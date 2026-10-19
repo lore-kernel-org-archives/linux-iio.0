@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B6555810E7;
-	Mon, 19 Oct 2026 13:58:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04E625AE423;
+	Mon, 19 Oct 2026 14:00:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792418325; cv=none; b=e/F9aWPOMSKTEXr1CMEQ9HbN/CuHz+TBxmGPHnKP65zNfkmfViR0SZoio4LdX8bFqik/JlrqfnPpL6UfwmXyeV7pdEyV1ihjBsneFeTHONsI+VkdnYLcdTlW+ftm5QfOKmYDj/uf2F4TkSayhF0/xMwS2qSJviFF5s62sE4wWUU=
+	t=1792418418; cv=none; b=bDJxbDIIisDEdenoFKVw2QtfJVcrRid0zUZUhn2jyHdRR5aeyb1r/b6guRXyF+soEyTTwHIblL/59vHPdUGHNZVHHAD0aZ9nItTD37CsoDjfIbKxI+ZeeJC+xgPy4GvQDFrSLaL4H3GfkiDzuMvzz5bNnK09XxADq5GApyl2/Bo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792418325; c=relaxed/simple;
-	bh=0/+oTq/iPFd4Dx56ED+kSetpVtEOv78MVIXbnFkc8HU=;
+	s=arc-20240116; t=1792418418; c=relaxed/simple;
+	bh=atj6UOvgApRieG1GJGv5RDUIMlc+SFdaGNyRb7mWE5E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=s07MncBYvcUrdXu6GJySyT+pTOuNwtHHjhHYpi+1S7LTL5pyWB9bjRxVjDOx/+d+Sh9aZ/x8NtWEiGYMlhfeWoKlilGJ96F8mgCJawSSPJVjTd6FKuRo/iZzbEVGDzCQCQBeXcDnsyFM2jZ+slnsHThsQvFtVjcEFu5DjshWMss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gA39CcNJ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=l9RF2CHHu7XJHrogpn5SeHUbcKTzknad0FGAYbCi49FDvcUdqH0WC8bPA5VJ41TsuNckLNAjcY+oRwO9MqvS654kzhoo49WAP8Pe34KZ2yiL/6Z4QkTsnCl5fRZcCFONiMXo1ML67v7hZIZoD2LRQotZjk2GNWgV3E7RA8hRCk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dGSHiR23; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gA39CcNJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BA3D1F000C7;
-	Mon, 19 Oct 2026 13:58:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dGSHiR23"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A86C51F000C4;
+	Mon, 19 Oct 2026 14:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792418322;
-	bh=dENmD698szZzBSZbOBfmILBFw0Baf/1rZwQeB805f4o=;
+	s=k20260515; t=1792418415;
+	bh=OpFOufFlSjediWMBK9vzhB5wdkH6ywbB5g9Et8FopIw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=gA39CcNJKhHgq7B59R2mfa5+NRFWq4whIH8Gtzo8fJwksfYAP3/FKwXQgBkstbElS
-	 mtEE9PDQ2LNE15+n7/iESZU6Ccq/FGTsZZzIJdDu19NzmGQlXkMQNOuGn61lM1tRkp
-	 L7X1Vjb5VYcobQv5Uur3hJH36oyyc+HO+kcrmaUdRhEbJQacQ+wZUNXn3lCtH6ZtJt
-	 cQuFxVr/uBCDSTEKUjLsFh47QnsT3qwQvY0w1uh93gSTrJi5ybo6pDv/bkNCbF/zZd
-	 d9icni/n6S0l68gOi5ctalm/2tq2BT9wCeEyHdbJOtmjTaBFKDyNmxs1OI2Bu4PMkl
-	 83zrrI8Aeoz0g==
+	b=dGSHiR23DoZKzWb5kdvDKnj4VyzrCAUP4CYZ4YPLp/WPfzPo8Fe3ddN9DmqrZCFqy
+	 DXGoczJQZmlD0M6Y6YVnHLu1OzH4YjUOWK93bGPXAZjFkjgn6ln2bvh9DBmzZju/Kf
+	 Y3RNtFM9BnWllRiwuangGTYW5en316jY1Kt91esSwbSaDm/wvJ7lXgUboHdR0Vigw3
+	 XaidOKqFkVGPwNCFwbWCHgfpLM8Y3R4BTW/8BpTmB8lOuDYpdqrER2Lj7/X4kh8W+b
+	 s2VWV6TN+Ra+izuKKZPWgj6huSFLOZ03IAMKITia8W6Rsv6uC3MTgzAJ88PNzHa1Mr
+	 laxTEAsaHjqmw==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Bryam Vargas <hexlabsecurity@proton.me>,
+Cc: Pengpeng Hou <pengpeng@iscas.ac.cn>,
 	Andy Shevchenko <andriy.shevchenko@intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-5.15] iio: accel: fxls8962af: clamp the device-reported FIFO sample count
-Date: Mon, 19 Oct 2026 09:47:36 -0400
-Message-ID: <20261019135441.1420968-165-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.18-5.10] iio: adc: max1241: add missing MODULE_DEVICE_TABLE()
+Date: Mon, 19 Oct 2026 09:48:44 -0400
+Message-ID: <20261019135441.1420968-233-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261019135441.1420968-1-sashal@kernel.org>
 References: <20261019135441.1420968-1-sashal@kernel.org>
@@ -53,21 +53,22 @@ X-stable-base: Linux 6.18.57
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Bryam Vargas <hexlabsecurity@proton.me>
+From: Pengpeng Hou <pengpeng@iscas.ac.cn>
 
-[ Upstream commit 2f8225b91eb478ca2e9aec8aaef4d229765bcebe ]
+[ Upstream commit 790a2080e0c9eabefea3561dec301172043de236 ]
 
-fxls8962af_fifo_flush() transfers the sample count the device reports in
-BUF_STATUS into an on-stack buffer sized for FXLS8962AF_FIFO_LENGTH (32)
-samples, but the count is a 6-bit field (0..63) that is only checked for
-zero. A device, or an attacker on the I2C/SPI bus, reporting 33..63
-overflows the buffer by up to 186 bytes: a stack out-of-bounds write.
+The driver has a match table for the spi bus wired into its driver
+structure, but the table is not exported with MODULE_DEVICE_TABLE().
 
-Clamp the count to FXLS8962AF_FIFO_LENGTH before the transfer, mirroring
-the clamp already applied in fxls8962af_set_watermark(). Conforming
-hardware reports at most that many samples and is unaffected.
+Add the missing MODULE_DEVICE_TABLE() entry so module alias information
+is generated for automatic module loading.
 
-Signed-off-by: Bryam Vargas <hexlabsecurity@proton.me>
+This is a source-level fix.  It does not claim dynamic hardware
+reproduction; the evidence is the driver-owned match table, its use by
+the driver registration structure, and the missing module alias
+publication.
+
+Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
@@ -75,116 +76,114 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
 
 LLM Generated explanations, may be completely bogus:
 
-The local tree is **6.18.53**. The FIFO clamp is not in `v6.18.53`; the
-32-sample stack buffer and 6-bit `BUF_CNT` path have been here since
-v5.14. That is a real stack out-of-bounds write, so this is a YES on
-technical merit.
+The local checkout is mainline **7.3.0-rc4** (`v7.3-rc4-27`,
+`origin/master`). The change is a one-line `MODULE_DEVICE_TABLE(spi, …)`
+for an existing IIO ADC driver. Below is the full checklist against that
+tree.
 
 ===============================================================
 PHASE 1: COMMIT MESSAGE FORENSICS
 ===============================================================
 
 **Step 1.1: PARSE THE SUBJECT LINE**
-Record: **[iio/accel/fxls8962af] [clamp] [bound device-reported FIFO
-sample count before stack transfer]**
+Record: `[iio: adc: max1241:]` `[add]` `[export the existing SPI
+id_table via MODULE_DEVICE_TABLE so udev can autoload the module]`
 
 **Step 1.2: PARSE ALL COMMIT MESSAGE TAGS**
 Record:
-- **Reviewed-by:** Andy Shevchenko `<andriy.shevchenko@intel.com>`
-- **Signed-off-by:** Bryam Vargas `<hexlabsecurity@proton.me>` (author)
-- **Signed-off-by:** Jonathan Cameron `<jic23@kernel.org>` (IIO
-  maintainer)
-- No **Fixes:**, **Cc: stable**, **Reported-by**, **Tested-by**, or
-  **Link:** on the committed message (v1 had Fixes/Cc: stable; they were
-  dropped after review)
-- Ignore pipeline markers: `[ Upstream commit
-  2f8225b91eb478ca2e9aec8aaef4d229765bcebe ]`, Sasha Levin SOB
+- `Fixes:` none (expected)
+- `Reported-by:` none
+- `Tested-by:` none
+- `Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>`
+- `Acked-by:` none
+- `Link:` none in the git commit
+- `Cc: stable@vger.kernel.org:` none (expected)
+- `Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>` (author)
+- `Signed-off-by: Jonathan Cameron <jic23@kernel.org>` (IIO maintainer)
+- No syzbot, no CVE, no bugzilla
 
 **Step 1.3: ANALYZE THE COMMIT BODY TEXT**
 Record:
-- **Bug:** `fxls8962af_fifo_flush()` copies `BUF_STATUS` `BUF_CNT`
-  (GENMASK(5,0), 0..63) into `u16 buffer[FXLS8962AF_FIFO_LENGTH * 3]`
-  (32 samples). Count is only checked for zero.
-- **Symptom:** stack out-of-bounds write of up to 186 bytes (63×6=378
-  into 192-byte buffer), canary/return-address smash.
-- **Root cause:** driver trusts a 6-bit device field against a 32-deep
-  FIFO buffer. Watermark path already clamps; flush path does not.
-- **Version:** unbounded since `79e3a5bdd9ef` (“add hw buffered
-  sampling”), 2021.
+- **Bug:** `max1241_id[]` is wired to `spi_driver.id_table`, but not
+  published with `MODULE_DEVICE_TABLE(spi, …)`.
+- **Symptom:** `file2alias` never emits `spi:max1241`, so udev/modprobe
+  will not autoload `max1241.ko` for SPI-id instantiation.
+- **Failure mode:** driver stays unloaded until a manual `modprobe` /
+  builtin; not a crash.
+- **Version info in message:** none.
+- **Root cause:** missing module-alias publication for an already-
+  registered match table.
+- The “source-level fix / no dynamic hardware reproduction” paragraph is
+  in the original lore submission, not a stable-pipeline marker.
 
 **Step 1.4: DETECT HIDDEN BUG FIXES**
-Record: Not disguised. It is a bounds-check / memory-safety fix. Review
-treated it as hardening against malformed device reports rather than a
-conforming-hardware bug.
+Record: Not a disguised cleanup. It is an explicit autoload/modalias
+fix. Same pattern as other “publish the module alias” patches.
 
 ===============================================================
-PHASE 2: DIFF ANALYSIS
+PHASE 2: DIFF ANALYSIS - LINE BY LINE
 ===============================================================
 
 **Step 2.1: INVENTORY THE CHANGES**
 Record:
-- File: `drivers/iio/accel/fxls8962af-core.c` (+2 / −0)
-- Function: `fxls8962af_fifo_flush()`
-- Scope: single-file, two-line surgical fix
+- File: `drivers/iio/adc/max1241.c` (`+1 / -0`)
+- Function/data: none rewritten; one macro after `max1241_id[]`
+- Scope: single-file, one-line surgical fix
 
 **Step 2.2: UNDERSTAND THE CODE FLOW CHANGE**
-Record: After `count = reg & FXLS8962AF_BUF_STATUS_BUF_CNT` and the `if
-(!count) return 0` check, add `count = min(count,
-FXLS8962AF_FIFO_LENGTH)` before timestamp math and
-`fxls8962af_fifo_transfer(data, buffer, count)`. Normal path with count
-≤ 32 is unchanged. Path with count 33..63 is capped at 32 instead of
-overflowing the stack buffer.
+Record:
+- **Before:** SPI id table exists and is used at bind time if the module
+  is already loaded; `modules.alias` has no `spi:max1241`.
+- **After:** build-time alias `spi:max1241` is generated (same mechanism
+  as the existing `MODULE_DEVICE_TABLE(of, max1241_dt_ids)`).
+- **Path affected:** module autoload for SPI-id devices. Probe/runtime
+  I/O unchanged.
 
 **Step 2.3: IDENTIFY THE BUG MECHANISM**
-Record: **Buffer overflow / out-of-bounds write.** Device-reported
-length used as transfer size without clamping to the on-stack array. Fix
-is a bounds clamp (memory-safety / hardware-value validation).
-
-Verified math:
-- `u16 buffer[32 * 3]` → 192 bytes
-- `fxls8962af_fifo_transfer()` reads `count * 3 * sizeof(u16)` = `count
-  * 6` bytes
-- count=32 → 192 (fits); count=33 → 198 (6 past); count=63 → 378 (**186
-  past**), matching the message
+Record: **Hardware matching / module autoload (logic/correctness,
+device-ID class).** Not UAF, leak, race, or crash. `MODULE_DEVICE_TABLE`
+is consumed by `scripts/mod/file2alias.c` (`do_spi_entry`).
 
 **Step 2.4: ASSESS THE FIX QUALITY**
-Record: Obviously correct and minimal. `min()` is valid here: `count` is
-`u8`, `FXLS8962AF_FIFO_LENGTH` is 32; this tree’s `minmax.h` promotes
-unsigned char to signed int. Regression risk is very low: conforming
-devices report ≤32. Clamping a wild count to 32 can leave unread FIFO
-data rather than crashing; that is safer than a stack smash. Maintainer
-later preferred `dev_err` + abort over a silent clamp, but the clamp
-still prevents the overflow.
+Record: Obviously correct; matches every other SPI IIO ADC in this tree.
+No API, locking, or control-flow change. Regression risk is negligible.
+The committed hunk matches the driver after `d04a09b41d2e2` (`{ .name =
+"max1241" }`); the lore v1 still had `{ "max1241", max1241 }`, but the
+macro placement is identical.
 
 ===============================================================
 PHASE 3: GIT HISTORY INVESTIGATION
 ===============================================================
 
 **Step 3.1: BLAME THE CHANGED LINES**
-Record: FIFO flush, stack buffer, and unclamped `BUF_CNT` came from
-**`79e3a5bdd9ef`** (Sean Nyekjaer, 2021-05-17), “iio: accel: fxls8962af:
-add hw buffered sampling”. First appeared around **v5.14**. Long-lived
-in this tree.
+Record: `max1241_id[]` and `id_table` come from `8a80a71d9020b` (“iio:
+adc: Add MAX1241 driver”, 2020-04-03), contained in **v5.8-rc1**. OF
+table had `MODULE_DEVICE_TABLE(of, …)` from day one; SPI publication was
+omitted then and stayed omitted until this commit.
 
 **Step 3.2: FOLLOW THE FIXES: TAG**
-Record: No Fixes tag on the committed version. v1 tagged `79e3a5bdd9ef`.
-That commit **is** an ancestor of HEAD and of `v6.18.53`.
+Record: No `Fixes:` tag. Introduction commit is `8a80a71d9020b` (v5.8).
+No later competing fix for the same SPI alias.
 
 **Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES**
-Record: Related: `1fe16dc1a2f50` (“Fix use after free in
-fxls8962af_fifo_flush”, CVE-2025-38485) — `synchronize_irq()` on
-predisable, **already in v6.18.53**. Different bug; does not bound FIFO
-count. Sibling **`3e766526827ac`** (bmc150 FIFO clamp) **is already in
-v6.18.53** with `Cc: stable`. This patch is standalone, not patch N/M.
+Record (file log, no `--all`):
+- `790a2080e0c9e` — this commit (v7.3-rc1)
+- `d04a09b41d2e2` — simplify id table (named initializer; not a
+  prerequisite for the macro)
+- `09e3bdfe499d5` — id-table formatting
+- Driver added in `8a80a71d9020b`
+Standalone; not patch `X/Y`.
 
 **Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS**
-Record: Bryam Vargas is not the IIO maintainer. Same author submitted
-the bmc150 clamp (already in this tree). Driver author/regular is Sean
-Nyekjaer (CC’d). Applied by Jonathan Cameron.
+Record: Pengpeng Hou is a regular contributor of the same
+`MODULE_DEVICE_TABLE` pattern (IIO `bmi270`, rtc, vdpa, watchdog, hwmon,
+fbdev). Not the IIO maintainer. Same-day sibling: `87359c88846fa` (`iio:
+imu: bmi270: add missing MODULE_DEVICE_TABLE()`), also applied by
+Jonathan Cameron.
 
 **Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS**
-Record: None. Uses existing `min()`, `FXLS8962AF_FIFO_LENGTH`, and
-`fxls8962af_fifo_flush()`. Applies standalone.
+Record: None. Macro sits next to an array that has existed since v5.8.
+Applies on both old `{ "max1241", max1241 }` and new `.name` forms.
 
 ===============================================================
 PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
@@ -192,139 +191,141 @@ PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
 
 **Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION**
 Record:
-- **v1:** https://lore.kernel.org/all/20260613-b4-disp-22362900-v1-1-
-  c5e49f6af027@proton.me/ (had Fixes + Cc: stable, used `min_t(u8,
-  ...)`)
-- **v2:** https://lore.kernel.org/all/20260615-b4-disp-1a8c7886-v2-1-
-  0f0a2c48d840@proton.me/
-- **v3 (applied):** https://lore.kernel.org/all/20260616-b4-disp-
-  2e8d94cf-v3-1-c4e092eef3a2@proton.me/
-- Jonathan on v1: *“This is hardening against broken devices. Nice to
-  have, but not a fix and not back port material.”* Also asked for
-  `min()` instead of `min_t`.
-- Andy: shrink the AI-heavy commit message.
-- Author dropped Fixes/Cc: stable for v2/v3. Andy **Reviewed-by** on v3.
-  Jonathan applied to iio.git testing.
+- `b4 dig -c 790a2080e0c9e` →
+  https://patch.msgid.link/20260704151633.38517-1-pengpeng@iscas.ac.cn
+- `b4 dig -a`: **v1 only** (no v2/v3)
+- Thread: Andy Shevchenko `Reviewed-by`; Jonathan Cameron applied it.
+- **Maintainer comment (verbatim from mbox):** “I'm not rushing this in
+  given we don't have reports of it actually causing problems for any
+  users. Applied to the testing branch of iio.git which means it'll go
+  upstream in the next merge window.”
+- No NAK. No `Cc: stable` in review. Landed in `iio-for-7.3a` (merge
+  window), not `iio-fixes`.
 
 **Step 4.2: CHECK WHO REVIEWED THE PATCH**
-Record: To/Cc included Jonathan Cameron (maintainer), Andy Shevchenko,
-David Lechner, Nuno Sá, Sean Nyekjaer, linux-iio, linux-kernel.
-Maintainer applied it; Andy reviewed it.
+Record (`b4 dig -w`): To/Cc were Jonathan Cameron, David Lechner, Nuno
+Sá, Andy Shevchenko, `linux-iio`, `linux-kernel`. Andy reviewed;
+Jonathan applied.
 
 **Step 4.3: SEARCH FOR THE BUG REPORT**
-Record: No syzbot/bugzilla/user crash. Author reproduced with a
-KASAN_STACK litmus (count=36 → write of size 216 past the 192-byte
-buffer) and a userspace ASan model (count=63). Not a field report.
+Record: No `Reported-by`, no bugzilla, no syzbot. Author presents it as
+source-level evidence (table present, not exported). No hardware repro
+claimed.
 
 **Step 4.4: CHECK FOR RELATED PATCHES AND SERIES**
-Record: Parallel bmc150 clamp (`ce0e1cae2609` / `3e766526827ac` in this
-tree) with Fixes + Cc: stable. Same author, same week. Jonathan agreed
-with that analysis and only nitted `min()` vs `min_t`.
+Record: Same-day IIO sibling `bmi270` (OF table, more important for DT
+autoload). This max1241 patch is a single standalone `[PATCH]`, not a
+numbered series.
 
 **Step 4.5: CHECK STABLE MAILING LIST HISTORY**
-Record: Duplicate sent to stable@ in Aug 2026 (Shengzhuo Wei). Jonathan:
-not a fix, don’t hide it by clamping. After learning Bryam’s patch was
-already in mainline: *“Oops… didn’t think of it in the same way… not
-worth more churn for something we don’t really expect to see in
-practice.”* He did not NAK backporting Bryam’s already-merged clamp; he
-rejected the duplicate and a follow-up rework.
+Record: lore.kernel.org/stable search for this subject/max1241 found
+**no** discussion of *this* commit. Broader `MODULE_DEVICE_TABLE` search
+**did** show current stable practice taking the same class, e.g. `[PATCH
+6.18 190/398] Input: eeti_ts - publish the OF module alias`, ASoC
+“Publish the OF/PCI module aliases” into 6.12/6.18. Those are the same
+autoload-publication category Greg is shipping now.
 
 ===============================================================
 PHASE 5: CODE SEMANTIC ANALYSIS
 ===============================================================
 
-**Step 5.1: KEY FUNCTIONS**
-Record: `fxls8962af_fifo_flush()`; helper `fxls8962af_fifo_transfer()`.
+**Step 5.1: IDENTIFY KEY FUNCTIONS IN THE DIFF**
+Record: No function body changed. Added `MODULE_DEVICE_TABLE(spi,
+max1241_id)` beside `max1241_id[]`. Related symbols:
+`max1241_spi_driver.id_table`, `module_spi_driver()`.
 
 **Step 5.2: TRACE CALLERS**
-Record: Only caller is `fxls8962af_interrupt()` when
-`FXLS8962AF_INT_STATUS_SRC_BUF` is set. IRQ is a threaded oneshot
-handler (`devm_request_threaded_irq(..., NULL, fxls8962af_interrupt,
-...)`). Runs when the IIO buffer is enabled and the device signals
-FIFO/watermark.
+Record: Runtime callers of `max1241_probe` are SPI core bind
+(`module_spi_driver`). The new macro is **not** called at runtime;
+`scripts/mod/file2alias.c` `do_spi_entry` reads it at `modpost`.
+Userspace trigger is udev/modprobe on `MODALIAS=spi:max1241`.
 
 **Step 5.3: TRACE CALLEES**
-Record: `regmap_read` (`BUF_STATUS`), `iio_get_time_ns`,
-`fxls8962af_fifo_transfer` → `regmap_raw_read` (or I2C errata-3 per-
-sample reads), then `iio_push_to_buffers_with_ts`.
+Record: N/A for the added line. Existing probe still uses
+regulators/GPIO/IIO register.
 
 **Step 5.4: FOLLOW THE CALL CHAIN**
-Record: Userspace enables the IIO buffer → hardware FIFO IRQ → flush.
-Not a syscall that feeds the count; the count comes from the device over
-I2C/SPI. Unprivileged userspace cannot set `BUF_CNT` without controlling
-the bus or the part.
+Record: Reachable when `CONFIG_MAX1241=m` and a SPI device is
+instantiated by **SPI id** (`spi_board_info` / `spi_new_device` / ACPI
+SPI name), not by DT. DT already autoloads via existing
+`MODULE_DEVICE_TABLE(of, max1241_dt_ids)` (`of:N*T*Cmaxim,max1241`). No
+in-tree DTS or board file instantiates `max1241` (only
+`Documentation/devicetree/bindings/iio/adc/maxim,max1241.yaml`).
 
 **Step 5.5: SEARCH FOR SIMILAR PATTERNS**
-Record: Same bug/fix in bmc150 (`__bmc150_accel_fifo_flush`). Watermark
-path already clamps to `FXLS8962AF_FIFO_LENGTH`. `BUF_CNT` is only
-consumed here.
+Record: Dozens of `drivers/iio/adc/*` files already have
+`MODULE_DEVICE_TABLE(spi, …)` (`max1118.c`, `max11205.c`, `ad7476.c`,
+…). Historical IIO fixes of the same bug: `8f0d7daf53972` (imx25-gcq
+autoload), `447ccb4e0834a` (qcom-spmi-adc5, had `Cc: stable`),
+`cc3304052a89a` (stm32-dfsdm aliases).
 
 ===============================================================
 PHASE 6: CROSS-REFERENCING AGAINST THE LOCAL TREE
 ===============================================================
 
 **Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?**
-Record: **Yes.** `git describe HEAD` → `v6.18.53-5049-g0f0bdc2b0dffb`;
-`make kernelversion` → **6.18.53**.
-`v6.18.53:drivers/iio/accel/fxls8962af-core.c` has the 32-sample stack
-buffer and unclamped `BUF_CNT`. `git merge-base --is-ancestor
-e25456b3011d9 v6.18.53` is false (candidate only on autosel). Introduced
-**v5.14** (`79e3a5bdd9ef`). Driver configs: `FXLS8962AF_I2C` /
-`FXLS8962AF_SPI`.
+Record:
+- `git describe HEAD` → `v7.3-rc4-27-gf0100363d8c37`
+- `make kernelversion` → `7.3.0-rc4`
+- Driver is present (`drivers/iio/adc/max1241.c`, `CONFIG_MAX1241`).
+- Bug introduced **v5.8**, long before this branch.
+- `git merge-base --is-ancestor 790a2080e0c9e HEAD` → yes; this commit
+  landed in **v7.3-rc1**. Current file already has the SPI
+  `MODULE_DEVICE_TABLE`. That is expected on mainline; it does **not**
+  mean the autoload bug is absent from older stables that still have the
+  v5.8-style driver. The SPI id table and OF table this patch depends on
+  are both here.
 
 **Step 6.2: CHECK FOR BACKPORT COMPLICATIONS**
-Record: **Clean apply.** `git diff v6.18.53 e25456b3011d9^ --
-drivers/iio/accel/fxls8962af-core.c` is empty. Dry-run of the two-line
-hunk against the v6.18.53 file succeeded.
+Record: Clean apply. One line after the existing `max1241_id[]`
+terminator. No refactor required. Table-format commits (`09e3bdfe499d5`,
+`d04a09b41d2e2`) do not block the macro.
 
 **Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE**
-Record: UAF/CVE-2025-38485 fix is in v6.18.53; it does not clamp count.
-No earlier FIFO-count clamp. bmc150 analog **is** in v6.18.53.
+Record: This is the SPI-table publication. OF publication was always
+present. No alternate SPI-alias fix in the file log.
 
 ===============================================================
 PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
 ===============================================================
 
-**Step 7.1: SUBSYSTEM AND CRITICALITY**
-Record: **IIO accelerometer driver** (`drivers/iio/accel/`).
-**PERIPHERAL / IMPORTANT for users of this NXP automotive accel**
-(FXLS8962AF/64/67/8974). Not core mm/net/fs.
+**Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY**
+Record: `drivers/iio/adc/` — **PERIPHERAL/IMPORTANT**: IIO ADC, one
+Maxim SPI chip (`CONFIG_MAX1241`). Not mm/net/core. Users are boards
+with this ADC, typically DT.
 
-**Step 7.2: SUBSYSTEM ACTIVITY**
-Record: Mature driver (2021) with ongoing IIO-wide and device-specific
-fixes. FIFO flush logic is stable, not newly introduced in 6.18.
+**Step 7.2: ASSESS SUBSYSTEM ACTIVITY**
+Record: IIO ADC is actively developed (continuous `iio-for-7.3a` / fixes
+merges). This particular file is mature (added 2020, infrequent
+changes).
 
 ===============================================================
 PHASE 8: IMPACT AND RISK ASSESSMENT
 ===============================================================
 
-**Step 8.1: WHO IS AFFECTED**
-Record: **Driver-specific / config-specific** (`CONFIG_FXLS8962AF_I2C`
-or `_SPI`), when the IIO buffer is on.
+**Step 8.1: DETERMINE WHO IS AFFECTED**
+Record: **Driver-specific / config-specific** (`CONFIG_MAX1241=m`).
+Built-in (`=y`) is unaffected. DT users already autoload via OF aliases.
+Remaining gap: SPI-id (non-DT) instantiation.
 
-**Step 8.2: TRIGGER CONDITIONS**
-Record: FIFO IRQ with `BUF_CNT` in 33..63 and `BUF_OVF` clear.
-Conforming silicon: FIFO depth 32; overflow sets `BUF_OVF` and the
-driver returns `-EOVERFLOW` without transferring. Trigger needs a
-bad/malicious/counterfeit part, bus tampering, or a corrupted
-`BUF_STATUS` read (e.g. I2C bit error on bit 5, which adds 32 to a 1..31
-count without setting OVF). Not reachable from syscalls alone. No field
-reports.
+**Step 8.2: DETERMINE THE TRIGGER CONDITIONS**
+Record: Module build + SPI device named `max1241` without OF compatible.
+Not every boot; not a syscall crash path. Unprivileged users do not
+trigger it directly. No in-tree board/DTS consumer of the SPI id was
+found.
 
-**Step 8.3: FAILURE MODE SEVERITY**
-Record: **Stack out-of-bounds write** (up to 186 bytes) in IRQ-thread
-context → canary smash, oops, or worse. **Severity: HIGH** (CRITICAL if
-the bus is treated as adversarial). Conforming hardware: not hit.
+**Step 8.3: DETERMINE THE FAILURE MODE SEVERITY**
+Record: **Failure mode:** module not autoloaded; ADC node missing until
+manual load. **Severity: LOW–MEDIUM** (functionality, not
+oops/corruption/deadlock). Workaround: `modprobe max1241`.
 
-**Step 8.4: RISK-BENEFIT RATIO**
+**Step 8.4: CALCULATE RISK-BENEFIT RATIO**
 Record:
-- **Benefit:** stops a kernel stack smash on a wild FIFO count. Same
-  class already shipped in this 6.18.53 tree for bmc150.
-- **Risk:** very low (2 lines, `min()`, no API/locking/structure change;
-  good devices unchanged).
-- **Ratio:** high benefit/risk for a memory-safety clamp. Maintainer
-  preference for “error out instead of clamp” is a design nit, not a
-  regression.
+- **Benefit:** restores SPI-id autoload for a driver that already claims
+  `id_table`; same class Greg is taking (“publish the … module alias”).
+- **Risk:** very low (one macro, no runtime logic).
+- **Ratio:** favorable *because* cost is ~zero, even though user
+  population for the SPI-id path is small.
 
 ===============================================================
 PHASE 9: FINAL SYNTHESIS
@@ -332,110 +333,131 @@ PHASE 9: FINAL SYNTHESIS
 
 **Step 9.1: COMPILE THE EVIDENCE**
 
-FOR:
-- Real stack OOB: 6-bit count vs 32-sample stack buffer, overflow math
-  verified (186 bytes).
-- Bug exists in **this** 6.18.53 tree; driver since v5.14.
-- Two-line, obviously correct clamp; `min()` is type-safe here.
-- Applies cleanly; no prerequisites.
-- KASAN_STACK reproduction of the overflow.
-- Reviewed by Andy Shevchenko; applied by IIO maintainer.
-- Identical bmc150 clamp already in v6.18.53.
-- IRQ-time path, not dead init code.
+**FOR backporting:**
+- Real autoload bug: SPI match table registered but not exported.
+- One line, obviously correct, reviewed (Andy Shevchenko) and merged by
+  the IIO maintainer.
+- Same class as device-ID / module-alias publication, which stable
+  currently accepts (`eeti_ts` OF alias on 6.18/7.2; ASoC OF/PCI aliases
+  on 6.12/6.18).
+- Earlier IIO autoload fixes used `Cc: stable` (`447ccb4e0834a`).
+- Driver present since v5.8; no missing prerequisites in this tree.
+- Zero runtime regression surface.
 
-AGAINST:
-- Jonathan: hardening, *“not a fix and not back port material.”* Author
-  dropped Cc: stable for that reason.
-- No user/syzbot reports; needs non-conforming `BUF_CNT` (OVF already
-  bails out on overflow).
-- Later stable@ thread: prefer logging/error over silent clamp; “don’t
-  expect this in practice.”
+**AGAINST backporting:**
+- Not a crash, UAF, deadlock, or data-corruption bug.
+- OF `MODULE_DEVICE_TABLE` already exists, so the normal DT path already
+  works.
+- Maintainer delayed it to the merge window specifically because there
+  were **no user reports**.
+- No in-tree DTS/board instantiation of the SPI id.
+- Author series is a static sweep of missing tables, not an incident
+  report.
 
-UNRESOLVED:
-- No datasheet fetch here beyond driver comments
-  (`FXLS8962AF_FIFO_LENGTH` 32, `BUF_CNT` GENMASK(5,0)). Driver and
-  review agree on those numbers.
+**UNRESOLVED:**
+- How many production boards instantiate max1241 by SPI board_info/ACPI
+  rather than DT (no evidence found).
+- WebFetch to lore returned 403/timeout; thread was recovered via `b4
+  dig -m` instead.
 
-**Step 9.2: STABLE RULES CHECKLIST**
-1. Obviously correct and tested? **PASS** — 2-line `min()`; KASAN
-   litmus; W=1 clean; maintainer applied.
-2. Fixes a real bug that affects users? **PASS** — driver uses an
-   unvalidated 6-bit length as a 32-slot stack transfer size. That is a
-   real memory-safety defect; analog already backported for bmc150 on
-   this tree.
-3. Important issue? **PASS** — stack smash / OOB write (HIGH). Not a
-   userspace-only theoretical race; it is a missing bounds check on a
-   device-supplied length.
-4. Small and contained? **PASS** — +2 lines, one function.
+**Step 9.2: APPLY THE STABLE RULES CHECKLIST**
+1. Obviously correct and tested? **PASS** — one macro, reviewed, in
+   mainline v7.3-rc1.
+2. Fixes a real bug that affects users? **PASS** — missing `spi:` alias
+   when `CONFIG_MAX1241=m`; impact is real but narrow.
+3. Important issue? **PASS** under the device-ID / module-alias
+   exception (not a crash). Official `stable-kernel-rules.rst` allows
+   “just add a device ID”; publishing the existing SPI id is that
+   mechanism.
+4. Small and contained? **PASS** — +1 line, one file.
 5. No new features or APIs? **PASS**.
-6. Can apply to the local tree? **PASS** — v6.18.53 file matches pre-
-   image; dry-run succeeded.
+6. Can apply to the local tree? **PASS** — surrounding `max1241_id[]` /
+   `id_table` exist; hunk is a single insertion.
 
-**Step 9.3: EXCEPTION CATEGORIES**
-Record: Not a device-ID/quirk/DT/build/docs exception. Ordinary memory-
-safety bounds check.
+**Step 9.3: CHECK FOR EXCEPTION CATEGORIES**
+Record: **Device ID / module-alias publication** (not a new driver, not
+a new API). Closest listed exception: adding IDs to an existing driver.
+Build/docs/quirk categories do not apply.
 
-**Step 9.4: DECISION**
-The IIO maintainer did not want this treated as a stable bug because
-conforming parts should never report >32 without `BUF_OVF`. That is why
-Cc: stable was dropped; that absence is not a reason to reject it. In
-this 6.18.53 tree the buggy flush is present, the fix is two lines, and
-the same pattern was already taken for bmc150. A wild `BUF_CNT` still
-produces a kernel stack overflow. That is enough technical merit to
-backport.
+**Step 9.4: MAKE YOUR DECISION**
+This tree has the driver and the SPI id table the patch exports. The
+change is a one-line, zero-risk autoload fix of a type already going
+into stable. Maintainer caution (no reports, not iio-fixes) lowers
+severity but does not make it a cleanup or a new feature. Criterion 3 is
+met via the device-ID exception, not via crash/security.
 
-Verification:
-- [Phase 1] Parsed subject/tags/body from `git log -1 e25456b3011d9` and
-  the user-supplied message; Fixes/Cc: stable dropped after v1 review
-- [Phase 2] Read `fxls8962af_fifo_flush` / `fxls8962af_fifo_transfer`;
-  confirmed 192-byte buffer, `count * 6` transfer, 186-byte max overflow
-- [Phase 2] Confirmed `min(u8, 32)` is valid in this tree’s
-  `include/linux/minmax.h`
-- [Phase 3] `git blame`: buggy FIFO flush from `79e3a5bdd9ef` (2021);
-  `git merge-base --is-ancestor 79e3a5bdd9ef HEAD` true
-- [Phase 3] UAF fix `1fe16dc1a2f50` is in v6.18.53; does not clamp count
-- [Phase 3] bmc150 clamp `3e766526827ac` is in v6.18.53 with Cc: stable
-- [Phase 4] `b4 dig -c 2f8225b91eb478ca2e9aec8aaef4d229765bcebe` → v2/v3
-  lore; `-a` showed v3 applied; `-w` listed IIO maintainers
-- [Phase 4] Fetched Jonathan v1 review: “not a fix and not back port
-  material”
-- [Phase 4] Fetched v3 apply mail and Andy Reviewed-by
-- [Phase 4] lore.kernel.org/stable search: Aug 2026 duplicate; Jonathan
-  restated hardening stance, then dropped rework of Bryam’s already-
-  merged clamp
-- [Phase 5] Only caller: `fxls8962af_interrupt` on BUF status, threaded
-  IRQ
-- [Phase 6] `make kernelversion` / Makefile: 6.18.53; clamp **not** in
-  `v6.18.53`; `git diff v6.18.53 e25456b3011d9^ -- fxls8962af-core.c`
-  empty; patch dry-run against v6.18.53 file succeeded
-- [Phase 7] Kconfig: FXLS8962AF I2C/SPI, automotive accelerometer
-- [Phase 8] Failure mode: stack OOB write in IRQ thread, HIGH
-- UNVERIFIED: live NXP datasheet fetch (FIFO=32 / BUF_CNT width taken
-  from in-tree defines and review, which agree)
+What it solves for stable users: if `max1241` is built as a module and
+the chip is created by SPI id rather than DT, udev can load the driver
+instead of leaving the ADC unbound. DT users are already covered; the
+extra alias does not change their path.
 
-The patch is a two-line bounds clamp on a stack FIFO flush that exists
-in this 6.18.53 tree. It prevents a kernel stack out-of-bounds write if
-`BUF_CNT` is 33..63, applies cleanly, and matches a clamp already
-present here for bmc150.
+Risk vs benefit: benefit is modest and device-specific; risk is
+effectively none. That trade-off matches other “publish the module
+alias” stable commits.
+
+### Verification
+- [Phase 1] Parsed tags: Reviewed-by Andy Shevchenko; SOB Jonathan
+  Cameron; no Fixes/Reported-by/Cc: stable/syzbot
+- [Phase 1] Body: missing SPI `MODULE_DEVICE_TABLE`; autoload aliases;
+  source-level, no hardware repro
+- [Phase 2] Diff: +1 line in `drivers/iio/adc/max1241.c` after
+  `max1241_id[]`
+- [Phase 3] `git blame`: table from `8a80a71d9020b` (v5.8-rc1); OF table
+  always exported; SPI table not
+- [Phase 3] No Fixes: tag; introduction commit confirmed via `git show`
+  / `git describe --contains --match 'v*'`
+- [Phase 3] Author also landed `87359c88846fa` (bmi270
+  MODULE_DEVICE_TABLE) the same day
+- [Phase 3] `git merge-base --is-ancestor 790a2080e0c9e HEAD` exit 0;
+  contained in v7.3-rc1
+- [Phase 4] `b4 dig -c 790a2080e0c9e`:
+  https://patch.msgid.link/20260704151633.38517-1-pengpeng@iscas.ac.cn
+- [Phase 4] `b4 dig -a`: v1 only
+- [Phase 4] `b4 dig -w`: IIO maintainers + linux-iio
+- [Phase 4] `b4 dig -m /tmp/max1241-thread.mbox`: Andy Reviewed-by;
+  Jonathan: not rushing, no user reports, testing branch / next merge
+  window
+- [Phase 4] lore.kernel.org/stable: no thread for this commit; other
+  “publish the module alias” patches are in 6.12/6.18/7.2
+- [Phase 5] `file2alias.c` `do_spi_entry` generates SPI aliases; probe
+  path unchanged
+- [Phase 5] No in-tree DTS/board `max1241` users (grep `arch/` and dts);
+  only DT binding YAML
+- [Phase 6] `git describe HEAD` = v7.3-rc4-27; `kernelversion`
+  7.3.0-rc4; driver + both match tables present
+- [Phase 6] Pre-fix parent `790a2080e0c9e^` has SPI table and OF
+  MODULE_DEVICE_TABLE, no SPI MODULE_DEVICE_TABLE
+- [Phase 7] Subsystem IIO ADC, CONFIG_MAX1241 tristate “module will be
+  called max1241”
+- [Phase 8] Failure mode: missing autoload, severity LOW–MEDIUM; risk
+  very low
+- UNVERIFIED: real-world count of non-DT max1241 boards (no evidence
+  found; not used as a YES driver)
+- UNVERIFIED: WebFetch lore (403/timeout); replaced by `b4 dig` mbox +
+  curl
+
+The patch is a one-line, obviously correct module-alias export for an
+existing SPI id table. This tree has the driver (since v5.8). It matches
+the device-ID/module-alias exception and current stable practice for
+“publish the module alias” fixes, with negligible regression risk.
 
 **YES**
 
- drivers/iio/accel/fxls8962af-core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/adc/max1241.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index 8763e91c63d2b..1ecffbf41f64f 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -970,6 +970,8 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
- 	if (!count)
- 		return 0;
+diff --git a/drivers/iio/adc/max1241.c b/drivers/iio/adc/max1241.c
+index d62c1a0116593..cab04beae7293 100644
+--- a/drivers/iio/adc/max1241.c
++++ b/drivers/iio/adc/max1241.c
+@@ -179,6 +179,7 @@ static const struct spi_device_id max1241_id[] = {
+ 	{ "max1241", max1241 },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(spi, max1241_id);
  
-+	count = min(count, FXLS8962AF_FIFO_LENGTH);
-+
- 	data->old_timestamp = data->timestamp;
- 	data->timestamp = iio_get_time_ns(indio_dev);
- 
+ static const struct of_device_id max1241_dt_ids[] = {
+ 	{ .compatible = "maxim,max1241" },
 -- 
 2.53.0
 
