@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792485360;
-	b=1XgNipt0JpVyuP69ApP3JMRy225ezbmSSn+gy6prp9nylJRGFc6roYCHINeYEZHxf961
-	 5Y7hwFpXudxk0JiYltQ9j9hDZvEo5ye/0mcQXLcSJY0hY1nV7JntwVGxYfc9WXaZNL+Km
-	 gB3nA73KumJmrf/QNDFuEHmZxsxrQ720FiyyviV62/h6e6sdyWHRdSDlMs6+MI88jEwie
-	 Z4wSIRYofu8CZEHQMqiW2ptNgyhre9SU4PLjBft019sAzVQI3yTCKV14ka4YS/KE6SwX4
-	 raUX/WVdRH4FlbuqGNHO+57itfyxZj+tOrM9EpYSTFnfW9LLX9YzEzSaA7RPC/AvPpQ==
+	t=1792485484;
+	b=DGPaaMqdnH+pJojd2lq/z9/+sHRpSmwWUhKM0bckWx482E1Urd64nUdrLm7YLZs03A9h
+	 NP4CAuVqJJDWwz7+RqwaNXApv5hdXPiMqQnAiQrQ6+2wXe/+N1myOlFgqY1cngkrN0Hcf
+	 vX4nZsEsVdf5nXezpLqP7TL16vF11iYWKJ9cAksOlOmemw8ggnmF2XOwFmVbaTGjvo2RF
+	 Bw0x1wrNnMhKghGjCKkgYdbiH8PVhtcCLRAv1vXmftw14wlQegA5eDx/D5XRrNE5bw5l3
+	 nFslh3DGHg3DN1FtQSFVeaooKwbA/6ANRMnh51sCQyHbNCVeeMs2aZZceJHHJIVbntA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792485360;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792485484;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=O9kQxxiMQXZgZt4jc5gh6sq1UOiM8uvtGuGsxDoj0/A=;
-	b=nPPFsh7J8+UgcV6WvbySTXoHkTxA5CaMWYba8O7+KZS4P7oFnYFzYjNpxf4urIZFU4Bv
-	 m1chNlNGpa+33WUfhiS7UhHiwEZgapOQRS3CdwoGo4KnvfMVlqjSW0iw9ESUU5PYUD0ad
-	 Ktd3XOe1PPWfmVvLBMuGjNN9k2lspXC/nwVedmOCs1bUvTfxSX4jzFy06W1YT/AOGWqg+
-	 oSpVOF6LJpMDjeD6vsztpjBWH+AWD0s/5WEJ5PCJ2AF1sWTifGUt0VebfNSBQVWFSY7pO
-	 iaQHHAD47rNbzc97+A2XbShj9KafrixOPp32cP8VkekeAwQ1KelJBQPOa+EoujMhxUA==
+	bh=VHl3GFnK/1yqp8JLtxfjT1mXRdPR3XfGGv+ZQvmy8F0=;
+	b=ppQaYblp2+5Ipu9i3xWOEblO35oC1MMw7Y8QMeAB/e3PBUrYsFWgKYbe3hOGMptOrbjv
+	 p+xDrTKrjT2baekYQLEdmdASZQK1+294MKDTJpOXyj2jTbE/lz3L3lmGRL6yFaYUidMIN
+	 TyOSRomZxsJgOm3xgtrY9oz1/Fqm0kk+s7V4SlKdkBUeNG/TD9nIUIBmFKeBh57K+3TS6
+	 WRYeFwmjEtu7BddnlgKJKigkvSSNcz22DTF774ixvzhk+0KJ8TDSi2yo/KDaCwyrMYJ92
+	 jk9Aix/7YI/j3pus11RTQc/9lBJlK6fVJDgCN8jSRVFcq7E+XkM/KjNQl7w9Q50G0xg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="W0olC9/h";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P3oc8iRU;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB5AD606A319;
-	Tue, 20 Oct 2026 08:35:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF2F606A31D;
+	Tue, 20 Oct 2026 08:38:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W0olC9/h
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A201F000C4;
-	Tue, 20 Oct 2026 08:35:58 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P3oc8iRU
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E96301F000C4;
+	Tue, 20 Oct 2026 08:38:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792485359;
-	bh=O9kQxxiMQXZgZt4jc5gh6sq1UOiM8uvtGuGsxDoj0/A=;
+	s=k20260515; t=1792485483;
+	bh=VHl3GFnK/1yqp8JLtxfjT1mXRdPR3XfGGv+ZQvmy8F0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=W0olC9/hO8H/xx6JNxQkjW5kqi13uKVIo87jifdOkUid/mmVit95os+yZqIOiXyZY
-	 OPnnT+7dEu4lmf9fCgCMM3bvIYYlrX6ec6wb1PVoybqurnC/SPzxouGZ6c8VHuAvOw
-	 2y2OBbsYOi4zJQ/rzybqfxp2DI7R5jJtexsHV7OY/eGpUfN0ILD4AHbMtTW0jaiNhc
-	 hmr1092yK0ohG2jSLBlNq45cL18Szw8UFmCNnSMcP5+asFk6nMUsv2HEae0uxUkusi
-	 /2nTDAe2aq8+CfdNIdFuUysyU6RDIbKAa2/etcYc7lNvGxSnD9glJt5xAHc6DsTnbk
-	 Qb15s2vvOotoQ==
-Date: Tue, 20 Oct 2026 10:35:56 +0200
+	b=P3oc8iRUR4azpGz6RNOpfSxY5BZOJFRePNicdlb3KpileJajPSAZBrabuQmNvbpGs
+	 pJDTkhsw5fnBCSZDwVBqTyF84ij+lTf6YFQHle0CCCghrtAJbwrxgutCIoseLcCA2Z
+	 +Cy5B6UQ0hkMtXXa8jCjQ9RIUzrwg9fFC95vSrXVYq2PuL/6Twty5jaz9U/1ArmBTB
+	 wJRKMd3U81KDZsarKJWI2rARwFabW3M1EP7JH0gnGU7rM6+nEOmre4l/lEfmF3Pc5b
+	 xE6ujxsSjoq97BmPbdOxSoxg1kYHERT2LIrifnQUzvTWek9FizJgYu32Oq5Jh0bJbv
+	 3TWFiQvxMtj+w==
+Date: Tue, 20 Oct 2026 10:38:00 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Vidhu Sarwal <vidhu.linux@gmail.com>
 Cc: Rob Herring <robh@kernel.org>, 
@@ -48,10 +48,10 @@ Cc: Rob Herring <robh@kernel.org>,
 	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org, 
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
 	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH 1/3] dt-bindings: vendor-prefixes: Add Benewake
-Message-ID: <20261020-impetuous-native-leopard-baf6da@quoll>
+Subject: Re: [PATCH 2/3] dt-bindings: iio: proximity: Add Benewake TF-Luna
+Message-ID: <20261020-formidable-aardvark-of-biology-cffcc9@quoll>
 References: <20261020-tf-luna-v1-0-53a88f93db24@gmail.com>
- <20261020-tf-luna-v1-1-53a88f93db24@gmail.com>
+ <20261020-tf-luna-v1-2-53a88f93db24@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -63,19 +63,28 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261020-tf-luna-v1-1-53a88f93db24@gmail.com>
+In-Reply-To: <20261020-tf-luna-v1-2-53a88f93db24@gmail.com>
 
-On Tue, Oct 20, 2026 at 12:03:41AM +0530, Vidhu Sarwal wrote:
-> Add vendor prefix for Benewake (Beijing) Co., Ltd., a manufacturer of
-> LiDAR distance sensors.
-> https://en.benewake.com/
+On Tue, Oct 20, 2026 at 12:03:42AM +0530, Vidhu Sarwal wrote:
+> Add binding for the Benewake TF-Luna, a single point ToF
+> LiDAR distance sensor with a range of 0.2 m to 8 m.
+> 
+> The sensor talks either UART or I2C, selected by the level of pin 5 at
+> power-up. This binding covers the I2C interface. Pin 6 is a data ready
+
+Binding should in general cover both interfaces. You will not get
+different compatible for UART. Incompatible changes won't be accepted,
+either.
+
+> output and is described as an interrupt.
 > 
 > Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
 > ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+>  .../bindings/iio/proximity/benewake,tf-luna.yaml   | 58 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  6 +++
+>  2 files changed, 64 insertions(+)
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
 Best regards,
 Krzysztof
