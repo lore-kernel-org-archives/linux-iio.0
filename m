@@ -1,60 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792502677;
-	b=R6IMCgG+j40QooswQ8todX8+tPVAAhUJLeDTh4MZAuq8BeE8/D05T5+fgPu2yU19R5cZ
-	 /nkagCwEBVNY+tQyCv2i9lnC8WIFubDeXdTyksC3CdPBMF6OPL+y0eRJ+aIBI1qm+Lo6k
-	 D+wfL8VnaRX5CftzVaRHL+2NPtfpkQW8Pr1BG/YYPF4sw2nHKrBnyXUs/gz74gyz5IOZw
-	 UOcliIEEZW8OVgjS8sn0goe7DTwSi8ktQ0Dy6lN3Dfh3DdmBCS9BGUB4X9dtBqa+JxUcI
-	 mFhPkq85KRkNnOnBwBs96ZD1O4tqTz7Mmb89PQohVresEVEvRnmJhFbuVjvK37IfK3g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792502677;
-	h=Received:DKIM-Signature:Received:X-Gm-Message-State:X-Received:
-	 Received:Received:From:In-Reply-To:MIME-Version:References:Date:
-	 X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type;
-	bh=COWPlZdRueN7pSY6pOWaLdT4Jys7uGpWmTmqPkHcMl8=;
-	b=kHGV1Z3+oG78mMNi486ZzBlqc8s+8ZAagOzCZ+f4eF1iwLVfhhGOXlQufCt2NHtd9sHz
-	 Os1JqyLgHxF3vDLFyYhLI1GpuMY8b0gUyzbIIgpiLIc8lMtA9t1CbvnmVfTa/EMfFjStS
-	 osn1dn/3ZEq4p1QCIUmEqh+cmQ34Ca+B6hzc2oRuUqJnB9Bh0DEotwb0ieY/jx/7X3JMx
-	 aeArLb8mQVAlWn+276XfrefzG50uyCj93jEjkM97XrpQkHQ7MpBSpaiaUywkdtPOK6Sc5
-	 kNmigE3JCRZ+bmkARBrRCypitJ5/Ze5VX3/ZkOT9V5cQTCqwMSv1WfDokLvobyfwOcg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PmEXTee3;
-	arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792509967;
+	b=01qENe8nMwjR49ul3MBqCsheBs0gtb/Nxq6KUpuQn0abFdnQceZU1jxOTFZhpOMJoG/o
+	 G+1gz8nZ4yOek40rit8wCB2HrAzA8HneZQFaOk11HK2NnUdx1CfoKG5oPiOYGPsneRDeQ
+	 RSxT6onNpIppwsX6f/R87SRhB+Swxl2tVFiYC7igPRK1kthVnrQRXljbj26tFTQlbGGQ6
+	 tzWo0wlKNUtTT+vtc5tBq3pVXTPyooOBLdtJGKTNBtCNF54411oU42s1DxZrfOjIa4Svp
+	 sUx7mBTd+IKDsP4eh3DcB68pWSzr3de2CuSRUgd+CKa3QKMtQQ6sgk9InSFEXqyFZvQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792509967;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=XB+26I9RQacuPIWnRjHF6pEOgxNT2RHWSFWP6LggIsg=;
+	b=BGKQWtp62g6M4O3Cb33PlrfWEU5xaiZN0l1KDy65B0IafyG+0Xxhd+MkPWR4UJiAQsLz
+	 tiSxBcxdUg7iRR0qGL1i8lAu9U2soJpSoAxdocD1GrjUCu5ehD3oy1h8Ndwh9uGv/hAwK
+	 iwJrwzPbf68GviEVHZDPS9bWgNQg3Rmb9QtZ0I1y9ws9mTYNHT1RSF3SISQ8Q+bBiLp0r
+	 pruCAJ9fVr8L21YBsw2bhwWcZZ6107gEajV9rbjRf1YlpXnDA/J/8imUQHyYhNQpKkLeW
+	 QTrOBCV7N+RZsNG1r7isMZaFYl1Bo49y7OtyjzSPzHz199In9i2ixQZLcNMiiG2CN6g==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=axKbDNdI;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08720606A323
-	for <linux-iio@vger.kernel.org>; Tue, 20 Oct 2026 13:24:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66663606A31B;
+	Tue, 20 Oct 2026 15:26:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PmEXTee3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAFA31F000D0
-	for <linux-iio@vger.kernel.org>; Tue, 20 Oct 2026 13:24:35 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=axKbDNdI
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792509965;
+	b=pxVmygMeW6h9dNfxNAIllE4BSwN3qxc0cUoOb4ZIivM64cT3jV2Kze2IvBAW/DsCG2Hk
+	 QB5tcPWHvrHMbZ6eeZcR9faMaJoPWqj6ClnXcd9WZy5oCDfcP1MeoXKerdmgsAOCACrK7
+	 WMxSzu/VfToJqlut0QKmWe9xEEFmQiiqI+8JrWOuNjW8LVsRwvyIZ5qdtt0tyAJMF/xAr
+	 oSsaeQ11uIgxjwQcpfFcvCEmHL1Utu1S2raqtlL8+6xxgAHVJQTAaj2OJGXMybwGfHKxy
+	 dA+pN2mz/kZgeHfLp9G5koVXcHoV98btlHw06W/UVPoreJMvgzqYvy3BeH3ilKtNkrw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792509965;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=XB+26I9RQacuPIWnRjHF6pEOgxNT2RHWSFWP6LggIsg=;
+	b=S4DnTk3apJnHs2Xu9W0Y1TFqzlRpKPXFF2XXkU9wFImEPJAyqEgGUKcbMHKWsPdXGlex
+	 1/GB1e2lkJ7dhoinsHW93t3HT9oM1GMzGDIZVi8NxO5nav645A+sNRkGMl6SPWapZzEhp
+	 30X79tHlvHkEnEJXG6Aw32Hl6MfJa77qC8nGd/2S5MatlHo8QAPrtrgzKvblJQbZEUIYx
+	 q7LRn8rJVEP7nbgjhMO58vh0VARoVqG8mlYab24MhrhJYfs6Aj4/ejTvukB7lUv2UABy+
+	 I3QObBW0g0foW2BKtTa8PVm3+aIt6pNxl4gOLVPlQNXqKJxOW9POB1JyFHOoqqKTBhQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 569161F000C4;
+	Tue, 20 Oct 2026 15:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792502675;
-	bh=COWPlZdRueN7pSY6pOWaLdT4Jys7uGpWmTmqPkHcMl8=;
-	h=From:In-Reply-To:References:Date:Subject:To:Cc;
-	b=PmEXTee3Pb1/Z2oHDK9VdfnvCM4Ux1PZEFvf8G7QLnqQLAgFCDKb2xcoijp+hqKzL
-	 o5CSN3VuG7XuaQUgKnXm6CHAzH16T/4cqXRSG5ZF80eXFkch5OaCwuDIQ3N6HOuZP+
-	 5RP2iflcCjL8T5WmD4RP2zZ9SUCfTbNEJ6Exjj+kLGPIvJmwzFX6Dicy1kx6px4ctK
-	 pEIiwLxlr2czPJg5c1S+oJ2yY3yX8wOoNBKc0ly8amOeVEF7w+whT5p4NsfJQ9Ec4z
-	 RsvTj3+w6iYxxmVwFKKNpTixzeE1sR2whQocKWE6HJ8EY/koowwyafEAFo4Aj43wos
-	 bY0qoENVV78HQ==
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-3a5a26c8412so27227341fa.3
-        for <linux-iio@vger.kernel.org>; Tue, 20 Oct 2026 06:24:35 -0700 (PDT)
-X-Gm-Message-State: AFq9FYJT9QeSxeGYLfBFs0UIY6N3yjTChPLb/kU4VXo/zzev4RJkjTyQ
-	rcgA22BPcuDk2cxPQqYk1WmfOrol9z6rOxL/Fqs9NWHI8euRWXIeDP0SY2RJNhOjA+UA+rkgORJ
-	ZctpaFYNHTv+SLq0fVnJmgygipcWeyJbr93Y89PuZOg==
-X-Received: by 2002:a05:651c:2108:b0:3ab:4412:354b with SMTP id
- 38308e7fff4ca-3ab44123804mr14301701fa.1.1792502674348; Tue, 20 Oct 2026
- 06:24:34 -0700 (PDT)
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 20 Oct 2026 09:24:31 -0400
-Received: from 969154062570 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 20 Oct 2026 09:24:31 -0400
-From: Bartosz Golaszewski <brgl@kernel.org>
-In-Reply-To: <cde9d00a-bfe4-4093-b03d-f76a122e4ded@baylibre.com>
+	s=k20260515; t=1792509965;
+	bh=XB+26I9RQacuPIWnRjHF6pEOgxNT2RHWSFWP6LggIsg=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=axKbDNdIrE6PWnixL1ykpsDc5q3vPLtw6R6WkhOfCC5DljXxKczVbQwkGU2AoKKZK
+	 B9gFHWZnlMCWSH2XN19rnNeLoezBOe1nrUmA780/2Yf/oGjjqwzuJ4QnyKeUAGaG7A
+	 blbeSoMCLK4O63rkHHNQhRDdZnKVGdY0EJMTXAdKXuhioJEhbQ4wJmNsXsbk7Xboid
+	 eZnc3gKEB3GlYLROKzRrU+ZhnF0EatS5+j588WQhVoU1wPzceAoTduS7wsqybE5aoF
+	 POHDs8wbpr0+RpblHwUmCTJZWOqiyw7Kf+o57no8+cKifeidtQV+eAs4a7nrc5OK/2
+	 PfXW5HlkkxR5g==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id AB4BF405FF;
+	Tue, 20 Oct 2026 15:26:04 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Tue, 20 Oct 2026 17:26:00 +0200
+Subject: [PATCH] iio: inv_sensors: prevent timestamps going back in time in
+ transitions
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,70 +83,122 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261009-iio-adc-ti-ads112c14-gpio-v2-0-3231a795fa63@baylibre.com>
- <20261009-iio-adc-ti-ads112c14-gpio-v2-2-3231a795fa63@baylibre.com>
- <CAMRc=Mfn7+uQYvLjGLxU9wMOnRwx5pyPgaLp6oNx+ZcFXyXL=A@mail.gmail.com> <cde9d00a-bfe4-4093-b03d-f76a122e4ded@baylibre.com>
-Date: Tue, 20 Oct 2026 09:24:31 -0400
-X-Gmail-Original-Message-ID: <CAMRc=Mfu6moWg6bomoPHqgR=7F9QoPVy62Za_EegP3eb8+jctQ@mail.gmail.com>
-X-Gm-Features: AclHuK_UJ2IGCUSDhuuXQjxJ1GUIk0fxrp4qAJiEjRQoj2s0LGafMJ4oqarMM3M
-Message-ID: <CAMRc=Mfu6moWg6bomoPHqgR=7F9QoPVy62Za_EegP3eb8+jctQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: adc: ti-ads112c14: add gpio support
-To: David Lechner <dlechner@baylibre.com>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261020-iio-common-inv-sensors-fixes-for-preventing-timestamp-in-past-v1-1-c27be451b287@tdk.com>
+X-B4-Tracking: v=1; b=H4sIAAeI12oC/yWNwQrCMBBEf6Xs2YWkSon+iniI7baukE3IxiKU/
+ rurXgYezMzbQKkyKVy6DSqtrJzFwB86GB9RFkKejKF3/eBd75A545hTyoIsKyqJ5qo485ssc8V
+ iNySNZcHGibTFVKyKJWrDMEV/nodwdOEE5rDyb2mK6+3P+ro/aWxfKez7Bw3903GhAAAA
+X-Change-ID: 20261020-iio-common-inv-sensors-fixes-for-preventing-timestamp-in-past-8da19f683084
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, Chris Hall <c-hall@ti.com>, 
-	Patrick Edwards <pedwards@ti.com>, Kurt Borja <kuurtb@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+ Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792509964; l=3507;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=SKRCGdHQ3/TSi0j/AnCYzWp+4z8JacqTdI3yvmeaYFE=;
+ b=3UVAS7YsWlCyaqey1MfHrpDdIzft+npqsEh1GeWkEd2LHGvRRicxbJ6cP/WTedQI8XG/1r7Je
+ bIuNz3L6ALlDMF1GPQQDjK3cbMM+RejEYNDuerAtpznFcRniqE6AtJ6
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
+Content-Transfer-Encoding: 7bit
 
-On Sat, 10 Oct 2026 15:46:30 +0200, David Lechner <dlechner@baylibre.com> said:
-> On 10/10/26 4:00 AM, Bartosz Golaszewski wrote:
->> On Sat, 10 Oct 2026 01:25:52 +0200, "David Lechner (TI)"
->> <dlechner@baylibre.com> said:
->>> Add support for using the AIN4/GPIO0 to AIN7/GPIO3 pins as GPIOs when
->>> the gpio-controller property is present.
->>>
->
-> ...
->
->>> @@ -2574,6 +2726,12 @@ static int ads112c14_probe(struct i2c_client *client)
->>>  	if (ret)
->>>  		return ret;
->>>
->>> +	if (device_property_read_bool(dev, "gpio-controller")) {
->>
->> I think the right one to use is device_property_present().
->
-> I thought this was the one case where device_property_read_bool() is
-> actually correct because gpio-controller property is a
-> /schemas/types.yaml#/definitions/flag.
->
-> Otherwise, we should just remove device_property_read_bool() from the tree
-> because there would never be a reason to use it.
->
-> My understanding is we should use device_property_present() for non-boolean
-> properties when we want to know if it is present or not before reading the
-> value of it.
->
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Right, I remembered seeing commits from Rob Herring changing read_bool() to
-present() but it's like so:
+Ensure when computing first timestamp and when applying odr change,
+that the next timestamp will not be lower than the previous one.
 
-commit a570feff16bd4fdaa247b4ef13f4d28f8c73903b
-Author: Rob Herring (Arm) <robh@kernel.org>
-Date:   Mon Nov 4 13:06:49 2024 -0600
+This way there is no risk to have a timestamp going back in time, meaning
+being lower than the previous one. It already can never happen without
+a transition because we are generating timestamps by adding the period
+to the last timestamp.
 
-    interconnect: Use of_property_present() for non-boolean properties
+Fixes: 0ecc363ccea7 ("iio: make invensense timestamp module generic")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+ drivers/iio/common/inv_sensors/inv_sensors_timestamp.c | 16 ++++++++++++----
+ include/linux/iio/common/inv_sensors_timestamp.h       |  3 ++-
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-    The use of of_property_read_bool() for non-boolean properties is
-    deprecated in favor of of_property_present() when testing for property
-    presence.
+diff --git a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
+index 8c9e81a77e68..9040da80f0c7 100644
+--- a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
++++ b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
+@@ -133,10 +133,15 @@ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
+ 		return;
+ 
+ 	/* no previous data, compute theoretical value from interrupt */
+-	if (ts->timestamp == 0) {
++	if (!ts->init) {
+ 		/* elapsed time: sensor period * sensor samples number */
+ 		interval = (s64)ts->period * (s64)sample_nb;
+-		ts->timestamp = timestamp - interval;
++		delta = timestamp - interval;
++		/* prevent next timestamp to be lower than the last one */
++		if ((delta + ts->period) > ts->timestamp)
++			ts->timestamp = delta;
++		ts->init = true;
++
+ 	}
+ 
+ 	/* update delta timestamps and estimated period */
+@@ -184,7 +189,7 @@ void inv_sensors_timestamp_apply_odr(struct inv_sensors_timestamp *ts,
+ 				     u32 fifo_period, size_t fifo_nb,
+ 				     unsigned int fifo_no)
+ {
+-	s64 interval;
++	s64 interval, timestamp;
+ 	u32 fifo_mult;
+ 
+ 	if (ts->new_mult == 0)
+@@ -207,7 +212,10 @@ void inv_sensors_timestamp_apply_odr(struct inv_sensors_timestamp *ts,
+ 		fifo_period = fifo_mult * ts->chip_period.val;
+ 		/* computes time interval between interrupt and this sample */
+ 		interval = (s64)(fifo_nb - fifo_no) * (s64)fifo_period;
+-		ts->timestamp = ts->it.up - interval;
++		timestamp = ts->it.up - interval;
++		/* prevent next timestamp to be lower than current one */
++		if ((timestamp + ts->period) > ts->timestamp)
++			ts->timestamp = timestamp;
+ 	}
+ }
+ EXPORT_SYMBOL_NS_GPL(inv_sensors_timestamp_apply_odr, "IIO_INV_SENSORS_TIMESTAMP");
+diff --git a/include/linux/iio/common/inv_sensors_timestamp.h b/include/linux/iio/common/inv_sensors_timestamp.h
+index 4f08204ede3b..91690778ae88 100644
+--- a/include/linux/iio/common/inv_sensors_timestamp.h
++++ b/include/linux/iio/common/inv_sensors_timestamp.h
+@@ -66,6 +66,7 @@ struct inv_sensors_timestamp {
+ 	u32 new_mult;
+ 	u32 period;
+ 	struct inv_sensors_timestamp_acc chip_period;
++	bool init;
+ };
+ 
+ void inv_sensors_timestamp_init(struct inv_sensors_timestamp *ts,
+@@ -94,7 +95,7 @@ static inline void inv_sensors_timestamp_reset(struct inv_sensors_timestamp *ts)
+ 	ts->it = interval_init;
+ 	ts->delta = interval_init;
+ 	ts->delta_counter = 0;
+-	ts->timestamp = 0;
++	ts->init = false;
+ }
+ 
+ #endif
 
-    Signed-off-by: "Rob Herring (Arm)" <robh@kernel.org>
-    Link: https://lore.kernel.org/r/20241104190650.275278-1-robh@kernel.org
-    Signed-off-by: Georgi Djakov <djakov@kernel.org>
+---
+base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
+change-id: 20261020-iio-common-inv-sensors-fixes-for-preventing-timestamp-in-past-8da19f683084
 
-So only for non-boolean properties. You're right.
+Best regards,
+--  
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Bart
+
