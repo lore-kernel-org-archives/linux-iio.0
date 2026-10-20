@@ -1,57 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792485484;
-	b=DGPaaMqdnH+pJojd2lq/z9/+sHRpSmwWUhKM0bckWx482E1Urd64nUdrLm7YLZs03A9h
-	 NP4CAuVqJJDWwz7+RqwaNXApv5hdXPiMqQnAiQrQ6+2wXe/+N1myOlFgqY1cngkrN0Hcf
-	 vX4nZsEsVdf5nXezpLqP7TL16vF11iYWKJ9cAksOlOmemw8ggnmF2XOwFmVbaTGjvo2RF
-	 Bw0x1wrNnMhKghGjCKkgYdbiH8PVhtcCLRAv1vXmftw14wlQegA5eDx/D5XRrNE5bw5l3
-	 nFslh3DGHg3DN1FtQSFVeaooKwbA/6ANRMnh51sCQyHbNCVeeMs2aZZceJHHJIVbntA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792485484;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=VHl3GFnK/1yqp8JLtxfjT1mXRdPR3XfGGv+ZQvmy8F0=;
-	b=ppQaYblp2+5Ipu9i3xWOEblO35oC1MMw7Y8QMeAB/e3PBUrYsFWgKYbe3hOGMptOrbjv
-	 p+xDrTKrjT2baekYQLEdmdASZQK1+294MKDTJpOXyj2jTbE/lz3L3lmGRL6yFaYUidMIN
-	 TyOSRomZxsJgOm3xgtrY9oz1/Fqm0kk+s7V4SlKdkBUeNG/TD9nIUIBmFKeBh57K+3TS6
-	 WRYeFwmjEtu7BddnlgKJKigkvSSNcz22DTF774ixvzhk+0KJ8TDSi2yo/KDaCwyrMYJ92
-	 jk9Aix/7YI/j3pus11RTQc/9lBJlK6fVJDgCN8jSRVFcq7E+XkM/KjNQl7w9Q50G0xg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P3oc8iRU;
-	arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792485754;
+	b=iifcQntNMkJq1BhQpEE5WjRifb2vIHzAODyYWu0DL+jOmda+g7CoXgnmEaZKfu8WmvVP
+	 smqXWgFac0e/BkX/QSzD8WuO46DKZ8NkIxRY+LVd3GU2GLsINvjIdkcX+tJ+/a0FfGLvy
+	 Lau7VlcMsG9T2MJzee1uLAlXBvTlWxxbqpf3jfrHf3xf7nWWhvCA5vLxCuggoV37W0IF6
+	 i4et97Tco55MEmKCy4w02XvQ7TfrPNJhxCemI9h4GTGhJ4nkwU7jHACWdaWfcDfLVktuk
+	 bs9T2VZ14j9tJ6Tj7ZMXK1x9LS7VSbv3IcgxjF7AsXWGc8TcvKeVPPiJi54wNUKyODw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792485754;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=QH2EnkYD50xonK1mDLEj4iXvUx+pAnRtPwytnFJJ+n8=;
+	b=BUquMt//nuGlucqrJ/9ADx5rwYA8+wIifA/hu1lHQnk2UdKo5woctHubo8bsjFTI0Y3Q
+	 R/vNR/NoSG7uKxSHf6Iyg8brd4QLDX0Pm0Rrd6nWAC7scprpqK/qsaj0B8fDeXWEwvgcC
+	 DelzI+p9BuN8kH+2O8UI4+KYAjX6gIqGLKdJnOPGZXadmY5HmErkVQIpyMOLRR2nHGmvf
+	 LZdD5PEsMlNGe7WlwyLSF5YQGM5ps4Vmrm45ycbi3dIqZuU+LNRR3WSuLRn1266RGjwSQ
+	 e7GohkqYOfXbaP6nvbAT18u/de3LhvP/ke5wTJbY6RTrGz9I4YqD3ieJg79JhFJSDrA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ETFbBu68;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF2F606A31D;
-	Tue, 20 Oct 2026 08:38:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DE7B606A31B;
+	Tue, 20 Oct 2026 08:42:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P3oc8iRU
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E96301F000C4;
-	Tue, 20 Oct 2026 08:38:02 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ETFbBu68
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792485754;
+	b=BlAZ+LNeUGeNkXmUsyWWQ+nEYZ1RqCMDxtUyUrhukYTDrRyugKyE/aHvXtF8HdfJfuOq
+	 yDGsabMTWDsuGtZTJw+pDJ5pv0vU9TOjkL6s7ewWbC22yiOd8YZ5NUS3hJ8wvcdTNRwIO
+	 ZdSxQVQHy+9zilat4BoXg7FWizAhxbC+r2SPklNv1kWtVKRKXsyyEYIg+1JViybyL2iII
+	 UcuaSsGio25TWidTfaMTUg0VM0uRbZZR4OUSjOz6hFMskBLcDlqPL4rZpE0deYYoeoo4m
+	 w3JYUTlG/xB9Eqt9WBA8axqcnnrksrrKVCx740jXoFY2lmUNxOyuQ5dTPkQk/B3H9DQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792485754;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=QH2EnkYD50xonK1mDLEj4iXvUx+pAnRtPwytnFJJ+n8=;
+	b=wU68RCAby0jZP8e/TbJTwf0qig+DL6Eo8+VwKHE4cnYJnVVQiLQJB7I+3xYdWkrFpr86
+	 TrOjIfkzeZxepVSPwtutioOJavxqTZnIrtNobjiD7k84RIA1yF/CZI+PHDXcs/lfeVwOP
+	 SzZpcdHcM4KrT5RulrvnY7cuHSwIVuLPVwllyUQPuaU8FIH6xrSacR3Am33ReqhZyu8/1
+	 vHbSjj+x6x0wxGipuj9ihuXrEFAG+c/Lowd/0KPBFtlmoevm5+FBF6BpDzNe6WEWU1xoq
+	 geL7nWE5B+OMjpNKRQWDAkUV8B+Eqy5/iX/vU816A71GPA0XtFIeq0OQjhUmvmNMezQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id A25931F000C4;
+	Tue, 20 Oct 2026 08:42:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792485483;
-	bh=VHl3GFnK/1yqp8JLtxfjT1mXRdPR3XfGGv+ZQvmy8F0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=P3oc8iRUR4azpGz6RNOpfSxY5BZOJFRePNicdlb3KpileJajPSAZBrabuQmNvbpGs
-	 pJDTkhsw5fnBCSZDwVBqTyF84ij+lTf6YFQHle0CCCghrtAJbwrxgutCIoseLcCA2Z
-	 +Cy5B6UQ0hkMtXXa8jCjQ9RIUzrwg9fFC95vSrXVYq2PuL/6Twty5jaz9U/1ArmBTB
-	 wJRKMd3U81KDZsarKJWI2rARwFabW3M1EP7JH0gnGU7rM6+nEOmre4l/lEfmF3Pc5b
-	 xE6ujxsSjoq97BmPbdOxSoxg1kYHERT2LIrifnQUzvTWek9FizJgYu32Oq5Jh0bJbv
-	 3TWFiQvxMtj+w==
-Date: Tue, 20 Oct 2026 10:38:00 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Vidhu Sarwal <vidhu.linux@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: proximity: Add Benewake TF-Luna
-Message-ID: <20261020-formidable-aardvark-of-biology-cffcc9@quoll>
-References: <20261020-tf-luna-v1-0-53a88f93db24@gmail.com>
- <20261020-tf-luna-v1-2-53a88f93db24@gmail.com>
+	s=k20260515; t=1792485754;
+	bh=QH2EnkYD50xonK1mDLEj4iXvUx+pAnRtPwytnFJJ+n8=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=ETFbBu68YLeb3pxxQoh4D4GJoJzWVAabOHVCiCAvGjb5ExDVyxWWIKWkkLL/wA9Vw
+	 xZxUIzNs2ShUkhX4jVxx77JGqCyvrmvRRonrKAn4jM/ST206FRS8ACeUlbKuzidZDk
+	 i7aWNiEJJ8aTr/0AOKPmXIHANqlLkF2OVsJQxrm/D3sDrI1sXS0VFEG9aZ6HCcVpRn
+	 hGt6cjkIBmBZAhY07WI5JE/mW6Peo96HFI/DfmDCnOCU8jkTUC68tlh4INWekolcQ8
+	 bmAaqBZCKzldfh+t3sfkDxCmtj/oKrw2IRUjett1AyfGFwvyZvKAghFsiuJmX532gn
+	 G84PqIpWIa5Qw==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 27C7F406D4;
+	Tue, 20 Oct 2026 08:42:33 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Tue, 20 Oct 2026 10:42:30 +0200
+Subject: [PATCH] iio: imu: inv_icm42600: update gyro start and stop delay
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -61,31 +82,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261020-tf-luna-v1-2-53a88f93db24@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261020-iio-imu-inv-icm42600-update-gyro-start-stop-delay-v1-1-ed52290a4ca4@tdk.com>
+X-B4-Tracking: v=1; b=H4sIAHUp12oC/yXNywrCMBCF4Vcps3ZgEiSoryIuYjKtIzYJuRRL6
+ bsbdXPg25x/g8JZuMBl2CDzIkVi6FCHAdzDholRfDdo0kaROqNIRJkbSlhQ3HzUhghb8rYyTmu
+ OWKrNtW9M6PllVzQnb0dWhrQi6L8p8yjvX/N6+7u0+5Nd/YZg3z/AlwJJlQAAAA==
+X-Change-ID: 20261019-iio-imu-inv-icm42600-update-gyro-start-stop-delay-68dafe160210
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792485752; l=1399;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=rYltn7fKB8YhPW/iRMCE7L2yTLJevy0EmSTjB4xuN+c=;
+ b=Un0R6vJGxLUzCcYGg0lb1WZ/8zxo6QNxOlLOvC8TBtfKqpRC72aMq0j11LKV9QpxNaww07QeS
+ xL6+W6DGsRuCs+oQOsGrSPRHubEQyds4kp5RK32/fcVVsu+z6GbbdlC
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 20, 2026 at 12:03:42AM +0530, Vidhu Sarwal wrote:
-> Add binding for the Benewake TF-Luna, a single point ToF
-> LiDAR distance sensor with a range of 0.2 m to 8 m.
-> 
-> The sensor talks either UART or I2C, selected by the level of pin 5 at
-> power-up. This binding covers the I2C interface. Pin 6 is a data ready
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-Binding should in general cover both interfaces. You will not get
-different compatible for UART. Incompatible changes won't be accepted,
-either.
+Following datasheet gyroscope specifications, the maximum start time
+for gyroscope is 45ms. Stop time is required for letting gyroscope
+mechanical structure settle down before enabling it back. 50ms is a
+sufficient value for that.
 
-> output and is described as an interrupt.
-> 
-> Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
-> ---
->  .../bindings/iio/proximity/benewake,tf-luna.yaml   | 58 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 +++
->  2 files changed, 64 insertions(+)
+Update values to these numbers.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index 3737e79dbcc1..c4a928fd3b8a 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -439,8 +439,8 @@ struct inv_icm42600_sensor_state {
+ #define INV_ICM42600_POWER_UP_TIME_MS		100
+ #define INV_ICM42600_RESET_TIME_MS		1
+ #define INV_ICM42600_ACCEL_STARTUP_TIME_MS	20
+-#define INV_ICM42600_GYRO_STARTUP_TIME_MS	60
+-#define INV_ICM42600_GYRO_STOP_TIME_MS		150
++#define INV_ICM42600_GYRO_STARTUP_TIME_MS	45
++#define INV_ICM42600_GYRO_STOP_TIME_MS		50
+ #define INV_ICM42600_TEMP_STARTUP_TIME_MS	14
+ #define INV_ICM42600_SUSPEND_DELAY_MS		2000
+ 
+
+---
+base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
+change-id: 20261019-iio-imu-inv-icm42600-update-gyro-start-stop-delay-68dafe160210
 
 Best regards,
-Krzysztof
+--  
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
 
