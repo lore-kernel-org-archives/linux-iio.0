@@ -1,60 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792499024;
-	b=XB2NYs64WYLgTqWvMK7LpCUDQVHnmsMbIuy4s/MRKEwA1g8OIsyNkgtdcH4d1fgRHO/R
-	 M05axzaTZurI3sNLp8FlfbY0T5A74FRezlm5Ai1FfAV0csl09rz+GR/FNIFTJ8g4xE6s7
-	 vh4BUvpKkrPal0iFWPZ+Ii0+yQaadHYhXxPYRgg2NC4gxqQZakUWXj0e9oLLegTqao3DB
-	 hrm91tppAEcdN/16rXum+NmbrprSt2tcc8LGipT4MsHMtVKYZRKEB1XsjDkOvXAotBRmL
-	 goDe7AQFS5z23As2R2LOFKULJpIO+GYgtJo+Z6hapJ7IMWzvanmq+JQ8dATBk0jZKXw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792499024;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=dmh4SEio2e2zB4dSZuzKozFuJ75qBwgCNF0O8LkaaMw=;
-	b=UwxRdnCpyUx7JUPwcMMtqdteva8PT8gRQ7V2Ol1C0oluQtG3rPqEP6IGlPsWBNkapZBn
-	 HmZbHr6mD7Cz8L4luWZ5CnaSl47fG19igVJkta2OSbqtQQg13hm3h/m+MnHSOQ/aaAQg4
-	 OIFkZ3lYnII3dxYjZ6WjlncrNoHDemyJXYnhESPhtwUI5MeB5uwjtK1d7evp16xCjXnVO
-	 3+bazv+OUo3/BQLNPXvm9Dohu6Y/50UQG1T5kiDgZ8N1szCRxzhlpM2k3ngq4HGoozrYZ
-	 7JJ7Yh+fNk7jpJP1XiFPmlNEHa7qZ0PC2iZgbe3xst41Vek6AREaMxf8UR++pywARPw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e6x4fg+h;
-	arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792499230;
+	b=AxClioS6JmzmHmLlcUu4QYbzJ323V//i3qFZm6M6BetuXFdkiUM3JoGM4BfZfBPHrreN
+	 PmCv/OrKenhOeE525LIeNepeUQcf8QJiOViehrG1raaY54970nXbEh7Tmb31o14C+IYC/
+	 3/Do2gtRKulG+FN9CgvpMVot6m/ah0gGtLxfObsXzTjSGPDs3lFAuHfXXcI1j5GKJSSPn
+	 nf/41qMmMznCO4BPoqB8C+LPXaTOAQiGWeb6sLpfjuK/PsWmU0qKGJRT57AWqDvh2f1WX
+	 15j/vb4QdnyzPP7e8jCafQEcHc5q4JVfpSz+NmGQj66zlynd4mU8rcRQbTjn329eFZw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792499230;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=0h82PfgQBbqSHfWyaOJyENOFSzAzo2EdWY4+OAqKu+4=;
+	b=ntguU9kp05aN4C0X4acXxhGA/t8J68OQQrvyHa6eGPGdI9skZOawJj7kxdrwMYxmqA7K
+	 hdPqyM4wFofH1mDqesglFQpWhSwjd+2ikcCuNiqZESqzoDgrgumyrlpr1pi1Podtr/v/e
+	 Uzc5eCFZrwTirZgsH8rMMb8/E3EI6UyWvEx3RuDdoZifDKSy2ASEmEBaFBfIHNDwBOshb
+	 NrK06CcCD7SloKaHEiTD+yKxqcCzPUZiYFv/DJbRB0ikt5wz7BkLUQBgh1MWhl7BvWFT5
+	 u4dJMBR4G5Ch1JvJXEGrMOYsySUESG+X3pzxTfP5L/LME36B6DPMJAn8ZaNmFWFvC7Q==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k2x8KSlD;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 9F058606A31B;
-	Tue, 20 Oct 2026 12:23:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0042606A330;
+	Tue, 20 Oct 2026 12:27:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e6x4fg+h
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id BD66E1F000C4;
-	Tue, 20 Oct 2026 12:23:43 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k2x8KSlD
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792499229;
+	b=Uxi3pIP+N/YJ6ymOggJ1EU0FGl9Xkls7DAlV0FQBtRf0MXyMPeLXsdOgNvIocXZSpyDF
+	 WzX9apfLVE7XWTH6Eq117spz8UdWPMAhAJe3T7JWzoloAdRecY29WRNG5A6YPMSuWzWMz
+	 P2Eb1iD3WZxpDtbVEnhrFONEjM75zoVrfWA1rmMhPqXc0scSc1UGSYx1esJv1999VZDV+
+	 RS11+yfkORE2Xw8YIifCkx9vnzn5GFDhhZxEIh9VS84LhmW4/7DSKzFwMIZGKcBoAjq83
+	 ht9rMM+fjZyHVYZ7C7/mWkHM53VjYtHqfp8ZwbLRFoqAUhssLbkDS9x7V1OLdmAJi3g==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792499229;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=0h82PfgQBbqSHfWyaOJyENOFSzAzo2EdWY4+OAqKu+4=;
+	b=s+FZUIAEGW4hc4dtJGBxTiwCZ/QFzPUfsYyRMdcoGZBfspGM+LnikCmiZ1hf12CX2eTd
+	 EOye3FTiGLR1PdZ3zwb18dryu5kwf29vIyl1+17QXJ+1B7pwt8ala5hHAZvpcmqfLp2zg
+	 XsnCv59cDBHEg1gYdV94nUkNjSlSUL/tZlvZrqB4RbrW42cTQ7dQQgdk36ssh0NxNrvdr
+	 Ucmo2AcUBQmLFmmrh3IPMPqX5vYQyqawN784YsXb2+Zt/u+Hn37V9lUbQw41ISy8d1hi6
+	 7WTtGZbBugvzsaQ5lzir1nUqEQkWj5TIRMJMn1Y5QHJlFK2BpO3Ra8viTVAKSY0iqiQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id C9AFC1F000CE;
+	Tue, 20 Oct 2026 12:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792499024;
-	bh=dmh4SEio2e2zB4dSZuzKozFuJ75qBwgCNF0O8LkaaMw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=e6x4fg+hVKPlf2jX7H+IVrTI1GS4Ja6Rd9ow0P5twU2QcW1CNYNYCVBoKdfxFIdrd
-	 w/6zvMfMwiOMYw2ZbPhUnC3z4K3jRDyBhmIj14tR44Zq/xgwRWB3fRnP4y5rfTMqlm
-	 us9Z7Ut3bLGJKFoDShskHkl0bjK8h3csi06fLw3rEPLURe3bhHRQujnPxKUeHYBHS9
-	 v7zmGEGquB3DScWBMKnukDEwhqZrZffR7jwtYOHBF1H8gD+1fIDGtXDyCd1dd8qiyZ
-	 G0uonBMpKP8dWQ+IM7tSSFleDDTqwLo0CWUXbpiRGHhbJfS0iRVJbdgJI0gqnX918B
-	 iBOo4tGYU1o1g==
-Date: Tue, 20 Oct 2026 14:23:41 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: rodrigo.alencar@analog.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-doc@vger.kernel.org, Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, 
-	Olivier Moysan <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH 07/10] iio: frequency: ad9910: support drctl control
-Message-ID: <atdcOsaDbtaQJd-9@monoceros>
-References: <20261015-ad9910-backend-support-v1-0-3c21648c8e26@analog.com>
- <20261015-ad9910-backend-support-v1-7-3c21648c8e26@analog.com>
+	s=k20260515; t=1792499229;
+	bh=0h82PfgQBbqSHfWyaOJyENOFSzAzo2EdWY4+OAqKu+4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=k2x8KSlDIY15IRQ/Fny/YOsXPy1Z4uAaCiuT6U6ywPfR3m3HX4YIUFDN+dFBHGJ4F
+	 yaCp5Lh7H3Wn4vMVgg/4rTHM/mBq758snHVy/CR47lt95CKPVQ+CdglzYT8PyFoDf/
+	 ml8GsqipP4OX1R6VpfHZ+OGgiA4cws3zlwCgl0rpZgq9tIYTx+Wi+9pnJVMUTf4ODH
+	 MltNvlBA4RoHAhFlCMpRc4pG9m2BUPyM+7C3iJphiURLP+HY56SJUUpBo6SKadd7Ib
+	 yH05NyN+oC62lWYJ4Zr+FubXNn5YYLsHARa6bwl3JLYzAk46/1YKZuxOJsEkhh+wW1
+	 lem2Q5FGhxeGQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 3735043120;
+	Tue, 20 Oct 2026 12:27:08 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Tue, 20 Oct 2026 09:26:59 -0300
+Subject: [PATCH RFC v3 1/5] lib: kstrtox: support E notation in
+ kstrtoudec64() and kstrtodec64()
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,106 +83,144 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="qqr4vuuxuxl2n7wx"
-Content-Disposition: inline
-In-Reply-To: <20261015-ad9910-backend-support-v1-7-3c21648c8e26@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261020-e-notation-v3-1-fd385c0fbf65@analog.com>
+References: <20261020-e-notation-v3-0-fd385c0fbf65@analog.com>
+In-Reply-To: <20261020-e-notation-v3-0-fd385c0fbf65@analog.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792499229; l=3107;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=eebegJE+PnC+75ynxisRvBtIu4ZnW2+u79LG/CGtXp0=;
+ b=8JCrrpwhEYIlQwsk5rqPAOJWF2ia/+VnAN7UKwdQQBgICTs497DvEbEVSH/XMj8kMVaKDn8U7
+ uOPUooU8wAgADguiPQoWB6d3YoJhYyodheuvA2WezRxKpkvdXH2zhMN
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
+
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+Allow decimal strings to carry an exponent suffix, such as "2.7e10" or
+"271828e-5", in kstrtoudec64() and kstrtodec64(). The exponent is added
+to the requested scale to work out how many integer and fractional digits
+are consumed. A negative effective exponent drops integer digits. Digits
+beyond the resulting precision are truncated, as before.
+
+The digits are now scanned first and the string termination is checked
+before any conversion. A missing or malformed exponent ("1e", "1e+")
+returns -EINVAL. An exponent that overflows when added to the scale, or
+that makes the result exceed 64 bits, returns -ERANGE.
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ lib/kstrtox.c | 71 +++++++++++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 49 insertions(+), 22 deletions(-)
+
+diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+index bac1c057e1b0..730b0c002d44 100644
+--- a/lib/kstrtox.c
++++ b/lib/kstrtox.c
+@@ -395,41 +395,68 @@ int kstrtobool(const char *s, bool *res)
+ }
+ EXPORT_SYMBOL(kstrtobool);
+ 
++static int _skip_digits(const char **s)
++{
++	const char *start = *s;
++
++	while (isdigit(**s))
++		(*s)++;
++
++	return *s - start;
++}
++
+ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+ {
+-	unsigned int rv_int, rv_frac;
++	const char *s_int, *s_frac;
++	int len_int, len_frac;
++	unsigned int rv;
+ 	u64 _res = 0;
++	int exp = 0;
++	int ret;
+ 
+-	rv_int = _parse_integer(s, 10, &_res);
+-	if (rv_int & KSTRTOX_OVERFLOW)
+-		return -ERANGE;
+-	s += rv_int;
++	s_int = s;
++	len_int = _skip_digits(&s);
+ 
+ 	if (*s == '.')
+ 		s++; /* skip decimal point */
+ 
+-	rv_frac = _parse_integer(s, 10, &_res, scale, _res);
+-	if (rv_frac & KSTRTOX_OVERFLOW)
++	s_frac = s;
++	len_frac = _skip_digits(&s);
++
++	if (!len_int && !len_frac)
++		return -EINVAL;
++
++	if (*s == 'e' || *s == 'E') { /* E Notation */
++		s++;
++		ret = kstrtoint(s, 10, &exp);
++		if (ret)
++			return ret;
++	} else { /* verify termination */
++		if (*s == '\n')
++			s++;
++		if (*s)
++			return -EINVAL;
++	}
++
++	if (check_add_overflow(exp, (int)scale, &exp))
+ 		return -ERANGE;
+-	s += rv_frac;
+ 
+-	/*
+-	 * Check input beyond rv_int and rv_frac to cover cases like ".5" with
+-	 * scale 0, which is considered a valid input, being parsed as 0.
+-	 */
+-	if (!rv_int && !rv_frac && !isdigit(*s))
+-		return -EINVAL;
++	if (exp < 0) {
++		len_int = max(len_int + exp, 0);
++		exp = 0;
++	}
+ 
+-	while (isdigit(*s)) /* truncate digits */
+-		s++;
++	rv = _parse_integer(s_int, 10, &_res, len_int);
++	if (rv & KSTRTOX_OVERFLOW)
++		return -ERANGE;
+ 
+-	if (*s == '\n')
+-		s++;
+-	if (*s)
+-		return -EINVAL;
++	rv = _parse_integer(s_frac, 10, &_res, exp, _res);
++	if (rv & KSTRTOX_OVERFLOW)
++		return -ERANGE;
+ 
+-	if (_res && ((scale - rv_frac) > 19 /* log10(2^64) = 19.26 */ ||
+-		     check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
++	exp -= rv;
++	if (_res && (exp > 19 /* log10(2^64) = 19.26 */ ||
++		     check_mul_overflow(_res, int_pow(10, exp), &_res)))
+ 		return -ERANGE;
+ 
+ 	*res = _res;
+
+-- 
+2.43.0
 
 
---qqr4vuuxuxl2n7wx
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH 07/10] iio: frequency: ad9910: support drctl control
-MIME-Version: 1.0
-
-On Thu, Oct 15, 2026 at 01:49:47PM -0300, Rodrigo Alencar via B4 Relay wrote:
-> +static int ad9910_drctl_sync(struct ad9910_state *st)
-> +{
-> +	struct pwm_state state;
-> +	bool ndh, ndl;
-> +	int ret;
-> +
-> +	if (!st->drctl_pwm)
-> +		return 0;
-> +
-> +	ndh = FIELD_GET(AD9910_CFR2_DRG_NO_DWELL_HIGH_MSK,
-> +			st->reg[AD9910_REG_CFR2].val32);
-> +	ndl = FIELD_GET(AD9910_CFR2_DRG_NO_DWELL_LOW_MSK,
-> +			st->reg[AD9910_REG_CFR2].val32);
-> +
-> +	pwm_init_state(st->drctl_pwm, &state);
-> +
-> +	if (!ndh && ndl) {
-> +		state.duty_cycle = st->ramp_down_time_ns / 2;
-> +		state.period = st->ramp_down_time_ns;
-> +		state.polarity = PWM_POLARITY_INVERSED;
-> +	} else if (ndh && !ndl) {
-> +		state.duty_cycle = st->ramp_up_time_ns / 2;
-> +		state.period = st->ramp_up_time_ns;
-> +		state.polarity = PWM_POLARITY_NORMAL;
-> +	} else if (!ndh && !ndl) {
-> +		state.duty_cycle = st->ramp_up_time_ns;
-> +		state.period = st->ramp_up_time_ns + st->ramp_down_time_ns;
-> +		state.polarity = PWM_POLARITY_NORMAL;
-> +	} else {
-> +		state.duty_cycle = 0;
-> +		state.period = st->ramp_up_time_ns + st->ramp_down_time_ns;
-> +		state.polarity = PWM_POLARITY_NORMAL;
-> +	}
-> +
-> +	if (!state.period) {
-> +		pwm_disable(st->drctl_pwm);
-> +		return 0;
-> +	}
-> +
-> +	state.enabled = true;
-> +	ret = pwm_apply_might_sleep(st->drctl_pwm, &state);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = pwm_get_state_hw(st->drctl_pwm, &state);
-> +	if (ret)
-> +		return ret;
-
-Does enabling the PWM have any side effects? Are you doing that only to
-be able to call pwm_get_state_hw() and thus find out what the resulting
-output looks like? In that case, pwm_round_waveform_might_sleep() might
-be your friend.
-
-> +
-> +	if (!ndh && ndl) {
-> +		st->ramp_down_time_ns = state.period;
-> +	} else if (ndh && !ndl) {
-> +		st->ramp_up_time_ns = state.period;
-> +	} else if (!ndh && !ndl) {
-> +		st->ramp_up_time_ns = state.duty_cycle;
-> +		st->ramp_down_time_ns = state.period - st->ramp_up_time_ns;
-> +	}
-
-So the configuration depends on the previous state of the
-AD9910_REG_CFR2 register? That's a recipe for surprises?!
-
-> +
-> +	return 0;
-> +}
-> +
-
-Best regards
-Uwe
-
---qqr4vuuxuxl2n7wx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrXXUsACgkQj4D7WH0S
-/k6OXAf/d+0pGyggG4T72U405o4MpvtL+k9Xo8s1ca6BnOzf6oX3P+2ME8TPhrb+
-tAbw9W7x2qZdaa9AfsihMrbotE1l8vdodoHQnT6SRG+xHJrBUD5rP+hKbq8Ty5Wj
-FoP3PuI+QYjoxUJu++Vni4rEVdR0MrpAntztgjxHGiORpDpzCeRq5/fsjeyjCjzc
-0qmjXAoTuaHprZJgINMMlAh8DaWEp1fIWncKJcv/unU58YYTJpduMC/ULDF3Gcy9
-nFc5vQe7UoKaoPHqcHofv/MbjJ2r21fHnZWLih6piUi7ATYfj88G/Q08R+ANcuer
-7xDjDYfwt2MDswuPJ8SVpUCA9TbOyw==
-=KbhQ
------END PGP SIGNATURE-----
-
---qqr4vuuxuxl2n7wx--
