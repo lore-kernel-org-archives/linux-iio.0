@@ -1,80 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792499230;
-	b=kl6VUav3SwKBXQt/STL8r2wIaVwC7ml79OAgZ1ZTH+yhpK1kdrieDhcKkP8R5xdQ8qC6
-	 BuP8yKh/swr17TLYaJk3kid+BJecTYeo8bkW/NQk46IwmFGFUWqcE6uIKDqELcQ6jQ6TU
-	 4/HWhbKTNNkz4ZE4KqEuV7dnw0GMynZj66aYxKsrpnmgHOZGTkIDKMcNJMidMjnCuK1Di
-	 OYeAEk5zLqiTLQn0CJXJvssWdjer+cpxUU86ZfiiOslNszdpwMMpmc5Gxqzc2BMpK/Jiq
-	 d0ThHy2Hz3qx4CoNFUJ3wXyZRR96utTV+1T5DoDV5NLXmN0tmH4PgX1wSrPJO17idkQ==
+	t=1792499231;
+	b=WlOY0OqOYbnBypIdL88Xn7M8yR2jbjjPK7oR7VR7H5381AVbtvuQFyjSF2FRCNLTyBCp
+	 Gbz/lAnI3/AGpLPsmSbkW+yruoTqLiRApOyK5wEkhiHYADcTaWVmIvPB3u1tyACp7NoXC
+	 8fx9O95mWavvN/ZXaBfVJVVP738VKsKNhFVkrVM8BsmfIZUTJ5AY11guc+K6Spo2aJdYu
+	 JPfp496jvg3frl5R5EiTE32zPjtdgcBRVtaCf2PsQVPji9fuYEwt+T4UPhW+GcqOZSes+
+	 U8Yv1YuSYD/M/5vrkG/5nYe0/V3HVOAxWB3E0qHAy+T67NzKsjOuo1jYDAUMFrXvRdw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792499230;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=2d17GGzHzMhWkyC0c3Ho1xSbxyR/hxmcmyU3uzQTBus=;
-	b=l1zJH3aoMZN81pt8OCFs2PsulrVBkyb+6JPiE9TejLj4LF3wAIj0GHhk+Z6DDDWjncD9
-	 7GoZuGGZXa+POWpDzbt/bTVgwxA4pkboq77XHS7Ca2XUa3nDIiMp/mI7M42vIuRKORj19
-	 buOp9+lpRDDnxKYtlqwFoMLZPJFvmH3nEhKsvetKIf1IcfPQmx6UaoRdQYpYVH3F6nlBt
-	 09/kjfto2FdMPItdo5Br3JEzISC51plU3RBFEJwNPRgMaaUURyQzkKoo65LftX2u76DKL
-	 JWnYfQ5x19TDcEiIqcaezzD58YWOcQbPRrpsRRh4oiZh0Zvqx60A4HbOoLHNjj7U0Pg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792499231;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=g5/XTBwjO9xZzjHPGxxFtGAyObSmsDBMVSsSCasyVY4=;
+	b=kYaGwLh6l0tJEiw9/8uAa3z3lnnDN+XIYxVV/hydQ2h5m0oXNmzQMLn3VTiD1dAoGJb5
+	 1EX/RU9J6lUCVtsVyPRa9oTjt2XdD4mADYIL6plhbXP+jH3pG1WHQJupPrL+OyPyGIBhX
+	 Ac/wCn2BsGpeS8/WErKN9zT2YttOl1941Ac8jHwBZZ+JziKeo+cDHCRHtiy3dhO31GWHz
+	 uzJuCk5tuQX16IW4RKMxnRUDMRvJvkORxd8yU8EJQoYbZ9OLDtHV+oT7auMWE2rVMkonp
+	 wO4GyQTVmAp/VfBZZ6T4e4nn9Z+hGgUHHCk+wxiIx3XCeP/WV3y4QID6gFChjZuIGRA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="T/g2oOPq";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y8zQ6qp9;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F50C606A321;
-	Tue, 20 Oct 2026 12:27:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F0DD606A336;
+	Tue, 20 Oct 2026 12:27:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T/g2oOPq
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y8zQ6qp9
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792499230;
-	b=PsLfQdGahbNHXiwnYUxqOYC/G+jP1i4zo58720B5c+yUwYILyHM50dNTIn93ASambdNM
-	 TYbXsJpTJPWUqUvSYqbNEIRLL1foXnYe2OeM92Oz3uIp5ViPbky+sirWBGusO7ORVuuJH
-	 5+7PIdPSznc4/xfVz8UEUhDLy/qSZJ9Gf+VFDbTHB6qVcj2eZVjJuAx16fNY56zbgjzIb
-	 UloHK/pRdKDwhgJH1L0/rh1i9/xI742A56zXJT5oEZZMU66MFcfGtcaP+psSYX3uUUCYQ
-	 6Us0cA0cHjxlbryFLmKyVuywyABK1gjDp3DDWFZHYY8db1AF12tUWAna8ZKKFocNIIQ==
+	t=1792499231;
+	b=xROAka+8lIoggx8guoYXC4C3H8auDes0+epLbPl+TdEU/yCbhbVZcUzbIipkaU36Q0kZ
+	 avwTQgI8FdItGq9NROmszPWAO6Dx/YFkXRxhXIIWLg6CYsnuiUyOsTBpcQvQJLHLmLs2x
+	 TutdWedMU85FZL03Qio3mxHAr5pMaise+ql6Ix4Dl+EOpYj/JWaGr4knpySdRXmZlrj01
+	 DwIKjt58MFMU+QXNlBSaYe6ldCfhKR5XWrl4MAnEASNtcnj7os3ZUWf/msP8MRZmn1sjU
+	 XhmUMcFRym5jbIqtrG0NIJd0JHx9TMcttqBPbimq3zl4rE8DuSPrJwD1Mv7OWac9W8A==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792499230;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=2d17GGzHzMhWkyC0c3Ho1xSbxyR/hxmcmyU3uzQTBus=;
-	b=EaikBy9t1SgcxPbfkp7rXEaHo9EBksHMlbQzhDxhtC9uKTcUwcWh8C21FyijaNIqt0vP
-	 bK1R79nxPGp/dYgr+UUVL++lIq1LlEWfNnwB1xQgo4M25nggyjnrkYiNde4bjed+n6CQ7
-	 V4FVDSXMzNCIhUtMm2+9Gx05qFlkMws9xoLToiXaumJOLcRRAj4mUy6KUuHzqCboxjjvd
-	 Z03ktBZQiD5baU1ZCMpU0lcIslcf4Mo43QbihJ4jX0VFCvUP4vccf4Xb55u+WDtipC/aN
-	 JcPLyZhgaL7ZrpTZUCwlbnIIY7FnJr/YNlnifWGOVc8FKRwCuqr5Yvbtcep1r5mDWhA==
+	c=relaxed/relaxed; t=1792499231;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=g5/XTBwjO9xZzjHPGxxFtGAyObSmsDBMVSsSCasyVY4=;
+	b=vjq7xyxpypBdNU5ZHFOoMcGoHAXKbzgiFf7ArhvRKRMTpMuDYhlTnBRhlvGSjetxAOMA
+	 3Vbdb+aEdl/mS1NcHad7TpI0DPYdSl4znOzm3QdUQKnerTtEQnqcSs5WNrYQTf//McLJW
+	 /gYQRMuTLxDrRM9tx+SW0ndMdcOhLcLOevBoJ7KRU+owd7GxPEqbOIMbYPV9+RV2rILlr
+	 QQwUsaCI3MmU536xoY0hpDv6fSrcSBUY77Fza29ziUL66+ghzPei8MvYiYytzQWGUXsuv
+	 rbO9nkXzfUveyJcmJdzkPaIIx2Off1wb4l7ukQXxl53xt4Td52aK+sK6oYhVMvL5GHg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C97CD1F000CB;
-	Tue, 20 Oct 2026 12:27:08 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id D7D9E1F000CA;
+	Tue, 20 Oct 2026 12:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792499230;
-	bh=2d17GGzHzMhWkyC0c3Ho1xSbxyR/hxmcmyU3uzQTBus=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=T/g2oOPq73/nWDbYNFAjpI3eWW0vdnpRAXOOVLjwbaUpjYxeofYDPxXKT6G/xhCzF
-	 b00Ult+cnIRm458zuiXSpkZF2BA4XSlnpnLAiumL3H6W9BZiRV4hoF7Wlpn1R3MtGi
-	 nKeWSnSNL9HFXrh90c9q45r88MnPUOwcK0W4mt/bCThc+yI9TR4ZyX6+n4LsuxrbzV
-	 kOZ3Chi4WEO8XTZyKM3Xh9xgJmnc4Afp5yta+AqvniumrDBXewOZlRK1KbzsCbZVsy
-	 lcIoVJL1dOna4CRhvpwqV/Fo/UfNWifDnDRgD4y2OI1VoEPOX7O5o27zsKtNFfP2Hf
-	 nNqG1ub2UKx4w==
+	s=k20260515; t=1792499231;
+	bh=g5/XTBwjO9xZzjHPGxxFtGAyObSmsDBMVSsSCasyVY4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=Y8zQ6qp94cNGQTfrbpCGFDl9/QbKXSLk4nWu3K7yX8xIgjyKBVSWI2/jvjPSPQVT4
+	 3JOAiwdwFIgqVdopZKc6naQXgGqjSi+Whp1z/MlPyGDo2fW63D8lgNI49A898fC+Fb
+	 SVWAUrfWoS6csuqL+/DNqYyDE/Dn42Qkd5zz/EMjmmcNUEFgYP3QGrQESUQVpHNPd1
+	 UcDYOfQuzrjEtapO7oTwaTJJi3Ket+UBQ3pZV9GGB5QD2UuiS75SBPFym6+G0S5Srf
+	 kXQMeiCh5NhIO95qVtLKSA7qyP7bLDerjCeuej2RLLuqudoXDO6d4+rayvFw4IEJtf
+	 66nE9NHNixeew==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 2F48B43128;
+	by lkml.kernel.org (Postfix) with ESMTP id 50B3643139;
 	Tue, 20 Oct 2026 12:27:08 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH RFC v3 0/5] Add E notation support to kstrtodec64() and IIO
- sysfs writes
-Date: Tue, 20 Oct 2026 09:26:58 -0300
-Message-Id: <20261020-e-notation-v3-0-fd385c0fbf65@analog.com>
+Date: Tue, 20 Oct 2026 09:27:03 -0300
+Subject: [PATCH RFC v3 5/5] iio: test: add kunit tests for channel info
+ writes
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,134 +84,523 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIABJe12oC/22NQQ6CMBBFr0K6tmYGLBVXJiYewK1xUcoANUpNW
- 4mGcHcLbiRx+SfvvRmYJ2fIs10yMEe98cZ2cWSrhOlWdQ1xU8XNUkhzBEBOvLNBhYhxqEFKIQs
- EEiwKD0e1ec2xMzsdD+zyPfpneSUdpsyEtcYH697zyx5n+F+9Rw5cCtzKsoZcI+xVp262WWt7n
- 8t9+uNitnDT6FYbVZWCsMhqvXDHcfwAyTm+KPgAAAA=
-X-Change-ID: 20261001-e-notation-0f07757910e5
+Message-Id: <20261020-e-notation-v3-5-fd385c0fbf65@analog.com>
+References: <20261020-e-notation-v3-0-fd385c0fbf65@analog.com>
+In-Reply-To: <20261020-e-notation-v3-0-fd385c0fbf65@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Andrew Morton <akpm@linux-foundation.org>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792499229; l=5078;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792499229; l=18371;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=rO6A838qBXP/TP6FSpqRUMdEQfQmKaVBJ5QyMvmAWck=;
- b=tsOWdwi6YeZX6vIAYMBwU6earWjWCZ/bZ2ivkq2rZZmtX9p17hRHVy89j+USMmE6SMvyaq+nz
- amj8XPg7VhDAuS8zBAuu/3DrKVilsI3kHvg0W8rtdrGzyISpAyCFowN
+ bh=etzEsJTNxGniKPVl9k3nrFa0ZjtF5iQ+dd++vIYpf8I=;
+ b=IgvlrNoOorGMID1JFoUmWvr0EK+E6dmP4wSstocaREq/w3LB1wiOIblNbHD6Lhk5kY+LhIsMQ
+ nMXQRuSj/c/Ak49YVoS3s3M9GMBPy46OtE5fq/7RAHQPfwVwFKd0xb5
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
  with auth_id=561
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
 
-This series lets kstrtoudec64() and kstrtodec64() accept numbers in E
-notation (scientific notation), such as "2.7e9", "1.5E-3" or "1e+16".
-It then moves the IIO core fixed-point parser over to kstrtodec64(), so
-every IIO channel attribute written through iio_write_channel_info()
-accepts that format as well.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-There are two main motivations:
+Add a KUnit test suite covering iio_write_channel_info(), the sysfs
+store handler that parses a channel info value according to the format
+reported by write_raw_get_fmt() and hands it to write_raw(). The
+function is made visible to KUnit through VISIBLE_IF_KUNIT and
+EXPORT_SYMBOL_IF_KUNIT, so it stays static in regular builds.
 
-1. Shell usage of sysfs attributes
+The suite uses an unregistered iio_dev allocated on a KUnit device,
+with stub write_raw_get_fmt() and write_raw() callbacks that select
+the format under test and capture the parsed values. Cases are grouped
+by format:
 
-   Some IIO devices take values that are long to type and easy to get
-   wrong in plain decimal. A frequency synthesizer or DDS might be
-   programmed in the GHz range, and a scale might be a tiny fraction.
-   With this series one can write:
+  - IIO_VAL_INT: decimal, hex and octal input, decimal fallback with
+    rounding and E notation, and 32-bit range checks.
+  - IIO_VAL_INT_PLUS_MICRO / IIO_VAL_INT_PLUS_NANO: sign handling,
+    rounding of extra digits (ties to even), E notation and malformed
+    input.
+  - IIO_VAL_INT_PLUS_MICRO_DB: optional "dB" / " dB" suffix.
+  - IIO_VAL_CHAR: single character input.
+  - IIO_VAL_INT_64 and IIO_VAL_DECIMAL64_*: 64-bit values split into
+    val/val2, including the S64_MAX / S64_MIN boundaries.
 
-     echo 2.7e9 > out_altvoltage0_frequency
-     echo 1.5e-6 > in_voltage0_scale
-
-   instead of counting zeros in "2700000000" or "0.0000015". It also
-   works with shell tools that print in E notation by default, such as
-   printf's %g conversion ("printf '%g' 2700000000" prints "2.7e+09")
-   and awk, whose default output format ("%.6g") prints
-   non-integral values like 1234567.5 as "1.23457e+06".
-
-2. Userspace software that formats numbers automatically
-
-   Many languages and libraries switch to E notation when converting
-   floating point numbers to strings, without the caller asking for it:
-
-   - Python: str() and repr() of a float use E notation for exponents
-     below -4 or from 16 up, e.g. str(0.00001) == '1e-05' and
-     str(1e16) == '1e+16'. Writing such a value straight to an attribute
-     with open(...).write(str(value)) currently fails with -EINVAL.
-     The same applies to NumPy scalars and to f-strings with the 'g'
-     format spec (f"{2.7e9:g}" == '2.7e+09').
-   - JavaScript/Node.js: Number.prototype.toString() uses E notation
-     for magnitudes from 1e21 up or below 1e-6, e.g. String(1e-7)
-     gives '1e-7'.
-   - C/C++ applications and bindings that use printf("%g") or
-     std::to_chars() with general formatting, as well as MATLAB/Octave
-     and other numeric environments that print in a "short" form.
-
-   Today these values have to be reformatted by the application, or are
-   rejected by the kernel without warning. Accepting E notation in the
-   kernel makes the IIO sysfs ABI more robust to this common
-   behaviour.
-
-The exponent is folded into the requested decimal scale, so no floating
-point arithmetic is involved. Overflow is reported as -ERANGE and a
-malformed exponent ("1e", "1e+") as -EINVAL.
-
-Digits beyond the resulting precision are now rounded to nearest, ties
-to even, instead of truncated (new patch 2). This follows from the
-second motivation: floating point values printed by userspace often end
-just below the intended decimal value. "%.17g" of 0.3 gives
-"0.29999999999999999", which truncation turns into 299999 at micro
-precision instead of 300000. E notation makes this more visible, since
-a negative exponent can drop integer digits: with truncation, "19e-1"
-written to an integer attribute gives 1. Round-half-even is the IEEE 754
-default, as used by strtod() and printf(), it is unbiased and symmetric
-for negative values, and inputs that fit the precision (including values
-read back from sysfs) are parsed exactly as before. The rounding is done
-before the IIO core conversion, so IIO fixed-point writes change
-behaviour only once.
-
-This changes existing kstrtodec64() behaviour, so feedback is welcome on
-whether it should stay in this series or be sent as a follow-up.
+Further cases cover unsupported formats, the default micro precision
+used when write_raw_get_fmt() is absent, a missing write_raw(), and
+error propagation from write_raw().
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v3:
-- New patch: round to nearest, ties to even, instead of truncating.
-- Amend kstrtox E notation tests and IIO channel write tests for rounding.
-- Link to v2: https://patch.msgid.link/20261013-e-notation-v2-0-d4adb5e193fc@analog.com
-
-Changes in v2:
-- More test cases on test-kstrtox.c.
-- Rework fallback logic when parsing integers.
-- Add iio kunit test cases for iio_write_channel_info()
-- Link to v1: https://patch.msgid.link/20261001-e-notation-v1-0-75187bf06c10@analog.com
-
----
-Rodrigo Alencar (5):
-      lib: kstrtox: support E notation in kstrtoudec64() and kstrtodec64()
-      lib: kstrtox: round to nearest, ties to even in kstrto[u]dec64()
-      lib: test-kstrtox: add E notation tests for kstrto[u]dec64()
-      iio: core: use kstrtodec64() to parse fixed-point values
-      iio: test: add kunit tests for channel info writes
-
  MAINTAINERS                               |   1 +
  drivers/iio/iio_core.h                    |   3 +
- drivers/iio/industrialio-core.c           | 164 +++++++-------
+ drivers/iio/industrialio-core.c           |   9 +-
  drivers/iio/test/Kconfig                  |  14 ++
  drivers/iio/test/Makefile                 |   1 +
  drivers/iio/test/iio-test-channel-write.c | 360 ++++++++++++++++++++++++++++++
- lib/kstrtox.c                             | 107 ++++++---
- lib/test-kstrtox.c                        | 119 ++++++++--
- 8 files changed, 650 insertions(+), 119 deletions(-)
----
-base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
-change-id: 20261001-e-notation-0f07757910e5
+ 6 files changed, 384 insertions(+), 4 deletions(-)
 
-Best regards,
---  
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 52024397dc78..ef8b912f593b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12758,6 +12758,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	drivers/iio/test/iio-test-channel-prefix.c
++F:	drivers/iio/test/iio-test-channel-write.c
+ F:	drivers/iio/test/iio-test-format.c
+ 
+ IIO UNIT CONVERTER
+diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+index 59fa1bd9924b..08f0cc28ad8c 100644
+--- a/drivers/iio/iio_core.h
++++ b/drivers/iio/iio_core.h
+@@ -114,6 +114,9 @@ ssize_t __iio_chan_prefix_emit(struct device *dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_shared_by shared_by,
+ 			       char *buf, size_t len);
++ssize_t iio_write_channel_info(struct device *dev,
++			       struct device_attribute *attr,
++			       const char *buf, size_t len);
+ #endif
+ 
+ #endif
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index ce5391b1ca34..6c8fe0949a06 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1077,10 +1077,10 @@ static int __iio_str_to_fixpoint_units(const char *str, const char *units,
+ 	return iio_str_to_fixpoint(dec_str, fract_mult, integer, fract);
+ }
+ 
+-static ssize_t iio_write_channel_info(struct device *dev,
+-				      struct device_attribute *attr,
+-				      const char *buf,
+-				      size_t len)
++VISIBLE_IF_KUNIT
++ssize_t iio_write_channel_info(struct device *dev,
++			       struct device_attribute *attr,
++			       const char *buf, size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+@@ -1168,6 +1168,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 
+ 	return len;
+ }
++EXPORT_SYMBOL_IF_KUNIT(iio_write_channel_info);
+ 
+ static
+ int __iio_device_attr_init(struct device *dev,
+diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
+index 04930b4fdd5d..af75c032a330 100644
+--- a/drivers/iio/test/Kconfig
++++ b/drivers/iio/test/Kconfig
+@@ -17,6 +17,20 @@ config IIO_CHANNEL_PREFIX_KUNIT_TEST
+ 
+ 	  If unsure, say N.
+ 
++config IIO_CHANNEL_WRITE_KUNIT_TEST
++	tristate "Test IIO channel info write" if !KUNIT_ALL_TESTS
++	depends on KUNIT && IIO
++	default KUNIT_ALL_TESTS
++	help
++	  Build unit tests for iio_write_channel_info(), the sysfs store
++	  handler that parses channel info values according to the format
++	  reported by write_raw_get_fmt() and passes them to write_raw().
++
++	  For more information on KUnit and unit tests in general, please refer
++	  to the KUnit documentation in Documentation/dev-tools/kunit/.
++
++	  If unsure, say N.
++
+ config IIO_GTS_KUNIT_TEST
+ 	tristate "Test IIO gain-time-scale helpers" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
+index ba08afa7f3f2..bcaf82ffd9c1 100644
+--- a/drivers/iio/test/Makefile
++++ b/drivers/iio/test/Makefile
+@@ -5,6 +5,7 @@
+ 
+ # Keep in alphabetical order
+ obj-$(CONFIG_IIO_CHANNEL_PREFIX_KUNIT_TEST) += iio-test-channel-prefix.o
++obj-$(CONFIG_IIO_CHANNEL_WRITE_KUNIT_TEST) += iio-test-channel-write.o
+ obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
+ obj-$(CONFIG_IIO_FORMAT_KUNIT_TEST) += iio-test-format.o
+ obj-$(CONFIG_IIO_GTS_KUNIT_TEST) += iio-test-gts.o
+diff --git a/drivers/iio/test/iio-test-channel-write.c b/drivers/iio/test/iio-test-channel-write.c
+new file mode 100644
+index 000000000000..9205a5674d0e
+--- /dev/null
++++ b/drivers/iio/test/iio-test-channel-write.c
+@@ -0,0 +1,360 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Unit tests for IIO channel info writes.
++ */
++
++#include <kunit/device.h>
++#include <kunit/test.h>
++#include <kunit/visibility.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/types.h>
++#include <linux/string.h>
++
++#include "../iio_core.h"
++
++#define IIO_TEST_UNSUPPORTED_FMT	IIO_VAL_FRACTIONAL
++
++struct iio_test_write_priv {
++	int fmt;
++	int ret;
++	int val;
++	int val2;
++	bool called;
++};
++
++struct iio_test_write_ctx {
++	struct iio_dev *indio_dev;
++	struct iio_dev_attr attr;
++};
++
++static int iio_test_write_raw_get_fmt(struct iio_dev *indio_dev,
++				      struct iio_chan_spec const *chan,
++				      long mask)
++{
++	struct iio_test_write_priv *priv = iio_priv(indio_dev);
++
++	return priv->fmt;
++}
++
++static int iio_test_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val, int val2, long mask)
++{
++	struct iio_test_write_priv *priv = iio_priv(indio_dev);
++
++	priv->val = val;
++	priv->val2 = val2;
++	priv->called = true;
++
++	return priv->ret;
++}
++
++static const struct iio_info iio_test_write_info = {
++	.write_raw = iio_test_write_raw,
++	.write_raw_get_fmt = iio_test_write_raw_get_fmt,
++};
++
++static const struct iio_info iio_test_write_info_no_fmt = {
++	.write_raw = iio_test_write_raw,
++};
++
++static const struct iio_info iio_test_write_info_no_write = {
++};
++
++static const struct iio_chan_spec iio_test_write_chan = {
++	.type = IIO_VOLTAGE,
++	.indexed = 1,
++	.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),
++};
++
++static int iio_test_write_init(struct kunit *test)
++{
++	struct iio_test_write_ctx *ctx;
++	struct device *dev;
++
++	ctx = kunit_kzalloc(test, sizeof(*ctx), GFP_KERNEL);
++	KUNIT_ASSERT_NOT_NULL(test, ctx);
++
++	dev = kunit_device_register(test, "iio-test-channel-write");
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
++
++	ctx->indio_dev = devm_iio_device_alloc(dev,
++					       sizeof(struct iio_test_write_priv));
++	KUNIT_ASSERT_NOT_NULL(test, ctx->indio_dev);
++	ctx->indio_dev->info = &iio_test_write_info;
++
++	ctx->attr.c = &iio_test_write_chan;
++	ctx->attr.address = IIO_CHAN_INFO_SCALE;
++
++	test->priv = ctx;
++
++	return 0;
++}
++
++static struct iio_test_write_priv *iio_test_write_priv(struct kunit *test)
++{
++	struct iio_test_write_ctx *ctx = test->priv;
++
++	return iio_priv(ctx->indio_dev);
++}
++
++static ssize_t iio_test_write(struct kunit *test, int fmt, const char *str)
++{
++	struct iio_test_write_ctx *ctx = test->priv;
++	struct iio_test_write_priv *priv = iio_priv(ctx->indio_dev);
++
++	priv->fmt = fmt;
++	priv->called = false;
++	priv->val = 0xdead;
++	priv->val2 = 0xbeef;
++
++	return iio_write_channel_info(&ctx->indio_dev->dev, &ctx->attr.dev_attr,
++				      str, strlen(str));
++}
++
++#define EXPECT_WRITE(_test, _fmt, _str, _val, _val2) do {			\
++		struct kunit *__test = (_test);					\
++		struct iio_test_write_priv *__priv;				\
++		const char *__str = (_str);					\
++		ssize_t __len = strlen(__str);					\
++		ssize_t __ret;							\
++										\
++		__ret = iio_test_write(__test, (_fmt), __str);			\
++		__priv = iio_test_write_priv(__test);				\
++		KUNIT_EXPECT_EQ_MSG(__test, __ret, __len,			\
++				    "input: \"%s\"", __str);			\
++		KUNIT_EXPECT_TRUE_MSG(__test, __priv->called,			\
++				      "input: \"%s\"", __str);			\
++		KUNIT_EXPECT_EQ_MSG(__test, __priv->val, (_val),		\
++				    "input: \"%s\"", __str);			\
++		KUNIT_EXPECT_EQ_MSG(__test, __priv->val2, (_val2),		\
++				    "input: \"%s\"", __str);			\
++	} while (0)
++
++#define EXPECT_WRITE_S64(_test, _fmt, _str, _expected) do {			\
++		s32 __lo, __hi;							\
++										\
++		iio_val_s64_decompose((_expected), &__lo, &__hi);		\
++		EXPECT_WRITE(_test, _fmt, _str, __lo, __hi);			\
++	} while (0)
++
++#define EXPECT_WRITE_ERR(_test, _fmt, _str, _err) do {				\
++		struct kunit *__test = (_test);					\
++		const char *__str = (_str);					\
++		ssize_t __ret;							\
++										\
++		__ret = iio_test_write(__test, (_fmt), __str);			\
++		KUNIT_EXPECT_EQ_MSG(__test, __ret, (ssize_t)(_err),		\
++				    "input: \"%s\"", __str);			\
++		KUNIT_EXPECT_FALSE_MSG(__test,					\
++				       iio_test_write_priv(__test)->called,	\
++				       "input: \"%s\"", __str);			\
++	} while (0)
++
++static void iio_test_write_int(struct kunit *test)
++{
++	EXPECT_WRITE(test, IIO_VAL_INT, "0", 0, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "42\n", 42, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "-7", -7, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "+7", 7, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "2147483647", INT_MAX, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "-2147483648", INT_MIN, 0);
++
++	/* hex and octal are still accepted for integers */
++	EXPECT_WRITE(test, IIO_VAL_INT, "0x10", 16, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "010", 8, 0);
++
++	/* decimal fallback: fractional digits are rounded, ties to even */
++	EXPECT_WRITE(test, IIO_VAL_INT, "1.9", 2, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "-1.9", -2, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "1e3", 1000, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "15e-1", 2, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT, "25e-1", 2, 0);
++
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT, "2147483648", -ERANGE);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT, "-2147483649", -ERANGE);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT, "", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT, "abc", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT, "12abc", -EINVAL);
++}
++
++static void iio_test_write_int_plus_micro(struct kunit *test)
++{
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "0", 0, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "1.5\n", 1, 500000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "-1.5", -1, 500000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "-0.5", 0, -500000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, ".25", 0, 250000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "3.", 3, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "0.000001", 0, 1);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "-0.000001", 0, -1);
++
++	/* digits beyond the precision are rounded, ties to even */
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "1.2345678", 1, 234568);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "0.0000009", 0, 1);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "0.0000005", 0, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "0.0000015", 0, 2);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "-0.0000015", 0, -2);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "0.9999995", 1, 0);
++
++	/* E notation */
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "1.5e3", 1500, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "1e-3", 0, 1000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO, "-25E-1\n", -2, 500000);
++
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO, "2147483648", -ERANGE);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO, "", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO, ".", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO, "1.5x", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO, "1.2.3", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO, "0x10", -EINVAL);
++}
++
++static void iio_test_write_int_plus_nano(struct kunit *test)
++{
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_NANO, "1.5", 1, 500000000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_NANO, "0.000000001", 0, 1);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_NANO, "-0.000000001", 0, -1);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_NANO, "-2.000000001", -2, 1);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_NANO, "1.0000000019", 1, 2);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_NANO, "25e-10", 0, 2);
++}
++
++static void iio_test_write_int_plus_micro_db(struct kunit *test)
++{
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO_DB, "-3.5 dB\n", -3, 500000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO_DB, "-3.5dB", -3, 500000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO_DB, "2dB", 2, 0);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO_DB, "-0.25 dB", 0, -250000);
++
++	/* the unit suffix is optional */
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO_DB, "1.25", 1, 250000);
++	EXPECT_WRITE(test, IIO_VAL_INT_PLUS_MICRO_DB, "1.25\n", 1, 250000);
++
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO_DB, "dB", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO_DB, "1.5 db", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO_DB, "2.5 dBm", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO_DB, "7.3dBm", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO_DB, "10 ddB", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_PLUS_MICRO_DB, "1.5 V", -EINVAL);
++}
++
++static void iio_test_write_char(struct kunit *test)
++{
++	EXPECT_WRITE(test, IIO_VAL_CHAR, "x", 'x', 0);
++	EXPECT_WRITE(test, IIO_VAL_CHAR, "K\n", 'K', 0);
++
++	EXPECT_WRITE_ERR(test, IIO_VAL_CHAR, "", -EINVAL);
++}
++
++static void iio_test_write_int_64(struct kunit *test)
++{
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "0", 0);
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "-1", -1);
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "4294967296\n", 4294967296LL);
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "0x100000000", 0x100000000LL);
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "9223372036854775807", S64_MAX);
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "-9223372036854775808", S64_MIN);
++
++	/* decimal fallback */
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "1.9", 2);
++	EXPECT_WRITE_S64(test, IIO_VAL_INT_64, "5e9", 5000000000LL);
++
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_64, "9223372036854775808", -ERANGE);
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT_64, "abc", -EINVAL);
++}
++
++static void iio_test_write_decimal64(struct kunit *test)
++{
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_MILLI, "1.5", 1500);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_MILLI, "-0.001", -1);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_MILLI, "0.0009", 1);
++
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_MICRO, "1.5e3", 1500000000LL);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_MICRO, "-0.000001\n", -1);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_MICRO, "5000", 5000000000LL);
++
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_NANO, "1.000000001",
++			 1000000001LL);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_PICO, "1e-12", 1);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_PICO, "-2.5", -2500000000000LL);
++	EXPECT_WRITE_S64(test, IIO_VAL_DECIMAL64_FEMTO, "9223.372036854775807",
++			 S64_MAX);
++
++	/* no hex support when a decimal scale is set */
++	EXPECT_WRITE_ERR(test, IIO_VAL_DECIMAL64_MICRO, "0x10", -EINVAL);
++	EXPECT_WRITE_ERR(test, IIO_VAL_DECIMAL64_FEMTO, "9223.372036854775808",
++			 -ERANGE);
++	EXPECT_WRITE_ERR(test, IIO_VAL_DECIMAL64_MICRO, "1e20", -ERANGE);
++	EXPECT_WRITE_ERR(test, IIO_VAL_DECIMAL64_MICRO, "1.5 Hz", -EINVAL);
++}
++
++static void iio_test_write_unsupported_fmt(struct kunit *test)
++{
++	EXPECT_WRITE_ERR(test, IIO_TEST_UNSUPPORTED_FMT, "1", -EINVAL);
++	EXPECT_WRITE_ERR(test, -EBUSY, "1", -EINVAL);
++}
++
++static void iio_test_write_no_get_fmt(struct kunit *test)
++{
++	struct iio_test_write_ctx *ctx = test->priv;
++
++	/* without write_raw_get_fmt() values are parsed as IIO_VAL_INT_PLUS_MICRO */
++	ctx->indio_dev->info = &iio_test_write_info_no_fmt;
++
++	EXPECT_WRITE(test, 0, "1.5", 1, 500000);
++	EXPECT_WRITE(test, 0, "-0.000001", 0, -1);
++	EXPECT_WRITE(test, 0, "1.2345678", 1, 234568);
++	EXPECT_WRITE_ERR(test, 0, "0x10", -EINVAL);
++}
++
++static void iio_test_write_no_write_raw(struct kunit *test)
++{
++	struct iio_test_write_ctx *ctx = test->priv;
++
++	ctx->indio_dev->info = &iio_test_write_info_no_write;
++
++	EXPECT_WRITE_ERR(test, IIO_VAL_INT, "1", -EINVAL);
++}
++
++static void iio_test_write_raw_error(struct kunit *test)
++{
++	struct iio_test_write_priv *priv = iio_test_write_priv(test);
++	ssize_t ret;
++
++	priv->ret = -EBUSY;
++	ret = iio_test_write(test, IIO_VAL_INT, "1");
++	KUNIT_EXPECT_EQ(test, ret, (ssize_t)-EBUSY);
++	KUNIT_EXPECT_TRUE(test, priv->called);
++	KUNIT_EXPECT_EQ(test, priv->val, 1);
++}
++
++static struct kunit_case iio_channel_write_test_cases[] = {
++	KUNIT_CASE(iio_test_write_int),
++	KUNIT_CASE(iio_test_write_int_plus_micro),
++	KUNIT_CASE(iio_test_write_int_plus_nano),
++	KUNIT_CASE(iio_test_write_int_plus_micro_db),
++	KUNIT_CASE(iio_test_write_char),
++	KUNIT_CASE(iio_test_write_int_64),
++	KUNIT_CASE(iio_test_write_decimal64),
++	KUNIT_CASE(iio_test_write_unsupported_fmt),
++	KUNIT_CASE(iio_test_write_no_get_fmt),
++	KUNIT_CASE(iio_test_write_no_write_raw),
++	KUNIT_CASE(iio_test_write_raw_error),
++	{ }
++};
++
++static struct kunit_suite iio_channel_write_test_suite = {
++	.name = "iio-channel-write",
++	.init = iio_test_write_init,
++	.test_cases = iio_channel_write_test_cases,
++};
++
++kunit_test_suite(iio_channel_write_test_suite);
++
++MODULE_AUTHOR("Rodrigo Alencar <rodrigo.alencar@analog.com>");
++MODULE_DESCRIPTION("Test IIO channel info write parsing");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("EXPORTED_FOR_KUNIT_TESTING");
+
+-- 
+2.43.0
 
 
