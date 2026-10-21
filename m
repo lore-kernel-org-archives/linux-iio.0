@@ -1,81 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.176
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792627309;
-	b=hwW/ow+g7suTBe9hmKimz+keoWQkwA2SwqM7TxTOqliZ0DASEVcRDhSkUfFAEpKP/65l
-	 DW/7kB1Fg5j5mCuL3V+qm7mKshLc6SLz1EDLfHhlRudD6ao+E4Xl3SR1BhTzKGdRxQi/Z
-	 +AwXbBC74koA5p8fNYrowm4GM5AY0WFPaU301J3zqUD8IhKwSlL0jcHsm41qDfq9/Eo5x
-	 TQuqGpOv2NWyW/YXddYFE0km/Se9m0c8mWIRn95Lt6/kCP5q9txS+L5iAMoKGTCDR8dPQ
-	 JIKw2U9tb+xIrsMjdBP2U9p+UGSu2J6EtYk/NJxEiti3LiHsAqiCbyAOOP6swoO6DTA==
+	t=1792627312;
+	b=eeasQzV3RZA+GHNejQE7AkjauGY1Mjbyq0YlMru8VqmxqTrxCyE50KMOhB3uOqfIz26q
+	 omSdriRAB9cHiZipjjAsSXUyaq6LfPpXCccNtk2+JCGqkLaVLQ/xv2fbNonUrke4lT7LI
+	 6KGdbcjrWZ0aYrG42sJFhOLGIcKtf3o+vLxq5RMSFcPyBUu3kirSaz06hwtKNvOh0A3RD
+	 5XcGUCkDNUqHB7rqj3cW1cINZtwlw1VDAURJaGC/NciFZEJCcSwGqeri7Pgxj35evAE2P
+	 t5CShkjt00dwYsFsk844Hswsp4WJVUk+osZGTA9sKynToAbsUGo+jJ5hUUlNwF8qH3g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792627309;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792627312;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=blXYgQJJBizz/bz/KIQMetOyL/YCHKq3pY30hwAK25M=;
-	b=kINduYA2ddNu1G5gPzkgyGLs2k7tEl8Bdv3yw60bjA39tMNBW0q+msO5uFgCkj2Z+GyV
-	 Igkg+sxdM+KmK2jXtqFzwDL/6a+mxpb2xWtb+Or9v3BbqWuR+wBo2pAOeqLIecxHa3HpC
-	 DX7LQBlJKmTDvydO471I+LzApT94ZMU7IORv9M2S2I5RxFnYw6VLp0M/sOAlBXyM7oe01
-	 XvhnyiWzmbeptFBDcnX9/U42NckyrLjS5uKsLVFL2Rcqx+VIE16VwTN5D+KWuPRCkfANF
-	 Rk3H/pL/RMear5SScCE4gzkiBjJ8fUFcE32wETt1VXRyfg5h5ZPswRuvvI5HWb98wLw==
+	bh=A2hj0UfttoWfWnVmfQgXmyBs/YW0e/AChXA2zyZLurE=;
+	b=EwP1bB623uXoePCq6LK9pQggMSoHMtt/taEn+imxNQF8xbYV8krWJVQ06sQO18VOdQLb
+	 8lc7UiD5OuY/mWd8aHmmiDr1vZJ2g1cX1+SWpvLTe3c73OWkyMG+V7FdS6iA69Ai3isB3
+	 oj2ZzrA/n9OXcY+i0Cp8Rw9g7hEY/59YTPSiSZcN32C5GwDynlVD8O6QtIhkawyaI+Gqm
+	 AylUCEOgkKjYcAUTHEnc5BaVtmtya0jQwQLyiNNKIXC1r7CDunTQEutAffHwDwBQ0hOiX
+	 dcZ9Aa0iGmHEi2A95wbO0z2awdgQ1sDMOq4dlc7lfvP/49Ldz9lo/w3jduz90oGwvaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=chromium.org;
 	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=NelsS96C;
-	arc=none smtp.remote-ip=74.125.82.176
-Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=afzVRXlH;
+	arc=none smtp.remote-ip=74.125.82.181
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56692606A338
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 56692606A338
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35A760A4AF4
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C35A760A4AF4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=NelsS96C
-Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-35f1f76ea84so1851520eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:48 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=afzVRXlH
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-354ba08cfd1so2158105eec.1
+        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1792627307; x=1793232107; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1792627311; x=1793232111; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=blXYgQJJBizz/bz/KIQMetOyL/YCHKq3pY30hwAK25M=;
-        b=NelsS96C6bj2mZywfkxDxSnUjkXtFur6XMZuZtSmnKGE9qGz208ajyJZwN/WEP8Obs
-         anrHJKyf7UmvRRRzyIo46WLiZPaea20IsdzILDfOpEAFyprvGcC7Yyr7ub5QupGdFQN/
-         Yrzx/SaJtWDcDapVW1fZIa+/KRsnLYGwgvRj4=
+        bh=A2hj0UfttoWfWnVmfQgXmyBs/YW0e/AChXA2zyZLurE=;
+        b=afzVRXlH7AyuOv6MQn72cix8RjgPhIb/LYyiVfbScV3+/W3r+nXIxRv7O+d96h6sDo
+         6dtVNUUUkNbYBYO7WruxmW1s1NtFcoKPzex0Gr8p5sp9U/4RR2cKDpQrY9M8ibdCj/5S
+         kF5x57ccX229im/onuXbSpaJR4+sgQuzDP6Ac=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792627307; x=1793232107;
+        d=1e100.net; s=20260707; t=1792627311; x=1793232111;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=blXYgQJJBizz/bz/KIQMetOyL/YCHKq3pY30hwAK25M=;
-        b=XKko0wHYHl9MkfUDRQyKrafEvWwiNowrEEorhv5iGJFP2vjqSve3F9rNtLRMsSU01n
-         z2cbXmN08/iOZAxJ1ueBNc88xBdY/PmlRGSEmJGDm4+ZvPYBy6Oy9yR2ff8lq7Uzr1cl
-         q+Mluskr0yyN9W4kJQ2Bd4vHbTtDbon9ddxS9Vfx4pPVI1luxOeEbj+rpMoQZfTlqJYB
-         QJZ0/tMzCakEScIuSzLSYiOTACRGGv9GGVc+y4pzWQg1hGxff2dfEax0ivV7a+gN1XJv
-         FfrrPSpTwTw8KYngzplMlYVc2hZ0tfDk4Y1MLCgNNPgd0KNufqRxq5J2Y7pBOX3XdSBa
-         dxDg==
-X-Forwarded-Encrypted: i=1; AKwUvBzkMWshnUOFPsVxeFBfvCKj5ZwekjDN/918L70JyBxInoin2ybP+8OoyvKpay3Cg6F7lmx96zdr+qI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKnjtspoQmCVgyhUGDwcmClxEzQa8bF60qeT8lujjrzc7Ct4Sro
-	Y7aOp4PQTiQ2dC+grGpyYkzepppHywjSKx+3XfzWBYhg9DzIUBWl7Ny1PVBoCEKZ0w==
-X-Gm-Gg: AYBFou1dSvegIjAKPNP0kjbKlgSdVtUulNo3ikzSQKi7JaWE6ziCfc4sdjzRX2XZS4M
-	1cdTotWPNjVazHLGFitX9it148/WJLYQFP4mSeF6l73ZTo8qUAT0PSRN3Hlc99NebugUdMEEELV
-	Hm4KE6DETUSPKw0yy6m6qUDZHthQ56TSNhLzfVq0nbYpBcLjUhv6MnfSca1+0eJnoIedJSXwz4P
-	Z/2RL5mj+mK2llmAhfz/EdAWBZAciSUb5eVfW7AlCWpA5mdhr6fqoPq9+QLkV0ylSfjY63E7dDn
-	UBqUZ8emAVmaw6t3ulohF0gWLYy8p5WH2fOJITVaCa+6NmUrMzjoRlwMsyDhyV6OvytED6S4wXq
-	TbpOqgUQjMApi4emyblAg1iKQUK/IhtYYnObRHmAPvI6OcK/FpXb3ZP0O9Ar4SkhqV3d0cJsbRw
-	Dod9Z8uB/7vWjypTUJ21TBK1fil7gXOxDz+JjqTa4NCxhUTcHAYdfz32/TOs8cBkViUmuEgPfp5
-	4oaXE2XmBGFqBNi3UEcoOFVNVw7AL2DUY/mqaodsmOwutZTXOj3BaDDHZbc3DChagrRyPLqcFBZ
-	o8+3bxUCv75wWZXIC2U=
-X-Received: by 2002:a05:7301:e2e:b0:368:8d1d:2a81 with SMTP id 5a478bee46e88-3688d1d2d90mr1563701eec.24.1792627307305;
-        Wed, 21 Oct 2026 17:01:47 -0700 (PDT)
+        bh=A2hj0UfttoWfWnVmfQgXmyBs/YW0e/AChXA2zyZLurE=;
+        b=kRlk9NTqhP3UTKbEasm0YnOqj3WBso6PzeGh6iMs5HcIUUw1k2RgN6U887yeBwRAe0
+         Q0O1mvGOSXkE4/VMSHBe2wIqVF+FFGqqr0HUjbhUqooe7ee8OEglDn9hhl3l0h95eBPf
+         M94EZxlFBU7OxiSDknJQDLqpAkH3pWZCcO0WBn9QBWJ3HfPKQUqYDzFob86UKG4qnjyM
+         TUhfez5+kdHcGoqJdij05ArlZuzZzOnrUH9B9hySPYlUcQP4+QUoni3cAL4+CJgZajck
+         3tFXShIWJTApLhUP8dDYSPRrfhPCOZGadqbLjGP1MTHeK0lrFNjI2uDq+a9E96I04MC9
+         9JMA==
+X-Forwarded-Encrypted: i=1; AKwUvBzccP7KKFrACObKcxZgxchU3fy9GP0UH8lwg+d+FOoh6TuNw0h1VERsFq/s5CntSTpF5X4GwIbO85s=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJkiKVMkL6q7eT+mXA5iMp2Bu1U2H1Imu3gnd2HEl0AlLPWaIuN
+	MEIqCrdxgKvj91tM9Ie1wx28LbLaRRETZKGpdWZkejGKSXKJFH/1xqUu39EZdnvjCg==
+X-Gm-Gg: AYBFou3f2fAvX1zFv919LAfu5T9kIj+PMwt0gRD1EmWCQD2ZMLOVNIoy3GK9VaefIKe
+	AWJVSEzd+50JpYxnKXgsDdY62AlLJxWLhsqlXTY3UB//D/gZxWTDKy16NgVrdQdjq0YBabKYwVG
+	2vJSg9iZvAjfEYkCAolUzW238W3SY/77u7yGY357ADEAxyTQyw0fXdbRdw15hu+5KoHPa+Y5RO4
+	/4gQHWWY3YtDHQ50yW1SzJlZKnbkzCJqkv+XkfGDCuXR8ljGX//MJIwFWntxhRpyoVg62tYpv50
+	fMVv5NOK48SPrvzHh4RMpP1OUWg8AsCzD07ZRicnpp23H9dyOKu5EuaQ8D/iWRGiUbnYzFvjSNK
+	63/TorZFiww/bQtXvIT7Zh/FDBPUdMEX32up3SD9urpSg817A0v0wE3MIvxFZff6UD7kanx1/DG
+	mA40ExXJFifKT2k2NbeP9qgMG6s25eg5mFNMsFC5LDD6DQ8vmlVqRQ+wfVhPtnR8GlRHHU5TY2Z
+	Hb/F0pp0FZcv4A/WKHFWmP/ot/qg3VpwR44ucc7X2iYSwbQh5aGQwRPsk/84A3mMr482+O5tRpW
+	xTOg+C49TLNgs30Jg294AbvFu7uZYkZn/PWZsa+v
+X-Received: by 2002:a05:701b:4248:20b0:16d:dd5c:4261 with SMTP id a92af1059eb24-190a7e0c294mr4435702c88.46.1792627310929;
+        Wed, 21 Oct 2026 17:01:50 -0700 (PDT)
 Received: from localhost ([2a00:79e0:2e7c:8:14ab:bfeb:ac88:458f])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36740cc848fsm10851892eec.13.2026.10.21.17.01.45
+        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1903a180ca2sm8704538c88.6.2026.10.21.17.01.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Oct 2026 17:01:46 -0700 (PDT)
+        Wed, 21 Oct 2026 17:01:50 -0700 (PDT)
 From: Brian Norris <briannorris@chromium.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -87,9 +87,9 @@ Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org,
 	Brian Norris <briannorris@chromium.org>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 15/17] iio: light: rpr0521: Discard pm_runtime_put_autosuspend() return values
-Date: Wed, 21 Oct 2026 16:57:16 -0700
-Message-ID: <20261021165858.v2.15.I31ffc98637199185bab952631d880c1d38d64b7c@changeid>
+Subject: [PATCH v2 16/17] iio: light: tsl2583: Discard pm_runtime_put_autosuspend() return values
+Date: Wed, 21 Oct 2026 16:57:17 -0700
+Message-ID: <20261021165858.v2.16.Ic3775fd68cac415d959c0456c4d4c36e9e5b95e5@changeid>
 X-Mailer: git-send-email 2.56.0.218.g1ec904b173-goog
 In-Reply-To: <20261021235818.3059519-1-briannorris@chromium.org>
 References: <20261021235818.3059519-1-briannorris@chromium.org>
@@ -127,103 +127,63 @@ Signed-off-by: Brian Norris <briannorris@chromium.org>
 
 Changes in v2:
  * Split iio patch into per-driver patches
- * Simplify some conditional logic
 
- drivers/iio/light/rpr0521.c | 57 ++++++++++++++++---------------------
- 1 file changed, 24 insertions(+), 33 deletions(-)
+ drivers/iio/light/tsl2583.c | 27 ++++-----------------------
+ 1 file changed, 4 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iio/light/rpr0521.c b/drivers/iio/light/rpr0521.c
-index 7d82efc31f3a..6305d7a9c282 100644
---- a/drivers/iio/light/rpr0521.c
-+++ b/drivers/iio/light/rpr0521.c
-@@ -357,32 +357,31 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
- 	 * Note: If either measurement is re-enabled before _suspend(),
- 	 * both stay enabled until _suspend().
- 	 */
--	if (on)
--		ret = pm_runtime_resume_and_get(&data->client->dev);
--	else
--		ret = pm_runtime_put_autosuspend(&data->client->dev);
-+	if (!on) {
-+		pm_runtime_put_autosuspend(&data->client->dev);
-+
-+		return 0;
-+	}
-+
-+	ret = pm_runtime_resume_and_get(&data->client->dev);
- 	if (ret < 0) {
--		dev_err(&data->client->dev,
--			"Failed: rpr0521_set_power_state for %d, ret %d\n",
--			on, ret);
-+		dev_err(&data->client->dev, "Failed to resume: %d\n", ret);
- 		return ret;
- 	}
- 
--	if (on) {
--		/* If _resume() was not called, enable measurement now. */
--		if (data->als_ps_need_en) {
--			ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
--			if (ret)
--				return ret;
--			data->als_ps_need_en = false;
--		}
-+	/* If _resume() was not called, enable measurement now. */
-+	if (data->als_ps_need_en) {
-+		ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
-+		if (ret)
-+			return ret;
-+		data->als_ps_need_en = false;
-+	}
- 
--		if (data->pxs_ps_need_en) {
--			ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
--			if (ret)
--				return ret;
--			data->pxs_ps_need_en = false;
--		}
-+	if (data->pxs_ps_need_en) {
-+		ret = rpr0521_pxs_enable(data, RPR0521_MODE_PXS_ENABLE);
-+		if (ret)
-+			return ret;
-+		data->pxs_ps_need_en = false;
- 	}
- #endif
- 	return 0;
-@@ -545,17 +544,14 @@ static int rpr0521_buffer_preenable(struct iio_dev *indio_dev)
- 
- static int rpr0521_buffer_postdisable(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+index 2d041b7530e6..a5b2b7fb6dd9 100644
+--- a/drivers/iio/light/tsl2583.c
++++ b/drivers/iio/light/tsl2583.c
+@@ -647,7 +647,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
+ 			    int *val, int *val2, long mask)
  {
--	int err;
- 	struct rpr0521_data *data = iio_priv(indio_dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	int ret, pm_ret;
++	int ret;
  
- 	mutex_lock(&data->lock);
--	err = rpr0521_set_power_state(data, false,
--		(RPR0521_MODE_PXS_MASK | RPR0521_MODE_ALS_MASK));
-+	rpr0521_set_power_state(data, false,
-+				RPR0521_MODE_PXS_MASK | RPR0521_MODE_ALS_MASK);
- 	mutex_unlock(&data->lock);
--	if (err)
--		dev_err(&data->client->dev, "_buffer_postdisable fail\n");
+ 	ret = pm_runtime_resume_and_get(&chip->client->dev);
+ 	if (ret < 0)
+@@ -716,19 +716,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
+ read_done:
+ 	mutex_unlock(&chip->als_mutex);
  
--	return err;
-+	return 0;
- }
- 
- static const struct iio_buffer_setup_ops rpr0521_buffer_setup_ops = {
-@@ -718,12 +714,7 @@ static int rpr0521_read_info_raw(struct rpr0521_data *data,
- 	ret = regmap_bulk_read(data->regmap,
- 			       rpr0521_data_reg[chan->address].address,
- 			       &raw_data, sizeof(raw_data));
 -	if (ret < 0) {
--		rpr0521_set_power_state(data, false, device_mask);
+-		pm_runtime_put_autosuspend(&chip->client->dev);
 -		return ret;
 -	}
 -
--	ret = rpr0521_set_power_state(data, false, device_mask);
-+	rpr0521_set_power_state(data, false, device_mask);
- 	if (ret < 0)
- 		return ret;
+-	/*
+-	 * Preserve the ret variable if the call to
+-	 * pm_runtime_put_autosuspend() is successful so the reading
+-	 * (if applicable) is returned to user space.
+-	 */
+-	pm_ret = pm_runtime_put_autosuspend(&chip->client->dev);
+-	if (pm_ret < 0)
+-		return pm_ret;
++	pm_runtime_put_autosuspend(&chip->client->dev);
  
+ 	return ret;
+ }
+@@ -780,16 +768,9 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_unlock(&chip->als_mutex);
+ 
+-	if (ret < 0) {
+-		pm_runtime_put_autosuspend(&chip->client->dev);
+-		return ret;
+-	}
++	pm_runtime_put_autosuspend(&chip->client->dev);
+ 
+-	ret = pm_runtime_put_autosuspend(&chip->client->dev);
+-	if (ret < 0)
+-		return ret;
+-
+-	return 0;
++	return ret;
+ }
+ 
+ static const struct iio_info tsl2583_info = {
 -- 
 2.56.0.218.g1ec904b173-goog
 
