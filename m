@@ -1,108 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792589093;
-	b=bU7GPT2PDkMWKenYRRt5pJKDnNimB/O+r6wGBjyVROA9y8csp0ZIexrgf3+5E4P3z5U6
-	 Vb2zmmhLZpe8A/LLARybdfclMginRTYJRlfGJcGTeMvRWcw7q6/1iTEFmjNXNaJ2nOV6D
-	 zkZqetjJ8davAS1wRuj6yAF0vqCK1A5oeXgEYNx/teVqC0NfIphhieRz17ta/qg6uwcC2
-	 PJalSYy/IsIXqR+d2YZcd+hWP0iddlJJmVxVZvL28wXFZa6TeZAdn8csHYNTRoo3eNXSG
-	 fuvCfwy7kbrbZd0POt4KG+hzemhFbMzq9UVSHWhWKcAKbz/ncTYAl8uAGgEAND7qwZA==
+	t=1792591377;
+	b=mLCDIutiT0FkBNQOFiLYV1xd48qsa72I71n+0cFz8OCIQB5zpyqJCFmRXtiOKGlVhGTy
+	 uOCifFRoZO6AAeQPfgrbby5Kc+/ANRm9cGAvyarBvoAJjacyFQwU2XgacqF1G4qs7T53K
+	 hJnGKY4og8M+MB9gBomFIstRXrrsRFaU2o9kJulEWkMum0gZnA4HO5vcEOr+UCWFqNoN+
+	 YtrvaPR2UcImBy1RF04VfWu5uhI7PwdtFl2pfQupUFs4KKanD/UYI6Xq0wZlZBhf0QUKg
+	 0cN7Cw+ESGALNHGpjqXnH5PmAccazthFfdaYgdnchll+S7Yd+sR5vsUPiVy9JX/sGRg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792589093;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=DfLg15d2NsC8WG4F+8NUyIDwq+mbAzZvSv8g7DgQuf0=;
-	b=DWHhJflAUUZXE7NE/2UdD33GpE+6+Fy9SE2X0WNzy8xuFbePqc5EmnN3eOGTS3dWGygI
-	 GbT3pOKaEn7wohAPGNoyoopo3VWnFplfYe5omudAdBtyiY29J50ZrDlkYmPQpQ43HdX/2
-	 rX3Z7yQwDJy2yRCc6va2FoIod55dMhJU3meQtGQaA19Qu4exFEzQkLLRqvRvEhNGFT/G0
-	 1bCBYQTEF9vFS5ST9alOU0J2Eom79IP71eerTZlqFLOSixeiAVO+bpGREj3EHJ/EoezAc
-	 D7glk/NzxVSyaIyBeqK2O6Xh3OZ+F26LV/QR+RPulYN0fcqgFntp5xPajn3/SaebUzQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792591377;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=fDLM2uSdaow9LokFw0VaDIv/9QOPzVgEmcb//BHgPyM=;
+	b=eC0qQ10fkCB32bojVCO0Ge7Es0zdHEfZyino4JQoaGa8Ea+5VtiYaCqXU0iEkf/GiBoO
+	 bbqIcYYUA+NK9XCU9g6wVwlVYjrx4t/ZHoeOqHOLYXGRnmFx4+jOd/nMXf8Pzl6Lfb7ia
+	 1Nc7rer1zB4pG6AAmaINsEZ0xa3GoMztDxZQgs3ldgxejQAahxQdUXI7+LrBILNQDKaKZ
+	 K3pIqVaVpTN37HhCNJ1CC/lO7eDnuM8frLMvrHR0C4UdGjheuc1Ul9nnSQoH9CcMegi5i
+	 G7DRlxdO2TDEPPOwiFQ6U1UgzZXwpWbXvr90BobeoscGEAirdEjkROuV++TE650BIDA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=DFN1tklU;
-	arc=none smtp.remote-ip=209.85.218.47
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OUA8VE9V;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA24606A321
-	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 13:24:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7AA24606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D05606A31D;
+	Wed, 21 Oct 2026 14:02:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 98D05606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=DFN1tklU
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-c423b145922so87235966b.3
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 06:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792589092; x=1793193892; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=DfLg15d2NsC8WG4F+8NUyIDwq+mbAzZvSv8g7DgQuf0=;
-        b=DFN1tklUulxevp5e23DDQwk12D6ac5gehXefCmPIk3ujm87X145Iltk3nXTTJy10Co
-         18aFMXxMs0ITa744yyaA8coIk8ixafXJoH+P2cxkRvVolGZtNXcjQJah39i86ygQ6vDa
-         +99t2ShsDmh/tvedHar6FjFJfigremGZZVxAJDG4o5coiF6bAcm6M6xs4ybCKGtgClnL
-         l5OOZx+SjoAEToexQ1PuerbtVhpUdLGXFFshGdvMRUly8FwJwMta5oyLxtSTvLLGsP3X
-         lt+BLgsYkcghrABTaGAGNrvkqd8/1EUZqnrVutMlXxygBFmBdiNYwNo5pnLVhrScVieF
-         RAMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792589092; x=1793193892;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=DfLg15d2NsC8WG4F+8NUyIDwq+mbAzZvSv8g7DgQuf0=;
-        b=eDgvBWh+x2Tit+juySwxTNhKQ761mPPS/+1NCVyL+r+/+t5IgL92ZJzX1ltJG1p4wp
-         RjH88JH3trDFpLE//tpbNqXwTVChXFCvbV0VGQZSAncMAGwSC739cAZ9qM6DyfVu8O/J
-         o+XJ4hkytyyC3DEL0S7aw5kCgu0YaP5Axso8vZH67lSlbZewgXczzoYK90sQcNd7rVUI
-         UEsNDL4kbuCHRPfmRYcST2uNW2qXaG0KwbourRDAyGuAbLiceKPAQ9v2D66vwgbFnl3t
-         Kyuz7fkOwQMQLvXtUCsJLM0FFuefG6F+PyvJNJEZBrpd6kkoiP7sBtN2o2gbdHbTzD8K
-         jdUQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwwXAQo1bKN5dnTVV9r2/TVpprk+BtSWHQ+1/AWi7qWUILVpU7Ko0H7uiTxmoJngLvk4v0DpTdnfCI=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJ0I5hhJwDYhyIT0/JDGMgSDh6neRaIl/isKC4oJZcxjylyfG8Q
-	5Bjg2p1CM5YeNJT3Vnt8YShMjNRVKhvLUw6wXe2FLQtuQBfdfW5BQ3B/
-X-Gm-Gg: AYBFou0q46k1zc1O4YdeWXy9ndsvNl2eh7WrkZQbw7rmJE0IuMZ3Hx9V/Xpi06SAYHO
-	bKzbjePH9N4NY3YCbfwVWGsKZbszIAfn22zQHT8Tlwbf63UY4FCSlZQ9bhEpWAB38ASwd4whXTD
-	dB6UvlolM0TmQL81yND7zxY4twH8eZaED1i/QXkUoRtgOp0nGYVNV/yGzM3ZovvLtAylV+t3fVY
-	onURq10dWTI3GrJmUr25ohCS9GSGxHY5bGFU7MyWc9ZZcMia5qZwqQuznA6UzxcHc0CjGBMpyH7
-	TS8EN/UlfPYBZGs4wVX0Zl60FRFenECHif3eIe3832GwO1ccpHwXd4mtwVC02jsqa5Rw+/e9uDW
-	u3DFwQ0FQ8/Fan+Nyr+2VaeWHM6BKOxyc0Fsyb2k16FzGfM5A0TWY3aWL252FcLDIkYMiFunGSq
-	Rm33Giz5Ifpn6uwjJ8S/Q1xh+DYjFZ+fx5wgMKAnjjvkdAXn0aVcwNZ6PMS47s0wM3VvBqIDyUE
-	WOA15EkrC0yoCWGOl0qlYLKPMfuK+lKaDHGIlbwTIakQV8REmh0dp/LXrqIVDFTBOHVwWlODi+/
-	vjs53D98IVI3Nez1wzMy+E2dQLM/+okp3kqBbwBwhp2O+DCs2vWbug26Ympafo5bQGHJq87X5ov
-	mZpTzFsuF
-X-Received: by 2002:a17:907:608d:b0:c2e:46d0:b802 with SMTP id a640c23a62f3a-c46797af00bmr188075166b.40.1792589091580;
-        Wed, 21 Oct 2026 06:24:51 -0700 (PDT)
-Received: from M-K2012N0113010.localdomain ([88.119.128.229])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c468a592333sm1418266b.46.2026.10.21.06.24.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2026 06:24:50 -0700 (PDT)
-From: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Eddie James <eajames@linux.ibm.com>,
-	Joel Stanley <joel@jms.id.au>,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OUA8VE9V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792591374; x=1824127374;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6TcpUU+U6JP4MXD+j4bO+YP5IabLS7DHZ5gJkyB4Sa4=;
+  b=OUA8VE9VlomzQ9ySAxgQDPJtkfHVZW9TwNJXT9Ywx1oiCdAA8Ecd4Aef
+   EizK+tZE8RVNa+f5eHjVetBF0m1YWo2r8PtLGDE8r9fjngmRGRgx6nJVN
+   uQg90Cn5QIbz60ayEiLGDeTe3VOSGsZKYsvdSPUktNpUoPVY1XOAmdor2
+   f/7N4xQO2p3j1prVfWigHu9rbstQgko/xtsShO0qn0iKYPzWFgTbYfVEJ
+   RJJkcm19w+Bfp5lKh+4+4/VGWkisQvJ72Oqp8qrPiU58zzKwEZOfnTQLF
+   2j98t4c8KmrLk5EFqhEmtsuV5w9hBJS+8OgVAMCktq/Ozfijn0evHAxff
+   w==;
+X-CSE-ConnectionGUID: AAALVXWlRE25Hh/uefcPDQ==
+X-CSE-MsgGUID: R0mSUPKNTpyUmzcktM8aew==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1214489"
+X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
+   d="scan'208";a="1214489"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 07:02:51 -0700
+X-CSE-ConnectionGUID: JogAVmmJS02mlCCCTu7pTg==
+X-CSE-MsgGUID: iwCDsb9RRXOAkFMEYHMsEw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
+   d="scan'208";a="3416326"
+Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 07:02:48 -0700
+Date: Wed, 21 Oct 2026 17:02:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Lee Jones <lee@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 0/5] iio: pressure: dps310: add Zilltek ZTS8032
-Date: Wed, 21 Oct 2026 16:24:09 +0300
-Message-ID: <20261021132409.3742735-1-paulius.zaleckas@gmail.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261019141646.49599-1-zoone.rupert@gmail.com>
-References: <20261019083620.1285782-1-paulius.zaleckas@gmail.com> <20261019141646.49599-1-zoone.rupert@gmail.com>
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Shi Hao <i.shihao.999@gmail.com>, Rachna Patil <rachna@ti.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org, mfd@lists.linux.dev
+Subject: Re: [PATCH 28/28] mfd: ti_am335x_tscadc: Remove redundant
+ ti_tscadc_dev_get() helper
+Message-ID: <atjGBg9IAnPPBRmX@ashevche-desk.local>
+References: <20261021121245.3111563-1-lee@kernel.org>
+ <20261021121245.3111563-28-lee@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -112,11 +86,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261021121245.3111563-28-lee@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 19, 2026, Rupesh Majhi wrote:
-> Tested-by: Rupesh Majhi <zoone.rupert@gmail.com>
+On Wed, Oct 21, 2026 at 12:09:50PM +0000, Lee Jones wrote:
+> Now that ti_tscadc_dev_get() is a single-line wrapper around
+> dev_get_drvdata(p->dev.parent), remove the bespoke helper and retrieve
+> the parent driver data directly in the child ADC and touchscreen
+> drivers.
 
-Thanks for testing on a real DPS310!
+I don't see more patches Cc'ed to me, so I don't know if this one makes sense
+or not, but OTOH I don't care much, both approaches are fine with me.
 
-Paulius
+Acked-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
