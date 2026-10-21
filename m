@@ -1,97 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.75
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792601581;
-	b=MwTfB0p43XvEq/kZBXaSK0nI+aanP6drhDuf2iVjXuecCScgDu673aKwFBR1GIoIOUxD
-	 Wb5yx2OQUAX+CYyT3rEvk23Jt7uyvdslVvJMwj+XTnc6nSQCWnJ8d1Q6iJZMxDA7fK0yC
-	 O9cDHEyG246Lle7no3MqDfsD7mIDQfaL43F1XiJpAhtZNfI35LLLUHwCVUQubSUwhc8OV
-	 HFgcZlbP1NZCn/xkcosttgDPvm659b7z9A2odg+jdowMOZ6liSpGgR6yCKAk/GdXIneBw
-	 QsJfaSktS593j3yGIunf2aVoOseQ8HN2BC4N8/y7WbcbjjdGYbR0D8eE5Y9oNVpvGXA==
+	t=1792601980;
+	b=H2BgtGj8zoQQ3rIV5dYzkuCR+naOeg0w1mW5AJofP1xbEwlakyATSK2EPPdUyGwJtvRe
+	 avskOkKkgU+DoLFQmrrn3vaOgFQQ74vWv4/0m2MTqC0JoczTGR7rdumn1pQnbsmbl55Uc
+	 vEScq8+GnqZM3prdQ5VjALUaKSOIDvP0/R5XX3vPZDySvTPA3cvREodPCWf33S7vg7kgn
+	 wIgrrLtfP0p1V8To922etA4DBJMAo2ieIj+/rWVPkxDXJSR4m4fhsgz6EVKw8dJ/su4/z
+	 3bIZvcyyTXAlTEg8oA0RWF1iA+zqQ27CVidKBh0u+SPftoAOxWKnjGCthcEe4cfJobg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792601581;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=pKVlIvSF3bgj4NKmyst/GQOZtuCqamm6OCIrIl39yS8=;
-	b=TGNLAFKkBC717yVLBzpBEkEmTI/TrynZQWZmYf82bHcrZq/+jOq4ELYQPeOFeplnpkOw
-	 vtR8lmeJClXCUtPxwrbVlrlSNI5Em53NX+UNwpZbfb/sW3oYSgq9vF59c/hgVM/chgoHm
-	 0ZItayO3QDXKUtlwPWy7wZYL4/kwuGr3QLVZ6D9p/85nvfyv1/aQ36FCAupWLp7N2Mqoq
-	 b3Lxm454j6l5MbHP0pPUo3sue1Pc5qlq6D43ZuDh9DkBfDyKlsg7/wbznG5AuvP7zNLux
-	 LnVj0ixHK4LZCVtUBu0yTajUMMokxr8B/iYQANwD0rbVFFGSbSo1p67IREOJ4S5AfXg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792601980;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version;
+	bh=p+CU0uLPlyx2SCbGFn0tLzOAhUz48rH3EvqMuFceNuw=;
+	b=ikXMJ5hpmxxrK+wkWZz5NJZhlfNzrewTALpduN60OAy7wtF9TCGAyxLWU0WNFQFvRUxo
+	 cvcqCiuvOVv560bkGMPqy2Ma6Mmj2trBsCOXHf8WATwM2jS5AtYhVSNru04VGQEn3taQT
+	 sIApd44BLdSLEbaIKF+IsL1V7F2+D0Gbjmk0lho4dByRbcSaAGxBWuJ1z8JlCdHTj2Gc3
+	 6G61Wd1RVzvLkywRiRfU+f//TF+nSpjbaxOPBL9scZ2kXqz5WDqSSZkwqQiDKySoJoWoq
+	 ks9/nHqRdmzwGXRkvvUk3/Dl0XJxIjJZOhYANFBwvgt0NX/6tV/rjua1nNUB5PuFdYw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qmbwvlpD;
-	arc=none smtp.remote-ip=74.125.82.47
-Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	arc=none smtp.remote-ip=95.215.58.75
+Received: from mta1.migadu.com (out-75.mta1.migadu.com [95.215.58.75])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F315606A320
-	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 16:53:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6F315606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qmbwvlpD
-Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-14394530ec6so1193695c88.1
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 09:53:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792601580; x=1793206380; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=pKVlIvSF3bgj4NKmyst/GQOZtuCqamm6OCIrIl39yS8=;
-        b=qmbwvlpDjjnvN+ojyDVZMh4S/iXYFHextf/p4m9ZyuKDJw8yp4XS5IVGfxc7T0kIwz
-         HBuaORpQGk3pTdC1lnVV0qHf/leap+KQONIw/DTJpmbK40VFfvr0Pq7U0GS+JIvTgXEG
-         2YquSH2LTMrcpTsI3MreKRpqLGekFDCqH9eVgfchdHPNBQHlWsB+cGebsi/zY+9vSlo8
-         rJJxdvmqHFAk1xm0RwcKaKhslv0n643FcuctDdz9lZgj6/Lu7IZjhMO6EW9HPjdXR7Rg
-         HlFF9KYbxy96QZGw6Mrl1K7YoL5YKGEwyI/Rjfgqu/FynbzUzjspX2rWXDL4KgmmIyac
-         Wx4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792601580; x=1793206380;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=pKVlIvSF3bgj4NKmyst/GQOZtuCqamm6OCIrIl39yS8=;
-        b=gEahIJsq5sTCEPcO3W3IzVKj4zf9THaNgvxoYFv05GjNdYJDiDACm/ndBH9N+0r2Nn
-         l/t0YnSSUjvU25B3PGX3zDjTBffjudnpDDf/Bocr2dFPcXqsZjfcTHIJSkK3snZjr4zO
-         IDIuy8Ht/BxRjnSQkNLOOjcjWH8dHTlXxLYGPB1uOmJvj4f8WKZXBN/OR5p/dEG7eRc0
-         OtXJyBITKqlIycGyq0n5qSkasVgWpBhxlxdjHMU+WvqIBCF/yMlc15Z5FPKJkGKLv+qg
-         eDLytF6kwqjTL2EfKbzTjkKzrjyq2zFpZ8uo3phIzzNXCff7sQjogWueI5lF2kC+01R4
-         3FmQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzfpFw0IfGJLTRFYtaKdTysJ+ozOXVbqj8ijSrzOwDsjrN3tz5nNmck5BpC/2/Usvo9ZcUDbOjb0Zg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKIONznPZUA4kbfXrZPpo/NRhiZP93h+N12h4VYJeqXPtH14+kD
-	hj83/62NI/Lyll5wyUB5N4hEHz08z0yLxeW30a8OdiMgjnTFyNjFpgHm
-X-Gm-Gg: AYBFou1etm1IzVu2QrqHtDWo1S3ahW1ekohfrIqme+TxavR6WST9cmO5JUAhaOxUR2p
-	avl/6u/iQ2qWDC6vLQRYEGDoeGbpW5xdMI84Cldhla80biixcabLlrSMwaNorAm43HTVAjY1zaB
-	/z0rjbNlBlfGC7jtt6VDqO6svsqqqtVvln9ctmL3gghhL0s7vdiacF0vxqobHIjhMDJ31AHOkZF
-	8XamYHrb4NY5Q+ehyzzUf09u3dNdbsIJqjsU+qBub3OmfbmyziT3s+j/Z8FksoMOqsWP804Ijll
-	IbiNxvE3AhIxytUB5ZrMKbcYxK4U5YeT2IqwMJM4gAEeLEryrGtms2utjyaTuQ3tsCGh2A0y8Pj
-	8c17tZwPKWhmZRt/ZkucpiI+83uy8BqX95CqRZzVRc0KEMIXMB0ptdDCPDRvYLBE3wd7bq4gwGq
-	iFXtu+TpdQHfKS3pjT7R7E6UOTHpvkPGaf9TT9+qBBU5uy4DHHk8sk0h9AyHGSNuDW7wlPs+rfj
-	kud/MX7zqsfcy9n0t8OMHxd2WlD3xKUYB/gWmps8AsFGD8gpxylLMWPqVT+EciuEht5Vm6GGHpM
-	eXIIPYCUozzLUjgnVgC44A==
-X-Received: by 2002:a05:701b:260c:b0:18a:6c40:1a35 with SMTP id a92af1059eb24-190a4e0f52emr2922497c88.20.1792601580385;
-        Wed, 21 Oct 2026 09:53:00 -0700 (PDT)
-Received: from google.com ([2a00:79e0:2ebe:8:92d1:8038:c4e7:1f0c])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1903e02901fsm7779991c88.22.2026.10.21.09.52.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2026 09:52:59 -0700 (PDT)
-Date: Wed, 21 Oct 2026 09:52:56 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Lee Jones <lee@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Shi Hao <i.shihao.999@gmail.com>, Rachna Patil <rachna@ti.com>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, 
-	mfd@lists.linux.dev
-Subject: Re: [PATCH 28/28] mfd: ti_am335x_tscadc: Remove redundant
- ti_tscadc_dev_get() helper
-Message-ID: <atjtywLzWKxoddD7@google.com>
-References: <20261021121245.3111563-1-lee@kernel.org>
- <20261021121245.3111563-28-lee@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6852D606A328
+	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 16:59:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6852D606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+X-Envelope-To: linux-iio@vger.kernel.org
+DKIM-Signature: a=rsa-sha256; bh=N2OoIaXbm1ikGvwpS1JJSDFdorhSOcRL/wya42gaR/o=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1792601977; v=1; x=1793206777;
+ b=WqohzBuXMER1LmjiCeUCqqT3n8lklluRkRPsxMIjlU1bosfcFkiH5w/GJGYfTwMS7MRRniwW
+ R64eJpT1uOdaQPteFt49LBqyJyKoAX/7hmh1cq1dAiDDzX72NdvsXJG/M9S07K6GTAojBCM6oBe
+ xJRmKI4T+lMdZXoUDKMiFCzs=
+X-Envelope-To: linux-iio@vger.kernel.org
+Received: by smtp.migadu.com with ESMTPS id de2331398842e179;
+	Wed, 21 Oct 2026 16:59:37 +0000
+X-Mizu-Trace-ID: de2331398842e179
+X-Migadu-Flow: FLOW_OUT
+From: Igor Korotin <igor.korotin@linux.dev>
+To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>,
+ Danilo Krummrich <dakr@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+ Gary Guo <gary@garyguo.net>, Alice Ryhl <aliceryhl@google.com>,
+ Daniel Almeida <daniel.almeida@collabora.com>,
+ Lars-Peter Clausen <lars@metafoo.de>, Mark Brown <broonie@kernel.org>,
+ Brandon StJohn <branstj@gmail.com>, linux-iio@vger.kernel.org,
+ linux-i2c@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v6 0/4] iio: position: add Rust driver for ams AS5600
+Date: Wed, 21 Oct 2026 17:59:36 +0100
+Message-ID: <179260197668.3127.18219777718091081046@linux.dev>
+In-Reply-To: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com>
+References: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,24 +70,67 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261021121245.3111563-28-lee@kernel.org>
 
-On Wed, Oct 21, 2026 at 12:09:50PM +0000, Lee Jones wrote:
-> Now that ti_tscadc_dev_get() is a single-line wrapper around
-> dev_get_drvdata(p->dev.parent), remove the bespoke helper and retrieve
-> the parent driver data directly in the child ADC and touchscreen
-> drivers.
-> 
-> Signed-off-by: Lee Jones <lee@kernel.org>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c           | 2 +-
->  drivers/input/touchscreen/ti_am335x_tsc.c | 2 +-
+Hi Muchamad,
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com> # for input
+Reviewed the lifetime/teardown contracts you asked about. read_raw() has
+a problem: it takes parent: &Device<Bound> and recovers &I2cClient<Bound>
+via TryFrom. That conversion just got removed upstream ("rust: i2c:
+remove TryFrom<&Device> implementation for &I2cClient", use-after-free,
+unrelated thread), so this won't compile anymore. More importantly, Gary
+Guo made the point that needing the conversion at all is the actual
+design issue: a class device shouldn't reach back into a generic parent
+reference during a callback -- whatever bus-specific resource it needs
+should be captured once, at registration time, and handed back via its
+own private data.
 
-Thanks.
+Concretely, this means dropping devres and letting Data<'bound> carry a
+borrowed reference directly, which it's designed for
+(Driver::Data<'bound>: Send + 'bound):
 
--- 
-Dmitry
+  pub struct As5600Priv<'a> {
+      client: &'a I2cClient<Bound>,
+      #[pin]
+      io_lock: Mutex<()>,
+  }
+
+  unsafe impl Send for As5600Priv<'_> {}
+  unsafe impl Sync for As5600Priv<'_> {}
+
+  unsafe impl IioDriver for As5600Priv<'_> {
+      fn read_raw(&self, _chan: *const iio_chan_spec, info: IioChanInfo)
+          -> Result<IioVal> {
+          let client = self.client;
+          ...
+      }
+  }
+
+In probe(), capture the client once via deref coercion (Core -> Bound)
+and split the driver struct so the registered IIO device carries the
+same 'bound lifetime:
+
+  struct As5600;
+
+  struct As5600Data<'bound> {
+      _iio_dev: Device<As5600Priv<'bound>, Registered>,
+  }
+
+  impl Driver for As5600 {
+      type Data<'bound> = As5600Data<'bound>;
+      fn probe<'bound>(dev: &'bound I2cClient<Core<'_>>, ...) -> ... {
+          let client: &'bound I2cClient<Bound> = dev;
+          ...
+      }
+  }
+
+register() then just returns Device<T, Registered> directly instead of
+transferring it to parent devres -- that transfer is what forced T:
+'static in the first place, which is what made storing the borrowed
+client impossible and pushed you toward TryFrom.
+
+I built this end to end against current rust-next: compiles clean, zero
+warnings, and zero changes to rust/kernel/i2c.rs. Happy to send the full
+diff if it's useful as a starting point for v7.
+
+Cheers
+Igor
