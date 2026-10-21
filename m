@@ -1,97 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792575360;
-	b=uD4Nw1tH0StF+5uFNotvIJHBVWb150HDcUUdE7EEoBKBYZnBLmcW60fl/h1Xr2e3285f
-	 j/gCkdp7mWRStyyyLLnnvWm3jlnbXJ0oEoc4gcga9Wp87FRLcLy1K+FCRf76itVKttNlX
-	 ojro1bif7T1YNfA0JTQmaGhi2cdizUahlx2SfVRL1d9TewnhZNRnlInFg5tNRB03OvT+6
-	 Dqj9GSV3uIW1Lf8ikCRYq0y+1RRHEqr/jIH8F37oXF9eFcFu1S9/YY8yT0DmGr2l2zWUC
-	 wQKd271eDxJPw0ye36n6UfXgpZt/hv9xdJiK1upUSPmE+Vtej16+Rg+nfmqWLQJZ+og==
+	t=1792575797;
+	b=nThPa9vMzezsF5iX/7pyOiwwQLM6HPNe0YjfUd7PJEGACGa0FMwpo5XSY6WDxjOBdcQ1
+	 KHzlcQeNvaBAygYf/0a9Fs54HjLrlTjT6dZ7Ews0aAKQfaKLXrMiJVfWHaRmjIzi5pbrX
+	 +XhtXnqILSPRTUXN0p2QQKkT4DzlMlOFxBR9N7VsHABThpgk4+RBwH07qO2NmTMoyhHA2
+	 yB7COit3KXAqkA0FcxBWq2m8x9bm8ahB5X6TWNVGKJ50Rfqfg3tiXcttA7wvxtOh2kqoj
+	 3GplhVqcGzwzi/TkmrSnv42xJmokIOx96RBy6h27UzkPn9uRzY5I7VoHWGrrR71cyFw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792575360;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792575797;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
 	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=vESFpxx0VNlWv9cyNazlbbd+txTe8v8vPR3h4QzwP9c=;
-	b=OrS+JIYlA1B82LIq/94J40APkGmhECvw4lvr/+lyB4uPvxSWWosF6j2cozB3Xhbs/sIE
-	 q+G9RD/yMsBH00SODR42BIKTiomTj1fZounsUlRd7q1/uoVrnvd1KYYVU4tw8lgnbfmqI
-	 jssBaydfyoyzqsfXdX5in+Gvx2keKdoFCBLByeTPjWqIxZT0KVEJT7X6VIFWZqE085qWx
-	 Eke5vNkZg0g/GUgJikoHFhGO+/fW0Vm9V7Xtdc2pvKUT5qMDkdarzU8FDUAsakZL9wUfl
-	 xCz2g/T7UR8kMG42LdX4zHDGLjyT/y/gvtqOacGUKj2vH4QCcoRfUwU1nmgUGmPk3UA==
+	bh=dhe+OwUtPyp9lDIgAXa6HnxDE7Qgi1WH1ldmiGmED74=;
+	b=it7X8i/3LM5veqjwFEOllnHddBb229W4bvVMIJB4SgsYestKfcAgRwomo23vEsRIL5ZD
+	 +lB4fSTHJKmnWWkJPsFAgINVU169KM2bxYHZHZOWuLLXIpMll8RVX4Y8bJTsS9dfSF7+X
+	 cKb4x8BwM7JI3SpM3HkHvjCkLjOg9CTdzGuxmPiaSIxUyDASpqWfgRiTs/H0S0WL26+jC
+	 1mQ2ipkmA6JvIB+1xSRBpM0Gb+e1Agw7KOIWXJI4xkTRY8cPk/QS8O0Geq/H6288mtDdt
+	 0JvADQ2G2BhFAZFqku3OInpPvyDvvKfyn2XB8Oqy7bGg7WgqyxyJAcvrXsq7YgJqGug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="K/QunA4g";
-	arc=none smtp.remote-ip=209.85.160.46
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=srjt+DeZ;
+	arc=none smtp.remote-ip=209.85.222.43
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC945606A31E
-	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 09:35:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CC945606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A2CC606A322
+	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 09:43:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A2CC606A322
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=K/QunA4g
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-4949f037131so305491fac.3
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 02:35:59 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=srjt+DeZ
+Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-99061e2171cso158846241.2
+        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 02:43:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792575358; x=1793180158; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792575796; x=1793180596; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:date:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=vESFpxx0VNlWv9cyNazlbbd+txTe8v8vPR3h4QzwP9c=;
-        b=K/QunA4gLyUdCC9TYZCnXtwnhnkHnbML3h8cQpfsW+/fJ+cOYFQyOufQWY3bKogqVm
-         r/IliMVAXHqNoDBA+NmtPYQjBsFdxtiav6wZLzHeoKvi9Qi7NWFFV6t2i4PK2p1A8tBv
-         9ZdOTSQ5qAqpLI3GkvHLni42pRefDw7QZ+fkIhcTLN5QOXxaosLSZjergEDqy9NVNar1
-         Ci7cx3MADb9T7UjRXu/BDe/xxKZ2PLiQ15rZskNbdBDWu6sKLJWLHHmZMMSGUDgUd2ET
-         uCaiCYcKTlocrB5z0toX3FoiIZELwzvcmHHYSAVvCO2E2Z6YAsuMowxSXfbqM5CzMI5d
-         g4/A==
+        bh=dhe+OwUtPyp9lDIgAXa6HnxDE7Qgi1WH1ldmiGmED74=;
+        b=srjt+DeZDfQvwdyCu9ry3wmr0HKr+FZ4kA7dbDOp6ht0khn7HeCNM2OdlG1xRsQ0Kd
+         lxc8MVn5Ct0LOJVBW+BsQHEtgEN1C7Ox286rsUVGq0jJHiO36gSHKXKJKny2mMLUwIzz
+         5yv4UuuXW3yHSKLLIwM8fCpkRTzEOrMh5Ac1r1FWzw8+VcYjCnayVa/z5p6jz3RXXGU0
+         iqWfaY939/CB+ZIVFsftv5ay9t2ZfsXbSArDLdKTT7fMjMiJkuqKYvkzjMLSlXfbWCxs
+         cffdCFhd81Jp9qg8nUpkly1HyvG35jEVMRaKE9R9isJVF+yiuq0kVJEFcFYLnTYaSkIQ
+         5ZIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792575358; x=1793180158;
+        d=1e100.net; s=20260707; t=1792575796; x=1793180596;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=vESFpxx0VNlWv9cyNazlbbd+txTe8v8vPR3h4QzwP9c=;
-        b=H+sxXemHEdWA+MuJ+tc+6ofk5sBYOo8XakGOpk1V/ggWRV8rHTjlZlptSEQZRtYVcL
-         Qkd389/iX0WSHwuFNye9s1IZKc6HMWJLHyKsXAoCQUxhVO4DtMFgTlKfF0PpjuNcploR
-         7T42pt4ZnIQ2whGbQ9fwzk9FLYcg3bsK3C5EUQZNBNiTTWLrdBtKJuNISu/Qfkp2XUIn
-         wS2KT6LPNBzUIkLuwax/cyXynxj/wjCtdigVZtRcMfCxUUKghZiCWfLrIeV4Bfgk2FLf
-         V49j4CZZ2WOZFxpbJG8NH+u4456iLuXc7mnlyFNw+BPiXKFF6q4gfsS1evJNQBpZwDEr
-         mfFA==
-X-Forwarded-Encrypted: i=1; AKwUvBz0/M1YxuySimwKfvKgKzGFHmYPU7h+piWDf7pn8rebKbja48OJYYoIK9LxbhZK/EWZ5j1FdV0emPM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLd+hqLCRPreTP78gPpFoxuwLEVy0FwE9xgsSSjYEap1wxNb0CC
-	TRAoC7EQl91yrpB+9Kl/n6dNyw+XTQOLpU0GCMs72H2PgsPR3eX7lTkD
-X-Gm-Gg: AYBFou3BuCMNTBrFAapYM5u48UOGuK0mJvvQAEXnVKtW+bvdesj7wf8H/hdeQ6qPhrk
-	s85d6GlzbrvWwE8gYT+VEOs6nCOApgLy4NwLg0cbdipTowQUZMxOTcAMr3oLO8BbsBNVMSYjz/c
-	L1l9nhZSOGiynAw7cp8F0LmUCBJpOYXPGkhQV7eZh7blJvgeVhsSHk74Fv2bREDpIvPvGUGJA8+
-	JH3G55m/J6jHyDfC/y+U5erwc8+2qqZrZMvh6hytrYugg6LW3dWoyKUfc8sqTkTNQ9RoCBpU50w
-	3gBrm/qiBtXoIMn7cCGtzYspLGUiNsrPFsDZ6y7VgdCLFGCPLLezgL8gm1wd3Xtz2Gl61iZ6RHx
-	q36/SzcrV4HB5jwy7265QBL7Zavz8hMO4cr4sdnpaH2/31Kqe6SnUBdrb3U2kwwtXNAeHcWUyLj
-	jTTGojCs3i8ugR0v/qVMOte3XsjzH5H1SpoY7M+SFQl4zzONGQcL9H1EZZiLtH83Gbwx0lMCzaG
-	MhVDJ/PQcTtMMJ5gBnxW3uYBRzN13AFZAIm49KP/2Y7mkMSvf3OsT7c11lVDH+26P1SNuYiRheM
-	6IU2Q/S/SfPP0cfaIB/tfuOaryrHdJb11Hy1smshDzIQPjQgjHM=
-X-Received: by 2002:a05:6871:288:b0:48f:e107:8e48 with SMTP id 586e51a60fabf-4a7dc238a6cmr729894fac.41.1792575358461;
-        Wed, 21 Oct 2026 02:35:58 -0700 (PDT)
+        bh=dhe+OwUtPyp9lDIgAXa6HnxDE7Qgi1WH1ldmiGmED74=;
+        b=S/mWEL8lZxmfsxJpiD5eCCRKd+Rd2TU+nSSDKjg6V5sKgkNr4m449uRQ8saTH11MpW
+         cQ4FP2igXZj9kZz8C2TCL2CMXAnI9IOGkHFWnqilqz2rYUU1VvjbRHlzb4VJwwL3ODvt
+         fYcir46VY+cEYw0ALfejSCZfKfU1mmrha3wDhZqXZ7iNYfQ80Kl5ssFnrsfP/3D/e5C8
+         0kl/mRiWAMQHbc0vjQGznf5Nt8c038pofwMM25SNJuKmO2XwJISrliXnYv0u9R7TfvzR
+         l2sf6sq4btINXL+UrKiLnPgvnC1HuVZK/tN71nTQQAijth73xpY+a3iFDIzEtyUrDZSt
+         qAMA==
+X-Forwarded-Encrypted: i=1; AKwUvBzaMDcjoDrQ19TKdc++4SiKVS6hf4XIMYJ5rk3MU3os60jwkboEOsYpz4YzOcRiQT+ecgqiRK9NbxM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJHKy+sXQfXipgJSVj6rmPNud1BA518CuIKAVWVTKxPSfIoD4P3
+	AX5DZBm160VRjcjo00t1g1L+4HTTqdrJgVMhHY2hLX96r5FxkP7WLj/E1vWWCPMG
+X-Gm-Gg: AYBFou35hhlqm/Twv+9GlgwJqgkj/TkQutPL8s1C55yCz42nKbHaUQBj49iRZ2JVLzo
+	vU50AozK3zUQRTNVCCJRXrrPaVjXkdoCvmBa6hj0h2UpRZOPY2qlrY7wYfgV7jrcwJrOHZv1n2s
+	uAFR8Az/luhkyvIqbRa88fmLNfv/RhqF1vub8nlefiB27bqRUr10lAAze0ax4C1rLjK3nsKFstb
+	oaaI2b13A87BWa+Kae7AZk3PVWtBMFsH9zVVKkSAfMrxnF7l8J0e/xzbOfwmV9Z7GK1aNAUHKqT
+	2clpRyXzpUnOxP3UOuqU2mwvVzp/BFLJC0YctVWXVrYbagBS99P+c7TY++NM7I980KzYT+FuDlU
+	6nMChll//Q/Pfi6PZMxD8a3Ja6pNAofxVBlalHso69M8NzyIBccxvJufet4Q0wzKbvsl4gAea8q
+	UgujFK5h9ZI4AYjy8EjpQuEu77CCY8RL+dVDqeZ5Jvg00S++/H/v+/6JNtpLNybwWNlhl7SR4/i
+	YsBWTx0pctCtZY6wOV39wne+vBuSdItX/WxPQYeNpuDT0YP2jEW+HulNgmWvfe+ET7e5YIiTiPS
+	3BiU2uGvQhvrby+PqQLew+7ErKlgWBxln9wmxFMv8jxQ4mxH+nM=
+X-Received: by 2002:a05:6102:4187:b0:7cc:776:6c41 with SMTP id ada2fe7eead31-7cc9273dca8mr453540137.22.1792575796124;
+        Wed, 21 Oct 2026 02:43:16 -0700 (PDT)
 Received: from RDEALENC-L01.ad.analog.com (158.95.44.31.netskope-rdns.com. [158.95.44.31])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4a7d617c2f2sm1491979fac.8.2026.10.21.02.35.55
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7cc92327896sm2088122137.4.2026.10.21.02.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2026 02:35:57 -0700 (PDT)
+        Wed, 21 Oct 2026 02:43:15 -0700 (PDT)
 From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Date: Wed, 21 Oct 2026 06:35:49 -0300
+Date: Wed, 21 Oct 2026 06:43:12 -0300
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
 	Andrew Morton <akpm@linux-foundation.org>, Jonathan Cameron <jic23@kernel.org>, 
 	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC v3 2/5] lib: kstrtox: round to nearest, ties to even
- in kstrto[u]dec64()
-Message-ID: <e2zxpo6o34qbp3oihrenolktavoczl2dqyggp3q773i7ryrrtd@4ixkwasrh2kv>
+Subject: Re: [PATCH RFC v3 1/5] lib: kstrtox: support E notation in
+ kstrtoudec64() and kstrtodec64()
+Message-ID: <6h2ryn6waf6gcb72wjabfcxwf7fxl5nd74cbew3vixpop5oxrw@xlzrifrya7ux>
 References: <20261020-e-notation-v3-0-fd385c0fbf65@analog.com>
- <20261020-e-notation-v3-2-fd385c0fbf65@analog.com>
- <ath_3QVy5DVV4fxw@ashevche-desk.local>
+ <20261020-e-notation-v3-1-fd385c0fbf65@analog.com>
+ <ath7t0hj12kXGgxs@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,60 +103,93 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ath_3QVy5DVV4fxw@ashevche-desk.local>
+In-Reply-To: <ath7t0hj12kXGgxs@ashevche-desk.local>
 
-On 21/10/26 12:03, Andy Shevchenko wrote:
-> On Tue, Oct 20, 2026 at 09:27:00AM -0300, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > kstrtoudec64() and kstrtodec64() drop the digits beyond the requested
-> > scale, which truncates the result toward zero. The error is up to one
-> > unit in the last place and is always in the same direction.
+On 21/10/26 11:45, Andy Shevchenko wrote:
+> On Tue, Oct 20, 2026 at 09:26:59AM -0300, Rodrigo Alencar via B4 Relay wrote:
 > > 
-> > This is easy to hit with values produced by userspace floating point
-> > formatting. Printing 0.3 with "%.17g" gives "0.29999999999999999",
-> > which is parsed as 299999 with a scale of 6 instead of 300000. With E
-> > notation a negative exponent can also drop integer digits, so "19e-1"
-> > with a scale of 0 gives 1 instead of 2.
+> > Allow decimal strings to carry an exponent suffix, such as "2.7e10" or
+> > "271828e-5", in kstrtoudec64() and kstrtodec64(). The exponent is added
+> > to the requested scale to work out how many integer and fractional digits
+> > are consumed. A negative effective exponent drops integer digits. Digits
+> > beyond the resulting precision are truncated, as before.
 > > 
-> > Round the result to nearest instead, with ties to even. This is the
-> > IEEE 754 default rounding mode, as used by strtod() and printf(), and it
-> > does not bias results in either direction. The first discarded digit is
-> > known from where parsing stopped, so no extra pass over the string is
-> > needed: the remaining digits are only checked when the first discarded
-> > digit is a 5. Since round-half-even is symmetric, kstrtodec64() keeps
-> > rounding the magnitude and negates it.
-> > 
-> > Inputs that fit within the scale are parsed exactly as before. An input
-> > that rounds up past the type limit, such as "18446744073.7095516155"
-> > with a scale of 9, now returns -ERANGE.
-> 
-> > Update the existing truncation test cases and add cases for ties and
-> > for rounding at the type limits.
-> 
-> ...
-> 
-> > +static bool _round_half_even(const char *p, const char *end, u64 res)
+> > The digits are now scanned first and the string termination is checked
+> > before any conversion. A missing or malformed exponent ("1e", "1e+")
+> > returns -EINVAL. An exponent that overflows when added to the scale, or
+> > that makes the result exceed 64 bits, returns -ERANGE.
 
 ...
 
-> > +	/* tie: any nonzero digit after it breaks it, skipping the decimal point */
-> > +	for (; p < end; p++)
-> > +		if (*p != '0' && *p != '.')
+> >  static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+> >  {
+> > -	unsigned int rv_int, rv_frac;
+> > +	const char *s_int, *s_frac;
+> > +	int len_int, len_frac;
+> > +	unsigned int rv;
+> >  	u64 _res = 0;
+> > +	int exp = 0;
+> > +	int ret;
+> >  
+> > -	rv_int = _parse_integer(s, 10, &_res);
+> > -	if (rv_int & KSTRTOX_OVERFLOW)
+> > -		return -ERANGE;
+> > -	s += rv_int;
+> > +	s_int = s;
+> > +	len_int = _skip_digits(&s);
+> >  
+> >  	if (*s == '.')
+> >  		s++; /* skip decimal point */
 > 
-> This is a loop, so this also passes '.0.0.' case and some other similar to it.
-> Is this a problem?
+> So, I know that '.NNN' is valid notation, but is 'NNN.'?
 
-no, string validation has been done before at this point.
+It looks weird, but that is also valid notation.
 
 > 
-> > +			return true;
-> > +	return res & 1;
+> > -	rv_frac = _parse_integer(s, 10, &_res, scale, _res);
+> > -	if (rv_frac & KSTRTOX_OVERFLOW)
+> > +	s_frac = s;
+> > +	len_frac = _skip_digits(&s);
+> > +
+> > +	if (!len_int && !len_frac)
+> > +		return -EINVAL;
+> > +
+> > +	if (*s == 'e' || *s == 'E') { /* E Notation */
 > 
-> So, this res is used only once to get a parity. But this doesn't semantically
-> sound like boolean to me. What if we actually return 0 or 1 from this function
-> and use its output directly in the check_add_overflow()?
+> You may use _tolower() helper (yes, the one with a single leading underscore).
 
-Yes, if it is fine to always take the path to check_add_overflow().
+ok, so we only check for _tolower(*s) == 'e'
+
+> > +		s++;
+> > +		ret = kstrtoint(s, 10, &exp);
+> > +		if (ret)
+> > +			return ret;
+> 
+> So, with the above in mind, this may lead to 'NNN.e10' input which I find a bit
+> confusing.
+
+might be, but as mentioned, it is considered valid, e.g.:
+
+- python:
+
+	>>> x = 2.e10
+	>>> print(x)
+	20000000000.0
+	>>> y = .5e-3
+	>>> print(y)
+	0.0005
+
+- c++
+
+	int main()
+	{
+	    float x = 2.e3;
+	    std::cout<<"x = " << x << std::endl;
+
+	    return 0;
+	}
+
+	x = 2000
 
 -- 
 Kind regards,
