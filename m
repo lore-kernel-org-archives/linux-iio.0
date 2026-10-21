@@ -1,80 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=199.89.1.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792595624;
-	b=SG9GQu8NSWTpNggC2MqSx/b1VhqajIXg3ZSdxZCHiIrmhqdH0JuVsNt0xdLk4gxJV6pB
-	 3Syf/HC+SmGzKws5XvSeK0hI1CiLVHMNQIJeznWYhyvLLa+UY+FHURLNb2+tT1F3n/g1I
-	 Kx9WhMDdzsxlmLpYPrPMJOdf2sUUVvO9tI9g4ABWF0aplEwEeptU1fEFdwafuq2BIHU74
-	 eakdoLGvM60WpdZWWomVtOAHxv+VFIWb1C+S/gM10gaKSDOjCZctGZ9dtBotC7qsg7UBk
-	 6GFmQI2l02kydrjuVDoqtngNH6jBjnGC83lpzI0df+sNXGNSr7rc0uMpfGx1Sv8Kl7Q==
+	t=1792595726;
+	b=PBZP8f0jpTG3c/Xd7D++EPjXv00EooqKc+P0r0YLXjKB3Tuu+RwwNmxCvFtsIJe3lixg
+	 pm53UEEZFBHzGezZAG57Zwb6wUuZuptkD9FMPagJ48SwnOLNbA4VsCOhiHNAjd5BfGKFr
+	 SxKITArK05ed9MIiNVMnfwv8xLyzmNygXw3fUXyTzBLaU0D6eHd1nIsocl6uGxDLBCifT
+	 +RsYPW1taaXA2waeWjpkvtdkleaEu/ZjkY8baUb+8coNLy0vDQLINbzTXYyYlyfg7cfce
+	 Rv2CkXuh2g1SL4DPApUeT6Vi9x6gywtnmLB0u1LHs7t4Vj0utxya22v1DhIKxiCC+mw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792595624;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=KxpO86Q0W+aWjReqhlSHVuBksZU+TOD9Uy4JnKjmlfs=;
-	b=lzzRQK8CWbMqwUB4Qsv31tsK32jlDYis7RYfxJYa4nqCdVsYyWLlA5icUk/1Cd1r3TAK
-	 eazq5WZVLe+LFWhD+tmx9P7qfz53eP9BwkfJNGFQTiTt4uJp7q6J+VKoUrO7bzqzJrjSN
-	 mVKYv2wSfc73pbaerVWpf7HTT+cSsGrzdFy1fxh5zJNrYNbhfO0rY/gDYNjG71bV5qRW1
-	 1HK1p64eJ3evyAMqV1gquVQSS+i++5wXHgm5w0ZiTgD/3JS0KRW48W9+paxl0/LXc8Ffp
-	 KjPkxcs+zPKtSoXLDdzFE/k3QJ1/qhZlBTpqTJvbqlh0kbtj9s12crCCVWP0OBYMRlA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792595726;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Virus-Scanned:Received:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=z5QHQniaB8UQJwr12nv8aMFa+4JawJqryd6yJ0w5vOM=;
+	b=tMJPa5BdQW7hhiLPy96RH+rukYvKm2zVSVhIYE0ILKFFkcEjWaQ/uD6ejMnfJju1oM7X
+	 GM0LdReACFMAQbbbVki6uxxjdQQ8DaA92Qe+8cuRt/rz41YBWDZFQbYHWFCVYXBdse0+N
+	 glzIR0M90KFFow+N8d0hUwv1UYs01MoawzCZmMUv+entMisLg6/26QqOGra0gAUKhHT1l
+	 fEZtfAzqN5FZSJ+aPbIctomefUspg1+NCjCQbkY2eIipoS4FDL4wmWLPqxYuGmOCRl6sD
+	 MIZt4iR3+tIn56EDzkf0qBCv7wvz3cRVifdhU9CDFNukaJSuWhFvlQuVZIT8AsTRWzQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eZ32q6fD;
-	arc=none smtp.remote-ip=192.198.163.9
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=acm.org;
+	spf=pass smtp.mailfrom=acm.org;
+	dkim=pass header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=y++LgGgq;
+	arc=none smtp.remote-ip=199.89.1.16
+Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97E04606A319;
-	Wed, 21 Oct 2026 15:13:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 97E04606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55972606A31A;
+	Wed, 21 Oct 2026 15:15:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55972606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eZ32q6fD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792595622; x=1824131622;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UIFQcVy5Zsmxy4T/q0obmOoralhVzyur/Xc2hxCmnTM=;
-  b=eZ32q6fD46OwdSXBdYoUmcjW0t/vP1Dasxa2esK96Wkj8NaIBCYEeTa4
-   V1wzf764+JcRkKmy0fnN05Wf+kDWFzeFHldBnI2v+E2P+qYW0VNzbNtMf
-   uGZfqH4xK9tn4d5dAMkKUxFW9khn75mE4DS09dlk2XP3OSY+oQP1VsHaZ
-   ItfKLAZfRRBfX66k0LLy449u9E1cZt3+CCkPohit6uT22e3+pz/yWaXG6
-   oaZ9Uj8UGMGi+yqC+2SolcSeKGaXpHTlVRip25TfVrgzYjD21zZi1TGH3
-   HtVpVkygikfeVWBa6/sTXcqHvVOiPabxf9oDDKVHm5j2XRFsaeY8DDVAd
-   g==;
-X-CSE-ConnectionGUID: bF7/4nVMSRO8Kpj4LZ1Wjg==
-X-CSE-MsgGUID: L96qcTiFSi2OR9Te308U5w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1212278"
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="1212278"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 08:13:41 -0700
-X-CSE-ConnectionGUID: n2DUfOjvRROA1dh/XPSPRw==
-X-CSE-MsgGUID: Iq8tyuFxQVKj66CHfi152g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="3038524"
-Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 08:13:38 -0700
-Date: Wed, 21 Oct 2026 18:13:36 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Santos <Jonathan.Santos@analog.com>
-Cc: linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux@analog.com, broonie@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org,
-	Michael.Hennerich@analog.com, nuno.sa@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com
-Subject: Re: [PATCH v4 8/9] spi: spi-engine-ex: Add support for multi-CS
- devices
-Message-ID: <atjWoMzRHsSbOjbi@ashevche-desk.local>
-References: <cover.1792435248.git.Jonathan.Santos@analog.com>
- <183539c950c013d472c6b46e3f1365b022e7c716.1792435248.git.Jonathan.Santos@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=y++LgGgq
+Received: from localhost (localhost [127.0.0.1])
+	by 013.lax.mailroute.net (Postfix) with ESMTP id 4j8tBj4MNMzlfvpr;
+	Wed, 21 Oct 2026 15:15:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
+	content-transfer-encoding:content-type:content-type:in-reply-to
+	:from:from:content-language:references:subject:subject
+	:user-agent:mime-version:date:date:message-id:received:received;
+	 s=mr01; t=1792595722; x=1795187723; bh=z5QHQniaB8UQJwr12nv8aMFa
+	+4JawJqryd6yJ0w5vOM=; b=y++LgGgqLESLWbzLL4BDXwMuzdMCTi6quXI/tx02
+	+5lODzpJYJcdJc0hvs8AVjf84xd1M5T5Q5LDbK9qULiJvGBsSClzrwgrd8H/AGWI
+	VINiHUx/jpBKVXccBDEpCo8m1LZy7A4L7ziahoFBlHmGBz3uTpxtf29b38Sgq8sJ
+	00mQ9GR96Zh2aGaddANM6RVDmdcD9PTCKCJoYGX7iH28ZnKHrrp2T7Pv8Gu9f5Qu
+	MjJ2T0sh7Y8eXpnITvnhJ3iTePZBLf/anm9trRDBJ6qFg34Db+jjdMNDxhAE3EqQ
+	ya5eYwMZwifIHRiX4OCBMl/hQfwHCYAXtf1oqB1beZPZrQ==
+X-Virus-Scanned: by MailRoute
+Received: from 013.lax.mailroute.net ([127.0.0.1])
+ by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
+ id daTAItDCxG7f; Wed, 21 Oct 2026 15:15:22 +0000 (UTC)
+Received: from [IPV6:2a00:79e0:2ed2:d:e988:4883:8cd6:dc3e] (unknown [104.135.182.42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bvanassche@acm.org)
+	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4j8tBd0fQNzlfvpd;
+	Wed, 21 Oct 2026 15:15:20 +0000 (UTC)
+Message-ID: <3f41338e-fc47-4306-b68b-5a81c26027fe@acm.org>
+Date: Wed, 21 Oct 2026 08:15:20 -0700
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,44 +70,29 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <183539c950c013d472c6b46e3f1365b022e7c716.1792435248.git.Jonathan.Santos@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on
+ mutex helpers
+To: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>,
+ Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Marco Elver <elver@google.com>
+References: <20261021052435.112686-1-zoone.rupert@gmail.com>
+Content-Language: en-US
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20261021052435.112686-1-zoone.rupert@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 20, 2026 at 10:58:37PM -0300, Jonathan Santos wrote:
-> The SPI Engine controller only handled the first chip select when
-> asserting CS lines and configuring CS polarity inversion, ignoring
-> additional CS indices present in cs_index_mask.
-> 
-> Update spi_engine_gen_cs() to iterate over all set bits in
-> cs_index_mask and toggle each corresponding CS line in the assert mask.
-> Update spi_engine_setup() likewise so that SPI_CS_HIGH polarity is
-> applied to every active CS index rather than only index 0.
-> 
-> Set SPI_CONTROLLER_MULTI_CS in the controller flags to reflect the
-> capability to the SPI core.
+On 10/20/26 10:24 PM, Rupesh Majhi wrote:
+> Found by building with CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y, which the
+> driver does not set today. Build tested only, no hardware here.
+Why doesn't this patch set CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y?
+Shouldn't that change be included in this patch?
 
-...
+Thanks,
 
-> +static unsigned long spi_engine_get_chipselect_bits(struct spi_device *spi,
-> +						    unsigned long index_mask)
-> +{
-> +	unsigned long bits = 0;
-> +	unsigned int idx;
-> +
-> +	for_each_set_bit(idx, &index_mask, SPI_DEVICE_CS_CNT_MAX)
-> +		bits |= BIT(spi_get_chipselect(spi, idx));
-> +
-> +	return bits;
-> +}
-
-Since the chipselects are in a sequential range, wouldn't that repeat one of
-bitmap_gather() / bitmap_scatter()?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Bart.
