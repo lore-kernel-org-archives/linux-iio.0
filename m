@@ -1,81 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.180
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792627303;
-	b=U/v/ggjXBQE5LO2MFMGnjgvF88rMlKqOIFxt4gCc+N750KLtfNR2nHg9+hzzYqLdJlAE
-	 Dqmqs0OqatZ9/N5MDhngmRBw6UAeJx5Gh/Rpym1+2JrnjehGPQ+q7DJ1/5p9ZgTEd2jwl
-	 /kDa24xe6o5xtxpUE6gZsyrIg8kgHuKVvRWbkuS7tGzod20wh1mu6B+z2SJEC/m+huLtn
-	 2r/0R//SAZUWMXKr7Og3uNbRwM6FSrVWZrvbeQPvEa/4dYq5suhSONOj5LY7FpjG2jHUi
-	 Z3pEB23EHlBHo/ebvWs9FAsZLU1lFXIf8jG/m9x3vjWOcDNZqBASlqQX76FSMpTAv8g==
+	t=1792627305;
+	b=ymBlnYEFUm0ezuGgLpA7JDY7T4NAFE/AthyGdV4j5s7JWRWAonUMywgXBXqELSSIo+1v
+	 7otlHCNBsw7XM5gwXRA2JYfDKi3vyyCc+7w0M15Jf5o06+vwSQ3s8eyCD2vrEjkrjqVnX
+	 NIxoR7bIHBkLtBlT2DsXkH1kug+zpQcMYhblyLslkcL+jjWwdoTnT8dXIJzApjawXd/N9
+	 L/E6zetUWyP3N+trP15lib+b17KwbAgMJMqatOF0xsdOCR+xy32vE1uvds/RDF1EvMZHB
+	 yVjtG0dyeND1QVooMgoeVCYY7Hnb32eaVU2kQclhWVKeUs1s8jcsAc21OJoPTtsP97g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792627303;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792627305;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=xzFwmGHdlHCFeH91f0yXYoPTiWjKtDmQ9whoEi6CYmo=;
-	b=mE0CDh5eoVhqWT1dKPAI+4nbazOuh0TnIC2kLXZsowJ/9QYBgw2A5zyAaVFieGjAK5PP
-	 WOu7Kxt3YzAy1uYX8l+FqutYb01VpSZs4B50sBZ/jZiTGDQGOb4N4BO765Yr8L1GxZAjY
-	 Xwl+qFYAd8xK7eVUDuyCJIwjy+dAHKFYnaFdco/Ti/puboihQck8+kCGzOHAFprrD6Zqw
-	 RqB7jPOhN/IYDKgWUnlBjk44brzMkbyKpZsSMUi4/fzkh4jOR6s4wJV65MAqOPtLFwZT0
-	 yaZWEkYXFLWK/yGGq7HuPc52IrQGsQzC+tCk3NbtiWHD5aAqjCaEPeRzkh2vuvL6D+w==
+	bh=hvZJAGJoNW9px1hCT4jyVbr/7Ym3LMfNBDMY5M42JDI=;
+	b=pJc5liqVX2U6ZanndRCEe1daQcXe9xkkt2xeJqnwoqPhpY+oj+zCOROeemR5u/LrX3Uy
+	 VUr4CUicJFor88gxk2Nvv53HrVcZCBHiH7RFxLVGxAS310Cub+rHnFOCWEVnog5oh31Pd
+	 HGFWUNfKqm7/ceGv1prC2dhofARW+A51sg+sBAi3iVTv2yiemXsgTq2uLtcCko2HF527g
+	 Rf02BtoRkX+sJ8GkxCP45QbOdCQAtdXIVQftro84OwOzI3pCnd/0cRkWK0METf7/z6hjG
+	 jvDRKzeOWGWrND/Mfadntu9KgQjLjv6dRDG0siqjPlD6fceEm7le8O1j1ea3ovRCokg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=chromium.org;
 	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=mfooWoBL;
-	arc=none smtp.remote-ip=74.125.82.178
-Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=ECWbVKoP;
+	arc=none smtp.remote-ip=74.125.82.180
+Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B62360A4AD1
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9B62360A4AD1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DD7560A262C
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5DD7560A262C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=mfooWoBL
-Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-35f036b17easo1570279eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:42 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=ECWbVKoP
+Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-3550c917fd3so1717880eec.0
+        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1792627302; x=1793232102; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1792627304; x=1793232104; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=xzFwmGHdlHCFeH91f0yXYoPTiWjKtDmQ9whoEi6CYmo=;
-        b=mfooWoBLQ49R4W96lPj6ek9zouBwjFgjcwiTmjoQxjajp8opGZln+hCXXpdBbY31dH
-         +W4/G9hlzQePAV0I9WZLPiq5sBTvZQ/eaOtSYfFa4jnH9Cb3/JLrJJPGb+7Jnb+ZI68/
-         Ryj/1pPSfTyOoJcWR8luaUtueRELcPvDfUgqE=
+        bh=hvZJAGJoNW9px1hCT4jyVbr/7Ym3LMfNBDMY5M42JDI=;
+        b=ECWbVKoPH/fjp+0fMIXh0XR4F4wF3kd+jhtIeTuoZf3HhCNT5XUBYhAz3nr1EjyK4P
+         ycZeszuRSrqXsWhj/ZpWVdMiaFnyaHdQp3HLSMDs2YHhmDjNztwp52dZN4+GUgaXefGP
+         ZcPEa6jJ22sfzGvp/iIGEwx5EqtFHq8f7SI4U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792627302; x=1793232102;
+        d=1e100.net; s=20260707; t=1792627304; x=1793232104;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=xzFwmGHdlHCFeH91f0yXYoPTiWjKtDmQ9whoEi6CYmo=;
-        b=lBMbPzyJdENju7D7K3bkhULAFKizZk7XNaNgCWUBTL2XHFVQONv0DTsZZHKBLw1SkG
-         CCW72Nu3hMLeXgGqlmHu8OsPRLCWrR4EgfQm3zo8wLNdB0MIxDEbH0JNdGv/4h5DxEkt
-         IJvN8qZYC69BholED1IDFNQE1lHOBfgouhCL31CRVUb6N3dxs1njWiC0j6CKGShRtX9I
-         NjqOe3IWtZ73xv9HPC1WLM+gJyPpeGIBtZ2eYOrdiECZlw9MuMZR4MTwPfwH10bWVHif
-         UUCxIE4iQqaDUUoyVg9S+Wu6OR1JkoD+s7I7+hq821kDyfm67Wm+gwDRD85KH//Hi5It
-         lSlQ==
-X-Forwarded-Encrypted: i=1; AKwUvBytwen4OArCQtOijHVLyonaUqQUfyqbtADA7OcmNgW7rSZE520gg20kmC6/zlBtQxqZH83d+Gl3gBo=@vger.kernel.org
-X-Gm-Message-State: AFq9FYK46ALkydmJMj/3Lm6Iqvy0XAqkCdELaqPpvLM8wohs7PPCkAl9
-	xirutMmhx76cn5dQnhnaNIyO8AwD95OgFdUX4vOkuo8/aGdhzc0PlXbCK1e4tCKBoA==
-X-Gm-Gg: AYBFou0yy+VU5auxX36zazf2n+m6fS4beFlnbDb9ZGS7+TWRAnYxhyTGuhx/1yTRp0z
-	sCp1rEi249mHN0Vk/YU+T6SY4rjxJq3Uv4/SXWAVJI3+/ua2IR9ru4tjwMR+rvmpQynmR4dfWpk
-	6/vrFq10zfGAJnFR8+UVVfAAxMnKoXbiBgPuWgnede8QhhKzxOglvuOD5pCzMYI4qbQBo3zjFGy
-	OKxYIW4fe2GG0lubWNeTVgWKRkWStyvrcPAJ+nfZM19zzkyq8Y91XXH1zbuumB1XPJbY2W5kNEs
-	C5vGZTsB5Rp3hg/tMePmLAj6C4+6tqN3yoavK012/im3KzrAILvwKLSuaDCiY70VlDYZ8nPQH12
-	sJGiT8utj0nF5avsbs/XR80OT9No5iNfn2vTipo0eORXBM74vgzArFJX85O0pfKbqHDRum/nk3L
-	mKvld3XuC7OWVk60WzbXTtj5y8p1YCypF/PiguUvNOKYEOzznV2JMKvfODQ6iuVTM4uWuJ6lT5S
-	SwdeTZga2UfBaUDEhjVjADs9m8e5S/1qGYJcT8W6QjEDrlfJMhkcuynLqEiw4SfyZVvsrNeU91E
-	Wu2QwUAc/5xArUXTR34=
-X-Received: by 2002:a05:693c:864e:10b0:351:7444:8bfd with SMTP id 5a478bee46e88-367508e2cfemr5263895eec.39.1792627301575;
-        Wed, 21 Oct 2026 17:01:41 -0700 (PDT)
+        bh=hvZJAGJoNW9px1hCT4jyVbr/7Ym3LMfNBDMY5M42JDI=;
+        b=tTbBlz0WNxs7rMBnLu//pwDsf3lBlei64Z6JK+4tgXnt5ntoLPagnuRXkcZfM+QWp6
+         RyiRYGeZ0xxSPbMq00EzW6vva21Nud3kNc4Orf7hNlqdct7A95bj0fldutdHIK9OpcCq
+         t5GwuPVg4W7QUbbZ49f9M3T7rURgF8ArApI1TprJon20Z4VkcWw1J946xbXj2WoncV7Z
+         4hKLHRptMPh4leDM7vrh9ltOEma/yER1GppqHPUMBwSKbuEe1fiaufg4kI3O5T9EfPCc
+         UqJNqJ64CYL3OuzjPj/UpERkSz0InMyeSLmowBKV7ZQqDw8GxTDqniSbiNqvSICZmBQ+
+         tZOg==
+X-Forwarded-Encrypted: i=1; AKwUvBy4qKPR9Bprf1HOm1NuFGoT7Jg+1PcVoXFSx/8Cfv60hf5rdtQpI8OZcaL4UFJGga6p9Hl/Y2UKf8Q=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLSGPIS5s7IN0xYrw1ddybPcISA5iuai6Q5Q4srmdpHer2kMwjc
+	G21E3QD7qHk5KKNHmxxJvGU0kYovVHaQDAl9tMo/CqvVI/mbylrhG/GO3GxuVW5k5Q==
+X-Gm-Gg: AYBFou1VYivbpgojiSpkpxpmNVlWge/17hNnTcGHhIvgbyhoUbtOMWZ3SPO4kEJ2KNk
+	tMfP/qsZ0tvnF9sPrT6O7F4MJYqYDZjPWyCN2eJIi5n12OnjXJiV9Q3BvdHR9bB5Ql9Ozam96N4
+	ZoEYdyr2T77HimlHOcolQvry13w9gRsPVzsrGQK5Gz/i0YHgCLSky/CGQPZej96jEkFEhoyaCt7
+	bWBh75Q0fZHDCuxFXGFummKS1oSmY3WPAdBeej0Dv8/c9xFI7m4OoTojj+bbWfpuIJBCyToIqQ1
+	YH94VnoUreOjlDl9SxumL6I3E6Pre0KKjGyFg0VPlpRNeFCJp/tK0SI++D7lZhqBfKd/S7Wx/p2
+	q3dhDbzFIKg+pVtFaps6GjTtzdNOtqwVDytP4scjpoBQ1MwNv0ZeJxGPenKQjrzO1XZJm32T8ZD
+	0XNrkU/bZQLZBepF+y7J+cfOYoP/vSZQya49NI68RQB+pX04IvM6y1IrqIQYOWl8CoQKuQquRRd
+	UBkVmJwQqcMcP4ZrC+nKTjLwZTB+8xNnzMxwyvSeQZjhK8vgq2ShsZsmI8Lus/vLPLNtUiAKqb2
+	fNAP02w2GukUh59uAjGUxjehTdLybWnBjoP8zDJt
+X-Received: by 2002:a05:7300:3398:b0:35e:a225:3ba6 with SMTP id 5a478bee46e88-3674c531737mr4703094eec.13.1792627304253;
+        Wed, 21 Oct 2026 17:01:44 -0700 (PDT)
 Received: from localhost ([2a00:79e0:2e7c:8:14ab:bfeb:ac88:458f])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36741e71eaesm22647177eec.26.2026.10.21.17.01.40
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36741e71eaesm22647943eec.26.2026.10.21.17.01.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Oct 2026 17:01:40 -0700 (PDT)
+        Wed, 21 Oct 2026 17:01:43 -0700 (PDT)
 From: Brian Norris <briannorris@chromium.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -87,9 +87,9 @@ Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org,
 	Brian Norris <briannorris@chromium.org>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 13/17] iio: light: apds9960: Discard pm_runtime_put_autosuspend() return values
-Date: Wed, 21 Oct 2026 16:57:14 -0700
-Message-ID: <20261021165858.v2.13.Ic0c3be7c36a602e32c04628d5ae5692556742fa8@changeid>
+Subject: [PATCH v2 14/17] iio: light: pa12203001: Discard pm_runtime_put_autosuspend() return values
+Date: Wed, 21 Oct 2026 16:57:15 -0700
+Message-ID: <20261021165858.v2.14.I501510b542691f595de1e110cfe35632a5fa7768@changeid>
 X-Mailer: git-send-email 2.56.0.218.g1ec904b173-goog
 In-Reply-To: <20261021235818.3059519-1-briannorris@chromium.org>
 References: <20261021235818.3059519-1-briannorris@chromium.org>
@@ -115,8 +115,9 @@ situations in which that can happen, like after writing "on" to the
 device's runtime PM "control" attribute in sysfs for one example.
 
 For this reason, modify this driver to simply discard the
-pm_runtime_put_autosuspend() return value. Inline the "off" helper, as
-it's trivial now, and rename to apds9960_power_on().
+pm_runtime_put_autosuspend() return value, and inline some of the
+runtime PM helper function, now that it behaves the same with and
+without CONFIG_PM.
 
 This will facilitate a planned change of the
 pm_runtime_put_autosuspend() return type to void in the future, similar
@@ -125,135 +126,100 @@ type to void").
 
 Signed-off-by: Brian Norris <briannorris@chromium.org>
 ---
-I'm not sure if apds9960_write_event_config()'s existing logic is
-correct, but I don't want to mess with it.
 
 Changes in v2:
  * Split iio patch into per-driver patches
- * Inline the put() helper
+ * Inlining
 
- drivers/iio/light/apds9960.c | 48 ++++++++++++++----------------------
- 1 file changed, 18 insertions(+), 30 deletions(-)
+ drivers/iio/light/pa12203001.c | 26 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-index afe520de60e2..0e084ffba1a6 100644
---- a/drivers/iio/light/apds9960.c
-+++ b/drivers/iio/light/apds9960.c
-@@ -476,38 +476,23 @@ static int apds9960_set_als_gain(struct apds9960_data *data, int val)
- 	return ret;
+diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+index c0f4db8d95f7..0a0502a60a06 100644
+--- a/drivers/iio/light/pa12203001.c
++++ b/drivers/iio/light/pa12203001.c
+@@ -154,13 +154,12 @@ static inline int pa12203001_px_enable(struct pa12203001_data *data, u8 enable)
+ 	return 0;
  }
  
--#ifdef CONFIG_PM
--static int apds9960_set_power_state(struct apds9960_data *data, bool on)
-+static void apds9960_power_on(struct apds9960_data *data)
+-static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
+-				      u8 mask)
++static int pa12203001_runtime_resume_and_get(struct pa12203001_data *data, u8 mask)
  {
- 	struct device *dev = &data->client->dev;
--	int ret = 0;
-+	int suspended;
+ #ifdef CONFIG_PM
+ 	int ret;
  
- 	mutex_lock(&data->lock);
- 
--	if (on) {
--		int suspended;
--
--		suspended = pm_runtime_suspended(dev);
--		ret = pm_runtime_get_sync(dev);
-+	suspended = pm_runtime_suspended(dev);
-+	pm_runtime_get_sync(dev);
- 
--		/* Allow one integration cycle before allowing a reading */
--		if (suspended)
--			usleep_range(data->als_adc_int_us,
--				     APDS9960_MAX_INT_TIME_IN_US);
--	} else {
--		ret = pm_runtime_put_autosuspend(dev);
--	}
-+	/* Allow one integration cycle before allowing a reading */
-+	if (suspended)
-+		usleep_range(data->als_adc_int_us,
-+			     APDS9960_MAX_INT_TIME_IN_US);
- 
- 	mutex_unlock(&data->lock);
--
--	return ret;
- }
--#else
--static int apds9960_set_power_state(struct apds9960_data *data, bool on)
--{
--	return 0;
--}
--#endif
- 
- static int apds9960_read_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
-@@ -522,7 +507,7 @@ static int apds9960_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		apds9960_set_power_state(data, true);
-+		apds9960_power_on(data);
- 		switch (chan->type) {
- 		case IIO_PROXIMITY:
- 			ret = regmap_read(data->regmap, chan->address, val);
-@@ -540,7 +525,7 @@ static int apds9960_read_raw(struct iio_dev *indio_dev,
- 		default:
- 			ret = -EINVAL;
- 		}
--		apds9960_set_power_state(data, false);
-+		pm_runtime_put_autosuspend(&data->client->dev);
- 		break;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		/* RGB + ALS sensors only have integration time */
-@@ -767,7 +752,6 @@ static int apds9960_write_event_config(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		data->pxs_int = state;
--		apds9960_set_power_state(data, state);
- 		break;
- 	case IIO_INTENSITY:
- 		if (data->als_int == state)
-@@ -777,12 +761,16 @@ static int apds9960_write_event_config(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		data->als_int = state;
--		apds9960_set_power_state(data, state);
- 		break;
- 	default:
- 		return -EINVAL;
+-	if (on && (mask & PA12203001_ALS_EN_MASK)) {
++	if (mask & PA12203001_ALS_EN_MASK) {
+ 		mutex_lock(&data->lock);
+ 		if (data->px_enabled) {
+ 			ret = pa12203001_als_enable(data,
+@@ -173,7 +172,7 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
+ 		mutex_unlock(&data->lock);
  	}
  
-+	if (state)
-+		apds9960_power_on(data);
-+	else
-+		pm_runtime_put_autosuspend(&data->client->dev);
-+
- 	return 0;
- }
+-	if (on && (mask & PA12203001_PX_EN_MASK)) {
++	if (mask & PA12203001_PX_EN_MASK) {
+ 		mutex_lock(&data->lock);
+ 		if (data->als_enabled) {
+ 			ret = pa12203001_px_enable(data, PA12203001_PX_EN_MASK);
+@@ -185,10 +184,7 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
+ 		mutex_unlock(&data->lock);
+ 	}
  
-@@ -1078,7 +1066,7 @@ static int apds9960_probe(struct i2c_client *client)
- 	pm_runtime_set_autosuspend_delay(&client->dev, 5000);
- 	pm_runtime_use_autosuspend(&client->dev);
+-	if (on)
+-		return pm_runtime_resume_and_get(&data->client->dev);
+-
+-	return pm_runtime_put_autosuspend(&data->client->dev);
++	return pm_runtime_resume_and_get(&data->client->dev);
  
--	apds9960_set_power_state(data, true);
-+	apds9960_power_on(data);
+ err:
+ 	mutex_unlock(&data->lock);
+@@ -213,7 +209,7 @@ static int pa12203001_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->type) {
+ 		case IIO_LIGHT:
+ 			dev_mask = PA12203001_ALS_EN_MASK;
+-			ret = pa12203001_set_power_state(data, true, dev_mask);
++			ret = pa12203001_runtime_resume_and_get(data, dev_mask);
+ 			if (ret < 0)
+ 				return ret;
+ 			/*
+@@ -226,13 +222,11 @@ static int pa12203001_read_raw(struct iio_dev *indio_dev,
+ 				goto reg_err;
  
- 	ret = apds9960_regfield_init(data);
- 	if (ret)
-@@ -1105,12 +1093,12 @@ static int apds9960_probe(struct i2c_client *client)
- 	if (ret)
- 		goto error_power_down;
+ 			*val = le16_to_cpu(reg_word);
+-			ret = pa12203001_set_power_state(data, false, dev_mask);
+-			if (ret < 0)
+-				return ret;
++			pm_runtime_put_autosuspend(&data->client->dev);
+ 			break;
+ 		case IIO_PROXIMITY:
+ 			dev_mask = PA12203001_PX_EN_MASK;
+-			ret = pa12203001_set_power_state(data, true, dev_mask);
++			ret = pa12203001_runtime_resume_and_get(data, dev_mask);
+ 			if (ret < 0)
+ 				return ret;
+ 			ret = regmap_read(data->map, PA12203001_REG_PDH,
+@@ -241,9 +235,7 @@ static int pa12203001_read_raw(struct iio_dev *indio_dev,
+ 				goto reg_err;
  
--	apds9960_set_power_state(data, false);
-+	pm_runtime_put_autosuspend(&client->dev);
+ 			*val = reg_byte;
+-			ret = pa12203001_set_power_state(data, false, dev_mask);
+-			if (ret < 0)
+-				return ret;
++			pm_runtime_put_autosuspend(&data->client->dev);
+ 			break;
+ 		default:
+ 			return -EINVAL;
+@@ -262,7 +254,7 @@ static int pa12203001_read_raw(struct iio_dev *indio_dev,
+ 	}
  
- 	return 0;
- 
- error_power_down:
--	apds9960_set_power_state(data, false);
-+	pm_runtime_put_autosuspend(&client->dev);
- 
+ reg_err:
+-	pa12203001_set_power_state(data, false, dev_mask);
++	pm_runtime_put_autosuspend(&data->client->dev);
  	return ret;
  }
+ 
 -- 
 2.56.0.218.g1ec904b173-goog
 
