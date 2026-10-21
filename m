@@ -1,88 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792609398;
-	b=UTknLShHafM6PVK9aqjQvVDKho4gDs5aOj6RdDCobqsjR4rXuouNZqpEucMUgOm8NuwX
-	 XMYAecSgxGieo1u+wsnCd0fS1ixRknXJGquAzh2MTI4GnIHrkeWJFXoVZYhrybM4X7W4v
-	 KWesV5X+Ok65p0AbNmtW/GJz/mUiVlV+a0Hg9WAVQH55lquSUT5oZkdETTHzkbRm7JhKZ
-	 UF9GFhznAC3fsGgAGFlFqlvskVS1AkJWbkZueXYtYqnFOOxZdqns+TLyGaUoiI234dWKL
-	 nMLsIFF7RRsVW7W5FVWj4q78TyFm63biC5rIhtc3EclK7iBQfG2rZw/MSb6Qqz06ofA==
+	t=1792609638;
+	b=2pd+YNWfvpEbBy9iqAkCNNHv3NypAMo4sk+Nn5DxH0MfcWHfMKJ/gvLexuD0cJHZ8lAL
+	 G660BMF2uxHT0P7amn47a5niDa172ta2hrNKn7OD+YRAkxibthZ5xrNin/AYxbrNQHgmD
+	 TV70Gmt6LCi/gWdzzw9oPRb4wbUqy8s+cCyOoaTfJM1+AqqBrUCjASGmeaCX+HaExRNab
+	 1WYzXXkga5CCUoV/Gsb/05wW7cwGZA8/zdy3VTjOhkb7Zkoim4UaxKY3Mqsio6pYa/11T
+	 RgtCzNtV7BmsjEZS7ndraa0dcFDGcKBPAs0pZqnWaE0yF8Kl8QnNXMB0VA0FwQ5C/fg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792609398;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=vrSJU4GgBQ150PF99g7M45HkRrI5pLJYV4NvvKGCVjQ=;
-	b=Fc1ZeWLmP8U8cedLiv9YOq/7JJtn+wWnFqZmj1EBGOvQvwRow7N/dnCnmAMG3k2xre+1
-	 3TCnQetsWjQePRs6niGWKG3qxrLs1BduIpM6OWip8aGVEqoGEBDExYJaLuSkB3ZIJLU4c
-	 FL0VUCgYoG6brU7J5o035AL0+kVkAYb5+hxlgq86vaFT4NFtjBtcbJ9IMIglBD54PBdl+
-	 fbJ2FpkCUK9JabXp8Vy+OhDpe2tTk0Q/K6qre2NrZMGdl9fDjJCYgxvwPYe7HseuKKR3W
-	 51RORuNIkp1F9N/v0Cxgr9j+R8cO7japIduaWjxUHpsTin9H2aH0pOGnyutIi9cpsGw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792609638;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=tPh+YBeZlaYR1H948NeSQcCiYdMFP7WZrgT1b9om4LU=;
+	b=2ytk13Yo/+nKBh1afWvpZY6D8/hwIQnRw79IQ5uwtdFsiKwGxGvvLa15XAOqjIvH8nzC
+	 uxiDv7L3OQO7y2uGDc42wlxCzlMKRtwgRfFMVpwAkLvAvG0veQ5vslo0IMiCrwPT6Cvqc
+	 0DsqVAIZy6E8mbITwbe1RWIUY/zcTY34JkFm2LGHt0G7Jg+t9TDnVps9qSL8AaUst/eDF
+	 70nR8BHffVSu9SXhkMc0tz8yiAMnN6cVRuhcvIaQI48SVvEjhGanSuOlgp/+04m9JtwXX
+	 7TOob3Je9+CuQxkNghW0BD/U1fqrhwkhgo1HcePSAS1kTDxemPrXr9JdUt3dXSmdGGQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="e/KEu2Dl";
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RTlitjPJ;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6C1606A320;
-	Wed, 21 Oct 2026 19:03:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1E6C1606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3756E606A31B;
+	Wed, 21 Oct 2026 19:07:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=e/KEu2Dl
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792609398; x=1824145398;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4h3cHqTXriG4rqXH/umCjPSbZXlkjNMeDELIzfETGqg=;
-  b=e/KEu2Dl08ReNUoKAeP6Ki5hRucwV2EtgzCzTYlm2GKMtxl8sCI4m3SG
-   7F9L3+TsPdLvn56zlIkVnhhRZgfxM6lwYxRYtBm//ea2dYdIb1UpHLCDo
-   3UYP7h5iK+Kdj4QxxbpS0TEOTWxsrlMsMSeSAEq0CkFk/kQf06WwhhGSS
-   i2/BL+3/g0QRWabpJLVgMvKMPg5MBdcCxP9QnZwXY68NIzQ6FRTsTrTqc
-   4MNVzYNkzpQSGkpPTZCmszwo3Q9Yld01H/06fZCiztM97SnYjZZLbARCE
-   KXjRjEQQeD3rcUM2PSFgUHiogdGbtf4xLy5YWJbMeaEShJ9cjkRnVEKPc
-   Q==;
-X-CSE-ConnectionGUID: JD8IOpq7Say2tkZ8PnysBg==
-X-CSE-MsgGUID: uw+R8yX8Q+OrlhAI/j36uw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1236242"
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="1236242"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 12:03:18 -0700
-X-CSE-ConnectionGUID: trES0lCxSlKF23Su1cy7Ew==
-X-CSE-MsgGUID: gEt0x1TAQ/iMhUVCFp6H8A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="3237846"
-Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 12:03:09 -0700
-Date: Wed, 21 Oct 2026 22:03:06 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Shawn Guo <shengchao.guo@oss.qualcomm.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dan Carpenter <error27@gmail.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Dhruvin Rajpura <dhruvin.rajpura@oss.qualcomm.com>,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5-gen3: Allocate unique ADC_TM
- aux device IDs
-Message-ID: <atkMam-XiXcrUOFB@ashevche-desk.local>
-References: <20261008031154.3440632-1-shengchao.guo@oss.qualcomm.com>
- <atWzFlOgRICAGM-R@QCOM-aGQu4IUr3Y>
- <20261021195401.6a70fe6a@jic23-hlaptop>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RTlitjPJ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7571F000C1;
+	Wed, 21 Oct 2026 19:07:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792609637;
+	bh=tPh+YBeZlaYR1H948NeSQcCiYdMFP7WZrgT1b9om4LU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=RTlitjPJBupZr9X2f9sei2gN3h0lqU5sOVNDjfDT6k5b8EdhILiNKhJFaqlP15t/q
+	 ceRjrnCHwn41jiYhLBJOGr1WY0IC0ag8X9V2Gg421yMWegonacevpBvE0pM9+btrq4
+	 5nx5ewv3o2tvOe35TyPHvC5kieHtRGoR6ym1CaO9yO/v7vqiZ0G04SEPbL+T3/Hru+
+	 ottyKFy4afbR/iuUxZHMyHWESPnYVmRnibdt+cFiV2KSPKn0pM7SReVSPVZYS5w+Z9
+	 FVf7KJGykyyaSkgfwT54PwVB9t7HuYiWoTjT+LERP8M9OndJG0G6jUY1jzezCC+loa
+	 jSN4BbapRWmQw==
+Date: Wed, 21 Oct 2026 20:07:08 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Sabau, Radu bogdan" <radu.sabau@analog.com>
+Cc: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 2/6] dt-bindings: iio: imu: Add bindings for ADI
+ ADIS16607
+Message-ID: <20261021200708.5fc247c0@jic23-hlaptop>
+In-Reply-To: <LV9PR03MB841470F3A6677BA505411546F7982@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20261015-adis16607-v3-0-f972d4efee85@analog.com>
+	<20261015-adis16607-v3-2-f972d4efee85@analog.com>
+	<20261017021141.5b023e60@jic23-hlaptop>
+	<LV9PR03MB841470F3A6677BA505411546F7982@LV9PR03MB8414.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,28 +71,117 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261021195401.6a70fe6a@jic23-hlaptop>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 21, 2026 at 07:54:01PM +0100, Jonathan Cameron wrote:
-> On Mon, 19 Oct 2026 14:05:10 +0800
-> Shawn Guo <shengchao.guo@oss.qualcomm.com> wrote:
-> > On Thu, Oct 08, 2026 at 11:11:54AM +0800, Shawn Guo wrote:
+On Mon, 19 Oct 2026 08:15:41 +0000
+"Sabau, Radu bogdan" <radu.sabau@analog.com> wrote:
 
-...
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Saturday, October 17, 2026 4:12 AM =20
+>=20
+> ...
+>=20
+> > >
+> > > Add device tree bindings for the Analog Devices ADIS16607 Precision
+> > > MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
+> > > gyroscope, triaxial accelerometer, and temperature sensor, and
+> > > communicates over SPI Half-Duplex.
+> > >
+> > > Two variants are supported: adis16607-2 and adis16607-3. =20
+> >=20
+> > Say briefly how they are different and hence require their
+> > own compatibles. =20
+>=20
+> Hi Jonathan, thank you for looking at this, as well.
+>=20
+> The only difference between them is the gyroscope's fixed full-scale
+> range: =C2=B1450=C2=B0/s for adis16607-2, =C2=B12000=C2=B0/s for adis1660=
+7-3. Everything
+> else (accelerometer range, decimation, internal clock, sync modes) is
+> identical, and both report the same device ID over SPI, so the driver
+> has no way to tell which gyro range is populated at runtime - the
+> compatible string is the only source of that information. I'll make
+> the commit message say this explicitly.
 
-> > > Assisted-by: LLM
-> 
-> Applied to the fixes-togreg branch of iio.git and marked for stable.
+Good. A one liner to say scales differ in the commit message will do nicely.
 
-JFYI, this tag now is killed from documentation. The idea that the use of AI is
-described in the comments block or so.
+>=20
+> >=20
+> > The hardware rest being a configurable pin is an unusual
+> > bit of hardware design given how do we reset the reset pin
+> > to issue a reset if the device is hung?
+> >  =20
+>=20
+> I agree the hardware reset being configurable is unusual. GPIO0 is config=
+ured
+> as reset by default at power-up, so the driver probing at power-up is ok.
+> However, to answer your question if the USER_GPIO_CFG register is altered
+> by debugfs read or a bug or something else and the device is hung, the tr=
+ue
+> answer is you can't use hardware reset anymore and the only way out of th=
+is
+> would be a power-cycle.
+>=20
+> Perhaps a force write of the RESET_GPIO_MASK before the initial_startup
+> would help in case the SPI communication would still be alive, and I guess
+> if the SPI communication is broken we would then get an errno code anyway,
+> right? I am not sure this is the best solution so I would like to know yo=
+ur=20
+> thoughts on this.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Yeah. I think try to write it - but only warn if write fails rather
+than error out.  Gives us the best chance of recovering from any
+problems.
 
+>=20
+> > >
+> > > The binding exposes optional properties for:
+> > >   - An external clock for sync mode (falling back to the internal 8 k=
+Hz
+> > >     clock when absent)
+> > >   - A hardware reset GPIO (active low)
+> > > =20
+>=20
+> ...
+>=20
+> > > +  reset-gpios:
+> > > +    description:
+> > > +      Optional GPIO for hardware reset. The line is active low.
+> > > +    maxItems: 1 =20
+> >=20
+> > The datasheet I looked at has 4 gpio pins. You are calling out one
+> > as reset.  What happens if we don't have controllable supplies
+> > and someone else (firmware for instance) configured GPIO0 to not
+> > be reset?
+> >=20
+> > Anyhow, feels like this isn't a full description.
+> >  =20
+>=20
+> Indeed, this is not a full description. There are a total of 5 gpio pins =
+to
+> this device and each one has a fixed function, the USER_GPIO_CFG is
+> more like an enable/disable register I would say. So RESET is either
+> GPIO0 or idle to say so.
+>=20
+> Would you say that a description like this would be more suitable? :
+>=20
+> reset-gpios:
+>     description:
+>       Optional GPIO for hardware reset, active low. Of the device's
+>       five GPIO pins, this one is dedicated to the reset function,
+>       which can be independently enabled or idled via an on-chip
+>       register.
+Only talk about this one in this description.
+But add the pins with appropriate names for the functions the others
+support.  The GPIOX naming is silly given they are only good for
+one thing each.  Just make sure to add something in the comment
+to refer to what they are called on the datasheet.
+
+Jonathan
+
+
+>     maxItems: 1
+>=20
 
