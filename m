@@ -1,13 +1,13 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792547940;
-	b=UWJ15NoT9OpxXHownYoRD1HPEwwVw54n+1V/AICQX0xsPkkHy5aMbFlP5cDQgAbXnN4F
-	 Bdrh72crNW1tP7G5pOBPdf++aYdCJL4khOKOuohEPFmy9I5f+nO7DEz7KyFjcnrCB3X/g
-	 ufHEv9ceKtAvpDogNVGfZntjKT9kL7cGKoI64RdzEzeY+Y/Qg6c5QdGLb8ZsF/MQ7+xro
-	 PpPYpwjEHucO5N+2s5rEfAVsG9Dfl3u7mWJ6VIfRGb0vw4xegD7ggDxTLi22NXRBOhD5Z
-	 9oU6TDmLLYO+mXD7aE4SRrLC+nf5w6OC3WMFljVkH22WarqeXVpkqNu3DdC9O33D2OA==
+	t=1792547956;
+	b=ayPzY1IGM30iO/JpaBH66n3CoLI4jMQ+FtxJNKfWaR0EaS0YfigAblpzNs5pwfITqHUN
+	 mhFaqoLYtkcXV/xnrv6QhOt9s4CTWVRiO+fiGu4xet/dMDI7jvSc6d5tW1kWlMMMwMJKK
+	 nRy97QpMFHPVBgfgxjeZhaBuvGPGiQLhVsu4IdAC3TlxGHTUqI1IQxaQZhIFX+gfUZDqs
+	 du9BRXg1sQGJqwE7qJmi2J9vc6sPK9vc1Vg7MqDLHomwfdqOFw1ZVCk1F0UpfIXroCUTj
+	 dTL6is8w9G2+i2tPDWZyLC5id2L7oc8VXMu1IokfRZsEZSN/Kt/jgOUZRiOuLGZhRcw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792547940;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792547956;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
 	 Received:Received:Received:Received:From:To:CC:Subject:Date:
 	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
@@ -15,71 +15,71 @@ ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:X-Authority-Analysis:
 	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:
 	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=OGird1GsdRfjX6m1YvIMaaDnGmyXQ11VKm7h0BG9A0o=;
-	b=bESVVlUEzEnDijiHAGICIjmuBDwSwnDiCT6iYKm+9F5ePvHr5RxvdxPo+LVfyGyGQt7R
-	 yN9JVViBdGfjquHZ01wmuNRc1BtqhadI1reSW5oNJPsAwXB9nehqQUlqLPiuH7an0DQH/
-	 1SqSXRmhm57TIRFDE+u+KeeBOI/kCIUYTTZjjDcjp7p6TV0xSkNQpRsO2mz1sPLH49le+
-	 7hYVhLtV5uLA5HiZjYVGUg6CLH6Ec+rpGpNwCYAzNtirlznzQPIHLN63gEDS9/TVTx566
-	 iBCw6jYLaa92J11pZbKwt/opHcOHS6pNSrLj42vnUm/cBfkejM+i5+igkQhtigO4HpA==
+	bh=URuwE5bz8eWMgV//wrlENNhPFo9Zn9170qnevD1nibo=;
+	b=3YWGGIlQLtzGhyprzMJn5KeEOow8BrXW7BHLV3iXhe4CiJ9LZrS7ctSdsOtX2jUP0vpR
+	 w6cpWnnwjlZjOil1sdurE1hgDgx9btI+eH0zyOmnxuJknxS7VFMWs9yziQ54YG4ikPnLB
+	 WRGA226f0FW+/eztZIzIVH5xIZay09LsucXlnuv8z5UOZKmZWnjczFPIEhyMxxiXsRC5H
+	 6lMncmalmc+9JwmoR+Wa5Le3Ft5YIFPCGdAF4uH8BGlZy0j2XK3SKfaUrzldXEZDGQ9/d
+	 ISLLN0Db5QEjUJ3a8uGsGk8JSkOpnFfCxS3PtpkWJGJzabVQVMHKlwE4Sc+vl0yBsCw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=analog.com;
 	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b="Vi+s/xkw";
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=Lk33fIUZ;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=AsB1CyOr;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=dcQNhire;
 	arc=none smtp.remote-ip=148.163.135.77
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC728606A31A;
-	Wed, 21 Oct 2026 01:58:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC728606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A31A3606A31D;
+	Wed, 21 Oct 2026 01:59:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A31A3606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=Vi+s/xkw;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=Lk33fIUZ
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=AsB1CyOr;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=dcQNhire
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69L10fIP2442269;
-	Tue, 20 Oct 2026 21:58:57 -0400
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69L0sQHJ2442089;
+	Tue, 20 Oct 2026 21:59:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=OGird1GsdRfjX6m1YvIMaaDnGmyXQ11VKm7h0BG9A0o=; b=Vi+s/xk
-	wjLwoVF5FwZF+XYJfSvQ8H+N+dbB+kUsX8LlSFKr/DIlttgk81dNF/2Xt5d7k4nj
-	LN2CayxNOE/TfKyBiAgnuKxWYZE2Ki4oO2ZG/4LtsckSEZ3t1A2f17u3zcKsaRFT
-	9VIrox3Ki2JWZG3LnInWICptY8pNCbgSTuLxefNem2m1vezyxkb3qDDFtA0L0P+K
-	ja54YyN0rufPCALZ4cg2ZTlgfuFTEzPfI4sPRXZOmIZzOOlugU3zl/kj70Vx3coN
-	N5UhC2mleJAFsJ8sn3AdNu+KsFvyteStgrrkPIF3CUBXhB65qgXuCvYKnuV0TRVd
-	Dk5BkQEynKjuIqQ==
+	DKIM; bh=URuwE5bz8eWMgV//wrlENNhPFo9Zn9170qnevD1nibo=; b=AsB1CyO
+	rPrL6gtPxA5i+tDkSe+TxTZmy12ReNO3dfY8E/QSBdFFX2pPcyyfdV0BK6H66him
+	zd4ICsZ4T46WmI7Q3lU3lKAVe+2TK7Gl/C1WOjCb9r2YLEgJqPe064LfXfjgAYqS
+	Pcbifp+sNpY6lHoZwn7Q3jCXLvxI9Q5dI3atTlYQWys1P0HWShhASlJn4kETXAlm
+	7YyLhIU6UenVlRB7dezHNqFOw1IPJP52zSjVMLO5f/tLirmgsteq1ydw2HurKBdm
+	8fHDEL/HIh2u3RH94f4bty69S9w55T3SRIjKYYjoIYhSETQCQOgbw2prmTr9pk/t
+	4I63tU/awu8GCMw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=OGird
-	1GsdRfjX6m1YvIMaaDnGmyXQ11VKm7h0BG9A0o=; b=Lk33fIUZsOklSwKN+yu4x
-	6bRzcSWKWG0GkdoZRrq2kBiXEPwPoosiu2YjKQLHRiWv1sEGpI+QhOTf6UHSI0NK
-	87jH96gzm7F1tyeKs+WrXe85TjYD7989WrNqZLmhck90nb1N22rJOMNvn2Cyurut
-	rtIkcieRh6wPCeYNhkMAQm7heo4z8nw4lCUgu2PVjQW+sJX8lvx9ll70//nKF00F
-	u1/zlWzaG/irHfsc9MhPVeVpGqsFmlRwMB724SyaJcr3rEBXb9lbRpRwjhwiP8tm
-	ONRhbMDIsGTGxivPQrd9sg6bvZG8dkpkWNtDgbM8x8Cu/aLs5w1mFKPbQx+aEv4j
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hef2khjpk-1
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=URuwE
+	5bz8eWMgV//wrlENNhPFo9Zn9170qnevD1nibo=; b=dcQNhiresXVP2SnC51Om9
+	qxB1lmEzum3wCq8cAp4QjV5+2n2f6PU9eNj+xU6oIDXOeDJnwYaRjlRp2CRaA86M
+	GehcKBIkLa2Y4C8lfCfMuBwwvqAcX8k2J/8ksXMBAitId4uIUAnoTZSqBUakmoTk
+	S7pQn7RndT78lesPzb24l5+By7XMfSy2/fEgGkkLNIazwPVQI+svtCGRhS8LxGhZ
+	tHHnjlCJnp21kdOTd/KOUXO7LxQizlfLpjyv4MxhtvfJ2dpdOmUMzMsmybia4PqV
+	zry7OVEkU42G5T1lQeu+nNw6RR0aRpY7a5t6wrXazl/nPuTU5dbedeM2BYbG+bUL
+	Q==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hef2khjqp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 20 Oct 2026 21:58:56 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69L1wtJg007078
+	Tue, 20 Oct 2026 21:59:12 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 69L1xBQg062433
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 20 Oct 2026 21:58:55 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+	Tue, 20 Oct 2026 21:59:11 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 20 Oct
- 2026 21:58:55 -0400
+ 2026 21:59:11 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 20 Oct 2026 21:58:55 -0400
+ Transport; Tue, 20 Oct 2026 21:59:11 -0400
 Received: from JSANTO12-L01.ad.analog.com ([10.65.60.206])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69L1wgnW029097;
-	Tue, 20 Oct 2026 21:58:45 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69L1ww6w029102;
+	Tue, 20 Oct 2026 21:59:01 -0400
 From: Jonathan Santos <Jonathan.Santos@analog.com>
 To: <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
@@ -89,9 +89,9 @@ CC: Jonathan Santos <Jonathan.Santos@analog.com>, <broonie@kernel.org>,
         <Michael.Hennerich@analog.com>, <nuno.sa@analog.com>,
         <jic23@kernel.org>, <dlechner@baylibre.com>,
         <andriy.shevchenko@intel.com>
-Subject: [PATCH v4 8/9] spi: spi-engine-ex: Add support for multi-CS devices
-Date: Tue, 20 Oct 2026 22:58:37 -0300
-Message-ID: <183539c950c013d472c6b46e3f1365b022e7c716.1792435248.git.Jonathan.Santos@analog.com>
+Subject: [PATCH v4 9/9] iio: adc: ad7768-1: add support for multiple chip aggregation
+Date: Tue, 20 Oct 2026 22:58:53 -0300
+Message-ID: <7afbafd67ad52b2342af30c278b8b001413221ee.1792435248.git.Jonathan.Santos@analog.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1792435248.git.Jonathan.Santos@analog.com>
 References: <cover.1792435248.git.Jonathan.Santos@analog.com>
@@ -107,119 +107,292 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIxMDAwNyBTYWx0ZWRfX9dSTzNeUApSw
- leKhk0dSDmc9cL5uE69pHmC2cHuEy/d7fqAXNcTJFOo9zaKQZQvhfx5mT7IvvvdRc68nfR8rKLM
- 3GFNm1qLGW5GhmiviXA+7W1T47aXL5j31gAgz72r1z1hiqF58rYRCQwyo8OppsOBSrQQEh2ntb+
- JvaQRjOxpK5CrhD/hEwoxQzcYPEEzQl5TpLXa1C63fOgLMcbHCK3AcSb5zBvWfc3AQj5Khxb23p
- PEyUP3K682PXguPK1zvDylydgpDV0cFMsJi7D6sZ5P2zmlnLwKbWyom6EfpmXzUFvNIGgh94Bhj
- sIUd2z10P3OJ8O1TTxiIvgStnZDICm3aUi0WbN1PY3xrUA8okzhbf1XzOuOTcwMoMzcDzh8F5x6
- xW5i+tgEpFXAOudcui0Ny1woY+8/ULLThjc+nvjsPUm7y1v9zp4Osz80JkMQUcMfGGr0l1Fdqyo
- JAFnVuJqb7IwoRRg1nQ==
-X-Proofpoint-GUID: Ep6RaPjssw8IUUTlDn9YBsQZK7wCRvub
-X-Authority-Analysis: v=2.4 cv=KIHPn1Fo c=1 sm=1 tr=0 ts=6ad81c60 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIxMDAwNyBTYWx0ZWRfX4pex+0BXBLHt
+ rf3cMi05e6T8nS49RfRkSvhSclmyIDRehUdrrCKgIWeKQxqfybfIZS3jycEgF1K9l9ciT7HLhuA
+ cwpYEbRnPLQM9ZGQ/DRtxCV9OXaB30sE9hFBpB8dXQMFmqKGHay1B8fVIk7VAu92b4Yl/5E2eKX
+ NEFaE9WdYhyErBmwI/mpQuJLl3b4yq82i/R11dc1A6pypKphPeTAKCmGxRmcJCe1JOhUKPDJws9
+ 83eLd2HcbQ94vJF131XW15IIAl6Z6unz4EAFZgQPpaoncog8OaA45DHTWLxlWCLXsAvJ3/6atBP
+ DUAf6CGe5ExoIV6WE9oD5LsNnxJ2HQckpx9smZBBPYmTfetoRc331ymkqUo3k7r8CxFTwIlD0bJ
+ LStm5IJzeEPDBaHl7YZlzXSBrksCLrHTivDY6KgF/2GwPATkX2ilQC4XK4WjdebkI2AxvYrcSIg
+ 0dxEbkJvJgXaVtlvgCQ==
+X-Proofpoint-GUID: yK2kILLSa7V3mjBjf7Y128AoC22LGoZw
+X-Authority-Analysis: v=2.4 cv=KIHPn1Fo c=1 sm=1 tr=0 ts=6ad81c70 cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
  a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=m8HNSDYCDbX-GGj12HkA:9
-X-Proofpoint-ORIG-GUID: Ep6RaPjssw8IUUTlDn9YBsQZK7wCRvub
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIxMDAwNyBTYWx0ZWRfX42uxN+Wb5wKp
- olxTDh23/Oyisz7Iu/Rxz8o++RS44ReYfhHF/CzyRZxdpY1/UQdXABvXjRACm6Kt92egmzmUWYw
- 7s55QSbv8Qgm7cll82H7X6f3UiOhms+N4+Y7qJGtAZcQNYY/hJGq
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=1TctlgW-Hzn0q3-P7isA:9
+X-Proofpoint-ORIG-GUID: yK2kILLSa7V3mjBjf7Y128AoC22LGoZw
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIxMDAwNyBTYWx0ZWRfX3ePuSpbond4H
+ v0j7vDZ0gY3zl1QoOZGlk17b6EPwQxRy4PZj3V4hQummkbq1ZQaqmJu0lQYdeejLT7styYsdVL0
+ 0qhDVLpE00s1Bzm+7K6d12P1zQSxNE3C6IjYw5KrMI3jZtERw35I
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
  definitions=2026-10-20_04,2026-10-19_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 priorityscore=1501 malwarescore=0 impostorscore=0
+ clxscore=1011 priorityscore=1501 malwarescore=0 impostorscore=0
  lowpriorityscore=0 spamscore=0 bulkscore=0 suspectscore=0 adultscore=0
  phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
  definitions=main-2610210007
 
-The SPI Engine controller only handled the first chip select when
-asserting CS lines and configuring CS polarity inversion, ignoring
-additional CS indices present in cs_index_mask.
+The AD7768-1 family is a single-channel ADC, but it is designed to allow
+connecting multiple devices to the same SPI controller, each on a
+dedicated CS and data lane, clocked synchronously, and sharing SDO and
+SCLK. The number of aggregated devices is derived from the number of
+CS.
 
-Update spi_engine_gen_cs() to iterate over all set bits in
-cs_index_mask and toggle each corresponding CS line in the assert mask.
-Update spi_engine_setup() likewise so that SPI_CS_HIGH polarity is
-applied to every active CS index rather than only index 0.
+The DRDY pins are combined to trigger the data interrupt when all
+devices are ready, and since the synchronization pins are tied, they
+stay in synchrony.
 
-Set SPI_CONTROLLER_MULTI_CS in the controller flags to reflect the
-capability to the SPI core.
+To reflect the multidevice setup, IIO channels are dynamically set
+based on the number of devices. Restrict buffered capture to the
+all-channels scan mask, since all devices sample in lockstep. Register
+an ancillary SPI device per lane for individual direct reads, and enable
+SPI_MULTI_LANE_MODE_STRIPE in offload mode to interleave samples from all
+lanes into the DMA stream.
+
+Since all devices must be in sync, all configurations that affect the
+sampling rate are unified, so they always have the same sampling
+frequency.
 
 Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
 ---
 Changes in v4:
-* Added the spi_engine_get_chipselect_bits() helper to reduce duplicated
-  code.
+* Fixed the st->offload_xfer.len calculation to account for multiple 
+  devices.
+* The number of aggregated devices is now defined by the number of CS
+  instead of number of lanes.
+* Used devm_bitmap_zalloc() and bitmap_set() for the masks allocation
+  and definition, as requested.
 
 Changes in v3:
-* None.
+* Modified channel mask allocation on ad7768_parse_aaf_gain() to get 
+  a static value, Since we assume the family is single channel. Added a 
+  comment explaining.
 
 Changes in v2:
-* Adaptation of the patch
-  "spi: spi-engine-ex: Add support for multi-CS devices" from v1,
-  discarding the per transfer CS mask and keeping the Multi-CS support
-  only.
+* New patch.
 ---
- drivers/spi/spi-axi-spi-engine.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ad7768-1.c | 100 +++++++++++++++++++++++++++++++++----
+ 1 file changed, 90 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/spi/spi-axi-spi-engine.c b/drivers/spi/spi-axi-spi-engine.c
-index 02bbc5d0cfc5..e4c40059e583 100644
---- a/drivers/spi/spi-axi-spi-engine.c
-+++ b/drivers/spi/spi-axi-spi-engine.c
-@@ -278,13 +278,25 @@ static void spi_engine_gen_sleep(struct spi_engine_program *p, bool dry,
- 	}
+diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
+index 3972821c295a..064b4b394a2e 100644
+--- a/drivers/iio/adc/ad7768-1.c
++++ b/drivers/iio/adc/ad7768-1.c
+@@ -6,6 +6,7 @@
+  */
+ #include <linux/array_size.h>
+ #include <linux/bitfield.h>
++#include <linux/bitmap.h>
+ #include <linux/cleanup.h>
+ #include <linux/clk.h>
+ #include <linux/completion.h>
+@@ -20,6 +21,7 @@
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/overflow.h>
+ #include <linux/rational.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+@@ -120,7 +122,8 @@
+ 
+ #define AD7768_TRIGGER_SOURCE_SYNC_IDX 0
+ 
+-#define AD7768_MAX_CHANNELS 1
++#define AD7768_MAX_CHANNELS	1
++#define AD7768_MAX_AGGR_DEVICES	4
+ 
+ #define ADAQ7768_PGA_PINS 3
+ 
+@@ -300,10 +303,12 @@ struct ad7768_chip_info {
+ 
+ struct ad7768_state {
+ 	struct spi_device *spi;
++	struct spi_device *spi_anc[AD7768_MAX_AGGR_DEVICES];
+ 	struct spi_offload *offload;
+ 	struct spi_offload_trigger *offload_trigger;
+ 	struct regmap *regmap;
+ 	struct regmap *regmap24;
++	struct regmap *regmap24_anc[AD7768_MAX_AGGR_DEVICES];
+ 	int vref_uv;
+ 	struct regulator_dev *vcm_rdev;
+ 	unsigned int vcm_output_sel;
+@@ -322,11 +327,12 @@ struct ad7768_state {
+ 	struct gpio_descs *pga_gpios;
+ 	struct gpio_desc *gpio_sync_in;
+ 	struct gpio_desc *gpio_reset;
+-	const char *labels[AD7768_MAX_CHANNELS];
++	const char *labels[AD7768_MAX_CHANNELS * AD7768_MAX_AGGR_DEVICES];
+ 	struct gpio_chip gpiochip;
+ 	struct spi_transfer offload_xfer;
+ 	struct spi_message offload_msg;
+ 	const struct ad7768_chip_info *chip;
++	u8 num_devices;
+ 	bool en_spi_sync;
+ 	struct mutex pga_lock; /* protect device internal state (PGA) */
+ 	/*
+@@ -335,7 +341,7 @@ struct ad7768_state {
+ 	 */
+ 	union {
+ 		struct {
+-			__be32 chan;
++			__be32 chan[AD7768_MAX_AGGR_DEVICES];
+ 			aligned_s64 timestamp;
+ 		} scan;
+ 		__be32 d32;
+@@ -478,9 +484,10 @@ static int ad7768_set_mode(struct ad7768_state *st,
+ 				 AD7768_CONV_MODE_MSK, AD7768_CONV_MODE(mode));
  }
  
-+static unsigned long spi_engine_get_chipselect_bits(struct spi_device *spi,
-+						    unsigned long index_mask)
+-static int ad7768_scan_direct(struct iio_dev *indio_dev)
++static int ad7768_scan_direct(struct iio_dev *indio_dev, unsigned int chan)
+ {
+ 	struct ad7768_state *st = iio_priv(indio_dev);
++	struct regmap *regmap;
+ 	int readval, ret;
+ 
+ 	reinit_completion(&st->completion);
+@@ -492,7 +499,8 @@ static int ad7768_scan_direct(struct iio_dev *indio_dev)
+ 	if (!ret)
+ 		return -ETIMEDOUT;
+ 
+-	ret = regmap_read(st->regmap24, AD7768_REG24_ADC_DATA, &readval);
++	regmap = st->num_devices > 1 ? st->regmap24_anc[chan] : st->regmap24;
++	ret = regmap_read(regmap, AD7768_REG24_ADC_DATA, &readval);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -989,7 +997,7 @@ static int ad7768_read_raw(struct iio_dev *indio_dev,
+ 		if (!iio_device_claim_direct(indio_dev))
+ 			return -EBUSY;
+ 
+-		ret = ad7768_scan_direct(indio_dev);
++		ret = ad7768_scan_direct(indio_dev, chan->channel);
+ 
+ 		iio_device_release_direct(indio_dev);
+ 		if (ret < 0)
+@@ -1388,9 +1396,11 @@ static int ad7768_offload_buffer_postenable(struct iio_dev *indio_dev)
+ 	if (IS_ERR(scan_type))
+ 		return PTR_ERR(scan_type);
+ 
+-	st->offload_xfer.len = spi_bpw_to_bytes(scan_type->realbits);
++	st->offload_xfer.len = spi_bpw_to_bytes(scan_type->realbits) * st->num_devices;
+ 	st->offload_xfer.bits_per_word = scan_type->realbits;
+ 	st->offload_xfer.offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
++	if (st->num_devices > 1)
++		st->offload_xfer.multi_lane_mode = SPI_MULTI_LANE_MODE_STRIPE;
+ 
+ 	spi_message_init_with_transfers(&st->offload_msg, &st->offload_xfer, 1);
+ 	st->offload_msg.offload = st->offload;
+@@ -1694,6 +1704,63 @@ static int ad7768_parse_aaf_gain(struct device *dev, struct ad7768_state *st)
+ 	return 0;
+ }
+ 
++static int ad7768_probe_multidevices(struct iio_dev *indio_dev)
 +{
-+	unsigned long bits = 0;
-+	unsigned int idx;
++	struct ad7768_state *st = iio_priv(indio_dev);
++	struct device *dev = indio_dev->dev.parent;
++	struct iio_chan_spec *channels;
++	unsigned int mask_longs;
++	unsigned long *masks;
++	size_t num_chans;
++	unsigned int i;
++	u8 cs;
 +
-+	for_each_set_bit(idx, &index_mask, SPI_DEVICE_CS_CNT_MAX)
-+		bits |= BIT(spi_get_chipselect(spi, idx));
++	num_chans = size_mul(st->num_devices, st->chip->num_channels);
++	channels = devm_kcalloc(dev, num_chans, sizeof(*channels), GFP_KERNEL);
++	if (!channels)
++		return -ENOMEM;
 +
-+	return bits;
++	indio_dev->num_channels = num_chans;
++	for (i = 0; i < num_chans; i++) {
++		struct iio_chan_spec *chan = &channels[i];
++
++		*chan = *st->chip->channel_spec;
++		chan->channel = i;
++		chan->scan_index = i;
++	}
++
++	indio_dev->channels = channels;
++
++	/*
++	 * One scan mask with all devices enabled, plus a zero terminator. Each
++	 * mask spans BITS_TO_LONGS(masklength) longs.
++	 */
++	mask_longs = BITS_TO_LONGS(indio_dev->num_channels);
++	masks = devm_bitmap_zalloc(dev, 2 * mask_longs * BITS_PER_LONG, GFP_KERNEL);
++	if (!masks)
++		return -ENOMEM;
++
++	bitmap_set(masks, 0, num_chans);
++	indio_dev->available_scan_masks = masks;
++
++	/* Setup ancillary SPI devices for single device access */
++	for (i = 0; i < st->num_devices; i++) {
++		cs = spi_get_chipselect(st->spi, i);
++		st->spi_anc[i] = devm_spi_new_ancillary_device_with_lane(st->spi,
++									 cs, i, 0);
++		if (IS_ERR(st->spi_anc[i]))
++			return dev_err_probe(dev, PTR_ERR(st->spi_anc[i]),
++					     "failed to register ancillary device\n");
++
++		st->regmap24_anc[i] = devm_regmap_init_spi(st->spi_anc[i],
++							   &ad7768_regmap24_config);
++		if (IS_ERR(st->regmap24_anc[i]))
++			return PTR_ERR(st->regmap24_anc[i]);
++	}
++
++	return 0;
 +}
 +
- static void spi_engine_gen_cs(struct spi_engine_program *p, bool dry,
- 		struct spi_device *spi, bool assert)
- {
- 	unsigned int mask = 0xff;
+ static bool ad7768_offload_trigger_match(struct spi_offload_trigger *trigger,
+ 					 enum spi_offload_trigger_type type,
+ 					 u64 *args, u32 nargs)
+@@ -1833,6 +1900,12 @@ static int ad7768_probe(struct spi_device *spi)
+ 		return -ENODATA;
  
- 	if (assert)
--		mask ^= BIT(spi_get_chipselect(spi, 0));
-+		mask ^= spi_engine_get_chipselect_bits(spi, spi->cs_index_mask);
+ 	st->spi = spi;
++	/* Infer the number of devices from the number of CS */
++	st->num_devices = spi->num_chipselect;
++	if (st->num_devices > AD7768_MAX_AGGR_DEVICES)
++		return dev_err_probe(&spi->dev, -EINVAL,
++				     "Too many devices (%u), max %d supported\n",
++				     st->num_devices, AD7768_MAX_AGGR_DEVICES);
  
- 	spi_engine_program_add_cmd(p, dry, SPI_ENGINE_CMD_ASSERT(0, mask));
- }
-@@ -886,12 +898,14 @@ static int spi_engine_setup(struct spi_device *device)
- {
- 	struct spi_controller *host = device->controller;
- 	struct spi_engine *spi_engine = spi_controller_get_devdata(host);
-+	unsigned long cs_bits;
- 	unsigned int reg;
+ 	st->regmap = devm_regmap_init_spi(spi, &ad7768_regmap_config);
+ 	if (IS_ERR(st->regmap))
+@@ -1856,11 +1929,18 @@ static int ad7768_probe(struct spi_device *spi)
  
-+	cs_bits = spi_engine_get_chipselect_bits(device, device->cs_index_mask);
- 	if (device->mode & SPI_CS_HIGH)
--		spi_engine->cs_inv |= BIT(spi_get_chipselect(device, 0));
-+		spi_engine->cs_inv |= cs_bits;
- 	else
--		spi_engine->cs_inv &= ~BIT(spi_get_chipselect(device, 0));
-+		spi_engine->cs_inv &= ~cs_bits;
+ 	st->mclk_freq = clk_get_rate(st->mclk);
  
- 	writel_relaxed(SPI_ENGINE_CMD_SYNC(0),
- 		       spi_engine->base + SPI_ENGINE_REG_CMD_FIFO);
-@@ -1222,6 +1236,7 @@ static int spi_engine_probe(struct platform_device *pdev)
- 	host->unoptimize_message = spi_engine_unoptimize_message;
- 	host->get_offload = spi_engine_get_offload;
- 	host->put_offload = spi_engine_put_offload;
-+	host->flags |= SPI_CONTROLLER_MULTI_CS;
- 	host->num_chipselect = 8;
+-	indio_dev->channels = st->chip->channel_spec;
+-	indio_dev->num_channels = st->chip->num_channels;
+ 	indio_dev->name = st->chip->name;
+ 	indio_dev->info = &ad7768_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++	if (st->num_devices > 1) {
++		ret = ad7768_probe_multidevices(indio_dev);
++		if (ret)
++			return dev_err_probe(&spi->dev, ret,
++					     "Failed to configure multidevice\n");
++	} else {
++		indio_dev->channels = st->chip->channel_spec;
++		indio_dev->num_channels = st->chip->num_channels;
++	}
  
- 	if (adi_axi_pcore_ver_gteq(version, 1, 2)) {
+ 	/* Register VCM output regulator */
+ 	if (st->chip->has_vcm_regulator) {
+@@ -1892,7 +1972,7 @@ static int ad7768_probe(struct spi_device *spi)
+ 			return ret;
+ 	}
+ 
+-	ret = ad7768_set_channel_label(indio_dev, st->chip->num_channels);
++	ret = ad7768_set_channel_label(indio_dev, st->num_devices);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.34.1
 
