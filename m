@@ -1,58 +1,66 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792608980;
-	b=i74ZN1TaVsPNQ7IDuWLfaW3HiOE1l0/KgKRnaw/PICtE7smg1ONAbavxcSX1MCVP+TOm
-	 F5nGWUosS7kHBai0cFAeEM8XZqXCc8e/4wrJt3mPYsdCMvMlp7yXr33ZFTjyTOJUlTG1L
-	 4joWIS7XvFZsGDBwYQm/aj+M9kUgtO5uAxC9nM/AS2o/n78pjJr9sY4qIf7SWM70GRNGH
-	 LGmS97nXDJZW3GcpG+u02HXay3WgUqgFtaIk0qnNgF4hZhg+YHzQOoe/yiVaWnsFoAv4M
-	 Y0kzlbOSFduYi4Abwv9LSJ9n/G2lqHqM77VvuGq6uZ07kGxXk7gxbxxD/oxIhaIr0Bg==
+	t=1792609369;
+	b=jMA080xK8u07HbVUCgWXQio/pVB5+7d41uwhjPVfDrIOb19NuV01v4RsuFLhvCALwOXR
+	 fZAsEueQPf/0LdxGgF39dt/56igN1c79ee4iB8DSxRkFOWrdFrmxwLmOwKvIM17yC7sAJ
+	 YTTki3pBlPFuX+2cltk4fd2BkvxnD2TiuATHT0WmD9o3nsgx/dZcXsCUGRSB1NSfTnKp/
+	 uzQsQRavBCb5K/fxhwErZfNjCWBTmPzlaUPldDJV4zCdYRof02Qb8JP0WbcIPfSp7d9Tb
+	 WDTYGocJTuZBf/duT0wflqWXgP1Eru6kM/SuA1V98XDwT+etwoZXTz+Db88g6Zq7Gqg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792608980;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792609369;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=knRn+3sr9mXrCZcyGIH6NLdUHpEKhFcrM1DoEB35T7Y=;
-	b=u3T4l18uWlhEc57zLEIonwzFD/x3CcwYJ4laM8VCH8eGjvHQKw0Mm+2cxRKJR/A+P1rP
-	 IIqIkwPO4WlFF+WpHlLJBIELtWP3Dp4bgURIGKUV5YLd6NwIeQOKGHi5JjVP/UC8Q0tMg
-	 WYrUi1dONUh9wtVhwHjpVFOXSpb6J/xzqIuu3vwbKMZL5A9J/ic3LU5z0W5JxP+LIQuE9
-	 7lZpiOor8c6j8IY9L2MR6v11FRd5SPL7QmsSahFyak2Slyc4j0m3tHI7WMe9Ti45iLWev
-	 XapXgggDrels43rzCvEIQBZ9v3VjxZuhw6gS2H8NT281MxF19ELMFNdI1vKZGH4z45Q==
+	bh=hPLAdvaWalGY0U9v8mXM3Qqe7MtUNRmdQjypi/WQugs=;
+	b=OQEOUB/t7azYvtLbsx3XmbGFa2QD0M6Eu4quTwdII+did/0ENezDwfqm36SQfZqTqXNn
+	 V2s4AAmMUx1FLe+ADeyyS7Ui/xj6H/oTBz8LofS35r2FJplAimDm8Nez2UxQzPRwDN9sU
+	 aWQyaMgHQXhL72gZ63TntB+a2pmnMaPb+bVaw5qT857vjsHiYhsDg4xjUfEiebiY+vEYf
+	 RtFRHfkWobo+pV936kTgRzZ30y/FeiITwadyVRofVsg85IYB1xDHLnKu6lI50gL7KrjVV
+	 Tirsv7432w6vX3ot6WB10BhbmsK3gVbC/t+7t/oGmU4KYxScv78wkV+8YAmY0wQO9Aw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZyZIN2zq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gPq3zoFC;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A201606A319;
-	Wed, 21 Oct 2026 18:56:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5E00606A31B;
+	Wed, 21 Oct 2026 19:02:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZyZIN2zq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B56311F000C1;
-	Wed, 21 Oct 2026 18:56:17 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gPq3zoFC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56221F000C1;
+	Wed, 21 Oct 2026 19:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792608979;
-	bh=knRn+3sr9mXrCZcyGIH6NLdUHpEKhFcrM1DoEB35T7Y=;
+	s=k20260515; t=1792609368;
+	bh=hPLAdvaWalGY0U9v8mXM3Qqe7MtUNRmdQjypi/WQugs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZyZIN2zqAc/0d39aWeCqUXNdD52jBRRS5I23SWHd7ufiq4hcz+egrLzdxUpW4oKXs
-	 Vjt8ykR0uvZh8OxeQmqxd8/oHbSiJDgxZqDYGLG6oRpKVGHVNU5nR2nwFWG66OSqvp
-	 P1lOvidyyuOB1Zxa20gOKyFTIbNmxCH7GaPEGuZw8MFIuC/YIcyHZ6jgR34somw+Xs
-	 x0ABGotVVnKOq+8urtHMgOJn25xS0z86mc2bvXQAmx13jwHUNwm1dkzVbLcEBNvGE9
-	 EYUHKkJ50wmA8wHbv6wtNuGzCdD64EH+tyswZkpT0KQ+hOuKBb5L1ppb6hKAFWo8wI
-	 BXBb/9PXsOxqw==
-Date: Wed, 21 Oct 2026 19:56:11 +0100
+	b=gPq3zoFChF2SXhDhy5VXX5jOvuRBEJuKWKTS3eyog23Y3xM2wyHfTEMqZmcJULCA2
+	 HxVU3GUDPpYQXAuFLpCIvgykcWwq0YZ/TppHiC0DLxN1rEo3PXhMO0OKOAGtMeGv1L
+	 wjgLpgWBU2sIeT/Fxh7z1q/oRfDJs+sbvChh5O5PGzQb4WgBulFdhU3sqg824xo4ku
+	 hGfqiJ8Zskc/EP1qp0wcqGna7+tOY2lPePR1en3zROoWGvlQYzSD4Xs5VpI6pADLSe
+	 hofbadcH4Q8PJBkBQiyhOyETdONNUJYfbfdOuT7tgD6CzuCALdLILQ7az/+ya+7BuM
+	 XLH0HUfBwsdCQ==
+Date: Wed, 21 Oct 2026 20:02:40 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Kurt Borja <kuurtb@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v5 00/10] iio: adc: Add TI ADS126X ADC family support
-Message-ID: <20261021195611.14cd0a2a@jic23-hlaptop>
-In-Reply-To: <20261018023129.3abeb679@jic23-hlaptop>
-References: <20261010-ads126x-v5-0-49e331cb2fed@gmail.com>
-	<20261018023129.3abeb679@jic23-hlaptop>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Joe Sandom
+ <joe.g.sandom@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, martin.triska@mycroftmind.com, Jan Remes
+ <jan.remes@mycroftmind.com>
+Subject: Re: [PATCH v2 0/4] iio: light: tsl2591: fix lux calculation and
+ precision, add I2C ID table, report saturation
+Message-ID: <20261021200240.774e3108@jic23-hlaptop>
+In-Reply-To: <ati8u6-OUEi7KOHw@ashevche-desk.local>
+References: <20261014141650.259929-1-ciakval@gmail.com>
+	<atEdM6wi_FAGFjrr@ashevche-desk.local>
+	<20261017031411.05dee323@jic23-hlaptop>
+	<atXSBHbOPYYltHUW@mm-ntb-00805>
+	<atXZwm5DzCK8S0_K@ashevche-desk.local>
+	<atdRJ3JqAyGWOnxf@mm-ntb-00805>
+	<athxOKkugAYL62F9@ashevche-desk.local>
+	<ati5lzd2KotvmMC6@mm-ntb-00805>
+	<ati8u6-OUEi7KOHw@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,38 +74,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 18 Oct 2026 02:31:29 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 21 Oct 2026 16:23:07 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Sat, 10 Oct 2026 03:52:39 -0300
-> Kurt Borja <kuurtb@gmail.com> wrote:
+> On Wed, Oct 21, 2026 at 03:09:43PM +0200, Jan Remes wrote:
+> > On Wed, 21 Oct 2026 11:00:56 +0300, Andy Shevchenko wrote:  
+> > > On Tue, Oct 20, 2026 at 01:31:51PM +0200, Jan Remes wrote:  
+> > > > On Mon, 19 Oct 2026 11:50:10 +0300, Andy Shevchenko wrote:  
+> > > > > On Mon, Oct 19, 2026 at 10:17:08AM +0200, Jan Remes wrote:  
+> > > > > > On Sat, 17 Oct 2026 03:14:11 +0100, Jonathan Cameron wrote:  
 > 
-> > Hi all,
+> ...
+> 
+> > > > > > FWIW, I don't think it to be very urgent, as people probably don't use
+> > > > > > it on x86-64 (seeing both as it had only DT probe support and that
+> > > > > > impacted users are likely to have noticed the oops).  
+> > > > >
+> > > > > What do you mean by the second part of the sentence? It's as easy to use on
+> > > > > ACPI platforms as on DT, we have so nice trick called PRP0001, which allows to
+> > > > > enumerate "OF-only" drivers on ACPI platforms via SSDT overlays (or other means
+> > > > > of DSDT/SSDT provisioning).  
+> > >  
+> > > > I did not know about the PRP0001 (thanks), so please disregard that
+> > > > argument. Still, I believe x86 users to be few if any, since the oops is
+> > > > quite easy to trigger  
+> > >
+> > > True.
+> > >  
+> > > > and AFAIK most x86 distro kernels ship without CONFIG_OF.  
+> > >
+> > > How is this relevant? This driver doesn't use any #ifdef CONFIG_OF or alike,
+> > > so most likely the driver is available for x86 as well.  
 > > 
-> > I apologize for the long delays between versions. This month has been
-> > very busy at university plus some personal stuff. I expect to have more
-> > time now, so development should be faster. Thanks for your patience!
-> > 
-> > Signed-off-by: Kurt Borja <kuurtb@gmail.com>  
+> > I thought that CONFIG_OF was needed in order to be able to probe a
+> > device using the driver's OF table. TIL that missing CONFIG_OF prevents
+> > only manual probing (`echo "tsl2519 0x29" > .../new_device`) but not the
+> > ACPI mechanism.  
 > 
-> I took another look through and it looks good.  However, give
-> the sheer scale of the driver I'll leave it a little longer before
-> applying in case anyone else plans to give it another look.
-> As normal, if anyone has it on their list but is snowed under
-> just reply to the thread and I'll let it sit longer.
+> Actually not really. The manual binding relies on i2c ID table and
+> the OF ID table is a fallback.
 > 
-Long enough I think.  Though given I'll be rebasing on rc1 any feedback
-people want to give is fine after this.
+> > So:
+> >   1. Please ignore that argument
+> >   2. The wording of my Patch 2 commit message is not correct ("cannot
+> >      be probed on a kernel with CONFIG_OF disabled"), I can send a v3
+> >      if that's preferable.  
+> 
+> Yes, better to send a new version with better wording in the commit message.
 
-Applied to the testing branch of iio.git.
+Given we are in merge window and my base tree will be rebased shortly anyway
+I don't mind the noise of dropping these.
+
+Hence done so and will wait for v3.
 
 Thanks,
 
 Jonathan
 
-> Thanks,
 > 
-> Jonathan
+> > Thanks for getting me to learn a bit more.  
 > 
+> You're welcome!
 > 
 
