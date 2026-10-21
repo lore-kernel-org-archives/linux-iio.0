@@ -1,82 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792591377;
-	b=mLCDIutiT0FkBNQOFiLYV1xd48qsa72I71n+0cFz8OCIQB5zpyqJCFmRXtiOKGlVhGTy
-	 uOCifFRoZO6AAeQPfgrbby5Kc+/ANRm9cGAvyarBvoAJjacyFQwU2XgacqF1G4qs7T53K
-	 hJnGKY4og8M+MB9gBomFIstRXrrsRFaU2o9kJulEWkMum0gZnA4HO5vcEOr+UCWFqNoN+
-	 YtrvaPR2UcImBy1RF04VfWu5uhI7PwdtFl2pfQupUFs4KKanD/UYI6Xq0wZlZBhf0QUKg
-	 0cN7Cw+ESGALNHGpjqXnH5PmAccazthFfdaYgdnchll+S7Yd+sR5vsUPiVy9JX/sGRg==
+	t=1792592631;
+	b=DiwFV7Jw+6EsyUyb+s3wsorKtCr253WAlObDNzGdlbNbeF7meuIR6EMjWbhR3Rkz+Vmd
+	 zZUuno0miZLUNnqh7FvDiZedHSw9CnIn/YVr6CCvYPrc2wFKXvHoR99a9ufmIbpCF13d9
+	 MGydc+QHoS2iDlJL99a2CTRa4sN2debgofvfNosuAdeElEaGj5y+mEin8rTZxwYf3V5y4
+	 YCWL4HBNK/iSRjr5XjBJJnGXxsQ3i0cVtalNO8SUu2mXXTH1AJjCdzX9DRb+KbWJfxUui
+	 Wf46fVFAXxUb/YZXwbX2l7g1okaBPqfP4FLzeMY+yqEU6T8fawxKFv8EO7FtehApFIw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792591377;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792592631;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=fDLM2uSdaow9LokFw0VaDIv/9QOPzVgEmcb//BHgPyM=;
-	b=eC0qQ10fkCB32bojVCO0Ge7Es0zdHEfZyino4JQoaGa8Ea+5VtiYaCqXU0iEkf/GiBoO
-	 bbqIcYYUA+NK9XCU9g6wVwlVYjrx4t/ZHoeOqHOLYXGRnmFx4+jOd/nMXf8Pzl6Lfb7ia
-	 1Nc7rer1zB4pG6AAmaINsEZ0xa3GoMztDxZQgs3ldgxejQAahxQdUXI7+LrBILNQDKaKZ
-	 K3pIqVaVpTN37HhCNJ1CC/lO7eDnuM8frLMvrHR0C4UdGjheuc1Ul9nnSQoH9CcMegi5i
-	 G7DRlxdO2TDEPPOwiFQ6U1UgzZXwpWbXvr90BobeoscGEAirdEjkROuV++TE650BIDA==
+	bh=jb+vfbNXloreD+xqRGxnuP44OgtQpnNM1Ty2GHb0qck=;
+	b=UXPbowmNgFuGZUqjT75gtd+2666gvZS66ubCfgWDzIJq23fX7hbS/N5r9dWApqn/qK1a
+	 pXoleOVHx1J0v49AOqEI7r2z36WjvcoPugZVXIlWalXTW1TnbcjkZBtkyLkIeDzgR/b+L
+	 A0FRihe3NEwIAxmBOV36KT/DDTokPfTPL6svt2V9bQnJWuamOF2/1Qyi5yE5Wh3zthr2T
+	 HD4XivCu4no/+XtG2L0xYK3S02xGQGeOIImUUId/yjnqG/a0rGlrUF1a8XAf1idopDlcf
+	 TPQ2nGh2ZerW3N633CPds7JW/yUrDhmzzeMX4FSjMH5hTQdLkjXb1QY4Pydu0wSEAQw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OUA8VE9V;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mO7N7i7i;
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D05606A31D;
-	Wed, 21 Oct 2026 14:02:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 98D05606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA59606A31A;
+	Wed, 21 Oct 2026 14:23:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0AA59606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OUA8VE9V
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mO7N7i7i
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792591374; x=1824127374;
+  t=1792592630; x=1824128630;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=6TcpUU+U6JP4MXD+j4bO+YP5IabLS7DHZ5gJkyB4Sa4=;
-  b=OUA8VE9VlomzQ9ySAxgQDPJtkfHVZW9TwNJXT9Ywx1oiCdAA8Ecd4Aef
-   EizK+tZE8RVNa+f5eHjVetBF0m1YWo2r8PtLGDE8r9fjngmRGRgx6nJVN
-   uQg90Cn5QIbz60ayEiLGDeTe3VOSGsZKYsvdSPUktNpUoPVY1XOAmdor2
-   f/7N4xQO2p3j1prVfWigHu9rbstQgko/xtsShO0qn0iKYPzWFgTbYfVEJ
-   RJJkcm19w+Bfp5lKh+4+4/VGWkisQvJ72Oqp8qrPiU58zzKwEZOfnTQLF
-   2j98t4c8KmrLk5EFqhEmtsuV5w9hBJS+8OgVAMCktq/Ozfijn0evHAxff
+  bh=ro1PYdze8Pv3Fy03q6iZknJsqp2OdbiERqciVNqzv0U=;
+  b=mO7N7i7iQ8XD2/FX+FooogoBM/JIMDJMwOGRwd65t0JOBh1/shH86laC
+   6bSbOg5xW+4IaIuZ9XYqD+GZDfCaqjGJILl5gok1GKjoXkj8wFtHwE/FY
+   Gm7KSsaJCCrWuqbuVb1w0vkSjx9+CprMxP25xHJkG9ZJnkadJAFeMMVQq
+   kWSMs2ZI9op1Hx/DqiMhfkmOCkFLRdZHuyV4HUqQdRPm2FPj4OS0lrBGX
+   gqHBebgL6IEkft+0O6QVAq9blL3yYgyazNEfCyNduWnzWFX5za5et37wO
+   MKTjotJHXmIoykekRywLmZx63h9GbWe+O67T45trIBeUCCHbNyzmZrDrz
    w==;
-X-CSE-ConnectionGUID: AAALVXWlRE25Hh/uefcPDQ==
-X-CSE-MsgGUID: R0mSUPKNTpyUmzcktM8aew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1214489"
+X-CSE-ConnectionGUID: oeYx7ampRFC040X2IWuxig==
+X-CSE-MsgGUID: 8UMoTCNWSTih+B3sVWKeyA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1336109"
 X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="1214489"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 07:02:51 -0700
-X-CSE-ConnectionGUID: JogAVmmJS02mlCCCTu7pTg==
-X-CSE-MsgGUID: iwCDsb9RRXOAkFMEYHMsEw==
+   d="scan'208";a="1336109"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 07:23:49 -0700
+X-CSE-ConnectionGUID: nT6wuyktTvO6IIrpOxM2Gw==
+X-CSE-MsgGUID: izpanyToQMahVeI7+wlQdg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,170,1787036400"; 
-   d="scan'208";a="3416326"
+   d="scan'208";a="3094082"
 Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 07:02:48 -0700
-Date: Wed, 21 Oct 2026 17:02:46 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 07:23:47 -0700
+Date: Wed, 21 Oct 2026 17:23:44 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Lee Jones <lee@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
+	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Shi Hao <i.shihao.999@gmail.com>, Rachna Patil <rachna@ti.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org, mfd@lists.linux.dev
-Subject: Re: [PATCH 28/28] mfd: ti_am335x_tscadc: Remove redundant
- ti_tscadc_dev_get() helper
-Message-ID: <atjGBg9IAnPPBRmX@ashevche-desk.local>
-References: <20261021121245.3111563-1-lee@kernel.org>
- <20261021121245.3111563-28-lee@kernel.org>
+	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Marco Elver <elver@google.com>,
+	Bart Van Assche <bvanassche@acm.org>
+Subject: Re: [PATCH v2] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations
+ on mutex helpers
+Message-ID: <atjK8DW-XLQ5gepC@ashevche-desk.local>
+References: <20261021052435.112686-1-zoone.rupert@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,20 +87,44 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261021121245.3111563-28-lee@kernel.org>
+In-Reply-To: <20261021052435.112686-1-zoone.rupert@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Oct 21, 2026 at 12:09:50PM +0000, Lee Jones wrote:
-> Now that ti_tscadc_dev_get() is a single-line wrapper around
-> dev_get_drvdata(p->dev.parent), remove the bespoke helper and retrieve
-> the parent driver data directly in the child ADC and touchscreen
-> drivers.
+On Wed, Oct 21, 2026 at 08:24:35AM +0300, Rupesh Majhi wrote:
+> Since commit 5b63d0ae94cc ("compiler-context-analysis: Remove Sparse
+> support"), __acquires() and __releases() only feed context analysis.
+> Their argument is parsed before the function body, where only dev is in
+> scope, so with analysis enabled for this file the build fails:
+> 
+>   error: use of undeclared identifier 'adc'
+> 
+> These helpers take and drop the lock for the ADC_TM driver, which only
+> sees their declarations in the header. Naming the lock there would
+> mean exposing struct adc5_chip, and with no annotation at all the
+> analysis flags the unbalanced locking. Mark both __context_unsafe().
+> 
+> Fixes: baff45179e90 ("iio: adc: Add support for QCOM PMIC5 Gen3 ADC")
 
-I don't see more patches Cc'ed to me, so I don't know if this one makes sense
-or not, but OTOH I don't care much, both approaches are fine with me.
+> Cc: Marco Elver <elver@google.com>
+> Cc: Bart Van Assche <bvanassche@acm.org>
 
-Acked-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Move Cc list after the '---' line (similar to the changelog block below),
+it will have the same effect on email headers, but won't pollute the commit
+message.
+
+> Assisted-by: LLM
+
+As of today we killed that tag, drop it.
+
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+> ---
+> v2: explain __context_unsafe() in commit message (Andy)
+> v1: https://lore.kernel.org/linux-iio/20261003214516.128573-1-zoone.rupert@gmail.com/
+> 
+> Found by building with CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y, which the
+> driver does not set today. Build tested only, no hardware here.
+
 
 -- 
 With Best Regards,
