@@ -1,102 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792623245;
-	b=TxErWK8LUprnm9YsMzls8EiCAT+95J8s/Dt3OgVZCp7gZL2F65ibwbBVKWr5UWjeds1o
-	 YwV2fjkOJ4tvg/+eYUxIUr3/4yAl+1BJ8FSq+rgDxUi9TTs4k3LceeqGpTBqv06JSodHq
-	 xdnE9YjggJe1Jta0w0GKR2SvryHdj3uK+wQTbSXFyBJN63aGtEc7c0J84EBD7pSJyH6Jx
-	 lM0AJcvCLh949Ve9zxbnOCIm6mD3rEskBbSu3XoCyrBoimv9fnAAWRuFZZomh6teZLoQT
-	 gedJ4JEaTXYRGDchA4jXBpa7cszEVuBqlgZ3xrKiU14bY+NDDD+CV8V9eYKWXEaHoWA==
+	t=1792623265;
+	b=HPNxLw3na7KmCCGJIZfFwikpxTLO+/9FLL4c4/PQ9lt1c5OSIdohKt7RaN+g41pCf45M
+	 K7x52NNQBKUpTnmnccobO+qq/IPsSK16flL8kx1fAZp4XOxb2xm2qNFoDcYf+MOHDg/0w
+	 Tqy5qsiV4eD0C55Ve/WQgyUQmSFq5sPhBd5FlMwx5iHJ0aFch2sA4YEQYdvEKPo335h60
+	 ez13VPjI6LsW4qGPWV3SmsD1lNa3cejZGVi2SIlWodVRSsVLO2RGM29E3NI4oVO84amal
+	 zcYRFQoebXUHtFYWDJJKfdGrW2KO3F4iCz+aKLVK8nhJyapD6mu9NwazWmpdtoeBQqw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792623245;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792623265;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=Og+YgCk31Ft1aKtiGGPovDF1opI3usAtawTXGFK4Kuo=;
-	b=RyEpmfAddlBMbhX/nVtMH425tozAuekxEH5bRE5/TIVtBxpOd4p4p9svBXXYE2FppXhN
-	 zfetTMGK4VGgGfGL6xKHnoD+czlb4yUcj8x9JDMBh41+H1Mhyc+RlFTHX9Ipb1HQJpPeC
-	 kguFCDOo0w39ubo5f0PBFmHg/TFE+Xfm14UpcxLg73YLaN38a/HPgx2biKd7Pc0vhYm75
-	 mljvvWnDVCVMHUTJ4ncxCnjEAJ0GB49U9vupZcO4k0ntZyvMMjGq2fW4EJigHn2VWrFR4
-	 ZYw16a3X5Xks5jdGqdqCRKqgh+tSM/cqqOQsu1bCps12oOh9+egX/ZFgcp/2MuduCTw==
+	bh=M/HCi2uN/jq/lVCP/nbhRVGKxJtO5i3puDSAhzll2fQ=;
+	b=Xh16i2/TwO0c6tfDDnwYk1Mw2C2ORvQJuL82S0iMVdA5+O0cJzkjkzy8QmCaiJEjQtzI
+	 cyK0yNedAYu+lN97cDzN8h2FZ3QWyUcDSb/bxNDqIZxwfgjEM0tYilQxbWVlGzbZTh+EO
+	 cIPI84jWAlt/bmFuZHuYzNGDuyElPkGyg02pD1PKvCXsdiWMewcF3pNbEwz6VS+t6rDKC
+	 3MO3D4EJ1zPh3ptpgMnvYW1LwOuoPslzly+GqxFBp4qTQO9WQOHOXe8ipx97A0tZSiXj4
+	 xIsTsnxgx7hZDXsQ4KosPXoIneegYkpOhUNsKTKoN7WxugJdGmwhKU0WKLaIMZKswaQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=YvPKHfMT;
-	arc=none smtp.remote-ip=74.125.82.170
-Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=LULCyG0N;
+	arc=none smtp.remote-ip=74.125.82.173
+Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29D5A606A31B
-	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 22:54:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 29D5A606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9703E606A31A
+	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 22:54:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9703E606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=YvPKHfMT
-Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-33bf40b0c8bso1564966eec.0
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 15:54:04 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=LULCyG0N
+Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-35ef6b49813so1650346eec.0
+        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 15:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792623244; x=1793228044; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792623264; x=1793228064; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Og+YgCk31Ft1aKtiGGPovDF1opI3usAtawTXGFK4Kuo=;
-        b=YvPKHfMTH8xkUFhhJ+uX4L4AW2Y6H/f2dIb6RgYs29EEX/7AiY2hZ192tuLRv2FwKZ
-         4JOWRCBKRcJ3ilpIuZno2sMLiYqHd3Yr4Xy30VOJg7tQHo0zH/IRm3Z1gYKXiT+QBk0/
-         /Cr/gO9gDYKQEjXpfsRkRtAV/ZJwVW5DSJ8KquWPkDmiRIWMkMzToPEPXJOY9Xsb9BOt
-         XrvrKJtD+jxjsTMxb4MtUjczburSVjFbsvLJN32tQ8DJ3DPhkO3TBm11wbD0WWcicrwM
-         6cz5IDC3A0aImPA3zNASlM1dSb/7xNJKGw0kXkTZ/f+wIJaY38M7Sm8y+wHap7J6Ahud
-         q+VA==
+        bh=M/HCi2uN/jq/lVCP/nbhRVGKxJtO5i3puDSAhzll2fQ=;
+        b=LULCyG0NF8XpZRm6yFjaDBqK8WHmyzAGJg9YsvXN/iSa8G+WPnlvofYQhtYGP4qwJP
+         VthbE2b9UlAWO7kz+Vd0PFLMrkgETeaIRIxi6+wd4eGQGro1eh6jlgG0sqyy/FRI1jRZ
+         4XjgjgDtLLg53RSkMPNR1pUlM0h7h3DpMZfhSDAsk0Tt1/y7yCuxgnyIITci1scL8ujC
+         iPqAUnlWI/xazld+rvOfOlRKcV/5fcjXNeJQbgs5ppmm/IXHb6hXFWKDvXSV3PQfOegg
+         ZVkWreLBGibUbs+x5pVK7G2leAFuFlXVBz/mt2CTmKiEqDDMpJkhiPOg6nOUFCnqdeUC
+         0/PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792623244; x=1793228044;
+        d=1e100.net; s=20260707; t=1792623264; x=1793228064;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Og+YgCk31Ft1aKtiGGPovDF1opI3usAtawTXGFK4Kuo=;
-        b=E9KpEiwNDbx5xdju3FuW+kKivygHaatKQcm+Q9SbZh3WjAvI9+V8ah9ZYmi2K9Lv1z
-         e7iXIPBfme9bRMPNv8hrz8v9lv/vfyTjy1dd4o+2oqe5INIpPf0kgJBk/KLPA9Xsd0eH
-         Cm2zDThUs2eXZqAzdYsLiV5GgbmULcJhEo5I0jtAJDY4635KCg0uze97QOiVovSkiy0x
-         DVirEER1LDttApnWDZEvD2QUWrNXvCmHPcvfW8MH2lM0DcNmFVWUP3fz8vPxHWDjwOrT
-         dMBZnIDN1Qn4FFk932qXuwz823UwJ2fvctXKm27W66HaAn1EfelBSevwuNHbP1O2hgQi
-         i7bw==
-X-Forwarded-Encrypted: i=1; AKwUvBxxoZOuRLL4OL6EXHxgSk6T5TZRf5DovfHQ2VfDzNsiBUOW6LMY6rU+IbSmfzs1y1aEO8Ex++rddIg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYICwMCM5OlZLkElowStwDOFE5pDKQGvTtYoU59T5BQWI6186vBb
-	erF357fLFmQcWgTotnM+1h9e4mh3UyPlBMc0Jf4P5wrlc9VzsZ5byyGb
-X-Gm-Gg: AYBFou3rgyRbse289B475qBhBXABp5m1qRPHINq0MCrYxcLTQ0H6KPHp/iGMQrhSb9g
-	A8I2zCQmvZOOhjbqPzLr1Nbx4XsWGCu/E0OJR8h49jVMJ/iG2po6zUCl+v30aZnHbCAaittNxfE
-	NMOJXn6LvQuYRP/i5YiYZNgRROeySyW2lRwF+0Rkd5sFhdqFI72Ci0511nXbI0rcOUfvwEney3r
-	/4kYAKTka69L8nxaEOrWl762MDw5thYQOAZLujHXPSynQB13I3YL1hgTu0NT/ZyNco6lL4qHvH5
-	AGIXY2/P52QKWM2ZOM1ctO4MmmfoQQC8Uai2K6CPOmb3321pet5Nocr6ePtGoVAnQ5N8acBZJ1V
-	kpIZaS/QZWjhJgL5KgKEMZ/5sphX8gQJxU2PkUujrTT4g35JOySW7GyMv+dm0dZFdzsLpK411pz
-	9dSiSousWtdggrpS5dXJUT1S/fON6jhJltCkanVcv4lUVGqFebSgBuoqyREIJuXiGiNC3JDx3kW
-	L2XFywo50jG5pvq5Tzdg+J0mIS+sGQrd+T4xdxZubEx5Yn2oMY8HB44a8pFReGm0RTPApQ6pLYs
-	HE6zOxvzsJ+lKv/Snmn2ld3oIYNKYTIKFiWA/DL3TOh8KG393DXNCUBzHuTJc72vD3xOOFVq4ev
-	SugFmwf+bD38=
-X-Received: by 2002:a05:7300:d58a:b0:35b:9f06:e383 with SMTP id 5a478bee46e88-3674e450e8emr5262441eec.8.1792623244093;
-        Wed, 21 Oct 2026 15:54:04 -0700 (PDT)
+        bh=M/HCi2uN/jq/lVCP/nbhRVGKxJtO5i3puDSAhzll2fQ=;
+        b=pSWrrCJxRxFYEEL1EthbYxQVzyVobcQ+JXTBTMrV8rxxnPiobU0FrYLho7tUXZ90oE
+         BrWJr3s/2RqoKjYCnfxsYfc0xwn3HfMlh5ov7ac/L9kPcGtYeemJ2b9YnqnECbH5okus
+         E+q0c5CtPB1I57VxNyUIZj9uFpgj4BiRXOT5nG8n68T4RxVixQwDr27Tw3GwxzEy1XqN
+         Zm/h5Q9DKJmoeJlHASjVDPn0usrMsRLkaB8qAISHfApZCXL1VNy96qbCD30GIp0Ix0vd
+         UGQ5lOf9b4SHQZl93K8WDhbx5Mtwe/tloAwVfbRvZHMIPuSTFrgrH6e5GvTm5BRUshwe
+         HKhg==
+X-Forwarded-Encrypted: i=1; AKwUvBzD/ZwqJBJG6E86z3VQPJLRYESDBefIHvTdHe96eQ9ii73ZQ4z29HM7m5VO0VaJkQJzGz0eaYT2p2k=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIvzWZvchZBM0EU6xomvU9nc8sR0XN/eqKJ1KsWvBopNcrrWs60
+	NilvKlmqFrn0PKqvrr43FtCKFB5PRSVdAhxOI6WWJ6+59plS/JxObCTd
+X-Gm-Gg: AYBFou3tk1fRZE7nN72tJhbBonYcZvxQH5BuquEkDPrUL+riekTa9/htz6y24bQqtMO
+	tYzrNh8jsEHp2kueQnHikEPPC925+a3oip+3CiCf4n8AQjpTBylNoTZef6pyBBQgbR23cavN9cE
+	jc2wRaI81tn4Nd7grsBrMfIq550DOeCSxbcHbQZNjre0/vA9Y3qEc1IOR/XOzzHHDQynqu1vqqV
+	Zmub7DWhpHU4U+10i6uZfD92Fto62hgJPyF3TYz3YSNCDosQFWYsZbdgwmx3Ie1YSKAKeLB782X
+	m3eC2O2+inOaKt3dP93Z+zig+YSwhWx6zyIRHmXUVRxRgvSchXNdzua1Yqr/HXr2b5/N1RF4AhK
+	OVhIxchgIJm7EikukLgJvmdVylS7j/vp1YXeNVUZaVc36WhS4eOeVaPWMXnZ5N7a3k2lWLkf6wI
+	G/VpcpfDbOp9E0o0Cndpk4Rf42MVrlEgBOs7RgyolyHNE/65BHjZaHJcwLCtVRtsaFWq8gTDe1O
+	UpY4SfgTw/gAhUoE9twMlnWEuWfBZvb+xj6vKamQAnGyaMt9W6N/HkzoeVh5MN5s6uQisSkorH4
+	xeolzpyybt2/sSvaKgLQg1m2cA8tGb2mTY7Ryuyk7TdoNjQuN1iN4jqJunXxgml6vF9++3hZwu6
+	dxT58iNtRRkVf
+X-Received: by 2002:a05:7300:e9cf:10b0:365:b147:b458 with SMTP id 5a478bee46e88-3674b52acb8mr5389019eec.3.1792623263512;
+        Wed, 21 Oct 2026 15:54:23 -0700 (PDT)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-367411b4145sm11999808eec.15.2026.10.21.15.53.59
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-368ee692656sm439219eec.28.2026.10.21.15.54.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2026 15:54:03 -0700 (PDT)
+        Wed, 21 Oct 2026 15:54:22 -0700 (PDT)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
-	"Conall O'Griofa" <conall.ogriofa@amd.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michal Simek <michal.simek@amd.com>,
-	Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-	Manish Narani <manish.narani@xilinx.com>
+	Andy Shevchenko <andy@kernel.org>
 Cc: Arnav Kapoor <kapoorarnav43@gmail.com>,
-	stable@vger.kernel.org,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: xilinx-ams: fix out-of-bounds accesses when
-Date: Thu, 22 Oct 2026 04:23:34 +0530
-Message-ID: <20261021225356.625288-1-kapoorarnav43@gmail.com>
+Subject: [PATCH] iio: proximity: sx9324: fix out-of-bounds read of scan
+Date: Thu, 22 Oct 2026 04:24:11 +0530
+Message-ID: <20261021225417.626946-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -109,170 +101,54 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
-ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
-channel specs and lets ams_init_module() fill them for the AMS node and
-each of its children, without telling it how much room is left.
+The scan period of the SX9324 is selected by the 5 bit wide
+SX9324_REG_GNRL_CTRL0_SCANPERIOD field, so it has 32 possible values.
+sx9324_scan_period_table[] however only has 16 entries, it was copied
+over from the SX9310 driver where the field is only 4 bits wide.
 
-For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
-"channel@N" child after the 10 fixed PL channels. The binding allows
-reg values 20..50, so a PL node can have up to 31 such children, i.e.
-up to 41 PL channels, while only 31 are budgeted for it. Together with
-the 13 PS and 7 AMS control channels, this writes past the end of the
-buffer. Since the modules are filled in device tree order, the fixed
-channel blocks copied after the PL node can overflow as well.
+sx9324_wait_for_sample() indexes the table with the raw field value, so
+all the codes from 16 to 31 read past the end of the array. The default
+value of the register is SX9324_REG_GNRL_CTRL0_SCANPERIOD_100MS (0x16,
+i.e. 22), so the out-of-bounds read happens with the default
+configuration of the device. It is only avoided when the device has an
+interrupt line, as the wait is only done in the polling case.
 
-ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
-unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
-far out of bounds.
+The value read is then used as the duration of an msleep() call, so the
+sensor is polled with a completely random delay.
 
-Pass the remaining capacity down to ams_init_module() and
-ams_get_ext_chan() and fail with -ENOSPC when a module does not fit,
-instead of writing past the buffer. Also reject reg values below 20, as
-the binding requires.
+Fill the table with the scan periods of all 32 codes, which are the
+periods documented for the corresponding sx9324_samp_freq_table[]
+entries, and add a static assertion to keep both tables in sync.
 
-This was previously reported by Weigang He, but the thread stalled
-before the changes were picked up.
-
-Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
-Cc: stable@vger.kernel.org
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
- drivers/iio/adc/xilinx-ams.c | 57 ++++++++++++++++++++++++++++--------
- 1 file changed, 45 insertions(+), 12 deletions(-)
+ drivers/iio/proximity/sx9324.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index 158e6133abf5..0077a88da52c 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -144,7 +144,14 @@
- #define AMS_PL_CSTS_ACCESS_MASK		BIT(1)
- 
- #define AMS_PL_MAX_FIXED_CHANNEL	10
--#define AMS_PL_MAX_EXT_CHANNEL		20
-+/*
-+ * The external PL channels are addressed by their channel number. The
-+ * binding allows the range from AMS_PL_EXT_CHANNEL_MIN to
-+ * AMS_PL_EXT_CHANNEL_MAX. AMS_PL_EXT_CHANNEL_MIN maps onto the first
-+ * ams_pl_channels[] entry, AMS_PL_EXT_CHANNEL_MAX onto the last one.
-+ */
-+#define AMS_PL_EXT_CHANNEL_MIN		20
-+#define AMS_PL_EXT_CHANNEL_MAX		50
- 
- #define AMS_INIT_POLL_TIME_US		200
- #define AMS_INIT_TIMEOUT_US		10000
-@@ -1142,20 +1149,31 @@ static const struct iio_chan_spec ams_ctrl_channels[] = {
+diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+index 13b4ef2896e3..36ab83d3f493 100644
+--- a/drivers/iio/proximity/sx9324.c
++++ b/drivers/iio/proximity/sx9324.c
+@@ -279,11 +279,20 @@ static const struct {
+ 	{ 0, 250000 },  /* 11111: 4 s */
  };
  
- static int ams_get_ext_chan(struct fwnode_handle *chan_node,
--			    struct iio_chan_spec *channels, int num_channels)
-+			    struct iio_chan_spec *channels, int num_channels,
-+			    int max_channels)
- {
- 	struct iio_chan_spec *chan;
--	struct fwnode_handle *child;
- 	unsigned int reg, ext_chan;
- 	int ret;
++/*
++ * The scan period of the SX9324 is selected by the 5 bit wide
++ * SX9324_REG_GNRL_CTRL0_SCANPERIOD field. The values below are the scan
++ * periods in ms of the corresponding sx9324_samp_freq_table[] entries.
++ */
+ static const unsigned int sx9324_scan_period_table[] = {
+-	2,   15,  30,  45,   60,   90,	 120,  200,
+-	400, 600, 800, 1000, 2000, 3000, 4000, 5000,
++	1, 2, 4, 6, 8, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50,
++	56, 62, 68, 74, 80, 90, 100, 200, 300, 400, 600, 800, 1000,
++	2000, 3000, 4000,
+ };
  
--	fwnode_for_each_child_node(chan_node, child) {
-+	fwnode_for_each_child_node_scoped(chan_node, child) {
- 		ret = fwnode_property_read_u32(child, "reg", &reg);
--		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
-+		if (ret)
-+			continue;
++static_assert(ARRAY_SIZE(sx9324_scan_period_table) ==
++	      ARRAY_SIZE(sx9324_samp_freq_table));
 +
-+		/*
-+		 * Anything outside of the range of channel numbers allowed
-+		 * by the binding is not a valid channel.
-+		 */
-+		if (reg < AMS_PL_EXT_CHANNEL_MIN ||
-+		    reg > AMS_PL_EXT_CHANNEL_MAX)
- 			continue;
- 
-+		if (num_channels >= max_channels)
-+			return -ENOSPC;
-+
- 		chan = &channels[num_channels];
--		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
-+		ext_chan = reg - AMS_PL_EXT_CHANNEL_MIN;
- 		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
- 
- 		if (fwnode_property_read_bool(child, "xlnx,bipolar"))
-@@ -1183,7 +1201,7 @@ static void ams_iounmap_pl(void *data)
- 
- static int ams_init_module(struct iio_dev *indio_dev,
- 			   struct fwnode_handle *fwnode,
--			   struct iio_chan_spec *channels)
-+			   struct iio_chan_spec *channels, int max_channels)
- {
- 	struct device *dev = indio_dev->dev.parent;
- 	struct ams *ams = iio_priv(indio_dev);
-@@ -1191,6 +1209,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
-+		if (max_channels < ARRAY_SIZE(ams_ps_channels))
-+			return -ENOSPC;
-+
- 		ams->ps_base = fwnode_iomap(fwnode, 0);
- 		if (!ams->ps_base)
- 			return -ENXIO;
-@@ -1202,6 +1223,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
- 		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
- 		num_channels = ARRAY_SIZE(ams_ps_channels);
- 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
-+		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
-+			return -ENOSPC;
-+
- 		ams->pl_base = fwnode_iomap(fwnode, 0);
- 		if (!ams->pl_base)
- 			return -ENXIO;
-@@ -1213,9 +1237,15 @@ static int ams_init_module(struct iio_dev *indio_dev,
- 		/* Copy only first 10 fix channels */
- 		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
- 		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
--		num_channels = ams_get_ext_chan(fwnode, channels,
--						num_channels);
-+		ret = ams_get_ext_chan(fwnode, channels, num_channels,
-+					max_channels);
-+		if (ret < 0)
-+			return ret;
-+		num_channels = ret;
- 	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
-+		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
-+			return -ENOSPC;
-+
- 		/* add AMS channels to iio device channels */
- 		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
- 		num_channels += ARRAY_SIZE(ams_ctrl_channels);
-@@ -1234,7 +1264,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 	struct fwnode_handle *fwnode = dev_fwnode(dev);
- 	size_t ams_size;
- 	int ret, ch_cnt = 0, i, rising_off, falling_off;
--	unsigned int num_channels = 0;
-+	int num_channels = 0;
- 
- 	ams_size = ARRAY_SIZE(ams_ps_channels) + ARRAY_SIZE(ams_pl_channels) +
- 		ARRAY_SIZE(ams_ctrl_channels);
-@@ -1245,7 +1275,8 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 		return -ENOMEM;
- 
- 	if (fwnode_device_is_available(fwnode)) {
--		ret = ams_init_module(indio_dev, fwnode, ams_channels);
-+		ret = ams_init_module(indio_dev, fwnode, ams_channels,
-+				      (int)(ams_size - num_channels));
- 		if (ret < 0)
- 			return ret;
- 
-@@ -1253,7 +1284,9 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
- 	}
- 
- 	device_for_each_child_node_scoped(dev, child) {
--		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
-+		ret = ams_init_module(indio_dev, child,
-+				      ams_channels + num_channels,
-+				      (int)(ams_size - num_channels));
- 		if (ret < 0)
- 			return ret;
- 
-
+ static const struct regmap_range sx9324_writable_reg_ranges[] = {
+ 	/*
+ 	 * To set COMPSTAT for compensation, even if datasheet says register is
