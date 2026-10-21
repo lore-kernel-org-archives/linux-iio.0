@@ -1,97 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792564438;
-	b=g5HKbPavyE9xcnVCJIb+fY5Th3RUAhjjRxwQLAY3eAFlp91mq2Y5H04RWw7QAraA/LgK
-	 VayFtcW4fh6SiNvVuEhoWuJC50GsS436IoCXcmPjKCfQ/8pG4EkbyoVUetn1SDzMOGx2B
-	 WvQ4DQpvSMOKl+Ae8E0OQqiQSaqRBSTV26r0cQbNR3NWWqLy2QXHIRHz174MCwmuyZARK
-	 aO6WGkgvOW5x0/xW1cYND1Qn0dEmlTzzUjkJPSeAl+m2fDsPOIcnsZ3ga8aHQZX72TciB
-	 PsnHblq5ADggV2Qumb82TzHDN9+jJ4rnUv28oy7Q0bU4X+2HFtgetGhAARhfOx97INw==
+	t=1792565258;
+	b=k+/f17hdl72VY/vUDetsuVLAoXVdP/jQo7/c99+YmTxySdRJak8b+mRKy2HW8zyDtUXr
+	 Oak6uOezx5IqJev3nVHUKZ2qZy2NX10/xk6EvKMj9tpOE2WCwjcJTh8e/BrT0ic/H34Ja
+	 EVSlhd78t3IvlbQtyS+w+wBpA/HadyQAvrIh4wI1alKKrgFXaN74tzUpOstX9MVzqks72
+	 4J9cq4ldfSfGjRJdG2VzeVneO6mSOzcTiNZP8CQBDvbeGv/nc6Y0cqG23tvm4UPob9X4y
+	 17thZ7ljBlnpI0z4dU8URWTrYh1njcTzsYDpLvsvJwg8AtQgalhSb63Sl8/4naNeDjQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792564438;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=XfpDTt0rN1tqZZQ9NzVFLUVJCa2Nxf7s33VXO2H8BuY=;
-	b=a6CL3Bkum5QTY5J3RqScHawLjR7iibyBevHhJKOMscXSTrUu0YhwzB/0PEoc/x4WzVKM
-	 i3vjEN3Wjy1U4OK6KzFW6Ccwd6e2xp9mnvzQRXohyEPDqX3njOLe2MThUQqhSZ9xFIx8a
-	 y/Myl+T1KtjCc5SHWrJNcrZjFnSRqfNlNSmwWqdWDx9RCXVwfUzlEukR35ZtSjSGtWdwY
-	 uytGEUS2Oe9ErWSkqEYOjrnvl73d5Rw36nDV9Cq/AFpWSHPRw6H368hce7oejHWTO/Fwm
-	 qW2wO/Zwnoa3qBKmogwoUID2kXZnN1fpS7hsbnLpZWBplf0LxS1Eq8Pe/vuJm409a5A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792565258;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=ApuaSU74icQpUtG1jhi+LU4LikfJD2XTst7XYPteYzE=;
+	b=R6X3hmbidvx7C75jdUiwwfqqyZYW0CRFC6V7EdJc4p9Fb1iaZbKNkbQkUKWJD02Pvfu6
+	 N/61iaryeogcXDx1LWgsWlVJ8GXCuZCp6aYo1WfdMjiHunDk4/6mSUg309hE3yFRmn3jH
+	 irIFCpkL67LN8S2DGkaRwTGHKt+/fxQD4i5GcImE7167cgH+tpY30i+CrfuJH4OOhAz4a
+	 rTvoqg5Gp8t1k/Bqmd67p/oiVc5U/cnj2OcMgdKwIaOKl6qlt24P9eQBI64uIkKSK9Ms2
+	 ex6DxuJNE+U2W/AQJNy5/57bHV0DvPQVtK0c1Uthh13ZmKf2Ndo6q5rw39x/wly61eQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=oUbtByXC;
-	arc=none smtp.remote-ip=209.85.221.43
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="BM/NTVVZ";
+	arc=none smtp.remote-ip=192.198.163.13
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C153606A31D
-	for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 06:33:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C153606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF723606A319;
+	Wed, 21 Oct 2026 06:47:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CF723606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=oUbtByXC
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-48e20ed3b9dso332904f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 20 Oct 2026 23:33:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792564436; x=1793169236; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=XfpDTt0rN1tqZZQ9NzVFLUVJCa2Nxf7s33VXO2H8BuY=;
-        b=oUbtByXCBGRAYf/94Hy5mFiVX/EOo3S3a9888PZNtD+M6l5dxyrX8RZbT1xWpsPTYM
-         0wwMKdnWiTRZ+ss+sxqEyv4/s3OuLFh8RrJHIIjoGknJDJpOTaeuJhbjCyenDwS1jP2l
-         PjhKoPAAOtBzYeioDWG3eQ4N5yYGcI7wYGCMmI2nWZxGt8fTxvLHd0gqRu5qKNu9JAoA
-         0vwVICOD12KT6Mv/mZchmzauVocAzAgiys/Xijov7zR9nT4r1Kcq2Mmy//gWKcMLOxcW
-         BsReoXjukbmwOijdpyL9jOmgsk+bzkQyXzgQ2t6UrcJy5nmSLR/uFWBnPA5jHymCl91u
-         XXkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792564436; x=1793169236;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=XfpDTt0rN1tqZZQ9NzVFLUVJCa2Nxf7s33VXO2H8BuY=;
-        b=lwSn9PDBzuA7yoprKcBbSRLTKkTxe7LH4wRsua0cm6uBuKwRXwCAnYa0EKlUYW0u1s
-         Eq7CYUeFQYGBcIaN2HZwFR2Hbmab0u74jiaxUmoQly12fQhqXOJuYK64ergEGUJLXKaz
-         /n9T6/t4/a4HtIsv2lqb2YlmKlMpH/XRt5D/Qi/a+hxFlM9RT2ufd/UI5Y6aX94G7SpW
-         d0jR/xsyfzOj62oydpKGtxO+w//vm7o40lwhgtUYpk9hzfiarLs1/u3AHKwYj7ovXUCr
-         RE09wnX2ee564sIgx1WSbnnQMvOTNpoOLXlZcqO/DJbmewpi+Sjzwm8fKckRGijQ6kiu
-         q2og==
-X-Forwarded-Encrypted: i=1; AKwUvBy5hK8jYDaS/f5bHlyaGUMiEPD8FfJm4wLyOuzD3OzcO1Z0jcspAr67LebxexCXTo+KzQIqaFIFlu8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLNQn/bHkeldnouphbk2gSksfaTcD3HGNtPfAJkv93OpPQGjh8Z
-	In3+11xVtsz/WcqCGB6p80jknRtkH6Pumm1IEub38wlizhNZzkzTf7N4
-X-Gm-Gg: AYBFou0xTfzq316jFP3FWIW7RRU5hxjzVQzyfFOcOSy7M0nZup+b2b5zwNCvr7/ilKq
-	kAVz0hMKmbdVdUC2TlHpFY7myGZSlFQQaXUKV++Y5nC8k/nSZE4FeCcXdWZ/5zHptSrp0+4DDFe
-	yWKDyqMXcI70n/PCpCKe1GkPfO2fQNqnpPl5dZN5gl+L01P+CAh+7U9zi4DFT3g/aD1qKBEZCvb
-	Uoco6KNrNTSD6/6cAXDbSo9yAf9f8OXF1l9h+u7CVHKjo2p8of1lyoDROpJzttHnf8vy2enpJ8Z
-	pXi5gBeziAa4zXPEYfhPXAzc+PU0spyeViuWiSehUMxOiGlD++piF/qp3HaRZckUWZOL3yb5xAe
-	aY8TZWKDWKwJmJT9LYdPkLJDcvgGWm2dxzEC1yfmxyd5v+M1IloU5XYr5hQ40D2Ae93czjOHe8q
-	7YQQSeBzrC+4Oe5Fa6MU6xdpKgReP0Nohv80+iPGkXwZzcTy+6Z5yaJR6zLTikH08EAOy5Yy4CL
-	tg2dvC1Eh1rsf113ae/FTTdvsuLAQBBnucf84Xx1HZjtVCcjSfwCwndlUV2X2rC/trEgX2Cg03C
-	CRZO34O2gQIH0EtXFuXgRvC383FC5Q==
-X-Received: by 2002:a05:6000:46d6:b0:48d:f831:2681 with SMTP id ffacd0b85a97d-48e264ce32cmr1131712f8f.38.1792564436308;
-        Tue, 20 Oct 2026 23:33:56 -0700 (PDT)
-Received: from flaviu-Aspire-E5-572G.. ([5.15.72.164])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e2581f15esm3726408f8f.20.2026.10.20.23.33.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Oct 2026 23:33:55 -0700 (PDT)
-From: Flaviu Nistor <flaviu.nistor@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BM/NTVVZ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792565257; x=1824101257;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iXkJaOf0hTRjgmGgbM6k+DxFr9bYqP5hlnEeIwLlwMw=;
+  b=BM/NTVVZ3BQb5s1Sp7uq93U0U2qePEl1wnC33T7o45gL0zvV/q5e/ZtN
+   8WXKszIYcL0QGaCd602ZgqvqQkz4/kHrUmNnByCCQDSlW85LnVHdngzcu
+   MqK1GOFI1nYTIGW8dRFyqzeh+aXIxWec3PQmBwLZPdDkycTW0+kuD8rZQ
+   TqBcJ8AjqrLNc5tCYjYYJXzlokGrkBs+vjuv164lFaOF4ReY2kJOF34Ph
+   HcqcUXFkD5QUEcPuokCcf0wvF5VBCakF9zCEf7jKkkUL9L512J/MglI33
+   wgNU4VJI6LizcYH7hQAdjStGKxJcx9/CrF1Wie+CpcbfcaRkDCG0HYny3
+   w==;
+X-CSE-ConnectionGUID: 3oBmdl6hTs6ZaRPDdaO7Wg==
+X-CSE-MsgGUID: Bw8jrls2Te+de/tOjuqAog==
+X-IronPort-AV: E=McAfee;i="6800,10657,11941"; a="1262464"
+X-IronPort-AV: E=Sophos;i="6.27,169,1787036400"; 
+   d="scan'208";a="1262464"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 23:47:36 -0700
+X-CSE-ConnectionGUID: /kqY2X8UQ5acfpW8VEcolQ==
+X-CSE-MsgGUID: cTIjsCwcQcuRHKnLFY5T8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,169,1787036400"; 
+   d="scan'208";a="4811458"
+Received: from cpetruta-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 23:47:30 -0700
+Date: Wed, 21 Oct 2026 09:47:27 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Cc: Flaviu Nistor <flaviu.nistor@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: [PATCH] docs: iio: add documentation for ti-ads1015 driver
-Date: Wed, 21 Oct 2026 09:33:50 +0300
-Message-ID: <20261021063350.7984-1-flaviu.nistor@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: imu: inv_icm42600: update gyro start and stop delay
+Message-ID: <athf_2jVU7eUri-0@ashevche-desk.local>
+References: <20261020-iio-imu-inv-icm42600-update-gyro-start-stop-delay-v1-1-ed52290a4ca4@tdk.com>
+ <atcsENHqXSRvn7SU@ashevche-desk.local>
+ <BE1P281MB142605780E1D5B1B051ED4A3CE672@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
+ <BE1P281MB1426FBE0884F6FC89255B5A2CE672@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,162 +85,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BE1P281MB1426FBE0884F6FC89255B5A2CE672@BE1P281MB1426.DEUP281.PROD.OUTLOOK.COM>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add documentation for the ADS1015 ADC IIO driver, which describes channels,
-IIO attributes, threshold events and ABI usage examples.
+On Tue, Oct 20, 2026 at 12:55:53PM +0000, Jean-Baptiste Maneyrol wrote:
+> >From: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+> >Sent: Tuesday, October 20, 2026 14:40
+> >>From: Andy Shevchenko <andriy.shevchenko@intel.com>
+> >>Sent: Tuesday, October 20, 2026 10:53
+> >>On Tue, Oct 20, 2026 at 10:42:30AM +0200, Jean-Baptiste Maneyrol via B4 Relay wrote:
+> >>
+> >>> Following datasheet gyroscope specifications, the maximum start time
+> >>
+> >>What datasheet? What specifications? Please, be more precise to refer the
+> >>Datasheet name, version, chapter, section, et cetera.
 
-Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
----
- Documentation/iio/index.rst      |   1 +
- Documentation/iio/ti-ads1015.rst | 129 +++++++++++++++++++++++++++++++
- 2 files changed, 130 insertions(+)
- create mode 100644 Documentation/iio/ti-ads1015.rst
+> >I will add the reference.
+> 
+> in fact, this number is not available in the public datasheet. Only the mean
+> value is accessible.
+> 
+> Should I just modify the commit message to delete any reference to the datasheet?
 
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index d0fb32f4b80f..47ba249dae0b 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -43,3 +43,4 @@ Industrial I/O Kernel Drivers
-    bno055
-    ep93xx_adc
-    opt4060
-+   ti-ads1015
-diff --git a/Documentation/iio/ti-ads1015.rst b/Documentation/iio/ti-ads1015.rst
-new file mode 100644
-index 000000000000..214e50c39821
---- /dev/null
-+++ b/Documentation/iio/ti-ads1015.rst
-@@ -0,0 +1,129 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+=====================
-+TI ADS1015 ADC driver
-+=====================
-+
-+Driver for the Texas Instruments ADS1015 and related I2C analog-to-digital
-+converters. The module name is ``ads1015``.
-+
-+Supported devices
-+=================
-+
-+* `ADS1015 <https://www.ti.com/product/ADS1015>`_: 12-bit ADC, programmable data rate from 128 to 3300 samples/s.
-+* `ADS1115 <https://www.ti.com/product/ADS1115>`_: 16-bit ADC, programmable data rate from 8 to 860 samples/s.
-+* `TLA2024 <https://www.ti.com/product/TLA2024>`_: 12-bit ADC, programmable data rate from 128 to 3300 samples/s.
-+
-+The ADS1015 and ADS1115 provide a comparator; the TLA2024 does not.
-+
-+I2C address
-+===========
-+
-+The ADDR pin selects the 7-bit I2C address.
-+For ADS1015 and ADS1115, the possible addresses are:
-+
-+* ``0x48``: ADDR connected to GND
-+* ``0x49``: ADDR connected to VDD
-+* ``0x4a``: ADDR connected to SDA
-+* ``0x4b``: ADDR connected to SCL
-+
-+For the TLA2024, the possible addresses are:
-+
-+* ``0x48``: ADDR connected to GND
-+* ``0x49``: ADDR connected to VDD
-+* ``0x4b``: ADDR connected to SCL
-+
-+
-+Channel configuration
-+======================
-+
-+The driver exposes four single-ended voltage channels (AIN0 through AIN3,
-+measured relative to GND) and four differential channels (AIN0-AIN1,
-+AIN0-AIN3, AIN1-AIN3, and AIN2-AIN3). Device Tree child nodes configure the
-+initial settings for the corresponding conversion input. They do not restrict
-+which IIO channels are available.
-+
-+The child node ``reg`` values select the conversion input as follows:
-+
-++---------+------------------+
-+| ``reg`` | Conversion input |
-++=========+==================+
-+| 0       | AIN0 - AIN1      |
-++---------+------------------+
-+| 1       | AIN0 - AIN3      |
-++---------+------------------+
-+| 2       | AIN1 - AIN3      |
-++---------+------------------+
-+| 3       | AIN2 - AIN3      |
-++---------+------------------+
-+| 4       | AIN0 - GND       |
-++---------+------------------+
-+| 5       | AIN1 - GND       |
-++---------+------------------+
-+| 6       | AIN2 - GND       |
-++---------+------------------+
-+| 7       | AIN3 - GND       |
-++---------+------------------+
-+
-+``ti,gain`` selects the full-scale input range using the following index:
-+
-++-------+--------------------------+
-+| Index | Full-scale range         |
-++=======+==========================+
-+| 0     | +/- 6.144 V              |
-++-------+--------------------------+
-+| 1     | +/- 4.096 V              |
-++-------+--------------------------+
-+| 2     | +/- 2.048 V (default)    |
-++-------+--------------------------+
-+| 3     | +/- 1.024 V              |
-++-------+--------------------------+
-+| 4     | +/- 0.512 V              |
-++-------+--------------------------+
-+| 5     | +/- 0.256 V              |
-++-------+--------------------------+
-+
-+For a channel node that omits ``ti,gain``, the default index is 2.
-+
-+``ti,datarate`` selects the data rate by index. For the ADS1015 and TLA2024,
-+indices 0 through 7 select 128, 250, 490, 920, 1600, 2400, 3300, and 3300
-+samples/s, respectively. For the ADS1115, they select 8, 16, 32, 64, 128,
-+250, 475, and 860 samples/s. For a channel node that omits
-+``ti,datarate``, the default index is 4.
-+
-+The ``label`` property is exposed through the channel's ``in_voltageY_label``
-+sysfs attribute. Without a defined label, the datasheet input name is used
-+(for example, ``AIN0`` or ``AIN0-AIN1``).
-+
-+IIO attributes
-+==============
-+
-+Each voltage channel provides a raw reading, a label, scale, and sampling frequency.
-+The scale and sampling frequency can be changed at runtime; their available
-+values are listed by ``scale_available`` and ``sampling_frequency_available``.
-+
-+Threshold events
-+================
-+
-+The ADS1015 and ADS1115 can report threshold events when the ALERT/RDY pin is
-+connected to an interrupt. The driver supports one active comparator channel
-+at a time, and threshold events cannot be enabled while buffered capture is
-+active. The TLA2024 does not support threshold events.
-+
-+The rising threshold value sets the upper threshold. The falling threshold
-+value sets the lower threshold; enabling the ``either`` event uses both values
-+in window-comparator mode. The event period selects the comparator queue
-+duration, which corresponds to 1, 2, or 4 consecutive conversions at the
-+channel's configured sampling frequency.
-+
-+Usage examples
-+--------------
-+
-+.. code-block:: bash
-+
-+	root:/sys/bus/iio/devices/iio:device0# cat name
-+	ads1015
-+	root:/sys/bus/iio/devices/iio:device0# cat in_voltage0_label
-+	AN0
-+	root:/sys/bus/iio/devices/iio:device0# cat in_voltage0_raw
-+	750
+I would rather see the full information like you put above, like
+
+  "Unfortunately the public datasheet "$REFERENCE_TO_IT" does not specify
+   these numbers".
+
+> >>> for gyroscope is 45ms. Stop time is required for letting gyroscope
+> >>> mechanical structure settle down before enabling it back. 50ms is a
+> >>> sufficient value for that.
+> >>>
+> >>> Update values to these numbers.
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
