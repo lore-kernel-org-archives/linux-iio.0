@@ -1,81 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792627277;
-	b=YPz+fvHGcEpMWftLPtVxJZm2nc6X4si7KndqBsLLoZzEAurxT1mITY81X8K2GxihXNDv
-	 ejVKygrLGR4Ax3pgUP+y9uECYp4BEgvqSP7Eq6qJPzgN6Ido7a36KeS3h/bBVfqEeDZlx
-	 b7NDTWc/GQLx5nK2wd1iSAK4vmGL/MSY+reY+sVZanQM5N5nrBsAGdCYAqsoAlj8UeJa3
-	 k4GgZWFSbVqtI1Ui/P4OD6L9qJxdEhehM3cId7CWswHJ+AFE2t/qcFVkbDZk+oR+QbVQp
-	 0VFWJYTLBNpc72lotsocdC/nLLl04kGuucfeBKwEA6il3dvq0uPnolyHc/9104OUzcA==
+	t=1792627280;
+	b=HV800+IffI3NXEPV9+2dbdXaTunV/AU+Ki5ghpsDijTCjCK8pjYopO2kDjVYtJO5+vAu
+	 QcT4F+O7AGqActwH28qumm25cpatWwmxsJoxUbHH0oTmxiJNsGSCZEIdKMm3slxkZR/8b
+	 x76CdSd48RKLm7f5Z6kpYjG5voCNUx1964tnIMv/sLtHDs9kNHxVrIkDlKgc1Z2Iqclyy
+	 OgboWjULXdws66kt4sYuVie6t4POFzCntnp3OnWofasmeokh7narrlZK+IkRTagkBegZD
+	 Iu1d09vp/25Ucy2QC/oqgAqcdqo/0qzXS1vTLVeASennlplv9SU3+bfMnSesz3M51Tw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792627277;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792627280;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=UkAsoLMeActYKyns6ZTYz7sV5mC0lERrrNy6cvdT+bo=;
-	b=G/MMhvzFLhN1HuBgiEDwgzccSHk17BW1PWQfOpkE0dDjeukA0fVKmcDr69TJvBeoY4N4
-	 FAu6iJIwbdRzGAISb0xVvJNOlcyLsLinEK77WNeQ+zolkdCVDRKMBdkdC1fJgFHqGYbvW
-	 gJ3UTI2rqf210AbZzMJskJHQE9tjr6+2+Gz9ZnuzgrZnERxJhMvfqRbpsR/GkD4J9ijQS
-	 P8YwAxz7cX/DCfuOxR4LOrxeFYe5mENQQWXw2sHJjpYOm21ERn2R8g/ZgucrmNFuWLYEI
-	 aeF0LHnmwXKWNGrnGPxrixvMIhX7vPxR6c5Uj/6nTXslzpLIwv73dkYMEwHWG+TSFkQ==
+	bh=DrhBXqhw+pc4M/hvpW+mvyywy5l2oUqCGne7U8TDFRk=;
+	b=BIA4FRqeTruR2kOA125/UEJzvx7JR43MjE5mH/uLU+pEmJ+MmcQN3GC+h4v7txyOA2Nu
+	 LOYEObmmIIjEcfiUYGFllHuJ/NOol0aFvhA8FH1eGJXERyko9R2ra+zIj6s10YgATpvxL
+	 WorraYCexkph83vVpW5SOZmM7fXC4HSgTfiA9PqkNB/M1u/1BN/RkqeononDbZ2c4eNB3
+	 xQlUf46tTP9qmG4uM65yjyVh3E0uGxgx0YkjojZJr6xYGd9vpIgQZ1SYpSzSo9grALnJe
+	 kj0hZxw0b8pLTgrnRXoYmWNJJtWLsxwKdxDtR2ntX2PI6W9Kz/lyUQeMqn/C7XnK6zA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=chromium.org;
 	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=OkvbgxbH;
-	arc=none smtp.remote-ip=74.125.82.175
-Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=HrJTejEB;
+	arc=none smtp.remote-ip=74.125.82.174
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AA35606A328
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1AA35606A328
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA964606A33D
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA964606A33D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=OkvbgxbH
-Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-3535bf8b3e0so2473949eec.0
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:16 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=HrJTejEB
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-354ba08cfd1so2157578eec.1
+        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1792627276; x=1793232076; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1792627279; x=1793232079; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=UkAsoLMeActYKyns6ZTYz7sV5mC0lERrrNy6cvdT+bo=;
-        b=OkvbgxbHMZnSAk8CTquPIubABB8DrdxIk8wRnLiASUwQGSmYvdGCzV1C02/c6B13qF
-         IgEcHEBHUQ7iCzGKwuOlGzo/rXfYtEUeVNjm/RelAayCIIboVTtN9b6vH3yRHaTucRb9
-         hu/3+YqfTzzHcbGoYGlkRRW655YChl20icXuA=
+        bh=DrhBXqhw+pc4M/hvpW+mvyywy5l2oUqCGne7U8TDFRk=;
+        b=HrJTejEB7BtLE0g6YVZzJ+mXw/FqC4qs+QE3ZEylrm506D3bPr/XnbN7CQaB1kxGgG
+         POwNaazpcRqDRqmS6PBilW20w11LSMVcXHTYIwZh9MAXzgRDhdANFYKJ8p+i5GEF7jNZ
+         ndsHL84Hh8PeeeGrLlhciPOC2ADIkgI0bAiiM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792627276; x=1793232076;
+        d=1e100.net; s=20260707; t=1792627279; x=1793232079;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=UkAsoLMeActYKyns6ZTYz7sV5mC0lERrrNy6cvdT+bo=;
-        b=X6XnLan3r5sMlX/wiVaAvKLP8mmX/zwhORL+JIyo+jcsy+g8Ckfs6tcqUnqpxTmMvh
-         UjMVwIsUSKTZ8olkFi0DLbCQ1Z6dCbjY2rxGvr3KPDlIWZo6WOXMeGik/DZxFh8aMafh
-         1x9hMatpIygZg4Bg22qTdQ1xz1OcGhNtRiJIk+LU01HHjcEg151b+E9O+47p6Io1Jf9f
-         2MfV5SkCBp+hrozaXeMSYA8kt2HFx79j5O4O0AdgNVqWSEYeP4GiMOFZdwEVsjznXzLk
-         O4la/mK4Bdj0fMNCGcTP4ZW7A1zK+X30uFlvZFddprZSXHNL6tYBc/fQrRLfVerlMMlN
-         U8AA==
-X-Forwarded-Encrypted: i=1; AKwUvBy8x6CnrFD3J6iaUrMvHNXgez/Cj3zHxC9fAtoJ4vv8bEEltL7rnEKdTAtPKH6DLoCRBWi0Dvp/ToE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJsv7u+VArF+TIrP8CH0maqjtsWqB+ZTflKnhb7+KSke6Tb6r+k
-	qEZlkxDT3IIP4pf589KA0KpSL9D5htF82M1eZeaj9LCZk1ehATzUxM0FpAumCOIVkg==
-X-Gm-Gg: AYBFou3Ealm8xiLK3GSE8aCtQfy64o+bxYXZooZj7nb5frjjcwTmlkmXVYlL6g5i+Ky
-	4i4BM/8jWgcDGbSNaJnha+vBb3oaSJ8u/P9jWhKHzV92GCUpO8NP2VoWoo5SPeDVTau91O1KDFt
-	NARlsz84PPwQ0tYGF8TWPOJ6jKCw6BQjuIW8m9R5wq13Oen2r4MVob49zveReSoFcr2pjG69OD/
-	EXJseXQsl5CoG1oTUlmKzTKy0yNHORpomthPZFeCz0twCgho3HoDsD8BqvWrbAQcg2Z3PpsCaLw
-	YtrOROSHNcbfvX2quPo18hmw8cbUOpZ3z6J+KlgJp8IYy0bEEsrBtD9P82g2IyDhl1/pkm10GTw
-	fazkxguuS9qgDuzqtlryf7t3BEB+K4EHog+8zBtdnb8j/1k+WM9PAT1rovowNcf38MerVYgH1vS
-	F9iVzWLZbZvy41o/HyPHHpwCwp9UVAAIS0BDpqTRUo5IhjthRcBd0v8S9cT5hTgk+J/4aFiypMy
-	NzuMM/K0Mp7slluxIX/MaB6hsqnrH+h9yfkGph5t8O7D3cSxVQXp8pURRUQbniSjmiDPj4kNcy6
-	VL7VOgSccx7pJHlWuNo=
-X-Received: by 2002:a05:7022:4586:b0:144:fd7c:84fe with SMTP id a92af1059eb24-190a67fc71cmr6323768c88.35.1792627275807;
-        Wed, 21 Oct 2026 17:01:15 -0700 (PDT)
+        bh=DrhBXqhw+pc4M/hvpW+mvyywy5l2oUqCGne7U8TDFRk=;
+        b=TZEo01S0Xzu3xsu4kmaksMt6GUli83xcT0aEwhc3bOiRfWy2l/SrG0BmBztAQHds1v
+         rdxZBOjPTAeRY+R2/CMBHM3636ZdVKIOzpR1DdbyJfSkU5njgFbIEKThRB78YhIiFkFP
+         2q3mtqlKqcDzGKXm1IrTq13EooukbXab8zfAgQxcopysx9orvDXJD1c4jvuIzGP4YsA1
+         sJkz9MlTvMlAKaNGNmAAjYY9Yhx4tavY1Afzg24vtHMPPDZHzOWKVgNuTlj2ncxA/5xY
+         0JeT9DOq3GqiKrCYv64T2/ABgznieG8Tqo6WPI/SLQnM/wvJD8B9XBsLxK+YorrRmATg
+         gteA==
+X-Forwarded-Encrypted: i=1; AKwUvBxrMVa5ae4gRV1XU/hBIC1XtzsYuoAJFvr5ub0H7xYccPPtEWCR+33In/PCvk0ZkWLGkF7GGmwgE+E=@vger.kernel.org
+X-Gm-Message-State: AFq9FYK4tzoy/ZWUmnIGhPRvvudrGgrDpGnMIGKPCj73NRPbuSgXEpBl
+	mhAhr2oSCSumwMa4R+lmf/ZlHSbTcfael9gJXz2cVsKSR/juthWCj8sPIjBB6LgiPw==
+X-Gm-Gg: AYBFou0xf4C3dFs+StBR3n4cdstRZMpjw7bHTsfo0qG7sRrGuQT9mq1u0b2BxWQc/6m
+	31WtGQMuFkppbQsfJFPF2cm4xcxSCUFqnAHpVYBOp/4Z1EFu6YL4qI5aSPZ4THgXlvxn9LaiVyj
+	wTvS3bVGA3Fh/kw/VYYdvEdb4SmdAUQ88z5s7wX6grl+c4YpqG/cup1VcMGJdSRpx8HWWhvsU4A
+	eo5seG0moc4kPwy4y2Md/Pl7dRCMCHDG3wNyeU+lm+1QGgCH4ordmfouKMdd8e1WdYJRNekqjLO
+	yOn+sGvL/jBHG79X2uOj5RnqUMnvHFXkzwqOR1OgO/Day1FtSpTkWCNymMPaGVLXES7cU0fqiHM
+	fiPZ2Fu6vjlO35RjegDNToDDsPbGqTRmBIfR0xQ347BepZrbCYWoMAm7dwjdVT9LTDzJpqeLnXD
+	KkdFYl/PYf/BUoJUgHXcKFQrJPKpHd1VAR+wtccP6xfIsYBC1U3HZshQ9ZkFmruIm3xgbN4Ps9J
+	naZ41k1BHu8dPW9rfJkoOF2S38lpVyn5zxf0EHMD45fXmv63Ke5QmqChLgtymziA8HzVrcxsdGq
+	+SHcI6w9P1W1tsap51o=
+X-Received: by 2002:a05:7301:618e:10b0:35f:8c5d:5927 with SMTP id 5a478bee46e88-3674cf3715emr5200368eec.14.1792627278783;
+        Wed, 21 Oct 2026 17:01:18 -0700 (PDT)
 Received: from localhost ([2a00:79e0:2e7c:8:14ab:bfeb:ac88:458f])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1903d3ae06fsm9737854c88.19.2026.10.21.17.01.09
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36741e71eaesm22639722eec.26.2026.10.21.17.01.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Oct 2026 17:01:10 -0700 (PDT)
+        Wed, 21 Oct 2026 17:01:18 -0700 (PDT)
 From: Brian Norris <briannorris@chromium.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -87,9 +87,9 @@ Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org,
 	Brian Norris <briannorris@chromium.org>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 03/17] iio: accel: mma8452: Discard pm_runtime_put_autosuspend() return values
-Date: Wed, 21 Oct 2026 16:57:04 -0700
-Message-ID: <20261021165858.v2.3.I0ce530b298f72acf4015d898d8b2aaee89482b8e@changeid>
+Subject: [PATCH v2 04/17] iio: accel: mma955x: Discard pm_runtime_put_autosuspend() return values
+Date: Wed, 21 Oct 2026 16:57:05 -0700
+Message-ID: <20261021165858.v2.4.Ie9a9de6adbe98d063c6c45b2f59e143303586067@changeid>
 X-Mailer: git-send-email 2.56.0.218.g1ec904b173-goog
 In-Reply-To: <20261021235818.3059519-1-briannorris@chromium.org>
 References: <20261021235818.3059519-1-briannorris@chromium.org>
@@ -105,8 +105,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-This driver propagates the return value of pm_runtime_put_autosuspend(),
-which is not particularly useful.
+These drivers propagate the return value of
+pm_runtime_put_autosuspend(), which is not particularly useful.
 
 Returning an error code from pm_runtime_put_autosuspend() merely means
 that it has not queued up a timer or work item to check whether or not
@@ -114,15 +114,13 @@ the device can be suspended and there are many perfectly valid
 situations in which that can happen, like after writing "on" to the
 device's runtime PM "control" attribute in sysfs for one example.
 
-For this reason, modify this driver to simply discard the
+For this reason, modify these drivers to simply discard the
 pm_runtime_put_autosuspend() return value, and inline the pm_runtime
-helper, since the behavior is the same with and without CONFIG_PM.
+helpers now that they behave the same with and without CONFIG_PM.
 
-While I'm at it: I see that mma8452_data_rdy_trigger_set_state() and
-mma8452_write_event_config() mismanage the runtime PM reference count,
-and instead rely on (racy) autosuspend delay for correct ordering.
-Undo this choice, and instead properly drop the reference count only
-after we're done touching the hardware.
+While at it, I see that mma9553_write_event_config() mismanages the
+runtime PM reference count. It should only put() a reference after it's
+done touching the hardware, not before. Resolve this ordering issue.
 
 This will facilitate a planned change of the
 pm_runtime_put_autosuspend() return type to void in the future, similar
@@ -133,36 +131,106 @@ Signed-off-by: Brian Norris <briannorris@chromium.org>
 ---
 
 Changes in v2:
- * Rebase to linux-next properly
- * Drop a few drivers' changes, as they stopped checking
-   pm_runtime_put_autosuspend() return code already
  * Split iio patch into per-driver patches
  * Inlining
- * Autosuspend race fixes
+ * Refcount ordering
 
- drivers/iio/accel/mma8452.c | 100 ++++++++++++++++++++++--------------
- 1 file changed, 61 insertions(+), 39 deletions(-)
+ drivers/iio/accel/mma9551.c      | 21 +++++++++--------
+ drivers/iio/accel/mma9551_core.c | 39 ++++----------------------------
+ drivers/iio/accel/mma9551_core.h |  1 -
+ drivers/iio/accel/mma9553.c      | 36 ++++++++++++++++++++---------
+ 4 files changed, 42 insertions(+), 55 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index fe62a903f0e2..7466c40f6239 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -220,26 +220,6 @@ static int mma8452_drdy(struct mma8452_data *data)
- 	return -EIO;
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index 182f488edab1..4c549fb106bc 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -71,9 +71,11 @@ static int mma9551_read_incli_chan(struct i2c_client *client,
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = mma9551_set_power_state(client, true);
+-	if (ret < 0)
++	ret = pm_runtime_resume_and_get(&client->dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to resume: %d\n", ret);
+ 		return ret;
++	}
+ 
+ 	ret = mma9551_read_status_byte(client, MMA9551_APPID_TILT,
+ 				       reg_addr, &angle);
+@@ -96,7 +98,7 @@ static int mma9551_read_incli_chan(struct i2c_client *client,
+ 	ret = IIO_VAL_INT;
+ 
+ out_poweroff:
+-	mma9551_set_power_state(client, false);
++	pm_runtime_put_autosuspend(&client->dev);
+ 	return ret;
  }
  
--static int mma8452_set_runtime_pm_state(struct i2c_client *client, bool on)
+@@ -178,9 +180,7 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		ret = mma9551_set_power_state(data->client, false);
+-		if (ret < 0)
+-			return ret;
++		pm_runtime_put_autosuspend(&data->client->dev);
+ 	} else {
+ 		int bitnum;
+ 
+@@ -200,15 +200,18 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
+ 		}
+ 
+ 
+-		ret = mma9551_set_power_state(data->client, true);
+-		if (ret < 0)
++		ret = pm_runtime_resume_and_get(&data->client->dev);
++		if (ret < 0) {
++			dev_err(&data->client->dev, "failed to resume: %d\n",
++				ret);
+ 			return ret;
++		}
+ 
+ 		ret = mma9551_gpio_config(data->client,
+ 					  (enum mma9551_gpio_pin)mma_axis,
+ 					  MMA9551_APPID_TILT, bitnum, 0);
+ 		if (ret < 0) {
+-			mma9551_set_power_state(data->client, false);
++			pm_runtime_put_autosuspend(&data->client->dev);
+ 			return ret;
+ 		}
+ 	}
+diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
+index 2ccb1fb19b96..68df195d5b24 100644
+--- a/drivers/iio/accel/mma9551_core.c
++++ b/drivers/iio/accel/mma9551_core.c
+@@ -654,37 +654,6 @@ int mma9551_set_device_state(struct i2c_client *client, bool enable)
+ }
+ EXPORT_SYMBOL_NS(mma9551_set_device_state, "IIO_MMA9551");
+ 
+-/**
+- * mma9551_set_power_state() - sets runtime PM state
+- * @client:	I2C client
+- * @on:		Use true to power on device, false to power off
+- *
+- * Resume or suspend the device using Runtime PM.
+- * The device will suspend after the autosuspend delay.
+- *
+- * Returns: 0 on success, negative value on failure.
+- */
+-int mma9551_set_power_state(struct i2c_client *client, bool on)
 -{
 -#ifdef CONFIG_PM
--	struct device *dev = &client->dev;
 -	int ret;
 -
 -	if (on)
--		ret = pm_runtime_resume_and_get(dev);
+-		ret = pm_runtime_resume_and_get(&client->dev);
 -	else
--		ret = pm_runtime_put_autosuspend(dev);
+-		ret = pm_runtime_put_autosuspend(&client->dev);
 -	if (ret < 0) {
--		dev_err(dev, "failed to change power state to %d\n", on);
+-		dev_err(&client->dev,
+-			"failed to change power state to %d\n", on);
 -
 -		return ret;
 -	}
@@ -170,148 +238,111 @@ index fe62a903f0e2..7466c40f6239 100644
 -
 -	return 0;
 -}
+-EXPORT_SYMBOL_NS(mma9551_set_power_state, "IIO_MMA9551");
 -
- static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
- {
- 	int ret = mma8452_drdy(data);
-@@ -247,18 +227,20 @@ static int mma8452_read(struct mma8452_data *data, __be16 buf[3])
- 	if (ret < 0)
- 		return ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, true);
--	if (ret)
-+	ret = pm_runtime_resume_and_get(&data->client->dev);
-+	if (ret < 0) {
-+		dev_err(&data->client->dev, "failed to resume: %d\n", ret);
- 		return ret;
-+	}
- 
- 	ret = i2c_smbus_read_i2c_block_data(data->client, MMA8452_OUT_X,
- 					    3 * sizeof(__be16), (u8 *)buf);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, false);
-+	pm_runtime_put_autosuspend(&data->client->dev);
- 
--	return ret;
-+	return 0;
- }
- 
- static ssize_t mma8452_show_int_plus_micros(char *buf, const int (*vals)[2],
-@@ -974,17 +956,25 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 	if (ret)
- 		return ret;
- 
--	ret = mma8452_set_runtime_pm_state(data->client, state);
--	if (ret)
--		return ret;
-+	if (state) {
-+		ret = pm_runtime_resume_and_get(&data->client->dev);
-+		if (ret < 0) {
-+			dev_err(&data->client->dev, "failed to resume: %d\n",
-+				ret);
-+			return ret;
-+		}
-+	}
- 
- 	switch (dir) {
- 	case IIO_EV_DIR_FALLING:
--		return mma8452_set_freefall_mode(data, state);
-+		ret = mma8452_set_freefall_mode(data, state);
-+		break;
- 	case IIO_EV_DIR_RISING:
- 		val = i2c_smbus_read_byte_data(data->client, ev_regs->ev_cfg);
--		if (val < 0)
--			return val;
-+		if (val < 0) {
-+			ret = val;
-+			break;
-+		}
- 
- 		if (state) {
- 			if (mma8452_freefall_mode_enabled(data)) {
-@@ -997,7 +987,7 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 					ev_regs->ev_cfg_chan_shift);
- 		} else {
- 			if (mma8452_freefall_mode_enabled(data))
--				return 0;
-+				break;
- 
- 			val &= ~BIT(chan->scan_index +
- 					ev_regs->ev_cfg_chan_shift);
-@@ -1005,10 +995,23 @@ static int mma8452_write_event_config(struct iio_dev *indio_dev,
- 
- 		val |= ev_regs->ev_cfg_ele;
- 
--		return mma8452_change_config(data, ev_regs->ev_cfg, val);
-+		ret = mma8452_change_config(data, ev_regs->ev_cfg, val);
-+		break;
- 	default:
--		return -EINVAL;
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	if (ret) {
-+		if (state)
-+			pm_runtime_put_autosuspend(&data->client->dev);
-+		return ret;
+ /**
+  * mma9551_sleep() - sleep
+  * @freq:	Application frequency
+@@ -741,9 +710,11 @@ int mma9551_read_accel_chan(struct i2c_client *client,
+ 		return -EINVAL;
  	}
-+
-+	if (!state)
-+		pm_runtime_put_autosuspend(&data->client->dev);
-+
-+	return 0;
+ 
+-	ret = mma9551_set_power_state(client, true);
+-	if (ret < 0)
++	ret = pm_runtime_resume_and_get(&client->dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "failed to resume: %d\n", ret);
+ 		return ret;
++	}
+ 
+ 	ret = mma9551_read_status_word(client, MMA9551_APPID_AFE,
+ 				       reg_addr, &raw_accel);
+@@ -755,7 +726,7 @@ int mma9551_read_accel_chan(struct i2c_client *client,
+ 	ret = IIO_VAL_INT;
+ 
+ out_poweroff:
+-	mma9551_set_power_state(client, false);
++	pm_runtime_put_autosuspend(&client->dev);
+ 	return ret;
  }
+ EXPORT_SYMBOL_NS(mma9551_read_accel_chan, "IIO_MMA9551");
+diff --git a/drivers/iio/accel/mma9551_core.h b/drivers/iio/accel/mma9551_core.h
+index 543454a31dc0..1d55fdfd0a92 100644
+--- a/drivers/iio/accel/mma9551_core.h
++++ b/drivers/iio/accel/mma9551_core.h
+@@ -62,7 +62,6 @@ int mma9551_gpio_config(struct i2c_client *client, enum mma9551_gpio_pin pin,
+ 			u8 app_id, u8 bitnum, int polarity);
+ int mma9551_read_version(struct i2c_client *client);
+ int mma9551_set_device_state(struct i2c_client *client, bool enable);
+-int mma9551_set_power_state(struct i2c_client *client, bool on);
+ void mma9551_sleep(int freq);
+ int mma9551_read_accel_chan(struct i2c_client *client,
+ 			    const struct iio_chan_spec *chan,
+diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+index 5a36d415a837..2ccb68dfbcd4 100644
+--- a/drivers/iio/accel/mma9553.c
++++ b/drivers/iio/accel/mma9553.c
+@@ -610,10 +610,16 @@ static int mma9553_write_raw(struct iio_dev *indio_dev,
+ 		if (data->stepcnt_enabled == !!val)
+ 			return 0;
+ 		mutex_lock(&data->mutex);
+-		ret = mma9551_set_power_state(data->client, val);
+-		if (ret < 0) {
+-			mutex_unlock(&data->mutex);
+-			return ret;
++		if (val) {
++			ret = pm_runtime_resume_and_get(&data->client->dev);
++			if (ret < 0) {
++				dev_err(&data->client->dev,
++					"failed to resume: %d\n", ret);
++				mutex_unlock(&data->mutex);
++				return ret;
++			}
++		} else {
++			pm_runtime_put_autosuspend(&data->client->dev);
+ 		}
+ 		data->stepcnt_enabled = val;
+ 		mutex_unlock(&data->mutex);
+@@ -737,24 +743,32 @@ static int mma9553_write_event_config(struct iio_dev *indio_dev,
  
- static void mma8452_transient_interrupt(struct iio_dev *indio_dev)
-@@ -1447,20 +1450,39 @@ static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct mma8452_data *data = iio_priv(indio_dev);
- 	int reg, ret;
+ 	mutex_lock(&data->mutex);
  
--	ret = mma8452_set_runtime_pm_state(data->client, state);
--	if (ret)
--		return ret;
+-	ret = mma9551_set_power_state(data->client, state);
+-	if (ret < 0)
+-		goto err_out;
 +	if (state) {
 +		ret = pm_runtime_resume_and_get(&data->client->dev);
 +		if (ret < 0) {
 +			dev_err(&data->client->dev, "failed to resume: %d\n",
 +				ret);
-+			return ret;
++			goto err_out;
 +		}
 +	}
- 
- 	reg = i2c_smbus_read_byte_data(data->client, MMA8452_CTRL_REG4);
--	if (reg < 0)
--		return reg;
-+	if (reg < 0) {
-+		ret = reg;
-+		goto err_put_pm;
-+	}
- 
- 	if (state)
- 		reg |= MMA8452_INT_DRDY;
- 	else
- 		reg &= ~MMA8452_INT_DRDY;
- 
--	return mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
-+	ret = mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
-+	if (ret)
-+		goto err_put_pm;
 +
+ 	event->enabled = state;
+ 
+ 	ret = mma9553_conf_gpio(data);
+ 	if (ret < 0)
+ 		goto err_conf_gpio;
+ 
 +	if (!state)
 +		pm_runtime_put_autosuspend(&data->client->dev);
 +
-+	return 0;
-+
-+err_put_pm:
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return 0;
+ 
+ err_conf_gpio:
+-	if (state) {
+-		event->enabled = false;
+-		mma9551_set_power_state(data->client, false);
+-	}
 +	if (state)
 +		pm_runtime_put_autosuspend(&data->client->dev);
-+	return ret;
- }
- 
- static const struct iio_trigger_ops mma8452_trigger_ops = {
++	event->enabled = !state;
+ err_out:
+ 	mutex_unlock(&data->mutex);
+ 	return ret;
 -- 
 2.56.0.218.g1ec904b173-goog
 
