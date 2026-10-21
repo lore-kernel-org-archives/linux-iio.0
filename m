@@ -1,60 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792608221;
-	b=oQ8po4sfq2gjwO898ASXnkv+7HBrYlLNUShBXf98tc1i65ka4cKtMm3zLrNZ2RSKaIUS
-	 uh0Coue7sWGkt6v3M+hYBrl1I0Af5Qvj44PSBqiZNb/p+pyNqjTwWw/Q3p1PBsEbRAU5O
-	 T/dfS18/MrxBkFI44khA/zqxJ9FDiGFl6vW1hYNUnhGGFk2Hv9iFM1aA2gWbHSTh1EpIH
-	 tjaP9JSBjJY2SNwnG5XwmepvdbdG3MUT5IhyhFmU4q4pEgjdaJLJ9sUjZXlP4dpkvs+FF
-	 raXe0wBttEuUUqhhYRZx2YMW9yFVL4e61A4fPnj4bRb/a0Fbo5b+lMnoLBQxbKa8+iw==
+	t=1792608600;
+	b=O/AL67aIDwDwLk4xv9ATEJqgISsB3qXDLHlFLZmvy0X7IK9D6kIL7ah+gN8R3WipIb7Y
+	 AnsAqlZLOfiqSWPGgIQCbYimcRSAsyd/Ys/42dvx6iD6wQ1i+IUZAQja1ykCpTo6qdrBH
+	 grAQNvdxzeJbkMInFdgrFlBbTlhjUN0juGP/js6gsM4q9y/cIQLPoM94ZsPoJpf5TdmOK
+	 +zGYqituJv1zmZKiyUNsNtOF/2l+A214D6h/hqhhH5l1JaPBSjFMQuDtIBLubKocDnZhK
+	 LvW0tpJ6Iw3agkbEwNcoagURcq2GT81ViWjYYDqXk0sS1znsP7Qv6JFLt/jas4tkTcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792608221;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792608600;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=Yaa6k5Fi/S8yLcSO8oA5OP0KYAzuBkSJifuZS+OJQwg=;
-	b=3tld28wijojEQaB4q+Xj6suzN4QOBHx77MJdThm1pK1B1Q45UEk2xhq5jEUbyOxjL/d2
-	 MBo5A9S+dWDKwDz7WwBlB8om3pVHlUFX4vfZfV5A1kry+MobGfieHe+ek0+auzu/X5YJN
-	 J9M2pQpKsc6hTcUSWEnDC2nugiyGkgRc+MAthm8SNXUHrpehUCLjc/FjYtNV5MtTrZG2U
-	 ialWvj9XV5hQKR9DW/kaPniHIC1+s7QFOc1QJnUVT3T39Wogizln6dEqUirfuHajeBF5D
-	 5i7zw7RTiNpIR6wSEPe2G2jfpbqod3zJuwN4/doMggFUQFyDnKFMdneJJzUkdLDIhFg==
+	bh=UP7QKcZoxFf5ukFFf3zgd+8QVhw52yv+EUqhUUTfyb4=;
+	b=KSitFwIZOtJeRj6ftP6CYfDrJOp0J/5sYP1xmYjoFmQAKTF7qpl0hZJo5dFoigzqn2jb
+	 iu3iIsVMqlOcQUQex7fjGhnMgpJSJQyfrCD0fzo0yEpcRX8c71EEFBGz2DaQ2hQPEoXVF
+	 +ch2MG8/IXEBofW8gfNtmLrsqvhgFuO6ibnpepMCcv4vIT1F5nXuQ6ckNZ48vt3YF5i69
+	 Ie2lmyCu2fPpR7si2Txd3qHOHRVqM+KpNZSVrQptpsI+4IEY/4C+ibC/L1I2B8Ly02dcm
+	 RuvshHu2x67Iw3eXDBDOIbX0xHvdVVnFYJTd/i2U8fXhRjZ85ll+4H3iLhmHIDfEMNA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Q4DMs8kV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F2aDVkC3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE663606A319;
-	Wed, 21 Oct 2026 18:43:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 217F3606A319;
+	Wed, 21 Oct 2026 18:49:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Q4DMs8kV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E39751F000C1;
-	Wed, 21 Oct 2026 18:43:37 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F2aDVkC3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 947C51F000C1;
+	Wed, 21 Oct 2026 18:49:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792608220;
-	bh=Yaa6k5Fi/S8yLcSO8oA5OP0KYAzuBkSJifuZS+OJQwg=;
+	s=k20260515; t=1792608599;
+	bh=UP7QKcZoxFf5ukFFf3zgd+8QVhw52yv+EUqhUUTfyb4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Q4DMs8kVxPGEaN7Axg9dakbNTgBP2NukZGUkfwdkGiJd2vewncfX2IL/BP4IW9GQd
-	 8HRndU+baQEdiRdKBKFYuHOehHyfenkrIscmvzQk86iUTA/NESFOO3lF2GZmxcHgJK
-	 /iY1tW+Bd4g8AwVRtyB5iI9JaSNPAaEOPvVmO//Hbc65Bo2QNSSrULzY1Ba0wt+zkS
-	 ItAmKgvV84ZNMX1S/lpls36R9WBNW7mkvuQq6hHTgZ6YvYEm1hVNaG9OMD6E9xlN8Y
-	 V4+qzZhzn/zKRVX4zPRD/bt7qwmcT6IRDwFuL6Nrjbu5v5F1GbRmJTNTZ0a/vBm89z
-	 kvR2Ya+aXNHZw==
-Date: Wed, 21 Oct 2026 19:43:34 +0100
+	b=F2aDVkC3wKHHTT76g49QPHNRr9iHNf/o3pj4tzGIUkjoh8OOPu5FE5dHowS0tIoef
+	 sn3kug7+NGNfS8MV5OvoLU/mFl066DoydpisPFNekOWrs5ZaAe39iXy/ZFdXdmzTPi
+	 hwyMD2j1eAp5ibjgRP5VOD+Nl8WTYFIn3AEdo2mDWJ8O5tP3NQyiYPcPGRA4xk/HDc
+	 N9Ylbfroo/g6m6RCa/p0EVOpUoP8ORnGDu59yLEvf2htR+5ppugdyp6xEZVFb8C998
+	 DEPbgu0vyxON++1Kdf6Bn53W9ORsSFaYYwtpSIvdf8SBFXm/chMV4KwJRob9Jn09qh
+	 5ol4dDmCmogZw==
+Date: Wed, 21 Oct 2026 19:49:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Billy Tsai <billy_tsai@aspeedtech.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Joel Stanley <joel@jms.id.au>, "Andrew
- Jeffery" <andrew@codeconstruct.com.au>, Ryan Chen
- <ryan_chen@aspeedtech.com>, Arnd Bergmann <arnd@arndb.de>,
- <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
- <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v4] arm64: dts: aspeed: Add syscon phandle to AST2700
- ADC nodes
-Message-ID: <20261021194334.587dbe77@jic23-hlaptop>
-In-Reply-To: <20261021-ast27xx-adc-dts-syscon-v4-1-4fab164f10b4@aspeedtech.com>
-References: <20261021-ast27xx-adc-dts-syscon-v4-1-4fab164f10b4@aspeedtech.com>
+To: Brian Norris <briannorris@chromium.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org, Ulf
+ Hansson <ulfh@kernel.org>, linux-kernel@vger.kernel.org, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Geert Uytterhoeven
+ <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, Marek Vasut
+ <marek.vasut+renesas@mailbox.org>, Rui Miguel Silva <rmfrfs@gmail.com>,
+ linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH 03/13] iio: Discard pm_runtime_put_autosuspend() return
+ values
+Message-ID: <20261021194951.7b65c2eb@jic23-hlaptop>
+In-Reply-To: <ataTYER7XM_MEYKL@google.com>
+References: <20261006231900.3230373-1-briannorris@chromium.org>
+	<20261006161337.3.If2263e6ae9eaa4493881b72922dcde031ce9d81d@changeid>
+	<20261018211807.66bfea0d@jic23-hlaptop>
+	<ataTYER7XM_MEYKL@google.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,63 +71,190 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 21 Oct 2026 10:09:39 +0800
-Billy Tsai <billy_tsai@aspeedtech.com> wrote:
+On Mon, 19 Oct 2026 15:02:08 -0700
+Brian Norris <briannorris@chromium.org> wrote:
 
-> Point the ADC nodes at their own syscon1 so the driver can correctly
-> locate the reference-voltage trimming data on AST2700, where syscon0
-> and syscon1 share the same device-tree node name and would otherwise
-> resolve to the wrong SCU.
+> Hi Jonathan,
 > 
-> Fixes: e77bb5dc5759 ("arm64: dts: aspeed: Add initial AST27xx SoC device tree")
-> Assisted-by: LLM
-> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
-> ---
-> This was patch 3/3 of "iio: adc: aspeed: Fix SCU lookup for multi-SCU
-> AST2700" (https://lore.kernel.org/r/20261005-ast27xx-adc-upstream-v3-0-ef25552d3a59@aspeedtech.com).
-> Jonathan has applied patches 1 and 2 to the testing branch of iio.git;
-> this resends patch 3 on its own, now with a Fixes tag, since the
-> driver falls back to the old global syscon lookup whenever this
-> property is absent, so patches 1 and 2 alone don't change AST2700's
-> behaviour without it.
+> On Sun, Oct 18, 2026 at 09:18:07PM +0100, Jonathan Cameron wrote:
+> > On Tue,  6 Oct 2026 16:13:31 -0700
+> > Brian Norris <briannorris@chromium.org> wrote:
+> >   
+> > > Multiple IIO drivers inspect or propagate the return value of
+> > > pm_runtime_put_autosuspend(), which is not particularly useful.
+> > > 
+> > > Returning an error code from pm_runtime_put_autosuspend() merely means
+> > > that it has not queued up a timer or work item to check whether or not
+> > > the device can be suspended and there are many perfectly valid
+> > > situations in which that can happen, like after writing "on" to the
+> > > device's runtime PM "control" attribute in sysfs for one example.
+> > > 
+> > > For this reason, modify these drivers to simply discard the
+> > > pm_runtime_put_autosuspend() return value, and change the return types
+> > > of fxls8962af_power_off() and fxas21002c_pm_put() to void.
+> > > 
+> > > This will facilitate a planned change of the
+> > > pm_runtime_put_autosuspend() return type to void in the future, similar
+> > > to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
+> > > type to void").
+> > > 
+> > > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > > ---
+> > > This patch is independent of the rest of the series, except for the end
+> > > (changing the return type). I expect it can be applied by individual
+> > > maintainers, and we pick up the end once the dust is settled.
+> > > 
+> > > I couldn't decide if I should split this up by individual driver, or
+> > > just 1 for the whole drivers/iio/ subsystem. Many of these drivers have
+> > > borrowed the same patterns, so I chose to just send 1. Let me know if I
+> > > should split it up.  
+> > 
+> > Hi Brian,
+> > 
+> > Great that you are doing this, but sadly it opens the can of worms that
+> > are the helpers a lot of these drivers have.  They just about made
+> > sense before various recent runtime_pm useability improvements.
+> > Now they make very little sense at all. Dropping the return value
+> > here also removes the reason for a bunch of odd defensive ifdefs.
+> > 
+> > As such, I'm requesting some slightly more involved changes. Some of
+> > them I think are coupled tightly to what you are doing here so should
+> > be in this series, others can be left for later.  
+> 
+> Thanks for the notes. I'll handle the ones that are at least
+> approximately related to the code I'm touching. I think there are a few
+> bugs that get resolved along the way too.
+> 
+> I may not get the more tangential ones though.
+> 
+> Also, unless you'd prefer otherwise, I plan to wait a bit more to send
+> v2, since the merge window only just opened, and some of this series
+> will just be a RESEND. I'd prefer maximizing the chance that the
+> recipients will actually notice the patches, by submitting outside that
+> window.
+> 
+> (OTOH, the bulk of these changes are in IIO, so I can just make IIO its
+> own series if that helps things along.)
 
-I've now moved these at Billy's request to the fixes-togreg branch
-and tagged them for stable. That will go upstream sometime after
-rc1 (rather than waiting for the next cycle as testing would have
-done).
+I'd split out an IIO series but take your time as no particular rush
+given these won't merge until next time around.
+
+  
+> > > diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+> > > index d611341a0e2a..e8e511daa7c4 100644
+> > > --- a/drivers/iio/gyro/bmg160_core.c
+> > > +++ b/drivers/iio/gyro/bmg160_core.c
+> > > @@ -319,18 +319,15 @@ static int bmg160_set_power_state(struct bmg160_data *data, bool on)
+> > >  	struct device *dev = regmap_get_device(data->regmap);
+> > >  	int ret;
+> > >  
+> > > -	if (on)
+> > > +	if (on) {
+> > >  		ret = pm_runtime_get_sync(dev);  
+> > 
+> > gah.  Please just change this to use pm_runtime_resume_and_get() whilst you
+> > are here.
+> > 
+> > Ideally squash the helper in favour of direct calls to the runtime
+> > pm.  Yet another pace that the recent improvements in runtime pm useability
+> > have made what was of minor benefit entirely pointless.
+> > 
+> > The ifdef can go away as well as I think the only thing that helped with
+> > was the return value of the put you are removing.  
+> 
+> One thing I found while looking through this driver:
+> 
+> bmg160_write_event_config() and bmg160_data_rdy_trigger_set_state() do
+> some ghastly things w.r.t. runtime PM. In particular, they seem to
+> perform put_autosuspend() *before* they're done touching the hardware,
+> and then rely on the (very large) autosuspend delay to defer the
+> runtime_suspend() operation. It even has a bunch of comments about the
+> incorrect ordering.
+> 
+> That's one giant race condition. And the autosuspend delay is
+> configurable via user space, so it's extra dangerous.
+> 
+> Anyway, that's to say: I plan to refactor/reorder the put_autosuspend()
+> ordering there while I'm at it.
+
+Excellent!
+
+> 
+> (There's also some strange error handling that potentially leads to
+> runtime PM underflow. I'll fix that one while I'm here.)
+> 
+> I think this one is imitated in another few drivers as well.
+
+yeah.  We do seem to cut and paste bad practice and bugs around :(
+
+> 
+> > > -	else
+> > > -		ret = pm_runtime_put_autosuspend(dev);
+> > > -
+> > > -	if (ret < 0) {
+> > > -		dev_err(dev, "Failed: bmg160_set_power_state for %d\n", on);
+> > > -
+> > > -		if (on)
+> > > +		if (ret < 0) {
+> > > +			dev_err(dev, "%s: failed to resume: %d\n", __func__, ret);
+> > >  			pm_runtime_put_noidle(dev);
+> > > -
+> > > -		return ret;
+> > > +			return ret;
+> > > +		}
+> > > +	} else {
+> > > +		pm_runtime_put_autosuspend(dev);
+> > >  	}
+> > >  #endif
+> > >  
+
+> > > diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+> > > index c0f4db8d95f7..d4e197e05d26 100644
+> > > --- a/drivers/iio/light/pa12203001.c
+> > > +++ b/drivers/iio/light/pa12203001.c
+> > > @@ -188,7 +188,8 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
+> > >  	if (on)
+> > >  		return pm_runtime_resume_and_get(&data->client->dev);
+> > >  
+> > > -	return pm_runtime_put_autosuspend(&data->client->dev);
+> > > +	pm_runtime_put_autosuspend(&data->client->dev);
+> > > +	return 0;  
+> > 
+> > This function has evolved to the point of silliness.
+> > Given how minor your change is, feel free to ignore the following however!
+> > 
+> > There is zero shared code in here between the on and off paths so
+> > rename the function pa12203001_runtime_enable() and cover only the
+> > 'on' case.  Then just put the pm_runtime_put_autosuspend() in wherever
+> > on was previously false.  
+> 
+> Ack. But because "runtime_enable()" has a specific runtime PM meaning
+> that is very different than the usage here, I've chosen the name
+> "pa12203001_runtime_resume_and_get()" instead, which I think makes for
+> more API symmetry.
+
+Good point on naming.
+
+> 
+> > Given that presumably one of the things is being turned on whenever
+> > we enable it, also pull the mutex out of the if blocks and use
+> > guard() to simplify that.  
+> 
+> guard() is tricky, since it produces a deadlock if you hold the lock
+> across pm_runtime_resume_and_get(). So I'll skip that part and leave it
+> to someone (or no one) who is more particularly interested in this
+> driver.
+Ah indeed. Should be scoped_guard() but can wait for someone else
+who cares enough to do that and maybe not worth it anyway.  I got
+lost in imagining what the other refactors would look like.
 
 Thanks,
 
 Jonathan
 
-> ---
->  arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi b/arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi
-> index bc990f79e693..053673cc4b8e 100644
-> --- a/arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi
-> +++ b/arch/arm64/boot/dts/aspeed/aspeed-g7-soc1.dtsi
-> @@ -246,6 +246,7 @@ adc0: adc@14c00000 {
->  		clocks = <&syscon1 SCU1_CLK_AHB>;
->  		resets = <&syscon1 SCU1_RESET_ADC>;
->  		interrupts-extended = <&intc1 80>;
-> +		aspeed,trim-syscon = <&syscon1>;
->  		#io-channel-cells = <1>;
->  		status = "disabled";
->  	};
-> @@ -256,6 +257,7 @@ adc1: adc@14c00100 {
->  		clocks = <&syscon1 SCU1_CLK_AHB>;
->  		resets = <&syscon1 SCU1_RESET_ADC>;
->  		interrupts-extended = <&intc1 80>;
-> +		aspeed,trim-syscon = <&syscon1>;
->  		#io-channel-cells = <1>;
->  		status = "disabled";
->  	};
-> 
-> ---
-> base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
-> change-id: 20261021-ast27xx-adc-dts-syscon-9cf5d733ed0e
-> 
-> Best regards,
+> > >  
+> > >  err:
+> > >  	mutex_unlock(&data->lock);
+
 
