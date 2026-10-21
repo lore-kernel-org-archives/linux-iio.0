@@ -1,59 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792610390;
-	b=OgSFMGsNS55ifX8C/NcxpZjZAmZNRnX4Hzfsk3mx8pLPpWHyAkIunIV6yxqia4RvvnMl
-	 FHFVAYCyh1gdpV3tmQt8QtbK51h7U2krG62N8ZMC+uXQahlnQU62aTlDSu46ZBLfBd+u9
-	 t8xNhQaQGJebFoYRusCY1FtvbQoWJF6pfjblfMXMHioqD0iyBtW8IWC27S3CwWQ5GAys4
-	 nR730cTjKNpaEao2Z1qRdG4XQlZWXcrtYsyVAGx0dAkHiPnkpnL++tny41k5N+uy89OtP
-	 D1Us2q7CkB0z03V5vy3c3lUCNvIcClgsEzd4y86cv4Zx2S8RFNghVFBY1ZYgE+b3hkQ==
+	t=1792610538;
+	b=qrnxr+Ub8rlahsNlyyJa0h5Z9im/FqcmOk9UVATRc5ssvqWgzAOV2CbNOPWsi6FtG8+N
+	 kpob0DEN9Ddr72YYXW7ux1ETJT8P6OznOEOf/lnFuHL1jhBo6XOWtObzbmHpd9QRxc3+d
+	 g6xU1h+0TmlsQd0MQBqIlc0Oq8qFPLk8q3d06EeI5Wgu4jHK4o74JeOXCoAlQ2VbU8zdl
+	 Wrd8Xd7BOxy7h60OU+z5vc7bkNoyHTRhAmIJjFoDFIbYyIq2Mv7r/1iicY9+o3Iwd3Oyf
+	 XaOYL91ZIZRs+hRGscKoO422REzNcbmgZe8xGTYOjCpkhqnAZBfTccNKgdDsPu4Al9Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792610390;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792610538;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=ubD8jlES2r9JS1ilGa+r04b+PuxqIhs9kd1HnDejkPY=;
-	b=sj+mKhOhgH0RIdwqQRwsojsXPMDndU84ggtJJDMng3Gje8ZdDTn0kl4clbtI4V9XPIQz
-	 TPcTez20GZ/OYqgh9mrJT/PAqCI4beHGZ3P8yTOVue5HDgnYGgvhC7CfBuQkCPNqN/J78
-	 QDN1MN6lTg/Y/NcDuBByLz2tEjrxgQz7IF4bfysF6ySyrXKLq7RgpQYukBb+SR20tWzCw
-	 1F2UcQ46eWsTySWOeO2TLuLbwyxlr8gEU3cbACfhyNtYaqDL1avsNsIstrx1LPPvDHwBA
-	 4C2X59+ZmHX2dsD7IPQTYz7nR5ayPtOduKJXjB8pAb7gr+yb54xvD8FjLBdHqpTr/6Q==
+	bh=q8aWe+ym/B+qVtPpDaCvqQXqyZeVsHrlmAXXw0ZAdow=;
+	b=GNZuK1U5cfHhSrawCtZc/R3OoEdYyQ+yWSfsrw83CfahMriORRS9u7iRP++HZrpppRyw
+	 agGANYJtJg4tQtmVBLe7JywR2AVklrEWgNyn0eOCKV0dC68lOU0pH5MHZJOJ61Eq7wpo+
+	 Rd1jZlYrI8Up9LXJxpfiCrbZzwUw61HqZqg6j6MVSWBmnyPegTjfO/OGJNs/uZtNravzL
+	 QhKqvRl/9xQZNlDgBN0nCPjPNFGn+ALo62tNiQJNea+mmzBO8PonbMaw+JMhZwvRJDQUb
+	 T6zyWDx76d+i6pVjQn4S9m2cjPP67CI70LhMJlE6D8VTdKee5VYV1DpQZ/c1+diX2aw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BbA0vOuq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ci5+dYs1;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13DDD606A324;
-	Wed, 21 Oct 2026 19:19:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7FFC606A319;
+	Wed, 21 Oct 2026 19:22:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BbA0vOuq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A0E71F000C2;
-	Wed, 21 Oct 2026 19:19:47 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ci5+dYs1
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF6C1F000C1;
+	Wed, 21 Oct 2026 19:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792610389;
-	bh=ubD8jlES2r9JS1ilGa+r04b+PuxqIhs9kd1HnDejkPY=;
+	s=k20260515; t=1792610537;
+	bh=q8aWe+ym/B+qVtPpDaCvqQXqyZeVsHrlmAXXw0ZAdow=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BbA0vOuq4XksLwfEBfKH0Mg/HesUwrzRg3nbNBByJuoIfwSj//7JtxU8UX2urpuiC
-	 y9CD6iqC8wPLe24M9fSoQ2xx022IoaPUW5IxH0wRyb/NsVbvuEEqiVGyjaKg4Aq1EM
-	 m+qfMkt5WpvQtVgBW9uQoijmRNfqCAhn+CXpUvZrPZ5Inc1nVUO0TWy1yN91bAjvW0
-	 OQw+dWJ9Lvt4fF6XS6kWV8Zu5tvjIVOLZzxYX+GqPmC0lcEfcqZH1HjX1Qwnbb4ouf
-	 P2ZAzQhs7KqMHMkMfeFXIkJFi5pfVYStj779wXkEBjQvkonBRoH+eo2ssWNaDT4UcG
-	 t2cJpPkALSe/g==
-Date: Wed, 21 Oct 2026 20:19:43 +0100
+	b=ci5+dYs1BpJJyoRmYQ8k1K3/KlTeRgwCpFcBnsHb2WGabzhzN6vfM2ZzUaCYXQoDw
+	 jSRO4Ey4d+UvHc2D3u4LCndTbHzTVpiBrBkH4Oe6MIG6moVADqlPW8PHvSPnP5RVfp
+	 55/emvZCC852WjgDT3GzgGtQ0zy0i/4+sz89G88IyZhQs8ufV6TeIQmV3k9QIwjBxb
+	 Zs9ENU7/SLUkfJOKuQ2GVaGN3WVE2y0LJqvtY1HhUzBbJSKva8NIn8eHUFJ3509G+Q
+	 180M9qf4B2XsM8zufFeP4qpRYpV2CvwtHJxZ0uKFtZGkVU2d5Pxi4SGDkTuZ26SxXb
+	 4qSlKihUEmzOA==
+Date: Wed, 21 Oct 2026 20:22:10 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Lee Jones <lee@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Dmitry Torokhov
- <dmitry.torokhov@gmail.com>, Shi Hao <i.shihao.999@gmail.com>, Rachna Patil
- <rachna@ti.com>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-input@vger.kernel.org, mfd@lists.linux.dev
-Subject: Re: [PATCH 28/28] mfd: ti_am335x_tscadc: Remove redundant
- ti_tscadc_dev_get() helper
-Message-ID: <20261021201943.6159ecdf@jic23-hlaptop>
-In-Reply-To: <20261021121245.3111563-28-lee@kernel.org>
-References: <20261021121245.3111563-1-lee@kernel.org>
-	<20261021121245.3111563-28-lee@kernel.org>
+To: Flaviu Nistor <flaviu.nistor@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah
+ Khan <skhan@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH] docs: iio: add documentation for ti-ads1015 driver
+Message-ID: <20261021202210.7d70429b@jic23-hlaptop>
+In-Reply-To: <20261021063350.7984-1-flaviu.nistor@gmail.com>
+References: <20261021063350.7984-1-flaviu.nistor@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,68 +64,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 21 Oct 2026 12:09:50 +0000
-Lee Jones <lee@kernel.org> wrote:
+On Wed, 21 Oct 2026 09:33:50 +0300
+Flaviu Nistor <flaviu.nistor@gmail.com> wrote:
 
-> Now that ti_tscadc_dev_get() is a single-line wrapper around
-> dev_get_drvdata(p->dev.parent), remove the bespoke helper and retrieve
-> the parent driver data directly in the child ADC and touchscreen
-> drivers.
+> Add documentation for the ADS1015 ADC IIO driver, which describes channels,
+> IIO attributes, threshold events and ABI usage examples.
 > 
-> Signed-off-by: Lee Jones <lee@kernel.org>
-Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Hi Flaviu
+This is missing the 'why'?
 
-Seems moderately unlikely we will get a flurry of activity on
-this driver and if we do merge conflicts should be minimal
-so no need for an immutable I think.
+We don't tend to add per driver documentation unless there are some
+oddities or unique aspects that aren't described by more generic
+documentation.  The actual features are all discoverable so documenting
+those rarely makes sense.
 
-J
-> ---
->  drivers/iio/adc/ti_am335x_adc.c           | 2 +-
->  drivers/input/touchscreen/ti_am335x_tsc.c | 2 +-
->  include/linux/mfd/ti_am335x_tscadc.h      | 5 -----
->  3 files changed, 2 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index 1516dd332f90..77ea59d6c6b7 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -636,7 +636,7 @@ static int tiadc_probe(struct platform_device *pdev)
->  
->  	adc_dev = iio_priv(indio_dev);
->  
-> -	adc_dev->mfd_tscadc = ti_tscadc_dev_get(pdev);
-> +	adc_dev->mfd_tscadc = dev_get_drvdata(pdev->dev.parent);
->  	tiadc_parse_dt(pdev, adc_dev);
->  
->  	indio_dev->name = dev_name(&pdev->dev);
-> diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-> index 623546e80668..40ffdec9d207 100644
-> --- a/drivers/input/touchscreen/ti_am335x_tsc.c
-> +++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-> @@ -418,7 +418,7 @@ static int titsc_probe(struct platform_device *pdev)
->  {
->  	struct titsc *ts_dev;
->  	struct input_dev *input_dev;
-> -	struct ti_tscadc_dev *tscadc_dev = ti_tscadc_dev_get(pdev);
-> +	struct ti_tscadc_dev *tscadc_dev = dev_get_drvdata(pdev->dev.parent);
->  	int err;
->  
->  	/* Allocate memory for device */
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 4a048a897cf3..36d365b64fe6 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -175,11 +175,6 @@ struct ti_tscadc_dev {
->  	struct adc_device *adc;
->  };
->  
-> -static inline struct ti_tscadc_dev *ti_tscadc_dev_get(struct platform_device *p)
-> -{
-> -	return dev_get_drvdata(p->dev.parent);
-> -}
-> -
->  static inline bool ti_adc_with_touchscreen(struct ti_tscadc_dev *tscadc)
->  {
->  	return of_device_is_compatible(tscadc->dev->of_node,
+If you have a reason that it makes sense to document this specific
+driver then state that clearly in this patch description.
+
+Thanks,
+Jonathan
+
+
+> Signed-off-by: Flaviu Nistor <flaviu.nistor@gmail.com>
+
 
