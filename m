@@ -1,78 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792688712;
-	b=a8J3d5NtbIHzy5NdLToSOPPpD2cFceHy+lS6m6QGgDu4x2oIwwd2+6uAQbyJ7OId+Y+M
-	 69UPcNlaTcjDuCOdlseUW8cgCIlwya2DdjA4CUwbvNC3ro2sVi5KRJbQGGJXWIZxVjo/u
-	 quDn9Mzqzc9TxNTwPOEOtbAum464IuLoslu08Yi8xFctnMU7V3XeqvB1Y/6Pm15TeddK9
-	 EdRwHWbVI6MCOlUWEpyQZstP2C9BUEgcJYs6a78eXZuMFhhWinUzALGWirblrVMyV4AIJ
-	 /I46Oefm/bx2xTLvE6Yup79Re0Pr8wJbjhr41iqZlk7KoX9KWxOzQ7Sa47boHqVxeNw==
+	t=1792689184;
+	b=aYWNTA0go3ei4LvUAYIJkxIKVFL3dFSiv8xzIFUHXLJ8kMup66POzLmPmpzFWy4MKyOm
+	 0k6N3G5V3FJUvqh4YOV0ilxJwZyw+ZZxtK791FH49yLNcQXxZn89/fwl7UkQqpSIvXMZt
+	 3QP9npidfNMFgag74tbo0wC6Rwd1qctCxWcSNRChNewxcRM3XritOvWGrpPWQLLCJ/QbU
+	 XEEO0A3B1bQtR8rXdx3O63N40xJ+u4ki3d4PyDvJjn1kSxOMe1GYE88ZwMPuccbIl86/f
+	 ARom7V+6JfWBfnqcF73HuWXA2KWMGJuN+KfmpGasPkhwQwgFdp4tHRrithKiE+tvGXg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792688712;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792689184;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=AumMrA7/B/d4okNxR/VNRrns0flvuSaqDE5lrscAo1o=;
-	b=DrdSO3M+xcG6OjGTIVcyhpeTZTwYhHuCPu4Sy6y0OGhOE2lPknOCsZVmitF2aVBiUwMD
-	 aH6eRhQVDSpDOjejj5tc9worJlcx+8qDGijBPDEhhVL2g5f8u9M96ehzTT2ETjPYYXMuy
-	 Jz5mqj5xGcGEzLutbdWQEzy8yhZcrmP8WakZfoUPCv3f5M98cGlwSupQ9azys5MK4OwBE
-	 fSDVlh1o7sOkq3ugWEaxc93w0B4MhaJK6HDdAS/S3K8BvF82o3XZt8peWDGoDHTAggCJe
-	 Am5a7+H8624cZQMLXx2uBBURm1fWvs4oqNaasi/p9dtL7vt6MlGV6iVcrTH38trGwkg==
+	bh=oTL3AeZwV6ZEe/kOcuwqr+gYR3dBMWnb8q5n1L841M0=;
+	b=L/bJvgDxJx5Vf6wvGtts8zI7E1WK4WOntLDFiqp2ESisWu1QOw1sGOCI+97AdE1CzGXx
+	 V6E97QTr3oEKM6D2U9Lwi+qwf1+is0RBoL33v2uXxcjqxpGcOSatdIMwFV9jGDKxj4Z4l
+	 sAD/3U9BnAWtXWJfz9yJg29BY6sM5CM7iQis/rbInC3TizeNWFw+A629l1yf6WXYAxGLH
+	 hpDNTERQz8xFczyhQZ21EBXi5NFO9aPlbBtdqtVglLJzd9HsgcBYmRZc2uhCbOhUEEQum
+	 /SFU7lYeva3S8WVnvoH0ciRScjqdvxV07zwbm/H0i7n/vH81BLmq6IwNV80Cc5rcLfw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=STlZhha5;
-	arc=none smtp.remote-ip=192.198.163.14
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="iInod/N4";
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF113606A319
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 17:05:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BF113606A319
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C019C606A31A
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 17:13:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C019C606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=STlZhha5
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=iInod/N4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792688711; x=1824224711;
+  t=1792689183; x=1824225183;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=zpwZWPgrIXZBnxIixVNojCcDBQFcz7HWxi43tsZ6D8A=;
-  b=STlZhha5x8ny3MWwITrwlAkqMaZyA1Ow1/oGa5p/4bZFV2Y+wWyYzi7l
-   FuRJGQVJJH5Gn2i9Ej1rtmSk7iXmTRWvde2uS5wh202h0glUXLT/zkFnj
-   /zVxFDBroPbnEQTo3KRDFQuGU7V3TAIn11dwOoYTSwA8cfaaftri8Ugpm
-   7y8TOPFRAVpUkgBnN3U7kKx86Qchd8bdzOYmBQkmrubTYa/CIRlypa0Qx
-   2atnoN+iihNBeWYfn8eX9GAtljSNSMff0DZ6q56hhiqRFhxJ7hYceZ+DM
-   d3T5rCCrICfo5RTEx4cY0tzlFDP/vSeBZnfef/7+BPncDRGIoo5tnixsB
-   A==;
-X-CSE-ConnectionGUID: lrGBbt+ATAyYT0Gqe9cPPg==
-X-CSE-MsgGUID: YuviecrFRaueuC8hZPqLVQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1459336"
+  bh=2upO2Q+Wopsmw/6bFemWtxyPZmT7UkAgO+Sp6AcMrtI=;
+  b=iInod/N4c/QUUEJfuG4u4h/XjlhulkfCnyCNQLDIXd2Y5z7vdhWmHuhX
+   W2N/xPr3KB0sK3s95HrBMC6Wui4s3GEsdZhrqXLpE5QcSIhTUsLUd7iCP
+   GBQhJ9KduYsGgreu/xVLgv5TsBLxAfj2q343Z4/FxXoyxxho8Ckj+b6rJ
+   ysDPrXxJpolNjP+O/PV+jsQPdRuWLpriBf7BOy//A0BDSK5D/P+Jsr8oB
+   Su9NtSCdoXMikzXi/0f9Zaq38SwRKVZdpfB5b2/MAAnLfqWwVxwkfBvIF
+   zW4ndPIRmn0sBwRM+YvtqYz9Kk32f6gnoW45RH2l4oi8G3+6Dbx+Q10U/
+   g==;
+X-CSE-ConnectionGUID: y4Sl5dpmQ42fsNNzEB2Nng==
+X-CSE-MsgGUID: tsfkqL+vTnqhdDEzafnzJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1480271"
 X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
-   d="scan'208";a="1459336"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 10:05:11 -0700
-X-CSE-ConnectionGUID: 11I+FFDkSOCWHBlEG4RlTA==
-X-CSE-MsgGUID: J+h6clnSR5W0REpvGZum0A==
+   d="scan'208";a="1480271"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 10:13:03 -0700
+X-CSE-ConnectionGUID: FXcVcXJTTuaPM9VwfSvGHQ==
+X-CSE-MsgGUID: 5zSrhU8XRA+2S9qrluxnsA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
-   d="scan'208";a="3465736"
+   d="scan'208";a="3892040"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 10:05:08 -0700
-Date: Thu, 22 Oct 2026 20:05:06 +0300
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 10:13:01 -0700
+Date: Thu, 22 Oct 2026 20:12:58 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Viral Patel <viral8854@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Dixit Parmar <dixitparmar19@gmail.com>, linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, joshua.crofts1@gmail.com
-Subject: Re: [RFC] iio: magnetometer: Infineon TLE493D-W2B6 support - new
- driver or extend tlv493d?
-Message-ID: <atpCQhRG-c9z__Bn@ashevche-desk.local>
-References: <CAFkCdFwEOUq1nG42GPDHHMLDoVEWJQ63bJd2tPTJ30AKvdKn2A@mail.gmail.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, lkp@intel.com
+Subject: Re: [PATCH v2] iio: chemical: ccs811: Make sampling frequency
+ configurable
+Message-ID: <atpEGkRrt5pBlRtA@ashevche-desk.local>
+References: <20261018170013.79443-1-nikhilgtr@gmail.com>
+ <20261022150652.4842-1-nikhilgtr@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,54 +82,135 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFkCdFwEOUq1nG42GPDHHMLDoVEWJQ63bJd2tPTJ30AKvdKn2A@mail.gmail.com>
+In-Reply-To: <20261022150652.4842-1-nikhilgtr@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Oct 22, 2026 at 09:24:50AM +0530, Viral Patel wrote:
+On Thu, Oct 22, 2026 at 08:36:52PM +0530, Nikhil Gautam wrote:
+> Allow userspace to configure the CCS811 IAQ measurement rate through
+> the IIO sampling_frequency attribute.
 > 
-> I'm planning to add support for the Infineon TLE493D-W2B6 3D Hall
-> sensor (automotive-grade, AEC-Q100), a second-generation sibling of
-> the TLV493D-A1B6 handled by drivers/iio/magnetometer/tlv493d.c.
-> Before writing code, I'd like your view on driver structure.
+> Support the three IAQ measurement modes with sampling frequencies of
+> 1 Hz, 0.1 Hz, and approximately 0.016667 Hz, corresponding to
+> measurement intervals of 1, 10, and 60 seconds.
 > 
-> The X/Y/Z data packing is the same (12-bit two's complement, MSBs in
-> 0x00-0x02, LSB nibbles in 0x04/0x05), but most other things differ:
-> 
->  - I2C protocol: addressed writes (trigger bits + register address)
->    instead of a raw stream to a separate write-register space; reads
->    use a 1-byte mode (PR bit) to read from 0x00 without an address
->  - Register map: one unified map 0x00-0x16 (config, mode, wake-up
->    thresholds, diagnostics, version)
->  - Parity: mandatory odd parity bits (FP over MOD1/MOD2, CP over the
->    config/wake-up registers); a wrong FP makes the sensor flag itself
->    defective until reset
->  - Data validity: Diag register (PD0/PD3 flags, frame counter, bus
->    parity) instead of the channel bits used by tlv493d
->  - Temperature: 10-bit, different encoding and scale/offset
->  - Modes: master-controlled, low-power with 8 update rates
->    (0.05 Hz-770 Hz), fast mode; full/short magnetic range
->  - Reset: dedicated I2C reset sequence (FF, FF, 00, 00 frames)
-> 
-> Given that, my plan is a new driver (e.g. tle493d.c) targeting the
-> W2B6 first, leaving tlv493d.c unchanged. The same register map is
-> shared by other second-generation parts (TLE493D-A2B6,
-> TLI493D-W2BW), which could be added later once verified.
-> 
-> Questions:
->  1. New driver vs. extending tlv493d.c - any preference?
+> Preserve unrelated bits in the MEAS_MODE register when updating the
+> drive mode, and cache the selected mode after a successful register
+> write. Expose the supported frequencies through
+> sampling_frequency_available.
 
-I haven't compared datasheets myself, but if your judgement above is correct it
-justifies a brand new driver to me.
+...
 
->  2. Naming: tle493d.c, or a family name such as tlx493d.c?
+>   * TODO:
+> - * 1. Make the drive mode selectable form userspace
+> - * 2. Add support for interrupts
+> - * 3. Adjust time to wait for data to be ready based on selected operation mode
+> - * 4. Read error register and put the information in logs
+> + * 1. Add support for interrupts
+> + * 2. Adjust time to wait for data to be ready based on selected operation mode
+> + * 3. Read error register and put the information in logs
 
-No 'x' for sure. Name after the first supported one.
+I would just change the 1st line as
 
-> I have a TLE493D-W2B6 Shield2Go board on order and will test on a
-> Raspberry Pi 5 before sending patches.
+ * 1. DONE. Was: "Make the drive mode selectable form userspace"
 
-Have you checked other drivers? No more (close enough) matches?
+And renumber / kill when it's close to complete.
+
+>   */
+
+...
+
+> +static int ccs811_set_sampling_freq(struct ccs811_data *data,
+> +				    int val, int val2)
+> +{
+> +	u8 drive_mode;
+> +	int ret;
+> +
+> +	if (val == 1 && val2 == 0)
+> +		drive_mode = CCS811_MODE_IAQ_1SEC;
+> +	else if (val == 0 && val2 == 100000)
+> +		drive_mode = CCS811_MODE_IAQ_10SEC;
+> +	else if (val == 0 && val2 == 16667)
+> +		drive_mode = CCS811_MODE_IAQ_60SEC;
+> +	else
+> +		return -EINVAL;
+
+You have an array, use it instead of duplicating values here.
+
+
+> +	guard(mutex)(&data->lock);
+
+Always make sure the guard()() is put standalone (id est surrounded by
+blank lines).
+
+> +	ccs811_set_wakeup(data, true);
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, CCS811_MEAS_MODE);
+> +	if (ret < 0)
+> +		goto out;
+
+> +	ret &= ~CCS811_MODE_MASK;
+> +	ret |= drive_mode;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client,
+> +					CCS811_MEAS_MODE, ret);
+
+A single line, and the ret = foo(ret) is not good style, add a temporary
+variable with good name and use it.
+
+	u8 mode;
+	...
+	mode = (ret & _MASK) | drive_mode;
+	ret = _write_byte_data(mode);
+
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	data->drive_mode = drive_mode;
+> +	ret = 0;
+> +
+> +out:
+
+Instead, make a wrapper that does this wakeup calls, guard()(), bu calls the
+body only once, so you will have here
+
+	ccs811_set_wakeup(data, true);
+	ret = my_new_kool_body(...);
+
+> +	ccs811_set_wakeup(data, false);
+> +	return ret;
+> +}
+
+...
+
+> +static int ccs811_get_sampling_freq(struct ccs811_data *data,
+> +				    int *val, int *val2)
+> +{
+> +	guard(mutex)(&data->lock);
+> +
+> +	switch (data->drive_mode) {
+> +	case CCS811_MODE_IAQ_1SEC:
+> +		*val = 1;
+> +		*val2 = 0;
+> +		break;
+> +	case CCS811_MODE_IAQ_10SEC:
+> +		*val = 0;
+> +		*val2 = 100000;
+> +		break;
+> +	case CCS811_MODE_IAQ_60SEC:
+> +		*val = 0;
+> +		*val2 = 16667;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+
+> +	return IIO_VAL_INT_PLUS_MICRO;
+
+Replace break:s with this return.
+Also use an array you have.
+
+> +}
 
 -- 
 With Best Regards,
