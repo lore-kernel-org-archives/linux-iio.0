@@ -1,138 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792679807;
-	b=j8tyccUSE7V8lCYkmszaZ2EOvtSaPQGo3OxjFwhmIzNdImtgPn010yunP38k4xZmdXg7
-	 q4Y03jr1ravRGwkxgU2mbIUkUDQw4/4x00EbRGYw7Caio/SWQ4IEEnZKKW306kukXRNes
-	 dCWnNs1QCi7KCRSzNd4Ask5tTkF/+MVlDH9q64vCu7BA0ZRprRioltvtYj1A+k7SD3xIp
-	 Aucj7k8FOE2eSmjLOjsFAB6d0R1zJ/cx67bHfyQemeLFFgb1KdmBJGBfgvWqzD8uEeWN9
-	 ywA5Ohwi9Np6M1REBhhIgkNfwU+DCSmeEoLTGMVbI0yLjrWNxYiLSttJWa/HrRq+wKw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792679807;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Content-Type:Content-Transfer-Encoding:Subject:From:
-	 To:Cc:In-Reply-To:References:Date:Message-Id:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-LD-Processed:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-Exchange-RoutingPolicyChecked:
-	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-GUID:X-Authority-Analysis:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=kQh7tdtJGf+jHEUQ123EofxTWBcPMaZTCBNL/H2KpIc=;
-	b=ylkeLLLib+Vn/Hq5mjqmqWCCPDysHQeaL3297oVbwgPQfqzDymBFjsDcxeyVyuUOMXM0
-	 7WXwVzJGpJY0pHiuWTxW2TdImQbR1vrGyR6M5jC0pEpJSRKqoUpfmA8QoAc7/+kN/U3K6
-	 UgiCA0bvUxc8T1+XBhrvWzB11yPCObpMAZvZYQQ3dvGKZG1XzAmO0qcjNczvZE3FOUaxs
-	 bDsqmcHrqitfHyiCESgV1C0PrLH0xl+HSIk8YLubTvrDWhW71+2jkzBLRqH2RxBidm+ZG
-	 ZLoFeJcF413irsBdlpHshrciLtNQ0AnsJHeuqJJtfMWat+AUI0C4mxzbvCgFlCmpi3w==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=J9AB9ntc;
-	dkim=temperror header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=dd2hAB2S;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.43
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792681624;
+	b=ntoRHoXzpgRRZuaHZYJpGC0lvmCRn4k5+HC2u0016l6LZ2LEgrPoOF+fzh4nB+/OIGs7
+	 knFXmVFmuXOvvVIxIcVOmJGVgbSf0USJIEEqF1KZ8MHnvk2EDdiyMWkCRo1eb0hIdBUjs
+	 iOnJ9vCmWEKHOZxlha3ZjAoKaLo4+AxUgUKPHF63XwZC24VOYXeVZ6tU6m8dTrEnpRAWb
+	 iu3CWTpiIUgX3Ckcl8uy8e+8275Z0MM6FTMHGk7Oqq1q89EP80CuZwLCp5gXFetpIYhi3
+	 xVgPt7yu1P5IV2CGDXQWjGqcApybN6LoFsgshJMPjZBBF2MaW6Q1F/8GIiXxjWOwivA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792681624;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=WJvVinknyEzeiRsHAYM6GbQze/GHN3YehwHAtJv+JOI=;
+	b=1ULvJ/YMdVdE13sbvSAgKNqGZu/lFO510trE+08C6tlfYyPqCPxtwjA9i8WBYq6P43Cu
+	 M92rj8AhzRiRDuiUB+sSoDlhhh3DnQqDN7H4htI6JTAPXIgmFZ/rFK5dyJRBHexg4pFe9
+	 tnYregqjA6jW1mem7RuIjlq7Gi0XZVMEpILPlkjpeNPZYUwak2hgez8oLC8E+Va9vIaMc
+	 J9k0bGdA9wALiatyA+ThEMoISeu4k77AuMQVYA8eHKxgc41NUTAhmjmOAeOTnRG3i6jCc
+	 FBIFB4f954/HhO+tAwlPcpOwlkNMRVrjru/cSs/tHl2cZ7IgrzaIHXjri4jkAsro1kA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=OcuNHFRm;
+	arc=none smtp.remote-ip=74.125.82.43
+Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6EB606A320;
-	Thu, 22 Oct 2026 14:36:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC6EB606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E23360A4ADB
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 15:07:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7E23360A4ADB
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=J9AB9ntc;
-	dkim=temperror header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=dd2hAB2S
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69MECu4v2115162;
-	Thu, 22 Oct 2026 10:36:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=kQh7tdtJGf+jHEUQ123EofxTWBcPMaZTCBNL/H2KpIc=; b=J9AB9nt
-	crY3D3JoMra0YTA8UoVmEv0jKquHntTl/M7YR3tNOw+QYGfdh64Oss9sZbIPNRG5
-	PTZ5vUxTmQSGNrDf7kqXlMGMh30iVPctvA2ZEognlox5m9IYf19ZTKhcjJElVlct
-	S+oW1Wug046whcRDap5AVmEOYa0m13kH0rZbmTTbnXFZmJBXaxsEaOSkSY0i3KmY
-	VtnDHDyLHxd7E/PJiBSK9UKubAzgtDzqNRLG/7UH9cjhYN4EEpyDOgW90Ch7JOlv
-	xsYZzPlA6jFhAuNIrgf3f22MBw4D+eiFirDQCCVh8xxY1a6nOcyBj01jkWSicj0s
-	SnVtoSAO1+0eyjg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=kQh7t
-	dtJGf+jHEUQ123EofxTWBcPMaZTCBNL/H2KpIc=; b=dd2hAB2Sbw57tmK7HM+g6
-	K+xJHI2hUxVtrZs7MmgIk8q9BQLhdMq3+UQKkExW+2oe3gmfpK/VYJL3k3wxtH4R
-	w6jRnPHMiKj84bjV++zacKn0PF+xKkbTE3t8H1uc1Wotk2Xf5FHTbG93/qX6gFb/
-	Iv9pzLDaY2rK2wqxcBXW658u7XNND05NVHHpEeSYPOEy3voBe/jNdl63CEAWXhdK
-	yJegieN0sYednP45UYUlQiMeLu1DQO6w6WF3TEzumiaL6Ym1CapRW8u+2iAg2Pwm
-	6LuwjZUOBcGv9M3zZEZZaCdIW5Bg6l2AloTUP5C2DJlLKitt1wKWMxXJ1+K+tDnI
-	w==
-Received: from sn4pr2101cu001.outbound.protection.outlook.com (mail-southcentralusazon11012014.outbound.protection.outlook.com [40.93.195.14])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hf927uuu6-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 22 Oct 2026 10:36:25 -0400 (EDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JXxi0fQ/LvVkMN8I1QtxaUc67iUKft1aibczunAVfZsQFyIKX2FPJFjE78BlRTysPw4FsNgWxuwatmMLFnsMWGRFLBy0pRtidgca+lyc6p08Vy0C2iPzjWqjppdTeA+ZFEFXg9RXz9uNiVFEA/Iy275vUKfdX6MlzFaAx3/Xhplf45IjIdJ5F3KfM9tC9OAXCH2Hv+mFKA80Z7DhM2DsMBB6QVHpdMMe+Jdsn3VU0TxFDeNcqFfQdqmFFwgYeA77b6oQYt8BI96iBr/lp4bkKQQ/59ohakaiBCJoSICXa548zIpcllyaA4Tg5ULtgtxm6lB6f2XLKCj9poA6/qdBnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kQh7tdtJGf+jHEUQ123EofxTWBcPMaZTCBNL/H2KpIc=;
- b=Oq4lWAxbWqpWWU37slYlxRbU2xIlol8REsv0JkpbzBso+ZjWkUqQ7HxVsUjWY85AXgnHloOGRYt7OFTyuQrTNLNUeukSUnG/WIbbOPEsQaVxfa+lkJa4LsYf49hyg1M6+Ynq+CvsxPMWw23f0uXDDLD/Ed5jJcP2QqQPCgqO+vChI4xNwjb21t3jUgfi4Db0G0v3PsPsSoGULl6SMTLvzpXLl05rsLLM61q/rakuAIPdAKPmjpqqgX/76ledKfbQDtLt879s/gDBNbgA39Mej7XazFQ54Vm/U8noYERdGbPIg5xoMEIHPuN5PS0t8SucVeYExanCYE338kTt+WFAhg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analog.com;
-Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
- by CH5PR03MB7982.namprd03.prod.outlook.com (2603:10b6:610:214::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.16; Thu, 22 Oct
- 2026 14:36:16 +0000
-Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
- ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
- ([fe80::2a19:76b2:e731:8c5a%6]) with mapi id 15.21.0546.016; Thu, 22 Oct 2026
- 14:36:16 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 4/6] iio: imu: adis16607: Add FIFO-based
- buffered/triggered capture
-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-To: Radu Sabau <radu.sabau@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20261015-adis16607-v3-4-f972d4efee85@analog.com>
-References: <20261015-adis16607-v3-0-f972d4efee85@analog.com>
- <20261015-adis16607-v3-4-f972d4efee85@analog.com>
-Date: Thu, 22 Oct 2026 15:37:18 +0100
-Message-Id: <179267983879.3584.6208111187400356290.b4-review@b4>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792679840; l=627;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=DtN+ornrsltWmcBaTQipMZUPDxF9yrr4jv9of/L/faI=;
- b=UmFJhXLirYJJZtdvnUHFT2OY4W97xyY2KFBuNGSQgQvH9ivs/oGKXQ+kdxfBo3psxM9mtH8e7
- d268/uNjopuDIgjnG+hPqgi9rsz9f3bvzqfuKwPko7lSEXC2KrMMJQ5
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ClientProxiedBy: MR1P264CA0151.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:54::8) To SJ0PR03MB5469.namprd03.prod.outlook.com
- (2603:10b6:a03:28a::17)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=OcuNHFRm
+Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-1438d9363fbso837266c88.0
+        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 08:07:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792681623; x=1793286423; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=WJvVinknyEzeiRsHAYM6GbQze/GHN3YehwHAtJv+JOI=;
+        b=OcuNHFRmYwSXXcbTWye1iR3vSZT+PF5Kw5TZsHpKEEA6Sy+nOIUzQNQOWV4Av8dKD7
+         s4zZ7nYxLUArQ+kW7iSM8XPsXeA4RvzHbjYptgXWGNIrmFcchPupu+htAuDMpjIR7eve
+         wae5XnOz7JGEEgYBAZWcqQFuaxpfivtkhdE/tTIApSI0XCPvVM8Fz2EL5RNUKVALuf2d
+         /p//SwiC3+X24Hn+4DY/skGW0lXdMXMPtX5Epkytzycv4+AEZPlXDW58OV5ig3pUW9eu
+         3v6H6JXTbNeSPQU+4H4dzBkl3Q9ZEbNT+xq8aSTVdFHU3ymJp1l7J3dAZPyAmi/1JJOv
+         sQOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792681623; x=1793286423;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=WJvVinknyEzeiRsHAYM6GbQze/GHN3YehwHAtJv+JOI=;
+        b=B0qW5mDnPJFUQa8qEjm5smLkmJR53e0vrRt9NYKkFyW9drWWWK4dOJeoc8rwnK/JKN
+         koMCkfu2tJBvuc6jndtl2qn4yszLD5l78YXjt4RgBdlWApxCoGv3Rdl84yPSJAqhaXjy
+         RZv0sxw5X1PQk1uK1e4Uwex1PeIs/6pPPyvSHM+R+0wLx7LkGabtJppcZQYxxoHiqCL8
+         e6N2R7hdyxbsMsrv+Z/8v90Ue7jAsRJceeNWEWMrazOcGaJysO+a/iy3xDGAuWYeb9yK
+         hCN5vG/ZISSo64dRowONGLUpvJH/wNjv0GvgQ8NVMQmUyTnceyNcuKGptpVAR6YaDNqt
+         pdVA==
+X-Gm-Message-State: AFq9FYKE+9fzJtoLpkKobUPWq/PYQaVVkNrPwR2ZXxkgXqLJ3s+WMuzi
+	nNaFtpYaiDBi1rZ/pC9T7rokEpNZxlw8BLkU5eh7aM54e7SKg9tQVWbeHINDk86NyQ==
+X-Gm-Gg: AYBFou2qE0e7SsSI0PKXlqhq0faNWj2knYfmB5R2OaZZY0Qzk6bBY/X9r6D0kZ90aIU
+	/BVn3C7rs5dakYIFGX5UQBaGmVpPG4IcbKqRrqcgmMBZxDP88TgR3W3MM0sU33vS1PoSKJn0+5e
+	DXNQwHwLzOALfEHwoMsQEIrUoe51mMWOdDrk113s4Cy2sLfFujMDgSlmAXtoDrVeF0ibL25i4hO
+	wayYW6TyR9AmvkJup/QyJd6yR8ChK/BloxXY3ufAui3SDo84v+YJqNZe+g5ciyzI3TRYQjSCTCl
+	ZNi75TXRXoS6f6OFsiirVjWn9oimj79zBA31VdEPdCoNKoQKag54DcmihhUermEWcjvg/vRCG3k
+	Q9KizLJa4OVD8evLe0/848W6tb56m9XpC11tg66pA9+64bZATFYfbPyxFs7uakLuW7rb5dXKV0H
+	PB13wlfwqmfgz0/6yeAWd77C0sxd5GUTin+2ObxtLoIjOvHtc9S6LuvQuM6u2Jv4bDCpFXPmB8G
+	wGBLXs+2OweaaIvZBe5vK4C7SuEbZOvgaKYEnSN/RIPYw/5vDctr5Uf8tmhB+DHQY2jTy86ol/x
+	E5c01e7IYijWq2pR
+X-Received: by 2002:a05:701b:42d1:20b0:185:e68c:904c with SMTP id a92af1059eb24-192f2f0ae92mr3345694c88.7.1792681623297;
+        Thu, 22 Oct 2026 08:07:03 -0700 (PDT)
+Received: from localhost.localdomain ([101.0.63.6])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1903bb7f098sm24297301c88.12.2026.10.22.08.06.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2026 08:07:02 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	lkp@intel.com,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH v2] iio: chemical: ccs811: Make sampling frequency configurable
+Date: Thu, 22 Oct 2026 20:36:52 +0530
+Message-Id: <20261022150652.4842-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20261018170013.79443-1-nikhilgtr@gmail.com>
+References: <20261018170013.79443-1-nikhilgtr@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -142,115 +100,266 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|CH5PR03MB7982:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5e73c360-9af3-45fb-37cb-08df3049d416
-X-LD-Processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
- BCL:0;ARA:13230040|7416014|376014|366016|1800799024|23010399003|11063799006|4143699003|56012099006|261009223027099003|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
- GmJaiitPQFRUZn07dYELmPt02Gszdmp8lVhYzTajkCZoP48q3EdXo3TDPhWjB0P/36G/VcP+IeHTU/WqZeEKADrItNqcvp2jRuS2tDr+8QG0zPg0o/iqmHAr38mipksywotUazdBpT2avI7K57GRmChkzOA6YU+qhXILUFc16gixDXSDaCQ6Dx2KDQuOlSCAE07ceWkpt2qZsAaXIOsNe81QO63JxP3SlRS/5lFs19szgyrXTwjqOxsxnxScUl2GH4kyEcLDrZFHzMTe7Hdd9dl7N+pmJFYDiu23q/Txq03wW/6LN3dU0GfXxHAjojzV9EtyUAVrJw+Zs5Rj3DkeVnc35gza3z1hAKNiJe3rO+mhixDoxIaNnjYbvmQ6yMbDfdeZeKS1jICLnlBj1KAMlHFFnt3HfZ5W/Vt1KSOtDEhcmrHiFSCwFVZM4jydaiJ2xgAQ3PCAe630qll9RLPleYx1jB9LNY9GIszDn4ostJ6Sp9Ni39qylxjYjma5MmDACpNGN+yJO9ClVivSzh9lWcNObAQxVUaDTtuGg9qM822xwEsnnq2lP2bynOMIt0TcvpkjcQ/UGuKBYoSVnbk3rRcR65nMfpZ0XaZfwkWorYw8YSxwmCjqJemNd5rjum1ujbxVkysJrPn7eFdQ1Y66Z48U8KT29GsbE7dDmcmOtIY=
-X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(23010399003)(11063799006)(4143699003)(56012099006)(261009223027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
- =?utf-8?B?UFU0K3UvVko1VXMzNTVVQXJZUytERVptSXo1ZHRHRUZHZHR3b2trL3A0SDIx?=
- =?utf-8?B?dDYrREZyRWl0dkl6MEZqNHp0Q2RKSzRBNGtIUTIzU1pkV3hnS0RyQTA0SG05?=
- =?utf-8?B?Rmd1MVBJQlA3WUUzbkZXbzZGSkYwS28rNlR4WlU0SEYwdWlhWGdKTjNmYWI4?=
- =?utf-8?B?NVhDKzZOL3h2VWMxSkZUaTVYdFRTdVRHQTVhZkZNL2QxRmhvWU9WWk5XSlZ5?=
- =?utf-8?B?c09WMGlVQmpEUE11emtvZ1h2RFFURjliS01TK3ZycmdKOElyamsxSmV2MkRZ?=
- =?utf-8?B?UkRxMmJKOXBBRGI1cVdldVpZajVPQXRabmp4TGNnUnkzK1ZoeW5iN0daQlVU?=
- =?utf-8?B?VUFPZ1ZSU1NWYWVRejU1TUxhdHRWVVJZbHFOYXZHK1lDNUtQdG1LVENYdW1q?=
- =?utf-8?B?UllORjNwMTA4Z2J2MXdWS2dieFdTOGZsRFNWSDY1MVJLQW1vZDB3c2FQRVFy?=
- =?utf-8?B?dG4xWE13UEwvd0lNV3FXRXQvTWxkLzJYVHM2MkRvNG5Md3MzR250S0o0T0FP?=
- =?utf-8?B?WjNaa0xLaEs2cVh2anJ6NTN5bXZ4NmZIMmZPc01YRWMrOWlqQzZjMGFrSHBj?=
- =?utf-8?B?WnJzeXp0UUlicjh6cExSWXc0Mmt6bEJtZ29CZmFEeDhCRS85SUtPNFRyTVFE?=
- =?utf-8?B?WHNHMSsycC91OGQvSVBObThDd1lPcG93c1lJT2xGTWxHczhRSlMxRDN5WC9m?=
- =?utf-8?B?Nm9KWE1HdGk2OGpqaTZFSDA0ZWtWOXBwUUxnNWFDZ1RlUTc4RGI0UEVJclBY?=
- =?utf-8?B?VnNSVmwyeFB0TlFxczZvcEZmY2xJY0tLZWh5bXdiV1VESU5oM3VTdWNIYU13?=
- =?utf-8?B?T0puaDBNNFRnL1V3ZmtTZGp3dWdGLzhHSE9oQlNhcllTZndsSUFQaEVXVXli?=
- =?utf-8?B?dGhWbzB2a21sYTk1bFdXcjN4d2ZKVittVk1OdGNZS2t3VGlyOTBSLytjVjdu?=
- =?utf-8?B?MWJ4UWdTQ1JGK2lybkhUWk93MDR0Y0RTaldXcDFENWZJZndzRy9vUEhIOGF6?=
- =?utf-8?B?VWZyU2J5Tkl3bi9DTzJtbWpZRVBDbmZVZHBjV0tHVWtQck1jb3RINkpuM3p1?=
- =?utf-8?B?NnJtNU9OOVpqTkd2VWlKa3B1MEt0Y0pkM1pSNW9hZG05RHFwTFVxekZDQ1hJ?=
- =?utf-8?B?TnB4UTBvSnNZQnZpWWxoU3lGeHFtbE05SlRPYm1ZSXNhZW1qL2ZLMXAzcnVZ?=
- =?utf-8?B?bGhvR0cxSWpOVUI1RjJaSVUxdUtlTWkrYXdsbUxnVkdlYy8wMnBkaTJ5b0dI?=
- =?utf-8?B?Y1pmVGhSd3VBT2tZdXE1aXBVeVpqQ3Y1TU9JckZaR2RuU3VDbDhtczVvcEFP?=
- =?utf-8?B?a280MUQxTDF6UzlEem5oSGE5ZVB4MzhuR1BEYjlnWFlZeFhiaGlhOWF4ZFI4?=
- =?utf-8?B?TlBlQXM3SFRlOEtZWDRSYnJHOUFIKzFpSnBXSSs3L3lITkt2M09vZU9maUV1?=
- =?utf-8?B?cW9Rc2tjV01OTnBqTEdVekpzd0VsSmhkN2pKY28weVdRSGtXek1BK2RXSGM2?=
- =?utf-8?B?TGF2c01zOWhRb2Yza1VUU0ZzYXVtOUJ5d29lSzkybGJwMGtYOHpSTUY4S0Q2?=
- =?utf-8?B?enA4LzgyQUdlSWxkZ1FHTnBVRi9NQkpjdjVMd0ZSY3g0bnd0TmMyZkJKQ2Nt?=
- =?utf-8?B?enh6Si9MS291MFc4aitDMjlkekg1VzByWGhwV2d5cWZKUnZQMy9Pd2dlWHdz?=
- =?utf-8?B?M3N5VDVtMGtobzJxb2hpZjNMOXJVNFpuR1hvWjNQR0ZabS8vT3VtUU5acFp0?=
- =?utf-8?B?cFNxbjErNkZ2c05qaW93WElZaGxKOVdRb0hmdEFaYkNSSnNEUXBsN2xxV2pX?=
- =?utf-8?B?M3pIdzN2K2hBYVUxVlFwRmFVcXJFSWkwcllVOTRsYUZXcU04T3hqVTFjd3V5?=
- =?utf-8?B?cVp2TDFwdDI2bUhxNi9hWFpGTHNkUU5TV3RQYVd4L3hEWDRMRUUxNHZ6d29O?=
- =?utf-8?B?TkdjRUg4ZEdTbmcwWko1citaY0tIaDVEZnROSEJpOWs1TEUrSEpHNXQ5WVpm?=
- =?utf-8?B?SjJLeGJrYzllU0xyZ2Y0RjJyUWsvQWhnUklTTFVOMkdWQkErTHpITERlNDJQ?=
- =?utf-8?B?Mml0KzdKS2loMnBFenZlYjJXVmI2dTRQdERMUnZBdnhON3F1VmRBa1N3YXI0?=
- =?utf-8?B?Q2NxRVBoYk1NK2s3UWhnVXVZTkVOeENtRlFuTXFDSDJQZ2M5eTl4bkRLMlZF?=
- =?utf-8?B?azRtc04xckRXRW5KaUF0RFlxYlJzeFR3dmMzL1I3bTZHVzlNV0NFWEN0a2xS?=
- =?utf-8?B?MVR6SS9ZWUZla3BnMEZKekNkWHIxTmxibFZIZDdsQW5ITGdwUXlvaitTQU1U?=
- =?utf-8?B?V1FiQTI4d083dk82OXY2b1NGS3ZvRUVQQ2pab3pQNVBnOWpYSVJUQT09?=
-X-Exchange-RoutingPolicyChecked:
-	4rvLc7vXBmssQCrCEYxKnECqZJ8jhRjwGERTmSJtryVRBmZ1qPmhUnU3+N9u3fFRoqIwbX1eA0MQZwUI7davi0K+rp7nosp+GTuPoVoLUIH2AVcIObvTFtndwfteFxaBft7BQtDCmZazDkQdd82JK6ukDP1FiZwjgWiB0JfaBLa1dE+6vIF9LyXHyFc0rHKMLebalExBdZyuWswSLU0p8lcwM4K0SQ3I0JaGRiW2hECTft0yFiQ8SaUvJdEzihNoruBtdX6iimUYulu86OgiwmIEPNh1wIq1MiQ1/S2hZiIvjVZZF5Zf1XsfREXD/Qi1nzH39u/hhaLWI2S4EVWRlQ==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e73c360-9af3-45fb-37cb-08df3049d416
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 14:36:16.1981
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 63O9s0Z0gRYdBtYtHFU/RHrbgKQOebEitkcVfpzsB+0klmts6WjxRiIe1HMzqQ8DtgYR+LXDtJcUSHQvvCmyBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH5PR03MB7982
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIyMDA1OCBTYWx0ZWRfXwmT3MfkV8aSb
- ZTU9kf6QrAnmp56DMjSQg/iAu00ZIhu1/K2/EdD/dJiN8XF84X5wKSrKmKadrX4Y1gN9VhPq59x
- A+BCmMgNXByBlWOl4FIc9sG3tzabZZgoRnlev9TA/fMAWMpqPiuR
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIyMDA1OCBTYWx0ZWRfX2Zr9izfgaBOq
- eQJBlTLht1/osHHc8Ag58xCVue8KNKj1fwbQ204DFkDf+pmaMUEkzIMD3Yp2jgs+FhG9mMqkVgs
- VnjBBgk4e/ACrk/GEB99LeeKet/vc54jdHFckyekPKRKMnOByLsm8b9mTfqJq3kJVVzBNSfukKB
- YEpuss7vMyrPfXT/C4c8g4mzjjMjUMEuCpjOSQ8qUPfrMZqxx/o1D4hDlJ/6Pnkpi5NGZaPF9BO
- WJ+/jmGmiPvhpN63SFVjkGr83wVJgFw97u3fJh1FDfTnTIGYe9cT96J0mvYgqrhXDnr+E8xfv89
- 51xcYZjxrol81+8EL/oVXKHyBJxzm6se4hIRV0TybMDM2012Hp48OZKjp3gOXXsGjcHmDxNpBPK
- Zq5ttKFrQ0sP3No4zqIlAGxxWP3f5Ak7IOgIJYsk/toY1SQ7P9OGY6pXr+UEdF+FUOL/1n1oPbK
- 01/1hm81kAwNa90OnFQ==
-X-Proofpoint-GUID: 3pp62U37oqj5rdQFYyxr18EWM_9zh49k
-X-Authority-Analysis: v=2.4 cv=U/cHnuru c=1 sm=1 tr=0 ts=6ada1f69 cx=c_pps
- a=C5q/T6pJLpFJxMBEEzTjbA==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
- a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
- a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=M51BFTxLslgA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22
- a=gAnH3GRIAAAA:8 a=q3gMZk7u7SkVHuEQnqcA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: 3pp62U37oqj5rdQFYyxr18EWM_9zh49k
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-22_05,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 priorityscore=1501 spamscore=0 adultscore=0 lowpriorityscore=0
- malwarescore=0 suspectscore=0 phishscore=0 impostorscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610220058
+Content-Transfer-Encoding: 8bit
 
-On Thu, 15 Oct 2026 12:33:01 +0300, Radu Sabau <radu.sabau@analog.com> wrote:
-> diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
-> index 1d471f59f043..dac146645415 100644
-> --- a/drivers/iio/imu/adis16607.c
-> +++ b/drivers/iio/imu/adis16607.c
-> @@ -224,6 +251,352 @@ static const struct adis_ops adis16607_ops = {
-> [ ... skip 129 lines ... ]
-> +	s32 val24;
-> +	int bit, offset = 0;
-> +
-> +	memset(st->data, 0, sizeof(st->data));
-> +
-> +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev->masklength) {
+Allow userspace to configure the CCS811 IAQ measurement rate through
+the IIO sampling_frequency attribute.
 
-Use the proper helper for the above.
+Support the three IAQ measurement modes with sampling frequencies of
+1 Hz, 0.1 Hz, and approximately 0.016667 Hz, corresponding to
+measurement intervals of 1, 10, and 60 seconds.
 
+Preserve unrelated bits in the MEAS_MODE register when updating the
+drive mode, and cache the selected mode after a successful register
+write. Expose the supported frequencies through
+sampling_frequency_available.
+
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/chemical/ccs811.c | 147 +++++++++++++++++++++++++++++++---
+ 1 file changed, 138 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index d126ee12ffe5..a1cbc4fa6a82 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -9,10 +9,9 @@
+  * IIO driver for AMS CCS811 (I2C address 0x5A/0x5B set by ADDR Low/High)
+  *
+  * TODO:
+- * 1. Make the drive mode selectable form userspace
+- * 2. Add support for interrupts
+- * 3. Adjust time to wait for data to be ready based on selected operation mode
+- * 4. Read error register and put the information in logs
++ * 1. Add support for interrupts
++ * 2. Adjust time to wait for data to be ready based on selected operation mode
++ * 3. Read error register and put the information in logs
+  */
+ 
+ #include <linux/cleanup.h>
+@@ -54,6 +53,7 @@
+ #define CCS811_STATUS_FW_MODE_APPLICATION	BIT(7)
+ 
+ /* Measurement modes */
++#define CCS811_MODE_MASK	GENMASK(6, 4)
+ #define CCS811_MODE_IDLE	0x00
+ #define CCS811_MODE_IAQ_1SEC	0x10
+ #define CCS811_MODE_IAQ_10SEC	0x20
+@@ -79,6 +79,7 @@ struct ccs811_data {
+ 	struct iio_trigger *drdy_trig;
+ 	struct gpio_desc *wakeup_gpio;
+ 	bool drdy_trig_on;
++	u8 drive_mode;
+ 	/* Ensures correct alignment of timestamp if present */
+ 	struct {
+ 		s16 channels[2];
+@@ -86,6 +87,12 @@ struct ccs811_data {
+ 	} scan;
+ };
+ 
++static const int ccs811_samp_freq[] = {
++	1, 0,
++	0, 100000,
++	0, 16667,
++};
++
+ static const struct iio_chan_spec ccs811_channels[] = {
+ 	{
+ 		.type = IIO_CURRENT,
+@@ -103,6 +110,8 @@ static const struct iio_chan_spec ccs811_channels[] = {
+ 		.modified = 1,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 				      BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.scan_index = 0,
+ 		.scan_type = {
+ 			.sign = 'u',
+@@ -163,16 +172,21 @@ static int ccs811_start_sensor_application(struct i2c_client *client)
+ 	return 0;
+ }
+ 
+-static int ccs811_setup(struct i2c_client *client)
++static int ccs811_setup(struct ccs811_data *data)
+ {
+ 	int ret;
+ 
+-	ret = ccs811_start_sensor_application(client);
++	ret = ccs811_start_sensor_application(data->client);
++	if (ret < 0)
++		return ret;
++
++	ret = i2c_smbus_write_byte_data(data->client, CCS811_MEAS_MODE,
++					CCS811_MODE_IAQ_1SEC);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return i2c_smbus_write_byte_data(client, CCS811_MEAS_MODE,
+-					 CCS811_MODE_IAQ_1SEC);
++	data->drive_mode = CCS811_MODE_IAQ_1SEC;
++	return 0;
+ }
+ 
+ static void ccs811_set_wakeup(struct ccs811_data *data, bool enable)
+@@ -188,6 +202,44 @@ static void ccs811_set_wakeup(struct ccs811_data *data, bool enable)
+ 		usleep_range(20, 30);
+ }
+ 
++static int ccs811_set_sampling_freq(struct ccs811_data *data,
++				    int val, int val2)
++{
++	u8 drive_mode;
++	int ret;
++
++	if (val == 1 && val2 == 0)
++		drive_mode = CCS811_MODE_IAQ_1SEC;
++	else if (val == 0 && val2 == 100000)
++		drive_mode = CCS811_MODE_IAQ_10SEC;
++	else if (val == 0 && val2 == 16667)
++		drive_mode = CCS811_MODE_IAQ_60SEC;
++	else
++		return -EINVAL;
++
++	guard(mutex)(&data->lock);
++	ccs811_set_wakeup(data, true);
++
++	ret = i2c_smbus_read_byte_data(data->client, CCS811_MEAS_MODE);
++	if (ret < 0)
++		goto out;
++
++	ret &= ~CCS811_MODE_MASK;
++	ret |= drive_mode;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					CCS811_MEAS_MODE, ret);
++	if (ret < 0)
++		goto out;
++
++	data->drive_mode = drive_mode;
++	ret = 0;
++
++out:
++	ccs811_set_wakeup(data, false);
++	return ret;
++}
++
+ static int ccs811_get_measurement(struct ccs811_data *data)
+ {
+ 	int ret, tries = 11;
+@@ -215,6 +267,31 @@ static int ccs811_get_measurement(struct ccs811_data *data)
+ 	return ret;
+ }
+ 
++static int ccs811_get_sampling_freq(struct ccs811_data *data,
++				    int *val, int *val2)
++{
++	guard(mutex)(&data->lock);
++
++	switch (data->drive_mode) {
++	case CCS811_MODE_IAQ_1SEC:
++		*val = 1;
++		*val2 = 0;
++		break;
++	case CCS811_MODE_IAQ_10SEC:
++		*val = 0;
++		*val2 = 100000;
++		break;
++	case CCS811_MODE_IAQ_60SEC:
++		*val = 0;
++		*val2 = 16667;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
+ static int ccs811_read_info_raw(struct ccs811_data *data,
+ 				struct iio_chan_spec const *chan,
+ 				int *val, int mask)
+@@ -249,6 +326,28 @@ static int ccs811_read_info_raw(struct ccs811_data *data,
+ 	}
+ }
+ 
++static int ccs811_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct ccs811_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (!iio_device_claim_direct(indio_dev))
++			return -EBUSY;
++
++		ret = ccs811_set_sampling_freq(data, val, val2);
++
++		iio_device_release_direct(indio_dev);
++		return ret;
++
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int ccs811_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+@@ -293,13 +392,43 @@ static int ccs811_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return ccs811_get_sampling_freq(data, val, val2);
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int ccs811_read_avail(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     const int **vals, int *type, int *length,
++			     long mask)
++{
++	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
++		return -EINVAL;
++
++	*vals = ccs811_samp_freq;
++	*type = IIO_VAL_INT_PLUS_MICRO;
++	*length = ARRAY_SIZE(ccs811_samp_freq);
++
++	return IIO_AVAIL_LIST;
++}
++
++static int ccs811_write_raw_get_fmt(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    long mask)
++{
++	if (mask == IIO_CHAN_INFO_SAMP_FREQ)
++		return IIO_VAL_INT_PLUS_MICRO;
++
++	return -EINVAL;
++}
++
+ static const struct iio_info ccs811_info = {
+ 	.read_raw = ccs811_read_raw,
++	.write_raw = ccs811_write_raw,
++	.read_avail = ccs811_read_avail,
++	.write_raw_get_fmt = ccs811_write_raw_get_fmt,
+ };
+ 
+ static int ccs811_set_trigger_state(struct iio_trigger *trig,
+@@ -460,7 +589,7 @@ static int ccs811_probe(struct i2c_client *client)
+ 		return -ENODEV;
+ 	}
+ 
+-	ret = ccs811_setup(client);
++	ret = ccs811_setup(data);
+ 	if (ret < 0) {
+ 		ccs811_set_wakeup(data, false);
+ 		return ret;
 -- 
-Nuno Sá <nuno.sa@analog.com>
+2.39.5
+
