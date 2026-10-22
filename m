@@ -1,95 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.12
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792641303;
-	b=ae0osQEwBPvCjMklCRuA2D3gxB6AvuwyDZ0IMz1FEPv7wDuPZ6AlMintQsJJd2+s09bb
-	 aLYPEo6zCf3lBOdipREGnYcPBRU12i3e2l10rqHA34v8N3zA82YJOGgr7ngThWV/hDeBc
-	 HB1i+o+5gRiJHLrycygYasDTUM7LfvWMR0fbqa2VWB6KZfP0SGx7P0Bk1SyzwweepDJn+
-	 BwR2DNS/hW1nFw4/NkJeRqbDgSkd99vttk1eY2yB22paRz2II+ZXGfTcSsozf4XBLGVNf
-	 EoB6cZdh9KdJ7RlQlYvl+dwYRJTMmOnt4ZbwbZJA0ICSP9edIhN5pCuj7ZfHzVbz6kg==
+	t=1792645561;
+	b=1gZ7T+POSzhwZ4671iBA5tSGEv2jIu0pYIVfJbp+yiILggf0ITAiypA8Ua9axljPJQC1
+	 6fNVg5L3buCPioQ8KPb+fx2da6WhrCcCkAUPQMbD0mkRrO5CobNZv7Z1a7NOQvIlkv7gH
+	 iPdyUYgSh6qS/LQxYc/TAEvdkA9P3gpgT4Kkwha6XMNK/uxVtPbBvegGirRAQbQoL2BQE
+	 Pg7umNq9JwYN5YDoZDpm3Zct/k96ierPPjjJlOs5dnXLhsF7rUK9JATg42ANQSFugs9X3
+	 R59/kNCJn5Rt/aR/mBc9a9JOHd0UVYf2DSbd26Ky97+ERVpnACgYMwVial3BC5hJfIw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792641303;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:From:Date:
-	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type;
-	bh=/7mlgXJErE8xX5o3nFwIM/2IadSxoaDFzAkWIJSoFos=;
-	b=uzR8uLIXGoedr5pGTGLfucX2p99DrqSuBM1coqlv+jXCpKZ2VctB1QGudZ7l/YyyB3Uy
-	 4hB5mYzoE1fdBMhWbJ88WADRtvz2vchMA0OkkOi2TtD+HxiTSlEGevkWv17yZx2MnMbxq
-	 IY9sMuncu2kSdV2wJzQ1t5daR3yy2GPqNTyiRTLtoiM0zIhbv0Dgrc+AIAU0LRgOC9uGe
-	 nf8LtrmgbkaEfpjraI3ZAKvMcO3jK3IhOML8veAeF1Q7JPrsNoQiXTe12n2r68R5xHrr7
-	 dy993cl5JdAK/VzGX99qdTXuVlIzFKIauF/GeDSPX4QXg5rdJkrpSiPnzl1Ks/o0NxQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792645561;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:From:Subject:To:Cc:References:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-LD-Processed:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=LKu2Bd1j3pB3RxaUq4wlhFKCN3SSegoMZruWuarvMBE=;
+	b=OE4hJVeh6dv4LYwbdiRFaArcyEBfwg+qOrwz4igTpfyJfNhFAqL/xo8o9vvSDSJ0WetZ
+	 sQrSVlAS7oxS7MVuqY5d6UV8ehOT1rsd9Va7xclY/yGlffGWFel+xDdZh3e5BP7TsiD8N
+	 e4u3eKqw4nvZP76nubfK68KadDNtBzjl8EvqPbz+h3rl73Vd7vqPg7Eu601XJcGtGF/TV
+	 60p+XaPcJ1Uf26HsTyE3z9e3lSvZUbop9hxkuKV24yBm2aXGUJxGJ5eimGEi7hJ1X9W8V
+	 4o3VhpeuHjovMTbYvnHkmHn8g16AAXOPtpGSn0B+buDYWkZlDvzrZE2CjuzVr3P/n1Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="CAGBZZl/";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.54
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=eIb5eX7I;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.12
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011012.outbound.protection.outlook.com [40.93.194.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5077D606A319
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 03:55:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5077D606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003AB606A31A;
+	Thu, 22 Oct 2026 05:06:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 003AB606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=CAGBZZl/
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4a20568c8c0so2163975e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 20:55:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792641302; cv=none;
-        d=google.com; s=arc-20260327;
-        b=KGp8KLTNiQseZroLXbk8AqQ5X268QUcCBIQVE9zr//biwgMWYcJak5qVmamxpOuiJ5
-         CvFenGYtdtpgLfvAsfQeoJUnecN0hr3sEn2ji0GrdvjkOU2lHDCFKtSy+N0dcsLuF+/5
-         uia5v6hkqLzrh5vPY8CbuEJmCOHi3KiqYGj4DRKDfAHK3AGaNxPGi4GO7+95FZK3SkiI
-         lO592yxu0LVrb2WjMCQ6D1Za6uuiH97cMel05HixQq5ucsBScmeWjMHUEkrHleB9uAtF
-         odzHDUpwGspXhC1SPBiIYmzOXp4MR2lRiH+bzVcMV4drWTRcYDB0lAA7I46fSkusk+n6
-         h32w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=/7mlgXJErE8xX5o3nFwIM/2IadSxoaDFzAkWIJSoFos=;
-        fh=npSOCoPgWXHE3nR2xvTiannofPmWmz72QFkUr7vahQ0=;
-        b=sXyyI0sUpLAk/vGI3Dd+yHuae97zHEUy1YVw/HEVSs+VroRuveFn24Hh9BBBQWG+Xe
-         hTatsnnUU6ZBRBaFOgkFKtsimx0GfwuH7nXfKTaJGKPtPuuU9IifQk1F9XwnLhhyjB4R
-         fHUlvoYVa8TIUFv/OlXugI7argQjUZm0/EvgHs2AadwHNQube74J2UNqmcr46FGuj5HD
-         pRoHNe1iFvv0GVAcMJmyaivMD+lLyyw9pWAgZ2UCVTy9b6EE6SQqvgeHLKP59wCv5NTY
-         A7Oa2ljFhizhTw3d4aKfMdaDgo2mdcfg+U9z6wkD4ATkhWuO+hDaQKk290Hd7xfmDhj1
-         Nopw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792641302; x=1793246102; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=/7mlgXJErE8xX5o3nFwIM/2IadSxoaDFzAkWIJSoFos=;
-        b=CAGBZZl//w+SKdzOATkvV28W0KF+cy3EYK8+Iyn/ZcSCT0c83x2jUjU7tzRzZqKZTj
-         n5chEs9lEIn4RIIQgNXGOtcm0Kp+LB/wKYJCXLEjV4JaBRs4jNp4RtIhL0ptO0IPn5uB
-         87mksnkHaI1jtTU7RMumel+2MvXjjoYR5WHHGXXpsIq74SIfEvGgLYMeAq+LVZArT23I
-         m8IUOY7AbNHV5poCI0ZwGbTt73jE64CSy0Nc/sKpH2wWXaS8gSdXQutrDZD+0neIj1+r
-         11aoIi2MV4uIZk54lbnqnl3KqHYFa3yraN4CoMSH0QLB4RwuFyMgtheQ59LHUlGF2Q/C
-         f9Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792641302; x=1793246102;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=/7mlgXJErE8xX5o3nFwIM/2IadSxoaDFzAkWIJSoFos=;
-        b=dPAnQN0uHu8GP2iPT0xBZpyIxetFtd1we9ZTSL8VCB+4JWNV/2iIr/gMgXOse99i1W
-         MoiObUAosAETamCwAoKBPMKx0U9y32Fv84Yv4neztdO8GKRHL6s+AIy9U7eaxHDWb6rh
-         iDJrOpQBPOepzPkHTATXu8GHmU9IPJyVG+bBhJWF+O3VIeSgLE1hWogEJBpG1VCw7lcb
-         1dgGvjU92UTwTKh1My/KRAdCzmORavFdUkObO9v53EOhzVLDcmvyOiyxnO/+/AkhxyBv
-         PDz4k5FWxUM/X5uWvWkxKOW4qahX9OMnGmg8p3CHg24QXYZDjsFyByHsd+9lejHmKo2x
-         Bb0A==
-X-Gm-Message-State: AFq9FYIWcwxc/pHKq6mxOknUtqWU254pUdRJXSARdyJwKwu3RHMbzEt0
-	GJdiARJAEwdQgCGM06V+3sqqQafCysN6Am9pyp5YXsYq+h+yuuzZqqBGz2CIlCVVSVfKFTOtnxC
-	eG2XcIj2gmQThgkLh1Sqh1p6ZurTt01I=
-X-Gm-Gg: AYBFou3PwPEloQkLYF0mj0gZyPZaqrnqpScTKP3JWxg9ccSeNXdYBrzQVZaOY9/PRgl
-	60Q6nt/gCnZCPnBRb+xmLgiZqXJN1OWgWq+TmKguzVomUIgElUisk7e4NfaQN0uJFG5xUG0m6HI
-	fcGtijFAMdJsV1aRH8i2IFE5n8pTmK0O0SM1PXmwrVbPD9tnwOPVri8L0KNYdb8bw/1ALePtmrT
-	U+m9JXAjEJItATjUqib3FaTVgw+RQVE+AnpJFl4EYF1b3+Gi9buA+F9Kexw4RfwiotUBaJfn2N3
-	kUG+drG6tHswauWbzGC5Bn2j4OmJlLtpd58IzOkrzpZiIAfFrKilgmA7prctNW8tNNIrRJNmNPN
-	fJ6tqgV0K6kdP62eC1CSXbgEiPRxQYIEYLActIg==
-X-Received: by 2002:a05:600c:6097:b0:4a1:e69d:90e8 with SMTP id
- 5b1f17b1804b1-4a1fdd44d02mr77592175e9.22.1792641301532; Wed, 21 Oct 2026
- 20:55:01 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=eIb5eX7I
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=jjISaySKzjDysTbrlzT24jbUGwYo51w7OwiVX/4a5SZWFT4aWMwrbJaUDvlL6HDqOGdY2zFV6+Lsv2M6PwACCbHSNoA0D/VdZFDhCeP8W1/YNDkG4ae1Ywp1CK4vU05hK0yvqB5ml/SBwUSRMrPn5d+Xr2Ie8NnzdYtCPqfyZUuVImFb6DCzHuEPstDz5WYl/bff8aiYC72ifXeYzYw8UJYvcx185PI0EoCGMLBHkmgsULYeFi7ZDuSFOyuU4Yt7syCY6ZeRyzeDBMsFU2WinSvpqu5McIC7bg0eXXme+PCg6Mtw5X/AB1w1dcyR3IR0Sn9vP/bjjo6ZNE55l1Ic7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LKu2Bd1j3pB3RxaUq4wlhFKCN3SSegoMZruWuarvMBE=;
+ b=qHlhk6S7aMb7EWrSE2GgwAIWzMuqAr6dlD9YLIvkY2w3m6iH7h5YaIdUz4bUPjQxQV9NBMzD7D9nmMlfT6XNYdnqfker9Kx7vxDuCIsQNjk1E5d5Ji6LXV810SPc7n5/diBOzJWo/V5ZE+eyU7UilR0tVitb6SYl5W3UUUqPUEmLHoG4ZsTMNOuUyPpw2FfYApdZzhYf/H0J6rR9VxVvtsBEjsqGtmrKqY6bzny9bWiVmODzsWEhreYpITIEKxs8UYi3iY44W1+9t3cQsPbuxAD7sUaulPWzEfh//SjBjZ7BUQ7uUmiI2tfolcz8Uv1I+SdbxEO4Uv7SejJhu9SBUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LKu2Bd1j3pB3RxaUq4wlhFKCN3SSegoMZruWuarvMBE=;
+ b=eIb5eX7IfMAtTQ7ExX6+sMTTD5LXnHRuW3N+SQUzN5k+OVirymPPG6By3wuYajQYRt3mDZvK71ZgqK5cCjnbJW5rtghpTYrKtd5S/7lYXcyzvYANVSON41WYyfyOw4WVzr1tIoe0/u7pKYxr9mwb5MC7sxUdFUxBlPVZDHMxJoc=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS2PR12MB9568.namprd12.prod.outlook.com (2603:10b6:8:27c::20)
+ by LVUPR12MB999185.namprd12.prod.outlook.com (2603:10b6:408:3a3::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
+ 2026 05:05:56 +0000
+Received: from DS2PR12MB9568.namprd12.prod.outlook.com
+ ([fe80::d13e:ae33:dff:b2]) by DS2PR12MB9568.namprd12.prod.outlook.com
+ ([fe80::d13e:ae33:dff:b2%6]) with mapi id 15.21.0546.012; Thu, 22 Oct 2026
+ 05:05:56 +0000
+Message-ID: <b01a603b-5e9f-4fb2-955d-48efb57d3f0b@amd.com>
+Date: Thu, 22 Oct 2026 10:35:48 +0530
+User-Agent: Mozilla Thunderbird
+From: "Nagavarapu, Dileep Kumar" <dnagavar@amd.com>
+Subject: Re: [PATCH v4 04/15] iio: adc: xilinx-xadc: Drop unnecessary masking
+ and dead code
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Michal Simek <michal.simek@amd.com>, Conall O'Griofa
+ <conall.ogriofa@amd.com>, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+References: <20261005094205.1045874-1-dileepkumar.nagavarapu@amd.com>
+ <20261005094205.1045874-5-dileepkumar.nagavarapu@amd.com>
+ <20261019000523.1d43a8d1@jic23-hlaptop>
+Content-Language: en-US
+In-Reply-To: <20261019000523.1d43a8d1@jic23-hlaptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA5PR01CA0068.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1b7::7) To DS2PR12MB9568.namprd12.prod.outlook.com
+ (2603:10b6:8:27c::20)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -99,54 +104,123 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-From: Viral Patel <viral8854@gmail.com>
-Date: Thu, 22 Oct 2026 09:24:50 +0530
-X-Gm-Features: AclHuK86GA8xQQUJ5Va-YAnsnwRCUxOWK9bKR76ObS9toEpCtM8qEUJMfLzwUz8
-Message-ID: <CAFkCdFwEOUq1nG42GPDHHMLDoVEWJQ63bJd2tPTJ30AKvdKn2A@mail.gmail.com>
-Subject: [RFC] iio: magnetometer: Infineon TLE493D-W2B6 support - new driver
- or extend tlv493d?
-To: Jonathan Cameron <jic23@kernel.org>, Dixit Parmar <dixitparmar19@gmail.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, joshua.crofts1@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PR12MB9568:EE_|LVUPR12MB999185:EE_
+X-MS-Office365-Filtering-Correlation-Id: b5be0e7e-0909-47e2-05b6-08df2ffa273b
+X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|10067099003|18002099003|22082099003|4143699003|5023799004|11063799006|261021121427099003|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	QYvbhftVCuRKAMwKHgMVtjhu4zV/3oWiR30JFk8e8EvZJ2pZT/i7HC037mWYW9LggDDR+0e5UtZAUrVM5JtaYMJvp+B87De5CJIwBMfvUUQQN0qsvcRrjl+sclnbJbe4qRns4RUK1SXuLY7poEmCM0+fy4BoHhpmVGdjvb2sx8lNj1pTSsXANqBVBZSwlBzEJ7adaVJSH7PI00Kx9M374SK8N2NQbprBBb5KG/zlLnFA5d0TBtiE4tzHtcq+0CMhWnTAhk45svM59obLPC9VtNzddIFlIPWjLWJZsSX0pQbNz52dLzkNDpwzhjGhxEcaUpkpWOarSH124nkhJpYwU6P3sAWf8cdrOR7afDIK0pfUVwYV6D90qx49t4X/xwNX/3wd8ynw+BiJWadj3JBeGhiHtdZql6ta6VoGJhaxr27UFfBPSGADW0uyqaUfDJXljnlKCbGEH5cJRN9yc4D2BJ+e1hDgIdPee6KRcZ6/4hpgj4J1z6qCetJW3IcPSrOkEn4tP/kQg3sf/g2inU7/QQy9TBakiGFXTU6zPV117m0FVywVNjuc+17ooeBuWTvxpWOxWYWCuERzjukNHWD1y/hmruSVhzwraUGu9bDbX0RrC52ObJ5iNzxQGxqv1q8SG2ipMMKlvDLiv1w0BSFWf0mpi7VpTSuUtzYURc9g7ps=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS2PR12MB9568.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(10067099003)(18002099003)(22082099003)(4143699003)(5023799004)(11063799006)(261021121427099003)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aVY5R0pvejhkT0FlQnZiaE1TZmpOMklyWHhyTFRkMTNFcWUvNldva3N5U1BO?=
+ =?utf-8?B?ajBuMEd4S1puV2N1bWoyaHFEbE5pejZGT3lUSXZDcFkyOW54eGZVRm5WQUsy?=
+ =?utf-8?B?cWhUVW03SDYvakRnamJXZEdCb2hmNUZXM2x5dzd1NG9CcUxYSEFsc2ZmZFU5?=
+ =?utf-8?B?T0kySEVsWFplTHJYSWxQMDZrZ0pISkhxdDBqdnFyWjVDSjhobWZYZUZJbGhQ?=
+ =?utf-8?B?aVlIQVpVZnVrUTlxaitvTEZ4ZFo3eGhudWR5S3ZlVEd4dVc5aWVtajNMM3JV?=
+ =?utf-8?B?YXBYLzk0Y0dhTDIybG1LSVhmUkN1NHZ4VXRLZmJ5eFF5K0NVaUphWGkyQWpu?=
+ =?utf-8?B?L2o1T21XbFQ4VVFmYlQ0UlBiWGhUMHUvNlNOTHNDUWp5d2lMT1U1NDVHK2N3?=
+ =?utf-8?B?bm9qRGhGMjZQbms4dW1MTW5hYUdkb2c3NkdJME45OGlTUmNtcWFxRkVXNXA4?=
+ =?utf-8?B?OHo3b2h0cisvVDY4Nk1IZ0dLdVJxcm5xZGpha1RaVUt2UnVHNlE2ajdlOEZU?=
+ =?utf-8?B?QTBiMFJ4L2Y3anZmZlpHVXo0VXpKUDN4MGF3QjVOVVVCdnZ3SUFMKzd2ZExH?=
+ =?utf-8?B?V2dUR0Y3UFBEUEZERGh1SG0xRG9HNnRhMnpuWVVVajJHV2ZTVE9aeXE0b3RT?=
+ =?utf-8?B?WUI4OFJ1bkhRSmVYNUZHUjFuaGYzeSt3aW4vN1hPZHF0NVlMQitBV3FlSGo1?=
+ =?utf-8?B?eDVGcm9kNzZjS3lXRXFFY3p2ZW56RHV4R2FRUmJYeXNHUEcvL3E2ZjJFc01v?=
+ =?utf-8?B?SmZ5Q3Q1RzV4TnZnbFkvTHZtbU94LzhVR3NJZ1R1SWpDTEphUGE1VWZIamM3?=
+ =?utf-8?B?ZWtPVkFCbm5ScnowOTJvdGpkandOS1pSWUNzUGh2MUhjSWR4T1RmSHBKUnpP?=
+ =?utf-8?B?eTczdkZVTm5vZUQ4QUpjd1NvbFc0MDRiU1ViT2Jzb2tRTFJPekR2SkdpakFh?=
+ =?utf-8?B?OSs0SXVqcG1SbmZ4UC9uWWRzOVlBV2xFSzdMRWlWSStma3NZeDBSay9aSDVP?=
+ =?utf-8?B?Mm9xTjFHRVdTam4rRjhEUEZURFRuZEJTcnh6Skl3eVBOOUNaY2JrOHRITUg5?=
+ =?utf-8?B?dlA5U1IwUUdkWkRCRDNITEozc0tMYWxkbzV1Y2NIOHgwMC9uREo0akpKOHFa?=
+ =?utf-8?B?VHZuODR6NmR3Y3NmcTJEcGRieFhCRFZNclN4ek9CN2Q5RDZkMHRUQ3BiKzA4?=
+ =?utf-8?B?QS9TbWRETlZGQWh2TG5HUFBQT0NRNzhuSTZKc3Fia2M1bHpadUdRcS9Cajcy?=
+ =?utf-8?B?VnZqSzMwaE5keUQ3K2RzRE1iNHVvMGI2R20vYklDOGdhaWdrNHhvUTQzblpn?=
+ =?utf-8?B?KzFIcWEwR3ZEUFZwdE91U0l1dm1nOWdpM0dJOXlmYUNvOUd2eFJtUDl6Wjda?=
+ =?utf-8?B?d1kxQThVcFRhbXNyZkVJU0ZhUkNCSVZVZVk2K1RjWTNnZEpmbjJZOEVZaEtE?=
+ =?utf-8?B?YitXNlVVZTlyQ2ZCZmY1OFBEc1c0VmVjazVlelpUcDRGVGhMcGdTb3pFeHBV?=
+ =?utf-8?B?YUk0SzlDWThBNGZPMDE0YW1IeXEwOTBDVUJuc25uQXFHTnFDYXJpNzlHVmV5?=
+ =?utf-8?B?dWNUWFlwc2xSMDdicVUyLzRnTTE3VFV4d3FHbHpDSWxLWklXbjBEVTU5MlZx?=
+ =?utf-8?B?MnU3djdFTjg3ekJkYUdNbCtmcnFmaWxhdTVnc1pleEl2K20waHlWWVZrdlQ4?=
+ =?utf-8?B?YktITjRZLzVscm5pNE90NGJOY3J4dlphMnNwS20wS01nR21WcEVwQW5TaTB0?=
+ =?utf-8?B?VkgzbC9CQy9ZUjQyU1BabVFyME9BOStuSnFSU29WcUxEaS9oS0FEc29OK0Yz?=
+ =?utf-8?B?MFExdkg1dW5kaEZzT1QyaTMzWUl0V202Vi9zQ3hXeHJaMzN5VHFEaFJGTGFF?=
+ =?utf-8?B?Sk1ZZURhOEpQQktUTGV2UXNpazVGUng5ZGExZkdFTmNWOS9pVmd6cTN3MXlt?=
+ =?utf-8?B?UjdyY2cxS0ptSmI0K3FDekRCMXhWSnlCbmZWUlVKc2grVXVic0ZIUGY1UUJ1?=
+ =?utf-8?B?UE5mMk1hbTJGak5UeTZBL3BBQXM0UWJqdnNtSVBpQnpBWVZwZFJ1ZEtxQVNR?=
+ =?utf-8?B?dGFyVyszWjFIVlR4bzdFQk1Dbk1IMmp4WVd6NGszNVpZMlFnV243Y3pleDI5?=
+ =?utf-8?B?NTRSYWFKZ1JXNncxWk9TZHFiZm51Q3M3LzNCMEw2N2RYd0hZZitHTzYxOWxR?=
+ =?utf-8?B?aldMMit1eFNXaDdUb1NvOGdvOVhmODB3aUhjek53OTJTR2tYR0p3L3RleVNJ?=
+ =?utf-8?B?VHFsM3RRa0hkdWp6cGJLS0VxNEhKT25tR09WQ1JYWXpMUjVuU29hVmJ0L0x1?=
+ =?utf-8?B?RjlRT3o4RHdCUkhOTlZ4ZGduQng3bXFwTHBOQ3NuWko5U1dJRVhvdz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5be0e7e-0909-47e2-05b6-08df2ffa273b
+X-MS-Exchange-CrossTenant-AuthSource: DS2PR12MB9568.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 05:05:55.8011
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OW+QR3R5+YiqtXQLGD48KIB23m2vMxRHGqgzG7C/dS9qmSCI4onrXD2kK+0IvOdgRpwnIRp9yOhg9OLaTehKtQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LVUPR12MB999185
 
-Hi Jonathan, Dixit, all,
 
-I'm planning to add support for the Infineon TLE493D-W2B6 3D Hall
-sensor (automotive-grade, AEC-Q100), a second-generation sibling of
-the TLV493D-A1B6 handled by drivers/iio/magnetometer/tlv493d.c.
-Before writing code, I'd like your view on driver structure.
 
-The X/Y/Z data packing is the same (12-bit two's complement, MSBs in
-0x00-0x02, LSB nibbles in 0x04/0x05), but most other things differ:
+On 10/19/2026 4:35 AM, Jonathan Cameron wrote:
+> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+> 
 
- - I2C protocol: addressed writes (trigger bits + register address)
-   instead of a raw stream to a separate write-register space; reads
-   use a 1-byte mode (PR bit) to read from 0x00 without an address
- - Register map: one unified map 0x00-0x16 (config, mode, wake-up
-   thresholds, diagnostics, version)
- - Parity: mandatory odd parity bits (FP over MOD1/MOD2, CP over the
-   config/wake-up registers); a wrong FP makes the sensor flag itself
-   defective until reset
- - Data validity: Diag register (PD0/PD3 flags, frame counter, bus
-   parity) instead of the channel bits used by tlv493d
- - Temperature: 10-bit, different encoding and scale/offset
- - Modes: master-controlled, low-power with 8 update rates
-   (0.05 Hz-770 Hz), fast mode; full/short magnetic range
- - Reset: dedicated I2C reset sequence (FF, FF, 00, 00 frames)
+Hi Jonathan,
 
-Given that, my plan is a new driver (e.g. tle493d.c) targeting the
-W2B6 first, leaving tlv493d.c unchanged. The same register map is
-shared by other second-generation parts (TLE493D-A2B6,
-TLI493D-W2BW), which could be added later once verified.
+> 
+> On Mon, 5 Oct 2026 15:11:54 +0530
+> Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com> wrote:
+> 
+>> Remove a no-operation bitwise-OR with zero (dead code) and the redundant
+>> 16-bit masking when storing values into u16 destinations, where the
+>> mask has no effect. Also remove the unused macros.
+> 
+> Hi Dileep,
+> 
+> Why?  If they are expressing the rest of the fields in a register
+> simply knowing there is stuff there an be useful even if not
+> explicitly used. There are three approaches I tend to accept to
+> such defines.
 
-Questions:
- 1. New driver vs. extending tlv493d.c - any preference?
- 2. Naming: tle493d.c, or a family name such as tlx493d.c?
+Thanks for the review. I removed these macros as they are currently 
+unused by the driver.
 
-I have a TLE493D-W2B6 Shield2Go board on order and will test on a
-Raspberry Pi 5 before sending patches.
+I agree that they are useful for documenting the relevant register 
+fields, so I’ll retain them.
+> 
+> 1) Comprehensive.  Sometimes it is just easier to define anything -
+>     particularly if codegen involved.
+> 2) Comprehensive for a subset of registers + nothing for the contents
+>     of other registers - fits the above definition of useful by defining
+>     what the bits we are leaving alone do.
+> 3) Exactly what is used.  I actually don't particularly like this and
+>     prefer option (2) but I don't tend to consider it a reason to not
+>     merge a driver.
+> 
+> Now, if the stuff you are dropping is inconsistent across IPs or similar
+> then that is fine, but say so here.
+> 
+> Jonathan
+> 
+> 
+>>
+>> No functional change intended.
+>>
+>> Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+>> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+>> Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
+> 
 
 Thanks,
-Viral
+Dileep
+
