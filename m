@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792663101;
-	b=cGSTXk8UqghnIfv2R0fZnQIhtMwQUyEa7nquig/4cSeaF/ORkli7uj/TeuK9wo5BNwWG
-	 fCI0PFJFnCu1QX+kwhyUgITUCffu2QLLnge/3hnkbo8TbOcVipVRwPzuQlRMsy5XOF0ID
-	 Vo4Y8b+AnBlnIZTS229a4u7+8npAWkN75MZolYnotI+wUFJTMyTn/xOg1uEb1yWgMNqCp
-	 f0hybmfdQCqj/K/n669YAw9fiQJx7sKAfj2YOAJoLkoxZ8elcVOG1Jr0vuIFSKcwFazpd
-	 JDkWvZB3TmLd5UyCrRghAiD5gUHvc8nvhimgWdMreOgKpVzHj36U3wbXh6i+E3ShnCA==
+	t=1792663100;
+	b=af2UChuu5HXwkolphPQYRJwZ6Ga0HGr4K9JBTrWzVCSR2CgxpJj3SBBbr6TW+MBCBVs2
+	 l0PscOeiBuI4Dbo2N16EGC3Q5dZ73ec5TbEfu+oYwAZvm+FjSiUh8U4dZYXS3CPVjCKDC
+	 bs9CJu0uxs7dRrAHK8CxofQuH7En4w1POlnP+hZE+oxgIIPX39HEUJ4eerZDEJrGfYl30
+	 zXUHlvxeKMVTRt0xTgG0CRbCT/sJXBoLSFKNkzZarlNniXdDlOoFGECJkVsyj3EeCGtpN
+	 ifge5YlmzfZMxyf/WS8j3WZEDJNM8J+Ts0Rpv0kiekKk7TcO1Mj8UQFK/LhKWVbeqGQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792663101;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792663100;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=IJfr7m0z+T7MFoKWbLG+a7K+ylPZLtfNHNUQwdb/xBo=;
-	b=V+UXFa8HRQcSOf6rwlAo9GFJTU0JWY3sAuA/HzDNZcMsGNX/rsp63ux91yJMSq6a5Fp5
-	 1dPN3X9f2N0y8/8mnZuO7NTJODpMrea2fPOy7zGLKjNsUc0q8u48YO1OSfeIIZFbDCAJT
-	 qIws8s8LkoZSLRrVvYTaTLVI1Qd85gECBBgR1cx3nDJU1OT8nn4sAXt10vM6R2lN5LanH
-	 hnq463o1MUuUtvIwVb30i7PNGEh0BpYS78J7ygoJvUjL+0NndtnOteXsR8obbq4zryqmB
-	 /Cs00Gbs1NInwG4tccHgK7VS5K/qLyizCXp1Rd4X97BU6wbFGpXixRIbERJBtw11ocg==
+	bh=v4UMkVlfVtb81/ahh8w+P5lmn3QSfFvadiLrsC4smkA=;
+	b=kQtT5NqzKojgrixF6gfc+lc3Tbk4gvmA1gu9dY5rF95PTQvDP+B2XCzlQ95RWk6gXmkZ
+	 px7ZuMfIxtpDvMLfMAiOhxtTihBfpchRJlvr1yJABlVjhqGJPTLX/vi26z5ijXjVsh287
+	 KZAjJV4Zu1JXD7Eks1tn4vaNrp54GaRKbKRFWuY0aDIjeU1GXtnY9XQ/9vvaeQ3Xv6ZDW
+	 Y8nZLKI09nCnf97idQg07kczxAqK0GJbNwdXOZ6gBRZ+DIr6WOJjdH0WSNCqmpCai2dFX
+	 N2JzyjhBqWZB2WnVP+hioIKECFgYm8JojZynoLOUfxaz00B0JkeRIcs4Qs3ULoP/p0w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UJZPeNau;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aS9AvGs5;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30BDD606A326;
-	Thu, 22 Oct 2026 09:58:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FB35606A31A;
+	Thu, 22 Oct 2026 09:58:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UJZPeNau
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aS9AvGs5
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
 	t=1792663100;
-	b=EXFc5yxzIsL9DrS95RVhgbWb0yv2mU6N6TZw3pNN8hfswyyTbDW4dWNpdBgHyhaPnk24
-	 +Lz+Om6YoxaHUsy9NlI+iKGgdtx5hOhr/BRhDY2KUMN/9HYq9IjBQJh4lXpVrToiBx374
-	 9CaqKf/L7VBJEgEmGDUYowllOqdMB8PEq5EDUg/h31NBcma63bRdpNOUpKWGR7O2Oqkrw
-	 FIQVHlpuCV8FwjTJ3dmvIpt7woD1ObII549Opf+xeyzRFQGj8mlh3lAKa1Ynk4fLlM0lG
-	 +tSR+fdq/V7Cc5PqI0dtmMt1AyZ0OZhXmajtKyWuLdpnLC5O1v4eBExDb4+Jqy/uBnA==
+	b=mFE+uhVSUGB+o2h4jqHIel+tZkE55vv2CnOXGBZX1gByL3IbuHX7MtC8rm9et+mmO6oo
+	 JEkCKW71aHa0qeNCraSprMj5XsnatzYVqoxq1Nw1JF7P2qsQK7LK48N4PtlbujwdJX++N
+	 +CWl9RfUqfoSBXpW52fmQpsmK8rJeoDskDlT21QpVrPkGFP17MRLyjWvgUc6Yhqr5AWZk
+	 xJDQ19yZJNNaJOHEEZtXhPwlRMo8PAUOKuAIha7Exwnjgb/+A0SWkWsqWp2DPqXpx1W6+
+	 HHexYm/I8Z6auXcAEwtHPTQhe6OF73ivnbiO2wO/lE6oyRD4TO5u35uNS6oCQH16gdg==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
 	c=relaxed/relaxed; t=1792663100;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=IJfr7m0z+T7MFoKWbLG+a7K+ylPZLtfNHNUQwdb/xBo=;
-	b=IU4oXbXQ5Lc95nJzLnsYO3oSxNDM4sQCPaHc7JQJdYejhddmr1lqHu3FTyUWbzAHgWkx
-	 ale0y86ql7AX45Gb1x1Q80FI5i9pf5VclVtfGEdlFOXLgSmI+bJHGaKQMc3QuZDWyFwg5
-	 GTyqao5iTcMrLRBvJhk6pjDAPs94Si8Rby1NsKA0hxsHaAWXOOZxHTVu3fnIwrT4XL6gv
-	 xLa6VctR8uOMnFWC4IoYrozuBmG5UrR0ZBxQcBPj6e8sxt0ufBfy7tBFM2A2WahI22as0
-	 2729amhXMWphPxZ75LSgHZYtym6fip1URZhtVgAOME+E26HpcWw2TbOhhN5A89bVR6w==
+	bh=v4UMkVlfVtb81/ahh8w+P5lmn3QSfFvadiLrsC4smkA=;
+	b=XGMdR9/t3dJ8miGfamaL8qgIZC7SVaPX2MMZxr5SA6rheH6FSlUq2oq2erYMHLDh2Pf7
+	 VgS+yoRGEImzsS3C8IcWsfsezN93aaCo/kfRUxBliZK2YIDHnq274Q34WorZFpY0fK7uO
+	 Pbhp9obvMr93ANIs2osTC6Ghby/xExveKSUO3A1xGbRjvawBGG651PrsEQVdRfAsTTux8
+	 2fDN/9sUsCCLWtKBsLNxUkgtD+sTwsGh48o6tOK/BxCR0INSyaxcM5nrxxXhnDoVkMKWA
+	 cHaKy0xobjh81X3rVtKTGufRCO10Y+76G08jeSgkzoYrK19PA8Awki7Jzhn/yrNOQHQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 3D9971F000C3;
+	by smtp.kernel.org (Postfix) with ESMTPS id 3D9BF1F000C4;
 	Thu, 22 Oct 2026 09:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1792663100;
-	bh=IJfr7m0z+T7MFoKWbLG+a7K+ylPZLtfNHNUQwdb/xBo=;
+	bh=v4UMkVlfVtb81/ahh8w+P5lmn3QSfFvadiLrsC4smkA=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=UJZPeNaumhKMcfGD0miBGrb8K8EMGKpNjGrIalJkARfH/2s2EzlDO5Rd/njRavkVL
-	 w7WwCFFGaizODgZrbEypFS52ZExZiCZ8M0SaitIojop6QO5sZBdXyYl8rTIQali4OR
-	 TvslAbOcBoZxzwqTDXtJ61y4kO002J/zS09EXAURqriMudyjwVzp5IlptLoYcf0IZO
-	 w9/74tZC7RTjTo9Hyy9UxyEfcojzbCw/uzm10lH56s3RSpDz4HQ6+MpDMM4WuaPRXD
-	 6oX9asF2+pe19cpxPNV4l9G8Harqc4YY0wAF/HmolHpG1N9aL5i2AA2vARoKQiwNt/
-	 VvSOIl0hWF8fw==
+	b=aS9AvGs5SIpcPTERYgv3sRz1cGpSBpLE2YbymNDm1Rxjl+q/r2WJgsze/c5jJrX0f
+	 9XvhY6ajICCrGbieE6Ra25u5SN1Bs9whefzvSLMxPQQpPgZuGqmAQ0P1H8FLxvT2Xz
+	 f5w1MHf03UxvBhujxNMJXeen4S7t9E+/OniQOMkmHHeKqSF43y3dVT8fVqx170nYn1
+	 EjZlxsoImpdG4j7iE7iW14CeG1ladRqZXm4xHjzD3ogPp+sGtgbLuna1LL9z5B9rHY
+	 Rvmf+f7ba5JQ5teOgwb1lm1+W8namjVULFne2s0SnCb80DGlMoLynJT9OxuwWD4PGY
+	 q9qh3+WVK7KwQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id A640A4355A;
+	by lkml.kernel.org (Postfix) with ESMTP id AF7FD4355E;
 	Thu, 22 Oct 2026 09:58:18 +0000 (UTC)
 From: Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org>
-Date: Thu, 22 Oct 2026 12:58:19 +0300
-Subject: [PATCH v2 2/3] iio: adc: ltc2497: add FA/FB line-frequency
- rejection selection
+Date: Thu, 22 Oct 2026 12:58:20 +0300
+Subject: [PATCH v2 3/3] iio: adc: ltc2497: add LTC2493 support
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261022-submission-ltc2493-support-v1-v2-2-391d908d2877@analog.com>
+Message-Id: <20261022-submission-ltc2493-support-v1-v2-3-391d908d2877@analog.com>
 References: <20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com>
 In-Reply-To: <20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -98,11 +97,11 @@ Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, 
  Andrei Stancovici <andrei.stancovici@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792663098; l=17544;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792663098; l=8715;
  i=andrei.stancovici@analog.com; s=20261009; h=from:subject:message-id;
- bh=Nz6ORfk+kWHxiziw4ipbyeEPZLGtvXKdCpXKRHMfzps=;
- b=FsGig/vQKgnwyJHbXLMkqDuFYRlcGPg1/t9x9Eurg84u/v2d+t4uFi71fwtdcDxTXXmSq3uwi
- Y0jjfSY0L/oCgfYudpy9WxL3Kllr1YB//12haj/Sj1JXNqMCHLh9MWa
+ bh=y587TS9YqWDIOJvw8dQBhToPnXX1YTN14TsWokMI8DI=;
+ b=eir08n3POeaz1h0QalSSsLxr/ZdJl/6D0heAqsWBphGnIbivgnXmMNb1VbkjZ91QYgtL7cEG6
+ mPUUbi32cSvAOcrdqtk/9axrtYCpR9+Rfa3oWwlNk8pY+M3IN207UZe
 X-Developer-Key: i=andrei.stancovici@analog.com; a=ed25519;
  pk=wgT+au+blAhVYxhwNgdx0woNl/1p+OCG484rnTRFrsE=
 X-Endpoint-Received: by B4 Relay for andrei.stancovici@analog.com/20261009
@@ -113,438 +112,219 @@ Content-Transfer-Encoding: 8bit
 
 From: Andrei Stancovici <andrei.stancovici@analog.com>
 
-The LTC2499 can suppress mains interference at 50Hz, 60Hz, or
-simultaneously at both, which is the power-up default. Expose the
-selection through filter_mode and filter_mode_available. It applies to
-voltage and temperature conversions alike, so the attribute is
-device-wide.
+The LTC2493 is the 4-channel member of the LTC2499 family: 4 single-ended
+inputs or 2 differential pairs, 24-bit result, and the same command
+format, internal PTAT temperature sensor, 2x speed mode and line-frequency
+rejection as the LTC2499.
 
-The rejection mode also sets the conversion time and the output rate, so
-both are now tracked per mode. 50Hz-only rejection takes up to 163.5 ms
-at 1x, which the previous 150 ms budget did not cover; a read in that
-mode could reprogram the device mid-conversion and fail with -EIO.
+For channel enumeration, the parts differ in how many inputs they
+have, so record that count in chip_info and select the corresponding
+channel table from it. A future family member with another input
+count is then one more table and one more row rather than another
+branch in probe.
 
-Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2499fa.pdf
+Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2493fe.pdf
 Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
 
 ---
 Changes in v2:
-- Moved ahead of the LTC2493 patch: this is infrastructure the new part
-  uses, not a feature added after it (Nuno Sá, Jonathan Cameron).
-- FA/FB are now one 2-bit field written with FIELD_PREP(), so the enum
-  values are the register values and ltc2497_rejection_bits() is gone.
-  No change on the wire (Jonathan Cameron).
-- Dropped the reserved FA = FB = 1 notes, all three of them (Jonathan
-  Cameron).
-- Dropped the comment justifying the devm_kmemdup(); the copy itself is
-  kept, as suggested. A second static channel set was considered, but
-  with the channel tables in the core and chip_info in the transport
-  files, patch 3 would then have to delete machinery this patch adds.
-  Happy to do it in a later series (Jonathan Cameron).
-- guard(mutex) in the new filter_mode callbacks, in read_avail(), and in
-  write_raw()'s sampling-frequency path, which this patch restructures
-  anyway. The rest of the driver's locking is left alone (Jonathan
-  Cameron).
-- read_avail() now takes the lock before reading the rejection mode; it
-  was the only unlocked access to that field.
-- Restored the speed_2x comment indentation (Jonathan Cameron).
+- Folded in the previous temperature, 2x speed and rejection patches, so
+  the LTC2493 chip_info entry is complete where the part is introduced
+  (Nuno Sá, Jonathan Cameron).
+- Replaced bool four_channel with u8 num_inputs, and pick the channel
+  table from a set keyed by that count in the core, so another input
+  count is one more table and one more row rather than another branch in
+  probe (Jonathan Cameron). It is named num_inputs rather than
+  num_channels because indio_dev->num_channels represents the complete
+  IIO channel set and is 33 for the 16-input part.
+  pahole, struct ltc2497_chip_info, before -> after: LP64 16 -> 16 bytes,
+  ILP32 12 -> 12 bytes, no holes either way. The u8 lands in the padding
+  the trailing bools already occupied, so nothing was reordered.
+- ltc2496_info and the LTC2497/LTC2499 entries gain num_inputs = 16.
+  Without it those parts match no channel set and fail probe.
+- Dropped the comment above the temperature-channel trim rather than
+  rewording it (Nuno Sá).
+- Dropped Joshua Crofts' Reviewed-by from the old patch 2/6: that patch
+  is now merged with three others and the channel representation it
+  covered has been rewritten, so it needs a fresh look.
 ---
- drivers/iio/adc/ltc2497-core.c | 161 ++++++++++++++++++++++++++++++++---------
- drivers/iio/adc/ltc2497.c      |  34 +++++----
- drivers/iio/adc/ltc2497.h      |  30 ++++++--
- 3 files changed, 170 insertions(+), 55 deletions(-)
+ drivers/iio/adc/ltc2496.c      |  1 +
+ drivers/iio/adc/ltc2497-core.c | 66 +++++++++++++++++++++++++++++++++++++-----
+ drivers/iio/adc/ltc2497.c      | 13 +++++++++
+ drivers/iio/adc/ltc2497.h      |  1 +
+ 4 files changed, 74 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
+index 5b5b6ab28850..e40440410f60 100644
+--- a/drivers/iio/adc/ltc2496.c
++++ b/drivers/iio/adc/ltc2496.c
+@@ -89,6 +89,7 @@ static void ltc2496_remove(struct spi_device *spi)
+ static const struct ltc2497_chip_info ltc2496_info = {
+ 	.resolution = 16,
+ 	.name = NULL,
++	.num_inputs = 16,
+ };
+ 
+ static const struct of_device_id ltc2496_of_match[] = {
 diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
-index a6e34da83b81..c218d87d3a62 100644
+index c218d87d3a62..9346a39968d0 100644
 --- a/drivers/iio/adc/ltc2497-core.c
 +++ b/drivers/iio/adc/ltc2497-core.c
-@@ -6,7 +6,10 @@
-  * Copyright (C) 2017 Analog Devices Inc.
-  */
+@@ -420,6 +420,49 @@ static const struct iio_chan_spec _name[] = {                           \
+ LTC2497_DEFINE_CHANNELS(ltc2497core_channel, 0);
+ LTC2497_DEFINE_CHANNELS(ltc2497core_channel_samp_freq, BIT(IIO_CHAN_INFO_SAMP_FREQ));
  
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
-+#include <linux/device/devres.h>
-+#include <linux/gfp.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/driver.h>
- #include <linux/math64.h>
-@@ -22,19 +25,24 @@
- #define LTC2497_SIGN			BIT(3)
- 
- /*
-- * Output-rate modes, indexed by ltc2497core_driverdata.speed_2x
-- * (0 = 1x, the power-on default; 1 = 2x, LTC2499 only).  The advertised
-- * sampling_frequency and the conversion-time budget are two views of the same
-- * mode, so they are kept in lock-step here.
-+ * Output-rate modes as [rejection][{1x, 2x}], each a (Hz, microHz) pair taken
-+ * as 1 / t_CONV typ for that combination.  The advertised sampling_frequency
-+ * and the conversion-time budget are two views of the same mode, so the rows
-+ * here are kept in lock-step with ltc2497core_conv_time_ms_tbl.
-  */
--static const int ltc2497core_samp_freq_avail[] = {
--	6, 800000,	/* 1x: ~6.8 Hz  (1 / t_CONV_1 typ 146.9ms) */
--	13, 600000,	/* 2x: ~13.6 Hz (1 / t_CONV_2 typ  73.6ms) */
-+static const int ltc2497core_samp_freq_avail[][4] = {
-+	[LTC2499_REJECT_50_60]	= { 6, 800000, 13, 600000 },
-+	[LTC2499_REJECT_50]	= { 6, 240000, 12, 450000 },
-+	[LTC2499_REJECT_60]	= { 7, 490000, 14, 950000 },
- };
- 
--static const unsigned int ltc2497core_conv_time_ms_tbl[] = {
--	LTC2497_CONV_TIME_1X_MS,		/* 1x */
--	LTC2499_CONV_TIME_2X_MS,		/* 2x */
-+static const unsigned int ltc2497core_conv_time_ms_tbl[][2] = {
-+	[LTC2499_REJECT_50_60]	= { LTC2497_CONV_TIME_50_60_1X_MS,
-+				    LTC2499_CONV_TIME_50_60_2X_MS },
-+	[LTC2499_REJECT_50]	= { LTC2499_CONV_TIME_50_1X_MS,
-+				    LTC2499_CONV_TIME_50_2X_MS },
-+	[LTC2499_REJECT_60]	= { LTC2499_CONV_TIME_60_1X_MS,
-+				    LTC2499_CONV_TIME_60_2X_MS },
- };
- 
- static unsigned int ltc2497core_conv_time_ms(struct ltc2497core_driverdata *ddata,
-@@ -42,13 +50,14 @@ static unsigned int ltc2497core_conv_time_ms(struct ltc2497core_driverdata *ddat
- {
- 	/*
- 	 * SPD is ignored by the part during a temperature measurement: it
--	 * always converts at 1x, so budget the 1x time regardless of the
-+	 * always converts at 1x, but the rejection selection still applies, so
-+	 * budget the 1x cell of the current rejection row regardless of the
- 	 * selected voltage-channel mode.
- 	 */
- 	if (address == LTC2497_TEMP_ADDR)
--		return ltc2497core_conv_time_ms_tbl[0];
-+		return ltc2497core_conv_time_ms_tbl[ddata->rejection][0];
- 
--	return ltc2497core_conv_time_ms_tbl[ddata->speed_2x];
-+	return ltc2497core_conv_time_ms_tbl[ddata->rejection][ddata->speed_2x];
- }
- 
- static int ltc2497core_wait_conv(struct ltc2497core_driverdata *ddata,
-@@ -192,11 +201,11 @@ static int ltc2497core_read_raw(struct iio_dev *indio_dev,
- 		/*
- 		 * Only advertised on the voltage channels of parts with a speed
- 		 * mode; the sampling frequency is a property of the selected 1x/2x
--		 * mode, not of an individual conversion.
-+		 * mode and rejection mode, not of an individual conversion.
- 		 */
- 		mutex_lock(&ddata->lock);
--		*val = ltc2497core_samp_freq_avail[ddata->speed_2x * 2];
--		*val2 = ltc2497core_samp_freq_avail[ddata->speed_2x * 2 + 1];
-+		*val = ltc2497core_samp_freq_avail[ddata->rejection][ddata->speed_2x * 2];
-+		*val2 = ltc2497core_samp_freq_avail[ddata->rejection][ddata->speed_2x * 2 + 1];
- 		mutex_unlock(&ddata->lock);
- 
- 		return IIO_VAL_INT_PLUS_MICRO;
-@@ -211,13 +220,17 @@ static int ltc2497core_read_avail(struct iio_dev *indio_dev,
- 				  const int **vals, int *type, int *length,
- 				  long mask)
- {
-+	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
++#define LTC2493_DEFINE_CHANNELS(_name, _extra_mask)                     \
++static const struct iio_chan_spec _name[] = {                           \
++	LTC2497_CHAN(0, LTC2497_SGL, "CH0", _extra_mask),               \
++	LTC2497_CHAN(1, LTC2497_SGL, "CH1", _extra_mask),               \
++	LTC2497_CHAN(2, LTC2497_SGL, "CH2", _extra_mask),               \
++	LTC2497_CHAN(3, LTC2497_SGL, "CH3", _extra_mask),               \
++	LTC2497_CHAN_DIFF(0, LTC2497_DIFF, _extra_mask),                \
++	LTC2497_CHAN_DIFF(1, LTC2497_DIFF, _extra_mask),                \
++	LTC2497_CHAN_DIFF(0, LTC2497_DIFF | LTC2497_SIGN, _extra_mask), \
++	LTC2497_CHAN_DIFF(1, LTC2497_DIFF | LTC2497_SIGN, _extra_mask), \
++	LTC2497_TEMP_CHANNEL,                                           \
++}
 +
- 	switch (mask) {
--	case IIO_CHAN_INFO_SAMP_FREQ:
--		*vals = ltc2497core_samp_freq_avail;
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		guard(mutex)(&ddata->lock);
++LTC2493_DEFINE_CHANNELS(ltc2493_channel, 0);
++LTC2493_DEFINE_CHANNELS(ltc2493_channel_samp_freq, BIT(IIO_CHAN_INFO_SAMP_FREQ));
 +
-+		*vals = ltc2497core_samp_freq_avail[ddata->rejection];
- 		*type = IIO_VAL_INT_PLUS_MICRO;
--		*length = ARRAY_SIZE(ltc2497core_samp_freq_avail);
-+		*length = ARRAY_SIZE(ltc2497core_samp_freq_avail[0]);
- 		return IIO_AVAIL_LIST;
--
-+	}
- 	default:
- 		return -EINVAL;
- 	}
-@@ -228,24 +241,26 @@ static int ltc2497core_write_raw(struct iio_dev *indio_dev,
- 				 int val, int val2, long mask)
++/*
++ * Channel sets keyed by the part's single-ended input count, so that adding a
++ * family member with a different count is a new table and a new row here
++ * rather than a new branch in probe.  num_channels counts the temperature
++ * entry, which probe drops again for parts without the sensor.
++ */
++struct ltc2497core_channel_set {
++	u8 num_inputs;
++	unsigned int num_channels;
++	const struct iio_chan_spec *channels;
++	const struct iio_chan_spec *channels_samp_freq;
++};
++
++static const struct ltc2497core_channel_set ltc2497core_channel_sets[] = {
++	{
++		.num_inputs		= 4,
++		.num_channels		= ARRAY_SIZE(ltc2493_channel),
++		.channels		= ltc2493_channel,
++		.channels_samp_freq	= ltc2493_channel_samp_freq,
++	}, {
++		.num_inputs		= 16,
++		.num_channels		= ARRAY_SIZE(ltc2497core_channel),
++		.channels		= ltc2497core_channel,
++		.channels_samp_freq	= ltc2497core_channel_samp_freq,
++	},
++};
++
+ static const struct iio_info ltc2497core_info = {
+ 	.read_raw = ltc2497core_read_raw,
+ 	.read_avail = ltc2497core_read_avail,
+@@ -430,6 +473,7 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
  {
  	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
-+	const int *avail;
- 	unsigned int i;
--	bool speed_2x;
- 
- 	switch (mask) {
--	case IIO_CHAN_INFO_SAMP_FREQ:
--		/* Match the (val, val2) pair against the advertised rates. */
--		for (i = 0; i < ARRAY_SIZE(ltc2497core_samp_freq_avail); i += 2) {
--			if (val == ltc2497core_samp_freq_avail[i] &&
--			    val2 == ltc2497core_samp_freq_avail[i + 1])
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		guard(mutex)(&ddata->lock);
-+
-+		/*
-+		 * Match the (val, val2) pair against the rates advertised for
-+		 * the rejection mode currently selected.
-+		 */
-+		avail = ltc2497core_samp_freq_avail[ddata->rejection];
-+		for (i = 0; i < ARRAY_SIZE(ltc2497core_samp_freq_avail[0]); i += 2) {
-+			if (val == avail[i] && val2 == avail[i + 1])
- 				break;
- 		}
--		if (i == ARRAY_SIZE(ltc2497core_samp_freq_avail))
-+		if (i == ARRAY_SIZE(ltc2497core_samp_freq_avail[0]))
- 			return -EINVAL;
- 
--		speed_2x = i / 2;
--
--		mutex_lock(&ddata->lock);
--		ddata->speed_2x = speed_2x;
-+		ddata->speed_2x = i / 2;
- 		/*
- 		 * The new speed only takes effect once the second command byte
- 		 * is reprogrammed, so force the next read to reprogram rather
-@@ -259,15 +274,73 @@ static int ltc2497core_write_raw(struct iio_dev *indio_dev,
- 		 * untouched here.
- 		 */
- 		ddata->addr_prev = LTC2497_CONFIG_DEFAULT;
--		mutex_unlock(&ddata->lock);
- 
- 		return 0;
--
-+	}
- 	default:
- 		return -EINVAL;
- 	}
- }
- 
-+static const char * const ltc2497core_filter_modes_str[] = {
-+	[LTC2499_REJECT_50_60]	= "50_60",
-+	[LTC2499_REJECT_50]	= "50",
-+	[LTC2499_REJECT_60]	= "60",
-+};
-+
-+static int ltc2497core_set_filter_mode(struct iio_dev *indio_dev,
-+				       const struct iio_chan_spec *chan,
-+				       unsigned int val)
-+{
-+	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
-+
-+	guard(mutex)(&ddata->lock);
-+
-+	ddata->rejection = val;
-+	/*
-+	 * The new rejection mode only takes effect once the second command byte
-+	 * is reprogrammed, so force the next read to reprogram rather than reuse
-+	 * the value already latched for this address.  LTC2497_CONFIG_DEFAULT is
-+	 * not a valid channel/temperature address, so it is a safe re-arm
-+	 * sentinel (as used at probe).
-+	 *
-+	 * A conversion started under the old rejection mode may still be in
-+	 * flight; its own duration (conv_time_prev), not the new mode's, still
-+	 * gates the next reprogram, so the timing state is left untouched here.
-+	 */
-+	ddata->addr_prev = LTC2497_CONFIG_DEFAULT;
-+
-+	return 0;
-+}
-+
-+static int ltc2497core_get_filter_mode(struct iio_dev *indio_dev,
-+				       const struct iio_chan_spec *chan)
-+{
-+	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
-+
-+	guard(mutex)(&ddata->lock);
-+
-+	return ddata->rejection;
-+}
-+
-+static const struct iio_enum ltc2497core_filter_mode_enum = {
-+	.items = ltc2497core_filter_modes_str,
-+	.num_items = ARRAY_SIZE(ltc2497core_filter_modes_str),
-+	.set = ltc2497core_set_filter_mode,
-+	.get = ltc2497core_get_filter_mode,
-+};
-+
-+/*
-+ * Rejection applies to voltage and temperature alike, so the attribute is
-+ * device-wide.
-+ */
-+static const struct iio_chan_spec_ext_info ltc2497core_ext_info[] = {
-+	IIO_ENUM("filter_mode", IIO_SHARED_BY_ALL, &ltc2497core_filter_mode_enum),
-+	IIO_ENUM_AVAILABLE("filter_mode", IIO_SHARED_BY_ALL,
-+			   &ltc2497core_filter_mode_enum),
-+	{ }
-+};
-+
- #define LTC2497_CHAN(_chan, _addr, _ds_name, _extra_mask) { \
- 	.type = IIO_VOLTAGE, \
- 	.indexed = 1, \
-@@ -380,6 +453,21 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
- 	else
- 		indio_dev->num_channels = ARRAY_SIZE(ltc2497core_channel) - 1;
- 
-+	if (ddata->chip_info->has_rejection_mode) {
-+		struct iio_chan_spec *channels;
-+
-+		channels = devm_kmemdup(dev, indio_dev->channels,
-+					indio_dev->num_channels * sizeof(*channels),
-+					GFP_KERNEL);
-+		if (!channels)
-+			return -ENOMEM;
-+
-+		for (unsigned int i = 0; i < indio_dev->num_channels; i++)
-+			channels[i].ext_info = ltc2497core_ext_info;
-+
-+		indio_dev->channels = channels;
-+	}
-+
- 	ret = ddata->result_and_measure(ddata, LTC2497_CONFIG_DEFAULT, NULL);
- 	if (ret < 0)
- 		return ret;
-@@ -404,8 +492,11 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
- 
- 	ddata->addr_prev = LTC2497_CONFIG_DEFAULT;
- 	ddata->time_prev = ktime_get();
--	/* Power-on default mode is 1x; a conversion is already in flight. */
--	ddata->conv_time_prev = LTC2497_CONV_TIME_1X_MS;
-+	/*
-+	 * Power-on default is simultaneous 50/60Hz rejection at 1x; a conversion
-+	 * is already in flight.
-+	 */
-+	ddata->conv_time_prev = LTC2497_CONV_TIME_50_60_1X_MS;
- 
- 	mutex_init(&ddata->lock);
- 
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index 15458d4e21a1..4cccd3b7c8ef 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -7,6 +7,7 @@
-  * Datasheet: http://cds.linear.com/docs/en/datasheet/2497fd.pdf
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/driver.h>
-@@ -85,32 +86,34 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
- 	}
+ 	struct iio_map *plat_data = dev_get_platdata(dev);
++	const struct ltc2497core_channel_set *set = NULL;
+ 	int ret;
  
  	/*
--	 * Parts with a second config byte (LTC2499: internal PTAT sensor and/or
--	 * the 2x speed mode) latch their converter configuration from that byte
--	 * and only re-evaluate it when EN2 is set; a single byte, or a second
--	 * byte with EN2 = 0, means "keep previous".  A one-byte channel select
--	 * therefore cannot pull the device back out of temperature mode, so a
--	 * voltage read after a temperature read would keep returning the PTAT
--	 * result.  Always drive the second byte with EN2 set on these parts:
-+	 * Parts with a second config byte (LTC2499: internal PTAT sensor, the 2x
-+	 * speed mode and/or the line-rejection selection) latch their converter
-+	 * configuration from that byte and only re-evaluate it when EN2 is set;
-+	 * a single byte, or a second byte with EN2 = 0, means "keep previous".
-+	 * A one-byte channel select therefore cannot pull the device back out of
-+	 * temperature mode, so a voltage read after a temperature read would
-+	 * keep returning the PTAT result.  Always drive the second byte with EN2
-+	 * set on these parts:
- 	 *   - temperature read: IM = 1 (SPD is ignored by the part in
--	 *     temperature mode and is left 0 here);
--	 *   - voltage read: IM = 0 (external input), plus SPD when 2x is
--	 *     selected.
--	 * FA = FB = 0 keeps the power-on simultaneous 50/60Hz rejection, whose
--	 * worst-case conversion time the driver's wait already covers.
-+	 *     temperature mode and is left 0 here), plus the rejection select,
-+	 *     which the part does honour while measuring temperature;
-+	 *   - voltage read: IM = 0 (external input), plus the rejection select,
-+	 *     plus SPD when 2x is selected.
- 	 *
- 	 * The byte could be skipped while the latched configuration is already
- 	 * the one wanted; it is sent on every conversion for simplicity.
- 	 */
--	if (ddata->chip_info->has_temp || ddata->chip_info->has_speed_mode) {
-+	if (ddata->chip_info->has_temp || ddata->chip_info->has_speed_mode ||
-+	    ddata->chip_info->has_rejection_mode) {
-+		u8 reject = FIELD_PREP(LTC2499_REJECT, ddata->rejection);
- 		u8 cmd[2];
+@@ -441,17 +485,25 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
+ 	else
+ 		indio_dev->name = dev_name(dev);
  
- 		if (address == LTC2497_TEMP_ADDR) {
- 			cmd[0] = LTC2497_ENABLE | LTC2497_CONFIG_DEFAULT;
--			cmd[1] = LTC2499_EN2 | LTC2499_IM;
-+			cmd[1] = LTC2499_EN2 | LTC2499_IM | reject;
- 		} else {
- 			cmd[0] = LTC2497_ENABLE | address;
--			cmd[1] = LTC2499_EN2;
-+			cmd[1] = LTC2499_EN2 | reject;
- 			if (ddata->speed_2x)
- 				cmd[1] |= LTC2499_SPD;
- 		}
-@@ -179,6 +182,7 @@ static const struct ltc2497_chip_info ltc2497_info[] = {
++	for (unsigned int i = 0; i < ARRAY_SIZE(ltc2497core_channel_sets); i++) {
++		if (ltc2497core_channel_sets[i].num_inputs ==
++		    ddata->chip_info->num_inputs) {
++			set = &ltc2497core_channel_sets[i];
++			break;
++		}
++	}
++	if (!set)
++		return -EINVAL;
++
+ 	indio_dev->info = &ltc2497core_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	if (ddata->chip_info->has_speed_mode)
+-		indio_dev->channels = ltc2497core_channel_samp_freq;
+-	else
+-		indio_dev->channels = ltc2497core_channel;
+-	/* Only the ltc2499 has a temperature channel; it is the last entry. */
+-	if (ddata->chip_info->has_temp)
+-		indio_dev->num_channels = ARRAY_SIZE(ltc2497core_channel);
++		indio_dev->channels = set->channels_samp_freq;
+ 	else
+-		indio_dev->num_channels = ARRAY_SIZE(ltc2497core_channel) - 1;
++		indio_dev->channels = set->channels;
++	indio_dev->num_channels = set->num_channels;
++	if (!ddata->chip_info->has_temp)
++		indio_dev->num_channels--;
+ 
+ 	if (ddata->chip_info->has_rejection_mode) {
+ 		struct iio_chan_spec *channels;
+diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+index 4cccd3b7c8ef..644954b785b8 100644
+--- a/drivers/iio/adc/ltc2497.c
++++ b/drivers/iio/adc/ltc2497.c
+@@ -19,6 +19,7 @@
+ #include "ltc2497.h"
+ 
+ enum ltc2497_chip_type {
++	TYPE_LTC2493,
+ 	TYPE_LTC2497,
+ 	TYPE_LTC2499,
+ };
+@@ -173,13 +174,23 @@ static void ltc2497_remove(struct i2c_client *client)
+ }
+ 
+ static const struct ltc2497_chip_info ltc2497_info[] = {
++	[TYPE_LTC2493] = {
++		.resolution = 24,
++		.name = "ltc2493",
++		.num_inputs = 4,
++		.has_temp = true,
++		.has_speed_mode = true,
++		.has_rejection_mode = true,
++	},
+ 	[TYPE_LTC2497] = {
+ 		.resolution = 16,
+ 		.name = NULL,
++		.num_inputs = 16,
+ 	},
+ 	[TYPE_LTC2499] = {
+ 		.resolution = 24,
  		.name = "ltc2499",
++		.num_inputs = 16,
  		.has_temp = true,
  		.has_speed_mode = true,
-+		.has_rejection_mode = true,
- 	},
+ 		.has_rejection_mode = true,
+@@ -187,6 +198,7 @@ static const struct ltc2497_chip_info ltc2497_info[] = {
  };
  
+ static const struct i2c_device_id ltc2497_id[] = {
++	{ .name = "ltc2493", .driver_data = (kernel_ulong_t)&ltc2497_info[TYPE_LTC2493] },
+ 	{ .name = "ltc2497", .driver_data = (kernel_ulong_t)&ltc2497_info[TYPE_LTC2497] },
+ 	{ .name = "ltc2499", .driver_data = (kernel_ulong_t)&ltc2497_info[TYPE_LTC2499] },
+ 	{ }
+@@ -194,6 +206,7 @@ static const struct i2c_device_id ltc2497_id[] = {
+ MODULE_DEVICE_TABLE(i2c, ltc2497_id);
+ 
+ static const struct of_device_id ltc2497_of_match[] = {
++	{ .compatible = "lltc,ltc2493", .data = &ltc2497_info[TYPE_LTC2493] },
+ 	{ .compatible = "lltc,ltc2497", .data = &ltc2497_info[TYPE_LTC2497] },
+ 	{ .compatible = "lltc,ltc2499", .data = &ltc2497_info[TYPE_LTC2499] },
+ 	{ }
 diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-index cee9a2f50b82..3a3fd82b21a3 100644
+index 3a3fd82b21a3..02ca0c946448 100644
 --- a/drivers/iio/adc/ltc2497.h
 +++ b/drivers/iio/adc/ltc2497.h
-@@ -4,15 +4,21 @@
- #define LTC2497_CONFIG_DEFAULT		LTC2497_ENABLE
- 
- /*
-- * Conversion-time bounds used to gate reads.  Each value is the datasheet
-- * t_CONV maximum, rounded UP to the next whole millisecond.
-+ * Conversion-time bounds used to gate reads, one per rejection/speed
-+ * combination.  Each value is the datasheet t_CONV maximum, rounded UP to the
-+ * next whole millisecond.
-  *
-  * The 2x mode (LTC2499_SPD, LTC2499 only) disables the offset auto-calibration
-  * to roughly double the output rate; adding the 2x wait time is what makes the
-- * SPD control actually faster.
-+ * SPD control actually faster.  The simultaneous 50/60Hz 1x value is the
-+ * power-up default and the only one the LTC2496/LTC2497 can be in.
-  */
--#define LTC2497_CONV_TIME_1X_MS		150ULL	/* ceil(t_CONV_1 simult. max 149.9) */
--#define LTC2499_CONV_TIME_2X_MS		76ULL	/* ceil(t_CONV_2 simult. max  75.1) */
-+#define LTC2497_CONV_TIME_50_60_1X_MS	150ULL	/* t_CONV_1 simult. max 149.9 */
-+#define LTC2499_CONV_TIME_50_60_2X_MS	76ULL	/* t_CONV_2 simult. max  75.1 */
-+#define LTC2499_CONV_TIME_50_1X_MS	164ULL	/* t_CONV_1 50Hz    max 163.5 */
-+#define LTC2499_CONV_TIME_50_2X_MS	82ULL	/* t_CONV_2 50Hz    max  81.9 */
-+#define LTC2499_CONV_TIME_60_1X_MS	137ULL	/* t_CONV_1 60Hz    max 136.3 */
-+#define LTC2499_CONV_TIME_60_2X_MS	69ULL	/* t_CONV_2 60Hz    max  68.2 */
- 
- /*
-  * Sentinel passed as `address` to result_and_measure() to request a
-@@ -24,13 +30,26 @@
- /* Second config-byte bits (LTC2499 / LTC2493 only) */
- #define LTC2499_EN2			BIT(7)	/* enable second config byte */
- #define LTC2499_IM			BIT(6)	/* 1 = measure internal temp sensor */
-+#define LTC2499_REJECT			GENMASK(5, 4)	/* line-rejection select (FA/FB) */
- #define LTC2499_SPD			BIT(3)	/* 1 = 2x output rate (offset cal off) */
- 
-+/*
-+ * Values of the FA/FB line-rejection field.  Rejection is honoured during a
-+ * temperature conversion too, unlike SPD, which the part ignores while
-+ * measuring temperature.
-+ */
-+enum ltc2497_rejection {
-+	LTC2499_REJECT_50_60,	/* simultaneous 50/60Hz, the power-on default */
-+	LTC2499_REJECT_50,
-+	LTC2499_REJECT_60,
-+};
-+
+@@ -47,6 +47,7 @@ enum ltc2497_rejection {
  struct ltc2497_chip_info {
  	const char *name;
  	u32 resolution;
++	u8 num_inputs;		/* single-ended inputs */
  	bool has_temp;
  	bool has_speed_mode;	/* SPD bit in the 2nd config byte (LTC2499/LTC2493) */
-+	bool has_rejection_mode;	/* FA/FB bits in the 2nd config byte */
- };
- 
- struct ltc2497core_driverdata {
-@@ -41,6 +60,7 @@ struct ltc2497core_driverdata {
- 	const struct ltc2497_chip_info	*chip_info;
- 	u8 addr_prev;
- 	bool speed_2x;	/* SPD: false = 1x (default), true = 2x */
-+	enum ltc2497_rejection rejection;	/* FA/FB line-rejection select */
- 	/* Conversion time (ms) of the conversion currently in flight. */
- 	unsigned int conv_time_prev;
- 	int (*result_and_measure)(struct ltc2497core_driverdata *ddata,
+ 	bool has_rejection_mode;	/* FA/FB bits in the 2nd config byte */
 
 -- 
 2.43.0
