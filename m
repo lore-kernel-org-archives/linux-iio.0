@@ -1,78 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792687323;
-	b=LFYw2RU/z/kI82cWG9dpgN1neZAClEJ5N6faqNZUeuJ3YkgjXrjpUc2yTc6Fu1iFDDgA
-	 MA5DYI77MVXrUvH7snpU1Q086DIPjYLFisiG6xvtvGLp02B2X9GAtJerFvVdgi9M+FUMu
-	 q3ErrDrxD94n3k24I9TnBvaQ6/gFOzDOq8LrRCCXIP4J6vTPjZjPnRSch4KMKRAe8wh8Z
-	 HHRrsXntT76Nwb29s+w9M3FFV5Uw4j9nGWxLIlmekWbKqWqE7QO49VCPrpYMLBVG+MB/1
-	 5Mr1NdZS0eU+u5K4wNp3gRWNJBjv4yHrn4dcb6omR9YvjRQz2N9C+2QW2/yYwY31fuA==
+	t=1792687502;
+	b=2lmfZ5Vmwd3fzxf2g6w/3pM8/gEhDB23yxXrURMQ7+gbUK2T8BnVEsTaNBEFtx8xUITV
+	 CRgJncuoR1t0fSAL9A2GwOJD1A75E2Z6V2j2IQ8yDNfLUV923P9E2YAnPejGZw/JQE+zk
+	 UcJAsrpzdnHyZuoiDsCQeOo072Ynkbr+wj3GtqfEnpix38UGsPnytXJmHwLk11B0OIjr1
+	 H1St4LXxsfyayG3Wo382gz7APK3YsCxPufCKcRQu0u9X25C4NSvUUGnHUYzCUrf/Vq8iN
+	 ay3CxO5MTWnCPIx2HWYWgLfTszlTDIfKT9xpWMg9Ub2A4hPHzaKvEKJSG150EPXAcNQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792687323;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=E2wdDEekVy0P+07Vs6ycsqQnxnT7EjSZRxjLJlJ2A6A=;
-	b=jJ4zdYi3oIHoNuUlhZmBueOw9aeyecaNrNbp6DiCNh8sM4n72tV83G5XkhfLl/jV0jMA
-	 iClTspjgJyCfar2cDLtJXm7JMsWTeWOGQZaIuv5bK0o84nfeymCH4GjzWEIjVAQUevNbH
-	 Unxlminsufb0zPuFemn88cGkRGT05jshyI6odZ2HnmqN+aQZwQM90hnONSprJXf/PheGe
-	 M4w10xZynvkPsBRQ6eQwWY4xuZlqtlIX6vmI5P7nmxIALBMOrD6vCaZmNUK1On4smfid2
-	 J5Za0kcp05eaHfv4MLRppghDuCvY3bcpkH4MbDfYcGK4u7hQ6JsyCllebD765Q74MXA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792687502;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=CzD89pGzOgOnG8GG0pKfl9YPmTEtR6RkDZF0eraj8Us=;
+	b=pOjzz1p+bmY6TvomFz+iYnNJYtsiIJbBZ15/de5YqamPx90NxD/jBywSZL/YJ0ITAAmH
+	 XIAvJFR6KA/qc0pxUmAuGAYBVabP3BmJjOstt2dWflaisGeHxmyLjCXRkXlGgCCbkzZPB
+	 WnR0tPE07s0+PZoVV2pH5VMocN4Y6v1t4WBCdN+OKO6T9NncUL8LYUn/YSnyMUmTjnGZN
+	 Q+vQzwxdC8YNja5oSnwOeMfipdkLwgXmxb+0gVnxMqHkI/OiVxPm/e6k6raLpNWLCinh4
+	 jpAGbYkqCp5cl1RJFBcewG715tvJU+MvY38oftHzer2NZl34PAZJMScA7K55WKdIAyQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lxqKsZ4A;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=S80lluzC;
+	arc=none smtp.remote-ip=74.125.82.50
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21295606A319;
-	Thu, 22 Oct 2026 16:42:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 21295606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B565606A322
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 16:45:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5B565606A322
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lxqKsZ4A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792687323; x=1824223323;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JdD/KTg8XZ2fzdF8q8aX0Q/Ay4pr03yaweqTC9tcWbE=;
-  b=lxqKsZ4AMFnlgyNLtpzC7Sf9QijhO9/jCBxnbwTelqJqukPVSylHTjJL
-   4/m8kui4qAJ0rtdJPRW2uPR1Ga1jQdMbutca4f3jl0i97It3K6TfYLDKo
-   at7H+SO92In48Qeuo214iK05s4jUI07Vy2iXnGm5Y45QecB1HX7YmAT8R
-   GIQ6rO7K1EHuxJAd4MmrcKI1i8aLIjWWdXq4F7ww28G4xTxJgXFI/AB5n
-   d2KebResR8ngFDJ+LePq5jAVV8afnRXp2JCXeHmWdijYYx+vsQseFtQ19
-   SUqLF6GstvsgaQVwbt5WZvfaovFob9flrL//v4s56IohThVOZfQb7VnHh
-   Q==;
-X-CSE-ConnectionGUID: ZR4KyjPARMSsz6pgp7AwXQ==
-X-CSE-MsgGUID: hkS/f78iQ/q1Adq2fx4xmQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1316639"
-X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
-   d="scan'208";a="1316639"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 09:42:02 -0700
-X-CSE-ConnectionGUID: i8QMZGsTRGW2Ilg89RdqkA==
-X-CSE-MsgGUID: v7XsLAGoT/qoSGz/PSwyug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
-   d="scan'208";a="3392790"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 09:42:00 -0700
-Date: Thu, 22 Oct 2026 19:41:58 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=S80lluzC
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-18cdcfc05ffso2323515c88.1
+        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 09:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792687501; x=1793292301; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=CzD89pGzOgOnG8GG0pKfl9YPmTEtR6RkDZF0eraj8Us=;
+        b=S80lluzC7icrs/ERi7dGlFC5QXVR2BCpoZU68Wn5HZxt55ADppNiFIU9geq7+fJVHr
+         Ak1AlTlBn2Rjx6oDONicssTfvIKeQTHPXv53s9nmKLHDtjzZG9PM8sYoItMSnZmvlqsU
+         3lL9UNsKIbm6woT18pVGhLK6WlwvjYD54kj742CDkoJPkFV09grXDci2gsbLlTsDjUq4
+         J71JMzjJNPXaY7fk6QazAhnICbxG0uQYF+QE1CrquydvWJHooz+/efNoFYG9ukFmPKkU
+         UGUUZpVB9wh4+EZcErazdk8fB1l3SXyYQOkhdtBQTWSJ6gs1Wtv0jMaAEiDqs4usAjhC
+         SoWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792687501; x=1793292301;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=CzD89pGzOgOnG8GG0pKfl9YPmTEtR6RkDZF0eraj8Us=;
+        b=t9ZV0J0jTVXyeIfQh/CacgZ8d7EthmkTxb3VRRmcUrJw70NZ4z3cf2ajnjru3LaBEt
+         snC9x46m2u9PwN6tH3MrQBdScVBJ72M6stR3hlg7F/ZLQKcpU48phJ7zrPo7IgnN30DO
+         /Dfe1qG2dD/1gdLocPLa4+7rhDYi2I6tS+QVuzkcYNRoZfgCbVV2MTocU8dx5cx6dzFB
+         ThYqJResId/WJLIyn18+0yuSXUZhrgPImbZuSTfOnD/3xTfOvKml5if/Xs2RKy/Fspq1
+         jEnJ3sl+jBKgBKTEqwQd+YiGeAqC/BtAr9njlW9pQ0Jt6YbyxKKJrBvf782pfSoWcSuc
+         fmZg==
+X-Forwarded-Encrypted: i=1; AKwUvBxWTEBm6k5WB1QPBjbK7wjbAwRDfUTsvQllRkbxv0H/RJGaqU5IfjqlOgPutg/DnZev1plkBf2aOOQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKxCVQTZQT1jlLMsvUZvtQ3awPWzc0o0pDrnmbAK/0eOplvjzOK
+	WxX4bqF7gejtABEIyTEJibJgmj+JnYg++faVeJ0MYJz63gHWN0C4984n
+X-Gm-Gg: AYBFou0PIgLiQbnqb0lHPtKTFzcgpojyTTcGBOh3q2y10aOPFw6pRgd3dFzmaNlGFGH
+	IJL/Kgl+FlBXZtBiw5SUWQUmlmONsbeOZFM7PzJAXMpNmuCBT7HzNrGkop4ztecc0B+vYr0uewW
+	TQ8mID2mneiCgBHHdFhpPz0yPEPqHSuh3g9hcOiE54y/R+AGofjhD9J9cpw2uau+7afKhfa7iJH
+	7dmpW44zPtFbQOUjeyUhEXvZnuOpA97/kTp4TXbRcMWc3D65tKxcoYddY65vv/86m0k4HnDbDGf
+	Wqjuo5liJ+/w/OhUp5I13NtFKMvAvHJjLSsrfAchm9B4Q8WS0ki6C0qWtoerPQtSdR+xfEQVQY+
+	MpnEKf88IVS52wxWBsZ3qup0tl7O56By8ti0lMclfG13MNxloaPq1vKHzw4AFoZ1afb118pbgWG
+	DRQpNSzj8JgjoPxaDNipytLOPvB+lB6oJpVlDKqIHj9KF5R10+VdKwPmaTzxDUlBS6Jr6TGRYsI
+	ShWMQH1n4vQr5V0//EAf3knxO0X4rz4b+Zm6Ep8mwLb/SMgk1xqXrSoE2Trg5TfaozEoysxYGEc
+	cdWm6meJL9cuUO1/CJase+qORUpBXhb9S1j36K2MOhqCNp/pNtPoYFD/09RYwHEqxbnWuR+Y8/X
+	KWyamNnf9cIE=
+X-Received: by 2002:a05:7023:a8b:b0:143:72b1:9004 with SMTP id a92af1059eb24-190a87a3b70mr7623767c88.45.1792687501102;
+        Thu, 22 Oct 2026 09:45:01 -0700 (PDT)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1903a180adasm15841782c88.8.2026.10.22.09.44.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2026 09:45:00 -0700 (PDT)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Frank Li <Frank.li@oss.nxp.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	linux-iio@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: mcp3564: reject devices without match data
-Message-ID: <ato81kWiI4gnI5xK@ashevche-desk.local>
-References: <20261021225431.627718-1-kapoorarnav43@gmail.com>
+Subject: Re: [PATCH] iio: adc: fsl-imx25-gcq: check the return value of the
+Date: Thu, 22 Oct 2026 22:14:50 +0530
+Message-ID: <20261022164452.201416-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <ato7b3ydggC9X0_-@ashevche-desk.local>
+References: <20261021225450.628499-1-kapoorarnav43@gmail.com> <ato7b3ydggC9X0_-@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,36 +109,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261021225431.627718-1-kapoorarnav43@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Oct 22, 2026 at 04:24:28AM +0530, Arnav Kapoor wrote:
-> The driver identifies the chip by reading its ID registers. If that
-> fails, e.g. for a newer part number, it falls back to the match data
-> provided by the device tree.
-> 
-> spi_get_device_match_data() returns NULL when the device is bound with
-> the "spi: override" property, as in that case no match data is set and
-> the device name doesn't match any of the entries of the driver's id
-> table.
-> 
-> The driver dereferences the returned pointer without checking it, which
-> leads to a NULL pointer dereference and a kernel oops.
-> 
-> Return -ENODATA if no match data is available, like the other IIO SPI
-> drivers do.
+(Resending as plain text, my earlier reply was rejected by one of the
+lists.)
 
-Fine, but I hope we will have something to land to actually do it differently
-for the drivers that don't want to use driver_override mechanism.
+On Thu, Oct 22, 2026 at 07:35:59PM +0300, Andy Shevchenko wrote:
+> I consider this change an unneeded churn until you come up with real life
+> example of how MMIO fails
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Please, shrink the commit message to the point.
+You and Frank are right. The regmap here is a plain
+devm_regmap_init_mmio() without a clock, so the accesses can't return an
+error, and the uninitialized-data case can't happen either. Please drop
+this patch.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks to both of you for the review. And Andy, thank you for going
+through all of my patches today, the feedback has been very helpful.
 
-
+Arnav
