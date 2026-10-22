@@ -1,101 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.48
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792689646;
-	b=rwXdhl7P0lCXyuL5j5+93hpSe42ZweSXskbYW9lnZdwer4hNEUhq02n3IZfKKqsBVeF/
-	 86hwKjD4+Zq4NEtxRStm9okksHVCqTnClayuGW1kw86w6HRLLYo93bIVwBeN/V+5rOqoa
-	 1TzW8e6LzpYL38lTKXGaUduFYePG3eSPkm6OTap+y/KbLUT9g7J+4qjxs0L9HTK1bEfZ5
-	 d/K3KpiuyVMgUEEjR0D4N3DESkn58HPUXZFSozdE1viWoTi0+XlFaLgfsPSrcLqj9LAud
-	 jugDJL92q8MrVAuHJmsJZ5qq7tEyy+Bmw5ZpCcFTk1JvEskODnNhyP35uD8P55NmFFA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792689646;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.43
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792691259;
+	b=JGJDZkKaUM0jf1gwSdTxat3Dkprn0zijX/xFuvF0n4DWVDa4smRowqcwneniVTzT9u7v
+	 DSIYO2qulAS1V4xvsKwLbTzP0nBXHEE3OF5pdf4E0AV0ekbsqtXq6WY0Wiq1YTpADZWWS
+	 ba1ywxoKcF/m6FhVJPXqDGE8dKfZ0+t7WYSJdbv/ihlvvbe3+ZcE+tepoOPQGCTDuwPy6
+	 gfC3gkZI2GTxhDtGroj1MaZ3dOQNrS0w60KcjzOHXOpUl6ZVGLOqQjzv840Ghc1WR3Tsn
+	 S9gT2eOkyXa51Qmhx6by7QxVILVwUE9lRtZ+Oa+QGxBO32w+myr4Ibb/DOOP+u/e0eQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792691259;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type;
-	bh=H9S66qUYgCAGeh6U4XWLuGK0Cl5W3WmNMPy48UlzzTw=;
-	b=jdtIhSXIxhH1FHwWJsoc/u++otfbncu6hNd9EZV6qdYA+DXp6rcSS7ProVxfZNcdj89X
-	 wUlrXrtlVXQ1VadvhsQbjeVapu1ezTalcq5c4dTaUOeg7jP4W3rxcTnYcCXtlg4L8CtVW
-	 2Exy8OEP9XPw0zuodkbBNZL1/kzP9mP28c4ZC9rZaDhGEZy7elouSTmZx39/SEu4JjKA1
-	 bXmo0NvEQNyFAVavggCupCbBcJbA7VGJrb6pNkW7PL5Zki5eG5yCAcp5T/91oYbkSSCAb
-	 hgFJTEhCmbHLkg7toaMLDnat2FO03gHrKSSlSl1J0ELYg8PaGXIHJb3xC/bhY8oeH5A==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=gIB166mq;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.48
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=SCWBGn+DbuJPekfhEu4uXLYMGCLHZ53aEkUTCOxglzU=;
+	b=VddIGaz2gUB7QCPOZcA+O2hMqlOFWVSurz9/XNgu49CRCgkVllgcgrJhrR4pZBKGaOkv
+	 757/hJZFzEQySkqjpwyFqBLvrCGtpRYjiKsqNY7Xh0IP3t4zLjCdbZ7YbqRn8xuigdHGi
+	 Fq3LMNy5hLTj/UoGpuY9FOrDoGMZOq2tYQkaok6CBBinlffZdBi8SfsDyPO6nJw6X+mu7
+	 YwbW4BUBg0iRHgPO0I2Pm3eq9NvAkryR8Z2gSMxZGfi20LdPg15Be9h4u5gG/TMeAv03F
+	 h9iKPJ/nj4NmwAkqvdsEMFHpF1MTBm1is45mTu3x74x+vgLXP1olqZUMyRSFQlRM8Fg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	arc=none smtp.remote-ip=74.125.82.43
+Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 185A3606A319
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 17:20:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 185A3606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=gIB166mq
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-48c4d99c32bso33953f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 10:20:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792689644; cv=none;
-        d=google.com; s=arc-20260327;
-        b=gsGx2zc6BpYItqhZCIcZD5kh6QtNbTbm+ixjHrwGDz1UxhU+c/o7lL3Hz6RSrCOWoD
-         ORyOuB8SDKcVwC6+QoCAogXe3y0xNDRo7prCMGXX5PZ/WbB5Pdw+jNEZLau4UMQjcVFV
-         1O2SJMhAStu4MHjle6H1dk3xbJkUU4QPkLo+sg33/y7ZFEx7Mb7K+eoH5+R7ec2UVokB
-         ZH1SXKOfs/Ddtz9eKzN1rqJhZpRyzn1FPZ7JHEgkbGMIQB+wdeniq18qEB5qe0SdajA9
-         ArDxf/j42GyXY9booBbqddkeKxl9hO05q9ZEMSKhInqnnVY5FtXcckPSmSG16QYohJvO
-         qw5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=H9S66qUYgCAGeh6U4XWLuGK0Cl5W3WmNMPy48UlzzTw=;
-        fh=zHUFJEQu8XkaPbinm8VXe680QCHz7KYqg8/1IdLje80=;
-        b=orraO7UrLJVqnvnQp3+WxFLfJkDNXYj2rMDixKbnPF9fkKUONnI2beGucUZbdoeAER
-         Ot8CAUvCWemRw6eKZA06HK/r5TWTP4vMQPsolMaxW3bftZWzZZr8A5sdG+++BojJ9ORs
-         E71ec8vp5HKqZ0b9wINckuwTGS+DF5onB8O/mJr3ZM0jOmEfOJAnKkdRyHnHJ+KMu7RR
-         2p+IYpVbT/f3Y3Ydr5OyMiu9xxFhWJdNBLJC+0Bmq/L8ywhiP9tFKXCYXlhp0bm+Z6jC
-         wP0TVNGQ1IdABVQIaK6xueA5zzuyWfT1NiPIz6GpHj5yyJsG7Q5ZBZIA0IXn0XfbbnVU
-         FupQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22132606A31B
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 17:47:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22132606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-16079d54c17so74494c88.0
+        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 10:47:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792689644; x=1793294444; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=H9S66qUYgCAGeh6U4XWLuGK0Cl5W3WmNMPy48UlzzTw=;
-        b=gIB166mq077RL1eF4gICTRLB5kbgcH66jZLcX2cxFPkVMZIYjfpZN3CG0utk9OxkBV
-         xFyYwRRd4jCZkYXabPUANNYm3TaLZS2NwR0wH2zG2w+fDErAsZrARFbn8UqDNnb+mPk6
-         q901VU5F2i2yVRYkyGV6YkCb3C7+h3ueC5YcagsMlSNJpX7vgkVu6b0za7ikHBfPufBC
-         F5YTS0tGPDJrP8eUeqFkbI4kvZ7Evlcfoy06Hba93s9sAougz4W04yDGXt+raVUdxdqA
-         Y5IIN2rImGzUYvlVSUtyTulUOGfO/FbeXoLkzmbVlbr/I0q15QQVYeMBZscGHj0tgIzs
-         Aa/w==
+        d=chromium.org; s=google; t=1792691258; x=1793296058; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=SCWBGn+DbuJPekfhEu4uXLYMGCLHZ53aEkUTCOxglzU=;
+        b=RRvkm1u8IQ2Mlv0vsEHcUE6HX3QGyQ0zuC17cFWJH5zKzqe8B2RbjaeRf4virWKdfi
+         BxvSMALrfPAT1sQvmdnR9hn0E8NkF0DPFeIIZicEO8qpgQ4YIQGxDGKxo0a7LhN0KIAb
+         qrpZ4ahpNCVhO8d1q5QeFzajGWihKNT++R1NU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792689644; x=1793294444;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=H9S66qUYgCAGeh6U4XWLuGK0Cl5W3WmNMPy48UlzzTw=;
-        b=r9/vYBoQuRF6GLLwzv78pgQ7Hs/tc1o3TK/BBjTvXqVbPQX0MQmotQAZTci2yHM9uy
-         BhBPMJH4HpckMI+hAU5YNHS7YfE4mC9DRmqr/E465rcFjbTsvI8+guJdZiBWMvLoDrQN
-         E3IcZ8E0Buv0HCY1wfigQVogvsADGRpR+8zkWLDF3WYRU5CtJ5zQfqu+qAQvZRXJDCwS
-         8/T8CtIFoOBXmntjtpKsFjdiH/eIfa7oH2oOkbR98TMDHFs4Pjxs3er43X+0N6AvDIFl
-         /Qn7N8Usno6sYx+9OjiisHa8GR6ZRPKYmWwCA3u//qcVw27cu5+t9CrzRF1Gbpw3V6MC
-         DtZw==
-X-Gm-Message-State: AFq9FYL+eh2nyn1/DzA0OcUBqbS663OpVZEa9ReT+zdmxwe6jtSRPR+A
-	jNNlkaBjAWuhUidBx+aIX1LvcRB+x07xrMeO/QTF/at+acJF4clUZbvYNDzcF9wAylvc4Lf3F/a
-	ijAelQiwUKdFMNaAyU8X4BKCMQv25wgI=
-X-Gm-Gg: AYBFou1sSieOU05zkvKxiU8NmAGCajjA1ikiSdKf8743UAmkJ9xa8+ooExn6jfSVZ2w
-	WCbxh2JpJUFum2K4Zehpbo1MqrZv5THRHA+gQdzu/PYwLZF5lKL3JJS1FK1eWLaITTbYKRgwupS
-	x9qVWRJIE1C5ncgkeJgmsNDgf5Cc/sdC6SSSmTRakj86Nx1mhm2p7kSrFLlQs1Zw74hMUZ1VezS
-	GPpW7jIEmEbCXx/c4wBSO3+qShdQGgweISIblzjmvlk9QpoPyFcKhFerKDzr3VBMpNhtCnzJGtt
-	bTqRMxUE6Xy3gJk6iEg6/AEaKVh51mMjS22DHBdbmGiqcBpQIyuNsWA6LPDgrWs2wi1KHhud450
-	f3iq7fAvMnNWc87udfTvk5pHS950ZMlTIp2nNkkC45SO3e8Rwj/dShmLJqLY1RFVBlzO6rfmTdq
-	unGBrSAz//nNI/U5P7t+W5ROvEKFtg7bECclHV2h/OW5+ZMxBBOn2zARJx76usFUnEedICFftp0
-	i6OgYft7tpIBAYAr7LMt2DmvWa6Owd9nVvUOvGB/wy2bwvh5qg+CBmtMEXC2IalD79j4hmhlasm
-	LZjtfw==
-X-Received: by 2002:a05:6000:98a:b0:48d:f014:63ee with SMTP id
- ffacd0b85a97d-48e264a1d2dmr10995231f8f.20.1792689644186; Thu, 22 Oct 2026
- 10:20:44 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792691258; x=1793296058;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=SCWBGn+DbuJPekfhEu4uXLYMGCLHZ53aEkUTCOxglzU=;
+        b=Me7j+QTDd7F+357e6IaMc9Cja+RR7EWyK+TN2ONmAzabawSu8B0UcPM9eA6OWsofZs
+         vHvEDoUc+FDm739+PEtmzKpjSQ2CDaYGxcbcHv/8TtZhiTvH2BnDg5SjGvHJB5IGuFgi
+         MtSEOK4pg6CwjQLlUJLQdUhZnEZl71kfIy51Ko6qSS6ncA3mrg3JTCZggDZRXlWl2rvu
+         J5MRkalpqm+C4ri301ue1RTBPbHpZkCDG+nYQ4Eq0MDWDCM3qnrRLD9nR1rJHLpzOcPM
+         wlqghjizUQpIKCsSu6eKZI+QEoA6hfVGQAFrK3lb30OJNMKDQzjewxWi1FrjxSpCQ/b7
+         RIbA==
+X-Forwarded-Encrypted: i=1; AKwUvBzT5yQ8oAlRRO2v3PeQgFmZS06VzNMHn8eC/wNhzpk3NUj0Fa7i0JzgK8o4uwKBTOw4ayTpfyMeIHM=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLZRgg7qAv4xEqepAC9MiWlS0pMuXh2FeHFstKpRlYCrO48C91s
+	Ep4LG5Gq4gX4P/ls/DpwD0+ySTqjwbIlngR67lEiGkzFB4nNZUskUzW3F8F9pfSSlg==
+X-Gm-Gg: AYBFou3ihmVQ4aML93Jik06BUiojVTWntT2/R7MfDLB+7ZKp/u/A7yBBlvE9a7wTfyK
+	AWBhbBBdZlpkqVU7Mr0lHECnrQkyT3f3V5vROYXaiP8R3FFhMOjWpDn6jgm6Z5DvH+nyGuJogkZ
+	jRvwwIYXSXX/XMzERoSzEyh6k289pZWw5G9IW4mSqrfZ73vlp3+TojeTf10q6ttyNT/wIXUFWwj
+	pBpNRKONwhORpjPnqoWjeTUDD+Pth/7MlBizM6Vxub6+DqKmLTfh0EyNpr/ZX7jn+ZZxwpZ5Ul3
+	DykfgJe29uPJeUmHrHezb+EGdn3JAy4hdorAyZf5fbw2tRpwGb+X6rjX9bEKXCXFkfArrYqpzRr
+	/bg1djAdG11tdDwoWKE9FwD1frX10oKkhJ5ZJKyAjM4jfDp+e4U8yvFhPWBfK18qyWS1QmfmMG1
+	BAW3b6RQN/sGjKgZDN6S/L9lP8S5xHtR+sq2sX57rRvDsLqT0YZKE7++jcUthS4qaMyYo66AmrP
+	Y1GgjCUtruveMacIQ/2Vf4kbCIiZX/NteuEQO5FedspsbLN7WyNJXXDT9i7MJza0odr14zjisgc
+	3f1a12zmLV1JXauy3p4=
+X-Received: by 2002:a05:701b:2608:b0:144:c127:dd1b with SMTP id a92af1059eb24-190a7f02797mr6894593c88.39.1792691257861;
+        Thu, 22 Oct 2026 10:47:37 -0700 (PDT)
+Received: from localhost ([2a00:79e0:2e7c:8:4a1d:784c:3fc4:37a2])
+        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-195a7f4432asm146724c88.6.2026.10.22.10.47.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Oct 2026 10:47:37 -0700 (PDT)
+Date: Thu, 22 Oct 2026 10:47:34 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Ulf Hansson <ulfh@kernel.org>, linux-pm@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Marek Vasut <marek.vasut+renesas@mailbox.org>,
+	Rui Miguel Silva <rmfrfs@gmail.com>, linux-kernel@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH v2 00/17] iio: Stop looking at
+ pm_runtime_put_autosuspend() return codes
+Message-ID: <atpMNk6ymCpC5BL_@google.com>
+References: <20261021235818.3059519-1-briannorris@chromium.org>
+ <atm0umwtxZlQSAhy@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,40 +101,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261018170013.79443-1-nikhilgtr@gmail.com> <20261022150652.4842-1-nikhilgtr@gmail.com>
-In-Reply-To: <20261022150652.4842-1-nikhilgtr@gmail.com>
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-Date: Thu, 22 Oct 2026 19:20:33 +0200
-X-Gm-Features: AclHuK-YQlLOTUZt4Yjb1PozJmhJ44RVHSrK7WcB8S8nFNSjNPhi76VQeiMPyGo
-Message-ID: <CALoEA-zfAgPiOTGSm6okcEq7nZsReyZVeih4nHOKGGH77SgDsA@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: chemical: ccs811: Make sampling frequency configurable
-To: Nikhil Gautam <nikhilgtr@gmail.com>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, lkp@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <atm0umwtxZlQSAhy@ashevche-desk.local>
 
-On Thu, 22 Oct 2026 at 17:09, Nikhil Gautam <nikhilgtr@gmail.com> wrote:
->
-> Allow userspace to configure the CCS811 IAQ measurement rate through
-> the IIO sampling_frequency attribute.
->
-> Support the three IAQ measurement modes with sampling frequencies of
-> 1 Hz, 0.1 Hz, and approximately 0.016667 Hz, corresponding to
-> measurement intervals of 1, 10, and 60 seconds.
->
-> Preserve unrelated bits in the MEAS_MODE register when updating the
-> drive mode, and cache the selected mode after a successful register
-> write. Expose the supported frequencies through
-> sampling_frequency_available.
->
-> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
-> ---
+On Thu, Oct 22, 2026 at 10:01:14AM +0300, Andy Shevchenko wrote:
+> After three patches I stopped because it seems more works needs in each of
+> the individual drivers. Yes, the series can be applied as is in exchange for
+> a bigger additional churn in the future. My preference is to see everything
+> settled down in a single step.
 
-Changelog?
+There are limits in how much work I'm willing to do on a bunch of
+drivers I don't use, can't test, and frankly have no actual interest in.
+I'm sure if I spent a few more minutes on each driver, I could find
+another dozen things to try to improve.
 
-Also, please do not send a new version of a patch as a reply to the previous
-version, it can break tooling like b4!
+I can go back to the v1 approach (fix only what I came to do) if you'd
+prefer.
 
---
-Kind regards,
-Joshua Crofts
+Or, I'd prefer to stick with the sentiment Jonathan expressed in
+optionally requesting additional refactoring:
+https://lore.kernel.org/all/20261018211807.66bfea0d@jic23-hlaptop/
+that most of these changes are optional, and that fixing 1 thing is not
+a subscription to fixing everything.
+
+Brian
