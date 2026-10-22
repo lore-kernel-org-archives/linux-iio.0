@@ -1,87 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792670046;
-	b=s8/ycrSMX8msOXgW/zrKE9hAGCd7B7T8dXhq1/nqzI1UZkDY8kxOwu9K3T35MHk6WTct
-	 H0GeU4kFkr0iPaW6vp9ivzxR9nPtzRI5AM4FOOOBA7DMJmhVvqrFipnmtXFkHjYRIUH5l
-	 Fqb4XDaJoL2qLJBcEKpnCe6oo1Y5oTpNSjGbPDRevrHSqLaCIGFdFm/2SU6ZdyA1VdOLP
-	 J25MZm+6/h9Uad8BDE917UFVc0cmsQ5pywj56xCVnJq1/db/KkaFNi2PCZ78ymIwt2m9s
-	 IRwHWRPOio8+BAHUro7B5zoqvAuXDwSeBNN0jpszRmfKoAuw3EMvMAF/gF+ii+nIHhw==
+	t=1792675263;
+	b=g9x7Kxi5P76nneFFhL71eD7l2iRxczZyWnja58awi3iDT2RYvDd5sL+zW77az/QE2ufw
+	 9DYcIhtHtj6IHeat5KEVx7fbjuo6peZJQCCDNqZCEhNYvWfYp9/rIotMdQXfrnRNKUWGb
+	 o2onKzb3P2z3yRt63E9DRujFuPuNq91v4SCCgnsSnif5fJubIUEsO7P7Nbjl825uudfDt
+	 faydzD35LNtSSMWonBKEpvi+t+ZEKEgQofZMQo9kMaf0Pakt39eM4kkSFPWrO51DPspm1
+	 xa5Mu8GjsJgrreYMlzljUk4m+hEOui7bIHM3jKTfYsTBW1obqBVw4br/QIbe+ONMlUw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792670046;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	 References:In-Reply-To:To:Cc:X-Mailer;
-	bh=peR+wtMRuf/Lbf3aBVnZb+FceQ6m+uCwk67vJ8kOWzU=;
-	b=Ao+5GnisbGbFYL6vTWm9zHZ8u+T3giZFCd1p560k7Ygz+bdj0MYWBei0aJ2mmM5YzIYv
-	 AAsF0xhBYqnh1HIpa2BaxFU4HfcXLUsRpSDqKUUo8e9gy0E/f81UfKcYWhqlFAUTDZaCT
-	 iQZg1qTwJPEU/k/WriEGmyvt9o/2iWrG1o2t65OyorAYqUWhgRQ17+XWry4ezB9q8MPxn
-	 BiUNcu7TZz4Xf7n00zEClLFPQOpjtTJCYxR7xy36Yp65EN7+HS/8dS4xWRkaiN43KCxIf
-	 gdf7QTcC/kueIFuYCQ0ri1+1R0K5NSwTvJQahd8mRgho1ivFShwhAuS7UEWE86k31hQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792675263;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=J1cJunRtziCQSI57V0U3l58lyDmUupWkdJUEjrp/6ac=;
+	b=rpR7kpNpbKIYpQ1KxFWRzL3NbULT0yhdpyoRIXDSsppEvTavjew27YJFVxWDq2mZPCdo
+	 8j93t46W2/Zc5SnaX0l3g6diztMGS59KI/ZS2mpGoBBaaY/qBGVDwsUlPuGufQPqCQ+HH
+	 AEJdNfVdo2j2Za3D8uilo3pmb6cYRI4Xpk6ycXSlqGFe/gHi2g43HYYc9eCy7+mPNZkCZ
+	 tzo/+9fbJLj1C0wmg7OQIqI2ZrrkPnmQdFF17Fdr/WQDkfRyWPoBCF809f9Dupqe/qIM4
+	 nKodkJDq2jo/FMcWiYiRrZpanFCI9wJIGkdu/6Rt7W6ohHITYDyXUmIz1AiuqrWrkUw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=oRTKVgbx;
-	arc=none smtp.remote-ip=209.85.221.44
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ee8Yj8lF;
+	arc=none smtp.remote-ip=198.175.65.19
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4563A60A2603
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 11:54:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4563A60A2603
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99F9F606A31F;
+	Thu, 22 Oct 2026 13:21:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 99F9F606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=oRTKVgbx
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-48e0d1da913so706001f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 04:54:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792670045; x=1793274845; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=peR+wtMRuf/Lbf3aBVnZb+FceQ6m+uCwk67vJ8kOWzU=;
-        b=oRTKVgbxyBlIREX7nZMYP+04H0N8obAoqRFnsZsoK0olwGVDPe8k4ZtzBK+MY80drs
-         TlZFP5ymKxgbUX2oCBuKze2R6SYmG0s7In9DeKQ54P2lAVdmka4SCB+fyFSfRJ9IcNw5
-         m6QQVw0Nzeb5KocUfYHaue9nRZynhDxOBMkbUFx1+83G2M9uX4MVnQ5RTLy812IW1U89
-         hVcXSyqz+UjgBLhhYlhl15g3DmMF8XlA2huFyKfdDFey0bGCB2DGjyhQAJqFdtVJoXBz
-         JVUOEMX1VZjDIq2+QYHv6j9BAx2Yre4LDjYYNSJKYK/M0Wbb/jTLjCqXnAAo6OiWjlYU
-         lGkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792670045; x=1793274845;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=peR+wtMRuf/Lbf3aBVnZb+FceQ6m+uCwk67vJ8kOWzU=;
-        b=ESkWSvSvdasMxeAKinGKNJaQDAkqY9/26IshgofvpM1H/hH3DCvQT6D1jvV1HkfBaF
-         KIkRu2OBkADwctQVg1gvb3wL7upUlsYVAXr+85vR5Q3bqJ+H5SXH+3CA1xQ/4qnuT88W
-         Rm+pSG8io+CYQpb1/e3WD8TLNKBw/xiuwyBvnTuQGlRq83InCSopWczqY8upvqtedCxm
-         RzbF3ZGPs4s/1yslWr2Jr17CAyobIHzSqMHV7YXEZdUkfp9DqU63fI97MS1wMNt2eM9y
-         1wyOpW3ogvbDDunVeKduyrLpR5Y4iSFeHT7fcI87IdqkbTJjihIwKyEM9lLhEybr9FHp
-         LezA==
-X-Gm-Message-State: AFq9FYKiaB7DgJvGOEKmn/lIxg2ifzol++cUM4RotpavgIFoCeUIlmWP
-	iNaeP8g9FUFveFGrz3fuUuv6pDwAT58vlE9L2vj5egUj3nHPN1Imwx8F
-X-Gm-Gg: AYBFou2m3RZ0U+xiiFsoytqp60KxvXYKjHIenntMHA+XDcBzi1TTQfw+1a7U0qIenZ8
-	5z60FTF35Tik3XbH/B/iGQ7E9Og+Iv6Z9nKF6WxL4MnWBeCkzWHPoIFNDEizZSXzFNuxfwDTrUa
-	T2FxJaQE2Zt5jK+h7A/VBHQsKDZMg46g0ToIPm4ed4C9LuliGNjQ1GsfISAUA9UTmbuFptJkLVD
-	iy3Jy/fTs10FpOSvdnytReUyTqdto5wh6Xpp1AiBkK9jhtR3iEhGVM65K4oUkGnwlnabjuuJpD/
-	qvc19MKo94Rxj2PUzwOLLeLyn6kgQkLaD/gOr8mCNiSSbbmFDtuAO8oQHZry4T7z4d0dWQioX5J
-	zrPs3CDHnxTOcUEQnlDJeBysckbJfGtJcbiaRGS9yS4ISxzMT+e9JXze7xvyXEl2/6hij9OewJ+
-	SKKPnhyid/Tmtv/XUpRQb2AkieCXtMfnBUU2NlGXnN5GqcRXelgIesWKrfEXm1iuoPvTB2UrmKg
-	QgmwZo/TaLoMRTLXo0fZg6gc7gpS+cZ0tHPIv2QwNXIN3r1nvcFyJX7GmSVT36EGgUa2mhd59Qh
-	7wVnqgzeeQ==
-X-Received: by 2002:a05:6000:2f8a:b0:48d:f160:efad with SMTP id ffacd0b85a97d-48e2d27f5ffmr5035811f8f.30.1792670044596;
-        Thu, 22 Oct 2026 04:54:04 -0700 (PDT)
-Received: from localhost (ip-94-113-240-150.net.vodafone.cz. [94.113.240.150])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e25841fe4sm12371400f8f.53.2026.10.22.04.54.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2026 04:54:04 -0700 (PDT)
-From: Jan Remes <ciakval@gmail.com>
-Date: Thu, 22 Oct 2026 13:54:00 +0200
-Subject: [PATCH v3 4/4] iio: light: tsl2591: improve lux calculation
- precision
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ee8Yj8lF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792675261; x=1824211261;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RPtVW+zJYuGYEvqqnTvxnUJoTo1amg8ZRAWoVfiCZ18=;
+  b=ee8Yj8lFP3xZ4G0Kk9wK363HLDaSZ95iOWqRtW2aTWS81hHDvDVnOVjc
+   y8lFbglR03fmeEqpgnCzF8jw+1Vq5XOBg+Z/RhwjodOeH6BmOyrQV+MZu
+   YlOAgjupMBxrOKFlAIEUFpur+B5UnZxCqdzZURxDWxIzWCwJ/jdd98w9F
+   yH1rGv9IEa2Mqym+r/5NkaEeZ/g7nJ1nBnkSHLCFdH74ymJiihXqPYs3q
+   v1TLWvdyqdMliXEhGFTPch+KPQPGHrxfQCRYceQ17rOjeT+745xSDQm1L
+   UAmRGxzjKSlRFE3SpxNhJ1lWQwNijXjRxpKcywNA02ZoJ1xQOhmuqjFPq
+   w==;
+X-CSE-ConnectionGUID: hwwiFS/sRiObncYI47L/9g==
+X-CSE-MsgGUID: KcC4JQZ7Tim7S3WcSkkkeA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1456206"
+X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
+   d="scan'208";a="1456206"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 06:21:00 -0700
+X-CSE-ConnectionGUID: 81646FC0QK+lTVLsXp90pg==
+X-CSE-MsgGUID: Ef+DEytISBOPzyqcvoN+FQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
+   d="scan'208";a="3293950"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 06:20:57 -0700
+Date: Thu, 22 Oct 2026 16:20:54 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
+	Conall O'Griofa <conall.ogriofa@amd.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michal Simek <michal.simek@amd.com>,
+	Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+	Manish Narani <manish.narani@xilinx.com>, stable@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: xilinx-ams: fix out-of-bounds accesses when
+Message-ID: <atoNtka8rCO3Cil3@ashevche-desk.local>
+References: <20261021225356.625288-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -91,111 +88,85 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261022-first-patch-v3-4-b792e89a429a@mycroftmind.com>
-References: <20261022-first-patch-v3-0-b792e89a429a@mycroftmind.com>
-In-Reply-To: <20261022-first-patch-v3-0-b792e89a429a@mycroftmind.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Joe Sandom <joe.g.sandom@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jan Remes <jan.remes@mycroftmind.com>, Jonathan Cameron <jic23@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
-X-Mailer: b4 0.16.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261021225356.625288-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Jan Remes <jan.remes@mycroftmind.com>
+On Thu, Oct 22, 2026 at 04:23:34AM +0530, Arnav Kapoor wrote:
 
-The lux calculation computes the ratio CH1 / CH0 as a truncated integer
-(CH1 * 1000 / CH0) before using it. When CH1 is close to CH0, the
-truncation makes the result off by up to ~35%, e.g. CH0 = 56097,
-CH1 = 55973 at LOW gain and 100ms gives 1.517 lux instead of 1.118 lux.
+ Subject: [PATCH] iio: adc: xilinx-ams: fix out-of-bounds accesses when
 
-The formula (CH0 - CH1) * (1 - CH1 / CH0) / CPL is equal to
+when what?..
 
-   (CH0 - CH1)^2 * DF / (CH0 * ATIME_ms * AGAIN)
+Please, read what you about to send. Most likely you used AI for all this and
+hence people tend to stop checking all the crap it produces...
 
-which needs no intermediate ratio. Compute it like that, with a single
-division at the end.
+> ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
+> ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
+> channel specs and lets ams_init_module() fill them for the AMS node and
+> each of its children, without telling it how much room is left.
+> 
+> For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
+> "channel@N" child after the 10 fixed PL channels. The binding allows
+> reg values 20..50, so a PL node can have up to 31 such children, i.e.
+> up to 41 PL channels, while only 31 are budgeted for it. Together with
+> the 13 PS and 7 AMS control channels, this writes past the end of the
+> buffer. Since the modules are filled in device tree order, the fixed
+> channel blocks copied after the PL node can overflow as well.
+> 
+> ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
+> unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
+> far out of bounds.
+> 
+> Pass the remaining capacity down to ams_init_module() and
+> ams_get_ext_chan() and fail with -ENOSPC when a module does not fit,
+> instead of writing past the buffer. Also reject reg values below 20, as
+> the binding requires.
 
-Also report the result in micro-lux instead of milli-lux. At MAX gain
-and 600ms one count is well below 1 mlx, so the milli-lux resolution
-throws away information. The numerator still fits into u64.
+> This was previously reported by Weigang He, but the thread stalled
+> before the changes were picked up.
 
-Assisted-by: LLM
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Jan Remes <jan.remes@mycroftmind.com>
----
- drivers/iio/light/tsl2591.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+Convert this paragraph to Reported-by, Closes, and respective Link tags.
 
-diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index e3092ae77a11..fce8cea08201 100644
---- a/drivers/iio/light/tsl2591.c
-+++ b/drivers/iio/light/tsl2591.c
-@@ -21,6 +21,7 @@
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
- #include <linux/sysfs.h>
-+#include <linux/units.h>
- 
- #include <linux/unaligned.h>
- 
-@@ -362,12 +363,12 @@ static int tsl2591_wait_adc_complete(struct tsl2591_chip *chip)
-  * Counts Per Lux (CPL) = (ATIME_ms * AGAIN) / LUX DF
-  * lux = ((C0DATA - C1DATA) * (1 - (C1DATA / C0DATA))) / CPL
-  *
-- * Scale values to get more representative value of lux i.e.
-- * lux = ((C0DATA - C1DATA) * (1000 - ((C1DATA * 1000) / C0DATA))) / CPL
-+ * Since (C0DATA - C1DATA) * (1 - (C1DATA / C0DATA)) equals
-+ * (C0DATA - C1DATA)^2 / C0DATA, this is computed in micro-lux as
-+ * lux = ((C0DATA - C1DATA)^2 * LUX DF * 10^6) / (C0DATA * ATIME_ms * AGAIN)
-  *
-  * CPL is not computed on its own: at 1x gain it is below 1 for integration
-- * times under 500 ms, so the division by LUX DF is folded into the final
-- * division instead.
-+ * times under 500 ms, so all divisions are done at the end.
-  *
-  * Channel 0 = IR + Visible
-  * Channel 1 = IR only
-@@ -382,8 +383,8 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 	u8 als_data[TSL2591_NUM_DATA_REGISTERS];
- 	int int_time_fval, gain_multi;
- 	u16 als_ch0, als_ch1, als_max;
-+	u32 diff, rem;
- 	u64 lux;
--	u32 rem;
- 	int ret;
- 
- 	ret = tsl2591_wait_adc_complete(chip);
-@@ -436,19 +437,15 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 
- 		int_time_fval = TSL2591_FVAL_TO_MSEC(settings->als_int_time);
- 
--		/* Calculate lux value */
--		lux = (u64)(als_ch0 - als_ch1) *
--		      (1000 - ((als_ch1 * 1000) / als_ch0)) *
--		      TSL2591_LUX_COEFFICIENT;
--		lux = div_u64(lux, int_time_fval * gain_multi);
-+		/* Calculate lux value in micro-lux */
-+		diff = als_ch0 - als_ch1;
-+		lux = (u64)diff * diff * TSL2591_LUX_COEFFICIENT * MICRO;
-+		lux = div64_u64(lux, (u64)als_ch0 * int_time_fval * gain_multi);
- 
- 		dev_dbg(&client->dev, "Raw lux calculation: %llu\n", lux);
- 
--		/* Divide by 1000 to get real lux value before scaling */
--		*val = div_u64_rem(lux, 1000, &rem);
--
--		/* Get the decimal part of lux reading */
--		*val2 = rem * 1000;
-+		*val = div_u64_rem(lux, MICRO, &rem);
-+		*val2 = rem;
- 
- 		break;
- 	default:
+...
+
+> +		ret = ams_get_ext_chan(fwnode, channels, num_channels,
+> +					max_channels);
+
+Perhaps a single line?
+
+...
+
+>  	if (fwnode_device_is_available(fwnode)) {
+> -		ret = ams_init_module(indio_dev, fwnode, ams_channels);
+> +		ret = ams_init_module(indio_dev, fwnode, ams_channels,
+> +				      (int)(ams_size - num_channels));
+
+Why do we need casting? is ams_init_module() is aware of negative numbers?
+If so, it can also be aware of some "big" number.
+
+>  		if (ret < 0)
+>  			return ret;
+
+...
+
+> static int ams_parse_firmware(struct iio_dev *indio_dev)
+
+>  	device_for_each_child_node_scoped(dev, child) {
+> -		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
+> +		ret = ams_init_module(indio_dev, child,
+> +				      ams_channels + num_channels,
+> +				      (int)(ams_size - num_channels));
+
+Ditto.
+
+>  		if (ret < 0)
+>  			return ret;
 
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
