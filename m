@@ -1,99 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.171
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792657495;
-	b=J6rLAZAHGxqkwFfk1JU2yvCSnZ5lkWSTgRU0X2U2eSq1BbPh1vEK/Pjg3j8xuk93jjbn
-	 Vxyk72auv6XzByv8x0ivAdMwr6IjmZlB7lW4K1wtb0jKThdxiI13QXuTy+DKWDs1cBF56
-	 OHx/kfEc0P1uRQbnm4LFhkxqvsvvwA7I5lKkS9nuhN3+uutUOFunTw6I7TJzbM0rkT5Lj
-	 i7ZKYSh2WIxl+1W+0svUaE7HCFr/dQOMfk7Dghp3liomMGnSRA2xQGO23qLrnxZ5K03qq
-	 bBLVT7vRAbv1b11BMI9pcZaD0VYZEAWQ0sLDRn5hdViPPLuUSYw+08h/GzKtmJiH2gw==
+	t=1792661032;
+	b=yckk5gLIBr8esoQjhD+ZvzjEJjrjp/e93kwZWtSRLiotpyXIN2wuimcu3PFAPOM6GhoG
+	 /sqWfPqFM713VMMDuq/RtzgyuC+kWMCb4CdlP6PKmVuVXKf6h/CIKY7YuSOih0JFAMFYV
+	 TEXkIUPJ+nBgAdyiEk/4fvBpV4FUrX8wtg77mYYvR0cJcBoiWliFA9EKKFPPzKQXrBtD6
+	 nSkKLYpk1uAtYIh2T9MrjzClPm5qwTGQzd7sV2zzj3fK6eSyLwy7Tkf+/bEfxWOc89Ebl
+	 Xn1I2bdHjDYOogiLAMkydoRUHnWDwWfWijz1k7Z4TXK46GuwV9ts9SHLz7n1heMkVTA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792657495;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=7Vd7izru+6/lgo99qhm4hOGTqXdwgysuGRl6/uCpNmY=;
-	b=yNpOCubGBEJskb9PoWIkl9/L1RTn1BRv9u/0eFff6Ve/wVFAk6ZwuEGMum/8Sx5elHdR
-	 yzgVeKfiQVs55bqVq6eXw6BD5LFc3xz/gBiA4eC5ayo8gX4qeqp8Vn2GMLGQaGTY8eYjS
-	 6ZsU0YdnWz7r0pQtGglGSmgk7LSKzCWQt60Z2lcBmEYGjyTUQUwW/wVI8pHXL1fK9vlXQ
-	 5QKLYgUA2Hw6RWqOfrjjxhaoQHba8wbhQIj+P8k4ijLytMSDojJ6C1upcb4av2n6+3Nm6
-	 qeHbtfsob08ifpqhEHSrpQ6jOlvH/ZX4xGpQpF0tZ8ZFFNH1qMiEubYo5jKjEo8Jcyg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792661032;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
+	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type;
+	bh=gkhBBRoKjdMjfG0Ulhfds5pPtjNKOakoMGJLQPu1F7U=;
+	b=TOU0E3qnpUrVb5ku4K7zyVUU8ZfCkStByTvHzvH4/IQQvM93ggfusNNlSxOoA47OQxxq
+	 V124n7StS6dg7bRTObYRrQloPxBry0/YA7snWuNFcTGQPnyWqO2I0iB42MfOt+JiVJLkp
+	 Pch0Pv3cDD0u3PAJEE2bY0U0X1c35vDyGzXA1j3Bfgx4mbHGHekp2kVM9qoYvrYy8/FMm
+	 LeH3NEnV/scRl68PH9j1Js3tAJUN2bOiEmOr/vUP/R93h/vUktedg/zHlKVt47kpVPVCq
+	 CDD0klCt93o8C85ciY+3+uqJCs2XAs+hussu6qzBZiOjYAzM4V1jorlcYwtWHH9eHdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
+	dmarc=none header.from=linux-m68k.org;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=DOxI3ENA;
-	arc=none smtp.remote-ip=74.125.82.170
-Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
+	arc=none smtp.remote-ip=209.85.221.171
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A159606A31F
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 08:24:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A159606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 827F9606A31B
+	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 09:23:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 827F9606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=DOxI3ENA
-Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-35f1f76ea84so2312835eec.1
-        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 01:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792657494; x=1793262294; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7Vd7izru+6/lgo99qhm4hOGTqXdwgysuGRl6/uCpNmY=;
-        b=DOxI3ENAEcruVbjOOf7E0Qad3+/ETA7XsNDIyoy3589tZRxR13X/NC4KdDSavH4l9p
-         gcQdhBsQ/xONblFurjSzQ5nxZ6iElRdi7WdOIFRbFxB4hakLCyaANjRsPD2Pyr5+Vmsc
-         A3V41YGqCscZ72pPMjw0WQOcYnSHXAqB6sjZ4nPwj2MSdf31gCppjoMCOgwTGRh1PV0D
-         nzY8h+Of2ZmA4AnLxA94J8rXQTKAQoBG6m5OIsqhh6eVpIExEPjV+KzcyUABVAjOr4i9
-         VpCe5c3sySW78+EEPQi3RpOY/9nhL7223tWCh7RVkn091wtKrroExSJoc6UqrmUdrLCe
-         eq9A==
+Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-5eaa5e03c47so606263e0c.0
+        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 02:23:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792657494; x=1793262294;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7Vd7izru+6/lgo99qhm4hOGTqXdwgysuGRl6/uCpNmY=;
-        b=Jy1ixevTL9x6xLal/txBxQWTrYNJtCO79QUS8N+biJBvUAh5rl/at2pKReDx3g/PNA
-         XMY5cPSOKt/07V/ArcS2m6JazxeHqCFWrPo9UemvQMX1hXUVDUVzDHUJU/We5eDz0nSo
-         TG+7dzVsgEZEPY8tglslC6YqFU6IdgwHgyxys4fY+WG7MwQnGYqTfC10jEvdkacf0UHk
-         X0JsK6QpSARLmL9FhSLRoFx7nv4Vqqat5EEyvVDTXCEZTdsSv4+Rd+wfBgfcUkweAelG
-         7tgVGDOnpCrru8rF2m63TtDIgsf//BF3uL3+n2nuPwN93OoafXWJ26rjQ9P0h31YYsAA
-         B5PQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzskeXy6kd/yMQh0P9U44+UI/nZo+UitLo3CYMHwTgmo8qsb0xC8xrZAmIZebKQZKGQJY3RnG50kcU=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJ/1M6YB+bIzrNmhk4kua125g0Z+p6yvjZoHfE0r/M7pzfh0tKr
-	SE38kSUbEAmx6EeBVFL9BUroq9ONCc0SOX9H9qGU+7FO5V+02e3Zvpap
-X-Gm-Gg: AYBFou2mfVfSVxpiqjQw8xi0g0zF/hTFEsRchCwBck9rTATLwN37KGNKDIop9LAYAC2
-	1LsjG/xV5a3KhM1AiyZaLLcLxhhLODhx57GlD9kI7pzAOF1wfi2v0LFlvmytN/9se86okjrUvle
-	X+PlR5uqEwhYykpHD5nNOmb3PJK5ofAePaJxNMo0ksdbgove7QIjlPUVz5hWM5p4h2yb/ORxOO9
-	G8Bbl0ZKEhUg3aAzxH7DK1WQLHnsTr0h8h0MEntRq4G2CMHraT6eiY5rZaLZ2I6R6RHo4t0F7dN
-	K0g1AVsgmsMMLaNQhmxGljpG7qk9ZtZtFMCK5Cs01EVynS8EopA6uZxSqfFZ8o4PRuxUzowttcV
-	wsiz/xDOX2O6bEKh/Y3iLKg/cc+GQKAJf800RrVyP1G2CmobngUAZwkBUiLkNtYj3VZmBYf7/+a
-	JPPVuQGcpmdDxfMbsU/PpArag3it4holF4o1P2FxVHfra4fBsQMMFEmUppFrUljBg4l9YRibPcx
-	SC3XGsQUDrUoHprMtqBpygOpGld8qTsuro3S+9YLIPDCebWs4C0/nfbJWcejtAyjzn/3uy/pkXu
-	sqXlobHxHZtFw2vEbtozkhPOq4ned1iK4Ir8eOsfairhSRxTTXsEhjV94jaXPcFYYYO2A5UOJYc
-	ZtS2hQ/xI1rw=
-X-Received: by 2002:a05:7300:fe46:b0:350:869:d106 with SMTP id 5a478bee46e88-3674ea39d18mr5791998eec.34.1792657494222;
-        Thu, 22 Oct 2026 01:24:54 -0700 (PDT)
-Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36740cc88b5sm14857858eec.10.2026.10.22.01.24.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2026 01:24:53 -0700 (PDT)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org,
-	rodrigo.alencar@analog.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: core: fix signed integer overflow in
-Date: Thu, 22 Oct 2026 13:54:48 +0530
-Message-ID: <20261022082448.275582-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <atm2WhX9KDkbUIPk@ashevche-desk.local>
-References: <20261021225306.623361-1-kapoorarnav43@gmail.com> <atm2WhX9KDkbUIPk@ashevche-desk.local>
+        d=1e100.net; s=20260707; t=1792661031; x=1793265831;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=gkhBBRoKjdMjfG0Ulhfds5pPtjNKOakoMGJLQPu1F7U=;
+        b=DU3lrnElgv6V1ljS4RVS1Vtoa/zB0xIX5V+xq1vE3NWu250FoRk78e5xLP92xWARPO
+         vraHvYLLJsT27KBZDoSojmXzlfve/LMPvj54NBTE1QkmHGvGjp+43xIPeu1fSomv4nmo
+         pgr60VwcRYH9ukchFMC7eCohgCnhW8lkylCQpQo6nrdpBKgSo/obSB1hVxI/7PjYOz/s
+         xw7BX1fAeNXDmZHvJk+JuNcph9L3e2HeplW2GxoTvehhBNAsrGVW9ID/noQ+AgZW2VUO
+         phQ6WNe/hSxicM3dnXAYyevyZq5WhhplhiZug255TsmSiC0AVDITbtPOe8bOXQYS8jiV
+         St6Q==
+X-Forwarded-Encrypted: i=1; AKwUvBz+LsiNl6vkWXILPGcPiQtEs0OE/kzWnLfdAxmJutCrL3xcosZu4vXGGA4ye4GWQk4RHEKYEhTVZkw=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIhjw5g8E/S82o2pxaZUNRTp4zPme1bw9Jp3nuLBygOmW4B1isX
+	X8nVhBYkH8mYfiAdGQv7LQKVE34pLz6AIkaYmKJlvVCPtQhcFUzfCiSMgKzn3nIE
+X-Gm-Gg: AYBFou3J1+B4SwPKYaGMA6Ie+pjvpyU8R9+zgN3x6+8C4iB3fFC2yjMrBlBUJWML1J7
+	dVdO/6FRvqODsNRH9lxtQvsIUAU8kUYG5/R9KxDH94f2wU++gEV0jZYu4k2T62L1WYr9wRJTdVc
+	pJc//FC4wQCUH1OhVEtzELHsR64LxirkYGojEAQXBzLerEApwpv7dCU+qmZeD+35h97TiDY6YpG
+	wj87Dlgv4+6yClGPOGOnsoZmA0dnrUYhjCpY6I/pJf7o97kMJpCGWVM9bcHvnq37pneg8vnQMzy
+	JnuOTPnV/rIJpWMnfdgXoMRMS145/uZtS/cFC2T3CAIDxxhK/xJu9IrFIxsOctmRVSfCFCqcHLm
+	daJlHraxIAXGvJv7omz99rY9KGgkWhbzalgXSsN+e+x5iizo0ZgTZqnGsz0FDwpyjvEStGN43ba
+	vR8DrLGNayAzOhcmlfCTVVa8gUYd9Wfz6CwU0H4aLysucZqw3CK+/KBkoVrzaJn2Bw25s8TYPnt
+	nmAwofGsfJAXTSmI2340EkX+NMfS722CB8urhWTD4XbwS7ZDey8uSN/yFJh2lnoXQAqt7i8GyZ7
+	Kf3hm4T0j+DkNyQN6Q==
+X-Received: by 2002:a05:6102:6054:b0:7ca:8f2d:5c29 with SMTP id ada2fe7eead31-7cca9b1ce25mr403733137.27.1792661031456;
+        Thu, 22 Oct 2026 02:23:51 -0700 (PDT)
+Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7cc9237bbf7sm5619454137.6.2026.10.22.02.23.50
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Oct 2026 02:23:50 -0700 (PDT)
+Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-78fb1fb9508so566197137.1
+        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 02:23:50 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBzLM+OkcjSvbSJtRljz6u7tpH3EBkKi8UR26SPeLuB7qomy9qpf5yNEhs7yn4ieUPJhY5ejOyYfLSY=@vger.kernel.org
+X-Received: by 2002:a05:6102:5093:b0:7b1:3ecd:3d8d with SMTP id
+ ada2fe7eead31-7cca9a1a007mr483763137.7.1792661030261; Thu, 22 Oct 2026
+ 02:23:50 -0700 (PDT)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,43 +80,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20261021235818.3059519-1-briannorris@chromium.org> <20261021165858.v2.6.Ia4649c7263a5733426a8778ac4b2dc459f3ffef6@changeid>
+In-Reply-To: <20261021165858.v2.6.Ia4649c7263a5733426a8778ac4b2dc459f3ffef6@changeid>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 22 Oct 2026 11:23:38 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWNuVOnn9KwYuRm5TYsMEf362V_4fSwQGp3fOfR_i7jkg@mail.gmail.com>
+X-Gm-Features: AclHuK9DeixcMDu5pJYEJIO6mwWZklXvy1cHSqlxPpUgEBM8a99XYlxTEG_tKGQ
+Message-ID: <CAMuHMdWNuVOnn9KwYuRm5TYsMEf362V_4fSwQGp3fOfR_i7jkg@mail.gmail.com>
+Subject: Re: [PATCH v2 06/17] iio: adc: rcar-gyroadc: Discard
+ pm_runtime_put_autosuspend() return values
+To: Brian Norris <briannorris@chromium.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Ulf Hansson <ulfh@kernel.org>, linux-pm@vger.kernel.org, 
+	Andy Shevchenko <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
+	Marek Vasut <marek.vasut+renesas@mailbox.org>, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-(Resending with the list Cc'd, sorry for the duplicate, Andy.)
+On Thu, 22 Oct 2026 at 02:01, Brian Norris <briannorris@chromium.org> wrote:
+> This driver propagates the return value of pm_runtime_put_autosuspend(),
+> which is not particularly useful.
+>
+> Returning an error code from pm_runtime_put_autosuspend() merely means
+> that it has not queued up a timer or work item to check whether or not
+> the device can be suspended and there are many perfectly valid
+> situations in which that can happen, like after writing "on" to the
+> device's runtime PM "control" attribute in sysfs for one example.
+>
+> For this reason, modify this driver to simply discard the
+> pm_runtime_put_autosuspend() return value.
+>
+> This will facilitate a planned change of the
+> pm_runtime_put_autosuspend() return type to void in the future, similar
+> to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
+> type to void").
+>
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
 
-On Thu, Oct 22, 2026 at 10:08:10AM +0300, Andy Shevchenko wrote:
-> This needs a Fixes tag, otherwise it probably won't needed as Rodrigo working
-> towards tons of improvements in this area.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Will add:
+Gr{oetje,eeting}s,
 
-Fixes: 6807d7211327 ("iio: Factor out fixed point number parsing into its own function")
+                        Geert
 
-> OTOH, Rodrigo's test cases might be good as part of this fix as well.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-As far as I can see, Rodrigo's tests in the E notation RFC exercise
-kstrtodec64() in lib/test-kstrtox.c, so they won't cover the current
-parser. I'd rather keep the fix small for backporting and send KUnit
-cases for iio_str_to_fixpoint() as a separate patch, if that's OK.
-
-> Wow, what's wrong with INT_MIN?
-
-Nothing, it was just clumsy. In v2 the sign is applied while
-accumulating, so INT_MIN falls out naturally and the limit goes away.
-
-> What's the point in changing this line?
-> Why do you need explicit castings?
-
-None, both dropped.
-
-> Do you know about APIs in overflow.h? I think you wanted to use something
-> from there.
-
-Yes, v2 uses check_mul_overflow() and check_add_overflow() and keeps
-the variables as int, so the s64 and the declaration reordering are
-gone too.
-
-I'll send v2 shortly.
-
-Thanks,
-Arnav
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
