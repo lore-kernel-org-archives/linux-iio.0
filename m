@@ -1,98 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792627315;
-	b=qGUkjUOxwWmz+KLreuEZqP5e9flJHcyTnDNqRzu93g+GkK7JFZXDX+LQIVMgXwhWLtM4
-	 YbfHRttJDYuemuo44wgoz2FuPSTSHaAml9bS1OhegWfG2XFLSCKH5UfLIH1fNvuaCGGeu
-	 GO1TNFa3dhceRtzj/PYBSyHPkMq+9ydXdESWAa7sUY0CaH7c1VByfouG43bnhXlCHG5N2
-	 mwwqi470dH4Pb6oaS0SR79LDeheNAgBiColRi6mRwUSqQIyN5SAMqqUMCxc3UJp7KjjOd
-	 inn2IEiqQBO4crpCVzfmnMCBA6Bj4pJgwoU+ubknQufnI3r9cM120OvnRcLL8Wfpt4Q==
+	t=1792632122;
+	b=3FBMVXnEedK/LjZSNvvMOgRsQ+D3pHrVveupr4qIk7u5JY8Vefvh6ZiDnzqSE3/HSUS2
+	 g5CSaJZD1PvXlvJwu6+PPyZsc7KSixJ0dbOM/g9L3WZpV5/PNlcLCYaFeyVQZgN4Rg6a1
+	 86aEzhx/wWogLH92AR0dyt3bg9V0gDew3mAbKiBUbiXHlCMmBOfou8YC4oKgeB6Mf2ZUl
+	 BrerkTfpUiVybj+EqYFMLrk4bbIb9NsfLNTdt3zhhwtGY/P5VmMco69StTn7J3jnan1uB
+	 wUl4kc2bKshGmFHcAeyqayAsMiEmFKWdbeW2023jQWsXH/dLnDl2LdpjdwjprylHdGQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792627315;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=n3xDMUCpAKA+W1udgKw6gUi4Aniek2eVFJ0ny2jPCSQ=;
-	b=4bqdBryYE63G+8tnHfcYajWbvS3v/hx5104W6fieONerWDQKVmkIC1Nf6q3DneI8hYAQ
-	 M2aQ7tuuzXJQsRLYV9KFpob/SCVEhHnn2otltznAnfzpf7Z1NgXZT2kWAnQwMCL4vFX+R
-	 p4pUWIimeJuYFTjWa0NJw8lWc5WysUXNl6q3u4PcXFLBUNxZ4Nl4oB2MDVAwoN501Zemk
-	 prqBvxNVv7HjpAeJgJfZb5T6+AKKJmOXYY4R/8XyJk+aqtC5fw32gGV8nqPinU1ao+tm0
-	 DzFlV5vrlFDIkH24SXgo9lIFlUn5rs63q135toiwIyuFR1jm/+0u3vZdPvPDbxY1yDQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792632122;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
+	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:User-Agent:MIME-Version;
+	bh=6h6npeneL+mFSvsMfCVYXMehVP94L7ywxVJ3HZasHdQ=;
+	b=sSX2ajFB3dsUBT/Ey5GoSdlNjnKuVtB2vVOttH5SCI9Y9sdhWaJlEhWwuyd2UTT9qPWk
+	 wGVjgwTel2RCqzjXgeQVVcmLOTvQW0XTkBWV24MFCNLwZH+IQVQTSDVt8negkoD/IoKWD
+	 0Zq+5SHhg09y8EMGSpyb72gAlzaJXFGnuAy4T3h/mQ8cNZUJNeKtFsardOoiIu8d3mQRa
+	 UQRp0S+BoQTNTosiLrhxejt4E/PS+Yw6PHOT1dCpObwLtL8Y6F8vWTR7Z9CWwIMKi4MiZ
+	 jLZJwSUV78gLdnDDlqCzNrnk8DMakN/Ean/pMTEvqFIYSHCwtGSLoJDRynuh9LfIP5g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=kvIRrwjF;
-	arc=none smtp.remote-ip=74.125.82.48
-Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nOtikx07;
+	arc=none smtp.remote-ip=198.175.65.19
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C88B160A5BC3
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 00:01:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C88B160A5BC3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 946B5606A319;
+	Thu, 22 Oct 2026 01:22:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 946B5606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=kvIRrwjF
-Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-157fe9d771bso1659460c88.0
-        for <linux-iio@vger.kernel.org>; Wed, 21 Oct 2026 17:01:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1792627314; x=1793232114; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=n3xDMUCpAKA+W1udgKw6gUi4Aniek2eVFJ0ny2jPCSQ=;
-        b=kvIRrwjFl/SmlvjoHbZEubwmV1VUTKswii2wq2ZZEjoyn9z+qojvyG+qmSgXdXNLPQ
-         07CFtQMCqOO1ZmBsLY8ITCgQvab7T6BG59XbmrP2u9l2tvkPuelMWZBZ/o1evdAlIgPf
-         IqygWD7HfNf8t1a35mOslK+V/a6f6Ijkih2Vs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792627314; x=1793232114;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=n3xDMUCpAKA+W1udgKw6gUi4Aniek2eVFJ0ny2jPCSQ=;
-        b=DyLBVXVgss3qBBVHB8MGjk6S0eir9J2APOtumv1MZ89cbRckuivu/T4hIp9bMxGcNx
-         JtFbCnu5T9X6gJdNAJ531STrr5wp9jst8WBBYLQTui1hQ3KT1zUxqjI6KNs6tNUXIMmV
-         aoYQh/QLBht16Vm8VelmbNa9Mv5fboJb6Vryt4zHmJFGDgXNWuqpcEh9+oh+BMyJA0VY
-         jPtJ7gF4V0fPAWBdHEUOQ/S8sAL8+R5I7fVmWy88mJpvqU9Z1cM5FBim1WZUdG4QL+Nm
-         GpOuRzsjRkJy4zjPpAIFgGo0juprvXvNHwZq5NdbvocFD4uwzgRJDKtaUtXUdyfV+WP3
-         l+iA==
-X-Forwarded-Encrypted: i=1; AKwUvBxT4E2c6yGENTIe2wjaPZQzgS1kzNtSuw71AXEHv0ilOUKC+4zypQQgDH0yCrHDgl4dFx7n+6L4CVc=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKLpVGVZrWGYR+rq5cbmkg7hcA4TxDAmkOHCMXhY9QNC8JPz52D
-	G1cAB0Kzz5BZlQYzhtBC3/Q8NcoRvERiPViBBH0mg4jIcvkdTdmb6/HXzEq9nhcSrw==
-X-Gm-Gg: AYBFou3ArgCpfZAp157Ak52ab3XMqCzwsHe3+jzzA3mwfbtpD394Y6nXemFGuUYb3xY
-	OHAuWldWVQKj3gPfXoGh2V3MK5+ZDmlPgL26HCtlDU/1B3M64QQtJcPNg9ZZ/TyCH4Le6RrdawF
-	DpHtLHioeLFaLD1Aiy1Dpb5FafOnQ72fE68cSBJkbYAUuFbYrpGzlUPBI6bi4C9wnleY38R8XRI
-	R+ceCJneJArGpwopT1P+f2LnekUm3Z3k+W52xVwvo6onaW2tnOXe/tJSkFn6UKDKXrBDda0cHFQ
-	t3xCyFj3lsLcZdaWoto5UXDr31ksAdfLzdy0F/7xGIyo82sAUppiZyVrfPzkwFx3UOrXjOxcfuo
-	hkGmoHWgQCjnZoGuI+fnJuNuoWfe2QgYTV3TA3KpgTVAb7jtDFjSrmHWjZyiEzJWsVFBQdgz5I0
-	42NJyxxIJjXOiNw+5dK6+dq0/U+M2t3VD9xtkBYOQIb39gYhBp9po+zOzwq+QWD8kkgreWWf2Xw
-	d7AOylwTnGMMjmeaPJ2HeOdLT98MOeAcgP+ggl/1xZRvo5+Apqz8XS92EzLRkJMbEdjlZ5jhv+R
-	tcEpK59GfG2v3sN5LNg=
-X-Received: by 2002:a05:701b:4194:10b0:15b:7f7a:730d with SMTP id a92af1059eb24-190a632f93fmr4268943c88.28.1792627313833;
-        Wed, 21 Oct 2026 17:01:53 -0700 (PDT)
-Received: from localhost ([2a00:79e0:2e7c:8:14ab:bfeb:ac88:458f])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1903d87ab1bsm10000732c88.21.2026.10.21.17.01.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Oct 2026 17:01:52 -0700 (PDT)
-From: Brian Norris <briannorris@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Ulf Hansson <ulfh@kernel.org>,
-	linux-pm@vger.kernel.org,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	linux-iio@vger.kernel.org,
-	Brian Norris <briannorris@chromium.org>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 17/17] iio: light: us5182d: Discard pm_runtime_put_autosuspend() return values
-Date: Wed, 21 Oct 2026 16:57:18 -0700
-Message-ID: <20261021165858.v2.17.I2a58d2ac56600e492fd431e173bd0d67f180c6a3@changeid>
-X-Mailer: git-send-email 2.56.0.218.g1ec904b173-goog
-In-Reply-To: <20261021235818.3059519-1-briannorris@chromium.org>
-References: <20261021235818.3059519-1-briannorris@chromium.org>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nOtikx07
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792632122; x=1824168122;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=BNzoYnazXyJ6JJrwYdvEPd+oYROiHViwlnUhOUWCJjE=;
+  b=nOtikx07vKID6hafQLQqBzdJllDAh85g8xWAImdUTyKnboFPd2T6KPkn
+   pqI1M+WZY1CowKCsV3ZtBXx2HJ8WATzJS3ZPbztYjD2BIsQ4flWKzsMK/
+   h0YdNAH6qZKbujyQLkgrNnstHLjTwmxg1IQYgAs6sVU2o3OojYzTY+EDy
+   rozEKaF/5Wk3FKbpbbwSgv+lAYEtQDsvI0rya9UQUJh5YFdVAPl7slGx0
+   jVhMsIYEdcI8nw+PV9RAkb2s1xlDZg+amGjrUy+vXYkkC4oXqY7zG0d8J
+   YGXLHgzq6c1wgYVIIRgWEURb/0Sj9UylkGlYFzzDta7Jm3i9UxRFUB6Gq
+   w==;
+X-CSE-ConnectionGUID: RKp5QISKSHWeU4/RCYyNXg==
+X-CSE-MsgGUID: hZUSjlOQS5mRSYV7BCVSHg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1405253"
+X-IronPort-AV: E=Sophos;i="6.27,171,1787036400"; 
+   d="scan'208";a="1405253"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 18:22:01 -0700
+X-CSE-ConnectionGUID: KJbXWNUaT+65FE9FZ59IiA==
+X-CSE-MsgGUID: q8RP0IbgSRGmp0sXmpq6MQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,171,1787036400"; 
+   d="scan'208";a="3115640"
+Received: from spandruv-mobl5.amr.corp.intel.com (HELO [10.247.175.100]) ([10.247.175.100])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2026 18:21:57 -0700
+Message-ID: <4470c427937d26035d81b99ee7d06e2a602ee4d7.camel@linux.intel.com>
+Subject: Re: [PATCH v3 1/3] HID: hid-sensor-hub: Synchronize callback
+ removal with raw events
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Christopher Hoover <ch@murgatroid.com>, Jonathan Cameron
+ <jic23@kernel.org>,  Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>
+Cc: Lixu Zhang <lixu.zhang@intel.com>, Joshua Crofts
+ <joshua.crofts1@gmail.com>,  David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko	
+ <andy@kernel.org>, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Date: Wed, 21 Oct 2026 18:21:45 -0700
+In-Reply-To: <20261019023420.83976-2-ch@murgatroid.com>
+References: <20261019023420.83976-1-ch@murgatroid.com>
+	 <20261019023420.83976-2-ch@murgatroid.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,107 +89,77 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-This driver propagates the return value of pm_runtime_put_autosuspend(),
-which is not particularly useful.
+On Sun, 2026-10-18 at 19:34 -0700, Christopher Hoover wrote:
+> sensor_hub_raw_event() holds pdata->lock while it looks a callback up
+> in dyn_callback_list and calls its capture_sample() and send_event().
+> sensor_hub_remove_callback() takes only dyn_callback_lock, so it can
+> unlink a callback and return while another CPU is between the lookup
+> and the call.=C2=A0 The sensor drivers remove their callback in .remove()
 
-Returning an error code from pm_runtime_put_autosuspend() merely means
-that it has not queued up a timer or work item to check whether or not
-the device can be suspended and there are many perfectly valid
-situations in which that can happen, like after writing "on" to the
-device's runtime PM "control" attribute in sysfs for one example.
+Two spaces before "The".
 
-For this reason, modify this driver to simply discard the
-pm_runtime_put_autosuspend() return value.
+> and keep the struct hid_sensor_hub_callbacks in memory that devres
+> frees right after, so a report racing an unbind can call through
+> freed function pointers.
+>=20
+> Take pdata->lock in sensor_hub_remove_callback() too, outside
+> dyn_callback_lock as in sensor_hub_raw_event(), so the removal waits
+> for a report in flight.=C2=A0 pdata->lock is otherwise only taken in
+> sensor_hub_raw_event(), and callbacks are removed from process
+> context.
+>=20
+> Fixes: 401ca24fb34a ("HID: sensors: introduce sensor framework")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christopher Hoover <ch@murgatroid.com>
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> ---
+> =C2=A0drivers/hid/hid-sensor-hub.c | 12 ++++++++++--
+> =C2=A01 file changed, 10 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
+> hub.c
+> index 6470a290ebfc..7cf9f398592e 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -173,7 +173,14 @@ int sensor_hub_remove_callback(struct
+> hid_sensor_hub_device *hsdev,
+> =C2=A0	struct sensor_hub_data *pdata =3D hid_get_drvdata(hsdev-
+> >hdev);
+> =C2=A0	unsigned long flags;
+> =C2=A0
+> -	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
+> +	/*
+> +	 * sensor_hub_raw_event() holds pdata->lock while it looks
+> up a
+> +	 * callback and calls it.=C2=A0 Taking it here too means no
+> report is
+> +	 * still using the callback once it is unlinked, so its
+> owner may
+> +	 * free it as soon as this returns.
+> +	 */
+> +	spin_lock_irqsave(&pdata->lock, flags);
+> +	spin_lock(&pdata->dyn_callback_lock);
+> =C2=A0	list_for_each_entry(callback, &pdata->dyn_callback_list,
+> list)
+> =C2=A0		if (callback->usage_id =3D=3D usage_id &&
+> =C2=A0						callback->hsdev =3D=3D
+> hsdev) {
+> @@ -181,7 +188,8 @@ int sensor_hub_remove_callback(struct
+> hid_sensor_hub_device *hsdev,
+> =C2=A0			kfree(callback);
+> =C2=A0			break;
+> =C2=A0		}
+> -	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
+> +	spin_unlock(&pdata->dyn_callback_lock);
+> +	spin_unlock_irqrestore(&pdata->lock, flags);
+> =C2=A0
 
-This will facilitate a planned change of the
-pm_runtime_put_autosuspend() return type to void in the future, similar
-to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
-type to void").
+The patch looks fine. Is this issue actually reproduced or it was found
+by some AI tools?
 
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
+Thanks,
+Srinivas
 
-Changes in v2:
- * Split iio patch into per-driver patches
-
- drivers/iio/light/us5182d.c | 32 ++++++++++----------------------
- 1 file changed, 10 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index ab518311fd79..98279bd1ab25 100644
---- a/drivers/iio/light/us5182d.c
-+++ b/drivers/iio/light/us5182d.c
-@@ -366,45 +366,36 @@ static int us5182d_set_power_state(struct us5182d_data *data, bool on)
- 	if (on)
- 		return pm_runtime_resume_and_get(&data->client->dev);
- 
--	return pm_runtime_put_autosuspend(&data->client->dev);
-+	pm_runtime_put_autosuspend(&data->client->dev);
-+
-+	return 0;
- }
- 
- static int us5182d_read_value(struct us5182d_data *data,
- 			      struct iio_chan_spec const *chan)
- {
--	int ret, value;
-+	int ret;
- 
- 	mutex_lock(&data->lock);
- 
- 	if (data->power_mode == US5182D_ONESHOT) {
- 		ret = us5182d_oneshot_en(data);
- 		if (ret < 0)
--			goto out_err;
-+			goto out;
- 	}
- 
- 	ret = us5182d_set_power_state(data, true);
- 	if (ret < 0)
--		goto out_err;
-+		goto out;
- 
- 	if (chan->type == IIO_LIGHT)
- 		ret = us5182d_get_als(data);
- 	else
- 		ret = us5182d_get_px(data);
--	if (ret < 0)
--		goto out_poweroff;
--
--	value = ret;
- 
--	ret = us5182d_set_power_state(data, false);
--	if (ret < 0)
--		goto out_err;
--
--	mutex_unlock(&data->lock);
--	return value;
--
--out_poweroff:
- 	us5182d_set_power_state(data, false);
--out_err:
-+
-+out:
- 	mutex_unlock(&data->lock);
- 	return ret;
- }
-@@ -676,11 +667,8 @@ static int us5182d_write_event_config(struct iio_dev *indio_dev,
- 		goto err;
- 	}
- 
--	if (!state) {
--		ret = us5182d_set_power_state(data, false);
--		if (ret < 0)
--			goto err;
--	}
-+	if (!state)
-+		us5182d_set_power_state(data, false);
- 
- 	if (!data->falling_en && !data->rising_en && !data->default_continuous)
- 		data->power_mode = US5182D_ONESHOT;
--- 
-2.56.0.218.g1ec904b173-goog
-
+> =C2=A0	return 0;
+> =C2=A0}
