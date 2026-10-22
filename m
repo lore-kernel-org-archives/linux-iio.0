@@ -1,79 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.83.46
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792682351;
-	b=I3W1fTemq+9aCBsUtJXVvy1outmHpi7h69gSPiEQ44BLjJZLXyrmG1qifxGUV5T/WXLa
-	 zhi5c2G4d/4kLQF4gXMTxRkjCXVze+cFkJi75GM6Ho4rwAQFJkNVZM7yG2amcp960wn8y
-	 KAeQEpkWeUfcHoWe/bQlk4KY92lsETw5xWMI5vP4olZuBQ8vPLyxqRFxulf8N26OgYmao
-	 RpzkSy6JfEhU/i0wiWjVn7Z4zaG0G1ejs58iuv5lhJmwj2WScllKkNUkJo1DFlvMNtU8O
-	 0oqDhhIA/SQ4ZXMsj7JyhZ3LfrOSeaf1ne3tyXQg1jyw2OByzn82gigmzyLQe0nc+jg==
+	t=1792684574;
+	b=hO0XVyOOjWT1v2Q3UEdpaogRUOW6bPQPEot86r90nZix606crYm1nCyJ5UyRKrK7kwQ5
+	 ry+kv/LXhSTJlENE7CiRR1XieBChPGG5qXJ7FxUZYC4NVumTXnFwL9Bzym2WgEMtTcRAI
+	 qBPYuBQd/NGIUictIc32fxN0l8ePLxOeqHrks0Em5qeA1JwB7md5esScP7va2zouRXK1f
+	 gtU8e5gVDIfhthuBAHAvh8K5XGBBXkB1pKmLMPzBMpIwiLGOL7YGIgfVh/axrhZ+f3BL4
+	 taEO6gIOZWqz+Mg5iVXwIId8FHEa/4o8KrhupU2OZHPGcC+NLAgboV5ERdfbvgHJz8A==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792682351;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=mgr3ZBUadswlY0m18RoK45iupDXQ8OR9+gCMQmzuBbo=;
-	b=UvSG34QLNqsxgOoQ74y+xZQoVEoJ3tmgCrNWhYEz1P0D7qd3nNHdItnlqiH3Owc5dwOy
-	 ErGcrbNkV4Lz1TGqzbcqEm02i34FLyhcKTRKd/h+PzFWsdt2QsfTCph5EkagL13JrddkA
-	 0oZAmROhncXIaCGu1FwEOwl07miR1tT1EpO0jx95ir0uD1tBSgDLQUDEWGRtRComdqJCz
-	 TUyoMglDngSiCdXnDqiGqevRIMgJbit+mnIAk6U418RMMn8iwssK2HoiG9Mg+jL/OMLAw
-	 7uto8XFW3bbx8BQWgn9nZhXPEGz08M9auEto8WiuapbH2H+QR0v+pOm53J/DQvazsew==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792684574;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:Content-Type:Content-Disposition:
+	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=9irhYSs7tYnwBabFDIG38h/JX5qepDmLAZu/Ak3BZ9g=;
+	b=dTPbU982c8pGXX4fOvIFpgEtANeRxz5H9Bj2NIMmTjFu5D+Rab8CtQt9/KVGNL+s5IQp
+	 VnIeN7+2JlunPInvU7Fd4qFd2H1Apjw3tVmxl2X87kngPs799ibpaGyt2EwlNgGF/yNTS
+	 Q7yDUAVFxbwY3wu8YNh8ZF9Tr1bPU7L6+8QzXiiG1Kj4nzZQbnFTYCiqGTL/bUmcoZDxE
+	 q4yCvkuDqNKyqV/IVyJbcwBIphUvN8p1IRl8cnrlQHyU87C3h3Wjrz3bT/kwYFX43/r9H
+	 YFmqet+yRa2c5d6EMNUkBp+U5eeT6pfMz8bUTvXbx/PJSV9Ose7QIDsEW+4L+CK/X3Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEFt0zHa;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=oss.nxp.com;
+	spf=pass smtp.mailfrom=oss.nxp.com;
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b="XgoFSB/I";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.83.46
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013046.outbound.protection.outlook.com [52.101.83.46])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCFB4606CC5A;
-	Thu, 22 Oct 2026 15:19:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B55F0606A319;
+	Thu, 22 Oct 2026 15:56:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B55F0606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEFt0zHa
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792682350;
-	b=tAHIoPT4yQYa5WD5VzurJM3c2a31QKk+fxh3JrxlIInJiLQtWsjlQdZt96/Yp0dW9pDk
-	 WFKuSkwgXSYm8W9oTRWFH2JxtHqMA7lHDT4cVWla83CMD+blHQncKaRQMsnfPJf3lJe1F
-	 zH9nHN4t0PHUc0rGHm05n2oIEQmFOMBrpQSerFfvv8ka3MowseYumloDzttjO5XW5F0t8
-	 sid21JgR+i7WZ0yuiMVGyZ8qq4530tPD01ZApgO1P3zbCl5eG6SHAzGBvYJG4YuRdAWPr
-	 MW5NEI0pTqt48pAmnctyThQZxLzkwQ0Ns1qOHXRhxc4d2O7Wxw2rDPetldxK6yBCmQA==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792682350;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=mgr3ZBUadswlY0m18RoK45iupDXQ8OR9+gCMQmzuBbo=;
-	b=1e1a3N96K8qD2LQAMSXQhDigwpOGHakkxOg5ZdEsysbw24x4Flp5adNINH3HOkPqA9YC
-	 x5Qz/eoXIL+BJSAStpNrNnyDOuI4lDcJcLMQ62CFzV3nJUGgADFVvGm+ivFzttbhAgjID
-	 FncvtU8mEl31dWOXdVS/51ghT6XRHb9gmDgpExIqFNv24PP5tGjGlBxnlKp6/Gm7Po9Uk
-	 d1jJSjKEnoYyS2VXcnGiVSXt5pACwh7i2hss+aP8hfwFzooyh0M+x2SwAb15kaGOVTQKG
-	 T1yus0oWWGrfo86obBBlWiNCpeiX38V/TIGR0UcoamwUGaFC6iytYvWUR33IL3qq8hQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 00A701F031E0;
-	Thu, 22 Oct 2026 15:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792682350;
-	bh=mgr3ZBUadswlY0m18RoK45iupDXQ8OR9+gCMQmzuBbo=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=IEFt0zHaSNUWl/E5sitxQcOI6HRlusm66q/3D22+EwobWGHwkBg3CW/PitV8DKqsz
-	 DRkBhKTQvllN4fwzSuMtreGs7LiCaEBeSdih5RS+SRcorjxrHuPqhRWTDRjnBwb3JX
-	 DBWyzZSfx9sZ49crCLGzKQY1HEPkSIB1YqhF1i6muC9S3mEOMsMwqv6DVBFy62g7PQ
-	 RQGMVpNV6//xtwN1vnd7lJVYlo6T5VnBaP8NCEEuotbk8KapnbueIwDwBjTLnJ9qqL
-	 dh+kxo5JxPw3iIxAq65xKDuba2+OCEltjeqGqiOVOjouYlckoh7mSIXtAx92H0DN7w
-	 +zNcjGd6tWa0A==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 7E68441E52;
-	Thu, 22 Oct 2026 15:19:08 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Thu, 22 Oct 2026 12:19:01 -0300
-Subject: [PATCH v2 03/10] dt-bindings: iio: frequency: add
- adi,ad9910-axi-backend
+	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=XgoFSB/I
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=qeCLvgyEc8WJojoCssFm/TIW/bWa/N+Vt5DnU6wps8D3M6bxQP3A1Cu3xvRyR17FOX4vpEQytf96mz7Yiuk3aOZKalbTWbDxdBuALKByUM34NSJlokwTnJUbEHAq3dTXsg4/td40zqyU/DoCgwQKiz+iTORsdCy2urYmFGRvQw/PjK5jAo/3i9ZtyZaJ3/+hsLq9ds57On16xSd1o89IUGkInslc3oYrUD/oC2mtiPWJkEhMd+Qnhix0YFhTFCbBCaIzkIvx2JuQhFsllfO6RgXVJecbanybwsf8f0bmtzj7zjE8v4H4amFT+rl12y/pM6uF6NNaZhYnkwsy5eWv7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9irhYSs7tYnwBabFDIG38h/JX5qepDmLAZu/Ak3BZ9g=;
+ b=lZ4/lwNw1NjJ3e7zThLwvixWTfM81oURbj4yvXdwligDY3JBB3ym3xbBmxQxK+j+F5JVMwsLrVn3gHAmHRPz/mgWK0k+GPezIimfvJZUG0oNf+Ttmi14i5hcQr5v16vk8iqE7C9oTr49iMupSOLFZC2iUQLn/kTpZ5j4w8+jC9IXDPtrML8HcdmbAKXlH3exCjiIcNCj4mb40mSdDJZxPfPRoyny2fBnpfXxTyw5+UObOuuo2GTVHaptPTJG5UeDCXszz0EeNjKlmuSxbsRr+oFxCBpAgMB/WnU2ca8m7RKCsTca1WBgwkGorbiprsjek3XvQSuxN6b3Jnyd4p2EMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9irhYSs7tYnwBabFDIG38h/JX5qepDmLAZu/Ak3BZ9g=;
+ b=XgoFSB/IZk6WcvRYlAK29U7UBCeORvuRDePZmfQckjchp57he44fChywRLl0nbETFSWL/E+1+7RL5Y1jBsuKL2BUv1smYFuYpEjCE/CNVGAYGlAI7/9B/UnUTSluBK9SZc2HALUlVd3z4CnKek+w5mWi/sG2nGf25fJ+EkNPJotLG9cwHBaDyeHd+U7P1QMFJp13/6uY3t9v4Y9U8D/LAKrFAxm86cVbyd+g5u0b37QCtpohE0C/QQv/TRbQhVTBfUA5BPdJ2AjV9vf8WBnSkTnWYVzgRhJrvX/JqEaG8miTG/c/Cu16uY9b5MECn78ZbDoX0bwhiqN815M3QLqR4Q==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
+ by DUZPR04MB10061.eurprd04.prod.outlook.com (2603:10a6:10:4df::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
+ 2026 15:56:10 +0000
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b%6]) with mapi id 15.21.0546.012; Thu, 22 Oct 2026
+ 15:56:10 +0000
+Date: Thu, 22 Oct 2026 10:55:59 -0500
+From: Frank Li <Frank.li@oss.nxp.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: fsl-imx25-gcq: check the return value of the
+Message-ID: <atoyD5GpW-4uWKjq@SMW015318>
+References: <20261021225450.628499-1-kapoorarnav43@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261021225450.628499-1-kapoorarnav43@gmail.com>
+X-ClientProxiedBy: PH8PR07CA0039.namprd07.prod.outlook.com
+ (2603:10b6:510:2cf::7) To MI3PR04MB12438.eurprd04.prod.outlook.com
+ (2603:10a6:290:76::14)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,149 +102,69 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
-References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
-In-Reply-To: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux@analog.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, 
- linux-doc@vger.kernel.org, 
- Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: Olivier Moysan <olivier.moysan@foss.st.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
- Randy Dunlap <rdunlap@infradead.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792682347; l=3683;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=CY1SqfatwESZkmEigRY0fdqsP8jg+f3FT7aQydkMpu0=;
- b=oI+lu8LbTOa5A6uaf9OYIuX4y81mOUXtMN/wKCdcC1YNfsNQkrOSbWCPrVI6U8OWrnOPgJPKy
- 9F4hXqVq0vZAMv7vRARXh22XzTJpNGwoCWVbyO2/DO/H8ETPZ4TtVbZ
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|DUZPR04MB10061:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2085cf5e-b34f-4e09-709a-08df3054fdce
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|23010399003|1800799024|7416014|19092799006|366016|261021121427099003|56012099006|261009223027099003|11063799006|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	W4W5Hn9lfPockmGEjYxdFYgmxDTIG97zJbiHGa7hRcgm2GexqpZ5mEhTZOwK2N1XttpZXCSoJCEWqDIuc/OFI4kWrqsV2LvYn2Vn/Oucesh/y65DtaTjpGN1pOxEx103jkzFwkrFFFc/BFL+lAy7PYSP20Ym0bDtqbnXuWMQyu2TetmfyNgRCaCgwXysn4kanGjquRUGWZKCPZO0rEz47CVCiZ5ycisfO0R/8SyLY+0iHM/gC4YLm44PVb8xHmOw2K6GLhAJwq6eDPlN6lZRnml/YeUoGgVeuIchk7Xv34hvsyrYmJ16vYEIvx9T7mrC4HzFMjbyjgEk4EEgT12Zu2XIn0RbFh5V9zOJLUGgCUWfLJ8eOk+DutpnLQ5RSju5sasQtW5Mz1sVEpr3qw3t6rdoJaJyjBrJmj8RE9tGVJ3/dDliSoMmuVLziF2E0d2YN0Ite29F3vf61oe2qhz0VURMqNNG+CXTuKJg13Wvt9ogiLx23BMk1b3JBsNQJfzf4ilZXf6EUupJo8AFc8mqMqyME+qmGEkX7/AgE6ceTgwKvhB/BULBBvbB8QxHsRmKw/h7Co+P6MwfbDuF0LUYPvRd13JYM6XMDzcqhJ9A/9gbF2Rtxqe9B/yRTGwXV7Bz1CYRcQwI9aMEFuA3o/kcETYmK71V3ZEA10qpOdP+qb8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(7416014)(19092799006)(366016)(261021121427099003)(56012099006)(261009223027099003)(11063799006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jmjS5MRoCSaO3uEW4GVOkWI0EgHcx9TizGUOIMQ8tb9PpnYChGLg7ocvdJ8I?=
+ =?us-ascii?Q?y9NO8SUYEZeWARIhylkHCsaq4ntgmz9Cr3+irHp3JRDNir7yu9pDMJQKWFak?=
+ =?us-ascii?Q?w20mxJKrw/e2bBabdxA2ps4D0GwGeiavXBh1MTVs2OCaPtnFiWjFzaEsucoA?=
+ =?us-ascii?Q?TUvYJkClxRRIOzJA7TBu6rm1Qg4NU/cN9WrMVfVprntysgj5UJFR1bKlpTBO?=
+ =?us-ascii?Q?Np4quAO0npvMKsBsZUACxDQhYL/A1f43tWIpWFwh9Ce3uPZBHSubpMPSOZrO?=
+ =?us-ascii?Q?7YpdaAorlk+51DrKeJZGxwJwQ6SysWUABc7O9dUNdIU2itl2zLDXxlFTfZ/5?=
+ =?us-ascii?Q?RhOrBVErM3VXXK4F6INWuFfwyoguAcH+FX+2On/FpRw/qgXT6ikAnTcT7KzV?=
+ =?us-ascii?Q?74URAucPnjvEQJUWAavomujApX+PWdfYzjEURqYV94Hu7nzraUAImnEJaZD9?=
+ =?us-ascii?Q?R27c1RHWEbfnDG1OOwZn1fh08M+GKq5bEA1C3m+fWMVfDFlZAIS5kcdJIHWz?=
+ =?us-ascii?Q?4ULvHK6LObZtoCd7N5Jxpf94Cx3RHxFF3xHrn2Z6QPFvOl8ngK9s7aWgyoEu?=
+ =?us-ascii?Q?kc+ffY2l2v0DktrvOl7TktQm01TGelYEzjCOw7I1vYhVX/amghrX7k3yqOHy?=
+ =?us-ascii?Q?SNrb26FNRcfcgBMRHvtYTALYcEOf/V3Ky57uz3amDc2Ay9gWYth/1WvV/3Zq?=
+ =?us-ascii?Q?9Xe+/sX//H8QgLaYkAIgPtgCZYCKLEyfy/zRASVJPBk13oBXQTJxxQR5EyV6?=
+ =?us-ascii?Q?FzGn416lYukQCr2W1gT+gfpRGv6iDe1cwrh8qis9jgmb9Ajl3jYSUoMJTfiy?=
+ =?us-ascii?Q?ynF0PFlXSv43il2HRbP7e/GRa1O5lGdW5m+Ig+5N1YudbVt4MPWWSb1wxSHO?=
+ =?us-ascii?Q?8CVKp55SKXaNNzknDLpUoSvQJyGYqcgf2AYv7qt3sEzEFFYORbzUfPZSczo7?=
+ =?us-ascii?Q?UO4+O86jObpb+qOGUd7Yp7+ve7M3+T9vj7Mk/O30iipL7T+QD8JgSyr0OlyT?=
+ =?us-ascii?Q?0RWRt4sfQGPGNrt5QY3qOptENec10OVDf/Wto3zZwgN+3LOXkWVQWmifln67?=
+ =?us-ascii?Q?71DDFxNGmnaXAJ53nEK22XFXcU+cHH+a89mRVvFBaO6O7atntYt0q1SlRx96?=
+ =?us-ascii?Q?Z2eZyO1hWzNMhnXnG0/QpJWgsqw5owZ4Npwy8bFMYkCVyiT0hqwov2aM/0a4?=
+ =?us-ascii?Q?R/fUOXJJCI7OkwJlpkxmWspceJGkwtvZiVxB/w3Z4lyN6VmAobQlP+eIT3wB?=
+ =?us-ascii?Q?704k/XcKbAWojJ0XUE+/k9zTKe2HwI6kspefZySPhX/VDArNCt336xsGGGt2?=
+ =?us-ascii?Q?AldW80q4zqOHwtIAJEzmJ7LET6CqHG+L1pODku8+T0Tmt03KL9vWUtvNqpBW?=
+ =?us-ascii?Q?BvxFsx8FK1+3/74k6T438SSHxRSOZXOctCy/lX9dHheu0Bc8ACGl7UzCqap/?=
+ =?us-ascii?Q?pgvBcxj8COimNYeB0/HtOyU2ohHBTmi+iCqaI891vBpX+ZUz3MTAu2sKLyDN?=
+ =?us-ascii?Q?HBP1JVNHJlDQtyVIGNdRItQi1WkxC1GAwxcBYoaAf0QJteyaEqf3gQU7fV1g?=
+ =?us-ascii?Q?WmYzDWEZ+Tjkm/gim3ThL+BLUltok/HAjluzcogJ4wx7OOeX5BYgu23X0Kr+?=
+ =?us-ascii?Q?GAYvCCmHiiUkewJagvVmvxtLi8ZyVZw3c7/oTnFq54LCi/MZ1oj2F7w0YMLd?=
+ =?us-ascii?Q?e6lgu88vcd0sKOegfbgrnXl0fsLB9jPfM5yTso9rR+5Hqa4hJdEJ1GYSsDBE?=
+ =?us-ascii?Q?kTuXQeREtVP5wcULdBlo1HmFNVTvr/TC/1hkqvXyJVmFSI5898eM?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2085cf5e-b34f-4e09-709a-08df3054fdce
+X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 15:56:10.4164
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HA3vRY+ztQcJiLS7cDLlgLpaTOd9HwzSWotS+ZRhlQWJKH1PVIu0+1bFYn7vyKdfWOhJYcJrcw+HlXRlp050gr+ah3WELrgV5jl+d0UyQoEEawv5IknLKuEXe4kn854k
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DUZPR04MB10061
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+On Thu, Oct 22, 2026 at 04:24:45AM +0530, Arnav Kapoor wrote:
+> [You don't often get email from kapoorarnav43@gmail.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+>
+> The driver ignores the return value of all the regmap accesses. If one
+> of them fails, e.g. because the memory mapped registers can't be
+> accessed, the driver just continues with an undefined state.
 
-Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
-interfaces with the data and control pins of the AD9910 DDS, streaming
-data from memory via DMA into the 18-bit parallel data port (F[1:0] and
-D[15:0] pins), which is clocked by the PDCLK output of the device. It
-also drives the PROFILE[2:0] pins and the DRCTL pin, which controls the
-slope direction of the digital ramp generator (DRG). The DRCTL pin is
-driven by a PWM generator, so the IP core is described both as an IIO
-backend and as a PWM provider.
+MMIO never return failure. if write register fail at irq, it will cause
+irq storm.
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- .../iio/frequency/adi,ad9910-axi-backend.yaml      | 74 ++++++++++++++++++++++
- MAINTAINERS                                        |  1 +
- 2 files changed, 75 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
-new file mode 100644
-index 000000000000..20c45fbaf945
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910-axi-backend.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD9910 AXI Backend IP core
-+
-+maintainers:
-+  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-+
-+description:
-+  FPGA IP core that interfaces with the data and control pins of the AD9910
-+  Direct Digital Synthesizer. The SPI bus is used as the control interface
-+  of the AD9910 device, while this IP core streams data from memory via DMA
-+  into the 18-bit parallel data port (F[1:0] and D[15:0] pins), which is
-+  clocked by the PDCLK output of the AD9910. The IP core also drives the
-+  PROFILE[2:0] pins for profile selection and provides a PWM generator that
-+  drives the DRCTL pin, controlling the digital ramp generator (DRG) slope
-+  direction.
-+
-+  https://developer.analog.com/docs/hdl/latest/library/axi_ad9910/index.html
-+
-+properties:
-+  compatible:
-+    const: adi,ad9910-axi-backend
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+    description: AXI bus clock (s_axi_aclk).
-+
-+  dmas:
-+    maxItems: 1
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+
-+  '#io-backend-cells':
-+    const: 0
-+
-+  '#pwm-cells':
-+    const: 3
-+    description:
-+      The first cell must be 0, as only the DRCTL PWM output is available.
-+      The second cell is the PWM period in nanoseconds and the third cell
-+      holds the PWM flags.
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - dmas
-+  - dma-names
-+  - '#io-backend-cells'
-+  - '#pwm-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    ad9910_backend: dds-backend@44a00000 {
-+        compatible = "adi,ad9910-axi-backend";
-+        reg = <0x44a00000 0x10000>;
-+        clocks = <&clkc 15>;
-+        dmas = <&tx_dma 0>;
-+        dma-names = "tx";
-+        #io-backend-cells = <0>;
-+        #pwm-cells = <3>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 52024397dc78..351ec0bca477 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1731,6 +1731,7 @@ S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/ABI/testing/debugfs-iio-ad9910
- F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
-+F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
- F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
- F:	Documentation/iio/ad9910.rst
- F:	drivers/iio/frequency/ad9910.c
-
--- 
-2.43.0
-
-
+Frank
