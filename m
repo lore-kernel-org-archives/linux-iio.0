@@ -1,99 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=209.85.208.177
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
-	t=1792685133;
-	b=G8gjly1hgMAHjtVzXU8LQMeUvZQfAahLTSp1btN7olTXnrpJ/GU3nAVZk1zUXYQ4Jwd2
-	 liOTX1Du4fMBcgFap32K6kXYXlO0K6xIlngWLJFxmuBnKvufIYm+8UCAZyHHJp6t9Chuu
-	 gwg929cPplNwwlkxsAimoUhPYkjoTtFnH57qb9WJFnd2J65g8PIGSyMz32OqlfAfN2OtD
-	 LQFiV69H5g66UL3ReJtRRt6jiS47k7Ob5OhrzCNhuzTd8B+vM3qtEBVKeTjRYkLosuBJc
-	 1uYGq9f9/I/Er2MS4Re+qF8iSPx+kObb33yRd6W7/Uum0kEZlJWF2gvpE9RYOuaWMmg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792685133;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=mocTbU6QYoGmhL7dstIxBqOB3/wT12OUsHUZqXTiEeg=;
-	b=D9DACUPCc4m8dXbsxuNrCJgVMSF2qAnsdRROyi7PlkdumCkvFjrbt1d89aUmJNeS7amp
-	 HDIKqUiSKDj/xlzTpTHd1DXmjI0ozLhUqZpz2k18NfMk6HFWEY2qGGilUkSagnmgntto6
-	 tgPIV1wb2nn/TBH6p4jvE/dsVOFBgdQ+36GGt/DjgP9+faf6URXExUr0Nx4f5lIfaK+t7
-	 MKbkhVsgNp2SrQkszqwclcIQ+oReVTM4AOcChcjvzC5wSIbaGdrpyCto/h4eonqTE5zVZ
-	 MhtHXd/5RXK31F1vn5FR+sj0OSWqQcxAATRgIMrbDaOVtsdBdAJGHRqhADZ5oFb1G/g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=po2Ejtmm;
-	arc=fail smtp.remote-ip=209.85.208.177
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792686966;
+	b=Z5dn+wKKFTBbUCB4ePXQ34xfVOJjJ0kVoDgAICI6Y0OdYY/Fiae4Q6YyM5W7STf+Xkos
+	 HckExLWo4N4XorBv0FAEAufy+jW7QR6HS8TJz9HMeJx5o+UYjkxtBUUMOlrqhAqBzhARW
+	 2Th6+jqDBKR7HAH8MkFyGCRT7nVJqUfsdg2okr5tKu8tWj5MxCsjfQ+Snzuj7YvUSzI4q
+	 ZHAc+TOav64UgientrISwxUOBQTqGOHzgFvDlrq8pWJt5BjGy9oSe1QStNhtgm/IO1Y7P
+	 muBjByT9laVQXgEazgXbyBkuZBjYwxXN2dwqmRHIcFVb9yY9R2R8gCyqFk342OfnV5g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792686966;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=w878p9VACeLLpl7740pkLWeHcq6k++Uy5zzDlCAnlQs=;
+	b=mDS3FvWT5eyTpo0D1zJL2m29zfs30eFCeXvreTExhsCdytg9FHObDAzCVY+yc+9EA88B
+	 vAvrxBq25CMRGU1odRw7QmAkmd8k8OLOtSGGJ3wwt5KU0ysXerfwpJl6r4txHmDjuE76K
+	 hw+tlV3JY/5G7tRDlD5xksPtHfRcuQXQnb/sgD1Uknx8esNcJERzQEwNEl2h6Vk42ZAKv
+	 HEZ861uKf4QNA5FtleE46FPsr0dYY36vhCHyrzt9VLLomspdUaNWSGCcQOOM4/QL3JvEI
+	 7JMWAxTQ+ADuI9Rzox09lnGNyQ1Kyif7vD5kdDkl3Z35zRSVGO9DXCuMNVaWsgb0yUQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fFCyMLfp;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D0F606A31D
-	for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 16:05:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D3D0F606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D7C2606A319;
+	Thu, 22 Oct 2026 16:36:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6D7C2606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=po2Ejtmm
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3ab4354db11so15087251fa.1
-        for <linux-iio@vger.kernel.org>; Thu, 22 Oct 2026 09:05:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792685131; cv=none;
-        d=google.com; s=arc-20260327;
-        b=UOS9UqG9jrwrUem/TZNeWAE5rmq0TMG4nguRp8o+QgTFERGT0sM48Ox3mUvM57Aim7
-         vyEbCfirQKprC4Z74wKKm+61OFt6GfDrVAW1vnBVmngw3+4aa3Y6cRtCyBocgd/i+Lwe
-         lUV+6+v36XoponUdxEZ2HyrHPBMcryfD0P4btsRaaErnCxlMvgO6l4WHKePWyxcdTiO6
-         LSTMAnsDlgsZgMxTYvLQZw6gv+KVq8507c8A3V4rKunQs6RLo557hfaEHpDxURZpHUMZ
-         /Ki5uefclQZOAPBsM115qboFmuYemp+IL0vDyj4WunETOr7jKAL+pcIbDSR4jP9rl4FY
-         esng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=mocTbU6QYoGmhL7dstIxBqOB3/wT12OUsHUZqXTiEeg=;
-        fh=ejmfmuOxXxeDY7ikyfrikM1XzzpABIirLNeJ6kfEgXY=;
-        b=qjmZ8OYu7ny28Eb9i8HKXr6hoOr4bAqe0Sd4eJlGLgLDr6hUz6eGJZ9rl76AjwOOKH
-         N5j9BOqWxlNZOsC1vbyeP1lANNNeI/YDP5oLEvdIi5eweuz924o9iuRRiHmZqSAHbge0
-         wneJ2j9UtO0Lr+nqgAxzCyjTuQcQfSs8PcCwQrM/Cthhcc8VAPhVjxHG1uj3/kwM3Cv6
-         oT6E2SntW2Lem5h5z+jVUvYMoCupakoxc6AilsaTi7/IzyY6i2myf48sw/gHg3cYVJT1
-         J9mj9/pao2pHzYW5bUZkoqRQMYuHHPAtLNivf2cX/EZIC25crrTSY1hu1YonwrMbkAmy
-         lmRg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792685131; x=1793289931; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mocTbU6QYoGmhL7dstIxBqOB3/wT12OUsHUZqXTiEeg=;
-        b=po2EjtmmhjEnBHkbQa505xq9tldXRzLLiYUKajpmJEW6SybEo90CZ0lqMjVa63jsZc
-         hBqO+hVyyfp3yMA3aOmJ/rYRiZTHJeyhNRuTBX5d7el4UNaAUSpUj0iajRk30E1ugAdr
-         2G4T5gLJtkMgJThjAbkjcfdONnuZbru9nEP8pIO/2nmPriJoUBZnQekt5x2y3lec11md
-         bQ7OfvBEGTrDvpc0tQtmEBfFcnEXfoKGYpnbVi8qY5k+7PRNl6d/wifiA0bHvzixl07I
-         pvFROBWdh0rZOyDKhlPSor8xwgaeSIbOVGatbpAHmH/8+VTlGB27UgUCaThtBfsY4u0z
-         WE7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792685131; x=1793289931;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=mocTbU6QYoGmhL7dstIxBqOB3/wT12OUsHUZqXTiEeg=;
-        b=ftiVK+PwXeVcgkHVGg0Jbqh6l/L7he85O/7TClqI/hph6aAXpK9ackBI9GWci8xg0O
-         oaU7C2JLza/tCeIOxX2Cj3YNuogos1mjBNxi06Au/lUB4qarfehm2HZ074R7ORcNs8wt
-         ZOfXMlmJy/bQai6y46ntWrI7ldQcNhgs8MMGsAsXxvT2/DzTMxCWruv7m3kdu1LyYxIf
-         mcQMXh+NWwTr/XmpT1i5eoBKCHAhz9uVIZ+4P059DrpRX5Bw8DwzPMGIpl2EP/9v1e1M
-         /rtp2M79Rsrl7+FEKTztifimfumVV9WdfZWGCkK42Pm6X3SLtfJUnVWinQs/bO6eLeNv
-         jI9g==
-X-Forwarded-Encrypted: i=1; AKwUvBzFChXYBLZpHpe1jU3zfq1XpDz60knhSsGhKtUG5SqysZ2DC4phLUKdiXqx6qjh+Vpp5+mJAGj1zRA=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKTml39pW+qQk0VZn0UWk+ZxafxrsQF8vO2mvnw8PD6JTQ32aU1
-	dMnRvq3cVmhEy1eL8MrT4STUQ7ujkQijC++vaKhCV+izQnk15g4sbVTtAEpKOiRe+YQLtMxp9Yu
-	DGIll4TJtYfKhqtywQz5HFP4SoVfm7lE=
-X-Gm-Gg: AYBFou1ZP5NujEDcm1eOaR5ev+6qH+ds9TPjTg1azFdbR84CUt5lKArH7eAmhEWOIPx
-	ygkl/O96Sk2mx7DJxMWDjFdFY0i/wFFsI0Nixy89BtmzY3M7UqzT1r8KwszOUkQcI7X1SyWpG0M
-	K1VAd0Oi3N2EwsYFShV2W9Ya3JEPxEBJEQuejnPnKVJY09fFhB+5IvVCk9lpIhS5nFw91Wl//ou
-	uS/Hr0NXkX+rX+E+gdFUaLsHdUAtJ6LIXxJoQ605UI+neiWS0MQ/vDE9vps5hnudoQUKOvCITOA
-	hOXEbOiG/qWTMndglJmh5dhvV6U6UdSobxzmC8wytAXEkG78siCVPZGCVHu4KB631Tp9e5gyTDh
-	VU+W99zAvas0tB6qCoCKsHkvTENUoleuh2L4P9w==
-X-Received: by 2002:a05:651c:c01b:20b0:3ab:3f1c:c2c0 with SMTP id
- 38308e7fff4ca-3ac441adcf0mr12071131fa.22.1792685130710; Thu, 22 Oct 2026
- 09:05:30 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fFCyMLfp
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792686965; x=1824222965;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LEUYGSZsLTD/SVvD/2c4iL2H5I6h5X2TitS2F7JiFls=;
+  b=fFCyMLfpFO/7uO2kYsseMJFBNSxh9IGSehfgTR6WmUiC3nnByd839Rhv
+   kFHg7RYwHXk8oOoo56Lg4nTwJ8LtflmWiZOmO6bBHgGbK/pLrDTeox1YQ
+   Ku29kO3w0U/Kp9uiuw6yCNVJlcgl/78S2E38wGyErX8tZZt8ZoyGdtTbq
+   HkI09rxhxe6xelKQvxSocI7NvG8wxEn1B/EOqDX7UO+XLO2pYKkqo+otf
+   juh3P/K/5hdDg/w7AwHF9D4dVlD4kScIWOuo9MGzRbxHSw8Ca7yfKkxEv
+   Dn7DGvy8/GTQLvQkfHLf5pZipvTD89wMwY1t/5TroFA2cv0pG7g5XH5GV
+   g==;
+X-CSE-ConnectionGUID: nCegt4iDSROe10TCKgBmmA==
+X-CSE-MsgGUID: I5qaOOL1RSaLp7WG3+HBww==
+X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1322238"
+X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
+   d="scan'208";a="1322238"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 09:36:04 -0700
+X-CSE-ConnectionGUID: 4Fy5l208SZq9IlKmHFfDBg==
+X-CSE-MsgGUID: 8NNYp9l+TBSxuX5D/cFFhg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,172,1787036400"; 
+   d="scan'208";a="3478948"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.189])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 09:36:01 -0700
+Date: Thu, 22 Oct 2026 19:35:59 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: fsl-imx25-gcq: check the return value of the
+Message-ID: <ato7b3ydggC9X0_-@ashevche-desk.local>
+References: <20261021225450.628499-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,103 +85,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com> <179260197668.3127.18219777718091081046@linux.dev>
-In-Reply-To: <179260197668.3127.18219777718091081046@linux.dev>
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Date: Thu, 22 Oct 2026 23:05:18 +0700
-X-Gm-Features: AclHuK-_6y3CZAcHO0wx7PGRH7qXj55F0nJkQUzx_zuArGiTC_UADw4Zf8xvi5o
-Message-ID: <CAO26r3QK+Q5=JR5TeMzEX-WiLpgYWd8Zn0O1qx11LxTgN96BPg@mail.gmail.com>
-Subject: Re: [RFC PATCH v6 0/4] iio: position: add Rust driver for ams AS5600
-To: Igor Korotin <igor.korotin@linux.dev>
-Cc: Danilo Krummrich <dakr@kernel.org>, Jonathan Cameron <jic23@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, 
-	Gary Guo <gary@garyguo.net>, Alice Ryhl <aliceryhl@google.com>, 
-	Daniel Almeida <daniel.almeida@collabora.com>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Mark Brown <broonie@kernel.org>, Brandon StJohn <branstj@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, rust-for-linux@vger.kernel.org, 
-	driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261021225450.628499-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 21 Oct 2026 at 23:59, Igor Korotin <igor.korotin@linux.dev> wrote:
->
-> Hi Muchamad,
->
-> Reviewed the lifetime/teardown contracts you asked about. read_raw() has
-> a problem: it takes parent: &Device<Bound> and recovers &I2cClient<Bound>
-> via TryFrom. That conversion just got removed upstream ("rust: i2c:
-> remove TryFrom<&Device> implementation for &I2cClient", use-after-free,
-> unrelated thread), so this won't compile anymore. More importantly, Gary
-> Guo made the point that needing the conversion at all is the actual
-> design issue: a class device shouldn't reach back into a generic parent
-> reference during a callback -- whatever bus-specific resource it needs
-> should be captured once, at registration time, and handed back via its
-> own private data.
->
-> Concretely, this means dropping devres and letting Data<'bound> carry a
-> borrowed reference directly, which it's designed for
-> (Driver::Data<'bound>: Send + 'bound):
->
->   pub struct As5600Priv<'a> {
->       client: &'a I2cClient<Bound>,
->       #[pin]
->       io_lock: Mutex<()>,
->   }
->
->   unsafe impl Send for As5600Priv<'_> {}
->   unsafe impl Sync for As5600Priv<'_> {}
->
->   unsafe impl IioDriver for As5600Priv<'_> {
->       fn read_raw(&self, _chan: *const iio_chan_spec, info: IioChanInfo)
->           -> Result<IioVal> {
->           let client = self.client;
->           ...
->       }
->   }
->
-> In probe(), capture the client once via deref coercion (Core -> Bound)
-> and split the driver struct so the registered IIO device carries the
-> same 'bound lifetime:
->
->   struct As5600;
->
->   struct As5600Data<'bound> {
->       _iio_dev: Device<As5600Priv<'bound>, Registered>,
->   }
->
->   impl Driver for As5600 {
->       type Data<'bound> = As5600Data<'bound>;
->       fn probe<'bound>(dev: &'bound I2cClient<Core<'_>>, ...) -> ... {
->           let client: &'bound I2cClient<Bound> = dev;
->           ...
->       }
->   }
->
-> register() then just returns Device<T, Registered> directly instead of
-> transferring it to parent devres -- that transfer is what forced T:
-> 'static in the first place, which is what made storing the borrowed
-> client impossible and pushed you toward TryFrom.
->
-> I built this end to end against current rust-next: compiles clean, zero
-> warnings, and zero changes to rust/kernel/i2c.rs. Happy to send the full
-> diff if it's useful as a starting point for v7.
+On Thu, Oct 22, 2026 at 04:24:45AM +0530, Arnav Kapoor wrote:
+> The driver ignores the return value of all the regmap accesses. If one
+> of them fails, e.g. because the memory mapped registers can't be
+> accessed, the driver just continues with an undefined state.
 
-Hi Igor,
+Can MMIO actually fail? It can give invalid values (due to HW being off or
+wrong MMIO window). It can give a page fault, or some other error in HW,
+but the read itself most likely never fails.
 
-Thanks for working through this and building the changes. I'd be glad
-to use your approach for v7, and I'd appreciate seeing the full diff you
-offered.
+> The most severe case is the read of the FIFO in
+> mx25_gcq_get_raw_value(): the destination variable is not initialized,
+> so a failed read leaks uninitialized stack memory to userspace.
+> 
+> Check the return value of all the register accesses and propagate the
+> errors to the caller. In the interrupt handler, where there is not much
+> that can be done about a failed access, just don't use the content of
+> the status register if it can't be read.
 
-I got the lifetime model wrong in v5 by storing an
-`ARef<I2cClient<Bound>>`. I only realized that while fixing the
-documentation for v6. In v6 I stopped storing that `ARef`, but ended up
-relying on `TryFrom` in `read_raw()` instead.
+I consider this change an unneeded churn until you come up with real life
+example of how MMIO fails (at least on this platform, not exactly with this
+driver).
 
-Storing the client reference in the IIO private data rather than converting
-the parent back in `read_raw()` makes sense. I'll check the lifetime and
-teardown details as I prepare v7, and I'll acknowledge your contribution.
+Yes, I aware that checking for error codes of regmap is a good manners and
+style in general, but would we do jsut that in a standalone change?
 
-Thanks again,
-Coirul
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> Cheers
-> Igor
