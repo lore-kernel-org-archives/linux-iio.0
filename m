@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792788349;
-	b=d07M5bJF5lFO6jmgVyLQU5vpNcXHEIeJ2tTc0S3buY94VX9tbXAvlxb6WLD+8VfcFRuv
-	 nPi4X9W+tZVycw6Y4ooB1MbbWAXZyMkWLP9K22uhLaacPKXfCleZJa7WwmBnI8Zku135m
-	 Z0nK/74Jd/thUr8/UAUHPM0k+0xRpVfjPOzzuyyFBE4m0ZbbNsMGNTwFTmcWnPZDvCZYv
-	 TcD5M88OJJYAQMZUAQWpFOrmv0YFw+KukeLdkmQJnMEskY7aN5+LnsFUzrQpPBsJ3CKJ3
-	 NKSJzGpDiVhR/UNLtqyvofGRtItR2xlCj5MgBygA0nodRPTZ8aLUh+KKWGTX2cVZcHQ==
+	t=1792788564;
+	b=QF8VMVBQTWUV637tl2ThRcf76CL9f/Xp61XlOqkh5J0W/e20iUE7BaOO3LMBrEVDTkQF
+	 6Q6U670x7dl3GOm2m8D9vwf3AQDAeb0qolg6xPzsH2oZCXqS8GZrlzzlq9fqwNI9yC8mT
+	 uT9i2kAOFzDMOZVM6C155OROeOmI2MB+e82uMgscnbUJga314F4bxoIfndRs7pJJayQRr
+	 Rg1DW+u4Sn3ZOTp/5W8dg+zPe5xeyqJVIuXj7FPXmG+npRYtncWWqUDeq2I/J2oYq7mIb
+	 Wr1WOAomSDoG5Pg/PVscwrEG96Q7LHylzSfipQGuT/rZCYMggSev1OoVDIa2vP9F1cg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792788349;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792788564;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=ERMAe4gQ6i7Ta6EWqnTv8/4TwhPeAc1qJP5T9a65q9Y=;
-	b=1uG5K/RJw5A6Ycy28rfvrocGhMrnevaZQow9581YVs/Nizj+me8BOlTbLeKCu1z/JNd8
-	 F6kbaqKo0gaqibX9aAm2yX14j4GrdmTfMJeaaX2mxExi7bOMypnsCYqjEieioS9eNmm9I
-	 q6oVPd9NcUGKqMs6mMgEG1c7qghugC0B7xou9zvBjrpxviAzcsCkxTb2tCR9U48r23uon
-	 pYbCKAFJ6bv6nZgk8iGGLs2v5w2iNQmgOne5lXkeDa961ZtpuHwB9BBBnwlrCTfMDNoSX
-	 oSuNRPSI0iDbygbm4HwAzvO90NoX40/voIT9oB290za7hyORyJZ2hvBmeaQVYvIySuA==
+	bh=i/d/j6CvGXRGkq9MM1Xns/LyW3UECTcEwY9WrU9e6vE=;
+	b=oCwdunZafiTX3S4p/f4Xf7dpTp4M786DpPwWkukVHaKM50OZlqlJLcDdkmxYLwpxx82v
+	 K4MW5qchLxi7jCx4Z+Y81RXyTscOc7F/XubZSvBgbMCFY+HQpsZTNCllig747bTclSWqa
+	 pIrgkqX+JBYwqV2wrlc+wHeMfsrJGMDKPHszaMLXmXfZ2Vd4q1Cdm06ViJLYiYffonf6D
+	 i7KWMnQdFc+5RxACSrmscavqzUsCPAYiMsKDbC55y/22dh+VkBEmitSqr5NDAJu9DBtqR
+	 8fJIIXJMMAkP/Q/Rgkj0i19+z+ZJ1HhggEhUvepjwWSd1IDio3D8DsrCvlJ0JumvUcg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dgdiRnMA;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cLWXFfk0;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3718606A31E;
-	Fri, 23 Oct 2026 20:45:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5788606A31A;
+	Fri, 23 Oct 2026 20:49:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dgdiRnMA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6C21F01825;
-	Fri, 23 Oct 2026 20:45:45 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cLWXFfk0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CB8D1F01825;
+	Fri, 23 Oct 2026 20:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792788348;
-	bh=ERMAe4gQ6i7Ta6EWqnTv8/4TwhPeAc1qJP5T9a65q9Y=;
+	s=k20260515; t=1792788563;
+	bh=i/d/j6CvGXRGkq9MM1Xns/LyW3UECTcEwY9WrU9e6vE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dgdiRnMA1IBRaZV7sbt0GCyCMQHFVcSb55t+wf3P6474xAb5UjqA8aB5U3V9jSSjf
-	 3TMwdyDt5g3d3XRibjlNWvWYD6YSwWY30x1e8YcAdCE9RER542GE6n+kOD0dXX9Q/f
-	 Z2S7Lqy4GxKEajNUyI/3Z6VCxzgZZFOgxlOh6u19zmbPppwsQOQ0XVZabYcPPTSqKp
-	 0xln+pIlXJDnW6j3DCRLAO5GSwnVvCorrPFPS91Ql9sN4Vh5paXMrXgj8Pfhc8KN6D
-	 yw1igtIAOyKKzGSCl2kO4odfMeSudTXueZ8Vfm/Q1DhN0Frpr/zFv02nEb06pEUmfq
-	 SGIeHyZCUPoFQ==
-Date: Fri, 23 Oct 2026 21:45:42 +0100
+	b=cLWXFfk0jjuGxlDFeBpT+0uKBselTAfa63AxsOc+Jc25I2QSiI9pB+Zy4KxCWVZWo
+	 6LHYtKXHuZXo3kTSipDK0nQumr+eW2IKSKtVXhWUEyUF86YD3yIDd0ym2kQKKZTXfj
+	 asHekn5SjCTvfCmZFmAqGEw282JwEH+75gUD+3W/RDSR8UrhyKJxw+DGHgRrJCGlXI
+	 7w2/+WOgk8GSeEIFMs6BYa2HoIhL1l1Y5q0swAF4lTU19wkGWSmDSA5/onLjVfvvWE
+	 dee/eVbrzmiTTcNW65ihquJK0Zc4I4AEQsC/LnwxNcLeILMvHYvbGEa10a7OLjj8Bg
+	 fcQOU5pNPjHfg==
+Date: Fri, 23 Oct 2026 21:49:17 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Prabhakar <prabhakar.csengg@gmail.com>
 Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, Andy
@@ -56,12 +56,11 @@ Cc: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, Andy
  <biju.das.jz@bp.renesas.com>, Fabrizio Castro
  <fabrizio.castro.jz@renesas.com>, Lad Prabhakar
  <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v3 6/8] iio: adc: rzt2h: Prepare for SoCs with different
- ADC info
-Message-ID: <20261023214542.49c6304f@jic23-hlaptop>
-In-Reply-To: <20261023175919.160103-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v3 0/8] Add ADC driver support for RZ/V2H(P) and RZ/V2N
+ SoCs
+Message-ID: <20261023214917.157d0c89@jic23-hlaptop>
+In-Reply-To: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-	<20261023175919.160103-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,61 +74,64 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 23 Oct 2026 18:59:17 +0100
+On Fri, 23 Oct 2026 18:59:11 +0100
 Prabhakar <prabhakar.csengg@gmail.com> wrote:
 
 > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > 
-> Prepare the driver for RZ/V2H(P) support, where the ADC supports 8-bit and
-> 12-bit conversion modes with channel configurations that differ from
-> RZ/T2H.
+> Hi all,
 > 
-> Allow each SoC to provide its own IIO info structure and use the
-> chip-specific configuration when registering the IIO device.
+> This patch series aims to add ADC support for the RZ/V2H(P) and RZ/V2N
+> SoCs. The ADC IP on these SoCs is similar to the one found on the RZ/T2H
+> SoC but varies slightly in terms of available channels and configuration
+> options.
 > 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Applied to the testing branch of iio.git.
+Note I'll be rebasing that on rc1 once it is available.
+In the meantime, additional feedback is still welcome.
+(It's welcome after that but preferred as patches on top!)
 
-FWIW as I'm not going to ask you to respin for this...
-I think this should just have been squashed with patch 3 where
-*_chip_info was originally introduced.
+Jonathan
 
-> ---
 > v2->v3:
-> - No change
+> - Added Ack from Conor for the DT binding patch
+> - Avoided splitting up the ndelay calculation into multiple lines
+>   in patch#2
+> - rzt2h_adc_pm_runtime_suspend() now checks the return value of
+>   reset_control_assert() and returns if non-zero. This is to
+>   avoid churn in future patch.
+> - In rzt2h_adc_write_scale() used multiplication() operation
+>   for comparison by dropping the div_u64_rem in patch #8
 > 
 > v1->v2:
-> - No change
-> ---
->  drivers/iio/adc/rzt2h_adc.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> - Dropped using DIV_ROUND_UP_ULL to DIV_ROUND_UP
+> - Included time64.h
+> - Returned -ENODATA in case device_get_match_data() returns NULL
+> - Renamed RZT2H_ADC_VREF_MV to RZT2H_ADC_VREF_mV
+> - Updated Kconfig description
+> - Included array_size.h
+> - Dropped unnecessary extra line in rzt2h_adc_write_scale
 > 
-> diff --git a/drivers/iio/adc/rzt2h_adc.c b/drivers/iio/adc/rzt2h_adc.c
-> index 94dad479abff..dbe82939acc2 100644
-> --- a/drivers/iio/adc/rzt2h_adc.c
-> +++ b/drivers/iio/adc/rzt2h_adc.c
-> @@ -68,6 +68,7 @@ struct rzt2h_adc;
->  struct rzt2h_adc_chip_info {
->  	const struct iio_chan_spec *chan_template;
->  	int (*sst_to_freq)(struct rzt2h_adc *adc, u8 sst);
-> +	const struct iio_info *info;
->  	unsigned int num_channels;
->  	u8 features;
->  };
-> @@ -763,7 +764,7 @@ static int rzt2h_adc_probe(struct platform_device *pdev)
->  		return ret;
->  
->  	indio_dev->name = "rzt2h-adc";
-> -	indio_dev->info = &rzt2h_adc_iio_info;
-> +	indio_dev->info = chip_info->info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->channels = adc->channels;
->  	indio_dev->num_channels = adc->num_channels;
-> @@ -778,6 +779,7 @@ static int rzt2h_adc_probe(struct platform_device *pdev)
->  static const struct rzt2h_adc_chip_info rzt2h_adc_info = {
->  	.chan_template = &rzt2h_adc_chan_template,
->  	.sst_to_freq = rzt2h_adc_sst_to_freq,
-> +	.info = &rzt2h_adc_iio_info,
->  	.num_channels = 16,
->  	.features = RZT2H_ADC_FEATURE_CALIBRATION | RZT2H_ADC_FEATURE_SAMPLE_STATE,
->  };
+> v2: https://lore.kernel.org/all/20261009184122.1378797-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> v1: https://lore.kernel.org/all/20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> 
+> Cheers,
+> Prabhakar
+> 
+> Lad Prabhakar (8):
+>   dt-bindings: iio: adc: renesas,r9a09g077-adc: Add RZ/V2H(P) and RZ/V2N
+>     support
+>   iio: adc: rzt2h: Wait for the analog part to stop after a forced stop
+>   iio: adc: rzt2h: Add chip-specific configuration
+>   iio: adc: rzt2h: Add optional reset support
+>   iio: adc: rzt2h: Prepare for SoCs without sample state registers
+>   iio: adc: rzt2h: Prepare for SoCs with different ADC info
+>   iio: adc: rzt2h: Use scan type for ADC scale
+>   iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
+> 
+>  .../iio/adc/renesas,r9a09g077-adc.yaml        |  38 +-
+>  drivers/iio/adc/Kconfig                       |  10 +-
+>  drivers/iio/adc/rzt2h_adc.c                   | 327 ++++++++++++++++--
+>  3 files changed, 346 insertions(+), 29 deletions(-)
+> 
 
