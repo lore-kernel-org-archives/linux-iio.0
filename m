@@ -1,79 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792740610;
-	b=rIcuRM4vE5L+rP3kLI/3RkbN88GT/4grPSvW4SCX0bfKpH3TGRFkJnlITVW/PqLZ72Oh
-	 kTPT3UQ+ggJtw2gaO6GiOqC7nbaG9Yg3Ri5GjrzWt7Nns/S81p1Qzqe6zbKEachpQmLnf
-	 SUNPKwLVdDIP0d9MrDJMXlsDzxOaTnaEZam6Vu2T0w4u2u8u3TLRmjAJqzze8RFsgWkOV
-	 nn238Mn/hkfX5Ufs/H/n77UpCsj6XkUB4I9Y6RTUh4VwxPE4Yl6GcnC8x0VazQB+7OyNn
-	 vwGhR9FiAjhlmjZN5dkvQk0y7tl9FtwjsoZoUsS7RmisDSGlVNKTMu0CSBXf++Pb/WA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792740610;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=skMjuWLYgrb3zbPFerLGDLtIB/YRl1mYtS8z9pIfhj0=;
-	b=E0gg74tzw/NJeK8wp/xLMgR03pnPknRSHOlJ04FragYJh5dO9LPXZIchSnQl45JVI0jg
-	 BAj4NX5Sv2g/VHIGfBpIg4l6OMuuVsA1A1enfuTyMjUorAo0txEbdV3RqWZOttqiVxe1s
-	 T4EMLffjEVphuwQLo6J1I0cuX8+tR/ri+QstBnd+b2N6jSR+SrXh4qyV93Kgdq7Uc/VHZ
-	 lnSZC+S7EQB69ZoHVwB07vEfQMiIwncT3sFCxm4NsaZIPw9P19qdhlochsmkZvyV9M6/P
-	 /V9PZeXYuszBTYlrhbdnsNzZ8N/pXblL48iQqoL/Y7I5xaQ89sl+fcx9wt2fYX90r6A==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y9R+t3HN;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.33
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792741736;
+	b=PGn7iSDRFfSFwcN0skB9yRtXEFgLbR1UMjZHX7wdsGt3ZghZPA2a2cH0LbYFZPhag1rh
+	 5zh8lu2SKjnzxYY75w3I0i7mxEyPssvgisokRdoseBk3xJUIWISOjyuoprYufaFkq2ery
+	 XChArzA5veYwsyplPO1VZNr/vvj8Za5e9kYerkn/rPQ3FUMKQ+Mp8ikLrtGaNoNVPOyZE
+	 NQ473VdVOxqUzvjhe3+gA/CNOYhPUmpYqMnITTXru7CA+f/ua2o/PzbUcYm947HlgfH13
+	 ewrA2angVLmwMpoCRmhCfdosZc9hUMiQF7iLDK5VltZrY+Xfh4h3XJQ+xjK1lHHFWAQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792741736;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Received:From:Subject:Date:Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 CC:X-Mailer:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=8lU6P79LwzuKwAh7P2mb9QxpDyD8Xnt67/9ecZ1x0gs=;
+	b=RbMZcATWHpsEO/Om0ra0iLIbKYXatLd1z6Cl4sCWYxLz6LiiVlI8ezrMas4eJRAyV70A
+	 n3PEi59XHabyaNa3lfs6SikmNNNyywDt4pxkMR9OAsLcEPQ38SNJ/YOLz1ZPiFpor6AFk
+	 o18XOZmvGiyZsC+m+Hk6vRjW8k5DDmeqNN/SH0VcgXgb3LtwqiRcKZLsPKTaNN9KQmQBH
+	 n8To4qn74sw4tPnuci1VZ8umgZfLFLbDMZfuAeHCgbZlnSuRkNyIjHKa/uR3rHJVGWs1c
+	 Hpd4QvRIUQ39uK7oQkHxz9BpJqblnezU4eqlNDw5RjTwGg+tGRAkdJh2HsYxrqd2mew==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=axis.com;
+	spf=pass smtp.mailfrom=axis.com;
+	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=e0ASceYZ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.33
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013033.outbound.protection.outlook.com [40.107.162.33])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8634606A31D;
-	Fri, 23 Oct 2026 07:30:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C8634606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB64B606A31F;
+	Fri, 23 Oct 2026 07:48:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB64B606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y9R+t3HN
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792740606; x=1824276606;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AFSNfPlYQzxZQ2cYehz2XsGR3G7XxBvKomZwfac7ZTw=;
-  b=Y9R+t3HNG6UVEjVKkqPJhfssuQyUkow1cCGsb5xGXUqNX3XkKi+1dStd
-   5Mw9k87vK/v9LrdAPnVPik8ZC6le95uxd9584H3PmHi3Cbra0l7gjbW4p
-   sK8Mnia/uXk9ER6Ve/DSN+2pstexpMatNdhBwSPnKbv4ZXWBwL9A4az+c
-   F0a3ugd5pDjqlvzwO7z0MGFvrzoCOFj73UHilJnC5Ei+gFSlitHu9SaEF
-   8cjK4z5duF+K2SDdcEG8v8s6/rcT/XaYwbxLWS1fwCmxW24NSnIAoiXSx
-   NEdLoIuCxSMcad4qUquXmvjpxCG3kslKNZQ0NtWD86tfpb84Guy4j0DC5
-   g==;
-X-CSE-ConnectionGUID: hECcbJtxTp2qeQVeuI/Zaw==
-X-CSE-MsgGUID: NlZfJtxfQ7SvCX02kK0Dhg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1388146"
-X-IronPort-AV: E=Sophos;i="6.27,173,1787036400"; 
-   d="scan'208";a="1388146"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 00:29:58 -0700
-X-CSE-ConnectionGUID: HK1YQdiqR/yQ5VChjDtp5A==
-X-CSE-MsgGUID: R144Lw9BQm6LGL520UDakg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,173,1787036400"; 
-   d="scan'208";a="3687563"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 00:29:57 -0700
-Date: Fri, 23 Oct 2026 10:29:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Victor Chernyakin <chernyakin.victor.j@outlook.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <atsM8hUovBz_DaCp@ashevche-desk.local>
-References: <SN1PR12MB25286BE4E1EA3B75F8E563A9A5652@SN1PR12MB2528.namprd12.prod.outlook.com>
- <SN1PR12MB25288BF227D6555AEE60DF73A5652@SN1PR12MB2528.namprd12.prod.outlook.com>
- <20261023040143.2e7043bc@jic23-hlaptop>
+	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=e0ASceYZ
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MLlUyuXRfws5e5ahQXUQG4twtX1Q4bTLHV+J5nCTzqs0EQw9jtrdRR7L7OQjrpA71O7B/0qeOWDug2NTt7JudEJQv4mrpbcGan0xBIQj+5vA71nGGiXr6H58pDLFxWRUNXmbJEzhwcVIz0KSR+2DjBWAhJB4kZ1Q+yqb9ezIQg0mLxcH0PcyvuF+PR7a3yKM6oiJ/ZIDUiXD2xoC392m1lMvKekyHgGB/D9jYywv4mNtoglU00klg8+J5Su+vGykLflsxUw/YuOcaQZY8sN1gg6m+ZH3apbt0fl/MQ7CQeJWG79IETZrlXG4Pbje2HSYBhIHDLmU3+EV2WCkSu7adw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8lU6P79LwzuKwAh7P2mb9QxpDyD8Xnt67/9ecZ1x0gs=;
+ b=MCPPtgRvfxiCfGqpRi0lgNGGuN2zSF0VpBb65ZcR2NZrtBBkzGeVVodHtrgGmSrWt9TLqFb2OjSNo8Dg43dnyhkbc5VkIU9jV1CQl2E1SdfhfTXyLRr4H+KOjH6d3RZfqwaXzBHij2m5Gkex3x575w3r6a17tj04MK+SFkauxBSKi0HaNA/HAMA0oS0kWz6N7gnJm/ZwPdSegbeNbtIfqPFOIFVGZw+3/8pyxQ2K/+NhkxBzX110SQo2L3ZS2gVmzKT60uDZ98r0+RANkxoGU/NYLtRZf/KFbeSof05fmtPcNblbbg0CQ8YBPXr8GfJBOQ8mrYvFJSfhwifJJurNiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=analog.com smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8lU6P79LwzuKwAh7P2mb9QxpDyD8Xnt67/9ecZ1x0gs=;
+ b=e0ASceYZdXBFY3zzrtI+U7MKAq1bClpbJfRt8bbB5bkQaYNq1a9Y2kcAZay83mFF1HfZMy29bNn6YDQnKWyRe0IqggoHEeBaeqcODFPfK7EczFBWdmxFhfTu4mSqwuJkm5y7DfitCxz+oplxKcn/ZWyIXik+Gpjs/tEUKIgbNLU=
+Received: from DUZPR01CA0035.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:468::13) by MA9PR02MB520490.eurprd02.prod.outlook.com
+ (2603:10a6:250:104::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.18; Fri, 23 Oct
+ 2026 07:48:51 +0000
+Received: from DB1PEPF000509F1.eurprd03.prod.outlook.com
+ (2603:10a6:10:468:cafe::91) by DUZPR01CA0035.outlook.office365.com
+ (2603:10a6:10:468::13) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.546.19 via Frontend Transport; Fri,
+ 23 Oct 2026 07:48:51 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 195.60.68.100) smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ DB1PEPF000509F1.mail.protection.outlook.com (10.167.242.75) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.546.15 via Frontend Transport; Fri, 23 Oct 2026 07:48:50 +0000
+Received: from se-mail10w.axis.com (10.20.40.10) by se-mail10w.axis.com
+ (10.20.40.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Fri, 23 Oct
+ 2026 09:48:48 +0200
+Received: from se-intmail01x.se.axis.com (10.4.0.28) by se-mail10w.axis.com
+ (10.20.40.10) with Microsoft SMTP Server id 15.2.1748.39 via Frontend
+ Transport; Fri, 23 Oct 2026 09:48:48 +0200
+Received: from pc46036-2141.se.axis.com (pc46036-2141.se.axis.com [10.94.180.139])
+	by se-intmail01x.se.axis.com (Postfix) with ESMTP id 1198D3CB0;
+	Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
+Received: by pc46036-2141.se.axis.com (Postfix, from userid 16197)
+	id 0A79B584AC3D; Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
+From: Jesper X Nilsson <jesper.x.nilsson@axis.com>
+Subject: [PATCH 0/3] This series adds support for Texas Instruments OPT4041
+ Ambient light sensor
+Date: Fri, 23 Oct 2026 09:48:12 +0200
+Message-ID: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,215 +109,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261023040143.2e7043bc@jic23-hlaptop>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAD0R22oC/yXMQQ5AMBCF4avIrDWZQRFXEQt0ylggLSIRd1csv
+ +R/7wLPTthDFV3g+BAvyxxAcQT92M4DKzHBkGCSE2KhlnXLMCNFZUralJrQWAj16tjK+T3VzW+
+ /dxP32zuH+34AF1/sVWsAAAA=
+X-Change-ID: 20261007-opt4041-18315d8510df
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, "Stefan
+ Windfeldt-Prytz" <stefan.windfeldt-prytz@axis.com>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Jesper X Nilsson <jesper.x.nilsson@axis.com>,
+	<kernel@axis.com>
+X-Mailer: b4 0.16.0
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB1PEPF000509F1:EE_|MA9PR02MB520490:EE_
+X-MS-Office365-Filtering-Correlation-Id: e6eae6a3-ce69-48e3-af19-08df30da1417
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|1800799024|376014|7416014|82310400026|36860700016|10067099003|13003099007|261009223027099003|261009221227099003|261021123027099003|261021121427099003|56012099006|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	XdL8w95kHIg4fSRbXeO7DppjzFbLezexzGr/XP20Fw0tY+9cz6x5N1utQ4QQUaOyI1acUDi20lBe5i3oobdxaoJNbNThy+dL22qD2cO1tQNA20xlZzhcKsRYcyqWn6IKGV3GZdbiWrwVDBIdb84jfDKYQ0Ryqs5Y/Mijo3BYRiOihC3nFSYG82NbaWjFKpeXTqc6Um85KVNXcZkb0BFXRUh8Yd9QaBOxqCpdY8mwEzRa0rK+vmnhcV8Z6WXdYsW/nbeW7D20JD/Au1QbJJQz3virtMIl9IJC6V4Ife+wJUg+hbC8h7okMl0Xt0baIRBjEUYLPM76Ntu8fnchoBAyHBinz61Qw5bTbEa8eBMqWD2cBgNZApfOXC8zk9vTDRLR/iyMdXOgrqw4e+VJasaV+WWOjWRCoe/2cdEF8pYuRfznLgQxXbNyhHISKFTPKGtxO+deP/8nxhP2uX5+0x/2PVA4piEOIONk/xSQ3kfaAw7k75Ai0qbb80mVMHb7MMAZoGnp7kPoGxcX+/whGiIqy2RMxU3BAS2tb5y6UEqH30e/Fsa1cfdRdnEMA78uyVx7d9H9R+vaVVM92CcLFYtvR3atL5cH8MKYx39usT0Xn5lw0VyfvKedA4xeNa3QDyPAJ35i68gsHqotT/ssU+FxSWJuaZafq2VCILl9z+QjJVLe7DKNX6ss+tIWtd2ijLMuiOT6Wzbqlb0B7ewCbbYHyQ==
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(7416014)(82310400026)(36860700016)(10067099003)(13003099007)(261009223027099003)(261009221227099003)(261021123027099003)(261021121427099003)(56012099006)(11063799006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	uAuNUhLq4zZVRs6WjoT8iQE3fSQ8igsjUXV1vV2wKJXrr8tDI57JL+OcdizkyQKb2ycKFmI/qsn4jtx1QzHjVgpw3LlivJiptjJ5DpGASb0ANL8+hDLJug8zjmFwR0J0EwgjzKSw12XQgG2SgsJsoPitq3HXngQ30pHt7+ZO07Mpbgpi3U5pspk8zTTHdGN6Uu/kqANqeB2wFnxyljZl2WKTt9eoZid5uvW6MLyy7u08lVk7quBbbXmVSU6vMvxU7k7Y9YDIDUEbT4YjsFflpVJqbNmi2rsZ6NoxnecEvBTdytFdZPg9vsYYzv0Gjf4yxfjSBw3xNRxfOUlt4DafPe1UIvUUP8MsKHb6Cz18lqQMI7q84et59frFIOkxZyjXWZnoENBzP8frbGKKLRlSIP0tYN7ATY8xJXw9kvj8USLPnaRRQ6Kj+R6ktlOW7t96
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2026 07:48:50.7509
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6eae6a3-ce69-48e3-af19-08df30da1417
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB1PEPF000509F1.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MA9PR02MB520490
 
-On Fri, Oct 23, 2026 at 04:01:43AM +0100, Jonathan Cameron wrote:
-> On Thu, 22 Oct 2026 18:40:32 -0500
-> Victor Chernyakin <chernyakin.victor.j@outlook.com> wrote:
+Extend the opt4001 driver to support OPT4041, since it is so similar to
+OPT4001. The OPT4041 adds a second channel, a wide band channel ranging
+from 380nm to 1000nm. The register map is almost the same for both
+devices. OPT4001 has an internal fifo of size four, OPT4041 has two
+fifos of size two, one for each channel.
 
-...
+Since OPT4041 has two channels it has one bit in register 0Bh to select
+which channel is compared to the threshold register. The driver does not
+support setting the threshold registers, so no new support has been
+added for this.
 
-> > +#include <linux/array_size.h>
-> > +#include <linux/bitfield.h>
+The OPT4041 is pin compatible and has the same package as
+opt4001-sot-5x3. Although the device id is different, I added a new
+compatible string since the driver already had different compatible
+strings to differentiate between the two OPT4001.
 
-> > +#include <linux/bitops.h>
-> > +#include <linux/bits.h>
+Datasheet: https://www.ti.com/lit/gpn/opt4041
 
-The latter one is covered by the former, so drop bits.h.
+Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
+---
+Jesper X Nilsson (3):
+      dt-bindings: iio: light: opt4001: add opt4041
+      iio: light: opt4001: refactor driver to prepare to support more devices
+      iio: light: opt4001: add support for opt4041
 
-+ cleanup.h // guard()()
+ .../devicetree/bindings/iio/light/ti,opt4001.yaml  |   9 +-
+ drivers/iio/light/Kconfig                          |   2 +-
+ drivers/iio/light/opt4001.c                        | 144 ++++++++++++++++-----
+ 3 files changed, 121 insertions(+), 34 deletions(-)
+---
+base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+change-id: 20261007-opt4041-18315d8510df
 
-With this, please follow IWYU principle (see other IIO drivers that has been
-submitted in the past couple of years for the style of include section).
-
-> > +#include <linux/delay.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/iopoll.h>
-> > +#include <linux/math.h>
-> > +#include <linux/module.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/regulator/consumer.h>
-> > +#include <linux/types.h>
-
-...
-
-> > +static const s64 fdc1004_calibbias[] = {
-> > +	-0x8000 * 488281250UL, /* min */
-> > +	+0x0001 * 488281250UL, /* step */
-> > +	+0x7FFF * 488281250UL, /* max */
-> > +};
-
-Looking at these data types, can you check if linear_range.h APIs
-can be applied instead?
-
-...
-
-> > +struct fdc1004_data {
-> > +	struct i2c_client *client;
-> > +	struct mutex lock;
-> 
-> Add a comment on what data the lock is actually protecting.
-> 
-> > +	u8 samp_freq_index;
-> > +	u8 offsets[4];
-
-Swap these two, it *might* be that compiler can retrieve all offsets into
-32-bit register (due to alignment) at once and optimise the code. You can
-check the result with `bloat-o-meter`, btw.
-
-> > +};
-
-...
-
-> > +	return poll_timeout_us(
-> > +		{
-> > +			ret = i2c_smbus_read_word_swapped(client,
-> > +							  FDC1004_REG_FDC_CONF);
-> > +			if (ret < 0)
-> > +				return ret;
-> 
-> common convention to add the error condition to the exit one rather than do it
-> in here.  Then check ret after the exit from teh poll.
-> Tends to give nice code to read.
-> 
-> > +		},
-> > +		ret & FDC1004_FDC_CONF_DONE_n_MASK(meas), USEC_PER_MSEC,
-
-And please split on logical borders, also use 1 * USEC_PER_MSEC.
-
-> > +		40 * USEC_PER_MSEC, false);
-> > +}
-
-Yes, and this macro should not be used like this. Your case is read_poll_timeout().
-
-...
-
-> > +static int fdc1004_read_raw(struct iio_dev *indio_dev,
-> > +			    const struct iio_chan_spec *chan, int *val,
-> > +			    int *val2, long mask)
-
-Logical borders:
-
-static int fdc1004_read_raw(struct iio_dev *indio_dev,
-			    const struct iio_chan_spec *chan,
-			    int *val, int *val2, long mask)
-
-...
-
-> > +	case IIO_CHAN_INFO_RAW: {
-> > +		guard(mutex)(&data->lock);
-> > +
-> > +		/* Configure the measurement we want. */
-> > +		ret = i2c_smbus_write_word_swapped(
-> > +			client, FDC1004_REG_CONF_MEASn(0),
-> > +			chan->address |
-> > +				FIELD_PREP(FDC1004_CONF_MEAS_CAPDAC_MASK,
-> > +					   data->offsets[chan->channel]));
-
-Indentation is broken...
-
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		/* Start the measurement. */
-> > +		ret = i2c_smbus_write_word_swapped(
-> > +			client, FDC1004_REG_FDC_CONF,
-> > +			FDC1004_FDC_CONF_MEAS_n_MASK(0) |
-> > +				/* "+ 1" because the chip wants a 1-indexed value. */
-> > +				FIELD_PREP(FDC1004_FDC_CONF_RATE_MASK,
-> > +					   data->samp_freq_index + 1));
-> 
-> For some of these more complex values I'd use a local variable and build them
-> up in steps.
-
-...and this is a good advice to fix readability,
-
-> 
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		ret = fdc1004_wait_until_measurement_is_ready(client, 0);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		ret = fdc1004_read_measurement(client, 0, val);
-> > +		if (ret)
-> > +			return ret;
-> > +
-> > +		return IIO_VAL_INT;
-> > +	}
-
-> > +	case IIO_CHAN_INFO_SAMP_FREQ: {
-> > +		guard(mutex)(&data->lock);
-
-Always add a blank line after guard()().
-
-> > +		*val = fdc1004_samp_freqs[data->samp_freq_index];
-> > +		return IIO_VAL_INT;
-> > +	}
-
-...
-
-> > +		iio_val_s64_decompose(
-> > +			sign_extend64(ret, 15) * fdc1004_calibbias[1],
-
-Again, broken indentation.
-
-> > +			val, val2);
-
-...
-
-> > +static int fdc1004_probe(struct i2c_client *client)
-> > +{
-> > +	struct iio_dev *indio_dev;
-> > +	struct fdc1004_data *data;
-> > +	int ret;
-> > +
-> > +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> 
-> I'd look at using regmap even though you only have a single bus. It provides
-> a rich set of helpers and the caching functionality that will save a bunch
-> of bus traffic.
-> 
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	data->client = client;
-> > +
-> > +	ret = devm_mutex_init(&client->dev, &data->lock);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = devm_regulator_get_enable(&client->dev, "vdd");
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = fdc1004_soft_reset(client);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	indio_dev->name = "fdc1004";
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->info = &fdc1004_info;
-> > +	indio_dev->channels = fdc1004_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(fdc1004_channels);
-> > +
-> > +	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-
-Why out of a sudden indio_dev->dev.parent?
-
-> > +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+--  
+Jesper X Nilsson <jesper.x.nilsson@axis.com>
 
