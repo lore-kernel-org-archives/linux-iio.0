@@ -1,101 +1,62 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792787179;
-	b=cvvghXBnIakSPiT1EEngzejL1DuPEBwoYu9QR2PIbthutbfGp9VCINYeME/ZEIa6rEdS
-	 cFgdIVkGJrV0451KZLgxYXv6dA5wV6TrkrTP0TTQp/VFYcPXOlZEGWLw9GR4len4UKHqv
-	 Zbz6W0X0Dvo+OFnzvrq5I9K9FNuKi20AHGEiRUT3XfsEZqGF8C8EthvvzK/zJbZmiPK48
-	 xz6XCcyXl0ficpjvyimMAK/9p1cs9jPfdpb5jV8AUlzv8zA5X2OPUKHOU4WJXiOKdmT1y
-	 4uqXhRew7EKd5ALokhbenLF9G2e+RwhElTJyjUtWAYodWRIOzhlwP5SOGVderLuylSg==
+	t=1792788025;
+	b=HXU9OfLRp8VMndSURJLPj1QG8jNKat1tKhoi3fnIBppOfN5D8+cH/eCSylhkQ5f0M1gF
+	 vlJ06XLD7PdYjE2Yxk1WEdIRwwDyVCiEkYnDJcOnON7GFlCb8mVYoZAfPPcRWbLU3iTN4
+	 pSQxpn4dFUkYO27En5dLztlhpvQsFz0mtlTMWdI+TYP5IMMcainw9ge2hF0MDjjk60MTD
+	 E6egdrK3s6NP1l0ClsmCBDU8JHCrYEZxrK/gA0gpJTdhxaO7+VmQglPLo81N+AIC9pgm+
+	 2XKXB05P1GF/+BMYZ7xyaSdDgR3E9Y5Sf9oR2xZhFo5feyhRKA5uCvuF7EL94nYrxQg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792787179;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1792788025;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=jMT/0jRYIKZhw47Q26itdzqUKsUFWhPK7paGQJTSrNA=;
-	b=oxqlCEvQjyXw6hRrAOa8IMgHwq6IvpUGnsVsi2jv3XNO5llLx/WXMDUb0u0GLOCvXSxk
-	 rzXsjudEKnXugeSzgeqi3G5087vHYV5JpejDlkI8b2ya5JEbS69AC27HNlZh9eJJoutJK
-	 RZZpNWEvhUBj1Hr5jCroL3JZo3yPD97zUrdeZ5R5Css/MTHWA4ui/cbgBYkPRkUZrYEe3
-	 8FWF1dSTejVRAv43Y0jL8qZTu8dyQPOvzrzHkfAKyOh+YoACwhOK2gmIEA15Hntfee+Qy
-	 nqw8QzHKS6UGajJ1sDvp7TFgYIkCyKDqPovbO8Zm8L72k+no2GIO3nzVlt+9fg7YGVg==
+	bh=Sj3N8ofVLmUhviS1Qitt8FcFhDmmyzbZj344e+t8UZQ=;
+	b=PZSmRCNcpzSkwandC225VB+d8y3RKO3/qZzlAB7nOrq5B0MHsH6SEirn6mBVtmUuZYM9
+	 RfF0c2iWGKUOm7E2QHR0Ox0knTRTA7kepccgjOhjVKXnCg6v2fwtNO9hJCbknfyVcmBmD
+	 yJZJx6UALV1vH9iCKVGBtZS5xEzs5pCH99fCCLAN2lI2atlyBFYnvlHbNiV+lsjJp/Cq0
+	 l8CvRY8229D9bpaI7avAy25gtFqdGSHkIs8t96TOWA8UL5VF4C10NFL9QaSY9jxLlksp6
+	 bN6dmciedK+MpnPNyM8R2imy6R33RW3BDZ+Puz8vtmYEWdWQQl2T97ciGVc2oUElz2g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="brUqs/ru";
-	arc=none smtp.remote-ip=209.85.128.51
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eThajyz6;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 635D6606A31A
-	for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 20:26:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 635D6606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB721606A31D;
+	Fri, 23 Oct 2026 20:40:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=brUqs/ru
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a1e3098ee2so14430435e9.3
-        for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 13:26:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792787178; x=1793391978; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jMT/0jRYIKZhw47Q26itdzqUKsUFWhPK7paGQJTSrNA=;
-        b=brUqs/ruabJLhMCyTI1qCB113WGLMZBS6lZo0oDLGSLFgSrKweSNWSJT1wc+D3vUim
-         H7ZVosX9ORfTMbN/yU8ouV6dClsHYYcd5l/rQcn7N9fJJEkc2Z1qQI7Ix1J6FDEscgsq
-         /qedPqVuf4bnWODa2v8XvHZHSvzD3xxle37jagXf/59xLp/XqVXifdSXvX6L1RJ6kjeg
-         rFGxBzv4eo1TxskqrUD23KmEXy8p7En4iSl5XvgAlXHrviDXeDPSsFoadeGqsgzSJDKP
-         TDQ0zUgjBWOkln+z7EgAMsep+Oc4VIzsTg5lS9nLAMb7Vxc5ywjm7vafIiDdkz+uz7Dr
-         I6ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792787178; x=1793391978;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jMT/0jRYIKZhw47Q26itdzqUKsUFWhPK7paGQJTSrNA=;
-        b=W6Ya5omW9uf0RWxUhLy8TMdy/MqFZKFt9Okp/A2ZTBLyhqVipNqfIEQtzva9r7HmyR
-         tO8nm/THFJpS9g5wf7u/ZRmfsMU+FHA+95Gw/YUO2kHh1tdlXl8B7dFU1U8ixa0Sz/ZV
-         dIIt334GaZ8z/c7n0m/PoStdc0Xhi4TVYFoI9rtGLtjodZ5LKSlLHe437nEt893wEk94
-         jcs33D2tqdX0JOpprwzAiMsXObXCUdSAOCgl+Kkmf/UorlPrAuBS/Z2iSAWTB4N7KbqC
-         7CdrKxfkavNq1G6jV7GgkeEFqRdYzm7UPXJfIURGudkpo8rRhGiHLO1yVLfiCR2G+WzK
-         aFQw==
-X-Forwarded-Encrypted: i=1; AKwUvBz4enzWjktOUpY3aaBaGK50NLSaAm3ZD/jBv/RC2CLwRs8Nkv/TwZzhKxEe9+DHl53ZLp23wmIAzZ8=@vger.kernel.org
-X-Gm-Message-State: AFq9FYL8NIcttVOCLTN2lcUx6VucElpuO2u+4CM4Oa6ee0DujPQh+akI
-	P/mor5auzDo97Fw2D9tWB+YyAv11U9N/333D1s+ZgLScnkzmmA+vvElf
-X-Gm-Gg: AYBFou1cBBBRV5fqZULf5Ut4uaHqo1R80dsKqrtM0Wj7NSsw4i0mDij17Kzpwa2T4kK
-	OH5EnqrDVcdSQzkqoWcuaj09EZgcW5YNOat7b+e9ft5TqZkxShDbb0+YZO6rKO9VqjrRHUTr2pD
-	s4j+vdt/HwniJwtKu7BjJCHBeudF+9Iy41qye8KV0T5N3CaRxCNhKwbMtAjIjkPnuaecJHdrjXx
-	NfCabpy/i6sJnYQFE1+rHuhA2hEnVOVm75EWLoi8QA0MBcUhVXhWZk7Um03ZhNs9dkbwfOXSWfD
-	MD6iD9Sz/Kym6/P8sMgZk/LQBbMEwYJN9NNsSNIUTKtielIaJCXqheoUworcZ8H5zSnhvf/TZyD
-	3JT++I5RhM26/xgya3/4Eijw2clfW7SFhFUpSece+S8zu6KLRa4jBL0meQtBHBJ99kbYeqaDPCB
-	/ob9sH+W+R3XxPYPRP6QVQ70gsqgManXUX+rLuhrnT78VWgBBKhSx5rxVYdWKV0bTU5jkemOkLL
-	YKrHUCqY9oh9wMnRk+9X0iYeGb3TeXKt5DxSbxUDDRNGLO7Zzcam+a1p5R6DTmQDd0xTmo7RSq5
-	e6BFDQ==
-X-Received: by 2002:a05:600c:a45:b0:4a1:e11f:b2e1 with SMTP id 5b1f17b1804b1-4a35aca4bbbmr269895e9.15.1792787177630;
-        Fri, 23 Oct 2026 13:26:17 -0700 (PDT)
-Received: from legion.. ([5.43.81.125])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a573f65sm5674945e9.10.2026.10.23.13.26.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 13:26:17 -0700 (PDT)
-From: =?UTF-8?q?Adi=20Kadu=C5=A1i=C4=87?= <kadusicadi1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?q?Adi=20Kadu=C5=A1i=C4=87?= <kadusicadi1@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
-	Miao Li <limiao@kylinos.cn>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
-	"Rafael G. Dias" <rafael.guimaraes.dias@usp.br>,
-	Pan Chuang <panchuang@vivo.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: light: stk3310: replace sprintf() with safer sysfs_emit()
-Date: Fri, 23 Oct 2026 22:25:40 +0200
-Message-ID: <20261023202543.144563-1-kadusicadi1@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eThajyz6
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C901F031E0;
+	Fri, 23 Oct 2026 20:40:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792788024;
+	bh=Sj3N8ofVLmUhviS1Qitt8FcFhDmmyzbZj344e+t8UZQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=eThajyz67bQE5cq81KRSeUm5cVIvX+5E8TJp6b2mx/A5V6GkLQmtoVqPdD2M8S5LM
+	 thaFsJqpByB33EHTQMNnZFdGVFNOR/gGl0rijVKnw5ATg5BSTwTJNohMI0wbf0lRl2
+	 1nN0mM5vlvnMl+JOISbp7z2cgIwkGIUcBfXwg77ucf/nFnffORKCuawUoe3UiILCTC
+	 ZvwSIcvogReKnXR0/zRoq8IzT4isnXRfBJ2MuWr4jXY8OrwPG99YBi0tw+g0XbTTBQ
+	 7UQsfXxKcSxoHDMQ9vVufxwCzn/XluiF2MzqQrlS3CIhEtRGjBD5WvnNGEGkAspKLl
+	 hSsyjNwikcPeg==
+Date: Fri, 23 Oct 2026 21:40:19 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Adi =?UTF-8?B?S2FkdcWhacSH?= <kadusicadi1@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Joshua Crofts
+ <joshua.crofts1@gmail.com>, Jorijn van der Graaf
+ <jorijnvdgraaf@catcrafts.net>, Miao Li <limiao@kylinos.cn>, "Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>, "Rafael G. Dias"
+ <rafael.guimaraes.dias@usp.br>, Pan Chuang <panchuang@vivo.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: stk3310: replace sprintf() with safer
+ sysfs_emit()
+Message-ID: <20261023214019.7861c071@jic23-hlaptop>
+In-Reply-To: <20261023202543.144563-1-kadusicadi1@gmail.com>
+References: <20261023202543.144563-1-kadusicadi1@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,37 +67,40 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-This patch replaces sprintf() with sysfs_emit() safer alternative
-with no functional changes.
+On Fri, 23 Oct 2026 22:25:40 +0200
+Adi Kadu=C5=A1i=C4=87 <kadusicadi1@gmail.com> wrote:
 
-Signed-off-by: Adi Kadušić <kadusicadi1@gmail.com>
----
- drivers/iio/light/stk3310.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-index 0a16e326e939..e751e7c97bc1 100644
---- a/drivers/iio/light/stk3310.c
-+++ b/drivers/iio/light/stk3310.c
-@@ -18,7 +18,6 @@
- #include <linux/pm.h>
- #include <linux/property.h>
- #include <linux/regmap.h>
--#include <linux/sprintf.h>
- #include <linux/sysfs.h>
- #include <linux/types.h>
- 
-@@ -180,7 +179,7 @@ static ssize_t stk3310_read_near_level(struct iio_dev *indio_dev,
- {
- 	struct stk3310_data *data = iio_priv(indio_dev);
- 
--	return sprintf(buf, "%u\n", data->ps_near_level);
-+	return sysfs_emit(buf, "%u\n", data->ps_near_level);
- }
- 
- static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
--- 
-2.43.0
+> This patch replaces sprintf() with sysfs_emit() safer alternative
+> with no functional changes.
+>=20
+> Signed-off-by: Adi Kadu=C5=A1i=C4=87 <kadusicadi1@gmail.com>
+Applied.
+> ---
+>  drivers/iio/light/stk3310.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+> index 0a16e326e939..e751e7c97bc1 100644
+> --- a/drivers/iio/light/stk3310.c
+> +++ b/drivers/iio/light/stk3310.c
+> @@ -18,7 +18,6 @@
+>  #include <linux/pm.h>
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+> -#include <linux/sprintf.h>
+>  #include <linux/sysfs.h>
+>  #include <linux/types.h>
+> =20
+> @@ -180,7 +179,7 @@ static ssize_t stk3310_read_near_level(struct iio_dev=
+ *indio_dev,
+>  {
+>  	struct stk3310_data *data =3D iio_priv(indio_dev);
+> =20
+> -	return sprintf(buf, "%u\n", data->ps_near_level);
+> +	return sysfs_emit(buf, "%u\n", data->ps_near_level);
+>  }
+> =20
+>  static const struct iio_chan_spec_ext_info stk3310_ext_info[] =3D {
 
