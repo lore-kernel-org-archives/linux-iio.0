@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792778369;
-	b=WdGBsBgoM1Rl+VoswLfIqlmeaO72KhnJQF/tPVsO7G8JjIRp4P/cn76HwiuhhYKERVb5
-	 kMbbADrsA43iGpTUN+GhIz1FQoZp8QoYEPoxKMBFUCUqq/Go46ztAPlH1M5XBzdYQZ5rH
-	 3s7o1+ftiUEwOKEgkEAIadSwR7tH32zR+m3RwA95ZtWJ9zKj9p4fp/rwyWmbNPcD0guG/
-	 cGlR/NkYnUfkuao5tIOJ74u1l+N861swq87KvjaLVeiO/E4TuIZnxWr7+EkI5vHFFxBME
-	 WrCvGdUU8eg8rh+FjxSgZ6sGTa+xyl5KzNW4QLeHRwyipNhbFRLgdbu1Le0wplKbKeQ==
+	t=1792778371;
+	b=hYlVEILSsCqCwtMEd65PDDSfsmUguumhfh6PSpzB4lZJUxNa1tUCx/04yfesuZp9C9PZ
+	 LJh48bBkskTI18jVYOD0J/oZXEAq6i+bZyXXk0CbbzVNvxKQnlnEh+qiZrrEkauO01FB9
+	 3bL68FG+QCRcOjOCF+f6387gEmVRevbnrZoHb5bzfV8o6FsEjrrcMlV6aS2G89gUbZGQn
+	 M9nu+jI4febms/X0yG6OdLEH/tOHSFzSGM2rFNC+E1Ko+qMLjUksYMid85ObypLRdDOII
+	 VsY5DgqnvaszbLErp93t1rpJAwzyBnAH4kXyq517qo1BT9O2sJ+6s7XYKrtj4ETeLeg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792778369;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792778371;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:
 	 X-Google-Original-From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=LpC4gMXlTugYajA/SMa/iR8ejQmmRNh7RBHmbQp4ruc=;
-	b=F3Q7DiTQB9PjzWxUkdat+zHp1X2VbTRsnAZb0ChSmiegb0ngH+knfFe1QQgucwuiufMm
-	 xu8IRj4IL/8UtmNi9OcRmXoYLi/WskT0fCM0LWI2YDsZ8IHMA8eeYyNFaKeaXreD+544+
-	 1fLthrz17yn96UjSxPFKZ5HtiFXtUSwyMK/Jxx5KV6cyPpQVvRv5a0tuKK1sxHIEKAGDU
-	 v6sum0VBf8ST6nsRG9kaAKdQJj5Nn9TrDjm9R2AlfvdRa1fYOWcw5Aes5WWYIsVWsxnpB
-	 OuwaXArGrLE81ASn+sd5okdyPz+8B5yFLRItdnTI8NHQtj4uOUU+X2RGjF118rUSyMA==
+	bh=GVmgd8z0CPb2cc8gY/ciKAfurSnSMglt/JBh+HjasTs=;
+	b=vKBnuD8C4Jnwc3G8u9gUrm1u66uFSX5P3znFll4XBRt2pjFbsm+0ugbFiWKk6basI7PO
+	 0qly1d3c9QIUQIWM82EjK956LOd2xEi9WbK1M1yrLtG1DXlGUElux8RJUaQQ0br+JWd49
+	 SIZHF1bHM22/59guVWWRiEPlLmQIP5w2quC2/riZB6sn+MXsjKQ/4fP+MDtayzn3GhrXr
+	 20PnbOxdi3GsVA9l+1bbPHzvMswSxM6wmONOU8gtb/C62ULI9FuU9pzMBC708nAfMq6pW
+	 DuZuAw2jj3XYsJqlyB+m2BFN5Hwvs7OCjab27qy3fLjgflEf4TAtZVsk6yBMLuNJtYw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=TdotHO0L;
-	arc=none smtp.remote-ip=209.85.128.49
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=RGgWKqKe;
+	arc=none smtp.remote-ip=209.85.221.48
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FDAB606A330
-	for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 17:59:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5FDAB606A330
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7F1D60A2607
+	for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 17:59:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7F1D60A2607
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=TdotHO0L
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-49d0da752ffso9399465e9.3
-        for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 10:59:29 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=RGgWKqKe
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-48e00eee27dso764952f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 10:59:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792778368; x=1793383168; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1792778369; x=1793383169; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=LpC4gMXlTugYajA/SMa/iR8ejQmmRNh7RBHmbQp4ruc=;
-        b=TdotHO0LUw1mirdK8D1NBjojrI2VmIEU5egfzcux8YEvAuWfygCij3RiEUjE5TnLr+
-         WpXsbdXZSHieqpN7o626WlDMX4LW+UwO1k1r7FK28CQpRKVsGCTkmdhAnsfVn1XawLdH
-         VrL7GsQe+wE4DJmKu+yInnG+mXRyisWGjIJx3SDTe6Srbq58prtysyLwOoZjJfXUuBP+
-         OE9A5kxovZsuX4jgkwq3urr0da7Xwfneug/sNNpWfc6kfkPcRWjeIVYFVmOiw2XlU3yB
-         5uKXlSyKeJIS9LiGRwWSITgeo5jsJQ4ZP+ohwWxLHGN72YiKdOPgI+6WgJjycdoRAgh5
-         K6Ag==
+        bh=GVmgd8z0CPb2cc8gY/ciKAfurSnSMglt/JBh+HjasTs=;
+        b=RGgWKqKeYbqLW0wSlqk2RC3TVrh9pZb/qBOtmdo1z6Um8DH2YQValyJHCcsrU45xRM
+         rqds4snvjM3RElw0tPKlmBnG/ZS59z0VNp5NlNkyurocmDjZGYNz2rqTjz+Sgh3DCfRc
+         Pfq5WtRupPT31sivjVqm1WT66KRoj1RRI5BpVuahZGYM6cCTktx1fRKm+lHllMR5W6uH
+         MH4iceWt+pWQIZX1Jzf7qANDe77R0xQ+zclk1cw1PNeqbS6xuWJJ9wGCqOH4h8JqIfOk
+         6QObAnUW6kJkKfArxU3L18Iw5Iuq2sXspHU7vZ5TtHbHTs7Xuwb+hUQ84Erq0FKd1RAi
+         dOxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792778368; x=1793383168;
+        d=1e100.net; s=20260707; t=1792778369; x=1793383169;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=LpC4gMXlTugYajA/SMa/iR8ejQmmRNh7RBHmbQp4ruc=;
-        b=aXhn4cNv2+xaKPWjBtmrryit5xXkgglMuRdOVuSKDCbtR6zp8CIqaIBfOeOJkOQBC7
-         2CURdoO8z5leH1StBZ627pyKF7hsxGcMzkpCVGmJ/0q3c+InSQpVofTHk1HfJCx4jzsa
-         fe5MBLiOhkMyJMsSGoBD5c9ixmfj0ETpbf+iCQvf2p11bPGafgccj+p3f/IiflPPpsLr
-         cF0zBx+qCeHPJ0D91QHLtFBAiEvaW22YxMOK8LJSaK1kV1lWdL1oukju2KmN9skmDPLc
-         M+B7Rhnh2xz3LclaFGAiAAE1U+ndglHZIIE0GnEbeTImdSBUFVC4x3BdBrEb2SSjpSNL
-         RIaw==
-X-Gm-Message-State: AFq9FYI5bHHjwgrqCPU/Hz7Z3uyGvZmF8Mr2cQoJUI5nxSw2j4x0LW/b
-	90kuU8wnySsMk9hJaXGSSbThvh+5WeH2VQqTcpJRsOtvmRZanhAZ9ES9
-X-Gm-Gg: AYBFou3pxeix2udptCEoAWEUAIi02bbt+3GFkBy73Ute+RXBs5QLMu8C9mUt0KRz13K
-	kko2wOHLiM1Xtsl5NVg1yLSO9b+Sf6soitlH0wmdhKUnNotKA/Rj2P2JePPsyivH5nwhUyl+X4n
-	KpCFng1M7Zyl7dkSpPOT5U/46YLj4J7KSQdDqZZP2sdnxdSU6EgKXb0TiuiydrbotyveV+lSCQc
-	H2Py06ULCRjRHMgEUpALWyathGVCYDnxOn4xZIrrP6b7SuQphuD9A/1H34tsp9MvRbbXwkk8t7Z
-	2FKZuLpniJussnmDfjkzsLkYii4BSinzq7gyDmIbZjflcGOwMF71EdSn2KkP15rdK/RO/P6b2Vx
-	NdQPq7UsiIDJvFs1TvSGQGvv3mmq6PzFRyfzSPLvcZfLDemORrOI0sOm/HIcMZzRau62t94i7Qq
-	ME3ALMsa2KrfPGT+jnXcBi77dbSK0jLUrJi7/7s2e7YpUYE27vg8PY78fZfVOF0Ori9tQCj4H8z
-	bVUPSitc6NnTiOXUBghzFqPVJzPQPcm+7tAczKU4rPkQ/ZJuCJdzhcIlwr1jkvtrCkpfHt8FTPA
-	+BNoPvBjG54z64f9nUVpJXfnTXI1Zu5P5VbSpWuCVUJR199NVN6d+GqyptnYL9JztsQO11HQdGj
-	Lh2FdF5IFC6dUCoBMnkNJ08gmomii9PRnv5eFO9FURU9l
-X-Received: by 2002:a05:600c:4e8a:b0:4a1:e7ce:10a4 with SMTP id 5b1f17b1804b1-4a211eebdc3mr52878955e9.29.1792778367523;
-        Fri, 23 Oct 2026 10:59:27 -0700 (PDT)
+        bh=GVmgd8z0CPb2cc8gY/ciKAfurSnSMglt/JBh+HjasTs=;
+        b=dSD5lHI9BYIc7TyMc9oENM+Bnqj0nMbwL6Wxzq37bCOYkBnZbFOhEYpXDgP/8C9Ms6
+         CekMXns/77ZZ366Ubw2vh9keQRFmxfGkSNmgQiWFIsy4jCW86DiyWwfNugE5fxUaXRNX
+         jnHrCgPjASM8rzPqzA7cKal7Cg5DKl9XsylG0bLLItn7+9wCjN/3cS83OSjXHNb1GwGP
+         +piG1tPRMrgoHN04hu/y1kPsIJswvPS2EwXF08hLAcnYXMniTFGRef11wTofpuINa1Xg
+         bQnTljGdsydvpR2gjl9w+MH01+uHUSzwZgOTUcDyurLM+Prvg2QMrKfLxws65IPNdcVS
+         D93Q==
+X-Gm-Message-State: AFq9FYIjgFCOGZ1PEfpXTeOnv3xLhQ+fTUIP2zC3W/kfSySyopm1rh8h
+	a6bEeL8qTzLZkLaOmwhwCJBNy7EGEnyHxVNFTVh/lwMq5CV8Pt6IYiB0NjdcKmCx
+X-Gm-Gg: AYBFou2bPAhCBwz7NI5ZgUkjfwPsH/8HtMfgT0vLBtTsuUxpHwfpDtz7h1r2FY0ei/U
+	FwuBkIVeIRNXamlVhmzN1mCaxGuu47gY0h6j4FG3lEVMizFvfOP/X40d4pCdaCj0MWE1OuxYKcC
+	baWBuc0NMvCnaFESHeX7hbit/XkiERsZm9hqw2vXn9snde2cpZKeBtONo0tW5xFvTs51SAdOAvy
+	+YvIE8xxFTOqwmWleXClBu6KSVxHr4GT4pzMiBYQNsZCsr00c3a1tAGOVFTpnrphuGa1SwbtEHD
+	1bB9WECAax7Vj35CfUTJvMuU6ENWMWiOHG9fxQ/Z55Fs82yAmUWsCn5CFWqvoTLVAd2WlBlbhJa
+	zSLxcwuzHfAqV3LxW+E3nQGWzsJA2060DwAlURaA5DpsQw3/+jJyaRNYNUQ42n34TCVPB+QN+yE
+	pSVjLQgDZ3/XsKUF90q6mIpSIjFs7rZhVjRm4qDzcKdVnWOvx61+2Ee9n9355BKfgnwBUPm0Qr3
+	tAAGOa9i2JPQIIp10GWeC5nN73q+Jw6ZL3famWf1dzvxsVJVhpn3Lfj6a5Bw43QgbpoLe2ecmut
+	4p4X+EcuZFHmaVaPdwhurCpQMmRiUZDlGkxrz5K2yMsFgIvjLIpsUOkwF17+4+TYA+1V9+/B8pl
+	V/wEZfusHUXJfrC7DAvoKLM7EobFDMUgV1sMJjo87ySDZNQ==
+X-Received: by 2002:a05:6000:22c5:b0:48d:f9dd:e3df with SMTP id ffacd0b85a97d-48e3859df07mr4841249f8f.18.1792778369013;
+        Fri, 23 Oct 2026 10:59:29 -0700 (PDT)
 Received: from iku.example.org (host86-133-9-17.range86-133.btcentralplus.com. [86.133.9.17])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3d37ca2asm1342800f8f.8.2026.10.23.10.59.26
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3d37ca2asm1342800f8f.8.2026.10.23.10.59.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 10:59:27 -0700 (PDT)
+        Fri, 23 Oct 2026 10:59:28 -0700 (PDT)
 From: Prabhakar <prabhakar.csengg@gmail.com>
 X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
@@ -99,9 +99,9 @@ Cc: linux-iio@vger.kernel.org,
 	Biju Das <biju.das.jz@bp.renesas.com>,
 	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v3 2/8] iio: adc: rzt2h: Wait for the analog part to stop after a forced stop
-Date: Fri, 23 Oct 2026 18:59:13 +0100
-Message-ID: <20261023175919.160103-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v3 4/8] iio: adc: rzt2h: Add optional reset support
+Date: Fri, 23 Oct 2026 18:59:15 +0100
+Message-ID: <20261023175919.160103-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -118,66 +118,106 @@ Content-Transfer-Encoding: 8bit
 
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-When ADCSR.ADST is cleared to forcibly stop a conversion, the analog part
-of the A/D converter can take up to 2 ADCLK cycles to stop operating.
+Prepare the driver for RZ/V2H(P), where the ADC has a module reset line
+that is not present on RZ/T2H.
 
-Wait for the write to ADCSR to complete and allow the analog part to stop
-before reconfiguring or restarting the converter.
+Assert the optional reset when the ADC is runtime-suspended and deassert it
+on runtime resume before performing calibration. Assert the reset again if
+calibration fails.
 
-Fixes: fc3b97dd71ab ("iio: adc: add RZ/T2H / RZ/N2H ADC driver")
+Use a shared reset control to support SoCs such as RZ/V2N where the reset
+line is shared between multiple ADC instances.
+
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
 v2->v3:
-- Avoided splitting up the ndelay calculation into multiple lines
+- rzt2h_adc_pm_runtime_suspend() checks the return value of
+  reset_control_assert() and returns it if non-zero. This is to
+  avoid churn in future patch.
 
 v1->v2:
-- Dropped using DIV_ROUND_UP_ULL to DIV_ROUND_UP
-- Included time64.h
+- No change
 ---
- drivers/iio/adc/rzt2h_adc.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/iio/adc/rzt2h_adc.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/rzt2h_adc.c b/drivers/iio/adc/rzt2h_adc.c
-index 8ba7b0fde8a1..131904d97b8c 100644
+index 2ada8ecb2603..51a976f85ae7 100644
 --- a/drivers/iio/adc/rzt2h_adc.c
 +++ b/drivers/iio/adc/rzt2h_adc.c
-@@ -15,10 +15,12 @@
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kthread.h>
-+#include <linux/math.h>
- #include <linux/module.h>
+@@ -20,6 +20,7 @@
  #include <linux/platform_device.h>
  #include <linux/pm_runtime.h>
  #include <linux/property.h>
-+#include <linux/time64.h>
++#include <linux/reset.h>
+ #include <linux/time64.h>
  
  #define RZT2H_ADCSR_REG			0x00
- #define RZT2H_ADCSR_ADIE_MASK		BIT(12)
-@@ -58,6 +60,7 @@
- #define RZT2H_ADC_DMA_BUFFER_SIZE	(RZT2H_ADC_DMA_BUFFER_SAMPLES * \
- 					 RZT2H_ADC_MAX_CHANNELS * \
- 					 RZT2H_ADC_CHANNEL_BYTES)
-+#define RZT2H_ADC_STOP_CYCLES		2
+@@ -91,6 +92,7 @@ struct rzt2h_adc {
+ 	void __iomem *base;
+ 	struct device *dev;
+ 	const struct rzt2h_adc_chip_info *chip_info;
++	struct reset_control *rstc;
  
- struct rzt2h_adc_dma {
- 	struct dma_chan *chan;
-@@ -124,6 +127,15 @@ static void rzt2h_adc_stop(struct rzt2h_adc *adc)
- 	reg &= ~(RZT2H_ADCSR_ADIE_MASK | RZT2H_ADCSR_ADST_MASK);
+ 	phys_addr_t phys_base;
+ 	struct rzt2h_adc_dma dma;
+@@ -709,6 +711,10 @@ static int rzt2h_adc_probe(struct platform_device *pdev)
  
- 	writew(reg, adc->base + RZT2H_ADCSR_REG);
+ 	platform_set_drvdata(pdev, adc);
+ 
++	adc->rstc = devm_reset_control_get_optional_shared(dev, NULL);
++	if (IS_ERR(adc->rstc))
++		return PTR_ERR(adc->rstc);
 +
-+	/*
-+	 * When a conversion is forcibly stopped, the analog part of the A/D
-+	 * converter takes up to 2 ADCLK cycles to stop operating. Read back
-+	 * ADCSR to make sure the write has reached the hardware before
-+	 * starting the delay.
-+	 */
-+	readw(adc->base + RZT2H_ADCSR_REG);
-+	ndelay(DIV_ROUND_UP(RZT2H_ADC_STOP_CYCLES * NSEC_PER_SEC, adc->adclk_rate));
+ 	ret = rzt2h_adc_parse_properties(adc);
+ 	if (ret)
+ 		return ret;
+@@ -770,10 +776,27 @@ static const struct of_device_id rzt2h_adc_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, rzt2h_adc_match);
+ 
++static int rzt2h_adc_pm_runtime_suspend(struct device *dev)
++{
++	struct rzt2h_adc *adc = dev_get_drvdata(dev);
++	int ret;
++
++	ret = reset_control_assert(adc->rstc);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
+ static int rzt2h_adc_pm_runtime_resume(struct device *dev)
+ {
+ 	struct rzt2h_adc *adc = dev_get_drvdata(dev);
+ 	const struct rzt2h_adc_chip_info *chip_info = adc->chip_info;
++	int ret;
++
++	ret = reset_control_deassert(adc->rstc);
++	if (ret)
++		return ret;
+ 
+ 	if (!(chip_info->features & RZT2H_ADC_FEATURE_CALIBRATION))
+ 		return 0;
+@@ -785,11 +808,15 @@ static int rzt2h_adc_pm_runtime_resume(struct device *dev)
+ 	 */
+ 	fsleep(1);
+ 
+-	return rzt2h_adc_calibrate(adc);
++	ret = rzt2h_adc_calibrate(adc);
++	if (ret)
++		reset_control_assert(adc->rstc);
++
++	return ret;
  }
  
- static void rzt2h_adc_set_sst(struct rzt2h_adc *adc, unsigned int ch, u8 sst)
+ static const struct dev_pm_ops rzt2h_adc_pm_ops = {
+-	RUNTIME_PM_OPS(NULL, rzt2h_adc_pm_runtime_resume, NULL)
++	RUNTIME_PM_OPS(rzt2h_adc_pm_runtime_suspend, rzt2h_adc_pm_runtime_resume, NULL)
+ };
+ 
+ static struct platform_driver rzt2h_adc_driver = {
 -- 
 2.55.0
 
