@@ -1,104 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792746650;
-	b=viR59palkeNdOEHQY0K0cjERQm64XzN9a0j5gIiUn4qe0jnCRWWgkmDVLfPtjrIxSNIg
-	 QhKpEJP6u95Wp52iHPbstwA/Zy4VcbaSn8S8UMuwvVqQMmRysBmu455oBKaTSi10cIrE3
-	 kcD9SoWgnMbZB4SgrqUUgICD2Da7wGDkEBpH7l1jpKANlE/dc4tKNevxKf+EwgeehKddd
-	 xfBywOVvzeMeRMlZQWauy3hNqagXV3MyTuF0P9RZgqjsbubaJA71p0x9v5+Jz/cdR6XM2
-	 7EiS23VepfptpphyltuHnCnRR0YVlGmQSAXoHy816JeTWNd66DUD6N5TPN7WUX5yYLg==
+	t=1792746873;
+	b=IWEnG69dq4Bx7VrHRY8m5Sl7l/Q7UupY966KzrUdQRM7yHY9SO8BoeWTrURgIaVG0QMv
+	 3Z3wKBsCbKTIKTHLkJsOa25lsFSbDIvr4NXz78mCjOWQ/klVB8jbzXhnmcm7w6Uw/U6qb
+	 zYyw46geY/YcOR5u6rendBYJy/DSN2Mwq1k/KD4tT/7tjwvRxSFgFgVyWo3Bwpdk3jcDt
+	 Zjbgc6+YXzi51kwHxIOIvvW/UsUygz0GRUjHoTiOq41vjQOSvGds9thW1UfBKKxEbfMni
+	 WxPIwdQcG6aDm6Ww31ZgC9EqDBQ5bxfMsF9ehcfAPwhmi/V2VqDwUzTodl0EbKkfqyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792746650;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=iks0aFSHOkkGNM3nhF8ovnYM+3HT6MOjrI6VZAWf4VM=;
-	b=m1/egA7keQf/yJCxmOg5NoPS0S83nmdWhHamh62FtlqpNCzAB5dXeLHKO1oH4SgzLse2
-	 PprJwszt8v+kjvn1Qx8aKPs+yj2rbTNiRXsUXUnO0R26jOttimsSFKtyFp7I9RgRy1MZh
-	 iUfq0yT31GsfrCUWPtvUsLNRyMLg+KBxUVKidj6eYiUjWuB7JR3DHZzoV9zbV5sr+r7vS
-	 IFpZfauhCM9UXj4J7Ns3vtl1tanlJ5EDgHNqsyiDTAqX6ESaoP4OMthqCFeMqPQPXZ1s6
-	 XwVRrsOkWrdITJCPT49NSDQcUa2YGZXVru5xKSWW8Pdhx7ESQIyYFyKXKH6BICgqKnA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792746873;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=VtvWRjl8MAnddMfovWj2q6w872RtxbrfTWw2pjGsNnM=;
+	b=KE3OYEsX98jXBR1bmC19ExF2D0rxhtvLNnHOLaXaJOSk4rY8IP/EAHHitUzghZSCtYnL
+	 zbI+HAsDLCQonYfTtIkrjn6JLSqB68vGcgLEzIWTzySGSn5IK9lj4sBQBEy5UC6RKKkEu
+	 3bE+pSyK0vjnCjPYyC04l6T4yrLFwIv6KNffxnGNJFTeP48vSWLkgnqZTuLJh6oj8Y1j1
+	 zWGyF6MXN149nfabLzaCNPhAq0b/xwIKZRb+O9/AKmGa0Y6aTDhvIPPbtKP8459zSnpyW
+	 Sf6GQ8nICKdN3VSOjE+PfWzUlQWelrS3MCVCPa5/A7oCW0fSlpJ5m1Rn/DFUcr+3MmQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=A6QAjipA;
-	arc=none smtp.remote-ip=209.85.221.42
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=O2vUllAP;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C61606A321
-	for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 09:10:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 49C61606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC25E606A31B;
+	Fri, 23 Oct 2026 09:14:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AC25E606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=A6QAjipA
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-48dfaa3fa12so1269215f8f.0
-        for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 02:10:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792746649; x=1793351449; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=iks0aFSHOkkGNM3nhF8ovnYM+3HT6MOjrI6VZAWf4VM=;
-        b=A6QAjipAxdnOPrYJOoNxB2QBPlprucEwxZlX6TPKJR+HagX2O7ucfY/43nX2EQSRPU
-         VjMNJuH1sGvjLlGsqPUe3l/d0V+/sp1J40eDh/aVuRtkOIkM8Y2IauFbk9xR0lOx7RTd
-         bqO464Mxhzza+zphrnJlB5LMsOQ2vtWW+uV8W7Hg7ceQx4bDGoMV2NZhH07b4KlNJ1ei
-         VTir+57pAE80mOGeGmYlBZPRONGU5a9R5eLMmj/kdof4AfIIUdZFouqRwHDAtGTkSq/P
-         irSkC69s29//Nam5JDtH2E0G1Yr3l4PFU6vzD6ybbs0Ap+1bdsMUu3jEY4spzZFFsCRs
-         hAkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792746649; x=1793351449;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=iks0aFSHOkkGNM3nhF8ovnYM+3HT6MOjrI6VZAWf4VM=;
-        b=a3Kp48CDd41h9A62CBCrSfzZklMHeCIjbMu1CUbQYHDrZvc/8Fvexf+u8R5D96QpJg
-         4RDlR6uU5iVjTiAHMD1TGzfv3EuivttTyyTW7atjhU9qjKPH6C3ykPa3otA2ZLvt1YXD
-         JNKAv3cUVpFQRoU3UMNJx2Dy/j8mtpeFV+vmVU34ea2K5EQgb6cNVxVjn7uso2djtF5v
-         Qmgxv/qei7fg1+mX/ncpNkb5bA/zJJrLwz1d+RIu6ivudseOCmkHWr4lpdSOFh51Zw+B
-         5T2KXJQGxWRQp/B3JDl1NnP6cj8//eYkpuQo3SkKzX8Mc2l2jr2FRpBi2NuMoAYxcBOi
-         eU7Q==
-X-Forwarded-Encrypted: i=1; AKwUvBy1/F6n+e24iotv37gpdjwGbYekyHTe2JkCV3b4m3pKKtQegYXZtEByxHjltUv/ej/QT9nkzOzTwyA=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJkeS82DFts2fsKByqGBFUjQPtdeY+odO9Bj5n1e1M/fzx40yRs
-	Ss0PWeKKU8S1JRhNNBtjoYpISEEn3h6ImB0ouaHN2s70UmCfY9+Z1Q3b
-X-Gm-Gg: AYBFou241kb53dQ5y5ywwxj8Bw0yvuC2dgz2as+hdHgsJmGel1xuWoZ1kdiVtgUust6
-	2fIrwd5CZv80tCM2aXzFJwAzult11w/hVhNviZ8crfQOK5yO2ImU7lvdzUouc74B8dsjNz26OUJ
-	RY/8Sg5113Jyv4wzO8N7wxJqhlx6p+HgmX4XZhLmAFryoUOA8Dy449+5U8EY0By+ZVg+HhUtfQs
-	yjhpQosviIyneJJrCvhLjA5u1DwZcqY/50ulJPMnVjN7rO+iVeNAScAVOmJeVKG+MskdQSYQnO4
-	HUhsA3dTP5RoNqjE4+mXOdKKrSPmoeZdNmPG9ShE7IVrqoPEeRSSdMzEkRzVK53S6j83ZQ5Rt9q
-	NSCAAboymJs0uLFKQp1vCjuRQtZ5KW7m1PpSsQeAKiIwzG3G9dkESXZBFt28fTW3BwwgVEBX16t
-	vdJj1Lu9I4Igq19KBS91e4YIVnM8G2688oifH4TXMNwTDu4jeiTPU7vaAd0hY9UYp3eZIftmpVA
-	fPP/0sPX+QxiQvbbP0dJjSpe0jx68d2wRiwh35/IHhQa/ajjJg9lVKczB0EFaD5E+8TLSEbgB9G
-	jnudgayU1GvgUTKP1eh2QBTXfHe4puyBsLS3OUD1eXPJEklYfrWrs4tA92DaBiuQJw3vOKKkBpt
-	ZbHj6aBInlB+mx5JjsV06ngtHmmjboXsRsB9zQaqgzOsXfJTl5FqUr5A3AUc3LJVcUrsnBpPapo
-	djhBiyEqLvuigcwYW76Nyu+xCiqQl5zqsVwr9TmD6HxcxDJ/o3xN6tVJm325BcPQ==
-X-Received: by 2002:a05:6000:1a88:b0:48e:884:affb with SMTP id ffacd0b85a97d-48e2d273444mr10748908f8f.24.1792746643235;
-        Fri, 23 Oct 2026 02:10:43 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3803360asm3931375f8f.29.2026.10.23.02.10.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 02:10:43 -0700 (PDT)
-Date: Fri, 23 Oct 2026 11:10:32 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=O2vUllAP
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792746873; x=1824282873;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2W39ih95/AzH17zBqn6rXJXjjgFZun+fD1/GtsbiOl8=;
+  b=O2vUllAPIFDhc83mLr/g9VLBoisngjk+bb6qh3pObjQ2wbvUH7XsgikX
+   YNl9ZRoa+6ZHwR1QiArJCI/ThYnBoFlt5g6AkmAQnershqHBPmfqykhdr
+   uBUw6fODlZndtwwwj6EOImzFyB5XLLLVUc7tDSqgetFdJiClyg+/EnUzw
+   /D2F5tVmhZ0nnaaMXqZAEBAb6KjXD0myQLQh/aZPZ/2KjS4CElP9NquIV
+   86T6sKc+YN8u8z2HeI5eUWQIO+JB9elJWepaGSc+/ahIHr0XBWZWXAJJl
+   LTJ3tBm1yyKbijLuMAgxclvwem5rlqVXVQLq59DL2zn2FVxtRBaqdelKF
+   A==;
+X-CSE-ConnectionGUID: 6kJuGdiwQ1C43VeleGWR4A==
+X-CSE-MsgGUID: BQSd+Gs8S1StyUPGuY4aQg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1399923"
+X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
+   d="scan'208";a="1399923"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:14:32 -0700
+X-CSE-ConnectionGUID: Jbq1sZTuSHmmN4/ImqFQnQ==
+X-CSE-MsgGUID: KZS3rtAYTC6W5vNMIGoNRw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
+   d="scan'208";a="3685630"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:14:28 -0700
+Date: Fri, 23 Oct 2026 12:14:26 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "Stefan Windfeldt-Prytz"
- <stefan.windfeldt-prytz@axis.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <kernel@axis.com>
-Subject: Re: [PATCH 2/3] iio: light: opt4001: refactor driver to prepare to
- support more devices
-Message-ID: <20261023111032.0000019b@gmail.com>
-In-Reply-To: <20261023-opt4041-v1-2-45227f82d05c@axis.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel@axis.com
+Subject: Re: [PATCH 3/3] iio: light: opt4001: add support for opt4041
+Message-ID: <atslcgx03BMp-juY@ashevche-desk.local>
 References: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
-	<20261023-opt4041-v1-2-45227f82d05c@axis.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+ <20261023-opt4041-v1-3-45227f82d05c@axis.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,33 +86,108 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261023-opt4041-v1-3-45227f82d05c@axis.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, 23 Oct 2026 09:48:14 +0200
-Jesper X Nilsson <jesper.x.nilsson@axis.com> wrote:
-
-> Prepare opt4001 driver to be able to support OPT4041. Extend struct
-> opt4001_chip_info with fields channels and device_id because OPT4041 has
-> two channels and another device id.
+On Fri, Oct 23, 2026 at 09:48:15AM +0200, Jesper X Nilsson wrote:
+> Extend the opt4001 driver to also support OPT4041. The devices are very
+> similar, with the difference being OPT4041 having two channels, one
+> visible and one wide band channel ranging from 380nm to 1000nm.
 > 
-> Datasheet: https://www.ti.com/lit/gpn/opt4041
-> Assisted-by: LLM
-
-This tag has been deprecated.
-
-> Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
+> The register map is almost the same. OPT4001 has registers to read out
+> the last four values sampled. OPT4041 maps to the same registers, but
+> has two channels, saving the last two samples for each channel.
 
 ...
 
-> @@ -388,19 +411,19 @@ static int opt4001_probe(struct i2c_client *client)
->  		return dev_err_probe(&client->dev, ret,
->  				     "failed to reinit regmap cache\n");
->  
-> +	chip->chip_info = i2c_get_match_data(client);
+> Assisted-by: LLM
 
-+ null check and return -ENODATA on failure.
+Drop this.
+
+...
+
+>  	help
+>  	  If you say Y or M here, you get support for Texas Instruments
+> -	  OPT4001 Ambient Light Sensor.
+> +	  OPT4001 and OPT4041 Ambient Light Sensors.
+
+We in IIO established kinda a style for this to be scalable, id est list them
+one-per-line:
+
+	  If you say Y or M here, you get support for Texas Instruments
+	  Ambient Light Sensors:
+	  - OPT4001 (...can add some short useful detail here...)
+	  - OPT4041 (...can add some short useful detail here...)
+
+>  	  If built as a dynamically linked module, it will be called
+>  	  opt4001.
+
+Perhaps also consider changing summary text at tristate to make it like
+"...OPT4001 and compatible".
+
+...
+
+> - * Device driver for the Texas Instruments OPT4001.
+> + * Device driver for the Texas Instruments OPT4001 and OPT4041.
+
+Make this and MODULE_DESCRIPTION() to be the same as summary in the Kconfig,
+see above.
+
+>   */
+
+...
+
+> +static const struct iio_chan_spec opt4041_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.address = OPT4001_LIGHT1_MSB,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
+
+Trailing comma.
+
+> +	},
+> +	{
+> +		.type = IIO_INTENSITY,
+> +		.modified = 1,
+> +		.channel2 = IIO_MOD_LIGHT_BOTH,
+> +		.address = OPT4041_LIGHT2_MSB,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
+
+Ditto.
+
+> +	},
+> +};
+
+...
+
+> +static const struct opt4001_chip_info opt4041_sot_5x3_info = {
+> +	.mul = 5850,
+> +	.div = 10000000,
+
+Just sent a patch to move this to use struct s32_fract, I believe you may
+incorporate it into your series as a precursor).
+
+> +	.name = "opt4041-sot-5x3",
+> +	.channels = opt4041_channels,
+> +	.num_channels = ARRAY_SIZE(opt4041_channels),
+> +	.device_id = OPT4041_DEVICE_ID_VAL,
+> +};
+
+...
+
+> +MODULE_DESCRIPTION("Texas Instruments opt4001 and opt4041 ambient light sensor driver");
+
+See above.
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
