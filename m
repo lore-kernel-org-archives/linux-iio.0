@@ -1,103 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.11
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792741738;
-	b=GGpGjMcISI3HERk4mw1XuLzFl4CE+kp44M5xfyo4GeGWc/a6VB3ZxH1sCY5OM/DFbYN/
-	 acuct3X3LkB7VnUK6e80HTaCoLZwYqhzcF7XqZb4oj4SeXQo4HsfLYD1wMa0dhBnL8BeA
-	 rpz9BQQV1DgDPXkWSRdX3tm4XbjE7B/uWwIWoaNMXTzRRk4OjsZaGsRqkpbtTArAvPc31
-	 XOuYw4mkhuuILxfvjlMPIHqs9hVVD/E2e73uu37p04vqZar+4QpsQUeXROnv6cD41NlaT
-	 b5sI5pOajVM6/OSfibTh40GfXLVAHPMUCTmEDvUe0g+xz83sjbnKdDvmPsNy1EYkAhQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792741738;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Message-ID:References:
-	 In-Reply-To:To:CC:X-Mailer:X-EOPAttributedMessage:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=XDD8Vaq6MQCXwR6NekrNsLGqPebrwlF98tXoPxUnYqE=;
-	b=we1EyCKcU4ZCw1CihaQjgqAEDeO7QpKGGJT8JhpQkk0IQkNNfgXDI+vJMD38myZF8sQ+
-	 7LgsoRTTS1w2++4jyBeSA2pzC5Q0N7E4QJIEBqydh2m9l53vNbxXXbkzNoCWxlt+iXSWo
-	 6/0YxnyuiV1HCnE/u2F61gYjRX6VrS3sVLesjAp/MJ7acWFZsd4El3v7HCzKQGnvEevAk
-	 PRjJ51gGsev7bL7Gq42BmhczV/CNUKpgaDk9jWJAGuXsoFZW0tokPKYA0PNq8hpOYaZSt
-	 y/7/4+gSyqYtKz0X+g9p9CyjTASTBnnUbxtJbfQ/1A/UuHF0k7PT3M050wrQrxkm6eA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=axis.com;
-	spf=pass smtp.mailfrom=axis.com;
-	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=QWxld8Vm;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.11
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011011.outbound.protection.outlook.com [52.101.65.11])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792742818;
+	b=YDzH40GY0Dsr7Atn8Je3RFDk4we3zMpy8lTvGodm4zQGRoMrhr6NfGfLzgd5E0oOO8y/
+	 vdQI4KkLra0ctGtMecb8tOPxHhI0Jvow5SYMI21j6qL5ecS9/bkKhQ18SRax9+RHCCRnj
+	 nhVU6PgzCYMFLs83bsbvhTqTLSzp9uupjKVQ/bbghbhA/vzTe4xwgySlO2wquO4cKER9K
+	 HIrzvNGzlaJoMrM5u6PZ/jHjtqzq1krTn3zb9PxALi2ZGm+4Bmxy0kkLEPrwwhnrKhPEw
+	 RIgLV/9mxTA49bjAM1m/yoU5V8IqONd0oOwetBuk3aV24ZckmqQA+gXpkbLCcVINJCA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792742818;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
+	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=xZ9zLMNgICpiuhAA0acCDo6vlmbVnNtUumbO78GGMNg=;
+	b=IaXpMqc6EQPqFOg01aI8MteQTAdthbr0xQSVikMKcgkqgcc/WRn3Ga/6RWZviEJygMb0
+	 7ZITdcbnn6iNbg5RJmg7NyhiQAc0wWphobpMEygVN2U+l03/ONZE1Pjld+bppwU6iedMq
+	 stwnEZvng1BT0xZjuhf+/ml4UDstmrtzfkDvbM0VKNLuAKr2+VUs4zVMr7ky1PIIpjTYP
+	 2+fs46mn/481E9MjPwQpVJwZXGPXASj7JAaA+BWc/HS9iULVv2WuI49Ov4m0U+5Jnew32
+	 EgZZGtUepkEPoi4qvQ6bASUQJBLp1n78VwAWUEA4QclaJ/t4y/yE9BHz3VvlhobU/DA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=RyHzRgUQ;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=D9P73wcO;
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 022F3606A338;
-	Fri, 23 Oct 2026 07:48:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 022F3606A338
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F8A606A31B;
+	Fri, 23 Oct 2026 08:06:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32F8A606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=QWxld8Vm
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SnomUNzEnaxVGJuYKz5Z4e73UC9pKJXzsc5+pZp5lVyqzepE482wc9k7g5AJtoKMiuoWmneWv6nlpV6uuaIOJ+O2sbKRdtbcSUd8HfcFjPdgGF710kHaHn1zpByb++Fzp7BARVNP+uki14dQspwd6rt4bQgOWo88GlQNp1W1bmZCLeHCeJ+ozvAhU3yldxenwDql9f2y+tYyh1xzYNrngRqd6gKBEs0Ab4lV53VAM7WRqR3PQX3KLhov28AuMhluxl80WL4Nfk1cpVTIZIY1x8AudbDsU0LfuEUUUQBzlXUzqpsI0jOU0Bs4PWza4G1c93J92N0stGNj1SnA65Vs8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XDD8Vaq6MQCXwR6NekrNsLGqPebrwlF98tXoPxUnYqE=;
- b=Gje4LdbnuHsE+xgtWOAUd/lpBvkvMd03c56xRe1pQ7pXe9M+MS4Fe3/SRuEv0zqgesrRFmuOyCV1nilYytWOoz/jc3yZyN6V9fORsvZePZygldPnWl/Go9hF/8gbq5zYbOIFCq2kAeHjFaui1UGMZ6UYDIHJaQ0DJKeAROGyR1r8vA0qqqugJVQfVDC+dN8KbpIYF/8z7EktuPDVJCJOWZIe3TOF6UKtZGwO3mwUFpwqX7yozkHi8NV32UkVbc7RmgLcYWllaZyJ1LZ9lpe5ORB+PDYMtYApnNICmH/K/BeoounJcdFxUOtzdwuh6OZAjQCcEZCu/caIaUwjnFEl+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=analog.com smtp.mailfrom=axis.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XDD8Vaq6MQCXwR6NekrNsLGqPebrwlF98tXoPxUnYqE=;
- b=QWxld8Vm/tc0y6VEZ7yRgXjE+mjdV2fKDgTs1JjUAZ2JxCr6MjrAM39lyWoFW9K++07OPsScA1U7GgIrCOoifcG4CB9q5Mw+kU9K5g8Pl0E2vIOeh9ff1+4Swh3T0uaAWdMU9dPNXKbgI8h+/OUsy0uoWWqKpEZJl2U5d5nhnIk=
-Received: from WA1P291CA0001.POLP291.PROD.OUTLOOK.COM (2603:10a6:1d0:19::12)
- by OSKPR02MB11337.eurprd02.prod.outlook.com (2603:10a6:e10:95::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Fri, 23 Oct
- 2026 07:48:51 +0000
-Received: from WA1PEPF000099D0.eurprd04.prod.outlook.com
- (2603:10a6:1d0:19:cafe::8a) by WA1P291CA0001.outlook.office365.com
- (2603:10a6:1d0:19::12) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.546.19 via Frontend Transport; Fri,
- 23 Oct 2026 07:48:51 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 195.60.68.100) smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=axis.com;
-Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
- 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com; pr=C
-Received: from mail.axis.com (195.60.68.100) by
- WA1PEPF000099D0.mail.protection.outlook.com (10.167.242.24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.546.15 via Frontend Transport; Fri, 23 Oct 2026 07:48:50 +0000
-Received: from se-mail11w.axis.com (10.20.40.11) by se-mail11w.axis.com
- (10.20.40.11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Fri, 23 Oct
- 2026 09:48:48 +0200
-Received: from se-intmail01x.se.axis.com (10.4.0.28) by se-mail11w.axis.com
- (10.20.40.11) with Microsoft SMTP Server id 15.2.1748.39 via Frontend
- Transport; Fri, 23 Oct 2026 09:48:48 +0200
-Received: from pc46036-2141.se.axis.com (pc46036-2141.se.axis.com [10.94.180.139])
-	by se-intmail01x.se.axis.com (Postfix) with ESMTP id 19E014233;
-	Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
-Received: by pc46036-2141.se.axis.com (Postfix, from userid 16197)
-	id 14EC5584AC3D; Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
-From: Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Date: Fri, 23 Oct 2026 09:48:15 +0200
-Subject: [PATCH 3/3] iio: light: opt4001: add support for opt4041
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=RyHzRgUQ;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=D9P73wcO
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69N7Gj2C820689;
+	Fri, 23 Oct 2026 04:06:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=xZ9zLMNgICpiuhAA0acCDo6vlmbVnNtUumbO78GGMNg=; b=RyHzRgU
+	QDlpsjf9Jma5hiqXThg7iH84l51aNEU/Gq0OBsQ9aT38qOg7TlMqZFs9BY0rPGUX
+	HgU3bSyAF8RC2MURxk1CjHHuDeO2hr49irrNamsFIl5dboRzHwPR6MhsuPkIT4+0
+	YpR6yPJYqX+n6OOfzCvq7HWka3sLiTK/1tG0QsT017KhRbLTT/HnsOhU1fkLy5bG
+	H2/5Z1O+Q89VWhjAjckwJPL4xT0wNFsJG75NIDHijmY3/bQ+VuDhXUNdb++xd/Js
+	9f5VJgXTTnVn7QBrEX3sZj+lLULft0DOJa1Ma/abHnDDOc4si2mhZyHBBat+P1md
+	EGEyifo9ueY1z0Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=xZ9zL
+	MNgICpiuhAA0acCDo6vlmbVnNtUumbO78GGMNg=; b=D9P73wcOD6qELKKJspze5
+	uugY4iuRLvN2oyLD8M6FgFhS71IKr80RqYsP+4hIwCF1Wp9nUavSfZyFBYrV7I9H
+	dFWAAyWxIrKDUcDIIgu/DpIxJTqyd1gtrn1ZRwt/KdvFVpb58gV3aSPS1OL/tYD2
+	PGNlIN1NgC/wVFL+3APuP6gArsWC3vJJi6AbBy2vdGHYp9YvcN14QA1rrd3+Q/Q6
+	xgVR57PGgx2G9xNCCIK9+aIlq6ABOwTAxBSvOmo5pwOSjbCR9fqEP/lh+Z/oU/V0
+	oi4Z6ZDEvVW8j1uyvD7XDmjqAZSUoHsByac4oPyrovCTvIp//gkngq10AmxOAsqF
+	A==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hfy3wseet-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 23 Oct 2026 04:06:53 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 69N86p5W045306
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 23 Oct 2026 04:06:51 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 23 Oct
+ 2026 04:06:51 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 23 Oct 2026 04:06:51 -0400
+Received: from JGERONI2-L01.ad.analog.com ([10.66.6.192])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69N86VIO020871;
+	Fri, 23 Oct 2026 04:06:43 -0400
+From: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <krzk+dt@kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+        <nuno.sa@analog.com>, <Michael.Hennerich@analog.com>,
+        <andy@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <joshua.crofts1@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH v5 1/2] dt-bindings: iio: temperature: add ADI MAX30210
+Date: Fri, 23 Oct 2026 16:06:22 +0800
+Message-ID: <20261023080623.1830-2-johnerasmusmari.geronimo@analog.com>
+X-Mailer: git-send-email 2.44.0.windows.1
+In-Reply-To: <20261023080623.1830-1-johnerasmusmari.geronimo@analog.com>
+References: <20261023080623.1830-1-johnerasmusmari.geronimo@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,235 +102,133 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20261023-opt4041-v1-3-45227f82d05c@axis.com>
-References: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
-In-Reply-To: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, "Stefan
- Windfeldt-Prytz" <stefan.windfeldt-prytz@axis.com>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Jesper X Nilsson <jesper.x.nilsson@axis.com>,
-	<kernel@axis.com>
-X-Mailer: b4 0.16.0
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: WA1PEPF000099D0:EE_|OSKPR02MB11337:EE_
-X-MS-Office365-Filtering-Correlation-Id: c7d6fab7-19aa-46c9-40f0-08df30da1420
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|82310400026|36860700016|261022105027099003|261022075727099003|56012099006|261009221227099003|11063799006|261021123027099003|261009223027099003|261021121427099003|261021135927099003|10067099003|18002099003|22082099003|13003099007|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	bHCHvqgqb87/x3E/QRmynhW6cTnTOezgJN2oM2TzgilCCx8leSb7atYAoqP0amQ2EPT2KQVqvmoa66CKAf0GB5ovsRfHAW4hYhkL3kRqu7hfL0jXdpMsprEz7mVHUDQVE/crogNxKtHDtSflMpe7Acot6o8Q6LtZaDTE831O3ghqZrbHnxvF+1rld8eQKTJ7IEYd1hna9Y9fbLuU+cSwk3mbtZRQMek28po6iiZao2WZ/M82lCu0TWJbOuOARrEzOiSGhj+6OHttFvFswCtGtrgBCYHW9lIgOp/fdzNbdS96EzyxkA64mTRKLAokaTM57I5JX6lTR31ATmNFWnsuOxwstK6Y1qwZo5k2KuocuR/ZMuHAfH1jMDfHqSLmxgvyLdAulPVhbh8L7GQKmS2d3cgwNpkiFxZMP5Enq6tlf7zBA1hhwP0Ju9kKQsBaAf8wrYMTsvGWOHH3GqC3426yO6Tr7eKuBSAzt4XhS0soNhtW6RY/ITucsdiSGv6i50hIn237LEKxgoomSCCZsxhqHdJAr93/jGQOkg51tKNybEls1KsKF6MM7WkMuPiHLTmZhtvjxfFf9iUq8vf33KUheNASGHHZHXnHE5Xl+oyjNsNJExbPZdudORl3o5Q1D895ahlXucWRhhxKswoJ3l87bXQNMzDAAt0seKkg0NvPpa8/DczlivAXq13cIYKq3JV7BMCxrrmiRXQpD7aI6BNl4Q==
-X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(82310400026)(36860700016)(261022105027099003)(261022075727099003)(56012099006)(261009221227099003)(11063799006)(261021123027099003)(261009223027099003)(261021121427099003)(261021135927099003)(10067099003)(18002099003)(22082099003)(13003099007)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	dbOQuRS8BN9FVr00kxFabchS7MTESIoGuv4z9higPibnHGx01KC84fNp3qrAg43YTY9bFDMeeTL/92seZhTVEGWcWl72x042zMTah17G0YaU0tyv4LDrQjOmUzGUR9aHLEOLMSZPzt2a8VNYFwJ8z7wJWdEZOEFVxkJRfz7h0D6K4OS4I+AtHD4+0Xf9ljP5D7fvZwvdyPgIODnkP6DOAdhH+VLOf6dvJt9gTOkr+VxOGRkv3AmNTP4ugclcCsenziGt5VCuqV1pwti3E0PRng/soPFU8eWg9NSWR+LXNUhVGJOTvIm2GViFH8T09XElO3AGg3IVHOjDx8pNWGdSI7X9byD/3LHRo3+jW7vIRZep6VhstSgg2EEaa9QMHWUGtsSP/NH7ojrfG96lsWeM1FcUO2VuNJ9e0NOwPqOogomsodMyqj8Hg9+a1GzA6AlS
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2026 07:48:50.8062
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c7d6fab7-19aa-46c9-40f0-08df30da1420
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	WA1PEPF000099D0.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSKPR02MB11337
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIzMDAzMiBTYWx0ZWRfX8s2UlOsN6LFj
+ 2x6RWCAo0bViju46PrLTIrAV7hkgoDrUnMl1YGHFdY5a8F04i+UBKsG3QTE2s/XuCCO7kRSIqvg
+ XpXEDKAm9mDEhEkke2IFhZo0PXddlynYJrzyn3s6sjUfOZsLoptp
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIzMDAzMiBTYWx0ZWRfX9pRBqmtgMOeK
+ lYMxsQVVMWdY39VoXvWuU2Pf2wNhYxY5d1h4qnGP7bF3IT8VU3cQ326sD7SZJzwUQYrqdyX52Ps
+ ojRne+14jl+lyxixBD5ed7zMLF7hp1oI/wkY3ckz2E/UIMDMhPC22l51assdMLzebwWlzbnogoF
+ CdENyK70rAc30auS+VlwPS4AdjYAOE+VZhJQMdLDia62Hjapl9A7Nk6EbGedYltuv1mhilxBT1Y
+ t7l/Y2chYXA0jPOWCxY/uZ3FVPLYf45AtNbWoMpIWX1oTqAolcLSvVHd8Fz2l5dLgRZxOUFwkWN
+ fS/v7RpSE+1AA14/OTrH2DjebJGs+4IyRda6FFtg1VSG7ITzdnwjebdgQ1fGaiVSbCmSzuUsPue
+ o2qpSCrqQsUz9YvR080+zL+Vph1TDx2drkeVU+SoErIu8sr6dm9aR5Sdl9AcLF18NC/cnfqci16
+ WBfFI7YJG/47rT2Rpog==
+X-Authority-Analysis: v=2.4 cv=fJ+sTpae c=1 sm=1 tr=0 ts=6adb159d cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+ a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=gEfo2CItAAAA:8 a=EUspDBNiAAAA:8
+ a=VwQbUJbxAAAA:8 a=8Tyz5C_Vz1RR8MM-A30A:9 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-ORIG-GUID: kPRaer5KTRzADotCoC26efkASbSHjICl
+X-Proofpoint-GUID: kPRaer5KTRzADotCoC26efkASbSHjICl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-23_02,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 adultscore=0 clxscore=1011 impostorscore=0 suspectscore=0
+ spamscore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610230032
 
-Extend the opt4001 driver to also support OPT4041. The devices are very
-similar, with the difference being OPT4041 having two channels, one
-visible and one wide band channel ranging from 380nm to 1000nm.
+Add device tree binding documentation for the Analog Devices
+MAX30210 temperature sensor.
 
-The register map is almost the same. OPT4001 has registers to read out
-the last four values sampled. OPT4041 maps to the same registers, but
-has two channels, saving the last two samples for each channel.
-
-Datasheet: https://www.ti.com/lit/gpn/opt4041
-Assisted-by: LLM
-Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
+Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/max30210.pdf
+Signed-off-by: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 ---
- drivers/iio/light/Kconfig   |  2 +-
- drivers/iio/light/opt4001.c | 67 ++++++++++++++++++++++++++++++++++++++++++---
- 2 files changed, 64 insertions(+), 5 deletions(-)
+ .../iio/temperature/adi,max30210.yaml         | 61 +++++++++++++++++++
+ MAINTAINERS                                   |  7 +++
+ 2 files changed, 68 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 462fff1ddef2..625ebb10ad1b 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -508,7 +508,7 @@ config OPT4001
- 	select REGMAP_I2C
- 	help
- 	  If you say Y or M here, you get support for Texas Instruments
--	  OPT4001 Ambient Light Sensor.
-+	  OPT4001 and OPT4041 Ambient Light Sensors.
- 
- 	  If built as a dynamically linked module, it will be called
- 	  opt4001.
-diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
-index bf5dc1c8514c..ff142591fcba 100644
---- a/drivers/iio/light/opt4001.c
-+++ b/drivers/iio/light/opt4001.c
-@@ -2,9 +2,11 @@
- /*
-  * Copyright (C) 2023 Axis Communications AB
-  *
-- * Datasheet: https://www.ti.com/lit/gpn/opt4001
-+ * Datasheets:
-+ *  https://www.ti.com/lit/gpn/opt4001
-+ *  https://www.ti.com/lit/gpn/opt4041
-  *
-- * Device driver for the Texas Instruments OPT4001.
-+ * Device driver for the Texas Instruments OPT4001 and OPT4041.
-  */
- 
- #include <linux/bitfield.h>
-@@ -19,6 +21,8 @@
- /* OPT4001 register set */
- #define OPT4001_LIGHT1_MSB    0x00
- #define OPT4001_LIGHT1_LSB    0x01
-+#define OPT4041_LIGHT2_MSB    0x02
-+#define OPT4041_LIGHT2_LSB    0x03
- #define OPT4001_CTRL          0x0A
- #define OPT4001_DEVICE_ID     0x11
- 
-@@ -43,6 +47,7 @@
- 
- /* OPT4001 constants */
- #define OPT4001_DEVICE_ID_VAL            0x121
-+#define OPT4041_DEVICE_ID_VAL            0x221
- 
- /* OPT4001 operating modes */
- #define OPT4001_CTRL_OPER_MODE_OFF        0x0
-@@ -72,7 +77,7 @@
- 
- /*
-  * The different packaging of OPT4001 has different constants used when calculating
-- * lux values.
-+ * lux values and OPT4041 has one additional wide band channel.
-  */
- struct opt4001_chip_info {
- 	int mul;
-@@ -100,6 +105,25 @@ static const struct iio_chan_spec opt4001_channels[] = {
- 	},
- };
- 
-+static const struct iio_chan_spec opt4041_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.address = OPT4001_LIGHT1_MSB,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
-+	},
-+	{
-+		.type = IIO_INTENSITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
-+		.address = OPT4041_LIGHT2_MSB,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
-+	},
-+};
+diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+new file mode 100644
+index 0000000000000..8bfd154bbc438
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright 2026 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/temperature/adi,max30210.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static const struct opt4001_chip_info opt4001_sot_5x3_info = {
- 	.mul = 4375,
- 	.div = 10000000,
-@@ -118,6 +142,15 @@ static const struct opt4001_chip_info opt4001_picostar_info = {
- 	.device_id = OPT4001_DEVICE_ID_VAL,
- };
- 
-+static const struct opt4001_chip_info opt4041_sot_5x3_info = {
-+	.mul = 5850,
-+	.div = 10000000,
-+	.name = "opt4041-sot-5x3",
-+	.channels = opt4041_channels,
-+	.num_channels = ARRAY_SIZE(opt4041_channels),
-+	.device_id = OPT4041_DEVICE_ID_VAL,
-+};
++title: Analog Devices MAX30210 Temperature Sensor
 +
- static const int opt4001_int_time_available[][2] = {
- 	{ 0,    600 },
- 	{ 0,   1000 },
-@@ -270,10 +303,30 @@ static int opt4001_read_raw(struct iio_dev *indio_dev,
- 			    int *val, int *val2, long mask)
- {
- 	struct opt4001_chip *chip = iio_priv(indio_dev);
-+	u64 raw_value;
-+	u32 rem;
-+	int ret;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
- 		return opt4001_read_lux_value(chip, chan->address, val, val2);
-+	case IIO_CHAN_INFO_RAW:
-+		ret = opt4001_read_raw_value(chip, chan->address, &raw_value);
-+		if (ret)
-+			return ret;
++maintainers:
++  - John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
 +
-+		*val = div_u64_rem(raw_value, 100, &rem);
-+		*val2 = rem * 10000;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SCALE:
-+		/*
-+		 * OPT4041 CH1: datasheet specifies 0.1923 nW/cm^2 per ADC code
-+		 * with a 520 nm stimulus. Convert to nW/m^2 (x10000) and
-+		 * compensate for dividing the reported raw value by 100 (x100).
-+		 * The resulting scale is 192300 nW/m^2 per reported unit.
-+		 */
-+		*val = 192300;
-+		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		*val = 0;
- 		*val2 = opt4001_int_time_reg[chip->int_time][0];
-@@ -340,6 +393,8 @@ static bool opt4001_readable_reg(struct device *dev, unsigned int reg)
- 	switch (reg) {
- 	case OPT4001_LIGHT1_MSB:
- 	case OPT4001_LIGHT1_LSB:
-+	case OPT4041_LIGHT2_MSB:
-+	case OPT4041_LIGHT2_LSB:
- 	case OPT4001_CTRL:
- 	case OPT4001_DEVICE_ID:
- 		return true;
-@@ -363,6 +418,8 @@ static bool opt4001_volatile_reg(struct device *dev, unsigned int reg)
- 	switch (reg) {
- 	case OPT4001_LIGHT1_MSB:
- 	case OPT4001_LIGHT1_LSB:
-+	case OPT4041_LIGHT2_MSB:
-+	case OPT4041_LIGHT2_LSB:
- 		return true;
- 	default:
- 		return false;
-@@ -448,6 +505,7 @@ static int opt4001_probe(struct i2c_client *client)
- static const struct i2c_device_id opt4001_id[] = {
- 	{ .name = "opt4001-sot-5x3", .driver_data = (kernel_ulong_t)&opt4001_sot_5x3_info },
- 	{ .name = "opt4001-picostar", .driver_data = (kernel_ulong_t)&opt4001_picostar_info },
-+	{ .name = "opt4041-sot-5x3", .driver_data = (kernel_ulong_t)&opt4041_sot_5x3_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, opt4001_id);
-@@ -455,6 +513,7 @@ MODULE_DEVICE_TABLE(i2c, opt4001_id);
- static const struct of_device_id opt4001_of_match[] = {
- 	{ .compatible = "ti,opt4001-sot-5x3", .data = &opt4001_sot_5x3_info},
- 	{ .compatible = "ti,opt4001-picostar", .data = &opt4001_picostar_info},
-+	{ .compatible = "ti,opt4041-sot-5x3", .data = &opt4041_sot_5x3_info},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, opt4001_of_match);
-@@ -470,5 +529,5 @@ static struct i2c_driver opt4001_driver = {
- module_i2c_driver(opt4001_driver);
++description: |
++  The MAX30210 is a temperature sensor with an I2C interface.
++  https://www.analog.com/media/en/technical-documentation/data-sheets/max30210.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,max30210
++
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++
++  powerdown-gpios:
++    description: GPIO connected to the CVT/PDB pin (active low).
++    maxItems: 1
++
++  interrupts:
++    description: Connected to INT pin. Interrupt triggered on both rising and falling edges.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        temperature-sensor@40 {
++            compatible = "adi,max30210";
++            reg = <0x40>;
++            vdd-supply = <&vdd>;
++            powerdown-gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
++
++            interrupt-parent = <&gpio>;
++            interrupts = <17 IRQ_TYPE_EDGE_BOTH>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 396d4e76dccc2..6eb3cf66f431c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1653,6 +1653,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
+ F:	drivers/iio/dac/max22007.c
  
- MODULE_AUTHOR("Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>");
--MODULE_DESCRIPTION("Texas Instruments opt4001 ambient light sensor driver");
-+MODULE_DESCRIPTION("Texas Instruments opt4001 and opt4041 ambient light sensor driver");
- MODULE_LICENSE("GPL");
-
++ANALOG DEVICES INC MAX30210 DRIVER
++M:	John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
++
+ ANALOG DEVICES INC ADA4250 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
 -- 
-2.43.0
+2.34.1
 
