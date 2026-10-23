@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792746465;
-	b=MgtYZ+TrU24laWvSsQLYGGcaGmI1ix0+UhXs8sUT/aFigZ1LrV0ed+ZeZ7Uo1YfSlT62
-	 IB0OegAfcOSuoMlvTa2gtdcND7pMBZ27CE/amb5ri7WcciRxEcXfoZWwgRw3jPFVoAVnw
-	 rDOsDRQkq/0VIV0SQvZp7MidGhj737IaWwButGzv0++AjG1SPvsCbWMuIs94NPJ45eGYE
-	 QRcFoxwb2oSlMaoCZ92Zg8r0OddyGBF3hiN3au6gx5lbLJuFYN6L6Yqx/2ziZHEqxaVyM
-	 edr+fxS77WHF6ifGKvRff1xVVrTTChRnz/3zUojsDGOCkMvFtxiGpFPEnvhTsBppKrw==
+	t=1792746488;
+	b=I0nUu0Bv6Y5p/vYx4eYH/t/zxLAUE4A+aE5eYqoN3dkcBCokzDm6zZp6daU0GHkyhnH1
+	 VBaTZvqMRVPw1vfeHvnWUpn6hnj0T9oPKCh1PhRxt1LaKIApOkOaaxd9/lArKKG6Q84zE
+	 bglNgGliEVVUtxgvEWLfIy0DVHtrcdCctJOwMAcREawLcMKnlUl6f/7MnJA6brGggqYgS
+	 5d8PmjQe+8AJGg0SML4HrN3NRjvUS7/TGtWJnBD9yNilIXDoEbzDKYV0WwJbGDUU5Pv0T
+	 0lSanadUw8YE538WIQHcyN0mBPRlqJWXmMKG/i/dXFaimyGcD+Xvf9GGVDLk8hEmjgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792746465;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792746488;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=ryxLfqZ2x3zEOQBJHsQdFgr4b5y+v6O3GMf3NIHFJAg=;
-	b=1rk7Qt3kPJhgebaYS0mG+zQvznDQ2dlijDved1Fra6JS8RnlPl6pyI3hE+3H1JBotf/Z
-	 7lCn7cxgunud+RDuQkasdxk8oMTQd4a1u27Hm1lmRPSwO0hlXN2EI3rBsHH82t0XpYse+
-	 IWRb869bqd+hcOKHWibwagU2Nw9a3J9cahOmIRPKT/dDbu99aw1QTs2TjytSc14H4ICSO
-	 ChHUJMwg0DkmAHcUihAs0buACf8A8Im95FCBkAletdNSTDICA35sMDa7wwL3r4FK/oQy5
-	 eUCwHHpgVXpwp17up5HQJF+YYVzUjw3C3AVqpEulCOyeKOhH/Es4rZFtuuTS37/cjFQ==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:From:To:Cc:
+	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=oj5plAiDhvkLrgl/yO16Ihe/4KJIUvPcCw3wCr0eQ18=;
+	b=Fu3wrMxtjD2vJ2AhjA+MWhc+mwgLg5uEKAefyaPLiGgRACuJLGoDhc+oXgxiYWpQcgcJ
+	 SKdqT8hXYNiPbrKiwzYb1nz728PVrhZpMtVJ6Vk5hupsiKIAjn+mnZZzOlH2Jo61zNje6
+	 3DraLfYkF02Eg07gGSJiXk6pZj1ZeITfMUrwxz+qTRCI6aeVvWjrquA4iVSTaNY1Zns2l
+	 BIJbo+ndTGDLIanu8Q6FsG3eBy+dNF+bZWm5LgfasnK32CyYLr2bxLnIm38QVbA92yXo3
+	 23Ez19PJJYS3dJ+ewezepDLx9D7iuFFEStjpImJzuRfQkNTqaSDVutOIC1KH21gDY0w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EDawJKzN;
-	arc=none smtp.remote-ip=198.175.65.11
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cBPdpRzi;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08478606A31A;
-	Fri, 23 Oct 2026 09:07:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 08478606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 523EE606A31D;
+	Fri, 23 Oct 2026 09:08:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 523EE606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EDawJKzN
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cBPdpRzi
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792746464; x=1824282464;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mZSMbbSHC7P3bGXH792fq383zLv84L1V8vnl08O21d4=;
-  b=EDawJKzNhU0UAz1fM9Rpnn4hRu8bU/IHKBg3bAwLVgZP/E6JJsvILjYT
-   8LRINAtHq9oU7knmuGNy5ikpHbbPj8qDBL2ETzluaqjeB+r5sm0H5KI6L
-   wh99PQ5QkTCM2LFuReK/AKlJ29+lwaQxsGMGDix11rcqYSN4t2M0yp7rv
-   MxO+Us7/y29P17yUVk7xdBBmgDaG1ewA+3rMnd/XefMODo1y3WlDOW20b
-   vfAK6Mct0rcyL/ppMWMjO5spRQHfQu4xM8QPIE4tsV0g3z0K+BI2x13i1
-   3tjp9sZtBHKgHlE5raKn2PJvxdfWBottiDPlVi3ajGvYPpZatVFsZyeha
+  t=1792746488; x=1824282488;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=82KH3JHj6m6tzFsEqM7OoWpk3yXnB9iS/kKLxps8Vzc=;
+  b=cBPdpRzi8tTzSsjpeo38NJcMS17JnVNw2ReU9ZyABNSQxGpzJ3DGbPPA
+   OsyiELRbQ+Vh2fZD63f/m9X3D2qYNwy2+nUpwmQexmoGFApexEiGaaKC+
+   iq7kSdeme4sLKZ/G+pZKGPt8VGN5fcXzyEZewG/p+u8/V4tcKB36MUoFq
+   kz6CZRSb1fg1uRX1QZUl347n8EnQccjxF6qqdFGv3qNdGVRkkMtMjBAnD
+   HcHCFpAIYWfvyL9TF9t1fK6VKFsKKw4E8jiE0NHjEAJ+SjhnQbjmL1+eR
+   OYNsjuAIw8rb8fv+sHFfLftP+5P5X7FDoXG69M7EM8zWAidT1ks7cVEFK
    A==;
-X-CSE-ConnectionGUID: KKoIxESoT+ua+sTEcU2gNg==
-X-CSE-MsgGUID: QhRwH/r6TtWt452h79Kz+w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1393170"
+X-CSE-ConnectionGUID: id3Ig3kyShiwOS76jN5jmw==
+X-CSE-MsgGUID: JWaj1CnGS5KKX1CHSsJPXA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1598952"
 X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
-   d="scan'208";a="1393170"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:07:44 -0700
-X-CSE-ConnectionGUID: 539xFK+GQdaYZUhYbNUjFA==
-X-CSE-MsgGUID: JOY0Zqv6TWKyk/y8bMn7mQ==
+   d="scan'208";a="1598952"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:08:08 -0700
+X-CSE-ConnectionGUID: zj4pkPBAQx+QbxsvM2nOcA==
+X-CSE-MsgGUID: 0ZLSprJOTruewRk5hc6MzQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
-   d="scan'208";a="3535770"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:07:41 -0700
-Date: Fri, 23 Oct 2026 12:07:38 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jesper X Nilsson <jesper.x.nilsson@axis.com>
+   d="scan'208";a="3505471"
+Received: from black.igk.intel.com ([10.91.253.5])
+  by orviesa003.jf.intel.com with ESMTP; 23 Oct 2026 02:08:06 -0700
+Received: by black.igk.intel.com (Postfix, from userid 1003)
+	id DA17D99; Fri, 23 Oct 2026 11:08:04 +0200 (CEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Nikhil Gautam <nikhilgtr@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@axis.com
-Subject: Re: [PATCH 2/3] iio: light: opt4001: refactor driver to prepare to
- support more devices
-Message-ID: <atsj2tE357ZvUuCm@ashevche-desk.local>
-References: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
- <20261023-opt4041-v1-2-45227f82d05c@axis.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jesper X Nilsson <jesper.x.nilsson@axis.com>
+Subject: [PATCH v1 1/1] iio: light: opt4001: Re-use generic struct s32_fract
+Date: Fri, 23 Oct 2026 11:08:02 +0200
+Message-ID: <20261023090802.1957593-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.50.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,62 +87,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261023-opt4041-v1-2-45227f82d05c@axis.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Oct 23, 2026 at 09:48:14AM +0200, Jesper X Nilsson wrote:
-> Prepare opt4001 driver to be able to support OPT4041. Extend struct
-> opt4001_chip_info with fields channels and device_id because OPT4041 has
-> two channels and another device id.
+Instead of custom data type re-use generic struct s32_fract.
+No functional changes intended.
 
-...
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/light/opt4001.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-> Assisted-by: LLM
-
-Drop this tag.
-
-...
-
-> +static const struct iio_chan_spec opt4001_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.address = OPT4001_LIGHT1_MSB,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
-
-While at it (and I see it was in the original code), add a trailing comma here.
-
-> +	},
-> +};
-
-...
-
->  	u8 count;
->  	u8 crc;
->  	u8 calc_crc;
-> -	u64 lux_raw;
-> -	u32 rem;
-> +	u32 mantissa;
-
-Try to put it to make more of reversed xmas tree order.
-
->  	int ret;
-
-...
-
-> +	chip->chip_info = i2c_get_match_data(client);
-
-For now it requires
-
-	if (!chip->chip_info)
-		return -ENODATA;
-
+diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
+index aa3d87995b7c..b2e7abc22434 100644
+--- a/drivers/iio/light/opt4001.c
++++ b/drivers/iio/light/opt4001.c
+@@ -75,8 +75,7 @@
+  * lux values.
+  */
+ struct opt4001_chip_info {
+-	int mul;
+-	int div;
++	struct s32_fract ratio;
+ 	const char *name;
+ };
+ 
+@@ -88,14 +87,12 @@ struct opt4001_chip {
+ };
+ 
+ static const struct opt4001_chip_info opt4001_sot_5x3_info = {
+-	.mul = 4375,
+-	.div = 10000000,
++	,ratio = { .numerator = 4375, .denominator = 10000000 },
+ 	.name = "opt4001-sot-5x3"
+ };
+ 
+ static const struct opt4001_chip_info opt4001_picostar_info = {
+-	.mul = 3125,
+-	.div = 10000000,
++	,ratio = { .numerator = 3125, .denominator = 10000000 },
+ 	.name = "opt4001-picostar"
+ };
+ 
+@@ -199,8 +196,8 @@ static int opt4001_read_lux_value(struct iio_dev *indio_dev,
+ 		return -EIO;
+ 
+ 	lux_raw = lux_raw << exp;
+-	lux_raw = lux_raw * chip->chip_info->mul;
+-	*val = div_u64_rem(lux_raw, chip->chip_info->div, &rem);
++	lux_raw = lux_raw * chip->chip_info->ratio.numerator;
++	*val = div_u64_rem(lux_raw, chip->chip_info->ratio.denominator, &rem);
+ 	*val2 = rem * 100;
+ 
+ 	return IIO_VAL_INT_PLUS_NANO;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.50.1
 
