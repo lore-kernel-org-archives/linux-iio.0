@@ -1,70 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792777157;
-	b=FMP3VvdIf6zNHFSlDqLWYW4cq70EERYMRQA64fo/puZ4eYUFuGmFel8j/ahJVmDe1qKf
-	 bBRs4a7hWDEdMttzWm+00ygMw4vBSO+eIN8G2yuaAy3iezdS6mvsEKDDTv1/usMKVf0Pd
-	 DrprNUJ+FZkYMM62K43D8DGKOHoapGGsf8CIr2nXIOMViP01s69fB4beILQlxe2UpDJSW
-	 VOOCJtZ7M/eQFsXIzFPZ6qHBmK3F12HzdKcsV9TtVV4bc9B+DMR75F5IWdt0nBnPEZ/K2
-	 k2dsuc01kn20RU3onqXAoscI5W7blIz2tFHvz3mZHE1g3Ih5Emet4nPclAuXyRJfB+w==
+	t=1792778368;
+	b=XRdoy8noT5zs6OhZx6nXWLnkGA+PX4hqqxT2jxGlWBoEQEbfn3VAfUblTHds3fRw7URQ
+	 zEAPQrIkHsVnizsDAJtWXnTIwRHDH9NEbXcGJ7Bb9mVdN2/G9klC7EuW1/LKoC+Le5xQX
+	 IuQrVgccSx8T6DfBtrPfNiX6sgrnVl3rgSzKuPgbFg8Y1wIVfOfIwY6Mo7xM4j/lAZo0/
+	 ZQYYOWABqOOU8FCPN4zj25WtmLYyzdYyRp064RHic+h4yHs5abQECmZ8F6tJGv7RB4gZt
+	 7iO1FIKCoXvckKY3UV4WTALn+U2O2glRh0EncxbEOtN91BxVyu4ayoRLCW6WQ4+78SA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792777157;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=sPGd9aFROxOhz1KFda6cV3QjwhmfwJ0s75CjYBEyrrk=;
-	b=z4ZJZbFuOhmk1atl+7KgAgmz92O/TGthE3f5gpUq0r87nXzO1rG9ESAOFodKh4aK/uL8
-	 uxjSuAFfr6ZLQ5ghXf59Gc73LGCyaxT4jRtF7Kl8cN4mi9dAfuwe1KS1ev3he590vnOHe
-	 MUIhXUxVezW/mv2+5jmxxniMY+lwkwb/olZF+k1IZ5dqk/I2uxkJxQb2zCkZFcoZzmAR2
-	 Z3u+S1So2/22uMjhRYmYGPtIXnIfcSTuYJrTNUSxV8u00nIf/8VVHs+q7kRQwXy2U82Te
-	 Key3tbgPyqEU0jtwQEfEH6Eo/DUL9puQSrlBs2QRO0naE0dCmLOYqpgt4aU291+FrwQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792778368;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:
+	 X-Google-Original-From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=qpKChd7cX2IKr3NLYeu19b4piYqsJmCK1pOKyiliy74=;
+	b=C1LIGR0cn8u+y2Q7cyCGV06IBSePzzJgU4T0EXFK+Gpx1cy1XcWKmr5JMwFOD/PvR5rI
+	 oH+kv3b2Bcw9E50x/i0jEYnasBaUZcziXYpC26zkhI8zi8hFar9LtjIcnTPGwK3QHeAOD
+	 vBHGT3/UOJjf/VBO/kwiej2piL83j/6pT1ihHQtuBXf/haH/MBQPg5k0dumvsx5jdkqXn
+	 1tT1aYIALZzX/fmeYy4T1cgKaS3JCiOy7PILfr5UKCkEHa+W4vfyMLojPuCIJE6lTJiKf
+	 Eq7HUf1e4VIlbCGlJOuRQhxaShjN1wCLRRErIRGVU/LNHDkKLp1CcPbha1qh9VxVXDA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WYqvYP6Z;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=FMPVSIPU;
+	arc=none smtp.remote-ip=209.85.221.51
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAD3606A31A;
-	Fri, 23 Oct 2026 17:39:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91D81606A326
+	for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 17:59:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91D81606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WYqvYP6Z
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0831F01825;
-	Fri, 23 Oct 2026 17:39:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792777156;
-	bh=sPGd9aFROxOhz1KFda6cV3QjwhmfwJ0s75CjYBEyrrk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=WYqvYP6ZKJ4Y4UemFOE4AuTFrSWI3JomDirAvL9Da3Ke2KrGDRXWjZVhzuziC4ORR
-	 Tm2vFQZ9NRMxUiC3qA2csJDV2of7uuHDPiB+rSHJeHYht6zoZtepfwnJgMJNG8xyuG
-	 CMfl4k2/3k0xnisEvDIomqBheiUSsxTABdeC/oLDyzwevo6U7YSvuZExkZhAm0Y/qM
-	 9lUKLzh/yIabOUIayzJC8gG/XhZSqEg2p2B4B/JdRBgWtNjr8kLwuhbQsVw4Ef6Q6+
-	 g+9kW9a5ceQh28XoSBqJIXmDwl3qUecAEWBMWye0HRuIB89cQN+LiAfrus0tPr5Nco
-	 P5TXLa0cMjhQA==
-Date: Fri, 23 Oct 2026 18:39:11 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux@analog.com, devicetree@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=FMPVSIPU
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-48dee593f18so826160f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 10:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792778366; x=1793383166; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=qpKChd7cX2IKr3NLYeu19b4piYqsJmCK1pOKyiliy74=;
+        b=FMPVSIPUP4r2nJIpBzw+AnOH4syghw9n89Z8Gr3tcHyhYZgMPSW2wo/l9P2KmSJ6xE
+         JWW0NRo8Cd/tIuttGp9/u6xE7Eg5agM3nbdUJg9/0sJnaA0r6MYoWRVrBBYtC4EG3Bny
+         nhMSK4DUyGvJkJPZWKU+rkgxoGy5Wkh3FW1All8qDORLYNHrFMq+ixmvOR0XjB3fuzWg
+         UGvy3wPcZdItGmCc9upmVxpWcNNdbPdThBM/QOQUbsq8JhbkUQhKlyqxhh0DbCL5IFu8
+         OK3QcDAmweCwbP5xQOoi2yZwNAnRClPpbrAXkmHWqPOGmvQJVb/J9RVmF4KhqIqrCP/j
+         meEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792778366; x=1793383166;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=qpKChd7cX2IKr3NLYeu19b4piYqsJmCK1pOKyiliy74=;
+        b=ZFlZONv6ETp145Z7Co2ix8elFyNJEsvYLqZzniyMemJLJAleQZN9GiDv0g1VXZCCNm
+         PKc7Kd/T/KwFhmmaDBD75LTuZA1OmOqI+8Hc6lrP5b3CSqH+9fj61ytnFGh+ivoqZW3r
+         heVvFGmjdDVsbqf5Tge5y6WCKdrnzlPn5MFxbwxr2Hm8zUWg6recJ3KK/A3lM9W3OuuC
+         u7Kygc5hoPsiW84CUNz1xfrmfu9dYU1VH2GQ12SpdxnT/2ZA8o7LHa4H8zw6FmKU2M6f
+         kYjdgD7W9DeoRZbcW/rQpk0T7fRoJYzoJZ1UI2zs2pkJSK74/cDiFMXz3LvqAqXL86dA
+         yDWA==
+X-Gm-Message-State: AFq9FYI9rpf2cQtwA2cKcIZ7rhSkotVUe0Fa8sbSgp02QnoplK3GlN/0
+	WT6hRRpiPuwByJ4EfhsNmavWiWCQBYaLBZmOS8nfM0r3cWsOwZXvlhJNT/82GQTE
+X-Gm-Gg: AYBFou2Y1U8+Gu6SukkxYjmxzb911xG8Ax9FvbO0LXBuoB6JZu0nNoCCk7MjgNHVm/H
+	b4ogdrB9ykBk/d3A/UcTMMXCmwR3vDwMuOxaJ13PLmcGPpRnRRDBynaTSEdrTW7WXadDBl4jdyr
+	w+0fJvo1aX05pxGCxrcV1yZSRmTuzzNRisZ4Y/W+iwfI0mL5+mcYxN7yqmmCzp8HIMHrilGnkZm
+	DeL7+0SXSKHLzQHzCZdHVVPtQjAKmabDPxBd4ZH/t3DmE9ag97CkftOOMc1I4n7t+o3QX3w11mH
+	oBa3vWc03wuSUNo5NP00fYEpBcrpSpuzyOSaPFA7n+CwXedHs5e/RIHGdZN/ifKcZYbgQ5Nha2e
+	iFqam3+uuhK9BgTwv/K/w6GRjKA5jK5gXXXtveKei0TltxZxxmAcgbj2+oy+VJjOY/NxYFdBXbx
+	bD32reOfeK8nhKKR9TCOXGEOKbl5KnwMdSvUb5O2ZK/T5FrKy3VY+d3S3adQKfERozcmr2sZ+u+
+	PaPAYOHl6f3354baJJq+PyGtj0GNYTfAzbRM70JY5TxGWM1Jc/eWANH9tKYBLQSTQiJkZ0xErDe
+	tcHxFnW1pvC/O1rTFUwU4MyMpVpAghUjB00zdm8O/LcnXKrO8Br4BQGAhM1Izzm04MRXXgZD1wd
+	QINNUQMgCmvHBgzzQuzvpb1jF7mMiG4KPtKfx6jJGv+sn
+X-Received: by 2002:a05:6000:46c8:b0:488:8384:c382 with SMTP id ffacd0b85a97d-48e385a2ca8mr3518753f8f.49.1792778365736;
+        Fri, 23 Oct 2026 10:59:25 -0700 (PDT)
+Received: from iku.example.org (host86-133-9-17.range86-133.btcentralplus.com. [86.133.9.17])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3d37ca2asm1342800f8f.8.2026.10.23.10.59.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2026 10:59:25 -0700 (PDT)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
 	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2 03/10] dt-bindings: iio: frequency: add
- adi,ad9910-axi-backend
-Message-ID: <20261023-boss-matriarch-a1953ccaf539@spud>
-References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
- <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
- <20261022-banish-scenic-030717ca503e@spud>
- <hx6lt2u5j5yh3iez5zimolukip4a6ak36rdqridrvaz7bb25hw@6blwtzy2iuat>
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Prabhakar <prabhakar.csengg+renesas@gmail.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v3 0/8] Add ADC driver support for RZ/V2H(P) and RZ/V2N SoCs
+Date: Fri, 23 Oct 2026 18:59:11 +0100
+Message-ID: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.55.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -74,79 +111,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lGRIL5kI7ggZQ17D"
-Content-Disposition: inline
-In-Reply-To: <hx6lt2u5j5yh3iez5zimolukip4a6ak36rdqridrvaz7bb25hw@6blwtzy2iuat>
+Content-Transfer-Encoding: 8bit
 
---lGRIL5kI7ggZQ17D
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-On Fri, Oct 23, 2026 at 08:15:07AM -0300, Rodrigo Alencar wrote:
-> On 22/10/26 19:38, Conor Dooley wrote:
-> > On Thu, Oct 22, 2026 at 12:19:01PM -0300, Rodrigo Alencar via B4 Relay =
-wrote:
-> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > >=20
-> > > Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
-> > > interfaces with the data and control pins of the AD9910 DDS, streaming
-> > > data from memory via DMA into the 18-bit parallel data port (F[1:0] a=
-nd
-> > > D[15:0] pins), which is clocked by the PDCLK output of the device. It
-> > > also drives the PROFILE[2:0] pins and the DRCTL pin, which controls t=
-he
-> > > slope direction of the digital ramp generator (DRG). The DRCTL pin is
-> > > driven by a PWM generator, so the IP core is described both as an IIO
-> > > backend and as a PWM provider.
->=20
-> ...
->=20
-> > > +  '#io-backend-cells':
-> > > +    const: 0
-> > > +
-> > > +  '#pwm-cells':
-> > > +    const: 3
-> > > +    description:
-> > > +      The first cell must be 0, as only the DRCTL PWM output is avai=
-lable.
-> >=20
-> > I was about to ack this, but the wording here caught my eye. Are there
-> > other PWMs that are unavailable?
->=20
-> Not for this version of this core. Other signals to control the DDS could=
- be
-> modeled as PWM, e.g. DRHOLD, PROFILE0, OSK... but that is not being consi=
-dered
-> at this stage.
+Hi all,
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+This patch series aims to add ADC support for the RZ/V2H(P) and RZ/V2N
+SoCs. The ADC IP on these SoCs is similar to the one found on the RZ/T2H
+SoC but varies slightly in terms of available channels and configuration
+options.
 
-(But maybe consider rewording so that it doesn't sound like there are
-other PWMs that cannot be used)
+v2->v3:
+- Added Ack from Conor for the DT binding patch
+- Avoided splitting up the ndelay calculation into multiple lines
+  in patch#2
+- rzt2h_adc_pm_runtime_suspend() now checks the return value of
+  reset_control_assert() and returns if non-zero. This is to
+  avoid churn in future patch.
+- In rzt2h_adc_write_scale() used multiplication() operation
+  for comparison by dropping the div_u64_rem in patch #8
 
->=20
-> >=20
-> > > +      The second cell is the PWM period in nanoseconds and the third=
- cell
-> > > +      holds the PWM flags.
->=20
-> --=20
-> Kind regards,
->=20
-> Rodrigo Alencar
+v1->v2:
+- Dropped using DIV_ROUND_UP_ULL to DIV_ROUND_UP
+- Included time64.h
+- Returned -ENODATA in case device_get_match_data() returns NULL
+- Renamed RZT2H_ADC_VREF_MV to RZT2H_ADC_VREF_mV
+- Updated Kconfig description
+- Included array_size.h
+- Dropped unnecessary extra line in rzt2h_adc_write_scale
 
---lGRIL5kI7ggZQ17D
-Content-Type: application/pgp-signature; name=signature.asc
+v2: https://lore.kernel.org/all/20261009184122.1378797-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+v1: https://lore.kernel.org/all/20260929124248.237032-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
------BEGIN PGP SIGNATURE-----
+Cheers,
+Prabhakar
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatubvgAKCRB4tDGHoIJi
-0vKSAQDQFFHMyIEfY+UgNmbkTiIL1nyt6ylahe3+fmkcT8fIxAD/Tcw/FliHpwOB
-As/ewbCO71uqlme5mpXhT1RCHhK8qgw=
-=moiI
------END PGP SIGNATURE-----
+Lad Prabhakar (8):
+  dt-bindings: iio: adc: renesas,r9a09g077-adc: Add RZ/V2H(P) and RZ/V2N
+    support
+  iio: adc: rzt2h: Wait for the analog part to stop after a forced stop
+  iio: adc: rzt2h: Add chip-specific configuration
+  iio: adc: rzt2h: Add optional reset support
+  iio: adc: rzt2h: Prepare for SoCs without sample state registers
+  iio: adc: rzt2h: Prepare for SoCs with different ADC info
+  iio: adc: rzt2h: Use scan type for ADC scale
+  iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
 
---lGRIL5kI7ggZQ17D--
+ .../iio/adc/renesas,r9a09g077-adc.yaml        |  38 +-
+ drivers/iio/adc/Kconfig                       |  10 +-
+ drivers/iio/adc/rzt2h_adc.c                   | 327 ++++++++++++++++--
+ 3 files changed, 346 insertions(+), 29 deletions(-)
+
+-- 
+2.55.0
+
