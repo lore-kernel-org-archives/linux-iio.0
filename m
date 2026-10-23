@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.63
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.53
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792750788;
-	b=BIwfXnXH0NZcbsz/2v5hrQJgfJpGVbtMmSQLK2SRina42W8WiSrzvEtWVcI1TUhG9HXG
-	 zWw8AhNFKRLizsKQNoJZnKT1LFJGjJ3KQhVCuQiwNv4GJgM4g9js6SMcu10xN+lQewhrQ
-	 mELS0O+d7qGzsmxUXu5UoNuLWMc3FNqzL2N60+MoNZDkHI0V5fnrA/JDg1lGeNwXojldG
-	 e+s8WAPwtwdJ9fRByE4lyTvPaGddwPGoWR8LAqZfLbh9MsKIxkx65NGciwmvBm1VWLUvq
-	 wGyOr8cCa5/LUKKe+g8nG3oY3LkjD1bvtG+WzX60JYOnLKaUngtsgwuZtdQ67x4dKMQ==
+	t=1792750853;
+	b=0sutRUdr7HO/VskOpO02sqY06u+0+PZRJyxtjwaRBZr9Er9iNgin0VDHwbxNZbwLdpKO
+	 yRzTqjEYlY+s4PNQzfRbN6ENpjvZmLAGW4yb6w7gR4joc8DaeyRUNfYqN+CXFj4cdCfsg
+	 hEAmgLs/tTm25WgQnukyWZStsSndoCk9jRQkG10a925o7CkYlffDcNcAjbkDBfmkCV62V
+	 A91qkVWotH0QWRRDmQk7DpaKCRwaYAbOVwHurJGqIJ9BMttUEzblye/17y0S/07ADICdu
+	 IIUIXgy7GmXm8VZLHK8dxEimlzBQkoapCd1AERmT2hot9xjz39mNuBG5AmlrhVB/FBg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792750788;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792750853;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
 	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
@@ -24,57 +24,58 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=88Pc6nFyiXZM1X284UUVFQ/onxhVXr5jRp6cpJ+ZXyY=;
-	b=XNp+t/Pwc3Zf5OH2yLS7kdIaYAZirdtx44M+2cvd6Pb0PgvyOB68VxTCBcF4e54Z8gsh
-	 KpetAI7d7sGzAicoYmlvx5rvrqw5YUtdmTFQlVuZRsGoeYV8bxGS2m3HnUAfMg7BdCIJo
-	 wciaEz4wahRToW/+BeyHKQfkJuX6XjFGSJzxm6Jkl9rElZ6qGX1DTU+SnRbDvAJROuCiW
-	 zFRKWfQmvIidXaGFDNXI0yvtwP6iICrxVyAV7VndKzaIu4SBUvINdz6JNmFCWmoF3rrkH
-	 1DJ4g37MDkZf1dH3bqpZ9AjJmgBtILUCJ0//YJFc5R4YvEr9w+r17CR00IGHX2qVN8w==
+	bh=TsGVk65Ce0SGTqpGljv8TUP55sejw8PAlv+pS9NqBUo=;
+	b=DQ3laCTZUiuSC52UWCIHK0hdRyAzL/N+AA+6GeWfPOq3cT7cpgaGbe2syZnJSAPBcTHY
+	 XXMN1TMliUL3T579Kv+YU+A4EvTlZJ+9lpilZVK1fru7YwUVMyehb2txp9Gxyik3jK94d
+	 HmMIyWyYa+XWirVi+9PnCiNNys5eexeqlpqmHIKt62DgfIUU/1ewKIhls+jFC170wQAMs
+	 Op7hrWPMLtpKP4cQ/eoEo4fWFzEDoaNl9n532jFpKbrWAQT6+aGHsgZIRWasy1rHMStWF
+	 QjnuXi+Baq4CEISiMcx58SasFBjK5AOGun/Mj1yTxGn8pObAoiNX1S6feRfoFYIe2ZQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=axis.com;
 	spf=pass smtp.mailfrom=axis.com;
-	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b="i/XkcAxs";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.63
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010063.outbound.protection.outlook.com [52.101.84.63])
+	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=ZXOw9GAD;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.53
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013053.outbound.protection.outlook.com [40.107.159.53])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 366A9606A323;
-	Fri, 23 Oct 2026 10:19:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 366A9606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5FE606A321;
+	Fri, 23 Oct 2026 10:20:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB5FE606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=i/XkcAxs
+	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=ZXOw9GAD
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=heTIC3B9Cik4UkBoAYp3j3+z9l0jrVPEKwDEdSF/J9a6UZmTXm5YNTLeYUDN/6e2jKGnMm2mBxmGTSvPbRXga+A/4/ShWg6cdvHp6NfCOtqSlDocHTk6CJS/YaJwoEb5jpz11Hhtopz0wiHm8TBseTa31OMGaXTgqcUTb599bb4OFigUfQ9ukn/mDTa7nhQXjzmN3es1vEu6tiBp2k4oHkBj7ma470TY0lSFt0blxMoOXmgt3/BUDamZo0TPPuevR/71/1AG2jrx3qWW29UjxzlSFMrGQgV4aUPqZo1lzYp7h6Qu6Y2Jnztrpyh04GPYNAyumGIaVTPWj9H7GGK7Pw==
+ b=tmSFgSFiaS1TZ2qSSattBAf7q/MUbuyJgvBo07iSdI40X4KNG1a3nBjit0tMKKy70C7vZBSGoRN1jf+ykRyvb3IWjQWJDecjDQhHyNLS0I0Wgh1+jyE/FE7Af5jonPyA+xi9q9tQAZ+yLYC0x2ZMoPh8p1djr8KgDosbFjtiTRVOz3T3RtkkwmprMac2MfodrQI5hoMoRflRHvaUslGQoh2hT9pzJnc81kffQevIeWZoV3kB0c2GPopWBUf194X650WSBaobm1lg5yJ9XS7GtwYzR48X4m3r+i/uyHznGitnM5eATQ7nd976g7+gSok6D8MEusDE58cYt3cZl9dCeQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=88Pc6nFyiXZM1X284UUVFQ/onxhVXr5jRp6cpJ+ZXyY=;
- b=TumuMlodb3xxAxU8GnEE4zaZuCB2sUgG1nLs+tlAIE5NBMKf2lXpJlUP4MbJLjV1DPuqa2xbBQGkz3EX/1FNUuvd9k5j1tzb7jnNd0MvabpfkSgpWW5CLnrhua49VZeF26uPq28HTHwEU60tl1Zfn5ovT5TSgIGp4Pq1rCRFSe82yn2zcOwWQo0d6E9Z3HFHR1dLpNkJ4qzvR9f/WeFb4xomCC/dRhv5FzegZpBbwZ2O7cGc2oEhbGM968vponyJhbyDRQYNc1VFxUsq4zaPc1Ye5p/IH1mmC7uN4lEXmXjWrDCI2lOofwXJo4CMJPluPta37HvT1KG/9LLBtFBO+g==
+ bh=TsGVk65Ce0SGTqpGljv8TUP55sejw8PAlv+pS9NqBUo=;
+ b=CXxo76kSZbuDiCyfvnRaCsxN0phlsoKvM6Lyne3HaABL5cbeA8bbgEu2YX1hQ1EQiaiTKYSLhOQb7Y4XG67yW5BhGaHUTnqMUj4j6SxbScz81yJ7T0HZObjaM9pvhurqUrd4qs8h2I9VlTPnCTBOxPVAzx4DNXsA9Hb3R2Xgf47uHTYdacJFhnB7KMyqoH09zeYh4dytWbADN4warh+LIa6rAgYQU3K+pLZ1sWma/mk13DOvc3LZN94HXqS2qWdXkjJwf/84ZC2zWCy/Lhjeh2XTeZk78zah2STrpjhKFmeQghDjeVbPCGO35rrXzHKjZ3fuCiQxeFdJTUYft02h6Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
  dkim=pass header.d=axis.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=88Pc6nFyiXZM1X284UUVFQ/onxhVXr5jRp6cpJ+ZXyY=;
- b=i/XkcAxs2h5fUEY3czZwlurexnPAkx+Ijl1N/k3dPWDLKH0zEBGeieNGE9nGMevftqf1DyALL3Feqo1w5kASZdzNXECM8qusouuMVaCV3ik5lOsArhMGPfsmoWuKtcyIL3jR8JFQEwmLS5sRB/5qaFNDD1Su1WjIAde/xYnPXfM=
+ bh=TsGVk65Ce0SGTqpGljv8TUP55sejw8PAlv+pS9NqBUo=;
+ b=ZXOw9GADaCN3Y6vq62c8KqBDgGUt/tsqXqfPWlEL5abgOKCesjJCLtL/pDl3PLGg8+q9odgvg/NZRF24hx7dqoCYvucd6Otna9SyhzDpmY/w9lhjycbRP5sum64AZPNY7Eu3PINxAfwcpOk6RSRK5FwILUC+UbupBp9lPNDtYMo=
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=axis.com;
 Received: from DU4PR02MB12006.eurprd02.prod.outlook.com (2603:10a6:10:62a::23)
- by GV2PR02MB8697.eurprd02.prod.outlook.com (2603:10a6:150:78::22) with
+ by GVXPR02MB10833.eurprd02.prod.outlook.com (2603:10a6:150:14a::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.14; Fri, 23 Oct
- 2026 10:19:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Fri, 23 Oct
+ 2026 10:20:47 +0000
 Received: from DU4PR02MB12006.eurprd02.prod.outlook.com
  ([fe80::7584:3ff:da11:e6b3]) by DU4PR02MB12006.eurprd02.prod.outlook.com
  ([fe80::7584:3ff:da11:e6b3%5]) with mapi id 15.21.0546.017; Fri, 23 Oct 2026
- 10:19:43 +0000
-Message-ID: <7cac8178-ee10-43b5-9fc1-6537b96e8c0a@axis.com>
-Date: Fri, 23 Oct 2026 12:19:41 +0200
+ 10:20:46 +0000
+Message-ID: <d3212ead-623d-4457-98b2-25ca319c6d65@axis.com>
+Date: Fri, 23 Oct 2026 12:20:44 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] iio: light: opt4001: add support for opt4041
+Subject: Re: [PATCH 0/3] This series adds support for Texas Instruments
+ OPT4041 Ambient light sensor
 To: Andy Shevchenko <andriy.shevchenko@intel.com>,
  Jesper X Nilsson <jesper.x.nilsson@axis.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -86,15 +87,14 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, kernel@axis.com
 References: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
- <20261023-opt4041-v1-3-45227f82d05c@axis.com>
- <atslcgx03BMp-juY@ashevche-desk.local>
+ <atsmKZjpr-NQLKBD@ashevche-desk.local>
 Content-Language: en-US
 From: Jesper X Nilsson <jesperni@axis.com>
-In-Reply-To: <atslcgx03BMp-juY@ashevche-desk.local>
+In-Reply-To: <atsmKZjpr-NQLKBD@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MM0P280CA0077.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:190:8::20) To DU4PR02MB12006.eurprd02.prod.outlook.com
+X-ClientProxiedBy: MM0P280CA0067.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:190:8::34) To DU4PR02MB12006.eurprd02.prod.outlook.com
  (2603:10a6:10:62a::23)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -106,177 +106,101 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU4PR02MB12006:EE_|GV2PR02MB8697:EE_
-X-MS-Office365-Filtering-Correlation-Id: 32ccb407-ae9c-4047-ed12-08df30ef2787
+X-MS-TrafficTypeDiagnostic: DU4PR02MB12006:EE_|GVXPR02MB10833:EE_
+X-MS-Office365-Filtering-Correlation-Id: 379c3af8-4f7c-4246-46f7-08df30ef4d36
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|7416014|366016|376014|10067099003|18002099003|22082099003|261022113327099003|3023799007|11063799006|261009223027099003|4143699003|261022105027099003|56012099006|261022075727099003;
+	BCL:0;ARA:13230040|1800799024|23010399003|376014|7416014|366016|22082099003|18002099003|4143699003|11063799006|10067099003|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	M2jeBieSB5G9Ad1RKgV2orp7hXNzM2LspLIMXpYZPziu/ppGBTh3jvdqsJEvxea3G3UrMhd6kykhS2cwE1Id9SLYzEWme9fYVXd05m86s/SYFR3NVvyTIJtDT5kblWtfGDHUSUFnKXDB9zm5P6MIvqvCPBCCVOEuYk4SntGN/0ZIAjSZrO/dHq8SuHU3E6uJ8Er69CxDjQJiQLZl3+udoPt5J2hAh69Uc3lqkdQ/KTe2crB5CXPnD4XrxZqYp+PkAN+LRTiG3RamYtp6GnerALV9pNB1tJdd1wY4/gO3Zj+jZEtyFWQkywYKQhAlPbNEVqWtzoHygC44XjqnRhdtwjvqlySqHaO/mEkELZYoOSf0zdJwEh6nK6mZMBiyA8kbW2IBipTZAeZi5kq31MyKwOof+Miep2VDnaKy0WJLfF/p1y1cPnpPQGRxuXgpz8BviTS7bn1uIpCgqMm4ywi4tLgYb8miDSGLeySKNSViJpzVW1eSJwranKhVpFTBMThnJICOO0xdFO5JUH9SWFl3GFWYXpfaIn8emM3b3TDQwz6NyyCNxLB8yWs3EXvSUXpswxMHW8mMK6BAzbQP8Pr0dEfDTJ7HbHJ8lzIAXbdTCU8EGb2Z92pThiyBC8zgrbLofHFHrUSU265c47z620IFqAFTjZcW7rzHkYa+jxqut20=
+	kTAY9/U4VMdNhv1lxU2S/dGo2RFXhdObinPllJ7OijAyud8yuDGZX4ujHuWLHOXoMDoXRLYYnuY6x0SCzUqt67LtfTZgEU6b74FhMycP9fDB70620e9JBL9MpydJBAkAvcYmpQitzTPxyHkXUnz72LijDAKlhlnv69zpHWQt4hY+AonHKeoxOKvQ44H9FQX3WqfP0TU/2rLOv4t9HWIYj7OcgaYkK6cs6NLqOvmtVPcvbraNfn13lKGBfpM+sx/FbuEX8w1ieYWFp+MD3tMjBk0MJYLAt4iJixWD5NdBtCUPNwwRi4Mf9CbR0Dvx+vrgrNX6i5+BUBhs4CJqgo/tq/FZA/cljqsSsMBf0ZGsW1DKyag2MDa1mj92DLV+ljneZ8UO2Y7Pg47kdrP20osAE90yUsBUTRBuzvVSYmP77j4ShkcObTs/qvhUX/kkyHsAIKnZznBGLcXRX5+uZTQzCmQM5yh9mBxZNIZgSmvXhxejwpUOix9S4Kb1ciTJg4Mn+vTfsr8E3MX7o+laUK9tvtm0C7hTTmgZ1WWvjAfycKuap0RPdGpQYvwDb5Ni7Vk3gqxvZ+I+CPbYVf3AY2p4pZt8RSCztKm4zQyNOW+LL2NBR/vUi5fGBSBUcCYjt6LS6vSiOOFTXQABQsLim80m451h+kJ5ZzVbq7dUSb0yUX0=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU4PR02MB12006.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(7416014)(366016)(376014)(10067099003)(18002099003)(22082099003)(261022113327099003)(3023799007)(11063799006)(261009223027099003)(4143699003)(261022105027099003)(56012099006)(261022075727099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU4PR02MB12006.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(7416014)(366016)(22082099003)(18002099003)(4143699003)(11063799006)(10067099003)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bWc5YjVWbGZOVXZ3TXBiYTNEOUl1OEdCZFNHY2pQS054V1lCM21RT05qOVk2?=
- =?utf-8?B?SHFDS2V2NUlES3Vka255K2tYalhIc21iUHE4aDJib2JHVllKZFIrK0kvem42?=
- =?utf-8?B?RDFMcGdmQkhrV1NkZ2xPZzJqSWZuQ1NWK0IwK0lMNjNVRnNyaE1GWVdsL3pn?=
- =?utf-8?B?YVc0c1oyb1RjWWpaUTlTbTBEL0hrV1Y1Lyszd1RzV2xWR0MvRXZPN2IxRENO?=
- =?utf-8?B?QktjSHFJcEhudGFPQ28xNEp6MUVIc05lS3I2ck1ORHp6NHFkOXFCdlRpUlJn?=
- =?utf-8?B?ckFOREtpK042NThmenhBWVVYUFY1RFd3TkQrNENDMDA0QVowaUJjSE1FRk9s?=
- =?utf-8?B?Smo5bUU0TUV5ZDNLZFlqV3U3ZldmMmJ5QU0ybmR1YlRYS1JzMTQ1dVFpQXpL?=
- =?utf-8?B?bi84U1cySlBScldON25jazhUYU1tR0dVaEl2d2VoSTBwUU1lNjRsUzEyd2g4?=
- =?utf-8?B?cFk2YVhHNSszTVNKQlVwQlQxT3V2UjI1MFpCOXR6UHhDTitTd0twZlBFWTZ4?=
- =?utf-8?B?Wnk0OVJCYy8vYkp6VkwwcDQyZjg0WnU1RDAzdnE1blR5amZTZGt5Nk02ZndX?=
- =?utf-8?B?OXppTURJajFwMG1ic0JERFhiZE9XRUZDVGNlUUdSMWhtbmNzcDJaQnVLcm9l?=
- =?utf-8?B?U2RhbWEydFFsQmhzNDh6amwrK251TlMyb01xQXhmNkdvL2pNdTlUeU43eC9i?=
- =?utf-8?B?Rkh6NDVSTTBFWTR6eGlxR1llUVl3R05lWTBZSm1BM0pnY3B2UU14Y0dlb0tD?=
- =?utf-8?B?K1lmb2lnY2Y5NmNybXpVTTZ1SUcyb2pod3Z4U3hRb3B6dVdiS01VOHhjYU9q?=
- =?utf-8?B?ZFJWczlrc250dloyS2ZUNTFwWmtzdnlUNXZZMHV6SWMrelJPcTZ3VVpVd1Rl?=
- =?utf-8?B?a3FnQkxGZDU0emtPKytzK1NNanJ5SjFxMDMxNW55QmlJNXl1N2ppTTk2aDRY?=
- =?utf-8?B?N2dOd0QzbUpEUTlCZVNBdjMwUEJSTm9mSzA3Y0lWc090SkJJbVhKcWxyZXJo?=
- =?utf-8?B?UklabnFHNVJsSU1DcUdKWm93SGw3L0NSdTJ5Ym9VM1BWTURmK0dld1l4dXU4?=
- =?utf-8?B?dVloTnJ3YXJQbnFyWUtYZnpKRTlDN2l5UVpLWlVlR3hWVk1FTldhT0lKS3hq?=
- =?utf-8?B?YUhHR29wYnZESDMvMC8rVk9sREc1clpMNUVoWHB1VTIwYUIrT1BLU1VjZXdr?=
- =?utf-8?B?eUlXNmI2NlVKdzJraWVNcDdkaWRidlBEQU0wOTlZbUkwVkcvTS9teFdvbHZB?=
- =?utf-8?B?MUlUZlpEMGZNa1Z3RXlnV1d4RHhFQmJJWXhhZldyYTRtVEJLNnRhZ2o3b2ZK?=
- =?utf-8?B?enJ4V0FweU85eXorTW85eUV2d3dNZ1NjbmJOYlR6NUc3dWhNaWQzTm9BOHJB?=
- =?utf-8?B?N3MxL2ZXdVdJYXZvUmR2VVNKMjJQVHZESHhBWWlBN3JPSXNFbEROWnEyY2Fz?=
- =?utf-8?B?ZWRPUHdXaFV2OUdGQXpxWnByUTZHMlVOTklTZGxsUi8rZWtSZFoxOE42YnBv?=
- =?utf-8?B?WXRuRzRSMmpjelNVZHVzU1JJQTluUmd4aHF5aEhSVGZCL212Ulo1NGR6Rm1C?=
- =?utf-8?B?amNlU05peHlraENLQXVvZDFBOHMwWE02WHlIdnFjSForU01TbUdzUVB5aGli?=
- =?utf-8?B?cTI0VDVYdnFsVXRsdjhRaHhFZXJTVVZDYWFpQkJDUVh3V1g4NG80alh3bVZ0?=
- =?utf-8?B?ZGdaY3k4Vk5IMTRjQjFNYnNoVnk3OFY3OHcxSHBzWGZnUmZ5UnhjWnNQNk9n?=
- =?utf-8?B?TmNLZXk1MUo2RnN5MVg5VG5nZHM0NzZ4ZldKQW1zdE13NkUyQzNNd1IvTHpj?=
- =?utf-8?B?WjZEQTJDOXhVUTcvV29ZL1ZIbUhZdVRGYkk4RFdSSG80eUxYSFN3RDZYVEtz?=
- =?utf-8?B?UDJ5cmlKNUpwMVZ2MmNrdEdlZTlhekplT2dqSlk0bGtTdUdYWkZhU2tmZlA3?=
- =?utf-8?B?RFBQQW1pZS9DSjZZbHdveE5zRTR6YnhMTU1aaExwU05OOGN6bGl4R0NicmxN?=
- =?utf-8?B?VWdnSi9uYTIyL0NxNnV5MW9iOGFXMWFhRWlDdXFvSDEzVEwva1BmYkMwckZw?=
- =?utf-8?B?K0l5QS9oUHVJaE9Bakw4eDZvanhwekhYZDFwRHZNVlFwSmFKM0NjQmJSajlM?=
- =?utf-8?B?Qks1OGZPNE1TdWF2MzI4WExhQUd0cjc1WWV0cjNWbFlLL0xuU3ZoZUkxQURT?=
- =?utf-8?B?TlRKZDZYc2RFS0pPeDlqT0FTdTRMZWF2ZURTZmsrK1A1VEZVeVRrNExUQjdj?=
- =?utf-8?B?YUtJeWJsWU9XR1JNVnFrajF3V2tqN2pnOERES01PREdVSm5COGZnLzg0RDVI?=
- =?utf-8?Q?pYz0gyroAbDEEJriVX?=
+	=?utf-8?B?eDBEVG1vZGQ2TkRRUDlVTHBvVUsrd1VQWFRYVy8yWFJNS2tjZzhtUFhseTB1?=
+ =?utf-8?B?S2pZaUhITFYvOEdtaEdrMEllMDQ4RnA0cm1vbzVsVi9WSldaa0RweDREUXZQ?=
+ =?utf-8?B?YkRpLzNHbzhJNllvWDcrd2tEYW83ak1GNVNOZ0lzNmhnRkpJQ1ZXZ0V2VjM1?=
+ =?utf-8?B?REtmL2N4UUZnL2pXVlE2UnFwWnY3OGk2SkZyMUprYTU0OUZXV0JqL28vdFM5?=
+ =?utf-8?B?ZlY4Q3RaY1dkUjNXTW1RbERXb1FQSnhDek9DNXJ2bWpORnZBcm9EZ3owWWNJ?=
+ =?utf-8?B?TXdXVDBuQ3o4S202SFRHN05MbFRZc0Nna1hncVl3ZTlVNXdOK3lpV2FNR3VZ?=
+ =?utf-8?B?ZUZtbnY3SDBuV01DRUxnaS9jNk9EVSt5cjBkNWpWUmdiRFlRZGpmMVZvdVM2?=
+ =?utf-8?B?VVRLY294VUh2Sjc3ZHRQT1hNMG80MllDVERQNnk1UVZ1THcyQjBtd2Z6TmU5?=
+ =?utf-8?B?RDE2dTRYVjgwUlZBV25sejdUbkNPUkZzNWdhdDBmMVlQVlRYc2I5emJJWXRh?=
+ =?utf-8?B?RzNVVDJzdVpSc0tqdlJMVGp0ME0yb2ZhUWtNSnFjeStFekhIekJTMGttQU1M?=
+ =?utf-8?B?ZDJweG42Z2xYbFdsanlaTTdjWkc4Y2hZcmlNOFp2MHhxL1Z2Vm0rb0tnNGJu?=
+ =?utf-8?B?NFNsNVYxR29rNmxoL0sySHhDWWsxbTNNRXJieDdzSTUvSDAyWXd5UzZLc2tm?=
+ =?utf-8?B?Vml1Y0FHek1JY1BvVm1JMzA5UTF6cWRjZ2RVTHBLR0lCWk53b0VLU1g3Skp0?=
+ =?utf-8?B?Nnk5c09YUkRjR1BGZ3BqYm5CK1YvaURPRDJOb1dWTERpQ0Vla0VzYkhLRlV6?=
+ =?utf-8?B?QXFiMjlLY2U2SStSUUYxZ0hDTFZiWWZ6czBXMVA3eG8wc3pHS0RvRU5SaHp5?=
+ =?utf-8?B?RVkzVW13UkNWQTAxNWF6UU4zT1JlYjE5d0pFbVprWjI0MWp5NHpGSWRmamE4?=
+ =?utf-8?B?bG1ZSVRyeTZLczBXblBVMWdXcnJBNG5KdnNhamhhZkJwbjM2dGpYdTV4M01v?=
+ =?utf-8?B?eHdXc0hxd3p6YmFYOGVnbWFiL2xydHU0UzJRamZrSEZVZDY3RUdjUEVnd08x?=
+ =?utf-8?B?cGdBdGIvSmRmOEZ3cFNWWkVpYUxzTkdIeGJjdVVaaTYzWTRXMXduakgvUVVS?=
+ =?utf-8?B?Vyt2LzNPelNrTXVmY0FQcEtsMzRtOEpEZ1RPTkZVTS9BV1dEWUVnN3Awekxy?=
+ =?utf-8?B?TTNaWWVZaUp5V055NGFha2lQTU1iNC9UdG1RdHdBTmtPZ1oyeEZobktqYmQv?=
+ =?utf-8?B?S09Zc21QYWM0emxuL1RjYVJHejhrbzZWV3JWUEprMWtkL21IZjdlamZUV0Vo?=
+ =?utf-8?B?T0ZiMVNHSyswamtBckE1Kzl4dm9YRlN5TElCSXZTNlk2U1AyaWFHMTBoK1Nu?=
+ =?utf-8?B?Rktuc1NLTlQvNTNrUUcrWnE4L0Q3T3VZMHRnRkg5b3FqWi9tMWtwK1RZOC9Z?=
+ =?utf-8?B?Y1c4czZzRHR0ZlhJNlJXOEgvS0gzSGxNeHhSMjh2Q0w3S0pza3F2RWxxbFBN?=
+ =?utf-8?B?VCtwSWlrV0dlMGtTTTFxM3Y2SllpQXdMQjUzWlBRNjNIZjJBdCt2RXMzNVA0?=
+ =?utf-8?B?RDJUeFJJRDJMdzVBWDdGaHVoWllPNE0xamtUNUR3eXgzcTBpY0xXRTQxQmJz?=
+ =?utf-8?B?QVJ2MXp0c3N6OGJUZXd0T1htL0dOTC9CejllcFJvODJkZFU0TXRuaGQ1czZL?=
+ =?utf-8?B?NW1ndzd1S015bVhRWExEenRZMDhVVE5SRFBqV3h0Q3QvUy81RE1PNDdIbWhp?=
+ =?utf-8?B?c2NRYk40YTFPU3Q5TUk2U2sra01DTk1DTy9kdW9BdDlJdlJzQ3FMU256WTJH?=
+ =?utf-8?B?dXpKWWRreGhBT1lDTHV3c1BtUHJnQ3ZCdVR0OHNlZ2lPcWExUXB5RFBmNVZp?=
+ =?utf-8?B?MXVSQjNEMkt1ejk2bTNCT1g4Z1c4OUF5NjZOLzJMcnRGUmF2VEFzSlFJZ0s5?=
+ =?utf-8?B?cm1nWE5NRkdsR2dzMXZsRWlWcjVsR0ZWTGN2WlpnMnMzcllqT0tDZTk4SmVG?=
+ =?utf-8?B?ajdONUZINzhNS1lpRVN4Mllrb3BDSXpndzNGNCtOQnlJNHdMdEowMEdYdkla?=
+ =?utf-8?B?VVVITTZsWFJsbHRVc05ab1FQSE5WWnhYYmlQMlJIbVV6aGo4blF4VWlycFNu?=
+ =?utf-8?B?RktCMkNBazhqblFMZnk5eFJ3Nnh6d2tudmZqdlhuUW50c0tkZWV5YU1UeVJO?=
+ =?utf-8?B?VEdRMUZuUFlUekM0a2RCU2pWUEp3eEFiUkNRbmFjZjBoTGd4RHQybW5YSjF2?=
+ =?utf-8?B?Q3hza3hMMGova2NSeGFRSExJNDFUU2IzQUQ5YnRzZG9HdjJXRnE4Z1Q0RkRx?=
+ =?utf-8?Q?HHvGCFJDw67VgsV9Y+?=
 X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32ccb407-ae9c-4047-ed12-08df30ef2787
+X-MS-Exchange-CrossTenant-Network-Message-Id: 379c3af8-4f7c-4246-46f7-08df30ef4d36
 X-MS-Exchange-CrossTenant-AuthSource: DU4PR02MB12006.eurprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2026 10:19:43.0215
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2026 10:20:46.1957
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sxxKPTfGCgbvCRuRO0Y11TcJn2VlLUaWcgd4XD0gM/5ykSjICyTlkRAQXgHc9Oxk0pnOxJ6wkHjVYO7I+fHzBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR02MB8697
+X-MS-Exchange-CrossTenant-UserPrincipalName: MOYs+tkPQDInCpskdubR7y/pxueBCXaQu2gwOcKcLuITQbTN0RSFIv0I2tCQvCXZzLwmInMAtcR/sqVI4MXQlA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR02MB10833
 
-On 10/23/26 11:14, Andy Shevchenko wrote:
-> On Fri, Oct 23, 2026 at 09:48:15AM +0200, Jesper X Nilsson wrote:
->> Extend the opt4001 driver to also support OPT4041. The devices are very
->> similar, with the difference being OPT4041 having two channels, one
->> visible and one wide band channel ranging from 380nm to 1000nm.
+On 10/23/26 11:17, Andy Shevchenko wrote:
+> On Fri, Oct 23, 2026 at 09:48:12AM +0200, Jesper X Nilsson wrote:
+>> Extend the opt4001 driver to support OPT4041, since it is so similar to
+>> OPT4001. The OPT4041 adds a second channel, a wide band channel ranging
+>> from 380nm to 1000nm. The register map is almost the same for both
+>> devices. OPT4001 has an internal fifo of size four, OPT4041 has two
+>> fifos of size two, one for each channel.
 >>
->> The register map is almost the same. OPT4001 has registers to read out
->> the last four values sampled. OPT4041 maps to the same registers, but
->> has two channels, saving the last two samples for each channel.
+>> Since OPT4041 has two channels it has one bit in register 0Bh to select
+>> which channel is compared to the threshold register. The driver does not
+>> support setting the threshold registers, so no new support has been
+>> added for this.
+>>
+>> The OPT4041 is pin compatible and has the same package as
+>> opt4001-sot-5x3. Although the device id is different, I added a new
+>> compatible string since the driver already had different compatible
+>> strings to differentiate between the two OPT4001.
 > 
-> ...
+> Overall very good small series, I have a few comments, but they like 15 minutes
+> to address, id est mostly style related. I'll give my tag if you send a v2 with
+> the changes as suggested.
 > 
->> Assisted-by: LLM
+>> Datasheet: https://www.ti.com/lit/gpn/opt4041
 > 
-> Drop this.
+>>
 > 
-I will drop the tag in v2.
+> No blank lines in the tag block :-)
+> 
+I will update it in v2.
 
-> ...
+>> Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
 > 
->>   	help
->>   	  If you say Y or M here, you get support for Texas Instruments
->> -	  OPT4001 Ambient Light Sensor.
->> +	  OPT4001 and OPT4041 Ambient Light Sensors.
-> 
-> We in IIO established kinda a style for this to be scalable, id est list them
-> one-per-line:
-> 
-> 	  If you say Y or M here, you get support for Texas Instruments
-> 	  Ambient Light Sensors:
-> 	  - OPT4001 (...can add some short useful detail here...)
-> 	  - OPT4041 (...can add some short useful detail here...)
-> 
-I will change to this style in v2.
-
->>   	  If built as a dynamically linked module, it will be called
->>   	  opt4001.
-> 
-> Perhaps also consider changing summary text at tristate to make it like
-> "...OPT4001 and compatible".
-> 
-Good suggestion, will add it in v2.
-
-> ...
-> 
->> - * Device driver for the Texas Instruments OPT4001.
->> + * Device driver for the Texas Instruments OPT4001 and OPT4041.
-> 
-> Make this and MODULE_DESCRIPTION() to be the same as summary in the Kconfig,
-> see above.
-> 
-I will update the MODULE_DESCRIPTION() in v2.
-
->>    */
-> 
-> ...
-> 
->> +static const struct iio_chan_spec opt4041_channels[] = {
->> +	{
->> +		.type = IIO_LIGHT,
->> +		.address = OPT4001_LIGHT1_MSB,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->> +		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
->> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
-> 
-> Trailing comma.
-> 
->> +	},
->> +	{
->> +		.type = IIO_INTENSITY,
->> +		.modified = 1,
->> +		.channel2 = IIO_MOD_LIGHT_BOTH,
->> +		.address = OPT4041_LIGHT2_MSB,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->> +		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
->> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
-> 
-> Ditto.
-> 
->> +	},
->> +};
-> 
-> ...
-> 
->> +static const struct opt4001_chip_info opt4041_sot_5x3_info = {
->> +	.mul = 5850,
->> +	.div = 10000000,
-> 
-> Just sent a patch to move this to use struct s32_fract, I believe you may
-> incorporate it into your series as a precursor).
-> 
-I will add the patch to my series.
-
->> +	.name = "opt4041-sot-5x3",
->> +	.channels = opt4041_channels,
->> +	.num_channels = ARRAY_SIZE(opt4041_channels),
->> +	.device_id = OPT4041_DEVICE_ID_VAL,
->> +};
-> 
-> ...
-> 
->> +MODULE_DESCRIPTION("Texas Instruments opt4001 and opt4041 ambient light sensor driver");
-> 
-> See above.
-> 
-
-Thanks for the fast review!
 
 Best regards,
 Jesper
-
