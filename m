@@ -1,79 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792747841;
-	b=iYdHqBxAgUy0PCXE6/5xA8nJBnZmkk3d/p5QOklQEYoMqY3o0uvvUc3M/EQRCK0CZC5Q
-	 +9dB3HwgjTwqrlU+OjM7MysowF6fHC3IvYYXZdaPZdWValzFODyW4ZwubVxO/0uCv+Qh0
-	 tIfI3YSmG44p9QMWQ0SKlvIFQ59DRCZTRHewqo9tMJQTrJgrtePPNM7AJ2S0uf6tjgb+i
-	 oCMvic2Rs5oEgX83GfnbhAouNxOORbrXzY2GcaND79VJ4/0c5j0ABTboM2bJ/FGHMQYOj
-	 6QOAnn/Js2r9/z4bjcVJqrJOvzVG9VcrKcdxmGh7dxk56vrk9jS0TOjvYlslUDb4KaQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792747841;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=R4AamfmiWjxAnYkbduF3NDoMYISaJ01c2pwRFA69PcU=;
-	b=S3HFARWkPyigg8aLxnhPCMdYmLx3ytoir4/Ov3YKz2c/2pTiHZxgBJeGtC4FJu0+2xYT
-	 A9pS0nD5Bz9rhaa6hQbJS0kv5Uy0pFKvgdUo8+jlsDiiFwAFNpyF+CuUlvU6SwQygpIf5
-	 2W+ulk0Rwb97ZJ6kbM7InzgYMZYY7bfoduB/P2I2lEommZhOWWf0419yi1v4jx/zPp9sT
-	 okhKJ62srIvp5XEgOEDt3FBP0rZQqzGiUF+CkSQt2m7Hmec0dSDaVnj9gaLmTGL6xgpkN
-	 SvVGMrfVphnSqewzTBkXpca0PcU3CJG7H4k7y7FANftCw+GMNUlb2qppUt5/ZDQQzWw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=StYVIVMk;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792749467;
+	b=Kd0Vw+FyVnovrNk4oMojnKwQTEleaurY/2FovTAnkgghd83vJOWaAaGCEmmwMmegClBZ
+	 9OO4ugTQDyzI0dzY12thfA98wHWn/hSkt1GgP7eoluPB39nt3UX4ldHnFMJVG94zRH6pl
+	 drrVpI/iYM/Y7FS5ne4kjEMiKVUfqnXpPMAz5fFgC20iHIhdkocLcNusc5iiHjnjiaXIj
+	 KhSJx+oyObdeXGJsVDeNfuQV4W+Kn7ypCC83Crh5kpi8GW8TXX18Zq/uIf/eS0YR7LQHA
+	 D6hPkAbIDNtRt9BaXJ/nv/5Y4Vahtan8RQE/fcCeagCLI1KnYjVNQqFFoYMn1VlRhWQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792749467;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=DbVHW1yrB4yoHqU1q7CQ3q5hu4mf3NTWesL2v+5GJVE=;
+	b=neR5UjBoMtfsRzvKqL8EQYJpI2aLiyutVBvVUr/CCA0846dSVYb9ApFA1sCOgNhmXmzo
+	 s++v+yNWx63l6eGqQrAeXhiG4aO/qkeiN7GDJ24aoI14dj8QAIAp1ujhy+7PrTAxdQZ78
+	 b3sXXsIkue4fdls/dNWNZCX5EqNyrBMuvz89mpmnCvgEgWp4s2zEsO5/LK8wol5HL3BQ4
+	 JEzHnYP3MCKGBR4Pm64+IF+JH3I5mK1kRX1ppoNPBc6dumtnaItYkkrQzPacUXIfbXXTO
+	 sB3nXv6IEySk8y3fCbK/au7iKtWlqwTVp+V2pkdCe+6ezhKVS/KB0G1DV2H2cdp4VpQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=GAkszb+1;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965D560A2629;
-	Fri, 23 Oct 2026 09:30:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE080606A31A;
+	Fri, 23 Oct 2026 09:57:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CE080606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=StYVIVMk
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792747825;
-	b=x+bzgXmYBepf7HCew4vxs01sQByLygCnpCZnBfPd7ukQNb2cpNfAeVhaHy7pX+BLWXZm
-	 /tSFqtbzy5CEtHv+tiZ2jcdha8+2XFfLZruEOxv1khMZJuijaTeJi53k4U2K57Bnrqvsk
-	 ghq+HWz1YXI8c/st/fJ8dtyx7Ge+gqt0hd7JEudneFG5+BdayVVsTxFUwETy9AMRG7TW3
-	 AHT5D9/R/SL/zaK2mH3rTWuBDEyojjPRD9+yE75rIdiPrUzZH7LygTjCMeU5hFrxIIVkq
-	 ZiXXaPce8xd15uu57mjLoN7e/0QRHRri0fyBbeJvxRzmCKG762F4i+LP1epdLhz+L1Q==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792747825;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=R4AamfmiWjxAnYkbduF3NDoMYISaJ01c2pwRFA69PcU=;
-	b=t+ghTIBPZnPUQqDhQpSGsU3mUavzHBD+N877JI5cYpblLCPL6nmGDqlTpwW3pY2oq6Z/
-	 tdcWJIbaguINtMc4qoojtPHYWjkM035piijCZ9tMhs88iLGCOPwvAwpYmOhljU06670fO
-	 Wm6kZ7IHTQE+5Wz3VLgBFGfkS1PhmEgF61BegUQwisgNzjI+W00mWYXrcb856kFOeNYIJ
-	 5y7cNpNJC0vhe3Zu6PydhEbSevP+V4RtZGixvDC8aLTNqAZy9wpYBDogC/24jKM7P59p1
-	 W5LuTHVVI+5MMc5i4ROzS9sJkikBjroxKiRhOK9+J8RqANGG1go5jlnKLh1xMB5kabg==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 85C321F031E8;
-	Fri, 23 Oct 2026 09:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792747825;
-	bh=R4AamfmiWjxAnYkbduF3NDoMYISaJ01c2pwRFA69PcU=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=StYVIVMkMKEQosynZo45nevw0TfLBykIe603+k+y0UI6rmmq1DCiNWqBZpDls3vnQ
-	 842Y6MnJ6KpbOvK6VOsr24RQ29RbJ1WoH2srby4TA84a3OMBlaQWwxjPchmUuVYy0P
-	 LHT8UuXb+Nwmo9dkqbqrp649QBZyqhalgIz+oa7Ndr8ZIPy8sFgxEAQKMDC62R1c87
-	 y27FGPVWSjU88J3uSVivc+S3wMruDMco2b/mBeKSlBR3oxERtmUW9jwAahW7iaF+5f
-	 3obdY65iuzRL/oGmhTa2eYzY8VDL97HKB/Hi221puosN06Ggx9niEH8fkEjMfIBu3s
-	 9IpGpXFIjAdHQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 85D7444474;
-	Fri, 23 Oct 2026 09:30:21 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Fri, 23 Oct 2026 12:30:25 +0300
-Subject: [PATCH v4 8/8] iio: imu: adis16607: Add calibration bias support
- for gyro/accel
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=GAkszb+1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792749466; x=1824285466;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=dbbIU+M7u+etB+K38xpzwtKJdfTEoOUMsbxe88Ciw8U=;
+  b=GAkszb+1kHNlEmUX3qnu2Coz24EE0gt+I/Tvbx/wa81t9yHPv3bPCyV1
+   Bnl5fevs3mzE1dSno927CW/CdD3KnbSbj9sql2aFLx7qK0aGu3BBA+2z6
+   V+uv9t99SRe22p5Lhu9tzA5jnzj3KIGZE7YHfGSyLh4TDRpgwM9hNb9yy
+   IU7eZtXCnHyVCBmBvsMqpZUtveQIGJUmVKyNkWZpGnnMs2XToxyfB6ZSD
+   TUcHs+rRXb2eBxL2AjsTPqjXYFHOB74PQrghYTBtgdYM4AU1j/4Z17oAv
+   QUpSvGQmrJ8+F92Z2/uwwcwykeZImrqM4afx2EL1JRmSe8v9wiKXosk8Y
+   Q==;
+X-CSE-ConnectionGUID: rV4cJwxlQt29Bs2yggn3FQ==
+X-CSE-MsgGUID: KklpnB8LREesbNj+LTSgnA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1397547"
+X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
+   d="scan'208";a="1397547"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:57:45 -0700
+X-CSE-ConnectionGUID: 2dUNhiiqQEmt+J0E3MzIMQ==
+X-CSE-MsgGUID: Jj9ltOfeQrGjpzSvRefqog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
+   d="scan'208";a="3482835"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:57:42 -0700
+Date: Fri, 23 Oct 2026 12:57:40 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	krzk+dt@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, Michael.Hennerich@analog.com, andy@kernel.org,
+	robh@kernel.org, conor+dt@kernel.org, joshua.crofts1@gmail.com
+Subject: Re: [PATCH v5 2/2] iio: temperature: add support for Analog Devices
+ MAX30210
+Message-ID: <atsvlJDkqkrtaxRl@ashevche-desk.local>
+References: <20261023080623.1830-1-johnerasmusmari.geronimo@analog.com>
+ <20261023080623.1830-3-johnerasmusmari.geronimo@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,136 +83,513 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261023-adis16607-v4-8-a4d541ebfd13@analog.com>
-References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-In-Reply-To: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Alexandru Ardelean <alexandru.ardelean@analog.com>, 
- Radu Sabau <radu.sabau@analog.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux@analog.com, 
- Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792747820; l=3210;
- i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=2O9Md9H/5f7xIz5zm5QLl/OmXDIIRisepJv+lS3NV6M=;
- b=VKqFNgw5lTiUNcpM2vXGhumkljtk+VCaPs9sBUh0ipEVin+u1qW2b+4aEGWMkmDi+ZEsL7Up8
- EEfKW21pLZ9DKRQjPbntCWk3ANo61BYENuNlO8NVb7oppXZciqxSo9d
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
- auth_id=1094
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261023080623.1830-3-johnerasmusmari.geronimo@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Radu Sabau <radu.sabau@analog.com>
+On Fri, Oct 23, 2026 at 04:06:23PM +0800, John Erasmus Mari Geronimo wrote:
+> Add support for the Analog Devices MAX30210 I2C temperature
+> sensor.
+> 
+> The driver uses regmap for register access and integrates with
+> the IIO framework. It supports:
+> 
+> - Direct mode temperature conversion
+> - Configurable sampling frequency
+> - Threshold events
+> - FIFO operation with IIO kfifo buffer support
+> - Optional interrupt-driven data ready signaling
+> 
+> The device provides 16-bit signed temperature data and a
+> 64-sample FIFO.
 
-Add IIO_CHAN_INFO_CALIBBIAS support for the gyroscope and
-accelerometer axes, backed by the device's per-axis bias registers
-(XA/YA/ZA_BIAS, XG/YG/ZG_BIAS).
+...
 
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- drivers/iio/imu/adis16607.c | 35 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 34 insertions(+), 1 deletion(-)
+> +static int max30210_read_event(struct iio_dev *indio_dev,
+> +			       const struct iio_chan_spec *chan,
+> +			       enum iio_event_type type,
+> +			       enum iio_event_direction dir,
+> +			       enum iio_event_info info, int *val, int *val2)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	if (info != IIO_EV_INFO_VALUE)
+> +		return -EINVAL;
 
-diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
-index 3c5b59820be1..f73df022e819 100644
---- a/drivers/iio/imu/adis16607.c
-+++ b/drivers/iio/imu/adis16607.c
-@@ -55,6 +55,12 @@
- #define ADIS16607_REG_SOFT_RESET	0x36
- #define ADIS16607_REG_SELF_TEST		0x39
- #define ADIS16607_REG_DEC_RATE		0x3A
-+#define ADIS16607_REG_XA_BIAS		0x3B
-+#define ADIS16607_REG_YA_BIAS		0x3C
-+#define ADIS16607_REG_ZA_BIAS		0x3D
-+#define ADIS16607_REG_XG_BIAS		0x3E
-+#define ADIS16607_REG_YG_BIAS		0x3F
-+#define ADIS16607_REG_ZG_BIAS		0x40
- #define ADIS16607_REG_DIGITAL_STATUS	0x4E
- 
- /* SPI Half-Duplex lock value */
-@@ -153,6 +159,15 @@ enum {
- 	ADIS16607_SCAN_TEMP,
- };
- 
-+static const u32 adis16607_calib_bias[] = {
-+	[ADIS16607_SCAN_ACCEL_X] = ADIS16607_REG_XA_BIAS,
-+	[ADIS16607_SCAN_ACCEL_Y] = ADIS16607_REG_YA_BIAS,
-+	[ADIS16607_SCAN_ACCEL_Z] = ADIS16607_REG_ZA_BIAS,
-+	[ADIS16607_SCAN_GYRO_X] = ADIS16607_REG_XG_BIAS,
-+	[ADIS16607_SCAN_GYRO_Y] = ADIS16607_REG_YG_BIAS,
-+	[ADIS16607_SCAN_GYRO_Z] = ADIS16607_REG_ZG_BIAS,
-+};
-+
- /*
-  * SPI Half-Duplex read operation for ADIS16607.
-  * Protocol:
-@@ -863,6 +878,7 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
- 			      int *val, int *val2, long info)
- {
- 	struct adis16607 *st = iio_priv(indio_dev);
-+	const int idx = chan->scan_index;
- 	int ret;
- 	u32 tmp;
- 
-@@ -900,6 +916,16 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
- 		*val = 5000;
- 		return IIO_VAL_INT;
- 
-+	case IIO_CHAN_INFO_CALIBBIAS: {
-+		u16 tmp16;
-+
-+		ret = adis_read_reg_16(&st->adis, adis16607_calib_bias[idx], &tmp16);
-+		if (ret)
-+			return ret;
-+		*val = sign_extend32(tmp16, 15);
-+		return IIO_VAL_INT;
-+	}
-+
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		ret = adis16607_get_freq(st, &tmp);
- 		if (ret)
-@@ -918,6 +944,7 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
- 			       int val, int val2, long info)
- {
- 	struct adis16607 *st = iio_priv(indio_dev);
-+	const int idx = chan->scan_index;
- 	u32 tmp;
- 
- 	switch (info) {
-@@ -925,6 +952,11 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
- 		tmp = val * 1000 + val2 / 1000;
- 		return adis16607_set_freq(st, tmp);
- 
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		if (val < S16_MIN || val > S16_MAX)
-+			return -EINVAL;
-+		return adis_write_reg_16(&st->adis, adis16607_calib_bias[idx], val);
-+
- 	default:
- 		return -EINVAL;
- 	}
-@@ -934,7 +966,8 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
- 	.type = (_type), \
- 	.modified = 1, \
- 	.channel2 = (_mod), \
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-+			      BIT(IIO_CHAN_INFO_CALIBBIAS), \
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
- 	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 	.address = (_address), \
+Seems in the same way you can test for IIO_EV_TYPE_THRESH.
+
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_write_event(struct iio_dev *indio_dev,
+> +				const struct iio_chan_spec *chan,
+> +				enum iio_event_type type,
+> +				enum iio_event_direction dir,
+> +				enum iio_event_info info, int val, int val2)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	if (info != IIO_EV_INFO_VALUE)
+> +		return -EINVAL;
+
+Ditto.
+
+> +	if (val < S16_MIN || val > S16_MAX)
+> +		return -EINVAL;
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
+
+You can reduce the lines at least by 7 characters with
+
+	struct regmap *map = st->regmap;
+
+at the top of the function. Use same trick elsewhere.
+
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_read_event_config(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_event_type type,
+> +				      enum iio_event_direction dir)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = regmap_read(st->regmap, MAX30210_INT_EN_REG, &val);
+> +	if (ret)
+> +		return ret;
+
+Do you need to do this for other than IIO_EV_TYPE_THRESH?
+Otherwise check for that first and bail out earlier.
+
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return FIELD_GET(MAX30210_STATUS_TEMP_LO_MASK, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +	guard(mutex)(&st->lock);
+> +
+> +	/* The core does not dedupe; only take/drop a reference on a real change. */
+> +	ret = regmap_read(st->regmap, MAX30210_INT_EN_REG, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!!(val & mask) == state)
+> +		return 0;
+
+regmap_test_bits() ?
+
+> +	/*
+> +	 * Threshold events need the device sampling autonomously, independent
+> +	 * of whether the FIFO buffer is also enabled.
+> +	 */
+> +	if (state) {
+> +		ret = max30210_autoconv_get(st);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+> +	ret = regmap_assign_bits(st->regmap, MAX30210_INT_EN_REG, mask, state);
+> +	if (ret) {
+> +		if (state)
+> +			max30210_autoconv_put(st);
+> +		return ret;
+> +	}
+> +
+> +	return state ? 0 : max30210_autoconv_put(st);
+
+Why not simply
+
+	if (state) {
+		ret = regmap_set_bits(map, MAX30210_INT_EN_REG, mask);
+		if (ret)
+			max30210_autoconv_put(st);
+
+		return ret;
+	} else {
+		ret = regmap_clear_bits(map, MAX30210_INT_EN_REG, mask);
+		if (ret)
+			return ret;
+
+		return max30210_autoconv_put(st);
+	}
+
+(Yeah, if I suggested _assign_bits() earlier, I was clearly wrong, this
+ is more complex logic here.)
+
+> +}
+
+...
+
+> +static int max30210_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	unsigned int uval;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 5;
+> +		*val2 = MILLI;
+> +
+> +		return IIO_VAL_FRACTIONAL;
+> +	case IIO_CHAN_INFO_SAMP_FREQ: {
+> +		unsigned int period;
+
+Units? period_Hz?
+
+> +		ret = regmap_read(st->regmap, MAX30210_TEMP_CONF_2_REG, &uval);
+> +		if (ret)
+> +			return ret;
+> +
+> +		period = FIELD_GET(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, uval);
+> +
+> +		/*
+> +		 * TEMP_PERIOD is an index into the sampling frequency lookup
+> +		 * table. Clamp in case the register holds a reserved value.
+> +		 */
+> +		period = min(period, ARRAY_SIZE(max30210_samp_freq_avail) - 1);
+> +
+> +		*val = max30210_samp_freq_avail[period][0];
+> +		*val2 = max30210_samp_freq_avail[period][1];
+> +
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +	}
+> +	case IIO_CHAN_INFO_RAW: {
+> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +			return -EBUSY;
+> +
+> +		guard(mutex)(&st->lock);
+> +
+> +		/*
+> +		 * TEMP_DATA_REG is only refreshed by a single-shot
+> +		 * conversion; the buffer/FIFO path is the only thing that
+> +		 * gets updated during AUTO mode. If AUTO is already running
+> +		 * for the buffer and/or events, triggering a one-off
+> +		 * conversion here would stomp the AUTO bit out from under
+> +		 * whoever enabled it, and there is no way to get a fresh
+> +		 * single-shot value without doing so -- refuse instead of
+> +		 * returning stale data.
+> +		 */
+> +		if (st->autoconv_users > 0)
+> +			return -EBUSY;
+> +
+> +		ret = regmap_write(st->regmap, MAX30210_TEMP_CONV_REG,
+> +				   MAX30210_TEMPCONV_CONV_T);
+> +		if (ret)
+> +			return ret;
+> +
+> +		/*
+> +		 * Wait until CONVERT_T auto-clears.
+> +		 * Datasheet:
+> +		 *   tBIAS_WU = 260 µs
+> +		 *   tINT     = 8 ms
+> +		 *
+> +		 * Worst-case conversion ≈ 8.26 ms.
+> +		 * Use 10 ms timeout for margin.
+> +		 */
+
+> +		ret = regmap_read_poll_timeout(st->regmap, MAX30210_TEMP_CONV_REG, uval,
+> +					       !(uval & MAX30210_TEMPCONV_CONV_T),
+> +					       500, 10 * USEC_PER_MSEC);
+
+Logical split
+
+		ret = regmap_read_poll_timeout(map, MAX30210_TEMP_CONV_REG,
+					       uval, !(uval & MAX30210_TEMPCONV_CONV_T),
+					       500, 10 * USEC_PER_MSEC);
+
+> +		if (ret)
+> +			return ret;
+> +
+> +		return max30210_read_temp(st->regmap, MAX30210_TEMP_DATA_REG, val);
+
+		return max30210_read_temp(map, MAX30210_TEMP_DATA_REG, val);
+
+will fit into 80 characters limit.
+
+> +	}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int max30210_set_watermark(struct iio_dev *indio_dev, unsigned int val)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	if (val < 1 || val > MAX30210_FIFO_SIZE)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * FIFO_A_FULL sets the number of empty FIFO slots remaining when the
+> +	 * A_FULL interrupt fires. For a watermark of N samples, set
+> +	 * FIFO_A_FULL = FIFO_SIZE - N.
+> +	 */
+
+The rule of thumb is to make lines in the comments balanced (by length):
+
+	/*
+	 * FIFO_A_FULL sets the number of empty FIFO slots remaining when
+	 * the A_FULL interrupt fires. For a watermark of N samples, set
+	 * FIFO_A_FULL = FIFO_SIZE - N.
+	 */
+
+> +	ret = regmap_write(st->regmap, MAX30210_FIFO_CONF_1_REG,
+> +			   FIELD_PREP(MAX30210_FIFOCONF1_A_FULL_MASK,
+> +				      MAX30210_FIFO_SIZE - val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->watermark = val;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int max30210_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	/* Enable FIFO-full interrupt */
+> +	ret = regmap_set_bits(st->regmap, MAX30210_INT_EN_REG,
+> +			      MAX30210_STATUS_A_FULL_MASK);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Flush FIFO before starting autonomous conversions */
+> +	ret = regmap_set_bits(st->regmap, MAX30210_FIFO_CONF_2_REG,
+> +			      MAX30210_FIFOCONF2_FLUSH_FIFO);
+> +	if (ret)
+> +		goto err_disable_irq;
+
+> +	scoped_guard(mutex, &st->lock)
+> +		ret = max30210_autoconv_get(st);
+> +	if (ret)
+> +		goto err_disable_irq;
+
+Oh, does it compile this way with scoped_guard()?
+
+> +	return 0;
+> +
+> +err_disable_irq:
+> +	/* The core won't call postdisable() when preenable() fails. */
+> +	regmap_clear_bits(st->regmap, MAX30210_INT_EN_REG,
+> +			  MAX30210_STATUS_A_FULL_MASK);
+> +
+> +	return ret;
+> +}
+
+> +static int max30210_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	int ret, err;
+> +
+> +	scoped_guard(mutex, &st->lock)
+> +		err = max30210_autoconv_put(st);
+> +
+> +	/* Keep going on error so the interrupt is always disabled below. */
+> +	ret = regmap_set_bits(st->regmap, MAX30210_FIFO_CONF_2_REG,
+> +			      MAX30210_FIFOCONF2_FLUSH_FIFO);
+> +	if (!err)
+> +		err = ret;
+> +
+> +	/* Disable FIFO-full interrupt */
+> +	ret = regmap_clear_bits(st->regmap, MAX30210_INT_EN_REG,
+> +				MAX30210_STATUS_A_FULL_MASK);
+> +
+> +	return err ?: ret;
+> +}
+
+TBH, I don't like how these two callbacks are implemented in terms of goto:s
+and additional error code variable, but I have nothing to suggest, so we would
+live with the above... :-(
+
+...
+
+> +static void max30210_powerdown(void *data)
+> +{
+> +	struct gpio_desc *powerdown_gpio = data;
+> +
+> +	gpiod_set_value(powerdown_gpio, 1);
+> +}
+
+static void max30210_powerdown(void *powerdown_gpio)
+{
+	gpiod_set_value(powerdown_gpio, 1);
+}
+
+...
+
+> +static void max30210_quiesce(void *data)
+> +{
+> +	struct max30210_state *st = data;
+> +
+> +	/* Stop interrupt sources and autonomous conversions; errors are not actionable here */
+
+Make it multi-line to fit 80 characters limit.
+
+> +	regmap_write(st->regmap, MAX30210_INT_EN_REG, 0);
+> +	regmap_write(st->regmap, MAX30210_TEMP_CONV_REG, 0);
+> +}
+
+...
+
+> +static int max30210_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct max30210_state *st;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to enable vdd regulator.\n");
+
+Here it is fine to have a single line
+
+		return dev_err_probe(dev, ret, "Failed to enable vdd regulator.\n");
+
+> +	st->regmap = devm_regmap_init_i2c(client, &max30210_regmap);
+> +	if (IS_ERR(st->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
+> +				     "Failed to allocate regmap.\n");
+> +
+> +	st->watermark = MAX30210_WATERMARK_DEFAULT;
+> +
+> +	ret = max30210_setup(st, dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = &max30210_channel;
+> +	indio_dev->num_channels = 1;
+> +	indio_dev->name = "max30210";
+> +	indio_dev->info = &max30210_info;
+> +
+> +	/* Currently, without an interrupt there is no way to drain the FIFO into the buffer */
+> +	if (client->irq) {
+> +		ret = devm_iio_kfifo_buffer_setup_ext(dev, indio_dev, &max30210_buffer_ops,
+> +						      max30210_fifo_attributes);
+
+		ret = devm_iio_kfifo_buffer_setup_ext(dev, indio_dev,
+						      &max30210_buffer_ops,
+						      max30210_fifo_attributes);
+
+> +		if (ret)
+> +			return ret;
+> +
+> +		/* Runs after unregister, so nothing can re-arm the device; before powerdown. */
+> +		ret = devm_add_action_or_reset(dev, max30210_quiesce, st);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	ret = devm_iio_device_register(dev, indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!client->irq)
+> +		return 0;
+> +
+> +	/*
+> +	 * Request the IRQ after registering the IIO device so devm tears it
+> +	 * down first on removal, before the event interface is freed.
+> +	 */
+> +	return devm_request_threaded_irq(dev, client->irq, NULL,
+> +					 max30210_irq_handler, IRQF_ONESHOT,
+> +					 indio_dev->name, indio_dev);
+> +}
+
+...
+
+Module description:
+> +MODULE_DESCRIPTION("MAX30210 low-power digital temperature sensor");
+
+Kconfig:
+> +	tristate "Analog Devices MAX30210 temperature sensor"
+
+Top comment:
+>  * Analog Devices MAX30210 I2C Temperature Sensor driver
+
+Make all three texts to be the same.
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
 
 
