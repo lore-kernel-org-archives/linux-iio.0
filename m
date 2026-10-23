@@ -1,60 +1,70 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792777064;
-	b=tqPx5sZNyIXqh2P/i2MpBe2qGC4wimSh+gWaPfIBpOq/xL4AB5ME3SBSVbswfezk7oyN
-	 O/JY6jTK8GKGEDjVmpF5DLoz/mMPM9hwzkfkqZn5cySuocMcUFe+GqcsgOJes9II7SjdV
-	 iP2CrPCMAsQZDSXupQuI4suP/3UjnY2WdbAvh4xZmtKte6y6JxLxUIhA2jUlcwBzon9O+
-	 coUpJi4Y/rQdugxJfnYfmjzr3PBYzU2EiruTqJ51bYutWg4tesNFqa4tH7jNuD9b2Ro2p
-	 n5QZfrrc2DN4TqHX74bqYGknc79eGd5Mm6OCdFQ1i9JBcaI2D3Fc2bKD85B+z9A+MSA==
+	t=1792777157;
+	b=FMP3VvdIf6zNHFSlDqLWYW4cq70EERYMRQA64fo/puZ4eYUFuGmFel8j/ahJVmDe1qKf
+	 bBRs4a7hWDEdMttzWm+00ygMw4vBSO+eIN8G2yuaAy3iezdS6mvsEKDDTv1/usMKVf0Pd
+	 DrprNUJ+FZkYMM62K43D8DGKOHoapGGsf8CIr2nXIOMViP01s69fB4beILQlxe2UpDJSW
+	 VOOCJtZ7M/eQFsXIzFPZ6qHBmK3F12HzdKcsV9TtVV4bc9B+DMR75F5IWdt0nBnPEZ/K2
+	 k2dsuc01kn20RU3onqXAoscI5W7blIz2tFHvz3mZHE1g3Ih5Emet4nPclAuXyRJfB+w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792777064;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792777157;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=4SM4YBD6lUzD+hk3iOr9i7/VjypaevvBMuwZxI4VpqI=;
-	b=dny7J2vM+1znvgtApVsLHObxcpA+8t8lchgp0N88kOjJlRvR6744ZCN+zr+1T+MwJPSh
-	 B1ghVCRrmP2bIVwnVxPFbc6/Tv45xRMWN4spbsHP8aA/xNIeehzAa5/H4jGCdYzsVcFTh
-	 kIIgqPFKEr/gDZrhk76ZM17V2S6Ufwe9nORSYzGSXDRujqr+gRTMULWTzb68AGnS85NT4
-	 VH09z3yC7fx6dhIe9WBLT2p+jW/tTfuTOYMK9J48YR6eJmDyaYt4mmRW88EAJ20rWcM/2
-	 qmCZHaP7FHXNIEoCShqDWz6yqFENNr4b8rcPuyGUfUcDxw2EAUjYrMzueYCTvtDgz3A==
+	bh=sPGd9aFROxOhz1KFda6cV3QjwhmfwJ0s75CjYBEyrrk=;
+	b=z4ZJZbFuOhmk1atl+7KgAgmz92O/TGthE3f5gpUq0r87nXzO1rG9ESAOFodKh4aK/uL8
+	 uxjSuAFfr6ZLQ5ghXf59Gc73LGCyaxT4jRtF7Kl8cN4mi9dAfuwe1KS1ev3he590vnOHe
+	 MUIhXUxVezW/mv2+5jmxxniMY+lwkwb/olZF+k1IZ5dqk/I2uxkJxQb2zCkZFcoZzmAR2
+	 Z3u+S1So2/22uMjhRYmYGPtIXnIfcSTuYJrTNUSxV8u00nIf/8VVHs+q7kRQwXy2U82Te
+	 Key3tbgPyqEU0jtwQEfEH6Eo/DUL9puQSrlBs2QRO0naE0dCmLOYqpgt4aU291+FrwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Cqp2iPHp;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WYqvYP6Z;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05EE606A31E;
-	Fri, 23 Oct 2026 17:37:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAD3606A31A;
+	Fri, 23 Oct 2026 17:39:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Cqp2iPHp
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B909F1F01825;
-	Fri, 23 Oct 2026 17:37:40 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WYqvYP6Z
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0831F01825;
+	Fri, 23 Oct 2026 17:39:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792777063;
-	bh=4SM4YBD6lUzD+hk3iOr9i7/VjypaevvBMuwZxI4VpqI=;
+	s=k20260515; t=1792777156;
+	bh=sPGd9aFROxOhz1KFda6cV3QjwhmfwJ0s75CjYBEyrrk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Cqp2iPHp7fKQdPAUTUj0lCRddK1Rjl/QKlJRjO6BZDffmRrNeZ8Os/CsgMKSoaNrv
-	 TX6gKewWoxBdq06VLcn0rD1N8WZtTemRTvkLfpqKpcFR4dq7FvTrC67xaa7a8+/Nnh
-	 NLFA9YnmSftXRvpq9Q5t/wx93VjF2KBB0iQb9tlWVMnM1vhfRnE3jbUthhN9XzPq5v
-	 lAnNWS7qKQvc2hOFPSzikyLjLcUIv0lvpMXuS2JCgFGNE+6Lomult0dO4o7l9VJ4ac
-	 +U30kN1YzcihcHWM5iBd9KRNEPNXF4gT+U39MwDbqcEAMiego49p/7y+Uf5dYH8t9I
-	 dDqkgNPiSEatw==
-Date: Fri, 23 Oct 2026 18:37:38 +0100
+	b=WYqvYP6ZKJ4Y4UemFOE4AuTFrSWI3JomDirAvL9Da3Ke2KrGDRXWjZVhzuziC4ORR
+	 Tm2vFQZ9NRMxUiC3qA2csJDV2of7uuHDPiB+rSHJeHYht6zoZtepfwnJgMJNG8xyuG
+	 CMfl4k2/3k0xnisEvDIomqBheiUSsxTABdeC/oLDyzwevo6U7YSvuZExkZhAm0Y/qM
+	 9lUKLzh/yIabOUIayzJC8gG/XhZSqEg2p2B4B/JdRBgWtNjr8kLwuhbQsVw4Ef6Q6+
+	 g+9kW9a5ceQh28XoSBqJIXmDwl3qUecAEWBMWye0HRuIB89cQN+LiAfrus0tPr5Nco
+	 P5TXLa0cMjhQA==
+Date: Fri, 23 Oct 2026 18:39:11 +0100
 From: Conor Dooley <conor@kernel.org>
-To: Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux@analog.com, devicetree@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel@axis.com
-Subject: Re: [PATCH v2 1/4] dt-bindings: iio: light: opt4001: add opt4041
-Message-ID: <20261023-purist-privacy-e079ae39f0cd@spud>
-References: <20261023-opt4041-v2-0-ee320812804c@axis.com>
- <20261023-opt4041-v2-1-ee320812804c@axis.com>
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v2 03/10] dt-bindings: iio: frequency: add
+ adi,ad9910-axi-backend
+Message-ID: <20261023-boss-matriarch-a1953ccaf539@spud>
+References: <20261022-ad9910-backend-support-v2-0-0ff7f0bff326@analog.com>
+ <20261022-ad9910-backend-support-v2-3-0ff7f0bff326@analog.com>
+ <20261022-banish-scenic-030717ca503e@spud>
+ <hx6lt2u5j5yh3iez5zimolukip4a6ak36rdqridrvaz7bb25hw@6blwtzy2iuat>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,26 +75,78 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="DxVnmI0yXMZnzjoC"
+	protocol="application/pgp-signature"; boundary="lGRIL5kI7ggZQ17D"
 Content-Disposition: inline
-In-Reply-To: <20261023-opt4041-v2-1-ee320812804c@axis.com>
+In-Reply-To: <hx6lt2u5j5yh3iez5zimolukip4a6ak36rdqridrvaz7bb25hw@6blwtzy2iuat>
 
---DxVnmI0yXMZnzjoC
+--lGRIL5kI7ggZQ17D
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Oct 23, 2026 at 08:15:07AM -0300, Rodrigo Alencar wrote:
+> On 22/10/26 19:38, Conor Dooley wrote:
+> > On Thu, Oct 22, 2026 at 12:19:01PM -0300, Rodrigo Alencar via B4 Relay =
+wrote:
+> > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > >=20
+> > > Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
+> > > interfaces with the data and control pins of the AD9910 DDS, streaming
+> > > data from memory via DMA into the 18-bit parallel data port (F[1:0] a=
+nd
+> > > D[15:0] pins), which is clocked by the PDCLK output of the device. It
+> > > also drives the PROFILE[2:0] pins and the DRCTL pin, which controls t=
+he
+> > > slope direction of the digital ramp generator (DRG). The DRCTL pin is
+> > > driven by a PWM generator, so the IP core is described both as an IIO
+> > > backend and as a PWM provider.
+>=20
+> ...
+>=20
+> > > +  '#io-backend-cells':
+> > > +    const: 0
+> > > +
+> > > +  '#pwm-cells':
+> > > +    const: 3
+> > > +    description:
+> > > +      The first cell must be 0, as only the DRCTL PWM output is avai=
+lable.
+> >=20
+> > I was about to ack this, but the wording here caught my eye. Are there
+> > other PWMs that are unavailable?
+>=20
+> Not for this version of this core. Other signals to control the DDS could=
+ be
+> modeled as PWM, e.g. DRHOLD, PROFILE0, OSK... but that is not being consi=
+dered
+> at this stage.
 
 Acked-by: Conor Dooley <conor.dooley@microchip.com>
 pw-bot: not-applicable
 
---DxVnmI0yXMZnzjoC
+(But maybe consider rewording so that it doesn't sound like there are
+other PWMs that cannot be used)
+
+>=20
+> >=20
+> > > +      The second cell is the PWM period in nanoseconds and the third=
+ cell
+> > > +      holds the PWM flags.
+>=20
+> --=20
+> Kind regards,
+>=20
+> Rodrigo Alencar
+
+--lGRIL5kI7ggZQ17D
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatubYgAKCRB4tDGHoIJi
-0qaZAQDhFiO7gQ6R3QCOlDbr7+Rog8IhB5PJ5JmCdrOFfmDKtgEA5OyuShdHS04A
-tl7Day3pzGxasIp5oYwEKvqq5jGz/gQ=
-=/tQE
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCatubvgAKCRB4tDGHoIJi
+0vKSAQDQFFHMyIEfY+UgNmbkTiIL1nyt6ylahe3+fmkcT8fIxAD/Tcw/FliHpwOB
+As/ewbCO71uqlme5mpXhT1RCHhK8qgw=
+=moiI
 -----END PGP SIGNATURE-----
 
---DxVnmI0yXMZnzjoC--
+--lGRIL5kI7ggZQ17D--
