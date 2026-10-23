@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792747825;
-	b=MPPI84mKv2RgMxIYTHTvaESTOmE2mL6Vvz7/F9VJ3u70qqN1gG1MFpV7swP6NVeNHdZU
-	 bopClAyxIcWhSixIGS8C7/5f+BZRBMk/j4Bq5GYTYfbCsBmw9WEAGO4UFm5K2B/4DZud2
-	 BnAIYStywbzTbQHB39NI2kAUGWVl6e+rAwCX2GMCkXvzWMr1HwTgeV8mO2pdg4GGKzSZL
-	 WwViFFicqb915K9smFPFHgHjcsCEb15gAB3YWPCpoNMPXgbP1xY2O1FAo324XU6K9MOPl
-	 /712JmPknOqdPun5wpbW0VubM5Ew3KgB0FhP4gjxsnODmvOJepulimRHB1V7gGfTsxg==
+	t=1792747831;
+	b=r+6moLfKDD6UvIPPYrqbFH62R0dnoO46LFxr57BkvaHoCH6UHzJ29kiNo4Kpl8gr+EqM
+	 AfLgSOp4nsdGvdt6dAFlWRRji5YoTo9XnBtvitmgLlwa9iRKoF9wRAj2mHUQmmNO4Ioms
+	 dNlbXHjpFw6jgUUpXwG6RFHvyb/N1aINqkrtIqzwIO5wPZP8HFWdp5vg8+mX8CALmNOgS
+	 ohnu/5t2ITIHTcMwvmKxrprq2Lkqz0pK9oR2Ul6YoKVnGyb3JvQB0G6kDKIkyIVxodQ/x
+	 FMILWaKA4YBkapqEyZHGE501JbjVxB60CfU0zMS+b+y6Ot79jeHisQrsZ3SYT8Qm6fQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792747825;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=5VECN0YbjNGQZk+4GWdAYkShMoMx/CYsLB+JxpqSmeA=;
-	b=zvBd+kU3/s2doxoRq3tQfEwqpVMlgw0DRh1e7msSt3lg2ABsB98rC578ltIWs0PO4Zus
-	 vHKMG1p4jLaA4TnmkoEIvBO02N10IuFTpY5lbhr3cM/y5mb1NkNjshejJkZRd6S+G8bnN
-	 IGqrQSC8vtPP21+FRrYP2vkW4p+zN4BWaIiVHMsO3oEB3V83u7ASt1yLwPkpR/6qzChRx
-	 Jx5WIT48Wq0WMfiI7U8miEI9OmbpQtPGJXMim8+M1XBydfCk/liiPyuO4nfKIIP6vOK/t
-	 V+O/3jge3V0QuKck1zxsOqDTFSROBeOpSYIsot9FPcICaeS24HAkryrcyY7iyTJgHrw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792747831;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=VnWonFKCnGuCLyPuz+nEaDV397ceW0847/QSykKmLo4=;
+	b=Qi8XE49cg9gQXmULYp0P2Kp6xshLviRCNjI3oVVjrgXTQgAZgt6SKwTVYQPjd7SNhY49
+	 SadIivyj5+jEO3c1fenTaHE9RpvpmajtwjTGyo1ABVqHcrmHul3j6lDzes5eU7WwYqOGH
+	 pr+T+wXHXtzCAdYKe7sOxJ47Hoy0WidYQIsU0F/89AWbJhBzOEAg2Ygw7XewR9hR9j7Gz
+	 SRJsUh8qCc3ArZ/c9LliIbzNdXJnwYA3zTmU58/+SR/Gg6a2H5Id0aSPj8MwwdBduHgfd
+	 5i1zVzL1Wfkhe370KhQx0OYoPrHqz5NFOYe2w3XOsP09D2Tk3/PJNsBugGoONGb2KHw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EbNRshSU;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Nqyrs+bC;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F15860A2600;
-	Fri, 23 Oct 2026 09:30:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C437060A263F;
+	Fri, 23 Oct 2026 09:30:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EbNRshSU
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Nqyrs+bC
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1792747824;
-	b=JxWLZZFSoAvqqZKyHrE3/DQYUEmWj40ulVBYpZz0AOpJrfDUjKKqUKNDJzuXdbsq4XYd
-	 zY7JynB8f2oLaJCM5F09reLBfqlZJ3nAI5+6ZVkE48xyUL9EudIkg5mVCPdI5GuVRZWsO
-	 tWVoVMbVW3sH7YHi6xulgZhnibdx3SZ9l2t2BaTxcKOCdmtxclWE+xN2eM2I8KeuaKyFK
-	 6juhG6lq3ooCY7FY6brtJevnWUW0YYwEPksstcQw+NiEgaAqIAvbpGHktSjIcgxDvrPla
-	 kTcERKW6amd8Rz39QCW0bh4ScmIobGHOlsZHXGiwGqJjKkR37vQK2OFes4GcASlPIZg==
+	t=1792747825;
+	b=iThgoCnk15onlt1ke6F7rjRdvr7xdGIZGYQ5V+ma3+dTatrOGX4T0g2sK/297zaZaovr
+	 nDhRxxicOdRVV9axjKuRypSnH2c6q0gPUkZFteLEnSOjzWtvf/2XRipsp08AjYBAFTNSn
+	 vBLWsbXU4qBufq4bV2UNODSCMMoPQ9zmrHDJAkCoL9ajRp+HW3qVKXfBVnVptHwLchNIw
+	 Rp/zwFJPjI97ysHB1vmO+uVhiMLtOQQyeS6h8rHXOjBZjkUGcoieQ6j+I1Jvrq3lvlpey
+	 FKx883gRh6fJ3GuOgay57u3T5v1Q3awP43t+6OyV8m7nBsHAhIhI9jFHi8MGxUo1xvA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1792747824;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:To:Cc:X-Mailer:
+	c=relaxed/relaxed; t=1792747825;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=5VECN0YbjNGQZk+4GWdAYkShMoMx/CYsLB+JxpqSmeA=;
-	b=HqV/DmtYYn6wBpHsyuMGNYhZpGQSgSFcSaRRtXZg4z+O7oGDVdiHCY0jvvgOrmhXKy0l
-	 sjcrqYogCdwF7jo/KfANlLZv3KopMmI2Kw70LND0MWdjrK+R8f1rhMMn7XLOmuj9Mb7i3
-	 bPIYgdq7JcREluUOwiieoiR18wfACpGF2iCwreuLVtXhxWNMcWTdVjaQkpB899/IFkDJ1
-	 yVQufLXcNVqnEvqfiyJYTz6/xasNQoxW+v+Ahn122SYqzg34t4cp4ugv9RV0+YKnozTTr
-	 W1+fDoPNq3r6sxIoAOjynTEQ83674djbxYXvD+VqRq+EQ/S1KmW+6bpFWyRgOZxmGFg==
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=VnWonFKCnGuCLyPuz+nEaDV397ceW0847/QSykKmLo4=;
+	b=UrMVR/7146fjzRg4T9sQv5M24M3FMOH1cDDtnId8AQDZeUfjGzWit0ReSopYXf3MY+IY
+	 gTgCWVhb++mbhjirPvuYGEfD5W5ZxEnFkCW6swiRowEFG9tVkhGVIylaxOJ6rNBK/wVRk
+	 dpSGwB0pt8dM891PplUxCT9nD3M2+nPw6PXrNknstmrDBy3SXrzeKQOpKIacatdzl50NA
+	 nRgOnwOnhMKXGdXXusfeBKZNsUrsTpdupMHFBF7gFAFZgV91viqZzjT1+sRQg9jQ9BOlv
+	 X0ZUC5evvVOWSwSUbjhfB2dd6OcBIvcLrw1EwQWcF8fReJrWEOp4zVfyIYhFTureioQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id D95C41F031E1;
-	Fri, 23 Oct 2026 09:30:21 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 091D51F031E4;
+	Fri, 23 Oct 2026 09:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792747824;
-	bh=5VECN0YbjNGQZk+4GWdAYkShMoMx/CYsLB+JxpqSmeA=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=EbNRshSUnCmxhrtq5MsJ4WxGWqZ0hjWwgH4G/ey847KyJFojN1ZCVH8s8tW9unZc5
-	 1G8SSvsR+A9v+d6Hh+xjJ5VjNyJa1eWYW1VMxmfI4tHhKCIEdOOycJM84dQWMFp521
-	 s0yvD6eKGY8W2TYR/MmI+7oSCNjASxUwgdJnzMS9ZNh3zk/jk8PT5OHG9KAjkc3fkd
-	 GOV2e2WYnF4SP9YuJ0f78cJjvgtl6Cfll0ctp2dy3BRd9eJpYMAWAFdKWBN/OT8gWA
-	 78xIGd3HAkJ3F6LXF2HYCgeeqz4WcWoG5y7CJWCKpoGAFTaL4wPkD66XFIXNdEC+jz
-	 UYY1x+Tqf5p0g==
+	s=k20260515; t=1792747825;
+	bh=VnWonFKCnGuCLyPuz+nEaDV397ceW0847/QSykKmLo4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=Nqyrs+bCFpmag1FHmq5zoyEfmNmWz0W1wS5xRCMF9jzL14Eb9VFceSI5oPLJq+6qI
+	 xCdywNta+y3Vn4fP/KnkUmdgQwMeNHOVkBy1vAZq7coWEdyHDwGNtU1nSENjvvqWUm
+	 z0NNBmAlxACdu3KqUr1lC0Z/cVehdAD+R+pJODuxg7YSsO4t5HR161Ttfv7najtj9e
+	 zbIMlV/fMkIWLcwbRQbTZg3AxT4t7MgK2VfQdd6n8tHhH0c+WbxaXTJNRS8EVwyZjM
+	 RLe3pamIkp1TSTaUBeKTiSbq5b6sI4WwwGWxhA7HtvMLZAHsLom8x1uhBv/6X0iIxQ
+	 NnY8OV71cdqjg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 39B2E44458;
+	by lkml.kernel.org (Postfix) with ESMTP id 7396C4446C;
 	Fri, 23 Oct 2026 09:30:21 +0000 (UTC)
 From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Subject: [PATCH v4 0/8] iio: imu: Add support for the ADI ADIS16607
-Date: Fri, 23 Oct 2026 12:30:17 +0300
-Message-Id: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+Date: Fri, 23 Oct 2026 12:30:23 +0300
+Subject: [PATCH v4 6/8] iio: imu: adis16607: Add FIFO-based
+ buffered/triggered capture
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,11 +84,9 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIACkp22oC/2XMTQ7CIBCG4as0rMUALX+uvIdxgTC0JFoMGKJpe
- ndpVxiX32Sed0EZUoCMTt2CEpSQQ5zrGA4dspOZR8DB1Y0YYYIIKrFxIVMhiMREae+t4NzCDdX
- /ZwIf3nvrcq17CvkV02dPF7pd9wolhDaVQjHB2iptAXruuDib2dzjeLTxgbZMYS1VLWWVSqsH5
- xVRUpk/2jeU8pb2lXotmRvAAyj+Q9d1/QJ5sbVzGQEAAA==
+Message-Id: <20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
+References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+In-Reply-To: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
@@ -101,289 +99,480 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, linux@analog.com, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792747820; l=15184;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792747820; l=15727;
  i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=blpfuhphV3xIbzwtEl/kWdFibNliaCDRqHSRBD9E/Bg=;
- b=Rp3y+30DlMVhjgzu9gf7/7yR19PQt4y7vhpR2DHVDqQMv5FjDHhgw5wZ7y1cC0iKa4M6craIt
- 3JMGoL/74tjD695JpnLl5PhU4WB4fY+n6GeA3pUCNRxIEOkAGxLLGZH
+ bh=5bO9M+VBZnN3vwynF1gmWkEcYXe12va6iYcUbOFuYgg=;
+ b=supR8dMS0dZxUlRkSLOJfscXI18fnrcoGXRrthdDMkkccMuIVkvmlnk66wIM+6/iEE0lIwf1B
+ CigAnrg+U8aAZxqj7jXdqe7SxrZgjbTMN2N7LcTtQEAMI1q68Hjrkiq
 X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
  pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
 X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
  auth_id=1094
 X-Original-From: Radu Sabau <radu.sabau@analog.com>
 Reply-To: radu.sabau@analog.com
+Content-Transfer-Encoding: 7bit
 
-This series adds support for the Analog Devices ADIS16607, a precision
-MEMS IMU with triaxial gyroscope, triaxial accelerometer, and
-temperature sensor, communicating over a non-standard SPI Half-Duplex
-protocol.
+From: Radu Sabau <radu.sabau@analog.com>
 
-Patch 1 adds an optional self_test callback to adislib, for devices
-whose self-test sequence doesn't fit the generic
-mask-write/sleep/check-status pattern.
+Add buffered capture via the device's hardware FIFO - the only
+capture mode this driver supports. Popping the FIFO uses a dedicated
+command and payload format (FIFO_DATA_CMD, 52 bytes, no checksum),
+handled directly rather than through adislib's generic burst-read
+helpers, which assume one fixed-shape read per trigger rather than a
+variable-count drain loop.
 
-Patch 2 fixes the reset dispatch: both __adis_initial_startup()'s reset
-fallback and the public adis_reset() wrapper were calling
-__adis_reset() directly instead of dispatching through
-adis->ops->reset(). That bug is invisible for every existing adislib
-driver (adis_default_ops.reset is __adis_reset() itself), but silently
-breaks a driver with fully custom ops - like this one - on any board
-without a reset-gpios property, or any caller of adis_reset() on a
-device like adis16550 whose custom reset op needs a different write
-size than __adis_reset()'s hardcoded 8-bit one. Carries a Fixes tag for
-the commit that introduced the hardcoded call; no stable backport is
-needed since the bug only manifests for a custom-ops driver, and this
-is the first one.
+The watermark-met condition is signaled via DEV_NOK on the device's
+one interrupt pin, which stays asserted (level-triggered) until
+DIAG_STAT is read and cleared - matching adislib's has_fifo contract.
+DEV_NOK fires on any DIAG_STAT flag, not just FIFO_THRESH_MET, so the
+trigger handler checks that specific bit before popping anything.
+DR_GPIO_MASK stays enabled unconditionally: DR pulses drive the FIFO
+controller's internal sample enqueue, independent of pin routing.
 
-Patch 3 adds an optional post_reset_setup callback to adislib, for
-devices that need extra device-specific bring-up between reset and
-self-test (SPI mode locking, status/bootloader checks, pin or
-burst-mode configuration, etc.) - not all ADIS devices need this, so
-it's only called when set, same as self_test.
+Watermark is configurable via the standard hwfifo_set_watermark
+callback and the usual hwfifo_* sysfs attributes.
 
-Patch 4 adds the devicetree binding.
-
-Patches 5-8 add the driver in functional groupings, as requested in
-v1 review:
- - Patch 5: base driver - probe, raw channel reads, decimation/sample
-   frequency, startup and self-test via adislib, debugfs identity
-   entries. No buffered capture yet.
- - Patch 6: buffered capture via the device's hardware FIFO.
- - Patch 7: external clock sync support.
- - Patch 8: calibration bias support for gyro/accel.
-
-Notable points for reviewers:
-
- - The device does not implement the standard ADIS SPI protocol used
-   by other parts in the family; reads/writes are done over a custom
-   Half-Duplex sequence (see adis16607_spi_read()/adis16607_spi_write()
-   and the adis_ops overrides).
-
- - Startup is split across the two new adislib callbacks rather than a
-   driver-private initial_startup(): adis16607_post_reset_setup() does
-   SPI Half-Duplex locking, dev_id verification, the bootloader-busy
-   check, and (once FIFO is wired up in patch 6) burst-mode and
-   DR/DEV_NOK interrupt-pin configuration; adis16607_self_test() does
-   the actual per-axis delta-check, clearing the SELF_TEST register on
-   every exit path (not just success) so a failure doesn't leave the
-   sensor sitting in its self-test/force state.
-
- - GPIO0's reset-pin routing (RESET_GPIO_MASK in USER_GPIO_CFG) is
-   runtime-writable on this part, so a prior write (bug, firmware,
-   direct register access) could leave it de-routed, silently
-   defeating reset-gpios. Patch 5's probe() forces it back to the
-   reset function over SPI before relying on toggling the pin -
-   warning rather than erroring out on failure, so a still-responsive
-   device still gets a real chance at reset. Patch 6 adds the
-   DR/DEV_NOK pins to the same USER_GPIO_CFG register via a
-   read-modify-write, so it can't clobber what probe() already set.
-
- - The hardware FIFO is the *only* buffered capture path - there is no
-   single-sample direct burst-read trigger mode. The FIFO-pop command
-   and the regular burst-read command are genuinely different
-   protocols on this device (different payload shapes, no checksum on
-   the FIFO side), so this stays driver-private rather than going
-   through adislib's generic burst-read helpers.
-
- - The FIFO drain in the trigger handler just reads DIAG_STAT (which
-   clears FIFO_THRESH_MET as a side effect) and pops however many
-   complete samples are available - no disabling, flushing, or
-   re-enabling around the drain. The datasheet's dual-port FIFO
-   architecture means reads and writes don't contend, so there's
-   nothing for a disable step to protect against.
-
- - The FIFO-threshold interrupt is signaled via DEV_NOK on the
-   device's one physically-wired interrupt pin, which stays asserted
-   (level-triggered) until DIAG_STAT is read and cleared - this sets
-   has_fifo on adis_data and requests the IRQ through adislib's
-   threaded/level path, matching adislib's actual contract for that
-   flag.
-
- - An optional external clock (clocks property) selects between
-   SYNC_DIRECT and SYNC_SCALED modes depending on the supplied
-   frequency, with the internal 8 kHz clock used as the default when
-   no clock is provided (adis16607_config_clk()).
-
-This has been tested on a Raspberry Pi 4 (arm64) with the device wired
-over SPI, exercising the FIFO buffered-capture path with the updated
-DEV_NOK/level-triggered interrupt wiring.
-
-To: Lars-Peter Clausen <lars@metafoo.de>
-To: Michael Hennerich <Michael.Hennerich@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-
-Changes in v4:
-- Split the combined adislib commit into three: self_test callback,
-  the reset-dispatch fix, and post_reset_setup callback, each its own
-  patch - the original bundled all three under one "Also..." (Jonathan).
-- Simplified the reset-dispatch fix: removed the internal settle-time
-  sleep from __adis_reset() entirely and made both call sites
-  (__adis_initial_startup(), adis_reset()) sleep unconditionally after
-  dispatching through adis->ops->reset() - no more comparing against
-  __adis_reset() to decide whether to sleep (Jonathan).
-- dt-bindings: commit message now states how adis16607-2/-3 actually
-  differ (gyro full-scale range only) instead of just asserting two
-  variants exist (Jonathan). Narrowed reset-gpios's description to
-  just itself, and expanded the top-level description to explain the
-  device's five GPIO pins and where each one's function is actually
-  modeled (clocks, interrupts, or not exposed) (Jonathan).
-- Base driver: moved the RESET_GPIO_MASK force-write from after reset
-  to before it, in probe() - a previously-defeated reset-pin routing
-  (buggy driver, direct reg access) now gets a chance to be corrected
-  before relying on the GPIO toggle, instead of too late to matter;
-  only warns rather than erroring out on failure, so a still-live
-  device keeps its chance at a real reset (Jonathan). Removed the
-  now-redundant duplicate of that same write from
-  adis16607_post_reset_setup() (Andy).
-- Base driver: large style/cleanup batch - dropped an unneeded
-  <linux/kernel.h> include, reordered struct adis16607 so struct adis
-  is first (cheaper container_of(), measured -0.41% code size via
-  bloat-o-meter), use spi_message_init_with_transfers() instead of
-  repeated spi_message_add_tail(), ARRAY_SIZE() instead of hardcoded
-  loop bounds, put_unaligned_be16(), combined the firmware/revision
-  debugfs files into one "major.minor"-formatted entry, dropped an
-  unnecessary #ifdef CONFIG_DEBUG_FS wrapper, guard()/
-  adis_dev_auto_lock() instead of manual mutex lock/unlock, -ENODATA
-  instead of -EINVAL for an unmatched chip_info, unit-suffixed
-  clk_freq_mhz/int_clk_hz field names with MILLI from <linux/units.h>
-  instead of a bare magic 1000, de-duplicated/inlined several
-  single- or two-use macros (Andy, Jonathan).
-- Base driver: the self-test startup delay now cites the actual
-  datasheet value (Inertial Settling Time, 40ms) instead of an
-  unexplained 100ms that didn't match anything in the datasheet
-  (Andy). Self-test now clears the SELF_TEST register on every
-  failure path, not just on success (Sashiko AI).
-- FIFO: dropped disabling the FIFO before draining and the
-  flush-and-re-enable afterward entirely - the datasheet confirms
-  overflow-only overwrite (not overwrite-during-read) and a dual-port
-  architecture with no read/write contention, so there was nothing
-  for the disable step to protect against, and it was costing real
-  samples during its own disabled window (Jonathan). fifo_buf is now
-  a fixed-size array instead of a heap allocation reallocated on
-  every scan-mode change; deleted the now-unnecessary
-  update_scan_mode() and its devm cleanup entirely (Jonathan).
-  guard()/adis_dev_auto_lock() and direct returns in buffer
-  postenable/postdisable (Jonathan). clamp() instead of clamp_t() -
-  confirmed by building that the forced cast wasn't needed (Jonathan).
-- Sync: adis16607_config_clk() now reads DEC_RATE live instead of
-  assuming it's 0 after reset, the same way adis16607_get_freq()
-  already does - consistent with how USER_SYNC is already written
-  explicitly rather than relying on its own reset default (Jonathan).
-- Link to v3: https://lore.kernel.org/r/20261015-adis16607-v3-0-f972d4efee85@a
-
-Changes in v3:
-- Fixed the public adis_reset() wrapper (adis.h) to also dispatch
-  through adis->ops->reset() instead of hardcoding __adis_reset() -
-  the same bug class as the v2 __adis_initial_startup() fix, just a
-  second call site that was missed. Switched both checks from
-  comparing against adis_default_ops to adis->ops->reset != __adis_reset,
-  which also works from the header, where adis_default_ops isn't
-  visible (Sashiko).
-- Fixed dt-binding wording: dropped "compatible" from the variant
-  description (reads as a DT compatible-string fallback claim, which
-  doesn't exist here - the two variants aren't interchangeable) and
-  dropped a Linux-driver-specific sentence from reset-gpios's
-  description (Conor); removed a stale commit-message bullet claiming
-  a FIFO watermark property that was never in the binding (Sashiko).
-- Dropped a redundant <linux/mod_devicetable.h> include -
-  <linux/spi/spi.h> already provides it (Uwe, Andy); switched
-  adis16607_id[] to named initializers (Uwe).
-- Fixed FIFO sample timestamps: they were projected forward from the
-  IRQ-fire time instead of back-dated, so the newest sample in a batch
-  ended up timestamped in the future. Now back-dated so the newest
-  sample lands on the IRQ-fire time and earlier ones count back from
-  it (Sashiko).
-- Added a comment explaining why disabling the FIFO during drain, and
-  the flush afterward, don't lose in-flight samples - no new samples
-  are enqueued at all while disabled, so nothing can arrive in that
-  window for the flush to drop (Sashiko asked twice, independently).
-- Reworked external clock sync configuration (adis16607_config_clk())
-  so every mode (default/direct/scaled) explicitly writes its own
-  complete SYNC_GPIO_MASK/USER_SYNC state, instead of only writing
-  conditionally when enabling non-default sync (Sashiko x2); switched
-  the sync scale factor from truncating to rounding division (Sashiko);
-  fixed a real bug where SCALED mode's effective clock was hardcoded
-  to the nominal internal rate instead of the actual achieved rate
-  (ext_clk_hz * sync_scale), which would have caused FIFO timestamps
-  to drift whenever the external clock didn't divide the internal
-  clock exactly (Sashiko).
-- Added range validation before writing calibration bias - out-of-
-  range values were silently truncated to 16 bits instead of being
-  rejected (Sashiko).
-- Link to v2: https://lore.kernel.org/r/20261008-adis16607-v2-0-7c94df80878a@analog.com
-
-Changes in v2:
-- Split the driver commit into functional groupings per review:
-  base, FIFO, external clock sync, calibration bias (Nuno).
-- Added adis_data.self_test and adis_data.post_reset_setup callbacks
-  to adislib instead of duplicating startup/self-test logic in the
-  driver (Nuno). post_reset_setup is a second, honestly-named hook
-  added after review feedback that overloading self_test to also mean
-  "everything else the device needs at startup" was misleading.
-- Fixed __adis_initial_startup()'s reset fallback to dispatch through
-  adis->ops->reset() instead of a hardcoded __adis_reset() call -
-  found while wiring up this driver's custom reset op. Added a Fixes
-  tag for the originating commit.
-- Removed the direct single-sample burst-read capture path entirely;
-  the hardware FIFO is now the only buffered capture mode. Dropped
-  adi,fifo-enable from the binding accordingly.
-- Fixed FIFO-threshold interrupt wiring: set has_fifo on adis_data and
-  switch the DT interrupt type from edge to level, matching the
-  DEV_NOK signal this now uses (previously only the data-ready pulse
-  was wired, which never actually generated a FIFO interrupt).
-- Moved the optional reset-status GPIO output into the base driver
-  patch (where it conceptually belongs) instead of bundling it into
-  the FIFO patch's USER_GPIO_CFG write; the FIFO patch now updates
-  that register with a read-modify-write instead of a blind write.
-- Fixed cover letter: "Three compatible variants (-1, -2, -3)" was
-  wrong, there are only two (-2, -3); "configurable data-ready
-  interrupt pin (DIO1-4)" was wrong, there's a single fixed pin.
-- Corrected spi-max-frequency to 10 MHz (datasheet maximum), from
-  15 MHz.
-- Renamed ADIS16607_REG_SW_RES to ADIS16607_REG_SOFT_RESET to match
-  the datasheet's register name; renamed burst_buf to fifo_buf and
-  dropped the redundant "fifo_" prefix from the buffer postenable/
-  postdisable/ops names, since FIFO is the only capture mode and
-  "burst" no longer described what that scratch buffer is used for.
-- Link to v1: https://lore.kernel.org/r/20261001-adis16607-v1-0-9c89cee35d56@analog.com
-
 ---
-Radu Sabau (8):
-      iio: imu: adis: Add optional self_test callback
-      iio: imu: adis: Fix custom reset dispatch in adislib
-      iio: imu: adis: Add optional post_reset_setup callback
-      dt-bindings: iio: imu: Add bindings for ADI ADIS16607
-      iio: imu: Add driver for the ADI ADIS16607
-      iio: imu: adis16607: Add FIFO-based buffered/triggered capture
-      iio: imu: adis16607: Add external clock sync support
-      iio: imu: adis16607: Add calibration bias support for gyro/accel
+ drivers/iio/imu/adis16607.c | 349 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 346 insertions(+), 3 deletions(-)
 
- .../devicetree/bindings/iio/imu/adi,adis16607.yaml |   94 ++
- MAINTAINERS                                        |    8 +
- drivers/iio/imu/Kconfig                            |   13 +
- drivers/iio/imu/Makefile                           |    1 +
- drivers/iio/imu/adis.c                             |   15 +-
- drivers/iio/imu/adis16607.c                        | 1325 ++++++++++++++++++++
- include/linux/iio/imu/adis.h                       |   26 +-
- 7 files changed, 1477 insertions(+), 5 deletions(-)
----
-base-commit: 0fcb05b72344f40806cbe810de8872f1698bf053
-change-id: 20260617-adis16607-089ffc655ceb
+diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
+index 2dda306d7b54..b1f3667d8ce3 100644
+--- a/drivers/iio/imu/adis16607.c
++++ b/drivers/iio/imu/adis16607.c
+@@ -12,6 +12,9 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/imu/adis.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/interrupt.h>
+ #include <linux/math.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+@@ -42,8 +45,11 @@
+ #define ADIS16607_REG_Y_DELTANG		0x1A
+ #define ADIS16607_REG_Z_DELTANG		0x1C
+ #define ADIS16607_REG_TEMP		0x20
++#define ADIS16607_REG_FIFO_WORD_CNT	0x2B
+ #define ADIS16607_REG_USER_GPIO_CFG	0x2F
+ #define ADIS16607_REG_SPI_HALFDUPLEX	0x32
++#define ADIS16607_REG_USER_DATA_CFG	0x34
++#define ADIS16607_REG_USER_FIFO_CFG	0x35
+ #define ADIS16607_REG_SOFT_RESET	0x36
+ #define ADIS16607_REG_SELF_TEST		0x39
+ #define ADIS16607_REG_DEC_RATE		0x3A
+@@ -54,8 +60,26 @@
+ 
+ /* Masks */
+ #define ADIS16607_RESET_GPIO_MASK	GENMASK(2, 0)
++#define ADIS16607_DR_GPIO_MASK		GENMASK(11, 9)
++#define ADIS16607_DEV_NOK_MASK		GENMASK(14, 12)
++#define ADIS16607_DATA_CNTR_EN_MASK	BIT(14)
++#define ADIS16607_BURST32_MASK		BIT(15)
+ #define ADIS16607_BOOTLOADER_BUSY_MASK	BIT(0)
+ 
++/* FIFO masks */
++#define ADIS16607_FIFO_THR_MASK		GENMASK(10, 0)
++#define ADIS16607_FIFO_FLUSH_MASK	BIT(15)
++#define ADIS16607_FIFO_THR_MET_MASK	BIT(0)
++#define ADIS16607_FIFO_DATA_CMD		0xA9
++
++/* FIFO limits */
++#define ADIS16607_MAX_FIFO_WM		38
++#define ADIS16607_FIFO_WORDS_PER_SAMPLE	26
++#define ADIS16607_FIFO_DATA_LEN		52
++
++/* Burst read - Half-Duplex mode (DATA_CNTR enabled) */
++#define ADIS16607_BURST_CMD_SIZE	4
++
+ /* Self-test registers and masks */
+ #define ADIS16607_REG_SELF_TEST_DATA(x)	((x) + 0x23)
+ #define ADIS16607_SNSR_SELF_TEST_MASK	BIT(6)
+@@ -86,6 +110,11 @@ struct adis16607 {
+ 	const struct adis16607_chip_info *info;
+ 	unsigned long clk_freq_mhz;
+ 	u64 sample_period_ns;
++	u16 fifo_watermark;
++	/* Scratch buffer used for FIFO pop operations, see adis16607_fifo_pop() */
++	u8 fifo_buf[ADIS16607_BURST_CMD_SIZE + ADIS16607_FIFO_DATA_LEN] __aligned(IIO_DMA_MINALIGN);
++	/* IIO buffer for reordered data - sized for max channels */
++	u8 data[64] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ enum {
+@@ -215,6 +244,286 @@ static const struct adis_ops adis16607_ops = {
+ 	.reset = adis16607_reset,
+ };
+ 
++/*
++ * FIFO/burst data offsets for each channel (in bytes from the data start,
++ * i.e. after the 4-byte command prefix).
++ * Each 32-bit inertial channel occupies 4 bytes (MSW + LSW), TEMP is 2 bytes.
++ *
++ * FIFO data layout (52 bytes, DATA_CNTR enabled, no checksum):
++ *   Offset 0-3:   ACCEL_X  (32-bit: MSW, LSW)
++ *   Offset 4-7:   ACCEL_Y
++ *   Offset 8-11:  ACCEL_Z
++ *   Offset 12-15: GYRO_X
++ *   Offset 16-19: GYRO_Y
++ *   Offset 20-23: GYRO_Z
++ *   Offset 24-27: DELTVEL_X
++ *   Offset 28-31: DELTVEL_Y
++ *   Offset 32-35: DELTVEL_Z
++ *   Offset 36-39: DELTANG_X
++ *   Offset 40-43: DELTANG_Y
++ *   Offset 44-47: DELTANG_Z
++ *   Offset 48-49: TEMP (16-bit)
++ *   Offset 50-51: DATA_CNTR (16-bit)
++ *
++ * Each 32-bit value encodes 24-bit sensor data as:
++ *   value_24bit = (MSW << 8) | (LSW >> 8)
++ */
++static const u8 adis16607_burst_offsets[] = {
++	[ADIS16607_SCAN_ACCEL_X] = 0,
++	[ADIS16607_SCAN_ACCEL_Y] = 4,
++	[ADIS16607_SCAN_ACCEL_Z] = 8,
++	[ADIS16607_SCAN_GYRO_X] = 12,
++	[ADIS16607_SCAN_GYRO_Y] = 16,
++	[ADIS16607_SCAN_GYRO_Z] = 20,
++	[ADIS16607_SCAN_DELTVEL_X] = 24,
++	[ADIS16607_SCAN_DELTVEL_Y] = 28,
++	[ADIS16607_SCAN_DELTVEL_Z] = 32,
++	[ADIS16607_SCAN_DELTANG_X] = 36,
++	[ADIS16607_SCAN_DELTANG_Y] = 40,
++	[ADIS16607_SCAN_DELTANG_Z] = 44,
++	[ADIS16607_SCAN_TEMP] = 48,
++};
++
++/*
++ * Pop a single sample from FIFO using FIFO_DATA command (0xA9).
++ * Returns the raw FIFO data in the provided buffer.
++ */
++static int adis16607_fifo_pop(struct adis16607 *st, u8 *data)
++{
++	struct spi_message msg;
++	struct spi_transfer xfer = {
++		.tx_buf = st->fifo_buf,
++		.rx_buf = st->fifo_buf,
++		.len = ADIS16607_BURST_CMD_SIZE + ADIS16607_FIFO_DATA_LEN,
++		.bits_per_word = 8,
++	};
++	int ret;
++
++	/* FIFO data command */
++	st->fifo_buf[0] = ADIS16607_FIFO_DATA_CMD;
++	st->fifo_buf[1] = 0;
++	st->fifo_buf[2] = 0;
++	st->fifo_buf[3] = 0;
++
++	spi_message_init(&msg);
++	spi_message_add_tail(&xfer, &msg);
++
++	ret = spi_sync(st->adis.spi, &msg);
++	if (ret)
++		return ret;
++
++	/* Copy data starting after command bytes */
++	memcpy(data, st->fifo_buf + ADIS16607_BURST_CMD_SIZE, ADIS16607_FIFO_DATA_LEN);
++	return 0;
++}
++
++/*
++ * Process a single FIFO sample and push to IIO buffer.
++ * FIFO data format differs from regular burst - no DIAG_STAT, data starts immediately.
++ *
++ * FIFO data layout (52 bytes):
++ *   Offset 0-3:   ACCEL_X (32-bit)
++ *   Offset 4-7:   ACCEL_Y (32-bit)
++ *   Offset 8-11:  ACCEL_Z (32-bit)
++ *   Offset 12-15: GYRO_X (32-bit)
++ *   Offset 16-19: GYRO_Y (32-bit)
++ *   Offset 20-23: GYRO_Z (32-bit)
++ *   Offset 24-27: DELTVEL_X (32-bit)
++ *   Offset 28-31: DELTVEL_Y (32-bit)
++ *   Offset 32-35: DELTVEL_Z (32-bit)
++ *   Offset 36-39: DELTANG_X (32-bit)
++ *   Offset 40-43: DELTANG_Y (32-bit)
++ *   Offset 44-47: DELTANG_Z (32-bit)
++ *   Offset 48-49: TEMP (16-bit)
++ *   Offset 50-51: DATA_CNTR (16-bit)
++ */
++static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
++				       u8 *fifo_data, s64 timestamp)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++	u16 msw, lsw;
++	s32 val24;
++	int bit, offset = 0;
++
++	memset(st->data, 0, sizeof(st->data));
++
++	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev->masklength) {
++		u8 burst_off;
++
++		/* Skip the soft timestamp channel - it has no burst offset */
++		if (bit >= ARRAY_SIZE(adis16607_burst_offsets))
++			continue;
++
++		burst_off = adis16607_burst_offsets[bit];
++
++		if (bit == ADIS16607_SCAN_TEMP) {
++			/* TEMP is 16-bit */
++			put_unaligned_be16(get_unaligned_be16(&fifo_data[burst_off]),
++					   &st->data[offset]);
++			offset += 2;
++		} else {
++			/* All other channels are 24-bit stored as 32-bit */
++			msw = get_unaligned_be16(&fifo_data[burst_off]);
++			lsw = get_unaligned_be16(&fifo_data[burst_off + 2]);
++			val24 = sign_extend32(((u32)msw << 8) | (lsw >> 8), 23);
++			put_unaligned_be32(val24, &st->data[offset]);
++			offset += 4;
++		}
++	}
++
++	iio_push_to_buffers_with_timestamp(indio_dev, st->data, timestamp);
++}
++
++/*
++ * Trigger handler - reads samples from the device FIFO. Triggered by the
++ * DEV_NOK interrupt, which fires on any DIAG_STAT flag, not just
++ * FIFO_THRESH_MET - the DIAG_STAT read below both checks which flag(s)
++ * raised the interrupt and clears the latched status, and must happen
++ * before any FIFO pop, or we'd pop for nothing on an unrelated flag.
++ */
++static irqreturn_t adis16607_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct adis16607 *st = iio_priv(indio_dev);
++	u8 fifo_sample[ADIS16607_FIFO_DATA_LEN];
++	u16 diag_stat, word_cnt, sample_cnt;
++	s64 timestamp;
++	int ret, i;
++
++	mutex_lock(&st->adis.state_lock);
++
++	/* Check if FIFO threshold is met */
++	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
++	if (ret)
++		goto unlock;
++
++	if (!(diag_stat & ADIS16607_FIFO_THR_MET_MASK))
++		goto unlock;
++
++	/* Read FIFO word count */
++	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_FIFO_WORD_CNT, &word_cnt);
++	if (ret)
++		goto unlock;
++
++	/* Calculate number of complete samples */
++	sample_cnt = word_cnt / ADIS16607_FIFO_WORDS_PER_SAMPLE;
++	if (!sample_cnt)
++		goto unlock;
++
++	/*
++	 * pf->timestamp is the IRQ-fire time, i.e. when the newest (last
++	 * enqueued) sample tipped the FIFO over watermark. The FIFO pops
++	 * oldest-first, so back-date the first popped sample's timestamp by
++	 * the batch duration - the loop then counts back up to pf->timestamp
++	 * for the newest sample, instead of projecting past it.
++	 */
++	timestamp = pf->timestamp - (s64)(sample_cnt - 1) * st->sample_period_ns;
++
++	/* Pop and process each sample */
++	for (i = 0; i < sample_cnt; i++) {
++		ret = adis16607_fifo_pop(st, fifo_sample);
++		if (ret)
++			goto unlock;
++
++		adis16607_fifo_push_sample(indio_dev, fifo_sample, timestamp);
++		timestamp += st->sample_period_ns;
++	}
++
++unlock:
++	mutex_unlock(&st->adis.state_lock);
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
++/* FIFO sysfs attributes */
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_min, "1");
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_max, __stringify(ADIS16607_MAX_FIFO_WM));
++
++static ssize_t hwfifo_watermark_show(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adis16607 *st = iio_priv(indio_dev);
++
++	return sysfs_emit(buf, "%u\n", st->fifo_watermark);
++}
++
++static ssize_t hwfifo_enabled_show(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adis16607 *st = iio_priv(indio_dev);
++	u16 val;
++	int ret;
++
++	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_USER_FIFO_CFG, &val);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%d\n", (val & ADIS16607_FIFO_THR_MASK) ? 1 : 0);
++}
++
++static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
++static IIO_DEVICE_ATTR_RO(hwfifo_enabled, 0);
++
++static const struct iio_dev_attr *adis16607_fifo_attributes[] = {
++	&iio_dev_attr_hwfifo_watermark_min,
++	&iio_dev_attr_hwfifo_watermark_max,
++	&iio_dev_attr_hwfifo_watermark,
++	&iio_dev_attr_hwfifo_enabled,
++	NULL
++};
++
++static int adis16607_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++	struct adis *adis = &st->adis;
++	u16 threshold;
++	int ret;
++
++	adis_dev_auto_lock(adis);
++
++	/* Flush FIFO to start clean */
++	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
++				  ADIS16607_FIFO_FLUSH_MASK);
++	if (ret)
++		return ret;
++
++	/* Enable FIFO with watermark threshold (in word count) */
++	threshold = st->fifo_watermark * ADIS16607_FIFO_WORDS_PER_SAMPLE;
++	return __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
++				   threshold & ADIS16607_FIFO_THR_MASK);
++}
++
++static int adis16607_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++	struct adis *adis = &st->adis;
++
++	adis_dev_auto_lock(adis);
++
++	/* Disable FIFO */
++	return __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG, 0);
++}
++
++static const struct iio_buffer_setup_ops adis16607_buffer_ops = {
++	.postenable = adis16607_buffer_postenable,
++	.postdisable = adis16607_buffer_postdisable,
++};
++
++static int adis16607_set_watermark(struct iio_dev *indio_dev, unsigned int val)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++
++	val = clamp(val, 1, ADIS16607_MAX_FIFO_WM);
++	st->fifo_watermark = val;
++
++	return 0;
++}
++
+ /*
+  * Check if the delta between two values is within specified range.
+  */
+@@ -306,8 +615,9 @@ static int adis16607_sensor_self_test(struct adis16607 *st)
+  * has handled reset (hardware GPIO or SW reset, adislib's own job) and
+  * before self-test - no mutex is taken here either, matching that
+  * convention. Does the device-specific startup steps adislib has no
+- * concept of: SPI Half-Duplex locking, dev_id verification, and the
+- * bootloader-busy check.
++ * concept of: SPI Half-Duplex locking, dev_id verification, the
++ * bootloader-busy check, enabling 32-bit burst mode + DATA_CNTR, and
++ * the DR/DEV_NOK pin routing.
+  */
+ static int adis16607_post_reset_setup(struct adis *adis)
+ {
+@@ -355,7 +665,29 @@ static int adis16607_post_reset_setup(struct adis *adis)
+ 		return -EBUSY;
+ 	}
+ 
+-	return 0;
++	/* Enable 32-bit burst mode and DATA_CNTR - one-time, used by FIFO pops */
++	ret = __adis_update_bits_base(adis, ADIS16607_REG_USER_DATA_CFG,
++				      ADIS16607_BURST32_MASK | ADIS16607_DATA_CNTR_EN_MASK,
++				      ADIS16607_BURST32_MASK | ADIS16607_DATA_CNTR_EN_MASK, 2);
++	if (ret)
++		return ret;
++
++	/*
++	 * DR_GPIO_MASK and DEV_NOK_MASK are updated here rather than written
++	 * blind, so this doesn't clobber the RESET_GPIO_MASK bit already
++	 * configured earlier in probe(). Per datasheet, DR pulses are what
++	 * drive the FIFO controller's internal enqueue logic. DR and
++	 * DEV_NOK are separate physical pins, so enabling DR_GPIO_MASK here
++	 * does not put DR's full-sample-rate pulses onto the interrupt line
++	 * - DEV_NOK_MASK routes the aggregate "any DIAG_STAT flag asserted"
++	 * signal onto the one physically-wired interrupt pin, which is what
++	 * actually fires on FIFO_THRESH_MET, at the (much lower) watermark
++	 * rate, not the sample rate.
++	 */
++	return __adis_update_bits_base(adis, ADIS16607_REG_USER_GPIO_CFG,
++				       ADIS16607_DR_GPIO_MASK | ADIS16607_DEV_NOK_MASK,
++				       FIELD_PREP(ADIS16607_DR_GPIO_MASK, 1) |
++				       FIELD_PREP(ADIS16607_DEV_NOK_MASK, 1), 2);
+ }
+ 
+ /*
+@@ -669,6 +1001,7 @@ static const struct iio_info adis16607_info = {
+ 	.read_raw = adis16607_read_raw,
+ 	.write_raw = adis16607_write_raw,
+ 	.debugfs_reg_access = adis_debugfs_reg_access,
++	.hwfifo_set_watermark = adis16607_set_watermark,
+ };
+ 
+ static const char * const adis16607_status_error_msgs[] = {
+@@ -690,6 +1023,7 @@ static const struct adis_data adis16607_data = {
+ 	.prod_id_reg = ADIS16607_REG_DEV_ID,
+ 	.prod_id = 0x6000,
+ 	.unmasked_drdy = true,
++	.has_fifo = true,
+ 	.post_reset_setup = adis16607_post_reset_setup,
+ 	.self_test = adis16607_self_test,
+ 	.status_error_msgs = adis16607_status_error_msgs,
+@@ -765,6 +1099,8 @@ static int adis16607_probe(struct spi_device *spi)
+ 	indio_dev->info = &adis16607_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	st->fifo_watermark = ADIS16607_MAX_FIFO_WM;
++
+ 	st->adis.ops = &adis16607_ops;
+ 
+ 	ret = devm_regulator_get_enable(dev, "vdd");
+@@ -803,6 +1139,13 @@ static int adis16607_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = devm_adis_setup_buffer_and_trigger_with_attrs(&st->adis, indio_dev,
++							    adis16607_trigger_handler,
++							    &adis16607_buffer_ops,
++							    adis16607_fifo_attributes);
++	if (ret)
++		return ret;
++
+ 	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret)
+ 		return ret;
 
-Best regards,
 -- 
-Radu Sabau <radu.sabau@analog.com>
+2.43.0
 
 
