@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.56
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.34
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792741739;
-	b=R1AqWgvOjxIasQ4F3ZE/WG83zzsjg5vE2HKBpze87BkPuVkrAjk4qkytIch60e71Yf4U
-	 bdfo4Wp6xwxvmnc+rbW7yLNwj6eBGJcqiRIH+PgUckBPh/LWgveo9CcRCaPCH/OCHHyQA
-	 arrSzWOq2XRgu7XAcEtgyTAwmbupFa+bPWexXqYM6f3VTrl+sn6XbUnlSbhxJKXQzmwze
-	 iIzzdHSSlLIaXCl+2+Dvv06CdvKZHqB4xkM7uIAufW+MWscyB/aH1Rvqaw5hipfxJ6o9q
-	 nXzdRLdbCOPKHoj7fK+hHErK1IhSf3CCqC2912/nyayu36A7I0FDQqMdxtXn3jBBgKg==
+	t=1792741737;
+	b=JJtTTDjDyRBMUJhJREJYaACM2kU42NpCkGoSfEZc1803+U4qfF5Sr8N7xNg3NKXk/IXQ
+	 e2CJGWNDvEI7YIVotsmjYyGUBqqhDtRYWZADJuDUKSo3HvPSpEU4Qmjt4ixsBMjxl1jcq
+	 XhSzhuIGmlJrFvUudWH+5PZ6v3yZHuMcxdnCAG6Wkq1r/aqIuQsH/jFKqXtfkrM5aUnQP
+	 6RcnGSZwFU1ZGFJbyVA4kB/+q73NJodC8lueEwMNmprBR/6VjXAm3bEa0970LFhnqAhRU
+	 ahicczjosZ3AaZbcL18IgEISjm5Jz8CFyH5fNLR7EbUh/cVcQbjdspXT2xNOkS85M6g==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792741739;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792741737;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 Received:Received:Received:Received:From:Date:Subject:MIME-Version:
@@ -26,53 +26,53 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=iB9QfVN3xMXcmrRMG4z8ItvbLPagm6YL6c2H0qHJyLw=;
-	b=4LpEg+6VWsexlfbKC3UNr9v/klNBqGpZgmxEYHUYicjRqTXJ19C/qrnded0gcdRFdKGP
-	 9N9EQa1abta0bWAXdPHjaHqSiS5ySoPLC+UrY6NoylJCSpsKh69U48O9zrK1JBxct3gtd
-	 t/XJWWHaZ4+nb4SQSmtEsWrp1Y9XiiSAyv0MF2cpgcoC8LV9itp4OcTXT89MTVsI6wb71
-	 Rt3usDxc2qMd9hvVd5C4+NDO+ARjpxsbHSo7U9OtwdAdOsRrr9So9k2kAiPwLbRZl7loB
-	 TLaea1CdUFwkqEHyUp2v3hUwuGpBnq5er45YOY5YFzSlYeRtjK2AVPpf8Md3qGlBZSA==
+	bh=cC3Ha/M5+HIbwT94jPcK00ZYzRTp+w1kerU2dGF23OE=;
+	b=Y2rSBZRCyXV/XyvCbMEvSJDARcxVuSzseV5dazNnDnKvEBvCbuqnBYd9hEdSvcl28hWM
+	 U7+sKI2E6XL+wv1gvtAmAeBJe8IcjV5M1tuTB+xuIGW4BA1pmqpp4BMZvNRtZbv+vXm/3
+	 Uz3wtN1maJfLuPv0v+lTzIRvWRfGmBC2PsUhPYAMqNNDQ1N8waZIHMPb0c6WhC0MT2Oq9
+	 xzGcZbELtPvTQSMME1ynILwAr0TgTfEJwT/Qim80zlvhZMuxCGUk80mcc11QFMucsHe/C
+	 d1Dofs0CW+AsIvdNEmFjjIICKj153rSetkIrGCuxTYoXz553gcz5kcF0oe8u85/uapQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=axis.com;
 	spf=pass smtp.mailfrom=axis.com;
-	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=XPVKAxH1;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.56
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010056.outbound.protection.outlook.com [52.101.84.56])
+	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b="keOPfOo/";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.34
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011034.outbound.protection.outlook.com [40.107.130.34])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C457C60A261E;
-	Fri, 23 Oct 2026 07:48:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C457C60A261E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D865606A322;
+	Fri, 23 Oct 2026 07:48:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D865606A322
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=XPVKAxH1
+	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=keOPfOo/
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Saa902aeierhQkm9RFNF9b1jsHgh2l5HP4ql9OTdijQCvr5aGLxWrfsh5+ofnAB7SbCYFPxv7UoAcG+7uoZj5lBP4cQG5F9fEE4LKNyW5kKR71RzWMKcZlEUP/uTXP8jAulxAfAG09S/jD1ooLIcJ0NjLatJFpyz5JqWqAC4ll3/hUDN2AcQxy0/lmSWGvR/C7ZJqZGISCLhpzMf3KlZtNgRkdUgCagxYL0m+f8/8bWZ6gJvFq3D8naX0iGkJ6J2VWaWRF1mrcL4nzwGfAJSysQOeQpQFdaxQD5W43xR70MIvN+TjhJO2Bg14t4RJYiQqADXnMHASS6yBjNhhtsbVg==
+ b=hjjkVCC/l2d7bftCUe22YIoawhOOG63ytY1jgWGcVMlKyP4CZn34DOlzxL9p0+iPVteOKB+/VTTHQZAkcWvFpNCYXevwWkmK0e4imz+n9beoM/C75bygHaGDK5MRFL1yG93xsqeg9XtUbwhzqE7tG8h7SkZaHyaFPr21nux2TzfpcDP8m0vylfIRSh/Hj9v2ScTYv7m8P/03knvw94n9s1/VSsCz7furUhRC+3V5SfC/rFbLqHvFArYOOmbkqXI9JEiM4ZihCy+JuHA6pCWhaiXwE10FUN5sSqmsWnguF+tsHUVFxf8XKVF/jzGhqUQuF1ZevGoTGymvidOKTPBXXQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iB9QfVN3xMXcmrRMG4z8ItvbLPagm6YL6c2H0qHJyLw=;
- b=qSDHtvNltDY2VLOjBFIrEqiSzreY+hBINNCnrBA7olYGm3hcf9qLbaymRqD0RLbBef/nyFT0ZIblhbGcydG5bVpvJgb1FsiZlieSpEJOYecc3okcjzvePI2M4yLaJF8FAc0LSYH/ltbnUqInZ5YdpmJKeM7NjmhYP+2kdN2i6drevv3QIyzS1H18Wn311t6NClY7wQtoCR831ZtPinZ5ldood1gS4iubnVKqJqedIjtlAEsKK/8PeYluFMvH7PWBsWdmeLZN1oJU0xH0+pNc/0KSYAqGVVP9JbS6OboMs4WpyDiGTN5DieaMZJcxigogewDaDTkGGPoUk3gieFWdhw==
+ bh=cC3Ha/M5+HIbwT94jPcK00ZYzRTp+w1kerU2dGF23OE=;
+ b=KS+nTGbfS7USEJILP9SHIUm0jbDHa4DzQX7MqK4RlXkGTp5OJMN7l1WN70lrmeSoSNXQY84xsK47Yo1nryUBo1UtX5J2POKHdnfKsZGgaFVHXE2nGcKWktXfGPLqFSCb9dDMfXob6VjJKVkTf9VkYUKnpeqwlOUsnj0grP9BBk/K5TUHYNItXh+iXZuOBQTTMQtkrEkFVkdyQ8ZT7ipN9DVD8+GjzMaDGQMSkP1Stn4NRRhq292+PLkSKUTthOkX8E5ZG/61HFRtkk/kDqNL/XRuqjePvjl3ei0yVTpAreIeph/O/B2guah0E11LKOQdQh2VBSLtrm9iYYZbocbHZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  195.60.68.100) smtp.rcpttodomain=analog.com smtp.mailfrom=axis.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iB9QfVN3xMXcmrRMG4z8ItvbLPagm6YL6c2H0qHJyLw=;
- b=XPVKAxH1gVA8mmJM30eP6Ju/thdIBwkXKXU5UsNCR2oj6q/SqxGqoUoeU1OFKfLNlw8luiCXOzN/WTGBaKHGcOhaBZ07gaU/a/fdZemAjfEi42g5wagAJvsfNwW8ayZyZ9CDwC1Q+QZTrnPDWdUUZZifLeq1+XxTQcWCCOTtuSE=
-Received: from DUZPR01CA0037.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:468::15) by PA4PR02MB7087.eurprd02.prod.outlook.com
- (2603:10a6:102:10c::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Fri, 23 Oct
- 2026 07:48:52 +0000
+ bh=cC3Ha/M5+HIbwT94jPcK00ZYzRTp+w1kerU2dGF23OE=;
+ b=keOPfOo/3hY1aIMgsAcwE3qX799DqicxOZJmhABt+g56Xjd9whfNEoeJzKdfvQ0bRZGhKiWBIW7sYVkmyWNc6cdD3MyK6Khd2D4HvWEwpKmP46FBoDqSPIc8lgLBq5G9Ar6IkIaHi1iY8OZSyJAKV6tPck4jnydbENgU5FTa1zQ=
+Received: from DUZPR01CA0041.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:468::19) by PA6PR02MB10457.eurprd02.prod.outlook.com
+ (2603:10a6:102:3ce::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.16; Fri, 23 Oct
+ 2026 07:48:53 +0000
 Received: from DB1PEPF000509F1.eurprd03.prod.outlook.com
- (2603:10a6:10:468:cafe::7d) by DUZPR01CA0037.outlook.office365.com
- (2603:10a6:10:468::15) with Microsoft SMTP Server (version=TLS1_3,
+ (2603:10a6:10:468:cafe::24) by DUZPR01CA0041.outlook.office365.com
+ (2603:10a6:10:468::19) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.546.19 via Frontend Transport; Fri,
- 23 Oct 2026 07:48:52 +0000
+ 23 Oct 2026 07:48:53 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 195.60.68.100) smtp.mailfrom=axis.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=axis.com;
@@ -82,27 +82,26 @@ Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
 Received: from mail.axis.com (195.60.68.100) by
  DB1PEPF000509F1.mail.protection.outlook.com (10.167.242.75) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.546.15 via Frontend Transport; Fri, 23 Oct 2026 07:48:52 +0000
+ 15.21.546.15 via Frontend Transport; Fri, 23 Oct 2026 07:48:53 +0000
 Received: from SE-MAILARCH01W.axis.com (10.20.40.15) by se-mail10w.axis.com
  (10.20.40.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.1748.39; Fri, 23 Oct
  2026 09:48:48 +0200
-Received: from se-mail10w.axis.com (10.20.40.10) by SE-MAILARCH01W.axis.com
+Received: from se-mail11w.axis.com (10.20.40.11) by SE-MAILARCH01W.axis.com
  (10.20.40.15) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.61; Fri, 23 Oct
  2026 09:48:48 +0200
-Received: from se-intmail02x.se.axis.com (10.4.0.28) by se-mail10w.axis.com
- (10.20.40.10) with Microsoft SMTP Server id 15.2.1748.39 via Frontend
+Received: from se-intmail01x.se.axis.com (10.4.0.28) by se-mail11w.axis.com
+ (10.20.40.11) with Microsoft SMTP Server id 15.2.1748.39 via Frontend
  Transport; Fri, 23 Oct 2026 09:48:48 +0200
 Received: from pc46036-2141.se.axis.com (pc46036-2141.se.axis.com [10.94.180.139])
-	by se-intmail02x.se.axis.com (Postfix) with ESMTP id 153702B99;
+	by se-intmail01x.se.axis.com (Postfix) with ESMTP id 131BE3CD1;
 	Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
 Received: by pc46036-2141.se.axis.com (Postfix, from userid 16197)
-	id 107B2584AB8A; Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
+	id 0D657584AC3E; Fri, 23 Oct 2026 09:48:48 +0200 (CEST)
 From: Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Date: Fri, 23 Oct 2026 09:48:14 +0200
-Subject: [PATCH 2/3] iio: light: opt4001: refactor driver to prepare to
- support more devices
+Date: Fri, 23 Oct 2026 09:48:13 +0200
+Subject: [PATCH 1/3] dt-bindings: iio: light: opt4001: add opt4041
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -114,7 +113,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20261023-opt4041-v1-2-45227f82d05c@axis.com>
+Message-ID: <20261023-opt4041-v1-1-45227f82d05c@axis.com>
 References: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
 In-Reply-To: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -128,206 +127,84 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 X-Mailer: b4 0.16.0
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB1PEPF000509F1:EE_|PA4PR02MB7087:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0bcfb5e3-d48a-4f1e-3a4f-08df30da1512
+X-MS-TrafficTypeDiagnostic: DB1PEPF000509F1:EE_|PA6PR02MB10457:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8e51fa9f-975a-451c-c2a8-08df30da1575
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|23010399003|376014|1800799024|36860700016|82310400026|261021123027099003|261022105027099003|56012099006|11063799006|261009223027099003|10067099003|22082099003|18002099003|261021121427099003|13003099007;
+	BCL:0;ARA:13230040|82310400026|23010399003|36860700016|376014|1800799024|7416014|18002099003|22082099003|261022105027099003|13003099007|3023799007|11063799006|261009223027099003|261021123027099003|10067099003|261021121427099003|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	Gub23do+uay9WogQOALqnHTZk3E9a7cQnB5cCx6FXjpKpT2SOdkxRjatoNitAHQSDjURjkYLS6987r8r6Je6EM9w8g2lmGABeZDHHjq6PziJ/29N48KzISypgYfdWYg8vu1mSnhShuaZqFbBlqfA0m9O4tMeFFUniOAyDr7IT56EZCcWZcq2XlA1V7cJvkCDIK0HUErAXBqMCCp2S10aqVbLtoYHrivmWCTpbHgvcl6260fTAq3uZGuX9J+eCB19dRJ5Vw4VksJYBsmvXVxDzkpzd761zb/qmVcF8B3EuVXsFKnzUPOruNStWQev6wvvG55nqTqjrDKPYWyZdMekwbWal57fNTJ+hk3w6Jz+VUK4S3zvFFQO1wyqO/xyEtybQ7WXzDaugwo/dC2Y9xwGUF+yeaa9IeMM6vsVVJy9MbOPDMYbG0QS4xZzEEknp375fVh4DGHYMjlCHb4yOrGAV31sKGT3UavaXF44ya//Ma9WgMVeTiCmsZuPDZRKBYeEbHfQ6oUGvTSC/Br6xuYgEGOF36jCNeFsBmGf9XyUuMZQ+MzGEU/ZjuArNEybEY3Q8PR9mNYlwP/gb+YwpX2ZlZ5OdmNndvMpYHlqYtpvcqO1o8aLXJ2vgNAhTodNz34zshWhl6tloj8qdRR9hxx3BS1IeWPKzHbVgft1ev0+OdEWuvHDTuVtW8AY9rhKZ91jhDr4HvOjbtqyN7J4wh1PgQ==
+	J80IV6qkW15uLYevB3aXRj1NQ3fjQQT4e0lJma6f0Ptei8TEenL91sc1Gg+5H58QOb8L6qrcs18vgZryvzq5CpO8PH1jfqti1xMSutIdM328FjMWzWkO4RxcIuvBcn95o5vJjSbhCdFJEz1tqTOO1iRKTZBI3YB/z6ulJ8r+u5C5uJ1h7MQvhGjWA0VT5bZqNOYd9IaL/KOybOIiRpDzqFsoXbbz5IqoDUVENppehFFTGCVZCVtfSHu2J8rm269qbOt10KuXNgqLu63F3D0I6jtYv8R2DpByrHyJzjHE6DUF9XikADlZnrUrH3R9NZxdKd15ciTk4ofvhUihsZuIEElhH26Je8AQiyCW8eiK9s7SII/vpdG0LAnEPmuBKNWrgB6X08yAYyMrLjvnMCjEsuJZanUy6iUlqrNtNO3Aejz8LppWVYU45KmV6uUhpCbqjR0yrew3KR4EfHbzHL3bzXvzyjys0o3I1APPSk/hbyCaSaX19aeb8TwLp9k4iTKIk7m4vyHD29RYw2cFtJJNY6EEUdJ10ySzTvO1oAnVvpMcVM4dTjA8A/c2+XP+CAOyjN/+CpP3CmU+LaZUgDOVnk9n7k2eJ+RQ39y2c6QvZiC6yqi1P1djHptM+xF189Pr5E/ygonjo8U48Rp93XtYMg==
 X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(1800799024)(36860700016)(82310400026)(261021123027099003)(261022105027099003)(56012099006)(11063799006)(261009223027099003)(10067099003)(22082099003)(18002099003)(261021121427099003)(13003099007);DIR:OUT;SFP:1101;
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(23010399003)(36860700016)(376014)(1800799024)(7416014)(18002099003)(22082099003)(261022105027099003)(13003099007)(3023799007)(11063799006)(261009223027099003)(261021123027099003)(10067099003)(261021121427099003)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	MBNzSoBOsqWzrZ3xhadHSYFdh2tMUFgleKtN/nN8MQ2a4KAGnjNoBm+vqgBWkyp63rvfbkZ646kTR0WvMnkGdMkRnZTCEhaXzUTTg8LX8Cs90sDvVFL84iMhVkRI89PxdWDEYRBph5JpsM8cmLR4aqZu1Dral+18sPdhmOHz6Ibmg6aLOCNy4MjXRUVk9NkvJ+LMzO36MfrnAAAhil5NraE4mMAGHCMWj/MVIXy6EGrSGHHo39OpHNZaVMPfVguQWr02thVlqrxUNkgYBh/pG6HMycrQ51f9JKgUlAzi14uH+hpwKnMI5xdI5kYgeVQQXC/cSSN/9wwl6JdEHbRm0g4xcXVbmTov4SOH+xIIR8ehGJ2GRujQ4PRpSgy9lZr2HhkkEprjHvUQ1l91BZB3fN8fiE9EfETQwlNeD7cu62gFFQgBCjhrWRgG34w3Kn0D
+	OnuKnA3cDH16TVxbshuabKHfAda1wYLOb3Phr0q9kzXRPoO9k6rtOT8XqZSEjsZgvQxU9N74ChWdsWEMIAzhvcx/jR9JIE0UUbAmhFcYq8KmVh2ZppXYqBbVGGcRWY0zkN4Flp6/iZcqv0F/zFENXdxVEA0JyDQFoOitllad4SOxcUqRXkGmCL5+gEYNC1Z8TkGzMJX4Swt1VdhtJyCt9dkQesFX7YuidKyn6goyXUvEjxsnzCNcNbclKokXmt1bjkz5x6l/OA+voz3LzWcKwRTq6LgIoVDcvv85JCTvONMAwfwLabWs4F0S5GrtP+XPryoe0pGrXPb9LqICzClWklpCeD1ANjsN8aaJq+f18szO4DsoCYVCvaHMOIOpzCGkwGGO0bjDKZawOXICPnkM7p3cWtAHDuLJOolkjQmfN0MkygLFnfkLMbI1UyhDnuFh
 X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2026 07:48:52.3930
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Oct 2026 07:48:53.0466
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bcfb5e3-d48a-4f1e-3a4f-08df30da1512
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e51fa9f-975a-451c-c2a8-08df30da1575
 X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	DB1PEPF000509F1.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR02MB7087
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA6PR02MB10457
 
-Prepare opt4001 driver to be able to support OPT4041. Extend struct
-opt4001_chip_info with fields channels and device_id because OPT4041 has
-two channels and another device id.
+Add a new compatible for opt4041. The opt4041 is only available in the
+SOT-5X3 package. The device is pin compatible with the opt4001-sot-5x3
+and shares the same properties. The opt4041 has one additional channel
+compared to opt4001, the extra channel has a wide spectral bandwidth
+ranging from 380nm to 1000nm.
 
 Datasheet: https://www.ti.com/lit/gpn/opt4041
-Assisted-by: LLM
 Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
 ---
- drivers/iio/light/opt4001.c | 77 +++++++++++++++++++++++++++++----------------
- 1 file changed, 50 insertions(+), 27 deletions(-)
+ Documentation/devicetree/bindings/iio/light/ti,opt4001.yaml | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/light/opt4001.c b/drivers/iio/light/opt4001.c
-index aa3d87995b7c..bf5dc1c8514c 100644
---- a/drivers/iio/light/opt4001.c
-+++ b/drivers/iio/light/opt4001.c
-@@ -78,6 +78,9 @@ struct opt4001_chip_info {
- 	int mul;
- 	int div;
- 	const char *name;
-+	const struct iio_chan_spec *channels;
-+	int num_channels;
-+	u16 device_id;
- };
+diff --git a/Documentation/devicetree/bindings/iio/light/ti,opt4001.yaml b/Documentation/devicetree/bindings/iio/light/ti,opt4001.yaml
+index 12b0c7ed5d72..35e9b0deb944 100644
+--- a/Documentation/devicetree/bindings/iio/light/ti,opt4001.yaml
++++ b/Documentation/devicetree/bindings/iio/light/ti,opt4001.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/light/ti,opt4001.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- struct opt4001_chip {
-@@ -87,16 +90,32 @@ struct opt4001_chip {
- 	const struct opt4001_chip_info *chip_info;
- };
+-title: Texas Instruments OPT4001 Ambient Light Sensor
++title: Texas Instruments OPT4001/OPT4041 Ambient Light Sensor
  
-+static const struct iio_chan_spec opt4001_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.address = OPT4001_LIGHT1_MSB,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
-+	},
-+};
-+
- static const struct opt4001_chip_info opt4001_sot_5x3_info = {
- 	.mul = 4375,
- 	.div = 10000000,
--	.name = "opt4001-sot-5x3"
-+	.name = "opt4001-sot-5x3",
-+	.channels = opt4001_channels,
-+	.num_channels = ARRAY_SIZE(opt4001_channels),
-+	.device_id = OPT4001_DEVICE_ID_VAL,
- };
+ maintainers:
+   - Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>
+@@ -13,13 +13,16 @@ description:
+   Ambient light sensor with an i2c interface.
+   Last part of compatible is for the packaging used.
+   Picostar is a 4 pinned SMT and sot-5x3 is a 8 pinned SOT.
++  OPT4041 is only available as sot-5x3 and adds a wide band channel.
+   https://www.ti.com/lit/gpn/opt4001
++  https://www.ti.com/lit/gpn/opt4041
  
- static const struct opt4001_chip_info opt4001_picostar_info = {
- 	.mul = 3125,
- 	.div = 10000000,
--	.name = "opt4001-picostar"
-+	.name = "opt4001-picostar",
-+	.channels = opt4001_channels,
-+	.num_channels = ARRAY_SIZE(opt4001_channels),
-+	.device_id = OPT4001_DEVICE_ID_VAL,
- };
+ properties:
+   compatible:
+     enum:
+       - ti,opt4001-picostar
+       - ti,opt4001-sot-5x3
++      - ti,opt4041-sot-5x3
  
- static const int opt4001_int_time_available[][2] = {
-@@ -159,10 +178,9 @@ static u8 opt4001_calculate_crc(u8 exp, u32 mantissa, u8 count)
- 	return crc;
- }
- 
--static int opt4001_read_lux_value(struct iio_dev *indio_dev,
--				  int *val, int *val2)
-+static int opt4001_read_raw_value(struct opt4001_chip *chip, unsigned int reg,
-+				  u64 *raw_value)
- {
--	struct opt4001_chip *chip = iio_priv(indio_dev);
- 	struct device *dev = &chip->client->dev;
- 	unsigned int light1;
- 	unsigned int light2;
-@@ -172,17 +190,16 @@ static int opt4001_read_lux_value(struct iio_dev *indio_dev,
- 	u8 count;
- 	u8 crc;
- 	u8 calc_crc;
--	u64 lux_raw;
--	u32 rem;
-+	u32 mantissa;
- 	int ret;
- 
--	ret = regmap_read(chip->regmap, OPT4001_LIGHT1_MSB, &light1);
-+	ret = regmap_read(chip->regmap, reg, &light1);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to read data bytes");
- 		return ret;
- 	}
- 
--	ret = regmap_read(chip->regmap, OPT4001_LIGHT1_LSB, &light2);
-+	ret = regmap_read(chip->regmap, reg + 1, &light2);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to read data bytes");
- 		return ret;
-@@ -193,12 +210,27 @@ static int opt4001_read_lux_value(struct iio_dev *indio_dev,
- 	crc = FIELD_GET(OPT4001_CRC_MASK, light2);
- 	msb = FIELD_GET(OPT4001_MSB_MASK, light1);
- 	lsb = FIELD_GET(OPT4001_LSB_MASK, light2);
--	lux_raw = (msb << 8) + lsb;
--	calc_crc = opt4001_calculate_crc(exp, lux_raw, count);
-+	mantissa = (msb << 8) + lsb;
-+	calc_crc = opt4001_calculate_crc(exp, mantissa, count);
- 	if (calc_crc != crc)
- 		return -EIO;
- 
--	lux_raw = lux_raw << exp;
-+	*raw_value = (u64)mantissa << exp;
-+
-+	return 0;
-+}
-+
-+static int opt4001_read_lux_value(struct opt4001_chip *chip, unsigned int reg,
-+				  int *val, int *val2)
-+{
-+	u64 lux_raw;
-+	u32 rem;
-+	int ret;
-+
-+	ret = opt4001_read_raw_value(chip, reg, &lux_raw);
-+	if (ret)
-+		return ret;
-+
- 	lux_raw = lux_raw * chip->chip_info->mul;
- 	*val = div_u64_rem(lux_raw, chip->chip_info->div, &rem);
- 	*val2 = rem * 100;
-@@ -233,15 +265,6 @@ static void opt4001_chip_off_action(void *data)
- 		dev_err(&chip->client->dev, "Failed to power down\n");
- }
- 
--static const struct iio_chan_spec opt4001_channels[] = {
--	{
--		.type = IIO_LIGHT,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
--		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME),
--		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME)
--	},
--};
--
- static int opt4001_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long mask)
-@@ -250,7 +273,7 @@ static int opt4001_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_PROCESSED:
--		return opt4001_read_lux_value(indio_dev, val, val2);
-+		return opt4001_read_lux_value(chip, chan->address, val, val2);
- 	case IIO_CHAN_INFO_INT_TIME:
- 		*val = 0;
- 		*val2 = opt4001_int_time_reg[chip->int_time][0];
-@@ -388,19 +411,19 @@ static int opt4001_probe(struct i2c_client *client)
- 		return dev_err_probe(&client->dev, ret,
- 				     "failed to reinit regmap cache\n");
- 
-+	chip->chip_info = i2c_get_match_data(client);
-+
- 	ret = regmap_read(chip->regmap, OPT4001_DEVICE_ID, &dev_id);
- 	if (ret < 0)
- 		return dev_err_probe(&client->dev, ret,
- 			"Failed to read the device ID register\n");
- 
- 	dev_id = FIELD_GET(OPT4001_DEVICE_ID_MASK, dev_id);
--	if (dev_id != OPT4001_DEVICE_ID_VAL)
-+	if (dev_id != chip->chip_info->device_id)
- 		dev_warn(&client->dev, "Device ID: %#04x unknown\n", dev_id);
- 
--	chip->chip_info = i2c_get_match_data(client);
--
--	indio_dev->channels = opt4001_channels;
--	indio_dev->num_channels = ARRAY_SIZE(opt4001_channels);
-+	indio_dev->channels = chip->chip_info->channels;
-+	indio_dev->num_channels = chip->chip_info->num_channels;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = chip->chip_info->name;
- 
+   reg:
+     maxItems: 1
+@@ -39,7 +42,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: ti,opt4001-sot-5x3
++            enum:
++              - ti,opt4001-sot-5x3
++              - ti,opt4041-sot-5x3
+     then:
+       properties:
+         interrupts:
 
 -- 
 2.43.0
