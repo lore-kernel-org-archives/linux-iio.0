@@ -1,80 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792747301;
-	b=aRCseezTDGqP7bYRcnewKBXDuhJkjcbeVmcdaxHCRqh03lMibrOKsLcvB+OhqDpZJAxm
-	 jr9yUzVFfSxXIDJEzQ3Nc1k6OWbBJWg2EY7TC4FVXU6V9+BgM+FfX+OuQ0BzG+1b8QzD4
-	 HS+IshGBl4gWiuEN+OX5bRzEwYKDMyrFTJZLLtBA3lcJwbBRmedD2tkMOh8ZdVMTQhI3h
-	 DygnFSg1CLs+AN+4Nas5hNmVcwNEJelHoxMwUyGaliSqu3tTnN0vmYODI7KySeXGhN+/o
-	 Q4O85i6xHAy5mbxbvIODF83lPrA5LZfddIgW5qrZWBxZtrtLGj4GY5JHFEWo87pazQg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792747301;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=7WVW9LTCsDSlQNBj+ssV+xOFD2713qkXxDb5vqL1zmw=;
-	b=njXA1ybhcNSW8q3Iwvkw7J6XmvSRGXYK/J2HAdkW1YuqGRXMseDd+/7l/a/CepuTvYYL
-	 Ddl8pupqI/D8sAbswz6vcsbRohj8bmtLaq8VRkLXVoTCtqF/rNd3uP+V6ktj4VzMQpDNz
-	 etc3NFN70Mwr581BteS9Yzxx2cDOtkktcXXTxRHQoosw3wa5e4up71g+4sIDTUPXHgmmA
-	 6GR8Db+402Qq1ep86ehp+QBoB6CEbL0mt26mU9UcCPm0U+kii9XUreJPhT4ELi2LfBl4c
-	 0CnrlS4U7VCow5otz+bPZaHzSjDfMzWYMlnkIYkHznzVNRuao+Q5KlV+TJE74KbXe6A==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZRGAxF1Z;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792747823;
+	b=WxWOhx+vkhBVW/nwD2IHd9rg4Ocw84tf1ybhRgZ/1+XYRls8CBQD8CJo3DPT5PY/C/iA
+	 /wV9Z8O1H7dcIqvLXu8nnkk8XdmyCw7+GmLS1+DubclHJ6g6S8IFO3Hzh1J6LWfLptq2U
+	 5kWepmfL/0l8zYuZPxQBqeevzYs4yncI61wJv4IghR10dkjo0D509qO5kcZ/b8gcmWLCe
+	 buA4epk5I4qE66FvtQbVhwqlgTQmQGt2fAwik9v9VWRt6LfNXSo3DmemEakEuK46L/Y+0
+	 SR2AtR1pvkKHfKeMa1iU9VMtv4EhdNo+1nGufqEAZhn9CauFmtIEH/w7YgZJK2WPM7A==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792747823;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=3EpzDGuO8u0kVCltVrxaYONhwLletiSmFRu42c4xoh0=;
+	b=V6kQJB4uhnWbRWmhtlw/hR0qrmvM/hk0Xp9DHC5WjfKnjdy4BcIvUlN0lf8ocULScgua
+	 eo3Ijrn9hlehpdc+hj7SthN2yN/XOud+177dTUVm7SjDfBpjh3VxdRckdP47ljZx47JCE
+	 4KYLKyp+POGlzHxIIGlblk3zkL0W99i7xLzyJ7hgX578VRPWDvCjoJQe49r/lcgSYo73U
+	 b23RvK2NAtFHT6i+HIC/USfNWkSV4LUFgLSX9DY/q66qYsASIqwlnE2BZviQSyEsLuYqJ
+	 EvKKtGVrtokmqN29/tblqhU5Idvo7FOTPOhQ72TlvFkyTFrvtwJus1UhDaCtn40g9nA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RcGC3TDo;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F684606A31F;
-	Fri, 23 Oct 2026 09:21:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F684606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC40F606A322;
+	Fri, 23 Oct 2026 09:30:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZRGAxF1Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792747302; x=1824283302;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=j6agsC6FkDh8TpkbmEQdEdh2DcF162EGqj2Ha9Ht668=;
-  b=ZRGAxF1ZBxQDBFVKB8gVoNpIWL4wUKQ4uTESn/VxTeWOvC7wwkXuoJ+3
-   +YDWQ+MWcfa+brO+OaWp0jeP5ZEF0fNE+ick8S5yvCepWlRc6aUM/WElg
-   IqXBtNTNdc4IvYh8AQWLbu/YWltKsQG0fr8tIIXiQOnkoqxx8sT6UdYXj
-   GU2o3roBIwg1L10v7IOdW2+ffSiJ/bFPSmVjwgaMUNXxxAypviRa17oMl
-   UmEIrZcMu5B1lsKGNNj8g34WfJk4hLBZjEe7Owu/IIseN5h8bSaptwiJ0
-   efzriua/9OMPN2d584M8d9zL1IvoxEr6TE7PjT9/gegfpaPA2y/ifDmvA
-   g==;
-X-CSE-ConnectionGUID: fX//dhF6RIemXj9TK6Fhlg==
-X-CSE-MsgGUID: g8vkq3+hQvGb53bF02TNlA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1400760"
-X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
-   d="scan'208";a="1400760"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:21:41 -0700
-X-CSE-ConnectionGUID: qIckkqhAQ2WsiZ/gA/1eHw==
-X-CSE-MsgGUID: PcubL6yVTxKZrRpWBbwtuw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
-   d="scan'208";a="3977368"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:21:39 -0700
-Date: Fri, 23 Oct 2026 12:21:36 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Subject: Re: [PATCH v1 1/1] iio: light: opt4001: Re-use generic struct
- s32_fract
-Message-ID: <atsnIMEnefu0GD96@ashevche-desk.local>
-References: <20261023090802.1957593-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RcGC3TDo
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792747822;
+	b=OH/8W0UTzePGoB4J5Z9NSecFksceWH3ytYTo4gKpUD9gwYOBYOKeS57yybr8AxbWkY4Q
+	 9OH+0TEzssoxB8+rezShbWsXWjOEeOezBzTQHWKCnzUXgB5X4+tLwCC0RM9NE7V6cxG29
+	 sGc+jSDDXedf80qHxpN/6RrNW55Gn7NGbcBKwM0FVkXG0YuhUY+2aJSbgxCCVzgxcOfd4
+	 nLlwGjlKB7OzpF/0DxqDByDxGXPpJRvbzIEYTY7UhTL4o6iEmoYDbspTax7TNRUojVAUP
+	 kZkjvvOSIo5ntUwagYdGE2oueYCvjWJwaefTTPwkabsXveDW171/ou1lvS3YD9bXqQg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792747822;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=3EpzDGuO8u0kVCltVrxaYONhwLletiSmFRu42c4xoh0=;
+	b=DnLl/mX2KMmO/+EWK8UenmijXYvRJKJxeBvOHAZSv9UqeUws/CwinCMe0mPuMFpws2b3
+	 UIklgm9NYN5zZERf9MoqF1QyeSSwQG4pWY5NzBeKRKzjzGm3qrUrybIXReCn6CdJLw5LP
+	 t42yR8xZH1Otk8tn4/dh+mvlYxBv4nEZlswFzm5vQo2pPRHKmyqapjunzjpGOD/RA6NNa
+	 R7W9kxKkIJufqQUru8yyqGDn3Lf96sXqzS7gR27EBYQc+oFuU8kcwFlh+KIMy/CFW5F4a
+	 GanEqYrPxizKOPfDPqo3FGNJXiucbOxoRhtkQMdTD+j/urojn7pzIpsfHznUO0ZSvAQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id D95521F031E0;
+	Fri, 23 Oct 2026 09:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792747822;
+	bh=3EpzDGuO8u0kVCltVrxaYONhwLletiSmFRu42c4xoh0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=RcGC3TDo9pGZPmEMBUQj0NfjQFbPAV3zFjK25NdNxaRSETbQlJfs7I8hSYAXeP7n3
+	 JcARxIHEcY9HFyClJAHV+tt7OJ12Y85GTFlYDoGsmZtdw4adVgOsYB5lCs5lZeeRqZ
+	 /PR7VNBtARlCsYBHaitnDXL0TYkiTcRNUrsioO27wdXeOMGjb1mue9ZRXZ9RgevcJV
+	 1P+jFpGbAInUVf56tpi2UUcvcRGefPsrfaSurUVL8hFco2KI/ErX4VHT4x2IgQgQh5
+	 7o1uBK3VJXnwXgz2QoyyVDexE+XZrsaYBcmPqBzlnIDVf4EC0txaytRLTgNSW9EXMS
+	 h747qHJhqgNyg==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 4EB314445C;
+	Fri, 23 Oct 2026 09:30:21 +0000 (UTC)
+From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Date: Fri, 23 Oct 2026 12:30:19 +0300
+Subject: [PATCH v4 2/8] iio: imu: adis: Fix custom reset dispatch in
+ adislib
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,45 +83,124 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261023090802.1957593-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261023-adis16607-v4-2-a4d541ebfd13@analog.com>
+References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+In-Reply-To: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Alexandru Ardelean <alexandru.ardelean@analog.com>, 
+ Radu Sabau <radu.sabau@analog.com>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux@analog.com, 
+ Jonathan Cameron <jic23@kernel.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792747820; l=2750;
+ i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
+ bh=vuWXnWSiWcah16SzlQvOsXkP8u5qRQjoUvxICsehtNU=;
+ b=65/j/nI+nWzwoH+3gaT2k/GBM/HGxFEJGyisaCl4wFLSsn1LkCV4yahYp2TccX+AomiRmS88b
+ mPtBMxJeCFPCFQc0n4gZijKj8SaqAr1pOCTpaHUy7uhEI0KP/7rwjHs
+X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
+ pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
+X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
+ auth_id=1094
+X-Original-From: Radu Sabau <radu.sabau@analog.com>
+Reply-To: radu.sabau@analog.com
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 23, 2026 at 11:08:02AM +0200, Andy Shevchenko wrote:
-> Instead of custom data type re-use generic struct s32_fract.
-> No functional changes intended.
+From: Radu Sabau <radu.sabau@analog.com>
 
-...
+__adis_initial_startup()'s no-reset-gpio path called __adis_reset()
+directly instead of adis->ops->reset(), silently ignoring any driver's
+custom reset implementation. Invisible until now since
+adis_default_ops.reset is __adis_reset() itself. Dispatch through
+adis->ops->reset() instead - the same bug existed in the public
+adis_reset() wrapper, fixed here too.
 
->  static const struct opt4001_chip_info opt4001_sot_5x3_info = {
-> -	.mul = 4375,
-> -	.div = 10000000,
-> +	,ratio = { .numerator = 4375, .denominator = 10000000 },
+Move the settle-time sleep out of __adis_reset() and into both call
+sites instead, so every reset op (default or custom) is treated
+uniformly: adis->ops->reset() is expected to just do the write, and
+the library always sleeps the settle time afterwards. This removes
+the previous asymmetric "sleep here only for custom ops" special
+case entirely.
 
-Oh, I should have compiled it, but I missed. Should start with a period, of
-course.
+Fixes: ecb010d44108 ("iio: imu: adis: Refactor adis_initial_startup")
+Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+---
+ drivers/iio/imu/adis.c       |  6 ++----
+ include/linux/iio/imu/adis.h | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 5 deletions(-)
 
->  	.name = "opt4001-sot-5x3"
->  };
-
->  static const struct opt4001_chip_info opt4001_picostar_info = {
-> -	.mul = 3125,
-> -	.div = 10000000,
-> +	,ratio = { .numerator = 3125, .denominator = 10000000 },
->  	.name = "opt4001-picostar"
->  };
-
-Ditto.
-
-...
-
-Jesper, please take this patch into your series, but also fix those typos.
-Or if you are busy, I can do it after my lunch.
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index 388518ebba2e..5c3bb7259037 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -340,7 +340,6 @@ EXPORT_SYMBOL_NS_GPL(__adis_check_status, "IIO_ADISLIB");
+ int __adis_reset(struct adis *adis)
+ {
+ 	int ret;
+-	const struct adis_timeout *timeouts = adis->data->timeouts;
+ 
+ 	ret = __adis_write_reg_8(adis, adis->data->glob_cmd_reg,
+ 				 ADIS_GLOB_CMD_SW_RESET);
+@@ -349,8 +348,6 @@ int __adis_reset(struct adis *adis)
+ 		return ret;
+ 	}
+ 
+-	msleep(timeouts->sw_reset_ms);
+-
+ 	return 0;
+ }
+ EXPORT_SYMBOL_NS_GPL(__adis_reset, "IIO_ADIS_LIB");
+@@ -416,9 +413,10 @@ int __adis_initial_startup(struct adis *adis)
+ 		gpiod_set_value_cansleep(gpio, 0);
+ 		msleep(timeouts->reset_ms);
+ 	} else {
+-		ret = __adis_reset(adis);
++		ret = adis->ops->reset(adis);
+ 		if (ret)
+ 			return ret;
++		msleep(timeouts->sw_reset_ms);
+ 	}
+ 
+ 	ret = adis_self_test(adis);
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index 14f9b304c252..c09b381eb619 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -10,6 +10,7 @@
+ #define __IIO_ADIS_H__
+ 
+ #include <linux/cleanup.h>
++#include <linux/delay.h>
+ #include <linux/spi/spi.h>
+ #include <linux/interrupt.h>
+ #include <linux/iio/iio.h>
+@@ -178,8 +179,17 @@ int __adis_reset(struct adis *adis);
+  */
+ static inline int adis_reset(struct adis *adis)
+ {
++	int ret;
++
+ 	guard(mutex)(&adis->state_lock);
+-	return __adis_reset(adis);
++
++	ret = adis->ops->reset(adis);
++	if (ret)
++		return ret;
++
++	msleep(adis->data->timeouts->sw_reset_ms);
++
++	return 0;
+ }
+ 
+ int __adis_write_reg(struct adis *adis, unsigned int reg,
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.43.0
 
 
