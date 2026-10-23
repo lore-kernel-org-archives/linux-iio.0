@@ -1,105 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792747010;
-	b=RiuNlFUSG3JLOGnSXTKIhqTB3s0g493LGDXyJRNJ/7IjNJQTUAdtc0+ASzI0MG2lTegp
-	 ZoEf/+UjARQyN9zPTGkd9a7z0tX5F9M4tNu5YL3nwLaJRENkYsAQmwYEmK4s7HSWb+V6f
-	 KlgWYjgqSQNUsGf+3Gizheh/ibLkyfdwRC+MVwMDOMZCC1I0kvgEtCRpdX1BCiiL/TqHk
-	 wt1qHSIObD+j7LBkDSnD/DtXmv6rVHvMPkB7zOgEYBOsZ87XXud8ufaBvscCMyaUBBRLG
-	 hTmES9OoPGDvL6OUEyriRNzUS23qh8fVDZqczJgjVRZe3BbFfpPrTRVH7nKiHs6jBdQ==
+	t=1792747055;
+	b=LTTwr6/+SXsafiAO9OhA4ZTg22dYnzEU2CzbGcoKJw5hqPNPp381qbVfx7m7nXSs8qkk
+	 cIe0Lrg8npZD9hkRP92KMthZCPaFvoBbiX4KFjN9Ta7KsnXMCVnmpD/vtLsscNVQl1dM5
+	 EMMq/ba8EwmDsFHNq7NJMnwHbkUKu7/woSlVpPyjRXlgH18cHfBf5KUFC/SzJE7UuAUcv
+	 gOVhmzDgo5ZfOnOYdG8Vi0Nhr14ZwsOcts89pzzXu7O9m9u2u6awTsX+GI/OjLVyx/+UJ
+	 nJsEjIfQ38WiQMBhTeRKOwtmlVvPHgUC86GOnyr3tcEqsaJZxUA16HX3Otjte4VIEvQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792747010;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=7QbAvKZlHDd3AEbAYJ/zukbrl6OsuWTPpYdirZ5iLSM=;
-	b=XxcW9SZAN9rD8h4NxC4tk+INDIFaJtADfgiH5z7konzvS9wbM9GFVXHp69OH+vU0h07k
-	 O1qsGmFBBigcvFupRj4/h6ycLwhtwEkmrM2iR97ofIzm8nTPeUODgyaaFU/G1lwbTxSSt
-	 fPx67pZbS6i0+pWyyx/WJMz3QKhzpHmxfvfFOu9DUDOEKw3K0mNex8UsQLUwTOpkjS4UD
-	 0PPFJhrMCddRZoydq0Gne+HqZfvSpL66xUMjgfBafgveDNnAugORelPDhAzFbpRPtjh2t
-	 58afIuVSm/aERmIrTL0+9v7BLUCGrkTorMCk4NAsGMZK5k4pOT+87dsTvmQgWTlk/5A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792747055;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=W6Dqe40TF9G9HwbVvZOqNjcj55Y+RW+4s3fXUCy/gPk=;
+	b=MvkOHM1IGI1jWTP/3QWUyvJhbkcuaAKdqZUnSTk2v8Qw0UYd1Gc0wSisylFZw9X+Y0Kh
+	 REd1WQJ+urXxqkvHwE7bF2iJYatIRah2j19SPfxyRYnuEVCVAlsbRBWM2J4G3I7kVW7pN
+	 8p1ne2BQN44wLxFt+YaAKxeSKFiLSnSmFHLK9bBtoAflhnxSUbvl6JjhgZ/FpG2p/wX/C
+	 r4DhSxn4ZzDmOgSecgW77a+v4OMvntXHH4eU9GEtD2j413pRIcul5O83erzyj+yRt0+4j
+	 i6u+7WUwq+BSovGRAHTUTGAAv0UsTPwXq46S9EZxjYxTyYZttU4icbq6cp1YN5/H8RA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=mW+avd+h;
-	arc=none smtp.remote-ip=209.85.128.45
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XnOKE7IF;
+	arc=none smtp.remote-ip=192.198.163.13
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5FD7606A320
-	for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 09:16:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E5FD7606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98D76606A31A;
+	Fri, 23 Oct 2026 09:17:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 98D76606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=mW+avd+h
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4a210470b49so5196185e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 23 Oct 2026 02:16:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792747008; x=1793351808; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=7QbAvKZlHDd3AEbAYJ/zukbrl6OsuWTPpYdirZ5iLSM=;
-        b=mW+avd+hjO8+1Rstd5HMROdiarYwWClCmO+5Kd4xM5ZoI3CKxiuXaywpfuOj6Os9S8
-         groA2rZBSGzxCF4MYRQGf80pez30iNfMrhBRjFZTb08jpPeOqxcJfBnVLD4+KPmHrbwS
-         kOm2rvFEl23NAbCROpt/y3G8MTyHGaXeV8yskvIvmEwxVp2O3TVbH5Ft/zecFQQc4SJT
-         khNsF0eriWubmgTIwxXYAv58AR5f7oWNaonNlCrTIrfLZMMqz6SHEtnFIv4GKV6w+PVz
-         AD7rxCI7/kxEigsMZvlFq0Fxn4dRFZR6+79WXXMCe5HU4rY/L9SWZBQ1T7nZTjAG5J85
-         hz4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792747008; x=1793351808;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7QbAvKZlHDd3AEbAYJ/zukbrl6OsuWTPpYdirZ5iLSM=;
-        b=yuNDULNcPLnMtmQku94QO4EqDsSO0rd+tk04reDyhf0QHypE2dIovW0Y9VwU6psfvp
-         2YUIMZ6EPyf6tFwh/FHsrqLai0Y6LOgjpVvlE3oQA8H2msjHcRcRQNV2YQMwdN4yShV0
-         joT6OBeGjI9yWRrKHv7cg0xu4HPKCpJYzLVWvo3qOYFwQIL8/0dgfiyyC9yg3DUGup7G
-         CysOYzHqBnjv3DfbF23KSI/SbpG1noQGISPbiXLtyEE0w0lN2iPvNZOXyJQlA1SqlVnG
-         lmaof9yvvwWIJb5dIRUwmAG7adWjfLcxBwwOYHkGwCrac7t3krhpYZlLArL8te6q3Osn
-         f6nw==
-X-Forwarded-Encrypted: i=1; AKwUvBzzxI3oKGmaWExvRf3hkdsvQO/KSVhq4v/YOkfHQDar/efoMul+v8zUmQSKDKORk/ONm9NmtxcMGcg=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLLyR3fEuayoAs44B/F7wFcJh/Q+khtyCzVm1l9+pktUaOxOU/L
-	Y/8+uiIWYl89uP8rHPFtzIOte3ozXpR60ahA2Ejf1CIz24aLf3TfHu4T
-X-Gm-Gg: AYBFou034TOk6o9ObiVf057oJm3JTrxycK52gQhDf3GBsGoX9HqeJ16WeUuYzSFRAdu
-	lEO0qjItZ55RiSz7wzo9PHldWcrygo3wzoYXvRqeAoxp0w9qnSlZ2D/gBPm8G72y5H4SzK4yBAE
-	OdldE3PpRmw21viZ0lqTA+CQKtuPc8dwtxlNi45GLNc+OuL45V6t4Ykavu/6yanMfVo2f73krWg
-	ZPySsCuQvG5fcoZpYhXMLC1DWvflcQx0Y0eG0mLZDtFPw/UxXeXsZGY1Grus977goHRVxPe2SCq
-	LNV8tUtFSytYZl7fAOISi1m5CtM+WyEPqIA+kqykKiBye92LEIUGSpKijSo590mFV0tIBxW9wDV
-	dNXseFrodNa6hkEYAB+UddpVPoZcQJd7tJY5ZG4rYdjgu2x0UrioPd8b2nDuyj+vuy01jbOWWvb
-	LRhh06lJj34u/PtIhbCZZwa1+HWM0gMN+1mRC3to/57WzNr0sq4o2yovIdVW/cHS/m30QEcCW8a
-	6RHF9GxssXT32DsF8MJufxIwSn1+w7J8+8pcwkU+WDMV16ggYXSVPhbDLlFQHWvc0wo3Uw8jW4I
-	wzICTWokX7kqTZT+aCM9R6dOGjLPM7TYZnItSfNDQcEFnRvGB7jdPiFODXlTlzuyJszWOVg0j1h
-	yxr/zklVePb4ZBAjslp8kAw7ZgT9lt+Oo0EM1irDWNSDcziRnyzJT6fL6kNjzXigJF3RTWzihe5
-	jQh+L/6u5mNJAtMWQOs/jRHLTjd2dcErCz5+8fo1+5Q9i2U4kjv6QaHdQfrG0uDQ==
-X-Received: by 2002:a05:600c:c11c:b0:4a2:167a:c93b with SMTP id 5b1f17b1804b1-4a2167acde3mr10151235e9.30.1792747008186;
-        Fri, 23 Oct 2026 02:16:48 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a211ba3ab5sm55235845e9.7.2026.10.23.02.16.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 02:16:48 -0700 (PDT)
-Date: Fri, 23 Oct 2026 11:16:43 +0200
-From: Joshua Crofts <joshua.crofts1@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XnOKE7IF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792747054; x=1824283054;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ogSESg8d+AQ/8m1inPCVKjuc5x0JyAFn0zrW4tVebuk=;
+  b=XnOKE7IFsL5OgkeqpEY3EEjCpCURc+w8ebDujhDEc3fgTZjNaLcCE4WQ
+   /qMSKhw8/mQyHdUrnwC8T5zRo4VfSGgzhNLM5vi2y4LM6KfU/Wz2SrUQh
+   KV8fWSY4jz+vFPJ5LuGMI2LCW1oYClUQ12v5HIVtZacNtBBGDu2zh/bVV
+   2piQf78c0MzWhkWBqnkoG+B+IoPtCBZBBjmJQzdtd/2N8U0huN65Vcj6g
+   Gp8OGn99LANteJIHEgoOxBXzR1DObVm1enTc7efENmcTWJSdcQtpT7GLt
+   auaWM+s2ncYVNJODSxzSvvP8NWSr62VzqeY6EonKgV3qY3T8Ykfhm5HLY
+   A==;
+X-CSE-ConnectionGUID: BV72pTdfQ3KG5LpvPqL9+g==
+X-CSE-MsgGUID: qm58k5PfS4KP7I510ChL/w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11943"; a="1495200"
+X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
+   d="scan'208";a="1495200"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:17:34 -0700
+X-CSE-ConnectionGUID: DRL5n1gAR/OzIF3PX3dWqw==
+X-CSE-MsgGUID: E1nxLauySKi8bqqTfeRBeA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,174,1787036400"; 
+   d="scan'208";a="3937545"
+Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.100])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2026 02:17:31 -0700
+Date: Fri, 23 Oct 2026 12:17:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "Stefan Windfeldt-Prytz"
- <stefan.windfeldt-prytz@axis.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <kernel@axis.com>
-Subject: Re: [PATCH 2/3] iio: light: opt4001: refactor driver to prepare to
- support more devices
-Message-ID: <20261023111643.00007823@gmail.com>
-In-Reply-To: <20261023111032.0000019b@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel@axis.com
+Subject: Re: [PATCH 0/3] This series adds support for Texas Instruments
+ OPT4041 Ambient light sensor
+Message-ID: <atsmKZjpr-NQLKBD@ashevche-desk.local>
 References: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
-	<20261023-opt4041-v1-2-45227f82d05c@axis.com>
-	<20261023111032.0000019b@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,39 +86,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261023-opt4041-v1-0-45227f82d05c@axis.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, 23 Oct 2026 11:10:32 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Fri, Oct 23, 2026 at 09:48:12AM +0200, Jesper X Nilsson wrote:
+> Extend the opt4001 driver to support OPT4041, since it is so similar to
+> OPT4001. The OPT4041 adds a second channel, a wide band channel ranging
+> from 380nm to 1000nm. The register map is almost the same for both
+> devices. OPT4001 has an internal fifo of size four, OPT4041 has two
+> fifos of size two, one for each channel.
+> 
+> Since OPT4041 has two channels it has one bit in register 0Bh to select
+> which channel is compared to the threshold register. The driver does not
+> support setting the threshold registers, so no new support has been
+> added for this.
+> 
+> The OPT4041 is pin compatible and has the same package as
+> opt4001-sot-5x3. Although the device id is different, I added a new
+> compatible string since the driver already had different compatible
+> strings to differentiate between the two OPT4001.
 
-> On Fri, 23 Oct 2026 09:48:14 +0200
-> Jesper X Nilsson <jesper.x.nilsson@axis.com> wrote:
-> 
-> > Prepare opt4001 driver to be able to support OPT4041. Extend struct
-> > opt4001_chip_info with fields channels and device_id because OPT4041 has
-> > two channels and another device id.
-> > 
-> > Datasheet: https://www.ti.com/lit/gpn/opt4041
-> > Assisted-by: LLM  
-> 
-> This tag has been deprecated.
-> 
-> > Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>  
-> 
-> ...
-> 
-> > @@ -388,19 +411,19 @@ static int opt4001_probe(struct i2c_client *client)
-> >  		return dev_err_probe(&client->dev, ret,
-> >  				     "failed to reinit regmap cache\n");
-> >  
-> > +	chip->chip_info = i2c_get_match_data(client);  
-> 
-> + null check and return -ENODATA on failure.
+Overall very good small series, I have a few comments, but they like 15 minutes
+to address, id est mostly style related. I'll give my tag if you send a v2 with
+the changes as suggested.
+
+> Datasheet: https://www.ti.com/lit/gpn/opt4041
+
 > 
 
-Just noticed that Andy was faster :)
+No blank lines in the tag block :-)
+
+> Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
