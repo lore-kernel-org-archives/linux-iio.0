@@ -1,90 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=85.215.255.84
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792862278;
-	b=aPdYXm6HYvA9JqlwRgx2AyJ1iNsmEjRZOZaBrk4dfInBY29AxGybGmWnHu9taoxwxjxf
-	 4kHpmm15Zj0Hw5j8ReIPFNc7Pjxf5ayAtylq2uXnQFassH1QEeaBxM/4qLK/3S9hU0JGa
-	 SBTm63Eg+o1aAsp2qsh6h5ontv6+zvdiSdTlEidSJTRZQZxnTmbTgyIO+8S+56v6htCg2
-	 xzicRA1EKDo0D81kOALJVpip6O4uUQ2GzfjAki56oXZ/pEDqLUmudZWp2xbE3obh7p57Y
-	 I0xjX8YwRuoOueHX8zjYXSHuPAM6P5TMh3fHa1wnoq4FKAiDJysmEMWKTpOENmd8kcg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792862278;
-	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
-	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
-	bh=/QR3du3ZR7TxGnSlzBaOHpre8JHaWwlpkdHwAjzsG0E=;
-	b=FVp7QKTLQVTReQ2DanX8aNchQ7ifG23f28BzGBa+k0wB94mTfXMQlu1apYPSmizOL9e3
-	 C08EhlFj31pWAf1Qbrgv6jpBgHW74mmAbYSQRvoe7jo8imxUfxqImL0cmXN0CiVtWB9a7
-	 rbEWG7O6PWiEf5LsUcTgT8pDVSkBgoZCMcmrIwLKBVDnFMYo28FTxz0/nNFqSuOq5G31+
-	 HVCX5anf9iWkde98MMKCTbRRMODIW+rE5O7js9u+/NCN48E5YjmYRPqUJrz/rZRJNd9rf
-	 v30XnxaaC3lJyL6Q1PQCtTNlzHiYBV66wyrIXEU0T3ivZi1Yg6shWIvwcgqSz+dW9sQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=goldelico.com;
-	spf=pass smtp.mailfrom=goldelico.com;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=VV3BUSos;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=9w+QXjID;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=85.215.255.84
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.84])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.108
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792863591;
+	b=SOHvt4Kja7RfMuVxU5a9lFUfHRLm5k2mavzgiXA3JbztEVvs+RSPYCfGzpGKRIZWCh6s
+	 jTxqmHCB4+sNJFY0dzpycIem4EzIQIU8Tzc67nCxqkFarLCjO4vaSzz1LM1z78ElGHC2B
+	 0uBRpt6W1kkryub78g8iAttLtquKkOFjHXlrc/0LhgsmbavysxLQBl8Nkjlv7EjimB1aV
+	 ub3mW0n48SlTuQXduvKDvUdoMbwbrG5gL9k3T3cMGCHOfnnJMmDBDAnBQi/RL1LXgigfZ
+	 8mnN1yKkxqCoFB6t8eYKA9IXUc5AinW1VMA9l+y6oACtQ6kJXOZpCYbcRaSnmloiF2A==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792863591;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
+	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version;
+	bh=Kijzy9EdMhpT7YhrRfRAvZoCaEVnAEPrNMBnKqo82nY=;
+	b=AtX1G4LLbHXWZjZ/5R7UBei8IUNfFwfDzBrJZYGj9HSblM36HWSiI3Y4rhPwI6yZfl2u
+	 /ru0GiLISor4xGpo4k06Wg6SjKXSZ9oodLz9dXcBtEecD9UCUUG9QXRUvZtvkIWh+/zA1
+	 pSBspDP+2NjnPrOIah2MzUBeVZjiY79SOq2XBwhcRyc8UolmhGtRKvqYx2u3MNsce3XhH
+	 W+sXv9IUc8QyQSDixZD5+opwef5iodBzhNcZHr+dJLwSboCYFXN/dqyUWQ1TiqnZRS4Y6
+	 7SMIbUVWtZfEPIHNE10RA7NMmIVd7pzwI4q55iMmAolMt7tgui9rZfvF513JYqSJdOQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=PZARaFnR;
+	arc=none smtp.remote-ip=95.215.58.108
+Received: from mta1.migadu.com (out-108.mta1.migadu.com [95.215.58.108])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D876D606A31A;
-	Sat, 24 Oct 2026 17:17:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D876D606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 182C7606A31A
+	for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 17:39:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 182C7606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=VV3BUSos;
-	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=9w+QXjID
-ARC-Seal: i=1; a=rsa-sha256; t=1792862257; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=UpSOIFOuxxGSTuyq2/HHSepdOQXpQIdcCTw9aH6aChtN4C5AnbXAohQstrSpRxBnAr
-    4mn/wEwWUQaPIbazOTwlk+AKpU8TI1HoAiemJNRzNMFxxgginBzS7BP9gvToBwTg0Hzv
-    tocFd5e+zLFQmd/7BjgX9zh0wZ9gjm+vgtzpvE/vZqBIhpTSYO/2qaQ0EGNKxk3YfJFn
-    l33R2Af2C16PokJ3jMqgpEgMYMaeHIMcq6iBvMpXpzFnJtXRbW5gOdN4S3Tx5uwMihb1
-    R7vpZPZUVMPLDQ6tYY8Gl9AW9r6Nq9ziekX9sWBsJd7LkGqLxs/cF6B2Ul+PrQEkgYby
-    udpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1792862257;
-    s=strato-dkim-0002; d=strato.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=/QR3du3ZR7TxGnSlzBaOHpre8JHaWwlpkdHwAjzsG0E=;
-    b=ZEWXGFrLNUN/s+PNjo2ZbhUe1KPCORZ1Dj7n0GocL/zmsIlgRv5UGyAQa+Gr30Yw7v
-    mD0OsIUtY2CH5ramvrmL8K+92co+RmgZ8TJXcqiw4kk6hzXapbHQhglFCw5j5ZAuAbEQ
-    uAQJb3nAih2grlFcbg3kyxoyHCw0VEVUSMCgv4jkMH33CnvGawYVw1LX1UjQKHzgEs7n
-    IfYUzpTxPqz46GwvY0xDBt8D0d7KrzC8zcc6uDaT+lh5B05JInkRkSdOyoigjxA+cGf+
-    vYtZznIpE+a9ijkWJft2c4YPZF6hgydEpEC4dp8RhIpHSAUP4rHKeeXXbJrReApLrrsq
-    zhkQ==
-ARC-Authentication-Results: i=1; strato.com;
-    arc=none;
-    dkim=none
-X-RZG-CLASS-ID: mo02
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1792862257;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=/QR3du3ZR7TxGnSlzBaOHpre8JHaWwlpkdHwAjzsG0E=;
-    b=VV3BUSosD9xeDwCmwJgmrIpUdpc4TFkNnBYcv9H0vDvYGgIi5EhzEW9gq+zh6X+gVh
-    WvXsnyjB+KB4XKQg7g/FxK4e4wRrZdQ3fIUdVyQDTDjj0XrEc6W4NKlkeORpZA5Ot+2K
-    sHzZuOh0OPDV+oRVcEliOMiTHV73mMh0FvoVW+kWFQt6g4Es9DiNcYhz3NKX2ymSUGbm
-    bOQWx5XfhOgwp/L8LHS1gGLui2Yg2n6Uac/Z3HZZV0CtSveGbOoMX0WNGj1cso1v1zAr
-    Z3nF9j2oCugE/eZF4/bjadO5xno8kc/gVPUUR6QsNDVq4kYrQ8PXZ9AMjaTW+voxgA/6
-    Qiaw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1792862257;
-    s=strato-dkim-0003; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=/QR3du3ZR7TxGnSlzBaOHpre8JHaWwlpkdHwAjzsG0E=;
-    b=9w+QXjIDX9jonH63ES/LXLFQ5VZBz9i0tdYw7MSrvIN/8ehBsVHr20OqeP6hlAXvp+
-    +RCLQBtQqmXmJhMSvxCw==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV2poKzsiNzptYNlV1C1yk7253raiyx+O3Hxli"
-Received: from smtpclient.apple
-    by smtp.strato.de (RZmta 55.6.3 AUTH)
-    with ESMTPSA id Qb56a229OHHbwpq
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-	(Client did not present a certificate);
-    Sat, 24 Oct 2026 19:17:37 +0200 (CEST)
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=PZARaFnR
+X-Envelope-To: linux-iio@vger.kernel.org
+DKIM-Signature: a=rsa-sha256; bh=ZfEMLtaMNfEqeXSdp7dnPs3+qMD4QqvgJKLt9hUIpWQ=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1792863588; v=1; x=1793468388;
+ b=PZARaFnREmGjoUbKSjZ1tyTHw9KlCcTo9q11SHFQ5YuA3LhEkwPY1+6RaA1hx3KjiKtS8in+
+ X+2xcSTg4npo5N3HCKteRdiJss8lslX/LTL05pidb0zDQKtqLUdxNbMTPAW9MNWTGbvMe5u11u/
+ 0t8Gg/o2pS2s4HHFGyHO67PE=
+X-Envelope-To: linux-iio@vger.kernel.org
+Received: by smtp.migadu.com with ESMTPS id bd748e8ee187c88c;
+	Sat, 24 Oct 2026 17:39:48 +0000
+X-Mizu-Trace-ID: bd748e8ee187c88c
+X-Migadu-Flow: FLOW_OUT
+From: Igor Korotin <igor.korotin@linux.dev>
+To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+Cc: Danilo Krummrich <dakr@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
+ Alice Ryhl <aliceryhl@google.com>,
+ Daniel Almeida <daniel.almeida@collabora.com>,
+ Lars-Peter Clausen <lars@metafoo.de>, Mark Brown <broonie@kernel.org>,
+ Brandon StJohn <branstj@gmail.com>, linux-iio@vger.kernel.org,
+ linux-i2c@vger.kernel.org, rust-for-linux@vger.kernel.org,
+ driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v6 0/4] iio: position: add Rust driver for ams AS5600
+Date: Sat, 24 Oct 2026 18:39:46 +0100
+Message-ID: <179286358623.55649.5397316745104390556@linux.dev>
+In-Reply-To:
+ <CAO26r3QK+Q5=JR5TeMzEX-WiLpgYWd8Zn0O1qx11LxTgN96BPg@mail.gmail.com>
+References: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com>
+ <179260197668.3127.18219777718091081046@linux.dev>
+ <CAO26r3QK+Q5=JR5TeMzEX-WiLpgYWd8Zn0O1qx11LxTgN96BPg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,126 +75,278 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.10\))
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20261023204209.48556-1-olivier@mgcrea.io>
-Date: Sat, 24 Oct 2026 19:17:07 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>,
- =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Paul Cercueil <paul@crapouillou.net>,
- linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-mips@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
- Paul Boddie <paul@boddie.org.uk>,
- Andreas Kemnade <akemnade@kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <998458A1-5304-40B1-947D-C268AA8C067A@goldelico.com>
-References: <20261023204209.48556-1-olivier@mgcrea.io>
-To: Olivier Louvignes <olivier@mgcrea.io>
-X-Mailer: Apple Mail (2.3826.700.81.1.10)
+MIME-Version: 1.0
 
-HI,
+Hi Coirul,
 
-> Am 23.10.2026 um 22:42 schrieb Olivier Louvignes <olivier@mgcrea.io>:
->=20
-> The X1600's SAR ADC has four auxiliary channels and none of the
-> touchscreen or battery engines of the JZ47xx ADCs in
-> ingenic,adc.yaml, so it gets a binding of its own.
->=20
-> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
-> ---
-> .../bindings/iio/adc/ingenic,x1600-adc.yaml   | 60 +++++++++++++++++++
-> 1 file changed, 60 insertions(+)
-> create mode 100644 =
-Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
->=20
-> diff --git =
-a/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml =
-b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-> new file mode 100644
-> index 000000000000..7886836b10c6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-> @@ -0,0 +1,60 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ingenic,x1600-adc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Ingenic X1600 ADC
-> +
-> +maintainers:
-> +  - Olivier Louvignes <olivier@mgcrea.io>
-> +
-> +description:
-> +  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input =
-channels
-> +  measured against a 3.3 V reference. Its clients select a channel by =
-index
-> +  through "io-channels".
-> +
-> +properties:
-> +  compatible:
-> +    const: ingenic,x1600-adc
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    items:
-> +      - const: adc
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  '#io-channel-cells':
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - interrupts
-> +  - '#io-channel-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    adc@10070000 {
-> +        compatible =3D "ingenic,x1600-adc";
-> +        reg =3D <0x10070000 0x30>;
-> +
-> +        clocks =3D <&cgu 28>;
-> +        clock-names =3D "adc";
-> +
-> +        interrupt-parent =3D <&intc>;
-> +        interrupts =3D <11>;
-> +
-> +        #io-channel-cells =3D <1>;
-> +    };
->=20
-> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> --=20
-> 2.39.5
->=20
->=20
+Here's the full diff, applied on top of your v6 patches 3 and 4.
 
-Good to get such a driver. Thanks.
+diff --git a/drivers/iio/position/as5600.rs b/drivers/iio/position/as5600.rs
+index b72775241e81..f2897fbf8aa2 100644
+--- a/drivers/iio/position/as5600.rs
++++ b/drivers/iio/position/as5600.rs
+@@ -36,7 +36,8 @@
+         Device,
+         IioChanInfo,
+         IioDriver,
+-        IioVal, //
++        IioVal,
++        Registered, //
+     },
+     io::Io,
+     module_i2c_driver,
+@@ -65,14 +66,12 @@
 
-BR, H. Nikolaus Schaller <hns@goldelico.com>
+ i2c_device_table!(
+     I2C_TABLE,
+-    MODULE_I2C_TABLE,
+     <As5600 as Driver>::IdInfo,
+     [(DeviceId::new(c"as5600"), ())]
+ );
 
+ of_device_table!(
+     OF_TABLE,
+-    MODULE_OF_TABLE,
+     <As5600 as Driver>::IdInfo,
+     [(of::DeviceId::new(c"ams,as5600"), ())]
+ );
+@@ -97,25 +96,29 @@ unsafe impl Sync for As5600Channels {}
+ });
 
+ #[pin_data]
+-struct As5600Priv {
++struct As5600Priv<'a> {
++    client: &'a I2cClient<Bound>,
+     #[pin]
+     io_lock: Mutex<()>,
+ }
+
++// SAFETY: `I2cClient<Bound>` methods go through kernel I2C core functions
++// that provide their own synchronization (bus locking); no `&self` method
++// exposes interior mutability. The borrowed `client` field can therefore be
++// safely accessed and shared across threads like the rest of `As5600Priv`.
++unsafe impl Send for As5600Priv<'_> {}
++// SAFETY: See above.
++unsafe impl Sync for As5600Priv<'_> {}
++
+ // SAFETY: AS5600_CHANNELS contains one valid, immutable IIO_ANGL channel
+ // exposing only RAW and SCALE. It has no event or extension callbacks,
+ // and all optional pointer fields are null.
+-unsafe impl IioDriver for As5600Priv {
+-    fn read_raw(
+-        &self,
+-        parent: &kernel::device::Device<Bound>,
+-        _chan: *const iio_chan_spec,
+-        info: IioChanInfo,
+-    ) -> Result<IioVal> {
++unsafe impl IioDriver for As5600Priv<'_> {
++    fn read_raw(&self, _chan: *const iio_chan_spec, info: IioChanInfo) -> Re=
+sult<IioVal> {
+         match info {
+             IioChanInfo::Raw =3D> {
+                 let _guard =3D self.io_lock.lock();
+-                let client: &I2cClient<Bound> =3D parent.try_into()?;
++                let client =3D self.client;
+
+                 let io =3D client.smbus_io();
+                 // Read status register to verify magnet presence before
+@@ -142,14 +145,17 @@ fn channels(&self) -> &'static [iio_chan_spec] {
+     }
+ }
+
++struct As5600;
++
+ #[pin_data]
+-struct As5600 {
+-    _registration: (),
++struct As5600Data<'bound> {
++    #[pin]
++    _iio_dev: Device<As5600Priv<'bound>, Registered>,
+ }
+
+ impl Driver for As5600 {
+     type IdInfo =3D ();
+-    type Data<'bound> =3D As5600;
++    type Data<'bound> =3D As5600Data<'bound>;
+
+     const I2C_ID_TABLE: Option<IdTable<Self::IdInfo>> =3D Some(&I2C_TABLE);
+     const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> =3D Some(&OF_TABLE);
+@@ -162,15 +168,22 @@ fn probe<'bound>(
+         dev: &'bound I2cClient<Core<'_>>,
+         _id_info: Option<&'bound Self::IdInfo>,
+     ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound {
+-        try_pin_init!(As5600 {
+-            _registration: {
++        try_pin_init!(As5600Data {
++            _iio_dev: {
++                // Deref coercion: I2cClient<Core<'_>> -> I2cClient<Bound>.
++                let client: &'bound I2cClient<Bound> =3D dev;
++
+                 let priv_init =3D pin_init!(As5600Priv {
++                    client,
+                     io_lock <- new_mutex!(()),
+                 });
+
+-                Device::build_device(dev.as_ref(), c"as5600", INDIO_DIRECT_M=
+ODE, priv_init)?
+-                    .register(&crate::THIS_MODULE)?;
++                let unregistered =3D
++                    Device::build_device(dev.as_ref(), c"as5600", INDIO_DIRE=
+CT_MODE, priv_init)?;
++                let registered =3D
++                    unregistered.register(kernel::module::this_module::<crat=
+e::LocalModule>())?;
+                 dev_dbg!(dev.as_ref(), "AS5600 magnetic position sensor read=
+y\n");
++                registered
+             }
+         })
+     }
+diff --git a/rust/kernel/iio.rs b/rust/kernel/iio.rs
+index 9ad2f50948de..4648424c7600 100644
+--- a/rust/kernel/iio.rs
++++ b/rust/kernel/iio.rs
+@@ -21,7 +21,6 @@
+         self,
+         Bound, //
+     },
+-    devres,
+     error::{
+         code::*,
+         to_result,
+@@ -159,15 +158,12 @@ pub enum IioVal {
+ pub unsafe trait IioDriver: Send + Sync {
+     /// Called by the IIO core to read channel information.
+     ///
+-    /// `parent` is the parent device supplied to [`Device::build_device`].
+     /// `chan` identifies the channel, and `info` selects the requested
+-    /// information, such as its raw value or scale.
+-    fn read_raw(
+-        &self,
+-        parent: &device::Device<Bound>,
+-        chan: *const iio_chan_spec,
+-        info: IioChanInfo,
+-    ) -> Result<IioVal>;
++    /// information, such as its raw value or scale. Implementors must
++    /// capture whatever bus-specific resources they need at registration
++    /// time (see [`Device::build_device`]) rather than re-deriving them
++    /// from a generic parent reference here.
++    fn read_raw(&self, chan: *const iio_chan_spec, info: IioChanInfo) -> Res=
+ult<IioVal>;
+
+     /// Returns the channel specifications for this driver.
+     ///
+@@ -204,16 +200,6 @@ fn channels(&self) -> &'static [iio_chan_spec] {
+     // initialized `T` that remains valid for the duration of this callback.
+     let driver =3D unsafe { &*priv_ptr };
+
+-    // SAFETY: `indio_dev` is valid by the callback contract. Its parent
+-    // was supplied as a bound device to `build_device`.
+-    //
+-    // During registration, the builder holds that bound parent borrow.
+-    // After ownership is transferred, parent devres runs the registered
+-    // device's destructor, which unregisters the IIO device and drains
+-    // the supported read_raw paths before destroying the private data.
+-    // The parent therefore remains bound throughout this callback.
+-    let parent =3D unsafe { device::Device::<Bound>::from_raw((*indio_dev).d=
+ev.parent) };
+-
+     // `info` is `long` from C. Negative values and values > u32::MAX
+     // are unsupported iio_chan_info variants; both map to EINVAL.
+     let info_enum =3D match u32::try_from(info)
+@@ -224,7 +210,7 @@ fn channels(&self) -> &'static [iio_chan_spec] {
+         None =3D> return EINVAL.to_errno(),
+     };
+
+-    match driver.read_raw(parent, chan, info_enum) {
++    match driver.read_raw(chan, info_enum) {
+         Ok(IioVal::Int(v)) =3D> {
+             // SAFETY: `val` is valid per the function's Safety contract abo=
+ve.
+             // `val2` is not written; `IIO_VAL_INT` signals to the IIO core
+@@ -271,11 +257,8 @@ fn channels(&self) -> &'static [iio_chan_spec] {
+ pub struct Registered;
+
+ /// An initialized IIO device awaiting registration.
+-///
+-/// The parent remains bound until this builder is consumed or dropped.
+-pub struct UnregisteredDevice<'a, T: IioDriver> {
++pub struct UnregisteredDevice<T: IioDriver> {
+     device: Device<T>,
+-    parent: &'a device::Device<Bound>,
+ }
+
+ /// An owned IIO device with in-place initialized driver data.
+@@ -363,12 +346,12 @@ impl<T: IioDriver> Device<T> {
+     /// Allocation and initialization errors are propagated.
+     ///
+     /// Call [`UnregisteredDevice::register`] to register the device.
+-    pub fn build_device<'a, E>(
+-        parent: &'a device::Device<Bound>,
++    pub fn build_device<E>(
++        parent: &device::Device<Bound>,
+         name: &'static CStr,
+         modes: u32,
+         init: impl PinInit<T, E>,
+-    ) -> Result<UnregisteredDevice<'a, T>>
++    ) -> Result<UnregisteredDevice<T>>
+     where
+         Error: From<E>,
+     {
+@@ -406,7 +389,7 @@ pub fn build_device<'a, E>(
+         // large enough for `T`. The private data remains at a fixed address=
+ in
+         // the separate IIO allocation until it is dropped. On initialization
+         // failure, the error path only frees the allocation.
+-        let init_result =3D unsafe { init.__pinned_init(priv_ptr) };
++        let init_result =3D unsafe { pin_init::raw_try_init(priv_ptr, init) =
+};
+         if let Err(e) =3D init_result {
+             // SAFETY: `pin_init` guarantees partial-init rollback internall=
+y.
+             // `priv_` memory was not fully initialized, so we only free the
+@@ -446,21 +429,23 @@ pub fn build_device<'a, E>(
+             (*indio_dev).modes =3D modes;
+         }
+
+-        Ok(UnregisteredDevice { device, parent })
++        Ok(UnregisteredDevice { device })
+     }
+ }
+
+-impl<T: IioDriver + 'static> UnregisteredDevice<'_, T> {
+-    /// Registers the IIO device and transfers ownership to parent devres.
++impl<T: IioDriver> UnregisteredDevice<T> {
++    /// Registers the IIO device.
+     ///
+-    /// Parent resource teardown unregisters the device and completes its
+-    /// supported `read_raw` callbacks before destroying the private data.
++    /// The caller owns the returned, pinned [`Device<T, Registered>`] and is
++    /// responsible for keeping it alive for as long as the registration
++    /// should remain visible to userspace; dropping it unregisters the
++    /// device and tears down the private data.
+     ///
+     /// On failure, the device is released and any successful registration is
+     /// undone.
+     #[inline]
+-    pub fn register(self, module: &'static ThisModule) -> Result {
+-        let Self { device, parent } =3D self;
++    pub fn register(self, module: &'static ThisModule) -> Result<Device<T, R=
+egistered>> {
++        let Self { device } =3D self;
+
+         // SAFETY: `device.indio_dev` is a valid, fully-initialized `iio_dev`
+         // allocated by `iio_device_alloc` with its name, info vtable, chann=
+els,
+@@ -475,6 +460,6 @@ pub fn register(self, module: &'static ThisModule) -> Res=
+ult {
+         };
+         forget(device);
+
+-        devres::register(parent, registered, GFP_KERNEL)
++        Ok(registered)
+     }
+ }
+
+Cheers
+Igor
