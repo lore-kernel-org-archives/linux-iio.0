@@ -1,98 +1,156 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792795102;
-	b=kfnZlqN0d/nWrKpH5hjJ1djasWXRuUldbxOslPTEbx2yGmHeoe+/5j1iB2WSdKN0tTCE
-	 YOLajuMJxq4vsJl7T89gMcfGdOlv4QeGhe7vYTgmQdadco7rYPNRyr726pZasrnIUsb9i
-	 a4DnWAHRegCXorIUlMv7vHrHRVIbfj6ZHUsHHDKv9+Fm+7ygjbUE1rd7saec3cRsBTHcn
-	 UtB2AtXY7uWk4qUVQh5yuhO4IM663oEUGEyyUI6M6MIzrds8IA3ihEVvcORHEcy5510Nk
-	 rFQNfDqyImwuaE6kDZW1PjPtqdcIdhEJuVlrFF5mwkK6IeAnQjPZm8OoFXEYFr3sg+A==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792795102;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-ADIRuleOP-NewSCL:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=UOZ6WSueaHCJ9DyUcKOnlyq8dCc+epWLmpmO/pZb0C0=;
-	b=XTSrPfDCYQpreJwmH7l4awyooNnitc4f6fWiZ74Kv92tkhXSt8RxCfBiXXc0V9FVuiqu
-	 ma27WXn6t2zFe2tLDySMWYczgiBwrsE4d0ZfjOydjSQtT3melpqR9ZVj1qU5t+JpQyLen
-	 rJm5Ot/0vjfTHiWnlzZcNcLBcu942Ko9pagk0QPrAC9t75irVp/EupwrBO5lwTGQ1tF2D
-	 7ISzcn65GowjpHU9Q5ZJKYnNgAqN9zp/jXxkcrfF70bIu65Cki/paLWyQa4cuCy9Q0Pza
-	 BYey2+Bs/UKflFve70+osH6+ZkXPl+9SGxb4fM+TWRo3vmr91q57ig7Lqaqk5ybYt1A==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=sFoJeMOj;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=Ghh71+GK;
-	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.1
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792800387;
+	b=f1UEuj99zhEj0rVO3CSJp9xPrTopiGHudjmUrR+qEoTZNNnCjAOBeOrRJ+Mt9pCU6EVl
+	 5jkvxM83gPCKCTTfi2n6EtWXuSLQVD84m/vBeO5qQh6aUxtmFSPnBtAJ/n9hQmv1Fn8e/
+	 rk3U3yoJo9jF/bJzGjIShs0PV/teEANHkJxhqgzMRvQpAUhV4cNmtyhgjW1JEUih8o+0d
+	 hx98onU+RJq8UWfAEOaOm+1g03glasiFk9gx7otpHalkV530nHx64VlCHUz0aol/SIeEl
+	 K5Gxh+YcG67Xa0paMHLSSSJq0zB43Yz2ACRmYgnuU6u4JsYLjv8g3In90Q1oJv5KbDg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792800387;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 msip_labels:x-ms-exchange-messagesentrepresentingtype:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:
+	 x-ms-exchange-slblob-mailprops:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:
+	 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=pJLkM20fqxOHCRD7r1vSc9uENrBKh1P6QWiuy1xlBSQ=;
+	b=Ie3NaGd6yAEr9tyB+bfKK8p6876dq/2EytgDyfiG+V6Uea1vMZ4F3t+N8qu+OHzdBP2e
+	 FVuHILjeTMGnjvEJsFSubePDhzyDVsFTKMnRxsO/yWYEiNkdI7je03BVLDp/0T4kLkpZs
+	 48Dibsss/PhR1c0zgM0Fdj8ms5V2u9A/gMeSSB68x7IHlyiQPrl2Y3CYUZTSqdjwv/Zz8
+	 X702QKNhnzunr8ix7GU7jLQop6N2FGlXWL6klt8uNLo/XPRrgMKZW+rOLW6gmfvnX+awW
+	 sYzL4nZIq6Ny6+RurRwD1r5AwgLAcl+VvqkUFBzpZPu1HJ/sxPr0mCG1LAVq0qPmWGw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=outlook.com;
+	spf=pass smtp.mailfrom=outlook.com;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=bLOrKM6A;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.1
+Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazolkn19010001.outbound.protection.outlook.com [52.103.13.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD174606A31A;
-	Fri, 23 Oct 2026 22:38:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CD174606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DD50606A31A;
+	Sat, 24 Oct 2026 00:06:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DD50606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=sFoJeMOj;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=Ghh71+GK
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69NLwaOZ1784476;
-	Fri, 23 Oct 2026 18:38:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=UOZ6WSueaHCJ9DyUcKOnlyq8dCc+epWLmpmO/pZb0C0=; b=sFoJeMO
-	jSVVyT5k4zqG7aQ/MGDWcegY+rTUarEZU3I3jS21CLgMy251Es3IXT5ibyvwoZpr
-	hV9dXrppfzMzj5pNfjB41Q8gNcr6Cq4GptlMSGoSk+in9vS+R8UHncyFdt3MbnuG
-	8YjjzY8BLLF6yALt23n/Sx7RsGW1xacYQyBWgXndZ+MpM5RXmHlMnR1dl1Sd3SY+
-	e082SijXW7GFl+ru2BGMF66JaXp+c7/ZYbpxzcuJvcNkcL/+gEOfCXcZ6cFj+h3Y
-	D9ZnRDJfhwPxRxQ2EzQ+QS1Wbd4Zko77yS+y9aVSM2s3xIlKTCZAwXfnXQDBf36h
-	xS/IumMccoxUxjA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=UOZ6W
-	SueaHCJ9DyUcKOnlyq8dCc+epWLmpmO/pZb0C0=; b=Ghh71+GKAC+hoMAV3zu9y
-	NY+Nk8is/xsgYByY8uyR1TfLL5bhjXv/Dhm5bHHK0ZmLSa3OvXVl/oOhAkLonTYX
-	QO+HEPD9RAMox6XCfi8wGntHYSNj207kpDKmlQuhWJA0Uom54oLYFVULFeYESz7F
-	/eGXZDz9k9Ze0WfsQOthskgaTN8dk93Ei452O93CBvneV4fWjTtRoMOR0CrpO2Y5
-	PmtEvYVMlq6VlcrHLnC70nv5QbtiW2PVJrfn4r+EapzhdF+Et3rdH0UMa3zNc/QS
-	4C7Kqr2+wQ9lHntu/hXDZep4Skalz+a78C/nhhOxorxRv13zs34geUsZYhPduJnS
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hg2mvmcq8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 Oct 2026 18:38:16 -0400 (EDT)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69NMcFwP027073
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 23 Oct 2026 18:38:15 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 23 Oct
- 2026 18:38:15 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 23 Oct 2026 18:38:15 -0400
-Received: from work.maxim-ic.internal ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69NMbxLd005932;
-	Fri, 23 Oct 2026 18:38:02 -0400
-From: Marcelo Schmitt <marcelo.schmitt@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@analog.com>
-CC: <jic23@kernel.org>, <nuno.sa@analog.com>, <dlechner@baylibre.com>,
-        <andy@kernel.org>, <Michael.Hennerich@analog.com>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <corbet@lwn.net>,
-        <skhan@linuxfoundation.org>, <marcelo.schmitt1@gmail.com>
-Subject: [PATCH v6 16/16] Docs: iio: Add AD4134
-Date: Fri, 23 Oct 2026 19:37:54 -0300
-Message-ID: <9d06595a505406598d1585d883226561e2a1c739.1792792325.git.marcelo.schmitt@analog.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1792792325.git.marcelo.schmitt@analog.com>
-References: <cover.1792792325.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=bLOrKM6A
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZgK/stLKcX5KBhMwv8+xnnvZU51wJrcDWKYT36Sjrwat15iMThw4Bqx/ci06Z7a8ukBscqbRLpPPQCI1v2NYoV3zizuwvYsmx5pWkjVA3lPKotmzCx5rw2rHpeWKxlGcOsKm4wsn9S2N9PGMEzqhAivEwmN+CUcOSCYrvZ0gYnoyl5uXC9TD31FzxrR+0rCdgOH840/OyvYclCpkWkVliWpVtlRR2GLjfHlJR8QNUJJc7dzrr4KqWM8hs7SW//jL3Oq5ifLuQO4KwxNFY9jTSTUb/lGyR0319fXZzfio8Y02QnmnV+f0F7GeUwE5lWClE1AQ+dzKs+z//CytIUC7MA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pJLkM20fqxOHCRD7r1vSc9uENrBKh1P6QWiuy1xlBSQ=;
+ b=rwZySJhpDTvFOoxLspBGJBsLkEUpWOS7BHk75CGXKMLKmYPo7BOdKFEfuc0MziZAfYucGQ5T069HNXJkSSqkbOCWsD3ZSY4XUX/2PgN8pW+3TyqAQ9uRyQr9eSAxHS6o4EdRwnUo+BLb/5RxshQYe6eV2mNBtbFvYzlHvJ3GAEZHOV3GonWut21PkT8cr8CHiuDujfNP39E3lyhiBn5rErJT8bGmwd/eLClIpHGTICAChob6rATXglcaYdM3wOv2EHXgPp9neE7th4noqv7EbeHuiPKMSH1L2vClgpZ/FSPufQLak/sRE2gN70zkoetXAZ5vMluRUHpOx89meOKPEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pJLkM20fqxOHCRD7r1vSc9uENrBKh1P6QWiuy1xlBSQ=;
+ b=bLOrKM6A72gBycrb8uOQBkd8cxgfEn/x6HNvksp9m2aQhS207F0moc5bNwPXpWbRTAXttCznWYnUWkM9yUPZECTwjrhiwb0UJvYoEAn7rxS7IAhsp5Ntqr7dRRpxSkoNpoG/39Bdmmun1/ucBWNchRfaVzy+no/t1TDLTKTnCtG6jnIdAPsg5JpHPsOP9Zwo28c8eul4/U26G1xLtuu9Iq1yclVfu1j8Emw4vcwlrHzA6+zIQh3JRDoPSTEbgj8LSpCGA7RnZLNq3zrojBqdcJYMWNjwozqXUHhQfjoJXdbbc300oSe6XA5m0JcL2Dr4ghZlULPsSCq0EBkp+KHI6Q==
+Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
+ by IA0PR12MB8352.namprd12.prod.outlook.com (2603:10b6:208:3dd::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.19; Sat, 24 Oct
+ 2026 00:05:26 +0000
+Received: from SN1PR12MB2528.namprd12.prod.outlook.com
+ ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
+ ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0546.012; Sat, 24 Oct 2026
+ 00:05:26 +0000
+From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/3] iio: cdc: add Texas Instruments FDC1004 driver
+Thread-Topic: [PATCH 0/3] iio: cdc: add Texas Instruments FDC1004 driver
+Thread-Index: AQHdYn7WUhVUIOKG9ky+b5jJGaFnRLcKtdOAgAESvYs=
+Date: Sat, 24 Oct 2026 00:05:26 +0000
+Message-ID:
+ <SN1PR12MB252895FEB136DA236B70EA93A5642@SN1PR12MB2528.namprd12.prod.outlook.com>
+References:
+ <SN1PR12MB25286BE4E1EA3B75F8E563A9A5652@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <atsIGZswWCjXlNSX@ashevche-desk.local>
+In-Reply-To: <atsIGZswWCjXlNSX@ashevche-desk.local>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN1PR12MB2528:EE_|IA0PR12MB8352:EE_
+x-ms-office365-filtering-correlation-id: e729483a-0af6-492f-35dc-08df316281b9
+x-ms-exchange-slblob-mailprops:
+ hnD4Fgoc1bPokEwHA1l2GYyEHUkO2myIrX8kMDhREvwIynrhwJ1dswpRd0vVlm7HIsviBpLe7GTegDrhdq2BOgNUepc5386Oo/7MCoqP2NhAHKg7m9N58L9WkQNtLLymzN0n1hQyiGO5gcR6SurNclpW0zY15AftDe7RJ+Z2rQ6Onj8inrky53/st9RDMMZ9C/0Azd/cnw+Qo/DrdOtKQQUtm47IGd8zhbxM/YD+Ofqr9Ny8L3duzLCBupwGcgJ9S0vl/zEEzwlzC3FDMZUwEgFhY5qnJUchNh2LkXky10GwnSTlKJPn6q2b1BTWjKUFHAcp/TtwjsT6sBAMrWiBaYgrLPsxmb24iopPAennVlqQmSM9qvghGiD+JwrGNyvCudIVHT7h1VsWHsRxZY3HlLofdVxJAlIiKOMjFpt8RLwtODom8gXKSI9zM86F8cgcfVIh5ohsbfRKFnNpyx9ajpsuYuPgpzPekpwT2SOLqghCXv22tX1pEYYRly6phGbnPDPV4LwpKD4SDtQ+JuzGkseq3zXnGRvyIEfREzIZo4JM4HRMsSOaVa3F0ngY+jpyn1IFsAAayj2bJPtF55ZMH/6JV9CwW1qfn/KTX2vYExNrcnp1f9Mll7eTf1v9a4tW
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|19110799012|8062599012|24021099003|8060799015|31061999003|25010399006|22091999003|51005399006|15030799006|15080799012|24121999003|40105399003|102099032|3412199025|440099028;
+x-microsoft-antispam-message-info:
+ =?iso-8859-1?Q?xlT0iv+VVsDh63tE/4hA59ijyz2WwauQtYyA+g62J0mbuB/yxB6b5YrstG?=
+ =?iso-8859-1?Q?9OgqmRF6/0R1S2J4qXPiV/CpLz0INYT4zWa9BwAceJdTZdkCCPlTw7+VSr?=
+ =?iso-8859-1?Q?TaYRvcU/9xWUKiYrM7UvVN3zAcjsgFvftdZnOSO62cfwR8lTTHvj3Ys1nM?=
+ =?iso-8859-1?Q?WITxv+BWmzDdVlbfCteFNpI+w3y+fWPbxGeyWNgKte7cCIqe9PruKJapVl?=
+ =?iso-8859-1?Q?zFrbyJQglecTXun6xh3O/ZO2SlpAKcnZ7eMe5l2GgqGdhOKZ++ZGFeSXqB?=
+ =?iso-8859-1?Q?Gslh74IuS3IDHq/qlY0dNhvc3W/ElhVs+1i+KGTLGqXRR5mZrkS7ZekpX3?=
+ =?iso-8859-1?Q?/jB17tqBp/mU7+pc7C/YB6dNWC8DLirh+Oukb77f/aJUGy6EV2dIjXIbYH?=
+ =?iso-8859-1?Q?4Garfzh03uOhso7x+J6CXUFnc8hvS/1bBpLspka/Ccmga7fYYPVfHiIRLZ?=
+ =?iso-8859-1?Q?NBsP8wzXAn/dzgrcOnFZWWvsigAiTDDwVlKWj46FEQrs4isgv8/1TSDsKt?=
+ =?iso-8859-1?Q?KAtp7YziYR5fOlkdp1/uCOrJDAdh3G1axmPzXufCIlEBxgvsBlWC8u4zAi?=
+ =?iso-8859-1?Q?NAn/SZxzO1LWRLUjHeqd23NJCaZ+yYmJPi24BZ5VhrVMw2lGzYI7NJ08ln?=
+ =?iso-8859-1?Q?99rwqq1nH2rTXyXGAWHoGm16QSOPY9lsiezFsqMzzY1fKieOkaMLNWoNkx?=
+ =?iso-8859-1?Q?lhc9/TwYxjhagUHg7s8bNxhlT6f0wWqdCM//IExdNr715jOTVUEFszzZSX?=
+ =?iso-8859-1?Q?dIN8IgiuaNFR+gXVz+wQEyAw9D9+cAyFRDaGkdZ2iYNgYlQfLPuXEbKqSb?=
+ =?iso-8859-1?Q?9UfBq//HenJAcutxhw2ddWRZ5LRH+wUbFAnH6RFiOXySbgENQl1WWYzKuX?=
+ =?iso-8859-1?Q?v6B07jXgJ4ECuXvsLU0+RDEmF8CM8e3jHmD5jSR8MV0jwMzugQbvuHDm9Q?=
+ =?iso-8859-1?Q?LSTDU99NttpLdTLFb90a5C/DEHPPk1LxBQn1r9YrCvqLkpn13fPPux5vup?=
+ =?iso-8859-1?Q?Bz+H/iFcM2ycZDL9ui/JTJvowhuXdPumR4P8tDs52duehFg+nrKc6QA3cu?=
+ =?iso-8859-1?Q?fbEEusyTvvt92y+T9MhrhAY=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?6N2NudlSdNMJWb4LRrlDjgQXoeKCDhjt5YZGcjloyNCEnxNQpr7/1o7pbp?=
+ =?iso-8859-1?Q?26B/f/LLguLzXs8hxR1u2Ibs+gnAC44Ym4wuhzGbYpv5RnSPUMRdN0dWKi?=
+ =?iso-8859-1?Q?Q8LlGFxf366uGW65HMAlGBIlHNzg1CfIziO1ycdAqSI5grWmphWFyUCm1k?=
+ =?iso-8859-1?Q?X+JhkluQJ53ZWGO3U2qrSNG1nXp3Hn4y2QphmhNHVJYhLxC0qSLM2SxNR4?=
+ =?iso-8859-1?Q?jeflayrfl22B55NQcaMgE3eCsbMVV2Cw8RYR9n4Gn5uX7SjZZr9YxP53eO?=
+ =?iso-8859-1?Q?192uEfHgGDTYEEHkS8B423FWBuSzjAcduwIoYwC2Z38XLF80GQCYYZS/ao?=
+ =?iso-8859-1?Q?Fsk0d9oOXLd7eNMbupTSL6lwMLwAyyThvoRZMMG79Lc1ySxeX8Y5xQOefh?=
+ =?iso-8859-1?Q?15rbXsA3DekTohLbCzkZoZv4BGbwRPpWXXbmSCxQ8A06UymEN6qTwSS9LA?=
+ =?iso-8859-1?Q?HRD2hlMbQyPkAGsNaaToPxAIV/TX06YQlUZE276ad2P/bvtRqFTTu5uQtP?=
+ =?iso-8859-1?Q?nsf25mqmv6RTz8Htm7znjPEXdiER+fQIJWIk8C17GgG6QzfpEoZ6Vb9DmH?=
+ =?iso-8859-1?Q?OMXSuSjNl6hk8NQD/l2kJJFkn8pcn0fo0NrMUi4Icaw7QomhQedPu+ZWPc?=
+ =?iso-8859-1?Q?j6+vXGACGeitbDVt+b/ZiErfPEzCydI6HlaW3jS5hO6nxJ0MSNJhXQ+v9K?=
+ =?iso-8859-1?Q?NR/p0qQVkW5N6nnaUYUFKQ8aB3Y4x3nisY6L/Uia1QtcqGd+5f+8xXAM7a?=
+ =?iso-8859-1?Q?stsHF+KsAEP9Q9yygvXN/fOIzNhZSKvU4M/kzm2vJU+aEaDy544j8iKdKn?=
+ =?iso-8859-1?Q?X4ziK9X22qBMF2BS7O25gfU56QTiDZmvlpmUtKor4ELjZGlFIkgVatNqBB?=
+ =?iso-8859-1?Q?IWAsNW80A1LptEvjaH40xQYpuqDPQNlv6uefZEefIa+Nk2nVy/E0uEO7yU?=
+ =?iso-8859-1?Q?JuPvpgTHQzTlZRocylngDD1JePcgNWhOKt5luTuvvIwa0vl9QXhuKquE3g?=
+ =?iso-8859-1?Q?/L68x2cLOLDVMw9PY2GqFMfO6eeRQSMEf7JdwOS8vj7iSiofrAu8v3gST8?=
+ =?iso-8859-1?Q?6Uqt+qS4n2KB55CGJ9PRkAdbc/8nbi1wGLdj9b5QCovpOFiJIZcbZ5SLt0?=
+ =?iso-8859-1?Q?EcXciH/yalv4CHKJhPdqIuXqkbxpNI6g4GD/zIqsckZrQo38MV5EHYVKNX?=
+ =?iso-8859-1?Q?rA/qoE3qGISCcY5m/SiiMND2tyjTkrlfgbm1QdhZlfNsdPpffHXcjtlJSi?=
+ =?iso-8859-1?Q?J99DkdRAV2o73wp3xu2q5mvICBF/vKtqBzIebvQD+ejQq8cYvFzovgI94l?=
+ =?iso-8859-1?Q?1cbK7L6SXYRikhCgeC0GPTDS9qEYCpmG85G/CFI1x44AiGhY5A5I+VB4/f?=
+ =?iso-8859-1?Q?sFA7hYdtHcSnSlUY2ilRFx7oFsbqk3oNYV/OaAHgcWp0PDo2AH3BUxNGzM?=
+ =?iso-8859-1?Q?utdjDFlPap87UWaNmdQT2FMKN52Ui/BB4ppoPA=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,206 +160,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: rnfggMxlM9UkoGQNXcGSdM-2536i_eRD
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIzMDA4OSBTYWx0ZWRfX+xWqp+1zM/iI
- 9+rAHHFc5UyvrkzOxsd60Ql6nuAJ+KP9coHmFKzMpAXfEEQrXdGdikwSCREXva/Gb3TPSpY9n9b
- UOYt5zz/0JCWEt9TDnUlSZyz/LECMVFwNQmAwybGBS1QYbZxvMHY
-X-Authority-Analysis: v=2.4 cv=YJoKWhGx c=1 sm=1 tr=0 ts=6adbe1d8 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
- a=wI1k2SEZAAAA:8 a=VwQbUJbxAAAA:8 a=5WHrTUun5MBT5U1ic48A:9
- a=qcg49hLlgF0N60+LroqrWnV/Vu4=:19 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=6HWbV-4b7c7AdzY24d_u:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIzMDA4OSBTYWx0ZWRfX+zXFkUt9X0xB
- jJTEo/lx9cH00bAaw+FZiK0QBnlOsnZ+dkJxlevyjQmpTnCPANHqyPqFln6Ub3FQs5mxarWZpaD
- PKhTMCDwmLkmzZV6L+dst7CW995pRnsRn0TZeDNxm8MleCGV4IOVrws7Z6gb/07yVGV6JBWwoVH
- gFXz3ktGMDI59Fk4rZLA2fiOA3gXB1N3a1H8ilMW2lKsVjspX5tyDZpZKjMwlheZvHfeptsajeA
- hdfOAi8wdwkIltVLTu7o4/8VrVCHUVzHvUKRrlBa/5tCooNRFh9k/uHNcRthy0w7QuB7IVdB+h5
- i8sbdWsEUeKDuAvGMBViLdIu0eQDyfgQeYxU82jxwbn/KsRfE4gGSNVsRb90TLBWOdkhCNO9poy
- GSifa8ZdSKiG8/9gU/VMSlI3pjWZi/nDUSIuDcXOsFvPp6e/eAMXkSs2+4SaAmGqyWRbR+jQ2Pv
- GOkVMuEnxpqtVsdE5sw==
-X-Proofpoint-GUID: rnfggMxlM9UkoGQNXcGSdM-2536i_eRD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-23_06,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 lowpriorityscore=0 priorityscore=1501 impostorscore=0
- clxscore=1015 phishscore=0 bulkscore=0 spamscore=0 adultscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
- definitions=main-2610230089
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: e729483a-0af6-492f-35dc-08df316281b9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2026 00:05:26.2448
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8352
 
-Add initial documentation for the ad4134 IIO driver.
-
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
----
- Documentation/iio/ad4134.rst | 127 +++++++++++++++++++++++++++++++++++
- Documentation/iio/index.rst  |   1 +
- MAINTAINERS                  |   1 +
- 3 files changed, 129 insertions(+)
- create mode 100644 Documentation/iio/ad4134.rst
-
-diff --git a/Documentation/iio/ad4134.rst b/Documentation/iio/ad4134.rst
-new file mode 100644
-index 000000000000..c0889a21cd77
---- /dev/null
-+++ b/Documentation/iio/ad4134.rst
-@@ -0,0 +1,127 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+=============
-+AD4134 driver
-+=============
-+
-+Device driver for Analog Devices Inc. AD4134 and similar ADCs.
-+
-+Supported devices
-+=================
-+
-+* `AD4134 <https://www.analog.com/AD4134>`_
-+* `AD7134 <https://www.analog.com/AD7134>`_
-+
-+Wiring connections
-+------------------
-+
-+AD4134 and similar ADCs can operate in a few different wiring configurations.
-+Because AD4134 also supports control modes other than through SPI protocol,
-+the following pins must be statically set for all of the wiring modes described
-+below.
-+
-++----------------------------+----------------------+--------------------+
-+| Pin Function               |         Level        | Description        |
-++============================+======================+====================+
-+| PIN/SPI                    |         High         | SPI control mode   |
-++----------------------------+----------------------+--------------------+
-+| MODE                       |         Low          | ASRC slave mode    |
-++----------------------------+----------------------+--------------------+
-+| DEC0/DCLKI                 |         Low          | DCLK input         |
-++----------------------------+----------------------+--------------------+
-+| DEC1/DCLKMODE              |         Low          | Gated DCLK         |
-++----------------------------+----------------------+--------------------+
-+
-+Minimum I/O mode
-+^^^^^^^^^^^^^^^^
-+
-+The minimum I/O mode wiring allows AD4134 register and data access with the
-+conventional set of SPI bus lines. In this mode, the peripheral CS pin must be
-+tied to GND. A possible connection schema that sets AD4134 digital interface for
-+minimum I/O mode is::
-+
-+      +------------+         +-------------+
-+      |  AD4134    |         | SPI         |
-+      |            |         | Controller  |
-+      |       DCLK |<--+     |             |
-+      |       SCLK |<--+---- | SCLK        |
-+      |        SDI |<--------| SDO         |
-+      |        SDO |-------->| SDI         |
-+      |        ODR |<--------| GPIO        |
-+      |         CS |----+    |             |
-+      +------------+    |    +-------------+
-+                        V
-+                       GND
-+
-+Set ``adi,spi-mode = "no-cs"`` in device tree to indicate the device is
-+connected in minimum I/O wiring configuration.
-+
-+SPI 4-wire mode - single lane
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+The conventional SPI 4-wire configuration except a multiplexer is used to
-+select between SDO (for register data) and DOUT0 (for ADC sample data).::
-+
-+  +-----------------------+                         +-----------------+
-+  |         AD4134        |                         | SPI Controller  |
-+  |                       |                         |                 |
-+  | SPI interface    SCLK |<------------------------| SCLK            |
-+  | for register       CS |<------------------------| CS              |
-+  | access            SDI |<------------------------| SDO             |
-+  |                   SDO |------->|¯¯¯¯\           |                 |
-+  |                       |        |MUX  >--------->| SDI             |
-+  | Data interface DOUT0  |------->|____/           |                 |
-+  | for ADC sample        |          ^              |                 |
-+  | data read             |          |              |                 |
-+  |                  DCLK |<------------------------| DCLK            |
-+  |                   ODR |<----------------+    +->| Offload Trigger |
-+  +-----------------------+          |      |    |  +-----------------+
-+                                     |      |    +--| PWM1            |
-+                                     |      +-------| PWM0            |
-+                                     +--------------| GPIO            |
-+                                                    +-----------------+
-+
-+Set ``adi,spi-mode = "4-wire"`` in device tree to indicate the device is
-+connected in SPI 4-wire configuration.
-+
-+For SPI offload operation, a PWM is connected to the ADC ODR pin. The ``pwms``
-+firmware property specifies the PWM that is connected to the ADC. The SPI
-+offload will have a ``trigger-sources`` property to indicate the SPI offload
-+(PWM) trigger source.
-+
-+To achieve high sample rates while meeting ADC timing requirements, an offset
-+must be added between the rising edges of PWM0 and PWM1 to delay the SPI
-+transfer until ADC sample data is available. This requires a specialized PWM
-+controller that can provide such an offset.  The `AD4134-FMC HDL project`_, for
-+example, can be configured to sample AD4134 at high speed sample rates.
-+
-+.. _AD4134-FMC HDL project: https://analogdevicesinc.github.io/hdl/projects/ad4134_fmc/index.html
-+
-+SPI 4-wire mode - multi-lane
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+Maximum throughput rate can be achieved by reading 4 input lines simultaneously.::
-+
-+  +-----------------------+                         +-----------------+
-+  |         AD4134        |                         | SPI Controller  |
-+  |                       |                         |                 |
-+  | SPI interface    SCLK |<------------------------| SCLK            |
-+  | for register       CS |<------------------------| CS              |
-+  | access            SDI |<------------------------| SDO             |
-+  |                   SDO |------->|¯¯¯¯\           |                 |
-+  |                       |        |MUX  >--------->| SDI0            |
-+  | Data interface  DOUT0 |------->|____/           |                 |
-+  | for ADC sample        |          ^              |                 |
-+  | data read       DOUT1 |------------------------>| SDI1            |
-+  |                 DOUT2 |------------------------>| SDI2            |
-+  |                 DOUT3 |------------------------>| SDI3            |
-+  |                  DCLK |<------------------------| DCLK            |
-+  |                   ODR |<----------------+    +->| Offload Trigger |
-+  +-----------------------+          |      |    |  +-----------------+
-+                                     |      |    +--| PWM1            |
-+                                     |      +-------| PWM0            |
-+                                     +--------------| GPIO            |
-+                                                    +-----------------+
-+
-+Each of SDI0 to SDI3 connect to a different SPI controller deserializer
-+(``spi-rx-bus-width = <1>, <1>, <1>, <1>``).
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index 571ee7e5dc8e..8376c73c29f1 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -23,6 +23,7 @@ Industrial I/O Kernel Drivers
-    ad4000
-    ad4030
-    ad4062
-+   ad4134
-    ad4691
-    ad4695
-    ad7191
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 02426f316faa..800eaff4176d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1533,6 +1533,7 @@ L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/adc/adi,ad4134.yaml
-+F:	Documentation/iio/ad4134.rst
- F:	drivers/iio/adc/ad4134.c
- 
- ANALOG DEVICES INC AD4170-4 DRIVER
--- 
-2.53.0
-
+> Tell us more. Why do we need a brand new driver?=0A=
+=0A=
+Sure, I've made the cover letter more detailed in v2. I was a bit afraid of=
+=0A=
+repeating too much of what I wrote in the driver patch...=0A=
