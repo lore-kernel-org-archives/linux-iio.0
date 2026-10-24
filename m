@@ -1,72 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.180
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792863591;
-	b=SOHvt4Kja7RfMuVxU5a9lFUfHRLm5k2mavzgiXA3JbztEVvs+RSPYCfGzpGKRIZWCh6s
-	 jTxqmHCB4+sNJFY0dzpycIem4EzIQIU8Tzc67nCxqkFarLCjO4vaSzz1LM1z78ElGHC2B
-	 0uBRpt6W1kkryub78g8iAttLtquKkOFjHXlrc/0LhgsmbavysxLQBl8Nkjlv7EjimB1aV
-	 ub3mW0n48SlTuQXduvKDvUdoMbwbrG5gL9k3T3cMGCHOfnnJMmDBDAnBQi/RL1LXgigfZ
-	 8mnN1yKkxqCoFB6t8eYKA9IXUc5AinW1VMA9l+y6oACtQ6kJXOZpCYbcRaSnmloiF2A==
+	t=1792864629;
+	b=WaywYJUkXbl2vkZ9vQjKA4uyv9uAyS77XRdoLbEmJZDWmtuvnF37QVS7yXYQ9hkgqmtk
+	 IWLW6IWzQxg/03rku1M3vGunkv4++ToyX4CpEHN+pxA66+hfsEoJLU/5VkRA9FgFU0Zpz
+	 D9+8JN11i3UmSTDa8Pk/G26UuRu70X6A6WiDtQgyUlceFXwENHOBzA+kBk0/iIh+Q9pI6
+	 JNxil+16vs2s4Vq4DHLa7UBz4lX8cygRc5ASZiXvXeDGvX5oLPCBl5AZz9ki+WSt4XDhC
+	 3LeVHLDAqEahpigqq3STmNZpPbwes4F2QJIMWqgmOvB55CQUjb73zSPOCegM/FhOTRw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792863591;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
-	 In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
-	 MIME-Version;
-	bh=Kijzy9EdMhpT7YhrRfRAvZoCaEVnAEPrNMBnKqo82nY=;
-	b=AtX1G4LLbHXWZjZ/5R7UBei8IUNfFwfDzBrJZYGj9HSblM36HWSiI3Y4rhPwI6yZfl2u
-	 /ru0GiLISor4xGpo4k06Wg6SjKXSZ9oodLz9dXcBtEecD9UCUUG9QXRUvZtvkIWh+/zA1
-	 pSBspDP+2NjnPrOIah2MzUBeVZjiY79SOq2XBwhcRyc8UolmhGtRKvqYx2u3MNsce3XhH
-	 W+sXv9IUc8QyQSDixZD5+opwef5iodBzhNcZHr+dJLwSboCYFXN/dqyUWQ1TiqnZRS4Y6
-	 7SMIbUVWtZfEPIHNE10RA7NMmIVd7pzwI4q55iMmAolMt7tgui9rZfvF513JYqSJdOQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792864629;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=gHrHyM/5fyejYWNArNua6ZlvykMFHKuFZPw+M6rELIk=;
+	b=JxILOkicNrRXJy6rCMfkvScwlHtCcWmAtgizcDZJY7Tb0CosI2+UefiXQwnWVmUoVlqJ
+	 q8agmSCVuGRy+AHIcaeNavgoxTF3IELmSEKDkre3OnFUsbI7X0GEqJEBf9cWByHhyqH9r
+	 UphmwcCiQ5RmJyu6WvNIW++V6LVfW7p7trQkVvGXK9SXNgOROVe7yBkYcbA4bbW51KrCu
+	 mucLLfmXFOpXMiU5rSKzWxpDUjVnht84oV+WwsbzPO6+posBQ8V5AJs7Vu3ezvXT01Jls
+	 zREnO59NAaAuZhoyJCcaQye4SdPgUOFSZ+P8uH80nUgmf+XU8GsTMdVWzCsPq0kXk5g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=PZARaFnR;
-	arc=none smtp.remote-ip=95.215.58.108
-Received: from mta1.migadu.com (out-108.mta1.migadu.com [95.215.58.108])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Je60pJkw;
+	arc=none smtp.remote-ip=74.125.82.180
+Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 182C7606A31A
-	for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 17:39:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 182C7606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D358D606A31F
+	for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 17:57:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D358D606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=PZARaFnR
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=ZfEMLtaMNfEqeXSdp7dnPs3+qMD4QqvgJKLt9hUIpWQ=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1792863588; v=1; x=1793468388;
- b=PZARaFnREmGjoUbKSjZ1tyTHw9KlCcTo9q11SHFQ5YuA3LhEkwPY1+6RaA1hx3KjiKtS8in+
- X+2xcSTg4npo5N3HCKteRdiJss8lslX/LTL05pidb0zDQKtqLUdxNbMTPAW9MNWTGbvMe5u11u/
- 0t8Gg/o2pS2s4HHFGyHO67PE=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id bd748e8ee187c88c;
-	Sat, 24 Oct 2026 17:39:48 +0000
-X-Mizu-Trace-ID: bd748e8ee187c88c
-X-Migadu-Flow: FLOW_OUT
-From: Igor Korotin <igor.korotin@linux.dev>
-To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Cc: Danilo Krummrich <dakr@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
- Alice Ryhl <aliceryhl@google.com>,
- Daniel Almeida <daniel.almeida@collabora.com>,
- Lars-Peter Clausen <lars@metafoo.de>, Mark Brown <broonie@kernel.org>,
- Brandon StJohn <branstj@gmail.com>, linux-iio@vger.kernel.org,
- linux-i2c@vger.kernel.org, rust-for-linux@vger.kernel.org,
- driver-core@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v6 0/4] iio: position: add Rust driver for ams AS5600
-Date: Sat, 24 Oct 2026 18:39:46 +0100
-Message-ID: <179286358623.55649.5397316745104390556@linux.dev>
-In-Reply-To:
- <CAO26r3QK+Q5=JR5TeMzEX-WiLpgYWd8Zn0O1qx11LxTgN96BPg@mail.gmail.com>
-References: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com>
- <179260197668.3127.18219777718091081046@linux.dev>
- <CAO26r3QK+Q5=JR5TeMzEX-WiLpgYWd8Zn0O1qx11LxTgN96BPg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Je60pJkw
+Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-35b2c599f43so726888eec.0
+        for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 10:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792864628; x=1793469428; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=gHrHyM/5fyejYWNArNua6ZlvykMFHKuFZPw+M6rELIk=;
+        b=Je60pJkwg0vgqa2pDwqVNdZXAhghgfLuN8UJmrVfOSukQHu7PRbeMS9eCcC4R5xZf3
+         9JLcX51AOLhxYrqn6H0zNlkLtYyd0LKc9/NagG8mtBRr6SbZNTUa0DPHS2YPQXG76H8b
+         1dtY1CIeQ3w3QUXwMhYOKlUf+oVPrvYb/bPZEaG622fNrbtzsEq5HHRiVm2682Kq2L2b
+         jW3TcjvScO118Qqg02mNgHRt/wi7sQCsQCIz5CxbVQ4MrDhBpHYp7aavDHvf2w+VhlL1
+         Bu767YO1Txx0oWvo2loz9hRNnlxnfHZmRFwde92bohGwWngNzoi3p6BEYNSnCBfLPBv1
+         kkGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792864628; x=1793469428;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=gHrHyM/5fyejYWNArNua6ZlvykMFHKuFZPw+M6rELIk=;
+        b=XGFh2bCi6D4JmPQeiiVrl1+pHaybFNidYMDYp8lmlBdwuqnF1RSF0CG8PjL90iEfEJ
+         A8XSI+9kw1iFHTsAUKXQqBmeNHU3M2GDN0goadZPCQmpqNQFa8NMCBpj5Ily9BHUdiFg
+         DZ4XfEgrpConWa8oiE81mN7wHBdtWVKY/ZrQ106+Kr+gZ0Isvfd8AhgG9VN+wUgZJ4vI
+         jgwKKEt1mCEl+LwgdKCjel9hOxfnHg4MMHUQ5YiyaFcOmuxFWqniCQsjrN+4O98shL3R
+         zkfWzIgyr54wfzDBJcjJYTwezPnON1p4rQFHglmphtxD1CFY+MwZAqSL2IITGVmhcGRq
+         g/Yw==
+X-Forwarded-Encrypted: i=1; AKwUvBxuRMlHMU6nGZHMWOj/PFRTgSvt/dEdJEcEO3+L8w2bBe5m1Acd2kSCa5+DpcRHaF+j3FP0KYQwC6E=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLqiUh7vR4cLu3XKxqReXzzoMQ23hqvoygxkLugKkQIzwbHVOE6
+	lW8dIR5YY0lIoJR+GpHZaohX6m2SoqHgVYry+7N57G20eXTBoNsCWi1Q
+X-Gm-Gg: AYBFou0MSi2czCnM/oescir1exxZMCUUeEx0YALoNZ5I4wuP0j/oVbRLDo8f7VigHrv
+	sE/Ri17NtSDVsArLIPeOuS8v0altmrOj8Ert4Tsb53l7djztotkigcm+vFX5fe0ONVQ+ssjRRYu
+	zDXkt7OT7aWFTa9bfTKt5tC8pLCHaQcjn7EO4duWKMLNSIBJqtmhPAi0Il/edZv7TSZ+PbTvWlZ
+	7WxxdaedpoCiuCBoqct+/0ttG6Dbq/f+fgiIctfjI+dMqlQ5Mu8G2cVTlpVDu0syX05UIxaCdKQ
+	inj17ytZJjHCLlP/pi7j6Gj6gacwtjTxUESDNtz2qzyJyjWLjE/u9gqNqHjrdz5796GgedmybNf
+	/aKbgbgLciqQwSdrg9LuDzgtkEjdfv77jVDekbkjfU0vOA4mT19Bjln/55QOwDxOTNc1E8Frr95
+	3afn8UF384H4pBck9qQ9jpzFuHW7otAUubsrZvGPEsvPXpOUt6Ha8QHVRxA2GsTaaCXOnHFCE0I
+	6tJO2DxYkySbi0XYVaVjJ86SatWIuz+yigR8EQYFh9o50rHWR+vNxGyaS5sR3JIFvu0MklmWcja
+	cZYvomLTqxu8prM9Q8Dq/Sr2VG2egEg+igbqF8ZyUHzR5P/VVy3KmQu4jzHT3I3KHj+6H6paZ1T
+	y1HNph5OcGtg=
+X-Received: by 2002:a05:7301:fd02:b0:342:645a:5cf with SMTP id 5a478bee46e88-369e830ed89mr3796698eec.1.1792864627754;
+        Sat, 24 Oct 2026 10:57:07 -0700 (PDT)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-369e8d5b841sm10684217eec.9.2026.10.24.10.57.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Oct 2026 10:57:07 -0700 (PDT)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH] iio: proximity: sx9500: ignore event config writes that don't change state
+Date: Sat, 24 Oct 2026 23:26:53 +0530
+Message-ID: <20261024175658.130546-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -76,277 +100,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Coirul,
+sx9500_write_event_config() adjusts the channel and close/far user
+counts on every write, even when the event is already in the requested
+state. Writing 0 to a disabled event and then 1 leaves the counts at 0,
+so the channel and its interrupts stay off while the event reads as
+enabled. As channel_users[] is shared with raw reads, those can then
+wait forever for a conversion. Writing 1 twice and then 0 has the
+opposite effect.
 
-Here's the full diff, applied on top of your v6 patches 3 and 4.
+Return early when the state doesn't change, as
+sx_common_write_event_config() does.
 
-diff --git a/drivers/iio/position/as5600.rs b/drivers/iio/position/as5600.rs
-index b72775241e81..f2897fbf8aa2 100644
---- a/drivers/iio/position/as5600.rs
-+++ b/drivers/iio/position/as5600.rs
-@@ -36,7 +36,8 @@
-         Device,
-         IioChanInfo,
-         IioDriver,
--        IioVal, //
-+        IioVal,
-+        Registered, //
-     },
-     io::Io,
-     module_i2c_driver,
-@@ -65,14 +66,12 @@
+Fixes: 4193c0f1d863 ("iio: driver for Semtech SX9500 proximity solution")
+Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+---
+Compile-tested only (W=1); I don't have SX9500 hardware. Both write
+sequences were checked with a userspace model of the user counting.
 
- i2c_device_table!(
-     I2C_TABLE,
--    MODULE_I2C_TABLE,
-     <As5600 as Driver>::IdInfo,
-     [(DeviceId::new(c"as5600"), ())]
- );
+ drivers/iio/proximity/sx9500.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- of_device_table!(
-     OF_TABLE,
--    MODULE_OF_TABLE,
-     <As5600 as Driver>::IdInfo,
-     [(of::DeviceId::new(c"ams,as5600"), ())]
- );
-@@ -97,25 +96,29 @@ unsafe impl Sync for As5600Channels {}
- });
-
- #[pin_data]
--struct As5600Priv {
-+struct As5600Priv<'a> {
-+    client: &'a I2cClient<Bound>,
-     #[pin]
-     io_lock: Mutex<()>,
- }
-
-+// SAFETY: `I2cClient<Bound>` methods go through kernel I2C core functions
-+// that provide their own synchronization (bus locking); no `&self` method
-+// exposes interior mutability. The borrowed `client` field can therefore be
-+// safely accessed and shared across threads like the rest of `As5600Priv`.
-+unsafe impl Send for As5600Priv<'_> {}
-+// SAFETY: See above.
-+unsafe impl Sync for As5600Priv<'_> {}
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index dadce9b44227..26522b6c5a2d 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -548,6 +548,12 @@ static int sx9500_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&data->mutex);
+ 
++	/* The user counts must only change when the state does. */
++	if (data->event_enabled[chan->channel] == state) {
++		ret = 0;
++		goto out_unlock;
++	}
 +
- // SAFETY: AS5600_CHANNELS contains one valid, immutable IIO_ANGL channel
- // exposing only RAW and SCALE. It has no event or extension callbacks,
- // and all optional pointer fields are null.
--unsafe impl IioDriver for As5600Priv {
--    fn read_raw(
--        &self,
--        parent: &kernel::device::Device<Bound>,
--        _chan: *const iio_chan_spec,
--        info: IioChanInfo,
--    ) -> Result<IioVal> {
-+unsafe impl IioDriver for As5600Priv<'_> {
-+    fn read_raw(&self, _chan: *const iio_chan_spec, info: IioChanInfo) -> Re=
-sult<IioVal> {
-         match info {
-             IioChanInfo::Raw =3D> {
-                 let _guard =3D self.io_lock.lock();
--                let client: &I2cClient<Bound> =3D parent.try_into()?;
-+                let client =3D self.client;
+ 	if (state) {
+ 		ret = sx9500_inc_chan_users(data, chan->channel);
+ 		if (ret < 0)
 
-                 let io =3D client.smbus_io();
-                 // Read status register to verify magnet presence before
-@@ -142,14 +145,17 @@ fn channels(&self) -> &'static [iio_chan_spec] {
-     }
- }
+base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
+-- 
+2.53.0
 
-+struct As5600;
-+
- #[pin_data]
--struct As5600 {
--    _registration: (),
-+struct As5600Data<'bound> {
-+    #[pin]
-+    _iio_dev: Device<As5600Priv<'bound>, Registered>,
- }
-
- impl Driver for As5600 {
-     type IdInfo =3D ();
--    type Data<'bound> =3D As5600;
-+    type Data<'bound> =3D As5600Data<'bound>;
-
-     const I2C_ID_TABLE: Option<IdTable<Self::IdInfo>> =3D Some(&I2C_TABLE);
-     const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> =3D Some(&OF_TABLE);
-@@ -162,15 +168,22 @@ fn probe<'bound>(
-         dev: &'bound I2cClient<Core<'_>>,
-         _id_info: Option<&'bound Self::IdInfo>,
-     ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound {
--        try_pin_init!(As5600 {
--            _registration: {
-+        try_pin_init!(As5600Data {
-+            _iio_dev: {
-+                // Deref coercion: I2cClient<Core<'_>> -> I2cClient<Bound>.
-+                let client: &'bound I2cClient<Bound> =3D dev;
-+
-                 let priv_init =3D pin_init!(As5600Priv {
-+                    client,
-                     io_lock <- new_mutex!(()),
-                 });
-
--                Device::build_device(dev.as_ref(), c"as5600", INDIO_DIRECT_M=
-ODE, priv_init)?
--                    .register(&crate::THIS_MODULE)?;
-+                let unregistered =3D
-+                    Device::build_device(dev.as_ref(), c"as5600", INDIO_DIRE=
-CT_MODE, priv_init)?;
-+                let registered =3D
-+                    unregistered.register(kernel::module::this_module::<crat=
-e::LocalModule>())?;
-                 dev_dbg!(dev.as_ref(), "AS5600 magnetic position sensor read=
-y\n");
-+                registered
-             }
-         })
-     }
-diff --git a/rust/kernel/iio.rs b/rust/kernel/iio.rs
-index 9ad2f50948de..4648424c7600 100644
---- a/rust/kernel/iio.rs
-+++ b/rust/kernel/iio.rs
-@@ -21,7 +21,6 @@
-         self,
-         Bound, //
-     },
--    devres,
-     error::{
-         code::*,
-         to_result,
-@@ -159,15 +158,12 @@ pub enum IioVal {
- pub unsafe trait IioDriver: Send + Sync {
-     /// Called by the IIO core to read channel information.
-     ///
--    /// `parent` is the parent device supplied to [`Device::build_device`].
-     /// `chan` identifies the channel, and `info` selects the requested
--    /// information, such as its raw value or scale.
--    fn read_raw(
--        &self,
--        parent: &device::Device<Bound>,
--        chan: *const iio_chan_spec,
--        info: IioChanInfo,
--    ) -> Result<IioVal>;
-+    /// information, such as its raw value or scale. Implementors must
-+    /// capture whatever bus-specific resources they need at registration
-+    /// time (see [`Device::build_device`]) rather than re-deriving them
-+    /// from a generic parent reference here.
-+    fn read_raw(&self, chan: *const iio_chan_spec, info: IioChanInfo) -> Res=
-ult<IioVal>;
-
-     /// Returns the channel specifications for this driver.
-     ///
-@@ -204,16 +200,6 @@ fn channels(&self) -> &'static [iio_chan_spec] {
-     // initialized `T` that remains valid for the duration of this callback.
-     let driver =3D unsafe { &*priv_ptr };
-
--    // SAFETY: `indio_dev` is valid by the callback contract. Its parent
--    // was supplied as a bound device to `build_device`.
--    //
--    // During registration, the builder holds that bound parent borrow.
--    // After ownership is transferred, parent devres runs the registered
--    // device's destructor, which unregisters the IIO device and drains
--    // the supported read_raw paths before destroying the private data.
--    // The parent therefore remains bound throughout this callback.
--    let parent =3D unsafe { device::Device::<Bound>::from_raw((*indio_dev).d=
-ev.parent) };
--
-     // `info` is `long` from C. Negative values and values > u32::MAX
-     // are unsupported iio_chan_info variants; both map to EINVAL.
-     let info_enum =3D match u32::try_from(info)
-@@ -224,7 +210,7 @@ fn channels(&self) -> &'static [iio_chan_spec] {
-         None =3D> return EINVAL.to_errno(),
-     };
-
--    match driver.read_raw(parent, chan, info_enum) {
-+    match driver.read_raw(chan, info_enum) {
-         Ok(IioVal::Int(v)) =3D> {
-             // SAFETY: `val` is valid per the function's Safety contract abo=
-ve.
-             // `val2` is not written; `IIO_VAL_INT` signals to the IIO core
-@@ -271,11 +257,8 @@ fn channels(&self) -> &'static [iio_chan_spec] {
- pub struct Registered;
-
- /// An initialized IIO device awaiting registration.
--///
--/// The parent remains bound until this builder is consumed or dropped.
--pub struct UnregisteredDevice<'a, T: IioDriver> {
-+pub struct UnregisteredDevice<T: IioDriver> {
-     device: Device<T>,
--    parent: &'a device::Device<Bound>,
- }
-
- /// An owned IIO device with in-place initialized driver data.
-@@ -363,12 +346,12 @@ impl<T: IioDriver> Device<T> {
-     /// Allocation and initialization errors are propagated.
-     ///
-     /// Call [`UnregisteredDevice::register`] to register the device.
--    pub fn build_device<'a, E>(
--        parent: &'a device::Device<Bound>,
-+    pub fn build_device<E>(
-+        parent: &device::Device<Bound>,
-         name: &'static CStr,
-         modes: u32,
-         init: impl PinInit<T, E>,
--    ) -> Result<UnregisteredDevice<'a, T>>
-+    ) -> Result<UnregisteredDevice<T>>
-     where
-         Error: From<E>,
-     {
-@@ -406,7 +389,7 @@ pub fn build_device<'a, E>(
-         // large enough for `T`. The private data remains at a fixed address=
- in
-         // the separate IIO allocation until it is dropped. On initialization
-         // failure, the error path only frees the allocation.
--        let init_result =3D unsafe { init.__pinned_init(priv_ptr) };
-+        let init_result =3D unsafe { pin_init::raw_try_init(priv_ptr, init) =
-};
-         if let Err(e) =3D init_result {
-             // SAFETY: `pin_init` guarantees partial-init rollback internall=
-y.
-             // `priv_` memory was not fully initialized, so we only free the
-@@ -446,21 +429,23 @@ pub fn build_device<'a, E>(
-             (*indio_dev).modes =3D modes;
-         }
-
--        Ok(UnregisteredDevice { device, parent })
-+        Ok(UnregisteredDevice { device })
-     }
- }
-
--impl<T: IioDriver + 'static> UnregisteredDevice<'_, T> {
--    /// Registers the IIO device and transfers ownership to parent devres.
-+impl<T: IioDriver> UnregisteredDevice<T> {
-+    /// Registers the IIO device.
-     ///
--    /// Parent resource teardown unregisters the device and completes its
--    /// supported `read_raw` callbacks before destroying the private data.
-+    /// The caller owns the returned, pinned [`Device<T, Registered>`] and is
-+    /// responsible for keeping it alive for as long as the registration
-+    /// should remain visible to userspace; dropping it unregisters the
-+    /// device and tears down the private data.
-     ///
-     /// On failure, the device is released and any successful registration is
-     /// undone.
-     #[inline]
--    pub fn register(self, module: &'static ThisModule) -> Result {
--        let Self { device, parent } =3D self;
-+    pub fn register(self, module: &'static ThisModule) -> Result<Device<T, R=
-egistered>> {
-+        let Self { device } =3D self;
-
-         // SAFETY: `device.indio_dev` is a valid, fully-initialized `iio_dev`
-         // allocated by `iio_device_alloc` with its name, info vtable, chann=
-els,
-@@ -475,6 +460,6 @@ pub fn register(self, module: &'static ThisModule) -> Res=
-ult {
-         };
-         forget(device);
-
--        devres::register(parent, registered, GFP_KERNEL)
-+        Ok(registered)
-     }
- }
-
-Cheers
-Igor
