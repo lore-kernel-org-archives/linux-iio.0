@@ -1,58 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792809570;
-	b=P3MM7Fn73cf7G0dbmy4SHDkua9voKGMuBwMxzGrdqEPC24rW4e4zfQ0N5SW2ZbzJytry
-	 HkEi5ikYX41wwGx2CMf7gmPMPCEyShKPZ7qYl0rkqRDVnNmu6/MuV0AaEXXgJgCI2TXDO
-	 o+k9R8cojE80GnKuuNjCx7f9fZMbYAO9mqwikoOrhYDJ8hE9rFC2jRunKcAl0a9yLrLQO
-	 JXoWm4m/batFGOG6lf7Wxy7oLDFB27j3cCPXD1FjXP16GCt2iCTBpRsRunXjHrRGANL8D
-	 sipucrOtbQQgoE8bPxDmRwU8i4ZOyuoiuvfHjdBP1F/FGzABAzmQ1oJ2sL/qUcTdcJA==
+	t=1792809839;
+	b=uhR/f73zFycHDm2mzcEHwbAt/7hzaTzpkcgtMjhNKYzHSduIn4GPKoG+ZjELSSX1f81I
+	 8KqLVNV3plgX65mOX1kz/cgJzFjZTD7HHekhJtVOYj2Mqmpf+1iCoAJQgcqGrsqej8upx
+	 QbrMXl/0wcDtG+i4aNxL7Yjg4ytZX0+aKHTaAroDGq9oL/46GZhuvu685To2YNw29dtLR
+	 iNz+fCRv7k6bNAALMPKOa08Jx2bjpvgZzdxmWcmomtix4VncQUPwjXOv4i0PPCKgDGNWQ
+	 MP3q8jtReEVScw6+1B7J+bu3HabnAgcmM6B8JN/xx23x0nR9b2UXSV6t2pCJdtvL57Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792809570;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792809839;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=rAvEBbxAiiozil7JXucCOwvBF/yNHw8qmjRc24tUjiI=;
-	b=Xo5pUkpf3ccwKc/mvHSPCze3DDQ/xysJxtJXQ1K3LbPX+pn9PQTQFasmjEPqp5O7qZhw
-	 BAeBsrKS2gpIypZc5F67ARWCS/TT94IHAMldohzGfLxKAxocBa+TYoxw8sa2PyMI3MpKS
-	 0A7gxBW2cnEwINYhx1We8nl1/aM5LfK3HPrVAZ0HR5EFDysFjwvm+DS7NeY7Q2gcJeFaN
-	 wbkYAdL554L5HqbcGYOq5dDN/hBoFjRQZn1t+t4iHwIA5qs4ll4OrWJnUcG8S/jfwR9M7
-	 co5ASYCyp5fLqH+9STJHjjJdGte6NbEo1rspS8zsj+VV3juJiiDZ75E5J3nw24R9TpQ==
+	bh=q5oNvwlrSmzVl4Pfa+U6fXz0MufSP4EYM6gckAHNebg=;
+	b=CqmGrdgYVoGJ2RuydsZE8+iKvN5EtXXT6/SaDBiIIcT88OD+wh5yjaKOQSzcuVrGSEyd
+	 Uu6PUmqx2S1thL7nNadWcp4jAiiS7EwIOKTCBRoFrNBuX0C+J2HlsF518DrK+tiQ4IcoB
+	 mt33p4lGBpdqJOtkQhl798MZ3ZUWj45jnxbZ5cs92JgDNgNtbzrhS4VeXoRdbt39wFOAq
+	 aazX2yapLFHzm4VMZ8kRdjOcXIJgV58301Fw++KH/TUx/hC2JrdA09+NilSA5m78Ex5me
+	 5FT3v5FEXj/s41ib7ICYiBhLhLr2wx8f8cWkIeB0iS+GgR/zF0MMwbjUjiyOyMmWSJg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JG21U+k+;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b9PkSNUE;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E37B3606A31A;
-	Sat, 24 Oct 2026 02:39:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2518606A31A;
+	Sat, 24 Oct 2026 02:43:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JG21U+k+
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E111F01825;
-	Sat, 24 Oct 2026 02:39:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b9PkSNUE
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F8D21F01825;
+	Sat, 24 Oct 2026 02:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792809569;
-	bh=rAvEBbxAiiozil7JXucCOwvBF/yNHw8qmjRc24tUjiI=;
+	s=k20260515; t=1792809838;
+	bh=q5oNvwlrSmzVl4Pfa+U6fXz0MufSP4EYM6gckAHNebg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JG21U+k+4thCFVkwD0ssK1USjZ7OGrNmoJRSN1jymFK5U/g1qJQTXgVoOD9CuZ+yV
-	 qYKgkZ7pw442CYUFGxkyZOHPLhTkH2Lc48Z0XYs3tE7NV/mC0Tpis2XYCiqm6VpdNb
-	 OX/19f+iHHR7IgrOlWrrv4umCmjeM4eWqhxOGf9Jr+x8GN+MdU/KLccL2xJgqNnfUU
-	 cA1efYPoaf3iXRHziot3fbDj6c5HREL0rYvcHpKHHCCq5KkQe1u0wRvqlqN1NUFG8u
-	 B7JQpqW7V6jH2fuHJhLPXYRZylTeKEx+Wlnl8DD8PMWAaxbe+WhKTUgiPqakglqsA4
-	 AWNLboJMveNhQ==
-Date: Sat, 24 Oct 2026 03:39:23 +0100
+	b=b9PkSNUE2rl/bH6NaOpJ7jnXySnsLvcnPC9tmFk1kUOMrl6ThsKV0RB8gkQHAXn9a
+	 psgiWRk6BJcZ4wFEXDx7cI5KOBX08tY/oa4QhB9iA770C0X0EvXgO4sbmJIsyFI96O
+	 T07G9G1j7uwGJNKW9XQxRy8cTBuuMcNWlAaliDGOFOf5HWw5ffZ2b1CM07BUDZObe2
+	 U0pH3aKlwoNvnCbjzMlkpfv+zxedsjdStCe12AlZcQ+Huq2FvOh7+ac2S+GBNhtWIR
+	 v2PVh65G9kmy8CNMX58bRRrIUvRdU7jda1uwn6qEq/oYTV/pWYBQIzucb7dOB1LX2a
+	 kcELLEyFAH0Vw==
+Date: Sat, 24 Oct 2026 03:43:51 +0100
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: Jinseob Kim <kimjinseob88@gmail.com>, linux-iio@vger.kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-kernel@vger.kernel.org, lkp@intel.com, oe-kbuild-all@lists.linux.dev,
- llvm@lists.linux.dev
-Subject: Re: [PATCH] iio: osf: avoid a large stack frame in osf_core_init
-Message-ID: <20261024033923.5a32dcbf@jic23-hlaptop>
-In-Reply-To: <20261020095039.00004c88@gmail.com>
-References: <202610191514.fRYyu0HX-lkp@intel.com>
-	<fc593496353a60a15fd5ef1a2786d41dd9bdff3a.1792403576.git.kimjinseob88@gmail.com>
-	<20261020095039.00004c88@gmail.com>
+To: Iron Berrington <berringtoni36@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 RESEND] iio: accel: adxl345: update period cache
+ after successful write
+Message-ID: <20261024034351.5d1be9c6@jic23-hlaptop>
+In-Reply-To: <CAF2O-sPB3ggqwEA1LXsrA=tCpZGJMdx8KAXLXrW7RcaEk9y1iA@mail.gmail.com>
+References: <20261018-adxl345-period-cache-v2-resend-1@gmail.com>
+	<atXvOA40_3qE2HA-@ashevche-desk.local>
+	<CAF2O-sPB3ggqwEA1LXsrA=tCpZGJMdx8KAXLXrW7RcaEk9y1iA@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,46 +67,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 20 Oct 2026 09:50:39 +0200
-Joshua Crofts <joshua.crofts1@gmail.com> wrote:
+On Mon, 19 Oct 2026 07:53:28 -0500
+Iron Berrington <berringtoni36@gmail.com> wrote:
 
-> On Mon, 19 Oct 2026 18:58:49 +0900
-> Jinseob Kim <kimjinseob88@gmail.com> wrote:
+> Hi Andy,
 > 
-> > Clang reports a 1344-byte stack frame in osf_core_init() for
-> > hexagon-allmodconfig, exceeding CONFIG_FRAME_WARN=1280.
-> > 
-> > The aggregate assignment materializes a temporary struct osf_device on
-> > the stack and copies it to the destination. With the mutex and caches
-> > added by the IIO support, this structure is 1328 bytes in the reported
-> > configuration.
-> > 
-> > Clear the destination directly, then set dev and initialize latest_lock
-> > as before. This preserves zero initialization of all other fields,
-> > including when the core is reinitialized for a new session, without the
-> > large temporary object.
-> > 
-> > With the reported Clang 24.0.0git compiler and Hexagon configuration, the
-> > frame decreases from 1344 to 8 bytes and the warning disappears.
-> > 
-> > Fixes: 7329986669f2 ("iio: osf: add IIO devices from capability reports")
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Closes: https://lore.kernel.org/oe-kbuild-all/202610191514.fRYyu0HX-lkp@intel.com/
-> > Assisted-by: LLM
-Dropped this lot because it all gets messy with an unstable commit.
-I made the Closes into a Link to retain the info.
-
-Applied to the testing branch of iio.git
-
-Thanks,
-
-Jonathan
-
-
-
-> > Signed-off-by: Jinseob Kim <kimjinseob88@gmail.com>
-> > ---  
+> Thanks for the review and the Reviewed-by tag. I'll address the
+> time-unit constants in a separate cleanup patch, keeping this fix
+> focused on updating the cache after successful writes.
 > 
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+Applied.
+> Best regards,
+> Wenqiang
 > 
+> 
+> On Mon, 19 Oct 2026 13:21:44 +0300, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > On Sun, Oct 18, 2026 at 09:42:00PM +0800, Wenqiang Zhao via B4 Relay wrote:
+> >  
+> > > The ADXL345 event-period read path returns st->inact_time_ms. The setters
+> > > for inactivity, free-fall and the ODR-derived default currently update
+> > > this cache before writing TIME_INACT or TIME_FF. If the regmap write
+> > > fails, the sysfs write reports an error but a subsequent read returns
+> > > the requested period even though it was not programmed.
+> > >
+> > > Update the cached period only after the corresponding regmap write
+> > > succeeds.  
+> >
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Assuming that my comments may lead to a separate cleanup patch later on.
+> >
+> > --
+> > With Best Regards,
+> > Andy Shevchenko  
 
