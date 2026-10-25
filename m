@@ -1,68 +1,61 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792972140;
-	b=04JsETalSd5blhZ82TpLG3Gu7CEjT7cw/rGHZLMPe8xrdvdWXyztFyszPgOEMtTRj6vG
-	 znWtmy9xjhH+4re8DBpHXN0Lz4QINystXVD5XdDljIMMlfp9I21VR3BnR8mH7+o+4HF9o
-	 NNUu4SC8F+0CvMtw05FmNH4Ow+aPmLTNvjmufBP5n9pdSiQXd5xS3Oz1Ie7zgokeWjfhY
-	 QqhaQ57q6xQ/pCUvWuWlHo3pYvvce7oRY1+FZssaYbqFxgqZd2M3WrGBXnI9X1N8/kfMQ
-	 u5ftt4BK7pTFdbx61tSgHdLxFSG0F3TBtZlEoX8HNVGEiyRvXSlME5niRp4/56NWu2w==
+	t=1792972353;
+	b=JK14gDhcOsple5gyrEFc1Pci+H0hL2X/9+mEHlSm+7QIr/YBEJ4aMIuN1Q/pUQFMdJWZ
+	 GCpvROBWjhNvzKVa28gF/y6V35toGkDaRJU3X+FgBNlngA8ub3qDiMqCh0brVWAeaXf9B
+	 m21IR/al+qLJmXtSjiYG5QZ/Eb9zCZRhc/+OXHRSPXYMhzjYTKr3SvrJhA7rDB+z8DloR
+	 KGW0EBqQ9NqFW4pyOHMIMeNnMzS9HWJcNoRvb0PVTzgZ2np6a0IhTMel3Gx8czwNunERv
+	 EycxROJx0kc2fEG2WW6Ap+Xjm62fEM6sLP2eO+7c7F684yEmjsM9TGgtUJTuzYv09LA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792972140;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792972353;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=mezoK2VZHuQsu7p6myHJ5EdzM1VQCFQnX3rSyq9jwJw=;
-	b=hLm8uLheWLNc/1P7HlVFtGsCZ2XZwI6E7oPP2utOq7+lg0y9BR7lp8RzCL19XZmPi5yU
-	 erpe/MNoVCmVHevKrlkKjRdV93FjKkY0i30Om9haWLfhTI+5vSYNS3kssIJ6NHEydXorp
-	 1OKXIwO8TNZ/chr0l8ZJBJX2zGgE5SSovbLOEGRlFcdqqDHRAr/+959sEErKEsXAuZPLN
-	 eqcO/h8Yrfhe/HpfEfgl+RbXWJp+zolXHJQkLtKYVoS4y1WpfIneDTxiXnjPwQF93wxxI
-	 FPP7TxWg3rTqZItlpkVSk+WWv+/XCVIxHnbiFd1EK+j5aTRA0ltkBojUGMg8qtW4mfg==
+	bh=fPIhY56A0lJsANT23ZtFsSMJWb8Ef6EXLkwShBN+wJM=;
+	b=Jnq3MIgGgkfm7lCKfb1a2fMOMbTstsCrnuk/LpF/u6chdl5p3fOXqaaA/RCXaKEs4mT8
+	 galMASCUtUEgO21I5Raweq/Tb6BmRSP2GOPo1De+kyueME01UlGKxURmLSNtMV5fBg97G
+	 AqfShjrygLW4Au1G+K5IbW5EqPxsD2X31AM2S8sYPm7UJ1mp7xm0EJvfXMKCI9iTD6zHd
+	 fL9fJ4L73bu9Jq2O+Ax+UucUp1ObYjCvsGVFepLQOEvo1ThmctBehvIlS0CehD4xA10la
+	 77whvLHkR4CO1j5hpf1AnYeeUECkISL9Gj+kDUlXzFjYpW+6sRx0hlaEgxhEQ8tbvlA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UcC6fvOA;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ieEvz06I;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66059606A31B;
-	Sun, 25 Oct 2026 23:49:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13603606A31A;
+	Sun, 25 Oct 2026 23:52:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UcC6fvOA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3934E1F01825;
-	Sun, 25 Oct 2026 23:48:56 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ieEvz06I
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B4481F01825;
+	Sun, 25 Oct 2026 23:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792972140;
-	bh=mezoK2VZHuQsu7p6myHJ5EdzM1VQCFQnX3rSyq9jwJw=;
+	s=k20260515; t=1792972352;
+	bh=fPIhY56A0lJsANT23ZtFsSMJWb8Ef6EXLkwShBN+wJM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=UcC6fvOAeuddlpGwwm5HvyA0ve7BfGvTmFrXzAT4C5WxFJpGVIz3B021hWyrby6tp
-	 L85l/hn0qFp1jD9XG3iguON0YmZO1g3uWocCLCzBpmT3cknt1vosg4T9LMKLJJpJQ/
-	 Dt7EXHSkkLn6BRz5yGMiDw9NMh2LujLU/XdppFQhdt62nBM6qO2xccg/XQq+7pWgud
-	 upvH847HUjEn/W9XbHZJU9gxaH11oJ1sq+jTUpk4rLrqqfuC1IkmH2FLvYpc2unCEi
-	 Vd/d7JxZRNNk4lJE7JvZmuUvIVkUE7siywxv6ammW6TR3zendxtCD93Bddj58VygfK
-	 GAwrtUJuLNE/w==
-Date: Sun, 25 Oct 2026 23:48:50 +0000
+	b=ieEvz06IokA3lDxjWWPO/S8Y0W/hAndSRfvEKhMmARdaRm3xyXEBBbi98gc+ll0Mr
+	 9OXC2dwU7R5XWR3DqZpMH3worKu9XnuOBKrcqhf5XecQwwBMMszcVjA2A6tgtX/do0
+	 QCK05k0Q3BIAzCvdLa4nXvUBnr/yr4lTFJHR0FeMQ5DyWys7224xzVGbvP2wFDKYTh
+	 bzfFM+jPrdDlDaW1h2wF6zJVlJLk1XxlaLSz/g52lDw687GS1CdXIJiXpULu80pbea
+	 NEwKrQsYI3KKnMig1WoqMS7OOv6MlVWxFkydgCTn4wlj7GfWhg7yPqkFALHcW7wKvK
+	 7q4qrxJE4ocoA==
+Date: Sun, 25 Oct 2026 23:52:26 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Prabhakar <prabhakar.csengg@gmail.com>, Cosmin Tanislav
- <cosmin-gabriel.tanislav.xa@renesas.com>, Andy Shevchenko
- <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Geert
- Uytterhoeven <geert+renesas@glider.be>, Magnus Damm
- <magnus.damm@gmail.com>, linux-iio@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Prabhakar
- <prabhakar.csengg+renesas@gmail.com>, Biju Das
- <biju.das.jz@bp.renesas.com>, Fabrizio Castro
- <fabrizio.castro.jz@renesas.com>, Lad Prabhakar
- <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v3 8/8] iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
-Message-ID: <20261025234850.41bc8f15@jic23-hlaptop>
-In-Reply-To: <atyKo0pTYZyt5XJc@ashevche-desk.local>
-References: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-	<20261023175919.160103-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
-	<atyKo0pTYZyt5XJc@ashevche-desk.local>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
+Subject: Re: [PATCH v4 3/8] iio: imu: adis: Add optional post_reset_setup
+ callback
+Message-ID: <20261025235226.1f0fc87a@jic23-hlaptop>
+In-Reply-To: <20261023-adis16607-v4-3-a4d541ebfd13@analog.com>
+References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+	<20261023-adis16607-v4-3-a4d541ebfd13@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,69 +69,53 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 24 Oct 2026 13:38:27 +0300
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 23 Oct 2026 12:30:20 +0300
+Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
-> On Fri, Oct 23, 2026 at 06:59:19PM +0100, Prabhakar wrote:
+> From: Radu Sabau <radu.sabau@analog.com>
 > 
-> > Add support for the ADC found on the Renesas RZ/V2H(P) SoC, which shares
-> > the RZ/T2H ADC IP but differs in channel count, sampling, calibration and
-> > resolution support.
-> > 
-> > The RZ/V2H(P) ADC provides 8 channels, has a fixed conversion time of
-> > 20 ADCLK cycles, does not support calibration, and supports selectable
-> > 12-bit and 8-bit conversion resolution.
-> > 
-> > Expose the fixed sampling frequency as a read-only attribute and allow
-> > the conversion resolution to be changed through the scale attribute.
-> > Use extended scan types so the reported scan type follows the selected
-> > resolution, and prevent resolution changes while buffered capture is
-> > active.  
+> Add an optional post_reset_setup callback to struct adis_data, called
+> right after reset and before self-test. Not all ADIS devices need
+> extra bring-up between reset and self-test (SPI mode locking, status
+> or bootloader checks, pin or burst-mode configuration, etc.) - purely
+> additive: defaults to NULL, no change for existing drivers.
 > 
-> ...
-> 
-> > +static int rzt2h_adc_write_scale(struct iio_dev *indio_dev,
-> > +				 struct iio_chan_spec const *chan,
-> > +				 int val, int val2)
-> > +{
-> > +	struct rzt2h_adc *adc = iio_priv(indio_dev);
-> > +	u64 req_scale, scale;
-> > +	unsigned int i;
-> > +
-> > +	if (!(adc->chip_info->features & RZT2H_ADC_FEATURE_RES_SELECT))
-> > +		return -EINVAL;
-> > +
-> > +	req_scale = mul_u32_u32(val, NANO) + val2;  
-> 
-> But what's wrong with the simple 1ULL * val * NANO?
-> 
-> > +	for (i = 0; i < chan->num_ext_scan_type; i++) {
-> > +		scale = mul_u32_u32(RZT2H_ADC_VREF_mV, NANO) >>  
-> 
-> Similar Q.
+> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+Hi Radu,
 
-Patch on top please - I might squash it with original.
+As it seems you will be doing a v5 for other feedback, time to
+argue about the bikeshed colour.
 
-Thanks,
+> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+> index c09b381eb619..3d7c7febaec6 100644
+> --- a/include/linux/iio/imu/adis.h
+> +++ b/include/linux/iio/imu/adis.h
+> @@ -52,6 +52,12 @@ struct adis_timeout {
+>   * @self_test_mask: Bitmask of supported self-test operations
+>   * @self_test_reg: Register address to request self test command
+>   * @self_test_no_autoclear: True if device's self-test needs clear of ctrl reg
+> + * @post_reset_setup: Optional device-specific hook called after reset,
+> + *		before self-test. Not all ADIS devices need extra bring-up
+> + *		between reset and self-test (SPI mode locking, status or
+> + *		bootloader checks, pin or burst-mode configuration, etc.) -
+> + *		only called when set. Must return 0 on success, a negative
+> + *		error code otherwise.
 
-Jonathan
+Trivial but I wonder if this naming focuses unnecessarily on bit being
+after reset.  Maybe simply calling it init() would be enough with
+assumption that any intialization is always after reset if there
+is one done?
 
-> 
-> > +			chan->ext_scan_type[i].realbits;
-> > +		if (scale == req_scale)
-> > +			break;
-> > +	}
-> > +	if (i == chan->num_ext_scan_type)
-> > +		return -EINVAL;
-> > +
-> > +	/* The scan type changes with the resolution. */
-> > +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> > +	if (IIO_DEV_ACQUIRE_FAILED(claim))
-> > +		return -EBUSY;
-> > +
-> > +	adc->resolution = i;
-> > +
-> > +	return 0;
-> > +}  
+>   * @self_test: Optional device-specific self-test override. When set,
+>   *		it is called instead of the generic mask-write/sleep/
+>   *		check-status sequence. The callback owns its own pass/fail
+> @@ -88,6 +94,7 @@ struct adis_data {
+>  	unsigned int self_test_mask;
+>  	unsigned int self_test_reg;
+>  	bool self_test_no_autoclear;
+> +	int (*post_reset_setup)(struct adis *adis);
+>  	int (*self_test)(struct adis *adis);
+>  	const struct adis_timeout *timeouts;
+>  
 > 
 
