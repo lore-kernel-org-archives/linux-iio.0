@@ -1,95 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792951409;
-	b=lF1bZ0+CAjD/KTDkfen4VBvM6Q/3yah/yT5cDDen17rRFgdZMhFeugC8GRdXE6mX0Nwe
-	 12k5jCqkuPTjzBIHLfAgj1fK5d/Cq/J0NVNP/n/ow409NM0p9zC3Wg2Rs07Dgxun00wrA
-	 cRf2ZqomXsDeEZHa9zKLP36M2T75tSciatBY/ulvKWtkEEY8t0v/EmNDgarstyXEOiR2g
-	 udBYpNVQxs6rYLmEOtDseaUUy8DLmL87E8ed8TSoxlusgpiY82LErIw+oFMGW326VJj9r
-	 N3141mdhaRaISj4quC2wCKNvB7t0dG4gz4AG5qIGVfAPeFv+nsM224rhsrbr/tCT1OA==
+	t=1792955720;
+	b=HYw3UGG+uQWoVgYveM5k7Hv3RQXwe5mTwVJHCL/4/fm5MTRQOsuc8ZT41GavBNois4K/
+	 wV/0VyX9f3YZD8hR7QwhaBacAvSD5Ac+1n2DuPcP/yuWHPv+kHIXfoSZbCDl69zneZWE8
+	 DuYtz5MW56onTZEjAHu00su4HCTqFuqlRd8yocuPL7+q43EuSHJBlTN9GwsyrZnezRisI
+	 9F9D6pSyA2in3V77bBX3lZmNGRsGfJ3rcA7hnXZ503XmUeQsPMxB41A3MI1LR9iGvJ3vG
+	 ep8NNp5/e5zeksQz8R9mHIsZ3VM8XIJeboB9yxtEgHXroFBJJfARTtPiZPt/7S/6L9Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792951409;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792955720;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:X-Google-Original-From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=FuQYvevBom22bTnzSsTpOFkpY8t4qr2tg5E7eW5T0Y8=;
-	b=KzLrIX/oC0Jq9zr1wkRn7f0XtAw5cu+nFmxaLmNmrAfvdtKlxCHfb4oP9c9d4Ue0G4+Z
-	 Y78MXQNWIQJ2f7Ox8ME3CCKcW/y0psOORqOIZKeV9Kt45uWLkWQkdu/QbQfOadAGyYVFt
-	 yXzIC3FC6wBnbyjY9S0TMYMoReVmdhBpPBHYj61jhjre0YmVhJGkrm5YjM2Q4aT/IXVwP
-	 61V/SJzCrmcHkVZJv1+Jps1/RO6WMLMAerGxx7nEepI7T7mXf+ZqEqIboVGz5GsfWEBgZ
-	 yEH6o20uHC3+Un3YfNWBZj4d9x4OLho7bxT+ZsNuY2qlfxVFCZ1m12n+vYZU3jltEtg==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=ZNcBLqWAyNJp/9Ob/qdifA0LjCwb6pxRLzUpAFt2R8M=;
+	b=BMULeKWdLn0jVJDfFltx83VjwtytBvFXWUZ9Vi0IKRrjWlemBgvTybCjd2ofc89uGJ9q
+	 owaBtpzy0Dq2mvA0eHi0HG8kBgaBndXeJ2RRWk2eT0KUyCAaUk57dGyQkFhA559zoXj1/
+	 Cc55Pj8EJqTCI5nl1VtNCBGGFAeMIPKKCaO1VruoklUlMrGB/wpCy5lIPQ2Is/rDNwD63
+	 +P1MFacYsZKinbBCYgIJCq6VwcmR6p1pQLHNnGOzliIynmZpDPH24ja+DXaRo9LP9uwBp
+	 b3YumBXN1EGtbnadqx72zP7egS7YhHJjpott+JkzVXAO9Ks+AdFANpm+pJtVhjLoKOg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=SjwI2lnG;
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=N8pkrUGe;
+	arc=none smtp.remote-ip=209.85.167.54
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B53606A331
-	for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2026 18:03:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 65B53606A331
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92D46606A31D
+	for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2026 19:15:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 92D46606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=SjwI2lnG
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a2167bd087so13000765e9.3
-        for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2026 11:03:29 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=N8pkrUGe
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5bc18f54abbso300901e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2026 12:15:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792951408; x=1793556208; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=FuQYvevBom22bTnzSsTpOFkpY8t4qr2tg5E7eW5T0Y8=;
-        b=SjwI2lnGWsinoP36jfi0ElwFZziJ93zTgjc/8QgRa5KztbBQbZawlofZ7iG+//j7vY
-         bScv9n6R5wwlBVJmwebpIwQVyAV14rrLJYBTR6WqU743VDO18gsggzmUenDyw+twCZ9r
-         A4qMbuTpOCk0EJTGdGomO9wqcsfMs8RykGTU18kRjzpH/i1vnr8irhYU2csD/kvLZrX1
-         A4EyaDB8D56X4uqGMx+tMcjpQbx53lsjuqRt8fyi+ZV7nkmZwAVVEjT1BM41GSz8+uLt
-         C5G7OuuGM6ePEkyWdb9G08Mnz2spgI+XdGeVlawZJBc0oAWkhAISYbxQPJW4qIdJ+kN5
-         EKiA==
+        d=gmail.com; s=20251104; t=1792955718; x=1793560518; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ZNcBLqWAyNJp/9Ob/qdifA0LjCwb6pxRLzUpAFt2R8M=;
+        b=N8pkrUGeiYT1k6wkM0LXvk4AZeGpUoGdqHa1tEHKmz3I4f9HVTKjxpXzABIy7d4GKH
+         84yIdL0EjaYBfs77J72pVKB67AJZA6co2SkII8zjgkdDOU1+EmsCJlu9goMqzSEiXW1T
+         kMTgND8A7f+LkkcRIFuTbapGjkj8D7Z2dl8w1A6+F8kwacoBVdMg7gcClyDxfDg/F3vK
+         2/HwaRK5dApqNop9RjeCrWLy+MJ1dTyoJTsW2ZtSmYF+UvZMFVmbql9P90OZ/x5WbKX9
+         RINxIm2Bca1geYUTpJEGVTY5IqxipKrBYJmnlerWKWDrossJ29skAlc5uPJrNDjuulXo
+         55/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792951408; x=1793556208;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=FuQYvevBom22bTnzSsTpOFkpY8t4qr2tg5E7eW5T0Y8=;
-        b=G8kMe/b91uEWB0AIkTTUS1lYYwxN2yV/U6lFfUZQ0qj9b0ywBKVD7Dy4OGWE73Q5nQ
-         RMN1YJ3y3z3Lk3bRXWghW/TtbNsL/xoEJXbnjGFUooacxWhiG/5/QQsaZiJbmZCYe861
-         ZvQaG50pL+akpcAA6mXeRj9/BjhIr8ZCzg3CkU5skNVKkL37lOE4rP/BxLzNZ30LpH67
-         Bm2ZdFZWs4iZ+LwvUkulaJMp8J1C3AhoSGWaceHB7NDWEEUzyWsd0PDvwK2Tvz0mT2aw
-         G6lZ7gUmyETrQywhaVzqIvTFWFuI+ng1lFusicslY1uDrxUNc7jnJITKws37YW9tHdXg
-         euoQ==
-X-Forwarded-Encrypted: i=1; AKwUvBygPMJi3ayFxfZ1wkMD6XJw05SxOxAouye8zAF38gvs1x8NdckUVReZs+YldHcTVjqnejh0Lv3+HUw=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLR7LMG4jd2ymPjcmvnZdAD6WarHTHqF0XqyAdUrYKhGN0afm4+
-	RdXy9MirLg55h110RsXR1rvECZ9IKcqyZvsaeyXG0xUAtfeoU0RxBHg=
-X-Gm-Gg: AYBFou0nTWp/N0Qm8+PDE8g8j6fUAFCKchgYALXqCQkPqZNt4raC/ULVgcZ1LIsakof
-	r618Jrc2Ejtti9ldGsnLvyKMKKgMRFgKpvgjL2J2zdwfZDyJ4YO7xpyi+vI1BFIC1Y19FrML3ta
-	YNsFU6vITCpfUZThU2UXpsFBWKvIcvOz+LChSl0qMvgX24bBozfyj9gFONyanGfE4n7AB8eb6ua
-	94wjwf1enTL+AHrMFTFX6pVj5WtRNP9x/li3eAPRZnoEj2CcHKAWIXwSxWGFFjxgC/VDCSl7oCm
-	F1i4EUr6E5IzsK2SUowk0h3e+5ppwnUdU2eoIl3UnsxN5+VCY9CfLTx1hJQAgjBgP4S9UPQCz92
-	9dnhWiDUGMXzffhFfuyLvum/gxR5gdevt/yYecJMj0UUAhKMSjTyW5t+e+6Pe1O32hi4vpK2yE1
-	RrwqpRK5sgPPIqZpVsZp9Ok5ccQaPtE77jj1KA893oV4nkDceB7qPhRPaFVWh16pBd0/VIaM9AF
-	jk3HnPew6Bp0rlYjz+u8F81QJve+nX/zs4iuQ==
-X-Received: by 2002:a05:600c:4ece:b0:4a1:6517:ccf1 with SMTP id 5b1f17b1804b1-4a35ac9d116mr83202465e9.9.1792951407729;
-        Sun, 25 Oct 2026 11:03:27 -0700 (PDT)
-Received: from debian.. ([2001:41d0:303:db6b::])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a4cb7bece3sm82641055e9.10.2026.10.25.11.03.25
+        d=1e100.net; s=20260707; t=1792955718; x=1793560518;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ZNcBLqWAyNJp/9Ob/qdifA0LjCwb6pxRLzUpAFt2R8M=;
+        b=23I9x/I4ofkuTptHshhwuP1oOW+xTqY2vUDI8tESuVNrPCAcpXxjnPmymPXu8331dB
+         NuNNP3q0PzXq3y7/JFmn3Fwh1uZC7yRleCwjRa1w8gF26TPSjpqq9I8E7/OIS0iyxDGZ
+         M88yHUQKiqaS/aFiZFiO/Rz4gtFNQINvd58cZ/f663seHVANcaHPd643YLmrJ7y81h9C
+         jSrT0NJ4cj71d/34vwG9M/tBkvGDRSz1VdCDxtAoun4AdmwISV0Za6vyXfO8bLJt/3tl
+         oqIYd8rqASlHKQKXOCEYwWUmLmE9Vpzcmfueni0eUfBqO5aTVmG9lU5eeL0aBJBILIvr
+         Efbg==
+X-Forwarded-Encrypted: i=1; AKwUvByR24yZeoK/NtO/J1czpDmI9b8Q2QKGS69g4Pfq9b6gY+QKjJRVB4BvExsG1PkBIj0m1JTW6AkYflg=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJmH8P5RrWJoMk+k4eQb5po//HI2QTYwk4QL6lkjJnhxWBS/zpY
+	PkHZ/1ajHVlJ8hfuSFG5CKCIpflqqfGrs498v3laPBx0ygXnVsbqjTAi
+X-Gm-Gg: AYBFou1K5RTlhEYzey/PW5JwOpjV+PRfvqi1hOoR4x/TtK8P3dcsk53azOhN3vfOBsr
+	ZDMA6W7JtOvmcrW8C/AstuIFUWXdfILFr39EIm9CswHCtVcGJUg9bcvhoJwVJWUWO9u43RSCy66
+	tsbj5FXXVJHhEHW9kexKKwMD4Xh4cwEI5AgktVLJNcqs+6wV67IpGRTlzOx2mynF9RC7w2OC9bT
+	Ta+oB2NshlIvVjhucNXhBad4cCkuMAHbdvzN1pM7+ZQTEI29LqF+jloG7H5Yo2rbyGBIdl1RDN5
+	qHbx6O4nBWSD+KRp0jyYpXtrHRfMuL1i5tl8AFEOAAK/GtVosSjR3r1ZeIlA92So9PDJYeyj2kn
+	2KKWaOkHudRd9sdusy8bOryOjU0/4plf3ARCZJ8k++aFp70GYPzTstVNZk89nYnpH75nft6NuXr
+	ROgySequ/9UiNmTsaqy8gT/36vekKMmlPRYqbA+W1X1+Mxi24urxYWiqdObJmuRdysmm/oTnI7m
+	eRqLaC0c1nbvDNSrOxZWDY0CQJtvla0C8ZV2uqGGOC79gl/U2JnjDgGXf5bggGgNWSfBiQLor+0
+	O+uoOYCI1mt0ZLmrgl4Tid1ABNEsd1nmXqjk4LylSKtnXCUou0mRr2j048+kT6SM/HAmx5Ua4pS
+	UMq9+rys=
+X-Received: by 2002:a05:6512:3e04:b0:5bf:a467:32ab with SMTP id 2adb3069b0e04-5bfb71d1366mr1553389e87.29.1792955717490;
+        Sun, 25 Oct 2026 12:15:17 -0700 (PDT)
+Received: from yantra.. (nekmmqusumz5xuyc5yb-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:b52c:35a:762:9323])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7a75a79sm1147287e87.39.2026.10.25.12.15.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Oct 2026 11:03:25 -0700 (PDT)
-From: Tristan Madani <tristmd@gmail.com>
-X-Google-Original-From: Tristan Madani <tristan@talencesecurity.com>
-To: jic23@kernel.org
-Cc: lars@metafoo.de,
+        Sun, 25 Oct 2026 12:15:17 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Cc: linux-arm-msm@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH 2/2] iio: imu: inv_mpu6050: validate ACPI object types in asus_acpi_get_sensor_info()
-Date: Sun, 25 Oct 2026 18:03:23 +0000
-Message-ID: <20261025180323.3641477-2-tristan@talencesecurity.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20261025180323.3641477-1-tristan@talencesecurity.com>
-References: <20261025180323.3641477-1-tristan@talencesecurity.com>
+	Rupesh Majhi <zoone.rupert@gmail.com>,
+	Marco Elver <elver@google.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Subject: [PATCH v3] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on mutex helpers
+Date: Sun, 25 Oct 2026 21:15:10 +0200
+Message-ID: <20261025191510.22261-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,43 +105,61 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-asus_acpi_get_sensor_info() iterates through a nested ACPI package
-structure without checking types at either level.  The outer object
-returned by acpi_evaluate_object() and each inner element must be
-validated as ACPI_TYPE_PACKAGE before accessing their package.count
-and package.elements members.
+Since commit 5b63d0ae94cc ("compiler-context-analysis: Remove Sparse
+support"), __acquires() and __releases() only feed context analysis.
+Their argument is parsed before the function body, where only dev is in
+scope, so with analysis enabled for this file the build fails:
 
-Add type checks at both levels of the package iteration.
+  error: use of undeclared identifier 'adc'
 
-Fixes: a35c5d1aa96a ("iio: imu: inv_mpu6050: Create mux clients for ACPI")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tristan Madani <tristan@talencesecurity.com>
+These helpers take and drop the lock for the ADC_TM driver, which only
+sees their declarations in the header. Naming the lock there would
+mean exposing struct adc5_chip, and with no annotation at all the
+analysis flags the unbalanced locking. Mark both __context_unsafe().
+
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Cc: Marco Elver <elver@google.com>
+Cc: Bart Van Assche <bvanassche@acm.org>
+Cc: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-index 460792ed27e03..81fe1d96365b4 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c
-@@ -57,11 +57,17 @@ static int asus_acpi_get_sensor_info(struct acpi_device *adev,
- 		return -ENODEV;
+v3: drop Fixes tag (Jonathan), trailer cleanup (Andy)
+v2: __context_unsafe() explained in commit message (Andy)
+    https://lore.kernel.org/linux-iio/20261021052435.112686-1-zoone.rupert@gmail.com/
+v1: https://lore.kernel.org/linux-iio/20261003214516.128573-1-zoone.rupert@gmail.com/
+
+Found by building with CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y, which the
+driver does not set today. Enabling it comes later, with the IIO core
+annotations. Build tested only, no hardware here. Patch and commit
+message drafted with an LLM coding assistant.
+
+ drivers/iio/adc/qcom-spmi-adc5-gen3.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+index c68c6c5f6aca..6a3cabedf4e8 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
++++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+@@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
+ }
  
- 	cpm = buffer.pointer;
-+	if (cpm->type != ACPI_TYPE_PACKAGE) {
-+		kfree(buffer.pointer);
-+		return -EINVAL;
-+	}
- 	for (i = 0; i < cpm->package.count; ++i) {
- 		union acpi_object *elem;
- 		int j;
+ void adc5_gen3_mutex_lock(struct device *dev)
+-	__acquires(&adc->lock)
++	__context_unsafe(/* returns with adc->lock held */)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+ 	struct adc5_chip *adc = iio_priv(indio_dev);
+@@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
+ EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
  
- 		elem = &cpm->package.elements[i];
-+		if (elem->type != ACPI_TYPE_PACKAGE)
-+			continue;
- 		for (j = 0; j < elem->package.count; ++j) {
- 			union acpi_object *sub_elem;
- 
+ void adc5_gen3_mutex_unlock(struct device *dev)
+-	__releases(&adc->lock)
++	__context_unsafe(/* releases adc->lock */)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+ 	struct adc5_chip *adc = iio_priv(indio_dev);
+
+base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125
 -- 
-2.47.3
+2.43.0
 
