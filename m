@@ -1,57 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792965434;
-	b=K9WVrKfdFvne6KesYcdnXR2H8DZioNxBa//LIaptnQ61vII3mFmD12xVIYsh1v6X6FZD
-	 yEVsDDxZx+w7etNbpJ5G3daMbBtbtc0eGfXYYpRL9LnYVQgD5Fnkt3RUkM+W7Iree9cZR
-	 wupBfXJDfPJkf9I+M5GgOvPG6mKeosXBJIKAysyODholBneZHV8gACPsPMn0bb1pToCtf
-	 CPiVqBH+/RRXced5wploPgROH9B3V7lmDYQFOtPJPtBB6JNegMd1NUcGUBTCSoI7hPoQw
-	 GAm0NdrbbHbMMX9SIBMcVYJYhjHZOeIL+s4UYzA5rCSkVma/xr3MaiGYuFXCORG2ivQ==
+	t=1792965600;
+	b=AVMayYybJZunU8vGjVmNsfCS+tYuEmYiaitDKEEIXyaBGDKBOETo3twxqgdPyT4dAJ9D
+	 aIHJwFVZ0ypgij40xrZ6dBvKnlsLSqEa8lFcfjoHBSWI2EIbLf32irYRgqHBI+oXKran4
+	 3DgFbOAJ0EQaaEz4I/peU8a/tIAJ7h+sStnZgqPM4JPtKLsN6MNU9TvRxdMdJvP48e3/D
+	 j+7qxohXbiSWEENXcHkL0T2rsOrQRXH9jtJkmXH7wogOxZ2goOwu4f9GpiRIJgMLjQUc1
+	 6eJf7LC38wZGjAhzymJr4dpahZ+iPD8nvxij4YYXfjIZ8LhHBC5TOXsBR+tFz4xuQYw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792965434;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792965600;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=/WqhRxfqqV6Q7suisF2pv2nhmZAR9yq7c2488ERdjbU=;
-	b=c4u0wzZVLNumii8cA3vLd92ekuZH5/srV8u4DG9A2UFtIPJUuXpoG3pSylF8WHLYZDMs
-	 XcIKP0VNNZix01rU8SdmFbR/FQHFhVj6cmrkFEAdf5aXpaHIX+QHTi0FgWw4JhiY3BpeH
-	 AH87NXVb70DwG9SKDWzttPLO3S5231thcrqBo6Q5qqWuofK4fjcUe9w2hIT0GjOZf14um
-	 KYzS2Tdds4nBiH4jpEHlfHRpnUxjnJW6eo/04yewu9kJrHK5b38sMWeuinsPZlem45Kqw
-	 fznRcOrIw62AonrTu/WRKo8+cKakJlRorsAj24pHdUvLYansrxp8AAtfU3OLkofZOvg==
+	bh=z7Oec1H1B66PlNrpgwqION9Mp2RyTNxhQ8Dr7dkYH4E=;
+	b=aYsSTZgWQgvlEyLfYDiezjNEVmD4jzDxmyJFmO9IcWvFQ2rr/D4IYQTA5vyZWGZACw8y
+	 VQjgLyQYOGoXwm10g/S8tx64n3SrUKfT0tzC/rXdvFNjVcANF0n1N7r7cMbuJScNVzj46
+	 q+Qu4ysVz13QEe83Pzpg/szygnr57BQaOaw1+wLHBmTFhTSMyUs+seukwC8/IWPYx0scE
+	 kZ+a70lRaIcGEF9n7plPThNWAVuimimMCaMkUSnQc7o1M9Yldyp/86FA5zUdKU2NLK4ml
+	 roIe3H3h74+6UAIR3Tyn7feee4CZecOSalhORmF8MLA9HYJB8fVfqFqj69C0zQwihaA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OhJfQ3on;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ltz2eLlc;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46B65606A31B;
-	Sun, 25 Oct 2026 21:57:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AF89606A31A;
+	Sun, 25 Oct 2026 22:00:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OhJfQ3on
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF5CF1F01825;
-	Sun, 25 Oct 2026 21:57:11 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ltz2eLlc
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00B9E1F01825;
+	Sun, 25 Oct 2026 21:59:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792965433;
-	bh=/WqhRxfqqV6Q7suisF2pv2nhmZAR9yq7c2488ERdjbU=;
+	s=k20260515; t=1792965600;
+	bh=z7Oec1H1B66PlNrpgwqION9Mp2RyTNxhQ8Dr7dkYH4E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=OhJfQ3onjSJNknKSZlQEc2jX+ueQe44w3nqgPo7RTRN1ACtzGqq8rI1itPZ+vJCyu
-	 L8s/UMnXPTOVNM3kLx84yPDhQQBjVqJhkv5EcgoEbZ9Ce4b5C8Z4vfMG/hiUYElArR
-	 EV7ZjnplENXU2Ol1Q07PqQErhc0VWwllwnV5ly4VNChoqAs5nq0fDVkLAi6pRxmwmr
-	 eTjEEzgZEzLmuf03ywNxM6s5FUnjDCDZTD7CA+mF+MJ0NSbfmQdU1DuQ42WPF8hti2
-	 gpRD03twfiq6PZ752LcFxjKtl4ZBzEqvxrn6uHNptV/pgb38NlL17p6j7dHMNUC3m3
-	 evDt86Vt07Swg==
-Date: Sun, 25 Oct 2026 21:57:07 +0000
+	b=Ltz2eLlcAXtkIzyRyn55zSitjVCuCRG+XeP7R+NW/MB3HKmu+b9K+r5Tj9irK0/5M
+	 bo1jIiJ4DWYX2J7T1sujPurHZRBMzW7T0gmpbhHhTl5ajRaXtFEQkGjCQ8JKnw633b
+	 9PTIMWiscI33zFISVK/hcZu+pimro/qunnb3/aCTF1a8E4YnwiwaHBIM83e9LCvD4Y
+	 W8bhRcsRViDTcmJv8rN8Ecyp6uDUQ8JrBFNPomVCw5lFpu9vzYsSfR2PryvTbFVBNW
+	 19bPbbIcRNGzby7zoM9iHIQvu6rvhTf0Kh82DqKQShd5MD/KG5qJTcJD27M7pl3C5G
+	 5RBl3dzjlxUoA==
+Date: Sun, 25 Oct 2026 21:59:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Carlier <devnexen@gmail.com>
-Cc: Ariana Lazar <ariana.lazar@microchip.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: dac: mcp47feb02: reject out-of-range raw values
-Message-ID: <20261025215707.4fe42618@jic23-hlaptop>
-In-Reply-To: <20261025211856.256491-1-devnexen@gmail.com>
-References: <20261025211856.256491-1-devnexen@gmail.com>
+To: Bart Van Assche <bvanassche@acm.org>
+Cc: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko
+ <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, linux-arm-msm@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Marco Elver
+ <elver@google.com>, Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Subject: Re: [PATCH v3] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations
+ on mutex helpers
+Message-ID: <20261025215954.73549810@jic23-hlaptop>
+In-Reply-To: <76bbebb4-7337-486d-8f21-a39bcb6dca93@acm.org>
+References: <20261025191510.22261-1-zoone.rupert@gmail.com>
+	<76bbebb4-7337-486d-8f21-a39bcb6dca93@acm.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,73 +67,86 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 25 Oct 2026 21:18:56 +0000
-David Carlier <devnexen@gmail.com> wrote:
+On Sun, 25 Oct 2026 13:10:26 -0700
+Bart Van Assche <bvanassche@acm.org> wrote:
 
-> mcp47feb02_write_raw() writes the user supplied raw value to the DAC
-> register without checking it against the chip resolution. The parts
-> are 8, 10 or 12 bit, and the bits above the resolution are not
-> implemented, so writing 300 to out_voltage0_raw on an 8-bit part sets
-> the output to code 44 instead of failing, and -1 is written as 0xffff.
+> On 10/25/26 12:15 PM, Rupesh Majhi wrote:
+> > Found by building with CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y  
 > 
-> The out-of-range value is also cached in dac_data, so it is written
-> back on resume and stored to EEPROM by store_eeprom.
+> Please include the CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y change in
+> your patch.
 > 
-> Return -EINVAL for values outside [0, 2^resolution - 1].
-> 
-> Fixes: bf394cc80369 ("iio: dac: adding support for Microchip MCP47FEB02")
-> Cc: stable@vger.kernel.org#
 
-Good catch but given the fix will go in the same cycle as the driver
-I've dropped the table tag.
+I asked that we didn't do this because intent is to follow with
+remaining fixes to be able to enable this IIO tree wide.
+I'd rather avoid the churn of piecewise makefile updates if
+we are going to be there soon.
 
-This is more about how I choose to queue this up than anything could
-know.  I might have held it for next merge window in which case
-it would have wanted the stable tag.
+Rupesh, if you think that is coming soon then please just make
+next version of this the first patch in that series.
 
-Applied to the fixes-togreg branch of iio.git.  I've just rebased that
-to reflect the char-misc pull going into Linus' tree (which was needed
-to get the driver for this patch). I'll rebase again on rc1 once available.
-
-Given I'll be rebasing anyway, extra tags welcome (and I didn't hold
-off on applying as I might have done if aiming for no rebasing). Ariana,
-please take a look at this one.
+If not I don't mind merging this sooner with the makefile change
+to ensure this gets used in the meantime.
 
 Thanks,
 
 Jonathan
 
-
-
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Signed-off-by: David Carlier <devnexen@gmail.com>
-> ---
-> Found by LLM-assisted code inspection, reviewed and verified by hand.
-> Build tested with W=1 (=m and =y) only; no hardware was available for
-> runtime testing.
+> > diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> > index c68c6c5f6aca..6a3cabedf4e8 100644
+> > --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> > +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> > @@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
+> >   }
+> >   
+> >   void adc5_gen3_mutex_lock(struct device *dev)
+> > -	__acquires(&adc->lock)
+> > +	__context_unsafe(/* returns with adc->lock held */)
+> >   {
+> >   	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+> >   	struct adc5_chip *adc = iio_priv(indio_dev);
+> > @@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
+> >   EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
+> >   
+> >   void adc5_gen3_mutex_unlock(struct device *dev)
+> > -	__releases(&adc->lock)
+> > +	__context_unsafe(/* releases adc->lock */)
+> >   {
+> >   	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+> >   	struct adc5_chip *adc = iio_priv(indio_dev);
+> > 
+> > base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125  
 > 
-> v2:
-> - Use GENMASK() for the upper bound so it is safe up to 32 bits (Andy)
-> - Drop the Assisted-by tag, removed from the docs in 1e035297ffda (Joshua)
-> - Move the testing note below the --- (Joshua)
+> Please consider replacing the above with the patch below:
 > 
-> v1: https://lore.kernel.org/all/20261024214423.865635-1-devnexen@gmail.com/
-> ---
->  drivers/iio/dac/mcp47feb02-core.c | 3 +++
->  1 file changed, 3 insertions(+)
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c 
+> b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> index c68c6c5f6aca..09013c6e44a0 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> @@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct 
+> adc5_chip *adc)
+>   }
 > 
-> diff --git a/drivers/iio/dac/mcp47feb02-core.c b/drivers/iio/dac/mcp47feb02-core.c
-> index 88bffbab0854..b5a2ac4a2e67 100644
-> --- a/drivers/iio/dac/mcp47feb02-core.c
-> +++ b/drivers/iio/dac/mcp47feb02-core.c
-> @@ -696,6 +696,9 @@ static int mcp47feb02_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val > GENMASK(data->chip_features->resolution - 1, 0))
-> +			return -EINVAL;
-> +
->  		ret = regmap_write(data->regmap, REG_ADDR(ch->address), val);
->  		if (ret)
->  			return ret;
+>   void adc5_gen3_mutex_lock(struct device *dev)
+> -       __acquires(&adc->lock)
+> +       __acquires(&((struct adc5_chip 
+> *)iio_priv(dev_get_drvdata(dev->parent)))->lock)
+>   {
+>          struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+>          struct adc5_chip *adc = iio_priv(indio_dev);
+> @@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
+>   EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
+> 
+>   void adc5_gen3_mutex_unlock(struct device *dev)
+> -       __releases(&adc->lock)
+> +       __releases(&((struct adc5_chip 
+> *)iio_priv(dev_get_drvdata(dev->parent)))->lock)
+>   {
+>          struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+>          struct adc5_chip *adc = iio_priv(indio_dev);
+> 
+> Thanks,
+> 
+> Bart.
 
