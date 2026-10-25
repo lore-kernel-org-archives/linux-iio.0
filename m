@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792972353;
-	b=JK14gDhcOsple5gyrEFc1Pci+H0hL2X/9+mEHlSm+7QIr/YBEJ4aMIuN1Q/pUQFMdJWZ
-	 GCpvROBWjhNvzKVa28gF/y6V35toGkDaRJU3X+FgBNlngA8ub3qDiMqCh0brVWAeaXf9B
-	 m21IR/al+qLJmXtSjiYG5QZ/Eb9zCZRhc/+OXHRSPXYMhzjYTKr3SvrJhA7rDB+z8DloR
-	 KGW0EBqQ9NqFW4pyOHMIMeNnMzS9HWJcNoRvb0PVTzgZ2np6a0IhTMel3Gx8czwNunERv
-	 EycxROJx0kc2fEG2WW6Ap+Xjm62fEM6sLP2eO+7c7F684yEmjsM9TGgtUJTuzYv09LA==
+	t=1792972492;
+	b=fYFS2KbqcQaBVt7rGlAqKHkF1QoVE48kXVP2gloWMkYfE+6W3rhhClBHAtff6YGTkNbh
+	 24VLW0I4zHN0IZVpZUbHgyFrfXIyZ+mcHiVPLyfbt8hizxYEu6JeGe7CrArpwAWkJtMkw
+	 GQxyleb5ywSaSFeueHGZ66HVcwZfnyDzRn7k/ukH2S3eKJ2JleytiviN24xaRcFV57CQH
+	 BcllILoNbJk+bMZXHaOdgDdYHOfnf3eZZAOJWH9SkM417XfXHgNTTqLp1FIPys86Agf2v
+	 5H6b/29HLWQxDmxIeOJRj0T4HF6oYyAbbagPfiCQJqrC1JoZL8v11xnlY2hxHb2/J+g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792972353;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792972492;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=fPIhY56A0lJsANT23ZtFsSMJWb8Ef6EXLkwShBN+wJM=;
-	b=Jnq3MIgGgkfm7lCKfb1a2fMOMbTstsCrnuk/LpF/u6chdl5p3fOXqaaA/RCXaKEs4mT8
-	 galMASCUtUEgO21I5Raweq/Tb6BmRSP2GOPo1De+kyueME01UlGKxURmLSNtMV5fBg97G
-	 AqfShjrygLW4Au1G+K5IbW5EqPxsD2X31AM2S8sYPm7UJ1mp7xm0EJvfXMKCI9iTD6zHd
-	 fL9fJ4L73bu9Jq2O+Ax+UucUp1ObYjCvsGVFepLQOEvo1ThmctBehvIlS0CehD4xA10la
-	 77whvLHkR4CO1j5hpf1AnYeeUECkISL9Gj+kDUlXzFjYpW+6sRx0hlaEgxhEQ8tbvlA==
+	bh=LkGkgiiJ14vcz/5K/9BxVarCa1Rt0W0jKXIzP/tm76s=;
+	b=4bqw5eODROsNHj0mmtRzu3e0+LgY3zrqFsbY2lhVflHLguzOAxxWVtjOJhlokXoiBUn+
+	 Y43WFrEG28bRDf+GG2yFS9yiMuN50e/dgHcqN2vZ3zLqedSQnF/mkZHxqlQYqBZ0zKDms
+	 mveFjkAjZY5oIPqP8jm5jyxWYglzhE8MymKyyMy7bt9uBHgoBg6q8llrjSqzFB6VdzWeE
+	 4Lyj8de63Wk5Tyn9aiCv+o1btEZ6U77Xe1bU7ySKkciWeGTo237fclyrIbe+zu+N7l09e
+	 r0hW+n1Cah6EAR4gOu+uJw/DpiW22AXoK8r8IcqmNHLltyTkmRqsUD78P1Mk6tvVT/A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ieEvz06I;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FN7XVxpC;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13603606A31A;
-	Sun, 25 Oct 2026 23:52:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE287606A31A;
+	Sun, 25 Oct 2026 23:54:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ieEvz06I
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B4481F01825;
-	Sun, 25 Oct 2026 23:52:30 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FN7XVxpC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9C51F01825;
+	Sun, 25 Oct 2026 23:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792972352;
-	bh=fPIhY56A0lJsANT23ZtFsSMJWb8Ef6EXLkwShBN+wJM=;
+	s=k20260515; t=1792972491;
+	bh=LkGkgiiJ14vcz/5K/9BxVarCa1Rt0W0jKXIzP/tm76s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ieEvz06IokA3lDxjWWPO/S8Y0W/hAndSRfvEKhMmARdaRm3xyXEBBbi98gc+ll0Mr
-	 9OXC2dwU7R5XWR3DqZpMH3worKu9XnuOBKrcqhf5XecQwwBMMszcVjA2A6tgtX/do0
-	 QCK05k0Q3BIAzCvdLa4nXvUBnr/yr4lTFJHR0FeMQ5DyWys7224xzVGbvP2wFDKYTh
-	 bzfFM+jPrdDlDaW1h2wF6zJVlJLk1XxlaLSz/g52lDw687GS1CdXIJiXpULu80pbea
-	 NEwKrQsYI3KKnMig1WoqMS7OOv6MlVWxFkydgCTn4wlj7GfWhg7yPqkFALHcW7wKvK
-	 7q4qrxJE4ocoA==
-Date: Sun, 25 Oct 2026 23:52:26 +0000
+	b=FN7XVxpCqcCIg269fh5/6/vn/3TEvobOrTKHo7ZxV9ptsP554olOyR6qlVnkoIj7K
+	 HAHxhBol0Pop7Rg2W92nQ0ORoimqeNL/5otJFyFBklxw07jWtCZSlnmyiIKABqlPs3
+	 chTZK9hL+3XoMn+yrNNu4cVrmHME4ReDa9iAj3qpuATFxmPcAYavhMvUFso/rucOHl
+	 hHWUjdL345QuoNutepUK3xMvUbm9ql7uYhFytyOQDproSXQlFYLVqL7q4TK7RTTiU5
+	 zCbNCRZlI2vkZPilFJGkH3S3OLJayJ9E5JZyLGaRc0qzL7wBaghUztmFV+DEFFx9kQ
+	 5KLqmsfUtBoEQ==
+Date: Sun, 25 Oct 2026 23:54:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
 Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
@@ -50,12 +50,12 @@ Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v4 3/8] iio: imu: adis: Add optional post_reset_setup
- callback
-Message-ID: <20261025235226.1f0fc87a@jic23-hlaptop>
-In-Reply-To: <20261023-adis16607-v4-3-a4d541ebfd13@analog.com>
+Subject: Re: [PATCH v4 4/8] dt-bindings: iio: imu: Add bindings for ADI
+ ADIS16607
+Message-ID: <20261025235443.07d75197@jic23-hlaptop>
+In-Reply-To: <20261023-adis16607-v4-4-a4d541ebfd13@analog.com>
 References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-	<20261023-adis16607-v4-3-a4d541ebfd13@analog.com>
+	<20261023-adis16607-v4-4-a4d541ebfd13@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,56 +66,164 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 23 Oct 2026 12:30:20 +0300
+On Fri, 23 Oct 2026 12:30:21 +0300
 Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
 > From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add an optional post_reset_setup callback to struct adis_data, called
-> right after reset and before self-test. Not all ADIS devices need
-> extra bring-up between reset and self-test (SPI mode locking, status
-> or bootloader checks, pin or burst-mode configuration, etc.) - purely
-> additive: defaults to NULL, no change for existing drivers.
-> 
+>=20
+> Add device tree bindings for the Analog Devices ADIS16607 Precision
+> MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
+> gyroscope, triaxial accelerometer, and temperature sensor, and
+> communicates over SPI Half-Duplex.
+>=20
+> Two variants are supported, adis16607-2 and adis16607-3, differing
+> only in gyroscope full-scale range (=C2=B1450=C2=B0/s and =C2=B12000=C2=
+=B0/s
+> respectively).
+>=20
+> The binding exposes optional properties for:
+>   - An external clock for sync mode (falling back to the internal 8 kHz
+>     clock when absent)
+>   - A hardware reset GPIO (active low)
+>=20
+> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+
+There is enough new stuff in here I'd have dropped Rob's tag.
+
 > Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-Hi Radu,
+> ---
 
-As it seems you will be doing a v5 for other feedback, time to
-argue about the bikeshed colour.
+and noted you had done so here with a breadcrumb of why, which
+is the gpio handling
 
-> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-> index c09b381eb619..3d7c7febaec6 100644
-> --- a/include/linux/iio/imu/adis.h
-> +++ b/include/linux/iio/imu/adis.h
-> @@ -52,6 +52,12 @@ struct adis_timeout {
->   * @self_test_mask: Bitmask of supported self-test operations
->   * @self_test_reg: Register address to request self test command
->   * @self_test_no_autoclear: True if device's self-test needs clear of ctrl reg
-> + * @post_reset_setup: Optional device-specific hook called after reset,
-> + *		before self-test. Not all ADIS devices need extra bring-up
-> + *		between reset and self-test (SPI mode locking, status or
-> + *		bootloader checks, pin or burst-mode configuration, etc.) -
-> + *		only called when set. Must return 0 on success, a negative
-> + *		error code otherwise.
-
-Trivial but I wonder if this naming focuses unnecessarily on bit being
-after reset.  Maybe simply calling it init() would be enough with
-assumption that any intialization is always after reset if there
-is one done?
-
->   * @self_test: Optional device-specific self-test override. When set,
->   *		it is called instead of the generic mask-write/sleep/
->   *		check-status sequence. The callback owns its own pass/fail
-> @@ -88,6 +94,7 @@ struct adis_data {
->  	unsigned int self_test_mask;
->  	unsigned int self_test_reg;
->  	bool self_test_no_autoclear;
-> +	int (*post_reset_setup)(struct adis *adis);
->  	int (*self_test)(struct adis *adis);
->  	const struct adis_timeout *timeouts;
->  
-> 
+>  .../devicetree/bindings/iio/imu/adi,adis16607.yaml | 94 ++++++++++++++++=
+++++++
+>  MAINTAINERS                                        |  7 ++
+>  2 files changed, 101 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml=
+ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+> new file mode 100644
+> index 000000000000..4545f942365c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+> @@ -0,0 +1,94 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/imu/adi,adis16607.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices ADIS16607 IMU
+> +
+> +maintainers:
+> +  - Radu Sabau <radu.sabau@analog.com>
+> +
+> +description: |
+> +  Analog Devices ADIS16607 Precision MEMS Inertial Measurement Unit (IMU)
+> +  with a triaxial gyroscope, triaxial accelerometer, and temperature sen=
+sor.
+> +  Uses SPI Half-Duplex communication protocol.
+> +
+> +  The device has five GPIO pins (GPIO0-GPIO4 in the datasheet), each
+> +  independently selectable for a single fixed function. This binding
+> +  exposes GPIO0's reset function as reset-gpios; GPIO2's sync function
+> +  is modeled via the clocks property, and GPIO4's DEV_NOK interrupt via
+> +  the interrupts property. GPIO3 (data-ready) is required internally
+> +  regardless of board wiring and isn't exposed. GPIO1 (wake) gates
+> +  whether the bootloader auto-loads its NVM contents after reset; it
+> +  defaults to enabled with a weak pull-up, which already gives normal
+> +  operation with no configuration needed, so it isn't exposed either.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,adis16607-2
+> +      - adi,adis16607-3
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-cpha: true
+> +
+> +  spi-cpol: true
+> +
+> +  spi-max-frequency:
+> +    maximum: 10000000
+> +
+> +  vdd-supply: true
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description:
+> +      Optional external clock for sync mode. If not provided, the intern=
+al
+> +      8 kHz clock is used.
+> +    maxItems: 1
+> +
+> +  reset-gpios:
+> +    description:
+> +      Optional GPIO for hardware reset, active low. Routes to the
+> +      device's GPIO0 pin, which can be independently set to the reset
+> +      function or left idle via an on-chip register.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - spi-cpha
+> +  - spi-cpol
+> +  - vdd-supply
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    spi {
+> +        #address-cells =3D <1>;
+> +        #size-cells =3D <0>;
+> +
+> +        imu@0 {
+> +            compatible =3D "adi,adis16607-2";
+> +            reg =3D <0>;
+> +            spi-cpha;
+> +            spi-cpol;
+> +            spi-max-frequency =3D <10000000>;
+> +            vdd-supply =3D <&vdd>;
+> +            interrupts =3D <4 IRQ_TYPE_LEVEL_HIGH>;
+> +            interrupt-parent =3D <&gpio>;
+> +            clocks =3D <&sync_clk>;
+> +            reset-gpios =3D <&gpio 10 GPIO_ACTIVE_LOW>;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f53047aa8d3c..d5679e8d0ffd 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1792,6 +1792,13 @@ S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+> =20
+> +ANALOG DEVICES INC ADIS16607 DRIVER
+> +M:	Radu Sabau <radu.sabau@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +W:	https://ez.analog.com/linux-software-drivers
+> +F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+> +
+>  ANALOG DEVICES INC ADL8113 DRIVER
+>  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+>  L:	linux-iio@vger.kernel.org
+>=20
 
