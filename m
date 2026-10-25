@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792960072;
-	b=ivnhiiKNhcGbcOFzasYY0Z5Dde78nREDooIBD1sLrYPINdgKpy5tMukw7EDq+Rhen9/3
-	 SUsg+BzcZ4ygPODu893q+PLOguCptmVLK5cH30jpmEiOCt5cwD2Rv4raRewE1sTZYgUpX
-	 xjykq52j6kzFcKnqrQIvUgJqrcQwaUEPxR34zJ2UfeinAujGt9ylIs2gfJPEx57fIBKGv
-	 JfcZKVbSg2DVbGVno4gexY/1T0O/NR5xpAPhfO5wG7oMlrqpscMxRYOyYroBi4FPuzhxG
-	 30984B5pXHArMLx8n/Wz0nZtXbCFOyipLlVBo9iLqvz8XTrQDnZelULe2suk6iWiwvQ==
+	t=1792960466;
+	b=OYe72mp94iaqX3x6QgzU/giAiCTPv9itLxW9Zh47Y+62bQ6/0iQMxRQjyet9kLSiN5ID
+	 vyWNQVEkyAv+dkyRTEDbv5uNOVlk8AKwKKztzuuiAuRg+dmmyvD1DEQ4q5gDgYET5Xq/7
+	 pKor/MoOJ0n94MVCdETsjCROsWtNB4+OMlw2+cF9JEe82UV1soMIDjaUNOQ/Kx20BDfGe
+	 W5Ol5dw4q/JnoZXkZEFbGqgXqvi6+IKZpu4gfc65TzOe9Mc39gDMIr53qlZxWoD1t0F+f
+	 +0JoeajLFhdEeEZoAV4wGWQrEd/sqIFUAc/buTUuzC4LtMaZSJ+V+8oJfumYIeQnV0g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792960072;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792960466;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=DN6PbRBNxad9DcTg5iR4Oy8HtkEcukmwakAHDWPA8T8=;
-	b=5qlCxQsuF3PavFR1RVH+nrZ5Pqggjna9Rv+8VeJZe3IqOyHH0TbcnAOzLv0jyhi2BucU
-	 KK/I4Mz/YJU6MuxkRz4QiC5ZZt7v2Ko9RAtD8DIx9mP9Kirlyy2/HVip5lKhZAbEL523a
-	 ZKsh5lX3/lXZogu+MsT76x66Qdy4Kcld7bUwnCRQ2WBn7/VFi6eOPqRuIiWZqjFY8N3mC
-	 y4aEu9uD1l1dV37NWd/1Q+24YMjK5e0FFaYh5twCpp97uGS2F/XZ5NcMbDHi4tV6riKw6
-	 PCrg7Xsr67UwEM2SunPSmyv3PdWdDl8pp0fclF8/lhOIp1AQcfJa9s6mRHB0gURddiw==
+	bh=SerfV/Y7Wh+AGRntag+tZ7aJlrVfjkCeYTwFVXmDajI=;
+	b=jHw1/uqiO+DJ8S75Rlmv4d4fnZGRYuUSlPV1IrhOsScc7S2J1LACpoc47qLP+qtwtr+1
+	 NWMUqPSVyTy5eTLUJY1Q2iD14maF2rZHTxI7RJLkXkLcEdZkh8ZL83dqlc0FgxpihZUN3
+	 FxQ71lS0S/ajcdYI6a+feqoS+pGhuKs0h9UpiZkDHZHi91xiqmVznHTb1HmE8OTX7F7sH
+	 bxtR57YXG338qPpUHwvqRTUADtoyUMJtrZsqlhIfH1d8KA0N22pGNrambLJc92happvQk
+	 Q6fgBI13wScZA7dnUcQGxSAdcbvKDitu09Z/MvlJoprOWU81JuGGkJt+UP6yaUxHEoQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OM5UaaSY;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OTKm3kTp;
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CF23606A31A;
-	Sun, 25 Oct 2026 20:27:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6CF23606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A6B606A31A;
+	Sun, 25 Oct 2026 20:34:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A0A6B606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OM5UaaSY
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OTKm3kTp
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792960070; x=1824496070;
+  t=1792960464; x=1824496464;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=awMLT1oMZkYBF++Hj/2vSzE6fORyJ8L6erONzisvwNc=;
-  b=OM5UaaSYES0wncZbMTaES9hKvwboS2f+BWdqz6bsq2rH009VFGEljSv4
-   ghis9abRHoET6yPdpyKSTd/82wpLbhDm+jjo8GDYvGCvAwcYTy9I8Hemf
-   FLZBsRlrp3+qxT0R2oUaFNV0pETPk8U3WAQyx1Q3HuREVuH9Viksu2VQa
-   PNk5kvod0tmGaOUActsxmtVN2ZnM5F8yAQbCDrq+wtrw5za9eznluDnmD
-   MYElrIpFyhvBSrIuX5BZJT4l5NdEO41hSKpFhWMkp/oUDLIXelmhwA79q
-   nXaRcCTYyeNCrO5mAsJxIFnW1xUQ4cD+yPke0hkm3BJc1hGBwQVX/01IT
+  bh=mg6YTG/YvJ24ApaEm7t/+8C8l8zv4nUM13VOLy4x8R4=;
+  b=OTKm3kTpcwEF+7zuk+6vRH0n7a3ADiBHYl8uNo4gpQ8H4U261aDx7oev
+   MCF73G9nYpI6cZYnKSyvm7IsuSMjxOJ9thLYLZirmxW87PWUr0t8MgqNC
+   1ZyvChzxA8v1l33Tc51aTmMYtpAjA9RGyVp9iNan3Xnm3exeba6/QI8dK
+   Swy26rhTPVmXtlmSjzEj69EKpOiCpA40G4kxIbzK44dF+oIKb7aAzUct/
+   RZwsQ/VRnnT2zTa0fzGIZZv6Aktfvr96qdoExycYfDcFPS14TFuG/Ov6f
+   Rw1cymk/2IsZleOuWEakHBZQ8ntj0q6+mV5FkY7h0CJpvO+/gXFADG0PX
    w==;
-X-CSE-ConnectionGUID: TzDdQteMQpSIhZ0v0m1o4Q==
-X-CSE-MsgGUID: 3IH0oqBxS4SLNQO9HxeF9Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1638425"
+X-CSE-ConnectionGUID: PGuK82JTRjuamPYh5zrf4Q==
+X-CSE-MsgGUID: dBOF0LMYTcq83929fIQ3bw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1662665"
 X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="1638425"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 13:27:50 -0700
-X-CSE-ConnectionGUID: RSd2NqtWSee3gWRFAR2BbQ==
-X-CSE-MsgGUID: NUsMokEVRFCm6DQZrick6A==
+   d="scan'208";a="1662665"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 13:34:23 -0700
+X-CSE-ConnectionGUID: nUa3Tpr0RGKMqIqVElpsaw==
+X-CSE-MsgGUID: P4z4O7j4RxO4iO9gfX8lrw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="4041488"
+   d="scan'208";a="4480432"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.10])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 13:27:47 -0700
-Date: Sun, 25 Oct 2026 22:27:44 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 13:34:20 -0700
+Date: Sun, 25 Oct 2026 22:34:17 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Stephan Costa Barros <stephanbrrs8@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -74,11 +74,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
 	Krzysztof Kozlowski <krzk@kernel.org>, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/6] iio: adc: ti-ads1298: prepare for more chip
- families
-Message-ID: <at5mQNfPsoQFyraj@ashevche-desk.local>
+Subject: Re: [PATCH v2 6/6] iio: adc: ti-ads1298: add ADS1299 support
+Message-ID: <at5nycDs6ImZV8X5@ashevche-desk.local>
 References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
- <20261024231335.280955-5-stephanbrrs8@gmail.com>
+ <20261024231335.280955-7-stephanbrrs8@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,119 +89,111 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261024231335.280955-5-stephanbrrs8@gmail.com>
+In-Reply-To: <20261024231335.280955-7-stephanbrrs8@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Oct 24, 2026 at 08:13:33PM -0300, Stephan Costa Barros wrote:
-> The ADS1299 has the register map of the ADS129x, with other gains, data
-> rates, reference and ID layout. To support it in this driver, collect
-> what differs between families in a chip info structure, given as match
-> data. The private structure has carried an unused chip_info pointer
-> since the driver was added.
+On Sat, Oct 24, 2026 at 08:13:35PM -0300, Stephan Costa Barros wrote:
+> The ADS1299, ADS1299-6 and ADS1299-4 are 8, 6 and 4-channel, 24-bit
+> biopotential ADCs for EEG. They share the register map, the commands
+> and the data format of the ADS129x, and differ in:
 > 
-> The chip info holds:
-> - the regmap configuration and the PGA gain table;
-> - the data rate rules: the base shift, whether CONFIG1 has an HR bit,
->   and the oversampling ratio at DR = 0;
-> - the internal reference, whether CONFIG3 has the VREF_4V bit, and the
->   reserved bits of CONFIG3 that must be written as 1;
-> - a callback that checks the ID register and sets the channel count and
->   the name, as the ID layouts differ; bit 3 alone tells them apart.
+> - the PGA gains, 1, 2, 4, 6, 8, 12 and 24;
+> - the data rates, f_CLK / 2^(7 + DR) with no HR bit, from 16 kSPS to
+>   250 SPS, and the oversampling ratio, 64 * 2^DR;
+> - the internal reference, a fixed 4.5 V, and the reserved bits 6:5 of
+>   CONFIG3;
+> - the ID register, which holds the channel count in bits 1:0;
+> - the register map, which ends at CONFIG4;
+> - the inputs, which are shorted out of reset.
+> 
+> Add the chip info for the ADS1299, and connect the inputs of every
+> channel at init, which changes nothing on the ADS129x, whose inputs are
+> already connected out of reset. The channel count is read from the ID
+> register, so ti,ads1299 also serves the ADS1299-4 and ADS1299-6 through
+> their fallback.
+> 
+> For both families, enable the DVDD supply when the device tree gives
+> one, and hold PWDN asserted, like RESET, until the supplies and the
+> clock are up. Nothing changes for a device tree that has neither.
 
 ...
 
-> +#define ADS1298_VREF_4V_MV			4000
+>  config TI_ADS1298
+> -	tristate "Texas Instruments ADS1298"
+> +	tristate "Texas Instruments ADS1298 and ADS1299"
+>  	depends on SPI
+>  	select IIO_BUFFER
+>  	select IIO_KFIFO_BUF
+>  	select REGMAP
+>  	help
+> -	  If you say yes here you get support for Texas Instruments ADS1298
+> -	  medical ADC chips
+> +	  If you say yes here you get support for Texas Instruments ADS1294,
+> +	  ADS1296, ADS1298 and ADS1299 medical ADC chips, and their variants
 
-_mV
+Make this a list, see how other drivers (recently updated to support more HW)
+do it.
 
-...
 
-> +/* What differs between the chip families the driver supports */
-> +struct ads1298_chip_info {
-> +	/* Checks the ID register, and sets the channel count and the name */
-> +	int (*parse_id)(struct iio_dev *indio_dev, unsigned int id);
-> +	const struct regmap_config *regmap_config;
-> +	/* PGA gain for each value of the GAIN field of CHnSET */
-> +	const u8 *gains;
-> +	unsigned int num_gains;
-> +	/*
-> +	 * The data rate is f_CLK >> (dr_shift + DR). With an HR bit in
-> +	 * CONFIG1, dr_shift is that of the high-resolution mode, and the
-> +	 * low-power mode shifts one more.
-> +	 */
-> +	unsigned int dr_shift;
-> +	bool has_hr;
-> +	/* Oversampling ratio at DR = 0 */
-> +	unsigned int osr_base;
-> +	/* Internal reference, in millivolts */
-> +	unsigned int vref_mv;
-
-_mV
-
-> +	/* CONFIG3 has the VREF_4V bit, which selects a 4 V internal reference */
-> +	bool has_vref_4v;
-> +	/* Reserved bits of CONFIG3 that must be written as 1 */
-> +	unsigned int config3_reserved;
-> +};
-
-Run `pahole` and act accordingly.
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-ads1298.
 
 ...
 
->  		*val = ret / MILLI; /* Convert to millivolts */
+>  // SPDX-License-Identifier: GPL-2.0
+> -/* TI ADS1298 chip family driver
+> +/* TI ADS1298 and ADS1299 chip family driver
+>   * Copyright (C) 2023 - 2024 Topic Embedded Products
+> + * Copyright (C) 2026 Stephan Costa Barros <stephanbrrs8@gmail.com>
+>   */
 
-At some point this should use (MICRO / MILLI) instead of MILLI.
+Fix multi-line comment style, make the text of tristate in Kconfig, this one,
+and in the MODULE_DESCRIPTION() the same.
 
 ...
 
->  		ret = regmap_read(priv->regmap, ADS1298_REG_CONFIG3, &regval);
->  		if (ret)
->  			return ret;
+> +	/* TI sells the 8-channel part as plain ADS1299 */
+> +	if (indio_dev->num_channels == ADS1298_MAX_CHANNELS)
+> +		indio_dev->name = "ads1299";
+> +	else
+> +		indio_dev->name = devm_kasprintf(dev, GFP_KERNEL, "ads1299-%u",
+> +						 indio_dev->num_channels);
+
+Why do we need this? Can't we derive it from IIO ABI?
+
+> +	if (!indio_dev->name)
+> +		return -ENOMEM;
+
+...
+
+>  static int ads1298_init(struct iio_dev *indio_dev)
+>  {
+>  	struct ads1298_private *priv = iio_priv(indio_dev);
+>  	unsigned int val;
+> +	unsigned int i;
+
+It's not used outside of the loop, make it local to that for-loop.
+
+>  	int ret;
 >  
->  		/* Reference in millivolts */
-> -		*val = regval & ADS1298_MASK_CONFIG3_VREF_4V ? 4000 : 2400;
-> +		*val = regval & ADS1298_MASK_CONFIG3_VREF_4V ?
-> +		       ADS1298_VREF_4V_MV : info->vref_mv;
+>  	/* Device initializes into RDATAC mode, which we don't want */
 
-Can't we assign the default and always use info->vref_mV here?
-
-...
-
-> +	priv->chip_info = spi_get_device_match_data(spi);
-> +	if (!priv->chip_info)
-> +		return -ENODEV;
-
--ENODATA
-
-...
-
-> -	priv->regmap = devm_regmap_init(dev, NULL, priv, &ads1298_regmap_config);
-> +	priv->regmap = devm_regmap_init(dev, NULL, priv,
-> +					priv->chip_info->regmap_config);
-
-Leave it a single line.
-
->  	if (IS_ERR(priv->regmap))
-
-...
-
->  static const struct spi_device_id ads1298_id[] = {
-> -	{ .name = "ads1298" },
-> +	{ .name = "ads1298", .driver_data = (kernel_ulong_t)&ads1298_chip_info },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, ads1298_id);
+>  	if (!priv->reg_vref)
+>  		msleep(ADS1298_REF_START_UP_MS);
 >  
->  static const struct of_device_id ads1298_of_table[] = {
-> -	{ .compatible = "ti,ads1298" },
-> +	{ .compatible = "ti,ads1298", .data = &ads1298_chip_info },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, ads1298_of_table);
-
-I think this patch is overloaded. You need to split it to a series (to make
-chip_info a separate preparatory change, for example).
+> +	/* The ADS1299 comes out of reset with its inputs shorted */
+> +	for (i = 0; i < indio_dev->num_channels; i++) {
+> +		ret = regmap_update_bits(priv->regmap, ADS1298_REG_CHnSET(i),
+> +					 ADS1298_MASK_CH_MUX,
+> +					 FIELD_PREP(ADS1298_MASK_CH_MUX,
+> +						    ADS1298_MUX_NORMAL));
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	return 0;
+>  }
 
 -- 
 With Best Regards,
