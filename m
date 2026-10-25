@@ -1,66 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=199.89.1.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792959035;
-	b=LRb0TRMyhxPK9gM+pVshDi0p+VpLNWl1cPzgkfYodbSiOHjo31/LRV4sAdJATaHjx43K
-	 ObDjt5ac1r2YM92We5M+lgsiYXPBWPEsdKqg5x18lIJgyf2XAxGk1TwkaRPNiJMN/BTEg
-	 ZOo5Wq3LuBEb7wYVQx6ng3MQqGsIHvMLGpzf1wYcQjkv4dtih3drsQ9BRk/UQ6zTTmkxB
-	 YS1KwoJCV7vubN/r53jnqUiiLh3D3Cui5IZ/9dogKm06f1ylh4dUzB4K9MSqdS/FxtkWn
-	 ZEliulYDpb8BDo5Rb56c6KEHdWTn78Vv1oB4FlHOQKAp1l1TDTCsaRi1MBov6FSSP/A==
+	t=1792959287;
+	b=y+31rwBJv9y73oTrZU3fCnkPINTkG5/fGm9/mojmY4oyxRbMVZuu1H/GiIOhHgSnnz32
+	 4LfIPzmxaxkHa4js/ZLHJViGExIsDbt6Ppn0qix+CDZV/GN2qG9UUtKUPuni5uGCBo9v9
+	 EQrQPcgEqxY8VypMfhWneeFL9wEE3zPGeg4AzmjMEByujIXQ6cayBOwAU9tia+l7Ae/Ip
+	 TJKlwqeZRPJg8mrW4VKq3nY1QnzpdWDf+bzcZOMCVhqnbpg6X7C3fIUXsYQuco6oFOrkY
+	 49yjyZsoCRKnVODVBPEWSVZYKvHqTGGjiwNemtTwj0qxBd0g41ZfaL/YHL0ygPWJJjQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792959035;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Virus-Scanned:Received:
-	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=nfuxDUd17BdkkholAC0E5iZ6FczMfNtszUIXAcM/J/4=;
-	b=MtiuCWpXi9qCDthwaB1qUwatBNpobHAAl7IuUN7iLrVks8z1xC6pGVasSYa7Aah1Vqc2
-	 xr51UsWdnuisHqYRX0kAnzaBG5tQoj7LQjdeup+hOcksCkbtRldbIHDP8kZiDDa2kQq8j
-	 lN03cEw5eo7MtJKqJIr1pppYMEEhMphQaC1sx56qxDKMX6QivhLeyyAAhclQWDyxGbt5f
-	 3H4e4pwr3gV2CRWjpMXgOapEaLpwfH8TqQ26YfVDh1Qw8dN8hjwGU45hOUprHcUK2g2/x
-	 NoO0H0FPvKnd0UlTjw/RPKPgtCH/cllv9h15Oc+DeXPRuDxkWIClFlmImFjGb43Rzew==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792959287;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=nGJHavF6dSjRKsxaMbsvbObMuN/1FJT3WyyQ9KeYG14=;
+	b=OOjvJGMWwlZxXTvpoYTdg8r21JhEbmrOZFqr9m3KL7yhv8X4cL03EcWiqCeseuqJxosd
+	 2EGFv9KheC9NidDm9ZXFcd5w1qVIlllIdRgC9lknamxm/GL5B79zkpn6sjS0i8FdHuQBv
+	 1AyZ3PedARNkgSyDZNV8luOgKTD+s0XGdGQFagkYhX/TFasE61rOyKLt9qMfntKrL5c2+
+	 DcxTxp4iRvryi2BKIGxWL5tAX1bzQ/cycC+5+flNmXN3+x6FthPF0hfgzimQHZzbtNk/q
+	 ssT7VSJnBf3F3tYL9xERQRVMPkgR1dx++1+BdrIQ7bGa5MDSlg7qrH5p1GlLBEggSDQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=acm.org;
-	spf=pass smtp.mailfrom=acm.org;
-	dkim=pass header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=xIbPSHG9;
-	arc=none smtp.remote-ip=199.89.1.16
-Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RhGP+OHz;
+	arc=none smtp.remote-ip=192.198.163.9
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB87606A31A;
-	Sun, 25 Oct 2026 20:10:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DFB87606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 962AC606A31A;
+	Sun, 25 Oct 2026 20:14:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 962AC606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=xIbPSHG9
-Received: from localhost (localhost [127.0.0.1])
-	by 013.lax.mailroute.net (Postfix) with ESMTP id 4jCSYQ2rpdzlfvpM;
-	Sun, 25 Oct 2026 20:10:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
-	content-transfer-encoding:content-type:content-type:in-reply-to
-	:from:from:content-language:references:subject:subject
-	:user-agent:mime-version:date:date:message-id:received:received;
-	 s=mr01; t=1792959029; x=1795551030; bh=nfuxDUd17BdkkholAC0E5iZ6
-	FczMfNtszUIXAcM/J/4=; b=xIbPSHG9E/ShBMSpMR7/MCIc5yF6CJvMRbZ+75QX
-	TJ7blH0H/jORRmw6sB1iF5m3Y8DQxQ9i6sDKhu/Mnywp4iPywwl/lsBZDO5F2oT9
-	jFRc/eLosbMCBNPd9aBhBjv8+zWi4iY7aJjGmG2QH6X+eI22nb1lQUzPk4rSraIA
-	2QazKqnF2itsHjqbDh4CxQ/3pdnX5t6obUXtAVdLy4Wxn3PPQ8Fc8dFHzn3vncyT
-	RnrLIo8wfXAzBXiljOyQwg178p+T7ofDCGfj/LtI265+MaSJgzYTMtBUCoC8dW7o
-	6LJC/Hg/0X84UO9Zga8qAoZLivGnK9LpUX+mzzGJWqDwNw==
-X-Virus-Scanned: by MailRoute
-Received: from 013.lax.mailroute.net ([127.0.0.1])
- by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
- id EBJM-FDfAURl; Sun, 25 Oct 2026 20:10:29 +0000 (UTC)
-Received: from [192.168.51.14] (c-24-6-239-25.hsd1.ca.comcast.net [24.6.239.25])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: bvanassche@acm.org)
-	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4jCSYK095DzlfvpK;
-	Sun, 25 Oct 2026 20:10:28 +0000 (UTC)
-Message-ID: <76bbebb4-7337-486d-8f21-a39bcb6dca93@acm.org>
-Date: Sun, 25 Oct 2026 13:10:26 -0700
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RhGP+OHz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792959285; x=1824495285;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9GKkWz1dS8PrpKepJfMr9pKKIngX8+cFO3s2cipkbo8=;
+  b=RhGP+OHz1IVu8HJdFb6mDqgNPr5+wLXFBuiixfc5QiH24zZQaAfTjC1g
+   YkuDgNrn3sdAPAVHMcT7u93o9zqiSa8dzUHP0Z6+f5bQkSHPnu/XWciVn
+   LhQkltKAhfjBWpIFodDvxAFp4cdJsqt2jAYz3V3i17fyXHuauL1/XUs77
+   Lp6cRNYpcXXjLcLWBBICbAeyZiX0f69RaygM9U8KIMX4pY0LegjHJsF5O
+   YwQzTXrs31bo0PdlgDiTmLwds++U7MtcxmZylOk812UleUlgGx92Nxsne
+   bkd+3Oyy2EPsdl+dVs2miJtbluWxKI02qxmxK9fLTes4JcJ3TTJGNIbty
+   A==;
+X-CSE-ConnectionGUID: LQQs0V6NSDy/mVdcnQhnNg==
+X-CSE-MsgGUID: 5QhiAhhUT82g0SoGY3v9ug==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1517950"
+X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
+   d="scan'208";a="1517950"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 13:14:45 -0700
+X-CSE-ConnectionGUID: XymywbSuQaiqi2CTwJ07hA==
+X-CSE-MsgGUID: uQIrykXUQguTpx5uGdlWbA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
+   d="scan'208";a="4045131"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.10])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 13:14:42 -0700
+Date: Sun, 25 Oct 2026 22:14:39 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Stephan Costa Barros <stephanbrrs8@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Mike Looijmans <mike.looijmans@topic.nl>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] iio: adc: ti-ads1298: fix the data read path
+Message-ID: <at5jL47A-6vQJYOX@ashevche-desk.local>
+References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
+ <20261024231335.280955-2-stephanbrrs8@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -70,82 +87,120 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on
- mutex helpers
-To: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko <andy@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Marco Elver <elver@google.com>,
- Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-References: <20261025191510.22261-1-zoone.rupert@gmail.com>
-Content-Language: en-US
-From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20261025191510.22261-1-zoone.rupert@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261024231335.280955-2-stephanbrrs8@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 10/25/26 12:15 PM, Rupesh Majhi wrote:
-> Found by building with CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y
-
-Please include the CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y change in
-your patch.
-
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> index c68c6c5f6aca..6a3cabedf4e8 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> @@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
->   }
->   
->   void adc5_gen3_mutex_lock(struct device *dev)
-> -	__acquires(&adc->lock)
-> +	__context_unsafe(/* returns with adc->lock held */)
->   {
->   	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
->   	struct adc5_chip *adc = iio_priv(indio_dev);
-> @@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
->   EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
->   
->   void adc5_gen3_mutex_unlock(struct device *dev)
-> -	__releases(&adc->lock)
-> +	__context_unsafe(/* releases adc->lock */)
->   {
->   	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
->   	struct adc5_chip *adc = iio_priv(indio_dev);
+On Sat, Oct 24, 2026 at 08:13:30PM -0300, Stephan Costa Barros wrote:
+> Fix five issues in how the driver reads samples:
 > 
-> base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125
+> - cmd_buffer serves both the register accessors, under the regmap lock,
+>   and the commands, under the IIO device lock, and shares a cacheline
+>   with rx_buffer and tx_buffer. A register access can then rewrite a
+>   command on the bus, or corrupt an RDATA transfer in flight on a
+>   platform without coherent DMA. Give each path its own buffer, each on
+>   its own cacheline.
+> 
+> - After STOP, the conversion in progress still raises DRDY, so an RDATA
+>   transfer can be in flight when the core frees the active scan mask.
+>   Track in the driver whether samples go to the buffer, wait in
+>   predisable for the last DRDY and its transfer, and push the sample
+>   before marking the transfer done. update_scan_mode reset the transfer
+>   counter, which let a new transfer be queued over one in flight; wait
+>   for it instead.
+> 
+> - When a single-shot read times out, its transfer may still be in
+>   flight, and the next read then wakes up with the old sample. On
+>   unbind, nothing waits for the DRDY interrupt or its transfer. Wait for
+>   the transfer before a single-shot read, and on teardown disable the
+>   interrupt and wait for the last transfer.
+> 
+> - The return value of spi_async() and the status of the RDATA message
+>   are ignored: a failure leaves the transfer counter stuck, and a failed
+>   transfer is reported as a sample. Handle both.
+> 
+> - read_raw takes the sample out of rx_buffer after releasing direct
+>   mode, so a buffer enabled in between can overwrite it. Take it while
+>   direct mode is still held.
+> 
+> The first, second and last were found by review and not reproduced.
+> The third and fourth were found by review and reproduced on an emulated
+> device only.
 
-Please consider replacing the above with the patch below:
+...
 
-diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c 
-b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-index c68c6c5f6aca..09013c6e44a0 100644
---- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-+++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-@@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct 
-adc5_chip *adc)
-  }
+> static void ads1298_rdata_complete(void *context)
+>  {
+>  	struct iio_dev *indio_dev = context;
+>  	struct ads1298_private *priv = iio_priv(indio_dev);
+> +	int status = priv->rdata_msg.status;
+>  	int scan_index;
+>  	u32 *bounce = priv->bounce_buffer;
+> +	bool buffered;
+>  
+> -	if (!iio_buffer_enabled(indio_dev)) {
 
-  void adc5_gen3_mutex_lock(struct device *dev)
--       __acquires(&adc->lock)
-+       __acquires(&((struct adc5_chip 
-*)iio_priv(dev_get_drvdata(dev->parent)))->lock)
-  {
-         struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
-         struct adc5_chip *adc = iio_priv(indio_dev);
-@@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
-  EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
+> +	/* Only changes while no transfer is in flight */
+> +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> +		buffered = priv->buffered;
+> +
+> +	if (!buffered) {
 
-  void adc5_gen3_mutex_unlock(struct device *dev)
--       __releases(&adc->lock)
-+       __releases(&((struct adc5_chip 
-*)iio_priv(dev_get_drvdata(dev->parent)))->lock)
-  {
-         struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
-         struct adc5_chip *adc = iio_priv(indio_dev);
+Strictly speaking you need to assign buffered to make any compiler not being
+confused by the scoped_guard(), which cases IIRC we used to have the past.
 
-Thanks,
+...
 
-Bart.
+> static int ads1298_buffer_postenable(struct iio_dev *indio_dev)
+
+> -	return ads1298_write_cmd(priv, ADS1298_CMD_START);
+> +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> +		priv->buffered = true;
+> +
+> +	ret = ads1298_write_cmd(priv, ADS1298_CMD_START);
+> +	if (ret) {
+> +		scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> +			priv->buffered = false;
+> +	}
+> +
+> +	return ret;
+
+Before write_cmd is called the buffered might have been triggered. Is it okay?
+
+...
+
+>  static int ads1298_buffer_predisable(struct iio_dev *indio_dev)
+>  {
+>  	struct ads1298_private *priv = iio_priv(indio_dev);
+> +	int ret, ret2;
+> +	int rate;
+> +
+> +	ret = ads1298_write_cmd(priv, ADS1298_CMD_STOP);
+> +
+> +	/*
+> +	 * The conversion in progress completes and raises DRDY once more.
+> +	 * Wait for it and for its transfer before the core tears down the
+> +	 * scan.
+> +	 */
+> +	if (ads1298_get_samp_freq(priv, &rate) >= 0 && rate > 0)
+> +		fsleep(2 * DIV_ROUND_UP(USEC_PER_SEC, rate));
+> +	ret2 = ads1298_wait_rdata_idle(priv);
+>  
+> -	return ads1298_write_cmd(priv, ADS1298_CMD_STOP);
+> +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> +		priv->buffered = false;
+> +
+> +	return ret ?: ret2;
+>  }
+
+The code lacks of comments on why in all error cases (either first one, or
+second, or both are triggered) it's fine to continue. And what will be the
+meaning of the returned value in all three cases?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
