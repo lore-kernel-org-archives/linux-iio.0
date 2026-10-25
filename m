@@ -1,104 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792883669;
-	b=uGj0SJQk980VdrSajqAkiJQpPzsnTYt8f0CRhJnjAlFae9JI/vMGAbFfAfzf9xSu1Bdz
-	 lQuN9DEBFBhlXBfHddlfzq+SdumuqLhcr6mSh2CCxOZIO8okcmweODpi9cZd6UPjAbw0H
-	 h2dl9tKp1JtL6fLEh/qF59j9Ab6Cv+MPk7z180SCdbg+VZ6iOyMog9vFjSYjfKEGkspJG
-	 Vp5YxlZATgzsokotPWeA2lyhu9VgkRuB+I5l5kFL4EdgDVXpH2WYyZg/uoBgaFv1JKKhm
-	 GG6s3m4BkqLwVe3td518EEsaXMJU249Hv+ph5rv6CQYkJ+htOB/DR7AEO5MYtqB0w/A==
+	t=1792905494;
+	b=aplLRnmJlQd/jPoGYMMQFyEYYUCsrtnm/iLRAqcRdZ4KOcJByWq9KRPA2HkuH3jxxxT8
+	 RULnOkZOvMcMoRqUzjZK3tQrBeneSNQcvRNi+IeYeykgFTAehvUOI8k3+F0eKbBJomPzg
+	 XijAtJiPnEwpa5evAdqMhjJ+mYKPDuBxlA9gPXYH3SKPB44XKs4lHd1EgG9vhNWxDWf7A
+	 SIy1B6UKUScUb64Zq8fKK51+KRbP5z7CYDhV0pzjKOE0tAkshFbDus9fziW9828KtwV4g
+	 QwcXpZkk8f1wul2sntWWAR9MyDhdryOFuG5KOPaM0D0J0cTP6h7XacCRRsc/kxNa66Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792883669;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792905494;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=O0Hxp+Z6Z20A4q/acm/GtdnoKxJONqcI68/yotG+5rc=;
-	b=4UqroTFdUJaVFoKJBcFcQN+OKqReginWW7fjEnw4i11XVHpKggbBBHpjpaXG8fawVWpm
-	 /R/edz3HMcsHqm7CeX8oyED9TRGesikU/FreIvuvz34TMHOsdIvSB0froelaHzM+xEnSv
-	 +xwU/x6umlhuNibSZfcPwAgHtM2jS9kcVDnCjxbEJxg9SaAnU2g6XrM0wAm5cnvvzIHx9
-	 1Pqv5JTYTjR3FEvVMSdOoyOq7K6KTzGZeshXhpUQJ1lMNRU5V93KQksYdXm5qLyzqESlj
-	 Q/WEoLhcMdKTmCbOd7xE48Rdie+HrV2pbxNdk1f6Trasqzyz7K1eaLXwmDe9sx2gjXw==
+	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key;
+	bh=/W2ZST1PdRMiETuySk5iN0wTTyj64nbsfp3hS9oPgWA=;
+	b=zwuY7lbeqmbeXyExTUwbMmhVuakcU7VYJPmMuIprsD7a2PLmpqbKcvfttMFHdXlqkfR+
+	 5lTZnO2uWodCalft1hWy6A23Z6WBlZrYPRhkbyFIDRJumkylUDjpYIC/alXcf1KRUlvjl
+	 dCnpyHFhkcMIRgx3VKyzKxjB+1HxAoMjFgiU1D6cTtxO2mC0ePPK+rxjV8T+rS5hZ1kXg
+	 YwE/K3oeouKPdvs7/eeogXHNeOJRyPvPGIeb9QinxRZCO5mcoRdxCe5Vho1FcQ9W01ynP
+	 SQLB5m3Wu0GbC+ecOhiBajHf6djCAOMposTUOOGNs4rXdsQ62/SngX7rn1ig6e2kzGg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=HxNgrnWQ;
-	arc=none smtp.remote-ip=209.85.221.170
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=drja54eF;
+	arc=none smtp.remote-ip=74.125.224.130
+Received: from mail-yx2-f2.google.com (mail-yx2-f2.google.com [74.125.224.130])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C3DB606A320
-	for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 23:14:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C3DB606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4224606A31D
+	for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2026 05:18:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A4224606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=HxNgrnWQ
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-5eafa528803so678218e0c.1
-        for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 16:14:27 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=drja54eF
+Received: by mail-yx2-f2.google.com with SMTP id 956f58d0204a3-679e6ab647dso907971d50.0
+        for <linux-iio@vger.kernel.org>; Sat, 24 Oct 2026 22:18:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792883667; x=1793488467; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=O0Hxp+Z6Z20A4q/acm/GtdnoKxJONqcI68/yotG+5rc=;
-        b=HxNgrnWQN3H09j3KbAZChzmuxKMvKy3Xr3HAI6vlFlq97Ri+/LzETvDYHl2hn7XvwJ
-         V/Zqk+33Q9H++LUACOKoyWXXV5druPCq0fc840ejGZ/k9akt+w+Qsi1Gu2WekXSoI8/B
-         rIyxqkumcMd2ndEcpt+tbwZM6OTf4ssaNAz22i3dwcMCFLpc3+NwzLMMblsHaWFrfccD
-         UNqKhCfW/HprFKf//uXWZVxJNc3CV/wyl8eY2RTXw7YEavsesNGRRGPLNh1ctFRNqcP6
-         lhAYjwdDbwhpoznkJRSM9WtXYC1lUewNXQnhpghTByxu6aryuQ+Rk5p2OKNn21ux/rtm
-         foWA==
+        d=gmail.com; s=20251104; t=1792905492; x=1793510292; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=/W2ZST1PdRMiETuySk5iN0wTTyj64nbsfp3hS9oPgWA=;
+        b=drja54eFfOch0K2zQqZ+GcI5pRTkKIua+FkkXwTXsXLqxXMjggZrXYM4w7OdalIeQR
+         8hn11BPeNLyLW1EqGm3B7ceBn8cAKPebgrcDuIE9uOoQmTzoTCBa15gr5Vc/yo3qNN5i
+         LZcWIq9rLcstfAsz9YoOYcHF29T61rUHulmm9hxTJ6z+HIQ52MbbD1ug6AFryJY6QqOE
+         vYsXIBD34c99QGkEWeHfKib+YMI222btcaBuP/DHz+5CYukhAEorA7l9wxp0YXGlkjQB
+         MsNt9wn9QvDg7JNuQuAj9tAWqmS6y71dykTClSWk/O+LuJJPvx8wK+v++bPy2JVhaHqr
+         t4eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792883667; x=1793488467;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=O0Hxp+Z6Z20A4q/acm/GtdnoKxJONqcI68/yotG+5rc=;
-        b=C5Hm1U8EmWACqqsuPqPIUghiCCZeI70pn9F8GJTEkCV605/NgZHfox52/0Au4egkSG
-         QT7DCVAxP0JD7coJcBNPzzpRLnERjy+5OQUVXuP9L+yp3wpE9YWReowK7jvWoewmQCan
-         IRFa75WV1pBbKj0Yuj54dwC8Qfihx0dzDLOSo3cUJtnjt9qdw6Z+svmyZWwtgCJ7YrBA
-         eqaI3212SvsCUc4mcjQ0Eug/nN3eV0O/u09WBrsNt+LLw+6/UN0B05SINDJJr2mIdjb5
-         AJckU3aJpD37Q3/s4+03Ha7WtwnO8Rzb8Xa+UUZfifcAzGlxlUtzN2xMu6R6XAMiYOnq
-         /tEw==
-X-Forwarded-Encrypted: i=1; AKwUvBwlyCvBxf9lgtVxymr18xyQINjI+glrI6PUXoDBDlKr1ryBopHNdF6GOEE3g7igWeSAEEW6HGwMaJU=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKdlNsBC8i7UbyGMNzhqLZ1D/dBHT8jNQ4Qnnaxyojkw3RvXHbN
-	rdogQ7QzXcf0eyysbucdYG7dZZ8IL5lxIgZKWum8I0kHfFT4MStIbHlN
-X-Gm-Gg: AYBFou3+dwBrObL4c+mAFQunc2wEsg8rFYTKDXFQuYJtudMPz+3Ch23yUQtXlbtmzvJ
-	DkCp2iWgBOfKvKu4ucGQYIGkqCF1G+Isnqkq6Vckwkf9N6pvLfry4PDcCUTtJ+xCc6niU+s0cBb
-	jQCw3qTrwLZKqTcfYisBXgC8CP8GMRjbkjxsFaw3kVsJw2vWS5Hj9i/GDM46X7424I3nFb8M/Bn
-	A2sdrvzKAMqNCme1jEAwlmoYNWXQzjk40oVElIZQcOiAih/gujfjNh7GJVJzJOmlhx2r//yl+/r
-	lPszmvI8lpFBQPdUexFtsuLJkYUyaoOmQ2zPwUcau33Mt7WNpFmzcXIDyGMqbhID5OV2khJff/b
-	prFQ3RR20SVdbDag1uR3yKJlG8JySGoKCz5rAwqJMwBHsGn31K8NcT8uVAT9KyNjbAIUWg79IAN
-	B4ug7DMfSDQnJiPANFwrdS08Oz5fUt8FoAkiKg/goYZsEtmMqWXPnKeYYux31gVsUspNqDiIg8d
-	s91baLqI/KWlchfGn/M3FTuzJc5qd9XDcgXPf0ndwl8NiXLfbGM0kDBBL6TKOofAo2zqOBZ4dxU
-	71NO
-X-Received: by 2002:a05:6102:5049:b0:7c8:fb4e:a3b0 with SMTP id ada2fe7eead31-7ce5ccddc2fmr687752137.12.1792883666907;
-        Sat, 24 Oct 2026 16:14:26 -0700 (PDT)
-Received: from stephan-Inspiron-15-3520.. ([2804:5d20:6009:6701:efc9:520c:e99d:e5ce])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9910e7b8f0csm3775406241.5.2026.10.24.16.14.21
+        d=1e100.net; s=20260707; t=1792905492; x=1793510292;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=/W2ZST1PdRMiETuySk5iN0wTTyj64nbsfp3hS9oPgWA=;
+        b=E2XseseutrZJLswWJ2iY93GibCayUUOl6HwgRQzZaTi4CQvZv9ZS1jlMgPXdzaVc1w
+         MTFhL9crLkjnb3sKtHSAql0F3rCSR5jbzBzEykJPTJrBbEIkqYIdP9RtMz0qP9HxyosU
+         YQ8LWSqyku7NreDZRAAT2fSx/f0pQb2WB8Ckb+MVQreB+840uHVSREAkqEKowpnr09O3
+         n1zGcjmNd3xccZ+CXdsC0ZUtkGh1J+QF6UW+oUmXOkRufsjVTny1TL+rgm7RElJxvsvD
+         5JPj4U2VLp3SQ57+v0Pnrkd7z8SXtEX2GhmEc3pwzB5KL/sTHxp5BaKO+tN4gWZbN3y5
+         hzxQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwfOzD+ir3k3YbgWeafJ364Aa50iaUgYiv45061TXC60jx5hoSu9mDSMqRpb5cQR/ca+G8QzGt6aIc=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLy8lYj9+Yi+VTB2R4rhj/06sfoKTXrOYcePROypp0nWsElJXid
+	poX/KjU0hsKAt+v3hh3Q2bdJyQBWytoadKB15H0gBFyrk5eDtfEDji8B
+X-Gm-Gg: AYBFou0lkbrvs7SUyYa+r41hLldy9rvkfU9wqOgTikvSQyVFKN0fJ7CzdzDcgj9IUIn
+	YxkW9SQC72UdaGCn2ZHzdpwZYVC8j4QrjTL5cFh4SSn3wSbk8pRWwdcQlDzZeLIeuG4ugQWIuR1
+	9duuwAPa38VrLJzTOpVi7/yoZnwH6nm/GizZA0tsxUajI8lPHU+WjcbyVBzgOs5Zh2ijgjGT5pf
+	NsVdXEU/yLJRDZehsIiLtKXvuG6m0WQyb1sMienvRbQcbCqC4it2H3jxxwYdg2FmY10EZ5M4xq6
+	NKVdPjaV/w2d/3b03MBojBrSoucfs9tq6WoUPuPVpIWB/H6ebo8+pj/c91kHVoieHkxHVMs3sTl
+	9WOo+4DHZcTK0NV3m6jW39zJwBJCmtAP4PrzCvHMsGjlnsCVSrRVkYF3R1ANOBmwFo36iQVhfgD
+	MV3IdX2Abf5fTxZANBo7Rex0RPBkcgwKCGl98w4mmM4vFIa2djscy9wYbkpiGddHryRPM0aRIdT
+	vjrw7mQOlffIG33gBQcG/pKbO8r763z/gZcwZQaWNJsiQ==
+X-Received: by 2002:a05:690c:3141:b0:8b0:a01e:2ccd with SMTP id 00721157ae682-8b166c938afmr20299057b3.62.1792905492438;
+        Sat, 24 Oct 2026 22:18:12 -0700 (PDT)
+Received: from [192.168.1.91] ([2600:1702:894b:4a00::12])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b166c5d605sm16477797b3.5.2026.10.24.22.18.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Oct 2026 16:14:26 -0700 (PDT)
-From: Stephan Costa Barros <stephanbrrs8@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Mike Looijmans <mike.looijmans@topic.nl>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 6/6] iio: adc: ti-ads1298: add ADS1299 support
-Date: Sat, 24 Oct 2026 20:13:35 -0300
-Message-ID: <20261024231335.280955-7-stephanbrrs8@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261024231335.280955-1-stephanbrrs8@gmail.com>
-References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
+        Sat, 24 Oct 2026 22:18:11 -0700 (PDT)
+From: Ryan Brue <ryanbrue.dev@gmail.com>
+Subject: [PATCH v5 0/2] iio: adc: add mt6397 PMIC AUXADC support
+Date: Sun, 25 Oct 2026 00:18:07 -0500
+Message-Id: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,274 +91,226 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAA/43NQW6DMBBA0atYXjPVMIMdwir3qLow9oRYKhDZg
+ NJG3L0iUiXUbtj+xftPnSVFybpRT51kiTmOg26UKZT2Nzd0AjHoRmlCsnguK0htmgXyLN8w3/O
+ UxPVx6KCfLJ9P4OaHCx6MlEQ1kvEGdaH0Pck1Pl6b949C6VvM05i+Xtel3OrvwBwbLCUgBDaBn
+ Odgr3jpehc/3/zY622w0B49HURpQ1s2dU3OYv0P5R1KeBBlQPCIEpxvRWz1F632aH0QrQCB2DA
+ 7DIzCe3Rd1x+DAIjN1wEAAA==
+X-Change-ID: 20260914-rbrue-suez-upstreaming-mt6397-auxadc-5e1228025c50
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: Roman Vivchar <rva333@protonmail.com>, 
+ Luca Leonardo Scorcia <l.scorcia@gmail.com>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+ Ryan Brue <ryanbrue.dev@gmail.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792905489; l=10472;
+ i=ryanbrue.dev@gmail.com; s=20260906; h=from:subject:message-id;
+ bh=hZ4ataN3TqF3XlcUTTlr0WAyyMp0HQO8iZw+M3vlDFw=;
+ b=PGRd3RMljy/6mIRA8gGGOeRo7WduXda/Rryemi47hJYV3sSsq4sgHWrhfc4JzkvhM5IjreR0T
+ CkV77HYcjVCDhu9OirSxZjs6ecT4tzXz5sn4coU1G5jEG5GuR5JXq9L
+X-Developer-Key: i=ryanbrue.dev@gmail.com; a=ed25519;
+ pk=KsUvVaP//v/2q+ZBuacc7cLbsyEYn+AD71Sn28oZWKo=
 
-The ADS1299, ADS1299-6 and ADS1299-4 are 8, 6 and 4-channel, 24-bit
-biopotential ADCs for EEG. They share the register map, the commands
-and the data format of the ADS129x, and differ in:
+The MediaTek mt6397 PMIC has a 10-bit AUXADC that nothing in-tree can
+reach. On boards built around it that ADC is the only path to the battery:
+the SoC's AUXADC is wired to board thermistors, and the charger ICs these
+boards use have no ADC at all, so without it there is no pack voltage and
+no state of charge.
 
-- the PGA gains, 1, 2, 4, 6, 8, 12 and 24;
-- the data rates, f_CLK / 2^(7 + DR) with no HR bit, from 16 kSPS to
-  250 SPS, and the oversampling ratio, 64 * 2^DR;
-- the internal reference, a fixed 4.5 V, and the reserved bits 6:5 of
-  CONFIG3;
-- the ID register, which holds the channel count in bits 1:0;
-- the register map, which ends at CONFIG4;
-- the inputs, which are shorted out of reset.
+Patch 1 adds the compatible to the existing MediaTek PMIC AUXADC schema and
+the header naming the channels, patch 2 the driver. The MFD cell that
+instantiates it was patch 3 of v4, which Lee has applied [1].
 
-Add the chip info for the ADS1299, and connect the inputs of every
-channel at init, which changes nothing on the ADS129x, whose inputs are
-already connected out of reset. The channel count is read from the ID
-register, so ti,ads1299 also serves the ADS1299-4 and ADS1299-6 through
-their fallback.
+The mt6397 is not given mediatek,mt6359-auxadc as a fallback because the
+two are not register compatible; patch 1 has the detail.
 
-For both families, enable the DVDD supply when the device tree gives
-one, and hold PWDN asserted, like RESET, until the supplies and the
-clock are up. Nothing changes for a device tree that has neither.
+Only the two channels a board needs for its pack are described, so patch 1
+ships a header naming them: a channel ID is an index into the driver's
+array and not the PMIC's channel number, as in mt6323-auxadc. The register
+sequences are the ones the vendor kernel's pmic_auxadc.c programs.
 
-Tested on an ADS1299 with a Raspberry Pi 4.
+Tested on an Amazon Fire HD 10 (2017), an mt8173 with an mt6397. Both
+channels are exercised: the battery channel by a fuel gauge, which reads
+817 counts, 3830 mV with the pack at rest, and the thermistor channel by an
+ntc-thermistor consuming it. The error paths are driven by injecting a
+regmap failure into each helper in turn. The read returns the injected
+error, and every bit is cleared again. The teardown writes were also made
+to fail, one at a time. When one write fails, the others still run, and
+only the failed write's bits are left set. The next read clears them
+anyway. Run the same way, v3 stopped at the first failed write and left the
+later bits set. v5 gives the same results as v4 in all of these. Loading
+the two modules alternately on the board, their readings differ by 0.3 LSB
+on the battery channel and 0.1 LSB on the thermistor, both inside the
+comparison's own noise.
 
-Signed-off-by: Stephan Costa Barros <stephanbrrs8@gmail.com>
+A new driver was created here, instead of modifying an existing driver such
+as mt6323-auxadc or mt6359-auxadc, for the following reasons:
+
+ - Both mt6323-auxadc and mt6359-auxadc select channels through a request
+   register (1 bit per channel), while mt6397 uses a 4-bit numeric field
+   CHSEL in CON1 (10:7), and then pulses a START bit (CON1 bit 0).
+
+ - For mt6323-auxadc, which is the closest I could find to the mt6397
+   (CON0..CON27), it has 13 more registers than the mt6397 (CON0..CON14).
+   It uses CON22 for its request register, and reads the result value
+   from the same register as the ready bit. We don't do that - the mt6397
+   has a factory-calibrated value for each channel at 0x16 higher than the
+   raw value. mt6323 also has a 1800 mV / 15 bit scale / resolution while
+   we have 1200 mV / 10 bits. We also have some per-channel preparation
+   that we have to do before the burst, that the mt6323 doesn't have to
+   do.
+
+ - For mt6359-auxadc, it has a more generic framework for describing the
+   AUXADC, but it assumes requests are channel-per-bit, and so we would
+   have to basically ignore req_idx, req_mask, rdy_idx, and rdy_mask.
+
+ - We also have our own software sampling, which the vendor does too
+   (Amazon Fire OS based on Linux 3.18). We'd have to have our own
+   sampling callback to do it.
+
+I have two things in the driver different from the vendor (Amazon
+Fire OS based on a 3.18 kernel). Verified with over 150 interleaved reads
+per setting:
+
+ - Leaving the ISENSE input enabled between reads, as the vendor does,
+   makes no difference to the value, so the driver switches it off again.
+   Both ADC input enables are clear when idle, unless a teardown write
+   itself fails: the rest of the teardown still runs, and the next read of
+   the channel clears whatever was left set.
+
+ - The chip's sample accumulator makes no difference at 4, 8, 16 or 31
+   samples and costs no measurable time, so it is left at one. Software
+   averaging helps, but only by about a quarter: in one interleaved run,
+   0.92 LSB standard deviation for one conversion against 0.67 for sixteen,
+   where independent samples would have given 0.23. Conversions in a burst
+   are correlated.
+
+The reading was checked against the charger, which regulates the pack to
+a programmed voltage in constant-voltage mode. Over twelve such voltages
+from 3904 to 4080 mV, and charge currents from 111 to 778 mA, the driver's
+reading is a mean of 0.9 mV from the regulated value, well inside
+the charger's regulation tolerance. That also settles reading the chip's
+trimmed result register rather than the raw one - the raw register is
+20.7 mV low at every one of the twelve points.
+
+This series was developed with the help of an LLM coding assistant.
+
+[1] https://lore.kernel.org/all/179206667779.1910726.5341177428334836457.b4-ty@b4/
+
+Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
 ---
- drivers/iio/adc/Kconfig      |   6 +--
- drivers/iio/adc/ti-ads1298.c | 100 +++++++++++++++++++++++++++++++++--
- 2 files changed, 100 insertions(+), 6 deletions(-)
+Changes in v5:
+- Split the read into one helper per channel, each doing its own setup,
+  burst and teardown, and a caller that takes the lock and dispatches on
+  the channel. mt6397_auxadc_release() is gone. The register sequence is
+  unchanged on every path, including every failure path, and retested on
+  hardware. (Jonathan)
+- Keep Andy's Reviewed-by on patch 2, since the change is a restructure
+  that does not change behavior. If that's incorrect let me know.
+- Drop the MFD cell patch, applied by Lee from v4.
+- Rebase onto iio/testing. The MAINTAINERS entry now follows the MT6323
+  PMIC NVMEM one.
+- Drop the Assisted-by trailers per the new kernel guidance, and put the
+  disclosure in the cover letter.
+- Link to v4: https://patch.msgid.link/20260928-rbrue-suez-upstreaming-mt6397-auxadc-v4-0-23533a0d30e3@gmail.com
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index a29ed8f45..724ae6123 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -1920,14 +1920,14 @@ config TI_ADS1262
- 	  called ti-ads1262.
- 
- config TI_ADS1298
--	tristate "Texas Instruments ADS1298"
-+	tristate "Texas Instruments ADS1298 and ADS1299"
- 	depends on SPI
- 	select IIO_BUFFER
- 	select IIO_KFIFO_BUF
- 	select REGMAP
- 	help
--	  If you say yes here you get support for Texas Instruments ADS1298
--	  medical ADC chips
-+	  If you say yes here you get support for Texas Instruments ADS1294,
-+	  ADS1296, ADS1298 and ADS1299 medical ADC chips, and their variants
- 
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-ads1298.
-diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
-index 5ad543bdf..e0cea23b1 100644
---- a/drivers/iio/adc/ti-ads1298.c
-+++ b/drivers/iio/adc/ti-ads1298.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
--/* TI ADS1298 chip family driver
-+/* TI ADS1298 and ADS1299 chip family driver
-  * Copyright (C) 2023 - 2024 Topic Embedded Products
-+ * Copyright (C) 2026 Stephan Costa Barros <stephanbrrs8@gmail.com>
-  */
- 
- #include <linux/bitfield.h>
-@@ -45,6 +46,10 @@
- #define ADS1298_MASK_ID_CHANNELS		GENMASK(2, 0)
- #define ADS1298_ID_FAMILY_ADS129X		0x90
- #define ADS1298_ID_FAMILY_ADS129XR		0xd0
-+/* ADS1299: bit 4 reads 1 and DEV_ID[3:2] is 11; bits 7:5 are the revision */
-+#define ADS1299_MASK_ID_DEVICE			GENMASK(4, 2)
-+#define ADS1299_MASK_ID_CHANNELS		GENMASK(1, 0)
-+#define ADS1299_ID_DEVICE			0x7
- 
- #define ADS1298_REG_CONFIG1	0x01
- #define ADS1298_MASK_CONFIG1_HR			BIT(7)
-@@ -65,12 +70,14 @@
- #define ADS1298_MASK_CONFIG3_RESERVED		BIT(6)
- #define ADS1298_MASK_CONFIG3_VREF_4V		BIT(5)
- #define ADS1298_VREF_4V_MV			4000
-+#define ADS1299_MASK_CONFIG3_RESERVED		GENMASK(6, 5)
- 
- #define ADS1298_REG_LOFF	0x04
- #define ADS1298_REG_CHnSET(n)	(0x05 + (n))
- #define ADS1298_MASK_CH_PD		BIT(7)
- #define ADS1298_MASK_CH_PGA		GENMASK(6, 4)
- #define ADS1298_MASK_CH_MUX		GENMASK(2, 0)
-+#define ADS1298_MUX_NORMAL		0
- 
- #define ADS1298_REG_LOFF_STATP	0x12
- #define ADS1298_REG_LOFF_STATN	0x13
-@@ -354,6 +361,15 @@ static int ads1298_set_samp_freq(struct ads1298_private *priv, int val)
- 		return -EINVAL;
- 
- 	factor = (rate >> info->dr_shift) / val;
-+
-+	if (!info->has_hr) {
-+		/* The slowest rate at or above val, or the lowest of all */
-+		cfg = factor ? min(ilog2(factor), ADS1298_LOWEST_DR) : 0;
-+
-+		return regmap_update_bits(priv->regmap, ADS1298_REG_CONFIG1,
-+					  ADS1298_MASK_CONFIG1_DR, cfg);
-+	}
-+
- 	if (factor >= BIT(ADS1298_LOWEST_DR + 1))
- 		cfg = ADS1298_LOWEST_DR; /* Lowest rate, in LP mode */
- 	else if (factor)
-@@ -772,6 +788,43 @@ static int ads1298_parse_id(struct iio_dev *indio_dev, unsigned int id)
- 	return 0;
- }
- 
-+/* The ADS1299 has no WCT registers */
-+static const struct regmap_config ads1299_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.reg_read = ads1298_reg_read,
-+	.reg_write = ads1298_reg_write,
-+	.max_register = ADS1298_REG_CONFIG4,
-+	.wr_table = &ads1298_regmap_writeable,
-+	.volatile_table = &ads1298_regmap_volatile,
-+	.cache_type = REGCACHE_MAPLE,
-+};
-+
-+static int ads1299_parse_id(struct iio_dev *indio_dev, unsigned int id)
-+{
-+	struct ads1298_private *priv = iio_priv(indio_dev);
-+	struct device *dev = &priv->spi->dev;
-+	unsigned int nu_ch;
-+
-+	nu_ch = FIELD_GET(ADS1299_MASK_ID_CHANNELS, id);
-+	/* 0, 1 and 2 are 4, 6 and 8 channels; 3 is reserved */
-+	if (FIELD_GET(ADS1299_MASK_ID_DEVICE, id) != ADS1299_ID_DEVICE ||
-+	    nu_ch > 2)
-+		return dev_err_probe(dev, -ENODEV, "Unknown ID: 0x%x\n", id);
-+	indio_dev->num_channels = 4 + 2 * nu_ch;
-+
-+	/* TI sells the 8-channel part as plain ADS1299 */
-+	if (indio_dev->num_channels == ADS1298_MAX_CHANNELS)
-+		indio_dev->name = "ads1299";
-+	else
-+		indio_dev->name = devm_kasprintf(dev, GFP_KERNEL, "ads1299-%u",
-+						 indio_dev->num_channels);
-+	if (!indio_dev->name)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+
- static const u8 ads1298_gains[] = { 6, 1, 2, 3, 4, 8, 12 };
- 
- static const struct ads1298_chip_info ads1298_chip_info = {
-@@ -787,10 +840,24 @@ static const struct ads1298_chip_info ads1298_chip_info = {
- 	.config3_reserved = ADS1298_MASK_CONFIG3_RESERVED,
- };
- 
-+static const u8 ads1299_gains[] = { 1, 2, 4, 6, 8, 12, 24 };
-+
-+static const struct ads1298_chip_info ads1299_chip_info = {
-+	.parse_id = ads1299_parse_id,
-+	.regmap_config = &ads1299_regmap_config,
-+	.gains = ads1299_gains,
-+	.num_gains = ARRAY_SIZE(ads1299_gains),
-+	.dr_shift = 7,
-+	.osr_base = 64,
-+	.vref_mv = 4500,
-+	.config3_reserved = ADS1299_MASK_CONFIG3_RESERVED,
-+};
-+
- static int ads1298_init(struct iio_dev *indio_dev)
- {
- 	struct ads1298_private *priv = iio_priv(indio_dev);
- 	unsigned int val;
-+	unsigned int i;
- 	int ret;
- 
- 	/* Device initializes into RDATAC mode, which we don't want */
-@@ -822,6 +889,16 @@ static int ads1298_init(struct iio_dev *indio_dev)
- 	if (!priv->reg_vref)
- 		msleep(ADS1298_REF_START_UP_MS);
- 
-+	/* The ADS1299 comes out of reset with its inputs shorted */
-+	for (i = 0; i < indio_dev->num_channels; i++) {
-+		ret = regmap_update_bits(priv->regmap, ADS1298_REG_CHnSET(i),
-+					 ADS1298_MASK_CH_MUX,
-+					 FIELD_PREP(ADS1298_MASK_CH_MUX,
-+						    ADS1298_MUX_NORMAL));
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
-@@ -830,6 +907,7 @@ static int ads1298_probe(struct spi_device *spi)
- 	struct ads1298_private *priv;
- 	struct iio_dev *indio_dev;
- 	struct device *dev = &spi->dev;
-+	struct gpio_desc *powerdown_gpio;
- 	struct gpio_desc *reset_gpio;
- 	unsigned long clk_rate;
- 	int ret;
-@@ -844,12 +922,18 @@ static int ads1298_probe(struct spi_device *spi)
- 	if (!priv->chip_info)
- 		return -ENODEV;
- 
--	/* Reset to be asserted before enabling clock and power */
-+	/* Reset and power-down to be asserted before enabling clock and power */
- 	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(reset_gpio))
- 		return dev_err_probe(dev, PTR_ERR(reset_gpio),
- 				     "Cannot get reset GPIO\n");
- 
-+	powerdown_gpio = devm_gpiod_get_optional(dev, "powerdown",
-+						 GPIOD_OUT_HIGH);
-+	if (IS_ERR(powerdown_gpio))
-+		return dev_err_probe(dev, PTR_ERR(powerdown_gpio),
-+				     "Cannot get powerdown GPIO\n");
-+
- 	priv->reg_avdd = devm_regulator_get(dev, "avdd");
- 	if (IS_ERR(priv->reg_avdd))
- 		return dev_err_probe(dev, PTR_ERR(priv->reg_avdd),
-@@ -863,6 +947,10 @@ static int ads1298_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
-+	ret = devm_regulator_get_enable_optional(dev, "dvdd");
-+	if (ret && ret != -ENODEV)
-+		return dev_err_probe(dev, ret, "Failed to enable dvdd regulator\n");
-+
- 	/* VREF can be supplied externally, otherwise use internal reference */
- 	priv->reg_vref = devm_regulator_get_optional(dev, "vref");
- 	if (IS_ERR(priv->reg_vref)) {
-@@ -904,6 +992,9 @@ static int ads1298_probe(struct spi_device *spi)
- 	indio_dev->channels = ads1298_channels;
- 	indio_dev->info = &ads1298_info;
- 
-+	/* Out of power-down, now that the supplies and the clock are up */
-+	gpiod_set_value_cansleep(powerdown_gpio, 0);
-+
- 	/* Power-on reset time, counted from when the clock is valid */
- 	msleep(DIV_ROUND_UP(ADS1298_TPOR_CLOCKS * MILLI, clk_rate));
- 
-@@ -957,12 +1048,14 @@ static int ads1298_probe(struct spi_device *spi)
- 
- static const struct spi_device_id ads1298_id[] = {
- 	{ .name = "ads1298", .driver_data = (kernel_ulong_t)&ads1298_chip_info },
-+	{ .name = "ads1299", .driver_data = (kernel_ulong_t)&ads1299_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, ads1298_id);
- 
- static const struct of_device_id ads1298_of_table[] = {
- 	{ .compatible = "ti,ads1298", .data = &ads1298_chip_info },
-+	{ .compatible = "ti,ads1299", .data = &ads1299_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ads1298_of_table);
-@@ -978,5 +1071,6 @@ static struct spi_driver ads1298_driver = {
- module_spi_driver(ads1298_driver);
- 
- MODULE_AUTHOR("Mike Looijmans <mike.looijmans@topic.nl>");
--MODULE_DESCRIPTION("TI ADS1298 ADC");
-+MODULE_AUTHOR("Stephan Costa Barros <stephanbrrs8@gmail.com>");
-+MODULE_DESCRIPTION("TI ADS1298 and ADS1299 ADC");
- MODULE_LICENSE("GPL");
+Changes in v4:
+- Attempt every teardown write even if a previous one fails, so a failed
+  write doesn't leave the buffer, bias, or input powered. Reverses the v3
+  change. The teardown neither checks nor logs errors for failed writes,
+  similar to mt6358_stop_imp_conv(). The next read will rewrite those bits
+  anyway. (Angelo, sashiko-bot, Andy)
+- Move teardown into mt6397_auxadc_release(), keep error paths out of line
+  with goto, and use mutex_lock() / mutex_unlock() rather than guard().
+  (Jonathan)
+- Reword the comment above the BATSNS disable prior to ISENSE enable.
+  (Jonathan)
+- Collect tags.
+- Link to v3: https://patch.msgid.link/20260920-rbrue-suez-upstreaming-mt6397-auxadc-v3-0-c00edacbee64@gmail.com
+
+Changes in v3:
+- Move the sample loop into its own function, so read_channel() is setup,
+  then a conditional burst, then an unconditional teardown, with no goto
+  mixed with guard(). (Andy, sashiko-bot)
+- battemp_bias_off() and isense_disable() now return on the first failed
+  write, as mt6323_auxadc_release() does, and twelve other teardowns in
+  drivers/iio that I could find. A failed write can leave the later bits
+  set; the teardown runs at the end of every read, so the next read of that
+  channel clears them. (Andy)
+- Drop the "if (!ret) ret = err;" accumulators with it. A teardown failure
+  now goes to dev_err() rather than being returned, since the caller cannot
+  act on it, and read_channel() takes the iio_dev so no struct device * is
+  stored. (Andy)
+- Split battemp_bias(adc, bool on) into battemp_bias_on() and
+  battemp_bias_off(), and drop the bool. (Andy)
+- Make the SCALE case an if-else. (Andy)
+- Move the "why a new driver" rationale below the --- marker in patch 2,
+  out of the commit message. (Andy)
+- Reduce the CHSEL regmap_update_bits() call from four lines to two. (Andy)
+- Drop the comment above guard(mutex). (Andy)
+- Say in a comment why lowering START needs no settling delay. The ready
+  bit survives the fall and is cleared by the rise before the next
+  transaction on the PMIC wrapper can observe it. I measured this, and the
+  details are in the reply on 2/3. (Andy)
+- Cc Luca Leonardo Scorcia with a trailer rather than in prose. (Andy)
+- Link to v2: https://patch.msgid.link/20260917-rbrue-suez-upstreaming-mt6397-auxadc-v2-0-db35882a6080@gmail.com
+
+Changes in v2:
+- Add justification for this being a new driver rather than folded into
+  mt6323-auxadc.c or mt6359-auxadc.c, in the cover letter and patch 2.
+- Drop the "ret = ret ?: ..." chains, and let teardown fall through on
+  errors, allowing the chance for all bits to be properly torn down. The
+  errors are now held rather than discarded. (Andy and sashiko-bot)
+- Run teardown even when per-channel setup fails part-way through, so we
+  don't leave bits enabled that would have been cleared. (sashiko-bot)
+- Set ISENSE settle time to (1 * USEC_PER_MSEC). (Andy)
+- Write the two channel descriptors out instead of using a macro. Also
+  gets rid of the padded column. (Andy, Jonathan)
+- Move the MAINTAINERS entry for the dt-bindings header into patch 1, as
+  the mt6323 series does.
+- Declare the sample loop counter in the loop, instead of with sum, and
+  split the declaration of sample and ret. (Andy)
+- Keep the two CHR_CON16 ADCIN bits as BIT()s rather than turning them
+  into values of a GENMASK field. Fix OR operator on the bits, treat them
+  as mutually exclusive. (Jonathan)
+- The rest of Jonathan's v1 review: two-space indent separating a register's
+  fields from the register, a blank line before the settle times, a lock
+  comment that says why the lock is held, the two CON1 START writes on one
+  line each, the single-call init helper inlined into probe, and { } for the
+  of_device_id sentinel.
+- Add the additional three CHR_CON16 ADCIN defines that make up the 5
+  single-bit enables. These are currently unused.
+- Link to v1: https://patch.msgid.link/20260915-rbrue-suez-upstreaming-mt6397-auxadc-v1-0-d35d2ac3d6f0@gmail.com
+
+---
+Ryan Brue (2):
+      dt-bindings: iio: adc: mediatek,mt6359-auxadc: add mt6397 PMIC AUXADC
+      iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC driver
+
+ .../bindings/iio/adc/mediatek,mt6359-auxadc.yaml   |   1 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/mt6397-auxadc.c                    | 394 +++++++++++++++++++++
+ .../dt-bindings/iio/adc/mediatek,mt6397-auxadc.h   |   9 +
+ 6 files changed, 423 insertions(+)
+---
+base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125
+change-id: 20260914-rbrue-suez-upstreaming-mt6397-auxadc-5e1228025c50
+
+Best regards,
 -- 
-2.43.0
+Ryan Brue <ryanbrue.dev@gmail.com>
 
