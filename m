@@ -1,80 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792962457;
-	b=wxZq4SL/TY9GWQSIgtAgLzuaijvOrS8eXruw2dQXvgGPP784SW1bWYynHMwpX6f6L1oG
-	 7BPv+QtLVE9jL278qLs8ayuDCJbcW8610O7vFy4ScZswobGalbub3EG54TT28WGyvSkg7
-	 k778xdOUWlX2DTPSKEL96hKuOID6HvuTWrcuaOcvj7Vl+r1eo4aNsFNob0EM/ctO39tSv
-	 SzjZ6GH4njJi+KvLx+O+GFlmNHXOdT1SSugePOmYQLsQ7dqZprThdVkGb4cGHy8IhNKSW
-	 9sJy5PBZ9pRojo0sdLzJdIw72z09kvazUgSTY5aCxOOXL3iqkkVVyyu5gvMhjYlW5iw==
+	t=1792962535;
+	b=iT5VEHdwuvLf8GzD5FUHKlFxxdBz+FKb+25RZ4oJqPIHtcBt0V8eqH6WUosTUg71yCO/
+	 1U51ho67C1iGlJaqPiDoEfqSB7Rw/p/OxVBYpdT/fT8WaT5/3WU5HASuiXJ2uu6cme4Ec
+	 KLoF0reSLtFVgKNI/aqhysPdegmqzF+ZDxId3CYv1qR2nH+y7pBvjFwile5PORh4Xx8pu
+	 qEPKKHvJQxGhZpHsJGk5A+aGU9GclzK4AtbhSxRQc7iOjzLjIXU1RcsYwdrNmeW80tPw2
+	 Gfio5CyKSQKb2kDRI8pEp8Tag2fLB0ZcBgUXOg6gfOnXAroE1pBpDWijUE72yNUTvdQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792962457;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792962535;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=oQ1jy5NHZSKUkQZrbFs9Md2chhaAL2EFHqeXKzzHcug=;
-	b=J+JYvLXizBSf3/wCTQMYsOMwrpMg1CGO7Pr8RtNcGuSszXidBOXL3AA3wFJO4YFZ+43f
-	 4WtiQCFRzX6Sv/Gb+9UnA+EqQtyviQIABEfvjLRG6gCeCR2vHtrR0WNBpGQ6GIjwJPxTp
-	 2lOCK9XVOcbJHDdp9NjT1O+MpS0BfWSWgXE3rrsGaRCG8nnSH6Tt3Ub2dp3oQJUeytebj
-	 Cf7owvKnkmcRp2JDFlZ3dliihY01H43TaczVYeZvCAXE2MSZYstCZ5pSIMLPvrr/t1r67
-	 uj6FQqOk/AFiy7kGnxE0t6OGVd2ZBFGSF4wb/xJtT7izOWy3enBzeptSIMHwb+/77VA==
+	bh=0hTonDNrvazpNb68heoGRE1WEbqb6H4Cq+6nx5Aw3Tk=;
+	b=VhOsUYJUaVPBYz/M63TeXTV2akBp4y4xcDPKqKAZdujglw0WShcFEKOSCQiREl7CcGKO
+	 wuLFzGfssdn3IOp3mAAbK870sfwrf6uVZ0cb2f1tEfeKhOhvovsr7+SLM4MsZEY6LQDG1
+	 5NMms9d1/FGQkR49rAORLUoYS+1daUdnvLt30L8TTx4L8ZYOmLsozAcrBYwOdNSszDSaz
+	 MTcbkMdmWriOEpNZjzipEBIR0Ob4wZW22D4ci7bAOvOPmnZ63wcleRs9m1z5268D+7bZN
+	 9UMAey28ASPBberFzJnVVKe8YxGZSc27fCyOp6HxdV7kdYNq4tiO7jZEzPlzBeaFX5g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MnQWIUyj;
-	arc=none smtp.remote-ip=198.175.65.11
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=F5ft2uBt;
+	arc=none smtp.remote-ip=198.175.65.19
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430E8606A31A;
-	Sun, 25 Oct 2026 21:07:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 430E8606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B847D606A31A;
+	Sun, 25 Oct 2026 21:08:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B847D606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MnQWIUyj
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=F5ft2uBt
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792962456; x=1824498456;
+  t=1792962535; x=1824498535;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ddWQxm6Atu+dpnsKbez0pegjNrnEQpsq06K3nYaoOOs=;
-  b=MnQWIUyjyVWPoJ14cc1uo+QsRNZuWXSUZExjbI8ncoJwTVh3fN7l3t77
-   /9trM23NRUwBW4ilNLalC/KzaIre/BcxUpiZjhCR3siQX+fit41ImgWwn
-   CvKDGP7ZHXgBsyRGl5LMjRi4zY1M/Lgh+w6a6A0zMB4GFn9WiLOs7Faqk
-   JPArFl5X6lQyuUQBrzG1mQ4dqwnoBYMfM/KJ5GiV0xHKFGfDsktJXCxAj
-   mBtxwNcdiNf5zGzmv9ZYLnpGGgMvGvfCX98D19gSUPnttLqcGfIwwTasT
-   WI9qs7iQKGfOmH5qTrA9vDUL9wvfxVGGncMv+3XjCDBu/iatjWNQYuuVW
+  bh=tPktMJC8ZUhXLZKzTryijfniAEadKhAOZYoSqFz3s/s=;
+  b=F5ft2uBtoShifCkCyofc0daTdvzoUV7aXQqZwI0n9Ca9u/h5ZaGc6eSp
+   1YxhagGnZZmLzNxH+XoP84sVRq2o/5+boP+9LUqw9koSf5ukAkJpniMjJ
+   hAjpKcBumcwQnvlw9s6kJ1LA5Ai9SGRpIehYWv5ctfigIf+0TDsEqkxjo
+   fhW+SSTCE9dFPbVi8T19mPfUQGWhen4uv8ptIO3Hn7Hq1RwFlibs/IW4t
+   oPM5d3IsfBLU8snuVz49Mbz12tV7p3QKwVzH0AYN16evFBYYQvkoL4PJS
+   F9XjJ4MnryWp1g5fVBswjZdCt1ra2/sDPNL2MIO6cEN45cUsssZIp3dGA
    w==;
-X-CSE-ConnectionGUID: 0sLYVXVLR7+5J76z5Mkp6A==
-X-CSE-MsgGUID: pBZgMK/CSRyrMD/QwP7QDg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1514109"
+X-CSE-ConnectionGUID: A6TiOpIbTEyzNxjtotw2UA==
+X-CSE-MsgGUID: 3bSSpmQdQnmCTXksUxHFIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1658313"
 X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="1514109"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 14:07:35 -0700
-X-CSE-ConnectionGUID: sgMveGRQTQOhuTPzd0cSRw==
-X-CSE-MsgGUID: qQ9NNatxSFWhJWZNFvpeNg==
+   d="scan'208";a="1658313"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 14:08:54 -0700
+X-CSE-ConnectionGUID: TUC48Du8THyPchNmdbrQTA==
+X-CSE-MsgGUID: k2wGBJzmT7OpB91T3QBeKA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="4496870"
+   d="scan'208";a="5932743"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.10])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 14:07:32 -0700
-Date: Sun, 25 Oct 2026 23:07:30 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 14:08:52 -0700
+Date: Sun, 25 Oct 2026 23:08:50 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David CARLIER <devnexen@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Ariana Lazar <ariana.lazar@microchip.com>,
-	David Lechner <dlechner@baylibre.com>,
+To: "Baek Kyu, Kim" <pocj8ur4in@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: mcp47feb02: reject out-of-range raw values
-Message-ID: <at5vkvXrFNw-0xxq@ashevche-desk.local>
-References: <20261024214423.865635-1-devnexen@gmail.com>
- <at5ogu8JaXFbQpHg@ashevche-desk.local>
- <CA+XhMqx5jusLqo8G2XCY9gy_P=3-jAwTacgzrR4XFyjpagi8dA@mail.gmail.com>
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: dac: mcp4725: Update the cached DAC value only on
+ success
+Message-ID: <at5v4pw34L8Cj0vU@ashevche-desk.local>
+References: <20261025141351.33554-1-pocj8ur4in@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,33 +83,24 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+XhMqx5jusLqo8G2XCY9gy_P=3-jAwTacgzrR4XFyjpagi8dA@mail.gmail.com>
+In-Reply-To: <20261025141351.33554-1-pocj8ur4in@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Oct 25, 2026 at 08:50:16PM +0000, David CARLIER wrote:
-> On Sun, 25 Oct 2026 at 20:37, Andy Shevchenko <andriy.shevchenko@intel.com>
-> wrote:
-> > On Sat, Oct 24, 2026 at 10:44:23PM +0100, David Carlier wrote:
-
-...
-
-> > >       case IIO_CHAN_INFO_RAW:
-> > > +             if (val < 0 || val >= BIT(data->chip_features->resolution))
-> >
-> > If resolution is 32, this will suck. (Yes, this is a bit theoretical case.)
-> >
+On Sun, Oct 25, 2026 at 11:13:51PM +0900, Baek Kyu, Kim wrote:
+> mcp4725_write_raw() updates dac_value even if mcp4725_set_value() rejects
+> the requested value or reports an I2C transfer error. After writing 1000,
+> a rejected write of 4096 returns -EINVAL without an I2C transfer, but
+> out_voltage0_raw reports 4096. A later powerdown exit sends 00 00 instead
+> of the 03 e8 frame for the last successful value. The EEPROM store path
+> uses the same cache.
 > 
-> Hmm true.
-> 
-> > > +                     return -EINVAL;
-> >
-> > Not sure about this error code. Do other IIO drivers use same in the
-> > similar situation?
-> 
-> Yes other drivers for every out-of-range check IIO_CHAN_INFO_RAW.
+> Return the setter error before updating dac_value. This keeps the last
+> successful software value for readback, powerdown exit and EEPROM writes.
 
-No doubts. But I asked a different question. Can you answer it?
+Does it need a Fixes tag?
+
+> Signed-off-by: Baek Kyu, Kim <pocj8ur4in@gmail.com>
 
 -- 
 With Best Regards,
