@@ -1,59 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792971951;
-	b=rwca6l0rEB6WpW3aXeVa3VqJZT2ANfU5qN17jI4AgEK9Ig4Q1p5dHfDPa5ikSmOJVEAK
-	 YLUU976KAwhZxt3MTdZnDwib9/mtkLyGp2wp9S4XVPQvUhuNFy4kmikRhtqVJ19MPGTsr
-	 lWdljUD3Qf0igqzYL/qB74UWwnj/J23xeS5ZvZdr8CoyiJ23kbeJ2ketTxqTiFUvnXDx9
-	 sgKukGTtMNFhSjNMVHFMEm2TOvuGzxXmrCSxjEbI7sOeOqfwaygVHr+dGhAh/Bn5aUk2m
-	 cV7v0pLFN9S39IgipqNF1r9Oez692i+7mlBwjbRM/dODxur9W8q0he1gpf9PzRA/gDQ==
+	t=1792972078;
+	b=tNfcLD0Uzdde9R8nR/ObiqteJYKMoJ6fWi7+lk2AjMfQXdk7Az16rsCArhfJDjGpLa5I
+	 zPrVW/JVYHw2LALqMp94NkiuEncFBexZbishzyNnN0ZZf+reAJ3xzlNCen7vEWqrIiBKo
+	 Q5bNZ6on77XgInZJvrqD402FiCrt6YbRg0fDzrLPfwqBqJH5FUda8jdIfHTVcFiAwwXk0
+	 tY51P2RS1Oh29ZImTtLYDpfSHXZ5OH0RbJqcQDCcwxx4RWRLUU9kXsHdbadW/MrGh0bts
+	 rd9aLCJZWDKKPqlmNfj1B0I4zxkezewUo1O5nHcEooXHREgJSy778hK2IT40XDChgMQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792971951;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792972078;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=hakPJTGZwby279hgNDWQpX5r27VL4n94rHKLpL8MZvI=;
-	b=WPVnAHEvTUoZy1QoNg1b1qnYjSQvDxCf70C+dmlrtZBCfJ+/hTRYfdCbgmo/6wy8r3CH
-	 PSPJd9SuxxEnjOLiFrQBoysbSdM4Vc79sSoWosgtChS9G79jhHd0FuBKBh573BcszPbUt
-	 mYwTQ8qNpcsBXx0scWPxPMn9K3paBgZK03yv/EGCsYt2IZfQDBhogv/F6JOYXvTix6AZD
-	 nGZ26uLItXGNx+7UC0MrgHVT8wCQw1f8zK6iyFUu1QrS1d6GhQatD0kZyqzxVqNX4nMl9
-	 DGN2ys8YIjqcx4QrkAlPQIjz8BLsS1vZN2inKk9cD84+Lx3BMBhza9WoHX9t9/C8HAw==
+	bh=YRzMgodGFzIBBq+9796zrLdbYjk1ni9Pt8Zo5ySPvGA=;
+	b=zG5Fug2GTjwa3nGRrMu9lFjFJPRiI1GhDkCGi8hNQqmsa0WYPWTfcm4wJVrQRyXes3Bc
+	 XVh+96svqtg1Kg1fOS/925HO3T2RmgN0JV6aqQGIdqC6+U+ybTrBk21r0NDq0OfNr2pkN
+	 JgHqdSsQJXUXWI3viLwN6yPFbOj0uajurkXTbyqWfimW1uAjg3qygg2m62/vsILoxoACG
+	 28ZsMwyFZhhjHsPt8Frcpdvjn83jV2m2nC9F/6ifwkbo/B9+z9tLZI7vT5YLYmSdv/dHq
+	 oHUqzHJknvIG/O9dNKCfhxujImhgzJ/o0u6QJUjP+M1VXHfm3F4GqD7Bz4p333cVEDg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IrdwL6sB;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n8jxXxhr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5194606A324;
-	Sun, 25 Oct 2026 23:45:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30007606A31D;
+	Sun, 25 Oct 2026 23:47:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IrdwL6sB
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A1921F031E3;
-	Sun, 25 Oct 2026 23:45:48 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n8jxXxhr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 460051F01825;
+	Sun, 25 Oct 2026 23:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792971951;
-	bh=hakPJTGZwby279hgNDWQpX5r27VL4n94rHKLpL8MZvI=;
+	s=k20260515; t=1792972077;
+	bh=YRzMgodGFzIBBq+9796zrLdbYjk1ni9Pt8Zo5ySPvGA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IrdwL6sB6nvALGjivn8Wto5yP4vhYdRRmNwmCq+SsJlkGH75VlZMWdS5PjsEIWBSP
-	 fnUdx8U8xUxc7pEXbvDzpLMfSSNlNmcxNacePgn+A2kb+lXhVvuH+jDCX9dH0ZifG+
-	 ORseMRwCkpTZ9ZS+wrLJbIdU0DnJsYGyVJWOL7payFTBUxOxBecGcvjPBOefMWlrM5
-	 YqzK6xfXJt6WZGIv1+EzmYIO8RhzWgDk3070mFw5HyPLyYT8GGC/3ZNOoc5cMRo6bk
-	 hkyEb+t+sNMYO6jXg0aOT1kIF+OOnf2pzQWUTyKDOpKwWz9OuVfSWYWRqWlTSRJIwD
-	 an5Qv9txD4//A==
-Date: Sun, 25 Oct 2026 23:45:43 +0000
+	b=n8jxXxhrP8iCZuknRC/B2gvVZdRoEI3wL/ZPgor/BrkkT5RtB8dR5noFAFVtoSLlY
+	 rwlB49YsSDpwzGMCaBW0KmdlQ0IqlLuogg4hZuJEJvO+ViRrNB7DIvK6/YkUzObOdl
+	 XNLtR0YEwOmh/3nwIDfaK5oaMK6PLtrXEY2zeDJNeNZplLUExMMHvAGXUJb2HRkWXP
+	 X64wjEW/40y0XqAHoAgBNg7usJLOouK9fdh/1wEETvnmwNbtorlBqPW8xgnNGoqQGJ
+	 dSUFctk+fZzUIT2ADcFcWuWnq7Xo8Uvug+OiREVrt5+4vRISYo/kCm4Z4qPr4fSkb4
+	 mZQa24YZkG3rQ==
+Date: Sun, 25 Oct 2026 23:47:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Olivier Louvignes <olivier@mgcrea.io>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Cercueil <paul@crapouillou.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: Add a driver for the Ingenic X1600 ADC
-Message-ID: <20261025234543.0d5fb3db@jic23-hlaptop>
-In-Reply-To: <20261024041357.34346-2-olivier@mgcrea.io>
-References: <20261024041357.34346-1-olivier@mgcrea.io>
-	<20261024041357.34346-2-olivier@mgcrea.io>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, stable@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: proximity: sx9324: fix out-of-bounds read of
+ scan period table
+Message-ID: <20261025234750.5b26c0bd@jic23-hlaptop>
+In-Reply-To: <atyMCCJsBDPdgl2Q@ashevche-desk.local>
+References: <20261023192700.221344-1-kapoorarnav43@gmail.com>
+	<atyMCCJsBDPdgl2Q@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,51 +66,51 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 24 Oct 2026 06:13:57 +0200
-Olivier Louvignes <olivier@mgcrea.io> wrote:
+On Sat, 24 Oct 2026 13:44:24 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> The X1600's SAR ADC has four auxiliary channels, each with its own start
-> bit, interrupt flag and 12-bit result, and none of the touchscreen or
-> battery engines of the JZ47xx ADCs that ingenic-adc drives. Add a small
-> driver that exposes the four channels as voltages against the 3.3 V
-> reference.
+> On Sat, Oct 24, 2026 at 12:56:51AM +0530, Arnav Kapoor wrote:
+> > The scan period of the SX9324 is selected by the 5 bit wide
+> > SX9324_REG_GNRL_CTRL0_SCANPERIOD field, so it has 32 possible values.
+> > sx9324_scan_period_table[] however only has 16 entries, it was copied
+> > over from the SX9310 driver where the field is only 4 bits wide.
+> > 
+> > sx9324_wait_for_sample() indexes the table with the raw field value, so
+> > all the codes from 16 to 31 read past the end of the array. The default
+> > value of the register is SX9324_REG_GNRL_CTRL0_SCANPERIOD_100MS (0x16,
+> > i.e. 22), so the out-of-bounds read happens with the default
+> > configuration of the device. It is only avoided when the device has an
+> > interrupt line, as the wait is only done in the polling case.
+> > 
+> > The value read is then used as the duration of an msleep() call, so the
+> > sensor is polled with a completely random delay.
+> > 
+> > Fill the table with the scan periods of all 32 codes, which are the
+> > periods documented for the corresponding sx9324_samp_freq_table[]
+> > entries, and add a static assertion to keep both tables in sync.  
 > 
-> There is no datasheet here: the register layout and the clock dividers
-> come from the X1600 driver of the vendor's 4.4 kernel.
+> ...
 > 
-> Tested on a HiBy R1, whose play/pause and volume keys sit on channel 0
-> behind adc-keys: all three read and report correctly.
+> > +/*
+> > + * The scan period of the SX9324 is selected by the 5 bit wide  
 > 
-> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+> 5-bit
+> 
+> > + * SX9324_REG_GNRL_CTRL0_SCANPERIOD field. The values below are the scan
+> > + * periods in ms of the corresponding sx9324_samp_freq_table[] entries.
+> > + */
+> >  static const unsigned int sx9324_scan_period_table[] = {
+> > -	2,   15,  30,  45,   60,   90,	 120,  200,
+> > -	400, 600, 800, 1000, 2000, 3000, 4000, 5000,
+> > +	1, 2, 4, 6, 8, 10, 14, 18,			/* 0x00 - 0x07 */
+> > +	22, 26, 30, 34, 38, 42, 46, 50,			/* 0x08 - 0x0f */
+> > +	56, 62, 68, 74, 80, 90, 100, 200,		/* 0x10 - 0x17 */
+> > +	300, 400, 600, 800, 1000, 2000, 3000, 4000,	/* 0x18 - 0x1f */
+> >  };  
+> 
+> Haven't checked if this is part of any ABI. Otherwise LGTM,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+Tweaked and tagged.
 
-Just one trivial things in addition to the other reviewer comments.
-
-> diff --git a/drivers/iio/adc/ingenic-x1600-adc.c b/drivers/iio/adc/ingenic-x1600-adc.c
-> new file mode 100644
-> index 000000000000..60683f26c693
-> --- /dev/null
-> +++ b/drivers/iio/adc/ingenic-x1600-adc.c
-
-> +static int x1600_adc_probe(struct platform_device *pdev)
-> +{
-
-> +	ret = devm_request_irq(dev, irq, x1600_adc_irq, 0, dev_name(dev), adc);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to request irq\n");
-> +
-> +	/*
-> +	 * Powered up for good: the keys poll it every few tens of milliseconds,
-> +	 * and powering up takes 2 ms.
-The keys aren't tightly coupled to this driver so make that a little vaguer.
-
-A typically usecase makes use of .... for which polling is every few...
-Hence leave powered up.
-
-> +	 */
-> +	writel(0, adc->base + X1600_ADC_REG_ENABLE);
-> +	fsleep(2000);
-> +	writel(0, adc->base + X1600_ADC_REG_CTRL);
-> +	ret = devm_add_action_or_reset(dev, x1600_adc_power_down, adc);
-> +	if (ret)
-> +		return ret;
-
+Thanks,
