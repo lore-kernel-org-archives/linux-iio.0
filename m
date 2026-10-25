@@ -1,79 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792941519;
-	b=zVxhLaFf5cFLlnzGJO9GZwDpyDrAzXuEAFAQMr13gQKf8Ff0FmUkM+96r877jNWMrhzd
-	 +9TpD8mvf9opCtBmhJlMdH1B4n2j5tpBLqC/ODasvHsHGJxL6npTHwhCynxWSKklIqzDA
-	 0pmTfXcSuvAuxX3SRlYxEV1Ewat7SlbU28LR4ySFW9gT3P1ruWKxqPrXRKq5aJ05tLHLC
-	 II8e5pExpIUyimhKAxYhZtq7O4UgsKNRLpuV88r753jOmXvMRmzmss6h4ALFVCayXWSUV
-	 18G56N77XPUj2Bw6XmdZ58QR6TlRklb0XhPIHuOyWKwcq2G82Y9xM89BFRz7n6NufNw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792941519;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=eRTIY2QmE6ACq8H2nMlgUMbhu46IBSihGykRErDnDlA=;
-	b=mtTex6w1rzZhJWHwxOe+grjei6kyWfDbXouFu/gGpuIT7ET+aX+Bon/VBok+oi3VdoqA
-	 ZsgZMT8i29Bk2vpl7MjAJiZxs3hdH4NYpzPXPsY+Mjqk6XGTdSbzBYVA0Vpt3EsG2hxVs
-	 q3S2WeDWSoIf1StUTsY4rWkDFvqfO9umzxib1ydkgwrMlUIpsadzggedtd4CC26QMXhfJ
-	 cieZ9bhI0pv9r4wetTGpG6VwWa0q/sLNUZc7epjz2uPivwaCnp1SOoHYF2nSLs1+OWrAO
-	 vj9mOJ6NH+OPo4H/CgRnxDxwxCEGo7VVz9UpX7j8nZXoz1dAF1QXjGpHuIv7BKPx8tA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ODpn1dJJ;
-	arc=none smtp.remote-ip=198.175.65.18
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792947626;
+	b=gvn+k9QrSqC9ynUOr8sj1PYPKLtAGKU7bsReuklKVvumoF5r77I97AqDXPXRr+9rO+io
+	 vcCIjyYEo3EdxCQxtPNbMyJ/PhjJqPlyVvnUOfSaCMusTZkZSGl8V+oqS+qyyW10Kamjx
+	 6XjxE2ouNBzV4cN28QIuUEtnQspItBOqHJM5uDXzb+xSlJMfH3EZY0+WJlMTxctoeU6oK
+	 U8W7UEGI1NYamblpqPQ25SoUC4nbxLjC37lVed4so/7OPwk4UOOFZcuAz+GhqWAxXubwS
+	 5M1SnmsQfeiZn0s+pBKmD70riWztQdGzLEDP7bSrv53aSsm5aY3DIZlDP2ZTbdZLOVw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792947626;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=2kaGId0jyBB2Z9Zn37kzMz1TDKdpgYpw9Y9lXWn779U=;
+	b=osxm7lXDIKC99qmW0fzXml2EUkYEDn0bcsQphqYRE1BPIIZk23nNS/Os9pTA4yjxOFYf
+	 PITA8P5M9CNPUXvbHsF4dis+0LC7U5jm3Ki0wV81Cz3sZCmkcC/LmERPvkl8L6e/kNDf4
+	 YhJxICNOsTKNvMwF3sapfTsTK0HuxpqCcWo/7aVXIXB+lLG3m6SHXvTksgl9HIKBhZOwO
+	 JwzWY5KLQnNVOeADIt1UxGVCTF1v4KXe6L20F/HM2WRwELJ3cbcV9gk1IRkb/mjC8/+uo
+	 byxrWgUigVpdmmtjqaLXMlPkLJ/bjgxi5hgx6u2h6Oxg+mWxs6CRwm3gCT2g9KyOK7A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IfUVcSv2;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F36DC606A31A;
-	Sun, 25 Oct 2026 15:18:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F36DC606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9A6606A31F;
+	Sun, 25 Oct 2026 17:00:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ODpn1dJJ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792941518; x=1824477518;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IRySX0dv0SSIuLXVhOjByfyPWsSteJjEmoJdxJX+ZFE=;
-  b=ODpn1dJJaWrJAsgGS/IM8WQn4erBVlcZ73/VrZPwRaJasfN/H+8V64PF
-   C8fFHLH15dI1DZn/xrONe5r24z33eXUbzvozN81zFLgXaLvEQRnYu6sjX
-   +ySOLJ5fLKLeBv7WYW2me4Vdc9rZOssi/eP2BfnwoMzTJx5/NpdzHAmqf
-   CU+h8u1jcxh+ooNwcovFcM7hQi5f/JCVRIr3c7jGD3+vQtqcJ/Ylg9T8f
-   NE5Uof4P8DtwD/j2bGNHldIQ0M1TQAIGQRtEJ2zKOvxAMR7umMyE77KaH
-   HJmwoyHdHg64U1cN9PhHKUT/j78NBm/DcGVXoE5a/AFktM1zRSZoxW35/
-   Q==;
-X-CSE-ConnectionGUID: f/wU9nlqRIeg6hpXrcvTyg==
-X-CSE-MsgGUID: FxY+iVOWQu6BdeeUPouUBA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1623656"
-X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="1623656"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 08:18:38 -0700
-X-CSE-ConnectionGUID: 5y8bQpGCQnuqFxSlkmJJlQ==
-X-CSE-MsgGUID: ubjvbqYRRE2VRO1r6YQPWA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="4405461"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.10])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 08:18:36 -0700
-Date: Sun, 25 Oct 2026 17:18:33 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <at4dyW-XNABCF51c@ashevche-desk.local>
-References: <atyGxFmgv85JUTls@ashevche-desk.local>
- <SN1PR12MB2528B54E68524DC62C378CD7A5622@SN1PR12MB2528.namprd12.prod.outlook.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IfUVcSv2
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1792947625;
+	b=RIBYkbyKxxoxK7upH5Dyn+qqQwTxzG1lfAtam9lKz2eIfvtr8vx877XNmNiyxuxe6pyx
+	 FbAKcb8oQiUiWAZGi9xFpW3JiGmsA03ZaKRydOCTb446rmQDG/iltcZ2Bz9UFXQ1P61mu
+	 bEFuZYd/VZ2HK9FvMf9dT5ed+R8OD7OHSdl0RXksg/s+ptCEQjZfBXhUeNV8X+jz+9B7i
+	 MmFR24ouDYxta7iirPNMa2X5jSelgBBjSPx4i3iYyZt0wWJI4Apm1xHSNGkDKW3Ukncs3
+	 8q/qMO4tL3uOUjegMiA8wBYEz+s7IIOzAQbbqnXJ6wjz4Yma/bu+XI3Jfcw4aisgxPA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1792947625;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=2kaGId0jyBB2Z9Zn37kzMz1TDKdpgYpw9Y9lXWn779U=;
+	b=VXFqLDswjaNvUZ1TS7TfcrjSMA1PK+qMzil7eo5/5J8EV8Z4jlRziawfup9G371i+GYP
+	 hLSdcFwiipU8paY+XDXcucF5GB6XGUFQ589gTMe4vZEnduyvphk53E9FWko4Vhu1o77JJ
+	 qNVE8PSSWav5Zn7wRisiVkkNXvC1JyUraOLO+gQw4h9yuKE/ejdqhCB+AWPwPvT6NJFzq
+	 Yl9+feDkMOQzwMrpNq5tPex4S51qvZHpWsAw8MafWnxOm8avVUvbniED1aAeo1zYvhq6U
+	 Q9jesyj9rUUUiZqtKv9eAiF70oBtCd7afgtloPDNqgDRsROE2yPwIre6bNCNGDwAcMg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 58D0A1F01825;
+	Sun, 25 Oct 2026 17:00:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792947625;
+	bh=2kaGId0jyBB2Z9Zn37kzMz1TDKdpgYpw9Y9lXWn779U=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=IfUVcSv2jVTNBkiLx4m7R7ScfN00N88OPau14IUmapjq/3wuFWKbOTcMNgC19xigM
+	 ksCxcxVXJkxWkNgqKG/m/UUz8wCkYe05uBnC/2PGUvd3a1A9zbCBNsuf+ZeTST0XVP
+	 ivjjA/YBqUtJZkf15FjtqDZwewc6VFqQBDkHBFZHq1QYbHTw4vQDuYt4dLaypPonUx
+	 XX7vJVPcbtEQjWC89y8J9ve7+97YRKFs4pSrfGNKc7Ch625MuimofaT2t7FmCsiwhN
+	 g1GjxgaxcN/sbDNiyfGQh7eKA27Z853BcGpmZBlQexps7rt7MTIXq2oKDUeBRv5+YR
+	 iFepICpwN3yFw==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id CB96D44A74;
+	Sun, 25 Oct 2026 17:00:24 +0000 (UTC)
+From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Date: Sun, 25 Oct 2026 16:59:41 +0000
+Subject: [PATCH] iio: test: iio-test-format: add test case for char format
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,41 +82,96 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN1PR12MB2528B54E68524DC62C378CD7A5622@SN1PR12MB2528.namprd12.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261025-iio-test-format-char-v1-1-e2c208f90e87@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQqDMBCF4avIrB1IAq3aq4iLqBMdQSMzaSmId
+ zetyw/e+w9QEiaFV3GA0IeV45ZhywKG2W8TIY/Z4Ix7WuMeyBwxkSYMUVafMK8Ea2+r0IfGO2M
+ hX3ehwN9/tu1u67tfaEi/FpznBdGu6/R4AAAA
+X-Change-ID: 20261025-iio-test-format-char-8a17fbf9a201
+To: Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792947624; l=2121;
+ i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
+ bh=uYIGztgLiYRny/7kylD4MRCRKqn6ok2BmKnYkqfKVcI=;
+ b=xBDuRUL+yDkde1Lwh9CMrp33F0cJH9ggpOK2GKUdDyWWatBvnmFIWACQ3CzvcSdm/a8Rao18T
+ DiA2jJLpvZ0ByTE3W8YmcmNq4CskLZRb6u7LVZ3J6OlAbTJ0qu0kVwm
+X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
+ pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
+X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
+ with auth_id=1160
+X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-On Sun, Oct 25, 2026 at 12:55:25AM -0500, Victor Chernyakin wrote:
-> > > > I'd look at using regmap even though you only have a single bus. It provides
-> > > > a rich set of helpers and the caching functionality that will save a bunch
-> > > > of bus traffic.
-> > > 
-> > > Ah... is that a strong preference in new drivers? That would be quite
-> > > a bit of rewrite work...
-> > 
-> > Yes, usually drivers start being looked cleaner. On top you got a few benefits
-> > of regmap for free (cache, debugfs, tracing, maybe even more).
-> 
-> Alright, v2 is now regmap-based!
-> 
-> > > > Looking at these data types, can you check if linear_range.h APIs
-> > > > can be applied instead?
-> > > 
-> > > Doesn't look like they can, since they only work with unsigned int, but
-> > > these values are s64.
-> > 
-> > The types in the software is a result, but what is the cause? Do you have
-> > ranges with a sign?
-> 
-> Yes, fdc1004_calibbias needs a sign.
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-Need a sign and having it in the data tables is different. Do you mean that min
-of some ranges in your case are negative?
+IIO_VAL_CHAR is used by thermocouple drivers to report the
+thermocouple type, but iio_format_value() has no test for it.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Add a test case that checks a single character is printed followed
+by a newline.
+
+Assisted-by: LLM
+Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+---
+Tested with KUnit on arm64 QEMU: all 8 iio-format cases pass.
+---
+ drivers/iio/test/iio-test-format.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
+index e5d0a2ac4670..701c362695f3 100644
+--- a/drivers/iio/test/iio-test-format.c
++++ b/drivers/iio/test/iio-test-format.c
+@@ -197,6 +197,28 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1 -2 3 -4 5 \n");
+ }
+ 
++static void iio_test_iio_format_value_char(struct kunit *test)
++{
++	char *buf;
++	int val;
++	int ret;
++
++	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++
++	val = 'K';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "K\n");
++
++	val = 'j';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "j\n");
++
++	val = '0';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
++}
++
+ static void iio_test_iio_format_value_integer_64(struct kunit *test)
+ {
+ 	int values[2];
+@@ -308,6 +330,7 @@ static struct kunit_case iio_format_test_cases[] = {
+ 		KUNIT_CASE(iio_test_iio_format_value_fractional),
+ 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
+ 		KUNIT_CASE(iio_test_iio_format_value_multiple),
++		KUNIT_CASE(iio_test_iio_format_value_char),
+ 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
+ 		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
+ 		{ }
+
+---
+base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125
+change-id: 20261025-iio-test-format-char-8a17fbf9a201
+
+Best regards,
+--  
+Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
 
