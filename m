@@ -1,55 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792967994;
-	b=Po25gcPVqoiIcQ7G2gPLZHLl5QUidf/V8k0yOQR6nz0EpUKsyLpPEBiBqeChq/LbP9f2
-	 ZlJm76BYHzrRH3n39bgjil9hPHL0WevVMhru8BMAsdKyeyDWO8QcMgqH80OHmL/KLRqV+
-	 tdrhiiSJji2gJIR8h9Sec9eOP56k1GEOfxrRpzhS+YAt3wdZK1JbzJl/GaVw8v56RhPxc
-	 ErppOiuz36XeLH8pylwzelqkqOnonIdp6j8EVzeWP3OVW52U2Gr6OZ85/q+7+rZ4UMM1j
-	 EqIhrsr8ngsXec/wCTOKQpviSswl4LQuatHKxfYyggNbg8CL4aBrCqL/iuvK9Lzkgxg==
+	t=1792968271;
+	b=W9POF8KypGkfAz/Sf9g8wJ8BnGZd6V68nTbQdJXmKcK5yDYrqdDoU5vmE2aAsDLOKApw
+	 5CMY1W5N4gz4RwIjjW3ZAdv2semJdZVOY9uwv+18NnRoSCXZp2hV1RHB5rd/FKPsUK4Vm
+	 ko336r9QoGesQzug9xaHRCAcAVnRvyVwhwQEPq6SFVz/dxFpdcU4fr33hhRCwwVD7Q4Yb
+	 Y4rxPEQMSxspiSB5BexaYohOoMxiua9wUHNRmttaxEi2RxkDYbMHZ2T/CNUmu3N0equ8J
+	 8ZExZlSanIvGQV80HqPoZZ4Z0bjj15uuntpKu1bAfSNpzRN+kIfcwGIaDmj+UzSiH5w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792967994;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792968271;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=FayQBlNoh1s2kSCFTdjsjVw8B+IVHg3hDI6P1xEO6UE=;
-	b=Ep2irGVntE+TxLjHmZOFp9i7ACml8x2vcjrdQa9Kgm/t7/xlMML8zhJKOQt+iCjZHhDZ
-	 Xxbt981NIdB4Yu+hvu22ChqV/WKOTL/2VYMTNtJkTaQtpROI3n0pJrkxVJpqvgKoKfGBD
-	 oQAClM5VXUc3HK5C/3/JjYBopjmubVw9c0CfMzgm9C1plgjYsYngTOg/k+WP3UwI5EN0T
-	 iuRcJnoc3X2Y9a+MWrsJrlHH8tk/1gzJOBZPMslOk24Ddh5rlDGapjsEnbHLiDQa+6MBD
-	 +SKirxlQ9JfcLnSqJJ6Xj6YulYdLYhSXN0psQVUwYSO3m+kXSwJ5GCIbNEnUdQGXtTA==
+	bh=AYZMbGj7oht89My8sN94ja1hxWH99fDkLAWp50IGFJo=;
+	b=sVvaIB8X2BqBtokJ73eIU+TdofqP552VrKiYfRgV20tmUt9xz5rcA2IpqTYDiZFZARBB
+	 wt2QhAiUJTgKBWf0wvhykm21NUuUk1kvCs7ZANwp52DVgYqYCogpyoLej8yK3jwVc6xae
+	 5gBjeLgBX4OKdLhWHHcxh2p084nEg0njcFI1cXi8zNlioCrk+/zZiibMeO0pp94wnyQ/U
+	 fsjoG4AmJV00SUH73zTQOFkLr+v1ooLcWrhKxtZFo+yQV0So1xnw+Mzu3YDiaucB3mDTM
+	 HUMUnXbhijimPF/ddCe8yfPq8PjwCWAWDyHibaGWDDD23/ljlM6Fkrp/m1Ku4Qu2dzQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="TX4AIo/Y";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QbzkOfk0;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A72606A31A;
-	Sun, 25 Oct 2026 22:39:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E821F606A31A;
+	Sun, 25 Oct 2026 22:44:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TX4AIo/Y
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F061F01825;
-	Sun, 25 Oct 2026 22:39:53 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QbzkOfk0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03D91F01825;
+	Sun, 25 Oct 2026 22:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792967993;
-	bh=FayQBlNoh1s2kSCFTdjsjVw8B+IVHg3hDI6P1xEO6UE=;
+	s=k20260515; t=1792968270;
+	bh=AYZMbGj7oht89My8sN94ja1hxWH99fDkLAWp50IGFJo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TX4AIo/Y0s8/PyQBe1Av/6vBrUbrtD2aP2AG9anoDVL5aAK6jWyQjf1eCUwbTp+0Y
-	 3AMeE9Q34RPBlftSRuqMl8cabL0/yawfqMA1Gigt/gcC2g0/no3mu4NBPkDaNCIXFk
-	 bLkHLweb6XDCrS86LoMaQ4cYany8NEceHsPKBcptkN+M7CVjmAXRT1KlHJeJXOD92T
-	 DMctancMIIQbEwssuuL1YX/G3edgxjQLn1fwkiEnMYm99fwC2ouoxTIK9dJHcBwmUw
-	 TnRWCW22LO3TpeFGyMrWtraJ1A7O0mkd8FgMP7z5Oc18o+COobVlGfI2w7QqdVQtxe
-	 1zjxblN/tTbwA==
-Date: Sun, 25 Oct 2026 22:39:49 +0000
+	b=QbzkOfk0XPYKteukRUGvuLPQYRS4mq7rMHUgD77pb2OiFDr2Q1PMmb2d0hQGZjnkW
+	 jjW4nFKcGkFnUQOUc9ODSiwMAGYlX+FyGFbruw9Q9h2esLYajcQ0q+rs9LR3SWpOIz
+	 22Upn+oRQMrP/uWAUQmgVozXGGNJLExk4puWIAY4JqwrVFujFX43vrQiAy5rIYBZT7
+	 FqB8W6Q0RVLCUpGcOi6Q+PwC+ACC9O50tQha+HYdPWCU48M/tSdCLyXflBdPpLHp7/
+	 /A93MTZbp532wVURITqVSA76dA0npntH6/l+iOGNZlNTUrujL+GU53Ue+Vi/4lGeib
+	 rlXCbYR04VNqw==
+Date: Sun, 25 Oct 2026 22:44:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+To: Ryan Brue <ryanbrue.dev@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <20261025223949.00b98435@jic23-hlaptop>
-In-Reply-To: <SN1PR12MB2528DD1E6067CC4C0B76746FA5622@SN1PR12MB2528.namprd12.prod.outlook.com>
-References: <SN1PR12MB2528DD1E6067CC4C0B76746FA5622@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Roman
+ Vivchar <rva333@protonmail.com>, Luca Leonardo Scorcia
+ <l.scorcia@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v5 0/2] iio: adc: add mt6397 PMIC AUXADC support
+Message-ID: <20261025224421.551f3a7b@jic23-hlaptop>
+In-Reply-To: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
+References: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,23 +71,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 25 Oct 2026 00:48:03 -0500
-Victor Chernyakin <chernyakin.victor.j@outlook.com> wrote:
+On Sun, 25 Oct 2026 00:18:07 -0500
+Ryan Brue <ryanbrue.dev@gmail.com> wrote:
 
-> This series adds support for the FDC1004 4-channel I2C capacitive sensor.
-> This sensor can report single-ended measurements of any one of its
-> channels, as well as differential measurements between any pair
-> of them. It has a measurement range of +-15 pF and a resolution of 0.5 fF.
-> 
-> Patch 1 adds higher-precision IIO_VAL_DECIMAL64_* formats, used
-> in the driver.
-> Patch 2 adds the devicetree bindings.
-> Patch 3 adds the driver itself.
-> 
-> Tested with the sensor connected over an i2c-tiny-usb adapter.
-FWIW. I look a look at this version and didn't have anything
-to add to Andy's review and the discussion that already happened.
-As such, marking it changes requested in patchwork.kernel.org
+> The MediaTek mt6397 PMIC has a 10-bit AUXADC that nothing in-tree can
+> reach. On boards built around it that ADC is the only path to the battery:
+> the SoC's AUXADC is wired to board thermistors, and the charger ICs these
+> boards use have no ADC at all, so without it there is no pack voltage and
+> no state of charge.
+Applied to the testing branch of iio.git. I'll be rebasing that on rc1
+once available. At that point I'll push out as togreg which gets picked up
+by linux-next.
 
 Thanks,
 
