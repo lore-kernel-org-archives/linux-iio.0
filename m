@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792970778;
-	b=zoy/TyEkrSzrrJ1RIpQyr76NRqgS5qE1UPMBS+cYRMbyNB9C7FyynXF60ZLhlPfVwibf
-	 47jjV029WVAfEZYt1/EnxXrG1bXpe3fjQPjnWzRU1ojzAwgFtm7LmXBJJBRwDECxl6S4Y
-	 sb7PgKrt6LGeEOvOiyYyj9kisabGGNo1g0y9wtRdKlMPXlb7kYgx2yaK/AKwL8Ezm2wni
-	 PzgWQ7z2EMGlnyDosdn398dgODaQPDBK/sXZ9yjmCV2ofWAJ7YjvjEOakqUPDdP2t5VRz
-	 Npk/ve8M6zbsR5QdnMkMQ4MeM8KESm9SoFSeC+DbhP8dQ+TuGsAxTLBs4Km7a/+W8fQ==
+	t=1792971278;
+	b=ize687a5Bb0iwCRXs928HDcQhjHRrFwW+QaO6p51M+Zo7SZKbV/I6PkOssdb8z1qH66e
+	 Bs+1bVvFKCJXL2V4iuyxyD1VXXWyuRCO6gp2WwDwAgc+Sxfyk1Bk/HDUuTnwDPMoJlvzf
+	 4XJUKh2irwHvOaqqXXgJUUBLiOMeFPIec6ExDTLAAdRcu0WcxXMojbSFlTS0eovh8pV8z
+	 Qiq5o/pYB7+B5UDRVxtP2Sg2KCwqRqUVXNumeBLEQLDbYVlMTCu5atCs9XohcYXiLyAjh
+	 JE0D2pIrqKV81E86WTEjT15zl3dKdu3gXhcVcoTBH39f+tKb9V8c4y4ALPVD7NBA3Dg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792970778;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792971278;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=alygFOX07meOsfoRxrw0nSclDlbf7TGpZ7tMmzr2AHI=;
-	b=z00t2oKv8Cax9Z7rMlbLCydJyet23o4MfHGkjIMTig/OEbecJlAqtQQQxyf05qzFWkFO
-	 lITWBpdh8wdyuLvsOqC+VDajSTC/hZiL4hFUhC3ju9gYlPbSY8i23KpvFJOhmm8ODPtBG
-	 d3iEFJfIaHtyLjFPjXtnRuK1sYS8MlN8LcCPQjReaw5zt3O7aP5CXmkheKKO55j+6izmt
-	 VfpHQ4E12m8fzEiIf4YGS/FxDuC5MvRKkOoILsdd7obajCtgCejfwi7Vh6+jHnGXXJokZ
-	 qw73Chl2dJAwDw5q5LW+NVxt03O8Y/rE9VOeW0blLqrU6lcEFf5gph6LB9CmAUds0dg==
+	bh=jgxLF4l7tIp925U7psgjt2bmZePZKVTyZDOvhrKzpXc=;
+	b=TtUT5i8GxEUiu3iCpZOsFOwiy/EVilX0zWXJ/8toHOSrN5oM9OKtyrG/mpuw3mCNpQWd
+	 SUrUzb7gh1nQ0j//B5fQerczM0fjVTz9FOVbHOsf8rG+tIVoxHSZDSTItvAHJhF6Hq464
+	 o5vL4rr0VC44GO0c5nybQJQnzY4u+HXyFKcN7h1oVKJzuh4DuJC78UXZX7ZxKyiF8XW+R
+	 Ot7RVFr48FFJzAabyR8m+Zg+sQSCip6xpJdhD8mXDg5crDOguz6d3egCm9zS7x9JprQHR
+	 OA8y83yk0tdeL6oi5mwzgbmg+oXKWpoBj5xDDoxh/YB1edEeEifTeSbufBFu1X3GQ7Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Y/BwqL92";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G5hyTFGs;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B792606A31A;
-	Sun, 25 Oct 2026 23:26:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D291606A31A;
+	Sun, 25 Oct 2026 23:34:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y/BwqL92
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9938A1F01825;
-	Sun, 25 Oct 2026 23:26:14 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G5hyTFGs
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 457A71F01825;
+	Sun, 25 Oct 2026 23:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792970777;
-	bh=alygFOX07meOsfoRxrw0nSclDlbf7TGpZ7tMmzr2AHI=;
+	s=k20260515; t=1792971277;
+	bh=jgxLF4l7tIp925U7psgjt2bmZePZKVTyZDOvhrKzpXc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Y/BwqL92bqTjP041usi4NU+XCP97/QyVK8ROVjKaJ3Wk7DfC9ZRcIeK8v0C8lN95H
-	 +0yUZKHfkSJe+lJbrrXK7G66cfFSKddqYmKArrHESqWeYhZiJMgBKvpwmNccROjfOt
-	 l48Og/+Aph3c0OzYPdorABXjk9f0HPPh3fIXpR4zdwmWoC/v0Ff0Ry3Z3BhXk2YT/m
-	 yA6KVuP4RPJcC9zuDq9u/uhwcBFRUQxUxGrCozg0n6oCSQCvp9QiS6EDumhBduvl+2
-	 X4kquvykTybDl+1G0HDlsEuhJjl/iA73LH5wVyccrwdnxnWZIHw1mMwSupL4TBlMaN
-	 rVr8n/9e2y5TA==
-Date: Sun, 25 Oct 2026 23:26:08 +0000
+	b=G5hyTFGs3ZzX8kTTDfNhUNxQdNV9cOrBlQmymKN5xHla9mYCJGyQHaHvH0cnfzOz/
+	 t7nD1+ejhvtdQ7r3w3vVmGhQvfjjqu1UFoUNXK6lyWtp26h3YlbwyJ0PVykSsScvKL
+	 BX+EkALA7iy7Pn1tZojJ9rOUnhsuspet81iUBFygSxE/K69rcNJ0ehqlMpvsHKo7mR
+	 xLfN0fXBxA6SJdMqH7vbFUgbkxypzvvPE7BNlDEylpFvU/iEPpu5DYrquRhZ1wTKcB
+	 KWNidCZN6qDMLSwEFhjZzd4MZHKcHuUbnCAIinTwpE6MvYeI0QFEuGOt7S96ZIgwmb
+	 qDvgR/P/MUOuw==
+Date: Sun, 25 Oct 2026 23:34:29 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Stephan Costa Barros <stephanbrrs8@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -51,12 +51,11 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  =?UTF-8?B?Zw==?= <u.kleine-koenig@baylibre.com>, Krzysztof Kozlowski
  <krzk@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/6] iio: adc: ti-ads1298: prepare for more chip
- families
-Message-ID: <20261025232608.06a5762c@jic23-hlaptop>
-In-Reply-To: <20261024231335.280955-5-stephanbrrs8@gmail.com>
+Subject: Re: [PATCH v2 6/6] iio: adc: ti-ads1298: add ADS1299 support
+Message-ID: <20261025233429.23b02702@jic23-hlaptop>
+In-Reply-To: <20261024231335.280955-7-stephanbrrs8@gmail.com>
 References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
-	<20261024231335.280955-5-stephanbrrs8@gmail.com>
+	<20261024231335.280955-7-stephanbrrs8@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,210 +67,252 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-On Sat, 24 Oct 2026 20:13:33 -0300
+On Sat, 24 Oct 2026 20:13:35 -0300
 Stephan Costa Barros <stephanbrrs8@gmail.com> wrote:
 
-> The ADS1299 has the register map of the ADS129x, with other gains, data
-> rates, reference and ID layout. To support it in this driver, collect
-> what differs between families in a chip info structure, given as match
-> data. The private structure has carried an unused chip_info pointer
-> since the driver was added.
->=20
-> The chip info holds:
-> - the regmap configuration and the PGA gain table;
-> - the data rate rules: the base shift, whether CONFIG1 has an HR bit,
->   and the oversampling ratio at DR =3D 0;
-> - the internal reference, whether CONFIG3 has the VREF_4V bit, and the
->   reserved bits of CONFIG3 that must be written as 1;
-> - a callback that checks the ID register and sets the channel count and
->   the name, as the ID layouts differ; bit 3 alone tells them apart.
->=20
-> No functional change.
->=20
+> The ADS1299, ADS1299-6 and ADS1299-4 are 8, 6 and 4-channel, 24-bit
+> biopotential ADCs for EEG. They share the register map, the commands
+> and the data format of the ADS129x, and differ in:
+> 
+> - the PGA gains, 1, 2, 4, 6, 8, 12 and 24;
+> - the data rates, f_CLK / 2^(7 + DR) with no HR bit, from 16 kSPS to
+>   250 SPS, and the oversampling ratio, 64 * 2^DR;
+> - the internal reference, a fixed 4.5 V, and the reserved bits 6:5 of
+>   CONFIG3;
+> - the ID register, which holds the channel count in bits 1:0;
+> - the register map, which ends at CONFIG4;
+> - the inputs, which are shorted out of reset.
+> 
+> Add the chip info for the ADS1299, and connect the inputs of every
+> channel at init, which changes nothing on the ADS129x, whose inputs are
+> already connected out of reset. The channel count is read from the ID
+> register, so ti,ads1299 also serves the ADS1299-4 and ADS1299-6 through
+> their fallback.
+> 
+> For both families, enable the DVDD supply when the device tree gives
+> one, and hold PWDN asserted, like RESET, until the supplies and the
+> clock are up. Nothing changes for a device tree that has neither.
+> 
+> Tested on an ADS1299 with a Raspberry Pi 4.
+> 
 > Signed-off-by: Stephan Costa Barros <stephanbrrs8@gmail.com>
-Mostly fine. A few comments in line in trying to
-naming the structure elements to help with readability
-and reduce need for docs around them.
+Hi Stephan
+
+A few things in here feel like they should be in precursor
+patches because the implication is they apply just as much
+to improving support for the ads1298 as they do for the
+new device.
+
+Thanks
 
 Jonathan
 
-> ---
->  drivers/iio/adc/ti-ads1298.c | 132 +++++++++++++++++++++++++----------
->  1 file changed, 96 insertions(+), 36 deletions(-)
->=20
 > diff --git a/drivers/iio/adc/ti-ads1298.c b/drivers/iio/adc/ti-ads1298.c
-> index b390c13ae..5ad543bdf 100644
+> index 5ad543bdf..e0cea23b1 100644
 > --- a/drivers/iio/adc/ti-ads1298.c
 > +++ b/drivers/iio/adc/ti-ads1298.c
-> @@ -49,8 +49,6 @@
->  #define ADS1298_REG_CONFIG1	0x01
->  #define ADS1298_MASK_CONFIG1_HR			BIT(7)
->  #define ADS1298_MASK_CONFIG1_DR			GENMASK(2, 0)
-> -#define ADS1298_SHIFT_DR_HR			6
-> -#define ADS1298_SHIFT_DR_LP			7
->  #define ADS1298_LOWEST_DR			0x06
-> =20
->  #define ADS1298_REG_CONFIG2	0x02
-> @@ -66,6 +64,7 @@
->  #define ADS1298_MASK_CONFIG3_PWR_REFBUF		BIT(7)
->  #define ADS1298_MASK_CONFIG3_RESERVED		BIT(6)
->  #define ADS1298_MASK_CONFIG3_VREF_4V		BIT(5)
-> +#define ADS1298_VREF_4V_MV			4000
-> =20
->  #define ADS1298_REG_LOFF	0x04
->  #define ADS1298_REG_CHnSET(n)	(0x05 + (n))
-> @@ -105,6 +104,31 @@
->  #define ADS1298_SPI_RDATA_BUFFER_SIZE_MAX \
->  		ADS1298_SPI_RDATA_BUFFER_SIZE(ADS1298_MAX_CHANNELS)
-> =20
-> +/* What differs between the chip families the driver supports */
 
-This is very standard naming and purpose. I'd drop the comment.
-These sorts of general comments tend to become misleading as code
-changes and we never remember to update them.
-Keep comments for the surprising or places where they add stuff
-we can't do with naming.
-
-
-> +struct ads1298_chip_info {
-> +	/* Checks the ID register, and sets the channel count and the name */
-Given this is a=20
-> +	int (*parse_id)(struct iio_dev *indio_dev, unsigned int id);
-> +	const struct regmap_config *regmap_config;
-> +	/* PGA gain for each value of the GAIN field of CHnSET */
-> +	const u8 *gains;
-> +	unsigned int num_gains;
-> +	/*
-> +	 * The data rate is f_CLK >> (dr_shift + DR). With an HR bit in
-> +	 * CONFIG1, dr_shift is that of the high-resolution mode, and the
-> +	 * low-power mode shifts one more.
-> +	 */
-> +	unsigned int dr_shift;
-
-Probably spell out dr.
-
-> +	bool has_hr;
-
-I'd spell out hr.
-
-> +	/* Oversampling ratio at DR =3D 0 */
-> +	unsigned int osr_base;
-> +	/* Internal reference, in millivolts */
-> +	unsigned int vref_mv;
-
-Rename to something that won't need the comment then drop that coment.
-
-
-	unsigned int internal_vref_mV;
-
-> +	/* CONFIG3 has the VREF_4V bit, which selects a 4 V internal reference =
-*/
-> +	bool has_vref_4v;
-
-I'm lost here. If it's about the bit, then name it after the bit.
-I suspect it's about internal reference that can be disabled or not?
-In that case can you name it for that functionality instead?
-
-=46rom a quick look below, seems it is about what of two modes can be
-used?  If so how does that fit with just one vref_mv above?
-
-> +	/* Reserved bits of CONFIG3 that must be written as 1 */
-
-This one is interesting. Normally we deal with these by just using
-RMW cycles on such a register.   Can we do that here?
-
-> +	unsigned int config3_reserved;
+> @@ -354,6 +361,15 @@ static int ads1298_set_samp_freq(struct ads1298_private *priv, int val)
+>  		return -EINVAL;
+>  
+>  	factor = (rate >> info->dr_shift) / val;
+> +
+> +	if (!info->has_hr) {
+> +		/* The slowest rate at or above val, or the lowest of all */
+> +		cfg = factor ? min(ilog2(factor), ADS1298_LOWEST_DR) : 0;
+> +
+> +		return regmap_update_bits(priv->regmap, ADS1298_REG_CONFIG1,
+> +					  ADS1298_MASK_CONFIG1_DR, cfg);
+> +	}
+> +
+>  	if (factor >= BIT(ADS1298_LOWEST_DR + 1))
+>  		cfg = ADS1298_LOWEST_DR; /* Lowest rate, in LP mode */
+>  	else if (factor)
+> @@ -772,6 +788,43 @@ static int ads1298_parse_id(struct iio_dev *indio_dev, unsigned int id)
+>  	return 0;
+>  }
+>  
+> +/* The ADS1299 has no WCT registers */
+> +static const struct regmap_config ads1299_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.reg_read = ads1298_reg_read,
+> +	.reg_write = ads1298_reg_write,
+> +	.max_register = ADS1298_REG_CONFIG4,
+> +	.wr_table = &ads1298_regmap_writeable,
+> +	.volatile_table = &ads1298_regmap_volatile,
+> +	.cache_type = REGCACHE_MAPLE,
 > +};
 > +
-
-
-> -static const u8 ads1298_pga_settings[] =3D { 6, 1, 2, 3, 4, 8, 12 };
-> -
->  static int ads1298_get_scale(struct ads1298_private *priv,
->  			     int channel, int *val, int *val2)
->  {
-> +	const struct ads1298_chip_info *info =3D priv->chip_info;
->  	unsigned int pga_idx;
->  	int ret;
->  	unsigned int regval;
-> @@ -356,13 +381,16 @@ static int ads1298_get_scale(struct ads1298_private=
- *priv,
->  			return ret;
-> =20
->  		*val =3D ret / MILLI; /* Convert to millivolts */
-> -	} else {
-> +	} else if (info->has_vref_4v) {
->  		ret =3D regmap_read(priv->regmap, ADS1298_REG_CONFIG3, &regval);
->  		if (ret)
->  			return ret;
-> =20
->  		/* Reference in millivolts */
-> -		*val =3D regval & ADS1298_MASK_CONFIG3_VREF_4V ? 4000 : 2400;
-> +		*val =3D regval & ADS1298_MASK_CONFIG3_VREF_4V ?
-> +		       ADS1298_VREF_4V_MV : info->vref_mv;
-
-See above.  Why is vref_mv which is an internal reference not the 4V one?
-Probably need clearer naming of that field.
-
-> +	} else {
-> +		*val =3D info->vref_mv;
->  	}
-> =20
-
-> -static int ads1298_init(struct iio_dev *indio_dev)
-> +static int ads1298_parse_id(struct iio_dev *indio_dev, unsigned int id)
->  {
->  	struct ads1298_private *priv =3D iio_priv(indio_dev);
->  	struct device *dev =3D &priv->spi->dev;
->  	const char *suffix;
->  	unsigned int nu_ch;
-> -	unsigned int val;
-> -	int ret;
-> -
-> -	/* Device initializes into RDATAC mode, which we don't want */
-> -	ret =3D ads1298_write_cmd(priv, ADS1298_CMD_SDATAC);
-> -	if (ret)
-> -		return ret;
-> -
-> -	ret =3D regmap_read(priv->regmap, ADS1298_REG_ID, &val);
-> -	if (ret)
-> -		return ret;
-> =20
->  	/* Fill in name and channel count based on what the chip told us */
-> -	nu_ch =3D FIELD_GET(ADS1298_MASK_ID_CHANNELS, val);
-> +	nu_ch =3D FIELD_GET(ADS1298_MASK_ID_CHANNELS, id);
->  	/* 0, 1 and 2 are 4, 6 and 8 channels; the other codes are reserved */
->  	if (nu_ch > 2)
-> -		return dev_err_probe(dev, -ENODEV, "Unknown ID: 0x%x\n", val);
+> +static int ads1299_parse_id(struct iio_dev *indio_dev, unsigned int id)
+> +{
+> +	struct ads1298_private *priv = iio_priv(indio_dev);
+> +	struct device *dev = &priv->spi->dev;
+> +	unsigned int nu_ch;
+> +
+> +	nu_ch = FIELD_GET(ADS1299_MASK_ID_CHANNELS, id);
+> +	/* 0, 1 and 2 are 4, 6 and 8 channels; 3 is reserved */
+> +	if (FIELD_GET(ADS1299_MASK_ID_DEVICE, id) != ADS1299_ID_DEVICE ||
+> +	    nu_ch > 2)
 > +		return dev_err_probe(dev, -ENODEV, "Unknown ID: 0x%x\n", id);
->  	indio_dev->num_channels =3D 4 + 2 * nu_ch;
-> -	switch (val & ADS1298_MASK_ID_FAMILY) {
-> +	switch (id & ADS1298_MASK_ID_FAMILY) {
+How do backwards compatible parts with fallback compatible of ads1299 work?
 
-Please use FIELD_GET() and fix the family masks to be values in the field
-rather than the shifted version.  You might want to do that
-as a separate precursor patch.  Looks like there may be other similar
-changes in driver around fields vs value defines.
+Generally we don't reject on simply an who am I value mismatch.
+Note the existing driver may need relaxing on that point - we used
+to do this before DT maitainers pointed out what it broke!
 
-
->  	case ADS1298_ID_FAMILY_ADS129X:
->  		suffix =3D "";
->  		break;
-> @@ -745,19 +762,57 @@ static int ads1298_init(struct iio_dev *indio_dev)
->  		suffix =3D "r";
->  		break;
->  	default:
-> -		return dev_err_probe(dev, -ENODEV, "Unknown ID: 0x%x\n", val);
-> +		return dev_err_probe(dev, -ENODEV, "Unknown ID: 0x%x\n", id);
->  	}
->  	indio_dev->name =3D devm_kasprintf(dev, GFP_KERNEL, "ads129%u%s",
->  					 indio_dev->num_channels, suffix);
->  	if (!indio_dev->name)
->  		return -ENOMEM;
-> =20
-> -	val =3D ADS1298_MASK_CONFIG3_RESERVED; /* Must write 1 always */
+> +	indio_dev->num_channels = 4 + 2 * nu_ch;
+> +
+> +	/* TI sells the 8-channel part as plain ADS1299 */
+> +	if (indio_dev->num_channels == ADS1298_MAX_CHANNELS)
+> +		indio_dev->name = "ads1299";
+> +	else
+> +		indio_dev->name = devm_kasprintf(dev, GFP_KERNEL, "ads1299-%u",
+> +						 indio_dev->num_channels);
+> +	if (!indio_dev->name)
+> +		return -ENOMEM;
+> +
 > +	return 0;
 > +}
+> +
+>  static const u8 ads1298_gains[] = { 6, 1, 2, 3, 4, 8, 12 };
+>  
+>  static const struct ads1298_chip_info ads1298_chip_info = {
+> @@ -787,10 +840,24 @@ static const struct ads1298_chip_info ads1298_chip_info = {
+>  	.config3_reserved = ADS1298_MASK_CONFIG3_RESERVED,
+>  };
+>  
+> +static const u8 ads1299_gains[] = { 1, 2, 4, 6, 8, 12, 24 };
+> +
+> +static const struct ads1298_chip_info ads1299_chip_info = {
+> +	.parse_id = ads1299_parse_id,
+> +	.regmap_config = &ads1299_regmap_config,
+> +	.gains = ads1299_gains,
+> +	.num_gains = ARRAY_SIZE(ads1299_gains),
+> +	.dr_shift = 7,
+> +	.osr_base = 64,
+> +	.vref_mv = 4500,
+> +	.config3_reserved = ADS1299_MASK_CONFIG3_RESERVED,
+> +};
+> +
+>  static int ads1298_init(struct iio_dev *indio_dev)
+>  {
+>  	struct ads1298_private *priv = iio_priv(indio_dev);
+>  	unsigned int val;
+> +	unsigned int i;
+>  	int ret;
+>  
+>  	/* Device initializes into RDATAC mode, which we don't want */
+> @@ -822,6 +889,16 @@ static int ads1298_init(struct iio_dev *indio_dev)
+>  	if (!priv->reg_vref)
+>  		msleep(ADS1298_REF_START_UP_MS);
+>  
+> +	/* The ADS1299 comes out of reset with its inputs shorted */
+
+What is the case for the ADS1298 - is this just harmless or does
+that have similar behavior?
+
+> +	for (i = 0; i < indio_dev->num_channels; i++) {
+
+	for (unsigned int i = 0;...
+
+> +		ret = regmap_update_bits(priv->regmap, ADS1298_REG_CHnSET(i),
+> +					 ADS1298_MASK_CH_MUX,
+> +					 FIELD_PREP(ADS1298_MASK_CH_MUX,
+> +						    ADS1298_MUX_NORMAL));
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> @@ -830,6 +907,7 @@ static int ads1298_probe(struct spi_device *spi)
+>  	struct ads1298_private *priv;
+>  	struct iio_dev *indio_dev;
+>  	struct device *dev = &spi->dev;
+> +	struct gpio_desc *powerdown_gpio;
+>  	struct gpio_desc *reset_gpio;
+>  	unsigned long clk_rate;
+>  	int ret;
+> @@ -844,12 +922,18 @@ static int ads1298_probe(struct spi_device *spi)
+>  	if (!priv->chip_info)
+>  		return -ENODEV;
+>  
+> -	/* Reset to be asserted before enabling clock and power */
+> +	/* Reset and power-down to be asserted before enabling clock and power */
+>  	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+>  	if (IS_ERR(reset_gpio))
+>  		return dev_err_probe(dev, PTR_ERR(reset_gpio),
+>  				     "Cannot get reset GPIO\n");
+>  
+> +	powerdown_gpio = devm_gpiod_get_optional(dev, "powerdown",
+
+Given this is not limited to the new part, perhaps this should
+be a separate feature first added for the ads1298 and just
+adopted here?
+
+> +						 GPIOD_OUT_HIGH);
+> +	if (IS_ERR(powerdown_gpio))
+> +		return dev_err_probe(dev, PTR_ERR(powerdown_gpio),
+> +				     "Cannot get powerdown GPIO\n");
+> +
+>  	priv->reg_avdd = devm_regulator_get(dev, "avdd");
+>  	if (IS_ERR(priv->reg_avdd))
+>  		return dev_err_probe(dev, PTR_ERR(priv->reg_avdd),
+> @@ -863,6 +947,10 @@ static int ads1298_probe(struct spi_device *spi)
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = devm_regulator_get_enable_optional(dev, "dvdd");
+
+As above. If this is general for both devices, introduce it
+for the existing parts in a patch that is before adding the new
+device support.
+
+> +	if (ret && ret != -ENODEV)
+> +		return dev_err_probe(dev, ret, "Failed to enable dvdd regulator\n");
+> +
+>  	/* VREF can be supplied externally, otherwise use internal reference */
+>  	priv->reg_vref = devm_regulator_get_optional(dev, "vref");
+>  	if (IS_ERR(priv->reg_vref)) {
+> @@ -904,6 +992,9 @@ static int ads1298_probe(struct spi_device *spi)
+>  	indio_dev->channels = ads1298_channels;
+>  	indio_dev->info = &ads1298_info;
+>  
+> +	/* Out of power-down, now that the supplies and the clock are up */
+> +	gpiod_set_value_cansleep(powerdown_gpio, 0);
+As above.   Seems to apply to all parts, so precursor patch.
+
+This final patch should only be adding ads1299 specific stuff.
+
+> +
+>  	/* Power-on reset time, counted from when the clock is valid */
+>  	msleep(DIV_ROUND_UP(ADS1298_TPOR_CLOCKS * MILLI, clk_rate));
+>  
+> @@ -957,12 +1048,14 @@ static int ads1298_probe(struct spi_device *spi)
+>  
+>  static const struct spi_device_id ads1298_id[] = {
+>  	{ .name = "ads1298", .driver_data = (kernel_ulong_t)&ads1298_chip_info },
+> +	{ .name = "ads1299", .driver_data = (kernel_ulong_t)&ads1299_chip_info },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, ads1298_id);
+>  
+>  static const struct of_device_id ads1298_of_table[] = {
+>  	{ .compatible = "ti,ads1298", .data = &ads1298_chip_info },
+> +	{ .compatible = "ti,ads1299", .data = &ads1299_chip_info },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, ads1298_of_table);
+> @@ -978,5 +1071,6 @@ static struct spi_driver ads1298_driver = {
+>  module_spi_driver(ads1298_driver);
+>  
+>  MODULE_AUTHOR("Mike Looijmans <mike.looijmans@topic.nl>");
+> -MODULE_DESCRIPTION("TI ADS1298 ADC");
+> +MODULE_AUTHOR("Stephan Costa Barros <stephanbrrs8@gmail.com>");
+> +MODULE_DESCRIPTION("TI ADS1298 and ADS1299 ADC");
+>  MODULE_LICENSE("GPL");
 
