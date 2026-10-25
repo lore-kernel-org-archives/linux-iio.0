@@ -1,79 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=199.89.1.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792957834;
-	b=XqyAxZVcWy3PC+gLa+mbm/WI0aGLlcs/zcngHkzC3CeG50gKgMJGkShTqqML0ef+3D2k
-	 uIPpvV0v0y6SBPysY5WR5gDLmsEPBix5kOVUJ3Zn0TXKR14d3vv1lsYMPpghOqh5uxizM
-	 ESqUn+rfXMdPH49ydykvF2jkoCs6q3m5Eb6p+UiLPst6WR2aMxSm1zUzi1RF5v8Hm+7Lb
-	 7LnMx+efvVUPf+Ekwn7B4RkcGnWkLOcgsZrb9+mopndlsmuZwfmLK+wAgukmjoozsnK78
-	 pod3TrTGZyWjwgKBcHBQweTGDsKESC1Mtueid2MjKMrm3qOQ7y3EAqRgKrkjJrbHrYw==
+	t=1792959035;
+	b=LRb0TRMyhxPK9gM+pVshDi0p+VpLNWl1cPzgkfYodbSiOHjo31/LRV4sAdJATaHjx43K
+	 ObDjt5ac1r2YM92We5M+lgsiYXPBWPEsdKqg5x18lIJgyf2XAxGk1TwkaRPNiJMN/BTEg
+	 ZOo5Wq3LuBEb7wYVQx6ng3MQqGsIHvMLGpzf1wYcQjkv4dtih3drsQ9BRk/UQ6zTTmkxB
+	 YS1KwoJCV7vubN/r53jnqUiiLh3D3Cui5IZ/9dogKm06f1ylh4dUzB4K9MSqdS/FxtkWn
+	 ZEliulYDpb8BDo5Rb56c6KEHdWTn78Vv1oB4FlHOQKAp1l1TDTCsaRi1MBov6FSSP/A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792957834;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=gkId7z4rrADgLQjZjZcyjZrL4xqZXe9u/OW++kS1m38=;
-	b=5Q1fNZSA50+xbLVF56u5toswvjyw1ACltay/HhkqfcaAr244jgU7jRBLzOt98CRWjaHV
-	 u9SRmzTCSWFUNuRQbrMAM2yNc0h74oxXhpaYYqsFgjGQ8EcwPYaHNCz1YKvsJEeqmaGn7
-	 MxB86yGuGRFKQLeKpyXFp1TCyIF5kfnxiPcvCeXXZcjJNfNj0zh2QC0chpE2DZGucp1SS
-	 R8zG3CHOHfkUmY0B84s1OrRIHHuVd3Tl/JdGs0qi11vIFTgdCVBhTXyK1n7acmQexT9AC
-	 pMOoxOHPmh9EcKGShrs6+9YyGF2PUP/HD2DB5GadkUjJiu9vs4An5gAvkzgBNLhkUTQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792959035;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Virus-Scanned:Received:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=nfuxDUd17BdkkholAC0E5iZ6FczMfNtszUIXAcM/J/4=;
+	b=MtiuCWpXi9qCDthwaB1qUwatBNpobHAAl7IuUN7iLrVks8z1xC6pGVasSYa7Aah1Vqc2
+	 xr51UsWdnuisHqYRX0kAnzaBG5tQoj7LQjdeup+hOcksCkbtRldbIHDP8kZiDDa2kQq8j
+	 lN03cEw5eo7MtJKqJIr1pppYMEEhMphQaC1sx56qxDKMX6QivhLeyyAAhclQWDyxGbt5f
+	 3H4e4pwr3gV2CRWjpMXgOapEaLpwfH8TqQ26YfVDh1Qw8dN8hjwGU45hOUprHcUK2g2/x
+	 NoO0H0FPvKnd0UlTjw/RPKPgtCH/cllv9h15Oc+DeXPRuDxkWIClFlmImFjGb43Rzew==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UnPe0o0c;
-	arc=none smtp.remote-ip=198.175.65.19
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=acm.org;
+	spf=pass smtp.mailfrom=acm.org;
+	dkim=pass header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=xIbPSHG9;
+	arc=none smtp.remote-ip=199.89.1.16
+Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6A4606A31A;
-	Sun, 25 Oct 2026 19:50:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AF6A4606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB87606A31A;
+	Sun, 25 Oct 2026 20:10:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DFB87606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UnPe0o0c
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792957832; x=1824493832;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Z+Q7PaslewznwgUcZOwZylKUJ1RQH8/sf0B95GRfvAs=;
-  b=UnPe0o0cgWy5J8XumMzqvnSW1YPrQiaUwinnwWzALiMzSqalgBK84u3Z
-   BPH0LPl5kVE0SmDuZBa7B7f/dg0eW0Ac6gdZ30/qnxw/M5vCZVY5MO3hh
-   YjF0yQ/9OXasJYRkJDlBtpIjgQ4OVLkqDYlu2ZaLcCup/vrFC7x/7Nhg0
-   02u+PQNqxdU5G4293uaFZ5Ua1HWVFyez/hpWCvEfoIiU00jjL7jNK8l7h
-   cveE2OEFWWmHWj8vBTivYdS449svE/n6CH48PdTzGdGFMWXyF6N1A2LCf
-   9nA9hvD5xdDgrrn0VAfAyWYlLpdTSkP+HwAg/3MzaB9cxhxMn++nR4gVV
-   Q==;
-X-CSE-ConnectionGUID: 0QeIxNYPTHe6+6StcYcduw==
-X-CSE-MsgGUID: BNgmBNJoQwKeZdGFdW+Djw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1656117"
-X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="1656117"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 12:50:32 -0700
-X-CSE-ConnectionGUID: JMnOV2GhQCu5xJ9GdJ3w/g==
-X-CSE-MsgGUID: c98DkQqYSnidhEQpE3S+ew==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,178,1787036400"; 
-   d="scan'208";a="5922438"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.10])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2026 12:50:31 -0700
-Date: Sun, 25 Oct 2026 21:50:28 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: sx9360: fix sampling frequency write and
- available range
-Message-ID: <at5dhBAtWA5erRpe@ashevche-desk.local>
-References: <20261024180149.144609-1-kapoorarnav43@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=xIbPSHG9
+Received: from localhost (localhost [127.0.0.1])
+	by 013.lax.mailroute.net (Postfix) with ESMTP id 4jCSYQ2rpdzlfvpM;
+	Sun, 25 Oct 2026 20:10:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
+	content-transfer-encoding:content-type:content-type:in-reply-to
+	:from:from:content-language:references:subject:subject
+	:user-agent:mime-version:date:date:message-id:received:received;
+	 s=mr01; t=1792959029; x=1795551030; bh=nfuxDUd17BdkkholAC0E5iZ6
+	FczMfNtszUIXAcM/J/4=; b=xIbPSHG9E/ShBMSpMR7/MCIc5yF6CJvMRbZ+75QX
+	TJ7blH0H/jORRmw6sB1iF5m3Y8DQxQ9i6sDKhu/Mnywp4iPywwl/lsBZDO5F2oT9
+	jFRc/eLosbMCBNPd9aBhBjv8+zWi4iY7aJjGmG2QH6X+eI22nb1lQUzPk4rSraIA
+	2QazKqnF2itsHjqbDh4CxQ/3pdnX5t6obUXtAVdLy4Wxn3PPQ8Fc8dFHzn3vncyT
+	RnrLIo8wfXAzBXiljOyQwg178p+T7ofDCGfj/LtI265+MaSJgzYTMtBUCoC8dW7o
+	6LJC/Hg/0X84UO9Zga8qAoZLivGnK9LpUX+mzzGJWqDwNw==
+X-Virus-Scanned: by MailRoute
+Received: from 013.lax.mailroute.net ([127.0.0.1])
+ by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
+ id EBJM-FDfAURl; Sun, 25 Oct 2026 20:10:29 +0000 (UTC)
+Received: from [192.168.51.14] (c-24-6-239-25.hsd1.ca.comcast.net [24.6.239.25])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bvanassche@acm.org)
+	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4jCSYK095DzlfvpK;
+	Sun, 25 Oct 2026 20:10:28 +0000 (UTC)
+Message-ID: <76bbebb4-7337-486d-8f21-a39bcb6dca93@acm.org>
+Date: Sun, 25 Oct 2026 13:10:26 -0700
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,90 +70,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261024180149.144609-1-kapoorarnav43@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on
+ mutex helpers
+To: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Marco Elver <elver@google.com>,
+ Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+References: <20261025191510.22261-1-zoone.rupert@gmail.com>
+Content-Language: en-US
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20261025191510.22261-1-zoone.rupert@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 24, 2026 at 11:31:43PM +0530, Arnav Kapoor wrote:
-> GNRL_CTRL1/2 hold the scan period in units of 8192 / FOSC, but
-> sx9360_set_samp_freq() computes freq * 8192 / FOSC and mis-scales val2,
-> which is in micro units. Any integer frequency then programs a period
-> of 0, and fractional parts above ~0.26 Hz overflow the int, writing
-> 0x10 to GNRL_CTRL1 outside the SCANPERIOD field.
+On 10/25/26 12:15 PM, Rupesh Majhi wrote:
+> Found by building with CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y
+
+Please include the CONTEXT_ANALYSIS_qcom-spmi-adc5-gen3.o=y change in
+your patch.
+
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> index c68c6c5f6aca..6a3cabedf4e8 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> @@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
+>   }
+>   
+>   void adc5_gen3_mutex_lock(struct device *dev)
+> -	__acquires(&adc->lock)
+> +	__context_unsafe(/* returns with adc->lock held */)
+>   {
+>   	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+>   	struct adc5_chip *adc = iio_priv(indio_dev);
+> @@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
+>   EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
+>   
+>   void adc5_gen3_mutex_unlock(struct device *dev)
+> -	__releases(&adc->lock)
+> +	__context_unsafe(/* releases adc->lock */)
+>   {
+>   	struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+>   	struct adc5_chip *adc = iio_priv(indio_dev);
 > 
-> Compute FOSC / (freq * 8192), rounded to the closest value, and reject
-> frequencies outside the 1..2047 period range.
-> 
-> The available range doesn't match the limits in the comments next to it
-> either: 4 MHz / 8192 is 488.28125 Hz, not 448.28125 Hz,
-> 4 MHz / (8192 * 2047) is 0.238535 Hz, and (max - min) / 2047 is
-> 0.238419 Hz. Use those values.
+> base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125
 
-...
+Please consider replacing the above with the patch below:
 
-> static const struct {
->  	int val;
->  	int val2;
->  } sx9360_samp_freq_interval[] = {
-> -	{ 0, 281250 },  /* 4MHz / (8192 * 2047) */
-> -	{ 0, 281250 },
-> -	{ 448, 281250 },  /* 4MHz / 8192 */
-> +	{ 0, 238535 },  /* 4MHz / (8192 * 2047) */
-> +	{ 0, 238419 },
-> +	{ 488, 281250 },  /* 4MHz / 8192 */
->  };
+diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c 
+b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+index c68c6c5f6aca..09013c6e44a0 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
++++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+@@ -663,7 +663,7 @@ static int adc5_gen3_add_aux_tm_device(struct 
+adc5_chip *adc)
+  }
 
-At some point this should be converted to double array of int:s.
+  void adc5_gen3_mutex_lock(struct device *dev)
+-       __acquires(&adc->lock)
++       __acquires(&((struct adc5_chip 
+*)iio_priv(dev_get_drvdata(dev->parent)))->lock)
+  {
+         struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+         struct adc5_chip *adc = iio_priv(indio_dev);
+@@ -673,7 +673,7 @@ void adc5_gen3_mutex_lock(struct device *dev)
+  EXPORT_SYMBOL_NS_GPL(adc5_gen3_mutex_lock, "QCOM_SPMI_ADC5_GEN3");
 
-...
+  void adc5_gen3_mutex_unlock(struct device *dev)
+-       __releases(&adc->lock)
++       __releases(&((struct adc5_chip 
+*)iio_priv(dev_get_drvdata(dev->parent)))->lock)
+  {
+         struct iio_dev *indio_dev = dev_get_drvdata(dev->parent);
+         struct adc5_chip *adc = iio_priv(indio_dev);
 
->  static int sx9360_set_samp_freq(struct sx_common_data *data,
->  				int val, int val2)
->  {
-> -	int reg;
-> +	unsigned int period;
+Thanks,
 
-What's the units for period? Seconds?
-
-> +	u64 freq_uhz;
-
-_uHz
-
->  	__be16 buf;
->  
-> -	reg = val * 8192 / SX9360_FOSC_HZ + val2 * 8192 / (SX9360_FOSC_MHZ);
-> -	buf = cpu_to_be16(reg);
-> +	if (val < 0 || val2 < 0)
-> +		return -EINVAL;
-> +
-> +	freq_uhz = (u64)val * MICRO + val2;
-
-Read what units.h has for units of Hz.
-
-> +	if (!freq_uhz)
-> +		return -EINVAL;
-> +
-> +	/* The register holds the scan period, in units of 8192 / FOSC. */
-> +	period = DIV64_U64_ROUND_CLOSEST((u64)SX9360_FOSC_HZ * MICRO,
-> +					 freq_uhz * 8192);
-
-Ditto.
-
-> +	if (!period || period > SX9360_REG_GNRL_SCANPERIOD_MAX)
-> +		return -EINVAL;
-> +
-> +	buf = cpu_to_be16(period);
-
-Missing blank line. Always make guard()() to be standalone in the code.
-
->  	guard(mutex)(&data->mutex);
->  
->  	return regmap_bulk_write(data->regmap, SX9360_REG_GNRL_CTRL1, &buf,
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Bart.
