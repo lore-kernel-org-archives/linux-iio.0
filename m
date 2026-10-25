@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792969675;
-	b=Ygu16EJ3xJ+WiQoCDpQqMtvhHRYdNBt3BWw3lUrN6bxFPoEhJiwz+VgaN0oEo2YZkpNP
-	 7smPOvhL9rtRvq5ouE3Q72y/YMKvS9w5kLp877ICitBZX694rVDv24XgT0FqXwQU1HQDY
-	 JvN4kALsFOtJl6/B5Hte7UXGSHVuuh5L720KqihyAgQNohJ7ZuC1aDuLDg0RdDsgUjNO5
-	 WaZubSLNCBk1Iaf3uqypTR2gBeyXyeIB/jZle0XXDM6q2PPEOoo/FCv9APnIW1s4iCyhG
-	 qPqUZcxiJz9YnkK/wqeX4zF1XoZOqH0/l8ZSlO0JfQMz3jvc4Z502OAhTlLopVJsnxg==
+	t=1792969967;
+	b=AOr/h+HHbQ1JsRq5rJxCmbOzLcGvYIDp1Ok8ElNq5/WyJ6AeiGcIWrXcicDvbI68e8Ql
+	 1qHG9lcZWEkWUR/f+7tWl2z9sVKQ1PzYvcjdMV0kdHh+hidb8tevnaqeYb/O5KAtS3l14
+	 udZpJQ9c/L6HiYZPiqy8uQAAywZ+81SyZX3RP9zSoYT8FnnJ5oCGyRSo81rQFoO+nYYHE
+	 fqY7xsQkAoxU2LZkU7WfuHhGY+EiSrWac+1/mJjWHS+hnnJP59ac4oSyjatqQb6S558hf
+	 1cF54KaivGtMmKbGEVd9Cr05FdtW7AIE3WeoPR3fucx0mTdsHddUNdlSH1qI4iAs3ew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792969675;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792969967;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=jsgwf9WxiWZdmsH5Xo9Oq04atBIwspMffogmcSjWqeY=;
-	b=L8i6ZW5H8oTZQHQeOD9jKxcBRfW3u5KDd5QQtB4grAIJZLEmSLZhun6fiulSw3JyM7Qv
-	 A9Q3ySRUqEaXj6Zt3loOwewbAqPQav/lUXG/s3GPra7J0liRfDzrKBQ8ZfPIrC1lL9MWu
-	 2UB4hfT/c+1PRBqO5RY3qPw7KdYfE71E1pRRXjj+a1YVFrmnUJZ84+E7YZAqjXXfBa5+7
-	 KxUHjlmAr2pZtgSWY4GQPEYDrTKfdVyy5LHc/RyG+Xf1zpK31VWuo+KksFgW6pNv+H9Ov
-	 0uFTo2s2AVXP+WtDOaPSQy+xsw69zH37wIuENSQU+kvX/ykvpUoOdbD4aPBrVQD/yMg==
+	bh=aIUFJoFYTsajTpY+ck7fTBnjmSDJNtvuj8FkCBnGqao=;
+	b=rnWMCJwPOrc458mkKwjv+7PNh1jZPCE/ikvHoybVj9/kUgrkfI/HpqGq3mUiR2226oHW
+	 +ndqL+uoehiJWe0hFSEC9XuDrNnflUCdm9dG+YKMDb+c+kCNuQrh1r5IdeVYi9YpNE0ev
+	 vj7rXdrC23WgTtcZH3kYPmZhcTRepCOSV9NKH3uqVzTUcDzAFjSgm9ova7o+w+4b7dNse
+	 UonwdIxayehYSoIgg5ygPzbn/jb0BAPet8EajD87YedSDriZNq9U4fWSZXvGIB0gDORPT
+	 8RUuIkUum9+Mhj36ubghJZvNpGFsoigwvJl34h5ZkPX1ueYINdUmLIjPktum3Zwy31g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OHzh3czY;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Vd2dFF9+;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22BB2606A31A;
-	Sun, 25 Oct 2026 23:07:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4B0B606A31A;
+	Sun, 25 Oct 2026 23:12:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OHzh3czY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308351F01825;
-	Sun, 25 Oct 2026 23:07:53 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Vd2dFF9+
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB361F01825;
+	Sun, 25 Oct 2026 23:12:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792969674;
-	bh=jsgwf9WxiWZdmsH5Xo9Oq04atBIwspMffogmcSjWqeY=;
+	s=k20260515; t=1792969966;
+	bh=aIUFJoFYTsajTpY+ck7fTBnjmSDJNtvuj8FkCBnGqao=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=OHzh3czYyt0IlTTXun32ixVlFpCZUZNPZNeTa+oxseDP0BCFp761LRENdT+2zMo5Y
-	 qRCPcN2uv/Euh1VBQuS1+8I7XmJmrpqQjyhiNuiHK9k7mQfo9x48K9T3PCDXqcDxkP
-	 s4Omc1POiXEGPHDIlBe9LynZpaazVZKVni6SP+FyWH5bnl2ICZPQpzcT7l0B0YQZrf
-	 uHDgk5HA4h5KlI3tUUnm6Yuub4XNMnsS9gpEFg0EHbOy8HoYsunoLQoU9pv5GBozgF
-	 tSGlhY2O7eVYAfmKV4rO2UoGxcO+HljPK+N/PvLgE44wp9qlNmyVdUkahV0bVmaU/U
-	 a/Z9XZLlpwXYg==
-Date: Sun, 25 Oct 2026 23:07:48 +0000
+	b=Vd2dFF9+J1LK8EfBQv8o40zxH43ruMAtF+hOdYbAQ4FkMOhQWzPypTQHHaHMEZKNc
+	 v/x3eooK6IF2tAZHpaytPQpJltkD01bmRatAjaKBFU+ZMHg62K/Fw4lhR3Hrqx6Lar
+	 XrIMl7l7ItrZZ5+/mmEpxcrcBCvXfeKtygttRoaOYWlm7AAP+dUbGmsfXRiSm1KeOd
+	 ppAREyo7OxMJdHSN0ImPBlPV/BapKM4bE2ttzJpnY8l6Bv2w+BXiFXT9MBLc3gRX1S
+	 txMb3yh+iAxZA8/qx4qlX1D7rhS09pivbTHPN0AyFas8Rqam2W3UdsvpQeCIkNQLy2
+	 n2slycruHCVUA==
+Date: Sun, 25 Oct 2026 23:12:37 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Stephan Costa Barros <stephanbrrs8@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -51,12 +51,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  =?UTF-8?B?Zw==?= <u.kleine-koenig@baylibre.com>, Krzysztof Kozlowski
  <krzk@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/6] iio: adc: ti-ads1298: fix power-up and clock
- handling
-Message-ID: <20261025230748.38e228db@jic23-hlaptop>
-In-Reply-To: <20261024231335.280955-3-stephanbrrs8@gmail.com>
+Subject: Re: [PATCH v2 3/6] iio: adc: ti-ads1298: fix scale, ID check,
+ regmap and Kconfig
+Message-ID: <20261025231237.55d4ebd0@jic23-hlaptop>
+In-Reply-To: <20261024231335.280955-4-stephanbrrs8@gmail.com>
 References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
-	<20261024231335.280955-3-stephanbrrs8@gmail.com>
+	<20261024231335.280955-4-stephanbrrs8@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,43 +70,57 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 24 Oct 2026 20:13:31 -0300
+On Sat, 24 Oct 2026 20:13:32 -0300
 Stephan Costa Barros <stephanbrrs8@gmail.com> wrote:
 
-> Fix three issues with the power-up sequence and the device clock:
+> Fix four smaller issues:
 > 
-> - The datasheet powers up the supplies first, then the clock, then
->   waits t_POR = 2^18 clock cycles (128 ms at 2.048 MHz) before the
->   reset. The driver enabled an external clock and the vref supply
->   before AVDD, reset right away, and did not wait for the 150 ms
->   start-up of the internal reference. Follow the datasheet. Probe takes
->   about 280 ms longer.
+> - The scale divides the reference, in whole millivolts, by the gain
+>   before it is reported. With the internal 4 V reference, it is 0.099 %
+>   low at gain 6, 0.101 % at gain 12 and 0.025 % at gain 3. Report
+>   VREF / (gain * 2^23) as an IIO_VAL_FRACTIONAL; sysfs still shows it
+>   with nine decimals, now without the error.
+Move this to end of the fixes. An accuracy improvement is nice to have
+but not necessarily something anyone will backport if the previous driver
+is working well enough for them.  As with prior set, separate patch
+per fix.
+
+I appreciate that will mean a lot of patches, but they will each
+be simpler to review.
+
 > 
-> - The binding describes one optional clock and no clock-names, but the
->   driver asked for the clock named "clk". With a device tree that
->   follows the binding, the lookup fails, the optional getter returns
->   NULL, and a clock given in the device tree is never enabled, while the
->   sampling frequency is computed from the nominal 2.048 MHz. Ask for the
->   first clock of the node; a device tree with clock-names = "clk" still
->   gets the same clock.
+> - Only the channel codes 0, 1 and 2 of the ID register are defined; an
+>   ID of 0x93, for example, gives 10 channels. The IIO core then reads
+>   past ads1298_channels, and the RDATA transfer writes past rx_buffer.
+>   Refuse the reserved codes as an unknown ID.
+
+No problem with this, but it is hardening against devices we have
+never seen. So after fixes and marked as hardening.  We should never
+have a fallback compatible issue on this, because they shouldn't
+be using larger numbers of channels.
+
 > 
-> - A command takes 4 cycles of the device clock to decode, the minimum
->   reset pulse is 2 cycles, and the reset takes 18 more. These were
->   converted with the nominal 2.048 MHz, so a command ends after a fixed
->   2 us, short of 4 cycles with an external clock below 2 MHz, which the
->   ADS129x allows down to 1.94 MHz. Convert them with the rate of the
->   clock in use. At 2.048 MHz the delays do not change.
+> - The driver uses regmap but does not select REGMAP, and fails to build
+>   where nothing else selects it, such as tinyconfig with SPI, IIO and
+>   TI_ADS1298 on x86_64.
+
+Interesting we never saw this in random builds.  Indeed good to fix
+but has nothing to do with the rest of this patch.
+
 > 
-> The clock lookup was seen to fail on a Raspberry Pi 4, with a
-> fixed-clock in the device tree. The power-up order was found by review
-> and reproduced on an emulated device only. The decode time was found
-> with an emulated device; it is not seen on hardware running at
-> 2.048 MHz.
+> - Bit 0 of CONFIG3 is a read-only status bit and the GPIO register
+>   reads the pins, but both are cached, so a read through debugfs returns
+>   a stale value; debugfs can also write ID, LOFF_STATP and LOFF_STATN.
+>   Mark CONFIG3 and GPIO volatile, and the other three not writeable.
+
+I don't really care about stale data in debugfs. By all means fix
+this but it isn't something we'd bother backporting.
+
+> 
+> The ID check was found by review and reproduced on an emulated device
+> only, where KASAN reports the read past ads1298_channels.
 > 
 > Fixes: 00ef7708fa60 ("iio: adc: ti-ads1298: Add driver")
 > Signed-off-by: Stephan Costa Barros <stephanbrrs8@gmail.com>
-As before, this is multiple issues so needs breaking into more
-focused patches.  That may come at the cost of some code
-churn but it will make them easier to review.
 
-Jonathan
+
