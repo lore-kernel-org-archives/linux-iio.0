@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793055975;
-	b=nVmzCrbPw6Lq9fUnw8ZfsSoc3bFfX47haqhRvARzCqUf5gPCfTD82V/uKpExhen54YEU
-	 Ciev0jdvkUddLh4wh1TaIgNQee9ZmT1/d0YrDm83xm8q6ODTrE4XVDtQD5K4X51oqAWcv
-	 FOhRfp7o5vVlxTODiXwhvgGtPeLSWUmeb94IKmJ5FOHL8NbbD4Alvu9+SeRiqCYSvPYum
-	 2Ly5bTu9TfPQaVfb94AJzBvxgST/NT2N6+rskINEbIoMYf4n4C3O9UtzHq0XkhnCwVHC8
-	 706CCALUOVHc45P5B8HuNJ+KgD/JW0MwjvYv+mgJonGDc5kXvdm4WHbLSKj+YDMSnVw==
+	b=hI8BV4rIFYdwVR2thiIgogUvNaYtWs/4+ZHW/2yt1TW7lCOf8VbXXeSZcdQn9O0UXUDy
+	 rNyAWMJLieD3o3aDbFKqFYXploaDmHHZyd4eayDEa60Mw0GqURwao6cR0Q7mKxkgrKJn8
+	 yuvkavI78liiOVlAWbrmsCL+VxxrJfRSRTvF79VP4yhZmbkt8wUGThyohUx9jg3RoLYnL
+	 qzsiJIO1JfbHtl/y5mjfiQwMGv+FjckYYRTPmdjg9j7B/9skG8qBBpUncfieUjgAwfoHr
+	 NDQrlszGEY5I3jDecLFe/bKC7KPiyN8UZX/LOv/qF584xskbP3lCRxjk0pFAFAHDhIQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793055975;
 	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
 	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
 	 References:MIME-Version:Content-Type:X-Mailer:
 	 Content-Transfer-Encoding:X-Proofpoint-Reinject:X-QCInternal:
-	 X-QCInternal:X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=Q04oZfw3OjLDZgUZRGcxNy1JfSRYfzVtpRaBDOhbG1k=;
-	b=VPU8JE4+SVF+0blRKzwvi72Ln6BtE0IhcrPhITOn6nLW98HToNUE3FVy+tb3AxeIZiHm
-	 2vnatcCaKd68YNowJrpbkqU5LLopv8Up/ZHrJl+HqSZ6JJ0oY3hIEvALesTNq6AmRWK3K
-	 BrLSX/chfKzElUyd2nAxyRabuMUaONd2QaLCaBDliGFMWyJVeweMI/U2drUGVKAtqGHna
-	 9jdMIjk07CxJnanZ9r8X0ruY6+vWd84tHaxdJrmc6w0x5nW89FwtKVn61JwqBrL7Yx9GQ
-	 qMkEUSHLKli7qKXpS2QEdl+6aj/nx2Hs1EmuSVSZN+02UGATK43dAnNlzvYjvcs/F3w==
+	 X-QCInternal:X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
+	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=CPV+JPZ/v2IL4axfqYBTicqJJquDhxdcOjodLM+0aDU=;
+	b=4/frUevuFphdt4P6c1iu6Was5koa/bxrKFaL7T4FQaiRRLX6QhOaswpkQYMlDt3y5t+D
+	 Xp743Xq965695/xkuPRP3gzLJNg/bDLf8KU/zfynHzNWWR4xEAITs+88Frxu4NW+foTpk
+	 TohfVf1HKrJjn1HNHstFmQPksAAA1wUVw5WE6HLdmbQSU0ULgXBQKOUeAEZen5G7/rDKx
+	 uZDno8n69yujTX+k83cSRloB03fLhIw3uctDMPcJvA4PynKUBETiInIDV+kG8Az9pu29j
+	 lTcxQp6IXITygqiGYzdKXT1TMuRlHL9aKjaf3QBwGkEnqYNaP46wVBEf0NSdTNqbnnw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=oss.qualcomm.com;
 	spf=pass smtp.mailfrom=qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b="Ofz47Z/L";
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=NL8Fz5EX;
 	arc=none smtp.remote-ip=205.220.168.131
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A48A7606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B132E606A32D
 	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 23:06:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A48A7606A31B
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B132E606A32D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Ofz47Z/L
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69QMPE753042727;
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=NL8Fz5EX
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69QMOt0o4036389;
 	Mon, 26 Oct 2026 23:06:02 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Q04oZfw3OjLDZgUZRGcxNy1JfSRYfzVtpRaBDOhbG1k=; b=Ofz47Z/Lo5hkm85l
-	WP/Cx2XPDPeR4LlU76PHiTIRTYCwGnEVCaOtn8y5Y0VQGixKIQoAwkevImMxeNf1
-	ciXsZhyxWerMBSLF4z6sZ26ErvQdl9O3WNw2frKWr4yshUJyjLMr0M7G0opvQ1Sk
-	0jRtBxGLObS0HQuRM3BwLVqzVr/60AkB23eglaSb+Wz4bVk0r2kkQUUWy5ai1lhl
-	b7QDbVXV0G1pYC1Nss1TqR4wq1ES5k6rvcJqzsgqwvjCwaS+4d6IvIKjOa+3AO2j
-	ub2EtSruZiqHxGrEtu1EkEZVXyXfCfRgnm8diKr8czPwNCHBsq2FGhoGslspeZlF
-	QsVBRA==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hjb54h4hk-1
+	CPV+JPZ/v2IL4axfqYBTicqJJquDhxdcOjodLM+0aDU=; b=NL8Fz5EXkaCUEeJr
+	EYM9ElyJd8DQUJDGWxE0BQMyTbg2SCEIRv6vEIGpU/LV6Q/91KScmUsF0ffSmWOU
+	chq/tvOlvunPOPNAiDPmtSYGXYI+dYFFTymS4McX/glcMl/xo+fMDElIlSexUDnx
+	c0SfidPm4tdhBvp8W4bBxb/rPZ8ow3y46a4pHDl5FdxGbkjZKekNvpboHq3vIj8t
+	cfkxy4naAMF6Aw6IIzPoquo7C+VX0khnWEDE1rHnZbA9lxnZD3hoUOOC/Vc6Nuwx
+	9alyyobEH9ONe1jdu5ISvo8bWwKz9mxnjxPEfFqUE60mtIgUpqdFXNt4WPKMh3ga
+	NMG8jA==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hjbmm8ysr-1
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
 	Mon, 26 Oct 2026 23:06:02 +0000 (GMT)
-Received: from pps.filterd (nalasppmta05.qualcomm.com [127.0.0.1])
-	by NALASPPMTA05.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 69QN00sf158309;
+Received: from pps.filterd (nalasppmta04.qualcomm.com [127.0.0.1])
+	by NALASPPMTA04.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 69QN61cM186492;
 	Mon, 26 Oct 2026 23:06:01 GMT
 Received: from hu-devc-lv-u24-a.qualcomm.com (hu-jcameron-lv.qualcomm.com [10.81.84.69])
-	by NALASPPMTA05.qualcomm.com (PPS) with ESMTPS id 69QN61kl168676
+	by NALASPPMTA04.qualcomm.com (PPS) with ESMTPS id 69QN61qA186552
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
 	Mon, 26 Oct 2026 23:06:01 +0000 (GMT)
 Received: by hu-devc-lv-u24-a.qualcomm.com (Postfix, from userid 4846927)
-	id DE8B3255F3; Mon, 26 Oct 2026 16:06:00 -0700 (PDT)
+	id AAA5924D74; Mon, 26 Oct 2026 16:06:01 -0700 (PDT)
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
         David Lechner <dlechner@baylibre.com>,
         =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Cong Nguyen <congnt264@gmail.com>,
-        Ethan Tidmore <ethantidmore06@gmail.com>
-Subject: [PATCH 06/39] iio: gyro: mpu3050: use iio_push_to_buffers_with_ts()
-Date: Mon, 26 Oct 2026 16:05:24 -0700
-Message-ID: <20261026-iio-v1-6-8b136778eedf@oss.qualcomm.com>
+        Andy Shevchenko <andy@kernel.org>,
+        Francesco Lavra <flavra@baylibre.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: [PATCH 38/39] iio: imu: st_lsm6dsx: use iio_push_to_buffers_with_ts()
+Date: Mon, 26 Oct 2026 16:05:56 -0700
+Message-ID: <20261026-iio-v1-38-8b136778eedf@oss.qualcomm.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
 References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
@@ -92,59 +92,135 @@ Content-Transfer-Encoding: 8bit
 X-Proofpoint-Reinject: loops=2 maxloops=12
 X-QCInternal: smtphost
 X-QCInternal: smtphost
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDA5MiBTYWx0ZWRfXxzU5PnHIRPt4
- 3SQyIuBXbN+v7WFYLi0UtxutVICnB44PacHIzRZ1uDmeaTZMFQMPmoIvPmtRqAVfkxA5s57lJe8
- WTIXJtChL4tF5K47u74nM/APw8thK1o=
-X-Authority-Analysis: v=2.4 cv=bsnZl0ai c=1 sm=1 tr=0 ts=6adfdcda cx=c_pps
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDA5MiBTYWx0ZWRfX7ZSbQEW8xCV/
+ PZaFiy4BQR/ykzn93Zaj1HRjtLvZmIr/RKCKeGBewxCKpSFMrkgvj3ovNfMkvZqdxfLngwzJBAZ
+ L5XYGgNzyhO43Z+OkC+gQmpBY1v9Bck=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDA5MiBTYWx0ZWRfX6zVHONGI62UK
+ qO+7TO0W3icBL2Lmwua5wONP9vMbgk7Jgkcx2+v4VPy1fPzEiSqSNkw7CQmWuyRGv3jLoq+hRO5
+ i4ENqRfU11kAJgOncQOwysCw6xbnxjfyuZGnOGeGgcCoIgfG3k35d6sdJDSFUY83GsasAV+hp7y
+ 65SXJHQmb0qdOaUM2Dh4ETTL3Hq9RLVSiPWKsqG3z5OaZi875wVBkoYwep9dAQBd+E2xUtNMXzJ
+ 31K4Q32+LxlzzqzT6FUA+uv05HG0Hc9pNDcxd30dxdagVUPqs4z20L+wm7fZMQIEOlTp/IHxR74
+ s+FJRJynq1ShkF00vLL4IkupDZQAnpIalfb9lZ76lP6fjbgnS/J2iCHOEJfWunJfeaBhRCgzycP
+ 6muT8uP6X7sqGQze29GDqPzOt4j/y03f+jJ2BHmYpfr3MmFlN7u4OmjQm0eBFigVQCxCRVvyTAq
+ Oe5wiSF46I9irkcXpOw==
+X-Authority-Analysis: v=2.4 cv=PrkG/AM3 c=1 sm=1 tr=0 ts=6adfdcda cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
  a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22 a=EUspDBNiAAAA:8
- a=pGLkceISAAAA:8 a=TDnj59O4D6Hfr2lGhU8A:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: RSr36jmlYkezhlCJhU6qkqIxahWkGa9v
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDA5MiBTYWx0ZWRfXxu1ItrGVT0/6
- FPCSQoY6gi5V7TGko6+CqbXdE0J5xuTnKJsSvTA03NcRIS+AaSkRQZrZ0vv4bLgsC0xWmyRclqi
- wfrd7KfufVctRJ5r/bBNefLBj24BqJKmjfmoQuSQNctGx0+09z/yOcOP9xJNovF4ShKrRYYZ4EK
- dtA5NI3UP8H10r+MBtnYO5nDP+NJRDGeUohMgsQ4ZZCwwV6Qxdc+YU2F0RbkxXi59XqihbeQ44H
- uLWwrnOhG+KJctQRyEV1vyoMOhUUvNmOjFBdY3+AZqBWeNZB88Yfgiysss/KUkQCY4m3EF2YDI9
- 2lG0P1LqSgqrn4jG0hlMFUEBR9/A7EuMdbnquLABPqEu1FQZ/K/0NByWDv6uLjcrfS0f190utNF
- 2IYsloomKtFBcMjFg4GaCoszKJ2+YcGXpNRPgaXhdhghNfzXcrnl5ARph/nJZd4XEH0C2D7gjP8
- dEmtbjTOkHWzc2tVz0w==
-X-Proofpoint-GUID: RSr36jmlYkezhlCJhU6qkqIxahWkGa9v
+ a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22 a=EUspDBNiAAAA:8
+ a=IpJZQVW2AAAA:8 a=VwQbUJbxAAAA:8 a=Rd5JdI-Rlna3aY1cNJoA:9 a=QEXdDO2ut3YA:10
+ a=IawgGOuG5U0WyFbmm1f5:22
+X-Proofpoint-ORIG-GUID: NsvnHelfy48PouUpHX3vF6EmpMoze5_8
+X-Proofpoint-GUID: NsvnHelfy48PouUpHX3vF6EmpMoze5_8
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-10-26_05,2026-10-21_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 spamscore=0 malwarescore=0
- lowpriorityscore=0 clxscore=1011 phishscore=0 suspectscore=0 adultscore=0
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
- definitions=main-2610260092
+ malwarescore=0 spamscore=0 priorityscore=1501 phishscore=0 suspectscore=0
+ impostorscore=0 clxscore=1011 adultscore=0 bulkscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610260092
 
 Replace the deprecated iio_push_to_buffers_with_timestamp() with
-iio_push_to_buffers_with_ts(), passing the size of the pushed buffer,
-which is on the stack and local to mpu3050_trigger_handler().
+iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
 
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
-Cc: Cong Nguyen <congnt264@gmail.com>
-Cc: Ethan Tidmore <ethantidmore06@gmail.com>
+Cc: Francesco Lavra <flavra@baylibre.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/iio/gyro/mpu3050-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 17 ++++++++++-------
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   |  5 +++--
+ 2 files changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 07c0f9011c63..f91b1173c2a2 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -637,7 +637,7 @@ static irqreturn_t mpu3050_trigger_handler(int irq, void *p)
- 		goto out_trigger_unlock;
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index 777d479f10c0..c60192775ce8 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -496,9 +496,10 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ 				if (gyro_sensor->samples_to_discard > 0)
+ 					gyro_sensor->samples_to_discard--;
+ 				else
+-					iio_push_to_buffers_with_timestamp(
++					iio_push_to_buffers_with_ts(
+ 						hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+ 						&hw->scan[ST_LSM6DSX_ID_GYRO],
++						sizeof(hw->scan[ST_LSM6DSX_ID_GYRO]),
+ 						gyro_sensor->ts_ref + ts);
+ 				gyro_sip--;
+ 			}
+@@ -510,16 +511,18 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+ 				if (acc_sensor->samples_to_discard > 0)
+ 					acc_sensor->samples_to_discard--;
+ 				else
+-					iio_push_to_buffers_with_timestamp(
++					iio_push_to_buffers_with_ts(
+ 						hw->iio_devs[ST_LSM6DSX_ID_ACC],
+ 						&hw->scan[ST_LSM6DSX_ID_ACC],
++						sizeof(hw->scan[ST_LSM6DSX_ID_ACC]),
+ 						acc_sensor->ts_ref + ts);
+ 				acc_sip--;
+ 			}
+ 			if (ext_sip > 0 && !(sip % ext_sensor->decimator)) {
+-				iio_push_to_buffers_with_timestamp(
++				iio_push_to_buffers_with_ts(
+ 					hw->iio_devs[ST_LSM6DSX_ID_EXT0],
+ 					&hw->scan[ST_LSM6DSX_ID_EXT0],
++					sizeof(hw->scan[ST_LSM6DSX_ID_EXT0]),
+ 					ext_sensor->ts_ref + ts);
+ 				ext_sip--;
+ 			}
+@@ -549,7 +552,7 @@ static bool st_lsm6dsx_check_data(u8 tag, __le16 *data)
+ }
+ 
+ static int st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
+-				       __le16 *data, s64 ts)
++				       __le16 *data, size_t len, s64 ts)
+ {
+ 	struct st_lsm6dsx_sensor *sensor;
+ 	struct iio_dev *iio_dev;
+@@ -597,8 +600,7 @@ static int st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
  	}
  
--	iio_push_to_buffers_with_timestamp(indio_dev, &scan, timestamp);
-+	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan), timestamp);
+ 	sensor = iio_priv(iio_dev);
+-	iio_push_to_buffers_with_timestamp(iio_dev, data,
+-					   ts + sensor->ts_ref);
++	iio_push_to_buffers_with_ts(iio_dev, data, len, ts + sensor->ts_ref);
  
- out_trigger_unlock:
- 	mutex_unlock(&mpu3050->lock);
+ 	return 0;
+ }
+@@ -617,7 +619,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+ 	u16 fifo_len, fifo_diff_mask;
+ 	/*
+ 	 * Alignment needed as this can ultimately be passed to a
+-	 * call to iio_push_to_buffers_with_timestamp() which
++	 * call to iio_push_to_buffers_with_ts() which
+ 	 * must be passed a buffer that is aligned to 8 bytes so
+ 	 * as to allow insertion of a naturally aligned timestamp.
+ 	 */
+@@ -690,6 +692,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+ 			} else {
+ 				st_lsm6dsx_push_tagged_data(hw, tag,
+ 							    iio_buff.data,
++							    sizeof(iio_buff),
+ 							    ts);
+ 			}
+ 		}
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 360f1365f892..81ff0b32ec40 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -2798,8 +2798,9 @@ static irqreturn_t st_lsm6dsx_sw_trigger_handler_thread(int irq,
+ 				       hw->scan[sensor->id].channels,
+ 				       sizeof(hw->scan[sensor->id].channels));
+ 
+-	iio_push_to_buffers_with_timestamp(iio_dev, &hw->scan[sensor->id],
+-					   iio_get_time_ns(iio_dev));
++	iio_push_to_buffers_with_ts(iio_dev, &hw->scan[sensor->id],
++				    sizeof(hw->scan[sensor->id]),
++				    iio_get_time_ns(iio_dev));
+ 	iio_trigger_notify_done(iio_dev->trig);
+ 
+ 	return IRQ_HANDLED;
 
 -- 
 2.43.0
