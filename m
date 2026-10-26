@@ -1,88 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793009390;
-	b=uGh00BhAm42GK9d11u01ww/joCihtt5XaKp6IHA81dddWg0JbW4MbJbNYpPgUcPSQqmB
-	 0gKX9L9u3SHGpIu4ErWvqwCqVaK/mo9VUEl1Gw/7g6v4QB5ntgdDmnd7Vv3dhaw5ARWED
-	 9fW6grcEghnfA4HHYaJ4H4CjksDhS4zrfmxXmCsRAt63nwIonP2kobRqAjq/r8i/XTgoR
-	 4GOlpt+8d+T2IwF8PxxiFtAal5qp32I4k8yNXGMKfTL+QlDikxJBagh/jvLfVlm94VAqX
-	 3q4isUR6dYZI1OEGKBDMjJDlpAsOV+4CiZSGBcliXG20WgN01DYXr+H+sHUrcjrr5QQ==
+	t=1793010064;
+	b=Gww9Du/CgF9af1nG+b1Ji3CwqNiRysKe9NjcezqFuwOgZmYYibzT7cpwX5emtZOoTwzC
+	 CJr6KMHS6XgccU+21dCapIiRyea6XwAsBLlAeeapulJseJfGVxoHCZsECdTdI/e6oTkyr
+	 k/rSCxFHVVR4umKUxPvlkXkDRovBd/C68+p1WO6ANPYjCGjBRPuoyIiky0bBygwnhQ1hs
+	 yJfHMglrdd0j/B1eqmCKj1l9vY7J68DimX3D5Kj3QXENWTKU1vWNW8Vds7ZdgbVY13pL0
+	 f+Fk5Xe9jnCW8RSU+DlO2NQLbb/FTEeB9cmIVawcwpOzfwxsFwXB1sMvR+n2V5kbgsw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793009390;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=jm1644hOM8KkSEBC15KSWMNNpNyH5zjpP4wtWkVGhZg=;
-	b=DEWObexD8B7Op7rwe4K00qeHx3sb3oCC/vylSaYvtmz/0BxBIg27KM6e+fVVQ7xNQaNK
-	 yAYM2cIrP3LxYE5zwqo01Edmsrav+w2vTSESSCKkMINSqlQ+aOwXFcivDWYcD0adEmh6w
-	 NnsyF7wo9Sqewef3GtR3KftAGr2NfwEAVcBnMzv1EiidJtyJYZj4Vp9hp9oyoBHFKFynp
-	 hO6PQy6SMXE1QW+PchrBUpP7FF7dZCbD/LiWE/JixnMgsqWsA/DNlv/QxSuy3S8qq0KPD
-	 t/mP+WSy7YlrUAf1qpkj9RzPmQFACS/2kSTwy4IrpGavSsp+HprN7uezBu6soP8arDg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793010064;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
+	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type;
+	bh=xvHDL7X7nDz4fdHlD/Zd2vVTXXgNDrA1NXktS57i7t4=;
+	b=uUf3NWU7L0uTkNt10jfmVtFETr4+oe9hi0ea99uYMTaF/HC4ZFupm3XSvmrhNCmZU+I1
+	 ulwobu0qUlm58YABxtMNNJ0hgO0Z+X3zXLGN5dvAlhhUtKYwgT15S8djoYFpp7cpuIx5q
+	 Q+8lDWv7ETWgNUDMV5XpZSNOgFQmIak+cCZZA4wKNiEFIHUK+Y+BWr3obLCLkcdsrP74Q
+	 b7svVsssjgR0podKCkD3gFDTwWlPXUumUPTKIjUQ9evdaBfkIGYpiBTLOlmHWljgdfXIa
+	 oH3mGnAuDOz5iXo7Ej0AJBYavu981PHTFteODyVZn49xvw6AYYJN8if+BKK6Ll0lg/g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Z7UvKObN;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=linux-m68k.org;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.222.44
+Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com [209.85.222.44])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70BB8606A31B;
-	Mon, 26 Oct 2026 10:09:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70BB8606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Z7UvKObN
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793009389; x=1824545389;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Gvew9ukDl86S2wPT8y+Epku1wylXdvEYqLb+6NuMHmA=;
-  b=Z7UvKObNaKsa6GYgIpTeB35ROw+pdkxkczDHL1TimKDhy5Bk1TuqQfPi
-   oDtfuiLHVHVkL1IREifoA2UIIeXMimJj7MHevV3I2ul2O6ZhpWjaWQA9R
-   zyHXNMUDizw7XsCR44qDl5po78mE8+guBPU4rfQ2N12SMyjkxzOK5ikzp
-   DJtFnWIZbI/XGERL5XEb54tfdarlcl9RcSJZjQBsHYJlwZV34ngIPA86d
-   tAP6e4x+oOBErX/+/nPfCktE0scWqX/dUTa1amSIGD4OiKN1TADk9rQfk
-   Fjy3sqfBAGkXZ7PVjtcPWc7gcx2RHm8uqiOlPqAYEp2P129wyRV3Qbg5G
-   w==;
-X-CSE-ConnectionGUID: E5Cn5DZ7QMaE4EHG4oJ4Bw==
-X-CSE-MsgGUID: NqmQPli5RhmfjoKO6DFGMw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1676022"
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1676022"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:09:48 -0700
-X-CSE-ConnectionGUID: i6Wd1/cYSMG2sHMf1DEEKQ==
-X-CSE-MsgGUID: DASe3UZ7RdKZU9M9ALeONg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="4327858"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:09:44 -0700
-Date: Mon, 26 Oct 2026 12:09:42 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Brian Norris <briannorris@chromium.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Ulf Hansson <ulfh@kernel.org>, linux-pm@vger.kernel.org,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Marek Vasut <marek.vasut+renesas@mailbox.org>,
-	Rui Miguel Silva <rmfrfs@gmail.com>, linux-kernel@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH v2 00/17] iio: Stop looking at
- pm_runtime_put_autosuspend() return codes
-Message-ID: <at8m5q1B62hPxvSv@ashevche-desk.local>
-References: <20261021235818.3059519-1-briannorris@chromium.org>
- <atm0umwtxZlQSAhy@ashevche-desk.local>
- <atpMNk6ymCpC5BL_@google.com>
- <atsEql7X20hGytXv@ashevche-desk.local>
- <atuOysdhmPRA7Waf@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597F6606A31A
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 10:21:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 597F6606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-9908346255fso1855461241.1
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 03:21:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793010063; x=1793614863;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=xvHDL7X7nDz4fdHlD/Zd2vVTXXgNDrA1NXktS57i7t4=;
+        b=nJ+CXnYEQKqPSDfY9LfWAs5fzRN9gYslMjRcz5xYpbTKoZHepVT6U79jnjdfCagzli
+         GybPtx+DnMgpb/SPQHcHJxzMLKdSdAfrWrdvUtagrmxWgJjfTAnUg/Ikx0C02iWk4wNc
+         13oi7PmmMpNg65MgncBcIP4yTHzZwLmf3JAfWT5L3l1VEQRb7yS2l8UzdVdC1h/dCg8d
+         wN2bR5dWYJgPJFVEA7uSVhzch+Pg5R2yvpUvDb5/2VSgSkCdc+UBSh9cH688ss/iJHpM
+         Ye9DRB1j9e0wvZpWrheGbIMP59Q+9ERYh8DIMQDf8tXo9idwfJBMrIKlstNI2yGykPey
+         5Yow==
+X-Forwarded-Encrypted: i=1; AKwUvBzPrXvfdalDO4Ky3u5zMr+uESvePJgML1f8r45FemCiUM7tJ28OMMeixc+fDUL5wou0AzZSRfNxvfQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKu5+jtBrTkDV2lnINfi+FiUP8gp+fYeGVPUC5euvSe/kbF1EsL
+	/tmsxBzxO3qpJGuxiTd0g/ucmPQCwkgJowyKU+7imbnrbQIzJ0azjludq/JhNmkM
+X-Gm-Gg: AYBFou30IxmQXG9c2c9wG3Yz2BKtDdR6WmCpyBHiKm8xU4hUiqFhuZvx40LA5q9Rkce
+	nSIhUqNZCoA7q7GacT6uH3ca6DFuc/7KleMfXsARIP6Q7CdBxxkygtDXiNuoewtJSfr6F8dfd2W
+	xsoX8pS2e6m9SFzWkrDVMZzdwuZz3Ll3egoYi9ni8kOdhAMU+jE0owflj2q5Z/0BD4l7vYJCEeR
+	R5rmlLTfhz0bO9W9qnnQ5YtUOT3oSupUEOWu8xRi72dQIiN0Y0cvF6nmimnUw9F1dS6xJlb2Kog
+	tw62X5vst+QN919DbyV+rfJb5UtXTxeNMh/AXRfknblk4s+r8XIdaGo8wNv+H3t/OPShCGKZ88i
+	8p7n/yVIZ+EgHE0jGgOSg0JlWLNV1dfKYCOEqWG3N7tz7RXbVLZdUEeyxA56SmKDs7ydCAH7lMj
+	UXRd3t+4kt5mAvMsT8G7IhyYIB6zRDw8yIPIKVar9MWkJOWyoan9OdoS3poqA3ROg3Kf/5dyLuG
+	koVAAa/RZGg+/ftzKs9OVFJEEZqV3BDt3UdKamteNcMlckLux/cMHw4JJD9G2D/yz6fSlSw1wzn
+	0bJSM4S8ufCcLqrZBjNMTw==
+X-Received: by 2002:a05:6102:5113:b0:7ba:7a64:5946 with SMTP id ada2fe7eead31-7ce5ce460b9mr1410409137.35.1793010063381;
+        Mon, 26 Oct 2026 03:21:03 -0700 (PDT)
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com. [209.85.221.182])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-9910e7b8f0csm7813475241.5.2026.10.26.03.21.03
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Oct 2026 03:21:03 -0700 (PDT)
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-5eaa5e03c47so3532560e0c.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 03:21:03 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBxm6VWHwFcMu7FIDB4Jl4YIiV6O1AFN24SX/k29kcP3dEbCSYF4rOuAJ3+Fdq+svF/F6hJV3PiSJso=@vger.kernel.org
+X-Received: by 2002:a05:6102:6890:b0:7cc:ace:24ad with SMTP id
+ ada2fe7eead31-7ce5c6c0026mr1500062137.0.1793009705218; Mon, 26 Oct 2026
+ 03:15:05 -0700 (PDT)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,96 +80,84 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <atuOysdhmPRA7Waf@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20261023175919.160103-9-prabhakar.mahadev-lad.rj@bp.renesas.com> <atyKo0pTYZyt5XJc@ashevche-desk.local>
+In-Reply-To: <atyKo0pTYZyt5XJc@ashevche-desk.local>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 26 Oct 2026 11:14:53 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV8Q9UKrpoZuZfDUutrG=bOwcNWLnht1bufv0YVXJPNDw@mail.gmail.com>
+X-Gm-Features: AclHuK_Zae-S6levySXX9MNUVg775ICficux5w8oZYwqHzeoFMa3QGI09OnmK_U
+Message-ID: <CAMuHMdV8Q9UKrpoZuZfDUutrG=bOwcNWLnht1bufv0YVXJPNDw@mail.gmail.com>
+Subject: Re: [PATCH v3 8/8] iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Prabhakar <prabhakar.csengg@gmail.com>, 
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Prabhakar <prabhakar.csengg+renesas@gmail.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Oct 23, 2026 at 09:43:54AM -0700, Brian Norris wrote:
-> On Fri, Oct 23, 2026 at 09:54:34AM +0300, Andy Shevchenko wrote:
-> > On Thu, Oct 22, 2026 at 10:47:34AM -0700, Brian Norris wrote:
-> > > On Thu, Oct 22, 2026 at 10:01:14AM +0300, Andy Shevchenko wrote:
-> > > > After three patches I stopped because it seems more works needs in each of
-> > > > the individual drivers. Yes, the series can be applied as is in exchange for
-> > > > a bigger additional churn in the future. My preference is to see everything
-> > > > settled down in a single step.
-> > > 
-> > > There are limits in how much work I'm willing to do on a bunch of
-> > > drivers I don't use, can't test, and frankly have no actual interest in.
-> > > I'm sure if I spent a few more minutes on each driver, I could find
-> > > another dozen things to try to improve.
-> > > 
-> > > I can go back to the v1 approach (fix only what I came to do) if you'd
-> > > prefer.
-> > > 
-> > > Or, I'd prefer to stick with the sentiment Jonathan expressed in
-> > > optionally requesting additional refactoring:
-> > > https://lore.kernel.org/all/20261018211807.66bfea0d@jic23-hlaptop/
-> > > that most of these changes are optional, and that fixing 1 thing is not
-> > > a subscription to fixing everything.
-> > 
-> > Right, but my concerns is that in (some) cases you can do one step further and
-> > use PM_RUNTIME_ACQUIRE*() instead of putting first the explicit calls in this
-> > series and makes someone to basically do the same again.
-> 
-> I'm not making anyone do anything except stop looking at the return code
-> for pm_runtime_put_autosuspend(). Those cleanup-based helpers are
-> totally optional, and are not always all that helpful. In fact,
-> sometimes they introduce more problems than they're worth.
+Hi Andy,
 
-And I'm not telling to go there in every driver you touched!
+On Sat, 24 Oct 2026 at 12:38, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> On Fri, Oct 23, 2026 at 06:59:19PM +0100, Prabhakar wrote:
+> > Add support for the ADC found on the Renesas RZ/V2H(P) SoC, which shares
+> > the RZ/T2H ADC IP but differs in channel count, sampling, calibration and
+> > resolution support.
+> >
+> > The RZ/V2H(P) ADC provides 8 channels, has a fixed conversion time of
+> > 20 ADCLK cycles, does not support calibration, and supports selectable
+> > 12-bit and 8-bit conversion resolution.
+> >
+> > Expose the fixed sampling frequency as a read-only attribute and allow
+> > the conversion resolution to be changed through the scale attribute.
+> > Use extended scan types so the reported scan type follows the selected
+> > resolution, and prevent resolution changes while buffered capture is
+> > active.
+>
+> ...
+>
+> > +static int rzt2h_adc_write_scale(struct iio_dev *indio_dev,
+> > +                              struct iio_chan_spec const *chan,
+> > +                              int val, int val2)
+> > +{
+> > +     struct rzt2h_adc *adc = iio_priv(indio_dev);
+> > +     u64 req_scale, scale;
+> > +     unsigned int i;
+> > +
+> > +     if (!(adc->chip_info->features & RZT2H_ADC_FEATURE_RES_SELECT))
+> > +             return -EINVAL;
+> > +
+> > +     req_scale = mul_u32_u32(val, NANO) + val2;
+>
+> But what's wrong with the simple 1ULL * val * NANO?
 
-> > To me it sounds like
-> > a double effort. Yes, that is_active thing perhaps to much to follow, but even
-> > there it can be refactored to something like
-> > 
-> > 	if (is_active) {
-> > 		ret = regmap...
-> > 	} else {
-> > 		PM_RUNTIME_ACQUIRE*();
-> > 		...
-> > 		ret = regmap...
-> > 	}
-> > 
-> > without changing the driver logic.
-> 
-> Well, IMO, this is adding more trickiness about the scoping, precisely
-> because all these drivers have strange logic. Here, it may or may not be
-> obvious to someone that the runtime PM acquisition goes out of scope at
-> the end of the 'else' and so drops the refcount. Then you have to reason
-> about, "what does the rest of the function do?" -- hopefully nothing
-> relevant, but that may not always be the case.
+IMO that looks like a useless multiplication, which will be removed
+again in some future "cleanup"...
 
-Scope is a fundamental thing in C programming language, I believe with OOP
-staying with us for already somewhat 40 years we should have learnt that
-scope may be associated with the local references be dropped.
+There is a reason the mul_u32_u32() helper exists...
 
-> Don't get me wrong, I think the cleanup helpers are great for many
-> things, and especially for well-structured code. But they're optional,
-> and have their own downsides and risks, especially for unfamiliar
-> people.
+>
+> > +     for (i = 0; i < chan->num_ext_scan_type; i++) {
+> > +             scale = mul_u32_u32(RZT2H_ADC_VREF_mV, NANO) >>
+>
+> Similar Q.
 
-Yes, but doing only one thing at a time has its own downsides as well.
-As long as it makes the same or similar churn in the future while being
-tighten (I mean touching runtime PM calls but not converting in some
-cases to cleanup versions) it makes a lot of sense to me to kill two birds
-with one stone.
+Gr{oetje,eeting}s,
 
-> Anyway, I disagree with piling your personal desires on a submitter to
-> "fix" when they're unrelated, unnecessary, and may cause more work and
-> problems of their own (or any combination of those 3).
-
-And I definitely disagree on the inducing a potential unneeded churn
-in the future.
-
-> > Whatever, I am not a maintainer here, so if Jonathan is okay with this churn,
-> > then it's fine.
-
-But as I said... ^^^
+                        Geert
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
