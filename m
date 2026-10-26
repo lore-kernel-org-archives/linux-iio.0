@@ -1,59 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792982318;
-	b=xYAdviwjFKQo+BO3gp+iQSdAJy6BFY/KoX5PR3Nj1RIKFzkk+6I68Oj99Z/vjoP4AnkJ
-	 HhGhH6PfRXqKzn4DmfMpVC9/JHNNc/ipbvwV6iDg6d1w/e8tNyuzecuwLVxDc9H4bAYvs
-	 1VSvMRyIjLluJN3gCR5C1cGV3ZnkBuW9IvhJI6Yyfc7VUONVv3Bu3htq2xCsMOc+fb64b
-	 DNdJJ78FVPD6E3ShG4n53IYtSZVKRoENHJv8UoIG/VfWwVlCBlhgaoadMOcxY+3UcAEVO
-	 yBRldVnSAuDZ5OWZZtkkiDOq5re04yHtZrzetRtdndkNKIfoonjwl8nsC96GT/b6lPw==
+	t=1792982458;
+	b=3lrArGsBltQFmWfMyQuCQuUwBjWWcV5AR+5fQvTqo+HRgjBuymDWHwK6W0rVYr/ZQ62r
+	 lQlUK3mGRMWR402n92ETaALGtq/MKu7a4YebP1QRlYx9IN2vlG1MRpnmL8YdR2Qv1yZMQ
+	 HoFsHxSDoVyZ1gbzJG/wu/NM2UwIZlWdMmfW7g36KDXXzYyHsoaKrCBK6O3JtnkYpsB63
+	 q14kNkhGvpBRr+ZflPcB41t8VteMSCwH/83xfMj45LkYKfeholMRYX2saFISHhKFxIHhw
+	 nkrXREwW6hpyOhZ16Gv+8beoio0ICfD3gQOMYjnT4p3j1a5QbK4Je6/un1+QkcPihvw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792982318;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792982458;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=+WSxtcpzWDqfdS75bPeo5bTo+c8L8XTo3/3XTzhs2c8=;
-	b=IuwiqVLAFNyFiA5Uf5n+ksD0goWMCfES6X+nDJ4q1HV5pIfsRaTVkX5ys6GEKoWFBK4+
-	 f9cUHSR5hp5khVoLsxqTKqPWzct8FHXOMFHfoWz6UnJLDHBVBfOhig6jbb67k3QCQ1ypP
-	 CvH596gse+5j/A0s1E9lLiOJeDywzrp+Wpn3fi76pUiqbaIu9RqTbu72N7LTtVMr2Jmpd
-	 guyQk1pmkAIKvXPIVd2N9O/CpyofjPCi/TL+rrj/mOCa6CllZGiRwFA6jzt6MXYM8Uv2x
-	 M4EZoWgj+qdXQg9NQfa497akW44ZtiIzs2QH+AL+rwR8qVlB/te7EvlmP2o7KoJ4ooA==
+	bh=vMduSqZGsc9f+qjSdR1aqHK+wgdnsPTQvPLBByERgyA=;
+	b=SRZlzNRMaHg2QMkdi3xhlyv/vy471a7s90dKHPU+Kr7EbUqvQImLxQkySXPpFaoQMYtH
+	 7Bdw3REuOiBIh1zT5D063b8af8OxeXdGeszLO6Fhfp2ubqYCSr70w/Pj6ke0kKMOZbBFc
+	 cDVbCUQtrkac4LPnzIK5slA0TWJssHinKGEsibZve/AQ/jAdpUpssFsNOtkm3A4bNDGq5
+	 jxe+qYbYuTUq7opnig7irN3iZbhpkG9m/66nJTgh4NLMd3mM9beG1SqcvwnjuzvMePSNT
+	 xMu+zrWWx4gOs5VRNi/pdwbA27+DDfbNdcPgkQwNcyvKEZzvGqabbQu6JSzTNZNFdMQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ac9+pc4G;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m0qbVUKG;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB7F606A31B;
-	Mon, 26 Oct 2026 02:38:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 809B5606A31A;
+	Mon, 26 Oct 2026 02:40:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ac9+pc4G
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D9A01F01825;
-	Mon, 26 Oct 2026 02:38:35 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m0qbVUKG
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B145D1F01825;
+	Mon, 26 Oct 2026 02:40:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792982318;
-	bh=+WSxtcpzWDqfdS75bPeo5bTo+c8L8XTo3/3XTzhs2c8=;
+	s=k20260515; t=1792982458;
+	bh=vMduSqZGsc9f+qjSdR1aqHK+wgdnsPTQvPLBByERgyA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ac9+pc4GgGD9qrk/zJZXuNNbzby2Q3zZb8H6vs9Lb4f+M71RBI1ni1rj9aAJupLdI
-	 X25Bc9VYquBgJkqvt42DBVrAYoWjng3eVg9IdibMnCnnWalBOCKG5pZWbbAtru6Yuw
-	 RIBbb9bjKYpOKuezVbN3PIY8eyxvPaszR7Ox3iCJQq0lbWSn7pf044dxOdU1JDEbcy
-	 gkaykEf/fXI14WGJBuwCVhSoAb8dKs1VPk8LQfI/KG/XV568ovT41wyG9W1w5JqRHO
-	 82kU4yujyk5pLRrjJd5Af6hqE0XQPkluhRa4mCAYQ0TsBpMmLMBs/vcbjg1uB7GhCb
-	 jaUcXFYoEcPcw==
-Date: Mon, 26 Oct 2026 02:38:31 +0000
+	b=m0qbVUKGhgk60ZMuW9NZ6Y2s18B9Wyn3S7KcQt1tSbs6l3IODAPoKRb63hfspMTvG
+	 +QODx+t8+Y4FJcdWKUxjqCqZpVj25PIUTG5MUfLB6sQl2mHiG0SEW8jJOhLqTzkLyg
+	 SYPZrtU9O5GVi1J6VcM+mztC6GWewPZpYCUqL3uVMuoLA5KyXRt3nwYYpIKyFzWjtV
+	 ps7lJSK0XUXz8J2gUxEY1Um6EWcLl9WQvCwzEti8nbJ6h40FKECGhcAHagx5ApKPJY
+	 wWWrPebAJQGeqx/k8S0UKt7ty9XKN8lsjoZJlAx2Hypa8Zxa5mrRTDtSdi8WJk8pAQ
+	 CT5yd9SN5TXAw==
+Date: Mon, 26 Oct 2026 02:40:49 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_icm42600: fix parsing of all FIFO
- frames for odr change
-Message-ID: <20261026023831.32e65b30@jic23-hlaptop>
-In-Reply-To: <20261019-iio-imu-inv-icm42600-fix-odr-change-event-in-all-frames-v2-1-d72a69c327ff@tdk.com>
-References: <20261019-iio-imu-inv-icm42600-fix-odr-change-event-in-all-frames-v2-1-d72a69c327ff@tdk.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Nithishvelan M <mnithishvelan@gmail.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Nuno Sa <nuno.sa@analog.com>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
+ guard(mutex) in ad5933_show()
+Message-ID: <20261026024049.556c6642@jic23-hlaptop>
+In-Reply-To: <atZq2GstK_rxOgbj@ashevche-desk.local>
+References: <20261019150248.416-1-mnithishvelan@gmail.com>
+	<atZq2GstK_rxOgbj@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,22 +68,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 19 Oct 2026 15:37:33 +0200
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
+On Mon, 19 Oct 2026 22:09:12 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> On Mon, Oct 19, 2026 at 03:02:48PM +0000, Nithishvelan M wrote:
+> > Use guard(mutex) to automatically manage the state lock in
+> > ad5933_show(). This simplifies the function by allowing direct returns
+> > from each switch case, eliminating the mutable return variables and
+> > manual mutex_unlock() calls.  
 > 
-> For getting all odr change events, we need to parse all FIFO frames
-> in each iio device. Fix this correctly by sending effectively all
-> frames to all iio devices.
+> ...
 > 
-> Previously only batches of frames containing a matching sensor event
-> were sent to the corresponding iio device.
+> >  	case AD5933_IN_PGA_GAIN:
+> > -		len = sysfs_emit(buf, "%s\n",
+> > -				 (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
+> > -				 "1" : "0.2");
+> > -		break;
+> > +		return sysfs_emit(buf, "%s\n",
+> > +				  st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1 ? "1" : "0.2");  
 > 
-> Fixes: f670d4d34773 ("iio: imu: inv_icm42600: fix odr change not caught in certain cases")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Applied to the fixes-togreg branch of iio.git.
+> You can (re-)use ridx here as well
+> 
+> 		ridx = st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1;
+> 		return sysfs_emit(buf, "%s\n", ridx ? "1" : "0.2");
+> 
 
-thanks,
-Jonathan
+Maybe call it something else here as its not the range index that I can see.
