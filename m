@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.10.16
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.23.44
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793033500;
-	b=BR7qosgiPz5j/tH7+lQXmsyUQELZUu7vdF10U4wrkjOpI8VDZgHmLDSz9Mcuu7InFS62
-	 vSiqQ5+arq5s6FiVxEC6maqbU5wnX7YyHnRen6o+cT8R8voMwdbnO1eW/fnfJs+VZpGyT
-	 XAn6tl1Qbhz64vu2oztXts/BVK3MAA5r3M2lspPfsCVCB7E92JZ7DI3vV1Ftnj9pT4+LR
-	 B/eP3ipJb1KgvtLerF7CLEebDmhvHzz4sy8zLVQewX6wO/TO8VLPR6i1QwezSoMynSoxo
-	 g1TI03f7j2XgcGSv6wh4WB1xuirwNbnACxDVyCDC/eNXZCAWXDuVxAge7kwVv/sUTvA==
+	t=1793033497;
+	b=BTv+/pwzsqht+7yJkEcF6E8zHuyHIKmJzi4l29/xOdcmyyp8PXESf+Kx1BSqRKrZUV2I
+	 Io+aheoG/RXKUJv8ZhPzHi/mHAMMUmq6YLtkAy3HZUV1ME9jqiCkqC9LkHIW4S3Vn7xe0
+	 z4uAehoL5SLqLif3ZFIcIOma+627CZwK/zXvNfHg1tA9KvI7c+qBO6lLcChbEFmXhV5MT
+	 6edEeC468xqiqu7h3EW0L97t0ewwnf7i7K3ZEo5Rj4hFKrkW8HKpUik4zlRL4gsFl2mq0
+	 kyWntNAvx4WsbwiZl+0uTtvXngf/AqlriZIRPdBb4L3Fr8w9pr25fHf2G7JF+KZrusQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793033500;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793033497;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:
@@ -24,51 +24,51 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:
 	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=p6Zx+WbZrv3BFhnfTXLEh6oH4Rn9DprcpEwq96k6KfQ=;
-	b=VrMHVwLTjeWCO424B9E8V+osBUP9XHMy3YlEWyvKkoJVdVTdcEmTIAOdhs4kL/p+TAt+
-	 hleWR9J4FyRJx/uzarNDkdu41ApUKQzYbhbaniD4xG3Lh1gwWZiJ+S2PhPTEw6rs90qNp
-	 rwNm2ck/DPJPR4/v4N3ceRS2XheZX+sVTCeZo1tqwuU4k6+Drzn72up/oz7jyiIDM0jY+
-	 M6vsZS38LLzzXgh3ovaFSZkQdEkymcSYdd29HhMzXGcHgzX9qTbJEFctWN/Ib+J9gXNM8
-	 11EX1q/FyxNWQXj6iY9mY69krvcOhM9LvwT7QYteZG6Z1YeE9j7sZZeI252Xi8hwIJQ==
+	bh=/85Uo8ss7ZQq6Q2+KG9C9HxYnrpNxU98P6zmN6RyqDg=;
+	b=hYvmADEeORU3bzzphPS0B/xYwf2wQ12bv0D/6rp/ZHL0OsFixjdfpfVQrTiD3IkeWM4W
+	 vVxmNukN7nsaTXiaclBdvagXOiNp+iR+oF0NV5b0yivrY86n3r+oq6n+Et1V9vCBZjzQ+
+	 pIircgXBMWL2u04zzF0BTYty/J+LOQDuUaNcZEVYraIihHD7npnWdYCVari4BN54YkWJl
+	 5OjENzIOxp7Y/ZlfuTSkuIdDmL0UHhMoOD04G0vOPcU5jXQnDLpAEg6YgVCla2ghjNGKz
+	 0ZjDt8KICRoAFWlvjmVyHmFltPncoljKLeJ0OeB4xGLvHgMwimvEY5IeTB8LgSICT9A==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=outlook.com;
 	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=EG+3XvCZ;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.10.16
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azolkn19012016.outbound.protection.outlook.com [52.103.10.16])
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=RKHWNsp2;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.23.44
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19012044.outbound.protection.outlook.com [52.103.23.44])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB624606A329;
-	Mon, 26 Oct 2026 16:51:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB624606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D9AF606A321;
+	Mon, 26 Oct 2026 16:51:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D9AF606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=EG+3XvCZ
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=RKHWNsp2
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=D8QoLEAxkPjkTrbgNVphhgZAC2qp3ISENWBXVFoaElgI5rQbTNVwInXVlaiUw/tN9JKv2zKbiZ/Tg/gRzL40iKfbTq3v0m2LnycMiFUNG+lfQXpwxOb1Rv4kB5/VL4pafsJjJUncE05KlIYRv5r2PAWU3Zg11TG9mRZjMs7nrZpcKePvCC52bYrJeZLybG1MMltivoeb5lgbN/5/dh262R4K3QSNMm9jNderXlssjpyr7nyVEkPtMCbf+8Zmr7zj5nMWybWMN/8SZSIW2O9osGv+Z5qujVtoYa5ml2G/dgj/ibxfAqU4sNuvDcAsEXnaRvnrT/MjTNLDkFtUd1bb1Q==
+ b=CL34IJir0nw9FbFZ6TlyvzNi72siY+L1NOPo/12ZTBapb05QD5Mk9k+/NztaJFcH9TsfdiZSQCkbHLBkMNQcmA9citDkKuIs18lUSjfngU8rjK4am1Jk7fyIOxq3A/g5rJz6PpDTYrKxym7Ju00v6vKHocvgZew/JOlu1QSv7yCCKJpVaH78PfBtAOcudgyNwkAl64/isl+U2rh6Y/Aqpm7NLWBKUcP0Hv8o9NIRsbPf9qh/FHZXGi5MJvf1E05oU94MKtka5BN2PKjP+26ZWqB7yCIjY+LZPalE3h+TtUdTjYRl49cQghD81QS0jC8bR8fNBg5uUFN9cUUUT7nCgw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p6Zx+WbZrv3BFhnfTXLEh6oH4Rn9DprcpEwq96k6KfQ=;
- b=MAdLJDZVMuPeZtZZN1iMXnV9q5n5S+mcABIosIpa5KiVnSdnTpdVR00TZG2CuXrW/IjGtbnHQR9WGtN9el8q4Fs219QAE0f0N7TSEq94GgUpShcZLG6rgPRLfR1ccEQvLIHKyPZhgiWuej5CkQ0gjQVGElWHFhwKISvIxAxNmKMyyTf7GfO8kGpA4DEYhvsUeN2/7Na9z9PmZG0YvG949EDafW66Y+TXxEhD9T0c0927Z+VpROTtz7M3pf2ebMt8FlvOx/VfxO89y8KzRefWgo/No0bTOvfd4E7RgrDJ8+DR4JkqBw2Yz6l51yeLOGRlAENpi5XQ2/mSnEXsTLP03g==
+ bh=/85Uo8ss7ZQq6Q2+KG9C9HxYnrpNxU98P6zmN6RyqDg=;
+ b=g5JmF7di821r+EcDCPA3JJJS2i4VZGhWSEqhNRcrvD5ThH6MwxgLhPXSKcxxyG0BeywQaIuzGzbSaDPru70Kcd2fEGTQZNC714W+mG2y3Upk1cNlUJ1GNLWy30yPuLTKxUXP0EXjTxN5MZYEUni2X0Tw8yAyjt77l92BU0RpFa5zVMHkwqroQZyC+wbWZP5HH3qluUbONunX9Q1G5tUDURWaJ9uyGQFb57W8ECV4IyECORaG56tmAkLfj7VzVYSFL1KZHH9PVtfHHfMwG7IhBLJOZHjPUvm6O90IKKsLP4QXJ97eDXAO7Cf1XNgh4QjiJgCnLqnkMoOsQCRTCrNu7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p6Zx+WbZrv3BFhnfTXLEh6oH4Rn9DprcpEwq96k6KfQ=;
- b=EG+3XvCZUzXDnyfEXDXFr3vxAsy8vcijmpedC4e07NPoKNnrwA0AN3L3bizOktnx/zYAXqq+WbmTJi4XHa5qzfH5Vyjdtv7hWtsvtIxFQUKb3VCu2wFV3B2vgRwler8v1OyVibu+3ST7MBMmbP240i2wp5AiISJMmhFrONDSb4jf210dw4t59oStGl9z53OPms4SrtXyh80p0hlc73qrdo1tiqNmDow0a6y6rt+6YJcJxTkLhSDeTJbE5mBOeLT3eSO3qE8Uc9c71CZ0SBMDUH1J+J+WUPFCT4mPFNyh6zKsY5EgmF8c/nIGgaEJEVxCfyireFhY+PpTKYRtpHSIKw==
+ bh=/85Uo8ss7ZQq6Q2+KG9C9HxYnrpNxU98P6zmN6RyqDg=;
+ b=RKHWNsp2UW1plyuAE9AsUzBlRGFypB2oQb6+oPWkvaUgNQF+OAWd8/nYEryaDstzAyAY8An5mx7TXzV5y51TlVOZhmdUGlcNqSub6jwjXOA/swGGQkmLGYavFp2eSyPpU4wArLDmyL0jOaPupStMex3Zl9umDI3PbJLZ3QE8AqoDoP1gZ5cALvsDhTyK+vaacxJTn71KT63SByQSsRNxGGPM8Juwzn5ID7Vu6SrpwnOiJfWd8GEpeYugF+3hWZr90VkMocefI06BbnBH1jFc1y6baVcrG679MsUIWTsJrB783gNFqclwpvtUTP2fWakTlNqXgcIBUnli/zwzF7hYug==
 Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
  by IA3PR12MB389676.namprd12.prod.outlook.com (2603:10b6:208:713::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Mon, 26 Oct
- 2026 16:51:37 +0000
+ 2026 16:51:34 +0000
 Received: from SN1PR12MB2528.namprd12.prod.outlook.com
  ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
  ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0546.021; Mon, 26 Oct 2026
- 16:51:37 +0000
+ 16:51:34 +0000
 From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -77,10 +77,10 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Subject: [PATCH v3 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Date: Mon, 26 Oct 2026 11:51:14 -0500
+Subject: [PATCH v3 1/4] iio: prepare iio_format_value to handle higher-precision IIO_VAL_DECIMAL64_* formats
+Date: Mon, 26 Oct 2026 11:51:11 -0500
 Message-ID:
- <SN1PR12MB2528DB8EE8ACEBF9551ED52EA5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <SN1PR12MB2528906BE220765FAF201080A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
 References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
@@ -90,7 +90,7 @@ X-ClientProxiedBy: DS7P220CA0093.NAMP220.PROD.OUTLOOK.COM
  (2603:10b6:8:25a::17) To SN1PR12MB2528.namprd12.prod.outlook.com
  (2603:10b6:802:28::33)
 X-Microsoft-Original-Message-ID:
- <20261026165124.119890-5-chernyakin.victor.j@outlook.com>
+ <20261026165124.119890-2-chernyakin.victor.j@outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,63 +103,62 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|IA3PR12MB389676:EE_
-X-MS-Office365-Filtering-Correlation-Id: 37e0d2f3-6c8b-4031-34cd-08df338165f3
+X-MS-Office365-Filtering-Correlation-Id: 757c15be-e94d-49c8-36a7-08df33816444
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|24021099003|20031999006|22091999003|23021999003|24071999003|15080799012|24121999003|39105399006|5072599009|41001999006|12121999013|19110799012|8060799015|260925184616899003|4140399003|25010399006|3412199025|440099028|40105399003|261007181701699018|26121999007|11120399003|261005200801699003|10035399007|1710799026;
+	BCL:0;ARA:14566002|24021099003|20031999006|22091999003|23021999003|24071999003|15080799012|24121999003|39105399006|5072599009|41001999006|19110799012|8060799015|260925184616899003|4140399003|25010399006|3412199025|440099028|40105399003|261007181701699018|26121999007|11120399003|261005200801699003|1710799026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?bFHQ3uke4E78Tqx8tlrQ8I9Vj2nQAPT5OJgN1KoS3IilysodREM0j9QyJSOh?=
- =?us-ascii?Q?f1SlVQLZznm0Mm8pu06K+RMGS/thCv7FsFgZFEkJ6JoCiNYaG5bI9rqDlu5l?=
- =?us-ascii?Q?M/DYYUBTEm+Ej0nqekwt9/b4ve2zcV1pP8wdEOGYDD6QfvY2K6RZXm4g2KDX?=
- =?us-ascii?Q?DMGjKwsXCSe4I8PYEih1wCw/UkVA03CUBAtCMGFX36IEFYr8QPd+AqfVU+xP?=
- =?us-ascii?Q?d7MOXMqfNf1hGgMy4/pfc94k6PYFbBe21zUvCPmo9/3nupfNSAiwjs0mr/xf?=
- =?us-ascii?Q?c1DtTAK7uOgwlvkuMEf1t4ZM2fTyEJTbz5r5BCRgxsyu6vejs84y9wYsnwjP?=
- =?us-ascii?Q?cNbhtEcvuYPv2OtFP8idgiVfzCUm9IfLnfzmtGDqJzQqBrH5RMQGWEA1HqEV?=
- =?us-ascii?Q?rtGbrd61uhXY/2YlhQs9BQ5aBTwNEN/pwFHne8B+x+mJujVWCKzE0KKtpz6d?=
- =?us-ascii?Q?wRHmY3AO7v7oK4bSJ0clAmfL1FfRFdcRyHDiiIgcPC6PnBmekvWz9t8qXsSW?=
- =?us-ascii?Q?J9LfMwwDn52YAq6Cm8GwtKljDcoyGN7pbvD2Ck7T/kgGYSkeWFDjLnZ/IK+r?=
- =?us-ascii?Q?0d9x12cIr1UtLkRwVoQJrWOr5D+qNKMc6ERTpPfzYW8xkV4ZuQeezaN4L4kH?=
- =?us-ascii?Q?POJ4BgD65hlXfshgqZB8mEW/k8ei+ASCVbxPgK40Gle4YqdQiioPDL+Cg42O?=
- =?us-ascii?Q?P0TzsuXzY3/v4NibPHk4akrWMK0zqHOvbtiP9fdglm7gFrKIevTgFf8qxZFb?=
- =?us-ascii?Q?fEO8/t62gxbd0/StZvOlCqo0OJd36qi92MFvoUXXuaJVGtG/gv3Uwa51R/ps?=
- =?us-ascii?Q?Vq4O7tyKOTI2DxpYY3DTACLhuqhiNPIa5mqEUcnXUJjHN+EiLjv+1DSryWu2?=
- =?us-ascii?Q?0FBzTCmVzmn+YvKwNdWGfviGivW/QkeSTKGgorbR4kebtczK70gProgZfiFZ?=
- =?us-ascii?Q?BdGlkHQccYPJ7Gj7NgwMEBMBPYlUVIsTHmtsTTb7EIAa2VmLQwuwME0oLPhl?=
- =?us-ascii?Q?BOFl17ZWQ0O3zJ9feu6GM+Cj19gorlEOHUkRvBXf0rlZ9ynA7x8/8NNnX2O9?=
- =?us-ascii?Q?3ECxbfr283eIqXs105iRJLPaDDgXSq9ZOwmpevCKVHgfVpeeraTgoW+ggzxi?=
- =?us-ascii?Q?MmRLiUftBLpcSUFo/rtEg0s/yTK1pQ+5qdepG8oc31YPsaq9W+nprw+qT/Zp?=
- =?us-ascii?Q?nt2qF7SLMvv4YO6bXrhusVP4JnJWQ5C7JP9BG7Iz+1N7k/FAFyIEaRsWRcp8?=
- =?us-ascii?Q?0ia2DmNydPYPEyJyBAEwuTgGMlbqN50HZ2a2AuFFog=3D=3D?=
+	=?us-ascii?Q?/o8DtnCc74Y2mhWJ1f2m9vH34TOZO/sKJ7bLvQ+qp5g4mchxXhyJ+CCmtY/6?=
+ =?us-ascii?Q?wS+NUZr7iEBY7TyIiw3Qx9AV5cKefKHS1kdRJSiNaIwJg5G4rqvvxG1UdekL?=
+ =?us-ascii?Q?1Ov0ssIpX/4pOwVBO37hYo+P/F8yFoyKg0dfxfbO86qBFUC0BDhwCP1Y5hmC?=
+ =?us-ascii?Q?9hjEmAIwIhKBz46ytQtzEkp5m3v8Yf7aeMnFBOEiMZhXMt9cFI/pZT/LQWFC?=
+ =?us-ascii?Q?laCuUiRSXtRIbp+pjnv0i3dxRgALS9pQqeUGpps+CAQjYg9696Q+wB6DJqkD?=
+ =?us-ascii?Q?v/oIe4jCr9lwdPGIImffCerc/BVxVndhwW036E3kf0hJjvhnwEF5wJdYEDC3?=
+ =?us-ascii?Q?mPuw6DwfVgjqNtPYQdPWsEac/300QUFzG0vAcmWIKinEsAk/tIX+U/4Ku1yJ?=
+ =?us-ascii?Q?vO+Ltux1TmcG1rLsXM4b6hgxZ/bpaVDTcDzPlpsQm/DuOsNBd9TsJRlH/9B/?=
+ =?us-ascii?Q?TcHKGaJqRszJn5h1k3hgD06shjp0W1h8l5rV0b9NeEeZWMWR8aQH8WAp2Bcw?=
+ =?us-ascii?Q?QJNXpK/RJeNsAHTcszrz0vtnRVqoJf71qD6gYBBwUQo/dqm2CyQ6k0oBcgkY?=
+ =?us-ascii?Q?fzdEBEKfzlYu+q53GReqIRowRGJPtE4upjN7z/7sX0743aoj+JN3LezRx+tg?=
+ =?us-ascii?Q?5EyHE8YWClKISJe08h8rQxddRlau1/bvveSlrhA7lGJT2RvQgosNiXb4Qqce?=
+ =?us-ascii?Q?pYwMyc/sgvSC/gxuMQ3jFFgi3u6o+PHx5LpJOMu6Go9Z10EveP3puYiS/Xfu?=
+ =?us-ascii?Q?J3E3fhog2TpRg6FBxpPFPub3Kwer5cVwd5R9M6kWiLS4gsEt1WmCCMCZKI/n?=
+ =?us-ascii?Q?7MQS0sx3aQ76s1lW2+cKHViykQh15a/MpOuK8HMbFdigtuAk76Do3h4TeAMG?=
+ =?us-ascii?Q?UIJnz0yyTuyZNbxRJI4L4Qh8Pmau3IuTVEgr7S7F1x7p+HcxtDeHsjElC+Fp?=
+ =?us-ascii?Q?B0Xayj2+lyVYoK0lmqt2fWsUcOIMBXnLL0MOg3qZoh8zD7+zIGk4qlVkKD7I?=
+ =?us-ascii?Q?9AYKfUU2Hye7+jFRpOfA9g011joXdOPnv/NLpaQASxDvkSZupKAnVa0BlNii?=
+ =?us-ascii?Q?ppz4yk59p3jCrXI+RUFSXcFEAZ7QFotQFswoXegDsLbMiDUj3BDo3JH+rIQV?=
+ =?us-ascii?Q?HB+enfs7Xy7AEOXdbzNjUugRsXKzeeh433sZICZimEklj2PDg57k9SKPlv2J?=
+ =?us-ascii?Q?fcl6IHrMTLUOIvvDF6emzmsGoWGR7VU1tKPGfQ=3D=3D?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?c1gWQ3SiU/X37W4msi/FT7uPSvMcyUrM4iAoNoPBj9BSw6V4ZjzjD4Q1ENvp?=
- =?us-ascii?Q?bLwQT/1Ygr/NxfymD7RHT7wnCYLEC558QgofJhpZCUDsCN5DCHHNcL9ICTV/?=
- =?us-ascii?Q?TkUyBUXqaVTCxv3a+u+N8wskChVqZMNRf98kF9rDCMLUe1DYG0GsSh9jyEec?=
- =?us-ascii?Q?mvB3tiagakEA2QwKPuqQ/d8vTgT5FgmzQ8SN68HE2IUTF22T1Vfifl6/h+b2?=
- =?us-ascii?Q?ZuXsKkrFcFREj2XneBzadwJhBTQHmDIaA175ngVEED7oUj32cR3o8MeWOcV4?=
- =?us-ascii?Q?r2FdGm3cnNS98JoR+029WUiym2X1fqwDub0EW5qde5Uk4fGUumvOV9lpRiOn?=
- =?us-ascii?Q?fx9094jV6ZFDlz2/mVTb8aQ+x2cUxOaevfRneewhtYP4OzIKD6LvxjnXncE5?=
- =?us-ascii?Q?BRYabJBDQ6+EZL2MlM1czpzmc1wIUjbsnj8ZZ/WTZfr8T28H6IU870t/TgnR?=
- =?us-ascii?Q?UpaTEvr95w8dKghlGbGMYlS63pUez7TUoa8GXlzhEv+5MHG0MJ5ROzNkvmCt?=
- =?us-ascii?Q?RFR6Ckgp8jZOpDuV9GifhaPsCYqh7fq+9vGPQx0VFkLoCaJr3hSW59Z5oWhU?=
- =?us-ascii?Q?heCkFQLz88TUGZhhW90jW3BGX66ngc81pLbS1IKSwuN7ySAv7TnCuWR404fp?=
- =?us-ascii?Q?QAKpUkT2GH05O4oghYMY3A7Xin5wrfeMR0OZqCF2IvHofaoXXGL842EkI50N?=
- =?us-ascii?Q?RXAnywkgSWNNuek2gajOJk22i66xVrV4Xp9qLcz1GdSldjKXTDki7jAX1nZg?=
- =?us-ascii?Q?fjyM55JROks/zZ3nLyVIjbQIgC0kE8+E0se7yUEarpKgklM/yAq3b4GWLu6+?=
- =?us-ascii?Q?iO38pvsB0ocKJkaCcybfe02aFaZb1bx9S3ieATjWioNMq5xCu0jhV88cG+c2?=
- =?us-ascii?Q?5W+2jhGfx6MqZiCCqfEg4p0GPdVZvCZKo7zJQyr6OnfIHgh7yt85dvtp7nxR?=
- =?us-ascii?Q?EfbilOVrxa4mKQLdd6mHQ8KMEZ1953URr99S2MWqsP5mH2qz9zuQYDqi9p8c?=
- =?us-ascii?Q?mk8aSSBh0cLt63n6PU4iJucowDtO7BB4ANe5gMbo8dC1Jbpvh+Ws4ECzhNG+?=
- =?us-ascii?Q?a0WlD6Xmgt6TcBQkkNkTrp/RigeIxAXPcKIBV6qTOrBIhU/ba7tBTC9KTSlW?=
- =?us-ascii?Q?VSLEK7KJs3kzj0WU+G6Dp5RakR1z6UYIcY0v5QgAtMkDww6p5EayZKr49lEG?=
- =?us-ascii?Q?Q1SxDYLaSJEb2GmquiIH0wxpc7mtlykZH0EbTJ1chLU1cNm8ktv0mMQXemHI?=
- =?us-ascii?Q?14ooiDfqkUX6fn19KOpqRMcBmqmR7O19u2TuF5mRnIn9X2hSjsYOcSCYSnRI?=
- =?us-ascii?Q?8iE4AVgFwrt92R5NaopGCyCfWLl4xoeGSgK2JgXIfCxE4Zretsf9QCl7VDgU?=
- =?us-ascii?Q?8ynK+VTeSGlLq2mvEg1Idxr+gSi7av0PWHeG6pcxNHTLrHOBpQ=3D=3D?=
+	=?us-ascii?Q?36b7B9rey9fhdsbtD7YjKdeQ7u/Jd7DzEGTNnEF7VAPt8kW+K8+Jv09BYPCS?=
+ =?us-ascii?Q?bnSPPQ9cYp6PxKXe9Xx9rQJWuN2wXVQl+DV2SZrum3iyBWpGvWz0yMEuEYux?=
+ =?us-ascii?Q?jTAGLrPhOkp4Ti5yhObzkJ4M2sUGezqVpvDs3BJpjSqFc5CfEHu6X45pEz1s?=
+ =?us-ascii?Q?Zc4N2OFJiefaqCuJlmBNTtBX9xJJwpUn3fL6oJrrlwTXcdB3ePv5dCoQJwlz?=
+ =?us-ascii?Q?2xxWPRXBCqXgT3P81h5litHLHT/6CXKtjc4YuyRmZMvqZvA1kQr1V1XtbUC4?=
+ =?us-ascii?Q?2IrmLDKrnVjJKyhJAV0f7Og9+OBq0fzHZirwQMvXfbgVs1thrrtseENQemEa?=
+ =?us-ascii?Q?0TrTJ7Njj0gQRatMX+difFKGceQsab9LgFnfF01w0BB5w8IRoo7YjagJMAXu?=
+ =?us-ascii?Q?dcfmW+Ja/qEmqE6PQwl/z9Gz/8oj4rPB6l9Pa/YRE7n8Gdd9hGXjjI+cSYia?=
+ =?us-ascii?Q?MnwtBjI53uDe2bKrI4joAqVEwnuRDfXldwnEsXPWujj92t93sd5mvJ4XvJ+g?=
+ =?us-ascii?Q?qfPkcHDbpDE5t7sW0qBEOvQYWZDSyq7a5yrL1XnirhVw8nbZV4d6CE/l7thu?=
+ =?us-ascii?Q?lnXn2i0Z/7Ll0AGtRda+/Cx7ivPt/s4tElu3/c1qtmjcIAeQN6pGci+OLGEK?=
+ =?us-ascii?Q?PZMHfNmrqv0+Ae8M/gwo/WKDLSaYdC7FyDRFcb4HXA2bUGAuIl1pSDOvYAtU?=
+ =?us-ascii?Q?o46/iyWT6HYLhKfw35265/WJ7XuvoR1oManYcswQoodlXWqoCgRLGL4oQgyw?=
+ =?us-ascii?Q?5+KMRP+6Q6R0vXC3DCpWT9tzRXOdgLIXGzDPR9UGKmh8FULlehJQVo2VF0IJ?=
+ =?us-ascii?Q?phWL6Vt8oVezwICVenKB4I3rDONP5o3MSFAzTUrQEDTkY4REXgZ1NOX8qD5Q?=
+ =?us-ascii?Q?Au0XQRw7oqAgbT3s5cjyvbiootp9BnIWLUTeBHIinSyX0ebTxnZhIqW5Vise?=
+ =?us-ascii?Q?+pabDiovbMaFNgrrek5AY8t8BO3vlF3ufcxFySQ21vW49LO//Bj5D89PsUqI?=
+ =?us-ascii?Q?shgWDRQGGoyhaavlUCN4oT5S8gyiwgFOMBzzHwk8FykdzTy70OactVvymjRC?=
+ =?us-ascii?Q?Gy+LKq/bQ1px3goz5e8y6OwMBJSo3oDdfZf4sianZXS6h3LkuKXciU4yB+Pa?=
+ =?us-ascii?Q?T9qwPFeq/6/1NZrFtaE1dFuFKRvr0F7Rn3l00O3f3psXwVgZmNi/2Qlfr3N9?=
+ =?us-ascii?Q?P5+VzgKoFxkF9JBsBlWFBKWFEiLMqLdbPtapsxLF7LolcGLidNaZreEa0CA8?=
+ =?us-ascii?Q?vfJSU716oTO8FDoPh3JVQE0Ea7tmyYo8re1lV48vPTfurjM72q3cYvCm/7lN?=
+ =?us-ascii?Q?xpYZ1P6eqjBSJ/+Dbaa3gcfPIbi/U7iPQN+p6WtCXeayfXi9lqCrcECN/L8N?=
+ =?us-ascii?Q?7gOqIiOcH0ekaYVphIz/TnESH0khOIOoFzs78M4LZ2wxpj4+sA=3D=3D?=
 X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37e0d2f3-6c8b-4031-34cd-08df338165f3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 757c15be-e94d-49c8-36a7-08df33816444
 X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2026 16:51:36.8436
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2026 16:51:33.8701
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -167,558 +166,64 @@ X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA3PR12MB389676
 
-The FDC1004 is a high-precision 4-channel capacitive sensor that talks
-over I2C. It can report the values of each of its 4 channels individually,
-as well as the difference between any two of them.
-
-This initial driver allows performing single reads and configuring
-the sensor's various settings (sample frequency, calibration
-gain/offset, etc.). It could be extended with support for triggered
-buffers, repeated measurement mode, and/or power management.
+Prepare iio_format_value for an upcoming patch that adds formats up
+to IIO_VAL_DECIMAL64_YOCTO (a scale of 24 digits) by avoiding
+computing 10^scale when doing so would overflow, and by avoiding
+undefined behavior due to abs(LLONG_MIN) (which couldn't happen
+previously).
 
 Signed-off-by: Victor Chernyakin <chernyakin.victor.j@outlook.com>
 ---
- MAINTAINERS               |   1 +
- drivers/iio/cdc/Kconfig   |  10 +
- drivers/iio/cdc/Makefile  |   1 +
- drivers/iio/cdc/fdc1004.c | 488 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 500 insertions(+)
- create mode 100644 drivers/iio/cdc/fdc1004.c
+ drivers/iio/industrialio-core.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 69c23ae21016..4d926c47ad8d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -27392,6 +27392,7 @@ TI FDC1004 DRIVER
- M:	Victor Chernyakin <chernyakin.victor.j@outlook.com>
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/cdc/ti,fdc1004.yaml
-+F:	drivers/iio/cdc/fdc1004.c
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 767a7794624a..c30659ca0544 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -653,6 +653,18 @@ int iio_read_mount_matrix(struct device *dev, struct iio_mount_matrix *matrix)
+ }
+ EXPORT_SYMBOL(iio_read_mount_matrix);
  
- TI FLASH MEDIA MEMORYSTICK/MMC DRIVERS
- M:	Alex Dubov <oakad@yahoo.com>
-diff --git a/drivers/iio/cdc/Kconfig b/drivers/iio/cdc/Kconfig
-index e0a5ce66a984..6b9ea2cd37bd 100644
---- a/drivers/iio/cdc/Kconfig
-+++ b/drivers/iio/cdc/Kconfig
-@@ -24,4 +24,14 @@ config AD7746
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad7746.
++/*
++ * Regular abs(LLONG_MIN) causes signed overflow, which is undefined
++ * behavior. This variant avoids that by performing the computation in an
++ * unsigned type, for which negation is always well-defined.
++ */
++static inline u64 abs_s64_no_overflow(s64 x)
++{
++	return x < 0 ? -(u64)x : (u64)x;
++}
++
++#define GREATEST_POWER_OF_10_THAT_FITS_IN_S64 18
++
+ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 				  int size, const int *vals)
+ {
+@@ -720,13 +732,19 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 		int scale = type - IIO_VAL_DECIMAL64_BASE;
+ 		s64 frac;
  
-+config FDC1004
-+	tristate "Texas Instruments FDC1004 capacitive sensor driver"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the Texas Instruments FDC1004
-+	  capacitive sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called fdc1004.
-+
- endmenu
-diff --git a/drivers/iio/cdc/Makefile b/drivers/iio/cdc/Makefile
-index 41db756d8020..88253f33c5a7 100644
---- a/drivers/iio/cdc/Makefile
-+++ b/drivers/iio/cdc/Makefile
-@@ -5,3 +5,4 @@
- 
- obj-$(CONFIG_AD7150) += ad7150.o
- obj-$(CONFIG_AD7746) += ad7746.o
-+obj-$(CONFIG_FDC1004) += fdc1004.o
-diff --git a/drivers/iio/cdc/fdc1004.c b/drivers/iio/cdc/fdc1004.c
-new file mode 100644
-index 000000000000..1fe2874cd65a
---- /dev/null
-+++ b/drivers/iio/cdc/fdc1004.c
-@@ -0,0 +1,488 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Texas Instruments FDC1004 capacitive sensor driver
-+ *
-+ * Copyright (c) 2026 Victor Chernyakin <chernyakin.victor.j@outlook.com>
-+ *
-+ * Datasheet: https://www.ti.com/lit/gpn/FDC1004
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/math.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/iio.h>
-+
-+#define FDC1004_REG_MEASn_MSB(n)	(2 * (n))
-+#define FDC1004_REG_MEASn_LSB(n)	(2 * (n) + 1)
-+#define FDC1004_REG_CONF_MEASn(n)	(0x08 + (n))
-+#define FDC1004_REG_FDC_CONF		0x0C
-+#define FDC1004_REG_OFFSET_CAL_CINn(n)	(0x0D + (n))
-+#define FDC1004_REG_GAIN_CAL_CINn(n)	(0x11 + (n))
-+
-+#define FDC1004_CONF_MEAS_CHA_MASK	GENMASK(15, 13)
-+#define FDC1004_CONF_MEAS_CHB_MASK	GENMASK(12, 10)
-+#define FDC1004_CONF_MEAS_CHB_CAPDAC	0b100
-+#define FDC1004_CONF_MEAS_CAPDAC_MASK	GENMASK(9, 5)
-+
-+#define FDC1004_FDC_CONF_DONE_n_MASK(n)	BIT(3 - (n))
-+#define FDC1004_FDC_CONF_MEAS_n_MASK(n)	BIT(7 - (n))
-+#define FDC1004_FDC_CONF_RATE_MASK	GENMASK(11, 10)
-+#define FDC1004_FDC_CONF_RST_MASK	BIT(15)
-+
-+static const int fdc1004_samp_freqs[] = { 100, 200, 400 };
-+
-+/*
-+ * MEASn_{MSB,LSB}: 24 bits, signed. Format: IIO_VAL_DECIMAL64_YOCTO.
-+ * 1 step = 1/(2^19) pF = 1/(1000 * 2^19) nF = 0.000000001907348632812500 nF.
-+ */
-+static const s64 fdc1004_scale = 1907348632812500;
-+
-+/*
-+ * CAPDAC field: 5 bits, unsigned. Format: IIO_VAL_INT.
-+ * 1 step = 3.125 pF = 3.125 / 1/(2^19) raw value steps = 1638400 raw value steps.
-+ */
-+static const int fdc1004_offset[] = {
-+	0x00 * 1638400, /* min */
-+	0x01 * 1638400, /* step */
-+	0x1F * 1638400, /* max */
-+};
-+
-+/*
-+ * OFFSET_CAL_CINn: 16 bits, signed. Format: IIO_VAL_DECIMAL64_FEMTO.
-+ * 1 step = 1/(2^11) pF = 1/(1000 * 2^11) nF = 0.000000488281250 nF.
-+ * Negative values are used to cancel out any parasitic capacitance
-+ * of the sensor's external circuitry.
-+ */
-+static const s64 fdc1004_calibbias[] = {
-+	-0x8000 * 488281250UL, /* min */
-+	+0x0001 * 488281250UL, /* step */
-+	+0x7FFF * 488281250UL, /* max */
-+};
-+
-+/*
-+ * GAIN_CAL_CINn: 16 bits, unsigned. Format: IIO_VAL_DECIMAL64_FEMTO.
-+ * 1 step = 1/(2^14) pF/pF = 0.000061035156250 pF/pF.
-+ */
-+static const s64 fdc1004_calibscale[] = {
-+	0x0000 * 61035156250UL, /* min */
-+	0x0001 * 61035156250UL, /* step */
-+	0xFFFF * 61035156250UL, /* max */
-+};
-+
-+static const struct regmap_range fdc1004_readable_reg_ranges[] = {
-+	regmap_reg_range(FDC1004_REG_MEASn_MSB(0), FDC1004_REG_GAIN_CAL_CINn(3)),
-+};
-+
-+static const struct regmap_access_table fdc1004_readable_reg_table = {
-+	.yes_ranges = fdc1004_readable_reg_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(fdc1004_readable_reg_ranges),
-+};
-+
-+static const struct regmap_range fdc1004_writeable_reg_ranges[] = {
-+	regmap_reg_range(FDC1004_REG_CONF_MEASn(0), FDC1004_REG_GAIN_CAL_CINn(3)),
-+};
-+
-+static const struct regmap_access_table fdc1004_writeable_reg_table = {
-+	.yes_ranges = fdc1004_writeable_reg_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(fdc1004_writeable_reg_ranges),
-+};
-+
-+static const struct regmap_range fdc1004_volatile_reg_ranges[] = {
-+	regmap_reg_range(FDC1004_REG_MEASn_MSB(0), FDC1004_REG_MEASn_LSB(3)),
-+	regmap_reg_range(FDC1004_REG_FDC_CONF, FDC1004_REG_FDC_CONF),
-+};
-+
-+static const struct regmap_access_table fdc1004_volatile_reg_table = {
-+	.yes_ranges = fdc1004_volatile_reg_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(fdc1004_volatile_reg_ranges),
-+};
-+
-+static const struct regmap_config fdc1004_regmap_config = {
-+	.name = "fdc1004",
-+	.reg_bits = 8,
-+	.val_bits = 16,
-+	.val_format_endian = REGMAP_ENDIAN_BIG,
-+	.max_register = FDC1004_REG_GAIN_CAL_CINn(3),
-+	.rd_table = &fdc1004_readable_reg_table,
-+	.wr_table = &fdc1004_writeable_reg_table,
-+	.volatile_table = &fdc1004_volatile_reg_table,
-+	.cache_type = REGCACHE_MAPLE,
-+};
-+
-+struct fdc1004_data {
-+	struct regmap *regmap;
-+
-+	/*
-+	 * Serializes accesses to the chip's measurement and config
-+	 * registers, and to the other struct members below.
-+	 */
-+	struct mutex lock;
-+
-+	u8 offsets[4];
-+	u8 samp_freq_index;
-+};
-+
-+static int fdc1004_soft_reset(struct fdc1004_data *data)
-+{
-+	int ret;
-+	unsigned int val;
-+
-+	ret = regmap_write(data->regmap, FDC1004_REG_FDC_CONF,
-+			   FDC1004_FDC_CONF_RST_MASK);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_read_poll_timeout(data->regmap, FDC1004_REG_FDC_CONF, val,
-+					!(ret & FDC1004_FDC_CONF_RST_MASK),
-+					1 * USEC_PER_MSEC, 200 * USEC_PER_MSEC);
-+}
-+
-+static int fdc1004_read_raw(struct iio_dev *indio_dev,
-+			    const struct iio_chan_spec *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct fdc1004_data *data = iio_priv(indio_dev);
-+	struct regmap *map = data->regmap;
-+	unsigned int reg_val;
-+	u16 reg_vals[2];
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		iio_val_s64_decompose(fdc1004_scale, val, val2);
-+		return IIO_VAL_DECIMAL64_YOCTO;
-+	case IIO_CHAN_INFO_RAW: {
-+		guard(mutex)(&data->lock);
-+
-+		/* Configure the measurement we want. */
-+		reg_val = FIELD_PREP(FDC1004_CONF_MEAS_CHA_MASK, chan->channel)
-+			| FIELD_PREP(FDC1004_CONF_MEAS_CHB_MASK, chan->channel2)
-+			| FIELD_PREP(FDC1004_CONF_MEAS_CAPDAC_MASK,
-+				      data->offsets[chan->channel]);
-+		ret = regmap_write(map, FDC1004_REG_CONF_MEASn(0), reg_val);
-+		if (ret)
-+			return ret;
-+
-+		/* Start the measurement. */
-+		reg_val = FDC1004_FDC_CONF_MEAS_n_MASK(0)
-+			/* "+ 1" because the chip wants a 1-indexed value. */
-+			| FIELD_PREP(FDC1004_FDC_CONF_RATE_MASK,
-+				     data->samp_freq_index + 1);
-+		ret = regmap_write(map, FDC1004_REG_FDC_CONF, reg_val);
-+		if (ret)
-+			return ret;
-+
-+		/*
-+		 * Wait for the measurement to complete.
-+		 * The slowest sampling frequency the chip supports is 100 SPS,
-+		 * i.e. 1 sample every 10 ms, so our timeout can't be shorter
-+		 * than that. Go with 40 ms to be safe.
-+		 */
-+		ret = regmap_read_poll_timeout(map, FDC1004_REG_FDC_CONF, reg_val,
-+					       reg_val & FDC1004_FDC_CONF_DONE_n_MASK(0),
-+					       1 * USEC_PER_MSEC, 40 * USEC_PER_MSEC);
-+		if (ret)
-+			return ret;
-+
-+		/*
-+		 * Now read the two registers making up the measurement.
-+		 * The datasheet says to read MSB first, LSB second.
-+		 */
-+		ret = regmap_bulk_read(map, FDC1004_REG_MEASn_MSB(0),
-+				       reg_vals, ARRAY_SIZE(reg_vals));
-+		if (ret)
-+			return ret;
-+
-+		*val = (sign_extend32(reg_vals[0], 15) << 8) | (reg_vals[1] >> 8);
-+		return IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		guard(mutex)(&data->lock);
-+
-+		*val = fdc1004_samp_freqs[data->samp_freq_index];
-+		return IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_OFFSET: {
-+		guard(mutex)(&data->lock);
-+
-+		*val = data->offsets[chan->channel] * fdc1004_offset[1];
-+		return IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		ret = regmap_read(map, FDC1004_REG_OFFSET_CAL_CINn(chan->channel),
-+				  &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		iio_val_s64_decompose(sign_extend64(reg_val, 15) *
-+				      fdc1004_calibbias[1], val, val2);
-+		return IIO_VAL_DECIMAL64_FEMTO;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		ret = regmap_read(map, FDC1004_REG_GAIN_CAL_CINn(chan->channel),
-+				  &reg_val);
-+		if (ret)
-+			return ret;
-+
-+		iio_val_s64_decompose(reg_val * fdc1004_calibscale[1], val, val2);
-+		return IIO_VAL_DECIMAL64_FEMTO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const int fdc1004_calibbias_decomposed[] = {
-+	lower_32_bits(fdc1004_calibbias[0]), upper_32_bits(fdc1004_calibbias[0]),
-+	lower_32_bits(fdc1004_calibbias[1]), upper_32_bits(fdc1004_calibbias[1]),
-+	lower_32_bits(fdc1004_calibbias[2]), upper_32_bits(fdc1004_calibbias[2]),
-+};
-+
-+static const int fdc1004_calibscale_decomposed[] = {
-+	lower_32_bits(fdc1004_calibscale[0]), upper_32_bits(fdc1004_calibscale[0]),
-+	lower_32_bits(fdc1004_calibscale[1]), upper_32_bits(fdc1004_calibscale[1]),
-+	lower_32_bits(fdc1004_calibscale[2]), upper_32_bits(fdc1004_calibscale[2]),
-+};
-+
-+static int fdc1004_read_avail(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan,
-+			      const int **vals, int *type, int *length,
-+			      long info)
-+{
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = fdc1004_samp_freqs;
-+		*length = ARRAY_SIZE(fdc1004_samp_freqs);
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*vals = fdc1004_offset;
-+		*length = ARRAY_SIZE(fdc1004_offset);
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_RANGE;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		*vals = fdc1004_calibbias_decomposed;
-+		*length = ARRAY_SIZE(fdc1004_calibbias_decomposed);
-+		*type = IIO_VAL_DECIMAL64_FEMTO;
-+		return IIO_AVAIL_RANGE;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		*vals = fdc1004_calibscale_decomposed;
-+		*length = ARRAY_SIZE(fdc1004_calibscale_decomposed);
-+		*type = IIO_VAL_DECIMAL64_FEMTO;
-+		return IIO_AVAIL_RANGE;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int fdc1004_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+	case IIO_CHAN_INFO_OFFSET:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		return IIO_VAL_DECIMAL64_FEMTO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int fdc1004_write_raw(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct fdc1004_data *data = iio_priv(indio_dev);
-+	struct regmap *map = data->regmap;
-+	s64 val64;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		for (unsigned int i = 0; i < ARRAY_SIZE(fdc1004_samp_freqs); i++) {
-+			if (fdc1004_samp_freqs[i] == val) {
-+				guard(mutex)(&data->lock);
-+
-+				data->samp_freq_index = i;
-+				return 0;
-+			}
+-		tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
+-				     int_pow(10, scale), &frac);
++		if (scale <= GREATEST_POWER_OF_10_THAT_FITS_IN_S64) {
++			tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
++					     int_pow(10, scale), &frac);
++		} else {
++			tmp2 = 0;
++			frac = iio_val_s64_compose(vals[0], vals[1]);
 +		}
 +
-+		return -EINVAL;
-+	case IIO_CHAN_INFO_OFFSET: {
-+		if (val < fdc1004_offset[0] || val > fdc1004_offset[2] ||
-+		    val % fdc1004_offset[1])
-+			return -EINVAL;
-+
-+		guard(mutex)(&data->lock);
-+
-+		data->offsets[chan->channel] = val / fdc1004_offset[1];
-+		return 0;
-+	}
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		val64 = iio_val_s64_compose(val, val2);
-+		if (val64 < fdc1004_calibbias[0] || val64 > fdc1004_calibbias[2])
-+			return -EINVAL;
-+
-+		return regmap_write(map, FDC1004_REG_OFFSET_CAL_CINn(chan->channel),
-+				    DIV_ROUND_CLOSEST(val64, fdc1004_calibbias[1]));
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		val64 = iio_val_s64_compose(val, val2);
-+		if (val64 < fdc1004_calibscale[0] || val64 > fdc1004_calibscale[2])
-+			return -EINVAL;
-+
-+		return regmap_write(map, FDC1004_REG_GAIN_CAL_CINn(chan->channel),
-+				    DIV_ROUND_CLOSEST(val64, fdc1004_calibscale[1]));
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int fdc1004_debugfs_reg_access(struct iio_dev *indio_dev,
-+				      unsigned int reg, unsigned int writeval,
-+				      unsigned int *readval)
-+{
-+	struct fdc1004_data *data = iio_priv(indio_dev);
-+
-+	guard(mutex)(&data->lock);
-+
-+	if (readval)
-+		return regmap_read(data->regmap, reg, readval);
-+
-+	return regmap_write(data->regmap, reg, writeval);
-+}
-+
-+#define FDC1004_SINGLE_ENDED_CAPACITANCE_CHANNEL(_channel)               \
-+	{                                                                \
-+		.type = IIO_CAPACITANCE,                                 \
-+		.indexed = true,                                         \
-+		.channel = _channel,                                     \
-+		.channel2 = FDC1004_CONF_MEAS_CHB_CAPDAC,                \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |           \
-+				      BIT(IIO_CHAN_INFO_OFFSET) |        \
-+				      BIT(IIO_CHAN_INFO_CALIBBIAS) |     \
-+				      BIT(IIO_CHAN_INFO_CALIBSCALE),     \
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),    \
-+		.info_mask_shared_by_type_available =                    \
-+			BIT(IIO_CHAN_INFO_OFFSET) |                      \
-+			BIT(IIO_CHAN_INFO_CALIBBIAS) |                   \
-+			BIT(IIO_CHAN_INFO_CALIBSCALE),                   \
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
-+		.info_mask_shared_by_all_available =                     \
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ),                    \
-+	}
-+
-+#define FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(_chan1, _chan2)         \
-+	{                                                                \
-+		.type = IIO_CAPACITANCE,                                 \
-+		.indexed = true,                                         \
-+		.differential = true,                                    \
-+		.channel = _chan1,                                       \
-+		.channel2 = _chan2,                                      \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),            \
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),    \
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
-+		.info_mask_shared_by_all_available =                     \
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ),                    \
-+	}
-+
-+static const struct iio_chan_spec fdc1004_channels[] = {
-+	FDC1004_SINGLE_ENDED_CAPACITANCE_CHANNEL(0),
-+	FDC1004_SINGLE_ENDED_CAPACITANCE_CHANNEL(1),
-+	FDC1004_SINGLE_ENDED_CAPACITANCE_CHANNEL(2),
-+	FDC1004_SINGLE_ENDED_CAPACITANCE_CHANNEL(3),
-+
-+	/* The sensor only supports differential measurements where CHA < CHB. */
-+	FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(0, 1),
-+	FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(0, 2),
-+	FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(0, 3),
-+
-+	FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(1, 2),
-+	FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(1, 3),
-+
-+	FDC1004_DIFFERENTIAL_CAPACITANCE_CHANNEL(2, 3),
-+};
-+
-+static const struct iio_info fdc1004_info = {
-+	.read_raw = fdc1004_read_raw,
-+	.read_avail = fdc1004_read_avail,
-+	.write_raw = fdc1004_write_raw,
-+	.write_raw_get_fmt = fdc1004_write_raw_get_fmt,
-+	.debugfs_reg_access = fdc1004_debugfs_reg_access,
-+};
-+
-+static int fdc1004_probe(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev;
-+	struct fdc1004_data *data;
-+	int ret;
-+
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-+		return -EOPNOTSUPP;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+
-+	data->regmap = devm_regmap_init_i2c(client, &fdc1004_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return PTR_ERR(data->regmap);
-+
-+	ret = devm_mutex_init(&client->dev, &data->lock);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_regulator_get_enable(&client->dev, "vdd");
-+	if (ret)
-+		return ret;
-+
-+	ret = fdc1004_soft_reset(data);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "fdc1004";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->info = &fdc1004_info;
-+	indio_dev->channels = fdc1004_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(fdc1004_channels);
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static const struct i2c_device_id fdc1004_id[] = {
-+	{ .name = "fdc1004" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, fdc1004_id);
-+
-+static const struct of_device_id fdc1004_of_match[] = {
-+	{ .compatible = "ti,fdc1004" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, fdc1004_of_match);
-+
-+static struct i2c_driver fdc1004_driver = {
-+	.driver = {
-+		.name = "fdc1004",
-+		.of_match_table = fdc1004_of_match,
-+	},
-+	.probe = fdc1004_probe,
-+	.id_table = fdc1004_id,
-+};
-+module_i2c_driver(fdc1004_driver);
-+
-+MODULE_AUTHOR("Victor Chernyakin <chernyakin.victor.j@outlook.com>");
-+MODULE_DESCRIPTION("Texas Instruments FDC1004 capacitive sensor driver");
-+MODULE_LICENSE("GPL");
+ 		if (tmp2 == 0 && frac < 0)
+ 			l += sysfs_emit_at(buf, offset, "-");
+ 
+-		l += sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
+-				   abs(frac));
++		l += sysfs_emit_at(buf, offset + l, "%lld.%0*llu", tmp2, scale,
++				   abs_s64_no_overflow(frac));
+ 		return l;
+ 	}
+ 	default:
 -- 
 2.53.0
 
