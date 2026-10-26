@@ -1,62 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792975588;
-	b=D3u31dcjwSTUcNh3VV9KMNTNLPw5+CDG/HuUPpKC3i+7p1aJuHJmlatbyv9EAAV1mIhp
-	 9w8jCZ6CbXA/CdokhTBpl6s7RK80b2eSA13sWcwZop8V1/z7Dyszstj5Uj042Wz7ybcjE
-	 B0RQ80nhTtGx3L+DXTASGiMh5jraBkarIvY64FrQkTU6P6C8iD7uytQ+po/plmxmm0NJI
-	 eCPsztBJGJp50P38oVzhCYLPEu2zd2ligA9uYVfW0safYWQNJAGLkF9bnAqPGF5B/8hLr
-	 kPIR59boM8J4KZLub5SeI361K9UcepUd9jSFOGDDQH4GHZfQKx/Fqjadb0wJgoH6gAQ==
+	t=1792976021;
+	b=5NJxB5Emavgquev71LD5Gw2/zcwnDLYp2LCw6CwwMce9mMich8ixiwCgB+jbUsvdbNDz
+	 7Z8YcvFtJmFa4FhIFmp3Kcrs4e/UF0Du1NSQlMyygvL/sLl5ZY5cXzk1aVkeXso5UUmHV
+	 TiONJU7dUTGzxs+ipYpQnbRV/pw72ALzZIbZXa8OXykGT2C7HFyXYH27gPfGj3qcqO83N
+	 pDyirDfGU14Isn25I4x1o7/GHckX6V9Ql3sMiVpdtL/1tri+aQv4dU+R1qwyossXjAYQ/
+	 3TfdO/W/kf+1aEkQU9j2Coli2sH0BbEuX9LEDsRtWPFp0fSsU7EbQpe6eHQPDsYTEkg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792975588;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792976021;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=g27xXTBcmgXuFkZ0PIascCszUPkj4I9PwS3AryVBM+g=;
-	b=FMzhTFvvh9J+3eBUZ2It4glyJ/K55E5LvCMnGiIJ4lLYBi+cfBk+iY1dFY79SU6x4LRF
-	 I7DJ8LzRyesaXHgV5suWmHXZWhWl86TC/SgAPEaJX3Rqvs0pAzto6vQHbE+bbKmJ+gGbI
-	 8Jg8zTN0W/pA6MVJLDmm3aMnXyWiI9g3CAoK6wv6w3oJhuzKo4JysTvj4lx4nPw+rhENU
-	 nz5XsTlD/fwHGDOBiV+xVZymiwLqSa3on+C9woe+WEGDqX4ZV/+ZcgQYBQbWEJQl2ENLE
-	 S8XzitKrrhcpEo84X2OLt6U+B+faCi8L5MrZx+qmDJytE1debUHGFAjMCYgiOuzACJw==
+	bh=1CFnm7wSorQu4xILRSQcq+VwmU0p4yxg5DP/r3Ep0oA=;
+	b=D8E3xZeywd/OXfQAUv+hTGj0Kp2Cc5YhK6/OM758jxFg5AlBZVWVPOX9zVpPuECYuNC4
+	 xQtbKm5LbyvrjCE+4xTApzoEJHy5+G2heMcR0ZLEFOtu0EYSPxBDwXT108KS1GjUNyHfP
+	 yYvoEozM+m4UZmZ/eYd2gmKreOXE+crH7/bkugkphOkQjn0M6GaSLiNnGhvJlWLEDoBGq
+	 UYWMy/pwo/Tu469DCmoiyx8EUfI/y7f1i2Nj73l8Qy03m5kXwT2VMeGyxVcRgDHxW9rU/
+	 ICNvVesy8nZRkR7p5XPHFmYFnlS4CxPoE34PDSTme0DD1klPgQ4a0Femn08e18iydEQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I7iZXs+k;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a5IH9FKR;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98F9B606A31B;
-	Mon, 26 Oct 2026 00:46:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1856606A31B;
+	Mon, 26 Oct 2026 00:53:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I7iZXs+k
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F871F01825;
-	Mon, 26 Oct 2026 00:46:24 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a5IH9FKR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50A361F01825;
+	Mon, 26 Oct 2026 00:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792975588;
-	bh=g27xXTBcmgXuFkZ0PIascCszUPkj4I9PwS3AryVBM+g=;
+	s=k20260515; t=1792976020;
+	bh=1CFnm7wSorQu4xILRSQcq+VwmU0p4yxg5DP/r3Ep0oA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=I7iZXs+kQkQ9A/D2AcQhszyTc70xh7gKrZmE8XIUBzfWsgkvMS5D8bv/mbjD3+Mvi
-	 sS023f7sTP9MgBbIgaKSKmJZUuoxCIn5Arf2gptBN3IYvdG8/cwLkGmgYA4mfSRphN
-	 ci5E+1vL7K3dwCpxqWJ9V/Z04zATozKBKPAVVQ8JyP8IKWuJH63ffFHY7MJ1rl9+xB
-	 rnG0OWPlGpWZP9BYQ0FJgfKmAnOE2rFI5Ievdp03ZN0RRdN3QcZkYwT/eFCvLJmeHj
-	 EUwWS6rDH5ROhVIAlzOM4J5a0+p3f9EtqsiViJp8GSyiYd7AorBWJ9VOox7F3v81Nx
-	 9ok/va3mUTk7w==
-Date: Mon, 26 Oct 2026 00:46:20 +0000
+	b=a5IH9FKRitSom1EYbCCpvJ6PU9ONaFfvwNFIHwanCLJzm9/vaObxyFXdlEdz7+Tj7
+	 Vgropo5cXudT2jFzKWrcjHUvELHR5z7GjvyPjAukx7VVQiWEep3YTZdHwP2AJfh9LN
+	 hdO9mpu5sXrVsLpEXbMp0v9zB5xkHnWHcjIHGzoAKug+AwYjUpMMwAfpPRnZmSgdD2
+	 Q20QkAgtxv3pZEVF9t10oHoYuwvK8yuxT3vDSCO/AVjH0uaymysR6eI7Z6WCsv/nH8
+	 E8JXo+bYCZ6gd0Z6HWZzEiuUuXC774Qr+sFgf60qZ8XjKiZGjiQpLAW314xfQRXR6L
+	 A17PhOZ9CUAuw==
+Date: Mon, 26 Oct 2026 00:53:33 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andrei Stancovici via B4 Relay
- <devnull+andrei.stancovici.analog.com@kernel.org>
-Cc: andrei.stancovici@analog.com, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
- Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v2 0/3] iio: adc: ltc2497: add LTC2493 support and
- line-frequency rejection
-Message-ID: <20261026004620.16bc9020@jic23-hlaptop>
-In-Reply-To: <20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com>
-References: <20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com>
+To: Brian Norris <briannorris@chromium.org>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+ linux-pm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 17/17] iio: light: us5182d: Discard
+ pm_runtime_put_autosuspend() return values
+Message-ID: <20261026005333.7d8de0ce@jic23-hlaptop>
+In-Reply-To: <20261021165858.v2.17.I2a58d2ac56600e492fd431e173bd0d67f180c6a3@changeid>
+References: <20261021235818.3059519-1-briannorris@chromium.org>
+	<20261021165858.v2.17.I2a58d2ac56600e492fd431e173bd0d67f180c6a3@changeid>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,16 +67,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 22 Oct 2026 12:58:17 +0300
-Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org> wrote:
+On Wed, 21 Oct 2026 16:57:18 -0700
+Brian Norris <briannorris@chromium.org> wrote:
 
-> This series adds LTC2493 support to the ltc2497 driver, and adds FA/FB
-> line-frequency rejection for the LTC2499 and the LTC2493.
+> This driver propagates the return value of pm_runtime_put_autosuspend(),
+> which is not particularly useful.
+> 
+> Returning an error code from pm_runtime_put_autosuspend() merely means
+> that it has not queued up a timer or work item to check whether or not
+> the device can be suspended and there are many perfectly valid
+> situations in which that can happen, like after writing "on" to the
+> device's runtime PM "control" attribute in sysfs for one example.
+> 
+> For this reason, modify this driver to simply discard the
+> pm_runtime_put_autosuspend() return value.
+> 
+> This will facilitate a planned change of the
+> pm_runtime_put_autosuspend() return type to void in the future, similar
+> to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
+> type to void").
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
 
-FWIW I took another look and nothing to add to Nuno's review.
-Looking forward to v3. I'll mark this as changes requested in
-patchwork.
+For reference, the power control function in this one is:
 
-thanks,
+static int us5182d_set_power_state(struct us5182d_data *data, bool on)
+{
+	if (data->power_mode == US5182D_ONESHOT)
+		return 0;
+
+	if (on)
+		return pm_runtime_resume_and_get(&data->client->dev);
+
+	return pm_runtime_put_autosuspend(&data->client->dev);
+}
+
+So there is that bit of 'special' at the top. Honestly I've not
+looked at why that is there, but for now I don't care - the
+change proposed here is sensible on it's own plus removes at least
+some of the 'special' :)
+
+So applied to the testing branch of iio.git.
+
+Thanks,
 
 Jonathan
