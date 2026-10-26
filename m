@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793015664;
-	b=wqEarbBTJYL+6SdjcoFF55mdSKaxLPLf+D7fKsQSJuI8JX4Lz7FLEnee9M5dhQxdP647
-	 yX1f3viZ3qjkPdnxLHtkB5uTRqUHf6KmwGxLkIjC1F4B+M/UimaranKyC0mDZDW74VhdK
-	 EvUyYt5wZqj8mvezeWl7xZcX7aKgbQI+kwmT118oZTuPiYAHF3Ez/Tci94ScXYBSEzyDm
-	 0W0GGiZvNkwFTbtZWozugFlNQQiDjWt3PSw3uHhBWKgkcp9AIY0on6mfD3gVo0EJPH9zM
-	 aNTbedWjyM+izRywcej5w7ICOOd1UPjj9kxtF3uHc+IhZa+BeomEXcQ5bMtpr3sQ2BA==
+	t=1793015663;
+	b=frnq7nBsGHwi4DK3iRyjsUewLQG5ZNmc2FNklTZT5XSUR9bEgH3LfpO9siSlz0BODDIA
+	 KXhhrA99FKhVwSbIe0o5bm5XQBRq6RIIXsxwYrSWJhZg+/7DWq7Exl59okoPQ1YW8LhXZ
+	 6PYJCwqvXVi8tIayPaFsq8loejz//8j7nWU+0WsPm52B8s6VOBHT/bGUP8d0hGDECuT3P
+	 3bkOu5OS57TQqo+meWxygssiPy8yoodT3HUXO0RHlhX+PmUuVyNgdlltp+CHXUJNAiYTW
+	 MLDCivjj8OiM1TSvMB5bU3Vqo7bEH2StAUuO0YliTh57LuRkFHSKTH5qKL7rbGpwC0g==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793015664;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793015663;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=0jOcNFVVqTnbtE0AuLh8XjAAlZpL9TwlHpubfkYfO0A=;
-	b=5AraAXWqG5FPTZjCYc6nQFtzayd7/0NT0nKD47xMYLyEcuESMWi1Kvvi+88RrIGztJDm
-	 49531nq1KG1ry1656C9UTYaIA0YQ2gXERdilU9IwKqqeJfvtAUUwxXk63CDOrgjN0nEIz
-	 X5NUmgSelupC+onsVeibXK2aUTL46rLHE/nTe7Ibvpqo3KnN5ha5wxvgA9cRDdmM1X8io
-	 sSB+2AahAOu9f+Y9AUIwhimNrU02rvE2l4VzlkaQw39yd0ob9AHx+fYt+IYAue6rIgCgb
-	 KuJA17Uk3dqQX8QTFUBptDBh/IlAuV2ALfNi7/ocge8B42siEYtlNCDIEtHa+Bd59RA==
+	bh=7Z6QcafH4q69MTMj1n+q+kDS9Ee7x9hV3uOErHPDCYA=;
+	b=gKF6jyLGpSJCwN4+MOToJTDixhL8sB2rcMu+NdCnYmCFPKjH9gr6CEGwDitrU7C9mpKn
+	 34BdPwAHXzAsIqSRyrbzOsPP6BkOWtL9/NyzAhfQzbRziVUBAUY6cuqL+j1TccCjdCnm1
+	 Wfc5ADymIBOYrrl9J0npOwgIKs+X1iHr6XPWiO4WkXVsqMVw13X/qBy67VNf4r/0Nz7gZ
+	 HSyfetRNjT4Xo9EAXwwlRNGbubU2agvXgMM6NOgEech1HOhBElBCfi6zLXl+OgDu1mNfg
+	 MGGj+ch/ZYAon6aDrxddg1CgLshemOGSbTW9FL84kkvsxm+v4k7eWbDYT1FPV4SJJNA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Jo+tU1XN;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L9z8gQTh;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABDAD60A2606;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03FED606A331;
 	Mon, 26 Oct 2026 11:54:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Jo+tU1XN
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L9z8gQTh
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793015663;
-	b=kR8KKoJPnhuZkf+sjeePOu+Fojfkz69pe64z2d8y/sMovd2pgrYD0iuBqw/zRqQMll01
-	 03MXrSZNHG93qqH5XWTjZfA59cIH9BL65nf44X6lgStJxDtma9b515VlBInKdO1oHpkdZ
-	 Tx0mVuyGd5Nrp0CupV4YPUzGbTemH7l0cW742sGfEohjEcSJ3gNPLaWucF4x8K6eZdebS
-	 Cljw42TKKfwjM+lk9xdie04A4m6VnQNdLzXatYN2zOJc86SrHb4qktPXxM8dQ4Cm5tH27
-	 5McXrCv1D0lQ557nQeQUuhApKYbbykhQQzw90M5DARu2sRkx5Qq7A966TmVWBTu5NXw==
+	t=1793015662;
+	b=0WBu+RSWdwTTCjjzYVmZyWgGB2DfKUTSz7Dx16h5KnhPj0lVVaH9TJz4v0FdyqwfQTD5
+	 33iGxiUrpqVDS/NUkIA0vy17rcHLzufzjpCZhRqrvaBnvKE7pcvltlhlZ3jfiknkEFCOI
+	 JlCwNV/BPPy+974nSIf1rV17s+0o8aEkAXkL2VAUl6LKTkW5iXsXtqSaWG/4glO6jM5IK
+	 ana5yKjUGhHoX/aXuSVnbnilGM6DiEqTRy26G2hqaGtG/stBnjTtVUAswfLz2fgWPN2At
+	 8KSjnxonpSUS99oNDqrm9UszbEhvAb/4QRlK3P82GIdbllBQ1zDkYWipgiQmb/+/+Sg==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793015663;
+	c=relaxed/relaxed; t=1793015662;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=0jOcNFVVqTnbtE0AuLh8XjAAlZpL9TwlHpubfkYfO0A=;
-	b=iQopkUu6LGVEsqJDa7heQxcnznpAUZMefapaa6M8/9Kf+bHOg5HG1VlK0Isn4PXdm9X/
-	 h8Z+K3Wm13g5SKbDF6qDhxL0jPt6dQzN/fSQrdkiPyMCRcDsGUUEFUfrpdDfpvuohlglA
-	 VJfjcaTjVGXs68OLOVT48EdqQtePxxgynS7YS4EcKqxrUzNHGgk8lmxMFYm5v2HIleKV6
-	 7GSKhO6UCQGHvvCDu1me2yAzY2q0rcB11bc5hM6aBv/BX2LvvfIKUGGhxmjvMek4B3GLg
-	 1VPdpPWSDnIXa2PlGT3rhQrB51Gchsl8hOI589p+tPd8gmwF63dt3eQpNx+uyOjQDag==
+	bh=7Z6QcafH4q69MTMj1n+q+kDS9Ee7x9hV3uOErHPDCYA=;
+	b=vSf+v1WMtQUwMXjCaODGHJnrNHNdObJ4Nfwa6ofpcH7wrYjuFGxyobF2En0ndE1YmAql
+	 E2/zw6k9gN1XNlEfyiAZ4ERVjlAv5dH5MLY2iPe5Q52tNx1f8ZeLrv/pXrmI0itf88g05
+	 TGPmICEXqpDpa4L+Cy5wamwNkJ3o06OsZMHmmqW5huf2K+K76wYIAYvdFsRnbIjOdlRAc
+	 kwDCIJvbvbDFguYgVtyIi/CM00hZNz57MZDOt/KwEJOBzOJ0CYaVRV+g4iLDldQ0wv6/C
+	 zlmGoF/RnTNzhvhBF2Nkrory1JPRo3lO4TMmVyHsaXls1k5QAkvZCQEK3Jgx7tV+Trw==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 8BEAD1F01828;
-	Mon, 26 Oct 2026 11:54:22 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 7AC531F031E6;
+	Mon, 26 Oct 2026 11:54:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793015663;
-	bh=0jOcNFVVqTnbtE0AuLh8XjAAlZpL9TwlHpubfkYfO0A=;
+	s=k20260515; t=1793015662;
+	bh=7Z6QcafH4q69MTMj1n+q+kDS9Ee7x9hV3uOErHPDCYA=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Jo+tU1XNR7sqSrkcIdIlsQtTbV8cioYwD/7uEt7KKN96V0acy1iF1ZztVb7GDmF4q
-	 7lGqn8gFnYx4b4IG2PNf+kfGsRzpFuRy3Wi6rzFXsodKeRXsvqLN5vYek6fXBBRcHM
-	 g/4f4Q8BzSsYAxEuklb37IY5F7MNUPvpLQ6B60+E6FRjqxpvjOO8aomBgNH22lYyG7
-	 AYPqUVmTsna6D1+jMVyqUmw02ERTTSOi5ci3sYKSNs6/5PCp15AlDGdRgJUn2c/IdH
-	 YhGIw7pStcNrdxTCZe59OH5kTqdki1jmdSnJdAYCS4MnvFSV4f0YVXaTmz99wwNeMc
-	 UPwmIz6V/QWDA==
+	b=L9z8gQThF5vMsJBbKZ90ePBDJJt8TsVt4h4j7qmElvhOqFEpTfnJpH2CZd7sy1pIZ
+	 5aB1gMAcNHpFXq/1DrEN6Wmdq2vHvGjnA8zEfzIwjISsQUQcT7ZELf2/sUTiI6ONaV
+	 JwlxYOrAcTBDX8zjMVPK8pJtjIA92cDnuppsur39R0S/+jTvZAt18e3hCWI3oPEFiZ
+	 3Vg7CGabctVbxu9lvqp3iAoPhZy9+j6cQJeddwI0GHonfCatoViRDDO2JwbfTxtxop
+	 5diQA52OxQHAFlnwqbLYX8L0/Ek1zfuaFxzWvMwZ0WH3GE/4UVG143/lbXQ/P+U+ZA
+	 WfFNlfOa8ArOg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 118E944CF6;
+	by lkml.kernel.org (Postfix) with ESMTP id 082AB44CF2;
 	Mon, 26 Oct 2026 11:54:21 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 26 Oct 2026 08:54:09 -0300
-Subject: [PATCH v4 5/6] iio: core: use kstrtodec64() to parse fixed-point
- values
+Date: Mon, 26 Oct 2026 08:54:08 -0300
+Subject: [PATCH v4 4/6] iio: test: rescale: compare scales against the
+ precision of the output
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261026-e-notation-v4-5-a366a6d14d57@analog.com>
+Message-Id: <20261026-e-notation-v4-4-a366a6d14d57@analog.com>
 References: <20261026-e-notation-v4-0-a366a6d14d57@analog.com>
 In-Reply-To: <20261026-e-notation-v4-0-a366a6d14d57@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
@@ -93,11 +93,11 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793015661; l=6612;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793015661; l=5598;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=YUHZ2MysY8e+VgWXsYE4WNrhQ7OIuDMn1878U8UTPqY=;
- b=q7cijAK36IzjNuJJnEpk1Z/6Z7RlXblffkCVj8CEAOgbGDgG1nItNCBTrlaKdY8qIYrshfHuk
- qkUwYeAZHalBlA/7K2b2cQoKn+WkAwlGp0G2pytrz4/i6YYeT+qbOLn
+ bh=nELWY96qckQqagFFtkhq4P+EyoDGOmFkXwKMJiZTz3c=;
+ b=+pFNmFDSZK8OonTTZfUEuL6RhH8MRKjo2ez5MpxV5Fo9C8MQN/Cm+fbYqfeMWxD4//6AVunDF
+ eEg3dd8v9u7D5QDUcTsNvE4CJcRa6zem3pQnuJznWyfnuvqtHcE+Nlu
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -108,225 +108,151 @@ Content-Transfer-Encoding: 7bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Replace the open-coded __iio_str_to_fixpoint() parser with kstrtodec64(),
-so sysfs writes of fixed-point values also accept E notation.
+The scale tests format the rescaled value with iio_format_value(), which
+prints at most nano precision, and require the relative error to the
+expected value to be below 1 ppm. Both strings are parsed back with
+iio_str_to_fixpoint() at nano precision, so for the small scale cases the
+check only passes because the expected value, like the formatted one, is
+truncated to nano. For example, "0.000000033594" is parsed as 33 nano,
+equal to the formatted "0.000000033", although the actual error is about
+1.8%. If the expected value were rounded instead, it would be parsed as
+34 nano and the test would fail even though the output is as accurate as
+the format allows.
 
-The fractional part only keeps the sign when the integer part is zero,
-as before. The dB suffix for scale attributes is now handled by a separate
-__iio_str_to_fixpoint_units() helper. It strips an optional trailing
-newline and the "dB" or " dB" suffix before parsing.
+Parse both values with kstrtodec64() at a scale of 10, one digit more
+than the output precision, so the expected value keeps the digits lost
+when formatting. Scale 10 is the largest that still fits the overflow
+cases (about 2.1e8) in an s64. Compute the relative error with
+mul_u64_u64_div_u64(), as the product with 10^6 no longer fits in 64 bits
+for those cases.
 
-When there is no fractional part (fract_mult == 0, or dec_scale == 0 for
-64-bit values), try base-autodetecting kstrtoll() first so hexadecimal
-and octal input keeps its meaning ("010" is still 8). Fall back to
-kstrtodec64() on -EINVAL to accept E notation.
-
-As a side effect, inputs that used to be rejected for integer-only
-attributes are now accepted. An invalid octal number such as "08" is
-parsed as decimal 8, and a fractional value such as "1.5" is rounded
-to 2.
+Then allow a relative error up to the relative size of one nano of the
+expected value, the precision of the formatted output. This is 0 ppm for
+values of 0.01 and above, so those cases are checked as before, and it
+accepts the formatting error for the small scale cases.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/industrialio-core.c | 162 ++++++++++++++++++++++------------------
- 1 file changed, 90 insertions(+), 72 deletions(-)
+ drivers/iio/test/iio-test-rescale.c | 59 ++++++++++++++-----------------------
+ 1 file changed, 22 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index d73f2541375f..3f5190ddddef 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -994,75 +994,21 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
- 	}
- }
+diff --git a/drivers/iio/test/iio-test-rescale.c b/drivers/iio/test/iio-test-rescale.c
+index de4a09f432c0..1347a9650355 100644
+--- a/drivers/iio/test/iio-test-rescale.c
++++ b/drivers/iio/test/iio-test-rescale.c
+@@ -6,6 +6,8 @@
+  */
+ 
+ #include <linux/gcd.h>
++#include <linux/kstrtox.h>
++#include <linux/math64.h>
+ #include <linux/overflow.h>
+ 
+ #include <linux/iio/afe/rescale.h>
+@@ -581,55 +583,36 @@ static void case_to_desc(const struct rescale_tc_data *t, char *desc)
+ KUNIT_ARRAY_PARAM(iio_rescale_scale, scale_cases, case_to_desc);
+ KUNIT_ARRAY_PARAM(iio_rescale_offset, offset_cases, case_to_desc);
  
 -/**
-- * __iio_str_to_fixpoint() - Parse a fixed-point number from a string
+- * iio_str_to_nano() - Parse a fixed-point string to get an
+- *                      IIO_VAL_INT_PLUS_NANO value
 - * @str: The string to parse
-- * @fract_mult: Multiplier for the first decimal place, should be a power of 10
-- * @integer: The integer part of the number
-- * @fract: The fractional part of the number
-- * @scale_db: True if this should parse as dB
+- * @nano: The number as an integer
 - *
-- * Returns:
-- * 0 on success, or a negative error code if the string could not be parsed.
-- */
--static int __iio_str_to_fixpoint(const char *str, int fract_mult,
--				 int *integer, int *fract, bool scale_db)
-+static int iio_str_to_s64(const char *str, s64 *val)
- {
--	int i = 0, f = 0;
--	bool integer_part = true, negative = false;
+- * Returns 0 on success, or a negative error code if the string could not be
+- * parsed.
++/*
++ * iio_format_value() prints scales with up to nano precision. Parse values
++ * with one more digit, so the expected values keep the precision lost there.
++ * Scale 10 is the largest that fits the overflow test cases in an s64.
+  */
+-static int iio_str_to_nano(const char *str, s64 *nano)
+-{
+-	int tmp, tmp2;
+-	int ret = 0;
 -
--	if (fract_mult == 0) {
--		*fract = 0;
+-	/*
+-	 * iio_str_to_fixpoint() uses 10^8 here instead of 10^9 as fract_mult is
+-	 * the multiplier for the first decimal place.
+-	 */
+-	ret = iio_str_to_fixpoint(str, 100000000, &tmp, &tmp2);
+-	if (ret < 0)
+-		return ret;
 -
--		return kstrtoint(str, 0, integer);
--	}
+-	if (tmp < 0)
+-		tmp2 *= -1;
 -
--	if (str[0] == '-') {
--		negative = true;
--		str++;
--	} else if (str[0] == '+') {
--		str++;
--	}
+-	*nano = (s64)tmp * 1000000000UL + tmp2;
 -
--	while (*str) {
--		if ('0' <= *str && *str <= '9') {
--			if (integer_part) {
--				i = i * 10 + *str - '0';
--			} else {
--				f += fract_mult * (*str - '0');
--				fract_mult /= 10;
--			}
--		} else if (*str == '\n') {
--			if (*(str + 1) == '\0')
--				break;
--			return -EINVAL;
--		} else if (!strncmp(str, " dB", sizeof(" dB") - 1) && scale_db) {
--			/* Ignore the dB suffix */
--			str += sizeof(" dB") - 1;
--			continue;
--		} else if (!strncmp(str, "dB", sizeof("dB") - 1) && scale_db) {
--			/* Ignore the dB suffix */
--			str += sizeof("dB") - 1;
--			continue;
--		} else if (*str == '.' && integer_part) {
--			integer_part = false;
--		} else {
--			return -EINVAL;
--		}
--		str++;
--	}
--
--	if (negative) {
--		if (i)
--			i = -i;
--		else
--			f = -f;
--	}
--
--	*integer = i;
--	*fract = f;
--
--	return 0;
-+	int ret;
-+
-+	/*
-+	 * Keep hex/octal support for integers. E notation and decimal values
-+	 * result in -EINVAL from kstrtoll, due to unexpected termination on '.'
-+	 * or 'e'. It falls back to kstrtodec64 for decimal fixed-point numbers
-+	 * with zero scale.
-+	 */
-+	ret = kstrtoll(str, 0, val);
-+	if (ret == -EINVAL)
-+		ret = kstrtodec64(str, 0, val);
-+
-+	return ret;
- }
+-	return ret;
+-}
++#define IIO_TEST_DEC_SCALE	10
++#define IIO_TEST_NANO		10	/* one nano at IIO_TEST_DEC_SCALE */
  
  /**
-@@ -1078,10 +1024,78 @@ static int __iio_str_to_fixpoint(const char *str, int fract_mult,
- int iio_str_to_fixpoint(const char *str, int fract_mult,
- 			int *integer, int *fract)
+  * iio_test_relative_error_ppm() - Compute relative error (in parts-per-million)
+  *                                 between two fixed-point strings
+  * @real_str: The real value as a string
+  * @exp_str: The expected value as a string
++ * @max_ppm: The relative size (in parts-per-million) of one nano of the
++ *           expected value, the precision of iio_format_value()
+  *
+  * Returns a negative error code if the strings could not be parsed, or the
+  * relative error in parts-per-million.
+  */
+-static int iio_test_relative_error_ppm(const char *real_str, const char *exp_str)
++static int iio_test_relative_error_ppm(const char *real_str, const char *exp_str,
++				       int *max_ppm)
  {
--	return __iio_str_to_fixpoint(str, fract_mult, integer, fract, false);
-+	s64 dec64;
-+	int ret;
-+
-+	if (fract_mult) {
-+		/* scale = ffs(fract_mult) = ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
-+		ret = kstrtodec64(str, ffs(fract_mult), &dec64);
-+		if (ret)
-+			return ret;
-+
-+		dec64 = div_s64_rem(dec64, fract_mult * 10, fract);
-+		/* only carry the sign in fract if the integer is zero */
-+		if (dec64)
-+			*fract = abs(*fract);
-+	} else {
-+		ret = iio_str_to_s64(str, &dec64);
-+		if (ret)
-+			return ret;
-+
-+		*fract = 0;
-+	}
-+
-+	if (dec64 > INT_MAX || dec64 < INT_MIN)
-+		return -ERANGE;
-+
-+	*integer = dec64;
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(iio_str_to_fixpoint);
+-	s64 real, exp, err;
++	s64 real, exp;
+ 	int ret;
  
-+/**
-+ * iio_str_to_fixpoint_units() - Parse a fixed-point number with units from a string
-+ * @str: The string to parse
-+ * @units: The units to expect at the end of the string
-+ * @fract_mult: Multiplier for the first decimal place, should be a power of 10
-+ * @integer: The integer part of the number
-+ * @fract: The fractional part of the number
-+ *
-+ * Parses a fixed-point/decimal number from a string, optionally with units at
-+ * the end. The string should be in the format "<number>[ <units>]". For example,
-+ * The input "7.2 dB" would be parsed as the number 7200000 with units = "dB"
-+ * and frac_mult = 100000.
-+ *
-+ * Returns:
-+ * 0 on success, or a negative error code if the string could not be parsed.
-+ */
-+static int iio_str_to_fixpoint_units(const char *str, const char *units,
-+				     int fract_mult, int *integer, int *fract)
-+{
-+	size_t units_len = strlen(units);
-+	size_t s_len = strlen(str);
-+	const char *dec_str = str;
-+	char buf[64];
-+
-+	if (s_len && str[s_len - 1] == '\n')
-+		s_len--;
-+
-+	if (s_len > units_len &&
-+	    !strncmp(str + s_len - units_len, units, units_len)) {
-+		s_len -= units_len;
-+		if (str[s_len - 1] == ' ')
-+			s_len--;
-+		if (s_len >= sizeof(buf))
-+			return -EINVAL;
-+		memcpy(buf, str, s_len);
-+		buf[s_len] = '\0';
-+		dec_str = buf;
-+	}
-+
-+	return iio_str_to_fixpoint(dec_str, fract_mult, integer, fract);
-+}
-+
- static ssize_t iio_write_channel_info(struct device *dev,
- 				      struct device_attribute *attr,
- 				      const char *buf,
-@@ -1146,14 +1160,18 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 		if (dec_scale)
- 			ret = kstrtodec64(buf, dec_scale, &integer64);
- 		else
--			ret = kstrtoll(buf, 0, &integer64);
-+			ret = iio_str_to_s64(buf, &integer64);
- 		if (ret)
- 			return ret;
+-	ret = iio_str_to_nano(real_str, &real);
++	ret = kstrtodec64(real_str, IIO_TEST_DEC_SCALE, &real);
+ 	if (ret < 0)
+ 		return ret;
  
- 		iio_val_s64_decompose(integer64, &integer, &fract);
- 	} else {
--		ret = __iio_str_to_fixpoint(buf, fract_mult, &integer, &fract,
--					    scale_db);
-+		if (scale_db)
-+			ret = iio_str_to_fixpoint_units(buf, "dB", fract_mult,
-+							&integer, &fract);
-+		else
-+			ret = iio_str_to_fixpoint(buf, fract_mult, &integer,
-+						  &fract);
- 		if (ret)
- 			return ret;
+-	ret = iio_str_to_nano(exp_str, &exp);
++	ret = kstrtodec64(exp_str, IIO_TEST_DEC_SCALE, &exp);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -638,9 +621,9 @@ static int iio_test_relative_error_ppm(const char *real_str, const char *exp_str
+ 		return -EINVAL;
  	}
+ 
+-	err = 1000000UL * abs(exp - real);
++	*max_ppm = (int)div64_u64(IIO_TEST_NANO * 1000000ULL, abs(exp));
+ 
+-	return (int)div64_u64(err, abs(exp));
++	return (int)mul_u64_u64_div_u64(abs(exp - real), 1000000, abs(exp));
+ }
+ 
+ static void iio_rescale_test_scale(struct kunit *test)
+@@ -650,6 +633,7 @@ static void iio_rescale_test_scale(struct kunit *test)
+ 	struct rescale rescale;
+ 	int values[2];
+ 	int rel_ppm;
++	int max_ppm;
+ 	int ret;
+ 
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buff);
+@@ -666,10 +650,11 @@ static void iio_rescale_test_scale(struct kunit *test)
+ 	ret = iio_format_value(buff, ret, 2, values);
+ 	KUNIT_EXPECT_EQ(test, (int)strlen(buff), ret);
+ 
+-	rel_ppm = iio_test_relative_error_ppm(buff, t->expected);
+-	KUNIT_EXPECT_GE_MSG(test, rel_ppm, 0, "failed to compute ppm\n");
++	rel_ppm = iio_test_relative_error_ppm(buff, t->expected, &max_ppm);
++	KUNIT_ASSERT_GE_MSG(test, rel_ppm, 0, "failed to compute ppm\n");
+ 
+-	KUNIT_EXPECT_EQ_MSG(test, rel_ppm, 0,
++	/* allow the error of the nano precision used to format the value */
++	KUNIT_EXPECT_LE_MSG(test, rel_ppm, max_ppm,
+ 			    "\t    real=%s"
+ 			    "\texpected=%s\n",
+ 			    buff, t->expected);
 
 -- 
 2.43.0
