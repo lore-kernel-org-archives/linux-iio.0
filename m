@@ -1,101 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.182
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793013855;
-	b=kcjYszFpk6bsEC8k5MISKu7SEth0zHr3Kine9K9zf14xZWXxh/T7fUP1wxXJmOpEkexj
-	 T3++RL5Ti5vM7MkFJKEFZWzglq5ZZXM9DmEg5TP+wWfIlEAuzvCloeHU6r9ClygWmNIAk
-	 YRP5aTIjve99vKz1lXnB9DpSLxEVIidLDiyRxbFKXHuCKhOGDmuXF/xV795WEz2HaYiAi
-	 kRA0h+8BeYENzVFv+YYgIQekjcSzQaXFJveFIa3eDtWdwqBYft2TcDTfFmsD6/yeEAnCy
-	 wQ8ItfPsu/moutgsOT3GUmtZqryFrDnHMxTrPkuAuaCvnkUp7gvKg3OTkqnZbiC3YXQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793013855;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=gubS6R+BRHVt8ubZ457OUw2tXG30gxHEHztMFFDkJ1w=;
-	b=baW6zeEZ+voX7wQrT9i60OShYmwTa89NSDwIYMl8LDcObS0xHqrdRhfLcHTlFCOEKDnh
-	 Heb6T8omz3uAzENgbu7Q4uH2x2fylpWHyhIGxaraIIllCA7haMOjdHmx8EshnEL804xlK
-	 TQKdawYkKP0pJWnZJm8Juv4ud2WSR7imMBF88vLkD0Jn0jObraPQ0g0Q18xD1+Sr4i4kY
-	 pMd6omTMw+q2igzojoJdAErD0DFR+DC6D6eOODMROxNsPXLihA2qhx4wMJ598j+YDUPUR
-	 ZALSXFS48TyaVUviSlFMjLe6CXQN7LKsAJkrOd5neSNhHqS0Gvaib8Ewk6jOOavAikw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qgxGLDIM;
-	arc=none smtp.remote-ip=74.125.82.182
-Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793015662;
+	b=oVdrr5z+zRTSyZ20+SfIBeKbE1msQSeyTjDPZ7HNQ2aX25QB70Ktf1qBzrsqb9iCc8Ug
+	 WoVoXEiwVysCqFhuwAAOx0hcK5AH+DNQw5xYh5baWU5SRqFYAxtwXSYJSClYcgPp89y10
+	 mTddnJOULUV2pNJcYTXJXZecLj1Wun3AnR34Pus2bYE+4/RnZLMokHH8rLAUGu6LYYtc2
+	 4AU6+q38dwC/R51mkxugPy6eeMyojdTwg5XfP1cFJgLC0M5E49KDQL6vV+jIgh9reeUWZ
+	 h6xRkEM+KhMQ5cIpV/2GxNAVRqFNv7bwgxttHQVhDUEmO+7ZM9K0CBb8G4aW+A5Lmzg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793015662;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=QS/H5MuVG1mDm/oVnzdU/HgobrfCyaM+IP/VlC8ns5Y=;
+	b=h2HyTxlN4n2KFLA4hHLV0qKzIuVA4lj4MrI6163SqR/4804dOwf4AVJW18znmGfr0usW
+	 IpWwV6H2cMDa032eUSMZP20i4KbXJuBFeGVnhJqQ0POFzSPqcRSNL7LzoUIb9xpj33TnP
+	 d9oq4Vn2PvadAM+HWjnhY4pQPdlioyqRuNOBQqOF9Eu1ltXJtb/dtuwfdYGL7nhFPyQUQ
+	 hh/YnaemBiUB+lbNHfFh0y0dJKsDNq4GV+7EIxSTaLk8+ZJe08kWkCoen9IGTTYdFIxQM
+	 Wey1vQ5CcowzZAEKwjl3lW4mTp4CvE2D4wONOodWDx4KkClzAZeeEsAnGmq0lRGkfzQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VHIH+JSb;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58D38606A31A;
+	Mon, 26 Oct 2026 11:54:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VHIH+JSb
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793015662;
+	b=XQAnkPJLXhor6kNVSjbcrhJVSebmQCcnhsgxfiypI6YJPeHklMl/ZV4YnYUygleHID+i
+	 KZ/fGwXyOiidwdcEH4rUwVzwg8yKVMMpaH4NEbdoSYi57aEa1x7fgXtewRdJsdOAVKbA/
+	 QP18QFiUckbJ2TcgW2SZXUTJ05NKUQTd+CpSCzJvP2x268WQIV6A6B4n3M/hX6489dRw6
+	 FVE/qEib/DC+GR8nOoX4JPhQMXdFhxGVQ+fRPNtSoVQq0UzPKIQ0mQOKLf8Em9tX+p7Uh
+	 cykx/TJyjCyvf6gQXCGk6Z/epqrh6q98fE3NRojKxE77bQMSAPSmzIZAxz0V1YAD2PA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793015662;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=QS/H5MuVG1mDm/oVnzdU/HgobrfCyaM+IP/VlC8ns5Y=;
+	b=Kjby5neVUL4DWhu9C64xV4c8LV9RYEAf/i3o6zQikbFBTfP46cMWeYV+++IsfD5lkeTK
+	 VQBcoIAus+2taxtJFRfKv4msSiZIC4gdlZLlJjH6XZwbpDpPH7fa5zf9qahHzlHT0WXaP
+	 QCZ4MzzU/clLJkzkQFl7Qh8SeT/zcApSGwTe7cFMCQf5ybB33lKzHTmj6J6q2y/Yyz91w
+	 H1gE231QtuT4iv8fIuKFPYN949A/q/rpzfJuXAS9hN/D5RCLPlWOVBtawj0UoONn/wZA1
+	 0Kd9Ij+qxGm0t0jXOiP1mkgKI1x5lcv8COEl91osXrI3k1p2p9X4LwrT1BH5vqi5jbg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098BB606A324
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 11:24:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 098BB606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qgxGLDIM
-Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-369f33df08eso2613057eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 04:24:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793013854; x=1793618654; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=gubS6R+BRHVt8ubZ457OUw2tXG30gxHEHztMFFDkJ1w=;
-        b=qgxGLDIMsoM4FJ6DO4vvsW71Bys782W0K5qykT5Z8a2kbmrHlyodZaKcvRolCqEo8r
-         TJNogFYmpCcZaOOFX7R/2fB1nJ099mXcVZz8IBjVPsU6tbc5pgL6o/oKn5ZK4oNpej4C
-         UeCltzLcj4pKGSkChM35oqzCPJ4qkKMVQG9MWzGb3Fx1z1dO8gX9twn5SyIuo+2yZHC0
-         dCTqb7ruVf4I3TSzUUSIFGjcNK9t0toAfnlrtlgJKiBK8lX+5WJVuLxiZt4ZssB0x6c4
-         i1+cpna32aFON2E+EVv//r0s1/EztzT8pwUuAq4OfHCUlE61Bgq0mFRhCVL/lvsyLsDK
-         boXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793013854; x=1793618654;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=gubS6R+BRHVt8ubZ457OUw2tXG30gxHEHztMFFDkJ1w=;
-        b=iQ4qkxdLlc+Xe5LoaE8k6alck5JbsbHZO6pPPfvVatsLVRDGJrL49ZMkVYehRPBwOx
-         cOv9VBVVCxEP6SHyOcgNNodLZ+N1aoDmdplv60AhHzuYYMM02RGUhI0C1BViJlnFEig4
-         55JkYy0jtYnbLIa/il7ED90D82unAHe2WbxCG6z23d1Bp+dJDFPV1v1mshEd7eYqb5Tm
-         KW4qqJGQ3RA16Z9KTSTvpHIWcmIIKqCC/awHfiaNhbS5rk4fbKrVE8ru12/nkJ439zRE
-         5VPCoB2f1M8TPA4orDNUq3HtMXvqK64TZ4gOJzR4YF8Jt2tEXM6ItiItkXoa8tyq86SV
-         ZOJg==
-X-Forwarded-Encrypted: i=1; AKwUvBy1r8Eli9uyXYGP1pn5UKUiRuvGNexNjgDNnQXDCSzNm1CSTtte796cvL+QEMAzxMbnwyszPPsjRIE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJp2r0vG6GBZSnZd0YrQA8b1YzFdmsx041yRsttuiIjPL8K2YP7
-	hcMZJ+d8/v24RNvJK/u5hNz95Xi9dTQE+wk1XcpsfrIn0NFFeFL6OSDH
-X-Gm-Gg: AYBFou2Z3jNqRUbnBWUAejaX4XGJTZu6qddQkA0o3pQCdqOhVZdPOpzjokgUCxp6kMS
-	04BvRveP4AVYztDg91kzNSvKMN2/HKp4BWkdijZd2cVh3q8IK+Ce4iTZcnbj2/WAWoBWgodoCAp
-	Uuv1oALfUVtfZnxTEm9yorISIcPIveoEfKGIKYqZwiQyoXdPdDtkaPvnbJqozsvi3CM0kW2hnzH
-	eqZRbiYbzhhqkXH0F7bqWEy68PRmX3EjPSr2YH40VPAAHE7XWtdSVMaIF2Z5dh+2KYar+SdXtMF
-	/H57HjrR7NOmcTIi3PA9/7hasAVGKYLVlPnB80ZzugXhHf42DeEYIuVzlUNw8DwfBj2D3pDTYYX
-	PaOEKBzq75odvqgEaO1O2WdQXePNOwpQsivexUflR2jpuKLc+OqBZVBCnI7JjNfc+r53KDX6JFW
-	/X9huZ0/cqwH3subA0Qrw4bPgt6yx1hXmX8wrZLtQmTihyp/y8I/pj5pqCKmqhPc2zy6atf1xo1
-	KXaDsqYD2sf86Mr6ZYQ2yppe968brDaU9alkEtmAMj6Un8moZIG5HamiNQPXlCoeIAJEuEFYX31
-	hhvzpCSsgUem5eR4LqD0O/sgsCIFRwtDV96bl6Z+8cmgeGDOZ7+yC1a3JyBpm6Wrg0vU7UN+gTk
-	6rWLXvmfWRJo=
-X-Received: by 2002:a05:693c:2d84:b0:358:8f02:e0ca with SMTP id 5a478bee46e88-369e84fc4admr13621532eec.9.1793013854101;
-        Mon, 26 Oct 2026 04:24:14 -0700 (PDT)
-Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a064510b0sm6599989eec.2.2026.10.26.04.24.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 04:24:13 -0700 (PDT)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v2 3/3] iio: proximity: sx9360: keep the IRQ balanced across suspend and resume
-Date: Mon, 26 Oct 2026 16:53:06 +0530
-Message-ID: <20261026112342.65917-4-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261026112342.65917-1-kapoorarnav43@gmail.com>
-References: <20261026112342.65917-1-kapoorarnav43@gmail.com>
+	by smtp.kernel.org (Postfix) with ESMTPS id 7A4521F031E4;
+	Mon, 26 Oct 2026 11:54:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793015662;
+	bh=QS/H5MuVG1mDm/oVnzdU/HgobrfCyaM+IP/VlC8ns5Y=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=VHIH+JSbeuaq7Ta6UEyrdpxAKAQYYIcKhHSMWKbhYToeqUfXPPZm4zOeKFusymZcG
+	 uu/vXQcfDuvRAU2E0Wxx+RgjaeOpqS93fyML2w0DThmtD4jQskOluZ7OclwZ89+t/w
+	 gaUb9nsAWjf4gZpojj8X03Mv7lxBlPjWvsIvux/mNCFeavCSfOvfs2p05YUl2psG6d
+	 hcEbZJ9YVqrgJ7BYLvsvYewmNtSuRf1Nk+/irJtfhXP20kas+r6pstV3knQclCzD6y
+	 duG4UNGqw69zw1ZSKtxr6znbf8CUWMhU1wbzW0BAFzd2IVwlXqjqq+CKZDOJfTKV9P
+	 QGC6O8VmyWcSQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id E003B44CD6;
+	Mon, 26 Oct 2026 11:54:20 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Mon, 26 Oct 2026 08:54:05 -0300
+Subject: [PATCH v4 1/6] lib: kstrtox: support E notation in kstrtoudec64()
+ and kstrtodec64()
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,81 +83,142 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261026-e-notation-v4-1-a366a6d14d57@analog.com>
+References: <20261026-e-notation-v4-0-a366a6d14d57@analog.com>
+In-Reply-To: <20261026-e-notation-v4-0-a366a6d14d57@analog.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793015661; l=3027;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=wF/a33D3G0jiDP0HWeP+Ia8duTvTbru2jdlgQddbFsU=;
+ b=a92MNNxdUiMYjEUOSW/ArrcC6fp2wJqFfQNOJ+L0EcSbPSHNGPjeC7ksS+2QABzV10iC5ep88
+ TorwHD5+9xuBgT6woAAWDjXkzB1Z2yUde0Utz5C98QjsIRZvhjaM0wt
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
 
-sx9360_suspend() disables the interrupt first and returns with it still
-disabled if a register access fails. Resume isn't called after a failed
-suspend, so the interrupt is never enabled again. sx9360_resume() also
-returns without enabling it on error. Without an interrupt line,
-client->irq is 0 and both callbacks act on IRQ 0, which the driver
-doesn't own.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Disable the interrupt only once the device is asleep, always enable it
-in resume, and skip both when there is no interrupt.
+Allow decimal strings to carry an exponent suffix, such as "2.7e10" or
+"271828e-5", in kstrtoudec64() and kstrtodec64(). The exponent is added
+to the requested scale to work out how many integer and fractional digits
+are consumed. A negative effective exponent drops integer digits.
 
-Fixes: 1cdb4c47f7f5 ("iio:proximity:sx9360: Add sx9360 support")
-Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+The digits are now scanned first and the string termination is checked
+before any conversion. A missing or malformed exponent ("1e", "1e+")
+returns -EINVAL. An exponent that overflows when added to the scale, or
+that makes the result exceed 64 bits, returns -ERANGE.
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/proximity/sx9360.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ lib/kstrtox.c | 69 +++++++++++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 48 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/iio/proximity/sx9360.c b/drivers/iio/proximity/sx9360.c
-index ed83d809ecf5..85b83d86a433 100644
---- a/drivers/iio/proximity/sx9360.c
-+++ b/drivers/iio/proximity/sx9360.c
-@@ -797,8 +797,6 @@ static int sx9360_suspend(struct device *dev)
- 	unsigned int regval;
- 	int ret;
- 
--	disable_irq_nosync(data->client->irq);
--
- 	guard(mutex)(&data->mutex);
- 	ret = regmap_read(data->regmap, SX9360_REG_GNRL_CTRL0, &regval);
- 	if (ret < 0)
-@@ -809,23 +807,32 @@ static int sx9360_suspend(struct device *dev)
- 
- 
- 	/* Disable all phases, send the device to sleep. */
--	return regmap_write(data->regmap, SX9360_REG_GNRL_CTRL0, 0);
-+	ret = regmap_write(data->regmap, SX9360_REG_GNRL_CTRL0, 0);
-+	if (ret)
-+		return ret;
-+
-+	/* Only once nothing can fail, as resume isn't called on failure. */
-+	if (data->client->irq)
-+		disable_irq_nosync(data->client->irq);
-+
-+	return 0;
+diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+index bac1c057e1b0..20d94a73f937 100644
+--- a/lib/kstrtox.c
++++ b/lib/kstrtox.c
+@@ -395,41 +395,68 @@ int kstrtobool(const char *s, bool *res)
  }
+ EXPORT_SYMBOL(kstrtobool);
  
- static int sx9360_resume(struct device *dev)
++static int skip_digits(const char **s)
++{
++	const char *start = *s;
++
++	while (isdigit(**s))
++		(*s)++;
++
++	return *s - start;
++}
++
+ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
  {
- 	struct sx_common_data *data = iio_priv(dev_get_drvdata(dev));
+-	unsigned int rv_int, rv_frac;
++	const char *s_int, *s_frac;
++	int len_int, len_frac;
++	unsigned int rv;
+ 	u64 _res = 0;
++	int exp = 0;
 +	int ret;
  
--	scoped_guard(mutex, &data->mutex) {
--		int ret = regmap_update_bits(data->regmap,
--					     SX9360_REG_GNRL_CTRL0,
--					     SX9360_REG_GNRL_CTRL0_PHEN_MASK,
--					     data->suspend_ctrl);
--		if (ret)
--			return ret;
--	}
--	enable_irq(data->client->irq);
--	return 0;
-+	scoped_guard(mutex, &data->mutex)
-+		ret = regmap_update_bits(data->regmap, SX9360_REG_GNRL_CTRL0,
-+					 SX9360_REG_GNRL_CTRL0_PHEN_MASK,
-+					 data->suspend_ctrl);
-+
-+	/* Balance the suspend even if the device couldn't be woken up. */
-+	if (data->client->irq)
-+		enable_irq(data->client->irq);
-+
-+	return ret;
- }
+-	rv_int = _parse_integer(s, 10, &_res);
+-	if (rv_int & KSTRTOX_OVERFLOW)
+-		return -ERANGE;
+-	s += rv_int;
++	s_int = s;
++	len_int = skip_digits(&s);
  
- static DEFINE_SIMPLE_DEV_PM_OPS(sx9360_pm_ops, sx9360_suspend, sx9360_resume);
+ 	if (*s == '.')
+ 		s++; /* skip decimal point */
+ 
+-	rv_frac = _parse_integer(s, 10, &_res, scale, _res);
+-	if (rv_frac & KSTRTOX_OVERFLOW)
+-		return -ERANGE;
+-	s += rv_frac;
++	s_frac = s;
++	len_frac = skip_digits(&s);
+ 
+-	/*
+-	 * Check input beyond rv_int and rv_frac to cover cases like ".5" with
+-	 * scale 0, which is considered a valid input, being parsed as 0.
+-	 */
+-	if (!rv_int && !rv_frac && !isdigit(*s))
++	if (!len_int && !len_frac)
+ 		return -EINVAL;
+ 
+-	while (isdigit(*s)) /* truncate digits */
++	if (_tolower(*s) == 'e') { /* E Notation */
+ 		s++;
++		ret = kstrtoint(s, 10, &exp);
++		if (ret)
++			return ret;
++	} else { /* verify termination */
++		if (*s == '\n')
++			s++;
++		if (*s)
++			return -EINVAL;
++	}
+ 
+-	if (*s == '\n')
+-		s++;
+-	if (*s)
+-		return -EINVAL;
++	if (check_add_overflow(exp, (int)scale, &exp))
++		return -ERANGE;
++
++	if (exp < 0) {
++		len_int = max(len_int + exp, 0);
++		exp = 0;
++	}
++
++	rv = _parse_integer(s_int, 10, &_res, len_int);
++	if (rv & KSTRTOX_OVERFLOW)
++		return -ERANGE;
++
++	rv = _parse_integer(s_frac, 10, &_res, exp, _res);
++	if (rv & KSTRTOX_OVERFLOW)
++		return -ERANGE;
+ 
+-	if (_res && ((scale - rv_frac) > 19 /* log10(2^64) = 19.26 */ ||
+-		     check_mul_overflow(_res, int_pow(10, scale - rv_frac), &_res)))
++	exp -= rv;
++	if (_res && (exp > 19 /* log10(2^64) = 19.26 */ ||
++		     check_mul_overflow(_res, int_pow(10, exp), &_res)))
+ 		return -ERANGE;
+ 
+ 	*res = _res;
+
 -- 
-2.53.0
+2.43.0
+
 
