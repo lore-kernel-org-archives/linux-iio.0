@@ -1,100 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793036358;
-	b=PQZlKUU8ETzOHa8ga1VWdF9FetnvnJBnB/Gc3NOMHKLbz0WqWtX7H7defNlrI03MiIyV
-	 pY8Oez1ohKpxVeV4w33kALt1Bbz+IdVBm/uZOXajhoacGxC85PKILh60LEPzLQB3m1A1m
-	 +4Oyp03iiO2GMjcVIWE5XyYhCYLns5I8Fp3m3IxDqYrclnQOMNPEgFBwzQrIHp8lgw4Z4
-	 d+E0pcO0cSTQgRmWLtOc0KSzVDoltHaEQgnCgLFHnznuxVfLJpBaoVv+i6szAD0VJ1Nlc
-	 IV5eJOX0ZN/KaNmdbYS94S2P+tb6PU7Gx0+gj3OB0IruhOO9IlcOk+OXCFIOKVFsMaQ==
+	t=1793036534;
+	b=fU+szB/AblOuZwrdv0iGzoNFI2lg7KmGgpEmLblMWrX5UTXoKZhZxCMTapAd7XOMJpYL
+	 kqOQKcHTTICLsojFY6iqKOCgQk9BgtXb+ct+p6jUdCUplOSEOJyZ2QLI7C1BRvigXYzeq
+	 /ELSVJjkj88delBf8+v+EIrptJ8fwZ7JT9EbWkrOpTCGzoSKyL1LdU1HqbQyOMRfw7B18
+	 76NHEULmxuBFyA9sl1MweUgoOsVwmS8OZ8ZnAHlHnIuPmF+r6fTDFbrybh8grRf/+rXQj
+	 kakqXhuOyIzqpyRRBIvr4UCC5ixA+6jiR1gjZbYXC4mXee5jVIDT8uregTAaRBlqTrg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793036358;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793036534;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=PnSIBEinvI0aWOXfbfSxdS14sk+hrl90vzujOjLWDnE=;
-	b=OXBoVly5JMR7F6gxEMwc4p7s28vGqUsuFdO24y/u46VAixn2CaLcX358DzxFKjgJEL+K
-	 YwTyoRSKHzaDHtucGPFS1W/tga4uV6RxFtGKk0xN9Dn+9FPY3otpsG9Tj2YLJOuRu6n/a
-	 djn71hdBDelNcuko/tmR+KZJ//daUQwJU+N8JmgugppMPjuGcuep4oo8zbOhql1TyDtoB
-	 9ZF0oD3+n+LekzpMupNc5mzly1iYN2VpKL0mcdizvLtCdm7P0ejW1VPkLtgkRAf6gfN5H
-	 jY/5oUskvc0G3PUlFwMiesSA4SFc33at/QSc7JhxiS8LpKNEbUvbtDC2PalNuGlXw7w==
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=WAoMtkHfCWv+6BXicfU1j7E0e7dZp4DhcCvc99gABTo=;
+	b=o2+OIE9oeEnTCXit81v6wMXPcq8N//CnSZQACpMa/HwTuTt0TYb7d93bg1peoiRwGfR/
+	 1Ai2TjZZIs9ur2SZ1IsXeOVV/F6o/Rk2DCwTZvOXiqmUbxVDe3tcM7gE28DbVcsQg9bNZ
+	 IJl4XS5mqWvLPKbNJLfdmF6NpGMxcudXnILj3D3XWapgMkBMTvsBOC9nSw1HpTfg94Z9p
+	 nYsx++41cFRfMOW5dA+GE6c6YwzbctRJ9skX/e5fk6eX9qmNWfivbPrZQQV1/Ui3BqR0M
+	 S9zbKAQwB02YaJOjQibw/Uf23brD1ZrWbX93O+yuubb1l0mZ+W0u50WTmcoPGYC92eA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=KWNTyjiS;
-	arc=none smtp.remote-ip=209.85.208.173
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=M7d3W9ve;
+	arc=none smtp.remote-ip=74.125.82.182
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF935606A31D
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 17:39:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DF935606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96D69606A32E
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 17:42:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 96D69606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=KWNTyjiS
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-3a9e87ba696so23072301fa.0
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 10:39:17 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=M7d3W9ve
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-36661f953e4so6132334eec.1
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 10:42:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793036356; x=1793641156; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=PnSIBEinvI0aWOXfbfSxdS14sk+hrl90vzujOjLWDnE=;
-        b=KWNTyjiSseh8CRmBtZ2wrSmoout5WMIyNVt4NfUzr7M4iL6TvFU4puGMODBpTeXLjc
-         KdwxAfOs3VOMlLGb/XiRW30VSo82DUb5vdDcZ4xFHAFAXFrHjJ6tlPjYs0CjuTOIv3ux
-         HrDTjiVgs8bWoKoUT5px1oVEBL9dBP0uBhSomaaF94k0MkMe7ygEGLb4XyVFkQe5xCS4
-         y9DMI4KAZolgfSwuZuX8Zvy2yEd/cizD6XPGDxOxOLGy0Z/C9+J7rF/UN9RPEX4bX9SJ
-         B8BVl/hfCRyhHL8j7PR00Y1MFK3Gas/14IeU5PjShFWvSJmWi9BwPrLWZ6lZssF9IR/h
-         N9wA==
+        d=chromium.org; s=google; t=1793036533; x=1793641333; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=WAoMtkHfCWv+6BXicfU1j7E0e7dZp4DhcCvc99gABTo=;
+        b=M7d3W9veJ9vjDTmNS8rtt9D+2mCqDD2Te5uWPu1k9rIWMTzto5Jct+DObEeqFlrhwD
+         Irzx1/kmVtJ7SSQKdVZAWql4rBVqROykMdjeBFTck9xbPBHgibH9g25Dcf5QAP5+hZD7
+         AYTuIgsruAIwuQISy4kkcXS6fn6K2LGnIC/J8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793036356; x=1793641156;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PnSIBEinvI0aWOXfbfSxdS14sk+hrl90vzujOjLWDnE=;
-        b=0dwUQRdYcesEqhvfu04BmKw0xQnCcMhB7ykq7ThEEmyhJGaoXEU5z77+vcC3LTFKx6
-         dT7gIOSEM4+/LJB0DsHs3OFSRZKOGt8zoJhnl0dAjc5EYeRHI+82ujtrl6HFTG2MYFNC
-         bxo+alJb5wSPHkrxC2iCWBNZ+L6c+bNjEK6n0F4nFFWLxEgzJ4MJ0c4yNXk37kMqSN2U
-         /101UO0cwCoHZh7XWv1bsiP97A0cueZREvZdrR49WZe3cM36r1GtVAFwdwPCwetDhJgy
-         WBIXA3KPot8R7UfYoO/lrmxIpPSKkhUKVDWonaa0bRRmaySWjmJ6NG2z32UM9upDvwsz
-         Ulmw==
-X-Forwarded-Encrypted: i=1; AKwUvBxfQGYov/aPS97WLLba0kh35cYzPwv6LP/C3taqTtUydrb4GOEWOpfgxekE+5Pmhuu1LlabfFLJIO4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYK7sGjAVH9GWmu4kYX4paLy7E5IHTqZKWQWxMSxYgFQjPsL74CL
-	p6CY8+mZktrEQzxUCtb7SbkSER4cXMXdICMb8BYhTMlIXpB1k/fj23FQ
-X-Gm-Gg: AYBFou1klitHq6fZF0l/9+w2AN0e7MaxDk7NLu0271avXJm7oCCwrN1Ato2aJtJsre9
-	8hiVpTvifWBJ2u2PLqSHY2utQLtWat7SF6KcOl5UWamhSUhGL2q/5Q6kHYdm7Z8vG9EfXrQJxpu
-	u8TJCHpGN1hpg/C9Eu590e4EcJE1AlkXemLPysiir3EaxU+QwJ7AwDBKrZTqgkWo7dAtVVJF0jz
-	6LMHjJYMdmjCl69h8ju2EzfTnKK6TNVU7XHRrLfOWovOIYIdqk4KzEYyozo/H5rCRCS43TE3jP3
-	K6TSSVY5UIiM6gbhvGbqR3HiatopmmKgAJ7qPKPHq1V3SXBhSFFoTp3DLvntvI0iMMyXUEchRaN
-	BhssrCIRVOUlMA/IPB77xSMOhlv9GPdQV+oapAw/r/AyRyrNbPZZiF6YIiAQW5DGAewdiP7YmCS
-	gi0gecNxD+pJKUIEAhyxLSH/PcyRjzBAmgvsroBTUQspHo+O921Fh/L/nrRYRx6jdIuDdJsuAFl
-	qTAsUml5Ety9vxv8LCBADyKEMmu8S7m3zoyV1eWnE+7lOeoqv5xk5hfhD/2tJSCtjv1upQtXXYZ
-	CN2x+QpeFIIFesmM+I8Ljppnmwqi8Y31QBMMU0Tu0gSAv0d9W0dNyaTKs1rrUXvu
-X-Received: by 2002:a05:6512:b8c:b0:5be:4386:806d with SMTP id 2adb3069b0e04-5bfb71eeac7mr2553829e87.53.1793036355836;
-        Mon, 26 Oct 2026 10:39:15 -0700 (PDT)
-Received: from yantra.. (nekmmqua92iezg7lpcf-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:9332:cc42:ba9d:ca8f])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7a950b9sm1685199e87.63.2026.10.26.10.39.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 10:39:15 -0700 (PDT)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: andriy.shevchenko@intel.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
+        d=1e100.net; s=20260707; t=1793036533; x=1793641333;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WAoMtkHfCWv+6BXicfU1j7E0e7dZp4DhcCvc99gABTo=;
+        b=a+mMNcNANUhjlcJZEQwXMSobBELJzCXy0oxqCLWE7OMxE3myKdtLXacnmYJ9CNHxuS
+         KVQJegE8xdNFhUHWiMNlZnYqImscaH1PQbXNEZKFHrja+C4iUKsP8115wjasYKZiRBmM
+         iwC+YxWqmQrk9SNYvH5nNL9RQqX/8OKe7oso/hiUFBZcgqas1yPGyUtGwXwg6Y94ZwFB
+         FTrmTw7VqMNBNggVBhGORBEQRlkglAxysjOPbgDNduh+priPR8Lyw2or8LLl/igNsLfB
+         G7DEBoqEiNNtcF79ieMNf+KEW5lw5DZasZ3H1W6LA5ZtoK6Xk7V2/v3aB5mO/jQvF7Ps
+         eFdQ==
+X-Gm-Message-State: AFq9FYLFU1eHXD8A98QzyvfJlUbflGr8ZFoPk9z1QgT3uMZJggGHvBhF
+	4z+yfCbjDP/PdgkbB1GQ6BbJylS1Xw+iZy0J945o1HWhQ2A8SCMzi6xqJxciuQqCEA==
+X-Gm-Gg: AYBFou32QJ+sZLCd6j8PALJRGHUsDFMt+E9evmEiwT69LmTo5DjyY3e5jt7sKV5fuqv
+	+b3s3aHX7wX5rhwVKV/24DHP0sdssruAOcQBo7xeKIMO+1UqqRborBNGBYMOl1xYJUQME9lJXW2
+	IZNzuG2cg9jVMxDJo4okkx8jSln3xHpGPbsV9yZ8kMDCRo29uJZbS6OwN0TqV/ZTTLS/JhRP920
+	LJ5bHFHU9OK4Y2HBt/m0hBX5yxCr95sAc2tTfggqT+GUuk2+v/jxXXGjvCpZPtJNnmVJPieTgPO
+	lhTxKNO2afMxFU5WpPfNjtz2uOIi9BoKzpoA+MaaEQDR73hgv2kmEsfyO1Kc6YIVmUCUQ025tRH
+	uTSPLlDmE9zj7Sx6NOAmOxiEKo/Trr0CHZl9nJdwz9xEpAMF2BHs79Jumc3nCD1H4kYExiQRYRu
+	3PS1Vn02fZrcdKQ76L7NpuLQJ5O2w2mQyZzpoRCPFYgZW1zot/3+ewEDjc1lOWW3lR1ukl9p9MG
+	FvDkXVL6jIFUp/jB82pvcFE1ALmCmIc9RGCKSpgmD3t0dScEvC8YcnQXBLiKe9hXv5Y96xwYvxH
+	jvizH5zHCxepAlEI27w=
+X-Received: by 2002:a05:693c:8811:20b0:36a:1f8:a56e with SMTP id 5a478bee46e88-36a01f8b810mr4586888eec.23.1793036532444;
+        Mon, 26 Oct 2026 10:42:12 -0700 (PDT)
+Received: from localhost ([2a00:79e0:2e7c:8:79c5:9cd3:db14:7468])
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-369e8daf444sm25871383eec.18.2026.10.26.10.42.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Oct 2026 10:42:11 -0700 (PDT)
+Date: Mon, 26 Oct 2026 10:42:09 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Joel Stanley <joel@jms.id.au>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iio: pressure: dps310: wait for a new sample after a ratio change
-Date: Mon, 26 Oct 2026 19:39:10 +0200
-Message-ID: <20261026173910.23788-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <at8X810dwa98w9iL@ashevche-desk.local>
-References: <20261019153328.80739-1-zoone.rupert@gmail.com> <atZqSXI14WojGso5@ashevche-desk.local> <20261026024605.3286702f@jic23-hlaptop> <at8X810dwa98w9iL@ashevche-desk.local>
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Subject: Re: [PATCH v3 1/2] iio: gyro: fxas21002c: Discard
+ pm_runtime_put_autosuspend() return values
+Message-ID: <at-Q8f-BKoExUH0e@google.com>
+References: <20261026032051.1004536-1-jic23@kernel.org>
+ <20261026032051.1004536-2-jic23@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,12 +97,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261026032051.1004536-2-jic23@kernel.org>
 
-On Mon, Oct 26, 2026 at 11:05:55AM +0200, Andy Shevchenko wrote:
-> If Rupesh is going to add the patch to clean up that (before or after this patch)
-> I wouldn't be triggered.
+On Mon, Oct 26, 2026 at 03:20:50AM +0000, Jonathan Cameron wrote:
+> From: Brian Norris <briannorris@chromium.org>
+> 
+> This driver propagates the return value of pm_runtime_put_autosuspend(),
+> which is not particularly useful.
+> 
+> Returning an error code from pm_runtime_put_autosuspend() merely means
+> that it has not queued up a timer or work item to check whether or not
+> the device can be suspended and there are many perfectly valid
+> situations in which that can happen, like after writing "on" to the
+> device's runtime PM "control" attribute in sysfs for one example.
+> 
+> With the driver modified to discard the pm_runtime_put_autosuspend()
+> return value, it becomes simple to use PM_RUNTIME_ACQUIRE() and
+> guard(mutex)() to simpify two locations. At the remaining location
+> simply dicusard the return value.
+> 
+> This will facilitate a planned change of the
+> pm_runtime_put_autosuspend() return type to void in the future, similar
+> to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
+> type to void").
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> 
+> ---
+> 
+> Brian, given this tweaked your patch a fair bit, please let me know
+> if you are fine with this. Hopefully I didn't mess anything up!
 
-It's ready. It turns the 30000 into 30 * USEC_PER_MSEC and does the same
-for the other sleeps in the driver. It is in a small cleanup series that
-I'll send once the dps310 patches already in flight have landed.
+Fine with me. Not sure if it's appropriate for "my own" patch, but:
+
+Reviewed-by: Brian Norris <briannorris@chromium.org>
