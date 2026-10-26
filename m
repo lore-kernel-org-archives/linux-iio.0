@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792972492;
-	b=fYFS2KbqcQaBVt7rGlAqKHkF1QoVE48kXVP2gloWMkYfE+6W3rhhClBHAtff6YGTkNbh
-	 24VLW0I4zHN0IZVpZUbHgyFrfXIyZ+mcHiVPLyfbt8hizxYEu6JeGe7CrArpwAWkJtMkw
-	 GQxyleb5ywSaSFeueHGZ66HVcwZfnyDzRn7k/ukH2S3eKJ2JleytiviN24xaRcFV57CQH
-	 BcllILoNbJk+bMZXHaOdgDdYHOfnf3eZZAOJWH9SkM417XfXHgNTTqLp1FIPys86Agf2v
-	 5H6b/29HLWQxDmxIeOJRj0T4HF6oYyAbbagPfiCQJqrC1JoZL8v11xnlY2hxHb2/J+g==
+	t=1792973359;
+	b=SgsXKBJmphy4KfFdGTFgdW4W0avBo7jPB39v7vJ4XZPsyuzQL5QqE4AjkLAA6B8eEZUt
+	 31SzMNSY8G1n+io3ZyHEC7OiX0GQYVkaZvWnkATTIW6CQShdOOltj9Jycw7RsFKZu6aZ7
+	 BlINFRSzxnFxVeSoqonwmrh4FEv5585B32qYMC+EQM4KY3aEuPhuZ3Sx2iDXkgPV473UL
+	 DvzadRpOW5cX8IKBBAi5JgvCbWBe2xAMvONxhQ+UwWe4uQK0UVHuacV+XKgKU3xa1I4Gi
+	 m6qffb3w6DjxCub6Kmh+suUg6UaMv+rPYVKLVgaJS43yehB4ZIdGd32u2czNDx+cwSQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792972492;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792973359;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=LkGkgiiJ14vcz/5K/9BxVarCa1Rt0W0jKXIzP/tm76s=;
-	b=4bqw5eODROsNHj0mmtRzu3e0+LgY3zrqFsbY2lhVflHLguzOAxxWVtjOJhlokXoiBUn+
-	 Y43WFrEG28bRDf+GG2yFS9yiMuN50e/dgHcqN2vZ3zLqedSQnF/mkZHxqlQYqBZ0zKDms
-	 mveFjkAjZY5oIPqP8jm5jyxWYglzhE8MymKyyMy7bt9uBHgoBg6q8llrjSqzFB6VdzWeE
-	 4Lyj8de63Wk5Tyn9aiCv+o1btEZ6U77Xe1bU7ySKkciWeGTo237fclyrIbe+zu+N7l09e
-	 r0hW+n1Cah6EAR4gOu+uJw/DpiW22AXoK8r8IcqmNHLltyTkmRqsUD78P1Mk6tvVT/A==
+	bh=QMeNs2DEy/MEHGHund85xZ1Yt4veb1UtyYvJc7x2dNo=;
+	b=Myp8sliR//v4y8k7PIwSjLKPDlcoRASpzu/P9ktqRoeWQDJC4gJMDBLEYsuvWnVJqOBl
+	 IhrSHJ4/SIEMvQpTrrOfl3IvBGMfhUwfBYe1ISVXIp0uk1T2/lWUwO53h/prp1+6dTjH+
+	 4/UDXfvBEG57vRBnsQ949wO8Ljnk8VK/TQfTonwVEAIq6UHR28oan/v5sWxcYZ1cM/Vxb
+	 ik6uOznvOpb0pKBmX57Lsj/IgyWQfPP563ouQ5pSICVjLUyrfehUEvVph6QCf4RKtxgeL
+	 DfrlXONUAfs1htWQQiK3ui2Gqpbm84tPi6qlWnB+uJjgZ5dK4RHX8Aq/r7svn7L7TGw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FN7XVxpC;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e55oCv9U;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE287606A31A;
-	Sun, 25 Oct 2026 23:54:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44862606A31A;
+	Mon, 26 Oct 2026 00:09:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FN7XVxpC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9C51F01825;
-	Sun, 25 Oct 2026 23:54:48 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e55oCv9U
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61871F01825;
+	Mon, 26 Oct 2026 00:09:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792972491;
-	bh=LkGkgiiJ14vcz/5K/9BxVarCa1Rt0W0jKXIzP/tm76s=;
+	s=k20260515; t=1792973358;
+	bh=QMeNs2DEy/MEHGHund85xZ1Yt4veb1UtyYvJc7x2dNo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FN7XVxpCqcCIg269fh5/6/vn/3TEvobOrTKHo7ZxV9ptsP554olOyR6qlVnkoIj7K
-	 HAHxhBol0Pop7Rg2W92nQ0ORoimqeNL/5otJFyFBklxw07jWtCZSlnmyiIKABqlPs3
-	 chTZK9hL+3XoMn+yrNNu4cVrmHME4ReDa9iAj3qpuATFxmPcAYavhMvUFso/rucOHl
-	 hHWUjdL345QuoNutepUK3xMvUbm9ql7uYhFytyOQDproSXQlFYLVqL7q4TK7RTTiU5
-	 zCbNCRZlI2vkZPilFJGkH3S3OLJayJ9E5JZyLGaRc0qzL7wBaghUztmFV+DEFFx9kQ
-	 5KLqmsfUtBoEQ==
-Date: Sun, 25 Oct 2026 23:54:43 +0000
+	b=e55oCv9UC4XXxE7QpYtamcSCdTrgRR384vDO6/z+HZ6I739gZbI0X2J/PlE5+TIS3
+	 pCKAOD2U6xYDkwfAmD672wi0l4m9QLUtEm+P2hB23fdJqawdpLxjRDN7KONUVzQo31
+	 9G6EoGYbBTl38Xo2RJDvU4fXB5tjUqkEIg4UAH2ez7VPfYlA9ANBMZnUnNf+syCr7n
+	 j4eNPmYqKxCS4v8a/S0mO2P/OJIhOHgrcSBP4MWEPiBk1aI2si8mTTcmxIuOLr9PN+
+	 cPJUAVMcUSun0teRNyZ5jGSdDrVumZ8Cx6s6gwGGwR6d+4dM06yT+HsOuRrXZ7cscn
+	 YZ53P09omZuHQ==
+Date: Mon, 26 Oct 2026 00:09:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
 Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
@@ -50,12 +50,12 @@ Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v4 4/8] dt-bindings: iio: imu: Add bindings for ADI
- ADIS16607
-Message-ID: <20261025235443.07d75197@jic23-hlaptop>
-In-Reply-To: <20261023-adis16607-v4-4-a4d541ebfd13@analog.com>
+Subject: Re: [PATCH v4 6/8] iio: imu: adis16607: Add FIFO-based
+ buffered/triggered capture
+Message-ID: <20261026000910.328f6cd8@jic23-hlaptop>
+In-Reply-To: <20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
 References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-	<20261023-adis16607-v4-4-a4d541ebfd13@analog.com>
+	<20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,164 +66,142 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 23 Oct 2026 12:30:21 +0300
+On Fri, 23 Oct 2026 12:30:23 +0300
 Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
 > From: Radu Sabau <radu.sabau@analog.com>
->=20
-> Add device tree bindings for the Analog Devices ADIS16607 Precision
-> MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
-> gyroscope, triaxial accelerometer, and temperature sensor, and
-> communicates over SPI Half-Duplex.
->=20
-> Two variants are supported, adis16607-2 and adis16607-3, differing
-> only in gyroscope full-scale range (=C2=B1450=C2=B0/s and =C2=B12000=C2=
-=B0/s
-> respectively).
->=20
-> The binding exposes optional properties for:
->   - An external clock for sync mode (falling back to the internal 8 kHz
->     clock when absent)
->   - A hardware reset GPIO (active low)
->=20
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-
-There is enough new stuff in here I'd have dropped Rob's tag.
-
+> 
+> Add buffered capture via the device's hardware FIFO - the only
+> capture mode this driver supports. Popping the FIFO uses a dedicated
+> command and payload format (FIFO_DATA_CMD, 52 bytes, no checksum),
+> handled directly rather than through adislib's generic burst-read
+> helpers, which assume one fixed-shape read per trigger rather than a
+> variable-count drain loop.
+> 
+> The watermark-met condition is signaled via DEV_NOK on the device's
+> one interrupt pin, which stays asserted (level-triggered) until
+> DIAG_STAT is read and cleared - matching adislib's has_fifo contract.
+> DEV_NOK fires on any DIAG_STAT flag, not just FIFO_THRESH_MET, so the
+> trigger handler checks that specific bit before popping anything.
+> DR_GPIO_MASK stays enabled unconditionally: DR pulses drive the FIFO
+> controller's internal sample enqueue, independent of pin routing.
+> 
+> Watermark is configurable via the standard hwfifo_set_watermark
+> callback and the usual hwfifo_* sysfs attributes.
+> 
 > Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 > ---
+>  drivers/iio/imu/adis16607.c | 349 +++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 346 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
+> index 2dda306d7b54..b1f3667d8ce3 100644
+> --- a/drivers/iio/imu/adis16607.c
+> +++ b/drivers/iio/imu/adis16607.c
 
-and noted you had done so here with a breadcrumb of why, which
-is the gpio handling
+>  /* Self-test registers and masks */
+>  #define ADIS16607_REG_SELF_TEST_DATA(x)	((x) + 0x23)
+>  #define ADIS16607_SNSR_SELF_TEST_MASK	BIT(6)
+> @@ -86,6 +110,11 @@ struct adis16607 {
+>  	const struct adis16607_chip_info *info;
+>  	unsigned long clk_freq_mhz;
+>  	u64 sample_period_ns;
+> +	u16 fifo_watermark;
+> +	/* Scratch buffer used for FIFO pop operations, see adis16607_fifo_pop() */
+> +	u8 fifo_buf[ADIS16607_BURST_CMD_SIZE + ADIS16607_FIFO_DATA_LEN] __aligned(IIO_DMA_MINALIGN);
+> +	/* IIO buffer for reordered data - sized for max channels */
 
->  .../devicetree/bindings/iio/imu/adi,adis16607.yaml | 94 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  7 ++
->  2 files changed, 101 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml=
- b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-> new file mode 100644
-> index 000000000000..4545f942365c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-> @@ -0,0 +1,94 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/imu/adi,adis16607.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices ADIS16607 IMU
-> +
-> +maintainers:
-> +  - Radu Sabau <radu.sabau@analog.com>
-> +
-> +description: |
-> +  Analog Devices ADIS16607 Precision MEMS Inertial Measurement Unit (IMU)
-> +  with a triaxial gyroscope, triaxial accelerometer, and temperature sen=
-sor.
-> +  Uses SPI Half-Duplex communication protocol.
-> +
-> +  The device has five GPIO pins (GPIO0-GPIO4 in the datasheet), each
-> +  independently selectable for a single fixed function. This binding
-> +  exposes GPIO0's reset function as reset-gpios; GPIO2's sync function
-> +  is modeled via the clocks property, and GPIO4's DEV_NOK interrupt via
-> +  the interrupts property. GPIO3 (data-ready) is required internally
-> +  regardless of board wiring and isn't exposed. GPIO1 (wake) gates
-> +  whether the bootloader auto-loads its NVM contents after reset; it
-> +  defaults to enabled with a weak pull-up, which already gives normal
-> +  operation with no configuration needed, so it isn't exposed either.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adis16607-2
-> +      - adi,adis16607-3
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-cpha: true
-> +
-> +  spi-cpol: true
-> +
-> +  spi-max-frequency:
-> +    maximum: 10000000
-> +
-> +  vdd-supply: true
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description:
-> +      Optional external clock for sync mode. If not provided, the intern=
-al
-> +      8 kHz clock is used.
-> +    maxItems: 1
-> +
-> +  reset-gpios:
-> +    description:
-> +      Optional GPIO for hardware reset, active low. Routes to the
-> +      device's GPIO0 pin, which can be independently set to the reset
-> +      function or left idle via an on-chip register.
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - spi-cpha
-> +  - spi-cpol
-> +  - vdd-supply
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        imu@0 {
-> +            compatible =3D "adi,adis16607-2";
-> +            reg =3D <0>;
-> +            spi-cpha;
-> +            spi-cpol;
-> +            spi-max-frequency =3D <10000000>;
-> +            vdd-supply =3D <&vdd>;
-> +            interrupts =3D <4 IRQ_TYPE_LEVEL_HIGH>;
-> +            interrupt-parent =3D <&gpio>;
-> +            clocks =3D <&sync_clk>;
-> +            reset-gpios =3D <&gpio 10 GPIO_ACTIVE_LOW>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f53047aa8d3c..d5679e8d0ffd 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1792,6 +1792,13 @@ S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
-> =20
-> +ANALOG DEVICES INC ADIS16607 DRIVER
-> +M:	Radu Sabau <radu.sabau@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-> +
->  ANALOG DEVICES INC ADL8113 DRIVER
->  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
->  L:	linux-iio@vger.kernel.org
->=20
+That rather implies you never DMA into it.  If so just move it before
+the fifo_buf and no need to mark it IIO_DMA_MINALIGN.
+I'd also prefer that 64 was sized by maths, not a comment saying
+it is big enough. That may include use of IIO_DECLARE_BUFFER_WITH_TS()
+to ensure the timestamp spacing is there.
 
+
+> +	u8 data[64] __aligned(IIO_DMA_MINALIGN);
+>  };
+
+> +/*
+> + * Process a single FIFO sample and push to IIO buffer.
+> + * FIFO data format differs from regular burst - no DIAG_STAT, data starts immediately.
+> + *
+> + * FIFO data layout (52 bytes):
+> + *   Offset 0-3:   ACCEL_X (32-bit)
+> + *   Offset 4-7:   ACCEL_Y (32-bit)
+> + *   Offset 8-11:  ACCEL_Z (32-bit)
+> + *   Offset 12-15: GYRO_X (32-bit)
+> + *   Offset 16-19: GYRO_Y (32-bit)
+> + *   Offset 20-23: GYRO_Z (32-bit)
+> + *   Offset 24-27: DELTVEL_X (32-bit)
+> + *   Offset 28-31: DELTVEL_Y (32-bit)
+> + *   Offset 32-35: DELTVEL_Z (32-bit)
+> + *   Offset 36-39: DELTANG_X (32-bit)
+> + *   Offset 40-43: DELTANG_Y (32-bit)
+> + *   Offset 44-47: DELTANG_Z (32-bit)
+> + *   Offset 48-49: TEMP (16-bit)
+> + *   Offset 50-51: DATA_CNTR (16-bit)
+> + */
+> +static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
+> +				       u8 *fifo_data, s64 timestamp)
+> +{
+> +	struct adis16607 *st = iio_priv(indio_dev);
+> +	u16 msw, lsw;
+> +	s32 val24;
+> +	int bit, offset = 0;
+> +
+> +	memset(st->data, 0, sizeof(st->data));
+> +
+> +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev->masklength) {
+iio_for_each_active_channel()
+
+As sashiko notes, masklength is private.
+
+There are a load of places we need to update to stop accessing these
+directly but please don't add another one.
+
+It's on my list to throw some LLM tokens ago once I get out from
+under review backlog.
+
+https://sashiko.dev/#/patchset/20261023-adis16607-v4-0-a4d541ebfd13%40analog.com
+Check everything else reported.
+
+FWIW there are also some nasty race conditions around active_scan_mask
+being available when the buffer is being torn down. You might
+want to close those off by claiming buffered mode to prevent
+such a transition.
+
+> +		u8 burst_off;
+> +
+> +		/* Skip the soft timestamp channel - it has no burst offset */
+> +		if (bit >= ARRAY_SIZE(adis16607_burst_offsets))
+> +			continue;
+> +
+> +		burst_off = adis16607_burst_offsets[bit];
+> +
+> +		if (bit == ADIS16607_SCAN_TEMP) {
+> +			/* TEMP is 16-bit */
+> +			put_unaligned_be16(get_unaligned_be16(&fifo_data[burst_off]),
+> +					   &st->data[offset]);
+> +			offset += 2;
+> +		} else {
+> +			/* All other channels are 24-bit stored as 32-bit */
+> +			msw = get_unaligned_be16(&fifo_data[burst_off]);
+> +			lsw = get_unaligned_be16(&fifo_data[burst_off + 2]);
+> +			val24 = sign_extend32(((u32)msw << 8) | (lsw >> 8), 23);
+> +			put_unaligned_be32(val24, &st->data[offset]);
+> +			offset += 4;
+> +		}
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, st->data, timestamp);
+Use iio_push_to_buffers_with_ts() as for once in an ADIS driver we actually
+have the size of data.  Note that fixing the whole adis library is something
+that needs doing though I took a look at it on Friday and decided to leave
+it for now!
+
+Jonathan
+
+> +}
