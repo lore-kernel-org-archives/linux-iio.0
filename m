@@ -1,84 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793010716;
-	b=UMnzRqNxkC6AYGvk2hmxNw75q0Hm0FSazjL73/+ODswi7ylHfujLwqgQD3QqFCNJT670
-	 vy29xgIokVASDX+IY7EnxYHh6MJdOohgGwtJ85lqWnu4o714c0Qj0hZesDX1DpkXK1SvD
-	 J+2T7uE6mYyhYL+uMoGKeJivvlzXi9WNV87fzJOoU6951jUquOwGvP0+eFT88BB3iR3/w
-	 1NDOeC7of35bauWumcjiilSMl2SIWQh4/xyr42UhRG3yk0GimZX565yl8LeH2ZbrFA+Yr
-	 4xkxyqNy3gfC8ffjDpUfBzB9Mmu7r8cgByY6qZlafne4pGi1QepjN4CkNXtSH9rUNKA==
+	t=1793011124;
+	b=lsdWLDjcEhX3sleNPI5WqjZpZOZ7odVW3EnYaF1wFwmsKA363GfvhjUXA1Tzg73ZExjG
+	 llgEOlDnM9C0gnb8UHrnvyf06XVS323VUfCbscP+JulrSBqUHaZkM7b8aDIRij8H5gzA8
+	 bi6s0HNdRf/qi+AZNFsn5NDFgDUMdQ33q/SXzak/cEx6jC04VIDtpR/Vya/+dQB+SiBLg
+	 uGtjsEhus0I7BS8jjSV6Z+wHZNPDPAJsnI/y3aLI28d8SzbsvD4+4EDACeEhaHTFoIiFK
+	 HxZ51JR0n3I4GMGQReWsRidVxM1RxWmynRQ2mIjafIUDQLb442KFRI/X/oK9/6BfvDQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793010716;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=/HIhGXqA4xP0tvnc3uf9hmSWe+5xRVAu9Rr9DT23f/0=;
-	b=y92RVkMAq8apZHkGIOpRCYwHltEkHXLbDMYdeiK6M60YlvYjZOv8j1GPZ5vbTVk7xmhl
-	 Qmcde+03JUR4joqZnttLF9rJmBH8sN0OXHxUnjZCpUckn73SLGvXOXPpqV1SJX7zKUYro
-	 ag1zbsjF6l+TquFaig3D665HGrmEQ8qWLHcHGBqGTlGKGxly4n/8FWUrVTwVY54qgztkh
-	 uFfAKwdJ03OuMSZI9vZhvQB6vY5c8Ef+DDrZtgeVA6rWrF41woWwNBwj3v8q8knRlOr0u
-	 rvb7hyVBh/MTLi/Fd1Zf7RHyWRtn461MfrogCXJeTrep1K4sWoqddodnMem0KiyvMtg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793011124;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=skVw1yfqLZXOPzWoETXOkA5tQYujR3wIhQszB1NNCeM=;
+	b=sw7RTrU/hagrFugrI1MWt6olAk1tcHASFI0H32cv6e2iiJcEoQTQWwPwqJGWtfmW3SWO
+	 RSTfnjZKWIjBQgJ+cuIOm0UbhAFoAbCYMIUo+IV9YGlialYwzAYy9ELKkocVT82l5chFV
+	 xRwliiQtRuGZj6gcDleFe+5t+aUBkFkjWoy+sVNQj5hO7cJzA/xJVvluOGPuzPkt5CEPT
+	 gZnJqTwn3lxjTy5CkdEwuefaOGioBtxfsnrTXOBhCc6FFjrkIXeQpZBmVtUm+MUUvK1js
+	 hYcqITMPuTUN8Vhlm3Pb3NqtGFZZkpFr+K0jsN0c890rOZ4HAnW6NQBV2bWSrG5EkFA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=iFwI0wcZ;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UltD07cl;
+	arc=none smtp.remote-ip=209.85.128.41
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AE37606A31A;
-	Mon, 26 Oct 2026 10:31:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AE37606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F25E8606A31D
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 10:38:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F25E8606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=iFwI0wcZ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793010716; x=1824546716;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1C5aiI1j1KZosMcIZTJUzOc6KzOLatfEvtaQlkoXwmA=;
-  b=iFwI0wcZb5LeHydO+IVO1QDMOZQNVpYF+TQA5eyitvWksfKzQmCUu5TY
-   +VEk0ovtZvh+LHfF6SjVL54tqpvmW+QIhALUfmuhuC01RB30pOzMROBNm
-   m+Sj4tlOox1ajFf/jhddisgNrWcDPjufiTE12SDO+yAmx139kpfBny86/
-   pGsul+nh5HT83JxbN6rrbvDpvKZTQFjB01psbHTmpqL8t/VltgjCA4+y6
-   Wtc30ocdWfhO0pqAMzpv9e0LUYzffvnKsx7qS3Kn7gLL5bIjuNtwpxcAz
-   Mc1Aj7nSCxCUtIppDw+6GHtajU5Mn5IzlfIZ7CukkmzLBX5ImLzDhCKQq
-   A==;
-X-CSE-ConnectionGUID: lFCqhDoESceBkIJEN7eh3w==
-X-CSE-MsgGUID: DZLvHfopQCqDehXqVHBKrg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1686329"
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1686329"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:31:55 -0700
-X-CSE-ConnectionGUID: wdgDOIzoQRavQaKAgncGkw==
-X-CSE-MsgGUID: NuIN92+jR3a4UmobLJdD7Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="6087780"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:31:51 -0700
-Date: Mon, 26 Oct 2026 12:31:49 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Olivier Louvignes <olivier@mgcrea.io>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Cercueil <paul@crapouillou.net>,
-	"H . Nikolaus Schaller" <hns@goldelico.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: Add a driver for the Ingenic X1600 ADC
-Message-ID: <at8sFe3BzYNTT1DL@ashevche-desk.local>
-References: <20261026083631.48406-1-olivier@mgcrea.io>
- <20261026083631.48406-3-olivier@mgcrea.io>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UltD07cl
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a35a60499eso14789605e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 03:38:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793011122; x=1793615922; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=skVw1yfqLZXOPzWoETXOkA5tQYujR3wIhQszB1NNCeM=;
+        b=UltD07clBw2g+Y1aJYem1Dl1rIWB1uh8fp7BUdxaZ4uc5gMQGC1HSwdgOUYeOP8/dx
+         2TkThOJk1VP9OMA2ajX02tpdaLLAa5XG2w8XHnfR99TLeHIhpp4CUSsvJFI/9J5IGG7c
+         pGzoT7+hbDmAEe+Lj0blTQX1cy/K3pYIgAmUvAI6NR06P+hLyHXNoYC4EEOjfsP4PddJ
+         tykQqtvjlvbunzbk6J5SlUFpbGUQcZwwcJDkjq9SfqJRVTEvOT2Jy/gP/WwtYNTUMPH/
+         6Ls8CKv69hJpKI0qEtMEemKuUne4ij183SbEp3ZiQq9ERIHvQ8aSHt7vps2ehiKxt4rM
+         jK8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793011122; x=1793615922;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=skVw1yfqLZXOPzWoETXOkA5tQYujR3wIhQszB1NNCeM=;
+        b=tBVld2iyXpSVjDVce65jGfc17hAluh01rJSFF91z5t8I4vW7gePp8SQB4qNPGJniYx
+         oFpOVOnZBne9F4tcxN/Sw4R1B0v6eV1mJubv/j1zv6AWzdJcPQiae2o4pUkAyBObzDRp
+         QWPM44QXwXW9HNskMPV7L95gCbdPWG9e569/ewppgBNDixnNubBXPYQoufSoF4u0BdqL
+         pG4Aw78WWDra22YlVhcbINpRG5qCxSRUPle3ujUgaFMl2y/bmEVg0g8fdMS2nKjipCmy
+         xev/kvay9w3cmbMocW4eYvcyPmNJVJcmLRQy5RJjjDRnYIY9ABKZEODz3ZRrkyMAO+2L
+         65Fg==
+X-Forwarded-Encrypted: i=1; AKwUvByE2iQP+uW5dfB1xZetDVRShe7cfNDjPa8X2Qr9iXAxlpAZ/ga5OvHJ5GBkwZKpRLnNJ2xji+WIHQE=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLyw6SKiWppExb/lOwBEkk8uYVEHa1AxIcjWuN20qTaw/ZVOcc3
+	nIKRHA00TrWGKQ0a42TXO+++eM1VeohHMA7t/xhmUGdg59Jg1EkYM0YN
+X-Gm-Gg: AYBFou36KqXh5wfEthtoYocL+ftvLtnUYe/cZ17yxJVZegRSSv+R3E/lkcD8IPC7k3K
+	RJ2wEWRvyGPjrs+1mHcLB/6TbHxM9296VdydRMBNQNowFYrOWlYaCJsKJw8HXM1vxcqUgJ0GkKQ
+	deyvlmyTA3IUvuStLz6zScLQrdNZCIVTidyexQnMYrdSq7BQVibofFYlRvF6/YItvoufNo221Q1
+	/WHZiXoBcSL9wNU26StwmlDpuLbrUmmgZDJ55P9oyoPrttqrfY/9ic06yfgvQT/+qXxfrZwotaI
+	eSl3XQmrmBvl0/343r0to4dFu60PiO/nQ4HQ4mGZp2DjZm5cdU43QvsLKJO8btyqVcG0shYLcl/
+	zf9YCyJGM44UPK3womMv3Tx6bfHgR7mn6oUlfM/t3y2WjxGEQB/8YZwvjpyfvAloRrHgxSXWEk5
+	5q1v8WSXHvhdQ/9qvu7qGT6D9iVj9Gj8+VEMpwmMR82J4tGGXHviRpEaaMsRiWkhLgkB6AHEm6A
+	Em/Hr1PTSkcoTE8QHQLhPZI4qcaZJaZ5uC0OmZkKNlJBuKoZAubKs7yeVOIwExQGw358zgn5MW2
+	nXOTpbilS0RtCFcN8JGkbJw4GwpNLXPTViFHenExNdlrbOx4bOwjHRTcHlgW4jDtk4RHCFff7WH
+	vOsI0tOFA5TAVSQlXFgcaRa3IZ4dphXjAhoPxsfFk2QiVVqrYC4vbIyTjz3Ie0Elr/7Q+/aB21L
+	X/vcwf3q5cyD5U7NOjDpeYW6peqSbSVAnxlIxNMFxMtHsA4RePyB74vRvV4Rl9wA==
+X-Received: by 2002:a05:600c:4f56:b0:4a5:a5ca:de1d with SMTP id 5b1f17b1804b1-4a5a5cae166mr78474005e9.30.1793011122095;
+        Mon, 26 Oct 2026 03:38:42 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a58a293sm184743375e9.12.2026.10.26.03.38.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2026 03:38:41 -0700 (PDT)
+Date: Mon, 26 Oct 2026 11:38:31 +0100
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: sx9360: keep the IRQ balanced across
+ suspend and resume
+Message-ID: <20261026113831.00007f06@gmail.com>
+In-Reply-To: <20261026100450.17023-1-kapoorarnav43@gmail.com>
+References: <20261026100450.17023-1-kapoorarnav43@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,138 +104,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261026083631.48406-3-olivier@mgcrea.io>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 26, 2026 at 09:36:31AM +0100, Olivier Louvignes wrote:
-> The X1600's SAR ADC has four auxiliary channels, each with its own start
-> bit, interrupt flag and 12-bit result, and none of the touchscreen or
-> battery engines of the JZ47xx ADCs that ingenic-adc drives. Add a small
-> driver that exposes the four channels as voltages against the 3.3 V
-> reference.
+On Mon, 26 Oct 2026 15:34:47 +0530
+Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+
+> sx9360_suspend() disables the interrupt first and returns with it still
+> disabled if a register access fails. Resume isn't called after a failed
+> suspend, so the interrupt is never enabled again. sx9360_resume() also
+> returns without enabling it on error. Without an interrupt line,
+> client->irq is 0 and both callbacks act on IRQ 0, which the driver
+> doesn't own.
 > 
-> The registers are in chapter 19 of the X1600 programming manual. The
-> ADC clock divider is even, as the manual has it (an odd value divides
-> by one less); the vendor kernel writes the divider minus one, which
-> gives a slightly faster clock than it asks for.
+> Disable the interrupt only once the device is asleep, always enable it
+> in resume, and skip both when there is no interrupt.
 > 
-> Tested on a HiBy R1, whose play/pause and volume keys sit on channel 0
-> behind adc-keys: all three read and report correctly.
+> Fixes: 1cdb4c47f7f5 ("iio:proximity:sx9360: Add sx9360 support")
+> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> ---
+> I'm sending the same fix for sx9310, sx9324 and sx9360 as separate
+> patches, as the Fixes tags differ.
 
-...
-
-> +config INGENIC_X1600_ADC
-> +	tristate "Ingenic X1600 ADC driver"
-
-Make this text...
-
-> +	depends on MIPS || COMPILE_TEST
-> +	help
-> +	  Say yes here to build support for the SAR ADC of the Ingenic X1600
-> +	  SoC and its four auxiliary channels.
-
-...
-
-> +/*
-> + * ADC driver for the Ingenic X1600 SoC
-
-...and this comment along with the MODULE_DESCRIPTION() be the same.
-
-> + * Copyright (c) 2026 Olivier Louvignes <olivier@mgcrea.io>
-> + *
-> + * The X1600's SAR ADC has four auxiliary channels, each with its own start
-> + * bit, interrupt and 12-bit result (X1600 programming manual, chapter 19).
-> + */
-
-...
-
-> +#define X1600_ADC_REG_DATA(ch)		(0x10 + ((ch) / 2) * 4)
-
-> +#define X1600_ADC_DATA_MASK(ch)		(GENMASK(11, 0) << ((ch) % 2 * 16))
-
-Drop /2 and %2 here, see below why. This probably need to have ch be renamed to
-something else as it's like bank and shift.
-
-...
-
-> +#define X1600_ADC_CLK_RATE		1166667
-
-Is this in Hz?
-
-...
-
-> +static int x1600_adc_read_raw_channel(struct x1600_adc *adc, unsigned int ch, int *val)
-> +{
-> +	int ret = 0;
-> +	u32 data;
-> +
-> +	guard(mutex)(&adc->lock);
-> +
-> +	reinit_completion(&adc->done);
-> +	writel(BIT(ch), adc->base + X1600_ADC_REG_STATUS);
-> +	writel(readl(adc->base + X1600_ADC_REG_ENABLE) | BIT(ch),
-> +	       adc->base + X1600_ADC_REG_ENABLE);
-> +
-> +	if (!wait_for_completion_timeout(&adc->done,
-> +					 msecs_to_jiffies(X1600_ADC_TIMEOUT_MS)))
-> +		ret = -ETIMEDOUT;
-> +
-> +	writel(readl(adc->base + X1600_ADC_REG_ENABLE) & ~BIT(ch),
-> +	       adc->base + X1600_ADC_REG_ENABLE);
-> +	if (ret)
-> +		return ret;
-
-> +	data = readl(adc->base + X1600_ADC_REG_DATA(ch));
-> +	*val = field_get(X1600_ADC_DATA_MASK(ch), data);
-
-This is the only case when these two macros are being used. While  / 2 and % 2
-are power-of-2 based calculations, it's still make sense to have temporary
-variable for both of them (see the proposed naming above) and use in a form
-
-	bank = ch / 2;
-	shift = ch % 2;
-
-this can be optimised on some architectures to a single assembly instruction
-(yes, both calculations). The problem is that they should be tighten to each
-other so compiler sees it. In the current code they are go via macros and
-compiler most likely can't deduce that.
-
-All the above is based on the real life example, see 9b3cd5c7099f ("regmap:
-place foo / 8 and foo % 8 closer to each other") for that.
-
-> +	return 0;
-> +}
-
-...
-
-> +	writel(X1600_ADC_CHANNELS_MASK, adc->base + X1600_ADC_REG_CTRL);
-
-It makes sense to have read and write wrappers that will add adc->base.
-
-static inline u32 void x1600_read(adc, unsigned int offset)
-{
-	return readl(adc->base + offset);
-}
-
-static inline void x1600_write(adc, unsigned int offset, u32 value)
-{
-	writel(value, adc->base + offset);
-}
-
-Also you may consider using regmap MMIO.
-
-...
-
-> +	rate = clk_get_rate(adc->clk);
-> +	div = clamp(round_up(DIV_ROUND_UP(rate, X1600_ADC_CLK_RATE), 2), 2UL, 254UL);
-
-Wouldn't it be better to clamp the rate first and then divide with rounding up?
+Shame you didn't send the patches as a series with a cover letter
+given it's the same logical change and that it concerns the sx93xx
+series.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Kind regards,
+Joshua Crofts
