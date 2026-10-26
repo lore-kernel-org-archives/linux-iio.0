@@ -1,102 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793024454;
-	b=GEHJ6ZKJ2B0F42gkQYlx1aAkMBC9cIrQE/ST+2Vl2wuO1QEmx1DJvz5enQeoEna8FtZ4
-	 rhoRiS78ZcFztCPeqUPLmxxPljGYk2aLzq5MVtUIVFBYZjK3OgKyGvrIxvmSRixV+CtZx
-	 L3sVP6G6rO10l+PTB+YtNjYR4dbyH1IXYSBpPDUU2Jyrdib9w3cYIe6ZtfIQyVWLqAaru
-	 f9uW3a5So97ME55QBBJ3G15QzVei+IxhWpSnDi1eulTKwDe94o7jcUw3GAeo/1R1dNLS9
-	 UDE9f5ZLAcDULMcxY+qhfQXbfBfwJsK15T5R+vV88MgbVBZeG71RyyPm6F618DQNFJA==
+	t=1793024500;
+	b=kcxNyKqnUkE/qCnk3yTr8CWBv/qo9a6tgT3nnbyhqfDj/9Mno0KUFZhYgGeq0WqEpHII
+	 jLJxwEplwc+FB9CvvF8Q1dJ0yuCV4Ip7CTikpTRpQWyf9kQKY3Wb+v8L5udt3DAlop51/
+	 e8Io/tajnYTM5arWPxMalwlzWMP6xLV5JQndur4s5x3O5dreRfYNLswG2/lJnAHcx34Wa
+	 DLxaJHgf4703PwXALTTDUMn7n0u055j5OAtOvV4vaX0bgrvY1WhlDT5mRoDhJsVZ5k0GZ
+	 xZZgDhLNGod9/uzTgT6VngOGtPhBsE0gEE4VaqXJMzUxZTUVC0PLx/IXKvFTNGcWNTQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793024454;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793024500;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=qtgx3aMD/495ZX6s7lgn7crrN/uSuC+ZVzynjH2rJKA=;
-	b=KKWUbkpOI7SgT6oRjlMVmnIglc26xA0+wt2WVRwZmjRik9Fi5bv2NFHfahbn/vkqkDmO
-	 Y2nRSEdhBMMd0eHplXSNDZxr3JiFoXOXAEF63AGwiJYAndiaNJ78K//80uUEu5it6l9/1
-	 eFO904rjMUJVzj8RjtDScgAQOsoVALadtw4BOIW0cKgoOwb60N0fDvKHH5qjKpvOqw/Tn
-	 YcYs6Ui5DQGTu+TqQ/0uytACAnzT4f9XmUXh/oIdywiXBgsulzAmfQJZUsUlhhi85fmsU
-	 hU83zc4rIFpRcAETrKgrGWG/ZXgf9jLQDQydtOHskFAg7B5soLfMlTcvpVjgMjzSPAA==
+	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=MwdXN1TCWe2BL4b2dfairQrlmjtBR9ajoa0+SCjXZog=;
+	b=FKlsHuxoUtKk4msomH/awoB2Vbbc8FBsZO52iwsMXufKKN/6FckNHTQEcu7o4Ne3zV7o
+	 gjDGS0y0vvedPlLXQn3wuC+HVpNPQOKN4S7SXYn7mXZvSGQQKokZ6dOV1z/pelEIq/wIw
+	 QMpVFEOotT0oQr1U6ZcYJOyCxmKPr1znckRljqZzTug2fSlHtBmxHxdZ9XKASo3u6Dl5C
+	 KQAJ0ya+TdtcRvmktF9/5S6egkizWDHC/xoDM2F9EYxECEglUjC+Alk7K9sT3LExR0bsv
+	 b7I8jsm2u0LB17Luq1e9ow/j62BY/EpR9KHH9I8ECJA5io/dSJA9ThhhbHs1NudWqmg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=VibjgXv+;
-	arc=none smtp.remote-ip=209.85.221.46
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=aLGjbnY4;
+	arc=none smtp.remote-ip=209.85.128.47
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C93A560A2611
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 14:20:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C93A560A2611
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72B98606A320
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 14:21:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72B98606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=VibjgXv+
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-48afcfc4bf5so2432462f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 07:20:53 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=aLGjbnY4
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a4dc547987so6124515e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 07:21:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793024452; x=1793629252; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=qtgx3aMD/495ZX6s7lgn7crrN/uSuC+ZVzynjH2rJKA=;
-        b=VibjgXv+bcagRtSV3WmXK/WYP/g8lMLfHDmEGVKYDuOO/nSMvtUk/CrBhMiWpgZluv
-         rvtIkQsRzKvGYEjHsiDv139LqoROgRtSoi/gy+ihu2aB5WB/GDAX6SvkwXnbj2UiAWOL
-         uMkXie73jCSAOgPAOrCkkubc9VdDxB6iS2K5pzXM0JYIEaAB2fGrnm0lONCcj9G57EQG
-         jvCiAvfeiyg2zAj6ZQvjO7e9DZ2xH0qVlSiX8jlJLTs+HjBLBe6GaDqauDYBhfBAsPmK
-         srFpmb/GYbr1sbdxmEmwTlpa+l1+z1NBGg/tt70Olk49SdWQcpu1c/hynBdXfNOWMiLc
-         Q+qw==
+        d=gmail.com; s=20251104; t=1793024499; x=1793629299; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=MwdXN1TCWe2BL4b2dfairQrlmjtBR9ajoa0+SCjXZog=;
+        b=aLGjbnY4YqWZICNGtjWxs4lRVA3bjXXY7CKbgPyRyQlLvc+9cdycQj1oe2rKkgQA29
+         no6pwmzDV3pV9qprfLknsiWnfdLmcV8h+X/2Z6l+AiaPaamSnsD9UlJIn5aP7r1VOYHc
+         XDuAuPbQAegZQz1tJBn/P7f1QQptUYMIuNJpAFgPAMSeC2b3j1nFBr4o7zO1OOT6qwDp
+         auZTvkPUqt4kgwxCnCAP3tUNWw/SeT9vtUj0Jltt4tarbisSTwLbghUXJmcbu2lEOCX1
+         uNa1ONDz5FuKxxJsPP/7y85v06hqMTOFo4wlTGHTK/4bJFU606IXsFETl1W7RIRTCW3H
+         7MEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793024452; x=1793629252;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=qtgx3aMD/495ZX6s7lgn7crrN/uSuC+ZVzynjH2rJKA=;
-        b=NKAdheMHZpKYz7Izh0Mhfqs48WbVjkfgdnZycBZ56N2UopYC+VCzj6ipp8lRX2rf/5
-         ES2rmxWOJK3rpN7hnGQYN2HX8XR6+cRF/hPER8xZb2SyEl7i1s0o8HDn1EJT5gOTNz7R
-         cV849zRE5OmDwd+//u9pjonSpT/liI9VEGDzoPmDee/ACE8EBSnu8xLFJiVXJyToe8Yn
-         v7WLaPAatLXNQ8G+7DylgUPJv1rvX5+AwqpXyVJupks1ZD3l1uc/dCEQ4jFF7bo8M8fF
-         dLn1hf/OJ5B9R+VK761gIZ8C4D+35QtiS4Ms9YAmqV8/TtY5yhCnf1cXkZaKRZC7WEFm
-         QTmQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxO05mrLELh0hz7zpJRnTy13Pf0ZQJtRGpOi6UntgsoxFKjYNllW7OEdieylk2llWX2hAgMMFzonwE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLI461bSZ2ig2BV0zhWwdYwbdNqELS5yLe2pu/jAKKKiw7iP4aU
-	UL+0E7+OSISXEY4tHt12mQfWUytpOJF6Ndc96J7phsHKVUYXC0jliT8=
-X-Gm-Gg: AYBFou2pvWWP76Lyb/FgmxAtNpTv+LZ8uGjj+F20OO++nQKl9Uw/QawK7n99MKm7ErK
-	Qwd9hTWUdKGwm14TIL0nWtyOofS2K/LUbzBomQ/otSjeCqmngNflQ3qOdLyWNvUpj/dDoh0iDwC
-	mE8vKCGjjF6OFTIe/WzLVbjMZlD3VXbkTQsNT+xgPgmsKOMvmR8bqkGFBGMz2waybIqd2ms358b
-	Q4RylVuuHjnhficgeSMNiF9yixenv/VZl6CY/tqIQhm5RrQHlM1Y0zh2MALVihmOefzgwbwusjU
-	kJLJSOGKE4rMemzflhAZntHOzkyrNGHGZjyGM5QKNd7CzBBeojoKVSV26CAQveLSvdHnlZUQGmc
-	OvbD3cL1xKDdov1S99y+fBae4DMMGWWgo/ar8Waz0mRpmK0xS3l6W3W2NzLX4Pkxu2Ek+3LCsuD
-	VoFu8TaY2Zfj+MYVcJOVUjge7sQGA3OxtGiq1STOaZfvoVlp4tuf7dmVSDYsQybD9HRxcJyj+Tc
-	z+E08ZOAQhNnQVb2M/zAe8yOWdi9A1D8PhPZaEgSQj0sQ==
-X-Received: by 2002:a05:6000:41d0:b0:48d:ff71:dd97 with SMTP id ffacd0b85a97d-48e3eb2bdbcmr13969716f8f.7.1793024445723;
-        Mon, 26 Oct 2026 07:20:45 -0700 (PDT)
-Received: from debian.. ([2001:41d0:303:db6b::])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebcb8d5sm17484186f8f.28.2026.10.26.07.20.43
+        d=1e100.net; s=20260707; t=1793024499; x=1793629299;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=MwdXN1TCWe2BL4b2dfairQrlmjtBR9ajoa0+SCjXZog=;
+        b=h6M+SYVGQ/UdaMYp1MwQTe4mjwAzBHLuC5awLDBCwLxNgdnqTWI1QmFyVz2sy0RRQZ
+         XDopHNDQXvbp9cBAwCOhlXz6M5zP3VTBrgy+jJd5WFzEJgF2gFRezhDaIW9rWMYcPQFw
+         pYQwm6ynBrS0/pqeLtcWfDsGJUHqus0hWNUI7Vklp6fUxYI+fVEI58qb+pwXJSokmjLz
+         FWgYuJNUK18RZWYDFbmqwRZUaF6Cod47Kz1Lz0OLqx9DNJ+piJ1v/hbSNDxE7DvLlxMG
+         lyHZMbCmq/8bqFmbhX0hdXCVwa2op2gK0ubgCnzVEckc7Q5XXnSWdns+GdO+ppESOGtG
+         oEoA==
+X-Forwarded-Encrypted: i=1; AKwUvBxUTqXzch2u2lzwKUialQruWi0ICMd3FT6tAxYfoPi58rzLN4VYO+c//XSgOTAdvAkyjcPyqxV7Axk=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLNhudS9xEKEt9kC2IzyfEhPjzX5bE8uwgVNBryP2VKvivZd9Su
+	uqOgmeB9Mpb8SlLk62O+NL9ZFatqAzhDwPicM4EYB0QcVFYOPSE2yCH6
+X-Gm-Gg: AYBFou21mgrsBO0O+GtINSD2aUt6EgBYoXQFDt4ZJfGV6IBTx1wK7OQ261EQESAyWNM
+	K7d+D87dlTvcjNuwiR3jbcV4S4SYH3Y/+KZR9Er2HKZ5/a2vZLiueSV5+3T/49PQFEZJLInXL10
+	lbcN4L8JAvQJJCIsU86qFr3MekaZ8DJ7MQ8WpLjSxMj/tiM0C2PDD68d3widP4pz2z9AnLztXeg
+	CK+QY/70ybXHooVMN9Lp2PPQo61exiabBFDHruhaARpoz5i8qAe70nc2+Cuj9pno9uiF/pgaxOH
+	qaqqhkD3jnqTaro80qgX7ZyiG+Tc6g0jR89IjWYEkmfE9x/1SmZpj7CGjMwy+AUUF2Rh0ji+JTE
+	zYKY1UsPTqjAVf12VdcNm3bHYLWCoUeQHl93zby4nwQnkOa63iIlc+ZBTyDwanIp8MldXjoJRWG
+	mqfKduhd4N83OkDIceOsXWOspxh4fT7aISx4JRtPPO1BjkYlCJA1rKjLE3/M6B3P+736T6ew8YF
+	+qXYXr2c97XHXH7wSaZuyCFfqpt4+Z6C57PZUuhPctbMD4wa7SXf1ZBWVtUSmZErItT+2vj79YN
+	42NOeogK+TPhTuJt81w3/ctgBO41v/F4PxFMp5ZSn/DxFVP6BzZME3lgA2HnweJp4muSLIuF44h
+	sUcSzC1ZahlAdXES7mayL4hCZeCESgkm7hI4YQco/820/f/+xoHjywSzN2LnxC++VDKJv9XArBq
+	4uvwTRh4xZ87luhRQItT8Rf6dOb1BFsUCP37Axev4a5RE6tz5PMHfd0y8QXLTrjw==
+X-Received: by 2002:a05:600c:4e47:b0:4a1:fb2f:eff with SMTP id 5b1f17b1804b1-4a772d05e3emr11795885e9.18.1793024498731;
+        Mon, 26 Oct 2026 07:21:38 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebd48fasm16668508f8f.31.2026.10.26.07.21.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 07:20:43 -0700 (PDT)
-From: Tristan Madani <tristmd@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Kevin Tsai <ktsai@capellamicro.com>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Hans de Goede <hansg@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Tristan Madani <tristan@talencesecurity.com>
-Subject: [PATCH v2 1/2] iio: light: cm32181: validate ACPI object type in cm32181_acpi_get_cpm()
-Date: Mon, 26 Oct 2026 14:20:38 +0000
-Message-ID: <20261026142040.62383-2-tristmd@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20261026142040.62383-1-tristmd@gmail.com>
-References: <20261026142040.62383-1-tristmd@gmail.com>
+        Mon, 26 Oct 2026 07:21:38 -0700 (PDT)
+Date: Mon, 26 Oct 2026 15:21:36 +0100
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] iio: proximity: sx93xx: keep the IRQ balanced
+ across suspend and resume
+Message-ID: <20261026152136.0000047d@gmail.com>
+In-Reply-To: <20261026112342.65917-1-kapoorarnav43@gmail.com>
+References: <20261026112342.65917-1-kapoorarnav43@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,49 +104,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Tristan Madani <tristan@talencesecurity.com>
+On Mon, 26 Oct 2026 16:53:03 +0530
+Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
 
-cm32181_acpi_get_cpm() accesses cpm->package.count and
-cpm->package.elements without checking that the returned ACPI object
-is of type ACPI_TYPE_PACKAGE.  If firmware returns a different type,
-the package union members alias onto unrelated data.
+> sx9310, sx9324 and sx9360 disable the interrupt in suspend before
+> anything that can fail, and don't enable it again when suspend or resume
+> fails. Without an interrupt line they also act on IRQ 0. One patch per
+> driver, as the Fixes tags differ.
+> 
+> Changes in v2:
+> - Send as a series with a cover letter (Joshua)
+> - sx9310: move the wake-up register writes into a helper that uses
+>   guard(), so resume can use the usual early returns (Andy)
+> - sx9324, sx9360: no changes
+> 
+> v1:
+> https://lore.kernel.org/all/20261026100322.16720-1-kapoorarnav43@gmail.com/
+> https://lore.kernel.org/all/20261026100408.16874-1-kapoorarnav43@gmail.com/
+> https://lore.kernel.org/all/20261026100450.17023-1-kapoorarnav43@gmail.com/
+> 
+> Compile-tested only (W=1); I don't have the hardware and haven't
+> reproduced a failing suspend.
 
-Use acpi_evaluate_object_typed() to request an ACPI_TYPE_PACKAGE
-directly, so the ACPI core validates the type before returning.
-Also replace kfree() with ACPI_FREE() for the ACPI-allocated buffer.
+The code seems good, would be great if someone could test this.
 
-Fixes: d34ca613b939 ("iio: light: cm32181: Add support for parsing CPM0 and CPM1 ACPI tables")
-Cc: stable@vger.kernel.org
-Signed-off-by: Tristan Madani <tristan@talencesecurity.com>
----
- drivers/iio/light/cm32181.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
 
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index b32a94028f091e..8d00486af608c9 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -114,7 +114,8 @@ static int cm32181_acpi_get_cpm(struct device *dev, char *obj_name,
- 	if (!handle)
- 		return -ENODEV;
- 
--	status = acpi_evaluate_object(handle, obj_name, NULL, &buffer);
-+	status = acpi_evaluate_object_typed(handle, obj_name, NULL, &buffer,
-+						ACPI_TYPE_PACKAGE);
- 	if (ACPI_FAILURE(status)) {
- 		dev_err(dev, "object %s not found\n", obj_name);
- 		return -ENODEV;
-@@ -131,7 +132,7 @@ static int cm32181_acpi_get_cpm(struct device *dev, char *obj_name,
- 		values[i] = elem->integer.value;
- 	}
- 
--	kfree(buffer.pointer);
-+	ACPI_FREE(buffer.pointer);
- 
- 	return count;
- }
 -- 
-2.47.3
-
+Kind regards,
+Joshua Crofts
