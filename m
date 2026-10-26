@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792980309;
-	b=b+uUnjU3XBPevJsKjVIRXanuZVhN5Jjgc5zVkqYZE/T8zMXA7xbpPhAyqn2v+FaRnRrJ
-	 eaEbm3D0iFGYrkBa5bX9DViHtU7AAe3DnwXdVfC5Zo3cZpAmHpTfhrpbiCQh90y61ASVV
-	 Wkuhgzdp6i94al6yKamXRF1lSicfrNk1DKnwKRJLWmehBz+gqdvdiI7ROMfog+gZ51dRa
-	 bA4VH4GWiYVy2ZWF+Q6Sy2cS4kRiOz/CH4X5SzupnZDLFerGx7IXxrcaLp03mIpRJbakO
-	 9imNZKhMceO9oYbf6jGj4jhzhzrHfWYK2fUyXRCkiZsro1R1Er9bRa3SmmIu16Ve5nA==
+	t=1792980483;
+	b=HWomdi6KyFUsL9EDCZbSNNMTNgGMSgrusjcI+0tD9qfqtZVff0bxADIpjWoLMW6vUHV8
+	 f9atf1AACdYjRzJfstY9WTcXAdDZ6Kyl1MIQ4ovgyqHyAfYlhiND0EQd4soSYLHnTw24e
+	 4urXh0eZc4zLf5MV6wkv7eySyBxi/EkYwSr/pmptQfRYlAUE0vXkddKGIABgDWZilcNNL
+	 g83OaJpuriz0YeKhU20NrtRYM1RjEklLTVaZ8k1o42qzECPl/OPFbpMg3ZntV/OEY9Tbn
+	 DvjaNec4E0qr4+vGhn7BxTeYae8b/jWkJHDAhWWo12q9lgpc5PP0IwFqwPhoETdpI+g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792980309;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792980483;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=0+dbgBcIv97uEUp0MbCajYmBNDR2lPq6k0YhLiIX2so=;
-	b=npfPQmpGUnr5AxpKD0ZTUkSeIIamihpLHUvmCXMD3qGHoF+rgMZuklsP6/lh2Zjmkix5
-	 aGLfln7ihSgL6XGjbSgTLCsn7UJ5YoS4nZnJfbrCX+1//RAJD7upSICR5ZOhpAOldsbnY
-	 DKn0Iq9hyksL5AQxX4QnJts2C9enIzmyen0Dix5nLr0JUagTAk5TqMScRnzkrm85BikYX
-	 R/YpHs0e14/vV6Jc7NLyGi1DqIqP6/464dhKoutyzQ2hwUxOFQs6TB7XP9gHA0lKC/26Q
-	 OF3vX9ydEtBNPXp5lPj84toAMmc1jIIHRcnffytqdnOwBvZ+AhjTj7Ex005rmbMSK4A==
+	bh=udB4WUSLlHOnrdElRJG30Kpsih4XHIuaSZ4K7+ARFTE=;
+	b=a+DYoSabMiJXFkzzRFy8FJZE4R5ELbD/Ch8+2k/ZCHrzCtQPp/+ZoYENTXGBoIzuGL+x
+	 DarrTHin8/b5cPw0stQ47comNWrw63U5zWKkyZ34kcvQSAfXXNOx5sGMAOy4AOUlG1V40
+	 5+3ZhQ3TBU7d4mAhUxVBHPf+4P20Yy4AegWYeEYci3/efgm5452OW7LXPz5iuluIvBasG
+	 oaGk7t4HpF9mIxXoGRWSX26FlQy41oRI2jfY4+QxkLLpOfFBx3856okNPMKCtq0eU6wfH
+	 kRD3VP61VJkggmYZKUdzPqye/VD9OpehIREMoqlUZhWwfca/YlT1fmFVmghA+NdnpPg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aKqTLC5L;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CTPmLSCJ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE7C606A31D;
-	Mon, 26 Oct 2026 02:05:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46FC5606A321;
+	Mon, 26 Oct 2026 02:08:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aKqTLC5L
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AB7D1F031E0;
-	Mon, 26 Oct 2026 02:05:05 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CTPmLSCJ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C5671F01825;
+	Mon, 26 Oct 2026 02:07:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792980308;
-	bh=0+dbgBcIv97uEUp0MbCajYmBNDR2lPq6k0YhLiIX2so=;
+	s=k20260515; t=1792980483;
+	bh=udB4WUSLlHOnrdElRJG30Kpsih4XHIuaSZ4K7+ARFTE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aKqTLC5LnYtbWM9udYgadXlyfX78XLPlI5YAwRt+ln/DeLeS4fifwvBlVTiJvis6y
-	 X0XE1gLEUekUhHEzDuAYXIOvheYNXDNU6DfxNmh163yRMNjp4A/hxczsYnJSe9VbG7
-	 tKjjtv/FVQeqmPtWy7LKE0MXvfnfluusdT3/VBCfXxI5gZ4keQ0R/zS22SMmb+b9ql
-	 2kv2IMJyarK5eNpmwxzxP95d0pDHGf8xoHJq78wYVPrupRfzkqN8Zl4CRZdbPmqj/X
-	 Gs5znf23b3NqB4ewtL/wrF+PUChKr+PvV6CdQ0sQsiP1KZB41pPdlSPgVv7abOhRTE
-	 wisg/DHgGSO5g==
-Date: Mon, 26 Oct 2026 02:05:00 +0000
+	b=CTPmLSCJM1QA7SCTBGKD108BjPTuQdxhvqO3XMkqDoVSn5QBgX157RUDcdCcsyqa+
+	 4y8ZBV0GrotJ5Tgq71vRPCeOzjKi0J93VmbH48CpBETxmtrbereJQ+gSmlSbcbutnQ
+	 rH2hHBr3wr3NO0iJXOdQSl/2MjYySXGQVZkfN3HD+X9e/sKdJRQF8oU9OlFhfG0LGl
+	 SyeKCmkOBtFrZAVa8uBNfCe4lKGgg0qXQCer1PWaavDxZ5leo3p0njI00H0Ai6ZuvM
+	 feaGCVReA/hYmRUWsrLNMyGRaT19h3gFqs/avYF3uD2lIkCeCvv8E6uvB5LuPc9ajf
+	 /hWa5YrmW9N/g==
+Date: Mon, 26 Oct 2026 02:07:53 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Jonathan Santos <Jonathan.Santos@analog.com>
 Cc: <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
@@ -49,12 +49,12 @@ Cc: <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
  <Michael.Hennerich@analog.com>, <nuno.sa@analog.com>,
  <dlechner@baylibre.com>, <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v4 2/9] dt-bindings: iio: adc: ad7768-1: Document
- multidevice support
-Message-ID: <20261026020500.6c13c0e6@jic23-hlaptop>
-In-Reply-To: <6e2176d5547c59c39bb692e9768d7ac079b40f71.1792435248.git.Jonathan.Santos@analog.com>
+Subject: Re: [PATCH v4 5/9] spi: expand device name to include enabled CS
+ lines for multi-CS devices
+Message-ID: <20261026020753.42426bc0@jic23-hlaptop>
+In-Reply-To: <0bd7dfae5aa64066b8a3555cdcbd1b84de688f33.1792435248.git.Jonathan.Santos@analog.com>
 References: <cover.1792435248.git.Jonathan.Santos@analog.com>
-	<6e2176d5547c59c39bb692e9768d7ac079b40f71.1792435248.git.Jonathan.Santos@analog.com>
+	<0bd7dfae5aa64066b8a3555cdcbd1b84de688f33.1792435248.git.Jonathan.Santos@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,152 +68,69 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 20 Oct 2026 22:56:56 -0300
+On Tue, 20 Oct 2026 22:57:44 -0300
 Jonathan Santos <Jonathan.Santos@analog.com> wrote:
 
-> The AD7768-1 family supports aggregating up to four devices on a single
-> SPI controller, with each device occupying a dedicated CS line and a
-> single data lane.
+> The device name for SPI devices was formatted as <controller>.<cs0>,
+> always using only the first chip-select index, ignoring the remaining CS
+> lines.
 > 
-> Extend the `reg` property to accept up to 4 entries (one per device).
-> 
-> Add `spi-rx-bus-width` property to declare the per-device lane count.
-> Since each lane is bound to one CS, the number of entries must match
-> `reg`. Make it required when `reg` has more than one entry, along with
-> `spi-cs-composite` property.
-> 
-> Add an example for a four ADAQ7768-1 aggregation, with shared DRDY and
-> SYNC_IN pin.
+> Change the naming format to <controller>.<cs0>-<csN> for multi-cs
+> devices so that the range of active chip-selects is reflected in the
+> device name. Since we are not expecting sparse values for logical CS
+> values, adopt the range format.
+change that to not supporting rather than expecting.
+
+I'm not sure that's a good idea - and Andy's request to check for
+existing ones is a good start.  However, if you do it, consistency
+through the patch set is important.
+
 > 
 > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
 > ---
-
-I'd suggest some asci art might make it more obvious what you mean here.
-
 > Changes in v4:
-> * Include spi-cs-composite property to the bindings. The reason for going
->   this route is stated in the cover letter.
-> * We decided to keep the spi-rx-bus-width property because assuming 1-lane
->   per CS would break controllers that don't support multiple lanes.
+> * Opted for the range format, since we decide to limit logical CS values
+>   to a contiguous sequence.
 > 
 > Changes in v3:
+> * replaced `int idx = 1` by `unsigned int idx = 1` in the for loop.
+> 
+> Changes in v2:
 > * New patch.
 > ---
->  .../bindings/iio/adc/adi,ad7768-1.yaml        | 80 ++++++++++++++++++-
->  1 file changed, 79 insertions(+), 1 deletion(-)
+>  drivers/spi/spi.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-> index 7b72d14e104c..64c1cbeaa576 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-> @@ -26,7 +26,10 @@ properties:
->        - adi,adaq7769-1
+> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+> index 2b2eeaa4c15d..53d6ab4ce8a3 100644
+> --- a/drivers/spi/spi.c
+> +++ b/drivers/spi/spi.c
+> @@ -782,6 +782,7 @@ static void spi_dev_set_name(struct spi_device *spi)
+>  {
+>  	struct device *dev = &spi->dev;
+>  	struct fwnode_handle *fwnode = dev_fwnode(dev);
+> +	u8 num_enabled_cs = hweight32(spi->cs_index_mask);
 >  
->    reg:
-> -    maxItems: 1
-> +    minItems: 1
-> +    maxItems: 4
-> +    description:
-> +      Chip select number. For multi-device setups, one entry per device.
+>  	if (is_acpi_device_node(fwnode)) {
+>  		dev_set_name(dev, "spi-%s", acpi_dev_name(to_acpi_device_node(fwnode)));
+> @@ -793,6 +794,19 @@ static void spi_dev_set_name(struct spi_device *spi)
+>  		return;
+>  	}
 >  
->    clocks:
->      maxItems: 1
-> @@ -109,6 +112,12 @@ properties:
->    reset-gpios:
->      maxItems: 1
->  
-> +  spi-rx-bus-width:
-> +    description:
-> +      Bus width per CS. For multi-device setups (multiple reg entries), one
-> +      entry per device must be provided. Required when reg has more than
-> +      one entry.
+> +	/*
+> +	 * In multi-CS arrangements, use num_enabled_cs (derived from
+> +	 * cs_index_mask) to determine which CS lines the device is actively
+> +	 * using. num_chipselect only reflects how many CS lines are assigned
+> +	 * to the device, not how many are actually enabled.
+> +	 */
+> +	if (num_enabled_cs > 1) {
+> +		dev_set_name(&spi->dev, "%s.%u-%u", dev_name(&spi->controller->dev),
+> +			     spi_get_chipselect(spi, 0),
+> +			     spi_get_chipselect(spi, num_enabled_cs - 1));
+> +		return;
+> +	}
 > +
->    spi-cpol: true
->  
->    spi-cpha: true
-> @@ -203,6 +212,16 @@ allOf:
->        properties:
->          pga-gpios: false
->  
-> +  # Required properties for multi-device setups
-> +  - if:
-> +      properties:
-> +        reg:
-> +          minItems: 2
-> +    then:
-> +      required:
-> +        - spi-rx-bus-width
-> +        - spi-cs-composite
-> +
->  unevaluatedProperties: false
->  
->  examples:
-> @@ -244,4 +263,63 @@ examples:
->              };
->          };
->      };
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/iio/adc/adi,ad7768-1.h>
-> +    /*
-> +     * Four ADAQ7768-1 devices aggregated on a single SPI controller.
-> +     * Each device occupies one CS and one data lane; DRDY and SYNC_IN
-> +     * pins are wired together across all four devices.
-
-For DRDY, wired together how?   I assume that only gets set when
-they are all ready?
-
-> +     */
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "adi,adaq7768-1";
-> +            reg = <0>, <1>, <2>, <3>;
-> +            spi-rx-bus-width = <1>, <1>, <1>, <1>;
-> +            spi-cs-composite;
-> +            spi-max-frequency = <2000000>;
-> +            spi-cpol;
-> +            spi-cpha;
-> +            vref-supply = <&adc_vref>;
-> +            pga-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>,
-> +                        <&gpio 11 GPIO_ACTIVE_HIGH>,
-> +                        <&gpio 12 GPIO_ACTIVE_HIGH>;
-> +            interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-> +            interrupt-parent = <&gpio>;
-> +            #trigger-source-cells = <1>;
-> +            adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
-> +            reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
-> +            clocks = <&ad7768_mclk>;
-> +            clock-names = "mclk";
-> +            gpio-controller;
-> +            #gpio-cells = <2>;
-> +            #io-channel-cells = <1>;
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            channel@0 {
-> +                reg = <0>;
-> +                label = "channel_0";
-> +            };
-> +
-> +            channel@1 {
-> +                reg = <1>;
-> +                label = "channel_1";
-> +            };
-> +
-> +            channel@2 {
-> +                reg = <2>;
-> +                label = "channel_2";
-> +            };
-> +
-> +            channel@3 {
-> +                reg = <3>;
-> +                label = "channel_3";
-> +            };
-> +        };
-> +    };
->  ...
+>  	dev_set_name(&spi->dev, "%s.%u", dev_name(&spi->controller->dev),
+>  		     spi_get_chipselect(spi, 0));
+>  }
 
