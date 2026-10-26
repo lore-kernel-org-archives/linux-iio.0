@@ -1,100 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793024500;
-	b=kcxNyKqnUkE/qCnk3yTr8CWBv/qo9a6tgT3nnbyhqfDj/9Mno0KUFZhYgGeq0WqEpHII
-	 jLJxwEplwc+FB9CvvF8Q1dJ0yuCV4Ip7CTikpTRpQWyf9kQKY3Wb+v8L5udt3DAlop51/
-	 e8Io/tajnYTM5arWPxMalwlzWMP6xLV5JQndur4s5x3O5dreRfYNLswG2/lJnAHcx34Wa
-	 DLxaJHgf4703PwXALTTDUMn7n0u055j5OAtOvV4vaX0bgrvY1WhlDT5mRoDhJsVZ5k0GZ
-	 xZZgDhLNGod9/uzTgT6VngOGtPhBsE0gEE4VaqXJMzUxZTUVC0PLx/IXKvFTNGcWNTQ==
+	t=1793024507;
+	b=yeTH94bL1L1dj2jGfJ3tdIE1OJqjxM72VEsh3H4vSaJKs1A7xUylnCvocfFbfexZt8Da
+	 L83TG4mivIKlWXVD7P0+Znr3ZgluIwAjGMo9+luNjEu2tJ6dfUaKSCJkZp7l/Oayu4aqU
+	 coM0yFdMxZ/unQWvP7N7WZ/zw6wWjiIgkuKGQgrMN15iAxOqEebDLSxztiNuGFX8VqrzG
+	 ryZgrgeATP3Z0pYvJpFKVZrnyqpA5mJ5/mtW6k6MTe7tb2k+TeTCzGsEoHLx+BjevQ8G6
+	 yAbFzXz3AlEEMSqFmOCZGLua7OHXZxQH0BGrO53ITmcksLbiCT20l+8L4OkriHDt9RA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793024500;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=MwdXN1TCWe2BL4b2dfairQrlmjtBR9ajoa0+SCjXZog=;
-	b=FKlsHuxoUtKk4msomH/awoB2Vbbc8FBsZO52iwsMXufKKN/6FckNHTQEcu7o4Ne3zV7o
-	 gjDGS0y0vvedPlLXQn3wuC+HVpNPQOKN4S7SXYn7mXZvSGQQKokZ6dOV1z/pelEIq/wIw
-	 QMpVFEOotT0oQr1U6ZcYJOyCxmKPr1znckRljqZzTug2fSlHtBmxHxdZ9XKASo3u6Dl5C
-	 KQAJ0ya+TdtcRvmktF9/5S6egkizWDHC/xoDM2F9EYxECEglUjC+Alk7K9sT3LExR0bsv
-	 b7I8jsm2u0LB17Luq1e9ow/j62BY/EpR9KHH9I8ECJA5io/dSJA9ThhhbHs1NudWqmg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793024507;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=/FiQcDHgh/a9Z3vjpl46403izEP86pnHi8KIbA022QM=;
+	b=0yROKDMOXcb4+X2Pjt1ecYLaDBoUjSHtn8n1hjj1jQiWa3ATFrT/tSOaCGso2jCnBCm/
+	 pI/UReLuflq78z4WLNazi7Paza+5h2wHUQeuBknDm7/jBAlNSBXTpMAv3QoSn9fmgF72P
+	 wuVXth7qFle9O3ul5RMCHq57HrrawVSHwlwpz2mkgK1awrOwH++NmP6wC3eQwixwH18BL
+	 x6aAZW+PH4Ce8dXjbFjryypwYWRGDco279GuGvw8FwfOKfw43NMDzae7jBYjIkKmAEpjC
+	 usmoS1vBe2dOUW1s5Y2N0lowXEaIS2rf11f387qO/e7wivFj6kCwTdPk8T5MPp+l+9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=aLGjbnY4;
-	arc=none smtp.remote-ip=209.85.128.47
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=goX0ZSoo;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72B98606A320
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 14:21:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72B98606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7CFD606A31B;
+	Mon, 26 Oct 2026 14:21:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=aLGjbnY4
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a4dc547987so6124515e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 07:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793024499; x=1793629299; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=MwdXN1TCWe2BL4b2dfairQrlmjtBR9ajoa0+SCjXZog=;
-        b=aLGjbnY4YqWZICNGtjWxs4lRVA3bjXXY7CKbgPyRyQlLvc+9cdycQj1oe2rKkgQA29
-         no6pwmzDV3pV9qprfLknsiWnfdLmcV8h+X/2Z6l+AiaPaamSnsD9UlJIn5aP7r1VOYHc
-         XDuAuPbQAegZQz1tJBn/P7f1QQptUYMIuNJpAFgPAMSeC2b3j1nFBr4o7zO1OOT6qwDp
-         auZTvkPUqt4kgwxCnCAP3tUNWw/SeT9vtUj0Jltt4tarbisSTwLbghUXJmcbu2lEOCX1
-         uNa1ONDz5FuKxxJsPP/7y85v06hqMTOFo4wlTGHTK/4bJFU606IXsFETl1W7RIRTCW3H
-         7MEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793024499; x=1793629299;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=MwdXN1TCWe2BL4b2dfairQrlmjtBR9ajoa0+SCjXZog=;
-        b=h6M+SYVGQ/UdaMYp1MwQTe4mjwAzBHLuC5awLDBCwLxNgdnqTWI1QmFyVz2sy0RRQZ
-         XDopHNDQXvbp9cBAwCOhlXz6M5zP3VTBrgy+jJd5WFzEJgF2gFRezhDaIW9rWMYcPQFw
-         pYQwm6ynBrS0/pqeLtcWfDsGJUHqus0hWNUI7Vklp6fUxYI+fVEI58qb+pwXJSokmjLz
-         FWgYuJNUK18RZWYDFbmqwRZUaF6Cod47Kz1Lz0OLqx9DNJ+piJ1v/hbSNDxE7DvLlxMG
-         lyHZMbCmq/8bqFmbhX0hdXCVwa2op2gK0ubgCnzVEckc7Q5XXnSWdns+GdO+ppESOGtG
-         oEoA==
-X-Forwarded-Encrypted: i=1; AKwUvBxUTqXzch2u2lzwKUialQruWi0ICMd3FT6tAxYfoPi58rzLN4VYO+c//XSgOTAdvAkyjcPyqxV7Axk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLNhudS9xEKEt9kC2IzyfEhPjzX5bE8uwgVNBryP2VKvivZd9Su
-	uqOgmeB9Mpb8SlLk62O+NL9ZFatqAzhDwPicM4EYB0QcVFYOPSE2yCH6
-X-Gm-Gg: AYBFou21mgrsBO0O+GtINSD2aUt6EgBYoXQFDt4ZJfGV6IBTx1wK7OQ261EQESAyWNM
-	K7d+D87dlTvcjNuwiR3jbcV4S4SYH3Y/+KZR9Er2HKZ5/a2vZLiueSV5+3T/49PQFEZJLInXL10
-	lbcN4L8JAvQJJCIsU86qFr3MekaZ8DJ7MQ8WpLjSxMj/tiM0C2PDD68d3widP4pz2z9AnLztXeg
-	CK+QY/70ybXHooVMN9Lp2PPQo61exiabBFDHruhaARpoz5i8qAe70nc2+Cuj9pno9uiF/pgaxOH
-	qaqqhkD3jnqTaro80qgX7ZyiG+Tc6g0jR89IjWYEkmfE9x/1SmZpj7CGjMwy+AUUF2Rh0ji+JTE
-	zYKY1UsPTqjAVf12VdcNm3bHYLWCoUeQHl93zby4nwQnkOa63iIlc+ZBTyDwanIp8MldXjoJRWG
-	mqfKduhd4N83OkDIceOsXWOspxh4fT7aISx4JRtPPO1BjkYlCJA1rKjLE3/M6B3P+736T6ew8YF
-	+qXYXr2c97XHXH7wSaZuyCFfqpt4+Z6C57PZUuhPctbMD4wa7SXf1ZBWVtUSmZErItT+2vj79YN
-	42NOeogK+TPhTuJt81w3/ctgBO41v/F4PxFMp5ZSn/DxFVP6BzZME3lgA2HnweJp4muSLIuF44h
-	sUcSzC1ZahlAdXES7mayL4hCZeCESgkm7hI4YQco/820/f/+xoHjywSzN2LnxC++VDKJv9XArBq
-	4uvwTRh4xZ87luhRQItT8Rf6dOb1BFsUCP37Axev4a5RE6tz5PMHfd0y8QXLTrjw==
-X-Received: by 2002:a05:600c:4e47:b0:4a1:fb2f:eff with SMTP id 5b1f17b1804b1-4a772d05e3emr11795885e9.18.1793024498731;
-        Mon, 26 Oct 2026 07:21:38 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebd48fasm16668508f8f.31.2026.10.26.07.21.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 07:21:38 -0700 (PDT)
-Date: Mon, 26 Oct 2026 15:21:36 +0100
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] iio: proximity: sx93xx: keep the IRQ balanced
- across suspend and resume
-Message-ID: <20261026152136.0000047d@gmail.com>
-In-Reply-To: <20261026112342.65917-1-kapoorarnav43@gmail.com>
-References: <20261026112342.65917-1-kapoorarnav43@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=goX0ZSoo
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E95E1F031E3;
+	Mon, 26 Oct 2026 14:21:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793024506;
+	bh=/FiQcDHgh/a9Z3vjpl46403izEP86pnHi8KIbA022QM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=goX0ZSooZSgGCvuM2Nt2WwPgwT7XvnfTAVHe+fmtHzW2cLyGSn+QAFLIzsvEce67j
+	 vhTj6mXZ7yA/sfpahEP5SU+PbF+ChunnGyuEkcvZPEP88hlBoFu1l45BSETpNVwXVo
+	 NKAF2FK7xpMr8rf9A0FgR6gWql4/ZWcuvhqOtDHdvWATjpJLn0Hu0T7cf0ZPynsPm7
+	 4vLHZ95oWJ2msjx+RAPR5fCKRhDZuFV65VTl+TB7+u6pwprfXlfmO2TLXJGFxgx2Y3
+	 6agdhzhnf61FTqK38zXyDV9mvuUVvOKaOTgrpRG3jxcptnSasZdWCnu0WjEkpTNWAz
+	 IOoPzNyyskIog==
+Message-ID: <4ec32f9c-5a35-4146-96b0-99e8c85e0ff0@kernel.org>
+Date: Mon, 26 Oct 2026 15:21:37 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,35 +51,106 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Olivier Louvignes <olivier@mgcrea.io>, Jonathan Cameron
+ <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Paul Cercueil <paul@crapouillou.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20261024041357.34346-1-olivier@mgcrea.io>
+ <20261024083809.000026e5@gmail.com>
+ <20261026-hungry-masked-anaconda-7fadb6@quoll>
+ <20261026151811.00002233@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20261026151811.00002233@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 16:53:03 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
-
-> sx9310, sx9324 and sx9360 disable the interrupt in suspend before
-> anything that can fail, and don't enable it again when suspend or resume
-> fails. Without an interrupt line they also act on IRQ 0. One patch per
-> driver, as the Fixes tags differ.
+On 26/10/2026 15:18, Joshua Crofts wrote:
+> On Mon, 26 Oct 2026 11:50:44 +0100
+> Krzysztof Kozlowski <krzk@kernel.org> wrote:
 > 
-> Changes in v2:
-> - Send as a series with a cover letter (Joshua)
-> - sx9310: move the wake-up register writes into a helper that uses
->   guard(), so resume can use the usual early returns (Andy)
-> - sx9324, sx9360: no changes
+>> On Sat, Oct 24, 2026 at 08:38:09AM +0200, Joshua Crofts wrote:
+>>> On Sat, 24 Oct 2026 06:13:56 +0200
+>>> Olivier Louvignes <olivier@mgcrea.io> wrote:
+>>>   
+>>>> The X1600's SAR ADC has four auxiliary channels and none of the
+>>>> touchscreen or battery engines of the JZ47xx ADCs in
+>>>> ingenic,adc.yaml, so it gets a binding of its own.
+>>>>
+>>>> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+>>>> ---  
+>>>
+>>> Please use a cover letter when submitting a patch series.  
+>>
+>> It's fine for two patch series. Please do not make it more difficult,
+>> than necessary.
 > 
-> v1:
-> https://lore.kernel.org/all/20261026100322.16720-1-kapoorarnav43@gmail.com/
-> https://lore.kernel.org/all/20261026100408.16874-1-kapoorarnav43@gmail.com/
-> https://lore.kernel.org/all/20261026100450.17023-1-kapoorarnav43@gmail.com/
+> I'm not trying to make it difficult. The cover is usually a good place
+
+You are, because you are asking for something which is not a requirement
+here.
+
+> where to describe your motivations for a new driver, plus with a cover
+> it's easier to pull via b4 and Sashiko will treat the two patches as
+
+b4 works perfectly the same for this series as well.
+
+If Sashiko cannot handle standard kernel workflow, then Sashiko needs to
+improve, not contributors.
+
+> part of one series, not separately.
 > 
-> Compile-tested only (W=1); I don't have the hardware and haven't
-> reproduced a failing suspend.
 
-The code seems good, would be great if someone could test this.
 
-Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
--- 
-Kind regards,
-Joshua Crofts
+Best regards,
+Krzysztof
