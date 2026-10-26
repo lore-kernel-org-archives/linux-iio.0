@@ -1,85 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793037552;
-	b=xfafsNlYfkPPdr64hsbpqHQq6kOQHbpwAO7zkrogeXxv0ucOMRXVfqEHP7cvUiKwS1Tw
-	 7FI36Qc91ctPE3z2vyHSCDx8AdbOyEc4PdUzlwa9X59BNgKCSMj0Zcg4vG1J5fgO7n4T3
-	 PCQWPkj6ptiiit/X2SJcfUQbGyjhWo1kw9Nn064q2UkG1dqdmx8vkXnIXagetz8b9VUD7
-	 Tdu1GzjBYKNZqwyUCNH3CyU4sf+YzlTSShnTdHVnwHYMDJH+Y+koiRgIhTwiAsl5FXHEO
-	 JTJYEBVnvNt+DsUjVXfIXW7xll8nqOD53XnR0wHpslAX9qKfikR5z03edwLYXZEiuLw==
+	t=1793040157;
+	b=dRiS1SXhSpffbeffAUTHSnqOdJfq0d/5XKnwxWRkaVNkILa2rUlueEo3U/fINymj9ZqJ
+	 70OeaJGkCSmFZ69Aqyf4qbvxkz/tdP1AGd4Xkc7EFa4ibS92oj7whxi/88ZaPt7QvCVgJ
+	 jMJBhBGDmc8ZJ2Wug5KLHmshWwnBpOW80/0CIeiCl1LXDC86NAP0ckF729qtTE8tkvaCe
+	 tEvyMly/PjDWj3bf4A6YS/V23PEPyiVlman9BeCuNVHCjrO0WGSsO+9SQ5wo0C588X7sn
+	 O3Ng+sQ1TR30vljjN5M4VpmxQ2+LHcRQxElYgNIclJikYTwOlWUGLknCLlR7hYxIKAg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793037552;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=F2ljx2alcBFTo6QIXmQ3PZr1A9yTe7fXLFSuwRXwTto=;
-	b=mbBWklWW4FvrYCJJlnDgiGkl66JbkuUJahFYX+GlQU+wUeEAndg2eVRrzx3vqLt+UQw+
-	 GMI+uya+7ds82tmw4SSasX7ZL7PJGoo9ep8BwTPZunx68f4tgxz7EkucuAMTmFlusxih/
-	 l9UTS8rmoxB0XxwLdnAcpkTcfTj77RVP9GragweA1X0/DSs4a5SVwyGyFahSAe9BkrUPl
-	 +B79nX3rLBXGnVeqEB3XIeXEdxWbmagdIlax1c/cWjzj6Yfnorvn/bthx559Rbtj5RAhX
-	 trCC2JhayHVLde06wvrUWPMgHRHnR3LActHT7E3jIBy+nLOjSJd3UVAy1WAOc2JOWVw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793040157;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=jHGQKwi3HPZqZ9VMWi33DPF8ighBiHYISSnr6zwG9Ks=;
+	b=aSVqFlv+cFLk+ZmHOMpI60V0D+sTxpNVxiWvsqrjQParX8/qafbqrcwcxdWBNNQAdbrx
+	 1nNjHLX5U/KfSZUKhieGNRAN9fmKUHh4UsHzC+WflLzYoOpSQWUXhbd70h/ZGLto2ELfX
+	 S95ru00Y3V6B0dFm9+mQfMpiFlmTVUeJy8+UtJLOka0Sz5nVugxnJpMMVfVbsmeg3/D6k
+	 aLSfTqaL1mKURt0VurQb0Fdqpt6AtEnwBiRazUMOGg8MDDkKyU+RYTm/sesrCxONL69Pr
+	 oZAi7+H3Kx3xXnEDi7lartwTtI5U0/cSdx6JbtSYf/3MumZHkAWFN/ozHD9LSUXLNIQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=XPg83Srk;
-	arc=none smtp.remote-ip=74.125.82.41
-Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MPDbHy+5;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3C1606A31A
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 17:59:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA3C1606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F75606A31D;
+	Mon, 26 Oct 2026 18:42:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1F75606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=XPg83Srk
-Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-1931ff67a29so1420288c88.1
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 10:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1793037551; x=1793642351; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=F2ljx2alcBFTo6QIXmQ3PZr1A9yTe7fXLFSuwRXwTto=;
-        b=XPg83SrkdQHxiXw3yuZl1WwDqwjS/+7wNLUClFJaerBhuwBIdZ9u+y4krqfdH9ywCl
-         R5a4pEVxDrJr0cfry368ztlZLV4egXfstqW9o0j9KwDhsQVKgGDmJHk0nB9uIQRMbSaJ
-         WNuqog36pgJwHs680KLgimHuDP3YuFzGR3O9A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793037551; x=1793642351;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=F2ljx2alcBFTo6QIXmQ3PZr1A9yTe7fXLFSuwRXwTto=;
-        b=TkzI6tUpY0jCrqrd61HZ9KHe3kjaZtKp81KjwBQyaLLUoCHGuKAhve1GdUT4EHuSoX
-         MPU1YoMXYSf7hMeBh6GrO0oNQNms8lNoqvRrsXoers51rwC/ZgWoAHCctIYGf9FWN9Gj
-         IB1EtGxeb2qR9czRD454uKgMLYShYxWsTFM29XDoBv1lLgw3UnKm6Y4XyrlnTn0hrfRr
-         xAahDeVLSr+DpYOq2fnMP77RUEN6guaNoNFvFBrraHhV5H2CRQLdG5e7pC0YPpT+SIoa
-         WZFHBdEwIPqA7A0v2K8D2WFpxIEtdFJD1UBw6izmjnqY7/m3ykxB49arAQO8BHvQXhsK
-         y6oQ==
-X-Forwarded-Encrypted: i=1; AKwUvBz5mBpnFn2AgpOURB2WmgJxwDoaKo5pIQjvClJ4ysHcBMyiMvsCb+pccD8nqEYlBGBvGdo6F8TtZhQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJD68LCP9GBKsG8v+zmi1otisYUKdGMPt1ennwq2p9BFonzCqJD
-	crYez8RNRnA0PTXiy3g8Z5B5JN5AuANwaKTWh2U81aeVsjkKKh8q+srz5Dreepl9zw==
-X-Gm-Gg: AYBFou3jk+mtiwPy7Emm0iu4IWoj0alfp6e8hbxqWeHlJEmPsCCOIMANE6HIBPfJ8Ae
-	LT1QxkWc0QtLdmk+6a0NBluRikWaREnlNAAGOobQeN9vjkgiEM9RqVR9flcdxHIZNBCcLnrsH+l
-	U6pTrs5nYlZT2Av5lvw9hyqJDzYUAia5t3xvUZPDqlCPSzkc2ayMBsiTTCtokQ7c7Mzry7Aw92/
-	4bvsXpnFNTXQGmA/ZZ5cbrigXUAvgbyUPimHcbofecgOfC2GfzvU8l9lU2BujxUnXrmq3Fc7jJq
-	LzEmGSgwzp4mFhpgoFKTWqSynOIVvEzBfUmQec8qNaE+SuhTgywFN+QH7xj4VTrBtcbShJCMRSC
-	jNsQ/agRevKQgwTfxH9HYVph0JrdGJyeKJpO7cWyTf1f/AyuKpCfljV+cj4H6gZt0dXlrKZB0t0
-	mpq8lfIdiVx/mMqP+Jpv5KIaXmWdlrP+jEsVPs6xjK4czzfFqeZraLJpxdYcw/2e5xizP4iV28L
-	Szj7KylPXf/USWJsdqlpxB/eBJM35i4X4UYxkmV/IU/2ePRT1kv+PabpSW+03iq0lYlArrdj9NH
-	yZHZ6D4b1iQIbZhKpLPTl8Zabq4Fp35IogwcgcKw
-X-Received: by 2002:a05:7022:b058:10b0:19a:dc0e:c20f with SMTP id a92af1059eb24-19adc0ec4e1mr9832825c88.44.1793037550837;
-        Mon, 26 Oct 2026 10:59:10 -0700 (PDT)
-Received: from localhost ([2a00:79e0:2e7c:8:79c5:9cd3:db14:7468])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-198a0f83cedsm32565975c88.13.2026.10.26.10.59.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Oct 2026 10:59:10 -0700 (PDT)
-Date: Mon, 26 Oct 2026 10:59:08 -0700
-From: Brian Norris <briannorris@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MPDbHy+5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793040157; x=1824576157;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Pxkiu2dpipdFnT+u2/AE1L8SMSKwkt5e3B1Dige/WPs=;
+  b=MPDbHy+5cL9da7ZKt8tlTaiCd+WBbkP080itWj89uQg+xizcnYssCrVa
+   IV8F+McIyokaotHn3NVDB2H/M/8oMFFu0OHMcdAAQxbqY/T7kaefq8nmB
+   ZRHlb5/XZ7YYnoEbOm07BUS3gXvtQYumewxbMgD8RmPgviCX5IboGH5fM
+   hnjoBsBWHLyaHgnuSCXOGk+65xeVM2vidIdZr2zMKgB0beDs/okoOtMbL
+   fl6TZtmZ9Oh+62WmK50Y6xUqomv5ES2WkLS3UShipwj6If/4Lk5iE61Hf
+   yYTcMML+6psiaW57ZC3K/E6TxexeD/GAZTl8pQqnKWWjTzoUlSgItkZrt
+   A==;
+X-CSE-ConnectionGUID: zepA9MyYQeiCD2XU/U60sA==
+X-CSE-MsgGUID: WOLvbHtsT7yzXr/EMl0MvA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1731416"
+X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
+   d="scan'208";a="1731416"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 11:42:36 -0700
+X-CSE-ConnectionGUID: 7nm3nCWrREmdXpwFKMm4aQ==
+X-CSE-MsgGUID: yimnzbkvTE6NQb400VmwsQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
+   d="scan'208";a="4321598"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 11:42:33 -0700
+Date: Mon, 26 Oct 2026 20:42:31 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Brian Norris <briannorris@chromium.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Ulf Hansson <ulfh@kernel.org>, linux-pm@vger.kernel.org,
 	Andy Shevchenko <andy@kernel.org>,
@@ -87,10 +73,11 @@ Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 16/17] iio: light: tsl2583: Discard
  pm_runtime_put_autosuspend() return values
-Message-ID: <at-U7LvkoiNAJ6YM@google.com>
+Message-ID: <at-fF6u6Oqq-CHbW@ashevche-desk.local>
 References: <20261021235818.3059519-1-briannorris@chromium.org>
  <20261021165858.v2.16.Ic3775fd68cac415d959c0456c4d4c36e9e5b95e5@changeid>
  <20261026005504.7482bf26@jic23-hlaptop>
+ <at-U7LvkoiNAJ6YM@google.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,24 +89,37 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261026005504.7482bf26@jic23-hlaptop>
+In-Reply-To: <at-U7LvkoiNAJ6YM@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 26, 2026 at 12:55:04AM +0000, Jonathan Cameron wrote:
-> Note I'm putting these on my testing branch which I'll rebase
-> after rc1 is out and then they should show up in linux-next.
+On Mon, Oct 26, 2026 at 10:59:08AM -0700, Brian Norris wrote:
+> On Mon, Oct 26, 2026 at 12:55:04AM +0000, Jonathan Cameron wrote:
+> > Note I'm putting these on my testing branch which I'll rebase
+> > after rc1 is out and then they should show up in linux-next.
+> 
+> Thanks. I can't seem to find them on any 'testing' branch [1]. Just FYI,
+> in case you were intending to publish the intermediate result. If that's
+> intentionally a local branch, that's fine -- I'll check back in later.
+> 
+> I also see you're trying to partially rework/expand/add to some of them.
+> I'll try to review those, based on my local combination of my patches an
+> your patches.
+> 
+> Regards,
+> Brian
+> 
+> [1] In any of these:
+> 
+> $ git ls-remote -b git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git | grep testing | wc -l
+> 9
 
-Thanks. I can't seem to find them on any 'testing' branch [1]. Just FYI,
-in case you were intending to publish the intermediate result. If that's
-intentionally a local branch, that's fine -- I'll check back in later.
+Yet another "useless use of grep" ;)
 
-I also see you're trying to partially rework/expand/add to some of them.
-I'll try to review those, based on my local combination of my patches an
-your patches.
+$ git ls-remote -b git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git \*testing* | wc -l
 
-Regards,
-Brian
+-- 
+With Best Regards,
+Andy Shevchenko
 
-[1] In any of these:
 
-$ git ls-remote -b git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git | grep testing | wc -l
-9
