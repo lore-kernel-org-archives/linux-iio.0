@@ -1,83 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793040157;
-	b=dRiS1SXhSpffbeffAUTHSnqOdJfq0d/5XKnwxWRkaVNkILa2rUlueEo3U/fINymj9ZqJ
-	 70OeaJGkCSmFZ69Aqyf4qbvxkz/tdP1AGd4Xkc7EFa4ibS92oj7whxi/88ZaPt7QvCVgJ
-	 jMJBhBGDmc8ZJ2Wug5KLHmshWwnBpOW80/0CIeiCl1LXDC86NAP0ckF729qtTE8tkvaCe
-	 tEvyMly/PjDWj3bf4A6YS/V23PEPyiVlman9BeCuNVHCjrO0WGSsO+9SQ5wo0C588X7sn
-	 O3Ng+sQ1TR30vljjN5M4VpmxQ2+LHcRQxElYgNIclJikYTwOlWUGLknCLlR7hYxIKAg==
+	t=1793044103;
+	b=AHCc9S83LG1SxgByQj0nRddXYyvjb3EigVFak9RHDej4lelevFbgRFRaT7p3uph6fP+s
+	 9D8726vrQhe7Lnc/g7itDkkw8WpZAOTDndJYrbphRLL4nX2QBIZA/F97AGqgQMpjQhvJP
+	 wOP93q0ruL4HbsYEUaGOCLF99WBqSWaYmpQ3ss4hz56dF1Rf8ngm02IsJFcpl50Niidv2
+	 u3Q+KAg5ifZpTdk3nZmjnuMaLrdyxFWXiZLwPpWGl91Tl55E4yNPHJsTNN9jP3Kz+yIcy
+	 tFOmnv1JaV5grtPcz8MSGmz12qh2QRIO5T45ehBJTTewq5jcZhth6KlhWmIsrXoOMrA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793040157;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793044103;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=jHGQKwi3HPZqZ9VMWi33DPF8ighBiHYISSnr6zwG9Ks=;
-	b=aSVqFlv+cFLk+ZmHOMpI60V0D+sTxpNVxiWvsqrjQParX8/qafbqrcwcxdWBNNQAdbrx
-	 1nNjHLX5U/KfSZUKhieGNRAN9fmKUHh4UsHzC+WflLzYoOpSQWUXhbd70h/ZGLto2ELfX
-	 S95ru00Y3V6B0dFm9+mQfMpiFlmTVUeJy8+UtJLOka0Sz5nVugxnJpMMVfVbsmeg3/D6k
-	 aLSfTqaL1mKURt0VurQb0Fdqpt6AtEnwBiRazUMOGg8MDDkKyU+RYTm/sesrCxONL69Pr
-	 oZAi7+H3Kx3xXnEDi7lartwTtI5U0/cSdx6JbtSYf/3MumZHkAWFN/ozHD9LSUXLNIQ==
+	bh=5gIl0t6kJCxw2MNLMNSbR+KgSku/5SVUrggtOh2gw7g=;
+	b=vG+WY61LBf1xIW+FDjLS8gwVkbhQF4pxupGfIEtwv8UhoDJbl7Xek//Bx01zvxoVQEtg
+	 +UZDVYn0nzDP6p7rPTb+2FvtN86W37fbQ6jgkM+D8QOvgTq0Z1FJQ20R3kgs0Y6N3rQaE
+	 Zxtu93kR4nLLxx0oYg+50gi9XuREWqSL1Br6D92fofwH7rrtU/OpnV0EBk7OPz340YQCJ
+	 Y7hYhf7JnKTkJOX+dEi5OHOw1dw0be0aWNbgymkik1/KY2+CfAx9rSXrGv2plgmndzIXZ
+	 5uNkYfXF68so4fYnOOfzPZOMoo9B9j084CYWkpeCXq/41xeAOrsshYG68DVYBk6JZqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MPDbHy+5;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="n/l4QQ7c";
+	arc=none smtp.remote-ip=198.175.65.18
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F75606A31D;
-	Mon, 26 Oct 2026 18:42:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1F75606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D61B7606A31A;
+	Mon, 26 Oct 2026 19:48:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D61B7606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MPDbHy+5
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=n/l4QQ7c
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793040157; x=1824576157;
+  t=1793044102; x=1824580102;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Pxkiu2dpipdFnT+u2/AE1L8SMSKwkt5e3B1Dige/WPs=;
-  b=MPDbHy+5cL9da7ZKt8tlTaiCd+WBbkP080itWj89uQg+xizcnYssCrVa
-   IV8F+McIyokaotHn3NVDB2H/M/8oMFFu0OHMcdAAQxbqY/T7kaefq8nmB
-   ZRHlb5/XZ7YYnoEbOm07BUS3gXvtQYumewxbMgD8RmPgviCX5IboGH5fM
-   hnjoBsBWHLyaHgnuSCXOGk+65xeVM2vidIdZr2zMKgB0beDs/okoOtMbL
-   fl6TZtmZ9Oh+62WmK50Y6xUqomv5ES2WkLS3UShipwj6If/4Lk5iE61Hf
-   yYTcMML+6psiaW57ZC3K/E6TxexeD/GAZTl8pQqnKWWjTzoUlSgItkZrt
+  bh=Pt5t8K/pIpbSSx50cuHnBxf5hCIfQ1RsdhJ9lGlqrtk=;
+  b=n/l4QQ7cAM/33rSmNpi89VlJVko3UYqrm4zREJUu0+nhg+MMCZ6hpuNf
+   Rxlre0wRosbA0xQjCdFyIuFBUAmV5vXoZQ9Tp+1UInFStxVbSdperIeDS
+   IYLHuTtXvi+Vc+HrtIdpbNz4gGOLzg4Pal6j0S1XT+2EZp4Blsf5pw6Ym
+   OsOeMtuV6pGcAzIQsdC6DIEHTRdPtCgxhC1CKj3TpGvLqHaLkzlHLYRpj
+   gonsTKHgK1jODjnndedOTk8/Ng0bHTD8Hk9hfW4Z1DwwuvtYHtR+bKm6g
+   nuhGp/lJaXcWoNqHpIbbegDO58cmiyhoBYBfp1EfTHxRWcIX5chNXF9qZ
    A==;
-X-CSE-ConnectionGUID: zepA9MyYQeiCD2XU/U60sA==
-X-CSE-MsgGUID: WOLvbHtsT7yzXr/EMl0MvA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1731416"
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1731416"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 11:42:36 -0700
-X-CSE-ConnectionGUID: 7nm3nCWrREmdXpwFKMm4aQ==
-X-CSE-MsgGUID: yimnzbkvTE6NQb400VmwsQ==
+X-CSE-ConnectionGUID: 5ezgg+jiS8yxOns8T0FbCQ==
+X-CSE-MsgGUID: shL4GuuaQW+r3LhXDzD0ag==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1733712"
+X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
+   d="scan'208";a="1733712"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 12:48:21 -0700
+X-CSE-ConnectionGUID: wYcMSyN3TkOuTFxQ4XQvxw==
+X-CSE-MsgGUID: cd3MrB2mSx+36nNCMKn/pw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="4321598"
+X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
+   d="scan'208";a="4746044"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 11:42:33 -0700
-Date: Mon, 26 Oct 2026 20:42:31 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 12:48:20 -0700
+Date: Mon, 26 Oct 2026 21:48:17 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Brian Norris <briannorris@chromium.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Ulf Hansson <ulfh@kernel.org>, linux-pm@vger.kernel.org,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 16/17] iio: light: tsl2583: Discard
- pm_runtime_put_autosuspend() return values
-Message-ID: <at-fF6u6Oqq-CHbW@ashevche-desk.local>
-References: <20261021235818.3059519-1-briannorris@chromium.org>
- <20261021165858.v2.16.Ic3775fd68cac415d959c0456c4d4c36e9e5b95e5@changeid>
- <20261026005504.7482bf26@jic23-hlaptop>
- <at-U7LvkoiNAJ6YM@google.com>
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com
+Subject: Re: [PATCH v2 3/3] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <at-ugcvhOmPFpJP6@ashevche-desk.local>
+References: <at8g26_l5JVbqs2i@ashevche-desk.local>
+ <SN1PR12MB25284A3A9B89F3CC50689527A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,34 +82,57 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <at-U7LvkoiNAJ6YM@google.com>
+In-Reply-To: <SN1PR12MB25284A3A9B89F3CC50689527A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 26, 2026 at 10:59:08AM -0700, Brian Norris wrote:
-> On Mon, Oct 26, 2026 at 12:55:04AM +0000, Jonathan Cameron wrote:
-> > Note I'm putting these on my testing branch which I'll rebase
-> > after rc1 is out and then they should show up in linux-next.
-> 
-> Thanks. I can't seem to find them on any 'testing' branch [1]. Just FYI,
-> in case you were intending to publish the intermediate result. If that's
-> intentionally a local branch, that's fine -- I'll check back in later.
-> 
-> I also see you're trying to partially rework/expand/add to some of them.
-> I'll try to review those, based on my local combination of my patches an
-> your patches.
-> 
-> Regards,
-> Brian
-> 
-> [1] In any of these:
-> 
-> $ git ls-remote -b git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git | grep testing | wc -l
-> 9
+On Mon, Oct 26, 2026 at 12:06:36PM -0500, Victor Chernyakin wrote:
 
-Yet another "useless use of grep" ;)
+> > > regmap gives us the two 16-bit registers in native CPU endianness.
+> > 
+> > It's only if you specify endianess for the whole communication of regmap.
+> > I'm too lazy now to check the original patch, but if it's not specified,
+> > it means the device native endianess, whatever it is on per register basis.
+> 
+> We do specify it, yes (the chip is big-endian).
+> 
+> > > If the CPU is little endian, that means the overall 32 bits aren't in
+> > > __be32 format (because the two bytes in each of the halves are swapped).
+> > 
+> > But yes, even if you do it in the device native endianess, it will still be
+> > a pair of 16-bit values with the halves being swapped in case of treating
+> > them as a single 32-bit value. This is unfortunate... So, basically this
+> > needs to be elaborated in the comment above (where you refer datasheet).
+> 
+> Can you clarify what you want elaborated? (or are you saying, *if* we
+> were working in the device's native endianness, *then* we would have to
+> explain that in the comment?)
 
-$ git ls-remote -b git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git \*testing* | wc -l
+In the comment you can add something like "We may not read these
+two registers in a bulk transfer because they are 16-bit wide and
+the byte order in the compound 32-bit value will be wrong."
+
+Yeah, we can address that by swapping 16-bit parts, but it might
+make code worse to read (and possibly affect generation as well).
+(FWIW, we have even swahw32() for that.)
+
+...
+
+> > What I meant is to compare decomposed val64 as well.
+> 
+> Hmm, if we only worked with the decomposed values, I think we would have to
+> write something like this, which is probably even worse...
+> 
+>     if ((val < fdc1004_calibscale[0][0]) || 
+>         (val == fdc1004_calibscale[0][0] && val2 < fdc1004_calibscale[0][1]) ||
+>         (val > fdc1004_calibscale[2][0]) || 
+>         (val == fdc1004_calibscale[2][0] && val2 > fdc1004_calibscale[2][1]))
+>         return -EINVAL;
+
+It can be avoided by using a helper to validate. Also the meaning of the outer
+and inner indices is clearer. With one-dimension array it's unclear what those
+indices mean. Ideally the outer indices should match something with datasheet
+and in some cases can even be named.
 
 -- 
 With Best Regards,
