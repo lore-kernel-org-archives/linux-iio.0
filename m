@@ -1,62 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.177
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792973359;
-	b=SgsXKBJmphy4KfFdGTFgdW4W0avBo7jPB39v7vJ4XZPsyuzQL5QqE4AjkLAA6B8eEZUt
-	 31SzMNSY8G1n+io3ZyHEC7OiX0GQYVkaZvWnkATTIW6CQShdOOltj9Jycw7RsFKZu6aZ7
-	 BlINFRSzxnFxVeSoqonwmrh4FEv5585B32qYMC+EQM4KY3aEuPhuZ3Sx2iDXkgPV473UL
-	 DvzadRpOW5cX8IKBBAi5JgvCbWBe2xAMvONxhQ+UwWe4uQK0UVHuacV+XKgKU3xa1I4Gi
-	 m6qffb3w6DjxCub6Kmh+suUg6UaMv+rPYVKLVgaJS43yehB4ZIdGd32u2czNDx+cwSQ==
+	t=1792973409;
+	b=2jiFAtfL671kv9M3BlAQH/k2EXdnrsr5klSfQ9HyAjt4nwRsJOW5kK8+qsh5SI09GDPB
+	 rGdP8OVjZwQ0ZcjeXstetXNTUt5Dh8BPtpmldaeR1RAl4Q9Gl5jQZoLCtudzHWuYWEQei
+	 hfh9HQmQY5c96p4n3d81e8L+sDYqQAs0zKePc6Dc0PJbrmsXTTfFr2NPMHpR+yKRiPzTh
+	 coTXqHAg04cBP9yojQ0gsqofk63g5t6YUIB41fluJ7mLITYV6EWZrbm6mc1pta984rHQb
+	 EFsb46Ej5nW1bYzRTUSEjjQpix1bRA8KfK4YRkwhgT/COvGXJub1RGS/7dm8J/PW3ow==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792973359;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1792973409;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Sender:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=QMeNs2DEy/MEHGHund85xZ1Yt4veb1UtyYvJc7x2dNo=;
-	b=Myp8sliR//v4y8k7PIwSjLKPDlcoRASpzu/P9ktqRoeWQDJC4gJMDBLEYsuvWnVJqOBl
-	 IhrSHJ4/SIEMvQpTrrOfl3IvBGMfhUwfBYe1ISVXIp0uk1T2/lWUwO53h/prp1+6dTjH+
-	 4/UDXfvBEG57vRBnsQ949wO8Ljnk8VK/TQfTonwVEAIq6UHR28oan/v5sWxcYZ1cM/Vxb
-	 ik6uOznvOpb0pKBmX57Lsj/IgyWQfPP563ouQ5pSICVjLUyrfehUEvVph6QCf4RKtxgeL
-	 DfrlXONUAfs1htWQQiK3ui2Gqpbm84tPi6qlWnB+uJjgZ5dK4RHX8Aq/r7svn7L7TGw==
+	bh=I6RNa18QQwE+anXKqe6bcJQOCZahegO/UDnIdYaNXRQ=;
+	b=WGRu0rdVvuEU6XinSpbzFnuQ3dHGJaEc4o0sA3A2heSDZjEjNr0pCPTUFxyroPxWlJfn
+	 S4qTDK8SfI56Rczkoj1+gSnzHOk7yw2eFkGjnOuiRzD/+5JMII27WhMYJpjHD9okR0l8S
+	 nhTkhi+OqxTseMwiMTqOQT0gSA/VO92KlCc4SDzwPUgUD15+L8bV6WudEpnc3vcw1kR8z
+	 RdZfbH8c55M3v2MlY9dPS6bb+2ZtizRaiEIxPS0eO1uEFjpaAy2sr0QOVyZATpUcSgfw1
+	 d4aBnm7UT0VUBreYUVWgzIqbNTfxpUwtGttkvX+L0LZpYunNACoqnUh1sIDD4pktXBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e55oCv9U;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=roeck-us.net;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=obGspQYT;
+	arc=none smtp.remote-ip=209.85.210.177
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44862606A31A;
-	Mon, 26 Oct 2026 00:09:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D6B6606A31E
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 00:10:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D6B6606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=e55oCv9U
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61871F01825;
-	Mon, 26 Oct 2026 00:09:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792973358;
-	bh=QMeNs2DEy/MEHGHund85xZ1Yt4veb1UtyYvJc7x2dNo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=e55oCv9UC4XXxE7QpYtamcSCdTrgRR384vDO6/z+HZ6I739gZbI0X2J/PlE5+TIS3
-	 pCKAOD2U6xYDkwfAmD672wi0l4m9QLUtEm+P2hB23fdJqawdpLxjRDN7KONUVzQo31
-	 9G6EoGYbBTl38Xo2RJDvU4fXB5tjUqkEIg4UAH2ez7VPfYlA9ANBMZnUnNf+syCr7n
-	 j4eNPmYqKxCS4v8a/S0mO2P/OJIhOHgrcSBP4MWEPiBk1aI2si8mTTcmxIuOLr9PN+
-	 cPJUAVMcUSun0teRNyZ5jGSdDrVumZ8Cx6s6gwGGwR6d+4dM06yT+HsOuRrXZ7cscn
-	 YZ53P09omZuHQ==
-Date: Mon, 26 Oct 2026 00:09:10 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v4 6/8] iio: imu: adis16607: Add FIFO-based
- buffered/triggered capture
-Message-ID: <20261026000910.328f6cd8@jic23-hlaptop>
-In-Reply-To: <20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
-References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-	<20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=obGspQYT
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-8a06b436dffso1074592b3a.3
+        for <linux-iio@vger.kernel.org>; Sun, 25 Oct 2026 17:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792973408; x=1793578208; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=I6RNa18QQwE+anXKqe6bcJQOCZahegO/UDnIdYaNXRQ=;
+        b=obGspQYTYyqXhIh45EyMX+wi/DglbB6Fl+P0tHTQUCssxcre7T3xvzUTngUHg6ZeNR
+         5fds8Q2TCrIG9GF01u/+fd9yyR1DphOkA175De9TfldLy8jE8D1XxkGQYbey6PEA52ud
+         9ncjnnFHQXH3UVfPto7OPuwkAmpeIdnIx2Wr97IrdKcj5YO70kxYjEkt+1D36hSNppDq
+         pCNs1gJxtb+uTDukEoPGdgC+FWMNOErI7FI2I3fQS7eGIk9paY5FMayg9dsVjw8wOEQZ
+         vkpV8vAZ7RnmvUn0Yd/wxDPYF/JoDwUwowiN+Cw3xBkQkG4Vjri71Px5UXyjozoCQLIv
+         1sIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792973408; x=1793578208;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=I6RNa18QQwE+anXKqe6bcJQOCZahegO/UDnIdYaNXRQ=;
+        b=IVdVvkC6AZWtvJmfDYCD350L6MT+s1BoB8RCnNy1GdySaBmOGT3PTE1Krw8+kN04f3
+         Tt4HP2icKvh9aSIaMBm+KyobI5O4N4gUwNnMdD4WXqkjBCBlKKIhS22Bgr3JmaoyqV82
+         uL4oPYIqx2uCwaBMszxsQZtKUgJ+3RDyDv+pwW6HTWIL0BhbNu+skVDh1ngmWcus0NNU
+         kvC/xExGzg9vMq4eeqYPFWTHC8Zj/QfKpgb91V2QXJcpy4kCPZWqV6w0H6RlNtgIBKQr
+         98XG6BZwgC0YPTVk03Q5x1KBoTiRS7frmnPvTRbh7haDKSP29ytmQ9BkX03dak3cGzkT
+         2TbQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwIpVLMo2Y0zd0B9ezwISyVRYbjYadEDfOaJIZEuf+VFcYdVsoIhNKdN48tkzSiMqetn3/NHkOa2RA=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLcMh09sq8gthmnuHXgNOcbedw1Kw1MxsrL438wPAo+qDz7FozJ
+	nXVyMsnplTnLHQByTfpFvNBVyKlOQa2vYO61OSHk9U7LJUUIaKjO3CZZhPhYFA==
+X-Gm-Gg: AYBFou3qgjhKVt92lmYlAU/2n8vRMaRadQs9FevGzgd+A0kk/WTq3OoyFaYpfTPUKAT
+	33Yh2vbOXEVvYTBk1MsiLy17D1iKc+EoSx4SYcyZFGDuLW3E9HJ+ZV9Nu3A+EophqoxtW2Zp6ih
+	lPuLfcWxI0WhhsWjaQwcr5RWEq+XxTbyPggZm+De0SUB501O+1xb6bp4MM0wpNepYjic8LZEZx7
+	06RndERo6AOkFcf/rXNWxKnCvaHsoGl4E5XqSIOTaZHfo9GlS/aKwkuwuL1xrCr0iZnZZhXEfeJ
+	lvspyONwFFYdRg2zQm3n41IWnJ6onn8jddVFSvPQOFri+KuQk9Cl5whBcrRNdK+tluT0bFXvbkD
+	MForguwHLAQ8Tn3k+OspHF3p6zcGT2Y6ow2M8VcrfQJ0rRG6yfNJ02gnxmsgugBBkCTAaOiUkbP
+	5TbNVJtv+VwOBPdO6F+Wd5j17X92EKSoMesiPKbMXEfbJgH0MVZNBm1cD4RTCR9lsYnn0E4PQCV
+	J0lxUKwn5tExuC/NCn8k42gdTGbgBXisIdp2ARuQjb/VCUbdsWH5/7jLzhEGmXNxdcCtV+AyHBp
+	4NXfgQemZu76ZquB+/BP7GOu/Q1I5w==
+X-Received: by 2002:a17:90b:2789:b0:3a7:d2b5:2e99 with SMTP id 98e67ed59e1d1-3adea9d6f7dmr4046130a91.20.1792973407824;
+        Sun, 25 Oct 2026 17:10:07 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:da43:aeff:fecc:bfd5? ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebacbf5fsm6169808a91.6.2026.10.25.17.10.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 25 Oct 2026 17:10:07 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <dd1f8bf4-0dc7-4d89-9eee-8a08e2d5832e@roeck-us.net>
+Date: Sun, 25 Oct 2026 17:10:05 -0700
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -66,142 +93,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 0/2] Add support for Analog Devices MAX30210
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: krzk+dt@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, Michael.Hennerich@analog.com, andy@kernel.org,
+ robh@kernel.org, conor+dt@kernel.org, joshua.crofts1@gmail.com,
+ linux-hwmon@vger.kernel.org
+References: <20261023080623.1830-1-johnerasmusmari.geronimo@analog.com>
+Content-Language: en-US
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
+In-Reply-To: <20261023080623.1830-1-johnerasmusmari.geronimo@analog.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Fri, 23 Oct 2026 12:30:23 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
-
-> From: Radu Sabau <radu.sabau@analog.com>
+On 10/23/26 01:06, John Erasmus Mari Geronimo wrote:
+> This series adds support for the Analog Devices MAX30210 I2C
+> temperature sensor.
 > 
-> Add buffered capture via the device's hardware FIFO - the only
-> capture mode this driver supports. Popping the FIFO uses a dedicated
-> command and payload format (FIFO_DATA_CMD, 52 bytes, no checksum),
-> handled directly rather than through adislib's generic burst-read
-> helpers, which assume one fixed-shape read per trigger rather than a
-> variable-count drain loop.
+> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/max30210.pdf
 > 
-> The watermark-met condition is signaled via DEV_NOK on the device's
-> one interrupt pin, which stays asserted (level-triggered) until
-> DIAG_STAT is read and cleared - matching adislib's has_fifo contract.
-> DEV_NOK fires on any DIAG_STAT flag, not just FIFO_THRESH_MET, so the
-> trigger handler checks that specific bit before popping anything.
-> DR_GPIO_MASK stays enabled unconditionally: DR pulses drive the FIFO
-> controller's internal sample enqueue, independent of pin routing.
-> 
-> Watermark is configurable via the standard hwfifo_set_watermark
-> callback and the usual hwfifo_* sysfs attributes.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  drivers/iio/imu/adis16607.c | 349 +++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 346 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
-> index 2dda306d7b54..b1f3667d8ce3 100644
-> --- a/drivers/iio/imu/adis16607.c
-> +++ b/drivers/iio/imu/adis16607.c
+> The device provides a 16-bit temperature output and includes
+> features such as a hardware FIFO, programmable sampling rate,
+> threshold alarms, and interrupt support. These capabilities map
+> naturally to the IIO subsystem, particularly the buffered interface
+> and event framework -- hwmon has no equivalent buffered-capture
+> framework, and its alarm attributes are polled rather than
+> interrupt-driven, so there is no path to supporting the FIFO or the
+> autonomous threshold comparators there.
 
->  /* Self-test registers and masks */
->  #define ADIS16607_REG_SELF_TEST_DATA(x)	((x) + 0x23)
->  #define ADIS16607_SNSR_SELF_TEST_MASK	BIT(6)
-> @@ -86,6 +110,11 @@ struct adis16607 {
->  	const struct adis16607_chip_info *info;
->  	unsigned long clk_freq_mhz;
->  	u64 sample_period_ns;
-> +	u16 fifo_watermark;
-> +	/* Scratch buffer used for FIFO pop operations, see adis16607_fifo_pop() */
-> +	u8 fifo_buf[ADIS16607_BURST_CMD_SIZE + ADIS16607_FIFO_DATA_LEN] __aligned(IIO_DMA_MINALIGN);
-> +	/* IIO buffer for reordered data - sized for max channels */
+Oh, please, do not make up stuff. The hardware monitoring subsystem
+does support interrupts, but it is not mandatory. Sure, most drivers
+don't implement it, but that does not mean it is not supported.
 
-That rather implies you never DMA into it.  If so just move it before
-the fifo_buf and no need to mark it IIO_DMA_MINALIGN.
-I'd also prefer that 64 was sized by maths, not a comment saying
-it is big enough. That may include use of IIO_DECLARE_BUFFER_WITH_TS()
-to ensure the timestamp spacing is there.
+Guenter
 
-
-> +	u8 data[64] __aligned(IIO_DMA_MINALIGN);
->  };
-
-> +/*
-> + * Process a single FIFO sample and push to IIO buffer.
-> + * FIFO data format differs from regular burst - no DIAG_STAT, data starts immediately.
-> + *
-> + * FIFO data layout (52 bytes):
-> + *   Offset 0-3:   ACCEL_X (32-bit)
-> + *   Offset 4-7:   ACCEL_Y (32-bit)
-> + *   Offset 8-11:  ACCEL_Z (32-bit)
-> + *   Offset 12-15: GYRO_X (32-bit)
-> + *   Offset 16-19: GYRO_Y (32-bit)
-> + *   Offset 20-23: GYRO_Z (32-bit)
-> + *   Offset 24-27: DELTVEL_X (32-bit)
-> + *   Offset 28-31: DELTVEL_Y (32-bit)
-> + *   Offset 32-35: DELTVEL_Z (32-bit)
-> + *   Offset 36-39: DELTANG_X (32-bit)
-> + *   Offset 40-43: DELTANG_Y (32-bit)
-> + *   Offset 44-47: DELTANG_Z (32-bit)
-> + *   Offset 48-49: TEMP (16-bit)
-> + *   Offset 50-51: DATA_CNTR (16-bit)
-> + */
-> +static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
-> +				       u8 *fifo_data, s64 timestamp)
-> +{
-> +	struct adis16607 *st = iio_priv(indio_dev);
-> +	u16 msw, lsw;
-> +	s32 val24;
-> +	int bit, offset = 0;
-> +
-> +	memset(st->data, 0, sizeof(st->data));
-> +
-> +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev->masklength) {
-iio_for_each_active_channel()
-
-As sashiko notes, masklength is private.
-
-There are a load of places we need to update to stop accessing these
-directly but please don't add another one.
-
-It's on my list to throw some LLM tokens ago once I get out from
-under review backlog.
-
-https://sashiko.dev/#/patchset/20261023-adis16607-v4-0-a4d541ebfd13%40analog.com
-Check everything else reported.
-
-FWIW there are also some nasty race conditions around active_scan_mask
-being available when the buffer is being torn down. You might
-want to close those off by claiming buffered mode to prevent
-such a transition.
-
-> +		u8 burst_off;
-> +
-> +		/* Skip the soft timestamp channel - it has no burst offset */
-> +		if (bit >= ARRAY_SIZE(adis16607_burst_offsets))
-> +			continue;
-> +
-> +		burst_off = adis16607_burst_offsets[bit];
-> +
-> +		if (bit == ADIS16607_SCAN_TEMP) {
-> +			/* TEMP is 16-bit */
-> +			put_unaligned_be16(get_unaligned_be16(&fifo_data[burst_off]),
-> +					   &st->data[offset]);
-> +			offset += 2;
-> +		} else {
-> +			/* All other channels are 24-bit stored as 32-bit */
-> +			msw = get_unaligned_be16(&fifo_data[burst_off]);
-> +			lsw = get_unaligned_be16(&fifo_data[burst_off + 2]);
-> +			val24 = sign_extend32(((u32)msw << 8) | (lsw >> 8), 23);
-> +			put_unaligned_be32(val24, &st->data[offset]);
-> +			offset += 4;
-> +		}
-> +	}
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, st->data, timestamp);
-Use iio_push_to_buffers_with_ts() as for once in an ADIS driver we actually
-have the size of data.  Note that fixing the whole adis library is something
-that needs doing though I took a look at it on Friday and decided to leave
-it for now!
-
-Jonathan
-
-> +}
