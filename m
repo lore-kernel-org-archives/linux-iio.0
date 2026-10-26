@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793025635;
-	b=Gr8lzUF+rCzb6a1bKaCNJ5xC+51WrRvTl8rMo3DjXKtq79m9hil9BXKAxPamFEtVsFDb
-	 ff7N6pip6RlNMe8QDY0lXpgXYHDrtZK2r/jYgYgpeIGMUPl3VWsHq44LmC8BJwmj+jy3e
-	 RaRn5cJmgPe/Fw1ocSLg/A70f6DYAkNoavVzOJZaJqJg8yhmiYA2jF3LoY5hvSELas6yP
-	 9CqjXq6Kdt53pwkvbuVzLmrskEVXWwSe37I/nw4gbsNb0tl9JJflbGKGAAICx2RYwQxeW
-	 b8iMSM4RxsmRHAF9ZNtpQ1ZSMR/lToIEfmipLnvTCiveGGxRxb3+AXhItd3b/wfL5JA==
+	t=1793026471;
+	b=tUx0m5GBNls+ZEEIPuh+7UKHLYjfPFDVkHG91ASyToYLSiSafrZtFV0prXB1nKdR96X5
+	 wimaFlo5pN44QBP4/JKLObFtsgx31/yHxCQ1lGzB+Fxn6rgVw6+S5XS1NqrJvsSX5iBCo
+	 RVH05gCxjh+WPexRhT94GPp3avReG1JDREr8tbm3Z1TN6sMEwOyiBA2HNbD1JKOFhUz0F
+	 zjI5HYFBnj+e6ouXlKzZXl4hWDSYqVs+l7h9WVavTQb5H4QJttgKqA6MS+lYcnmLxAP78
+	 HSAemPTMhG4M3oLpjB4nGKZjSUvlPZnmctaAZ+4ef4SbX5dYRPIGy8WS7bFQLeMlaeg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793025635;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793026471;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=F5us/NfKXPDNTHhAYC35aaKem6Di7MpGF6aT1zqz7t8=;
-	b=rD+gX1OLFIz/iFvcbKauAqJe+YrqPJ3vMO1nj7hdI/mdZRvJKOMgtuqwxyuZ0y2nnge7
-	 v76sduHkO4TdVZZyhnxg46JC4HIVTgGmd771mePYtRCcjDTKQBcHRLjtz+0CKlDu/xk6H
-	 Esul27zEQz19DYoarw3I2CZLN3lMxNGnslKH6spGOnZlaleDXKZn02g48YAUfNtCZ1hH0
-	 NatxV8IZRfkWlUktoTCP6ZINd1hthSIJ23getZmNg1ODdVx+OkuDJXX9WRjcytF3aZAPp
-	 6b+rgRAqErPJKKIVsdDIlLY9ZvhgkAJSnHdT/aHpDy18elWIonQMhc4Ke9OjOZMGVdg==
+	bh=PPjLH4cKPpt60wqQSwVZpuEbLz9RRFMxTKYQZNlTZ/Y=;
+	b=DsAMgPats5qNpGBoO42TEfKrB9wIPKamdQVNS5IcJiJnulC613D2pu/Ovi4DHfVmZBdR
+	 UNHbqBn6XznFPJAZFWIZJKXRuuTp+wSsLWQ+3u1eKMiU3muL5T8oaB69egEd6VSNo/5F7
+	 4CiYw5vUvoLL/hhhMo/obvAX9E+0QPmBdMTOd0p9rsQBJilfO6KNw8VG1Zj4kWNHc6Etu
+	 hQJ2LnhlsxnAK5JURW/e+I+fl3mYKUtPRnfpago774kYKFvR7DpGsCrtyQY3kd5Y02Syf
+	 5uY8A650/BYRumQakAOgRmcuBEr1zNlHB9+DqjyspOcegUF4OmOs18wlFdKfw+oOSlA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=A0Ni4yu+;
-	arc=none smtp.remote-ip=198.175.65.13
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Qo0MNQoG;
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0781606A31A;
-	Mon, 26 Oct 2026 14:40:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C0781606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6024D606A326;
+	Mon, 26 Oct 2026 14:54:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6024D606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=A0Ni4yu+
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Qo0MNQoG
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793025635; x=1824561635;
+  t=1793026471; x=1824562471;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=6jc8Jbaf9Kdvp5Op6EZFBAdH72w4QRhrxSuuw3RIqFA=;
-  b=A0Ni4yu+4k+lHW19MqYPl3KiDVIOb6ThhtBFKOLZ/d2K1OMYXdLByhbM
-   RoBIyrW9/x4tQ6VkgD5JvBKgxcU46bETDvA9wEIJMK/SrEPg61itn8+mi
-   qGBi031/DwZ2TyuHQxLzWVvhwzy0WtFcbN6z8jZkl0zNghG4ZGAdPo1bE
-   gaRbQCe0XvbqVd3YLtfw0U7l0mpWHOS90JPl8vsAi9bbJHKSxIndpJWl/
-   IJ7kAvrnL1e+GkY22bT/bZ8GOc+eDKJjjXTmljAHaD3MGtxdPej2kqhf3
-   JmU0ANaOcy4956jHKFsAlLnreIUOXJniSYQzPP8+kLeay6uESVHVD1PJ3
+  bh=gwraoF7GukRvcx8UZz9jxSEElzPELFxj9SAkV2Hm/28=;
+  b=Qo0MNQoGF01TqZ1EJ0asJlM8GTENFfN+ajksAI93ZHPp/If2orIwnuYR
+   2xj4Dcww5+FpJuTHyswpeToYcW1X1GYzULEV+wc4l1dOyzHl9gKWFIcr1
+   G8XjoYmCmiYOTyZdcuZdIR5sjMxajerYmUkxwpWYkuoVzXBQs1z3QfzJr
+   Y827csjFt0OHugNxeWARHYR44otlCqXHsti9aXJmNAJI3z9pAcdnds0CK
+   07SLBHv37aoQzOZRfcFBlutSEuUVd7732VOzh52K6IzAZvWKcRBTCogP8
+   bxA8EMt1YzjduMPOhhrUGk12CJGrQSD6UcJnqFCss5KvmlQIcvtmUQPKF
    A==;
-X-CSE-ConnectionGUID: Sa+Lz83GSzqfrkBuhtYLzw==
-X-CSE-MsgGUID: BkdATaWeQG2mV+W8gpFhqg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1571176"
+X-CSE-ConnectionGUID: s/tKDUiNQXmOQWukQpUd0g==
+X-CSE-MsgGUID: oX+d3zTTTHK12etpfus8gQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1730701"
 X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1571176"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 07:40:34 -0700
-X-CSE-ConnectionGUID: UdR2FaPCTb+ZtJWssi7leg==
-X-CSE-MsgGUID: fXaTc6KjS9O2IqiUWYzQ1w==
+   d="scan'208";a="1730701"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 07:54:18 -0700
+X-CSE-ConnectionGUID: xCZGvGX5RiakcqJnLIPDhQ==
+X-CSE-MsgGUID: 6CA1Hb0EQku1j7B3GHbNcg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="4357913"
+   d="scan'208";a="4266229"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 07:40:32 -0700
-Date: Mon, 26 Oct 2026 16:40:29 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 07:54:16 -0700
+Date: Mon, 26 Oct 2026 16:54:13 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -69,11 +69,11 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v4 4/6] iio: test: rescale: compare scales against the
- precision of the output
-Message-ID: <at9mXdRhiM-9TVyg@ashevche-desk.local>
+Subject: Re: [PATCH v4 5/6] iio: core: use kstrtodec64() to parse fixed-point
+ values
+Message-ID: <at9plejNuVxO2V-A@ashevche-desk.local>
 References: <20261026-e-notation-v4-0-a366a6d14d57@analog.com>
- <20261026-e-notation-v4-4-a366a6d14d57@analog.com>
+ <20261026-e-notation-v4-5-a366a6d14d57@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,47 +85,107 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261026-e-notation-v4-4-a366a6d14d57@analog.com>
+In-Reply-To: <20261026-e-notation-v4-5-a366a6d14d57@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 26, 2026 at 08:54:08AM -0300, Rodrigo Alencar via B4 Relay wrote:
+On Mon, Oct 26, 2026 at 08:54:09AM -0300, Rodrigo Alencar via B4 Relay wrote:
+
+> Replace the open-coded __iio_str_to_fixpoint() parser with kstrtodec64(),
+> so sysfs writes of fixed-point values also accept E notation.
 > 
-> The scale tests format the rescaled value with iio_format_value(), which
-> prints at most nano precision, and require the relative error to the
-> expected value to be below 1 ppm. Both strings are parsed back with
-> iio_str_to_fixpoint() at nano precision, so for the small scale cases the
-> check only passes because the expected value, like the formatted one, is
-> truncated to nano. For example, "0.000000033594" is parsed as 33 nano,
-> equal to the formatted "0.000000033", although the actual error is about
-> 1.8%. If the expected value were rounded instead, it would be parsed as
-> 34 nano and the test would fail even though the output is as accurate as
-> the format allows.
+> The fractional part only keeps the sign when the integer part is zero,
+> as before. The dB suffix for scale attributes is now handled by a separate
+> __iio_str_to_fixpoint_units() helper. It strips an optional trailing
+> newline and the "dB" or " dB" suffix before parsing.
 > 
-> Parse both values with kstrtodec64() at a scale of 10, one digit more
-> than the output precision, so the expected value keeps the digits lost
-> when formatting. Scale 10 is the largest that still fits the overflow
-> cases (about 2.1e8) in an s64. Compute the relative error with
-> mul_u64_u64_div_u64(), as the product with 10^6 no longer fits in 64 bits
-> for those cases.
-> 
-> Then allow a relative error up to the relative size of one nano of the
-> expected value, the precision of the formatted output. This is 0 ppm for
-> values of 0.01 and above, so those cases are checked as before, and it
-> accepts the formatting error for the small scale cases.
+> When there is no fractional part (fract_mult == 0, or dec_scale == 0 for
+> 64-bit values), try base-autodetecting kstrtoll() first so hexadecimal
+> and octal input keeps its meaning ("010" is still 8). Fall back to
+> kstrtodec64() on -EINVAL to accept E notation.
+
+> As a side effect, inputs that used to be rejected for integer-only
+> attributes are now accepted. An invalid octal number such as "08" is
+> parsed as decimal 8, and a fractional value such as "1.5" is rounded
+> to 2.
+
+The main question here is: Do we want these side effects?
+And follow up question is: Where is it going to be documented?
+I consider this paragraph is very important for the users.
 
 ...
 
-> +/*
-> + * iio_format_value() prints scales with up to nano precision. Parse values
-> + * with one more digit, so the expected values keep the precision lost there.
-> + * Scale 10 is the largest that fits the overflow test cases in an s64.
->   */
-> +#define IIO_TEST_DEC_SCALE	10
-> +#define IIO_TEST_NANO		10	/* one nano at IIO_TEST_DEC_SCALE */
+> +	/*
+> +	 * Keep hex/octal support for integers. E notation and decimal values
+> +	 * result in -EINVAL from kstrtoll, due to unexpected termination on '.'
 
-I would put them as (9 + 1) to show that actually show that "with one more digit".
-I also don't follow the comment near to the last definition. What does it mean?
+kstrtoll()
+
+> +	 * or 'e'. It falls back to kstrtodec64 for decimal fixed-point numbers
+> +	 * with zero scale.
+> +	 */
+> +	ret = kstrtoll(str, 0, val);
+> +	if (ret == -EINVAL)
+
+> +		ret = kstrtodec64(str, 0, val);
+
+		return kstrtodec64(str, 0, val);
+
+?
+
+> +	return ret;
+
+...
+
+>  int iio_str_to_fixpoint(const char *str, int fract_mult,
+>  			int *integer, int *fract)
+>  {
+> -	return __iio_str_to_fixpoint(str, fract_mult, integer, fract, false);
+> +	s64 dec64;
+> +	int ret;
+> +
+> +	if (fract_mult) {
+> +		/* scale = ffs(fract_mult) = ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
+> +		ret = kstrtodec64(str, ffs(fract_mult), &dec64);
+> +		if (ret)
+> +			return ret;
+> +
+> +		dec64 = div_s64_rem(dec64, fract_mult * 10, fract);
+> +		/* only carry the sign in fract if the integer is zero */
+> +		if (dec64)
+> +			*fract = abs(*fract);
+
+Should we actually switch to UB-free abs() implementation?
+
+> +	} else {
+> +		ret = iio_str_to_s64(str, &dec64);
+> +		if (ret)
+> +			return ret;
+> +
+> +		*fract = 0;
+> +	}
+> +
+> +	if (dec64 > INT_MAX || dec64 < INT_MIN)
+> +		return -ERANGE;
+> +
+> +	*integer = dec64;
+> +
+> +	return 0;
+>  }
+
+...
+
+> +		if (scale_db)
+> +			ret = iio_str_to_fixpoint_units(buf, "dB", fract_mult,
+> +							&integer, &fract);
+
+Can we actually make units to be the last argument? In this case we might join
+two calls together, it also might be beneficial from code generation point of
+view (as the units version calls the basic one at the end).
+
+> +		else
+> +			ret = iio_str_to_fixpoint(buf, fract_mult, &integer,
+> +						  &fract);
 
 -- 
 With Best Regards,
