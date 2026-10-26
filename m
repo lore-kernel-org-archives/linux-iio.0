@@ -1,89 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793020043;
-	b=PO1GNsfW4guAA0/NfF59jgbs4UvreuxVx143CwfLgC+o35Qvy4qejZ54PGPBqwuuMA4a
-	 1c+O8lYz6IO2IIwim4HAk+UOw1mQfgic9551egH4mQzErckDe5bSBzLTemD0FP/6XGxn0
-	 3b77PuZrFaLwGLw4o1t+u4lZRzZtGXUrcl3tv7uyUfvRLb40kN2wL62Fnpf6RIN0VcqKM
-	 nAPgK4gavMP9PUHaOlNJeYGgyWiH/YZI0v+TPU6TjYhrjy+4XiFIg4zkB0kl6dwWt3DJ8
-	 y6leSefWNXh3j345s0EKR1Cp12mTat6AM3nnH15nVxKFyPWdvYuTamuYeAcHbxv3vEA==
+	t=1793024301;
+	b=pDO1Sa0L2IX8lVn4FFZhkeirPwZB2N/YxKr/X322DqD2jmNuXsrqTxnkQM8reziJzgku
+	 OtuO4y1lLjC3DPHMkCA5mMjb6Bml2EdVkZ6O5Z7nHhUcc4EQVaeHmmtW4nJZZhUAd315I
+	 hiMH8lwdfAnKeAnvvEOLBiB0C4DnQ6J5cS8seixB7rr/D2VwdCA+B+nkTyZtkn0e9wESp
+	 bTXwdTO2c1lvy9UkPNfUZ2U4bv7ucSwza6Qp9dqDb13uPoUm0x4nlDbGKJ5VaaDMHF4R3
+	 ioX/uXrS3LnjpufQezyBn5Qso1PlDZx9fmjfiG3BJ+h04pe7eAjJ3O5Hmkff7WYBuPA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793020043;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=SG4q9H8LK6rIAC4M83ckUomTfrQoO3mMpRMQLZ+Aymc=;
-	b=jisfRzOkSAnNFp63uOmFySLBE5YXEgbpOnBpo37hN1DTSfebAWe0A1YkiDtNrvCWs4hK
-	 f08tJ3J9H8t8+fL8+PRwatNvFy8vLy+XM0PDkl1WCu3n303CPv+WqAqkvZvlxGXgktGQI
-	 tRH9Q7OV0EeqWV8X6A4W423hh7ljviLhxVA2taA3+VPIB8yLNHnPXdr4nwsA+MLHN1mgW
-	 AIHIJzxcStX+A32YOaGYhwS/WdFLBazXCJm2z1TVnqEz/9DMzLPkm5i7IG3YxGYvTYssc
-	 H/nXGiMspQED4zQqPrp3Dd8cV9ot7S24FD5WfrL9A9HFa2qIR2jVMni7vOreCzbDtpA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793024301;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=ifM+PXldux5sH2cm3CGnH/RRo/Iq9tlkwFAZTBnx4+Q=;
+	b=jhXk+BY+VPK8K4L5C2sNnMP8aiMBB56817H7rvQ4lXTS/mjJ+CB5O1CFxMjD53T7EAzh
+	 bgF4OToxzozhLZNqTiD5YYo9PMiQpV6Ikd2kc1+GddAfY8tOxuXZ2nlmZ0VckdNxjZgzv
+	 xhRp5KR7FgqolTtcgJFpDIbpBCFTu15yZxqWSXFfeL3uf4IUntOxB75dniTeIoS3OHooX
+	 EbNNGaCW37EZytv3LhrFwY1aFgY9nT6sus9JWySmDOaTpZxvTlMVokCEakwThkU8rf6Bf
+	 qrnw39BmbquUnxC6YdHJkdiWwjhkUhg/743uaNgM6Vh4gpwH79gz1RboQ0iZUdlQuSg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PnIZDaMp;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=arAe2ryG;
+	arc=none smtp.remote-ip=209.85.128.50
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961D9606A31E;
-	Mon, 26 Oct 2026 13:07:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 961D9606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8A63606A321
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 14:18:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A8A63606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PnIZDaMp
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793020042; x=1824556042;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zCyKv0CD3wJJfw6FanjSGtwHVXDqiKBvBOkq6i4gY/I=;
-  b=PnIZDaMpJ5rgk1WkmebwJjtBkxjbwUqw5e77VZ4QGkCqh0eKJb/Fpra8
-   28Dvw4FVGRuLlA2M+RmgAu8V0HTdABziQ2O3FB6upI+N0arKmSvgsdKgi
-   7niBzafdk/8L9tkLl5rsnVW5MtKBtSwIIHukqUKT7f5p4wDDowDTcROXt
-   RB1y3mNmH/px5is37zCazV1mxw/THSn9Q6TLH8R5GDN5Q1KeN9EEECwlB
-   8mECgMHQCZ7JSBuP0iarxOtv/Fdi0Bnifc0WrkgNq7YEKeM9kwEugVVvS
-   bJM6Pr1rqXH/Ty60fTe57YMTRolmb4u29EXWmnrZZQeQkUO46mzHT+jjE
-   w==;
-X-CSE-ConnectionGUID: fix1NFj+SrqZkSSuLYQe/g==
-X-CSE-MsgGUID: 0gmw7Ms4TuKSpBVdY5t73g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1698594"
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1698594"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 06:07:21 -0700
-X-CSE-ConnectionGUID: 9qXtSX/mTvueKUDp0pyATw==
-X-CSE-MsgGUID: uud9tvgQSmSP1xhNYZA5+A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="4318374"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 06:07:17 -0700
-Date: Mon, 26 Oct 2026 15:07:14 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-	Chris Morgan <macromorgan@hotmail.com>, kernel@axis.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH v7 4/7] iio: imu: inv_icm42607: Initialize gyro based on
- chip_info
-Message-ID: <at9Qggd3hyGD1Hp6@ashevche-desk.local>
-References: <20261026-b4-inv_icm42370p-v7-0-222e296ac1e0@axis.com>
- <20261026-b4-inv_icm42370p-v7-4-222e296ac1e0@axis.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=arAe2ryG
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a60f9474c4so11480705e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 07:18:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793024294; x=1793629094; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ifM+PXldux5sH2cm3CGnH/RRo/Iq9tlkwFAZTBnx4+Q=;
+        b=arAe2ryGITQNaEOL6zbSb3LMwQmpaYIjaYHVlzJt+RwVkXz+ibO9s+qLO7YT1Dexse
+         wjEb/ve7fTopNBXX3YVni2GCZ+uWleeRmGhQOxUpH0OpM9W+4VuvjPijH+D66GQeaCKl
+         trLGCt7AqToC4FKcJ5oXvR4QIrkTuGShxtajFOcIIVcNVL0KlAw3RsgRa20lHE7EMgA+
+         pDpSpHcxEMQvzDhCfFJDZ5IP45budIblqKHrLqt9Fj8lrT/GY0hw7SfxT1pBYhc+6BRk
+         wZ1KYLk53bpOQLyS3knUrpi7z2H9z66bVOjWZg97H07dhGu531lOyOGQ571VIaKoWRSY
+         ImOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793024294; x=1793629094;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ifM+PXldux5sH2cm3CGnH/RRo/Iq9tlkwFAZTBnx4+Q=;
+        b=fcLs10w/vYECnMf04YSFBeJxqGzRjUBNXg0MYI82AhbI5aIEun2vfzillYoPruQAy2
+         WbFwypq0vgPudov9D8mVfNf3Vx9PNTs3dWN/begg+2qJimPnKZFQDFAdLoWaxNp17uoY
+         sFACvXJzmIbnpUzeYVJnoXHOFSp3+UVdPK799Dw6M9Ez2b8jNZ0U5rdVeLrktoX9NMEL
+         Bfg+TJTbFuQK8NtlA6Ne0AzHyqai0wTcrRpDvJ7JS0lYO8+4/BqYJBAf9rGwiggmXMeX
+         ZdD1p/x5/x+i7EGC6JRB0N53U9+4lPi3sw3c8o4lHLxx6atK5aTk5dxKbFMRm/V6gkzV
+         vKDw==
+X-Forwarded-Encrypted: i=1; AKwUvBxhF6OgFDdfVUJ099ncmfLHifVjectGkFmgcd10uZxjv9389ceU8YDCqI5QgCEupMgFFSC2tBU+U8Q=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLrarH/1HC6pocfRHHb9tAfgsJvYi6TrOR6pfF77CyVdsi5te9B
+	2VOIVGjbGORD6ktjyXZ4EWm7RhovnX3bnH7KnoOcH5jZ6Az0KM8rdPyyGRn66g==
+X-Gm-Gg: AYBFou18w8iQFGohdQQEA9E0ER4rD05Wqm8klS8o6QDw3wK3m7rTvh10zBX66lS6emb
+	Rq8r61TQLAlBreVIXqmjFvO9N8oKF/IH6jnQFW1nFhtj0J+rEQ95FmOrNMLIvCdvRNirNAmyWhL
+	ALG+wIrpmKiwNdTtajtl89JjBbQKplijrf9RxRxDKxjC0njUbZfM12DkhZAq54iocvb3PxTDXwV
+	kDmDglPUUVvr9ZyRVMCCWleWNgSFBS4GeJ/KF/3Zfc0HcUHdpj5k4NCZ6nUellf4/+kgTCvGNIA
+	knTU23axF99vTKKjgYAn08B5QYTqHgZz6CLpAx1E0MIlSX+/G3Neqehaspt8T19F4s0CNg31iRu
+	ByumxHXkIMkD7E0blpVLcKpc/2cpXPuNpLsem9eOA2X3maW6ITouBbYcI92C9QArpSA3yIuV74x
+	u/YQ/VVU/OmJQGnE/5FczhNQwu8ghZnmQccKNCosLXzOcFiGoGOIZ/Mnaa0pE/QySWHOxPdSuZb
+	RVKP3kQQNZMhLk/DZQvaGZ07sfS3doQz2c9UGD+sJni5qcaEeziEgIwkSWgsC4rWZjd36EwU0gF
+	gqL7oR2aspbuQ/7Nd6CXUSqZ3LBSAqEtu/1Wwe+aNxNjI701ZsWEivI1rCJKnV6S9OUUo4f+ks1
+	lgVCUFucEpZXN+4KRt47hvH1vNxa005xCxXzPs0gIv2cMRFG9x6rTuOEdr0xTame4hxkyMhdvdx
+	DK30XXcpgb42BChKabSu+zMawSsAhehvWd5oLinypoDWeJzzkwt+EId5OmBCzWQowzRJxdN9pVm
+	l56fVznM0s=
+X-Received: by 2002:a05:600c:a318:b0:4a3:5aee:2c25 with SMTP id 5b1f17b1804b1-4a35aee2cfdmr95663085e9.31.1793024293964;
+        Mon, 26 Oct 2026 07:18:13 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a58a0e2sm246428935e9.13.2026.10.26.07.18.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2026 07:18:13 -0700 (PDT)
+Date: Mon, 26 Oct 2026 15:18:11 +0100
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Olivier Louvignes <olivier@mgcrea.io>, Jonathan Cameron
+ <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Paul Cercueil
+ <paul@crapouillou.net>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+Message-ID: <20261026151811.00002233@gmail.com>
+In-Reply-To: <20261026-hungry-masked-anaconda-7fadb6@quoll>
+References: <20261024041357.34346-1-olivier@mgcrea.io>
+	<20261024083809.000026e5@gmail.com>
+	<20261026-hungry-masked-anaconda-7fadb6@quoll>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,93 +109,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261026-b4-inv_icm42370p-v7-4-222e296ac1e0@axis.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 26, 2026 at 12:02:52PM +0100, Kanak Shilledar wrote:
-> Update the chip_info struct with a new `has_gyro` property to support,
-> devices which do not have gyro functionality. This is a precursor for
-> adding support for the Invensense, ICM-42370-P. It is similar to the
-> existing device except it only has accelerometer. Check all operations
-> related to gyro with the boolean. Replace all the implicit comparision
-> checks with explicit to make it easier to follow the code flow.
+On Mon, 26 Oct 2026 11:50:44 +0100
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-...
+> On Sat, Oct 24, 2026 at 08:38:09AM +0200, Joshua Crofts wrote:
+> > On Sat, 24 Oct 2026 06:13:56 +0200
+> > Olivier Louvignes <olivier@mgcrea.io> wrote:
+> >   
+> > > The X1600's SAR ADC has four auxiliary channels and none of the
+> > > touchscreen or battery engines of the JZ47xx ADCs in
+> > > ingenic,adc.yaml, so it gets a binding of its own.
+> > > 
+> > > Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+> > > ---  
+> > 
+> > Please use a cover letter when submitting a patch series.  
+> 
+> It's fine for two patch series. Please do not make it more difficult,
+> than necessary.
 
->  	odr_us = 0;
-> -	if (accel && !oldaccel) {
-> +	if (accel != INV_ICM42607_SENSOR_MODE_OFF &&
-> +		oldaccel == INV_ICM42607_SENSOR_MODE_OFF) {
-
-Broken indentation.
-
->  		sleepval_us = max(sleepval_us, INV_ICM42607_ACCEL_STARTUP_TIME_US);
->  		odr_us = max(odr_us, inv_icm42607_odr_to_period_us(st->conf.accel.odr));
->  	}
-
-> -	if (gyro && !oldgyro) {
-> +	if (gyro != INV_ICM42607_SENSOR_MODE_OFF &&
-> +		oldgyro == INV_ICM42607_SENSOR_MODE_OFF) {
-
-Ditto.
-
->  		sleepval_us = max(sleepval_us, INV_ICM42607_GYRO_STARTUP_TIME_US);
->  		odr_us = max(odr_us, inv_icm42607_odr_to_period_us(st->conf.gyro.odr));
->  		/* Track the earliest we can turn off the gyroscope. */
-
-...
-
-> +	if (st->hw->has_gyro)
-> +		val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, conf->accel.mode) |
-> +		      FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, conf->gyro.mode);
-
-Swap them to make lines shorter
-
-		val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_GYRO_MODE_MASK, conf->gyro.mode) |
-		      FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, conf->accel.mode);
-
-> +	else
-> +		val = FIELD_PREP(INV_ICM42607_PWR_MGMT0_ACCEL_MODE_MASK, conf->accel.mode);
-> +
->  	ret = regmap_write(st->map, INV_ICM42607_REG_PWR_MGMT0, val);
->  	if (ret)
->  		return ret;
-
-...
-
-> +	if (st->hw->has_gyro) {
-> +		val = FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_FS_SEL_MASK, conf->gyro.fs) |
-> +		      FIELD_PREP(INV_ICM42607_GYRO_CONFIG0_ODR_MASK, conf->gyro.odr);
-> +		ret = regmap_write(st->map, INV_ICM42607_REG_GYRO_CONFIG0, val);
-> +		if (ret)
-> +			return ret;
-> +	}
-
-Use same trick.
-
-...
-
-> +	val = FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_FS_SEL_MASK, conf->accel.fs) |
-> +	      FIELD_PREP(INV_ICM42607_ACCEL_CONFIG0_ODR_MASK, conf->accel.odr);
-
-Ditto.
-
-...
-
-> -	ret = inv_icm42607_set_pwr_mgmt0(st, st->conf.gyro.mode,
-> +	ret = inv_icm42607_set_sensor_modes(st, st->conf.gyro.mode,
->  					 st->conf.accel.mode);
-
-Broken indentation.
-
->  	if (ret)
->  		dev_err(dev, "Unable to turn off sensors\n");
+I'm not trying to make it difficult. The cover is usually a good place
+where to describe your motivations for a new driver, plus with a cover
+it's easier to pull via b4 and Sashiko will treat the two patches as
+part of one series, not separately.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Kind regards,
+Joshua Crofts
