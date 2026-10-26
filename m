@@ -1,62 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=199.89.1.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792973736;
-	b=zLTwW+VK/yTGAqS8MDoXv0syCCCZrblPkC5/syQUe5BOAlkDlrABTsRbeUQQYc7Asw7F
-	 RtFUFHEDolkNDoUQ3AumfxU+yzDQEvYusTIC5v1P15Aj1qVqtqORstG+iKy+e5pb5pioZ
-	 Cpji8nArIxeUKde+cFE6Zp3wpRmz5VTk5m51sISK4psWqG4QBKEWUIyw95mCxkZec/gS0
-	 dpVT/3v7aohMV9AIzyOXtcQen1X1Pogj3Pyom4LNGQaKlnBapR1tY9uxH/+tjnPkf/HvP
-	 bKrq3P0Mc8z/oAm3Heu7F4NUSscBVyzJ7EoBAqiH5520J4ixoSgYu0PiV5QpkqWsuLg==
+	t=1792974475;
+	b=WVa/dmKbszKApILFqnbUugB4NnpVpeV1buUSxzZf1sTdMxdGT9vLeAWydMp9dU5V3gav
+	 QOrdNN3f5EeHWh/t2+PMC9xD7V/4UtbdwV5McI4o891vo56JhBN9YVu1/NYa3P/mwhsbV
+	 hS9AvrFbO7Wvx18cT59tix4b/l1GHFn61RzYKyM6NsVh5XM6z06QU/Kj+4iTI/qUTySJx
+	 ExD6qaHk9iNNGO+9t10ctGTcBbIk6u5T6h08XucoW6CxsRLYMtbLfZ35xYQnP6SwQht4V
+	 XVVJpDSsRxsWvQR9VEmz2hYXajDhmncPu+SxMjXG0+ktCh+cjbuBZb2k5102kAgvYgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792973736;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1792974475;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Virus-Scanned:Received:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=4miLNdmTCLRRbyZStSHRrLrP4dgFhOGAixFj2EYVbOs=;
-	b=lNF1tPBG7GpDDQfFPwcnyrajAL3HYdSw1f4l4SxHunLeKDYDT3Oqc7uVHx+f8VIdW46f
-	 xoNYsJIs18adMqiLuT9Aql42MVeAJ40t5px/8UvzOcDIO87scmnZ0knHOBGOoTa6B68Ic
-	 UyQR7cINnmL0uixKBH8rv0u27P/5jCh8PwamM+8BS+d+S0w3KTISrs2a9vl1EzCvvIJwu
-	 gk/86NkN06hezqjzJqyRWv06rYw2AlG5XRXBJBs7Haf3v5Re5SscmAOHwirlNpUK0bf+J
-	 eXnKTirHi6/SyTrbt3mXxbWrsyx5hlqpmdbPF6EQXNF5uN7Xyd75iadKpLaMDu4soZw==
+	bh=UbSOh/IZ6Ef01MAVctP8fMGAQq8qLAkB6lnPM5iAOxk=;
+	b=A7jJJkj+cp6+78AFfTBQe5D0PSxhB3YHIEyHimF7wA+rFl2tPDtiY8pKViLNCFD+75N7
+	 jE3xlXOJ3z+Fht4IupQ7bK76cqL6Enpte6jQZs2M+20nDLDlRfnbcMO27YucCXqCaUHT0
+	 DYRyK+0B3ByaglWLZiyU70OUGJLJ7404Q8GcxYkiWAb03ilOtunUJBgRz0Yi8CeXyJYZ8
+	 trEAcBFdVrwtCsU4KB83B5iIsiAKUm7m5KTCKAA1pkBwFNQ/BpatFX2btgufB5WZ2dyHP
+	 euV+dA4SClTqoYhor14V4/r/wYaZ2jbR8qp0cNuoGBsDryM+eQARRryIE2sXNVkNShg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="TRQ/3KML";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=acm.org;
+	spf=pass smtp.mailfrom=acm.org;
+	dkim=pass header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=y3ZrJh7Q;
+	arc=none smtp.remote-ip=199.89.1.16
+Received: from 013.lax.mailroute.net (013.lax.mailroute.net [199.89.1.16])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2384606A31A;
-	Mon, 26 Oct 2026 00:15:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 936FC606A31A;
+	Mon, 26 Oct 2026 00:27:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 936FC606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=acm.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=acm.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TRQ/3KML
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96AE31F01825;
-	Mon, 26 Oct 2026 00:15:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792973735;
-	bh=4miLNdmTCLRRbyZStSHRrLrP4dgFhOGAixFj2EYVbOs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TRQ/3KML6Rh1/J4tthZlYjCZgRp7rCtxofShMv0RG6GKs8eqlzK5eVD7cwoF5CZWs
-	 XR19KreUETCf7SPTyIbLnVt4eiTkG0fkTE0iT7xZ9TyiIZp5IWwKOuSTn2gHsS3F1u
-	 8HrdOCpnYQqZe2TQck57bO80GLCrAU2ecvusuQgZIedA9CO/guX5XeLrZkfrfoYfVS
-	 ukQa+I/vQEcSDCIwspBR5UEqREld0AwOJeNM56ZUKgaQdJX0k4UgWBQURQai49M9Vc
-	 ZHIJhoZR0We4cIVHd9ft2UY7n5eBrp6V7+VnhgItFNLrWWG8idg5d6MJGh18VZgadV
-	 4UJEUd3JcN8tg==
-Date: Mon, 26 Oct 2026 00:15:27 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v4 8/8] iio: imu: adis16607: Add calibration bias
- support for gyro/accel
-Message-ID: <20261026001527.456f2472@jic23-hlaptop>
-In-Reply-To: <20261023-adis16607-v4-8-a4d541ebfd13@analog.com>
-References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-	<20261023-adis16607-v4-8-a4d541ebfd13@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=acm.org header.i=@acm.org header.a=rsa-sha256 header.s=mr01 header.b=y3ZrJh7Q
+Received: from localhost (localhost [127.0.0.1])
+	by 013.lax.mailroute.net (Postfix) with ESMTP id 4jCZGK6jLfzlfvpM;
+	Mon, 26 Oct 2026 00:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=acm.org; h=
+	content-transfer-encoding:content-type:content-type:in-reply-to
+	:from:from:content-language:references:subject:subject
+	:user-agent:mime-version:date:date:message-id:received:received;
+	 s=mr01; t=1792974470; x=1795566471; bh=UbSOh/IZ6Ef01MAVctP8fMGA
+	Qq8qLAkB6lnPM5iAOxk=; b=y3ZrJh7Qtdi0qYIUutS41Wk5XxP99W/de4X9srBq
+	wyrV3AHi67dxsrGBnKb9Y4S2CpDr27+wYAyc7b7OScoqF8P6gU0nH9BlP5A4PGQc
+	/1kNkvJoVeQSRdiFn8X6l7CP5CxsgcQpJlv70kZbNE93WpM9/Xz4oj0fjJJvVd3X
+	EGUC8t0LrEQNWFwwS4uoGHYN500+5qNmtVXKb4vMHRbutkr5IJgGQDLlGnO8cRV0
+	r3kw3NrDFjNOYN3jFOZnHDUUjNZZ6GUxRHV9ixTZhLJufhBh8z8OgUixWVFVPmXe
+	nKrgfOooFNznTZZHUJEaeFRZsVBqN9GRNyoh1+Utdh+A/w==
+X-Virus-Scanned: by MailRoute
+Received: from 013.lax.mailroute.net ([127.0.0.1])
+ by localhost (013.lax [127.0.0.1]) (mroute_mailscanner, port 10029) with LMTP
+ id tGSHd7LPcoDz; Mon, 26 Oct 2026 00:27:50 +0000 (UTC)
+Received: from [192.168.51.14] (c-24-6-239-25.hsd1.ca.comcast.net [24.6.239.25])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: bvanassche@acm.org)
+	by 013.lax.mailroute.net (Postfix) with ESMTPSA id 4jCZGF2jnfzlfvpK;
+	Mon, 26 Oct 2026 00:27:48 +0000 (UTC)
+Message-ID: <f151a228-30f9-449a-b71e-7e2ead0ae01f@acm.org>
+Date: Sun, 25 Oct 2026 17:27:47 -0700
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -66,95 +70,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on
+ mutex helpers
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, linux-arm-msm@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Marco Elver <elver@google.com>,
+ Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+References: <20261025191510.22261-1-zoone.rupert@gmail.com>
+ <76bbebb4-7337-486d-8f21-a39bcb6dca93@acm.org>
+ <20261025215954.73549810@jic23-hlaptop>
+Content-Language: en-US
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20261025215954.73549810@jic23-hlaptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Fri, 23 Oct 2026 12:30:25 +0300
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
-
-> From: Radu Sabau <radu.sabau@analog.com>
+On 10/25/26 2:59 PM, Jonathan Cameron wrote:
+> I asked that we didn't do this because intent is to follow with
+> remaining fixes to be able to enable this IIO tree wide.
+> I'd rather avoid the churn of piecewise makefile updates if
+> we are going to be there soon.
 > 
-> Add IIO_CHAN_INFO_CALIBBIAS support for the gyroscope and
-> accelerometer axes, backed by the device's per-axis bias registers
-> (XA/YA/ZA_BIAS, XG/YG/ZG_BIAS).
+> Rupesh, if you think that is coming soon then please just make
+> next version of this the first patch in that series.
 > 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-I'd missed the use of scan_index in here.  That seems like very
-fragile coding to me. Moving over to address is going to require
-changes a few patches back.
+> If not I don't mind merging this sooner with the makefile change
+> to ensure this gets used in the meantime.
 
-> +
->  /*
->   * SPI Half-Duplex read operation for ADIS16607.
->   * Protocol:
-> @@ -863,6 +878,7 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
->  			      int *val, int *val2, long info)
->  {
->  	struct adis16607 *st = iio_priv(indio_dev);
-> +	const int idx = chan->scan_index;
+As maintainer it is of course your call how to proceed.
 
-As below. This to me is hurting readability a little.
-Using scan_index for this is a bit fragile anyway as those can
-be changed by people expecting them to only about buffered capture.
-This should be using address and that may well mean you need that
-to become a lookup into an array of multiple register addresses
-needed for a given channel rather than directly to one register as
-currently.
+In case anyone would be interested in working on a patch series that
+annotates all IIO drivers at once, feel free to borrow annotations from
+this kernel branch (entirely untested):
+https://github.com/bvanassche/linux/tree/thread-safety
 
+That branch has lock context annotations for all drivers in the entire
+kernel tree. I'm sending the code from that branch upstream in small
+chunks as time permits.
 
->  	int ret;
->  	u32 tmp;
->  
-> @@ -900,6 +916,16 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
->  		*val = 5000;
->  		return IIO_VAL_INT;
->  
-> +	case IIO_CHAN_INFO_CALIBBIAS: {
-> +		u16 tmp16;
-> +
-> +		ret = adis_read_reg_16(&st->adis, adis16607_calib_bias[idx], &tmp16);
-> +		if (ret)
-> +			return ret;
-> +		*val = sign_extend32(tmp16, 15);
-> +		return IIO_VAL_INT;
-> +	}
-> +
->  	case IIO_CHAN_INFO_SAMP_FREQ:
->  		ret = adis16607_get_freq(st, &tmp);
->  		if (ret)
-> @@ -918,6 +944,7 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
->  			       int val, int val2, long info)
->  {
->  	struct adis16607 *st = iio_priv(indio_dev);
-> +	const int idx = chan->scan_index;
+Thanks,
 
-I'd just go long on the line that uses this or at least push declaring it
-down to the case statement that uses it.
-
->  	u32 tmp;
->  
->  	switch (info) {
-> @@ -925,6 +952,11 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
->  		tmp = val * 1000 + val2 / 1000;
->  		return adis16607_set_freq(st, tmp);
->  
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		if (val < S16_MIN || val > S16_MAX)
-> +			return -EINVAL;
-> +		return adis_write_reg_16(&st->adis, adis16607_calib_bias[idx], val);
-> +
->  	default:
->  		return -EINVAL;
->  	}
-> @@ -934,7 +966,8 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
->  	.type = (_type), \
->  	.modified = 1, \
->  	.channel2 = (_mod), \
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-> +			      BIT(IIO_CHAN_INFO_CALIBBIAS), \
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
->  	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
->  	.address = (_address), \
-> 
-
+Bart.
