@@ -1,97 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.177
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793028563;
-	b=LvVdEapGZawbkDagZuiYqh2ofzf6dz3gEn353imDXByMFe98QKhWLWLLg+QyRbKRjS3f
-	 6s5xNU8NcpNXA7C+kdZTyZaB4fYgWQzaL/YcTXKtwIFrj09CZZOk51behQGpkURiPK7r2
-	 eaHQHISRj8h1ljaAJ4yLyfJZOH94QjpT6CQ+ZZU69MiAT2S0XxXwU0In8qW5Dmksf+UJm
-	 UgAZIOpMXxLT6i6BvLhI1RGW2QAtdjPjLhtVhRHB56OBI5d8V3lbGN1uTtLDJxeWb7WsU
-	 5yShuUddKzOV0yIqvGkM4c6u3q1ml1XKJLnCH9FL3lbe4okvflykwf4UIs2F2s/oTNA==
+	t=1793030018;
+	b=q6YWnmT9cBDdUPdYbb/XKcrQu0hbxaXO/3nLrlXFpQ7OWUx30aVSkvGaHnTNX21bio+l
+	 YCIJVvsWViox0+YHj0vkWNniNzH3wj5AWB3uYEmiF9j90I/hdGo0qEbDuNjJdqo5ngeHr
+	 1QIDNvWBl34xVG82vKJ1B+MyIsX+Ba2FVB1ZtQyXh66J8YVxKB+1v6WNmsItEdFSOoXwc
+	 HL2AGWBOSyTCBjAR0dhf50W36iggGAcrP2RVIYUiEt2IFlWhrzbXoy90IY5itUcpPk1W/
+	 K8hh5nWmHqQgQO6LHxscGinpAnCr68KF2slaKkEx4L1kgEMd/J12HIcZE7GMKGJoRag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793028563;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793030018;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
 	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=8iZubcz038EY8c4oZtKV+g//UmaZbw0VPeAJAfl9gbs=;
-	b=lzqj0/WUFZzudMaRxfNzrae9+jy4/B+MtfccIlcwkTiJ+3TZBkdzidNb7NvV03Xl07A/
-	 kefzDLG0g8DlbwmuqiBLYdLviUmNcrYpUP/3slL9Hfe7f7yMUPrX3vlKsR1yJGAfvr1xE
-	 NpmjGlEli7u2kW4VHbYSmwkNDVgLxh4Q3fsF7qCNKTL0spBpvfWWpugvE+REU9n6XLxw7
-	 kHexV9o6hO5a6AIOOcnD4ABcHvujjnDI9wJkv14ClvGaTFUjK2cwcD08JymfC6KsDdHDm
-	 S1KxWiam/zynl4YIXfabX2tMUKaqGNPynxKtVwts46wERpe8yqQ1zHNOib8lfbL5FNA==
+	bh=u6wrdDfBUAx+lhpOjfgvo/YG0J1lc0DhZKLgshqkArk=;
+	b=rBSGXKqXgixBDEixmjFkjI5kGlxocOP3SBkfjQwj3YyyMbYgN7O+9Z65vW29J0+Axe3g
+	 5gmj0xiPVA42rOwXq1fMWLItJ0OULCP7azWuu3DW15zQ+86U0IvWSdnETyyPROp21v86m
+	 Wa24J/rnSmEGDVX3u6GUrE+K9286SDTn06ZEr9xIARW1zew6OmS5gD2li875jT9CFesSL
+	 SSz0fHZCNPNfvRQ2pV0IBUR+nTiXW5dOW9QkWv/n6lHZQEwlwWCnQffIh5q3tM7/SXXk2
+	 HfTyqDMX9OGI2HY6zTTwq+h20Lee1wLWLE2h+dNwbiT5HbTGMlrWqVUK+HYfm12Wyxw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="n/3EmII+";
-	arc=none smtp.remote-ip=209.85.216.54
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=D2pXuL95;
+	arc=none smtp.remote-ip=209.85.128.177
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27673606A31D
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 15:29:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 27673606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69DDF606A31E
+	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 15:53:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 69DDF606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=n/3EmII+
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3ad787b79ffso1752341a91.1
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 08:29:22 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=D2pXuL95
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-8b0dba37a7fso25637447b3.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 08:53:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793028562; x=1793633362; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1793030017; x=1793634817; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:date:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=8iZubcz038EY8c4oZtKV+g//UmaZbw0VPeAJAfl9gbs=;
-        b=n/3EmII+fJ3KhXyCQp9OEAWpnHIEVyvrQJ1AzXdeKd0KhvvrNiJNZtCH4Gj55qCChy
-         q2DyGFrBEWIZ8NO+qHPrl/AFajFpUQIRdQnIMx9BBZV7oJWloxHlED+nsYrFCkmqqoIf
-         PFX5J+e0NMDoVfhMUi/4b+hA3ss5n3qwKz3J/1JfpswNsbxfbBKmfYEzSa+4e5AZbgWL
-         xtpMqxmQMC0Gh0ZTd7nLGGX0NzBGE+Mmur1OF2t9GnRaxPk0xPdAghfCfB31U9g54r4k
-         9/pN4Da0ifQQvbcjqz2k9bcsAwyNxSh3X2GopNHSIrWhmnfcZ0KTW84YAe/ea33TbZiW
-         3mBw==
+        bh=u6wrdDfBUAx+lhpOjfgvo/YG0J1lc0DhZKLgshqkArk=;
+        b=D2pXuL954F33dcEoQ0l2BBjEirm7xH1311UAnQZlNeVJn15Fno9zyTIfnqI9esHlr0
+         YcAAysF111tjJXZpXdYBWTNy1MIv0MQcziI/tPDlgWYYaa+tpJWzW8e7PtjV5Sv9G/Yu
+         9g/xxILQN8m8h7RCISIIfZNwdGwo0j/a5fT2/Bo75EWcvEgyOsPcDeVR8v2p2JE5P5R6
+         DBb1Oa3FPgzDJQHC1lyc9H2ig2JcZi2vTbsSHqfbTa90BhT8n8NHMwqKO0HJu7wluVLb
+         CMPLd2O8Yf1EAaSsFuKl2Tj8wwzXw4sBArMT2EW6uIaynFdUXi+OFDjwoGYAl3nbILCf
+         yG9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793028562; x=1793633362;
+        d=1e100.net; s=20260707; t=1793030017; x=1793634817;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=8iZubcz038EY8c4oZtKV+g//UmaZbw0VPeAJAfl9gbs=;
-        b=libbfAmW6IX9dh8kGIA7VCeD1P8V5hb3tAL0nlZvn4q0IRb+UJ89saW5ZgnRDUJSlj
-         +OnWdkj26D1FTwUQDdwmjjHOwt1D/jLcRarHYqKwyeprtzdtqj2jrIiFz0mDhy1BmdCS
-         8+v+TljCAFXILKogPJKl6g7/e0tGx/KZqKKz5yl7xQslNUyKvExXcQ3b/sYqB2Shvny7
-         9VbzVuiZETpNFnJnT2CUpRRSbprslMSxWzsdVW4rR/sVfcpmaOhr1l06QCoCSPaaN4pq
-         ark4aDHVsPiHIgS3zkwHASHT1Qq+m51XQesQIBFR9ekznHQWI6/lLzNDYx60JygTR7aL
-         2vNg==
-X-Forwarded-Encrypted: i=1; AKwUvBySexmJEgYJ8pOAZfDiRgWmgmwXyf7CD+WWWly6AZ5+FOmgDUfGW6OvZ4SCN3QY0i4X9aqjXDlvVcE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJf1x67VMnDGrYs4zsIH0EEqjhHP2kr9ULrQDl/9px5uz9vuwuo
-	nYUpk8pv+eQM8TAtNhR6DgcuVQNTQdfo4HaeF1RQrJg94X9vOVKnQNoz
-X-Gm-Gg: AYBFou3iheE8X9jQ1BXSM8MSrDZcQxXtP1SF+6uEFq40rmDku5FH33fOlySoJokxnhQ
-	+OZQDfVkKzbnSkvitQteXQUe18KJOmEQRmshrTAZbtHTx6oOVFrn9lrya9xFR7MlmV6gC4IcAVq
-	KL18b1eY9/5L2p/fWiTJop23z59oKsO802GRBV+JlKv29oCxvX4YSjIFCjRQEq45sR5ekqMIFpa
-	PvbN1xs4SV5uovByIksynGWVGtVv4a26i7sRDj6gG5Vmp9AVfl+/9NYjLfZJZyxPvRK52fNfUV7
-	6bTzfHozzPf1u5kopNgux5J9/Ue1w9d1EDJnxT5kf5U5LPgMCFN7tfp4YjQU/N1hmBjfXP+t+ZQ
-	JQt2F5rhm1osKT4UqULMzb+b80HDUxg0X8zwoX52QQpXQtpVBWpAe76DW0s9zz5SgTgWIkU8YPM
-	fJnTo6J+V82bEg2kU2bCJ/X9rtgN71T1nWqLAxQ+rJbQeZl64WN3GatZ7qLNv7Bju4bJl7YI6pj
-	TLM+jOFc4rHW+74Rfzy1peGZg77yIC1s0K0bGZ/DvV/PqiQz7OihrTQAxDnPTOtcWQpavM+FV8Z
-	82jFh/WL+d5+dWOlQrQZUm7V8dy3RBdgcQfqWDznE+LRU/HrDxk=
-X-Received: by 2002:a17:90b:1c8b:b0:3a8:c0cd:57f3 with SMTP id 98e67ed59e1d1-3adea8966a7mr5554619a91.18.1793028562351;
-        Mon, 26 Oct 2026 08:29:22 -0700 (PDT)
+        bh=u6wrdDfBUAx+lhpOjfgvo/YG0J1lc0DhZKLgshqkArk=;
+        b=o2T2RChZ69tVtwsEuUptwK3NBFlB2wt46915x8+8Xga/xtvyZs+whpKWI8tT7KZ2bw
+         JMomxHzSYMLzDqYlcL1S4TLxwDdi5CHGZ/wqlpPcbneIRAraxlHSFplF62L0+6bMo9bm
+         051/Kk8jr3PX8YmBdNCNkj7l+kUtxhu7Opbk7G4LvnJYCM/lIO9qfXVnbkGaXisuxfsk
+         wgsjc6dLyAmN6vDINdvm7Ttt2ObzUVZ/A+N+qpVAdrKpnPQZL8qnoWBZjndP47DIDKs/
+         2rc4V4CkileL0D7Z68PcxrbJmusaUjHqKGM2Ps/T9qJgGJf45V7uaPaFiJ3lHp3oVhNk
+         O5GA==
+X-Forwarded-Encrypted: i=1; AKwUvBxd2N0r2lrxHD6026kZfjqOLBUJqwxlPg5l5ulrnwZraQXrZ2UXKYjhYClatK/HInoFVZ7B4GmSDXg=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJRSHDXZ0/EYMkIF89mxT7gxgnUbjRiJzAjg481R5zwDmz6T/0q
+	wraHpmWo/A74qKN6hKKvLiavltSiJL1W3w84XyvNOpkNWeQ+9B4M2HA7NtapbQ==
+X-Gm-Gg: AYBFou1NLkbXT2Pn9hPbCSpYsSpuxH8/vReDGVMoy8wyqixqE69R28A/BBKjwdUYn79
+	M1eXxzFRx9ZMBKld00GowUaQYpKtPkOUXmvpcHC6rj1mXaGgNOrZNruXIm9g5OBXdpyeHbBow1V
+	83D2xiTisuO7djSuSUhkshbLlUb7em+j9sVbklmqFC+0VY+D8sb84YWoDv+ZJUid20GkVyDOFBT
+	vJB8yznbTxkorg17+IxJr4FmMn+vCDZfzZHR3RK+dSOPCYpm4ELqInjXjRPg/rc8tO6hynhrIMW
+	QtWUTYWWqpKwpcGPdjxTGUs3f0zNr9fWaDzUZb72wCkyFTZRGotiHCbr3aUZRuOXVsG4DL/o9Ro
+	AhqFpOJvGLMnhuN+FFhV5deJw6V/jEoNWLNlRQSsu6Jm6pUQkj6kfimsbLRA8ujs7YtkchYS6tj
+	f51gYPXwnVzLRH4Zf/03QQ1YspYjSXcuqALm3R8BhPnMtOmm4dYlyt87SaBB4LJ03SAbcZdPplm
+	lVyXU1lpdg3owWTa84OmBdekLwB4aBoXYuhYpTXElYwLLqMbyLNsXHHWOI5SXj2cgitvotlHUY8
+	ESZXSUvnwjVvEAhy9YiHWUhmfbMynD0iJ+ddyAORQBVYP5nleEk=
+X-Received: by 2002:a05:690c:7445:b0:8a6:1205:12e8 with SMTP id 00721157ae682-8b166c1b1bemr49338827b3.44.1793030017363;
+        Mon, 26 Oct 2026 08:53:37 -0700 (PDT)
 Received: from RDEALENC-L01.ad.analog.com (158.95.44.30.netskope-rdns.com. [158.95.44.30])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae403d0d9dsm3332a91.15.2026.10.26.08.29.18
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b166e46a93sm33895977b3.26.2026.10.26.08.53.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 08:29:21 -0700 (PDT)
+        Mon, 26 Oct 2026 08:53:36 -0700 (PDT)
 From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 X-Google-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Date: Mon, 26 Oct 2026 12:29:16 -0300
+Date: Mon, 26 Oct 2026 12:53:28 -0300
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
 	Andrew Morton <akpm@linux-foundation.org>, Jonathan Cameron <jic23@kernel.org>, 
 	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v4 4/6] iio: test: rescale: compare scales against the
- precision of the output
-Message-ID: <r3mtebdkezwd4sfpnqp2e3mo3bjqzzgdyyfcw3h5x6mqp5cskz@4d72r3r2wpkm>
+Subject: Re: [PATCH v4 5/6] iio: core: use kstrtodec64() to parse fixed-point
+ values
+Message-ID: <5ufw5zi4x5rrhs3wcm7kt7k3a2xv2edibbrzoucn3pxr2lddyw@op6eytgbgn2a>
 References: <20261026-e-notation-v4-0-a366a6d14d57@analog.com>
- <20261026-e-notation-v4-4-a366a6d14d57@analog.com>
- <at9mXdRhiM-9TVyg@ashevche-desk.local>
+ <20261026-e-notation-v4-5-a366a6d14d57@analog.com>
+ <at9plejNuVxO2V-A@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,49 +103,114 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <at9mXdRhiM-9TVyg@ashevche-desk.local>
+In-Reply-To: <at9plejNuVxO2V-A@ashevche-desk.local>
 
-On 26/10/26 16:40, Andy Shevchenko wrote:
-> On Mon, Oct 26, 2026 at 08:54:08AM -0300, Rodrigo Alencar via B4 Relay wrote:
+On 26/10/26 16:54, Andy Shevchenko wrote:
+> On Mon, Oct 26, 2026 at 08:54:09AM -0300, Rodrigo Alencar via B4 Relay wrote:
+> 
+> > Replace the open-coded __iio_str_to_fixpoint() parser with kstrtodec64(),
+> > so sysfs writes of fixed-point values also accept E notation.
 > > 
-> > The scale tests format the rescaled value with iio_format_value(), which
-> > prints at most nano precision, and require the relative error to the
-> > expected value to be below 1 ppm. Both strings are parsed back with
-> > iio_str_to_fixpoint() at nano precision, so for the small scale cases the
-> > check only passes because the expected value, like the formatted one, is
-> > truncated to nano. For example, "0.000000033594" is parsed as 33 nano,
-> > equal to the formatted "0.000000033", although the actual error is about
-> > 1.8%. If the expected value were rounded instead, it would be parsed as
-> > 34 nano and the test would fail even though the output is as accurate as
-> > the format allows.
+> > The fractional part only keeps the sign when the integer part is zero,
+> > as before. The dB suffix for scale attributes is now handled by a separate
+> > __iio_str_to_fixpoint_units() helper. It strips an optional trailing
+> > newline and the "dB" or " dB" suffix before parsing.
 > > 
-> > Parse both values with kstrtodec64() at a scale of 10, one digit more
-> > than the output precision, so the expected value keeps the digits lost
-> > when formatting. Scale 10 is the largest that still fits the overflow
-> > cases (about 2.1e8) in an s64. Compute the relative error with
-> > mul_u64_u64_div_u64(), as the product with 10^6 no longer fits in 64 bits
-> > for those cases.
-> > 
-> > Then allow a relative error up to the relative size of one nano of the
-> > expected value, the precision of the formatted output. This is 0 ppm for
-> > values of 0.01 and above, so those cases are checked as before, and it
-> > accepts the formatting error for the small scale cases.
+> > When there is no fractional part (fract_mult == 0, or dec_scale == 0 for
+> > 64-bit values), try base-autodetecting kstrtoll() first so hexadecimal
+> > and octal input keeps its meaning ("010" is still 8). Fall back to
+> > kstrtodec64() on -EINVAL to accept E notation.
+> 
+> > As a side effect, inputs that used to be rejected for integer-only
+> > attributes are now accepted. An invalid octal number such as "08" is
+> > parsed as decimal 8, and a fractional value such as "1.5" is rounded
+> > to 2.
+> 
+> The main question here is: Do we want these side effects?
+> And follow up question is: Where is it going to be documented?
+> I consider this paragraph is very important for the users.
+
+I see that those side effects turn the sysfs interface more robust to user input,
+not an interface change, but indeed a behavior change on edge cases. To answer
+the first question, yes, I would want those...
+
+Userspace can do floating point math on physical values and scales and write the
+result to raw integer attributes as is. Rounding to nearest acceptable values is
+something that drivers often do themselves.
+
+I am not really concerned about the invalid octal case input.
+
+Also, no valid input being used so far is being invalidated with this.
+
+As for the follow up question, I can add some details to iio_str_to_fixpoint() doc
+header, which is the exported symbol here.
+
 > 
 > ...
 > 
-> > +/*
-> > + * iio_format_value() prints scales with up to nano precision. Parse values
-> > + * with one more digit, so the expected values keep the precision lost there.
-> > + * Scale 10 is the largest that fits the overflow test cases in an s64.
-> >   */
-> > +#define IIO_TEST_DEC_SCALE	10
-> > +#define IIO_TEST_NANO		10	/* one nano at IIO_TEST_DEC_SCALE */
+> > +	/*
+> > +	 * Keep hex/octal support for integers. E notation and decimal values
+> > +	 * result in -EINVAL from kstrtoll, due to unexpected termination on '.'
 > 
-> I would put them as (9 + 1) to show that actually show that "with one more digit".
-> I also don't follow the comment near to the last definition. What does it mean?
+> kstrtoll()
+> 
+> > +	 * or 'e'. It falls back to kstrtodec64 for decimal fixed-point numbers
+> > +	 * with zero scale.
+> > +	 */
+> > +	ret = kstrtoll(str, 0, val);
+> > +	if (ret == -EINVAL)
+> 
+> > +		ret = kstrtodec64(str, 0, val);
+> 
+> 		return kstrtodec64(str, 0, val);
+> 
+> ?
+> 
+> > +	return ret;
+> 
+> ...
+> 
+> >  int iio_str_to_fixpoint(const char *str, int fract_mult,
+> >  			int *integer, int *fract)
+> >  {
+> > -	return __iio_str_to_fixpoint(str, fract_mult, integer, fract, false);
+> > +	s64 dec64;
+> > +	int ret;
+> > +
+> > +	if (fract_mult) {
+> > +		/* scale = ffs(fract_mult) = ffs(10^n) = ffs(2^n * 5^n) = n + 1 */
+> > +		ret = kstrtodec64(str, ffs(fract_mult), &dec64);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		dec64 = div_s64_rem(dec64, fract_mult * 10, fract);
+> > +		/* only carry the sign in fract if the integer is zero */
+> > +		if (dec64)
+> > +			*fract = abs(*fract);
+> 
+> Should we actually switch to UB-free abs() implementation?
 
-With decimal scale of 10, a unit is 10^-10, 10 units is 10^-9 = NANO, which is
-the scale used in iio_format_value().
+abs(fract) here is always less than 10^9 (largest power of 10 that fits 32-bits),
+I'd say that this is not a concern. 
+
+> 
+> > +	} else {
+> > +		ret = iio_str_to_s64(str, &dec64);
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		*fract = 0;
+> > +	}
+> > +
+> > +	if (dec64 > INT_MAX || dec64 < INT_MIN)
+> > +		return -ERANGE;
+> > +
+> > +	*integer = dec64;
+> > +
+> > +	return 0;
+> >  }
+
+...
 
 -- 
 Kind regards,
