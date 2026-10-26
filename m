@@ -1,100 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793011124;
-	b=lsdWLDjcEhX3sleNPI5WqjZpZOZ7odVW3EnYaF1wFwmsKA363GfvhjUXA1Tzg73ZExjG
-	 llgEOlDnM9C0gnb8UHrnvyf06XVS323VUfCbscP+JulrSBqUHaZkM7b8aDIRij8H5gzA8
-	 bi6s0HNdRf/qi+AZNFsn5NDFgDUMdQ33q/SXzak/cEx6jC04VIDtpR/Vya/+dQB+SiBLg
-	 uGtjsEhus0I7BS8jjSV6Z+wHZNPDPAJsnI/y3aLI28d8SzbsvD4+4EDACeEhaHTFoIiFK
-	 HxZ51JR0n3I4GMGQReWsRidVxM1RxWmynRQ2mIjafIUDQLb442KFRI/X/oK9/6BfvDQ==
+	t=1793011229;
+	b=BvDCqCdeKN8N6URYJ+As0F6P6P0QVK8qm6kWE+dC/StCQsG06TuRnpZvaWdbUR8e94KW
+	 8jzyWrghUztTZCGdkNqecrVPL88hMukDgSYtC/E6QNcmp9toR3V/z+TH3VqUTIMQx+wrQ
+	 R1kEXkw5HPBfi1LoH+xfF8CfPmCnD2Hg/3u7Goh4c5pSkoCXjigUR+VqJ9/dHdTKf9eNm
+	 uM7x2lEqUXTllOuqJOVQcJyE2Db9tYbNS4oyJVaSELghXZjHt/p1q7XXDQ6arbnPzYZms
+	 Ae4o94gfM0V9p2aj9vkaogqyv/ieNvcJs7bf+x4yryQh/08qIOeDyVp3vMxb30gFNtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793011124;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=skVw1yfqLZXOPzWoETXOkA5tQYujR3wIhQszB1NNCeM=;
-	b=sw7RTrU/hagrFugrI1MWt6olAk1tcHASFI0H32cv6e2iiJcEoQTQWwPwqJGWtfmW3SWO
-	 RSTfnjZKWIjBQgJ+cuIOm0UbhAFoAbCYMIUo+IV9YGlialYwzAYy9ELKkocVT82l5chFV
-	 xRwliiQtRuGZj6gcDleFe+5t+aUBkFkjWoy+sVNQj5hO7cJzA/xJVvluOGPuzPkt5CEPT
-	 gZnJqTwn3lxjTy5CkdEwuefaOGioBtxfsnrTXOBhCc6FFjrkIXeQpZBmVtUm+MUUvK1js
-	 hYcqITMPuTUN8Vhlm3Pb3NqtGFZZkpFr+K0jsN0c890rOZ4HAnW6NQBV2bWSrG5EkFA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793011229;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=cV0613HkIy6oDcHR5pHciUveYweuUKAGb8FXSxW3Ddk=;
+	b=UCfXo7TPsovEsjSBdTI5rH8FdWi/WFFYkH6of3r7u8JpgxzJQ1bRKqYY+ZMQNEJNmpkL
+	 7cBCx0NIQEng3iSPIjnJWVhMQ0lbYSkW81INvrfrQIkzlOkFIgZwQAjFr04TjmJrIseb+
+	 AH97x4Wrh4KMveFaGxWVNUnS965QcaIE+3ysZcDiGJw7xLkqBfy7hCF4pE2gN1EM7AMh4
+	 yHtRPZKqMYQfHTndULR16t9CdUx7jNMyL4A181NsYRCKQq+Mcrm9OBgrStty8tA3ld1Z4
+	 kamk5GW2o1hABEHwGaN4eKEKNik3utKtRRtB7Q2SH4ZEaglyqvgeNZcBQPPUfZJ7H2A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UltD07cl;
-	arc=none smtp.remote-ip=209.85.128.41
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OlxKvaFx;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F25E8606A31D
-	for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 10:38:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F25E8606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033DE606A31A;
+	Mon, 26 Oct 2026 10:40:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 033DE606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UltD07cl
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a35a60499eso14789605e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 26 Oct 2026 03:38:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793011122; x=1793615922; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=skVw1yfqLZXOPzWoETXOkA5tQYujR3wIhQszB1NNCeM=;
-        b=UltD07clBw2g+Y1aJYem1Dl1rIWB1uh8fp7BUdxaZ4uc5gMQGC1HSwdgOUYeOP8/dx
-         2TkThOJk1VP9OMA2ajX02tpdaLLAa5XG2w8XHnfR99TLeHIhpp4CUSsvJFI/9J5IGG7c
-         pGzoT7+hbDmAEe+Lj0blTQX1cy/K3pYIgAmUvAI6NR06P+hLyHXNoYC4EEOjfsP4PddJ
-         tykQqtvjlvbunzbk6J5SlUFpbGUQcZwwcJDkjq9SfqJRVTEvOT2Jy/gP/WwtYNTUMPH/
-         6Ls8CKv69hJpKI0qEtMEemKuUne4ij183SbEp3ZiQq9ERIHvQ8aSHt7vps2ehiKxt4rM
-         jK8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793011122; x=1793615922;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=skVw1yfqLZXOPzWoETXOkA5tQYujR3wIhQszB1NNCeM=;
-        b=tBVld2iyXpSVjDVce65jGfc17hAluh01rJSFF91z5t8I4vW7gePp8SQB4qNPGJniYx
-         oFpOVOnZBne9F4tcxN/Sw4R1B0v6eV1mJubv/j1zv6AWzdJcPQiae2o4pUkAyBObzDRp
-         QWPM44QXwXW9HNskMPV7L95gCbdPWG9e569/ewppgBNDixnNubBXPYQoufSoF4u0BdqL
-         pG4Aw78WWDra22YlVhcbINpRG5qCxSRUPle3ujUgaFMl2y/bmEVg0g8fdMS2nKjipCmy
-         xev/kvay9w3cmbMocW4eYvcyPmNJVJcmLRQy5RJjjDRnYIY9ABKZEODz3ZRrkyMAO+2L
-         65Fg==
-X-Forwarded-Encrypted: i=1; AKwUvByE2iQP+uW5dfB1xZetDVRShe7cfNDjPa8X2Qr9iXAxlpAZ/ga5OvHJ5GBkwZKpRLnNJ2xji+WIHQE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLyw6SKiWppExb/lOwBEkk8uYVEHa1AxIcjWuN20qTaw/ZVOcc3
-	nIKRHA00TrWGKQ0a42TXO+++eM1VeohHMA7t/xhmUGdg59Jg1EkYM0YN
-X-Gm-Gg: AYBFou36KqXh5wfEthtoYocL+ftvLtnUYe/cZ17yxJVZegRSSv+R3E/lkcD8IPC7k3K
-	RJ2wEWRvyGPjrs+1mHcLB/6TbHxM9296VdydRMBNQNowFYrOWlYaCJsKJw8HXM1vxcqUgJ0GkKQ
-	deyvlmyTA3IUvuStLz6zScLQrdNZCIVTidyexQnMYrdSq7BQVibofFYlRvF6/YItvoufNo221Q1
-	/WHZiXoBcSL9wNU26StwmlDpuLbrUmmgZDJ55P9oyoPrttqrfY/9ic06yfgvQT/+qXxfrZwotaI
-	eSl3XQmrmBvl0/343r0to4dFu60PiO/nQ4HQ4mGZp2DjZm5cdU43QvsLKJO8btyqVcG0shYLcl/
-	zf9YCyJGM44UPK3womMv3Tx6bfHgR7mn6oUlfM/t3y2WjxGEQB/8YZwvjpyfvAloRrHgxSXWEk5
-	5q1v8WSXHvhdQ/9qvu7qGT6D9iVj9Gj8+VEMpwmMR82J4tGGXHviRpEaaMsRiWkhLgkB6AHEm6A
-	Em/Hr1PTSkcoTE8QHQLhPZI4qcaZJaZ5uC0OmZkKNlJBuKoZAubKs7yeVOIwExQGw358zgn5MW2
-	nXOTpbilS0RtCFcN8JGkbJw4GwpNLXPTViFHenExNdlrbOx4bOwjHRTcHlgW4jDtk4RHCFff7WH
-	vOsI0tOFA5TAVSQlXFgcaRa3IZ4dphXjAhoPxsfFk2QiVVqrYC4vbIyTjz3Ie0Elr/7Q+/aB21L
-	X/vcwf3q5cyD5U7NOjDpeYW6peqSbSVAnxlIxNMFxMtHsA4RePyB74vRvV4Rl9wA==
-X-Received: by 2002:a05:600c:4f56:b0:4a5:a5ca:de1d with SMTP id 5b1f17b1804b1-4a5a5cae166mr78474005e9.30.1793011122095;
-        Mon, 26 Oct 2026 03:38:42 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a58a293sm184743375e9.12.2026.10.26.03.38.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 03:38:41 -0700 (PDT)
-Date: Mon, 26 Oct 2026 11:38:31 +0100
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: proximity: sx9360: keep the IRQ balanced across
- suspend and resume
-Message-ID: <20261026113831.00007f06@gmail.com>
-In-Reply-To: <20261026100450.17023-1-kapoorarnav43@gmail.com>
-References: <20261026100450.17023-1-kapoorarnav43@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OlxKvaFx
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793011228; x=1824547228;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0/Q8KSTo0adxm5V8+rvOuCbruYkK+f5oqI4EGetOZUs=;
+  b=OlxKvaFxaseF7IbyPAACeHlZln3IUETOIKKYPxuF5CfSh3Pw+WQV+eU5
+   1FjgRiGQ8tUfJwmEl4JETDjNg2Uxx8NLwVhtfx2Xz3kx3PeZ+0bOY6Jhp
+   82smqGvJvLQOflV/643Pqecr69/lsVSzpMMF18A7wBBCEsbl7ZHGFIK6O
+   a933mFZCszCF2JdmKg9h7jodrDsszN7BkKAUREFRnWJGKFNs+SPORWh5I
+   /zhzu4bgPuEu0kYAYrP/gLwhXxD03W0Vpl2R+yxhiaOInRSMBQYfC8i3S
+   GUTgTAa2y+FY9qCa/KTdPVHOiBFsFKqeUKXfzkmyiIR6mVKadkXWRKOVP
+   g==;
+X-CSE-ConnectionGUID: yOm/syLARwOOhgEkmkfsxA==
+X-CSE-MsgGUID: PCwhZI6tSaWNuXh3PMwg4Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1564747"
+X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
+   d="scan'208";a="1564747"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:40:27 -0700
+X-CSE-ConnectionGUID: uynkbYzyQsm+WZ1I78OQRA==
+X-CSE-MsgGUID: 2U+XNF39ROSidvrT8TCMtA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
+   d="scan'208";a="6089682"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:40:23 -0700
+Date: Mon, 26 Oct 2026 12:40:20 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Prabhakar <prabhakar.csengg@gmail.com>,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Prabhakar <prabhakar.csengg+renesas@gmail.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v3 8/8] iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
+Message-ID: <at8uFFHk7DHH9e1l@ashevche-desk.local>
+References: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20261023175919.160103-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <atyKo0pTYZyt5XJc@ashevche-desk.local>
+ <CAMuHMdV8Q9UKrpoZuZfDUutrG=bOwcNWLnht1bufv0YVXJPNDw@mail.gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,32 +97,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdV8Q9UKrpoZuZfDUutrG=bOwcNWLnht1bufv0YVXJPNDw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 26 Oct 2026 15:34:47 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Mon, Oct 26, 2026 at 11:14:53AM +0100, Geert Uytterhoeven wrote:
+> On Sat, 24 Oct 2026 at 12:38, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> > On Fri, Oct 23, 2026 at 06:59:19PM +0100, Prabhakar wrote:
 
-> sx9360_suspend() disables the interrupt first and returns with it still
-> disabled if a register access fails. Resume isn't called after a failed
-> suspend, so the interrupt is never enabled again. sx9360_resume() also
-> returns without enabling it on error. Without an interrupt line,
-> client->irq is 0 and both callbacks act on IRQ 0, which the driver
-> doesn't own.
+...
+
+> > > +static int rzt2h_adc_write_scale(struct iio_dev *indio_dev,
+> > > +                              struct iio_chan_spec const *chan,
+> > > +                              int val, int val2)
+> > > +{
+> > > +     struct rzt2h_adc *adc = iio_priv(indio_dev);
+> > > +     u64 req_scale, scale;
+> > > +     unsigned int i;
+> > > +
+> > > +     if (!(adc->chip_info->features & RZT2H_ADC_FEATURE_RES_SELECT))
+> > > +             return -EINVAL;
+> > > +
+> > > +     req_scale = mul_u32_u32(val, NANO) + val2;
+> >
+> > But what's wrong with the simple 1ULL * val * NANO?
 > 
-> Disable the interrupt only once the device is asleep, always enable it
-> in resume, and skip both when there is no interrupt.
+> IMO that looks like a useless multiplication, which will be removed
+> again in some future "cleanup"...
 > 
-> Fixes: 1cdb4c47f7f5 ("iio:proximity:sx9360: Add sx9360 support")
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-> ---
-> I'm sending the same fix for sx9310, sx9324 and sx9360 as separate
-> patches, as the Fixes tags differ.
+> There is a reason the mul_u32_u32() helper exists...
 
-Shame you didn't send the patches as a series with a cover letter
-given it's the same logical change and that it concerns the sx93xx
-series.
+I don't see that. The 9e3d6223d209 ("math64, timers: Fix 32bit
+mul_u64_u32_shr() and friends") tells a different story.
+
+> > > +     for (i = 0; i < chan->num_ext_scan_type; i++) {
+> > > +             scale = mul_u32_u32(RZT2H_ADC_VREF_mV, NANO) >>
+> >
+> > Similar Q.
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
