@@ -1,93 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793011229;
-	b=BvDCqCdeKN8N6URYJ+As0F6P6P0QVK8qm6kWE+dC/StCQsG06TuRnpZvaWdbUR8e94KW
-	 8jzyWrghUztTZCGdkNqecrVPL88hMukDgSYtC/E6QNcmp9toR3V/z+TH3VqUTIMQx+wrQ
-	 R1kEXkw5HPBfi1LoH+xfF8CfPmCnD2Hg/3u7Goh4c5pSkoCXjigUR+VqJ9/dHdTKf9eNm
-	 uM7x2lEqUXTllOuqJOVQcJyE2Db9tYbNS4oyJVaSELghXZjHt/p1q7XXDQ6arbnPzYZms
-	 Ae4o94gfM0V9p2aj9vkaogqyv/ieNvcJs7bf+x4yryQh/08qIOeDyVp3vMxb30gFNtQ==
+	t=1793011319;
+	b=YPUgeLGGCx+ZxCmepEhX8L2tevtWyBn4FIw7XMhCLYG0gtdZwhMKqldG0y91Zwz05Y6n
+	 mOPDoIEShQDIxb2MJGPOCSzyTfxMDDgzM/QZ8X50KI2ZCPvKRGWIZ9ZOLqFJPavvGdquX
+	 idlJlvKrs43dPLvyY84LGk2lqDi709OSeWYPeM7ILCEMWODjg74Dg+k/G5nt7zkyOGH/W
+	 No2TBrXjwhCi/CEG5BdQOZOBSaWXFdTvVluAwm9lFIP0KygSy8vWB8cYG6I0I8xprZybw
+	 AbABuEzK7cDfcxUvn5b7pCFUdv7hEdl5JwytuMnysADkkSDCN5SQTZCWhZ1wC5yMsbA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793011229;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793011319;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=cV0613HkIy6oDcHR5pHciUveYweuUKAGb8FXSxW3Ddk=;
-	b=UCfXo7TPsovEsjSBdTI5rH8FdWi/WFFYkH6of3r7u8JpgxzJQ1bRKqYY+ZMQNEJNmpkL
-	 7cBCx0NIQEng3iSPIjnJWVhMQ0lbYSkW81INvrfrQIkzlOkFIgZwQAjFr04TjmJrIseb+
-	 AH97x4Wrh4KMveFaGxWVNUnS965QcaIE+3ysZcDiGJw7xLkqBfy7hCF4pE2gN1EM7AMh4
-	 yHtRPZKqMYQfHTndULR16t9CdUx7jNMyL4A181NsYRCKQq+Mcrm9OBgrStty8tA3ld1Z4
-	 kamk5GW2o1hABEHwGaN4eKEKNik3utKtRRtB7Q2SH4ZEaglyqvgeNZcBQPPUfZJ7H2A==
+	bh=JWu1tuX4kW1Cjp6C6Rivubv9hwm+8cTWeHursPE9SlE=;
+	b=Bs/sN3FBlSAoOSsdEM6Gb5q4CS3aGA8RoY9N9WR4QAFlu0zMl+foHPqhN1EdRf8ymE7v
+	 AClfE37b3fs4S678wSbGo4gFzA3Fsjzf3NuiGakGzel3U/jzQ15I1o/qb5atnv/lDDXAM
+	 u9KkwVc0loP0cRO+KCxu1UaC1iRD2Uza5ICWk4Rzp5btfXjaDgj0uEKfuQv0hhH6/qU5N
+	 lT3ClMi7EzFAiTRdwOZwWPnGr6weZen6BEc1CGL4YRAQLvnKKoMZ3OjpMxOIwnYCDZvu4
+	 XSCpBIlNgXMoK9q5tXQLzrmFznyjGKlAFSajMttqB6qET6eqwNahkAusEnLqFgTtcRw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OlxKvaFx;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hsRa2Kr0;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033DE606A31A;
-	Mon, 26 Oct 2026 10:40:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 033DE606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA249606A31E;
+	Mon, 26 Oct 2026 10:41:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA249606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OlxKvaFx
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hsRa2Kr0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793011228; x=1824547228;
+  t=1793011318; x=1824547318;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=0/Q8KSTo0adxm5V8+rvOuCbruYkK+f5oqI4EGetOZUs=;
-  b=OlxKvaFxaseF7IbyPAACeHlZln3IUETOIKKYPxuF5CfSh3Pw+WQV+eU5
-   1FjgRiGQ8tUfJwmEl4JETDjNg2Uxx8NLwVhtfx2Xz3kx3PeZ+0bOY6Jhp
-   82smqGvJvLQOflV/643Pqecr69/lsVSzpMMF18A7wBBCEsbl7ZHGFIK6O
-   a933mFZCszCF2JdmKg9h7jodrDsszN7BkKAUREFRnWJGKFNs+SPORWh5I
-   /zhzu4bgPuEu0kYAYrP/gLwhXxD03W0Vpl2R+yxhiaOInRSMBQYfC8i3S
-   GUTgTAa2y+FY9qCa/KTdPVHOiBFsFKqeUKXfzkmyiIR6mVKadkXWRKOVP
-   g==;
-X-CSE-ConnectionGUID: yOm/syLARwOOhgEkmkfsxA==
-X-CSE-MsgGUID: PCwhZI6tSaWNuXh3PMwg4Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1564747"
+  bh=WM6zGa0/xkVzrcbn0JKH6wSyOf1elLj03d05n3GDUnQ=;
+  b=hsRa2Kr076ufr9aEnceh+FbDLCcEJbMgCFRXXSuN8B7YC6HjKwi1Nii0
+   7E72qOYACHwl5RYXAUoWQ5OCrsKwbivdSxCaXzvt5gbB5YXnF1ab51LCF
+   cKXvbYcNrT2420wSKK7YU3STnmpOsWmOGMq4Wy6nEzr6Ye7LhsDjGJ1If
+   gkH5nb2HrypqoF2jfLaIa6no+VGtdzjO4kjlUb4SJriwHxItFi4LAkqLE
+   0x5W0iu0gm+MLwdQunF/JjE7YLfYFkC5nq0JTVL8BLqkhwO6nbN4i4anD
+   i49L53S8N+fZmgL/vH0cKInAleUy35aSRWZzfkk88Nxzm6A4rOHcrZ9M8
+   w==;
+X-CSE-ConnectionGUID: 92u8fOx2TJKn/cBNEl0KeA==
+X-CSE-MsgGUID: RJQuKep1SRuNw+18jmH1lQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11946"; a="1559140"
 X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="1564747"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:40:27 -0700
-X-CSE-ConnectionGUID: uynkbYzyQsm+WZ1I78OQRA==
-X-CSE-MsgGUID: 2U+XNF39ROSidvrT8TCMtA==
+   d="scan'208";a="1559140"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:41:57 -0700
+X-CSE-ConnectionGUID: VChWZLwXRQetuC2astqSeA==
+X-CSE-MsgGUID: fLha9bd9QJuJiLdFzuQgxQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,179,1787036400"; 
-   d="scan'208";a="6089682"
+   d="scan'208";a="4134251"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.93])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:40:23 -0700
-Date: Mon, 26 Oct 2026 12:40:20 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2026 03:41:56 -0700
+Date: Mon, 26 Oct 2026 12:41:53 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Prabhakar <prabhakar.csengg@gmail.com>,
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>,
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Prabhakar <prabhakar.csengg+renesas@gmail.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v3 8/8] iio: adc: rzt2h: Add support for RZ/V2H(P) SoC
-Message-ID: <at8uFFHk7DHH9e1l@ashevche-desk.local>
-References: <20261023175919.160103-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20261023175919.160103-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <atyKo0pTYZyt5XJc@ashevche-desk.local>
- <CAMuHMdV8Q9UKrpoZuZfDUutrG=bOwcNWLnht1bufv0YVXJPNDw@mail.gmail.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: sx9310: report a hysteresis of 0 when it
+ is disabled
+Message-ID: <at8ucTXC_VYqdVON@ashevche-desk.local>
+References: <20261026100041.16018-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -99,44 +85,33 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdV8Q9UKrpoZuZfDUutrG=bOwcNWLnht1bufv0YVXJPNDw@mail.gmail.com>
+In-Reply-To: <20261026100041.16018-1-kapoorarnav43@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 26, 2026 at 11:14:53AM +0100, Geert Uytterhoeven wrote:
-> On Sat, 24 Oct 2026 at 12:38, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Fri, Oct 23, 2026 at 06:59:19PM +0100, Prabhakar wrote:
+On Mon, Oct 26, 2026 at 03:30:32PM +0530, Arnav Kapoor wrote:
+> sx9310_read_hysteresis() turns a PROXHYST value of 0 (no hysteresis)
+> into a shift of 0 and reports the full threshold, which writing back
+> then usually fails with -EINVAL. Report 0, as sx9324 and sx9360 do.
 
 ...
 
-> > > +static int rzt2h_adc_write_scale(struct iio_dev *indio_dev,
-> > > +                              struct iio_chan_spec const *chan,
-> > > +                              int val, int val2)
-> > > +{
-> > > +     struct rzt2h_adc *adc = iio_priv(indio_dev);
-> > > +     u64 req_scale, scale;
-> > > +     unsigned int i;
-> > > +
-> > > +     if (!(adc->chip_info->features & RZT2H_ADC_FEATURE_RES_SELECT))
-> > > +             return -EINVAL;
-> > > +
-> > > +     req_scale = mul_u32_u32(val, NANO) + val2;
-> >
-> > But what's wrong with the simple 1ULL * val * NANO?
-> 
-> IMO that looks like a useless multiplication, which will be removed
-> again in some future "cleanup"...
-> 
-> There is a reason the mul_u32_u32() helper exists...
+>  	regval = FIELD_GET(SX9310_REG_PROX_CTRL10_HYST_MASK, regval);
+>  	if (!regval)
+> -		regval = 5;
+> -
+> -	/* regval is at most 5 */
+> -	*val = pthresh >> (5 - regval);
+> +		*val = 0;
+> +	else
+> +		*val = pthresh >> (5 - regval);
 
-I don't see that. The 9e3d6223d209 ("math64, timers: Fix 32bit
-mul_u64_u32_shr() and friends") tells a different story.
+While at it, invert the conditional.
 
-> > > +     for (i = 0; i < chan->num_ext_scan_type; i++) {
-> > > +             scale = mul_u32_u32(RZT2H_ADC_VREF_mV, NANO) >>
-> >
-> > Similar Q.
+	if (regval)
+		*val = pthresh >> (5 - regval);
+	else
+		*val = 0;
 
 -- 
 With Best Regards,
