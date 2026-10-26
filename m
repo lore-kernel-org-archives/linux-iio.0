@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792973501;
-	b=VV3NxFkb7lOeviuGKkXzFQYvJ591L0HLgAezPEe5iaAS74tqE/efSqHts4oNjZoq0Da8
-	 m3nzP7akxpmx6TJLhLTjckzitfqCh6zBbPRmmloQfLpntAgSCLxjLnKH4w6rb+a1tlthG
-	 lByr5+aqpbt92+7m/oPbSDBvv8aoOVivvIIRtUr2/OOsKYhhm07xin2fNyTW429dzxF2F
-	 qDd2Y7mG4RE9wWqaXhqRYoKO2RixCd3acozPe+qACJ9wMisF6nw8y4M5x7DdIOnumLKDC
-	 vKY+IQCdisF6sr0OSr3qS/m9eQHIWatrzn+9NvwyYqKfq0O9A5VVmd5+m8OdyTH7zkg==
+	t=1792973736;
+	b=zLTwW+VK/yTGAqS8MDoXv0syCCCZrblPkC5/syQUe5BOAlkDlrABTsRbeUQQYc7Asw7F
+	 RtFUFHEDolkNDoUQ3AumfxU+yzDQEvYusTIC5v1P15Aj1qVqtqORstG+iKy+e5pb5pioZ
+	 Cpji8nArIxeUKde+cFE6Zp3wpRmz5VTk5m51sISK4psWqG4QBKEWUIyw95mCxkZec/gS0
+	 dpVT/3v7aohMV9AIzyOXtcQen1X1Pogj3Pyom4LNGQaKlnBapR1tY9uxH/+tjnPkf/HvP
+	 bKrq3P0Mc8z/oAm3Heu7F4NUSscBVyzJ7EoBAqiH5520J4ixoSgYu0PiV5QpkqWsuLg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792973501;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792973736;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=rsqxAz7lqfB62WUBWW1eOoWDX04yDtpDlQeAS6FSONM=;
-	b=Mbhy1Yi2GXRJruJ19bCX9NcSmp2WJearCWwVgSCoNOdCZxH9q9WzS7v3vD6l6yHA8poR
-	 OUWi0QKaxM+yWfBJM/bMrjOWSrR8H/OWja3wXRFPwJMv2485ZLNc8E8yl1Xg4LhQpfjIk
-	 YabjxWzv5v4L3HIYTikYKMyso8KTFtA2qVbaKpHsohujxAAk0shM/nouQnxwPeXellg96
-	 +uFTkOYNGSX49mysJSuI5o9F4j0bvUR4ggpQ16JOMWx25jylmULwQcMjwn81C2jlFbpjo
-	 uuclYTP/YDt7ppYMJ0cHPAcrmMrJ9DDBRDJ2yAR7ESJIB8nfzwyAgiUn5DySf4k+wFg==
+	bh=4miLNdmTCLRRbyZStSHRrLrP4dgFhOGAixFj2EYVbOs=;
+	b=lNF1tPBG7GpDDQfFPwcnyrajAL3HYdSw1f4l4SxHunLeKDYDT3Oqc7uVHx+f8VIdW46f
+	 xoNYsJIs18adMqiLuT9Aql42MVeAJ40t5px/8UvzOcDIO87scmnZ0knHOBGOoTa6B68Ic
+	 UyQR7cINnmL0uixKBH8rv0u27P/5jCh8PwamM+8BS+d+S0w3KTISrs2a9vl1EzCvvIJwu
+	 gk/86NkN06hezqjzJqyRWv06rYw2AlG5XRXBJBs7Haf3v5Re5SscmAOHwirlNpUK0bf+J
+	 eXnKTirHi6/SyTrbt3mXxbWrsyx5hlqpmdbPF6EQXNF5uN7Xyd75iadKpLaMDu4soZw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HvwtPgnb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="TRQ/3KML";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5729E606A31A;
-	Mon, 26 Oct 2026 00:11:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2384606A31A;
+	Mon, 26 Oct 2026 00:15:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HvwtPgnb
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE2C1F01829;
-	Mon, 26 Oct 2026 00:11:37 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TRQ/3KML
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96AE31F01825;
+	Mon, 26 Oct 2026 00:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792973501;
-	bh=rsqxAz7lqfB62WUBWW1eOoWDX04yDtpDlQeAS6FSONM=;
+	s=k20260515; t=1792973735;
+	bh=4miLNdmTCLRRbyZStSHRrLrP4dgFhOGAixFj2EYVbOs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=HvwtPgnbuwetsVWXXssnFHCP/M8UWpbIWGcioo2dwCtZlINpELRyJmXvs3oi7PHpj
-	 UUevTDDFYKfca3T0tpuGJzJgVhyTND8ZWdI3fqsyhxVn8LSdrJyjzPFLGFhdqDIMmw
-	 0eU9+8OBtPdQb52Q2hOsq5XRt/rupNLzMGn8hwnEco4ygUAIliaETqHYjwMqVlIgF7
-	 nkTC6+Vihl5L74ytuabu6BiNwRuqljtxkJJJ2IfYDmHuaozWsR0qvme3Zm9R1IyfKW
-	 Jn7GP8iwbsNnVydaJE7B9SdnE81PDZ/Fn76zEQU/1S98OfYrtHBDrCxNrugCL3VTXI
-	 u8u6cbts3vlXQ==
-Date: Mon, 26 Oct 2026 00:11:32 +0000
+	b=TRQ/3KML6Rh1/J4tthZlYjCZgRp7rCtxofShMv0RG6GKs8eqlzK5eVD7cwoF5CZWs
+	 XR19KreUETCf7SPTyIbLnVt4eiTkG0fkTE0iT7xZ9TyiIZp5IWwKOuSTn2gHsS3F1u
+	 8HrdOCpnYQqZe2TQck57bO80GLCrAU2ecvusuQgZIedA9CO/guX5XeLrZkfrfoYfVS
+	 ukQa+I/vQEcSDCIwspBR5UEqREld0AwOJeNM56ZUKgaQdJX0k4UgWBQURQai49M9Vc
+	 ZHIJhoZR0We4cIVHd9ft2UY7n5eBrp6V7+VnhgItFNLrWWG8idg5d6MJGh18VZgadV
+	 4UJEUd3JcN8tg==
+Date: Mon, 26 Oct 2026 00:15:27 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
 Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
@@ -50,12 +50,12 @@ Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v4 7/8] iio: imu: adis16607: Add external clock sync
- support
-Message-ID: <20261026001132.3c76529a@jic23-hlaptop>
-In-Reply-To: <20261023-adis16607-v4-7-a4d541ebfd13@analog.com>
+Subject: Re: [PATCH v4 8/8] iio: imu: adis16607: Add calibration bias
+ support for gyro/accel
+Message-ID: <20261026001527.456f2472@jic23-hlaptop>
+In-Reply-To: <20261023-adis16607-v4-8-a4d541ebfd13@analog.com>
 References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-	<20261023-adis16607-v4-7-a4d541ebfd13@analog.com>
+	<20261023-adis16607-v4-8-a4d541ebfd13@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,125 +69,92 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 23 Oct 2026 12:30:24 +0300
+On Fri, 23 Oct 2026 12:30:25 +0300
 Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
 > From: Radu Sabau <radu.sabau@analog.com>
 > 
-> Add support for an optional external clock (clocks property),
-> selecting between SYNC_DIRECT and SYNC_SCALED modes depending on the
-> supplied frequency, with the internal 8 kHz clock used as the default
-> when no clock is provided.
+> Add IIO_CHAN_INFO_CALIBBIAS support for the gyroscope and
+> accelerometer axes, backed by the device's per-axis bias registers
+> (XA/YA/ZA_BIAS, XG/YG/ZG_BIAS).
 > 
 > Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
+I'd missed the use of scan_index in here.  That seems like very
+fragile coding to me. Moving over to address is going to require
+changes a few patches back.
 
-> -/*
-> - * No external clock sync support yet: always run on the internal clock.
-> - * Default dec=0 after reset, so period = 1 / clk_freq_mhz.
-> - */
->  static int adis16607_config_clk(struct adis16607 *st)
+> +
+>  /*
+>   * SPI Half-Duplex read operation for ADIS16607.
+>   * Protocol:
+> @@ -863,6 +878,7 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
+>  			      int *val, int *val2, long info)
 >  {
-> -	st->clk_freq_mhz = st->info->int_clk_hz * MILLI;
-> -	st->sample_period_ns =
-> -		DIV_ROUND_CLOSEST_ULL((u64)NSEC_PER_SEC * MILLI, st->clk_freq_mhz);
-> +	struct device *dev = &st->adis.spi->dev;
-> +	const struct adis16607_sync *sync_mode_data = NULL;
-> +	unsigned long ext_clk_hz = 0;
-> +	u16 sync_scale = 0;
-> +	u16 dec;
-> +	struct clk *clk;
-> +	int ret, i;
+>  	struct adis16607 *st = iio_priv(indio_dev);
+> +	const int idx = chan->scan_index;
 
-where there is no other particular reason for ordering, reverse xmas tree
-preferred.
+As below. This to me is hurting readability a little.
+Using scan_index for this is a bit fragile anyway as those can
+be changed by people expecting them to only about buffered capture.
+This should be using address and that may well mean you need that
+to become a lookup into an array of multiple register addresses
+needed for a given channel rather than directly to one register as
+currently.
 
 
-> +
-> +	clk = devm_clk_get_optional_enabled(dev, NULL);
-> +	if (IS_ERR(clk))
-> +		return PTR_ERR(clk);
-> +
-> +	if (clk) {
-> +		ext_clk_hz = clk_get_rate(clk);
-
-Hmm. What if it is a controllable clock?
-
-> +
-> +		for (i = 1; i < st->info->num_sync; i++) {
-
-		for (unsigned int i = 1; ...
-
-> +			if (ext_clk_hz >= st->info->sync_mode[i].min_rate &&
-> +			    ext_clk_hz <= st->info->sync_mode[i].max_rate) {
-> +				sync_mode_data = &st->info->sync_mode[i];
-> +				break;
-> +			}
-> +		}
-> +
-> +		if (!sync_mode_data)
-> +			return dev_err_probe(dev, -EINVAL,
-> +					     "Clk rate: %lu not in a valid range\n",
-> +					     ext_clk_hz);
-> +
-> +		st->sync_mode = sync_mode_data->sync_mode;
-> +	} else {
-> +		st->sync_mode = ADIS16607_SYNC_DEFAULT;
-> +	}
-> +
-> +	/*
-> +	 * Write the full desired sync state explicitly for every mode,
-> +	 * rather than only when enabling non-default sync: USER_SYNC's
-> +	 * documented reset default (0x0000, direct mode / scale 0) means
-> +	 * this isn't fixing a known reset-state issue, but each mode
-> +	 * establishing its own complete state here, instead of only
-> +	 * touching bits conditionally, is simpler to reason about and
-> +	 * doesn't depend on that default holding true.
-> +	 */
-> +	ret = adis_update_bits_base(&st->adis, ADIS16607_REG_USER_GPIO_CFG,
-> +				    ADIS16607_SYNC_GPIO_MASK,
-> +				    FIELD_PREP(ADIS16607_SYNC_GPIO_MASK,
-> +					       st->sync_mode != ADIS16607_SYNC_DEFAULT), 2);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (st->sync_mode == ADIS16607_SYNC_SCALED)
-> +		sync_scale = DIV_ROUND_CLOSEST(st->info->int_clk_hz, ext_clk_hz);
-> +
-> +	ret = adis_write_reg_16(&st->adis, ADIS16607_REG_USER_SYNC,
-> +				(st->sync_mode == ADIS16607_SYNC_SCALED) ?
-> +				ADIS16607_SYNC_MODE_MASK | sync_scale : 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	switch (st->sync_mode) {
-> +	case ADIS16607_SYNC_SCALED:
-> +		/*
-> +		 * sync_scale is a rounded integer, so the hardware's actual
-> +		 * effective rate is ext_clk_hz * sync_scale, not necessarily
-> +		 * int_clk_hz - use the real value here so sample_period_ns (and
-> +		 * therefore FIFO sample timestamps) don't drift from it.
-> +		 */
-> +		st->clk_freq_mhz = (unsigned long)ext_clk_hz * sync_scale * 1000;
-> +		break;
-> +	case ADIS16607_SYNC_DIRECT:
-> +		/* DIRECT: external clock is the effective internal rate */
-> +		st->clk_freq_mhz = ext_clk_hz * 1000;
-> +		break;
-> +	default:
-> +		st->clk_freq_mhz = (unsigned long)st->info->int_clk_hz * 1000;
-> +		break;
-> +	}
-> +
-> +	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_DEC_RATE, &dec);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->sample_period_ns = DIV_ROUND_CLOSEST_ULL((u64)NSEC_PER_SEC * 1000ULL * (dec + 1),
-> +						     st->clk_freq_mhz);
-> +
->  	return 0;
->  }
+>  	int ret;
+>  	u32 tmp;
 >  
+> @@ -900,6 +916,16 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
+>  		*val = 5000;
+>  		return IIO_VAL_INT;
+>  
+> +	case IIO_CHAN_INFO_CALIBBIAS: {
+> +		u16 tmp16;
+> +
+> +		ret = adis_read_reg_16(&st->adis, adis16607_calib_bias[idx], &tmp16);
+> +		if (ret)
+> +			return ret;
+> +		*val = sign_extend32(tmp16, 15);
+> +		return IIO_VAL_INT;
+> +	}
+> +
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		ret = adis16607_get_freq(st, &tmp);
+>  		if (ret)
+> @@ -918,6 +944,7 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+>  			       int val, int val2, long info)
+>  {
+>  	struct adis16607 *st = iio_priv(indio_dev);
+> +	const int idx = chan->scan_index;
+
+I'd just go long on the line that uses this or at least push declaring it
+down to the case statement that uses it.
+
+>  	u32 tmp;
+>  
+>  	switch (info) {
+> @@ -925,6 +952,11 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+>  		tmp = val * 1000 + val2 / 1000;
+>  		return adis16607_set_freq(st, tmp);
+>  
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if (val < S16_MIN || val > S16_MAX)
+> +			return -EINVAL;
+> +		return adis_write_reg_16(&st->adis, adis16607_calib_bias[idx], val);
+> +
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -934,7 +966,8 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+>  	.type = (_type), \
+>  	.modified = 1, \
+>  	.channel2 = (_mod), \
+> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +			      BIT(IIO_CHAN_INFO_CALIBBIAS), \
+>  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+>  	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>  	.address = (_address), \
 > 
 
