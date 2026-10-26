@@ -1,64 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792975196;
-	b=Aq3gF3Zwz5l1rc90+t3hLATwIOqMIXTylxdeL/lGdQisLxp1DO7Apwu7GGm5ZRXvCr9v
-	 A/QIXDTHejk0CfBJjMRX9iRPKsL2xmW2Jz/z8d6ym+potbkJr4pLjay+eZN9WyQlnl46Q
-	 deeHtXeeUhDIF2PpKwpyQ8nXYNhnJ9xiX2TfbpLiymbEQutO+OAf9hFgg49rP6+vdhUDW
-	 V68oH6qWy/Q0Js2hJkx8Q64Y16p+mG4K3MMUl+24zi5xVD5xAHcy5dxD6Rl7P0h2oHltG
-	 c82dAa0TfzIXNRyWMcRZLEz8tYrB3ibevPa05MXKkl/CQQvF4bOQ/RMcCZ+tIDpHGhg==
+	t=1792975588;
+	b=D3u31dcjwSTUcNh3VV9KMNTNLPw5+CDG/HuUPpKC3i+7p1aJuHJmlatbyv9EAAV1mIhp
+	 9w8jCZ6CbXA/CdokhTBpl6s7RK80b2eSA13sWcwZop8V1/z7Dyszstj5Uj042Wz7ybcjE
+	 B0RQ80nhTtGx3L+DXTASGiMh5jraBkarIvY64FrQkTU6P6C8iD7uytQ+po/plmxmm0NJI
+	 eCPsztBJGJp50P38oVzhCYLPEu2zd2ligA9uYVfW0safYWQNJAGLkF9bnAqPGF5B/8hLr
+	 kPIR59boM8J4KZLub5SeI361K9UcepUd9jSFOGDDQH4GHZfQKx/Fqjadb0wJgoH6gAQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792975196;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792975588;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=4ogPoZF/lqkn698dMqetdlvhWbLkdpcLeii08xRYCdQ=;
-	b=gNns46gzCqsi8znJFDMlLlLpMuToEneIahyffjvBd0jwZI8RrRTRj8yGf58AYjVwIaij
-	 e8xaW2v3ZqnFizB2W83gL4kl0Xkwszw1QO71qY8Ha6C8M7R2Y/k1lPwWSmmyq+Upfa9Q6
-	 8E33nofJASZ12DOmzBTmt8wf1QQivYDBEgi8RP8aH36BgHyMWau0xIP1SBpIvRioO4oYL
-	 b6LowADm9xgOAtsQ7NNlHplVDqQYs2kjUCL3PekFBmURZZrQ9H7in1r+Y+N+3VOQcO/wl
-	 8Y/6cQvNj8yGcloz29syy0CjAuq5d9HLkqtVNPrPm9AfLqu1eKAGSACFopG66O/kGfQ==
+	bh=g27xXTBcmgXuFkZ0PIascCszUPkj4I9PwS3AryVBM+g=;
+	b=FMzhTFvvh9J+3eBUZ2It4glyJ/K55E5LvCMnGiIJ4lLYBi+cfBk+iY1dFY79SU6x4LRF
+	 I7DJ8LzRyesaXHgV5suWmHXZWhWl86TC/SgAPEaJX3Rqvs0pAzto6vQHbE+bbKmJ+gGbI
+	 8Jg8zTN0W/pA6MVJLDmm3aMnXyWiI9g3CAoK6wv6w3oJhuzKo4JysTvj4lx4nPw+rhENU
+	 nz5XsTlD/fwHGDOBiV+xVZymiwLqSa3on+C9woe+WEGDqX4ZV/+ZcgQYBQbWEJQl2ENLE
+	 S8XzitKrrhcpEo84X2OLt6U+B+faCi8L5MrZx+qmDJytE1debUHGFAjMCYgiOuzACJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m9BAGhcq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I7iZXs+k;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9169E606A31B;
-	Mon, 26 Oct 2026 00:39:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98F9B606A31B;
+	Mon, 26 Oct 2026 00:46:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m9BAGhcq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A1C1F01825;
-	Mon, 26 Oct 2026 00:39:55 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I7iZXs+k
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F871F01825;
+	Mon, 26 Oct 2026 00:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792975196;
-	bh=4ogPoZF/lqkn698dMqetdlvhWbLkdpcLeii08xRYCdQ=;
+	s=k20260515; t=1792975588;
+	bh=g27xXTBcmgXuFkZ0PIascCszUPkj4I9PwS3AryVBM+g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=m9BAGhcqmnmidYPeLRdveFJcgl30BaMU7/u07/i3r03R56tZ5ICmgh3fqtcCkY5x8
-	 uQMQAPTRz5Hmaj9gTaN5hfYOcBxu5LVkC49cwcUMLXJ7K8JjdAlcNY/1m3cSdc+MBO
-	 RWrlY5HbQPzce3f/TSr3Gyhrjw4ZkAZCWljvkrfqyZEWjmmBDHGjq6Q4egKPlTwTXW
-	 7jyokoM4HlX/ntiQGImvipInX9w0YtQVQP6frzWP8yvCXVT/tEEhewwDYS7p1kbweo
-	 7pO0mQUJpOjtI2Q7D8oZKGSgx3oVJrzgL73aXHYPBfHuqMtfZ/P8YDRzaJAZbK3eTq
-	 lgvJEbINmqTRQ==
-Date: Mon, 26 Oct 2026 00:39:50 +0000
+	b=I7iZXs+kQkQ9A/D2AcQhszyTc70xh7gKrZmE8XIUBzfWsgkvMS5D8bv/mbjD3+Mvi
+	 sS023f7sTP9MgBbIgaKSKmJZUuoxCIn5Arf2gptBN3IYvdG8/cwLkGmgYA4mfSRphN
+	 ci5E+1vL7K3dwCpxqWJ9V/Z04zATozKBKPAVVQ8JyP8IKWuJH63ffFHY7MJ1rl9+xB
+	 rnG0OWPlGpWZP9BYQ0FJgfKmAnOE2rFI5Ievdp03ZN0RRdN3QcZkYwT/eFCvLJmeHj
+	 EUwWS6rDH5ROhVIAlzOM4J5a0+p3f9EtqsiViJp8GSyiYd7AorBWJ9VOox7F3v81Nx
+	 9ok/va3mUTk7w==
+Date: Mon, 26 Oct 2026 00:46:20 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, "Shuah
- Khan" <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- Joshua Crofts <joshua.crofts1@gmail.com>, Marcelo Schmitt
- <marcelo.schmitt@analog.com>, Radu Sabau <radu.sabau@analog.com>, "Janani
- Sunil" <janani.sunil@analog.com>, Salih Erim <salih.erim@amd.com>, "Jishnu
- Prakash" <jishnu.prakash@oss.qualcomm.com>, Jakub Szczudlo
- <jakubszczudlo40@gmail.com>, <linux@analog.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH v2 0/4] iio: adc: ade9000: add support for ADE9039
-Message-ID: <20261026003950.3a5b2e40@jic23-hlaptop>
-In-Reply-To: <20261022111759.6019-1-antoniu.miclaus@analog.com>
-References: <20261022111759.6019-1-antoniu.miclaus@analog.com>
+To: Andrei Stancovici via B4 Relay
+ <devnull+andrei.stancovici.analog.com@kernel.org>
+Cc: andrei.stancovici@analog.com, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
+ Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v2 0/3] iio: adc: ltc2497: add LTC2493 support and
+ line-frequency rejection
+Message-ID: <20261026004620.16bc9020@jic23-hlaptop>
+In-Reply-To: <20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com>
+References: <20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,22 +70,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 22 Oct 2026 14:17:53 +0300
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Thu, 22 Oct 2026 12:58:17 +0300
+Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org> wrote:
 
-> Add support for the ADE9039, a polyphase energy monitoring device in the
-> ADE9000 family. It is register compatible with the ADE9000 for every
-> register the driver touches. The differences that matter here are:
-> 
->  - full-scale codes match the ADE9078, not the ADE9000;
->  - dip/swell detection and the digital integrator are both present;
->  - there is no total reactive power: no AVAR at 0x211, no AVAROS at
->    0x010, only the fundamental AFVAR and AFVAROS;
->  - maximum SPI clock is 10 MHz, as on the ADE9078.
-Other than missing Nuno's tag as given for v1 (I added that by hand),
-this looks good to me.
+> This series adds LTC2493 support to the ltc2497 driver, and adds FA/FB
+> line-frequency rejection for the LTC2499 and the LTC2493.
 
-Applied to the testing branch of iio.git
+FWIW I took another look and nothing to add to Nuno's review.
+Looking forward to v3. I'll mark this as changes requested in
+patchwork.
 
 thanks,
 
