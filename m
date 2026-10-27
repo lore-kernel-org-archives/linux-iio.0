@@ -1,77 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793096883;
-	b=e/HOf84wSI/AR3YsqxsDI6NmqiK00BwVawmfWkurCYlsEGmNjxGWgDTECtg8h2KmSrfN
-	 s/4b50XHCTIlM0ht/ccNdnjt7Yt/OJ/a9+C1XwSZXSwoMaWi6B4ZFWz80IUtKgYr1oCr5
-	 C9WgAfrvErQkAnD3Py0WNZvIKeo4LJsCa5xDdseptLGXSGEQYo8qXqJaDsQO0tvDxQLaO
-	 mq/bl28jUuGoZonhzbIarE3PYZ7u+lGAMhrtTZ/s4pt1k+/AXcM8IltT06eImcLQ5Wxbk
-	 cOPrr6e6C1z/LhA2x3w8JA6Z6N3dZyg+I0XNXtS5oFTulIbPBrt24ht7c/z0+J2b71A==
+	t=1793097375;
+	b=nWoxorpunWg5lhVf36UkCT7K8EKe4qO8zGD0AP2ZXT1WvdExDc6BxP6DUrkqJkHFA52V
+	 YP4GoskMmx3QusNWBbztCV1jguEiTN3K3sp08nhRynWovgnWmyb9X5p5wIl9VvYa/uegG
+	 0L6DJ26OUMDmva6MxUk/7bgb6sRFSs/Wvwkaw5/9OLrD+ArwOhtXa4zo6K8HGv7NLFK50
+	 N6A0mGOQPj8iNI607IkLIz18WlrnCB1VWckcqrdsPA0ZK5dXLUcFWmFf/WqG0OxcI4R7P
+	 DC7o7AYsv1SvCC7CkQ8BkEmqOyLFGNHqE6N1jDYECkAwpS+iBlWeDCM91M/t5AqJOmw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793096883;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=pdXVOduGggyLG0Xo/K1PJVGxfUF7RtBliaZz/jOyAys=;
-	b=TrouCOtw0oz9vrZ0dld+QxybqBD7/1or28SEq5wXomCvu7KMgW+VdM3yVf0aKd9+XgBu
-	 racmE2h9/mB2a+Y3zET0xTYTDSK6dW/sYkwWsbQ4HFgBYbpKwfzSWfbvg3v9L6qEls0MK
-	 A2zQIWOMV55h62ZUOu2UTEePKXXgVu8/zzQjf/9qk2ZrPwZuHh7fEvXrnLW/QkG4cwQbj
-	 l9jFpnAyXi6IC01ExrIEXDcI6+BqhYVxaaiEMusw+mRw8is0rdA9pvd54GUsgt79fNWsb
-	 KqyoVhhaBucD1bsbyUMEE+eivGYC/rdyWssrEkU2Q+EFCdpVk4ADbxRFmDzDKu9Blng==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793097375;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=5EJSPUzg0whVepx7G/qDLZdM2wsz34VCNLXrTAyw3pI=;
+	b=yFu5+A16UKR1rYavHkDxPgp5hR9pI4RjY+/xbZIRwAY6abfZbAl7xKzqnA8XIyHIo/d5
+	 r4t8VO8reDD2su3KZ6gTsrhE4KNo1xYewSwfATzEE9qg6UXQeUDo4amR3p2YGbUYv5QnK
+	 2LOT48bGCw0Egp4ZIjRmuuYzP3FFMldLGIH6qiCQfSNKA3uBJIY9S4zCXBEJKFhqCXFtz
+	 6l4g6tNR5liRtbh6/EaHRKVfjFL+jeRG98P/2K7MWsAYZhCKLL3wbNKVBMvEv49IXpoSQ
+	 esVm0ytwAy0Af6A37PNyWuNpNna5ebNmEc8+P43lCDwuPfhSxHUCdKosWB1V5+93IHg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nWJTHLwk;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iASb0re8;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684A5606A31F
-	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 10:28:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 684A5606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9597A606A31A;
+	Tue, 27 Oct 2026 10:36:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nWJTHLwk
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793096882; x=1824632882;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=u6dn5xaAoP2y7xrISH+CIMNh/ZfLhFg8VqgfyrS1ZwQ=;
-  b=nWJTHLwk5dAlICvagll8eKZ6dGHfnLFrX2A7IaIzcnBwFX0UwuJAcrKm
-   WVT+WL2aK3w39DeV1Z3E9gZjPNoBVXtcaNysAYTJ/ojHmQ07Z9mvJoXYh
-   sEDHZQSFU/04BKB3J6JHny1Fqwaps964NgDGbOB36NbETQFKAvreWsBLq
-   udk2Z+svC7JlDltxwDXxQ3UXSZ/TLiWffxGeyCVw8L6uArV2SCHgKFYDW
-   55cT0Tk1qUqfnn6V9IvWIWeRfGORv8hUD/ejrPGO90ZXICtuL7fvvE+Fl
-   StfrLLbQE/8oCEApiZWx/006PqYpuNDT+DW8MdWBSiianJM9x7fBE3oYi
-   g==;
-X-CSE-ConnectionGUID: MtnfxEz/TYOcPK/uDmouxw==
-X-CSE-MsgGUID: b62S5zWBTNK4/Tp5PpyI3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1669742"
-X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1669742"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:28:01 -0700
-X-CSE-ConnectionGUID: a4nmKb6JRO6ifASe2Atnjg==
-X-CSE-MsgGUID: qRWtLDEGQEufG6yDQkEmGg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="4414069"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:27:59 -0700
-Date: Tue, 27 Oct 2026 12:27:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH 35/39] iio: accel: bmc150-accel-core: use
- iio_push_to_buffers_with_ts()
-Message-ID: <auB8rKIaXGRfai6b@ashevche-desk.local>
-References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
- <20261026-iio-v1-35-8b136778eedf@oss.qualcomm.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iASb0re8
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDC191F01825;
+	Tue, 27 Oct 2026 10:36:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793097374;
+	bh=5EJSPUzg0whVepx7G/qDLZdM2wsz34VCNLXrTAyw3pI=;
+	h=From:To:Cc:Subject:Date;
+	b=iASb0re8vO6SmQzI3jESEFwNxt38qBTygyrDAMU44uQSV25dLenh7KNtveoOoALIB
+	 vraMrLKDeOVJPBQDRh1irshh95EmTzfsHSsNJ+c3FzgKVugeofULumW2D9m7YZEudc
+	 URWw9XIS7TuXb/v5ZpgQwMhKIwLpErX/ngkDurb6vIoI5VH00LuWjtQpH1ZWqMb6tt
+	 qp6UsJfvfPdgz3giYTeRGL74w5tDFtnbFn6wu2rXZV76NfCjNDclsh7qxZ05SP71jc
+	 pv7FNSGRndDCszm7EQzmxXGO1ibkeHJDKG1cnZRjj09Y/zYDNQtMBo6MiqPX2fgmt3
+	 epay1ZXJEKWkA==
+From: Lee Jones <lee@kernel.org>
+To: lee@kernel.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Andreas Kemnade <andreas@kemnade.info>,
+	Andy Shevchenko <andy@kernel.org>,
+	AnilKumar Ch <anilkumar@ti.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Binbin Zhou <zhoubinbin@loongson.cn>,
+	Brent Casavant <bcasavan@sgi.com>,
+	Chong Qiao <qiaochong@loongson.cn>,
+	Corey Minyard <corey@minyard.net>,
+	David Lechner <dlechner@baylibre.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Felipe Balbi <balbi@ti.com>,
+	Gyungoh Yoo <jack.yoo@maxim-ic.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+	Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Joshua Kinard <linux@kumba.dev>,
+	Kai Svahn <kai.svahn@nokia.com>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Kumar Sanghvi <kumar.sanghvi@stericsson.com>,
+	Linus Walleij <linusw@kernel.org>,
+	linux-crypto@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	Mattias Nilsson <mattias.i.nilsson@stericsson.com>,
+	Mattias Wallin <mattias.wallin@stericsson.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	mfd@lists.linux.dev,
+	Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Milo Kim <woogyom.kim@gmail.com>,
+	Ming Yu <tmyu0@nuvoton.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Pantelis Antoniou <panto@antoniou-consulting.com>,
+	Pat Gefre <pfg@sgi.com>,
+	Paul Burton <paulburton@kernel.org>,
+	Peter Ujfalusi <peter.ujfalusi@ti.com>,
+	Qunqin Zhao <zhaoqunqin@loongson.cn>,
+	Rabin Vincent <rabin.vincent@stericsson.com>,
+	Rachna Patil <rachna@ti.com>,
+	Roger Quadros <rogerq@kernel.org>,
+	Samuel Ortiz <sameo@linux.intel.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Shi Hao <i.shihao.999@gmail.com>,
+	Srinidhi Kasagar <srinidhi.kasagar@stericsson.com>,
+	Stanislaw Skowronek <skylark@unaligned.org>,
+	Stephen Warren <swarren@nvidia.com>,
+	Sundar Iyer <sundar.iyer@stericsson.com>,
+	syed khasim <x0khasim@ti.com>,
+	Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+	Thomas Richard <thomas.richard@bootlin.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Yinggang Gu <guyinggang@loongson.cn>
+Subject: [PATCH v2 00/27] mfd: Assorted resource lifetime, teardown, and error-handling fixes
+Date: Tue, 27 Oct 2026 09:30:29 +0000
+Message-ID: <20261027093306.2812695-1-lee@kernel.org>
+X-Mailer: git-send-email 2.56.0.307.g5fe7bd680c-goog
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -81,37 +117,148 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261026-iio-v1-35-8b136778eedf@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 26, 2026 at 04:05:53PM -0700, Jonathan Cameron wrote:
-> Replace the deprecated iio_push_to_buffers_with_timestamp() with
-> iio_push_to_buffers_with_ts(), passing the size of the pushed buffer,
-> at both call sites.
-> 
-> The triggered buffer handler read into a separate fixed buffer rather
-> than the scan buffer used for the FIFO path. Use the scan buffer
-> directly and drop the now unused buffer field. This also corrects the
-> type of the read destination to __le16 to match the scan buffer's
-> channels array. Widen the mutex-held region to cover the use of scan.
+These issues were reported by Sashiko.
 
-...
+This series addresses a collection of resource lifetime, teardown
+ordering, error-handling, and bounds-checking bugs across several MFD
+drivers.
 
->  	u8 fifo_mode, watermark;
-> -	s16 buffer[8];
+v1 => v2:
+ - Collected Acked-by, Reviewed-by, and Tested-by tags from the list
+ - Dropped "mfd: cgbc: Zero-initialise version buffer in
+   cgbc_get_version()" in favour of Thomas Richard's upcoming central
+   cgbc_command() validation series
+ - Restored Fixes: tags (without Cc: stable@vger.kernel.org) on the four
+   non-Stable MFD cell stack-pointer clean-ups (ls2kbmc, bd96801,
+   ti_am335x_tscadc, and db8500-prcmu)
 
-I have a weak memory that I have seen a patch that reuses scan buffer instead
-of dedicated one, but I'm not sure if it was against this driver (and if so,
-why it got not applied).
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>
+Cc: Andi Shyti <andi.shyti@kernel.org>
+Cc: Andreas Kemnade <andreas@kemnade.info>
+Cc: Andy Shevchenko <andy@kernel.org>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: AnilKumar Ch <anilkumar@ti.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Binbin Zhou <zhoubinbin@loongson.cn>
+Cc: Brent Casavant <bcasavan@sgi.com>
+Cc: Chong Qiao <qiaochong@loongson.cn>
+Cc: Corey Minyard <corey@minyard.net>
+Cc: David Lechner <dlechner@baylibre.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Felipe Balbi <balbi@ti.com>
+Cc: Gyungoh Yoo <jack.yoo@maxim-ic.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
+Cc: Huacai Chen <chenhuacai@kernel.org>
+Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Joshua Kinard <linux@kumba.dev>
+Cc: Kai Svahn <kai.svahn@nokia.com>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: Kumar Sanghvi <kumar.sanghvi@stericsson.com>
+Cc: Linus Walleij <linusw@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-i2c@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+Cc: linux-mediatek@lists.infradead.org
+Cc: linux-omap@vger.kernel.org
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Mattias Nilsson <mattias.i.nilsson@stericsson.com>
+Cc: Mattias Wallin <mattias.wallin@stericsson.com>
+Cc: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: mfd@lists.linux.dev
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Milo Kim <woogyom.kim@gmail.com>
+Cc: Ming Yu <tmyu0@nuvoton.com>
+Cc: "Nuno Sá" <nuno.sa@analog.com>
+Cc: Pantelis Antoniou <panto@antoniou-consulting.com>
+Cc: Pat Gefre <pfg@sgi.com>
+Cc: Paul Burton <paulburton@kernel.org>
+Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: Qunqin Zhao <zhaoqunqin@loongson.cn>
+Cc: Rabin Vincent <rabin.vincent@stericsson.com>
+Cc: Rachna Patil <rachna@ti.com>
+Cc: Roger Quadros <rogerq@kernel.org>
+Cc: Samuel Ortiz <sameo@linux.intel.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Shi Hao <i.shihao.999@gmail.com>
+Cc: Srinidhi Kasagar <srinidhi.kasagar@stericsson.com>
+Cc: Stanislaw Skowronek <skylark@unaligned.org>
+Cc: Stephen Warren <swarren@nvidia.com>
+Cc: Sundar Iyer <sundar.iyer@stericsson.com>
+Cc: syed khasim <x0khasim@ti.com>
+Cc: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc: Thomas Richard <thomas.richard@bootlin.com>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Yinggang Gu <guyinggang@loongson.cn>
 
-It might be this one 8c5f649119f4 ("iio: accel: kionix-kx022a: use scan struct
-for one-shot and trigger reads").
+Lee Jones (27):
+  mfd: nct6694: Allocate USB DMA buffers with kzalloc_obj()
+  mfd: ls2kbmc: Unregister GPIO GSI via devm_add_action_or_reset()
+  mfd: ls2kbmc: Cancel reset work on teardown via devm_work_autocancel()
+  mfd: ls2kbmc: Allocate simplefb platform_data on the heap
+  mfd: bd96801: Allocate watchdog IRQ resource on the heap
+  mfd: ti_am335x_tscadc: Retrieve parent driver data via
+    dev_get_drvdata()
+  mfd: db8500-prcmu: Make AB8500 cell and IRQ resource static
+  mfd: nct6694: Do not resubmit interrupt URB on endpoint stall (-EPIPE)
+  mfd: ioc3: Request parent IRQ via request_irq() and free before domain
+    removal
+  mfd: intel-lpss: Remove registered MFD child devices on probe failure
+  mfd: max8907: Manage power-off handler via
+    devm_register_sys_off_handler()
+  mfd: twl-core: Clear pm_power_off callback in twl_remove()
+  mfd: twl-core: Clear twl_priv pointer on teardown and probe failure
+  mfd: loongson-se: Check return value of dma_set_mask_and_coherent()
+  mfd: loongson-se: Zero-initialise controller command structures
+  mfd: loongson-se: Reinitialise completions and wait uninterruptibly
+    for commands
+  mfd: loongson-se: Zero-allocate driver data and initialise engine
+    completions in probe
+  mfd: loongson-se: Prevent out-of-bounds engine access in
+    se_irq_handler()
+  mfd: loongson-se: Stop controller and mask interrupts on teardown and
+    shutdown
+  mfd: loongson-se: Validate engine ID, DMA buffer size, and IRQ
+    registration
+  mfd: abx500-core: Unregister device ops on devm release
+  mfd: ab8500-core: Register sysfs attribute groups via
+    devm_device_add_group()
+  mfd: tps65217: Manage IRQ domain teardown via devres
+  mfd: mt6397: Manage IRQ domain lifecycle with devres
+  mfd: mt6397: Unregister PM notifier on probe failure and unbind
+  i2c: cgbc: Propagate hardware errors when polling read status
+  mfd: ti_am335x_tscadc: Remove redundant ti_tscadc_dev_get() helper
+
+ drivers/i2c/busses/i2c-cgbc.c             |  27 ++++--
+ drivers/iio/adc/ti_am335x_adc.c           |   2 +-
+ drivers/input/touchscreen/ti_am335x_tsc.c |   2 +-
+ drivers/mfd/ab8500-core.c                 |  11 +--
+ drivers/mfd/abx500-core.c                 |  29 +++---
+ drivers/mfd/db8500-prcmu.c                |   8 +-
+ drivers/mfd/intel-lpss.c                  |   1 +
+ drivers/mfd/ioc3.c                        |  32 ++++---
+ drivers/mfd/loongson-se.c                 | 110 +++++++++++++++++-----
+ drivers/mfd/ls2k-bmc-core.c               |  27 ++++--
+ drivers/mfd/max8907.c                     |  28 ++++--
+ drivers/mfd/mt6358-irq.c                  |  17 +++-
+ drivers/mfd/mt6397-core.c                 |   4 +-
+ drivers/mfd/mt6397-irq.c                  |  31 +++++-
+ drivers/mfd/nct6694.c                     |  23 +++--
+ drivers/mfd/rohm-bd96801.c                |  11 ++-
+ drivers/mfd/ti_am335x_tscadc.c            |   7 +-
+ drivers/mfd/tps65217.c                    |  40 ++++----
+ drivers/mfd/twl-core.c                    |  45 +++++----
+ include/linux/mfd/loongson-se.h           |   8 +-
+ include/linux/mfd/ti_am335x_tscadc.h      |   7 --
+ 21 files changed, 326 insertions(+), 144 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.56.0.307.g5fe7bd680c-goog
 
