@@ -1,61 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793125720;
-	b=W0Mm20OYiDNJQGh76wSogPsSrVprYyPOTTk47UL13MB4arnXkdCxJSb4ZgNKz//tYQBQ
-	 d5rtoyDN/TnWioyyJmp5PwH525bLSGu4jOVP5FQUg4xvw/w/SaDmgjR1dVUMxrWTXM8n/
-	 RdGmaGeMDAe+wc1XEftKCIWBsTBYqKpEqxE6+uUJrCNC5exby8xtLs+2U3TpHqIFRlwsk
-	 3a9AEexIQaCnn0+33O5EIBZJ8lNbX7w+ifaiVoK2n6QM2DuuD2cnOR94EaoWJfrN7waXg
-	 sGnbfZgkNcx1HvQ8daDixHOw/YyB8tRij7ZBXI4Xw3FJjkSLpMrREZ9REOeqEhee1NA==
+	t=1793127407;
+	b=1e+0H+p+rmgFw0KnQC+MceILqeEKeJcOBfAC0+gbDgq16ZxKXXZS8ejyBKDnVacZz0Mn
+	 3vdSXrnAxe2CecglJxCFL1BDGCgcoXwzb6XQTHKUDaIewGF7D+Yv4n6HP++oqfFPpIMjj
+	 FBx6nE1QYxC56Gx3ty+sYL8Mi9wWVXKBE1SJTZyp2ryNGzmGY8b2h86DpimxzArJFDfNS
+	 MTe69EvzmKoEAOsfnnEFsTRcuFyEdIIFpg5IuCNPL/YvqHUnrROl7OvawPTezXhHhNbUD
+	 SnwWO9Kd6Zs0TOkurusQl+9scfFtzl6aBdtrGgco9Y2UsDjKbIel9grc/A9hl6t10mQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793125720;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=qmTkjhfRVZXBH3VauU4MsoTCHvTi7jHmC9yQvfjqtMk=;
-	b=lkDim+1s1fiXJVRH6ekxO7zbZ/58ZHENqpVWUrXnA2XmcFPZnWaODvgo2LbNDzlGQi/Z
-	 EGKTEzo/0TQczBNv50Ed5XL+cx7IjsoinDM7FhN1HN4/rJYb94MWKnPids6NaV6Jf0dcI
-	 vherwUiPwEL2HhB5uH5vQlW6EwHFGrxawQ/Iq55Id+WI2FpJs9T9JKzW/jk3LatvCG4tJ
-	 +bBUPKJe8xFFzkZJ9JFKFqpYOTeIGRI3pS5D9CZ2tloNHuogB85+9n64P4Wxp7gqsXhyq
-	 8nWaXw3CMIf1YX8GqIWhrbkQ7rI1U8xge4mpp0cBGMlzGGTrRlCxttgRCSadNtozYvA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793127407;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=sdw0zAFeaxdWH5BaxHh21oqt1eSDwMTyb26USwQqQls=;
+	b=hjRNCIc65tgtJBv1xhj1lW+atz9msQGU+oGYSLoyu13o6Y9WutgxR8ooO28O3DGSMrlN
+	 qhDVFubUGk6mTbOMpKfd1SkugEnYL7pvEWHkY8Ep4Mdqtk/KaLpj3zVO59k48ZXmK9PCF
+	 AIeQHYBy+YrrpPfoStwr6AWHU7BJ2kaKr584xOeMdmvswXtnmVKsFNBJndD8HiOiK4jZf
+	 jhUtIU9fijO7frPRB718895kiDICPXx4gNhBTZRc0lClYzSyBP4KeMVqYGe881RSbEzWB
+	 UyLARxbijsMh0z7Vcwo67QszDS6XIIZRlm7Jmhoz/MlZj5opCKwNcKYiP50y9b2rtlw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UJr+iHiI;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=N9SogX0m;
+	arc=none smtp.remote-ip=209.85.222.52
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 339EB606A31A;
-	Tue, 27 Oct 2026 18:28:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9C4606A31D
+	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 18:56:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C9C4606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UJr+iHiI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C201F01825;
-	Tue, 27 Oct 2026 18:28:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793125719;
-	bh=qmTkjhfRVZXBH3VauU4MsoTCHvTi7jHmC9yQvfjqtMk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=UJr+iHiIfOZ7o5mFrf4QdKdBqCq5SUsq48wJw1mpVi3v4Klbu5UKZiA2xajQRk610
-	 DUldXfqm5y5X6yLyvtKR9DpfkgrloEGtS7dJg9A1w3F21tCVlSg+BmL/ukkpVryAjM
-	 pOQotDbtzy1QPpPzAELFTsDFgo4Rt+FYW9LxuzykHOUKMUL7uZxnakMpp13+auwV5G
-	 cuNmxW9oN+KhuB+9d6OG5XLVEj901Vt75Gjjs8Ifuu9aLMCtvjFlfxdpoP5nGpgaFM
-	 u0dTgv0Bo+mv4ExDjGYgKRKkgTq8F9Fqhn89la/8sRA0dncqxwv2zmk8RCq5t5hGXd
-	 KyJhQYazeyN4w==
-Date: Tue, 27 Oct 2026 18:28:34 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
-Message-ID: <20261027-attic-collector-cb4ffdb5cf82@spud>
-References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
- <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=N9SogX0m
+Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-980c4258105so153641241.2
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 11:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793127406; x=1793732206; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=sdw0zAFeaxdWH5BaxHh21oqt1eSDwMTyb26USwQqQls=;
+        b=N9SogX0mUYzznMLkCdxnScars4a5lypSOARFKHHvLWqKISy4u1LwAvblttViiOhgl2
+         g/lvPyHzbh8cNa6FInQy2Sq1Qo9tBkgQJOoh5RE2FD4JSf+G8O7ryBOMvUCRKRLcDKoe
+         Pf7CwrapxrNaBM+H1gWvl8mifiXFt4uIESOQFCX8PIAWvNSzrJb13NcfpfCSKqQ6Q7ir
+         kKqUu3wbO++S1Dnc5yo4zFpwfXr4XaCx6mw3RnLysxAAEJCj+9/lYr8AQRZRmf/WQHWq
+         zo0dQf0FhrNmLjDhQemzgPrDhphJv1bHmpkZWzLVKS6WsUkZEIIwfzXPETjBzoGDZdIr
+         cl6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793127406; x=1793732206;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=sdw0zAFeaxdWH5BaxHh21oqt1eSDwMTyb26USwQqQls=;
+        b=suPeSihqrT4ktZoR7eqgOSBKeinNQdgaVUmbIbRomYPMdwxTrkTWBkKwAqIjGtrpTr
+         YMbv+YKTZZQOUBovQTZkqVNQG1V7RJfYmIQGgHe+HP7bqj6itNlDVzZmbcGwIvD9VeQa
+         2+4JGbj0sbThihXnC/aanxnJHdP5TJq7FWaTOzK7DrP92h0pdZYRMkLI+wQqA5TgcUzh
+         8YXstzonb6P+NtCF/1BVtMZ558gfjLTEQPPX3ywVN63tx9eAQ2NwYKQS6wZCdCWnIPBn
+         JbX0l58uLqqU/gwKf2FqdDTl9o9yMoOQol4uONtuIbgHU4Q8nzjD9e9hACbPjJum8aqz
+         qgKw==
+X-Forwarded-Encrypted: i=1; AKwUvBw5zR31L5rwqhFfq+hdVS1G+g/z7eOZqaqw2HP+wU0oBog/yY+plC3cjBlkuBtw0mVd6PV/DCp4d1g=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJal86JBgxXHMuBS5xrUuhPs4XVCoZ+DTr7Y2I4La4G4e+rIYx1
+	ZXwan3PIyFB/Xl9mOfuGVs3pmpN3cybkh9brzPWotXVTbo6oHlL8Do4q
+X-Gm-Gg: AYBFou13Hu29dnNVNophlafbeuk6QeIkUihn6wJpi6iInrlJuK3DC/wsAD9ETLSBfyE
+	78KQ7HvUDKkJ/N1clXV7/tL7fWsOHQVkJ+JREd7A1d/6nY+T8dlWiPMbXKTAzvL20UFNEf1pgop
+	/L2Jg0cAlKQ9mc1446QOsIn+63YopnDJeIh6+6LetvtylkucOP0CohSMlFBuQ7SfzHBVTA1fv1K
+	rUXxk6ydVbf1wdMzCeHKiejbbDTC3mH15+y9gG05a9BhTi+jUEaklAlWIhimsLJembYECJgMsx2
+	ayzpPX6k9QlMgang+vxkXywn5CUm/AeEp3qrFTTW1oQ/xZf5sgb35OGXKZsMf9TGD8AClxm8WhC
+	dpgEiXbCZaBqytRviRAeKr8qsIu6PkBRojHDOmYuj+Sjqn36o9011wL6CcPpoWajdS4OAp2ITeQ
+	33/cXF6NIS+jsKKHuVDYpdeyFb7Y7r/8xJG3311M38b9ycQMgMmB3WZHWfG0X8D/OpvZBKP0zFr
+	oiHzgElsirikjvML/W3dvl/oSNJo71mlfud4R4qaineUDMVfsBydNo1YS5eU6Fo49GDe58yFNMn
+	ZZw1sGnHF9dSB7XlPLYJiwIlIQYjmCeqabBLRso419xuQuEGgEAbufkmcoUZ/LwQ
+X-Received: by 2002:a05:6102:3fa2:b0:7cc:3eb0:6ece with SMTP id ada2fe7eead31-7d03a585266mr85277137.33.1793127406463;
+        Tue, 27 Oct 2026 11:56:46 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (158.95.44.31.netskope-rdns.com. [158.95.44.31])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-99125a07478sm3462145241.12.2026.10.27.11.56.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 11:56:45 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 27 Oct 2026 15:56:35 -0300
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>, 
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] iio: prepare iio_format_value to handle
+ higher-precision IIO_VAL_DECIMAL64_* formats
+Message-ID: <25g6fr7y4bmd6bzomvlvoejtps7wzbnbuuxxipmcrnozujno2l@klcfyrmqsifd>
+References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <SN1PR12MB2528906BE220765FAF201080A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,252 +101,96 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="kalH6PIzx3Y4bVJp"
-Content-Disposition: inline
-In-Reply-To: <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
-
---kalH6PIzx3Y4bVJp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <SN1PR12MB2528906BE220765FAF201080A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
 
-On Tue, Oct 27, 2026 at 03:44:08PM +0200, Nicolae-Daniel Deaconescu wrote:
-> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
->=20
-> Add bindings for the LTC2387-16 and LTC2387-18, 15 Msps SAR ADCs with
-> an LVDS data interface, and for the ADAQ23875, ADAQ23876 and ADAQ23878
-> uModule ADCs, which pair an LTC2387 die with a fully differential
-> amplifier front end.
->=20
-> Conversion start (CNV) and the gated LVDS clock are driven by two PWM
-> channels. Sample data is captured by an AXI ADC IP core, referenced
-> through io-backends. adi,use-two-lanes selects two-lane output, and
-> adi,gain-milli gives the front-end gain: fixed at 2 on the ADAQ23875,
-> set by pin strapping on the ADAQ23876 and ADAQ23878.
->=20
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@ana=
-log.com>
-> Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analo=
-g.com>
-> Assisted-by: Claude:claude-opus-5-5
-> ---
->  .../bindings/iio/adc/lltc,ltc2387.yaml        | 138 ++++++++++++++++++
->  MAINTAINERS                                   |   8 +
->  2 files changed, 146 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc238=
-7.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml =
-b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-> new file mode 100644
-> index 000000000000..f912260c8f79
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-> @@ -0,0 +1,138 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright 2022 Analog Devices Inc.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/lltc,ltc2387.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Linear Technology / Analog Devices LTC2387 ADC
-> +
-> +maintainers:
-> +  - Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> +  - Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> +
-> +description: |
-> +  The LTC2387-18 is a low noise, high speed, 18-bit 15Msps
-> +  successive approximation register (SAR) ADC ideally
-> +  suited for a wide range of applications.
-> +
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/23=
-8718fa.pdf
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/23=
-8716f.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adaq23875
-> +      - adi,adaq23876
-> +      - adi,adaq23878
-> +      - lltc,ltc2387-16
-> +      - lltc,ltc2387-16-x4
-> +      - lltc,ltc2387-18
-> +      - lltc,ltc2387-18-x4
+On 26/10/26 11:51, Victor Chernyakin wrote:
+> Prepare iio_format_value for an upcoming patch that adds formats up
+> to IIO_VAL_DECIMAL64_YOCTO (a scale of 24 digits) by avoiding
+> computing 10^scale when doing so would overflow, and by avoiding
+> undefined behavior due to abs(LLONG_MIN) (which couldn't happen
+> previously).
 
-Why are we getting new devices with linear vendor prefixes? My
-understanding was that new devices from ADI subsidiaries were to use the
-adi vendor prefix.
+...
 
+> +/*
+> + * Regular abs(LLONG_MIN) causes signed overflow, which is undefined
+> + * behavior. This variant avoids that by performing the computation in an
+> + * unsigned type, for which negation is always well-defined.
+> + */
+> +static inline u64 abs_s64_no_overflow(s64 x)
+> +{
+> +	return x < 0 ? -(u64)x : (u64)x;
+> +}
+
+I think I've seen Andy doing mentions to a needed 'safe' abs() a couple of times.
+Don't we have something in the tree already? if not, Why not adding a
+'unsigned' abs function to math.h? something like:
+
+/**
+ * uabs - return absolute value of an argument as an unsigned type
+ * @x: the value.
+ *
+ * Unlike abs(), the result is well defined when @x is the minimum value of
+ * a signed type, since the negation is done in the unsigned domain.
+ *
+ * Return: an absolute value of @x, as the unsigned counterpart of its type.
+ */
+#define uabs(x)	__uabs_choose_expr(x, long long,			\
+		__uabs_choose_expr(x, long,				\
+		__uabs_choose_expr(x, int,				\
+		__uabs_choose_expr(x, short,				\
+		__uabs_choose_expr(x, char,				\
+		__builtin_choose_expr(					\
+			__builtin_types_compatible_p(typeof(x), char),	\
+			({ signed char __x = (x);			\
+			   (unsigned char)(__x < 0 ? -(unsigned char)__x :	\
+						     (unsigned char)__x); }),	\
+			((void)0)))))))
+
+#define __uabs_choose_expr(x, type, other) __builtin_choose_expr(	\
+	__builtin_types_compatible_p(typeof(x),   signed type) ||	\
+	__builtin_types_compatible_p(typeof(x), unsigned type),		\
+	({ signed type __x = (x);					\
+	   (unsigned type)(__x < 0 ? -(unsigned type)__x :		\
+				     (unsigned type)__x); }), other)
 
 > +
-> +  clocks:
-> +    description: Sampling clock
-> +    maxItems: 1
+> +#define GREATEST_POWER_OF_10_THAT_FITS_IN_S64 18
 > +
-> +  pwms:
-> +    maxItems: 2
-> +    description:
-> +      PWM signals used to synchronize the sampling procedure
-> +
-> +  pwm-names:
-> +    items:
-> +      - const: cnv
-> +      - const: clk_gate
 
-Hmm, ltc2387-16 does not appear to have these signals?
-Well, it has "cnv" but "cnv" has "sample clock" as the input name so is
-the clocks property above and pwm-clock can be used if the provider is a
-pwm?
+that is readable! being local to this file, maybe define this as
+IIO_VAL_INTLOG10_S64_MAX or something to indicate the scope of its usage?
 
-Either there's some mutual exclusion missing here or the modelling in
-incorrect.
+>  static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+>  				  int size, const int *vals)
+>  {
+> @@ -720,13 +732,19 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+>  		int scale = type - IIO_VAL_DECIMAL64_BASE;
+>  		s64 frac;
+>  
+> -		tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
+> -				     int_pow(10, scale), &frac);
+> +		if (scale <= GREATEST_POWER_OF_10_THAT_FITS_IN_S64) {
+> +			tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
+> +					     int_pow(10, scale), &frac);
+> +		} else {
+> +			tmp2 = 0;
+> +			frac = iio_val_s64_compose(vals[0], vals[1]);
+> +		}
+> +
+>  		if (tmp2 == 0 && frac < 0)
+>  			l += sysfs_emit_at(buf, offset, "-");
+>  
+> -		l += sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
+> -				   abs(frac));
+> +		l += sysfs_emit_at(buf, offset + l, "%lld.%0*llu", tmp2, scale,
+> +				   abs_s64_no_overflow(frac));
 
-"clk_gate" doesn't appear in either of the datasheets I looked at, what
-does that actually do?
+...
 
-pw-bot: changes-requested
+-- 
+Kind regards,
 
-> +
-> +  io-backends:
-> +    description:
-> +      The AXI ADC IP block (axi_ltc2387) that captures the LVDS data str=
-eam.
-> +    maxItems: 1
-> +
-> +  vref-supply:
-> +    description:
-> +      External voltage reference. When absent the device's internal 4.09=
-6 V
-> +      reference is assumed.
-> +
-> +  adi,use-two-lanes:
-> +    description: The device uses two lanes for data transfer
-> +    type: boolean
-
-Please explain how this is not determinable from the compatible.
-
-Cheers,
-Conor.
-
-> +
-> +  adi,gain-milli:
-> +    description:
-> +      Gain of the fully-differential amplifier that the ADAQ2387x modules
-> +      integrate ahead of the LTC2387 die, expressed as gain * 1000. It is
-> +      fixed on the ADAQ23875 and set by pin strapping on the ADAQ23876 a=
-nd
-> +      ADAQ23878, so it must match the board. The bare ltc2387-* parts ha=
-ve
-> +      no amplifier.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [370, 730, 870, 1380, 2000, 2250]
-> +
-> +required:
-> +  - compatible
-> +  - clocks
-> +  - io-backends
-> +  - pwms
-> +  - pwm-names
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - lltc,ltc2387-16
-> +              - lltc,ltc2387-16-x4
-> +              - lltc,ltc2387-18
-> +              - lltc,ltc2387-18-x4
-> +    then:
-> +      properties:
-> +        adi,gain-milli: false
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: adi,adaq23875
-> +    then:
-> +      properties:
-> +        adi,gain-milli:
-> +          const: 2000
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - adi,adaq23876
-> +              - adi,adaq23878
-> +    then:
-> +      properties:
-> +        adi,gain-milli:
-> +          enum: [370, 730, 870, 1380, 2250]
-> +      required:
-> +        - adi,gain-milli
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    adc {
-> +            compatible =3D "lltc,ltc2387-16";
-> +            clocks =3D <&clk 0>;
-> +            io-backends =3D <&axi_adc>;
-> +            pwms =3D <&pwm 0 0>, <&pwm 1 0>;
-> +            pwm-names =3D "cnv", "clk_gate";
-> +            vref-supply =3D <&vref>;
-> +    };
-> +  - |
-> +    adc {
-> +            compatible =3D "adi,adaq23878";
-> +            clocks =3D <&clk 0>;
-> +            io-backends =3D <&axi_adc>;
-> +            pwms =3D <&pwm 0 0>, <&pwm 1 0>;
-> +            pwm-names =3D "cnv", "clk_gate";
-> +            vref-supply =3D <&vref>;
-> +            adi,use-two-lanes;
-> +            adi,gain-milli =3D <870>;
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 52024397dc78..b871d7f25d76 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -15529,6 +15529,14 @@ W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/adc/adi,ltc2378.yaml
->  F:	drivers/iio/adc/ltc2378.c
-> =20
-> +LTC2387 IIO ADC DRIVER
-> +M:	Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> +M:	Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-> +
->  LTC2664 IIO DAC DRIVER
->  M:	Michael Hennerich <michael.hennerich@analog.com>
->  M:	Kim Seer Paller <kimseer.paller@analog.com>
-> --=20
-> 2.34.1
->=20
-
---kalH6PIzx3Y4bVJp
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauDtUgAKCRB4tDGHoIJi
-0mhqAP412YGM8tjEuoPHIpRc3MotpTsdTFAtTjKi6T98iyNx6QEAp/G1BrLrISod
-4STFsH+BlH9SpK8CcvKlU77TLfLSVgk=
-=TQny
------END PGP SIGNATURE-----
-
---kalH6PIzx3Y4bVJp--
+Rodrigo Alencar
