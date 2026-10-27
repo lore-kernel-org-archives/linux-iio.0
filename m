@@ -1,46 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793117985;
-	b=pFsE/X6/lUmmwOWjQe5S+kFTNlmhYjcnSDskKXa1c5C9kfDeLQtS+1syWUSE9u3BepES
-	 6f7xLTPhk81Jxkyu1uftxfWylRIUKUScSMusGAfNSDuRbGXEX+BvUTQ9FoKy53KDa12lf
-	 4sbz30j9F1Kdc1RK36MPypFkoMU8fvTrSBP0rhB3dUGuqzYRFuotfqaCOos3Qh9fiFTM6
-	 bdm/cIV7rYQ28Y8PXDwBKMy2S+hbdtL9ibe0o8rTbR1jY//o/U5cO6Pfw+ZW55F/9DWWE
-	 5ffBKYrnZ+yF5dKaS9BKrHJPdFixlHEHUZ5Otz+FuD7uWL3FusmPw8CyYyxGj7lJ3pA==
+	t=1793117988;
+	b=P9KHze3ww3/yHS7o3tqWq7owY43uVeiX6Q6miFZbnldupj7RNjE/9HQUlBFOyF1I8SiJ
+	 XLT4fZaFuig1KXxkp+3H5IpVySG+R4XAJq1k9rUM9dTh8gQFv4bS2t18NM2NgjGk8Epk0
+	 piX709X4cfi6bxAreC2ddlCo9ulZGnlzSIHW4Z+KYnS9+MC0S+7faTgU+GNCzOjzloWrW
+	 wNLlnhrc95J9HfQBCuby3SZnH0geJ09f3H6PkBijErrxTHVQG8jqlfCiFVSMi/mOygq4V
+	 vnR/WZzfgpHD/avckLcN0iiFAysMPNjhBLDLzF2w5wk9ag1Ee4GzZAEF46GGOija/uA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793117985;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793117988;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=4KsMVf7JGzmeUeS3pME0rOFzTeLahdK1u2oXNHAyHlA=;
-	b=aAHyAlRd5o6F71wbev/t6P4nfGKn4VM0Ixhrvj5NYo+Lni1qFywbPNXq/GtKaJo0xmhS
-	 Ev8U0s1AIjDvvP55ncoIJi5kJMGtpmKnfHnVg5p2VMRGOQe+eNuENEieU8YTkAc+oglIx
-	 Bk4WfPqYE/defVj2pd1e97+4Vd7SuSR7qyF8+cfap1u9jU8uXK2VgI3bMc47Iq207Sval
-	 5ympx0Zy7ivoxBKAx9n/uLk5+Ix+iuLABGjrXpwW7PwmQ3BHn1P8zhrxCcJSZDsdzIq3a
-	 WAg1cm94lb1ZU4eHUi4jyUk3qyBuuiAzdngo0kXGrEQPcZvfGXIjVnelLb5eaA4tOZQ==
+	bh=JHqnh8HFZXcfg5Bs0iN7aIm4Zk/RzkzYfzVPGJj8jBw=;
+	b=O+p/uTWSEErob+/+Cn/eIKCFKhLPNMEXzQdKlvRhcSvra5d8ZnJ5BegE5rm8WdGD6uOV
+	 Zbxv56YTzSXy4YFcHIVQr6J2CUh47hfAN13iFztWuzK80zhlml4sYn3orc5OBxj0D4rYW
+	 4zDSimrbWmIsPVNxWf7/JUpe6539wm1jkd/ucRAMJ6rsTT6IBsYwueisC7eypNTLoN4V2
+	 nUVLmrxYAB6lK4YeXRnM5YLIE8EK4vx7pe5lg/E9S1YHBl0RvfL7ejryeexoxNifO4fYx
+	 ltawd6QxILc5LgJm3iyBHwjCgHXzS++X73a2hNysdWhTdDh3r/a+cVZKRJPdP/G84/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=FNEiMFIO;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=HwAXIM0w;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F3A60A3821;
-	Tue, 27 Oct 2026 16:19:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAA67606A325;
+	Tue, 27 Oct 2026 16:19:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=FNEiMFIO
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5501E1F01828;
-	Tue, 27 Oct 2026 16:19:44 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=HwAXIM0w
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DB5F1F01825;
+	Tue, 27 Oct 2026 16:19:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793117984;
-	bh=4KsMVf7JGzmeUeS3pME0rOFzTeLahdK1u2oXNHAyHlA=;
+	s=korg; t=1793117987;
+	bh=JHqnh8HFZXcfg5Bs0iN7aIm4Zk/RzkzYfzVPGJj8jBw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=FNEiMFIOCcNKa1ICW5DgFHGvqcbzZpKO5zADluau00rjbEbMEakvm09yloAoZSMHP
-	 vYbXgTwB6BgLZUkQnZmkHb9M7wID3bhgCEoP84a9u64MrptSkxemcpyrkaaoM1FO9y
-	 oFLHQdlLZ/jdWUr9XcV4VmGaGx0/0mFq2MWK4raY=
+	b=HwAXIM0wQ2cdheKBWbZHlqVVP+S/eZL4h9PDvkHLhEB9+7Yr6GnNKORywYginxV3M
+	 3jnQvJ/2LS5tPlhglym3BXlmlTIxNB2wV9/GwZcpu4ERSOA58uugjNnxQJWyVs1N9Q
+	 51WDvFJsTvN5aJ09Gl7I9pXDrZIjM0QE3cYC+n4o=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 17:19:14 +0100
-Subject: [PATCH 10/15] iio: light: tsl2591: don't divide by zero with low
- gain
+Date: Tue, 27 Oct 2026 17:19:15 +0100
+Subject: [PATCH 11/15] iio: hid-sensors: fix a division by zero
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,7 +51,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-llm-char-misc-iio-v1-10-0d818334f6c7@linuxfoundation.org>
+Message-Id: <20261027-llm-char-misc-iio-v1-11-0d818334f6c7@linuxfoundation.org>
 References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
 In-Reply-To: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
@@ -61,74 +60,60 @@ Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Lucas Rabaquim <lucas.rabaquim@usp.br>, 
- Matheus Silveira <matheus.feitosa@usp.br>, 
- Stepan Ionichev <sozdayvek@gmail.com>, Joe Sandom <joe.g.sandom@gmail.com>
+ Andy Shevchenko <andy@kernel.org>, 
+ Sanjay Chitroda <sanjayembeddedse@gmail.com>, 
+ Shi Hao <i.shihao.999@gmail.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2094;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1806;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=eaPrto2BMvGsjPbaJV0wiuHpsVsuJ6pcE1h7xYuaKT4=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPzjML7+iyUzmZ+3OLTopc1VqHP6UfFRiz4k6sWGD3q
- t32Xe3CjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZhI7AeGBQte+dTN3RQqdvja
- gpY0w9Y9puanTjPMj1k9h+ebldHvjtCNtxvadsQf8F2lCAA=
+ bh=UZ5MjDoqa+KWSX7qnJ57nq+fwWzyKDKvYAgn0tEKlhI=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPzjP/0XGedMX/Qeu8qzF/bYQZnV4m+p/1OWl+MT/52
+ YOkuvk/OmJZGASZGGTFFFm+bOM5ur/ikKKXoe1pmDmsTCBDGLg4BWAi6zcyLLjAdW838/Wz5nWz
+ z/7JDX7g5vdr92WG+bmdNdta/qw7wzjZNfrwtWsaTvs2vQUA
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-The number of counts per lux is the integration time in milliseconds times
-the gain, divided by 408.  With the low gain, which is 1, and an
-integration time of 100 to 400 ms, that is 0 in integer arithmetic, and
-each read of the illuminance divides by zero.
+convert_to_vtf_format() divides the micro part of a value by
+10^(6 + exp).  The unit exponent of a HID field is a nibble and goes
+down to -8.  For -7 and -8 the argument of int_pow() is negative, which
+the unsigned parameter turns into a huge power of ten: 0 modulo 2^64.
+The division by it is a divide error.  The exponent comes from the report
+descriptor of the sensor hub, the value from a write to the hysteresis
+attribute of the IIO device.
 
-In that case, multiply by the coefficient and divide by the product
-instead.  The result of the other settings does not change.
+Multiply by 10^(-exp - 6) in these two cases.
 
-Fixes: 2335f0d7c790 ("iio: light: Added AMS tsl2591 driver implementation")
+Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and trigger")
 Cc: stable <stable@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>
 Cc: "Nuno Sá" <nuno.sa@analog.com>
 Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Lucas Rabaquim <lucas.rabaquim@usp.br>
-Cc: Matheus Silveira <matheus.feitosa@usp.br>
-Cc: Josef Bacik <josef@toxicpanda.com>
-Cc: Stepan Ionichev <sozdayvek@gmail.com>
-Cc: Joe Sandom <joe.g.sandom@gmail.com>
+Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: Shi Hao <i.shihao.999@gmail.com>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/light/tsl2591.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
-index 286dc09e170f..773b50c17e71 100644
---- a/drivers/iio/light/tsl2591.c
-+++ b/drivers/iio/light/tsl2591.c
-@@ -16,6 +16,7 @@
- #include <linux/interrupt.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
-@@ -424,8 +425,13 @@ static int tsl2591_read_channel_data(struct iio_dev *indio_dev,
- 		}
- 
- 		/* Calculate lux value */
--		lux = ((als_ch0 - als_ch1) *
--		       (1000 - ((als_ch1 * 1000) / als_ch0))) / counts_per_lux;
-+		lux = (als_ch0 - als_ch1) *
-+		      (1000 - ((als_ch1 * 1000) / als_ch0));
-+		if (counts_per_lux)
-+			lux /= counts_per_lux;
-+		else	/* Less than one count per lux */
-+			lux = div_s64((s64)lux * TSL2591_LUX_COEFFICIENT,
-+				      int_time_fval * gain_multi);
- 
- 		dev_dbg(&client->dev, "Raw lux calculation: %d\n", lux);
- 
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 9e7c26e37880..3b0985d500ae 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -140,7 +140,10 @@ static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
+ 	if (val1 < 0 || val2 < 0)
+ 		sign = -1;
+ 	exp = hid_sensor_convert_exponent(exp);
+-	if (exp < 0) {
++	if (exp < -6) {
++		value = abs(val1) * int_pow(10, -exp);
++		value += abs(val2) * int_pow(10, -exp - 6);
++	} else if (exp < 0) {
+ 		divisor = int_pow(10, 6 + exp);
+ 		value = abs(val1) * int_pow(10, -exp);
+ 		value += abs(val2) / divisor;
 
 -- 
 2.56.0
