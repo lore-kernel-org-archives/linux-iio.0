@@ -1,45 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793117988;
-	b=P9KHze3ww3/yHS7o3tqWq7owY43uVeiX6Q6miFZbnldupj7RNjE/9HQUlBFOyF1I8SiJ
-	 XLT4fZaFuig1KXxkp+3H5IpVySG+R4XAJq1k9rUM9dTh8gQFv4bS2t18NM2NgjGk8Epk0
-	 piX709X4cfi6bxAreC2ddlCo9ulZGnlzSIHW4Z+KYnS9+MC0S+7faTgU+GNCzOjzloWrW
-	 wNLlnhrc95J9HfQBCuby3SZnH0geJ09f3H6PkBijErrxTHVQG8jqlfCiFVSMi/mOygq4V
-	 vnR/WZzfgpHD/avckLcN0iiFAysMPNjhBLDLzF2w5wk9ag1Ee4GzZAEF46GGOija/uA==
+	t=1793117991;
+	b=I2N4GSHPBqWC/PXpI4SoS+P6l3SIuVAKsNdZydsdHlWssQ+Fh9gFSYQGwKUEEUB2ZoXZ
+	 79CSuRAa35dK/BcC84HqEZ+65N7KDgFvuWglVfNyyjcki80zUOB+cK550i8kBTH4wHn5d
+	 4D54lqJt6Kn4QfCnFzC8Eoe4IKx3uGCG9YuGe8jZbKL/3JukeDWpY2pnrRzo+jN/gmujP
+	 UlxWZ6PHlBRmWy3gYgEuwCtNNW309BIIoEyRwfDtBQJ7WmTqHjFbfO4LuctxWsgphqTuT
+	 89Ik+yHoeoOrbwtg/QU3+Uw7nkpNo2dyJbqYTe4je2as64mQFZEyC/OvDTnCBg1Gbug==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793117988;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793117991;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=JHqnh8HFZXcfg5Bs0iN7aIm4Zk/RzkzYfzVPGJj8jBw=;
-	b=O+p/uTWSEErob+/+Cn/eIKCFKhLPNMEXzQdKlvRhcSvra5d8ZnJ5BegE5rm8WdGD6uOV
-	 Zbxv56YTzSXy4YFcHIVQr6J2CUh47hfAN13iFztWuzK80zhlml4sYn3orc5OBxj0D4rYW
-	 4zDSimrbWmIsPVNxWf7/JUpe6539wm1jkd/ucRAMJ6rsTT6IBsYwueisC7eypNTLoN4V2
-	 nUVLmrxYAB6lK4YeXRnM5YLIE8EK4vx7pe5lg/E9S1YHBl0RvfL7ejryeexoxNifO4fYx
-	 ltawd6QxILc5LgJm3iyBHwjCgHXzS++X73a2hNysdWhTdDh3r/a+cVZKRJPdP/G84/w==
+	bh=5Qz954FfKhxiBvNDtW0TClzsDfBKO4noqaERMsBmA5Q=;
+	b=t4EiJ9EQ7ENeT8R+DdrGnsMAAToZp2+v/XbAWLMuxjiu/31LY2nAqzuYEg3xsCxIzKuR
+	 rmbBcsrrNdnCPMmvWyrXIz78IP2iR493fOsmuVSNHGfOUqtxiL/YGfrZ6ydIbzCa8+bL0
+	 bRpUWpdoV2O0DlhYqL3QfPfWDWCu1FBpdc0rfSyXhhkzrDD0JkJWwpp/arNkZJh8KUGV4
+	 NGVjx4mv9mFhRfsnCkmiucVLyl/CUOlPUHVsyxcUVX/wcCJCY1MTFT76rwOl9+CWZSPQA
+	 o2p6aIHPA7ekxEgiNUmPAG4qlLOC5g3ZlZeZDm+qyIlSmC1hIAuGHv2LLvqBmfxEADQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=HwAXIM0w;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=O9fWBwjV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAA67606A325;
-	Tue, 27 Oct 2026 16:19:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F372660A2604;
+	Tue, 27 Oct 2026 16:19:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=HwAXIM0w
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DB5F1F01825;
-	Tue, 27 Oct 2026 16:19:47 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=O9fWBwjV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082151F01829;
+	Tue, 27 Oct 2026 16:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793117987;
-	bh=JHqnh8HFZXcfg5Bs0iN7aIm4Zk/RzkzYfzVPGJj8jBw=;
+	s=korg; t=1793117990;
+	bh=5Qz954FfKhxiBvNDtW0TClzsDfBKO4noqaERMsBmA5Q=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=HwAXIM0wQ2cdheKBWbZHlqVVP+S/eZL4h9PDvkHLhEB9+7Yr6GnNKORywYginxV3M
-	 3jnQvJ/2LS5tPlhglym3BXlmlTIxNB2wV9/GwZcpu4ERSOA58uugjNnxQJWyVs1N9Q
-	 51WDvFJsTvN5aJ09Gl7I9pXDrZIjM0QE3cYC+n4o=
+	b=O9fWBwjV9fdtYBAbrFGLXW43ZXLP8e5Mly1RtNT/JEFdzMGZNJj8QlW8Le/fVF2K0
+	 C2qTFKYD3VPnjcEXVeJuwlWUhlKNEAvQvav6fX3swuNh1FGvb2GxVdGxoaMFb4J6MI
+	 b1xeSg0lEOkutVBnh/ep579I3+K9oMOoaiJ3AT1k=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 17:19:15 +0100
-Subject: [PATCH 11/15] iio: hid-sensors: fix a division by zero
+Date: Tue, 27 Oct 2026 17:19:16 +0100
+Subject: [PATCH 12/15] iio: imu: inv_mpu6050: don't disable the IRQ under
+ lock
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,69 +52,94 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-llm-char-misc-iio-v1-11-0d818334f6c7@linuxfoundation.org>
+Message-Id: <20261027-llm-char-misc-iio-v1-12-0d818334f6c7@linuxfoundation.org>
 References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
 In-Reply-To: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Sanjay Chitroda <sanjayembeddedse@gmail.com>, 
- Shi Hao <i.shihao.999@gmail.com>
+ Andy Shevchenko <andy@kernel.org>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1806;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2410;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=UZ5MjDoqa+KWSX7qnJ57nq+fwWzyKDKvYAgn0tEKlhI=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPzjP/0XGedMX/Qeu8qzF/bYQZnV4m+p/1OWl+MT/52
- YOkuvk/OmJZGASZGGTFFFm+bOM5ur/ikKKXoe1pmDmsTCBDGLg4BWAi6zcyLLjAdW838/Wz5nWz
- z/7JDX7g5vdr92WG+bmdNdta/qw7wzjZNfrwtWsaTvs2vQUA
+ bh=BFJs09BfJW/TDsVBDvZCHtVCvlIyhy2kepf0ms+E/60=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPzjMfWXP1hGHkg2kF3i8Yyhk2L9Ka5m0u49r6+8jPm
+ Ur5TxYs64hlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJPC1mmB93VnTDpnT/M597
+ nu5U7tofJzA/3JxhwY2ElXnlLu2x236V1aYw/jjafe7WLAA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-convert_to_vtf_format() divides the micro part of a value by
-10^(6 + exp).  The unit exponent of a HID field is a nibble and goes
-down to -8.  For -7 and -8 the argument of int_pow() is negative, which
-the unsigned parameter turns into a huge power of ten: 0 modulo 2^64.
-The division by it is a divide error.  The exponent comes from the report
-descriptor of the sensor hub, the value from a write to the hysteresis
-attribute of the IIO device.
+If the chip is a wake-up source, inv_mpu_suspend() calls disable_irq() with
+st->lock held.  disable_irq() waits for the threaded handler, and
+inv_mpu6050_interrupt_handle() takes st->lock to read the interrupt
+status.  If the chip raises an interrupt while the system is being
+suspended, the handler waits for the lock, the suspend callback waits for
+the handler, and the suspend hangs.
 
-Multiply by 10^(-exp - 6) in these two cases.
+Disable the interrupt once the lock has been dropped.
 
-Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and trigger")
+Fixes: 305914d01807 ("iio: imu: inv_mpu6050: add WoM suspend wakeup with low-power mode")
 Cc: stable <stable@kernel.org>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Cc: David Lechner <dlechner@baylibre.com>
 Cc: "Nuno Sá" <nuno.sa@analog.com>
 Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: Shi Hao <i.shihao.999@gmail.com>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index 9e7c26e37880..3b0985d500ae 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -140,7 +140,10 @@ static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
- 	if (val1 < 0 || val2 < 0)
- 		sign = -1;
- 	exp = hid_sensor_convert_exponent(exp);
--	if (exp < 0) {
-+	if (exp < -6) {
-+		value = abs(val1) * int_pow(10, -exp);
-+		value += abs(val2) * int_pow(10, -exp - 6);
-+	} else if (exp < 0) {
- 		divisor = int_pow(10, 6 + exp);
- 		value = abs(val1) * int_pow(10, -exp);
- 		value += abs(val2) / divisor;
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 38c3f3b398d4..0ae9d497ccfd 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -2166,7 +2166,7 @@ static int inv_mpu_resume(struct device *dev)
+ 	return result;
+ }
+ 
+-static int inv_mpu_suspend(struct device *dev)
++static int __inv_mpu_suspend(struct device *dev, bool *disable)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+@@ -2212,7 +2212,7 @@ static int inv_mpu_suspend(struct device *dev)
+ 		if (result)
+ 			return result;
+ 		enable_irq_wake(st->irq);
+-		disable_irq(st->irq);
++		*disable = true;
+ 	} else {
+ 		result = inv_mpu6050_set_power_itg(st, false);
+ 		if (result)
+@@ -2223,6 +2223,21 @@ static int inv_mpu_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
++static int inv_mpu_suspend(struct device *dev)
++{
++	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(dev));
++	bool disable = false;
++	int result;
++
++	result = __inv_mpu_suspend(dev, &disable);
++
++	/* Not under st->lock: this waits for the handler, which takes it */
++	if (disable)
++		disable_irq(st->irq);
++
++	return result;
++}
++
+ static int inv_mpu_runtime_suspend(struct device *dev)
+ {
+ 	struct inv_mpu6050_state *st = iio_priv(dev_get_drvdata(dev));
 
 -- 
 2.56.0
