@@ -1,79 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793086811;
-	b=swbNtN+m4l7fiI/1gQY1aY62Q8GVMXcLgx6pPjHSRshugQcpQtdmI6caAMS5QTyz1UAw
-	 vV3vqGSUDpy7KLfdRpVY76XKUSrYWVZEvc27FO93bm28x4bugFu2XAiLY+rYgE4sNZPPR
-	 hup1zyhiWtVb0OzUW0ziun2c2L2qMHxPeLGxErFuib8aZg+29zQF9toZ2xu+GqNRo8m0Q
-	 TQ520CtLRgo7zNbL8Pkm5HhDCqZQ9300/uZ3TUzqTZrSbgJD3POU8d1KRSajy2GIJWVWE
-	 xCzaiyRFIY+XbjxJvL7CSuFefFpiDDqcuVpFBHd3CGJZONbtlrg0Q6w8R4zEofzrUqw==
+	t=1793088289;
+	b=MkSs1e62xTlew5lrNHS4Atzn6zuexgKKqujHczhxXG2j9EGeCzrE6eNUjMklIW6ZGVdV
+	 fZoTbYMVq3WX1HUmkuNYirEfJkzpsr/LE+s0taI6RI9t1Qc/C0aBIx49oY4h2iO3l7UKf
+	 Rw+joEa9LXwVhmKM9nn/ENOkcPQbIZemlkPWDt8tohS1fEdN0iWThjd4EnyPAXXRMOFL7
+	 N59wG2QfyC9w5XVwXaHvkko+UUUFvkw9Emj5Xrb9td6PW7XYj7IuPOdXl4+z+4JOftIz8
+	 2XLQD1t7GofywxYFOKSiSfyFRtEznpZ9xFgstzFLqkXqniNZeABIGIGg0JldAh7jvBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793086811;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=zhzRbOY+f2fkhfI8wKvgdJCyZcEUpeNqMO1bmo1gL0Y=;
-	b=K9Tzn2BMV5P7ihWtLr7oEeV8v6Okq3DmfZO6ed7sQIhfkHaHNQKll8vMFirOI+PPPPBj
-	 GIjOLFtuSZJnWT5TrWTs5TxAMdhkmbjwwN53ylP/iwPrWBqgAVnAFWFL2FV5MVQ6cmRHS
-	 440xAENVVV14szybBVCnc2mF4FknguyiSQvnxLEIPvj9/ipq62ltZheetYBKemBtHNbup
-	 cvIw/w1h+TFqGVkM7IMiT+Fw2BHu1WBYkYGuc1QQgEaDHm3KntosuvEnvaoO4ewrJ7ud2
-	 wdzZyH89dW0RXEu1yalHywC6rNmxXhNanWyLkJm4RYN3hay/ECB/ixclkFBpmiz+KaQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793088289;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=ZL1gpW7p4ard24lSO9/+2V0/hqF98a+IvwOAZv1vj7A=;
+	b=QrjDuEwLXEYlyuSGQGD+Z/C0CDFGeZO7oHF1qofXiPe1ZzbhJbHygjBkVv842XSmbpVu
+	 wc6dE4rTXURKhX+6GR1KqcE4oS1pEuBuUM3TzNcdGgcT9P0aj6zbWxLER2Bb6oGNPoPhH
+	 FSPFw8XJb+Rda9nXAiDrAX06PjTKkCw9mKUBeoVxmJpsqoMbSnd3HBJwmec+iwiqTBiNU
+	 01bgWr38CO2aMdZKj4GxvKOMKHaypwOeqptXvXG54kdsvkiJnYLfSTbpP7jRTMVM27IjO
+	 2x3DV3Yyj02QI7R8T2nH5c6fFqJz3za72/CORAA6B2whPMGkC1JuNKn3XQKljmAT87Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nPs8ehIB;
-	arc=none smtp.remote-ip=192.198.163.11
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kOFIK9R3;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DFAF606A31A;
-	Tue, 27 Oct 2026 07:40:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4DFAF606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944AA606A31D;
+	Tue, 27 Oct 2026 08:04:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nPs8ehIB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793086809; x=1824622809;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VOrxgR1L2PkAfv7reE/vBjtMkl1xSbA981UX2w0vwKM=;
-  b=nPs8ehIB4AeZ0M6vKCh7dkreqSksv0tvhZiTHNIHfO2W6eY7wXmwKLZ5
-   k04N2YBEK8OfaD2BudbMBLzIgCRXtokYnjoPznXWjtMJomJF/VWcacDWQ
-   fUbdA3lQmaT43wfZbOnXx76QgEOP65hytf1CSp4wiSgBaT4lpyNW9dpH+
-   KshxV0mk74HFAwcX7SmnvGy5Yb8GI9uOUXR0k5CDtNmVrma9mj01vvrWn
-   7jKXiKmulyAGFd349no+OEmyZrOhSh4ZSPOB3tAeR6R0CbOg7L5Z1y7Hp
-   tQBm8J8j6GJ0b/O2+2DqMzePaasNK+LuqieNTc8EEaGeFlsVOEEE3bUte
-   w==;
-X-CSE-ConnectionGUID: XkPr2EXzTPOAqbsznK9hww==
-X-CSE-MsgGUID: F3CWHr5zSUqI0az6dp3a/w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1689915"
-X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
-   d="scan'208";a="1689915"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 00:40:09 -0700
-X-CSE-ConnectionGUID: hUQzUt6LTd2GxtwR6NNHmg==
-X-CSE-MsgGUID: wU/CpHueSe2bzmMIPEj2qw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
-   d="scan'208";a="4865936"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 00:40:07 -0700
-Date: Tue, 27 Oct 2026 09:40:04 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tristan Madani <tristmd@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-	tristan@talencesecurity.com
-Subject: Re: [PATCH] iio: adc: pac1934: validate ACPI _DSM return type and
- bounds
-Message-ID: <auBVVIuIPhZZf9OH@ashevche-desk.local>
-References: <20261026230910.2569782-1-tristan@talencesecurity.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kOFIK9R3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E761F031E2;
+	Tue, 27 Oct 2026 08:04:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793088289;
+	bh=ZL1gpW7p4ard24lSO9/+2V0/hqF98a+IvwOAZv1vj7A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=kOFIK9R30fCpE+kzywtFEXksr4BIrnOkyAqNjGnji/boXE+SHiUCokPAb0BYrOfaE
+	 3Ij2CbhXsxbCf7Xduo0Kimt9MtZRokiJYe6R1D4ib9sadBZk4Ja2FHFKBqlEEWxrB+
+	 SATNGY2WB8GUKMR2SBxC0areS6/Zdha/vir4HXyjZ+TtByRtUbJCLd7BGk+8DA+J+o
+	 otee2mf26zka3gFjg0OMVd7itagJs0B0Lc+vgX+NWjc7RRW4S2gKInisCiInE1kbN4
+	 iHxROV2v+Qa8Fl8K95pih6+jxxvX6n8tbKuHlUkBmYabIxRzFtJDlbyZeh90w/S70/
+	 PNpA6Rgz4cbLg==
+Date: Tue, 27 Oct 2026 09:04:45 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Stephan Costa Barros <stephanbrrs8@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Mike Looijmans <mike.looijmans@topic.nl>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/6] dt-bindings: iio: adc: ti,ads1298: add ADS1299
+Message-ID: <20261027-slick-rhino-of-vastness-5cfe0c@quoll>
+References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
+ <20261024231335.280955-6-stephanbrrs8@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,66 +62,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261026230910.2569782-1-tristan@talencesecurity.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20261024231335.280955-6-stephanbrrs8@gmail.com>
 
-On Mon, Oct 26, 2026 at 11:09:10PM +0000, Tristan Madani wrote:
-> pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
-> times to read channel configuration but does not validate the returned
-> object type or array bounds:
+On Sat, Oct 24, 2026 at 08:13:34PM -0300, Stephan Costa Barros wrote:
+> The ADS1299 is an 8-channel, 24-bit biopotential ADC for EEG with the
+> register map of the ADS129x. It differs in its gains, data rates and
+> ID layout, and has a fixed 4.5 V internal reference. The ADS1299-4 and
+> ADS1299-6 are the same part with four and six channels.
 > 
->   1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
->      firmware returns a different type, accessing rez->package.count
->      and rez->package.elements on a non-package object produces
->      unpredictable values.
+> TI sells the 8-channel part as plain ADS1299, so ti,ads1299 names it,
+> and it is the fallback for ti,ads1299-4 and ti,ads1299-6: the channel
+> count can be read from the ID register. The ADS1299 is not compatible
+> with the ADS1298, so ti,ads1298 is not a fallback for it.
 > 
->   2. The loop bounds use rez->package.count directly without capping
->      to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
->      than expected causes writes past the fixed-size labels[],
->      shunts[], and active_channels[] arrays.
+> In the same way, give each ADS129x part a compatible, with ti,ads1298 as
+> the fallback: the ID register tells the parts apart, by family and
+> channel count. ti,ads1298 alone remains valid, so existing device trees
+> are not affected.
 > 
->   3. The bipolar and sample rate DSM calls access elements[0] without
->      verifying package.count >= 1.
+> Both families have a digital supply, DVDD, and an active-low power-down
+> pin, PWDN, which the binding did not describe. Add them, both optional.
 > 
-> Add ACPI_TYPE_PACKAGE validation after each acpi_evaluate_dsm() call,
-> cap loop iterations to PAC1934_MAX_NUM_CHANNELS, and verify package
-> count >= 1 before accessing elements[0].
+> Add myself as a maintainer of the binding, next to Mike.
+> 
+> Signed-off-by: Stephan Costa Barros <stephanbrrs8@gmail.com>
+> ---
+>  .../bindings/iio/adc/ti,ads1298.yaml          | 41 +++++++++++++++----
+>  1 file changed, 34 insertions(+), 7 deletions(-)
 
-...
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
->  	rez = acpi_evaluate_dsm(handle, &guid, 0, PAC1934_ACPI_GET_NAMES_AND_MOHMS_VALS, NULL);
->  	if (!rez)
->  		return -EINVAL;
-> +	if (rez->type != ACPI_TYPE_PACKAGE) {
-> +		ACPI_FREE(rez);
-> +		return -EINVAL;
-> +	}
-
-So, what's wrong with acpi_evaluate_dsm_typed()?
-Ditto for other cases below.
-
-...
-
-> -	for (i = 0; i < rez->package.count; i += 2) {
-> +	for (i = 0; i + 1 < rez->package.count &&
-> +	     i / 2 < PAC1934_MAX_NUM_CHANNELS; i += 2) {
-
-This is ugly and inefficient. Why can't you just check count to be even number?
-Or choose the limit in the loop making it an even number?
-
-	for (i = 0; i < (rez->package.count & ~1); i += 2) {
-
->  		idx = i / 2;
->  		info->labels[idx] =
->  			devm_kmemdup(dev, rez->package.elements[i].string.pointer,
-
->  	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards,
+Krzysztof
 
