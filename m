@@ -1,76 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793096659;
-	b=bNujpboCv5jgrul8xPkLdvduw49rjstk3hkKsnfpvo7IkFMU8n/vbdlXUdEwrKRx6wpN
-	 3jF9ax2TI6ZzP8ftsKNRTEefeiQ9JsjqVFK6OPkLdgw9soSdoAdJsr4Aw5YV8Rcv0cnLY
-	 GgrJlZh59VCAKpFHPD/06cyDtSRkRovik/A6P4BfOvWtMrpvP2FMQzDgW6+xXN31q8rqr
-	 BXYfltkq0GrJtFv1kPiymxD9bY8mmzjVGBef2LvEuIq51LuLlb3d5H2rIlMoI6UxQXwsL
-	 6y+y1fF+zBPS0jsc72aJoPYQwZUBMkjDZrOTIJ8KFuDD1fFRBvHa9N7EXdmw+TqZpnw==
+	t=1793096883;
+	b=e/HOf84wSI/AR3YsqxsDI6NmqiK00BwVawmfWkurCYlsEGmNjxGWgDTECtg8h2KmSrfN
+	 s/4b50XHCTIlM0ht/ccNdnjt7Yt/OJ/a9+C1XwSZXSwoMaWi6B4ZFWz80IUtKgYr1oCr5
+	 C9WgAfrvErQkAnD3Py0WNZvIKeo4LJsCa5xDdseptLGXSGEQYo8qXqJaDsQO0tvDxQLaO
+	 mq/bl28jUuGoZonhzbIarE3PYZ7u+lGAMhrtTZ/s4pt1k+/AXcM8IltT06eImcLQ5Wxbk
+	 cOPrr6e6C1z/LhA2x3w8JA6Z6N3dZyg+I0XNXtS5oFTulIbPBrt24ht7c/z0+J2b71A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793096659;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793096883;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=MH+utCLByoHUrkCDfZ5Khn4rliwPXSZJfLR+w81syWg=;
-	b=IECFiPdcSLHQMJiEcd3uOAK0UQiLrZJDXYGlaNuHcSA/IDgG8RZVvVOas06q4y78dffa
-	 F0eoykugZ9ulvMZU/qY8Q1rA1NMbvh53vrwZ0+VHU9qe1ZpdEcGOqJ0Sfy/xFGzPKbVcK
-	 m9Xjt8ghX1R4viq0FyXW0BnzwaMXoyMcNhKY7DK+wFQHl0op1G6fZt/whncDWZJmWu2rN
-	 RVt2yKtvzWbv01hymIjGjmj2AGKU7g9ciVRb0FqXrrHxY5yVjufhCSmfI2vfaHQrZ4sWr
-	 NqF7GiMzxVbBr4+z4MEp/SWNBBGh4JYwrE5UJCIA3O12AgB0EGHAh2EZe9JPXgLs1Ig==
+	bh=pdXVOduGggyLG0Xo/K1PJVGxfUF7RtBliaZz/jOyAys=;
+	b=TrouCOtw0oz9vrZ0dld+QxybqBD7/1or28SEq5wXomCvu7KMgW+VdM3yVf0aKd9+XgBu
+	 racmE2h9/mB2a+Y3zET0xTYTDSK6dW/sYkwWsbQ4HFgBYbpKwfzSWfbvg3v9L6qEls0MK
+	 A2zQIWOMV55h62ZUOu2UTEePKXXgVu8/zzQjf/9qk2ZrPwZuHh7fEvXrnLW/QkG4cwQbj
+	 l9jFpnAyXi6IC01ExrIEXDcI6+BqhYVxaaiEMusw+mRw8is0rdA9pvd54GUsgt79fNWsb
+	 KqyoVhhaBucD1bsbyUMEE+eivGYC/rdyWssrEkU2Q+EFCdpVk4ADbxRFmDzDKu9Blng==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=azW2Asqz;
-	arc=none smtp.remote-ip=198.175.65.12
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nWJTHLwk;
+	arc=none smtp.remote-ip=198.175.65.14
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70102606A31E
-	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 10:24:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70102606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684A5606A31F
+	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 10:28:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 684A5606A31F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=azW2Asqz
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nWJTHLwk
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793096659; x=1824632659;
+  t=1793096882; x=1824632882;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=QMU/oM4MD0LAaHarQu7t7HgzgZowp7/olk8I1Z06YEs=;
-  b=azW2AsqzNpNKzKQoHWYcm1snGwX2UD1YNJPM3nAEN2hOO/h5h008zO8p
-   9Q/Lt4/PvZRgIM1EoPnz3qcvDGWB0l1RnjWgPKRaMCWUk/CQPxoknRJ1t
-   4JS8hKPPLn5X/I9hQG8fbIHG1LM2KIYP0/8OaLs568V/YWiHW+r7rjDCL
-   hTkqrU9PwdspuickNerX3jkIr2pm8MJOnjB65YM2Q0BSZr83tvl3UcCnd
-   RXrJ8T9paZB/LuLmTtoPhMP6GpCAZsax3sYlnlr2df7JOdTJI+dVvEBcb
-   bcqQD5Bs+N2sCfdXyZxIvfbKpX428e5WhbGrJvx+r682TQ6fe7jQ4N/r9
-   A==;
-X-CSE-ConnectionGUID: DFxhr7Z1RWeMbha6+VKIbw==
-X-CSE-MsgGUID: OOmSowGIQmK4VXR+Vgo+jw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1676350"
+  bh=u6dn5xaAoP2y7xrISH+CIMNh/ZfLhFg8VqgfyrS1ZwQ=;
+  b=nWJTHLwk5dAlICvagll8eKZ6dGHfnLFrX2A7IaIzcnBwFX0UwuJAcrKm
+   WVT+WL2aK3w39DeV1Z3E9gZjPNoBVXtcaNysAYTJ/ojHmQ07Z9mvJoXYh
+   sEDHZQSFU/04BKB3J6JHny1Fqwaps964NgDGbOB36NbETQFKAvreWsBLq
+   udk2Z+svC7JlDltxwDXxQ3UXSZ/TLiWffxGeyCVw8L6uArV2SCHgKFYDW
+   55cT0Tk1qUqfnn6V9IvWIWeRfGORv8hUD/ejrPGO90ZXICtuL7fvvE+Fl
+   StfrLLbQE/8oCEApiZWx/006PqYpuNDT+DW8MdWBSiianJM9x7fBE3oYi
+   g==;
+X-CSE-ConnectionGUID: MtnfxEz/TYOcPK/uDmouxw==
+X-CSE-MsgGUID: b62S5zWBTNK4/Tp5PpyI3g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1669742"
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1676350"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:24:19 -0700
-X-CSE-ConnectionGUID: /U5xIUatQ1GFHoQXL+3CQA==
-X-CSE-MsgGUID: Wi48zNwpQjyaE+IkKHlqBA==
+   d="scan'208";a="1669742"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:28:01 -0700
+X-CSE-ConnectionGUID: a4nmKb6JRO6ifASe2Atnjg==
+X-CSE-MsgGUID: qRWtLDEGQEufG6yDQkEmGg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="4590658"
+   d="scan'208";a="4414069"
 Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:24:17 -0700
-Date: Tue, 27 Oct 2026 12:24:14 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:27:59 -0700
+Date: Tue, 27 Oct 2026 12:27:56 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH 32/39] iio: adc: ad7887: use iio_push_to_buffers_with_ts()
-Message-ID: <auB7zg8H8bMGchzw@ashevche-desk.local>
+Subject: Re: [PATCH 35/39] iio: accel: bmc150-accel-core: use
+ iio_push_to_buffers_with_ts()
+Message-ID: <auB8rKIaXGRfai6b@ashevche-desk.local>
 References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
- <20261026-iio-v1-32-8b136778eedf@oss.qualcomm.com>
+ <20261026-iio-v1-35-8b136778eedf@oss.qualcomm.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,36 +83,32 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261026-iio-v1-32-8b136778eedf@oss.qualcomm.com>
+In-Reply-To: <20261026-iio-v1-35-8b136778eedf@oss.qualcomm.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 26, 2026 at 04:05:50PM -0700, Jonathan Cameron wrote:
+On Mon, Oct 26, 2026 at 04:05:53PM -0700, Jonathan Cameron wrote:
 > Replace the deprecated iio_push_to_buffers_with_timestamp() with
 > iio_push_to_buffers_with_ts(), passing the size of the pushed buffer,
-> which is a structure within the iio_priv() data.
+> at both call sites.
 > 
-> Replace the data buffer with one declared via
-> IIO_DECLARE_DMA_BUFFER_WITH_TS(), for 2 __be16 channels.
-> 
-> Use be16_to_cpu() to replace the opencoded equivalent.
+> The triggered buffer handler read into a separate fixed buffer rather
+> than the scan buffer used for the FIFO path. Use the scan buffer
+> directly and drop the now unused buffer field. This also corrects the
+> type of the read destination to __le16 to match the scan buffer's
+> channels array. Widen the mutex-held region to cover the use of scan.
 
 ...
 
-> Otherwise I might just rip out the pdata path in the near future.
-> This patch being an example of how it is causing maintenance burden.
+>  	u8 fifo_mode, watermark;
+> -	s16 buffer[8];
 
-I don't see users in the kernel, I think we may just drop it for good.
-If anybody wants that, they can use software nodes in the future, no
-revert will even be considered.
+I have a weak memory that I have seen a patch that reuses scan buffer instead
+of dedicated one, but I'm not sure if it was against this driver (and if so,
+why it got not applied).
 
-...
-
-> -	return (st->data[(ch * 2)] << 8) | st->data[(ch * 2) + 1];
-> +	return be16_to_cpu(st->data[ch]);
-
-Add asm/byteorder.h into include block. And yes, the include block is a mess
-in this driver.
+It might be this one 8c5f649119f4 ("iio: accel: kionix-kx022a: use scan struct
+for one-shot and trigger reads").
 
 -- 
 With Best Regards,
