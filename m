@@ -1,99 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793089071;
-	b=ehC9XQVhFoA1XwVRbVBbopLfctJVGzkelSoBMeb2huCuUq17zdA8P7aNd2yBYbX26qaY
-	 QYjsp8gwsPOD4EjShdwyWVmwzdZbxiriCoojaaP6YjBt9zS7ctEqqOqlrzAIT1aikkTIu
-	 qvkmCYqbRiXCHEbH6IVQAY6PBZR/ccNh8izSLv+aepO1FaSRj6nAFnha7zEdtuF0dIIWM
-	 mxi0EyioKawhcozTNTXxhShp0mOI+GkR8tBAJMuJyZVvXWaONQjXSfuyrPJ380paFHHHi
-	 /sC1ABdojb1Ql72KRzEKuchX79+3DlBaTUGjWuTrAUCOjsOSh42VOai16BKYxZb0Qww==
+	t=1793089277;
+	b=vEGWsxU3xWE31zr6+BkksHrAFIbZhKVossLOFxbNBRkvGUxTAjYt3ymnd7/E/JXytggp
+	 5nmL8BP4NvM5mOX/deEWURY6c6GIaoXLkrHxgBN8AxkvCrwHx53+kCfuWik0IJgG3To4L
+	 7I3a9rJBV6+Odtk1Mo71+rro2WtConm6zK9QA5DAR176O0ZgVTNMQJ+X4umlBWk5QHrKe
+	 /2R2aeOL3+enrZpxcLSrH8Cdf4NWcB9whahpNqr+6WsDfWtE+JafTrU5HUpXhlv87GzL2
+	 9EKEkGyY0ii5eDYtJNR/MgQnOBKl+uTXSgkcQVWl+BbXvPNFHl22O1Aem8/vKR077nA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793089071;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=6pSRZs9to8QozgPzXBQtkQ5486leq3++5McafqcUDu4=;
-	b=ugbfOwKOng87bUR7VE0pD0xjSD8Jc6/SpryXLuEWXcJjTVNbDrfg/K9jEdQf96DQ0fLz
-	 0yPyAuGfCkPdtWW7337BbyuTqmjkmq07sUejSo/KN7fbCWYnCKUss+NQquldNaBm41WdV
-	 vEy3Zz0uPiJYCMWgG30na5gAnaauJ2flI2stsqJIrceDrgd0vxAoKzkiLvra7aumRUJ+u
-	 8vkk4BF8rjkix/JuJ3LYvJFQ3lKxFAOsQy1fZOhXj7TijOrvuW2XEoUvk31U2wB+NMPfd
-	 /Fm3QBrQ6FLk6MgCb0G6SFzhZPqt6roUlwFwr5jHxqtP0Ewj6FXgFXL8NQeshNBXtcg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793089277;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=jXudob4FNwiWo3hKeRI2goSq7uyjjvjV5QYY8az2u1I=;
+	b=Gwryxgzq63bNFgYMGWjm4Rc54quExQumIvIkLJ65vqkjmGTwnwxlUd6MT5CWoCdVqops
+	 P0Nk0sbVW1SlHSQDJFV8IFnBmB8/GJgS/Y1SAdMwkCZMr85jT4Vi8gTeyD9YdOv460CcC
+	 yeVRyGWamWn635+ChsEAbcyY02ZMGEJt4cNvrsCue96AVYb5JBvpf6gHAIyahdqqkpb1d
+	 Ao01x2gwfbpQ/JyQ9/bL82ZTZLSUnD9YigmarYhG5JDX1Zli8JG7iLwwHLMkzuKmp77V1
+	 uFMwLM0kVDqcn4qLjFlvb83F/bFdQn8uXmOG356xJMaDHshXoTKRGfvIx/6DhIsCN/g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=W3GY38+c;
-	arc=none smtp.remote-ip=209.85.128.41
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NJDSf8Ts;
+	arc=none smtp.remote-ip=192.198.163.13
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A13E606A31E
-	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 08:17:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6A13E606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F842606A31B
+	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 08:21:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F842606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=W3GY38+c
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a1fbd52ab6so24690995e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 01:17:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793089070; x=1793693870; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=6pSRZs9to8QozgPzXBQtkQ5486leq3++5McafqcUDu4=;
-        b=W3GY38+cy5nyGOTXHCSp+3n6w0AYvVRXiUp7A2Cbk8DDVn53KpGA3YH0vEo+qOXf8I
-         7FmBu9L5EEOfCdqmeWvs+lTFXCJg3XTuz6XG7PsnsHmOzKk0jXvxilPJYttD4o25udUL
-         jA+uWvXmpZ9sjFhO7hdPijqhVKTor05LH5Gigd3IXfDZ5ALOlFLVB4qoYgfGATSEkH1G
-         nqXE7YSHSwnADsebID64gYRdcuoYFUHpaaDpeBgu+8RSXk8xlc3Bi4ZwBhyc02nF8cDA
-         aOIWnyp7+eBYtLRllxxED0j5E61ih2JASp37+Q1wv9/8wLGtWe4d0Z1fUCPXDnse02mM
-         O9rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793089070; x=1793693870;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=6pSRZs9to8QozgPzXBQtkQ5486leq3++5McafqcUDu4=;
-        b=WDH/rh2SVSQcAcdRpJ0lO08HN7UsbCnZ1RSFXw6j2gwRQU8zGVeMMItdAXBPcPWo1p
-         GrDBps6QO5ng5GsWZdh2kE/+aSfUPgc7EETwck8aNqxigxNUzXAxgC1QVzUfN3d0MoZ7
-         WXnBLqXt9pBM6DGs0N7PwLgqjKqZovuzcKWNFNT0HmJw/zb9beaG9beAspjgU9cPMASm
-         o+dqcxBrxvsuHuehucupl7osMqmdt4341kIrUSxaGq4epImAhOPstzrlm2564N/V4GOt
-         fsDbIKpTjtZkSixDFGS+JoJQJIC6soOcTRjOHjpensVLdQGPT58KVnpJgGs9yLNV595O
-         ib7Q==
-X-Forwarded-Encrypted: i=1; AKwUvByvtwXtbnR5K96d4A6r+mvQy2YpgxghIN+JEHX5MeL08tSLIYZgc3/oszes/Aj72pcBjqjIFawdIto=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLn3r5PgkmBeiKZ92fkM/oqFq1rcY1721fk81OiXPreAHat7uXc
-	H+qOmUtEfQ0YXzxgd6PmPS7z8MsSPxdWEGSxaAT+sdvafI4xSsq9ntFkLTldDA==
-X-Gm-Gg: AYBFou2zJt3E7I8H+LXWRnXdJw15l3VW4OCo0NcPr8zdpSv3hsPQDnOQGYTMyoQiLWy
-	U1valtWdU1M+WxhxNueWYjU7R9Gl5399Ut/GUlfMcVObNjRViJiYexvbymuO8FRyimHBulN7wkX
-	mCyNhMgJxeNtR9wWICYH2UrDKAS0oZuMaaL9qwC5gp4Vt33S+PdQXvBG0eoNArJpKLtJlNsXiNG
-	Sd8j9ZJMae2U7IUCykdbE1EZuoOg8Vimp0ZT/vuQpESoWTiMECgQrX4/DYBrSTaPav5c7HfxEHq
-	3h5F1a/S6tEdGuRA+9jmrIdlTV4nb/jpQ0KvgzOEHmF9nLsNh/V7MKTdmExUSd3tOtqMAZtMvhP
-	GERolabXz1RX2xhqCy0evdMhmpjK4jgw/eNGR91gIoQ0Iam0Qv9VOo9/DDGkLVaEMVBFM/mB5ln
-	+gTK5mRSjs61VsLC7vctL+aDwF5PStM1diNqQQ6VMvfQEAqSacI8lE3tsSIfbyTu7/9+c6mgE3y
-	cJGJMFZKOCzbQ76eYs4iqwBKUWs/HjDiDSw9+69nVbDDqxK8e2t6wNjeqK3//K4R6etZ3R+QXEb
-	M6Fm8lAWiSUrKAiRZwCixBpi3IOdvNuPehXCwQXdC7aBaCOj28axRPwuKN7heuxzg5D3IjT/kmk
-	pW0GNkI67NNpMSbwjMIgDmUp9QLyKxqVXJ+GMHdhMaxyTxH4ysKB1K0F/BCEbNz8k30RZ2WBShO
-	HCGtBgvUNMbDPD8+pDOMOXpvIfI7OT7Q1iFQ+Vkp5gSbRzcGFmp5LD5Tk7MVlDog==
-X-Received: by 2002:a05:600c:37cc:b0:4a1:f720:74cd with SMTP id 5b1f17b1804b1-4a35acaf08fmr170013745e9.24.1793089069570;
-        Tue, 27 Oct 2026 01:17:49 -0700 (PDT)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a0aa0bcsm311304615e9.4.2026.10.27.01.17.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2026 01:17:49 -0700 (PDT)
-Date: Tue, 27 Oct 2026 09:17:47 +0100
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <20261027091747.000040c9@gmail.com>
-In-Reply-To: <SN1PR12MB2528DB8EE8ACEBF9551ED52EA5612@SN1PR12MB2528.namprd12.prod.outlook.com>
-References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
-	<SN1PR12MB2528DB8EE8ACEBF9551ED52EA5612@SN1PR12MB2528.namprd12.prod.outlook.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NJDSf8Ts
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793089276; x=1824625276;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XiDkEh7B3Izv8UXVNWN+A7npyoKvcNWJC5jYfCpWRGU=;
+  b=NJDSf8TshkZLWCyTMm+ab69xwgy45PfeTJlnWEQTkj99G2kfZ7tgUrd5
+   bHYvEIAMGePyIgsyIeZVw1wzAciYHSZyKvsLfwAtGjYdlPJlKJKEBv2ID
+   wKgdeLJ6b5vWL5Os7TvG7lwemJqV/jELRtQlS/EtKUsHwtiope2w563nu
+   tg6CLrjFBe38Qn0SGRWl2Mh2HgsyfvBIfD4rR6hdZLTHBjzRqkh1vmZ3a
+   +xMVt8+cE16yACLYmdVMPVx306d8dLcaVOm0VoAsiqHZpRCKV65NY5TpD
+   Bs8/0dYuKd1yT/YZgF/FAAOHI1u7xh3H1JW4aTfNV4aCOfB5caVUF3yuy
+   Q==;
+X-CSE-ConnectionGUID: jIn1U4fRRA2UVaS6FhE/hw==
+X-CSE-MsgGUID: AcAodntwSrmqmabpQqEikQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1776599"
+X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
+   d="scan'208";a="1776599"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 01:21:15 -0700
+X-CSE-ConnectionGUID: T0OskXOZQWacvSVk2bu7EQ==
+X-CSE-MsgGUID: mzH7Zn42QAijCoDNpaI+zg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,180,1787036400"; 
+   d="scan'208";a="4570073"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 01:21:13 -0700
+Date: Tue, 27 Oct 2026 10:21:11 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Zhang Lixu <lixu.zhang@intel.com>
+Subject: Re: [PATCH 05/39] iio: hid-sensors: use iio_push_to_buffers_with_ts()
+Message-ID: <auBe99wrAxb-Bc6H@ashevche-desk.local>
+References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
+ <20261026-iio-v1-5-8b136778eedf@oss.qualcomm.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,28 +82,29 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261026-iio-v1-5-8b136778eedf@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 26 Oct 2026 11:51:14 -0500
-Victor Chernyakin <chernyakin.victor.j@outlook.com> wrote:
+On Mon, Oct 26, 2026 at 04:05:23PM -0700, Jonathan Cameron wrote:
+> Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
+> 
+> For hid-sensor-magn-3d, use IIO_DECLARE_BUFFER_WITH_TS() to suize the
+> buffer for the maximum number of channels supported avoiding need
+> for separate allocation.
 
-> +config FDC1004
-> +	tristate "Texas Instruments FDC1004 capacitive sensor driver"
-> +	depends on I2C
+I was staring at this for a while. The feeling is that it has to work
+as we don't register more channels than it was reported by the HW.
+Since the patch makes the buffer static of maximum size, the _with_ts()
+should handle this correctly.
 
-Please add "select REGMAP_I2C" here, otherwise building this module
-may cause errors with certain configs (e.g. allnoconfig).
-
-> +	help
-> +	  Say yes here to build support for the Texas Instruments FDC1004
-> +	  capacitive sensor.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called fdc1004.
-> +
-
+But it would be nice to check, indeed.
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
