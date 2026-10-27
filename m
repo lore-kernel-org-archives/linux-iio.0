@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793063390;
-	b=PKnVj24gfpdbKeCfllJ0s86W9q76LwrvsImZVWuU1En+q2WN4abBk2gXVtVfbfNpmUls
-	 0qmexvEtqGHLWEK/2eoZLox7RMUJdaNT+WWas1DXVm2Kr1V6UGdLkFPahPdT9+DvjjY2B
-	 +AhW+iEGeYYiAQRM+m+H4uAfuhdmcZ2xJyXF7KVWCucVHf07dq5tmQG8UlG0i56TgIXJ2
-	 N0PeJB1rtSR90n/V6xyHSy02SJez4o6eqKNR3yzq9pkD0Msl+3rg7X5U27IaeALnIH6vS
-	 DbPcINGB1zw58T7sMfBLgn1RNK1gt5TkZVvG9/ldBZtvb5Hf/cyDvz7rtubjdmWvwFA==
+	t=1793063508;
+	b=RJU+0GfFltcRFDZwjlGW+CfQVJBZetmHwB8KYkm7hceRPkfWj5WpYvSt9RJ2m7JE79Gn
+	 gjHQBve5g3mAOQtkePJnNJJQZP3UGoBb2KuaFwDKKPIYlAXnlxezOgHm/c4MU8Xj4BIqD
+	 uD2M/855EZvWR0kneawgedt8b4PR3/N7kn3rZRdxo/ygh2Q4vmQ5fL5oTJKNjeU23sHFg
+	 jnsqBOq5ymjNcLEI0pQcmUXHzHrASYSHfhkDMSwTNd6KWP90Ao8uc6MjXSr6OXVIAuU5S
+	 r0AzSkqjrjpKrwDiQ08t2/Wm9uaXgfeGO948AiLGYVbfxjLYU+65xrKUn4SV4xNKZDQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793063390;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793063508;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=xvbMHvz44q6egU6UHmyrVq7TTu1E+YqD75Q/63ez7/E=;
-	b=QwMFUgi+vx4G4JfIE0FsKmGIccMoFAwXjMDUJMakkfSHkTguww/fFYmEAtGw3fKvd+U6
-	 SnvFCWYGPeIwP1fi5B8homEUmuHS98v6MrKUuSPqyUvwFiNN2DeXDuO3TZwyDrHyJqoaS
-	 +uZ19SjnfLXdiI7wfBTPwrg6RTSkOdwemtKJsHDdEX9Ov9bBwWvaCG6/axmWvNF+Oqr3j
-	 kw1vIRqwWswW3075Fhsc0OTMwiEPxt8C0o/5jlv8rQigJsclKHC0IJTlK/d/7EW7J1TkC
-	 HYYzN/qutQbB7oOELiIWw9uWttK7Bpo490SJIP0OoyRWUDG1IyHzWn1rKkjLO2qz6fA==
+	bh=lQNU6hNGBy9jJbAi6r59f2PUJR0Koj1qckPlsZypSTk=;
+	b=vNLN9QOD8HLyNyPTo1mNW9dhl94sMHwvbyexSOQklxSmyrI6Zu/1W5fTHFiSaADLiahL
+	 SCthFrkcmADc60RUGc4AO0Ff0X0mn4yaWPkERwrLrZkFzL7itOYN7S5TWz/s02rBe9pFe
+	 QPVGCELUaXbRFHoZWr90/oZXSzHjCocUs8CjDdZX3NHF1aTuR1Z40FYA5rAnqjp7QaTax
+	 xchSRdHqGTbWy26iQOTVIV7cm/l25BCbzshwUf7FFa/VHHpX6Ng243iPBMJzeqbSs0eNB
+	 DHY8cpxJjeSk+ZYGSFI9o5k9Vm/h/bY58tar2LHyDuDvXBJtSsclm+FyXEMPaQ3BXNw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Lo0Ng5hz;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hVWh675o;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE52F606A31A;
-	Tue, 27 Oct 2026 01:09:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 696A5606A31A;
+	Tue, 27 Oct 2026 01:11:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Lo0Ng5hz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72D781F01825;
-	Tue, 27 Oct 2026 01:09:46 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hVWh675o
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 095CF1F01825;
+	Tue, 27 Oct 2026 01:11:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793063389;
-	bh=xvbMHvz44q6egU6UHmyrVq7TTu1E+YqD75Q/63ez7/E=;
+	s=k20260515; t=1793063508;
+	bh=lQNU6hNGBy9jJbAi6r59f2PUJR0Koj1qckPlsZypSTk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Lo0Ng5hz8D5+SDQAjVUXEG5RLC5UI/0jmIzSkgDXLA5n5GAHaW8Oh1aTN4hjv+4Kk
-	 rkwRMMVR3PMQ/DWSQeqfhIkm5ZquVb1v1P4e7SoVZ0uXBU/byB1X9Kt2C74RtAeE95
-	 qWssxbEj4By1bw4wQhiU8+RyzNFZFlx78nfKZLMYaKe5X5+aKXmBfGLAfVXjvSJ467
-	 V4+i3BPf7oL6NoXervU+TGZvFJj+GgdcitMPhHXPDJI4qF+HGihS3yfYBf9FTDVigf
-	 P0ouiL73T13nx31OGf6HGJVf5eGK5H/Yf8zxbQanMAMIa1wZ+Y8BOMVmfy1mOyGIub
-	 M0vzk6bc7TRxQ==
-Date: Tue, 27 Oct 2026 01:09:40 +0000
+	b=hVWh675out79bGzP+eT+vTXlBvi8q+BuUtiK9jsImwMHkQGPl6iU1Ea6kIVEinF+4
+	 DHFZgHTdaKKW9mZ0zV202B8oGQhyLBepn4BvN9sBBn7VrtnHzW50wyUuLeru5LNYPd
+	 ovII4SKiUVAqkN0tif+j69bKabx4Iq3CkLozWjJ4t7a6y8BR7DRgggrKT73KP8KeNF
+	 qERUGq34uJcm4jal/W96Id3kqJJp30EAsuUk+U026hWMKcyOAbcbpxIXWR7pcXTOiy
+	 g6L8jL8g3Wex6kdkBjnIYv3K4Z7Vj+hNucD/3hvjdD6eCySP/tZrz6ir3o7WDBZEBX
+	 Co8hjVZrgkFZA==
+Date: Tue, 27 Oct 2026 01:11:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Tristan Madani <tristmd@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>, David Lechner
- <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, tristan@talencesecurity.com
-Subject: Re: [PATCH] iio: adc: pac1934: validate ACPI _DSM return type and
- bounds
-Message-ID: <20261027010940.50bd884a@jic23-hlaptop>
-In-Reply-To: <20261026230910.2569782-1-tristan@talencesecurity.com>
-References: <20261026230910.2569782-1-tristan@talencesecurity.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Nithishvelan M <mnithishvelan@gmail.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Nuno Sa <nuno.sa@analog.com>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] staging: iio: impedance-analyzer: ad5933: use
+ guard(mutex) in ad5933_show()
+Message-ID: <20261027011143.3bce4a32@jic23-hlaptop>
+In-Reply-To: <at8iQhUDfDpkRxI6@ashevche-desk.local>
+References: <20261026082828.652-1-mnithishvelan@gmail.com>
+	<at8iQhUDfDpkRxI6@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,97 +68,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 23:09:10 +0000
-Tristan Madani <tristmd@gmail.com> wrote:
+On Mon, 26 Oct 2026 11:49:54 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
-> times to read channel configuration but does not validate the returned
-> object type or array bounds:
+> On Mon, Oct 26, 2026 at 08:28:28AM +0000, Nithishvelan M wrote:
+> > Use guard(mutex) to automatically manage the state lock in
+> > ad5933_show(). This simplifies the function by allowing direct returns
+> > from each switch case, eliminating the mutable return variables and
+> > manual mutex_unlock() calls.  
 > 
->   1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
->      firmware returns a different type, accessing rez->package.count
->      and rez->package.elements on a non-package object produces
->      unpredictable values.
+> LGTM now,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
->   2. The loop bounds use rez->package.count directly without capping
->      to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
->      than expected causes writes past the fixed-size labels[],
->      shunts[], and active_channels[] arrays.
-> 
->   3. The bipolar and sample rate DSM calls access elements[0] without
->      verifying package.count >= 1.
-> 
-> Add ACPI_TYPE_PACKAGE validation after each acpi_evaluate_dsm() call,
-> cap loop iterations to PAC1934_MAX_NUM_CHANNELS, and verify package
-> count >= 1 before accessing elements[0].
-> 
-> Fixes: 0fb528c8255b ("iio: adc: adding support for PAC193x")
-I should have mentioned this for earlier patches.  This is
-to my eyes not a fix, it is hardening against buggy firmware.
 
-Now I'm fine with doing such hardening but we don't want to
-suggest it is something folk should definitely backport.
-
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Tristan Madani <tristan@talencesecurity.com>
-> ---
->  drivers/iio/adc/pac1934.c | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
-> index de59dc27c4405..43c4705c27be7 100644
-> --- a/drivers/iio/adc/pac1934.c
-> +++ b/drivers/iio/adc/pac1934.c
-> @@ -1101,8 +1101,13 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
->  	rez = acpi_evaluate_dsm(handle, &guid, 0, PAC1934_ACPI_GET_NAMES_AND_MOHMS_VALS, NULL);
->  	if (!rez)
->  		return -EINVAL;
-> +	if (rez->type != ACPI_TYPE_PACKAGE) {
-> +		ACPI_FREE(rez);
-> +		return -EINVAL;
-> +	}
->  
-> -	for (i = 0; i < rez->package.count; i += 2) {
-> +	for (i = 0; i + 1 < rez->package.count &&
-> +	     i / 2 < PAC1934_MAX_NUM_CHANNELS; i += 2) {
->  		idx = i / 2;
->  		info->labels[idx] =
->  			devm_kmemdup(dev, rez->package.elements[i].string.pointer,
-> @@ -1130,7 +1135,13 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
->  		return 0;
->  	}
->  
-> -	for (i = 0; i < rez->package.count; i++) {
-> +	if (rez->type != ACPI_TYPE_PACKAGE) {
-> +		ACPI_FREE(rez);
-> +		return -EINVAL;
-> +	}
-> +
-> +	for (i = 0; i < rez->package.count &&
-> +	     i < PAC1934_MAX_NUM_CHANNELS; i++) {
->  		idx = i;
->  		info->shunts[idx] = rez->package.elements[i].integer.value;
->  		info->active_channels[idx] = (info->shunts[idx] != 0);
-> @@ -1141,6 +1152,10 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
->  	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_BIPOLAR_SETTINGS, NULL);
->  	if (!rez)
->  		return -EINVAL;
-> +	if (rez->type != ACPI_TYPE_PACKAGE || rez->package.count < 1) {
-> +		ACPI_FREE(rez);
-> +		return -EINVAL;
-> +	}
->  
->  	bi_dir_mask = rez->package.elements[0].integer.value;
->  	info->bi_dir[0] = ((bi_dir_mask & (1 << 3)) | (bi_dir_mask & (1 << 7))) != 0;
-> @@ -1153,6 +1168,10 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
->  	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_SAMP, NULL);
->  	if (!rez)
->  		return -EINVAL;
-> +	if (rez->type != ACPI_TYPE_PACKAGE || rez->package.count < 1) {
-> +		ACPI_FREE(rez);
-> +		return -EINVAL;
-> +	}
->  
->  	info->sample_rate_value = rez->package.elements[0].integer.value;
->  
-
+Applied.
