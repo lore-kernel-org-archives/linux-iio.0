@@ -1,57 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793098363;
-	b=fXAuAQg7qBhTbLkhBxl5OU40z8YORRICmpFNf4B8SfAf00dOrUdU2clDA5S0t+U7gDpi
-	 GbusLL8dWkPtTOms5iPrIP2V9E4X0NP3CGf4lFRi7u9YTJsJJNVTtF4fF8VaSGnrQCvz6
-	 pEAICe5lb/BxNBVWfXP3lvGX/A373lZCaV/FLUFOkc9d5UhLI+6mZSQbiKGqvDB6azSHm
-	 JOOMeIl9hIAmzAafcFoZXf3R/hq9KFNFMVAhFvtZND5nX7oUtZEUwTBagmfqBPnVppqHM
-	 SmQFpunpvJuMC26mVpcFXalGHLTGln1j9rw1Q2/WFOAjnTzoUFoldkSEtod30pF2xpA==
+	t=1793098537;
+	b=W3ndzSLSAKEJKlSRlHNt7mKVCK7YiDAUPMntIKoj+0mQcEdJBf39mDTuwJRINtCmdNuJ
+	 zJAFarrMynszqpDQIAm+0n6ANg0QCU5lhZtxhYYKgoR9HxrFga50jxNGglWyj9tJ1h3ka
+	 e9jnsUJfZl1t2WxVHPJSjhmGkokpuCGCKXZH2AZfHkUt3ef278WMMQxRK2AaC3b2jTKC/
+	 PZRcZD6rpukoGbdjMBIaBr8F/4ndczavAc/ltgNsnF2ll2MH/IbBM7t18YQSBoUxr3cER
+	 dTNlBZiDTudF3SHcdrgbdjZeawT1zE2itO1g1duof0yAtkxTFloGiLw+L7/mzKM3tbQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793098363;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=nb0Lf50bJgBV2CiWucdnoIYSpgrOvc7UWebGORq0ITo=;
-	b=Qm6nvCDKtKNj52MREOVPOELUceOQpq3e0i+oocpSczFPDYioEA4XCMTv0Wu+JOyj/uIS
-	 vOkj1aBDwt/dSFN68aHmrMMvd8rMxlx/p7EozDKEg3eo994Rd8D+fQF3QhoHTFGHZHD8f
-	 hH2ugghidrXVvBnlI+EjZMvIh9EsJtpOBQwW1AdqFzzBtatp+ORKO4mNbZUS0atekCAGR
-	 0itph/DmqUjzzPEev8h3aOyYG7aYh6N3X0Bf1BmgESHrCfs09qTzLwm5ShaIF4QXurfn1
-	 0fnDAZiv1c6cpPMfNDNXG7jgbYSAwlJxsf/LcWnSzQqVLM5ic7pGt/vK6DKepUtOyYQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793098537;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=q6ycl+QNfQUCSRFPnQQpnrxTMRSegaGgqkhsDX5lmZw=;
+	b=pa34XJIJPEIx91T1kgW9zriowxYbNJNqBJ6xm0HROoQP9isEUASMQmV6zZ222j7KBUU2
+	 ev90PoavmP7rCpcCfwO5ezg9yMVDLd2okBh5bREI5HCHnNlWC3Oz1xW1lnBjNKGQYAA5Z
+	 awiDJE1X5LRrUOh7Iiu83w2gE/MJppuL9+R6r28khV+janEWpUDTfbB0cbhA2dSwxLvJ7
+	 enkqcCo+hF70e0I/RkX164m3RSV51P5XmuJTbSxfqcBp10PXi3M1TntIWgEj72reorheP
+	 CAc75qKNhjpvrHfW+0tqkKKTTXBKT0aDCLnn6A93jq8vbJSSwm8uryLLxp5+6oHitTw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hO5a0BFI;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Grxt8rTh;
+	arc=none smtp.remote-ip=192.198.163.9
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA7CA606A335;
-	Tue, 27 Oct 2026 10:52:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C312606A31B
+	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 10:55:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4C312606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hO5a0BFI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC7971F01200;
-	Tue, 27 Oct 2026 10:52:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793098362;
-	bh=nb0Lf50bJgBV2CiWucdnoIYSpgrOvc7UWebGORq0ITo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hO5a0BFILnam2QbREVi5eYsEJ2yGN9Fu8pd1BwNmJxgglAb0Kvy+s5dFQA8TUzzWo
-	 rVsCIrUJ4vBurRfdkj+TnguSgQxfIs95ppVRFzB4UQhx9Dri0WAxOXyGz+WidlFPBr
-	 whuQ7NkP/WPc7GrU/LRS+3+kGYyW+vhJEFEOHZUPp/p/uvBpj3C1gkijHHEaMP/WK2
-	 HlGLkEfbjeW5A4LH9wQtiiaRoTDinQ+tbsAIpWV4ocxjkhIho/p2+Kah4niflqGgGU
-	 ij7viDDpCf9BPdLJRckq8Z/tHj9EVwdqEYq996qNY3FOc0yylAdldh/xhNB7BuWAbr
-	 r1FHlA2p+JK7g==
-Date: Tue, 27 Oct 2026 11:52:39 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Olivier Louvignes <olivier@mgcrea.io>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Paul Cercueil <paul@crapouillou.net>, "H . Nikolaus Schaller" <hns@goldelico.com>, 
-	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] iio: adc: Add the Ingenic X1600 ADC
-Message-ID: <20261027-fractal-unbreakable-parrot-224dc2@quoll>
-References: <20261026083631.48406-1-olivier@mgcrea.io>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Grxt8rTh
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793098537; x=1824634537;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gisSPxKckGRyj7krOfYw+Y8RfTNWJ8ia9rK5SRV+UQk=;
+  b=Grxt8rThdXe3+c4amp0oOeu+F1c855LTMi0FOiluRJuK91/Qh+mj2Hym
+   kg18cUr0NiUG+AnI80LjCFzBXjx8SUePrzeIrqGjvW0aX4Gl01XV6gU/q
+   BqzS43GjPuoOp6culw5m7R16vjz0razu3qORT6ldueDsyyGjYk7CEuZS4
+   sN78IvEwHTvF4b3eMbNu/+YJkgUt+BVVRvS5wbLmwm/KeGNtvb2xHwQaf
+   zyNWjNqA28IFhWoZmIpHYteRXmGqBBtr1WutEzPdGZ7J+ZoID+vaB1QR0
+   K+42ttHNMy81mABd+FLnKHjHz1p4PCbuV76l8pSBh1Y1ujflN0dRGhIav
+   g==;
+X-CSE-ConnectionGUID: 9D0CIHvQQYGRRZKYW2K8mg==
+X-CSE-MsgGUID: yoC+ZPAHQi2NnFCwMs5oHA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1679256"
+X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
+   d="scan'208";a="1679256"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:55:36 -0700
+X-CSE-ConnectionGUID: 6L5mL92xS2S1+A7xkufLTg==
+X-CSE-MsgGUID: xLKUR3IaSFaojQ+PON0IzA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
+   d="scan'208";a="4901399"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:55:34 -0700
+Date: Tue, 27 Oct 2026 12:55:31 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Francesco Lavra <flavra@baylibre.com>,
+	Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: Re: [PATCH 38/39] iio: imu: st_lsm6dsx: use
+ iio_push_to_buffers_with_ts()
+Message-ID: <auCDIxUsvEO_gsvY@ashevche-desk.local>
+References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
+ <20261026-iio-v1-38-8b136778eedf@oss.qualcomm.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -61,43 +83,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261026083631.48406-1-olivier@mgcrea.io>
+In-Reply-To: <20261026-iio-v1-38-8b136778eedf@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Oct 26, 2026 at 09:36:29AM +0100, Olivier Louvignes wrote:
-> A driver for the SAR ADC of the Ingenic X1600: four auxiliary channels,
-> 12 bits, one interrupt per channel. Tested on a HiBy R1, whose keys are on
-> channel 0 behind adc-keys.
-> 
-> By their programming manuals, the X1830 (3 channels, 10 bits) and the
-> X2000 (5 channels, 10 bits, one more data register) have the same
-> register layout, two results to a data register. As Jonathan said on v2,
-> the X1600 name stays, and supporting them now is welcome but not
-> required: I have neither to test on, so this version is X1600-only, and
-> a chip_info with the channel count and the resolution can add them
-> later. Nikolaus, if Letux has either at hand, adding them on top with a
-> test would be welcome.
-> 
-> Changes since v2:
-> - Cover letter (Andy, Joshua).
-> - MAINTAINERS: no list line; the binding's path in patch 1, the driver's
->   in patch 2 (Joshua).
-> - Includes for what the driver uses, copyright line, MODULE_AUTHOR(),
->   reverse xmas tree, open-coded return, no message after
->   devm_request_irq(), a blank line (Joshua; Andy on the return).
-> - fsleep(2 * USEC_PER_MSEC) (Andy).
-> - The ADC clock divider is now even, as the X1600 programming manual
->   has it; v2 wrote the divider minus one, as the vendor kernel does. The
->   divider fields are named as in the manual, and the two clocks only
->   repeated sampling uses stay at their reset values.
-> - The probe comment on staying powered up no longer names the keys
->   (Jonathan).
-> 
-> v2: https://lore.kernel.org/all/20261024041357.34346-1-olivier@mgcrea.io/
+On Mon, Oct 26, 2026 at 04:05:56PM -0700, Jonathan Cameron wrote:
+> Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
 
-Please keep here complete changelog, so also v1 etc.
+...
 
-Best regards,
-Krzysztof
+>  				if (gyro_sensor->samples_to_discard > 0)
+>  					gyro_sensor->samples_to_discard--;
+>  				else
+> -					iio_push_to_buffers_with_timestamp(
+> +					iio_push_to_buffers_with_ts(
+>  						hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+>  						&hw->scan[ST_LSM6DSX_ID_GYRO],
+> +						sizeof(hw->scan[ST_LSM6DSX_ID_GYRO]),
+>  						gyro_sensor->ts_ref + ts);
+
+Seems like a lot of code duplication in all three cases.
+But yeah, it's out of scope of this change.
+
+>  				gyro_sip--;
+>  			}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
