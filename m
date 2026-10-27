@@ -1,58 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.171
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793105176;
-	b=EXqVLPFAMIb7uvUl4WiijURxNHruFzEPEIg3CzqtY6tjWQwSjfEgwk23WoM/1/OvDEa8
-	 hLs64CRjqG6Wm3z/nJ4FgYEw8jiS3QXnDJ4+BtxAT6xSXq0BxgOFcJlHfDV6SWGPnbqWw
-	 N53hoRPe1KIib4gnj70zfzynM+csogAC56S/l5+tDd5o/hg4eSesKZ74D/yGWaQUUK+7H
-	 wX1p69yiv2JYYBokGVX7dzffk4Gn3bA/TD849uPM3+LW3aGLnnH5ovd1Mj3Eg4e/IS6rp
-	 TBuQZgHf79OV7ta4ciemzyC364Fr7n175FnF54kfi/2ZqGX0f5KMnyi0uaUgZc+UWpw==
+	t=1793105401;
+	b=E48V8i8IoSlcTnLA9peETSO98cKgUyWIo7WNf+3zyH/rJ692x+4ZZpZeO/nL/W+/+aZa
+	 zTcwhu+l/EBK96eOK0FCZO9CvP736AHdwpsCNyM44RxGZWbqYddIekDPl5Q016HIqycmp
+	 gB3wAuuhyeNpr4124z49+JnvBg8JY/ZwJM+KQvrhjCho2P52bHCYvu7ssxMF/NILFjGYn
+	 SZwy2nIUWAufhpWahDABwEcIt9EyHP2TqIK3idLgFADmaQCSDl8RaOWMdS6OBh1ekib6O
+	 GfQ7QsxXygn8vYlI1cP86bFuXccuDQWEsdzAXS+H/I/jL+Pmr+g5rZeoxXpSNYRBfoQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793105176;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=ZuPnGPtXOcWmhVu7JksGY/6MPU+imQRyhrYYsrvJoEY=;
-	b=cdoD4oitatdBrOGNUgQMC/JjvZAAZ5A+rILwSFQn0Go1nXSQCBc0FdF2OQ/bdyyQEkFx
-	 keaqz0fcoaQ0wBicd52TXye93i1+9/3dtvpKASwNdNucpzONV28lMCzGWcfO2Ec6n6A7I
-	 K8l4zyUT6GVxB8tx8CLraIMQHirYksIO4rPT4j93UXLYHxrJQyY/oBoZdsy6Oxhq6TfYr
-	 7+yugq5qgJnmxP+tPW34MQUBTx6/fz8kfXa6FZd+wTyXZ780oJIFK7ydj/h4nqMubuQzE
-	 KtLL5kJMttuVNn/jIyHKMvM8le2FHaTPJx2r9GFEMrf4ECxS9B6oOb/ZYkz/j6mWKvw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793105401;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=i3eoTk/bStSxof4N8Gfz3DvypjlvmOdA8edsrMpkUbM=;
+	b=Mxs4HiZb99u3mSAzU8s7w8/70xnYRcBENdYmeO1Pr4uOIhADfiWtFvxdLCyVLUESEeDx
+	 9J8U+59NtKmuhFvQ1O9Jz+zly0DvphX4fbKxyxu2XiduSGv5T5wrV3PK8BAxap4gNF9Iy
+	 cNmoeTFyWtPHtRe2k4A/GM1rpslBNDcFtRKWzGsA1kqHrpfzz5OIUDiqT3Uz7mszTOjQ7
+	 CHMbbdrBb1gdv6OAUJbDQcl2NIhTKqlOsVUdFJWW2S7XmgDRdgkObUmT+X8ZSnc/O8q/3
+	 x4c+QQf2l4FdbhNmBxqCkjKkQpHo207xHHESCHJVdXVMsd6dZpHtFDgq//52tcrxtyA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Vhbm56jr;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=hmwLS0X3;
+	arc=none smtp.remote-ip=209.85.208.171
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EE42606A31E;
-	Tue, 27 Oct 2026 12:46:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F60606A31D
+	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 12:50:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 20F60606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Vhbm56jr
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CAFF1F01825;
-	Tue, 27 Oct 2026 12:46:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793105176;
-	bh=ZuPnGPtXOcWmhVu7JksGY/6MPU+imQRyhrYYsrvJoEY=;
-	h=From:To:Cc:Subject:Date;
-	b=Vhbm56jrteQjTTsDguHLxGkwy0uhl30h+TeiYpBkTKwcKnWtgi5eXu6cJGSAGtVHN
-	 qnmYKadM/iQjZaXm5kN86nrNVfajeEwlKXp7XBhUAohzubxKZl88nJWvNZlkvibmUd
-	 pKvIXlhYJrDNj/NMg/dm6HOuw4npnMPGCjnrELNpq8Kx7YtCfLLDI0iXDagBpQxhAV
-	 1eFuMjWTWyQLfFoEQdftXK1zpkblWAD+MFmNPCfyiexQzfPQ6XABH3NcjvezNsmvAS
-	 CSzG0RIj2q8T89kJfzmx+n61e2E7BZ6BbwvvhQM5puqgznU2rZEuPeRUIJ0Mpt8T60
-	 ydBT7FGwORYLg==
-From: Joshua Crofts <crofts@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=hmwLS0X3
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-3a9787a156eso35230431fa.3
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 05:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793105398; x=1793710198; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=i3eoTk/bStSxof4N8Gfz3DvypjlvmOdA8edsrMpkUbM=;
+        b=hmwLS0X3VwBzPUhDQ4GJnqIBZcmagCbYccapc6RXsOEsStOprIPW93h+mJOTrqUupa
+         DVOeBpvClqXRrWUzWFSldeb23OWkRq3pRLtDRe3cuOD4QLzkz3/lfzm8LLcRDZgqRHgN
+         6fmYllJ9tz/5QXpgx3Z5MBEYIXFiQOfvPQ+mAnlWglizCNr0wnERfZL5an4u3KosXl82
+         GwZ7FKyjRyVqSJM0cDUJMKCOp91eLvh7lljoIYYfcp7HUvHC35tg4qXqkZMSSply3D9e
+         vSHlVm7bvk/JdyMdOZP99vLkfFkPoxka1MBMuHl/ZPBzS4CQ0JuzAYvbaYLCW4FSM/Pq
+         N+3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793105398; x=1793710198;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=i3eoTk/bStSxof4N8Gfz3DvypjlvmOdA8edsrMpkUbM=;
+        b=Lw9nEqxZlYfM20GZlYWPtAJeYZFHF0pOAWY4wc64mg5z4xuYtlPKCQZugCIaBdODAo
+         tgB6QIXHI+Brk4vhHM+qOBQx4TWXRIu1FmG00qEAfHGWGUzLHsGOb/dWZrAXmjJPyAPH
+         vmUIhhaeCo8yfOdEdgNhd4vBoSMxL6HgruR2JkJNLcGXAXKe3wXRWp/Gxi9nIGfTcL/i
+         buM//eAFzF35mOVGDf28yqLyvZSOSTgwADKP+MMz/V7MPJ16gMvWBQrzGcTaf2g862mu
+         ql92Gomx3BWQRvyFeQ8WXnPeHKguF3zbh23QAnSR5Ep0a/MrFe0Sey19pQCUUszht2pT
+         UB3Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxp3pyH8Jo/dG2eQAd4kQ0kM0MGAl9zW64qLgqdDPDLd98PO/uB9mMOeUjwHQqapvyBM6dibOeU7c8=@vger.kernel.org
+X-Gm-Message-State: AFq9FYK3bCQ66K0/dEJlOtG++hdvBGm3uzgBkviwW7pk+8Hw+eHr2RO1
+	JBDXgaYbGOrFHod2PhOQBduWJMM2Rt+IjSRQGLx5OSaIlzytdoo+rRyS
+X-Gm-Gg: AYBFou3hZteV1akrJJ5cxIzmem0QkoxL3qvJ7WvWvee6ZlYgCPMfMt21tA0nRvajrJg
+	2+slEgEQrqZHjDeJ5QeeZIbsA7q8YowQjEOBfj31n4mJXTxORKcwjT3zMABYwJpT/vAUcmKCp+i
+	wi2AXEl1Pk9gyqrejGXSPcI0oQvHJmXDiARv0HXU8sguu2f9bD+PvihIVeLxZh4AYIQ+52/PefJ
+	ZQiy6+QlpgGWMveL8cmw1Ehbm5BlPYz9bT/3LbZOW1yt4m5YJnsqRpJraDGW43wrONToN7LU3tz
+	r2L2DdzEjtGAI3IOtxpiYyE1O1tkXLF0SpLAVbyv/cIU5YcOUeQHphvgOd5v7LQEwvhVRwAoKHO
+	0TqcRwfOOPtljPIf3Th5cSLZ7hO40BB/181AN+pcdwMkG68ifPeGzbevCIYIJRyZSr2Kdm41+5+
+	3o8aN4Xsh5YTNqwqPTfYKYZIGqlP5+kWB6x424xP22dCRF/GHz2u5/GEfpA4Cyb5We9SePuf8lN
+	uaTaS/SyREMYuYGDVV7e8Oncod6Xle1KBGbfKyx4OQfPJEPxH9KDeh58OKBaXT6JQ6MuytSKk2L
+	dD+gXghnWVkY/kwhCTxJlGDA3HRKd/pTPKdAyyayOGDiU2U4mTQAl8QCKiHQ4/422kWKDSbpiIN
+	V/TdZdye8VA==
+X-Received: by 2002:a05:651c:b27:b0:3a9:e428:d2f8 with SMTP id 38308e7fff4ca-3ac6fd68faamr25300931fa.29.1793105398128;
+        Tue, 27 Oct 2026 05:49:58 -0700 (PDT)
+Received: from yantra.. (nekmmqtcmoboczbkdcs-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:55c8:a52b:6ba2:979c])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7e7cb24sm2052803e87.25.2026.10.27.05.49.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 05:49:57 -0700 (PDT)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Alex Lanzano <lanzano.alex@gmail.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org,
+	Benson Leung <bleung@chromium.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Guenter Roeck <groeck@chromium.org>,
+	Jagath Jog J <jagathjog1996@gmail.com>,
+	Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jerome Brunet <jbrunet@baylibre.com>,
+	Jinseob Kim <kimjinseob88@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Lorenzo Bianconi <lorenzo@kernel.org>,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Remi Buisson <remi.buisson@tdk.com>
+Cc: chrome-platform@lists.linux.dev,
+	linux-amlogic@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH] iio: update email for Joshua Crofts
-Date: Tue, 27 Oct 2026 12:46:02 +0000
-Message-ID: <20261027124602.1533-1-crofts@kernel.org>
+	Rupesh Majhi <zoone.rupert@gmail.com>,
+	Marco Elver <elver@google.com>,
+	Bart Van Assche <bvanassche@acm.org>
+Subject: [PATCH v4 0/9] iio: enable context analysis for all drivers
+Date: Tue, 27 Oct 2026 14:49:45 +0200
+Message-ID: <20261027124954.110697-1-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,108 +121,119 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-I'd like to use my kernel.org email going forward.
+Jonathan asked for the qcom-spmi-adc5-gen3 fix to become the first
+patch of a series that enables context analysis across IIO [1]. This
+is that series.
 
-Signed-off-by: Joshua Crofts <crofts@kernel.org>
----
- .mailmap                                                      | 1 +
- .../devicetree/bindings/iio/dac/microchip,mcp47a1.yaml        | 2 +-
- MAINTAINERS                                                   | 4 ++--
- drivers/iio/dac/mcp47a1.c                                     | 4 ++--
- drivers/iio/light/veml3328.c                                  | 4 ++--
- 5 files changed, 8 insertions(+), 7 deletions(-)
+With CONTEXT_ANALYSIS := y in every drivers/iio Makefile, testing gives
+256 warnings and 2 errors in 126 files (x86_64 allmodconfig, clang
+23.1).
 
-diff --git a/.mailmap b/.mailmap
-index 1f5540bc33f1..07df296885ba 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -475,6 +475,7 @@ Jorge Ramirez-Ortiz <jorge.ramirez@oss.qualcomm.com> <jorge.ramirez-ortiz@linaro
- <josh@joshtriplett.org> <josht@vnet.ibm.com>
- Josh Poimboeuf <jpoimboe@kernel.org> <jpoimboe@redhat.com>
- Josh Poimboeuf <jpoimboe@kernel.org> <jpoimboe@us.ibm.com>
-+Joshua Crofts <crofts@kernel.org> <joshua.crofts1@gmail.com>
- Jouni Malinen <quic_jouni@quicinc.com> <jouni@codeaurora.org>
- JP Kobryn <jp.kobryn@linux.dev> <inwardvessel@gmail.com>
- Juha Yrjola <at solidboot.com>
-diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
-index b181fe73dce8..e8a8c7c88716 100644
---- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
-@@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: Microchip MCP47A1 DAC
- 
- maintainers:
--  - Joshua Crofts <joshua.crofts1@gmail.com>
-+  - Joshua Crofts <crofts@kernel.org>
- 
- description: |
-   The Microchip MCP47A1 is a 6-bit single output volatile DAC.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ecc22d1149d1..78a21782e153 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17912,7 +17912,7 @@ F:	Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
- F:	drivers/iio/adc/mcp3911.c
- 
- MICROCHIP MCP47A1 DAC DRIVER
--M:	Joshua Crofts <joshua.crofts1@gmail.com>
-+M:	Joshua Crofts <crofts@kernel.org>
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/dac/microchip,mcp47a1.yaml
- F:	drivers/iio/dac/mcp47a1.c
-@@ -29151,7 +29151,7 @@ F:	Documentation/devicetree/bindings/iio/light/vishay,veml6030.yaml
- F:	drivers/iio/light/veml3235.c
- 
- VISHAY VEML3328 RGB IR LIGHT SENSOR DRIVER
--M:	Joshua Crofts <joshua.crofts1@gmail.com>
-+M:	Joshua Crofts <crofts@kernel.org>
- S:	Maintained
- F:	drivers/iio/light/veml3328.c
- 
-diff --git a/drivers/iio/dac/mcp47a1.c b/drivers/iio/dac/mcp47a1.c
-index 0bf994aa0e4f..2e2cf8f645fa 100644
---- a/drivers/iio/dac/mcp47a1.c
-+++ b/drivers/iio/dac/mcp47a1.c
-@@ -2,7 +2,7 @@
- /*
-  * Microchip MCP47A1 DAC driver
-  *
-- * Copyright (c) 2026 Joshua Crofts <joshua.crofts1@gmail.com>
-+ * Copyright (c) 2026 Joshua Crofts <crofts@kernel.org>
-  *
-  * Datasheet: https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/25154A.pdf
-  */
-@@ -161,6 +161,6 @@ static struct i2c_driver mcp47a1_driver = {
- };
- module_i2c_driver(mcp47a1_driver);
- 
--MODULE_AUTHOR("Joshua Crofts <joshua.crofts1@gmail.com>");
-+MODULE_AUTHOR("Joshua Crofts <crofts@kernel.org>");
- MODULE_DESCRIPTION("Microchip MCP47A1 DAC Driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/light/veml3328.c b/drivers/iio/light/veml3328.c
-index df36c48204be..c49dd3ff432d 100644
---- a/drivers/iio/light/veml3328.c
-+++ b/drivers/iio/light/veml3328.c
-@@ -2,7 +2,7 @@
- /*
-  * Vishay VEML3328 RGBCIR light sensor driver
-  *
-- * Copyright (c) 2026 Joshua Crofts <joshua.crofts1@gmail.com>
-+ * Copyright (c) 2026 Joshua Crofts <crofts@kernel.org>
-  *
-  * Datasheet: https://www.vishay.com/docs/84968/veml3328.pdf
-  */
-@@ -440,6 +440,6 @@ static struct i2c_driver veml3328_driver = {
- };
- module_i2c_driver(veml3328_driver);
- 
--MODULE_AUTHOR("Joshua Crofts <joshua.crofts1@gmail.com>");
-+MODULE_AUTHOR("Joshua Crofts <crofts@kernel.org>");
- MODULE_DESCRIPTION("VEML3328 RGBCIR Light Sensor");
- MODULE_LICENSE("GPL");
+Patch 1 fixes the two qcom errors, as v3 did, but names the lock the
+way Bart suggested [2]. Patch 2 annotates the two conditional mode
+claims in iio.h, which accounts for 241 of the warnings, in 120 files.
+Patch 3 covers the core helpers behind them. Patches 4 to 8 annotate
+lock helpers in kx022a, meson_saradc, the DMA buffer, opt3001 and
+veml6031x00. None of them is a locking bug. Patch 9 enables the
+analysis. The common and sensorhubs Makefiles only list subdirectories
+and are left alone.
 
-base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+With the series applied all 726 files build without warnings, also
+with W=1. bma180, ab8500-gpadc and intel_dc_ti_adc are not in
+allmodconfig and were built on their own. gcc W=1 builds show no
+warnings. Removing an unlock or a release is still reported, tried in
+kx022a, ms5611 and veml6031x00.
+
+Bart's thread-safety branch [3] has most of the same annotations. For
+meson_saradc and the DMA buffer he uses __context_unsafe(). Here they
+name the lock, so the helpers are checked, and for meson_saradc the
+callers too.
+
+Written with help from an LLM coding assistant.
+
+v4: was a single qcom patch, now the first of nine
+v3: https://lore.kernel.org/linux-iio/20261025191510.22261-1-zoone.rupert@gmail.com/
+
+[1] https://lore.kernel.org/linux-iio/20261025215954.73549810@jic23-hlaptop/
+[2] https://lore.kernel.org/linux-iio/76bbebb4-7337-486d-8f21-a39bcb6dca93@acm.org/
+[3] https://github.com/bvanassche/linux/tree/thread-safety
+
+Cc: Marco Elver <elver@google.com>
+Cc: Bart Van Assche <bvanassche@acm.org>
+
+Rupesh Majhi (9):
+  iio: adc: qcom-spmi-adc5-gen3: fix lock annotations on mutex helpers
+  iio: core: annotate the conditional mode claims
+  iio: core: mark the mode lock helpers __context_unsafe
+  iio: accel: kionix-kx022a: annotate the lock helpers
+  iio: adc: meson_saradc: annotate the lock helpers
+  iio: buffer-dma: annotate the queue lock helpers
+  iio: light: opt3001: mark the interrupt handler __context_unsafe
+  iio: light: veml6031x00: annotate the event enable helpers
+  iio: enable context analysis for all drivers
+
+ drivers/iio/Makefile                         | 2 ++
+ drivers/iio/accel/Makefile                   | 2 ++
+ drivers/iio/accel/kionix-kx022a.c            | 2 ++
+ drivers/iio/adc/Makefile                     | 2 ++
+ drivers/iio/adc/meson_saradc.c               | 2 ++
+ drivers/iio/adc/qcom-spmi-adc5-gen3.c        | 4 ++--
+ drivers/iio/addac/Makefile                   | 2 ++
+ drivers/iio/afe/Makefile                     | 2 ++
+ drivers/iio/amplifiers/Makefile              | 2 ++
+ drivers/iio/buffer/Makefile                  | 2 ++
+ drivers/iio/buffer/industrialio-buffer-dma.c | 2 ++
+ drivers/iio/cdc/Makefile                     | 2 ++
+ drivers/iio/chemical/Makefile                | 2 ++
+ drivers/iio/common/cros_ec_sensors/Makefile  | 2 ++
+ drivers/iio/common/hid-sensors/Makefile      | 2 ++
+ drivers/iio/common/inv_sensors/Makefile      | 2 ++
+ drivers/iio/common/ms_sensors/Makefile       | 2 ++
+ drivers/iio/common/scmi_sensors/Makefile     | 3 +++
+ drivers/iio/common/ssp_sensors/Makefile      | 2 ++
+ drivers/iio/common/st_sensors/Makefile       | 2 ++
+ drivers/iio/dac/Makefile                     | 2 ++
+ drivers/iio/dummy/Makefile                   | 2 ++
+ drivers/iio/filter/Makefile                  | 2 ++
+ drivers/iio/flow/Makefile                    | 2 ++
+ drivers/iio/frequency/Makefile               | 2 ++
+ drivers/iio/gyro/Makefile                    | 2 ++
+ drivers/iio/health/Makefile                  | 2 ++
+ drivers/iio/humidity/Makefile                | 2 ++
+ drivers/iio/imu/Makefile                     | 2 ++
+ drivers/iio/imu/bmi160/Makefile              | 3 +++
+ drivers/iio/imu/bmi270/Makefile              | 3 +++
+ drivers/iio/imu/bmi323/Makefile              | 3 +++
+ drivers/iio/imu/bno055/Makefile              | 2 ++
+ drivers/iio/imu/inv_icm42600/Makefile        | 2 ++
+ drivers/iio/imu/inv_icm42607/Makefile        | 2 ++
+ drivers/iio/imu/inv_icm45600/Makefile        | 2 ++
+ drivers/iio/imu/inv_mpu6050/Makefile         | 2 ++
+ drivers/iio/imu/smi330/Makefile              | 3 +++
+ drivers/iio/imu/st_lsm6dsx/Makefile          | 3 +++
+ drivers/iio/imu/st_lsm9ds0/Makefile          | 3 +++
+ drivers/iio/industrialio-core.c              | 2 ++
+ drivers/iio/light/Makefile                   | 2 ++
+ drivers/iio/light/opt3001.c                  | 1 +
+ drivers/iio/light/veml6031x00.c              | 2 ++
+ drivers/iio/magnetometer/Makefile            | 2 ++
+ drivers/iio/multiplexer/Makefile             | 2 ++
+ drivers/iio/orientation/Makefile             | 2 ++
+ drivers/iio/position/Makefile                | 2 ++
+ drivers/iio/potentiometer/Makefile           | 2 ++
+ drivers/iio/potentiostat/Makefile            | 2 ++
+ drivers/iio/pressure/Makefile                | 2 +-
+ drivers/iio/proximity/Makefile               | 2 ++
+ drivers/iio/resolver/Makefile                | 2 ++
+ drivers/iio/sensorhubs/osf/Makefile          | 2 ++
+ drivers/iio/temperature/Makefile             | 2 ++
+ drivers/iio/test/Makefile                    | 2 ++
+ drivers/iio/trigger/Makefile                 | 2 ++
+ include/linux/iio/iio.h                      | 9 ++-------
+ 58 files changed, 121 insertions(+), 10 deletions(-)
+
+
+base-commit: 7d80b4b383bc53b48abd3a30ca4a91cdab568bfa
 -- 
-2.47.3
+2.43.0
 
