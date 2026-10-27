@@ -1,100 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=74.125.82.53
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
-	t=1793121728;
-	b=orWKYvmVUifEVpJbshm2SAlRHn21FQ0Em33WcBtZy8NciFga4XQZVIhTct/whJmc91Of
-	 qKUaDwD7RjhcZi1Ur+RRhCnv2U2XdbJdimX/SkMmEY3+Nfle9sFjRePZ1JA3tIatXnb8G
-	 sVXiGpqHq4HITYxgZdikKuS9+cmwgtt1PLX4rTMZkqeJ6LNQ2njdTnyBeB8XuHkDPteWM
-	 fce3g3sbkVj6WF4isaWqMjTRx6rEcpb5HdpN6imToSZVCAPn5MbyjHQpxi0KgK7q753FZ
-	 bLzm/UAPXT/6MUQiVLw47fVOpEqnUMTndSD7O4hnxIQm14fM91JulLvvvRgbltOw4JQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793121728;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=sCMHExecnr7EVku3xKOnADgdNnCumi8ICt8RRfPLFyc=;
-	b=RvWbF9t4utXzZ1uOndwAUR2BJ6fIj5U43iLG2uUZbNXBH/ynPt2J7lc64Ffk24eKQG/8
-	 1yPCGiBC9yA//ndrf/hK1rqpBRBZindqZL6YLThhW/vejIgkguTDu/6qG30/JQGxbsLEI
-	 zN6JY2osS2TMO4cPhAGSa/FhTPaIJhEOt/G/oloOqBI827P5urNAjL1h/a9XNpbD1u6FC
-	 OzurfqKBVmbfV4qBrUad9zx5xkKaperqvkr5fIvRyu6IcrAU7AEkQjTlm5yB4Dk2nWulC
-	 cYCzMVNYhpZ6tm7rBdlnoUSX8ZJZA9J6+3y7RN4xCdY4dgOlnreHz1X9O9zBJTFt8CQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=C41cqylo;
-	arc=fail smtp.remote-ip=74.125.82.53
-Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793123264;
+	b=mpv+wKhYKiAN5hNz/mAjX2n37/+dDkU0bRByzZiYTULDyP1DYqr8FeSdRoFhxdQsaSNM
+	 5DGPTJjoosUDCjBLEtIFZu88sQswcx7S7Di1SqaPTGd2yY49MoUVSqchzeDAZs/rDwtqP
+	 on+UurVP4/W8560AcUmoTYbFHKBqmuVUvT0clFSz29coG3o0acbDXE90xKih0CpeViwk1
+	 JTcp94FddKb7gPCXKDrb2XXR00gY2H6xnlBrVdRbmQgW/1SKUVuwOOD3+eFEkyhngNBl5
+	 ygliovs1IN/zwvot+reM31nEOv0EOWHv4xmqWI8SC5GImV7eC9TG8xtrBU6InOU2W0Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793123264;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=l7VNpg2kRwd5b+144/iE+6hpJCf1dqpyVWjx64qc4l0=;
+	b=DTBUAFJ1cGEi8N3SMPAWrcxSScBNzKbb3MZ9qC3shmFBQ11LJI15uBL0X1/lPEPazU5s
+	 tWXub8jN+XQA5LwyAi0dkbfwjLUiPEb3kjXcYTUncewm5IQVlCMPiEghkv64QHrxacm4+
+	 WLpGAmVOSdG0Sx5It+hBj2BwKZxp2L8+VtXajh0vvzKPSG6wogU7eaghxKeK0w4RCPT9j
+	 7wZiQBkaJp43/uhY1X+hjpbYWdBhzA5C0lwL2xM9pOkPz9JfCGrbinN/Uv3w3kHO1GuIU
+	 Qnq94A+1PRJauBKLj7uH/nofqa0XI1L6VXCia56YbpMgQhKS5eWhiVcohY3GissexdQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nxx8rD+n;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 495AE606A31E
-	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 17:22:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 495AE606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8287606A31A;
+	Tue, 27 Oct 2026 17:47:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=C41cqylo
-Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-157fe9d771bso60521c88.0
-        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 10:22:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793121727; cv=none;
-        d=google.com; s=arc-20260327;
-        b=SaXOX1bAgVOpGWlBEdBhaVZZjlP5dlC0vwmM9WAaImWtbjbczdX531Owa4mVoi16LH
-         RfJFiIQfN5ulmlq2JZxjb9BA2tnC6SxsHpHnH/jvFGTFob1kGuaLnXpw1i+nnYLGSACw
-         sliqQDEEGYFAhZtksmEaiOHM8JmgavlhGzSrYuXuJLbw+Ym7wLnQCkpCouKc3osoDuKE
-         RRcHc2MKsZ+PO0UxnStctsvEPclVd1LIYHEUjmUFUS6+HHtJwgIC/bm21wy0ev7ENjVs
-         DjsLdvosD0mvmJeQHAR5Wr/5We/akVpQVNQjWTfWx/j4fec7qBBTwzFWVd93AXT+mJxE
-         0q6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=sCMHExecnr7EVku3xKOnADgdNnCumi8ICt8RRfPLFyc=;
-        fh=BkzObC5PHWdpBlOxW18gdDres+TN31XsQJGsE5S1RyY=;
-        b=I5GJoQonMtauRT5Umsgzi2KrpoVgFnqIeY9hOego8WCSPhwfFqxj5vOLTeZDTKrQoH
-         GsitqyDj7EWfG8KvCjCCudlrgRUKtJFdQVx8pVs3gATAWYfw5pKyltOPUijAMev1zFgd
-         r85YKKVsed2v+/A8+2N91YzXEyys9vie/K/MV+Yfz45afa7m44eqRXLzetOv+1ShtGrW
-         ocBL7Hx59B9x1E0XmVmBQOV7w6sLUj9VsbKX/iNpQc+LQs/n52M/i510lu6vhKcu2SVO
-         ZYVC4KQMcEg6K+r+kkihbQbz/suJq5R8si1XQ4WIW5qOrlnbclArYqUV2apWo+MK18Iv
-         jiOQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793121727; x=1793726527; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sCMHExecnr7EVku3xKOnADgdNnCumi8ICt8RRfPLFyc=;
-        b=C41cqyloeS/h5Vtwj4fa7MIjm2aLukQaJNMjA01Wn+JGGCcQqxaMEk4qtaeGLTgF11
-         +xXojI6iydcNCHCInBDP9VQyo1hJAFD3dr6yQmpBM6HUXazAlicytsDrwlamPA50lS4I
-         ot5PvMH/HWpuW8LsxGwuM5M0OIfhb6YxMmvO1BL7uALyaS3FIvEjHjPJFzKMoA1yF8FI
-         hrNTtVklmnbX0GKT3t5upCjaEu9RMl7g31Ii5f+e1EuriC9yJOvccQQtUIHojQFDkmTh
-         oSuMUeEQcN3ZJUIM7OREyaxa56yxzKExGn54vpm7A5KxV62XI0nsE+2SOQIxafVeXPuA
-         1IkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793121727; x=1793726527;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=sCMHExecnr7EVku3xKOnADgdNnCumi8ICt8RRfPLFyc=;
-        b=GtUofp4Q4zuhyVQ7WiruNGLaSQ0EPk6XfDz1FwQGGi0AqtGsGav5bj/O3xGB/i+Qyx
-         3pL1RGxdqhalVgHum9IvxsTjIwSSh95mFFSwjENCadDtpZSvOp2EueuZab98tpKtFe+U
-         g2HU9gz17u95HtyUdlbWR1v/uEDNCcSyFDXHkQHqnN6BweG6gS3hWtOnYfLsWbQ/rQKM
-         /e9xSRGBJWsOR44eWN+R7/80g0Q27bD/EYPKyoYo38oFP5U0dEwla/BdKRZV5d83aKpo
-         2EUBHFyOdBQNLbTP7OXXRCcf6PIO2t7lKbZ+l+jhYUv3Q4o4kCmIVlyUezJZlKxD4298
-         nncQ==
-X-Forwarded-Encrypted: i=1; AKwUvBw05VDPGJCQkEHp9tJEjouoE573q/eIS3+ZX7oIY8sRpsXEVfcOJ5jd7AUh5pboiE3HxuIxP5gy5DM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJCI1hYYjOPog2KCYR2UTD5ajoDJmpuirZsGFDyRFIgYYGgELxj
-	Q7jsAq+4rYyl7smGfrgg/gLew9C8nI+wd7T3mBgcscW/Sz9Jnztoz2Jc5uCre/gJJGVXVqA03Qu
-	zxiW6rJNlPsnzZ3ZSiHKXyzuodEcVPBWRlPo2iuwI
-X-Gm-Gg: AYBFou1OrnGxo+vLNKrPYel60GUQwyd8OTpaHx+kF5Q+WBXsr2an3WIWUvVZ/2I8V2C
-	vq+kyQe1JajnkCXuRhVt9Ug8RJZ+bzBy1zVGbVhX+CO/XoUGwrETk6GbXVkHSa5Ljcks+Mv0Zc/
-	1jUWkbEZiKB5aODBiMVyrTBikwNnpCUq9OzF86Fpx12niGi8ZuCGbN6hnDTVzKgQ0W9MCWpDWym
-	3mVnEJs/LjOEsxnqEBuZwObRriwPV6OkXyFQUWvmsfc3CTH7fDNBXRqzAEugPnCm5g611aX0+lm
-	LfOdeaxGUZwiRauw1mEDUBJcp9s/m8NooNmbjrm4SZvG7rvtgNsp6yB5XSIKXX9UWZl2uLzXl9g
-	95U3Kx9SlgC6hRhgzadwh8WBNqsWJH0n9036sIJDSPOnBzGK5Y/j+7JVYTNJoydsGfZnjOFakLY
-	k0dSakm3gnDYQ=
-X-Received: by 2002:a05:701b:2311:b0:16a:8ffd:4977 with SMTP id
- a92af1059eb24-199363a356emr13049111c88.17.1793121726447; Tue, 27 Oct 2026
- 10:22:06 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nxx8rD+n
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2F3A1F01825;
+	Tue, 27 Oct 2026 17:47:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793123263;
+	bh=l7VNpg2kRwd5b+144/iE+6hpJCf1dqpyVWjx64qc4l0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=nxx8rD+nror4YxninkczUDa2I1XrwE4PQI2duzB6BvO+3EYvOaufFAvzZ2Gj9nES5
+	 m2zhP7itgsRY8ByszH9+QY7e9oymBBzxIfJ3zvBXW3w7bS6/kqkm6HK9EIP2hRF3gx
+	 hmOiOawrr2NgRfzq2VABkINRuQlPg0a+bna9PAWyTbUKUg2DYcYwVY5G62OPWiiqC0
+	 cqXPw4Ti6rzYnpvSwsqPFTPY3B5TNQYlaXC3wYiszTVKqykpL5QqmAYXK9OJ0TFckC
+	 JKJ0i0m5eOlPsX6OEZ8okOsW/w8f3mni5EbM2CUucBT4uAj2MoFNgzkAtZFEU8ibdM
+	 AdUSHht44XH2w==
+Date: Tue, 27 Oct 2026 17:47:38 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Olivier Louvignes <olivier@mgcrea.io>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+Message-ID: <20261027-crunching-outsmart-deb81d2c4d6c@spud>
+References: <20261023204209.48556-1-olivier@mgcrea.io>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,48 +63,126 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261027124954.110697-1-zoone.rupert@gmail.com>
- <20261027124954.110697-10-zoone.rupert@gmail.com> <auDNzWMPy0VQcazt@ashevche-desk.local>
-In-Reply-To: <auDNzWMPy0VQcazt@ashevche-desk.local>
-From: Marco Elver <elver@google.com>
-Date: Tue, 27 Oct 2026 18:21:29 +0100
-X-Gm-Features: AclHuK8orvmEUb-f7W0Au_t0jJZW6yeRJKoPRMRQ-D7ejg8oB9UAKvhykKBG7IM
-Message-ID: <CANpmjNNNw3Ont87-Uqo_j4YrPbamHLue=EAMkc+B66Q_yywQ9A@mail.gmail.com>
-Subject: Re: [PATCH v4 9/9] iio: enable context analysis for all drivers
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Rupesh Majhi <zoone.rupert@gmail.com>, Alex Lanzano <lanzano.alex@gmail.com>, 
-	Andy Shevchenko <andy@kernel.org>, Benson Leung <bleung@chromium.org>, 
-	David Lechner <dlechner@baylibre.com>, Guenter Roeck <groeck@chromium.org>, 
-	Jagath Jog J <jagathjog1996@gmail.com>, Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Jerome Brunet <jbrunet@baylibre.com>, 
-	Jinseob Kim <kimjinseob88@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	Kevin Hilman <khilman@baylibre.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
-	Matti Vaittinen <mazziesaccount@gmail.com>, Neil Armstrong <neil.armstrong@linaro.org>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Remi Buisson <remi.buisson@tdk.com>, chrome-platform@lists.linux.dev, 
-	linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="IVzTkKMFsWARD4NZ"
+Content-Disposition: inline
+In-Reply-To: <20261023204209.48556-1-olivier@mgcrea.io>
 
-On Tue, 27 Oct 2026 at 17:14, Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Tue, Oct 27, 2026 at 02:49:54PM +0200, Rupesh Majhi wrote:
-> > All of drivers/iio now builds without context analysis warnings, so
-> > enable it in every Makefile that builds objects, replacing the entry
-> > for dps310 alone.
->
-> ...
->
-> > +++ b/drivers/iio/Makefile
->
-> > +CONTEXT_ANALYSIS := y
->
-> Can we reduce the churn to only adding it here and do some magic to propagate
-> this recursively, please? I truly believe it's feasible to achieve.
+--IVzTkKMFsWARD4NZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Should be:
+On Fri, Oct 23, 2026 at 10:42:08PM +0200, Olivier Louvignes wrote:
+> The X1600's SAR ADC has four auxiliary channels and none of the
+> touchscreen or battery engines of the JZ47xx ADCs in
+> ingenic,adc.yaml, so it gets a binding of its own.
+>=20
+> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+> ---
+>  .../bindings/iio/adc/ingenic,x1600-adc.yaml   | 60 +++++++++++++++++++
+>  1 file changed, 60 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,x16=
+00-adc.yaml
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.=
+yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+> new file mode 100644
+> index 000000000000..7886836b10c6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+> @@ -0,0 +1,60 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/ingenic,x1600-adc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Ingenic X1600 ADC
+> +
+> +maintainers:
+> +  - Olivier Louvignes <olivier@mgcrea.io>
+> +
+> +description:
+> +  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input channe=
+ls
+> +  measured against a 3.3 V reference. Its clients select a channel by in=
+dex
+> +  through "io-channels".
+> +
+> +properties:
+> +  compatible:
+> +    const: ingenic,x1600-adc
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  clock-names:
+> +    items:
+> +      - const: adc
 
-subdir-ccflags-y += $(CFLAGS_CONTEXT_ANALYSIS)
+This clock name is pointless, but also probably wrong? The name of a
+clock should be the name of the port/function in the device being
+documented, not the name of the clock at the provider.
+
+But it's not useful when you only have one clock, just like you do not
+have reg-names or interrupt-names.
+
+Otherwise, this looks fine.
+pw-bot: changes-requested
+
+Thanks,
+Conor.
+
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  '#io-channel-cells':
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - interrupts
+> +  - '#io-channel-cells'
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    adc@10070000 {
+> +        compatible =3D "ingenic,x1600-adc";
+> +        reg =3D <0x10070000 0x30>;
+> +
+> +        clocks =3D <&cgu 28>;
+> +        clock-names =3D "adc";
+> +
+> +        interrupt-parent =3D <&intc>;
+> +        interrupts =3D <11>;
+> +
+> +        #io-channel-cells =3D <1>;
+> +    };
+>=20
+> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+> --=20
+> 2.39.5
+>=20
+
+--IVzTkKMFsWARD4NZ
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauDjugAKCRB4tDGHoIJi
+0rHiAQDJqflN11vFOAQL32ZMWC+E2VMahLfw+dfMccVcVRCF9wD/b4ROSm7WtF59
+puNa4dwEMEvAxnNVq+n1mo1WhBFgQgo=
+=1Ief
+-----END PGP SIGNATURE-----
+
+--IVzTkKMFsWARD4NZ--
