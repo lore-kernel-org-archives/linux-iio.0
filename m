@@ -1,100 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.179
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793113761;
-	b=gyxZLxl/FVLxvCRwu0xjgOmgntta3mNcmaQPxt40KvNnwZ042m/qvA72BzRvzfGPJfw2
-	 BARQGVWRGPSqW+omfMjRC6SWLn3vOMJCw6rKI+rvQoE7nnARls/u6F/LGcxFCK8IauEkM
-	 20sspu1T201bQQkzMeQwbu4YGJ0UrntfntGPFNrWKcBy7VURABwZAsjVOukv3NTc6j8wC
-	 bY8HB0wrznpviKwY1T/FDo8aXWPwBJDpMGGPjpnAphrXm+jfKoUC9JV44Z+vOcIg//o6s
-	 5ZTMEz7JoadzxBgXDW6gVui8gy4Gb5CV2z0hZZBfDcBaj6bhVVjc2SUDG0WyNyfXvdQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793113761;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=oAHxKAOEiqLhGsEJj6uWGojbuVaoZYDv1iJ7mHdZGsA=;
-	b=l8fBDMKKxsKi1T10Ie12vdKyE0mRdE14nLLJdyi+ozxlpB4E6pIe4MmF/jDE/K04exxv
-	 4KBJ9BLzfJhEtSfFsLxDSXo2F9qqbS1n5dLec/McDUOgqosL5pM5aX2dfarjFHO12fJli
-	 3tuZTIrSE5Jsv3KFKc7dFA01ZGmmX9ndBPOHReh/N7to2lEhIJcXbILkQhmFlS4E8gLPh
-	 oDy/lZXaGcCwxaL9o/r7m3u86NE9eJEK8y0+LEJFGHMrczRVuaHwVz+08IxoAixHnJv3z
-	 ikDqRMAI79ZKp0qDFPnaGane7IPxOhcecsf5xGCRVLlgxxBQuQjO22ajDPTpGfGWPoQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=co466oFF;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.179
-Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793115177;
+	b=0fxPuVTRi3H7X5wPU6rhBtklfDaUAzCW8LWCMEr4MWVxvqUMcOqQsUSgJRAPpZZ6xB7Q
+	 BXp9Duhy6rZQNhpXJd9C6tYPshoqFSvLhYR6qml3S58COJJOa7MYvuJunaOZ4DBo9vcET
+	 vpKafygXgdkxzV79w7ARs28LCQTui7oQNMMZMJYtLu1YdUcBlBSvmN20/A7zlKd81IHug
+	 fbH8k/p+KyIzP9cBQppylqZoi5NgFoYqjc7lijNcuDBNaFNIfiCPeQwrtqA5yWnuwxmtE
+	 FXa70vLVqf2ubAnyattjWFkoWroVSONjengUwqfH3KzME77LGkXQDIFmiHBm9Mj2WVQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793115177;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:From:
+	 Subject:To:Cc:References:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=7LMuaf5x+G5vJCWy/uKvKS2aFv577p/jdhBqPwmdYmE=;
+	b=L7iHEFpYqCfA4Hanse2M1qQLf7otYP+dG3SrU3ECnXcvmY44dr64ZKUtVqbc1bln12uV
+	 4i46kZJgolUcmxL/mYISOmBO4/LwgDsy8vli8BHGPZRdW8utj1uVnJ0iyL33+62GM+b+0
+	 yF7psd0N1+1yLkczFYBqzEA5fOMUlV4Vq6/bPjKhb1hfavDSzZzclI/psZC8sMsWnKgwc
+	 WARZDViNqp7vGFaBItKUBxfjD2IJY51NjDJrSRLN54DXQu+7P6X7NK0/sYWixsFP/f/2Z
+	 CZu0FL9PpHnMsp2OZkVvsFSwFbWkha1g89LckNYTJnSdEr3/kg2rTbBOxjM9KsTFwhQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cxrcYpdA;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE3A606A31E
-	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 15:09:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0AE3A606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAC3D606A31A;
+	Tue, 27 Oct 2026 15:32:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=co466oFF
-Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-3535a54bed9so6545085eec.1
-        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 08:09:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793113760; cv=none;
-        d=google.com; s=arc-20260327;
-        b=gCsRmodVbM6ysIyw7JEOCNdL3Ze/Ron4dvZ8iTbqTbCF22z96VyKVFeVWhLW2rA5T/
-         wPhDJ5gFpsgLPV4IiunSCFvemlfzqNL6yT7Xc51x5yUQDTYgxwQJBWKRZ7uDoKa3Q1rd
-         hfJ+W17rw4vFXhWuzEj9l/PHmzyxSZcXXFTE8FzT7PnZKBRCrrRqlZi+Y2NScelZKy0d
-         0aWJqJHCS5/ncNEvjSNTZRYIq3AaqFuzQjk+mMdJ5zQ2Hus4ePWhpOJFSxUFP9Igq15L
-         n1nDX6tYmyycKGs09pLg/24CXbsY1mjba/4Bv0MQ10/B4WoNuUIOpKzExJgRlpDSiqdD
-         TDyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=oAHxKAOEiqLhGsEJj6uWGojbuVaoZYDv1iJ7mHdZGsA=;
-        fh=cq7HgoakbvK7uWxDcxmKmcub5fsz8w8tial0cGHIu60=;
-        b=FLFo5af57mgngIu/torydBtlwVVStiqWJlvaOUHHaEGRhMbeITPCCK8I7da3pBX//Q
-         MNEqIMp0zxO3lasRbdVjAFHSEfHMq5oDmv4yPC32OfdF+zkVY0SJledjUuyinD7AYukS
-         5Ou2LxKsbZPDrwXe+x6AME4CAlHS80BNHZ9C3W1oIGefQbaTnLUXQ2PSFCQyYyxBsrZU
-         Rp/E8GKqukQM0IE73ke/J8Uf8zz8TfwvR/ik5ocPIKbKODP+zurw1E6AniBSbz9O3vGZ
-         ylYUnAgtY1NUE3wWcK7kwwVN+Ymgncib6nsdNpjxcis8JRoW4v8pJmUP6jY0TWLzW2J0
-         SmXg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793113760; x=1793718560; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oAHxKAOEiqLhGsEJj6uWGojbuVaoZYDv1iJ7mHdZGsA=;
-        b=co466oFF1dhQmr2N8vEvSlNncCSXO6JbBOpXu3AWET4ZRArQ0r5TFsh3JtzIiCijJs
-         xuVELQBeufrhTzCRwaLyL8IJ94XYqwLjwQ3N+cMEQtFXinnkOenaRTKVr8WkgE73/iUL
-         gbZbuqionHz7tYdmAQP1py0nt116nJIadBvAhG6AzwmPkwVa6rXM7EM86B4eB8T/7V7g
-         EQarfMCisspF/8XzNwrt4NZ8cAgg0yWxLsM82t7x18XK4CkIdCNTCRscDbHeWKY/iGJT
-         gDPIv5zAgn3MCyG8o/2beygcMBwF9PfRJb1KNZIMoKB6X7pHl5zKVUfmZWYKrj7NMVAL
-         aBOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793113760; x=1793718560;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=oAHxKAOEiqLhGsEJj6uWGojbuVaoZYDv1iJ7mHdZGsA=;
-        b=KdVXMxKLl7dIzTcFgWHBZNtm8MbvKwVUX1US/vZmXif9RXzvwtb6+NxoHeEQnt39YL
-         152C0wYV0wdg4WmKJGx5X8g7E6vOH0mQjKrDSxiliYuN40CdUN20eEfy/AcAe9cX5Z0Q
-         82qOPpATloYXy1cy9gq/nM4XF2z9XcMCLRWhJMXeuoVaumxsW+WWQgy8FpeoXWNeXEZf
-         fXpMRrKAv5w7aMs4jWnogXLk+4bcla15JihmbTkZsmhls8SWOPqo22Av7g4NtmpiZd9L
-         FefojROhNDccJRCO+qsvtie7q6r4/7C+M4i+ZB/WUCIwViwsEuTpxuchIQtTKlwKi6ks
-         9E8g==
-X-Forwarded-Encrypted: i=1; AKwUvBy89pE0Hpbx37dNwEqxnjhw3Zat0466pxsh71PiapWDIT44xQYb1gsVZcQxxxhGKp0fIOJM3fzkhSo=@vger.kernel.org
-X-Gm-Message-State: AFq9FYL/UXphwxF5oGdWZF+BiaAydsU5VVQhgjVxgSP3pzLp0Al/B+2s
-	h66s28anSLo2CqY5sQpq2O/IlvsTe24zSQ8cYovndm21cWHA5gRqFMF5AB5Y4hlV7OYdRu+gD3r
-	00t3RkKzpVcFEr/2/MFhtGZ+J1buIODE=
-X-Gm-Gg: AYBFou11+n4HA9FhwM21EvRszW/hTF7m+18CrtflX8e3Fmh/533jAa+P9ptEt2EfSED
-	4OuhmEiLh9h5u8gfRrq46DAprlb83inR0AjWNXqFlrMbTalN7Uwv7Phdv/gxYExaXm6qoIHHVUY
-	YVCrwZruCBlwRc5wanJ/JS7hFgBhhVmaAV/08QmZPjSez6sZYnglmv4PDVyjCrKlxgM8VM3DruV
-	/tBli7pqUGr0hrKE5agl1+XwKNNxTmsG1e/fcXIAZk9vWwae3lyDwy0wOlfdppbNoH/ARHWwq6y
-	qK/pth8qBufO+bKAs8a5L8cSLU+rY8Y1yOP27+HMMbWTNYmTr+Ce/NgATVoEEF9vC3vCg10tgcI
-	e59fU5cgtH1H+LplINoriXzhNGnOeQpVo03ogJFtUtZnt3U9NFqaEmJPKVun++0pxNIxEin2ugZ
-	3VryrMvrcXeVdiRuhisEexAhY+w6ebY5f2xfPB0nX/BbBhSuLkVAnPqA==
-X-Received: by 2002:a05:7300:e024:b0:36a:158e:f917 with SMTP id
- 5a478bee46e88-36a158f021emr2604437eec.6.1793113760079; Tue, 27 Oct 2026
- 08:09:20 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cxrcYpdA
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5043A1F01825;
+	Tue, 27 Oct 2026 15:32:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793115176;
+	bh=7LMuaf5x+G5vJCWy/uKvKS2aFv577p/jdhBqPwmdYmE=;
+	h=Date:From:Subject:To:Cc:References:In-Reply-To;
+	b=cxrcYpdAQ9W/FlWVaAPDf6Hgqd2abZpYBZAQx174DTFsIrU5vWQxX4f8BpelVBPLL
+	 reMLDpomGxogYTjVq9B1VSgEcbSbZ5sR6S6ob0fDKDsp/uUbEaL5F+ik5chymcVBrZ
+	 Stt15ZORbG5LYT8PzngT4Jnbb6bLS0ZR12J9kZaLvqxjqavVCwfnU3fRpxhJJvTFxv
+	 YjVf8FQGe39voNmJ/ryA1aaVVbHlGoSdNsgY8d2zsYPBb0JtWRaoPX5o+8DK19RHNU
+	 eHEf0pFSF2ieKMeJ6avt62dg7O9s8/6PIyXsh5yuQIWnph5tc833K1qOUKJjUJ8H2V
+	 xl/28PVCpCw0A==
+Message-ID: <5f21c0f1-39cd-42ee-b091-4b1dad06c1a9@kernel.org>
+Date: Tue, 27 Oct 2026 16:32:53 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,51 +51,87 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261027124954.110697-1-zoone.rupert@gmail.com> <20261027124954.110697-10-zoone.rupert@gmail.com>
-In-Reply-To: <20261027124954.110697-10-zoone.rupert@gmail.com>
-From: Kim Jinseob <kimjinseob88@gmail.com>
-Date: Wed, 28 Oct 2026 00:09:08 +0900
-X-Gm-Features: AclHuK8H6vSFxFswuEXecNS4oxgF2wzBLnY17J5ZgNNydJKg-55kp3rBfAwA1Kg
-Message-ID: <CALMSew+nhZp9BoqS5tOgFdiVy13U1r2f4UQa9Sd5zc9pSt_YcA@mail.gmail.com>
-Subject: Re: [PATCH v4 9/9] iio: enable context analysis for all drivers
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Alex Lanzano <lanzano.alex@gmail.com>, Andy Shevchenko <andy@kernel.org>, 
-	Benson Leung <bleung@chromium.org>, David Lechner <dlechner@baylibre.com>, 
-	Guenter Roeck <groeck@chromium.org>, Jagath Jog J <jagathjog1996@gmail.com>, 
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, Jerome Brunet <jbrunet@baylibre.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Kevin Hilman <khilman@baylibre.com>, 
-	Lorenzo Bianconi <lorenzo@kernel.org>, 
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
-	Matti Vaittinen <mazziesaccount@gmail.com>, Neil Armstrong <neil.armstrong@linaro.org>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Remi Buisson <remi.buisson@tdk.com>, chrome-platform@lists.linux.dev, 
-	linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Marco Elver <elver@google.com>, 
-	Bart Van Assche <bvanassche@acm.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH] iio: proximity: sx9310: keep the IRQ balanced across
+ suspend and resume
+To: Arnav Kapoor <kapoorarnav43@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Gwendal Grignou <gwendal@chromium.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20261026100322.16720-1-kapoorarnav43@gmail.com>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20261026100322.16720-1-kapoorarnav43@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-I independently build-tested the full v4 series (1/9 through 9/9) on
-top of jic23/iio.git testing at 7d80b4b383bc, using Clang 24.0.0git
-with context analysis enabled and W=1.
+On 26/10/2026 11:03, Arnav Kapoor wrote:
+> sx9310_suspend() disables the interrupt first and returns with it still
+> disabled if a register access fails. Resume isn't called after a failed
+> suspend, so the interrupt is never enabled again. sx9310_resume() also
+> returns without enabling it on error. Without an interrupt line,
+> client->irq is 0 and both callbacks act on IRQ 0, which the driver
+> doesn't own.
+> 
+> Disable the interrupt only once the device is asleep, always enable it
+> in resume, and skip both when there is no interrupt.
+> 
+> Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
+> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> ---
+> I'm sending the same fix for sx9310, sx9324 and sx9360 as separate
+> patches, as the Fixes tags differ.
+> 
 
-Results:
+Please group them in patchset to make reviewing and applying easier. Or
+rejecting, or even commenting that something is wrong. Previously you
+were sending AI slop and this resembles recent AI-bot spamming.
 
-  - x86_64 OSF: 5/5 translation units built, 0 warnings/errors.
-
-  - ARM64 OSF: 5/5 translation units built, 0 warnings/errors.
-
-  - x86_64 allmodconfig-based IIO: 723/723 selected translation units
-built, 0 warnings/errors.
-
-As a control, enabling context analysis with 9/9 alone reproduced 256
-warnings and 2 errors. Applying the complete series eliminated these
-diagnostics, including an OSF warning resolved by the conditional mode
-claim annotation in 2/9.
-
-Testing covered compilation and static context analysis only. Final
-module linking, module loading and runtime/hardware testing were not
-performed.
-
-Tested-by: Jinseob Kim kimjinseob88@gmail.com
+Best regards,
+Krzysztof
