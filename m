@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793117996;
-	b=GXn0A7UkOeyCA0nINW9ONkL0W2J0fZKL+ziTjpDwJudaft/ovbO4u9OGDHU7WO7Yo4KE
-	 J7O2zHxbPD/bqaErW7JBDgP5o5Vhk8c6B1qqw+CEdsCsagPf69eEs53z2CcV6j5HjbDCH
-	 Wx2pajwbIENklN5Gi3lioMDmZ/CMJs1y/eP7VSbR106VyKwJPtaRJ2rJsGdvQHwd5aS+A
-	 MzbtqM5Jl8WgxrGJDqlNLzPyfhNimCe04FblRqgwBU1i9Up3+Xcqj3zGXT0pHzgarANHK
-	 ZRi4bZKVKUpvjYFLVb5ySLEOB+tYMhx0woGAOAQahZiXpFEMus9c2fwesd2fQn5b1kw==
+	t=1793117993;
+	b=0J69Mc5Rnj8iiMp3N2zpgJwkjzak+HqTYoSsySxmzJG+VPMkcJJYfsSQZNxEqgo2pZdo
+	 Vg1w9E/0Qy34RvUDoodxxowLenpv+EdA+JwlIWyLbgrZY8vU8RCcjU10sGfQjU8mYCGCO
+	 Nk48kNAjgr7kK2Up95G+4nbE5Xspbv9qjcMNtNeeyMzjMIpXih4e2c9ewzP1u+LWgPHBu
+	 j4P/d0VUTH4kaFHe3fp5Pmh+thC3f5wJXib+Ijwp3mrwG+LRlCwFDmZZ16GpRiEZtMW6R
+	 gc/t5Wq4I412gemyevlIQqQgG3tS6Qhl4G9YOJcMv07qNgOctK62prwYo0/fVwMzmJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793117996;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793117993;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=o6Fkph5h2pAzn97EpT/8t4z5WuX1XaUfqN6Kra+5vCw=;
-	b=qd2LNpIOHFtVlssBtRjKnSjIGWd0iMeOohdGQrpwGpT+x/5HT9Tp5W5syXt+qdIrfkXN
-	 wd8EXGhMQWKjyoYxQCQn2dd8PX+b9Wgg2QBLuGqHnqzpTfP9W1aA6oMOUgAwQ2yqrQVHJ
-	 gUx4PVrLY6Fv+weuxJfFtOnD/7qvsgahYKAOgGcc0av7c9JRAWySA/i/t4B91dni8AZV7
-	 pR6dg6W/An/kVFJyEuz0PDGnqXlPiZ8DwG29xUOXvsd1QHwKP+hj7Kd83I+t7yRpo68b+
-	 qpfBhH7FbTHJz5YG88PNKGubJxQqZkDEWcqoEFOWEThaDYZpbd12u4yUmaKdvZucYZQ==
+	bh=OFJjFkZdzibB5A58QKF8LDurn2JAd1jMkyXCmJDkT2g=;
+	b=aCjkZlngK+BeSSNgdpb3cGqzS+t/TWPvKN8M+XJP6mPpUyxccm/d8jHEaoZHos3Ciu4i
+	 KdbK0mJEFtWx9KYzvcLjVbF/3QdZcqVN4MuYaOIsnAi1aNHzxNwgFQfzsA/+sTP+cIEeJ
+	 dHYMeS7+yEMdwrUjcidC4W6ZjVosbGWsPhuWpMKTU0dP860WnThRdtmT+VH4mJHPf4Ywc
+	 /dI4ouQYGpErNbM7QWFIg0wby5YZPexcANipdJMsUv3rY7cbURkhiMCFtL+GB0YToyDA4
+	 RGyM6fUdRW5O9PCVIGfFV3uXl8FR7lTjEcMwN9sf/BkAb6aVbMiDNdYjVy116FSrGZA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xueaaVji;
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=SS7d1kpH;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61DD060A261D;
-	Tue, 27 Oct 2026 16:19:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88E9560A3838;
+	Tue, 27 Oct 2026 16:19:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=xueaaVji
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA4E1F01828;
-	Tue, 27 Oct 2026 16:19:55 +0000 (UTC)
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=SS7d1kpH
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71951F031E7;
+	Tue, 27 Oct 2026 16:19:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793117996;
-	bh=o6Fkph5h2pAzn97EpT/8t4z5WuX1XaUfqN6Kra+5vCw=;
+	s=korg; t=1793117993;
+	bh=OFJjFkZdzibB5A58QKF8LDurn2JAd1jMkyXCmJDkT2g=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=xueaaVjiiCaI32esyB0C3JtMHlf2m4fii2e68LdCx2mHexh9nVwVQ+ovVaYGvc0bI
-	 zhPL6jlmVrr9YCf/aRLPu95N7shkemU3aVuzHCaqDXqYW/Sc+G6bZCp0KB5Crz0oX4
-	 iT2KzKZGuH5pOFNumDeQzppaFEVSAoHS2wv9igKc=
+	b=SS7d1kpH5zQ23c4d99cjfnX/T2vDnbdiBR8kLGbWzYjPH+axN3z7mo6mfG7vGwT8H
+	 M2zf6R9a3mDSndFt520FqnkHHQTrgbsgISAV6vtcS/UYYT256d9GN8LON9bRDa3GZ5
+	 +7CQJAk4XybaL0e+lAOTnng24TYyGSfVaulZXKp8=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date: Tue, 27 Oct 2026 17:19:18 +0100
-Subject: [PATCH 14/15] iio: scmi: use 64-bit divisions for rates and
- intervals
+Date: Tue, 27 Oct 2026 17:19:17 +0100
+Subject: [PATCH 13/15] iio: proximity: sx9500: hand on probe deferral of
+ GPIOs
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,84 +52,127 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261027-llm-char-misc-iio-v1-14-0d818334f6c7@linuxfoundation.org>
+Message-Id: <20261027-llm-char-misc-iio-v1-13-0d818334f6c7@linuxfoundation.org>
 References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
 In-Reply-To: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable <stable@kernel.org>, 
- Jyoti Bhayana <jbhayana@google.com>, David Lechner <dlechner@baylibre.com>, 
+ David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
+ Andy Shevchenko <andy@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+ Siratul Islam <email@sirat.me>, Vlad Dogaru <ddvlad@gmail.com>, 
+ Mika Westerberg <mika.westerberg@linux.intel.com>
 X-Mailer: b4 0.17-dev-e5168
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2393;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3503;
  i=gregkh@linuxfoundation.org; h=from:subject:message-id;
- bh=t6VDM2l5au3qJMOWob91wpdhChP2f0xT4UhjYWazRqw=;
- b=owGbwMvMwCRo6H6F97bub03G02pJDFkPzjN7X9/dv4GrmaPzbHZyOPeR/6E/pU1/J1vOMZDhT
- z81jzG3I5aFQZCJQVZMkeXLNp6j+ysOKXoZ2p6GmcPKBDKEgYtTACZyeinDgq6Gtglz7Kf5Pomf
- wsDGur/0yt+pKQzzLFZWTn133HTOgct3pqxZ2n2/Le29HAA=
+ bh=IJtpxjlyEDsdBGiMTEvYSBQO0IBMipNZgzP3WJE3uCI=;
+ b=owGbwMvMwCRo6H6F97bub03G02pJDFkPzjO33tmfI/RrMmcVh8lRlZ4fvgu9G/Xvx8598e7Y+
+ V9v1kX2d8SyMAgyMciKKbJ82cZzdH/FIUUvQ9vTMHNYmUCGMHBxCsBEpn5hWHD5BMP8Y30HzizZ
+ 6BaXI9QdFLYkwZ5hfsr3xk2513Ud+RsP7BLveeyuGWhRDAA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp;
  fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 
 From: Josef Bacik <josef@toxicpanda.com>
 
-do_div() only uses the low 32 bits of its divisor.  Two divisors in this
-driver need more:
+sx9500_gpio_probe() treats every failure of devm_gpiod_get() as "the
+line does not exist".  If the GPIO controller has not been probed yet,
+the lookup fails with -EPROBE_DEFER, and the driver binds for good
+without the line:
 
-- scmi_iio_set_odr_val() divides by the requested sampling frequency in
-  micro-Hertz, which exceeds 32 bits from 4295 Hz on.  The update interval
-  sent to the firmware is then computed from the wrong frequency.
-- convert_ns_to_freq() divides by the update interval in nanoseconds, which
-  exceeds 32 bits from 4.3 seconds on.  The sampling frequency and the list
-  of available frequencies of a slow sensor are reported wrong.
+ - without the "interrupt" GPIO client->irq stays 0, so no interrupt is
+   requested and no trigger is registered: the device has no events and
+   no data-ready trigger until it is unbound and bound again;
+ - without the "reset" GPIO the chip is not reset in
+   sx9500_init_device().
 
-Use div64_u64().  A requested frequency of 0, which was a division by zero,
-is refused with -EINVAL like other values that cannot be represented.
+Which of the two happens depends only on the order in which the drivers
+are probed.  Return -EPROBE_DEFER so that the probe is repeated once the
+controller is there.  All other errors are handled as before.  The i2c
+core sets client->irq again at the start of every probe, so a deferral
+on the second line leaves nothing behind.
 
-Fixes: f774117c96f9 ("iio/scmi: Adding support for IIO SCMI Based Sensors")
+A system that describes one of the lines but never gets a driver for its
+GPIO controller now keeps the sensor in the deferred list instead of
+binding it without the line.
+
+Fixes: 45fd5f8e10d3 ("iio: sx9500: add GPIO reset pin")
+Fixes: e53111ad5dea ("iio: proximity: sx9500: Assign interrupt from GpioIo()")
 Cc: stable <stable@kernel.org>
-Cc: Jyoti Bhayana <jbhayana@google.com>
 Cc: David Lechner <dlechner@baylibre.com>
 Cc: "Nuno Sá" <nuno.sa@analog.com>
 Cc: Andy Shevchenko <andy@kernel.org>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: "Uwe Kleine-König (The Capable Hub)" <u.kleine-koenig@baylibre.com>
+Cc: Siratul Islam <email@sirat.me>
+Cc: Vlad Dogaru <ddvlad@gmail.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
 Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/common/scmi_sensors/scmi_iio.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/iio/proximity/sx9500.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/common/scmi_sensors/scmi_iio.c
-index 442b40ef27cf..0e51e9c16b90 100644
---- a/drivers/iio/common/scmi_sensors/scmi_iio.c
-+++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
-@@ -161,8 +161,7 @@ static int scmi_iio_set_odr_val(struct iio_dev *iio_dev, int val, int val2)
- 	do_div(sf,  MICROHZ_PER_HZ);
- 	mult = scnprintf(buf, sizeof(buf), "%llu", sf) - 1;
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index dadce9b44227..94cc577f4404 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -853,15 +853,15 @@ static const struct acpi_gpio_mapping acpi_sx9500_gpios[] = {
+ 	{ }
+ };
  
--	sec = int_pow(10, mult) * MICROHZ_PER_HZ;
--	do_div(sec, uHz);
-+	sec = uHz ? div64_u64(int_pow(10, mult) * MICROHZ_PER_HZ, uHz) : 0;
- 	if (sec == 0) {
- 		dev_err(&iio_dev->dev,
- 			"Trying to set invalid sensor update value for sensor %s",
-@@ -237,13 +236,10 @@ static int scmi_iio_read_avail(struct iio_dev *iio_dev,
- 
- static void convert_ns_to_freq(u64 interval_ns, u64 *hz, u64 *uhz)
+-static void sx9500_gpio_probe(struct i2c_client *client,
+-			      struct sx9500_data *data)
++static int sx9500_gpio_probe(struct i2c_client *client,
++			     struct sx9500_data *data)
  {
--	u64 rem, freq;
-+	u64 rem;
+ 	struct gpio_desc *gpiod_int;
+ 	struct device *dev;
+ 	int ret;
  
--	freq = NSEC_PER_SEC;
--	rem = do_div(freq, interval_ns);
--	*hz = freq;
--	*uhz = rem * 1000000UL;
--	do_div(*uhz, interval_ns);
-+	*hz = div64_u64_rem(NSEC_PER_SEC, interval_ns, &rem);
-+	*uhz = div64_u64(rem * 1000000UL, interval_ns);
+ 	if (!client)
+-		return;
++		return 0;
+ 
+ 	dev = &client->dev;
+ 
+@@ -871,6 +871,8 @@ static void sx9500_gpio_probe(struct i2c_client *client,
+ 
+ 	if (client->irq <= 0) {
+ 		gpiod_int = devm_gpiod_get(dev, "interrupt", GPIOD_IN);
++		if (PTR_ERR(gpiod_int) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
+ 		if (IS_ERR(gpiod_int))
+ 			dev_err(dev, "gpio get irq failed\n");
+ 		else
+@@ -878,10 +880,14 @@ static void sx9500_gpio_probe(struct i2c_client *client,
+ 	}
+ 
+ 	data->gpiod_rst = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
++	if (PTR_ERR(data->gpiod_rst) == -EPROBE_DEFER)
++		return -EPROBE_DEFER;
+ 	if (IS_ERR(data->gpiod_rst)) {
+ 		dev_warn(dev, "gpio get reset pin failed\n");
+ 		data->gpiod_rst = NULL;
+ 	}
++
++	return 0;
  }
  
- static int scmi_iio_get_odr_val(struct iio_dev *iio_dev, int *val, int *val2)
+ static int sx9500_probe(struct i2c_client *client)
+@@ -911,7 +917,9 @@ static int sx9500_probe(struct i2c_client *client)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+-	sx9500_gpio_probe(client, data);
++	ret = sx9500_gpio_probe(client, data);
++	if (ret)
++		return ret;
+ 
+ 	ret = sx9500_init_device(indio_dev);
+ 	if (ret < 0)
 
 -- 
 2.56.0
