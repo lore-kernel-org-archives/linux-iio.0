@@ -1,97 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793127407;
-	b=1e+0H+p+rmgFw0KnQC+MceILqeEKeJcOBfAC0+gbDgq16ZxKXXZS8ejyBKDnVacZz0Mn
-	 3vdSXrnAxe2CecglJxCFL1BDGCgcoXwzb6XQTHKUDaIewGF7D+Yv4n6HP++oqfFPpIMjj
-	 FBx6nE1QYxC56Gx3ty+sYL8Mi9wWVXKBE1SJTZyp2ryNGzmGY8b2h86DpimxzArJFDfNS
-	 MTe69EvzmKoEAOsfnnEFsTRcuFyEdIIFpg5IuCNPL/YvqHUnrROl7OvawPTezXhHhNbUD
-	 SnwWO9Kd6Zs0TOkurusQl+9scfFtzl6aBdtrGgco9Y2UsDjKbIel9grc/A9hl6t10mQ==
+	t=1793133786;
+	b=vad87G1Z64d+YGaePVg4OBaxgXRLzp4OdP1y+KTKO3qep9Ojy7hMh3e6QPTVpG5XQiDE
+	 SnJyM/EmAOe/tVhHrWba+YTSyI6+6P39DAwzB35nQfAk2PNy0W8x/W90oEuCyFnjsCmEu
+	 EVEnOUrQYzrRtLSE7g+Wb0Q4eJzKVXfbE2UmrRhq6JSai9006X0a5DbXHAoK9x93M5ntB
+	 +Hvfq54zCfq8zAia5ScmfRGfAvuXYmtWRMEugnj8+2lL0y/Wjk5cA7XSl9aySlH/YlZPt
+	 ARAbmAKIzwUfnaPTWRD9DGZXuA5qWp5dxPQEnAwd3wzxUzvVnZM/yFuJmW/FCfIwo7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793127407;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:X-Google-Original-From:Date:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=sdw0zAFeaxdWH5BaxHh21oqt1eSDwMTyb26USwQqQls=;
-	b=hjRNCIc65tgtJBv1xhj1lW+atz9msQGU+oGYSLoyu13o6Y9WutgxR8ooO28O3DGSMrlN
-	 qhDVFubUGk6mTbOMpKfd1SkugEnYL7pvEWHkY8Ep4Mdqtk/KaLpj3zVO59k48ZXmK9PCF
-	 AIeQHYBy+YrrpPfoStwr6AWHU7BJ2kaKr584xOeMdmvswXtnmVKsFNBJndD8HiOiK4jZf
-	 jhUtIU9fijO7frPRB718895kiDICPXx4gNhBTZRc0lClYzSyBP4KeMVqYGe881RSbEzWB
-	 UyLARxbijsMh0z7Vcwo67QszDS6XIIZRlm7Jmhoz/MlZj5opCKwNcKYiP50y9b2rtlw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793133786;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=f+BR3OM0F+HKfZEptGCURxUQqOvEQP7ahROv0C46Za4=;
+	b=tL4cpQfnEm/G55k2ILWg4Y+VKeHYHb8MlxIvP7qD/NvF8W+/DxunNUOFUtlBTCbiHVDo
+	 myJg/Ql2Cfc5VbG37piNTtRAJwDofnqSofgzCFsmAaqZJmK+LQRmceyMhMk9hkasL7nMw
+	 CfuEwhmBXKJKu5pBaSRvuosDNBLP+UxDXRd9iU4kzsRp2hxlLl8zEuvuxowL4OS0z1WCV
+	 qZer+y6+jD1ccQ/EaoN0oa4Kn2ri3V1u7jKkX/lRcKfFEnPnUyM0s4beXTaxVcxA1bUpk
+	 Z8qMXC7be1Y0zdtXUZlcUSrzSSip2WDmOnJtL9aOj/e6IdhnGhLOJgMefpb4P8jhFBA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=N9SogX0m;
-	arc=none smtp.remote-ip=209.85.222.52
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VlwwTbvw;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9C4606A31D
-	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 18:56:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C9C4606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC31606A31E;
+	Tue, 27 Oct 2026 20:43:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=N9SogX0m
-Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-980c4258105so153641241.2
-        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 11:56:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793127406; x=1793732206; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=sdw0zAFeaxdWH5BaxHh21oqt1eSDwMTyb26USwQqQls=;
-        b=N9SogX0mUYzznMLkCdxnScars4a5lypSOARFKHHvLWqKISy4u1LwAvblttViiOhgl2
-         g/lvPyHzbh8cNa6FInQy2Sq1Qo9tBkgQJOoh5RE2FD4JSf+G8O7ryBOMvUCRKRLcDKoe
-         Pf7CwrapxrNaBM+H1gWvl8mifiXFt4uIESOQFCX8PIAWvNSzrJb13NcfpfCSKqQ6Q7ir
-         kKqUu3wbO++S1Dnc5yo4zFpwfXr4XaCx6mw3RnLysxAAEJCj+9/lYr8AQRZRmf/WQHWq
-         zo0dQf0FhrNmLjDhQemzgPrDhphJv1bHmpkZWzLVKS6WsUkZEIIwfzXPETjBzoGDZdIr
-         cl6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793127406; x=1793732206;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sdw0zAFeaxdWH5BaxHh21oqt1eSDwMTyb26USwQqQls=;
-        b=suPeSihqrT4ktZoR7eqgOSBKeinNQdgaVUmbIbRomYPMdwxTrkTWBkKwAqIjGtrpTr
-         YMbv+YKTZZQOUBovQTZkqVNQG1V7RJfYmIQGgHe+HP7bqj6itNlDVzZmbcGwIvD9VeQa
-         2+4JGbj0sbThihXnC/aanxnJHdP5TJq7FWaTOzK7DrP92h0pdZYRMkLI+wQqA5TgcUzh
-         8YXstzonb6P+NtCF/1BVtMZ558gfjLTEQPPX3ywVN63tx9eAQ2NwYKQS6wZCdCWnIPBn
-         JbX0l58uLqqU/gwKf2FqdDTl9o9yMoOQol4uONtuIbgHU4Q8nzjD9e9hACbPjJum8aqz
-         qgKw==
-X-Forwarded-Encrypted: i=1; AKwUvBw5zR31L5rwqhFfq+hdVS1G+g/z7eOZqaqw2HP+wU0oBog/yY+plC3cjBlkuBtw0mVd6PV/DCp4d1g=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJal86JBgxXHMuBS5xrUuhPs4XVCoZ+DTr7Y2I4La4G4e+rIYx1
-	ZXwan3PIyFB/Xl9mOfuGVs3pmpN3cybkh9brzPWotXVTbo6oHlL8Do4q
-X-Gm-Gg: AYBFou13Hu29dnNVNophlafbeuk6QeIkUihn6wJpi6iInrlJuK3DC/wsAD9ETLSBfyE
-	78KQ7HvUDKkJ/N1clXV7/tL7fWsOHQVkJ+JREd7A1d/6nY+T8dlWiPMbXKTAzvL20UFNEf1pgop
-	/L2Jg0cAlKQ9mc1446QOsIn+63YopnDJeIh6+6LetvtylkucOP0CohSMlFBuQ7SfzHBVTA1fv1K
-	rUXxk6ydVbf1wdMzCeHKiejbbDTC3mH15+y9gG05a9BhTi+jUEaklAlWIhimsLJembYECJgMsx2
-	ayzpPX6k9QlMgang+vxkXywn5CUm/AeEp3qrFTTW1oQ/xZf5sgb35OGXKZsMf9TGD8AClxm8WhC
-	dpgEiXbCZaBqytRviRAeKr8qsIu6PkBRojHDOmYuj+Sjqn36o9011wL6CcPpoWajdS4OAp2ITeQ
-	33/cXF6NIS+jsKKHuVDYpdeyFb7Y7r/8xJG3311M38b9ycQMgMmB3WZHWfG0X8D/OpvZBKP0zFr
-	oiHzgElsirikjvML/W3dvl/oSNJo71mlfud4R4qaineUDMVfsBydNo1YS5eU6Fo49GDe58yFNMn
-	ZZw1sGnHF9dSB7XlPLYJiwIlIQYjmCeqabBLRso419xuQuEGgEAbufkmcoUZ/LwQ
-X-Received: by 2002:a05:6102:3fa2:b0:7cc:3eb0:6ece with SMTP id ada2fe7eead31-7d03a585266mr85277137.33.1793127406463;
-        Tue, 27 Oct 2026 11:56:46 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (158.95.44.31.netskope-rdns.com. [158.95.44.31])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-99125a07478sm3462145241.12.2026.10.27.11.56.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2026 11:56:45 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 27 Oct 2026 15:56:35 -0300
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>, 
-	Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] iio: prepare iio_format_value to handle
- higher-precision IIO_VAL_DECIMAL64_* formats
-Message-ID: <25g6fr7y4bmd6bzomvlvoejtps7wzbnbuuxxipmcrnozujno2l@klcfyrmqsifd>
-References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
- <SN1PR12MB2528906BE220765FAF201080A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VlwwTbvw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DCF1F01825;
+	Tue, 27 Oct 2026 20:43:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793133785;
+	bh=f+BR3OM0F+HKfZEptGCURxUQqOvEQP7ahROv0C46Za4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=VlwwTbvwhxRU0UFrnu3m/RTRfm6xYnQQ9H2mIUFOMvIfBtk2gJBKkcABTFJub/8FM
+	 ZGe/3h1D0UkVAj+qwRU/ATs2TE9A7CeTGxqxF/hdSBhNTWj7pNEbQ7sv4H/5ATipB3
+	 D8EjN+A+mvfxX8wshDWMmSaOPTemRbUfOSXtm37rh0+W4wFP5xZJl9EtqQ7sbGxfR3
+	 e7vmEY1yrG3oUbZ23c00sV0jXembhzsFixqU9q8U5L1til6ecfrtZ4rSMbEQKlaCBw
+	 qMcY97lQnCpGncGwt83BG7D7L8qYGWSUvINZxrO8ZnRJRzS60czEtG7VTawhjgsATK
+	 WTljcChfNdWhA==
+Date: Tue, 27 Oct 2026 20:43:00 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux@analog.com, broonie@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	Michael.Hennerich@analog.com, nuno.sa@analog.com,
+	dlechner@baylibre.com, andriy.shevchenko@intel.com
+Subject: Re: [PATCH v4 1/9] spi: dt-bindings: Add spi-cs-composite property
+Message-ID: <20261027-colonize-primer-f994b88171a6@spud>
+References: <cover.1792435248.git.Jonathan.Santos@analog.com>
+ <e9308680e7b45ecf9ef2b6b2a752ffdd4d23b80c.1792435248.git.Jonathan.Santos@analog.com>
+ <20261026020003.3f3fbe86@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,96 +62,133 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="8RvJR8qKFINmKJHV"
+Content-Disposition: inline
+In-Reply-To: <20261026020003.3f3fbe86@jic23-hlaptop>
+
+--8RvJR8qKFINmKJHV
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SN1PR12MB2528906BE220765FAF201080A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 
-On 26/10/26 11:51, Victor Chernyakin wrote:
-> Prepare iio_format_value for an upcoming patch that adds formats up
-> to IIO_VAL_DECIMAL64_YOCTO (a scale of 24 digits) by avoiding
-> computing 10^scale when doing so would overflow, and by avoiding
-> undefined behavior due to abs(LLONG_MIN) (which couldn't happen
-> previously).
+On Mon, Oct 26, 2026 at 02:00:03AM +0000, Jonathan Cameron wrote:
+> On Tue, 20 Oct 2026 22:56:41 -0300
+> Jonathan Santos <Jonathan.Santos@analog.com> wrote:
+>=20
+> > Some setups combine several SPI devices into one logical device, with
+> > each chip on its own CS line. All of those CS lines must be asserted at
+> > the same time, so that one transfer reaches every chip.
+> >=20
+> > Add the 'spi-cs-composite' boolean property. When it is set, every chip
+> > select listed in 'reg' is asserted together on each transfer.
+>=20
+> To me it feels inevitable that we will see a device / combination of
+> devices that want groups of CS lines together and others independent.
+>=20
+> Seems less likely we'll see more than one set of composite entrees.
+> Maybe this should be an array of values that match with specific
+> entrees in reg?
+>=20
+> I'm not sure though.  Conor, Kryzsztof or Rob, any thoughts on this
+> or similar things that have arisen elsewhere?
 
-...
+Why does the property actually exist in the first place? Does the device
+driver not know how each CS should be treated?
 
-> +/*
-> + * Regular abs(LLONG_MIN) causes signed overflow, which is undefined
-> + * behavior. This variant avoids that by performing the computation in an
-> + * unsigned type, for which negation is always well-defined.
-> + */
-> +static inline u64 abs_s64_no_overflow(s64 x)
-> +{
-> +	return x < 0 ? -(u64)x : (u64)x;
-> +}
+>=20
+> The most general case would (subject to it not working) smell like
+>=20
+> reg =3D < <0x1 0x4 0x5> <0x2> >
+>=20
+> Where intent is that 1 4 and 5 are meant to switch together and
+> 2 is separate.
 
-I think I've seen Andy doing mentions to a needed 'safe' abs() a couple of times.
-Don't we have something in the tree already? if not, Why not adding a
-'unsigned' abs function to math.h? something like:
+I would expect that for this kind of device, the driver should know that
+the first 3 CS are switched together and the 4th is not. I'm not really
+sure what the internal representation should be, because if someone can
+make a device like this, they could surely also make a device where (to
+borrow your format) it behaves like
 
-/**
- * uabs - return absolute value of an argument as an unsigned type
- * @x: the value.
- *
- * Unlike abs(), the result is well defined when @x is the minimum value of
- * a signed type, since the negation is done in the unsigned domain.
- *
- * Return: an absolute value of @x, as the unsigned counterpart of its type.
- */
-#define uabs(x)	__uabs_choose_expr(x, long long,			\
-		__uabs_choose_expr(x, long,				\
-		__uabs_choose_expr(x, int,				\
-		__uabs_choose_expr(x, short,				\
-		__uabs_choose_expr(x, char,				\
-		__builtin_choose_expr(					\
-			__builtin_types_compatible_p(typeof(x), char),	\
-			({ signed char __x = (x);			\
-			   (unsigned char)(__x < 0 ? -(unsigned char)__x :	\
-						     (unsigned char)__x); }),	\
-			((void)0)))))))
+| reg =3D < <0x1 0x4> <0x5 0x2> >
 
-#define __uabs_choose_expr(x, type, other) __builtin_choose_expr(	\
-	__builtin_types_compatible_p(typeof(x),   signed type) ||	\
-	__builtin_types_compatible_p(typeof(x), unsigned type),		\
-	({ signed type __x = (x);					\
-	   (unsigned type)(__x < 0 ? -(unsigned type)__x :		\
-				     (unsigned type)__x); }), other)
+and so on. But if those devices don't actually exist at the moment, and
+everything is either all together or all seperate, the API for this
+stuff in the SPI core doesn't have to solve that until a device actually
+shows up.
 
-> +
-> +#define GREATEST_POWER_OF_10_THAT_FITS_IN_S64 18
-> +
+Worst case is something where there's a variable grouping of chip
+selects, e.g.
 
-that is readable! being local to this file, maybe define this as
-IIO_VAL_INTLOG10_S64_MAX or something to indicate the scope of its usage?
+| reg =3D < <0x1 0x4 0x5> <0x2> >
 
->  static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
->  				  int size, const int *vals)
->  {
-> @@ -720,13 +732,19 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
->  		int scale = type - IIO_VAL_DECIMAL64_BASE;
->  		s64 frac;
->  
-> -		tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
-> -				     int_pow(10, scale), &frac);
-> +		if (scale <= GREATEST_POWER_OF_10_THAT_FITS_IN_S64) {
-> +			tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
-> +					     int_pow(10, scale), &frac);
-> +		} else {
-> +			tmp2 = 0;
-> +			frac = iio_val_s64_compose(vals[0], vals[1]);
-> +		}
-> +
->  		if (tmp2 == 0 && frac < 0)
->  			l += sysfs_emit_at(buf, offset, "-");
->  
-> -		l += sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
-> -				   abs(frac));
-> +		l += sysfs_emit_at(buf, offset + l, "%lld.%0*llu", tmp2, scale,
-> +				   abs_s64_no_overflow(frac));
+or
 
-...
+| reg =3D < <0x1 0x4> <0x2> >
 
--- 
-Kind regards,
+but maybe if that happens the thing to do is permit reg-names for that
+device, and again store the relationships in the driver rather than
+try to convey it via DT.
 
-Rodrigo Alencar
+Cheers,
+Conor.
+
+>=20
+> How to do lookup on something like this is another question.
+>=20
+> Jonathan
+>=20
+>=20
+> >=20
+> > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
+> > ---
+> > Changes in v4:
+> > * New patch. This has been included because without an explicit propert=
+y,
+> >   every device with more than one 'reg' entry would have all its chip
+> >   selects asserted together. That breaks devices that use ancillary
+> >   devices for the extra CS lines, so the composite behavior is now opt-=
+in.
+> > ---
+> >  .../devicetree/bindings/spi/spi-peripheral-props.yaml     | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props=
+=2Eyaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > index 4894196c8f9c..456cb9095632 100644
+> > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > @@ -60,6 +60,14 @@ properties:
+> >        Delay in nanoseconds to be introduced by the controller after CS=
+ is
+> >        de-asserted.
+> > =20
+> > +  spi-cs-composite:
+> > +    description: Some SPI devices can be aggregated into a single logi=
+cal
+> > +      device by asserting all their chip selects simultaneously. When =
+this
+> > +      property is present, all chip selects listed in the 'reg' proper=
+ty are
+> > +      asserted together on every transfer, treating the group as one c=
+omposite
+> > +      device.
+> > +    type: boolean
+> > +
+> >    spi-rx-bus-width:
+> >      description:
+> >        Bus width to the SPI bus used for read transfers.
+>=20
+
+--8RvJR8qKFINmKJHV
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauEM1AAKCRB4tDGHoIJi
+0taJAQDxWUdJTEyrBBQwwB+5pQJE1sGp/SQvIm4Rog0nramvvQD7Bl95EY8505PG
+qnhSurVHW18xxr9nxFNb2pEmo9W7uAA=
+=TzEb
+-----END PGP SIGNATURE-----
+
+--8RvJR8qKFINmKJHV--
