@@ -1,58 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793088289;
-	b=MkSs1e62xTlew5lrNHS4Atzn6zuexgKKqujHczhxXG2j9EGeCzrE6eNUjMklIW6ZGVdV
-	 fZoTbYMVq3WX1HUmkuNYirEfJkzpsr/LE+s0taI6RI9t1Qc/C0aBIx49oY4h2iO3l7UKf
-	 Rw+joEa9LXwVhmKM9nn/ENOkcPQbIZemlkPWDt8tohS1fEdN0iWThjd4EnyPAXXRMOFL7
-	 N59wG2QfyC9w5XVwXaHvkko+UUUFvkw9Emj5Xrb9td6PW7XYj7IuPOdXl4+z+4JOftIz8
-	 2XLQD1t7GofywxYFOKSiSfyFRtEznpZ9xFgstzFLqkXqniNZeABIGIGg0JldAh7jvBw==
+	t=1793089071;
+	b=ehC9XQVhFoA1XwVRbVBbopLfctJVGzkelSoBMeb2huCuUq17zdA8P7aNd2yBYbX26qaY
+	 QYjsp8gwsPOD4EjShdwyWVmwzdZbxiriCoojaaP6YjBt9zS7ctEqqOqlrzAIT1aikkTIu
+	 qvkmCYqbRiXCHEbH6IVQAY6PBZR/ccNh8izSLv+aepO1FaSRj6nAFnha7zEdtuF0dIIWM
+	 mxi0EyioKawhcozTNTXxhShp0mOI+GkR8tBAJMuJyZVvXWaONQjXSfuyrPJ380paFHHHi
+	 /sC1ABdojb1Ql72KRzEKuchX79+3DlBaTUGjWuTrAUCOjsOSh42VOai16BKYxZb0Qww==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793088289;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=ZL1gpW7p4ard24lSO9/+2V0/hqF98a+IvwOAZv1vj7A=;
-	b=QrjDuEwLXEYlyuSGQGD+Z/C0CDFGeZO7oHF1qofXiPe1ZzbhJbHygjBkVv842XSmbpVu
-	 wc6dE4rTXURKhX+6GR1KqcE4oS1pEuBuUM3TzNcdGgcT9P0aj6zbWxLER2Bb6oGNPoPhH
-	 FSPFw8XJb+Rda9nXAiDrAX06PjTKkCw9mKUBeoVxmJpsqoMbSnd3HBJwmec+iwiqTBiNU
-	 01bgWr38CO2aMdZKj4GxvKOMKHaypwOeqptXvXG54kdsvkiJnYLfSTbpP7jRTMVM27IjO
-	 2x3DV3Yyj02QI7R8T2nH5c6fFqJz3za72/CORAA6B2whPMGkC1JuNKn3XQKljmAT87Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793089071;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=6pSRZs9to8QozgPzXBQtkQ5486leq3++5McafqcUDu4=;
+	b=ugbfOwKOng87bUR7VE0pD0xjSD8Jc6/SpryXLuEWXcJjTVNbDrfg/K9jEdQf96DQ0fLz
+	 0yPyAuGfCkPdtWW7337BbyuTqmjkmq07sUejSo/KN7fbCWYnCKUss+NQquldNaBm41WdV
+	 vEy3Zz0uPiJYCMWgG30na5gAnaauJ2flI2stsqJIrceDrgd0vxAoKzkiLvra7aumRUJ+u
+	 8vkk4BF8rjkix/JuJ3LYvJFQ3lKxFAOsQy1fZOhXj7TijOrvuW2XEoUvk31U2wB+NMPfd
+	 /Fm3QBrQ6FLk6MgCb0G6SFzhZPqt6roUlwFwr5jHxqtP0Ewj6FXgFXL8NQeshNBXtcg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kOFIK9R3;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=W3GY38+c;
+	arc=none smtp.remote-ip=209.85.128.41
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944AA606A31D;
-	Tue, 27 Oct 2026 08:04:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A13E606A31E
+	for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 08:17:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6A13E606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kOFIK9R3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E761F031E2;
-	Tue, 27 Oct 2026 08:04:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793088289;
-	bh=ZL1gpW7p4ard24lSO9/+2V0/hqF98a+IvwOAZv1vj7A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=kOFIK9R30fCpE+kzywtFEXksr4BIrnOkyAqNjGnji/boXE+SHiUCokPAb0BYrOfaE
-	 3Ij2CbhXsxbCf7Xduo0Kimt9MtZRokiJYe6R1D4ib9sadBZk4Ja2FHFKBqlEEWxrB+
-	 SATNGY2WB8GUKMR2SBxC0areS6/Zdha/vir4HXyjZ+TtByRtUbJCLd7BGk+8DA+J+o
-	 otee2mf26zka3gFjg0OMVd7itagJs0B0Lc+vgX+NWjc7RRW4S2gKInisCiInE1kbN4
-	 iHxROV2v+Qa8Fl8K95pih6+jxxvX6n8tbKuHlUkBmYabIxRzFtJDlbyZeh90w/S70/
-	 PNpA6Rgz4cbLg==
-Date: Tue, 27 Oct 2026 09:04:45 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Stephan Costa Barros <stephanbrrs8@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Mike Looijmans <mike.looijmans@topic.nl>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/6] dt-bindings: iio: adc: ti,ads1298: add ADS1299
-Message-ID: <20261027-slick-rhino-of-vastness-5cfe0c@quoll>
-References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
- <20261024231335.280955-6-stephanbrrs8@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=W3GY38+c
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a1fbd52ab6so24690995e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 01:17:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1793089070; x=1793693870; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=6pSRZs9to8QozgPzXBQtkQ5486leq3++5McafqcUDu4=;
+        b=W3GY38+cy5nyGOTXHCSp+3n6w0AYvVRXiUp7A2Cbk8DDVn53KpGA3YH0vEo+qOXf8I
+         7FmBu9L5EEOfCdqmeWvs+lTFXCJg3XTuz6XG7PsnsHmOzKk0jXvxilPJYttD4o25udUL
+         jA+uWvXmpZ9sjFhO7hdPijqhVKTor05LH5Gigd3IXfDZ5ALOlFLVB4qoYgfGATSEkH1G
+         nqXE7YSHSwnADsebID64gYRdcuoYFUHpaaDpeBgu+8RSXk8xlc3Bi4ZwBhyc02nF8cDA
+         aOIWnyp7+eBYtLRllxxED0j5E61ih2JASp37+Q1wv9/8wLGtWe4d0Z1fUCPXDnse02mM
+         O9rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793089070; x=1793693870;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6pSRZs9to8QozgPzXBQtkQ5486leq3++5McafqcUDu4=;
+        b=WDH/rh2SVSQcAcdRpJ0lO08HN7UsbCnZ1RSFXw6j2gwRQU8zGVeMMItdAXBPcPWo1p
+         GrDBps6QO5ng5GsWZdh2kE/+aSfUPgc7EETwck8aNqxigxNUzXAxgC1QVzUfN3d0MoZ7
+         WXnBLqXt9pBM6DGs0N7PwLgqjKqZovuzcKWNFNT0HmJw/zb9beaG9beAspjgU9cPMASm
+         o+dqcxBrxvsuHuehucupl7osMqmdt4341kIrUSxaGq4epImAhOPstzrlm2564N/V4GOt
+         fsDbIKpTjtZkSixDFGS+JoJQJIC6soOcTRjOHjpensVLdQGPT58KVnpJgGs9yLNV595O
+         ib7Q==
+X-Forwarded-Encrypted: i=1; AKwUvByvtwXtbnR5K96d4A6r+mvQy2YpgxghIN+JEHX5MeL08tSLIYZgc3/oszes/Aj72pcBjqjIFawdIto=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLn3r5PgkmBeiKZ92fkM/oqFq1rcY1721fk81OiXPreAHat7uXc
+	H+qOmUtEfQ0YXzxgd6PmPS7z8MsSPxdWEGSxaAT+sdvafI4xSsq9ntFkLTldDA==
+X-Gm-Gg: AYBFou2zJt3E7I8H+LXWRnXdJw15l3VW4OCo0NcPr8zdpSv3hsPQDnOQGYTMyoQiLWy
+	U1valtWdU1M+WxhxNueWYjU7R9Gl5399Ut/GUlfMcVObNjRViJiYexvbymuO8FRyimHBulN7wkX
+	mCyNhMgJxeNtR9wWICYH2UrDKAS0oZuMaaL9qwC5gp4Vt33S+PdQXvBG0eoNArJpKLtJlNsXiNG
+	Sd8j9ZJMae2U7IUCykdbE1EZuoOg8Vimp0ZT/vuQpESoWTiMECgQrX4/DYBrSTaPav5c7HfxEHq
+	3h5F1a/S6tEdGuRA+9jmrIdlTV4nb/jpQ0KvgzOEHmF9nLsNh/V7MKTdmExUSd3tOtqMAZtMvhP
+	GERolabXz1RX2xhqCy0evdMhmpjK4jgw/eNGR91gIoQ0Iam0Qv9VOo9/DDGkLVaEMVBFM/mB5ln
+	+gTK5mRSjs61VsLC7vctL+aDwF5PStM1diNqQQ6VMvfQEAqSacI8lE3tsSIfbyTu7/9+c6mgE3y
+	cJGJMFZKOCzbQ76eYs4iqwBKUWs/HjDiDSw9+69nVbDDqxK8e2t6wNjeqK3//K4R6etZ3R+QXEb
+	M6Fm8lAWiSUrKAiRZwCixBpi3IOdvNuPehXCwQXdC7aBaCOj28axRPwuKN7heuxzg5D3IjT/kmk
+	pW0GNkI67NNpMSbwjMIgDmUp9QLyKxqVXJ+GMHdhMaxyTxH4ysKB1K0F/BCEbNz8k30RZ2WBShO
+	HCGtBgvUNMbDPD8+pDOMOXpvIfI7OT7Q1iFQ+Vkp5gSbRzcGFmp5LD5Tk7MVlDog==
+X-Received: by 2002:a05:600c:37cc:b0:4a1:f720:74cd with SMTP id 5b1f17b1804b1-4a35acaf08fmr170013745e9.24.1793089069570;
+        Tue, 27 Oct 2026 01:17:49 -0700 (PDT)
+Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a0aa0bcsm311304615e9.4.2026.10.27.01.17.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 01:17:49 -0700 (PDT)
+Date: Tue, 27 Oct 2026 09:17:47 +0100
+From: Joshua Crofts <joshua.crofts1@gmail.com>
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <20261027091747.000040c9@gmail.com>
+In-Reply-To: <SN1PR12MB2528DB8EE8ACEBF9551ED52EA5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+	<SN1PR12MB2528DB8EE8ACEBF9551ED52EA5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -62,38 +103,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261024231335.280955-6-stephanbrrs8@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 24, 2026 at 08:13:34PM -0300, Stephan Costa Barros wrote:
-> The ADS1299 is an 8-channel, 24-bit biopotential ADC for EEG with the
-> register map of the ADS129x. It differs in its gains, data rates and
-> ID layout, and has a fixed 4.5 V internal reference. The ADS1299-4 and
-> ADS1299-6 are the same part with four and six channels.
-> 
-> TI sells the 8-channel part as plain ADS1299, so ti,ads1299 names it,
-> and it is the fallback for ti,ads1299-4 and ti,ads1299-6: the channel
-> count can be read from the ID register. The ADS1299 is not compatible
-> with the ADS1298, so ti,ads1298 is not a fallback for it.
-> 
-> In the same way, give each ADS129x part a compatible, with ti,ads1298 as
-> the fallback: the ID register tells the parts apart, by family and
-> channel count. ti,ads1298 alone remains valid, so existing device trees
-> are not affected.
-> 
-> Both families have a digital supply, DVDD, and an active-low power-down
-> pin, PWDN, which the binding did not describe. Add them, both optional.
-> 
-> Add myself as a maintainer of the binding, next to Mike.
-> 
-> Signed-off-by: Stephan Costa Barros <stephanbrrs8@gmail.com>
-> ---
->  .../bindings/iio/adc/ti,ads1298.yaml          | 41 +++++++++++++++----
->  1 file changed, 34 insertions(+), 7 deletions(-)
+On Mon, 26 Oct 2026 11:51:14 -0500
+Victor Chernyakin <chernyakin.victor.j@outlook.com> wrote:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> +config FDC1004
+> +	tristate "Texas Instruments FDC1004 capacitive sensor driver"
+> +	depends on I2C
 
-Best regards,
-Krzysztof
+Please add "select REGMAP_I2C" here, otherwise building this module
+may cause errors with certain configs (e.g. allnoconfig).
 
+> +	help
+> +	  Say yes here to build support for the Texas Instruments FDC1004
+> +	  capacitive sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called fdc1004.
+> +
+
+
+-- 
+Kind regards,
+Joshua Crofts
