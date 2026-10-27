@@ -1,106 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793098655;
-	b=TpoWAK6asMOBaYwZmG/4kiPSOyg6hi9lO5z7BevLp2v/k9oUlWSJCKmyo027MfrXIDmm
-	 rap9fTkzVpTgtjOwRp58Ldkr4gBvGGj1+Wxdn+C5wVP/rKH6+SZzp+TDkgMIKvUpHPFIS
-	 C3vxnQMmZ4fNFS0VNQMN+3xPNdpTsI9Lgs4PsUlkGVh5kN7e1vdUChBdTfhCOrBZuLPmI
-	 j8KtjvNGRzEETEloQyRiOSI5ItAxiQP4qpdbi5+0Jo6dbFE8wAGjMiPbQEN2ET4jjKacR
-	 HiBx0q/5l8lEfudAF1J2uyjf/C1EV6CNehGKf8RRDV4ySZWyQzUKNoa+TmzOkHduE2g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793098655;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=dZz9lepwmlI/2ss/zkEKEg3BC+T3gnksNTo7+qpe9cw=;
-	b=N5441xdTeA/dX6VS26XkTHdKdUcQSnSgLb08jjiD1JeQgOfFfoZfrbK6kHgHW4hXSaS/
-	 wG8p6UAFDSuaTgZCLz8LXwAMcbUZENnZ09F+1rKq7j2j2e01MV9OUIdDqof7qkhQD57Vl
-	 mDCMUJmXAsMfdgu0BnF2mYsEBVdhhDpI4UqBQ+o1+2YEst2PKIfwg383V1/whfJZBvYdV
-	 a3zsNsgKdJhW+PBSCJB9e9/4rQbfmm0SHwXn2ldGllkOOCI5O3j6EUhUJWClyfQ10Fg1s
-	 yAGCPEudReZaCmohbrFr+uapoKojM5frC6wfyp0yb0q12h8TMoKwmR9aCz+Y/90naYA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ju2DiaR9;
-	arc=none smtp.remote-ip=192.198.163.10
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793098733;
+	b=fFs81wCMN8ipPqzQ2St5CvJD5OmI5/N1fqWz9smwI5cixduTBNH7c4XEbxiqcsJAEBiK
+	 3+g+GrdNoy9coxNefsOIq8kCZVBY30ClRrnalbo89LvM8h3A8L+Zyzkzdlaw3Dk0EOOGY
+	 jfFWvtV9H3sj65EShUoQK/zobCsmaDzkkVGeywZAtB0vn3hZKpGhJwwqJOWMBg10Nvrd5
+	 LuCgmLKygp6w12lhj3PbWcDB1lBc8DvRP/cZgAeiTyAXuxbEip4Vq9o8DCQgVX8MXhS3+
+	 FurRSp2UfHd6BgZDwLpnbk5DyCaaVwEUjxWukAuuxtLRWN4eHpM5Q7waGsxmftSEPLw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793098733;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=jRVGSqGb3x/iswrEHVzAMghiqhU4ka2ocVNlaJSUIlo=;
+	b=2unhh6eAGQVh01BCGI2MW1CE9MTpTBe9MBfgqDST0P9WHD09GrEMukOqyL7ZGQbSM59T
+	 wllPDE1+uhkWUTg/959AtN1Re6aYfKNNVRrrqX6Vcl8/49HhWa3GlO57e9MgvhANKYkln
+	 k6yXMLWuMuJnOFL73FcdLycJx1usO+Ru+u7xaIodm24H9VeonoSpaQ31hM3p/N/RM8zQ8
+	 KFRGocVPAuNQXVCBQqYccXt18LNW/mdoLl4gF158eMq3RALwzw5XnYe1GApD/aNZLunDx
+	 ihLLgI9UZmn7ceA1ZJrEy7ERPfhPdFxZIu6KVHFT0g3Zqhkpa+d5bYDj5sK+Nh7281Q==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ajljmEdH;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62D13606A31B;
-	Tue, 27 Oct 2026 10:57:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62D13606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DAE9606A31B;
+	Tue, 27 Oct 2026 10:58:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ju2DiaR9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793098655; x=1824634655;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NJXnj7w8pWN3MAmf0AvWK3yUGzwNpUAqyM+X0M9ZSTI=;
-  b=ju2DiaR9hMXgLQD0vkwlbK8jvdF1UUGCKKNQGZv8LJ3/sYPFxAnBuFXM
-   8Nagi/Qj4VhrH1k/kIoOl559hQXomF2vzas8YgIHOoBruIHyfd6hPHE37
-   vvIOIrYwh1ko/jqw46sbHXLqNg/QIiVjQLw7lIW8Rz/8aqes3vZWX9/mj
-   FSk9Z/ifCIddmq3iAOntUm2SxB4LoEgFbxLAGUo4KCijlKAa3g2KXhnM/
-   GE8j0/TR2iv5OxN4hQOOYeyB8yyZbVyvJ2EiotP+kxpbU45/A5ITk3O46
-   negytHUZVwFKXSp5cWrTPEbDMgVtve5WByzmIRVlQQrXhOlXGJ13kacgb
-   g==;
-X-CSE-ConnectionGUID: qs9Fzu/9QfyU3Ng+Gd12qg==
-X-CSE-MsgGUID: cOdqnKJYSiaWg7JfV1AWXw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11947"; a="1698414"
-X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="1698414"
-Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:57:34 -0700
-X-CSE-ConnectionGUID: mKWLNoNfTvq7NWi3cOEIBw==
-X-CSE-MsgGUID: yXzo/wnYTh+aZbgjrPdnzg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,181,1787036400"; 
-   d="scan'208";a="6265627"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.196])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2026 03:57:27 -0700
-Date: Tue, 27 Oct 2026 12:57:23 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Gene Chen <gene_chen@richtek.com>,
-	Jonathan Santos <Jonathan.Santos@analog.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Zhang Lixu <lixu.zhang@intel.com>,
-	Cong Nguyen <congnt264@gmail.com>,
-	Ethan Tidmore <ethantidmore06@gmail.com>,
-	Christian Eggers <ceggers@arri.de>,
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>,
-	Petre Rodan <petre.rodan@subdimension.ro>,
-	Jianping Shen <Jianping.Shen@de.bosch.com>,
-	Alex Lanzano <lanzano.alex@gmail.com>,
-	Justin Weiss <justin@justinweiss.com>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Archit Anant <architanant5@gmail.com>,
-	Stefano Manni <stefano.manni@gmail.com>,
-	Jyoti Bhayana <jbhayana@google.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Piyush Patle <piyushpatle228@gmail.com>,
-	=?iso-8859-1?Q?Nicol=E1s?= Antinori <nico.antinori.7@gmail.com>,
-	stable@vger.kernel.org,
-	Adi Nata <adinata.softwareengineer@gmail.com>,
-	Cheng-Yi Chiang <cychiang@chromium.org>,
-	Tzung-Bi Shih <tzungbi@kernel.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	Francesco Lavra <flavra@baylibre.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: Re: [PATCH 00/39] IIO: Continue removing deprecated
- iio_push_to_buffers_with_timestamp()
-Message-ID: <auCDk6qMQDMEGdOr@ashevche-desk.local>
-References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ajljmEdH
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793098733;
+	b=XhWekbwv/qD3PeP2dWAYUO2+NMC76MG+CvbGqDyrwH6D9iAo5HkE+Sn0c/GriiQjFrcc
+	 Cea3YdKipyDMCfjTIf2YqZ6BWIKlaneEQ0BXUESj9KvykZ/kLi8i96dgukrgmL0oB2ktW
+	 dTHmm3t2MqqyCIta8SE629wrgfEfDTrmnOYE9GRPqju6+VVabgR2lm+criqYgKtE6CH3l
+	 wmwC4YDeZXRA2P7XSn/Y9Ew+/EDyVk94nawlBUE9+k52e7NPWSPzRZTzMbmKOBFmNIvKh
+	 IKtAGts6ikTyaHihOdnBrkZ7Z6enq46TLD2dy57knE+IOs8M+gH7mYstWXi2A6fRiJg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793098733;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=jRVGSqGb3x/iswrEHVzAMghiqhU4ka2ocVNlaJSUIlo=;
+	b=oymBU4CuUQvHlemp2Lv92Z1A7dNk6tRyQ/bNIa39MBnY6lcvL4cS1a6ts4zRMlRDX4pQ
+	 PJZBab7UkLhrmlUikuse21RXDzlxo8MqbP+eYdUziJ1+VdwnqtXfbP2+IK9FV1srW1XdU
+	 K75Qk+QQuaPkqTFvGXYNCrS+8nWf7FiiWGsmNfutroshJK11zINqv/sR3Ifm+DLKWiz5l
+	 w8vEeHkDpEIc4uBgXB0fE23I4KQGashgKK/t2obE7qbpcUX3rLeOYqF8dhFtfbzubPHV9
+	 QGC4tqjNR7SC9t5gXlRHuKm5rMkWAXxMRaBc0kpKWMH0rNhTDuIwwiqUmi0RCWfcETA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 7570B1F01825;
+	Tue, 27 Oct 2026 10:58:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793098732;
+	bh=jRVGSqGb3x/iswrEHVzAMghiqhU4ka2ocVNlaJSUIlo=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=ajljmEdHmyMGq01Jw9j6/obLNAiTRumm/M9Lg/OiDTa9YVeQSgjOGKc8NRU7wzC97
+	 Of/wIvnwo/iSP0Vb6QuNyYr1I010QYCxrUimzvOvorffOoxTkaKF+FQ42S+LLxIMK1
+	 tiAWzrJ4i4OQonLPV3T7QRljQm7pU0QYVmZzZ/5TPBsjNA6j/v64P7vX6vllH3DlPd
+	 qe8UtAfQ/E9oTyTy1KSYgWr1yIF0mmhez1EAQzMTBqo1fO0qPJDJFPtLH/vaKwdaId
+	 n/g/z3ULY5tgOM3QQlhOKIZrnqdlIXsnRU/pf2H7946AdbBnzN2xjG3CM5qSbl7pSZ
+	 EswBvNT2vuuUg==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id CC1264509F;
+	Tue, 27 Oct 2026 10:58:51 +0000 (UTC)
+From: Daniel Schaefer via B4 Relay <devnull+dhs.frame.work@kernel.org>
+Date: Tue, 27 Oct 2026 18:58:39 +0800
+Subject: [PATCH] iio: light: hid-sensor-als: Don't read past the end of
+ short fields
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -110,39 +83,95 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261027-iio-als-overread-v1-1-e47e2706368b@frame.work>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MSwqAMAwA0atI1gZsxe9VxEWoqQaklRREkN7d4
+ vItZl5IrMIJ5uoF5VuSxFBg6grcQWFnlK0YbGN709gBRSLSmTDerMq0oZu4a0dPvfEEJbuUvTz
+ /cllz/gAIkYvKYgAAAA==
+X-Change-ID: 20261027-iio-als-overread-c9e538fa61fa
+To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: srinivas pandruvada <srinivas.pandruvada@intel.com>, 
+ linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Daniel Schaefer <dhs@frame.work>, 
+ =?utf-8?q?Sven_Vaink=C3=BCla?= <sven@xn--vainkla-r2a.ee>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793098731; l=1879;
+ i=dhs@frame.work; s=20260705; h=from:subject:message-id;
+ bh=HbHuBMAJPm4/X1qXGCMYOxlRvxnQ4Q+ym/c/16zMV7Y=;
+ b=hNWK6KU9FNsC+SmMsb+DoSpOCyteg/p4oNS7Z6kAHJRdxscCJyuLk7DJM3oE/Xsd/yq3H+sbb
+ VNQqTddW9FYDRCIKWlZ+Xut5xDwHppXVKYz0tyVIqs32kOpEi5+06sy
+X-Developer-Key: i=dhs@frame.work; a=ed25519;
+ pk=O1zF7VDnmz6EZNc7sEiawR+KK650uRg1XteQ8jHwScw=
+X-Endpoint-Received: by B4 Relay for dhs@frame.work/20260705 with
+ auth_id=852
+X-Original-From: Daniel Schaefer <dhs@frame.work>
+Reply-To: dhs@frame.work
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 26, 2026 at 04:05:18PM -0700, Jonathan Cameron wrote:
-> A bit of technical debt cleanup that was partly a discovery exercise in
-> using AI tooling for this sort of somewhat messy subsystem maintenance
-> activity.
-> 
-> Replace iio_push_to_buffers_with_timestamp() with
-> iio_push_to_buffers_with_ts() which includes a runtime check that
-> there is sufficient space to insert the timestamp.
-> 
-> A few other modifications of related code seen whilst working through
-> these and a couple of fixes for DMA safety. Those are not sent as
-> separate fixes as they are in old drivers and we have had no
-> reports of problems. So no rush to get upstream.
-> 
-> The remaining users of iio_push_to_buffers_with_timestamp() are
-> the more complex cases that will require more careful review so
-> are left for the next series.
-> 
-> I appreciate this is a large series, so if you have time to take
-> a look review what you can and I'll nibble away at applying the
-> ones that have received sufficient review.
+From: Daniel Schaefer <dhs@frame.work>
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-assuming we get a positive feedback from Srinivas on testing HID sensors case.
+Reports are not guaranteed to be 4 bytes.
+On color ALS sensors there are fields that can be shorter than 4 bytes:
+16-bit illuminance, color temperature and chromaticity x/y.
 
+I don't have such a sensor right now, but I have emulated one in
+firmware. With this patch, no garbage data is read from the next report:
+
+  before: 05dc02bc 05dc02bc 190005dc 0ce41900 00000ce4
+  after:  000002bc 000002bc 000005dc 00001900 00000ce4
+
+Same fix as commit ad02ca57e44e ("iio: hid-sensor-prox: Add support for
+16-bit report size").
+
+Fixes: ed5514c925a0 ("iio: hid-sensors: Added ALS")
+Signed-off-by: Daniel Schaefer <dhs@frame.work>
+---
+Tested on an emulated sensor with 2 byte reports that is correctly recognized
+by Windows.
+
+Cc: Sven Vainküla <sven@xn--vainkla-r2a.ee>
+---
+ drivers/iio/light/hid-sensor-als.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 929343e42d83..00dfc2037c19 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -267,7 +267,21 @@ static int als_capture_sample(struct hid_sensor_hub_device *hsdev,
+ 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
+ 	struct als_state *als_state = iio_priv(indio_dev);
+ 	int ret = -EINVAL;
+-	u32 sample_data = *(u32 *)raw_data;
++	u32 sample_data;
++
++	switch (raw_len) {
++	case 1:
++		sample_data = *(u8 *)raw_data;
++		break;
++	case 2:
++		sample_data = *(u16 *)raw_data;
++		break;
++	default:
++		if (raw_len < sizeof(u32))
++			return -EINVAL;
++		sample_data = *(u32 *)raw_data;
++		break;
++	}
+ 
+ 	switch (usage_id) {
+ 	case HID_USAGE_SENSOR_LIGHT_ILLUM:
+
+---
+base-commit: 09f742b49cb2728086d78be2b0b35e4d1d71fc85
+change-id: 20261027-iio-als-overread-c9e538fa61fa
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Daniel Schaefer <dhs@frame.work>
 
 
