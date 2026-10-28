@@ -1,55 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793195491;
-	b=cKT2HsJDbI5rDJcuCHBHXfrc6KUW58LvzsQcx5/7KehePP0rdBbxC7gh4Qiuny9UWZ2U
-	 n27lGbcGnYNAxq+4hkAdmuPA3GarxMU2c/qz9JIkE/kt4EvT0OzdYtDluWhb8GPVd+TrH
-	 VdekKwdmoLCEI8HVqztGf/o0Gx3c/idwPmbvBORl/vezAqbysmiH5mzJIBJR/d7g8OI0h
-	 9BiENZ8tSgjJHeVvryu/VyjuypMxo+InHfCOg7przCgTCPWJ9og0uawWuO+o9KySOazoA
-	 HoytUWOoAMwws+VofJ5xfT9SEEW4Fya2xn/agozJY6etJ5fTl3awBJbm4iaKylG11eg==
+	t=1793195708;
+	b=bEIV0Zep131c53xd/X6J7iW6EyQ98PITdcRR6p2/whfkpvxlhq0m2xLh0yZcLvrhcex2
+	 uRf7+iUCqrn1A97b9DceC7KHPw1VRB0p8RSO5BexzYDMSAaa2bCdoCvcR+hoUKxjOH+MC
+	 WEIBkTqWyFDFzmhcZn1AEDgjwuzK/dSVwWqLm/c6ng5YWujZnAPP8pYZAjI3CFu/Qql1J
+	 TQa9h98AXfvf+8Wo9ImIHHWdPUlZPrwAa7JSLmD+ZZ39kvAuLSZ1/t/58R2FofELXP/Da
+	 TNu3wKt319l6UISjHx/x5/bWy85hfuV5wnxQ9EGmFdrRR9LOr0obeJeZr5pcDUigSgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793195491;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=4Y/rSr894qLRl2goj1baT6Zs2+/CgiEisoOorlNt+S4=;
-	b=R9ZqM/3/+AA2nQBDGYecP7DLllgWoKdU3Sf/CZ3MIHb19UFKyjvmhXu4V/F3W/gtL7qK
-	 pX6NV0/uB4UDLXHD3zJm4RlKMdXUcJMUxtY41fv6vWHEDCth8lqDoyOj3HuJy9HSFYwOO
-	 yyzCoSkG7T7jLHWUV/vgSeBfhh/8fNNonOaq5LfhywAgQ22KbeWmitfHoxh+Uir2wrl3C
-	 lqPEnj83g3j1CuCqpyHaLViZ5PRcXPNqi7uT2vR7CxuugNlqdDp0yypn4904Wk3rgPdM+
-	 tXRQPwa+cvvzLoGVU0xI/oRzMa+m8617UVXtjBYe/HR4E43/9/qa8+kh7aJcCoiQkfQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793195708;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=ppjHqUVsglS3sP4IvrCeWYBNEAaFHo0dcAQS3txioPw=;
+	b=2wGXsOUgNDgybb3N3eu4mXE8FLXd1gANWM1Sjqb6PNfkqDjOdAdfeoG9NDW6gf+hnk2i
+	 RrmolB+7i/6hf4wxy/n544/Lli/rxAjPx6MbXasFlnGbIOLyM9QM5nj9M90NvsCvVaGTl
+	 NHLRQpckYO+dkLUWF/A4ZmTmgg5gC7M71Lw4ogzL2PcQNc4O9rSL0jMEJHvY4Zyd/SVjF
+	 ryCANKQ41MblKOWWqF7a5KYsIJo9ARE9sA3ygQbOl7eavt4OW1WTuZx5wyDK6vZzM+/oa
+	 VntIBSOFUZfs/65srxlgWO8p1TJF3cAK6AB188xvxZlGKXSR1icnjcR5CreSyOpU+Yw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LhnyHoqC;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QeMMikUA;
+	arc=none smtp.remote-ip=192.198.163.12
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA083606A321;
-	Wed, 28 Oct 2026 13:51:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6FFF606A31C;
+	Wed, 28 Oct 2026 13:55:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6FFF606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LhnyHoqC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29F51F01828;
-	Wed, 28 Oct 2026 13:51:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793195490;
-	bh=4Y/rSr894qLRl2goj1baT6Zs2+/CgiEisoOorlNt+S4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=LhnyHoqCJuE9rE85usJCDB2h/oQDstnXf3hY6egJQRU3jUjwqVgpFTHL/lVw5jpdM
-	 WRT3XfE3/xqUB1VZjrEnk77Oh0a8byY71hpQ0D+5YJBG7izBPn1EgqB1VglrScq7MZ
-	 6UjbB1Z/Eekl1XxfKFbASJuwO+YAZvmFwkNc4XqL7BZUDjM77zF4zxeXaE9Jv11SfI
-	 P1Fie5Pqx+RVYy+l0PqpZn0zrmksrcUooQT82lE3gRDddLqnjJJPl0SEDYZo/JVdFC
-	 hUE+9IUxinOhU5erVPVBcJex328FUcPIoP0YMPR7/z1q1wUiLKE74pYRjz7vWMzmFC
-	 Lb2KHu7MxNQzw==
-Date: Wed, 28 Oct 2026 14:51:26 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] iio: update email for Joshua Crofts
-Message-ID: <20261028-independent-cougar-of-hail-d2b21f@quoll>
-References: <20261027124602.1533-1-crofts@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QeMMikUA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793195707; x=1824731707;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WOn6xYyEphAdy77ddUIYxqei8Cv3mh2qBW9TTARgsLY=;
+  b=QeMMikUA4I9fvLT1iJtCpwKeR6iz6CG1jv+IY+SI/3IeMUJ5irq4Tvy1
+   /ZfPJqVeG0Et1Wp+rLmu2hrzCeunMyXZix6y+WX2rDJwdbHx3GBRG8uRN
+   m/oxcpsTftAxqDdI3G2FPPtVdyad2hgw1l2z4Y4Q4wLQDqLqUgO0U+Sba
+   37bTMFf/5UvpaoMTdRuLL4ml3f7yafKwTotGFS/duZsnWW5zAgx9EivG+
+   sb6k0Fj2t3xNr11V+H+F/01PdVzZQHI3mgR6YWglh9o9Q/b+kDuM6cVXx
+   XFdjC/o7jLsakDi6zkXytOFFwdY1+3n7l6VG6GKnYQook03NiQanOM+1Z
+   w==;
+X-CSE-ConnectionGUID: I4x+rTziQICluj8Hutp3lw==
+X-CSE-MsgGUID: spsPJNBiQhaNwpQe/nVn2g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11949"; a="1812952"
+X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
+   d="scan'208";a="1812952"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2026 06:55:06 -0700
+X-CSE-ConnectionGUID: VMU1DyMOQlOXkwpRTX1z0Q==
+X-CSE-MsgGUID: XjlXhUujQRGWC6CQKWnFlg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
+   d="scan'208";a="5361534"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2026 06:55:03 -0700
+Date: Wed, 28 Oct 2026 15:54:59 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Neil Armstrong <neil.armstrong@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux@analog.com, Marius Cristea <marius.cristea@microchip.com>
+Subject: Re: [PATCH v4 2/3] unaligned: introduce be56 unaligned accessors
+Message-ID: <auH-swoZ1mWwgWU9@ashevche-desk.local>
+References: <20261028-topic-sm8x50-iio-max34417-adc-v4-0-d4baaf3ee903@linaro.org>
+ <20261028-topic-sm8x50-iio-max34417-adc-v4-2-d4baaf3ee903@linaro.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -59,20 +87,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261027124602.1533-1-crofts@kernel.org>
+In-Reply-To: <20261028-topic-sm8x50-iio-max34417-adc-v4-2-d4baaf3ee903@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Oct 27, 2026 at 12:46:02PM +0000, Joshua Crofts wrote:
-> I'd like to use my kernel.org email going forward.
-> 
-> Signed-off-by: Joshua Crofts <crofts@kernel.org>
-> ---
->  .mailmap                                                      | 1 +
->  .../devicetree/bindings/iio/dac/microchip,mcp47a1.yaml        | 2 +-
+On Wed, Oct 28, 2026 at 02:19:05PM +0100, Neil Armstrong wrote:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> The MAX34417, IIO driver, is using some unaligned 56 bit registers.
 
-Best regards,
-Krzysztof
+56-bit
+
+(When you refer to the size as adjective, use '-' dash, otherwise space.)
+
+> Provide some helper accessors in preparation for the new driver.
+
+...
+
+I think I gave a tag to something similar in the past. Anyways,
+with the above being fixed,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
