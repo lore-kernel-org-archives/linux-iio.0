@@ -1,58 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793133786;
-	b=vad87G1Z64d+YGaePVg4OBaxgXRLzp4OdP1y+KTKO3qep9Ojy7hMh3e6QPTVpG5XQiDE
-	 SnJyM/EmAOe/tVhHrWba+YTSyI6+6P39DAwzB35nQfAk2PNy0W8x/W90oEuCyFnjsCmEu
-	 EVEnOUrQYzrRtLSE7g+Wb0Q4eJzKVXfbE2UmrRhq6JSai9006X0a5DbXHAoK9x93M5ntB
-	 +Hvfq54zCfq8zAia5ScmfRGfAvuXYmtWRMEugnj8+2lL0y/Wjk5cA7XSl9aySlH/YlZPt
-	 ARAbmAKIzwUfnaPTWRD9DGZXuA5qWp5dxPQEnAwd3wzxUzvVnZM/yFuJmW/FCfIwo7A==
+	t=1793151994;
+	b=49mrJ7wLtRdKyObctjDoW+0lKQiWf/bMhnj+pU4rRsSVVVcZcE8e+YYo2VpypkMYqvY1
+	 j9MROmvhEAM87YC1v4uhM4EiixQ0+EGZnXNbxPC/8qL6e7DlYng7JloRl6aKrl7NYt1VY
+	 KGCHMn7ZEnxig+UfMyX81hVbEdhT7VU3NsPdaasCaI+3kAxDDYES9h6gIGtAc48hNk0bN
+	 AySGqyXll0QWDAZAkaN5EVQN1RyTbjH5GTOexN34hDGW0KOhnoPhk5m/QoXuT5WEAvRUo
+	 pNzmXZKrsLxMOcsfXVjBNL+x3W2V+v/lKp2e+eo4gVfRNBHvelD4rAS7DRcGN5nhh8Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793133786;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793151994;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=f+BR3OM0F+HKfZEptGCURxUQqOvEQP7ahROv0C46Za4=;
-	b=tL4cpQfnEm/G55k2ILWg4Y+VKeHYHb8MlxIvP7qD/NvF8W+/DxunNUOFUtlBTCbiHVDo
-	 myJg/Ql2Cfc5VbG37piNTtRAJwDofnqSofgzCFsmAaqZJmK+LQRmceyMhMk9hkasL7nMw
-	 CfuEwhmBXKJKu5pBaSRvuosDNBLP+UxDXRd9iU4kzsRp2hxlLl8zEuvuxowL4OS0z1WCV
-	 qZer+y6+jD1ccQ/EaoN0oa4Kn2ri3V1u7jKkX/lRcKfFEnPnUyM0s4beXTaxVcxA1bUpk
-	 Z8qMXC7be1Y0zdtXUZlcUSrzSSip2WDmOnJtL9aOj/e6IdhnGhLOJgMefpb4P8jhFBA==
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=HhVgMwDF/XYzF1S4bXhT7dEgzoMg0MoK8ytAJuC4oTg=;
+	b=bkMDSmY0YxCqY1TEvVciA8+iwJQembtRkb5c37dvoeS+e9Mz457+o9HrfEebqZDds9fg
+	 OXR7DLEMCN4r0UAOfZUhCWF/ShCA2SG8CItJqzmkvF8X/W7Qz57eAzI/Iner8gC6X9sqh
+	 bhOMr6hhNlXJjCq4RS20gqnGt06uYqSsKCz82dexZFAmUkFFhhMWxWhmzU2fNX5l+CDIr
+	 3fZ0abQ8AndXYpuUnnzIpMIgG9hahG+x+mZNtN+UaLcbMrt2Lem60Z+fyx4NO/eRSEwT4
+	 1q06Sd0P5542+G6OMPdJUQRZ5ncgX608L28uFhzXouRFAJXPNKgbXGV1GKC+3B1NEyw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VlwwTbvw;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P6TBaF45;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC31606A31E;
-	Tue, 27 Oct 2026 20:43:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68671606A31A;
+	Wed, 28 Oct 2026 01:46:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VlwwTbvw
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DCF1F01825;
-	Tue, 27 Oct 2026 20:43:02 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P6TBaF45
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A4091F01825;
+	Wed, 28 Oct 2026 01:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793133785;
-	bh=f+BR3OM0F+HKfZEptGCURxUQqOvEQP7ahROv0C46Za4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=VlwwTbvwhxRU0UFrnu3m/RTRfm6xYnQQ9H2mIUFOMvIfBtk2gJBKkcABTFJub/8FM
-	 ZGe/3h1D0UkVAj+qwRU/ATs2TE9A7CeTGxqxF/hdSBhNTWj7pNEbQ7sv4H/5ATipB3
-	 D8EjN+A+mvfxX8wshDWMmSaOPTemRbUfOSXtm37rh0+W4wFP5xZJl9EtqQ7sbGxfR3
-	 e7vmEY1yrG3oUbZ23c00sV0jXembhzsFixqU9q8U5L1til6ecfrtZ4rSMbEQKlaCBw
-	 qMcY97lQnCpGncGwt83BG7D7L8qYGWSUvINZxrO8ZnRJRzS60czEtG7VTawhjgsATK
-	 WTljcChfNdWhA==
-Date: Tue, 27 Oct 2026 20:43:00 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-spi@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux@analog.com, broonie@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	Michael.Hennerich@analog.com, nuno.sa@analog.com,
-	dlechner@baylibre.com, andriy.shevchenko@intel.com
-Subject: Re: [PATCH v4 1/9] spi: dt-bindings: Add spi-cs-composite property
-Message-ID: <20261027-colonize-primer-f994b88171a6@spud>
-References: <cover.1792435248.git.Jonathan.Santos@analog.com>
- <e9308680e7b45ecf9ef2b6b2a752ffdd4d23b80c.1792435248.git.Jonathan.Santos@analog.com>
- <20261026020003.3f3fbe86@jic23-hlaptop>
+	s=k20260515; t=1793151994;
+	bh=HhVgMwDF/XYzF1S4bXhT7dEgzoMg0MoK8ytAJuC4oTg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=P6TBaF45s40DeWTgldpqO1+bizR/xXy9w/EM4SKzr6QWeN3ygfozlJINicJUJb86j
+	 TzBwdXkaqz6aY3t6hn+tAJFeXbTd6t9OIwQD+Y62g5c5KENtkzHURMEzG7x/vzbUmj
+	 75OO3lkd58d7VeiNbQizJt2eQ2xmGAfi9mRQotSOsw/CktUEC5NQzJf8YSb9Alz//s
+	 8iwQ5whJKFSkyd8IMcs7ITiFNTakGgTKSwdRJvY+eX5zcJXVId5T+ozZ0SDRJNrfs4
+	 3TDGs4Q1mZo1ZvS6zwqMQyrw8ED/QcEMhcJyeJJAMd05Sthuk1fDAc+xvMoS9A2sJ3
+	 SEEey4/Lm++OA==
+Date: Wed, 28 Oct 2026 01:46:26 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable <stable@kernel.org>, Jyoti Bhayana
+ <jbhayana@google.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH 14/15] iio: scmi: use 64-bit divisions for rates and
+ intervals
+Message-ID: <20261028014626.4187905f@jic23-hlaptop>
+In-Reply-To: <20261027-llm-char-misc-iio-v1-14-0d818334f6c7@linuxfoundation.org>
+References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
+	<20261027-llm-char-misc-iio-v1-14-0d818334f6c7@linuxfoundation.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -62,133 +63,83 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="8RvJR8qKFINmKJHV"
-Content-Disposition: inline
-In-Reply-To: <20261026020003.3f3fbe86@jic23-hlaptop>
-
---8RvJR8qKFINmKJHV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 26, 2026 at 02:00:03AM +0000, Jonathan Cameron wrote:
-> On Tue, 20 Oct 2026 22:56:41 -0300
-> Jonathan Santos <Jonathan.Santos@analog.com> wrote:
+On Tue, 27 Oct 2026 17:19:18 +0100
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+
+> From: Josef Bacik <josef@toxicpanda.com>
 >=20
-> > Some setups combine several SPI devices into one logical device, with
-> > each chip on its own CS line. All of those CS lines must be asserted at
-> > the same time, so that one transfer reaches every chip.
-> >=20
-> > Add the 'spi-cs-composite' boolean property. When it is set, every chip
-> > select listed in 'reg' is asserted together on each transfer.
+> do_div() only uses the low 32 bits of its divisor.  Two divisors in this
+> driver need more:
 >=20
-> To me it feels inevitable that we will see a device / combination of
-> devices that want groups of CS lines together and others independent.
+> - scmi_iio_set_odr_val() divides by the requested sampling frequency in
+>   micro-Hertz, which exceeds 32 bits from 4295 Hz on.  The update interval
+>   sent to the firmware is then computed from the wrong frequency.
+> - convert_ns_to_freq() divides by the update interval in nanoseconds, whi=
+ch
+>   exceeds 32 bits from 4.3 seconds on.  The sampling frequency and the li=
+st
+>   of available frequencies of a slow sensor are reported wrong.
 >=20
-> Seems less likely we'll see more than one set of composite entrees.
-> Maybe this should be an array of values that match with specific
-> entrees in reg?
+> Use div64_u64().  A requested frequency of 0, which was a division by zer=
+o,
+> is refused with -EINVAL like other values that cannot be represented.
 >=20
-> I'm not sure though.  Conor, Kryzsztof or Rob, any thoughts on this
-> or similar things that have arisen elsewhere?
+> Fixes: f774117c96f9 ("iio/scmi: Adding support for IIO SCMI Based Sensors=
+")
+> Cc: stable <stable@kernel.org>
+> Cc: Jyoti Bhayana <jbhayana@google.com>
+> Cc: David Lechner <dlechner@baylibre.com>
+> Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
+> Cc: Andy Shevchenko <andy@kernel.org>
+> Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Why does the property actually exist in the first place? Does the device
-driver not know how each CS should be treated?
+We have some other fixes in this area. They don't completely overlap
+though much of the content does match.
 
+https://lore.kernel.org/all/20261006045244.13993-1-kapoorarnav43@gmail.com/
+
+> ---
+>  drivers/iio/common/scmi_sensors/scmi_iio.c | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
 >=20
-> The most general case would (subject to it not working) smell like
->=20
-> reg =3D < <0x1 0x4 0x5> <0x2> >
->=20
-> Where intent is that 1 4 and 5 are meant to switch together and
-> 2 is separate.
-
-I would expect that for this kind of device, the driver should know that
-the first 3 CS are switched together and the 4th is not. I'm not really
-sure what the internal representation should be, because if someone can
-make a device like this, they could surely also make a device where (to
-borrow your format) it behaves like
-
-| reg =3D < <0x1 0x4> <0x5 0x2> >
-
-and so on. But if those devices don't actually exist at the moment, and
-everything is either all together or all seperate, the API for this
-stuff in the SPI core doesn't have to solve that until a device actually
-shows up.
-
-Worst case is something where there's a variable grouping of chip
-selects, e.g.
-
-| reg =3D < <0x1 0x4 0x5> <0x2> >
-
-or
-
-| reg =3D < <0x1 0x4> <0x2> >
-
-but maybe if that happens the thing to do is permit reg-names for that
-device, and again store the relationships in the driver rather than
-try to convey it via DT.
-
-Cheers,
-Conor.
-
->=20
-> How to do lookup on something like this is another question.
->=20
-> Jonathan
->=20
->=20
-> >=20
-> > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
-> > ---
-> > Changes in v4:
-> > * New patch. This has been included because without an explicit propert=
-y,
-> >   every device with more than one 'reg' entry would have all its chip
-> >   selects asserted together. That breaks devices that use ancillary
-> >   devices for the extra CS lines, so the composite behavior is now opt-=
-in.
-> > ---
-> >  .../devicetree/bindings/spi/spi-peripheral-props.yaml     | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props=
-=2Eyaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> > index 4894196c8f9c..456cb9095632 100644
-> > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> > @@ -60,6 +60,14 @@ properties:
-> >        Delay in nanoseconds to be introduced by the controller after CS=
- is
-> >        de-asserted.
-> > =20
-> > +  spi-cs-composite:
-> > +    description: Some SPI devices can be aggregated into a single logi=
-cal
-> > +      device by asserting all their chip selects simultaneously. When =
-this
-> > +      property is present, all chip selects listed in the 'reg' proper=
-ty are
-> > +      asserted together on every transfer, treating the group as one c=
-omposite
-> > +      device.
-> > +    type: boolean
-> > +
-> >    spi-rx-bus-width:
-> >      description:
-> >        Bus width to the SPI bus used for read transfers.
+> diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/com=
+mon/scmi_sensors/scmi_iio.c
+> index 442b40ef27cf..0e51e9c16b90 100644
+> --- a/drivers/iio/common/scmi_sensors/scmi_iio.c
+> +++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
+> @@ -161,8 +161,7 @@ static int scmi_iio_set_odr_val(struct iio_dev *iio_d=
+ev, int val, int val2)
+>  	do_div(sf,  MICROHZ_PER_HZ);
+>  	mult =3D scnprintf(buf, sizeof(buf), "%llu", sf) - 1;
+> =20
+> -	sec =3D int_pow(10, mult) * MICROHZ_PER_HZ;
+> -	do_div(sec, uHz);
+> +	sec =3D uHz ? div64_u64(int_pow(10, mult) * MICROHZ_PER_HZ, uHz) : 0;
+>  	if (sec =3D=3D 0) {
+>  		dev_err(&iio_dev->dev,
+>  			"Trying to set invalid sensor update value for sensor %s",
+> @@ -237,13 +236,10 @@ static int scmi_iio_read_avail(struct iio_dev *iio_=
+dev,
+> =20
+>  static void convert_ns_to_freq(u64 interval_ns, u64 *hz, u64 *uhz)
+>  {
+> -	u64 rem, freq;
+> +	u64 rem;
+> =20
+> -	freq =3D NSEC_PER_SEC;
+> -	rem =3D do_div(freq, interval_ns);
+> -	*hz =3D freq;
+> -	*uhz =3D rem * 1000000UL;
+> -	do_div(*uhz, interval_ns);
+> +	*hz =3D div64_u64_rem(NSEC_PER_SEC, interval_ns, &rem);
+> +	*uhz =3D div64_u64(rem * 1000000UL, interval_ns);
+>  }
+> =20
+>  static int scmi_iio_get_odr_val(struct iio_dev *iio_dev, int *val, int *=
+val2)
 >=20
 
---8RvJR8qKFINmKJHV
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauEM1AAKCRB4tDGHoIJi
-0taJAQDxWUdJTEyrBBQwwB+5pQJE1sGp/SQvIm4Rog0nramvvQD7Bl95EY8505PG
-qnhSurVHW18xxr9nxFNb2pEmo9W7uAA=
-=TzEb
------END PGP SIGNATURE-----
-
---8RvJR8qKFINmKJHV--
