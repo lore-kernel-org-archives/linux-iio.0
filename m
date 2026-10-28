@@ -1,79 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793226269;
-	b=U5DoT5Avx/22dK2cRotLHfTYluaEHSoYrS2e/dALDW1cfcxOIackH6D59sktlLB/5WcJ
-	 I390/022mLZHUjD9TAURIdNCSYfsD22oAUQT/aGvME9efNnf7sG98W1cFa1b11mqB4jPG
-	 fYkwnXODJ/+MHcAWt+rDpegFGgP6SJK6POJX3jFo2PsIDhK0NjhNH7VSscNzlZD6WTReX
-	 rqWEKw4ryENbCTySGzfq/zv1G7Om5O/Uwcv0jYdyGw6aLt8vNoLEg02ltoW42RX6Oszs9
-	 gey6yfknHUD+WsHtEDH0Xfw8KG8yxN+esfgk9NEMPtBpzGtYPyCC6t3uwTnlVW7G+2A==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793226269;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=6JteruuYFKqK2qjAQ+bINGAUfyjKeOOAshoIWEKW9DA=;
-	b=g1F++Fgm9NmRPt4R5RYaAy4PKS03kqLPoRAIfbjt4YhKK9f6Giw4G8CFgOeIquYLyVwO
-	 /2sA+svBWRdeeVS09CP/hoIPifw4ZBW8vlqDXbtfx98f0BIr8rqg3a4iYT23sxhiCEjtC
-	 QjlptK3shWPOGfQBhJQ4S5Xfv/E9FldjudIw5c1TdSdYaFO2qSKYPdSUhUxW97T1fwAaH
-	 w1B+ISjnA5y7JWtxqX66yq9a2RZb2dvQ8VFomBXvzydurA3xSSZFU7DkVEZUDqiSbnSEj
-	 QWycyQ+9I0UnLhC84q7OX5sjg0EhX3OQHpsiOTbut1z0J3KrRrVlKgB+YgegPwQZfBA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=O8A2jBRq;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793231232;
+	b=2PYZCg3mThLzezw1w8n3cKmfiXois7312sqxBrg6f75mQfDuzrQrbW/WZs7xuOcOUmc3
+	 rbvAyYsmgAxwb1liL0ds61kEzS0psOySjwAOK7dXCejsRXeZKbI9hw8qfkCSpGbJGl56c
+	 ZzliyZUGe4HuKOTQJu0idfUKx4qe7qVKIb9xhmoceGfN2sArbnVHqK/zEO/p+T21gKS1B
+	 SSOy32jI7FqP7nnvp7hFQC42b0O85ETPRx+PmLrdYsy8Rppmd4YAimx363Lpmsjqq2oTI
+	 gChxwBW+3ztxI7apDI31m2qn6BEoF4vOhCmCo2980ad7MfUvrudDgMzVPSpVvbIvFQA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793231232;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=neOivWsfnHbQR3N6AKh/3PoW3tIDMGi3k5qezfAAwY4=;
+	b=vbXkEV5Z5oBXMuPtH9KWc+F9vfTYPbVbrN5cEmremTKv0nHnm/7UM5fOrG9FrE/7JFUE
+	 ad/hpOcLIMtiGa8hw6thvz2TRO/TXIiLOQfSwYLm9b9ndsVh15iGYoACBqO1XTrnPy3g6
+	 QQ4S6jMU/Jj30PM5Wy4gVa5Q8w77jxf65ZhZ5aszGbjwECpywmB3psanHfgmuYMYLiy8v
+	 Uj51XEXBrGg6jmoheaGi51m/TnS2gMoZaCVLVsS7d2QJRAMyo2uISZcXupc8b4CenzMgk
+	 pW4XOb1uaxmdhfCTk+gJ42vG2R7sD1EKqH5oXwE9YZCBZdRyrmS7wx9X5XvRmlInZIQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="f/4cLrJ4";
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A393606A322;
-	Wed, 28 Oct 2026 22:24:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 746DF606A31A;
+	Wed, 28 Oct 2026 23:47:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=O8A2jBRq
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793226269;
-	b=2RIg8onTKcG4jNEVptCHQpJGFTOH1ofkmKwjv06sPe6ilIhuW2/xne7vPOmm3sQzxWPc
-	 SwAQpIr6yU9M56nXo9llm23P7puNwaKYGLOWy5potG8xaTt7tkbqWYqKcg5lUF4WiyTl5
-	 KKXrTI7n4WbgY4UVsui9Fj/02ugcF8w3V+VvhAoA/nqQBtY+oXBKQW0yCuL14mJlBWYOq
-	 WEO5+fG71k+SYlTIkkjpvoYJUPosnx+1tt3vT7wEfjUv6ZKiKZXfUYO+YIpJnixFHe1t2
-	 iMDQmPm/uGv9WiLgbvYts3Ivk3zeR0nCLiXarXfbl/e3DwT1OFuYJWjCP8z/hEs1mbA==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793226269;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=6JteruuYFKqK2qjAQ+bINGAUfyjKeOOAshoIWEKW9DA=;
-	b=XTyyRBemxLevoLnjIbpF5gghY5WAH3n7D6dwofbqK6o2zB71zEKuTZR3Yf0e+dSeD39t
-	 pUN20u3qBZc8BU1IpschjjDIqFF9S8a55HHqrE0Yjg1SnULyz7gAbpt5aFtvXIrTVQvnu
-	 uVhhSdzPHOm34S3aGxvGP640//0hkLxFtbdTq2QqwPu/VyUGhNBay+97ae4A/9wzfGDl6
-	 YUu/sLRerQynJt5IxymrGOFoH+GSBHSBt+MPiyFkUG4nZgHJAORlWF7aqJMbcxaKkc4Or
-	 FhfLEb5HNfJlF8ygeNV408Kz11NcxAbFen/HhvjTjJUQNvtXf6+haOpv5h57JsZic6g==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 203421F031E0;
-	Wed, 28 Oct 2026 22:24:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=f/4cLrJ4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF611F01825;
+	Wed, 28 Oct 2026 23:46:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793226269;
-	bh=6JteruuYFKqK2qjAQ+bINGAUfyjKeOOAshoIWEKW9DA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=O8A2jBRqMycVtaI55vCTlh6Gt076E0VM7XkSws2hligFHzDjSqWOJsBMScNctdI/R
-	 92thDgZwVhukSJTcfYdYlsZ/mU7wiZLgRWZwMD3Fy1rOprZEuV8m22iAeT5f/bltTC
-	 cc2hXFjttfkQz0taka3jPjq2Pu3dwPpF/EbZd3Mqh85+O7pc8S/NeLyn7qSdMpjiuz
-	 ap0RPqgaD9RESy1OzQFPPov6Gv/KHiSOQeFI9wG0NKMnLNFym5WiqkTZDC09pX6UbU
-	 p+BZOv9BuovgIVroqUFymhw78r5PnB0Mtx84ECCOfkSx0y1m+AKYw8XGQ8Wm8Rjk/E
-	 lpGWFHRFPsesA==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 9E9CF455EA;
-	Wed, 28 Oct 2026 22:24:26 +0000 (UTC)
-From: Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org>
-Date: Thu, 29 Oct 2026 00:24:28 +0200
-Subject: [PATCH v3 3/4] iio: adc: ltc2497: select the channel set per
- device
+	s=k20260515; t=1793231232;
+	bh=neOivWsfnHbQR3N6AKh/3PoW3tIDMGi3k5qezfAAwY4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=f/4cLrJ4TGztgvmr14VBy6t7mBV8AM+uDlLfYVyShzm7APQvQBIiI0EDLgRGe0v7z
+	 LrPP1CYrALPm5Q04g1ErXIwYEqxpncy7n/vcasP5VS7fxapXxWQMRvQ3eLtXYsxC4u
+	 pO80RH6CgwyVic6xTA3E8YyB/WqO22L05DI08uL25eIqchvragaWR3rowAwilUDAAt
+	 Xh6oVb4uczfsq1lW3toZ9+v63X4qnWgC+a2EdGz7QxrKclbDs6hRlAucgG9mlmv1zz
+	 0pRXR0bqvqejkSM04r2n2wZ9K5nHoWUM+gUptsMAuOcN5EfgGaQV+XNpzRAcoIe2zH
+	 rDwATDPNl5e/Q==
+Date: Wed, 28 Oct 2026 23:46:52 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+ Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet
+ <jbrunet+clk@baylibre.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>, Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Florian Fainelli
+ <florian.fainelli@broadcom.com>, Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Rob Clark
+ <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>,
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang
+ <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, Marijn Suijten
+ <marijn.suijten@somainline.org>, Frank Li <Frank.Li@nxp.com>, Vinod Koul
+ <vkoul@kernel.org>, Yinbo Zhu <zhuyinbo@loongson.cn>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>,
+ Kevin Hilman <khilman@baylibre.com>, Martin Blumenstingl
+ <martin.blumenstingl@googlemail.com>, Tiffany Lin
+ <tiffany.lin@mediatek.com>, Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+ Yunfei Dong <yunfei.dong@mediatek.com>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Andrzej
+ Hajda <andrzej.hajda@intel.com>, Ryder Lee <ryder.lee@mediatek.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Krzysztof =?UTF-8?B?V2lsY3p5?=
+ =?UTF-8?B?xYRza2k=?= <kwilczynski@kernel.org>, Manivannan Sadhasivam
+ <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Christian Marangi
+ <ansuelsmth@gmail.com>, Eric Anholt <eric@anholt.net>, Kuogee Hsieh
+ <quic_khsieh@quicinc.com>, Peng Fan <peng.fan@nxp.com>, Aakarsh Jain
+ <aakarsh.jain@samsung.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, freedreno@lists.freedesktop.org,
+ imx@lists.linux.dev, dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org,
+ linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Fix property name typos in if/then schemas
+Message-ID: <20261028234652.0d075035@jic23-hlaptop>
+In-Reply-To: <20261028120216.2657397-1-robh@kernel.org>
+References: <20261028120216.2657397-1-robh@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,174 +96,236 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261029-submission-ltc2493-support-v1-v3-3-c7dd5f877c3b@analog.com>
-References: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
-In-Reply-To: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>, 
- Joshua Crofts <joshua.crofts1@gmail.com>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Andrei Stancovici <andrei.stancovici@analog.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793226265; l=5702;
- i=andrei.stancovici@analog.com; s=20261009; h=from:subject:message-id;
- bh=Nf5hH6TBOt/zTpIFaIzCQBPLGE7n6D6DuKoTSgdJLX8=;
- b=07+4DD+bx5WNyrGw1X61s38DIq0Al2dEcPFBo/hNxRYHrXvHczHQkRbTb8uYkC4hWF4pzHFFI
- pCbvLE+uWE/ABdOzmPkNSsP0lDGxDtXBlSuH40+S2xPLPNZIdUqRy1D
-X-Developer-Key: i=andrei.stancovici@analog.com; a=ed25519;
- pk=wgT+au+blAhVYxhwNgdx0woNl/1p+OCG484rnTRFrsE=
-X-Endpoint-Received: by B4 Relay for andrei.stancovici@analog.com/20261009
- with auth_id=1140
-X-Original-From: Andrei Stancovici <andrei.stancovici@analog.com>
-Reply-To: andrei.stancovici@analog.com
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Andrei Stancovici <andrei.stancovici@analog.com>
+On Wed, 28 Oct 2026 07:02:12 -0500
+"Rob Herring (Arm)" <robh@kernel.org> wrote:
 
-Ahead of adding a part with a different channel map, describe each
-layout as a channel set in the core and let chip_info point at the one
-its part uses. Probe takes the channel array and its length from there
-instead of picking a table and trimming the count itself.
+> Property names within if/then schemas currently go unchecked whether
+> they have a type defined or match what's in the top-level schema. Adding
+> a check finds a number of instances of typos. The typos result in the
+> schema having no effect on constraints.
+> 
+> With this, fix the mediatek,vcodec-encoder 'clocks' count constraint
+> exposed by the name correction.
+> 
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/clock/qcom,kpss-gcc.yaml     |  2 +-
+>  .../bindings/display/brcm,bcm2711-hdmi.yaml          |  2 +-
+>  .../bindings/display/msm/dp-controller.yaml          |  2 +-
+>  .../devicetree/bindings/display/msm/hdmi.yaml        |  4 ++--
+>  Documentation/devicetree/bindings/dma/fsl,edma.yaml  |  2 +-
+>  .../devicetree/bindings/gpio/loongson,ls-gpio.yaml   |  2 +-
+>  .../bindings/iio/adc/amlogic,meson-saradc.yaml       |  2 +-
 
-No functional change.
+For IIO
 
-Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
+Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
----
-Changes in v3:
-- New patch. The channel-set mechanism is introduced before the LTC2493
-  so that the patch adding the part does not change the chip_info of the
-  parts already supported (Nuno Sá).
-- chip_info references a channel set directly rather than carrying the
-  single-ended input count for the core to match against a keyed table.
-  That removes the probe-time search and its -EINVAL path. The count had
-  no remaining user once the search was gone, so it is removed with it;
-  the direct reference is what now carries the relationship the integer
-  added in v2 was standing in for (Jonathan Cameron, Nuno Sá).
-- pahole, struct ltc2497_chip_info, before -> after: LP64 16 -> 24
-  bytes, ILP32 12 -> 16 bytes, no holes either way. The driver holds
-  four of these, all static and const. The ILP32 figures were taken
-  from a standalone build of the struct by the host compiler; no 32-bit
-  kernel toolchain was available here.
-- Verified as no functional change on hardware: the complete sysfs
-  attribute tree of the LTC2497 and the LTC2499, names and values, is
-  identical across this patch, and both parts still pass their full
-  suites at this commit (LTC2499 36/36, LTC2497 24/24).
----
- drivers/iio/adc/ltc2496.c      |  1 +
- drivers/iio/adc/ltc2497-core.c | 27 ++++++++++++++++++---------
- drivers/iio/adc/ltc2497.c      |  2 ++
- drivers/iio/adc/ltc2497.h      | 13 +++++++++++++
- 4 files changed, 34 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
-index 5b5b6ab28850..ffddd6368755 100644
---- a/drivers/iio/adc/ltc2496.c
-+++ b/drivers/iio/adc/ltc2496.c
-@@ -89,6 +89,7 @@ static void ltc2496_remove(struct spi_device *spi)
- static const struct ltc2497_chip_info ltc2496_info = {
- 	.resolution = 16,
- 	.name = NULL,
-+	.channel_set = &ltc2497_chanset_ltc2497,
- };
- 
- static const struct of_device_id ltc2496_of_match[] = {
-diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
-index c218d87d3a62..576a7c0a0f9b 100644
---- a/drivers/iio/adc/ltc2497-core.c
-+++ b/drivers/iio/adc/ltc2497-core.c
-@@ -420,6 +420,22 @@ static const struct iio_chan_spec _name[] = {                           \
- LTC2497_DEFINE_CHANNELS(ltc2497core_channel, 0);
- LTC2497_DEFINE_CHANNELS(ltc2497core_channel_samp_freq, BIT(IIO_CHAN_INFO_SAMP_FREQ));
- 
-+/*
-+ * The temperature channel is the last entry of each table, so a part without
-+ * the sensor stops one short of it.
-+ */
-+const struct ltc2497_channel_set ltc2497_chanset_ltc2497 = {
-+	.channels	= ltc2497core_channel,
-+	.num_channels	= ARRAY_SIZE(ltc2497core_channel) - 1,
-+};
-+EXPORT_SYMBOL_NS_GPL(ltc2497_chanset_ltc2497, "LTC2497");
-+
-+const struct ltc2497_channel_set ltc2497_chanset_ltc2499 = {
-+	.channels	= ltc2497core_channel_samp_freq,
-+	.num_channels	= ARRAY_SIZE(ltc2497core_channel_samp_freq),
-+};
-+EXPORT_SYMBOL_NS_GPL(ltc2497_chanset_ltc2499, "LTC2497");
-+
- static const struct iio_info ltc2497core_info = {
- 	.read_raw = ltc2497core_read_raw,
- 	.read_avail = ltc2497core_read_avail,
-@@ -443,15 +459,8 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
- 
- 	indio_dev->info = &ltc2497core_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	if (ddata->chip_info->has_speed_mode)
--		indio_dev->channels = ltc2497core_channel_samp_freq;
--	else
--		indio_dev->channels = ltc2497core_channel;
--	/* Only the ltc2499 has a temperature channel; it is the last entry. */
--	if (ddata->chip_info->has_temp)
--		indio_dev->num_channels = ARRAY_SIZE(ltc2497core_channel);
--	else
--		indio_dev->num_channels = ARRAY_SIZE(ltc2497core_channel) - 1;
-+	indio_dev->channels = ddata->chip_info->channel_set->channels;
-+	indio_dev->num_channels = ddata->chip_info->channel_set->num_channels;
- 
- 	if (ddata->chip_info->has_rejection_mode) {
- 		struct iio_chan_spec *channels;
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index 4cccd3b7c8ef..984f15eb06f6 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -176,10 +176,12 @@ static const struct ltc2497_chip_info ltc2497_info[] = {
- 	[TYPE_LTC2497] = {
- 		.resolution = 16,
- 		.name = NULL,
-+		.channel_set = &ltc2497_chanset_ltc2497,
- 	},
- 	[TYPE_LTC2499] = {
- 		.resolution = 24,
- 		.name = "ltc2499",
-+		.channel_set = &ltc2497_chanset_ltc2499,
- 		.has_temp = true,
- 		.has_speed_mode = true,
- 		.has_rejection_mode = true,
-diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-index 3a3fd82b21a3..7335c6c0af84 100644
---- a/drivers/iio/adc/ltc2497.h
-+++ b/drivers/iio/adc/ltc2497.h
-@@ -44,8 +44,21 @@ enum ltc2497_rejection {
- 	LTC2499_REJECT_60,
- };
- 
-+/*
-+ * The set of channels a part exposes.  Each supported channel layout has one
-+ * of these in the core; a part names its own through chip_info.
-+ */
-+struct ltc2497_channel_set {
-+	const struct iio_chan_spec	*channels;
-+	unsigned int			num_channels;
-+};
-+
-+extern const struct ltc2497_channel_set ltc2497_chanset_ltc2497;
-+extern const struct ltc2497_channel_set ltc2497_chanset_ltc2499;
-+
- struct ltc2497_chip_info {
- 	const char *name;
-+	const struct ltc2497_channel_set *channel_set;
- 	u32 resolution;
- 	bool has_temp;
- 	bool has_speed_mode;	/* SPD bit in the 2nd config byte (LTC2499/LTC2493) */
-
--- 
-2.43.0
-
+>  .../bindings/media/mediatek,vcodec-encoder.yaml      | 12 ++++--------
+>  .../devicetree/bindings/media/samsung,s5p-mfc.yaml   |  2 +-
+>  .../devicetree/bindings/pci/mediatek-pcie.yaml       | 12 ++++++------
+>  10 files changed, 19 insertions(+), 23 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml
+> index 88b7672123a0..ed347096df46 100644
+> --- a/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml
+> +++ b/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml
+> @@ -62,7 +62,7 @@ then:
+>      - '#clock-cells'
+>  else:
+>    properties:
+> -    clock: false
+> +    clocks: false
+>      clock-names: false
+>      '#clock-cells': false
+>  
+> diff --git a/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml b/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml
+> index c1cefd547391..fd4d598f6ff8 100644
+> --- a/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml
+> +++ b/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml
+> @@ -145,7 +145,7 @@ allOf:
+>              - description: CEC stuck at low interrupt
+>              - description: Hotplug connected interrupt
+>              - description: Hotplug removed interrupt
+> -        interrupts-names:
+> +        interrupt-names:
+>            items:
+>              - const: cec-tx
+>              - const: cec-rx
+> diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> index 094a6383bb77..f72d1b354007 100644
+> --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> @@ -304,7 +304,7 @@ allOf:
+>          clocks:
+>            minItems: 6
+>            maxItems: 6
+> -        clocks-names:
+> +        clock-names:
+>            minItems: 6
+>            maxItems: 6
+>  
+> diff --git a/Documentation/devicetree/bindings/display/msm/hdmi.yaml b/Documentation/devicetree/bindings/display/msm/hdmi.yaml
+> index dfec6c3480f3..02d27ccad024 100644
+> --- a/Documentation/devicetree/bindings/display/msm/hdmi.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/hdmi.yaml
+> @@ -113,7 +113,7 @@ allOf:
+>              - const: core
+>              - const: master_iface
+>              - const: slave_iface
+> -        core-vcc-supplies: false
+> +        core-vcc-supply: false
+>  
+>    - if:
+>        properties:
+> @@ -136,7 +136,7 @@ allOf:
+>              - const: core
+>              - const: alt_iface
+>              - const: extp
+> -        hdmi-mux-supplies: false
+> +        hdmi-mux-supply: false
+>  
+>    - if:
+>        properties:
+> diff --git a/Documentation/devicetree/bindings/dma/fsl,edma.yaml b/Documentation/devicetree/bindings/dma/fsl,edma.yaml
+> index f609038e35ae..0260d177c7d0 100644
+> --- a/Documentation/devicetree/bindings/dma/fsl,edma.yaml
+> +++ b/Documentation/devicetree/bindings/dma/fsl,edma.yaml
+> @@ -172,7 +172,7 @@ allOf:
+>              const: fsl,imx7ulp-edma
+>      then:
+>        properties:
+> -        clock:
+> +        clocks:
+>            minItems: 2
+>            maxItems: 2
+>          clock-names:
+> diff --git a/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml b/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
+> index 69852444df23..07c8b233c6bd 100644
+> --- a/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
+> +++ b/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
+> @@ -80,7 +80,7 @@ allOf:
+>          - resets
+>      else:
+>        properties:
+> -        "#interrupts-cells": false
+> +        "#interrupt-cells": false
+>          interrupt-controller: false
+>          resets: false
+>  
+> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> index 70ab4e140e71..535213ba0c5e 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> @@ -92,7 +92,7 @@ allOf:
+>      else:
+>        properties:
+>          nvmem-cells: false
+> -        mvmem-cel-names: false
+> +        nvmem-cell-names: false
+>          clocks:
+>            minItems: 4
+>          clock-names:
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> index 4505e66876a2..52f471a070d5 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> @@ -110,19 +110,15 @@ allOf:
+>  
+>      then:
+>        properties:
+> -        clock:
+> -          items:
+> -            minItems: 1
+> -            maxItems: 1
+> +        clocks:
+> +          maxItems: 1
+>          clock-names:
+>            items:
+>              - const: venc_lt_sel
+>      else:
+>        properties:
+> -        clock:
+> -          items:
+> -            minItems: 1
+> -            maxItems: 1
+> +        clocks:
+> +          maxItems: 1
+>          clock-names:
+>            items:
+>              - const: venc_sel
+> diff --git a/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml b/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml
+> index b46cc780703c..4488d5ca9b9c 100644
+> --- a/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml
+> +++ b/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml
+> @@ -174,7 +174,7 @@ allOf:
+>              - const: mfc
+>          iommus:
+>            maxItems: 2
+> -        iommus-names: false
+> +        iommu-names: false
+>  
+>  examples:
+>    - |
+> diff --git a/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml b/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml
+> index c009a7a52bc6..7c40361f95ec 100644
+> --- a/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml
+> @@ -127,7 +127,7 @@ allOf:
+>          phy-names:
+>            const: pcie-phy1
+>  
+> -        power-domain: false
+> +        power-domains: false
+>  
+>        required:
+>          - resets
+> @@ -150,7 +150,7 @@ allOf:
+>            minItems: 2
+>            maxItems: 2
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -171,7 +171,7 @@ allOf:
+>          clocks:
+>            minItems: 6
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -193,7 +193,7 @@ allOf:
+>          clocks:
+>            minItems: 6
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -215,7 +215,7 @@ allOf:
+>          clock-names:
+>            maxItems: 1
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -223,7 +223,7 @@ allOf:
+>  
+>          phy-names: false
+>  
+> -        power-domain: false
+> +        power-domains: false
+>  
+>          mediatek,pbus-csr: false
+>  
 
