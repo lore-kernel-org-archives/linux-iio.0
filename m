@@ -1,98 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.129
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793198342;
-	b=4RW7JLUhS5S9a/cVWNiWG15a/0q3WMObc5mPHhrassE2X4O2qXSMWym/q131YdmeNytu
-	 NqhF1DLQ4kEyyXBtVojTHwr8bndwIYe17zS/BW/G9R1P7wm47YK3oj+u5wda0mjY6bTDm
-	 CUQwKm25XAw5fyeejBmSdtthaFe/e9bD49ERFbaZ/hV7l2k7ZVijCplbMuGWIW3v+yRXP
-	 nmK5zLX4gY+vEL8XQhlR7E4TThq/zjFz4CKGi/L7lIATU3oM817vwVlhV8J2+mGq9szfa
-	 n4usPyBuATdWh0OkWdZJO0iQX3xlqvS2KnsReq80rcs0S4PMmnE+QRNn7V6gM0OivMw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793198342;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type;
-	bh=YffM2+bNXSGxzbIFjdRQB5xkjYVmryZXh9IxVf9SGB0=;
-	b=EHsoIZeL6Mdtmakh+GD36Q/k7sEbQ+aI/1+3Ux8qHdrlk/soDOyMCZy+RE5jzgDS4wW8
-	 iJnMDdT8GokZQFRCJ9Ckaa4U33AG2gchYZVOcHMexprla64XPcZMNn2oshqypPHeJwFsH
-	 EYVCFmU7OzuZ646BocoGpiWFj2RVWSVfKN9Pkyuehwvdz5wphIc2dNxj41ejAv0HYZfJz
-	 qC7Nc0+N4JOGCzo2IlQTf5eoA5T80sMtIsd03UX5q0fd/0eGGnuuzoxKlgJBuhyNv4tVM
-	 bSKQxbBIAXzT2iOVoU9RdRi9Da6kTO76WWYJeaqCC9fXxjWGU8Azf7FJi1timXfYlTQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=frame.work;
-	spf=pass smtp.mailfrom=frame.work;
-	dkim=pass header.d=frame.work header.i=@frame.work header.a=rsa-sha256 header.s=google header.b=llErKZ8+;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.129
-Received: from mail-yx2-f1.google.com (mail-yx2-f1.google.com [74.125.224.129])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793199456;
+	b=LrTS7Kzgrok0cvaEZw05FuvUF5iMAuk7kbhkgfnb7tgJrtNxoMHInQVKgHXuqOcB+fOe
+	 PU+jmMhe/1Hl3VDIUEx1rD1bjLE2a0hvdf5KXX+3PwwvOIiRF5ZbSjGwqAAv/5boPjCpF
+	 vPJtTDj2nfvAmHCZU+Hbi3Z7Zv6QtNakTjO7yXERb0e0p3fPV0XAjN6Y6STmyFmZIW+Za
+	 XsX0lmTclSaVikqEgvVmom/WJMk1S/vXDowwM8IzxPBa9UINfMJ2jCvfbg6+O803VqGhC
+	 OHQxRbyeVDNu/g9VmS37oXM307fCd63F4kZno507cWrLusocj+EjFQLDwF34OqTF5QA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793199456;
+	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Received:Received:Received:From:In-Reply-To:
+	 MIME-Version:References:Date:X-Gmail-Original-Message-ID:
+	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type;
+	bh=mIGs1095/pi5A3phf200bT5vD03Lp1U81y8sX9m5/iA=;
+	b=D6csKs5ukoVwGs02jvw/dzNlI4CdmkcGcEfEWu3oWVprzD1JtmINStx2GkoZjnm3Sy4B
+	 DkH8nZnWBS91bjZd3k7ZDjvQIWaQfod3VV2/tnimyECrVFdNjsLfXI/HywTt95wpOE43k
+	 rtOerUgmtL05xQlXaUDNK3vga2+1Kig+gWLO+Jjw2Zh55I9PlcJMT0dodrg+QL7bDNHqF
+	 1adhD5To2L966E3AweFotigS/uKG+MdSQRk1lbDvA1kZiTfgJOFr5Lh/VlBejlmN0E31U
+	 kYOxZgEup45Lg9jDZqMnDbWaSNpaMxrsqtupGE6MH7a7c/9e+Y7DPzeGAitQFgP58Sw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W2HHLBXt;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B85E606A31A
-	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 14:39:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B85E606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=frame.work
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=frame.work
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 167CF606A321
+	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 14:57:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=frame.work header.i=@frame.work header.a=rsa-sha256 header.s=google header.b=llErKZ8+
-Received: by mail-yx2-f1.google.com with SMTP id 00721157ae682-8b0b746503fso2479717b3.1
-        for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 07:39:01 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793198341; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lZY6d9u9qUUIZ/DJqtvr4JI2TLYFRF8Lj5mWjtjjQAquGEwlYSIGgKEyJYLzGTCaGq
-         eh94lJlm8qU1LC0d9z+HrauLnbPJPaFhWTCZVa6dMlQa+SltMUVcQuWKtZPN1ie02YU8
-         v0/Kea5n5aaAYLksrPvfcaVcwqOz6PVFD0ckFAywJyMrlqoH9+tVEDEXOyoBX9Zx1lwF
-         EFIvWM5MtFoKsasTU1rK5jgzINc0jSp1fb+SOtr7O4Wr1bmc5cSZwKjR3KVnTwip2I+T
-         tpHcWs7ziGKAPPwDozXlKALOChicBqr+qCgDKqwW/l5FLUKrawtCvfZkhjA2gB1hVCsZ
-         1Avw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=YffM2+bNXSGxzbIFjdRQB5xkjYVmryZXh9IxVf9SGB0=;
-        fh=hnpalnA0htYphAx1nraAiAaY1cdFzxbRXFUvUKg93HE=;
-        b=jbj1aC3nAqqMAv+emCR5MjjZtPNGP4hhpXHvTO3rrU+ZnlQKTuvS2M5xtxrX8nC2Dm
-         Yyk8SgMQR162vvVWs0liAzJ9A+NvXOmm41bpxrRoQkZOfv30hW12L2B1awcb6l71Smcm
-         vyr+mwwBxvJmqK79SsKhk6M1ATJu+07wZULdErAj5UKjpS/9lWOscuWJJH69Mql012Cr
-         6qwj7lnP0uIhCYW5sJc2kG700NWPRf7+R/1dtFDO1v1G8JDPnxlrETShxGCjRVBBO9FY
-         j9b/1WFDNbPuu07MujI5NJbRjkWFluo2b3SEioSsHMNu6w9BzDq7C3NFt9LWLKjsDriR
-         zi4Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=frame.work; s=google; t=1793198341; x=1793803141; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YffM2+bNXSGxzbIFjdRQB5xkjYVmryZXh9IxVf9SGB0=;
-        b=llErKZ8+cU1c0A3LaglTHA23qyp6aZosMAa0/JcCynOVB1B1cqihO+9AxXHdC2iXDM
-         /lMSA4vIzex6CkHTyzOTwxIeOgVY0VkOVc5ifSdsjyDfl/MG+1lBV+fqeGEisoQhORXq
-         ltRcjRhCTstoFAloYxcTF7JfO+4bOM/83vGKfnjGvujD6amqLyX67MQnFFNBUBROkMUf
-         tvSCzV4B3VZEtdmo/zUVLr+PLSt9NlZoRhJRDf4WVuVVlJP2BcbptlNlPbB1iTh1lGp7
-         0IBQvgGyBOGsGchbtzRev3RoTbqbLzFOlvIDUDyGAk7MkN9qHGE76+l8oDhet8phjO//
-         wGEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793198341; x=1793803141;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=YffM2+bNXSGxzbIFjdRQB5xkjYVmryZXh9IxVf9SGB0=;
-        b=TLYIyumu+XJDMSVfkJol0oCVsNuYAfpBs6k9bZrXOXMijUNS136CrCr+SpHC0CDWMA
-         TU8NWYRV+oBA5Vuo25g3rWgeo2xY6Xcr0ic7Caxid7RGneV6xJCp4tNIDUwaCv+2/vc2
-         98Iz+s7uxerMspZyL+lElhMvBGqJpXX7csOXzONP7w2e0NIoO6CXqAFDiRlU4XoLgaCf
-         KmlARcRw2cmkStDy/cDhE2nRdNuDM5xCJ10z8H+SVHjl6uTU/Dwy8JaPZzfwy+Ux9szn
-         +fAThYo3Y1OCOM3kXs1OHbzag/WNTjeA/UP/WEq9nU6WsKL0bcdLOlW6wPwOV2HbNJR3
-         cEww==
-X-Forwarded-Encrypted: i=1; AKwUvBwZR8vHxAkW+UIvPMA/XTrwxWZOBCeJJo+1wnlgznIIklCBgsFY7L/l9RbbaRNzVfYsda2sqe3iB4Y=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKI3yuwIIzJ2/EO27e3VmpeGSMSrKnIH8yC/+buNl7m1qy2ripa
-	4DwbJzFlUjNq70OrgKFS7utkcstyFM+iI9tcKe+bCpvEqx0QH/upxi3gnQc2TrMKjnmLNbRugkZ
-	5xHGIfOhOZ66RwKpQX+KTsOaJb5SYPMSI3ds+cEyCFQ==
-X-Gm-Gg: AYBFou1OU0cB8dc5iJ5/glibKImXVFWMD5dsSZ+UtSCigFsQumv7AFO0sfIfqnpXfiX
-	FJ5MS3lHw4GljCkv4L686kINk4O1ugJBC+SRBLIYRQkHFUyX5w0urXnnyuWZceV33x9HBqU0f5O
-	+a4wipRKF2F8RRxogByYyjm7MKLUsRMDgWXFgZDh8N51smZ5ysZ718e9WpCY0kaV0sUHA/qC1Wr
-	EJk1JHpJH1CSwsw5l97KKR3rC9kIOSqdrwMpKGUDYCQdv7xNTzrgq42NV96VyNiJ2d+UVT4wid8
-	IqaWx6njuTrScYFMV2OoQpbQYwN5Dihrs5T8ErQMEzEyws1AU1zpcBQ+5G+266Ow8kcvvfAzr8j
-	bTmB4dEH5MptvAop1KGozHGBWzdKbLJ1UWxtV7hVhTM+Gx0+/+2f6NS6dVD3tl6WM9cbaGiMIe6
-	lgel+CpoTof0gC4FMH94/Now==
-X-Received: by 2002:a05:690c:f14:b0:8b0:e595:8cc1 with SMTP id
- 00721157ae682-8b1b5d4be24mr16738707b3.58.1793198340947; Wed, 28 Oct 2026
- 07:39:00 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W2HHLBXt
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABD221F031E5
+	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 14:57:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793199455;
+	bh=mIGs1095/pi5A3phf200bT5vD03Lp1U81y8sX9m5/iA=;
+	h=From:In-Reply-To:References:Date:Subject:To:Cc;
+	b=W2HHLBXt6yBVAcplFhzpJ6jtmHOuCp53by4m98jBMIziA5t6rtB1YlnGlq/AWRlr1
+	 FQCh8fULMVw/6c1o5lmtjYYX1FdF3w72Vhh92y18FIUEBg0iAf6b+hQSp3YxO7o3w2
+	 NQLLEEEfBL2s7t9h24eEfYn4v1g4zC2nlqA6M7EuEQI6Z/6RdZsFX+guKD90fItizi
+	 a5xwC9YeA2FjWj8rfFo0XC4Al+7AXrBxYs7rFrO7GZB83wfNqD7ZuWZjpWyVfYaV++
+	 N/jtBDuxvPA74FBRxmYZeLCP5ayrbJBci8gmbYKVr5V6NwlSuhUqDS5ZcWnGUFJWgu
+	 d4cwa2zYelD2A==
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-3ab27e45e7cso8554391fa.3
+        for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 07:57:35 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AKwUvBxQYISQ3BEqEIX0QKJCWOMlf+RJtzM9wWwCKTUgn0by3ah9d4MXIy/mC61xJAEq5D6xRl0YoILvtSQ=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLQBThfPuidrdpqMGggDNuHY+ntiA5Mm2J1GlT9PwdJbvcJ5Bg9
+	r0qD1EBQu3EV4nxntLe08weXbhmJW35nwpWaRgHq9lyR4e6dPuJgSYN9Y5WAd1soE4PGD6Bg3qd
+	1LL3TqdsLaXlGMnutP/O8vvhQGShYjVRTdOgukHYlGA==
+X-Received: by 2002:a05:651c:1543:b0:3a9:d756:bfdd with SMTP id
+ 38308e7fff4ca-3ac9cf1d2cdmr6179361fa.7.1793199454407; Wed, 28 Oct 2026
+ 07:57:34 -0700 (PDT)
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 28 Oct 2026 07:57:32 -0700
+Received: from 969154062570 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 28 Oct 2026 07:57:32 -0700
+From: Bartosz Golaszewski <brgl@kernel.org>
+In-Reply-To: <20261028120216.2657397-1-robh@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,35 +65,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-From: Daniel Schaefer <dhs@frame.work>
-Date: Wed, 28 Oct 2026 22:38:24 +0800
-X-Gm-Features: AclHuK8o_-AiuRFYRh4EKMyxmqBI8f97bswVkP-qj0VI3UmPL4F27DibpVK4qwU
-Message-ID: <CAAjcXz7fjcH283zHzJSZbKK74HOsOxEr9+W0ydoiYyLJ8y9qVg@mail.gmail.com>
-Subject: Request: backport cad928dad9a4 ("iio: hid-sensor: als: scale each
- channel individually")
-To: stable@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, linux-iio@vger.kernel.org
+References: <20261028120216.2657397-1-robh@kernel.org>
+Date: Wed, 28 Oct 2026 07:57:32 -0700
+X-Gmail-Original-Message-ID: <CAMRc=Md2xhYPdUEQ2SeqiGq9uG1qcc9Hi77T4k3ta_wmd56BhQ@mail.gmail.com>
+X-Gm-Features: AclHuK-L3iqt92WsRHLJE8OI5aNBBhyNCiN5RHrPr_WcVOO_RomVfpU-3_RxU7E
+Message-ID: <CAMRc=Md2xhYPdUEQ2SeqiGq9uG1qcc9Hi77T4k3ta_wmd56BhQ@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Fix property name typos in if/then schemas
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Abhinav Kumar <quic_abhinavk@quicinc.com>, linux-arm-msm@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	freedreno@lists.freedesktop.org, imx@lists.linux.dev, 
+	dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org, 
+	linux-media@vger.kernel.org, linux-pci@vger.kernel.org, 
+	linux-mediatek@lists.infradead.org, Bjorn Andersson <andersson@kernel.org>, 
+	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+	Jerome Brunet <jbrunet+clk@baylibre.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>, 
+	Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, 
+	Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>, Yinbo Zhu <zhuyinbo@loongson.cn>, 
+	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
+	Kevin Hilman <khilman@baylibre.com>, 
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>, Tiffany Lin <tiffany.lin@mediatek.com>, 
+	Andrew-CT Chen <andrew-ct.chen@mediatek.com>, Yunfei Dong <yunfei.dong@mediatek.com>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Andrzej Hajda <andrzej.hajda@intel.com>, Ryder Lee <ryder.lee@mediatek.com>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Christian Marangi <ansuelsmth@gmail.com>, Eric Anholt <eric@anholt.net>, 
+	Kuogee Hsieh <quic_khsieh@quicinc.com>, Peng Fan <peng.fan@nxp.com>, 
+	Aakarsh Jain <aakarsh.jain@samsung.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Hi stable team,
+On Wed, 28 Oct 2026 13:02:12 +0100, "Rob Herring (Arm)" <robh@kernel.org> said:
+> Property names within if/then schemas currently go unchecked whether
+> they have a type defined or match what's in the top-level schema. Adding
+> a check finds a number of instances of typos. The typos result in the
+> schema having no effect on constraints.
+>
+> With this, fix the mediatek,vcodec-encoder 'clocks' count constraint
+> exposed by the name correction.
+>
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/clock/qcom,kpss-gcc.yaml     |  2 +-
+>  .../bindings/display/brcm,bcm2711-hdmi.yaml          |  2 +-
+>  .../bindings/display/msm/dp-controller.yaml          |  2 +-
+>  .../devicetree/bindings/display/msm/hdmi.yaml        |  4 ++--
+>  Documentation/devicetree/bindings/dma/fsl,edma.yaml  |  2 +-
+>  .../devicetree/bindings/gpio/loongson,ls-gpio.yaml   |  2 +-
 
-Could you please cherry-pick commit cad928dad9a4c26aa56b4223dc2a29bca517fb5f
-("iio: hid-sensor: als: scale each channel individually") to the
-stable trees >=6.9?
-Currently that's: 6.12.y, 6.18.y and 7.2.y
+For GPIO:
 
-v6.9 (3765d426fe86) added color temperature/chromaticity channels, but
-they share the
-same scale as the illuminance datum, even if the report descriptor
-says otherwise.
-This makes the sensors report values many orders larger than they should.
-Apart from this, color sensor hardware works ok on 6.9+
-
-Reported on Asus ProArt PX13, breaking iio-sensor-proxy:
-https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/-/merge_requests/413
-
-The commit cherry-picks cleanly and builds fine on those trees.
-
-Thanks,
-Daniel Schaefer
+Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
