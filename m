@@ -1,61 +1,61 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793153353;
-	b=QiWC/cpeO9NhRED2PQTpt/B6KzKjzqJ9y+uT1F/IginfQhcQftxDoUKcJThGiMrixmcP
-	 j+gyZw8af2A+GHTRySA8pGFddaqzaj88Q41J+H8noYguhcaaFfZ3HLYlCGQuU9gEk3Vlm
-	 MP7/1qp+WJhZMOaAJCcJxF8JzWN94HhsAj8tLM640mK4cRLJ6aqnBuX9HcoMaQYnDax3x
-	 /ADCFhHqeENr4EtnR/dGdXT7JsHNMAq2C9EyuCXWTIyRaGFrzhcmeslH1agkYBLriYpeR
-	 inex5hwLNUwwpyKd+bVBcHWPylE7dN4sDeV6YI50mCHhO6wPLa2X2plBCA4lCz0iT/A==
+	t=1793153587;
+	b=odzjhtOouK9XrIctep+x9uwjB1cUBaXFA8roVnLBWC4ycoHqU+zit5cv7cY+t7emZZao
+	 msQ966G4MJQYNsAkRKUlZi2Pba88dCChih0BjPxgfganEcUlbtt5+hP+IKVjHrP9Dweps
+	 cKBC2qEes1NVoAtN2A9dqS9bZTrmE7LzuZtITSlUZeSC6dQYrgPC5QfF7ZNY/a06Cdb/T
+	 H7mG2e7QQZLlAN2Fl2d2pdy4wdHYxZjFXu7vjQMT69ZDp4P84mxC92ziB2bCxXx8vxk6C
+	 2T3PV+ckq12dkM8tXedeUp2mV1PkJBEe+7O6AqxtP61DWMkvOQuF4o/Fr+rtmSL+ubQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793153353;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793153587;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=b5HjZdh2yKxFGrfPenLoIjzp9fFH2lJQ+StmQcjE9YM=;
-	b=0wUL0kdaPSU0EOcMZ+GoY61eYcI1RRARDDtDhUHGZY9Ir0q3SMKhbDh0bu7bzdvFH4rk
-	 IbqIgaL68eaP+FbPEjErRtLL//v4Iph76/f5U2YK+5Jo1moSXaKnAaWocsZlBR5WfsGso
-	 5QI75AYTSpL1lDNQKebQihYOvdMtsuRLa30cTWTvnUh6hzpOKerrExTgSWbEgHtnqVKle
-	 xD0Fo++/cFN/QuYWlIuy46x7Mzv+DYoo6T0Pi6I/UlUZVLTRdWHyGa+ZjJy43++pwfsLi
-	 W0FhsuR7FGtfyin60Tqq1t5uMIiiuWKvc7anI9jvXIc6T6lkaXBjCTOdUFVPtz0RLQg==
+	bh=9k/l1F3j9ErOaEXfe5eV7mu872+xG0viZl1MxnggL7U=;
+	b=quysC0LFbddbZF7r5DjOAzl147bun3ukDGkGhB7qWBoegnNPgUyG++Yb1XUb4TpBKaL7
+	 /SJiHaIjPtPpPhmiDIOQOICShmZVFr7uWxaND71c62+0GSAlcyz1nNprbVR50x27dDFYK
+	 ayvKi6jd3mdWJtHSYmDo6PmInVgWNasUbsZ2pZjz2VitfTQhWAgj1M8tDTLFqrGOfO0Ty
+	 cuKZAvS52bjkxXpGaJvlpZJVQmqWtSghihWzQ2pTHEnwGmrAzzR433nd7oflR5hPoM/59
+	 vaPUzonT+9OORE2DSg/AE0H+D5xvbSXC+5rY4lgYrcIQJUD0nDBW3GOzc8I0Zu3uc3w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hK2vt+lF;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Iy6j/YCz";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ECB4606A31A;
-	Wed, 28 Oct 2026 02:09:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B285606A31A;
+	Wed, 28 Oct 2026 02:13:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hK2vt+lF
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE631F01825;
-	Wed, 28 Oct 2026 02:09:09 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Iy6j/YCz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 218B91F01825;
+	Wed, 28 Oct 2026 02:13:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793153353;
-	bh=b5HjZdh2yKxFGrfPenLoIjzp9fFH2lJQ+StmQcjE9YM=;
+	s=k20260515; t=1793153587;
+	bh=9k/l1F3j9ErOaEXfe5eV7mu872+xG0viZl1MxnggL7U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hK2vt+lFd95/4EAeL1ZmUeeJCvQOeptmCDyVGIGDl6v/t/HF3XytZRdsVcFHDs+0k
-	 BJhMcDBLPMCm92RAmrzBjpijhLQMA81pfN2MpqtSAo7MceDZKBDV7v96+GEsJ9DcsL
-	 kVVPM5dgGaXGjC4ZMlAwGiY6rzSMwJqt7x8f+TNbk9enaBWQRUT6QWajJmQEum3xNj
-	 O8kehJKJRqiHygl83jLsTUbKZhpjpAt128D7zgrHqxis0G4fgGMVzWE+GO6r3p+LfB
-	 FpCkw4fMVe4xskdEAGjoTEdbG0IuZATdcTYVSBQqmRtjn0X2PBTRj6l1YcD4gOkG7U
-	 k/65001Hv1W/w==
-Date: Wed, 28 Oct 2026 02:09:05 +0000
+	b=Iy6j/YCzW/RJbRpPPhlhTFz3CtdP/eKdE9QmL6xGjMvHWIb7t4G22bG7hjUjteFsg
+	 x+cE5oREJk/10uXgFdhIubFtd9+weQFLCTzfjEc0A6LqwzDZcxbAmvhwAb/6fXvZdS
+	 qpveLgFZc2OVVC/SNnPJ2rxuHQMhZH/zQArvk0J+GTOCs6YNeBJOa7HqaervEJ/j1s
+	 Ocrr34GABgjHUQwDVDgfagBIHU95uTnc12FrLO//02m29jon7Y8CoOQDwDU+0xwbXt
+	 69/TkOaPIwiDNmIu3GEFVO3DvnRYTKyMsdPyj6HTKbVLV+gL3Rr9ci+2iV9et/ZmsS
+	 haFEjrsHJ499g==
+Date: Wed, 28 Oct 2026 02:13:02 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, stable <stable@kernel.org>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The
- Capable Hub)" <u.kleine-koenig@baylibre.com>, Siratul Islam
- <email@sirat.me>, Vlad Dogaru <ddvlad@gmail.com>, Mika Westerberg
- <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH 13/15] iio: proximity: sx9500: hand on probe deferral of
- GPIOs
-Message-ID: <20261028020905.7e0e86f0@jic23-hlaptop>
-In-Reply-To: <20261027-llm-char-misc-iio-v1-13-0d818334f6c7@linuxfoundation.org>
+ Shevchenko <andy@kernel.org>, Lucas Rabaquim <lucas.rabaquim@usp.br>,
+ Matheus Silveira <matheus.feitosa@usp.br>, Stepan Ionichev
+ <sozdayvek@gmail.com>, Joe Sandom <joe.g.sandom@gmail.com>, Jan Remes
+ <ciakval@gmail.com>
+Subject: Re: [PATCH 10/15] iio: light: tsl2591: don't divide by zero with
+ low gain
+Message-ID: <20261028021302.0430a947@jic23-hlaptop>
+In-Reply-To: <20261027-llm-char-misc-iio-v1-10-0d818334f6c7@linuxfoundation.org>
 References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
-	<20261027-llm-char-misc-iio-v1-13-0d818334f6c7@linuxfoundation.org>
+	<20261027-llm-char-misc-iio-v1-10-0d818334f6c7@linuxfoundation.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,149 +69,73 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 27 Oct 2026 17:19:17 +0100
+On Tue, 27 Oct 2026 17:19:14 +0100
 Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
 > From: Josef Bacik <josef@toxicpanda.com>
 >=20
-> sx9500_gpio_probe() treats every failure of devm_gpiod_get() as "the
-> line does not exist".
->
->  If the GPIO controller has not been probed yet,
-> the lookup fails with -EPROBE_DEFER, and the driver binds for good
-> without the line:
+> The number of counts per lux is the integration time in milliseconds times
+> the gain, divided by 408.  With the low gain, which is 1, and an
+> integration time of 100 to 400 ms, that is 0 in integer arithmetic, and
+> each read of the illuminance divides by zero.
 >=20
->  - without the "interrupt" GPIO client->irq stays 0, so no interrupt is
->    requested and no trigger is registered: the device has no events and
->    no data-ready trigger until it is unbound and bound again;
->  - without the "reset" GPIO the chip is not reset in
->    sx9500_init_device().
+> In that case, multiply by the coefficient and divide by the product
+> instead.  The result of the other settings does not change.
 >=20
-> Which of the two happens depends only on the order in which the drivers
-> are probed.  Return -EPROBE_DEFER so that the probe is repeated once the
-> controller is there.  All other errors are handled as before.  The i2c
-> core sets client->irq again at the start of every probe, so a deferral
-> on the second line leaves nothing behind.
->=20
-> A system that describes one of the lines but never gets a driver for its
-> GPIO controller now keeps the sensor in the deferred list instead of
-> binding it without the line.
-That's all a bit long winded though accurate.
+https://lore.kernel.org/all/20261022-first-patch-v4-0-90b2fc6e8e28@mycroftm=
+ind.com/
 
-The original code is rather odd.  If the intent is to actually have
-these as optional gpios, why not use devm_gpiod_get_optional()
-which documents that intent?
+I have first few of that series queued up already.
 
-Anyhow, I suggest a bit more radical surgery given the driver
-is fine without the irq and the code being fixes smells like it is
-papering over ancient firmware. It definitely shouldn't run on
-a modern system.
+Jonathan
 
->=20
-> Fixes: 45fd5f8e10d3 ("iio: sx9500: add GPIO reset pin")
-> Fixes: e53111ad5dea ("iio: proximity: sx9500: Assign interrupt from GpioI=
-o()")
+
+> Fixes: 2335f0d7c790 ("iio: light: Added AMS tsl2591 driver implementation=
+")
 > Cc: stable <stable@kernel.org>
 > Cc: David Lechner <dlechner@baylibre.com>
 > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
 > Cc: Andy Shevchenko <andy@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Lucas Rabaquim <lucas.rabaquim@usp.br>
+> Cc: Matheus Silveira <matheus.feitosa@usp.br>
 > Cc: Josef Bacik <josef@toxicpanda.com>
-> Cc: "Uwe Kleine-K=C3=B6nig (The Capable Hub)" <u.kleine-koenig@baylibre.c=
-om>
-> Cc: Siratul Islam <email@sirat.me>
-> Cc: Vlad Dogaru <ddvlad@gmail.com>
-> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Cc: Stepan Ionichev <sozdayvek@gmail.com>
+> Cc: Joe Sandom <joe.g.sandom@gmail.com>
 > Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/iio/proximity/sx9500.c | 16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
+>  drivers/iio/light/tsl2591.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
 >=20
-> diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx950=
-0.c
-> index dadce9b44227..94cc577f4404 100644
-> --- a/drivers/iio/proximity/sx9500.c
-> +++ b/drivers/iio/proximity/sx9500.c
-> @@ -853,15 +853,15 @@ static const struct acpi_gpio_mapping acpi_sx9500_g=
-pios[] =3D {
->  	{ }
->  };
+> diff --git a/drivers/iio/light/tsl2591.c b/drivers/iio/light/tsl2591.c
+> index 286dc09e170f..773b50c17e71 100644
+> --- a/drivers/iio/light/tsl2591.c
+> +++ b/drivers/iio/light/tsl2591.c
+> @@ -16,6 +16,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/iopoll.h>
+>  #include <linux/kernel.h>
+> +#include <linux/math64.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+>  #include <linux/pm_runtime.h>
+> @@ -424,8 +425,13 @@ static int tsl2591_read_channel_data(struct iio_dev =
+*indio_dev,
+>  		}
 > =20
-> -static void sx9500_gpio_probe(struct i2c_client *client,
-> -			      struct sx9500_data *data)
-> +static int sx9500_gpio_probe(struct i2c_client *client,
-> +			     struct sx9500_data *data)
->  {
->  	struct gpio_desc *gpiod_int;
->  	struct device *dev;
->  	int ret;
+>  		/* Calculate lux value */
+> -		lux =3D ((als_ch0 - als_ch1) *
+> -		       (1000 - ((als_ch1 * 1000) / als_ch0))) / counts_per_lux;
+> +		lux =3D (als_ch0 - als_ch1) *
+> +		      (1000 - ((als_ch1 * 1000) / als_ch0));
+> +		if (counts_per_lux)
+> +			lux /=3D counts_per_lux;
+> +		else	/* Less than one count per lux */
+> +			lux =3D div_s64((s64)lux * TSL2591_LUX_COEFFICIENT,
+> +				      int_time_fval * gain_multi);
 > =20
->  	if (!client)
-> -		return;
-> +		return 0;
+>  		dev_dbg(&client->dev, "Raw lux calculation: %d\n", lux);
 > =20
->  	dev =3D &client->dev;
-> =20
-> @@ -871,6 +871,8 @@ static void sx9500_gpio_probe(struct i2c_client *clie=
-nt,
-> =20
->  	if (client->irq <=3D 0) {
->  		gpiod_int =3D devm_gpiod_get(dev, "interrupt", GPIOD_IN);
-> +		if (PTR_ERR(gpiod_int) =3D=3D -EPROBE_DEFER)
-> +			return -EPROBE_DEFER;
->  		if (IS_ERR(gpiod_int))
->  			dev_err(dev, "gpio get irq failed\n");
-
-This is 'novel'. I did some archaeology.  Goes back almost 11 years
-and at the time the driver only had ACPI and i2c_device_id. So
-assuming we weren't talking board files I suppose this is papering over
-a broken ACPI firmware.
-
-Given the driver works fine without the interrupt (despite that print
-implying it is an error).
-Shall we just rip this out?  The irq from any modern firmware will
-be in client->irq anyway so this section doesn't run.
-
->  		else
-> @@ -878,10 +880,14 @@ static void sx9500_gpio_probe(struct i2c_client *cl=
-ient,
->  	}
-
-The next bit is valid, though with the above gone, I'd be tempted
-to flatten this helper and just get the gpio inline.
-
-> =20
->  	data->gpiod_rst =3D devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
-
-	data->gpiod_rst =3D devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-	if (PTR_ERR(data->gpiod_rst))
-		return dev_err_probe(dev, "gpio get reset failed\n");
-	if (!data->gpiod_rst)
-		dev_warn(dev, "gpio reset not available\n:);
-
-	return 0;
-
-> +	if (PTR_ERR(data->gpiod_rst) =3D=3D -EPROBE_DEFER)
-> +		return -EPROBE_DEFER;
->  	if (IS_ERR(data->gpiod_rst)) {
->  		dev_warn(dev, "gpio get reset pin failed\n");
->  		data->gpiod_rst =3D NULL;
->  	}
-> +
-> +	return 0;
->  }
-> =20
->  static int sx9500_probe(struct i2c_client *client)
-> @@ -911,7 +917,9 @@ static int sx9500_probe(struct i2c_client *client)
->  	indio_dev->modes =3D INDIO_DIRECT_MODE;
->  	i2c_set_clientdata(client, indio_dev);
-> =20
-> -	sx9500_gpio_probe(client, data);
-> +	ret =3D sx9500_gpio_probe(client, data);
-> +	if (ret)
-> +		return ret;
-> =20
->  	ret =3D sx9500_init_device(indio_dev);
->  	if (ret < 0)
 >=20
 
