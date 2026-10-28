@@ -1,59 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793160994;
-	b=OhXnH+QrmrLO5jO3qTGc/zCInt/pLKkXCOPmB2oUKqun5ExLuuFOF1jbiybZ4RsQVfcf
-	 tV8RwzRvjJRO+Y6GxU8Dmh2Rv2agTaK35N0bDaslt72jAvd5zkHA7eXO0UCYHI1x+D7Iw
-	 EIwFA90FN+KdKj8EVUZ2AHQcfAf3B5yX7vZIWAZR1+1AjYXbVxjK+MJ1RQBmtlbgTSkLF
-	 YZY7F1LnFDCVqNaR2cEQsAJ77+ooAKnbED+lMwa8HF06NCKzUbJUosyL6dGbIniKfKzgD
-	 euWhAiYM1yCDZMru/n/IPQ4At5oW5yDKWLghY512Q+LKdsdK7w63mr+YUCoCzi9oJfg==
+	t=1793168178;
+	b=lIK4hm5LMpWBDiAYBKcTd0L+3yxGxU36xTVTa/RmXGoA2H4UfD1tApnbdM/U9YuaenAy
+	 G9GB2zgVh7OzlC1Dv7JELVHwpRaEQEurKrT9b4OI/49x7xYQseUdGbljJV+CzD+pQMcl9
+	 fd6uJPK6HkJRmTQWmO/ei5U1lfeift4+az02TZmlp6vd9jIDjmRczQxt+ddJwGBtS4sWJ
+	 O8KQm52h63AXefXqkK2L4rY2+1srONvfOhnkm+NC7mpsOFsdX1amVkAd1SNXLFFaocnJu
+	 Rp0oSm9Gktg0FRr8wqoWQXkTdeSSMStCiTcMMUi7SCIPtch53HLrd8IHvY1/wxcVDYA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793160994;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=bqr5LFlLDjohW6x4hgPjC4WeE9jd+dhVprKk2d3u/uw=;
-	b=5ilz1BsUSfRQVWwx8KsX/3wBNbJ2PLQ/NMt6kcEend0aF5eNLAuKjeviJ2lOnJisXQLC
-	 JexYkPgSVgcmGuj3cOyOw/JGJpjiEc7GJiDZjqz1ZHbLWuRaSfXp89YS/HjFICtRiaWYW
-	 m2hMPxIp2i+/EZ62fjCVOG1DcwVQx3l0AyCQJuQj3PUfoBKjm4Q5/qeQ3hEZCNC0E7Dlt
-	 V0tQ/eQVXy5NPi6UAZHTvNMhpPcq4o02JOEBYGxcrSFN5dtpVwtm9rs++M6yFIR7xeCBL
-	 UlZkDk0tMNK4FbxoPdY5umKNfbJqQyZJrsFt8GsYGIJOxMAihphD8wjlUu33l18NDqg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793168178;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=upb2yDjK+Sz2Or79oIRzVU6fGyWUl+WecZ9r73Zp7qs=;
+	b=SpzdbwVdQ19VxCrC8EeQIqOaf3wyqBLGgCLZKVqGw9gTdGtossQpAkM0cbQz6ruu6Qwc
+	 ps0GPo2y593bCzRkd6gy2UkLO75/Z/+GZutoRZ/paxfgAQ5azb+th6NS/gjKhVr6QskDr
+	 uclo7Wqm1QSWm2+7edGgl9jDRu7Bhvx8kVuAaVeNm3Cb1B+uzZrCpPeUUW0fY71m/38wv
+	 KkR8mEYHE0pJUGV28nr9l+RU2VN8zKmrvpzXnzXosNClwwmqrA9sSuw/LcHX5AuvhnAY9
+	 hU/Tr72vxpO7QhuIF50ueF57R29LSh6QwdNxg0SkxeiPrsMhgAzRso2nJ0W0/WNCeLA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=h1aQrZVx;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xVrrS+rA;
+	arc=none smtp.remote-ip=209.85.167.50
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D994606A31A;
-	Wed, 28 Oct 2026 04:16:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B98A8606A31A
+	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 06:16:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B98A8606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=h1aQrZVx
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C7D1F01825;
-	Wed, 28 Oct 2026 04:16:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793160993;
-	bh=bqr5LFlLDjohW6x4hgPjC4WeE9jd+dhVprKk2d3u/uw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=h1aQrZVxyxe0TmJfBWEKi1I0hu12HbFZVbvb0Fu2dqrM25TDfwS5BuRtWMpOS6wpn
-	 D7Af/hR346lhzoS8+H05jgZXYhI2CnDqEo+s2V8rCPB68pr0Twlslc2VnwBDLEs4xu
-	 9oox5eKcQbrVkVt9UScupxzxSEMI8iI0oqBehX6k=
-Date: Wed, 28 Oct 2026 05:16:32 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable <stable@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lucas Rabaquim <lucas.rabaquim@usp.br>,
-	Matheus Silveira <matheus.feitosa@usp.br>,
-	Stepan Ionichev <sozdayvek@gmail.com>,
-	Joe Sandom <joe.g.sandom@gmail.com>, Jan Remes <ciakval@gmail.com>
-Subject: Re: [PATCH 10/15] iio: light: tsl2591: don't divide by zero with low
- gain
-Message-ID: <2026102809-untaxed-vanity-856f@gregkh>
-References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
- <20261027-llm-char-misc-iio-v1-10-0d818334f6c7@linuxfoundation.org>
- <20261028021302.0430a947@jic23-hlaptop>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xVrrS+rA
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5be53e5fce1so652677e87.1
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 23:16:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793168176; x=1793772976; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=upb2yDjK+Sz2Or79oIRzVU6fGyWUl+WecZ9r73Zp7qs=;
+        b=xVrrS+rA48dR++IWDoeT0yzgI8xGj6gmsCuXugY9JkQg8WgACbfDsXwKUBfsfE+oO4
+         xWeUg+T12a7Bbfsb5wCcdiLCdoMQu5a5u77uLDQJ2AYHQiH8zXrGn9/9sXY008GV+gQR
+         Rvf6zK1RU7ithcxnnEsZgKBC8J6OXzVYOYbWHsEVuUJS3FGX4oFYxfsqQyMBoUUaIJzn
+         p5Gg4diO74fqYRoEQqGKbXmrpJGDvWGUg+MQpMwxlvGGVncK5E6Z9c3jw3DJOAi9sncu
+         baKYmGIraPwobQ9M63jnTuEVNUa+cPVrVO+L33aJu2tm42cwY6MIQ2pZE5R883rrFRCg
+         qSfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793168176; x=1793772976;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=upb2yDjK+Sz2Or79oIRzVU6fGyWUl+WecZ9r73Zp7qs=;
+        b=FaYw8l2M9Ax2G0UVLG0c6/PYJ//PW0qzfEN0t21HqSZ3JMO4DTMTbOv7qX0aaiI94S
+         TRGkKePy/YTQr/Qn1Z/X7BvHKhx03eD5wQNE2WR5rSkj8R9vsJ9xTpYmgEahbFZCayNi
+         HOiyT0qBHXJpa6b008UcleQDmXWPa5DFiIoUNdiFmVr23RqnnzF8w4dIN6flOl5Itd4B
+         Lqypg1QOutqGd55Qjen49XBxDt0dbWqehbN0bc534QvZBaxgvU7Al6BaAFZxbRLxPeQo
+         uyVhho9UCWaadpseqjWq0KlLLnqGCS1ezMYlJaWXwuB71xlTQrwe2siQeuHdILqd0WD0
+         EKxQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwssOK9eVLJk8KiI3nIbmJbL22idWLw/qu9kkuyIy7jOhkRGO23NWatEQQKVCycwpcLOcuqEUgKNhg=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIG9Awlkt1KPAqQyWVLwvw4SqxF7NuexI+v2R2jTDeOoPRJp3Vc
+	STk0CULdH+rPiMNAiSjUu7BYrOppgGcKZIrFK9JjC/AAngI5Uh4UOSp3
+X-Gm-Gg: AYBFou0OYYkVB1HkL/P/+9wrjjwQizpvltEWVdoSt+l503WERzeQLEFw2yyBmULBQSE
+	uRXP5wrHwEUnHh2w7mWPR4erMoLdVEv6WwhcUOlaevzYD19ceo8VuO71g4qYpLrh+u38p9IqFBA
+	PKSPQ838EXqyLjHkhZkCePiYyn48B0OpdKKBrTJo0/twywLxqdgMatvVYzWianY2tUAfB18U6wt
+	H2uwKTnNQxwZktvj6cf9TyLGW+5aBLs+RGv49w1w+Koh704K1iZ0h/zCuihcJmvSrF61Yq8UO6G
+	aiBZz2rh4pXUoqDGwPTxhhUjnlZRpN9Kpidmh8epeKl1qrKTadQRSGR9lREJ3pJuIkD+G2ydRnH
+	F/ysxJtJOeevweBj1+sowz3C6Ie/EQ3cpb+CZaWET/nsYo+cGhQSGFvy4uw9yQYGpN9rpTqRP5K
+	4hidMo71hXfHFsyAiZ6VEDU1Ga3dz1ehSFISxcGzA9jKBGGz281/qVFaahOtCA8S1Acjy03Fn6D
+	ey/M50kE5h8gNVYmllCrjwzyYb6E3KIp/ge/lN/FFzedRQ6rHLt+UqnYxza9GYhM7X/24JV52tL
+	oF5K7J7FnfiLsm9zZWNylWLxhIr5/rwYCr2RLWqRjICkYT4oWOYhCC2RYq/RAXsMW6x2oMswvjm
+	3E4p/yzJzDA==
+X-Received: by 2002:a05:6512:3a82:b0:5be:4be3:bb8f with SMTP id 2adb3069b0e04-5bfcad787eamr578392e87.19.1793168175751;
+        Tue, 27 Oct 2026 23:16:15 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfca47f9f2sm400912e87.8.2026.10.27.23.16.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Oct 2026 23:16:14 -0700 (PDT)
+Message-ID: <9e9a2f4b-b6d6-4faf-95f2-e227b41d27eb@gmail.com>
+Date: Wed, 28 Oct 2026 08:16:11 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -63,29 +93,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261028021302.0430a947@jic23-hlaptop>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 4/9] iio: accel: kionix-kx022a: annotate the lock
+ helpers
+To: Rupesh Majhi <zoone.rupert@gmail.com>,
+ Alex Lanzano <lanzano.alex@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+ Benson Leung <bleung@chromium.org>, David Lechner <dlechner@baylibre.com>,
+ Guenter Roeck <groeck@chromium.org>, Jagath Jog J <jagathjog1996@gmail.com>,
+ Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+ Jerome Brunet <jbrunet@baylibre.com>, Jinseob Kim <kimjinseob88@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>, Kevin Hilman <khilman@baylibre.com>,
+ Lorenzo Bianconi <lorenzo@kernel.org>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ Neil Armstrong <neil.armstrong@linaro.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Remi Buisson <remi.buisson@tdk.com>
+Cc: chrome-platform@lists.linux.dev, linux-amlogic@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Marco Elver <elver@google.com>, Bart Van Assche <bvanassche@acm.org>
+References: <20261027124954.110697-1-zoone.rupert@gmail.com>
+ <20261027124954.110697-5-zoone.rupert@gmail.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20261027124954.110697-5-zoone.rupert@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 28, 2026 at 02:13:02AM +0000, Jonathan Cameron wrote:
-> On Tue, 27 Oct 2026 17:19:14 +0100
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+On 27/10/2026 14:49, Rupesh Majhi wrote:
+> kx022a_turn_off_lock() returns with data->mutex held when it succeeds,
+> and kx022a_turn_on_unlock() releases it. Annotate both so context
+> analysis follows the lock into the callers.
 > 
-> > From: Josef Bacik <josef@toxicpanda.com>
-> > 
-> > The number of counts per lux is the integration time in milliseconds times
-> > the gain, divided by 408.  With the low gain, which is 1, and an
-> > integration time of 100 to 400 ms, that is 0 in integer arithmetic, and
-> > each read of the illuminance divides by zero.
-> > 
-> > In that case, multiply by the coefficient and divide by the product
-> > instead.  The result of the other settings does not change.
-> > 
-> https://lore.kernel.org/all/20261022-first-patch-v4-0-90b2fc6e8e28@mycroftmind.com/
-> 
-> I have first few of that series queued up already.
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 
-Wonderful, thanks!  Proof again that people keep finding the same bugs
-at the same time with these tools :)
+Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
 
-greg k-h
+Thanks.
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
