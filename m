@@ -1,61 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793155167;
-	b=1Bqv+QQbKYJn3jI/FT1oBLyoKK1yI24Pvt9Z/PM5gaPdJfOW78XxdzDflZUBey1+NniN
-	 2VFkcD3n/+XztePjOdi9/lUPQFluXs3WHKcR5GGdJsclrY+rsDXJmEn3xePwuOsK1ckRg
-	 VT/xcXQGgdmBsrw7z3L4rWztpBU6Z3oX7+hPUj2hibBs7X5lhgCRp079F9hY13mUB/uuL
-	 TfxCd1Nrf0WvQeqcW9U7rNPmOnCUnYsLEOj0P3X6btTzvpePy9wVHz9DD+/d/eCwfx+TG
-	 ptE3cdLumYlP/UHBdoYQHaa3XRRFy6s2J5S27MvVSGph35FdzuqT+EtplCEpc6mW9WA==
+	t=1793155200;
+	b=rJlKTO5DU6PwN3nA6VkJyyR/foOI+HFltLyj69nCZ2wFuSg63zvf5uZHEoxO9iWCZJWZ
+	 SXf0uXChmt+IwlmIeM53Tm3zWOVK5Y3QfbG4GB/HOporzQPtIfZ4hfOJ88QZVTMqKdbn6
+	 IShVG5jSancoX4nfgBUUfC3ndC/GqeFS5KOZF5AGjwX495tPEIz7X4hdPzuUhnAiU/GRz
+	 HMe4dyNW9qH0bgZMV8rxoSerhEXFp74TAO/VSX43rbdWC8HJZaffqJmDuxAORsG043l5w
+	 nzymo1DMhN68BI6iXoeWBk8Os3eN17M8hJdWUWehoFJYKUK24+pAkhEsHBXqdk9pKFg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793155167;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=q9vP4N6Xq+pWaWFspzkH4JG7fJYn2ADhm9WVHgwfMPs=;
-	b=uNX0M24wEIHi/z4goH0tCIN1smYnq2pMMIhfQApuekJDYgYfKW5mJ2I5TL249/BrC765
-	 QqGUoyQlVSsBfMUzyeWIfY3lqZp7ygWn4O1x+rM7qnYjsCdQwj3yVxozFlsNMjbad3TCh
-	 2ixNOflPuc5U0ABTIxUMXE7n2eeXmGcg6FeHTFRdSbvUZfXmUBjQJcLMtC9uNpmc6Oj85
-	 65LaRedDC3Q1IrDtKZ02jjN5niGVFJT0pQdWcSEAy4wanFWdX0CIfvMs9NvyPBGUuuX1c
-	 iQATwCRR6CzWbJ/MEVxg8IO20IqUubuIYmEkfjydcDb9Nlse2gKc1e8aIO2tRBNFl8g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793155200;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=UUyOzdfDW64FxuR3j/5aF6mngo0zFqICWYuprjdj1Ig=;
+	b=HugDeMoaUSk4A9eRg5708kCasLc5fau6ki65LA3GnWCv2Pw9v6drvgP0KWU1U0MLatqV
+	 uMqpcWPq/tbv7tk899Xy2ZbMRIiqTgCTbhYWkkvQSBtqZhtGLewMCetQfU7mquC/MZU04
+	 pVhaNyRYRt8fdV1eX8RMCVaWxwhmGWnxSYLnn8Yya7HmNsPtJBkxNh7JzKjfUQZBPnG0D
+	 panwysqF+5a0CSYM2U613xdpEQ+uJPtF/9YqSHE6C9ywPXPzXzJCqJ4/kIgUobCYZSLr8
+	 O3qdU1dSMfmKk2XVHY6B8VG+1bW3o9xmc7N+/3XmmQfEP6slIzweohhE0esWW8OWznQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fArf4kC1;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RWoIigvq;
+	arc=none smtp.remote-ip=209.85.222.45
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com [209.85.222.45])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FAAB606A31A;
-	Wed, 28 Oct 2026 02:39:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59592606A31D
+	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 02:40:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59592606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fArf4kC1
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651741F01825;
-	Wed, 28 Oct 2026 02:39:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793155166;
-	bh=q9vP4N6Xq+pWaWFspzkH4JG7fJYn2ADhm9WVHgwfMPs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=fArf4kC1GAoberVAhC6f+ZKxf3oaZErgeLn/WvBmD5xrFs0YLhfxaJ0Ews+EXZmQY
-	 6yy1tvQ3jc4fakj26m2+meB29dlERvjTcLzPnE9bfoaegAyaiNts+OW4scjLFBDcXA
-	 xTmQuOAFiyGtvAhkANvkBbWdoej6wLWXzmNovhm775HyVDhOIPTvFarLYyi1R0KA9k
-	 Hz5e/4QZTc2hPD6w6J8Cupw2JCvucL8XF2oRU1bI5vz2J5c9VGEo1OtWldp2w8ap7V
-	 wAuyqLZ6M30f8w/YN+JYvjWdoKI8mF0bsC8nMO/svN78kXqi3JYCdr+hDowW9r6kax
-	 zXmlpTrzkZjLw==
-Date: Wed, 28 Oct 2026 02:39:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Sergiu Cuciurean <sergiu.cuciurean@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: add ltc2387 driver
-Message-ID: <20261028023919.21834986@jic23-hlaptop>
-In-Reply-To: <20261027134409.76824-3-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
-	<20261027134409.76824-3-Nicolae-daniel.Deaconescu@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RWoIigvq
+Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-99071945aa7so312731241.3
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 19:40:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793155199; x=1793759999; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=UUyOzdfDW64FxuR3j/5aF6mngo0zFqICWYuprjdj1Ig=;
+        b=RWoIigvqvu2Ej8Oo8yU9qnRczeMA2FfGfYTvYHgIz8Z/TK3KnYp5KT9ktyA1OpKhXb
+         rww8NjYMYxiMajA1EqeiPaOV9b1J+eFxwne7kJGTL1Ra2uw+YH2LsZvLhc+3KSng4+CJ
+         Wjq73WkdZKv7fY/Z+WtRehwsdpIdGy1FLWOAU1OkdpzwZhA2vmAA7OhZdmZUZBlbyx3f
+         jZKCQD+Yk/d0nQ7Rt+q5VjpQt/WX/z5TcGt1z9mtYyFYOKOgjXNOeAw41Xj0vmmSThip
+         ZIgBlxGYO24fOePTI8TPrsl9Au6zt0kQPXb9wZPH/nybYHLX0sG9eYXGHZh8I3R9Y9zV
+         GBGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793155199; x=1793759999;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=UUyOzdfDW64FxuR3j/5aF6mngo0zFqICWYuprjdj1Ig=;
+        b=hgESn7A/Gecyx0WJ0NR6gy5i1LQRJi23whaRWWez3QGn/aLh5X2rgJLXolMlpY/qIv
+         rYgFk2GLcxTm3qJbcYLFkcEt5vd6qO3HUD67iOmq0OJY1ddKK9rR/HgPKuasi5B5U6ul
+         WMh2vYyPlaAp5safp+h7wJMhk8iQHvJSfXQR2swKQh/NWsnM92K+3XbgMpnwIGhpTBK0
+         bMtH3qfpqi94nsT5aIMmYL6vYwsVoJDljMtK+cdTRmpuAk633VLsx15uhqsJlEmGRvQ7
+         j0G7c83olt+CWhFFZTLjBViTjlcz4yT+OUgH2fw9uQvYAls/OnE5OcUIODoFGt5AvSiY
+         kaIg==
+X-Forwarded-Encrypted: i=1; AKwUvByV/q2ULTdpCS6uv1wFQxtk6lF5CWZcQnPmeA6hsr6qeaEJlbnukyrv/gMF+CrWGqadFJ751n//Ynw=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLHld28ae/cMN33YR4cXnqZY2bm965Cjwrr5uXRAowja/vjgsQK
+	GokR5UFNbM3PaEyb7+o3g7ONC+wunaNN8/WOuDRxo30TPaHd+nQ3B1NT
+X-Gm-Gg: AYBFou0EW6nJwhw9BT+Z7vZglrwcuStvcQpK8FoX5XVw8GZwPX3ORnebLNeBa436gaK
+	QySTmSvuIila9ALfbS+wCQKNtUHXCcLDIssG1Bu9EQbUe4mAYmMUrYkxiT26uBRDVvKM1eiIO0t
+	XJVfSmgKRZ4GGVxZbUOB56SYbHsrwJvmvIImB4rrM6IesTkxeGHec7SToMb8e/SV8DMQXx6k1mX
+	doW++68lTGQZRtIA6S4OT+ZSkHG30YDTOL6rlRgdgX3dNjbbrAaNyFclqC0r+bFB2dWVjtdB/7C
+	EwzEf35OEKjtCq1wqSuxp9Zpm+MeyuQvvcpBkLEykSx/HQR+e8jobTrNNTNQI5sUml1evku8SC3
+	ZyqsQsSUwUCR76TixPBwSDlhT3WZwcGwsZ2//Z7D7M0xKNOZUXsimfgOM5z+fecvN6R6MyqeNU3
+	zZAaWCZ411STqYFJxz/5OU1jwKo3haj70F8BsJQMQOfBkhuvKxZB0MRUQZjeSSZYk2v4wwRJ1Ht
+	3enP3ieCjbeQ/xhVLLVoBocK1yoJPMFmKAOgAdlsI0XLQFM4k08tk1Uj9jlbOov9gEbzWhXafvh
+	uN4YLn/iPCLM0uvEWoBVN+7tkjv4oZnFXzJ4YIsMqg+iW0Fawzki9prdRdGA8lTrF76c5N6Rew=
+	=
+X-Received: by 2002:a05:6102:508d:b0:7b4:879c:bb76 with SMTP id ada2fe7eead31-7d03a4c76camr507860137.21.1793155199338;
+        Tue, 27 Oct 2026 19:39:59 -0700 (PDT)
+Received: from stephan-Inspiron-15-3520.. ([2804:5d20:6009:6701:4df:52dc:4559:394e])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7cea397a24asm4467382137.1.2026.10.27.19.39.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 19:39:58 -0700 (PDT)
+From: Stephan Costa Barros <stephanbrrs8@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Mike Looijmans <mike.looijmans@topic.nl>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] iio: adc: ti-ads1298: fix the data read path
+Date: Tue, 27 Oct 2026 23:39:51 -0300
+Message-ID: <20261028023951.33149-1-stephanbrrs8@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <at5jL47A-6vQJYOX@ashevche-desk.local>
+References: <20261024231335.280955-1-stephanbrrs8@gmail.com> <20261024231335.280955-2-stephanbrrs8@gmail.com> <at5jL47A-6vQJYOX@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,352 +109,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Tue, 27 Oct 2026 15:44:09 +0200
-Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com> wrote:
-
-> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> 
-> Add a driver for the LTC2387-16/18 and the ADAQ23875/23876/23878.
-> 
-> The driver generates CNV and the gated data clock with two PWM
-> channels, timed against the reference clock to meet t_FIRSTCLK, and
-> gets sample data through the IIO backend framework from the AXI ADC
-> core. It supports one-lane and two-lane output and reports the
-> sampling frequency the PWMs produce after rounding to whole reference
-> clock cycles. in_voltage_scale is referred to the analog input, so on
-> the ADAQ parts it is divided by the front-end gain.
-> 
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> Assisted-by: Claude:claude-opus-5-5
-
-Check the docs on this.  We moved away from this form to the LLM
-one not naming the model and now convention is to just mention
-it in the cover letter or below the ---
-Ideally with a bit more info on how you used it.
-
-Various things inline.  Some of the stuff in here
-looks like old drivers and the copyright suggests this is
-one that is now being upstreamed.  Please take a look
-at some more recent ones for preferred style etc.
-
-Jonathan
-
-> diff --git a/drivers/iio/adc/ltc2387.c b/drivers/iio/adc/ltc2387.c
-> new file mode 100644
-> index 000000000000..c236b99baa4a
-> --- /dev/null
-> +++ b/drivers/iio/adc/ltc2387.c
-> @@ -0,0 +1,482 @@
-> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-> +/*
-> + * Linear Technology LTC2387 ADC driver
-> + *
-> + * Copyright 2022 - 2026 Analog Devices Inc.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/backend.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/kernel.h>
-> +#include <linux/math64.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/mod_devicetable.h>
-> +
-> +#define LTC2387_VREF		4096
-> +#define LTC2387_T_CNVH		8
-> +
-> +/*
-> + * Minimal value for t_{FIRSTCLK} according to
-> + * https://www.analog.com/media/en/technical-documentation/data-sheets/238718fa.pdf
-> + * is 65 ns. Add some slack because there is some rounding involved in the PWM
-> + * driver. With the PWM driver rounding to the nearest possible value, targeting
-> + * 70 ns works for input clk rates >= 100 MHz.
-> + */
-> +#define LTC2387_T_FIRSTCLK_NS	70
-> +
-> +#define KHz 1000
-There are units for this already...  See units.h
-Probably want HZ_PER_KHZ for this one.
-
-> +#define MHz (1000 * KHz)
-HZ_PER_MHZ
-
-> +enum ltc2387_lane_modes {
-> +	ONE_LANE = 0,
-> +	TWO_LANES = 1
-
-Trailing comma.
-
-> +};
-> +
-> +enum ltc2387_id {
-> +	ID_LTC2387_16,
-> +	ID_LTC2387_16_X4,
-> +	ID_LTC2387_18,
-> +	ID_LTC2387_18_X4,
-> +	ID_ADAQ23875,
-> +	ID_ADAQ23876,
-> +	ID_ADAQ23878,
-
-See below. I'd expect this to go away with changes there.
-
-> +};
-> +
-> +struct ltc2387_info {
-> +	const char *name;
-> +	struct iio_chan_spec channels[4];
-> +	unsigned int test_pattern[2];
-> +	int num_channels;
-> +	int resolution;
-> +	/* Gain * 1000 when adi,gain-milli is absent; unity for the bare parts. */
-
-Gain / 1000?  If its in units of milli.
-For the unity parts why 0?
-
-> +	u32 default_gain_milli;
-> +};
+On Sun, Oct 25, 2026 at 10:14:39PM +0200, Andy Shevchenko wrote:
+> > +	/* Only changes while no transfer is in flight */
+> > +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> > +		buffered = priv->buffered;
 >
-> +
-> +static const struct ltc2387_info ltc2387_infos[] = {
-> +	[ID_LTC2387_16] = {
-> +		.name = "ltc2387-16",
-> +		.default_gain_milli = 1000,
-> +		.resolution = 16,
-> +		.test_pattern = LTC2387_TEST_PATTERN_16,
-> +		.channels = { LTC2378_CHAN(16, 16) },
-> +		.num_channels = 1,
-> +	},
-As mentioned below. Split this up into individual named
-structures where the name makes it clear what device they are for.
+> Strictly speaking you need to assign buffered to make any compiler not being
+> confused by the scoped_guard(), which cases IIRC we used to have the past.
 
-> +
-> +static int ltc2387_setup(struct iio_dev *indio_dev)
-> +{
-> +	struct ltc2387_dev *ltc = iio_priv(indio_dev);
-> +	struct device *dev = indio_dev->dev.parent;
-> +
-> +	if (device_property_present(dev, "adi,use-two-lanes"))
-> +		ltc->lane_mode = TWO_LANES;
-> +
-> +	return ltc2387_set_sampling_freq(ltc, 15 * MHz);
-So this (I think) is the call that actually enables the pwms.
-The devm unwinding should pair with setup not the pwm_get()
-> +}
+OK, I'll initialise it.
 
+> > +	ret = ads1298_write_cmd(priv, ADS1298_CMD_START);
+> > +	if (ret) {
+> > +		scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> > +			priv->buffered = false;
+> > +	}
+> > +
+> > +	return ret;
+>
+> Before write_cmd is called the buffered might have been triggered. Is it okay?
 
-> +
-> +static const struct of_device_id ltc2387_of_match[] = {
-> +	{
-> +		.compatible = "lltc,ltc2387-16",
-> +		.data = &ltc2387_infos[ID_LTC2387_16]
-> +	}, {
-> +		.compatible = "lltc,ltc2387-16-x4",
-> +		.data = &ltc2387_infos[ID_LTC2387_16_X4]
-> +	}, {
-> +		.compatible = "lltc,ltc2387-18",
-> +		.data = &ltc2387_infos[ID_LTC2387_18]
-> +	}, {
-> +		.compatible = "lltc,ltc2387-18-x4",
-> +		.data = &ltc2387_infos[ID_LTC2387_18_X4]
-> +	}, {
-> +		.compatible = "adi,adaq23875",
-> +		.data = &ltc2387_infos[ID_ADAQ23875]
-> +	}, {
-> +		.compatible = "adi,adaq23876",
-> +		.data = &ltc2387_infos[ID_ADAQ23876]
-> +	}, {
-> +		.compatible = "adi,adaq23878",
-> +		.data = &ltc2387_infos[ID_ADAQ23878]
+Yes, and on purpose. By postenable the core has set up the scan mask and
+the buffer, so a sample arriving before START is pushed like any other.
+The chip does not convert before START anyway, unless its START pin is
+tied high. The other order is the problem: a DRDY between START and
+setting the flag would be taken as a single-shot read.
 
-trailing comma.
+> > +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
+> > +		priv->buffered = false;
+> > +
+> > +	return ret ?: ret2;
+> >  }
+>
+> The code lacks of comments on why in all error cases (either first one, or
+> second, or both are triggered) it's fine to continue. And what will be the
+> meaning of the returned value in all three cases?
 
-Also there doesn't seem to be a reason to have these in an array.
-Split them up into individually named structures. That tends
-to end up easier to read in the longer term and removes
-the need for the enum.  We are slowly removing this array
-approach from existing drivers.  
+The core goes on with the teardown whatever predisable returns
+(iio_disable_buffers() says so), so the driver must stop using the scan
+in every case. The return value only reaches whoever wrote to
+buffer/enable, and it is the first error.
 
-> +	},
-> +	{}
+If STOP fails, the chip may keep converting, but once the flag is clear
+the completions leave the scan alone. In v2 the flag was cleared only
+after the wait, which was wrong, v3 clears it right after STOP. If the 
+wait times out, a completion that already saw the flag set could still 
+be pushing. The SPI core completes every message, so I'm inclined to 
+wait without a limit there, as on unbind, and return only the STOP error.
 
-	{ }
+I'll put that in a comment. Jonathan asked to rework this part, so the
+code may change, but the explanation stays.
 
-> +};
-> +MODULE_DEVICE_TABLE(of, ltc2387_of_match);
-> +
-> +static int ltc2387_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev			*indio_dev;
-> +	struct ltc2387_dev		*ltc;
-> +	int				ret;
-
-Don't force indent. It just creates churn in places like this.
-Keep it for aligning numeric tables and that sort of thing only.
-
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ltc));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ltc = iio_priv(indio_dev);
-> +
-> +	ltc->vref = devm_regulator_get_optional(&pdev->dev, "vref");
-> +	if (!IS_ERR(ltc->vref)) {
-> +		ret = regulator_enable(ltc->vref);
-> +		if (ret) {
-> +			dev_err(&pdev->dev, "Can't enable vref regulator\n");
-> +			return ret;
-
-return dev_err_probe()
-
-> +		}
-> +		ret = regulator_get_voltage(ltc->vref);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ltc->vref_mv = ret / 1000;
-> +		ret = devm_add_action_or_reset(&pdev->dev,
-> +					       ltc2387_regulator_disable,
-> +					       ltc->vref);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		if (PTR_ERR(ltc->vref) != -ENODEV)
-> +			return PTR_ERR(ltc->vref);
-> +
-> +		ltc->vref_mv = LTC2387_VREF; /* Internal vref is used */
-> +	}
-> +
-> +	ltc->ref_clk = devm_clk_get(&pdev->dev, NULL);
-
-	ltc->ref_clk = devm_clk_get_enabled() looks like it would
-work here.
-
-> +	if (IS_ERR(ltc->ref_clk))
-> +		return PTR_ERR(ltc->ref_clk);
-> +
-> +	ret = clk_prepare_enable(ltc->ref_clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_add_action_or_reset(&pdev->dev, ltc2387_clk_disable,
-> +				       ltc->ref_clk);
-> +	if (ret)
-> +		return ret;
-> +	ltc->ref_clk_rate = clk_get_rate(ltc->ref_clk);
-> +
-> +	ltc->clk_gate = devm_pwm_get(&pdev->dev, "clk_gate");
-> +	if (IS_ERR(ltc->clk_gate))
-> +		return PTR_ERR(ltc->clk_gate);
-> +
-See above. IIRC pwms aren't turned on by the get.  So
-as above I think this should be paired with the
-setup call not here.
-
-> +	ret = devm_add_action_or_reset(&pdev->dev, ltc2387_pwm_disable,
-> +				       ltc->clk_gate);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ltc->cnv = devm_pwm_get(&pdev->dev, "cnv");
-> +	if (IS_ERR(ltc->cnv))
-> +		return PTR_ERR(ltc->cnv);
-> +
-> +	ret = devm_add_action_or_reset(&pdev->dev, ltc2387_pwm_disable,
-> +				       ltc->cnv);
-Same as previous. Also no blank line here.
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	ltc->device_info = device_get_match_data(&pdev->dev);
-> +	if (!ltc->device_info)
-> +		return -EINVAL;
-
-Do this early given it is a trivial check and saves on unwinding all
-the above if it fails.
-
-> +
-> +	ltc->gain_milli = ltc->device_info->default_gain_milli;
-> +	device_property_read_u32(&pdev->dev, "adi,gain-milli", &ltc->gain_milli);
-We now do optional properties with error checking but
-	if (device_property_present()) {
-		ret = device_property_read_u32();
-		if (ret)
-			..
-		if (!ltc->gain_milli)
-				...
-		}
-// or drop this out of the if else if you prefer.
-	} else {
-		ltc->gain_milli = ...
-	}	
-> +	if (!ltc->gain_milli)
-> +		return dev_err_probe(&pdev->dev, -EINVAL,
-> +				     "adi,gain-milli must be nonzero\n");
-> +
-> +	indio_dev->channels = ltc->device_info->channels;
-> +	indio_dev->num_channels = ltc->device_info->num_channels;
-> +	indio_dev->dev.parent = &pdev->dev;
-
-That is unlikely to be needed... The IIO core has set parent
-up for you for quite a while now.
-
-> +	indio_dev->name = ltc->device_info->name;
-> +	indio_dev->info = &ltc2387_info;
-> +
-> +	ltc->back = devm_iio_backend_get(&pdev->dev, NULL);
-> +	if (IS_ERR(ltc->back))
-> +		return dev_err_probe(&pdev->dev, PTR_ERR(ltc->back),
-> +				     "failed to get IIO backend\n");
-> +
-> +	ret = devm_iio_backend_request_buffer(&pdev->dev, ltc->back, indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_iio_backend_enable(&pdev->dev, ltc->back);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* axi_ltc2387 has a single capture channel carrying every scan element. */
-> +	ret = iio_backend_chan_enable(ltc->back, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ltc2387_setup(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "\nltc2387 setup failed\n");
-> +		return ret;
-
-return dev_err_probe() for any error prints in probe or functions
-only called from probe.  It improves the message formatting
-even when no chance of deferral.
-
-> +	}
-> +
-> +	return devm_iio_device_register(&pdev->dev, indio_dev);
-> +}
-> +
-> +static struct platform_driver ltc2387_driver = {
-> +	.probe          = ltc2387_probe,
-> +	.driver         = {
-I'd not bother forcing alignment. It just ends up inconsistent.
-
-> +		.name   = "ltc2387",
-> +		.of_match_table = ltc2387_of_match,
-> +	},
-> +};
-> +module_platform_driver(ltc2387_driver);
-
+Thanks,
+Stephan
