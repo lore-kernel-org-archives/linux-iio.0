@@ -1,98 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793171766;
-	b=aJBg7ZWEu1bYgbjDi+u3p31GcThbES/82u0DHMGh1ULE3pQhAyqSrPurF4tJR021hG8b
-	 I1+yHjKFq8dh+9YEen4NBDbROvRiY/3yQ6XT8sla43f2ftHzVnIDY3V5c+FCdSXhBXHc3
-	 heFVtAbSI+qAnQpsYC+jSYqOOuqVXVI+X6XaVKgnE1J1sFFAr7wmHNSg0LJITUh0NiJrU
-	 fnpxaltK6XdDkTyw6hHXNIh5ia+vMerrc4LRS1f6vcqc7f2ZejixHXksOf01NQPlgSeWA
-	 EGDmMO9Ba0fhBR6SEcKE2R5krn2P9WDv7lhl54LUjz9KX9zJkUTAtXviW3LlM7DTTtw==
+	t=1793175072;
+	b=42+Hof4gnc8oY6mM0b2JI2qoB9eLFuZ+jfho856iSYCOrTRRQlWxmDo+97JKOuQq6pix
+	 pRfmdPxoTSf8vRxMcFeGE9WHS/9LbmzflhvpcfRHq5bZcZAreT8EeWjTr+9vCiiDuyrlh
+	 FTjeAwA/9L0tXejCz2LUNowWJH/Yj5mpNvadoAmKgsbFKaYbJAZrNtAPOX2bm3z9N9X3V
+	 5W5lYXx8waengaFWxnVwsg1PmD33W7IsBJCET+T3jWqRMjf/cKvJd/3vujFVWaoCNPdUa
+	 Lcqf1ibR3Md8p+ES+6SGqOGSElnERZXTCzwXJQKdLsp2CI4vHQl/vnvXUeWYMK6W32Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793171766;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=emtegajvD2PHGqYHH217zdcmL1omyniO8biT/+kuRok=;
-	b=269hFnLfl93pY52HEIUC7l8hRTaIIZNkdfLdbKNtf4GlOfPR3xhYSJIjeeyiXkO6wEh/
-	 +HhloCpL71IpMElQ7QU/U82oyNOVtxwINFTNfgGPruGM3IqNsSMbpgCZmYMEIIIxSBvZo
-	 NW/GM6Yt9p70zreRgdJcvBcH+KUSrXihbD2n/t1Oh5iEHunfrXRH1fYGewrfw0zLQlDy8
-	 efgci4/SSD3kKAqxxUV2cBvaKRYwDwOyovoS2loPOiZuqFN8Vx5c8xevDDqy9T9A5QiMd
-	 2LBju0RGi60WmhrVXmBn64WPx3kwnXYpJyeKVECkhto7u8twXAgbqtm82D3au7sbVeA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793175072;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=Ezbo+pip8MpAdiPPtGALw6EWfroPjVb4YVB/6Tn9BEI=;
+	b=DDo9KJlk2MZ7hyptZrqYdst+9zv2f7oWCj1G8HAaijeR4YNc3RaGwOM8I1oGsL8+v/X8
+	 2aPOgiQoHf5CA1xrS/2CIJzHcGZqoUL0qgkYnTJ/t+1GokRWtsa0zmrAQATmvygZY0hyJ
+	 McibXDGphL8zsUahBpQsCh0O4Zg2uzDpHTfLpvY1SBiRblif8cJLhKEl7tJecuOFPlVFp
+	 m5Y0cLj6dPO1nKG5/CLMcFLtv5+mwuQtRGHQCKPly2UnrVykL7MkrcZzV1nYoGzggjKrR
+	 dg3Jk3x/Nt2+RiZZlcFzMwxPlEH+urir/CcWv58osqJEo52qL5lNth9yz8sm6BLKNvg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=baylibre.com;
-	spf=pass smtp.mailfrom=baylibre.com;
-	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=bj1RDHAt;
-	arc=none smtp.remote-ip=209.85.128.54
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=J5y5ahUQ;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 819F6606A31F
-	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 07:16:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 819F6606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7800F606A31E;
+	Wed, 28 Oct 2026 08:11:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7800F606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=bj1RDHAt
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4a210470b49so4612985e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 00:16:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1793171764; x=1793776564; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=emtegajvD2PHGqYHH217zdcmL1omyniO8biT/+kuRok=;
-        b=bj1RDHAtB7vjolh/24QUvBkjTKpiQ4fB+9unIykEiiFy4aRwpzNeawm3XLokJFOah2
-         L7uL3NcV9qrvoRUqBUstYTl/vbX7YesKx4ZUfFicl7U0ZsfVEuiRMkTUPaMCfpZXAnxc
-         /JjgXahGqqSkk9nnUASL9ilmPxeG/bwigyi1WtMUZTIUPREvuPQt1BM5hJSRONfAHWEf
-         afYWiwnrkeiWB613fQ2NABYwf+OZPqsBHno58MpDGrmclIEV2sDw70ph5TLcdta7Hequ
-         EyLnEWnEbaAVFzWmaI/hvzq6EOv2s3YJ3knhw/Y/8s2NJDbalyD+DZeCRZSLIiJqsPYN
-         yC/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793171764; x=1793776564;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=emtegajvD2PHGqYHH217zdcmL1omyniO8biT/+kuRok=;
-        b=flZlzBI6gNI0NhjWYWD9AdKaupeE3Mk7DkEYOvfurZAc4RJAPyAQADNnHdmr1grWpI
-         ar8dDKKvaeeTZqPCkPckDSSP0+4tsFu3P/88/mcYFcDnUrbM4ck3fKyy8xWfTPoycV5a
-         xkOOs2hHpfb6DLhs8urZ62Wt3B1bn6NqEg/Jpo+SWdf96THEjnSaBIvThadpJABq8uQu
-         6b0xeiihrYKYxYwClw3RMIUZRog8pfy0U1ALvOA2x9RipVivjHrXeHk8koXyz9zcWeFX
-         YzTeQppaX6BGTE8kdG6erXqjjzPAxBWjRZi34RM2okPy5C2ZtzeXyi1gyR6l25wMpsrm
-         EH8Q==
-X-Forwarded-Encrypted: i=1; AKwUvBwgz2o4GerahQRPmjsaGirWl+sPkTOPxh+hjs8P1D3i5dEB+dn19O1rRGOJLEYnbaTSzJeM6lTN8c0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKYEMxoR2dIz8Q60av9GMrGpLJ6VtSU2RYKteaoyLRZN2ApvgXN
-	onhT4Bupl+CvdoR87ROQW4IVAv03kGC3UGzdXy8DIafO6X5reIdzYcHaXxn+reC7zKM=
-X-Gm-Gg: AYBFou3nBG3UF8WpqTLi2P6OOgmm1jvAxgmSb4zwyurXE9Wj8QPpyA1ImO13PD77Hgh
-	SOVi6weXrTnltWiIpDd+YxIwPbRPwc5ndRqx8Qi+rLw8k7EtA8D+kGPw49jAJ4MPopiBbunTNpQ
-	AbYPtmQYUSCq1LQp1KlcNXdG16+3X4uXf9NgGDGikzZicusrM2PlqVD56okw8+JIwT3ZIlM2TJY
-	iS1o28Xpzt1xOe20T1YN2rCOYacF/iRtj+BF6P26xG8KJ9g6AdKl0IgpAZfKn3EuGFuxJN/tT80
-	ycBXLK7pxiLs5ZsU4Zwwl6vW8EGZLuVM7v3eFwkVTYDRRdCP1PLko5A956JJNc4p4rwjHFNLkBg
-	g6qI1Uoj0jlGF0HJKqDsyB+4ukrLUGGfgvh8cqqnkHU2CVRszu3KmjzLh/bQpWBs52mu84mSpmH
-	ezVUdC5/M4o/4cAw3+kx+N1VRpn985JIk7yi38c9c1UoK9ctgueiQ5QbvWRcu64FZsnxeF/HllN
-	UYKz5cMXCUqpkpuTcXGryr3bS9NO88sVhN4YBxJziJotnz3UGkAFnUbP7oTeRtOeRZH9dxjupVh
-	5gJUUzRNjhQjVh1o4/rRklKDp38zi4QXmqNYSIGAcLFxJyc0pc9fA6Ep/5np57/qNlHSHJsyTNI
-	T9TLFMIOoeBVPI4E=
-X-Received: by 2002:a05:600c:6098:b0:4a1:e00b:a0ea with SMTP id 5b1f17b1804b1-4a9640f2328mr26189545e9.1.1793171763595;
-        Wed, 28 Oct 2026 00:16:03 -0700 (PDT)
-Received: from localhost (p200300f65f19a904c16506b94501b867.dip0.t-ipconnect.de. [2003:f6:5f19:a904:c165:6b9:4501:b867])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4a930a63eb3sm26054795e9.1.2026.10.28.00.16.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2026 00:16:02 -0700 (PDT)
-Date: Wed, 28 Oct 2026 08:16:01 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Olivier Louvignes <olivier@mgcrea.io>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Paul Cercueil <paul@crapouillou.net>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: adc: Add a driver for the Ingenic X1600 ADC
-Message-ID: <auGg1AwlHMTKYAL8@monoceros>
-References: <20261023204209.48556-1-olivier@mgcrea.io>
- <20261023204209.48556-2-olivier@mgcrea.io>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=J5y5ahUQ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793175071; x=1824711071;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XNHGGlQncV6bGlFLPBcvpXgxWjmtNHlsa6hAlwTLNMY=;
+  b=J5y5ahUQFTxTwBFz8G2iLZ8dshzh3X+a7cnfhl5mUUrpDklcD0u5k6xS
+   G6y82ruDXewqPbiO0aQTFNKLwsmGdMwU70gsC86MBbkzBwL8yVImiCv1p
+   l8QmogRetzlMNoWmlsrD4qjCSDyaO8/GV6BuvYtNkYEqjVCT+8pYbVGFl
+   IPjGolqOfhOvXT0yixW7a4xFsnIl8b4qa33WKbToXCToImGUIHZ5zYoPc
+   eZkxalgxx8uUEj4AF0sgAB9V8Kdp1ylo/CZh+wLIgxFoA+DylUPeAvSTR
+   L9G0g+Il9LhWOqfsrueVCV2Vx+c/IxxwmEnxN7Al2blKT8jFK8tmF12GY
+   w==;
+X-CSE-ConnectionGUID: LffTDLibTgKPTh8mO1Q0Og==
+X-CSE-MsgGUID: zBKDzl5qQTSSiyE6j53pdg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11948"; a="1981352"
+X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
+   d="scan'208";a="1981352"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2026 01:11:10 -0700
+X-CSE-ConnectionGUID: AsztMSEwQXawjPBf51w47g==
+X-CSE-MsgGUID: FlBbW2MGSX2CO59dO8aYCg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,182,1787036400"; 
+   d="scan'208";a="6618184"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.117])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Oct 2026 01:11:07 -0700
+Date: Wed, 28 Oct 2026 10:11:05 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
+	David Laight <David.Laight@aculab.com>
+Cc: Victor Chernyakin <chernyakin.victor.j@outlook.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] iio: prepare iio_format_value to handle
+ higher-precision IIO_VAL_DECIMAL64_* formats
+Message-ID: <auGuGfSqa-D9sceB@ashevche-desk.local>
+References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <SN1PR12MB2528906BE220765FAF201080A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <25g6fr7y4bmd6bzomvlvoejtps7wzbnbuuxxipmcrnozujno2l@klcfyrmqsifd>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,46 +86,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7kzx4bd5q3rwseko"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261023204209.48556-2-olivier@mgcrea.io>
+In-Reply-To: <25g6fr7y4bmd6bzomvlvoejtps7wzbnbuuxxipmcrnozujno2l@klcfyrmqsifd>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Tue, Oct 27, 2026 at 03:56:35PM -0300, Rodrigo Alencar wrote:
+> On 26/10/26 11:51, Victor Chernyakin wrote:
+
++Cc: David Laight
+
+...
+
+> > +/*
+> > + * Regular abs(LLONG_MIN) causes signed overflow, which is undefined
+> > + * behavior. This variant avoids that by performing the computation in an
+> > + * unsigned type, for which negation is always well-defined.
+> > + */
+> > +static inline u64 abs_s64_no_overflow(s64 x)
+> > +{
+> > +	return x < 0 ? -(u64)x : (u64)x;
+> > +}
+> 
+> I think I've seen Andy doing mentions to a needed 'safe' abs() a couple of times.
+> Don't we have something in the tree already? if not, Why not adding a
+> 'unsigned' abs function to math.h? something like:
+
+Or maybe something clever using the s64/u64 domain for all.
+Let's gather David Laight's opinion.
+
+> /**
+>  * uabs - return absolute value of an argument as an unsigned type
+>  * @x: the value.
+>  *
+>  * Unlike abs(), the result is well defined when @x is the minimum value of
+>  * a signed type, since the negation is done in the unsigned domain.
+>  *
+>  * Return: an absolute value of @x, as the unsigned counterpart of its type.
+>  */
+> #define uabs(x)	__uabs_choose_expr(x, long long,			\
+> 		__uabs_choose_expr(x, long,				\
+> 		__uabs_choose_expr(x, int,				\
+> 		__uabs_choose_expr(x, short,				\
+> 		__uabs_choose_expr(x, char,				\
+> 		__builtin_choose_expr(					\
+> 			__builtin_types_compatible_p(typeof(x), char),	\
+> 			({ signed char __x = (x);			\
+> 			   (unsigned char)(__x < 0 ? -(unsigned char)__x :	\
+> 						     (unsigned char)__x); }),	\
+> 			((void)0)))))))
+> 
+> #define __uabs_choose_expr(x, type, other) __builtin_choose_expr(	\
+> 	__builtin_types_compatible_p(typeof(x),   signed type) ||	\
+> 	__builtin_types_compatible_p(typeof(x), unsigned type),		\
+> 	({ signed type __x = (x);					\
+> 	   (unsigned type)(__x < 0 ? -(unsigned type)__x :		\
+> 				     (unsigned type)__x); }), other)
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---7kzx4bd5q3rwseko
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH 2/2] iio: adc: Add a driver for the Ingenic X1600 ADC
-MIME-Version: 1.0
-
-Hello,
-
-On Fri, Oct 23, 2026 at 10:42:09PM +0200, Olivier Louvignes wrote:
-> +#include <linux/mod_devicetable.h>
-> [...]
-> +#include <linux/platform_device.h>
-
-Please don't include <linux/mod_devicetable.h>,
-<linux/platform_device.h> already provides of_device_id without all the
-added build dependencies of <linux/mod_devicetable.h>. If you insist on
-full iwyu, use <linux/device-id/of.h> instead.
-
-Best regards
-Uwe
-
---7kzx4bd5q3rwseko
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrhoS4ACgkQj4D7WH0S
-/k4yYggApnKsIa+rCf3BFQJjly7WiAmxlAQR57PJQJaEPivBmt7SsrrspxVOOAum
-ZSo8hfftL2LyDHfMgYIzt3la64M0m9Ka5MNheXRDG3NuIFW78hiJY1uyy1Sy+fcU
-oPNpBjjLJWxzwjcGLUxIbM4kPqmIdsBamY7GrwDSB3BeNHFmOL2l6oLaF7QF22sC
-3rDO8bwez9gW80BWN7CJCjpw4ynQK6LaxRX+7fBFbX4fRvqIL3Onp3Nufmp4TVo5
-iXpJYlTPv3vt8tTP6rhxFh3R+9bmnzR2nc8MUCJJmAb7qRiaZSoQ3kz09LzpeVWt
-eAau0gujuBeEzy26ASfKDcl86MpIng==
-=0pQ9
------END PGP SIGNATURE-----
-
---7kzx4bd5q3rwseko--
