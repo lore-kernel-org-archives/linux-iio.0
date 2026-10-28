@@ -1,105 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793155200;
-	b=rJlKTO5DU6PwN3nA6VkJyyR/foOI+HFltLyj69nCZ2wFuSg63zvf5uZHEoxO9iWCZJWZ
-	 SXf0uXChmt+IwlmIeM53Tm3zWOVK5Y3QfbG4GB/HOporzQPtIfZ4hfOJ88QZVTMqKdbn6
-	 IShVG5jSancoX4nfgBUUfC3ndC/GqeFS5KOZF5AGjwX495tPEIz7X4hdPzuUhnAiU/GRz
-	 HMe4dyNW9qH0bgZMV8rxoSerhEXFp74TAO/VSX43rbdWC8HJZaffqJmDuxAORsG043l5w
-	 nzymo1DMhN68BI6iXoeWBk8Os3eN17M8hJdWUWehoFJYKUK24+pAkhEsHBXqdk9pKFg==
+	t=1793156390;
+	b=c17fa8iPNhkxBvOoQUr/ymPmZE7ZMmDtPuYNueQvc98Vndvd+tzBq0pyTULBcdXZL+CD
+	 EWdjau6iL44+SlX2huWZo8PBpGzt2y9QMqaMze8zVPJk8ZOCdA/5DchxcPPyMwISzJjpU
+	 JVpDpQg/Fdm2ORrIWiqO8K9DBXLb4UK+GehjRBpta6c16FBiEMEoqIo3f/v5QfBIikqOz
+	 igCFwsl2gpmtfXBrAzU8H4uHK9k0LSRUal5WHppZzC58OG9VtN+bDdZJxgi9kFEiyPw/3
+	 OLit7bxHILAPM6+R/9o0ek/p9hakcFoS+nK3h+/3oeQ4D7yxenG0aLG7nYY08HCc8YA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793155200;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793156390;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=UUyOzdfDW64FxuR3j/5aF6mngo0zFqICWYuprjdj1Ig=;
-	b=HugDeMoaUSk4A9eRg5708kCasLc5fau6ki65LA3GnWCv2Pw9v6drvgP0KWU1U0MLatqV
-	 uMqpcWPq/tbv7tk899Xy2ZbMRIiqTgCTbhYWkkvQSBtqZhtGLewMCetQfU7mquC/MZU04
-	 pVhaNyRYRt8fdV1eX8RMCVaWxwhmGWnxSYLnn8Yya7HmNsPtJBkxNh7JzKjfUQZBPnG0D
-	 panwysqF+5a0CSYM2U613xdpEQ+uJPtF/9YqSHE6C9ywPXPzXzJCqJ4/kIgUobCYZSLr8
-	 O3qdU1dSMfmKk2XVHY6B8VG+1bW3o9xmc7N+/3XmmQfEP6slIzweohhE0esWW8OWznQ==
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
+	 X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=zmhLt1fcIW49TsxftipVDOrL5MaEf1i51ozTS3vuQE0=;
+	b=Vs3LMhrQx7vTionIyVoKIUXylg1wOQQ5OOjPLxRtO4E/B2U9jbsJpRpFR9lX7V5/DcMA
+	 2+9jZK35eu4EH+fVRQldy5pgoPwD1uvp/T39j3bp1yNi+m2mX1DYKuTaxUNYpXIXTGZsf
+	 e+bdWPDbBCoQwtF2QszM2cloNMrSx6AvGIpZwFKcgLFLSOG+te0oOFJyue6KUuXYCrg83
+	 wjzlRGu2uA7tNi9TOr3uNvZFDtcE1sMizxY+l00FxENoVUf0n6TDZEr19bzJJEW+E5ig0
+	 eMOXjS6H4l/1MiprfvDY72tfAfVr1lviEJ/xQEA32LrruD2DfmYPrCSZTnLLu27i4nQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RWoIigvq;
-	arc=none smtp.remote-ip=209.85.222.45
-Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com [209.85.222.45])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tiXxZ5B2;
+	arc=none smtp.remote-ip=74.125.82.174
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59592606A31D
-	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 02:40:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59592606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D44606A31E
+	for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 02:59:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 86D44606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RWoIigvq
-Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-99071945aa7so312731241.3
-        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 19:40:00 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tiXxZ5B2
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-36a17a332ecso650426eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 27 Oct 2026 19:59:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793155199; x=1793759999; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=UUyOzdfDW64FxuR3j/5aF6mngo0zFqICWYuprjdj1Ig=;
-        b=RWoIigvqvu2Ej8Oo8yU9qnRczeMA2FfGfYTvYHgIz8Z/TK3KnYp5KT9ktyA1OpKhXb
-         rww8NjYMYxiMajA1EqeiPaOV9b1J+eFxwne7kJGTL1Ra2uw+YH2LsZvLhc+3KSng4+CJ
-         Wjq73WkdZKv7fY/Z+WtRehwsdpIdGy1FLWOAU1OkdpzwZhA2vmAA7OhZdmZUZBlbyx3f
-         jZKCQD+Yk/d0nQ7Rt+q5VjpQt/WX/z5TcGt1z9mtYyFYOKOgjXNOeAw41Xj0vmmSThip
-         ZIgBlxGYO24fOePTI8TPrsl9Au6zt0kQPXb9wZPH/nybYHLX0sG9eYXGHZh8I3R9Y9zV
-         GBGA==
+        d=gmail.com; s=20260707; t=1793156390; x=1793761190; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=zmhLt1fcIW49TsxftipVDOrL5MaEf1i51ozTS3vuQE0=;
+        b=tiXxZ5B23CrDdxwaxzsxnGEx/Tmy+ieUOR5s3xjD47whazeW89JHVTusEC3WEyH3sH
+         sDVk/oaCL0wMEI25vEUyDqxLEGKyk2I+ox1vbPuaiMB6FEGn4xWsfPEfGrtIFkH4AJl1
+         4DQrTs7V83Z9e+MtmJQGvhT5q5OpIoQTwhoAyqeOx+HDaixt5Cmr+3oLxYm06nVeVh6D
+         x6MnAVJ9wJdA6pfjTd2ixEaxL40VpD04BiUPh9KynHYksDjwcia6elBYNQPLous61f4r
+         kKISIi/84w/YC6qThME4mO6oKSbkMRzjkcGDbma0TSbjB9VNaWZVPciibd7ffMXdNS6y
+         YWeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793155199; x=1793759999;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=UUyOzdfDW64FxuR3j/5aF6mngo0zFqICWYuprjdj1Ig=;
-        b=hgESn7A/Gecyx0WJ0NR6gy5i1LQRJi23whaRWWez3QGn/aLh5X2rgJLXolMlpY/qIv
-         rYgFk2GLcxTm3qJbcYLFkcEt5vd6qO3HUD67iOmq0OJY1ddKK9rR/HgPKuasi5B5U6ul
-         WMh2vYyPlaAp5safp+h7wJMhk8iQHvJSfXQR2swKQh/NWsnM92K+3XbgMpnwIGhpTBK0
-         bMtH3qfpqi94nsT5aIMmYL6vYwsVoJDljMtK+cdTRmpuAk633VLsx15uhqsJlEmGRvQ7
-         j0G7c83olt+CWhFFZTLjBViTjlcz4yT+OUgH2fw9uQvYAls/OnE5OcUIODoFGt5AvSiY
-         kaIg==
-X-Forwarded-Encrypted: i=1; AKwUvByV/q2ULTdpCS6uv1wFQxtk6lF5CWZcQnPmeA6hsr6qeaEJlbnukyrv/gMF+CrWGqadFJ751n//Ynw=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLHld28ae/cMN33YR4cXnqZY2bm965Cjwrr5uXRAowja/vjgsQK
-	GokR5UFNbM3PaEyb7+o3g7ONC+wunaNN8/WOuDRxo30TPaHd+nQ3B1NT
-X-Gm-Gg: AYBFou0EW6nJwhw9BT+Z7vZglrwcuStvcQpK8FoX5XVw8GZwPX3ORnebLNeBa436gaK
-	QySTmSvuIila9ALfbS+wCQKNtUHXCcLDIssG1Bu9EQbUe4mAYmMUrYkxiT26uBRDVvKM1eiIO0t
-	XJVfSmgKRZ4GGVxZbUOB56SYbHsrwJvmvIImB4rrM6IesTkxeGHec7SToMb8e/SV8DMQXx6k1mX
-	doW++68lTGQZRtIA6S4OT+ZSkHG30YDTOL6rlRgdgX3dNjbbrAaNyFclqC0r+bFB2dWVjtdB/7C
-	EwzEf35OEKjtCq1wqSuxp9Zpm+MeyuQvvcpBkLEykSx/HQR+e8jobTrNNTNQI5sUml1evku8SC3
-	ZyqsQsSUwUCR76TixPBwSDlhT3WZwcGwsZ2//Z7D7M0xKNOZUXsimfgOM5z+fecvN6R6MyqeNU3
-	zZAaWCZ411STqYFJxz/5OU1jwKo3haj70F8BsJQMQOfBkhuvKxZB0MRUQZjeSSZYk2v4wwRJ1Ht
-	3enP3ieCjbeQ/xhVLLVoBocK1yoJPMFmKAOgAdlsI0XLQFM4k08tk1Uj9jlbOov9gEbzWhXafvh
-	uN4YLn/iPCLM0uvEWoBVN+7tkjv4oZnFXzJ4YIsMqg+iW0Fawzki9prdRdGA8lTrF76c5N6Rew=
-	=
-X-Received: by 2002:a05:6102:508d:b0:7b4:879c:bb76 with SMTP id ada2fe7eead31-7d03a4c76camr507860137.21.1793155199338;
-        Tue, 27 Oct 2026 19:39:59 -0700 (PDT)
-Received: from stephan-Inspiron-15-3520.. ([2804:5d20:6009:6701:4df:52dc:4559:394e])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7cea397a24asm4467382137.1.2026.10.27.19.39.55
+        d=1e100.net; s=20260707; t=1793156390; x=1793761190;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=zmhLt1fcIW49TsxftipVDOrL5MaEf1i51ozTS3vuQE0=;
+        b=lbkMopdTp7PyGB/3KDgcEz6Tw+B9KUQjDdABQQgfQR0JBQqVO6FAChpWGcIf9DmawM
+         b2J+nxf/1KpvUiFmkQV+Dr/ZV82Cc0UjjdSlFnye8j6+7g0b2mmE8s47lITnRVqvqrw8
+         /YiKSyILc7VQ0MpldzJL3oMI9QBRDEH7VlyhrcbxUA1Y2C5KFZ7oJcoXqVPg+AeTXuRv
+         vsyIiLIhenUuGzpg6ty8wivdT9CF/iDoRA6nLZuSMhlO3KdVy2pcZrmN+Ife74KzJlPM
+         ZbuXLyFALVVQE7nczyZZSaCecoQgkb7s+w6CT27wQYorz6ZodJ4rBBprX2uXqlvYeUxe
+         LpVw==
+X-Gm-Message-State: AFq9FYLIxLn/TyFAHV/Tdqz4UGPZ+xAycBy5HCFzWdCkuDI+7/9lP/E2
+	540SBVfR8Cb4W2LOUpgLGd/zkJD3TXbc0SUfJ7bq9RzHOoMtCzg7EHzM
+X-Gm-Gg: AYBFou3w70E1M2Eye5GHVh893u+jf07CpuNTUgFu2yyi40ubunBSkFZEOfttXAaOXcD
+	joul1WYToePizNMUbu5Dzr7Gi1a+4yyoWgU8BkYOHWX3o6GaT7VowC/6kS6d1V4A6jW7bDEHWeP
+	+SvxoM8j2Ma2P9ZMwY1KujCGlaCt1LEuLIh0HgWOXTtL5GrqAdZVIYc+1z1GTmTvpcASxE+EjY1
+	OKQTqVKKk9EcuhWg/UYqlN6INSJtY7BebWFax7SbSFMZCytQ5cAdoRAmSsKbWG5deZmRqLARWFI
+	8ylXfrQBPuWXdS4iP9eF71TTyrurpYDoCnBZhXTWj+BQ8n5oAwecIBTs9X0mrEQYuYMTlxwR94T
+	u6BXiAUZSAQIBSfDaglRBX8O1HosRIYQtcgDfX2o3avlFO9oW3hXVtnbka/8l/OIaS5ME5mUjWJ
+	jMXZqPUcGbkES/Pqspg8CoqI0HYVC54ou9CqAPZt30EBVhxGC7vtBBBCkUANMAAG5/iTzw3nu6S
+	icsK3c/jMmv+09mIeKWVGaneAiIgn1PfrKH5rnNYa2bZm4RW5avAlq6bSb7u9PKGsQF2LWanJVK
+	tGj+IjwyO6/RwW/COPVQSi/wcbk=
+X-Received: by 2002:a05:7300:c88:b0:369:eec1:1d7e with SMTP id 5a478bee46e88-36a2011245fmr2678360eec.11.1793156389380;
+        Tue, 27 Oct 2026 19:59:49 -0700 (PDT)
+Received: from [127.0.1.1] ([2406:da16:4ab:8700:3d3b:2065:9087:3429])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a237bddb7sm1377850eec.3.2026.10.27.19.59.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2026 19:39:58 -0700 (PDT)
-From: Stephan Costa Barros <stephanbrrs8@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Mike Looijmans <mike.looijmans@topic.nl>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] iio: adc: ti-ads1298: fix the data read path
-Date: Tue, 27 Oct 2026 23:39:51 -0300
-Message-ID: <20261028023951.33149-1-stephanbrrs8@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <at5jL47A-6vQJYOX@ashevche-desk.local>
-References: <20261024231335.280955-1-stephanbrrs8@gmail.com> <20261024231335.280955-2-stephanbrrs8@gmail.com> <at5jL47A-6vQJYOX@ashevche-desk.local>
+        Tue, 27 Oct 2026 19:59:49 -0700 (PDT)
+From: Liu Yufei <lyf98405@gmail.com>
+Date: Wed, 28 Oct 2026 10:59:26 +0800
+Subject: [PATCH] iio: imu: bmi270: fix zero timestamp in triggered buffer
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,58 +90,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261028-bmi270-fix-timestamp-v1-1-99c0e5fe7d0c@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAA1l4WoC/yXMSwqEMBBF0a1IjS1IgvjprYiDREuthqikogji3
+ ju2wwPv3QuEApPAJ7sg0MHC65Kg8wz62S4TIQ/JYJQptTI1Os+mUjjyiZE9SbR+w6K2uilc2Qx
+ OQ7pugdLgn22717K7L/XxacF9/wCHtErLeAAAAA==
+X-Change-ID: 20261028-bmi270-fix-timestamp-48a194b69db1
+To: Alex Lanzano <lanzano.alex@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Gustavo Silva <gustavograzs@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
+ Liu Yufei <lyf98405@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793156377; l=2048;
+ i=lyf98405@gmail.com; s=20261028; h=from:subject:message-id;
+ bh=A/1srCpfd1UGOdpJgwH+wipqcVfWHT5hKzmppz1xS28=;
+ b=zes8qii00NcuE45PPu4stJ4xIYMjnHPkeaU4SW86Z6Tts6kgcxp+jNZYZKP+DQD8HFWvEzC4v
+ ZVUz4JILlhbAuqBUFmVzhyVSvWcFzX6BPQDuPVG3/de4T6fhpBDmLe2
+X-Developer-Key: i=lyf98405@gmail.com; a=ed25519;
+ pk=lc+pS6pGKgsSIrWd9Plh5gs4dnZRQT6qkyv+hvAy7hs=
 
-On Sun, Oct 25, 2026 at 10:14:39PM +0200, Andy Shevchenko wrote:
-> > +	/* Only changes while no transfer is in flight */
-> > +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
-> > +		buffered = priv->buffered;
->
-> Strictly speaking you need to assign buffered to make any compiler not being
-> confused by the scoped_guard(), which cases IIRC we used to have the past.
+When the device's own data ready trigger is used, the trigger is
+polled with iio_trigger_poll_nested() from the threaded IRQ handler.
+In that path the pollfunc top half, iio_pollfunc_store_time(), is
+never run, so pf->timestamp is left at zero and every sample pushed
+to the buffer carries a zero timestamp.
 
-OK, I'll initialise it.
+Take the timestamp in the trigger handler itself and drop the top
+half, so that a valid timestamp is provided for all triggers.
 
-> > +	ret = ads1298_write_cmd(priv, ADS1298_CMD_START);
-> > +	if (ret) {
-> > +		scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
-> > +			priv->buffered = false;
-> > +	}
-> > +
-> > +	return ret;
->
-> Before write_cmd is called the buffered might have been triggered. Is it okay?
+Fixes: a1854d55f54b ("iio: imu: bmi270: add support for data ready interrupt trigger")
+Cc: stable@vger.kernel.org
+Signed-off-by: Liu Yufei <lyf98405@gmail.com>
+---
+ drivers/iio/imu/bmi270/bmi270_core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Yes, and on purpose. By postenable the core has set up the scan mask and
-the buffer, so a sample arriving before START is pushed like any other.
-The chip does not convert before START anyway, unless its START pin is
-tied high. The other order is the problem: a DRDY between START and
-setting the flag would be taken as a single-shot read.
+diff --git a/drivers/iio/imu/bmi270/bmi270_core.c b/drivers/iio/imu/bmi270/bmi270_core.c
+index fbcf6bb87acc..40ed1ee5ac58 100644
+--- a/drivers/iio/imu/bmi270/bmi270_core.c
++++ b/drivers/iio/imu/bmi270/bmi270_core.c
+@@ -840,6 +840,7 @@ static irqreturn_t bmi270_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct bmi270_data *data = iio_priv(indio_dev);
++	s64 timestamp = iio_get_time_ns(indio_dev);
+ 	int ret;
+ 
+ 	guard(mutex)(&data->mutex);
+@@ -852,7 +853,7 @@ static irqreturn_t bmi270_trigger_handler(int irq, void *p)
+ 		goto done;
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
+-					   pf->timestamp);
++					   timestamp);
+ done:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	return IRQ_HANDLED;
+@@ -1630,8 +1631,7 @@ int bmi270_core_probe(struct device *dev, struct regmap *regmap,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+-					      iio_pollfunc_store_time,
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+ 					      bmi270_trigger_handler, NULL);
+ 	if (ret)
+ 		return ret;
 
-> > +	scoped_guard(spinlock_irqsave, &priv->irq_busy_lock)
-> > +		priv->buffered = false;
-> > +
-> > +	return ret ?: ret2;
-> >  }
->
-> The code lacks of comments on why in all error cases (either first one, or
-> second, or both are triggered) it's fine to continue. And what will be the
-> meaning of the returned value in all three cases?
+---
+base-commit: 09f742b49cb2728086d78be2b0b35e4d1d71fc85
+change-id: 20261028-bmi270-fix-timestamp-48a194b69db1
 
-The core goes on with the teardown whatever predisable returns
-(iio_disable_buffers() says so), so the driver must stop using the scan
-in every case. The return value only reaches whoever wrote to
-buffer/enable, and it is the first error.
+Best regards,
+--  
+Liu Yufei <lyf98405@gmail.com>
 
-If STOP fails, the chip may keep converting, but once the flag is clear
-the completions leave the scan alone. In v2 the flag was cleared only
-after the wait, which was wrong, v3 clears it right after STOP. If the 
-wait times out, a completion that already saw the flag set could still 
-be pushing. The SPI core completes every message, so I'm inclined to 
-wait without a limit there, as on unbind, and return only the STOP error.
-
-I'll put that in a comment. Jonathan asked to rework this part, so the
-code may change, but the explanation stays.
-
-Thanks,
-Stephan
