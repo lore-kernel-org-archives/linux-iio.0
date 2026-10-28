@@ -1,78 +1,80 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793226269;
-	b=aghd4zOLCpL+5KyObj7YYAyIGnsoX0cFqUfewctqhnsCj1xaZg7/oVqBhb+aGhyhOtf9
-	 gJGNt73zPCgKXcoq4LGsQV0DRevb6jkqdcOR/HN7ArrbMxE6gzSXoJhmw05oC7ci+Kas2
-	 IS/X3huTCqN9qgSu60do5Hcu2uYhPhSW8PXsFDLw5CU+J0Lt9C2c25rnWZxbFTv06E4ub
-	 2HEMorPJVZrpt/cHxKZXsZvjQ5GbSyHI58Z1BLPPY3WMfiWpXL0ptUwlH/6Q4IL6B4ryY
-	 EWm+098by0m/Yr1Nnnmxu1/AmdWiwoeAyta78Nx2mpxc5zTjg0EYV91EuaQWkwN/deA==
+	b=VbCqwXgkT4X1vhpYdQ2+akRHOhFu5LMmyPUSZKluGAnTmK4fR5Jj+mBIkOJP54viW0km
+	 jZAl32NXJM77C2dNoKJR3f8hZpT15U7MES1jSJJ8aahyIikSgJdCMvVpvBObRfI1t8OeJ
+	 Tev4iCMTbuxfxBY0uf4WyPgwE621zkVqvi/RCDChBKbauOFXh8Pxel+YijZn8YYZf2hvJ
+	 tbolcPLHChoE4UBZXD21/lp0s9ALPEY62YNxe+1nsDa7XnLZBcuFryQogMSjyg9X8TaDx
+	 tuwMrVQORbocTN679gWLyi9BX2rzgrstSI92gJseI4h9qJVsu3hL8FgyiJoJxWA19bQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793226269;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=jj8IIGFLEiUloe5ADfWrgSQMIReGe1WkFbLKic5cw30=;
-	b=DIc6wDXlRXkUaAtMqYn2G/0rrThQKYegBuMZ9py+NTIm9TRbxCHVdCXU1knKEz+kNAoO
-	 SeHFXfkkX32sNr+LWZFdmZxdj6+MfoH67ttB4zWRLblxrxpookbo4RJXOGfPstWRpXxcd
-	 0XptXfida6OI5Te5J74V+5FHWGVA2kGQaIe6cvdyYxQuwB4+OYsCgBoJGH35v9e1W0nFU
-	 per+7xaHtK7mk2AYg4CYN5BHNVfADWzyscdEum2F1BiZEDOKdmBNgLYU06+8hwOzfIyyj
-	 vaBzmxEMaya8wxE2M8GVYgFOh6gfeMJC0NhqrnowS8dfkSDxTEoJBRuhBQHZ9NX1xDA==
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=FOjUM1QU/65yJdqKRUJpV2huVdJI9vszG3TaDRFuNvI=;
+	b=s/zE0UuzqC/R4EHn6jQ0HnjB4kmSYVKt098zXD6NTgOmS69Pk3ttvO3N3rbL/T5vdYKt
+	 rjGxnxWhry/3PdgWLQPcsJMwVZbAEY4kewO3eRwL51IgLhDrCGf9hBX4R5PKNuhpyWGuC
+	 ia6eMj5Jzlemnru59yGuwHcgGbNxnUEtuBGRfqvD2U55i0IEtmjTUzJR6FcDChG4RfXNy
+	 NJXaUrCA5oMXz757oiS5XtFd92DeTotH+pxBoJIEqX+OKU1OEQfbsHuzCFvUL/eDoXsFf
+	 5GFTFhdb8yE91xeOQJHB9px/49uTAc7TaetDiKCcm7/GE94d30UagYIGIfE3c9pBtfA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K7xum04W;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EsiGnW4k;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F0A606A320;
-	Wed, 28 Oct 2026 22:24:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11454606A321;
+	Wed, 28 Oct 2026 22:24:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K7xum04W
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EsiGnW4k
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
 	t=1793226268;
-	b=JboHPPhS/MGvtQBovEbiV0Gu82SEHOZvALA53C5sU00s59t3IsbXxB9Ft2ULdLnkp/40
-	 ihWuyRbzt7hFelF76VBbhH48ceA7YbHGCXxOiOcJDjCf69c2Xk9TXmfCzh4SRjNyvR7Cy
-	 NINpTeCr6PMtd5IeF2sp0IUEgSbGsqczltaGExMeXxmFeTL/pzRHVPikMan0Fazxsv9rY
-	 6EMk3C61kFjNfqqibkM0LT8KXg/Ad3C75sNDbYPgaE7visdaDR9ViTfu3rulv5YTgqa5u
-	 tBuCrJm6zGCPSjnbxThzN/AAaHk1pN98pozjjJlH/C6EUKVvQp0tm0gfl41pc/onbwA==
+	b=WTRtpCTw/LxEL+JU5wVreE35/XApqogNpLtohjBdVUmYNouVBtdkFuFO8ZYWx9hy2ZaH
+	 RCJrPhPioKTOl1t7IZkshZ6PJtyFZLb+EU9G88iVkzSuDWAfHz2ilVgDvu+pJtmSDchcd
+	 TgIuKbHJKqwLLbzpJxzVhHill5pZfD9nZzBliJLdajBuXGzg64+OLj6CHjeBUrvnx1t+e
+	 4sXqaE/r1df546lGzxy+kBqSQ7Cl4NeBC/ltIKFKL1bVf5b0MAPTjNvFMdim1gDbi13rO
+	 evl19rcaX1NfC+18sstamyZ6HPJEjMgqmPKvIrR4wQFClWTDU570Ffza/4nB/Doe9Nw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
 	c=relaxed/relaxed; t=1793226268;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=jj8IIGFLEiUloe5ADfWrgSQMIReGe1WkFbLKic5cw30=;
-	b=lYpiblZfvuyfn4sSjkUEjVe+7BDGoUIAw+smKoOtBa6N+b5x0nSdigC7Vnq4FQV7ivUM
-	 5YIFiclLTyf/pUV3JrkjWOb9XDmaY1pqDxQIs3jQE069krXRHMvvxlhTPXModv7PONxcx
-	 KNIcvH1cR+aRsg4mctExDCLL3NA4h8YzEUuVUMgkmGgLQGi0GEoycxN3eH6DoKX3n4tHh
-	 ScjYeJ4H/curkx2puhaV0GWYoP8Oq856/WK1D0RFVUPlDsI55zW3SqW8Fe+0yIP9m7nwa
-	 pvCKrQ0+zFju/r4EjFRjD6bw4elGqjpCGmXjz2cm3kvfNpcq7OH9bRwGddG8HS+un1A==
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=FOjUM1QU/65yJdqKRUJpV2huVdJI9vszG3TaDRFuNvI=;
+	b=r+iRkpbEbceK1Vo1VV2FEh40bxqntUxbLWt0DejenEAMoxf6K7CkSSWPLdoHikf/H9al
+	 o4Y/+xQjYCO4wYj4IgIDJNANbU7TI+ysUuYxb57VhowSemy1+KSsgYv4N2NqYPTOT558C
+	 SOmZfdaOy8M29tYY62RKc6NgYut4quL9hA75UaJyjQ8a6k8SjMmm1DrZkQ7MCVPplXef5
+	 W4chaxdezMURIlTGhv/iWmfgu0HgRsrhnHck9ealD5kvf4H/T3u3B2cAzckzzn0fv1uT7
+	 8P5F6hW7amtWDq3gkOaitewFKyq2jl83130e6qROOrxwF2PTIXOigFwfKEJADEsI4+Q==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 2A8251F031E4;
+	by smtp.kernel.org (Postfix) with ESMTPS id 209851F031E3;
 	Wed, 28 Oct 2026 22:24:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1793226268;
-	bh=jj8IIGFLEiUloe5ADfWrgSQMIReGe1WkFbLKic5cw30=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=K7xum04W2mWSX8PtW5MtF2mW/Yb9uwhjysV/gfUCvwfjKiSvpqJiBP/lYV5CCmYEi
-	 zie383XY2vNgD3KtqTaOr8mMGyZWQhyBh8dy0LTjwFa3XumNQGV9XECGYJBIg0Emzw
-	 S/d6XhqrIZBt3kgEmajMtLJqC921inaI/GmvTdLoShH2NbO8bswvHCqoVCPKSjaD9X
-	 CNgYY5Sxory8AOEN3Upm05B8AvlZCP8Zqp5nIrNFnVQcu6LDmLNQs35jB/L1JQy8b9
-	 BCgCmcTNlugSDJfii5BYrQ8CGC6TVT7/m7pU9C2DJ2yUXPV7wN3lUAbpSV2JSGXeCv
-	 PomSHWjDRjonQ==
+	bh=FOjUM1QU/65yJdqKRUJpV2huVdJI9vszG3TaDRFuNvI=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=EsiGnW4kCfzwsRYQWArZpz0X9Zm9LKuQ0tVrMXUQR69CVK6xqpIxU0jND3ciWfkwu
+	 UEl9fPz9wp8JeWarsZwIeGkRBOBXxzh0UYHjvmdPfzx+B2B2JAbMXWvrEpxSWKhnFd
+	 YG8xqn1mVQAAgYDInRHweJ9C/Lia9S5lS4AGjJFZ0CSQ00xFVP7TC5JJZuZS2D/RcI
+	 R/OiVW+5q/zIywYJm/+C1nvXm7ZtLp1281ScBpBz3GK2R+aIrk3wkA3PWM2okQhXv6
+	 gzNf8R5mK5ANUJEKgYIhjJBtOSut2ntlKBzEOIxHKx3bpE0cBNuQtW3MvsmIPqtGN8
+	 H/so/QZxQ/Vqw==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id AB711455EE;
+	by lkml.kernel.org (Postfix) with ESMTP id 75980455D7;
 	Wed, 28 Oct 2026 22:24:26 +0000 (UTC)
 From: Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel.org>
-Date: Thu, 29 Oct 2026 00:24:29 +0200
-Subject: [PATCH v3 4/4] iio: adc: ltc2497: add LTC2493 support
+Subject: [PATCH v3 0/4] iio: adc: ltc2497: add LTC2493 support and
+ line-frequency rejection
+Date: Thu, 29 Oct 2026 00:24:25 +0200
+Message-Id: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,9 +85,12 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261029-submission-ltc2493-support-v1-v3-4-c7dd5f877c3b@analog.com>
-References: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
-In-Reply-To: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIABl24moC/43OQQ7CIBAF0Ks0rMXAFNviynsYFxSwxbSlASSap
+ ncX6kZXmszmT37ezIK8dkZ7dCwW5HQ03tgphXJXINmLqdPYqJQREKgoIRz7ezsan2t4CBIYL9N
+ qnq0LOFLcVIxxrTQrQaFkzE5fzWPzz5d3TsBNy5DR3OiND9Y9twcizb1/b6UhuFRCUcVaegBxE
+ pMYbLeXdkT5WIQPDuAXB5njVHHSKGjq+otb1/UFngVSSiwBAAA=
+X-Change-ID: 20261009-submission-ltc2493-support-v1-86449ede432d
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
@@ -95,143 +100,88 @@ To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Joshua Crofts <joshua.crofts1@gmail.com>
 Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, 
- Andrei Stancovici <andrei.stancovici@analog.com>
+ Andrei Stancovici <andrei.stancovici@analog.com>, 
+ Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793226265; l=4895;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793226265; l=3174;
  i=andrei.stancovici@analog.com; s=20261009; h=from:subject:message-id;
- bh=HMOt8+O4iAcZt1O9Bo/3/1otGda9wp6zawFttSIvbBk=;
- b=KHB0M1q9DcYZ4AxeEKHIHs5tI5yISDR1/tozj+Xj20g2+1ZmupYvl4Jl8NgD4XcGcC6XHipLw
- QaZS66PuSQICVgArQiWLXObVmVuT1+cPrCGnlxvhZNYdA9hk/1QnGJO
+ bh=1eElcDBdYH6U/ku61R6dLZL+jxyUrre0O5/3HdquLhs=;
+ b=yEFSNN9D24qKQqM56ZbWt8NYT5yfncSvbb2L3PTHannAmja4yUc/CCeEHsPfk1ItZwoHa6w5p
+ YHzLTQxydd9AhzvDp858mrV5p4ZXE+Y+Uoxvvva8EJa6tn5/RZDGcfZ
 X-Developer-Key: i=andrei.stancovici@analog.com; a=ed25519;
  pk=wgT+au+blAhVYxhwNgdx0woNl/1p+OCG484rnTRFrsE=
 X-Endpoint-Received: by B4 Relay for andrei.stancovici@analog.com/20261009
  with auth_id=1140
 X-Original-From: Andrei Stancovici <andrei.stancovici@analog.com>
 Reply-To: andrei.stancovici@analog.com
-Content-Transfer-Encoding: 8bit
 
-From: Andrei Stancovici <andrei.stancovici@analog.com>
+This series adds LTC2493 support to the ltc2497 driver, and adds FA/FB
+line-frequency rejection for the LTC2499 and the LTC2493.
 
-The LTC2493 is the 4-channel member of the LTC2499 family: 4 single-ended
-inputs or 2 differential pairs, 24-bit result, and the same command
-format, internal PTAT temperature sensor, 2x speed mode and line-frequency
-rejection as the LTC2499.
+It includes:
+- the LTC2493 device-tree binding,
+- FA/FB line-frequency rejection (50Hz, 60Hz, or both) exposed via
+  filter_mode, implemented in the core and enabled for the LTC2499,
+- a preparatory refactor giving each supported channel layout a channel
+  set in the core, referenced directly from chip_info,
+- LTC2493 support in the driver: 4 single-ended inputs or 2 differential
+  pairs, 24-bit result, same command format as the LTC2499, the internal
+  PTAT temperature channel, the 2x conversion speed mode exposed via
+  sampling_frequency, and the same rejection selection.
 
-Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2493fe.pdf
+The rejection patch also adjusts the conversion wait time for each
+rejection mode. The 50Hz-only mode takes up to 163.5 ms at 1x, while the
+previous fixed 150 ms delay only covered the default 50/60Hz mode.
+
+Validated on a Raspberry Pi 4 running 7.3.0-rc4, over an IIO network
+backend, with a DC1010A-A board (LTC2493), a DC1012A-A board (LTC2499)
+and an LTC2497:
+- LTC2493: 41/41 hardware tests passed,
+- LTC2499: 36/36 hardware tests passed,
+- LTC2497: 24/24 hardware tests passed,
+- all LTC2493 rejection x speed combinations were exercised without
+  conversion or I2C errors.
+
+LTC2496 was build-tested only because no LTC2496 hardware was available.
+
+The source in this series matches the hardware-tested tree.
+
 Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
-
 ---
 Changes in v3:
-- The channel-set mechanism moved to the preceding patch, so this one
-  adds only the LTC2493: its channel table and channel set, its
-  chip_info entry, and the I2C and OF identifiers. No chip_info entry of
-  an already supported part is touched (Nuno Sá).
-- The LTC2493 channel table is defined once, for the speed-mode layout
-  the part actually uses; v2 also generated a second variant that
-  nothing selected.
-- Revalidated on hardware with the full series applied: LTC2493 41/41,
-  LTC2499 36/36, LTC2497 24/24.
+- The channel-set selection moved into a preparatory patch, so the patch
+  adding the LTC2493 no longer touches the chip_info of the parts
+  already supported (Nuno Sá).
+- chip_info now references a per-device channel set directly. The
+  num_inputs field and the keyed lookup it was matched against in probe
+  are both gone (Nuno Sá).
+- The LTC2493 patch is reduced to the device-specific additions.
+- The binding and FA/FB patches are unchanged. Nuno Sá's Reviewed-by is
+  added to the FA/FB patch.
+- Behaviour revalidated on hardware on all three parts; see the
+  validation summary above.
+- Per-patch changelogs are under the --- of each patch.
+- Link to v2: https://patch.msgid.link/20261022-submission-ltc2493-support-v1-v2-0-391d908d2877@analog.com
+
 ---
- drivers/iio/adc/ltc2497-core.c | 20 ++++++++++++++++++++
- drivers/iio/adc/ltc2497.c      | 11 +++++++++++
- drivers/iio/adc/ltc2497.h      |  1 +
- 3 files changed, 32 insertions(+)
+Andrei Stancovici (4):
+      dt-bindings: iio: adc: lltc,ltc2497: add LTC2493 support
+      iio: adc: ltc2497: add FA/FB line-frequency rejection selection
+      iio: adc: ltc2497: select the channel set per device
+      iio: adc: ltc2497: add LTC2493 support
 
-diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
-index 576a7c0a0f9b..6659f848256c 100644
---- a/drivers/iio/adc/ltc2497-core.c
-+++ b/drivers/iio/adc/ltc2497-core.c
-@@ -420,6 +420,20 @@ static const struct iio_chan_spec _name[] = {                           \
- LTC2497_DEFINE_CHANNELS(ltc2497core_channel, 0);
- LTC2497_DEFINE_CHANNELS(ltc2497core_channel_samp_freq, BIT(IIO_CHAN_INFO_SAMP_FREQ));
- 
-+static const struct iio_chan_spec ltc2493_channel[] = {
-+	LTC2497_CHAN(0, LTC2497_SGL, "CH0", BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN(1, LTC2497_SGL, "CH1", BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN(2, LTC2497_SGL, "CH2", BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN(3, LTC2497_SGL, "CH3", BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN_DIFF(0, LTC2497_DIFF, BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN_DIFF(1, LTC2497_DIFF, BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN_DIFF(0, LTC2497_DIFF | LTC2497_SIGN,
-+			  BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_CHAN_DIFF(1, LTC2497_DIFF | LTC2497_SIGN,
-+			  BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	LTC2497_TEMP_CHANNEL,
-+};
-+
- /*
-  * The temperature channel is the last entry of each table, so a part without
-  * the sensor stops one short of it.
-@@ -436,6 +450,12 @@ const struct ltc2497_channel_set ltc2497_chanset_ltc2499 = {
- };
- EXPORT_SYMBOL_NS_GPL(ltc2497_chanset_ltc2499, "LTC2497");
- 
-+const struct ltc2497_channel_set ltc2497_chanset_ltc2493 = {
-+	.channels	= ltc2493_channel,
-+	.num_channels	= ARRAY_SIZE(ltc2493_channel),
-+};
-+EXPORT_SYMBOL_NS_GPL(ltc2497_chanset_ltc2493, "LTC2497");
-+
- static const struct iio_info ltc2497core_info = {
- 	.read_raw = ltc2497core_read_raw,
- 	.read_avail = ltc2497core_read_avail,
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index 984f15eb06f6..3bbb6d91d41c 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -19,6 +19,7 @@
- #include "ltc2497.h"
- 
- enum ltc2497_chip_type {
-+	TYPE_LTC2493,
- 	TYPE_LTC2497,
- 	TYPE_LTC2499,
- };
-@@ -173,6 +174,14 @@ static void ltc2497_remove(struct i2c_client *client)
- }
- 
- static const struct ltc2497_chip_info ltc2497_info[] = {
-+	[TYPE_LTC2493] = {
-+		.resolution = 24,
-+		.name = "ltc2493",
-+		.channel_set = &ltc2497_chanset_ltc2493,
-+		.has_temp = true,
-+		.has_speed_mode = true,
-+		.has_rejection_mode = true,
-+	},
- 	[TYPE_LTC2497] = {
- 		.resolution = 16,
- 		.name = NULL,
-@@ -189,6 +198,7 @@ static const struct ltc2497_chip_info ltc2497_info[] = {
- };
- 
- static const struct i2c_device_id ltc2497_id[] = {
-+	{ .name = "ltc2493", .driver_data = (kernel_ulong_t)&ltc2497_info[TYPE_LTC2493] },
- 	{ .name = "ltc2497", .driver_data = (kernel_ulong_t)&ltc2497_info[TYPE_LTC2497] },
- 	{ .name = "ltc2499", .driver_data = (kernel_ulong_t)&ltc2497_info[TYPE_LTC2499] },
- 	{ }
-@@ -196,6 +206,7 @@ static const struct i2c_device_id ltc2497_id[] = {
- MODULE_DEVICE_TABLE(i2c, ltc2497_id);
- 
- static const struct of_device_id ltc2497_of_match[] = {
-+	{ .compatible = "lltc,ltc2493", .data = &ltc2497_info[TYPE_LTC2493] },
- 	{ .compatible = "lltc,ltc2497", .data = &ltc2497_info[TYPE_LTC2497] },
- 	{ .compatible = "lltc,ltc2499", .data = &ltc2497_info[TYPE_LTC2499] },
- 	{ }
-diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-index 7335c6c0af84..8de35df74f28 100644
---- a/drivers/iio/adc/ltc2497.h
-+++ b/drivers/iio/adc/ltc2497.h
-@@ -55,6 +55,7 @@ struct ltc2497_channel_set {
- 
- extern const struct ltc2497_channel_set ltc2497_chanset_ltc2497;
- extern const struct ltc2497_channel_set ltc2497_chanset_ltc2499;
-+extern const struct ltc2497_channel_set ltc2497_chanset_ltc2493;
- 
- struct ltc2497_chip_info {
- 	const char *name;
+ .../devicetree/bindings/iio/adc/lltc,ltc2497.yaml  |   7 +
+ drivers/iio/adc/ltc2496.c                          |   1 +
+ drivers/iio/adc/ltc2497-core.c                     | 208 ++++++++++++++++-----
+ drivers/iio/adc/ltc2497.c                          |  47 +++--
+ drivers/iio/adc/ltc2497.h                          |  44 ++++-
+ 5 files changed, 243 insertions(+), 64 deletions(-)
+---
+base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
+change-id: 20261009-submission-ltc2493-support-v1-86449ede432d
 
--- 
-2.43.0
+Best regards,
+--  
+Andrei Stancovici <andrei.stancovici@analog.com>
 
 
