@@ -1,88 +1,149 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793272828;
-	b=K7Y8BHEb1wc4ooC5Vrl8rurNXqz1AVqGafAM9Ws31ArMt9pJ5IMDeCdPv8paqgEN4UHV
-	 dXW5mm4P64GMGAJa1eGPNz6LJzRIsPzdtzcBkkkXtRn888wlVq7YmJcfsTiQDB2BiLG0W
-	 x2oQXO8fHHg1XaDWZe53FlI0JZjXjRouH/0poL9Fv6VXoeEHZRAjmkm3UPnSLdzloUgg2
-	 Ao6IaDb98pPW+uwLNtAcAzlGoPrVkOpWA6OvV8WmVowFMOJHwbbf4AChbjcLLMbfiriCz
-	 OCp4d+zle97pyUR6UxNWla1MES4CQSE7mtb0amUvLBjZKNu4JnuIKDvohuj5Y3p3i2g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793272828;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=HWr1SxRoSXUpgXKKNJoVMyu+qAI3Q0fzstEAk/1G7Uk=;
-	b=lRwM2DUjLBgFRUAzQKEuQP4gm7UwZh39/dLU97BaHeOkZ4Kc3TFq0wgQxD/1jHxf78OI
-	 FHSa65oHQd51iOn6SI4/HiwlMRQQfE3V6hA5jq0kay599mb1m/nWCGDl4Bu4ObSNVCxT9
-	 XLrwA+2QXoH2sdJkLtY7v7PwPoCWstoUiMy7aYuJSj89QAH16cWW8nfAbNL1J5GaZYJuh
-	 jEadrcf74EaPR23AfsrekX15K3NSzxQoIl5s5fuMSoh38hDhZiZ9avXTmpDLC6VcXbHkY
-	 V/hm8Zh5kvqQnyxs0BtzO6fxImChOQSbuhmrXg22R3dirYYwVKag3T58AWitUIvhQww==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Pf0+jnlU;
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=185.203.200.13
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793273032;
+	b=w6QBzIFMEW8tEdQ3aiWTG8yaRyNGM6fnKj0NBgCnhwEmCh8xTSdQpXPjCXdOp1AO0Rw3
+	 POpDSLoYh1v/fzaD5pqnbmyNajGZzpF23ZOG6Vijbx/iTpSI3ZI3GHZc1dWcmgdVD6446
+	 GfmCPa3tgiAUmc3nH8S0+gIaLxkHgceI0MXsYoGkl3v0S6+Fk9Xhyt/slTnvzR9+mww3l
+	 g4m8xJByhPCuxUp26rV6diMF8WmfYkP1TQBZzqowH+rBPluR1pRt3NIIi/uW56TH9mk3N
+	 x16rFwtx1ZdNRXiSlWE8k8mEvIJ/o3t52RONVxkaP2PbIHUcxZ00ECrdn8QY+g77UEw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793273032;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 User-Agent:MIME-Version;
+	bh=s4uscHTSNNyFgyqCTfvm7pgyQFz42LzvHFK7u0x0Cw0=;
+	b=PmWTb+KEy4cOaOjeBxs9dQ9UP32u+M6sWjiUE/ABOoBv0gmiIIMNhAe5EwXN38G8+puz
+	 5QNuNb7hKB4Njg7z+pvT/qVhnPv8kCt6nXIjo0FEEOtfqh2zUtfKq8FzjBnDcRZehryn1
+	 iFZBNEel6cv6bO1VCl/lU0mDrEAURzQKlBUdApQWbnicQMlvIlJ9gJ3zeuWh1F0CZRXz4
+	 OZoYiCn9ugXsxtb8oKdHe1L77dXFCO1plwXoxsbh9lt5FTzDheP9XmHfTieuGAe4FHfFb
+	 KuJAE37azJwpbfOy4wkemGj02JZ7UijkeO+FrN4meRDkF4g4x8/Kpxg8Ke+Sf3wiYMA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=none header.from=pengutronix.de;
+	spf=pass smtp.mailfrom=pengutronix.de;
+	dkim=pass header.d=pengutronix.de header.i=@pengutronix.de header.a=rsa-sha256 header.s=20260414 header.b=YhheDy8E;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=185.203.200.13
+Received: from mx1.white.stw.pengutronix.de (mx1.white.stw.pengutronix.de [185.203.200.13])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4BD4606A31C
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 11:20:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C4BD4606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7746606A31A;
+	Thu, 29 Oct 2026 11:23:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C7746606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Pf0+jnlU
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a9a8d6cea8so8283235e9.1
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 04:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793272826; x=1793877626; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HWr1SxRoSXUpgXKKNJoVMyu+qAI3Q0fzstEAk/1G7Uk=;
-        b=Pf0+jnlUONlj2VAi35lQK+uRzr7kbgX9ldnEV/NSIsg+SKnM5FqDBuIuB6exfW+74k
-         vgsUqhpIQNrGDXg8WrHq6j48D750X8T2xOSL/XjZTr4/vK4BHI9DRrf8qHZSNOzPEQg0
-         UNqDM0fIHvJxfMzKPG9ol9ZyUr4FvqNkLA+nURZmEju0xBMkz2bKcMRIdzc10y3Owg8q
-         20MZ55dtmpbIsO6kqIHqc9jcQ1zP4mqKfI1cI+fzQ/L0yiMD31GPXO/ZXuAoDvt3f9kO
-         d0aPAJchToVRAO2hN61RNxAbJg6GO8sMn/wHHpQtstkNaG1RiAvNcRBUeBzMdH1dOweD
-         T/6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793272826; x=1793877626;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HWr1SxRoSXUpgXKKNJoVMyu+qAI3Q0fzstEAk/1G7Uk=;
-        b=zlgIBqiQd5bl/K7obQavJt0mj6ihxBE1y/Rovp6Au/s0yissT63T3x7Ns5ir0XdUXP
-         Vg4BoRC8FVjw27gZBeAqfTYk5El1jv6+Ra5Qw0ecMjATwm8bwxQz537cIqkylVJZcP2H
-         +nwJNJlXu3hnYhEa7fvRKG/bbcghuue+A/t/JKn5dgfgECX8zZndct6vhQMwgUPEycZB
-         3s6SXaxSn1i1E6seiI3LoJNp8ka96HBSvRXZWawja1YmDIgSpGMuwmj0Fy1DhX6WAjmc
-         D7oSghO6RTXbOPDFDB1ZjrnT9cDEkAr1tpUWJiud2y2NrJsUx3qNnSMCcDg7kWPpeMFf
-         W1qA==
-X-Forwarded-Encrypted: i=1; AKwUvBy/qQ00wIbWLI1cP9+eJVOAFuE1X4rIPKYrbuSoDcTwc18/ewJpNHLfdOzrbSNAvtmEgbM+B9MHotc=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIBF9a25s1KvqfFIxttnqN2oiB1baJswFMu6b588+Ruy1mQqO0a
-	p3MfKNTyGkAAj9BrjeyZz4l7fxX7o+sPcQ2g+54DRloqJQUXZTHdpuux
-X-Gm-Gg: AYBFou12vdTnLsBHjZ7d3wyuuTOT0EXuECqOLCUgly6rlIrw7KBtB6cI8j3ga3CJT+e
-	urjMsHbY9ilf7wgMddxcqzfu6hCeRK45loxkvhPNo7bQL5dSyJKk3W/sBKzX34GAmesxOS6OVQz
-	AC0AvDeVq/x1xJZFYHiHo3+kQXxydzIEfIyoxhqFMigNm9SnWcsFsragUGQYdiBGGj/ASzB+l9i
-	nY08B9xm7XqZ1jfMCqsxzqx/2K8z3p6idItklLkhZHMY4wHNAEAPW/v7WGEo8dcX9XAvF/4U1D4
-	TGqaQgTs/BzEpQvBWT1/soKuUII7WN1yBYmDwL43j5TX78D9a//CWsoM1pECqUMRJwApjbp5jUi
-	8+nDw1CjYHIKVlWFBGx6PEfz6qYqFJfl3YJLKtJAS8jgs9Qon/e+VN4iacrCWxIfj8NPwRbOxJa
-	z3x4Ht27PmnLxkV1YnWsux5vf4dSxT8SUfW6/HPhBEUwjFMjgPbc4557dP4cRxndwGGEfz9zB4h
-	RC2j5s8r65hKLx7DlvB48xfJmOvSo+H0Y7lmQ1PVN3wkf9ayAS3fdNQsmdzgwlf9Wlb4X6nEuxp
-	VgPLHUpXFgJzBvE4W75irffHOrrEI1QbIHTdIRMDL9Foda0=
-X-Received: by 2002:a05:600c:3144:b0:4a0:20b4:ba93 with SMTP id 5b1f17b1804b1-4aa8823df43mr54740705e9.16.1793272826044;
-        Thu, 29 Oct 2026 04:20:26 -0700 (PDT)
-Received: from [192.168.1.22] ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4ab61d8b9f4sm15790305e9.12.2026.10.29.04.20.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Oct 2026 04:20:25 -0700 (PDT)
-Message-ID: <533bca43-8de5-4295-b226-5ea3742871de@gmail.com>
-Date: Thu, 29 Oct 2026 12:20:24 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=pengutronix.de header.i=@pengutronix.de header.a=rsa-sha256 header.s=20260414 header.b=YhheDy8E
+Received: from [IPv6:::1] (ptz.office.stw.pengutronix.de [IPv6:2a0a:edc0:0:900:1d::77])
+	(Authenticated sender: lst@pengutronix.de)
+	by mx1.white.stw.pengutronix.de (Postfix) with ESMTPSA id 418BC2007F9;
+	Thu, 29 Oct 2026 12:23:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pengutronix.de;
+	s=20260414; t=1793273028;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=s4uscHTSNNyFgyqCTfvm7pgyQFz42LzvHFK7u0x0Cw0=;
+	b=YhheDy8EfCQv89DyrUXN/Yqh1aav8HKOaPDt4/Y3XFIPfM2HQZksNK1Q4J8Xiva3N9Z1Am
+	tkP2eX7Gmfxohg3zXmJeyevXeiaQVGhGYtgf5DW7WiXDKCn+YIxVKqJUBhnT18fBqcR9od
+	pNUOxHrNlb/aeBZqcMinomv32QEtNIj5iOvnDLzi8UenUwl35U/mEBFZgBoAEnX3k3vgMh
+	WQOKG6XE+gjRy2dunur160DUflwOCoaEEllxXNkae4RdWnLlHPVfWZgcVG5KwuGlYdMS4j
+	K8l8J5jfGgLMMk0a9E7oE+GBGvUkDtPQtpWfP+urJK7Rg8cIfoftFRGLPfWCxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=pengutronix.de;
+	s=20260414; t=1793273028;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=s4uscHTSNNyFgyqCTfvm7pgyQFz42LzvHFK7u0x0Cw0=;
+	b=YtyTqxntKVSuf0cXkpc84IWDjijQempbl/OM6z3jYncGCiwf/Ln99mK5+x8W0cyO9xO1gA
+	kZBUATT4teV385wTGMVEaT2ftHDv466XZMo/nCHJ+3VBjvaefh76HC4h6ZqGpVZBZzIif0
+	B0s67a7gzHS6sPKR61gN4QKr3LIKCsgfOapXu1CZ/XgwBY8WD5Dr2jHZMjCr5H6sThWMxU
+	MsRJbd3Mcfr33CLRmW8Bp3z2gPWqfmC5Y9O64Vqrjxd/mFXxtXsuyhRNEFalbt43sftG6G
+	xJ0leaBmncxO0k6VjKMNj5ycc2G3vyKocU53toT9hpLpEM+cmebxYVR8EEEN+Q==
+ARC-Authentication-Results: i=1;
+	ORIGINATING;
+	auth=pass smtp.auth=lst@pengutronix.de smtp.mailfrom=l.stach@pengutronix.de
+ARC-Seal: i=1; s=20260414; d=pengutronix.de; t=1793273028; a=rsa-sha256;
+	cv=none;
+	b=CMz7Ii0BbFpIf3JOy1xOkUy1/GalemR2HX7An2NH4NYYc7nV9uA9ia33/CLwhOM5TIZVCO
+	r5SjbN1jtUnItbnYc85Z8xd4yR28RKXjpQwR04UflRreGYa/mpCLkcKsFkvwIJI+HcAAQT
+	e6tyb0XkfNDiCGGfk7D6jVoenCj3H0aH4beZaCr4Eu2G+Ql31BsMOvYsHkb91GsL5HKzlk
+	3XcSZVASLqeWZ4KZWuMaxSYPs7oxi8oIKtwvZ2vU+4PLj3JdRq+wZ2/4S5M1ckb3lR6s7O
+	ZyHtIMqbdSoBMc5gGXlEKgsiCFaxc5lHEpetkI/HR6kfcn8G0LRnwE1RHAFQyQ==
+Message-ID: <d0610126883f23bec3472f41e528aae786f27c8c.camel@pengutronix.de>
+Subject: Re: [RFC PATCH 0/6] dma-buf: Phase out is_signaled() race
+From: Lucas Stach <l.stach@pengutronix.de>
+To: phasta@kernel.org, Min Ma <mamin506@gmail.com>, Lizhi Hou
+ <lizhi.hou@amd.com>,  Oded Gabbay <ogabbay@kernel.org>, "Rob Herring (Arm)"
+ <robh@kernel.org>, Tomeu Vizoso	 <tomeu@tomeuvizoso.net>, Karol Wachowski
+ <karol.wachowski@linux.intel.com>,  Andrzej Kacprowski
+ <andrzej.kacprowski@linux.intel.com>, Sumit Semwal
+ <sumit.semwal@linaro.org>, Christian =?ISO-8859-1?Q?K=F6nig?=	
+ <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Alex
+ Deucher <alexander.deucher@amd.com>, David Airlie <airlied@gmail.com>,
+ Simona Vetter	 <simona@ffwll.ch>, Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>,  Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Russell King	
+ <linux+etnaviv@armlinux.org.uk>, Christian Gmeiner
+ <christian.gmeiner@gmail.com>,  Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi
+ <rodrigo.vivi@intel.com>, Tvrtko Ursulin <tursulin@ursulin.net>, Alessio
+ Belle	 <alessio.belle@imgtec.com>, Luigi Santivetti
+ <luigi.santivetti@imgtec.com>,  Qiang Yu <yuq825@gmail.com>, Rob Clark
+ <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov	 <lumag@kernel.org>,
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang	
+ <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, Marijn Suijten	
+ <marijn.suijten@somainline.org>, Lyude Paul <lyude@redhat.com>, Danilo
+ Krummrich <dakr@kernel.org>, Boris Brezillon
+ <boris.brezillon@collabora.com>, Steven Price	 <steven.price@arm.com>,
+ =?ISO-8859-1?Q?Adri=E1n?= Larumbe	 <adrian.larumbe@collabora.com>, Liviu
+ Dudau <liviu.dudau@arm.com>, Dave Airlie	 <airlied@redhat.com>, Gerd
+ Hoffmann <kraxel@redhat.com>, Matthew Brost	 <matthew.brost@intel.com>,
+ Natalie Vock <nat@pixelcluster.dev>, Arun Pravin	
+ <arunpravin.paneerselvam@amd.com>, Matthew Auld <matthew.auld@intel.com>, 
+ Thomas =?ISO-8859-1?Q?Hellstr=F6m?=	 <thomas.hellstrom@linux.intel.com>,
+ Melissa Wen <mwen@igalia.com>,  =?ISO-8859-1?Q?Ma=EDra?= Canal	
+ <mcanal@igalia.com>, Dave Stevenson <dave.stevenson@raspberrypi.com>, 
+ Raspberry Pi Kernel Maintenance	 <kernel-list@raspberrypi.com>, Dmitry
+ Osipenko <dmitry.osipenko@collabora.com>,  Gurchetan Singh
+ <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>, Zack Rusin
+ <zack.rusin@broadcom.com>,  Broadcom internal kernel review list	
+ <bcm-kernel-feedback-list@broadcom.com>, Thierry Reding	
+ <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
+ Jonathan Cameron	 <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Greg Kroah-Hartman	
+ <gregkh@linuxfoundation.org>, Sunil Khatri <sunil.khatri@amd.com>, Kees
+ Cook	 <kees@kernel.org>, Jesse Zhang <jesse.zhang@amd.com>, Timur
+ =?ISO-8859-1?Q?Krist=F3f?=	 <timur.kristof@gmail.com>, Srinivasan Shanmugam
+ <srinivasan.shanmugam@amd.com>,  Kexin Sun <kexinsun@smail.nju.edu.cn>,
+ Prike Liang <Prike.Liang@amd.com>, David Rosca	 <david.rosca@amd.com>,
+ Krzysztof Karas <krzysztof.karas@intel.com>, Marco Crivellari
+ <marco.crivellari@suse.com>, Shixiong Ou <oushixiong@kylinos.cn>, Jouni
+ =?ISO-8859-1?Q?H=F6gander?=	 <jouni.hogander@intel.com>, Thadeu Lima de
+ Souza Cascardo <cascardo@igalia.com>,  Pierre-Eric Pelloux-Prayer
+ <pierre-eric.pelloux-prayer@amd.com>, Joel Fernandes
+ <joelagnelf@nvidia.com>, Al Viro <viro@zeniv.linux.org.uk>,  Neill Kapron
+ <nkapron@google.com>, Michael Bommarito <michael.bommarito@gmail.com>, Sam
+ Day <me@samcday.com>,  Gabriel Prostitis <prostitisgabriel@gmail.com>
+Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
+	linux-media@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
+	etnaviv@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+	imagination@lists.freedesktop.org, lima@lists.freedesktop.org, 
+	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
+	nouveau@lists.freedesktop.org, virtualization@lists.linux.dev, 
+	spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
+	linux-tegra@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-usb@vger.kernel.org
+Date: Thu, 29 Oct 2026 12:23:45 +0100
+In-Reply-To: <3565783722927fa48a30f48b063ef99bcd703eab.camel@mailbox.org>
+References: <20261029095542.1526750-3-phasta@kernel.org>
+		 <abca3f0039b07999e29558690c27fef23292bea3.camel@pengutronix.de>
+	 <3565783722927fa48a30f48b063ef99bcd703eab.camel@mailbox.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,70 +153,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/2] iio: light: add AS7343 multi-spectral sensor
- driver
-To: Chang Yu <marcus.yu.56@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Joshua Crofts
- <joshua.crofts1@gmail.com>, Shi Hao <i.shihao.999@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
-References: <20261029074851.216029-1-marcus.yu.56@gmail.com>
- <20261029074851.216029-3-marcus.yu.56@gmail.com>
-Content-Language: en-US
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-In-Reply-To: <20261029074851.216029-3-marcus.yu.56@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 
-On 10/29/26 8:48 AM, Chang Yu wrote:
-> Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
-> 
-> The AS7343 is a 14-channel spectral sensor featuring 11 visible
-> channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
-> flicker detection channel.
-> 
-> The driver exposes 12 spectral channels (11 visible light and 1
-> near-infrared) via sysfs. Runtime PM is implemented to stop
-> measurements and enter SLEEP state when the device is suspended
-> or torn down.
-> 
-> Future patches will add configurable gain and integration time,
-> interrupt support, buffered reads, VIS channel, and flicker
-> detection.
-> 
-> Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+Am Donnerstag, dem 29.10.2026 um 11:28 +0100 schrieb Philipp Stanner:
+> On Thu, 2026-10-29 at 11:23 +0100, Lucas Stach wrote:
+> > Hi Philipp, hi Christian,
+>=20
+> Jo Lucas
+>=20
+> >=20
+> > Am Donnerstag, dem 29.10.2026 um 10:55 +0100 schrieb Philipp Stanner:
+>=20
+> [=E2=80=A6]
+>=20
+> > I think we would all be interested in the actual use-case that's
+> > sensitive to this kind of latency.
+>=20
+> Me too.
+>=20
+> Let me use this opportunity to stress that in the future, in DRM,
+> whenever we have [to accept] a racy "optimization", both commit
+> messages and code comments must document why it exists and who
+> requested it with what proof.
+>=20
+I don't fully agree that this is a racy optimization. To me it seems
+the most critical issue here is that "fence is signaled" is under
+specified.
 
+Does it purely mean that the actual hardware operation that the fence
+is guarding is done? In that case the current implementation is fine,
+as the bit is only set after the HW told us that it is done. This is
+the interpretation I would assume was the original intent behind the
+current implementation.
 
-[snip]
+Does it mean that the hardware is done and all registered callbacks
+have been run, even if the actual work is done in a (indefinitely)
+deferred worker? You mentioning explosions caused by the pure signal
+state check outside the lock would imply that some consumers of the
+fence took the signaled state to mean this interpretation.
 
-> +		/* Check for digital saturation. */
-> +		if (status & AS7343_ASTATUS_ASAT_STATUS) {
-> +			/*
-> +			 * Per the datasheet, ASTATUS is self-clearing: writing
-> +			 * the value back clears the entire register.
-> +			 */
-> +			ret = regmap_write(map, AS7343_ASTATUS_REG, status);
+> Would save us lots of time when those things are discussed >5 years
+> later.
+>=20
+> >=20
+> > However, I wonder if this is even an issue anymore with the lock
+> > inlined into the fence structure.
+>=20
+> Almost no one uses inline-lock so far. So unfortunately, we might
+> regress old drivers, maybe.
+>=20
+> But sounds as if you're in favor of phasing the locklessness out :)
+>=20
+I'm in favor of ripping out hard to reason optimizations if they turn
+out to not provide any optimization after all. However, before going in
+either direction we need to clarify the fence signal state interface.=C2=A0
 
+Either we keep the (in my interpretation) original intent of the signal
+state only telling about HW progress state and thus declare some
+current uses as wrong usage of the interface, which need to be fixed.
+Or we need to include the SW callbacks too, but then your current lock
+approach only guards against code directly executed in the callback
+functions. If the implementation of the callback defers anything to a
+worker this may still be racy.
+And that's also my criticism to this patchset now that I thought a bit
+more about this: by simply putting things under the lock you serialized
+more of the SW state without actually better defining the guarantees
+that this changed fence interface provides or doesn't provide to the
+consumers.
 
-isn't that the STATUS (0x93) text? the datasheet says ASTATUS is read
-only and ASAT_STATUS clears on access, so the write shouldn't be needed.
-it also covers analog saturation, not only digital
-
-> +			return ret ? ret : -EIO;
-
--EIO reads like a bus error. as73211 returns -EOVERFLOW for this,
-wouldn't that fit better?
-
-		if (status & AS7343_ASTATUS_ASAT_STATUS)
-			return -EOVERFLOW;
-
--- 
-cheers,
-jose a. p-a
+Regards,
+Lucas
