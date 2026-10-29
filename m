@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.176
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793264440;
-	b=XkFi7yKM68CH0axlE2tz0i1tvpDutcyHoVHQlflonGm0+PPuJuSWMlM3s6b5hxdO0VmL
-	 qzN8JiknDom14PzJbKmNcby8LSHxMDckrFGxPzyHSw1H47WuSib3KhQdcCx0Bj2Z3pCzM
-	 BfLd5DZJKZ+OxLEfsfHVkhypnQsSphytSsqyOdFXwHFnZ/o8V81144u8Rr5IZhCWI8gHg
-	 GhAN8eDhzui51FbVc0BuUN6ldhWDeeQGyrT0SQ636OxidE2U6RkMgJoRHj+MW29V/9kat
-	 Ie1fi4IMygWWns5uilmB9k718mCaPaKv3nZxGKVUPb8w3SI6LoJZFjyL0KuiuX3bTRw==
+	t=1793264465;
+	b=pv8xgQ60/EbB9eVqWand5IQeqPk74BiJOgG5UQxuPhrlw+YZIBOfbnvIgigm19ZZs5Jw
+	 cWum7LyhJau5/8iCClAlDiCgmRbSECpOxJi3LnrrjjhOeBSVqwpoeooB090gFFz0q0Ykw
+	 e5Vjx1q45x+pWCjQ44mhv/sN5AbBL9OJDLb35tYhXQ0eZ99qbhlnVWR6WeJ99zCjizMgH
+	 cyiMr8GjTdBOMaRRFy4R26qFU2+YZn1FFSlNZRWUXEPiRbcPE+Ucl/kLK79H4HgxNKHsD
+	 /pwjiPMtqSl2/hz74Z+BUnKiDFtqWo4zytbI+fwy+r1WKxudzZWWlUJ5lgGVQnCfC3A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793264440;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793264465;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=hGYaG5S4e7TJEt4TBHtAN4ES2AM8I/c2sIKujiNwJrY=;
-	b=Oq86RgTZFFPwqEr9oOneW0G6n2QIDku1A1hEI/DdTHBQK8GRvxLKmwkxedWXAwi2q5as
-	 p7mjC62UVg40quUt6A+TRzrKsCyRqVK528z2c00ZNSDem6WIZ0J2hWhH98MTnigD2ETeG
-	 EcxquMGT7/OGE+lxIpUSgIq909PNIGL2OEi8RXKNisXgjsf8wbH2k4uBpoFrnG9SuADMO
-	 gmd/vgeh7xNoJKvGULcWanJDQLkAu7qyH6LhPAR7/S/O1JgWZtoOjqx5XnTiVPhVk0f5V
-	 9YNZ8FAFnonGIT4Vn2lzSuccTT/o9mkRsSHTI/iXxgwX+6He5QSyjcFyal3axh+l8KA==
+	bh=Z3mbcZY+neJw3cJUW+gndo2WA1VaXIZUfre4RITk+7k=;
+	b=U+hM2XvQLjJ5b7rI15aHP8tTEJLpAoZKx+qqyPqa8MVUS4MnernW3VuryPZDZgHO5pUC
+	 SmIgF0yB4Uo+wgNZKP+hIa80ibyqq0rjuuclPpGXtUHJepXJeHDAeiXaposue4ECVRv2h
+	 qAgzyJzVtOJFj7s8USIg34HVPsHmDSlZpdHtvyIU7s1udTpaqBmE02ab1Az7L/L7pyvNz
+	 BevF6AXV0Xh12ge4HNa9Ac5h5HU3+zhmSJ+IkXfT64kOzlBBOjIljpTSTkIQMh+hEOuCP
+	 ONsMLUn9OeKkUqWScc3rNoqb5DwAFmNCoC0p4/uPF0X2VaeS4fY+5o6GLTIVShpFI9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="xipISR/h";
-	arc=none smtp.remote-ip=74.125.82.176
-Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TCcGnNUJ;
+	arc=none smtp.remote-ip=74.125.82.170
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF5B6606A339
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 09:00:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BF5B6606A339
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65BF9606A31F
+	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 09:01:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 65BF9606A31F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xipISR/h
-Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-36a17a332ecso2725014eec.1
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 02:00:38 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TCcGnNUJ
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-36a1947498bso1261399eec.1
+        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 02:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793264438; x=1793869238; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793264465; x=1793869265; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=hGYaG5S4e7TJEt4TBHtAN4ES2AM8I/c2sIKujiNwJrY=;
-        b=xipISR/hBNNzw7lSvtVi25be6OIkASKWzN2hSQgTVddoxixFt1v3sf7vhgfANS9rMs
-         JXLhuLERpR3cd6x92G9DtinkhcrJm9VPi0+i0tH4t8zWfIvlhxKbIyV/WveW5bn2+vHH
-         jmlS3aLQ2afo/buVoF7pa+3fpfzkZD+gw/R2HhBEjO3NjhmZZl6DzNh/juxHWKubn5DZ
-         s3Gm1VB1JHJ+dfpFF6TNvXJckYa2gutnJIgWeMsssr2biYWjNS3qF0kGd65N0bE5ELi5
-         6hMYEi6ze4xBmVCGdWMNJF1TUT8Ioihj5jbHwOZLsHvpK9kPkhhpVdiFcMV6mSTmlLrg
-         qhSg==
+        bh=Z3mbcZY+neJw3cJUW+gndo2WA1VaXIZUfre4RITk+7k=;
+        b=TCcGnNUJc9rE3+MU2dfBg1/buLqpvuGZpYCZpTH5anu5u+ZMXaHl9K3FX4AOJa36iE
+         SHLYuQ8VH7B/b7kK8397LfdltoUH5e6q2jo++wZvHhNr1Kqx2KiiJVNWv++16GSYeXQH
+         t6Ww3ttl7Q+94LDcf7q0QvjHrUAXJfa/V7tBTLTrruB4gSw/g97V32iMOOU0Sm9ERl9S
+         4MGRGzLa94oKF7jIl1QFcE66oOfgguRO0RAazo4KhivQuQbL7hiPIbc7D/5wupmrnu67
+         NZ2ljq3nvkvPLFUrnS/YtgabfHFLNHyNR8ZRtyhzh7sH9L0c+OWsajyMQ2UolEIrFD08
+         PAuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793264438; x=1793869238;
+        d=1e100.net; s=20260707; t=1793264465; x=1793869265;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=hGYaG5S4e7TJEt4TBHtAN4ES2AM8I/c2sIKujiNwJrY=;
-        b=CphDBpnyGR4E6U1jcE0U738xhKuwrtPYTZa0Geb9q1mNHX/CWNKwpCkz57bQkF5hrM
-         nosT/GkaNXanDDy1uxVbBTJub5jfpmbH0+zTPTYF+0pLzQXjrF/iD8CNsSI69Vkv0b74
-         l/H7B3WJhoqjcEahCJabl5ExgMOlPsToqGMbYZDHPnvXjGVjU0IdyKJbA/87GyQcYDFL
-         el2KFudRJZ5ySUQGFqDUqOF21PW4d5BFBVPhqOj6Eo1eDqT712T6QSHzvP73ZHG69uu8
-         ZIkHjET7tWfh/E/JjtDjSY4LCsMag0Za3BGHrxA15/S7MqZ2HdjYNTcA5HTt1DF5AHU0
-         bntQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzOrDeboy1Ih5LkYEvjRTXFnPj+1xjJQbqxg128gmOHElwX6i8B/ULwCIh983EkT2b99ksQgsm9jUk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKbf12BLOG/H9B1mfbsUh7Yw7uC6qoxZyBBMMVn7UAAtERzabMc
-	4LhXoIeP7PDhhSuL94ikEdDvtcYn5fd0zhkzBAy/N1kWt18KdWq2PH8=
-X-Gm-Gg: AYBFou1ooNHz9GL3tyaWCsWTFnkov4mAR/hKWO7PR3am3hh/A8vtgLOo06EwBXi7D5h
-	Z85iCSpTv6p3pc8wObTR4nqxBbInm4LWZ/J3lN1pJVtec64SLyApidttFML5rV5rIQmBQ1p0jdD
-	HrpPN3kA2jI8aS7nCkxa9Qsjk/7nKOlCXt+HBKDGT/SyvNw7xTL52kZkS/WxKOguXcyv6PoDRNk
-	+9JwESBmgfhl1f4haq5WFDHyxHLQUSrXmmcL2x9frAgJ+JxNXUQ96ROT10ctAp5jsVEecYALJeb
-	fxN7O/J588GfwKRqpDNTzsHrp2qC2swi0p6nV509nLNAD8tGg+n8c2xt9X5W7zD1nzr7TyJiNIT
-	EKPCSi1QoHi3SFHZSGbys4DikdJVKM646WtNtn6rnS1+7H9cW7SoiObJgjpX/3QIPdANtG4u7r9
-	sktIi7uUSWlL7BsmqLLzs5abWr0aBwbyXkbPstxzaJAthD2qhSMh4JvNDo037GYqP7L/KtAB5+d
-	O63A2AWnhhhvY51bNeTP470pujshJb/byQMyLHEbCYFy1aSLC15nwqhzmTXvcUvFE+Z3jz/iPhe
-	AdOAlNqrTgOhCB8egIar0WauMTpHCSffee6I2XXEMlE32i16hT0g5GFDqPLtkw==
-X-Received: by 2002:a05:7300:de06:b0:35e:9c54:d41b with SMTP id 5a478bee46e88-36a2017372amr6688850eec.21.1793264437342;
-        Thu, 29 Oct 2026 02:00:37 -0700 (PDT)
+        bh=Z3mbcZY+neJw3cJUW+gndo2WA1VaXIZUfre4RITk+7k=;
+        b=FVtAR3VXJFiAQAS4OSGwwv1AsYQ0oXUrdlXYSFVfVlt/8UyDSs1wnysLjTxS7+xNqH
+         eFpajIHER2GQYtbDqK0PI+O1nitOg9Y99ToSvlNHkY/QNoqJIuezHzVSO0DrhQfW59KS
+         /QtB2TW/tg3D3yCKBoBfnSUGJCjsVkxsJqsIPqr7GVJBjsJkwT1f1WkOcJjLhLaq1hXF
+         rjv6I0ZXDCLbZ9m/3L8oZJ8lVjJ5GTLZzZV3jRhP7ipVChvuKtApn5M6wL/mxhrSJo3P
+         rfVSEdvJARKYYaIgkmc6I+YMlARmeQ/dyi1qpa9arWpvbC7byu+/PYbdAni6S0m1rijT
+         8Guw==
+X-Forwarded-Encrypted: i=1; AKwUvBxmZKJY/bLoaFMtfHhwaP4EuaW+M1fTR780bNEVbXL+xy/6/JM3xbPlmBGCESeHeA2cgg8/ZmXBz70=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKTBT+/dNPiDbIMtXQvWMkpTzGKKUx4Skfp6UpjyI9S7+RFpI98
+	wdC2iZgbplfMHUFvnNIfrCGvETtYUzyDfpgMOQ+1Cjh1H7jzl/a3GcY=
+X-Gm-Gg: AYBFou2BZclUZkM8G1jgaYBcRy9aoHY5+YtVvz+q5sUKJth1skaRu+L2EbH/gG0WsDs
+	MUajK6a8H8VP02i+kCvHuT7gvIl/fwH1WJW7OmPoH+DI+KEgUu7LdYPtPvK0m/y4kKsa5z+5etq
+	Y+2NWYLbGe/zmjhw0oAr0b1DwTDDS6Dk2IOyccDC3jkA2T4nM+Nw6KPYxhjDegORMgcQ3EjezYB
+	Stepe733FdMuGPSy2nNsCpdd5YvFHQC3W5TJysIggI45qGVYokYtOvnkp3WI1MvUqIIbYiyCTve
+	reeMsq5F6wRxYnt5k3/8y2IBo1yIk6QCe3CuvthgsfAuTlbHHo75iZVBxmHSx3lEVAeDqqjyLSA
+	wBgPZW6GqMeI7GGgXimO/fbVauPm8n8QGpL1ezluPYKiAJRcwkFEAOg0m1PItY1/FGxhfMpHMWh
+	0Vffg1W6Gk/DUr0I2Tye5Z7sDfMiE8HI9do4wA6Kj/7RTIbXdPxnEj82j9qXxt3I197tTUQH4Kf
+	3VI2s2FCwfsOqwc69jfVxrbzQGvQdP+ZuE7A8d5AT/3U5Q+ZCZ2Ts4iipGB9bIuGKdbiVGDhvab
+	SfJhipzjS+++Mv9oyxIVlJTJV/VjGNvDI2lVg0ii4T6NLF6tDV9wdRqT/oP4kQ==
+X-Received: by 2002:a05:7300:f894:b0:351:207d:bff4 with SMTP id 5a478bee46e88-36a202bc360mr7083860eec.4.1793264464275;
+        Thu, 29 Oct 2026 02:01:04 -0700 (PDT)
 Received: from at-Standard-PC-Q35-ICH9-2009 ([27.60.20.232])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a23641e78sm16497937eec.0.2026.10.29.02.00.19
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a23641e78sm16497937eec.0.2026.10.29.02.00.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 02:00:36 -0700 (PDT)
+        Thu, 29 Oct 2026 02:01:03 -0700 (PDT)
 From: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
 To: 
 Cc: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>,
@@ -133,9 +133,9 @@ Cc: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>,
 	linux-integrity@vger.kernel.org,
 	keyrings@vger.kernel.org,
 	linux-security-module@vger.kernel.org
-Subject: [RFC PATCH 10/14] power/supply: add support for x86 macs in macsmc-power
-Date: Thu, 29 Oct 2026 04:52:07 -0400
-Message-ID: <20261029085504.3547-11-atharvatiwarilinuxdev@gmail.com>
+Subject: [RFC PATCH 11/14] acpi: disable battery and adapter for x86 apple machines
+Date: Thu, 29 Oct 2026 04:52:08 -0400
+Message-ID: <20261029085504.3547-12-atharvatiwarilinuxdev@gmail.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261029085504.3547-1-atharvatiwarilinuxdev@gmail.com>
 References: <20261029085504.3547-1-atharvatiwarilinuxdev@gmail.com>
@@ -150,990 +150,73 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make macsmc-power work on Intel Macs, as a replacement for
-acpi-sbs. It exposes a lot more sensors than acpi-sbs, such
-as voltage, current, power, temperature, charge and health
-info, and also the adapter state.
-
-It also adds a charge limit, which acpi-sbs doesn't offer.
-
-And now we have power stats on non-mobile macs as well (iMacs,
-MacPros,etc), using macsmc-ac.
+When macsmc-power is enabled on an Intel Mac, skip acpi-sbs
+and the ACPI battery and adapter drivers, since macsmc-power
+now provides them. This avoids duplicate devices.
 
 Signed-off-by: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
 ---
- drivers/power/supply/macsmc-power.c | 751 ++++++++++++++++++++++------
- 1 file changed, 606 insertions(+), 145 deletions(-)
+ drivers/acpi/sbs.c       | 17 +++++++++--------
+ drivers/acpi/x86/utils.c |  4 ++++
+ 2 files changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/power/supply/macsmc-power.c b/drivers/power/supply/macsmc-power.c
-index ced37a701..1d64d8185 100644
---- a/drivers/power/supply/macsmc-power.c
-+++ b/drivers/power/supply/macsmc-power.c
-@@ -7,8 +7,11 @@
-  * on Apple Silicon systems.
-  *
-  * Copyright The Asahi Linux Contributors
-+ *
-+ * Copyright (C) 2026 Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
-  */
+diff --git a/drivers/acpi/sbs.c b/drivers/acpi/sbs.c
+index f10bbf13c..b12f2acc0 100644
+--- a/drivers/acpi/sbs.c
++++ b/drivers/acpi/sbs.c
+@@ -634,6 +634,9 @@ static int acpi_sbs_probe(struct platform_device *pdev)
+ 	int result = 0;
+ 	int id;
  
-+#include <linux/acpi.h>
- #include <linux/ctype.h>
- #include <linux/delay.h>
- #include <linux/devm-helpers.h>
-@@ -80,12 +83,16 @@ struct macsmc_power {
- 	char serial_number[MAX_STRING_LENGTH];
- 	char mfg_date[MAX_STRING_LENGTH];
- 
-+	bool has_battery;
-+
- 	/* Supported feature flags based on SMC key presence */
- 	bool has_chwa; /* Charge limit (Modern firmware) */
--	bool has_chls; /* Charge limit (Older firmware) */
-+	bool has_chls; /* Charge limit (Older firmware And New firmware on Intel macs) */
- 	bool has_ch0i; /* Force discharge (Older firmware) */
- 	bool has_ch0c; /* Inhibit charge (Older firmware) */
- 	bool has_chte; /* Inhibit charge (Modern firmware) */
-+	bool has_pd0r; /* AC Adapter current power in watts (Old Intel macs) */
-+
- 	/*
- 	 * Battery critical key is 1 byte and charge key is little endian
- 	 * (Modern firmware)
-@@ -94,7 +101,9 @@ struct macsmc_power {
- 
- 	u8 num_cells;
- 	int nominal_voltage_mv;
-+	unsigned long long adapter_status;
- 
-+	struct acpi_device *adapter;
- 	struct notifier_block nb;
- 	struct work_struct critical_work;
- 	bool emergency_shutdown_triggered;
-@@ -195,6 +204,37 @@ static int macsmc_battery_get_status(struct macsmc_power *power)
- 	return POWER_SUPPLY_STATUS_CHARGING;
- }
- 
-+static int macsmc_battery_acpi_get_status(struct macsmc_power *power)
-+{
-+	int ret;
-+	s16 vs16;
-+	u16 vu16;
-+
-+	ret = apple_smc_read_s16(power->smc, SMC_KEY(B0AC), &vs16);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = apple_smc_read_u16(power->smc, SMC_KEY(BRSC), &vu16);
-+	if (ret < 0)
-+		return ret;
-+
-+	vu16 = swab16(vu16);
-+	vs16 = (s16)swab16(vs16);
-+
-+	if (power->adapter_status) {
-+		if (vu16 == 100 && vs16 <= 0)
-+			return POWER_SUPPLY_STATUS_FULL;
-+
-+		if (vs16 > 0)
-+			return POWER_SUPPLY_STATUS_CHARGING;
-+
-+		return POWER_SUPPLY_STATUS_NOT_CHARGING;
-+	}
-+
-+	return POWER_SUPPLY_STATUS_DISCHARGING;
-+}
-+
-+
- static int macsmc_battery_get_charge_behaviour(struct macsmc_power *power)
- {
- 	int ret;
-@@ -322,6 +362,198 @@ static int macsmc_battery_get_capacity_level(struct macsmc_power *power)
- 		return POWER_SUPPLY_CAPACITY_LEVEL_NORMAL;
- }
- 
-+static int macsmc_battery_acpi_get_capacity_level(struct macsmc_power *power)
-+{
-+	int ret;
-+	u16 vu16;
-+
-+	ret = apple_smc_read_u16(power->smc, SMC_KEY(BRSC), &vu16);
-+	if (ret < 0)
-+		return ret;
-+
-+	vu16 = swab16(vu16);
-+
-+	if (vu16 <= 5)
-+		return POWER_SUPPLY_CAPACITY_LEVEL_CRITICAL;
-+	if (vu16 <= 20)
-+		return POWER_SUPPLY_CAPACITY_LEVEL_LOW;
-+	if (vu16 <= 80)
-+		return POWER_SUPPLY_CAPACITY_LEVEL_NORMAL;
-+	if (vu16 < 100)
-+		return POWER_SUPPLY_CAPACITY_LEVEL_HIGH;
-+
-+	return POWER_SUPPLY_CAPACITY_LEVEL_FULL;
-+}
-+
-+static int macsmc_battery_acpi_read_f32_scaled(struct apple_smc *smc, smc_key key,
-+	int *p, int scale)
-+{
-+	u32 fval;
-+	u64 val;
-+	int ret, exp;
-+
-+	ret = apple_smc_read_u32(smc, key, &fval);
-+	if (ret < 0)
-+		return ret;
-+
-+	val = (u64)((fval & GENMASK(22, 0)) | BIT(23));
-+	exp = ((fval >> 23) & 0xff) - 127 - 23;
-+
-+	val *= (u64)scale;
-+
-+	if (exp > 63)
-+		val = U64_MAX;
-+	else if (exp < -63)
-+		val = 0;
-+	else if (exp < 0)
-+		val >>= -exp;
-+	else if (exp != 0 &&
-+		 (val & ~((1ULL << (64 - exp)) - 1)))
-+		val = U64_MAX;
-+	else
-+		val <<= exp;
-+
-+	if (fval & BIT(31)) {
-+		if (val > (u64)INT_MAX + 1)
-+			*p = INT_MIN;
-+		else
-+			*p = -(int)val;
-+	} else {
-+		if (val > INT_MAX)
-+			*p = INT_MAX;
-+		else
-+			*p = (int)val;
-+	}
-+
-+	return 0;
-+}
-+
-+static int macsmc_battery_acpi_read(struct apple_smc *smc, smc_key key, int *val,
-+	int scale)
-+{
-+	int ret;
-+	struct apple_smc_key_info info;
-+
-+	ret = apple_smc_get_key_info(smc, key, &info);
-+	if (ret)
-+		return ret;
-+
-+	switch (info.type_code) {
-+	/* 32-bit IEEE 754 float */
-+	case __SMC_KEY('f', 'l', 't', ' '): {
-+		int flt_ = 0;
-+
-+		ret = macsmc_battery_acpi_read_f32_scaled(smc, key, &flt_, scale);
-+		if (ret)
-+			return ret;
-+
-+		*val = flt_;
-+		break;
-+	}
-+
-+	/* 3.13 fixed point decimal */
-+	case __SMC_KEY('f', 'p', '3', 'd'): {
-+		u16 fp3d;
-+
-+		ret = apple_smc_read_u16(smc, key, &fp3d);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac(be16_to_cpu(fp3d), scale, BIT(13));
-+		break;
-+	}
-+
-+	/* 5.11 fixed point decimal */
-+	case __SMC_KEY('f', 'p', '5', 'b'): {
-+		u16 fp5b;
-+
-+		ret = apple_smc_read_u16(smc, key, &fp5b);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac(be16_to_cpu(fp5b), scale, BIT(11));
-+		break;
-+	}
-+
-+	/* 8.8 fixed point decimal */
-+	case __SMC_KEY('f', 'p', '8', '8'): {
-+		u16 fp88;
-+
-+		ret = apple_smc_read_u16(smc, key, &fp88);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac(be16_to_cpu(fp88), scale, BIT(8));
-+		break;
-+	}
-+
-+	/* 3.12 signed fixed point decimal */
-+	case __SMC_KEY('s', 'p', '3', 'c'): {
-+		s16 sp3c;
-+
-+		ret = apple_smc_read_s16(smc, key, &sp3c);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac((s16)be16_to_cpu(sp3c), scale, BIT(12));
-+		break;
-+	}
-+
-+	/* 4.11 signed fixed point decimal */
-+	case __SMC_KEY('s', 'p', '4', 'b'): {
-+		s16 sp4b;
-+
-+		ret = apple_smc_read_s16(smc, key, &sp4b);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac((s16)be16_to_cpu(sp4b), scale, BIT(11));
-+		break;
-+	}
-+
-+	/* 5.10 signed fixed point decimal */
-+	case __SMC_KEY('s', 'p', '5', 'a'): {
-+		s16 sp5a;
-+
-+		ret = apple_smc_read_s16(smc, key, &sp5a);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac((s16)be16_to_cpu(sp5a), scale, BIT(10));
-+		break;
-+	}
-+
-+	/* 6.9 signed fixed point decimal */
-+	case __SMC_KEY('s', 'p', '6', '9'): {
-+		s16 sp69;
-+
-+		ret = apple_smc_read_s16(smc, key, &sp69);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac((s16)be16_to_cpu(sp69), scale, BIT(9));
-+		break;
-+	}
-+
-+	/* 7.8 signed fixed point decimal */
-+	case __SMC_KEY('s', 'p', '7', '8'): {
-+		s16 sp78;
-+
-+		ret = apple_smc_read_s16(smc, key, &sp78);
-+		if (ret)
-+			return ret;
-+
-+		*val = mult_frac((s16)be16_to_cpu(sp78), scale, BIT(8));
-+		break;
-+	}
-+
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
- static s16 macsmc_swap_b0rm(struct macsmc_power *power, s16 b0rm)
- {
- 	/* B0RM was Big Endian, likely pass through from TI gas gauge */
-@@ -343,7 +575,10 @@ static int macsmc_battery_get_property(struct power_supply *psy,
- 
- 	switch (psp) {
- 	case POWER_SUPPLY_PROP_STATUS:
--		val->intval = macsmc_battery_get_status(power);
-+		if (power->smc->is_acpi)
-+			val->intval = macsmc_battery_acpi_get_status(power);
-+		else
-+			val->intval = macsmc_battery_get_status(power);
- 		ret = val->intval < 0 ? val->intval : 0;
- 		break;
- 	case POWER_SUPPLY_PROP_PRESENT:
-@@ -359,36 +594,71 @@ static int macsmc_battery_get_property(struct power_supply *psy,
- 		break;
- 	case POWER_SUPPLY_PROP_TIME_TO_FULL_NOW:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0TF), &vu16);
--		val->intval = vu16 == 0xffff ? 0 : vu16 * 60;
-+		if (power->smc->is_acpi)
-+			val->intval = vu16 == 0xffff ? 0 : swab16(vu16) * 60;
-+		else
-+			val->intval = vu16 == 0xffff ? 0 : vu16 * 60;
- 		break;
- 	case POWER_SUPPLY_PROP_CAPACITY:
--		ret = apple_smc_read_u8(power->smc, SMC_KEY(BUIC), &vu8);
--		val->intval = vu8;
-+		if (power->smc->is_acpi) {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(BRSC), &vu16);
-+			val->intval = swab16(vu16);
-+		} else {
-+			ret = apple_smc_read_u8(power->smc, SMC_KEY(BUIC), &vu8);
-+			val->intval = vu8;
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_CAPACITY_LEVEL:
--		val->intval = macsmc_battery_get_capacity_level(power);
-+		if (power->smc->is_acpi)
-+			val->intval = macsmc_battery_acpi_get_capacity_level(power);
-+		else
-+			val->intval = macsmc_battery_get_capacity_level(power);
- 		ret = val->intval < 0 ? val->intval : 0;
- 		break;
- 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0AV), &vu16);
--		val->intval = vu16 * 1000;
-+		if (power->smc->is_acpi)
-+			val->intval = swab16(vu16) * 1000;
-+		else
-+			val->intval = vu16 * 1000;
- 		break;
- 	case POWER_SUPPLY_PROP_CURRENT_NOW:
- 		ret = apple_smc_read_s16(power->smc, SMC_KEY(B0AC), &vs16);
--		val->intval = vs16 * 1000;
-+		if (power->smc->is_acpi)
-+			val->intval = (s16)swab16(vs16) * 1000;
-+		else
-+			val->intval = vs16 * 1000;
- 		break;
- 	case POWER_SUPPLY_PROP_POWER_NOW:
--		ret = apple_smc_read_s32(power->smc, SMC_KEY(B0AP), &vs32);
--		val->intval = vs32 * 1000;
-+		if (power->smc->is_acpi) {
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(B0AP),
-+					&val->intval, 1000000);
-+			if (ret < 0)
-+				return ret;
-+
-+			val->intval = -val->intval;
-+			}
-+		else {
-+			ret = apple_smc_read_s32(power->smc, SMC_KEY(B0AP), &vs32);
-+			val->intval = vs32 * 1000;
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(BITV), &vu16);
--		val->intval = vu16 * 1000;
-+		if (power->smc->is_acpi)
-+			val->intval = swab16(vu16) * 1000;
-+		else
-+			val->intval = vu16 * 1000;
- 		break;
- 	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
- 		/* Calculate total max design voltage from per-cell maximum voltage */
--		ret = apple_smc_read_u16(power->smc, SMC_KEY(BVVN), &vu16);
--		val->intval = vu16 * 1000 * power->num_cells;
-+		if (power->smc->is_acpi) {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(BCMV), &vu16);
-+			val->intval = swab16(vu16) * 1000 * power->num_cells;
-+		} else {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(BVVN), &vu16);
-+			val->intval = vu16 * 1000 * power->num_cells;
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_VOLTAGE_MIN:
- 		/* Lifetime min */
-@@ -400,17 +670,36 @@ static int macsmc_battery_get_property(struct power_supply *psy,
- 		ret = apple_smc_read_s16(power->smc, SMC_KEY(BLPX), &vs16);
- 		val->intval = vs16 * 1000;
- 		break;
-+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_END_THRESHOLD:
-+		if (power->has_chls) {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(CHLS), &vu16);
-+			val->intval = vu16 & 0xFF;
-+		} else {
-+			ret = apple_smc_read_u8(power->smc, SMC_KEY(BCLM), &vu8);
-+			val->intval = vu8;
-+		}
-+		break;
- 	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RC), &vu16);
- 		val->intval = vu16 * 1000;
- 		break;
- 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
--		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RI), &vu16);
--		val->intval = vu16 * 1000;
-+		if (power->smc->is_acpi) {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(CHBI), &vu16);
-+			val->intval = swab16(vu16) * 1000;
-+		} else {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RI), &vu16);
-+			val->intval = vu16 * 1000;
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
--		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RV), &vu16);
--		val->intval = vu16 * 1000;
-+		if (power->smc->is_acpi) {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(CHBV), &vu16);
-+			val->intval = swab16(vu16) * 1000;
-+		} else {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RV), &vu16);
-+			val->intval = vu16 * 1000;
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0DC), &vu16);
-@@ -418,11 +707,17 @@ static int macsmc_battery_get_property(struct power_supply *psy,
- 		break;
- 	case POWER_SUPPLY_PROP_CHARGE_FULL:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0FC), &vu16);
--		val->intval = vu16 * 1000;
-+		if (power->smc->is_acpi)
-+			val->intval = swab16(vu16) * 1000;
-+		else
-+			val->intval = vu16 * 1000;
- 		break;
- 	case POWER_SUPPLY_PROP_CHARGE_NOW:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RM), &vu16);
--		val->intval = macsmc_swap_b0rm(power, vu16) * 1000;
-+		if (power->smc->is_acpi)
-+			val->intval = swab16(vu16) * 1000;
-+		else
-+			val->intval = macsmc_swap_b0rm(power, vu16) * 1000;
- 		break;
- 	case POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0DC), &vu16);
-@@ -430,15 +725,37 @@ static int macsmc_battery_get_property(struct power_supply *psy,
- 		break;
- 	case POWER_SUPPLY_PROP_ENERGY_FULL:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0FC), &vu16);
--		val->intval = vu16 * power->nominal_voltage_mv;
-+		if (power->smc->is_acpi) {
-+			if (ret < 0)
-+				return ret;
-+
-+			u16 voltage;
-+
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(B0AV), &voltage);
-+			val->intval = swab16(vu16) * swab16(voltage);
-+		} else
-+			val->intval = vu16 * power->nominal_voltage_mv;
- 		break;
- 	case POWER_SUPPLY_PROP_ENERGY_NOW:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0RM), &vu16);
--		val->intval = macsmc_swap_b0rm(power, vu16) * power->nominal_voltage_mv;
-+		if (power->smc->is_acpi) {
-+			if (ret < 0)
-+				return ret;
-+
-+			u16 voltage;
-+
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(B0AV), &voltage);
-+			val->intval = swab16(vu16) * swab16(voltage);
-+		} else
-+			val->intval = macsmc_swap_b0rm(power, vu16) * power->nominal_voltage_mv;
- 		break;
- 	case POWER_SUPPLY_PROP_TEMP:
--		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0AT), &vu16);
--		val->intval = vu16 - 2732; /* Kelvin x10 to Celsius x10 */
-+		if (power->smc->is_acpi)
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(TB0T), &val->intval, 10);
-+		else {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(B0AT), &vu16);
-+			val->intval = vu16 - 2732; /* Kelvin x10 to Celsius x10 */
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
- 		ret = apple_smc_read_s64(power->smc, SMC_KEY(BAAC), &vs64);
-@@ -446,7 +763,10 @@ static int macsmc_battery_get_property(struct power_supply *psy,
- 		break;
- 	case POWER_SUPPLY_PROP_CYCLE_COUNT:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(B0CT), &vu16);
--		val->intval = vu16;
-+		if (power->smc->is_acpi)
-+			val->intval = swab16(vu16);
-+		else
-+			val->intval = vu16;
- 		break;
- 	case POWER_SUPPLY_PROP_SCOPE:
- 		val->intval = POWER_SUPPLY_SCOPE_SYSTEM;
-@@ -489,6 +809,15 @@ static int macsmc_battery_set_property(struct power_supply *psy,
- 	switch (psp) {
- 	case POWER_SUPPLY_PROP_CHARGE_BEHAVIOUR:
- 		return macsmc_battery_set_charge_behaviour(power, val->intval);
-+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_END_THRESHOLD:
-+		if (val->intval > 100 || val->intval < 1)
-+			return -EINVAL;
-+		if (power->has_chls) {
-+			u16 vu16 = val->intval & 0xFF;
-+
-+			return apple_smc_write_u16(power->smc, SMC_KEY(CHLS), vu16);
-+		}
-+		return apple_smc_write_u8(power->smc, SMC_KEY(BCLM), (u8) val->intval);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -500,6 +829,8 @@ static int macsmc_battery_property_is_writeable(struct power_supply *psy,
- 	switch (psp) {
- 	case POWER_SUPPLY_PROP_CHARGE_BEHAVIOUR:
- 		return true;
-+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_END_THRESHOLD:
-+		return true;
- 	default:
- 		return false;
- 	}
-@@ -524,12 +855,47 @@ static int macsmc_ac_get_property(struct power_supply *psy,
- 
- 	switch (psp) {
- 	case POWER_SUPPLY_PROP_ONLINE:
--		ret = apple_smc_read_u32(power->smc, SMC_KEY(CHIS), &vu32);
--		val->intval = !!vu32;
-+		if (power->smc->is_acpi) {
-+			if (power->has_battery)
-+				val->intval = power->adapter_status;
-+			else
-+				val->intval = 1;
-+		} else {
-+			ret = apple_smc_read_u32(power->smc, SMC_KEY(CHIS), &vu32);
-+			val->intval = !!vu32;
-+		}
-+		break;
-+	case POWER_SUPPLY_PROP_CURRENT_NOW:
-+		if (power->has_battery)
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(ID0R),
-+					&val->intval, 1000000);
-+		else
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(ID2R),
-+					&val->intval, 1000000);
-+		break;
-+	case POWER_SUPPLY_PROP_POWER_NOW:
-+		if (power->has_pd0r)
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(PD0R),
-+					&val->intval, 1000000);
-+		else if (power->has_battery)
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(PDTR),
-+					&val->intval, 1000000);
-+		else
-+			ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(PD2R),
-+					&val->intval, 1000000);
- 		break;
- 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
--		ret = apple_smc_read_u16(power->smc, SMC_KEY(AC-n), &vu16);
--		val->intval = vu16 * 1000;
-+		if (power->smc->is_acpi) {
-+			if (power->has_battery)
-+				ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(VD0R),
-+						&val->intval, 1000000);
-+			else
-+				ret = macsmc_battery_acpi_read(power->smc, SMC_KEY(VD2R),
-+						&val->intval, 1000000);
-+		} else {
-+			ret = apple_smc_read_u16(power->smc, SMC_KEY(AC-n), &vu16);
-+			val->intval = vu16 * 1000;
-+		}
- 		break;
- 	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
- 		ret = apple_smc_read_u16(power->smc, SMC_KEY(AC-i), &vu16);
-@@ -537,7 +903,10 @@ static int macsmc_ac_get_property(struct power_supply *psy,
- 		break;
- 	case POWER_SUPPLY_PROP_INPUT_POWER_LIMIT:
- 		ret = apple_smc_read_u32(power->smc, SMC_KEY(ACPW), &vu32);
--		val->intval = vu32 * 1000;
-+		if (power->smc->is_acpi)
-+			val->intval = swab32(vu32) * 1000;
-+		else
-+			val->intval = vu32 * 1000;
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -634,6 +1003,23 @@ static int macsmc_power_event(struct notifier_block *nb, unsigned long event, vo
- 	return NOTIFY_DONE;
- }
- 
-+static void macsmc_power_acpi_notify(acpi_handle handle, u32 event, void *context)
-+{
-+	struct macsmc_power *power = context;
-+
-+	if (event == 0x80) {
-+		acpi_status status = acpi_evaluate_integer(power->adapter->handle, "_PSR", NULL,
-+								&power->adapter_status);
-+		if (ACPI_FAILURE(status))
-+			return;
-+
-+		power->adapter_status = !!power->adapter_status;
-+		power_supply_changed(power->batt);
-+		power_supply_changed(power->ac);
-+	}
-+}
-+
-+
- static int macsmc_power_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -670,15 +1056,19 @@ static int macsmc_power_probe(struct platform_device *pdev)
- 	 * Check for battery presence.
- 	 * B0AV is a fundamental key.
- 	 */
-+	if (smc->is_acpi && apple_smc_read_flag(power->smc, SMC_KEY(BBIN), &flag) == 0 && flag)
-+		has_battery = true;
-+
- 	if (apple_smc_read_u16(power->smc, SMC_KEY(B0AV), &vu16) == 0 &&
- 	    macsmc_battery_get_status(power) > POWER_SUPPLY_STATUS_UNKNOWN)
- 		has_battery = true;
- 
-+	power->has_battery = has_battery;
- 	/*
- 	 * Check for AC adapter presence.
- 	 * CHIS is a fundamental key.
- 	 */
--	if (apple_smc_key_exists(smc, SMC_KEY(CHIS)))
-+	if (apple_smc_key_exists(smc, SMC_KEY(CHIS)) || smc->is_acpi)
- 		has_ac_adapter = true;
- 
- 	if (!has_battery && !has_ac_adapter)
-@@ -694,118 +1084,156 @@ static int macsmc_power_probe(struct platform_device *pdev)
- 
- 		nprops = 0;
- 
--		/* Fundamental properties */
--		props[nprops++] = POWER_SUPPLY_PROP_STATUS;
--		props[nprops++] = POWER_SUPPLY_PROP_PRESENT;
--		props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_CURRENT_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_POWER_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_CAPACITY;
--		props[nprops++] = POWER_SUPPLY_PROP_CAPACITY_LEVEL;
--		props[nprops++] = POWER_SUPPLY_PROP_TEMP;
--		props[nprops++] = POWER_SUPPLY_PROP_CYCLE_COUNT;
--		props[nprops++] = POWER_SUPPLY_PROP_HEALTH;
--		props[nprops++] = POWER_SUPPLY_PROP_SCOPE;
--		props[nprops++] = POWER_SUPPLY_PROP_MODEL_NAME;
--		props[nprops++] = POWER_SUPPLY_PROP_SERIAL_NUMBER;
--		props[nprops++] = POWER_SUPPLY_PROP_MANUFACTURE_YEAR;
--		props[nprops++] = POWER_SUPPLY_PROP_MANUFACTURE_MONTH;
--		props[nprops++] = POWER_SUPPLY_PROP_MANUFACTURE_DAY;
--
--		/* Extended properties usually present */
--		props[nprops++] = POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_TIME_TO_FULL_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN;
--		props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN;
--		props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MIN;
--		props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MAX;
--		props[nprops++] = POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT;
--		props[nprops++] = POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX;
--		props[nprops++] = POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE;
--		props[nprops++] = POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN;
--		props[nprops++] = POWER_SUPPLY_PROP_CHARGE_FULL;
--		props[nprops++] = POWER_SUPPLY_PROP_CHARGE_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN;
--		props[nprops++] = POWER_SUPPLY_PROP_ENERGY_FULL;
--		props[nprops++] = POWER_SUPPLY_PROP_ENERGY_NOW;
--		props[nprops++] = POWER_SUPPLY_PROP_CHARGE_COUNTER;
--
--		/* Detect features based on key availability */
--		if (apple_smc_key_exists(smc, SMC_KEY(CHTE)))
--			power->has_chte = true;
--		if (apple_smc_key_exists(smc, SMC_KEY(CH0C)))
--			power->has_ch0c = true;
--		if (apple_smc_key_exists(smc, SMC_KEY(CH0I)))
--			power->has_ch0i = true;
--
--		ret = apple_smc_get_key_info(power->smc, SMC_KEY(BCF0), &info);
--		if (ret) {
--			dev_err(&pdev->dev, "Failed to determine BCF0 key size\n");
--			return ret;
--		}
--		if (info.size == 1)
--			power->fw_ge_27 = true;
--		else if (info.size == 4)
--			power->fw_ge_27 = false;
--		else {
--			dev_err(&pdev->dev, "Unexpected BCF0 key size %d\n", info.size);
--			return -EIO;
--		}
--
--		/* Reset "Optimised Battery Charging" flags to default state */
--		if (power->has_chte)
--			apple_smc_write_u32(smc, SMC_KEY(CHTE), 0);
--		else if (power->has_ch0c)
--			apple_smc_write_u8(smc, SMC_KEY(CH0C), 0);
--
--		if (power->has_ch0i)
--			apple_smc_write_u8(smc, SMC_KEY(CH0I), 0);
--
--		apple_smc_write_u8(smc, SMC_KEY(CH0K), 0);
--		apple_smc_write_u8(smc, SMC_KEY(CH0B), 0);
--
--		/* Configure charge behaviour if supported */
--		if (power->has_ch0i || power->has_ch0c || power->has_chte) {
--			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_BEHAVIOUR;
--
--			power->batt_desc.charge_behaviours =
--				BIT(POWER_SUPPLY_CHARGE_BEHAVIOUR_AUTO);
-+		if (smc->is_acpi) {
-+			props[nprops++] = POWER_SUPPLY_PROP_STATUS;
-+			props[nprops++] = POWER_SUPPLY_PROP_PRESENT;
-+			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_CURRENT_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_CAPACITY;
-+			props[nprops++] = POWER_SUPPLY_PROP_CAPACITY_LEVEL;
-+			props[nprops++] = POWER_SUPPLY_PROP_TEMP;
-+			props[nprops++] = POWER_SUPPLY_PROP_CYCLE_COUNT;
-+			props[nprops++] = POWER_SUPPLY_PROP_HEALTH;
-+			props[nprops++] = POWER_SUPPLY_PROP_SCOPE;
-+			props[nprops++] = POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX;
-+			props[nprops++] = POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE;
-+			props[nprops++] = POWER_SUPPLY_PROP_TIME_TO_FULL_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_FULL;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_ENERGY_FULL;
-+			props[nprops++] = POWER_SUPPLY_PROP_ENERGY_NOW;
-+
-+			if (apple_smc_key_exists(smc, SMC_KEY(CHLS)))
-+				power->has_chls = true;
-+			if (power->has_chls || apple_smc_key_exists(smc, SMC_KEY(BCLM)))
-+				props[nprops++] = POWER_SUPPLY_PROP_CHARGE_CONTROL_END_THRESHOLD;
-+			if (apple_smc_key_exists(smc, SMC_KEY(B0AP)))
-+				props[nprops++] = POWER_SUPPLY_PROP_POWER_NOW;
-+			if (apple_smc_key_exists(smc, SMC_KEY(B0TE)))
-+				props[nprops++] = POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW;
-+			if (apple_smc_key_exists(smc, SMC_KEY(BITV)))
-+				props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN;
-+			if (apple_smc_key_exists(smc, SMC_KEY(BCMV)))
-+				props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN;
-+
-+			if (apple_smc_key_exists(smc, SMC_KEY(BC3V)))
-+				power->num_cells = 3;
-+			else
-+				power->num_cells = 2;
-+		} else {
-+			/* Fundamental properties */
-+			props[nprops++] = POWER_SUPPLY_PROP_STATUS;
-+			props[nprops++] = POWER_SUPPLY_PROP_PRESENT;
-+			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_CURRENT_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_POWER_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_CAPACITY;
-+			props[nprops++] = POWER_SUPPLY_PROP_CAPACITY_LEVEL;
-+			props[nprops++] = POWER_SUPPLY_PROP_TEMP;
-+			props[nprops++] = POWER_SUPPLY_PROP_CYCLE_COUNT;
-+			props[nprops++] = POWER_SUPPLY_PROP_HEALTH;
-+			props[nprops++] = POWER_SUPPLY_PROP_SCOPE;
-+			props[nprops++] = POWER_SUPPLY_PROP_MODEL_NAME;
-+			props[nprops++] = POWER_SUPPLY_PROP_SERIAL_NUMBER;
-+			props[nprops++] = POWER_SUPPLY_PROP_MANUFACTURE_YEAR;
-+			props[nprops++] = POWER_SUPPLY_PROP_MANUFACTURE_MONTH;
-+			props[nprops++] = POWER_SUPPLY_PROP_MANUFACTURE_DAY;
-+
-+			/* Extended properties usually present */
-+			props[nprops++] = POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_TIME_TO_FULL_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN;
-+			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN;
-+			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MIN;
-+			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_MAX;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT;
-+			props[nprops++] = POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX;
-+			props[nprops++] = POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_FULL;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN;
-+			props[nprops++] = POWER_SUPPLY_PROP_ENERGY_FULL;
-+			props[nprops++] = POWER_SUPPLY_PROP_ENERGY_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_CHARGE_COUNTER;
-+
-+			/* Detect features based on key availability */
-+			if (apple_smc_key_exists(smc, SMC_KEY(CHTE)))
-+				power->has_chte = true;
-+			if (apple_smc_key_exists(smc, SMC_KEY(CH0C)))
-+				power->has_ch0c = true;
-+			if (apple_smc_key_exists(smc, SMC_KEY(CH0I)))
-+				power->has_ch0i = true;
-+
-+			ret = apple_smc_get_key_info(power->smc, SMC_KEY(BCF0), &info);
-+			if (ret) {
-+				dev_err(&pdev->dev, "Failed to determine BCF0 key size\n");
-+				return ret;
-+			}
-+			if (info.size == 1)
-+				power->fw_ge_27 = true;
-+			else if (info.size == 4)
-+				power->fw_ge_27 = false;
-+			else {
-+				dev_err(&pdev->dev, "Unexpected BCF0 key size %d\n", info.size);
-+				return -EIO;
-+			}
-+
-+			/* Reset "Optimised Battery Charging" flags to default state */
-+			if (power->has_chte)
-+				apple_smc_write_u32(smc, SMC_KEY(CHTE), 0);
-+			else if (power->has_ch0c)
-+				apple_smc_write_u8(smc, SMC_KEY(CH0C), 0);
- 
- 			if (power->has_ch0i)
--				power->batt_desc.charge_behaviours |=
--					BIT(POWER_SUPPLY_CHARGE_BEHAVIOUR_FORCE_DISCHARGE);
--
--			if (power->has_chte || power->has_ch0c)
--				power->batt_desc.charge_behaviours |=
--					BIT(POWER_SUPPLY_CHARGE_BEHAVIOUR_INHIBIT_CHARGE);
-+				apple_smc_write_u8(smc, SMC_KEY(CH0I), 0);
-+
-+			apple_smc_write_u8(smc, SMC_KEY(CH0K), 0);
-+			apple_smc_write_u8(smc, SMC_KEY(CH0B), 0);
-+
-+			/* Configure charge behaviour if supported */
-+			if (power->has_ch0i || power->has_ch0c || power->has_chte) {
-+				props[nprops++] = POWER_SUPPLY_PROP_CHARGE_BEHAVIOUR;
-+
-+				power->batt_desc.charge_behaviours =
-+					BIT(POWER_SUPPLY_CHARGE_BEHAVIOUR_AUTO);
-+
-+				if (power->has_ch0i)
-+					power->batt_desc.charge_behaviours |=
-+						BIT(POWER_SUPPLY_CHARGE_BEHAVIOUR_FORCE_DISCHARGE);
-+
-+				if (power->has_chte || power->has_ch0c)
-+					power->batt_desc.charge_behaviours |=
-+						BIT(POWER_SUPPLY_CHARGE_BEHAVIOUR_INHIBIT_CHARGE);
-+			}
-+
-+			/* Detect charge limit method (CHWA vs CHLS) */
-+			if (apple_smc_read_flag(power->smc, SMC_KEY(CHWA), &flag) == 0)
-+				power->has_chwa = true;
-+			else if (apple_smc_read_u16(power->smc, SMC_KEY(CHLS), &vu16) >= 0)
-+				power->has_chls = true;
-+
-+			/* Fetch identity strings */
-+			apple_smc_read(smc, SMC_KEY(BMDN), power->model_name,
-+				       sizeof(power->model_name) - 1);
-+			apple_smc_read(smc, SMC_KEY(BMSN), power->serial_number,
-+				       sizeof(power->serial_number) - 1);
-+			apple_smc_read(smc, SMC_KEY(BMDT), power->mfg_date,
-+				       sizeof(power->mfg_date) - 1);
-+
-+			apple_smc_read_u8(power->smc, SMC_KEY(BNCB), &power->num_cells);
-+			power->nominal_voltage_mv = MACSMC_NOMINAL_CELL_VOLTAGE_MV *
-+							power->num_cells;
-+
-+			/* Enable critical shutdown notifications by reading status once */
-+			macsmc_battery_read_bcf0(power, &val32);
- 		}
--
--		/* Detect charge limit method (CHWA vs CHLS) */
--		if (apple_smc_read_flag(power->smc, SMC_KEY(CHWA), &flag) == 0)
--			power->has_chwa = true;
--		else if (apple_smc_read_u16(power->smc, SMC_KEY(CHLS), &vu16) >= 0)
--			power->has_chls = true;
--
- 		if (nprops > MACSMC_MAX_BATT_PROPS)
- 			return -ENOMEM;
- 
- 		power->batt_desc.properties = props;
- 		power->batt_desc.num_properties = nprops;
- 
--		/* Fetch identity strings */
--		apple_smc_read(smc, SMC_KEY(BMDN), power->model_name,
--			       sizeof(power->model_name) - 1);
--		apple_smc_read(smc, SMC_KEY(BMSN), power->serial_number,
--			       sizeof(power->serial_number) - 1);
--		apple_smc_read(smc, SMC_KEY(BMDT), power->mfg_date,
--			       sizeof(power->mfg_date) - 1);
--
--		apple_smc_read_u8(power->smc, SMC_KEY(BNCB), &power->num_cells);
--		power->nominal_voltage_mv = MACSMC_NOMINAL_CELL_VOLTAGE_MV * power->num_cells;
--
--		/* Enable critical shutdown notifications by reading status once */
--		macsmc_battery_read_bcf0(power, &val32);
--
- 		psy_cfg.drv_data = power;
- 		power->batt = devm_power_supply_register(dev, &power->batt_desc, &psy_cfg);
- 		if (IS_ERR(power->batt)) {
-@@ -829,16 +1257,27 @@ static int macsmc_power_probe(struct platform_device *pdev)
- 		/* Online status is fundamental */
- 		props[nprops++] = POWER_SUPPLY_PROP_ONLINE;
- 
--		/* Input power limits are usually available */
--		if (apple_smc_key_exists(power->smc, SMC_KEY(ACPW)))
--			props[nprops++] = POWER_SUPPLY_PROP_INPUT_POWER_LIMIT;
--
--		/* macOS 15.4+ firmware dropped legacy AC keys (AC-n, AC-i) */
--		if (apple_smc_read_u16(power->smc, SMC_KEY(AC-n), &vu16) >= 0) {
--			props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_NOW;
--			props[nprops++] = POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT;
-+		if (smc->is_acpi) {
-+			props[nprops++] = POWER_SUPPLY_PROP_CURRENT_NOW;
-+			props[nprops++] = POWER_SUPPLY_PROP_POWER_NOW;
-+			if (apple_smc_key_exists(power->smc, SMC_KEY(PD0R)))
-+				power->has_pd0r = true;
-+			/* MacBookPro5,x and 7,x dosent have VD0R key or any equivalent */
-+			if (!power->has_battery || apple_smc_key_exists(power->smc, SMC_KEY(VD0R)))
-+				props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_NOW;
-+			if (apple_smc_key_exists(power->smc, SMC_KEY(ACPW)))
-+				props[nprops++] = POWER_SUPPLY_PROP_INPUT_POWER_LIMIT;
-+		} else {
-+			/* Input power limits are usually available */
-+			if (apple_smc_key_exists(power->smc, SMC_KEY(ACPW)))
-+				props[nprops++] = POWER_SUPPLY_PROP_INPUT_POWER_LIMIT;
-+
-+			/* macOS 15.4+ firmware dropped legacy AC keys (AC-n, AC-i) */
-+			if (apple_smc_read_u16(power->smc, SMC_KEY(AC-n), &vu16) >= 0) {
-+				props[nprops++] = POWER_SUPPLY_PROP_VOLTAGE_NOW;
-+				props[nprops++] = POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT;
-+			}
- 		}
--
- 		if (nprops > MACSMC_MAX_AC_PROPS)
- 			return -ENOMEM;
- 
-@@ -858,9 +1297,26 @@ static int macsmc_power_probe(struct platform_device *pdev)
- 	if (!power->batt && !power->ac)
++	if (IS_ENABLED(CONFIG_MACSMC_POWER) && x86_apple_machine)
++		return -ENODEV;
++
+ 	device = ACPI_COMPANION(&pdev->dev);
+ 	if (!device)
  		return -ENODEV;
+@@ -655,14 +658,12 @@ static int acpi_sbs_probe(struct platform_device *pdev)
  
--	power->nb.notifier_call = macsmc_power_event;
--	blocking_notifier_chain_register(smc->event_handlers, &power->nb);
-+	if (!smc->is_acpi) {
-+		power->nb.notifier_call = macsmc_power_event;
-+		blocking_notifier_chain_register(smc->event_handlers, &power->nb);
-+	} else if (power->has_battery) {
-+		power->adapter = acpi_dev_get_first_match_dev("ACPI0003", NULL, -1);
-+		if (!power->adapter)
-+			return -ENODEV;
+ 	result = 0;
  
-+		ret = acpi_dev_install_notify_handler(power->adapter, ACPI_DEVICE_NOTIFY,
-+					macsmc_power_acpi_notify, power);
-+		if (ret)
-+			return ret;
+-	if (!x86_apple_machine) {
+-		result = acpi_manager_get_info(sbs);
+-		if (!result) {
+-			sbs->manager_present = 1;
+-			for (id = 0; id < MAX_SBS_BAT; ++id)
+-				if ((sbs->batteries_supported & (1 << id)))
+-					acpi_battery_add(sbs, id);
+-		}
++	result = acpi_manager_get_info(sbs);
++	if (!result) {
++		sbs->manager_present = 1;
++		for (id = 0; id < MAX_SBS_BAT; ++id)
++			if ((sbs->batteries_supported & (1 << id)))
++				acpi_battery_add(sbs, id);
+ 	}
+ 
+ 	if (!sbs->manager_present)
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index 418951639..9f3b9b7d9 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -14,6 +14,7 @@
+ #include <linux/dmi.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/platform_data/x86/apple.h>
+ #include <asm/cpu_device_id.h>
+ #include <asm/intel-family.h>
+ #include "../internal.h"
+@@ -608,6 +609,9 @@ bool acpi_quirk_skip_acpi_ac_and_battery(void)
+ 	long quirks = 0;
+ 	int i;
+ 
++	if (IS_ENABLED(CONFIG_MACSMC_POWER) && x86_apple_machine)
++		return true;
 +
-+		acpi_status status = acpi_evaluate_integer(power->adapter->handle, "_PSR", NULL,
-+					&power->adapter_status);
-+		if (ACPI_FAILURE(status))
-+			return -EIO;
-+
-+		power->adapter_status = !!power->adapter_status;
-+	}
- 	return 0;
- }
- 
-@@ -868,7 +1324,11 @@ static void macsmc_power_remove(struct platform_device *pdev)
- {
- 	struct macsmc_power *power = dev_get_drvdata(&pdev->dev);
- 
--	blocking_notifier_chain_unregister(power->smc->event_handlers, &power->nb);
-+	if (!power->smc->is_acpi)
-+		blocking_notifier_chain_unregister(power->smc->event_handlers, &power->nb);
-+	else
-+		acpi_dev_remove_notify_handler(power->adapter, ACPI_DEVICE_NOTIFY,
-+				macsmc_power_acpi_notify);
- }
- 
- static const struct platform_device_id macsmc_power_id[] = {
-@@ -891,3 +1351,4 @@ MODULE_LICENSE("Dual MIT/GPL");
- MODULE_DESCRIPTION("Apple SMC battery and power management driver");
- MODULE_AUTHOR("Hector Martin <marcan@marcan.st>");
- MODULE_AUTHOR("Michael Reeves <michael.reeves077@gmail.com>");
-+MODULE_ALIAS("platform:macsmc-power");
+ 	dmi_id = dmi_first_match(acpi_quirk_skip_dmi_ids);
+ 	if (dmi_id)
+ 		quirks = (unsigned long)dmi_id->driver_data;
 -- 
 2.55.0
 
