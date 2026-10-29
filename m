@@ -1,100 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.50
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793240568;
-	b=sfFPVDd7ykzhDrxK5NkPIQ3AUE+PkS0SJunn08uqhj+Cg6wDPJuQvpoWJyCUt+lX6K5B
-	 sTKhFPpOfUWmVsBaLRpEWpgco52/d2YS+sY1rVoHODJEo+8qmoeqenljoVCZ/1xFjtFsK
-	 Kuc34iAyxxjEvEVg9OmGfxycXACnkILUBDbu0VnjH+QrAhpPQVheJHxisN5wtxeBssXU0
-	 L0JIqFcTd5NNyQqI+OGuOKuKUf2u2+Q4Y0oywHx/VgXod09jvxRxJ208iUrErgz4X71x8
-	 r+REnMh8eW+SGWc4uJqKSOkTX4ViAOlaGt4Sr7b1gzSBBJKSZwmqbJNkQK6rfFvEikg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793240568;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=j4WfMTamCRXHv/6Y8+jwIR5jjgxstSa69agWQosfIbg=;
-	b=EH/8IRSrQ8ZzOwxIca9RjTgemoRfiZ1Sm4ioYJ1KSibkTG4GDveA3kJMf8Du1NLJmTpi
-	 iWZv1HHEidQYtJwktq5l8bDwoSM15ZS8pglQ0zCKmzfJAZRyAI7mzWtnJRwlW18rVJUm+
-	 cAwmuYQpikPapZZGivd35EaRKe2DlqSMHg89VxT1jCkkjtd116t8PF9Xs2gdpRs+EVmFY
-	 dwWteJcpoJegQmNZhWRzP52paPHDq8EFT5Wi+RPnfvbImpUFXT+xBoUvnTOspYlcjLcEL
-	 0RMJzQKJzi9pSbQnhduOxOB6HiWEu1ggy8wDzKS+Sj0cc1ziwGPGpHj8dswoFsPCaJQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qmyf5Jt+;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.210.50
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793254389;
+	b=Tes/sfBGuImzrGcRTSeX4LG4ZuUcqZm91UM4Iu1r8vc8GQaFcfGsaRsiJsvjMkJs3VXq
+	 ejUaASoxMs0NvbLVz3cY/TTtE0UlDSHIkmAwNvO/blIYLwudLdkMDxZToY6EU1uALehBs
+	 SjzuclP/WvxVrbDbJcAUG2uXXwGeriHthTzE/LNGZ5jChWo4R7Ch0GwSmoqihsxCaXRko
+	 yEEEbaAT4xDeq/v+pqyq4henciKcwPyepS58oP2bsSKFFtvD5uJcOTQtkDYniia8mwciv
+	 +cytMTeG7vajxP5sf6XpSZ7jgXTYvJQfQHK4COkThC9Jqe9UKjxxfKOVsquq3EifBqA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793254389;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=8HfICeltQZtZCQ5hD60I+Ms/gO7apKM3P6RJyOQSEUI=;
+	b=ygpf8oSIetfgdHDl0NfHPaR6Yo2nxtU/ayi5CGecBeXHfOd/8UUHYzeBpyXRe8gpL7NV
+	 oD3Af+M27S4KG1WZi3Ksgf5Wvptf3sVJo5COf8NYvF3xxAGJtcwd+kDaWSl58bszJK8RY
+	 B1MNXrhG6jCrkqQAhBj0GyG1hd7YhH5m3Uo4L3XpP0wKLOeyoFYgCG7b41rUCBnMp55sm
+	 WRssEs3XmoMUXuCF9ErOr+rPvbazyHDnL0yRfJRE2slgITnb2fc0jJd2O70n5Kkvka0y1
+	 y6hxAGXmAYNczyOGDdovVMYW6O8Svx8qiVXBmH/6+5iJ0QjU1gwIKdWtjRrGdvKZcBA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AY9fCZM8;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F98D606A31C
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 02:22:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F98D606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0309606A31D;
+	Thu, 29 Oct 2026 06:13:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qmyf5Jt+
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-844a8bf7e25so1116580a34.1
-        for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 19:22:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793240567; cv=none;
-        d=google.com; s=arc-20260327;
-        b=fnG5VMMreo6VAfAujPsnDuChN7ZshnJA4ODjmgfJd/EfQA3MdtBXMrElmfXeGYHc6b
-         3A8D9texfcR5PJpO7hXu1YFFHkG3n0DRYzRT7J4/EldS3hAEAci52Ax3DmPP51NcOGHA
-         yASgp6hLmFmQqCoHru9TgVYYEMJyO4omWPB0o8qlF4HZG3Uww+1S4IzR+nj6DClwe+Y8
-         FjgCNLeggheOjEhQ+q1SK9jENzvBbdwmmchyd9tPc6CCcwThRee6ZssKRzzBzp8ygDfk
-         rByS3Syn6vOQNwgCA8SsPWTUB5wEGfimlovviROu308IPtTnq3jeT576244wMC6xDKjB
-         gkXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=j4WfMTamCRXHv/6Y8+jwIR5jjgxstSa69agWQosfIbg=;
-        fh=Vs8O03pAjTsZbdbwN4snQ7/14M+HxfDC+LWnMJWdXsM=;
-        b=B/vok7IpZuSosgKc7lBb7KfhsxLDv6h0/407VxUo19Go9Y5eBhmEy9FSKHEHF4OHoX
-         LrGowez9bQSOgVfLY1hUmiC1jxpTQOd4vhXVf/0QsC1mUKU5ZhtXtbEJMYcr2jwz4HGR
-         f2/QLS36Ur6KFlSETj4MAyiQxYxdd8RE1mW41V0tkbcH4WcsEG9Cqw4inyH9JQ2xeadX
-         dOTN9iW9CMkKog71wvWa4J1NB8qMSJ5WUd2X85l2+KlKvP+dy4d69kWsUmvm/IPJfib9
-         t9NQvsuL6rEgQXqwPnhJTu9+X9n0admtzcX0dy1yxQS1bY8KWrNwPO9z+7TJQmMABItI
-         4uSQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793240567; x=1793845367; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=j4WfMTamCRXHv/6Y8+jwIR5jjgxstSa69agWQosfIbg=;
-        b=qmyf5Jt+Ed+8erZTIMBU8TuCQh3D2NzH5HVjNrR2j/MFpaoN3IGVfoACJiUjUHMjb/
-         lFR8+WFwLe0CXdQXa/o0qlcSwCYmOmul2OW7qv5Fyp0d5twPeruOqTJp87ZyLFwWu03V
-         aaQxGAM2DUjtppw/xL5P7oISaWVHa+H+oVtjg1Qmu84nz8uY8gAA2Af3Ucve5FKD4PPB
-         tfAKUJfn06RuAOZ3E6CWTcIq8tnssyh0C8Em7zGntuVxBb7lLV3NdSlDyI7g0edtr8ra
-         AKp7JqKhozgBFOIhF2TTJXF6W59ghl5TVfxLl1XRy0Cid1wYWsLR+hX9LRp1UxkcjO1i
-         ZtLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793240567; x=1793845367;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=j4WfMTamCRXHv/6Y8+jwIR5jjgxstSa69agWQosfIbg=;
-        b=OojFv56k6TohUmO25aTrdgMTza/70zIMhU+EAfPgcCESS6+QR8yOxEze+RECfbs9ik
-         D467c88ze1I469Ct/Pk/fsAxBqN/G7JfB0VWvqtn9GbbiU+LuKgAnzNiw8aP8+MExgne
-         X8HPqvCgCEQ4CjSOnw3oCN6mQkcAntKACdNvuu7thpf/MdyVaTvB097RTm8QFpC5haUl
-         SlWESD3Y4/L/uQi07RYCc+EFm0M030hpo3W0L/RhqOTeJHN1tykLEKuZsOaonnCvWpbi
-         0zey+pZqUZaEeZC0yxZUh66Lbk0rmNwDT9EWGkAqfg8gDDe7QMJEWhobHDrh1rY/TFhI
-         gqLg==
-X-Forwarded-Encrypted: i=1; AKwUvBwbTzH8qrahhCn0bv8Rrg3b5gk+GqDu7XXPj2EuOUOfPYNZF8ppH92vziKdZrth1BHHd1XIYl4Y3tk=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKPSi2cBzxMot0TOZxNmjaYZXnthdxzWQpZEEZiZz8McsPzqyMR
-	BCU6pVxsUuEvka8PNlZvgO9PIxYQMEozGhDzageYyrlvagPWknrZTxHYi1NT1QCy+lb9xTPuevm
-	z7jzQHURM8fnuBXLV3QknPKf4m4shhcc=
-X-Gm-Gg: AYBFou1qjIQMyW1TSh1cvpk4c2Bd2k9t4OHBtp+qvqcUOUCsPbW/M7wIWFngPftfAap
-	2sMADdejcE9wCLBE0y9V5MBFTciT53BcL068v4IRqofcYwvfuQIWvVy1IYRvO+bRPiB5qK+ZJCs
-	Tex8cvxXnL222eqmoPNaVpwhkig4N/AwR+NevN/xAcDmV2HswowLCj9DkwrZpKfl6UXJkydLYT0
-	rT3xJG1WeOhexD44ltogKP3tzglL5tNyoEMS1GqveeW+ylAdUToJ8QfGM+XAPOH2IqFky10UnAj
-	qfzCNO+FiqB3fuqX1QIpN3eSlQO+Z+wzKlbqNt5JOlf4oodL/GBiWofK1fBYCPRlRgLAbxJIETC
-	BlvkuDVsV4fczIiHZ7LIpUfttm81kkqyb7FsfptGT+xNrULHW128RWGMy31G2qCX01Ka4sQoFaa
-	PB1cVSKLpzp7UWQDEqUnmgYTWv2cM=
-X-Received: by 2002:a05:6820:c2d3:20b0:703:fee:9506 with SMTP id
- 006d021491bc7-713f217c0c9mr1834612eaf.82.1793240566951; Wed, 28 Oct 2026
- 19:22:46 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AY9fCZM8
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFD61F01825;
+	Thu, 29 Oct 2026 06:12:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793254387;
+	bh=8HfICeltQZtZCQ5hD60I+Ms/gO7apKM3P6RJyOQSEUI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=AY9fCZM838jxvzO1LZjlGpXv0W8K3teqSZL7RijTgFK+vMuR9I/rLM2tTDsuEdu49
+	 D2/wj4MDZjo91NakOEaX5qSF5O95U3YG8/G5UHWIxf80ZCUvpFSL90WwQh/5OnZhB+
+	 IxV3Ir9hpPOUOgGFeO+ZNTpumWj+emmZLNf8wkK2peC6tx3JvxcCwhRjIp/8vl4fIF
+	 5Te7rIsn3LXYjnylmmiG2eWT/I2O7NNXE/I6Z/jqqYBvXQ+flDBPRbsCb9u28Gwj8Z
+	 Wm++8Vi3KmsJ2uSOrdepJb1M4tZjsQyVIQao8cR8k7StT66yaZCypWnGb4AtixMYe1
+	 607LwJx2luOOA==
+Date: Thu, 29 Oct 2026 07:12:52 +0100
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+ Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet
+ <jbrunet+clk@baylibre.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>, Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Florian Fainelli
+ <florian.fainelli@broadcom.com>, Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Rob Clark
+ <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>,
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang
+ <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, Marijn Suijten
+ <marijn.suijten@somainline.org>, Frank Li <Frank.Li@nxp.com>, Vinod Koul
+ <vkoul@kernel.org>, Yinbo Zhu <zhuyinbo@loongson.cn>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, Jonathan
+ Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>, Kevin Hilman
+ <khilman@baylibre.com>, Martin Blumenstingl
+ <martin.blumenstingl@googlemail.com>, Tiffany Lin
+ <tiffany.lin@mediatek.com>, Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+ Yunfei Dong <yunfei.dong@mediatek.com>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Andrzej
+ Hajda <andrzej.hajda@intel.com>, Ryder Lee <ryder.lee@mediatek.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Krzysztof =?UTF-8?B?V2lsY3p5?=
+ =?UTF-8?B?xYRza2k=?= <kwilczynski@kernel.org>, Manivannan Sadhasivam
+ <mani@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Christian Marangi
+ <ansuelsmth@gmail.com>, Eric Anholt <eric@anholt.net>, Kuogee Hsieh
+ <quic_khsieh@quicinc.com>, Peng Fan <peng.fan@nxp.com>, Aakarsh Jain
+ <aakarsh.jain@samsung.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, freedreno@lists.freedesktop.org,
+ imx@lists.linux.dev, dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org,
+ linux-media@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Fix property name typos in if/then schemas
+Message-ID: <20261029071252.586c8cbc@foz.lan>
+In-Reply-To: <20261028120216.2657397-1-robh@kernel.org>
+References: <20261028120216.2657397-1-robh@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,31 +97,240 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261020-tf-luna-v1-0-53a88f93db24@gmail.com> <20261020-tf-luna-v1-2-53a88f93db24@gmail.com>
- <20261020-formidable-aardvark-of-biology-cffcc9@quoll>
-In-Reply-To: <20261020-formidable-aardvark-of-biology-cffcc9@quoll>
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-Date: Thu, 29 Oct 2026 07:52:35 +0530
-X-Gm-Features: AclHuK-_y3DzB2l4MCckdRo6yujg-QNDJMup39akDFJc-hodLNFx5tyWp7l8yc4
-Message-ID: <CAFqz8LLzi=mY01Lyjzmt71yzae=8C3-O9zMG0739jH2Dac1=2w@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: proximity: Add Benewake TF-Luna
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 20, 2026 at 10:38:00AM +0200, Krzysztof Kozlowski wrote:
-> Binding should in general cover both interfaces. You will not get
-> different compatible for UART. Incompatible changes won't be accepted,
-> either.
+On Wed, 28 Oct 2026 07:02:12 -0500
+"Rob Herring (Arm)" <robh@kernel.org> wrote:
 
-Hi Krzysztof,
+> Property names within if/then schemas currently go unchecked whether
+> they have a type defined or match what's in the top-level schema. Adding
+> a check finds a number of instances of typos. The typos result in the
+> schema having no effect on constraints.
+> 
+> With this, fix the mediatek,vcodec-encoder 'clocks' count constraint
+> exposed by the name correction.
 
-Thanks, In v2 I'll extend the binding to describe the UART interface
-as well. The driver stays I2C-only for now.
+For media:
+
+Acked-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+
+> 
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/clock/qcom,kpss-gcc.yaml     |  2 +-
+>  .../bindings/display/brcm,bcm2711-hdmi.yaml          |  2 +-
+>  .../bindings/display/msm/dp-controller.yaml          |  2 +-
+>  .../devicetree/bindings/display/msm/hdmi.yaml        |  4 ++--
+>  Documentation/devicetree/bindings/dma/fsl,edma.yaml  |  2 +-
+>  .../devicetree/bindings/gpio/loongson,ls-gpio.yaml   |  2 +-
+>  .../bindings/iio/adc/amlogic,meson-saradc.yaml       |  2 +-
+>  .../bindings/media/mediatek,vcodec-encoder.yaml      | 12 ++++--------
+>  .../devicetree/bindings/media/samsung,s5p-mfc.yaml   |  2 +-
+>  .../devicetree/bindings/pci/mediatek-pcie.yaml       | 12 ++++++------
+>  10 files changed, 19 insertions(+), 23 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml
+> index 88b7672123a0..ed347096df46 100644
+> --- a/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml
+> +++ b/Documentation/devicetree/bindings/clock/qcom,kpss-gcc.yaml
+> @@ -62,7 +62,7 @@ then:
+>      - '#clock-cells'
+>  else:
+>    properties:
+> -    clock: false
+> +    clocks: false
+>      clock-names: false
+>      '#clock-cells': false
+>  
+> diff --git a/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml b/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml
+> index c1cefd547391..fd4d598f6ff8 100644
+> --- a/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml
+> +++ b/Documentation/devicetree/bindings/display/brcm,bcm2711-hdmi.yaml
+> @@ -145,7 +145,7 @@ allOf:
+>              - description: CEC stuck at low interrupt
+>              - description: Hotplug connected interrupt
+>              - description: Hotplug removed interrupt
+> -        interrupts-names:
+> +        interrupt-names:
+>            items:
+>              - const: cec-tx
+>              - const: cec-rx
+> diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> index 094a6383bb77..f72d1b354007 100644
+> --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+> @@ -304,7 +304,7 @@ allOf:
+>          clocks:
+>            minItems: 6
+>            maxItems: 6
+> -        clocks-names:
+> +        clock-names:
+>            minItems: 6
+>            maxItems: 6
+>  
+> diff --git a/Documentation/devicetree/bindings/display/msm/hdmi.yaml b/Documentation/devicetree/bindings/display/msm/hdmi.yaml
+> index dfec6c3480f3..02d27ccad024 100644
+> --- a/Documentation/devicetree/bindings/display/msm/hdmi.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/hdmi.yaml
+> @@ -113,7 +113,7 @@ allOf:
+>              - const: core
+>              - const: master_iface
+>              - const: slave_iface
+> -        core-vcc-supplies: false
+> +        core-vcc-supply: false
+>  
+>    - if:
+>        properties:
+> @@ -136,7 +136,7 @@ allOf:
+>              - const: core
+>              - const: alt_iface
+>              - const: extp
+> -        hdmi-mux-supplies: false
+> +        hdmi-mux-supply: false
+>  
+>    - if:
+>        properties:
+> diff --git a/Documentation/devicetree/bindings/dma/fsl,edma.yaml b/Documentation/devicetree/bindings/dma/fsl,edma.yaml
+> index f609038e35ae..0260d177c7d0 100644
+> --- a/Documentation/devicetree/bindings/dma/fsl,edma.yaml
+> +++ b/Documentation/devicetree/bindings/dma/fsl,edma.yaml
+> @@ -172,7 +172,7 @@ allOf:
+>              const: fsl,imx7ulp-edma
+>      then:
+>        properties:
+> -        clock:
+> +        clocks:
+>            minItems: 2
+>            maxItems: 2
+>          clock-names:
+> diff --git a/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml b/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
+> index 69852444df23..07c8b233c6bd 100644
+> --- a/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
+> +++ b/Documentation/devicetree/bindings/gpio/loongson,ls-gpio.yaml
+> @@ -80,7 +80,7 @@ allOf:
+>          - resets
+>      else:
+>        properties:
+> -        "#interrupts-cells": false
+> +        "#interrupt-cells": false
+>          interrupt-controller: false
+>          resets: false
+>  
+> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> index 70ab4e140e71..535213ba0c5e 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> @@ -92,7 +92,7 @@ allOf:
+>      else:
+>        properties:
+>          nvmem-cells: false
+> -        mvmem-cel-names: false
+> +        nvmem-cell-names: false
+>          clocks:
+>            minItems: 4
+>          clock-names:
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> index 4505e66876a2..52f471a070d5 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> @@ -110,19 +110,15 @@ allOf:
+>  
+>      then:
+>        properties:
+> -        clock:
+> -          items:
+> -            minItems: 1
+> -            maxItems: 1
+> +        clocks:
+> +          maxItems: 1
+>          clock-names:
+>            items:
+>              - const: venc_lt_sel
+>      else:
+>        properties:
+> -        clock:
+> -          items:
+> -            minItems: 1
+> -            maxItems: 1
+> +        clocks:
+> +          maxItems: 1
+>          clock-names:
+>            items:
+>              - const: venc_sel
+> diff --git a/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml b/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml
+> index b46cc780703c..4488d5ca9b9c 100644
+> --- a/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml
+> +++ b/Documentation/devicetree/bindings/media/samsung,s5p-mfc.yaml
+> @@ -174,7 +174,7 @@ allOf:
+>              - const: mfc
+>          iommus:
+>            maxItems: 2
+> -        iommus-names: false
+> +        iommu-names: false
+>  
+>  examples:
+>    - |
+> diff --git a/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml b/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml
+> index c009a7a52bc6..7c40361f95ec 100644
+> --- a/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/mediatek-pcie.yaml
+> @@ -127,7 +127,7 @@ allOf:
+>          phy-names:
+>            const: pcie-phy1
+>  
+> -        power-domain: false
+> +        power-domains: false
+>  
+>        required:
+>          - resets
+> @@ -150,7 +150,7 @@ allOf:
+>            minItems: 2
+>            maxItems: 2
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -171,7 +171,7 @@ allOf:
+>          clocks:
+>            minItems: 6
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -193,7 +193,7 @@ allOf:
+>          clocks:
+>            minItems: 6
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -215,7 +215,7 @@ allOf:
+>          clock-names:
+>            maxItems: 1
+>  
+> -        reset: false
+> +        resets: false
+>  
+>          reset-names: false
+>  
+> @@ -223,7 +223,7 @@ allOf:
+>  
+>          phy-names: false
+>  
+> -        power-domain: false
+> +        power-domains: false
+>  
+>          mediatek,pbus-csr: false
+>  
+
+
 
 Thanks,
-Vidhu
+Mauro
