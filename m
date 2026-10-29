@@ -1,57 +1,148 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793267271;
-	b=zAMfmdHyYDCaqGvwLPxieDG5tQmsz6xM9Mk6UsgqzX0gweuxA3U6tuUXF3QD9IeCXq7I
-	 kjpv/Lp/Xr3mMk94HJAcgNOcR3ZP6iM8tGQaM2j4ZFxMKtrk1jxnPWkERopCUMHZBzIAb
-	 G6tjfNzIvEOofSoZpVaZs3mm1uEf5O4kaScSsYuKKwvLoHbZMm46BiGsJ0oupwdEvIJM5
-	 J+uT2b2dpfHvnlXb6LiRSSy3/O/9Ux3b3HRU+Y7smlB55pWdq+OE3EZPXMQRD7enXvVka
-	 Qm/oUay1NB4mhQS6tG5oYA5b8IEDFcbX8P66Pnd30TVifLx0Qmzfkjr55+vTz11ejtQ==
+	t=1793267915;
+	b=QTI7p51ynBMs2mLb/WT00Bdm7IoLt+DjKOcRc1YtdMcIXDy7C7+LcAAgXcYdDluYIrHD
+	 aElOX12JDansrk2VOfWxAACu0IhgW/kJTynvmyAstU/R/eqUq8BWVAfcT1AafyV+ZTklK
+	 /9mB4D74kKFzlG/NAxwjsb/GwsPDgV+Du6mC1LBQq84AkWZTngFqn5Dnbgb6XCk0sr6h1
+	 XLxBq0eSBbivfGqeH8BMcIfOSOybg+kzUC6MjM1Vl2BRZnRit8W47VmT4VodFliQIGAzx
+	 sw3ffJCQ2SIdHoHdpFyQaWgInzDCFiN0p9DgXSNB9sxN71J3CQqXX+RT3OZRkdc8wbw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793267271;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=JLznhEesXud6u4BhPm2aVn2jx6Uyq7IzPp7BgTwUqZA=;
-	b=l3/R25hAahaChuDYFLF9g8nbRW6U1D6SPCDx8h0tNXWo1uie+XFpjgcguqnUynOoWzmr
-	 kSC6xTq6FXKHkhYCgYg1LPz/AyjplqJLZgZJXlpyYeSwxKQVjiw3t+QfdvAXVuhKohIq+
-	 kFT0V1/hauAu1xoFYd6A0LCEoQjeKZq7R5JO7JLp4LOaLnJa6x8XIvxFXD6kUV3b1WiJN
-	 nr/gBhdcBe6RUCpf9wCXDb16+IoNmlnOYzFhBdoCbIPvZRkQplnKpwQjMMqO+pANZwbZm
-	 VPqwh+ObFVvfvBAKdz01xNdkwiOWmEYe1Lc2fRBoOrWKc3fJKSrTW0+1jjNRKBuEZ8w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793267915;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=pvyVptf34gNXi8Bay+Y0wQ1+su1zbi4JW/reYBgb1VQ=;
+	b=iXWipHfQ9P8yqBpD1L+ahnnTIzBFtQ7ppqeF9S6cpC9TBDMCC9eQ/2GMzz2KM9H6EUhg
+	 6G7RWEZxcq6f2/Jr60SFJJjBUvWbY4jQJbPgCGMJAmxzuSlD0w7/BJ40ndvsucV9BrQvS
+	 iejOUI4ddT/0uxjaK4/vTFQx338G7xmI21OdUZZ7v6SpeYsM3I/IGCgzI9JKm4bMSBJ8G
+	 XIbZ8I4Dj3Q6cGQsigL3VhiHO2+Cs8aXbD1Zbse0sTqapXYnptvIa2NddeJZZaR860pjq
+	 Z2FxYFZCMoguMfYqseNBTip+zeJTmHrUUdn2PLs9+AA1OqUTR+JnqcHRRZ7IU0v8WRA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="RkNO3YA/";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E9blAECY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60273606A31C;
-	Thu, 29 Oct 2026 09:47:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E047606A31C;
+	Thu, 29 Oct 2026 09:58:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RkNO3YA/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D321F01825;
-	Thu, 29 Oct 2026 09:47:50 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E9blAECY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D52E1F01825;
+	Thu, 29 Oct 2026 09:58:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793267271;
-	bh=JLznhEesXud6u4BhPm2aVn2jx6Uyq7IzPp7BgTwUqZA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RkNO3YA/U3bdXgOGg3qaT6s0CRkCmGtMa3IPUXdj7t1NrzXf1n+M7826uasZ34CtD
-	 u3n2IDEKU+VDxWzJTSD4Gesei7glRO5XZhVaxNZcIzYIGR+0DWWHBkrxWdM4jQaPLQ
-	 hpBpcNZ45+GtMjBm6XWjvunXCMZEZLpo88tml1ZGSidQQfWIwSv0FQMMdLQ6Xz0pms
-	 ZEnxxO8bG+Y1txS8gMu+zcnUsVhVW3OYtZKgCH4TIb/kMTkpucUlJdhKWU3ru7sgOn
-	 9SmAB+10cMQVk35G3nN98jR+qkGY/Jl5lxBNWTeRgarb8xaZhLJlHaUbYkZ4UpUwXG
-	 p3AdtdwGwIh1g==
-Date: Thu, 29 Oct 2026 10:47:47 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Sergiu Cuciurean <sergiu.cuciurean@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
-Message-ID: <20261029-rustling-scrupulous-peacock-5e6b03@quoll>
-References: <20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com>
- <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
+	s=k20260515; t=1793267915;
+	bh=pvyVptf34gNXi8Bay+Y0wQ1+su1zbi4JW/reYBgb1VQ=;
+	h=From:To:Cc:Subject:Date;
+	b=E9blAECYp6KG8AN9sCB1a35WZl4tql7Y8ZXp0RDyDE91uhItcOlCubJTDFxxfFQ1c
+	 FQ1oLcDZUFCI5NNc2ysWVgB/YRzMjzSxsJmTuSY+45io7wuL8LjueztYWrgRcpOECH
+	 VewapS1H9J02mVTfUi3oCFQKKGmnMRyzM3asO2oNSoHkcLOi0Td6e3tzSkHmyLmid0
+	 hdfX9MCzFdHpolJc2F/hD/ot11Mq8ijC0ZN/oRoyiR3cb6617vJjq0MXOsWWjMlgvu
+	 0oeqVetAnnaBq4kfE+Rq5DaPVbXmQggZR+obBEtf/xce5dNpC92pf3UDffILLhhSf6
+	 rLTIHQ1YDRYGA==
+From: Philipp Stanner <phasta@kernel.org>
+To: Min Ma <mamin506@gmail.com>,
+	Lizhi Hou <lizhi.hou@amd.com>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Tomeu Vizoso <tomeu@tomeuvizoso.net>,
+	Karol Wachowski <karol.wachowski@linux.intel.com>,
+	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	Felix Kuehling <Felix.Kuehling@amd.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Lucas Stach <l.stach@pengutronix.de>,
+	Russell King <linux+etnaviv@armlinux.org.uk>,
+	Christian Gmeiner <christian.gmeiner@gmail.com>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	Alessio Belle <alessio.belle@imgtec.com>,
+	Luigi Santivetti <luigi.santivetti@imgtec.com>,
+	Qiang Yu <yuq825@gmail.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Abhinav Kumar <abhinav.kumar@linux.dev>,
+	Jessica Zhang <jesszhan0024@gmail.com>,
+	Sean Paul <sean@poorly.run>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Lyude Paul <lyude@redhat.com>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	Steven Price <steven.price@arm.com>,
+	=?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>,
+	Liviu Dudau <liviu.dudau@arm.com>,
+	Dave Airlie <airlied@redhat.com>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Philipp Stanner <phasta@kernel.org>,
+	Natalie Vock <nat@pixelcluster.dev>,
+	Arun Pravin <arunpravin.paneerselvam@amd.com>,
+	Matthew Auld <matthew.auld@intel.com>,
+	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Melissa Wen <mwen@igalia.com>,
+	=?UTF-8?q?Ma=C3=ADra=20Canal?= <mcanal@igalia.com>,
+	Dave Stevenson <dave.stevenson@raspberrypi.com>,
+	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>,
+	Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Zack Rusin <zack.rusin@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sunil Khatri <sunil.khatri@amd.com>,
+	Kees Cook <kees@kernel.org>,
+	Jesse Zhang <jesse.zhang@amd.com>,
+	=?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>,
+	Srinivasan Shanmugam <srinivasan.shanmugam@amd.com>,
+	Kexin Sun <kexinsun@smail.nju.edu.cn>,
+	Prike Liang <Prike.Liang@amd.com>,
+	David Rosca <david.rosca@amd.com>,
+	Krzysztof Karas <krzysztof.karas@intel.com>,
+	Marco Crivellari <marco.crivellari@suse.com>,
+	Shixiong Ou <oushixiong@kylinos.cn>,
+	=?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
+	Thadeu Lima de Souza Cascardo <cascardo@igalia.com>,
+	Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>,
+	Joel Fernandes <joelagnelf@nvidia.com>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Neill Kapron <nkapron@google.com>,
+	Michael Bommarito <michael.bommarito@gmail.com>,
+	Sam Day <me@samcday.com>,
+	Gabriel Prostitis <prostitisgabriel@gmail.com>
+Cc: dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org,
+	etnaviv@lists.freedesktop.org,
+	intel-gfx@lists.freedesktop.org,
+	imagination@lists.freedesktop.org,
+	lima@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	nouveau@lists.freedesktop.org,
+	virtualization@lists.linux.dev,
+	spice-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-usb@vger.kernel.org
+Subject: [RFC PATCH 0/6] dma-buf: Phase out is_signaled() race
+Date: Thu, 29 Oct 2026 10:55:37 +0100
+Message-ID: <20261029095542.1526750-3-phasta@kernel.org>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -61,176 +152,113 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261027134409.76824-2-Nicolae-daniel.Deaconescu@analog.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 27, 2026 at 03:44:08PM +0200, Nicolae-Daniel Deaconescu wrote:
-> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> 
-> Add bindings for the LTC2387-16 and LTC2387-18, 15 Msps SAR ADCs with
-> an LVDS data interface, and for the ADAQ23875, ADAQ23876 and ADAQ23878
-> uModule ADCs, which pair an LTC2387 die with a fully differential
-> amplifier front end.
-> 
-> Conversion start (CNV) and the gated LVDS clock are driven by two PWM
-> channels. Sample data is captured by an AXI ADC IP core, referenced
-> through io-backends. adi,use-two-lanes selects two-lane output, and
-> adi,gain-milli gives the front-end gain: fixed at 2 on the ADAQ23875,
-> set by pin strapping on the ADAQ23876 and ADAQ23878.
-> 
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> Co-developed-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> Assisted-by: Claude:claude-opus-5-5
+dma_fence_is_signaled() can return true *while* the fence is signaling.
+This has caused explosions before and I guess we can agree that it's
+just not ideal.
 
-Drop tag. Not correct value for some time and recently checkpatch
-complains. Anyway, your tag is the last one.
+The fundamental issue is that the fence-signaled-bit is set under lock
+protection but read without it.
 
-Please run scripts/checkpatch.pl on the patches and fix reported
-warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
-patches and (probably) fix more warnings. Some warnings can be ignored,
-especially from --strict run, but the code here looks like it needs a
-fix. Feel free to get in touch if the warning is not clear.
+So ideally, we would read it with the lock. This would not change the
+relative order, i.e. the bit would still be true in the fence callbacks.
 
-> ---
->  .../bindings/iio/adc/lltc,ltc2387.yaml        | 138 ++++++++++++++++++
->  MAINTAINERS                                   |   8 +
->  2 files changed, 146 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-> new file mode 100644
-> index 000000000000..f912260c8f79
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2387.yaml
-> @@ -0,0 +1,138 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright 2022 Analog Devices Inc.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/lltc,ltc2387.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Linear Technology / Analog Devices LTC2387 ADC
-> +
-> +maintainers:
-> +  - Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> +  - Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-> +
-> +description: |
-> +  The LTC2387-18 is a low noise, high speed, 18-bit 15Msps
-> +  successive approximation register (SAR) ADC ideally
-> +  suited for a wide range of applications.
-> +
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/238718fa.pdf
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/238716f.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adaq23875
-> +      - adi,adaq23876
-> +      - adi,adaq23878
-> +      - lltc,ltc2387-16
-> +      - lltc,ltc2387-16-x4
-> +      - lltc,ltc2387-18
-> +      - lltc,ltc2387-18-x4
-> +
-> +  clocks:
-> +    description: Sampling clock
-> +    maxItems: 1
-> +
-> +  pwms:
-> +    maxItems: 2
-> +    description:
-> +      PWM signals used to synchronize the sampling procedure
-> +
-> +  pwm-names:
-> +    items:
-> +      - const: cnv
-> +      - const: clk_gate
-> +
-> +  io-backends:
-> +    description:
-> +      The AXI ADC IP block (axi_ltc2387) that captures the LVDS data stream.
-> +    maxItems: 1
-> +
-> +  vref-supply:
-> +    description:
-> +      External voltage reference. When absent the device's internal 4.096 V
-> +      reference is assumed.
-> +
-> +  adi,use-two-lanes:
-> +    description: The device uses two lanes for data transfer
-> +    type: boolean
-> +
-> +  adi,gain-milli:
-> +    description:
-> +      Gain of the fully-differential amplifier that the ADAQ2387x modules
-> +      integrate ahead of the LTC2387 die, expressed as gain * 1000. It is
-> +      fixed on the ADAQ23875 and set by pin strapping on the ADAQ23876 and
-> +      ADAQ23878, so it must match the board. The bare ltc2387-* parts have
-> +      no amplifier.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [370, 730, 870, 1380, 2000, 2250]
-> +
-> +required:
-> +  - compatible
-> +  - clocks
-> +  - io-backends
-> +  - pwms
-> +  - pwm-names
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - lltc,ltc2387-16
-> +              - lltc,ltc2387-16-x4
-> +              - lltc,ltc2387-18
-> +              - lltc,ltc2387-18-x4
-> +    then:
-> +      properties:
-> +        adi,gain-milli: false
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: adi,adaq23875
-> +    then:
-> +      properties:
-> +        adi,gain-milli:
-> +          const: 2000
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - adi,adaq23876
-> +              - adi,adaq23878
-> +    then:
-> +      properties:
-> +        adi,gain-milli:
-> +          enum: [370, 730, 870, 1380, 2250]
-> +      required:
-> +        - adi,gain-milli
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    adc {
-> +            compatible = "lltc,ltc2387-16";
+Christian informs us that taking the lock causes people to complain
+about performance regressions because the lock-taking shoots down copied
+cache-lines. (which is weird since it would mean that someone is
+repeatedly polling on fences instead of just registering a callback to
+notify himself once it signals)
 
-Use 4 spaces for example indentation.
+Let's accept the potential for regressions as true for now.
+Nevertheless, I think I can propose a path towards removing the race:
 
-Please run dt-check-style.
+This series suggests taking the lock in dma_fence_is_signaled() *unless*
+the driver explicitly asks for a check with a race-condition.
 
-Best regards,
-Krzysztof
+As a preparation, I allow drivers to set flags when initializing fences.
+Then, we add a flag with which the driver can switch locking off for
+that particular function.
+
+By default, we let all drivers take the lock.
+
+Should we then, in the kernel release process get reports about
+regressions, we can set the race-flag for the affected driver and
+restore the old behavior.
+
+Should there be no reports, we could phase the flag out again after a
+few releases, always taking the lock.
+
+New users would always see the lock.
+
+I put all potentially affected parties on Cc. Please point out if you
+can already foresee your driver being negatively affected by this.
+
+P.
+
+
+Philipp Stanner (6):
+  dma-buf: dma-fence: Add flags parameter to dma_fence_init()
+  dma-buf: dma-fence: Add flag for using 64-bit seqnos
+  dma-buf: Port users of dma_fence_init64()
+  dma-buf: dma-fence: remove dma_fence_init64()
+  dma-buf: dma-fence: Close race in dma_fence_is_signaled() by default
+  drm/nouveau: Remove hacky fence check
+
+ drivers/accel/amdxdna/amdxdna_ctx.c           |  2 +-
+ drivers/accel/ethosu/ethosu_job.c             |  2 +-
+ drivers/accel/ivpu/ivpu_job.c                 |  2 +-
+ drivers/accel/rocket/rocket_job.c             |  2 +-
+ drivers/dma-buf/dma-fence-array.c             |  2 +-
+ drivers/dma-buf/dma-fence-chain.c             |  4 +-
+ drivers/dma-buf/dma-fence.c                   | 44 +++++------------
+ drivers/dma-buf/st-dma-fence-chain.c          |  2 +-
+ drivers/dma-buf/st-dma-fence-unwrap.c         |  2 +-
+ drivers/dma-buf/st-dma-fence.c                |  2 +-
+ drivers/dma-buf/st-dma-resv.c                 |  2 +-
+ drivers/dma-buf/sw_sync.c                     |  2 +-
+ .../gpu/drm/amd/amdgpu/amdgpu_amdkfd_fence.c  |  2 +-
+ .../drm/amd/amdgpu/amdgpu_eviction_fence.c    |  7 +--
+ drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c     |  2 +-
+ .../gpu/drm/amd/amdgpu/amdgpu_userq_fence.c   |  5 +-
+ .../gpu/drm/amd/amdgpu/amdgpu_vm_tlb_fence.c  |  5 +-
+ drivers/gpu/drm/drm_crtc.c                    |  2 +-
+ drivers/gpu/drm/drm_writeback.c               |  2 +-
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.c         |  2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c  |  2 +-
+ drivers/gpu/drm/i915/i915_request.c           |  2 +-
+ drivers/gpu/drm/i915/i915_sw_fence_work.c     |  2 +-
+ drivers/gpu/drm/i915/i915_vma_resource.c      |  2 +-
+ .../gpu/drm/i915/selftests/i915_sw_fence.c    |  2 +-
+ drivers/gpu/drm/imagination/pvr_ccb.c         |  2 +-
+ drivers/gpu/drm/imagination/pvr_queue.c       |  2 +-
+ drivers/gpu/drm/lima/lima_sched.c             |  2 +-
+ drivers/gpu/drm/msm/msm_fence.c               |  2 +-
+ drivers/gpu/drm/nouveau/nouveau_drm.c         | 13 -----
+ drivers/gpu/drm/nouveau/nouveau_fence.c       |  4 +-
+ drivers/gpu/drm/panfrost/panfrost_job.c       |  2 +-
+ drivers/gpu/drm/panthor/panthor_sched.c       |  2 +-
+ drivers/gpu/drm/qxl/qxl_release.c             |  2 +-
+ drivers/gpu/drm/radeon/radeon_fence.c         |  2 +-
+ drivers/gpu/drm/scheduler/sched_fence.c       |  4 +-
+ .../gpu/drm/scheduler/tests/mock_scheduler.c  |  2 +-
+ drivers/gpu/drm/ttm/tests/ttm_bo_test.c       |  2 +-
+ .../gpu/drm/ttm/tests/ttm_bo_validate_test.c  |  2 +-
+ drivers/gpu/drm/v3d/v3d_fence.c               |  2 +-
+ drivers/gpu/drm/vc4/vc4_gem.c                 |  2 +-
+ drivers/gpu/drm/vgem/vgem_fence.c             |  2 +-
+ drivers/gpu/drm/virtio/virtgpu_fence.c        |  2 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_fence.c         |  2 +-
+ drivers/gpu/drm/xe/xe_hw_fence.c              |  2 +-
+ drivers/gpu/drm/xe/xe_oa.c                    |  2 +-
+ drivers/gpu/drm/xe/xe_preempt_fence.c         |  2 +-
+ drivers/gpu/drm/xe/xe_tlb_inval.c             |  2 +-
+ drivers/gpu/host1x/fence.c                    |  2 +-
+ drivers/iio/industrialio-buffer.c             |  2 +-
+ drivers/usb/gadget/function/f_fs.c            |  2 +-
+ include/linux/dma-fence.h                     | 48 +++++++++++++++++--
+ 52 files changed, 115 insertions(+), 105 deletions(-)
+
+-- 
+2.56.0
 
