@@ -1,83 +1,83 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.180
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793264241;
-	b=Sc9aOeZ7Awo0lVz5vton6Iacp2s1cxHPaxVyZWgSjbc9YD4c8TRFfTuy7pdmipcpPvHv
-	 oVr499JnII4afWhu3uto+xqXEsGuP4Eiji3GLhXy/rI8ZRtCatzEf3nLnB9c3y4yPb3QW
-	 9dCzu1G7NS1lGvkjU1ImJiugK/FZQhpq8k70V11wH2i78ZKoMOUQGSWMqvFYWXmgh5Wsk
-	 4ZRyKjkYUCtYVW+M5tLj7pPqwM0AZq7doa1nESafcaoweLnK4OTLN94XZg7vtjPjL8qew
-	 iuhrHWPcW5pNt6jgxI3zEyGw2IL/atY85U+qLt609YKjdI763ENtGULhXBbJ95euk0Q==
+	t=1793264272;
+	b=zPVHCegy1IT0ICbOnL8mKJVc1o26/Kc6xLt1iVqP5mj/Ji6l6WEW+esLqW5+ph8FRhPM
+	 PqK3TEtqg+GEzDTpT5wLEu/w0ail8J6FE4GHuDFuDs100A8Jn/kPqIg21YL5cRK1mTXbv
+	 B+qpeWfGEpMrDvIC6E9lq+srXGP1K22I5BNNZakujQXnqLuPYwc28R8pBgtSKHsjYLBz2
+	 h95jwrbdi48JXlVDYpIX7TJRwSqLRB1F/SglzsvTzEiovStaj+8nilBZHlUMtfRzfRbB4
+	 vg8WHyt+9FnRm7LiABH8H7cOMtx/Uq+lePzVl0HONkM9PorOZOz2mKGsfWk/mx2drbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793264241;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793264272;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=l2H0bFieZXxd5jJJlL+lwbMkDWOOduyv3s8IOA4GnsU=;
-	b=bcjotAasEflFL1ZVX4ubQFp3dBg7hwN8kYecFidSBrrd/5qjgFZQKPXw4Su4zjGxZx5p
-	 QmDX1+xhzUvGeoCjfLkIEM9tP5uFKuagg7moXwVYmP9FdtG9gCroQyWUxl50tubiNuG+5
-	 qOSbVURH/q8ULZ+pyTnMnwW/NqnTwsVoRp8MGgV9/v7+49I22QZgGYc3K/58gJtr37te7
-	 TBDmhpm2AigXuXAfpV1e6QjmC8iPXiaNwo/DBwHFBwC6BB19hFsViRoZYS/sqIXTQ1Ut+
-	 r/1noMphtOJAnhGOmXZK31jIIk38fCE9eVp+WBNtkzpM2xkROtFfaj6R7NL8Qy/Lejw==
+	bh=Cs7lasADMMl4bjEjGvbybzUuKYrhEora6V1skLnp0co=;
+	b=GLsHV7GwB8F1vFL2CsVuyHDEbapZFF3PrB/D8/XkJn1PN02StoxJt2uOS7+vtx3dUhyH
+	 kWIyVtO8W/hPNIMMQnMgUhSx/yhXbvsTcj6WwANna5QtHhS8CtxjtKdK4qR5ERe1eq805
+	 XXGe8xcf2WUFbfUb34FhvsNhM7F4rLE0R7b3wWlq745O2gcEaT1HP4meLjsXiGOCfzkzt
+	 MAovDx6Bw1GrMmrMB5RC6n7Z7Sr1npA8Mltm671UJcXAL5dzDVzMf2EUqJU+cadhir4iu
+	 dfl6K1cW2PkjQ2JBb9MHXdf3JWqaOfHw5kZdVmXEV4/A6/UtP/oOAHwwobTIVyL5ETg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hVOk1ChT;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HRtT2iUT;
 	arc=none smtp.remote-ip=74.125.82.180
 Received: from mail-dy1-f180.google.com (mail-dy1-f180.google.com [74.125.82.180])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6561606A329
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 08:57:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B6561606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 019F2606A322
+	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 08:57:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 019F2606A322
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hVOk1ChT
-Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-3535a54bed9so2733359eec.1
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 01:57:20 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HRtT2iUT
+Received: by mail-dy1-f180.google.com with SMTP id 5a478bee46e88-33bf40b0c8bso1174699eec.0
+        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 01:57:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793264240; x=1793869040; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793264271; x=1793869071; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=l2H0bFieZXxd5jJJlL+lwbMkDWOOduyv3s8IOA4GnsU=;
-        b=hVOk1ChTsyDShJ56FOp8o/9+3MQFLB0HW1Ei0A0/oEO++7zL1B6B1eZnTpmrIYtipJ
-         St7BvbStGgaYM8FI+pgxJwnqYzTBIDCI6RH48ISInnwbjSoJWTaKWHcj+dxy2IwnDz5z
-         pPZy5M3Wrv3Zc6ZjmIe8kbynI/RK51T2vfk++Lawt8B9M6KGNcOdFk4Ym3l59f6IadYQ
-         gjX1nIvb4LAzRV//gMrTJGuNZ3TLl989iUwDvOtrQQd87WYuuKl7nTHM2ggKsKxL1cY2
-         ALXOzhV1gXysgRz6wxfNsk0WlxN8WBguWpiasJJmzs8wVmwCVrLFNHpWYNkpCkcJexd/
-         FhMA==
+        bh=Cs7lasADMMl4bjEjGvbybzUuKYrhEora6V1skLnp0co=;
+        b=HRtT2iUTIP8tQw0W2BF26I1s3RT7ZhcG3VnZDhwJ0/tWXcgCT1stZLKnUS9jKYY/pe
+         Qw8TAVw2OvDsE60gmnd+EW02UWEmkaqK9UP+jxxvNRtkxL/qYmdNkLloF7ZVUeUI/lcg
+         hL2EgfJIc4uL4D/gFtXsvzUtZGcJiWiTVbonWyG2YL6Ya57C1P96E/CGd5gKuQCWIa9X
+         94/0tUFVsZGEpt1X574eJA3ZBDxVk2zTZxqvXyddtci5lM2nRezNMD8TjE1ErEoWxHnr
+         cCAb1f1omnp9csacXav36aPoiaX+swdxYOmk9bluvJP5ylS8bEuIhwcEV8GjTh+CoFPJ
+         FVnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793264240; x=1793869040;
+        d=1e100.net; s=20260707; t=1793264271; x=1793869071;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=l2H0bFieZXxd5jJJlL+lwbMkDWOOduyv3s8IOA4GnsU=;
-        b=td60zkD5Jtl5vkCZKU/bxrnPGmxdgZ92V4we0UlIVzpxMPITQCkDsesGvw1Kg4Ldrn
-         Ih6WhB9UA6B7kJ0SaVFl7uEyiux6peloFQDJpTgsIgN0U95CAkMvJZRIRU2l1V0gMSLO
-         OqS0bWZnnnQzfDuLTVAJv7BGYls0rCk1wR8DlC38ivLyjZ0UnnLpOqqOAPJrdVKjyvPI
-         RohAfPzHiui5uTMIQi/rJUmVNUPAb+g7NieyWDXJibRpgp8CTy3B2daO8uuHKS95pk+O
-         2z/uBmEAw0FidHCSCimDzT55/akWTqKbH+xTZInpO7yCPp0nkERKMsrWB/KMGM72uIZD
-         2ylg==
-X-Forwarded-Encrypted: i=1; AKwUvBx5/0TQorW0hGExo9KoPpo3U+QJAo8+/4TcL5I9wRz59O410wEDnB4vhAuj58bEUFunzc6H6hlEytM=@vger.kernel.org
-X-Gm-Message-State: AFq9FYL1Cfx8k2lCjscE9TuqCZcIDEOFa0KNd3g/0vg7TgjZ22Uz+6Nr
-	GyeAaBDwUWblIqkzBi+7SxJ5RQb+versiokpZO5/ke/WDT0DEQjedak=
-X-Gm-Gg: AYBFou3ThpCdTQxfRaMD07Y0piVekQHPajX/Sp6wRt351pTEkurY4OoON2hfCI5nXFp
-	DhMz9OffUq0og63IVMqlPFmC+DJwkhc3V2Q+UJ7VN7g/vYMbqQC6vAlWyrNIqYuB30JUWX1ZmwE
-	9gMsuAY70wRlVBTUcURlw22jGRQVBLzHkj34bQuxU3vL7HhKAJVWqoXidnY98UAb06u8g5UuDqU
-	CUyx+763NLDAwbOnBqUtb2nwFJ0vbMZRDXJI713RLDWs97uqaAKuhCRkrUF19yZadm/ZJ3xE+n9
-	inkD5bGKufvsJHuRMNvRgGt4o7x55ULh+yXrmOXr2Rsl4kHG0w7+jabEQBHPkrb3XXoIvxjEIbI
-	z5GFJXyPmAfoBJTyxubJUZ2g1/PULz9L4beWn5j/QZM1e8P7upOE1ie9/fzRkbP5XDnthHQQdJh
-	B/sHBUtGabP1yvjHcnfSjrc97VYxzXfPfunhHif3thJ6pAXj28Fj6ZnGER+JV8bhO4aEEuZkG7F
-	RB5YLs/ZYaOP378T2+bZ2K3AJ1LStm0rK4nLpLLCycRE1M4+Nz2BIt0fjZpKsypSYl4CqdMHJqx
-	oRvEtvcG8w2P402Qo8gLZNn7zZ6xHwLTwehKyoNUaZlDmefLqeY+HViQLdxyJg==
-X-Received: by 2002:a05:7300:e9c4:20b0:36a:13e1:c889 with SMTP id 5a478bee46e88-36a20427d57mr7840856eec.36.1793264239420;
-        Thu, 29 Oct 2026 01:57:19 -0700 (PDT)
+        bh=Cs7lasADMMl4bjEjGvbybzUuKYrhEora6V1skLnp0co=;
+        b=t8Cr//UAHea0FjIjB3JLexlyybC0PNgiQyLbgeGUPv2WTEyMkXW+UyTW/rRUFEU32Q
+         5Pixh+ijrdK0nWz9vU7hCzS+2+5wWhqgMKqPbi9blNj7gXkYEjWVv81A+CMgA1+JEm0t
+         LBTgV/Uwo553QBX+ZATgqCkatqYlipT1BuhzHunKAzx/+YPbMQ5qg6H6uodgjLOXc3MO
+         0h/n5qIJ/Ia2rcpwYj12/7JR/8RLwCQDpEtDNXxySKkDI01fBlZFvQlZVmGORM2u3oge
+         lbFUSJ0uL25++3hBhZZNBKjGlwBVi18kWrr31Os15j2s++ldqqK6ctlAIcsDMLkKh/fd
+         6K8Q==
+X-Forwarded-Encrypted: i=1; AKwUvByAguaKbfxHm6zcD/Q1HYvRopuNZhUh2b+0jbj6i0YFH8xwlHkIHCj5d4eHkEsFRsliKr7/dWjpTy4=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJpayvTqfb8dqGP5mWrvy9+nkTJGMjOocpkKYoFSbyZK4KUnW12
+	By9SkRiABveSqx3mdmryOo3jnjcFci+WbrU5UP1Szr7cV8OY5sf2AxA=
+X-Gm-Gg: AYBFou0RSGR3bb04uAgaPt3Etu2Qr6TSLvrQeBrPHQZFFsuQ4RTsjHORzaNvgvrg6Jy
+	JnGgmN05ckMo6oCBnXIvMl1QmJw1sz3hLkSQxZwZsvOTmx4B/5ybk43rPmM021LE3mxnPSs9wl2
+	R85M4ysGNZ50WjzHmRdI0Rv7QEbqXAT3vKGWqIaeBhVulxZSsSzhEH4qJR3vQQbkm7AZZXJXKL8
+	uC+ZCmDwPsmiTUjaYdd0imIQi1gUkpX5j+uR8fL4Ky5M9HjNfqLw1MHCcjkdYvqrAbhMDHdJomC
+	4lXJzZNsLdgNYm0bXZZHFobEK2a1T6cWgo2kkLPFh9C/WjYTQPb1aP5z7uO1UkMLDOWie7GFwMG
+	MmKZ52Ju+aUM4PqAfsfgL4gtGD0lnvUoT/JFma8jiLdN1az6IrsENsJhlvLTvC3tkYu9GcxI4/D
+	oKPegOb+Tz3ggY4Fx24ewtpUmdCzGhV41Aum4OYVouoSYDGkY/n4dZCSNlwiecq/UCs/hD8Be70
+	AHLhE0ve3VWYvwovkFJOd3Ajmptz4ynMtzeJXryw2KoueIH3t8SHtTc7bm+nkcJiN2K/H3UELhY
+	+wxgIsomNri8dK78mTnY58LhPNlPNZHhA8qrfkaDg0FCY5USOj8EA6bPWpKGvQ==
+X-Received: by 2002:a05:693c:4010:b0:36a:eee:bb41 with SMTP id 5a478bee46e88-36a202bc3ccmr7412692eec.1.1793264270972;
+        Thu, 29 Oct 2026 01:57:50 -0700 (PDT)
 Received: from at-Standard-PC-Q35-ICH9-2009 ([27.60.20.232])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a23641e78sm16497937eec.0.2026.10.29.01.57.01
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a23641e78sm16497937eec.0.2026.10.29.01.57.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 01:57:19 -0700 (PDT)
+        Thu, 29 Oct 2026 01:57:49 -0700 (PDT)
 From: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
 To: 
 Cc: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>,
@@ -133,9 +133,9 @@ Cc: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>,
 	linux-integrity@vger.kernel.org,
 	keyrings@vger.kernel.org,
 	linux-security-module@vger.kernel.org
-Subject: [RFC PATCH 03/14] watchdog: add driver for apple smc
-Date: Thu, 29 Oct 2026 04:52:00 -0400
-Message-ID: <20261029085504.3547-4-atharvatiwarilinuxdev@gmail.com>
+Subject: [RFC PATCH 04/14] iio/light: add new driver for macsmc
+Date: Thu, 29 Oct 2026 04:52:01 -0400
+Message-ID: <20261029085504.3547-5-atharvatiwarilinuxdev@gmail.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261029085504.3547-1-atharvatiwarilinuxdev@gmail.com>
 References: <20261029085504.3547-1-atharvatiwarilinuxdev@gmail.com>
@@ -150,41 +150,271 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a watchdog driver for the SMC on Intel Macs. It can
-reset the machine if the system stops responding. It works
-on both newer and older SMC versions.
+Add a driver for the ambient light sensors, exposed through
+the standard IIO interface with left and right channels.
+
+This replaces the light sensor support in applesmc.
 
 Signed-off-by: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
 ---
- drivers/mfd/macsmc-core.c     |  11 +++
- drivers/watchdog/Kconfig      |  11 +++
- drivers/watchdog/Makefile     |   2 +-
- drivers/watchdog/macsmc_wdt.c | 140 ++++++++++++++++++++++++++++++++++
- 4 files changed, 163 insertions(+), 1 deletion(-)
- create mode 100644 drivers/watchdog/macsmc_wdt.c
+ drivers/iio/light/Kconfig        |  11 ++
+ drivers/iio/light/Makefile       |   1 +
+ drivers/iio/light/macsmc-light.c | 189 +++++++++++++++++++++++++++++++
+ drivers/mfd/macsmc-core.c        |  11 ++
+ 4 files changed, 212 insertions(+)
+ create mode 100644 drivers/iio/light/macsmc-light.c
 
-diff --git a/drivers/mfd/macsmc-core.c b/drivers/mfd/macsmc-core.c
-index b8905c834..1c1469828 100644
---- a/drivers/mfd/macsmc-core.c
-+++ b/drivers/mfd/macsmc-core.c
-@@ -33,6 +33,10 @@ static const struct mfd_cell apple_smc_acpi_rtc[] = {
- 	MFD_CELL_NAME("macsmc-rtc"),
- };
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 462fff1dd..f84707edc 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -457,6 +457,17 @@ config LV0104CS
+ 	  To compile this driver as a module, choose M here:
+ 	  the module will be called lv0104cs.
  
-+static const struct mfd_cell apple_smc_acpi_wdt[] = {
-+	MFD_CELL_NAME("macsmc-wdt"),
++config MACSMC_LIGHT
++	tristate "Apple SMC Light Sensor"
++	depends on MACSMC_ACPI
++	help
++	  Say Y here if you have a Intel-based Mac. and you
++	  want support for light sensors.
++
++	  To compile this driver as a module, choose M here:
++	  the module will be called macsmc_light
++
++
+ config MAX44000
+ 	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 6672ed01a..2ef4c054d 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -40,6 +40,7 @@ obj-$(CONFIG_LTR390)		+= ltr390.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
+ obj-$(CONFIG_LTRF216A)		+= ltrf216a.o
+ obj-$(CONFIG_LV0104CS)		+= lv0104cs.o
++obj-$(CONFIG_MACSMC_LIGHT)	+= macsmc-light.o
+ obj-$(CONFIG_MAX44000)		+= max44000.o
+ obj-$(CONFIG_MAX44009)		+= max44009.o
+ obj-$(CONFIG_NOA1305)		+= noa1305.o
+diff --git a/drivers/iio/light/macsmc-light.c b/drivers/iio/light/macsmc-light.c
+new file mode 100644
+index 000000000..9d4532b34
+--- /dev/null
++++ b/drivers/iio/light/macsmc-light.c
+@@ -0,0 +1,189 @@
++// SPDX-License-Identifier: GPL-2.0 OR MIT
++/*
++ * Apple SMC Light Sensor Driver
++ *
++ * Copyright (C) 2026 Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
++ *
++ * Based on drivers/hwmom/applesmc.c:
++ * Copyright (C) 2007 Nicolas Boichat <nicolas@boichat.ch>
++ * Copyright (C) 2010 Henrik Rydberg <rydberg@euromail.se>
++ */
++
++#include <linux/iio/events.h>
++#include <linux/iio/iio.h>
++#include <linux/byteorder/generic.h>
++#include <linux/mfd/macsmc.h>
++#include <linux/platform_device.h>
++#include <linux/unaligned.h>
++
++enum {
++	LEFT_LIGHT = 0,
++	RIGHT_LIGHT
 +};
 +
- int apple_smc_read(struct apple_smc *smc, smc_key key, void *buf, size_t size)
- {
- 	guard(mutex)(&smc->mutex);
-@@ -147,6 +151,13 @@ int apple_smc_probe(struct device *dev, const struct apple_smc_backend_ops *ops,
++struct macsmc_light {
++	struct apple_smc *smc;
++	struct notifier_block nb;
++	struct iio_dev *indio_dev;
++	u8 size;
++};
++
++static int macsmc_light_read_raw(struct iio_dev *indio_dev,
++		const struct iio_chan_spec *chan,
++		int *val, int *val2, long mask)
++
++{
++	struct macsmc_light *drv = iio_priv(indio_dev);
++	u8 buffer[10];
++	int ret;
++
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	switch (chan->channel) {
++	case LEFT_LIGHT:
++		ret = apple_smc_read(drv->smc, SMC_KEY(ALV0), buffer, drv->size);
++		if (ret < 0)
++			return ret;
++
++		if (drv->size == 10)
++			*val = be16_to_cpu(get_unaligned_be16(buffer + 6)) >> 10;
++		else
++			*val = buffer[2];
++
++		break;
++	case RIGHT_LIGHT:
++		if (drv->size == 10) {
++			*val = 0;
++			break;
++		}
++		ret = apple_smc_read(drv->smc, SMC_KEY(ALV1), buffer, drv->size);
++		if (ret < 0)
++			return ret;
++
++		*val = buffer[2];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return IIO_VAL_INT;
++}
++
++static int macsmc_light_event(struct notifier_block *nb, unsigned long event, void *data)
++{
++	struct macsmc_light *drv = container_of(nb, struct macsmc_light, nb);
++	s64 timestamp = iio_get_time_ns(drv->indio_dev);
++
++	/* check if event is for us */
++	if (event != 0x2A)
++		return NOTIFY_DONE;
++
++	iio_push_event(drv->indio_dev,
++		IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
++				LEFT_LIGHT,
++				IIO_EV_TYPE_CHANGE,
++				IIO_EV_DIR_EITHER),
++		timestamp);
++
++	if (drv->size != 10) {
++		iio_push_event(drv->indio_dev,
++			IIO_UNMOD_EVENT_CODE(IIO_LIGHT,
++					RIGHT_LIGHT,
++					IIO_EV_TYPE_CHANGE,
++					IIO_EV_DIR_EITHER),
++				timestamp);
++	}
++
++	return NOTIFY_OK;
++}
++
++static void macsmc_light_unregister_notifier(void *data)
++{
++	struct macsmc_light *drv = data;
++
++	blocking_notifier_chain_unregister(drv->smc->event_handlers,
++					   &drv->nb);
++}
++
++static const struct iio_event_spec macsmc_light_events[] = {
++	{
++		.type = IIO_EV_TYPE_CHANGE,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++static const struct iio_chan_spec macsmc_light_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.channel = LEFT_LIGHT,
++		.extend_name = "left",
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.event_spec = macsmc_light_events,
++		.num_event_specs = ARRAY_SIZE(macsmc_light_events),
++	},
++	{
++		.type = IIO_LIGHT,
++		.channel = RIGHT_LIGHT,
++		.extend_name = "right",
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.event_spec = macsmc_light_events,
++		.num_event_specs = ARRAY_SIZE(macsmc_light_events),
++	},
++};
++
++static const struct iio_info macsmc_light_info = {
++	.read_raw = macsmc_light_read_raw,
++};
++
++static int macsmc_light_probe(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev;
++	struct macsmc_light *drv;
++	struct apple_smc_key_info info;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*drv));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	drv = iio_priv(indio_dev);
++	drv->smc = dev_get_drvdata(pdev->dev.parent);
++
++	ret = apple_smc_get_key_info(drv->smc, SMC_KEY(ALV0), &info);
++	if (ret < 0)
++		return -ENODEV;
++
++	drv->size = info.size;
++	drv->indio_dev = indio_dev;
++	drv->nb.notifier_call = macsmc_light_event;
++	ret = blocking_notifier_chain_register(drv->smc->event_handlers, &drv->nb);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(&pdev->dev, macsmc_light_unregister_notifier, drv);
++	if (ret)
++		return ret;
++
++	indio_dev->name = "macsmc-light";
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &macsmc_light_info;
++	indio_dev->channels = macsmc_light_channels;
++	indio_dev->num_channels = ARRAY_SIZE(macsmc_light_channels);
++
++	return devm_iio_device_register(&pdev->dev, indio_dev);
++}
++
++static struct platform_driver macsmc_light_driver = {
++	.probe = macsmc_light_probe,
++	.driver = {
++		.name = "macsmc-light",
++	},
++};
++module_platform_driver(macsmc_light_driver);
++
++MODULE_AUTHOR("Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>");
++MODULE_LICENSE("Dual MIT/GPL");
++MODULE_DESCRIPTION("Apple SMC Light Sensor Driver");
++MODULE_ALIAS("platform:macsmc-light");
+diff --git a/drivers/mfd/macsmc-core.c b/drivers/mfd/macsmc-core.c
+index 1c1469828..6014df4fe 100644
+--- a/drivers/mfd/macsmc-core.c
++++ b/drivers/mfd/macsmc-core.c
+@@ -29,6 +29,10 @@ static const struct mfd_cell apple_smc_acpi_common[] = {
+ 	MFD_CELL_NAME("macsmc-power"),
+ };
+ 
++static const struct mfd_cell apple_smc_acpi_light[] = {
++	MFD_CELL_NAME("macsmc-light"),
++};
++
+ static const struct mfd_cell apple_smc_acpi_rtc[] = {
+ 	MFD_CELL_NAME("macsmc-rtc"),
+ };
+@@ -158,6 +162,13 @@ int apple_smc_probe(struct device *dev, const struct apple_smc_backend_ops *ops,
  				return ret;
  		}
  
-+		if (apple_smc_key_exists(smc, SMC_KEY(NATJ))) {
-+			ret = devm_mfd_add_devices(dev, -1, apple_smc_acpi_wdt,
-+				ARRAY_SIZE(apple_smc_acpi_wdt), NULL, 0, NULL);
++		if (apple_smc_key_exists(smc, SMC_KEY(ALV0))) {
++			ret = devm_mfd_add_devices(dev, -1, apple_smc_acpi_light,
++				ARRAY_SIZE(apple_smc_acpi_light), NULL, 0, NULL);
 +			if (ret < 0)
 +				return ret;
 +		}
@@ -192,187 +422,6 @@ index b8905c834..1c1469828 100644
  	} else
  		ret = devm_mfd_add_devices(dev, -1, apple_smc_rtkit_devs,
  			ARRAY_SIZE(apple_smc_rtkit_devs), NULL, 0, NULL);
-diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-index f7d0a0c2c..854ab772f 100644
---- a/drivers/watchdog/Kconfig
-+++ b/drivers/watchdog/Kconfig
-@@ -1810,6 +1810,17 @@ config SIEMENS_SIMATIC_IPC_WDT
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called simatic-ipc-wdt.
- 
-+config MACSMC_WDT
-+	tristate "Apple SMC Watchdog"
-+	depends on X86 && MACSMC_ACPI
-+	select WATCHDOG_CORE
-+	help
-+	  This driver adds support for Watchdogs in Intel macs Using
-+	  Apple SMC.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called macsmc_wdt.
-+
- # M68K Architecture
- 
- config M54xx_WATCHDOG
-diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
-index 9ac406677..f142a5d8d 100644
---- a/drivers/watchdog/Makefile
-+++ b/drivers/watchdog/Makefile
-@@ -158,7 +158,7 @@ obj-$(CONFIG_NIC7018_WDT) += nic7018_wdt.o
- obj-$(CONFIG_MLX_WDT) += mlx_wdt.o
- obj-$(CONFIG_KEEMBAY_WATCHDOG) += keembay_wdt.o
- obj-$(CONFIG_SIEMENS_SIMATIC_IPC_WDT) += simatic-ipc-wdt.o
--
-+obj-$(CONFIG_MACSMC_WDT) += macsmc_wdt.o
- # M68K Architecture
- obj-$(CONFIG_M54xx_WATCHDOG) += m54xx_wdt.o
- 
-diff --git a/drivers/watchdog/macsmc_wdt.c b/drivers/watchdog/macsmc_wdt.c
-new file mode 100644
-index 000000000..38f68d0d8
---- /dev/null
-+++ b/drivers/watchdog/macsmc_wdt.c
-@@ -0,0 +1,140 @@
-+// SPDX-License-Identifier: GPL-2.0 OR MIT
-+/*
-+ * Apple SMC Watchdog Driver
-+ *
-+ * Copyright (C) 2026 Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
-+ */
-+
-+#include <linux/mfd/macsmc.h>
-+#include <linux/platform_device.h>
-+#include <linux/watchdog.h>
-+
-+#define WATCHDOG_TIMEOUT 60 /* 60 sec default timeout */
-+
-+static bool nowayout = WATCHDOG_NOWAYOUT;
-+module_param(nowayout, bool, 0);
-+MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started default="
-+		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
-+
-+static int timeout = WATCHDOG_TIMEOUT; /* in secounds */
-+module_param(timeout, int, 0);
-+MODULE_PARM_DESC(timeout,
-+		 "Watchdog timeout in seconds. 1 <= timeout <= 255, default="
-+		 __MODULE_STRING(WATCHDOG_TIMEOUT) ".");
-+
-+struct macsmc_wdt {
-+	struct apple_smc *smc;
-+	bool has_oswd; /* Newer version of watchdogs in macsmc */
-+	struct watchdog_device wdd;
-+};
-+
-+static int macsmc_wdt_set_timeout(struct watchdog_device *wdd, unsigned int timeout)
-+{
-+	struct macsmc_wdt *drv = watchdog_get_drvdata(wdd);
-+	int ret;
-+
-+	if (timeout)
-+		wdd->timeout = timeout;
-+
-+	if (drv->has_oswd) {
-+		ret = apple_smc_write_u16(drv->smc, SMC_KEY(OSWD), (u16)(timeout << 8));
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		/*
-+		 * NATJ = 2, makes the watchdog do force restart if NATi == 0
-+		 * NATJ = 0, makes the watchdog do nothing if NATi == 0
-+		 */
-+		if (timeout == 0) {
-+			ret = apple_smc_write_u16(drv->smc, SMC_KEY(NATJ), 0);
-+			if (ret < 0)
-+				return ret;
-+		}
-+		ret = apple_smc_write_u16(drv->smc, SMC_KEY(NATi), (u16)(timeout << 8));
-+		if (ret < 0)
-+			return ret;
-+
-+		if (timeout != 0) {
-+			ret = apple_smc_write_u16(drv->smc, SMC_KEY(NATJ), 2);
-+			if (ret < 0)
-+				return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+static int macsmc_wdt_start(struct watchdog_device *wdd)
-+{
-+	return macsmc_wdt_set_timeout(wdd, wdd->timeout);
-+}
-+static int macsmc_wdt_stop(struct watchdog_device *wdd)
-+{
-+	return macsmc_wdt_set_timeout(wdd, 0);
-+}
-+
-+static int macsmc_wdt_ping(struct watchdog_device *wdd)
-+{
-+	struct macsmc_wdt *drv = watchdog_get_drvdata(wdd);
-+	int ret;
-+
-+	if (drv->has_oswd)
-+		ret = apple_smc_write_u16(drv->smc, SMC_KEY(OSWD), (u16)(wdd->timeout << 8));
-+	else
-+		ret = apple_smc_write_u16(drv->smc, SMC_KEY(NATi), (u16)(wdd->timeout << 8));
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static const struct watchdog_ops macsmc_wdt_ops = {
-+	.owner =	THIS_MODULE,
-+	.start =	macsmc_wdt_start,
-+	.stop  =	macsmc_wdt_stop,
-+	.set_timeout =	macsmc_wdt_set_timeout,
-+	.ping =	macsmc_wdt_ping,
-+};
-+
-+static const struct watchdog_info macsmc_wdt_info = {
-+	.options = WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
-+	.identity = "Macsmc Watchdog timer",
-+};
-+
-+static int macsmc_wdt_probe(struct platform_device *pdev)
-+{
-+	struct macsmc_wdt *drv;
-+
-+	drv = devm_kzalloc(&pdev->dev, sizeof(struct macsmc_wdt), GFP_KERNEL);
-+	if (!drv)
-+		return -ENOMEM;
-+
-+	drv->smc = dev_get_drvdata(pdev->dev.parent);
-+	if (apple_smc_key_exists(drv->smc, SMC_KEY(OSWD)))
-+		drv->has_oswd = true;
-+	else
-+		drv->has_oswd = false;
-+
-+	drv->wdd.ops = &macsmc_wdt_ops;
-+	drv->wdd.info = &macsmc_wdt_info;
-+	drv->wdd.min_timeout = 1;
-+	drv->wdd.max_timeout = 255;
-+	watchdog_init_timeout(&drv->wdd, timeout, &pdev->dev);
-+	watchdog_set_nowayout(&drv->wdd, nowayout);
-+	watchdog_set_drvdata(&drv->wdd, drv);
-+
-+	return devm_watchdog_register_device(&pdev->dev, &drv->wdd);
-+}
-+
-+static struct platform_driver macsmc_wdt_driver = {
-+	.probe = macsmc_wdt_probe,
-+	.driver = {
-+		.name = "macsmc-wdt"
-+	},
-+};
-+module_platform_driver(macsmc_wdt_driver);
-+
-+MODULE_AUTHOR("Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>");
-+MODULE_LICENSE("Dual MIT/GPL");
-+MODULE_DESCRIPTION("Apple SMC Watchdog Driver");
-+MODULE_ALIAS("platform:macsmc-wdt");
 -- 
 2.55.0
 
