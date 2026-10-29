@@ -1,101 +1,103 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.50
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793290786;
-	b=FySYcXZC1gitP3K7vvNCAGy4k02stIMKBev1JXG/fhiFeXRifnEikqZ0f2/nu8pxsuFX
-	 PJpFBWSJwiw+7DGPDsPqmMufKFaVG/r7jI+kTn3EBrBmbkxvj90RxNyMvPykKOb6rSG7+
-	 HHcde18yX2W6qqY/In3TaMIbI0+/MkOfOp9J9q6HS7Pug/gM7q17biTavR0LaGv0SJ+yF
-	 Td5N0Cj++MUDo4TOHJ8hxh6/+WHvNlqYA2Poi7Jiu20cSC8P7v81GBnvT2UfVQxTDh9Yn
-	 kJ0/EbQ5VQhDQb5XqTlvBKIwSXSBpS07WUXRxz8zIq0rgC7f7B4zAaxGpb/e34/+gxg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793290786;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.49
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793291941;
+	b=huHg42PvIZfHQFGifSEtfg+YmQGQ9jmFKRlqAuD7tEWuDUQrV0iq/4QCcbV2405R0Yeo
+	 EKUQoheHdk4OdU8pOloT3L3uJ+/vToVKGyDS0QHcpmcvFim9jc1bLjN01hW2pHEXjsHZi
+	 l24AU6YN94T8iL/t39AlpRdD++ZW1BcbkwO/VCW1/dXyVTkAMFeZzFMgBK0o3ezL8xdWL
+	 dxQfdNKWZS+WIRFEku5KSYNaVGG1e4pwGW/j/qwf/AkvhEQ2HQdY09nIPCyzCZ2VQ/xSx
+	 jixDQdGOAhxi2tcpk39XRXPHw9LBUHID004254QrCkhsqAiWI7zHYBxePCFbIgj9TIQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793291941;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=ZrLXGPOeZtKb/0Qmj4iU0Alw7tw3rFlIHiedf/XCtcE=;
-	b=C8iLzDYF6aG6HLrY9SDoNZvAp9iKw3zhUZK3QifcVD3btcIqviWty+SnmI3nJDSzArYU
-	 sEoSEN5xKhbVkFCGNu1wGaBKadsFP599wnk/2YrDbZD8r50PPY/CiiCTpk3YUciW0fgmk
-	 liwXuMK6MSYwRjSuV6SLGz+KO0a1J+Kl2qU4uC76faQjWAbG8qNS6lKiUpq+g4NE/nQVV
-	 +Dib54+LhyyCBMD9cHzaC+ktpnTFOOFSADoGke+ZGBANnVyuTIyrNTlX1GQ9d/JjMxUsm
-	 sdOEZjzvMhCRVRUhTX4MjuzSRl8yt5Tf0ilSo94n3SukAidlhnsgg2o/20Fc4uTAT2g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=secPgUqYwtFyT27T12CKOEsJz45eODbglv/xrQzYdao=;
+	b=p02thx5y9ZN2U5oZewaO/lRSTzOq4Q91SOYasl2XZ21+bGdaqt2pChUD7hKFqoYLC0lT
+	 waFdEOidK0E6ONyAf1+xbGxlHEus/o/s3zaZeO3mlJc3rAaLmIKvHbmYCJkkZGqo0Q7pV
+	 CaZLRvEJO1gYsSFVg4756cKtdnXV9mmxiC6H0ocHdLeoQmpEvRDUjl+1VeC9oKMIkB/KZ
+	 suzVhnEYfGpVZbcbsph7w7SV868NUXYZCNKg3Qnbrl8Ja0BDuyuWPgEoM27tICJs1/Jzt
+	 4A9uHxm/5ptis9A8rLfczHKOcP7WRgMD7EqeVN8IZplf1Od/6a8oQPTpQ9FGf9uVtwQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tJCNqvxi;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.50
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=rVcVTC8T;
+	arc=none smtp.remote-ip=74.125.82.49
+Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A44D1606A321
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 16:19:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A44D1606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28B5D606A322
+	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 16:39:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 28B5D606A322
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tJCNqvxi
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c169ae1cb26so151936666b.1
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 09:19:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793290784; cv=none;
-        d=google.com; s=arc-20260327;
-        b=LrqkC/CRd7VCylzjsKnapL8I6xKtRADV3qDtgSR8nt53TbPL/l7G8t6fNWp193X22c
-         qjKXY+//QYJPNM+fLXrnJGcOeXAYtTvWOd/nomtlTdxV6PtXyyTIdV8lMIoEtS7kSaaO
-         5NHRhEUALjFJ2CqI4h3IVVlF0kHR/dIe0eCJyN3GPwAty8cCq9dGKNBdWoi5XLU+EBiN
-         ZiNqHdQTFYgBpwkNKSDAltXZ2VzRwGh8bMcdbudF4E8RGbRjJj0shk11vk5d5Wf+u4ds
-         AnvTXopvdYWuEQOCkhVy2wuOPf2APnH/0DEUvQ5CW6smC1iFWxYjaQ1tXE5AriJ71DwT
-         NDrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ZrLXGPOeZtKb/0Qmj4iU0Alw7tw3rFlIHiedf/XCtcE=;
-        fh=PHxpW2NtUoQ1rh+iJKTxTXXTnO4ZPK2p8syPzZjloeQ=;
-        b=L7LgszslE49WXLgWwleyqo0yyNuQD4pD9BWfmpwWg2618229vNhjHkr26NJXTL5SYj
-         UKk45CqZf9ioB8+jPY1Vs9LTB3Gw0f7xsSAC9w+RQ31JrjzHe12aLq1bV1h+IzHtT4/F
-         Iaum5VR0vMn3J9S1AElJFXcmB+/zAmrjOreJr0t2W0cA2OdwIF9GKZHw4mRF4crLy1hc
-         jbDdp8K3Nopby4L1WhkChEWqKvhRoxlQ7HcCYsGIWAvJSyFXr0z8yjtROp47fpGmcHfS
-         VyrDPRuA6eTOhQ6nr+/Ju0HnJPbsIiGYbjlW8shnMaUeeScQnk6eBnNOPtygj8yhR9Ke
-         zx3w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=rVcVTC8T
+Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-1a3c08d6928so3161107c88.0
+        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 09:39:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793290784; x=1793895584; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=gmail.com; s=20260707; t=1793291940; x=1793896740; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ZrLXGPOeZtKb/0Qmj4iU0Alw7tw3rFlIHiedf/XCtcE=;
-        b=tJCNqvxiSy3QxAKlEFW90cKUFyyBgpoSeP/Y5ousN6wPGZSrolLGcLaPbCYXA1fxRu
-         hyVsewX0wFmTmBY8TlvUBE4oSRdUuvso9BOhMBlz92LV/gs0YdGdUPu/SeSx7yKSEgae
-         DtK5weghFzRSq07QuSregfqRkrGn/HYN/qGVPOgb0V9un5TOuBcJn+HH3XRz6Qjb5Ymc
-         h0a6dkLjD8hKH+4gxpX/7mtBpFAWTESYYmgPzoV9mN4JS+7JztM2c1PCNt/nj6uvIrHD
-         pmt2E1fEsdla3c4dbYIo+nrE3KwsGfTJXjoEixBJJpLcsOlyR70ckXgO3VHTl+Le1l7x
-         +gmw==
+        bh=secPgUqYwtFyT27T12CKOEsJz45eODbglv/xrQzYdao=;
+        b=rVcVTC8TGQMpCG7a8sOBfuFoJLWg3xKjWScLLKASsUj3rkRZlIq3nyaHi8fO9e+FB5
+         enpl4lELhHTl1EhmwzICVhyizGAri3C+TY3nDGm40h/8CXYYQ+FQQcWZsayhU2ln/nH9
+         ULPdUUCkU0Ppr5gi23H/YQlVwnMA94z0lhZWhLJShAvlvPZwNp5XBfbEmEScjSS1OR4Y
+         FGyXq6Q7WJIh/g8p2mVqkNgwH2zpSHz5IveuVPiDF4WC8yyYE889ISVmD0pM7oykSG/X
+         yp4SUH2uNM5CfrusIGmuQi3Vuo9nEpHFYTBSrBuXGHeS3h64V0UHETPQGaE/qaTMNuwB
+         Yevw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793290784; x=1793895584;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1793291940; x=1793896740;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ZrLXGPOeZtKb/0Qmj4iU0Alw7tw3rFlIHiedf/XCtcE=;
-        b=ZrgsFbB9dX7Vt3HPlvpD2mfeWCCYD6ECawLHaIXIE5g6bHg6SktUDbbwXT8kHHfCE0
-         RY/h7RseFmlNbZRohpnst2gXvJc3mhE35GTF75D/3JyDi3SvIbcC+I1x82eCXdVaWq0g
-         zaf9m8m19F+QDJGX4W1YERBqtBtGXSCL+HEy4Ut2IFpPGYY3F6d3yn4WfO9mICz3xGb5
-         IAcFoR9gWseMnvgubIpUmTy+QqN3Bc56wLqd+xtrV/4iNTcVSndRe5tmyYknqdc0ONgP
-         QwwFxomoJpDmI0w4hFDVdy6oM0hj9eO2d/hCJPv38M3ZP0VYkDeMfw5rUt1QRSuhiCBK
-         AgbA==
-X-Forwarded-Encrypted: i=1; AKwUvBzSEdpnDZoYUIJ1N7uN8+YLI3ivpFkeX1ED0/2ZFuiXffD2f3w2lMN5QpW2gbWzAn1we5lafLzC0VQ=@vger.kernel.org
-X-Gm-Message-State: AFq9FYLgyYs2ur9FcXfVuvKzPhWTqXQDoUY5CHwmcTlmk+t6gUqtzfAB
-	PjaNPM5f0x49VEpdYPvFb3UCPTaNswDh3+r7RzGMjBFbjAXLBfVbr7VvE71nFPbbGSLCMlcYRf5
-	tMNdaSF3Hi02zzMTQQB5e0AwBHonfVcM=
-X-Gm-Gg: AYBFou32ronjiWyITYjrmdyFDIiC+OwMHMPiswa02WmmndMq/SgUToFztL5CMw/G8ne
-	BTOEgvqrsV/nkg9LOOVpaZJDmRBObwwT+rz+AkytiLPyWUQ+p0Cj7nJua58VbOp3wVze12E+ulu
-	f72vudVG9FyyOJieKkzgc0SVGr9lq28a/YRU33j5CrceRThxAWLjXEoes/8hVJ4S2lBMfjGNs73
-	N23FS9Z/4QambIZW1JnO11KYcqYq0by58IvFBu9aVM3W2h5R9ZHvzzuFbTs/p0fDGKJD9z3h5e+
-	wPlKUEAEzYjsnPAtf8aiWygw3A0BJbbAeTZsHwyTrk1LB03C2QLuSPl9V4ZEZoee6g2Eh1mBA+Y
-	FBO6HUc1GS8rEJEKOY2S5f7/D/IuF8a+OQgy6qGq+PSvGlqrrUxI9OC1B+nR6kftNCNh5o8F2kq
-	y57SdIYXD8P+VB8GoT
-X-Received: by 2002:a17:907:d489:b0:c41:4512:a3b4 with SMTP id
- a640c23a62f3a-c49d13b6aa3mr277245466b.20.1793290783798; Thu, 29 Oct 2026
- 09:19:43 -0700 (PDT)
+        bh=secPgUqYwtFyT27T12CKOEsJz45eODbglv/xrQzYdao=;
+        b=1+BQu2POL6tZvceQ+d9byjy+Fc2/dsexs04iZXbnEIO1bVZP74E7HFXDNTq49P0D0O
+         iXJWSHVvjneA2XQ7QjwCfdgpXRNiiGah4MEF0zAXnTXJIlFpTzl4GhGUXcOVuyRQI0zw
+         O8oBV8b94FIEAAukP5VunMK17HXfnPYv/PGWN5hvrqG1ljM0sc99fVhW7/3VYnMfrIwG
+         Lq4jtFluj4emAfsER8zcIFf229KyJqdfGEyiZyoxjJQQQ590jaCjZ6cfr+iiW9dmmVKL
+         TGEtabrbj1yup5qwgrUlbq1S3my4pbUihB1L/gbXTLCmxveCgt1D6awT+FZ50DQQN0g1
+         LKXQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwSOmo+Ht3y184YguYunpP+tx5X+RrL/oJzNElj/MDV4sl7bAXbQ7wPyx0JKDhjQi0OdbSCMN4eim8=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJN6epeNrO7YkBeYfJnJSM35bP4Sll35nf2/phvuzHtGbRIFU1r
+	KaCUHjIjnRKVFdxU0Zp7UYBIHtf0IwQWjk1mn9nlDk5I/rugxjf2rsH7
+X-Gm-Gg: AYBFou3uuN5HudPmMhveEYBzHLZWWWwOAok25G8PCgAoU9hJXuzYGvZWfXPGCRU7Z+B
+	wwDYcRJIUt2fbAtm8/d5pqEgS1tl6Ooebcnwi+fK2McWPmSYzUbG6zGtO+WYsRZU3GU9CiUBxQm
+	bNlDTIkfv7FBbl2hTqg96wP8LyNVJFFJAAik6aVQzZG5kXZQOqu42D9foEXmRywAdwHXo/D1hFP
+	i9BntYtqkqBeDX90T7x7vQK0+0HNvCVWETQqEy3WSCaQ7LlKzjR0Zgd5L0APhEXsvpAQHwESncg
+	upa50TTkoX+UlLIG9bQOV957yIp9S+itZGm3AfaO60ngeDfLmGZego+Q6mGr+r3+IcfWxlJYp4w
+	VklCIuE5Jg7B1jfpPwo7mjM/2KQpzYz1KCjepcAuRe75lubuHPAPzXebSsLeAUs/4g3Vv6dAMsv
+	2cUTmZattsTIFXd4dawT4m4uynYW2L4K/xv65Jq9X9sDt3LjJoFnvvSPkGU+IOpmtJyIhzcF8+q
+	ZrMgC+Kx4WJ2tPoCNXZn5YOHtdyIdmZpxlKEm3LkkGM7DGmHtHTJYXxEO9d06/ooi1h6lf5b8TV
+	j+k0pwiwBbzuj2SckSVYcvPs1/ZD
+X-Received: by 2002:a05:701b:4559:20b0:151:2e62:fe6d with SMTP id a92af1059eb24-1a6ce4eaea4mr8107048c88.22.1793291939202;
+        Thu, 29 Oct 2026 09:38:59 -0700 (PDT)
+Received: from localhost ([149.28.89.224])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1abe9d7548fsm192739c88.13.2026.10.29.09.38.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2026 09:38:58 -0700 (PDT)
+Date: Fri, 30 Oct 2026 00:38:39 +0800
+From: Chang Yu <marcus.yu.56@gmail.com>
+To: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
+Cc: Chang Yu <marcus.yu.56@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Shi Hao <i.shihao.999@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v7 2/2] iio: light: add AS7343 multi-spectral sensor
+ driver
+Message-ID: <auN2jwQVr-GSnZvF@zephyrus-g14.localdomain>
+References: <20261029074851.216029-1-marcus.yu.56@gmail.com>
+ <20261029074851.216029-3-marcus.yu.56@gmail.com>
+ <533bca43-8de5-4295-b226-5ea3742871de@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,72 +107,61 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20260831151235.64076-1-notmissinge@gmail.com> <20260831232157.27037a5e@systembl0wer>
- <20260904042215.0e21cf29@jic23-huawei> <0d584595-4479-4116-a52b-710e01f20bb3@gmail.com>
-In-Reply-To: <0d584595-4479-4116-a52b-710e01f20bb3@gmail.com>
-From: Not More <notmissinge@gmail.com>
-Date: Thu, 29 Oct 2026 21:49:30 +0530
-X-Gm-Features: AclHuK-5tg4KowTUoVyHp9syWpuH0yweez4JYRJMVbYb4pI6PQlKfsVZtbaG4Ig
-Message-ID: <CANU2TT4bTZYouZs=WWrYU=g70VcnjiBxBZRTh1fT3bqkbhz=BA@mail.gmail.com>
-Subject: Re: [PATCH] iio: chemical: add SGP41 driver
-To: Lukasz Kulga <lukasz.kulga@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Joshua Crofts <joshua.crofts1@gmail.com>, 
-	linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, 
-	Andreas Klinger <ak@it-klinger.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <533bca43-8de5-4295-b226-5ea3742871de@gmail.com>
 
-Hi Lukasz,
+On Thu, Oct 29, 2026 at 12:20:24PM +0100, Jose A. Perez de Azpillaga wrote:
+> On 10/29/26 8:48 AM, Chang Yu wrote:
+> > Add a driver for the AMS AS7343 14-channel multi-spectral sensor.
+> > 
+> > The AS7343 is a 14-channel spectral sensor featuring 11 visible
+> > channels, 1 near-infrared channel, 1 clear channel (VIS), and 1
+> > flicker detection channel.
+> > 
+> > The driver exposes 12 spectral channels (11 visible light and 1
+> > near-infrared) via sysfs. Runtime PM is implemented to stop
+> > measurements and enter SLEEP state when the device is suspended
+> > or torn down.
+> > 
+> > Future patches will add configurable gain and integration time,
+> > interrupt support, buffered reads, VIS channel, and flicker
+> > detection.
+> > 
+> > Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
+> > Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+> 
+> 
+> [snip]
+> 
+> > +		/* Check for digital saturation. */
+> > +		if (status & AS7343_ASTATUS_ASAT_STATUS) {
+> > +			/*
+> > +			 * Per the datasheet, ASTATUS is self-clearing: writing
+> > +			 * the value back clears the entire register.
+> > +			 */
+> > +			ret = regmap_write(map, AS7343_ASTATUS_REG, status);
+> 
+> 
+> isn't that the STATUS (0x93) text? the datasheet says ASTATUS is read
+> only and ASAT_STATUS clears on access, so the write shouldn't be needed.
+> it also covers analog saturation, not only digital
+> 
+Aw man, how did I not notice that?
 
-Thanks for reaching out.
+> > +			return ret ? ret : -EIO;
+> 
+> -EIO reads like a bus error. as73211 returns -EOVERFLOW for this,
+> wouldn't that fit better?
 
-> I'd like to pick up SGP41 support, taking the approach Jonathan
-> suggested above and extending the sgp40 driver rather than adding
-> a separate one.
+Sounds good to me. Jonathan, if v7 goes in, can you replace this if
+block with:
 
-I have a v2 nearly ready (binding as a trivial-devices entry with
-vdd-supply, plus a separate driver). Hardware testing on my SGP41
-board is still remaining, so I expect to post it within the next 2
-weeks.
+		/* Check for saturation. */
+		if (status & AS7343_ASTATUS_ASAT_STATUS)
+			return -EOVERFLOW;
 
-I kept it separate because SGP41 has different commands, CRC-protected
-two-word results, a NOx channel and a 10 s conditioning phase that
-sgp40 lacks. I'll explain this in the cover letter as Jonathan asked,
-and I'm happy to rework it as an sgp40 extension if he prefers.
-
-I'll Cc you on v2. Testing on your boards would be very welcome.
-
-Thanks,
-Akshat
-
-
-On Wed, 28 Oct, 2026, 6:43=E2=80=AFpm Lukasz Kulga, <lukasz.kulga@gmail.com=
-> wrote:
->
-> On 9/4/26 05:22, Jonathan Cameron wrote:
-> > Whilst it should be a separate patch, the route here to use
-> > trivial-devices might make sense.  Only thing that might be
-> > worth documenting would be vdd-supply.
-> >
-> > I'm would be looking for description in the cover letter of how this
-> > is different from, and not suited to extension of another drive
-> > such as the sgp40 (obviously there are more channels on one than
-> > the other so it isn't trivial!)
-> >
-> > Jonathan
->
-> Hi Akshat,
->
-> I'd like to pick up SGP41 support, taking the approach Jonathan
-> suggested above and extending the sgp40 driver rather than adding
-> a separate one. I have SGP40 and SGP41 boards on the way for
-> testing.
->
-> Unless you already have a v2 close to ready, I plan to post a
-> series in the next few weeks and will Cc you on it. Your review
-> and testing would be very welcome.
->
-> Thanks,
-> Lukasz Kulga
+I've tested the change on hardware and everything works fine. Or do you
+prefer me sending over a v8 instead?
