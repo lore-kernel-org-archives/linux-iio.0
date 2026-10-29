@@ -1,95 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.54
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793232892;
-	b=ERz74FXGhUK35WXnh4K2/18TIhuB1W25DyBMF9Bp6zC4ZKce6B7yAJduxZPwz+ggXPWx
-	 RIzpeF063oDw4xOFpy1Shau0rNcD86AF8zz2bx/OsCF2YtpWZjKmk8WhgLdNiJ55gPFYr
-	 OznHfPg/dpfF/1H0Ehpqw2oood5ZqIeTILdrrwK7tUILk8K9vJMrb2Y35QJeF/HINodc6
-	 ss0zwhfFBRWvC2BcI9STsGNtI4XYxbtkzIwU739Dy9OSlfxorrJcJIkF41PQpjqWnKwea
-	 loGSF3lZJhkcmvzfH4bQSBjDM92PxGxBORAtWuv5z+KlFneg0NJx2EMIZSTQqjghVTw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793232892;
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=209.85.161.50
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
+	t=1793240368;
+	b=IpXzZ8FU9gk1CN6zWlCJ5PItcl3n7lIvXV1gsdmDPWRXyVijaKZ4s0/YPpZ6WrMo3L2W
+	 rAjlbQdGhQNJcYxm4ylU2SLMAjXC3dHimERjw3IKgYe4SpBWJPAaraRy95ZKOdkYxRu2b
+	 ZXPziF3ZomhzWhhrZdGuTp8FwOO+ZhH2g1DHccmDCJx260c1ld6MxEbcYhkoyF89oLrul
+	 NQ59FgOTBUm8Wp4c6kum/sp0X8bE9mxBTxakHzWcNqwS/LFvtFQHW85tQjHjCNvK7ibwr
+	 f9huHvBg1Fj8BI5B4Bb5mcho6MLHWdhUe/V6JQf1l7yYpnmTG8hEsvHTmIMCgeB/hvg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793240368;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=KLVBw/UkNwKCf0bH78xGpqCQNeCNKlhoh2dQVh4mvTM=;
-	b=Ugeas6ijKyOWimw/0gQut0zzN+RQ3l//dOrqs0u54hndtd1g9FoPS+U4iaPXmwcgduYo
-	 YOqTH7qcl0V3g+54c6PiX/3eLcN8vSBARSBibHoMhSw9lkXzR3kEK8dzzRS2NHph6XX54
-	 R3kcL09eoUTUUhcB9Pd3dZ1im9vC1bsc8pNL3CGb2MGS8waLbL4ThkhXA/4T5EJwrsvl/
-	 4tGX40BT7Zt0RSvUlv0csb9S9Fb8PiBD39YyK2Uz+ub9liKoP8j1UgE77UTeh+Mnzv/wu
-	 h+/gtU/vg14ditKQTp3jqq49THjacqxLhymUkhOyq4BEteK1leqGJ2RHc60lXYhhynw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type;
+	bh=/LiOfXWRHjUDgLhmT1WvxPVPa3QavCe7SpY0favJ9tc=;
+	b=m1MaY2MpIjvQw4Lv/dh7FNRKkOKvslNlBDL+arTAqq77ekfp2IUbpbOoVHFuLRsAqR+5
+	 2v/Hf/mkoTY9TbqB2D0KIDaQd0UXajA6pgd68s+xF6JPiQc3oIucZju1S3v1gLXoP45uJ
+	 dPl3fYLrFesxrakG2Fca1ETnfwjS7DZNaYN2or0gUjuSQl5r9DTDWmgF0CCezqIpFd2va
+	 cNMOzKuyi6bFcPZHAaF61fOyfoAhCOEjDmEv56FGTThllMoOgo4Tb54b5M5ITvI9H4Dfs
+	 hPm6FDZf9p/cuhzM8uIAkLrU61aX+fHHxbi7yXMFcIzBMxUhSDs0VqHG/RI/P+ftI0A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YZurm2vn;
-	arc=none smtp.remote-ip=209.85.221.54
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j84zXx65;
+	arc=fail smtp.remote-ip=209.85.161.50
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59BDD606A31A
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 00:14:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59BDD606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4E82606A31A
+	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 02:19:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B4E82606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YZurm2vn
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-48df4f540ebso779016f8f.3
-        for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 17:14:52 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j84zXx65
+Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-6dd7070699eso1329080eaf.3
+        for <linux-iio@vger.kernel.org>; Wed, 28 Oct 2026 19:19:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1793240366; cv=none;
+        d=google.com; s=arc-20260327;
+        b=IJy70ODmTHgdMBerq++sRlKqy0B4+v0pFtZUkXRDk6+/jKJ3/LSmevB7jbBHySr4BU
+         /OiGiy1qdJKbxWhlD4H38IVQZg/M84exaJDGlfstiC0BB2nswFCLKw65DyXAeS+u/zI2
+         R0rqY8JWfdlZvy3hjCPUk9vzfxamDEBJyoyJq7Pkj2fqHBU7U5ggipBeZB28MiId3ahW
+         B464PD/OzgOR6WH7tMgZdSPV02g/pM7jtCuRFoYR8wVJ4zr3L0r3/KzBkiA8z2OUX6+p
+         8t9iDM62FfAgNyEuaK2JGtj2/uteqiIieiujFf8nT0lkOv3WzoOhpcCnEfMdceo8R3Ra
+         RsRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=/LiOfXWRHjUDgLhmT1WvxPVPa3QavCe7SpY0favJ9tc=;
+        fh=ibHTxUIkeiqgmdE9MrEPV+FFjawQyYNV6lGkLlePGfI=;
+        b=nVrewPtU13t1Q8Irui/myUTaxbsaQZW1+ruyqZbF8rH1twezaKpTas8mFKhgMY5h9C
+         cGpARA+aO2toDBd61vGeFtWc79L+sE9hjFca7upI9X2Q/QQkC3diy+NGhAy0YrUKPTio
+         IapVeG484W+ZxZh4u/IeO09Gao2ZsyapHzpSlULZrRcs3YsgXfn333G/kPm5+1D/51su
+         I+vMIqeijKVvUsQe0Qed3SDE4g4TryPv+0tA6YmQX+aV0WseGiUEjlGrHlaxDYrcxN86
+         dJxVUTZdA5woEfqqaEuM99ovxmecZMb4gdV8r5ltML+XZeY973cOtaehHwe+bcIOuIfR
+         HWjg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793232891; x=1793837691; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=KLVBw/UkNwKCf0bH78xGpqCQNeCNKlhoh2dQVh4mvTM=;
-        b=YZurm2vn38Ou3OZVInaponIYZXLBJDkwhva9jMzfROFu/1s2AkjSYPTCNsChA6AXmp
-         W9TWD/praBvYzF8n5aG/gRG8TcFsEHAIk72D3zLGz80B30J4hZpAtoIriB9gPUfwXm1H
-         SKFUZnbzelrJUCYD+g3ks0wT5NQS9wTk0rMBVzFAGhLJlcoT1MoM8j++9NIqSqHXSsT5
-         NYtj4RbQr0ymGpqAIGB+0LcL+gaXJu/XM7mBKr8qe19sgG128p9XmgaxU6u0f8lvsBV7
-         3sNDYfwyb62sNOKGQdeCC96XXYgkbrJQna8lKk9B/lmVq3YfDGaD+ROffDoR0jJe77vw
-         YEyw==
+        d=gmail.com; s=20260707; t=1793240366; x=1793845166; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=/LiOfXWRHjUDgLhmT1WvxPVPa3QavCe7SpY0favJ9tc=;
+        b=j84zXx659Vk9rM2x6lrM1tdsePSk4pdpzHRtnrW1nXb4Nsb4f7ZH87bcfqhCY0I1Ne
+         D5vfvn9+fFjEbF1mzik6+c67LlccrlaFqbNdBSpyBSYb2Lp0r1589MY6K3Qvdjqe6WHp
+         m1nFcJnmYiEBGfFcilJAEiEf2A4iXA5tLq4jGeCTqGDQuyISFoshfXRIXc8R4Q7Fhd+4
+         6zYo30I4UmDIOjjo2NWg6t5zYYPkQ7WMO7WG9cU5+0+qygmSOSiz6jrX5wzsPAMXeJc9
+         Ikam7P+XLUbKSvg2ZS90r3yBhYe8G+O2Ythgs/fAmJ9uArlV4Pu7evCxpAAwkJBqElYu
+         NHtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793232891; x=1793837691;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=KLVBw/UkNwKCf0bH78xGpqCQNeCNKlhoh2dQVh4mvTM=;
-        b=upnT8sNR+/eIOSQKcv2wbvALgS+bmjFhykR0XNp3+AiaqkrANnKJghR4v+q1Sd6mXl
-         bff3682WQFbcHIGdHHXVUCEy+1Bhj33zMSwfK320ZVPzqWBJzLfXXZUUgqQDtOYhKLme
-         Birb+LGZ11Yl4fYhwXjDcRq/MxoBQYsVvCsM8JqDLCSoJ3s2z4zmttDuFBMk36GRD4k6
-         Kx/dwiTHrSHz2Ud3MU5nDf4r3NCFMSURd+cB4GmLVBgXDX4gEM5vSBXSoQpvJ4kXPrKg
-         2JFshKU9kv3je01RBxCizKI2a6IMLr9UrKWKEAz+OGCVPZ2pb1dYpHXuxclZUB1+dt/P
-         eW9A==
-X-Forwarded-Encrypted: i=1; AKwUvBzHIihoe6ylwVZDILPYbdPFXlCiHJ2hpep+JgUUQ+frPV5V6CzUi9iR0Xmo9x/Jve+mQYQEY08aSE0=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIim3r8CrAWrdFigjaz5FOKgMYo7TYilTz2DeFMitOH3xTc/K1t
-	TdMQe+Q0Ojh780uVeJPiJnOoAKR7XMya6E6V5O2BgI+9xrjt3LvmsuM=
-X-Gm-Gg: AYBFou0OmSnX5UuE1wEH9ZYAKGYDg8aWcodlrXpU3dh26IRfeoj9+XvUP7qnWmbDMTQ
-	Z/AxVUTp8TXtCNKL4mNoo1oQkap65S05Ft8rG6pjPI8YZ6iOMltmriZRYtsf3B4Ncsis+9HBeG3
-	FVm23g8div/rrWVNL0AoF9v7O6MAvkdgz81/GkWp2D7ybesGkOS91goIif8RaNWbVMjkehaW9KD
-	iKz9u8MMedf/hHEFBOWYEud0iRI02RgUIGjQWtFpMBrMXg6ELw0/kG0sY24fo9QiDrMbTbkWo6i
-	MUEfMdf8kNimS4v3m3lb2C2tkYVj1CC1Kwc7vgoxKXsgiDA17cfiqf939WVK7hafO8cc1QCW7w/
-	NJb0uTpducyklOznPHxvYjOKk7ucFM9o2NzyoZ+xTiXFmWA14Kjp6vWRA1s/akCcln/JQBjLVtK
-	905SltRGVN3U6pVUUhmjCijj5TiAocAkDCaiVCZVSlq0yWeHNbvBGNpFFuaVUcGtrSO0b8L6I6p
-	JChuzjEIrkcvgrPXmQ+fcZHif/y+4diIBKIJNFAYmKXL/67iOETyLRbmySFdDOm82JGN9kMSrUP
-	MNDQp7g+4QMAk9b42w8=
-X-Received: by 2002:a5d:4841:0:b0:48b:451:4f19 with SMTP id ffacd0b85a97d-48e5d3120admr7180228f8f.51.1793232890621;
-        Wed, 28 Oct 2026 17:14:50 -0700 (PDT)
-Received: from debian.. ([2001:41d0:303:db6b::])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3eb8f37csm25262605f8f.8.2026.10.28.17.14.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2026 17:14:48 -0700 (PDT)
-From: Tristan Madani <tristmd@gmail.com>
-To: Marius Cristea <marius.cristea@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>
-Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Tristan Madani <tristan@talencesecurity.com>
-Subject: [PATCH v3] iio: adc: pac1934: validate ACPI _DSM return type and bounds
-Date: Thu, 29 Oct 2026 00:14:47 +0000
-Message-ID: <20261029001447.1114691-1-tristmd@gmail.com>
-X-Mailer: git-send-email 2.47.3
+        d=1e100.net; s=20260707; t=1793240366; x=1793845166;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=/LiOfXWRHjUDgLhmT1WvxPVPa3QavCe7SpY0favJ9tc=;
+        b=eXi+G1GWCNSPA3CH9aT+SkjhamtEDUw2EzZP4F7f/lxgM0/bPvpBt3YKtK9c4s1uZr
+         OKcf7ecDgtdA7M0jISn7MnbAwaxP+pbSpPUu7vGrXvCadL58pugUGUyjqDnpF26bQdEz
+         klYX2glvrYsi8ViULrHS4m4NBtFeJd4d4Su+agoLiOiU31IM23TXDiuDP7ZBeUmj4d7z
+         GNZ9ZhIAGMIzYkayYEDzWVoIsOvH6Llr4NzlenLUup1W7IXCr+5XgwhDyeKHASyxfgof
+         ZFmTOewbgfjTSjc5KJX91CnS4vKgrgxufbypnN/oriNclTqijoA2FhXBKUDObm5CtBjK
+         uc0w==
+X-Forwarded-Encrypted: i=1; AKwUvByCHzc9ji0cIN7/s5OVaZIzHCxcXxD6eG5MeYzcqLQ/meAGy267RCPr+/Jj7SNGbINy4RD3ULoMnzk=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLxDU+DnBunFdSLTZwxTTJrJAjbble3aVCT9InuwpTIcLFvLqqN
+	H3oRRklM7X03GnLxQkVEBMU6AEpqeOQ21A8TkkrSvwpXBfsQoRHshdv2LZqnYl5iNACdUExDoSL
+	yIH37juFUTaKWGWqs7Ze0/Kn4EftFVEA=
+X-Gm-Gg: AYBFou1LeoWyd1p4dbmsi26zLU+i7VoOb9rVnxqDLOUOdojSPlpnqB1khAYVe5GMENg
+	UPNFZ92xM89Zbk9ibl1eyvo0GpBzgUQyu+vAwCD2cET6o4TsF5SwX18gkPZ5t2pd0DAzdTrNyA9
+	mtQNhqYk3CvYlPTrqsf4rTXo7+gc06UOSmCsMEVJEZlBcc7SkZGT0d5ARTqluDOUR2+OYp8XRhy
+	cSSBcQnFjOSLi33BvEc77M4qKmTZSEY73re8EYKQGv6HdbsHDIJ0aOPDlfWLxqXNR0WSbQqu+uZ
+	AkmFKi96TuJuJY/+KTR5TrovpMI2Z3japO4ZZUcnMCiUlirr9zag4JRogmY2NC9HU9vlHExShFk
+	2Fmt5zQQBVq+qv7BUIbkf+x4vt8kreTOAFOFeSapeyW/hUY1LVsCoJKIFGt392+9q3XjAB4sig5
+	V04FV9+IbEOJ9HjND7BqpfpFuJd6o=
+X-Received: by 2002:a05:6820:1501:b0:6df:2b6e:d57a with SMTP id
+ 006d021491bc7-713f04d5ab3mr2650404eaf.76.1793240366413; Wed, 28 Oct 2026
+ 19:19:26 -0700 (PDT)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -99,129 +104,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20261020-tf-luna-v1-0-53a88f93db24@gmail.com> <20261020-tf-luna-v1-3-53a88f93db24@gmail.com>
+ <20261020092316.00003339@gmail.com> <atcbe2O6REJqok2n@ashevche-desk.local>
+In-Reply-To: <atcbe2O6REJqok2n@ashevche-desk.local>
+From: Vidhu Sarwal <vidhu.linux@gmail.com>
+Date: Thu, 29 Oct 2026 07:49:15 +0530
+X-Gm-Features: AclHuK-sDGs78YBOmA5Mf81isBK3M5HnFRdgXc0AbERqvLh0UlNiIFbXRQ4I_GQ
+Message-ID: <CAFqz8L+fCc19aaUhs6k0a47y=oxhiM9PSgjMgjY0JYH8HN5wKA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: proximity: Add Benewake TF-Luna LiDAR driver
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Joshua Crofts <joshua.crofts1@gmail.com>, 
+	Vidhu Sarwal via B4 Relay <devnull+vidhu.linux.gmail.com@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Tristan Madani <tristan@talencesecurity.com>
+On Tue, Oct 20, 2026 at 10:42:51AM +0300, Andy Shevchenko wrote:
+> > > +static const struct regmap_config tf_luna_regmap_config = {
+> > > +       .reg_bits = 8,
+> > > +       .val_bits = 8,
+> > > +       .max_register = TF_LUNA_REG_SIGNATURE + 3,
+>
+> No cache?
 
-pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
-times to read channel configuration but does not validate the returned
-object type or array bounds:
+Hi Andy,
 
-  1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
-     firmware returns a different type, accessing rez->package.count
-     and rez->package.elements on a non-package object produces
-     unpredictable values.
+The only configuration register the driver writes to is MODE, once
+during probe. The other write is only a one shot trigger, and the
+registers read afterwards contain measurement data that keeps
+changing. also need to read MODE back from hardware since the sensor
+can silently ignore writes that come too quickly. I was planning to
+add caching later along with runtime PM to restore MODE , but I can
+add it in v2 if you think its better added now.
 
-  2. The loop bounds use rez->package.count directly without capping
-     to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
-     than expected causes writes past the fixed-size labels[],
-     shunts[], and active_channels[] arrays.
+I'll also address the other comments from you, Joshua and Jonathan
+in v2.
 
-  3. The bipolar and sample rate DSM calls access elements[0] without
-     verifying package.count >= 1.
-
-Use acpi_evaluate_dsm_typed() with ACPI_TYPE_PACKAGE to validate the
-return type at evaluation time.  Cap loop iterations to
-PAC1934_MAX_NUM_CHANNELS, and verify package count >= 1 before
-accessing elements[0].
-
-Signed-off-by: Tristan Madani <tristan@talencesecurity.com>
----
-Changes in v3:
-- Use acpi_evaluate_dsm_typed() instead of manual type checks, per
-  Andy Shevchenko
-- Use (count & ~1u) for the name+mohm loop bound to ensure pairs
-  are complete, per Andy Shevchenko
-- Drop Fixes: and Cc: stable tags since this is hardening rather
-  than a fix for a specific regression, per Jonathan Cameron
-
- drivers/iio/adc/pac1934.c | 32 ++++++++++++++++++++++++++------
- 1 file changed, 26 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
-index de59dc27c4405..b6315a13a353e 100644
---- a/drivers/iio/adc/pac1934.c
-+++ b/drivers/iio/adc/pac1934.c
-@@ -1092,17 +1092,22 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 	struct device *dev = &client->dev;
- 	unsigned short bi_dir_mask;
- 	int idx, i;
-+	unsigned int count;
- 	guid_t guid;
- 
- 	handle = ACPI_HANDLE(dev);
- 
- 	guid_parse(PAC1934_DSM_UUID, &guid);
- 
--	rez = acpi_evaluate_dsm(handle, &guid, 0, PAC1934_ACPI_GET_NAMES_AND_MOHMS_VALS, NULL);
-+	rez = acpi_evaluate_dsm_typed(handle, &guid, 0,
-+				      PAC1934_ACPI_GET_NAMES_AND_MOHMS_VALS,
-+				      NULL, ACPI_TYPE_PACKAGE);
- 	if (!rez)
- 		return -EINVAL;
- 
--	for (i = 0; i < rez->package.count; i += 2) {
-+	count = min(rez->package.count & ~1u,
-+		    (unsigned int)(PAC1934_MAX_NUM_CHANNELS * 2));
-+	for (i = 0; i < count; i += 2) {
- 		idx = i / 2;
- 		info->labels[idx] =
- 			devm_kmemdup(dev, rez->package.elements[i].string.pointer,
-@@ -1119,7 +1124,9 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 
- 	ACPI_FREE(rez);
- 
--	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_UOHMS_VALS, NULL);
-+	rez = acpi_evaluate_dsm_typed(handle, &guid, 1,
-+				      PAC1934_ACPI_GET_UOHMS_VALS,
-+				      NULL, ACPI_TYPE_PACKAGE);
- 	if (!rez) {
- 		/*
- 		 * initializing with default values
-@@ -1130,7 +1137,8 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 		return 0;
- 	}
- 
--	for (i = 0; i < rez->package.count; i++) {
-+	count = min(rez->package.count, (unsigned int)PAC1934_MAX_NUM_CHANNELS);
-+	for (i = 0; i < count; i++) {
- 		idx = i;
- 		info->shunts[idx] = rez->package.elements[i].integer.value;
- 		info->active_channels[idx] = (info->shunts[idx] != 0);
-@@ -1138,9 +1146,15 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 
- 	ACPI_FREE(rez);
- 
--	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_BIPOLAR_SETTINGS, NULL);
-+	rez = acpi_evaluate_dsm_typed(handle, &guid, 1,
-+				      PAC1934_ACPI_GET_BIPOLAR_SETTINGS,
-+				      NULL, ACPI_TYPE_PACKAGE);
- 	if (!rez)
- 		return -EINVAL;
-+	if (rez->package.count < 1) {
-+		ACPI_FREE(rez);
-+		return -EINVAL;
-+	}
- 
- 	bi_dir_mask = rez->package.elements[0].integer.value;
- 	info->bi_dir[0] = ((bi_dir_mask & (1 << 3)) | (bi_dir_mask & (1 << 7))) != 0;
-@@ -1150,9 +1164,15 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 
- 	ACPI_FREE(rez);
- 
--	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_SAMP, NULL);
-+	rez = acpi_evaluate_dsm_typed(handle, &guid, 1,
-+				      PAC1934_ACPI_GET_SAMP,
-+				      NULL, ACPI_TYPE_PACKAGE);
- 	if (!rez)
- 		return -EINVAL;
-+	if (rez->package.count < 1) {
-+		ACPI_FREE(rez);
-+		return -EINVAL;
-+	}
- 
- 	info->sample_rate_value = rez->package.elements[0].integer.value;
- 
--- 
-2.47.3
-
+Thanks,
+Vidhu
