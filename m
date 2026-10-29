@@ -1,88 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793271146;
-	b=ssnZdDCBfRzoeb2GkCQbKmEtmBRz6KDhLPxOifDWM61EHF8tp/yQUr6zNCuUa8m1xiOU
-	 7F/87BwGemRVUx5qWdbuXkU8IbrEC+gduWVJsD+tTFvydGZDRI6te0c3wY6e9+Nts0jyK
-	 Nx7UKrIdmMBT8j5diqf6UJ4jXIgqHwDvvLun6f1NW85Ek+yh7p2eAsLpIT1GXhAC3mifU
-	 L/e2HZTLMBJiq8c67wzV7LD4cfQGy2eaovT5JqXvf95k67LPY5TQ3fjTmcTUQk1C1UZjR
-	 AczkYXnqEhSsZGaxIV80zyBkfnPtz7n9GnzfRPzR9LMUqm6EUCaCnrkV+HiOWF02wyQ==
+	t=1793272114;
+	b=sYDCGrcy+HMMZJvrrqA/N++Sra35dLenMfjrmo357D72xsGgm1qchkFo45OPErobTnay
+	 b8HqiIMC/j/jNpd0RmaOJfQBCHxput7c6O2yv/VYC7Q93nIHeZkDoggZHr1lapKgTNjVd
+	 AbYqpnd2yfXXq3imxK2O+aLbimZ4lA5i6/JNg31+FaBO1Mj0d4oLXc1GKoJytV2OGk1/c
+	 Tj1VYdVvhxr/gyqkt+eF/wyn/f7Z7lEXB4jIYttbmz71557mjq7uGgHaaeKw8P5+sBCB8
+	 JATDE1gFbowy4dS7vAJVV7gWmu/5qn3aLQqOLNm7wUMzSY2yVFpVw7okKq3R5tQXmcg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793271146;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793272114;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=Z9CuJJHkbbNNuzLS3GGtdXngJnS4fF2IBPDFiplXDVI=;
-	b=jStgtRZaJ12L+BAAgdSvImaws/6V8A8rKEijS8Q06/R3IKrpO569iY+10EDiqvMZoYRo
-	 8fJTnmpg/R+DkCc4WIF8zQ+QfaTKG10ixq1tEdJjZihRSdd3spGcCSusGpGxDEdBC86ih
-	 HzNiO4Vh1/GFxw5V3TdsSsINUrsl/n75QcWfUX8uR8cUHlqrsgyoccrXz5/fwnEm5YdEB
-	 txh0v0jV7locKnbMx1h2g58NZ4EUYo9mefD46RUxRn4vwSCCEGEfuWo4tOpDYAD38ql39
-	 9XLKU5ig63Wnd05pUve0GjRVv8er0wKDclkFwlq7e0NU/UMkDkt6gaqQysIfQbrQbQQ==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=H0tYkJYy3C880yk6BHBia02WiTzz3Y2QDCRFZ+JDpxw=;
+	b=sB0sHGd5D03DTTEcxRRVNogww5+tYaVksf0iYDHqlvGxZNEqmc+mmasIoejgVxt79S2X
+	 Tho4D8W1SocLMiTHbv6RsS+nG+dUxGy9RpeNQDouGrFfOeMAixKeaCHcvi6g9Cl9R/q7u
+	 ls//FQ43XFYabrC7KWNDb85TwqI2Ul0cDFGBXwuRcVHpG2js1i+kZRd0EXHiP0XJFa6Re
+	 iU0QmyjP7c+H5abBqTJpcmi22I8bIEpIC+Ed0ebmfuLM1cvVsuAFhPMh9SjkmvAHmuy78
+	 z0X6FYTP291SafOuabsQutbUoSBJ+hCjVehjQ1mCU2UIn4Rm9edy1MRHKn+DOYrvSQw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PsYvEjgx;
-	arc=none smtp.remote-ip=209.85.221.41
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vtMbs72i;
+	arc=none smtp.remote-ip=209.85.218.50
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76A6A606A325
-	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 10:52:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 76A6A606A325
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74B47606A327
+	for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 11:08:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 74B47606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PsYvEjgx
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48e04773687so762997f8f.2
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 03:52:26 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vtMbs72i
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c46d41f6af3so295210666b.1
+        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2026 04:08:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793271145; x=1793875945; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Z9CuJJHkbbNNuzLS3GGtdXngJnS4fF2IBPDFiplXDVI=;
-        b=PsYvEjgxQzAaHbqnKMmKaATrRLL3eF78bLWpfKuowjhm9iKoiYVq+QgV27M271RkK9
-         U0lV17SWE2FvHqBV8dHwPsyXM0iiPfahckMTEUjM4vepU2oEIRv9h4vPrVWCSKYV1e/Q
-         z+ZYVBCIu1iWfyuTGFHun73FLD3PUyseydCFA8M/ACRg1UM6cJVeJLDl7qbu4gZLm+mP
-         CKCsKhX/rc/bgD7Rrh9Nx3+81uQ53QlJTEjJ8mXQQNAIz8NvC+rBbb6CXewLhr74D48+
-         Z7iYe08xhjdECnx0favoECnlXvKP1cL5eaJ/P8Wy9fI9htrlCFYOlNLFFQqZ8T0v9Z7z
-         Salw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793271145; x=1793875945;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1793272113; x=1793876913; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Z9CuJJHkbbNNuzLS3GGtdXngJnS4fF2IBPDFiplXDVI=;
-        b=xsmEBVyX5yyr/h/Qi8928EwIjrjNnJWE1WV1L1x6f9VK00cpR46Iv7nrK659NkcLM5
-         /lY8V9TIOON1nutu2dVNXjVq2QUUaYKn1X3IA0KB5QZpZrwvjHCHpapX/YSEtIhSsJxa
-         H5l1S2wexhvRoQcjMDUZqtWsLPuixlpsnCS83uDuj0fwMV01yffryasYKiPf2owOTHPq
-         lIy4alKX6Y3K0wbT+x0nQEWFzgBjlrBezNumNbe1VhTg7EgRwA5irXG7V1RBeZQ4v7es
-         MUr25NBwbRurUkHtv2sfb37pfoZbRgCV3y6+XIT43uOCdUhRoTuvLxYpnIB1d/KFNLx4
-         n3sg==
-X-Forwarded-Encrypted: i=1; AKwUvBz+LJdzd1tG5oJrclq92idSp/UUiZqnHZ8+F36JVB0XvctVjo5Cl31G5PyR+Iq7cY6u77a78IBy7No=@vger.kernel.org
-X-Gm-Message-State: AFq9FYIGEdmHkMvp8reXT9+TCSPiWdXIAWmSFQxOm2NY6InZbbwedj/P
-	hrowvdtNxHp2r/aTTxteb7WCBuxrFpLWygVH3aQx68mm9hP5m2Uy1ZOG
-X-Gm-Gg: AYBFou3n1pKxbwXvYfpAX8kHFu/JKXR2PD9YY0+XN1LM8mrVhTrnmA1IY/Xpkpkkzft
-	4pLYF4CP5vcq0Hzj2hMdmY+3T5SEC3Vgy/S1pecExrzqC7s4eG75E2uskUOv4djaPDzGl9DSdH+
-	SkujpEp8xlkdEF41L0dexdcpAI3DczceKJ8St/gdx6SGTVLrUBTE34lQibIrxTo3MOAoovPKWOt
-	PUGggwBtwwFy+sNQLoLEizyH73HlqozcQB1MwQjIG4j6keotcliLGx5+QlPy7oBPDe5+smoAU47
-	IQALY/ifrNqMZ0SmBX8Gbcj2KNGsH51sKdmmdf8nUB+Sf1yvi9ON5/FhQv9tN752gekj5Mu9cmV
-	8lvbVb3RE5WfZDRrxHGEVtBWWlM1e9MaYFuyov/U/RN8S3UyLm7z4ah8Un2rvD+kxzhLPyL5thQ
-	wGQbL8I5XVhPFLJCWjVtVRY0DWJuCw6AswJ9Z5Q7KFa1uEBsngB7sWbBYY02ieb30O0TmQZ7lo5
-	iftzxildN6QiY+MU0pwX7SO3UqDc5UTB7Jee6y9jHp5RU2dOecjgLQ0e/FdCCD/KhfCp4LENNWL
-	0QbiYerYELyi5fnnoIphVykA5CmWPrCt7EKGvJEtxfgkpw==
-X-Received: by 2002:a05:6000:2284:b0:48b:f08:8159 with SMTP id ffacd0b85a97d-48e5d46820amr12549573f8f.40.1793271144749;
-        Thu, 29 Oct 2026 03:52:24 -0700 (PDT)
-Received: from [192.168.1.22] ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ecd8ddasm36664688f8f.48.2026.10.29.03.52.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Oct 2026 03:52:24 -0700 (PDT)
-Message-ID: <7558d438-5d5d-41bf-8853-33bee931dc50@gmail.com>
-Date: Thu, 29 Oct 2026 11:52:23 +0100
+        bh=H0tYkJYy3C880yk6BHBia02WiTzz3Y2QDCRFZ+JDpxw=;
+        b=vtMbs72i5Bwdg+EQEg0LQ54+jb1t7DAQtNOEGkP82cMcmWhR72Yob+mezasr9+t7/4
+         mw6CFywSWfKjify4A2dxToGllevETEqsU6CtEtZkw1viIo7kinb0f/b4YWwPCFIvN/XE
+         Z4Th2VBIja6JR8q6bxYsuWRHUZi/wGDYy5Y/PitS/sraMLvF4CsrSgSOOHMTicJvDbh9
+         QoU+ETHa3SxSeoXWtHIVYs5G7UpijQ9HuNkuqfLcvTudhPgS6Xwxe5PIKA0BfVpK8x3E
+         HiMvV/sC8KnW8UYPJdOl0ZUS1ahob76GAtia8Y0ESQKSnZ9XL0dtikB7AEoB60LOqFwa
+         nycg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793272113; x=1793876913;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=H0tYkJYy3C880yk6BHBia02WiTzz3Y2QDCRFZ+JDpxw=;
+        b=s9RVg0eN8OaGbfXSTKygYQkgqR7ky9M6LtGiUXYGPHQgCNJPrsKu17IswlPBkfr/CG
+         Awn+vbuHZIMeU29mGxbKYbSYCa8wpr+fJ3/sgXMMHHTpCYem2gExWZL3rCNKMqpGJsUQ
+         wmcidHP0+OY0iREpVFrh9lCx38KZjowIxiSdggUbpAe5BNsp/kxVxjiXPoIigpvgcO0v
+         i9Z7S2QcbR96h9LdKxP40W35n6rCBNgR5PkT/7ZuyrnTheY0uZIdFdyoka8wiwC63fW6
+         qKFWi7Vl4OYg8SQ87mLhBB6P5+C2yKPb9KKe8JiQxYLCrtYb80V0SzoePDb4sjyJlDds
+         JyWw==
+X-Forwarded-Encrypted: i=1; AKwUvBystD6r+nF5JkT7GBcRcy054Q77+SCQ4Mlo6MmU17irIh2V/hEBjuRZ0rX6vZgZcH0ZeuKD2G3lTQE=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKTLSniNrDTz3zetD8gnPRQDmZqFOmxr29shhs3RYUbaAZmjuG/
+	r87jUxZY7eQNpuJUQ+MPICb5Uba5maIdJ+mbDVX5XYTfj8KVfSbLUpM=
+X-Gm-Gg: AYBFou2IiR08NTKhQYySQ0xoZnEaahrReFhvcaNtiWbQ/w7rKWX00WfgWKsP1ZS6NJU
+	5DthDAg3IqYQVQHrV5Y+F/by0gLqDAmHg+pvqNBuYYI4lSEtUgXvNuCA+ZdbSGav+Jh4zgFUijN
+	xSjWsuV8D9+Fn6PhTuyRcmRBXHAgUv0LRZqrXNxuE2JSaG/a40szKxKheGHPYN2XdleR1XxLNc3
+	7CDvBIhQe7nvKHQ42gVGjIKDduH0P8HXnJbHx5+5vVQE4WkdvJjPLMg0WTGtcADJDoRL2kfWkaX
+	+u8g2CYIWFDyS6OuY0vvmjH7q6AYvYMXoTNA00cAmOYiwFKziRhmPOgdYjK9pbHk743Qhi/R4z9
+	ybHBUMR0lw2TQ6GBhEt38BSmU74zYoEfZMtRKFTzQMwHIm8vTTT0hGltkHugaG50Da5eyJHYdpZ
+	pAJztL0rUxIeg7qr3NmKREontwxIXbnFDHQruBaYOBklbVeTC7Uv3MrVbHrs/m9/WlA9qyfM+/U
+	LxfhTkdfR+QK28ZSw62+3HVvQ7vSaljJa/LENpujQ4mROMngosjYrE3Ljp1WPjAS9HJBnv0hA==
+X-Received: by 2002:a17:907:72c3:b0:c31:e958:408c with SMTP id a640c23a62f3a-c49be046b2bmr424030766b.38.1793272112734;
+        Thu, 29 Oct 2026 04:08:32 -0700 (PDT)
+Received: from debian.. ([2001:41d0:303:db6b::])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ecdfb8esm33716448f8f.54.2026.10.29.04.08.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2026 04:08:30 -0700 (PDT)
+From: Tristan Madani <tristmd@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Kevin Tsai <ktsai@capellamicro.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Tristan Madani <tristan@talencesecurity.com>
+Subject: [PATCH v3 0/2] iio: validate ACPI return types in sensor drivers
+Date: Thu, 29 Oct 2026 11:08:27 +0000
+Message-ID: <20261029110829.1086835-1-tristmd@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20261026142040.62383-1-tristmd@gmail.com>
+References: 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,42 +106,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/2] dt-bindings: iio: light: add as7343
-To: Chang Yu <marcus.yu.56@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Joshua Crofts
- <joshua.crofts1@gmail.com>, Shi Hao <i.shihao.999@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-References: <20261029074851.216029-1-marcus.yu.56@gmail.com>
- <20261029074851.216029-2-marcus.yu.56@gmail.com>
-Content-Language: en-US
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-In-Reply-To: <20261029074851.216029-2-marcus.yu.56@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 10/29/26 8:48 AM, Chang Yu wrote:
-> Add binding for AMS AS7343 which is a 14-channel multi-spectral sensor
-> with i2c address of 0x39.
-> 
-> The GPIO pin is not described because the datasheet does not document
-> how to use it for hardware synchronization at all. The GPIO register
-> also has no mode-select bit to isolate the pin from the chip's
-> internal control logic. Exposing it as a generic GPIO could result
-> in kernel writes being overwritten by internal logic.
-> 
-> Datasheet: https://look.ams-osram.com/m/5f2d27fff9a874d2/original/AS7343-14-Channel-Multi-Spectral-Sensor.pdf
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-> Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
-LGTM so:
+From: Tristan Madani <tristan@talencesecurity.com>
 
-Reviewed-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+Two IIO drivers access ACPI package members without type validation.
+Use acpi_evaluate_object_typed() for the outer object and add inner
+element type checks where needed.
+
+Changes in v3:
+- Fix alignment of acpi_evaluate_object_typed() continuation line to
+  match the opening parenthesis, per Jonathan Cameron
+
+Changes in v2:
+- Switch from post-hoc type check to acpi_evaluate_object_typed()
+- Replace kfree() with ACPI_FREE() for ACPI-allocated buffers
+
+Tristan Madani (2):
+  iio: light: cm32181: validate ACPI object type in
+    cm32181_acpi_get_cpm()
+  iio: imu: inv_mpu6050: validate ACPI object types in
+    asus_acpi_get_sensor_info()
+
+ drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c | 7 +++++--
+ drivers/iio/light/cm32181.c                | 5 +++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
 -- 
-cheers,
-jose a. p-a
+2.47.3
+
