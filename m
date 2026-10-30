@@ -1,102 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793361776;
-	b=4OpJsINn/JJ65IO1zdm5sIH50Lwq4WfR9UVkz8l6sfcf5Yyzzo+ERAB8dSv27cgPdMmo
-	 BqdsswiqC6qp7MvKMKo6DzkhiPPXL2yr5KSxblbpNrVsx4eOcKyHVxg5iuvJ0LTZjW+dN
-	 4hbIdbO7SfP/d0t7PEPuk2nkNKjLn4g1ddPcRVF3Z7MpTdc6WLK0OlC3pw3syRuUnYrkO
-	 hY++qXXCrSjLpnOqRvCwu8O2jdMpaEk/em9nc2ymYmZ9f/MYk+SNl+8WtzUnnX/YMxmui
-	 ElFp6Bwc7oO6A645mfHm4EEdpnCmrgcKSxQg9EfuUMFp3ipzxxi5ttAmyDXxWx2PZ6A==
+	t=1793363732;
+	b=FxwhlUxtxttTXAnhOWgwVp2pf0mfaIwXmEr0F0sboT8IaajZOajkilHDiQPoqS0l450D
+	 ApRL1hYwgoRYpI2a3Rh5hvzfv6gPCn33HUGMM9ZS8XSB98+rjcHy39uC6Wdj4pPWnok3Y
+	 Um+iSWBIroyzy6bFnY2O4JCb1uuNRESdnmWkGCDVTxaPM0bXH7bijhyV40RG4wqj+IEW3
+	 5FxcrV7/DHCaeFPoNN7ZQ2gy7qHhWcPP2eON8BBkymOCTEo1xoHtramgQDoDIdyOts39F
+	 zlIk5hT0ilz62/o19e7fDIkNW3B9wnn5OL/9/aBTIrSudD2I4dky3VJIm3OMfmO9RZg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793361776;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
-	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=c9S/U1H5OICMNEFW384lho6MZOsN+RV8JrxUnuTzmZQ=;
-	b=OzDIvA+Ll0JvyjyT2PDEmIePmy7krKYGQMQc4/hipzt1OztH18688A1jA7G61QmRPwC9
-	 IwtPZWiU3wR/ZnZFPC+vXvts279kKSugoCz2zsjygcQDnpoNx6bMfHya9AqNCiE7Rs3DU
-	 F8iP/pn/ILRym4NnsjhyMm26U7DjrIfVViKUTVhFdtRYstFzkGQdgTgNU7TEenKGu0ERb
-	 H9YpJKzO8w0DItCJ4WH/xEoYLBlztEdQ0O+jb+K5H1h1Lk6js9uEFB3HI9YPRBAYzgyBY
-	 Wh1GDB8EJwQ1BSXedIp6jbZt9XNKE+it0ZEgnW8355ndmXxdDWBg4LgR9gFrGxtfmlA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793363732;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=M7/R3LmLUP9HCLPp+1CZga6AX7kccFyKSghLPQjiFI0=;
+	b=5NjscF586/QaymFYXMQgHO2og7wbvZI15UpdA7yfGVk8RC/YxGOQstqdF1X57Ij5VktK
+	 8VmcEn/1X6Hy24eY0kdoV2RuC2+TcAi3PBGgzdRDetEL99bri93gUw48wVOvcwdZZkdoK
+	 6S/8NO7Tegj9tWUWVBd3rUYxa/Sa+8nNYdCa5qSxi1NvAlRwPsd/O/uFUG0E+/V7A1Mq/
+	 DCrXJaQrBOS53qbFu5koUPtAMg7gkek8TjBNuo//WFIBnA1DPXHBfCzihal/enYCriHMv
+	 rRpf1PBITlw19JyO5Sf8NAK2Lo7fge1B8sskmCg6u8Ci3BR1X0YzSpSh5PCM6Pyzkbw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=ccUsT8A7;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b="C7Wx/Y9M";
-	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="Wy93/5Vl";
+	arc=none smtp.remote-ip=209.85.221.42
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 809E9606A337;
-	Fri, 30 Oct 2026 12:02:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 809E9606A337
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E6BC606A31C
+	for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 12:35:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E6BC606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=ccUsT8A7;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=C7Wx/Y9M
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69UBI6Dv1436848;
-	Fri, 30 Oct 2026 08:02:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=c9S/U1H5OICMNEFW384lho6MZOsN+RV8JrxUnuTzmZQ=; b=ccUsT8A
-	7qkv8Z9MWJ8dQahQbY1Ud63oYNtz+6LnE1L7aQJemqeT98KDbGHamMuGygwDgRQt
-	T2Z4K4IbALGt54GW82PNdmVcDCTZ4ZLsMrEYtOmmHgUNCGn64hG2ZUnpuROfXYSH
-	0tuu23EmKeoV3kH6jN4Dh9yu7tua1CmvJ9N+rH2odFd1X17pzJlQHDzyb916c8RW
-	qdC91AIefeVsEj8ju0BH1UEKxWBlqiIfsEbxOym2gMnRJ9mb7njwHc/1+XYUdp0A
-	6nlysQPPib9MwH6JXCAP4J6bov1Iss8lKWAWNrcjVXZ01f3nCVIq8GQlRsdJtkGh
-	glT5Z/nPT7ggAUQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=c9S/U
-	1H5OICMNEFW384lho6MZOsN+RV8JrxUnuTzmZQ=; b=C7Wx/Y9MWuufVumUy0SeJ
-	+VvcXA7FnYf3yv/E6oi0DWLHaNCPeok2oyE3tRCn3TyNmJFZwbtSEPcQkTG6jlbd
-	1meIPGh0bP7bwfW9Np72Bi4Y3bFIoY6ImzfSFqIT/FGi0nb7TQdhYjQYv1trgG81
-	x6pbI6+I73u2n+Lfx36d/YJvl+KZ2D6DzFc8ugjzJuZwKVc93tqBXsLGw4xW6wvZ
-	q4kbbTVO+BxIo2HRXkl/iTKW7xHBRgBUz5tBvQft0mZdzx276tynSJBQbWhC1sA7
-	IKQzWarOnzOxPobYLVJ6Bn96WCtTP57XafAd0T/XPqjPa3WZrxtFdoI8Kll8F72b
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hme7ac03u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Oct 2026 08:02:51 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69UC2omq006520
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 30 Oct 2026 08:02:50 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Oct 2026 08:02:50 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Oct 2026 08:02:50 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 30 Oct 2026 08:02:50 -0400
-Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69UC2cS9029032;
-	Fri, 30 Oct 2026 08:02:40 -0400
-From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-To: <krzk@kernel.org>
-CC: <sergiu.cuciurean@analog.com>, <jic23@kernel.org>, <dlechner@baylibre.com>,
-        <nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <ukleinek@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
-Date: Fri, 30 Oct 2026 14:02:32 +0200
-Message-ID: <20261030120232.269585-1-Nicolae-daniel.Deaconescu@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261029-rustling-scrupulous-peacock-5e6b03@quoll>
-References: <20261029-rustling-scrupulous-peacock-5e6b03@quoll>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Wy93/5Vl
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-48dfdd0678dso472429f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 05:35:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793363730; x=1793968530; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=M7/R3LmLUP9HCLPp+1CZga6AX7kccFyKSghLPQjiFI0=;
+        b=Wy93/5Vl1e12IqRE65omU8GhbZMP/kBPFIZsru8ISA7tan8uB3EvGSrj+pUH/KjUWY
+         JXmnJ35a+hOvAoaoOVc5VDf2+OIWJNw2LhFtGmg67V1bXfSDUy03kmhv6L3KYfh08NVr
+         qERWjayJgtiqCHKtl/fIWvweSlyfrp1TThsw/lMlBPPEYYDCrGLj7Rx2Q66PgOUf1a7q
+         mPCPFc6K9PWPD69NinrBkk8JoD6L2GR+vvJCJhOAc3xe07Oikq2Q5plFXCHd8OaqVNXh
+         HM4bqs4WM+fgqjQMKsI2xhIhF1TWP7DCMMcBELfOA7aR644EH7+ooQUbYGSXWquRB2lr
+         xQZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793363730; x=1793968530;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=M7/R3LmLUP9HCLPp+1CZga6AX7kccFyKSghLPQjiFI0=;
+        b=HHkRLStNbkuGvm4uDUVDeCjuWygyw1owpWT1HfJiZQd0dQ2vmKJ9wU/w++GCbWdsM4
+         1tH3XotWsI5gogf3i1z7EiGkttNnZ9nGm19x0I62SZ70E8ARFcDk5PAWmGFV9Vz8ApD2
+         UfVO62PjMHxWG8OI+1809jFSegsz01te6fLVqbN98HHgXlSwLxgzq3tV18zi7/T+48z5
+         mjeOCkTXk7mVOv2XPTALNcUY3lZq5s3YyUE6roa7kgIdQD78IkLpPw0RzOoK98gZLVmW
+         CYKexvMfSzp0RIRO3/4ikgG/+o6ayWyMpyUVQlnkZUcIfhqg3aynj5DESizxknt4JC3N
+         Sctw==
+X-Forwarded-Encrypted: i=1; AKwUvBx+xvZvg40+TpEZvaoITF9M66+4EN8R06Ygw9Yn3WuXWVg2UEpt7U8ztUEt/L8FNBXWWOetaJwLX9E=@vger.kernel.org
+X-Gm-Message-State: AFq9FYIU6K2FOyTmblkklwL/bOibw0vTZ6hoTjVLL+EBGGTrT/Ip/xk2
+	Z9X8G+38cfsN88/YhJid5XEAh9o82+S2EXENsylUT7VXu6F9i7mEQGY=
+X-Gm-Gg: AYBFou26713DixLuxfZmkuHyfOthds/PagX67sOC0sdUhec7qLM/WcZEGMGFv7r12Up
+	GPYbHMaFZ0NWV3ULEt/GEP5Mof4nMRIufQ6or1QNDgMYKz68aYma4WuuG/zLybASSAJSiNrnFo3
+	QN2qPgmf7UM7C+wTL9qBjo1yxGWu89GswZoG8uQlhkTsLl9FFcJ9StRAQ2GPmrGI4QIm0fNuZUj
+	PEIEBtcm41Lujzgm6zz+I7TIzYr/Kz81Rqo4NGKCfrR9uZ0uaBdUuE50pQyvRAWaXjKCi/eJ8he
+	aH3UZDShe+mplIweXiHX2TjPzqVQ6cf3d2gBRr2uTe3Rf9Rb8HSvpHtBzKFjgTdUU44va1v9uLr
+	ocB6KqOAk2F/JZ5nsVh5/QB8S/anOhshXEGP2KqKNk/PzkjGB5lAzFqETdwmZvMR/+Sz5cYZGx3
+	6gw4QVJzkJim17PL3Uo4h3EAXuYeZWYTihvI3Ww3d3f9RQYD3LDwOhF4kIkayF3AWV9XCh/uX1b
+	gFJ0MJ5TTG1/1mJTcpI7h418B6AeikNcnzWOMlSh0c9+8JZVHna3JjEY9yA+nMZQatqf0UGcg==
+X-Received: by 2002:a05:600c:83c5:b0:4a1:f377:5c75 with SMTP id 5b1f17b1804b1-4ac19329ea4mr38828955e9.33.1793363729731;
+        Fri, 30 Oct 2026 05:35:29 -0700 (PDT)
+Received: from debian.. ([2001:41d0:303:db6b::])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71b7270asm3084970f8f.11.2026.10.30.05.35.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Oct 2026 05:35:29 -0700 (PDT)
+From: Tristan Madani <tristmd@gmail.com>
+To: Marius Cristea <marius.cristea@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Tristan Madani <tristan@talencesecurity.com>
+Subject: [PATCH v5] iio: adc: pac1934: validate ACPI _DSM return type and bounds
+Date: Fri, 30 Oct 2026 12:35:28 +0000
+Message-ID: <20261030123528.606107-1-tristmd@gmail.com>
+X-Mailer: git-send-email 2.47.3
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,38 +99,139 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=bcX+w+PB c=1 sm=1 tr=0 ts=6ae4876b cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=uXIjobp8t2wMuQ0fPvqm:22 a=W8u4RvIHnHHQhm-UzlUA:9
-X-Proofpoint-GUID: 81BRxWoFrnnZbA0Z-vlatwUqMQx8vm-H
-X-Proofpoint-ORIG-GUID: 81BRxWoFrnnZbA0Z-vlatwUqMQx8vm-H
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMwMDA0NyBTYWx0ZWRfX6F7j1Xv5gCrU
- Z60KNqBCLCSI2coof7fdwIP8WAhw5s1ICMvbFxxEn9GiT6qeRVIqeXDpnqyrm7m8lK1ZIG/thoQ
- hm1+2BvCdM62bJlBQ75K8l8RUmdhAVnsHqxlNrTLTgnUpyf3r2yd
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMwMDA0NyBTYWx0ZWRfXx/K/IDpUeEKS
- ZwrrbULIHb9DiAl7xz7FF4nfsU656aEGxmMfT++47rU5TSKPoJrrvGkg2Te7Nk4VenxX4ljeirP
- wSsEA5/AaFXJOgFSc22FqcT6yTbWDAYu/NUhWHX87t9REdjtEP1qlnjff8eg3Mk34xpaaDvPLDT
- ELLOcBpuE4dE1qfDjRr1gedzOXdHZUb6p79OKGiO3sBRruSxkHl3m316KQatKq6S/Xx1k68oCZo
- W1JBPV0fJGHuJfksSeKHpD1mN7ezTlFe7zrVPVQOTG5BZNUbO0Cz9IxnKWw8MhAPOBx6ZTm2+gZ
- bTYQKY8cgg9gi7QAN/9zQzavUyq7Ahw9UknJlMc9w8CEiAPpNRLmexs01XaoMnv7gvBLys6sBCs
- GhL0w7PsMGId/w+s0BSBQBlNdZKUXd5JPn5FaC8NSxjS6oSNeoN6qCS2KVsp91CwB8t5mPp4hxD
- wpI34iW5KUckevD3Hcg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-30_04,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 adultscore=0 suspectscore=0 impostorscore=0 priorityscore=1501
- phishscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1011
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610300047
 
-On Thu, 29 Oct 2026 10:47:47 +0100, Krzysztof Kozlowski wrote:
-> Drop tag.
+From: Tristan Madani <tristan@talencesecurity.com>
 
-I'll drop Assisted-by in v2, and run checkpatch --strict on both patches.
+pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
+times to read channel configuration but does not validate the returned
+object type or array bounds:
 
-Thanks,
-Daniel
+  1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
+     firmware returns a different type, accessing rez->package.count
+     and rez->package.elements on a non-package object produces
+     unpredictable values.
+
+  2. The loop bounds use rez->package.count directly without capping
+     to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
+     than expected causes writes past the fixed-size labels[],
+     shunts[], and active_channels[] arrays.
+
+  3. The bipolar and sample rate DSM calls access elements[0] without
+     verifying package.count >= 1.
+
+Use acpi_evaluate_dsm_typed() with ACPI_TYPE_PACKAGE to validate the
+return type at evaluation time.  Cap loop iterations to
+PAC1934_MAX_NUM_CHANNELS, and verify package count >= 1 before
+accessing elements[0].
+
+Signed-off-by: Tristan Madani <tristan@talencesecurity.com>
+---
+Changes in v5:
+- Keep existing declaration order, only add new 'count' variable, per
+  Andy Shevchenko
+- Replace (count & ~1u) with min_t() cap and i + 1 < count loop bound
+  to avoid unsigned literal question, per Andy Shevchenko
+
+Changes in v4:
+- Reorder variable declarations to reverse xmas tree, per Andy Shevchenko
+- Drop casts from min() parameters, per Andy Shevchenko
+
+Changes in v3:
+- Use acpi_evaluate_dsm_typed() instead of manual type checks, per
+  Andy Shevchenko
+- Use (count & ~1u) for the name+mohm loop bound to ensure pairs
+  are complete, per Andy Shevchenko
+- Drop Fixes: and Cc: stable tags since this is hardening rather
+  than a fix for a specific regression, per Jonathan Cameron
+ drivers/iio/adc/pac1934.c | 33 +++++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
+index de59dc27c4405..cdb730217d46c 100644
+--- a/drivers/iio/adc/pac1934.c
++++ b/drivers/iio/adc/pac1934.c
+@@ -1091,6 +1091,7 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+ 	union acpi_object *rez;
+ 	struct device *dev = &client->dev;
+ 	unsigned short bi_dir_mask;
++	unsigned int count;
+ 	int idx, i;
+ 	guid_t guid;
+ 
+@@ -1098,11 +1099,15 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+ 
+ 	guid_parse(PAC1934_DSM_UUID, &guid);
+ 
+-	rez = acpi_evaluate_dsm(handle, &guid, 0, PAC1934_ACPI_GET_NAMES_AND_MOHMS_VALS, NULL);
++	rez = acpi_evaluate_dsm_typed(handle, &guid, 0,
++				      PAC1934_ACPI_GET_NAMES_AND_MOHMS_VALS,
++				      NULL, ACPI_TYPE_PACKAGE);
+ 	if (!rez)
+ 		return -EINVAL;
+ 
+-	for (i = 0; i < rez->package.count; i += 2) {
++	count = min_t(unsigned int, rez->package.count,
++		      PAC1934_MAX_NUM_CHANNELS * 2);
++	for (i = 0; i + 1 < count; i += 2) {
+ 		idx = i / 2;
+ 		info->labels[idx] =
+ 			devm_kmemdup(dev, rez->package.elements[i].string.pointer,
+@@ -1119,7 +1124,9 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+ 
+ 	ACPI_FREE(rez);
+ 
+-	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_UOHMS_VALS, NULL);
++	rez = acpi_evaluate_dsm_typed(handle, &guid, 1,
++				      PAC1934_ACPI_GET_UOHMS_VALS,
++				      NULL, ACPI_TYPE_PACKAGE);
+ 	if (!rez) {
+ 		/*
+ 		 * initializing with default values
+@@ -1130,7 +1137,9 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+ 		return 0;
+ 	}
+ 
+-	for (i = 0; i < rez->package.count; i++) {
++	count = min_t(unsigned int, rez->package.count,
++		      PAC1934_MAX_NUM_CHANNELS);
++	for (i = 0; i < count; i++) {
+ 		idx = i;
+ 		info->shunts[idx] = rez->package.elements[i].integer.value;
+ 		info->active_channels[idx] = (info->shunts[idx] != 0);
+@@ -1138,9 +1147,15 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+ 
+ 	ACPI_FREE(rez);
+ 
+-	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_BIPOLAR_SETTINGS, NULL);
++	rez = acpi_evaluate_dsm_typed(handle, &guid, 1,
++				      PAC1934_ACPI_GET_BIPOLAR_SETTINGS,
++				      NULL, ACPI_TYPE_PACKAGE);
+ 	if (!rez)
+ 		return -EINVAL;
++	if (rez->package.count < 1) {
++		ACPI_FREE(rez);
++		return -EINVAL;
++	}
+ 
+ 	bi_dir_mask = rez->package.elements[0].integer.value;
+ 	info->bi_dir[0] = ((bi_dir_mask & (1 << 3)) | (bi_dir_mask & (1 << 7))) != 0;
+@@ -1150,9 +1165,15 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+ 
+ 	ACPI_FREE(rez);
+ 
+-	rez = acpi_evaluate_dsm(handle, &guid, 1, PAC1934_ACPI_GET_SAMP, NULL);
++	rez = acpi_evaluate_dsm_typed(handle, &guid, 1,
++				      PAC1934_ACPI_GET_SAMP,
++				      NULL, ACPI_TYPE_PACKAGE);
+ 	if (!rez)
+ 		return -EINVAL;
++	if (rez->package.count < 1) {
++		ACPI_FREE(rez);
++		return -EINVAL;
++	}
+ 
+ 	info->sample_rate_value = rez->package.elements[0].integer.value;
+ 
+-- 
+2.47.3
+
