@@ -1,82 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793357284;
-	b=MzGVvoEuNR1C/uIV8ZZWYoa2txou28BM6DIjsG+0hHiJJYcB1IvnFudp4NQ8Z8V9jM4G
-	 vCxtrDb+ardrLvWU0EgLdbJbzfaIAQPs9qCq6XcAPqjfgSzD2DAmN/SOvu0qdt190wW+e
-	 hvo0+vZ/HriLLwhYjzLO+7ha61UHCUtD0O8p3kSp+hcE/LcS/b4uYJ3chTEBT2+bJQEMm
-	 5693n/Si2IL6255Hfo+E442jZIP5mEbSQ4nHBhfGtPe7RNypQT1qtx3DoPNS/GkbGFXtS
-	 G4KdpnIY6oKvNke17wmZg4fbZ1/cv+1BbG9DLB0SFKPOCSVPKqTy2Be85XmdRVYOzuw==
+	t=1793357302;
+	b=V4ocsSgG+ap3rdXFcItKyCFSQpKPGz6+53m5Vt2xltpaaaOvJCM8mPDUQ4tCvWERD2sm
+	 w3ydImIjgHjhwu504LjZz1SsPFSirDKcvlbQCAMOTex0SlwVIF5H6VLgOxbm9pc1W4vHx
+	 oZeUugh9KKcdsBstNAE6PlSSnOj+X+cUKivFMa+ZcPxcExLijgo5ynqlLa+HJINN8eXry
+	 4cZapl4sHw7ICIkJQV392Wk2IJVse/SJjnrIYcVmvxi7+zXWEFifuB/IZ9q27G7l59nXI
+	 xZ69vuZO4TM5sDsxACJvLOdWexkI+0kgzZPTiBPk6MtSNAAh1TKfCir/C3bVfBk3vIQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793357284;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793357302;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=C57ru1ZgQyPfTj2Ltl+MtZ6bKGREeSrdFgZ8/zlIiCA=;
-	b=Yq+un/OrofEmCztCy9/ahn0Jq32RM7VlqxCCwjSShVCQBantZ/xmXfbS9bhVb3q33adH
-	 UpVD6usJZIqQj9hroTlkXxkoXvp8dNkibApD71DE8o3ZQZhyUlSXDbln8M5KBAZGTFgo4
-	 00l8KduwyHbjemoP1JF/hUYsY2tHHxTFqpVyoFjXmQID5HQU0bK6aJSlS+o/Oy6MjaTkC
-	 Jk7SRaXE03b334AsZQ7+5Ex1ySgqdKQlzWxH0Ie/ObwAbkvUI1os5POyqDqRVfb63hhLO
-	 iMl/4UsB3cKF6LPIEVWkrQzEwwXSc96axAjQ2FUGpX6dTUa2mMfj+//qH0TEMQ92Nuw==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=QpStEmyGQQsu84SS4INTHakUVlKWH4EpwsSW4OFxdxk=;
+	b=ALCSh65FNDPU2PPCexJjz9eolXkuJKoYaB3jY33VYBi+v6arNAxvofXoLAvNhToBEfit
+	 l1e0e+Sb1LyoZOhXpLVxxlzu7MvyFtt5PDbHYMKp4YOFMWNWkUL284iTrZQmfi4tsDjcy
+	 q3bxw9vK/T29nIi/FW8/miLcHX+rw5LsUH0OitsU7eXoOMvZFV9nJg6cVTNpgQQY/kdZA
+	 cS6y7Xe8+bLAmVDNfOuOt1+9gmQyyVJEfOnyMLag0Hl++xJnJcGWBmR2Bhqc2odRWIoC+
+	 1Bu7mwN7JpEINfSI8+Fr1iyYXGmRqTqhY0T2bdIOziECtFsePyrJwfqlmcvWPQvVTxg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=y+c0kfy6;
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TgD7EExM;
+	arc=none smtp.remote-ip=209.85.221.46
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BED8606A31D
-	for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 10:48:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0BED8606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D3A606A325
+	for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 10:48:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 81D3A606A325
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=y+c0kfy6
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a1b07c3c5fso4666805e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 03:48:03 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TgD7EExM
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-48dfc0421d9so465869f8f.1
+        for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 03:48:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793357282; x=1793962082; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=C57ru1ZgQyPfTj2Ltl+MtZ6bKGREeSrdFgZ8/zlIiCA=;
-        b=y+c0kfy6ChDLjC2R1iiJMnAjUiTid9A+fyPapn4dSVhOrxBpyPmg3QbZSwOHJEAbYN
-         Q4HeyWLBCXC0p2ef9JYeIR5WCJ242CAZTHXEApeu5gmEJuqHgm0TtUKkz7iuTki2KO2O
-         5pEsL8TdYvMxN3An7qHagEnvL9CvyKmbyTAvb3ZLpDV3wLtRwzNsBpjP6xq+Z7AgqRpX
-         JRIJGIVhh7hrJTsJ7Uz01Lg2/RH2L5MGIjXpTckKFdSY/uYvKkyEPSoJksh8cx8V9DyZ
-         m9TAdMJ+TaFjKP5kB2PX/HTzNM8J/A3FxZQFFcUzMPykDYK4AGbrCGfM/LEjUke0V1KP
-         yx2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793357282; x=1793962082;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1793357300; x=1793962100; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=C57ru1ZgQyPfTj2Ltl+MtZ6bKGREeSrdFgZ8/zlIiCA=;
-        b=0sJElu47I7UVIRcYC/CbeeW5rhpulCRDrZpvYCfSqBmEypot29JjH8CwVk8owotY9a
-         ksudZzduYgL5VuX/Z61xozY0VPnTFvqRggq9CPS+LFHhezR7vPB5jizt8k63GU509TOj
-         c2/YbS6Wzf5H1CGTnLyv3hn0r/Nrv2P6tAa2sagR6y0/00TXSlDo5Hw9WMjVXYFU2xmr
-         QYmhIzz2w9NYHcQNUZQv7BQO1mbKzsOlmCDdjq02n9jlnpWWL666U1d1qhwEccHnwRjp
-         189UHXdQWybJ6yjt3y1sHBzdir8hil1XhltnNt2JyWQv2w77qWKfO7SO6xojc842aey3
-         gsOw==
-X-Forwarded-Encrypted: i=1; AKwUvBxXFSqWFbCW8sjT08fDks+8VAvLnMWOAHh4K+ZbN85RFFclX6C/feljiuC+NIlfvXt1NaS1x7N5CN4=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJcVWHnjTStC1GUVb9uW5xgtSnRkKyUcAkEVc5WZL5p0vVzIvJ+
-	NNyd+p3oAPMvaZb3/PBSgObqHTd3l743rFM1sq6uMCU2XiM7BMw//vxg
-X-Gm-Gg: AYBFou0vhwpH7FXdZKpzX08UlpqISW3eMofXgQw3GWWpUrjE+6gey4vjQS2CJDQvA88
-	wuQfk+C2rMUD5UvZQSgM7rBK67s9eNWmWNEc3vJZLF290/plIMiiPqwXoDxQjhdyoizz30qvQQ5
-	ikTbdfP/6iUlqSJaDhjsGJo0kgNpmpG4j60WOw3SytC5weHuqVD8mx1fA4mBb6kt4PVGsirFDco
-	d1wwXZaekBqs4vLdnsjBFAz2z+3Ukms7esThC1L4XX6ia+H/c8scIjcoqcwzyabolgoT9OLziaz
-	IVBxJaNDY4kP2RfrHjHrNcfjLrdis6xlH+Grow+xVc9PGqbduaisS15Mkydhe926jkqLh6prO/x
-	FljbWb3DNvUS9yV4nbzNJDdt6KlSx+qG3IpNVafy5tSoSBdvNcs3C2zoMucFp8IwA9i01qjCWKe
-	CzdC/aImy8566PanbtPMdUr1vene51BE3JXjMDdP/uEEiDiPAOWAJ+fdPoF2xB/rd5G35kzfRgh
-	kz7UZ9I6r+qj1VJbydh6OjXKz//fLQkjR9ZInTbsl68g8IO99I8gSJf2QFIunxTr/c7IrXRk3DH
-	XqYFwSMNoM+1jf99FtkRwszssHckK+qNIPMAuagypWNVnZhu5H7qEZYud2fh
-X-Received: by 2002:a05:600d:a:b0:4ac:aae6:6401 with SMTP id 5b1f17b1804b1-4acaae665d8mr12093245e9.12.1793357282256;
-        Fri, 30 Oct 2026 03:48:02 -0700 (PDT)
+        bh=QpStEmyGQQsu84SS4INTHakUVlKWH4EpwsSW4OFxdxk=;
+        b=TgD7EExMtyLX1qNBHnezhB8JBhjJjNtwS9ret5xVef7xr1FZxQuVCJBSL8QXqaWLPh
+         Pa2KsJ1BUKSAm7e2GHVtKOE+L3TqU3tq5yRoge6i1E24PkiIocgQfexJ6bv2ZVy7/5PN
+         2SEdlTV8QmhWQdwsJNwWGFeSxzR42/QEz6IdOuxLum+hxvgoorU3j/lxqQumzs88zOaf
+         Bs165BifaTvp7zvnFilHIDVSairKJDJk4MGH9YY5jq0nvYv+NJaipzT4fzEu4/eq0Gys
+         1w0EQbazUBPYw976ABPowMYajY9jsaZA84nCI2axFc2g0z1TH3/6R7v8v88kV/Pb2fWZ
+         4PEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793357300; x=1793962100;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=QpStEmyGQQsu84SS4INTHakUVlKWH4EpwsSW4OFxdxk=;
+        b=SdTrTYTLn8BmifbguGjAdnOaTnaxGWO2TUPRNmi5ACy7MSvKY6pSKIhHzhipkpS1j9
+         Fq+twEOBvxQxrdpega7W6Z0a4GXpnDh+7uA3vzi7E/bimOw7fiY2hsdvJB3qMFIKjW34
+         qCE8qpJi0hWNOqf8zRQZMBIEvL1AIAR7d8VhU2yMA37P61o5Zvj9fwWAzrIBzNIhxdes
+         LTpETYSwwSO3YQXblR5eC91cSS0m+2HwESnT5Hd4UMPWbr8291D+jXAX6RfRlofYNxRO
+         dHcihIDsIMlLb49MjjAIqMn4Bzj9SP8fVLbfoADZ/7YeNP0FHKt+OYowbNpg/ZDe+p2u
+         Om0w==
+X-Forwarded-Encrypted: i=1; AKwUvBw9QGs1HeA04Qt8f4x2K1D2kUMN/UctTkS1rDdegrsNmV3BNgpbHqd6ulDCnK0eheo6MfyhfBVqX6A=@vger.kernel.org
+X-Gm-Message-State: AFq9FYJuTnyqf5bwldS8OS07kwJalrmPP6YDu9NZzplhoc8eAUsMc3NK
+	+adcCcjZ9DD9bb4Q1vQOkJKDBV5bnGq92PgjABz0GsXafNtfDJs6zTYE
+X-Gm-Gg: AYBFou0uko47LXdKdS4VarKNJGg1jOwnCbrbmk60lABAY36SaWZhNjAQEKgdOKMWECJ
+	0+exdulAMk/NVwdR+JvhXVZCpZpl8XtJPVTS31d1zmsckNRqkwElRfmV8TEo7mm723TEQcBBv6l
+	yt4rMjnZszsnKZMYAZh+XnoQ5z1m43XbpdA7A1VQ1AQZ1QLBawLBXy3em7VIyUG0UXKQ4vf7c17
+	Tm6nEJ8oODiHuxzxVVnUhK/de8H0ufA1OOU23hb8pmwRviWsFuiRe6EfErNZI3T5BGc3i7DbK7s
+	y/EKeCZckh4cMb163CyF1fmtngQ/bqMn07N6ZnIMyedVxakroDGDKulekmSzgE8Cc84Z/AZwFYX
+	Si3AWHYTkILPjMKp8CYRAbMja69sdchN5m68eADPk8lOZvM8gKhf8HJpxaeCnghpH4JI3V/eT7x
+	td46AodKJiMMCJ/1Y1cVd6EX5R4Sd+M+VVeAXrjLG9J3orrssKIHFuNdB7RkAFvCJk764NvOcNd
+	qyo/ycSFnILumy9EYTUC/FfA/iC7qMXjFdYACV6D6MgNQ8v26bSpj5Jl+6VcF53jGSbuayw6AeD
+	ZbUk94la3msFR0b+5pjIK0s5p2XxW3yCH9hs01g=
+X-Received: by 2002:a05:6000:26c5:b0:48b:e50:714e with SMTP id ffacd0b85a97d-48e6e50d8a5mr4237079f8f.36.1793357300391;
+        Fri, 30 Oct 2026 03:48:20 -0700 (PDT)
 Received: from fedora ([154.183.179.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71bae25dsm2240473f8f.59.2026.10.30.03.47.59
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71bae25dsm2240473f8f.59.2026.10.30.03.48.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2026 03:48:01 -0700 (PDT)
+        Fri, 30 Oct 2026 03:48:20 -0700 (PDT)
 From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -89,10 +90,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux@analog.com,
 	linux-kernel@vger.kernel.org,
 	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH v2 0/2] staging: iio: addac: adt7316: clean up header inclusions
-Date: Fri, 30 Oct 2026 12:47:43 +0200
-Message-ID: <20261030104745.16693-1-abdelnasserhussein11@gmail.com>
+Subject: [PATCH v2 1/2] staging: iio: addac: adt7316: replace kernel.h with bits.h and kstrtox.h
+Date: Fri, 30 Oct 2026 12:47:44 +0200
+Message-ID: <20261030104745.16693-2-abdelnasserhussein11@gmail.com>
 X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261030104745.16693-1-abdelnasserhussein11@gmail.com>
+References: <20261030104745.16693-1-abdelnasserhussein11@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,34 +107,29 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series cleans up header inclusions in adt7316.c
+Drop the proxy header <linux/kernel.h> and explicitly include
+<linux/bits.h> for BIT() macro and <linux/kstrtox.h> for
+kstrtou8(), kstrtou16(), and kstrtoint() conversions.
 
-The changes are split into two logical patches:
-1. Drop proxy header <linux/kernel.h> and explicitly include
-   <linux/bits.h> and <linux/kstrtox.h> per IWYU.
-2. Explicitly include missing headers (<linux/err.h>, <linux/errno.h>,
-   <linux/pm.h>, <linux/string.h>, and <linux/types.h>), drop unused
-   headers, and sort the remaining headers alphabetically.
+Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+---
+ drivers/staging/iio/addac/adt7316.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Note: <linux/device.h> is retained because the driver explicitly calls
-dev_get_drvdata() and dev_set_drvdata().
-
-v2:
- - Split the original patch into a 2-patch series.
- - Dropped proxy header <linux/kernel.h> and included <linux/bits.h>
-   and <linux/kstrtox.h>.
- - Explicitly included missing headers for types, errors, and PM ops.
- - Retained <linux/device.h> for device drvdata functions.
-
-Abdelnasser Hussein (2):
-  staging: iio: addac: adt7316: replace kernel.h with bits.h and
-    kstrtox.h
-  staging: iio: addac: adt7316: explicitly include missing headers and
-    sort
-
- drivers/staging/iio/addac/adt7316.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
-
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 20f6052cc7fb..d4b759ef637c 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -10,7 +10,8 @@
+ #include <linux/irq.h>
+ #include <linux/workqueue.h>
+ #include <linux/device.h>
+-#include <linux/kernel.h>
++#include <linux/bits.h>
++#include <linux/kstrtox.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/list.h>
 -- 
 2.56.0
 
