@@ -1,78 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793386412;
-	b=5mMhCpSfQsylDt2J3+5TZIXdGMsoRpn9Mi6RrEbHQ4R3TdbRsq9727RiLjeXvLLALnst
-	 vgxobYqVBX1yK/2Q75Baxdjr6/8Fl8TGxYvvRqKMAhRGwApjBjFFLkUti9KAUig9mRPQf
-	 WwIAPj0p0SbTcrxytF3MjYeqe0Lfv0EUuAZHRiO1mMWQFJqe13yVZVN44KaXsy2sRc5h0
-	 7fnGzumdizlCrJSx0A8MI6aytlxpy0wNaVzf2Sdz8YoQcpRxREMGmYbgalJHd/jQHnQ/X
-	 bUNXtxTY2eSM50WLzrlz5EpjxdvdEHYoHGrCX6JaAta0ZWQE6i3+Slmh4YT/dPPw8LA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793386412;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Fe4RNK7/9GNwXOLesS6DtxLPhNs3D3794NTNOF2GqJg=;
-	b=m9FrQ9qFRoQ8VeVrS15QJ5/u3ub0xNocxK3I9mD2I2XPHtuwijcvCTMNiKcmAVK5d4M0
-	 lr+ZUoPw0HO6GAGZ74wa4n86nBIw8Agk6Z0yo8vv7p3cQBe3XrRkaeL0sSejev3253H8k
-	 1/88t4fQToP8xOgRLe0TzJhMo+BVcC4W7fU7lTj+YYiUosUyKYfSmba8/mh7n4WfPnr4Z
-	 fUEAjuw1LlZ8skIQ6zzaS58c9Y0W51Al2vJfqpBxMnyQ4vQsH9F7Vwgpza9gPtvuLnrGN
-	 olGgdgAnNeNIcOLwmOJqAQYbUHU9dAlzjH6nhMNr1qfb05+rusPKsICK20JGuOAfuog==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="ghYCYv/s";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793393416;
+	b=qinaGOaJN7R+PYH9R+s2oKab2FBBjpVaqBHe0MjgJsU2BiXP3rGCXo+TchojZlcgbTsb
+	 TRzUW+KtGG4B4F6s+AIBtypRK4VyzMI47iGO3EsYecrfOy/Zu2KpNjoVukVJMhnakHG2D
+	 z8l8VveVS7K7XOPk0xGKm5IHXayL53saKlx/c/0sVNuY1dMzb+moFszT9kRFf58iCMK4u
+	 uvejnQUT/xOxtPwCWrt+9WMFPO/wzkILoenN2QDGlDUPVuAngF660NFRg8yTdX/jbT52z
+	 P61G/TL5DmMD4ds4ee5ntWQrcYW+CdLdiZ/It71Obujl1hn6KxtqCLXuQH8TMUybT1Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793393416;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=8UQfLMqON5p9ekAUB7Y3vPF1E10i6/apVL01RDKA+Kg=;
+	b=ipHNgOiFQNX6gFkpZjrdqBP4R0LarARU1VCHx0zRfWPRpDWjcohP+w7sO7nlXho3AZaq
+	 EYort17o8rQFFDQtDYGLMQnrESZ+T1vZRKtUx5UJurvuT1xsuNsCuYmpFEfhpOjoRn3FV
+	 lRqtkDBqlCjnyEXS54wow7UkX0XIyMIelTok46ZKEkhDYB1svseSDU7vloylNcZq++kpQ
+	 WOnc/vRrFWqXIuXHIBqy6oJjFXYlPJXz9CjEopC7wuByLK881Vce7DXmm6meJ0H4rjGTl
+	 +09IfLCw9ROgg2jzKVFqBTb7x75AqLqhEQu8AlCDHNNmh+MgYGAfu9ts89Oa1UBwz2Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jawp8oRp;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D52D7606A31D;
-	Fri, 30 Oct 2026 18:53:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BE43606A31C;
+	Fri, 30 Oct 2026 20:50:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ghYCYv/s
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793386411;
-	b=JDbeSBVcRGj1E3FhTrc+82nYjdMyEhRrc/P4sdemmbvJx/pWNdD3uXKVpIPSNUPEwI3O
-	 eSEqp4WZs5HVWVoX9N/XrvXtZE3TYVDKyRKQkLeqmROdbmyVwuqIg1hgzzFMEHfa+PRw4
-	 STo32oPE/OdTve7YIlLm1b6Jw6Zez3xy25VMJKbcu9Ks5uNJ8uw37itiicRowyTNPrlJN
-	 Kt8y5PI4oN+jNcuLi43LT9Kwk5UbPibFdMXACf6j5ZQUeIIuwMu7rB8AyQvt6eHd0N6Lh
-	 qMBj0W2/tfPMm8uSw+SyxFY9Hh8CKSAx892cnHF2GIZ3I4eT6g1gqwZFsIGcmnvWjVw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793386411;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Fe4RNK7/9GNwXOLesS6DtxLPhNs3D3794NTNOF2GqJg=;
-	b=i3Gcb0K60eX/nFdrtWuO/QIe3Z7Sw2GWwQbCaJI8Qg5NypzLozhSaKWczbTGurekUKcR
-	 EV9TxbvW2vkpjqlUPtwHPX5VOK+i/5USuHbAyng3J/boGxG9mRIM2NkzZqlHKCo+Nx20+
-	 YcYDjPjUuX/rnE5HGwRAzgPv67wJkGKPcYCweXsPpmQF9IID9Mn7upkxmA7+sltRvcg/0
-	 F/+r4QnAH1cpjiy1F/ijdA62IcAPGd+Ivxs8BqIk1gM3ojwY4SBVY5au0mmZiUjVOZoys
-	 7FcW2dDE6CviZC1SKHTZeUIRGes0ENkl8wd9KtK7GS1sIPuoDtXitoItE8Lp5kgUshw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 9A02E1F0093A;
-	Fri, 30 Oct 2026 18:53:30 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jawp8oRp
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71861F0093A;
+	Fri, 30 Oct 2026 20:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793386411;
-	bh=Fe4RNK7/9GNwXOLesS6DtxLPhNs3D3794NTNOF2GqJg=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=ghYCYv/sbRMIaSggYhJEAQ4k5uvjS8PmF8Gva9VGLTmYrSKS0jrof3s8WDk8Cj9eD
-	 BKgdxyRVBiH8MS4672ztYhlPO+iYrLFCltFg6f8u0wm+ufHkZyJhAD4mU7Avh90b4O
-	 9SkPTTW/dAzn6HAzDcxrMtpKCwKCsm+1SAErWl076OehXT1Rbuu8w3sK1WaQgjGmtK
-	 fi25wMbThoZoyMaEcO3LYEvdaUal4HFzLEjOGUMAbhNU0MXgMqewL8gKzn5O+f+nNQ
-	 s2N/UOj+iY/qjhy9LFIPuCLTUEEMqr+gEeRy7I77t63XRtCdMYzJN9TjKXnVoR0oVS
-	 eTjFI+V8yI51g==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 14A9444249;
-	Fri, 30 Oct 2026 18:53:30 +0000 (UTC)
-From: Vidhu Sarwal via B4 Relay <devnull+vidhu.linux.gmail.com@kernel.org>
-Date: Sat, 31 Oct 2026 00:23:29 +0530
-Subject: [PATCH v2 2/3] dt-bindings: iio: proximity: Add Benewake TF-Luna
+	s=k20260515; t=1793393416;
+	bh=8UQfLMqON5p9ekAUB7Y3vPF1E10i6/apVL01RDKA+Kg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=jawp8oRpq1WL06JzKEhpmxNHNXrWNVgEeMA5zOR6qX9ipJ11xiOaghlRu4h9WT/43
+	 dCdjlQ4xGlC9orKn/e5XdNamymg4R2tprNRF4STYwZS55QJkFmbcvSoK6Ihbnyz9yb
+	 SmiVIZDnrWN6iO9+T8rAw8XsX5e1bt0j3QsrNYJGwNIy59Nr33vihmaA0JmO3I6GUY
+	 ssgJ5A3nxKimbVwfnqzuAudA9IgceKo4PKAwMnVWLBoXVTY6Ddufs3x86rpHSZUeHi
+	 z/lOaNItIPqNjD8CwWq8vLtgGLiDkIqdvODe963ciHT7zS02jDjdHQhLrSs3siO4jf
+	 ILWTpAb24lqeA==
+Date: Fri, 30 Oct 2026 20:50:11 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: sergiu.cuciurean@analog.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, ukleinek@kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
+Message-ID: <20261030-scientist-puzzle-ab2c668b6e27@spud>
+References: <20261027-attic-collector-cb4ffdb5cf82@spud>
+ <20261030120205.269090-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,137 +60,84 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261031-tf-luna-v2-2-ce403579bb8a@gmail.com>
-References: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
-In-Reply-To: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Vidhu Sarwal <vidhu.linux@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-iio@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793386408; l=3211;
- i=vidhu.linux@gmail.com; s=20260713; h=from:subject:message-id;
- bh=ocYeyqYoBl3HVzLcvJavpWYsClFy28D0KPq7x1fpZtk=;
- b=mW6j3+3+quNnEyG314nQuPlWdij1s9csYRJfc/7JZI5uprtNNcWI8ZYNBE6Y4QhyuclPdyvCS
- fY+jnFEKkuDCGISJypY0qM9qqDRKb388XPvK92kUjX5DuvqCqyyCwBz
-X-Developer-Key: i=vidhu.linux@gmail.com; a=ed25519;
- pk=xDu3Cbesz76CQXwY8lteI74n3ELVIV7wCsuYAvcX1Q4=
-X-Endpoint-Received: by B4 Relay for vidhu.linux@gmail.com/20260713 with
- auth_id=869
-X-Original-From: Vidhu Sarwal <vidhu.linux@gmail.com>
-Reply-To: vidhu.linux@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="1kUioFkg2UPifayy"
+Content-Disposition: inline
+In-Reply-To: <20261030120205.269090-1-Nicolae-daniel.Deaconescu@analog.com>
 
-From: Vidhu Sarwal <vidhu.linux@gmail.com>
+--1kUioFkg2UPifayy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Add binding for the Benewake TF-Luna, a single point ToF
-LiDAR distance sensor with a range of 0.2 m to 8 m.
+On Fri, Oct 30, 2026 at 02:02:05PM +0200, Nicolae-Daniel Deaconescu wrote:
+> On Tue, Oct 27, 2026 at 18:28:34 +0000, Conor Dooley wrote:
+> > Why are we getting new devices with linear vendor prefixes?
+>=20
+> I'll fix this in v2. The binding file will be adi,ltc2387.yaml.
+> The -x4 compatibles will also be dropped, because they described
+> four devices sharing one AXI ADC.
 
-The sensor talks either UART or I2C, selected by the level of pin 5 at
-power-up. This binding covers both interfaces. Pin 6 is a data ready
-output and is described as an interrupt.
+Please retain more context than this, it's not enough to just have what
+you're replying to. I see so many patches that I will have completely
+forgotten what you're doing by the time I get to the next day.
 
-Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
----
- .../bindings/iio/proximity/benewake,tf-luna.yaml   | 66 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 ++
- 2 files changed, 72 insertions(+)
+> > Hmm, ltc2387-16 does not appear to have these signals?
+> > Well, it has "cnv" but "cnv" has "sample clock" as the input name so is
+> > the clocks property above and pwm-clock can be used if the provider is a
+> > pwm?
+>=20
+> The LTC2387-16 datasheet has these pins: CNV+/CNV- (pins 27/28), which
+> is the conversion-start input; CLK+/CLK- (pins 23/24), which is an
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/benewake,tf-luna.yaml b/Documentation/devicetree/bindings/iio/proximity/benewake,tf-luna.yaml
-new file mode 100644
-index 000000000000..607a71a6ab39
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/benewake,tf-luna.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/benewake,tf-luna.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Benewake TF-Luna LiDAR distance sensor
-+
-+maintainers:
-+  - Vidhu Sarwal <vidhu.linux@gmail.com>
-+
-+description: |
-+  Single-point time-of-flight LiDAR ranging sensor with a range of 0.2 m to
-+  8 m. The sensor talks either UART or I2C, selected at power-up by the level
-+  of pin 5: tied to ground for I2C, unconnected or tied to 3.3 V for UART.
-+
-+  Datasheet: https://en.benewake.com/uploadfiles/2025/04/20250430174501874.pdf
-+
-+properties:
-+  compatible:
-+    const: benewake,tf-luna
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      Output on pin 6. In I2C mode it is a data ready signal that goes high
-+      when a new measurement is available and goes low again once any
-+      register has been read. In UART mode it can be configured as an on/off
-+      output.
-+    maxItems: 1
-+
-+  vcc-supply:
-+    description: Power supply, 3.7 V to 5.2 V.
-+
-+required:
-+  - compatible
-+  - vcc-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        proximity@10 {
-+            compatible = "benewake,tf-luna";
-+            reg = <0x10>;
-+            vcc-supply = <&reg_5v>;
-+            interrupt-parent = <&gpio>;
-+            interrupts = <17 IRQ_TYPE_EDGE_RISING>;
-+        };
-+    };
-+  - |
-+    serial {
-+        proximity {
-+            compatible = "benewake,tf-luna";
-+            vcc-supply = <&reg_5v>;
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 52024397dc78..24fa7cdf6a57 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4662,6 +4662,12 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/luisbg/linux-befs.git
- F:	Documentation/filesystems/befs.rst
- F:	fs/befs/
- 
-+BENEWAKE TF-LUNA LIDAR IIO DRIVER
-+M:	Vidhu Sarwal <vidhu.linux@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/proximity/benewake,tf-luna.yaml
-+
- BFQ I/O SCHEDULER
- M:	Yu Kuai <yukuai@fygo.io>
- L:	linux-block@vger.kernel.org
+Ahh, I see that now. The symbolic diagram on page one confused me and I
+didn't look much further.
 
--- 
-2.53.0
+> externally applied clock that shifts out the result; and DCO+/DCO-,
+> the echoed clock. There is no clk_gate pin.
 
+Then there should not be a clk_gate pwm for this device.
 
+> The part needs a burst of 8 CLK pulses per conversion in one-lane mode
+> (4 in two-lane), starting t_FIRSTCLK =3D 65 ns after CNV and ending
+> within t_LASTCLK =3D 49 ns of the next CNV. So the CLK input cannot run
+> freely: the clk_gate PWM gates the host clock into that burst. That is
+> why the clock needs a PWM and not a plain pwm-clock, which would give
+> a continuous clock. The clocks property is the reference clock the PWM
+> generator runs from, and the driver needs its rate to compute the
+> waveforms.
+
+Then you've got a "layering" violation of some kind here. If this clock
+is consumed by the PWM generator, it should be an input to the pwm
+generator not this adc.
+
+The second pwm should then just be called "clk", because that's the
+input(s) that it represents.
+
+I want to see what the dts you have for a complete setup of this device
+looks like, including the backend and pwm generator.
+
+>=20
+> > Please explain how this is not determinable from the compatible.
+>=20
+> TWOLANES is a digital input on the chip. High selects two-lane output,
+> two bits per clock on DA and DB; low selects one-lane output. Both
+> modes exist on every part, and the pin is set by how the board is
+> wired, so the compatible does not say which mode is used.
+> v2 will contain more detail in the description.
+>=20
+> Thanks,
+> Daniel
+
+--1kUioFkg2UPifayy
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauUDAwAKCRB4tDGHoIJi
+0tQoAP4izLcxISMIO9hhxqgUNHToGy/iMA8wqihVLgj2tQ+KFgEAqbqokbXFRrNP
+n5wXUsHpOWS1rTi4qsuPBHNsU0LWCA0=
+=NVgP
+-----END PGP SIGNATURE-----
+
+--1kUioFkg2UPifayy--
