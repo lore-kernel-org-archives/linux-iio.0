@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793357302;
-	b=V4ocsSgG+ap3rdXFcItKyCFSQpKPGz6+53m5Vt2xltpaaaOvJCM8mPDUQ4tCvWERD2sm
-	 w3ydImIjgHjhwu504LjZz1SsPFSirDKcvlbQCAMOTex0SlwVIF5H6VLgOxbm9pc1W4vHx
-	 oZeUugh9KKcdsBstNAE6PlSSnOj+X+cUKivFMa+ZcPxcExLijgo5ynqlLa+HJINN8eXry
-	 4cZapl4sHw7ICIkJQV392Wk2IJVse/SJjnrIYcVmvxi7+zXWEFifuB/IZ9q27G7l59nXI
-	 xZ69vuZO4TM5sDsxACJvLOdWexkI+0kgzZPTiBPk6MtSNAAh1TKfCir/C3bVfBk3vIQ==
+	t=1793357318;
+	b=UBBo3zfx9Z9oNdr2u58GrNDODlimFU1ZJ6xrecV4+uxkPBthpmSydDdoSbXSlpEG4qqI
+	 TGgaNM1HMlP/b/7F1GmOUn90ujdLdmjYpDBAUD1XUt/UsDCtL/8S6m2Fe/tmVsIY6WGOR
+	 ANmqbgVikuO9hTtFmSJOvO3ob+NPOwFRm+rVqu2HsZkdBR7MIq0FIwoaezRBbfD4GadeE
+	 hgUAiggmKdDJCnxkM3JauDfqAbs/KN3+sdH8AOdYMnFm6ldgLOyJmKOS87W6Zt8cJ4UE2
+	 gtvYwm/VxlQt3EJ8aSGiiJFFmyxXHKYAsc9s2izHmFk7siBEI7CcWkaG7BpBekm2seg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793357302;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793357318;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=QpStEmyGQQsu84SS4INTHakUVlKWH4EpwsSW4OFxdxk=;
-	b=ALCSh65FNDPU2PPCexJjz9eolXkuJKoYaB3jY33VYBi+v6arNAxvofXoLAvNhToBEfit
-	 l1e0e+Sb1LyoZOhXpLVxxlzu7MvyFtt5PDbHYMKp4YOFMWNWkUL284iTrZQmfi4tsDjcy
-	 q3bxw9vK/T29nIi/FW8/miLcHX+rw5LsUH0OitsU7eXoOMvZFV9nJg6cVTNpgQQY/kdZA
-	 cS6y7Xe8+bLAmVDNfOuOt1+9gmQyyVJEfOnyMLag0Hl++xJnJcGWBmR2Bhqc2odRWIoC+
-	 1Bu7mwN7JpEINfSI8+Fr1iyYXGmRqTqhY0T2bdIOziECtFsePyrJwfqlmcvWPQvVTxg==
+	bh=M1z9/DW1dCHbs+qEJtXcl5om+PqlKumxC7fOSdG5ZB4=;
+	b=rulnTrkdLWPbWz7MVKUCAk3JHNp7L4FpqCHe0dTdzq61k8Ud81C74HIZ2I8dcVOLojpQ
+	 Pvb2VLTfTbtYw8zmHAu5gsAJhCBviE0Kcr4Yl76MZZfy3mDaalbjJuaN5ZhRCm29NAOKv
+	 SnlOaX/rVIZpOm3Lh3bFoIAr31Z7wUvOGtsCH6pz23sxsoAHlODf3rqpjI4no16dQhYF5
+	 clDg0ffqpUYGLJSnI1wtzxTrEpamKbHXGhqzmaLjXLUHy/2wb5d/t2ZW0cTygYPOjAIhE
+	 bUEOHelC5dt9FHlnbRsLw9r14BENA7FkPapYoBlbcLgSDLKtRAluLZio8m1pmoy92DA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TgD7EExM;
-	arc=none smtp.remote-ip=209.85.221.46
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vbOYjEda;
+	arc=none smtp.remote-ip=209.85.221.53
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D3A606A325
-	for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 10:48:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 81D3A606A325
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B77606A320
+	for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 10:48:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 79B77606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TgD7EExM
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-48dfc0421d9so465869f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 03:48:21 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vbOYjEda
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-48e00eee27dso296780f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 30 Oct 2026 03:48:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793357300; x=1793962100; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793357317; x=1793962117; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=QpStEmyGQQsu84SS4INTHakUVlKWH4EpwsSW4OFxdxk=;
-        b=TgD7EExMtyLX1qNBHnezhB8JBhjJjNtwS9ret5xVef7xr1FZxQuVCJBSL8QXqaWLPh
-         Pa2KsJ1BUKSAm7e2GHVtKOE+L3TqU3tq5yRoge6i1E24PkiIocgQfexJ6bv2ZVy7/5PN
-         2SEdlTV8QmhWQdwsJNwWGFeSxzR42/QEz6IdOuxLum+hxvgoorU3j/lxqQumzs88zOaf
-         Bs165BifaTvp7zvnFilHIDVSairKJDJk4MGH9YY5jq0nvYv+NJaipzT4fzEu4/eq0Gys
-         1w0EQbazUBPYw976ABPowMYajY9jsaZA84nCI2axFc2g0z1TH3/6R7v8v88kV/Pb2fWZ
-         4PEA==
+        bh=M1z9/DW1dCHbs+qEJtXcl5om+PqlKumxC7fOSdG5ZB4=;
+        b=vbOYjEdaBbyMdhIQakogxXUu3241PunB6JUFa0Iqc5AMpqkWSzGmMI1+SaDwdNQ/KE
+         GFGm5ZGi42VCa2omb+54oZ1wviKjP3pPFPQhXs6Yo8L6OR3LMa6vz7Q61bdJ8bpJ/2Mn
+         zQIuP/M/uZr5JEgiBMAnIiGenKZn6IGlmY113mpeiaHyTR0uOkSWO8tH8k/wCQdNd1Zy
+         XM9iQNqcJ//mx5gcxgMREeeEI6KMlPzWVMyCmQCNBTRl9JUwGHB4/UHBWmd9qPp36Iai
+         pBa/Q8DmJ0NtzyyqpP44dkXUOuHNhxWfMSTUuYJ1GDAYJj3/WHZmNsOKy99OUgsohD6O
+         7NVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793357300; x=1793962100;
+        d=1e100.net; s=20260707; t=1793357317; x=1793962117;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=QpStEmyGQQsu84SS4INTHakUVlKWH4EpwsSW4OFxdxk=;
-        b=SdTrTYTLn8BmifbguGjAdnOaTnaxGWO2TUPRNmi5ACy7MSvKY6pSKIhHzhipkpS1j9
-         Fq+twEOBvxQxrdpega7W6Z0a4GXpnDh+7uA3vzi7E/bimOw7fiY2hsdvJB3qMFIKjW34
-         qCE8qpJi0hWNOqf8zRQZMBIEvL1AIAR7d8VhU2yMA37P61o5Zvj9fwWAzrIBzNIhxdes
-         LTpETYSwwSO3YQXblR5eC91cSS0m+2HwESnT5Hd4UMPWbr8291D+jXAX6RfRlofYNxRO
-         dHcihIDsIMlLb49MjjAIqMn4Bzj9SP8fVLbfoADZ/7YeNP0FHKt+OYowbNpg/ZDe+p2u
-         Om0w==
-X-Forwarded-Encrypted: i=1; AKwUvBw9QGs1HeA04Qt8f4x2K1D2kUMN/UctTkS1rDdegrsNmV3BNgpbHqd6ulDCnK0eheo6MfyhfBVqX6A=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJuTnyqf5bwldS8OS07kwJalrmPP6YDu9NZzplhoc8eAUsMc3NK
-	+adcCcjZ9DD9bb4Q1vQOkJKDBV5bnGq92PgjABz0GsXafNtfDJs6zTYE
-X-Gm-Gg: AYBFou0uko47LXdKdS4VarKNJGg1jOwnCbrbmk60lABAY36SaWZhNjAQEKgdOKMWECJ
-	0+exdulAMk/NVwdR+JvhXVZCpZpl8XtJPVTS31d1zmsckNRqkwElRfmV8TEo7mm723TEQcBBv6l
-	yt4rMjnZszsnKZMYAZh+XnoQ5z1m43XbpdA7A1VQ1AQZ1QLBawLBXy3em7VIyUG0UXKQ4vf7c17
-	Tm6nEJ8oODiHuxzxVVnUhK/de8H0ufA1OOU23hb8pmwRviWsFuiRe6EfErNZI3T5BGc3i7DbK7s
-	y/EKeCZckh4cMb163CyF1fmtngQ/bqMn07N6ZnIMyedVxakroDGDKulekmSzgE8Cc84Z/AZwFYX
-	Si3AWHYTkILPjMKp8CYRAbMja69sdchN5m68eADPk8lOZvM8gKhf8HJpxaeCnghpH4JI3V/eT7x
-	td46AodKJiMMCJ/1Y1cVd6EX5R4Sd+M+VVeAXrjLG9J3orrssKIHFuNdB7RkAFvCJk764NvOcNd
-	qyo/ycSFnILumy9EYTUC/FfA/iC7qMXjFdYACV6D6MgNQ8v26bSpj5Jl+6VcF53jGSbuayw6AeD
-	ZbUk94la3msFR0b+5pjIK0s5p2XxW3yCH9hs01g=
-X-Received: by 2002:a05:6000:26c5:b0:48b:e50:714e with SMTP id ffacd0b85a97d-48e6e50d8a5mr4237079f8f.36.1793357300391;
-        Fri, 30 Oct 2026 03:48:20 -0700 (PDT)
+        bh=M1z9/DW1dCHbs+qEJtXcl5om+PqlKumxC7fOSdG5ZB4=;
+        b=CpKQNLWNOlKS0X4iE2KmvK6WKou5zIRohozwP30EsrgZeJvzK1SvzGreR/uMtTyGIN
+         uQNCrOxDJZianv6q5LjTeLnKU9VPqhxheUaHL1tX1D9IxFMEcDhbkh6FAgFbRU5UI8fh
+         /RY8VqaHyj8VHyGPZLnwFNHD966+8j2dehzPn3N+EqM5taCD7bUkM9Jcb3YgIvXXIY9P
+         I4zbBxWF/0R8ZqDNxtJ/NvSvujxbt9s3TqmEQq1fvXLobc6c8pbYFL3LgVAAg+LgXXK7
+         viXSgV9oIRw2oIFaYqy0XsHnzFIr4qp/CGt1Z8+BPcV9rbLVe3bYFTvlrHyX7eHAsTVL
+         F9Dg==
+X-Forwarded-Encrypted: i=1; AKwUvBxH0sjgU/kFq8TOOLRESORrfVMABR6WCHdM4CPj8hxDXDqLaZhTuXw48zeaFNtHt7JulMGHZz5NVjo=@vger.kernel.org
+X-Gm-Message-State: AFq9FYLKT88Tnmpli00vN0J9oU5FO/l23J4UVvnk+pb9an2Lki0eqlBu
+	45J2qDSVaAP+2Sctwk4xgMwOGmU5fH4+kXJ2yly/xn0NKzRbRe3IcarP
+X-Gm-Gg: AYBFou3jqJ5cpiadcD7j/HoQzOazqUyMqsZRzHfcUckEyRNQr2h/cFmZI8RyOjstJrt
+	3CAfwEFVTNFD49z1VPaJUIYFIjpRpoQ5qeHxbi561bc4lYo95iFfSpB2AV6d1uImSuK4moe37za
+	tezy7T/Uw0etUGWoVwrMuGlXzatav0pnACGWIm+ec34OAbo1ypidZKYpzF5hb4q1/utO8SpdmM8
+	OgPyDsl4g30bD16KWIZjfypICDKyUcZhgj3+Zkl4pdcu/O0hg5psuX+fa7MsL41BcUErXZ6O0cw
+	cuHZqls2Bmjh47LbKMveQPKMcbHNb1hfgEVjC3AwEPXrEFwr8ickWHAWbDa/7xU6zso/YMoVokt
+	aScHeTrnBgD10MM01TBzwfnh5T3fbvIDCbo6mKSMkQs3JhMljCNn0ePd/MeLxgT89txg48d/cld
+	VHQ4Y2/Q5fbPwfLaxa7BD3B2eANMpTuBFSEkLLzuvRI9JRstXLWFJWpyCxAKYScdT8y58aWVRlF
+	aqTRg0LRCJkW92jelstSp31TRktjosyoNBzn/oZpMLiO4p7TVyhv7yQpwaegENtcZaeuJVlE83A
+	9u9CUuGzG+M8Udc+iKg2u3Cmm1Rp8DLjeJ666WMzU9HNjn0UTNKSdfVd6IPj
+X-Received: by 2002:a05:6000:4020:b0:48e:791:1cb with SMTP id ffacd0b85a97d-48e6e4f502dmr4669993f8f.35.1793357316844;
+        Fri, 30 Oct 2026 03:48:36 -0700 (PDT)
 Received: from fedora ([154.183.179.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71bae25dsm2240473f8f.59.2026.10.30.03.48.17
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71bae25dsm2240473f8f.59.2026.10.30.03.48.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2026 03:48:20 -0700 (PDT)
+        Fri, 30 Oct 2026 03:48:36 -0700 (PDT)
 From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -90,9 +90,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux@analog.com,
 	linux-kernel@vger.kernel.org,
 	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH v2 1/2] staging: iio: addac: adt7316: replace kernel.h with bits.h and kstrtox.h
-Date: Fri, 30 Oct 2026 12:47:44 +0200
-Message-ID: <20261030104745.16693-2-abdelnasserhussein11@gmail.com>
+Subject: [PATCH v2 2/2] staging: iio: addac: adt7316: explicitly include missing headers and sort
+Date: Fri, 30 Oct 2026 12:47:45 +0200
+Message-ID: <20261030104745.16693-3-abdelnasserhussein11@gmail.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261030104745.16693-1-abdelnasserhussein11@gmail.com>
 References: <20261030104745.16693-1-abdelnasserhussein11@gmail.com>
@@ -107,29 +107,55 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Drop the proxy header <linux/kernel.h> and explicitly include
-<linux/bits.h> for BIT() macro and <linux/kstrtox.h> for
-kstrtou8(), kstrtou16(), and kstrtoint() conversions.
+Explicitly include <linux/err.h>, <linux/errno.h>, <linux/pm.h>,
+<linux/string.h>, and <linux/types.h> for error handling, error codes,
+EXPORT_GPL_SIMPLE_DEV_PM_OPS(), memcmp(), and fixed-width types. Drop
+unused headers and sort the remaining headers alphabetically.
 
 Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 ---
- drivers/staging/iio/addac/adt7316.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/iio/addac/adt7316.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 20f6052cc7fb..d4b759ef637c 100644
+index d4b759ef637c..54d942cae586 100644
 --- a/drivers/staging/iio/addac/adt7316.c
 +++ b/drivers/staging/iio/addac/adt7316.c
-@@ -10,7 +10,8 @@
- #include <linux/irq.h>
- #include <linux/workqueue.h>
- #include <linux/device.h>
--#include <linux/kernel.h>
+@@ -5,23 +5,24 @@
+  * Copyright 2010 Analog Devices Inc.
+  */
+ 
+-#include <linux/interrupt.h>
 +#include <linux/bits.h>
-+#include <linux/kstrtox.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
- #include <linux/list.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/errno.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/interrupt.h>
+ #include <linux/irq.h>
+-#include <linux/workqueue.h>
+-#include <linux/device.h>
+-#include <linux/bits.h>
+ #include <linux/kstrtox.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/list.h>
+-#include <linux/i2c.h>
+-#include <linux/rtc.h>
+ #include <linux/module.h>
++#include <linux/pm.h>
++#include <linux/string.h>
++#include <linux/sysfs.h>
++#include <linux/types.h>
+ 
+-#include <linux/iio/iio.h>
+ #include <linux/iio/events.h>
++#include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++
+ #include "adt7316.h"
+ 
+ /*
 -- 
 2.56.0
 
