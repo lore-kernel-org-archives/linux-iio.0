@@ -1,68 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.151
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793349798;
-	b=lbZLjOuvpFnEjAMIeR1R2/++y8BKZdHd61CSDDtsOYCtkqu814SgJaF5K9F/Bm0peLIV
-	 vA/Bs9eLD6yI8vaq4eyeWD+JkgEa+zYlhU+tcpP9InoIzqzjeqrgwCZjJMhK2jWI45VeX
-	 xA1Rx/GM1jdrTrPCk5MqqvGZKbKxGt4exMWhZDdzpMgOt3VN1zpqx2m2miNnW2DW8gjns
-	 PvvAfz+jVrLNiDV50UXClq0KiW8Peo15pMixvIDrJDlTws/WUPW5WgxqqU0ljB6aXZvbN
-	 ib/Ha2cWVKIMSMHmzTqkQ/awHilJCzfvUw5RjNDhKsiYLHVavBlGJW4nt4d6GjJ1iVA==
+	t=1793353646;
+	b=HlwdLBxIo/EpPX2MjN8e2JK9+Mq/rTOvyVFoiv9giWrNElGs8mMffzVD+WtCI5GEL6m2
+	 RWoA/8FY5QsNyKL1fEBw2qfUu9657Sn4aebey+9yNgHPuFAJ3WqTTJLi7HhYoLoRXPgPf
+	 HIP4NBS3AYypMEgCr2jPBdaZ3WwT848nHPf4x7N2C2Zh+ZHOkjyf1iEP4uxuKRbTsgkmO
+	 TbREfdav9kzPncd9lgHOD+Z320IuFblVodbFxodX2/G14i/L7r5JVViwhud9SMtK9Ezou
+	 GhBAjDnP0PQilFMijjXZjslPouYTn8Zg2kUcZdZZ4CRuPWFvb0hwp41QNtS4JoJ0rJw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793349798;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=L3BzpO5N3vbUEfc5njd6xjAlReJvCRdmIg/2EyPXr58=;
-	b=hdPpkQLcF8buzpCx/LMv54Y5Dn1VWDJogJVKx0PnKKTIkL3NGQkCCunyAxy7lWIv6BwJ
-	 N6lLPBhQwVvC4VeJEo7gpVem0YW3ZTqAUa1S8kY7ughRVYZRsKxZpvEVRmr1gppj5CGFY
-	 T6ujdFxQE/uvaZPy9ArPDYJ20QYuhB2LlECSXyYz90JntnLT4RrrS6r86JMif9N48Yt9b
-	 /CNrwWevsH/F00l7VG6AfElF3iEGMHKO2ahcg8RHWNibz5O9F0KpMRtLpPFMR1zQin6J0
-	 nKN86Q5lsPsNC52d7MqtJXDKMsGmUDoa6+AzlGbNLHtr3zcqKQ+regO2+ykAFBNP27Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793353646;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=QaZJzYnrmgn/3/+MnWVhC1pUB6YQ4dkPpe2aqBqfGes=;
+	b=azpemxHAb2E/cjcpHWX8p29QxBUsSs352L9Qa8VZ9W7SvBNxC4Icq7xQrGEOqn24OFEl
+	 3pD6wFv5nXgQqd5q9vWDnb9g0bwzQBZhA4aSQlOcn6kxNTE03EIZ5T/WBNtKGMVgSMnQ2
+	 bJgkPBkjjAJlcrohNFHJXnVVhSRqtSvwRdVI7pppVXTzZ5XB6t9zbHrg7XTLUxTGVzil7
+	 7DJ1hHBWts39gZzD9xa6GkTXqPs1L8OPKQLer5LHK1wkV2SnRte1/DBTmsq6nExOXMuoz
+	 wviKYEWwkfoa/t0t6MxTDYS0w/wi7QGjplFJMyKvF9hKYnizI6WwrEU+Meae6coxzWg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=WmhH5hdN;
-	arc=none smtp.remote-ip=111.22.67.151
-Received: from cmccmta8.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D1A5606A31A;
-	Fri, 30 Oct 2026 08:43:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8D1A5606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RYK8qgmF;
+	arc=none smtp.remote-ip=192.198.163.7
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3C94606A31C;
+	Fri, 30 Oct 2026 09:47:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B3C94606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=WmhH5hdN
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=WmhH5hdNiSFHaUJ2gxGUXUnUPfbWv8j6bHMGq9D/9LhxEE6c0k5todTu+IVDzGljPUgPKeA9VnVn2
-	 O2HgRiU4TLKhlgbbCfAaHrvu1kq4DUsEhZOThIpltKk9BA4mj9BqByeQq0rb+MaNY7eepp1IMihvEQ
-	 N4hM5W3egITfy5pI=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app06-12006 (RichMail) with SMTP id 2ee66ae4589cc54-400c9;
-	Fri, 30 Oct 2026 16:43:08 +0800 (CST)
-X-RM-TRANSID:2ee66ae4589cc54-400c9
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.101])
-	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee66ae4589a409-565db;
-	Fri, 30 Oct 2026 16:43:08 +0800 (CST)
-X-RM-TRANSID:2ee66ae4589a409-565db
-From: laixiangwu <laixiangwu@cmss.chinamobile.com>
-To: Linus Walleij <linusw@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RYK8qgmF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793353644; x=1824889644;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cWBxoB6m9qlpzRPldiJg4DoVUNnWvIe79hiZSg3Ps1E=;
+  b=RYK8qgmFnWsXl/OstC1O+MrmBKc6wCBCFdBcoZbXRvBt0W1D04/v/9GJ
+   1Tpt7fOgWRbYYqLq3Fk20/POHgLcGe5Zboo6v7B22zCjHcOGNfuZhP0Fr
+   5j8das1ThucUAR+5E1LhC0YB7XasUWzYpNBtVc1AC+eFFp42u7cRmmeA5
+   3p+bKAKs8elqMVP0bMMu9svz7710TY2deLA/zSbm0NW4XLWmUQeHi+bKm
+   EYAZAtajNOb+VFphsJjv+WXz1cwbRC7zdj4iwOSp4L1IknFYnnBIR/7Gn
+   Y2ad6CkDBhTYJd/aFGFnizsk5CHD5ZlPy7mY7U95SKYaHBbPZWk1mIeGX
+   g==;
+X-CSE-ConnectionGUID: COEFM0R5Td6TRZIXAYEIPw==
+X-CSE-MsgGUID: b7BjjgCASD6zUiK3sVgbfA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1996164"
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="1996164"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 02:47:11 -0700
+X-CSE-ConnectionGUID: Co0TvGOiQ9CACnqcrqQWtA==
+X-CSE-MsgGUID: eY5aRmYBQ9qhKHVYjMhA7Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="5520571"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 02:47:09 -0700
+Date: Fri, 30 Oct 2026 11:47:06 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Tristan Madani <tristmd@gmail.com>
+Cc: Marius Cristea <marius.cristea@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	laixiangwu <laixiangwu@cmss.chinamobile.com>
-Subject: [PATCH] iio: gyro: mpu3050: Fix runtime PM refcount leak in trigger enable path
-Date: Fri, 30 Oct 2026 16:43:05 +0800
-Message-ID: <20261030084305.1660-1-laixiangwu@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.50.1.windows.1
+	Tristan Madani <tristan@talencesecurity.com>
+Subject: Re: [PATCH v4] iio: adc: pac1934: validate ACPI _DSM return type and
+ bounds
+Message-ID: <auRnmh6129P7WY5i@ashevche-desk.local>
+References: <20261029165602.3265518-1-tristmd@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -72,96 +83,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261029165602.3265518-1-tristmd@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when
-enabling the data ready trigger, but all five error returns in the
-enable path return directly without the matching
-pm_runtime_put_autosuspend(). The disable path, in contrast, drops
-the reference correctly.
+On Thu, Oct 29, 2026 at 04:56:02PM +0000, Tristan Madani wrote:
 
-As a result, a failed trigger enable leaves the runtime PM usage
-counter incremented and the sensor can never runtime suspend. It also
-leaves hw_irq_trigger set to true, claiming the hardware IRQ is in
-use when it is not.
+> pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
+> times to read channel configuration but does not validate the returned
+> object type or array bounds:
+> 
+>   1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
+>      firmware returns a different type, accessing rez->package.count
+>      and rez->package.elements on a non-package object produces
+>      unpredictable values.
+> 
+>   2. The loop bounds use rez->package.count directly without capping
+>      to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
+>      than expected causes writes past the fixed-size labels[],
+>      shunts[], and active_channels[] arrays.
+> 
+>   3. The bipolar and sample rate DSM calls access elements[0] without
+>      verifying package.count >= 1.
+> 
+> Use acpi_evaluate_dsm_typed() with ACPI_TYPE_PACKAGE to validate the
+> return type at evaluation time.  Cap loop iterations to
+> PAC1934_MAX_NUM_CHANNELS, and verify package count >= 1 before
+> accessing elements[0].
 
-Add an error label that drops the runtime PM reference and clears
-hw_irq_trigger, and check the return value of pm_runtime_get_sync()
-like the rest of the driver does.
+...
 
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
----
- drivers/iio/gyro/mpu3050-core.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+>  static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
+>  					     struct pac1934_chip_info *info)
+>  {
+> -	acpi_handle handle;
+> -	union acpi_object *rez;
+>  	struct device *dev = &client->dev;
+>  	unsigned short bi_dir_mask;
+> -	int idx, i;
+> +	union acpi_object *rez;
+> +	acpi_handle handle;
+> +	unsigned int count;
+>  	guid_t guid;
+> +	int idx, i;
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 07c0f9011..9c6d5ba82 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -988,20 +988,24 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
- 		return 0;
- 	} else {
- 		/* Else we're enabling the trigger from this point */
--		pm_runtime_get_sync(mpu3050->dev);
-+		ret = pm_runtime_get_sync(mpu3050->dev);
-+		if (ret < 0) {
-+			pm_runtime_put_noidle(mpu3050->dev);
-+			return ret;
-+		}
- 		mpu3050->hw_irq_trigger = true;
- 
- 		/* Disable all things in the FIFO */
- 		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
- 		if (ret)
--			return ret;
-+			goto err_put_pm;
- 
- 		/* Reset and enable the FIFO */
- 		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
- 				      MPU3050_USR_CTRL_FIFO_EN |
- 				      MPU3050_USR_CTRL_FIFO_RST);
- 		if (ret)
--			return ret;
-+			goto err_put_pm;
- 
- 		mpu3050->pending_fifo_footer = false;
- 
-@@ -1013,12 +1017,12 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
- 				   MPU3050_FIFO_EN_GYRO_ZOUT |
- 				   MPU3050_FIFO_EN_FOOTER);
- 		if (ret)
--			return ret;
-+			goto err_put_pm;
- 
- 		/* Configure the sample engine */
- 		ret = mpu3050_start_sampling(mpu3050);
- 		if (ret)
--			return ret;
-+			goto err_put_pm;
- 
- 		/* Clear IRQ flag */
- 		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-@@ -1037,10 +1041,16 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
- 
- 		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
- 		if (ret)
--			return ret;
-+			goto err_put_pm;
- 	}
- 
- 	return 0;
-+
-+err_put_pm:
-+	pm_runtime_put_autosuspend(mpu3050->dev);
-+	mpu3050->hw_irq_trigger = false;
-+
-+	return ret;
- }
- 
- static const struct iio_trigger_ops mpu3050_trigger_ops = {
+No need to touch lines that are unrelated to your change. Just make sure that
+your change tries to keep reversed xmas tree order as much as possible.
+
+...
+
+> -	for (i = 0; i < rez->package.count; i += 2) {
+> +	count = min(rez->package.count & ~1u, PAC1934_MAX_NUM_CHANNELS * 2);
+
+What is the purpose of 'u' suffix? In case if you want to keep that 32-bit
+value this might be even wrong (I haven't checked the promotion rules for the
+values with suffix, though).
+
+> +	for (i = 0; i < count; i += 2) {
+
 -- 
-2.50.1.windows.1
-
+With Best Regards,
+Andy Shevchenko
 
 
