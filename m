@@ -1,102 +1,102 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793363866;
-	b=exxn6lGTTFvFOVYmqgttvndBwWBWyOnt2cU54TYU7do6GJ8SJmgosf/2zOMIRsJoeeDI
-	 NNvwnR2Q83A5opn01U78RxDONnlwtE+p7/3YFSZAMWMt08X4T0Ygry93gJ8uQoih9MC/b
-	 5N/KJHYwu/f8F+wAmOULQbAedKHrRSk57KT6vGbjBkxFk8T3OLOzTp7N5fLsNJjF7sC5o
-	 1NWyd/e0L+J7qUYaxWnSgi12ievDWoKexu3YDadvTZsGCexFhh5qhaI0yYsIN/JQUcjV5
-	 SzzizVH9aozWfcVrzeTk2N3Zew4Fh1aa3iMshyEfKJ87SRNl3MHF8oATiOY20rZQl1w==
+	t=1793366559;
+	b=3PX7au+rjmP6o/f1u9MPDEUNVASEOqCT9qAhYiWxHomQl26H42oJ8+wcHGTDGwgA/CC1
+	 TCT791XQzoEGWICj8hwvT9sIcQ7VhLUJWH9vOalsnIGstD0bjVmkLH8KXTUl8mcaP3H3F
+	 5zMcUrQ8yitZ1g/WVi2++8DHO3JZ4Ci+XrE6nPx3bTOdPiJn+gYG74hxcCwPwVUbT1agA
+	 oPvOoCu/kXqQvX/D2SCagta2zirzF8ncGVrVpg6Emx96GhHYigXn7t1gHI0zX/+F073rL
+	 fZywPQDHI0dh4VkQ3mKb/ZcIogU36M74FOc668gGb7MAZxtb1zJavtEI1PnALNGPNqw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793363866;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793366559;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
 	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
 	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:
-	 X-Proofpoint-Spam-Info:X-Authority-Analysis:X-Proofpoint-ORIG-GUID:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
 	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=HIT1gA/uiyE2ZeyS6P02z17BC0t98TWx/E9biD6Jw+U=;
-	b=yL43f1yImM28ui1EOsntGfLRzfVBDfPC7j5MWG5tvwB+UjwzE91a9LGTQLBeShx4S/aF
-	 OXgdbf0+zfNvTIgfvqkF/Dv462kSDJFYWzU9RbPXbPzB7YOVqG4haZ2ExSicK9vnVJUt3
-	 9HSghqtVlVwH/yQddzJJ4gMxUdwcVyhk1ZoIaI8Sbj1jKjgaqi8MJnuYzP6nN7z1P0SKX
-	 QthFYY41vF+p5WVnGTxpU5m/2zVO57MejMbk8kf2Ke3py1o+ufbX8XjXbYE2CpB4X1HQK
-	 ljE/hat8+a6r3ya73i+VHvjkPQV5NeS8e8r9/d7ojmS9PFB285E6VhhXhaAC6wTjEqA==
+	bh=j2UAE94DwDtj5LC5+N6jjgw+UMIRPadcwNXB/HMtjzU=;
+	b=1fuwAUKxkOXZvPOKUNjt6Nm2puHUBY/5SbxGndHMsp+h6a81nfZrxoKOT3qIk444ya3b
+	 6cEUq5L4lLiGWi6wGZgpG022z0O+unaCWFZ81+6F8Mj+5E6LgVlxwDb+uom9a/5QJ6nus
+	 ar07/IOeJsAPe7A1qsAA0H6zAG/8+8a9twDWMxEdr8TTDRNMhPiDluX7sPo+JMx2xw9lY
+	 WaqcCCLAxjONzIh3KiZW2z0DUgJdMsjZTqebEB3hwYezsPGaXql1hwSxodb5FLTquTD4N
+	 +qaYVHyiGBOKdMdLn2EkjfXZjGSOzDVXmVsCObAKbOpUI0zmNewjEa5zDQ9JIXGSNDQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=analog.com;
 	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=IjEZ7idq;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=ax2mN206;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=XHGg+9JK;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=NM6HgPDW;
 	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69FFE606A31A;
-	Fri, 30 Oct 2026 12:37:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 69FFE606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86839606A31A;
+	Fri, 30 Oct 2026 13:22:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 86839606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=IjEZ7idq;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=ax2mN206
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69UBHklX3601577;
-	Fri, 30 Oct 2026 08:37:42 -0400
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=XHGg+9JK;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=NM6HgPDW
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69UBI7k91436892;
+	Fri, 30 Oct 2026 09:22:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=HIT1gA/uiyE2ZeyS6P02z17BC0t98TWx/E9biD6Jw+U=; b=IjEZ7id
-	qqJXAA6aA3dDwdZUVbTxKiVWnIxGZG0mR5n+91IjRkDWfj4demXpoPjQWXW7CiSO
-	DHJVroXLDTNE4CFKWY2tCCJ31LAxVVOQllgPenxil2DwDtLeN0dCkJ2ygNpls/Ef
-	Q2ql9zc0ujbozb7uulsWjf+nyjM4EQGOB8bSmUmpf/p1zh4+3utaHP891xgo1S83
-	dXmA6d7i//HYPRb093QIH7WApI0E6Eh82YvgSAvzYxuBMvR2Hsn1bHBTkEt5sbTZ
-	rl0k7jC7fqLE0AG/qxxn9J+LZTlM5U3lcUiydwolrR1bPHkBYQII9q8eEkJsr7Vx
-	Ma8epJqTkveWk5A==
+	DKIM; bh=j2UAE94DwDtj5LC5+N6jjgw+UMIRPadcwNXB/HMtjzU=; b=XHGg+9J
+	KDzSNB+JROdc4hcYks3nREF0z6Z0neuy+5uxM3t5IN1qIQI3n/8wW7rP7E3hSq8s
+	g1ValLDLfKUx9690UPlgizlMWfvbMb3B+lJqZ+YsRvmUUow+sIf0wKyRGFMcO2Pt
+	lK7sneWIj99uV9KX7rGT5JIfTJHbU5+O646cKFd7NeWJjhpVvvKZCHiT1V0DPT1e
+	3svSc15Yh/x/OUQxm9D987o/L6kyfyVNs373fGRZlObw55tueEO1OogCQeangsIr
+	eFnUT6jIShCnbHBOo7UqPz+lAI6125qKuG6aR6O38Iof1MUuRyyjry8vCvZU8Q/j
+	oELl18GBlXq0Ppg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=HIT1g
-	A/uiyE2ZeyS6P02z17BC0t98TWx/E9biD6Jw+U=; b=ax2mN206NzCaSheCKibNV
-	7MoOz8syaHBD5jizVqANzKgkEHRRi2FZh3vQ+LvkztxbNes60Iw0z0qFjXpNjCVv
-	rGxiZYJt7JOS+2kca9ciBKzz8Z3TfQxyy/SAAVUV4wQ0o1nr0BJrz/voHmuZFwEk
-	LSbCmNM3ORO8zVRZVc1lHxu9ntlDN1xwFN+c5arFcRVD7KIe6fDHk86QbRQ4A2d6
-	qBFIXoHMmbtzkECzDchXyWLSRpdBaaEfPuE1xMIOpce4cDqlaUdJjCzZviMsuMud
-	liR4tmhi0ax6XhC/STspxYzZzlY/M259woFrAH//jBsxuKdMvcu9Z/EGPlcnD3Az
-	g==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4hme7bm290-1
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=j2UAE
+	94DwDtj5LC5+N6jjgw+UMIRPadcwNXB/HMtjzU=; b=NM6HgPDWWduO9A+1lCEEl
+	6ipgpN9QMWgjOOOK6QOPqhxH+e5GE5ZcWTkrpqMEBGiBSPbdlpOfOv00VrpYPBoc
+	a9ZUIFIkaFlxcDZyGCSb++Z2sc9KtO8fj8S9QQcQS18TlXM0L3xkoR77dqZ++lLD
+	YZg5ilyOxP6tt3FxbtMtPcabfIk3x7KYfR4NaP/M9d+bf74MDnxEVDH4P+maSMd7
+	l3xKVNV/iPd+7aiFdgDMDTq/YU4mqITubdYwlZxtfIeGyJAOMm3RZ3e/HkWPt38p
+	fwXHzRiFZJtpX2+Ro8jqHuYvUlUYiKv9FDlbuM94Djq+fUBF9VLhGott1VYzkAUM
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hme7acduy-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Oct 2026 08:37:41 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 69UCbeoC028648
+	Fri, 30 Oct 2026 09:22:34 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69UDMXfx010514
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 30 Oct 2026 08:37:40 -0400
+	Fri, 30 Oct 2026 09:22:33 -0400
 Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Oct 2026 08:37:40 -0400
+ 15.2.1748.37; Fri, 30 Oct 2026 09:22:33 -0400
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
  ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Oct 2026 08:37:40 -0400
+ 15.2.1748.37; Fri, 30 Oct 2026 09:22:33 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 30 Oct 2026 08:37:40 -0400
+ Transport; Fri, 30 Oct 2026 09:22:33 -0400
 Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.191])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69UCbMUM023339;
-	Fri, 30 Oct 2026 08:37:26 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69UDMKjm024982;
+	Fri, 30 Oct 2026 09:22:23 -0400
 From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-To: <krzk@kernel.org>
-CC: <sergiu.cuciurean@analog.com>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+To: <jic23@kernel.org>
+CC: <sergiu.cuciurean@analog.com>, <dlechner@baylibre.com>,
         <nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
         <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <ukleinek@kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
-Date: Fri, 30 Oct 2026 14:37:16 +0200
-Message-ID: <20261030123716.296299-1-Nicolae-daniel.Deaconescu@analog.com>
+Subject: Re: [PATCH 2/2] iio: adc: add ltc2387 driver
+Date: Fri, 30 Oct 2026 15:22:14 +0200
+Message-ID: <20261030132214.327546-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <a9d1b3c8-e7c0-475e-9fd8-408670ed4f2b@kernel.org>
-References: <a9d1b3c8-e7c0-475e-9fd8-408670ed4f2b@kernel.org>
+In-Reply-To: <20261028023919.21834986@jic23-hlaptop>
+References: <20261028023919.21834986@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,38 +109,44 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMwMDA1MCBTYWx0ZWRfX3NT9Jzd+Iix4
- Wv77ed71r+e83v6RJ5hw6glTs4AJp262wuhylojRSF9yeXW8nDA/vC3o5H7FhibrVLdM0xOB/nT
- xJoKFS8HJoO3G3oct6Llsc32W+z2nyBWG2amGyZUO5g6oSq/s61NBR2ra6zDcHR59/OTZIQ7x2c
- liFjEVoGKUyHjyAs8YivjB+tAFcX38vl3IFcHe68JihbqUXqS7rdBLJX+jw4OJwg4hNKAf/KDLn
- mldfHWeTv+SK8zvDSB4Hh368WEfi7uGWlNG1uYn7Cfo1NFlmz2+ZHmR1YG4aKSljEoLR7vKgg7B
- Wt9KiSrqgGoZnbvktEoVF9ykUuK7e3m+txmvRrmX7uaD/gtHFux6AV8pbSK1gcNX1tjFlLZOQKl
- TRkfAVD5UB1R45k6IfO3XPG/SVAVtrl4XqpLy2hlJwk+ASu9ocO35YwMJjrvDq3R2JgKLBWAKRr
- o2ONH5FyTiFMRBmCUdQ==
-X-Proofpoint-GUID: KKvncvhn_9bRTnUk1kPADyZMdr-hZpEa
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMwMDA1MCBTYWx0ZWRfX1um37yz4vBwv
- dLYNYO9vy1J4k/n1XPVYSc1P5P4pMgdAwqqARr2iocgYm2lSQzuUV3+kcfbESGDewKBHnRbnWpH
- wYxr6E0axbFHOpYZnAnzkX9sNw9jQrkd8LCZGkc7+/iaaUqiU7bb
-X-Authority-Analysis: v=2.4 cv=XfMcX455 c=1 sm=1 tr=0 ts=6ae48f95 cx=c_pps
- a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+X-Authority-Analysis: v=2.4 cv=bcX+w+PB c=1 sm=1 tr=0 ts=6ae49a1b cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=8CewITcD-NaUE93ftHsA:9 a=QYH75iMubAgA:10
-X-Proofpoint-ORIG-GUID: KKvncvhn_9bRTnUk1kPADyZMdr-hZpEa
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=YXEIlvhfyepGEwiY_-oA:9
+X-Proofpoint-GUID: JN8he33VGWJsHSRbojmuxX0BypCuBSP7
+X-Proofpoint-ORIG-GUID: JN8he33VGWJsHSRbojmuxX0BypCuBSP7
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMwMDA1MyBTYWx0ZWRfX8k/N9fY+Y8jl
+ RL8YPi8BtsCdcYRgKjSq8zq8J+qPUEN9z9QuVYF9rVBuaE766EfmWYFIm2GsNA77RPR1MPSyIgK
+ R14OSPtCY4hkizovss/2mpFaey09U2CjZoO++uyypoXMpbSWSIYg
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMwMDA1MyBTYWx0ZWRfX+HAtx+6NIOWw
+ 47/dqxtepKpLBCbMUuBFQC5HYhwLsjg/DX27NMxd4KPfaUOiCrptaCkPLIJJDEtCCS7ucNh0Ozr
+ joj960KQoUw4JOJLGimiDEDOHxsTaWykURrfB+TsHRmrT5Rmc4iI1P52ryUSiAaBz8nEsKE7Zu/
+ /VS4iGHmHGr0ZiVx+B1kdHGsP29SYN5wEy5wOSK4gzYIvQLZeRUSZPxUA/qg+h8IgjtHjEs/e/N
+ FynUrsticJC/PED8n7kb3fWpBrLrLdBCpM/FNZ2SSl4SLCNdTx1Dvgx5eCh+Bvx+r/i+2+lJ4Cw
+ X+C8CtuA1xhNtzsRNmuKdUYv/V/K+yYzFLg5c/oGVVBpJNlz/H9uRldQRp9WZo2mgsdfiVsntHB
+ RhodziAiJ1XIKURzYj9xCI6QuelGZ9kV//VWt68K255g+fhVb0rzftUY3dHbMN8UuG3N6kt4+Mw
+ 35Q5N8JtdT1MEHlBH/A==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-10-30_04,2026-10-21_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 clxscore=1015 impostorscore=0 bulkscore=0 adultscore=0
- suspectscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
- definitions=main-2610300050
+ spamscore=0 adultscore=0 suspectscore=0 impostorscore=0 priorityscore=1501
+ phishscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610300053
 
-On Fri, 30 Oct 2026 13:07:13 +0100, Krzysztof Kozlowski wrote:
-> And the rest of the review as well?
+On Wed, 28 Oct 2026 02:39:19 +0000, Jonathan Cameron wrote:
+> > +	/* Gain * 1000 when adi,gain-milli is absent; unity for the bare parts. */
+> Gain / 1000?  If its in units of milli.
+> For the unity parts why 0?
 
-Yes, sorry, I'll fix the dt-binding spacing and style as well.
-If you meant the other comments, those will be adressed in v2 too.
+The value is stored as gain * 1000, so a gain of 2 is 2000. I'll reword
+the comment to say that.
+
+The bare LTC2387-16 and -18 use 1000, which is unity. Only the ADAQ23876
+and ADAQ23878 use 0: their gain is pin-strapped, so there is no default
+and adi,gain-milli is required. In v2 the comment will say so, and probe
+will fail if the property is missing.
 
 Thanks,
 Daniel
