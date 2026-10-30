@@ -1,78 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793371294;
-	b=zm+QVmQJUov69gJPUSyOMJHmVXQE7x8xxeyIxOTwJfkDQ23gkI5hABoApaVa/ql+Ibfk
-	 WxJ85/KEti9g8Tln3FK2wKFE1uzUExFUDzk5eTO3gm1jDN4T6fwlLOElyRhbMUpI342eo
-	 I7j0hDYuC7sKJV90RzrRrkLb1g1TaPD4dch5KhOcl6BTMI5hSPmbx5pXVc4HgrysYsjLV
-	 7WtU8oLyckmeFWv24M7FfEAkuYAvjN7iIn0IW/PFOGZ2U7NEwSuB442f/RMrk1c5mQ4u/
-	 av8+QxJVqhLLOOk4TdoD+zz2m2kqPKGjOg0a5uYZHuWQya+UQMR0H4ZRvjoAwkWk0WQ==
+	t=1793372856;
+	b=2kVq6u7spEtkOPShOWxTSgsuDo7Bi87zRlIkACUMitbTZKZIPJNRQhLPmQ5IjepkwZOe
+	 GoMKI4UehMoyWTFFFqNT6iKt1THMPorpe6hjove8YOJbcS48RWBOxv0XpcXXWZzyoX2Ky
+	 q5Oil4QwcQSURfcQwApNWXhOF2K+ajGehjxFL4wh4J+g9C9dGXoIxTQXW2Fhwgrf0jORf
+	 Ts2/N0kOLo6j+VZtuO4hiLX7ylTxO31MuUVz7cGpl4sTwB5qxtE0H6/Zj+4+fluZMePZ3
+	 5I90GsaNPOvmysxC23GKvnTe+YCj8xsYiZZoYyrdJruigiB6sZP2/wwOyh/fu+HPxiA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793371294;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=iGt6RSK7yWWj55giIGgQVyqxXAu4XvXBM5uzKbjCTkI=;
-	b=isLvWe1xj7B8sYWbzFIOmF3LoNN4fOPi3LyHqcYlAyREfaP8Yzxqwqi8k+asm78p0fpa
-	 qVo8d/rBCWQQHxUoXtfNEHvQZa2Xul9/Pf5uHF104J3qN9op+oD5Kwn3euhgYoXJTy7hY
-	 QESLTKQYJBhQaS4pmbq6epvWvfy6PTnhX27M9kqK21jauTJvXXfgV1u2IPUkIIin8DZYZ
-	 yDKXtijvfMTRk4ZYjFH94vWs5M12QCqojkuwfQ2VXA+QrH2kv1RSSYimmH8WTj12uCSsA
-	 9W1q8/BCOeeZMZe1LKcbbFHfjPpt3g2idM0tQ5ZknzPr9doVv7IGYPIsBPlq8h3zemw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793372856;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 X-Proofpoint-GUID:X-Authority-Analysis:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=ZtDYzKCNzb7bgZ2aWPtMicfyGEULEG1oSrYBD1rl6QA=;
+	b=l3fRWVQllY68xfhs0aSevZWrP6kJuXvIPqcoHj6jCUtinBO6ynNuX6qWKTKBImv+dMtJ
+	 rMcwTEqXWzcfL0/1WnJIf3SUgFj/s4b7oqYM/OR8REDMTLXOHRoR7zqRI86Ta/HJbmnDb
+	 c0NOb2ARO4r4wr3VOcZXCxlKmn9w75KT46cpUrHxzwWgi1Ogs9qCv6RpR1IffAAnWhOyw
+	 13DQEdqhX+IA6u7J2XZX3jGaCNiGqwNmqnRjEH4yQenkw/AzjcreftWMLqOMZx/lTJ/K0
+	 eOjZTkKC+6JIsEZImyMTYT70zC3Fe0WL/xOqnhvW9Zi8g++rdctnM0c4CfmmhbhcdHA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JAYwn9tM;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=GT2vI8Tg;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=TnOdZuTo;
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EA80606A31A;
-	Fri, 30 Oct 2026 14:41:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8EA80606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 411EE606A31F;
+	Fri, 30 Oct 2026 15:07:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 411EE606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JAYwn9tM
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793371293; x=1824907293;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=A8iFghOosTD4Zm3Vh31UnlE/E9aYofFplatSiUbIcZ8=;
-  b=JAYwn9tMiXM8RczKU26WtzookRi3zp0yP7LTsqi6vk+yJeHVCsmCQHU3
-   Lk8URCHEgrFzkm8M3N+LYiJLxtCMAd/gV/0LJk77EW4mtpTr1nYMslm3T
-   WkbYGonjgU9LEJ8O1n00s3Mhv2KwtkemhwQ0+GBKG4gTAaoghsVRzAS55
-   NJFykB9FlGk+F8MH0wCQVzBd7x5adxuiU8tco7FOoPEautKI87Q9BxsqR
-   CnuExKS/QzknUihsI2MIsr6D5C7B4eBkiWEWHkJ7m6OVbwbA7KL6eQslU
-   U8Cx6GACCA/4QXJQ623qS/q+VvrM4pJBiHar/hqne9l2i6afoBzVEoPaD
-   g==;
-X-CSE-ConnectionGUID: /MCn0M1fTcOzOf9B7C7a5A==
-X-CSE-MsgGUID: tkVtFpoRSLG1376lsfriDQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2036854"
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="2036854"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 07:41:33 -0700
-X-CSE-ConnectionGUID: A7+PJm9qRr+DudHh8+7fug==
-X-CSE-MsgGUID: 7XZUW5h2TvWNZj4iep0niw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="5792399"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.247])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 07:41:30 -0700
-Date: Fri, 30 Oct 2026 16:41:27 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: sergiu.cuciurean@analog.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, ukleinek@kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=GT2vI8Tg;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=TnOdZuTo
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69UER08n473570;
+	Fri, 30 Oct 2026 11:07:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=ZtDYzKCNzb7bgZ2aWPtMicfyGEULEG1oSrYBD1rl6QA=; b=GT2vI8T
+	geEyrRKAc7EcgKMBRqACVPn/lL2gz6mHVsvSWi652ZTOaNrOUzrOA2D/IXWD2J/s
+	0FnC8ueS+k73NaCem52rnC5QQBLqufBzqWOjM3JY0m+OM26xiMwJGBDdcJrK4A17
+	KUhtQ+OL8FQwIZMXySOWjmk8VP3l9hFVhK6cbcrZm6q1kVCrgMeTYBKfqXOWuO78
+	hRkhHXEZuz8EacB236Nqk2rT79woleBFh81MO7HgyxyxCitfm2mDZeJOVXJOn6Fz
+	zulVlK2WFo+lLFAg7CWdGKDIjCdYdn6RqnEH7EURvxuV22uVyQ+aaEaZUBeXk0Pw
+	ppnq6nF+2HREO7Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=ZtDYz
+	KCNzb7bgZ2aWPtMicfyGEULEG1oSrYBD1rl6QA=; b=TnOdZuToDaTFdut8ya8Iv
+	wj4fMWhMIvLmC6Cdob/kVPaKf+PyC6+ACTQ4J/Y8kU2AeLOM7oa67a0rUnHFkiH2
+	K5OoMbsOoGK2ab5fqZ60XO+RKRMA++Z5+j6/TJlIzjZEkks2xwhy2UfvA1QEi15l
+	3BkWmwtCXjcBsIrT7cgBHcxUlKwN6BYaaBNQUmEj2MJ7btwXf6gfGMOaXQOtpzIC
+	2T2rK88fzG+qr9IoXnjn4V5QWQ8Nfj3lC99BYzLzg6iTjY7HOoST5k+s2gy+0FF8
+	QwhRKntJknnFGzGDoTgK/HeDwAggpK1+c+wj8cvBY5wrter8WRwtLf7LUXUoI6I9
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hme7bvx1j-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 30 Oct 2026 11:07:24 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 69UF7NP5014905
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 30 Oct 2026 11:07:23 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 30 Oct
+ 2026 11:07:23 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 30 Oct 2026 11:07:23 -0400
+Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.191])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 69UF7BmG028551;
+	Fri, 30 Oct 2026 11:07:14 -0400
+From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+To: <andriy.shevchenko@intel.com>
+CC: <sergiu.cuciurean@analog.com>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+        <nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <ukleinek@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>
 Subject: Re: [PATCH 0/2] iio: adc: add LTC2387 and ADAQ2387x support
-Message-ID: <auSsl5_xQNXCNphJ@ashevche-desk.local>
-References: <auDJu8u85flQ9bjo@ashevche-desk.local>
- <20261030100808.217874-1-Nicolae-daniel.Deaconescu@analog.com>
+Date: Fri, 30 Oct 2026 17:07:05 +0200
+Message-ID: <20261030150705.411102-1-Nicolae-daniel.Deaconescu@analog.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <auSsl5_xQNXCNphJ@ashevche-desk.local>
+References: <auSsl5_xQNXCNphJ@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,28 +102,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261030100808.217874-1-Nicolae-daniel.Deaconescu@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 5GSdl94ZMrpxxyVN4Ha1JgC7CZb4mFSn
+X-Authority-Analysis: v=2.4 cv=T9AZ3PKQ c=1 sm=1 tr=0 ts=6ae4b2ad cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=660iZSQnnn4A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=lqvLhWEU_XxSqjk564gA:9
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMwMDA2MCBTYWx0ZWRfXwah9Va40KVj1
+ xUNOQGwEVufKaNW1BM+vCaC9PlHKQlxc9pO6cZpY6hhITu5v0K+X0rF5nxej5oToP/Yq98eMbMz
+ rlzSEgWRGrD89XbcpxuuFcfYeaV24UML0a9BSqAWbBf0362+UE0X
+X-Proofpoint-ORIG-GUID: 5GSdl94ZMrpxxyVN4Ha1JgC7CZb4mFSn
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMwMDA2MCBTYWx0ZWRfX+aYDnCLX0HW/
+ G1oE/dEApfV5U9r2fbzZwd/R2ADSNkRXibCYzvVIzxFnkG+CBgDNrSUgUIDZrhzt0qjQOsAwW40
+ RTNwnuCv5OhvK0KAX0/HL8FtJ6zI3Jp2hhuAuA6mJtJZAlgJxW/tZbpKtYoGOQHPWQ2zvNykS8/
+ ZkNGX9xDQtq3MReI4DAQX+BNWy4gIrQ6aPSaSk+FFyT8H+DcwNLUHwBa1mC8QM+VpzjplwbRJf4
+ w2rozNkb83AYOVAUpCjannwsqWNQ9bANilq7OeFAs9zt/rYD7Yo2w9NBDk5fA2V7a8Caw9s+JkO
+ mb61Un+FFWzg7LATDsIk+5Ds27QFdbE5XMBJ44sGg4HpfWP155oUs/Z3c9JLjk0/wjjs3xIZLtt
+ TzIAHnkTI9OnO2vS0BxiS0VkBQpseS8E/2FSjXwCADPbhlT4mAzVFhiDeR27kjIyt6cD8ji45NS
+ /UhkQmh8m7qo3tbRkkg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-30_05,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0 suspectscore=0 malwarescore=0 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610300060
 
-On Fri, Oct 30, 2026 at 12:08:08PM +0200, Nicolae-Daniel Deaconescu wrote:
-> On Tue, Oct 27, 2026 at 17:56:43 +0200, Andy Shevchenko wrote:
-> > Why have you written a brand new driver?
-> 
-> ad7625 is the closest existing driver, and it shares the transport:
-> CNV PWM, clk_gate PWM and the AXI ADC backend. The converters differ
-> in a few ways though. For instance, the LTC2387 is DDR on one or two
-> lanes. ad7625 is one bit per clock on one lane. Also, the ad7625
-> clamps the period to 100 ns (10 MSPS). The LTC2387 runs at 15 MSPS.
+On Fri, 30 Oct 2026 16:41:27 +0200, Andy Shevchenko wrote:
+> But these difference doesn't explain why you need a brand new driver.
+> Is hard to configure this at run-time by choosing the respective driver
+> data based on the compatible string?
 
-But these difference doesn't explain why you need a brand new driver.
-Is hard to configure this at run-time by choosing the respective driver
-data based on the compatible string?
+Looking at ad7625.c again, most of it can come from chip data,
+like the driver already does for max_sample_freq_hz. The lack of
+en pins could probably also be parametrized.
 
--- 
-With Best Regards,
-Andy Shevchenko
+However, doing it this way would risk clashing with the sampling
+path of the existing driver. Keeping it separate would make testing
+easier, as well as isolating drivers for unrelated families, which
+might be out of scope for this.
 
+Ultimately I think keeping them separate would be simpler, but
+I'll integrate it if you believe it's worth it. We might also 
+need to consult with the authors of the original driver, as I
+haven't worked with the ad7625 before. 
 
+Thanks,
+Daniel
