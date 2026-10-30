@@ -1,86 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793360449;
-	b=oSI3/QcOQ/A84Xclb00R8iPXXweTdJdZigZ8lYmwRZ3QuUnpbqhjLCbI4d1ELcbgkizC
-	 kl8rW8dZfQxt42NDpUltRAHykQSb0rWhn6Uu1ozUwq78EvFm5OUrSmACU/s13MWRUXkmB
-	 hPC3zieqbkWUauOQyaviX0G38FuraTToWl6bmCWX1B/4I3tCKQOYbwriVY8wDuBKiml8Y
-	 L9GLEjPwPJUQE9wdNtYlXVtyWXHLx+ChvcEW1+ugnFKuZuWcCSrhh8qVdiLCttqlvigA/
-	 6T84HkTMccXeYDZoo7Z2Mb2ifOlh7k9NkkcIXi7edXioFX0wUDbfw1AziHIbJp3mHbw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793360449;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793360672;
+	b=c3lChteatUb+fYCoLZ6MvutcfB0Zaa3I2zHbnXPUUi5wkXqL1pjDVp9u7wGGtnKnrrRt
+	 eCeZzPcRmAcYAHRjD0f0Kszo68sM2H2zeRfH4A1rIbxD9QqZSS4Wcukm/EuB2fO4SWZJ6
+	 SAvsrlwX4GqH/r+qAx/EHDVG3o3PdB4yOLfk2NtwV6SMfR1HEUHpok4MW93a45iiJ6zgC
+	 I2b/F7GEz7fOoG+SVpJ5l2GHoHVG2ZWmAGvBoGM4xCMf3JrJQacaaWVNTS8za9nKyH5XL
+	 8ibEet+qL/GI+18VFJxQoQraoJfGnedfbwCcuq6Af7oCeyRHgYMYzY0n9tBDes7kliQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793360672;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=BY90Za/JCHy+xgr2C8pKQUZhNspX1pb5ngLRt4MMhi8=;
-	b=L2YAIpZ//9opUwHTT3l7gwIAIAiwDGFrq50V7VXZsHt285oWmlGXUj9ArnWgmAl+3fDP
-	 odNFYV/mKxfXyOtHpER4k/PD9f1ZLO0da+hByGh1X7bsCtu5ZggmbmByG25Fc/wfCOMrR
-	 pubx7skVoiscEsnJ3Epckpv6F6m/6W9elLUTuMBLlFOkit4G3JuIrKMJgpFvrZPX1/FfC
-	 vTcqpgWPVOrxDJyMAGL1oQOpk1GlGWEA9F9QfRFea9v6s9CUSlvtSifGrOgQUOX60YpYX
-	 ZT+24KUSy53Q5bAAl5ZCJ+JaFsqTA7y2FUDnKXuQ3UWFztQb7GqilZD/MjFifIwegQQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Vktc8TjD;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=u22L97/jeI13IB20ysbQZcY423yThcHnEYQlKHEzxLc=;
+	b=gS+kucei7Z6HMG27q7M5/Sl5rccD69VDEuloR30z8M2jdkfjA0STkSQkd1Eh43Otlxm2
+	 Nvi55IkfWFQtrsqwEbqP3mZREBSluMhvSoAjAyX6qfn0HGvl0C+4nAZHLP9Yrz/00d779
+	 QBPNxeaJeBJ5F2rwgsaP9jcesyp3+XyGb2eTFhknTMyWW7rtotv2/yF2AJL5f93kU8sW0
+	 Dl9AQMzk1CFqSZgtiGcO85XJ0jnhB7a/DsvMkanlw4tIuQi3GgiV+ip2h8m/sCCPbtwnY
+	 k6YAzGqPaSnX+vHUVbhdtTCGb8SZADCzxAGtPI8y/7c1zWkzXrkWkqffilswO36nRrQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=POEHrrX+;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25B5606A31A;
-	Fri, 30 Oct 2026 11:40:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C84F8606A31A;
+	Fri, 30 Oct 2026 11:44:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Vktc8TjD
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793360449;
-	b=SV+p/5c+DCmM0kN0Vw3ZslL6nwxVKpMnj5QH4iaCmL5mTAWTX1B27IJRUoXlxyc4WYnU
-	 teiQA7RmYDch3uqZCIPQOPWBkH2vphZMAiUlCsmmBClsryG+XXWCFC7WY6fKuC0q3zQGx
-	 5wo0VwrlnK0wUh8qOkLi0A62cC21t3x8ceXzF6BgaDsMy2kpEWrrxl3oP/IcgS8U2jmAx
-	 2hW5Kud/uH1s8iL+DsOynVz9aAG6pEb9YigrI4olBJQ9Me+73jE9kBFy+3wEavBWOAxGf
-	 RCPddKHJX99krvD/P0soUAZzGhkyx+1a9BWgIZ3s47jNV3kV99+nMqPTMHOETMXpbFg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793360449;
-	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=BY90Za/JCHy+xgr2C8pKQUZhNspX1pb5ngLRt4MMhi8=;
-	b=bH+5ONxaZt1Ta92dVy63+Mw/QGFAH5nh0nijevpCpXq7/pMpwcconLgIiCmFyveBHgPA
-	 AWslbim3Kq73MbYfRCZR65d0HhElpxQLRi2Q2+IkKArq2I7+MB+EOl5uLXhNkoqQc987b
-	 rSscNJpfrH2LR1wVEWn9blwA1lQzZcP/Wirj3C2IKlf1fPrV0ZB/Ga5Y6ZbFsB87xDoFj
-	 oHuiphF1a+M8dWfU+gMyk9oiDwjTcH1SnWbEjCWVdbJbZbeXjifCk1cHZ5XU6VVKycB+I
-	 sPU7nrthCbLlng/htEHam3VlTIGVNwJquEBa/mmkAZneJwbfQ0gxvAkNc+/ICWK8m0Q==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=90.182.112.124
-Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 53C4A1F000C1;
-	Fri, 30 Oct 2026 11:40:46 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=POEHrrX+
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4AD1F0093A;
+	Fri, 30 Oct 2026 11:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793360449;
-	bh=BY90Za/JCHy+xgr2C8pKQUZhNspX1pb5ngLRt4MMhi8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Vktc8TjDxEXvvagEPCwa7SRqf0iW+QldwX7auFei5/U+B6E8GT293THS66dy5uHBt
-	 o7n6qOGVfhUk1te/HFjNokmSD70AIsnFRHCWoWzJkjOcohQWMHLuw0YvbHy1EE3G1F
-	 3KUrgPCL4wRhu/O4Fd5FdUeswZAwVJx6sxJSPp2qfqnVSDifkOAhqjjQRKjoKFoAHi
-	 g6w8RNI/Pk8fsfYjEYVTIzcbPntuKmMxX8+SM5NO5eI6PUlIFFSPW2xMkF5/2RMs3k
-	 KWHRFiQTMzToa89jHUntBwazIfOJAOiTAwB8gmGwiN38Vnvy/OOCj46hSPkkeznhNS
-	 1aYwrO2xGW8ng==
-Date: Fri, 30 Oct 2026 12:40:40 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Nuno Sa <nuno.sa@analog.com>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, linux@analog.com,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] staging: iio: addac: adt7316: explicitly include
- missing headers and sort
-Message-ID: <20261030124040.00003db0@kernel.org>
-In-Reply-To: <20261030104745.16693-3-abdelnasserhussein11@gmail.com>
-References: <20261030104745.16693-1-abdelnasserhussein11@gmail.com>
-	<20261030104745.16693-3-abdelnasserhussein11@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	s=k20260515; t=1793360671;
+	bh=u22L97/jeI13IB20ysbQZcY423yThcHnEYQlKHEzxLc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=POEHrrX+sPBo41n1mG2oZ7jZsPptJNOYuklpaJCho15lUx/hky0vAto0IGN9wUGU6
+	 ND1CBDe5rZnFil1HZM1tjiLOFUAleLd3OoRXz2gYSIc3S0vbxzEcjwCfDh4zVMpSsf
+	 EQlNPouP+PVpC+k2CwhIb/KtciGpEkUOTO8XdOVMGJFbCRhD4vWJqa17k4GdbY1Vlc
+	 +22QWJSEiJS+ic6dfb3qVSAJmBMrYs3nndjOrrxn5UsvH0+zvXfwafKrObb+dlFg75
+	 QjOl3vEY9Q5kPpMymCryWXA4Z8a6csZvMkbqWCkAqIOAa8OUIZNXAetDK6xKKo0Mfo
+	 yZ+wl5iCt+jdg==
+Date: Fri, 30 Oct 2026 12:44:28 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, 
+	Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>, 
+	Jerome Brunet <jbrunet+clk@baylibre.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Rob Clark <robin.clark@oss.qualcomm.com>, 
+	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
+	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>, 
+	Yinbo Zhu <zhuyinbo@loongson.cn>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
+	Kevin Hilman <khilman@baylibre.com>, Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
+	Tiffany Lin <tiffany.lin@mediatek.com>, Andrew-CT Chen <andrew-ct.chen@mediatek.com>, 
+	Yunfei Dong <yunfei.dong@mediatek.com>, Mauro Carvalho Chehab <mchehab@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Andrzej Hajda <andrzej.hajda@intel.com>, 
+	Ryder Lee <ryder.lee@mediatek.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>, Manivannan Sadhasivam <mani@kernel.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Christian Marangi <ansuelsmth@gmail.com>, 
+	Eric Anholt <eric@anholt.net>, Kuogee Hsieh <quic_khsieh@quicinc.com>, 
+	Peng Fan <peng.fan@nxp.com>, Aakarsh Jain <aakarsh.jain@samsung.com>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	freedreno@lists.freedesktop.org, imx@lists.linux.dev, dmaengine@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org, 
+	linux-media@vger.kernel.org, linux-pci@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Fix property name typos in if/then schemas
+Message-ID: <20261030-musical-modest-butterfly-e7734f@quoll>
+References: <20261028120216.2657397-1-robh@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,24 +85,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261028120216.2657397-1-robh@kernel.org>
 
-On Fri, 30 Oct 2026 12:47:45 +0200
-Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
-
-> Explicitly include <linux/err.h>, <linux/errno.h>, <linux/pm.h>,
-> <linux/string.h>, and <linux/types.h> for error handling, error codes,
-> EXPORT_GPL_SIMPLE_DEV_PM_OPS(), memcmp(), and fixed-width types. Drop
-> unused headers and sort the remaining headers alphabetically.
+On Wed, Oct 28, 2026 at 07:02:12AM -0500, Rob Herring (Arm) wrote:
+> Property names within if/then schemas currently go unchecked whether
+> they have a type defined or match what's in the top-level schema. Adding
+> a check finds a number of instances of typos. The typos result in the
+> schema having no effect on constraints.
 > 
+> With this, fix the mediatek,vcodec-encoder 'clocks' count constraint
+> exposed by the name correction.
+> 
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
 
-Better if patch 1 only sorts the list and patch 2 removes kernel.h
-and adds/removes headers - it will be more readable that way. Have
-a look at this patch series I sent some time ago [1] for reference.
+I just git grepped kernel sources and weirdly no one made a typo in
+"clocks" of forgetting the second letter. We became way too polite :).
 
-[1] https://lore.kernel.org/all/20260831-kernel-header-removal-v2-0-b92b580ef5eb@gmail.com/
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
--- 
-Kind regards,
-Joshua Crofts
+Best regards,
+Krzysztof
+
