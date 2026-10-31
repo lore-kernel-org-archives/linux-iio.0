@@ -1,53 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=45.254.49.198
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=220.197.31.2
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793451947;
-	b=pYFA80t43rV++jZxXeeeQOijsJuYNpoFGtSKdHqI2C8skzv9sBiJUCEG3rR6r8YapI73
-	 7Hh40XxNz2yTNcIzSn95AfyW9h54+WYPsvbpyWw9h4KoyE2KfUI1qYGH+4ewtdOsPVxlT
-	 EAJ3dQgE3bOa3dHLQN27z6E/4kzheQP8AyxoeWYTKY9H+tPaMykwSt1MZHpx5oC9uPDnH
-	 h7iD7NMaTGtPBMGSiBSwIb9CLGcKiHj8bowh+Py1SsavVM/zw+Tgwxls71pY88azxwtxN
-	 gE9xF3ZeMjB0OT5IClpFrgnigYfkCegTpp/l1D+amJmtqcmRj/1ea3N55HqqkP1Ct+A==
+	t=1793456922;
+	b=bl8dABK5FhIUbJFxEf0V2MBLpGUKQyC/AzWh72x/kKQm3KK2jPCzr6QpIuDbSsA2gy2i
+	 otx5SgqrM63c7ZSAwQRvbUqCa/+t5tMdYbIHctQHIdSYG6SSbuQCSv8XkiFd5TSLFkCnC
+	 BgYTcMK8WC7iHVOj5rFfKOe3FVQUDwplIltvE5Xof/wzxAbP8MKgVyzUgZndYS1Iu2Ux7
+	 I6o5mPwj3PTwkWQdmFbTKEEHj6YQDbX4QzGxyNydsR9+7rsch7JBl4WNitzkWzPmC4Q3p
+	 25zRyUP1wjF0OhsU2pk6Tmq2wq08CHrU3XQbGjqTx3icA0lacscGrDkoTzeTqgjz+vQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793451947;
-	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding:X-HM-Tid:X-HM-MType:
-	 X-HM-Spam-Status:DKIM-Signature;
-	bh=bPqsacQc0zbv20k2lImH6MGENdzusvAyxHn0G4Pxgs8=;
-	b=Ds6LDX5oLUuy8WsVIov5V9bprzZ6i4a9MKCZoIf166jGOjpzNOSRhlXgHocfWce4Dhyb
-	 wu/qR5cge6l6g57osTDnmueNPyB2bL91XJv+VvcOr/VNOnzIPu3ElpWDua41BKvsTJl3O
-	 TerCmw1zEuCmBlv8NDvWflGdzHrQxjptd8WTeZsWZU1zo019GC5K46qiry8ErfAvTr7Cz
-	 W4gfCLF257NDhQ5xU+X1rMSVORYmTDR4VPLTUA/WYX6jPB+DIPVJQalVJF22dmCOAGz2a
-	 8h8MclMIki9Y0F1sUowIZUGU+bfk8NN/GhgGV8tw0Hn0YCZiHjcCB7OfxT4E136PzBA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793456922;
+	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
+	 Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 X-CM-TRANSID:X-Coremail-Antispam:X-CM-SenderInfo;
+	bh=1KhEjBbS2PxEW961tuGY+mC3rr8BuX8rY+suSCsiUYo=;
+	b=2kfW4GeH0HjfXBwxOlK6XLOwHx1ulnPIUxN7paHAQwQR9zo/T+2B1gR6FmoesGAwbyK1
+	 KAhFf/zluX1PWLwbHRTSHR0ExjjS0nJks3hUO8FwjCbjXLE3t996YcQC/Qo835wvh8mhT
+	 lJ+Bz86WRsMLix/iKlcg/ga9JYIu4ihXGgqZ5mK4HYZswY9XymPZuRVGYQ9DC4YgY+wVw
+	 QLDAccv3eODKKUhNwG298fcRE7erzSaY34Tn/o81cTSwjyZUXAzCgmAnsLEkW9FTc9dMK
+	 2wT1xdO/JtsIaIPQbrbCTTfnzgU25NI22ijs/7ZTqqGhwVrN1nhm0D22pZ80U1DEp+A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=mail.sdu.edu.cn;
-	spf=pass smtp.mailfrom=mail.sdu.edu.cn;
-	dkim=pass header.d=mail.sdu.edu.cn header.i=@mail.sdu.edu.cn header.a=rsa-sha256 header.s=default header.b=cnoTmKFZ;
-	arc=none smtp.remote-ip=45.254.49.198
-Received: from mail-m49198.qiye.163.com (mail-m49198.qiye.163.com [45.254.49.198])
+	dmarc=pass header.from=163.com;
+	spf=pass smtp.mailfrom=163.com;
+	dkim=pass header.d=163.com header.i=@163.com header.a=rsa-sha256 header.s=s110527 header.b=jDVFHp9R;
+	arc=none smtp.remote-ip=220.197.31.2
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE959606A31A;
-	Sat, 31 Oct 2026 13:05:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DE959606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mail.sdu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mail.sdu.edu.cn
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB1FD606A31D;
+	Sat, 31 Oct 2026 14:28:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EB1FD606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=mail.sdu.edu.cn header.i=@mail.sdu.edu.cn header.a=rsa-sha256 header.s=default header.b=cnoTmKFZ
-Received: from lgs.. (unknown [101.76.249.61])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 530655121;
-	Sat, 31 Oct 2026 21:05:39 +0800 (GMT+08:00)
-From: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: accel: kxsd9: Fix potential use-after-free on removal
-Date: Sat, 31 Oct 2026 21:05:38 +0800
-Message-ID: <47d9e9120165e819d706f922c798517701019bf1.1793377431.git.liguangshuo@mail.sdu.edu.cn>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key, unprotected) header.d=163.com header.i=@163.com header.a=rsa-sha256 header.s=s110527 header.b=jDVFHp9R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=1K
+	hEjBbS2PxEW961tuGY+mC3rr8BuX8rY+suSCsiUYo=; b=jDVFHp9RAeq6ZVsR8N
+	3CV6cu9eLBtrxTaXeS5b4et1mdeZ5gB3YOQvw2d9S3rjf9gg8oRJ5SItdfBXLd9Y
+	06pdAndN1tddOQPv7p0x1YlHD8nhzLfeeVZu6/sq/glhcsPYifnfJ63ang8SadZj
+	vG02iybI6+a2FvdWLk/H6KhEM=
+Received: from localhost.localdomain (unknown [])
+	by gzsmtp1 (Coremail) with SMTP id PCgvCgB30HEA++VqtTNjCw--.5261S2;
+	Sat, 31 Oct 2026 22:28:17 +0800 (CST)
+From: "Li Youhong" <dayou5941@163.com>
+To: biju.das.jz@bp.renesas.com,
+	wbg@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	cosmin-gabriel.tanislav.xa@renesas.com,
+	Li Youhong <liyouhong@kylinos.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter init fails
+Date: Sat, 31 Oct 2026 22:28:13 +0800
+Message-Id: <20261031142813.2522444-1-dayou5941@163.com>
+X-Mailer: git-send-email 2.25.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,49 +65,48 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa19210d81503a1kunm472732cb83be0
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkZTx1IVkoYTUhLSh1CTkpDH1YeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlKS0pVTE1VSU9CVU1KWVdZFhoPEhUdFFlBWUtVS1VLVUtZBg
-	++
-DKIM-Signature: a=rsa-sha256;
-	b=cnoTmKFZxGF3QtRiIwThX9aSLMuFgVb9l77epTEt9OcOrLBTfiDBz9dWQCpOSSKNh2Sg0L/D/g6h/9y7bsdrRW+no9fDKSUlq81cFrOA9bf5i063KqOolZ5tmGzJBprkaypULxBtGSqZYLZ8yUrS2RaYaSAWbsibq9tDEHUmj/g=; s=default; c=relaxed/relaxed; d=mail.sdu.edu.cn; v=1;
-	bh=bPqsacQc0zbv20k2lImH6MGENdzusvAyxHn0G4Pxgs8=;
-	h=date:mime-version:subject:message-id:from;
+X-CM-TRANSID:PCgvCgB30HEA++VqtTNjCw--.5261S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Kw1xXr45Jw17Zr13WF43Awb_yoW8GF1xpF
+	4jqrZ5CrW0yrWkGF4xG34DZFyagw40yrWrWFy8K3WrZ3Z5ArnYv3WkWr4YqF1ktr95KFy2
+	qrn7W3WUCFyUArJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j5R6wUUUUU=
+X-CM-SenderInfo: 5gd103ivzuiqqrwthudrp/xtbC3gITwWrl+wJWywAA3l
 
-Unregistering an IIO device with an active triggered buffer detaches its
-poll function. Freeing the poll function first can therefore make
-iio_device_unregister() access freed memory.
+From: Li Youhong <liyouhong@kylinos.cn>
 
-Unregister the device before cleaning up the triggered buffer.
+Counter enable takes a runtime PM reference before initialization but
+only puts it on disable. Drop the reference if initialization fails.
 
-This issue was found by our static analysis tool under development.
-
-Fixes: 0427a106a98a ("iio: accel: kxsd9: Add triggered buffer handling")
-Assisted-by: OpenAI:gpt-6-astra
-Signed-off-by: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
+Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter driver")
+Cc: stable@vger.kernel.org
+Reviewed-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
 ---
-Build-tested the changed object with x86_64 allmodconfig (W=1,
-CONFIG_WERROR=n).
-No runtime or fault-injection testing was performed.
+v2:
+- Add Cc: stable@vger.kernel.org.
+- v1: https://lore.kernel.org/all/20261008020506.211566-1-dayou5941@163.com/
 
- drivers/iio/accel/kxsd9.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/counter/rz-mtu3-cnt.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 7ac885d94d7f..27adcdd31201 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -478,8 +478,8 @@ void kxsd9_common_remove(struct device *dev)
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 
--	iio_triggered_buffer_cleanup(indio_dev);
- 	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
+diff --git a/drivers/counter/rz-mtu3-cnt.c b/drivers/counter/rz-mtu3-cnt.c
+index 7bfb6979193c..61fbeb122851 100644
+--- a/drivers/counter/rz-mtu3-cnt.c
++++ b/drivers/counter/rz-mtu3-cnt.c
+@@ -506,8 +506,11 @@ static int rz_mtu3_count_enable_write(struct counter_device *counter,
+ 	if (enable) {
+ 		pm_runtime_get_sync(counter->parent);
+ 		ret = rz_mtu3_initialize_counter(counter, count->id);
+-		if (ret == 0)
+-			priv->count_is_enabled[count->id] = true;
++		if (ret < 0) {
++			pm_runtime_put(counter->parent);
++			goto exit;
++		}
++		priv->count_is_enabled[count->id] = true;
+ 	} else {
+ 		rz_mtu3_terminate_counter(counter, count->id);
+ 		priv->count_is_enabled[count->id] = false;
+-- 
+2.25.1
 
-base-commit: d89e1d186ec9271bf78e62771779e9fc03bf0fc3
