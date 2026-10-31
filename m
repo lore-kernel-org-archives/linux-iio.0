@@ -1,60 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=220.197.31.2
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793456922;
-	b=bl8dABK5FhIUbJFxEf0V2MBLpGUKQyC/AzWh72x/kKQm3KK2jPCzr6QpIuDbSsA2gy2i
-	 otx5SgqrM63c7ZSAwQRvbUqCa/+t5tMdYbIHctQHIdSYG6SSbuQCSv8XkiFd5TSLFkCnC
-	 BgYTcMK8WC7iHVOj5rFfKOe3FVQUDwplIltvE5Xof/wzxAbP8MKgVyzUgZndYS1Iu2Ux7
-	 I6o5mPwj3PTwkWQdmFbTKEEHj6YQDbX4QzGxyNydsR9+7rsch7JBl4WNitzkWzPmC4Q3p
-	 25zRyUP1wjF0OhsU2pk6Tmq2wq08CHrU3XQbGjqTx3icA0lacscGrDkoTzeTqgjz+vQ==
+	t=1793457705;
+	b=Eigc4pGxSYX6binmvrLhOc56Rrv4hxOWmNDHgsTfsPc+7rKf95WIcbar7dJZXvS4o29w
+	 YEw2Bylk1wAlgWCw71ezR6vL4tphg46JutwNkt1wInXjuSKfrE816ksbvjN/i689qccd8
+	 8UeFvkvHtWRMeg3uXgXk/MlyHnsJavhKtE9QuWEpcTb/8pMIYyq4EZ6qiqhgzwEw8tj0g
+	 IY40/RADsls5vMReznngjaM07to8VDBHffao2VOtTnwDRqx+qa99QpO666aOwTRl3Vofs
+	 bYMJDDInDjHU8LQPxYNVpVF7wWnyD9/peltlvWun7f0/8vv01VoxifoEprLjzJ1y28Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793456922;
-	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
-	 Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding:
-	 X-CM-TRANSID:X-Coremail-Antispam:X-CM-SenderInfo;
-	bh=1KhEjBbS2PxEW961tuGY+mC3rr8BuX8rY+suSCsiUYo=;
-	b=2kfW4GeH0HjfXBwxOlK6XLOwHx1ulnPIUxN7paHAQwQR9zo/T+2B1gR6FmoesGAwbyK1
-	 KAhFf/zluX1PWLwbHRTSHR0ExjjS0nJks3hUO8FwjCbjXLE3t996YcQC/Qo835wvh8mhT
-	 lJ+Bz86WRsMLix/iKlcg/ga9JYIu4ihXGgqZ5mK4HYZswY9XymPZuRVGYQ9DC4YgY+wVw
-	 QLDAccv3eODKKUhNwG298fcRE7erzSaY34Tn/o81cTSwjyZUXAzCgmAnsLEkW9FTc9dMK
-	 2wT1xdO/JtsIaIPQbrbCTTfnzgU25NI22ijs/7ZTqqGhwVrN1nhm0D22pZ80U1DEp+A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793457705;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=qMiezCVPRvfmEAcVXWIKedu9PC/DGE1ePhNgy9uq5x0=;
+	b=BDfWvfn46R6TI7EiafU1uSktD0bPhcj+ftjD76YYop1+sr2KL3D6g9FVzoBQvuChZ44s
+	 yGVzgZ9UYp6+wWBvqNIkigGII+9xONk7w/JlNsvbyqPjexmaYoE8FMKP+cpXASxf8oJ2d
+	 U0yOnrVgDZ7W13RQXmVYukIYTlJHbj9wIssXsC0qcyvnaIsK93rgfwYgxLp30SnnJI28I
+	 QgPJBN3QA9ccrvKwFQhykaXn4kvHD28VprBonFNtHftWD7Oy59YVsyNqLGm4AfHh3DBjK
+	 d7phBPBT8QMsotqQtLyQs/ALVHK8XI2W6eAfmIXkvSKu3y6lSXOipnTrRquOsv1gIRQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=163.com;
-	spf=pass smtp.mailfrom=163.com;
-	dkim=pass header.d=163.com header.i=@163.com header.a=rsa-sha256 header.s=s110527 header.b=jDVFHp9R;
-	arc=none smtp.remote-ip=220.197.31.2
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nJS4ZTDL;
+	arc=none smtp.remote-ip=198.175.65.9
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB1FD606A31D;
-	Sat, 31 Oct 2026 14:28:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EB1FD606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D58F606A31C;
+	Sat, 31 Oct 2026 14:41:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D58F606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=163.com header.i=@163.com header.a=rsa-sha256 header.s=s110527 header.b=jDVFHp9R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=1K
-	hEjBbS2PxEW961tuGY+mC3rr8BuX8rY+suSCsiUYo=; b=jDVFHp9RAeq6ZVsR8N
-	3CV6cu9eLBtrxTaXeS5b4et1mdeZ5gB3YOQvw2d9S3rjf9gg8oRJ5SItdfBXLd9Y
-	06pdAndN1tddOQPv7p0x1YlHD8nhzLfeeVZu6/sq/glhcsPYifnfJ63ang8SadZj
-	vG02iybI6+a2FvdWLk/H6KhEM=
-Received: from localhost.localdomain (unknown [])
-	by gzsmtp1 (Coremail) with SMTP id PCgvCgB30HEA++VqtTNjCw--.5261S2;
-	Sat, 31 Oct 2026 22:28:17 +0800 (CST)
-From: "Li Youhong" <dayou5941@163.com>
-To: biju.das.jz@bp.renesas.com,
-	wbg@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nJS4ZTDL
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793457704; x=1824993704;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xFSfPWA9RT3drrfXpaWPsgnK3xaYD29USKn5rSBjZpc=;
+  b=nJS4ZTDLIKFnRH9fi8UVN7WYrwgCEQSE3DxEx342bSOO4EX3UhT3tl3u
+   NjQgTAphNU2go838hXagp8VFvWU7RS76s7cAw0o1UaDBAkNW3B3pLoiwt
+   8YUE2F2Npx+VQmnrjAfAk90rdmKCbgWvYBGMmGaLEK/eITutJ56wHeAF1
+   fSSrfrp15odArEFwitKbU3ALS6kCLQIvK7HdKzcxoKvXTk1j9abj+NNTd
+   vOZJe5BSA1LTylPPPL88ccgvWR30ByTggNzz5kDvKPmPwYi4/J0mBHp9o
+   5SqdzXH5ikf5dCEZfCWVBFQhHdveNnSeXE25I3F0W6/GkihBowBr4uL4e
+   w==;
+X-CSE-ConnectionGUID: LH/WTP9FSNazEzA4xLy/oQ==
+X-CSE-MsgGUID: ++fdntvSQEGauVDCfixI3g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11952"; a="2093748"
+X-IronPort-AV: E=Sophos;i="6.27,188,1787036400"; 
+   d="scan'208";a="2093748"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 07:41:43 -0700
+X-CSE-ConnectionGUID: OTKt/FKUT2q7bd+ZmrxpQw==
+X-CSE-MsgGUID: 7bxzTIlcSPmVUBRBmPd5gw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,188,1787036400"; 
+   d="scan'208";a="7478984"
+Received: from slindbla-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.127])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 07:41:41 -0700
+Date: Sat, 31 Oct 2026 16:41:38 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Tristan Madani <tristmd@gmail.com>
+Cc: Marius Cristea <marius.cristea@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	cosmin-gabriel.tanislav.xa@renesas.com,
-	Li Youhong <liyouhong@kylinos.cn>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter init fails
-Date: Sat, 31 Oct 2026 22:28:13 +0800
-Message-Id: <20261031142813.2522444-1-dayou5941@163.com>
-X-Mailer: git-send-email 2.25.1
+	Tristan Madani <tristan@talencesecurity.com>
+Subject: Re: [PATCH v5] iio: adc: pac1934: validate ACPI _DSM return type and
+ bounds
+Message-ID: <auX-InQPSh_vTNoH@ashevche-desk.local>
+References: <20261030123528.606107-1-tristmd@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,49 +83,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:PCgvCgB30HEA++VqtTNjCw--.5261S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Kw1xXr45Jw17Zr13WF43Awb_yoW8GF1xpF
-	4jqrZ5CrW0yrWkGF4xG34DZFyagw40yrWrWFy8K3WrZ3Z5ArnYv3WkWr4YqF1ktr95KFy2
-	qrn7W3WUCFyUArJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j5R6wUUUUU=
-X-CM-SenderInfo: 5gd103ivzuiqqrwthudrp/xtbC3gITwWrl+wJWywAA3l
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261030123528.606107-1-tristmd@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Li Youhong <liyouhong@kylinos.cn>
+On Fri, Oct 30, 2026 at 12:35:28PM +0000, Tristan Madani wrote:
 
-Counter enable takes a runtime PM reference before initialization but
-only puts it on disable. Drop the reference if initialization fails.
+> pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
+> times to read channel configuration but does not validate the returned
+> object type or array bounds:
+> 
+>   1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
+>      firmware returns a different type, accessing rez->package.count
+>      and rez->package.elements on a non-package object produces
+>      unpredictable values.
+> 
+>   2. The loop bounds use rez->package.count directly without capping
+>      to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
+>      than expected causes writes past the fixed-size labels[],
+>      shunts[], and active_channels[] arrays.
+> 
+>   3. The bipolar and sample rate DSM calls access elements[0] without
+>      verifying package.count >= 1.
+> 
+> Use acpi_evaluate_dsm_typed() with ACPI_TYPE_PACKAGE to validate the
+> return type at evaluation time.  Cap loop iterations to
+> PAC1934_MAX_NUM_CHANNELS, and verify package count >= 1 before
+> accessing elements[0].
 
-Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter driver")
-Cc: stable@vger.kernel.org
-Reviewed-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
----
-v2:
-- Add Cc: stable@vger.kernel.org.
-- v1: https://lore.kernel.org/all/20261008020506.211566-1-dayou5941@163.com/
+...
 
- drivers/counter/rz-mtu3-cnt.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+> +	count = min_t(unsigned int, rez->package.count,
+> +		      PAC1934_MAX_NUM_CHANNELS * 2);
 
-diff --git a/drivers/counter/rz-mtu3-cnt.c b/drivers/counter/rz-mtu3-cnt.c
-index 7bfb6979193c..61fbeb122851 100644
---- a/drivers/counter/rz-mtu3-cnt.c
-+++ b/drivers/counter/rz-mtu3-cnt.c
-@@ -506,8 +506,11 @@ static int rz_mtu3_count_enable_write(struct counter_device *counter,
- 	if (enable) {
- 		pm_runtime_get_sync(counter->parent);
- 		ret = rz_mtu3_initialize_counter(counter, count->id);
--		if (ret == 0)
--			priv->count_is_enabled[count->id] = true;
-+		if (ret < 0) {
-+			pm_runtime_put(counter->parent);
-+			goto exit;
-+		}
-+		priv->count_is_enabled[count->id] = true;
- 	} else {
- 		rz_mtu3_terminate_counter(counter, count->id);
- 		priv->count_is_enabled[count->id] = false;
+We have already discussed that, that min_t() has not to be in use.
+Ditto for the rest of the similar cases.
+
+I would recommend you to slow down, drop AI assistance and check
+the code (variable types, available macros and their usages) first.
+Don't send a new version until you understand what AI is trying to
+do and what we want to have at the end.
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
