@@ -1,145 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.229.65
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793464477;
-	b=KpKRRzd/YY9avsXiMINM9vZUHrdaR3Uzj4rrWyKo6BBeMqEsZYuG9skWNZgvwoFornM/
-	 TtWuYbvgkTIhpiRZcKyEttFuLUtm+82NEs+gRK0xXljjKR6xhU0qZhedCJXNS8JTVCHu3
-	 lsUbuuQQOqUYCTMl5k1TdzqugfjqqtzgSnQgpbnH6JHlp2QOIRYS/ezSS4Ia2VZRe7YJW
-	 ta1zz5kxLUCwmBrEZXqwjmoqfj8fhK2UaVS18rdw34Sc9lRPrxWtidLEshsSawgKL+GEf
-	 REnVr9sqgt/ZKuIUa5cTBkA2S73fHw52FOgL+xTAbOomfZE3IAQ0vyzG7AHBfbibbAA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793464477;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
-	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
-	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
-	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
-	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
-	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
-	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
-	 x-ms-exchange-antispam-messagedata-chunkcount:
-	 x-ms-exchange-antispam-messagedata-0:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-originalarrivaltime:
-	 X-MS-Exchange-CrossTenant-fromentityheader:
-	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-	 X-MS-Exchange-CrossTenant-userprincipalname:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=zbvr4+h/uDP3p2rEUNFgDQq3HSLr/cFMqPajhO5UUmE=;
-	b=sPw0dE8RGXdOiIHCrKDdvbP+jwYpZWN0GldhDIOh1YkddguOkeFiwMyndD8Hs/WkY6kI
-	 h2cqpuKkbVljZgGCwr2zEYnVhf6u5FORI926R0etWCLFjAAJEKdWiiDGcjmd6bB+yKtT8
-	 iIC58H+/lkKqesxe2fAZDa/q6O5OhiZr0D112aqoeX5NPSf5HH/dQePW70G3uW8V12j+U
-	 TwXylzno/PTye/3saV2pH4Q0Lz0b+dQULiknQHh+TZzCTOKJG9F85EQ+EUegCA34dHPES
-	 UphZexVhj2ahV1igN0nX57E0KWCVwhtx0S4vr7EYJtz+jfwzu8Ih2Q7Qpq6DbefFwuA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bp.renesas.com;
-	spf=pass smtp.mailfrom=bp.renesas.com;
-	dkim=pass header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=XnB9POXM;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.229.65
-Received: from TY3P286CU002.outbound.protection.outlook.com (mail-japaneastazon11010065.outbound.protection.outlook.com [52.101.229.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.175
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793464629;
+	b=ZAO9tuyvf7880qCKSP0ax9+W22OpZdr9WqJZ4JUto0PVHs5VE2zX+4UTeRuQSIzQmYjE
+	 t/IQkWUqYy3xQGNu3M6ox+8ifkL8YfCorblN0Azr2pE9hyCmjmR+FN2H+m3BdveqIdbUO
+	 MBGCSWf2CnySxGw6soKgWmOUNPeajOgA2IT9dva26QbPgz9OGt5+DDWvSAT8f8xisKG7m
+	 x9G5uX0UxCBETow5iH4dKdu0WY/SkGD6YwI8zVI4Wvom/fk+RgmFqQcLmB4Ovg//U+o4P
+	 Tb/Ku+xvzjKoI2k+QJmQliQZCYQA+JVs7C1bnkMAZ2p24gocUoW9wPUbbY9dfmzABuQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793464629;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=hog/LSraSSmnGVZ4/pHBjOKsX6XesCbb7trG3Vy1+fM=;
+	b=ViAeQHE4+41SfTPZ7k1pbMFkAyENcjpcN2UY+Q3g3tLyYfMtjec68Mu+QJLr/OYLzRio
+	 PikRQ1AFezyESYZu+9QsrSNURpvnqOrRU3mkosEOcOqXQwp7pC4WVvmdEZKN2eVKKAQI3
+	 etU+IyG8cEyH3gUduX6Wt4HC0CHC3/KCguInfYwSsatAe19gspLAEYGmMEMRbBt7UQHJA
+	 k7+I3vxhBJjNJTbyF6a+xVENYe0zDSquVUKkAa39S4wes2OVvEHbQDDDCv15vXL/fKlTU
+	 d0g9GFcKjrf1o5z5NlmQu6edYHX5uA3HNZ2EKhVo/yb6Lrz6F1bjhN/m9kJN6A1lN1g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ryQtlJXu;
+	arc=none smtp.remote-ip=209.85.221.175
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55A07606A31A;
-	Sat, 31 Oct 2026 16:34:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55A07606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21AD5606A31E
+	for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2026 16:37:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 21AD5606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=XnB9POXM
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sIIMtLlFCXGpp71od5oaBVSn4L+VHTex5j46NOipj0GniVxnFW52FNSZvORp6ZrZU/laspyLHwhbUoZ/lko1zH4byV6K1VmlVi7LspWjqNHzLzZ4zLzwLc2OwfSiaYcxJAg+/rWvbUxRyTgpHKM5OK9tkgf1TFeuPj7If4p34EAORi27tDCTdOBIZYZYyy89FfA3T+a/YQ57ccd6/JBqQN1OejIm67+yafEtO28jXXYk3WOfaALJqt0RIVtualzSQgYkU+P5GolA/psWBc7SM9BZ0HYYMA8SGA59o1f1njoo8KFKIoP4XCR1l6lFdauxcX2EwgkEyIIloahjZAJhrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zbvr4+h/uDP3p2rEUNFgDQq3HSLr/cFMqPajhO5UUmE=;
- b=he5HEhJ0Gy5CSz9a85T4/c9rtFtyeIuee4jCHwKBh93qd0AgC73bTEYDIggi1oXimynps0W/RRYSyy5Iill3cvCZgw32wsZKcYfGuT5vDqEQ6TwcvigatXj3cAIcqqgDObl2iyJZwm0lncVYWxhogEXq3To3zARAfy7EHCQRZsVO042AGZNzr2SRxmVsPoL7IypLmpqf7TELdgOepHSAMIpRI/23SMSJOvV65rX45ieeqgUzPMoSD4rcFrLhbtGUkx4/FysKJ4IrZ0g6Eo3ldX76qQbgkOM+OK3uSPXyPxiHZ9BxRI7X94Or7rHcKj/auAWkCd5rwxkKxd4rHhrcNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zbvr4+h/uDP3p2rEUNFgDQq3HSLr/cFMqPajhO5UUmE=;
- b=XnB9POXMJfEej7WfpguHs1zffIHG5Jcozh7UnB3+eQ1575NkVUWbfKivC/lM8/uKh+HAAPQB8cISQvPP2YgxckXpYo61pBpsJDuwLkIEJMVPC6pPgr+fEDllS8+JqDf9crx2s3hPDRguuv1IMpKk4wWRitLzESNctwxoowrczNo=
-Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com (2603:1096:400:3d0::7)
- by TY4PR01MB15806.jpnprd01.prod.outlook.com (2603:1096:405:2bb::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.11; Sat, 31 Oct
- 2026 16:34:32 +0000
-Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com
- ([fe80::87d1:4928:d55:97de]) by TY3PR01MB11346.jpnprd01.prod.outlook.com
- ([fe80::87d1:4928:d55:97de%6]) with mapi id 15.21.0569.010; Sat, 31 Oct 2026
- 16:34:32 +0000
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: William Breathitt Gray <wbg@kernel.org>, Li Youhong <dayou5941@163.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cosmin-Gabriel
- Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, Li Youhong
-	<liyouhong@kylinos.cn>, "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter
- init fails
-Thread-Topic: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter
- init fails
-Thread-Index: AQHdaUQVMKdks6J/dkie/1eCJR5kdLcX10iAgAAAe4A=
-Date: Sat, 31 Oct 2026 16:34:32 +0000
-Message-ID:
- <TY3PR01MB1134606C5DE0411FDACBF0001866C2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-References: <20261031142813.2522444-1-dayou5941@163.com>
- <20261031162853.3635249-1-wbg@kernel.org>
-In-Reply-To: <20261031162853.3635249-1-wbg@kernel.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TY3PR01MB11346:EE_|TY4PR01MB15806:EE_
-x-ms-office365-filtering-correlation-id: 0e072939-f5ff-4bb8-c37a-08df376cd7a2
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|6133799003|10067099003|22082099003|18002099003|38070700021|56012099006|11063799006|4143699003|261021121427099003|261021123027099003|261026140227099003|261022105027099003|261022075727099003|261009223027099003|261028144727099003;
-x-microsoft-antispam-message-info:
- KD3Iv3dnuSZHTcmwWqkJw+v3OORS7HYfcxr4f7FddVFFnhS8ajYt+uLtWS8kJFE3JslBfyg0zuUnl8zhXw/pWZYiYpG0Mo648CdHsILI/sTDiK9U2TkA2a64nWDsdrf9KQqd9dZagc7D6XlxLa/mOc5QdbgWiWA+bs1gtdB5h3LR8xjRUfxgs4v5QE6VDWTq6507iGSjSsru059Q+4vRxrdhYWduKDS/l5r/gzs5XyyQhAC1qFY2U04rV5bBSVsZ1dFTgy87CbUr9Vdic9CBLRCD/CjrskPiK/7v1PzLuWP0ryST0KK5TyfZcJoQmut4cQAx5R6jTRChmonKoNWT5ejns9PTS2geRjHCO4lXonuKcpQXXPzwTgIpxIX5aSc/2N7EjbopeObY+Ot+T2QFT2muKOGEdP/e6ff5VMTNuTBeoWlfas3dokHgATVGG8DSmIh5OIOG6eD/LBvBk7A1f9GW1PgVeDuqJ/ks+y6lJm3DtPgkHRJSbpL/uGheymYCH1ORdTfYsviY50AKLGD1pDY095dD/jP7uEu/zBfi/oWlHL1LjTdwH99Vh1wJcofxZeUtkUk3MRclUfZI65gMFNg3B+QqS9NvyYDa6l73+/5TQI0gpQLyy/QrpxU1iOtvZXqrUZJ5gY6FU+a41JREd4BmCLCbkdPODotu066HXZk3zablAkiEGQfEgyAAsJ2a
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB11346.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(6133799003)(10067099003)(22082099003)(18002099003)(38070700021)(56012099006)(11063799006)(4143699003)(261021121427099003)(261021123027099003)(261026140227099003)(261022105027099003)(261022075727099003)(261009223027099003)(261028144727099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?s1LYLoODcUTboTSiLaf4ndkVcuL9GsrkS9Jb2Lh92UrW2Nu1g4vAFtgZ16wo?=
- =?us-ascii?Q?71Zl1/nujnJtCQNV8nWkcuaMUg8CT4Ya0eSJAkqaLLxJV4/wOBVJ7WAKGOxR?=
- =?us-ascii?Q?UM1q86eUkKjGWL2mHxYyg6P+RE54h+jTJrzJqzx+ny+1CKnEvp3gSBKM3sTO?=
- =?us-ascii?Q?97+yg9tAbrUqBYu5lba5BMkIiHdtaj+89gYPlwkgiG4G/auznIwezeXWIbcA?=
- =?us-ascii?Q?9Kv4zPLdKsSvksA74v2pxpJwD7ZHfVmoeumT6zeM9tBR3L2FRRmZGXO7p6n5?=
- =?us-ascii?Q?g+5TAM2hMribIblpQcdQPJiJQGViNI1UqVkCHZG8hgL1TDBKVghRobhZB2W3?=
- =?us-ascii?Q?55N1yA1kAZRUUdk/O82iR7VORguUrX7zHpcahrGstDSrXiaRo87jm3lRFRO7?=
- =?us-ascii?Q?z40NRE4/DrZBK1HHjLN6hztQKF9RVrOIqnlcjb/eTGszYFa6m4KSSe9W3IO1?=
- =?us-ascii?Q?ViYFOpsNsurtevUA4z0Nz4deOfKWc3a67VVMgZkAVnaFDTQlpBRSa9rlhvUg?=
- =?us-ascii?Q?3T/PVcEhMVq/4FPwX6K78QLvbYSrUUos5H0ykbMVwnH2Q1VkIe+AR7xs4YFE?=
- =?us-ascii?Q?wpriOtVQlukfjLU6r+aRBKzhbIv44FwR4VTAfHIslkF5MVFc+hf3Tr7K1S44?=
- =?us-ascii?Q?qeGq04mkbRiZN1r8CCk05MxZtK6F1558wK7OqGjaraxdOZQeJX1M8m6dyhrK?=
- =?us-ascii?Q?ViSU3ZVVyas0iwbSF51gjvuyXQwwFPAmVhB8xRtXwhi0QrTIx5bjWTQzdmUp?=
- =?us-ascii?Q?iX68gzCYrE9yUBgp7VBHhP6P1e/ZeUxo3+FaL4T0hu4IGe/YbBnj2Y//zt6H?=
- =?us-ascii?Q?bJL1Bqnm5BfjVkHWk3IqWuCBLYoviMFt4UZvqPPNWhVVmPM1Mi/MOPZ0mhBW?=
- =?us-ascii?Q?d4hRjt2yeBkbcFEP2/oD+twwju9rzm+E8++oh85HgswYEed+VWQUPQi/Kc1W?=
- =?us-ascii?Q?A88MKEHOQoArdS6zK69kxXUYWLGX8WniQbS5WLje4dTH4zvRG08WEfcUFmdA?=
- =?us-ascii?Q?UnM2PAmXGsBnZRy2LQRzAwT+JtsByWf1Q5baQa/fFq9l2SKjaOneHFoQXXeJ?=
- =?us-ascii?Q?Evz6ubLt1jlNkth3cwyXqTgGPzr/+Sf5RolpRrCtSJle4HGSMtX8fdRh7EpC?=
- =?us-ascii?Q?GUYAlV8ywXbgqlAyTmt6z79OTsSXxMjtdREcFARLDu7kZ344bt7Z1aACmzH9?=
- =?us-ascii?Q?NfCqqOofcK6i1a2RJGBJRLIhhpx/aQaIrJ6RxqgSZot04vO0p59a8fREwXyK?=
- =?us-ascii?Q?Udn81PxJlt6i8IYn+TUFW0p6oSHhddaX6iCJc5GyB+0t6l8nO7cGEo8PL+w3?=
- =?us-ascii?Q?oJbRgg6V8mc0W1K9rDm7k1OgBDuwSZko461iikODpWiqbZwy4Wq68mLY36GB?=
- =?us-ascii?Q?EO6cqPp4Qm7GFVFNbNOkK/Lji8DLTvF2sbGPRHPFbSbydoitSfVjR55YW37J?=
- =?us-ascii?Q?YebclQ1irSOsY33S28H4MQ0xGDKXIctvjZMNHWu5MnvO56561GZrgfB5yRLO?=
- =?us-ascii?Q?1NF3mwJYLqBy+vf6fVprSBPipWCw+FGUpgrgBdUk6Ym5iPHgLJ9MzUD8zsO2?=
- =?us-ascii?Q?KWunzMPmbRf7NChx6BZG472bEDpom6a2+QVwjU/vj3eA4An1apxyKpJAECKI?=
- =?us-ascii?Q?CFqZt14Zm4zFv1QiHG/wmZChMA+Y1/82ylt72GqD1R7paPALKDT/GKkjbGso?=
- =?us-ascii?Q?1WSYrobFdBfe/+XpTLAKIXADBLiQiijeNSldgWyduyYzxYv28qZH2ZR7kTeD?=
- =?us-ascii?Q?Td6rfojmmQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ryQtlJXu
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-5eac6e4a735so92488e0c.2
+        for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2026 09:37:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793464628; x=1794069428; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=hog/LSraSSmnGVZ4/pHBjOKsX6XesCbb7trG3Vy1+fM=;
+        b=ryQtlJXuGOLY277F7JKl/5lVPrcSb4rXBnbEpO3itGx+1xjXisTz3mTMXT9bkdFlkv
+         hLI9uz8ndz8i3smEGsFroNxgiT+XanUm0Ph1IlH67k5Ue1KuQRwS7EXQgAbJJa+np22k
+         q0rrP9zbSxB29xD8T/+chHxZuU8uTRjYnEiQVjPLACCI38+RoawfwzpfVuQwad2+Cksk
+         fi3I4k3ipvbnxAS0FehI70nvEIjGfWMatOQQieM+oioIcQYcrkwkX9JmyE7xij6W6G0N
+         RB2OSw8PZzskWvAgY2IngyouO75X26t6vU4Gv6ggyPMQeY6wVgllKZD8Def5hxf3eLIR
+         jq6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793464628; x=1794069428;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hog/LSraSSmnGVZ4/pHBjOKsX6XesCbb7trG3Vy1+fM=;
+        b=pyh0pRfgsH9UorKrPKa/07kHGC/BkXKuHNLPlt4MnJ0FKl37fxlmNAriRH4oL67IZt
+         ERfMG+iHHEAK5Y+U3Qoi3O7/h82aWIfcatzuHRu24je/qt/R0Pa3zJ4IM0oNhrQg1KZY
+         +hTPvdYJCCqoiqglXGcEojgCS/q/tq1NeWgyn17jTimu02jpLhq7EE5xnJgC6G/V70y9
+         33TDMyvHsi+KcjdMQmGswFVmQPD0GEM8tSxviUOoF/Wvl+jLnBDkJ8V47ZZltMLff44c
+         XUj6QHvNPme0/gxay3LtJ7q7MWC1nmgFKWgJ/OUnXM2Y9pTJFFVoIZg8hCMTEz/3pLPj
+         ZTVQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzDfif4Iw/CMv4WKWjIPRyHlDYtPZvk2NVPQfVkAinyXiOmm7Minbw8omUoVM94SgkFCASt9rCGy+c=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKXjMzD6Lae7o/T613EFRc1CYaNk3friA/YxbonJFkATUs/1sRD
+	7cNlBz/Ks1zZiOW5pGd2ujlfHLyVDgeFvjzQfReLwN0rKiK9HWzzI0hL
+X-Gm-Gg: AYBFou3PP0TAhYCPSvap/i/VxUXj/+Fg2qAFlu1O0cfB/yr05ICLS4MVqE4Qx4N4q6N
+	Dmj4hxwMDfMbhIbuSV28M35m7qomQcInLDPKXVANwcUVDcTg3jrNt5TDGgX5PT9gGdpea2DYBQ7
+	OePcQO2NUwH8x5YpkUpvMCOBG5rcJ+xwcTq0nM44CyrldDGJyvIpsYfPdQyKYwFwr6LnxATDKAr
+	0WAcTbrO2/qEAhFTd2EHMWfN39CmjchjYxz7ePmssX0LRxeNsLVzyjDLKu8Fe17MrzeW6l2u9zg
+	QDmqhEnVOByY2+RphfyOy3Hez8QP78XVAc47iO9vr53UB+xONv3t5x8lE6lbx0Knq0y8SypGTk8
+	NHO0lWgIDjQlye1zDxnNM3+6RVq3ZlcpOe9hG9ifwYXTsgUkzhpxfI8/7Qf7VDE7aLxx/zRKYJH
+	cPCaZZSL9XgCLJ/2/OuErWq3hWirOGEBs9CC6axE4q56d5uxC0wC/k9YVO1AcaTUc4uNPlFeIfc
+	zB3yLnphzcOtJYQ9R29RA+Y4ElS6YqsrP2GVU8POdW1Z51SfGIbOpbadlRhEGXR5mTaA7tZTobA
+	A1Y7F1Iy8D7DvzFxwlPw8MBX1zJdPeAx3vnO8PlNGenaglUOdLoazKdUNrnXUdSMz3bFgQ==
+X-Received: by 2002:a05:6122:2b16:b0:5e0:2ba:5a06 with SMTP id 71dfb90a1353d-5ec6896981emr2989151e0c.4.1793464627977;
+        Sat, 31 Oct 2026 09:37:07 -0700 (PDT)
+Received: from JSANTO12-L01.ad.analog.com ([177.112.152.97])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ec69bf220esm5989015e0c.7.2026.10.31.09.37.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Oct 2026 09:37:06 -0700 (PDT)
+Date: Sat, 31 Oct 2026 03:28:06 -0300
+From: Jonathan Santos <jonath4nns@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux@analog.com, broonie@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	Michael.Hennerich@analog.com, nuno.sa@analog.com,
+	dlechner@baylibre.com, andriy.shevchenko@intel.com
+Subject: Re: [PATCH v4 2/9] dt-bindings: iio: adc: ad7768-1: Document
+ multidevice support
+Message-ID: <auWKdiIzL1Gykxkk@JSANTO12-L01.ad.analog.com>
+References: <cover.1792435248.git.Jonathan.Santos@analog.com>
+ <6e2176d5547c59c39bb692e9768d7ac079b40f71.1792435248.git.Jonathan.Santos@analog.com>
+ <20261026020500.6c13c0e6@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -149,83 +103,164 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB11346.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e072939-f5ff-4bb8-c37a-08df376cd7a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2026 16:34:32.3077
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dd+eCKgWkKHFfZBKgsHKpGn7jjL+6Rzu2k3qLAoSrmxRIIVpJqY4lYYuFn/xSmQz1Gc72henkNDFsohQ+sZI7BnU9+RokNQu7YUOQqgb5oU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB15806
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261026020500.6c13c0e6@jic23-hlaptop>
 
-Hi William Breathitt Gray,
-
-Thanks for the feedback.
-
-> -----Original Message-----
-> From: William Breathitt Gray <wbg@kernel.org>
-> Sent: 31 October 2026 16:29
-> Subject: Re: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if count=
-er init fails
->=20
-> On Sat, Oct 31, 2026 at 10:28:13PM +0800, Li Youhong wrote:
-> > From: Li Youhong <liyouhong@kylinos.cn>
-> >
-> > Counter enable takes a runtime PM reference before initialization but
-> > only puts it on disable. Drop the reference if initialization fails.
-> >
-> > Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter
-> > driver")
-> > Cc: stable@vger.kernel.org
-> > Reviewed-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-> > Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
+On 10/26, Jonathan Cameron wrote:
+> On Tue, 20 Oct 2026 22:56:56 -0300
+> Jonathan Santos <Jonathan.Santos@analog.com> wrote:
+> 
+> > The AD7768-1 family supports aggregating up to four devices on a single
+> > SPI controller, with each device occupying a dedicated CS line and a
+> > single data lane.
+> > 
+> > Extend the `reg` property to accept up to 4 entries (one per device).
+> > 
+> > Add `spi-rx-bus-width` property to declare the per-device lane count.
+> > Since each lane is bound to one CS, the number of entries must match
+> > `reg`. Make it required when `reg` has more than one entry, along with
+> > `spi-cs-composite` property.
+> > 
+> > Add an example for a four ADAQ7768-1 aggregation, with shared DRDY and
+> > SYNC_IN pin.
+> > 
+> > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
 > > ---
-> > v2:
-> > - Add Cc: stable@vger.kernel.org.
-> > - v1:
-> > https://lore.kernel.org/all/20261008020506.211566-1-dayou5941@163.com/
-> >
-> >  drivers/counter/rz-mtu3-cnt.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/counter/rz-mtu3-cnt.c
-> > b/drivers/counter/rz-mtu3-cnt.c index 7bfb6979193c..61fbeb122851
-> > 100644
-> > --- a/drivers/counter/rz-mtu3-cnt.c
-> > +++ b/drivers/counter/rz-mtu3-cnt.c
-> > @@ -506,8 +506,11 @@ static int rz_mtu3_count_enable_write(struct count=
-er_device *counter,
-> >  	if (enable) {
-> >  		pm_runtime_get_sync(counter->parent);
-> >  		ret =3D rz_mtu3_initialize_counter(counter, count->id);
-> > -		if (ret =3D=3D 0)
-> > -			priv->count_is_enabled[count->id] =3D true;
-> > +		if (ret < 0) {
-> > +			pm_runtime_put(counter->parent);
-> > +			goto exit;
-> > +		}
-> > +		priv->count_is_enabled[count->id] =3D true;
-> >  	} else {
-> >  		rz_mtu3_terminate_counter(counter, count->id);
-> >  		priv->count_is_enabled[count->id] =3D false;
-> > --
-> > 2.25.1
-> >
->=20
-> This patch seems similar to another we're considering for ti-eqep.[^1] In=
- that patch, runtime PM is
-> managed via devm which allows us to remove the explicit PM unwind on fail=
-ures and have them implicitly
-> handled when the device resource is released. Should we use the same appr=
-oach for rz-mtu-cnt?
+> 
+> I'd suggest some asci art might make it more obvious what you mean here.
+> 
 
-Here we save power, clock is turned on/off during counter enable/disable.
-On TI case, they enable it during the probe which unnecessarily waste power=
-.
-Even disable case, the clock is on.
+Ok! in the commit message, right?
 
-Cheers,
-Biju
+> > Changes in v4:
+> > * Include spi-cs-composite property to the bindings. The reason for going
+> >   this route is stated in the cover letter.
+> > * We decided to keep the spi-rx-bus-width property because assuming 1-lane
+> >   per CS would break controllers that don't support multiple lanes.
+> > 
+> > Changes in v3:
+> > * New patch.
+> > ---
+> >  .../bindings/iio/adc/adi,ad7768-1.yaml        | 80 ++++++++++++++++++-
+> >  1 file changed, 79 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+> > index 7b72d14e104c..64c1cbeaa576 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+> > @@ -26,7 +26,10 @@ properties:
+> >        - adi,adaq7769-1
+> >  
+> >    reg:
+> > -    maxItems: 1
+> > +    minItems: 1
+> > +    maxItems: 4
+> > +    description:
+> > +      Chip select number. For multi-device setups, one entry per device.
+> >  
+> >    clocks:
+> >      maxItems: 1
+> > @@ -109,6 +112,12 @@ properties:
+> >    reset-gpios:
+> >      maxItems: 1
+> >  
+> > +  spi-rx-bus-width:
+> > +    description:
+> > +      Bus width per CS. For multi-device setups (multiple reg entries), one
+> > +      entry per device must be provided. Required when reg has more than
+> > +      one entry.
+> > +
+> >    spi-cpol: true
+> >  
+> >    spi-cpha: true
+> > @@ -203,6 +212,16 @@ allOf:
+> >        properties:
+> >          pga-gpios: false
+> >  
+> > +  # Required properties for multi-device setups
+> > +  - if:
+> > +      properties:
+> > +        reg:
+> > +          minItems: 2
+> > +    then:
+> > +      required:
+> > +        - spi-rx-bus-width
+> > +        - spi-cs-composite
+> > +
+> >  unevaluatedProperties: false
+> >  
+> >  examples:
+> > @@ -244,4 +263,63 @@ examples:
+> >              };
+> >          };
+> >      };
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +    #include <dt-bindings/iio/adc/adi,ad7768-1.h>
+> > +    /*
+> > +     * Four ADAQ7768-1 devices aggregated on a single SPI controller.
+> > +     * Each device occupies one CS and one data lane; DRDY and SYNC_IN
+> > +     * pins are wired together across all four devices.
+> 
+> For DRDY, wired together how?   I assume that only gets set when
+> they are all ready?
+> 
+
+They are combined through an AND gate, so yes, it only gets set when
+they are all ready. We make sure by using the SYNC_IN to synchronize
+them.
+
+> > +     */
+> > +    spi {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        adc@0 {
+> > +            compatible = "adi,adaq7768-1";
+> > +            reg = <0>, <1>, <2>, <3>;
+> > +            spi-rx-bus-width = <1>, <1>, <1>, <1>;
+> > +            spi-cs-composite;
+> > +            spi-max-frequency = <2000000>;
+> > +            spi-cpol;
+> > +            spi-cpha;
+> > +            vref-supply = <&adc_vref>;
+> > +            pga-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>,
+> > +                        <&gpio 11 GPIO_ACTIVE_HIGH>,
+> > +                        <&gpio 12 GPIO_ACTIVE_HIGH>;
+> > +            interrupts = <25 IRQ_TYPE_EDGE_RISING>;
+> > +            interrupt-parent = <&gpio>;
+> > +            #trigger-source-cells = <1>;
+> > +            adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
+> > +            reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
+> > +            clocks = <&ad7768_mclk>;
+> > +            clock-names = "mclk";
+> > +            gpio-controller;
+> > +            #gpio-cells = <2>;
+> > +            #io-channel-cells = <1>;
+> > +            #address-cells = <1>;
+> > +            #size-cells = <0>;
+> > +
+> > +            channel@0 {
+> > +                reg = <0>;
+> > +                label = "channel_0";
+> > +            };
+> > +
+> > +            channel@1 {
+> > +                reg = <1>;
+> > +                label = "channel_1";
+> > +            };
+> > +
+> > +            channel@2 {
+> > +                reg = <2>;
+> > +                label = "channel_2";
+> > +            };
+> > +
+> > +            channel@3 {
+> > +                reg = <3>;
+> > +                label = "channel_3";
+> > +            };
+> > +        };
+> > +    };
+> >  ...
