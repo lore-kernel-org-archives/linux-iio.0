@@ -1,61 +1,72 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793470888;
-	b=jatLje/oDBW5AAvxRtSF94Hez12R9ccLpp5qsGZJhxKwnWKV+Li4mBHdjorov33RQAiX
-	 ztt2jg6JK8UKblXf1nPiIgvL0s+MhMqpuKqiWpXJLU2wsuLz18lk2ZArlsNFAx4GYm5++
-	 A5Hun1fU6yGnkGBgBF5Sr5Z8qXGy9SKMiyBdEQToLf1SBk/C+O8FGG3Ep7CniHeYZcUKp
-	 HKteochWkJLdD5k9BejL6GqtqRQvxElbDxO9/0oY9a4kDDYssLqTLzH11lGZxvC+HX28f
-	 a2Xzbn/D5hvC9LOWYtsLBsUy1/WNDFi1RSe7D8UMAqD7K9+DDsyF5TcDAdFemF/1U+g==
+	t=1793486148;
+	b=frWS6XP9/D+XU+S1eAo/DxVlWeldqwPRNfeTWVf3BlaJ7fZda9JP6HqqF+XtBATb9YY5
+	 vokEzmB0mk/XX3ADxwHFrYBWYvMEgitkqeDIoFSl4FImOK1BDAEaSYzJCTv5KgQQ7L/ti
+	 ybRUVF0RRJzRYl4LuMZpkKzYdl5ap4LrA/6IDh4fCyB89LhzRnGle9mIapvRZYGfwlH9t
+	 COY1ulpli9jmisT8xOyheiLLtLtGCXASiSAS0OYc2vxZIt747bevNf8fjQbE/g/0vbEQY
+	 gMjuj1zvOGrcR51UnLD/yMBeju/nwk4ofUc93w+JaknbhPFdtUSu2QH+lQqKIlDPKBA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793470888;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:X-Developer-Signature:
-	 X-Developer-Key:Content-Transfer-Encoding;
-	bh=lHKFRctLDfXlCv2OU3bCsqyyCRbSpNPu6FlORAWwFwE=;
-	b=UI4kfa3xjgDuUC56w2XLG7y12+SWDOZVlIiAv53T4GTy6DV8kL3P7T/byqN7BJ/AJwo+
-	 IYM3vp/V1RmvGmJ9JJOewGaubL+xTEvMqVE6anfVLl4aaqVyR45FKJO49JzKtAJeLkjEz
-	 hFGi6KxVND/PxccFgFWruB5Cp1J3Y1cUToGpCG8eYLRlgEy0GvEF6Hy0Nc4XSc1GExziI
-	 KySi6OKBpampuzc5+QzoQpTmMnR5uwKl0x6jV7rd+xsYqlfRO1EuJ+NvFzynKHrN5M1b9
-	 37ihAKiWIraTFOoRN3puFlWEiO4KWwtOl0p5T6yvb2OdX0YP1jmWol074Sct4QQ/LYg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793486148;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=nzQRvCwaYXmtasavKNUZak9W/WcvebGkCSju9XOd+Dk=;
+	b=mswjbR9GpD8obRgyeRMZCRuHsUUPB4l+jmgTQQ6ITF0ij7udfPbshHyqa92GCXl5Rn54
+	 Vo3YAjV/rE2zLhCXLuqS/aPREr2nwaQWmoJmxr4A/iL+u09rw+9s/+3+IhdiCBYQJh3uQ
+	 GYNRewDoWR6KpsUJsh+WH3Y8zAW1N94g6Ga5JEVj4r88G74MDpJRsmNV96Lj0PJlYvurF
+	 3FAaZIkz15Ly1oPqRNkiNu3MW3vv7TmKG0/HTXzRLDhLW9o9hyso28vTxuAOMRv0QsDe6
+	 2+cfDca9GGOMjtEFt/VJ1/c6X50AcUB+RseP9qTdwIgDcYTMZBlIdAG511p4nf9G2Uw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hTiVZ46j;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4X7Q7N+;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C18606A31A;
-	Sat, 31 Oct 2026 18:21:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C32606A31A;
+	Sat, 31 Oct 2026 22:35:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hTiVZ46j
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9FFF1F000C1;
-	Sat, 31 Oct 2026 18:21:26 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4X7Q7N+
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F4B1F000C1;
+	Sat, 31 Oct 2026 22:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793470887;
-	bh=lHKFRctLDfXlCv2OU3bCsqyyCRbSpNPu6FlORAWwFwE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=hTiVZ46jpxyLejVCQJV/JU+oCM33Z8pBI4QxA0ZJJUrQRNV/2jfoDvmS4Bz/D4zr7
-	 /1ZFLS8neKlXUNFNy3GkEl4V41ArIFXF9PX+y40Ucv6ynGIDV1LjB3buv0RU/A2Nlv
-	 LCPtpLDllFhQZVZCkeRBFhGTru/QY1O/0DBZnayzBTN5+GNhs9IFid/0GiaYEtmC40
-	 lYPKayUGmUtcHb/LtBlTTjUR9XmFlLTclXORuPBq2UAxDTSc2wRtzY3Y80R1njO6BV
-	 liAvZbOsgi99Z3PrY87WENo/G0TFHijqkvWwlnRoctYGRRp0KTS+D0qQfJ1SsfcKS2
-	 mljHYemnl3+Pg==
-From: William Breathitt Gray <wbg@kernel.org>
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: William Breathitt Gray <wbg@kernel.org>,
-	Li Youhong <dayou5941@163.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
-	Li Youhong <liyouhong@kylinos.cn>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter init fails
-Date: Sat, 31 Oct 2026 14:21:19 -0400
-Message-ID: <20261031182120.3646747-1-wbg@kernel.org>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <TY3PR01MB1134606C5DE0411FDACBF0001866C2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-References: <TY3PR01MB1134606C5DE0411FDACBF0001866C2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+	s=k20260515; t=1793486147;
+	bh=nzQRvCwaYXmtasavKNUZak9W/WcvebGkCSju9XOd+Dk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=K4X7Q7N+2GrsDpipIbbihb9skWxgDHXW7LjI7/ryzpj50cqC2lv8Gxo487TdmeH6c
+	 9i1RGrSHAc+96kcRxwPRnHL6oRrmpx0vdbI1O1c7GSSzq1zoOeHMqdAafdsSFriJ9a
+	 +fZmXrJ7LQ1lYPALpEOdXOS0pPqquUgDpkBA/ZR+xgQTMPfCaqDvTDPHEVa1tZCBHo
+	 ZTUvZdoMXq05ic41AAJL63ns1nv1zfjGKr1gptVSoV5VnP4S9zqBEYKu88uwCAufu/
+	 yOfyaCi9MoVC/1vlT+pkUF+hsaugr8UwjmJnf2/4pNJ78SypTuqnFLxQqkAHzDaf2p
+	 lAbt3CrFhcxXQ==
+Date: Sat, 31 Oct 2026 22:35:37 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Marco Elver <elver@google.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Rupesh Majhi
+ <zoone.rupert@gmail.com>, Alex Lanzano <lanzano.alex@gmail.com>, Andy
+ Shevchenko <andy@kernel.org>, Benson Leung <bleung@chromium.org>, David
+ Lechner <dlechner@baylibre.com>, Guenter Roeck <groeck@chromium.org>,
+ Jagath Jog J <jagathjog1996@gmail.com>, Javier Carrasco
+ <javier.carrasco.cruz@gmail.com>, Jean-Baptiste Maneyrol
+ <jean-baptiste.maneyrol@tdk.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Jinseob Kim <kimjinseob88@gmail.com>, Kevin Hilman <khilman@baylibre.com>,
+ Lorenzo Bianconi <lorenzo@kernel.org>, Martin Blumenstingl
+ <martin.blumenstingl@googlemail.com>, Matti Vaittinen
+ <mazziesaccount@gmail.com>, Neil Armstrong <neil.armstrong@linaro.org>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Remi Buisson
+ <remi.buisson@tdk.com>, chrome-platform@lists.linux.dev,
+ linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>
+Subject: Re: [PATCH v4 9/9] iio: enable context analysis for all drivers
+Message-ID: <20261031223537.1e1c5ad2@jic23-hlaptop>
+In-Reply-To: <CANpmjNNNw3Ont87-Uqo_j4YrPbamHLue=EAMkc+B66Q_yywQ9A@mail.gmail.com>
+References: <20261027124954.110697-1-zoone.rupert@gmail.com>
+	<20261027124954.110697-10-zoone.rupert@gmail.com>
+	<auDNzWMPy0VQcazt@ashevche-desk.local>
+	<CANpmjNNNw3Ont87-Uqo_j4YrPbamHLue=EAMkc+B66Q_yywQ9A@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,75 +76,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2694; i=wbg@kernel.org; h=from:subject; bh=4jOGApQctKuARm0QUpYj59awkb17qYceby5349anA7c=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFnPDLs+zMzxqVJ8LFWoosmlav7pRaBJWszVQw6Vyz9Os z7E6/W7o5SFQYyLQVZMkaXX/OzdB5dUNX68mL8NZg4rE8gQBi5OAZjI1kMM/5O+vn3F+Xch75LC 9Wt49nzYfkH9RmJBr/WLxTkMv/xOTrzCyPCO8Xn31u3aV/MFP9xKmbJ4s8qL8wIvXgaWNXN8Fd5 gwMAKAA==
-X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 31, 2026 at 04:34:32PM +0000, Biju Das wrote:
-> Hi William Breathitt Gray,
-> 
-> Thanks for the feedback.
-> 
-> > -----Original Message-----
-> > From: William Breathitt Gray <wbg@kernel.org>
-> > Sent: 31 October 2026 16:29
-> > Subject: Re: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter init fails
+On Tue, 27 Oct 2026 18:21:29 +0100
+Marco Elver <elver@google.com> wrote:
+
+> On Tue, 27 Oct 2026 at 17:14, Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
 > >
-> > On Sat, Oct 31, 2026 at 10:28:13PM +0800, Li Youhong wrote:
-> > > From: Li Youhong <liyouhong@kylinos.cn>
-> > >
-> > > Counter enable takes a runtime PM reference before initialization but
-> > > only puts it on disable. Drop the reference if initialization fails.
-> > >
-> > > Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter
-> > > driver")
-> > > Cc: stable@vger.kernel.org
-> > > Reviewed-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-> > > Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
-> > > ---
-> > > v2:
-> > > - Add Cc: stable@vger.kernel.org.
-> > > - v1:
-> > > https://lore.kernel.org/all/20261008020506.211566-1-dayou5941@163.com/
-> > >
-> > >  drivers/counter/rz-mtu3-cnt.c | 7 +++++--
-> > >  1 file changed, 5 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/counter/rz-mtu3-cnt.c
-> > > b/drivers/counter/rz-mtu3-cnt.c index 7bfb6979193c..61fbeb122851
-> > > 100644
-> > > --- a/drivers/counter/rz-mtu3-cnt.c
-> > > +++ b/drivers/counter/rz-mtu3-cnt.c
-> > > @@ -506,8 +506,11 @@ static int rz_mtu3_count_enable_write(struct counter_device *counter,
-> > >  	if (enable) {
-> > >  		pm_runtime_get_sync(counter->parent);
-> > >  		ret = rz_mtu3_initialize_counter(counter, count->id);
-> > > -		if (ret == 0)
-> > > -			priv->count_is_enabled[count->id] = true;
-> > > +		if (ret < 0) {
-> > > +			pm_runtime_put(counter->parent);
-> > > +			goto exit;
-> > > +		}
-> > > +		priv->count_is_enabled[count->id] = true;
-> > >  	} else {
-> > >  		rz_mtu3_terminate_counter(counter, count->id);
-> > >  		priv->count_is_enabled[count->id] = false;
-> > > --
-> > > 2.25.1
-> > >
-V> >
-> > This patch seems similar to another we're considering for ti-eqep.[^1] In that patch, runtime PM is
-> > managed via devm which allows us to remove the explicit PM unwind on failures and have them implicitly
-> > handled when the device resource is released. Should we use the same approach for rz-mtu-cnt?
+> > On Tue, Oct 27, 2026 at 02:49:54PM +0200, Rupesh Majhi wrote:  
+> > > All of drivers/iio now builds without context analysis warnings, so
+> > > enable it in every Makefile that builds objects, replacing the entry
+> > > for dps310 alone.  
+> >
+> > ...
+> >  
+> > > +++ b/drivers/iio/Makefile  
+> >  
+> > > +CONTEXT_ANALYSIS := y  
+> >
+> > Can we reduce the churn to only adding it here and do some magic to propagate
+> > this recursively, please? I truly believe it's feasible to achieve.  
 > 
-> Here we save power, clock is turned on/off during counter enable/disable.
-> On TI case, they enable it during the probe which unnecessarily waste power.
-> Even disable case, the clock is on.
+> Should be:
 > 
-> Cheers,
-> Biju
+> subdir-ccflags-y += $(CFLAGS_CONTEXT_ANALYSIS)
 
-I suppose you are right. There is no need to keep the clocks powered if
-the counter is disabled because we are no longer counting.
+Nice. If nothing else comes up requiring a v5. I'll tweak the
+last patch to just do this whilst applying.
 
-William Breathitt Gray.
+Will leave these on the list for a few more days but I
+just gave them a spin and they seem to be working well.
+
+Thanks,
+
+Jonathan
