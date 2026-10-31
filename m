@@ -1,11 +1,11 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.21
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793459628;
-	b=zP16M5wHiPDlpCM/IQu2edogj7NbnHLm8C74RwTBeXjh7f6pBVLhSvaOeJ9T2/FvqHGN
-	 CJD2j2CgTQ/G7O1OmEfN36MJaXUldQ6nYQ4XSNcfg6Od9mrPF4heNe6rgo2IyKBzA1wcw
-	 iDvmi8Zf22zWbS2bqAqQLOaMXOsbi359fMO6PC0VICq6cXG44XWuq12/xXj+h2EBijIsU
-	 ZhbaZ3r0Ike8NEl29F/OinKocC/8/QmDuVkTJEzsUrA5bBZ3m7mS/GHKkKUiHlKCwipgr
-	 lzMFJnLyYrv+cFJ3EIeYznLV/s52bT+rUmLgGLWBFzdSeUTx3JTKhgBMLCzkPUbtHug==
+	b=j89sKTRRg1QxpQbXWxcKGbm0Mfzgtv/Iwsy4UGojmvDHNhxkrZAOY4m/lrHjgksDhVKy
+	 hph7TP9XlM2pVfPFkxvoaKJIsgTAYE88hFddUd93dJnb3zMCeXRp2bTQtkMRulV9ZCR7F
+	 nSwzakbaVtX1VOS7gzbtRlGwO4WRDmC9tSgp9etrlt3oJoO5P+LIqpKeO7JQzJeOax2Av
+	 vgFUA9tE9suNNZhErfCsxfSornAOE/UUhFqxGSCUuZK/RtIUhbHGPa/K+AtkJsIsVbEx/
+	 wkXM8tl1/AdIGc1ypMJFicGaoClS6dplnZ2uYjazJmYAED4LdOfTDpkV/WjdfdiUIyA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793459628;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
@@ -24,51 +24,51 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:
 	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=rHdfqmh1sx28Y17GBtqfP8VlpKysSu2Fq76IJlSdA8g=;
-	b=QjdQoLY5J18zDnnHWR9ucjV0dxX0o/nrU3T8lhRj9XvAHG2MkUsMHYv6nngZfZ9PNFWk
-	 39S88dmC7RT0b1Xud6dyJj0byDMsxIZH/yB63faoMQ6w7rQ63kyL9MZEspXBTcysOCzlM
-	 ST2kkhibjEOYtbH8UIMnTR776pWeyJYjpRKCiba9KUlCbitanpL0jggmmPUDO/+ZrJERA
-	 v8EgH+KkNp7tOV1LAvRpP76mhZYqAIC9u46N/y3TqeX9NKFNY/Iy0sR3nzs5fOhUtRc9q
-	 FbKPYUp+sGclB1QkLUY68V/slZ+Z0ssnV5Iem+QFioAzX2Gb3aHHIthHI6p2UGn57zA==
+	bh=CapBSMZIciUjEJlH9FahIYlpO550tSMt3mXknuF+/5w=;
+	b=3WjrnfROokdp4OCKS+eJB8ZG7fIUHFu7VXzaa3HrEt30QRU7b1P3GE7porMw55COO72m
+	 WhQSyQ0GhjaOvjto9j0LgKksOwANI0tCpWz+EoZnjz4vCwMi/F/O2+hWgxQnsApwONf4B
+	 tKzHO5f34nMg3hCdz92zBvfy9By6sgCO/ldP7w07t0VuHFvL4sViERQlpF4PoS1AvK0s5
+	 H80CmtW48wEInRErOtwy5W51PMQx7FEAcWhiwoo9uH5VQv6hkNoecjZ3jJlOoFmTPNL4n
+	 k11eo5SC5iwj9j9KQEds9hj1tpg1We5jOIWaM4ba9FkliJSoO47NdzIn6TwPPEGPUHA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=outlook.com;
 	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=EqgYQwOl;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=Nh2y447Y;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.21
 Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazolkn19010021.outbound.protection.outlook.com [52.103.13.21])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD21A606A329;
-	Sat, 31 Oct 2026 15:13:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AD21A606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A42E606A332;
+	Sat, 31 Oct 2026 15:13:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5A42E606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=EqgYQwOl
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=Nh2y447Y
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JPN5dOJfq8QgnrnG3YNAC1EpxLuQQhvxR3mcmgF6DsYxjOi/IGrMXv/dGo3j8TkhmOogg9bU6wXb/juU9Q2qX7MSMO2s1MJrxxeHOiWvly/CmLcUWL6n2N9g8pi1QreJr12X0U1Oi535pwzeDR9IHMkJ0PxE6U4JLJiCzSi5y9tfhHjBTb4zcqR+DiIAkBA4TFFLhq6G5wFpR3biPIE1+TxqnVAyzk54DzYMFKBD8kvrprS/TW/kJPWwxJ5uL40+qX4e0EJNXiK3bptlNAcMb1JMbIRHoTBq/Yz1+tBc/PaJKhtujX/ry6IXeCAaWY7dz4sn8LlqWS7cR1M3x7HfeQ==
+ b=soEkS5//zalEXLhXiydcrvnLk0Sa7ZK+PYRNKIThQyHLDZvqcq4RO4hrKig1QFx/pNmw8yg5qwmTRM4lFxr9wrVFawbhrZxFOZ1SGQIGsTaVLzBvcEXKBqtVG/ee63RYvX35cUFEv0mP58iM/x2AkgrnOcWRBNEyE3QEy/59wTrDT74m7d/YUB6TO/rrI62VIdRWfoq+EPXfdczzLbMbbxsc4YiYmS5ySHWOxYWLx6F2XjmzNmLJPoscaShSid7xxiQhsUeSbr07DZXQuz3JbCh/8PeHCG7/bHxNUunTxa5c2AZGGKSf0unmW40r+5QooKOP2YaegeAo18jG78ygiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rHdfqmh1sx28Y17GBtqfP8VlpKysSu2Fq76IJlSdA8g=;
- b=UqcZwyLHfZdXy3srVj5fcaAD3ddtGZoS9wcxTv3achWB+dK/8A//cDkqLp+lDlTxinbxVnOtqRvSj17uLP3chC4/RlWwhTTTgcOw0mKAWqyj9RDorrzUao0nEhwZapT9WedXxmrBnAdW+rqFI3mtehx3xa2XQI4I04b7IZqEAwZiN3jaflKtobqpMc3vRKZkG9IXsZJlzx1ezuEVWp8jyYm6SUmyKR6wZtXAqERwmzPkFpgqjaUloOoA70wBpXbvUkJQ10tmzivedAUMt2Tg5n+2QpEiVdiPvBcmWMdo+1gz3C1K9t1JkLbswD7j6HAWoMW0rwjsGEp+MOoeLpb2eg==
+ bh=CapBSMZIciUjEJlH9FahIYlpO550tSMt3mXknuF+/5w=;
+ b=zF97AuJgPpvcptbnNokbrBH/Wk12dKvDqahA2ThG8STlx6XyCFUbGOZvLY/dMtK8JOst9ieW8mSKOTeafF5NaR4kmYly1BnTc23fJBFWG4SpAEs+yCstZ7rN2rmSENsLvi97ZtoN4FpAj9+Y/fvmrfIjzp9/j+OFM2V2Isjs17HIckTkCtJkbAtpNjWyZrTwHpEP2e0oAE5qP93qe1Y5wr2xtQEqHHj6znG5cEsfFtUY4pbUXXXHqGeiokjX+a6YqgWKCh3Q+7mJNJjAgEYkArQ7JgpAtOUG4bg+/0ubVArTptrxRoGlOlBlIR99JGXJc0fvNfnqqsDJxhv347eGfg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rHdfqmh1sx28Y17GBtqfP8VlpKysSu2Fq76IJlSdA8g=;
- b=EqgYQwOlFThFpyqEPR9xGfIipElgk/WBzIxyiGA0jfKylFhOwTiAvKSOMWLr8S04g3LO8ViOzYFjH+WSyatnMGQMl9FfXmhWQ5pYWUxHUrPWICdvvYHg3l4vOQ2NyLYdFZOlq894qqTtcYZtcpHvz/bEylf1/Eh6sT3/fwoin1j0tvBNm7zBXNXZYTHrZexM0vWfXyBLae9+dOvt1kvx5mFrq+3KSg+CNfJxEl5e2iB2UdRs+j752wdakIIJNlhTZMVCWmARCSMKEDdJJuj0Z6nzZi/oQbCQsRBAa6rEml8GDIaUaGAQqdH/FG9ZzuhsQBDTkEiDMuoTYW7oaf9Svw==
+ bh=CapBSMZIciUjEJlH9FahIYlpO550tSMt3mXknuF+/5w=;
+ b=Nh2y447YFNJc+Ye8zwGvB5kx0d4qqZzbCvMeGKYI0KSZOCY2UPhdy2JKf/7tH4ZAOGabNb0BLBMJLt+YNt9fmvxe7xIz5LDh3Lj8O4bLe3Zjhv31jjmEGgiWbc90HyWBGRXJ9z2PD/G6kuPvXHIb946QjXHakdsHL1umj12TDaURE3tjg7yNadUas6KF7NkZPaEPGYuIxIKeovCaLgWdVYNXVcsfTDqyHJblHXd/f28QFsuDrof3OMiQg4PXfgu8FGucXYLWd1LfU8w+qfJvV3fbw3GaFoNNTfjhzWcWKwk7BRxi7HncFXTc6OYyOMMvTvmP+mavI6r6B+Udcbig/Q==
 Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
  by BN7PPF9C6E5285F.namprd12.prod.outlook.com (2603:10b6:40f:fc02::6db) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.11; Sat, 31 Oct
- 2026 15:13:45 +0000
+ 2026 15:13:46 +0000
 Received: from SN1PR12MB2528.namprd12.prod.outlook.com
  ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
  ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0569.010; Sat, 31 Oct 2026
- 15:13:45 +0000
+ 15:13:46 +0000
 From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -77,10 +77,10 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Subject: [PATCH v4 1/4] iio: prepare iio_format_value to handle higher-precision IIO_VAL_DECIMAL64_* formats
-Date: Sat, 31 Oct 2026 10:13:27 -0500
+Subject: [PATCH v4 2/4] iio: add IIO_VAL_DECIMAL64_{ATTO,ZEPTO,YOCTO} formats
+Date: Sat, 31 Oct 2026 10:13:28 -0500
 Message-ID:
- <SN1PR12MB2528AC1EE9CA6DB258A8BCD2A56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <SN1PR12MB2528B9D3CB68414EA235CD95A56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <SN1PR12MB252803756D5D1C8F35122B8DA56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
 References: <SN1PR12MB252803756D5D1C8F35122B8DA56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
@@ -90,7 +90,7 @@ X-ClientProxiedBy: CH0P221CA0007.NAMP221.PROD.OUTLOOK.COM
  (2603:10b6:610:11c::23) To SN1PR12MB2528.namprd12.prod.outlook.com
  (2603:10b6:802:28::33)
 X-Microsoft-Original-Message-ID:
- <20261031151331.140654-2-chernyakin.victor.j@outlook.com>
+ <20261031151331.140654-3-chernyakin.victor.j@outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,60 +103,60 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|BN7PPF9C6E5285F:EE_
-X-MS-Office365-Filtering-Correlation-Id: 322c324a-c0c9-420d-5615-08df37618d92
+X-MS-Office365-Filtering-Correlation-Id: 48d9d02e-2dae-43ac-6acb-08df37618f0f
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|19110799012|8060799015|8022599003|260925184616899003|25010399006|24021099003|15080799012|23021999003|41001999006|5072599009|22091999003|24121999003|26121999007|3071699003|3412199025|440099028|1710799026;
+	BCL:0;ARA:14566002|19110799012|8060799015|8022599003|260925184616899003|25010399006|24021099003|15080799012|23021999003|5072599009|22091999003|24121999003|26121999007|3071699003|3412199025|440099028|1710799026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?eecDX7JauSFaJCNENI6QzfcU6f6p3r9RMW9NSZHZ7Ubeul0FFsznLI8hGYWv?=
- =?us-ascii?Q?mK4W2Yv4Dp/aNji6v4WkpFABykuorn4EDfGe5IdFO3r5+rDn55dF6+joETLJ?=
- =?us-ascii?Q?L9heT/n2rOP9/4GaQXPSKSnnbhM6LF9U/M+a3t4YtvAXqap7Mq3yt/I/msmq?=
- =?us-ascii?Q?JKRv2Dht/BEoP11mN17fC4tzc2dJusTyp1VcJG5d3RJGap6oINyakEHAFipm?=
- =?us-ascii?Q?yqwlVe/4qOFYzOwN8ulMShmNjTQbYeh2qxGW+CKM7FD5kzdAvUiL5yN/illo?=
- =?us-ascii?Q?uVi4zTQeHm4UXTZ/fsXmVHUYVqrDmUQLkt8FV2Yv5BYJXOIrIirDo9/UHqwO?=
- =?us-ascii?Q?7TcTZc9Qy2k5BOFFh0EMO2kViMcXjRFZSSjNwDu+Ojepw3Bc1n9o+KRwijUc?=
- =?us-ascii?Q?6xR/aKxxvx0aODttel5TALub75nmwKbeRVHRP2oLi5+ivsBg3vHaP2mpQdWh?=
- =?us-ascii?Q?0YlJNAKs1y0DR0OkjgYQFuzQRovmX6/bQX9GmZOgF8QoBOjt52bs7uxOZbB6?=
- =?us-ascii?Q?eDbSwvUhGfuarjiv9Psn1LBkSEhgtq5Gh+AiqpTdQK8m9bYAZ2JptZdpOUGT?=
- =?us-ascii?Q?IE1JXzfJNjZ1ZDAmaMEXFqBG5/NVQjYF1w4sSujv0uBaeYiuU0PsHYsG5Yeb?=
- =?us-ascii?Q?GxxqNM7X+Pgq1BmEDsSJmfX0qCvHjml3HrSQkC03Y1/hMNGmocLTbqHIjgLz?=
- =?us-ascii?Q?QFiebUqLnXdtITX/wta7QCtglCOq2zcOof5iBguQs5YnBqVuP6arg4TYkC3w?=
- =?us-ascii?Q?6J3SXhBNg3Ub4pwJU0HQKjJo4un2TbwT+d0/UdKnvH48j4gYAyXOO+z/X7fG?=
- =?us-ascii?Q?FJPRqb1x3Q6ZzLP1IKpOGBBOwbxMu4cfrwFliTlqgeMrKsW2G8zNu4I1aXJF?=
- =?us-ascii?Q?nTD6MMfq6bOYhx3TcPFK9GXEGbMINscvdX0yOlDNBm8/5jHsXXGRrIZdIXt4?=
- =?us-ascii?Q?zpIZYmCraTu4uCoKZMrJidSg9dPdJ23AHBF41Yi3h0vPXrmJU1EYNw9ndL/k?=
- =?us-ascii?Q?D+i/MTS4byaOwmLhM8ABm1mlI6/dB9Nn2IdBuJOIBEGrhPpVO+ECdpoizzA9?=
- =?us-ascii?Q?3NW8IUuF5rINAhNNKf1KL8Z5EZOASA=3D=3D?=
+	=?us-ascii?Q?4EiK25w2rLSActhETW/Watg9FFct0RLmLtoIKYFD44/VmV5Je+hJkNn8z3kT?=
+ =?us-ascii?Q?60/Ykb7pHu2YJj8Sl/TGWuV0861LieGEMZo64RlSmQTe/MOPNDJTlrWGP8Cj?=
+ =?us-ascii?Q?lqIH++VTXRf+pEnTZZbStW4P38ZJ5J5HZ9wEV5pZuKHKEn6s9fw+Y4iGZJaI?=
+ =?us-ascii?Q?LyJamHfz9CHZ0z2WmJTn95U9Drg5WA1US3XNL1wYqcFS09d1Gum7we8CUWJG?=
+ =?us-ascii?Q?uvejJhGlWs1k6TYxj3qu/n3kj2PN43cSZP/T828Pegul9cGSk4yO3mR+w6W0?=
+ =?us-ascii?Q?3r2fGgKJku3W7CIYLbynEOwr/fEHoDB79WDpQx0vLVDm14UCPxMi/gDxYywd?=
+ =?us-ascii?Q?k3PO8DSaVpYlTDoFwogl3tQwhXpaXOHkHYIgWo3rH8LxvjNgFJeL1mSoliw8?=
+ =?us-ascii?Q?8rQ7/bhjI9ovYiRCS3cEe0CxJYgvGu7weOWh/lJnCakWz1OZHpJwqorUKC4g?=
+ =?us-ascii?Q?pF8zcC276uZidEHOgT97XYBT84vtTz5ats+fB0RoWfWuh6Y/WAZVbDX32D/4?=
+ =?us-ascii?Q?vUKwhVzmvUJ/Ztw56uJRhqinB7C8w9zEPeks7BPmdwWV2oJ+XlixVet73V1y?=
+ =?us-ascii?Q?NdfZod+uaE+111c7j8uG6IeuvvLVwK0LTl1BOu+bdAf8r02C/DoIpOq/PN6u?=
+ =?us-ascii?Q?K3haocM7FaRuFsoTKGVG7IRShDE68s6Rkdpg5rdoSiHhFVa90qPu7Mr0d/+A?=
+ =?us-ascii?Q?SNrR/jGGUzbB+xYGMBXznfViygtwLGkiWjRudssQgZqGgjbQYwS5l1KwQpCd?=
+ =?us-ascii?Q?AjqVTf4WWXzB9NVjQLEobox51asrcsXgoLLE92JKgCxhDpw5BmAITVD5OK8K?=
+ =?us-ascii?Q?TFOZRJIZJr5vMRDDFcniNXRTzj8Yi8XUFG8QFX4Wq8jcbiblQ4YS2uMrzq7O?=
+ =?us-ascii?Q?NtjgSBq/gZy432489zS8/fcYrpHKS3UvHyUn0roGTHMW5noRgK5WHejvxEVE?=
+ =?us-ascii?Q?+zsl5+I9wpyQy9ytkgk07qECCfoPw5WJXGMSWWNWMPbuOls9Kuc10oBE4Psb?=
+ =?us-ascii?Q?+wJvn8fSgSDdAzolU0m7XXds5XABgbUHseepxvccq3tWpLOkPZs4rUWZMoiU?=
+ =?us-ascii?Q?ESI8srmz?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?XL1cv9NRRbEE+LIT41GqJjIfMgArbHyeaxPgK8jiGFkuV7zzm0YgfxANas33?=
- =?us-ascii?Q?qoWivuvwRL8AlNCou5UP7cKp+2ZZAHmZ2/7gxwVP3MbigPMhMHdAvjm0+Xmj?=
- =?us-ascii?Q?s/PimdUesenxndIQrRNhg1QQvNSgyiKk8pH11AQ9XVamW5MobklHpAOsNAuQ?=
- =?us-ascii?Q?d1e2SYPRohq+LIqv4mVLLl2yQFOH4PnFdslthYSmHtDH9Rp03o8ZfnpmNSnR?=
- =?us-ascii?Q?OadFjRUcjBnFUdStPyGfg2o5duXWB3FaD9bPGWeJSXGefiaE+sHJeC1D8ybc?=
- =?us-ascii?Q?bq0oftZPAEzLRfbNg7D9Zkae4Py/CdLYVvgrpSce0I4cYmQul+eaTdsnifgi?=
- =?us-ascii?Q?FfBIRr/LhFj3I3irqH+fDctm/Y6WlIHzPmKcKFODAYfV5282Ljh9IVQq7k0/?=
- =?us-ascii?Q?m9T3PBo7xxSXmk2O61u4xv8NcT5EY5iy6H8Ebgv48tyPLjYhhWwjvrqZkmff?=
- =?us-ascii?Q?WRsCdPayL9Zk/ZZeBf+WRg41Bnbrv8i5jsa8sZxLpzFqOLvKveuvb88TSzqP?=
- =?us-ascii?Q?nTAVvyBov5eNTZ/3mwXCpIyiAceWOCjZ3wFUQJapV3ChSPDfSVAhwbnOMoSD?=
- =?us-ascii?Q?Ytqlh/qySFZ/E5rsHMOHW39sqHjlCDBeJ9ry4U7F3mFaac6cAU+c9m3TS/Rq?=
- =?us-ascii?Q?1kzUhFRRjX2xBKiNh6vgkj5TkOsoo1Mw/siN+fsD7WzD7DgidQAqnAhg8iyH?=
- =?us-ascii?Q?MqG8ZljQE5eNE7TMSSv8Yjz/EOj6qqtjl69eIVKz6R2/PJ4RRkDe5SMsdGby?=
- =?us-ascii?Q?S2NkpY7dNEDx3vOwfpgN9IxtiL4iAcjXB+X8CCiNlrL1MKE3/aDnhoJiXiSm?=
- =?us-ascii?Q?B7MAtruFiGLk4/ELtpUN5emaswr8JGMquD664Fpk/e7Vh9gfyGdOs5gyROAt?=
- =?us-ascii?Q?7kAIZoky+bVD503um44c4bsrX8WLwOt4fsSEO5ru1t7TJ9L7aPVlsMEd7Kvn?=
- =?us-ascii?Q?+cmtq3Mny1brMqBWjYJmPVaDeJ4zUJf/8xVr9sdCzAak9c252rM+7C+7vVai?=
- =?us-ascii?Q?lq7jSesT2TArpNK7vsd5xRaZOIwyCP+qX4/tfOOlQPHJUOyiC7RTz1ts/8kb?=
- =?us-ascii?Q?/+M9Tqred8wX4uG91VGYP8jajl51oZpIdf4NCDQORtEnDNTKhLhHilGMEmQu?=
- =?us-ascii?Q?55V8LgDaSXaNHijkeCM5rhmIH4ugy07nFQSrEq7oZXAOjzanO1iI1hemZ/ed?=
- =?us-ascii?Q?V5hKdaq2rnEGakg0wp7eHI+XpYpc7Hdofsc+9Z/3thV0ntvOgggYdauqPLUA?=
- =?us-ascii?Q?vNq8sNb9gZDRx9oBIV/xs1hhi4e4CalV535lQhgYCVtfqqfVV9z6RfQCWZVc?=
- =?us-ascii?Q?hG4Yd0wrhy6zihlB2dQl1ncF0xtsdEW/APAgeXElwRm3vwqNhN8F1Ki36jH3?=
- =?us-ascii?Q?qqYCIBfg0Z58xXO9qgYZNu2VdAnAA0QSXyVcIAe035yvVEIgwg=3D=3D?=
+	=?us-ascii?Q?vXDZf0sVF5pDov5eHg51zHJ1XCS/jljfxigniRSNJ58hsq4g2GIFGy6CahdV?=
+ =?us-ascii?Q?BG1QBy3WpN43Z9GLpsKmZEFUXSZ9U2I40c0+bTnyYn+W7UGa0spdKNxUJP8H?=
+ =?us-ascii?Q?FJMUYrvCFjHgHFodrsnnKN8QhUrGbAcIJU4eu9CGdLrklzeuxkGKRsar7xrq?=
+ =?us-ascii?Q?McGrf/75rm0Ln9UUMPfCkHXp9c92Ietk0TsHhEpONVo787CYymnsotleTFrs?=
+ =?us-ascii?Q?1U6ZnrYdO2a/e/0irK8XABgvl/gshM+mYcuOc4m5ZwBvQcbbBPJ7U3N26Vt+?=
+ =?us-ascii?Q?Qnk5fmUGF0GNxIMj4fZUmYfdPUt9+RhWT8Ofj+FCHT+Unq6jHj20jZyF5Q4S?=
+ =?us-ascii?Q?mg0zPJiQ03AJF32XsWLtCyP8aj8Lor9ouJq8YaD80TpCXE0BrfFiuCo3N48f?=
+ =?us-ascii?Q?XJ7MtJBUBVZC9mvCS5CS2JJ5epssReKK14liEe6kuEf9p3UkqocrcAo6nVul?=
+ =?us-ascii?Q?JoEWZzzXaiJToDR2WwfmHGbbjVzh+/BWrf6TcmFY8eb7xMGpAmui8N3Zq3km?=
+ =?us-ascii?Q?XNJgNfwd0H1qiS0ycNfRycz86x8AHVpf0jpFXi1zcgeTQM9Frv8KH78dl7S1?=
+ =?us-ascii?Q?H84qwOWgLo5e4tyTv5gcChvDoyytqCGDlru2OQ41oBuJRcd8poV/8gM90GMV?=
+ =?us-ascii?Q?kIAWfHBIpLh5+BfV6E8VgxbGh2037hw+/+ZLnnJ1agPiTL1cPZ6islQ5XRMV?=
+ =?us-ascii?Q?AohMkRqTCBQt9W1r0fPAsQZTw5vqSbJEAP1g1O2TeA+U2037vMfizU4diFPX?=
+ =?us-ascii?Q?ULrajdTKXGKu4Yeed9rKyXHQ39fwWDTIwQokk27mW0/mMumyNxDhZeoTXjbz?=
+ =?us-ascii?Q?/QO9vqHxi4nx2jkyHsUYBguklI982QjIl7S2AvucVGlvjk0nZJlKhE6DxWSP?=
+ =?us-ascii?Q?2fBM3MKxwa5U0N+IUX/x8shNFNdD3hES7p80WmTpJBd7KypezaFlUh2nBhdm?=
+ =?us-ascii?Q?vsPBm//vxji8+5dPn19QHCSQkaYZv/389VbvugJItyLcDgIge2Dp517vuiqN?=
+ =?us-ascii?Q?tA5lhtaQGFZeOGYpkBd2+g/nMGize/sEH707x+tJNCnx/QhRa3UF8za2F6wY?=
+ =?us-ascii?Q?nPz0Tb/uR7nqiae7bR6lAy9Xf1Bzj+Jy1sKY6saixpWUdkt9RVTKVoTS7j1l?=
+ =?us-ascii?Q?CgvonRir3yk3aiZrYEC9zv+Q5mlgUDmbsmPqmjWLB9kU46g5S/dzTKnt5wpF?=
+ =?us-ascii?Q?EYuCisru2NTHsuofK0mRaxmwkSuQmD80OnICVWYdYiBOTrQUC6CklFE75vJq?=
+ =?us-ascii?Q?R50GotgrPHcV3WKR8AyeJGw2APORS/NdSre8ILQvbJTH6W5e/5Sn56QUZIsd?=
+ =?us-ascii?Q?59DHND6dv4C73K1vSg/I1y5o54ZViRSQT8JBelIGlcRiuBgigvFQIbaXguzK?=
+ =?us-ascii?Q?3g9Y0iNi8SgoBGTOlydYZelB3IMor5k1IX+VbfD9URO5Rq6Ong=3D=3D?=
 X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 322c324a-c0c9-420d-5615-08df37618d92
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48d9d02e-2dae-43ac-6acb-08df37618f0f
 X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2026 15:13:44.5834
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Oct 2026 15:13:46.3787
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -164,75 +164,91 @@ X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PPF9C6E5285F
 
-Prepare iio_format_value for an upcoming patch that adds formats up
-to IIO_VAL_DECIMAL64_YOCTO (a scale of 24 digits) by avoiding
-computing 10^scale when doing so would overflow, and by avoiding
-undefined behavior due to abs(LLONG_MIN) (which couldn't happen
-previously).
+The highest-precision format IIO has right now is IIO_VAL_DECIMAL64_FEMTO,
+which gives 15 decimal digits of precision after the decimal point. This
+is not enough for the upcoming TI FDC1004 driver, which needs 22 digits
+of precision to exactly express its scale value. This patch adds higher-
+precision formats, up to IIO_VAL_DECIMAL64_YOCTO (24 digits of precision).
 
 Signed-off-by: Victor Chernyakin <chernyakin.victor.j@outlook.com>
 ---
- drivers/iio/industrialio-core.c | 24 ++++++++++++++++++++----
- include/linux/iio/iio.h         |  3 +++
- 2 files changed, 23 insertions(+), 4 deletions(-)
+ drivers/iio/industrialio-core.c    |  6 ++++++
+ drivers/iio/test/iio-test-format.c | 16 ++++++++++++++++
+ include/linux/iio/types.h          |  3 +++
+ 3 files changed, 25 insertions(+)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 767a7794624a..42e92a79d1ee 100644
+index 42e92a79d1ee..21594318bb9e 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -653,6 +653,16 @@ int iio_read_mount_matrix(struct device *dev, struct iio_mount_matrix *matrix)
- }
- EXPORT_SYMBOL(iio_read_mount_matrix);
- 
-+/*
-+ * Regular abs(LLONG_MIN) causes signed overflow, which is undefined
-+ * behavior. This variant avoids that by performing the computation in an
-+ * unsigned type, for which negation is always well-defined.
-+ */
-+static inline u64 abs_s64_no_overflow(s64 x)
-+{
-+	return x < 0 ? -(u64)x : (u64)x;
-+}
-+
- static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
- 				  int size, const int *vals)
- {
-@@ -720,13 +730,19 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+@@ -726,6 +726,9 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 	case IIO_VAL_DECIMAL64_NANO:
+ 	case IIO_VAL_DECIMAL64_PICO:
+ 	case IIO_VAL_DECIMAL64_FEMTO:
++	case IIO_VAL_DECIMAL64_ATTO:
++	case IIO_VAL_DECIMAL64_ZEPTO:
++	case IIO_VAL_DECIMAL64_YOCTO:
+ 	{
  		int scale = type - IIO_VAL_DECIMAL64_BASE;
  		s64 frac;
+@@ -1050,6 +1053,9 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 		case IIO_VAL_DECIMAL64_NANO:
+ 		case IIO_VAL_DECIMAL64_PICO:
+ 		case IIO_VAL_DECIMAL64_FEMTO:
++		case IIO_VAL_DECIMAL64_ATTO:
++		case IIO_VAL_DECIMAL64_ZEPTO:
++		case IIO_VAL_DECIMAL64_YOCTO:
+ 			dec_scale = type - IIO_VAL_DECIMAL64_BASE;
+ 			fallthrough;
+ 		case IIO_VAL_INT_64:
+diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
+index e5d0a2ac4670..43a80952a50f 100644
+--- a/drivers/iio/test/iio-test-format.c
++++ b/drivers/iio/test/iio-test-format.c
+@@ -286,6 +286,14 @@ static void iio_test_iio_format_value_decimal_64(struct kunit *test)
  
--		tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
--				     int_pow(10, scale), &frac);
-+		if (scale <= IIO_INTLOG10_S64_MAX) {
-+			tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
-+					     int_pow(10, scale), &frac);
-+		} else {
-+			tmp2 = 0;
-+			frac = iio_val_s64_compose(vals[0], vals[1]);
-+		}
-+
- 		if (tmp2 == 0 && frac < 0)
- 			l += sysfs_emit_at(buf, offset, "-");
+ 	/* limits */
+ 	iio_val_s64_decompose(LLONG_MAX, &values[0], &values[1]);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_YOCTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000009223372036854775807\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_ZEPTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.009223372036854775807\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_ATTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9.223372036854775807\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_FEMTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223.372036854775807\n");
+ 	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372.036854775807\n");
+ 	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
+@@ -294,6 +302,14 @@ static void iio_test_iio_format_value_decimal_64(struct kunit *test)
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "9223372036854.775807\n");
  
--		l += sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
--				   abs(frac));
-+		l += sysfs_emit_at(buf, offset + l, "%lld.%0*llu", tmp2, scale,
-+				   abs_s64_no_overflow(frac));
- 		return l;
- 	}
- 	default:
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 711c00f67371..7cb72ae282b6 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -1132,4 +1132,7 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
-  */
- #define IIO_M_S_2_TO_G(ms2) (((ms2) * 100000ULL + 980665ULL / 2) / 980665ULL)
+ 	iio_val_s64_decompose(LLONG_MIN, &values[0], &values[1]);
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_YOCTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.000009223372036854775808\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_ZEPTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.009223372036854775808\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_ATTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9.223372036854775808\n");
++	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_FEMTO, ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223.372036854775808\n");
+ 	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_PICO, ARRAY_SIZE(values), values);
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-9223372.036854775808\n");
+ 	ret = iio_format_value(buf, IIO_VAL_DECIMAL64_NANO, ARRAY_SIZE(values), values);
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index d8944c9e5e90..2ef9b2a8b119 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -43,6 +43,9 @@ enum iio_event_info {
+ #define IIO_VAL_DECIMAL64_NANO		(IIO_VAL_DECIMAL64_BASE + 9)
+ #define IIO_VAL_DECIMAL64_PICO		(IIO_VAL_DECIMAL64_BASE + 12)
+ #define IIO_VAL_DECIMAL64_FEMTO		(IIO_VAL_DECIMAL64_BASE + 15)
++#define IIO_VAL_DECIMAL64_ATTO		(IIO_VAL_DECIMAL64_BASE + 18)
++#define IIO_VAL_DECIMAL64_ZEPTO		(IIO_VAL_DECIMAL64_BASE + 21)
++#define IIO_VAL_DECIMAL64_YOCTO		(IIO_VAL_DECIMAL64_BASE + 24)
  
-+#define IIO_INTLOG10_S64_MAX 18
-+#define IIO_INTLOG10_U64_MAX 19
-+
- #endif /* _INDUSTRIAL_IO_H_ */
+ static inline s64 iio_val_s64_compose(s32 val0, s32 val1)
+ {
 -- 
 2.53.0
 
