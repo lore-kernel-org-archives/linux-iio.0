@@ -1,71 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793486148;
-	b=frWS6XP9/D+XU+S1eAo/DxVlWeldqwPRNfeTWVf3BlaJ7fZda9JP6HqqF+XtBATb9YY5
-	 vokEzmB0mk/XX3ADxwHFrYBWYvMEgitkqeDIoFSl4FImOK1BDAEaSYzJCTv5KgQQ7L/ti
-	 ybRUVF0RRJzRYl4LuMZpkKzYdl5ap4LrA/6IDh4fCyB89LhzRnGle9mIapvRZYGfwlH9t
-	 COY1ulpli9jmisT8xOyheiLLtLtGCXASiSAS0OYc2vxZIt747bevNf8fjQbE/g/0vbEQY
-	 gMjuj1zvOGrcR51UnLD/yMBeju/nwk4ofUc93w+JaknbhPFdtUSu2QH+lQqKIlDPKBA==
+	t=1793488458;
+	b=iv4PuK1eoFNlwY1LqaxWXG/N2lfyQ0bX10VQSjUOsPaoPDrjN7PwHE/ImgBM4PnMtdY4
+	 bRfJqyX59Dqm9MixOUDI3xYeo1DWroMSk9h4UTRXcCEE6Nna692Y5S8OGrwuW5z4Q9Xq2
+	 DxjADBpG2/+pFul2w0y6ws9VwKggSbrICZEDK+9c9m+EGOc0Cp4NHSiSErjjtjAli0Sf3
+	 bKRM39BB85JLoplM3+xyFKUTboa6UhLWdcgHKS9Yc/O7jiyHnM+bdi1TSm4cpX+IJfUsp
+	 pegDjjcsIzHvvSRoQu9GeSr/3HVZT1S/i+/d7jXTFsL8V5dVsWAbJVQl2uTB5NYShsg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793486148;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793488458;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=nzQRvCwaYXmtasavKNUZak9W/WcvebGkCSju9XOd+Dk=;
-	b=mswjbR9GpD8obRgyeRMZCRuHsUUPB4l+jmgTQQ6ITF0ij7udfPbshHyqa92GCXl5Rn54
-	 Vo3YAjV/rE2zLhCXLuqS/aPREr2nwaQWmoJmxr4A/iL+u09rw+9s/+3+IhdiCBYQJh3uQ
-	 GYNRewDoWR6KpsUJsh+WH3Y8zAW1N94g6Ga5JEVj4r88G74MDpJRsmNV96Lj0PJlYvurF
-	 3FAaZIkz15Ly1oPqRNkiNu3MW3vv7TmKG0/HTXzRLDhLW9o9hyso28vTxuAOMRv0QsDe6
-	 2+cfDca9GGOMjtEFt/VJ1/c6X50AcUB+RseP9qTdwIgDcYTMZBlIdAG511p4nf9G2Uw==
+	bh=EvFOsNwECWzkoE1K3ThF17khYLPjrSsyxDscyOScTwc=;
+	b=f0IklgoRVtZtAf8jEuRoDnwrfm6DCs0C0+j0WJSpS7A+1XF7DHxHKK6NahhQgjy7JkFy
+	 skmYwOFrhu4diQkTjWm7uL8tWvY4bxSuNlWYjwwo093bU64x4tvI6plIq8YuH2q7S5R76
+	 HSiFkGi6FjF0pCv9OT+ttJPZz55zJVQUrqs+WIixtG/hRrXG3IAiCmWZ6fNflcnOobdm1
+	 XRyGEp+k4q3IRjxGwNpoAYeegqrUqtlyWNezbkv77rv7Xw2gXoSSlcuOrK9V+49FoRQ5S
+	 xIPjhrQFKyZ9BwQzHeWZDSWoL95W3f8TQzZGetKtr9U50ZHq+eR9Bluzb6yEHTajf0A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4X7Q7N+;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AA1GFEPR;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C32606A31A;
-	Sat, 31 Oct 2026 22:35:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC65A606A31A;
+	Sat, 31 Oct 2026 23:14:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K4X7Q7N+
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F4B1F000C1;
-	Sat, 31 Oct 2026 22:35:43 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AA1GFEPR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EFFD1F000C1;
+	Sat, 31 Oct 2026 23:14:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793486147;
-	bh=nzQRvCwaYXmtasavKNUZak9W/WcvebGkCSju9XOd+Dk=;
+	s=k20260515; t=1793488457;
+	bh=EvFOsNwECWzkoE1K3ThF17khYLPjrSsyxDscyOScTwc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=K4X7Q7N+2GrsDpipIbbihb9skWxgDHXW7LjI7/ryzpj50cqC2lv8Gxo487TdmeH6c
-	 9i1RGrSHAc+96kcRxwPRnHL6oRrmpx0vdbI1O1c7GSSzq1zoOeHMqdAafdsSFriJ9a
-	 +fZmXrJ7LQ1lYPALpEOdXOS0pPqquUgDpkBA/ZR+xgQTMPfCaqDvTDPHEVa1tZCBHo
-	 ZTUvZdoMXq05ic41AAJL63ns1nv1zfjGKr1gptVSoV5VnP4S9zqBEYKu88uwCAufu/
-	 yOfyaCi9MoVC/1vlT+pkUF+hsaugr8UwjmJnf2/4pNJ78SypTuqnFLxQqkAHzDaf2p
-	 lAbt3CrFhcxXQ==
-Date: Sat, 31 Oct 2026 22:35:37 +0000
+	b=AA1GFEPRp+kuc+mN2k6+E1+jMbxMAD1iLd8u5HDknQRvWI9ida3+udfP/Lw5+Suif
+	 3nw+3kKfkPxfphua5gRRztv7XGuYv5bZGEUA5nPnvkpEhQ3YMO4KqqUPma/eTg2C5T
+	 4dxcuPeJ9591k0wefY6Ru3tXBsK631cNtQZlZ77Piy7h2nkma8SnsKpo9EGApgywiB
+	 NEPnMt9MDeRDa0lzQqflklGrdqT/O0gLTRN/IQOlfFU452AYe91Pk9lk+C536XCCcs
+	 jhOlPGXINVA3yEsm+Lltp+ErtfIyxokNEPyRP73cPUu7Jyrs3MikR90w7bB84M8qpK
+	 NDraaBHkZU8Kw==
+Date: Sat, 31 Oct 2026 23:14:13 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marco Elver <elver@google.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Rupesh Majhi
- <zoone.rupert@gmail.com>, Alex Lanzano <lanzano.alex@gmail.com>, Andy
- Shevchenko <andy@kernel.org>, Benson Leung <bleung@chromium.org>, David
- Lechner <dlechner@baylibre.com>, Guenter Roeck <groeck@chromium.org>,
- Jagath Jog J <jagathjog1996@gmail.com>, Javier Carrasco
- <javier.carrasco.cruz@gmail.com>, Jean-Baptiste Maneyrol
- <jean-baptiste.maneyrol@tdk.com>, Jerome Brunet <jbrunet@baylibre.com>,
- Jinseob Kim <kimjinseob88@gmail.com>, Kevin Hilman <khilman@baylibre.com>,
- Lorenzo Bianconi <lorenzo@kernel.org>, Martin Blumenstingl
- <martin.blumenstingl@googlemail.com>, Matti Vaittinen
- <mazziesaccount@gmail.com>, Neil Armstrong <neil.armstrong@linaro.org>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Remi Buisson
- <remi.buisson@tdk.com>, chrome-platform@lists.linux.dev,
- linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>
-Subject: Re: [PATCH v4 9/9] iio: enable context analysis for all drivers
-Message-ID: <20261031223537.1e1c5ad2@jic23-hlaptop>
-In-Reply-To: <CANpmjNNNw3Ont87-Uqo_j4YrPbamHLue=EAMkc+B66Q_yywQ9A@mail.gmail.com>
-References: <20261027124954.110697-1-zoone.rupert@gmail.com>
-	<20261027124954.110697-10-zoone.rupert@gmail.com>
-	<auDNzWMPy0VQcazt@ashevche-desk.local>
-	<CANpmjNNNw3Ont87-Uqo_j4YrPbamHLue=EAMkc+B66Q_yywQ9A@mail.gmail.com>
+To: Nithishvelan M <mnithishvelan@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux@analog.com
+Subject: Re: [PATCH v2] staging: iio: frequency: ad9832: use
+ devm_mutex_init()
+Message-ID: <20261031231413.19937479@jic23-hlaptop>
+In-Reply-To: <20261031091236.40401-1-mnithishvelan@gmail.com>
+References: <20261031091236.40401-1-mnithishvelan@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,36 +66,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 27 Oct 2026 18:21:29 +0100
-Marco Elver <elver@google.com> wrote:
+On Sat, 31 Oct 2026 14:42:36 +0530
+Nithishvelan M <mnithishvelan@gmail.com> wrote:
 
-> On Tue, 27 Oct 2026 at 17:14, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> >
-> > On Tue, Oct 27, 2026 at 02:49:54PM +0200, Rupesh Majhi wrote:  
-> > > All of drivers/iio now builds without context analysis warnings, so
-> > > enable it in every Makefile that builds objects, replacing the entry
-> > > for dps310 alone.  
-> >
-> > ...
-> >  
-> > > +++ b/drivers/iio/Makefile  
-> >  
-> > > +CONTEXT_ANALYSIS := y  
-> >
-> > Can we reduce the churn to only adding it here and do some magic to propagate
-> > this recursively, please? I truly believe it's feasible to achieve.  
+> Replace mutex_init() with devm_mutex_init() in ad9832_probe() and
+> check its return value. The driver already uses devm_* helpers for
+> its other resources and has no remove() callback, so this ensures
+> the mutex is destroyed automatically on teardown when mutex
+> debugging is enabled.
 > 
-> Should be:
+> No functional change intended. Compile-tested only.
 > 
-> subdir-ccflags-y += $(CFLAGS_CONTEXT_ANALYSIS)
-
-Nice. If nothing else comes up requiring a v5. I'll tweak the
-last patch to just do this whilst applying.
-
-Will leave these on the list for a few more days but I
-just gave them a spin and they seem to be working well.
+> Signed-off-by: Nithishvelan M <mnithishvelan@gmail.com>
+Applied.
 
 Thanks,
 
 Jonathan
+
+> ---
+> Changes in v2:
+> - Add blank line after "st->spi = spi;" (Andy)
+> 
+>  drivers/staging/iio/frequency/ad9832.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index 35f823f24f..e3b4e19a8d 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+> @@ -325,7 +325,10 @@ static int ad9832_probe(struct spi_device *spi)
+>  		return PTR_ERR(st->mclk);
+>  
+>  	st->spi = spi;
+> -	mutex_init(&st->lock);
+> +
+> +	ret = devm_mutex_init(&spi->dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+>  
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->info = &ad9832_info;
+
