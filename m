@@ -1,101 +1,145 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.179
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793464204;
-	b=eIcADBCOSiQlSGhld9AoDs+wBx+Mpfup4F8GizCP/cfrGsdTP+SB8mtO7iXyIaznEvfb
-	 H2//MXUuNvyt0WNI85fkA8Fatptq+cqmztTvTe5DtzfbZ0zSYkg+0Fvi/++12VOevwO2c
-	 BYd0W3mncr8UGYYsWZsP757cNc+vAwa15M+IizwIe72RMxjGHma+QzpxQKjkdI/OMQw2L
-	 7KpYFm8I7HmUuJgWyiMgQwiQz7wpZ4FSLKKjUXSdahiqf5llljWiPu1jwRwlj1Pd1060Q
-	 Zcsmuy4J+ndOw5lUvFwLHd+c5Vzw7CSy9INJTqxp57cryNfjEVUqXUQtiNuV2neg+fA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793464204;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=EgmEJPMkjbYM4FRPkppwPSirxq+mxfkqTc2AOCI0TeY=;
-	b=31c+SDRuIXvHJjoAW5bhVUlRWkN7u+YuKNmf7BfPhu98ahRdqjljC2c67lQYErcu567y
-	 yQZ6+dCvVETY4KVhcC05Hy+r4axzotSMcO8kfcgPFnTQzp6Z3M264SZwXalSQ15twIJJp
-	 R0ktRHputCPClKQDjCFS/2Jjdc+/eJTWUaK0HUSdU2BtOcSWrnVxXP0N0rItrr/ee1pnW
-	 e0JZIppBcBai3bN+j14MBUsvJuXmJF/rwckZlzbnvo3T7H85Mxqo28niOUV2pE6yeYjUZ
-	 QKdkZKDcCl/CW77zK7owP5Yw1wvBYPfWyF0PtaA0cL/Uv1dpsoDl1faxRc+rqH70NrA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NaCaOq1I;
-	arc=none smtp.remote-ip=209.85.221.179
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.229.65
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793464477;
+	b=KpKRRzd/YY9avsXiMINM9vZUHrdaR3Uzj4rrWyKo6BBeMqEsZYuG9skWNZgvwoFornM/
+	 TtWuYbvgkTIhpiRZcKyEttFuLUtm+82NEs+gRK0xXljjKR6xhU0qZhedCJXNS8JTVCHu3
+	 lsUbuuQQOqUYCTMl5k1TdzqugfjqqtzgSnQgpbnH6JHlp2QOIRYS/ezSS4Ia2VZRe7YJW
+	 ta1zz5kxLUCwmBrEZXqwjmoqfj8fhK2UaVS18rdw34Sc9lRPrxWtidLEshsSawgKL+GEf
+	 REnVr9sqgt/ZKuIUa5cTBkA2S73fHw52FOgL+xTAbOomfZE3IAQ0vyzG7AHBfbibbAA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793464477;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=zbvr4+h/uDP3p2rEUNFgDQq3HSLr/cFMqPajhO5UUmE=;
+	b=sPw0dE8RGXdOiIHCrKDdvbP+jwYpZWN0GldhDIOh1YkddguOkeFiwMyndD8Hs/WkY6kI
+	 h2cqpuKkbVljZgGCwr2zEYnVhf6u5FORI926R0etWCLFjAAJEKdWiiDGcjmd6bB+yKtT8
+	 iIC58H+/lkKqesxe2fAZDa/q6O5OhiZr0D112aqoeX5NPSf5HH/dQePW70G3uW8V12j+U
+	 TwXylzno/PTye/3saV2pH4Q0Lz0b+dQULiknQHh+TZzCTOKJG9F85EQ+EUegCA34dHPES
+	 UphZexVhj2ahV1igN0nX57E0KWCVwhtx0S4vr7EYJtz+jfwzu8Ih2Q7Qpq6DbefFwuA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=bp.renesas.com;
+	spf=pass smtp.mailfrom=bp.renesas.com;
+	dkim=pass header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=XnB9POXM;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.229.65
+Received: from TY3P286CU002.outbound.protection.outlook.com (mail-japaneastazon11010065.outbound.protection.outlook.com [52.101.229.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47E2B606A31E
-	for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2026 16:30:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 47E2B606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55A07606A31A;
+	Sat, 31 Oct 2026 16:34:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55A07606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NaCaOq1I
-Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-5c7d1fc8f9dso111726e0c.1
-        for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2026 09:30:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793464203; x=1794069003; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=EgmEJPMkjbYM4FRPkppwPSirxq+mxfkqTc2AOCI0TeY=;
-        b=NaCaOq1IS4vwEHlRWQvnbsS9HsMF9dwaaD0vhkRKTrgIcVBZDkggWXU8/3tG46OTdm
-         cpg6OM1czuebilGZOLupqWhc2EKGo3X/Gis5gz7rTdzJVzbdJIeV2LCJv1TWzJL5DEWN
-         JxQeHBTv4vFWePfOxdUvRpDpzpHzgd+hrOSG3YEOlcvtJZa782VtaK0deY2K8j3uFQnW
-         1XwmOXkCjWyWeI2h+QC3wE//RKwy9MhnGX1cOGQoLEfUxemm/XvK58do89hhvf6zn/eO
-         gV/Uz0ZyhF7uGHPzptjbevWf6qPBT0ntpJg9jgGW0q1RNqoRMh4R/8+p5hkxDnnIkfuv
-         8LHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793464203; x=1794069003;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=EgmEJPMkjbYM4FRPkppwPSirxq+mxfkqTc2AOCI0TeY=;
-        b=DIOwZ4gyLrKy0Xm+dWgxu4GFE8UNuwGwtE6EgW6LQLOixp78CCiLH3nnN+R7jmvQIR
-         tsd7iGQIy2tV+ASz7Q6PqS4Di8bZzq1EBjiWFDuTcSZCUlKIfb86TWg01pIFNzMfdlGk
-         bBlKpE0g6m7JVG08kBW5XnJdWnxZeRjhEh++rgwQS45aZhtJOiNRHbnHMFCcioD4XSam
-         H2mJ5YOwV86URCzL+tpRg73aKo87bikYGku9AFRoE4E/08jCG2SlfPeHhw50or/VkeHx
-         Q9anzoMu6VUO3uThOFQoIiMv3Rheb4hvL/ywMbVHR5CSFGcwPMJyFdhv/TRFpoMYas7U
-         BvIQ==
-X-Forwarded-Encrypted: i=1; AKwUvBykSU6iZ6JKxsNLGxVESCdwFvaGJ4nU6o+1kPKD+Tmw2lW+xJpcdP5QF9akrRAf0TvluZq0ghXFa8Q=@vger.kernel.org
-X-Gm-Message-State: AFq9FYKxuSmCPP0iE5mWZH6/4UZm+azSJIkAGdjjeWBua9Pm32bPdLLf
-	KpOjYqSzyZ2Wwt3iF8a91HmWAR46Pd/an6BzDY9ES5V/s3NHrhxYM+z0W5ABgyUe
-X-Gm-Gg: AYBFou0ObCIwAH0/iXSnMF6a2rmbbm1BKWZqlqy9ZFoVzWd/pFPjGZawZhBNkShLQyw
-	DvyibKe+OAAfh/yTscqATbFyFS+9GX1iBKPt8XOKalWaUXYMR1w+flaz1X1GjScV5+RdaFw4LpO
-	VQRl36HNt2Y6+n/M+dDL51DYHPA46eOngvy9c/xKVzJ3cJ7PMTn2amRkhUntgmRcVVqirmzcRDM
-	c/6/gLqZLgJKp4BJiDsW7Vlz7GGFqXJcFjU/QBLnwD9GBca/ivfEWWK625M85NxEaTXfeI1PuqC
-	b6qC7UA9FwPAGHphUO6V5d2mTE+1ehfcBpw//TWULxQPOLllUQ8O+zAfqVg2Z2DL6kOCNGECD9/
-	i1HN8E9WARS8zQexHVfcKGu+d94Iw2cL16KNnmITnHYu1rYzIDRRomBT08BDQ6ZMw9DFTTi2gre
-	UbiraAJsbqyQ1lljNxriOK4V7Ko7keJ5HbijmK9gn9xS3ha0FgfKSw35Ick5dVlQA8vtn1ob2e6
-	LURiv3Let03hPe/w/0+7ulavNFwLORcWUBy4Wa+iZ6FRpRPmqqjEvNQiOShNOeYDhXT/bx59tP3
-	XqlpYe6RmR96qF05ehs7KXmDHVestpYOO0R6/blBHU/Ay7d5/5VTnYMtTqVZAOKjLVn9zLN0
-X-Received: by 2002:a05:6122:12b4:b0:5e9:2e3c:2f5 with SMTP id 71dfb90a1353d-5ec685631b9mr2836551e0c.2.1793464203129;
-        Sat, 31 Oct 2026 09:30:03 -0700 (PDT)
-Received: from JSANTO12-L01.ad.analog.com ([177.112.152.97])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ec69caeccdsm6020716e0c.16.2026.10.31.09.29.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2026 09:30:02 -0700 (PDT)
-Date: Sat, 31 Oct 2026 03:20:26 -0300
-From: Jonathan Santos <jonath4nns@gmail.com>
-To: Conor Dooley <conor@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Santos <Jonathan.Santos@analog.com>,
-	linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux@analog.com, broonie@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org,
-	Michael.Hennerich@analog.com, nuno.sa@analog.com,
-	dlechner@baylibre.com, andriy.shevchenko@intel.com
-Subject: Re: [PATCH v4 1/9] spi: dt-bindings: Add spi-cs-composite property
-Message-ID: <auWIqpIaegH+AWV4@JSANTO12-L01.ad.analog.com>
-References: <cover.1792435248.git.Jonathan.Santos@analog.com>
- <e9308680e7b45ecf9ef2b6b2a752ffdd4d23b80c.1792435248.git.Jonathan.Santos@analog.com>
- <20261026020003.3f3fbe86@jic23-hlaptop>
- <20261027-colonize-primer-f994b88171a6@spud>
+	dkim=pass (1024-bit key, unprotected) header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=XnB9POXM
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=sIIMtLlFCXGpp71od5oaBVSn4L+VHTex5j46NOipj0GniVxnFW52FNSZvORp6ZrZU/laspyLHwhbUoZ/lko1zH4byV6K1VmlVi7LspWjqNHzLzZ4zLzwLc2OwfSiaYcxJAg+/rWvbUxRyTgpHKM5OK9tkgf1TFeuPj7If4p34EAORi27tDCTdOBIZYZYyy89FfA3T+a/YQ57ccd6/JBqQN1OejIm67+yafEtO28jXXYk3WOfaALJqt0RIVtualzSQgYkU+P5GolA/psWBc7SM9BZ0HYYMA8SGA59o1f1njoo8KFKIoP4XCR1l6lFdauxcX2EwgkEyIIloahjZAJhrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zbvr4+h/uDP3p2rEUNFgDQq3HSLr/cFMqPajhO5UUmE=;
+ b=he5HEhJ0Gy5CSz9a85T4/c9rtFtyeIuee4jCHwKBh93qd0AgC73bTEYDIggi1oXimynps0W/RRYSyy5Iill3cvCZgw32wsZKcYfGuT5vDqEQ6TwcvigatXj3cAIcqqgDObl2iyJZwm0lncVYWxhogEXq3To3zARAfy7EHCQRZsVO042AGZNzr2SRxmVsPoL7IypLmpqf7TELdgOepHSAMIpRI/23SMSJOvV65rX45ieeqgUzPMoSD4rcFrLhbtGUkx4/FysKJ4IrZ0g6Eo3ldX76qQbgkOM+OK3uSPXyPxiHZ9BxRI7X94Or7rHcKj/auAWkCd5rwxkKxd4rHhrcNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
+ header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zbvr4+h/uDP3p2rEUNFgDQq3HSLr/cFMqPajhO5UUmE=;
+ b=XnB9POXMJfEej7WfpguHs1zffIHG5Jcozh7UnB3+eQ1575NkVUWbfKivC/lM8/uKh+HAAPQB8cISQvPP2YgxckXpYo61pBpsJDuwLkIEJMVPC6pPgr+fEDllS8+JqDf9crx2s3hPDRguuv1IMpKk4wWRitLzESNctwxoowrczNo=
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com (2603:1096:400:3d0::7)
+ by TY4PR01MB15806.jpnprd01.prod.outlook.com (2603:1096:405:2bb::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.11; Sat, 31 Oct
+ 2026 16:34:32 +0000
+Received: from TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de]) by TY3PR01MB11346.jpnprd01.prod.outlook.com
+ ([fe80::87d1:4928:d55:97de%6]) with mapi id 15.21.0569.010; Sat, 31 Oct 2026
+ 16:34:32 +0000
+From: Biju Das <biju.das.jz@bp.renesas.com>
+To: William Breathitt Gray <wbg@kernel.org>, Li Youhong <dayou5941@163.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cosmin-Gabriel
+ Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, Li Youhong
+	<liyouhong@kylinos.cn>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter
+ init fails
+Thread-Topic: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if counter
+ init fails
+Thread-Index: AQHdaUQVMKdks6J/dkie/1eCJR5kdLcX10iAgAAAe4A=
+Date: Sat, 31 Oct 2026 16:34:32 +0000
+Message-ID:
+ <TY3PR01MB1134606C5DE0411FDACBF0001866C2@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20261031142813.2522444-1-dayou5941@163.com>
+ <20261031162853.3635249-1-wbg@kernel.org>
+In-Reply-To: <20261031162853.3635249-1-wbg@kernel.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bp.renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TY3PR01MB11346:EE_|TY4PR01MB15806:EE_
+x-ms-office365-filtering-correlation-id: 0e072939-f5ff-4bb8-c37a-08df376cd7a2
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|6133799003|10067099003|22082099003|18002099003|38070700021|56012099006|11063799006|4143699003|261021121427099003|261021123027099003|261026140227099003|261022105027099003|261022075727099003|261009223027099003|261028144727099003;
+x-microsoft-antispam-message-info:
+ KD3Iv3dnuSZHTcmwWqkJw+v3OORS7HYfcxr4f7FddVFFnhS8ajYt+uLtWS8kJFE3JslBfyg0zuUnl8zhXw/pWZYiYpG0Mo648CdHsILI/sTDiK9U2TkA2a64nWDsdrf9KQqd9dZagc7D6XlxLa/mOc5QdbgWiWA+bs1gtdB5h3LR8xjRUfxgs4v5QE6VDWTq6507iGSjSsru059Q+4vRxrdhYWduKDS/l5r/gzs5XyyQhAC1qFY2U04rV5bBSVsZ1dFTgy87CbUr9Vdic9CBLRCD/CjrskPiK/7v1PzLuWP0ryST0KK5TyfZcJoQmut4cQAx5R6jTRChmonKoNWT5ejns9PTS2geRjHCO4lXonuKcpQXXPzwTgIpxIX5aSc/2N7EjbopeObY+Ot+T2QFT2muKOGEdP/e6ff5VMTNuTBeoWlfas3dokHgATVGG8DSmIh5OIOG6eD/LBvBk7A1f9GW1PgVeDuqJ/ks+y6lJm3DtPgkHRJSbpL/uGheymYCH1ORdTfYsviY50AKLGD1pDY095dD/jP7uEu/zBfi/oWlHL1LjTdwH99Vh1wJcofxZeUtkUk3MRclUfZI65gMFNg3B+QqS9NvyYDa6l73+/5TQI0gpQLyy/QrpxU1iOtvZXqrUZJ5gY6FU+a41JREd4BmCLCbkdPODotu066HXZk3zablAkiEGQfEgyAAsJ2a
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY3PR01MB11346.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(6133799003)(10067099003)(22082099003)(18002099003)(38070700021)(56012099006)(11063799006)(4143699003)(261021121427099003)(261021123027099003)(261026140227099003)(261022105027099003)(261022075727099003)(261009223027099003)(261028144727099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?s1LYLoODcUTboTSiLaf4ndkVcuL9GsrkS9Jb2Lh92UrW2Nu1g4vAFtgZ16wo?=
+ =?us-ascii?Q?71Zl1/nujnJtCQNV8nWkcuaMUg8CT4Ya0eSJAkqaLLxJV4/wOBVJ7WAKGOxR?=
+ =?us-ascii?Q?UM1q86eUkKjGWL2mHxYyg6P+RE54h+jTJrzJqzx+ny+1CKnEvp3gSBKM3sTO?=
+ =?us-ascii?Q?97+yg9tAbrUqBYu5lba5BMkIiHdtaj+89gYPlwkgiG4G/auznIwezeXWIbcA?=
+ =?us-ascii?Q?9Kv4zPLdKsSvksA74v2pxpJwD7ZHfVmoeumT6zeM9tBR3L2FRRmZGXO7p6n5?=
+ =?us-ascii?Q?g+5TAM2hMribIblpQcdQPJiJQGViNI1UqVkCHZG8hgL1TDBKVghRobhZB2W3?=
+ =?us-ascii?Q?55N1yA1kAZRUUdk/O82iR7VORguUrX7zHpcahrGstDSrXiaRo87jm3lRFRO7?=
+ =?us-ascii?Q?z40NRE4/DrZBK1HHjLN6hztQKF9RVrOIqnlcjb/eTGszYFa6m4KSSe9W3IO1?=
+ =?us-ascii?Q?ViYFOpsNsurtevUA4z0Nz4deOfKWc3a67VVMgZkAVnaFDTQlpBRSa9rlhvUg?=
+ =?us-ascii?Q?3T/PVcEhMVq/4FPwX6K78QLvbYSrUUos5H0ykbMVwnH2Q1VkIe+AR7xs4YFE?=
+ =?us-ascii?Q?wpriOtVQlukfjLU6r+aRBKzhbIv44FwR4VTAfHIslkF5MVFc+hf3Tr7K1S44?=
+ =?us-ascii?Q?qeGq04mkbRiZN1r8CCk05MxZtK6F1558wK7OqGjaraxdOZQeJX1M8m6dyhrK?=
+ =?us-ascii?Q?ViSU3ZVVyas0iwbSF51gjvuyXQwwFPAmVhB8xRtXwhi0QrTIx5bjWTQzdmUp?=
+ =?us-ascii?Q?iX68gzCYrE9yUBgp7VBHhP6P1e/ZeUxo3+FaL4T0hu4IGe/YbBnj2Y//zt6H?=
+ =?us-ascii?Q?bJL1Bqnm5BfjVkHWk3IqWuCBLYoviMFt4UZvqPPNWhVVmPM1Mi/MOPZ0mhBW?=
+ =?us-ascii?Q?d4hRjt2yeBkbcFEP2/oD+twwju9rzm+E8++oh85HgswYEed+VWQUPQi/Kc1W?=
+ =?us-ascii?Q?A88MKEHOQoArdS6zK69kxXUYWLGX8WniQbS5WLje4dTH4zvRG08WEfcUFmdA?=
+ =?us-ascii?Q?UnM2PAmXGsBnZRy2LQRzAwT+JtsByWf1Q5baQa/fFq9l2SKjaOneHFoQXXeJ?=
+ =?us-ascii?Q?Evz6ubLt1jlNkth3cwyXqTgGPzr/+Sf5RolpRrCtSJle4HGSMtX8fdRh7EpC?=
+ =?us-ascii?Q?GUYAlV8ywXbgqlAyTmt6z79OTsSXxMjtdREcFARLDu7kZ344bt7Z1aACmzH9?=
+ =?us-ascii?Q?NfCqqOofcK6i1a2RJGBJRLIhhpx/aQaIrJ6RxqgSZot04vO0p59a8fREwXyK?=
+ =?us-ascii?Q?Udn81PxJlt6i8IYn+TUFW0p6oSHhddaX6iCJc5GyB+0t6l8nO7cGEo8PL+w3?=
+ =?us-ascii?Q?oJbRgg6V8mc0W1K9rDm7k1OgBDuwSZko461iikODpWiqbZwy4Wq68mLY36GB?=
+ =?us-ascii?Q?EO6cqPp4Qm7GFVFNbNOkK/Lji8DLTvF2sbGPRHPFbSbydoitSfVjR55YW37J?=
+ =?us-ascii?Q?YebclQ1irSOsY33S28H4MQ0xGDKXIctvjZMNHWu5MnvO56561GZrgfB5yRLO?=
+ =?us-ascii?Q?1NF3mwJYLqBy+vf6fVprSBPipWCw+FGUpgrgBdUk6Ym5iPHgLJ9MzUD8zsO2?=
+ =?us-ascii?Q?KWunzMPmbRf7NChx6BZG472bEDpom6a2+QVwjU/vj3eA4An1apxyKpJAECKI?=
+ =?us-ascii?Q?CFqZt14Zm4zFv1QiHG/wmZChMA+Y1/82ylt72GqD1R7paPALKDT/GKkjbGso?=
+ =?us-ascii?Q?1WSYrobFdBfe/+XpTLAKIXADBLiQiijeNSldgWyduyYzxYv28qZH2ZR7kTeD?=
+ =?us-ascii?Q?Td6rfojmmQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,156 +149,83 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261027-colonize-primer-f994b88171a6@spud>
+X-OriginatorOrg: bp.renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY3PR01MB11346.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e072939-f5ff-4bb8-c37a-08df376cd7a2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2026 16:34:32.3077
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dd+eCKgWkKHFfZBKgsHKpGn7jjL+6Rzu2k3qLAoSrmxRIIVpJqY4lYYuFn/xSmQz1Gc72henkNDFsohQ+sZI7BnU9+RokNQu7YUOQqgb5oU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB15806
 
-On 10/27, Conor Dooley wrote:
-> On Mon, Oct 26, 2026 at 02:00:03AM +0000, Jonathan Cameron wrote:
-> > On Tue, 20 Oct 2026 22:56:41 -0300
-> > Jonathan Santos <Jonathan.Santos@analog.com> wrote:
-> > 
-> > > Some setups combine several SPI devices into one logical device, with
-> > > each chip on its own CS line. All of those CS lines must be asserted at
-> > > the same time, so that one transfer reaches every chip.
-> > > 
-> > > Add the 'spi-cs-composite' boolean property. When it is set, every chip
-> > > select listed in 'reg' is asserted together on each transfer.
-> > 
-> > To me it feels inevitable that we will see a device / combination of
-> > devices that want groups of CS lines together and others independent.
-> > 
-> > Seems less likely we'll see more than one set of composite entrees.
-> > Maybe this should be an array of values that match with specific
-> > entrees in reg?
-> > 
-> > I'm not sure though.  Conor, Kryzsztof or Rob, any thoughts on this
-> > or similar things that have arisen elsewhere?
-> 
-> Why does the property actually exist in the first place? Does the device
-> driver not know how each CS should be treated?
->
-
-Hi Conor, Jonathan,
+Hi William Breathitt Gray,
 
 Thanks for the feedback.
 
-The problem we are addressing now: today the SPI core gives a driver very 
-little control over chip selects. The main spi_device only drives the first
-'reg' entry and the only way a driver can use the other CS lines is through
-ancillary devices, but for individual access only. For aggregated chips 
-(AD7768-1 in this case) we need all CS lines asserted at the same time, and 
-nothing in the core lets the driver ask for that AFAIK.
+> -----Original Message-----
+> From: William Breathitt Gray <wbg@kernel.org>
+> Sent: 31 October 2026 16:29
+> Subject: Re: [PATCH v2] counter: rz-mtu3-cnt: put runtime PM ref if count=
+er init fails
+>=20
+> On Sat, Oct 31, 2026 at 10:28:13PM +0800, Li Youhong wrote:
+> > From: Li Youhong <liyouhong@kylinos.cn>
+> >
+> > Counter enable takes a runtime PM reference before initialization but
+> > only puts it on disable. Drop the reference if initialization fails.
+> >
+> > Fixes: 0be8907359df ("counter: Add Renesas RZ/G2L MTU3a counter
+> > driver")
+> > Cc: stable@vger.kernel.org
+> > Reviewed-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+> > Signed-off-by: Li Youhong <liyouhong@kylinos.cn>
+> > ---
+> > v2:
+> > - Add Cc: stable@vger.kernel.org.
+> > - v1:
+> > https://lore.kernel.org/all/20261008020506.211566-1-dayou5941@163.com/
+> >
+> >  drivers/counter/rz-mtu3-cnt.c | 7 +++++--
+> >  1 file changed, 5 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/counter/rz-mtu3-cnt.c
+> > b/drivers/counter/rz-mtu3-cnt.c index 7bfb6979193c..61fbeb122851
+> > 100644
+> > --- a/drivers/counter/rz-mtu3-cnt.c
+> > +++ b/drivers/counter/rz-mtu3-cnt.c
+> > @@ -506,8 +506,11 @@ static int rz_mtu3_count_enable_write(struct count=
+er_device *counter,
+> >  	if (enable) {
+> >  		pm_runtime_get_sync(counter->parent);
+> >  		ret =3D rz_mtu3_initialize_counter(counter, count->id);
+> > -		if (ret =3D=3D 0)
+> > -			priv->count_is_enabled[count->id] =3D true;
+> > +		if (ret < 0) {
+> > +			pm_runtime_put(counter->parent);
+> > +			goto exit;
+> > +		}
+> > +		priv->count_is_enabled[count->id] =3D true;
+> >  	} else {
+> >  		rz_mtu3_terminate_counter(counter, count->id);
+> >  		priv->count_is_enabled[count->id] =3D false;
+> > --
+> > 2.25.1
+> >
+>=20
+> This patch seems similar to another we're considering for ti-eqep.[^1] In=
+ that patch, runtime PM is
+> managed via devm which allows us to remove the explicit PM unwind on fail=
+ures and have them implicitly
+> handled when the device resource is released. Should we use the same appr=
+oach for rz-mtu-cnt?
 
-In v1 I added a CS mask to struct spi_transfer, but that also needed a
-lane mask to work, and after the feedback we agreed it was too flexible
-and too easy to get wrong. In v2 and v3 I switched to ancillary devices
-(each with a lane attached) for single-CS access. That covered
-individual access, but there was still no way to assert all the CS lines
-at once. The spi-cs-composite property in v4 was my way around that, 
-letting the main device be the aggregator and using the ancillaries for
-single access.
+Here we save power, clock is turned on/off during counter enable/disable.
+On TI case, they enable it during the probe which unnecessarily waste power=
+.
+Even disable case, the clock is on.
 
-David also suggested two alternatives before that don't need any DT changes:
-
- a) Add a CS description to struct spi_transfer or spi_message, e.g.
-    passing the ancillary devices whose CS should be asserted. This also
-    allows dynamic CS selection within the main device. And since the
-    ancillary devices are already bound to a lane, this is less prone to
-    errors than the approach on v1.
-
- b) Add a new "composite" spi device, so a driver would have the main
-    device, ancillaries for individual access, and a composite device
-    for simultaneous access. The issue I saw is that the ancillary and
-    composite devices are siblings and their CS lines would conflict in
-    the core's CS check, so only one kind could exist for a given
-    device, not both (without some more complex logic in the spi cs check).
-
-I like the (b) approach, but we would have to bypass that sibling problem.
-The (a) looks less harmful to existing projects, if everyone agrees I can
-implement it on v5. Also with (a) I think we can drop the spi device
-name for now (or not?).
-
-Best regards,
-Jonathan Santos
-
-> > 
-> > The most general case would (subject to it not working) smell like
-> > 
-> > reg = < <0x1 0x4 0x5> <0x2> >
-> > 
-> > Where intent is that 1 4 and 5 are meant to switch together and
-> > 2 is separate.
-> 
-> I would expect that for this kind of device, the driver should know that
-> the first 3 CS are switched together and the 4th is not. I'm not really
-> sure what the internal representation should be, because if someone can
-> make a device like this, they could surely also make a device where (to
-> borrow your format) it behaves like
-> 
-> | reg = < <0x1 0x4> <0x5 0x2> >
-> 
-> and so on. But if those devices don't actually exist at the moment, and
-> everything is either all together or all seperate, the API for this
-> stuff in the SPI core doesn't have to solve that until a device actually
-> shows up.
-> 
-
-Yes, this is a bit out of the scope and kind of complex.
-
-> Worst case is something where there's a variable grouping of chip
-> selects, e.g.
-> 
-> | reg = < <0x1 0x4 0x5> <0x2> >
-> 
-> or
-> 
-> | reg = < <0x1 0x4> <0x2> >
-> 
-> but maybe if that happens the thing to do is permit reg-names for that
-> device, and again store the relationships in the driver rather than
-> try to convey it via DT.
-> 
-> Cheers,
-> Conor.
-> 
-> > 
-> > How to do lookup on something like this is another question.
-> > 
-> > Jonathan
-> > 
-> > 
-> > > 
-> > > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
-> > > ---
-> > > Changes in v4:
-> > > * New patch. This has been included because without an explicit property,
-> > >   every device with more than one 'reg' entry would have all its chip
-> > >   selects asserted together. That breaks devices that use ancillary
-> > >   devices for the extra CS lines, so the composite behavior is now opt-in.
-> > > ---
-> > >  .../devicetree/bindings/spi/spi-peripheral-props.yaml     | 8 ++++++++
-> > >  1 file changed, 8 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> > > index 4894196c8f9c..456cb9095632 100644
-> > > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> > > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-> > > @@ -60,6 +60,14 @@ properties:
-> > >        Delay in nanoseconds to be introduced by the controller after CS is
-> > >        de-asserted.
-> > >  
-> > > +  spi-cs-composite:
-> > > +    description: Some SPI devices can be aggregated into a single logical
-> > > +      device by asserting all their chip selects simultaneously. When this
-> > > +      property is present, all chip selects listed in the 'reg' property are
-> > > +      asserted together on every transfer, treating the group as one composite
-> > > +      device.
-> > > +    type: boolean
-> > > +
-> > >    spi-rx-bus-width:
-> > >      description:
-> > >        Bus width to the SPI bus used for read transfers.
-> > 
-
-
+Cheers,
+Biju
