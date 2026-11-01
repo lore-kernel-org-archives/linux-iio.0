@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793498456;
-	b=GJA2vLjdw1c1f5pjIFy4zL4FiN3J6u+xshkOLBcw8Bow++M1G6RO11h2aNVNi1qoJSO2
-	 oM5D1BGSLvgf7EwUPyqicUZht7s1HMFNxbOwPZKcPwYZ7sxWt/oS6q9tugL4sJ8p7xz7s
-	 lzETzno7iFApGaFuiH8MtHRJgJXgt/pUWiZ+TjIeSCjMez3lAq9TFlwKqASyWMQznoUVg
-	 pF61k9pX4QYf1scH8oDnGzvnaAPDvyqLMvC/srEg5TSymigZcd4usOso9Cm+3ktDY6+Vs
-	 SZk1/bAZchEYGS725dWsFzEI2O26RzWTLLEO8a4VVImpg5iEAtldoxUTTikKMlirIxw==
+	t=1793498869;
+	b=LoJpj9gzEe5LN9fxDd4Co74K+MFgDvuWVMIUEWw8mrz1WAxlj5NR5K7wZyWIl3Vftwga
+	 FwW6smsPM51s/T46mg3cNrBIApeXA+oX1OZ49lUREUGpFMSylVNt0mU4apxaEKTkJXz6/
+	 5UpedJSjBtcNOJO12GUKTovUdyM7+Ij3Swm/AbTTXLIR7rRBr/h7afXPl46TUIjzaZzlo
+	 no5LsPb/ttYhILTESd/CGYf4RZCMvqCo9eedcA3dwSSuZJvu/Tizm2A9Bd449DAF5Uqtz
+	 axnUYzBF2oOymtvB+y6f4xMAenBa4dQrEFPvbC95uTK9i5s8Xuu0ASUXYjNrkq1wsgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793498456;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793498869;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=55EAfDGPUHZz7T0vufY3UxzR1Z8zYzzLlpJPntYQtP4=;
-	b=yktke9189GqvABfosYMcEZQbqP9qIpCRyd7fWP/wOTmId7eZFh9uYO9tgs4Vrz65Eqwf
-	 xdccvlIfDCxQ1OE/WbdDlNeGJ8w8kMtL890WNzZ58jHHRi5x2P0n4CtN6jO9nKscN6KxO
-	 Ql7FeggvVYKWCo32zw/lZiAyKJlDz6dg5OVsOKUbV2BApX1tkAbpqvuRPE3LxJe7jB+eJ
-	 CosFZgJlg5cwAH8kpwhvUwiLfBqZE4ALGtNZGevQiY7fqEZiBKcOHXnnNOnfEdF3nvTHP
-	 ILndpGHTR5x5IpUHQ3JAkpqToHSQpsGVEX3zBEo5axpNtmE53exX7yq5IM+rn4R4MuQ==
+	bh=7FqCNCiJJeh+jYJp8CROnWa4/dpV2I+dALOUk6aQY+g=;
+	b=eA4Xw8dPDeDZ7ybKygXcGOvzZDWcTDLkZ6qWL0gAYdjAgoTtb4gUeV2MtAJ/hx26KBfl
+	 KSDyZwRcqcixRUwExatPH0r+SZWVvg839kmvhg1+6KTUxmpiOsEsIs9K6UN+LhCcItJBy
+	 9w9Gsu49gBvEdSAWghTRMEOTz/GceKvtuiZGTOaaTcNh2ClVEEB5P7wr62+NXYbH1ChYc
+	 Vimw+AtwchGVVPsQT183K625l5iGfnYxgAig1eKm4/Ya98uaw3Dc7t3gqhEeDcoXCItWu
+	 c5YgkOV1dD0q/dCLq0K5uCSSmi+3p13hGZj/dGj2l6L8UwDmOEvt2enkSW0DBuFDgzg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGJioGUB;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KvEsr0DD;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5F3A606A324;
-	Sun,  1 Nov 2026 02:00:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18839606A324;
+	Sun,  1 Nov 2026 02:07:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGJioGUB
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5E551F000C1;
-	Sun,  1 Nov 2026 02:00:52 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KvEsr0DD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D1C81F000C1;
+	Sun,  1 Nov 2026 02:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793498455;
-	bh=55EAfDGPUHZz7T0vufY3UxzR1Z8zYzzLlpJPntYQtP4=;
+	s=k20260515; t=1793498868;
+	bh=7FqCNCiJJeh+jYJp8CROnWa4/dpV2I+dALOUk6aQY+g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JGJioGUBgGf7C6p4yUcDFwJpgekjIxoAt297KuWOZyQ7tL3c6V63cMaZ/AoA8XInS
-	 fw4bPvGl5YEiVuM1l0SL2pMXpz5VfCuY7MOGzdemsK3SC21i1g87jQg180fralhX9y
-	 Yt2+/mCyTPqU/R0NTQbxtGfp2WH2I0hyz9U/Uj2xR2AXamvGQLTM58J3ndv0fBppz1
-	 CaZSKzobrtRkseOA0gr+bMp4BzBNi/qIgLBrI476OQn065U0UWZvMvjHbP1c80FYhV
-	 HZQ29ehPe90C7qewihm6oJBBZBC55nme3UHSYrw5eLSlDyqXKV3TXFqQlUsM/g+tlV
-	 PhWGFHXLbuPKQ==
-Date: Sun, 1 Nov 2026 02:00:47 +0000
+	b=KvEsr0DD62nEK2cv6iq5kFw0KXPC6JIU2zNzRJgkKe78Gi+S5p3NEu98fdm5VX/Xq
+	 uDpkMHwK8RJ4Mn5ZqlGE8rCEyC7fW/ZVUsy3vcjnHqy7lcTUYWrJKiTBLbsc2lyBpg
+	 9pfWwvuxxGKa5swlpfh+hv7D1l2PeXmuaKR5IOYkkWUjpnoWV19mrRWmxmlivBE1YA
+	 fvrSgrLHLjZkqVorjc3g6RvUohgkkjD6WuzoKZVoBmIDKR/SwMbZiiN1ZWhGJIxOQF
+	 OQWd+FXxki2er7XxYcj74s4wQKgLrylkIerf6Gd/yrAt6qrYmkewg7dlzCpucHQIfX
+	 FbbUmTsk6UioA==
+Date: Sun, 1 Nov 2026 02:07:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Loic Poulain <loic.poulain@oss.qualcomm.com>
+To: Neil Armstrong <neil.armstrong@linaro.org>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Shawn Guo <shengchao.guo@oss.qualcomm.com>
-Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5-gen3: Reuse IIO device ID for
- ADC_TM auxiliary device
-Message-ID: <20261101020047.66034613@jic23-hlaptop>
-In-Reply-To: <20261028-fix-adc5-tm-v1-1-0018aabc06c5@oss.qualcomm.com>
-References: <20261028-fix-adc5-tm-v1-1-0018aabc06c5@oss.qualcomm.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux@analog.com
+Subject: Re: [PATCH v4 3/3] iio: adc: add driver for the MAX34417
+ Four-Channel High Dynamic Range Power Accumulator
+Message-ID: <20261101020740.4fbd4522@jic23-hlaptop>
+In-Reply-To: <20261028-topic-sm8x50-iio-max34417-adc-v4-3-d4baaf3ee903@linaro.org>
+References: <20261028-topic-sm8x50-iio-max34417-adc-v4-0-d4baaf3ee903@linaro.org>
+	<20261028-topic-sm8x50-iio-max34417-adc-v4-3-d4baaf3ee903@linaro.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,118 +68,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 28 Oct 2026 15:09:47 +0100
-Loic Poulain <loic.poulain@oss.qualcomm.com> wrote:
+On Wed, 28 Oct 2026 14:19:06 +0100
+Neil Armstrong <neil.armstrong@linaro.org> wrote:
 
-Hi Loic,
-
-> A recent fix in ADC5 Gen3 driver allocates a dedicated auxiliary-device
-> ID through an IDA to ensure that ADC_TM auxiliary devices receive unique
-> names on the auxiliary bus.
-When talking about another patch I'd refer to it by name and ideally
-also add a Link tag to the lore.kernel.org for it to the tags block.
-I think you mean:
-
-iio: adc: qcom-spmi-adc5-gen3: Allocate unique ADC_TM aux device IDs
-Link: https://lore.kernel.org/all/20261008031154.3440632-1-shengchao.guo@oss.qualcomm.com/
-
+> The MAX34417 is a specialized current and voltage monitor used to
+> determine power consumption of portable systems. The driver support
+> getting the channels voltage, average power, accumulated average
+> power and energy over an I2C/SMBUS serial interface.
 > 
-> However, each ADC instance is already assigned a unique IIO device ID.
-> Reuse that existing identifier when registering the ADC_TM auxiliary
-> device instead of maintaining a separate IDA solely for auxiliary device
-> naming.
+> The MAX34417 datasheet only specified on how to calculate the
+> accumulated average power, but with the Sample Per Second rate
+> we can easily get accumulated Energy in mJ.
 > 
-> This removes the custom ID allocation and release handling while
-> preserving unique auxiliary device names across multiple ADC instances.
-
+> By default the IIO driver only supports single-shot Voltage
+> and Power sensing, but the accumulation can be enabled by
+> enabling the Energy IIO channel which then enables the
+> Continuous Accumulation Mode.
 > 
-> Signed-off-by: Loic Poulain <loic.poulain@oss.qualcomm.com>
+> The counter is common to all channels, so when reading a single
+> channel we will copy all accumulators to registers, so in order
+> to permit reading individual channels we must accumulate the
+> other channels in the driver when Continuous Accumulation Mode
+> is enabled.
+> 
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 
+FWIW I took another look and don't have anything to add to the
+comments of others.  With those tidied up hopefully this will
+be ready to merge.
 
-The fix hasn't gone upstream yet (assuming it is the patch I think
-it is!).  Would it be better to just squash this onto that patch
-and avoid having to care about a version of the intermediate code?
-
-+CC Shawn. 
-
-Thanks,
+thanks,
 
 Jonathan
-
-> ---
->  drivers/iio/adc/qcom-spmi-adc5-gen3.c | 24 +++++-------------------
->  1 file changed, 5 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> index f0b2544c16322374644ac3a2eda63322f318e25f..a23eb5c9096d765af7d76ad66b50ed895782b256 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> @@ -15,7 +15,6 @@
->  #include <linux/dev_printk.h>
->  #include <linux/err.h>
->  #include <linux/export.h>
-> -#include <linux/idr.h>
->  #include <linux/iio/adc/qcom-adc5-gen3-common.h>
->  #include <linux/iio/iio.h>
->  #include <linux/interrupt.h>
-> @@ -609,16 +608,9 @@ static void adc5_gen3_delete_aux(void *data)
->  	auxiliary_device_delete(data);
->  }
->  
-> -static DEFINE_IDA(adc5_gen3_aux_ida);
-> +static void adc5_gen3_aux_device_release(struct device *dev) {}
->  
-> -static void adc5_gen3_aux_device_release(struct device *dev)
-> -{
-> -	struct auxiliary_device *adev = to_auxiliary_dev(dev);
-> -
-> -	ida_free(&adc5_gen3_aux_ida, adev->id);n
-> -}
-> -
-> -static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
-> +static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc, int id)
->  {
->  	struct tm5_aux_dev_wrapper *aux_device;
->  	int i, ret, i_tm = 0;
-> @@ -628,6 +620,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
->  		return -ENOMEM;
->  
->  	aux_device->aux_dev.name = "adc5_tm_gen3";
-> +	aux_device->aux_dev.id = id;
->  	aux_device->aux_dev.dev.parent = adc->dev;
->  	aux_device->aux_dev.dev.release = adc5_gen3_aux_device_release;
->  
-> @@ -650,16 +643,9 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
->  
->  	aux_device->n_tm_channels = adc->n_tm_channels;
->  
-> -	ret = ida_alloc(&adc5_gen3_aux_ida, GFP_KERNEL);
-> -	if (ret < 0)
-> -		return ret;
-> -	aux_device->aux_dev.id = ret;
-> -
->  	ret = auxiliary_device_init(&aux_device->aux_dev);
-> -	if (ret) {
-> -		ida_free(&adc5_gen3_aux_ida, aux_device->aux_dev.id);
-> +	if (ret)
->  		return ret;
-> -	}
->  
->  	ret = devm_add_action_or_reset(adc->dev, adc5_gen3_uninit_aux,
->  				       &aux_device->aux_dev);
-> @@ -814,7 +800,7 @@ static int adc5_gen3_probe(struct platform_device *pdev)
->  		return ret;
->  
->  	if (adc->n_tm_channels > 0) {
-> -		ret = adc5_gen3_add_aux_tm_device(adc);
-> +		ret = adc5_gen3_add_aux_tm_device(adc, iio_device_id(indio_dev));
->  		if (ret)
->  			dev_err_probe(dev, ret,
->  				      "Failed to add auxiliary TM device\n");
-> 
-> ---
-> base-commit: f1ac44c32cba88ad65dcecd4a279661d14e93651
-> change-id: 20261028-fix-adc5-tm-c96b13a4f442
-> 
-> Best regards,
-
