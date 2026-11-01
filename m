@@ -1,57 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793491452;
-	b=1KaPv18lemW92u3OMjwSfisjer9HwMNZ34YXNWNqM0pw2qiPgMCpn8XZNH1kpZ1Eo1Hl
-	 1DRyktRfbLO7WajZRIfOWpqcyiUP29YU0/bIBZQWVnDMXMjv49T8DEhWn9R+WMQluk/zu
-	 89BZFGlZ1aAA5WG5jNfqj+ipmb7w6eGWTOpH2G2gtB7njYYjDQVL8LzGjcuypNXQk3u/i
-	 xT9hAdCYdBlCxCcgJorxLdvjZIb3kbe0f2xtVB9B5bgybq+astFwu5mln+EFwEKmxjJH6
-	 Tfru3naksbCuD0FN92kvG9SGcjIKluluVUEo6OII6S2qQs3s2E7G/tpnCXl5K31I9aw==
+	t=1793492383;
+	b=1EkGF2Q6pdx66kOx3EzbQ094uwBv3bGqRoxkE/mbJ0tFEkA6maxKIuwP21tQt7sqAuDp
+	 viYwcIF+jXOL5K/8uFrRPI26kz6hOjqjQoncxHK9MZkqKOZko2pzc8lGc1zqHFijMnsG8
+	 xvzOHL9wa+6RTAlNq6i9lzAVNJpX2GMMuZpO1WXRYaRLTYF63mOICnuBkJ4KjaTS/x7CP
+	 zFo+rZnL8JZY+s+rOqs+nDnkO7xJzF17wKM80M+pTEI2oJXjNlivsJLvqSJYppnGBIAMd
+	 nK/kGA/Nc/IOEGVXcu4QgJ/DdX9dt/YPOkDUvOsXmgHYAR1esoC71YwGjm/c0UEX8lA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793491452;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793492383;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=3DxqaAvoC2uAX8+s2/lJDh1AcKyFA/x2pgp6BwQODEM=;
-	b=IgkPzEMKkwNukf4B41e8+ABlPyo6XWHOaXpaFfc8ZFbFuAsDe0HDHsBL3fwByuIcXr3a
-	 /5n6JQT+8M/cZ6V0HiR8w0kO53JwhLPJXqqs4a6zmIqyflWhevvLrjWJOovaFLBIsUQg6
-	 pPLwgaUpT8O+ftHbq415FIG0dEAOvS4yEdmM0uPWpQXJ465CDwzobDX5kI3r1hl1OwX8P
-	 yrqjr+rixGj/dEoZKP/CDuitO582JqN8hUJ7BBc8juN9uI+2kP8aUgLoSdmygdTE7Y4k4
-	 BDCQpOAWU5roEso/Qtbab1FN7buU48ZP/X56EQJuznZ2Jjl71U+N1MkxSKE7D6ko7gw==
+	bh=Znj4jYqdJ9TOsG6jdqegXoGfsLpk9Em2KLPQH94MS8c=;
+	b=4KvFjbCgqDupgRfxvM2tQn+PprLIz++8U1rIZgm8FNaZ0gePC94RUIg06tW7KDcjb/j9
+	 6Pz9f5v2xHiLizzotypzUyk2bAmro/hjKlYCb42p6qh6ls0ZxUjNTS8guZryouC5iJwMj
+	 cIQNZboeFQTQJQ8YskCnhklDHfi1vJzrR33xtRZYDBmEl+svxJITUX3Z/KLbuOAdqYugJ
+	 uNGhAMifsty3hMKEcz69+O/9m69BGkL1orN0nVVyt72jCNzMzuuqt2EK7MaIt5id3i8k6
+	 miXAekU5K/tyA5CzK3PbrN8LVRV32YOW87+FAkiRckvMfG9UTwTKR5c5KdOQUvduLPg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X5WjeD7g;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sujhbtek;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4B13606A31A;
-	Sun,  1 Nov 2026 00:04:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BDEA606A31A;
+	Sun,  1 Nov 2026 00:19:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X5WjeD7g
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835EE1F000C1;
-	Sun,  1 Nov 2026 00:04:09 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sujhbtek
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6870E1F000C1;
+	Sun,  1 Nov 2026 00:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793491451;
-	bh=3DxqaAvoC2uAX8+s2/lJDh1AcKyFA/x2pgp6BwQODEM=;
+	s=k20260515; t=1793492382;
+	bh=Znj4jYqdJ9TOsG6jdqegXoGfsLpk9Em2KLPQH94MS8c=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=X5WjeD7g6cq6rexakEaQ3NCj8GKHfFdG5bqmIW4r44v1bOKE3HMNS1yDOSDIDwINa
-	 Zn3Hr42/Um7idvrtdIgTOkG+s3rujcu+ggq3/XVYyhb1LoB1XbfSTX9r6p/YHsf6Vs
-	 XuKd+YyvSAf2BitdH0lo9wq6NvFqX1cR5xIAcYIb0GUPXJkv0TmQlKREBGDpnK8olh
-	 asglpLoeDLQwucbFZ+4qbJAk004iaIg2A01HFK+hGuQGyk4CzRRG28fTKZUJEMIRAo
-	 yUF5/nkhu9iOzqniYsaQRyLnR6rVgsPniaHQ9+jBDrtvTmq3+xn28r89sRwas80a9y
-	 yBRb6DAxN7J7g==
-Date: Sun, 1 Nov 2026 00:04:04 +0000
+	b=SujhbteklN8J8n7KtZn+OdZ+vm3vIdeK1fl4/KNetrtd4nXnYsp1e/jeSHLyHWvHF
+	 8iq1xQraBiRTSJFWRFsY4ZcKjnWYonENVURBHz96FfmWgOkgS2M5Pxdf8c+53U/wab
+	 k2omhJwJd5Op1q5F0wI43bdSJX1mQ6IlJ7XaX/JemCtaREyauLRN8GS8M3A26ERbPn
+	 MVDqIJo5z/r/u2dZVKoTLJIcO3bo/Y1yi6Y0x7dX1+y1l7RTkoNHglVCJaBMspn7D8
+	 QUSye+dI7XoGO+evQCcOM+V65BuWI+2Q85mrwru6HrLtaNUnxYg8aUuDEYAaxn68bQ
+	 RsGnS3lJjEYIA==
+Date: Sun, 1 Nov 2026 00:19:34 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: laixiangwu <laixiangwu@cmss.chinamobile.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: mpu3050: Fix runtime PM refcount leak in
- trigger enable path
-Message-ID: <20261101000404.41fe1028@jic23-hlaptop>
-In-Reply-To: <20261030084305.1660-1-laixiangwu@cmss.chinamobile.com>
-References: <20261030084305.1660-1-laixiangwu@cmss.chinamobile.com>
+To: Chi-Wen Weng <cwweng.linux@gmail.com>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ cwweng@nuvoton.com
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+Message-ID: <20261101001934.23588aa2@jic23-hlaptop>
+In-Reply-To: <20261030031501.130290-2-cwweng.linux@gmail.com>
+References: <20261030031501.130290-1-cwweng.linux@gmail.com>
+	<20261030031501.130290-2-cwweng.linux@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,107 +66,196 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Oct 2026 16:43:05 +0800
-laixiangwu <laixiangwu@cmss.chinamobile.com> wrote:
+On Fri, 30 Oct 2026 11:15:00 +0800
+Chi-Wen Weng <cwweng.linux@gmail.com> wrote:
 
-> mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when
-> enabling the data ready trigger, but all five error returns in the
-> enable path return directly without the matching
-> pm_runtime_put_autosuspend(). The disable path, in contrast, drops
-> the reference correctly.
+> From: Chi-Wen Weng <cwweng@nuvoton.com>
 > 
-> As a result, a failed trigger enable leaves the runtime PM usage
-> counter incremented and the sensor can never runtime suspend. It also
-> leaves hw_irq_trigger set to true, claiming the hardware IRQ is in
-> use when it is not.
+> Add a devicetree binding for the Enhanced Analog-to-Digital Converter
+> (EADC) found on Nuvoton MA35D1 SoCs.
 > 
-> Add an error label that drops the runtime PM reference and clears
-> hw_irq_trigger, and check the return value of pm_runtime_get_sync()
-> like the rest of the driver does.
+> The controller provides eight external analog inputs which can be used
+> as single-ended channels or as four fixed differential pairs: 0-4,
+> 1-5, 2-6 and 3-7.
 > 
-> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-> Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
-Hi,
+> Describe the four hardware interrupt outputs, ADINT0 through ADINT3.
+> ADINT0 through ADINT2 are associated with the corresponding conversion
+> interrupt flags, while ADINT3 is shared by the ADIF3 conversion
+> interrupt and the ADCMPF0 through ADCMPF3 result-compare interrupt
+> sources.
+> 
+> Also describe the functional clock, optional reset, optional external
+> reference supply and optional DMA request.
+> 
+> Expose the controller as an IIO channel provider through the
+> DT #io-channel-cells property. The cell identifies the logical EADC
+> channel selected by the reg value of the corresponding channel child
+> node.
+> 
+> Restrict the channel binding to features supported by the MA35D1 EADC
+> hardware and use the common single-channel representation for
+> single-ended inputs.
+This description seems a little verbose.  Maybe only talk about the
+stuff we can't tell from the patch. 
 
+1. Why it needs a new binding and isn't similar enough to existing
+   ones for reuse.
+2. Any unusual aspects.  Calling out the stuff that I note below on
+   the per channel binding oddity more clearly would have been helpful.
+
+For the other stuff the reader can just look at the patch,
+
+Thanks,
+
+Jonathan
+
+> 
+> Signed-off-by: Chi-Wen Weng <cwweng@nuvoton.com>
 > ---
->  drivers/iio/gyro/mpu3050-core.c | 22 ++++++++++++++++------
->  1 file changed, 16 insertions(+), 6 deletions(-)
+>  .../bindings/iio/adc/nuvoton,ma35d1-eadc.yaml | 175 ++++++++++++++++++
+>  1 file changed, 175 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
 > 
-> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> index 07c0f9011..9c6d5ba82 100644
-> --- a/drivers/iio/gyro/mpu3050-core.c
-> +++ b/drivers/iio/gyro/mpu3050-core.c
-> @@ -988,20 +988,24 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
->  		return 0;
->  	} else {
->  		/* Else we're enabling the trigger from this point */
-> -		pm_runtime_get_sync(mpu3050->dev);
-> +		ret = pm_runtime_get_sync(mpu3050->dev);
-
-Read the documentation of this function.  It suggests what
-I think is the appropriate change here. Use pm_runtime_resume_and_get()
-not get_sync()
-
-> +		if (ret < 0) {
-> +			pm_runtime_put_noidle(mpu3050->dev);
-> +			return ret;
-> +		}
->  		mpu3050->hw_irq_trigger = true;
->  
->  		/* Disable all things in the FIFO */
->  		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
->  		if (ret)
-> -			return ret;
-> +			goto err_put_pm;
->  
->  		/* Reset and enable the FIFO */
->  		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
->  				      MPU3050_USR_CTRL_FIFO_EN |
->  				      MPU3050_USR_CTRL_FIFO_RST);
->  		if (ret)
-> -			return ret;
-> +			goto err_put_pm;
->  
->  		mpu3050->pending_fifo_footer = false;
->  
-> @@ -1013,12 +1017,12 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
->  				   MPU3050_FIFO_EN_GYRO_ZOUT |
->  				   MPU3050_FIFO_EN_FOOTER);
->  		if (ret)
-> -			return ret;
-> +			goto err_put_pm;
->  
->  		/* Configure the sample engine */
->  		ret = mpu3050_start_sampling(mpu3050);
->  		if (ret)
-> -			return ret;
-> +			goto err_put_pm;
->  
->  		/* Clear IRQ flag */
->  		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-> @@ -1037,10 +1041,16 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
->  
->  		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
->  		if (ret)
-> -			return ret;
-> +			goto err_put_pm;
->  	}
->  
->  	return 0;
+> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+> new file mode 100644
+> index 000000000000..97144a8eeb5c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+> @@ -0,0 +1,175 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/nuvoton,ma35d1-eadc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +err_put_pm:
-
-I'm not keen on an error block that only applies to one of the two legs
-of the if /else in such a large function.  Better here would be to introduce
-a pair of helpers for the if and else parts (enable / disable) and call
-the appropriate one.  Do that in a precursor patch and then this will
-become a more readable change.
-
-> +	pm_runtime_put_autosuspend(mpu3050->dev);
-> +	mpu3050->hw_irq_trigger = false;
+> +title: Nuvoton MA35D1 Enhanced Analog-to-Digital Converter
 > +
-> +	return ret;
->  }
->  
->  static const struct iio_trigger_ops mpu3050_trigger_ops = {
+> +maintainers:
+> +  - Chi-Wen Weng <cwweng@nuvoton.com>
+> +
+> +description: |
+
+I think you only want to keep paragraphs. In which case > rather than |
+
+> +  The Nuvoton MA35D1 Enhanced Analog-to-Digital Converter (EADC) is a
+> +  12-bit successive approximation converter with eight external analog
+> +  inputs and one internally connected VBAT input.
+> +
+> +  The external inputs can be used as eight single-ended channels or as
+> +  four fixed differential pairs: 0-4, 1-5, 2-6 and 3-7. The internally
+> +  connected VBAT input is not described by a channel child node.
+
+How would you have a consumer of VBAT given the io-channel-cells
+comment about using the channel reg values for xlate?
+
+
+> +
+> +  The controller provides four interrupt outputs, ADINT0 through ADINT3.
+> +  ADINT0, ADINT1 and ADINT2 are generated by the corresponding ADIF0,
+> +  ADIF1 and ADIF2 conversion interrupt flags. ADINT3 is shared by the
+> +  ADIF3 conversion interrupt flag and the ADCMPF0 through ADCMPF3 result
+> +  compare flags.
+
+> +
+> +patternProperties:
+> +  '^channel@[0-7]$':
+> +    type: object
+> +    $ref: /schemas/iio/adc/adc.yaml#
+> +    unevaluatedProperties: false
+> +    description: |
+> +      External EADC channel description.
+> +
+> +      For a single-ended channel, single-channel specifies the external
+> +      analog input number (0 through 7), while reg provides the logical IIO
+> +      channel index.
+> +
+> +      For a differential channel, omit single-channel. The reg value selects
+> +      one of the four fixed hardware differential pairs: reg 0 selects 0-4,
+> +      reg 1 selects 1-5, reg 2 selects 2-6 and reg 3 selects 3-7.
+
+Sorry, I wasn't paying attention on earlier versions.  This is a very
+unintuitive binding particularly as we may want to have a single channel
+before a differential one.  Better I think to use the differential
+channel bindings and restrict which ones are allowed to this fixed set.
+
+
+> +
+> +    properties:
+> +      reg:
+> +        maximum: 7
+> +
+> +      single-channel:
+> +        maximum: 7
+> +
+> +      # Differential pairs are fixed in hardware and are selected by reg.
+> +      diff-channels: false
+> +
+> +      bipolar: false
+> +
+> +      common-mode-channel: false
+> +
+> +      settling-time-us: false
+> +
+> +      oversampling-ratio: false
+> +
+> +    allOf:
+> +      - if:
+> +          not:
+> +            required:
+> +              - single-channel
+> +        then:
+> +          properties:
+> +            reg:
+> +              maximum: 3
+> +
+> +    required:
+> +      - reg
+> +
+
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/nuvoton,ma35d1-clk.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/reset/nuvoton,ma35d1-reset.h>
+> +
+> +    soc {
+> +        #address-cells = <2>;
+> +        #size-cells = <2>;
+> +
+> +        adc@40430000 {
+> +            compatible = "nuvoton,ma35d1-eadc";
+> +            reg = <0x0 0x40430000 0x0 0x10000>;
+> +            interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
+> +            interrupt-names = "adint0", "adint1", "adint2", "adint3";
+> +            clocks = <&clk EADC_GATE>;
+> +            resets = <&reset MA35D1_RESET_EADC0>;
+> +
+> +            #io-channel-cells = <1>;
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            channel@0 {
+> +                reg = <0>;
+> +                single-channel = <0>;
+> +            };
+> +
+> +            channel@1 {
+> +                reg = <1>;
+
+This looked very odd and is why I had a closer read of the docs
+above.  To make this a reasonable binding to read this
+needs to do the full differential channel binding from adc.yaml
+with reg just being an index and not specifying channels at all
+(same as for the single channel case).
+
+> +            };
+> +        };
+> +    };
+> +
+> +...
 
