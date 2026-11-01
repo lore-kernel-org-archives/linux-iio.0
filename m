@@ -1,61 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793499843;
-	b=RZtk1kqyb+rBZbvSSQ+OkIOcTZrpOrPdDEuR8ctYBQnrXwt6OMfNUA+SvTtlZ3dwQySJ
-	 ygbtjO/qaBknAktebus7Zx8dUGegfuWrv1/OHWE0U0hYrWlLCIRQMJipuDmaXIgiGDd27
-	 t9IXEM+GmL+H39urGdeqNt/erV3H9tRisjMx0ja/HFYXlreZBRtU7HyuNOTYsTJSQb0gn
-	 D/ru/a40irhY738B5O29eYwRYl/Z+EPfg9mPhiS4efQXYDFaY54+tL8WkMoYoNx6btPlJ
-	 S/oyNv/44XmtPJl9FDPzuR5nVivI6BiqwoJ6YMmDN3Pt7WvUohDmwKXpUk+5UkHuO9g==
+	t=1793499977;
+	b=DcqqjpEsjhlYTQrvN6MOdt/vOgYECzS9ajdAatcFYKPF4fbs5fGN4o5lNpE35cJOAXKB
+	 0WOOcwEkhJz7GktN+ceDZQrgg6Cg16bVmaK4+i3G5KYmLJyBB9BoBYO2U0iE+loaIkQHJ
+	 P49zuvIGVQ/m8kooB5x9EuT2dWPjQC9fKpy9o/UaO9SsdAUvwKR3lnnByuUUgBM5daQq+
+	 NTKpsoJRy4NwVxxi0LRHJZRs7jAP4sXrxk3fcJx11JPp0Mlxq2QkoI+mWIZ2GQ+V5GEQd
+	 uep/mso3WYCE/RW4EAznQ/n4wlqf6jEDIRyTyjIY9+xRdk2MMYKEPohQ8QnwRw+vQ/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793499843;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793499977;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=3mPJSSqIX7nT4RdPVdlxGSVjbXJ2qWmvv0f0cx0sQMI=;
-	b=2uqeXHFSCcjTzUfZqYSzrAipPhfHfnSymNtfHSEjuQ3birH3t8k330EeLuzVHB5o1qSB
-	 0yOhtzfn9ypvhd7Z7lMXqzGlwe5tMGcXJQyAivRZmQiUQ6+gondBDL/MUi/w82EwAzzp6
-	 GtQ6dfp6yfYKHbAaGcJGB9XvVKnP84d74k1O4YfOkFoLiGKwpjlfgjaoUvYRM0/FCrx5s
-	 hKngeX+KDoyE48uneDlI7F2/5q72YvDX/icoB9pfZPu4iQ/qg5uA+Phvquq+U0OwU4zkn
-	 AN9YRsmUnygf6VqxM5aWC+8NvpT26cXfkQsGycjxMwEcwPvfFnbQhsCadMM4x7nW2Wg==
+	bh=RgceOe+o9SSPiUOOX+dafdP5lR0/MnDvLfVzpqJudMk=;
+	b=5gi6+7XJiDqARgpbgJjSiY/M0VOiTz0MhhRByyaxzaXZbRUONOZSFutr5rnT+5G7Nx7w
+	 AVHB0zUZ7S1kZT5trosGtvvTj2nMXMnIOgOvL7QPH8ghiyx3DjcU++gto0vKMo2cCS4xQ
+	 Imv/FTpAuZHbw7uGFaXPF9XHRML+KDLi3O4wi0KZMPkGri5Hd9PgmqbSkPLcEjPwztQKF
+	 cQOkP2KFq/9U7/pfNBEF2lwBNYo/ZgssdcEEZRpL1KaFbLKO1s0tBK0Pd1gIED7gjpdOX
+	 kQFptT7X/eO3i0WGVzw81C8QNIpGdbP1KHpH++yzYHD7sprDrZ4xpfvtM4qo9ATYJdA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SVdZbX2B;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PPpnjRGA;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9E32606A324;
-	Sun,  1 Nov 2026 02:24:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2B18606A324;
+	Sun,  1 Nov 2026 02:26:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SVdZbX2B
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC2F51F000C1;
-	Sun,  1 Nov 2026 02:23:59 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PPpnjRGA
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E4301F000C1;
+	Sun,  1 Nov 2026 02:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793499842;
-	bh=3mPJSSqIX7nT4RdPVdlxGSVjbXJ2qWmvv0f0cx0sQMI=;
+	s=k20260515; t=1793499976;
+	bh=RgceOe+o9SSPiUOOX+dafdP5lR0/MnDvLfVzpqJudMk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=SVdZbX2BBQK71c2ZMUiX8T/g/cWxCilzPLAy2yCiIPNmEOQwLtgCBY4rL9MIXrpvl
-	 YzJ4rIN4u3n/8mLfH/OOvrZl7JE1REIOuGLh5ZdYfK+IENC+tdNguMjuA+EuIXD+9Z
-	 gUofFjNzk12mZyiQKaTR/3tWifL24vFw4RA6RjALJf6na8ExaWGgJXodZ2kGykBWMf
-	 SEZqWl34ZbTU9YNj7nCD4mHCf9R58jVT9xn1TVeuvvcGfABZZAYclxRY2wn7NWln+9
-	 7Btl4Oz2YCijo0JF8Vq0ZNpd2O17EoeWVna6VQlySijXQ2XoKAwTal6B+BttwVsSPf
-	 jb2uP/f8iC9kA==
-Date: Sun, 1 Nov 2026 02:23:54 +0000
+	b=PPpnjRGAfXGfaPE3Att3cIu4zMErP49vpC+K0MmV4tY5IM1Sq6WNQi7Nnbk3CkxQG
+	 adn8bUCv11RoHi16xoXaJnSJw1R+JfXq6+z38WN2f3hKWpyV4Ql7BoMbAUyygHNk8o
+	 33XAlrduzgkfFqqzRnXfrRhx64oayR0DxJaegTL5+2UX6do32x41EE5LjIcQuB9Iee
+	 pnM5zIV4McL0x5h6tXp9jMjniRaM1j6YVBbvmfl68s62y2WacHVerra1I1x2KfgCWX
+	 tcBsqYx5EebuTXdviI2lpOakQ+OBOpiCxzozmIy733Htpo1IOTsl+RI21LKyxoaTnB
+	 mF2eLB/HIpXyA==
+Date: Sun, 1 Nov 2026 02:26:08 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Josef Bacik
  <josef@toxicpanda.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable <stable@kernel.org>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Renato Lui Geh <renatogeh@gmail.com>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Ramona
- Bolboaca <ramona.bolboaca@analog.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <u.kleine-koenig@baylibre.com>
-Subject: Re: [PATCH 05/15] iio: adc: check the result of ad_sd_init()
-Message-ID: <20261101022354.16173af0@jic23-hlaptop>
-In-Reply-To: <auHC27EyvvR9TYKu@nsa>
+ linux-kernel@vger.kernel.org, stable <stable@kernel.org>, Ramona Gradinariu
+ <ramona.gradinariu@analog.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH 04/15] iio: accel: adxl380: don't stay in standby on
+ -EINVAL
+Message-ID: <20261101022608.0196b0ef@jic23-hlaptop>
+In-Reply-To: <auHIJRLqIm97GrEG@nsa>
 References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
-	<20261027-llm-char-misc-iio-v1-5-0d818334f6c7@linuxfoundation.org>
-	<auHC27EyvvR9TYKu@nsa>
+	<20261027-llm-char-misc-iio-v1-4-0d818334f6c7@linuxfoundation.org>
+	<auHIJRLqIm97GrEG@nsa>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,34 +70,38 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 28 Oct 2026 09:40:03 +0000
+On Wed, 28 Oct 2026 10:02:36 +0000
 Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-> On Tue, Oct 27, 2026 at 05:19:09PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Oct 27, 2026 at 05:19:08PM +0100, Greg Kroah-Hartman wrote:
 > > From: Josef Bacik <josef@toxicpanda.com>
 > >=20
-> > ad_sd_init() asks for the optional "rdy" GPIO and returns the error if
-> > that fails, for instance -EPROBE_DEFER. The binding of the AD7780
-> > describes such a GPIO.
+> > adxl380_set_act_inact_threshold() puts the sensor into standby, writes =
+the
+> > threshold and switches the measurement on again.  A threshold above 819=
+1 is
+> > refused in between, and the sensor stays in standby: no samples and no
+> > events until the next write that succeeds.
 > >=20
-> > ad7780, ad7791, ad7793 and max11205 ignore the result. The function has
-> > then returned before it set the driver data of the IIO device, which
-> > devm_ad_sd_setup_buffer_and_trigger() dereferences a few lines further
-> > down in these probe functions, and sigma_delta->rdy_gpiod holds an
-> > ERR_PTR() which ad_sigma_delta_clear_pending_event() takes for a GPIO.
+> > adxl380_set_range() has the same problem and a worse one.  It rescales =
+both
+> > thresholds for the new range.  If one no longer fits it returns -EINVAL
+> > with the sensor in standby, the new range in the chip, the old one in
+> > st->range and rescaled thresholds in the driver's state: from the next
+> > successful write on the samples are reported with the wrong scale.
 > >=20
-> > Return the error, as the other users of the library do.
+> > Switch the measurement on again if the threshold is refused.  In
+> > adxl380_set_range() see whether the thresholds fit before anything is
+> > changed.
 > >=20
-> > Fixes: a87ef09b1fdf ("iio: adc: ad_sigma_delta: Add support for reading=
- irq status using a GPIO")
+> > Fixes: df36de13677a ("iio: accel: add ADXL380 driver")
 > > Cc: stable <stable@kernel.org>
+> > Cc: Ramona Gradinariu <ramona.gradinariu@analog.com>
+> > Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
 > > Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-> > Cc: Renato Lui Geh <renatogeh@gmail.com>
 > > Cc: David Lechner <dlechner@baylibre.com>
 > > Cc: Andy Shevchenko <andy@kernel.org>
-> > Cc: Ramona Bolboaca <ramona.bolboaca@analog.com>
-> > Cc: "Uwe Kleine-K=C3=B6nig" <u.kleine-koenig@baylibre.com>
 > > Signed-off-by: Josef Bacik <josef@toxicpanda.com>
 > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > > --- =20
@@ -104,6 +109,6 @@ Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 Applied to the fixes-togreg branch of iio.git
 
-thanks,
+thanks
 
 J
