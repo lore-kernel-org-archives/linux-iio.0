@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793494990;
-	b=Iuxf4Kyvz88lYPie8fSxnADqB4rH8gvPXyPjjOkicT87CTeltU9ZblH3tb4ISLluxe9Y
-	 BKy41BLnJyombibwr1WuGr122B4FDTvMt4Ohb+zz6uTILcVmz/A6/dJpPFACqkuHSbKUS
-	 B+mNC8Dv/l7N67XLgdjxj8MpRIMnB1WYjlefxw+LSBj2gEObEtiurl/gqMlWKtW4pzYB9
-	 c2y3BTOk/wn774MKY1moPD38lrFCVrT9xrazXWC8Onk2xcWNzhPKw7rvwvQJm1z+YE08n
-	 zW69xQ9PN00hRz7lQRWifF33GVtnOlrh3uFDMhlxo+S1xk/gl9+ahi0Rx0oBSN4Zk8Q==
+	t=1793495091;
+	b=30NOE87Jt9ME7UlsUA4Z5jqvWkQNhYqfBQ2a8/+nwwc/By5H4LZVqUgigBo1UOp7bsY8
+	 5sdeAudpKpq2EbKUr2ek83NYvn8gwHqkiFi2lnmS/Z3nQIDOXwTx2zAIgCGYAut2fHUXI
+	 W0Y0kqFmgV8zYd1FqsvW3wMYdaGk39cuGFQSZvnEOHj4+g3y/ua/m4QWVz4zUSRsswPII
+	 RncL98DMnC9t1vzynZ1o2sKiS8+ss5Sq8I2fgq/v6p8qDEM5pBk+BWz4izthkTstaGVQ9
+	 FKr5GbUNauz2p8xhU9US+nlpUjpkm4b1f1cGO3izr2Lg0BghYTH2GtTfHl/+PQh0eGA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793494990;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793495091;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=ktcivWHIEFAFkwReSja1sIlL4LUQfANO3aW6MldUu48=;
-	b=m+t5NVna6KYxwghdvSFaaOxrw7ESBHQE5TDmsXQtfc3h6Y11Ip5Q8bmq3xn3mMUBnkbp
-	 F6Py4HgUIxujb7YXwBW424nTeqfkXSa00HIo6QJgFuPKPGcQlW6fWxSlGJLkVi6TRlk1U
-	 tnx3GWZgYOMZ3HoLE2LmhkxZDt8gI3pKgVjws62ZFHyX0UOUbELFhy4G71zD7hfund/gO
-	 Mk9ec/3ONgP9ll9xCDehV8Yoxc1T1+SXMvaqJ8oBcmgzgC/ZjBYdK6UIydoe5HxfFAVrn
-	 E3m83Aufm7mR96ZKdK6kxYLY7WfDvGAtdf893WbbcCPYrdHKKHLYecCxl4adyCIJgxA==
+	bh=WBnebek7ZBpuLmqJrRSo0Ht4VOQGeqUNOTJfiexzAbc=;
+	b=QBmhIavin5m4dtoAwhItOZGiiAp5WK5HE+pJJPkuQvBWLHc8oSASil90c5839AQf14+S
+	 /6d4Q81Gansj/nRuRdW63OaoWwfZEKZNNPvitYluPmVObqnWQuOn6SvTzrO/NAp6Ud84+
+	 xZ6MQ/sBjN4HxkMyLuRGHndt7/pKkTUbtStxnmV6sgmMb1k/+2FRQ9rMwBYHAGj5n0Ukk
+	 G/NlLO7JMBvFKg9aIP0mTmZhE3ZOX9nz0JJtsyta7tM0Cd4hxuV2Mf9+/PVhjwOUNAq6l
+	 tqh6TG8bpg2LWND1LMhigP9HuWsi3nIznIcITediER0OPaT4CoajNaHVJ/Smv0oFf8g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jn+tfC5i;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UD1F+OMI;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6247C606A31F;
-	Sun,  1 Nov 2026 01:03:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0920606A31A;
+	Sun,  1 Nov 2026 01:04:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jn+tfC5i
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B32C1F000C1;
-	Sun,  1 Nov 2026 01:03:07 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UD1F+OMI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F36E1F000C1;
+	Sun,  1 Nov 2026 01:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793494989;
-	bh=ktcivWHIEFAFkwReSja1sIlL4LUQfANO3aW6MldUu48=;
+	s=k20260515; t=1793495090;
+	bh=WBnebek7ZBpuLmqJrRSo0Ht4VOQGeqUNOTJfiexzAbc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jn+tfC5iJkEIDAQjKuyVlhF1j5dMK9nbBuvAA+0a7ocihShbfncCuXyke2HAwEl0O
-	 KxARV+cZXvmhxkHOdyG0J4pGF5a1jDszVtl32ECFF8XvLfsFWCHvAy8iy/CPZLqkEA
-	 4yz4QfK8yEI0NlCSH53lJ9UDRhPcCWS6bOqlllxehIja1VrocIvlxMayG1z6Jki7Hv
-	 vBIlxL0DVLsWTQbkBgWJXBNFWNoNxm3HTZ/xOAQKvSphVRCl7ahJWZa2TArjTZm66t
-	 vAlaTf7Q8r/6+gyP4Oy5GMLIQykU9j2dq+GLKjVv5MSxDYjC2VdRgHE2PPmBrWjyRs
-	 IwvHGq+KKy25Q==
-Date: Sun, 1 Nov 2026 01:03:02 +0000
+	b=UD1F+OMIneBZbs1a1d6MBVfUjAB6c89pebJ01ZAbJGvG2nRNMK73+TtDFXf7yQcWP
+	 R8usJXGowG1KtO3cLmxjrZtni0ajh+XmC4JJ784djihuJ1OHJZAGwFpLk15dDmhqP4
+	 bxo5xaGDE4/97e2Qn9Az67XlE1EsDYrsVcH+9l2cIE3lA2XV4r3LL1ON9ysFyfVd8X
+	 ZnQpYLg/rOYCxxHWVuH3d2xK7QcJk+qUfiz5uD387sCOjjGIy32ME9qtBB/2TdO/dj
+	 fnXVqmVoeuTRx8RhJzZPdjbIYCkLXFOpQ3zrHlzbV2PIkVHhIHtKYNn6L89yU3rTi2
+	 HrmGmUGcorzLA==
+Date: Sun, 1 Nov 2026 01:04:44 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rupesh Majhi <zoone.rupert@gmail.com>
 Cc: Andy Shevchenko <andy@kernel.org>, David Lechner
@@ -49,7 +49,7 @@ Cc: Andy Shevchenko <andy@kernel.org>, David Lechner
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Sashiko
  <sashiko-bot@kernel.org>, Paulius Zaleckas <paulius.zaleckas@gmail.com>
 Subject: Re: [PATCH 2/3] iio: pressure: dps310: reset the chip at probe
-Message-ID: <20261101010302.619adb33@jic23-hlaptop>
+Message-ID: <20261101010444.2803dab4@jic23-hlaptop>
 In-Reply-To: <20261029220635.18816-3-zoone.rupert@gmail.com>
 References: <20261029220635.18816-1-zoone.rupert@gmail.com>
 	<20261029220635.18816-3-zoone.rupert@gmail.com>
@@ -76,22 +76,14 @@ Rupesh Majhi <zoone.rupert@gmail.com> wrote:
 > update that follows writes FIFO_EN back from the register cache.
 > 
 > Reset the chip first, as remove already does.
-> 
-> Fixes: 90f0d1016398 ("iio: pressure: dps310: read buffered samples from the hardware FIFO")
-That's not a stable hash because it is recent enough that
-it is on the tree I've rebased since then and will do again on
-rc1.  Given this will go in at same time as the fifo anyway
-during next merge cycle, I tend to just drop the fixes tags
-in cases like this to avoid having to fix them up.
-
-Other than that, series looks fine to me, but given you asked Paulius
-for a test I'll wait on that!
-
-Thanks
+Why do we do it in remove?  Does it put it in a power saving mode
+or similar? It's fairly unusual to bother resetting in that path
+given as you've seen here, we pretty much have to reset in probe.
 
 Jonathan
 
-
+> 
+> Fixes: 90f0d1016398 ("iio: pressure: dps310: read buffered samples from the hardware FIFO")
 > Reported-by: Sashiko <sashiko-bot@kernel.org>
 > Closes: https://sashiko.dev/#/patchset/20260921183132.233136-1-zoone.rupert%40gmail.com
 > Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
