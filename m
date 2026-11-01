@@ -1,59 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793498066;
-	b=p/cQIUvZXOk/bEmdn08HKABuQPY+USy8haFFqHOdiIWREN1Q0Tz3kcJACHV8MF6vvYpj
-	 P9aU5r5RqwGcKbTBBfET4zUeT7URYrhk5Ec9FlBDpW2gLyv2OPIpkwo1sde//kUQe4xPQ
-	 afnwOxSXLRyexz76gMfHbjqcumYylGaKA2jWOBv65VNL/bROsfdMo1DJdatBrZILKn0tP
-	 PaZRHeNUtITky8zRGKqMFEBIUAVuHwXNKME6Dok7cZzW8FBugWzElZx3ocWbwMN1qbKYB
-	 UaOmfVkVasilRgTxm6uFZk4nfinNo3JFYhJ7cKB2ySPIBze8rY0InmTB9SMRzJwCinA==
+	t=1793498456;
+	b=GJA2vLjdw1c1f5pjIFy4zL4FiN3J6u+xshkOLBcw8Bow++M1G6RO11h2aNVNi1qoJSO2
+	 oM5D1BGSLvgf7EwUPyqicUZht7s1HMFNxbOwPZKcPwYZ7sxWt/oS6q9tugL4sJ8p7xz7s
+	 lzETzno7iFApGaFuiH8MtHRJgJXgt/pUWiZ+TjIeSCjMez3lAq9TFlwKqASyWMQznoUVg
+	 pF61k9pX4QYf1scH8oDnGzvnaAPDvyqLMvC/srEg5TSymigZcd4usOso9Cm+3ktDY6+Vs
+	 SZk1/bAZchEYGS725dWsFzEI2O26RzWTLLEO8a4VVImpg5iEAtldoxUTTikKMlirIxw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793498066;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793498456;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=v3ObFcPZJbeRiKkRyrxGK09fSNusHiNAUgb/BvLOJQg=;
-	b=Qk+KWtaO8yqM9+/DOAbgp+alHvvt4H/Lzl87+I5rLqtuE4iW4N0td2Vphsn8gqloA0mZ
-	 MSZiSiLoad5xYiesm4ockHnErF64jhFh/tEs+e8Uf49clzMWjopvA2iWBMvX0PFSpNMGy
-	 aG9DT3rcfWXxd6uhu1JTnJ/0a6zlpOnqSrfcK9ehhIwHy75TwtYHCw/O9KhN1tXKcxxZL
-	 vykszXukIKdpzBsjBZWXeO+/87tWEy1l6p/hP0EbL4ITqcj8rylB8L3MQtnhiIbCTNM9t
-	 4fOQfDsGCs0huwCiWA0RhaELBOTQwlnr+rZQkqCJ1baycyHwVpxQ5Memla3QnqWV9yA==
+	bh=55EAfDGPUHZz7T0vufY3UxzR1Z8zYzzLlpJPntYQtP4=;
+	b=yktke9189GqvABfosYMcEZQbqP9qIpCRyd7fWP/wOTmId7eZFh9uYO9tgs4Vrz65Eqwf
+	 xdccvlIfDCxQ1OE/WbdDlNeGJ8w8kMtL890WNzZ58jHHRi5x2P0n4CtN6jO9nKscN6KxO
+	 Ql7FeggvVYKWCo32zw/lZiAyKJlDz6dg5OVsOKUbV2BApX1tkAbpqvuRPE3LxJe7jB+eJ
+	 CosFZgJlg5cwAH8kpwhvUwiLfBqZE4ALGtNZGevQiY7fqEZiBKcOHXnnNOnfEdF3nvTHP
+	 ILndpGHTR5x5IpUHQ3JAkpqToHSQpsGVEX3zBEo5axpNtmE53exX7yq5IM+rn4R4MuQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FurM66+j;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGJioGUB;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7702606A324;
-	Sun,  1 Nov 2026 01:54:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5F3A606A324;
+	Sun,  1 Nov 2026 02:00:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FurM66+j
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED4791F000C1;
-	Sun,  1 Nov 2026 01:54:22 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JGJioGUB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5E551F000C1;
+	Sun,  1 Nov 2026 02:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793498065;
-	bh=v3ObFcPZJbeRiKkRyrxGK09fSNusHiNAUgb/BvLOJQg=;
+	s=k20260515; t=1793498455;
+	bh=55EAfDGPUHZz7T0vufY3UxzR1Z8zYzzLlpJPntYQtP4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FurM66+jC+VY1wEq07yWqSc5R7ghKYCDEvyM53uyk6CJFxhT3Xb8gEsY7OUEMiEWR
-	 7iC5Ax31jSTcxPQGvaa6p2JfeZxnaBOzM2njqdj05lWZPY3UwKNCt1IkqnuAc1BPwR
-	 NERuYrub6sLjfUnFQS0PdC8Pe4AnDNB06/B6uVGVNGZHnZ3Nni5DkIc5E8kBgwqU15
-	 AfgjSluiP7PMQv4T5ZPIcKmLsCKAXbTYbZUc6sFNIhi1HlRXDKP1AZ2+2dy4BcXMow
-	 mzyoNBFlA/mk070M3gdyrardf958pz0XqFb070yuq8f1hNsH3t/MzEETqpIjW6Mqbf
-	 O3kPhKoSszHMA==
-Date: Sun, 1 Nov 2026 01:54:16 +0000
+	b=JGJioGUBgGf7C6p4yUcDFwJpgekjIxoAt297KuWOZyQ7tL3c6V63cMaZ/AoA8XInS
+	 fw4bPvGl5YEiVuM1l0SL2pMXpz5VfCuY7MOGzdemsK3SC21i1g87jQg180fralhX9y
+	 Yt2+/mCyTPqU/R0NTQbxtGfp2WH2I0hyz9U/Uj2xR2AXamvGQLTM58J3ndv0fBppz1
+	 CaZSKzobrtRkseOA0gr+bMp4BzBNi/qIgLBrI476OQn065U0UWZvMvjHbP1c80FYhV
+	 HZQ29ehPe90C7qewihm6oJBBZBC55nme3UHSYrw5eLSlDyqXKV3TXFqQlUsM/g+tlV
+	 PhWGFHXLbuPKQ==
+Date: Sun, 1 Nov 2026 02:00:47 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Loic Poulain <loic.poulain@oss.qualcomm.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
- Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] iio: proximity: sx9310: keep the IRQ balanced
- across suspend and resume
-Message-ID: <20261101015416.4b477c91@jic23-hlaptop>
-In-Reply-To: <20261028220444.70121-2-kapoorarnav43@gmail.com>
-References: <20261028220444.70121-1-kapoorarnav43@gmail.com>
-	<20261028220444.70121-2-kapoorarnav43@gmail.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Shawn Guo <shengchao.guo@oss.qualcomm.com>
+Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5-gen3: Reuse IIO device ID for
+ ADC_TM auxiliary device
+Message-ID: <20261101020047.66034613@jic23-hlaptop>
+In-Reply-To: <20261028-fix-adc5-tm-v1-1-0018aabc06c5@oss.qualcomm.com>
+References: <20261028-fix-adc5-tm-v1-1-0018aabc06c5@oss.qualcomm.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,103 +65,118 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 29 Oct 2026 03:34:37 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Wed, 28 Oct 2026 15:09:47 +0100
+Loic Poulain <loic.poulain@oss.qualcomm.com> wrote:
 
-> sx9310_suspend() disables the interrupt first and returns with it still
-> disabled if a register access fails. Resume isn't called after a failed
-> suspend, so the interrupt is never enabled again. sx9310_resume() also
-> returns without enabling it on error. Without an interrupt line,
-> client->irq is 0 and both callbacks act on IRQ 0, which the driver
-> doesn't own.
+Hi Loic,
 
-irq 0 doesn't exist any more on any architectures I think..
-It did once, long ago. Today it means no interrupt.
+> A recent fix in ADC5 Gen3 driver allocates a dedicated auxiliary-device
+> ID through an IDA to ensure that ADC_TM auxiliary devices receive unique
+> names on the auxiliary bus.
+When talking about another patch I'd refer to it by name and ideally
+also add a Link tag to the lore.kernel.org for it to the tags block.
+I think you mean:
+
+iio: adc: qcom-spmi-adc5-gen3: Allocate unique ADC_TM aux device IDs
+Link: https://lore.kernel.org/all/20261008031154.3440632-1-shengchao.guo@oss.qualcomm.com/
 
 > 
-> Disable the interrupt only once the device is asleep, always enable it
-> in resume, and skip both when there is no interrupt.
+> However, each ADC instance is already assigned a unique IIO device ID.
+> Reuse that existing identifier when registering the ADC_TM auxiliary
+> device instead of maintaining a separate IDA solely for auxiliary device
+> naming.
 > 
-> Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> This removes the custom ID allocation and release handling while
+> preserving unique auxiliary device names across multiple ADC instances.
 
-I'm not keen on suspend and resume not being mirror images of each
-other with respect to ordering.
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@oss.qualcomm.com>
+
+
+The fix hasn't gone upstream yet (assuming it is the patch I think
+it is!).  Would it be better to just squash this onto that patch
+and avoid having to care about a version of the intermediate code?
+
++CC Shawn. 
+
+Thanks,
+
+Jonathan
 
 > ---
->  drivers/iio/proximity/sx9310.c | 42 ++++++++++++++++++++++------------
->  1 file changed, 28 insertions(+), 14 deletions(-)
+>  drivers/iio/adc/qcom-spmi-adc5-gen3.c | 24 +++++-------------------
+>  1 file changed, 5 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-> index 79ba46d8a0aa..f824d00f1174 100644
-> --- a/drivers/iio/proximity/sx9310.c
-> +++ b/drivers/iio/proximity/sx9310.c
-> @@ -943,8 +943,6 @@ static int sx9310_suspend(struct device *dev)
->  	u8 ctrl0;
->  	int ret;
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> index f0b2544c16322374644ac3a2eda63322f318e25f..a23eb5c9096d765af7d76ad66b50ed895782b256 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+> @@ -15,7 +15,6 @@
+>  #include <linux/dev_printk.h>
+>  #include <linux/err.h>
+>  #include <linux/export.h>
+> -#include <linux/idr.h>
+>  #include <linux/iio/adc/qcom-adc5-gen3-common.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/interrupt.h>
+> @@ -609,16 +608,9 @@ static void adc5_gen3_delete_aux(void *data)
+>  	auxiliary_device_delete(data);
+>  }
 >  
-> -	disable_irq_nosync(data->client->irq);
+> -static DEFINE_IDA(adc5_gen3_aux_ida);
+> +static void adc5_gen3_aux_device_release(struct device *dev) {}
+>  
+> -static void adc5_gen3_aux_device_release(struct device *dev)
+> -{
+> -	struct auxiliary_device *adev = to_auxiliary_dev(dev);
 > -
->  	guard(mutex)(&data->mutex);
->  	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL0,
->  			  &data->suspend_ctrl);
-> @@ -956,7 +954,29 @@ static int sx9310_suspend(struct device *dev)
->  	if (ret)
+> -	ida_free(&adc5_gen3_aux_ida, adev->id);n
+> -}
+> -
+> -static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
+> +static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc, int id)
+>  {
+>  	struct tm5_aux_dev_wrapper *aux_device;
+>  	int i, ret, i_tm = 0;
+> @@ -628,6 +620,7 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
+>  		return -ENOMEM;
+>  
+>  	aux_device->aux_dev.name = "adc5_tm_gen3";
+> +	aux_device->aux_dev.id = id;
+>  	aux_device->aux_dev.dev.parent = adc->dev;
+>  	aux_device->aux_dev.dev.release = adc5_gen3_aux_device_release;
+>  
+> @@ -650,16 +643,9 @@ static int adc5_gen3_add_aux_tm_device(struct adc5_chip *adc)
+>  
+>  	aux_device->n_tm_channels = adc->n_tm_channels;
+>  
+> -	ret = ida_alloc(&adc5_gen3_aux_ida, GFP_KERNEL);
+> -	if (ret < 0)
+> -		return ret;
+> -	aux_device->aux_dev.id = ret;
+> -
+>  	ret = auxiliary_device_init(&aux_device->aux_dev);
+> -	if (ret) {
+> -		ida_free(&adc5_gen3_aux_ida, aux_device->aux_dev.id);
+> +	if (ret)
+>  		return ret;
+> -	}
+>  
+>  	ret = devm_add_action_or_reset(adc->dev, adc5_gen3_uninit_aux,
+>  				       &aux_device->aux_dev);
+> @@ -814,7 +800,7 @@ static int adc5_gen3_probe(struct platform_device *pdev)
 >  		return ret;
 >  
-> -	return regmap_write(data->regmap, SX9310_REG_PAUSE, 0);
-> +	ret = regmap_write(data->regmap, SX9310_REG_PAUSE, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Only once nothing can fail, as resume isn't called on failure. */
-> +	if (data->client->irq)
-> +		disable_irq_nosync(data->client->irq);
-> +
-> +	return 0;
-> +}
-> +
-> +static int sx9310_wake_up(struct sx_common_data *data)
-> +{
-> +	struct regmap *map = data->regmap;
-> +	int ret;
-> +
-> +	guard(mutex)(&data->mutex);
-> +
-> +	ret = regmap_write(map, SX9310_REG_PAUSE, 1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_write(map, SX9310_REG_PROX_CTRL0, data->suspend_ctrl);
->  }
->  
->  static int sx9310_resume(struct device *dev)
-> @@ -964,19 +984,13 @@ static int sx9310_resume(struct device *dev)
->  	struct sx_common_data *data = iio_priv(dev_get_drvdata(dev));
->  	int ret;
->  
-> -	scoped_guard(mutex, &data->mutex) {
-> -		ret = regmap_write(data->regmap, SX9310_REG_PAUSE, 1);
-> -		if (ret)
-> -			return ret;
-> +	ret = sx9310_wake_up(data);
->  
-> -		ret = regmap_write(data->regmap, SX9310_REG_PROX_CTRL0,
-> -				   data->suspend_ctrl);
-> -		if (ret)
-> -			return ret;
-> -	}
-> +	/* Balance the suspend even if the device couldn't be woken up. */
-> +	if (data->client->irq)
-> +		enable_irq(data->client->irq);
-If we are going to reorder suspend, I'd expect this to also move
-and be done before the wake up. I think that should be safe enough?
->  
-> -	enable_irq(data->client->irq);
-> -	return 0;
-> +	return ret;
->  }
->  
->  static DEFINE_SIMPLE_DEV_PM_OPS(sx9310_pm_ops, sx9310_suspend, sx9310_resume);
+>  	if (adc->n_tm_channels > 0) {
+> -		ret = adc5_gen3_add_aux_tm_device(adc);
+> +		ret = adc5_gen3_add_aux_tm_device(adc, iio_device_id(indio_dev));
+>  		if (ret)
+>  			dev_err_probe(dev, ret,
+>  				      "Failed to add auxiliary TM device\n");
+> 
+> ---
+> base-commit: f1ac44c32cba88ad65dcecd4a279661d14e93651
+> change-id: 20261028-fix-adc5-tm-c96b13a4f442
+> 
+> Best regards,
 
