@@ -1,62 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793497779;
-	b=KIceVMWZ2xpoP9GsGKT7HnzJFPEfLIjsWT97cXFg++HWO/6Qfm4X14HhPjimVmOJZQ7T
-	 fDalmLsor4b1nlHISGgus4i6BvTK6TsSlW/YFo74CjgFlIA84UVcqFe1OiaysUrAUsNyl
-	 VdlBxllIzXfymjnd2xtjHBXOSCvYAF4DeFEeFLqjnoMhk/cwt0G7znetjmYthzpcpMDt+
-	 s/tsD36gKypnLHSx3ji6SjMVebJwhUFpgvcwqva5l+gEC36aiEZ139Ht+DpfmNls08tCs
-	 /DOqpD8qU7TM10WIhMdTAMirc+6lknGTM3UVnxuzo1QuhwslyY0YYpUxxYLm+Y6EJeg==
+	t=1793498066;
+	b=p/cQIUvZXOk/bEmdn08HKABuQPY+USy8haFFqHOdiIWREN1Q0Tz3kcJACHV8MF6vvYpj
+	 P9aU5r5RqwGcKbTBBfET4zUeT7URYrhk5Ec9FlBDpW2gLyv2OPIpkwo1sde//kUQe4xPQ
+	 afnwOxSXLRyexz76gMfHbjqcumYylGaKA2jWOBv65VNL/bROsfdMo1DJdatBrZILKn0tP
+	 PaZRHeNUtITky8zRGKqMFEBIUAVuHwXNKME6Dok7cZzW8FBugWzElZx3ocWbwMN1qbKYB
+	 UaOmfVkVasilRgTxm6uFZk4nfinNo3JFYhJ7cKB2ySPIBze8rY0InmTB9SMRzJwCinA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793497779;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793498066;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=NLPHjAXnjyuMTdfzoDtQeuMq7VGsQqOCv+QqYzkDD0M=;
-	b=EWO7ROSJ1V7Zkh/dCfnUadknjzlMxKfmf/1+vnK7f270iQZSSAUFS6ynT7eBK4TktWSf
-	 BXPOiu4z3RygTSyAjINRVtviQOQACV/33woQwfY2JZdxyijursdKt9qrqxfxGleKTkhzR
-	 DUY8/jBhf/9eihCqnx3qkZI+mx52FJ6TXAkIqYAY2aR9Se6iqdxzUMiCOoENqgtEJbgIV
-	 D9aKuvp1B96VmGEwjQc8WT8msfb5odzrQWAmcHYc7P4koq0IwUGUqys3anZBeOjZoFOjo
-	 37wIN0k7wtHbi5K30UfSRtOjpSTWokKOQq+PrdIGH1/X2tgHshWmy+h/aONIFI+GDIw==
+	bh=v3ObFcPZJbeRiKkRyrxGK09fSNusHiNAUgb/BvLOJQg=;
+	b=Qk+KWtaO8yqM9+/DOAbgp+alHvvt4H/Lzl87+I5rLqtuE4iW4N0td2Vphsn8gqloA0mZ
+	 MSZiSiLoad5xYiesm4ockHnErF64jhFh/tEs+e8Uf49clzMWjopvA2iWBMvX0PFSpNMGy
+	 aG9DT3rcfWXxd6uhu1JTnJ/0a6zlpOnqSrfcK9ehhIwHy75TwtYHCw/O9KhN1tXKcxxZL
+	 vykszXukIKdpzBsjBZWXeO+/87tWEy1l6p/hP0EbL4ITqcj8rylB8L3MQtnhiIbCTNM9t
+	 4fOQfDsGCs0huwCiWA0RhaELBOTQwlnr+rZQkqCJ1baycyHwVpxQ5Memla3QnqWV9yA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VdvZPlnA;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FurM66+j;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0592D606A324;
-	Sun,  1 Nov 2026 01:49:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7702606A324;
+	Sun,  1 Nov 2026 01:54:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VdvZPlnA
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4068B1F000C1;
-	Sun,  1 Nov 2026 01:49:37 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FurM66+j
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED4791F000C1;
+	Sun,  1 Nov 2026 01:54:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793497778;
-	bh=NLPHjAXnjyuMTdfzoDtQeuMq7VGsQqOCv+QqYzkDD0M=;
+	s=k20260515; t=1793498065;
+	bh=v3ObFcPZJbeRiKkRyrxGK09fSNusHiNAUgb/BvLOJQg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VdvZPlnAX2kZker4vaxAXk7QW6Loi5C0hOLs4lGN7kLjh/k6oBTkW5TlcCyG/lE/3
-	 uNXECFBiwPgvyYIrWh7TD4JZo5wZm1Fnj3IjeNL4JmIEyvQMigzns4a6lK1FCm/R7Y
-	 1Svytth2/hcySiRU2vU9eXWdDpuwiwiOMRGyiPHVpub2pc75sOPhT2fnzqSLBUErrW
-	 I46YCqFOGvr9sLC4yZzfb1KgNVWvEmyfCylQxtoYt0MSBTrgV3g1p3OClz80LqyEuC
-	 iCZMbnqwjoZ+ec8H87PCWXwLiDGwH3LDWxQhfO4gzU/+lC6+zFBGDM/p8PwyepimCk
-	 u7Zc6TsYeQqjg==
-Date: Sun, 1 Nov 2026 01:49:35 +0000
+	b=FurM66+jC+VY1wEq07yWqSc5R7ghKYCDEvyM53uyk6CJFxhT3Xb8gEsY7OUEMiEWR
+	 7iC5Ax31jSTcxPQGvaa6p2JfeZxnaBOzM2njqdj05lWZPY3UwKNCt1IkqnuAc1BPwR
+	 NERuYrub6sLjfUnFQS0PdC8Pe4AnDNB06/B6uVGVNGZHnZ3Nni5DkIc5E8kBgwqU15
+	 AfgjSluiP7PMQv4T5ZPIcKmLsCKAXbTYbZUc6sFNIhi1HlRXDKP1AZ2+2dy4BcXMow
+	 mzyoNBFlA/mk070M3gdyrardf958pz0XqFb070yuq8f1hNsH3t/MzEETqpIjW6Mqbf
+	 O3kPhKoSszHMA==
+Date: Sun, 1 Nov 2026 01:54:16 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andrei Stancovici via B4 Relay
- <devnull+andrei.stancovici.analog.com@kernel.org>
-Cc: andrei.stancovici@analog.com, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
- Joshua Crofts <joshua.crofts1@gmail.com>, linux@analog.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v3 0/4] iio: adc: ltc2497: add LTC2493 support and
- line-frequency rejection
-Message-ID: <20261101014935.411c75af@jic23-hlaptop>
-In-Reply-To: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
-References: <20261029-submission-ltc2493-support-v1-v3-0-c7dd5f877c3b@analog.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
+ Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] iio: proximity: sx9310: keep the IRQ balanced
+ across suspend and resume
+Message-ID: <20261101015416.4b477c91@jic23-hlaptop>
+In-Reply-To: <20261028220444.70121-2-kapoorarnav43@gmail.com>
+References: <20261028220444.70121-1-kapoorarnav43@gmail.com>
+	<20261028220444.70121-2-kapoorarnav43@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,96 +64,106 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 29 Oct 2026 00:24:25 +0200
-Andrei Stancovici via B4 Relay <devnull+andrei.stancovici.analog.com@kernel=
-.org> wrote:
+On Thu, 29 Oct 2026 03:34:37 +0530
+Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
 
-> This series adds LTC2493 support to the ltc2497 driver, and adds FA/FB
-> line-frequency rejection for the LTC2499 and the LTC2493.
->=20
-> It includes:
-> - the LTC2493 device-tree binding,
-> - FA/FB line-frequency rejection (50Hz, 60Hz, or both) exposed via
->   filter_mode, implemented in the core and enabled for the LTC2499,
-> - a preparatory refactor giving each supported channel layout a channel
->   set in the core, referenced directly from chip_info,
-> - LTC2493 support in the driver: 4 single-ended inputs or 2 differential
->   pairs, 24-bit result, same command format as the LTC2499, the internal
->   PTAT temperature channel, the 2x conversion speed mode exposed via
->   sampling_frequency, and the same rejection selection.
->=20
-> The rejection patch also adjusts the conversion wait time for each
-> rejection mode. The 50Hz-only mode takes up to 163.5 ms at 1x, while the
-> previous fixed 150 ms delay only covered the default 50/60Hz mode.
->=20
-> Validated on a Raspberry Pi 4 running 7.3.0-rc4, over an IIO network
-> backend, with a DC1010A-A board (LTC2493), a DC1012A-A board (LTC2499)
-> and an LTC2497:
-> - LTC2493: 41/41 hardware tests passed,
-> - LTC2499: 36/36 hardware tests passed,
-> - LTC2497: 24/24 hardware tests passed,
-> - all LTC2493 rejection x speed combinations were exercised without
->   conversion or I2C errors.
->=20
-> LTC2496 was build-tested only because no LTC2496 hardware was available.
->=20
-> The source in this series matches the hardware-tested tree.
->=20
-> Signed-off-by: Andrei Stancovici <andrei.stancovici@analog.com>
-I've somewhat speculatively picked this up on basis it looks fine to me.
-However, there is still time for additional review from Nuno or others
-as, whilst I'll be rebasing shortly on rc1, I probably won't push out as not
-rebasing until second half of the week.
+> sx9310_suspend() disables the interrupt first and returns with it still
+> disabled if a register access fails. Resume isn't called after a failed
+> suspend, so the interrupt is never enabled again. sx9310_resume() also
+> returns without enabling it on error. Without an interrupt line,
+> client->irq is 0 and both callbacks act on IRQ 0, which the driver
+> doesn't own.
 
-So applied to the testing branch of iio.git
+irq 0 doesn't exist any more on any architectures I think..
+It did once, long ago. Today it means no interrupt.
 
-Thanks,
+> 
+> Disable the interrupt only once the device is asleep, always enable it
+> in resume, and skip both when there is no interrupt.
+> 
+> Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 
-Jonathan
-
+I'm not keen on suspend and resume not being mirror images of each
+other with respect to ordering.
 
 > ---
-> Changes in v3:
-> - The channel-set selection moved into a preparatory patch, so the patch
->   adding the LTC2493 no longer touches the chip_info of the parts
->   already supported (Nuno S=C3=A1).
-> - chip_info now references a per-device channel set directly. The
->   num_inputs field and the keyed lookup it was matched against in probe
->   are both gone (Nuno S=C3=A1).
-> - The LTC2493 patch is reduced to the device-specific additions.
-> - The binding and FA/FB patches are unchanged. Nuno S=C3=A1's Reviewed-by=
- is
->   added to the FA/FB patch.
-> - Behaviour revalidated on hardware on all three parts; see the
->   validation summary above.
-> - Per-patch changelogs are under the --- of each patch.
-> - Link to v2: https://patch.msgid.link/20261022-submission-ltc2493-suppor=
-t-v1-v2-0-391d908d2877@analog.com
->=20
-> ---
-> Andrei Stancovici (4):
->       dt-bindings: iio: adc: lltc,ltc2497: add LTC2493 support
->       iio: adc: ltc2497: add FA/FB line-frequency rejection selection
->       iio: adc: ltc2497: select the channel set per device
->       iio: adc: ltc2497: add LTC2493 support
->=20
->  .../devicetree/bindings/iio/adc/lltc,ltc2497.yaml  |   7 +
->  drivers/iio/adc/ltc2496.c                          |   1 +
->  drivers/iio/adc/ltc2497-core.c                     | 208 +++++++++++++++=
-+-----
->  drivers/iio/adc/ltc2497.c                          |  47 +++--
->  drivers/iio/adc/ltc2497.h                          |  44 ++++-
->  5 files changed, 243 insertions(+), 64 deletions(-)
-> ---
-> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> change-id: 20261009-submission-ltc2493-support-v1-86449ede432d
->=20
-> Best regards,
-> -- =20
-> Andrei Stancovici <andrei.stancovici@analog.com>
->=20
->=20
+>  drivers/iio/proximity/sx9310.c | 42 ++++++++++++++++++++++------------
+>  1 file changed, 28 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+> index 79ba46d8a0aa..f824d00f1174 100644
+> --- a/drivers/iio/proximity/sx9310.c
+> +++ b/drivers/iio/proximity/sx9310.c
+> @@ -943,8 +943,6 @@ static int sx9310_suspend(struct device *dev)
+>  	u8 ctrl0;
+>  	int ret;
+>  
+> -	disable_irq_nosync(data->client->irq);
+> -
+>  	guard(mutex)(&data->mutex);
+>  	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL0,
+>  			  &data->suspend_ctrl);
+> @@ -956,7 +954,29 @@ static int sx9310_suspend(struct device *dev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	return regmap_write(data->regmap, SX9310_REG_PAUSE, 0);
+> +	ret = regmap_write(data->regmap, SX9310_REG_PAUSE, 0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Only once nothing can fail, as resume isn't called on failure. */
+> +	if (data->client->irq)
+> +		disable_irq_nosync(data->client->irq);
+> +
+> +	return 0;
+> +}
+> +
+> +static int sx9310_wake_up(struct sx_common_data *data)
+> +{
+> +	struct regmap *map = data->regmap;
+> +	int ret;
+> +
+> +	guard(mutex)(&data->mutex);
+> +
+> +	ret = regmap_write(map, SX9310_REG_PAUSE, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_write(map, SX9310_REG_PROX_CTRL0, data->suspend_ctrl);
+>  }
+>  
+>  static int sx9310_resume(struct device *dev)
+> @@ -964,19 +984,13 @@ static int sx9310_resume(struct device *dev)
+>  	struct sx_common_data *data = iio_priv(dev_get_drvdata(dev));
+>  	int ret;
+>  
+> -	scoped_guard(mutex, &data->mutex) {
+> -		ret = regmap_write(data->regmap, SX9310_REG_PAUSE, 1);
+> -		if (ret)
+> -			return ret;
+> +	ret = sx9310_wake_up(data);
+>  
+> -		ret = regmap_write(data->regmap, SX9310_REG_PROX_CTRL0,
+> -				   data->suspend_ctrl);
+> -		if (ret)
+> -			return ret;
+> -	}
+> +	/* Balance the suspend even if the device couldn't be woken up. */
+> +	if (data->client->irq)
+> +		enable_irq(data->client->irq);
+If we are going to reorder suspend, I'd expect this to also move
+and be done before the wake up. I think that should be safe enough?
+>  
+> -	enable_irq(data->client->irq);
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  static DEFINE_SIMPLE_DEV_PM_OPS(sx9310_pm_ops, sx9310_suspend, sx9310_resume);
 
