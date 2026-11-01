@@ -1,62 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793491101;
-	b=EzfeJjAiiiCmvPNFkGwSHZo9cihCwzZM0vmQDBz9Z2wAPqQgqPQ7KQcZ4nL7eY3vjcA2
-	 nPzIVWHVTt1n3klz9LbLdav8WLHSJbGAuEfQT0uP7vnjwypFvr5eOMJ66emlysebPngyI
-	 GZgBxp1q2slPEd0DVQTt/yrXxLTfwcqjclI2NbnuoUjrIGcfCf+NCa4LzsWRpreo2Bznb
-	 oM4znYhwe4Of7XtUkoRPIokhbTUHcSCPXgqDklY9nGsYRMW8iblPbqS3LNaWUJWJulhCm
-	 HDfJpZ6TEn8EwYf7nGa9CeMhRIIDtpIwprRneASbcXbiX8DmsFXjjn7qyYYW9g/zqIQ==
+	t=1793491452;
+	b=1KaPv18lemW92u3OMjwSfisjer9HwMNZ34YXNWNqM0pw2qiPgMCpn8XZNH1kpZ1Eo1Hl
+	 1DRyktRfbLO7WajZRIfOWpqcyiUP29YU0/bIBZQWVnDMXMjv49T8DEhWn9R+WMQluk/zu
+	 89BZFGlZ1aAA5WG5jNfqj+ipmb7w6eGWTOpH2G2gtB7njYYjDQVL8LzGjcuypNXQk3u/i
+	 xT9hAdCYdBlCxCcgJorxLdvjZIb3kbe0f2xtVB9B5bgybq+astFwu5mln+EFwEKmxjJH6
+	 Tfru3naksbCuD0FN92kvG9SGcjIKluluVUEo6OII6S2qQs3s2E7G/tpnCXl5K31I9aw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793491101;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793491452;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=6V0NiExjKiMGJ5h/1WwCW23VisWqxFUm51w7ztl/rtw=;
-	b=f1Fu5ckbutAMohD33pQt5+MtsRlwP+v5MwWA9FYVLuYQLXncRjK45tT32SwHLegviP8B
-	 5XY532mGHzJCtoFpliZJ8mRtCBUhJXe/7dOf5vdocOT2GStaw3X6lg2ZZgOi2l4cR1EyX
-	 WHvXVoGEhyfpFZMchQungIFg4UaHO7j2QBgcVNmO0b6QxcG+7q43upCyGio+5uvG84z5N
-	 FewQmvWNhtOLy/wkbExND9EGF9whrgZwckfqw7ilFzxKaHn2KrpZEKS5ESR1dg/D2igFA
-	 58qLIh8CBDxudLV+DlBkI3mqDrfB4c+78zH/MyFjCyltMYfet3I9qbIyQS4h1UNAW0g==
+	bh=3DxqaAvoC2uAX8+s2/lJDh1AcKyFA/x2pgp6BwQODEM=;
+	b=IgkPzEMKkwNukf4B41e8+ABlPyo6XWHOaXpaFfc8ZFbFuAsDe0HDHsBL3fwByuIcXr3a
+	 /5n6JQT+8M/cZ6V0HiR8w0kO53JwhLPJXqqs4a6zmIqyflWhevvLrjWJOovaFLBIsUQg6
+	 pPLwgaUpT8O+ftHbq415FIG0dEAOvS4yEdmM0uPWpQXJ465CDwzobDX5kI3r1hl1OwX8P
+	 yrqjr+rixGj/dEoZKP/CDuitO582JqN8hUJ7BBc8juN9uI+2kP8aUgLoSdmygdTE7Y4k4
+	 BDCQpOAWU5roEso/Qtbab1FN7buU48ZP/X56EQJuznZ2Jjl71U+N1MkxSKE7D6ko7gw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="cVnD0I/9";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X5WjeD7g;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08C5606A31A;
-	Sat, 31 Oct 2026 23:58:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4B13606A31A;
+	Sun,  1 Nov 2026 00:04:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cVnD0I/9
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A50E11F000C1;
-	Sat, 31 Oct 2026 23:58:19 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X5WjeD7g
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 835EE1F000C1;
+	Sun,  1 Nov 2026 00:04:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793491100;
-	bh=6V0NiExjKiMGJ5h/1WwCW23VisWqxFUm51w7ztl/rtw=;
+	s=k20260515; t=1793491451;
+	bh=3DxqaAvoC2uAX8+s2/lJDh1AcKyFA/x2pgp6BwQODEM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cVnD0I/925gFCOJnVBwIxkZZegH1NRZRU1VUlRVXvS37S8KkDDShwleVoT+PlUwcj
-	 LsyCOGO2YsjHP3pZwxLlQFHmt3Iecy605KhGnarPeNvdwfezWKHIq622wCKlmb0RtO
-	 cApZpSoZLOQM0CTiTd9SlSS78sclPU34sZnG8TJhFreAzUwwY8n3JCO7MZ7PmeMgUK
-	 4eq7A6+HHo1uUmX6U3Zl9fZ4wKpYhlNantSso2zNMALQhHud3S4KH1HktQ1luVbU+n
-	 BlkP4UpKQV2/3TL/GLa1kCXEHajYtyHH7Rol1IEK4F3PjE17UCQzkcTb4WnmuLxD2/
-	 TnLd1R5eWQEYA==
-Date: Sat, 31 Oct 2026 23:58:15 +0000
+	b=X5WjeD7g6cq6rexakEaQ3NCj8GKHfFdG5bqmIW4r44v1bOKE3HMNS1yDOSDIDwINa
+	 Zn3Hr42/Um7idvrtdIgTOkG+s3rujcu+ggq3/XVYyhb1LoB1XbfSTX9r6p/YHsf6Vs
+	 XuKd+YyvSAf2BitdH0lo9wq6NvFqX1cR5xIAcYIb0GUPXJkv0TmQlKREBGDpnK8olh
+	 asglpLoeDLQwucbFZ+4qbJAk004iaIg2A01HFK+hGuQGyk4CzRRG28fTKZUJEMIRAo
+	 yUF5/nkhu9iOzqniYsaQRyLnR6rVgsPniaHQ9+jBDrtvTmq3+xn28r89sRwas80a9y
+	 yBRb6DAxN7J7g==
+Date: Sun, 1 Nov 2026 00:04:04 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Tristan Madani <tristmd@gmail.com>
-Cc: Kevin Tsai <ktsai@capellamicro.com>, Lars-Peter Clausen
- <lars@metafoo.de>, David Lechner <dlechner@baylibre.com>, Nuno Sa
- <nuno.sa@analog.com>, Andy Shevchenko <andy.shevchenko@gmail.com>, Hans de
- Goede <hdegoede@redhat.com>, Jean-Baptiste Maneyrol
- <jean-baptiste.maneyrol@tdk.com>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org, Tristan Madani
- <tristan@talencesecurity.com>
-Subject: Re: [PATCH v3 2/2] iio: imu: inv_mpu6050: validate ACPI object
- types in asus_acpi_get_sensor_info()
-Message-ID: <20261031235815.4805cf65@jic23-hlaptop>
-In-Reply-To: <20261029110829.1086835-3-tristmd@gmail.com>
-References: <20261029110829.1086835-1-tristmd@gmail.com>
-	<20261029110829.1086835-3-tristmd@gmail.com>
+To: laixiangwu <laixiangwu@cmss.chinamobile.com>
+Cc: Linus Walleij <linusw@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: gyro: mpu3050: Fix runtime PM refcount leak in
+ trigger enable path
+Message-ID: <20261101000404.41fe1028@jic23-hlaptop>
+In-Reply-To: <20261030084305.1660-1-laixiangwu@cmss.chinamobile.com>
+References: <20261030084305.1660-1-laixiangwu@cmss.chinamobile.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,28 +65,107 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 29 Oct 2026 11:08:29 +0000
-Tristan Madani <tristmd@gmail.com> wrote:
+On Fri, 30 Oct 2026 16:43:05 +0800
+laixiangwu <laixiangwu@cmss.chinamobile.com> wrote:
 
-> From: Tristan Madani <tristan@talencesecurity.com>
+> mpu3050_drdy_trigger_set_state() calls pm_runtime_get_sync() when
+> enabling the data ready trigger, but all five error returns in the
+> enable path return directly without the matching
+> pm_runtime_put_autosuspend(). The disable path, in contrast, drops
+> the reference correctly.
 > 
-> asus_acpi_get_sensor_info() iterates through a nested ACPI package
-> structure without checking types at either level.  The outer object
-> returned by acpi_evaluate_object() and each inner element must be
-> validated as ACPI_TYPE_PACKAGE before accessing their package.count
-> and package.elements members.
+> As a result, a failed trigger enable leaves the runtime PM usage
+> counter incremented and the sensor can never runtime suspend. It also
+> leaves hw_irq_trigger set to true, claiming the hardware IRQ is in
+> use when it is not.
 > 
-> Use acpi_evaluate_object_typed() to validate the outer object type
-> at evaluation time.  Add a type check for each inner element before
-> accessing its package contents.  Also replace kfree() with
-> ACPI_FREE() for the ACPI-allocated buffer.
+> Add an error label that drops the runtime PM reference and clears
+> hw_irq_trigger, and check the return value of pm_runtime_get_sync()
+> like the rest of the driver does.
 > 
-> Fixes: a35c5d1aa96a ("iio: imu: inv_mpu6050: Create mux clients for ACPI")
-> Cc: stable@vger.kernel.org
-As with the previous.  Hardening against buggy firmware isn't
-a fix. It is however nice to have so with those tags dropped
-I've applied this to the testing branch of iio.git
+> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+> Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
+Hi,
 
-Thanks,
+> ---
+>  drivers/iio/gyro/mpu3050-core.c | 22 ++++++++++++++++------
+>  1 file changed, 16 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+> index 07c0f9011..9c6d5ba82 100644
+> --- a/drivers/iio/gyro/mpu3050-core.c
+> +++ b/drivers/iio/gyro/mpu3050-core.c
+> @@ -988,20 +988,24 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+>  		return 0;
+>  	} else {
+>  		/* Else we're enabling the trigger from this point */
+> -		pm_runtime_get_sync(mpu3050->dev);
+> +		ret = pm_runtime_get_sync(mpu3050->dev);
 
-Jonathan
+Read the documentation of this function.  It suggests what
+I think is the appropriate change here. Use pm_runtime_resume_and_get()
+not get_sync()
+
+> +		if (ret < 0) {
+> +			pm_runtime_put_noidle(mpu3050->dev);
+> +			return ret;
+> +		}
+>  		mpu3050->hw_irq_trigger = true;
+>  
+>  		/* Disable all things in the FIFO */
+>  		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+>  		if (ret)
+> -			return ret;
+> +			goto err_put_pm;
+>  
+>  		/* Reset and enable the FIFO */
+>  		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+>  				      MPU3050_USR_CTRL_FIFO_EN |
+>  				      MPU3050_USR_CTRL_FIFO_RST);
+>  		if (ret)
+> -			return ret;
+> +			goto err_put_pm;
+>  
+>  		mpu3050->pending_fifo_footer = false;
+>  
+> @@ -1013,12 +1017,12 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+>  				   MPU3050_FIFO_EN_GYRO_ZOUT |
+>  				   MPU3050_FIFO_EN_FOOTER);
+>  		if (ret)
+> -			return ret;
+> +			goto err_put_pm;
+>  
+>  		/* Configure the sample engine */
+>  		ret = mpu3050_start_sampling(mpu3050);
+>  		if (ret)
+> -			return ret;
+> +			goto err_put_pm;
+>  
+>  		/* Clear IRQ flag */
+>  		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+> @@ -1037,10 +1041,16 @@ static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+>  
+>  		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
+>  		if (ret)
+> -			return ret;
+> +			goto err_put_pm;
+>  	}
+>  
+>  	return 0;
+> +
+> +err_put_pm:
+
+I'm not keen on an error block that only applies to one of the two legs
+of the if /else in such a large function.  Better here would be to introduce
+a pair of helpers for the if and else parts (enable / disable) and call
+the appropriate one.  Do that in a precursor patch and then this will
+become a more readable change.
+
+> +	pm_runtime_put_autosuspend(mpu3050->dev);
+> +	mpu3050->hw_irq_trigger = false;
+> +
+> +	return ret;
+>  }
+>  
+>  static const struct iio_trigger_ops mpu3050_trigger_ops = {
+
