@@ -1,62 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793555302;
-	b=Xkd+C7MhaiEEFg7BL2spbOk84hpo7nJyWmqslLXHZhyveskNqziTRrO2q/C2IoH1AQyI
-	 jUPZtxl/TnDhqk6n9+6us7U8Z5wpDrWfW04U19vErQ9A84aQoPl6cbMncf+b3gUWnB/xa
-	 5BpsXkeMsz5Wk8pci8F+AFtu41zYYPiblHCEXK1wjxjUsjTAEG6as78XvqC9riaiHZXsr
-	 fH1D6U/oLeKcDmiQNcTRanlq02bIox3NgLNyu2VjRIdZwo70gvQ+WwDBZjeb5PSWfiWQa
-	 w0fY4JowYfMf7JdkyyR6geSvfqnVBjNW7KP/Aaqr7VHTRTPlOyIAknM5LEfb2ecrD7A==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793555302;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=UBm1kiri62EaTC8wl1H2p7PsuwOTdHeeIjuWlRIq8zk=;
-	b=eqD2c6uXqM4yr+d3H2Q8avriDOu0lvpHs/h/4aiEwiCO88biay2h8RO7P5CXRmGM2vbw
-	 GixdmEhC4aLanvzjSlLQPpgPtT52Yrm7AWczkUY9VU64d5QLfWVCl5r6z4Dyww9o14gby
-	 W54pW+twrtuWjHM20b9lBqyc0ZxWtrV8c+qclXTAN01R8oPTr/hVe7L0D/0V8T/anivgE
-	 AQYRzjNouPHrh92KHim9iR2ICAedDwund3dU4mgzsRBIIkpKZ9lmHOp0jDbFzwsTxCHeJ
-	 teB4yMFYhKT2gJKj8eR82SvO46gxSaMQ20NxyVPt6PdGJVF8LXxcsX9/rw+WlkkDvcw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KT0m98k3;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=74.125.82.176
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
+	t=1793555763;
+	b=CX6Sm5AeoN1ydK3hsdWuVMXfuXLJXmeOYeTagEpgIx7qNUJxekOxUKF507y8ax6m5CLC
+	 sJx3zrTubad11PKWa9PrS0YpXbtml0wiV69OBnlFDOa0wvf2HQS195xErxCpj3qHNRJQZ
+	 ISSCRX4X/ZhU/n5pKdHb0M+68LGynI/4fxKir43AUqgqenwUg+lRBe0v6GgcBwVufi/RU
+	 xoywdSw3kB8GPsT10WoTqzl9jf4XJM2Qgxx3ue1+kQkW1prxFQdnc3V8JtU5DWlnzyH3I
+	 e5fMO/kqe7N9hXTd48KZAoJl9klHYITgZbxZCNghZHg5kFafgX/xEF//j/PuYMJ0W3Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793555763;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=GoX7Xz5wrKL93mBkqFEu2q61WlbNu4zQ74W9jEnyAOI=;
+	b=oRx/xbd9zAYuRrF/ktfR65to36zYLTX35jksimNi02l6kBd7oxr8EmCyRHldVg9QEIg2
+	 ehEmT4uyZYucDPIMrRaeaVwYfbZHjuByFFBn66KKIZjd6dyKJDFOa2QogoUy9lgCpEkUZ
+	 ZdTSJaD6/OICvkEKb8X+CsW5W3tpSNDUZ9Fwsrw3Y1caB21I21kMvMATAVQlMCSwFD/Aq
+	 D/ULMXxnztRpS2WKPTKYkazKN3es3YTV+zPxdNTTlhqRgtbp9mdVCdtOFWFpcVdiMDsgz
+	 RDkEQqy/ihPPOdfhjyYsVg4UupjzXWEj3o6zUvqwFyZPWRRXyQtyOZL4Kf5bNS+6LKw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xI7Eg+iH;
+	arc=fail smtp.remote-ip=74.125.82.176
+Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00EC4606A324;
-	Sun,  1 Nov 2026 17:48:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E9E606A326
+	for <linux-iio@vger.kernel.org>; Sun,  1 Nov 2026 17:56:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A9E9E606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KT0m98k3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11141F000C1;
-	Sun,  1 Nov 2026 17:48:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793555301;
-	bh=UBm1kiri62EaTC8wl1H2p7PsuwOTdHeeIjuWlRIq8zk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KT0m98k3UOR0hY2Y+WT+ZObsDmEhEMolcBLNHvMhwchKY5dLNlekLEFg38RjMmkzw
-	 DCA4V5Cwc63T1GXyTtwdCnnJSBRuI7lR5R3OgexiyPw+WwbREeVzyE0OFSHYKy0m9w
-	 I6yqJPVWmzG9rm839BPgzort49dF90MwsNpqjnlTFiM8KYITEEYSZMbNT4OiHY4mCt
-	 P3hq6I6JDHHUZf+Q0NM8z4EmLvLIhJwYDN2VPEUS3k0oFHh1hL1kveANOQFUoAN60j
-	 xVMknE0mwOBWqfd9+O9j6+Kv6zlgiS5l+6bi5P5wVVKYHTEAL5kusm2s86vg9l6l35
-	 YVRK/0ZAbtCjA==
-Date: Sun, 1 Nov 2026 17:48:18 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Patrick Fischer via B4 Relay
- <devnull+admin.tsv-stahl-riesa.de@kernel.org>
-Cc: admin@tsv-stahl-riesa.de, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kevin Tsai
- <ktsai@capellamicro.com>, Svyatoslav Ryhel <clamor95@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add Capella CM3217
-Message-ID: <20261101174818.2aada52e@jic23-hlaptop>
-In-Reply-To: <20261101-upstream-iio-cm3217-v1-1-5e1724cae7b7@tsv-stahl-riesa.de>
-References: <20261101-upstream-iio-cm3217-v1-0-5e1724cae7b7@tsv-stahl-riesa.de>
-	<20261101-upstream-iio-cm3217-v1-1-5e1724cae7b7@tsv-stahl-riesa.de>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xI7Eg+iH
+Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-369f33df08eso4642436eec.0
+        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 09:56:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793555762; cv=none;
+        d=google.com; s=arc-20260327;
+        b=i7PazK5naBubWHLYIzCHAWA1h0PPakX4z1fACFZYHM1AeNcFkDVl1nznfq4884fria
+         TgIE7dMP0acI/3kb5auVu4btYOhRoGIHrSqXp++62CxYnHK+MGaOQMl86SGOzb9FQKOR
+         xuJAsvPQ8Tj8ziELBnk4FndLKP2nYEM9Sba80fTRjOf2Wv0GiJDYpHf7UmDdFqOeILjX
+         oMWeVLNo+amUWjiVy2C5allKxXYGYI+P2pASyc5R40j4JXq7nR4HG4rhB3GpPpRhGVUA
+         tl9tvHittEmbRuUX4R6auD2YMQh0+t+P9ZuD/vXjRv1vmRgEVzB6fQ5V31oaoZtxB8lp
+         1POw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=GoX7Xz5wrKL93mBkqFEu2q61WlbNu4zQ74W9jEnyAOI=;
+        fh=I0eb2EFhKz8mIYRuDgjgo4JgwAcdSFsLCGr0+wAE46I=;
+        b=ZZr7tQT/rqdPjv/iP8NpYQ8V3YSzd3BFvEaj75AEAtfqqe8FaIcITGd8lszvIvrzR+
+         ImZKIWEhN6pPBH/Oyuq+EpVOyHWUIXkHfCDSXJTiOFERALHA9dU76aFvUKPCq9Xh33X5
+         p6pYQVvrEe4h8FgmMDjNetYDL933s1lrLDu0nmohfrJhMNDup/2UkM+UrZqrV/4HAvJ7
+         pEVEOT/GDnwqvp5ySu34qvAe3Jhb98XGwRV1NrLOI4c3l/taqr4JujX0zSI6xmrKzwu/
+         IIf61nqrHHNr34in+6oOOmzQlY26oSxgzcwo0h/PRRO4Ckq50Gheb2/HvpXWN/r0ADxx
+         sGaw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793555762; x=1794160562; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GoX7Xz5wrKL93mBkqFEu2q61WlbNu4zQ74W9jEnyAOI=;
+        b=xI7Eg+iHeR8rPP+5vWDtTL5ybfLa9tfSUe6MjVJlKbjP3y8byZoks27U/XyRJiUKeA
+         3APi1BVxzVLn0GiDoMIAt1XFUF4HgOrEIHP8Kg3BqkNBFcgy/B24O2Hdx76f7Xg91Wdp
+         6J1oMess/iGYBKKfo7CP9+TpIsQdvaQMxq2aBE7QUFXjJlQgIioX8mL9scGZ8YoRFA2p
+         Q+AKFFznQ1GAja7JTHDWBbtuN7P88Bt88vQg9PzQkZs6ZKSu40/nqDfrEWpq4RJ+OEcm
+         fA8vuG7ZYRxLFQG2BY8cRbk0MofoQtVbSnrwMBGrUNVFhjz9gO2fJ6xSqZ5A6Pwt5sQn
+         wC+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793555762; x=1794160562;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GoX7Xz5wrKL93mBkqFEu2q61WlbNu4zQ74W9jEnyAOI=;
+        b=GxFsiSaByhe3T9QG4NB+HvetewI3YtmGbKwsDkhyZ3Sw0aqqA9iW224L0GBT6Tr8z5
+         foN8DhaMI5q0PLrIe2cRN8W/HoD2FqE83rJ87F3XcVeb3YubYJ8YVzYz/wQ0u+CKg2r7
+         /3vH/WEp8hrS8/Ez6nOB1VGVD1jnNqFmTyWNwNG0gV1IxybmkmHNMY398SzBwwuAVfKv
+         M5b0FNfq7bQJWMoWUOIAZ6ziMUfmfpNX7D8C7Clr5rm+mb2AB3HOKIHGLrbASkJTT44H
+         RxYfvVDDkBykm2pigFHh3dC1oSJGubg5ffmbdohvTmYnu8ymNQPxE5wt6zGyMQyhVkta
+         qqPA==
+X-Forwarded-Encrypted: i=1; AKwUvBxCxHBAFI6PZjaETuZhkYQrT4TA5GVXSziz0y71iN010sfV2SIE+3/K05zzLgLV0SoJHpGw/df5vhI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+Zlpj3TD/a9P7xpVjgTcuO5ZfOj/OXisCm2wh92iSKUpIgB6Lx
+	Tp07QvPBdw2+pOUkmA2lu1DhqzTYQS0w+REPW4pQ3eGhu/i8e2+8ig/UUMMX3I+lqeUv1SxAA4L
+	Cun5ENNpEN8fKO+hoMjHPUEwIw22FncQ=
+X-Gm-Gg: AYBFou0gpBgxqmAzbHbNXRlguHtHzrOSLA8KVdBP/h8h1A05Z89xaEnSMFG7fGEKGwA
+	oQsBu3VAf9Z1/R2MU8gM9Lc1sbFUUCr4upyXUFeyeyEg2nEqYm1sTl9LI/QQn/WLaC7Om45Z6Mv
+	rn2NNPKtkrC3sIEuj3TM+QOdQXvNm1rN2slkGtkPdhOC0ae0HochVgjxRhimfTVPa87QWCv6BrZ
+	p8/tSs9V6VvNRJy9CevJGyw3zJd3D8Rb9LkfDjf4xnM3e/R1EqBOjsKoj/mUhpxULhtOMcf4N2l
+	e1lrulbaEadOgw4FWRpVV+g+9CAt+W2tPGCraG/hecso3p14Qp+7dleFazAIaPs8cAcHAExEHdc
+	ItUix+jnD5vccBk0skKZP1j6pJ4//8SZuTHTRoPlXiAnsSg4vaA0jWsBLeSFVw1rvG4OBFg==
+X-Received: by 2002:a05:693c:895c:20b0:359:ef9:9be3 with SMTP id
+ 5a478bee46e88-36a4236a466mr11835005eec.11.1793555761519; Sun, 01 Nov 2026
+ 09:56:01 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -66,88 +104,222 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20261101141507.119186-1-clamor95@gmail.com> <20261101141507.119186-3-clamor95@gmail.com>
+ <20261101174140.4d11fdfc@jic23-hlaptop>
+In-Reply-To: <20261101174140.4d11fdfc@jic23-hlaptop>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Sun, 1 Nov 2026 19:55:49 +0200
+X-Gm-Features: AclHuK8EZUIy45_qfYG3a3MB3Ax9bYhjt0WTcJl5ffWhhE8QVM-VmOuMMgRylVc
+Message-ID: <CAPVz0n25RR-ayBHuvP8KkrYc22AzHT67=nSEZn=hzRufUJw0zg@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] iio: light: ltr501: Add support for the
+ LTR-659PS-01 proximity sensor
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Esben Haabendal <esben@geanix.com>, 
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+	Pan Chuang <panchuang@vivo.com>, Hemanth Selam <hemanth.selam@gmail.com>, 
+	Antoniu Miclaus <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 01 Nov 2026 15:46:06 +0100
-Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org> wrote:
+=D0=BD=D0=B4, 1 =D0=BB=D0=B8=D1=81=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 19:41=
+ Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Sun,  1 Nov 2026 16:15:07 +0200
+> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+>
+> > Add support for the Lite-On LTR-659PS-01 proximity sensor. This device =
+is
+> > nearly identical to the LTR-559ALS-01, but omits all elements related t=
+o
+> > ambient light sensing (Even the regmap is identical, but ALS registers =
+are
+> > marked as reserved and interactions with them are discouraged).
+> >
+> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> Hi Svyatoslav,
+>
+> Various more general comments on the driver in here. Only real request
+> is to not copy the rather ugly existing indentation for new code.
+>
+> If nothing else comes up in review, I can just tidy that up whilst applyi=
+ng.
+> For now I'm going to leave this on list to give others time to take a
+> look.
+>
 
-> From: Patrick Fischer <admin@tsv-stahl-riesa.de>
-> 
-> The Capella CM3217 is an ambient light sensor with an I2C interface but
-> without registers and without an interrupt line. It always answers on
-> the two addresses 0x10 and 0x11. The node describes the first address;
-> the second one is fixed and claimed by the driver.
-> 
-> The sensor is used in the NVIDIA Tegra Note 7 and the NVIDIA Shield
-> Tablet.
-> 
-> Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
+I can address some of your suggestions in this series. I would like to
+send v2 anyway since Sashiko found a few legit places needing a fix.
 
-Hi Patrick
+> Thanks,
+>
+> Jonathan
+>
+> > ---
+> >  drivers/iio/light/ltr501.c | 58 ++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 58 insertions(+)
+> >
+> > diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> > index 302be2fc314c5..5cc1141322ad5 100644
+> > --- a/drivers/iio/light/ltr501.c
+> > +++ b/drivers/iio/light/ltr501.c
+> > @@ -96,6 +96,7 @@ enum {
+> >       ltr329,
+> >       ltr501,
+> >       ltr559,
+> > +     ltr659,
+> >  };
+> >
+> >  struct ltr501_gain {
+> > @@ -649,6 +650,26 @@ static const struct iio_chan_spec ltr301_channels[=
+] =3D {
+> >       IIO_CHAN_SOFT_TIMESTAMP(2),
+> >  };
+> >
+> > +static const struct iio_chan_spec ltr659_channels[] =3D {
+> > +     {
+> > +             .type =3D IIO_PROXIMITY,
+> > +             .address =3D LTR501_PS_DATA,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE),
+> > +             .scan_index =3D 0,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 'u',
+> > +                     .realbits =3D 11,
+> > +                     .storagebits =3D 16,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +             .event_spec =3D ltr501_pxs_event_spec,
+> > +             .num_event_specs =3D ARRAY_SIZE(ltr501_pxs_event_spec),
+> > +             .ext_info =3D ltr501_ext_info,
+> > +     },
+> > +     IIO_CHAN_SOFT_TIMESTAMP(1),
+> > +};
+> > +
+> >  static int ltr501_read_info_raw(struct ltr501_data *data,
+> >                               struct iio_chan_spec const *chan,
+> >                               int *val)
+> > @@ -1178,6 +1199,12 @@ static struct attribute *ltr301_attributes[] =3D=
+ {
+> >       NULL
+> >  };
+> >
+> > +static struct attribute *ltr659_attributes[] =3D {
+> > +     &iio_dev_attr_in_proximity_scale_available.dev_attr.attr,
+> > +     &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> > +     NULL
+> > +};
+> Not something I'm going to ask for as part of this series, but
+> if anyone working with this driver has time it would be good to
+> move the available handling over to the read_avail() callback
+> and masks.  This is an old driver and so far not been converted
+> to that newer infrastructure.
+>
 
-One small thing inline. 
+This I don't promise, I will see what I can do. Maybe you have a good examp=
+le?
 
-> ---
->  .../bindings/iio/light/capella,cm3217.yaml         | 45 ++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
-> new file mode 100644
-> index 000000000000..b2ddb14d657b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
-> @@ -0,0 +1,45 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/capella,cm3217.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Capella CM3217 ambient light sensor
-> +
-> +maintainers:
-> +  - Patrick Fischer <admin@tsv-stahl-riesa.de>
-> +
-> +description:
-> +  The CM3217 is an I2C ambient light sensor without registers or interrupt
-> +  line. It always occupies the two I2C addresses 0x10 and 0x11; the node
-> +  describes the first one.
-> +
-> +properties:
-> +  compatible:
-> +    const: capella,cm3217
-> +
-> +  reg:
-> +    const: 0x10
+> > +
+> >  static const struct attribute_group ltr501_attribute_group =3D {
+> >       .attrs =3D ltr501_attributes,
+> >  };
+> > @@ -1186,6 +1213,10 @@ static const struct attribute_group ltr301_attri=
+bute_group =3D {
+> >       .attrs =3D ltr301_attributes,
+> >  };
+> >
+> > +static const struct attribute_group ltr659_attribute_group =3D {
+> > +     .attrs =3D ltr659_attributes,
+> > +};
+> > +
+> >  static const struct iio_info ltr501_info_no_irq =3D {
+> >       .read_raw =3D ltr501_read_raw,
+> >       .write_raw =3D ltr501_write_raw,
+> > @@ -1218,6 +1249,22 @@ static const struct iio_info ltr301_info =3D {
+> >       .write_event_config     =3D &ltr501_write_event_config,
+> >  };
+> >
+> > +static const struct iio_info ltr659_info_no_irq =3D {
+> > +     .read_raw =3D ltr501_read_raw,
+> > +     .write_raw =3D ltr501_write_raw,
+> > +     .attrs =3D &ltr659_attribute_group,
+> > +};
+> > +
+> > +static const struct iio_info ltr659_info =3D {
+> > +     .read_raw =3D ltr501_read_raw,
+> > +     .write_raw =3D ltr501_write_raw,
+> > +     .attrs =3D &ltr659_attribute_group,
+> > +     .read_event_value       =3D &ltr501_read_event,
+> > +     .write_event_value      =3D &ltr501_write_event,
+> > +     .read_event_config      =3D &ltr501_read_event_config,
+> > +     .write_event_config     =3D &ltr501_write_event_config,
+>
+> The indenting of the existing structure is weird and could do with a tidy=
+ up.
+> I'd suggest just dropping any attempt to force alignment.  As is shown
+> here, doing that tends to lead to inconsistency over time as a driver
+> evolves.
+>
 
-Put the documentation about using who I2C bus addresses here rather than
-in the introduction. This is where anyone wondering about allowed reg for
-a device that sits on two addresses would look.  Maybe add a little
-on what goes to each address.
+This I will address as a separate commit before adding ltr659
 
-> +
-> +  vdd-supply: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        light-sensor@10 {
-> +            compatible = "capella,cm3217";
-> +            reg = <0x10>;
-> +            vdd-supply = <&vdd_2v85_sen>;
-> +        };
-> +    };
-> +...
-> 
+> > +};
+> > +
+> >  static const struct ltr501_chip_info ltr501_chip_info_tbl[] =3D {
+> >       [ltr301] =3D {
+> >               .partid =3D 0x08,
+> > @@ -1283,6 +1330,15 @@ static const struct ltr501_chip_info ltr501_chip=
+_info_tbl[] =3D {
+> >               .channels =3D ltr501_channels,
+> >               .no_channels =3D ARRAY_SIZE(ltr501_channels),
+> >       },
+>
+> Another nice to have but not a request for this series.
+> Would be good to move away from handling these as an array with the enum
+> value in the firmware tables. That scales badly and runs into NULL check
+> problems when we use the generic firmware accessors (which we should real=
+ly
+> be using here). i2c_get_match_data().  The standard way to do this
+> today is to use separate named structures and put pointers to those in th=
+e
+> tables.
+>
 
+This I will address as well.
+
+> > +     [ltr659] =3D {
+> > +             .partid =3D 0x09,
+> > +             .ps_gain =3D ltr559_ps_gain_tbl,
+> > +             .ps_gain_tbl_size =3D ARRAY_SIZE(ltr559_ps_gain_tbl),
+> > +             .info =3D &ltr659_info,
+> > +             .info_no_irq =3D &ltr659_info_no_irq,
+> > +             .channels =3D ltr659_channels,
+> > +             .no_channels =3D ARRAY_SIZE(ltr659_channels),
+> > +     },
+> >  };
+> >
+> >  static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8=
+ ps_val)
+> > @@ -1635,6 +1691,7 @@ static const struct i2c_device_id ltr501_id[] =3D=
+ {
+> >       { .name =3D "ltr329", .driver_data =3D ltr329 },
+> >       { .name =3D "ltr501", .driver_data =3D ltr501 },
+> >       { .name =3D "ltr559", .driver_data =3D ltr559 },
+> > +     { .name =3D "ltr659", .driver_data =3D ltr659 },
+> >       { }
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, ltr501_id);
+> > @@ -1645,6 +1702,7 @@ static const struct of_device_id ltr501_of_match[=
+] =3D {
+> >       { .compatible =3D "liteon,ltr329", },
+> >       { .compatible =3D "liteon,ltr501", },
+> >       { .compatible =3D "liteon,ltr559", },
+> > +     { .compatible =3D "liteon,ltr659", },
+> >       { }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, ltr501_of_match);
+>
