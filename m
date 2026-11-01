@@ -1,80 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793542530;
-	b=wiSEt6XEweh+mM6Sz1FNh7nrgJ01Vn/2Wsg0RDmFMTDvyTPpz4mseQxGGmZVq8CImIX+
-	 MxtiUK6+uVSZyRWaUBIG/ZaP2N8U3MRSRo8bhqngPqJ5V0gyN3hnbJR+j/ZjBKVCTVhYX
-	 sYEvf1bm1r5KSFMPUxaGqY2eAm94x9DRwCOtXnephRGKjzwOtTxHd5ucSkG0RMNwIUHNV
-	 DnocRubf2pO9gbaM9G/mavttOAeKXRro4vUJyUQEvp0/rhlY6ml5nzwLC09AJTbpXCjiK
-	 8pGREfCB3c0+n01P6ZCK7FeihH2ywhLzbpEo0SpMAAJ/VnSfTM8bO14evS6nWlKZNkg==
+	t=1793542533;
+	b=f4vJFekkvHhXU5CiPiBWUq8ePaafKCu+U1uHNqSX4k5ds7uL2TkE2lP/YtSlZfNU57AR
+	 EUt+zwgeVqaih2kdk+f6oNhc6Z+P0enaOhM2NJyyCTFVyRoU9bDXqgT9IAf6dhLKTeMG8
+	 SwhAAcbhTLRJGGMnUpPbJIy8/6aGqJ/YAeTdD5NR/6o0RxzOcTa59ChVe31jvLRad1XA7
+	 W2KNM0ktnacZYpxnJLQBRiWLm3bJMjp0Xm25oJiaprm20zQJ/YG39mvfOPZW8ut1Xy+7/
+	 C7Kav9fWo6+nAobh1ELLiIe5aCf9+R1Gt2ISLWwZjOq/vvP8QBOjew/Ey1+cpC12rwA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793542530;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793542533;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=i+HyPC3h0+CjA+c2wC2QKJxSGQ6LFt99JUqVEiYe5TM=;
-	b=cKdzjXyG2qp+MrsZd8nlAwWEKYYrpza83HZOIM86H0tuRvixz6s/KYeG5LwW1t6l/dRu
-	 SxK71cew/YDCdy7Xl5C0WT23CXs03VaaO8htoW1z0g06eM6AKBE3/1AdzzvzWUOlkNS2x
-	 eq8x2uVjlbl8bQTiGDhcRR5waGT2sxrvqrPVVMil9Q6pL9+xIF/Gziyfj0ZMiNU4zj6fC
-	 HuZzX7ZtqQp+TdgyXdj/VmDlK9iy3MIXOEPm5Nn41TamGLcP7Y908Nm0eHAPfOk3/rirO
-	 EcQs171ldDqoYFkDbF4SyCKWD/Tj8kT0ABDZpvc3JFGQnxjRIYed8WxWYmkAuHsuMMg==
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=xu7FC3Q8JkhKAZXkmoQyecqo7Y03cSTT/z26JLOH2q8=;
+	b=VJdmxPtcCcr4gZ1uyh5JGxoyrYEkO8TdpHePHy9C1Y/+udbKH/FD6gMbG0jyPp9XbMh3
+	 H6LUd9SoUCHy2v0cEtijAhkOikuIxlwYiEUFFuaAc1wGks2U/PTusd6u4WXQVivExUWfT
+	 NzA/wAX8kj9VJ3IHStoZOJy+BioUk+ASi7n2v3Zbn1+fVI8081gzKcWK9niaqAsKn5brX
+	 HAejKTvi1V1/Q1hDcng8pPzOjc4z7KrkMdPqZGrz6UR0DTCYh39ltpPbXtynkp9QoMhjl
+	 ZF33tOqE0oXCZM77b1//+gjLK+vaXDuEldRuacCzULZA8u33rrcv2AHpjM+bVreLq8w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="v/0dqfDh";
-	arc=none smtp.remote-ip=209.85.208.46
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hE+tk5Le;
+	arc=none smtp.remote-ip=209.85.218.43
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69575606A324
-	for <linux-iio@vger.kernel.org>; Sun,  1 Nov 2026 14:15:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 69575606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2943F606A327
+	for <linux-iio@vger.kernel.org>; Sun,  1 Nov 2026 14:15:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2943F606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=v/0dqfDh
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6b4f7d3cd98so964235a12.0
-        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 06:15:30 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hE+tk5Le
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c315869241fso302957966b.0
+        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 06:15:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793542529; x=1794147329; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=i+HyPC3h0+CjA+c2wC2QKJxSGQ6LFt99JUqVEiYe5TM=;
-        b=v/0dqfDh/LLX8QuRh45hi2LGiNbiGbswWBbiecwizZ7IU5+c+Mj8bdNQZs8JkVPT/Z
-         mk5A4AAKTV5wdg8mRDxqoIEHPsbaykj+7nFV329SfGhcfdAtFWx5RBCv1NXQcnfDL3yP
-         +EP5Je/iBDNzFe70NuX/EghwgVSEbDM39NNh4W96uEkY11yLRaR7LD9TGNbd+DocD8zN
-         O2V/TtKTu8g+juww1i8It23ymEObXfH7rIRurTQ2Bylvr8jvYzD/1sGbRgiXlPKE5J+F
-         cz9op2k6jamY3DwOWtxxWrdLKljI9M0a6r8xZs9L7tYIRafDql7+MAbA3NW4a9jBvgBs
-         cKrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793542529; x=1794147329;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1793542532; x=1794147332; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=i+HyPC3h0+CjA+c2wC2QKJxSGQ6LFt99JUqVEiYe5TM=;
-        b=d/6bPNVlG48V7n42L8Vf2zhhbP+q8xamXjycjh39qBAmamDBbcDqWtx3V42CPFvjqM
-         TMiQ4qjRE9WJsogrIoCIhAl343qDpYRNlyWHWY58gwMxE47DinNQbP4Os7zxed6T60wb
-         deQBMoIOkdHkpxRPCo8J1QuHQB3MRsjfAHnUo+ZKVqVSU4+2DFCcd0x0E0u7tXr0PS7b
-         aeGaIcG1yD5TX848H7ihq3UDXL0PCdo4pfQCpsWhjCOsQTMce9FReDIdNptHDspwyBCw
-         L/rd6031SB9S0j6PPYG/y+BQaoxwk7gd2Twf1rM1hZMCLPuu/5IlBl1VHkLaTJiCC63U
-         b0xg==
-X-Gm-Message-State: AFq9FYKpZgr82NiJBQZb0jb0DDaaQKLA0cs8JNXkagFEbPyV/UfNo6Di
-	VKH94YOQh5M4ia8cQ/AOP1y3wF/BK7ro6ahjUiFYcHAwYu3r6q+O8WbS
-X-Gm-Gg: AYBFou1oJmM00fNMnItxYIUyeerv9UHo8ca102FfZJry1pONZ1/hrUzNrTQLZrHanZM
-	emBTk/ksZ1ajCWOA2u4KH6v0K73MkScs0LNRVsHQsqF5cwdMaUZUIDn8iAVvH5/ddn2QI560BM+
-	FHPjvdu9WfkljZl216FLOLC4KtidFzg84uB5SFlRJBPAW8IyrBCPc4aWSGWDBMpSz45lbeLrep1
-	UPGLBfOvQzHKvLqieVjerG3ySBxCwB2Yu6ob9YQ7et/pIseuNKgPIJHyZ2LZlGAPANEVf8GOSs1
-	1YXSlX3a6ARrQXtHqVC9yvEVrD/lhWdva+EOKZu9UaNiC32HpIJbjwxag45BdDEJ5Zw5krNItpz
-	ysXf8NjV17ZL9UHyB6Dvma9SNLpxoD/0VBI7bSzzoEIrFeqbYA0IuTr0ai2WByV0k/dqVTvhDVh
-	D+5Iyuj1C8g3TxHUxIJEY1Q5Pi8C6eFs2+qF8ucGHpmJFXpkE1PTBfmmGwL0cOiawZucZBtKQVj
-	cGOEspQeIGnxQT5M4XaXe4GXwhehb0eeY/GrhggP/GAIZVdnowmqrbzthQ5epasK50T8QHubJYO
-	0J5oF29XkcmPK/WG6pDMXolY2QjdvsP610sXHcqiaygdPHb73Q==
-X-Received: by 2002:a17:907:961a:b0:c31:91f9:60b7 with SMTP id a640c23a62f3a-c4ca7a69731mr631054166b.34.1793542528615;
-        Sun, 01 Nov 2026 06:15:28 -0800 (PST)
+        bh=xu7FC3Q8JkhKAZXkmoQyecqo7Y03cSTT/z26JLOH2q8=;
+        b=hE+tk5Leam7kz4ZKTkBOYn/U8XAqhR+uwoX8FgHVXR95UB8LGxUI+qygLbNQGE7eLg
+         3jqblPI8Kokn5TT6IY7vj17bYWcpr6M9OespfMNJxJ1Ly+S4nB6YTF5FYF3qIcM+jbHx
+         B7APhQF0iWQxtChIhY3TEKNlxf70K2GGFVVyaZCfDksj5CDLm5QPloaBzzPKRnJg/YHc
+         YNsgz5koB4952RoF5P1CEBiQOMZqKGDbM3S9p+AvFZv96GIXF6rfrI/FAOVvoUOUuNtx
+         8PFj1Ci/n+flAtpWnGqIdvDa21jJuj7+ev+lc2dTIoYNS6dqNXYwJpXaHoXIIadtxLcI
+         Ae0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793542532; x=1794147332;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=xu7FC3Q8JkhKAZXkmoQyecqo7Y03cSTT/z26JLOH2q8=;
+        b=cqV1X9Xc9gRpbAsyBHcQ2JpbXCi+HU3/oYenuNgykyMDFV9WkWR2Zl4jJ5nQldWGgF
+         U1L7GQ0LWBhVQ+AUjIyEJ+AfSFlRLWjQipbzOH6RJKMWbY8y28o3mlvOEGDF5GT5+Xtf
+         WfxQwGBH4BtrYkCAM2pD47rBlIMwFA6ZIM3FRjVPe3RsZHG1TGLrktpHeHd/goQdmyb8
+         qXpeXwSGg4YQNahqMdt1mNaM8nuW5DaTstMXW5S+Fk7cjclz5ZcOYEehdv2zJ49vHySY
+         /EA1OH7pZdsNJl3NF5nfW3/T/cy+EEpAw8xgiI7JEhddQi8Ys/zjZaoX83IEuMLF4KA+
+         gZXw==
+X-Gm-Message-State: AFq9FYIIau0PEPND2GS9Y3uI54yvUQCBvSyTl+r4Vg8G1hLQ+p5zXQ82
+	hJpLmrQs5TLZJzk7Si4blPnN/6n873R8dCUdYmiRdZVME3fqBgzU8I7B
+X-Gm-Gg: AYBFou3jKlqrvjbEeZz2m99o/+Idp4WvvyewklF1XMGDaU+Iw0lmrx4zvR0HHj9ollj
+	dpwieHsbVHpnpurb6Nu28QWrU37Z40oIVCh6yNHJXgmd2EBELr8YDe/wvUrl8idW/TP05M23CZn
+	5d5G9qOc/iBNnKjqWp1fm5DraULQk041vIYcOU8EBpXRIx6tUmEpdEIbXzi/oG3G9PlXT/Ev6Yz
+	9xpCi6l5roVlkafEiL3Cvy3YIfEBRWw1rd6pSrkVhpn4z9BkNbmLh0q27jF+/r/GgcxDzadczBz
+	3D09Xv8xhGx4pDa90eobRvOooeiKA/gvs8XHEDEl3CV4EtL3ekaQiV0vh3MOvOsuKBw75WWDBfK
+	7RNcqtHBcvHbKketCaTMmY+I9pusUU9/93CqyubxBNB1VkUOnxVMuqFOJxMvCJ/1NliGq4m2QlQ
+	6xmE5JIzw2fSo2CktAqxnF6hHfGrEHJobaGez76y3sgmSlTThHUANmiDnxjB6DGLqkD8Rc9uOQK
+	F4TBS8by1Ladvwd+vrprC52Zj/ShEN6rCp8wy4dP2mfcsJK/XY2wKfY4aQu8uLxJA5rfxbO900Q
+	SiW8nOYWXpfrFXi/DGFBTJ99yU7KSyIhiN83z5dLgv1RrONJHw==
+X-Received: by 2002:a17:906:ef07:b0:c49:cdc8:10cf with SMTP id a640c23a62f3a-c4ca7aa04a1mr633438066b.40.1793542531418;
+        Sun, 01 Nov 2026 06:15:31 -0800 (PST)
 Received: from xeon ([188.163.112.62])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4cabc18ec5sm281769266b.12.2026.11.01.06.15.25
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4cabc18ec5sm281769266b.12.2026.11.01.06.15.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2026 06:15:26 -0800 (PST)
+        Sun, 01 Nov 2026 06:15:29 -0800 (PST)
 From: Svyatoslav Ryhel <clamor95@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -94,10 +96,12 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v1 0/2] iio: light: ltr501: Add LTR-659PS-01 prox sensor support
-Date: Sun,  1 Nov 2026 16:15:05 +0200
-Message-ID: <20261101141507.119186-1-clamor95@gmail.com>
+Subject: [PATCH v1 1/2] dt-bindings: iio: light: ltr501: Document LTR659 proximity sensor
+Date: Sun,  1 Nov 2026 16:15:06 +0200
+Message-ID: <20261101141507.119186-2-clamor95@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261101141507.119186-1-clamor95@gmail.com>
+References: <20261101141507.119186-1-clamor95@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,18 +113,26 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add support for the Lite-On LTR-659PS-01 proximity sensor. This device is
-nearly identical to the LTR-559ALS-01, but omits all elements related to
-ambient light sensing.
+The LTR-659PS-01 is a proximity sensor similar to the LTR-559ALS-01, but
+without ambient light sensing support.
 
-Svyatoslav Ryhel (2):
-  dt-bindings: iio: light: ltr501: Document LTR659 proximity sensor
-  iio: light: ltr501: Add support for the LTR-659PS-01 proximity sensor
+Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+---
+ Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
- .../bindings/iio/light/liteon,ltr501.yaml     |  1 +
- drivers/iio/light/ltr501.c                    | 58 +++++++++++++++++++
- 2 files changed, 59 insertions(+)
-
+diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+index 20abd7da080d6..85ac3b540c206 100644
+--- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
++++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+@@ -17,6 +17,7 @@ properties:
+       - liteon,ltr329
+       - liteon,ltr501
+       - liteon,ltr559
++      - liteon,ltr659
+ 
+   reg:
+     maxItems: 1
 -- 
 2.53.0
 
