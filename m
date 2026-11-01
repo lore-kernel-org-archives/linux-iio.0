@@ -1,65 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793571934;
-	b=Oz4HLMHDNQ+BvJSuXzkHxehyK+4GKBRKSqIKmVtWigZeA+XlUMwhDaHKpn+uSAuQ6BQH
-	 bSJcKgzvDxVdx8sO805AJRepd7q7FaPp/MVIgyd2OhS5bo8sr0DCIJHHqtonqBFb273Ta
-	 ENcHLSiy4ZdVIGn9fHxkedouv0GlTSC0flYRlDWoD+A7FHaATICc5x3biIfRl5RlIEUeO
-	 cHW20HHtId2Jgs3z1dQDKd+AKkqIPQVT5Jrf4mOPotIVL9yRZHZWrNiYhSSgEwUlhmUEQ
-	 IMtBf4/ARNz8zAJLHZBbW1fYkD3An2djdeYV4LCxJ2njWz1pH8gR+FSNy7ETpE+mxdA==
+	t=1793575638;
+	b=hKIKHs0Uvx10/Z5+/t05aMl+RCECo8zVuBV4Lxew6rYSnzgcg6BDg0gjuK1ZGEwyn9Tn
+	 xwPFYeH2W0YbOnAIE0ACDcQ+eQHVRDwzsoLyVZGBXgZaYDIxxkAOTJg+eKhR21bAmyFAX
+	 RXXvJsDRFW5f75uQNPHDBMHJ5I33pWjxuq/6TEK52NGUKzWSPVOGvacHO0Qpf8QLVjtr1
+	 mav6tpQHSzJ7ySEaVSZa4vcUv8aCGh+/sLQPiKTVVeGEqGMJXbTCUn7FfhskJqAOkNg9q
+	 IOUzp4KFYohSTH38eF0GMtif3/iJhIT0TGcZypUeFtrMJrFCG4f0yIVEE63OcOmYZ0Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793571934;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793575638;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=8sOoVCRcZN/x0LMY6dgWZjebg2CSDJGW78WD2Rp9JOk=;
-	b=N+PtyQnTs9UoV5pFk0e0DesmKIjuCP1ovD5Ou+UDuHG8gzhB632Z0tawLpPod1DG+9gC
-	 3qOghmha/lcPwkVzQivGljWnM++i8KZXZFDMeP6KBlGGzLoUgHK94ovdiATqp09h15w1w
-	 jsKUhi4YvMgdf6nPacE0o8987ZCoyAqPkwWffrOWQfcvWebVyTA2syGy+4Fk1Og646G1I
-	 G4cxl3zElc+2IEJibnSdPUIala69XJpsaoIlkkyIiTnklYXgVB4G2yJ0ojYVV3p9XJXtG
-	 pZJWBFyCWdcJn5BAQcYN1zGaQINzXrCZev1mRs/l8vbm9ilOSLOu3ON3QozdrXeOUxA==
+	bh=Cm3uXWgrh+92bQkz7qUT8W8VdHKB20HvDylJRJySF3o=;
+	b=lHCJgyo4QkYmvPLzgtPrFB7WqyVYz4IxqU/WjkPgeqVnZGP2hWkOqgYY/Nb8XeRxG/0C
+	 6tvSV1H22EV2qn5XlIxqErtxU7U2d5ZhnR46y6SgCZS7UmtPto85ROdQTkYE0iPEfV09N
+	 5xkWQRAbBbyzI9a0wNcMvsJHT/iLadP+6aJebl6KuDUaUNk2OmYuGVR+SiJsC/dkMqOMm
+	 evPWX8uE8EIBANDWlLWCd+1pv1KDR6rbnrEvBTTYiWFfJm49ZskjLOsxo3kW8miEhCxId
+	 1lzW2CawHOeJtt2clWBILTaV/tlz2uNK4QjFoLB0sdsv0FFax4HwlHQEzBbjHmqO7Kw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=V8rmNcVY;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Jvo7KyGD;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2063F606E527;
-	Sun,  1 Nov 2026 22:25:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D0DC606A334;
+	Sun,  1 Nov 2026 23:27:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=V8rmNcVY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3915E1F000C1;
-	Sun,  1 Nov 2026 22:25:32 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Jvo7KyGD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F1FC1F00A15;
+	Sun,  1 Nov 2026 23:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793571933;
-	bh=8sOoVCRcZN/x0LMY6dgWZjebg2CSDJGW78WD2Rp9JOk=;
+	s=k20260515; t=1793575637;
+	bh=Cm3uXWgrh+92bQkz7qUT8W8VdHKB20HvDylJRJySF3o=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=V8rmNcVYviQJAu7eXwfrG/iy4DFzgdzimOFhPCKd3jsOWvGYdXk0J4xxkhSesTnvv
-	 C5tXKm85R6al635JtY3Me14qQlMBoOS1B9N1BCKd+23ppkJMGogryE4wbmoxF/K9Mj
-	 nNb0mRZ+2hAW6NfWQTQXtU2UPrmcgGKRoDReGE5V1A5yklvDW+YYMDog2CMnk0W+Ju
-	 /25jRTtShkYlWY8E05dlkU7xnjTO62ZSe/lkp9i383NI/KNkod7MIF383PnTeXROjJ
-	 26B0C7kcYuWcBrtg06s+yOZqqaBTK/NKr8Q1MNfkI2nniE3Y6+FBvUFu2+bMkqajzg
-	 //56bQgv/+1pQ==
-Date: Sun, 1 Nov 2026 22:25:28 +0000
+	b=Jvo7KyGDT+AEXA8d5RM/RWgHWIlzVEloK5ubaBai/CVET2r75W4/riaahHjEUPjPS
+	 VQqC+vqnNwUuRcQjcdDW/bzGtQaGgQ9HrgZ2JdIaKYHJpVUL0S1ob1W80456/4vydp
+	 qrn7gSKcdZx75mjK/qPzlqOvLWuruIzH0TGuodEukzr0rxmeVcaHm5z1gvGzI0PCX8
+	 H+XQoybSAa9LLyB1IPdEPVLHOY0Qc4woQANA023Qn1ggaGpX8D6ZZrbdK/MI+ckDe6
+	 kffjeABhiHeHKn9Qm1F7UWRJKoZ6eDeXTKWl9msNCkLTZCqxjvR6jIRk9z9+0CLe2v
+	 XQ8MdEv3XeFgQ==
+Date: Sun, 1 Nov 2026 23:27:07 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Kanak Shilledar <kanak.shilledar@axis.com>
-Cc: Henrik Grimler <henrik.grimler@axis.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- "Jean-Baptiste Maneyrol" <jean-baptiste.maneyrol@tdk.com>, Joshua Crofts
- <joshua.crofts1@gmail.com>, Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
- Chris Morgan <macromorgan@hotmail.com>, <kernel@axis.com>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, Jonathan Cameron
- <jonathan.cameron@oss.qualcomm.com>, Krzysztof Kozlowski
- <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH v7 7/7] iio: imu: inv_icm42607: Add accelerometer
- calibbias support
-Message-ID: <20261101222528.4ee16a59@jic23-hlaptop>
-In-Reply-To: <20261026-b4-inv_icm42370p-v7-7-222e296ac1e0@axis.com>
-References: <20261026-b4-inv_icm42370p-v7-0-222e296ac1e0@axis.com>
-	<20261026-b4-inv_icm42370p-v7-7-222e296ac1e0@axis.com>
+To: Jonathan Santos <jonath4nns@gmail.com>
+Cc: Conor Dooley <conor@kernel.org>, Jonathan Santos
+ <Jonathan.Santos@analog.com>, linux-spi@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux@analog.com, broonie@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ Michael.Hennerich@analog.com, nuno.sa@analog.com, dlechner@baylibre.com,
+ andriy.shevchenko@intel.com
+Subject: Re: [PATCH v4 1/9] spi: dt-bindings: Add spi-cs-composite property
+Message-ID: <20261101232707.4c08cc7a@jic23-hlaptop>
+In-Reply-To: <auWIqpIaegH+AWV4@JSANTO12-L01.ad.analog.com>
+References: <cover.1792435248.git.Jonathan.Santos@analog.com>
+	<e9308680e7b45ecf9ef2b6b2a752ffdd4d23b80c.1792435248.git.Jonathan.Santos@analog.com>
+	<20261026020003.3f3fbe86@jic23-hlaptop>
+	<20261027-colonize-primer-f994b88171a6@spud>
+	<auWIqpIaegH+AWV4@JSANTO12-L01.ad.analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,160 +68,169 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 12:02:55 +0100
-Kanak Shilledar <kanak.shilledar@axis.com> wrote:
+On Sat, 31 Oct 2026 03:20:26 -0300
+Jonathan Santos <jonath4nns@gmail.com> wrote:
 
-> Expose IIO_CHAN_INFO_CALIBBIAS on the accelerometer channels. The
-> registers are stored in MREG1. The calibration bias is written to
-> OFFSET_USER4 to OFFSET_USER8 registers in MREG1. Reject the out of
-> limit calibbias values instead of clamping it.
->=20
-> Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370=
--p
-> Datasheet: https://www.lcsc.com/product-detail/C5129967.html
-> Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
-Minor thing inline given you are going to be doing a v8
+> On 10/27, Conor Dooley wrote:
+> > On Mon, Oct 26, 2026 at 02:00:03AM +0000, Jonathan Cameron wrote:  
+> > > On Tue, 20 Oct 2026 22:56:41 -0300
+> > > Jonathan Santos <Jonathan.Santos@analog.com> wrote:
+> > >   
+> > > > Some setups combine several SPI devices into one logical device, with
+> > > > each chip on its own CS line. All of those CS lines must be asserted at
+> > > > the same time, so that one transfer reaches every chip.
+> > > > 
+> > > > Add the 'spi-cs-composite' boolean property. When it is set, every chip
+> > > > select listed in 'reg' is asserted together on each transfer.  
+> > > 
+> > > To me it feels inevitable that we will see a device / combination of
+> > > devices that want groups of CS lines together and others independent.
+> > > 
+> > > Seems less likely we'll see more than one set of composite entrees.
+> > > Maybe this should be an array of values that match with specific
+> > > entrees in reg?
+> > > 
+> > > I'm not sure though.  Conor, Kryzsztof or Rob, any thoughts on this
+> > > or similar things that have arisen elsewhere?  
+> > 
+> > Why does the property actually exist in the first place? Does the device
+> > driver not know how each CS should be treated?
+> >  
+> 
+> Hi Conor, Jonathan,
+> 
+> Thanks for the feedback.
+> 
+> The problem we are addressing now: today the SPI core gives a driver very 
+> little control over chip selects. The main spi_device only drives the first
+> 'reg' entry and the only way a driver can use the other CS lines is through
+> ancillary devices, but for individual access only. For aggregated chips 
+> (AD7768-1 in this case) we need all CS lines asserted at the same time, and 
+> nothing in the core lets the driver ask for that AFAIK.
+> 
+> In v1 I added a CS mask to struct spi_transfer, but that also needed a
+> lane mask to work, and after the feedback we agreed it was too flexible
+> and too easy to get wrong. In v2 and v3 I switched to ancillary devices
+> (each with a lane attached) for single-CS access. That covered
+> individual access, but there was still no way to assert all the CS lines
+> at once. The spi-cs-composite property in v4 was my way around that, 
+> letting the main device be the aggregator and using the ancillaries for
+> single access.
+> 
+> David also suggested two alternatives before that don't need any DT changes:
+> 
+>  a) Add a CS description to struct spi_transfer or spi_message, e.g.
+>     passing the ancillary devices whose CS should be asserted. This also
+>     allows dynamic CS selection within the main device. And since the
+>     ancillary devices are already bound to a lane, this is less prone to
+>     errors than the approach on v1.
+> 
+>  b) Add a new "composite" spi device, so a driver would have the main
+>     device, ancillaries for individual access, and a composite device
+>     for simultaneous access. The issue I saw is that the ancillary and
+>     composite devices are siblings and their CS lines would conflict in
+>     the core's CS check, so only one kind could exist for a given
+>     device, not both (without some more complex logic in the spi cs check).
+> 
+> I like the (b) approach, but we would have to bypass that sibling problem.
+> The (a) looks less harmful to existing projects, if everyone agrees I can
+> implement it on v5. Also with (a) I think we can drop the spi device
+> name for now (or not?).
 
-Thanks,
+I don't have a strong opinion on the way forward here.
+Mark, any thoughts on what is going to work best long term for SPI?
+
+I'm nervous that we might wall ourselves into a corner if not
+careful about bindings. That is less of a concern for in kernel
+interfaces which probably won't be that widely used.
 
 Jonathan
 
-> diff --git a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c b/drivers/=
-iio/imu/inv_icm42607/inv_icm42607_accel.c
-> index 9a3ace3e7fcf9..2878e35d655d0 100644
-> --- a/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> +++ b/drivers/iio/imu/inv_icm42607/inv_icm42607_accel.c
-> @@ -4,6 +4,7 @@
->   */
-> =20
->  #include <linux/array_size.h>
-> +#include <linux/bitfield.h>
->  #include <linux/bits.h>
->  #include <linux/cleanup.h>
->  #include <linux/device/devres.h>
-> @@ -13,6 +14,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/regmap.h>
->  #include <linux/types.h>
-> +#include <linux/units.h>
-> =20
->  #include "inv_icm42607.h"
->  #include "inv_icm42607_temp.h"
-> @@ -22,9 +24,11 @@
->  	.type =3D IIO_ACCEL,							\
->  	.modified =3D 1,								\
->  	.channel2 =3D _modifier,							\
-> -	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),				\
-> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |				\
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS),					\
-+			      BIT(IIO_CHAN_INFO_CALIBBIAS),			\
-Is my preference for aligning the blocks of a load of bits.
-
->  	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),			\
-> -	.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SCALE),		\
-> +	.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SCALE) |	\
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS),					\
->  	.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),		\
->  	.info_mask_shared_by_all_available =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->  	.scan_index =3D _index,							\
-> @@ -56,6 +60,16 @@ static const struct iio_chan_spec inv_icm42607_accel_c=
-hannels[] =3D {
->  	INV_ICM42607_TEMP_CHAN(INV_ICM42607_ACCEL_SCAN_TEMP),
->  };
-
-> +
-> +static int inv_icm42607_accel_write_offset(struct iio_dev *indio_dev,
-> +					   struct iio_chan_spec const *chan,
-> +					   int val, int val2)
-> +{
-> +	struct inv_icm42607_state *st =3D iio_device_get_drvdata(indio_dev);
-> +	struct device *dev =3D regmap_get_device(st->map);
-> +	s32 min, max;
-> +	u8 msb, lsb;
-> +	s16 offset;
-> +	s64 val64;
-> +	int ret;
-> +
-> +	if (chan->type !=3D IIO_ACCEL)
-> +		return -EINVAL;
-> +
-> +	/* inv_icm42607_accel_calibbias: min - step - max in micro */
-> +	min =3D inv_icm42607_accel_calibbias[0] * (long)MEGA -
-> +	      inv_icm42607_accel_calibbias[1];
-> +	max =3D inv_icm42607_accel_calibbias[4] * (long)MEGA +
-> +	      inv_icm42607_accel_calibbias[5];
-> +
-> +	val64 =3D val * (s64)MEGA;
-> +	if (val >=3D 0)
-> +		val64 +=3D val2;
-> +	else
-> +		val64 -=3D val2;
-> +
-> +	if (val64 < min || val64 > max)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Convert m/s=C2=B2 to g then to raw value
-> +	 * m/s=C2=B2 to g: 1 / 9.806650
-> +	 * g to raw 12 bits signed, step 0.5mg: 10000 / 5
-> +	 * val in micro (1000000)
-> +	 * val * 10000 / (9.806650 * 1000000 * 5)
-> +	 */
-> +	val64 *=3D 10000LL;
-> +	offset =3D DIV_S64_ROUND_CLOSEST(val64, 9806650 * 5);
-> +
-> +	/* Value is limited to 12 bits signed, return -EINVAL if out of range */
-> +	if (offset < -2048 || offset > 2047)
-> +		return -EINVAL;
-> +
-> +	msb =3D FIELD_GET(INV_ICM42607_OFFSET_MSB, offset);
-> +	lsb =3D FIELD_GET(INV_ICM42607_OFFSET_LSB, offset);
-> +
-> +	PM_RUNTIME_ACQUIRE_AUTOSUSPEND(dev, pm);
-> +	ret =3D PM_RUNTIME_ACQUIRE_ERR(&pm);
-> +	if (ret)
-> +		return ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_X:
-> +		/* OFFSET_USER4 upper nibble is shared. */
-> +		ret =3D regmap_update_bits(st->map, INV_ICM42607_REG_OFFSET_USER4,
-> +				INV_ICM42607_OFFSET_USER_NIBBLE_HI,
-Align after (
-Don't worry about slightly long lines.
-
-> +				FIELD_PREP(INV_ICM42607_OFFSET_USER_NIBBLE_HI, msb));
-> +		if (ret)
-> +			return ret;
-> +
-> +		return regmap_write(st->map, INV_ICM42607_REG_OFFSET_USER5, lsb);
-> +	case IIO_MOD_Y:
-> +		/* OFFSET_USER7 lower nibble is shared. */
-> +		ret =3D regmap_update_bits(st->map, INV_ICM42607_REG_OFFSET_USER7,
-> +				INV_ICM42607_OFFSET_USER_NIBBLE_LO,
-> +				FIELD_PREP(INV_ICM42607_OFFSET_USER_NIBBLE_LO, msb));
-> +		if (ret)
-> +			return ret;
-> +
-> +		return regmap_write(st->map, INV_ICM42607_REG_OFFSET_USER6, lsb);
-> +	case IIO_MOD_Z:
-> +		/* OFFSET_USER7 upper nibble is shared. */
-> +		ret =3D regmap_update_bits(st->map, INV_ICM42607_REG_OFFSET_USER7,
-> +				INV_ICM42607_OFFSET_USER_NIBBLE_HI,
-> +				FIELD_PREP(INV_ICM42607_OFFSET_USER_NIBBLE_HI, msb));
-> +		if (ret)
-> +			return ret;
-> +
-> +		return regmap_write(st->map, INV_ICM42607_REG_OFFSET_USER8, lsb);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
+> 
+> Best regards,
+> Jonathan Santos
+> 
+> > > 
+> > > The most general case would (subject to it not working) smell like
+> > > 
+> > > reg = < <0x1 0x4 0x5> <0x2> >
+> > > 
+> > > Where intent is that 1 4 and 5 are meant to switch together and
+> > > 2 is separate.  
+> > 
+> > I would expect that for this kind of device, the driver should know that
+> > the first 3 CS are switched together and the 4th is not. I'm not really
+> > sure what the internal representation should be, because if someone can
+> > make a device like this, they could surely also make a device where (to
+> > borrow your format) it behaves like
+> > 
+> > | reg = < <0x1 0x4> <0x5 0x2> >
+> > 
+> > and so on. But if those devices don't actually exist at the moment, and
+> > everything is either all together or all seperate, the API for this
+> > stuff in the SPI core doesn't have to solve that until a device actually
+> > shows up.
+> >   
+> 
+> Yes, this is a bit out of the scope and kind of complex.
+> 
+> > Worst case is something where there's a variable grouping of chip
+> > selects, e.g.
+> > 
+> > | reg = < <0x1 0x4 0x5> <0x2> >
+> > 
+> > or
+> > 
+> > | reg = < <0x1 0x4> <0x2> >
+> > 
+> > but maybe if that happens the thing to do is permit reg-names for that
+> > device, and again store the relationships in the driver rather than
+> > try to convey it via DT.
+> > 
+> > Cheers,
+> > Conor.
+> >   
+> > > 
+> > > How to do lookup on something like this is another question.
+> > > 
+> > > Jonathan
+> > > 
+> > >   
+> > > > 
+> > > > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
+> > > > ---
+> > > > Changes in v4:
+> > > > * New patch. This has been included because without an explicit property,
+> > > >   every device with more than one 'reg' entry would have all its chip
+> > > >   selects asserted together. That breaks devices that use ancillary
+> > > >   devices for the extra CS lines, so the composite behavior is now opt-in.
+> > > > ---
+> > > >  .../devicetree/bindings/spi/spi-peripheral-props.yaml     | 8 ++++++++
+> > > >  1 file changed, 8 insertions(+)
+> > > > 
+> > > > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > > > index 4894196c8f9c..456cb9095632 100644
+> > > > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > > > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > > > @@ -60,6 +60,14 @@ properties:
+> > > >        Delay in nanoseconds to be introduced by the controller after CS is
+> > > >        de-asserted.
+> > > >  
+> > > > +  spi-cs-composite:
+> > > > +    description: Some SPI devices can be aggregated into a single logical
+> > > > +      device by asserting all their chip selects simultaneously. When this
+> > > > +      property is present, all chip selects listed in the 'reg' property are
+> > > > +      asserted together on every transfer, treating the group as one composite
+> > > > +      device.
+> > > > +    type: boolean
+> > > > +
+> > > >    spi-rx-bus-width:
+> > > >      description:
+> > > >        Bus width to the SPI bus used for read transfers.  
+> > >   
+> 
+> 
 
