@@ -1,60 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793577118;
-	b=Wk2uXXEXxDL4jfN6rSnlNLnKcaQk+qDJhLE77EruearEnVDTbgmqT9xbd/dCiXY9pYyM
-	 odGrSV5c7PybQ1I7sDmkwAm0eXTlDZ+zAa71qrUKAFhk0EAj9otYNpuo+3ZAvTqEMCloR
-	 QX0sEpUQx5Z5Na0MnVUMbl9HfgLueoDOgVAR8WKQVvZWk0ttexbKPbHT/uCSVJluVqZMV
-	 2RctQwtV+RFqykgvS4DxeBawh72fs2ogxENOCe1KGqD4YIz9fSJpLpv1f4zuytmJg3T2R
-	 8O1NIyoi3j7HHDAuOKfQEKaCi7EOha3OSOPfcmjnw9c98a9h2B0wLtd90E37GNSo/Wg==
+	t=1793577187;
+	b=SKmft+HeCH1GwLDKBDj0PNlmFfkKhouPx87HPctFjXanveejTf3PVDD/h4Uxbllei7B+
+	 1o3eIzSfD2oWOXLv0qnEs1uBQcuXCMsOzItwHmmsRAQa/uTgjDFx+vu1LzEiILGsI35f3
+	 lG8Epbdy3+9JY+aVsMjkQYkFQU5oO7mAWjwQ3Q2n2IMmw1Zkpb/YUbwjENyTXxDIZM2G3
+	 zfxmtLJB/vwSUs7WNDpagkdEMWHGMquZSpCmjq0qrk82QCy0WtHlG3geFnnOz2CHZNN05
+	 9c+ylwdqK7wvsx4qti7dnRP5y6/SHmCnGC33hZjeXUwDu5ix+8P10PFK/2mudu/w28Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793577118;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793577187;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=IJgMuA+ECaJ8z8cHKxX/ao7zT6HhAj4YFvOVHgNIgIg=;
-	b=cU5Ax+XMRMSGibrtYDQy9jqDKnlJNNjylsSmPAOg6u0pZd/lG8tJJDcU+oFAICs3ngky
-	 TqvQyHoz8dO7bOcsNUUUiGBCX4rm8wVnEvVGScaqXu/aBYiHk7TgMsVKzK83FDTsJ6gKA
-	 SpFEiQp7ZsO/4NhMAW12ngIiMsb4fYe4dzDUJf6dwxrQi1OqDt+qGyv2uyJEFnQVcAYS+
-	 B8mnvojL+9ZCwCIOzQ4xtmXC9r6tGXGcKQlX1IBYYyOPZAMW6mgbXIB3/gOpKNFgCxY3+
-	 BOaA7T06TR1zxTZyTgVJDF2QVJBXJLVen2yw/iUegmpRDgxg/JhASnezx3TLEpUCE2Q==
+	bh=+FdbV1fygpkQa5AYOrs49bje7EWIBa53juEdskXuHwU=;
+	b=N4FybAT/B7TUSeh5ARJW/QoiM19YVIg/v2gYNJHgVrBkfVSjlCCl96cPlHywiekPCbHY
+	 pkD8oiz4S9uGHAeEF8nwkQfu0WsB+EuwQMpKsq4hvarTLNI/aU+QbyXktM01tOFUk6dXq
+	 lftq5HQyq88r+rYCLe1YT3HccT74QkP+T2BE0C+k7k7WDc3XO3HDFnFDGN0aTD1dhk9HW
+	 Wxme6eNHI7PCIf9G4vD9nXoWRCzE4POAI2RIRTM0HfXBxm6e6DEijfwWDvqTojpaYfUvs
+	 TZ2mQvUmRgbK2RGiND+uQHgdPbxXvKa3YeRvqN7fvNpXLrieLelfdJ+M2k1gmiSER2Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="BYu7sw/Y";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WPmoTco4;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1EC6606A329;
-	Sun,  1 Nov 2026 23:51:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF4D2606A324;
+	Sun,  1 Nov 2026 23:53:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BYu7sw/Y
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B03FE1F000C1;
-	Sun,  1 Nov 2026 23:51:55 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WPmoTco4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785891F000C1;
+	Sun,  1 Nov 2026 23:53:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793577117;
-	bh=IJgMuA+ECaJ8z8cHKxX/ao7zT6HhAj4YFvOVHgNIgIg=;
+	s=k20260515; t=1793577186;
+	bh=+FdbV1fygpkQa5AYOrs49bje7EWIBa53juEdskXuHwU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BYu7sw/Y2U6aEwK6PZPtJ1ZGT9oMGgW/xr7vm0zmx1qrReN4+MNaOwuoLYuIsi8gL
-	 0ZI7/A8kliC+oaoLJWyGF3R9N+uj2JZ/XRBoe471c0X2WXT+QMkgJ9rkIatCOZSw/X
-	 cI232pyKzIwY4L5k25hYrCHwY8DSfS5ouxNwGviHJXS8/dWYNzzzom8cPDWVCrzKvZ
-	 1bQAKhXyf35XGXxPAmvv0lP/IxU2I6dduI7gNl5W9E6Yb3PiDkj30mOA7FAdy3S1IN
-	 4oDX/DpB64G9XdydRo/tntGZ6h03f9daKILB5Riu2/G7Eqg3phlMJoGGgYsR/1LPrp
-	 NI5u+f7eTmYkQ==
-Date: Sun, 1 Nov 2026 23:51:50 +0000
+	b=WPmoTco4mk4LgWTTkVTV2hDqSITZ518aq3iHHoMFevxLyCh6xCDcBiL/ge82h347W
+	 usFpr9+SgHiuFrYPzA6XxL9Sr21lWT6t+pIIyrBEHhoQgf4rA77XYoGLv7ayfLfcHu
+	 9+fYC6kndRxa/UBm2istlaUjrOWIUfoNquMq9dielufemC0GeaOlTIoW5sI1Y1HUL2
+	 gyNY02y5mYc5lrC7NgOHZ1zIOPVroOYr3tJzb8KdjD5o9E/u/46UzkwJlk+vM/YdlL
+	 41lO4lNPnyNJxW4LKExWDoswQYB7EGTxPzI852RaupVVBAqXqjkm46GBm+olVztdm2
+	 6i8uL06R50hcA==
+Date: Sun, 1 Nov 2026 23:52:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: =?UTF-8?B?0KHQtdC80ZHQvSDQnNCw0YDRjNGP0YHQuNC9?= <simeon@maryasin.name>
-Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Jiri Kosina
- <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>, Haoxiang Li
- <haoxiang_li2024@163.com>, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org
-Subject: Re: [BUG] HID: sensor: custom: use-after-free of sensor_inst via
- open misc device after remove (hard lockup)
-Message-ID: <20261101235150.5b7f1549@jic23-hlaptop>
-In-Reply-To: <CAM2dg7dDTQDobkOfLt586ex9o+v0eQqGouyYdpG1KPdfD6uwyg@mail.gmail.com>
-References: <CAM2dg7eZJEii+fJT1TG8XME-TJFqDtURCsr5XS71E5-5-mUV0A@mail.gmail.com>
-	<CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=eUdbPthG2xrLqwQQ@mail.gmail.com>
-	<f3f50abbaea73cb84e43bbf811065b866fc4d7d1.camel@linux.intel.com>
-	<CAM2dg7dDTQDobkOfLt586ex9o+v0eQqGouyYdpG1KPdfD6uwyg@mail.gmail.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>, Conall O'Griofa
+ <conall.ogriofa@amd.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Michal Simek <michal.simek@amd.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, stable@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: xilinx-ams: fix out-of-bounds accesses
+ when parsing channels
+Message-ID: <20261101235259.27b3b43c@jic23-hlaptop>
+In-Reply-To: <20261023185652.195025-1-kapoorarnav43@gmail.com>
+References: <20261023185652.195025-1-kapoorarnav43@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,193 +65,184 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 27 Oct 2026 15:36:17 +0300
-=D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=8F=D1=81=D0=B8=
-=D0=BD <simeon@maryasin.name> wrote:
+On Sat, 24 Oct 2026 00:26:48 +0530
+Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
 
-> Hello! Tested this patch (had to adapt it to apply it to 7.2.8 kernel;
-> attaching the adapted version).
->=20
-> Without patch: xxd running while intel_ishtp_hid module is removed ->
-> xxd hangs, system either crashes or at least logs "hid-sensor-hub
-> 001F:8087:0AC2.0004: timeout waiting for response from ISHTP device"
-> With patch: xxd correctly closes with message "No such device", no
-> error in kernel logs, no crashes =E2=80=94 checked for several times.
+> ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
+> ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
+> channel specs and lets ams_init_module() fill them for the AMS node and
+> each of its children, without telling it how much room is left.
+> 
+> For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
+> "channel@N" child after the 10 fixed PL channels. The binding allows
+> reg values 20..50, so a PL node can have up to 31 such children, i.e.
+> up to 41 PL channels, while only 31 are budgeted for it. Together with
+> the 13 PS and 7 AMS control channels, this writes past the end of the
+> buffer. Since the modules are filled in device tree order, the fixed
+> channel blocks copied after the PL node can overflow as well.
+> 
+> ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
+> unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
+> far out of bounds.
+> 
+> Pass the remaining capacity down to ams_init_module() and
+> ams_get_ext_chan() and fail with -ENOSPC when a module does not fit,
+> instead of writing past the buffer. Also reject reg values below 20, as
+> the binding requires.
+> 
+> Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+AMD Xilinx folk, please take a look at this one.
 
-thanks!
-
-I'm assuming that Srinivas will at somepoint post a version of
-this patch as a formal submission.
+Thanks,
 
 Jonathan
 
->=20
-> =D0=BF=D1=82, 23 =D0=BE=D0=BA=D1=82. 2026=E2=80=AF=D0=B3. =D0=B2 17:12, S=
-rinivas Pandruvada
-> <srinivas.pandruvada@linux.intel.com>:
-> >
-> > Hi,
-> > On Fri, 2026-10-23 at 13:42 +0300, =D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=
-=9C=D0=B0=D1=80=D1=8C=D1=8F=D1=81=D0=B8=D0=BD wrote: =20
-> > > Hello,
-> > >
-> > > hid-sensor-custom frees its per-sensor state (sensor_inst,
-> > > devm-allocated) on remove while userspace
-> > > can still hold the misc device /dev/HID-SENSOR-2000e1.N.auto open. A
-> > > reader blocked in read() stays
-> > > queued on sensor_inst->wait in freed memory; when it wakes up,
-> > > finish_wait() spins on a garbage
-> > > wait-queue lock with interrupts disabled and the machine hard-locks.
-> > > Any read()/poll()/release() on such
-> > > an fd after remove is a use-after-free as well.
-> > > =20
-> >
-> > Please give a try with the attached diff.
-> >
-> >
-> > Thanks,
-> > Srinivas
-> >
-> > =20
-> > > The Sashiko AI review already flagged this as a pre-existing issue
-> > > on Haoxiang Li's "Fix fields lifetime issues" series
-> > > ("The /dev/HID-SENSOR-* character device operations do not
-> > > synchronize
-> > > with device
-> > > removal,
-> > > leading to Use-After-Free on devm-managed structures"):
-> > > https://lore.kernel.org/linux-input/20260707071545.3087073-1-haoxiang=
-_li2024@163.com/
-> > > The applied patches don't touch it, and the current mainline is
-> > > unchanged. Below is a real-world hit.
-> > >
-> > > Kernel: 7.2.8 (NixOS; drivers/hid/hid-sensor-custom.c is identical to
-> > > current mainline,
-> > >         including ad8fb82b0442 and 3789d0802ddb)
-> > > Hardware: Dell Latitude 5420 (Tiger Lake, Intel ISH), BIOS 1.49.0;
-> > > Dell's vendor ISH sensors appear as
-> > >           HID-SENSOR-2000e1.N.auto (e.g. an ST VL53L1 time-of-flight
-> > > sensor).
-> > > Taint: O, from unrelated out-of-tree WWAN modules (qcserial,
-> > > usb_wwan).
-> > >
-> > > How it was hit
-> > > --------------
-> > >
-> > > 1. echo 1 > /sys/bus/platform/devices/HID-SENSOR-
-> > > 2000e1.2.auto/enable_sensor
-> > > 2. xxd /dev/HID-SENSOR-2000e1.2.auto        # streaming reader, left
-> > > running
-> > > 3. modprobe -r intel_ishtp_hid intel_ish_ipc && modprobe
-> > > intel_ish_ipc
-> > >
-> > > The hub went away and was re-enumerated fine; ~30 s later CPU0
-> > > hard-locked in the still-running xxd
-> > > and the hard-lockup detector panicked the machine (log recovered from
-> > > EFI pstore).
-> > >
-> > > Presumably a minimal reproducer is just a blocked reader plus
-> > > unbinding the platform device
-> > > (echo HID-SENSOR-2000e1.N.auto >
-> > > /sys/bus/platform/drivers/hid_sensor_custom/unbind),
-> > > but only the module-reload path above was actually tested so far.
-> > >
-> > > Log (trimmed)
-> > > -------------
-> > >
-> > > [146608.877730] hid-sensor-hub 001F:8087:0AC2.0003: timeout waiting
-> > > for response from ISHTP device
-> > > [146611.885959] hid-sensor-hub 001F:8087:0AC2.0003: timeout waiting
-> > > for response from ISHTP device
-> > > [146614.893909] hid-sensor-hub 001F:8087:0AC2.0003: timeout waiting
-> > > for response from ISHTP device
-> > > [146617.901872] hid-sensor-hub 001F:8087:0AC2.0003: timeout waiting
-> > > for response from ISHTP device
-> > > [146619.972550] ish-hid {33AECD58-B679-4E54-9BD9-A04D34F0C226}:
-> > > [hid-ish]: enum_devices_done OK, num_hid_devices=3D3
-> > > [146620.031441] hid-sensor-hub 001F:8087:0AC2.0007: hidraw3: SENSOR
-> > > HUB HID v2.00 Device [hid-ishtp 8087:0AC2] on
-> > > [146643.503266] iwlwifi 0000:00:14.3: Queue 3 is stuck 46 70
-> > > [146648.924391] watchdog: CPU0: Watchdog detected hard LOCKUP on cpu
-> > > 0
-> > > [146648.924796] CPU: 0 UID: 0 PID: 1316004 Comm: xxd Tainted: G
-> > >    O        7.2.8 #1-NixOS PREEMPT(lazy)
-> > > [146648.924804] Hardware name: Dell Inc. Latitude 5420/03P5X2, BIOS
-> > > 1.49.0 09/01/2025
-> > > [146648.924808] RIP: 0010:native_queued_spin_lock_slowpath+0x64/0x2c0
-> > > [146648.924851] Call Trace:
-> > > [146648.924855]  <TASK>
-> > > [146648.924857]  _raw_spin_lock_irqsave+0x3d/0x50
-> > > [146648.924872]  finish_wait+0x3b/0x90
-> > > [146648.924886]  hid_sensor_custom_read+0x102/0x150
-> > > [hid_sensor_custom]
-> > > [146648.924901]  vfs_read+0xbf/0x390
-> > > [146648.924934]  ksys_read+0xbf/0xf0
-> > > [146648.924939]  do_syscall_64+0x134/0x6b0
-> > > [146648.925010]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> > > [146648.925083]  </TASK>
-> > > [146648.925086] Kernel panic - not syncing: Hard LOCKUP
-> > >
-> > > Also attaching a full dmesg log (with only wi-fi noise filtered out).
-> > >
-> > > Analysis (line numbers as in mainline 73bef5)
-> > > ---------------------------------------------
-> > >
-> > > - hid_sensor_custom_probe() allocates sensor_inst with devm_kzalloc()
-> > > (line 980), so it is freed right
-> > >   after hid_sensor_custom_remove() returns, regardless of open files.
-> > > - The misc device's fops reach sensor_inst through
-> > > container_of(file->private_data, ..., custom_dev);
-> > >   misc_deregister() does not revoke already-open files, so
-> > > read/poll/release keep dereferencing it.
-> > > - hid_sensor_custom_dev_if_remove() (lines 751-758) does wake_up(),
-> > > misc_deregister(), kfifo_free().
-> > >   The woken reader in hid_sensor_custom_read() (line 664) re-
-> > > evaluates
-> > >   wait_event_interruptible(sensor_inst->wait,
-> > > !kfifo_is_empty(&sensor_inst->data_fifo)), finds the fifo
-> > >   empty and goes back to sleep on sensor_inst->wait. Nothing tells it
-> > > the device is gone.
-> > > - Once sensor_inst is freed and reused, the next wakeup of that
-> > > reader
-> > > runs finish_wait() on the freed
-> > >   wait_queue_head: spin_lock_irqsave() on garbage, hard lockup.
-> > > hid_sensor_custom_release() similarly
-> > >   does clear_bit() on freed sensor_inst->misc_opened when the fd is
-> > > finally closed.
-> > >
-> > > Possible fix direction
-> > > ----------------------
-> > >
-> > > Tie sensor_inst's lifetime to its users rather than to devres, the
-> > > way
-> > > hidraw handles disconnect:
-> > > refcount it (kref: one reference for the device, one per open file;
-> > > kfifo_free() and kfree() on the last
-> > > put), add a "removed" flag set in remove() before
-> > > wake_up_interruptible_all(), include it in the
-> > > wait_event condition, and make read()/poll() return -ENODEV /
-> > > EPOLLHUP =20
-> > > > EPOLLERR once removed. =20
-> > >
-> > > The same review pointed out two more problems in this teardown path
-> > > that a fix would naturally cover:
-> > > remove() frees data_fifo before sensor_hub_remove_callback(), so a
-> > > sample arriving in between is
-> > > kfifo_in()'d into freed memory; and an enabled sensor is never
-> > > sensor_hub_device_close()d on remove.
-> > >
-> > > I can test patches on this machine.
-> > >
-> > > Thanks,
-> > > Semyon Maryasin
-> > >
-> > > P.S.: sorry for a possible duplicate, I think I messed with the
-> > > headers. =20
->=20
->=20
->=20
+> ---
+> Changes in v2:
+> - Fix the truncated subject line (Andy)
+> - Drop the paragraph about an earlier report, I could not find that
+>   thread again to reference it properly
+> - Pass the remaining capacity as unsigned int and drop the casts (Andy)
+> - Keep the ams_get_ext_chan() call on one line (Andy)
+> - Rebase on fixes-togreg
+> - Drop the bouncing @xilinx.com and @huawei.com addresses from Cc
+> 
+> v1: https://lore.kernel.org/all/20261021225356.625288-1-kapoorarnav43@gmail.com/
+> 
+> Compile-tested only (W=1); I don't have ZynqMP hardware.
+> 
+>  drivers/iio/adc/xilinx-ams.c | 54 ++++++++++++++++++++++++++++--------
+>  1 file changed, 43 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+> index 158e6133abf5..7f0f7778d6aa 100644
+> --- a/drivers/iio/adc/xilinx-ams.c
+> +++ b/drivers/iio/adc/xilinx-ams.c
+> @@ -144,7 +144,14 @@
+>  #define AMS_PL_CSTS_ACCESS_MASK		BIT(1)
+>  
+>  #define AMS_PL_MAX_FIXED_CHANNEL	10
+> -#define AMS_PL_MAX_EXT_CHANNEL		20
+> +/*
+> + * The external PL channels are addressed by their channel number. The
+> + * binding allows the range from AMS_PL_EXT_CHANNEL_MIN to
+> + * AMS_PL_EXT_CHANNEL_MAX. AMS_PL_EXT_CHANNEL_MIN maps onto the first
+> + * ams_pl_channels[] entry, AMS_PL_EXT_CHANNEL_MAX onto the last one.
+> + */
+> +#define AMS_PL_EXT_CHANNEL_MIN		20
+> +#define AMS_PL_EXT_CHANNEL_MAX		50
+>  
+>  #define AMS_INIT_POLL_TIME_US		200
+>  #define AMS_INIT_TIMEOUT_US		10000
+> @@ -1142,20 +1149,31 @@ static const struct iio_chan_spec ams_ctrl_channels[] = {
+>  };
+>  
+>  static int ams_get_ext_chan(struct fwnode_handle *chan_node,
+> -			    struct iio_chan_spec *channels, int num_channels)
+> +			    struct iio_chan_spec *channels, int num_channels,
+> +			    unsigned int max_channels)
+>  {
+>  	struct iio_chan_spec *chan;
+> -	struct fwnode_handle *child;
+>  	unsigned int reg, ext_chan;
+>  	int ret;
+>  
+> -	fwnode_for_each_child_node(chan_node, child) {
+> +	fwnode_for_each_child_node_scoped(chan_node, child) {
+>  		ret = fwnode_property_read_u32(child, "reg", &reg);
+> -		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
+> +		if (ret)
+> +			continue;
+> +
+> +		/*
+> +		 * Anything outside of the range of channel numbers allowed
+> +		 * by the binding is not a valid channel.
+> +		 */
+> +		if (reg < AMS_PL_EXT_CHANNEL_MIN ||
+> +		    reg > AMS_PL_EXT_CHANNEL_MAX)
+>  			continue;
+>  
+> +		if (num_channels >= max_channels)
+> +			return -ENOSPC;
+> +
+>  		chan = &channels[num_channels];
+> -		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
+> +		ext_chan = reg - AMS_PL_EXT_CHANNEL_MIN;
+>  		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
+>  
+>  		if (fwnode_property_read_bool(child, "xlnx,bipolar"))
+> @@ -1183,7 +1201,8 @@ static void ams_iounmap_pl(void *data)
+>  
+>  static int ams_init_module(struct iio_dev *indio_dev,
+>  			   struct fwnode_handle *fwnode,
+> -			   struct iio_chan_spec *channels)
+> +			   struct iio_chan_spec *channels,
+> +			   unsigned int max_channels)
+>  {
+>  	struct device *dev = indio_dev->dev.parent;
+>  	struct ams *ams = iio_priv(indio_dev);
+> @@ -1191,6 +1210,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
+>  	int ret;
+>  
+>  	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
+> +		if (max_channels < ARRAY_SIZE(ams_ps_channels))
+> +			return -ENOSPC;
+> +
+>  		ams->ps_base = fwnode_iomap(fwnode, 0);
+>  		if (!ams->ps_base)
+>  			return -ENXIO;
+> @@ -1202,6 +1224,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
+>  		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
+>  		num_channels = ARRAY_SIZE(ams_ps_channels);
+>  	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
+> +		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
+> +			return -ENOSPC;
+> +
+>  		ams->pl_base = fwnode_iomap(fwnode, 0);
+>  		if (!ams->pl_base)
+>  			return -ENXIO;
+> @@ -1213,9 +1238,14 @@ static int ams_init_module(struct iio_dev *indio_dev,
+>  		/* Copy only first 10 fix channels */
+>  		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
+>  		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
+> -		num_channels = ams_get_ext_chan(fwnode, channels,
+> -						num_channels);
+> +		ret = ams_get_ext_chan(fwnode, channels, num_channels, max_channels);
+> +		if (ret < 0)
+> +			return ret;
+> +		num_channels = ret;
+>  	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
+> +		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
+> +			return -ENOSPC;
+> +
+>  		/* add AMS channels to iio device channels */
+>  		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
+>  		num_channels += ARRAY_SIZE(ams_ctrl_channels);
+> @@ -1245,7 +1275,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+>  		return -ENOMEM;
+>  
+>  	if (fwnode_device_is_available(fwnode)) {
+> -		ret = ams_init_module(indio_dev, fwnode, ams_channels);
+> +		ret = ams_init_module(indio_dev, fwnode, ams_channels, ams_size);
+>  		if (ret < 0)
+>  			return ret;
+>  
+> @@ -1253,7 +1283,9 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
+>  	}
+>  
+>  	device_for_each_child_node_scoped(dev, child) {
+> -		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
+> +		ret = ams_init_module(indio_dev, child,
+> +				      ams_channels + num_channels,
+> +				      ams_size - num_channels);
+>  		if (ret < 0)
+>  			return ret;
+>  
+> 
+> base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
 
