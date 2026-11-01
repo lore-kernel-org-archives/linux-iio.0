@@ -1,70 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.135
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793525135;
-	b=c/Tdo12p/DZCWNDutRvTErcDa7So3amNuI5YhK+8h1C8pXvVUqp4AjGI0jJ4zrC74et0
-	 hMD2TdI87OrdaF+6vPVgVxeBd2qF7setIwwwAtFCsU2S9DQiAAq8amMTL0QtfLuXsyRAQ
-	 nQTtXO/7eAZROkpeb2Rk+irSkKNKZwwWKnonMKOqPOWPZHBA8OA9TQB0Essl+ZUpj12rE
-	 gpFKT92EmNJnkd5qZ9HRH8ySdoalAZETRMsjRIoege4AKrIES4HFKtFHyFQbutR0aTcx2
-	 0V4zII79TgMWoQwa2m0GuYT8SW6S0w7q3/B8rlfKaOjkg6PBb0XQzpYqzw6gKOsh6ww==
+	t=1793528729;
+	b=G2w0s3q1Pev/50Yr0Nye5nwlKUxiC2nZbkbCsowkvlK1hGfD7gneJudd1664uASGnsZK
+	 tiJax3h1RUdv8QR+6YITY4B1DPnvuxAx3B2r9BdFFTGU49Ia8FLITuKlWam+2+816KEcm
+	 NsX+PQp6m1H6rflk0ZMtrz5vsxYbcJlzl9PQxvlANOZr8b0HVKnTBZa5odf3jFoL7lq5e
+	 hDNDazubz+nbCEoTcwdopfP7o+0kILYuhZMM0E0DldMdEVTqhub+C5/siHi0WeQRcb8Q9
+	 ZLmfM/BtdNzF4xUA/r+rzBsnQ+FTCPehX1qASgDpzwyBBFmuBvDFbcoN9jaf8XgDqhA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793525135;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=RezLhFckeReSx7n+JaAFqSGfgExphmuMUiXgxjTqYZE=;
-	b=MSMVZbO+LSgcsTq9JGJMknR82K1/Wy7MJd77ebAbedJD7PMvqffD7Ef3bvRp1FBshT1i
-	 nC06HJlssRmT0x3kPUO2XnUi5z0w6+XjpLhyasfnzFngAkhWXZWZlNK5bUcPoWLWGzXiq
-	 /iznUtuo8/8aKZR2vJx0dltHZ+yT+etrvi4vooSudsKniEaA+9PTKcTHUGeWq+z8Hm5+v
-	 CYhQ+stNxy/aVmaRQqoO1a/aEN6OBfRENkLe6T4Fxxzlnunnr0gXrMaHSZ9hH8dE3gToY
-	 n5hoWfsEFpXg2DgaVopnPgybCnirOVoylhP6ukiq/vW2ZWbY8pbpVf0HBjBT3JCOAtg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793528729;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=paoWbKvqLK3NcbGaFUKJSTzcpwiwtIw5MyG4/oJgE9E=;
+	b=gWKC6clnfHlAAYhKAjUESnek6FBTlmxGMlcygLJ3PSD8LVkdwnSYtmzAbeeCn9jeDzae
+	 IQX9E1fz7jbRiTskthNlHh5Ljl9JFChCfzuEZ3uM+e2eyQ/8pVdFNd39DBn9yjZ3bYu6K
+	 8/rWT2GaosCUZ5XScBkYMCQE9fyrbGjhnzBcKbQCkOp2wJ5MAlyGJi3lEmmmh8z4VPQf2
+	 E95EYO81pfy+rni1YX+8zf8i2ZnudBdl6/lASKnWe/tm48KXZBdm1MbUlHz7AXVolo4G6
+	 S/j0HT7swcNu0DP9/TgFCl6gVXWznhucv8xtvWMTRaHyGrpXyjK+k7FTO9mfTNkk9zw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=V14uc0Tl;
-	arc=none smtp.remote-ip=111.22.67.135
-Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [111.22.67.135])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 850E5606A324;
-	Sun,  1 Nov 2026 09:25:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 850E5606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PkQZ+XJN;
+	arc=none smtp.remote-ip=74.125.82.43
+Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90CA5606A324
+	for <linux-iio@vger.kernel.org>; Sun,  1 Nov 2026 10:25:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90CA5606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=V14uc0Tl
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PkQZ+XJN
+Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-15dd124bbe7so2106580c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 02:25:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=V14uc0TlbttybLNJg1tFdVjM7jSpjzYOrl2gaapbfyxbWy2e58KwxLGMXQqeH+ivLW/6bjrIwusbp
-	 Cn9va8V77Lm5IBVW6deI7+sr/MAyCfnZdXANnJ2GG56Dfxjvm2wb0CIUCVilwqB0WcXZkfVl2KV6Ta
-	 URuf/SPXaAGRIvyA=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app07-12007 (RichMail) with SMTP id 2ee76ae7057cf81-80220;
-	Sun, 01 Nov 2026 17:25:30 +0800 (CST)
-X-RM-TRANSID:2ee76ae7057cf81-80220
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from DESKTOP-3K8GUTQ (unknown[112.22.250.195])
-	by rmsmtp-syy-appsvr03-12003 (RichMail) with SMTP id 2ee36ae7058788c-a2fbd;
-	Sun, 01 Nov 2026 17:25:30 +0800 (CST)
-X-RM-TRANSID:2ee36ae7058788c-a2fbd
-From: laixiangwu <laixiangwu@cmss.chinamobile.com>
-To: jic23@kernel.org,
-	linusw@kernel.org
-Cc: linux-iio@vger.kernel.org,
+        d=gmail.com; s=20260707; t=1793528728; x=1794133528; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=paoWbKvqLK3NcbGaFUKJSTzcpwiwtIw5MyG4/oJgE9E=;
+        b=PkQZ+XJNbnFgVlIDTRSgVWtEJWIYgUuYr996WYpbTC04fo+/qKtNRMvi44xHQJ9/6D
+         P5XqmOJvq8Lb3QV8R+LLJm8W5KYnS7jrkIlHy+S1tLmCMBbktNcUxvz+EfJSUd2xLS8W
+         sl2+LYM6Gv6lSw47at6Hw7PIV5t26I4p7gO8oDaBOkgyRPjfEBbbkFvEdDpL8e0kl+FH
+         v6k1VdQIIQQuqLwqW9K29sO9CAyckMwfJ0Jk9FHv2Th8o6u1+0G6uvPv2PTGgUv1dcrU
+         ho7nre1YGo59y1tGRehJ/PCO6GGkD6rlOx/XDfh67cfzYFeW5ybFUpp0vi+8Uorpb03a
+         iWBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793528728; x=1794133528;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=paoWbKvqLK3NcbGaFUKJSTzcpwiwtIw5MyG4/oJgE9E=;
+        b=xgZDoyxXBoskmxA6MaRiey2Ia6onjsahakV909Iv3rfrRSQADnBk2ntX3kJJpkqBC/
+         o5CBrMx3+5gsJQ6VZ0almMt3nmkCpb2ScJrls5YKlUeV7rt4iJBdVsY/tx1s8yXuFMMj
+         xcmV0+WAJXC3q++Tf9s7U6MN+MRZrgj1mkmy85DIob3rZIlMCdEDpQZe6xUIcY9BHH2d
+         uTBgIv8mEw8hp+IomRSPxjH33GsY4DVNRDqzxw+XBd99dFMS9GqXxgd0FeXRrSEdpl9d
+         vpW5P9bK2JAQgDoAYWO0P/qTvkuQ8TK5ELXggz0/tqdOx6w+XJzRu1YrcS2JdPC9DEQD
+         C+rw==
+X-Forwarded-Encrypted: i=1; AKwUvBxvWNmTMxnie8JW2vSxRDkR/hP5YP2f9zGVyX75KXi11Z/78l8ywJIVapmgt3XsM5ET2dKkPmOzRCk=@vger.kernel.org
+X-Gm-Message-State: AFq9FYKE4SEn00dj7+Zt6FJtK6c5vi9HBZIn9DDgvH5b7CKlDeoIT91x
+	o66w9H5KQZu5MUluNB/BQ2KJFN9bZO10beXizWR56Lie0Bp8FbFmre0p
+X-Gm-Gg: AYBFou3AKaqqKC0eRQYqHO8Wm5qloYqdDKD4p7lRtaAt2o6Y+IqtfF0ZfuuXFnX7Jv3
+	ucyvaMpjc9zGlDYeHfrPOxux1AwioQyUqs7WPHqa4LQvx3yIgQOjf4sEuDKWk8QxzOsItq/EbLh
+	SYqlBQ7Gl+3Ifku5sgUxVTLzfdtk34lWYeFX3wuqgl5plf/raiUSz9ofD8eG2h8YmYyG7TKfufl
+	LKqMx0ezxDwtK8TGxhIsm2IMijRCG1e+n73NcHXmfwlNS68N86EbyBNF8/zXERh0ivjRUDb4qn8
+	VDzHP7Dkyhps6WeZi3167ZgFEQUeQ/Q9F6iJaU2cKVisnHGVhI/Hb9fWLDy7wC9QZetnUeDAkAZ
+	UXW8pskhZxl83uNT6Hup3/ReSDiu3n7D6tnR/TCHz+jOCWviPm5ZlnxxnLfsiO+djpNH2vFO+Cv
+	ivLguriwv/Bwq6257xe8dd5RtDafstq0edJaS0GdivunARzEqKwgo+uRsK/ndUq0XJNSwrPv+cc
+	HJsfrjdrqwOD9yv7wSso+nWy+JOXCm7H25ZJppDrbjOBr3WHTHv3uuKDJaJq13mqRKxsc6uay0u
+	btjEqqhiRs11sJA9Q5JIErRSFuplC48PzOtuwqWW/EseIfMxBNKoXGO/cXES8r8wW9G/kvEwwy5
+	KpcZgOgFt+fJt+DXt6QgXqMNUNQM7AbXwHQQzwbla/ma/PE3lDSyTdDE3pKg4/iUdoKsIzfxKG6
+	Fc3MW+pu31uRawOTkHuKdUNDzdYUckBH1d5U9ALSmKrd6oq8rqtK41wy0kPNmTtOxo
+X-Received: by 2002:a05:7022:29c:20b0:15a:9834:73f2 with SMTP id a92af1059eb24-1ac5c5554eemr10126918c88.38.1793528727415;
+        Sun, 01 Nov 2026 02:25:27 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b106edc7f8sm6767163c88.9.2026.11.01.02.25.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Nov 2026 02:25:26 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	laixiangwu <laixiangwu@cmss.chinamobile.com>
-Subject: Re: [PATCH] iio: gyro: mpu3050: Fix runtime PM refcount leak in trigger enable path
-Date: Sun,  1 Nov 2026 17:25:27 +0800
-Message-ID: <20261101092527.219-1-laixiangwu@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.50.1.windows.1
-In-Reply-To: <20261101000404.41fe1028@jic23-hlaptop>
-References: <20261101000404.41fe1028@jic23-hlaptop>
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH v4 0/3] iio: proximity: sx93xx: keep the IRQ balanced across suspend and resume
+Date: Sun,  1 Nov 2026 15:55:01 +0530
+Message-ID: <20261101102518.22757-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -76,22 +105,41 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Jonathan,
+sx9310, sx9324 and sx9360 disable the interrupt in suspend before
+anything that can fail, and don't enable it again when suspend or resume
+fails. One patch per driver, as the Fixes tags differ.
 
-Thank you for the review!
+Changes in v4:
+- Enable the interrupt first in resume, so resume mirrors suspend
+  (Jonathan). This also drops the sx9310_wake_up() helper from v3.
+- Drop the IRQ 0 wording from the commit messages (Jonathan)
+- Drop Joshua's Reviewed-by, as resume changed
 
-Both suggestions are addressed in v2, which I just sent:
+v3: https://lore.kernel.org/all/20261028220444.70121-1-kapoorarnav43@gmail.com/
+v2: https://lore.kernel.org/all/20261026112342.65917-1-kapoorarnav43@gmail.com/
+v1:
+https://lore.kernel.org/all/20261026100322.16720-1-kapoorarnav43@gmail.com/
+https://lore.kernel.org/all/20261026100408.16874-1-kapoorarnav43@gmail.com/
+https://lore.kernel.org/all/20261026100450.17023-1-kapoorarnav43@gmail.com/
 
-- The enable and disable paths are now split out of
-  mpu3050_drdy_trigger_set_state() into a pair of separate helpers
-  in a precursor patch (1/2), so the error label only lives inside
-  mpu3050_drdy_trigger_enable().
-- The fix (2/2) now uses pm_runtime_resume_and_get() instead of
-  pm_runtime_get_sync(), which also keeps the usage counter balanced
-  when the resume fails, so the manual pm_runtime_put_noidle() from
-  v1 is no longer needed.
+Compile-tested only (W=1); I don't have the hardware and haven't
+reproduced a failing suspend.
 
-Best regards,
-laixiangwu
+Arnav Kapoor (3):
+  iio: proximity: sx9310: keep the IRQ balanced across suspend and
+    resume
+  iio: proximity: sx9324: keep the IRQ balanced across suspend and
+    resume
+  iio: proximity: sx9360: keep the IRQ balanced across suspend and
+    resume
 
+ drivers/iio/proximity/sx9310.c | 32 ++++++++++++++++++--------------
+ drivers/iio/proximity/sx9324.c | 28 ++++++++++++++++------------
+ drivers/iio/proximity/sx9360.c | 30 +++++++++++++++++-------------
+ 3 files changed, 51 insertions(+), 39 deletions(-)
+
+
+base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
+-- 
+2.53.0
 
