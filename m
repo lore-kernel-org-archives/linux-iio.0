@@ -1,65 +1,61 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793554904;
-	b=SFcwy2jEsARiNLPLxYlP3Rg2gFTsbbdyspw62F6RhqmUcpFadizBpYRRTeMtMkwN/xxk
-	 CLMuCn0n2K67u0zCOlEuJ9DvrVkg6w7s/dWLDdNFIks7Kq/5U06rx9BxLRMciho6soBzD
-	 hZ6cpoD4DkKkjBV10VfRFOcj5qhg8Se2nH8wn9gDFBvtk2oJIUaSNEbi5rIIvDQI+xIue
-	 8HGW9i67XAYPdoVJWHo6xhQxacfda6mJv2dpWcdrG1rJLa9Go4BZPs6Z58KgKG2VJn/h8
-	 XIliGcTNSs+cF9uiWhC66SIqIXFaYzfzVhr+A6EinDpa4IoI65kIMR3eqsUxeGfRGSA==
+	t=1793555302;
+	b=Xkd+C7MhaiEEFg7BL2spbOk84hpo7nJyWmqslLXHZhyveskNqziTRrO2q/C2IoH1AQyI
+	 jUPZtxl/TnDhqk6n9+6us7U8Z5wpDrWfW04U19vErQ9A84aQoPl6cbMncf+b3gUWnB/xa
+	 5BpsXkeMsz5Wk8pci8F+AFtu41zYYPiblHCEXK1wjxjUsjTAEG6as78XvqC9riaiHZXsr
+	 fH1D6U/oLeKcDmiQNcTRanlq02bIox3NgLNyu2VjRIdZwo70gvQ+WwDBZjeb5PSWfiWQa
+	 w0fY4JowYfMf7JdkyyR6geSvfqnVBjNW7KP/Aaqr7VHTRTPlOyIAknM5LEfb2ecrD7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793554904;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793555302;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=ZSWxv+vsV3OMpY3UoOnjoLymmnb2qgFdGAgFrnTm7wA=;
-	b=Eyw4mGTtswy/zrClQGxgdABNragC/b2R1eatdgIDp7gV+z7rjUwQS/6x1oKZJ5KPuvKG
-	 jdDLJEUiIGQBmdvI5qWrffjhUWfe1lrl0hvb+A63I1N7CZWylqRqgUQYLwkBHSX3DdaQ+
-	 qoZokFHAX9HzwIYrwHIn+WwbOJyBVjrduYV7z7SwGyDveeVd3MZvEjwIAr5mm2oY7xAMT
-	 IPGiF5uohXUlInJoENRGQoES6wX4vBgqupP68RuqQOnr961G2989eq+s4J53YbPzyafwd
-	 G7TZnjHur01jZAwsav/WPWBsjVIw6CI5Gd6LtNaIEsKi3SeFtPvzwKwTb7Q/MpblIcQ==
+	bh=UBm1kiri62EaTC8wl1H2p7PsuwOTdHeeIjuWlRIq8zk=;
+	b=eqD2c6uXqM4yr+d3H2Q8avriDOu0lvpHs/h/4aiEwiCO88biay2h8RO7P5CXRmGM2vbw
+	 GixdmEhC4aLanvzjSlLQPpgPtT52Yrm7AWczkUY9VU64d5QLfWVCl5r6z4Dyww9o14gby
+	 W54pW+twrtuWjHM20b9lBqyc0ZxWtrV8c+qclXTAN01R8oPTr/hVe7L0D/0V8T/anivgE
+	 AQYRzjNouPHrh92KHim9iR2ICAedDwund3dU4mgzsRBIIkpKZ9lmHOp0jDbFzwsTxCHeJ
+	 teB4yMFYhKT2gJKj8eR82SvO46gxSaMQ20NxyVPt6PdGJVF8LXxcsX9/rw+WlkkDvcw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hJYf1Zmh;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KT0m98k3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C3ED606A32C;
-	Sun,  1 Nov 2026 17:41:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00EC4606A324;
+	Sun,  1 Nov 2026 17:48:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hJYf1Zmh
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D3961F000C1;
-	Sun,  1 Nov 2026 17:41:42 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KT0m98k3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11141F000C1;
+	Sun,  1 Nov 2026 17:48:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793554903;
-	bh=ZSWxv+vsV3OMpY3UoOnjoLymmnb2qgFdGAgFrnTm7wA=;
+	s=k20260515; t=1793555301;
+	bh=UBm1kiri62EaTC8wl1H2p7PsuwOTdHeeIjuWlRIq8zk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hJYf1Zmh2Yx9+qETVYUi6n/ZBYeFIK+4QJnS6Yn2Q23NGW/MPESWC54jo5Qhioi75
-	 MUZ8ia1LeX5PcscI6EVBgWu6xB0lxUn4sJWDCBuFrF6rAZXzX6uVI+OQMp9xKZl1a7
-	 1OePawjs35W9cDvd3BoBLEg9CBB99xp/FHEtSMfS0qgcqSoZrQGFn3EA8UmhU8yUGf
-	 7uUNVXsuZUAiXu05o5VLCGqPFaJCMkW0YkpIBHVvv4XOyJ0ZOQERDfqw3qiBcVCCdM
-	 O9SsPRB4aZ5MrJ2trR2gfUgDyhEp+rGAK3kehDgRLYeZniN6LkFz7SB9G/MLGwMvjN
-	 ixQGjVXexQeNw==
-Date: Sun, 1 Nov 2026 17:41:40 +0000
+	b=KT0m98k3UOR0hY2Y+WT+ZObsDmEhEMolcBLNHvMhwchKY5dLNlekLEFg38RjMmkzw
+	 DCA4V5Cwc63T1GXyTtwdCnnJSBRuI7lR5R3OgexiyPw+WwbREeVzyE0OFSHYKy0m9w
+	 I6yqJPVWmzG9rm839BPgzort49dF90MwsNpqjnlTFiM8KYITEEYSZMbNT4OiHY4mCt
+	 P3hq6I6JDHHUZf+Q0NM8z4EmLvLIhJwYDN2VPEUS3k0oFHh1hL1kveANOQFUoAN60j
+	 xVMknE0mwOBWqfd9+O9j6+Kv6zlgiS5l+6bi5P5wVVKYHTEAL5kusm2s86vg9l6l35
+	 YVRK/0ZAbtCjA==
+Date: Sun, 1 Nov 2026 17:48:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Esben Haabendal <esben@geanix.com>, Kuppuswamy
- Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, "Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
- <u.kleine-koenig@baylibre.com>, Pan Chuang <panchuang@vivo.com>, Hemanth
- Selam <hemanth.selam@gmail.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>,
+To: Patrick Fischer via B4 Relay
+ <devnull+admin.tsv-stahl-riesa.de@kernel.org>
+Cc: admin@tsv-stahl-riesa.de, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kevin Tsai
+ <ktsai@capellamicro.com>, Svyatoslav Ryhel <clamor95@gmail.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] iio: light: ltr501: Add support for the
- LTR-659PS-01 proximity sensor
-Message-ID: <20261101174140.4d11fdfc@jic23-hlaptop>
-In-Reply-To: <20261101141507.119186-3-clamor95@gmail.com>
-References: <20261101141507.119186-1-clamor95@gmail.com>
-	<20261101141507.119186-3-clamor95@gmail.com>
+ linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: Add Capella CM3217
+Message-ID: <20261101174818.2aada52e@jic23-hlaptop>
+In-Reply-To: <20261101-upstream-iio-cm3217-v1-1-5e1724cae7b7@tsv-stahl-riesa.de>
+References: <20261101-upstream-iio-cm3217-v1-0-5e1724cae7b7@tsv-stahl-riesa.de>
+	<20261101-upstream-iio-cm3217-v1-1-5e1724cae7b7@tsv-stahl-riesa.de>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,169 +69,85 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  1 Nov 2026 16:15:07 +0200
-Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+On Sun, 01 Nov 2026 15:46:06 +0100
+Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org> wrote:
 
-> Add support for the Lite-On LTR-659PS-01 proximity sensor. This device is
-> nearly identical to the LTR-559ALS-01, but omits all elements related to
-> ambient light sensing (Even the regmap is identical, but ALS registers are
-> marked as reserved and interactions with them are discouraged).
+> From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 > 
-> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-Hi Svyatoslav,
+> The Capella CM3217 is an ambient light sensor with an I2C interface but
+> without registers and without an interrupt line. It always answers on
+> the two addresses 0x10 and 0x11. The node describes the first address;
+> the second one is fixed and claimed by the driver.
+> 
+> The sensor is used in the NVIDIA Tegra Note 7 and the NVIDIA Shield
+> Tablet.
+> 
+> Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
 
-Various more general comments on the driver in here. Only real request
-is to not copy the rather ugly existing indentation for new code.
+Hi Patrick
 
-If nothing else comes up in review, I can just tidy that up whilst applying.
-For now I'm going to leave this on list to give others time to take a
-look.
-
-Thanks,
-
-Jonathan
+One small thing inline. 
 
 > ---
->  drivers/iio/light/ltr501.c | 58 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 58 insertions(+)
+>  .../bindings/iio/light/capella,cm3217.yaml         | 45 ++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
 > 
-> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index 302be2fc314c5..5cc1141322ad5 100644
-> --- a/drivers/iio/light/ltr501.c
-> +++ b/drivers/iio/light/ltr501.c
-> @@ -96,6 +96,7 @@ enum {
->  	ltr329,
->  	ltr501,
->  	ltr559,
-> +	ltr659,
->  };
->  
->  struct ltr501_gain {
-> @@ -649,6 +650,26 @@ static const struct iio_chan_spec ltr301_channels[] = {
->  	IIO_CHAN_SOFT_TIMESTAMP(2),
->  };
->  
-> +static const struct iio_chan_spec ltr659_channels[] = {
-> +	{
-> +		.type = IIO_PROXIMITY,
-> +		.address = LTR501_PS_DATA,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 11,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
-> +		},
-> +		.event_spec = ltr501_pxs_event_spec,
-> +		.num_event_specs = ARRAY_SIZE(ltr501_pxs_event_spec),
-> +		.ext_info = ltr501_ext_info,
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
-> +};
+> diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
+> new file mode 100644
+> index 000000000000..b2ddb14d657b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
+> @@ -0,0 +1,45 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/capella,cm3217.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  static int ltr501_read_info_raw(struct ltr501_data *data,
->  				struct iio_chan_spec const *chan,
->  				int *val)
-> @@ -1178,6 +1199,12 @@ static struct attribute *ltr301_attributes[] = {
->  	NULL
->  };
->  
-> +static struct attribute *ltr659_attributes[] = {
-> +	&iio_dev_attr_in_proximity_scale_available.dev_attr.attr,
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL
-> +};
-Not something I'm going to ask for as part of this series, but
-if anyone working with this driver has time it would be good to
-move the available handling over to the read_avail() callback
-and masks.  This is an old driver and so far not been converted
-to that newer infrastructure.
+> +title: Capella CM3217 ambient light sensor
+> +
+> +maintainers:
+> +  - Patrick Fischer <admin@tsv-stahl-riesa.de>
+> +
+> +description:
+> +  The CM3217 is an I2C ambient light sensor without registers or interrupt
+> +  line. It always occupies the two I2C addresses 0x10 and 0x11; the node
+> +  describes the first one.
+> +
+> +properties:
+> +  compatible:
+> +    const: capella,cm3217
+> +
+> +  reg:
+> +    const: 0x10
+
+Put the documentation about using who I2C bus addresses here rather than
+in the introduction. This is where anyone wondering about allowed reg for
+a device that sits on two addresses would look.  Maybe add a little
+on what goes to each address.
 
 > +
->  static const struct attribute_group ltr501_attribute_group = {
->  	.attrs = ltr501_attributes,
->  };
-> @@ -1186,6 +1213,10 @@ static const struct attribute_group ltr301_attribute_group = {
->  	.attrs = ltr301_attributes,
->  };
->  
-> +static const struct attribute_group ltr659_attribute_group = {
-> +	.attrs = ltr659_attributes,
-> +};
+> +  vdd-supply: true
 > +
->  static const struct iio_info ltr501_info_no_irq = {
->  	.read_raw = ltr501_read_raw,
->  	.write_raw = ltr501_write_raw,
-> @@ -1218,6 +1249,22 @@ static const struct iio_info ltr301_info = {
->  	.write_event_config	= &ltr501_write_event_config,
->  };
->  
-> +static const struct iio_info ltr659_info_no_irq = {
-> +	.read_raw = ltr501_read_raw,
-> +	.write_raw = ltr501_write_raw,
-> +	.attrs = &ltr659_attribute_group,
-> +};
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vdd-supply
 > +
-> +static const struct iio_info ltr659_info = {
-> +	.read_raw = ltr501_read_raw,
-> +	.write_raw = ltr501_write_raw,
-> +	.attrs = &ltr659_attribute_group,
-> +	.read_event_value	= &ltr501_read_event,
-> +	.write_event_value	= &ltr501_write_event,
-> +	.read_event_config	= &ltr501_read_event_config,
-> +	.write_event_config	= &ltr501_write_event_config,
-
-The indenting of the existing structure is weird and could do with a tidy up.
-I'd suggest just dropping any attempt to force alignment.  As is shown
-here, doing that tends to lead to inconsistency over time as a driver
-evolves.
-
-> +};
+> +additionalProperties: false
 > +
->  static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
->  	[ltr301] = {
->  		.partid = 0x08,
-> @@ -1283,6 +1330,15 @@ static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
->  		.channels = ltr501_channels,
->  		.no_channels = ARRAY_SIZE(ltr501_channels),
->  	},
-
-Another nice to have but not a request for this series.
-Would be good to move away from handling these as an array with the enum
-value in the firmware tables. That scales badly and runs into NULL check
-problems when we use the generic firmware accessors (which we should really
-be using here). i2c_get_match_data().  The standard way to do this
-today is to use separate named structures and put pointers to those in the
-tables.
-
-> +	[ltr659] = {
-> +		.partid = 0x09,
-> +		.ps_gain = ltr559_ps_gain_tbl,
-> +		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
-> +		.info = &ltr659_info,
-> +		.info_no_irq = &ltr659_info_no_irq,
-> +		.channels = ltr659_channels,
-> +		.no_channels = ARRAY_SIZE(ltr659_channels),
-> +	},
->  };
->  
->  static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
-> @@ -1635,6 +1691,7 @@ static const struct i2c_device_id ltr501_id[] = {
->  	{ .name = "ltr329", .driver_data = ltr329 },
->  	{ .name = "ltr501", .driver_data = ltr501 },
->  	{ .name = "ltr559", .driver_data = ltr559 },
-> +	{ .name = "ltr659", .driver_data = ltr659 },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(i2c, ltr501_id);
-> @@ -1645,6 +1702,7 @@ static const struct of_device_id ltr501_of_match[] = {
->  	{ .compatible = "liteon,ltr329", },
->  	{ .compatible = "liteon,ltr501", },
->  	{ .compatible = "liteon,ltr559", },
-> +	{ .compatible = "liteon,ltr659", },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, ltr501_of_match);
+> +examples:
+> +  - |
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        light-sensor@10 {
+> +            compatible = "capella,cm3217";
+> +            reg = <0x10>;
+> +            vdd-supply = <&vdd_2v85_sen>;
+> +        };
+> +    };
+> +...
+> 
 
