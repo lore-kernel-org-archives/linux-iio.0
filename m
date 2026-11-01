@@ -1,58 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793557413;
-	b=XiQRxfT2GBvldAJmMSKl4lRMqP7IAfVJ1AWdkBH14oyRBcAZpefRCFUA7B8u2VH+fG93
-	 OuIrtMCX6VxgFjXm7Vec/Pff/LX+6fn9gxmb2UCsT+Sqy59l4tFUII3myUObvGXmY+Qq9
-	 2X7HS9I4XADXNR16N7j+GGTzCC3rQbYpK7/KpoSCDFjO+pmoq+o0qgmO78fOa13HIfr0E
-	 7+XnISefyww1ziog4nrmC5Euw1cvFlUWihJ5UG2U3+6JKyW5UjQ97ktdZRguz6ZZCmQsP
-	 qIU3tnvFSn8VjuccqdCtRfB8EsWO4Y5gJ54SuWrlqtPOjE04RIBw2y53ggHJUJc/4rA==
+	t=1793558129;
+	b=1YXKGhYdl6cJPZcl5vUJdks9rpthZ4ikyFEinJb+ZTQ0IeGYnwso8UPDvAR81Wjzthdm
+	 Y4o7XpR3A1sp12pBEnuwFYmjAABDNt6XppaLDZ+i11TVM5uy06qQKbwTXD9/ih9vMaRBS
+	 TIWAH2cxF2pHHvTm/4hYfB666/Q/Hm9EabL4MDF/yjw48rDjtOmxIFS97DMMpg3w2wpTl
+	 R2Tw8+Ztq/b4iGB2Cb33uAoYq2/cfMPYUYHygcpQANoOc0fRhrKIdm4ddCALyPpHwhK/h
+	 mAL5kfAXWzw0oMe0J3TsVNd3fmWAiKkr+ys1g03BGfRNEEi/I1Lej75xPaUCd6/Pjgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793557413;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793558129;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=CexjKfWtjIoJ9DgljIXuFJ9dsvppgQJpj8XKTnS3YHQ=;
-	b=3B7V+xiwm0p3f4ipSOw0zzubDUzuTrlh5mmRQ0U/vy5UIwLRX92JAgOcjC6dWXuCixbz
-	 KktK2lbjtSS/DyAdGVaW6snAjDRmuiImkqnoMMQ9outUZ7msHIb5PYNjfgMiYDFvT1ARV
-	 B0VNf1eQAOcnBqMpoI4o4V+9jjj+7CUuOYhwlImu7LbozrzlbAcrb6KeB34r7Jm3CdcoL
-	 uYI4Ri2Y5NmcXEJwF04VHTapzTlveQNKT0TX7J8+XWk/ie+ODZzK0BEMIY36IQoklYvtR
-	 SG+bFZa4UgtC+B+DPwbZMIPNoLjqr1WJuV0a90wd1cBRilYXLR7LEdnxi2/cdpp30MQ==
+	bh=714q+JQndWob5uh3djoFeHGesUURXR98SNz0mVZNiR4=;
+	b=AHESfhVf11EhTA9cfkqfT2VFKkbEwtzuSU2kLyli3XWY3HaMPcqgTGAP7KW2SXcc8AY1
+	 A9reHckwf3FKF+crV9TmySK6Ak3bc2P88adZAgidb13dR2sbIPae4tqkIs2zA8dRlxHOi
+	 mEyqVkOu8kSyqcqW5kzxmBYi/olb/KxT2RDd5HwOJ1ODz8QjV3NtKeohU50rX2ZAbMLEt
+	 RSTXi+VHg7yrQ4UMrMepilGvdbEA7QwtalfUVW6KwxiHgs2HhG1L0SpT0nsXarL3xBcYs
+	 CTQ/rQ3IlmGq1n3BQXBFt0h+YWqV8w7GVONSYBWkp3zgErv/NXAxKxxMBYQJBylvIdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dmTNwo69;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WW+Il0lZ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CFFC606A324;
-	Sun,  1 Nov 2026 18:23:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E98D5606A324;
+	Sun,  1 Nov 2026 18:35:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dmTNwo69
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47BD01F000C1;
-	Sun,  1 Nov 2026 18:23:31 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WW+Il0lZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D29CA1F000C1;
+	Sun,  1 Nov 2026 18:35:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793557412;
-	bh=CexjKfWtjIoJ9DgljIXuFJ9dsvppgQJpj8XKTnS3YHQ=;
+	s=k20260515; t=1793558128;
+	bh=714q+JQndWob5uh3djoFeHGesUURXR98SNz0mVZNiR4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dmTNwo69zFaCQXvC/ED/42xUCxYEr/xQsy2LxIsKvTi2TRX3v8wEwDsVnAxL6CVjl
-	 qtEurOKeT21839/CyOwj4Aq12+04zJhvqZNTzDT2qEz8BYc8WoMFNMUsfNDMW/lNKq
-	 hFzYQP0O9zvIGcxx39lBVxPHe+2qd/OTBh8m127Aq2wKQHBdDx+KgvX9U+ygE2oTOs
-	 47r0axbU1cHMr9ZKL0h4Jd8Q4rOtWkWtX31Gj2ZaJYI4yuAVOsU1p3S5inoszvChHP
-	 J53DpCPpq8KMYouvTVyIk5SBeer8/1hO3sqxPR4Ub26fuTgjKQXXmGiR2Hb7pi+zNn
-	 s9t0soY4Sz7KA==
-Date: Sun, 1 Nov 2026 18:23:27 +0000
+	b=WW+Il0lZGSBKBlhrFX6Q6wAKYQUoX9LIXnvKUVAFsdQZFBaQ0exmpyezgWrSAJA0N
+	 9Z0rzTGgSBNRK+jEZ+0BR93PaNlb3k8tnQ90s5poMYuXIrSmyNtC3QYwvx+oz0fZ8z
+	 tmgV8W/33IqOeyttrg06C7DkhQZfHkEdLoodgvNCEJi7eu3EbpBpwXJhX45oRwqSu7
+	 E+i/4dkVEBiIwdOKCtCm6xwkTSse4zI7lPYKKO8w/NTXM5lBppOChtbHTe5zbOttrd
+	 90EweljoeYp+SZS2YAMcBuOWZBjE362uZS0pcVg6VRUShhtH16k4N2uHsJ3E8RRfRP
+	 ZUsRFdgh54hkg==
+Date: Sun, 1 Nov 2026 18:35:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Liu Yufei <lyf98405@gmail.com>
-Cc: Alex Lanzano <lanzano.alex@gmail.com>, David Lechner
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Victor Chernyakin <chernyakin.victor.j@outlook.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Gustavo Silva <gustavograzs@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: bmi270: fix zero timestamp in triggered
- buffer
-Message-ID: <20261101182327.4fd27ceb@jic23-hlaptop>
-In-Reply-To: <20261028-bmi270-fix-timestamp-v1-1-99c0e5fe7d0c@gmail.com>
-References: <20261028-bmi270-fix-timestamp-v1-1-99c0e5fe7d0c@gmail.com>
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <20261101183523.693e4b48@jic23-hlaptop>
+In-Reply-To: <at-0cXiBV0RM-Att@ashevche-desk.local>
+References: <SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+	<SN1PR12MB2528DB8EE8ACEBF9551ED52EA5612@SN1PR12MB2528.namprd12.prod.outlook.com>
+	<at-0cXiBV0RM-Att@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,93 +66,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 28 Oct 2026 10:59:26 +0800
-Liu Yufei <lyf98405@gmail.com> wrote:
 
-> When the device's own data ready trigger is used, the trigger is
-> polled with iio_trigger_poll_nested() from the threaded IRQ handler.
-> In that path the pollfunc top half, iio_pollfunc_store_time(), is
-> never run, so pf->timestamp is left at zero and every sample pushed
-> to the buffer carries a zero timestamp.
+> > +		/*
+> > +		 * Now read the two registers making up the measurement.
+> > +		 * The datasheet says to read MSB first, LSB second.
+> > +		 */
+> > +		ret = regmap_bulk_read(map, FDC1004_REG_MEASn_MSB(0),
+> > +				       reg_vals, ARRAY_SIZE(reg_vals));
+> > +		if (ret)
+> > +			return ret;
+> > +
+> > +		*val = (sign_extend32(reg_vals[0], 15) << 8) | (reg_vals[1] >> 8);  
 > 
-> Take the timestamp in the trigger handler itself and drop the top
-> half, so that a valid timestamp is provided for all triggers.
+> We still have two shift operators, so it might be not a bad idea after all to
+> have a combined variable with wordswap done in case of LITTLE_ENDIAN
+> architecture. Jonathan, what do you think about this? Reading the whole set as
+> 32-bit value and convert it if required
 > 
-> Fixes: a1854d55f54b ("iio: imu: bmi270: add support for data ready interrupt trigger")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Liu Yufei <lyf98405@gmail.com>
+> 		// also note in this case we don't need to have _MSB in the name
+> 		ret = regmap_bulk_read(map, FDC1004_REG_MEASn(0), reg_val, sizeof(reg_val));
+> 		if (ret)
+> 			return ret;
+> 
+> #ifdef __LITTLE_ENDIAN
+> 		reg_val = swahw32(reg_val);
+> #endif
+> 
+> 		*val = sign_extend32(reg_val >> 8, 23);
+> 
+> 		// I assume the following is also possible in this case
+> 		// *val = (int)reg_val >> 8;
+> 		// but usually we use sign_extend32() in IIO even when simple
+> 		// casting is okay
+> 
+> This also reduces stack usage.
 
-Firstly. Do you have a setup where you actually care about this, or is this
-found by reading code / LLM etc? If nothing else that changes
-the urgency.
+To esoteric for me.  We'd have to add comments on why it worked to limit
+the future blast radius.  Now, what could we do that didn't need that...
+The problem is that the regmap_bulk_read is feeding us two native endian
+16 bit values.  Well, you could 'fix' that...
 
-This is an old problem. I really need to find some time to write
-a more consistent solution for timestamp acquistion that would
-indicate if we have a better timestamp or not and stop this
-being a driver problem.  We used to avoid this by having most
-triggers go through the irq_work dance but that was considered
-too much of an overhead.
+		u8 be_temp[4];
 
-As Andy suggested we do want to grab the timestamp if appropriate
-in the top half if it is our own trigger (the one registered
-by the driver) because we then know it is the best possible
-for a dataready trigger.
+		ret = regmap_bulk_read(map, FDC1004_REG_MEAS_n_MSB(0),
+				       reg_vals, ARRAY_SIZE(reg_vals));
+		put_unaligned_be16(reg_vals[0], &be_temp[0]);
+		put_unaligned_be16(reg_vals[1], &be_temp[2]);
+		*val = sign_extgend32(get_unaligned_be32(be_temp) >> 8, 23);
 
-The way some drivers handle this is to check on whether the
-trigger set is our own or not. Now ideally we'd do that check
-in some helper code, but writing that is less than trivial
-(which is why I've not done it already)
+Or something along those lines...  I'd rather something explicit like that
+than Andy's suggestion, but I'm not convinced on this either.
 
-https://elixir.bootlin.com/linux/v7.3/source/drivers/iio/light/rpr0521.c
-is an example I found with a quick grep, but perhaps not
-coded in the cleanest way!  So take the idea, not necessarily
-the implementation from there. 
+> 
+> > +		return IIO_VAL_INT;
+> > +	}
 
 Jonathan
 
-
-> ---
->  drivers/iio/imu/bmi270/bmi270_core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/bmi270/bmi270_core.c b/drivers/iio/imu/bmi270/bmi270_core.c
-> index fbcf6bb87acc..40ed1ee5ac58 100644
-> --- a/drivers/iio/imu/bmi270/bmi270_core.c
-> +++ b/drivers/iio/imu/bmi270/bmi270_core.c
-> @@ -840,6 +840,7 @@ static irqreturn_t bmi270_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct bmi270_data *data = iio_priv(indio_dev);
-> +	s64 timestamp = iio_get_time_ns(indio_dev);
->  	int ret;
->  
->  	guard(mutex)(&data->mutex);
-> @@ -852,7 +853,7 @@ static irqreturn_t bmi270_trigger_handler(int irq, void *p)
->  		goto done;
->  
->  	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
-> -					   pf->timestamp);
-> +					   timestamp);
->  done:
->  	iio_trigger_notify_done(indio_dev->trig);
->  	return IRQ_HANDLED;
-> @@ -1630,8 +1631,7 @@ int bmi270_core_probe(struct device *dev, struct regmap *regmap,
->  	if (ret)
->  		return ret;
->  
-> -	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
-> -					      iio_pollfunc_store_time,
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
->  					      bmi270_trigger_handler, NULL);
->  	if (ret)
->  		return ret;
-> 
-> ---
-> base-commit: 09f742b49cb2728086d78be2b0b35e4d1d71fc85
-> change-id: 20261028-bmi270-fix-timestamp-48a194b69db1
-> 
-> Best regards,
-> --  
-> Liu Yufei <lyf98405@gmail.com>
-> 
 
