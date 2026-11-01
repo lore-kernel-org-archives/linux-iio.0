@@ -1,59 +1,66 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793576429;
-	b=uawwwH9eNN3fZfsnJ54vTRW7XWveFGcqX4nlTr/m9AZpkmBP347SLkNpVm3Sp//wb5+b
-	 3bCqpMiRMnjkrz2zQmg+g1xj9FwUDLquqEUSIiBYLE62Z8fSOcjjlJxdKCSKTwimss3l9
-	 6XdX03u2jWexCWvOTc8ZFXcpxonoCu65DRmb+ck/HK7mmiq2i4KLqvMQ2GxbWv6SkBqJu
-	 7V23nFIZ+UA15tPm0J3fkGDxVTHaLv8e/sXRaort5IQaJBfa3foCwVn0pkx803Fx+GGla
-	 9b6IakXA6n979B1ggi29vCKRaagTtTqSNpz5HMwFTBuRM2X6qT4HWq9Ss+iIXjAmN8w==
+	t=1793577021;
+	b=kBIj+TCAD6Rf3UbIpqa7tOwTNxpWc1A9dmvYGPRhSb7jM8y33/QDkVQPKasBG47IDPd6
+	 8QHF4uvX3imuegc3fNgxp+eAimu1MYkrD22Szlt4P7ZR56wrbSIq0+aEB6qXSHr5fWwbP
+	 nITeeNfma6I0s8hPRTX7tK9GW45L8EA63CnsO49OCqbTj0AU+gq4yoJ3Y1KVdHhx9cf1n
+	 Wlacqk7v3OjqYAIa41z3bBrdW9xgBaVz2M0wpha6QR0Ht6zB+VHb7zvL28pEf8u6N92du
+	 t7IrFLPe4n8h/eVkNUH2PFo6U6yW5Kn3p3hnAmEZZDuGIMV6f2haCIOEznCIxmCkzZw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793576429;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793577021;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=3eD7IFMtpN6nJKjfqgZB3Oa32c8tF4+kKEbpHerQics=;
-	b=RepmqKLvmRvpsEV1BK7s50lBynYw3KAlKDWcuxjVZ1oLBW1ITEPSZ38BKhr85DwgWGyk
-	 zPIkt0UN2cGVYJVL3fAna6NWzK3jchf5e54PEG5YwSX+w5SeMT4wzBg5MA3CuozGGytOw
-	 rEbW2bbyEsQn0q35kiQAS60bb2WMUGfJSRO+3k+3sC4fOegpjJERbUD02MqS+qmqKH7CG
-	 41DWRPhPzn/933rGnMuzg830e6mo4Y4aRLH2FX3mbzKu4NTNHYs9JgzS6b3o0AsHHZdqQ
-	 ronZ4oJcbco9+4P9E6R4LTQz1dmtDFsoxVB/404KOMgDr+I3aIjtr0L++XIfQqCEbMg==
+	bh=GtkyqXjaNZUhp+wtMvVWU33nxLUpc8+32fesBBYhb8w=;
+	b=Jui8+Q+0DVF9eCiHWOAOlQrmCrF6uwHuZtLPKUrigv8gQ1ZO/EjK3Nk7Qj0heEjIsaUf
+	 uJTLwBGLKym4+eG+2dFuG0E+v2Dz467TKChWwkLbV7zwDW1ZLj2Z//6NlCWfPtaVGldUZ
+	 M0lSwE7kAP/dlP9g1XjnBWmP2tT4PdaSIxmZPQnKWkxaVeTjAM7nTP6nfdzYr8BQ9Rfij
+	 8aWIu7OcrefuIjxiiCKT+cERbpsQ0R/hle3dSE3tP2ZUX5ZmNE1ThHmksUSTuU4Rg0OCR
+	 oHzBncwo2bf8R+GIrbItkmxB2i8YGMtDhVrsFg6scPEbkapE4j/OMOCAXTYsrv1L/uA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iUUh6Kew;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i1mOGOEa;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D0B6606A32D;
-	Sun,  1 Nov 2026 23:40:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A9A4606A324;
+	Sun,  1 Nov 2026 23:50:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iUUh6Kew
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AE671F000C1;
-	Sun,  1 Nov 2026 23:40:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i1mOGOEa
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5131F000C1;
+	Sun,  1 Nov 2026 23:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793576428;
-	bh=3eD7IFMtpN6nJKjfqgZB3Oa32c8tF4+kKEbpHerQics=;
+	s=k20260515; t=1793577020;
+	bh=GtkyqXjaNZUhp+wtMvVWU33nxLUpc8+32fesBBYhb8w=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=iUUh6KewOgb3ZIJkUgwgn+qwmqS9ptkxoe0wGb4ouxV7LF5TdOrn3s/3y6FrlFK7C
-	 idOu6uWj05h+gLAPhma9VjptaJfgBwsXHSoHkB2efg65UALHFS2fxai7M8nQgPaVMU
-	 gV0LyTmwU+uFkkWXIdNOnkv9E2KaX8CRb9Duw9tINYO7RzTZTA3NsauuQcUgsHLlyl
-	 myIF74WMs8/fAbjMT/fWBU6yUMVRX4t5L7NaUhPTNA8Sn2DIyFQMh24pCkEbYi5hmU
-	 rDZRg5Lzw2hCuL9Ue7ivrKtviOrLniWgk1XLzjhZ15rPP1qWeY0vC+0KRB6TdOuzub
-	 eMmpXpPLy6aPg==
-Date: Sun, 1 Nov 2026 23:40:22 +0000
+	b=i1mOGOEaTLeFmzOBlUQPAipM3JBBEAnnb8FPetvslzNbDTb6qpgLHSXbJ5/6K+XYp
+	 Vxzcv05w+wIcpMMbJHxghkLCTN4kiZWPTrxnY01jkZNmM6FNk2nXJxXmzHNkXujkI3
+	 YM1Z6EKcixm75tmxi3B/Kqt0KAQMDWPFHWL4AMmsAwXd00DveNDZa4hKDlakL65nrB
+	 a/SomYiUTTQrTbFdeC8ivQPr+v/I+sXilm2dP3ZtpH0sQCfnlDyVvI8gUdtTg6JPoV
+	 T2kpvDdgJqRJjPQBCBmrIoC+doiFRsStkDDoA4dHB73vBWBXSD6eRYTVdvvnKuLUVb
+	 NXfjgbWYCOO8Q==
+Date: Sun, 1 Nov 2026 23:50:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Rodrigo Alencar
- <rodrigo.alencar@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: core: fix signed integer overflow in
- iio_str_to_fixpoint()
-Message-ID: <20261101234022.6e094a05@jic23-hlaptop>
-In-Reply-To: <atsgYaApZPg_3Z1N@nsa>
-References: <20261022140353.24213-1-kapoorarnav43@gmail.com>
-	<atsgYaApZPg_3Z1N@nsa>
+To: "Sabau, Radu bogdan" <radu.sabau@analog.com>
+Cc: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>, linux <linux@analog.com>
+Subject: Re: [PATCH v4 6/8] iio: imu: adis16607: Add FIFO-based
+ buffered/triggered capture
+Message-ID: <20261101235010.79416e15@jic23-hlaptop>
+In-Reply-To: <LV9PR03MB8414024B4B8A88109DE96B29F7602@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+	<20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
+	<20261026000910.328f6cd8@jic23-hlaptop>
+	<LV9PR03MB8414024B4B8A88109DE96B29F7602@LV9PR03MB8414.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,130 +71,93 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 23 Oct 2026 09:53:36 +0100
-Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+On Tue, 27 Oct 2026 09:36:47 +0000
+"Sabau, Radu bogdan" <radu.sabau@analog.com> wrote:
 
-> On Thu, Oct 22, 2026 at 07:33:51PM +0530, Arnav Kapoor wrote:
-> > __iio_str_to_fixpoint() accumulates the integer part of the parsed numb=
-er
-> > into an int. Feeding it a string with more digits than an int can hold
-> > overflows that variable, which is undefined behaviour.
-> >=20
-> > The parser is reachable from userspace via the writable IIO channel
-> > attributes, for example the "sampling_frequency" or "in_voltage_scale"
-> > ones, and via the exported iio_str_to_fixpoint() helper used by a
-> > number of IIO drivers. A user writing a long enough string therefore
-> > triggers a signed integer overflow.
-> >=20
-> > Use check_mul_overflow() and check_add_overflow() to accumulate the
-> > integer part and return -ERANGE when it does not fit into an int. The
-> > sign is applied while accumulating, so INT_MIN can still be parsed.
-> >=20
-> > Fixes: 6807d7211327 ("iio: Factor out fixed point number parsing into i=
-ts own function")
-> > Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-> > --- =20
->=20
-> LGTM (maybe a Cc to stable next time but Jonathan typically takes care
-> of that),
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Monday, October 26, 2026 2:09 AM  
+> 
+> ...
+> 
+> > > +static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
+> > > +				       u8 *fifo_data, s64 timestamp)
+> > > +{
+> > > +	struct adis16607 *st = iio_priv(indio_dev);
+> > > +	u16 msw, lsw;
+> > > +	s32 val24;
+> > > +	int bit, offset = 0;
+> > > +
+> > > +	memset(st->data, 0, sizeof(st->data));
+> > > +
+> > > +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev-
+> > >masklength) {  
+> > iio_for_each_active_channel()
+> > 
+> > As sashiko notes, masklength is private.
+> > 
+> > There are a load of places we need to update to stop accessing these
+> > directly but please don't add another one.
+> > 
+> > It's on my list to throw some LLM tokens ago once I get out from
+> > under review backlog.
+> > 
+> > https://urldefense.com/v3/__https://sashiko.dev/*/patchset/20261023-
+> > adis16607-v4-0-
+> > a4d541ebfd13*40analog.com__;IyU!!A3Ni8CS0y2Y!9cguUuIwYMdnmBcoNR
+> > ye0_U99KUnJt04T6XlSnvS-9rxh5-8Y2fQXC39Mxsw3erc_JwvyFp3ssecZg$
+> > Check everything else reported.
+> > 
+> > FWIW there are also some nasty race conditions around active_scan_mask
+> > being available when the buffer is being torn down. You might
+> > want to close those off by claiming buffered mode to prevent
+> > such a transition.
+> >   
+> 
+> Agreed, I'll switch to iio_for_each_active_channel() and I'll go through the
+> rest of the Sashiko findings for v5.
+> 
+> On the active_scan_mask races, I'd like to check which path you mean.
+> In this driver the only reader of the mask is the trigger handler
+> (fifo_push_sample()), which runs as the pollfunc.
+> As far as I can tell, iio_trigger_detach_poll_func()'s free_irq() waits for it
+> to finish before iio_disable_buffers() frees the mask, so I couldn't find a
+> window where the handler sees a stale or NULL mask today.
 
-In in two minds about this.  It is preventing unintuitive behaviour but
-we shouldn't have any cases that crash or anything like that.
+Ah. I may have failed to distinguish between cases with a trigger involved
+and those without.  The bug reports are probably on the ones without.
+Unfortunately I haven't found time to look at the overall issue
+in enough detail yet.
 
-Given the code in question is likely to be replaced shortly anyway
-by Rodrigo's rework applying this for backporting purposes makes me nervous
-even though it looks fine. I also don't want to delay Rodrigo's work
-by having this go in via a different branch.
+> Even so, I'd like to close this off for good, so that a later change to the
+> driver or to adislib can't introduce the race.
+> 
+> Claiming buffer mode inside the handler looks like it would deadlock
+> against iio_disable_buffers(), which holds mlock while waiting for the
+> handler in free_irq().
 
-So perhaps the worst possible compromise.  Applied to the testing branch
-of iio.git (which I'll rebase on rc1 shortly) and marked for stable.
+We'd use a conditional claim in here - only the core code driving the state
+transitions should take a claim unconditionally (they can just grab the lock).
+If mlock is held it should fail and we just drop out of the handler having
+done nothing.  So either disable buffer wins and we drop through the handler
+quickly or it looses and the attempt to take mlock blocks in
+iio_disable_buffers()
 
-Rodrigo, you are going to need to rebase your series on top of this.
+Or am I missing something worse?
 
-Thanks
+> 
+> Would snapshotting the active-channel layout in update_scan_mode()
+> (called before the pollfunc is attached) and having the handler read
+> only that copy be an acceptable way to close it?
+It would but that feels like we are just papering over a lifetime issue
+by creating another object rather than fixing it if necessary.
+
+Anyhow, from your first comment this may all be irrelevant anyway.
 
 Jonathan
 
-
-
->=20
-> > Changes in v2:
-> > - Use check_mul_overflow()/check_add_overflow() instead of open-coded
-> >   s64 accumulation and limits (Andy)
-> > - Apply the sign while accumulating so INT_MIN needs no special case
-> > - Drop the unrelated parenthesis change and the explicit casts (Andy)
-> > - Add Fixes tag (Andy)
-> > - Fix the truncated subject line
-> > - No KUnit tests for the current parser, as it is replaced by the
-> >   E notation series (Rodrigo)
-> >=20
-> > The fractional part is left as is: with the fract_mult values used in
-> > tree (at most 10^8) it cannot exceed 999999999.
-> >=20
-> > Tested with a userspace harness built with -fsanitize=3Dundefined on
-> > inputs including "2147483647", "2147483648", "-2147483648",
-> > "-2147483649", "99999999999999999999", "-0.5" and "12.345\n".
-> > All inputs that fit into an int parse exactly as before. Compile-tested
-> > in tree with W=3D1. Applies to both togreg and fixes-togreg.
-> >=20
-> > v1: https://lore.kernel.org/all/20261021225306.623361-1-kapoorarnav43@g=
-mail.com/
-> >=20
-> >  drivers/iio/industrialio-core.c | 16 +++++++++-------
-> >  1 file changed, 9 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio=
--core.c
-> > index d73f2541375f..f3bf17c13cea 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -25,6 +25,7 @@
-> >  #include <linux/math64.h>
-> >  #include <linux/module.h>
-> >  #include <linux/mutex.h>
-> > +#include <linux/overflow.h>
-> >  #include <linux/poll.h>
-> >  #include <linux/property.h>
-> >  #include <linux/sched.h>
-> > @@ -1027,7 +1028,12 @@ static int __iio_str_to_fixpoint(const char *str=
-, int fract_mult,
-> >  	while (*str) {
-> >  		if ('0' <=3D *str && *str <=3D '9') {
-> >  			if (integer_part) {
-> > -				i =3D i * 10 + *str - '0';
-> > +				int digit =3D *str - '0';
-> > +
-> > +				/* Accumulate with the sign applied so INT_MIN fits */
-> > +				if (check_mul_overflow(i, 10, &i) ||
-> > +				    check_add_overflow(i, negative ? -digit : digit, &i))
-> > +					return -ERANGE;
-> >  			} else {
-> >  				f +=3D fract_mult * (*str - '0');
-> >  				fract_mult /=3D 10;
-> > @@ -1052,12 +1058,8 @@ static int __iio_str_to_fixpoint(const char *str=
-, int fract_mult,
-> >  		str++;
-> >  	}
-> > =20
-> > -	if (negative) {
-> > -		if (i)
-> > -			i =3D -i;
-> > -		else
-> > -			f =3D -f;
-> > -	}
-> > +	if (negative && !i)
-> > +		f =3D -f;
-> > =20
-> >  	*integer =3D i;
-> >  	*fract =3D f;
-> >=20
-> > base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> > --=20
-> > 2.53.0
-> >  =20
+> 
 
