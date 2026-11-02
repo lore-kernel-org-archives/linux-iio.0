@@ -1,100 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.7
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793603532;
-	b=VgwZZK9cerNfLajwsf+kv7VKMebTSFQNHSkTLsj1q6aLEb2i4Rst+pKohXTB+NEjEiSx
-	 jRq0dNQrbdGALkuIIWb9THvmSARi8vyKFQ4MEmA23WB09/wwitX+A6/5j+xYUzQEmitCn
-	 xZLaORbdTD4RnWrgblrm9YArvJ9gssquhJYLh2RYEv7EohKXhNoklGkf0fY269KME6fme
-	 6NWE1tLcYywXxKZ5hd0BUGNpwq2HSil1VuR5MOXRg3xmF3W1zNddrBe4/8AzRWMPrbko2
-	 SQ/FOgxra+pFMzomWxKJOvf0KAFWpA1dvogkHG+lI1QCBB+xafaG+EYZuWJbX9ALieQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793603532;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:From:Subject:To:Cc:References:Content-Language:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=STjztyzTwL0p18OzfDBVbDKy73h6u7sCHye5XimNoyQ=;
-	b=bLGbQ27vcc2rAEvMqus/J0W7afErFLIuTihRbDqnpaQTrgmDMKVE1tIlqW1bbGHO0qy6
-	 GfgAS1/i3WNdZxqgaXbxKnywebx/x6KKFATXESuPJspSIoJ49OPKGiVqNes/F3juyjqsA
-	 ZPRLAnuHQq+RsZWaRETn7CYs1YyapsudJj+cPOL7PWxwAGWamzh9Gsl8Fen1p8+LTkaej
-	 q2pbZ24DkKtb7WGAZ/GjSq6/DIdQLcemPSb2Y6tFSCcg49gHE5xDUXBmB0Wk9cV48Z9k9
-	 U34P63UUrPnrIgOka5qOA1bGGM8BLdp1WnQ5YLs1vPEL+nOPt0gyj4S+4eOufqbscig==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="Sf/wagEk";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.7
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011007.outbound.protection.outlook.com [52.101.52.7])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.180
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793604165;
+	b=kwNowuSq4IEmKEvcRd+gqwxCJuzA/2Zd9Dw15J0GuopTw70UAi40v5z/1Pd4xRAh+87I
+	 OLWQMExGMNjIw1LaRUquAmEW1va7KKLRr657Qn/3wR+SY7tBug0eP0bFkp1y5QSSkJbFx
+	 sxNhugGOiGE3KT/0ahbJa4pEfzHjGpBDnGMtaSLUkLbLCYiMeL6cnDRU6YWyaLsCpGT/M
+	 8pp2p5AC0gHruWvoHXKal7hY8JI1jQT69uM1fEiRfgybZGasxae47I0ucMdDVmil0JZJj
+	 eC8WG8MffqB2SU4JZ/lGUFNZ8Hg8yeRuW9Hy3qox/pC/dmihtY4CnzABY/rse9RMl4A==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793604165;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=zZvPsHrAvL0Y+kR2JA74c1k0/RF2c6JuNAyuVnG8luo=;
+	b=QGl3qEYBLVJpnZXcnrbEk07vIwQg9ZjsDMthm9XUdfpt+ccs7SLjDBOVc0Nv9tELvsVI
+	 0V1m0SL+jvAtuS52UNp/WrioXjpipVrvVewVabvjeQOl0yDhrSu0DfiEMAMD/xmTRk4xD
+	 F7TycfFWWPW2+Ttql89vu1OsqIAIxLdOcMQRV95MMl2jaMdTDH723wwx4MZrow4G8pP4N
+	 0thVXmD8Ds42aEa1psOOT3vy4BjQUpC9TNI0HGBgnz5OXjCnbsJkwvZi+1QYYDnc8USGc
+	 PH3ZOrUv0mk3Yxok9ETUxz1lgGYtnnef1huQg5Z5RNKex/vGeOYUz4YULFzPx8yq+NA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=o2fxX+Pq;
+	arc=none smtp.remote-ip=209.85.208.180
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD7B1606A324;
-	Mon,  2 Nov 2026 07:12:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AD7B1606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD58560A2600
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:22:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD58560A2600
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=Sf/wagEk
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eZqJhjXz30YW3Hc4AXZylGMM4IbWuEoC3GqhzRuhdwb7VMiWDP4q2CmPLUwEbWEtK1x1HpLvr7hnnz4Hk3Bfp7Q/YnH8QIEL6BZmrVghKGppQkT21WleLJDbyWQvuGXq+HvyywxSr25JIK4REStjlljNZQbo5DC4BnvTqSNoyoTT/KquoLAtPooC/j1eY1IWJZCnF63Jlovw19GznHxHhHPv/qCDNFD1kQQORFi11PgPY6X5/XJwO88g6KUEM7NeImOqbFUb8GazBKgMjzkZZcWKVgDRVpc3c5z8BIKDHXHAzXop9d6u0y5Ew9jxLI79k07D6C1+uYRykqnaCn7JUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=STjztyzTwL0p18OzfDBVbDKy73h6u7sCHye5XimNoyQ=;
- b=WydNpY/G529ri9gljnR/YGyfuxpJnWpib8d1SZXTRdrDISOjalXuszjHiRgJZxdOVQt86hmx1GPk51g95WA7O0vhqtWVcKi0tC3NM/t0L/aIi55kXie7tEZ/YMaxHcvXbN1+1VOgUKmwD2y+IASWru3a7iT8uH6VV0DPE2jIuvGIOSJ7zGUccgPES/Yoa9hgrbbmQef0di4zpOs9Lkl8H5G5Zem0TIusBrQ1lu3JWhE9ai/hfe9KXg/8196TdFCN5SN6ReVZPseTcowhxNozPoa8rBWsfFWkflZeGninascZ/ozAoc8ZxKHcKeh8bQsEqdwSW/0ugc+EWgjRXD5qVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=STjztyzTwL0p18OzfDBVbDKy73h6u7sCHye5XimNoyQ=;
- b=Sf/wagEk9B3J5W7gBJQoPIooknL5gDADwSigWich03pdmLEwruN2xbBafv7v4/dG8oUA/WtWKqQ3XbT3Cn5HELPYbNVZ+ocOTEw6+esA9K3Gu1SRWoKziu+Buy3M8EFKgNTX43ysT+MKGWEByRkLXFNUVGPOYjCknu8cYExdvpY=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS0PR12MB9060.namprd12.prod.outlook.com (2603:10b6:8:c4::12) by
- PH8PR12MB6819.namprd12.prod.outlook.com (2603:10b6:510:1ca::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.569.12; Mon, 2 Nov 2026 07:12:08 +0000
-Received: from DS0PR12MB9060.namprd12.prod.outlook.com
- ([fe80::e096:864d:d60a:c83f]) by DS0PR12MB9060.namprd12.prod.outlook.com
- ([fe80::e096:864d:d60a:c83f%4]) with mapi id 15.21.0569.011; Mon, 2 Nov 2026
- 07:12:07 +0000
-Message-ID: <108cf042-5f7f-4b1e-9656-3193744e8043@amd.com>
-Date: Mon, 2 Nov 2026 12:41:59 +0530
-User-Agent: Mozilla Thunderbird
-From: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v2] iio: adc: xilinx-ams: fix out-of-bounds accesses when
- parsing channels
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: "O'Griofa, Conall" <conall.ogriofa@amd.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, "Simek, Michal" <michal.simek@amd.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20261023185652.195025-1-kapoorarnav43@gmail.com>
-Content-Language: en-US
-In-Reply-To: <20261023185652.195025-1-kapoorarnav43@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA5PR01CA0311.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:220::17) To DS0PR12MB9060.namprd12.prod.outlook.com
- (2603:10b6:8:c4::12)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=o2fxX+Pq
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-3accd1ff4c3so6953491fa.0
+        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 23:22:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793604163; x=1794208963; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=zZvPsHrAvL0Y+kR2JA74c1k0/RF2c6JuNAyuVnG8luo=;
+        b=o2fxX+PqdcK09i4Com2N8RWo4SY+zeOOj5IGn+V8TP09pTPR1C3Y7GIRdLi40k/1pf
+         X6rmvBhBcoX9skcx6QG/lPsBWlrODeptAJj5F8hV7nPn7eSerLq/j8la297XRNoqhpGD
+         /QqlEtM2ZqswFEXn/+nzo5UtF47lA+pIgkWL1UcA/zWG7yQaW01n1udOK0YxSh4cWZH3
+         IBiJsYlU962f7muJOJQuB71kyqRyZVVk1rGu0ch4MqKoXsZF5gaspxzqT0vvzQh9bTWo
+         FEDGHUZdHrZRoze5Nlt0+BLIpLSX0lrvMRadvaFzK7vmdTcUt3RtUbOd+z9PJcTQuiNE
+         HYJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793604163; x=1794208963;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=zZvPsHrAvL0Y+kR2JA74c1k0/RF2c6JuNAyuVnG8luo=;
+        b=uO1QYNQlU9u8TBMjQEmw4xxgptbJKr6TYTzW3DQntcpRi35drVjpHOSsRDnfM9CZ6f
+         bAgaRt43v25Yn9fJYSGWd/nrWYasNNaTxIfHX1CKKETZzn96QCoFA2wP6FW3owjG2gXz
+         Q5c5tF7qAZsnnt54Bt3KxVsiww1wsHrfYj6OnWVY8e9F8eITfHoFpIIYdvaZ/sBrNYr8
+         dCTKRLCxomUlhrkZmGGBlwHsW+Q4ZopHZQch/QUPqPZvCGMk/kdhdJ9rBN0/I7b2OXP3
+         v0VQoVItxaVmNtrrtH7mhMW+8IYOcXpJ8eVNVCLEmptd8JZC5dYVDKwuUfecOt9C35/V
+         04rA==
+X-Forwarded-Encrypted: i=1; AKwUvBwIV8uOnTqu2k+SMRufb//bNBaslVTFRj8omuY+ZW8r63c+DyqPgVxVAw4MMX7JYA/ucEDqHKlHAWo=@vger.kernel.org
+X-Gm-Message-State: APuU4Z87ppTjOKybXIHktI4P2Jgo3zQK7hM2TNRD2xvFI/7FeC4OTF+q
+	gfyUiTijISvlzK1ZuS2I69Lw2g4t7XXrpbJjZIC/TOdrTYrX1sraMScc
+X-Gm-Gg: AYBFou226SyBwtGV/BoPbE02v3zrnbWoPKJOYJFCyQghrl8/THPvja/Nkw2p41k5IoW
+	FzEs3NTQEsh3mBh39UJq+oz6UhR4aGyAb1Q6XMcAcRwKHYsxBGPlu6ckSrpVhZ2ARLoBm0N+vDm
+	lk4/IbXbJO1WPNjyTUDaCKwhjWxxzZXe/o8WKYV6bnuPi5DevFrmFxSrIfKYzYiG4+tdgM7lm6U
+	zP9COFamX0mCWh2bNQUHexVedB14U96V4CJoFqgk97w54j4jq0I2sf+BRlmmltrZm1DFIXzv/FY
+	RijzRtbRCGAVOKBXRJ0CV6vYTG0Sx+OZ9yeQTPefWP9ithfb37fuwVP1x+zCwwTPMzaMMJ0P94q
+	f7QGTkxdpPYjtMcqr43BNtO0pdJPgXcWHboA8L2okNa8FyTuyhoSGiPibF+ZfmVbUHbn93ySrwZ
+	d3nsaQRN3EbMt5Ys7i8yKMbhjPxzfC2jiqxFZ8gS6VbHr7SuvI7KgdvyYNG7Vd3jK2DGJIvp1q6
+	QGImLIGPmpEhXuuYwNT5Q0/ph19QodNeCMqRHi2+eNk4yhp/6F9ICIJwVqGG9hDJCXiDuQGD70M
+	yjga1xAr3vFs8zR3LO6rZMoVRWkrYKRw93rVWrPseVpuurXJ2iXiGh/6KMmIW1Sj68R7qdLVJ+a
+	peNbc0zUj
+X-Received: by 2002:a05:651c:1508:b0:3a9:9b74:1ba1 with SMTP id 38308e7fff4ca-3acb7a9da5bmr22751851fa.8.1793604162695;
+        Sun, 01 Nov 2026 23:22:42 -0800 (PST)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3acbbebea12sm20385851fa.10.2026.11.01.23.22.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Nov 2026 23:22:41 -0800 (PST)
+Message-ID: <e444c08d-3891-488a-b334-09f3ddd36584@gmail.com>
+Date: Mon, 2 Nov 2026 09:22:39 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,258 +93,392 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR12MB9060:EE_|PH8PR12MB6819:EE_
-X-MS-Office365-Filtering-Correlation-Id: c4555514-e2a7-4ae4-d3c7-08df38b09a5a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|366016|376014|7416014|261021130227099003|261021123027099003|261021121427099003|261021133027099003|261021135927099003|261022113327099003|261022105027099003|261022115727099003|261022075727099003|261009223027099003|261026130827099003|261026121527099003|261026135527099003|261026140227099003|261028144727099003|11063799006|10067099003|56012099006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	UGUT9EeMA+KgsyhCzCqqIA3Mpqum8l1niO2bhX3ZYi7v4pT4fhYET4FXSMEm4+KlKc4F5Jl/EEV8s0fDOAJ5MSnkPxfZAEd+EAgpDwqXCq2LAGvoBuLH/8l287d8hEqhcegbbWfUc0xDWj05ztdWTL8TcoKr4fFdPvgc6armJXFCbOHO5ErI3evyNojao+9OBGZFLwJHabfgL0X8rRVLyekBhMMHv1iWxqrUGMgTZxnrwM+Y+/BNnF4+6Qx5jhjlH8/r4cKn91WKWooEZMummbtE+W3eOZKcQRbtioF0oJy8H9cOcLLG8XDPSenVrYxYf4cTNgXhMTnOtxazYDBvAYsESFIjoftmmRvFrmkj5JCuJp3WzmtiOWOzeVmDe2BiRhZcaLYyskU/nHIBKWtJr4UydZzZr3KuzygBKsMiiU5Y5bFZb9iRBiwJhDG/ENTFCYHlJ7v9ymHngUT1OeF9mtvYtG8Cl9r8lhygIIJVBA1iJFBUb8p7SNnv38Zto2ucA3zDBokevx0Esp4WNTJH9D1THW8MN+xsHFnzClDN21e/PjVtJUhyMb5ezuRkSTor1kS3XYhksvw4XCNmGXvBfBoePxO+t6xus74T+HcX+7XXdag2zJvzBIyZG8rAId8f
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR12MB9060.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(376014)(7416014)(261021130227099003)(261021123027099003)(261021121427099003)(261021133027099003)(261021135927099003)(261022113327099003)(261022105027099003)(261022115727099003)(261022075727099003)(261009223027099003)(261026130827099003)(261026121527099003)(261026135527099003)(261026140227099003)(261028144727099003)(11063799006)(10067099003)(56012099006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZlY2RXl2MmVpSlU5N3FONkFMdGxmUDJQK2hUMEx1L0MxTVc2NWNKZFFlcmZY?=
- =?utf-8?B?azlNYnNYT0RrNE4yREtrbnNUSXJmNmNpZThTTkZpek81Y014bDlwVXMwZGx3?=
- =?utf-8?B?REVzVlorQU9WcEUxNWNyUXFuUStBTHBtc2gwTlVtRDRsd0o0cjJEWkluMXVx?=
- =?utf-8?B?cHZTQ2tYUkpKRDdPdGlKZGVDM1dYWlA3c29RalRYNEJWSnJJNWZMakFGN2JV?=
- =?utf-8?B?ZlVNbjJFK2Q3eit4TVVldXduNFIyeU5SZWE0WTh5Ulp4Y0FFd1ZOVWZzaWx3?=
- =?utf-8?B?M0VzdGV6ZFNTMTdKUUZ0N0ZGVVpWSU1rUEZnT3ltWGYyQ1RzdW90TklNYitN?=
- =?utf-8?B?c1dXTzNlL2NDblNlMnFuWTc1THk0elY4aHBOVHdkdCtQMjM2a3RyVWhEdXls?=
- =?utf-8?B?V3BLVU05Uk9JR1FkcTdjV3FNSi9PSkxUOE85RHg3SU9lQXZPMHdGQjhjVjlz?=
- =?utf-8?B?bzl4NzJzYXZ2WG14YXcwMjNqK0dVSUhHOU9UQVp1SkZJMHFNNUEvTng5b3Vq?=
- =?utf-8?B?cUxxdUR2OEMyaDNBZkNCYWNMNGFIcFIvVHROQ2d6UkJ5TVlnS04zdGV6OGho?=
- =?utf-8?B?enpuYUtXaU1YWkM1b1ZWSVdpckw2cGVwL1MzQy9VU3RZUG91VWppcS9TUEk5?=
- =?utf-8?B?dFVuMWxCVHFoTUVob0xxOHdMbEppRWJnSyt2QjBKeWQ2cWFGMXgrSkJ5RmpR?=
- =?utf-8?B?QVo4czVyN01CeERJK3VuN21LSHV1dDc0N2I5L05pczdnVGhabU42TFlkREZx?=
- =?utf-8?B?Umh6M3VWNjVHUFM2V3QzdjZnL2M4SzMzUjdja0UvWE9IVThBd3RnMEJ5eWlN?=
- =?utf-8?B?bmQ4VjBHUUY5Wk1NUHBVT1d4NUtVNEcwTDVOS2ZiWjFJSWZHSytFSkVkYmZw?=
- =?utf-8?B?QU0yOThWZ1BxVzFlKzBvMkxYRjNuWjBiMG9VWnBFWm4vUDJiVXNjaExOMCtR?=
- =?utf-8?B?VmkwczZYUkY5cy9Hd0NPMkRXbzlIclZoVnhrRk9DMFdmbXRkRHptdWt6ZkVE?=
- =?utf-8?B?d2ZmRW5SdldrYStMWEZwL1dBY2J6Um5oWURsQ0I4YjJkRzVkYXE1Q1RSczMw?=
- =?utf-8?B?MWpVSWdMakRadGMyU2lzMzlLZiszL2ltOVowTlBrUEdrSzVSQTFiQzFrS1Fp?=
- =?utf-8?B?KzBuSkRKZC9qNndMTG54a3RPUzlmRjNwMUswcjN6bFZpOXlyUzR5bElrYWtl?=
- =?utf-8?B?TDFDQ2dCS3FZTTVaSFRPSzMrMU9PZ0h2eVZSN0xIbC9oTHBHWkpFVXp6VEUx?=
- =?utf-8?B?enl3K0hlRXZicXVpNjNOWWR6ZlNKUW0wdnQvL0k0QUlISTZQc01QOWhsRS9P?=
- =?utf-8?B?UXFnWTBuaFVySHNOS0hjam1yOTNRa0o4MDhMODJaQkh0NEdudC9KTkdxV3J6?=
- =?utf-8?B?ZWROclZUQmwvWDVLZ0hxUktUTHAwVC9pQUQ5bm9ONzRvdHlmb0NMRkx6cGh4?=
- =?utf-8?B?Y3g3S3lBbFFscVdsdVNnTGl5U2JmaU1Bb1V4THJwMWJMTHMvMWZnZUl1ajM2?=
- =?utf-8?B?a0FoL0dtbUFIR0JEZUI5WWFya2RFMFh0MHY0QlFZdnlUWVM4WXhlbWxoWFdF?=
- =?utf-8?B?cTE4NmFGcWNhQWJMY1pKYSt0T1VNRVJWR3kyQnd2K1JLekZ0N28zbTJvemEx?=
- =?utf-8?B?cEFQQjRvRGU5eUpUUVMzbURLT2VuSUFNQXlNOVFHLzdsZk9BbjU3a2RCdk9t?=
- =?utf-8?B?NXZPYjlZVmtaSHpoRWlGTk1DSENYSVFCZy94dG1XenkvV0pPcm9IZHJjV2Ju?=
- =?utf-8?B?WGt3TXFjV0Rlc0RidTMwWVZZRkRQSkVKb20rSTdVWnFucFFWTXkybGh4Vis4?=
- =?utf-8?B?SDM2RWhIOVhLUThqSWRCTURjZXo2K3M5Unh6MEc1TGR5SDNzbERHUW16TjVF?=
- =?utf-8?B?dFdkNzBud2o0a01IYk80eDNxaTB2Z1QvalFXNWYraHJyU0hSUXI5L2VENFky?=
- =?utf-8?B?YXB5REtiL0JBbEFmc29jd3V0dHNyUXNCOTV6WFh1R2NPRWJNZ0JvdWVXcEhC?=
- =?utf-8?B?UmEyWTAzcmNHbUd1REVWajZ3SkpWaGdXeUR2MlN3bm9FL3d2M29BMlZBTksv?=
- =?utf-8?B?elVSOENyUFBvK0JhMi94Y0ZwSEl5VFNMSTNYTW5DNDlwenZCMmI4MjI1c2dp?=
- =?utf-8?B?czlWb3VHaWUvcGltQnM4dXlQWjY3d3paT0w2RUoyd3J3ZU5QSW1lN3RMb3ph?=
- =?utf-8?B?cWFZT2UvMUJNYXNGekE1S1h4YWM3SG9vWXF3MFRiVkt3NFBKMWdqek5hUHk2?=
- =?utf-8?B?UGd5Zk1hWUJiVFpoVFdsalUxY2NYaDdHVGZZSnVnRFZDSG5kK3I1MWNTc20x?=
- =?utf-8?B?a1B6a3IwZk5Rc0ZhTVZjeW8zN2V2b2lreEhjK3FWaGxRZzNSakVvdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4555514-e2a7-4ae4-d3c7-08df38b09a5a
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR12MB9060.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 07:12:07.0610
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9vcoSlGLIN5v2NZYjyGI4FCPNGz8OsRyIppD44/d4bOyFsERJy68YagKz/dZGqadyMqDmStA5p8y1dpHUqyFQA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6819
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] iio: adc: add driver for Texas Instruments TLA2528
+ adc
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: Rodolfo Giometti <giometti@enneenne.com>,
+ Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Angelo Dureghello <adureghello@baylibre.com>,
+ Tobias Sperling <tobias.sperling@softing.com>,
+ Eason Yang <j2anfernee@gmail.com>,
+ Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
+ Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+ duje@dujemihanovic.xyz, herve.codina@bootlin.com,
+ thomas.petazzoni@bootlin.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20261030164705.297354-1-maxime.chevallier@bootlin.com>
+ <20261030164705.297354-3-maxime.chevallier@bootlin.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20261030164705.297354-3-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Arnav Kapoor,
+On 30/10/2026 18:47, Maxime Chevallier wrote:
+> Add a new driver for the TI TLA2528 ADC chip. It has 8 12-bit
+> channels, that can also be configured as 16-bit averaging channels.
+> 
+> This is a very simple driver, allowing reading raw values for each
+> channel. GPIO mode isn't supported for now, as well as buffered mode and
+> the 16-bit averaging mode.
+> 
+> Co-developed-by: Rodolfo Giometti <giometti@enneenne.com>
+> Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-On 10/24/2026 12:26 AM, Arnav Kapoor wrote:
-> ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
-> ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
-> channel specs and lets ams_init_module() fill them for the AMS node and
-> each of its children, without telling it how much room is left.
-> 
-> For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
-> "channel@N" child after the 10 fixed PL channels. The binding allows
-> reg values 20..50, so a PL node can have up to 31 such children, i.e.
-> up to 41 PL channels, while only 31 are budgeted for it. Together with
-> the 13 PS and 7 AMS control channels, this writes past the end of the
-> buffer. Since the modules are filled in device tree order, the fixed
-> channel blocks copied after the PL node can overflow as well.
-> 
-> ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
-> unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
-> far out of bounds.
-> 
-> Pass the remaining capacity down to ams_init_module() and
-> ams_get_ext_chan() and fail with -ENOSPC when a module does not fit,
-> instead of writing past the buffer. Also reject reg values below 20, as
-> the binding requires.
-> 
-> Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+Looks very nice and clean to me. I made couple of remarks below but they 
+are very minor and I do not require them to be addressed. Nice job!
+
+Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+
 > ---
-> Changes in v2:
-> - Fix the truncated subject line (Andy)
-> - Drop the paragraph about an earlier report, I could not find that
->    thread again to reference it properly
-> - Pass the remaining capacity as unsigned int and drop the casts (Andy)
-> - Keep the ams_get_ext_chan() call on one line (Andy)
-> - Rebase on fixes-togreg
-> - Drop the bouncing @xilinx.com and @huawei.com addresses from Cc
+>   MAINTAINERS                  |   1 +
+>   drivers/iio/adc/Kconfig      |  12 ++
+>   drivers/iio/adc/Makefile     |   1 +
+>   drivers/iio/adc/ti-tla2528.c | 245 +++++++++++++++++++++++++++++++++++
+>   4 files changed, 259 insertions(+)
+>   create mode 100644 drivers/iio/adc/ti-tla2528.c
 > 
-> v1: https://lore.kernel.org/all/20261021225356.625288-1-kapoorarnav43@gmail.com/
-> 
-> Compile-tested only (W=1); I don't have ZynqMP hardware.
-> 
->   drivers/iio/adc/xilinx-ams.c | 54 ++++++++++++++++++++++++++++--------
->   1 file changed, 43 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-> index 158e6133abf5..7f0f7778d6aa 100644
-> --- a/drivers/iio/adc/xilinx-ams.c
-> +++ b/drivers/iio/adc/xilinx-ams.c
-> @@ -144,7 +144,14 @@
->   #define AMS_PL_CSTS_ACCESS_MASK		BIT(1)
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 471585b29c19..1ebb6418ab1f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -27720,6 +27720,7 @@ M:	Maxime Chevallier <maxime.chevallier@bootlin.com>
+>   L:	linux-iio@vger.kernel.org
+>   S:	Supported
+>   F:	Documentation/devicetree/bindings/iio/adc/ti,tla2528.yaml
+> +F:	drivers/iio/adc/ti-tla2528.c
 >   
->   #define AMS_PL_MAX_FIXED_CHANNEL	10
-> -#define AMS_PL_MAX_EXT_CHANNEL		20
+>   TEXAS INSTRUMENTS' TMP117 TEMPERATURE SENSOR DRIVER
+>   M:	Puranjay Mohan <puranjay@kernel.org>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index a802d8ee4dd9..8633267d6056 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -2016,6 +2016,18 @@ config TI_LMP92064
+>   	  This driver can also be built as a module. If so, the module will be called
+>   	  ti-lmp92064.
+>   
+> +config TI_TLA2528
+> +	tristate "Texas Instruments TLA2528 ADC driver"
+> +	depends on I2C
+> +	select REGMAP_I2C
+> +	select IIO_ADC_HELPER
+> +	help
+> +	  Say yes here to build support for Texas Instruments TLA2528
+> +	  12-Bit 8-Channel ADC.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ti-tla2528.
+
+I deeply dislike repetitive boilerplate text, which often, in my 
+opinion, provides no real value. This last chapter (which is also 
+present in many other drivers, and which is preferred by some 
+developers) is for me an example of wasted lines. I believe writing the 
+"choose M here: ..." is guidance, specific to menuconfig tool. The 
+purpose of this file is not to explain menuconfig tool usage, but 
+explain what the configuration option enables. Perhaps we some day have 
+different config tool, with no option labeled as 'M' at all.
+
+Furthermore, I do dislike also the "module will be called "foo", which I 
+think is just unnecessary noise. You probably want to still keep it, to 
+avoid comments from other reviewers, who claim someone (if not them) has 
+once used this information for something. ;)
+
+> +
+>   config TI_TLC4541
+>   	tristate "Texas Instruments TLC4541 ADC driver"
+>   	depends on SPI
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 9e82c21dbd37..b98cded4d0c7 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -171,6 +171,7 @@ obj-$(CONFIG_TI_ADS8344) += ti-ads8344.o
+>   obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>   obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>   obj-$(CONFIG_TI_LMP92064) += ti-lmp92064.o
+> +obj-$(CONFIG_TI_TLA2528) += ti-tla2528.o
+>   obj-$(CONFIG_TI_TLC4541) += ti-tlc4541.o
+>   obj-$(CONFIG_TI_TSC2046) += ti-tsc2046.o
+>   obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+> diff --git a/drivers/iio/adc/ti-tla2528.c b/drivers/iio/adc/ti-tla2528.c
+> new file mode 100644
+> index 000000000000..287e52dc9d6d
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-tla2528.c
+> @@ -0,0 +1,245 @@
+> +// SPDX-License-Identifier: GPL-2.0
 > +/*
-> + * The external PL channels are addressed by their channel number. The
-> + * binding allows the range from AMS_PL_EXT_CHANNEL_MIN to
-> + * AMS_PL_EXT_CHANNEL_MAX. AMS_PL_EXT_CHANNEL_MIN maps onto the first
-> + * ams_pl_channels[] entry, AMS_PL_EXT_CHANNEL_MAX onto the last one.
+> + * Driver for Texas Instruments TLA2528 ADC
+> + *
+> + * Copyright (C) 2020-2021 Rodolfo Giometti <giometti@enneenne.com>
+> + * Copyright (C) 2025 Maxime Chevallier <maxime.chevallier@bootlin.com>
 > + */
-> +#define AMS_PL_EXT_CHANNEL_MIN		20
-> +#define AMS_PL_EXT_CHANNEL_MAX		50
->   
->   #define AMS_INIT_POLL_TIME_US		200
->   #define AMS_INIT_TIMEOUT_US		10000
-> @@ -1142,20 +1149,31 @@ static const struct iio_chan_spec ams_ctrl_channels[] = {
->   };
->   
->   static int ams_get_ext_chan(struct fwnode_handle *chan_node,
-> -			    struct iio_chan_spec *channels, int num_channels)
-> +			    struct iio_chan_spec *channels, int num_channels,
-> +			    unsigned int max_channels)
->   {
->   	struct iio_chan_spec *chan;
-> -	struct fwnode_handle *child;
->   	unsigned int reg, ext_chan;
->   	int ret;
->   
-> -	fwnode_for_each_child_node(chan_node, child) {
-> +	fwnode_for_each_child_node_scoped(chan_node, child) {
->   		ret = fwnode_property_read_u32(child, "reg", &reg);
-> -		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
-> +		if (ret)
-> +			continue;
 > +
-> +		/*
-> +		 * Anything outside of the range of channel numbers allowed
-> +		 * by the binding is not a valid channel.
-> +		 */
-> +		if (reg < AMS_PL_EXT_CHANNEL_MIN ||
-> +		    reg > AMS_PL_EXT_CHANNEL_MAX)
->   			continue;
->   
-> +		if (num_channels >= max_channels)
-> +			return -ENOSPC;
+> +#include <linux/bits.h>
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
 > +
->   		chan = &channels[num_channels];
-> -		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
-> +		ext_chan = reg - AMS_PL_EXT_CHANNEL_MIN;
->   		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
->   
->   		if (fwnode_property_read_bool(child, "xlnx,bipolar"))
-> @@ -1183,7 +1201,8 @@ static void ams_iounmap_pl(void *data)
->   
->   static int ams_init_module(struct iio_dev *indio_dev,
->   			   struct fwnode_handle *fwnode,
-> -			   struct iio_chan_spec *channels)
-> +			   struct iio_chan_spec *channels,
-> +			   unsigned int max_channels)
->   {
->   	struct device *dev = indio_dev->dev.parent;
->   	struct ams *ams = iio_priv(indio_dev);
-> @@ -1191,6 +1210,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
->   	int ret;
->   
->   	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
-> +		if (max_channels < ARRAY_SIZE(ams_ps_channels))
-> +			return -ENOSPC;
+> +#include <linux/iio/adc-helpers.h>
+> +#include <linux/iio/iio.h>
 > +
->   		ams->ps_base = fwnode_iomap(fwnode, 0);
->   		if (!ams->ps_base)
->   			return -ENXIO;
-> @@ -1202,6 +1224,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
->   		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
->   		num_channels = ARRAY_SIZE(ams_ps_channels);
->   	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
-> +		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
-> +			return -ENOSPC;
+> +#define TLA2528_OP_WRITE_REG		0x08
+> +#define TLA2528_OP_READ_REG		0x10
 > +
->   		ams->pl_base = fwnode_iomap(fwnode, 0);
->   		if (!ams->pl_base)
->   			return -ENXIO;
-> @@ -1213,9 +1238,14 @@ static int ams_init_module(struct iio_dev *indio_dev,
->   		/* Copy only first 10 fix channels */
->   		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
->   		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
-> -		num_channels = ams_get_ext_chan(fwnode, channels,
-> -						num_channels);
-> +		ret = ams_get_ext_chan(fwnode, channels, num_channels, max_channels);
+> +#define TLA2528_SYSTEM_STATUS_ADR	0x00
+> +#define TLA2528_GENERAL_CFG_ADR		0x01
+> +#define TLA2528_GENERAL_CFG_RST		BIT(0)
+> +#define TLA2528_GPI_VALUE_ADR		0x0d
+
+Not sure having the GPI_VALUE_ADR or SYSTEM_STATUS_ADR here is worth it. 
+They seem to be unused.
+
+> +#define TLA2528_CHANNEL_SEL_ADR		0x11
+> +#define TLA2528_CHANNEL_SEL_MANUAL_CHID	GENMASK(3, 0)
+> +#define TLA2528_AUTO_SEQ_CH_SEL_ADR	0x12
+> +
+> +#define TLA2528_NUM_CHANNELS		8
+> +
+> +struct tla2528 {
+> +	struct i2c_client *client;
+> +	struct regmap *regmap;
+> +	int vref_mv;
+> +
+> +	/* Protects manual channel selection */
+> +	struct mutex lock;
+> +};
+> +
+> +static bool tla2528_volatile_reg(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case TLA2528_SYSTEM_STATUS_ADR:
+> +	case TLA2528_GENERAL_CFG_ADR:
+> +	case TLA2528_GPI_VALUE_ADR:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+
+My personal preference for static volatile/read-only/write-only register 
+information, is to use range tables. Seeing a function makes me always 
+think there is some runtime logic involved.
+
+This is still nice and clean function, with not much room for confusion 
+so I suppose it is fine.
+
+> +static const struct regmap_config tla2528_regmap_config = {
+> +	.reg_bits = 16,
+> +	.val_bits = 8,
+> +	.read_flag_mask = TLA2528_OP_READ_REG,
+> +	.write_flag_mask = TLA2528_OP_WRITE_REG,
+> +	.max_register = TLA2528_AUTO_SEQ_CH_SEL_ADR,
+> +	.volatile_reg = tla2528_volatile_reg,
+> +	.cache_type = REGCACHE_MAPLE,
+> +};
+> +
+> +static int tla2528_read_sample(const struct i2c_client *client)
+> +{
+> +	__be16 data;
+> +	int ret;
+> +
+> +	ret = i2c_master_recv(client, (char *)&data, sizeof(data));
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return be16_to_cpu(data) >> 4;
+> +}
+> +
+> +static int tla2528_read(struct tla2528 *tla2528, u8 channel, int *val)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_update_bits(tla2528->regmap, TLA2528_CHANNEL_SEL_ADR,
+> +				 TLA2528_CHANNEL_SEL_MANUAL_CHID, channel);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = tla2528_read_sample(tla2528->client);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	*val = ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int tla2528_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct tla2528 *tla2528 = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&tla2528->lock);
+> +		ret = tla2528_read(tla2528, chan->channel, val);
+> +		mutex_unlock(&tla2528->lock);
 > +		if (ret < 0)
 > +			return ret;
-> +		num_channels = ret;
->   	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
-> +		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
-> +			return -ENOSPC;
 > +
->   		/* add AMS channels to iio device channels */
->   		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
->   		num_channels += ARRAY_SIZE(ams_ctrl_channels);
-> @@ -1245,7 +1275,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
->   		return -ENOMEM;
->   
->   	if (fwnode_device_is_available(fwnode)) {
-> -		ret = ams_init_module(indio_dev, fwnode, ams_channels);
-> +		ret = ams_init_module(indio_dev, fwnode, ams_channels, ams_size);
->   		if (ret < 0)
->   			return ret;
->   
-> @@ -1253,7 +1283,9 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
->   	}
->   
->   	device_for_each_child_node_scoped(dev, child) {
-> -		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
-> +		ret = ams_init_module(indio_dev, child,
-> +				      ams_channels + num_channels,
-> +				      ams_size - num_channels);
->   		if (ret < 0)
->   			return ret;
->   
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = tla2528->vref_mv;
+> +		*val2 = 12;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +#define TLA2528_CHAN(chan) {					\
+> +	.type = IIO_VOLTAGE,					\
+> +	.channel = (chan),					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.indexed = 1,						\
+> +}
+> +
+> +static const struct iio_chan_spec tla2528_chan_template = TLA2528_CHAN(0);
+> +
+> +static const struct iio_chan_spec tla2528_channel[] = {
+> +	TLA2528_CHAN(0),
+> +	TLA2528_CHAN(1),
+> +	TLA2528_CHAN(2),
+> +	TLA2528_CHAN(3),
+> +	TLA2528_CHAN(4),
+> +	TLA2528_CHAN(5),
+> +	TLA2528_CHAN(6),
+> +	TLA2528_CHAN(7),
+> +};
+> +
+> +static const struct iio_info tla2528_info = {
+> +	.read_raw = tla2528_read_raw,
+> +};
+> +
+> +static int tla2528_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_chan_spec *channels;
+> +	struct iio_dev *indio_dev;
+> +	struct tla2528 *tla2528;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (i2c_check_quirks(client->adapter, I2C_AQ_NO_CLK_STRETCH))
+> +		return dev_err_probe(dev, -EOPNOTSUPP,
+> +				     "adapter does not support clock stretching\n");
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*tla2528));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	tla2528 = iio_priv(indio_dev);
+> +	tla2528->client = client;
+> +
+> +	tla2528->regmap = devm_regmap_init_i2c(client, &tla2528_regmap_config);
+> +	if (IS_ERR(tla2528->regmap))
+> +		return PTR_ERR(tla2528->regmap);
+> +
+> +	ret = devm_mutex_init(dev, &tla2528->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_regulator_get_enable(dev, "dvdd");
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_regulator_get_enable_read_voltage(dev, "avdd");
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	tla2528->vref_mv = ret / (MICRO / MILLI);
+> +
+> +	ret = devm_iio_adc_device_alloc_chaninfo_se(dev, &tla2528_chan_template,
+> +						    TLA2528_NUM_CHANNELS - 1,
+> +						    &channels);
+> +	if (ret < 0 && ret != -ENOENT)
+> +		return ret;
+> +
+> +	if (ret == -ENOENT) {
+> +		indio_dev->channels = tla2528_channel;
+> +		indio_dev->num_channels = ARRAY_SIZE(tla2528_channel);
 
-Thanks for the patch.
-Changes looks fine to me, it is properly addressing the out-of-bounds
-access. I think the underlying issue is also in the DT binding.
+I think just requiring the channels to be there would be simpler. It's 
+only 8 chans so it's not that huge description - and this would make it 
+simpler to support "all GPIOs" -case later.
 
-ams_init_module() already copies ams_pl_channels[0..9] as the 10 fixed
-channels. Inside ams_get_ext_chan(), since ext_chan = reg - 20, DT
-entries with reg = 20..29 map to the same entries and it create
-duplicates.
+> +	} else {
+> +		indio_dev->channels = channels;
+> +		indio_dev->num_channels = ret;
+> +	}
+> +
+> +	indio_dev->name = "tla2528";
+> +	indio_dev->info = &tla2528_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ret = regmap_write(tla2528->regmap, TLA2528_GENERAL_CFG_ADR,
+> +			   TLA2528_GENERAL_CFG_RST);
+> +	if (ret)
+> +		return ret;
+> +
+> +	fsleep(5 * USEC_PER_MSEC);
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id tla2528_id[] = {
+> +	{ "tla2528" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, tla2528_id);
+> +
+> +static const struct of_device_id tla2528_of_match[] = {
+> +	{ .compatible = "ti,tla2528" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, tla2528_of_match);
+> +
+> +static struct i2c_driver tla2528_driver = {
+> +	.driver = {
+> +		.name = "tla2528",
+> +		.of_match_table = tla2528_of_match,
+> +	},
+> +	.probe = tla2528_probe,
+> +	.id_table = tla2528_id,
+> +};
+> +module_i2c_driver(tla2528_driver);
+> +
+> +MODULE_AUTHOR("Maxime Chevallier <maxime.chevallier@bootlin.com>");
+> +MODULE_AUTHOR("Rodolfo Giometti <giometti@enneenne.com>");
+> +MODULE_DESCRIPTION("Texas Instruments TLA2528 ADC driver");
+> +MODULE_LICENSE("GPL");
+> +MODULE_IMPORT_NS("IIO_DRIVER");
 
-DT binding requires update to allow 30..50 for external channels. This
-gives a maximum of 10 fixed + 21 external = 31 PL channels, matching
-ARRAY_SIZE(ams_pl_channels).
-Please let us know if you plan to include the binding change, otherwise,
-we can handle it separately.
 
-Regards
-Sai Krishna
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-> 
-> base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
-
+~~ When things go utterly wrong vim users can always type :help! ~~
