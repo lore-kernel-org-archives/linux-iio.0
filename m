@@ -1,105 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.169
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.232.247.4
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793610857;
-	b=cjz0om3NhR2gQf0WCwnF4J7/KkA1M0pege23PzHL2fNmOWsqr84EHongCOWoSn3H4A0/
-	 GI+j52FXco1sE/IYiXLcL3kwGW7GyXF33X35/lUlV2gBezFwfYVNinGpqXnbhfyqdojjT
-	 P+jSP2xFw/Sl+q4076yLlvPgIj/vOU7+vNVx4Iop1XHYWq8Muxr8GVH0B0/T2g9M6AApD
-	 EZ6QIaIAU47EDysoLGMpy4cfcOmk/m9AqnMSnb+yijHpazvV6Fm+tbVexK7177vwm4Uua
-	 10/1IK0vcp4bOvkLaLEfk+Q/LInBOTTgoB/erFRYw3wWgVYYGN63l3aZHMkrbama9ag==
+	t=1793610894;
+	b=oBav+FSQNiZNu4gW0DBIkzUvrZjXP8E7IP2YS/go5FuIvxYkymT7gLPOAF7NMPXzdBw9
+	 f+E2ZRMxtcufY9LAp568z+OFlmF1/FblHANcyPpcdzu/L1cLsD6tkLH+purECOw0b9t3D
+	 cU0YhOyI0rVFG9ej9uH6+m7NSG/kJr54UDc9IQ2WUiRix2YdtgBMXpuxRtwaB3dUHDwD7
+	 /5zPzLjRrO8fs3iuhyyikavot33WFGFixKoymRIeLWIfZvTt+usceJjlM/IURszkg57u5
+	 PztXSeR2Wc6z3LPe2xrsPG8xyowPbZL2hicJ+xLzW1nv9UXukftJUu4/YnzpJEMTpfA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793610857;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=9l2X88+Cluso3aHhPPG2aCJ5eE8RQhXDwPSZjiqGEds=;
-	b=3rNkGOoCAklvJCwA6W5SV95yEedxUUuMw1G+kxZCzZMkl444Y1UIheXFcIaFs6gXzeqA
-	 AcApEDieAVSEJJF10/q79wZiVScWTOit3Tu0z4uG/Kun3+H12u1D1QoSf7+HnssfUIJfn
-	 duUoGNMMAHZWtD0Mkzr3Crw97DI05gPtPc9xJERhS1Vor2+d5Vv0oX4td4HUISpQT96Rj
-	 QqANph0JzLSMeeDkvP343dHXo+Y/QJc3Dfz+p/aGjvqiTHahE1nSKCu/a2NZemvJOHCXd
-	 2MpIjIFL5DGgEH28K6ilC5wI2D4bix9FD8hw7Af0/P34AJAPr66DGs4AoBwDvmdiWqg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793610894;
+	h=DMARC-Filter:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type:X-Originating-IP:X-ClientProxiedBy:X-FEAS-BEC-Info:
+	 X-FEAS-Client-IP:X-FE-Last-Public-Client-IP:X-FE-Policy-ID:
+	 X-FE-Hostname:DKIM-Signature;
+	bh=RiFDU2akqP6mKVPzgQeE3Cgv8b1arnpnehMfKnoHacQ=;
+	b=hP4CUzOWZEQ2xFOI1gcfHOOE6Y1PGBc+9ln9SSkHCysEaXrYzRF9wz5WLl4TeR5UpUYt
+	 yB+mCOgqj/Ums1tP9RGYEy4G+e9YbWgRDUFnxDdVMISC+fD1x3Zf0SNF7Smb2VSTX4eyl
+	 q351qf+GydjCSoiVBeuBmkDDgfoKYX+iACJLdH28YrVGaZcbJacH4Uh68a0jaCZH3fs5I
+	 EFB9RmQ9tiGY6uPYOqztMPZfQPv50UMD85kEGeKxa3j4aTyaHI7JjTe5JjOLqTCHKa0x3
+	 KiuM1plwwhfd9TbylDssbgZcSFxY8IFk2m7CrYyhyb9M5UF5GwbtWWFE9CsppmZbuHA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=f0oM6kP4;
-	arc=none smtp.remote-ip=74.125.82.169
-Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=utu.fi;
+	spf=pass smtp.mailfrom=utu.fi;
+	dkim=pass header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=h569ukrZ;
+	arc=none smtp.remote-ip=130.232.247.4
+Received: from fortymile.utu.fi (fortymile.utu.fi [130.232.247.4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1275606A329
-	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 09:14:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1275606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFCCF606A324;
+	Mon,  2 Nov 2026 09:14:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EFCCF606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utu.fi
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=f0oM6kP4
-Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-3282db206d3so4317442eec.0
-        for <linux-iio@vger.kernel.org>; Mon, 02 Nov 2026 01:14:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793610856; x=1794215656; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=9l2X88+Cluso3aHhPPG2aCJ5eE8RQhXDwPSZjiqGEds=;
-        b=f0oM6kP46WR4dmdZu0WgAUymTn0f6gib7tq7NgaNKpL1x0Ew3T/uU7llBroJvV+Yqp
-         y9gsrGBzR3LkTSLRZp46b8lxFfMlMOAKf/ikLXnN66MyNxKes3Ib9LG0MaFOEHmIqMLL
-         jcIuhkf6+bP2mMn71EwG9UxoY8z8eFMvLsjKzZ7F/uUBGZAvqdc1tJn4wRXfGS8iuVf6
-         FHz3yQ080CjY6zSiAJlgzJ31TMCBWKgmsOUOAQBC3DIaPjlpT21EKOQKJeeq4OV2ViCJ
-         9dZmIBxc+L4u2wvrHmf0J/f7k0tquIUphnL0xZrN0tr5yNNRJM48bFmq6yvFjIBYQnqV
-         M7fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793610856; x=1794215656;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=9l2X88+Cluso3aHhPPG2aCJ5eE8RQhXDwPSZjiqGEds=;
-        b=Li0ece9p++O6yet35YsXvDDJqXT9I6aoQW5S/nY4UP1B6PnzhDUcQUluvT2okRTpDp
-         nCvW0OGKrFHUXI1fBNfDVFPSXHikZeatr/Uwl3hAquoUOWbfotR/Q6lHEiZQI87RMIMh
-         9EvE0zlqSzcV/KOm9hMF+QZdp07QbeNwjUrgJVF0E0z61aTWO54eA+8W4I3wWHTEu6G7
-         7GtvER9Aha893E75hGuaJVIY8IX7D82x61axrLkKy5/EfpeUn7f8Ok25KgQ70/TXXGyZ
-         uaLS9GjYP6X36F10P5j4BkW6f8jjp5IahdaQPYxgRMO1cWTf8dxCpgHeQCys3oOKJaay
-         XvGA==
-X-Forwarded-Encrypted: i=1; AKwUvBzBeIaszIAQN4TSRked5NETUz9mShD8c4wgPUlQULlI96cAEHYKCiO6LZaa6achji+MuIpBm3Fh4UY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+v+3L84X7IDAGP8994KyRWNYmKxxTSS2W9EjjFdyQiUlarIM7t
-	wdulSToFsbAin9ieEbtMVmgXpaDjAAeFR4TYA985UqAYpoiqNYVXCsh1
-X-Gm-Gg: AYBFou2HwOj+l7ElwlnmxWbxRxZATIQ+DnPFO200BqpuWf+IbAXi6HauIzxq4WOnQyW
-	JHtDEMHomUINQh34tPG8NC6yW+4uqymjKq/wB01Vr3otSYPXaQnGrgPUmShiEta26NH7UmeWyJv
-	1wr6r4fKDBc0uuvkk68s73ddeQvKlOhzPDuv0hk185TbfufuevKZx4vmrf3qX31JvCTZljMJOKt
-	wyY22zkBsiVEHRvLk95BB78+Bp+ZcXTzxfGXnBrZkyfaN1bSFyj/ytbz8htQJ1s7dBVIQUFt+Pj
-	jYPUg81jxXm6nhkwEGbkiwHInEiRfXyIMNNDZo3vZU6+OjvWhcVmPnSpOo7evp//pTA1FiX1Eqj
-	Gz3fGI+XJUCGVFH5gA8UHz2ioT2PNAmoAgFnhpmzQotjTGtvejFUR3Cmlfsdo+pxCu7kdy2aRet
-	Y4jhTvwCYOpn6KzGj8pludHnpPDEn8iyd3uQ8o56JrXmu8u9di0v/SsdoaATbFWveOL8E2CekJ/
-	iaF0zzts4dS6WOlTEZkj0xL3jAp4NjgWq0d+zjUzYkzqWkiODjsauT7hoTBgRK/7t+t5FpoDOuU
-	yMdnI/lCp27IPdRa6Aa3mKMvmM7g4b3nAB9IyYRhlYUg7ulCESVoWOdZIWrSkBumtpk4gay8nX8
-	agoW4eIVDxgQ3YrGmVUrw/ihokUEv9fwDEJS0AF05bTHTE/A54rpgtwwmoYzR9hElu8uDMP/2BU
-	76u1SY3916tsUNXt7WzCY002eQTsUHjPIZSKjZt7vijQ==
-X-Received: by 2002:a05:7301:d198:b0:360:db68:3264 with SMTP id 5a478bee46e88-36a42340756mr15320792eec.6.1793610855684;
-        Mon, 02 Nov 2026 01:14:15 -0800 (PST)
-Received: from kapoor.iiserb.ac.in ([203.18.51.212])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a42a6f7f9sm41886949eec.25.2026.11.02.01.14.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2026 01:14:15 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Cc: Conall O'Griofa <conall.ogriofa@amd.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michal Simek <michal.simek@amd.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	stable@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: xilinx-ams: fix out-of-bounds accesses when parsing channels
-Date: Mon,  2 Nov 2026 14:44:08 +0530
-Message-ID: <20261102091408.246416-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <108cf042-5f7f-4b1e-9656-3193744e8043@amd.com>
-References: <20261023185652.195025-1-kapoorarnav43@gmail.com> <108cf042-5f7f-4b1e-9656-3193744e8043@amd.com>
+	dkim=pass (2048-bit key, unprotected) header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=h569ukrZ
+Received: from smtp-04.utu.fi (smtp-04.utu.fi [130.232.207.47])
+	by fortymile.utu.fi  with ESMTPS id 6A29EMYS024335-6A29EMYU024335
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+	Mon, 2 Nov 2026 11:14:22 +0200
+Received: from ex19-16.utu.fi ([130.232.247.56])
+	by smtp-04.utu.fi with esmtps  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <jaakko.ma.koivisto@utu.fi>)
+	id 1xNo7S-00Gk4l-Kh;
+	Mon, 02 Nov 2026 11:14:22 +0200
+Received: from lorpotin (91.145.105.139) by ex19-16.utu.fi (130.232.247.56)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Mon, 2 Nov
+ 2026 11:14:22 +0200
+From: Jaakko Koivisto <jmatko@utu.fi>
+To: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Jaakko
+ Koivisto <jmatko@utu.fi>
+Subject: [PATCH v2 0/5] iio: chemical: sgp40: add funtions for serial number readback, self-test, and heater control.
+Date: Mon, 2 Nov 2026 11:12:53 +0200
+Message-ID: <20261102091258.247402-1-jmatko@utu.fi>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,30 +68,88 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ex19-10.utu.fi (130.232.247.50) To ex19-16.utu.fi
+ (130.232.247.56)
+X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFxYWFhYWFBeUVxfSFhISFpdSAIJCQMDB0YFCUYDBwEeARscBygdHB1GDgFIWUhZXkgJAygB
+ HEUDBAEGDw0aRgwNSFhIWkhZXEhZW1hGWltaRlpYX0ZcX0hQSFhIWEhdSFhIWEhYSFleSAkDKAEcRQMEAQYPDRpGDA1IWEhZXUgJBgwRKAMNGgYNBEYHGg9IWEhaWUgM
+ BA0LAAYNGigKCREEAQoaDUYLBwVIWEhaXUgEAQYdEEUBAQcoHg8NGkYDDRoGDQRGBxoPSFhIWVBIBh0GB0YbCSgJBgkEBw9GCwcFSFg=
+X-FEAS-Client-IP: 130.232.207.47
+X-FE-Last-Public-Client-IP: 130.232.207.47
+X-FE-Policy-ID: 3:5:2:SYSTEM
+X-FE-Hostname: fortymile.utu.fi
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=utu.fi; s=out-utu-v3; c=relaxed/relaxed;
+ h=from:to:cc:subject:date:message-id:mime-version:content-type;
+ bh=RiFDU2akqP6mKVPzgQeE3Cgv8b1arnpnehMfKnoHacQ=;
+ b=h569ukrZqajU/z8vnkHzuOMIg3MZZ+QBrwzZJS9IMAUy2mcE0pyqlU/mrcsu6TdhlIU9FulP/+L0
+	T0/hoF8Ieh4rrzodcNVdNnrGhum6M0BPB+evM4JvycfihTRrOrStmHCd0kFWyL01gPlDSFHsheXd
+	khPOiNviTO8T5izsh+2YtFa6gKASDxqdF1Rok0Y6LdOI1rM0PuyCKeVG5nwnBVGBHkic0W0rEQQY
+	9BK6zgbew5DuswDnCHJsJMjiFqqRMVNMTFonXZLgzXDf3WR5uoSL9TZQo+RxXpRZNZU+LWGp2SkM
+	8rmGfSwaVlYUkMojSPvYkBi9hnN5NbcPr6FBHA==
 
-On Mon, Nov 02, 2026 at 12:41:59PM +0530, Sai Krishna Potthuri wrote:
-> ams_init_module() already copies ams_pl_channels[0..9] as the 10 fixed
-> channels. Inside ams_get_ext_chan(), since ext_chan = reg - 20, DT
-> entries with reg = 20..29 map to the same entries and it create
-> duplicates.
->
-> DT binding requires update to allow 30..50 for external channels. This
-> gives a maximum of 10 fixed + 21 external = 31 PL channels, matching
-> ARRAY_SIZE(ams_pl_channels).
-> Please let us know if you plan to include the binding change, otherwise,
-> we can handle it separately.
+Add commands for getting the Sensirion SGP40 VOC-sensor
+serial number, controlling the device's internal heater,
+and running the device self-test.
 
-Thanks for the review, you're right. Channels 20 to 29 are the fixed
-ones in the binding's own table, so a node for any of them only adds a
-duplicate, and that is also where the extra 10 channels in my overflow
-came from.
+Replace the manual mutex_lock()/mutex_unlock() with guard(mutex).
+Simplifies the locking patterns, making it easier to add new mutex-guarded
+variable 'heater_enabled' in patch 5.
+Extends the lock to cover i2c communications with the device.
 
-I'll include the binding change. v3 will be a two-patch series: the
-binding limited to channel@30..50 with your Suggested-by, and the driver
-only accepting 30 to 50, keeping the capacity checks from v2 so a device
-tree that repeats a reg value can't overflow the buffer either.
+Fixes issue with converting all i2c errors to EIO in
+sgp40_measure_resistance_raw(). Included in the patchset as it was found
+due to reviewer flagging the same issue in the v1 patches.
 
-Thanks,
-Arnav
+Changes in v2:
+- Added patch for replacing mutex_lock()/mutex_unlock() with guard().
+
+- Added guard against concurrent access to the device in
+  sgp40_get_serial_number(), sgp40_execute_self_test(),
+  and sgp40_turn_heater_off().
+
+- Return EIO if CRC check fails in sgp40_get_serial_number(),
+  sgp40_execute_self_test(), sgp40_and turn_heater_off().
+
+- Fixed formatting issues, missing newlines, unnecessary debug-print and
+  unnecessary 0LL constant, added comments for sleep times.
+
+- Changed 1 ms sleeps in sgp40_get_serial_number() and
+  sgp40_turn_heater_off() to use fsleep instead of msleep
+  (checkpatch.pl warning against using short msleep)
+
+- Removed storing serial-number in driver-data, instead retrieve it when
+  requested.
+
+- Use the existing serialnumber ABI for presenting the SN to userspace.
+
+- Fixed error paths in sgp40_turn_heater_off(). In v1 positive
+  numbers were returned for errors. Fail the driver probe if the self-test
+  fails to run, or the response is not PASS or FAIL.
+
+- Use the existing heater_enable ABI for heater control.
+
+- Return any negative errors from i2c_master_send() without
+  converting them to -EIO in get_serial_number, execute_self_test,
+  and turn_heater_off.
+
+- Added patch for fixing the i2c error conversion issue in
+  sgp40_measure_resistance_raw().
+
+- Log errors with dev_err_probe() instead of dev_err().
+
+- Link to v1: https://lore.kernel.org/linux-iio/20260918134019.1101308-1-jmatko@utu.fi/
+
+Jaakko Koivisto (5):
+  iio: chemical: sgp40: Do not convert I2C errors to EIO
+  iio: chemical: sgp40: Replace manual locking with guard()
+  iio: chemical: sgp40: Implement get_serial_number-command
+  iio: chemical: sgp40: Implement execute_self_test-command
+  iio: chemical: sgp40: Implement turn_heater_off-command
+
+ drivers/iio/chemical/sgp40.c | 231 +++++++++++++++++++++++++++++++----
+ 1 file changed, 210 insertions(+), 21 deletions(-)
+
+-- 
+2.56.0
+
