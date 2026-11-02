@@ -1,80 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793616086;
-	b=bIc4pVeEQdcLLkVY+i0r8QUB5xoyEFA3bg1+0NIgISXoEPTiL+IE2OtNWbFoPCRbhbBV
-	 c86FTMEPE+ku0jb/VaG8E2NqCGeYfn57nAKHhcQeyGufCJdnBxDtv8qxX84WOoV66UWK7
-	 bSTqcr0pFeZ2MUojdckXe4pVtBhMvAkiHNILjocKLjd0GtIoyocHW3KJlD8rN90X0pGpY
-	 Wf8m3/s7vdvGfpTYpuSwVWJi99wxfQn7wxaKWXsn9tNjNTsK3EgVPhoSy3Yv8dCVKoEd/
-	 tcQFquf9KTDiCl5OIAT3p9uZjho+AtdMn7lcp8gKdEjvARVrBppQpKtW/pcDXuCvfYg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793616086;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=i8fN3pjS0/PfpsaGXKslpxCtUG8HKCVsbgThTs9yHPw=;
-	b=VBQjhWq4yJ6EUS+YSz3Vu6VgdO3IJjONgF+YmIT5xRRL3o+Zm04rrm+Duvc2N310Csqu
-	 AD5bvApy12BAMk8EQBXFMiLXh0mbFKTwvlrGlfYB/k0/ULys3cj2hjOC8rR9bD1OBj77X
-	 NuQujWMNAcI+lpRRRWI39hE71OcBf1zFUcrkQOrfMyPpaF7r+HPwlNL2dSvCwMMPoPN/9
-	 vP3PQ9tn9pucIznP6bhfIwBuHy/63nlmbWBeyh6xhtk7XgdIjtLy6CvCp4Hvu0EIBVFWD
-	 vS+Z4bHUxKDR8F6D8yjz12xLSKUF03YoWa8qFmnEqrqs92YGqUe/zcqfEzPFX2RSuYw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gni0QQwd;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793616450;
+	b=qMxphBAUNZhVcyDIy2d48L8Y3ZKaPRFu+MhGlsWjPhivJ10J6IXGD1jhUKFZ2yfOM8oJ
+	 0P67u1rXTf96VvNL/EaOE+JGLd+mVgASqpaE8/OXYX1oIuisSxFEduKNf/6mm2zMKbJ7c
+	 jaFlYtusIR/dkgihUzyQOMEvs6hRME+3SmOMs11Om2ZkQbvxQ0qlXNryzx4QKTvvHE/LD
+	 +tE3CteRv3kDI1AcmLDRHIuQg0tS+PjWwyf6k7AQ3aGlQcx4j6aUUJQrXyC8GZHICLdGS
+	 o7VbyVno7SHOD331nMENPr+pSFKFlLwZWFJS3X22NBOT4b7z3xpR909KQ4O0IkwPeWg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793616450;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=QOTynnEdZ2Qvk7iiRKTKD7BwFl1KZcI80W8gzwB1ql8=;
+	b=fC/UXZPWuHAPek8W3/v+7jjxfJqoVlZPU/GWv1FnGfYNHEzL+5YS9I7frpdTxFMc4an3
+	 TWermvolnNuF1m1K4QzSMnyYXHukpwHjfVA+X3LR9jacoPupV/DAW/SajteJ8V4Sq6pfN
+	 yvmDCcrP+K5NQcNtzcyZvCVpss3ycVP5a7vnCRRNmvOHP6B4giJ3GPmpXGhifKkNTmHx4
+	 k3QrjcYJ3rPpLZBCXml36TLd3dDlmVXafwgI90drSLpFww+ioQbKUKag7rNA3OD6uNGAo
+	 4kUTdvbwDyQ26Xv5/sUXCqjjp3folSr9+NNMW2qmW6W7JJm7qjIUQaJVPl/5D567MAQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lYetf1cE;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3EC7606A331;
-	Mon,  2 Nov 2026 10:41:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E998606A326;
+	Mon,  2 Nov 2026 10:47:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gni0QQwd
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793616085;
-	b=tgFObwFHUFrryiOfw3ThCIG9bjL8CeJYjw/xIOqdNVvZ6FKrN2l2r5A8Xm4sr4UbZJTh
-	 CZ6kBevizCDAw+f1+0bA0eseS250KBRC0Ih3AbbhGK1Gqtt3dVjAJFAv5Vd5BHkXu4p9s
-	 6jsr1pCaENhSg2uMYe8T1QOvf63W6MXFWgm9QP4zYDjB+5QieLLBzNNlIIZ23PhAwWDeX
-	 YeBD9Av2OzS0bOuHyd+uiOwXzLAPjM8JoDa27p24L77PAP0P6txiRTn5qB/iQR10hysHe
-	 KUte0FMBFXLrxINnpSG2b2a2EiXSEhwoujY3vtlQqe3foHmrd6dxZD7T880/kwnGOhg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793616085;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=i8fN3pjS0/PfpsaGXKslpxCtUG8HKCVsbgThTs9yHPw=;
-	b=AMwF8KhT2yas4A0dVdW6qibgENzDZoYIvkoLmBIjYyhh6TESzpmdtKG32+QlhCZ4AWEz
-	 hezHTgx3uFjVvhzFm5djzCP8j2eVzpa06ZYOOXSNOIL0BBZmqvDfsr5p573Ra3EXPz7ee
-	 YKNNfG1VGoNJdlZ6PcYgIrJN///3JjBjGO5PSm+RjHcUoYdroz7CHAbK0nqekq1BhYD4N
-	 UnksAlJGzwN9vzLV98v2l4KProAVxXK6OdnifsD/zKM/MJAzWzhJwuA23KJaa4FYNdV9s
-	 VoM8O7Wh32/H81Xvq0Fi9lE00SWMHEtl4c63jaNZ/fWNwHVOtmsX3OP4nhMhQS7tDDA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 31ABF1F00A02;
-	Mon,  2 Nov 2026 10:41:24 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lYetf1cE
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B831F000C1;
+	Mon,  2 Nov 2026 10:47:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793616085;
-	bh=i8fN3pjS0/PfpsaGXKslpxCtUG8HKCVsbgThTs9yHPw=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=Gni0QQwd/NxFWn1IqXoCQ9v70KT8w0HbRAkhTozwMorLKBDtCXuKhzarqgLfQJxV6
-	 l0qThocySEeGia8jYNSpMPkASStIKq+3Rq1yWjil+/cpVHxT/nZZ004719tRBenJ4h
-	 T9IqcHYVyYyWZgtlQcJkffJbjuy8GzjI070Mn5fssTPmyhxpl/1TXEBln598VUNfud
-	 mIHCHm+/s9exRq/R0BiytSVIcvMVzi7OmF50TPhp9WZKD3VHQkxPF0kXAfBx6cpeb5
-	 xt7aCA4TT7jkbAxY7uyvmAJ/76DGp0ck31DRUAv5j6dua52HnpwABclzDIh6jcWNRe
-	 AMtXRkUhRNVMw==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 8786546480;
-	Mon,  2 Nov 2026 10:41:23 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v5 0/7] Add E notation support to kstrtodec64() and IIO
- sysfs writes
-Date: Mon, 02 Nov 2026 07:40:58 -0300
-Message-Id: <20261102-e-notation-v5-0-d399e544a982@analog.com>
+	s=k20260515; t=1793616449;
+	bh=QOTynnEdZ2Qvk7iiRKTKD7BwFl1KZcI80W8gzwB1ql8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lYetf1cEHmfG6nwRTCPYf2lnJ/RBinsmH4Y8o+y3t2jed8bATCjnV5p1XlkYtEj+2
+	 7g1X3bAe6qZ3dE41ijNlsu33FdVd4hIoICeTZ8h5QZC+dueojJZDOnUKbIvMstfzLO
+	 X6tu5UJzBtxA/Q+Tiizx2mculD3KLj5zNH211J/xGJo2YxzOVXHkt77pl+opbmGzPs
+	 KW6Xylxop8/F8ZlljEeGr70fHjfjiwuqd7p4OkfGdGSw5ieDFk1NG4tbOB78jGPfKJ
+	 yk6/WpmTO14F4J1eZ0bmGLP1cJPKfVe1JQbex1dtLOrib0Q8Lv4jA1qHSyTuzL6sc3
+	 P4gpH33oKikPw==
+Date: Mon, 2 Nov 2026 11:47:25 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Vidhu Sarwal <vidhu.linux@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v2 2/3] dt-bindings: iio: proximity: Add Benewake TF-Luna
+Message-ID: <20261102-ludicrous-eminent-beluga-b04e31@quoll>
+References: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
+ <20261031-tf-luna-v2-2-ce403579bb8a@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,159 +61,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIALpo6GoC/23NQQ7CIBQE0KsY1mL+hwLqynsYFxQ+itFiSm00p
- neX6qaNLieZN/NimdpImW0XL9ZSH3NMTQlquWDuZJsj8ehLZgKERgDkxJvU2a7UOAQwRpkNAil
- WwK2lEB+fsf3hm/O9PpPrxoWxcYq5S+3z89bj2Ps73CMHbhSuTR1AO4SdbewlHVcuXdm43IuJR
- TmzolhfWV8rwo0M7sfKiRUws7LY4OVaOQh10OrHVlOrZ7Yq1kqtrfZYeWVmdhiGN5JuaFlrAQA
- A
-X-Change-ID: 20261001-e-notation-0f07757910e5
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793616082; l=6077;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=bXDLkFn95HKwUvFszjP5Xf/IHHxhZfPcPq6H2zPZ3CQ=;
- b=A1pdj6hBk6J2D9VxgthKbhxFE8W0dFacLrPe7Tn4/PKzr/Fuqj8NCE9zoYP6JmGqtnJjjB+O7
- fDBMy5cFYdLBc6Onq2WTyv9l77s34dCp5ECPB+oihDylgjsVZdxmHiT
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261031-tf-luna-v2-2-ce403579bb8a@gmail.com>
 
-This series lets kstrtoudec64() and kstrtodec64() accept numbers in E
-notation (scientific notation), such as "2.7e9", "1.5E-3" or "1e+16".
-It then moves the IIO core fixed-point parser over to kstrtodec64(), so
-every IIO channel attribute written through iio_write_channel_info()
-accepts that format as well.
+On Sat, Oct 31, 2026 at 12:23:29AM +0530, Vidhu Sarwal wrote:
+> Add binding for the Benewake TF-Luna, a single point ToF
+> LiDAR distance sensor with a range of 0.2 m to 8 m.
+> 
+> The sensor talks either UART or I2C, selected by the level of pin 5 at
+> power-up. This binding covers both interfaces. Pin 6 is a data ready
+> output and is described as an interrupt.
+> 
+> Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
+> ---
 
-There are two main motivations:
+What is the base of it? I tried two linux-next and 7 different mainline
+tags (v6.18 and newer - up to current mainline).
 
-1. Shell usage of sysfs attributes
+All fail.
 
-   Some IIO devices take values that are long to type and easy to get
-   wrong in plain decimal. A frequency synthesizer or DDS might be
-   programmed in the GHz range, and a scale might be a tiny fraction.
-   With this series one can write:
-
-     echo 2.7e9 > out_altvoltage0_frequency
-     echo 1.5e-6 > in_voltage0_scale
-
-   instead of counting zeros in "2700000000" or "0.0000015". It also
-   works with shell tools that print in E notation by default, such as
-   printf's %g conversion ("printf '%g' 2700000000" prints "2.7e+09")
-   and awk, whose default output format ("%.6g") prints
-   non-integral values like 1234567.5 as "1.23457e+06".
-
-2. Userspace software that formats numbers automatically
-
-   Many languages and libraries switch to E notation when converting
-   floating point numbers to strings, without the caller asking for it:
-
-   - Python: str() and repr() of a float use E notation for exponents
-     below -4 or from 16 up, e.g. str(0.00001) == '1e-05' and
-     str(1e16) == '1e+16'. Writing such a value straight to an attribute
-     with open(...).write(str(value)) currently fails with -EINVAL.
-     The same applies to NumPy scalars and to f-strings with the 'g'
-     format spec (f"{2.7e9:g}" == '2.7e+09').
-   - JavaScript/Node.js: Number.prototype.toString() uses E notation
-     for magnitudes from 1e21 up or below 1e-6, e.g. String(1e-7)
-     gives '1e-7'.
-   - C/C++ applications and bindings that use printf("%g") or
-     std::to_chars() with general formatting, as well as MATLAB/Octave
-     and other numeric environments that print in a "short" form.
-
-   Today these values have to be reformatted by the application, or are
-   rejected by the kernel without warning. Accepting E notation in the
-   kernel makes the IIO sysfs ABI more robust to this common
-   behaviour.
-
-The exponent is folded into the requested decimal scale, so no floating
-point arithmetic is involved. Overflow is reported as -ERANGE and a
-malformed exponent ("1e", "1e+") as -EINVAL.
-
-Digits beyond the resulting precision are now rounded to nearest, ties
-to even, instead of truncated (new patch 2). This follows from the
-second motivation: floating point values printed by userspace often end
-just below the intended decimal value. "%.17g" of 0.3 gives
-"0.29999999999999999", which truncation turns into 299999 at micro
-precision instead of 300000. E notation makes this more visible, since
-a negative exponent can drop integer digits: with truncation, "19e-1"
-written to an integer attribute gives 1. Round-half-even is the IEEE 754
-default, as used by strtod() and printf(), it is unbiased and symmetric
-for negative values, and inputs that fit the precision (including values
-read back from sysfs) are parsed exactly as before. The rounding is done
-before the IIO core conversion, so IIO fixed-point writes change
-behaviour only once.
-
-This changes existing kstrtodec64() behaviour, so feedback is welcome on
-whether it should stay in this series or be sent as a follow-up.
-
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+b4 diff '20261031-tf-luna-v2-2-ce403579bb8a@gmail.com'
+Using cached copy of the lookup
 ---
-Changes in v5:
-- Allow for a negative scale in kstrto[u]dec64().
-- Add more details to the documentation.
-- Link to v4: https://patch.msgid.link/20261026-e-notation-v4-0-a366a6d14d57@analog.com
-
-Changes in v4:
-- Adjust iio-test-rescale.c to use kstrtodec64().
-- Minor changes on making the patches more readable.
-- Link to v3: https://patch.msgid.link/20261020-e-notation-v3-0-fd385c0fbf65@analog.com
-
-Changes in v3:
-- New patch: round to nearest, ties to even, instead of truncating.
-- Amend kstrtox E notation tests and IIO channel write tests for rounding.
-- Link to v2: https://patch.msgid.link/20261013-e-notation-v2-0-d4adb5e193fc@analog.com
-
-Changes in v2:
-- More test cases on test-kstrtox.c.
-- Rework fallback logic when parsing integers.
-- Add iio kunit test cases for iio_write_channel_info()
-- Link to v1: https://patch.msgid.link/20261001-e-notation-v1-0-75187bf06c10@analog.com
-
-To: linux-kernel@vger.kernel.org
-To: linux-iio@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Nuno Sá <nuno.sa@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Rodrigo Alencar <rodrigo.alencar@analog.com>
-
+Analyzing 19 messages in the thread
+Preparing fake-am for v1: dt-bindings: vendor-prefixes: Add Benewake
+ERROR: Could not fake-am version v1
 ---
-Rodrigo Alencar (7):
-      lib: kstrtox: support E notation in kstrtoudec64() and kstrtodec64()
-      lib: kstrtox: round to nearest, ties to even in kstrto[u]dec64()
-      lib: kstrtox: allow a negative scale in kstrto[u]dec64()
-      lib: test-kstrtox: add E notation tests for kstrto[u]dec64()
-      iio: test: rescale: compare scales against the precision of the output
-      iio: core: use kstrtodec64() to parse fixed-point values
-      iio: test: add kunit tests for channel info writes
-
- MAINTAINERS                               |   1 +
- drivers/iio/iio_core.h                    |   3 +
- drivers/iio/industrialio-core.c           | 186 ++++++++-------
- drivers/iio/test/Kconfig                  |  14 ++
- drivers/iio/test/Makefile                 |   1 +
- drivers/iio/test/iio-test-channel-write.c | 360 ++++++++++++++++++++++++++++++
- drivers/iio/test/iio-test-rescale.c       |  60 ++---
- include/linux/kstrtox.h                   |   4 +-
- lib/kstrtox.c                             | 127 ++++++++---
- lib/test-kstrtox.c                        | 246 ++++++++++++++++++--
- 10 files changed, 833 insertions(+), 169 deletions(-)
----
-base-commit: d1425b382b9cc5bd19223fad8ba4a8af3dbe1305
-change-id: 20261001-e-notation-0f07757910e5
+Could not create fake-am range for lower series v1
 
 Best regards,
---  
-Rodrigo Alencar <rodrigo.alencar@analog.com>
-
+Krzysztof
 
