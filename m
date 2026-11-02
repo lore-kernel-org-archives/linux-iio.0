@@ -1,67 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.232.247.4
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793610905;
-	b=EFzSkJxdUTg2wx1gK96chY/W0Gl+ilbnvZ6BLk4U9QTtNRIK/vR16z8qDYMqujs2wthP
-	 13QMfLKVO80/1iLNJ20MnDWgWaBaVqLlyWXZq+nhwrPXeVg7nuwafnzn/8dj9laRGKs2N
-	 xTkVEsCkFUpOfJdRqYV+kx8ybcOVdPTIDr1ikjq/dBbeSMOXItIyFwjtfn44PQWNF4rRR
-	 iZrhI2pcnwnCD1JcbWDVcTGq1GveE4tLbl0aXzu8Ai9Z4AI4LBjo8jedLk40+AwFbJ/dR
-	 8klvh3mYHXeqDY0oeRRHeb3wOPzAFv4oJMeDqP76PjiaepaOIqN2eoF7ugsUEJuhJcw==
+	t=1793610956;
+	b=RPSP/arhTiHz92yHxoomewIyP/kGu2OAwaDkuTA0kwGIBR4sumomyUc09my2TUcCPUfd
+	 sp+0BlmNUS4YX9UpUafjzOgVw1SWbf1pMAlTdtUuk8Bcye6wjeiyAfX12y9Sa9+FbbGo/
+	 IOPGoyRUdHR6yePt7VjWvklk+1DegBKP1/tBb2a0QVa82/ibQeFDONWMlchf3wWF005/h
+	 SzGmKbI8esLZV9Wx/bjR1AUI9cWISET80MWqmqRLqJmH8TUc1JpLXkwuSw01ZwEgSDwJp
+	 UTeFsZuK3B2xuoqYu9HvCRxhueinZwQ7Dk69hpILn6dw8nRLqL7jl5CWhA6/PK0HigA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793610905;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793610956;
 	h=DMARC-Filter:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-	 X-ClientProxiedBy:X-FEAS-BEC-Info:X-FEAS-Client-IP:
-	 X-FE-Last-Public-Client-IP:X-FE-Policy-ID:X-FE-Hostname:
-	 DKIM-Signature;
-	bh=A69/kg5LLhw/n57+9+c2EFtAoRS1SzBUAOSLPwxbfQ4=;
-	b=2fPb+leITgNM0/vLLQEI+/fjJA3ajgwvOptcxd0l+SabaCCkcsx6nrEZII2cuHEzC/p7
-	 loVoYlUZslN1cVhUsPS9iSdowRLKYCJ5d0XhA6zYUL3LmMNdRwDg2fFkkLjsf07A1Z3iY
-	 isWkQ6QelMqcMb94bHuJeBiKImOF355RtDiJVcOpHxzdqEpVj5zkEyQk8dinwST+oQ5xl
-	 oZZhQtWzSznBBc7e4kzZ0ocgRZqnM90szFlxY0pXqSwzyFz/UXfVz7Np5CkY9Chsd+EUm
-	 R0nhmw9wl4wNUlkEik44ObdXYkwJVsqZaY2yjGbZv1TUWBEEOCzZ+IRwNWdPSPs1ubA==
+	 Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type:X-Originating-IP:X-ClientProxiedBy:X-FEAS-BEC-Info:
+	 X-FEAS-Client-IP:X-FE-Last-Public-Client-IP:X-FE-Policy-ID:
+	 X-FE-Hostname:DKIM-Signature;
+	bh=O3jVSvvryYZl7OF3FZBbst06ttsT1TkPtiH56l6h7gM=;
+	b=mDtC9Us3ZbxbZhBslIfNdpdd2X5FkVYSJ3o7dW2sS8roUb5XeMSmLeCJ7WL5S9YauQGs
+	 cqf1N4qBNPZC/5QizSGxiXZqu76kh0MtWY1V0I/+auosS+RRXa5CFl/ggtNd3fYFMHpCA
+	 k+4bcBwz52VfKMMUAIqUzcCgHpJjXXjbE9jQD9VgVSBp82rEMsqA7j0Xei2rVaSSlUEy1
+	 lSyH+7BgUOEZxHK7IRZyZ2WoLS6z+BKYCSN8euJ9eiKoY5+zqkZf7J165jESZzxjbHG/B
+	 9IW9KdZ3vQy5HcUrRthkz/ZN5CgI/KlcqLru0+uSMGrvBQsbQLrJj1hzlr7DUhLOVTA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=utu.fi;
 	spf=pass smtp.mailfrom=utu.fi;
-	dkim=pass header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=VP78Ksrf;
+	dkim=pass header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=hwjlcLJG;
 	arc=none smtp.remote-ip=130.232.247.4
 Received: from fortymile.utu.fi (fortymile.utu.fi [130.232.247.4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55540606A33C;
-	Mon,  2 Nov 2026 09:15:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55540606A33C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E19B606A326;
+	Mon,  2 Nov 2026 09:15:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4E19B606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utu.fi
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=VP78Ksrf
+	dkim=pass (2048-bit key, unprotected) header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=hwjlcLJG
 Received: from smtp-04.utu.fi (smtp-04.utu.fi [130.232.207.47])
-	by fortymile.utu.fi  with ESMTPS id 6A29Efis024507-6A29Efiu024507
+	by fortymile.utu.fi  with ESMTPS id 6A29FXwl025270-6A29FXwn025270
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-	Mon, 2 Nov 2026 11:14:41 +0200
+	Mon, 2 Nov 2026 11:15:33 +0200
 Received: from ex19-16.utu.fi ([130.232.247.56])
 	by smtp-04.utu.fi with esmtps  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.95)
 	(envelope-from <jaakko.ma.koivisto@utu.fi>)
-	id 1xNo7k-00Gk5v-Sv;
-	Mon, 02 Nov 2026 11:14:40 +0200
+	id 1xNo8b-00GkDl-JU;
+	Mon, 02 Nov 2026 11:15:33 +0200
 Received: from lorpotin (91.145.105.139) by ex19-16.utu.fi (130.232.247.56)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Mon, 2 Nov
- 2026 11:14:40 +0200
+ 2026 11:15:33 +0200
 From: Jaakko Koivisto <jmatko@utu.fi>
 To: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
 	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
 CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Jaakko
  Koivisto <jmatko@utu.fi>
-Subject: [PATCH v2 3/5] iio: chemical: sgp40: Implement get_serial_number-command
-Date: Mon, 2 Nov 2026 11:12:56 +0200
-Message-ID: <20261102091258.247402-4-jmatko@utu.fi>
+Subject: [PATCH v2 5/5] iio: chemical: sgp40: Implement turn_heater_off-command
+Date: Mon, 2 Nov 2026 11:15:09 +0200
+Message-ID: <20261102091509.252337-1-jmatko@utu.fi>
 X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261102091258.247402-1-jmatko@utu.fi>
-References: <20261102091258.247402-1-jmatko@utu.fi>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -73,7 +70,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: ex19-10.utu.fi (130.232.247.50) To ex19-16.utu.fi
+X-ClientProxiedBy: ex19-05.utu.fi (130.232.247.45) To ex19-16.utu.fi
  (130.232.247.56)
 X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFxYWFhYWFBeUVxfSFhISFpdSAIJCQMDB0YFCUYDBwEeARscBygdHB1GDgFIWUhZXkgJAygB
  HEUDBAEGDw0aRgwNSFhIWkhZXEhZW1hGWltaRlpYX0ZcX0hQSFhIWEhdSFhIWEhYSFleSAkDKAEcRQMEAQYPDRpGDA1IWEhZXUgJBgwRKAMNGgYNBEYHGg9IWEhaWUgM
@@ -83,92 +80,63 @@ X-FE-Last-Public-Client-IP: 130.232.207.47
 X-FE-Policy-ID: 3:5:2:SYSTEM
 X-FE-Hostname: fortymile.utu.fi
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=utu.fi; s=out-utu-v3; c=relaxed/relaxed;
- h=from:to:cc:subject:date:message-id:references:mime-version:content-type;
- bh=A69/kg5LLhw/n57+9+c2EFtAoRS1SzBUAOSLPwxbfQ4=;
- b=VP78KsrfDsIrvU+ivYMD+mn838Ty7KYb3HVpOeG0RavkNj6szOrQTV8qbmGkq/Nrzyk/3c5vfhkd
-	7dJhVM8kULpgOTk2mKE/d+0bJbZtoBEK4LtxjQK/wvo1s71IkTqnfFfZAvK5VWnMjvZZVK/QJyW/
-	hVQVT7TRjLNJke6IcQrNKlyv/292XRIu4GecggwjQwY87u0zOMEHYQDQxVW3qU1Pcv0UvFSq2YKU
-	ayNMoam4162iZTbsEmgYofCoT5Kh/TXBYf0GYIPjc7bC4uLgp1oud2tyFiNNbpJH2KluKv82DbSS
-	NK+PXW0N8Lf3h92WHi0UTO6xkFBm1PmE2mnsWA==
+ h=from:to:cc:subject:date:message-id:mime-version:content-type;
+ bh=O3jVSvvryYZl7OF3FZBbst06ttsT1TkPtiH56l6h7gM=;
+ b=hwjlcLJGmmimqwJdujiWcM+UFFFGSU6RZ4D9R978MbMgpuR/IFnJFhV9aDzkaSvvTZsAfXZOr3V4
+	pNQhvrCvN9F4Pr/teq1eSdEKLHTf7enSNbrEl8/eaTau4S0a8P57953ZC1QCPEoZcmCxwvszJqnf
+	BXvsqbh+mjT+iE2wFm/g3d1fse56Sq7s+1VdsFSXX4OwUP0vzg6tqGBxX3e98s19sSvtgfx+FGyX
+	lswR3k4qDzvoFo/nRHyftNptCwZj38baZgYOP48tLBiFaEB/4cxRC9DmnTPpV2hcen6ffw6HnoWD
+	exehqyfIlKghSsPungFIl6u7z34rmn7axw0efw==
 
-Add functionality for retrieving SGP40 sensor serial number
-and present it to the userspace using serialnumber ABI.
+Add functionality for turning the SGP40 sensor heating element
+on or off manually. After turning the heater off, the sensor enters
+idle mode. Track the state of the heater in the driver, as the device
+does not expose current heater state via any register.
+
+Turning the heater off saves approx. 2.5 mA compared to regular
+operation. The heating element is automatically turned back on
+when measurement is performed.
 
 Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
 ---
-Currently only the bno055 driver uses the serialnumber ABI, and presents
-the SN in hex. Documentation gives hex output as example format, not hard
-requirement, but should we use the same format here anyway?
-
- drivers/iio/chemical/sgp40.c | 76 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 76 insertions(+)
+ drivers/iio/chemical/sgp40.c | 62 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
-index 080d51f9f53c..e0a300720fce 100644
+index 278390bc6b04..87df8d79fe6e 100644
 --- a/drivers/iio/chemical/sgp40.c
 +++ b/drivers/iio/chemical/sgp40.c
-@@ -35,6 +35,7 @@
- #include <linux/mutex.h>
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
+@@ -54,7 +54,8 @@ struct sgp40_data {
+ 	int			rht;
+ 	int			temp;
+ 	int			res_calibbias;
+-	/* Prevent concurrent access to rht, tmp, calibbias */
++	bool			heater_enabled;
++	/* Prevent concurrent access to rht, tmp, calibbias, heater_enabled */
+ 	struct mutex		lock;
+ };
  
- /*
-  * floating point calculation of voc is done as integer
-@@ -70,6 +71,18 @@ struct sgp40_tg_result {
- 	u8	res_crc;
- } __packed;
- 
-+/*
-+ * Datasheet table 16. Serial number is given as 48-bit value 0xAAAABBBBCCCC.
-+ */
-+struct sgp40_serial_number_result {
-+	__be16	A;
-+	u8	A_crc;
-+	__be16	B;
-+	u8	B_crc;
-+	__be16	C;
-+	u8	C_crc;
-+} __packed;
-+
- static const struct iio_chan_spec sgp40_channels[] = {
- 	{
- 		.type = IIO_CONCENTRATION,
-@@ -161,6 +174,41 @@ static int sgp40_calc_voc(struct sgp40_data *data, u16 resistance_raw, int *voc)
- 	return 0;
+@@ -263,6 +264,27 @@ static int sgp40_execute_self_test(struct sgp40_data *data)
+ 	}
  }
  
-+static int sgp40_get_serial_number(struct sgp40_data *data, u64 *serial_number)
++static int sgp40_turn_heater_off(struct sgp40_data *data)
 +{
 +	int ret;
 +	struct i2c_client *client = data->client;
-+	struct sgp40_tg_measure get_sn = { .command = {0x36, 0x82} };
-+	struct sgp40_serial_number_result res;
++	struct sgp40_tg_measure turn_off = { .command = {0x36, 0x15} };
 +
 +	guard(mutex)(&data->lock);
 +
-+	ret = i2c_master_send(client, (char *)&get_sn, sizeof(get_sn.command));
++	ret = i2c_master_send(client, (char *)&turn_off, sizeof(turn_off.command));
 +	if (ret < 0)
 +		return ret;
-+	if (ret != sizeof(get_sn.command))
++	if (ret != sizeof(turn_off.command))
 +		return dev_err_probe(data->dev, -EIO,
-+		       "i2c_master_send ret: %d, expected %zu\n", ret, sizeof(get_sn.command));
++		       "i2c_master_send ret: %d, expected %zu", ret, sizeof(turn_off.command));
 +
-+	fsleep(1000); /* Max duration for get_serial_number command. Datasheet table 8. */
-+
-+	ret = i2c_master_recv(client, (char *)&res, sizeof(res));
-+	if (ret < 0)
-+		return ret;
-+	if (ret != sizeof(res))
-+		return dev_err_probe(data->dev, -EIO,
-+		       "i2c_master_recv ret: %d, expected: %zu\n", ret, sizeof(res));
-+
-+	if (crc8(sgp40_crc8_table, (u8 *)&res.A, 2, SGP40_CRC8_INIT) != res.A_crc ||
-+	    crc8(sgp40_crc8_table, (u8 *)&res.B, 2, SGP40_CRC8_INIT) != res.B_crc ||
-+	    crc8(sgp40_crc8_table, (u8 *)&res.C, 2, SGP40_CRC8_INIT) != res.C_crc)
-+		return dev_err_probe(data->dev, -EIO, "CRC error in get_serial_number\n");
-+
-+	*serial_number = ((u64)be16_to_cpu(res.A) << 32) | ((u64)be16_to_cpu(res.B) << 16) | (u64)be16_to_cpu(res.C);
++	fsleep(1000); /* Max duration for command turn_heater_off. Datasheet table 8. */
++	data->heater_enabled = false;
 +
 +	return 0;
 +}
@@ -176,44 +144,62 @@ index 080d51f9f53c..e0a300720fce 100644
  static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance_raw)
  {
  	int ret;
-@@ -306,9 +354,37 @@ static int sgp40_write_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
+@@ -293,6 +315,7 @@ static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance
+ 		return -EIO;
+ 	}
+ 	msleep(30);
++	data->heater_enabled = true;
+ 
+ 	ret = i2c_master_recv(client, (u8 *)&tgres, sizeof(tgres));
+ 	if (ret < 0)
+@@ -423,10 +446,47 @@ static ssize_t serialnumber_show(struct device *dev,
+ 	return sysfs_emit_at(buf, 0, "%llu\n", serial_number);
  }
  
-+static ssize_t serialnumber_show(struct device *dev,
++static ssize_t heater_enable_store(struct device *dev,
++				   struct device_attribute *attr,
++				   const char *buf, size_t len)
++{
++	int ret;
++	u16 __ignore;
++	bool val;
++	struct sgp40_data *data = iio_priv(dev_to_iio_dev(dev));
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	if (val)
++		ret = sgp40_measure_resistance_raw(data, &__ignore);
++	else
++		ret = sgp40_turn_heater_off(data);
++
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static ssize_t heater_enable_show(struct device *dev,
 +				  struct device_attribute *attr,
 +				  char *buf)
 +{
-+	int ret;
-+	u64 serial_number;
 +	struct sgp40_data *data = iio_priv(dev_to_iio_dev(dev));
 +
-+	ret = sgp40_get_serial_number(data, &serial_number);
-+	if (ret < 0)
-+		return ret;
++	guard(mutex)(&data->lock);
 +
-+	return sysfs_emit_at(buf, 0, "%llu\n", serial_number);
++	return sysfs_emit(buf, "%d\n", data->heater_enabled);
 +}
 +
-+static IIO_DEVICE_ATTR_RO(serialnumber, 0);
-+
-+static struct attribute *sgp40_attributes[] = {
-+	&iio_dev_attr_serialnumber.dev_attr.attr,
-+	NULL
-+};
-+
-+static struct attribute_group sgp40_attribute_group = {
-+	.attrs = sgp40_attributes,
-+};
-+
-+
- static const struct iio_info sgp40_info = {
- 	.read_raw	= sgp40_read_raw,
- 	.write_raw	= sgp40_write_raw,
-+	.attrs		= &sgp40_attribute_group,
+ static IIO_DEVICE_ATTR_RO(serialnumber, 0);
++static IIO_DEVICE_ATTR_RW(heater_enable, 0);
+ 
+ static struct attribute *sgp40_attributes[] = {
+ 	&iio_dev_attr_serialnumber.dev_attr.attr,
++	&iio_dev_attr_heater_enable.dev_attr.attr,
+ 	NULL
  };
  
- static int sgp40_probe(struct i2c_client *client)
 -- 
 2.56.0
 
