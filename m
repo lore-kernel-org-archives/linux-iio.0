@@ -1,80 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793608469;
-	b=habUfwQJq38DyAf2SUNNi2j6m6XJVzQuyhWUdPwglyMTo1hDdA9QplXEFWhLJ2OeXVqS
-	 nMHwdyi3kmChn3TVkw+iOrVtxDfqXPtGJzwUn5dEbG3mQ42WAmuSr+8ZseicBdcmpJ91y
-	 VVYtsgwMu3vOg/0nReEy+oGzmm9+ci82piyoEU2ObBssV9RVzx7ByA8Y7XKoVdOVxDo7G
-	 Y+1vy2ESCK276gDPxoyUJjpawISRZwCZIJRGpEHRaxDOM0YitskXgCvEcssm7/tiPt5Im
-	 QC4waK9MPBudYZWWNIln3qTc4dm6M1uQz7C7UBs7ipTbNIMpm3N8tSQ66eTxypBeu/g==
+	b=hvLIwrvjrYIr6y+Tf1n06mvmccv2NZNBtYPs2xY6U63BHHsisvqtdCoO1okdxOTprN9p
+	 0JnoAEoNE8JVpVJQ1lAtaIh0+vA4l/RUt7GQj6quZt1UlVQLsxkNib5HVIC88NC4y7dOT
+	 TP3KvDZgerWxUuVM13xsiBc7zlGIDRXdeouC84C8BxJ4XTIAzqb1WhvxU7wEG/1mfS1hg
+	 SC3H597gQ1jEzQABbzb3tFyIJExJcGdO7VZdtTUx9yuyiMvb25wXccLmM2k4LndqIYa09
+	 L83wPvVgArZovTey3Y9o4xsfTp+3jSirNYHJyelDVqHfpzZcSayMxf/9d5AKCn5fBlQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793608469;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=LWE8O2lXe+0oKd5nDL5rYg3UGfF5cUqyhrMXFgfjz+E=;
-	b=NCftgUX2na5zAuT7ww8ThFPGOCj+dE/O3TbOb12I6y6HC0i7B1cdFeo5QsOtKbH2kQ33
-	 Xd7oBZH7gp3fffh65NmOtWFxFvLmLGPtAplgB1ITkzX+x1C33BfHFLAvmglo1SleeOeq3
-	 vYYmpxe+BGOL73scn/U+toUQSA5ohXuS/zrZ8BE9xtMcTER6YsIi/5JtIsCKv4FHLdUqc
-	 FN8iILiv/MzVUh32d2S+fRs+4NGge1WpxVb2T9UDzJuM8PJwDR8K6ulpmnwRQTRjPBXIk
-	 zO11KZ8SSaV/6eCxe6RxJ6efrGmokd1ng28oIh5GoeO4lHc2Qq5LRLQ+7CdFPDxu68Q==
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=boFFcpFnjyEzJo24rZUanw6C9QWlptqbhINfJloBLbY=;
+	b=5TnQbnm0Frt1I8kFwLq6QFqMr3GXPaV3ElKLCSreeVLzcSXg5t6LOtv9K88WWY0xBB28
+	 tu0MEOo2pUUP7KSrMU3iNtqLvwsfqa2Ds+KUJSiq8/L/gpSbIArcxasxMMY9v2Z8ebQP/
+	 FApsU1AN8LyA7e2ADU+5wMBlfxvv4EaPcRavhjA0hNNSE57uj8Q6iIVLjEbP0YTh0RHdj
+	 kfR4eAWCmGuDRNgz6RKmheSpkoNJpnwiMOS7MdD6DS4VXyoDM88q8EKtMcyjLbFNoIrdc
+	 lCoxm7tOv7X90uSRXOcZlBd7greAZF/WNfdoic1LzLjzCSYEAjT/ZYg6k6xpkad3nCw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WLbpMFeb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dozr78Ti;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7201606A327;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF038606A326;
 	Mon,  2 Nov 2026 08:34:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WLbpMFeb
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dozr78Ti
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
 	t=1793608468;
-	b=Kx8ozmwmeAp2UHpQso0V/4fymsk/aTGDrxQzRi+V9n+2RMnzFsZTWXf0puVPJ0ilYypX
-	 810ndIfrqr/Hie6aGE8tSqls+5et974HH+zEVAA1x+QiZEa8k7nRc1B3sGZPOUJPKfvn1
-	 AxqqYdtXRci6+gP6mRhtfPWYFRc4yybrLKyElhS1KGUKUAkvmJReM0WergphobqmWljrW
-	 P1GsNqLqdy2fq6Ji58YRN9nyNp20zMD/myeDJUnTdl6osDHlZXbhWeMsN0qTYikTdgX3X
-	 JVyoBMjgeVH4T/ZJ+8BTYG843cNJ6AdVhhkKL6Dd7KKO4T9odX9yyy4pDzR1KsXDtGA==
+	b=3ShTwgTSx+KUw1ih0JcAgc5xZGTeL0XlkDEK894xvYiJfSztcNPKbs5eXtIZec7GARjw
+	 ffnmuYfYhNkOzmIEteso4Kfuz29K3HCJPijzpu7Q/baeEPDlKyavZo89RwTtrHYkv1Im1
+	 g3tTbjtSLfCm7pY80xSwD1tIRzmXAvMKo1qHzjbFEre+B5aLkjwxXDx//vjFrDBw5sI7L
+	 jdBA3IYbouNV/4FCdOayzeogX3F5SWhDUaPzYSEt0tGmQoQd04sEIgP+kMbaKxMaDjIeW
+	 2bOmwzUI84ysOpOgeURVAAnq9aUHQKmPN80fuXIGp60QPobJDWCSbsfrQvEKPHWjOrw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
 	c=relaxed/relaxed; t=1793608468;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=LWE8O2lXe+0oKd5nDL5rYg3UGfF5cUqyhrMXFgfjz+E=;
-	b=nAKjfCSHhb6Rq4+w1VUyNSZcEPXmuUJqM+MW4ILe4UVE6KZ1e22KYVQ2XRksJQBsnDbU
-	 vwln2rCkMmbOK0XnAidszQHLLSa/9gK6aoV5nmyLHbQ5SwWhcBQQ2vu1W1tLwuSvSquUN
-	 hukk7Y/JzmX/hjsw0QLzCUr2hvj6UHOU9EwZS1QleTDKVYNBoAQKO2e22BmLDVhwXcytG
-	 Gh93rSAVyMxHvxyOfAxpvwo3vE9STiFDn5rx893Fe0HC7IxmJPa17zgnFtzj8ZRtHkwWH
-	 VFXGxVPeZI4gYqYiIfarfkR9QxXBz2Yf3flC2YZzhD9MWngeZEtA98C0JB/3YJZiELQ==
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=boFFcpFnjyEzJo24rZUanw6C9QWlptqbhINfJloBLbY=;
+	b=zWAgSdBz1LrT5gNyxQiHirvuBi6PIRC6VmbdLFgv1LZYEitCZOqos0NHnYl8HayHMVNs
+	 hbcj0zofMAQGFSVCP/1MTZCGkQpEx/Zpdzj+OOx85KDmrPt37KzLRzRGFIXwLb+eHGQ8H
+	 2N1em9xKbWpLYeYm1b1clrbHtchYRQ3C6p6TJhKjsQymRH2Zis2QYSVaRGyAGv70sy4I5
+	 NYOxEH4Rl12JdR5XS5BP7QGQfpDzq7gudUPOdN5Utn8wk2rW8H0lKrOlniIX8/C0yegp0
+	 fYJsZLgZ16wl+/8p3BbJFHnfD0cO/xx6J4x+FuMfG+jB/ZGHiqNig7of8mD8Kehm5HQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 0F1DC1F00919;
+	by smtp.kernel.org (Postfix) with ESMTPS id 0F3871F0093A;
 	Mon,  2 Nov 2026 08:34:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1793608468;
-	bh=LWE8O2lXe+0oKd5nDL5rYg3UGfF5cUqyhrMXFgfjz+E=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=WLbpMFebnUiEnGQmKQnqiCDWez6ua5cZzCggSUKzf+yvl1nf9HNAN6ANEnQ7aDtka
-	 hLowOWGStqY98HSjf8zRV/r4lKtJEMhCQO0PkmmzklhphMExOJT46U0OFtACgEN0vw
-	 ROrQqdNuc4HSnY0/x6cK0YsH2C1cploGDA9Dh8/gSorRpbq1skJtDsZ/Rvwpp2y+dC
-	 kYGTJamM/r4f6VW1C6U4XtfEc7w8+8+OrCJc+2CjPWgKomte82gH+I438AZtVKCb5H
-	 GZ4uitoSWVcYlMqgVY6/XEy51EYjFmYxjhXjd2zuwFRvGvDv9U4vOLsx70XDVrZ12F
-	 qK+Pv2ryvD0Uw==
+	bh=boFFcpFnjyEzJo24rZUanw6C9QWlptqbhINfJloBLbY=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=dozr78Ti9TR/ZzxwW57enkd5iBWSwLmVJofQjPb1vHGeiCiF4o/pxubowJKNjl6rY
+	 Pyrlg2kcq90uyBzHG2HShWZlHXoOQxBaMCsJquTMGFAFO2MRJNFJ+4JAxpmQ768bFJ
+	 ioi0ehsx4syT4Fo4uRtap2yn6aGc5x5/B7omSPGOlKhwyKvkI2XW4cLuapy8IKAGfw
+	 lv3+SgYlyzxQ+WecpJAXRM+xeglyQaOG4ybZvxItbryHFJejmJyFBb8RggXkM0Q7sp
+	 l33+QpwtNNqd2+EG+BlLfsAISPCqHPHYeih+B83zpVFDWcJPPVXgBpHwIY6L5ieoLJ
+	 DZL1hE1YWhgXQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 630BB46420;
+	by lkml.kernel.org (Postfix) with ESMTP id 7AE9A4640A;
 	Mon,  2 Nov 2026 08:34:27 +0000 (UTC)
 From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Subject: [PATCH v2 0/2] iio: test: iio-test-format: char format test and
- overrun checks
-Date: Mon, 02 Nov 2026 08:33:54 +0000
-Message-Id: <20261102-iio-test-format-char-v2-0-926100689e62@gmail.com>
+Date: Mon, 02 Nov 2026 08:33:55 +0000
+Subject: [PATCH v2 1/2] iio: test: iio-test-format: check that nothing is
+ written past the string
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,12 +84,9 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNQQ6CMBBFr0Jm7Zh2EgVceQ/DotQpjBFK2ko0h
- Ltb8AAuX/L++wtEDsIRLsUCgWeJ4scMdCjA9mbsGOWeGUjRWSs6oYjHxDGh82EwCbMVsDK6dK2
- rDSkNeToFdvLes7fmx/HVPtimrbUZvcTkw2f/nfXm/bmYNWpksqQqVyuuyms3GHkerR+gWdf1C
- wRXamPKAAAA
-X-Change-ID: 20261025-iio-test-format-char-8a17fbf9a201
+Message-Id: <20261102-iio-test-format-char-v2-1-926100689e62@gmail.com>
+References: <20261102-iio-test-format-char-v2-0-926100689e62@gmail.com>
+In-Reply-To: <20261102-iio-test-format-char-v2-0-926100689e62@gmail.com>
 To: Rodrigo Alencar <rodrigo.alencar@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -99,54 +95,150 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>, 
  Andy Shevchenko <andriy.shevchenko@intel.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793608466; l=1508;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793608466; l=4542;
  i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
- bh=zOtnsvVKuqmWXFDwxhbutV/jvXsZEvAJ8P6C/sc77Tw=;
- b=bADJ50upmNxu7XNqALoxeIB0ZhnI0hWiY4moXOuXg/CZVKTgTi5tUJ9llY9HaVTY5nnIbKfTX
- JzQbMk7+ajiB4o3nKTN9cpShlW00RXpJL2dEHYV/Jd+T4urw0CbPsif
+ bh=mjGIohs+VaxRspg/JVuGZhyysVoHzY7PwFWoazBDiao=;
+ b=DrTAHWoJIjQ+wh1ssogPCRVkdw1Bbyuy081yyAvJWDELLz95kHWclXNAGif7zElEYfZxW+KtC
+ TjqyUyOLGLOBiWgzyfpkce/FNXwOB13qegAR50hoa991LyOS8AMwzCI
 X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
  pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
 X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
  with auth_id=1160
 X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-Add a KUnit test for IIO_VAL_CHAR formatting and, as suggested by
-Andy, make IIO_TEST_FORMAT_EXPECT_EQ() check that iio_format_value()
-does not write past the formatted string.
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-A NUL character is currently emitted as is, so the attribute reads
-back as "\0\n". The test documents this behaviour; please let me
-know if it should rather be rejected or handled differently.
+IIO_TEST_FORMAT_EXPECT_EQ() compares the buffer only up to the first NUL
+character. It does not notice if iio_format_value() writes past the end
+of the formatted string, and it cannot check output that contains a NUL.
 
-These patches were written with the help of an LLM-based coding
-assistant, which I used to draft the code and commit messages. I
-reviewed and tested all changes myself.
+Poison the buffer before each call. Check the expected bytes, including
+the NUL terminator, with KUNIT_EXPECT_MEMEQ(), and check that the rest of
+the page still holds the poison value. Take the expected length from the
+string literal instead of calling strlen() on the buffer.
 
-Tested with KUnit on arm64 QEMU.
-
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 ---
-Changes in v2:
-- Drop the Assisted-by tag and describe the tool use here (Andy)
-- New patch 1: poison the buffer and check that nothing is written
-  past the string (Andy)
-- Add special, non-printable, NUL and out-of-range cases (Andy)
-- Link to v1: https://patch.msgid.link/20261025-iio-test-format-char-v1-1-e2c208f90e87@gmail.com
+ drivers/iio/test/iio-test-format.c | 50 +++++++++++++++++++++++++-------------
+ 1 file changed, 33 insertions(+), 17 deletions(-)
 
----
-Raffaele Tranfaglia (2):
-      iio: test: iio-test-format: check that nothing is written past the string
-      iio: test: iio-test-format: add test case for char format
+diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
+index e5d0a2ac4670..35b30420d995 100644
+--- a/drivers/iio/test/iio-test-format.c
++++ b/drivers/iio/test/iio-test-format.c
+@@ -6,20 +6,42 @@
+ 
+ #include <kunit/test.h>
+ #include <linux/iio/iio.h>
++#include <linux/string.h>
+ 
+-#define IIO_TEST_FORMAT_EXPECT_EQ(_test, _buf, _ret, _val) do { \
+-		KUNIT_EXPECT_EQ(_test, strlen(_buf), _ret); \
+-		KUNIT_EXPECT_STREQ(_test, (_buf), (_val)); \
++#define IIO_TEST_FORMAT_POISON	0x5a
++
++/*
++ * Check the formatted string including its NUL terminator, and that nothing
++ * beyond it was written. _val must be a string literal. The buffer is poisoned
++ * again afterwards for the next check.
++ */
++#define IIO_TEST_FORMAT_EXPECT_EQ(_test, _buf, _ret, _val) do {		\
++		KUNIT_EXPECT_EQ(_test, _ret, (ssize_t)sizeof(_val) - 1);	\
++		KUNIT_EXPECT_MEMEQ(_test, _buf, _val, sizeof(_val));		\
++		KUNIT_EXPECT_NULL(_test, memchr_inv((_buf) + sizeof(_val),	\
++						    IIO_TEST_FORMAT_POISON,	\
++						    PAGE_SIZE - sizeof(_val)));	\
++		memset(_buf, IIO_TEST_FORMAT_POISON, PAGE_SIZE);		\
+ 	} while (0)
+ 
++static char *iio_test_format_alloc_buf(struct kunit *test)
++{
++	char *buf;
++
++	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	memset(buf, IIO_TEST_FORMAT_POISON, PAGE_SIZE);
++
++	return buf;
++}
++
+ static void iio_test_iio_format_value_integer(struct kunit *test)
+ {
+ 	char *buf;
+ 	int val;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	val = 42;
+ 	ret = iio_format_value(buf, IIO_VAL_INT, 1, &val);
+@@ -48,8 +70,7 @@ static void iio_test_iio_format_value_fixedpoint(struct kunit *test)
+ 	char *buf;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	/* positive >= 1 */
+ 	values[0] = 1;
+@@ -109,8 +130,7 @@ static void iio_test_iio_format_value_fractional(struct kunit *test)
+ 	char *buf;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	/* positive < 1 */
+ 	values[0] = 1;
+@@ -149,8 +169,7 @@ static void iio_test_iio_format_value_fractional_log2(struct kunit *test)
+ 	char *buf;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	/* positive < 1 */
+ 	values[0] = 123;
+@@ -189,8 +208,7 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
+ 	char *buf;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	ret = iio_format_value(buf, IIO_VAL_INT_MULTIPLE,
+ 			       ARRAY_SIZE(values), values);
+@@ -203,8 +221,7 @@ static void iio_test_iio_format_value_integer_64(struct kunit *test)
+ 	char *buf;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	iio_val_s64_decompose(24, &values[0], &values[1]);
+ 	ret = iio_format_value(buf, IIO_VAL_INT_64, ARRAY_SIZE(values), values);
+@@ -241,8 +258,7 @@ static void iio_test_iio_format_value_decimal_64(struct kunit *test)
+ 	char *buf;
+ 	int ret;
+ 
+-	buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
+-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
++	buf = iio_test_format_alloc_buf(test);
+ 
+ 	/* DECIMAL64_MILLI: positive >= 1, value 1.234 */
+ 	iio_val_s64_decompose(1234, &values[0], &values[1]);
 
- drivers/iio/test/iio-test-format.c | 117 +++++++++++++++++++++++++++++++------
- 1 file changed, 100 insertions(+), 17 deletions(-)
----
-base-commit: d1425b382b9cc5bd19223fad8ba4a8af3dbe1305
-change-id: 20261025-iio-test-format-char-8a17fbf9a201
-
-Best regards,
---  
-Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+-- 
+2.56.0
 
 
