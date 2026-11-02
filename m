@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793611544;
-	b=uPy0RAvOUEwx/oVabaom/xoWOdaaCwiPlrMKXuhdS7pWK21C4oC7Ch8VmviQxriIi8ZN
-	 CeVwDe2ohSI4iBTMN9k7H/D5rOrjQ1h43nnltTTOuQod+9qS/LiP25+ms7FYkJlSuIlCp
-	 KeywpFvgpqEc5S2pF23dbRzv/gxBWG7++UgIrcT3oV7BQuEEzsHtQcdStlFUCrMUWesiO
-	 xhg1kFbIr0JMLkDzKpPhgYvHIsHPc/ok8Cd9H4aDgjPDqL5wPYubzhB2DIBHyqc6907Qe
-	 yjyoQK5WdroSsSkMUCrjy3Vz8lPwgTwrqUOLlaEMo3cPw+Ba69wM6aaHxQwZ/WjCF3Q==
+	b=UTUq0ykTFX/1KtNJd3OjFoqILc/seVP63iVhfIbvaP0k7oDZkblOhgl/nYeZqyl7C2zS
+	 rE+4ef0oo447nbuO+oGbYlAyZ8LBeTB7fkJGhTryTzr24vYaN1+Aj3U4xH++mt/4+mufd
+	 P9JE1n9c44brI16+SAALrmWHZKNvafnjZ6/LySaprWl6hjAWcwiSrAzFYRDU58V6C+eJH
+	 GXf8lxfVtJxbvzczqo2FpULMa40MHMNlMRe0G0bW93G0nDpISoRRK8beC045NyPzsOnzN
+	 NPk0zCupOHjGHKHvVSm650qI6nCN9XEcuNDSTpVW1PW+gtZqoeur10cRnjnqQqeDu3w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793611544;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=dAmi6q14Q9gImkHuQ9LuZnCLdziGrzGFmzUubLStCYY=;
-	b=pAsVX689xSvuiE25GuO1zxTxQQkcOSxejQwOPCMhyUnSQfVk+9WWC/lpW9MY4jjc6gYE
-	 3YQgB+h3H9rKvfx7e2uRl/R3IqXozfNN93ix9wMzQXwp9coRdeI5bE4w/NJZ0z1Gx/sZH
-	 UwA6H+ddDCLddkPlJUunZsXciaGr7oonvJX7fq+BM5HeS7kBmoDE2f3cDi5QAJOWoMdiS
-	 VezKWBHwWBjHjep9R+Na0Uu7kpCMOwPHYp+2q+ovi/wm0w5Ee+TOAMd+9FQMGyEin69xw
-	 PXs/av33a+p+aNsK5fnEkOdMdCOgSSUOeMC+hCfgbf3Eavzd1s+DAbBbgevuudZ/nHg==
+	bh=B6FWExT2fb6Xky06N6AZDMgw3GehroiiOZbmgn0b7+k=;
+	b=4Twrk3/iF9YCh+bsklNqaY2VGuWL/qxakT1M1f4W545EjpEjV381lWkL0yk7KhFRyfAZ
+	 xZzHmaM9AOmWKv16R80BAca30NSIB119lPrTz6V/Bmuaf+gH/MbKLESI8rPLhZOZpxeGr
+	 ul/pWKPG2zBD9ea323pb2fbwl5lHKAkrOBFeOuj7cZcMI+A6ODm9K975osTYQbV3mZqOV
+	 k36YiBIUSlvQvo04zIioWqaMKswf3HnZkDXl5SBeTuqE3rZXL9Og2BfZs4GeoQ4KZk0x+
+	 A2SjRjoRC9oF98ZWvkSflRHXArlnL56/+66PKvdtBZAvbzRp5uUbAPHONbIcQMOmbcw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=guaT2B5J;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F1uMcm7q;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 389A060A3801;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D0A960A3808;
 	Mon,  2 Nov 2026 09:25:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=guaT2B5J
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F1uMcm7q
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793611543;
-	b=WX+vd4COkM/6deKjgHKH3MiLP/NKcZsvooHtZvU05qOqsSGH4X6ANAJwnEuAER0hIz5N
-	 OfqLMUSt4DbsuCV++HBpHRgky3G8/Dp55CITD2j4UgSYkXiShkXZFTi9kJ9u4AQN6lBYg
-	 8T+QKuNwovHF0kJA7FDfJE7fCODkAI073nb8LnUCpH1pB76vCTi462EaDr0EoVpHTDkml
-	 LnVbGujq0u4dSPrD7UHlesOKE5zdYWFX0t0xEJGZV6xoWwE2dmU2/jU9McvhtIEPo1SSL
-	 12ktsgtZntciAWPHkRINXZ3KQAkqlWEDQQ0GE45TTswqGYBZPqY2ajRdio2r2Kutykg==
+	t=1793611544;
+	b=VzTGxI1I3fAta/XDNWaCAHCD0G8Q2noJrrXJOnq0UO5UAYDX5fM6lqcb2eY4nWV4w/Ff
+	 IEjcUpUDqu5v9/HHWahlp6m7QocQCzYBtdvLbn3ImUIsXb0YR+A4IZrBQ9UczGNZ1hC5K
+	 pOKUPxEKOTgWoxv/bsvmSsf9BqmvDEveVi8w/ZLVhAZ329cP3t5LJ9hHaPkVm7lGHZrvg
+	 FER2x3hGYdzyIf/zSAEedJ/AqNnclYb7tDWC1KHVb6hoLBtptgUqhtGdmZGtS0oCiCVRh
+	 SUIWX1kCpfrHf5TJh2zH/qQhTbnEvjppkqJmlOBdYS41t3yeF4z6M7S7lTWYfFAeGqw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793611543;
+	c=relaxed/relaxed; t=1793611544;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=dAmi6q14Q9gImkHuQ9LuZnCLdziGrzGFmzUubLStCYY=;
-	b=Mvxc09KvlbesRE+6KtfuoIxuNCb2k30N2aAdCldX0jFQRhKT8JFJI8EQGGOxbzckT0qB
-	 0fR9VW74EIsw0IydniXdqvLQnL2T/eK+uRvx84yGoAQKpEDczWryBXXtzZHmauM2Bs622
-	 sKjSvkpEwlG6rUTLf2lZ70Ua3Vmdek3+Ztf94rZg/aIcQcuyYAt1xBnOfZukoxZp4+rqQ
-	 35BpO2DWSY9Ao8hf/N7eRzpbV+phrODZeWcT68esFjDcSO2WCdvxddYCGvVKdLmOPowDh
-	 UYne3gnxZPrqpLjTDdZ+90BPd9tydqg6QSqbuNUPSXTK47Cy6VU3v3w5QgkxLQsKWFg==
+	bh=B6FWExT2fb6Xky06N6AZDMgw3GehroiiOZbmgn0b7+k=;
+	b=QHnZQU+VNy8XPCbRKunvyV76RhCUAVC39WY/ShrEYMyfsz0fRgbtunc8Q0j9hPiYnPnv
+	 FUv7V2SyghzSBCeRVwhn54wx/8YECbitT1wTZ8USYVKaFGXHunFvXhDYH4v7tyEpgIoDS
+	 3n7sUC2RqhPjoUvZI5hAOqBM4aG8dKmSxIQzZ30VeL0aM8Kq+SwQKpX1ShYYtNS40+8j7
+	 eE9xDzSkHQk6y9kSTadYdBFRcsLQ0YUiGrPS/LTCV5b4gChUxdRaCl8FgbsjjMGWtzkjU
+	 9x7tZZkmWlE7NwFMgCINjU4ndpDjYdIkyN7t/aR16K0PTrs6NttXfvCDPU4Q1Te9rIw==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4C1571F00A25;
+	by smtp.kernel.org (Postfix) with ESMTPS id 20F1E1F00A02;
 	Mon,  2 Nov 2026 09:25:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793611543;
-	bh=dAmi6q14Q9gImkHuQ9LuZnCLdziGrzGFmzUubLStCYY=;
+	s=k20260515; t=1793611544;
+	bh=B6FWExT2fb6Xky06N6AZDMgw3GehroiiOZbmgn0b7+k=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=guaT2B5J3dJAbDuwzbaS6N5FP7GqU0we5/GmOR1jfkwOkpqSKm4tfQIaEpGQT4Zlo
-	 vfYDCWV3g04zINAOQay/mgRzOjfo2jleKQIiGADkEH37MkZ+U9GjFu0ymSKelOSxdd
-	 mF/J5Yvq4z7YXr+fvvMBRVHvp6HfkQca9TEJjkWFodogzALsessbt7QmGDdIDKvm/h
-	 xC55RGqMU8pmJXQUNORPj4FpCCHs6gH+LkreSZ5Ta/OB5wYZBGBZ2XbIK1DvMjkzNc
-	 KBOOci83sDur3p7oAP1l3kfwiUNAAEmxFiNhDxvZBqR5p5GeHkqGQwK9xTsEdtlHwX
-	 Dy8KSKJ9nU9Yw==
+	b=F1uMcm7q4lJksF3rk50+DEdhGbeQZEIRs8ndLnN59P1R7Xmxm+69NUvnteutEvMSl
+	 YwfWftjrn5YB+S2ugGKGka3aO/1MKiIopT5s2eoVxLirGmOBsKpMDuWX4WdLjxHLbF
+	 t13nWf44MHU1Imp77QVxUmIs/3KSrB9imcqxh3pS1hSrsNInY6zHZITFxAriFYnjXR
+	 BZJeE21O4K0ZPvP6zOuM9Zf52JQc20Idh4BTdSStSQ9Q/PRrnIyu/llAiIbMNNi9sA
+	 q6Tev1MPYI/VPTUGZuX7UIYImVONUxxVfPU21FEo0EKJ/XSXiKAd6BXruzJedGmaBg
+	 1XU0efm+mM7vg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id D24A846449;
+	by lkml.kernel.org (Postfix) with ESMTP id AC1BE4642C;
 	Mon,  2 Nov 2026 09:25:40 +0000 (UTC)
 From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Mon, 02 Nov 2026 11:25:40 +0200
-Subject: [PATCH v5 4/8] dt-bindings: iio: imu: Add bindings for ADI
- ADIS16607
+Date: Mon, 02 Nov 2026 11:25:37 +0200
+Subject: [PATCH v5 1/8] iio: imu: adis: Fix custom reset dispatch in
+ adislib
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261102-adis16607-v5-4-4f98b0d271ac@analog.com>
+Message-Id: <20261102-adis16607-v5-1-4f98b0d271ac@analog.com>
 References: <20261102-adis16607-v5-0-4f98b0d271ac@analog.com>
 In-Reply-To: <20261102-adis16607-v5-0-4f98b0d271ac@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -99,11 +99,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, linux@analog.com, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793611539; l=4444;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793611539; l=2794;
  i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=SAtl7dLGUqcgnJ9wSgDpOErMnjHQjhHS0GOiEvJSp/U=;
- b=N1Ieq1xugQ9fMbqx2H94p0OiSk/pgVVVw5eyP9QZQMHS6RH9q95IlqXdD4tm1AXfCoDSOYC6s
- +pqBevb7g8tAxHKDHcyZN5YKe4DjNhSa+712Qc8qTCb+0YoKlsP4p5I
+ bh=SC/SubIQdTMZFTL014FlawEjYwq6iuRw3fYYRQBfK7Q=;
+ b=NEgpqLVygM+nDG23xfzaxjfKjvQRdtQbJuMROEdwQsTVjoTgn14nHNkmiFqPWdIAdzQrqfIHl
+ kVAdCY0RIAYA9qRllp1or/SSu4peU5owNr2voTIpnyrgscXAi9GoIp9
 X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
  pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
 X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
@@ -114,144 +114,92 @@ Content-Transfer-Encoding: 8bit
 
 From: Radu Sabau <radu.sabau@analog.com>
 
-Add device tree bindings for the Analog Devices ADIS16607 Precision
-MEMS Inertial Measurement Unit. The ADIS16607 integrates a triaxial
-gyroscope, triaxial accelerometer, and temperature sensor, and
-communicates over SPI Half-Duplex.
+__adis_initial_startup()'s no-reset-gpio path called __adis_reset()
+directly instead of adis->ops->reset(), silently ignoring any driver's
+custom reset implementation. Invisible until now since
+adis_default_ops.reset is __adis_reset() itself. Dispatch through
+adis->ops->reset() instead - the same bug existed in the public
+adis_reset() wrapper, fixed here too.
 
-Two variants are supported, adis16607-2 and adis16607-3, differing
-only in gyroscope full-scale range (±450°/s and ±2000°/s
-respectively).
+Move the settle-time sleep out of __adis_reset() and into both call
+sites instead, so every reset op (default or custom) is treated
+uniformly: adis->ops->reset() is expected to just do the write, and
+the library always sleeps the settle time afterwards. This removes
+the previous asymmetric "sleep here only for custom ops" special
+case entirely.
 
-The binding exposes optional properties for:
-  - An external clock for sync mode (falling back to the internal 8 kHz
-    clock when absent)
-  - A hardware reset GPIO (active low)
-
+Fixes: ecb010d44108 ("iio: imu: adis: Refactor adis_initial_startup")
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 ---
- .../devicetree/bindings/iio/imu/adi,adis16607.yaml | 94 ++++++++++++++++++++++
- MAINTAINERS                                        |  7 ++
- 2 files changed, 101 insertions(+)
+ drivers/iio/imu/adis.c       |  6 ++----
+ include/linux/iio/imu/adis.h | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-new file mode 100644
-index 000000000000..4545f942365c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-@@ -0,0 +1,94 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/imu/adi,adis16607.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADIS16607 IMU
-+
-+maintainers:
-+  - Radu Sabau <radu.sabau@analog.com>
-+
-+description: |
-+  Analog Devices ADIS16607 Precision MEMS Inertial Measurement Unit (IMU)
-+  with a triaxial gyroscope, triaxial accelerometer, and temperature sensor.
-+  Uses SPI Half-Duplex communication protocol.
-+
-+  The device has five GPIO pins (GPIO0-GPIO4 in the datasheet), each
-+  independently selectable for a single fixed function. This binding
-+  exposes GPIO0's reset function as reset-gpios; GPIO2's sync function
-+  is modeled via the clocks property, and GPIO4's DEV_NOK interrupt via
-+  the interrupts property. GPIO3 (data-ready) is required internally
-+  regardless of board wiring and isn't exposed. GPIO1 (wake) gates
-+  whether the bootloader auto-loads its NVM contents after reset; it
-+  defaults to enabled with a weak pull-up, which already gives normal
-+  operation with no configuration needed, so it isn't exposed either.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adis16607-2
-+      - adi,adis16607-3
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-cpha: true
-+
-+  spi-cpol: true
-+
-+  spi-max-frequency:
-+    maximum: 10000000
-+
-+  vdd-supply: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    description:
-+      Optional external clock for sync mode. If not provided, the internal
-+      8 kHz clock is used.
-+    maxItems: 1
-+
-+  reset-gpios:
-+    description:
-+      Optional GPIO for hardware reset, active low. Routes to the
-+      device's GPIO0 pin, which can be independently set to the reset
-+      function or left idle via an on-chip register.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - spi-cpha
-+  - spi-cpol
-+  - vdd-supply
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        imu@0 {
-+            compatible = "adi,adis16607-2";
-+            reg = <0>;
-+            spi-cpha;
-+            spi-cpol;
-+            spi-max-frequency = <10000000>;
-+            vdd-supply = <&vdd>;
-+            interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
-+            interrupt-parent = <&gpio>;
-+            clocks = <&sync_clk>;
-+            reset-gpios = <&gpio 10 GPIO_ACTIVE_LOW>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f53047aa8d3c..d5679e8d0ffd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1792,6 +1792,13 @@ S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index a2bc1d14ed91..793e3b6b0ea7 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -340,7 +340,6 @@ EXPORT_SYMBOL_NS_GPL(__adis_check_status, "IIO_ADISLIB");
+ int __adis_reset(struct adis *adis)
+ {
+ 	int ret;
+-	const struct adis_timeout *timeouts = adis->data->timeouts;
  
-+ANALOG DEVICES INC ADIS16607 DRIVER
-+M:	Radu Sabau <radu.sabau@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
+ 	ret = __adis_write_reg_8(adis, adis->data->glob_cmd_reg,
+ 				 ADIS_GLOB_CMD_SW_RESET);
+@@ -349,8 +348,6 @@ int __adis_reset(struct adis *adis)
+ 		return ret;
+ 	}
+ 
+-	msleep(timeouts->sw_reset_ms);
+-
+ 	return 0;
+ }
+ EXPORT_SYMBOL_NS_GPL(__adis_reset, "IIO_ADIS_LIB");
+@@ -413,9 +410,10 @@ int __adis_initial_startup(struct adis *adis)
+ 		gpiod_set_value_cansleep(gpio, 0);
+ 		msleep(timeouts->reset_ms);
+ 	} else {
+-		ret = __adis_reset(adis);
++		ret = adis->ops->reset(adis);
+ 		if (ret)
+ 			return ret;
++		msleep(timeouts->sw_reset_ms);
+ 	}
+ 
+ 	ret = adis_self_test(adis);
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index bfb6df68e6c9..97323b8d1cb3 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -10,6 +10,7 @@
+ #define __IIO_ADIS_H__
+ 
+ #include <linux/cleanup.h>
++#include <linux/delay.h>
+ #include <linux/spi/spi.h>
+ #include <linux/interrupt.h>
+ #include <linux/iio/iio.h>
+@@ -171,8 +172,17 @@ int __adis_reset(struct adis *adis);
+  */
+ static inline int adis_reset(struct adis *adis)
+ {
++	int ret;
 +
- ANALOG DEVICES INC ADL8113 DRIVER
- M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
- L:	linux-iio@vger.kernel.org
+ 	guard(mutex)(&adis->state_lock);
+-	return __adis_reset(adis);
++
++	ret = adis->ops->reset(adis);
++	if (ret)
++		return ret;
++
++	msleep(adis->data->timeouts->sw_reset_ms);
++
++	return 0;
+ }
+ 
+ int __adis_write_reg(struct adis *adis, unsigned int reg,
 
 -- 
 2.43.0
