@@ -1,64 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793658061;
-	b=KQhzNInyHb/m5am2GMdZY5Jxg1ZzG2niOfoDPk85tJTX70kNIjhD5Ln5gxTf250YHFlD
-	 zpF/s+iicb2vT5FrwEkrqxRKeDMF7ssUrdzKvlbhiCiSjOpcvT3Nc/SH9zPu79MH2rx3d
-	 j1VEj6m24hyzca2bPAe0Ho5auwUgWFxahT7wH6UmGpWHffF/LjaDUC5ts2iTBwevQW7br
-	 qMuK0GOqWRGylymVES2fSuZQMKFwcWqR/P17+f+xMiDsd4fG+6vpgaJZjOL9QXAGZuvTk
-	 hcRuxcdKWYnT/rY/xOhd745u+VwUm/rB+M/8B/r/GLA7IsV4ytVHfDEqB53WWmx6m1Q==
+	t=1793658193;
+	b=hF0L4Vx5XAOEFMIQN2OKwn8fpF1js95gbjosqXa1JLf/qEpHmEj+tyS+6nTxDQPRmu8C
+	 gFk5B5FAa7XTG2lPUiMDguNhztMnLOIJnZ4IIwTP4bOsbCLScd/SXoHjIwBCfOwE9UQdk
+	 xVG2bWwmCldFkhldnIIKif8KQ/j4ArIVJHh2E2Qp9/AoaaTMPOsahrT9GEl4qgrpmB2bA
+	 ZnjvLgVevyuk52CqkhSFjho0/g7YCMpoOSIgs7Urb86TJyfugJxC2jloOUCKG6+lNyfpp
+	 X53oaCrIZlXBTkfWlt1nm7IsXPeoQRY0cQQg23c5CJyLpYVaXlRt1pHANt3T77IjloA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793658061;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=+Hw9sq9VaFK71g+8WnPVyOU4RYJq80Ol7r4/gNdfThU=;
-	b=qtnnhLXvPwkscrQqTozpyC01e3yheFyp0sn8la0YDqxb2nHnY+7D7IBhOGXWbEqUxqPY
-	 n3VSN/MK2ZQxoV2p6lNsbyf++dml8/E1uxlQz8a4nZrv30/jNhtSMRyQPoE5D7XQvMbI9
-	 S56YByqOEdD8Xni4/ySU8KSCbFi9dLUOhI9J3U5mD4E/INsKj0K7pbXXUhLpVqDkApKpu
-	 wSN6Wzef8kirbknCZgVarjnyyKarkToSLGYsdK72fQtExy7RZELiSY2bkq9tvUJQrDbci
-	 luCBK/8BAILJ4AsRLK0qYWESMbund2TLuBxqISc28SiKPLxtqmPGFgagRUS1MnGHUtw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793658193;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=H0fIDV3Nj+gM4Edp2oSC2psv1bmpnCT/Fc3I24teA4c=;
+	b=Ysmjp6+6kG0e6Ss6fQb5+wW6LbDceMpsMMnvEzgxPkVJ/5k5174xr1/Sp/xFK73yiQ7T
+	 WIIVAhPE7PW9z4HtpyKg4UXbCnL3AUoukThokBEFcPch+DpSLaIs8a2xHfPOTMZKrX9UO
+	 ATdx0TiD2e3mT3IeZ5aB5Jx12xImwDa9aBmfxJKXKlmDzKAgSNKHQ3+B6XlztN+i2hkOr
+	 eMwTp64wbwAHpCrXG1a45AaTXKdP6ObfT9Ius4Fuj6jjMsZUu7DN3Y67p2dTnsHc4nwva
+	 RTW6/NbZ0174vgAc6elK1pCfFPluAA2PAphwxK0Sd2X6QUeA54+BDNv5131nglR3ucg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XEdNqHBi;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="ZoJtnA/h";
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A10606A324;
-	Mon,  2 Nov 2026 22:21:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D79A1606A326;
+	Mon,  2 Nov 2026 22:23:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D79A1606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XEdNqHBi
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8D3F1F00A16;
-	Mon,  2 Nov 2026 22:20:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793658060;
-	bh=+Hw9sq9VaFK71g+8WnPVyOU4RYJq80Ol7r4/gNdfThU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=XEdNqHBiKdOsOWdik/MVP587AiHnPUcW1lKgfFWhoWVgpKG2WIMS4yLFJvaOMP/+c
-	 d3fcSW17hfMtxIDqP4cdipsiCVuA6r2Ybz06He6i3+976/1OiWuU4MxUY8drEi5gWU
-	 bgpkQP/F9octYIYVEExDqRIrgLrGMK/LgmYDP59/hxgLB426ArkdtXJilvJ+6QO3kk
-	 OnpFNmGAyz7bC5ihp/0JvF9Tb1javi5SD5P0VsJ9CBKPQ3lPWlOE5Oq6SObJ9eLaua
-	 MG75Kb9sfere/9iLMWKHABad0I2YGpmvYP27xFI964KIyc8FJAjms6lwe+xN54PJ8F
-	 WWTAAh03whOZA==
-Date: Mon, 2 Nov 2026 22:20:56 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Cc: Vidhu Sarwal <vidhu.linux@gmail.com>, Krzysztof Kozlowski
- <krzk@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Shuah Khan
- <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v2 0/3] iio: proximity: Add Benewake TF-Luna LiDAR
- driver
-Message-ID: <20261102222056.30f23d75@jic23-hlaptop>
-In-Reply-To: <21b771dc-e9cd-46b9-a456-0950ae1270a3@oss.qualcomm.com>
-References: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
-	<20261102-massive-busy-woodlouse-8d0bbb@quoll>
-	<CAFqz8LJZQ+tw6wmLS-1FXvt6OxBESPEyz2-uK4D7B8X8epoKhg@mail.gmail.com>
-	<21b771dc-e9cd-46b9-a456-0950ae1270a3@oss.qualcomm.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZoJtnA/h
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793658192; x=1825194192;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9SOeMDMX0YgL2P8IH4L+GiLgePxa2YkFP+cCXrs3kOc=;
+  b=ZoJtnA/heye7t91H32zwtJHsqgiV5XOKdhAcZoK3/z5wHvGl0z3FYKmg
+   RZDJZW6WeiBohIQuFzpn2QITWe/dvq8nPCbQu85v0oktGVK0OvQV6+vnR
+   asxoY8Z+se3jN7mvEjNb3p6d55MuwUpkx4br0YvbeENwBMzWAfSM5hq/q
+   KToAUYE1YHLFh6cFA+OuRnhhrx/ibEz8KMKRIWXjqUZNwPz6Z21v6/Jav
+   Cmj+tfbzkYEJ6QvB5jyL9Pe8WJOZZld8PenyYmB0nIlNkYiAI5Sqk12AV
+   dAfz6LMixCqWIZLOYAehu5JQc67F3V7Jccu7gZz2oRzKrSfgAYlc2iu66
+   g==;
+X-CSE-ConnectionGUID: 4NB1ca2NT1qpAbmBX/XSpQ==
+X-CSE-MsgGUID: QufR/RJSSOCOz25NV5T3Hg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2361388"
+X-IronPort-AV: E=Sophos;i="6.27,192,1787036400"; 
+   d="scan'208";a="2361388"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 14:23:12 -0800
+X-CSE-ConnectionGUID: 2Udwf8xnSsWiKUtX8wkfnw==
+X-CSE-MsgGUID: ZD7A0aG0QPWCv26dj3HGrA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,192,1787036400"; 
+   d="scan'208";a="6775987"
+Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
+  by fmviesa010.fm.intel.com with ESMTP; 02 Nov 2026 14:23:10 -0800
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org,
+	andy@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: hid-sensors: fix fractional part for unit exponents -7 and -8
+Date: Mon,  2 Nov 2026 14:23:08 -0800
+Message-ID: <20261102222309.439895-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.55.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -68,27 +80,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2 Nov 2026 13:23:56 +0100
-Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com> wrote:
+split_micro_fraction() scales the remainder to micro units by
+multiplying it by 10^(6 - exp). The unit exponent of a HID field goes
+down to -8, so exp can be 7 or 8 here. Then the argument of int_pow()
+is negative, which the unsigned parameter turns into a huge power of
+ten: 0 modulo 2^64. As a result, the fractional part of a value read
+from the hysteresis attributes is always reported as 0.
 
-> On 02/11/2026 12:48, Vidhu Sarwal wrote:
-> > On Mon, Nov 02, 2026 at 11:47:56AM +0100, Krzysztof Kozlowski wrote:  
-> >> What changed exactly? b4 diff fails, the patchset cannot be applied on
-> >> any known upstream revision I tried.  
-> > 
-> > I am really sorry for that, I didn't realise it was based on Jonathan's
-> > iio.git (testing branch) instead of linux-next. Patch 3 conflicts in the  
-> 
-> That is fine in general, I'll wait for next linux-next.
-Might be a little longer. I've pushed out now. Was just waiting for
-anything nasty from the bots on after rebasing on rc1 before pushing
-out.
+Divide by 10^(exp - 6) in these two cases. This matches the reverse
+conversion in convert_to_vtf_format().
 
-J
-> 
-> Best regards,
-> Krzysztof
+Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and trigger")
+Cc: stable@vger.kernel.org
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 9e7c26e37880..0e6ea5373434 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -98,7 +98,10 @@ static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
+ 	int divisor = int_pow(10, exp);
+ 
+ 	*val1 = no / divisor;
+-	*val2 = no % divisor * int_pow(10, 6 - exp);
++	if (exp > 6)
++		*val2 = no % divisor / int_pow(10, exp - 6);
++	else
++		*val2 = no % divisor * int_pow(10, 6 - exp);
+ }
+ 
+ /*
+-- 
+2.56.0
 
