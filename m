@@ -1,61 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793658399;
-	b=gsnB94bTPc98FlXC6jcnki0qeXte27uqVZl7LuBH1j2xRCTeG0u3948DTspJbitGgOGR
-	 JEaLvSzAM6yucNCHvhJwj0CslXiz1hMfRUMMMJEF4KtEh0DNb5viNlKp2L5QuRk6I8W8C
-	 cw3M4xtO7Lg/IbOPo1R7L21K2RPjPBKk1IjIbWejS+vmD6hkRx3EMkRL20Sp6MdAc3oTW
-	 9tqF1YuygPgw8hqJ2S58IUrVTjtHr79gamrLJ8lCx9DyyjjOVzQk3pGewvTsX4tlARPA4
-	 nH3p4Q+nPwlGs4VJSVzd7U9FiQsxIM56J+H03Q0SecULIzTBEKpEYEwu92Nd5yUe7pQ==
+	t=1793658944;
+	b=WBeqKhVOhZY59AMb8caBRX3+gJJu4E3ritDi2MOFNT41vcvNksqsBaBcICWRt6d/nvYc
+	 PQ6qwx/J3QmTcWJE00oz7mWcx33rL4DTbIOIeYAsWA85DPih8PUpJKvBl1zHEZnk2uGai
+	 RgGLCpXsycP+OJ0gENnufziqoLsKXyqKvrpxHVaNp7wydl21xEfjK6U39AdyHRTr7v/xF
+	 nnrBbPXLpiShQA4ncikXuxjqcuQUbDi5gkw5Ttqwx2sKynLNpW2V0VR8wKHkFKo6o3PHa
+	 Gqw93LojUe83ez/jbG0W4VED/HGWwMPbN4BfRm8UKGC6oc9oxBD/97pHlIYAnwYu7Ew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793658399;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=ud2vRyGW32RAEy/UlibO5QmEZ60DomVO2DsT54Eh6Jo=;
-	b=PTF/7gIXxZFIy1SsYB2gYMFpTCYNNPTLZXpbxzZ0hvUgxKrYJT3HSsfzvThXpDh7oVv8
-	 ic/qc18eofMph1DqkTTGDA6a/K9jquYOpwpTlhzL6dXWQYNgIGkps9xInwPgPwF+TAp50
-	 4K/fGF+xN5jswgEWe5AI+V4DeWAN1ftZrjOPlyAGVlETbUcDfIx1L/I+L3wpE56BxRJKi
-	 ZmevEChvCOQU/gXsg0yIlYreMxxCl8PRuDUZBg4p2GJgC593xdwdeRm9XKD9RqM/1xDOQ
-	 C5EZUR1pTUO9/UVpUH0DOZK06l7zaOm+VAFT6QQbTr2lHwa0SLfB8IAdcpqc55xyjuA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793658944;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
+	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:User-Agent:MIME-Version;
+	bh=WB/3GQG/invUH430kybLJVqhzDKHnUACPSywPsPFm2Q=;
+	b=MnXw2CAoNNE1Da2FbZBKY8ea3TYXfL8KBtwhM4rDNL0PxFGCGayu8enwPy3o3BGj9J1e
+	 lEDeU0urw8eIaj3sTtQJLSfqZDfpXzVuhSt8Oyq9rBYspXJkrI+yHFmlnt8dPhc57eSjk
+	 pWeLxzZkJy3wDtR2To2me3oW0GzpySxcJN+rpWbxpcgJZ6wAJ/2N87g4u8HRvEo7k3dip
+	 /njUVLYoA4HhjboQv+OI9K4e8GZA40DwEcf0cVaCrC9z+C7WXDvLW2Edzytti293rmSFZ
+	 yii60sMzrfEKLSn4nUEV7xGQoZOfVqecaduZvbOB3TFrFNgVIYEZxI32df3wclR1zuA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CPo0O5ok;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IyZOLzv8;
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD65606A327;
-	Mon,  2 Nov 2026 22:26:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B84606A324;
+	Mon,  2 Nov 2026 22:35:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15B84606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CPo0O5ok
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B1371F00A17;
-	Mon,  2 Nov 2026 22:26:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793658399;
-	bh=ud2vRyGW32RAEy/UlibO5QmEZ60DomVO2DsT54Eh6Jo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=CPo0O5okfxy0QocbpTEqYgJzbqaZ8mI79zC5qp5pzGdZ9HpaM+2r69sD9PCZ/XWfA
-	 lbxu9PMo+GVzUQRPwYR6MVqLxkIZEhLf2vlztOF2OlIsNfpW+Gprv9YySGMqPyDcp2
-	 xdouetr4DCCu/amKqKxe6sA/+Lr/CUgFEGEPKNamti5ukVmVM2Qduz/YBe1YbrrehI
-	 UlIW5VX/jGLS7/AL+f/+OzS9eFItGy/BGrNRK37yZw5+YarcQvzy9YkpCxWiQvCYAo
-	 rbNzGIyOa8cVailgJW3jj7m9T2DoaEDpCGz0s3MXfSSDBBup9X9fUlhbMVgGX+SxyW
-	 VS6iiWH9tDZOA==
-Date: Mon, 2 Nov 2026 22:26:34 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Arka Mondal <arka@arkamondal.net>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>, Matt
- Ranostay <mranostay@gmail.com>, Robert Eshleman <bobbyeshleman@gmail.com>,
- Leonard Crestez <cdleonard@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/6] iio: light: isl29125: Report the scale list via
- read_avail()
-Message-ID: <20261102222634.6531dbe5@jic23-hlaptop>
-In-Reply-To: <20261102074700.63075-2-arka@arkamondal.net>
-References: <20261102074700.63075-1-arka@arkamondal.net>
-	<20261102074700.63075-2-arka@arkamondal.net>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IyZOLzv8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793658944; x=1825194944;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=taGbRzqe3xus4DwQuds9A8WTMnWUJ2/NU/L5ww7heq0=;
+  b=IyZOLzv809qj4Cc5WiPsw/Nn2jZiidUxIn8et0VButqh1Pa+KLyQuab+
+   onXSYNOG/Xv9MCAtafPBA7yuA/m5tWaQyOtUW5bob6g+x4q/9SFb+iNOK
+   LU9Gfdt8aX3eEGUBgqqPVPQ2fLTerQXr82ITwFjwjKi9za5068DKfktpR
+   IW7IlztiS5m9B60TKyPGSMl9IZZGprSWGIF10enP97gWAF3HvdEqMY9FZ
+   FBWevK06927fv0cO7tzqFL8Cw7P7My0ilHrml0OyfJrjkViQCyueeqJqA
+   9WGB1oJxcdRMwrBxqaHtZPtYPFrkBDBEHIR3MA9N+e9SdvNfBZEntAZ04
+   w==;
+X-CSE-ConnectionGUID: TqcD3gLpQBavIu5EoXtN4w==
+X-CSE-MsgGUID: Oa1dL0lDSBuMvn+YSH+FOA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2400766"
+X-IronPort-AV: E=Sophos;i="6.27,192,1787036400"; 
+   d="scan'208";a="2400766"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 14:35:43 -0800
+X-CSE-ConnectionGUID: 78N5Ry7URtq/fpdfkq8w4w==
+X-CSE-MsgGUID: aWBABTg9R6mGLnptiYovJQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,192,1787036400"; 
+   d="scan'208";a="6563581"
+Received: from bradocaj-mobl.ger.corp.intel.com (HELO [10.125.109.189]) ([10.125.109.189])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 14:35:43 -0800
+Message-ID: <cb38e8c40a4f2af26ee87dc37eea9c0cf4398075.camel@linux.intel.com>
+Subject: Re: [PATCH v2 09/17] iio: hid-sensors: Discard
+ pm_runtime_put_autosuspend() return values
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Brian Norris <briannorris@chromium.org>, Nuno =?ISO-8859-1?Q?S=E1?=	
+ <nuno.sa@analog.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Ulf Hansson	
+ <ulfh@kernel.org>, linux-pm@vger.kernel.org, Andy Shevchenko
+ <andy@kernel.org>,  David Lechner <dlechner@baylibre.com>,
+ linux-iio@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>
+Date: Mon, 02 Nov 2026 14:35:42 -0800
+In-Reply-To: <20261102220546.6fa5c62d@jic23-hlaptop>
+References: <20261021235818.3059519-1-briannorris@chromium.org>
+		<20261021165858.v2.9.Idbac8a0f9ecdd345191130e256e8d881d991bfc7@changeid>
+		<20261102015255.487bd1bd@jic23-hlaptop>
+		<84d712c6aa3df7df8fdb6cb85b85d720bdab5840.camel@linux.intel.com>
+	 <20261102220546.6fa5c62d@jic23-hlaptop>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,52 +91,151 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Mon,  2 Nov 2026 16:46:55 +0900
-Arka Mondal <arka@arkamondal.net> wrote:
+On Mon, 2026-11-02 at 22:05 +0000, Jonathan Cameron wrote:
+> On Mon, 02 Nov 2026 08:55:44 -0800
+> srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+>=20
+> > On Mon, 2026-11-02 at 01:52 +0000, Jonathan Cameron wrote:
+> > > On Wed, 21 Oct 2026 16:57:10 -0700
+> > > Brian Norris <briannorris@chromium.org> wrote:
+> > > =C2=A0=20
+> > > > The hid-sensors driver propagates the return value of
+> > > > pm_runtime_put_autosuspend(), which is not particularly useful.
+> > > >=20
+> > > > Returning an error code from pm_runtime_put_autosuspend()
+> > > > merely
+> > > > means
+> > > > that it has not queued up a timer or work item to check whether
+> > > > or
+> > > > not
+> > > > the device can be suspended and there are many perfectly valid
+> > > > situations in which that can happen, like after writing "on" to
+> > > > the
+> > > > device's runtime PM "control" attribute in sysfs for one
+> > > > example.
+> > > >=20
+> > > > For this reason, modify this driver to simply discard the
+> > > > pm_runtime_put_autosuspend() return value.
+> > > >=20
+> > > > This will facilitate a planned change of the
+> > > > pm_runtime_put_autosuspend() return type to void in the future,
+> > > > similar
+> > > > to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put()
+> > > > return
+> > > > type to void").
+> > > >=20
+> > > > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>=C2=A0=
+=20
+> > > +CC the various hid-sensors maintainers.
+> > > =C2=A0=20
+> >=20
+> > =C2=A0=C2=A0=C2=A0 Acked-by: Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>
+> >=20
+> >=20
+> > > Anyone remember why this does
+> > > pm_runtime_use_autosuspend(&st->pdev->dev);
+> > > in this code?
+> > >=20
+> > > That is unusual...=C2=A0 My immediate instinct is to
+> > > get rid of it, but maybe there is something subtle
+> > > going on.=C2=A0=20
+> >=20
+> > When reading sensor via raw interface, you need to power-up, read
+> > and
+> > power-down (This is done via runtime PM). To avoid repeating this
+> > sequence of power up and power down for consecutive fast reads,
+> > auto
+> > suspend is used. If there are reads with in 3 seconds, the sensor
+> > will
+> > keep power up.
+> >=20
+> Ah. I was too vague in that query.=C2=A0 Why is it enabled only the power
+> state interface rather than at the start when runtime pm is enabled?
+>=20
+> That seems to be done via a slightly unusually on first turning on
+> of the trigger rather than more generally.=C2=A0 Normally we'd expect
+> it to be enabled in driver probe and all paths that need the power
+> on to do a pm_runtime_resume_and_get().
+>=20
 
-> The intensity channels set IIO_CHAN_INFO_SCALE in
-> info_mask_shared_by_type, so userspace reads the scale from
-> in_intensity_scale. The values that attribute accepts are listed by a
-> custom attribute named scale_available. That name carries no channel
-> prefix, so it is registered at the device level and is never paired
-> with the channel. The core would have called it
-> in_intensity_scale_available, which is also the name
-> Documentation/ABI/testing/sysfs-bus-iio gives, so userspace does not
-> find the list where the ABI says it is.
-Hi Arka
+This function is called from probe() of each sensor instead of calling
+in each driver. I agree this can be different function than this
+particular one. This happen to be a common function.
 
-Not quite true.  The core would have done as you said if it was set in the
-iio_info_mask_shared_by_type.
-
-Now if it were in iio_info_mask_shared_by_all it would be called
-scale_available and hence match the existing ABI.
-
-The device presents 4 channels and arguably this one only applies
-to 3 of them as it doesn't apply to the timestamp.
-
-For that reason we generally only use the share_by_all mask for
-things like sampling_frequency.
-
-However, whilst less than ideal the change you are proposing here
-is a userspace ABI change and it's a bit arguable whether the current
-ABI is buggy or not.  So in general I'd leave this one alone,
-or as a simple cleanup rather than a fix, move it to the read_avail
-callback and the mask that does generate the same ABI.
-
-Other than that patch looks good.
+We can separate the function in a follow up patch.
 
 Thanks,
+Srinivas
 
-Jonathan
 
-> 
-> Report the two values through read_avail() and drop the custom
-> attribute group. The values and the text they print do not change.
-> 
-> Fixes: 208335138001 ("iio: light: isl29125: Add scale_available information")
-> Signed-off-by: Arka Mondal <arka@arkamondal.net>
->  static int isl29125_buffer_postenable(struct iio_dev *indio_dev)
-
+> I'm not seeing why it is in this particularly location which doesn't
+> seem to be particularly sensible to me.
+>=20
+> Jonathan
+>=20
+>=20
+> =C2=A0=20
+>=20
+>=20
+>=20
+> > Thanks,
+> > Srinivas
+> >=20
+> > > =C2=A0=20
+> > > > ---
+> > > >=20
+> > > > Changes in v2:
+> > > > =C2=A0* Split iio patch into per-driver patches
+> > > >=20
+> > > > =C2=A0.../iio/common/hid-sensors/hid-sensor-trigger.c=C2=A0=C2=A0=
+=C2=A0 | 14 +++++-
+> > > > ----
+> > > > ----
+> > > > =C2=A01 file changed, 5 insertions(+), 9 deletions(-)
+> > > >=20
+> > > > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-
+> > > > trigger.c
+> > > > b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > > index 60808e2430ca..d76a6d9f04f6 100644
+> > > > --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > > +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > > @@ -154,21 +154,17 @@ int hid_sensor_power_state(struct
+> > > > hid_sensor_common *st, bool state)
+> > > > =C2=A0{
+> > > > =C2=A0
+> > > > =C2=A0#ifdef CONFIG_PM
+> > > > -	int ret;
+> > > > -
+> > > > =C2=A0	if (atomic_add_unless(&st->runtime_pm_enable, 1, 1))
+> > > > =C2=A0		pm_runtime_enable(&st->pdev->dev);
+> > > > =C2=A0
+> > > > =C2=A0	if (state) {
+> > > > =C2=A0		atomic_inc(&st->user_requested_state);
+> > > > -		ret =3D pm_runtime_resume_and_get(&st->pdev-
+> > > > >dev);
+> > > > -	} else {
+> > > > -		atomic_dec(&st->user_requested_state);
+> > > > -		pm_runtime_use_autosuspend(&st->pdev->dev);
+> > > > -		ret =3D pm_runtime_put_autosuspend(&st->pdev-
+> > > > >dev);
+> > > > +		return pm_runtime_resume_and_get(&st->pdev-
+> > > > >dev);
+> > > > =C2=A0	}
+> > > > -	if (ret < 0)
+> > > > -		return ret;
+> > > > +
+> > > > +	atomic_dec(&st->user_requested_state);
+> > > > +	pm_runtime_use_autosuspend(&st->pdev->dev);=C2=A0=20
+> > > This is odd enough to make me nervous even though the patch is
+> > > obviously a no-op change.
+> > >=20
+> > > =C2=A0=20
+> > > > +	pm_runtime_put_autosuspend(&st->pdev->dev);
+> > > > =C2=A0
+> > > > =C2=A0	return 0;
+> > > > =C2=A0#else=C2=A0=20
+> > > =C2=A0=20
+>=20
