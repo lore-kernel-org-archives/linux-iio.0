@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.71
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.62
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793622111;
-	b=yoelWrEaS8hXMlTSPuYCHojpOabinRqUT35y0mPCNshN7bDzRkBFmc4TjWU9UOgn+OW4
-	 3+Yjb46u8jvKjlkRZ4wsLG4MfiagZ5sFGGgW/I6AIkqJYhDGh0w4EBgiRzkiwNir7VfLK
-	 kaGjW0RwZW67xweFOqJOulVxUgcogrZtvOayx0GR5KWIpItDNxJCkmpcYqfCKByeEDkFB
-	 5pyrCzx2VcgMKLN6/vXztGDrzJ06EyZkyKjB/qACmKj24MCH6H6BpoA6roy9ptMdpUy8E
-	 s5sV4Ku8b2vqUGIPzVG7tkcmxK5JKs+3YwwYl1t19UPEVEFhwWMgJPmfSOn5plNJKbQ==
+	t=1793622112;
+	b=IcuOV4dtJsUfDPdDR3HI91qfvdnCtm0N8mpVlIqa0LJAjPc4n7zrTtH0zRkYquetq+on
+	 D8MIj66FZwBb3TYvokekWmzsnecmc08hYRwczCN9qtYorGAv6rGeLHLQ55G/eR1kp2GZX
+	 jqOvvSePZAPDXj0MdUXruqadihEbP76GTP+hSnUEg+Zlt/H/GtaI3NX9ON4IBxKXLNpBm
+	 P1+okZhHzk4/KGzwM/nhnrvyBeEe8BdOt5r63ogrDDxs7YRtUx3MbPuzOisGp8EYExFOW
+	 mYpYzqUgx2fooVbMPgq8ZLNmchFqRhE3RdBFd1ZrwG8kRg4JY4KzCE16DVJJqgvLU3w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793622111;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793622112;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
@@ -26,74 +26,74 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=mlEJRa9yCCtbgCdEyyAj5GVB0H/rCjW99b0NrWU2/vM=;
-	b=TNuyM8Y9SQmEwljrB6Yk0BdQnkX1LAsT2DV6Sz7nnl2GomMm2OOAyGuC1XS7NvwTYPuR
-	 +OtXF3OIW+svjQqMQ4EtcJWXeA7Wu47ZTPkw/TY+pfG2QIWMgopP90pXwBp01+0T4UpOO
-	 q2xPwosoH6VTrGj75dugbExUcMJtsa0T9VumLY0Iv+l9Vl++p7NjUbzeQNmxDr48TA61D
-	 kge7jUFFd4y9ixRZtVAR3zNFereP+2flX5kqSm1k1j5NanhTNQvhiQiXt+lXi7+DRWDi3
-	 bUT4sSWt6bcXlJYjwhr9RWnndlDrp45Oh2H+Ao0U/41ufpo2h0fbpfCzj0L+O0Uh55w==
+	bh=xVGwxQnPo8iNr+bJIVXidlAAJucJK72QQd8YYeApDKs=;
+	b=Xc+fO6fWJGVWCFNyha1oy7o/W0ka/rtjoEcA3tBzo3cqG3/CRV+vZcdzabjv/ab6LfSv
+	 bcT67D1V2aha+QQa3MsZPm21jCzruEe6HSBvJOa8bo/LUrE1eJq/eA8aCrTkxz1yuWkbC
+	 mHLT7eWj9RJfS0/y2brITPfU/p2S7T3B7ll0laRE+KoO+mCUn0GFztD4ZTuXvusQMi/2Q
+	 rPBnzcHHO2nQVmHPdeWInancT4252s6DiU7rEZ3kJvtKPnj0Ny4+zbb//sKzRpKQUtx04
+	 1p9Oh9XPppL2ttwdmh6capazAC3tuBDr72P+rU/srRYxcvnzbJ5UK5hzcMeKz00Xz7Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=YwD4K8Cx;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.71
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011071.outbound.protection.outlook.com [52.101.52.71])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=XM26OgWD;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.62
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013062.outbound.protection.outlook.com [40.93.196.62])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A07C860A6F59;
-	Mon,  2 Nov 2026 12:21:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A07C860A6F59
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F088960A6F6C;
+	Mon,  2 Nov 2026 12:21:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F088960A6F6C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=YwD4K8Cx
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=XM26OgWD
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PpyfxaE6knbt0dafSiGc/xQae79r3d2KeXzWXtmql+URLxR88spG/kWeleq8GsfWgqpMjFDZ2Mcs3PJ+Qq7Ft1cqZHqWRSQ13xN/bXZs7o/ql7/grhfI5xCslSrT1rHWCG/TOE9Hy7uBQJoljFaFchsSrefxT4HZBarxkOTB0eSpntMqMgsDSnHBsgmSb4oJBBHBMHaOYg5quW2w78evV2T7Azc112qc+Om37fzezk4I8LswLugaX1004YvMCwMa8fx89/M3fo1/tU1Y0L2ckuvIzpDaQlKeKNuQtp/mIUt0j6OjE88Sk4daLgMh5M1tAsi/VQdCHTnRS+oOtD3Z7g==
+ b=ama+vbEcyIT3ZWCzBktiF2Ub9bcMPL9jggFTrjuPP6/cstT/X5lplruYa+TYzz42yXzRArcQ6d+wiq360GdxQu9be2r0CX61GciEADFFRUapoXUeRRr4DhQBWdAphJ+R2qdu2Adbz7zMahATl6O51RjCV60R7Q9it9so0pGe+UzplMxDwd9gQeSTu80dx0Vi/sLjtDG0O8fynmC2dkInLVpAlZ1C7cdBO8sPD7SzNVn0wUg8yfrkFeUkV2IzsU2g3WP7H4Rj6TIXEVxs4HX+WofLfzzvdoTc6Aaoy1ae0dhMeNK7nIgyKT2L9C967cpuV8sRvDEYMK1b/mz+uBGwaQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mlEJRa9yCCtbgCdEyyAj5GVB0H/rCjW99b0NrWU2/vM=;
- b=BJGYq4ecdkH/zn6DxdUTjZnyxWDv+Jr9hmTnmSmSjiuDtM+yMliEbaZoZFehkO1FB+oIfB0vUXPNTCcZBSi5EsBN4NDAFPJLdmJ83bIEpN1qlxyNpqmZVfI36RHD/esYCk6D/mPbzWmemQSRQ92gqH42Xz9mF2FqAn8DcMSc3HWmIUjRja7HpyVC0TA1E03W8rqDTAxAqWNr6wmW+jFpIhIprzgBuLkBYYGvTqBjhEwRoJoLKMI5zM7MzU5q21W3kQPCWyEaam7YQKfoCYLegSaPP+MYyWxNBcxUy82aGS6/UvHsQCUKtMOL+nsYaqacmcWsgGhxTHWxjLxux8KD+Q==
+ bh=xVGwxQnPo8iNr+bJIVXidlAAJucJK72QQd8YYeApDKs=;
+ b=gplnDUDnDzwnJQdFQ9TFtTmizXMom/dOAEHJthfTf8Bye+cWJbDhi3THHJ5XWmKggspRqXz/BELeBPhuZ2z/FmCxiQYU0j//dTVu6pZonRooDxHhej/xB6YBnEY/SSDqUWpE7ATYpAzzG0SfBZF9gC2AlDvL6MvH2F/kVsFs6vgbUImrutnIjlItLnw86MGHl/EYRVmue/8hPEJonNlTI0z/y0/e1PcRBIBWTNa1DIDKuNNToua2dUdPD1cQ60TnGJtkDrR4R7eywBDqotn0/fGN8WxZI5n27ONSZC7VxnPVlS7EOWoNV+nwCOEDNvGdQ1URkd4iNAFpmGX6MkWKSQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mlEJRa9yCCtbgCdEyyAj5GVB0H/rCjW99b0NrWU2/vM=;
- b=YwD4K8CxYTklLeadGXIS005oTub5AqJJG0glT8yq/FtK8MaIg4FHtoBzEl8yQhY3kPFCgqtDNgC+BgUWA0BR2wmaBXCDUy9zLHy8d/gWvkh4LN1aclr80/n1sTgM7SFtsB6LpDSC2HJi04JTt7RMvy5qY9OI/fcfJ9yYuRqHdgM=
-Received: from PH7PR17CA0041.namprd17.prod.outlook.com (2603:10b6:510:323::24)
- by PH7PR12MB9102.namprd12.prod.outlook.com (2603:10b6:510:2f8::14) with
+ bh=xVGwxQnPo8iNr+bJIVXidlAAJucJK72QQd8YYeApDKs=;
+ b=XM26OgWD9eMJsHfLZh2uvlKPPBOVVrfqVNLAh0qQs1JR0YOA0pl+BkCfPIQQe5wurW3eI7jqfmOoh7UOJZhMDOiH8gmCma9qs1Ydz/j3hCFVndxKIkg39i0I71nvO7S0o2v6MlzPzQB5TvyCDTV0sZNUjQAJIzKBVmusnEqQEgc=
+Received: from BN9P222CA0007.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::12)
+ by DM4PR12MB6009.namprd12.prod.outlook.com (2603:10b6:8:69::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.11; Mon, 2 Nov
- 2026 12:21:42 +0000
-Received: from BY1PEPF00026966.namprd05.prod.outlook.com
- (2603:10b6:510:323:cafe::8e) by PH7PR17CA0041.outlook.office365.com
- (2603:10b6:510:323::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.12 via Frontend Transport; Mon, 2
- Nov 2026 12:21:42 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Mon, 2 Nov
+ 2026 12:21:47 +0000
+Received: from BN3PEPF00022BC9.namprd05.prod.outlook.com
+ (2603:10b6:408:10c:cafe::9) by BN9P222CA0007.outlook.office365.com
+ (2603:10b6:408:10c::12) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.11 via Frontend Transport; Mon, 2
+ Nov 2026 12:21:47 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BY1PEPF00026966.mail.protection.outlook.com (10.167.244.150) with Microsoft
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ BN3PEPF00022BC9.mail.protection.outlook.com (10.167.248.218) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Mon, 2 Nov 2026 12:21:41 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.592.5 via Frontend Transport; Mon, 2 Nov 2026 12:21:47 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 2 Nov
- 2026 06:21:41 -0600
+ 2026 06:21:45 -0600
 Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
  (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 2 Nov
- 2026 06:21:40 -0600
+ 2026 06:21:45 -0600
 Received: from xhdakumarma40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
- Transport; Mon, 2 Nov 2026 06:21:37 -0600
+ Transport; Mon, 2 Nov 2026 06:21:41 -0600
 From: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 To: Jonathan Cameron <jic23@kernel.org>, Michal Simek <michal.simek@amd.com>,
 	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>, David Lechner
@@ -104,9 +104,9 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
 	<amitrkcian2002@gmail.com>, Amit Kumar Mahapatra
 	<amit.kumar-mahapatra@amd.com>
-Subject: [PATCH 5/6] arm64: versal-net: Add SysMon and thermal zone
-Date: Mon, 2 Nov 2026 17:51:11 +0530
-Message-ID: <20261102122112.1723130-6-amit.kumar-mahapatra@amd.com>
+Subject: [PATCH 6/6] MAINTAINERS: update Versal SysMon maintainers
+Date: Mon, 2 Nov 2026 17:51:12 +0530
+Message-ID: <20261102122112.1723130-7-amit.kumar-mahapatra@amd.com>
 X-Mailer: git-send-email 2.44.4
 In-Reply-To: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
 References: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
@@ -123,94 +123,53 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY1PEPF00026966:EE_|PH7PR12MB9102:EE_
-X-MS-Office365-Filtering-Correlation-Id: 11389056-a5fd-46d3-0904-08df38dbda34
+X-MS-TrafficTypeDiagnostic: BN3PEPF00022BC9:EE_|DM4PR12MB6009:EE_
+X-MS-Office365-Filtering-Correlation-Id: 885ce92f-da9e-42e1-5a57-08df38dbdd52
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|7416014|376014|36860700016|82310400026|56012099006|11063799006|261009223027099003|261021121427099003|261021123027099003|10067099003|18002099003|22082099003;
+	BCL:0;ARA:13230040|1800799024|23010399003|376014|7416014|36860700016|82310400026|261021123027099003|11063799006|56012099006|261009223027099003|261028144727099003|261021121427099003|261026121527099003|261026140227099003|261022105027099003|10067099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	dtnPitFW8LoVaxDr8HkTrBFGjkI+WduXKM3FW36jRaU2oAsPPatC7gZJLm4j54CkASdOwQItDWuaWMc00pqq9+epAm6jhuYrwe4InqJXaeiDHc/lqDZuBLWuju5JEEGO7Rn/drKzAwPwb3/XpZA1PoAWwHB2eMivOEx8vYrJBcroQTkdGjKALz1Pa3fo4i6SfOFl+kKjgy420hjM+0lqNWbpSYHe/y9VdnYjtJKgZoxtW2aik+QIbqR2Ip26U3O2Ugj0rKxOoOshxDhrQGGAuUS6vdqDRAVxxy8lQ2lZ2qU7H7n5sspJwaEqEZZ7HKsc666vnpnb8JdloUnaFW8DxbnYz00zJkOwSLFv6EPmJxIReXUDrgrka6Py6nAZuXutn9W2irCpvVJLBUdAmuuSty92LzkP1W45ntS6+EM9o0juO7pMbYWbartUe+8wpuR7aNQz4r8B27xkM5lPFxncxlXfvArPWiem0iIq3LGjiCeQVdYVcG5eGeNQyWH4V2ivrIIqstVh2QzB2PQ9UOao4xCqDgyD111bQ5BQdKEe7gbAr0fwHFXm5stX1S/6zFVRrzgobbEkGkw7rvmb+O+cekUMVLm1j21Df6V9cO8d41XEgZdJgdnsVirymgnf3Ojvx0541mx8dEyxZ9Jr5qd51azlOWZSdwyY+qoxqs4MCU7OexYsk2aeOGd+6GF0GhYHYrvw/7MiGLFUcLHIzMfwRw==
+	0TVBxJbsLN/zDDxExUCJsq7ZO/rXtNj/ZeAi7fOMR6hsg1QUdmCtUw3aM3aK0r1B6QHFMhnt8tg2EwIknrS/gx3lvr/hUXuDF7BURs3tAYu0Zo0+JHfdIk9atXY7ae0HUTpCZT9vNG2U2jFZRH7m/ItjnXRLe+BNFEnsmdOwrR764TuZokG6hz93hTlI5/Rno8j1lHM3hP9CmmF6n4Y+bkkKC4zLlYIO6DLTCZw2wLaHvTE5LfnOrG3JlevMt+HFCYiBukTcXegB6ZXeoNuYqh8e5pF9yVE2Go38IBztIrGpT+C7o+okshPlAp/8GLhzOPlMBjvzGdCzFWn80/GuWexfDA+dBa4L7WAipHSa+WJuaHD2RbZPmYH7buASqKODGRua+JgtV541x0TPPHWZGxhcwvXk4lg+g2Hn+U22kpamJnF03sOjPJj2VG6/nQakBusR+JWfmL8m7+/5/cGZG9e0RIDYOsdArDt+sByqQXVYr/WPE0Se+A11NIYC2rbU2GGZLIW9u77VW4e1rw6Z0tZB6ZJ5t/PESPiCo8ApIG1hmZHaQKSDM4Z0edhHDMzJOonBU95yZ5MeMoKO5OHowa78WwAfqKmxY2oO1E5CBSpg0ziy3+2iDyGRCK4eTWp4wJDsLOad6G6aGJFzFWpmEWaqiZwCB4W4DDc87l//F9wSjLaQj215sGNUDLPbPa/XbQOtU1rusXt6xE7ap+THqg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(7416014)(376014)(36860700016)(82310400026)(56012099006)(11063799006)(261009223027099003)(261021121427099003)(261021123027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(7416014)(36860700016)(82310400026)(261021123027099003)(11063799006)(56012099006)(261009223027099003)(261028144727099003)(261021121427099003)(261026121527099003)(261026140227099003)(261022105027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	ewFiOR2VCSJRBd+Xz9GEbV+Ta7rTC60ItlOf9AugGqRgEVtNFHoDt6N4WUSSuXG5aMLRpnB+eDgHJ/tS/fIcxYoeg6Zp7iFF7why/PchZsBmL4tHz/JKjN3ZBUeKuUTFdXYsXrI1mtNtKwqgZZJHZzbj7Ghz0C6KPE2ebPJOnQMjvtAmPDzBZ0EMXGJCn16apHZDE/oTnT0vrUBo5YFHulkN2LT84M+qMAKGhFYNT9EmUlMcDuap7F58Pqrnxq0Fuc9Q/HpVGiz+e+ukleahVBrIJ0ESPcJu9zZHLDG37APGWNsjstZNyEF1ALip/DOvkT05Xo++TTpA2fMyAgGvwXdeb2UOl0uBbV3xIGdlTkrfkje4sw/JujkLjyAIYz+owfmsrZ/EXZS+QRl8aPcvj+HWimyWjJIpe5kTTsaKnfRWGzHkX9+feuf6aG2HciQM
+	gZnwTwbPWJksg63QRaSwxrSU3Zk1gLej264wmWfTb4Z4wbGzlSO2BBiuig8+7vfZfVksX5+kPHHbvDnq/36caZ3DJEt/hiRt0fXr71jUL2CtpkWs4970P6+T6dwxWLv0iUjThNOkheX4MQaWDxOl8Dc/cnr+neIBiocOqEmi+JxGEWg2/ilCYYgjoVcqxERoFbmw+t1BdUSdpq2AwDOEc93VmjOJKkYhm9HWP1L64kXm2SkhHSxomcbLh94bkld2SbQFql8+bCUyUm6OVgWyE8EfnRlmD9twg3oqwFXgofJKcJf57VHjzO4sTEttDdx6xXoKqJAmKRqZ+B6wUoP78R4QQ+CIY0aZ9mm20U+wmRXsUiSJgj7304DoXcJqFxvRIhlsKxq3cxDDuJTwbmAPhMlWFC183Ivxe7yzgiqcWnoGTvZDH5i3kIoGYwFlnQdp
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 12:21:41.9039
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 12:21:47.1620
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11389056-a5fd-46d3-0904-08df38dbda34
+X-MS-Exchange-CrossTenant-Network-Message-Id: 885ce92f-da9e-42e1-5a57-08df38dbdd52
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BY1PEPF00026966.namprd05.prod.outlook.com
+	BN3PEPF00022BC9.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9102
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6009
 
-Describe the System Monitor (SysMon) block in the PMC, which provides
-on-chip voltage and temperature monitoring, and use its device
-temperature channel as the sensor for a thermal zone.
-
-SysMon channel 0 is the current maximum temperature across all active
-satellites.
-
-The thermal zone has a critical trip at 125C. Passive trips and cooling
-maps, voltage channels and per-satellite temperature channels depend on
-the design and are left to board files.
+Replace Salih Erim with myself as a maintainer of the Versal SysMon
+driver.
 
 Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 ---
- arch/arm64/boot/dts/xilinx/versal-net.dtsi | 29 ++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/xilinx/versal-net.dtsi b/arch/arm64/boot/dts/xilinx/versal-net.dtsi
-index 21bb917bcba1..394181c9a751 100644
---- a/arch/arm64/boot/dts/xilinx/versal-net.dtsi
-+++ b/arch/arm64/boot/dts/xilinx/versal-net.dtsi
-@@ -735,6 +735,28 @@ versal_fpga: versal-fpga {
- 		compatible = "xlnx,versal-fpga";
- 	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ecc22d1149d1..e3aca3bee13a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -30023,8 +30023,8 @@ F:	drivers/edac/versalnet_edac.c
+ F:	include/linux/cdx/edac_cdx_pcol.h
  
-+	sysmon_temp: thermal-sensor {
-+		compatible = "generic-adc-thermal";
-+		#thermal-sensor-cells = <0>;
-+		io-channels = <&sysmon0 0>;
-+		io-channel-names = "sensor-channel";
-+	};
-+
-+	thermal-zones {
-+		versal_thermal: versal-thermal {
-+			polling-delay = <1000>; /* milliseconds */
-+			thermal-sensors = <&sysmon_temp>;
-+
-+			trips {
-+				ot_crit: ot-crit {
-+					temperature = <125000>; /* millicelsius */
-+					hysteresis = <0>; /* millicelsius */
-+					type = "critical";
-+				};
-+			};
-+		};
-+	};
-+
- 	amba: axi {
- 		compatible = "simple-bus";
- 		bootph-all;
-@@ -1033,6 +1055,13 @@ spi1: spi@f1970000 {
- 			clock-names = "ref_clk", "pclk";
- 		};
- 
-+		sysmon0: sysmon@f1270000 {
-+			compatible = "xlnx,versal-sysmon";
-+			reg = <0 0xf1270000 0 0x4000>;
-+			interrupts = <0 202 4>;
-+			#io-channel-cells = <1>;
-+		};
-+
- 		ttc0: timer@f1dc0000 {
- 			compatible = "cdns,ttc";
- 			status = "disabled";
+ XILINX VERSAL SYSMON DRIVER
+-M:	Salih Erim <salih.erim@amd.com>
+ M:	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
++M:	Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/adc/xlnx,versal-sysmon.yaml
 -- 
 2.34.1
 
