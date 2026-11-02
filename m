@@ -1,62 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793657489;
-	b=3ZRlRgxgtPQeFydq3yRkWYlriT031EyAsun0u5NFMXhnRXS9xZd4XzLlKNf+U0xcIZZ/
-	 BE33mYw1uKrNI5+MxRrs7OrjUqlSnuoFcYfLLZEFbhtKmE59b6oFNMwBb7pVOzQ47wyxY
-	 bTkh7S3qrG1w2vlGkz8ozpVAkDLqgCp9rHE6rtvA5QO8YN7UjKVK1EUFYwdw7BJY43pQT
-	 q9RpBh/XQuxfj5nzLKbi3ZPuoguX25YqwW5XDnXCcI5KMj13eVkLs1Qk/yJ72H5ayXwkp
-	 BuCs4RL2HQlh0kWR4WAh4fkwxvaPouGzXyJt49GgH9cOUKnz+H4uHSEQLFL57wIbTEw==
+	t=1793657869;
+	b=se0vTNHXy6yMvRUv94RkECeJJJ83/P/lmRqc20oN3EKBix/AzU8/58P1XQ9xG2FADD+U
+	 6z7Eg41aNT329OtdweCCi4pW4M3m3MQ7XaKwT4/SFb/6gz96Ve1tnecVoaZOXl4qDWasi
+	 U5OtreNiEpojmaLHNqFS9CQ4ic2rNjTxc6OfVCh6Fq/6u/XJfHsUQljLvzCVCiKC9Li7a
+	 AJMQrqImHbL36HyFbjzvsVzbbPJ1feyrLHDmWmc8FVe+7gsIsR9IVCs5z6AywfOOhdadI
+	 P94Bc5qEXB/66fDupaITYAR+wr7hvpaixfWvcWgV/05VR1yXepUKQpH786OR/+rb1hg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793657489;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793657869;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=/NhqVjOKFln0SKgsgamqbhTP6g7g95UWHRnLjeIK1Y4=;
-	b=Gldnp/Cjz+TGgYtdFrqSJ3QZ2ZjSpO+BkmJVya/bhjBXVDGLE419nxeZIEr9okhkMylO
-	 WJ/B9/DTtKMYEnsYBdYe9aOWbZCU+k567fMtQP9O1aod9t1h8Ho/FzCjyROfHmoHdvafV
-	 XFuj28rZJ6PsvEsiXoEDxpZsC4rah4Mrws8dHecC2pqH03ReXt3Upj24hib9ZS0vXPfs7
-	 qlCpmsaaRYi4860CqhpjskAGk5k6gaYhuAIZCoxWHve3YgpXCzKnqKFrHP14OEqc05NyX
-	 Y5Up1JDU+2gGALgoVaLf/Dzr9HOBLUVJ5cR3wlfy0JGNAKCMw4UKCY6NBmhyv4D4lSA==
+	bh=1LoOI02nUgf322enYv05Hw1vZImTbwLOdnlR5QXFbCU=;
+	b=ZAQu8YviEYIXaLFIR/BiYRhCdMuq1Xims8jNVoYEaeCUMOQ9rhE2xVPFSxxXs2z8gWWV
+	 alzNE4Y3wQYrUzleq48HYP5QjN3hUbgKsluEW0UoCEanSpMOJp94avwfqBnqQHWM/NZx5
+	 nHmq+uy9M5M75TMJEEafBbpGfcUYBEnoExKbP/SmDS1J5SQ1e5P67U2aL9Yap2jupnZuD
+	 KJcCBRIAxIMzMIiZUnDkL54N2eiv4jxKrDC/U34lrNIKXLF9efkRFLhafUrZKXZT/1g6D
+	 IZtM8zIhUDokszGIT610ukp1KVlMtfBhKIWbe8aOjO39hOrt10fw560mKSMUppN/2Cw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Q7UvdZsC;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ObgOMNj5;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 563C8606A32F;
-	Mon,  2 Nov 2026 22:11:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17729606A327;
+	Mon,  2 Nov 2026 22:17:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Q7UvdZsC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2277F1F00A17;
-	Mon,  2 Nov 2026 22:11:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ObgOMNj5
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D43001F00A16;
+	Mon,  2 Nov 2026 22:17:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793657489;
-	bh=/NhqVjOKFln0SKgsgamqbhTP6g7g95UWHRnLjeIK1Y4=;
+	s=k20260515; t=1793657868;
+	bh=1LoOI02nUgf322enYv05Hw1vZImTbwLOdnlR5QXFbCU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Q7UvdZsCFMim2CEHZ/cCLlp3lAr/wnfqXFhVffykEVR5itLs9SQbkDwHZdKsgAN1+
-	 WNGjigzyGO3hxjnA5xJPBb9t7FrvCrURbkuQn0afiy5tTJBj7BUk/bWu3NQKKnW52K
-	 4cp8mrAyjsdhaegKmTvXHTQ0ifHwOR3lua5k5K3Vf/8x7dzQU59nnZGUr1Ith80/s3
-	 3qNqcpiRmiWLLJKwFEjbsYFhFkb/JRTbFJi9R83/BFXn+d/FV5u2RM+S1FbR9nl5Lg
-	 Tc+Gr3gidyriiAY+l5n9yLkxkSG7Lt8vTsZSvDRFWwAd0WyMth5H2nA1tGYoBmthuD
-	 fzpUUFJJ7adJQ==
-Date: Mon, 2 Nov 2026 22:11:24 +0000
+	b=ObgOMNj5Lbd3V13//0LFm+utOm/JdVKk7AxgGFlxRn9SX1kIYeKyER2zPJe58+5XQ
+	 ViXIdVRafeXa46tlIjLul/LH+U6Ul5GI+w/XunHpEIo5vCsjwSPUA807unl2WMxoqU
+	 4l1HPGgjK/4Zyzs97BO/kAGr6KLrnOet/GT4vsZeIBsQT4EMFiEhRuChIuy//f3Mie
+	 X08I1Qu/SZc8e5znS4ck/mQSOyJTDXaZFANax1+bymxWpu6iGPWi+AeWQbABWOibSd
+	 iLtJg2zv7JVP31v0DmlEpG/z39iav5Jg8N9gs/+O/Y2G4h+EIa2kGCHzqFEEDBLb3X
+	 UA0tO/6O2ynZA==
+Date: Mon, 2 Nov 2026 22:17:44 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Greg Kroah-Hartman  <gregkh@linuxfoundation.org>, Josef Bacik
- <josef@toxicpanda.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable <stable@kernel.org>, David Lechner 
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko  <andy@kernel.org>, Sanjay Chitroda
- <sanjayembeddedse@gmail.com>, Shi Hao  <i.shihao.999@gmail.com>, Jiri
- Kosina <jikos@kernel.org>
-Subject: Re: [PATCH 11/15] iio: hid-sensors: fix a division by zero
-Message-ID: <20261102221124.20a7aff2@jic23-hlaptop>
-In-Reply-To: <b06c4c02844b9d16dc5bf4dc050687aa4e99094a.camel@linux.intel.com>
-References: <20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
-	<20261027-llm-char-misc-iio-v1-11-0d818334f6c7@linuxfoundation.org>
-	<20261101021729.4a0df058@jic23-hlaptop>
-	<b06c4c02844b9d16dc5bf4dc050687aa4e99094a.camel@linux.intel.com>
+To: Chi-Wen Weng <cwweng.linux@gmail.com>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ cwweng@nuvoton.com
+Subject: Re: [PATCH v3 2/2] iio: adc: Add Nuvoton MA35D1 EADC driver
+Message-ID: <20261102221744.4bd13ae6@jic23-hlaptop>
+In-Reply-To: <81173139-a43c-48a4-97c7-0a82de158b3e@gmail.com>
+References: <20261030031501.130290-1-cwweng.linux@gmail.com>
+	<20261030031501.130290-3-cwweng.linux@gmail.com>
+	<20261101005312.1ec5e393@jic23-hlaptop>
+	<81173139-a43c-48a4-97c7-0a82de158b3e@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,73 +65,57 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 02 Nov 2026 09:33:34 -0800
-srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
 
-> On Sun, 2026-11-01 at 02:17 +0000, Jonathan Cameron wrote:
-> > On Tue, 27 Oct 2026 17:19:15 +0100
-> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> >  =20
-> > > From: Josef Bacik <josef@toxicpanda.com>
-> > >=20
-> > > convert_to_vtf_format() divides the micro part of a value by
-> > > 10^(6 + exp).=C2=A0 The unit exponent of a HID field is a nibble and
-> > > goes
-> > > down to -8.=C2=A0 For -7 and -8 the argument of int_pow() is negative,
-> > > which
-> > > the unsigned parameter turns into a huge power of ten: 0 modulo
-> > > 2^64.
-> > > The division by it is a divide error.=C2=A0 The exponent comes from t=
-he
-> > > report
-> > > descriptor of the sensor hub, the value from a write to the
-> > > hysteresis
-> > > attribute of the IIO device.
-> > >=20
-> > > Multiply by 10^(-exp - 6) in these two cases.
-> > >=20
-> > > Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and
-> > > trigger")
-> > > Cc: stable <stable@kernel.org>
-> > > Cc: David Lechner <dlechner@baylibre.com>
-> > > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
-> > > Cc: Andy Shevchenko <andy@kernel.org>
-> > > Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> > > Cc: Shi Hao <i.shihao.999@gmail.com>
-> > > Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-> > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org> =20
-> > +CC Jiri, and Srinivas given they are co-maintainers of this driver.
-> >=20
-> >  =20
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied.
->=20
->=20
->=20
-> > > ---
-> > > =C2=A0drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 5 ++++-
-> > > =C2=A01 file changed, 4 insertions(+), 1 deletion(-)
-> > >=20
-> > > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > > b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > > index 9e7c26e37880..3b0985d500ae 100644
-> > > --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > > +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > > @@ -140,7 +140,10 @@ static u32 convert_to_vtf_format(int size, int
-> > > exp, int val1, int val2)
-> > > =C2=A0	if (val1 < 0 || val2 < 0)
-> > > =C2=A0		sign =3D -1;
-> > > =C2=A0	exp =3D hid_sensor_convert_exponent(exp);
-> > > -	if (exp < 0) {
-> > > +	if (exp < -6) {
-> > > +		value =3D abs(val1) * int_pow(10, -exp);
-> > > +		value +=3D abs(val2) * int_pow(10, -exp - 6);
-> > > +	} else if (exp < 0) {
-> > > =C2=A0		divisor =3D int_pow(10, 6 + exp);
-> > > =C2=A0		value =3D abs(val1) * int_pow(10, -exp);
-> > > =C2=A0		value +=3D abs(val2) / divisor;
-> > >  =20
+> >   
+> 
+> Hi Jonathan,
+> 
+> Thank you for the detailed review.
+> 
+> I will address these comments in v4.
+Hi,
+
+A couple of process things.
+
+Most of this didn't need a reply at all.  When you agree with feedback
+and plan to modify the code, keep any description of that for
+the change log of v2.
+
+Also, reply inline to individual comments. The reviewer has probably 
+forgotten most of the details of what they commented on and so
+has to do the tiresome step of reading their own reply and then correlating
+that with what you have at the end.  If you reply inline as I did during
+the review, the context they need is right there.  Keep to tight
+focused comments where you want further feedback or disagree with the
+review.
+
+...
+
+> 
+> Regarding the one-hot scan-mask handling, the MA35D1 hardware itself is
+> not limited to one sample module at a time. The EADC has one SAR
+> converter shared by multiple sample modules. Multiple sample modules can
+> be triggered together, after which the hardware priority arbitrator
+> performs their conversions sequentially.
+> 
+> The initial driver, however, currently uses only sample module 0 and
+> performs one voltage conversion for each buffered trigger. Therefore
+> the buffered interface exposed by this version of the driver supports
+> one active voltage channel per scan. I will make this limitation
+> explicit using the standard one-hot scan-mask validation callback and
+> use iio_for_each_active_channel() when selecting the active channel.
+> Support for using multiple sample modules for multi-channel buffered
+> scans can be added separately in the future.
+
+This part would have been helpful inline next to the comment it is addressing.
+
+> 
+> Since the scan layout is therefore fixed to one u16 sample plus an
+> optional timestamp, I will replace IIO_DECLARE_BUFFER_WITH_TS() with a
+> fixed scan structure containing one u16 sample and an aligned timestamp.
+
+Jonathan
 
