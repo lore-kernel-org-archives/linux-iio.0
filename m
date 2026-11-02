@@ -1,111 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793621685;
-	b=yK0o4INaXXbwygnSkP6Mtj02vlkmcwoTnLDdTptXEmSp4Po4w3PExg1nRAOH3FAOr243
-	 LHiwEh7pQChJq0Holxum1e5gXPYdYWaoFoHllWIOhQzT7KEGw6271DcrlqF7RlE72gIna
-	 C1BC0Ad1NXgATWH4pXPYnabAMhyLYexRK8lStcXgg7pkkw5k27qxjlMcsDIxXaYXtPMjp
-	 8sugS9xAp8WvDGYOjGalRG9Vq68ORlhUbz2z+legAFP2U9L3u44c78CShnTHio2RYqrDq
-	 5LCehpJEzCchIj+ieZSC0UIQLcNQF1Rnn7NKbRwZ6R2SMpNGwc4N5oGsHPIPsc7gYnA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793621685;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-ADIRuleOP-NewSCL:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
-	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=4pYys262BoSP9st1EWB0AAZfQAXhEMARnoA66AWBafE=;
-	b=SPIWFtEKR73aAbpbp5U6lqRcb5ZEKI7yVfBy7an+KiPLFnxZ477FuaeACEYkvYg6pCtX
-	 B9ELrruRh958cn5SsL3Z0cMkyTUyOQ5h+lyG9Ob+SlgCWfmQSElMO7FhNYqjULJ3KOf+N
-	 a7s4xhExQ3mKeT/vo9rRpTrQw87pHorsEO9biqbOnJIiirAFdO2n/dDiu9znBIqMpQPDM
-	 t2QBY7Yso569vUBSZtHFJnvUqkfAB7Aa/sQnfDvtxMZzkxmlH+UviY+TzvEqCqNIewFjT
-	 6a4tqckHM0dn0WUKQ61AiqxkUREk+saDiHYK0yAO7WIeAP0DCm6zUzLFrxh2htKVx/w==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=O5Qo49TV;
-	dkim=temperror header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=YhbFCFgs;
-	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.1
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793622093;
+	b=cD16M0pZPVmArJmK+XHDqsP5hJQdMSO+04CUzdwOuOfiU5tv8ga/df6O2MaGav1u1DvY
+	 1rYQq6MuDBU8y3yk0E1SKgxrgmGnrNklIHvQo+FZ0OeOAa8hMui1mi7P7gf6PcARRaTRF
+	 dEc8LLpvck8i6ZtKuchLH7dBQms1xce93qwfE7Mzhyoj3td7ha8za5uIXLmo4crPwP5p/
+	 G5tkhaBh6uU3Y5lAxpVFMLrDzTkjc4Oh4C6tL6RlQ0xW1z73BRbmSn5CgLg98uTvYJMHi
+	 zx4WExljx+0OxolhQCKVy4nmAe1YE6M7laZUNf7NLLMvtXBHbIBF1FnvcScFCxxWlbA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793622093;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=7jY6yOIoDb2s40FcwgAUYkH4icXO6Xbv/NyPwxlalWc=;
+	b=DhDTRsrMvVphFXtlvpokgzPHxkXerlaTZaipB628beV2jN1/8OeoL8ydBLKNmxi+1N8s
+	 sesHoqnVLGpTfBYR6FS3HjU/CBGwjBJs2kueO/SUOR2qAqSV7WvVhRbKfgqD0BStmzsM+
+	 sy/R04cEFq16pL8TTRvA7zXy8WpohwFplA920tPi+jsjrrKAqjBd56ku0LBqnA84v594y
+	 eXtqVWzeCaCRClTztWcCOrEx4SYbdwyNgbv+Y4S10hA6E3iQ2TbBjB/H2utRz3Pd5j/eN
+	 0DF0fF08yC+Gs/24EE7yzhNQ+5Iw3pyUjoKIEOe1uDbXrRL/zhbJoFpgRUWZ4rQIn2g==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EzeunGqW;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.1
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012001.outbound.protection.outlook.com [52.101.48.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9570C60A2611;
-	Mon,  2 Nov 2026 12:14:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9570C60A2611
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56826606A32F;
+	Mon,  2 Nov 2026 12:21:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 56826606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=O5Qo49TV;
-	dkim=temperror header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=YhbFCFgs
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A29BVu51304387;
-	Mon, 2 Nov 2026 07:14:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=4pYys262BoSP9st1EWB0AAZfQAXhEMARnoA66AWBafE=; b=O5Qo49T
-	VDoOkzDGhP3gTSZg9CQsRcoDCZiNN70BGc4KmuPJvbLfEfYvzCs1bEOp9QJVGQTa
-	8TkEtHsXP4cEsNl+/iOlyzkrEvKTV6zrkJrdw0EG+AenpoNkeJSRhMSA1lkx1j6g
-	QMN4VDZj4MOKrFhrUJMgPhdJvwyZ5qlzNlj3KF0Qgdo8ED1/mPEgSmthYsoqBKGv
-	oixH9syL3rskUDlLOSfvmWRbWtUnOKJZLIVuT5NE3MNj4rJpp34mnh5PWK99uEZL
-	ADskQANbwsK1d/Zxx2L6qbnTsmV98mTt3RxC0CtaC5EzdlK08ez9do6xuQiR2qKC
-	rS9IQgNENqJBwYw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=4pYys
-	262BoSP9st1EWB0AAZfQAXhEMARnoA66AWBafE=; b=YhbFCFgs6cjRj79cY64Jl
-	Z9ldx9YN6PV2IRxuLt7AtviBzkE57SOr+XUJXJ0Y+FTYKxIe0capQMrP03vnwcJv
-	Od49Y/R1MOaYhgUYquAkiwAmQQQAwUEasf4ck5Q7HmDO3KEfSXBM4GHbn7Pc9v6l
-	0eRII3GlmC05JIjRtdtxWTQ8SYut3Zyfd5izfz1iSEBqpawWocFNZXtINq1rmvwG
-	jgyIsGmQIRF6EqwJxv+nTt6+CQv82ang6sPDLujmeljfGlL64NkV/TLD+UkhlQnN
-	3r3XHe+oiiH2muX1xbA2D+1+wyvxj8DDER2I72Y8dppR9lmaAAuLOtRaMXKD9NoV
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hpad3bvjf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 02 Nov 2026 07:14:31 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6A2CEUTa042531
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 2 Nov 2026 07:14:30 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 2 Nov 2026 07:14:30 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 2 Nov 2026 07:14:30 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 2 Nov 2026 07:14:30 -0500
-Received: from HYB-0FPP35J6CsI.ad.analog.com ([10.135.2.44])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6A2CEE0F021851;
-	Mon, 2 Nov 2026 07:14:23 -0500
-From: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
-To: <jic23@kernel.org>
-CC: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        David Lechner <dlechner@baylibre.com>,
-        "Andy
- Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "Dragos
- Bogdan" <dragos.bogdan@analog.com>, <linux@analog.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Pop Ioan Daniel <pop.ioan-daniel@analog.com>
-Subject: [PATCH 2/2] iio: adc: ad7405: Add support for ADuM7801/7802/7811/7812
-Date: Mon, 2 Nov 2026 14:13:52 +0200
-Message-ID: <20261102121352.23741-3-pop.ioan-daniel@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261102121352.23741-1-pop.ioan-daniel@analog.com>
-References: <20261102121352.23741-1-pop.ioan-daniel@analog.com>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EzeunGqW
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=L46w++12JV8S1hE/cMtrbccBxDFCuLEszbTR99NXkHSqnUP0JIvdeULvADthUoFVzuhypVNriT5M+up6eePe1KwTGn34H4YQ5YkaT73HedYu5u5lVhalRUTH0IoO31leMjaQjiEcQnoRfmxG6xB+E/e6LvrjKfcazfT6nNpDwDYK9NchAmVnYKdRQjMUbdkTdf8VLa/NpeGHqEGp8UWX7uWNXKkaqjnQrtVuAzlN+nURPHzD5HMzd6EFBc11ef+71IUt9amEkHsinkypiDSSESO+CC2brXR57/+k5psJKYXecL/V4jJ3SuOq2nwrTfs/X7/RMNa4N+wM7urA+d8MwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7jY6yOIoDb2s40FcwgAUYkH4icXO6Xbv/NyPwxlalWc=;
+ b=ZNO7a6ojC3bIMVBERtC72GEwqR5SP+3yQ4REWFHE/RczwrBjm4jDebKgJP0+cpv4iYlk4TP94D2cdQHrKG7pAFoCmWM5UnWgg7euwbU64xu1+yfhCwT1sOHMBjJlbxcAoqjZHQ0rIX6WaXh0TNji5K5L92Imz8Nwlbqic+50lrLX3XMSV8J/w3gVhRzvTBfUHXPIrssv9L0ZkzRNUfyDAcIRf31RqHvCgOqKiTC9a9LKKXQ6DqJXTltq9fiVK5EtHVefOO+EpU9mPBfdal20sojI6DqZgzKEOzq2gNxkd6ly5R8VZTQSk29Fg2FkffhmbciJabE+yXRvduqJ4NqCYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7jY6yOIoDb2s40FcwgAUYkH4icXO6Xbv/NyPwxlalWc=;
+ b=EzeunGqWdUHtfRN4ibAhlnmYMLwnwzehU9atgTFYtRoF6RXywFnySQ96DuB68iTF+ANADJ7j79v15Jb1ZGQhJZKnUi32go5plqDiMIsGGWs98SoPeV2R9SRaheOHYdkE5eRarOBLRzU4DqJnHZ/Sbno2jc54/Ag/YMCt7t29ads=
+Received: from BN9PR03CA0652.namprd03.prod.outlook.com (2603:10b6:408:13b::27)
+ by MW5PR12MB5621.namprd12.prod.outlook.com (2603:10b6:303:193::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Mon, 2 Nov
+ 2026 12:21:29 +0000
+Received: from BN3PEPF00022BC6.namprd05.prod.outlook.com
+ (2603:10b6:408:13b:cafe::35) by BN9PR03CA0652.outlook.office365.com
+ (2603:10b6:408:13b::27) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.12 via Frontend Transport; Mon, 2
+ Nov 2026 12:21:29 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ BN3PEPF00022BC6.mail.protection.outlook.com (10.167.248.219) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.592.5 via Frontend Transport; Mon, 2 Nov 2026 12:21:28 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 2 Nov
+ 2026 06:21:28 -0600
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 2 Nov
+ 2026 06:21:28 -0600
+Received: from xhdakumarma40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
+ Transport; Mon, 2 Nov 2026 06:21:24 -0600
+From: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
+To: Jonathan Cameron <jic23@kernel.org>, Michal Simek <michal.simek@amd.com>,
+	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>, David Lechner
+	<dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<amitrkcian2002@gmail.com>, Amit Kumar Mahapatra
+	<amit.kumar-mahapatra@amd.com>
+Subject: [PATCH 2/6] iio: adc: versal-sysmon: validate temperature hysteresis
+Date: Mon, 2 Nov 2026 17:51:08 +0530
+Message-ID: <20261102122112.1723130-3-amit.kumar-mahapatra@amd.com>
+X-Mailer: git-send-email 2.44.4
+In-Reply-To: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
+References: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -115,106 +119,110 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTAyMDA0OCBTYWx0ZWRfX9F4vsRtpf9qV
- sCEug5QOiHS1bPLZwykJv5BlTKsf2NwcDIQAxsF8NhGgP9oXz9SXRc+VfyvBw4+t4s0OJnaYsO4
- z1YY1N4TKflr6WCt4FcQWiwDqW8DlcFBjtL+wkN4WYcT+0/bCHGaMLiAk8dkY75socApiWD5DP/
- bjtEqeIth3fWdC0075RJ1x2aB7JhGhPuu3FBOG0ynLE17SWk+9tJC29HuyMZEi/nqCIuCg+dog8
- QtwEipFbPpSWByiscZ4llMzmW1ZokQFMoMxNlmmVs3y7xzBFUmMdiB74HdNEiPnGm4o7WNZrZjA
- NjtB1z6OmRG1yHG67QpLXo0oVfHfgHZBSAB0ZwX/SFa/DrKRr7iXrqU2fR35o5cFe8u+zqSvhlB
- BSGFnzGNq5qgbozuLq2xdcGY6nsmnKue4FqjpHkflHdtk0MTF7XMVjxYHcziew1i+Vzq+5qnl8y
- bnlDZYRe5W5l5Bkvq1g==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTAyMDA0OCBTYWx0ZWRfXxpZPn7CQ1Dhv
- EKzCb957+BBewkbZ4/4eUu/9vUsEI8WN8xgHGnotZtb5mPKac/Y8NeggWPHG6WSu0ad0ctCKq3M
- VW4tERLrCmHRRzeyTI/mJGwBbIPHvm26+arShA4+DZHV0UdUtNOm
-X-Authority-Analysis: v=2.4 cv=YL0KWhGx c=1 sm=1 tr=0 ts=6ae87ea7 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8
- a=YT1L1IOf0YprgsJQ2eIA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: GebDVp99DRRY2NWCPxh3LgTjHfR-aIQ5
-X-Proofpoint-GUID: GebDVp99DRRY2NWCPxh3LgTjHfR-aIQ5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-02_03,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 adultscore=0 spamscore=0 bulkscore=0 malwarescore=0
- clxscore=1011 phishscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610300000 definitions=main-2611020048
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF00022BC6:EE_|MW5PR12MB5621:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7b77ce0b-02bf-459c-95ac-08df38dbd27c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|36860700016|82310400026|11063799006|56012099006|261009223027099003|261009221227099003|261021123027099003|261021121427099003|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	HQpisMmT7tzRYz97NygPy84aItJtj6FefAoPUNlwRb6ZChZtaATlbl1SRnjPNCdMGNZzBWu+pPYAEsSy7uCy+TrEDILfm+IrsrMDt4kyCmk0892mLbOJ2pvhR4oCRiSafFRhUDxYikOAUGDsB6unSSBTBZsQg5htYVdOct6jCFohM0as/Y4X8bwKSsy+hnI3XNwRnvNgsK3E7fX/5LtUErFCgofDuCLP/csI7fQko0IStgoxfgb7RlmYZuSn0Mjtqpdn8a5+gCGzFrTBw7f2rO50PVZ6Clvi8FeifDucaKhBAaZv/H3r28+5zJVEo2+1VyCx39uc4DmbgcpdHqSuLg+QIgOfj+K9U+pcR8twhV+NGURrWHE2KAvOuUfvHvKHmgh1btENvfi7JbIgC60RJAtmjQSHviDo/JrrDclbOYrfGEOTs0skb081dPZro4okRQDx6xxOPUOaxWwz3uqMltAwVgOf+Iu6llxiRu/kO9yClEURChWfYY0VFRyYUtvjyRnDfU3dybWAR4iV0vx3X2fXs7NqJVHF08KCK3rBF0tC3l3NYtNJkCHxJfHtXFeK0u4cgS2p+2Hibjl+tltb9Kf6Z2V1ocLCrrNaMl1TjdKmjeuH+ua6cE81nRx+guZmBA9fCaRwLesqmo4UOftbNCCIRaKzn7Vl3C9l7Y6v1zRNMSr1EHDN1KWcGPwdRAHgnLWe4aBEqDCoXbWJVZMRiQ==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(36860700016)(82310400026)(11063799006)(56012099006)(261009223027099003)(261009221227099003)(261021123027099003)(261021121427099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	jlsUxtvmGetFUXbRWhmzQnBGsCWiCc2Doa40ckW3YCaP3tSIAMhXjePAkGVx2DZkJBY/7sNoYbU1p2ddK1M12UIOL4pvqiJMP7E00N+XuiBjhIGUqIM324/isAaBjylIxz17FRbAQPPYOpeABJF+3ChFER9rk1gQzKchpIyhMu9S6bLh+azlYopiqsJuDBUdco9aEv00Ih31spXb5qpcuIH7BRaG5jEuWpnQ7QHCd9FfH1ecIb+MYLXD/afsosL3QRuy/Ocl495Xck+sJIYvWYlXVValeMgwZipp8cN9ZD7mIND5XHJnwfqwlBhkA2x1yHjN8dwqY5ud6jAoqYeEqTkkyeGiYjsokdr9b/KcSgWKc6A7CBKWJXIz7p0VP53FquRUhCV1UM0HK4V7WDH10WjX1ya4dN0p98PbaDSy2R5JiRzd0b0tnU6tgi8GvfAE
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 12:21:28.9834
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b77ce0b-02bf-459c-95ac-08df38dbd27c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF00022BC6.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5621
 
-Add a chip information structure and a device tree match table entry
-for each of the ADuM7801, ADuM7802, ADuM7811 and ADuM7812. These parts
-are handled the same way as the existing ADuM770x devices and differ
-only in their full-scale input range: ±320 mV for the ADuM7801 and
-ADuM7811, and ±64 mV for the ADuM7802 and ADuM7812.
+The hysteresis written through sysfs is only checked for being negative.
+A large value makes upper_mc - hysteresis in sysmon_update_temp_lower()
+overflow before it is clamped. Reject values above the full Q8.7 span of
+511992 millicelsius, and name the Q8.7 temperature limits so that the
+span and the existing range checks share one definition.
 
-Also list the new parts in the Kconfig help text.
+The cached hysteresis is seeded at probe from the threshold registers
+without checking that the lower threshold is not above the upper one.
+Treat that case as zero hysteresis, as negative values are rejected on
+the write path.
 
-Signed-off-by: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
+Fixes: c7f7eb10638f ("iio: adc: versal-sysmon: add threshold event support")
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 ---
- drivers/iio/adc/Kconfig  |  3 ++-
- drivers/iio/adc/ad7405.c | 24 ++++++++++++++++++++++++
- 2 files changed, 26 insertions(+), 1 deletion(-)
+ drivers/iio/adc/versal-sysmon-core.c | 10 +++++-----
+ drivers/iio/adc/versal-sysmon.h      |  4 ++++
+ 2 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index f8456c8039883..0458b326e153b 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -359,7 +359,8 @@ config AD7405
- 	depends on IIO_BACKEND
- 	help
- 	  Say yes here to build support for Analog Devices AD7405, ADUM7701,
--	  ADUM7702, ADUM7703 analog to digital converters (ADC).
-+	  ADUM7702, ADUM7703, ADUM7801, ADUM7802, ADUM7811, ADUM7812 analog
-+	  to digital converters (ADC).
+diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
+index 6b9a58e19831..6595d07038c1 100644
+--- a/drivers/iio/adc/versal-sysmon-core.c
++++ b/drivers/iio/adc/versal-sysmon-core.c
+@@ -352,7 +352,8 @@ static int sysmon_update_temp_lower(struct sysmon *sysmon)
+ 		return ret;
  
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called ad7405.
-diff --git a/drivers/iio/adc/ad7405.c b/drivers/iio/adc/ad7405.c
-index 0996f48d76f1e..ee9873b47a84f 100644
---- a/drivers/iio/adc/ad7405.c
-+++ b/drivers/iio/adc/ad7405.c
-@@ -158,6 +158,26 @@ static const struct ad7405_chip_info adum7703_chip_info = {
- 	.full_scale_mv = 320,
- };
+ 	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
+-	lower_mc = clamp(upper_mc - sysmon->temp_hysteresis, -256000, 255992);
++	lower_mc = clamp(upper_mc - sysmon->temp_hysteresis,
++			 SYSMON_TEMP_MIN_MC, SYSMON_TEMP_MAX_MC);
+ 	sysmon_millicelsius_to_q8p7(&raw_val, lower_mc);
  
-+static const struct ad7405_chip_info adum7801_chip_info = {
-+	.name = "adum7801",
-+	.full_scale_mv = 320,
-+};
+ 	return regmap_write(sysmon->regmap, SYSMON_TEMP_TH_LOW, raw_val);
+@@ -429,8 +430,7 @@ static int sysmon_write_event_value(struct iio_dev *indio_dev,
+ 	case IIO_TEMP:
+ 		switch (info) {
+ 		case IIO_EV_INFO_VALUE:
+-			/* Q8.7 signed range: -256000 to +255992 mC */
+-			if (val < -256000 || val > 255992)
++			if (val < SYSMON_TEMP_MIN_MC || val > SYSMON_TEMP_MAX_MC)
+ 				return -EINVAL;
+ 
+ 			sysmon_millicelsius_to_q8p7(&raw_val, val);
+@@ -443,7 +443,7 @@ static int sysmon_write_event_value(struct iio_dev *indio_dev,
+ 			return sysmon_update_temp_lower(sysmon);
+ 
+ 		case IIO_EV_INFO_HYSTERESIS:
+-			if (val < 0)
++			if (val < 0 || val > SYSMON_TEMP_MAX_MC - SYSMON_TEMP_MIN_MC)
+ 				return -EINVAL;
+ 
+ 			sysmon->temp_hysteresis = val;
+@@ -838,7 +838,7 @@ static int sysmon_init_hysteresis(struct sysmon *sysmon, int *hysteresis)
+ 
+ 	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
+ 	sysmon_q8p7_to_millicelsius(lower_reg, &lower_mc);
+-	*hysteresis = upper_mc - lower_mc;
++	*hysteresis = max(upper_mc - lower_mc, 0);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
+index 701ef9b56263..a1ac3289719c 100644
+--- a/drivers/iio/adc/versal-sysmon.h
++++ b/drivers/iio/adc/versal-sysmon.h
+@@ -75,6 +75,10 @@ struct regmap;
+ #define SYSMON_FRACTIONAL_SHIFT		7U
+ #define SYSMON_SUPPLY_MANTISSA_BITS	16
+ 
++/* Q8.7 signed temperature range in millicelsius */
++#define SYSMON_TEMP_MIN_MC		-256000
++#define SYSMON_TEMP_MAX_MC		255992
 +
-+static const struct ad7405_chip_info adum7802_chip_info = {
-+	.name = "adum7802",
-+	.full_scale_mv = 64,
-+};
-+
-+static const struct ad7405_chip_info adum7811_chip_info = {
-+	.name = "adum7811",
-+	.full_scale_mv = 320,
-+};
-+
-+static const struct ad7405_chip_info adum7812_chip_info = {
-+	.name = "adum7812",
-+	.full_scale_mv = 64,
-+};
-+
- static const char * const ad7405_power_supplies[] = {
- 	"vdd1",	"vdd2",
- };
-@@ -232,6 +252,10 @@ static const struct of_device_id ad7405_of_match[] = {
- 	{ .compatible = "adi,adum7701", .data = &adum7701_chip_info, },
- 	{ .compatible = "adi,adum7702", .data = &adum7702_chip_info, },
- 	{ .compatible = "adi,adum7703", .data = &adum7703_chip_info, },
-+	{ .compatible = "adi,adum7801", .data = &adum7801_chip_info, },
-+	{ .compatible = "adi,adum7802", .data = &adum7802_chip_info, },
-+	{ .compatible = "adi,adum7811", .data = &adum7811_chip_info, },
-+	{ .compatible = "adi,adum7812", .data = &adum7812_chip_info, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad7405_of_match);
+ /* Bits per alarm register */
+ #define SYSMON_ALARM_BITS_PER_REG	32
+ 
 -- 
 2.34.1
 
