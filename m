@@ -1,67 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793577853;
-	b=CNsxpCoGEBB9lIabJfvHLuG2KvbmSEGiwkA2qCN8wxB4Iohc4TpQYG6HF22XpLLWzH5A
-	 zUJPwP52MspuH7yS45lnoj7UOhVymMxQ5tuw6TNWdakofFFerDEDJoI0W1k/X5NV+8rBa
-	 aSw3eO3tfVArNbmSyZDIzc4++flxr92zXgxVVovmNty3Z+mgmhjihMOaUpimzxLaAW9Xl
-	 b+X/TerIvLVyfwFqXoTGZgDiyWyr10cRbzR3JT25W2AKyX2jxd+KBKSzfet1107TqjQ8o
-	 5AtvTN1L0fHFgMiR942ZIDym96g/VFi99NkXqskM+nUQ4hIS3Y1uul0VgvStaM62mRg==
+	t=1793578092;
+	b=nJ1jYHigaU4c++U5Afgp/6wZq6K3a+nun4gyzzPO9zKJdj8YkouFiDepkQBEfke9YJKg
+	 gSKEF9CNgoYTPn/Ij4/E8gODUK0PqWu2qXLhDrLmijBn53+VRGjVolCwqr4JvBWcQ1Qb4
+	 Tc/NfyF1kpKEZWplOMqV0CfJwaDQIh3wnPKBgpCASomRK/X9m1+qr2NbBNfHBnel6Zpwt
+	 zGKSdJx176/ym6xn24hKGWrT7aowAdIPU0yeaWP/zuIG9l0NFIh+2SLgOwtqJaCrONdK4
+	 +eclqhvKNiUFZcKfekg/kBUmcwBDVPN/YE0Qz2vD9CBcYxAWXo9dH/suzP42ostfVPA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793577853;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793578092;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=KBin+VBb1gehkdGJoG2mdgFia04vBVa3nhreBJaAphI=;
-	b=XRpZfIikv8WrP/BRKjwJiwqc0WqdoCFGwfAC2+3Lvpcm0PMpqfQvQS+i7or6GvQAJ9kc
-	 q+PyD/PuryKwTxX9vEtRhnrsPMIQgucsDN7A3GwH+HjasJnCAuij6W7bnc2K9Kg9QE0/H
-	 wKyv4qX+0WMm8hD4TnwW6jxW5LDsVNFPn9bemVTXmiWobhuATGLzCyA7+FzvZfm0B8l6T
-	 jhyLjCrapFmu0hOb0x4Apx0T0SVY+5fPB4eT8EQ271Mu+2mRh+ymgEPaI1Cwj5UuvMSl7
-	 RKSD0ImTU3ClWMdmUatG/ciq79I9ty4KeFJjX+kdi7k2LHtTcaCPbNRZaiwKik/Hh0Q==
+	bh=To2uuGbxbCF9OFD4rYrbZQc498MOdFtRXrJ5fR1WVTU=;
+	b=JcBQHCsb6BVoeSHMFMszAtcoIhD8uRLVh1mUcKzN1pp1xBxK0CLFsrOZFRO0sgtY5glY
+	 vzcz71Xu6cs1VyeT3xFDCUINxvu7BjPgKO6iJXEh2vJ/9PNB9Lc8QdCuBt+Cp1Wizc4xc
+	 wo4EMLp97vwJOntan839zgEnqz9SMY+rFhdBkSYnNIMbHPiC1u9K4NOibu6Gvzu3jp2LK
+	 LlYw2Z/wjoUg25OMDoCuOhSQ0Aswe+nnmYjyRVM41iIOcgMYpFS4Y+Bvtc5Z2YJ0jWbyf
+	 jzG9r/1svCjM3F4Gcu1f1xrBbLVhKCyiUf7oDYgPWFsKKQmzCVTs1PbqWLXPSPnMlEA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R1rgjWhg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VsFR662W;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52739606A33C;
-	Mon,  2 Nov 2026 00:04:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CF60606A324;
+	Mon,  2 Nov 2026 00:08:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R1rgjWhg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B7B01F00919;
-	Mon,  2 Nov 2026 00:04:10 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VsFR662W
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B8521F000C1;
+	Mon,  2 Nov 2026 00:08:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793577852;
-	bh=KBin+VBb1gehkdGJoG2mdgFia04vBVa3nhreBJaAphI=;
+	s=k20260515; t=1793578092;
+	bh=To2uuGbxbCF9OFD4rYrbZQc498MOdFtRXrJ5fR1WVTU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=R1rgjWhggpddPfEwOMveGnQqrUll52v6MaouClMm7/QQ5Gox51xe+oVsjnERB3eap
-	 UZ03fkZRvzQMh56tRlNTBmmHLd/1YuzSaqB5khHFWYRZz0Yqj62rKsuH+KcSCY6fKa
-	 1fPLw5qZS9ynrhA/9ZKrdy8K+OoojoD0nPFoHuGYKxEkQTOX08gUOH0cdoPz3/wOB2
-	 hXRetKTyJMbzxNB3AxLtQML08iakUJMW6OfTsQatrmqPBzTqixlI0AisKtoIOzeAON
-	 cWFhHsG6Ol1br0LpOwuFnVwyQPFqzKj2wFLngX6N1VG8+upU70wb2tFcc/K+iejB+v
-	 hiJjMI6vy0qpQ==
-Date: Mon, 2 Nov 2026 00:04:06 +0000
+	b=VsFR662WK1EvXzuwd0r/uOXZxWykjrSBpVH7zElBWp1mwIMIMzKyMMuDDAAWuQGCw
+	 TYA9lDewlAC1l7pyJ//BZYFazk2a2jZBzFDG4UKncYFBvQ7pSTps1HvyRc0oBs5bJJ
+	 SnvYjnf9W7JN1gWXrk7BcCCBr+jQRujDwcZ94Q9bp6OuVGbgQesRk3BwwrpMlOGry1
+	 322Tycd37S8FiVicn+2PNUEr9bMB4Rvxi6Ggs5rIlvurRz33zc2B2ERe37FUYz5Hg2
+	 pekT1qbV5Y3oJrbwP6Z6n11cxpNT/nT+qv8Y9j+i9q0POW4B/7dZjDx0Gk15nCHEva
+	 LA9S+Ulz2nCYA==
+Date: Mon, 2 Nov 2026 00:08:02 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Sabau, Radu bogdan" <radu.sabau@analog.com>
-Cc: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
- <Michael.Hennerich@analog.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
+To: Stephan Costa Barros <stephanbrrs8@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
- <devicetree@vger.kernel.org>, linux <linux@analog.com>
-Subject: Re: [PATCH v4 6/8] iio: imu: adis16607: Add FIFO-based
- buffered/triggered capture
-Message-ID: <20261102000406.342657af@jic23-hlaptop>
-In-Reply-To: <20261101235010.79416e15@jic23-hlaptop>
-References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
-	<20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
-	<20261026000910.328f6cd8@jic23-hlaptop>
-	<LV9PR03MB8414024B4B8A88109DE96B29F7602@LV9PR03MB8414.namprd03.prod.outlook.com>
-	<20261101235010.79416e15@jic23-hlaptop>
+ <conor+dt@kernel.org>, Mike Looijmans <mike.looijmans@topic.nl>, Andy
+ Shevchenko <andriy.shevchenko@intel.com>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5p?=
+ =?UTF-8?B?Zw==?= <u.kleine-koenig@baylibre.com>, Krzysztof Kozlowski
+ <krzk@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/6] iio: adc: ti-ads1298: fix the data read path
+Message-ID: <20261102000802.646dfd86@jic23-hlaptop>
+In-Reply-To: <20261028021946.29877-1-stephanbrrs8@gmail.com>
+References: <20261024231335.280955-1-stephanbrrs8@gmail.com>
+	<20261024231335.280955-2-stephanbrrs8@gmail.com>
+	<20261025230601.6a2eae34@jic23-hlaptop>
+	<20261028021946.29877-1-stephanbrrs8@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,100 +71,73 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 1 Nov 2026 23:50:10 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue, 27 Oct 2026 23:19:45 -0300
+Stephan Costa Barros <stephanbrrs8@gmail.com> wrote:
 
-> On Tue, 27 Oct 2026 09:36:47 +0000
-> "Sabau, Radu bogdan" <radu.sabau@analog.com> wrote:
+> On Sun, 25 Oct 2026 23:06:01 +0000, Jonathan Cameron wrote:
+> > This is a lot in one patch.  Can we break some of this
+> > up into smaller changes?  The whole thing is probably
+> > to complex for a stable tag, so focus on the most broken
+> > aspects.  
 > 
-> > > -----Original Message-----
-> > > From: Jonathan Cameron <jic23@kernel.org>
-> > > Sent: Monday, October 26, 2026 2:09 AM    
-> > 
-> > ...
-> >   
-> > > > +static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
-> > > > +				       u8 *fifo_data, s64 timestamp)
-> > > > +{
-> > > > +	struct adis16607 *st = iio_priv(indio_dev);
-> > > > +	u16 msw, lsw;
-> > > > +	s32 val24;
-> > > > +	int bit, offset = 0;
-> > > > +
-> > > > +	memset(st->data, 0, sizeof(st->data));
-> > > > +
-> > > > +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev-
-> > > >masklength) {    
-> > > iio_for_each_active_channel()
-> > > 
-> > > As sashiko notes, masklength is private.
-> > > 
-> > > There are a load of places we need to update to stop accessing these
-> > > directly but please don't add another one.
-> > > 
-> > > It's on my list to throw some LLM tokens ago once I get out from
-> > > under review backlog.
-> > > 
-> > > https://urldefense.com/v3/__https://sashiko.dev/*/patchset/20261023-
-> > > adis16607-v4-0-
-> > > a4d541ebfd13*40analog.com__;IyU!!A3Ni8CS0y2Y!9cguUuIwYMdnmBcoNR
-> > > ye0_U99KUnJt04T6XlSnvS-9rxh5-8Y2fQXC39Mxsw3erc_JwvyFp3ssecZg$
-> > > Check everything else reported.
-> > > 
-> > > FWIW there are also some nasty race conditions around active_scan_mask
-> > > being available when the buffer is being torn down. You might
-> > > want to close those off by claiming buffered mode to prevent
-> > > such a transition.
-> > >     
-> > 
-> > Agreed, I'll switch to iio_for_each_active_channel() and I'll go through the
-> > rest of the Sashiko findings for v5.
-> > 
-> > On the active_scan_mask races, I'd like to check which path you mean.
-> > In this driver the only reader of the mask is the trigger handler
-> > (fifo_push_sample()), which runs as the pollfunc.
-> > As far as I can tell, iio_trigger_detach_poll_func()'s free_irq() waits for it
-> > to finish before iio_disable_buffers() frees the mask, so I couldn't find a
-> > window where the handler sees a stale or NULL mask today.  
+> Will do: one patch per fix in v3, the most broken first.
 > 
-> Ah. I may have failed to distinguish between cases with a trigger involved
-> and those without.  The bug reports are probably on the ones without.
-> Unfortunately I haven't found time to look at the overall issue
-> in enough detail yet.
+> > This I'd like in a patch that does just this and allows the commit
+> > message to say why simply using a single lock for the data buffers
+> > would not be cleaner.  
 > 
-> > Even so, I'd like to close this off for good, so that a later change to the
-> > driver or to adislib can't introduce the race.
-> > 
-> > Claiming buffer mode inside the handler looks like it would deadlock
-> > against iio_disable_buffers(), which holds mlock while waiting for the
-> > handler in free_irq().  
-> 
-> We'd use a conditional claim in here - only the core code driving the state
-> transitions should take a claim unconditionally (they can just grab the lock).
-> If mlock is held it should fail and we just drop out of the handler having
-> done nothing.  So either disable buffer wins and we drop through the handler
-> quickly or it looses and the attempt to take mlock blocks in
-> iio_disable_buffers()
-> 
-> Or am I missing something worse?
+> OK. To check the argument before I write it: a driver mutex around
+> write_cmd() and the regmap accessors would also stop a register access
+> from rewriting a command. It does not help with rx_buffer, which an
+> spi_async() started from the hard IRQ writes, so it cannot be under a
+> sleeping lock and still needs its own cacheline. Separate buffers fix
+> both without a new lock. If you would still rather have the mutex for
+> the command path, I'll do that.
 
-I'm indeed being dopey today.  Whilst it is a conditional claim we grab the lock
-unconditionally as part of that.  Which makes sense because we want
-multiple simple read the state calls to block behind each other.
+I'm fine with the approach you have here. I just want some more reasoning
+in the description as cachelines can be quite large and so we need
+to have a clear justification for people thinking of backporting the
+change.
+
+> > > After STOP, the conversion in progress still raises DRDY, so an RDATA
+> > > transfer can be in flight when the core frees the active scan mask.
+> > > Track in the driver whether samples go to the buffer, wait in
+> > > predisable for the last DRDY and its transfer, and push the sample
+> > > before marking the transfer done. update_scan_mode reset the transfer
+> > > counter, which let a new transfer be queued over one in flight; wait
+> > > for it instead.  
+
+Too much cropping.  I had to go find what I replied to in order to
+following the discussion! Put back above, indented as if you'd left
+it there
+
+> > Complicated sounding solution. Can we claim buffered mode instead?
+> > That would ensure the update_scan_mode and this don't race and mostly
+> > would be taking an uncontended lock.  
 
 > 
-> > 
-> > Would snapshotting the active-channel layout in update_scan_mode()
-> > (called before the pollfunc is attached) and having the handler read
-> > only that copy be an acceptable way to close it?  
-> It would but that feels like we are just papering over a lifetime issue
-> by creating another object rather than fixing it if necessary.
-> 
-> Anyhow, from your first comment this may all be irrelevant anyway.
-> 
-> Jonathan
-> 
-> >   
-> 
-> 
+> I don't see how to do it where the race is. The sample is pushed from
+> ads1298_rdata_complete(), the completion of that spi_async(), which the
+> SPI core "invokes in a context which can't sleep".
+
+Ah.  I'd missed that complexity and was assuming this was a normal
+threaded interrupt handler.  One simplification here would be to stop using
+async spi and instead just use synchronous spi in an interrupt thread which
+is how most drivers handle similar flows.
+
+> iio_device_try_claim_buffer_mode() takes mlock, and the core holds mlock
+> while it calls predisable, so the completion would also wait on the
+> teardown it races with.
+
+yeah. I got this wrong in another reply I sent today. Indeed, the lock
+is not conditional even though it acts like a conditional lock in the
+outer call.  We need to be able to queue up multiple users of that
+state on the lock so it can't be conditional wrt to mlock.
+
+Added checking the existing places we grab the buffer claim to my todo
+list for likely bugs :(
+
+
+Jonathan
+
 
