@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793616085;
-	b=sicNN5lFGgsNgk+3O9gi/jLFtn+/TKIPNnClueYK+yAvVetiE/Fd8sbK8lPWWitbnMBd
-	 Ow2pn67WBvkRG7zDpjpAmsLc2lUHSAljHhe/vf4dHmyka33Go6jnndZF2Uv84badOcBHk
-	 K0P8nx/v5NSW7X7bFRJYDFJu6wlDe0+yG4RiBJEHz8e75odfdblLcsQTV6OCJ3SJfxbiv
-	 WVVN6SunWtbLrROeW6Cp9pEaxS21CxgKXgddwJYLmv0d3FwmDFgH96I+kSVXwt89I/Yx8
-	 LzYf8EC2yNn4ZJV2iE/Hc8tYYqB1o545mR7x3zcQT9qfPDxK4s+VjEZWbnRFCCnSBIw==
+	t=1793616086;
+	b=fcPQuiXsqquAJd4yvzUJ3SWcO9ScZzUcD5u8+eJKIUYQnavXOfp5AB8gTcG+ajMsw/2w
+	 5rKK6VvHE+UgVbZV5o9fiy6Jl9WSLGxOu40KEJly56RtdLx92ZxX+Sbv83R6n0dlJxjGf
+	 XhbFn3TrR3LrkK8PCAqOGFwqq98WdwD85S8oO1gl515SG4TiZ8iJhT45c8bfx56n38k08
+	 GV+82T570oYHvfCYrxPQSmLYpV4ldEpAL9R26n+Z5IrkufnBXrgVCKHSl0SKseTM12ToE
+	 VmnQRyy/yvQv8tXs4WOCdCODltVJctp/PIjNzwH2bakJbLzEpCHMGhxbePpppPGYRuA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793616085;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793616086;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=hQdaApN8wCL1XS8RG/E8KSPYlZKoAadZqGW4uiQY/7M=;
-	b=3DtNwXH+dtSwnTIBqqjLkwBhKXSfSNNHOf1cgPIxcQzy23YeXGMj5SIbwNVPUDExRBkS
-	 F0a7wKFQVtD9+ml6aS517hkXUfS2cwXJQIUPudt0Y74I99U/OIp/Cg7k0vFbAmiah+js9
-	 va00hnhYVuxncH+uF6eXK4ctDIaNeoS53b1igNur0XtTlf1iZkksmFYbWqwCP5mjHbjIX
-	 G+gXwRiFxbPoYq+GQO2M/0ctmZ/NM2wZEe5sZIgV8Zd0uFktrXBYHsYxt+qpKD8ZGRQjl
-	 FLihpSMJtG0XDEMHgRvliJ+9IFAuDtXvuV8aw5e3o7CzU8CcF+lxJ1EFFq46odH1iVw==
+	bh=EPzCbxKELMHtph57rw7uF87sPahx/3UDJZ6gvRafZVk=;
+	b=EgECWCxVNReb45UgBUf1P/uyFnGi31eaMO2iCizT60wReOEsvna9rVl+Eurr09WpcF/m
+	 +lyxUABWiXfNJK2NSavnHjFX3Yk18EvfbswAie3W06JVCelQFNTmE0yaRWdiewZ8oj+ME
+	 elZBzfRQM81nzGGVcMxoXr+9pyZEOxRpZ05b2R8Z7ouYaEQz/wDh8BEa4SYDkYpJewGNi
+	 B6awV0q11Cq3w74uE3zpOyPWcXujB7QH/NsN/Xb02o1hFTSbPJfbv4T6ciDCBWHIxHPX5
+	 RyjLCcx9RRNCEgaEi16lFuxGA0RREg1NTsmWVDHD4kDLpRH6oSJSaFP5qx/NxlwQFtQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EwllRZRs;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hTFlyjNd;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60DBB606A326;
-	Mon,  2 Nov 2026 10:41:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64B89606A33B;
+	Mon,  2 Nov 2026 10:41:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EwllRZRs
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hTFlyjNd
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793616085;
-	b=ooDjfNhiWEFk3fNu2KERWSunLN+gU3sJlQ1xO9H7VMJK0QrfVNJr8AgoSTZbBDPe6Xo/
-	 RK3rUyI4YZn93tjbsd4d9ifTEwAhjGPkj5RmlmsaUEbtcKcqB+wUiWmhHNdcsiZ4bP5g3
-	 yEh4vmIWMrFdfzyD2OSihvaaU6M4QdwLUPTUukCV288gn46mUgpi0sib4Ysqbs8wg/ADo
-	 btbUQP6tffVU0zrk8U0VxxNSTW3gQfkn3ofzeaIlS0+N8CEQw8pPkz55uhXLPtOBuSkym
-	 vwhsq4sb+ERjasfkxoO7i79uAreaLVhNvK0WWIH4hcSvCxDaBsDhax5jaMjBdu7zp2w==
+	t=1793616086;
+	b=wbHcHOmPA2oEKSEbDg5iNWEEgO/sUMPqYpeYWjlqlun2uyr0DHmKcQ8+UsK49TZ0eIpi
+	 4zgUmJchUNB8LZ3lBTe6xOP1UY2k2q0XKmQ3eA3TIGoZtyl1fNsdrmdCM4KFWPOhi5Ylv
+	 R+CCavKp3wctRRIIqHz67UhGkqjIyr+JzXEHIvpCkK5M5M3BcDD27EeSCvKoQs3wyZuxH
+	 uquAKAAcQb9xvKZWn3kKMiJ15cOPOUUk32Maed3lS8tQmPeZtN5KSo1ydHnCOrrV/jkU8
+	 b6M5Oxp3KBsapYLFh/MiOaWn94IZ6R7TjsC3rzYxoAB4rM3JCkiYISozNL/b3p/yPXw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793616085;
+	c=relaxed/relaxed; t=1793616086;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=hQdaApN8wCL1XS8RG/E8KSPYlZKoAadZqGW4uiQY/7M=;
-	b=QnrU6aBVHbbUejO5L2K/swZRi5legYSU6K8L+sGpTvmpz+VOgIPRa+klMnQ4lE49I7EE
-	 ipp9S/QTxc0Li7BvjEvMOtoJacB0FQvoUi+uWtEIyX2wYOhbDyABxQP/9YuFQkTEqjH+m
-	 47Bwf4KOfu06mD3FCdYwanOftXMkmr2BNmhktdokoEbA4ipav1a3Kr6cqz/638WCweP2a
-	 Cnd6uf4xP2hFiTQh0CNrYm/lbW8t16r6vrkgPFe+jTHLwi6fkeo3rU24XxlMQUI26Vo6Q
-	 ja57zwPueUDjsRMSgWKT7PQ+J8HbByqQ6fjowlGXtlIkk1Flzv9Tn6phwsTPvSEcR/g==
+	bh=EPzCbxKELMHtph57rw7uF87sPahx/3UDJZ6gvRafZVk=;
+	b=tzyziyc1Uo1+8NoTyanTaMFDfWlUEH9IA5ESWGHVLYbaY1Xg1jM7AZc48Y8zYZWpBYX7
+	 Qva3/dEfrwyHZhysUKHmV4vJRqyQ6WaD09vbPErVsaEop1NJ562rELIRWRGKsSFiF18mV
+	 kpQE+LWH5hgexxN6Ojzmi6c7a4bZt6erb0j57PfRYQs5C2QvByrKj2srVHV67m/QxkGRO
+	 co1JnkHshsDENAqJitxwgxMStx0OvTU/aqPkTNSvkg6EbNsgOLsKlOA+q1gsSQO+z8Age
+	 IzcnaW/PXtQnW0wl5QtYZ+WuSf6adk5+wwIjSblSmvBO3hNEDJgQTNF6Xm3hGIZtB0Q==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 319831F000C1;
-	Mon,  2 Nov 2026 10:41:24 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 4F5C01F00A18;
+	Mon,  2 Nov 2026 10:41:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793616085;
-	bh=hQdaApN8wCL1XS8RG/E8KSPYlZKoAadZqGW4uiQY/7M=;
+	s=k20260515; t=1793616086;
+	bh=EPzCbxKELMHtph57rw7uF87sPahx/3UDJZ6gvRafZVk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=EwllRZRsx/gUPnZT9TZdHtUHiAhY9VLOuHKjhDc1vJ7rAfd4/eeKnvA8+agVm0pVt
-	 NkZCsPo+OW3rALRvTwpjRwzXQ2DPLXQDzXFTHH49zvef5UJdkZPlrVVfIq48e6elgk
-	 Zksz8LVx7pevBHqCVni3apHtFwOaFUlH1OwPw3per52JkIH3swAdPQho4paQygjJE5
-	 eiHvHQ4q4/NMU5g2AKEkkPdSnfyCtZ+/ITB9PRwucXhVDXIdpX21klL1nzlqVBuH7G
-	 OD++ZCx3MI2vP9JXtFPBiCjISgJdr2yBgMsW6sMWgurbRgxMbni46ogspLHqHhSMzr
-	 8RR3kASbg/uDg==
+	b=hTFlyjNd+HV4cR5zdo4fYsvlAY+H9tt3mmGHQoGjBFyRetGqXkl3xmEdcGuHNPXTk
+	 NmcCNlNS7324GJX9POBTLmlxB9sJj3ZfyNPRkKldBj9jldYBQcOlXHYIFO1e1i8MJx
+	 Tlvwhke2uhWudW0iXULHgydlhFawa+CvaVywwDGrqsiAjOGBYgRlS/KvoPReh0/jHL
+	 IErCQnGbdQw1VRr+1ootXAlEY+YvR+2wzp/wGFlTqC0AAsiDs6OxARE9rp2nZfVzmO
+	 TUZ8163QNhYkcvld3wjhiwMpKaHWpL4kOQId21Hhd/rlHDtmxVTi+ZB/if1yt6Qovf
+	 Aa0hXeSKWVS/A==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id A42E846484;
+	by lkml.kernel.org (Postfix) with ESMTP id C8DCB46490;
 	Mon,  2 Nov 2026 10:41:23 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 02 Nov 2026 07:41:00 -0300
-Subject: [PATCH v5 2/7] lib: kstrtox: round to nearest, ties to even in
- kstrto[u]dec64()
+Date: Mon, 02 Nov 2026 07:41:03 -0300
+Subject: [PATCH v5 5/7] iio: test: rescale: compare scales against the
+ precision of the output
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261102-e-notation-v5-2-d399e544a982@analog.com>
+Message-Id: <20261102-e-notation-v5-5-d399e544a982@analog.com>
 References: <20261102-e-notation-v5-0-d399e544a982@analog.com>
 In-Reply-To: <20261102-e-notation-v5-0-d399e544a982@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
@@ -93,11 +93,11 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
  Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793616082; l=8057;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793616082; l=5689;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=1dMB63Cn47ITK8X1gqWsPx6EOJi5fsA+BpVS9jc67FI=;
- b=Vk8+fK/uM1OSTrKP3qKFnUa28FgV4nyNkJLL60yoLdqOrVOLaKf8mal0/YunQn5YYHwIGmf93
- pZLaasVMrKpAQaHmMFJG/3FX5D5BmYzn0dMDaaTtI8JYlBdOlLEXOAr
+ bh=MYurB/fu0EGmpzdutFErjw1ab4qsWqsloaJ03rKS+2A=;
+ b=qhf2ARb0TQ8CjcmXWdasgktDpNzaPWHOzNUMTOCGx3EdJM0Gi9GdrQfaNkW3K3ZLn6uUIikJ6
+ YtB+IqqFczMDQcxgVHIiZADRvFWCcBI4cYYMe+rsgBF1PzExFrKf3pC
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -108,233 +108,152 @@ Content-Transfer-Encoding: 7bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-kstrtoudec64() and kstrtodec64() drop the digits beyond the requested
-scale, which truncates the result toward zero. The error is up to one
-unit in the last place and is always in the same direction.
+The scale tests format the rescaled value with iio_format_value(), which
+prints at most nano precision, and require the relative error to the
+expected value to be below 1 ppm. Both strings are parsed back with
+iio_str_to_fixpoint() at nano precision, so for the small scale cases the
+check only passes because the expected value, like the formatted one, is
+truncated to nano. For example, "0.000000033594" is parsed as 33 nano,
+equal to the formatted "0.000000033", although the actual error is about
+1.8%. If the expected value were rounded instead, it would be parsed as
+34 nano and the test would fail even though the output is as accurate as
+the format allows.
 
-This is easy to hit with values produced by userspace floating point
-formatting. Printing 0.3 with "%.17g" gives "0.29999999999999999",
-which is parsed as 299999 with a scale of 6 instead of 300000. With E
-notation a negative exponent can also drop integer digits, so "19e-1"
-with a scale of 0 gives 1 instead of 2.
+Parse both values with kstrtodec64() at a scale of 10, one digit more
+than the output precision, so the expected value keeps the digits lost
+when formatting. Scale 10 is the largest that still fits the overflow
+cases (about 2.1e8) in an s64. Compute the relative error with
+mul_u64_u64_div_u64(), as the product with 10^6 no longer fits in 64 bits
+for those cases.
 
-Round the result to nearest instead, with ties to even. This is the
-IEEE 754 default rounding mode, as used by strtod() and printf(), and it
-does not bias results in either direction. The first discarded digit is
-known from where parsing stopped, so no extra pass over the string is
-needed: the remaining digits are only checked when the first discarded
-digit is a 5. Since round-half-even is symmetric, kstrtodec64() keeps
-rounding the magnitude and negates it.
-
-Inputs that fit within the scale are parsed exactly as before. An input
-that rounds up past the type limit, such as "18446744073.7095516155"
-with a scale of 9, now returns -ERANGE.
-
-Update the existing truncation test cases and add cases for ties and
-for rounding at the type limits.
+Then allow a relative error up to the relative size of one nano of the
+expected value, the precision of the formatted output. This is 0 ppm for
+values of 0.01 and above, so those cases are checked as before, and it
+accepts the formatting error for the small scale cases.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- lib/kstrtox.c      | 46 ++++++++++++++++++++++++++++++++++++++++------
- lib/test-kstrtox.c | 48 +++++++++++++++++++++++++++++++++++-------------
- 2 files changed, 75 insertions(+), 19 deletions(-)
+ drivers/iio/test/iio-test-rescale.c | 60 ++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 37 deletions(-)
 
-diff --git a/lib/kstrtox.c b/lib/kstrtox.c
-index 94f3399b3a9b..192f2067cad1 100644
---- a/lib/kstrtox.c
-+++ b/lib/kstrtox.c
-@@ -405,9 +405,28 @@ static int skip_digits(const char **s)
- 	return *s - start;
- }
+diff --git a/drivers/iio/test/iio-test-rescale.c b/drivers/iio/test/iio-test-rescale.c
+index de4a09f432c0..e37a20ea1ca6 100644
+--- a/drivers/iio/test/iio-test-rescale.c
++++ b/drivers/iio/test/iio-test-rescale.c
+@@ -6,6 +6,8 @@
+  */
  
-+static u64 round_half_even(const char *p, const char *end, u64 res)
-+{
-+	if (p == end)
-+		return 0;
-+
-+	if (*p < '5')
-+		return 0;
-+	if (*p > '5')
-+		return 1;
-+
-+	/* tie: any nonzero digit after it breaks it, skipping the decimal point */
-+	while (++p < end) {
-+		if (*p != '0' && *p != '.')
-+			return 1;
-+	}
-+
-+	return res & 1;
-+}
-+
- static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+ #include <linux/gcd.h>
++#include <linux/kstrtox.h>
++#include <linux/math64.h>
+ #include <linux/overflow.h>
+ 
+ #include <linux/iio/afe/rescale.h>
+@@ -581,55 +583,37 @@ static void case_to_desc(const struct rescale_tc_data *t, char *desc)
+ KUNIT_ARRAY_PARAM(iio_rescale_scale, scale_cases, case_to_desc);
+ KUNIT_ARRAY_PARAM(iio_rescale_offset, offset_cases, case_to_desc);
+ 
+-/**
+- * iio_str_to_nano() - Parse a fixed-point string to get an
+- *                      IIO_VAL_INT_PLUS_NANO value
+- * @str: The string to parse
+- * @nano: The number as an integer
+- *
+- * Returns 0 on success, or a negative error code if the string could not be
+- * parsed.
++/*
++ * iio_format_value() prints scales with up to nano precision. Parse values
++ * with one more digit, so the expected values keep the precision lost there.
++ * Scale 10 is the largest that fits the overflow test cases in an s64.
+  */
+-static int iio_str_to_nano(const char *str, s64 *nano)
+-{
+-	int tmp, tmp2;
+-	int ret = 0;
+-
+-	/*
+-	 * iio_str_to_fixpoint() uses 10^8 here instead of 10^9 as fract_mult is
+-	 * the multiplier for the first decimal place.
+-	 */
+-	ret = iio_str_to_fixpoint(str, 100000000, &tmp, &tmp2);
+-	if (ret < 0)
+-		return ret;
+-
+-	if (tmp < 0)
+-		tmp2 *= -1;
+-
+-	*nano = (s64)tmp * 1000000000UL + tmp2;
+-
+-	return ret;
+-}
++#define IIO_TEST_EXTRA_DEC_SCALE	1
++#define IIO_TEST_DEC_SCALE		(9 + IIO_TEST_EXTRA_DEC_SCALE)
++#define IIO_TEST_NANO_PER_DEC_SCALE	int_pow(10, IIO_TEST_EXTRA_DEC_SCALE)
+ 
+ /**
+  * iio_test_relative_error_ppm() - Compute relative error (in parts-per-million)
+  *                                 between two fixed-point strings
+  * @real_str: The real value as a string
+  * @exp_str: The expected value as a string
++ * @max_ppm: The relative size (in parts-per-million) of one nano of the
++ *           expected value, the precision of iio_format_value()
+  *
+  * Returns a negative error code if the strings could not be parsed, or the
+  * relative error in parts-per-million.
+  */
+-static int iio_test_relative_error_ppm(const char *real_str, const char *exp_str)
++static int iio_test_relative_error_ppm(const char *real_str, const char *exp_str,
++				       int *max_ppm)
  {
--	const char *s_int, *s_frac;
-+	const char *s_int, *s_frac, *s_end, *s_round;
- 	int len_int, len_frac;
- 	unsigned int rv;
- 	u64 _res = 0;
-@@ -422,6 +441,7 @@ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
+-	s64 real, exp, err;
++	s64 real, exp;
+ 	int ret;
  
- 	s_frac = s;
- 	len_frac = skip_digits(&s);
-+	s_end = s;
+-	ret = iio_str_to_nano(real_str, &real);
++	ret = kstrtodec64(real_str, IIO_TEST_DEC_SCALE, &real);
+ 	if (ret < 0)
+ 		return ret;
  
- 	if (!len_int && !len_frac)
+-	ret = iio_str_to_nano(exp_str, &exp);
++	ret = kstrtodec64(exp_str, IIO_TEST_DEC_SCALE, &exp);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -638,9 +622,9 @@ static int iio_test_relative_error_ppm(const char *real_str, const char *exp_str
  		return -EINVAL;
-@@ -442,8 +462,16 @@ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
- 		return -ERANGE;
- 
- 	if (exp < 0) {
--		len_int = max(len_int + exp, 0);
-+		len_int += exp;
- 		exp = 0;
-+		if (len_int < 0) {
-+			s_round = s_end;
-+			len_int = 0;
-+		} else {
-+			s_round = s_int + len_int;
-+		}
-+	} else {
-+		s_round = s_frac;
  	}
  
- 	rv = _parse_integer(s_int, 10, &_res, len_int);
-@@ -454,6 +482,10 @@ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
- 	if (rv & KSTRTOX_OVERFLOW)
- 		return -ERANGE;
+-	err = 1000000UL * abs(exp - real);
++	*max_ppm = (int)div64_u64(IIO_TEST_NANO_PER_DEC_SCALE * 1000000ULL, abs(exp));
  
-+	s_round += rv;
-+	if (check_add_overflow(_res, round_half_even(s_round, s_end, _res), &_res))
-+		return -ERANGE;
-+
- 	exp -= rv;
- 	if (_res && (exp > 19 /* log10(2^64) = 19.26 */ ||
- 		     check_mul_overflow(_res, int_pow(10, exp), &_res)))
-@@ -473,7 +505,8 @@ static int _kstrtoudec64(const char *s, unsigned int scale, u64 *res)
-  *
-  * For example, a scale of 3 with input "123.45" results in 123450. Note that
-  * trailing zeros in the fractional part input to match the scale are not
-- * required. Also, digits beyond the specified scale are ignored.
-+ * required. Also, digits beyond the specified scale are rounded to nearest,
-+ * ties to even.
-  *
-  * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
-  */
-@@ -494,9 +527,10 @@ EXPORT_SYMBOL(kstrtoudec64);
-  * @scale: The number of digits to the right of the decimal point.
-  * @res: Where to write the result of the conversion on success.
-  *
-- * For example, a scale of 4 with input "-3.141592" results in -31415. Note
-- * that digits beyond the specified scale are ignored. Also, trailing zeros in
-- * the fractional part input to match the scale are not required.
-+ * For example, a scale of 4 with input "-3.141592" results in -31416. Note
-+ * that digits beyond the specified scale are rounded to nearest, ties to
-+ * even. Also, trailing zeros in the fractional part input to match the scale
-+ * are not required.
-  *
-  * Return: 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
-  */
-diff --git a/lib/test-kstrtox.c b/lib/test-kstrtox.c
-index 9255234752db..1f176b232085 100644
---- a/lib/test-kstrtox.c
-+++ b/lib/test-kstrtox.c
-@@ -737,12 +737,23 @@ static void __init test_kstrtoudec64_ok(void)
- 		{"0.01",		3,	10},
- 		{"0.1",			9,	100000000ULL},
- 		{"0.01",		9,	10000000},
--		/* truncation: more fractional digits than scale */
--		{"1.23456",		3,	1234},
--		{"3.1415926535",	6,	3141592},
--		{"0.999999999",		3,	999},
--		{"1.99",		1,	19},
-+		/* rounding: more fractional digits than scale */
-+		{"1.23456",		3,	1235},
-+		{"3.1415926535",	6,	3141593},
-+		{"0.999999999",		3,	1000},
-+		{"1.99",		1,	20},
- 		{"1.234",		0,	1},
-+		/* rounding: ties to even */
-+		{"0.5",			0,	0},
-+		{"1.5",			0,	2},
-+		{"2.5",			0,	2},
-+		{"2.500000",		0,	2},
-+		{"2.51",		0,	3},
-+		{"2.5000001",		0,	3},
-+		{"0.05",		1,	0},
-+		{"0.15",		1,	2},
-+		{"0.25",		1,	2},
-+		{"99.5",		0,	100},
- 		/* trailing newline */
- 		{"1.5\n",		1,	15},
- 		{"42\n",		3,	42000},
-@@ -760,15 +771,16 @@ static void __init test_kstrtoudec64_ok(void)
- 		{"18446744073.709551615",	9,	ULLONG_MAX},
- 		{"18446744073709.551615",	6,	ULLONG_MAX},
- 		{"0.18446744073709551615",	20,	ULLONG_MAX},
-+		{"18446744073.7095516154",	9,	ULLONG_MAX},
- 		/* scale > 19: representable when integer part is small */
- 		{"0.00000000000000000001",	20,	1},
- 		{"0.1",				20,	10000000000000000000ULL},
- 		{"0.00000000000000000000001",	23,	1},
--		/* truncation with scale > 19 */
-+		/* rounding with scale > 19 */
- 		{"0.0000000000000000000012345",	23,	123},
--		/* truncation with many excess digits */
-+		/* rounding with many excess digits */
- 		{"0.00000000000000000000000000000000423",	34,	42},
--		{"1.99999999999999999999999999999999999",	3,	1999},
-+		{"1.99999999999999999999999999999999999",	3,	2000},
- 	};
- 	TEST_OK(kstrtoudec64, u64, "%llu", test_udec64_ok);
+-	return (int)div64_u64(err, abs(exp));
++	return (int)mul_u64_u64_div_u64(abs(exp - real), 1000000, abs(exp));
  }
-@@ -795,6 +807,7 @@ static void __init test_kstrtoudec64_fail(void)
- 		{"1.5 ",	1},
- 		/* overflow */
- 		{"18446744073710.551615",	6},
-+		{"18446744073.7095516155",	9},
- 		{"99999999999999999999",	1},
- 		/* overflow with scale > 19 */
- 		{"1.0",				21},
-@@ -833,11 +846,16 @@ static void __init test_kstrtodec64_ok(void)
- 		{"-1.2",		3,	-1200},
- 		{"0.01",		3,	10},
- 		{"-0.01",		3,	-10},
--		/* truncation */
--		{"1.23456",		3,	1234},
--		{"-1.23456",		3,	-1234},
--		{"0.999999999",		3,	999},
--		{"-0.999999999",	3,	-999},
-+		/* rounding */
-+		{"1.23456",		3,	1235},
-+		{"-1.23456",		3,	-1235},
-+		{"0.999999999",		3,	1000},
-+		{"-0.999999999",	3,	-1000},
-+		/* rounding: ties to even */
-+		{"2.5",			0,	2},
-+		{"-2.5",		0,	-2},
-+		{"-3.5",		0,	-4},
-+		{"-3.141592",		4,	-31416},
- 		/* trailing newline */
- 		{"1.5\n",		1,	15},
- 		{"-1.5\n",		1,	-15},
-@@ -846,6 +864,8 @@ static void __init test_kstrtodec64_ok(void)
- 		/* limits */
- 		{"9223372036.854775807",	9,	LLONG_MAX},
- 		{"-9223372036.854775808",	9,	LLONG_MIN},
-+		{"9223372036.8547758074",	9,	LLONG_MAX},
-+		{"-9223372036.8547758085",	9,	LLONG_MIN},
- 		/* scale > 19 */
- 		{"0.0",				20,	0},
- 		{"-0.0",			20,	0},
-@@ -875,6 +895,8 @@ static void __init test_kstrtodec64_fail(void)
- 		/* signed overflow */
- 		{"9223372036.854775808",	9},
- 		{"-9223372036.854775809",	9},
-+		{"9223372036.8547758075",	9},
-+		{"-9223372036.8547758085001",	9},
- 		{"99999999999999999999",	1},
- 		/* signed overflow with scale > 19 */
- 		{"0.1",				20},
+ 
+ static void iio_rescale_test_scale(struct kunit *test)
+@@ -650,6 +634,7 @@ static void iio_rescale_test_scale(struct kunit *test)
+ 	struct rescale rescale;
+ 	int values[2];
+ 	int rel_ppm;
++	int max_ppm;
+ 	int ret;
+ 
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buff);
+@@ -666,10 +651,11 @@ static void iio_rescale_test_scale(struct kunit *test)
+ 	ret = iio_format_value(buff, ret, 2, values);
+ 	KUNIT_EXPECT_EQ(test, (int)strlen(buff), ret);
+ 
+-	rel_ppm = iio_test_relative_error_ppm(buff, t->expected);
+-	KUNIT_EXPECT_GE_MSG(test, rel_ppm, 0, "failed to compute ppm\n");
++	rel_ppm = iio_test_relative_error_ppm(buff, t->expected, &max_ppm);
++	KUNIT_ASSERT_GE_MSG(test, rel_ppm, 0, "failed to compute ppm\n");
+ 
+-	KUNIT_EXPECT_EQ_MSG(test, rel_ppm, 0,
++	/* allow the error of the nano precision used to format the value */
++	KUNIT_EXPECT_LE_MSG(test, rel_ppm, max_ppm,
+ 			    "\t    real=%s"
+ 			    "\texpected=%s\n",
+ 			    buff, t->expected);
 
 -- 
 2.43.0
