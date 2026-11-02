@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=34.202.193.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793605671;
-	b=f3eZFfxTcC/AuSo2LvJEdsQNhM9tUfP0nWXN4Pu7tBXlnp+GA/hA8/cJNWhegleBvuw9
-	 kW5/z4pLoOO9QmLE1MRlI0EGCLtRYY1IIZecf4rRFGvfbEJwrIijCofnsKEGgyNu6KoNY
-	 mijfQWuBSDcNWhRcQVULlU1pJDA6giKIyoPEx/04oPoTqTAlFFMFqOvCetqcHpvZ9VtJB
-	 iLmr5mEf/qlF122lbEYARjLvI/0sloNsYA73MU4QHfHAAN/nhUMaowFx8huYHEbQIlUAF
-	 sOvFVzrpN3P7D8LSy0eGTedqVadJ3VUCvAagYT7oqFh6QEXdAxLq2HHdyI2oing9yBA==
+	t=1793605673;
+	b=DLAqwyR/R0r9g8ulIQ6NcpaXEl3FDWylc1vaP634VMSws4gSf4f6Ya6bWakaZECqflVv
+	 n3XNvwOS7ywRyqNqQa4LL8lQ7EbyEBKpWTl+AYcQOun2v8lVpzNujspZjI2QY57HsJ4ZC
+	 6aZcV5bqYT9+UhVypHpkmyMToR5GSxUJhbZsXVnJjensZdl8kEaCzICjtNvsFA66CXI4Y
+	 UeEPUkoUQPlaKjqBFNA3937oixbp/MB9beJZyFSAm4gXx6OhaeJNMfljxb/bBjP6fgCZJ
+	 +LdmaU1mwwIF7sTFz7Hq0tUY6aptUg9zdSs1gj7fCR2WDzv4Tjq8kcSIFeBfnjjqiNQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793605671;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793605673;
 	h=DMARC-Filter:DKIM-Signature:DKIM-Signature:Feedback-ID:
 	 X-Pm-Original-To:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding:X-MIME-Autoconverted:
-	 Content-Type;
-	bh=ME2Cqg6qSz8PRLsZdr3Tn5bcHvcBRTnMAvRs195fxiM=;
-	b=QCUM9sQCuJUZHbAlmRGvjiY417UWmlevq/1eKXXGQ7kxPD81mGEtsDddb/WQoQIyoEjU
-	 6XKS1lF+5QdKQZ83zIR1MF5BfEBrEHLHv9K7BlbNfqJa50QYJKLgoB7heNcpLrBJxb0MA
-	 CpjKP2jjGUspvHf/VcyGaFuzw3gq6+36iL+5XkK8sI9YsznOZx5en8P8h8r8zyKFDDUcM
-	 /DWiD0PWsnu62awrH7kYrDY7H4UTmp7VwRT8nFqx1Xg5W5+MuU9f0PyyDWTR5EHSnBtC1
-	 sBsfYh7DKPNkxdi4U2XS/eshwP4orFEubU9oPPn9bG3Wg+fKUEleFop4vBAj5gLND2Q==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 X-MIME-Autoconverted:Content-Type;
+	bh=Klj60h8HQ29wEudOMHcX3kt40+YhSZgfn82l8HFZq8M=;
+	b=HgnizQwIp1bAPVvfISFyrRDv7VVndyd9k1G8ilQgZjVbAowRf3JTQY5gGX9XOkMl/x1e
+	 6vRXWggApPaJc5NLVPsZ302SyLgi54o/F56YFRWXhZAxxBEsqiMUGum/Yv721pE0fptUz
+	 XikdZGZxI8VbN8K0WxBQuJmxOGuAfSCKEZ2K2ywShUOURNIWu3yvP7S2nTd6rN2kXlBTS
+	 I0ZvK1B0EqI11FX6ZwsJ11jP4LUzZZX+cBsAL+shAtNmLy6yywJpQjIWSvjgG6O51FJAk
+	 AFGfVTTeOr1Pv7ruWCTcBTRgWOePEFcKtrWg5gmlHvmh/fADS+ljAxkO9xFSKWRW1kg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=arkamondal.net;
 	spf=pass smtp.mailfrom=arkamondal.net;
-	dkim=pass header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=gra4POX3;
-	dkim=pass header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b="QW/uBBom";
+	dkim=pass header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b="haxp/zWc";
+	dkim=pass header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b="qYi1/rw6";
 	arc=none smtp.remote-ip=34.202.193.197
 Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D210D606A324
-	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:47:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D210D606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B180606A333
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:47:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B180606A333
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=gra4POX3;
-	dkim=pass (2048-bit key, unprotected) header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=QW/uBBom
-DKIM-Signature: a=rsa-sha256; b=gra4POX39YwbZTA5PZhGKUncV6Zp994OHHzlTtuq45sKg6HkduIGhUyxz/wJIFk23rr9yv8rsuuV1MainkCa7n+qWOc7xNrLHgLLAjxueJ5PbdUrSAHxMdJDbww2uQf78w71fWqJHm1IYQixPl8ZMKzkdWIboyGUh9/+n36d9KUp0Nt6FZ7BVeOtJEn78xNCWImHWI0M39PqpppIBjOrUG07amnRy9WV9+RwaAbimzbklSitTMMCFweCL1oMajvjX1CpKlNsn2htE7Dbo1gcbOEPpELeDY6ypdYgsahmNM6dx8816BOQtaDkcm956u/pXlxGrTVcOlI5wmpwmVH3dA==; s=purelymail2; d=arkamondal.net; v=1; bh=kSHKm1nWBcQgSB/3l+sue+BQAl6lbrZWZ2hKP4X1zXQ=; h=Received:From:To:Subject:Date;
-DKIM-Signature: a=rsa-sha256; b=QW/uBBommH6pVDn2ig+V4wLwAlHffUQKH/gpld2lttq/X1R8NgF/zt84zlVhLWutE5vZH8t1XLu3srRUlDjcE28+xHf6Mh6KW+SonLWhfpeXssmT+yu02WVw30eOr2wr9bjUIIvB0qKCgBx5xjrCXt+BCDehcS6ZbHyZ+n4lbiK4lzmFXPfJXoteSWWPFMvk1tFB393nwKH/1cRfCCRplLlL8XpiCJHxZsZF1EbA/VqYAlkvy2TvR9v86OIcR70jtTv1UObn8n/o4k+tM3tP79dj1LYZqYwY1hIngTUtNE41J2T45HUNbxWZ+l+LN5oXkDVMPbQrkWMcnYQGvhLucw==; s=purelymail2; d=purelymail.com; v=1; bh=kSHKm1nWBcQgSB/3l+sue+BQAl6lbrZWZ2hKP4X1zXQ=; h=Feedback-ID:Received:From:To:Subject:Date;
+	dkim=pass (2048-bit key, unprotected) header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=haxp/zWc;
+	dkim=pass (2048-bit key, unprotected) header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=qYi1/rw6
+DKIM-Signature: a=rsa-sha256; b=haxp/zWcKGfYLH+VveVSgQ0hsiXc77MlCCKlMmaOP1HTPi2dtRz6rNJWIK8ZHAOuc1wcyAwySLxs9fJSLSpUJ9sjwN4Vve+ZQhDSfCE6ySORGVFAeveRHm+GyBMZIzEYc3GVIkLX//wJ8yvuNDBseBzX8VXkkFh/ncnTU0trMziQ7w9vzB7/GKeu7Fa5dS4TtDtS3ZIaJf2h4blZ8QmOIUYdhYXVDnOY971p3ikXQn+V1OK+8NDGPkhS/W3FCCu4PiB7DTgnQifqOJOlVsf44cidZoThgHemM4JfwieEJdmGuFMqlkJgpBrgd4MIV/vO2BmMC1oan/PEbdtVYJXhvg==; s=purelymail2; d=arkamondal.net; v=1; bh=yPD7e72BxlzGACPvkfjqczpIsl4woKKtHuunQfa11Zw=; h=Received:From:To:Subject:Date;
+DKIM-Signature: a=rsa-sha256; b=qYi1/rw6TYgFBMhnDKQ0si5sGK29P8I7uebb1IJlT7PmjWjriYTSS8X9hYhULlfErEFca69kEyqEeNIoUd+rLfdCxv9GQfoPIgSqqdnHj9JCGV6s43LndBT/RAdxB+6H6hi8XYZoJrRXj4dJJwIKdQOWBNvRDNozwTlbKMWxr6EiAeth5Ll1wWDjn9H6EN2hKTq0Oqgbsv5oEERLTqH1gL6zsDpRc5fLcQFyo2AiOqTK+qKm6GVIort/PWCtey6CQxGBE0mK7Nn/UE/bVJH+CRaOCelAKDjnI+xsQulQjL6qGd6SAcAB1RSPyV8wWfWm/0s8Jqpb64LRE1xT9F0AEg==; s=purelymail2; d=purelymail.com; v=1; bh=yPD7e72BxlzGACPvkfjqczpIsl4woKKtHuunQfa11Zw=; h=Feedback-ID:Received:From:To:Subject:Date;
 Feedback-ID: 1246644:48769:null:purelymail
 X-Pm-Original-To: linux-iio@vger.kernel.org
 Authentication-Results: purelymail.com; auth=pass
-Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id 1445244709;
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -370655267;
           (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-          Mon, 02 Nov 2026 07:47:18 +0000 (UTC)
+          Mon, 02 Nov 2026 07:47:29 +0000 (UTC)
 From: Arka Mondal <arka@arkamondal.net>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Linus Walleij <linusw@kernel.org>
@@ -57,10 +57,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arka Mondal <arka@arkamondal.net>
-Subject: [PATCH 0/6] iio: Give the *_available attributes the names the core generates
-Date: Mon,  2 Nov 2026 16:46:54 +0900
-Message-ID: <20261102074700.63075-1-arka@arkamondal.net>
+Subject: [PATCH 4/6] iio: light: max44000: Report the available lists via read_avail()
+Date: Mon,  2 Nov 2026 16:46:58 +0900
+Message-ID: <20261102074700.63075-5-arka@arkamondal.net>
 X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261102074700.63075-1-arka@arkamondal.net>
+References: <20261102074700.63075-1-arka@arkamondal.net>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -74,103 +76,146 @@ Content-Transfer-Encoding: quoted-printable
 X-MIME-Autoconverted: from 8bit to quoted-printable by Purelymail
 Content-Type: text/plain; charset=UTF-8
 
-An <attr>_available file takes its name from the attribute whose values
-it lists. The core builds both names with __iio_chan_prefix_emit(),
-called for the available attribute with the same shared_by
-argument, so the prefix follows from where the value sits:
-in_<type> plus any index or modifier for info_mask_separate,
-in_<type> for info_mask_shared_by_type, and nothing at all for
-info_mask_shared_by_all. The iio-channel-prefix KUnit suite covers each
-of those cases.
+The light channel keeps IIO_CHAN_INFO_SCALE and IIO_CHAN_INFO_INT_TIME
+in info_mask_shared_by_type, so userspace sees in_illuminance_scale
+and in_illuminance_integration_time. Two custom attributes list the
+values those accept, but they are named illuminance_scale_available and
+illuminance_integration_time_available, without the in_ prefix the core
+gives the attribute a list belongs to. Both land at the device level,
+paired with nothing, so userspace that asks for either prefixed name
+finds no such file.
 
-Six drivers build their lists by hand with IIO_CONST_ATTR instead,
-and ten of the eleven names they use have no prefix even though
-none of those values is shared across all channels. Each of
-the ten is a device level attribute paired with no channel, so
-its list is reachable only under a name that does not describe
-it. Documentation/ABI/testing/sysfs-bus-iio keeps bare names
-for the shared-across-all case, sampling_frequency_available and
-oversampling_ratio_available, and gives the prefixed form everywhere
-else: in_accel_scale_available, in_illuminance_scale_available,
-in_intensity_hardwaregain_available. Anything that looks for a list
-beside the attribute it belongs to finds no such file.
+Report both lists through read_avail() and delete the two attributes
+along with the strings they printed.
 
-These patches hand all eleven lists to read_avail() and delete the
-custom attribute groups. The same was done for hts221 in
-commit 003e99cf33e3 ("iio: humidity: hts221: report available values via re=
-ad_avail()")
-where "the incorrectly named in_humidity_oversampling_ratio_available
-attribute is replaced by the standard
-in_humidityrelative_oversampling_ratio_available name", so the shape is
-not new. The names change as follows.
+Each list uses the format the write path accepts, which
+max44000_write_raw_get_fmt() gives as IIO_VAL_INT_PLUS_MICRO for
+scale and IIO_VAL_INT_PLUS_NANO for integration time. The scale
+is read back as IIO_VAL_FRACTIONAL_LOG2, the same number written
+another way. max44000_write_raw() still rounds a request against
+the ulux table with find_closest() and against the ns table with
+find_closest_descending(), so both tables stay and the lists are
+separate arrays of value pairs.
 
-  isl29125   scale_available
-             -> in_intensity_scale_available
-  apds9960   proximity_scale_available
-             -> in_proximity_scale_available
-  apds9960   intensity_scale_available
-             -> in_intensity_scale_available
-  apds9960   integration_time_available
-             -> in_intensity_integration_time_available
-  max44009   illuminance_integration_time_available
-             -> in_illuminance_integration_time_available
-  max44000   illuminance_scale_available
-             -> in_illuminance_scale_available
-  max44000   illuminance_integration_time_available
-             -> in_illuminance_integration_time_available
-  hdc100x    temp_integration_time_available
-             -> in_temp_integration_time_available
-  hdc100x    humidityrelative_integration_time_available
-             -> in_humidityrelative_integration_time_available
-  hdc100x    out_current_heater_raw_available
-             -> unchanged, this one was already right
-  mpu3050    anglevel_scale_available
-             -> in_anglvel_scale_available
+No value changes, but the core prints each one to the full precision
+of its format. The scale now reads 0.031250 0.125000 0.500000 4.000000
+where it read 0.03125 0.125 0.5 4, and the integration time reads
+0.100000000 0.025000000 0.006250000 0.001562500 where it read 0.100
+0.025 0.00625 0.0015625.
 
-Of the eleven lists, four print exactly the text they printed before and
-six gain trailing decimals, because the core prints each value to the
-full precision of its IIO_VAL_* type where the old strings were written
-out by hand. apds9960's integration time, for one, becomes 0.028000
-0.100000 0.200000 0.700000. The numbers are the same.
+Fixes: d5d8f49b6345 ("max44000: Expose ambient sensor scaling")
+Signed-off-by: Arka Mondal <arka@arkamondal.net>
+---
 
-The eleventh is mpu3050, whose four values really do change. They were
-computed against 2^16 while mpu3050_read_raw() divides by U16_MAX,
-so the list never agreed with the channel: it offered 0.000122070
-where in_anglvel_scale reports 0.000122072, and likewise for the other
-three. Patch 6 builds the list from the same IIO_DEGREE_TO_RAD() terms
-the read path uses, so the two cannot diverge again.
+Notes:
+    Compile tested only; no relevant hardware available.
 
-On who runs these parts: mpu3050 appears in eight in-tree device tree
-files, covering Tegra 2 and 3 tablets, the APQ8060 Dragonboard and two
-Ux500 phones, and hdc1080 in two, one of them an IBM BMC. apds9960,
-max44000 and hdc100x also carry ACPI ids, so they turn up on x86
-machines with no device tree at all. isl29125 and max44009 have no
-in-tree user that I could find.
+ drivers/iio/light/max44000.c | 60 ++++++++++++++++++++++--------------
+ 1 file changed, 37 insertions(+), 23 deletions(-)
 
-Compile tested only; I have none of this hardware. Patch 2 draws one
-checkpatch spelling warning on a word inside its Fixes: subject. That
-typo is in the 2015 commit being cited and has to stay, or the tag stops
-matching the subject it names. I am happy to rebase on togreg or testing
-if that is easier for you.
-
-Arka Mondal (6):
-  iio: light: isl29125: Report the scale list via read_avail()
-  iio: light: apds9960: Report the available lists via read_avail()
-  iio: light: max44009: Report the integration time via read_avail()
-  iio: light: max44000: Report the available lists via read_avail()
-  iio: humidity: hdc100x: Report the available lists via read_avail()
-  iio: gyro: mpu3050: Fix the scale list and report it via read_avail()
-
- drivers/iio/gyro/mpu3050-core.c | 40 ++++++++++++---------
- drivers/iio/humidity/hdc100x.c  | 61 ++++++++++++++++++++++++---------
- drivers/iio/light/apds9960.c    | 56 ++++++++++++++++++++++--------
- drivers/iio/light/isl29125.c    | 29 +++++++++++-----
- drivers/iio/light/max44000.c    | 60 +++++++++++++++++++-------------
- drivers/iio/light/max44009.c    | 48 ++++++++++++++------------
- 6 files changed, 193 insertions(+), 101 deletions(-)
-
-
-base-commit: d135ab453a7400a34930bdda1ef4bdc8acfac80e
+diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+index 8c344f1b3fe2..9f9046e127c0 100644
+--- a/drivers/iio/light/max44000.c
++++ b/drivers/iio/light/max44000.c
+@@ -104,11 +104,20 @@ static const int max44000_int_time_avail_ns_array[] =
+=3D {
+ =09     6250000,
+ =09     1562500,
+ };
+-static const char max44000_int_time_avail_str[] =3D
+-=09"0.100 "
+-=09"0.025 "
+-=09"0.00625 "
+-=09"0.0015625";
++
++static const int max44000_int_time_avail[] =3D {
++=090, 100000000,
++=090, 25000000,
++=090, 6250000,
++=090, 1562500,
++};
++
++static const int max44000_scale_avail[] =3D {
++=090, 31250,
++=090, 125000,
++=090, 500000,
++=094, 0,
++};
+=20
+ /* Available scales (internal to ulux) with pretty manual alignment: */
+ static const int max44000_scale_avail_ulux_array[] =3D {
+@@ -117,11 +126,6 @@ static const int max44000_scale_avail_ulux_array[] =3D=
+ {
+ =09   500000,
+ =09  4000000,
+ };
+-static const char max44000_scale_avail_str[] =3D
+-=09"0.03125 "
+-=09"0.125 "
+-=09"0.5 "
+-=09 "4";
+=20
+ #define MAX44000_SCAN_INDEX_ALS 0
+ #define MAX44000_SCAN_INDEX_PRX 1
+@@ -132,6 +136,8 @@ static const struct iio_chan_spec max44000_channels[] =
+=3D {
+ =09=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),
+ =09=09.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE) |
+ =09=09=09=09=09    BIT(IIO_CHAN_INFO_INT_TIME),
++=09=09.info_mask_shared_by_type_available =3D
++=09=09=09BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_INT_TIME),
+ =09=09.scan_index =3D MAX44000_SCAN_INDEX_ALS,
+ =09=09.scan_type =3D {
+ =09=09=09.sign=09=09=3D 'u',
+@@ -383,24 +389,32 @@ static int max44000_write_raw_get_fmt(struct iio_dev =
+*indio_dev,
+ =09=09return IIO_VAL_INT;
+ }
+=20
+-static IIO_CONST_ATTR(illuminance_integration_time_available, max44000_int=
+_time_avail_str);
+-static IIO_CONST_ATTR(illuminance_scale_available, max44000_scale_avail_st=
+r);
+-
+-static struct attribute *max44000_attributes[] =3D {
+-=09&iio_const_attr_illuminance_integration_time_available.dev_attr.attr,
+-=09&iio_const_attr_illuminance_scale_available.dev_attr.attr,
+-=09NULL
+-};
+-
+-static const struct attribute_group max44000_attribute_group =3D {
+-=09.attrs =3D max44000_attributes,
+-};
++static int max44000_read_avail(struct iio_dev *indio_dev,
++=09=09=09       struct iio_chan_spec const *chan,
++=09=09=09       const int **vals, int *type, int *length,
++=09=09=09       long mask)
++{
++=09switch (mask) {
++=09case IIO_CHAN_INFO_SCALE:
++=09=09*vals =3D max44000_scale_avail;
++=09=09*type =3D IIO_VAL_INT_PLUS_MICRO;
++=09=09*length =3D ARRAY_SIZE(max44000_scale_avail);
++=09=09return IIO_AVAIL_LIST;
++=09case IIO_CHAN_INFO_INT_TIME:
++=09=09*vals =3D max44000_int_time_avail;
++=09=09*type =3D IIO_VAL_INT_PLUS_NANO;
++=09=09*length =3D ARRAY_SIZE(max44000_int_time_avail);
++=09=09return IIO_AVAIL_LIST;
++=09default:
++=09=09return -EINVAL;
++=09}
++}
+=20
+ static const struct iio_info max44000_info =3D {
+ =09.read_raw=09=09=3D max44000_read_raw,
+ =09.write_raw=09=09=3D max44000_write_raw,
+ =09.write_raw_get_fmt=09=3D max44000_write_raw_get_fmt,
+-=09.attrs=09=09=09=3D &max44000_attribute_group,
++=09.read_avail=09=09=3D max44000_read_avail,
+ };
+=20
+ static bool max44000_readable_reg(struct device *dev, unsigned int reg)
 --=20
 2.56.0
 
