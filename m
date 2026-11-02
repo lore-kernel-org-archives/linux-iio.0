@@ -1,57 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793581051;
-	b=ASQ8tmJDYb+G6u68hCrIhp1ODuuD6PQ6EIY1XuDGwDemQ/5gjYuzK2o/jFcO15ROiS1Z
-	 U+sFTQVvdmgdAid6wz2tP0ckqFFmB48j6UngGIwnLP8weYdnzXhfAhyqirUlEFcW97qFZ
-	 Thot9G2k5TR0lE8mbQWzHOqdKCEbwpjJ0+qNtT5nUGGdvibgklGRCuZzMEqDjjLNsCC2+
-	 wIaNJmkhauqz9nrZ/R4J9mDgdGYEUd4Ep2/lYf3fuhiBwNOMUyJNvjLaAB2LAnZB7uTxi
-	 FJHRb+/bSK1Skn9AxAAZU5wA9uIFkbv1wU5/ud7oAR+Fglbh7qSWbqWuXFGqzElmukg==
+	t=1793582859;
+	b=X7O4RTtQYWHlSx9pVT4cjD7VmwUBvsVv2ntDAbG5YhIiWcWq8UegPerWMQISp+f0dQKS
+	 lV0aXQvedilFsmHKIQ5hkxXcSkiDdXFhs+wu7cZCqZp3E0VWYjbKh0qCQYwCdvfToasoe
+	 397Q06mDFCWYxxt2rJ7IkvoLKBngEHTh7ev1ZolDyYaLU5UhCOayaj77uHcYjuzlPqqOA
+	 +pCo9OUYRfvuznSNKRULHUxeEkhH+0KuGZkHEbcw8M+Sa/0NthODijell2BbG5daEx1QP
+	 bx9QnoPEZLgfzRsNV3Tr9Fd8SIEoNJ4CTFTEBCXulL2tB55uaNBDzwmvzn9ccGBoStA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793581051;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793582859;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=heLd+ss6C638cZhNDlPcqRa2CXDipccwemFIU44ENYk=;
-	b=IuGgBavdYut2BhWZPgeloX28Q7HOA9mZmVYbVipZaJpwvO8JZ4EDVQT1l/EJbpcVrBGr
-	 7EOSo9j3M3iU9i9gbBK1HwAWwQMiot/CzqJoA0RpAeqSeuINkdIChaonwd3kP0YiiP7dZ
-	 39drUmSIo2IsMjUio4yaCvGD+yD0MHFZ3ImytEqYdv5hPM/mCq5e8MGjqxY0azM7ss1uO
-	 9edCSwLS63jW3BY7lmvof3A8K5Gy7cvowfXm6gSINaBxONIunl9Fbolc+EoIraeIhh5Fi
-	 1Cj5Kjr/JGg7GFq0Lj7FFrPxBoierBveh+sMDFO4WK8jFM/RX1K1pfyQYXaHI78QKuQ==
+	bh=UfRldmRYmdOXB066OSHlxeXaxLqp09q3SNbqpbUYr6E=;
+	b=JluMyMmajjHlC42db5VLVmi2ght6Y4hwG7BH44iIZF0EeUfFupaHdaRkTDMENgktjV8v
+	 1XES4zPSRzL1BrHXYHB8LOLxrLkKr73/CeOi4sqDKdpTwLVs5q6wfHAwOL5ym1bQMCtDt
+	 dLyuCx2rc2Hjd53W2yABnb6TKYUwFs3YfN2xzDciJTs84fy2m4anBrObxRU8joyrWn6si
+	 TvfFoTubhXVDaGCMNtA4q15ZWFv36ax2kF66mvf51MgjKca+6bs7NQoOPyvuDWXDTgaqQ
+	 Wvovz17OaDre3RqyOxjKeNHV7/8zutYinelCi/vlg4zADpWpGvSbJmP4TSYX6WTQeFQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bw6Cnh5y;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D0p68AVd;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA8260A2609;
-	Mon,  2 Nov 2026 00:57:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F5B6606A324;
+	Mon,  2 Nov 2026 01:27:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bw6Cnh5y
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F00A1F0093A;
-	Mon,  2 Nov 2026 00:57:29 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D0p68AVd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233981F00919;
+	Mon,  2 Nov 2026 01:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793581050;
-	bh=heLd+ss6C638cZhNDlPcqRa2CXDipccwemFIU44ENYk=;
+	s=k20260515; t=1793582859;
+	bh=UfRldmRYmdOXB066OSHlxeXaxLqp09q3SNbqpbUYr6E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=bw6Cnh5ydtca/KTvBYmmvOycB4MNE8b73QA9kOyPQoFkmsAGIl16tNLJkIquJVUFF
-	 L7hGlq6Wb8sjhULVaLDK9/uyNKmtG9cJQwotCC2weK5OMgS913xGK5I1MbuafFgBoe
-	 NFTNkXH44bwKXlXn7gE/bZae/fzLyOcKyAksgE6eRqgHMYdPfWURrYEeSPGWlKhBk5
-	 dYGBe8Y8uQbXVChMVW4XiNcVoU0VuxLfHBDmya9f3Da9ulJ+Us4dpKsHuTm27f/iT0
-	 St6giEnY+kd6LGcIfeFaxRRTco+T/c6BMFuUIDBgAyAU678yMabPFNAQhrzWviCv6r
-	 MvT7QJ3PiswFw==
-Date: Mon, 2 Nov 2026 00:57:22 +0000
+	b=D0p68AVdlqZHXbsjr56QtNk+BdkIR47WcT1nfpC2a0XNCVRXnWZVgYSLzVT7IpHfL
+	 pqwCPlvBDxJK8BShX1tg7dzDgfA5I3JTjrvyWa7DRKFqDww8nSCGTy+lu1Zp/s5foH
+	 eWXIONLFfOLY6xaruIhxMBeHKvJL0Cya428kSP3e6k1h3suDy2WspNx1TY6oQZonhz
+	 tWQyJFwYiM2vRPTjfMS/tAnfUMty3Y6E87udbkcrZVKZwNkp8kgcSCQcNvFxc0lsQv
+	 u1xVEQCs14mJGLp/94Y+fx6lrGntHACR8oaLyqDZko5gxFQ5EHAn7IBdpSG/df+cJN
+	 w9qREWdTKqJsg==
+Date: Mon, 2 Nov 2026 01:27:33 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org>
-Cc: and.amer@gmail.com, Peter Rosin <peda@lysator.liu.se>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Liam Beguin <liambeguin@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: afe: rescale: expose offset if rescaler or
- source has one
-Message-ID: <20261102005722.3f455caf@jic23-hlaptop>
-In-Reply-To: <20261026-iio-rescale-offset-v3-1-7cf6540111dc@gmail.com>
-References: <20261026-iio-rescale-offset-v3-1-7cf6540111dc@gmail.com>
+To: Brian Norris <briannorris@chromium.org>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+ linux-pm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 13/17] iio: light: apds9960: Discard
+ pm_runtime_put_autosuspend() return values
+Message-ID: <20261102012733.435bdc94@jic23-hlaptop>
+In-Reply-To: <20261021165858.v2.13.Ic0c3be7c36a602e32c04628d5ae5692556742fa8@changeid>
+References: <20261021235818.3059519-1-briannorris@chromium.org>
+	<20261021165858.v2.13.Ic0c3be7c36a602e32c04628d5ae5692556742fa8@changeid>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,57 +67,171 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 11:57:38 +0100
-Andrea Amer via B4 Relay <devnull+and.amer.gmail.com@kernel.org> wrote:
+On Wed, 21 Oct 2026 16:57:14 -0700
+Brian Norris <briannorris@chromium.org> wrote:
 
-> From: Andrea Amer <and.amer@gmail.com>
+> This driver propagates the return value of pm_runtime_put_autosuspend(),
+> which is not particularly useful.
 > 
-> A rescale channel advertises IIO_CHAN_INFO_OFFSET only when its own
-> offset is non-zero. A child rescale therefore hides a source offset,
-> and consumers apply raw * scale and drop it, even though
-> rescale_read_raw() folds the source offset in.
+> Returning an error code from pm_runtime_put_autosuspend() merely means
+> that it has not queued up a timer or work item to check whether or not
+> the device can be suspended and there are many perfectly valid
+> situations in which that can happen, like after writing "on" to the
+> device's runtime PM "control" attribute in sysfs for one example.
 > 
-> Expose the attribute when either the rescaler or the source channel
-> provides an offset.
+> For this reason, modify this driver to simply discard the
+> pm_runtime_put_autosuspend() return value. Inline the "off" helper, as
+> it's trivial now, and rename to apds9960_power_on().
 > 
-> Fixes: a29c3283653b ("iio: afe: rescale: add offset support")
-> Signed-off-by: Andrea Amer <and.amer@gmail.com>
-Applied to the fixes-togreg branch of iio.git and marked for stbale
+> This will facilitate a planned change of the
+> pm_runtime_put_autosuspend() return type to void in the future, similar
+> to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
+> type to void").
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+
+I took a look at this one and the current code is a complete mess.
+
+I'm going to apply what you have here as a step in the right direction
+simply because I can't see a quick path to fixing it properly.
+
+If anyone wants a fun project then unwinding the mess in here would
+be a good place to start.
+
+Anyhow, applied this one.
 
 thanks,
 
 Jonathan
 
 > ---
-> Changes in v3:
-> - Only expose offset if the rescaler or the source has one (Jonathan Cameron)
-> - Link to v2: https://lore.kernel.org/r/20261016-iio-rescale-offset-v2-1-02c825967139@gmail.com
+> I'm not sure if apds9960_write_event_config()'s existing logic is
+> correct, but I don't want to mess with it.
 > 
 > Changes in v2:
-> - Keep the IIO_CHAN_INFO_SCALE line unchanged (Andy Shevchenko)
-> - Link to v1: https://lore.kernel.org/r/20261012-iio-rescale-offset-v1-1-14ed15979ff2@gmail.com
-> ---
->  drivers/iio/afe/iio-rescale.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  * Split iio patch into per-driver patches
+>  * Inline the put() helper
 > 
-> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-> index 3a6a09ffa5267ddfd5131fbd04a5df928836589d..c01292a15a29d02afa8de80a778c2c2a2aeecd3f 100644
-> --- a/drivers/iio/afe/iio-rescale.c
-> +++ b/drivers/iio/afe/iio-rescale.c
-> @@ -303,7 +303,8 @@ static int rescale_configure_channel(struct device *dev,
->  	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  		BIT(IIO_CHAN_INFO_SCALE);
+>  drivers/iio/light/apds9960.c | 48 ++++++++++++++----------------------
+>  1 file changed, 18 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
+> index afe520de60e2..0e084ffba1a6 100644
+> --- a/drivers/iio/light/apds9960.c
+> +++ b/drivers/iio/light/apds9960.c
+> @@ -476,38 +476,23 @@ static int apds9960_set_als_gain(struct apds9960_data *data, int val)
+>  	return ret;
+>  }
 >  
-> -	if (rescale->offset)
-> +	if (rescale->offset ||
-> +	    iio_channel_has_info(schan, IIO_CHAN_INFO_OFFSET))
->  		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
+> -#ifdef CONFIG_PM
+> -static int apds9960_set_power_state(struct apds9960_data *data, bool on)
+> +static void apds9960_power_on(struct apds9960_data *data)
+>  {
+>  	struct device *dev = &data->client->dev;
+> -	int ret = 0;
+> +	int suspended;
 >  
->  	/*
-> 
-> ---
-> base-commit: a3b3580713f3ac5a32dc2874ee546828977a1d68
-> change-id: 20261012-iio-rescale-offset-41254a33b6d6
-> 
-> Best regards,
+>  	mutex_lock(&data->lock);
+>  
+> -	if (on) {
+> -		int suspended;
+> -
+> -		suspended = pm_runtime_suspended(dev);
+> -		ret = pm_runtime_get_sync(dev);
+> +	suspended = pm_runtime_suspended(dev);
+> +	pm_runtime_get_sync(dev);
+>  
+> -		/* Allow one integration cycle before allowing a reading */
+> -		if (suspended)
+> -			usleep_range(data->als_adc_int_us,
+> -				     APDS9960_MAX_INT_TIME_IN_US);
+> -	} else {
+> -		ret = pm_runtime_put_autosuspend(dev);
+> -	}
+> +	/* Allow one integration cycle before allowing a reading */
+> +	if (suspended)
+> +		usleep_range(data->als_adc_int_us,
+> +			     APDS9960_MAX_INT_TIME_IN_US);
+>  
+>  	mutex_unlock(&data->lock);
+> -
+> -	return ret;
+>  }
+> -#else
+> -static int apds9960_set_power_state(struct apds9960_data *data, bool on)
+> -{
+> -	return 0;
+> -}
+> -#endif
+>  
+>  static int apds9960_read_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+> @@ -522,7 +507,7 @@ static int apds9960_read_raw(struct iio_dev *indio_dev,
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		apds9960_set_power_state(data, true);
+> +		apds9960_power_on(data);
+>  		switch (chan->type) {
+>  		case IIO_PROXIMITY:
+>  			ret = regmap_read(data->regmap, chan->address, val);
+> @@ -540,7 +525,7 @@ static int apds9960_read_raw(struct iio_dev *indio_dev,
+>  		default:
+>  			ret = -EINVAL;
+>  		}
+> -		apds9960_set_power_state(data, false);
+> +		pm_runtime_put_autosuspend(&data->client->dev);
+>  		break;
+>  	case IIO_CHAN_INFO_INT_TIME:
+>  		/* RGB + ALS sensors only have integration time */
+> @@ -767,7 +752,6 @@ static int apds9960_write_event_config(struct iio_dev *indio_dev,
+>  		if (ret)
+>  			return ret;
+>  		data->pxs_int = state;
+> -		apds9960_set_power_state(data, state);
+>  		break;
+>  	case IIO_INTENSITY:
+>  		if (data->als_int == state)
+> @@ -777,12 +761,16 @@ static int apds9960_write_event_config(struct iio_dev *indio_dev,
+>  		if (ret)
+>  			return ret;
+>  		data->als_int = state;
+> -		apds9960_set_power_state(data, state);
+>  		break;
+>  	default:
+>  		return -EINVAL;
+>  	}
+>  
+> +	if (state)
+> +		apds9960_power_on(data);
+> +	else
+> +		pm_runtime_put_autosuspend(&data->client->dev);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1078,7 +1066,7 @@ static int apds9960_probe(struct i2c_client *client)
+>  	pm_runtime_set_autosuspend_delay(&client->dev, 5000);
+>  	pm_runtime_use_autosuspend(&client->dev);
+>  
+> -	apds9960_set_power_state(data, true);
+> +	apds9960_power_on(data);
+>  
+>  	ret = apds9960_regfield_init(data);
+>  	if (ret)
+> @@ -1105,12 +1093,12 @@ static int apds9960_probe(struct i2c_client *client)
+>  	if (ret)
+>  		goto error_power_down;
+>  
+> -	apds9960_set_power_state(data, false);
+> +	pm_runtime_put_autosuspend(&client->dev);
+>  
+>  	return 0;
+>  
+>  error_power_down:
+> -	apds9960_set_power_state(data, false);
+> +	pm_runtime_put_autosuspend(&client->dev);
+>  
+>  	return ret;
+>  }
 
