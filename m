@@ -1,78 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793639710;
-	b=xeraoRHXe+QecY48zYRl5cj4iOm8h1TQZIwiBKKLU21Ek+r2eVRROVWgyEmBbLSSruss
-	 JNlNZRBYwPO5ISbBxUWUc95fxOm8TNs7PKrVY4T6AB2KyJ3nzwzYv8QRqO6IPplYMOhHH
-	 8wVmMoSGfI9sRlF5nFTATyrHLZKhWvMAdLYUIAqNkknOps/YooXLhanF5qt3rLrElK5R1
-	 nclweISuosLp3QPVSUmRVjZn9QCMl6/b8eAPW4nknVCF2cnZ5aIn23EChREGjIDVvFAW2
-	 uOzttflFSPyLbmDLWIisiRZ94KVud62sDopr5wdKIR0IFJTEpfhlt67L9FFH2TL81fw==
+	t=1793639987;
+	b=okq8JG1vZzJS5r9xgmsyAI2+Rwzslf1uyU5qvFP4seY+t4WSMQhvDNq4RvY55zFFFWT5
+	 LVwSLZwEmzsfONm5Z0RkiPTz2YV91ovU01lLkDNor3wopJWnOPV7ZDwYBvhBZbnJO7mNX
+	 /FpZpNDX2MQeAqkp/DuEhExyoYv6ZkJAHiHucCD2zC+OoZLKzhC1gcuFTEihfL0FB1f8N
+	 fBfH/1W3y1AjlEBYeHn3YmfafLhxxfENfSXcs3x8qYc+8LuNwD1NBA1IZMQH0qc8RYdQx
+	 dgKQqzf8hC3cWgz11IQzovEwBmx9np1EBXCvC96k6sOVJmzUs8+2Uf+pbF9cIFG7XEg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793639710;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793639987;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
 	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
 	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=NavCnIFm0AweVazWDKe4qhf+cy2p1D0G3tM/6sqx7S4=;
-	b=GeQSX5lxJmTzV2gBZdN2yR3i5mbJefW2A9i4y9xxlVO7aPa1vEDFuxn4FBEqCPav84Z3
-	 pw7lhS6QBPpLqTOgBLhiNQQA8kn5/+ZGYSWRQ8tNwicBMsGcFf+uZDAuiZztufTL8IWj0
-	 sjZ1a68tbVCDi4NgUdjBXsw0LUFyA4WuMOvQhSUqMt7IxO6wpELzPVOTn2AJP6EYSViFH
-	 9avdpAyaBy0+gw2y8Nkusden1qQ625TVJWuO3twFB3lWmdKo/Mu9Lm4KOLM3e26KJ9s7e
-	 +KVG1WuFYfln1IigmAIxDHU55GR86Da1e4fJ5xZjeTa0fLVJnsNfrgeFbwVqn7uka1Q==
+	bh=DT5eWamxtrU19G5Gc7ioBYYTXLklgAXyVHvH2qTCEzA=;
+	b=2RjX0oJrpOw0ieUp3a4qaimsZ/T+bRGjK89/NGkwoWDO+qDln9RBpPrdSW+RyGJcVttW
+	 vpik7/Ffs0oTjdyqwXVCwbjwjj9PbCJy6/qRYu7vewZ0DeABKEBpSoyEvahlT0rvT0hMn
+	 ITavVKuEHQZ5vgz04vQ22njb//q4JaFXSmJX63qkFfiOwAxRsDI28F/dMw5vzSgpwROO5
+	 /wzj3CQsH+fSCJ0MLVUx78lZrlKpuV05vFpM/6KbVcJrPHJvTfXGt9R3vXwJyQqXw2h2W
+	 SLnRqQ0DAgtozcUtNDUDYoC1ico3wnHLcZWbGJ3MNzfOmCu8fOo137Xs5Q4hSye5/6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jCxpMyMs;
-	arc=none smtp.remote-ip=192.198.163.9
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=VfKhLVsX;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 885A1607220F;
-	Mon,  2 Nov 2026 17:15:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 885A1607220F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C0A606B0FF;
+	Mon,  2 Nov 2026 17:19:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40C0A606B0FF
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jCxpMyMs
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=VfKhLVsX
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793639709; x=1825175709;
+  t=1793639987; x=1825175987;
   h=message-id:subject:from:to:cc:date:in-reply-to:
    references:content-transfer-encoding:mime-version;
-  bh=wgA3wRQC1afllMNVeVGhV6lujmKAxOGnZcEDZZ2xY+4=;
-  b=jCxpMyMsUZud47oD6hZFBvij5dFPfJgboIcJax/ksBnK4XlkANSqm2ht
-   WvqkprKhjViylIWcwcJzavWRv9MKJGwThCU2FU57WWNmXYP0iw3Xy4CHa
-   3RBNhAIO52Bwa6xbcKXoisyQ5DFjjluJLes6Cp5VvOC+wapHKEvLlxP7N
-   k2/7dLatl7AlhA5QXzqLXg8vOX8joJTyZANxnaFGJTnXJLpNAqMxhtLoa
-   87qbPQqz55QR3PHTwHzWdPHJg4NkQZlsYVGDLoVgmx82vmteOGqj9o5Zj
-   U4SDGXuK6vzfoF6td14KWZd1ESUINg1flvFev1OJ82m8vGOKMnfHATCRu
-   w==;
-X-CSE-ConnectionGUID: FgKjec9ER/CqYHSlqpf1NA==
-X-CSE-MsgGUID: 6F0362yBRoum9W/Jtjm7xg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2221776"
+  bh=ninpGkQe1A3RJG31n9ZS8rQNZ+IaBpmi8PE11emBlIo=;
+  b=VfKhLVsXDNOL5ansfv2gw0rXmc+A6I9GsPjrG8liKAdPrPt1Nb65qemp
+   0EgoUcmqtXnhxD4UG8UaZeMbT6sTLEXWz0/nWjjReZ1ywmfBojfK0tUFr
+   PZJ6Z0MOI9/tAkkmxurA0yWYoeQ3o3kiGw0d+I0JRZf4zpSte10fSmvd8
+   yiNWRFmMozixwtevHj2lSLHcxh/zC76PHKnxJ/jxQ1A1zcFX6csw95Ya7
+   I5s2eLQvL78BnVevNUa+shPDiFrtR9eP9J1tWzjE7wk2Oz4ph8NNtGWUJ
+   0ZaE5oPx1Jp2u8nckaa3FxEor+RNb/aeJj8ktva/eCaMtYqg9USEMa0nL
+   A==;
+X-CSE-ConnectionGUID: UERHnDdjQaS8SnQU5XZ+6g==
+X-CSE-MsgGUID: n4NsglR4S4S/RqobQbseOQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2336248"
 X-IronPort-AV: E=Sophos;i="6.27,191,1787036400"; 
-   d="scan'208";a="2221776"
+   d="scan'208";a="2336248"
 Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:15:08 -0800
-X-CSE-ConnectionGUID: E6CLiraZQueMZNKb7ENaFg==
-X-CSE-MsgGUID: itX1B9qMRoewQ2rvGh6tug==
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:19:46 -0800
+X-CSE-ConnectionGUID: YaD6DFZAQAKj65kb+ApbIQ==
+X-CSE-MsgGUID: RXR9cYE3Qsi+fx0pNAsYTw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,191,1787036400"; 
-   d="scan'208";a="8017180"
+   d="scan'208";a="8018124"
 Received: from spandruv-desk2.jf.intel.com ([10.24.80.14])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:15:08 -0800
-Message-ID: <fa1b3732119eafd8dd6944b9324518213026fd0b.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: hid-sensor: Fix scale for magnetic north heading
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:19:45 -0800
+Message-ID: <53e98aa200636737155c122d545afa1fffc9d1cb.camel@linux.intel.com>
+Subject: Re: [PATCH v3 1/3] HID: hid-sensor-hub: Synchronize callback
+ removal with raw events
 From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, Maximilian Czirr <maxx-cz@web.de>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, linux-iio@vger.kernel.org, stable@vger.kernel.org,
- Jiri Kosina <jikos@kernel.org>, "Zhang, Lixu" <lixu.zhang@intel.com>
-Date: Mon, 02 Nov 2026 09:15:07 -0800
-In-Reply-To: <20261102003513.2796a9a9@jic23-hlaptop>
-References: <20261007000107.16533-1-maxx-cz@web.de>
-		<20261018203659.4f2b886e@jic23-hlaptop>
-	 <20261102003513.2796a9a9@jic23-hlaptop>
+To: Christopher Hoover <ch@murgatroid.com>, Jonathan Cameron
+ <jic23@kernel.org>,  Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>
+Cc: Lixu Zhang <lixu.zhang@intel.com>, Joshua Crofts
+ <joshua.crofts1@gmail.com>,  David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko	
+ <andy@kernel.org>, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Date: Mon, 02 Nov 2026 09:19:45 -0800
+In-Reply-To: <20261019023420.83976-2-ch@murgatroid.com>
+References: <20261019023420.83976-1-ch@murgatroid.com>
+	 <20261019023420.83976-2-ch@murgatroid.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
@@ -86,68 +90,69 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 
-On Mon, 2026-11-02 at 00:35 +0000, Jonathan Cameron wrote:
-> On Sun, 18 Oct 2026 20:36:59 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 2026-10-18 at 19:34 -0700, Christopher Hoover wrote:
+> sensor_hub_raw_event() holds pdata->lock while it looks a callback up
+> in dyn_callback_list and calls its capture_sample() and send_event().
+> sensor_hub_remove_callback() takes only dyn_callback_lock, so it can
+> unlink a callback and return while another CPU is between the lookup
+> and the call.=C2=A0 The sensor drivers remove their callback in .remove()
+> and keep the struct hid_sensor_hub_callbacks in memory that devres
+> frees right after, so a report racing an unbind can call through
+> freed function pointers.
 >=20
-> > On Wed,=C2=A0 7 Oct 2026 02:01:07 +0200
-> > Maximilian Czirr <maxx-cz@web.de> wrote:
-> >=20
-> > > hid_sensor_format_scale() applies the HID unit exponent only when
-> > > the usage and unit match an entry in unit_conversion[].
-> > >=20
-> > > Rotation-from-north support uses
-> > > HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, but that usage has no
-> > > entry in
-> > > the conversion table. As a result, the unit exponent is ignored
-> > > and the
-> > > heading can be exposed with a scale of 1 instead of the scale
-> > > specified
-> > > by the HID descriptor.
-> > >=20
-> > > Add a unitless conversion entry so the HID unit exponent is
-> > > applied to
-> > > the magnetic north heading. A sensor reporting an exponent of -5
-> > > then
-> > > correctly exposes a scale of 0.00001 instead of 1.
-> > >=20
-> > > Fixes: abea9c62c32f ("iio: hid-sensor-magn-3d: Add support for
-> > > rotation from north")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Maximilian Czirr <maxx-cz@web.de>=C2=A0=20
-> >=20
+> Take pdata->lock in sensor_hub_remove_callback() too, outside
+> dyn_callback_lock as in sensor_hub_raw_event(), so the removal waits
+> for a report in flight.=C2=A0 pdata->lock is otherwise only taken in
+> sensor_hub_raw_event(), and callbacks are removed from process
+> context.
+>=20
+> Fixes: 401ca24fb34a ("HID: sensors: introduce sensor framework")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christopher Hoover <ch@murgatroid.com>
+> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
+
 Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-> > +CC the hid-sensors maintainers + Lixu who has been helping a lot
-> > with this driver recently.
-> >=20
-> Srinivas, another one for you to check when you have a moment!
+> ---
+> =C2=A0drivers/hid/hid-sensor-hub.c | 12 ++++++++++--
+> =C2=A01 file changed, 10 insertions(+), 2 deletions(-)
 >=20
-> No huge rush - I'm just having a scan through what is outstanding
-> in patchwork to make sure I didn't miss anything.
->=20
-> thanks
->=20
-> Jonathan
-> > > ---
-> > > =C2=A0drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 2 ++
-> > > =C2=A01 file changed, 2 insertions(+)
-> > >=20
-> > > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-
-> > > attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-
-> > > attributes.c
-> > > index 9e7c26e37880..26f8554d18a5 100644
-> > > --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > > +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > > @@ -38,6 +38,8 @@ static const struct {
-> > > =C2=A0	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
-> > > =C2=A0	{HID_USAGE_SENSOR_COMPASS_3D,
-> > > HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
-> > > =C2=A0
-> > > +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, 0, 1, 0},
-> > > +
-> > > =C2=A0	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
-> > > =C2=A0	{HID_USAGE_SENSOR_INCLINOMETER_3D,
-> > > =C2=A0		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},=C2=A0=20
-> >=20
-> >=20
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
+> hub.c
+> index 6470a290ebfc..7cf9f398592e 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -173,7 +173,14 @@ int sensor_hub_remove_callback(struct
+> hid_sensor_hub_device *hsdev,
+> =C2=A0	struct sensor_hub_data *pdata =3D hid_get_drvdata(hsdev-
+> >hdev);
+> =C2=A0	unsigned long flags;
+> =C2=A0
+> -	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
+> +	/*
+> +	 * sensor_hub_raw_event() holds pdata->lock while it looks
+> up a
+> +	 * callback and calls it.=C2=A0 Taking it here too means no
+> report is
+> +	 * still using the callback once it is unlinked, so its
+> owner may
+> +	 * free it as soon as this returns.
+> +	 */
+> +	spin_lock_irqsave(&pdata->lock, flags);
+> +	spin_lock(&pdata->dyn_callback_lock);
+> =C2=A0	list_for_each_entry(callback, &pdata->dyn_callback_list,
+> list)
+> =C2=A0		if (callback->usage_id =3D=3D usage_id &&
+> =C2=A0						callback->hsdev =3D=3D
+> hsdev) {
+> @@ -181,7 +188,8 @@ int sensor_hub_remove_callback(struct
+> hid_sensor_hub_device *hsdev,
+> =C2=A0			kfree(callback);
+> =C2=A0			break;
+> =C2=A0		}
+> -	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
+> +	spin_unlock(&pdata->dyn_callback_lock);
+> +	spin_unlock_irqrestore(&pdata->lock, flags);
+> =C2=A0
+> =C2=A0	return 0;
+> =C2=A0}
