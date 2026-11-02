@@ -1,60 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793657869;
-	b=se0vTNHXy6yMvRUv94RkECeJJJ83/P/lmRqc20oN3EKBix/AzU8/58P1XQ9xG2FADD+U
-	 6z7Eg41aNT329OtdweCCi4pW4M3m3MQ7XaKwT4/SFb/6gz96Ve1tnecVoaZOXl4qDWasi
-	 U5OtreNiEpojmaLHNqFS9CQ4ic2rNjTxc6OfVCh6Fq/6u/XJfHsUQljLvzCVCiKC9Li7a
-	 AJMQrqImHbL36HyFbjzvsVzbbPJ1feyrLHDmWmc8FVe+7gsIsR9IVCs5z6AywfOOhdadI
-	 P94Bc5qEXB/66fDupaITYAR+wr7hvpaixfWvcWgV/05VR1yXepUKQpH786OR/+rb1hg==
+	t=1793658061;
+	b=KQhzNInyHb/m5am2GMdZY5Jxg1ZzG2niOfoDPk85tJTX70kNIjhD5Ln5gxTf250YHFlD
+	 zpF/s+iicb2vT5FrwEkrqxRKeDMF7ssUrdzKvlbhiCiSjOpcvT3Nc/SH9zPu79MH2rx3d
+	 j1VEj6m24hyzca2bPAe0Ho5auwUgWFxahT7wH6UmGpWHffF/LjaDUC5ts2iTBwevQW7br
+	 qMuK0GOqWRGylymVES2fSuZQMKFwcWqR/P17+f+xMiDsd4fG+6vpgaJZjOL9QXAGZuvTk
+	 hcRuxcdKWYnT/rY/xOhd745u+VwUm/rB+M/8B/r/GLA7IsV4ytVHfDEqB53WWmx6m1Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793657869;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793658061;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=1LoOI02nUgf322enYv05Hw1vZImTbwLOdnlR5QXFbCU=;
-	b=ZAQu8YviEYIXaLFIR/BiYRhCdMuq1Xims8jNVoYEaeCUMOQ9rhE2xVPFSxxXs2z8gWWV
-	 alzNE4Y3wQYrUzleq48HYP5QjN3hUbgKsluEW0UoCEanSpMOJp94avwfqBnqQHWM/NZx5
-	 nHmq+uy9M5M75TMJEEafBbpGfcUYBEnoExKbP/SmDS1J5SQ1e5P67U2aL9Yap2jupnZuD
-	 KJcCBRIAxIMzMIiZUnDkL54N2eiv4jxKrDC/U34lrNIKXLF9efkRFLhafUrZKXZT/1g6D
-	 IZtM8zIhUDokszGIT610ukp1KVlMtfBhKIWbe8aOjO39hOrt10fw560mKSMUppN/2Cw==
+	bh=+Hw9sq9VaFK71g+8WnPVyOU4RYJq80Ol7r4/gNdfThU=;
+	b=qtnnhLXvPwkscrQqTozpyC01e3yheFyp0sn8la0YDqxb2nHnY+7D7IBhOGXWbEqUxqPY
+	 n3VSN/MK2ZQxoV2p6lNsbyf++dml8/E1uxlQz8a4nZrv30/jNhtSMRyQPoE5D7XQvMbI9
+	 S56YByqOEdD8Xni4/ySU8KSCbFi9dLUOhI9J3U5mD4E/INsKj0K7pbXXUhLpVqDkApKpu
+	 wSN6Wzef8kirbknCZgVarjnyyKarkToSLGYsdK72fQtExy7RZELiSY2bkq9tvUJQrDbci
+	 luCBK/8BAILJ4AsRLK0qYWESMbund2TLuBxqISc28SiKPLxtqmPGFgagRUS1MnGHUtw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ObgOMNj5;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XEdNqHBi;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17729606A327;
-	Mon,  2 Nov 2026 22:17:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A10606A324;
+	Mon,  2 Nov 2026 22:21:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ObgOMNj5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D43001F00A16;
-	Mon,  2 Nov 2026 22:17:47 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XEdNqHBi
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8D3F1F00A16;
+	Mon,  2 Nov 2026 22:20:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793657868;
-	bh=1LoOI02nUgf322enYv05Hw1vZImTbwLOdnlR5QXFbCU=;
+	s=k20260515; t=1793658060;
+	bh=+Hw9sq9VaFK71g+8WnPVyOU4RYJq80Ol7r4/gNdfThU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ObgOMNj5Lbd3V13//0LFm+utOm/JdVKk7AxgGFlxRn9SX1kIYeKyER2zPJe58+5XQ
-	 ViXIdVRafeXa46tlIjLul/LH+U6Ul5GI+w/XunHpEIo5vCsjwSPUA807unl2WMxoqU
-	 4l1HPGgjK/4Zyzs97BO/kAGr6KLrnOet/GT4vsZeIBsQT4EMFiEhRuChIuy//f3Mie
-	 X08I1Qu/SZc8e5znS4ck/mQSOyJTDXaZFANax1+bymxWpu6iGPWi+AeWQbABWOibSd
-	 iLtJg2zv7JVP31v0DmlEpG/z39iav5Jg8N9gs/+O/Y2G4h+EIa2kGCHzqFEEDBLb3X
-	 UA0tO/6O2ynZA==
-Date: Mon, 2 Nov 2026 22:17:44 +0000
+	b=XEdNqHBiKdOsOWdik/MVP587AiHnPUcW1lKgfFWhoWVgpKG2WIMS4yLFJvaOMP/+c
+	 d3fcSW17hfMtxIDqP4cdipsiCVuA6r2Ybz06He6i3+976/1OiWuU4MxUY8drEi5gWU
+	 bgpkQP/F9octYIYVEExDqRIrgLrGMK/LgmYDP59/hxgLB426ArkdtXJilvJ+6QO3kk
+	 OnpFNmGAyz7bC5ihp/0JvF9Tb1javi5SD5P0VsJ9CBKPQ3lPWlOE5Oq6SObJ9eLaua
+	 MG75Kb9sfere/9iLMWKHABad0I2YGpmvYP27xFI964KIyc8FJAjms6lwe+xN54PJ8F
+	 WWTAAh03whOZA==
+Date: Mon, 2 Nov 2026 22:20:56 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Chi-Wen Weng <cwweng.linux@gmail.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- cwweng@nuvoton.com
-Subject: Re: [PATCH v3 2/2] iio: adc: Add Nuvoton MA35D1 EADC driver
-Message-ID: <20261102221744.4bd13ae6@jic23-hlaptop>
-In-Reply-To: <81173139-a43c-48a4-97c7-0a82de158b3e@gmail.com>
-References: <20261030031501.130290-1-cwweng.linux@gmail.com>
-	<20261030031501.130290-3-cwweng.linux@gmail.com>
-	<20261101005312.1ec5e393@jic23-hlaptop>
-	<81173139-a43c-48a4-97c7-0a82de158b3e@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Cc: Vidhu Sarwal <vidhu.linux@gmail.com>, Krzysztof Kozlowski
+ <krzk@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Shuah Khan
+ <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v2 0/3] iio: proximity: Add Benewake TF-Luna LiDAR
+ driver
+Message-ID: <20261102222056.30f23d75@jic23-hlaptop>
+In-Reply-To: <21b771dc-e9cd-46b9-a456-0950ae1270a3@oss.qualcomm.com>
+References: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
+	<20261102-massive-busy-woodlouse-8d0bbb@quoll>
+	<CAFqz8LJZQ+tw6wmLS-1FXvt6OxBESPEyz2-uK4D7B8X8epoKhg@mail.gmail.com>
+	<21b771dc-e9cd-46b9-a456-0950ae1270a3@oss.qualcomm.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,54 +71,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+On Mon, 2 Nov 2026 13:23:56 +0100
+Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com> wrote:
 
-> >   
+> On 02/11/2026 12:48, Vidhu Sarwal wrote:
+> > On Mon, Nov 02, 2026 at 11:47:56AM +0100, Krzysztof Kozlowski wrote:  
+> >> What changed exactly? b4 diff fails, the patchset cannot be applied on
+> >> any known upstream revision I tried.  
+> > 
+> > I am really sorry for that, I didn't realise it was based on Jonathan's
+> > iio.git (testing branch) instead of linux-next. Patch 3 conflicts in the  
 > 
-> Hi Jonathan,
+> That is fine in general, I'll wait for next linux-next.
+Might be a little longer. I've pushed out now. Was just waiting for
+anything nasty from the bots on after rebasing on rc1 before pushing
+out.
+
+J
 > 
-> Thank you for the detailed review.
-> 
-> I will address these comments in v4.
-Hi,
-
-A couple of process things.
-
-Most of this didn't need a reply at all.  When you agree with feedback
-and plan to modify the code, keep any description of that for
-the change log of v2.
-
-Also, reply inline to individual comments. The reviewer has probably 
-forgotten most of the details of what they commented on and so
-has to do the tiresome step of reading their own reply and then correlating
-that with what you have at the end.  If you reply inline as I did during
-the review, the context they need is right there.  Keep to tight
-focused comments where you want further feedback or disagree with the
-review.
-
-...
-
-> 
-> Regarding the one-hot scan-mask handling, the MA35D1 hardware itself is
-> not limited to one sample module at a time. The EADC has one SAR
-> converter shared by multiple sample modules. Multiple sample modules can
-> be triggered together, after which the hardware priority arbitrator
-> performs their conversions sequentially.
-> 
-> The initial driver, however, currently uses only sample module 0 and
-> performs one voltage conversion for each buffered trigger. Therefore
-> the buffered interface exposed by this version of the driver supports
-> one active voltage channel per scan. I will make this limitation
-> explicit using the standard one-hot scan-mask validation callback and
-> use iio_for_each_active_channel() when selecting the active channel.
-> Support for using multiple sample modules for multi-channel buffered
-> scans can be added separately in the future.
-
-This part would have been helpful inline next to the comment it is addressing.
-
-> 
-> Since the scan layout is therefore fixed to one u16 sample plus an
-> optional timestamp, I will replace IIO_DECLARE_BUFFER_WITH_TS() with a
-> fixed scan structure containing one u16 sample and an aligned timestamp.
-
-Jonathan
+> Best regards,
+> Krzysztof
 
