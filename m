@@ -1,98 +1,138 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.12.31
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793626196;
-	b=VVNX0clonqBA/khhTGyQEfv3zMjLm9C8RfdppzXUjs66uS3+9qH2+wVraRUwmnbZxNx6
-	 BifxrHBCqRuoFyVKrFw7Ep/fi0C7u4l3QdskdDaeIRBFtMUPUlI4vXrX2gWXcOrec2ygA
-	 AYCAUaQOCVsyP+Nb+QRw3GBBvtntwoC+FEIs1evuAhIzxLTziSSyeFBXDj+4F1HJySGfQ
-	 Ueuqs62EuAFvPEC4XGBHLALqUfdqfjgdy96Q7NbxkMCxhcl6TjnPf4xrfQy1Ph8JQlEAz
-	 hMBKiCRHqa95Wm8sElhrum6+uPcjV0zOicnijwfSG6Nqqh8BXNIovRk8uebVwOUHzXA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793626196;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:
-	 X-Microsoft-Original-Message-ID:MIME-Version:
-	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=mVGkEPXgW7TveilOTUuRiT+FhAzVYBEkYgifM3slqKQ=;
-	b=3+ETNdwGiEH59gbgVBO9q6Q4KxibTC1sum5WRE1lvP3npQjRmA5Ei7MhU8Hp/ZX03gwy
-	 mHLR3aCNc5BuQnwCdHM1O6yDhhM55CHOwOxv25saJmf9rJPvWf1bNQkW+xgRBtR0trlhJ
-	 cy3jnOJHlygsD2d20wwU0g3/yOogh8PMzL3qv8MAl7C9+klGVIhpof1FvhUBLpyK9xCCQ
-	 q4Jm16O6haUXp9HOpNJ99R7mIx5UGvE7Y5GwJwBOlh/kTSrWiX7FbcHECHrd1d+Xah0IL
-	 HdOnHCYlPXY/zuqmcthOprTCtBV2TqTAIGIU1cSPqQLA3rLQyaQl6y/IZ1kTzxhDXYA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=outlook.com;
-	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=RMlcfZMH;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.12.31
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azolkn19011031.outbound.protection.outlook.com [52.103.12.31])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793627630;
+	b=Boe9xUUse11nkfGBntxph12EOWB4NMqgFjPKlC+r9xCIsOuiWjlODGQUx+AtYlFTc/ls
+	 BnNPLYQrjvn+mfYLS9qImsfSCI+E3doKx41fip17oD31yqQm4AJ5z5Qwy58/g84t1dW/l
+	 neK42cle2pbXlLDt+KVYe1OTyTqjD+wvyuxvMskuyUELfbk437PNkBxLKH05FmcMrVa7I
+	 buvxUCOjN9iixUmyx5498JcukTgwOPudAwYsl9HVwpP5N0qMl2tbol2kag7veSsTT7Av1
+	 AGQx/ksu2aBNzHi8aEzm9c0T3SmarnQf/YL8uV6nICkFRNWmYuuXxgN/tT4qzb9RISw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793627630;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=8PdXPsr0BqbOm4N6slLaJkhJmpRccqZjg1DW7FPgi0w=;
+	b=oGbOSpophlUCyUTL6dpktk3wMcDC0S8sxzMUc5ulQzceyILY42QFNt1sTJwOa3UgUUuk
+	 6H4LrPxQ0qAiokKWdGvxYElaFgyWZiqcCUBC+WehkYuzwHiXZmsoEniVmXXpgJBDIxdZP
+	 z39CoBQBN9KpjtqJRXhakwMcod35xMFCnmIpxuBW8BdMznZtLIu70GFbWU/XAsgtAVR3T
+	 21WgxXM7mLOgPoWSA//sfvwTgYHGa2Ii+D5aqQD6C/xc/3FEMsGSBd+HlPuBs8vu7+HdZ
+	 Te3EbC3FX7iPr3NbMnMPLleCy+fXsjtmq4Dy0RvHUTSeXr415O/WPkiIZsBpnJg69qg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jwEEKbee;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E10606A329;
-	Mon,  2 Nov 2026 13:29:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09E10606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0357D606A32D;
+	Mon,  2 Nov 2026 13:53:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=RMlcfZMH
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WVi7Al+5nEevQbpuktmLhDQoAI/HFForq3oFHD9Dy76sDT1hm4+w/0w6HGcugeOBxRTCmZ5I/wQ0XbptbMIAJFQirPMqCC86HYYJ432o66y9x6BhOnpIQPC+/yvlpC64mIP/IeEiL39sfaI8+ZcAMoxJzuGyWvypfsFU4HN89LGH++3EESPa4BRfMC+9dOfM8ZJbcF0iS8k9BpVNkKphQ82gwSCyJM7vWTu6Q/DXPI5U+MT5ru5cQriZ4bFY0MSQQQ/E5KJszaNq2BKDVal2ONQtO1bhzeIPELvJx/ALUE/ODS48VkA6NxhZTiAahFPrs5Qxx1hxHHLpO4pFYuNeBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mVGkEPXgW7TveilOTUuRiT+FhAzVYBEkYgifM3slqKQ=;
- b=cFgjxz0hIQgRnl7q8m1lw4rnG2c5pBGsSIfkl7CA9rtv0fP634PAbB3eILPfoSbX9uA2EUqG6/HrTm3tOHhyk9EVR65U8MNpiMMabm8YgXCSs1/ZrlNoPhpDuvorhdrbC4nfekDpkE9ovRLAHPhQZbLdWSc8Pb2pz0JRI/jJvxW7fozjT8oTC4iwtm76/0vvm+L5zVM6hhqVAkpf+80MDEunUnAAy74chI5L2UtH8VIjFvzlaxDDKDJMW8Kw6TjAn+G1pnm93aPtlQW3pNa1wK9PKVKRxLXqrcaxwC3KeujMv0HLusDN6A5PlwESVyMdT+2xiHVasFQPKsc80pcUsw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mVGkEPXgW7TveilOTUuRiT+FhAzVYBEkYgifM3slqKQ=;
- b=RMlcfZMH4+8+7rA+4YKZo5mzvnfidAbYa6/qice7M78LwLT+26/3O7CnwkP4rP8T9TFSx3qqnHxIiuW3S5CzxidyW+DviBe8rzsoKb3ckL1GjCATu20NLOtFqMKF1RhIdUNK+BBDbbt36JdOKfRBwnDw9B/oGXr4shUorsON9jSR6ACTfbUp6jUsQhdkpaWUt5AyTxk+kWT2CXRCWlM3+XczAwmM51cybteZLgIfgtQXKBnFvsea4xDQOkcNjoEsGFn1yNVtC29SakDPeuOnHrNnZr83h/o5S129gYi/dJnYpexI96cw0gJY56B92CIG6I5b6hCl80OOisDm1w0vSA==
-Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
- by PH7PR12MB8013.namprd12.prod.outlook.com (2603:10b6:510:27c::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Mon, 2 Nov
- 2026 13:29:50 +0000
-Received: from SN1PR12MB2528.namprd12.prod.outlook.com
- ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
- ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0569.011; Mon, 2 Nov 2026
- 13:29:50 +0000
-From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-To: lkp@intel.com
-Cc: andy@kernel.org,
-	chernyakin.victor.j@outlook.com,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jwEEKbee
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FAD1F00A16;
+	Mon,  2 Nov 2026 13:53:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793627629;
+	bh=8PdXPsr0BqbOm4N6slLaJkhJmpRccqZjg1DW7FPgi0w=;
+	h=From:To:Cc:Subject:Date;
+	b=jwEEKbeeZuoCHbxJUlWEtLnIQBYGhOQBxwP+tQtMjvmJi6qzxzYcDukdNtIhOkRXJ
+	 6n+Jh8CeRi0Y/l5/zWC7hrZVP8JXsVNK9PuCOwrcCdOTS5C7i0aq2uOP5WBFmJG4mP
+	 +VSYdrI4Dyorre8UfCZIiuH6uKTkx7HccHlCFrt8dY3IAid0u56LI6rz18RSdj1GvE
+	 Y7s+w6UvyezlKJfl2IcZ+A3XK1IREBodAE5iSWak2WphnGkxKjSdn9F8Jz2Du1gOUp
+	 DOCFjJCW4UbSQ/Ho05urr8RhaF9BhcvDHN3iwkoV1CL/R3S62YltgkRa6WGZF6ApT9
+	 i+0fdXIadN4+A==
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Vadim Fedorenko <vadim.fedorenko@linux.dev>,
+	Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Ivan Vecera <ivecera@redhat.com>,
+	Benson Leung <bleung@chromium.org>,
+	Guenter Roeck <groeck@chromium.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+	Lee Jones <lee@kernel.org>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>,
+	Ulf Hansson <ulfh@kernel.org>,
+	Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Chanh Nguyen <chanh@os.amperecomputing.com>,
+	Alistair Francis <alistair@alistair23.me>,
+	Julius Werner <jwerner@chromium.org>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Dmitry Osipenko <digetx@gmail.com>,
+	Florian Fainelli <f.fainelli@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>,
+	Ray Jui <ray.jui@broadcom.com>,
+	Scott Branden <scott.branden@broadcom.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	dri-devel@lists.freedesktop.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com,
-	oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH v4 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Date: Mon,  2 Nov 2026 07:29:38 -0600
-Message-ID:
- <SN1PR12MB2528E19FDEA32D72F1070D75A56A2@SN1PR12MB2528.namprd12.prod.outlook.com>
+	netdev@vger.kernel.org,
+	chrome-platform@lists.linux.dev,
+	linux-gpio@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-sound@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
+	mfd@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	linux-phy@lists.infradead.org,
+	linux-pm@vger.kernel.org
+Subject: [PATCH] dt-bindings: Use hex unit address patterns
+Date: Mon,  2 Nov 2026 07:53:22 -0600
+Message-ID: <20261102135330.2493332-1-robh@kernel.org>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <202611021049.CWQj3jvL-lkp@intel.com>
-References: <202611021049.CWQj3jvL-lkp@intel.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH2PR19CA0008.namprd19.prod.outlook.com
- (2603:10b6:610:4d::18) To SN1PR12MB2528.namprd12.prod.outlook.com
- (2603:10b6:802:28::33)
-X-Microsoft-Original-Message-ID:
- <20261102132938.221533-1-chernyakin.victor.j@outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,71 +142,428 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|PH7PR12MB8013:EE_
-X-MS-Office365-Filtering-Correlation-Id: c3b91a13-5d71-4fbf-f505-08df38e55cf1
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|5072599009|23021999003|15080799012|24121999003|24021099003|22091999003|16041099003|8060799015|19110799012|4140399003|25010399006|260925184616899003|3412199025|440099028|26121999007|53005399003|40105399003|1710799026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?LntuOgoDQ7oF9FPrWgK2CIG5Bi43hlcAYbOoOJZlkbpdbfEK1xwT4DySCCxs?=
- =?us-ascii?Q?PbcNl/gQXR6KsHFrbWL2ovtyRlvJtNqgaPbJEC60+sXPC/o1lUAOxEGdCCA1?=
- =?us-ascii?Q?LgRlZs9To5z9Kp3+Kcq2S2z25nbSXd9l4+kp/Bq8Kp105BK/1bHLjaxMzUYU?=
- =?us-ascii?Q?ubLIP+tWzZAc/UrMlx6gKPZa+UCsXl3+BHZvctXogIYxIbfu4PyAtEminWRy?=
- =?us-ascii?Q?f1TdqqcE7eOIpqg35BpVh76dkOvzhvYoLldcL1zv0xGBxX5STK3tY0dG8Y4W?=
- =?us-ascii?Q?IWTMhu/7RuS0KIXG4/FIG1r4gn/FL+rz8UosyBKXgpi29JULjpMOe0qZt8ux?=
- =?us-ascii?Q?BiOCjvDbRhLs9VflqXK6A6u7FwmUDuaQ2C0hHCZuuaStcXAa/4i0AUzFEXYP?=
- =?us-ascii?Q?i6SVi2hOzrq39MhUus6IR1xk4L9TEsQ6eND+KyhVFAiSwIGoU2yRZTnShcEO?=
- =?us-ascii?Q?2cp9kZ9ANh10erLYCvu3UzXvkPjkwd8wEbofTQ6KBaw33vHApxsVQ4KYy8lQ?=
- =?us-ascii?Q?Q7c+2xepUsNb6sItXL0RNn7LuVqIkiQYeBiBN/GDHZo2dDRQFSwuYhKwC14/?=
- =?us-ascii?Q?SNh28WaMDhCNX1PV8wGAfcCCFS5uAcTo86RGDAipE7NsDxigOVE3DmJGGY2k?=
- =?us-ascii?Q?PNrjK1EnORJqNlejWI+XRQ2pXkFGB1jncD3HE0Xm/IH5/19D+MIwana7BmJH?=
- =?us-ascii?Q?DkodrDzxZdi1+YbOW1m7RpHTOkL1Uzw3Ny7OGHttORKBuzqlADsFEBglX5Bb?=
- =?us-ascii?Q?D+l8ZRULJiNySG+s2utdGdkIVEufmvO3+1mPp+bFwvMIHchINgritLhnibzb?=
- =?us-ascii?Q?qoIYsrlyIXKsPrrPCAUdfZqd5WxD3liTIzp9p69YDBWZi1KqqXlW6XeuUV1B?=
- =?us-ascii?Q?OFLnlZTYrwqrkfc+8GY4EdIAPFCxDWRGRVLXpK0cy6DnSz7sdYy55Y4nwQAf?=
- =?us-ascii?Q?o6ZbW38fBzEp9Ajtw8Ugzarow0iUqlY2G+L5UZ8IRdZo+8ZzF7Ykq2CQgKYO?=
- =?us-ascii?Q?3htO2x4E+7xFxegqysOQxfibJcpOXrNq65Kop8K0ddgc2KjZFXC2g0naoJ+N?=
- =?us-ascii?Q?cuXIDsL8FVdf55vIlqZQBNoYUxLmUXeQR6Tlr1PkQuH4A1SXWes=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?+3ZMRyav3GYggzpcC5FQKO660U+DjiK7ZgFn3xBOOF/9ccsjXhM+lBLixS2m?=
- =?us-ascii?Q?XVmjPENXLgRl8DlvsxCu1fMbAu8RCkVObqz1Yd+W8evi/y/IurNarHUXNy/U?=
- =?us-ascii?Q?2YWXfPykZryiizAPI+SLwuUYHRW6FJPARlnuqliBxlUpZQnaZ0DJ2Qj+O+/e?=
- =?us-ascii?Q?S2ZtHbi6oosIqUCTWf4F2XJYOa/EJ08SH8gA7kxuy1HM6kmQ4qxnVMEWoJ3m?=
- =?us-ascii?Q?lGAf0UPKqs0g4vXtWqyXHT7rnuPhet17eFo7+PX6etyRWH24G0ECpPHKDwXo?=
- =?us-ascii?Q?9p+n0TjBwr1FwKnZxcODw09ee/KemoT/TgWsjc4JAJkouhigCvRoO2pfCvXn?=
- =?us-ascii?Q?s3cKG9mk6gRlI0BKvxZ+DLzB3EVce5j2qH7rPYsmhbxdFPHP1/1lRngPbxcL?=
- =?us-ascii?Q?N+HZRiIDW1TS5k/aO6EeewJssZufCorCCh+jJO4x3vB4kZ34CktSIZ1vxdzz?=
- =?us-ascii?Q?krUG+nLW+FhJrA086pICZu0urWUWbQ/WhTKMEQKiGfhQ18WBHY54zMK31OXm?=
- =?us-ascii?Q?1Gts18dwAlI+BCsYAl18uBhJfipRdTplt2rJdM/HDniHdO+p4wJWjskwNy3C?=
- =?us-ascii?Q?hhOQmvhImo2OXbuKuX94RaJ/Bi3NNcuI6YnDy/S6VWCrfEnr1r5U/qrf1Jj5?=
- =?us-ascii?Q?ChoK+dKv2ZXxGCRomsdbWSwRJXzr/R8cqMg6gTOKdHEXX25R6Jyoi74IdoAS?=
- =?us-ascii?Q?ATg3YbzFBEEj6dfJt4/iCm6tTQdemzvLMti53pBjQRrBnqNRkYSQEH7QWeMf?=
- =?us-ascii?Q?m2DIN2VpjrVpG0Zg3SxznqPS9MkHOgMo7FDbDgSFw67KBI2q71poxmyKAH+x?=
- =?us-ascii?Q?yQ23ENPG7p8S/V5ZfTtioxJF2EtIaE+52fk/shsGb3EW+fzQSsLi2ULQkVTm?=
- =?us-ascii?Q?ms1QILYOR9XWuaLsdQ6RXUFQfUS1kZ9AA+pO3GZZqVfik+lYCpWUzetNTagW?=
- =?us-ascii?Q?50V72PPmbilOSI8roVk2blkV83wxTPGPyZQ+paOphf7fu8O369hqtUOWsNsA?=
- =?us-ascii?Q?V7HZ/9gxux3Qy1M3IKP7bA2zJks8B3QKx3TONClX+lttj2TLAw1yn+2G+GM/?=
- =?us-ascii?Q?Nj7N4XUp16H0geeNL2G/3fbVcvszFa2z5E1UnF83FlftN/5ZYfID0jBpG05S?=
- =?us-ascii?Q?woWqYwzfkyEqh1BoVJmkmJNeNb4COuBErNrmAKc6ogKjQ+cvZW/ce42Xahyg?=
- =?us-ascii?Q?w2JSjJ8g4b2O5BUJ/TENAMJVH5XHTxiLG9bFUe/WhBaMHQphsjeJ2PimG4B5?=
- =?us-ascii?Q?hTIIlwkDA4VjpCwSk91qmh5BSwAicEhWJJ8OnZNF/ZePBUDP3aBIZ+FT4fbu?=
- =?us-ascii?Q?tum/eBAPQZWWipUwML00Vu7b+jI5GjpjH4q/MPP24zCrwL5mXJbD4WllryIs?=
- =?us-ascii?Q?aUB0XUor6yz/BIHmOQwplVkgrMMwpuZcsa60Jf4dhd2Y/RXEaA=3D=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3b91a13-5d71-4fbf-f505-08df38e55cf1
-X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 13:29:50.0978
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8013
+Content-Transfer-Encoding: 8bit
 
-> >> ERROR: modpost: drivers/iio/cdc/fdc1004.ko: symbol '__udivdi3' undefined!
-> >> ERROR: modpost: drivers/iio/cdc/fdc1004.ko: symbol '__divdi3' undefined!
+Unit-addresses by default (and most commonly) are hexadecimal. There's a
+number of cases using decimal patterns. Fix all of them, limiting the
+pattern to match the 'reg' limits if there are any.
 
-math64.h to the rescue...
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+---
+ .../bindings/display/xylon,logicvc-display.yaml      |  2 +-
+ .../devicetree/bindings/dpll/dpll-device.yaml        |  2 +-
+ .../bindings/embedded-controller/google,cros-ec.yaml |  4 ++--
+ .../intel,ixp4xx-network-processing-engine.yaml      |  2 +-
+ Documentation/devicetree/bindings/gpio/gpio-mxs.yaml |  4 ++--
+ .../devicetree/bindings/hwmon/maxim,max31790.yaml    |  2 +-
+ .../devicetree/bindings/iio/adc/st,stm32-adc.yaml    |  2 +-
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml         |  6 +++---
+ .../bindings/input/touchscreen/cypress,tt21000.yaml  |  2 +-
+ .../memory-controllers/ddr/jedec,sdram-channel.yaml  | 12 ++++++------
+ .../bindings/memory-controllers/ingenic,nemc.yaml    |  2 +-
+ .../memory-controllers/nvidia,tegra20-emc.yaml       |  4 ++--
+ .../devicetree/bindings/mfd/st,stm32-lptimer.yaml    |  2 +-
+ .../devicetree/bindings/mfd/st,stm32-timers.yaml     |  2 +-
+ .../devicetree/bindings/misc/qcom,fastrpc.yaml       |  2 +-
+ .../bindings/mmc/mmc-controller-common.yaml          |  2 +-
+ .../bindings/net/cortina,gemini-ethernet.yaml        |  2 +-
+ .../bindings/phy/brcm,cygnus-pcie-phy.yaml           |  2 +-
+ .../devicetree/bindings/phy/brcm,sata-phy.yaml       |  2 +-
+ .../bindings/phy/socionext,uniphier-usb2-phy.yaml    |  2 +-
+ .../devicetree/bindings/sound/qcom,q6asm-dais.yaml   |  2 +-
+ .../bindings/sound/qcom,q6dsp-lpass-ports.yaml       |  2 +-
+ .../devicetree/bindings/thermal/sprd-thermal.yaml    |  2 +-
+ 23 files changed, 33 insertions(+), 33 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/display/xylon,logicvc-display.yaml b/Documentation/devicetree/bindings/display/xylon,logicvc-display.yaml
+index 76b804b7c880..3dd54636d23d 100644
+--- a/Documentation/devicetree/bindings/display/xylon,logicvc-display.yaml
++++ b/Documentation/devicetree/bindings/display/xylon,logicvc-display.yaml
+@@ -123,7 +123,7 @@ properties:
+         const: 0
+ 
+     patternProperties:
+-      "^layer@[0-9]+$":
++      "^layer@[0-9a-f]+$":
+         type: object
+ 
+         properties:
+diff --git a/Documentation/devicetree/bindings/dpll/dpll-device.yaml b/Documentation/devicetree/bindings/dpll/dpll-device.yaml
+index fb8d7a9a3693..4b5184500b9f 100644
+--- a/Documentation/devicetree/bindings/dpll/dpll-device.yaml
++++ b/Documentation/devicetree/bindings/dpll/dpll-device.yaml
+@@ -65,7 +65,7 @@ properties:
+         const: 0
+ 
+     patternProperties:
+-      "^pin@[0-9]+$":
++      "^pin@[0-9a-f]+$":
+         $ref: /schemas/dpll/dpll-pin.yaml
+         unevaluatedProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/embedded-controller/google,cros-ec.yaml b/Documentation/devicetree/bindings/embedded-controller/google,cros-ec.yaml
+index 3ab5737c9a8f..75159078f0ef 100644
+--- a/Documentation/devicetree/bindings/embedded-controller/google,cros-ec.yaml
++++ b/Documentation/devicetree/bindings/embedded-controller/google,cros-ec.yaml
+@@ -155,7 +155,7 @@ patternProperties:
+     type: object
+     $ref: /schemas/i2c/google,cros-ec-i2c-tunnel.yaml#
+ 
+-  "^regulator@[0-9]+$":
++  "^regulator@[0-9a-f]+$":
+     type: object
+     $ref: /schemas/regulator/google,cros-ec-regulator.yaml#
+ 
+@@ -224,7 +224,7 @@ allOf:
+ 
+       patternProperties:
+         "^i2c-tunnel[0-9]*$": false
+-        "^regulator@[0-9]+$": false
++        "^regulator@[0-9a-f]+$": false
+         "^extcon[0-9]*$": false
+ 
+       # Using additionalProperties: false here and
+diff --git a/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml b/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
+index 4d66ef483522..a9f874f201aa 100644
+--- a/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
++++ b/Documentation/devicetree/bindings/firmware/intel,ixp4xx-network-processing-engine.yaml
+@@ -44,7 +44,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  hss@[0-9]+$:
++  hss@[0-9a-f]+$:
+     $ref: /schemas/net/intel,ixp4xx-hss.yaml#
+     type: object
+     description: Optional node for the High Speed Serial link (HSS), the
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-mxs.yaml b/Documentation/devicetree/bindings/gpio/gpio-mxs.yaml
+index fed1b06495ad..6cab04ebbdd4 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio-mxs.yaml
++++ b/Documentation/devicetree/bindings/gpio/gpio-mxs.yaml
+@@ -36,7 +36,7 @@ properties:
+     maxItems: 1
+ 
+ patternProperties:
+-  '^(?!gpio@)[^@]+@[0-9]+$':
++  '^(?!gpio@)[^@]+@[0-9a-f]+$':
+     type: object
+     properties:
+       fsl,pinmux-ids:
+@@ -94,7 +94,7 @@ patternProperties:
+ 
+     additionalProperties: false
+ 
+-  '^gpio@[0-9]+$':
++  '^gpio@[0-9a-f]+$':
+     type: object
+     properties:
+       compatible:
+diff --git a/Documentation/devicetree/bindings/hwmon/maxim,max31790.yaml b/Documentation/devicetree/bindings/hwmon/maxim,max31790.yaml
+index 558cbd251b0f..bd30886def5f 100644
+--- a/Documentation/devicetree/bindings/hwmon/maxim,max31790.yaml
++++ b/Documentation/devicetree/bindings/hwmon/maxim,max31790.yaml
+@@ -45,7 +45,7 @@ properties:
+     const: 1
+ 
+ patternProperties:
+-  "^fan@[0-9]+$":
++  "^fan@[0-9a-f]+$":
+     $ref: fan-common.yaml#
+     unevaluatedProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+index c4c4575d3fa9..8e11f769d140 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+@@ -231,7 +231,7 @@ required:
+   - '#size-cells'
+ 
+ patternProperties:
+-  "^adc@[0-9]+$":
++  "^adc@[0-9a-f]+$":
+     type: object
+     description:
+       An ADC block node should contain at least one subnode, representing an
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+index c24ac98bbb3d..22cbc6e52537 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+@@ -74,7 +74,7 @@ required:
+ additionalProperties: false
+ 
+ patternProperties:
+-  "^filter@[0-9]+$":
++  "^filter@[0-5]$":
+     type: object
+     unevaluatedProperties: false
+     description: child node
+@@ -334,7 +334,7 @@ allOf:
+ 
+     then:
+       patternProperties:
+-        "^filter@[0-9]+$":
++        "^filter@[0-5]$":
+           properties:
+             reg:
+               items:
+@@ -349,7 +349,7 @@ allOf:
+ 
+     then:
+       patternProperties:
+-        "^filter@[0-9]+$":
++        "^filter@[0-5]$":
+           properties:
+             reg:
+               items:
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml b/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
+index 037e5d3c447f..e50adb72f808 100644
+--- a/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
++++ b/Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
+@@ -46,7 +46,7 @@ properties:
+   wakeup-source: true
+ 
+ patternProperties:
+-  "^button@[0-9]+$":
++  "^button@[0-9a-f]+$":
+     type: object
+     $ref: ../input.yaml#
+     properties:
+diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,sdram-channel.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,sdram-channel.yaml
+index 5cdd8ef45100..816c8e8b5713 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,sdram-channel.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,sdram-channel.yaml
+@@ -53,7 +53,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "^rank@[0-9]+$":
++  "^rank@[0-3]$":
+     type: object
+     description:
+       Each physical SDRAM chip may have one or more ranks. Ranks are
+@@ -72,7 +72,7 @@ allOf:
+             const: jedec,ddr4-channel
+     then:
+       patternProperties:
+-        "^rank@[0-9]+$":
++        "^rank@[0-3]$":
+           $ref: /schemas/memory-controllers/ddr/jedec,ddr4.yaml#
+   - if:
+       properties:
+@@ -81,7 +81,7 @@ allOf:
+             const: jedec,lpddr2-channel
+     then:
+       patternProperties:
+-        "^rank@[0-9]+$":
++        "^rank@[0-3]$":
+           $ref: /schemas/memory-controllers/ddr/jedec,lpddr2.yaml#
+   - if:
+       properties:
+@@ -90,7 +90,7 @@ allOf:
+             const: jedec,lpddr3-channel
+     then:
+       patternProperties:
+-        "^rank@[0-9]+$":
++        "^rank@[0-3]$":
+           $ref: /schemas/memory-controllers/ddr/jedec,lpddr3.yaml#
+   - if:
+       properties:
+@@ -99,7 +99,7 @@ allOf:
+             const: jedec,lpddr4-channel
+     then:
+       patternProperties:
+-        "^rank@[0-9]+$":
++        "^rank@[0-3]$":
+           $ref: /schemas/memory-controllers/ddr/jedec,lpddr4.yaml#
+   - if:
+       properties:
+@@ -108,7 +108,7 @@ allOf:
+             const: jedec,lpddr5-channel
+     then:
+       patternProperties:
+-        "^rank@[0-9]+$":
++        "^rank@[0-3]$":
+           $ref: /schemas/memory-controllers/ddr/jedec,lpddr5.yaml#
+ 
+ required:
+diff --git a/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml b/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
+index ee74a362f4ca..ca6426c28990 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
+@@ -37,7 +37,7 @@ properties:
+     maxItems: 1
+ 
+ patternProperties:
+-  ".*@[0-9]+$":
++  ".*@[0-9a-f]+$":
+     type: object
+     $ref: mc-peripheral-props.yaml#
+     additionalProperties: true
+diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-emc.yaml b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-emc.yaml
+index 71896cb10692..a0355050a074 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-emc.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-emc.yaml
+@@ -142,7 +142,7 @@ $defs:
+     additionalProperties: false
+ 
+ patternProperties:
+-  "^emc-table@[0-9]+$":
++  "^emc-table@[0-9a-f]+$":
+     $ref: "#/$defs/emc-table"
+ 
+   "^emc-tables@[a-f0-9-]+$":
+@@ -169,7 +169,7 @@ patternProperties:
+         type: object
+ 
+     patternProperties:
+-      "^emc-table@[0-9]+$":
++      "^emc-table@[0-9a-f]+$":
+         $ref: "#/$defs/emc-table"
+ 
+     oneOf:
+diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+index 4eabafb8079d..8de82540d231 100644
+--- a/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
++++ b/Documentation/devicetree/bindings/mfd/st,stm32-lptimer.yaml
+@@ -109,7 +109,7 @@ properties:
+       - compatible
+ 
+ patternProperties:
+-  "^trigger@[0-9]+$":
++  "^trigger@[0-4]$":
+     type: object
+     additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+index 66aa1550a4e5..5853c6019e98 100644
+--- a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
++++ b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+@@ -128,7 +128,7 @@ properties:
+       - compatible
+ 
+ patternProperties:
+-  "^timer@[0-9]+$":
++  "^timer@([0-9a-f]|1[0-3])$":
+     type: object
+     additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/misc/qcom,fastrpc.yaml b/Documentation/devicetree/bindings/misc/qcom,fastrpc.yaml
+index 49d2a5e8ba39..d9444f452585 100644
+--- a/Documentation/devicetree/bindings/misc/qcom,fastrpc.yaml
++++ b/Documentation/devicetree/bindings/misc/qcom,fastrpc.yaml
+@@ -79,7 +79,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "(compute-)?cb@[0-9]*$":
++  "(compute-)?cb@[0-9a-f]+$":
+     type: object
+ 
+     description: >
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml
+index 3d7195e9461c..f235f3ed1692 100644
+--- a/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml
++++ b/Documentation/devicetree/bindings/mmc/mmc-controller-common.yaml
+@@ -317,7 +317,7 @@ properties:
+       power sequence must be maintained while initializing the card.
+ 
+ patternProperties:
+-  "^.*@[0-9]+$":
++  "^.*@[0-7]$":
+     type: object
+     description: |
+       On embedded systems the cards connected to a host may need
+diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+index f0b5bea2458d..900e4e5ac360 100644
+--- a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
++++ b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+@@ -35,7 +35,7 @@ properties:
+ # They are not independent of each other since they share resources
+ # in the parent node, and are thus children.
+ patternProperties:
+-  "^ethernet-port@[0-9]+$":
++  "^ethernet-port@[0-9a-f]+$":
+     type: object
+     unevaluatedProperties: false
+     description: contains the resources for ethernet port
+diff --git a/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml
+index 808e90b2465d..25356f03f4a6 100644
+--- a/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/brcm,cygnus-pcie-phy.yaml
+@@ -30,7 +30,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "^pcie-phy@[0-9]+$":
++  "^pcie-phy@[0-9a-f]+$":
+     type: object
+     additionalProperties: false
+     description: >
+diff --git a/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml b/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml
+index 439bda142764..31d534065d42 100644
+--- a/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml
+@@ -46,7 +46,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "^sata-phy@[0-9]+$":
++  "^sata-phy@[0-9a-f]+$":
+     type: object
+     description: |
+       Each port's PHY should be represented as a sub-node.
+diff --git a/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.yaml b/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.yaml
+index 19522c54f448..b1a69ed96bb4 100644
+--- a/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.yaml
+@@ -29,7 +29,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "^phy@[0-9]+$":
++  "^phy@[0-3]$":
+     type: object
+     additionalProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml b/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml
+index bc8c8ba24f9c..988a84099790 100644
+--- a/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml
++++ b/Documentation/devicetree/bindings/sound/qcom,q6asm-dais.yaml
+@@ -32,7 +32,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "^dai@[0-9]+$":
++  "^dai@[0-9a-f]+$":
+     type: object
+     description:
+       Q6ASM Digital Audio Interface
+diff --git a/Documentation/devicetree/bindings/sound/qcom,q6dsp-lpass-ports.yaml b/Documentation/devicetree/bindings/sound/qcom,q6dsp-lpass-ports.yaml
+index 3b03e2acd67e..060487b2b72c 100644
+--- a/Documentation/devicetree/bindings/sound/qcom,q6dsp-lpass-ports.yaml
++++ b/Documentation/devicetree/bindings/sound/qcom,q6dsp-lpass-ports.yaml
+@@ -28,7 +28,7 @@ properties:
+ 
+ # Digital Audio Interfaces
+ patternProperties:
+-  '^dai@[0-9]+$':
++  '^dai@[0-9a-f]+$':
+     type: object
+     description:
+       Q6DSP Digital Audio Interfaces.
+diff --git a/Documentation/devicetree/bindings/thermal/sprd-thermal.yaml b/Documentation/devicetree/bindings/thermal/sprd-thermal.yaml
+index afa551f6185f..222d70baef1e 100644
+--- a/Documentation/devicetree/bindings/thermal/sprd-thermal.yaml
++++ b/Documentation/devicetree/bindings/thermal/sprd-thermal.yaml
+@@ -47,7 +47,7 @@ properties:
+     const: 0
+ 
+ patternProperties:
+-  "^([a-z]*-)?sensor(-section)?@[0-9]+$":
++  "^([a-z]*-)?sensor(-section)?@[0-9a-f]+$":
+     type: object
+     description:
+       Represent one thermal sensor.
+-- 
+2.53.0
+
