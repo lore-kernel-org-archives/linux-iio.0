@@ -1,59 +1,122 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793584720;
-	b=5OMrXmrs65CToa5orWjHf1GbjnexcEVebLT9JWjLAeBv5kX8NIpR1WxaOsrRU6HK984J
-	 7s3FSZfZzRiDYe6MXVaud1MYiJvQsJYRODHtf6A0UKPxk+CbH3SrR7zrttBrK/fa1p8oY
-	 q7f1waf1L8KvE+hLGSzFyRF817UtFDgjP3u+y6TGhKMMFxem2ILSgSIumhzgMv7n9gm7h
-	 OJVnix51oOUtCGxyLmIvprozME4LbGyNYamH4YpjAz/wB7MaVS+pX1mLMXDxMAGbcuzdY
-	 WQwqcMV7R1tnfOmjraZ2H80ZxL6XVm0WsIKmsKOFx/4O7Dw9+DHhAq0o1aZ7lvSNeWQ==
+	t=1793585142;
+	b=oXnpwpc3e847fnh/7w54wkqKqQEJTAt6aoiZsyROjJo4Hjmsea+lTDAKrr7Hukdrfw9q
+	 AHzPVFmRIKvio7jeE4KE7g2+VO9+9UOgco5+wh8dRbel1lGMb6Sm3xIPSHnAQuHxXnOg7
+	 Fi1JjXatlt5I55exgbkvDH73YMaS/0zOQkorysEV97ZxAA9ekXdttqtwjjX+0dToTV9xs
+	 QuxY/Lq7KZoIxdOLrvp/k6BwlmnOmIZA1FbLqM+E855AQRUoJeppZBA3PiJH+GPALGyBi
+	 mL3WRVp67vBztoAu/5jeGjW8+fjPaorsM+4hyBh1NM150bEyNH5yIlXYh4GVmaeaBNg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793584720;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=mhRVqiYq+ePDA2NvwBd3ChCoiSdjgNpL+sEWmLZjAq0=;
-	b=KYXROPU6g9CgOsI/0P2rTdE/uk4mpts8kO4BSHMLrocV5nJzuKU4agAEzU8s49yXpu1i
-	 MV9WDhF/l6rern4GsBVvAbS/KusAcybcR9QaRx9X+iDRsk65ZxlOhEjSbseL+avQhRlGc
-	 jFUvGbK3W4vsEOXrYkeeuqqH6mUQPbXtXyKIozhmOzSQeCbK2Z5QjQlM3m7YU+MtPN8Oa
-	 EBUCRR58BTNqFrZ1gEqr90n7+B6ihLPLp0zHL39XMLF6N2NOIs6eSqRoYgmqR01U8NJxL
-	 qCrhTwpKMvKxKY1O6l3vf4TcohOcbJMEkeEdvu7oKUvAH/9CrDoPKwMtKTSiqzznsIQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793585142;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
+	 X-Received:X-Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:Organization:X-Mailer:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-ORIG-GUID:
+	 X-Authority-Analysis:X-Proofpoint-Spam-Info:X-Proofpoint-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=saLjZrbieLhJB1tuozWjrnu5bEeBT6XlxMA2WYvE00k=;
+	b=aqppj9Hb/Jji02DPvYe3JACS9ISuCd/+/aPewwPz03uWWqbvPmSnCJ/x14kjxJf/F9yG
+	 CtYcsTepqufs93JUy9Sdhw+YDhiOVJ9+VjPMRfKVwPtE797874jQFr6LUjItNJDBt7G3a
+	 2GX9d8Vn2J8rKhZk+JORb+aut5fdp44F/+389g21qQ61M98RE+o/v4Lx1UUTKoN0cP1ip
+	 DbwDZtFU/3MXAlQcU8XdxKh9ZMCgAxVyW63K21eiypN4We401hqSjKZlXSqqsonjif5i+
+	 ShYUMeeIIzJiouTzOqW4p5WShwVZkTWJULra8wTDTCPu1AsvgtOZNy90nGLHQqIJS+g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A54SXCmm;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=l2+3H1Iw;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=KTumMwDy;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A990606A324;
-	Mon,  2 Nov 2026 01:58:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52A04606A324
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 02:05:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 52A04606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A54SXCmm
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D211F000C1;
-	Mon,  2 Nov 2026 01:58:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793584719;
-	bh=mhRVqiYq+ePDA2NvwBd3ChCoiSdjgNpL+sEWmLZjAq0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=A54SXCmmrU0CWruUEsp2I/RJfkUrvlGIypr3AmBaVF+YmLZIXSTtUfWkHiK17Cy5n
-	 mxSVdHnKE24IEGhs0yahQE0FuhpwcZCIjSLmCCT03VvBXeA/ar7E3IS50IbnZyC9Z0
-	 JThp1I5URyg1lJXMq/x8yg8mEZe6gv9v/eJrri/xZyWnKnUJntPHz43zH6ed5m7sP0
-	 e9iuij+BegYJEvz2lnZAYGw0mMljsl7ee10s4qmsLZBzhb5Z8kdbzYiluo6+3nxEX/
-	 3prU4pOK4Yuho7MllH3EjPVQpudibbjVwFcen6biudgC3b2b9oQYGKn+ztHz3IPSg4
-	 ABbDkeONkqeRw==
-Date: Mon, 2 Nov 2026 01:58:34 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Brian Norris <briannorris@chromium.org>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
- linux-pm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David Lechner
- <dlechner@baylibre.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 04/17] iio: accel: mma955x: Discard
- pm_runtime_put_autosuspend() return values
-Message-ID: <20261102015834.18155f42@jic23-hlaptop>
-In-Reply-To: <20261021165858.v2.4.Ie9a9de6adbe98d063c6c45b2f59e143303586067@changeid>
-References: <20261021235818.3059519-1-briannorris@chromium.org>
-	<20261021165858.v2.4.Ie9a9de6adbe98d063c6c45b2f59e143303586067@changeid>
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=l2+3H1Iw;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=KTumMwDy
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A20KEDl3310375
+	for <linux-iio@vger.kernel.org>; Mon, 2 Nov 2026 02:05:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	saLjZrbieLhJB1tuozWjrnu5bEeBT6XlxMA2WYvE00k=; b=l2+3H1IwxzBegogB
+	IaK2HeAW1sQjsQS6MA2XYIOMno5CHzbPO3a7uKJrLPMaGGGd8MtbeOU3D4ajhzXK
+	yQeUmp18LBTqSgoZ3hGnbxLgqdHLB+ebVoCN/b7F+B0VzJilNMRaAG5IiyaTQP6V
+	ikEAa7JYLVlF7Mt2I2DX5dqb28lUm368khY31jv2ZGvrD6TTozg5KgRhRaPwrtco
+	WeiziBoAC7yWaL1JT2yLQqejkSIkJ/gz4YBQRDgJLrdY2TuxcbtLKq5lPO8m+e1t
+	uY5mNnxSB2AjxTtfreBrwaXi/4ErN2K2TB9nN2aANhc6hMpP/2XWsXVseRT9vRCu
+	IwLHzA==
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hn79rvvx2-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Mon, 02 Nov 2026 02:05:41 +0000 (GMT)
+Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-3ab67ff8ec3so1711894a91.0
+        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 18:05:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1793585141; x=1794189941; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=saLjZrbieLhJB1tuozWjrnu5bEeBT6XlxMA2WYvE00k=;
+        b=KTumMwDy+GeIBsJoRa4pgcdwhL5wQUYi24+blPPQeo2/DT8dpdDT0TOeztsqjy/Sqh
+         1eL0V8cgJZqPsJDsJf72KV6yGf3tYAJqzaw7d3hu4ceCOONfxeOEgh92ETOzgYp9DGoQ
+         LvWmswcYXkJ+fLQBRNPguBrGr7yD2ccryn6WfnChxi1GoW+U2ylOzZ/16RuYI8uph8Wk
+         9OjQ4f7xxP6PcA9UbM2dffl1+E0k5+wh6czZAz473tUr8ifMfqh9+p89n6TBp0Lsm1TE
+         h0AC+z6v6BKp8BXXyNHhzgIXIzh8G6QVt4OyzBVKR2vhwMkqHd9eNGJFqjzqjEuIH+k4
+         FTuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793585141; x=1794189941;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=saLjZrbieLhJB1tuozWjrnu5bEeBT6XlxMA2WYvE00k=;
+        b=JlidZtLI2YQEchScxLItQ3zJ4KOaDwYARpuBoGmWE4dR1C9CjbcAB6bGD6ravCJiml
+         WYik/nQhX//qeiUKfSQ0PYW8pBQZvyyVn5G2gTZhEBOQTO+eDzX9lbmYq1aJ38F3SYvt
+         upC11KwRXPu073KbmfyX1vVO8a4m4IrhnUHZuofm81mhN55x4KfaymbNUfGNavoxTdTO
+         4VF9QWjYQXhOfdICnfQt4nZMLcLIj42gtfUM+4esfB82OrQsMy7aYEAfOZPMIgtW67GI
+         Rp8eidnISHXAuNa3B7Qy9rkrG7ceM1wy6dlmnKjKdzQC90DrfyuvMBSICVR2sZ5xZfaL
+         8tFw==
+X-Gm-Message-State: APuU4Z/NpB8ewtLn1mVR+PcxFLgruKh5MFFLtL/+WpJrggrvbmsyEeea
+	Nd58aAyEnUl8WZY1/rma1tXheGQXUc5UUWdv4s2tE6J7X8cpVA54LI09uemjUsp56V76cFhGKpX
+	XqNGNEyKl3m7XOcavl2spqFRX7pe7gvQKn8N8t8EVuiTvvcDW3ZJk3gwgeZQvmqPAe92c0s4=
+X-Gm-Gg: AYBFou30jPz2u+Ior4KgjJp2PLlhwSlr6vDaZO9PTs0oAsVXdX8UdLY1jJ6TbbJUf20
+	B/pI2oLq+mSea8q1lprto/hEznqGAMUwEPg2/0ugAw6pLAZSDzI0sZhqxfFIHFlOjlc7ELqlZm3
+	sx0irAGQiKaSA6/3sTROG5HBWNUela6EmXMpk8do2STkA1eWEN9rELZVHswRBUhI0I+0vGgwelA
+	HDuSW7ctjYCn8mRYT3dcrVKdiL/8ZDcX55Fnl8mowSaSLAUYoLGKO5Z8pOipYse8FrBT0yESbDx
+	AvYp695r3Gw/Qr0fl7+MBOEalKH4KExV/GK+X/nfJPYyxEZLLV5kiNuhVFkR8wiFhmc8yX8mHPn
+	C61JyiQWlLoPlPT2bY2JdFCxYJm56HhKY8xDkbuftzp5rH82xQ9qJzZV1ibNZyJN5XA==
+X-Received: by 2002:a17:90b:3c0d:b0:3aa:f4af:1e0b with SMTP id 98e67ed59e1d1-3ae8957d281mr6416172a91.8.1793585140454;
+        Sun, 01 Nov 2026 18:05:40 -0800 (PST)
+X-Received: by 2002:a17:90b:3c0d:b0:3aa:f4af:1e0b with SMTP id 98e67ed59e1d1-3ae8957d281mr6416157a91.8.1793585139987;
+        Sun, 01 Nov 2026 18:05:39 -0800 (PST)
+Received: from jic23-hlaptop ([50.35.44.179])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae6e9b1506sm15900631a91.15.2026.11.01.18.05.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Nov 2026 18:05:39 -0800 (PST)
+Date: Mon, 2 Nov 2026 02:05:35 +0000
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+To: linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>,
+        Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Antoniu Miclaus
+ <antoniu.miclaus@analog.com>
+Subject: Re: [PATCH 04/39] iio: addac: ad74413r: use
+ iio_push_to_buffers_with_ts()
+Message-ID: <20261102020535.288da60f@jic23-hlaptop>
+In-Reply-To: <20261026-iio-v1-4-8b136778eedf@oss.qualcomm.com>
+References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
+	<20261026-iio-v1-4-8b136778eedf@oss.qualcomm.com>
+Organization: Qualcomm
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,256 +129,69 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: 1cxOOFEi6QZq12AkwIasxpII3ZoGQJJL
+X-Authority-Analysis: v=2.4 cv=Wtq+otfv c=1 sm=1 tr=0 ts=6ae7eff5 cx=c_pps
+ a=0uOsjrqzRL749jD1oC5vDA==:117 a=aNnz9XPx1a4JIXSYt2cE/A==:17
+ a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=EUspDBNiAAAA:8 a=gAnH3GRIAAAA:8 a=AGahgOuteS9-GZue9eYA:9 a=CjuIK1q_8ugA:10
+ a=mQ_c8vxmzFEMiUWkPHU9:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTAyMDAwOCBTYWx0ZWRfX9N8RRQVcpQ9o
+ jPuU6sfwckz7lx5JeeR1/m3PHr8lGbmJAEyvK0El/KXxXC8oKAL/ZUefvcqmxjxFUPYQ15SNOyo
+ 9z7ep5Lc/2CJqN5VXzCeROCD0PoxHK0=
+X-Proofpoint-GUID: 1cxOOFEi6QZq12AkwIasxpII3ZoGQJJL
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTAyMDAwOCBTYWx0ZWRfX87W1k99WTQ4Y
+ xlm2sUzJaJ64mU7OjZi65POwbLKE+5g8x7piaKggI3OgyK6D1kzDkZEowDxULbj4OAy3J/XOJHF
+ WfaSVXD8UruyHfB1c5qj+v7yPLVBWIqxiWxPR04vXmPBJWNeqe8RR4vVtFde17R4ncyKaMw721S
+ QyvEwO/Ii74qpJ9xkJbPmHA3XAEHi+Xo5e3lj0X+uK5TKaoTLSk3OO7uRv11M3MSfghwHgswgNz
+ ewzb33OFLdCPbUswGcOmkRq7VXXcw/ybEr6M85YrByB+hFelq9AP1u5TKoyS8/YgmZV9wsbsFP4
+ 5WhBUPhXjtmByrALv9Rdf2OaWFud43HzJBcNlLbV7197a4IUgXwfr7aM/Y7LCq6GigC3cBXgD3s
+ XmsS5SjkVGmUwBG7xaEr0C+LoS+WX2hJT3a+wY9QQSXLxv1tCBNGNlc06ZTXyDdHXNrTWX891zC
+ qhm9hKBZJGvTm60tFvw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-02_01,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 lowpriorityscore=0 impostorscore=0 clxscore=1015 bulkscore=0
+ priorityscore=1501 spamscore=0 adultscore=0 phishscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610300000 definitions=main-2611020008
 
-On Wed, 21 Oct 2026 16:57:05 -0700
-Brian Norris <briannorris@chromium.org> wrote:
+On Mon, 26 Oct 2026 16:05:22 -0700
+Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> wrote:
 
-> These drivers propagate the return value of
-> pm_runtime_put_autosuspend(), which is not particularly useful.
+> Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
 > 
-> Returning an error code from pm_runtime_put_autosuspend() merely means
-> that it has not queued up a timer or work item to check whether or not
-> the device can be suspended and there are many perfectly valid
-> situations in which that can happen, like after writing "on" to the
-> device's runtime PM "control" attribute in sysfs for one example.
-> 
-> For this reason, modify these drivers to simply discard the
-> pm_runtime_put_autosuspend() return value, and inline the pm_runtime
-> helpers now that they behave the same with and without CONFIG_PM.
-> 
-> While at it, I see that mma9553_write_event_config() mismanages the
-> runtime PM reference count. It should only put() a reference after it's
-> done touching the hardware, not before. Resolve this ordering issue.
-> 
-> This will facilitate a planned change of the
-> pm_runtime_put_autosuspend() return type to void in the future, similar
-> to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put() return
-> type to void").
-> 
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+In the interests of nibbling down at the outstanding list,
+I've applied patches 1-4 as they are all on the trivial side.
 
-Mostly for my own reference, this looks fine to me, but if there
-is time it would be nice to use some ACQUIRE magic to simplify some error
-handling etc.
+Thanks,
 
-I'd also ideally like some eyes on the actual functional changes
-were reordering occurs just in case there is something subtle
-going on.
-
+Jonathan
 
 > ---
+> Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+>  drivers/iio/addac/ad74413r.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> Changes in v2:
->  * Split iio patch into per-driver patches
->  * Inlining
->  * Refcount ordering
+> diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
+> index 2e5a58e48a89..8d9d3d5f09c6 100644
+> --- a/drivers/iio/addac/ad74413r.c
+> +++ b/drivers/iio/addac/ad74413r.c
+> @@ -798,8 +798,9 @@ static irqreturn_t ad74413r_trigger_handler(int irq, void *p)
+>  	for (i = 0; i < st->adc_active_channels; i++)
+>  		ad74413r_crc_check(st, &rx_buf[i * AD74413R_FRAME_SIZE]);
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, &st->adc_samples_buf,
+> -					   iio_get_time_ns(indio_dev));
+> +	iio_push_to_buffers_with_ts(indio_dev, &st->adc_samples_buf,
+> +				    sizeof(st->adc_samples_buf),
+> +				    iio_get_time_ns(indio_dev));
+>  
+>  out:
+>  	iio_trigger_notify_done(indio_dev->trig);
 > 
->  drivers/iio/accel/mma9551.c      | 21 +++++++++--------
->  drivers/iio/accel/mma9551_core.c | 39 ++++----------------------------
->  drivers/iio/accel/mma9551_core.h |  1 -
->  drivers/iio/accel/mma9553.c      | 36 ++++++++++++++++++++---------
->  4 files changed, 42 insertions(+), 55 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
-> index 182f488edab1..4c549fb106bc 100644
-> --- a/drivers/iio/accel/mma9551.c
-> +++ b/drivers/iio/accel/mma9551.c
-> @@ -71,9 +71,11 @@ static int mma9551_read_incli_chan(struct i2c_client *client,
->  		return -EINVAL;
->  	}
->  
-> -	ret = mma9551_set_power_state(client, true);
-> -	if (ret < 0)
-> +	ret = pm_runtime_resume_and_get(&client->dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to resume: %d\n", ret);
->  		return ret;
-> +	}
->  
->  	ret = mma9551_read_status_byte(client, MMA9551_APPID_TILT,
->  				       reg_addr, &angle);
-> @@ -96,7 +98,7 @@ static int mma9551_read_incli_chan(struct i2c_client *client,
->  	ret = IIO_VAL_INT;
->  
->  out_poweroff:
-> -	mma9551_set_power_state(client, false);
-> +	pm_runtime_put_autosuspend(&client->dev);
->  	return ret;
->  }
->  
-> @@ -178,9 +180,7 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  
-> -		ret = mma9551_set_power_state(data->client, false);
-> -		if (ret < 0)
-> -			return ret;
-> +		pm_runtime_put_autosuspend(&data->client->dev);
->  	} else {
->  		int bitnum;
->  
-> @@ -200,15 +200,18 @@ static int mma9551_config_incli_event(struct iio_dev *indio_dev,
->  		}
->  
->  
-> -		ret = mma9551_set_power_state(data->client, true);
-> -		if (ret < 0)
-> +		ret = pm_runtime_resume_and_get(&data->client->dev);
-> +		if (ret < 0) {
-> +			dev_err(&data->client->dev, "failed to resume: %d\n",
-> +				ret);
->  			return ret;
-> +		}
->  
->  		ret = mma9551_gpio_config(data->client,
->  					  (enum mma9551_gpio_pin)mma_axis,
->  					  MMA9551_APPID_TILT, bitnum, 0);
->  		if (ret < 0) {
-> -			mma9551_set_power_state(data->client, false);
-> +			pm_runtime_put_autosuspend(&data->client->dev);
->  			return ret;
->  		}
->  	}
-> diff --git a/drivers/iio/accel/mma9551_core.c b/drivers/iio/accel/mma9551_core.c
-> index 2ccb1fb19b96..68df195d5b24 100644
-> --- a/drivers/iio/accel/mma9551_core.c
-> +++ b/drivers/iio/accel/mma9551_core.c
-> @@ -654,37 +654,6 @@ int mma9551_set_device_state(struct i2c_client *client, bool enable)
->  }
->  EXPORT_SYMBOL_NS(mma9551_set_device_state, "IIO_MMA9551");
->  
-> -/**
-> - * mma9551_set_power_state() - sets runtime PM state
-> - * @client:	I2C client
-> - * @on:		Use true to power on device, false to power off
-> - *
-> - * Resume or suspend the device using Runtime PM.
-> - * The device will suspend after the autosuspend delay.
-> - *
-> - * Returns: 0 on success, negative value on failure.
-> - */
-> -int mma9551_set_power_state(struct i2c_client *client, bool on)
-> -{
-> -#ifdef CONFIG_PM
-> -	int ret;
-> -
-> -	if (on)
-> -		ret = pm_runtime_resume_and_get(&client->dev);
-> -	else
-> -		ret = pm_runtime_put_autosuspend(&client->dev);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev,
-> -			"failed to change power state to %d\n", on);
-> -
-> -		return ret;
-> -	}
-> -#endif
-> -
-> -	return 0;
-> -}
-> -EXPORT_SYMBOL_NS(mma9551_set_power_state, "IIO_MMA9551");
-> -
->  /**
->   * mma9551_sleep() - sleep
->   * @freq:	Application frequency
-> @@ -741,9 +710,11 @@ int mma9551_read_accel_chan(struct i2c_client *client,
->  		return -EINVAL;
->  	}
->  
-> -	ret = mma9551_set_power_state(client, true);
-> -	if (ret < 0)
-> +	ret = pm_runtime_resume_and_get(&client->dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to resume: %d\n", ret);
->  		return ret;
-> +	}
->  
->  	ret = mma9551_read_status_word(client, MMA9551_APPID_AFE,
->  				       reg_addr, &raw_accel);
-> @@ -755,7 +726,7 @@ int mma9551_read_accel_chan(struct i2c_client *client,
->  	ret = IIO_VAL_INT;
->  
->  out_poweroff:
-> -	mma9551_set_power_state(client, false);
-> +	pm_runtime_put_autosuspend(&client->dev);
->  	return ret;
->  }
->  EXPORT_SYMBOL_NS(mma9551_read_accel_chan, "IIO_MMA9551");
-> diff --git a/drivers/iio/accel/mma9551_core.h b/drivers/iio/accel/mma9551_core.h
-> index 543454a31dc0..1d55fdfd0a92 100644
-> --- a/drivers/iio/accel/mma9551_core.h
-> +++ b/drivers/iio/accel/mma9551_core.h
-> @@ -62,7 +62,6 @@ int mma9551_gpio_config(struct i2c_client *client, enum mma9551_gpio_pin pin,
->  			u8 app_id, u8 bitnum, int polarity);
->  int mma9551_read_version(struct i2c_client *client);
->  int mma9551_set_device_state(struct i2c_client *client, bool enable);
-> -int mma9551_set_power_state(struct i2c_client *client, bool on);
->  void mma9551_sleep(int freq);
->  int mma9551_read_accel_chan(struct i2c_client *client,
->  			    const struct iio_chan_spec *chan,
-> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-> index 5a36d415a837..2ccb68dfbcd4 100644
-> --- a/drivers/iio/accel/mma9553.c
-> +++ b/drivers/iio/accel/mma9553.c
-> @@ -610,10 +610,16 @@ static int mma9553_write_raw(struct iio_dev *indio_dev,
->  		if (data->stepcnt_enabled == !!val)
->  			return 0;
->  		mutex_lock(&data->mutex);
-> -		ret = mma9551_set_power_state(data->client, val);
-> -		if (ret < 0) {
-> -			mutex_unlock(&data->mutex);
-> -			return ret;
-> +		if (val) {
-> +			ret = pm_runtime_resume_and_get(&data->client->dev);
-> +			if (ret < 0) {
-> +				dev_err(&data->client->dev,
-> +					"failed to resume: %d\n", ret);
-> +				mutex_unlock(&data->mutex);
-> +				return ret;
-> +			}
-> +		} else {
-> +			pm_runtime_put_autosuspend(&data->client->dev);
->  		}
->  		data->stepcnt_enabled = val;
->  		mutex_unlock(&data->mutex);
-> @@ -737,24 +743,32 @@ static int mma9553_write_event_config(struct iio_dev *indio_dev,
->  
->  	mutex_lock(&data->mutex);
->  
-> -	ret = mma9551_set_power_state(data->client, state);
-> -	if (ret < 0)
-> -		goto err_out;
-> +	if (state) {
-> +		ret = pm_runtime_resume_and_get(&data->client->dev);
-> +		if (ret < 0) {
-> +			dev_err(&data->client->dev, "failed to resume: %d\n",
-> +				ret);
-> +			goto err_out;
-> +		}
-> +	}
-> +
->  	event->enabled = state;
->  
->  	ret = mma9553_conf_gpio(data);
->  	if (ret < 0)
->  		goto err_conf_gpio;
->  
-> +	if (!state)
-> +		pm_runtime_put_autosuspend(&data->client->dev);
-> +
->  	mutex_unlock(&data->mutex);
->  
->  	return 0;
->  
->  err_conf_gpio:
-> -	if (state) {
-> -		event->enabled = false;
-> -		mma9551_set_power_state(data->client, false);
-> -	}
-> +	if (state)
-> +		pm_runtime_put_autosuspend(&data->client->dev);
-> +	event->enabled = !state;
->  err_out:
->  	mutex_unlock(&data->mutex);
->  	return ret;
 
