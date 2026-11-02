@@ -1,105 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793650395;
-	b=iTJmKQHkqk1UIL1u9OW3gsKqTaqL4yl7kbnPEgzcIgGIiO3DbpAKT6QhTFGn2Kn8t+4r
-	 jGVsOPJfKpyExx0X2F7FNDQTl45kvGbd4cCemz4aB296XZSxxfeJMLZzBXOJ7CBv8ciJV
-	 nJMjEfBXNJJ9WCBsTZEmfPDtRil/m8TR2BbsF/jrfkFOgqzZXKNrE2+GXNj7LqXUM/VxN
-	 hd9kuc9SIdeOHFRfTXIOyxWXcbVeBSa5EUuRlpUhUbvVtpLgzgvitshV50Q/i5FUwBobj
-	 sUrdocyGBIVeYNdtsWStHxOIdUmJaAnAHczqIXGZoGozmuRgHwAKlml3tWEeGq2fePA==
+	t=1793651754;
+	b=EdxtSwcpDh/9gSBqWb63B6FHxcB4EIvmbaFewV4hPShKrR1EvuTBJFWhf2KUMP6DKzC1
+	 ClQR7stOgOxf8qU8wo6qbGomLanqksIMM5SdQtApIwIkRNJ1PUvJg2r4KHt0XTNN1Dx2j
+	 lZ5oG4s0G+CgNMthNDbzwOEU9Lk83DUIClYGFyBBOpYd+qswxMfg8rk0jGBkc4IqYMX6e
+	 AkkkGTkv3DRzPkCABMoxCBJgE0u97rzng8Wgj3FG63dTzkrnOaN7Zn5MrJ5x8opjK6IPS
+	 DcFiI21jIdERtOLlY4iX6lIrth7a6We8+C1EBeAHAJTx1FnRqC6MYErGxuu6qirUZUg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793650395;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=L2gEpleCd13p+gM0N/gkP9xykl7jsD9jHrOnDwV/TOQ=;
-	b=PGlzRcix60vE/8aHt1GS6YkPmVSA0QPWFLqPhkDBp8EKfEDsL4GjCzCicsBblqMdBEvh
-	 Q2QqJ8iQeBHVTibt+ibKK76RAV5PMsq204XJO8XML1PROk/jsslQuq3v/IpWuXwidW4sd
-	 r0nmgQ17dNOnrJG8kVe6UjST/F16bmNcXLiBUq0ko6clDIzzvylfX4ZNiYiqyzNiP9qqS
-	 fALsIDLTI6wLAyZGrMojsygW+3TRWzhCHiK2kTNE68VWiOwy7+wxPkG6E/KAKKuHYk4L3
-	 6kTnZ3Zq3tNlNiaBJD959k+fwfR/sU6E4F1MsbGsjYqvYyeSFdivnLsRfhbL5N1oZrg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793651754;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=dvVO2rNpJvTNuu02lcc9yj9nd8ebw6GqxP0aGvMJCMc=;
+	b=o3kuTa8j8IxvNIyTCV9o/vyMYclA6uGD0UVAnF1Cg+HE+C1tjapu8nzxvinDa+UeDhYA
+	 m2eCJWbgJ0ljhnzAZvqDtButlo7dNR/IHxHqjLDH5w7dfIXWLX0mHxm5KBakU73aNi0T7
+	 E4dwQT31H4heB5zKP0zmCoSQaZvjnQXhWhYLoPS6k9iQXlr0QiwdFpYf3DHHzj24xAW9g
+	 xV+6o1BlGpAdoos2CEJYC2AL1lBXWc6Ssi+gGiTEcFWOUY/QaNmF1NJ74HvVuleqxEnN7
+	 zu/qb4aMh0cHyaHj+TcRDSPUSc8C+ewUqdTSIAc/PVEoXyzpS4uP/FqeFXDiotUYZXg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=mgcrea.io;
-	spf=pass smtp.mailfrom=mg-crea.com;
-	dkim=pass header.d=mg-crea-com.20260707.gappssmtp.com header.i=@mg-crea-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=MmSV0NDv;
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hdfZspls;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97C53606A32C
-	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 20:13:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 97C53606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=mgcrea.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mg-crea.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE45C606A326;
+	Mon,  2 Nov 2026 20:35:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=mg-crea-com.20260707.gappssmtp.com header.i=@mg-crea-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=MmSV0NDv
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a208d93758so36579685e9.3
-        for <linux-iio@vger.kernel.org>; Mon, 02 Nov 2026 12:13:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mg-crea-com.20260707.gappssmtp.com; s=20260707; t=1793650393; x=1794255193; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=L2gEpleCd13p+gM0N/gkP9xykl7jsD9jHrOnDwV/TOQ=;
-        b=MmSV0NDvusZz1hnlGyvqH9FGRNZmkYXSSPUBGZ9aWE8hBkP1gA1S84f28JHu3Q+fx4
-         BbxJzw8iFTkIWHedRtb5zP/sMHHyw0rS0m4/9xpAzCKQlbrJU+XJ1RFjP7Pts+malEhH
-         GfC/iGJ/b/NZWaY2nrOZr64AQPXUy6yb/miV725si3g2Zq4p5UTTGejXX8aJEhQ6RoBQ
-         FSNl2DzJ4Zp09b7qEHkWTHLcvUVjibmtc/3OucJfYU12u5xUQ7Ms27ql10t70oIiJyLP
-         v63o0HjQGe1M1EHsuyGHqtieBL+2hLHmv/9iqzRhPj/INNxY24a+ckyrqtbOiBuROVuR
-         znRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793650393; x=1794255193;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=L2gEpleCd13p+gM0N/gkP9xykl7jsD9jHrOnDwV/TOQ=;
-        b=f6bc+zu8p/joTiSJj8RnEGDzWaZfaOLqf2SYKe5NY0fW2ABhEBqDp5Ly3G2Sdd7uPL
-         4vhAVEZFuR1il3Cnap38RwZYPB+K7JVOTZa/PzXlb5x/OzJeGyCThvuFYO9DffGmvjNN
-         N9Jf4s8cP3QB+SRS3ql0gchXfWiv9mCEu+Mlst/2JHoYOtoEYXiAvCTr7LLGZR7uX/UL
-         qpjxI491IDJkQSTWL2wXySiVtceQIwoDomiJWgLAAMLfmpR5Fb+FPM24VXcRJ9iH/O/m
-         ExGvu3exdx722VGeO1A72cCcSZ9DgtYDqpCOPcNj+yUNKOYKL5xlXVCGhGEyV1HwI1gg
-         tMFQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzHPtdnPfO/Nr1R9G6wK/VZEHSF3hj62Q1iISN4WpvLc9T7x6sBAIBJ+/XKDJPs/hqGDtqdJ6uvnTs=@vger.kernel.org
-X-Gm-Message-State: AFq9FYJlDM+prLotzZa/7j+HrmCeaMOqiQErQwx0yJ2+JvotRz/UGYLW
-	+Yk5i5tghHhh7B02L1qhuYvuWdKfknFeoVhBUaNO2ekIexHZVXWOj8LNqLXvBjesDBY=
-X-Gm-Gg: AYBFou3ZWU+q6BX4kGvZgJt3YMaKk0a5WdPJ/YerV384dP0iCCbG+CtN+0W80GaWlXG
-	VTemadYBkbF4CxHIPHgLYarDh2RV3dY/Md+GL3BunFCNziQ6QzR8YqxJeypM4toJ988udeYSd4Q
-	kZkhI1uBRiIjhEdQq4XygZ+/qGAZOVB+bLnoKeGlvg+OuN8T9lMikuzc12WFBDNyPh9UeDkano4
-	Ut+bzTJimG70DW9DZb9oCvMft9kaN2L0DKOhA6flabxOP8QDWSKpbc4CJOsZz5ZVL+CxR2l2fdR
-	o3zsCczr9kdHab7dPaQCT8N8R1NcLJwaqg1afbD9Z5gWzRcUmeoSeXdZEFprKqHkbc4AEqc84ci
-	ZpErxPSGtQkk6gReuRt4dsH4ZYcEF9/0YoivzQg2O8ZrkIrlW6x8/kbCkOuKJAYabUndlFfybI+
-	Ko5SszGIXylofUZV6RvACqYyikiMgTijGXO3S+PICIgJ92Oz5whGd32/xH5S7EeeDJrUVoIWB9w
-	OxEA5AvJad8fRBiH/hfw1iM8gzz0/VxFzvp8QFAbL/S7TY7F8FEXn8kE9zlEG5RD1SmspKcPANx
-	36jspTNHgbnZsn2uH01bOszNbeiYiW647XElUrG1nw8BzLEW0Ym8Gb2+jODo
-X-Received: by 2002:a05:600c:840e:b0:4a1:813f:2a60 with SMTP id 5b1f17b1804b1-4ac17d168b1mr286479175e9.11.1793650393215;
-        Mon, 02 Nov 2026 12:13:13 -0800 (PST)
-Received: from localhost.localdomain ([2a01:e0a:9d2:5a71:6412:7406:ded:3229])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b2a82cf248sm13969155e9.2.2026.11.02.12.13.12
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 02 Nov 2026 12:13:12 -0800 (PST)
-From: Olivier Louvignes <olivier@mgcrea.io>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Cercueil <paul@crapouillou.net>,
-	"H . Nikolaus Schaller" <hns@goldelico.com>,
-	Joshua Crofts <joshua.crofts1@gmail.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Olivier Louvignes <olivier@mgcrea.io>
-Subject: [PATCH v4 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
-Date: Mon,  2 Nov 2026 21:11:54 +0100
-Message-ID: <20261102201155.10948-2-olivier@mgcrea.io>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20261102201155.10948-1-olivier@mgcrea.io>
-References: <20261102201155.10948-1-olivier@mgcrea.io>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hdfZspls
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA13A1F00A16;
+	Mon,  2 Nov 2026 20:35:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793651753;
+	bh=dvVO2rNpJvTNuu02lcc9yj9nd8ebw6GqxP0aGvMJCMc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=hdfZsplsPzWIBETGNzE+dm1RLl33QZCz1ghJ6tDoX7zt6yOYKwwO6E9RAvfbxsSHE
+	 WgHS42fPuH3ls3qLWGbiYhXVPGx3zFtkd0DdnqaMjLSVGg5uqgb4I38CfM3t4kGiN1
+	 ipKt36zcPi8DRGOaXVA0CikoClsoDEeVs/C1CUpdK4TsmxhEVs5rl3HSdMxiTcRjQu
+	 xoIVKpJ85AvU4gxWydUL8y+6v2fb3LY1aCnSS0kCma/8XO/1AXANoHowGID4qXsC4f
+	 t6FOKOH8zBc+T9vWJyLMN4agBmP2MDGSJnwtk7ADmjzdm4nQNIUPkFM19OQvelfs+D
+	 mp7nOinjfSjag==
+Date: Mon, 2 Nov 2026 20:35:48 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: sergiu.cuciurean@analog.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, ukleinek@kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: add lltc,ltc2387
+Message-ID: <20261102-pursuant-collide-4246c955efef@spud>
+References: <20261030-scientist-puzzle-ab2c668b6e27@spud>
+ <20261102081110.63080-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,94 +60,199 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="RY2oGnwwwn5GkflT"
+Content-Disposition: inline
+In-Reply-To: <20261102081110.63080-1-Nicolae-daniel.Deaconescu@analog.com>
 
-The X1600's SAR ADC has four auxiliary channels and none of the
-touchscreen or battery engines of the JZ47xx ADCs in ingenic,adc.yaml,
-so it gets a binding of its own.
+--RY2oGnwwwn5GkflT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
----
- .../bindings/iio/adc/ingenic,x1600-adc.yaml   | 53 +++++++++++++++++++
- MAINTAINERS                                   |  5 ++
- 2 files changed, 58 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+On Mon, Nov 02, 2026 at 10:11:10AM +0200, Nicolae-Daniel Deaconescu wrote:
+> On Fri, 30 Oct 2026 20:50:11 +0000, Conor Dooley wrote:
+> > On Fri, Oct 30, 2026 at 02:02:05PM +0200, Nicolae-Daniel Deaconescu wro=
+te:
+> > > On Tue, Oct 27, 2026 at 18:28:34 +0000, Conor Dooley wrote:
+> > > > Why are we getting new devices with linear vendor prefixes?
+> > >
+> > > I'll fix this in v2. The binding file will be adi,ltc2387.yaml.
+> > > The -x4 compatibles will also be dropped, because they described
+> > > four devices sharing one AXI ADC.
+> >
+> > Please retain more context than this, it's not enough to just have what
+> > you're replying to. I see so many patches that I will have completely
+> > forgotten what you're doing by the time I get to the next day.
+>=20
+> My bad, I'll keep more relevant info in my responses from now on.
+>=20
+> > > > Hmm, ltc2387-16 does not appear to have these signals?
+> > > > Well, it has "cnv" but "cnv" has "sample clock" as the input name s=
+o is
+> > > > the clocks property above and pwm-clock can be used if the provider=
+ is a
+> > > > pwm?
+> > >
+> > > The LTC2387-16 datasheet has these pins: CNV+/CNV- (pins 27/28), which
+> > > is the conversion-start input; CLK+/CLK- (pins 23/24), which is an
+> > > externally applied clock that shifts out the result; and DCO+/DCO-,
+> > > the echoed clock. There is no clk_gate pin.
+> >
+> > Then there should not be a clk_gate pwm for this device.
+> >
+> > > The part needs a burst of 8 CLK pulses per conversion in one-lane mode
+> > > (4 in two-lane), starting t_FIRSTCLK =3D 65 ns after CNV and ending
+> > > within t_LASTCLK =3D 49 ns of the next CNV. So the CLK input cannot r=
+un
+> > > freely: the clk_gate PWM gates the host clock into that burst. [...]
+> > > The clocks property is the reference clock the PWM generator runs
+> > > from, and the driver needs its rate to compute the waveforms.
+> >
+> > Then you've got a "layering" violation of some kind here. If this clock
+> > is consumed by the PWM generator, it should be an input to the pwm
+> > generator not this adc.
+>=20
+> It IS an input to the PWM generator, The ADC node references the same
+> clock only because the driver has to know its rate to compute the CNV
+> and CLK waveforms in clock cycles. adi,ad7625.yaml does the same.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-new file mode 100644
-index 000000000000..f6356ea97980
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-@@ -0,0 +1,53 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/ingenic,x1600-adc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Ingenic X1600 ADC
-+
-+maintainers:
-+  - Olivier Louvignes <olivier@mgcrea.io>
-+
-+description:
-+  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input channels
-+  measured against a 3.3 V reference.
-+
-+properties:
-+  compatible:
-+    const: ingenic,x1600-adc
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  '#io-channel-cells':
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - interrupts
-+  - '#io-channel-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    adc@10070000 {
-+        compatible = "ingenic,x1600-adc";
-+        reg = <0x10070000 0x30>;
-+
-+        clocks = <&cgu 28>;
-+
-+        interrupt-parent = <&intc>;
-+        interrupts = <11>;
-+
-+        #io-channel-cells = <1>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ecc22d1149d1..fd4bb5c6bf16 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12925,6 +12925,11 @@ F:	include/linux/mfd/ingenic-tcu.h
- F:	sound/soc/codecs/jz47*
- F:	sound/soc/jz4740/
- 
-+INGENIC X1600 ADC DRIVER
-+M:	Olivier Louvignes <olivier@mgcrea.io>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-+
- INJOINIC IP5xxx POWER BANK IC DRIVER
- M:	Samuel Holland <samuel@sholland.org>
- S:	Maintained
--- 
-2.54.0
+Then modify the PWM API to get the information that you need, you should
+not be constructing fake relationships in your devicetree to work around
+limitations of some subsystem's interface. If you need the information
+=66rom a PWM provider for what the minimum period or duty cycle step it can
+provide is so that you can use the waveform API correctly, then add that.
+I took a quick look at the code you've added and it looks like it'd just
+fall over as soon as someone used a PWM provider with a mandatory
+divider?
 
+Trevor got lucky that I didn't ask these questions about the ad7625, you
+did not.
+
+> > The second pwm should then just be called "clk", because that's the
+> > input(s) that it represents.
+>=20
+> I'll rename it to "clk" in v2 and reword the pwms description. ad7625
+> uses the name clk_gate for the same signal.
+>=20
+> > I want to see what the dts you have for a complete setup of this device
+> > looks like, including the backend and pwm generator.
+>=20
+> This is an ADAQ23878 on a Zedboard, two-lane, with the AXI ADC backend,
+> the DMA it uses, and the AXI PWM generator. The 120 MHz ext_clk is what
+> the HDL provides to the PWM generator. Supplies are fixed regulators here;
+> VS- is 0 V.
+>=20
+> / {
+> 	vdd_5v: regulator-vdd-5v {
+> 		compatible =3D "regulator-fixed";
+> 		regulator-name =3D "vdd-5v";
+> 		regulator-min-microvolt =3D <5000000>;
+> 		regulator-max-microvolt =3D <5000000>;
+> 		regulator-always-on;
+> 	};
+>=20
+> 	vio_2v5: regulator-vio-2v5 {
+> 		compatible =3D "regulator-fixed";
+> 		regulator-name =3D "vio-2v5";
+> 		regulator-min-microvolt =3D <2500000>;
+> 		regulator-max-microvolt =3D <2500000>;
+> 		regulator-always-on;
+> 	};
+>=20
+> 	vs_p: regulator-vs-p {
+> 		compatible =3D "regulator-fixed";
+> 		regulator-name =3D "vs-p";
+> 		regulator-min-microvolt =3D <5000000>;
+> 		regulator-max-microvolt =3D <5000000>;
+> 		regulator-always-on;
+> 	};
+>=20
+> 	vs_n: regulator-vs-n {
+> 		compatible =3D "regulator-fixed";
+> 		regulator-name =3D "vs-n";
+> 		regulator-min-microvolt =3D <0>;
+> 		regulator-max-microvolt =3D <0>;
+> 		regulator-always-on;
+> 	};
+>=20
+> 	vref: regulator-vref {
+> 		compatible =3D "regulator-fixed";
+> 		regulator-name =3D "vref-4v096";
+> 		regulator-min-microvolt =3D <4096000>;
+> 		regulator-max-microvolt =3D <4096000>;
+> 		regulator-always-on;
+> 	};
+>=20
+> 	clocks {
+> 		ext_clk: clock@0 {
+> 			#clock-cells =3D <0>;
+> 			compatible =3D "fixed-clock";
+> 			clock-frequency =3D <120000000>;
+> 		};
+> 	};
+> };
+>=20
+> &fpga_axi {
+> 	rx_dma: dma-controller@44a30000 {
+> 		compatible =3D "adi,axi-dmac-1.00.a";
+> 		reg =3D <0x44a30000 0x1000>;
+> 		#dma-cells =3D <1>;
+> 		interrupts =3D <0 57 IRQ_TYPE_LEVEL_HIGH>;
+> 		clocks =3D <&clkc 15>;
+> 	};
+>=20
+> 	axi_adc: adc@44a00000 {
+> 		compatible =3D "adi,axi-adc-10.0.a";
+> 		reg =3D <0x44a00000 0x10000>;
+> 		dmas =3D <&rx_dma 0>;
+> 		dma-names =3D "rx";
+> 		clocks =3D <&clkc 15>;
+> 		#io-backend-cells =3D <0>;
+> 	};
+>=20
+> 	axi_pwm_gen: pwm@44a60000 {
+> 		compatible =3D "adi,axi-pwmgen-2.00.a";
+> 		reg =3D <0x44a60000 0x1000>;
+> 		#pwm-cells =3D <3>;
+> 		clocks =3D <&clkc 15>, <&ext_clk>;
+> 		clock-names =3D "axi", "ext";
+> 	};
+>=20
+> 	adc@0 {
+> 		compatible =3D "adi,adaq23878";
+> 		clocks =3D <&ext_clk>;
+> 		io-backends =3D <&axi_adc>;
+> 		pwms =3D <&axi_pwm_gen 0 0 0>, <&axi_pwm_gen 1 0 0>;
+> 		pwm-names =3D "cnv", "clk";
+> 		vdd-supply =3D <&vdd_5v>;
+> 		vio-supply =3D <&vio_2v5>;
+> 		vref-supply =3D <&vref>;
+> 		vs-n-supply =3D <&vs_n>;
+> 		vs-p-supply =3D <&vs_p>;
+>=20
+> 		adi,gain-milli =3D /bits/ 16 <870>;
+> 		adi,use-two-lanes;
+> 	};
+> };
+>=20
+> One more thing, on the cover letter Andy asked whether this should be
+> done in an existing driver with per-compatible chip data instead.
+
+Dunno, don't care. How the drivers are written has nothing to with me :)
+
+Cheers,
+Conor.
+
+--RY2oGnwwwn5GkflT
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauj0JAAKCRB4tDGHoIJi
+0luKAQCR7NOOLzEZxK+88wBVi3I3guik+ZdYa1djbktQp85UlQEAqPRERobzPurB
+BYQdqJLzZj8eUCOik998InmtwzMqbgs=
+=kvR3
+-----END PGP SIGNATURE-----
+
+--RY2oGnwwwn5GkflT--
