@@ -1,18 +1,18 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.1
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.51
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793622093;
-	b=cD16M0pZPVmArJmK+XHDqsP5hJQdMSO+04CUzdwOuOfiU5tv8ga/df6O2MaGav1u1DvY
-	 1rYQq6MuDBU8y3yk0E1SKgxrgmGnrNklIHvQo+FZ0OeOAa8hMui1mi7P7gf6PcARRaTRF
-	 dEc8LLpvck8i6ZtKuchLH7dBQms1xce93qwfE7Mzhyoj3td7ha8za5uIXLmo4crPwP5p/
-	 G5tkhaBh6uU3Y5lAxpVFMLrDzTkjc4Oh4C6tL6RlQ0xW1z73BRbmSn5CgLg98uTvYJMHi
-	 zx4WExljx+0OxolhQCKVy4nmAe1YE6M7laZUNf7NLLMvtXBHbIBF1FnvcScFCxxWlbA==
+	t=1793622091;
+	b=ik5DyOdQX1DPeoOQrij+51Rz910i3djn5oXoh3kUG6riCZCPrV8DWsQMrzJDtb9YNlfa
+	 kKjuSFsCTeb8SLUv1FJBBrhdQsHf4wsHQXsh9XY/W2JsWA5fZj0zEBw4NZ3IRL7evIsYJ
+	 jG0lsshlqcYzenjxOcqcjX4lLetQsU5SwMu5JXhcgNavSlyQT/WpUtDs7W5gNs7HmIv03
+	 e0xZJdK/+6+5OxiMUii2iNIVmu2S1V1/OGokc+x9yYN4ObjHHZNE+oo4jsepDvb1jXNoO
+	 ZkoLGK/P8ZhHaemcVxQcVL82R8lqdCmU2F0yUxKi9V57DOLWCi8m5Vrxz76pZad73zg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793622093;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793622091;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 Content-Type:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
 	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
@@ -26,74 +26,70 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=7jY6yOIoDb2s40FcwgAUYkH4icXO6Xbv/NyPwxlalWc=;
-	b=DhDTRsrMvVphFXtlvpokgzPHxkXerlaTZaipB628beV2jN1/8OeoL8ydBLKNmxi+1N8s
-	 sesHoqnVLGpTfBYR6FS3HjU/CBGwjBJs2kueO/SUOR2qAqSV7WvVhRbKfgqD0BStmzsM+
-	 sy/R04cEFq16pL8TTRvA7zXy8WpohwFplA920tPi+jsjrrKAqjBd56ku0LBqnA84v594y
-	 eXtqVWzeCaCRClTztWcCOrEx4SYbdwyNgbv+Y4S10hA6E3iQ2TbBjB/H2utRz3Pd5j/eN
-	 0DF0fF08yC+Gs/24EE7yzhNQ+5Iw3pyUjoKIEOe1uDbXrRL/zhbJoFpgRUWZ4rQIn2g==
+	bh=Nx2k7pxdxbHfW3z6fYRnQeSZE2Mryn1gxwQy+BH+xc4=;
+	b=qvYK0HciAfQoG9pyxwzufN+llG24mL3l9AqmGQAZ+R9HtSFbsOZiRbypCYjEE/NmmAbJ
+	 +mP7KonCUFASQR/FnUo2Q30QjGnvsEq+/NyEgUFCOFplrVIZxebHUXixs7s0tZ5DGKjSm
+	 jWTn318V4x396LNsSYDwgaFgBHUlUBZ36HxTLESis1AvCMO8GevYNftnG3OfZ7SwDK7B8
+	 ebjcZgfDP3P05YzBa38tjHmc8p9asQjSBHKe85BxDK8InWMlZp1F4p2tI+fUjCJK1Zv0a
+	 K0Jscber7ntJJhYOy8IgVJmEyiKcNahU3WpzOCwEGJ8bEbGqspQZ1hA6NUmHw95bC6A==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EzeunGqW;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.1
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012001.outbound.protection.outlook.com [52.101.48.1])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=o9AWhKOL;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.51
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010051.outbound.protection.outlook.com [52.101.201.51])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56826606A32F;
-	Mon,  2 Nov 2026 12:21:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 56826606A32F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B0A606A326;
+	Mon,  2 Nov 2026 12:21:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D9B0A606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EzeunGqW
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=o9AWhKOL
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=L46w++12JV8S1hE/cMtrbccBxDFCuLEszbTR99NXkHSqnUP0JIvdeULvADthUoFVzuhypVNriT5M+up6eePe1KwTGn34H4YQ5YkaT73HedYu5u5lVhalRUTH0IoO31leMjaQjiEcQnoRfmxG6xB+E/e6LvrjKfcazfT6nNpDwDYK9NchAmVnYKdRQjMUbdkTdf8VLa/NpeGHqEGp8UWX7uWNXKkaqjnQrtVuAzlN+nURPHzD5HMzd6EFBc11ef+71IUt9amEkHsinkypiDSSESO+CC2brXR57/+k5psJKYXecL/V4jJ3SuOq2nwrTfs/X7/RMNa4N+wM7urA+d8MwA==
+ b=nx7OWIu5yPZnmp3nn+mUKwy8opMvhQqcv4MHJuaE3Bodm38QylQxesgeRWhevD7zWjCVrBcfpNxdyeDbwdv+ZRIkwnsRAAqD1q2RT6DnDDiXE3HWJhnX5Lt8IRR0EIQQX3LtQlY6kp9Oe3ZlQPpas0i1hHdaPDHnnw+8ugRcMQyYR+dmQU+tcqgk5qsy/ANOM/nvus3BsY2IaW3lbZ1HgT6PdsH0ocxFVi4DGGmejSSML3wGhB0vPfPNqOGKcRFvczqqVYaE9Q1hiwIbSZsyohCd4Xqg/XJ18wxVyFncR49025fnBOfYfXlCvRVKFfPOcgO/rejpRYTZ3OrEwMFK9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7jY6yOIoDb2s40FcwgAUYkH4icXO6Xbv/NyPwxlalWc=;
- b=ZNO7a6ojC3bIMVBERtC72GEwqR5SP+3yQ4REWFHE/RczwrBjm4jDebKgJP0+cpv4iYlk4TP94D2cdQHrKG7pAFoCmWM5UnWgg7euwbU64xu1+yfhCwT1sOHMBjJlbxcAoqjZHQ0rIX6WaXh0TNji5K5L92Imz8Nwlbqic+50lrLX3XMSV8J/w3gVhRzvTBfUHXPIrssv9L0ZkzRNUfyDAcIRf31RqHvCgOqKiTC9a9LKKXQ6DqJXTltq9fiVK5EtHVefOO+EpU9mPBfdal20sojI6DqZgzKEOzq2gNxkd6ly5R8VZTQSk29Fg2FkffhmbciJabE+yXRvduqJ4NqCYg==
+ bh=Nx2k7pxdxbHfW3z6fYRnQeSZE2Mryn1gxwQy+BH+xc4=;
+ b=OVt95COKdjkMu0fcTHyXTHXWDJWxdI9YRc0rOwVHYSaYDZCsse6X5cR+JVFAbqDGmGKk59Fv8p5kQUtARE0tgoHPW2nTHxJGjT/J2nhS1fY5sWtHHkON+Jq7fCVMahiS75CAmFhU6OgMGexEfVJKpDYBfqFchpVUSwOf5fjBtVlgIm02+mEMvPpALLDdNvI0se1fcN/LEy6C868GX3xb3YvBgw10vFFc7ubd+pgPzJBeVki1hDnS5KHGFx2xxcQ9laxbN3UQenXyU212YCp+huZZ+jIbkSGx7JkRZG3A+Qjx74SUrhlXkD9c14oNSbuhuM58l3Btix3idmy1OQJWng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7jY6yOIoDb2s40FcwgAUYkH4icXO6Xbv/NyPwxlalWc=;
- b=EzeunGqWdUHtfRN4ibAhlnmYMLwnwzehU9atgTFYtRoF6RXywFnySQ96DuB68iTF+ANADJ7j79v15Jb1ZGQhJZKnUi32go5plqDiMIsGGWs98SoPeV2R9SRaheOHYdkE5eRarOBLRzU4DqJnHZ/Sbno2jc54/Ag/YMCt7t29ads=
-Received: from BN9PR03CA0652.namprd03.prod.outlook.com (2603:10b6:408:13b::27)
- by MW5PR12MB5621.namprd12.prod.outlook.com (2603:10b6:303:193::12) with
+ bh=Nx2k7pxdxbHfW3z6fYRnQeSZE2Mryn1gxwQy+BH+xc4=;
+ b=o9AWhKOLF88Zm6qqJAr37h34zdXjdIQi5EbCdoi+pZKv5xLspMEJUljicUXBmjHYnSAXmX8IZAxFp8Z3MHeeVbJz/c8ZG9QLZ7LTrJnr8U1dT0+CYM8v+T6S3++x7/ajvMMwheVUWLQyVf0LDv6ZPk7qaOUqIzzqNvRGDHgpoQA=
+Received: from MW4P223CA0006.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::11)
+ by DS0PR12MB7512.namprd12.prod.outlook.com (2603:10b6:8:13a::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Mon, 2 Nov
- 2026 12:21:29 +0000
-Received: from BN3PEPF00022BC6.namprd05.prod.outlook.com
- (2603:10b6:408:13b:cafe::35) by BN9PR03CA0652.outlook.office365.com
- (2603:10b6:408:13b::27) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 12:21:25 +0000
+Received: from BY1PEPF00026968.namprd05.prod.outlook.com
+ (2603:10b6:303:80:cafe::8) by MW4P223CA0006.outlook.office365.com
+ (2603:10b6:303:80::11) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.12 via Frontend Transport; Mon, 2
- Nov 2026 12:21:29 +0000
+ Nov 2026 12:21:24 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- BN3PEPF00022BC6.mail.protection.outlook.com (10.167.248.219) with Microsoft
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BY1PEPF00026968.mail.protection.outlook.com (10.167.244.152) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Mon, 2 Nov 2026 12:21:28 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.592.5 via Frontend Transport; Mon, 2 Nov 2026 12:21:24 +0000
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 2 Nov
- 2026 06:21:28 -0600
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
- (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 2 Nov
- 2026 06:21:28 -0600
+ 2026 06:21:24 -0600
 Received: from xhdakumarma40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
- Transport; Mon, 2 Nov 2026 06:21:24 -0600
+ Transport; Mon, 2 Nov 2026 06:21:20 -0600
 From: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 To: Jonathan Cameron <jic23@kernel.org>, Michal Simek <michal.simek@amd.com>,
 	Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>, David Lechner
@@ -104,9 +100,9 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
 	<amitrkcian2002@gmail.com>, Amit Kumar Mahapatra
 	<amit.kumar-mahapatra@amd.com>
-Subject: [PATCH 2/6] iio: adc: versal-sysmon: validate temperature hysteresis
-Date: Mon, 2 Nov 2026 17:51:08 +0530
-Message-ID: <20261102122112.1723130-3-amit.kumar-mahapatra@amd.com>
+Subject: [PATCH 1/6] iio: adc: versal-sysmon: fix race in interrupt teardown
+Date: Mon, 2 Nov 2026 17:51:07 +0530
+Message-ID: <20261102122112.1723130-2-amit.kumar-mahapatra@amd.com>
 X-Mailer: git-send-email 2.44.4
 In-Reply-To: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
 References: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
@@ -123,106 +119,99 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF00022BC6:EE_|MW5PR12MB5621:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7b77ce0b-02bf-459c-95ac-08df38dbd27c
+X-MS-TrafficTypeDiagnostic: BY1PEPF00026968:EE_|DS0PR12MB7512:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9c128a70-fa4a-425b-e0a7-08df38dbcfdd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|36860700016|82310400026|11063799006|56012099006|261009223027099003|261009221227099003|261021123027099003|261021121427099003|10067099003|18002099003|22082099003;
+	BCL:0;ARA:13230040|36860700016|23010399003|1800799024|82310400026|376014|7416014|261021121427099003|261021123027099003|261022105027099003|261022075727099003|261009223327099003|261009223027099003|261009220027099003|261009221727099003|261009221227099003|261026140227099003|261028144727099003|11063799006|5023799004|10067099003|56012099006|18002099003|22082099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	HQpisMmT7tzRYz97NygPy84aItJtj6FefAoPUNlwRb6ZChZtaATlbl1SRnjPNCdMGNZzBWu+pPYAEsSy7uCy+TrEDILfm+IrsrMDt4kyCmk0892mLbOJ2pvhR4oCRiSafFRhUDxYikOAUGDsB6unSSBTBZsQg5htYVdOct6jCFohM0as/Y4X8bwKSsy+hnI3XNwRnvNgsK3E7fX/5LtUErFCgofDuCLP/csI7fQko0IStgoxfgb7RlmYZuSn0Mjtqpdn8a5+gCGzFrTBw7f2rO50PVZ6Clvi8FeifDucaKhBAaZv/H3r28+5zJVEo2+1VyCx39uc4DmbgcpdHqSuLg+QIgOfj+K9U+pcR8twhV+NGURrWHE2KAvOuUfvHvKHmgh1btENvfi7JbIgC60RJAtmjQSHviDo/JrrDclbOYrfGEOTs0skb081dPZro4okRQDx6xxOPUOaxWwz3uqMltAwVgOf+Iu6llxiRu/kO9yClEURChWfYY0VFRyYUtvjyRnDfU3dybWAR4iV0vx3X2fXs7NqJVHF08KCK3rBF0tC3l3NYtNJkCHxJfHtXFeK0u4cgS2p+2Hibjl+tltb9Kf6Z2V1ocLCrrNaMl1TjdKmjeuH+ua6cE81nRx+guZmBA9fCaRwLesqmo4UOftbNCCIRaKzn7Vl3C9l7Y6v1zRNMSr1EHDN1KWcGPwdRAHgnLWe4aBEqDCoXbWJVZMRiQ==
+	oH2+cHBgVCX6oJCbZ9jVNHUubIGENPsrYw2gNA8lVyyUoanZB1tTcitHFLTqqQ3u1dnvKkrPbWw7y/C4Sk9jYt9HVUBF8pPnDdktruRHMI5L7oa2DU/TVi4KBWscWi44qN0CQkPdBqfgpjKSxyH+pGQqM0fPI/kygKiNTvzAngXPEhOzQhVcWHfzhiiGiAH9hconh/Oz1/WJxwkdLSHTHHP/hHlnaaIhF/ttAIBPLyS2MyMz3Qf009rUdY6LG8E9ErL5M6Z+Gh/aDrqHiogzI0/54wCIW9RdEsoQDjkylczCOrSyiA6SMD+MOM17Ayy9MXvZaVG+VhwFVjoE06RozJlJZsq6+da7LLReS30ZarBHfVsl3Ili7F7GVZiT/XKcHTnIZhXJG5Nh2da1ogYULUEJ50RYGqsFamhzpYMJJxSTxbE1xNd+Le+rooRov3wU5evOHCyaiTDRC0bFIee4ujRRZu9UJ3qJpuuo48QlZUU1f8XY5uPf3PxBeiTp1rnBpq6NbZ4kEO4L9poidx04Drui5b15/udL0o0mUL9LZJgTLQzW1gDBPbh+aDRCX9ffJ3kaWPkkj4Q3ddrsKno0wMnBqR7lWWHpIT/AOuRAfMgpNrAYO57j/brMmis4xQvoM5Y6feEf24KMxAwKXEKtJOUBJxz+Rp6Zl1x5+edobSvhDlP3/Y+x8rEqCEPzk9zltSXmiTfUEpcQiPDDRkd5YA==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(36860700016)(82310400026)(11063799006)(56012099006)(261009223027099003)(261009221227099003)(261021123027099003)(261021121427099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(1800799024)(82310400026)(376014)(7416014)(261021121427099003)(261021123027099003)(261022105027099003)(261022075727099003)(261009223327099003)(261009223027099003)(261009220027099003)(261009221727099003)(261009221227099003)(261026140227099003)(261028144727099003)(11063799006)(5023799004)(10067099003)(56012099006)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	jlsUxtvmGetFUXbRWhmzQnBGsCWiCc2Doa40ckW3YCaP3tSIAMhXjePAkGVx2DZkJBY/7sNoYbU1p2ddK1M12UIOL4pvqiJMP7E00N+XuiBjhIGUqIM324/isAaBjylIxz17FRbAQPPYOpeABJF+3ChFER9rk1gQzKchpIyhMu9S6bLh+azlYopiqsJuDBUdco9aEv00Ih31spXb5qpcuIH7BRaG5jEuWpnQ7QHCd9FfH1ecIb+MYLXD/afsosL3QRuy/Ocl495Xck+sJIYvWYlXVValeMgwZipp8cN9ZD7mIND5XHJnwfqwlBhkA2x1yHjN8dwqY5ud6jAoqYeEqTkkyeGiYjsokdr9b/KcSgWKc6A7CBKWJXIz7p0VP53FquRUhCV1UM0HK4V7WDH10WjX1ya4dN0p98PbaDSy2R5JiRzd0b0tnU6tgi8GvfAE
+	TBP/kytg+yhfXaapKxAdtFBKIo1j8uQQJGFgLwgXL90TDPO4XC3cfKEgfv7xN7tGgikaNjWcr1E5dVi4T67L3/H6ohERQ9smYZwUznzXDYDo5KODdHcBsT9B7rta1zlqOhENV1CReyRzIQe72ITH5ypf8M5zyWf+fewjdscvTKQfTvfAygEQD2xCsAfplBmY9GHBwvCJW/44TexkSjioDVBVFoXAoe+9DQe1f7qPo+j9mb9Lo2sJxfQpqEFfi1f/NZgkaZY/NaHEheepEBtZq1Ua4qNuNO2PLrQ+8qGPu/Q91wezyLsr0rztpwe6S6LGdMDuvk0RqNwwsXii2MjoGDFSPRYfzSpFumAgAYhDwiCaE1BrUEB9hNJjWQwFfhYyozPtP0aTQYd0aIDCDUt22bXeDl6nVv9vt7oAPXSsclBQeKbJyf6YgiWQtmGn3u9S
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 12:21:28.9834
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 12:21:24.5574
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b77ce0b-02bf-459c-95ac-08df38dbd27c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c128a70-fa4a-425b-e0a7-08df38dbcfdd
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF00022BC6.namprd05.prod.outlook.com
+	BY1PEPF00026968.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5621
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7512
 
-The hysteresis written through sysfs is only checked for being negative.
-A large value makes upper_mc - hysteresis in sysmon_update_temp_lower()
-overflow before it is clamped. Reject values above the full Q8.7 span of
-511992 millicelsius, and name the Q8.7 temperature limits so that the
-span and the existing range checks share one definition.
+sysmon_disable_interrupts() masks all interrupts, clears masked_temp and
+cancels the unmask worker, but leaves the interrupt handler live. A
+worker that is already running can re-enable an alarm through IER after
+the mask write. If that alarm fires, the handler queues the worker again
+after cancel_delayed_work_sync() has returned. On unbind this action runs
+before devm releases the IRQ, so the queued work can run after the
+devm-allocated iio_dev that embeds it has been freed.
 
-The cached hysteresis is seeded at probe from the threshold registers
-without checking that the lower threshold is not above the upper one.
-Treat that case as zero hysteresis, as negative values are rejected on
-the write path.
+Disable the IRQ first so that no handler is running or can start, then
+clear masked_temp and cancel the worker, and mask all interrupts last,
+once nothing is left that can unmask them. Record the IRQ number for
+this.
 
 Fixes: c7f7eb10638f ("iio: adc: versal-sysmon: add threshold event support")
 Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 ---
- drivers/iio/adc/versal-sysmon-core.c | 10 +++++-----
- drivers/iio/adc/versal-sysmon.h      |  4 ++++
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/iio/adc/versal-sysmon-core.c | 5 ++++-
+ drivers/iio/adc/versal-sysmon.h      | 2 ++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
-index 6b9a58e19831..6595d07038c1 100644
+index 1b55d343982e..6b9a58e19831 100644
 --- a/drivers/iio/adc/versal-sysmon-core.c
 +++ b/drivers/iio/adc/versal-sysmon-core.c
-@@ -352,7 +352,8 @@ static int sysmon_update_temp_lower(struct sysmon *sysmon)
- 		return ret;
+@@ -781,12 +781,14 @@ static void sysmon_disable_interrupts(void *data)
+ {
+ 	struct sysmon *sysmon = data;
  
- 	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
--	lower_mc = clamp(upper_mc - sysmon->temp_hysteresis, -256000, 255992);
-+	lower_mc = clamp(upper_mc - sysmon->temp_hysteresis,
-+			 SYSMON_TEMP_MIN_MC, SYSMON_TEMP_MAX_MC);
- 	sysmon_millicelsius_to_q8p7(&raw_val, lower_mc);
+-	regmap_write(sysmon->regmap, SYSMON_IDR, SYSMON_INTR_ALL_MASK);
++	disable_irq(sysmon->irq);
  
- 	return regmap_write(sysmon->regmap, SYSMON_TEMP_TH_LOW, raw_val);
-@@ -429,8 +430,7 @@ static int sysmon_write_event_value(struct iio_dev *indio_dev,
- 	case IIO_TEMP:
- 		switch (info) {
- 		case IIO_EV_INFO_VALUE:
--			/* Q8.7 signed range: -256000 to +255992 mC */
--			if (val < -256000 || val > 255992)
-+			if (val < SYSMON_TEMP_MIN_MC || val > SYSMON_TEMP_MAX_MC)
- 				return -EINVAL;
+ 	scoped_guard(spinlock_irq, &sysmon->irq_lock)
+ 		sysmon->masked_temp = 0;
  
- 			sysmon_millicelsius_to_q8p7(&raw_val, val);
-@@ -443,7 +443,7 @@ static int sysmon_write_event_value(struct iio_dev *indio_dev,
- 			return sysmon_update_temp_lower(sysmon);
- 
- 		case IIO_EV_INFO_HYSTERESIS:
--			if (val < 0)
-+			if (val < 0 || val > SYSMON_TEMP_MAX_MC - SYSMON_TEMP_MIN_MC)
- 				return -EINVAL;
- 
- 			sysmon->temp_hysteresis = val;
-@@ -838,7 +838,7 @@ static int sysmon_init_hysteresis(struct sysmon *sysmon, int *hysteresis)
- 
- 	sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
- 	sysmon_q8p7_to_millicelsius(lower_reg, &lower_mc);
--	*hysteresis = upper_mc - lower_mc;
-+	*hysteresis = max(upper_mc - lower_mc, 0);
- 
- 	return 0;
+ 	cancel_delayed_work_sync(&sysmon->sysmon_unmask_work);
++
++	regmap_write(sysmon->regmap, SYSMON_IDR, SYSMON_INTR_ALL_MASK);
  }
+ 
+ static int sysmon_init_interrupt(struct sysmon *sysmon,
+@@ -807,6 +809,7 @@ static int sysmon_init_interrupt(struct sysmon *sysmon,
+ 	if (ret)
+ 		return ret;
+ 	sysmon->temp_mask = imr & SYSMON_TEMP_INTR_MASK;
++	sysmon->irq = irq;
+ 
+ 	ret = devm_request_irq(dev, irq, sysmon_iio_irq, 0, "sysmon-irq", indio_dev);
+ 	if (ret)
 diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
-index 701ef9b56263..a1ac3289719c 100644
+index bb9a75bf71c0..701ef9b56263 100644
 --- a/drivers/iio/adc/versal-sysmon.h
 +++ b/drivers/iio/adc/versal-sysmon.h
-@@ -75,6 +75,10 @@ struct regmap;
- #define SYSMON_FRACTIONAL_SHIFT		7U
- #define SYSMON_SUPPLY_MANTISSA_BITS	16
- 
-+/* Q8.7 signed temperature range in millicelsius */
-+#define SYSMON_TEMP_MIN_MC		-256000
-+#define SYSMON_TEMP_MAX_MC		255992
-+
- /* Bits per alarm register */
- #define SYSMON_ALARM_BITS_PER_REG	32
- 
+@@ -85,6 +85,7 @@ struct regmap;
+  * @regmap: register map for hardware access
+  * @lock: protects read-modify-write sequences on threshold registers
+  *        and cached state that spans multiple regmap calls
++ * @irq: interrupt number, 0 when events are not supported
+  * @irq_lock: protects interrupt mask register updates (MMIO path only)
+  * @masked_temp: currently masked temperature alarm bits
+  * @temp_mask: temperature interrupt configuration mask
+@@ -101,6 +102,7 @@ struct sysmon {
+ 	 * that spans multiple regmap calls.
+ 	 */
+ 	struct mutex lock;
++	int irq;
+ 	/*
+ 	 * Protects interrupt mask register updates.  Only used on the
+ 	 * MMIO path (fast_io regmap); I2C has no IRQ and never reaches
 -- 
 2.34.1
 
