@@ -1,79 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793608469;
-	b=d3t1K/10JrRa4fcG4vtwTH8/QN93n1ZM21dUtEc4ZDF2VUbpyokJg18urXbZFeHl+2lY
-	 1gWiKRea1OjwHsN8y01JGqTyxn4Mmg9N0RVn9RMnrvKAwniSrkNKIkOM306w+tvfap4UZ
-	 ELSA5n2M/q78Ivc8dscax9hgpsft+I0OcG4b4+5Nz8/2sIR/jI4rDelNhYpja781M77Ca
-	 SaEwo10RgfN/FBxZuUe14dbfzxWc7oc+N7YYyMcI9yPiwkupuEQkRfk1YE03DxmEcBUiJ
-	 mv5N1GIRhrhHUPXjBVBStXI3JrTRDWFmZYKMcjGbXPzRYz980fSLFicHLVfaSOMeEXg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793608469;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=yPialvn8pP9y7gaBrhECNrk+0Ew0QfzfkxE9sq21voo=;
-	b=p9ZPF0CNMNcYK8I1ixW4WKnOCBUGTOJFECnCOcnzizRDuD6d7uK40i79nHo4taKjNI7E
-	 PARu9LxY/RhXVwdPBuPt3LuYpDjRlg5E2cQ8fGw0pVl9HwB9CYWYTXmVwUmNIfeKxCufY
-	 ZGVcVhVnpmeAIFVDl1dxPg6gmjfNK8M85JYVoz7x3I437NGFquh3e+FfxHwEux9xMckeT
-	 Yw0ot3/aXD4LlIG4nrgu68r30mkusunOBwEVYFOv8NE5nfU8nBpG//e9GKi8f5f3ktgfy
-	 fPQFEs89FIRCDjAviGsVJKkReqPDzYp8VQqryiK/PaARe+a9wIcNSQ/9+i2g8x+VYJg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bS7LIzuN;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39027606A32D;
-	Mon,  2 Nov 2026 08:34:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bS7LIzuN
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793608468;
-	b=xGEjGPXA/Qfg4G3MxiFhPGSVW3wscfDWVBA9f2drHRn7N9Xh9sWBDGf0pFbe7BZ0gCJz
-	 FBVziNjdwyhyIxG7Mvg/y5eS1/fsgfXf40VLIRynvGC+rtF6yt7kYhpfeO/xRHc5fWWN9
-	 WNhymfSM8ZfDLgHnf+ce1wBRNfS5tzfpHe9BOZSMnycOMIOG2hgnL1amnFtNHvtMmEREw
-	 kKFnhoegjaV0r+DCFqDXm7yzwNT1IDb7ydFT+JrmpRpjWeFYKxxjaMOBGtClOt3Uu0j4Z
-	 KbuLPML+DbPrjxJtLKnLSozbyaUBofEdpgkNUia5lkiR9Au+KkSwpdl9U09uzanze/g==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793608468;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=yPialvn8pP9y7gaBrhECNrk+0Ew0QfzfkxE9sq21voo=;
-	b=tcjdbGoZmHsTRpDOkC3dRX/SQkf4TRMR4BlEWXI4mM6/Em0SRRBqeAeyQNZngNKXGeMF
-	 wQsDbGIPNsXMSpOGJg2+gIYKDVmANNrb46640sspyFXfPyJeSqZl8unsEw3RCNQRgSqVZ
-	 jqNWNF11YcsXUJsXzIB+/JBkazI2myc96lXhLkTZLzz4fuPkK8IGWngZ7oK4RKgBWddD2
-	 d0f3pqopmR2H+I9atkt3M/eQvk3xKBDyYjO/+uVkfWXCUPV3s6GPsWrs69bdNsuX+R9Fw
-	 J+DBcNqoTcXiNCHIBTW8Ad1OOpZwgkjhIW0rhaGwk0AZ54YBc3Jjh+81fJWI7jA5JDA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.169
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793610857;
+	b=cjz0om3NhR2gQf0WCwnF4J7/KkA1M0pege23PzHL2fNmOWsqr84EHongCOWoSn3H4A0/
+	 GI+j52FXco1sE/IYiXLcL3kwGW7GyXF33X35/lUlV2gBezFwfYVNinGpqXnbhfyqdojjT
+	 P+jSP2xFw/Sl+q4076yLlvPgIj/vOU7+vNVx4Iop1XHYWq8Muxr8GVH0B0/T2g9M6AApD
+	 EZ6QIaIAU47EDysoLGMpy4cfcOmk/m9AqnMSnb+yijHpazvV6Fm+tbVexK7177vwm4Uua
+	 10/1IK0vcp4bOvkLaLEfk+Q/LInBOTTgoB/erFRYw3wWgVYYGN63l3aZHMkrbama9ag==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793610857;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=9l2X88+Cluso3aHhPPG2aCJ5eE8RQhXDwPSZjiqGEds=;
+	b=3rNkGOoCAklvJCwA6W5SV95yEedxUUuMw1G+kxZCzZMkl444Y1UIheXFcIaFs6gXzeqA
+	 AcApEDieAVSEJJF10/q79wZiVScWTOit3Tu0z4uG/Kun3+H12u1D1QoSf7+HnssfUIJfn
+	 duUoGNMMAHZWtD0Mkzr3Crw97DI05gPtPc9xJERhS1Vor2+d5Vv0oX4td4HUISpQT96Rj
+	 QqANph0JzLSMeeDkvP343dHXo+Y/QJc3Dfz+p/aGjvqiTHahE1nSKCu/a2NZemvJOHCXd
+	 2MpIjIFL5DGgEH28K6ilC5wI2D4bix9FD8hw7Af0/P34AJAPr66DGs4AoBwDvmdiWqg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=f0oM6kP4;
+	arc=none smtp.remote-ip=74.125.82.169
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 0F1391F000C1;
-	Mon,  2 Nov 2026 08:34:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793608468;
-	bh=yPialvn8pP9y7gaBrhECNrk+0Ew0QfzfkxE9sq21voo=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=bS7LIzuNlSQKQkLeWsHeIw8+4BK1K/1E5ZFvHO7nb74J1KHGtn3FlMEwLHgPA7HRA
-	 6qBOD/30Qs3cf468CHOGC/V4JzLxqokhZxPfuB9BM3XuTPy6+r9H3rnbBABebbk61Q
-	 suS+X91X5XAPRx/TeXeRN2zzPH2sGGwE5hOZVbeqSIo+qjtRl6ISe2rXJa68Td2fwC
-	 UfGx4Yhfqb40F6KQxq01f4FGvAto3cGNN6Lg+lQOJPWcvQA9z1sGNGFRKeMwY9gIVu
-	 CdKoqEtB/rzV/TRCG08DINt41KqxyBhnQ3m9B3U7QnvE0wwF/VTG2Do7gE4kT1Evt/
-	 x73plcJ8T7mGQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 8735646424;
-	Mon,  2 Nov 2026 08:34:27 +0000 (UTC)
-From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Date: Mon, 02 Nov 2026 08:33:56 +0000
-Subject: [PATCH v2 2/2] iio: test: iio-test-format: add test case for char
- format
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1275606A329
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 09:14:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1275606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=f0oM6kP4
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-3282db206d3so4317442eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 02 Nov 2026 01:14:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793610856; x=1794215656; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=9l2X88+Cluso3aHhPPG2aCJ5eE8RQhXDwPSZjiqGEds=;
+        b=f0oM6kP46WR4dmdZu0WgAUymTn0f6gib7tq7NgaNKpL1x0Ew3T/uU7llBroJvV+Yqp
+         y9gsrGBzR3LkTSLRZp46b8lxFfMlMOAKf/ikLXnN66MyNxKes3Ib9LG0MaFOEHmIqMLL
+         jcIuhkf6+bP2mMn71EwG9UxoY8z8eFMvLsjKzZ7F/uUBGZAvqdc1tJn4wRXfGS8iuVf6
+         FHz3yQ080CjY6zSiAJlgzJ31TMCBWKgmsOUOAQBC3DIaPjlpT21EKOQKJeeq4OV2ViCJ
+         9dZmIBxc+L4u2wvrHmf0J/f7k0tquIUphnL0xZrN0tr5yNNRJM48bFmq6yvFjIBYQnqV
+         M7fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793610856; x=1794215656;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=9l2X88+Cluso3aHhPPG2aCJ5eE8RQhXDwPSZjiqGEds=;
+        b=Li0ece9p++O6yet35YsXvDDJqXT9I6aoQW5S/nY4UP1B6PnzhDUcQUluvT2okRTpDp
+         nCvW0OGKrFHUXI1fBNfDVFPSXHikZeatr/Uwl3hAquoUOWbfotR/Q6lHEiZQI87RMIMh
+         9EvE0zlqSzcV/KOm9hMF+QZdp07QbeNwjUrgJVF0E0z61aTWO54eA+8W4I3wWHTEu6G7
+         7GtvER9Aha893E75hGuaJVIY8IX7D82x61axrLkKy5/EfpeUn7f8Ok25KgQ70/TXXGyZ
+         uaLS9GjYP6X36F10P5j4BkW6f8jjp5IahdaQPYxgRMO1cWTf8dxCpgHeQCys3oOKJaay
+         XvGA==
+X-Forwarded-Encrypted: i=1; AKwUvBzBeIaszIAQN4TSRked5NETUz9mShD8c4wgPUlQULlI96cAEHYKCiO6LZaa6achji+MuIpBm3Fh4UY=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+v+3L84X7IDAGP8994KyRWNYmKxxTSS2W9EjjFdyQiUlarIM7t
+	wdulSToFsbAin9ieEbtMVmgXpaDjAAeFR4TYA985UqAYpoiqNYVXCsh1
+X-Gm-Gg: AYBFou2HwOj+l7ElwlnmxWbxRxZATIQ+DnPFO200BqpuWf+IbAXi6HauIzxq4WOnQyW
+	JHtDEMHomUINQh34tPG8NC6yW+4uqymjKq/wB01Vr3otSYPXaQnGrgPUmShiEta26NH7UmeWyJv
+	1wr6r4fKDBc0uuvkk68s73ddeQvKlOhzPDuv0hk185TbfufuevKZx4vmrf3qX31JvCTZljMJOKt
+	wyY22zkBsiVEHRvLk95BB78+Bp+ZcXTzxfGXnBrZkyfaN1bSFyj/ytbz8htQJ1s7dBVIQUFt+Pj
+	jYPUg81jxXm6nhkwEGbkiwHInEiRfXyIMNNDZo3vZU6+OjvWhcVmPnSpOo7evp//pTA1FiX1Eqj
+	Gz3fGI+XJUCGVFH5gA8UHz2ioT2PNAmoAgFnhpmzQotjTGtvejFUR3Cmlfsdo+pxCu7kdy2aRet
+	Y4jhTvwCYOpn6KzGj8pludHnpPDEn8iyd3uQ8o56JrXmu8u9di0v/SsdoaATbFWveOL8E2CekJ/
+	iaF0zzts4dS6WOlTEZkj0xL3jAp4NjgWq0d+zjUzYkzqWkiODjsauT7hoTBgRK/7t+t5FpoDOuU
+	yMdnI/lCp27IPdRa6Aa3mKMvmM7g4b3nAB9IyYRhlYUg7ulCESVoWOdZIWrSkBumtpk4gay8nX8
+	agoW4eIVDxgQ3YrGmVUrw/ihokUEv9fwDEJS0AF05bTHTE/A54rpgtwwmoYzR9hElu8uDMP/2BU
+	76u1SY3916tsUNXt7WzCY002eQTsUHjPIZSKjZt7vijQ==
+X-Received: by 2002:a05:7301:d198:b0:360:db68:3264 with SMTP id 5a478bee46e88-36a42340756mr15320792eec.6.1793610855684;
+        Mon, 02 Nov 2026 01:14:15 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.212])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a42a6f7f9sm41886949eec.25.2026.11.02.01.14.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2026 01:14:15 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Cc: Conall O'Griofa <conall.ogriofa@amd.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Michal Simek <michal.simek@amd.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	stable@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: xilinx-ams: fix out-of-bounds accesses when parsing channels
+Date: Mon,  2 Nov 2026 14:44:08 +0530
+Message-ID: <20261102091408.246416-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <108cf042-5f7f-4b1e-9656-3193744e8043@amd.com>
+References: <20261023185652.195025-1-kapoorarnav43@gmail.com> <108cf042-5f7f-4b1e-9656-3193744e8043@amd.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,130 +109,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261102-iio-test-format-char-v2-2-926100689e62@gmail.com>
-References: <20261102-iio-test-format-char-v2-0-926100689e62@gmail.com>
-In-Reply-To: <20261102-iio-test-format-char-v2-0-926100689e62@gmail.com>
-To: Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793608466; l=3409;
- i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
- bh=D/m37rYBfLiANR6mS/4JjUHXvyxkW1PG39W3icdF7Pc=;
- b=dZVAXhJqHx5q0y/yQWkuOQWgx4uGS3NUob5Y/5n04QK6bdzxvBcGhk4S2bHiA5t3st2YVEMbe
- l/V1zm/JtOTBcbRQiuPLibiQGYIIkzITsaInitkMRrjCVVcyN/u67uR
-X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
- pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
-X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
- with auth_id=1160
-X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Reply-To: raffaele.tranfaglia@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+On Mon, Nov 02, 2026 at 12:41:59PM +0530, Sai Krishna Potthuri wrote:
+> ams_init_module() already copies ams_pl_channels[0..9] as the 10 fixed
+> channels. Inside ams_get_ext_chan(), since ext_chan = reg - 20, DT
+> entries with reg = 20..29 map to the same entries and it create
+> duplicates.
+>
+> DT binding requires update to allow 30..50 for external channels. This
+> gives a maximum of 10 fixed + 21 external = 31 PL channels, matching
+> ARRAY_SIZE(ams_pl_channels).
+> Please let us know if you plan to include the binding change, otherwise,
+> we can handle it separately.
 
-IIO_VAL_CHAR is used by thermocouple drivers to report the
-thermocouple type, but iio_format_value() has no test for it.
+Thanks for the review, you're right. Channels 20 to 29 are the fixed
+ones in the binding's own table, so a node for any of them only adds a
+duplicate, and that is also where the extra 10 channels in my overflow
+came from.
 
-Add a test case covering printable, special and non-printable
-characters, a NUL character, and values that do not fit in a char.
+I'll include the binding change. v3 will be a two-patch series: the
+binding limited to channel@30..50 with your Suggested-by, and the driver
+only accepting 30 to 50, keeping the capacity checks from v2 so a device
+tree that repeats a reg value can't overflow the buffer either.
 
-Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
----
- drivers/iio/test/iio-test-format.c | 67 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
-
-diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
-index 35b30420d995..0faafa09f32b 100644
---- a/drivers/iio/test/iio-test-format.c
-+++ b/drivers/iio/test/iio-test-format.c
-@@ -215,6 +215,72 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
- 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1 -2 3 -4 5 \n");
- }
- 
-+static void iio_test_iio_format_value_char(struct kunit *test)
-+{
-+	char *buf;
-+	int val;
-+	int ret;
-+
-+	buf = iio_test_format_alloc_buf(test);
-+
-+	/* Printable characters, e.g. a thermocouple type */
-+	val = 'K';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "K\n");
-+
-+	val = 'j';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "j\n");
-+
-+	val = '0';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
-+
-+	/* Special characters are printed as is */
-+	val = ' ';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\x20\n");
-+
-+	val = '%';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "%\n");
-+
-+	val = '\\';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\\\n");
-+
-+	/* Non-printable characters are printed as is */
-+	val = '\n';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\n\n");
-+
-+	val = '\t';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\t\n");
-+
-+	val = 0x7f;
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\x7f\n");
-+
-+	val = 0xff;
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\xff\n");
-+
-+	/* A NUL character is emitted and counted like any other */
-+	val = '\0';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\0\n");
-+
-+	/* Only the low byte of the value is used */
-+	val = 0x100 + 'K';
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "K\n");
-+
-+	val = -1;
-+	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
-+	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\xff\n");
-+}
-+
- static void iio_test_iio_format_value_integer_64(struct kunit *test)
- {
- 	int values[2];
-@@ -324,6 +390,7 @@ static struct kunit_case iio_format_test_cases[] = {
- 		KUNIT_CASE(iio_test_iio_format_value_fractional),
- 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
- 		KUNIT_CASE(iio_test_iio_format_value_multiple),
-+		KUNIT_CASE(iio_test_iio_format_value_char),
- 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
- 		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
- 		{ }
-
--- 
-2.56.0
-
-
+Thanks,
+Arnav
