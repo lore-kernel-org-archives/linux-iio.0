@@ -1,60 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793577187;
-	b=SKmft+HeCH1GwLDKBDj0PNlmFfkKhouPx87HPctFjXanveejTf3PVDD/h4Uxbllei7B+
-	 1o3eIzSfD2oWOXLv0qnEs1uBQcuXCMsOzItwHmmsRAQa/uTgjDFx+vu1LzEiILGsI35f3
-	 lG8Epbdy3+9JY+aVsMjkQYkFQU5oO7mAWjwQ3Q2n2IMmw1Zkpb/YUbwjENyTXxDIZM2G3
-	 zfxmtLJB/vwSUs7WNDpagkdEMWHGMquZSpCmjq0qrk82QCy0WtHlG3geFnnOz2CHZNN05
-	 9c+ylwdqK7wvsx4qti7dnRP5y6/SHmCnGC33hZjeXUwDu5ix+8P10PFK/2mudu/w28Q==
+	t=1793577853;
+	b=CNsxpCoGEBB9lIabJfvHLuG2KvbmSEGiwkA2qCN8wxB4Iohc4TpQYG6HF22XpLLWzH5A
+	 zUJPwP52MspuH7yS45lnoj7UOhVymMxQ5tuw6TNWdakofFFerDEDJoI0W1k/X5NV+8rBa
+	 aSw3eO3tfVArNbmSyZDIzc4++flxr92zXgxVVovmNty3Z+mgmhjihMOaUpimzxLaAW9Xl
+	 b+X/TerIvLVyfwFqXoTGZgDiyWyr10cRbzR3JT25W2AKyX2jxd+KBKSzfet1107TqjQ8o
+	 5AtvTN1L0fHFgMiR942ZIDym96g/VFi99NkXqskM+nUQ4hIS3Y1uul0VgvStaM62mRg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793577187;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793577853;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=+FdbV1fygpkQa5AYOrs49bje7EWIBa53juEdskXuHwU=;
-	b=N4FybAT/B7TUSeh5ARJW/QoiM19YVIg/v2gYNJHgVrBkfVSjlCCl96cPlHywiekPCbHY
-	 pkD8oiz4S9uGHAeEF8nwkQfu0WsB+EuwQMpKsq4hvarTLNI/aU+QbyXktM01tOFUk6dXq
-	 lftq5HQyq88r+rYCLe1YT3HccT74QkP+T2BE0C+k7k7WDc3XO3HDFnFDGN0aTD1dhk9HW
-	 Wxme6eNHI7PCIf9G4vD9nXoWRCzE4POAI2RIRTM0HfXBxm6e6DEijfwWDvqTojpaYfUvs
-	 TZ2mQvUmRgbK2RGiND+uQHgdPbxXvKa3YeRvqN7fvNpXLrieLelfdJ+M2k1gmiSER2Q==
+	bh=KBin+VBb1gehkdGJoG2mdgFia04vBVa3nhreBJaAphI=;
+	b=XRpZfIikv8WrP/BRKjwJiwqc0WqdoCFGwfAC2+3Lvpcm0PMpqfQvQS+i7or6GvQAJ9kc
+	 q+PyD/PuryKwTxX9vEtRhnrsPMIQgucsDN7A3GwH+HjasJnCAuij6W7bnc2K9Kg9QE0/H
+	 wKyv4qX+0WMm8hD4TnwW6jxW5LDsVNFPn9bemVTXmiWobhuATGLzCyA7+FzvZfm0B8l6T
+	 jhyLjCrapFmu0hOb0x4Apx0T0SVY+5fPB4eT8EQ271Mu+2mRh+ymgEPaI1Cwj5UuvMSl7
+	 RKSD0ImTU3ClWMdmUatG/ciq79I9ty4KeFJjX+kdi7k2LHtTcaCPbNRZaiwKik/Hh0Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WPmoTco4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R1rgjWhg;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF4D2606A324;
-	Sun,  1 Nov 2026 23:53:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52739606A33C;
+	Mon,  2 Nov 2026 00:04:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WPmoTco4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 785891F000C1;
-	Sun,  1 Nov 2026 23:53:04 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R1rgjWhg
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B7B01F00919;
+	Mon,  2 Nov 2026 00:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793577186;
-	bh=+FdbV1fygpkQa5AYOrs49bje7EWIBa53juEdskXuHwU=;
+	s=k20260515; t=1793577852;
+	bh=KBin+VBb1gehkdGJoG2mdgFia04vBVa3nhreBJaAphI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=WPmoTco4mk4LgWTTkVTV2hDqSITZ518aq3iHHoMFevxLyCh6xCDcBiL/ge82h347W
-	 usFpr9+SgHiuFrYPzA6XxL9Sr21lWT6t+pIIyrBEHhoQgf4rA77XYoGLv7ayfLfcHu
-	 9+fYC6kndRxa/UBm2istlaUjrOWIUfoNquMq9dielufemC0GeaOlTIoW5sI1Y1HUL2
-	 gyNY02y5mYc5lrC7NgOHZ1zIOPVroOYr3tJzb8KdjD5o9E/u/46UzkwJlk+vM/YdlL
-	 41lO4lNPnyNJxW4LKExWDoswQYB7EGTxPzI852RaupVVBAqXqjkm46GBm+olVztdm2
-	 6i8uL06R50hcA==
-Date: Sun, 1 Nov 2026 23:52:59 +0000
+	b=R1rgjWhggpddPfEwOMveGnQqrUll52v6MaouClMm7/QQ5Gox51xe+oVsjnERB3eap
+	 UZ03fkZRvzQMh56tRlNTBmmHLd/1YuzSaqB5khHFWYRZz0Yqj62rKsuH+KcSCY6fKa
+	 1fPLw5qZS9ynrhA/9ZKrdy8K+OoojoD0nPFoHuGYKxEkQTOX08gUOH0cdoPz3/wOB2
+	 hXRetKTyJMbzxNB3AxLtQML08iakUJMW6OfTsQatrmqPBzTqixlI0AisKtoIOzeAON
+	 cWFhHsG6Ol1br0LpOwuFnVwyQPFqzKj2wFLngX6N1VG8+upU70wb2tFcc/K+iejB+v
+	 hiJjMI6vy0qpQ==
+Date: Mon, 2 Nov 2026 00:04:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>, Conall O'Griofa
- <conall.ogriofa@amd.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Michal Simek <michal.simek@amd.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, stable@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: xilinx-ams: fix out-of-bounds accesses
- when parsing channels
-Message-ID: <20261101235259.27b3b43c@jic23-hlaptop>
-In-Reply-To: <20261023185652.195025-1-kapoorarnav43@gmail.com>
-References: <20261023185652.195025-1-kapoorarnav43@gmail.com>
+To: "Sabau, Radu bogdan" <radu.sabau@analog.com>
+Cc: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Alexandru Ardelean <alexandru.ardelean@analog.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>, linux <linux@analog.com>
+Subject: Re: [PATCH v4 6/8] iio: imu: adis16607: Add FIFO-based
+ buffered/triggered capture
+Message-ID: <20261102000406.342657af@jic23-hlaptop>
+In-Reply-To: <20261101235010.79416e15@jic23-hlaptop>
+References: <20261023-adis16607-v4-0-a4d541ebfd13@analog.com>
+	<20261023-adis16607-v4-6-a4d541ebfd13@analog.com>
+	<20261026000910.328f6cd8@jic23-hlaptop>
+	<LV9PR03MB8414024B4B8A88109DE96B29F7602@LV9PR03MB8414.namprd03.prod.outlook.com>
+	<20261101235010.79416e15@jic23-hlaptop>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,181 +75,100 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 24 Oct 2026 00:26:48 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Sun, 1 Nov 2026 23:50:10 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> ams_parse_firmware() allocates room for ARRAY_SIZE(ams_ps_channels) +
-> ARRAY_SIZE(ams_pl_channels) + ARRAY_SIZE(ams_ctrl_channels) = 51
-> channel specs and lets ams_init_module() fill them for the AMS node and
-> each of its children, without telling it how much room is left.
+> On Tue, 27 Oct 2026 09:36:47 +0000
+> "Sabau, Radu bogdan" <radu.sabau@analog.com> wrote:
 > 
-> For the PL-SYSMON node, ams_get_ext_chan() appends one channel per
-> "channel@N" child after the 10 fixed PL channels. The binding allows
-> reg values 20..50, so a PL node can have up to 31 such children, i.e.
-> up to 41 PL channels, while only 31 are budgeted for it. Together with
-> the 13 PS and 7 AMS control channels, this writes past the end of the
-> buffer. Since the modules are filled in device tree order, the fixed
-> channel blocks copied after the PL node can overflow as well.
+> > > -----Original Message-----
+> > > From: Jonathan Cameron <jic23@kernel.org>
+> > > Sent: Monday, October 26, 2026 2:09 AM    
+> > 
+> > ...
+> >   
+> > > > +static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
+> > > > +				       u8 *fifo_data, s64 timestamp)
+> > > > +{
+> > > > +	struct adis16607 *st = iio_priv(indio_dev);
+> > > > +	u16 msw, lsw;
+> > > > +	s32 val24;
+> > > > +	int bit, offset = 0;
+> > > > +
+> > > > +	memset(st->data, 0, sizeof(st->data));
+> > > > +
+> > > > +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev-
+> > > >masklength) {    
+> > > iio_for_each_active_channel()
+> > > 
+> > > As sashiko notes, masklength is private.
+> > > 
+> > > There are a load of places we need to update to stop accessing these
+> > > directly but please don't add another one.
+> > > 
+> > > It's on my list to throw some LLM tokens ago once I get out from
+> > > under review backlog.
+> > > 
+> > > https://urldefense.com/v3/__https://sashiko.dev/*/patchset/20261023-
+> > > adis16607-v4-0-
+> > > a4d541ebfd13*40analog.com__;IyU!!A3Ni8CS0y2Y!9cguUuIwYMdnmBcoNR
+> > > ye0_U99KUnJt04T6XlSnvS-9rxh5-8Y2fQXC39Mxsw3erc_JwvyFp3ssecZg$
+> > > Check everything else reported.
+> > > 
+> > > FWIW there are also some nasty race conditions around active_scan_mask
+> > > being available when the buffer is being torn down. You might
+> > > want to close those off by claiming buffered mode to prevent
+> > > such a transition.
+> > >     
+> > 
+> > Agreed, I'll switch to iio_for_each_active_channel() and I'll go through the
+> > rest of the Sashiko findings for v5.
+> > 
+> > On the active_scan_mask races, I'd like to check which path you mean.
+> > In this driver the only reader of the mask is the trigger handler
+> > (fifo_push_sample()), which runs as the pollfunc.
+> > As far as I can tell, iio_trigger_detach_poll_func()'s free_irq() waits for it
+> > to finish before iio_disable_buffers() frees the mask, so I couldn't find a
+> > window where the handler sees a stale or NULL mask today.  
 > 
-> ams_get_ext_chan() also only checks the upper bound of reg. ext_chan is
-> unsigned, so a reg below 20 makes it wrap and ams_pl_channels[] is read
-> far out of bounds.
+> Ah. I may have failed to distinguish between cases with a trigger involved
+> and those without.  The bug reports are probably on the ones without.
+> Unfortunately I haven't found time to look at the overall issue
+> in enough detail yet.
 > 
-> Pass the remaining capacity down to ams_init_module() and
-> ams_get_ext_chan() and fail with -ENOSPC when a module does not fit,
-> instead of writing past the buffer. Also reject reg values below 20, as
-> the binding requires.
+> > Even so, I'd like to close this off for good, so that a later change to the
+> > driver or to adislib can't introduce the race.
+> > 
+> > Claiming buffer mode inside the handler looks like it would deadlock
+> > against iio_disable_buffers(), which holds mlock while waiting for the
+> > handler in free_irq().  
 > 
-> Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-AMD Xilinx folk, please take a look at this one.
+> We'd use a conditional claim in here - only the core code driving the state
+> transitions should take a claim unconditionally (they can just grab the lock).
+> If mlock is held it should fail and we just drop out of the handler having
+> done nothing.  So either disable buffer wins and we drop through the handler
+> quickly or it looses and the attempt to take mlock blocks in
+> iio_disable_buffers()
+> 
+> Or am I missing something worse?
 
-Thanks,
+I'm indeed being dopey today.  Whilst it is a conditional claim we grab the lock
+unconditionally as part of that.  Which makes sense because we want
+multiple simple read the state calls to block behind each other.
 
-Jonathan
-
-> ---
-> Changes in v2:
-> - Fix the truncated subject line (Andy)
-> - Drop the paragraph about an earlier report, I could not find that
->   thread again to reference it properly
-> - Pass the remaining capacity as unsigned int and drop the casts (Andy)
-> - Keep the ams_get_ext_chan() call on one line (Andy)
-> - Rebase on fixes-togreg
-> - Drop the bouncing @xilinx.com and @huawei.com addresses from Cc
 > 
-> v1: https://lore.kernel.org/all/20261021225356.625288-1-kapoorarnav43@gmail.com/
+> > 
+> > Would snapshotting the active-channel layout in update_scan_mode()
+> > (called before the pollfunc is attached) and having the handler read
+> > only that copy be an acceptable way to close it?  
+> It would but that feels like we are just papering over a lifetime issue
+> by creating another object rather than fixing it if necessary.
 > 
-> Compile-tested only (W=1); I don't have ZynqMP hardware.
+> Anyhow, from your first comment this may all be irrelevant anyway.
 > 
->  drivers/iio/adc/xilinx-ams.c | 54 ++++++++++++++++++++++++++++--------
->  1 file changed, 43 insertions(+), 11 deletions(-)
+> Jonathan
 > 
-> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-> index 158e6133abf5..7f0f7778d6aa 100644
-> --- a/drivers/iio/adc/xilinx-ams.c
-> +++ b/drivers/iio/adc/xilinx-ams.c
-> @@ -144,7 +144,14 @@
->  #define AMS_PL_CSTS_ACCESS_MASK		BIT(1)
->  
->  #define AMS_PL_MAX_FIXED_CHANNEL	10
-> -#define AMS_PL_MAX_EXT_CHANNEL		20
-> +/*
-> + * The external PL channels are addressed by their channel number. The
-> + * binding allows the range from AMS_PL_EXT_CHANNEL_MIN to
-> + * AMS_PL_EXT_CHANNEL_MAX. AMS_PL_EXT_CHANNEL_MIN maps onto the first
-> + * ams_pl_channels[] entry, AMS_PL_EXT_CHANNEL_MAX onto the last one.
-> + */
-> +#define AMS_PL_EXT_CHANNEL_MIN		20
-> +#define AMS_PL_EXT_CHANNEL_MAX		50
->  
->  #define AMS_INIT_POLL_TIME_US		200
->  #define AMS_INIT_TIMEOUT_US		10000
-> @@ -1142,20 +1149,31 @@ static const struct iio_chan_spec ams_ctrl_channels[] = {
->  };
->  
->  static int ams_get_ext_chan(struct fwnode_handle *chan_node,
-> -			    struct iio_chan_spec *channels, int num_channels)
-> +			    struct iio_chan_spec *channels, int num_channels,
-> +			    unsigned int max_channels)
->  {
->  	struct iio_chan_spec *chan;
-> -	struct fwnode_handle *child;
->  	unsigned int reg, ext_chan;
->  	int ret;
->  
-> -	fwnode_for_each_child_node(chan_node, child) {
-> +	fwnode_for_each_child_node_scoped(chan_node, child) {
->  		ret = fwnode_property_read_u32(child, "reg", &reg);
-> -		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
-> +		if (ret)
-> +			continue;
-> +
-> +		/*
-> +		 * Anything outside of the range of channel numbers allowed
-> +		 * by the binding is not a valid channel.
-> +		 */
-> +		if (reg < AMS_PL_EXT_CHANNEL_MIN ||
-> +		    reg > AMS_PL_EXT_CHANNEL_MAX)
->  			continue;
->  
-> +		if (num_channels >= max_channels)
-> +			return -ENOSPC;
-> +
->  		chan = &channels[num_channels];
-> -		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
-> +		ext_chan = reg - AMS_PL_EXT_CHANNEL_MIN;
->  		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
->  
->  		if (fwnode_property_read_bool(child, "xlnx,bipolar"))
-> @@ -1183,7 +1201,8 @@ static void ams_iounmap_pl(void *data)
->  
->  static int ams_init_module(struct iio_dev *indio_dev,
->  			   struct fwnode_handle *fwnode,
-> -			   struct iio_chan_spec *channels)
-> +			   struct iio_chan_spec *channels,
-> +			   unsigned int max_channels)
->  {
->  	struct device *dev = indio_dev->dev.parent;
->  	struct ams *ams = iio_priv(indio_dev);
-> @@ -1191,6 +1210,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
->  	int ret;
->  
->  	if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-ps")) {
-> +		if (max_channels < ARRAY_SIZE(ams_ps_channels))
-> +			return -ENOSPC;
-> +
->  		ams->ps_base = fwnode_iomap(fwnode, 0);
->  		if (!ams->ps_base)
->  			return -ENXIO;
-> @@ -1202,6 +1224,9 @@ static int ams_init_module(struct iio_dev *indio_dev,
->  		memcpy(channels, ams_ps_channels, sizeof(ams_ps_channels));
->  		num_channels = ARRAY_SIZE(ams_ps_channels);
->  	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams-pl")) {
-> +		if (max_channels < AMS_PL_MAX_FIXED_CHANNEL)
-> +			return -ENOSPC;
-> +
->  		ams->pl_base = fwnode_iomap(fwnode, 0);
->  		if (!ams->pl_base)
->  			return -ENXIO;
-> @@ -1213,9 +1238,14 @@ static int ams_init_module(struct iio_dev *indio_dev,
->  		/* Copy only first 10 fix channels */
->  		memcpy(channels, ams_pl_channels, AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
->  		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
-> -		num_channels = ams_get_ext_chan(fwnode, channels,
-> -						num_channels);
-> +		ret = ams_get_ext_chan(fwnode, channels, num_channels, max_channels);
-> +		if (ret < 0)
-> +			return ret;
-> +		num_channels = ret;
->  	} else if (fwnode_device_is_compatible(fwnode, "xlnx,zynqmp-ams")) {
-> +		if (max_channels < ARRAY_SIZE(ams_ctrl_channels))
-> +			return -ENOSPC;
-> +
->  		/* add AMS channels to iio device channels */
->  		memcpy(channels, ams_ctrl_channels, sizeof(ams_ctrl_channels));
->  		num_channels += ARRAY_SIZE(ams_ctrl_channels);
-> @@ -1245,7 +1275,7 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
->  		return -ENOMEM;
->  
->  	if (fwnode_device_is_available(fwnode)) {
-> -		ret = ams_init_module(indio_dev, fwnode, ams_channels);
-> +		ret = ams_init_module(indio_dev, fwnode, ams_channels, ams_size);
->  		if (ret < 0)
->  			return ret;
->  
-> @@ -1253,7 +1283,9 @@ static int ams_parse_firmware(struct iio_dev *indio_dev)
->  	}
->  
->  	device_for_each_child_node_scoped(dev, child) {
-> -		ret = ams_init_module(indio_dev, child, ams_channels + num_channels);
-> +		ret = ams_init_module(indio_dev, child,
-> +				      ams_channels + num_channels,
-> +				      ams_size - num_channels);
->  		if (ret < 0)
->  			return ret;
->  
+> >   
 > 
-> base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
+> 
 
