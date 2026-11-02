@@ -1,60 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793656571;
-	b=RBjrL/XbhCcBcPR8BGpMjgDS0fa0HB976HlX8rf4yX/1VzZPYdjucUqaxKb66GOJrN8D
-	 ksiQ1LBNszTxM5LbJn+987yNlQzWBhbWFDWlOAiOJdj8aAUUdnPlAIYBYgobr0ocnJvka
-	 ZDLQiQ1Qi5vlL32huTbW/et+DH8n3IXc3VICjqPFf2xlS7cgnMmv4UGh4Nvl6htj6gOFD
-	 rL+pMwgD3NHvQle2/oEeE6nMnM8L4OrYhD1nc6Cvhn9IHY+kqLyp05sVa4Zp7GM+qfNcB
-	 /pO7EwoAj0cZXPGf++3SmUteZW+lVTso/h8F4tdqAMNZSGU0qhmxhneJGYRAV6GK8gw==
+	t=1793657151;
+	b=RH63KtdKLkxDbSwicwTXDbDsl2HzpeASFb2LKad2833ihurqBB+TeA+CJfrl3GIVqhvg
+	 nfSwnaIbuJtVz7ZO+o/4+AgDqF//FxG8yqK/V4bsvbRosmyWMx2jQpIiHWjWhhKP62tGK
+	 Jl+DDycdQ5yOIPkk+8BXiv9oIaoiX6Ky+vIy9bJwSGT8/Dmu3Ktq6yEhFSIyZ3SH/Ejye
+	 vo0tHX1b7xwaIE+CWpAFTKJ/7o6tz8ys7bWAzZIlb4UqRrqJS1VnjsEC55dbmHn758DOg
+	 R1oBXfRlC+hSm8bHSh2q7s5/C65KRMm6wlByO1njJNBsml9BkICBnZL/f42E5avAXgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793656571;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793657151;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=nyuT3jAra0GlDW7PPgARgvC6ifNJJjzDIvX3nXn21YM=;
-	b=MaPCH/RZ6KxFr+2EXPsP3Zf647YFoM9pn3nFndjBgqFEESn38usny4v9hnHgJTkydv5w
-	 enwdxkD/RtyDNvnojxWWafW6biYRJCEj68bbzKQRb3nn8JooNgZ6gesPu/cNhODHIn1dN
-	 2Wk/oc/I+bEZMI9sA/I5wPQ2Qq01qUwNR9LOhxr0z+QaBSFXSd1ON5UqX88MzjE+wzC+E
-	 py1s0pn24rf9x/7CKb7/2Moro525X+KmN7OHH2Qdeuusi600XBuOoQqsrbGlmk0/uHaYN
-	 tyTzHgkbxlQHc0HJdBJ/SPPXgGp/jFW4oAzNdKUt2CffFtTm7JTVgmnl47sRO09PYHw==
+	bh=WbO27fB9MCHWgmwd8K9aWTFM4mLncfhM2klGB0+xjUE=;
+	b=LirLmHdJ3Oxv0jD4gn12Xr7tp+7HhAe0dEFX7iew5aEmM7G9SDNALoEkVtmgzxJfdG48
+	 LK+vnP4cAxx3QFyKZO0gDnaptkmJqMbIau1OTVsoS6Rl/0Tc/4E2pjWmwh0Y8GdpKwdNp
+	 SYxIvxkcGUbUDKgZLKKt5OgIQh8H4XVprQbx18XviGy4y4DurwTjjj4bmbp9GcdgxxDyB
+	 l1r3u6XWtmAHh6gAgvaEG9KQ1FprG3D6Q8bF86Kqhs7pFzk49mcEaFDpPPqYsZe1CwN8H
+	 NyhuxqzC5kCfQpjSFEXUOjztaTVTDLTeWZzj0ajZU66tAqTO/E06epzd45MP2OGXuGg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="gXfDca/s";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IjR47HKY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9041D606A327;
-	Mon,  2 Nov 2026 21:56:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A87B606A32C;
+	Mon,  2 Nov 2026 22:05:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gXfDca/s
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D90351F00A16;
-	Mon,  2 Nov 2026 21:56:10 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IjR47HKY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BA941F00A16;
+	Mon,  2 Nov 2026 22:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793656571;
-	bh=nyuT3jAra0GlDW7PPgARgvC6ifNJJjzDIvX3nXn21YM=;
+	s=k20260515; t=1793657151;
+	bh=WbO27fB9MCHWgmwd8K9aWTFM4mLncfhM2klGB0+xjUE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gXfDca/su318tH3kGwfqvT89cRwwFGjh1hbi8tOnu9+1ssLMKhBPeK5nU0hFWbkgc
-	 x27Woq7pww6CghuI6qSGmwosmUpsE+ojYIVlP1zwzwMfnYhqQyCcUf9YyT3/mqi3C5
-	 cXSfY375wRrKrN3mwtc7n6mHmLdW+wYEY+Yvnhevy4NykHfs2BY/z2QEYXMtnHpbUU
-	 n2CIKogp3/LjWgdvryUNoEwMfN9JP2YS3q63nmC5HaEgmkJP1knkKZJLYIaHFMhzdt
-	 IAF1L3P3S7nx8POlUkGNaw17lnKpcde2+YVQT7Ka89WKqAcRW12f1pEUf1pTs7yvWh
-	 rm34+pRRH4Asg==
-Date: Mon, 2 Nov 2026 21:56:06 +0000
+	b=IjR47HKYx7+3vt6N7O/fs0Hbtsx2Hrzt+gv6lOk1k6l7sXW0sgUAtjV0QX2XejiXU
+	 5GpFhU/HfpQ/DHWoPYn/OCyWGOQZxjDnW6a1p39+OgXiEjg1xijv66dLPPklsNOhCM
+	 mUrJIGw2mMYtkxSKVupQL5NtNQPLzFbFGVQhTEVVyYwaw5/+TqUZgvdpqh0h6CJ8nW
+	 KLadvIpU9jA0bIgLaR8UTFW/nSqbt/J4RiuuaZSlhq2+hAhzJcmivrcCw65cGIyxXy
+	 oToZrKsH3Ycp/seNs5VWHnZCerfYdlKZMWULrlY4P0y4MXkGRpSsEi2+iYGR6LGRHH
+	 E1QqqEn07ftdQ==
+Date: Mon, 2 Nov 2026 22:05:46 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Christopher Hoover <ch@murgatroid.com>
-Cc: Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Lixu Zhang
- <lixu.zhang@intel.com>, Joshua Crofts <joshua.crofts1@gmail.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] iio: hid-sensors: fix shared callbacks in
- temperature and humidity
-Message-ID: <20261102215606.5e36a2a2@jic23-hlaptop>
-In-Reply-To: <20261019023420.83976-1-ch@murgatroid.com>
-References: <20261019023420.83976-1-ch@murgatroid.com>
+To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Brian Norris <briannorris@chromium.org>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, "Rafael J. Wysocki"	 <rafael@kernel.org>, Ulf Hansson
+ <ulfh@kernel.org>, linux-pm@vger.kernel.org, Andy Shevchenko	
+ <andy@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ linux-iio@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>,
+ linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>
+Subject: Re: [PATCH v2 09/17] iio: hid-sensors: Discard
+ pm_runtime_put_autosuspend() return values
+Message-ID: <20261102220546.6fa5c62d@jic23-hlaptop>
+In-Reply-To: <84d712c6aa3df7df8fdb6cb85b85d720bdab5840.camel@linux.intel.com>
+References: <20261021235818.3059519-1-briannorris@chromium.org>
+	<20261021165858.v2.9.Idbac8a0f9ecdd345191130e256e8d881d991bfc7@changeid>
+	<20261102015255.487bd1bd@jic23-hlaptop>
+	<84d712c6aa3df7df8fdb6cb85b85d720bdab5840.camel@linux.intel.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,52 +67,127 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 18 Oct 2026 19:34:17 -0700
-Christopher Hoover <ch@murgatroid.com> wrote:
+On Mon, 02 Nov 2026 08:55:44 -0800
+srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
 
-> hid-sensor-temperature and hid-sensor-humidity share one static
-> struct hid_sensor_hub_callbacks across instances and overwrite its pdev
-> on every probe. With two temperature sensors, reports for one go to
-> the other's pdev; once that device is removed,
-> temperature_capture_sample() dereferences NULL. I hit this on 7.0
-> with two uhid-created sensors.
-> 
-> Patches 2-3 make the callbacks per instance, as the other HID sensor
-> drivers do. Patch 1 makes sensor_hub_remove_callback() take
-> pdata->lock, as sensor_hub_raw_event() does, so a report racing an
-> unbind cannot call through the freed callbacks.
-Applied to the fixes-togreg branch of iio.git with the ordering tweaks Andy suggested.
+> On Mon, 2026-11-02 at 01:52 +0000, Jonathan Cameron wrote:
+> > On Wed, 21 Oct 2026 16:57:10 -0700
+> > Brian Norris <briannorris@chromium.org> wrote:
+> >  =20
+> > > The hid-sensors driver propagates the return value of
+> > > pm_runtime_put_autosuspend(), which is not particularly useful.
+> > >=20
+> > > Returning an error code from pm_runtime_put_autosuspend() merely
+> > > means
+> > > that it has not queued up a timer or work item to check whether or
+> > > not
+> > > the device can be suspended and there are many perfectly valid
+> > > situations in which that can happen, like after writing "on" to the
+> > > device's runtime PM "control" attribute in sysfs for one example.
+> > >=20
+> > > For this reason, modify this driver to simply discard the
+> > > pm_runtime_put_autosuspend() return value.
+> > >=20
+> > > This will facilitate a planned change of the
+> > > pm_runtime_put_autosuspend() return type to void in the future,
+> > > similar
+> > > to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put()
+> > > return
+> > > type to void").
+> > >=20
+> > > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com> =20
+> > +CC the various hid-sensors maintainers.
+> >  =20
+>=20
+>     Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>=20
+>=20
+> > Anyone remember why this does
+> > pm_runtime_use_autosuspend(&st->pdev->dev);
+> > in this code?
+> >=20
+> > That is unusual...=C2=A0 My immediate instinct is to
+> > get rid of it, but maybe there is something subtle
+> > going on. =20
+>=20
+> When reading sensor via raw interface, you need to power-up, read and
+> power-down (This is done via runtime PM). To avoid repeating this
+> sequence of power up and power down for consecutive fast reads, auto
+> suspend is used. If there are reads with in 3 seconds, the sensor will
+> keep power up.
+>=20
+Ah. I was too vague in that query.  Why is it enabled only the power
+state interface rather than at the start when runtime pm is enabled?
 
-Thanks,
+That seems to be done via a slightly unusually on first turning on
+of the trigger rather than more generally.  Normally we'd expect
+it to be enabled in driver probe and all paths that need the power
+on to do a pm_runtime_resume_and_get().
+
+I'm not seeing why it is in this particularly location which doesn't
+seem to be particularly sensible to me.
 
 Jonathan
-> 
-> Changes in v3:
-> - Patches 2-3: set the callbacks with one compound literal (Jonathan).
-> - Kept Joshua's Reviewed-by on all three; patches 2-3 changed only in
->   style.
-> - Rebased onto v7.3.
-> - Sent as a new thread, not a reply to v2.
-> 
-> Changes in v2:
-> - New patch 1, for the use-after-free on unbind found by the Sashiko
->   review of v1.
-> 
-> v2: https://lore.kernel.org/all/20261007184423.622445-1-ch@murgatroid.com/
-> 
-> Christopher Hoover (3):
->   HID: hid-sensor-hub: Synchronize callback removal with raw events
->   iio: temperature: hid-sensor-temperature: Use per-instance callbacks
->   iio: humidity: hid-sensor-humidity: Use per-instance callbacks
-> 
->  drivers/hid/hid-sensor-hub.c                     | 12 ++++++++++--
->  drivers/iio/humidity/hid-sensor-humidity.c       | 14 +++++++-------
->  drivers/iio/temperature/hid-sensor-temperature.c | 14 +++++++-------
->  3 files changed, 24 insertions(+), 16 deletions(-)
-> 
-> 
-> base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
+
+
+ =20
+
+
+
+> Thanks,
+> Srinivas
+>=20
+> >  =20
+> > > ---
+> > >=20
+> > > Changes in v2:
+> > > =C2=A0* Split iio patch into per-driver patches
+> > >=20
+> > > =C2=A0.../iio/common/hid-sensors/hid-sensor-trigger.c=C2=A0=C2=A0=C2=
+=A0 | 14 +++++-----
+> > > ----
+> > > =C2=A01 file changed, 5 insertions(+), 9 deletions(-)
+> > >=20
+> > > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > index 60808e2430ca..d76a6d9f04f6 100644
+> > > --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> > > @@ -154,21 +154,17 @@ int hid_sensor_power_state(struct
+> > > hid_sensor_common *st, bool state)
+> > > =C2=A0{
+> > > =C2=A0
+> > > =C2=A0#ifdef CONFIG_PM
+> > > -	int ret;
+> > > -
+> > > =C2=A0	if (atomic_add_unless(&st->runtime_pm_enable, 1, 1))
+> > > =C2=A0		pm_runtime_enable(&st->pdev->dev);
+> > > =C2=A0
+> > > =C2=A0	if (state) {
+> > > =C2=A0		atomic_inc(&st->user_requested_state);
+> > > -		ret =3D pm_runtime_resume_and_get(&st->pdev->dev);
+> > > -	} else {
+> > > -		atomic_dec(&st->user_requested_state);
+> > > -		pm_runtime_use_autosuspend(&st->pdev->dev);
+> > > -		ret =3D pm_runtime_put_autosuspend(&st->pdev->dev);
+> > > +		return pm_runtime_resume_and_get(&st->pdev->dev);
+> > > =C2=A0	}
+> > > -	if (ret < 0)
+> > > -		return ret;
+> > > +
+> > > +	atomic_dec(&st->user_requested_state);
+> > > +	pm_runtime_use_autosuspend(&st->pdev->dev); =20
+> > This is odd enough to make me nervous even though the patch is
+> > obviously a no-op change.
+> >=20
+> >  =20
+> > > +	pm_runtime_put_autosuspend(&st->pdev->dev);
+> > > =C2=A0
+> > > =C2=A0	return 0;
+> > > =C2=A0#else =20
+> >  =20
 
