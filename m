@@ -1,82 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793588316;
-	b=iEnXjrJ6qtYpJIXmQNz1KNMa5zH/Wt11e3m1hJmycYKYe2xUXCINjJnH22LkZi1cIazl
-	 X1nDrl5JAF7fDPfzqKACrs95BAstikCSDPDtEwYB8ByaQxYCDbbxFM8yVB7aJf1rxjjsc
-	 5YUhw7Lh3TueWyXMTH0L4nIsjIQEp7qESz8RIzbDoF4Q7jO3MueEBIovLAKOKeEe3XSU4
-	 1WrevkAggmxXcgZ6ZJoqcbbUbEnJfKy0yvygQwvD+TlRt5v/hcNH8xtUN2zhTpplGd4xa
-	 vMCdqBuH/yGyFMd3sxDLwhM+G/HK1+yEOHyXxbh998lTjM1xDYHvzF5jvUFKYjTm05Q==
+	t=1793591148;
+	b=0njrnLkxKJ7w/CG9ucA5yf+jeWGJH08CiFtv0f8pZdFClz2AH+gSsAoV+MrAQ5lkZRpc
+	 4znglcCWzqh2y7yPO6rwK7klN6SUNxbaYBlCyRVebbP+6XNxtyXFdHN9ltXoL4PSDwR3c
+	 cwjkcBW/403Fn1/HmANl0wh2nVXMvvHUPZMW7dPhZqwMhBfz8TLV/sdJ1MHN5Sxi8i5eh
+	 fyTNHI3AW1eHKw168qUOCRi1i5gh4/KneE9gTuWI0IL8xqyRG6I9xYBXLyhg9HV0Q4R2f
+	 W2LphXwXQBAvtqkWAHpDcDN5vUJOJ6E1z39xzd3ac4iPN2DAqURcDF7soXilH/XpnCA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793588316;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=2z0oS7F5pneXEoOQ3bAfKWU7aXi5FlDjEbNB+9qE6ek=;
-	b=ZWZGYYyt4WKY9jhbGFXToy3hKE+TWqfZAoOseMlxEjxWURObeZH01KfpZXneZZd6gYMn
-	 tahDGplg2nl3x9K8qqp74wyDpuN0s+a5CzxJv0c+XuXr5Qnkn50/ZitbfEgoEA95RhIGE
-	 1VRgJgypLroNf5n25p4Ed6gAu5QkH1MSWfeYojUcDRGOu/oXRGfqqSkW6k3GpyOz4p5r0
-	 o+yGjncAFuZghSsZr6vWNluQEBYreLF8qlTfDG2Cocmsr5exAsZbfPoHB9qVEfK1qm9dO
-	 8cWipjdaXMLPskXzlU5Qhd8vLfYwUWlOlO1MqATHRNYb7eaAqyW25pt22vlfZqEgeBA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793591148;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=7653Z25URCQw51Ar2IS4ZcgvokQrZoYW0xDq4LSwubQ=;
+	b=HHBM2dNTpHvSO+tJ2Lm8FDzxFngQm01FjDkbnm3n1vupqKyf/S4FJ6o4dw0La3WcY+FP
+	 R+8XoKoTk7zy3Bw+dcqU6Gnq15JkdBMyv0PZoliuvG+WnJ3jWg0GlIcNqRBoNlb5ISM3j
+	 daFEFtsXDSlEwjtcNZzMNkyKdkrD3rGb4QShZLqEkAuKLEP8/OlccfTirAsI/jmwjRLOa
+	 IcQ/7bwzsABcA2V5o67xyrqRxc5tqqfrPGvpylMqV+9hPtRgmk4B1WJPN5HZmeJf+ioQN
+	 yZt+rS4fn/cFW9cZ3Z49MkMhXUgAc5JR4mKMlpF2QMGOglyIT+x0Agz42lRoktdJhug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EtdvKxzJ;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Wul8qBKR;
+	arc=none smtp.remote-ip=74.125.82.182
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9AC3606A329;
-	Mon,  2 Nov 2026 02:58:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C9AC3606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CB93606A324
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 03:45:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9CB93606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EtdvKxzJ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793588315; x=1825124315;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YJJe20M6aCN7M8p+TymRl22D3Rh1go93dltt38eLOfI=;
-  b=EtdvKxzJq96ebHEQlBT27gl+48gcrPfA1ewithnVx1PXDSwSLCE14SeW
-   us17BCLrqLYnE61aqanRDa8sOP/H8KWQ92JR8NZKza95TtKTs0MCCgG6t
-   4GeQdwO07N9E/zjDaXP00gpyb0nfAUGael3jEq1FL7GMlIQh3vToA8crG
-   OKKCUGBdBdVzU5qMlXKhihiNr0ZPLwDnG1WHdkMH7Sg13q/9bsZbdl1Th
-   pnpyHnr/r5d4DMJUF9YABOhpqXm9DDGKVyY/3WNeuYgvj4pdK8C7hAzAI
-   L+IlXuSg0p6+DQbpnmSy3wbtzmjXPSLaGBVyQsRtFQDx91P2eZvSAqR8u
-   g==;
-X-CSE-ConnectionGUID: fhMyQhhcT8mQKJB0ksh3FQ==
-X-CSE-MsgGUID: greFNm8jTUKjy0C+aGAkBw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11953"; a="2283494"
-X-IronPort-AV: E=Sophos;i="6.27,190,1787036400"; 
-   d="scan'208";a="2283494"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Nov 2026 18:58:34 -0800
-X-CSE-ConnectionGUID: TBvLHBEOQVurgNblHWwW/A==
-X-CSE-MsgGUID: nwZL1J13TvOh3hozCa3zGg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,190,1787036400"; 
-   d="scan'208";a="6322501"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa008.fm.intel.com with ESMTP; 01 Nov 2026 18:58:32 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xNiFh-00000000gHo-2bs0;
-	Mon, 02 Nov 2026 02:58:29 +0000
-Date: Mon, 2 Nov 2026 10:57:44 +0800
-From: kernel test robot <lkp@intel.com>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Wul8qBKR
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-3535a54bed9so3876490eec.1
+        for <linux-iio@vger.kernel.org>; Sun, 01 Nov 2026 19:45:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793591147; x=1794195947; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=7653Z25URCQw51Ar2IS4ZcgvokQrZoYW0xDq4LSwubQ=;
+        b=Wul8qBKRAP0Daw2OPIL2Cy4HHNJ+FoV/0vVmVHZYOA5NVJ5gWZDkIRPHdDSx8covUr
+         uWzh8og36uKFtFcS3tbT3hTw5nyaoGRoegdsnfemQEJTIyMWNuzegAW4uHUBOdgr8ez1
+         noUeR0laq2sce1zBSQl8od17Q1KFMjYxdNaqWvhyWMnP8nq6CEjPfEaRT4GB5+tbEnea
+         Y3tACXNmFc2MDq6qRmuql5mQqeR+NyU6yFOHIRf88d8YzZoZr03WwRKKb0hKrgsvdy+3
+         L3Nf+W0WvLbQBv2mjfZOUdVjrJPw/x/ouWtd6xzBYGroEB3fYV0WeaokxUqQQHho/7tb
+         eXVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793591147; x=1794195947;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=7653Z25URCQw51Ar2IS4ZcgvokQrZoYW0xDq4LSwubQ=;
+        b=axWYuhXlQvIpG9IPEpe4fHHw2HSP6rtqCA0oL691wzKmtQheoqGfA3X6zHPBv84RW2
+         S5JahCwqcyJ4r8nTYTTJy+MISJQrEUVXH9wgewl+nBtfiDFwHCwimijjf6rHYYIKxx3o
+         zk051mm921a78D8ZwaiYnj1HUhD2Qyej9Jj8GJzg+J7+Cm9rAMEqeZuhUbIl2FwONz5d
+         zjqHj9Yq5AC2hAytK4NevRUHttuPPhND5vMP9KABDxC27hjHiQrrLHrwku6MZsm1rlHn
+         AKsU/6NyCNuBJo/Yr/UGA7FnOad2Ow/1k34QaVlf3SnNB1bkWfvh/pqUIcKaQwkQXUAb
+         8M0A==
+X-Forwarded-Encrypted: i=1; AKwUvBzkGQgI9hKR/GDgPbkmP4Y/UggwqQ5RcMq2GyoCqN/heNZZcE7QWyGPPOzfr4YwoQPj5Ofkk3Qepi8=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8KseiAR20AKxvuPkOa03X+wBxfHchi/01NbrxE+qCB5JXIoKNt
+	P90IUnc1qyHYSDxpl3OLFYZ2Y2AQqHcNJ/qWEJxUAf1t3Atndhw2fcqk
+X-Gm-Gg: AYBFou354FG3JDjxePja1qFFChTkXRB0pAMA1tEQaI+1WR6uonxJoGtT0YnmDLCE8GS
+	T9N7OV4lHXJeHjo/xJ9y7uM7zUb8T2/ngZ4KBCBx3LJ0HPihR80jsGSf7iDiczjGQ8otroJQWxH
+	lBtZU4Kazzd49/fBRxHzT+VO02m5ziFOz7an2YqDWFlilKX0Dcsknn0XStts9v/rCrKw/uyPEyD
+	j2fkADm/Wi7X3rwXh9UZ20Nm+oQFS5wX20TWV5brcKYCcbNqm9dvAVdm3lgQatIsSKn6CZaAOdH
+	/gr2lVGW6CGspOWSiVG0X5vEE9Kef6XvHUERAHC3Er/7L5yf4KfzRtwQjtBERCFlBmsVq8MhAQ+
+	UvRLMdMBeNkFw/nRtwayMdi1wYfxu0YMxdLfxXF8pFsLESOKvg7Nd7mNaJV0bmhTzQHCIlgWv+B
+	QLxbmZIqVRfR22FFyO7Zv/t9zinYTEcxYSwvI5yX61sKcTh5jLSJvELZFhMHdEDrtHjdaSccQeM
+	83KKSO1NIJl48P5p89eAd2IrSzbwKLH8BrXJ5dUDw4bF8EQJvYqInQEcvaM22i2T5FnUqsjMpd3
+	d+n3qiI3BkPkfm1oXOHGPJ+wjF22y2xl7JHL3xfIjmllJTu1EQoKvbbLL3C5ZI25G+laHsTaUo6
+	nhYG6vO7sb6t8SUHjBqB1izp3cDAcCTxwNaGQb9/2PWwKbP68YnmCB8v0TiHCJoDv46AMsmrhso
+	SrhezR
+X-Received: by 2002:a05:7300:6d22:b0:36a:13e1:c889 with SMTP id 5a478bee46e88-36a425e10f8mr21842182eec.36.1793591145568;
+        Sun, 01 Nov 2026 19:45:45 -0800 (PST)
+Received: from EAIT-H54D9Q2FJQ.eait.uq.edu.au ([130.102.10.191])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36a42a504c6sm33470820eec.21.2026.11.01.19.45.39
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 01 Nov 2026 19:45:45 -0800 (PST)
+From: Yu Zhang <yuz08559@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Subject: Re: [PATCH v4 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <202611021049.CWQj3jvL-lkp@intel.com>
-References: <SN1PR12MB25281F8D83D65C87BF4B6A43A56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
+	stable@vger.kernel.org
+Subject: [PATCH v2] iio: trigger: fix use-after-free in current_trigger_store() on concurrent writers
+Date: Mon,  2 Nov 2026 13:45:32 +1000
+Message-ID: <20261102034532.33246-1-yuz08559@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20261026100246.68005-1-yuz08559@gmail.com>
+References: <20261026100246.68005-1-yuz08559@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,38 +103,151 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN1PR12MB25281F8D83D65C87BF4B6A43A56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Victor,
+current_trigger_store() holds iio_dev_opaque->mlock only around the
+INDIO_BUFFER_TRIGGERED / trig_readonly checks and then drops it. The rest
+runs unlocked: it reads the current trigger into oldtrig, acquires the new
+one by name, stores it into indio_dev->trig, and drops the old trigger's
+reference with iio_trigger_put().
 
-kernel test robot noticed the following build errors:
+sysfs does not serialize writes to the same attribute issued through
+different open file descriptors (each open has its own kernfs_open_file),
+so two threads can run current_trigger_store() on the same
+.../trigger/current_trigger concurrently. Both read the same oldtrig, both
+overwrite indio_dev->trig, and both call iio_trigger_put(oldtrig). The
+extra put drops the trigger's refcount to zero while it is still in use,
+frees it, and a concurrent writer then dereferences the freed trigger.
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v7.3 next-20261030]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+With two sets of writers hammering current_trigger between two software
+triggers on an iio_dummy device, KASAN reports:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Victor-Chernyakin/iio-prepare-iio_format_value-to-handle-higher-precision-IIO_VAL_DECIMAL64_-formats/20261031-101327
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/SN1PR12MB25281F8D83D65C87BF4B6A43A56C2%40SN1PR12MB2528.namprd12.prod.outlook.com
-patch subject: [PATCH v4 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-config: nios2-allmodconfig (https://download.01.org/0day-ci/archive/20261102/202611021049.CWQj3jvL-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261102/202611021049.CWQj3jvL-lkp@intel.com/reproduce)
+  refcount_t: addition on 0; use-after-free.
+  WARNING: CPU: 3 PID: 3467 at refcount_warn_saturate+0xbb/0xe0
+   kobject_get+0xf6/0x100
+   current_trigger_store+0x15c/0x4b0
+  ...
+  BUG: KASAN: slab-use-after-free in current_trigger_store+0x168/0x4b0
+  Freed by task 3468:
+   kobject_put+0x125/0x220
+   current_trigger_store+0x2cc/0x4b0
+  Allocated by task 3454:
+   __iio_trigger_alloc+0xc7/0x100
+  ...
+  Oops: general protection fault
+   __module_get+0x27/0xd0
+   current_trigger_store+0x192/0x4b0
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611021049.CWQj3jvL-lkp@intel.com/
+Hold mlock across the whole operation so that reading oldtrig, swapping
+indio_dev->trig and dropping the reference are atomic with respect to
+other writers (and to buffer enable, which the -EBUSY check guards).
+Acquiring the new trigger with iio_trigger_acquire_by_name() under mlock
+is safe: it only takes iio_trigger_list_lock, and the buffer path already
+calls iio_trigger_{attach,detach}_poll_func() with mlock held.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+The trigger swap itself keeps its goto based cleanup of the newly
+acquired trigger, so move it into a helper and take mlock with guard()
+in current_trigger_store() around the mode checks and the helper call,
+rather than mixing guard() and goto in one function.
 
->> ERROR: modpost: drivers/iio/cdc/fdc1004.ko: symbol '__udivdi3' undefined!
->> ERROR: modpost: drivers/iio/cdc/fdc1004.ko: symbol '__divdi3' undefined!
+Cc: stable@vger.kernel.org
+Signed-off-by: Yu Zhang <yuz08559@gmail.com>
+---
+ drivers/iio/industrialio-trigger.c | 60 +++++++++++++++++-------------
+ 1 file changed, 34 insertions(+), 26 deletions(-)
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 76926fe..cfc6af0 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -421,37 +421,14 @@ static ssize_t current_trigger_show(struct device *dev,
+ 	return 0;
+ }
+ 
+-/**
+- * current_trigger_store() - trigger consumer sysfs set current trigger
+- * @dev:	device associated with an industrial I/O device
+- * @attr:	device attribute that is being processed
+- * @buf:	string buffer that holds the name of the trigger
+- * @len:	length of the trigger name held by buf
+- *
+- * For trigger consumers the current_trigger interface allows the trigger
+- * used for this device to be specified at run time based on the trigger's
+- * name.
+- *
+- * Return: negative error code on failure or length of the buffer
+- *	   on success
+- */
+-static ssize_t current_trigger_store(struct device *dev,
+-				     struct device_attribute *attr,
+-				     const char *buf, size_t len)
++/* Must be called with iio_dev_opaque->mlock held. */
++static ssize_t iio_trigger_set_current(struct iio_dev *indio_dev,
++				       const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	struct iio_trigger *oldtrig = indio_dev->trig;
+ 	struct iio_trigger *trig;
+ 	int ret;
+ 
+-	scoped_guard(mutex, &iio_dev_opaque->mlock) {
+-		if (iio_dev_opaque->currentmode == INDIO_BUFFER_TRIGGERED)
+-			return -EBUSY;
+-		if (iio_dev_opaque->trig_readonly)
+-			return -EPERM;
+-	}
+-
+ 	trig = iio_trigger_acquire_by_name(buf);
+ 	if (oldtrig == trig) {
+ 		ret = len;
+@@ -492,6 +469,37 @@ out_trigger_put:
+ 	return ret;
+ }
+ 
++/**
++ * current_trigger_store() - trigger consumer sysfs set current trigger
++ * @dev:	device associated with an industrial I/O device
++ * @attr:	device attribute that is being processed
++ * @buf:	string buffer that holds the name of the trigger
++ * @len:	length of the trigger name held by buf
++ *
++ * For trigger consumers the current_trigger interface allows the trigger
++ * used for this device to be specified at run time based on the trigger's
++ * name.
++ *
++ * Return: negative error code on failure or length of the buffer
++ *	   on success
++ */
++static ssize_t current_trigger_store(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++
++	guard(mutex)(&iio_dev_opaque->mlock);
++
++	if (iio_dev_opaque->currentmode == INDIO_BUFFER_TRIGGERED)
++		return -EBUSY;
++	if (iio_dev_opaque->trig_readonly)
++		return -EPERM;
++
++	return iio_trigger_set_current(indio_dev, buf, len);
++}
++
+ static DEVICE_ATTR_RW(current_trigger);
+ 
+ static struct attribute *iio_trigger_consumer_attrs[] = {
+---
+v2:
+ - Move the trigger swap into a helper, iio_trigger_set_current(), and
+   take mlock with guard() in current_trigger_store() only, so that
+   guard() and the goto based cleanup of the newly acquired trigger are
+   not mixed in one function (Jonathan Cameron, Sashiko). No change to
+   the locking itself.
+v1: https://lore.kernel.org/all/20261026100246.68005-1-yuz08559@gmail.com/
+
+-- 
+2.43.0
+
