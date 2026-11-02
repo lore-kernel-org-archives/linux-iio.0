@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=34.202.193.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793605675;
-	b=lJa+P5ORmkf6sG7gTBGUg0yZkPf6wRVAQVP6rav/UC/g/pFaS2Mgq5+sTwFuwF/46Kdh
-	 0VZkSq7tK46tewfUpIcu0lPemgYe2OMcdyM4k2Yylg0CsUllCs0rK/GPJKKSOe1rqU8zR
-	 LFy0Mim95T4xUBrLfu82RbhaL6+UJdIF250u/w5XrLqM9k8sVjEAYlAVi02fTOFMFmcuU
-	 lIMLbcq4YJN1fXG4x65KchJavBv6NNzXopMXo14KlyPbTE/MrBrUnxguGqCD94olhSRg4
-	 H8Xw9E8t4cq+M8Cjf/t7fuGDnSkYvqmII+f85YevAnOPtJHPrMhlBkANZ6NW1wcXIuA==
+	t=1793605671;
+	b=I6Nyc9cfztqKsxthdxtCbXGUoOAh1daWlEBYr4VGwh5bvSnmBjbaMkLH4Ede1n69tRAY
+	 P9+KAu9q2XJlfU0DtTG0w9476GfI+FP62GmSAmpeXWTD3jal/H6TswbuBLE2RmUz7ArYK
+	 /FKWx7LlFSekglSHkR4JAt7veuPBZGVI/6eFllN8Fl9sRTcTUSQaz29mxeGdByUWJNVQh
+	 j8brXkvLC7tLiBI8/cuwoRKCUPDGf6opmTWchI/d07plHh/xiMSnU2YG4sW6TDURsiL9I
+	 GmncNaf1nTpwQdK2VBQp/2OhDHUOfxx5lCOT2wa2V9EYGFs3sax3FCztkQQZHsV6DWA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793605675;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793605671;
 	h=DMARC-Filter:DKIM-Signature:DKIM-Signature:Feedback-ID:
 	 X-Pm-Original-To:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-MIME-Autoconverted:Content-Type;
-	bh=P2WHQc6zM3YpFYZ7gdc6FJKerdajDKeyE4O3ZrIVA+E=;
-	b=EEYbetB+Wiq6pZK1tm3mUTj5TXHX/M942Y70jYtFDcG8L5f2AgrkIfu+03CZNYdaZPf2
-	 dsUdLyk5EqG0oRHLdg3EBfQK+j8RJ1tBTrlKCYF9KXcKj8TuukrFxDVTWGOC5jDBoC294
-	 X1wI62ksL7SUuXLAHJiYZTRhqRy9x8rkk+mo/AzqeWvxJoa19LWaiKO8W+zigQYAqjqxf
-	 W1B1Dq/C+Tuk67uOuIUBM2PA9YoDr55gc629vfVGk67flh4xFCBcUOYu+Oksjw4RV/pxN
-	 bzhORCevf+CfbnjtDb2qEtp7Bz0MveXy0A2gkiyNd8zg4aeJdeGJJFgGVKBu1xnG3GA==
+	bh=NVCONaY5z4ZFgwcXES3HKygeAOGw1+MgNQJI3khRZ6o=;
+	b=XumM0tMAluGwMLkNq6g57wxiOQVMK3qxeYzRtc+6jJgOmFVIcxrW6vAAUM1LQRY8Baqf
+	 C8QH4MH7zMUDTV7KnhdOXVk9HNJ7OBPSEtmf/bOEZ/1Hqkm0iPn5Z5cxsPSNq9LTgDyiT
+	 yrn4S+PqSI217tg2v/l/p+pvJA2kuy0RrWfPB05vtKtaNWbxnyzAjEnfCGmcA/hsHUJG3
+	 l0Ej3IbhkL5AaNLbnBJbC4p6P28uOOSeE9vcfkqCf/Lub8qPPN2zS5QeqqiV8RddoyQIB
+	 K8vuW4W1yC7hVjxrLEhBL8cQrWDt4/JbDJeBxHvNhzyfmn5N7Mejt0INEoq7gNeLmzw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=arkamondal.net;
 	spf=pass smtp.mailfrom=arkamondal.net;
-	dkim=pass header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=wBD3WBa2;
-	dkim=pass header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=HQZYvZ07;
+	dkim=pass header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=Z4Ic6Khq;
+	dkim=pass header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=R0zVm3wP;
 	arc=none smtp.remote-ip=34.202.193.197
 Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8743060A2614
-	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:47:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8743060A2614
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2244606A327
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:47:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D2244606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=wBD3WBa2;
-	dkim=pass (2048-bit key, unprotected) header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=HQZYvZ07
-DKIM-Signature: a=rsa-sha256; b=wBD3WBa2Xa+9cx3oUsQMcXeOxl1hO241sSuxHZUm3hDtC7XXOYg7otNl57tWw/Vynrzs/LrwHe4CpmhXKL3Xcc0u4v/vyeGaFnwgEhW4Hxcc5FtyROqE9qyn3WSRHyPQTCk1WRu4HyG2TelJQ9VoOtnWyljohqTwG6y1q5EVT6ycifJSnRv57cvGtdQVX0EyTp9fpo2Rov8iILku8E7AmO/e/hePfvl9Wn7hT1iwj5ytLQORnFqaubxhI0FG46QDwlMzsugmGJutQLtzwT9Noi9f/yIHTuE9d8tGcg918VTYA8v3A+kTHdDNe6nYgWzOp2tkOXsw6OU8Xp144Fmseg==; s=purelymail2; d=arkamondal.net; v=1; bh=qDJDGnNh0VyDniUgB1appHqn7rBPmTAD4rGUcCjsp0w=; h=Received:From:To:Subject:Date;
-DKIM-Signature: a=rsa-sha256; b=HQZYvZ07K/X4Bn+Kpc7BiVTtGzwQCFHgwbaZjFKFBbvDWPaSnex+Ln//58Nx/0p1r4KvTEOzaSKAdDy9lhiRoMk2flcWYkigs6rs34zyrrTlovFv+THyAZMePHgwH8dV2FEO8j9jNwjpJoImtWqA79EJKCnVEZobJjeToyChWka7xY8r03+wA48qZ6gfbtFGFt66NTCNYXf+60Fzoq5L/wnBXDg5WmziptQcDV/tmqWn4hi+pTjnmNDcp0y7weA2M9m05ise6yVNJ65o/Vocdf051ZmThqxTET8DWUyHV90SnSLxjSFxl5rqlu/eOII4ac/wJaq1IJ0Mcm5KfzHivQ==; s=purelymail2; d=purelymail.com; v=1; bh=qDJDGnNh0VyDniUgB1appHqn7rBPmTAD4rGUcCjsp0w=; h=Feedback-ID:Received:From:To:Subject:Date;
+	dkim=pass (2048-bit key, unprotected) header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=Z4Ic6Khq;
+	dkim=pass (2048-bit key, unprotected) header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=R0zVm3wP
+DKIM-Signature: a=rsa-sha256; b=Z4Ic6KhqoLLPjpYomvGQGzbnceOB+qxnV7Sm59QIs+r1r3dnBofm4rpHFR6xF/eUmgBfy9rQdpRrTfxC18LmktzLauJuaKE7PGIyRqT0vM0GDNargelD7C5s2rDzEiZh3QPbThBx9+zt4+L2uhcpiAm8gsrqcKmYOgjaFr67POQBVIlCiIdQiIkeb+sUBRBQLvSX5q9J2SxXQCcbseDHWJPw8pPHrn0dPAkihcZ024QFQqC85vlY2bDWbmbM4AOhQgtgmppusmLnE1wXrIRIl+dWTniXhXQ6CT/dY0iR2e+lrJVaVU5e54+H5clo/Ibp3dX9G5b839TSrR5uguJBJA==; s=purelymail2; d=arkamondal.net; v=1; bh=0fLlRHl/dzI82cbWStQRGi+3gA6yE9Uxex1br6bkHqA=; h=Received:From:To:Subject:Date;
+DKIM-Signature: a=rsa-sha256; b=R0zVm3wPZTerqrFE/rtUEER48VAOFmuyA4/0LTu3pGI8ENQa4n+kRsgGoqyk56TBicQiv7rQSZjfc/WeIlvPdc0xZhCUmW87Sh31MsCsDf6EIj9rIgF002DzDbeeyv+pVjfExs4sKajubQJqJa67gI00PUWb86UZHrXmrkg3AYJaf0suNIM2TlEidkIlB9cpSecLwMFWyjfD2RaHu55u7//uaH3IFy9oZpTbRlBhPexc7NXcpOIPHPML3xyTc/N8LhpDLiTBNKkdJDZhuxy9bWSRxKDq0WMdp6wMBsiYag+PpLE63wivqa8y1OPAl5nEr1I8ttypFbW4uhCLKAq93w==; s=purelymail2; d=purelymail.com; v=1; bh=0fLlRHl/dzI82cbWStQRGi+3gA6yE9Uxex1br6bkHqA=; h=Feedback-ID:Received:From:To:Subject:Date;
 Feedback-ID: 1246644:48769:null:purelymail
 X-Pm-Original-To: linux-iio@vger.kernel.org
 Authentication-Results: purelymail.com; auth=pass
-Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -1778885788;
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id 1322764464;
           (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-          Mon, 02 Nov 2026 07:47:33 +0000 (UTC)
+          Mon, 02 Nov 2026 07:47:23 +0000 (UTC)
 From: Arka Mondal <arka@arkamondal.net>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Linus Walleij <linusw@kernel.org>
@@ -57,9 +57,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arka Mondal <arka@arkamondal.net>
-Subject: [PATCH 6/6] iio: gyro: mpu3050: Fix the scale list and report it via read_avail()
-Date: Mon,  2 Nov 2026 16:47:00 +0900
-Message-ID: <20261102074700.63075-7-arka@arkamondal.net>
+Subject: [PATCH 2/6] iio: light: apds9960: Report the available lists via read_avail()
+Date: Mon,  2 Nov 2026 16:46:56 +0900
+Message-ID: <20261102074700.63075-3-arka@arkamondal.net>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261102074700.63075-1-arka@arkamondal.net>
 References: <20261102074700.63075-1-arka@arkamondal.net>
@@ -76,104 +76,133 @@ Content-Transfer-Encoding: quoted-printable
 X-MIME-Autoconverted: from 8bit to quoted-printable by Purelymail
 Content-Type: text/plain; charset=UTF-8
 
-The angular velocity channels keep IIO_CHAN_INFO_SCALE in
-info_mask_shared_by_type, so userspace reads the scale from
-in_anglvel_scale. One custom attribute lists the values it can take,
-and that list is wrong in both its numbers and its name.
+The proximity and intensity channels put IIO_CHAN_INFO_SCALE in
+info_mask_shared_by_type, and the intensity channels put
+IIO_CHAN_INFO_INT_TIME there too. The values those attributes accept
+are listed by three custom attributes: proximity_scale_available,
+intensity_scale_available and integration_time_available. None of the
+three carries the in_ prefix that the core gives the attribute it
+describes, so all three are registered at the device level, and
+userspace looking for in_proximity_scale_available,
+in_intensity_scale_available or in_intensity_integration_time_available
+finds nothing.
 
-The four numbers were computed against 2^16 while mpu3050_read_raw()
-divides by U16_MAX, so not one of them is a value the channel ever
-reports. The list gives 0.000122070, 0.000274658, 0.000518798 and
-0.001068115, where the channel reports 0.000122072, 0.000274662,
-0.000518806 and 0.001068131.
+Report all three through read_avail() and drop the custom attribute
+group. The two gain lists keep their exact text. The integration time
+list becomes 0.028000 0.100000 0.200000 0.700000 instead of 0.028 0.1
+0.2 0.7, because the core prints IIO_VAL_INT_PLUS_MICRO with six
+decimals. The values are unchanged.
 
-The name, anglevel_scale_available, has neither the in_ prefix nor
-the anglvel spelling the core uses for IIO_ANGL_VEL, so it sits at the
-device level and userspace that opens in_anglvel_scale_available finds
-no such file.
-
-Report the list through read_avail(), built from the same
-IIO_DEGREE_TO_RAD() terms and U16_MAX that mpu3050_read_raw() uses so
-the two cannot drift apart again, and delete the attribute along with
-the comment describing the hardcoded factors.
-
-Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+Fixes: aff268cd532e ("iio: light: add APDS9960 ALS + promixity driver")
 Signed-off-by: Arka Mondal <arka@arkamondal.net>
 ---
 
 Notes:
     Compile tested only; no relevant hardware available.
 
- drivers/iio/gyro/mpu3050-core.c | 40 +++++++++++++++++++--------------
- 1 file changed, 23 insertions(+), 17 deletions(-)
+ drivers/iio/light/apds9960.c | 56 +++++++++++++++++++++++++++---------
+ 1 file changed, 42 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-cor=
-e.c
-index 07c0f9011c63..0dfb5e6039fb 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -701,6 +701,8 @@ static const struct iio_chan_spec_ext_info mpu3050_ext_=
-info[] =3D {
- =09=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |=09=09\
- =09=09=09BIT(IIO_CHAN_INFO_CALIBBIAS),=09=09=09\
- =09=09.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),=09\
-+=09=09.info_mask_shared_by_type_available =3D=09=09=09\
-+=09=09=09BIT(IIO_CHAN_INFO_SCALE),=09=09=09\
- =09=09.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),\
- =09=09.ext_info =3D mpu3050_ext_info,=09=09=09=09\
- =09=09.scan_index =3D index,=09=09=09=09=09\
-@@ -736,29 +738,33 @@ static const struct iio_chan_spec mpu3050_channels[] =
+diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
+index afe520de60e2..496678c4d338 100644
+--- a/drivers/iio/light/apds9960.c
++++ b/drivers/iio/light/apds9960.c
+@@ -289,6 +289,8 @@ static const struct iio_event_spec apds9960_als_event_s=
+pec[] =3D {
+ =09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW), \
+ =09.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE) | \
+ =09=09=09BIT(IIO_CHAN_INFO_INT_TIME), \
++=09.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SCALE) | \
++=09=09=09BIT(IIO_CHAN_INFO_INT_TIME), \
+ =09.channel2 =3D IIO_MOD_LIGHT_##_colour, \
+ =09.address =3D APDS9960_REG_ALS_CHANNEL(_colour), \
+ =09.modified =3D 1, \
+@@ -304,6 +306,7 @@ static const struct iio_chan_spec apds9960_channels[] =
 =3D {
- /* Four channels apart from timestamp, scan mask =3D 0x0f */
- static const unsigned long mpu3050_scan_masks[] =3D { 0xf, 0 };
+ =09=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+ =09=09=09BIT(IIO_CHAN_INFO_CALIBBIAS),
+ =09=09.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),
++=09=09.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SCALE),
+ =09=09.channel =3D 0,
+ =09=09.indexed =3D 0,
+ =09=09.scan_index =3D -1,
+@@ -322,6 +325,8 @@ static const struct iio_chan_spec apds9960_channels[] =
+=3D {
+ =09=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),
+ =09=09.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE) |
+ =09=09=09BIT(IIO_CHAN_INFO_INT_TIME),
++=09=09.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SCALE) |
++=09=09=09BIT(IIO_CHAN_INFO_INT_TIME),
+ =09=09.channel2 =3D IIO_MOD_LIGHT_CLEAR,
+ =09=09.address =3D APDS9960_REG_ALS_CHANNEL(CLEAR),
+ =09=09.modified =3D 1,
+@@ -370,19 +375,11 @@ static const int apds9960_int_time[][2] =3D {
+ static const int apds9960_pxs_gain_map[] =3D {1, 2, 4, 8};
+ static const int apds9960_als_gain_map[] =3D {1, 4, 16, 64};
 =20
--/*
-- * These are just the hardcoded factors resulting from the more elaborate
-- * calculations done with fractions in the scale raw get/set functions.
-- */
--static IIO_CONST_ATTR(anglevel_scale_available,
--=09=09      "0.000122070 "
--=09=09      "0.000274658 "
--=09=09      "0.000518798 "
--=09=09      "0.001068115");
+-static IIO_CONST_ATTR(proximity_scale_available, "1 2 4 8");
+-static IIO_CONST_ATTR(intensity_scale_available, "1 4 16 64");
+-static IIO_CONST_ATTR_INT_TIME_AVAIL("0.028 0.1 0.2 0.7");
 -
--static struct attribute *mpu3050_attributes[] =3D {
--=09&iio_const_attr_anglevel_scale_available.dev_attr.attr,
+-static struct attribute *apds9960_attributes[] =3D {
+-=09&iio_const_attr_proximity_scale_available.dev_attr.attr,
+-=09&iio_const_attr_intensity_scale_available.dev_attr.attr,
+-=09&iio_const_attr_integration_time_available.dev_attr.attr,
 -=09NULL,
-+static const int mpu3050_scale_avail[] =3D {
-+=09IIO_DEGREE_TO_RAD(250) * 2, U16_MAX,
-+=09IIO_DEGREE_TO_RAD(500) * 2, U16_MAX,
-+=09IIO_DEGREE_TO_RAD(1000) * 2, U16_MAX,
-+=09IIO_DEGREE_TO_RAD(2000) * 2, U16_MAX,
+-};
+-
+-static const struct attribute_group apds9960_attribute_group =3D {
+-=09.attrs =3D apds9960_attributes,
++static const int apds9960_int_time_avail[] =3D {
++=090, 28000,
++=090, 100000,
++=090, 200000,
++=090, 700000,
  };
 =20
--static const struct attribute_group mpu3050_attribute_group =3D {
--=09.attrs =3D mpu3050_attributes,
--};
-+static int mpu3050_read_avail(struct iio_dev *indio_dev,
-+=09=09=09      struct iio_chan_spec const *chan,
-+=09=09=09      const int **vals, int *type, int *length,
-+=09=09=09      long mask)
+ static const struct reg_field apds9960_reg_field_int_als =3D
+@@ -786,8 +783,39 @@ static int apds9960_write_event_config(struct iio_dev =
+*indio_dev,
+ =09return 0;
+ }
+=20
++static int apds9960_read_avail(struct iio_dev *indio_dev,
++=09=09=09       struct iio_chan_spec const *chan,
++=09=09=09       const int **vals, int *type, int *length,
++=09=09=09       long mask)
 +{
 +=09switch (mask) {
 +=09case IIO_CHAN_INFO_SCALE:
-+=09=09*vals =3D mpu3050_scale_avail;
-+=09=09*type =3D IIO_VAL_FRACTIONAL;
-+=09=09*length =3D ARRAY_SIZE(mpu3050_scale_avail);
++=09=09switch (chan->type) {
++=09=09case IIO_PROXIMITY:
++=09=09=09*vals =3D apds9960_pxs_gain_map;
++=09=09=09*length =3D ARRAY_SIZE(apds9960_pxs_gain_map);
++=09=09=09break;
++=09=09case IIO_INTENSITY:
++=09=09=09*vals =3D apds9960_als_gain_map;
++=09=09=09*length =3D ARRAY_SIZE(apds9960_als_gain_map);
++=09=09=09break;
++=09=09default:
++=09=09=09return -EINVAL;
++=09=09}
++=09=09*type =3D IIO_VAL_INT;
++=09=09return IIO_AVAIL_LIST;
++=09case IIO_CHAN_INFO_INT_TIME:
++=09=09*vals =3D apds9960_int_time_avail;
++=09=09*type =3D IIO_VAL_INT_PLUS_MICRO;
++=09=09*length =3D ARRAY_SIZE(apds9960_int_time_avail);
 +=09=09return IIO_AVAIL_LIST;
 +=09default:
 +=09=09return -EINVAL;
 +=09}
 +}
-=20
- static const struct iio_info mpu3050_info =3D {
- =09.read_raw =3D mpu3050_read_raw,
- =09.write_raw =3D mpu3050_write_raw,
--=09.attrs =3D &mpu3050_attribute_group,
-+=09.read_avail =3D mpu3050_read_avail,
- };
-=20
- /**
++
+ static const struct iio_info apds9960_info =3D {
+-=09.attrs =3D &apds9960_attribute_group,
++=09.read_avail =3D apds9960_read_avail,
+ =09.read_raw =3D apds9960_read_raw,
+ =09.write_raw =3D apds9960_write_raw,
+ =09.read_event_value =3D apds9960_read_event,
 --=20
 2.56.0
 
