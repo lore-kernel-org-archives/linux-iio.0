@@ -1,82 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793640079;
-	b=eAA9zSD7gO0w7+YbiuFeic5YVti618u58GOHeSv6RZ5wYt757UbHc5SNOY/sParUxb5d
-	 p3mcxeLH8BIbKsQIDKyBRo5EEOtEQnzpOzjp6dSS2fT5l2QWk3r3l/ccrlx3HIZgYgI9R
-	 Dk368SSHheuHdS2GJcWuQMeoMHKFb+SWaLa/vxlV+JlPTWH75zPuLq/NiPtMAalNWDE9A
-	 NvuhLzSw3mOyE6ekgjBJtW0m9s34MHudqrPOsC1eUx7/93QChog53PGneDMYFgV5smXck
-	 xhafK/+4pdC/9eCeBjyj01W1K3v9dc49FMPMiJVCAhlGkGSUBsszFSk80k1hgh74jiA==
+	t=1793640816;
+	b=F2ClLCc09Cs6mkzP19cSaq5YDdBAIFHEDnEYfsL1zDedW0SxIgl040/BqVeVb/6D5pfi
+	 RyjWyIprWa7B6qRrrHXpgWqErB1MCMmVyexgnSzDn4ue5krhjsIBIbY1Nm5bFMene7MRh
+	 TAo7kiHPo2QFpAlIvPlpVlDHXvPhHbWBV/aYcWashNLu2RQ6OzX5dvCMIzhJWBvpDS7hi
+	 YbzyvKxhHyzH90Qxe7XljMGbHbNM1wIqgGDj2LpHWNU4xyScDVbN99uLx1QpCfENyGg9U
+	 75WIN/yzr3FlnY94evpytGUKf8/6JVjokWy77mRDYyG2i0/FO2hDZlxLu1zimjXApRQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793640079;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793640816;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
 	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
 	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=RgFx2yB/Hk83xGx4rKbycFXzztA6pnGEYqpH3zOrJt4=;
-	b=437ngVHSi0JNbZwC2h6jIpguvnE4Aj5ftmn0cAa5Na2Xa978A7+YwmQWoaH2Tti757dr
-	 dyiRCz1NRVaPV80ICin+xCS/UMWca81sHJ2AU5SFTApqtR7B2ytkDEDuYCrqBvDa6+64q
-	 GyBi7WHU5LcnceSET6YawVt8ca7NOLCF3RaMbefhtlvRaOg02K4fzwouIHL4OgJh23Vkl
-	 O6bsBoYiZyo5FcX5jR0Y6c4F12CAS5bMOktI7fYTLHvuTvGDKtIcPZeOQwa67SvGp+J83
-	 /QoUVrr7Q1gbb9DoOGNElndhqU+8aBM+d/JdcvKeFp3wm2xm5PrrLHJk/xfxJTBIjHQ==
+	bh=i8oK4KfpGAw7G/U1RRs6h/PYqDNVqJbTSxkqZMs4J/M=;
+	b=tLfmdHyYoq0WFmNe8Eclz6qLPSZqNi5AD69zsmEBTqKdh+j3TE9zB9PRk3nVlSPm0QZk
+	 E4akazQ1UgsRn9SjjqHgHJYtl9SyvYcMOSmm3PPbA/GNQNjtonmIIEISfpPIs5fMoVvhj
+	 0h5O4hJuEW7aBxyYeZkWKnLp3Iokqpv4GoGkV7Yycpen4EqmJO06J+7KkZBdWQhIsmBv/
+	 IQbeU39ACGcnOIa2F4z21cf+QcWUu2DRQljsyy0fEASCT1HMY5mS3HAOaO3ElmmKGd8aS
+	 6ersJWE3aZjxjBZN0Th0vqqZKdtMb2FkcVhCAYZs2AIYbf/oO7SnhbftaTyipMAG7tg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=KgbRNkAH;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Xvq0Foz9;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D72E460A3827;
-	Mon,  2 Nov 2026 17:21:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D72E460A3827
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF640606A597;
+	Mon,  2 Nov 2026 17:33:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BF640606A597
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=KgbRNkAH
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Xvq0Foz9
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793640079; x=1825176079;
+  t=1793640815; x=1825176815;
   h=message-id:subject:from:to:cc:date:in-reply-to:
    references:content-transfer-encoding:mime-version;
-  bh=jEzzLxaG7Elthrsvf/EaYA9KeJdgkDS8dXEt3tMRxh8=;
-  b=KgbRNkAH1RfkCr7a5RTH4bp0DuuzvIerNin6Vnv4semC2M45Gf29oUYW
-   170CU7Ymvs9/ntqB2KVlQliY86SHg8WXV6kKjhFu89Qoz+y1Vk5GDPy1J
-   yxP4cAvQMs1ayr0H36v3hGTCwckwboLdZ1YyHN2guEQAaoTz+SlQkBOyN
-   +Y4KNpeQtqwVf9Hj9zVzcI1TA+fXlMD7LUHgtXzd9aX3sMl8IuRF6huRc
-   /vk2IrhF6kC8fiNMbxE/rWFc2+q74ODT/wdpaIrr6B4EbxZRNvPOektYE
-   5KNpM1RfNBv/eRsqXFj3rmkUib7f878WZnvb240Gh8o2NGXiTLLJE/aDl
-   w==;
-X-CSE-ConnectionGUID: Y3HBvE8kR0COrGyJupDM9A==
-X-CSE-MsgGUID: r+oeGlH/RHCkCYED6Z/Ncw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2346732"
+  bh=fArsY9hKt91feQrTd7epp7TK81m2EQTLr8FWybs0efY=;
+  b=Xvq0Foz9OI0H7WFjkePXlJs0ljZ4zKdQW7cUv3tHvfE7qwj5F45XcE0A
+   PjsKV0J2tgjXGWw5gf7WN74dlo/eLCeLJVPiH96RzgY5OLfXb9tx1WZN2
+   dZscsGjkTLvLW5phSnqGPOWiSf+zAQ8udBZ5oY+ujdmY3y94JCiajC9BD
+   DOwMGN7CWSCP9IXCAsMf+YRjKxeanrGmtTIY/4e+GMfiW49W8M62swbks
+   6yvRUwnXyX7WnmR4PBCbnjjNNOxr7g9GnTB5yBMr7H2/dark9Vuw7PXrK
+   NRsvOUS8QEsdpmW+eqYQrT275Hjx0CW1q9OnFCIdOo1FYlpyIokoLrJzW
+   g==;
+X-CSE-ConnectionGUID: X7KC2j+KR6qWvsMJxHVTTw==
+X-CSE-MsgGUID: gGpoFtibSASadCF98arhMg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2337753"
 X-IronPort-AV: E=Sophos;i="6.27,191,1787036400"; 
-   d="scan'208";a="2346732"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:21:19 -0800
-X-CSE-ConnectionGUID: HSHacl66S7OYsKw1yBQgOA==
-X-CSE-MsgGUID: y3guCy38SnytuZLmYHeL1w==
+   d="scan'208";a="2337753"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:33:35 -0800
+X-CSE-ConnectionGUID: BZuv6bbXTIufvBEHQF6bAA==
+X-CSE-MsgGUID: ZFqCaQV7QumlBqJqm0axAQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,191,1787036400"; 
-   d="scan'208";a="6007577"
+   d="scan'208";a="8022066"
 Received: from spandruv-desk2.jf.intel.com ([10.24.80.14])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:21:18 -0800
-Message-ID: <29fc637d4056b9cc43cec3966570a278bf72b6c3.camel@linux.intel.com>
-Subject: Re: [PATCH v3 3/3] iio: humidity: hid-sensor-humidity: Use
- per-instance callbacks
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 09:33:35 -0800
+Message-ID: <b06c4c02844b9d16dc5bf4dc050687aa4e99094a.camel@linux.intel.com>
+Subject: Re: [PATCH 11/15] iio: hid-sensors: fix a division by zero
 From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Christopher Hoover <ch@murgatroid.com>, Jonathan Cameron
- <jic23@kernel.org>,  Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
- <bentiss@kernel.org>
-Cc: Lixu Zhang <lixu.zhang@intel.com>, Joshua Crofts
- <joshua.crofts1@gmail.com>,  David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko	
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Date: Mon, 02 Nov 2026 09:21:18 -0800
-In-Reply-To: <20261019023420.83976-4-ch@murgatroid.com>
-References: <20261019023420.83976-1-ch@murgatroid.com>
-	 <20261019023420.83976-4-ch@murgatroid.com>
+To: Jonathan Cameron <jic23@kernel.org>, Greg Kroah-Hartman
+	 <gregkh@linuxfoundation.org>
+Cc: Josef Bacik <josef@toxicpanda.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable <stable@kernel.org>, David Lechner
+	 <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko
+	 <andy@kernel.org>, Sanjay Chitroda <sanjayembeddedse@gmail.com>, Shi Hao
+	 <i.shihao.999@gmail.com>, Jiri Kosina <jikos@kernel.org>
+Date: Mon, 02 Nov 2026 09:33:34 -0800
+In-Reply-To: <20261101021729.4a0df058@jic23-hlaptop>
+References: 
+	<20261027-llm-char-misc-iio-v1-0-0d818334f6c7@linuxfoundation.org>
+		<20261027-llm-char-misc-iio-v1-11-0d818334f6c7@linuxfoundation.org>
+	 <20261101021729.4a0df058@jic23-hlaptop>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
@@ -90,69 +91,64 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 
-On Sun, 2026-10-18 at 19:34 -0700, Christopher Hoover wrote:
-> hid-sensor-humidity keeps a single static struct
-> hid_sensor_hub_callbacks for all instances and overwrites its pdev in
-> every probe, so with two humidity sensors, input reports for one are
-> delivered with the other's platform device, and a NULL dereference
-> follows once that device is removed.=C2=A0 The same bug was found in
-> hid-sensor-temperature, which shares this code.
+On Sun, 2026-11-01 at 02:17 +0000, Jonathan Cameron wrote:
+> On Tue, 27 Oct 2026 17:19:15 +0100
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 >=20
-> Keep the callbacks in struct hid_humidity_state, as the other HID
-> sensor drivers (accel, gyro, als, ...) do.
+> > From: Josef Bacik <josef@toxicpanda.com>
+> >=20
+> > convert_to_vtf_format() divides the micro part of a value by
+> > 10^(6 + exp).=C2=A0 The unit exponent of a HID field is a nibble and
+> > goes
+> > down to -8.=C2=A0 For -7 and -8 the argument of int_pow() is negative,
+> > which
+> > the unsigned parameter turns into a huge power of ten: 0 modulo
+> > 2^64.
+> > The division by it is a divide error.=C2=A0 The exponent comes from the
+> > report
+> > descriptor of the sensor hub, the value from a write to the
+> > hysteresis
+> > attribute of the IIO device.
+> >=20
+> > Multiply by 10^(-exp - 6) in these two cases.
+> >=20
+> > Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and
+> > trigger")
+> > Cc: stable <stable@kernel.org>
+> > Cc: David Lechner <dlechner@baylibre.com>
+> > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
+> > Cc: Andy Shevchenko <andy@kernel.org>
+> > Cc: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> > Cc: Shi Hao <i.shihao.999@gmail.com>
+> > Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> +CC Jiri, and Srinivas given they are co-maintainers of this driver.
 >=20
-> Fixes: d7ed89d5aadf ("iio: hid: Add humidity sensor support")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Christopher Hoover <ch@murgatroid.com>
-> Reviewed-by: Joshua Crofts <joshua.crofts1@gmail.com>
-
+>=20
 Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-> ---
-> =C2=A0drivers/iio/humidity/hid-sensor-humidity.c | 14 +++++++-------
-> =C2=A01 file changed, 7 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/iio/humidity/hid-sensor-humidity.c
-> b/drivers/iio/humidity/hid-sensor-humidity.c
-> index 7cec81ff5685..644c82719447 100644
-> --- a/drivers/iio/humidity/hid-sensor-humidity.c
-> +++ b/drivers/iio/humidity/hid-sensor-humidity.c
-> @@ -14,6 +14,7 @@
-> =C2=A0
-> =C2=A0struct hid_humidity_state {
-> =C2=A0	struct hid_sensor_common common_attributes;
-> +	struct hid_sensor_hub_callbacks callbacks;
-> =C2=A0	struct hid_sensor_hub_attribute_info humidity_attr;
-> =C2=A0	struct {
-> =C2=A0		s32 humidity_data;
-> @@ -184,11 +185,6 @@ static int humidity_parse_report(struct
-> platform_device *pdev,
-> =C2=A0	return ret;
-> =C2=A0}
-> =C2=A0
-> -static struct hid_sensor_hub_callbacks humidity_callbacks =3D {
-> -	.send_event =3D &humidity_proc_event,
-> -	.capture_sample =3D &humidity_capture_sample,
-> -};
-> -
-> =C2=A0/* Function to initialize the processing for usage id */
-> =C2=A0static int hid_humidity_probe(struct platform_device *pdev)
-> =C2=A0{
-> @@ -240,9 +236,13 @@ static int hid_humidity_probe(struct
-> platform_device *pdev)
-> =C2=A0
-> =C2=A0	platform_set_drvdata(pdev, indio_dev);
-> =C2=A0
-> -	humidity_callbacks.pdev =3D pdev;
-> +	humid_st->callbacks =3D (struct hid_sensor_hub_callbacks) {
-> +		.send_event =3D humidity_proc_event,
-> +		.capture_sample =3D humidity_capture_sample,
-> +		.pdev =3D pdev,
-> +	};
-> =C2=A0	ret =3D sensor_hub_register_callback(hsdev,
-> HID_USAGE_SENSOR_HUMIDITY,
-> -					=C2=A0=C2=A0 &humidity_callbacks);
-> +					=C2=A0=C2=A0 &humid_st->callbacks);
-> =C2=A0	if (ret)
-> =C2=A0		goto error_remove_trigger;
-> =C2=A0
+
+
+> > ---
+> > =C2=A0drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 5 ++++-
+> > =C2=A01 file changed, 4 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > index 9e7c26e37880..3b0985d500ae 100644
+> > --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> > @@ -140,7 +140,10 @@ static u32 convert_to_vtf_format(int size, int
+> > exp, int val1, int val2)
+> > =C2=A0	if (val1 < 0 || val2 < 0)
+> > =C2=A0		sign =3D -1;
+> > =C2=A0	exp =3D hid_sensor_convert_exponent(exp);
+> > -	if (exp < 0) {
+> > +	if (exp < -6) {
+> > +		value =3D abs(val1) * int_pow(10, -exp);
+> > +		value +=3D abs(val2) * int_pow(10, -exp - 6);
+> > +	} else if (exp < 0) {
+> > =C2=A0		divisor =3D int_pow(10, 6 + exp);
+> > =C2=A0		value =3D abs(val1) * int_pow(10, -exp);
+> > =C2=A0		value +=3D abs(val2) / divisor;
+> >=20
