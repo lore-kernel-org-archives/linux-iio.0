@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793611545;
-	b=0Mr0T1mip63hzhs2WYFEj2pulfawWTsOLi3r3lhg1jUdUXT/74nCR+fuzos92VRfi8Fx
-	 oWuevuKh+DDcYeK+NyjX3fKAYn9E0TbBvR5Ktdtl3iIskzrMLIYyX/92CY9hffanE2bJa
-	 rHzb3TfiZk6OWVEvtTUqxPjrU6kDUlbUP1Ieem4aygBY8H9eh3G1b/1A6l4Xbw7it/kkW
-	 kZ/X3JwxKFc0achK6YOgFInJ9TNewrQY71k8V2Bg+gZZSiwDnl3KJz6YUjPBiXmBPXlmY
-	 EAH9w8on8Z4LynlmNrnGe1s9ZISu2h4j28jUvgVgQZVVfsGpjVdm6MeFQqfYUg+tgxA==
+	t=1793611547;
+	b=NpSERnQ4Jo+SZ9WZY+tP3k4Jz6Z5YL9G6wLqGNZ3/7L5wHN66scq/wkDXWxOoP5N6b8N
+	 +RDMO4T9o9rWpCzbhJ48bEfqV9A4ALpzpf+MdSSqfkRf8izJoVrK9ltMoYq7XCWGv7VnS
+	 /vnVj8AhuhydHJIH5r6BwZtouZw+N5/sdfXcfaqiql4id9gM/LhLg3ayIvWAfHl2fkuVJ
+	 JlTwzT9hS/X6s0l+zIwku+bPRLxq6OUmSfElmWybalbF6FAX7Wx/S2pntlSvNpmlVpp0u
+	 9pa7Is5C5q5ytimYN5TwpBTJhE+FAMZxTqTGKgHgHpBAkQljirPknZbPNlkRAuRAyFQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793611545;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793611547;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=KABoEQ6oOeZnkbi23GW6NJ3GnOO7bT2WVCVPECPyMPA=;
-	b=vaJ7HOZL5V0q6J0Wfa4QZGNrez7BZ9I8ALvESCRIC2TOZArt2Zr8HXzkPGt6oLcG8lTx
-	 SfrL6r+dvcn1dLrmaZlwqcnI20jVk2KYtpdGMdXpmgafXYZ4J8NDEaHLg6skbjJijEWlE
-	 Ptx8mJrC0ZEd/PlKpjnVNievIGW90eatNFTdI6iatdOQZza4jIbhq9nZ833US0FsHlGun
-	 po+uLx07zFu3f+5gb+5EuYNBjfnND8y7oK603nyibF5DZGA984sTCFjAFmRc5y/YZRraK
-	 dIndtNGbgTemxthcT4Nd6bHURelrSgyTqqQLeZv4H4gAP761egYz0FSD1qNCiPhBYqQ==
+	bh=lG5dENJ3CxPUXycCg0G9BKxbX2oi0f5u5p3XFbvHy94=;
+	b=HDo5i0C+WaXdBDxFz0iIUG/CxSfN5LjN/2sIxqavHLlxAVj1075+DyW8BiM2v49/uyI/
+	 37NLiuF1lsB+tmGLZ+qmf9aStO+INIBpBXkTT2BjeGKcVVXw40Cp04x4fzQA46aRZD+z0
+	 yNjNY/n/5lntJ/YKsM7NXoo/NBswPyqseO0ukPnIkfzzGmGHkzzJ/Xo2yPYOL03XPV08I
+	 MmI8XQvFzVUGOm4z7S+JF/zX3HYOGDs8htOGbPGcTEXmyxVi1GWcS+0XeUhrQ/gjs/exj
+	 0MfnmzBGibEbU0XJvnRjrWL0guZ7san2Lb9iSd4A7FKXHKHFViKnQwXngmvrSt0+oBQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l0qLjR8S;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="R/ys455q";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C44B360A260A;
-	Mon,  2 Nov 2026 09:25:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44E2D606A33B;
+	Mon,  2 Nov 2026 09:25:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l0qLjR8S
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R/ys455q
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793611544;
-	b=zdBeqPIkvZB/Nbqax2ooVftCex9ivFFiinYQFPBH8FdoCWl56/5YMTd2qq1OrMltuxV9
-	 pJvdsqlDJXX6aqyOnhzJefFv9RLTR4DSOxgqjFwfv9A3b+/ltOVWw0TePA6dVbqYynRZq
-	 Isgj/eLJp4icDSSuuJ6YL6P+TjEgPd7MsESkkHwm3bjnzYkKzxa1V8Qxm2IxOlwyj1rfV
-	 gl/DpeSy4RYMbl94xq4nokRD6bS9TBjh2e8XFWdnTkDOI6LoTiY6rYL6Xp1pp0PPxz4Rt
-	 mQIkuVJUXOtgT369boo2bG7wTpSYh2FLifGeKPC8jyNOzqoJZx0/Lrs0iPkndeEz4fA==
+	t=1793611546;
+	b=II/yrsVkXBhvbkBfmk6QCqgG7cskCtxO3QJZd/dMxDJi7hQo0kAUkopvzQKeJ+1BUzPf
+	 lNmk/cysZlgNjX1LkENucKR3lScICM0WO/1VfDwJ+OBXf74dMlbUeIfdLkssueXfnLP0Y
+	 FYmoFj/JB3E+RVEOgyi87G/EqZeuqtan8LBxQ3HRxmXfa+Nnw9jqPPNo21LeCI3h/EsWA
+	 6ktcFHzqmXjFBqhp1WpKkV/BYHU9R3s7gkD1qxpCrMBEQA7BRM/MpA9IXCTd7bislikJr
+	 +7JltAQ7Y2x+9VsKgYAqgeHcl90Yi4+8PnL3BgOW3pVFSB9Z8SMAiznlcMWpCY0T1Mg==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793611544;
+	c=relaxed/relaxed; t=1793611546;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=KABoEQ6oOeZnkbi23GW6NJ3GnOO7bT2WVCVPECPyMPA=;
-	b=rs8U7zfssBbPgOCoQdd1QQrnO9in4W37AoDZbMazZNl6IvN0OLyPUWVviM75oA9XCOUI
-	 pnF17bGD9ASSuMEO20P2+7Qo7LVrwiAJy1IEQLNZw/WsoKl8J7/ketr7z726j6Y+d0FX+
-	 qsAJEdVs7vPlFyL1IOWVjUkXn94l239fCUAFlT6efSUhEf7wKk5AwVpNPgB1/TU1+51/D
-	 zKIC5cMPc4f153IX2+rkGREVYLtiRnqjm149QKIsJaG4+/V9HQMHZTiGdT5/su4KCsYcb
-	 incaH6vNoZ6uwkWMYGdhpS0WdCZptdfE0WHp6nL6az2r884ElZL4r4W+GFrpgjg6aOQ==
+	bh=lG5dENJ3CxPUXycCg0G9BKxbX2oi0f5u5p3XFbvHy94=;
+	b=wO1l8E5+5tqvzxr+u/apxci21yMGkv7BQGlJ/WS5VK9SXmAtf/AiV6xsx0tpyyyjpD/b
+	 gPQMeCFEG5X41O/oy5x6EIQ/G9Rp0tBDwKAAwEF/STaY+sFVhKyusjokkRGsquDRZWM/i
+	 hV2AfusceFodSCY3JysOCM3txTcRfdWADbmQ46caONUIF4U0aBzAoTk3Ue8DNsSX4YuKV
+	 648UIUGzfdZjNHXkPN82ryfkGpoV5w9re9DkA433+4bRH1r8fDSWsLb5Ye8Y9rKYaIDsc
+	 WqYe+oBhStpKqulbZ23KzJ9/sraMBNkPuaCqs7pxshj143nvTHXSEiGCgb4mprGnDxA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 3FD371F00A1C;
-	Mon,  2 Nov 2026 09:25:41 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id CC05A1F00A25;
+	Mon,  2 Nov 2026 09:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793611544;
-	bh=KABoEQ6oOeZnkbi23GW6NJ3GnOO7bT2WVCVPECPyMPA=;
+	s=k20260515; t=1793611546;
+	bh=lG5dENJ3CxPUXycCg0G9BKxbX2oi0f5u5p3XFbvHy94=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=l0qLjR8SU8RkF6OtE69tprIMjbk8NFnd3bHgGAJJ9WVPMWwqKcAdlUxU/m2cHEgat
-	 n+GCqHA9e9jZvCMkR3uU5HEiwqureSyvSmOP9V720EklNS8baZ0qwzTKCS+tExnK/o
-	 J92d4wuGQWqQ4egOQu1iB1MO5Oha0Enhg3/9CmrEIgf79VL5q8t7fLKPf+6qhZTjul
-	 oPk0aFUMF2CyL08CHxwJD75+lXL5tlxdI9+vhhs1ZoXQDZCRg5HIlVezxBPzZDI8kD
-	 GagzY1HoJC7xErbIgZVFpLzUT5+tQNe6YiWFXdCbYTcYHv04aICdgAL06rsrPskNYB
-	 P0/4c4XxUk9Ig==
+	b=R/ys455qpZzm6pU1Cz0C1Nvf4ZtTbRdJnISpn7HUgq6c0/H/cQhxSosGWAemN78OH
+	 giufNJOwMSYqbW68eDToaDnFf0e0FmMgkXSpsJzB+b+UhYL5lQi+6Fvr7MqQbNaa6V
+	 lvlj/lAADdVSjfbR7eHa+o4g9SQ2LKvCQStkWNqc2ozBv8rprCiHrjZwHR0LiChpNm
+	 /kaZMwpI29S/vY9ds5tmoUzSqlD+N+duGMBxsuOd0HBwq4X+FjszTjLxEDYkleikNb
+	 TqlzMA3pj+GRyyPtRU97duZ7Qtu2NPNXl17F6ZxIuKA3nBKJJv4OX7P6urXAH9hfop
+	 t4aj4oQIZNu3w==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id C5B7B46445;
-	Mon,  2 Nov 2026 09:25:40 +0000 (UTC)
+	by lkml.kernel.org (Postfix) with ESMTP id 14DD046459;
+	Mon,  2 Nov 2026 09:25:41 +0000 (UTC)
 From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Mon, 02 Nov 2026 11:25:39 +0200
-Subject: [PATCH v5 3/8] iio: imu: adis: Add optional init callback
+Date: Mon, 02 Nov 2026 11:25:44 +0200
+Subject: [PATCH v5 8/8] iio: imu: adis16607: Add calibration bias support
+ for gyro/accel
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261102-adis16607-v5-3-4f98b0d271ac@analog.com>
+Message-Id: <20261102-adis16607-v5-8-4f98b0d271ac@analog.com>
 References: <20261102-adis16607-v5-0-4f98b0d271ac@analog.com>
 In-Reply-To: <20261102-adis16607-v5-0-4f98b0d271ac@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -98,75 +99,111 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, linux@analog.com, 
  Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793611539; l=2194;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793611539; l=3771;
  i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=SjMU42Lj85caa9S//To07byzpthfksaMvSiYpZwwChI=;
- b=UVk5r8rF0ubBzgKUEh5ffk7cpzkZd/gdBlQb91Y7RbN78aAV0OP9BUareconQtWXrs16N2M4i
- PZgAxDXYPrZBjM9cX3k6562+FLbGFEDQijO7dZFbKVM+QG4021CwHDk
+ bh=XSKYww/o1vH0pbkIDQNdQXg29aw/PkeH3UrhLPjkzlQ=;
+ b=AQqlRshKUVcwEgILUz+Pmk2VkN9dl1ZhYGnb/t46KdI8SRdj+ZpPcXYRIKyArxjfa79E5ycTT
+ u57HfkB9Bg/CNH9r/EQlzxUe0DR4J94G61oo0keLkZh+8Xx6RsRnpN3
 X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
  pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
 X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
  auth_id=1094
 X-Original-From: Radu Sabau <radu.sabau@analog.com>
 Reply-To: radu.sabau@analog.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 From: Radu Sabau <radu.sabau@analog.com>
 
-Add an optional init callback to struct adis_data, called right
-after reset and before self-test. Not all ADIS devices need extra
-bring-up between reset and self-test (SPI mode locking, status or
-bootloader checks, pin or burst-mode configuration, etc.) - purely
-additive: defaults to NULL, no change for existing drivers.
+Add IIO_CHAN_INFO_CALIBBIAS support for the gyroscope and
+accelerometer axes, backed by the device's per-axis bias registers
+(XA/YA/ZA_BIAS, XG/YG/ZG_BIAS).
 
 Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 ---
- drivers/iio/imu/adis.c       | 6 ++++++
- include/linux/iio/imu/adis.h | 7 +++++++
- 2 files changed, 13 insertions(+)
+ drivers/iio/imu/adis16607.c | 39 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index 5c3bb7259037..e2cf42b8b946 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -419,6 +419,12 @@ int __adis_initial_startup(struct adis *adis)
- 		msleep(timeouts->sw_reset_ms);
- 	}
+diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
+index 58504d351de1..ab80e0909bf6 100644
+--- a/drivers/iio/imu/adis16607.c
++++ b/drivers/iio/imu/adis16607.c
+@@ -57,6 +57,12 @@
+ #define ADIS16607_REG_SOFT_RESET	0x36
+ #define ADIS16607_REG_SELF_TEST		0x39
+ #define ADIS16607_REG_DEC_RATE		0x3A
++#define ADIS16607_REG_XA_BIAS		0x3B
++#define ADIS16607_REG_YA_BIAS		0x3C
++#define ADIS16607_REG_ZA_BIAS		0x3D
++#define ADIS16607_REG_XG_BIAS		0x3E
++#define ADIS16607_REG_YG_BIAS		0x3F
++#define ADIS16607_REG_ZG_BIAS		0x40
+ #define ADIS16607_REG_DIGITAL_STATUS	0x4E
  
-+	if (adis->data->init) {
-+		ret = adis->data->init(adis);
+ /* SPI Half-Duplex lock value */
+@@ -168,15 +174,16 @@ enum {
+ 
+ struct adis16607_chan_regs {
+ 	u16 raw_reg;
++	u16 calib_bias_reg;	/* 0 if the channel has no calibbias support */
+ };
+ 
+ static const struct adis16607_chan_regs adis16607_chan_regs[] = {
+-	[ADIS16607_SCAN_ACCEL_X]   = { ADIS16607_REG_X_ACCEL },
+-	[ADIS16607_SCAN_ACCEL_Y]   = { ADIS16607_REG_Y_ACCEL },
+-	[ADIS16607_SCAN_ACCEL_Z]   = { ADIS16607_REG_Z_ACCEL },
+-	[ADIS16607_SCAN_GYRO_X]    = { ADIS16607_REG_X_GYRO },
+-	[ADIS16607_SCAN_GYRO_Y]    = { ADIS16607_REG_Y_GYRO },
+-	[ADIS16607_SCAN_GYRO_Z]    = { ADIS16607_REG_Z_GYRO },
++	[ADIS16607_SCAN_ACCEL_X]   = { ADIS16607_REG_X_ACCEL, ADIS16607_REG_XA_BIAS },
++	[ADIS16607_SCAN_ACCEL_Y]   = { ADIS16607_REG_Y_ACCEL, ADIS16607_REG_YA_BIAS },
++	[ADIS16607_SCAN_ACCEL_Z]   = { ADIS16607_REG_Z_ACCEL, ADIS16607_REG_ZA_BIAS },
++	[ADIS16607_SCAN_GYRO_X]    = { ADIS16607_REG_X_GYRO, ADIS16607_REG_XG_BIAS },
++	[ADIS16607_SCAN_GYRO_Y]    = { ADIS16607_REG_Y_GYRO, ADIS16607_REG_YG_BIAS },
++	[ADIS16607_SCAN_GYRO_Z]    = { ADIS16607_REG_Z_GYRO, ADIS16607_REG_ZG_BIAS },
+ 	[ADIS16607_SCAN_DELTVEL_X] = { ADIS16607_REG_X_DELTVEL },
+ 	[ADIS16607_SCAN_DELTVEL_Y] = { ADIS16607_REG_Y_DELTVEL },
+ 	[ADIS16607_SCAN_DELTVEL_Z] = { ADIS16607_REG_Z_DELTVEL },
+@@ -1030,6 +1037,16 @@ static int adis16607_read_raw(struct iio_dev *indio_dev,
+ 		/* Temperature: 0 raw counts = 25°C; offset = 25000 mdeg / 5 mdeg per LSB = 5000 */
+ 		*val = 5000;
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_CALIBBIAS: {
++		u16 reg = adis16607_chan_regs[chan->address].calib_bias_reg;
++		u16 tmp16;
++
++		ret = adis_read_reg_16(&st->adis, reg, &tmp16);
 +		if (ret)
 +			return ret;
++		*val = sign_extend32(tmp16, 15);
++		return IIO_VAL_INT;
 +	}
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		ret = adis16607_get_freq(st, &tmp);
+ 		if (ret)
+@@ -1067,6 +1084,13 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+ 		      val2 / (MICROHZ_PER_HZ / MILLIHZ_PER_HZ);
+ 		return adis16607_set_freq(st, tmp);
+ 	}
++	case IIO_CHAN_INFO_CALIBBIAS: {
++		u16 reg = adis16607_chan_regs[chan->address].calib_bias_reg;
 +
- 	ret = adis_self_test(adis);
- 	if (ret)
- 		return ret;
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index c09b381eb619..c9016f636530 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -52,6 +52,12 @@ struct adis_timeout {
-  * @self_test_mask: Bitmask of supported self-test operations
-  * @self_test_reg: Register address to request self test command
-  * @self_test_no_autoclear: True if device's self-test needs clear of ctrl reg
-+ * @init: Optional device-specific hook called after reset,
-+ *		before self-test. Not all ADIS devices need extra bring-up
-+ *		between reset and self-test (SPI mode locking, status or
-+ *		bootloader checks, pin or burst-mode configuration, etc.) -
-+ *		only called when set. Must return 0 on success, a negative
-+ *		error code otherwise.
-  * @self_test: Optional device-specific self-test override. When set,
-  *		it is called instead of the generic mask-write/sleep/
-  *		check-status sequence. The callback owns its own pass/fail
-@@ -88,6 +94,7 @@ struct adis_data {
- 	unsigned int self_test_mask;
- 	unsigned int self_test_reg;
- 	bool self_test_no_autoclear;
-+	int (*init)(struct adis *adis);
- 	int (*self_test)(struct adis *adis);
- 	const struct adis_timeout *timeouts;
- 
++		if (val < S16_MIN || val > S16_MAX)
++			return -EINVAL;
++		return adis_write_reg_16(&st->adis, reg, val);
++	}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1081,7 +1105,8 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+ 		.type = (_type),					       \
+ 		.modified = 1,						       \
+ 		.channel2 = (_mod),					       \
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		       \
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		       \
++				      BIT(IIO_CHAN_INFO_CALIBBIAS),	       \
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	       \
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),       \
+ 		.address = (_idx),					       \
 
 -- 
 2.43.0
