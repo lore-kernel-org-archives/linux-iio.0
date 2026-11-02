@@ -1,101 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.232.247.4
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793613288;
-	b=Q2Vfssi0V6bKSn/xmN6JivNu1uFhn33Fo1rNt4eTh2oLWYxQCQu7aZwM37yo/IeP7ui3
-	 oZwGRcQIxXEqFruwIA5GdsJwN/bowhzpZLUpk/sl5nyeRabHTISBY+EQ38RFix8+uUQN9
-	 yAFCupRH2ERZO6NEoZweZpxzhvWCFNVCaey6wntWY0rhd15YSkegS3GvfOCGB5uScpGCc
-	 YUwqprn89VbRhHC91eSosZMMw5aZx/ptSvis00pGGcSL37uF0FCxIdrz83nUHFI5tQJKa
-	 wlORFSYag9ddzQjHsZS1yDWsvKw96IhrjbdCHhKFZ9zk3MOTj6TCWHoPSlETSiGeapA==
+	t=1793613475;
+	b=ewM8wosmn716/Uw+DqYU+J62W2VVhB9zT8yUaxClkAp4Mr64D1aZsmfbLwW71/1hPcJQ
+	 kqGQrKe7IOkDHeGh0l7kqTs+Bk8giZPIZkTn8jjvwJG/Seg7rdlWQM7ICxx5hl/wl3Lo+
+	 D4gnSrfWbuG7l2lFmWYZJixPxWt1JnXVHwsWy/XIu08+avYBlTP3x9MFK3WTZgz2fnKe7
+	 f4y+uB9V4cSQ+3UhLEKFaFF9usEnjpb5L0uG34DqniJECfezrn6OyDAx7QJlzTeQfxNy9
+	 Ih6NauboFN9HbONlEAYSmZfLSa3FRAAlgzxypPS19x3pAAPia47IZOzwRfsyf1AIk3A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793613288;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=OtPUqDZyVtIcqGyOAPlThzTdLirAyOMXz5cBBQz5KzQ=;
-	b=Vg2BnM0Vzd2MnFdyisAHDc5ADN4r84y2ZZ/jVxGxA2f9KobEryKjyMsm5lp0QGT7wfTj
-	 lHPl/aiJ9ZcE3BMjnIKI7sk3S0YwsiYtaq6iadAomAenyyXTuj144sbs2g5Jx/Na+Ee8t
-	 vZe2pZYBNBTerxMDCGHuOjQRLhaNcuFM8mEDBM78HUBt4k1e264ybrzy1BoIuUdM1qCIT
-	 1qfGt4Kd+DR3rx8Q8uRWL/y571WN+D/woaOqy+TaAoXFfrmnmac6QVE1gIsLYTJlA2QIX
-	 FBBeJwEAeRkclA67x3qeovm3FWm+Arf59QPMhMaByyPJekk/mpbUQhpuvwYdYgPgtGg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793613475;
+	h=DMARC-Filter:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 X-ClientProxiedBy:X-FEAS-BEC-Info:X-FEAS-Client-IP:
+	 X-FE-Last-Public-Client-IP:X-FE-Policy-ID:X-FE-Hostname:
+	 DKIM-Signature;
+	bh=O3jVSvvryYZl7OF3FZBbst06ttsT1TkPtiH56l6h7gM=;
+	b=CUWn0vnYLOuYST6CUjhQJqBRDQInsbi5WiD10SEL+san/FdPSV8Y/l5gxrJ5pzhgmrPg
+	 puM5pKDx/Hyoiwgm+Ewi9xpxzM7W7fnflOY+CKuWQRFW4Yb3tbkvp7mt1VeGSA7PJ+z0t
+	 G7ErsDNX6fMSVdB8Zpbgxa4ZYFZ3/yomuiOf6xmRDn/BKNH86QEIIL3drUQuyW37GBCIB
+	 MI7h/1L3bWMxSHZfsGQB5Rh+iEUFRIm6VK0vFBffYHFrge7vIpcqDbeM7/KWHdNJhRBkk
+	 3njxaaI2+2Se2OdumnR8vCm0x8PTTdkKVECBiy44f+uimUS1l/KcSmkOQQnxi5+ngNw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=InXOzShJ;
-	arc=none smtp.remote-ip=209.85.128.50
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=utu.fi;
+	spf=pass smtp.mailfrom=utu.fi;
+	dkim=pass header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=BYOdEAWJ;
+	arc=none smtp.remote-ip=130.232.247.4
+Received: from fortymile.utu.fi (fortymile.utu.fi [130.232.247.4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8609C606A329
-	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 09:54:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8609C606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AB44606A324;
+	Mon,  2 Nov 2026 09:57:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AB44606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utu.fi
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=InXOzShJ
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a2000d5fb1so17883955e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 02 Nov 2026 01:54:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793613287; x=1794218087; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=OtPUqDZyVtIcqGyOAPlThzTdLirAyOMXz5cBBQz5KzQ=;
-        b=InXOzShJ8qC8LKWA8u7NlxIxhNEUv4L9qlGVlMQLDnZHHT6a5GykEMJBpdh7+MCNFx
-         TJQQfjXOOk+16e9ycoPKhLoiPI03FSngWDi4hbJBdATaMiJI/YZpQ0dlBTZS7AiroXxn
-         1T8XhrkchWYp97mGIa9gNQ8s+9h1LKKTg49e3s15EIenuASA0/RBsqI6AUpQk6/uCf01
-         GMaf+rYqx/oyamUqsDobhXKds9I3InYDnsj45ajqdwIxCartjWuKoMCMiuT7U3SbvJA+
-         CanEoxdMHqoJv46XKQxz74jgwVEEJ9HKnHxmP6B5Q82dajvH7KDn7feCMaI7z/DppR/8
-         spYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793613287; x=1794218087;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=OtPUqDZyVtIcqGyOAPlThzTdLirAyOMXz5cBBQz5KzQ=;
-        b=c657/Sw8D/9fPGijZMXCcvbYKT7YDNUOyfNyrMAudr9q0504wGqL217vbcO4vNpUMH
-         x7kIkvkvSkbf+yaiA0q5yMxs2qlY+bYhN5I84FtJSFj7L9PiEyhimCYjE+tZEogticUY
-         I8ano2Wu3UaM6rpKR/tm7w+D1uc2Gt8lvGL8T/NsHsg2InQTR9Rk2rPPtlWE9z9Vl9ik
-         ieXF3AXdA9oD5RZuRx8AkncJwT5jFipoumh+vOQfqNvD4zkX7KFYYWU++AAvHMf2rF6T
-         /oFPjGKQf5wVHdAXCuwgBzazAuRcG8XZT2i5edsFjyxwIiE2CowMyS5cuqzH5Ci1uvJo
-         8spQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwLHK1T7rRN9zNaheP6U19DdFYWxGP9S/jFo5arI7U6ddil0EdfPLgCW79eSlhB2A2vg2mjsjaNsqE=@vger.kernel.org
-X-Gm-Message-State: AFq9FYL3EDKzZm9uHJY0yWa6mG5hisAO445uId0NUwJ7gCLlaNORiJpj
-	VSUjWPh+xocu3bpMlIAHrHm6qniek2l5UE1rKaI2dDcSbfjmufJQoMMN
-X-Gm-Gg: AYBFou2dDek5KUrfTREkgwLI6v3jQKMZqOttsiVZvvydrQo5ilXGS7UiADEXpUWKXgY
-	vgn4/vTctuj+ZL00WjTtQ8KwGuZ5yYr/FSEhP/DaZPIIaOyDJ09z3Aa/eGPVXjz8Dy4YzoU7fmy
-	dkpz1N2+CLwIVWZ8aNeyieM9B2gG6SXVRNMU19SsDYG+u07sel8Jx88sTxMYGJsOzrZqgm9/COS
-	wgLNqnkURwxuhQ0X5sfrGzteXdDc5tGqSUkQYjIorh5YS07Xy98UjslGN+o6eAlfR/pn9uwKA1M
-	x8DzZ5kWDJyQs+cVyFjkRaG+IaU29zGsY2Q9yGpJioKTZTC0I1RtvJzimQm0OFQ+Pgd24AIz7Kl
-	8vUk47ZJNch6hiHuYdLZbedfHd5XZ0t4aBUD1qiGKPziTFl7TRwFzsjzY7EvT8Sjjvv8CgKjxSD
-	Bq+BMOiqdN8CZTendiuxy4cw1xKfq2chu0uhmHZwp07LgJoCICwdhcLG5QM6pMiLC7CBcINWtmU
-	DuLVQYzbdxoEZflgnec/LkPysyut68xCqJlIyNWFkzBRs+9VN1LllgflUN0DVzym1/ZeZO1QIaq
-	vBM6TTKhxyueIb9qrl+TloViVDIgQCwloAjGxOl7NLjoxcjqFeRR8nbo1ayeUCR61zgR5AyslfY
-	LUNueA7Brm35z0fHcXzfzqAwcrP8bKIv5Pjj+I6R0o4wjjuy2TeOsZFlOF/HVlA64Rxcr/pp3m9
-	cILaWFW6dBTI8B/ux2T5fgcpv2HJIMMMjv+gR52EjW8/Th0PRkjEnwc9qhHYBfLvRGWyMPY8Lvt
-	gQAB275uq0LcFqe73ldkQjF0erDWUuUZmWQ9A==
-X-Received: by 2002:a05:600c:3b1a:b0:4a7:9044:a87 with SMTP id 5b1f17b1804b1-4ac18c73df6mr218130165e9.27.1793613286827;
-        Mon, 02 Nov 2026 01:54:46 -0800 (PST)
-Received: from localhost (90-182-112-124.rcp.o2.cz. [90.182.112.124])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4abf60f1076sm277729555e9.6.2026.11.02.01.54.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2026 01:54:46 -0800 (PST)
-Date: Mon, 2 Nov 2026 10:54:39 +0100
-From: Joshua Crofts <joshua.crofts1@gmail.com>
-To: Jaakko Koivisto <jmatko@utu.fi>
-Cc: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/5] iio: chemical: sgp40: Do not convert I2C errors
- to EIO
-Message-ID: <20261102105439.00004b83@gmail.com>
-In-Reply-To: <20261102091258.247402-2-jmatko@utu.fi>
+	dkim=pass (2048-bit key, unprotected) header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=BYOdEAWJ
+Received: from smtp-03.utu.fi (smtp-03.utu.fi [130.232.207.30])
+	by fortymile.utu.fi  with ESMTPS id 6A29vSRr023761-6A29vSRt023761
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+	Mon, 2 Nov 2026 11:57:28 +0200
+Received: from ex19-16.utu.fi ([130.232.247.56])
+	by smtp-03.utu.fi with esmtps  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <jaakko.ma.koivisto@utu.fi>)
+	id 1xNonA-00HHFg-3x;
+	Mon, 02 Nov 2026 11:57:28 +0200
+Received: from lorpotin (91.145.105.139) by ex19-16.utu.fi (130.232.247.56)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Mon, 2 Nov
+ 2026 11:57:27 +0200
+From: Jaakko Koivisto <jmatko@utu.fi>
+To: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Jaakko
+ Koivisto <jmatko@utu.fi>
+Subject: [PATCH v2 5/5] iio: chemical: sgp40: Implement turn_heater_off-command
+Date: Mon, 2 Nov 2026 11:56:02 +0200
+Message-ID: <20261102095602.333752-1-jmatko@utu.fi>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261102091258.247402-1-jmatko@utu.fi>
 References: <20261102091258.247402-1-jmatko@utu.fi>
-	<20261102091258.247402-2-jmatko@utu.fi>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,55 +71,138 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ex19-10.utu.fi (130.232.247.50) To ex19-16.utu.fi
+ (130.232.247.56)
+X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFxYWFhYWFBeUVxfSFhISFpdSAIJCQMDB0YFCUYDBwEeARscBygdHB1GDgFIWUhZXkgJAygB
+ HEUDBAEGDw0aRgwNSFhIWkhZXEhZW1hGWltaRlpYX0ZbWEhQSFhIWEhdSFhIWEhYSFleSAkDKAEcRQMEAQYPDRpGDA1IWEhZXUgJBgwRKAMNGgYNBEYHGg9IWEhaWUgM
+ BA0LAAYNGigKCREEAQoaDUYLBwVIWEhaXUgEAQYdEEUBAQcoHg8NGkYDDRoGDQRGBxoPSFhIWVBIBh0GB0YbCSgJBgkEBw9GCwcFSFg=
+X-FEAS-Client-IP: 130.232.207.30
+X-FE-Last-Public-Client-IP: 130.232.207.30
+X-FE-Policy-ID: 3:5:2:SYSTEM
+X-FE-Hostname: fortymile.utu.fi
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=utu.fi; s=out-utu-v3; c=relaxed/relaxed;
+ h=from:to:cc:subject:date:message-id:references:mime-version:content-type;
+ bh=O3jVSvvryYZl7OF3FZBbst06ttsT1TkPtiH56l6h7gM=;
+ b=BYOdEAWJzH2vOSXkviwG/cx4EGPYm5HH3Q4+EdjW7Y+9+TZ+w8Kb4NYVH+uO0zmNku9G9we0+Plp
+	qpIPbmHrwOCHHAkvia2f0joAgSbIO9HvDTkzQY3lPEBPJvPCDmy8iy50saCg7gWxdNm37UTL886+
+	d1eWtaqW/uHy44rmzt6g83Q+in0Wl8lg0C5BZtOEo/GQMy18NPLDfJ1M7/ICha3KkdButRBOF5tg
+	beKoK3BPDXEpv2lPUrXeaqQpEkeWKTNFcOGD4QlZ+iR/FDOxpibYd71GJCrCbnTpHXIVDuCOazGK
+	GOrXsm+Zcrg4B0o7HHDblviIbOQWPriUeTUNXg==
 
-On Mon, 2 Nov 2026 11:12:54 +0200
-Jaakko Koivisto <jmatko@utu.fi> wrote:
+Add functionality for turning the SGP40 sensor heating element
+on or off manually. After turning the heater off, the sensor enters
+idle mode. Track the state of the heater in the driver, as the device
+does not expose current heater state via any register.
 
-> Any negative error returned by i2c_master_send() in
-> sgp40_measure_resistance_raw() was caught by the
-> branch guarding against short sends, and the error
-> was subsequently replaced with -EIO.
+Turning the heater off saves approx. 2.5 mA compared to regular
+operation. The heating element is automatically turned back on
+when measurement is performed.
 
-Please wrap the commit message to ~75 characters per line next
-time. Otherwise LGTM.
+Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
+---
+ drivers/iio/chemical/sgp40.c | 62 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
 
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
-
-> Check for any negative errors first and propagate
-> the error without conversion.
-> 
-> Fixes: 1081b9d97152 ("iio: chemical: Add driver support for sgp40")
->
-
-Also, no blank lines in the tag block.
-
-> Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
-> ---
-> Tested by forcing i2c clock to ground. The resulting ETIMEDOUT and
-> EREMOTEIO are now correctly communicated to userspace instead of
-> converting to EIO.
-> 
->  drivers/iio/chemical/sgp40.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
-> index b2b5e32a9eb2..3a239fb6847f 100644
-> --- a/drivers/iio/chemical/sgp40.c
-> +++ b/drivers/iio/chemical/sgp40.c
-> @@ -187,6 +187,8 @@ static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance
->  	mutex_unlock(&data->lock);
->  
->  	ret = i2c_master_send(client, (const char *)&tg, sizeof(tg));
-> +	if (ret < 0)
-> +		return ret;
->  	if (ret != sizeof(tg)) {
->  		dev_warn(data->dev, "i2c_master_send ret: %d sizeof: %zu\n", ret, sizeof(tg));
->  		return -EIO;
-
-
-
+diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
+index 278390bc6b04..87df8d79fe6e 100644
+--- a/drivers/iio/chemical/sgp40.c
++++ b/drivers/iio/chemical/sgp40.c
+@@ -54,7 +54,8 @@ struct sgp40_data {
+ 	int			rht;
+ 	int			temp;
+ 	int			res_calibbias;
+-	/* Prevent concurrent access to rht, tmp, calibbias */
++	bool			heater_enabled;
++	/* Prevent concurrent access to rht, tmp, calibbias, heater_enabled */
+ 	struct mutex		lock;
+ };
+ 
+@@ -263,6 +264,27 @@ static int sgp40_execute_self_test(struct sgp40_data *data)
+ 	}
+ }
+ 
++static int sgp40_turn_heater_off(struct sgp40_data *data)
++{
++	int ret;
++	struct i2c_client *client = data->client;
++	struct sgp40_tg_measure turn_off = { .command = {0x36, 0x15} };
++
++	guard(mutex)(&data->lock);
++
++	ret = i2c_master_send(client, (char *)&turn_off, sizeof(turn_off.command));
++	if (ret < 0)
++		return ret;
++	if (ret != sizeof(turn_off.command))
++		return dev_err_probe(data->dev, -EIO,
++		       "i2c_master_send ret: %d, expected %zu", ret, sizeof(turn_off.command));
++
++	fsleep(1000); /* Max duration for command turn_heater_off. Datasheet table 8. */
++	data->heater_enabled = false;
++
++	return 0;
++}
++
+ static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance_raw)
+ {
+ 	int ret;
+@@ -293,6 +315,7 @@ static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance
+ 		return -EIO;
+ 	}
+ 	msleep(30);
++	data->heater_enabled = true;
+ 
+ 	ret = i2c_master_recv(client, (u8 *)&tgres, sizeof(tgres));
+ 	if (ret < 0)
+@@ -423,10 +446,47 @@ static ssize_t serialnumber_show(struct device *dev,
+ 	return sysfs_emit_at(buf, 0, "%llu\n", serial_number);
+ }
+ 
++static ssize_t heater_enable_store(struct device *dev,
++				   struct device_attribute *attr,
++				   const char *buf, size_t len)
++{
++	int ret;
++	u16 __ignore;
++	bool val;
++	struct sgp40_data *data = iio_priv(dev_to_iio_dev(dev));
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	if (val)
++		ret = sgp40_measure_resistance_raw(data, &__ignore);
++	else
++		ret = sgp40_turn_heater_off(data);
++
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static ssize_t heater_enable_show(struct device *dev,
++				  struct device_attribute *attr,
++				  char *buf)
++{
++	struct sgp40_data *data = iio_priv(dev_to_iio_dev(dev));
++
++	guard(mutex)(&data->lock);
++
++	return sysfs_emit(buf, "%d\n", data->heater_enabled);
++}
++
+ static IIO_DEVICE_ATTR_RO(serialnumber, 0);
++static IIO_DEVICE_ATTR_RW(heater_enable, 0);
+ 
+ static struct attribute *sgp40_attributes[] = {
+ 	&iio_dev_attr_serialnumber.dev_attr.attr,
++	&iio_dev_attr_heater_enable.dev_attr.attr,
+ 	NULL
+ };
+ 
 -- 
-Kind regards,
-Joshua Crofts
+2.56.0
+
