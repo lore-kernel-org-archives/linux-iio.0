@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=34.202.193.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793605673;
-	b=C7ij5pP5InBs/I33yJdZHBDq0DbsD6fo788ExEp8Chfnd8BnImeSoof7qF35XGkj7ZVg
-	 e+uCivZDK1nECtF8Ssmy4bggVHtdlzxL2K8tB5LJPPkxaT8MG4dUid3zzSPDLIIQDB4W1
-	 C3UhBcyK3pSuUt5WHEtoS+SEJ18JIAuF4hTH/whnbdZ+v5fI/va/0tTre8Yg73hr0riek
-	 QmwbT7D3IvYd60BF1/yq6wdZx5UMrRNnTNuNq1HSSr2y+QKo70UUpoB8QmFQbwvwqAqJ1
-	 hvP8Zc+/YtUFbBkU65NFAZLGjSgwCvsrtW6/UzCjWvM8frF3N30/dwjePKf6npkhM+Q==
+	t=1793605675;
+	b=lJa+P5ORmkf6sG7gTBGUg0yZkPf6wRVAQVP6rav/UC/g/pFaS2Mgq5+sTwFuwF/46Kdh
+	 0VZkSq7tK46tewfUpIcu0lPemgYe2OMcdyM4k2Yylg0CsUllCs0rK/GPJKKSOe1rqU8zR
+	 LFy0Mim95T4xUBrLfu82RbhaL6+UJdIF250u/w5XrLqM9k8sVjEAYlAVi02fTOFMFmcuU
+	 lIMLbcq4YJN1fXG4x65KchJavBv6NNzXopMXo14KlyPbTE/MrBrUnxguGqCD94olhSRg4
+	 H8Xw9E8t4cq+M8Cjf/t7fuGDnSkYvqmII+f85YevAnOPtJHPrMhlBkANZ6NW1wcXIuA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793605673;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793605675;
 	h=DMARC-Filter:DKIM-Signature:DKIM-Signature:Feedback-ID:
 	 X-Pm-Original-To:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-MIME-Autoconverted:Content-Type;
-	bh=EQgB7Ymd+fLPzCCXTdlf20s2pSdfk7pjaO9SMb1ZYts=;
-	b=xCNLXmr+pbEoF3GlDJGCIotBsMVXnpuFqEhwQO0nnEikWyos6nCgJPiBnqsQcli5/eLX
-	 yPvAqbj69GzVKfwteqZYZhkB8gc3Amn2hPl7jGi6dnn0J4ErcDked9zXavKJl4SPoJ6CS
-	 JI5e1foL9FqHedXJdVYkkOAGyhzAXfzskWraBNwBXFfhhJxw+vMxha5jJ5U8XzltDljrl
-	 d248B7uNuvei8d61d6w7YtaZgMFSQ+TFCTMQ5ILeoZeM5F3LuriZvLGmQHX1DmLeWavYf
-	 5iV9EwnndoUB018HdOy95h0AQ1vtLO5M5S6Jdyo/t10U13MBCZPHW7vv1MxBYLDGAJw==
+	bh=P2WHQc6zM3YpFYZ7gdc6FJKerdajDKeyE4O3ZrIVA+E=;
+	b=EEYbetB+Wiq6pZK1tm3mUTj5TXHX/M942Y70jYtFDcG8L5f2AgrkIfu+03CZNYdaZPf2
+	 dsUdLyk5EqG0oRHLdg3EBfQK+j8RJ1tBTrlKCYF9KXcKj8TuukrFxDVTWGOC5jDBoC294
+	 X1wI62ksL7SUuXLAHJiYZTRhqRy9x8rkk+mo/AzqeWvxJoa19LWaiKO8W+zigQYAqjqxf
+	 W1B1Dq/C+Tuk67uOuIUBM2PA9YoDr55gc629vfVGk67flh4xFCBcUOYu+Oksjw4RV/pxN
+	 bzhORCevf+CfbnjtDb2qEtp7Bz0MveXy0A2gkiyNd8zg4aeJdeGJJFgGVKBu1xnG3GA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=arkamondal.net;
 	spf=pass smtp.mailfrom=arkamondal.net;
-	dkim=pass header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=SQ+OKXSi;
-	dkim=pass header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=MEk6d+TC;
+	dkim=pass header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=wBD3WBa2;
+	dkim=pass header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=HQZYvZ07;
 	arc=none smtp.remote-ip=34.202.193.197
 Received: from sendmail.purelymail.com (sendmail.purelymail.com [34.202.193.197])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86665606A331
-	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:47:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 86665606A331
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8743060A2614
+	for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2026 07:47:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8743060A2614
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arkamondal.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=SQ+OKXSi;
-	dkim=pass (2048-bit key, unprotected) header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=MEk6d+TC
-DKIM-Signature: a=rsa-sha256; b=SQ+OKXSiBOuOEIzZ3u1EVWR1aNcfDvECMkZvsNsaVfsuES5iF7cebsRIvMIh6cj05GFp7y40wCjfsn7kRQeg7145ex+gTwbJhi/7F+fntzGQIcvOvYLTgp7cWvA7XItATDVv2+Y1Ea40Bmd/ft7XyLOFX0oobVFr5bAnbGiXg1QiPI7Y4tmbn1ZCBaguFjQajvc8mUeQxHOjwdSKORs8hG7tvzr3QxH5GyzLXKlLEs8QazJbRoGd/C3qyCLl43p60QuGcLQq9OQZIdqBUhyvZrwrZHSLPGuCCSkARrouoetcby9eWk0v0EWkJPvSOudod9r+8EQlbf4hBWcLlqWBdA==; s=purelymail2; d=arkamondal.net; v=1; bh=GmGZH8whE4wcJYRb/27cdLgLfp23NjLnMdb8HMiYNzw=; h=Received:From:To:Subject:Date;
-DKIM-Signature: a=rsa-sha256; b=MEk6d+TCwHZB1q2VfN7JKTE2b6Bq2IVHGPuBWTxGNY6L378FBt3z7aZMrZ91nkG/JA4HOxN/abcJHj/i2v4lrO5x5ClP8KohWZps6GUktL5to/kt7xsF7AMLN5WrID6mGJljTp/xrK9OcY+GYkyIucGvqZY99uYC3/X8jDE4gh/bdhi9QHnHdZ0RfMuT9JMBENG0lrkLYTG6gKQV6GQGfMGCubCZhNea5Y/jBjCkdPZNxdolByi2p7W+gfEg+mQgGBIeORJB7rUZU2gWfQ8SE1BLzgwXRCCYecYwzyL+PDldKqtgP4lFvpFgLQnHpiCbcBuhpTydD521how+G4eDNw==; s=purelymail2; d=purelymail.com; v=1; bh=GmGZH8whE4wcJYRb/27cdLgLfp23NjLnMdb8HMiYNzw=; h=Feedback-ID:Received:From:To:Subject:Date;
+	dkim=pass (2048-bit key, unprotected) header.d=arkamondal.net header.i=@arkamondal.net header.a=rsa-sha256 header.s=purelymail2 header.b=wBD3WBa2;
+	dkim=pass (2048-bit key, unprotected) header.d=purelymail.com header.i=@purelymail.com header.a=rsa-sha256 header.s=purelymail2 header.b=HQZYvZ07
+DKIM-Signature: a=rsa-sha256; b=wBD3WBa2Xa+9cx3oUsQMcXeOxl1hO241sSuxHZUm3hDtC7XXOYg7otNl57tWw/Vynrzs/LrwHe4CpmhXKL3Xcc0u4v/vyeGaFnwgEhW4Hxcc5FtyROqE9qyn3WSRHyPQTCk1WRu4HyG2TelJQ9VoOtnWyljohqTwG6y1q5EVT6ycifJSnRv57cvGtdQVX0EyTp9fpo2Rov8iILku8E7AmO/e/hePfvl9Wn7hT1iwj5ytLQORnFqaubxhI0FG46QDwlMzsugmGJutQLtzwT9Noi9f/yIHTuE9d8tGcg918VTYA8v3A+kTHdDNe6nYgWzOp2tkOXsw6OU8Xp144Fmseg==; s=purelymail2; d=arkamondal.net; v=1; bh=qDJDGnNh0VyDniUgB1appHqn7rBPmTAD4rGUcCjsp0w=; h=Received:From:To:Subject:Date;
+DKIM-Signature: a=rsa-sha256; b=HQZYvZ07K/X4Bn+Kpc7BiVTtGzwQCFHgwbaZjFKFBbvDWPaSnex+Ln//58Nx/0p1r4KvTEOzaSKAdDy9lhiRoMk2flcWYkigs6rs34zyrrTlovFv+THyAZMePHgwH8dV2FEO8j9jNwjpJoImtWqA79EJKCnVEZobJjeToyChWka7xY8r03+wA48qZ6gfbtFGFt66NTCNYXf+60Fzoq5L/wnBXDg5WmziptQcDV/tmqWn4hi+pTjnmNDcp0y7weA2M9m05ise6yVNJ65o/Vocdf051ZmThqxTET8DWUyHV90SnSLxjSFxl5rqlu/eOII4ac/wJaq1IJ0Mcm5KfzHivQ==; s=purelymail2; d=purelymail.com; v=1; bh=qDJDGnNh0VyDniUgB1appHqn7rBPmTAD4rGUcCjsp0w=; h=Feedback-ID:Received:From:To:Subject:Date;
 Feedback-ID: 1246644:48769:null:purelymail
 X-Pm-Original-To: linux-iio@vger.kernel.org
 Authentication-Results: purelymail.com; auth=pass
-Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id 1269390563;
+Received: by smtp.purelymail.com (Purelymail SMTP) with ESMTPSA id -1778885788;
           (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
-          Mon, 02 Nov 2026 07:47:26 +0000 (UTC)
+          Mon, 02 Nov 2026 07:47:33 +0000 (UTC)
 From: Arka Mondal <arka@arkamondal.net>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Linus Walleij <linusw@kernel.org>
@@ -57,9 +57,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arka Mondal <arka@arkamondal.net>
-Subject: [PATCH 3/6] iio: light: max44009: Report the integration time via read_avail()
-Date: Mon,  2 Nov 2026 16:46:57 +0900
-Message-ID: <20261102074700.63075-4-arka@arkamondal.net>
+Subject: [PATCH 6/6] iio: gyro: mpu3050: Fix the scale list and report it via read_avail()
+Date: Mon,  2 Nov 2026 16:47:00 +0900
+Message-ID: <20261102074700.63075-7-arka@arkamondal.net>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261102074700.63075-1-arka@arkamondal.net>
 References: <20261102074700.63075-1-arka@arkamondal.net>
@@ -76,117 +76,104 @@ Content-Transfer-Encoding: quoted-printable
 X-MIME-Autoconverted: from 8bit to quoted-printable by Purelymail
 Content-Type: text/plain; charset=UTF-8
 
-The light channel has IIO_CHAN_INFO_INT_TIME in info_mask_separate,
-so userspace reads the integration time from
-in_illuminance_integration_time. The values it accepts are listed by
-a custom attribute called illuminance_integration_time_available.
-That name lacks the in_ prefix the core puts on the attribute it
-describes, so it is registered at the device level, and userspace
-looking for in_illuminance_integration_time_available finds nothing.
+The angular velocity channels keep IIO_CHAN_INFO_SCALE in
+info_mask_shared_by_type, so userspace reads the scale from
+in_anglvel_scale. One custom attribute lists the values it can take,
+and that list is wrong in both its numbers and its name.
 
-Report the list through read_avail() and drop the custom attribute
-along with the string it printed. read_avail() wants the values as
-IIO_VAL_INT_PLUS_NANO pairs, while max44009_write_int_time() rounds a
-request to the nearest supported value with find_closest_descending()
-over a flat table, so the two forms stay as separate tables.
+The four numbers were computed against 2^16 while mpu3050_read_raw()
+divides by U16_MAX, so not one of them is a value the channel ever
+reports. The list gives 0.000122070, 0.000274658, 0.000518798 and
+0.001068115, where the channel reports 0.000122072, 0.000274662,
+0.000518806 and 0.001068131.
 
-The eight values do not change. The core prints them with nine
-decimals, so the attribute now reads 0.800000000 down to 0.006250000
-instead of 0.8 down to 0.00625.
+The name, anglevel_scale_available, has neither the in_ prefix nor
+the anglvel spelling the core uses for IIO_ANGL_VEL, so it sits at the
+device level and userspace that opens in_anglvel_scale_available finds
+no such file.
 
-Fixes: 6aef699a7d7e ("iio: light: add driver for MAX44009")
+Report the list through read_avail(), built from the same
+IIO_DEGREE_TO_RAD() terms and U16_MAX that mpu3050_read_raw() uses so
+the two cannot drift apart again, and delete the attribute along with
+the comment describing the hardcoded factors.
+
+Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
 Signed-off-by: Arka Mondal <arka@arkamondal.net>
 ---
 
 Notes:
     Compile tested only; no relevant hardware available.
 
- drivers/iio/light/max44009.c | 48 ++++++++++++++++++++----------------
- 1 file changed, 27 insertions(+), 21 deletions(-)
+ drivers/iio/gyro/mpu3050-core.c | 40 +++++++++++++++++++--------------
+ 1 file changed, 23 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iio/light/max44009.c b/drivers/iio/light/max44009.c
-index 82b8a806c5fa..c27f0f9ecc44 100644
---- a/drivers/iio/light/max44009.c
-+++ b/drivers/iio/light/max44009.c
-@@ -66,15 +66,16 @@ static const u32 max44009_int_time_ns_array[] =3D {
- =096250000,  /* Manual mode only */
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-cor=
+e.c
+index 07c0f9011c63..0dfb5e6039fb 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -701,6 +701,8 @@ static const struct iio_chan_spec_ext_info mpu3050_ext_=
+info[] =3D {
+ =09=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |=09=09\
+ =09=09=09BIT(IIO_CHAN_INFO_CALIBBIAS),=09=09=09\
+ =09=09.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE),=09\
++=09=09.info_mask_shared_by_type_available =3D=09=09=09\
++=09=09=09BIT(IIO_CHAN_INFO_SCALE),=09=09=09\
+ =09=09.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),\
+ =09=09.ext_info =3D mpu3050_ext_info,=09=09=09=09\
+ =09=09.scan_index =3D index,=09=09=09=09=09\
+@@ -736,29 +738,33 @@ static const struct iio_chan_spec mpu3050_channels[] =
+=3D {
+ /* Four channels apart from timestamp, scan mask =3D 0x0f */
+ static const unsigned long mpu3050_scan_masks[] =3D { 0xf, 0 };
+=20
+-/*
+- * These are just the hardcoded factors resulting from the more elaborate
+- * calculations done with fractions in the scale raw get/set functions.
+- */
+-static IIO_CONST_ATTR(anglevel_scale_available,
+-=09=09      "0.000122070 "
+-=09=09      "0.000274658 "
+-=09=09      "0.000518798 "
+-=09=09      "0.001068115");
+-
+-static struct attribute *mpu3050_attributes[] =3D {
+-=09&iio_const_attr_anglevel_scale_available.dev_attr.attr,
+-=09NULL,
++static const int mpu3050_scale_avail[] =3D {
++=09IIO_DEGREE_TO_RAD(250) * 2, U16_MAX,
++=09IIO_DEGREE_TO_RAD(500) * 2, U16_MAX,
++=09IIO_DEGREE_TO_RAD(1000) * 2, U16_MAX,
++=09IIO_DEGREE_TO_RAD(2000) * 2, U16_MAX,
  };
 =20
--static const char max44009_int_time_str[] =3D
--=09"0.8 "
--=09"0.4 "
--=09"0.2 "
--=09"0.1 "
--=09"0.05 "
--=09"0.025 "
--=09"0.0125 "
--=09"0.00625";
-+static const int max44009_int_time_avail[] =3D {
-+=090, 800000000,
-+=090, 400000000,
-+=090, 200000000,
-+=090, 100000000,
-+=090, 50000000,
-+=090, 25000000,
-+=090, 12500000,
-+=090, 6250000,
-+};
-=20
- struct max44009_data {
- =09struct i2c_client *client;
-@@ -101,6 +102,7 @@ static const struct iio_chan_spec max44009_channels[] =
-=3D {
- =09=09.type =3D IIO_LIGHT,
- =09=09.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED) |
- =09=09=09=09      BIT(IIO_CHAN_INFO_INT_TIME),
-+=09=09.info_mask_separate_available =3D BIT(IIO_CHAN_INFO_INT_TIME),
- =09=09.event_spec =3D max44009_event_spec,
- =09=09.num_event_specs =3D ARRAY_SIZE(max44009_event_spec),
- =09},
-@@ -284,17 +286,21 @@ static int max44009_read_raw(struct iio_dev *indio_de=
-v,
- =09}
- }
-=20
--static IIO_CONST_ATTR(illuminance_integration_time_available,
--=09=09      max44009_int_time_str);
--
--static struct attribute *max44009_attributes[] =3D {
--=09&iio_const_attr_illuminance_integration_time_available.dev_attr.attr,
--=09NULL,
+-static const struct attribute_group mpu3050_attribute_group =3D {
+-=09.attrs =3D mpu3050_attributes,
 -};
--
--static const struct attribute_group max44009_attribute_group =3D {
--=09.attrs =3D max44009_attributes,
--};
-+static int max44009_read_avail(struct iio_dev *indio_dev,
-+=09=09=09       struct iio_chan_spec const *chan,
-+=09=09=09       const int **vals, int *type, int *length,
-+=09=09=09       long mask)
++static int mpu3050_read_avail(struct iio_dev *indio_dev,
++=09=09=09      struct iio_chan_spec const *chan,
++=09=09=09      const int **vals, int *type, int *length,
++=09=09=09      long mask)
 +{
 +=09switch (mask) {
-+=09case IIO_CHAN_INFO_INT_TIME:
-+=09=09*vals =3D max44009_int_time_avail;
-+=09=09*type =3D IIO_VAL_INT_PLUS_NANO;
-+=09=09*length =3D ARRAY_SIZE(max44009_int_time_avail);
++=09case IIO_CHAN_INFO_SCALE:
++=09=09*vals =3D mpu3050_scale_avail;
++=09=09*type =3D IIO_VAL_FRACTIONAL;
++=09=09*length =3D ARRAY_SIZE(mpu3050_scale_avail);
 +=09=09return IIO_AVAIL_LIST;
 +=09default:
 +=09=09return -EINVAL;
 +=09}
 +}
 =20
- static int max44009_threshold_byte_from_fraction(int integral, int fractio=
-nal)
- {
-@@ -464,7 +470,7 @@ static const struct iio_info max44009_info =3D {
- =09.read_event_config =3D max44009_read_event_config,
- =09.write_event_value =3D max44009_write_event_value,
- =09.write_event_config =3D max44009_write_event_config,
--=09.attrs =3D &max44009_attribute_group,
-+=09.read_avail =3D max44009_read_avail,
+ static const struct iio_info mpu3050_info =3D {
+ =09.read_raw =3D mpu3050_read_raw,
+ =09.write_raw =3D mpu3050_write_raw,
+-=09.attrs =3D &mpu3050_attribute_group,
++=09.read_avail =3D mpu3050_read_avail,
  };
 =20
- static irqreturn_t max44009_threaded_irq_handler(int irq, void *p)
+ /**
 --=20
 2.56.0
 
