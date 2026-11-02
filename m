@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793580435;
-	b=ffdBkbrfij18pV9sc7nSDxoK+aM57xZYqQ7Ho/Ic7oWixsxv46Tht3INROQyj2/SPLoJ
-	 HVO8g756DT436y2SkwW7ksqYEAN/CKUe4A75eTWyVscOH3iCY9JW8AdhUzVMXcGhTsAYR
-	 1pxU7Yx+vpTzqJnvC2YCi0NMn8BCxj82xU+eSJsCxhcg19cfjZ+5HRNDprs0TzTndWm2x
-	 F7okTdaDiNPGT2D854xEJEdqMT6I2FIIGXBmaoHTrdbd2ssciNcRm3IfoDw+6w58dqunu
-	 IMy/wM5Xw4Vm28Fs+vpO2EttlISRzFvRfNEGBwPjg2xkBkC7abpeMRzim88+IpB+Cog==
+	t=1793580870;
+	b=SYiynBnAqt1xgm+/Yx7toF4iPDdhuwtLWFIx46VXB7wmqe+3b57mJN4Fpl68l9VZzRws
+	 GH4BJ8rEZ7inXdSQ2yRFU//rrwLUKUrYNqLZWZeeJrhQItpSzCUW2Efs7+Wf5I+QN9BfJ
+	 1LFkHfRQaqoFEeFRoA2KZSlJcR6CF6xZe6Rq9XOCf20QYs1RvWR7HATdAOPHK+ufnQRlB
+	 IzM/VHLyf7+k4CY/KbAkgmunf0JXkIi4zcWYFqC7MR0mKgbDRigU4dXNmmYFbd1k1k1Fk
+	 Ul0k6wY+9PAREtvrXOT9NsQoO8mczdpHl6IYn8SXXTEgcznCu32K3CR+eekFq674uJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793580435;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793580870;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=xdlnoIvzsYxTwffLVnVth1spc9WrvS6NQ0FCDLT0Qo8=;
-	b=YmeEq2pMEZp29fo7MDCIGR394DOQjvxDmmtkOoBC01Twh9uslsfFuEOH+JmLP8GZe9Jr
-	 59BbZbK1GQjEvLySQEeP3u0Ga/xD/X/Sj72FCCHsyKvK0FPgcY6X4lYhk0A+AbiZ1gGJS
-	 tkGtFFldNRhUcL/49ogq2WnaYOFqXW0LMJCPDBsQ7aiIiGyGjGcsr5Pr2ibMzfmaSZT9W
-	 Vs/EV+G8QgI8UZuLccNGAuY1672EvjwQeJWuMnlxVlNyAJjuUb3o6ENBK8sLWRq5LVKio
-	 dDsVJAsgN1Xzt2KaKEoJATCMSY/T5u3lpxj8yP6gILmJc1EFGjlc47lPDFVZ9ffTM4g==
+	bh=JVUxdkyBUb/0yjW4j0WZM9elaL3fERdIZQlAiND4ioU=;
+	b=FeXVNgNb0OnDJrWOOZxBSkxyR4kH42sqZoZFSinardJsDkBlz8ekx8Hi2I0TNhWInwid
+	 MTWJBjshIGVKIdEFACzXHGsYaPMpYAQJsl9kPvIjeebez4U6PvgWtRgYtcS0yFkaDmHvl
+	 51LCgTjxl1+umSBeIy/4kyYQS2uI/8ng6Zc6c05gpIBuHU4fhrX8ugu+aaLfUkmyZmcWR
+	 4hdmRBgs71s+yPhYwE0CuqGXZlyQ681BZ+3LFI6y2y/0be/0lWV6/fpjCc+5W1qLRqkWO
+	 9Z8qQl+nPDlHiQu6nCvNfQguXWbGwaxFpJ748Rs7I/3mlCqMZYcp7rKKNfrHWFdRnVQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VMCVJOd3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YR3Wl4n+;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BAA3606A324;
-	Mon,  2 Nov 2026 00:47:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B2C7606A324;
+	Mon,  2 Nov 2026 00:54:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VMCVJOd3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BF031F000C1;
-	Mon,  2 Nov 2026 00:47:12 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YR3Wl4n+
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A59461F00919;
+	Mon,  2 Nov 2026 00:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793580435;
-	bh=xdlnoIvzsYxTwffLVnVth1spc9WrvS6NQ0FCDLT0Qo8=;
+	s=k20260515; t=1793580869;
+	bh=JVUxdkyBUb/0yjW4j0WZM9elaL3fERdIZQlAiND4ioU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VMCVJOd3wp0SY4Snxaqf/xi2jnjf6dbnTfr9yNxgv31cNT8hh3kk8o3IUgOJTdmEN
-	 eKXeKRB8iGp3kSdeUX38UW2PwtPl/RufOdusR1jVaSBdG/lPAMBnjagLCfTiPjAyA2
-	 kaLYAKHea/NIgO0ZjBBISVAjT6bT6QewCOisYKivxO+bQCevCcNrPXjBocMIRZuU5J
-	 GlsCtHJlg8J0NHRnL7d4dGU+SOlzUGgCVZGyqSzTeDuiYNUwnedsRcZTUea4AJg2ZF
-	 HKFjpTrdc3R3xaAYrtGkpXNJFvp7Us8aqWJEKBvIcoyQ5hZ+fb2qCP+WyYXD9h6peZ
-	 t4WqND+8bzAsw==
-Date: Mon, 2 Nov 2026 00:47:07 +0000
+	b=YR3Wl4n+WF2yP+H9lAtXZ/+o2y6y3wEHB37SptSBtopypMEzAVuBN71jlG+IvDyk+
+	 k8EEayLOuBrcomGRD0vpvspyLwU/fUTnLC7I/i5e1nr0mrgFJxGZ0UVWOapqn3/xx7
+	 T1zOBIa3HgFVwoOK42I7HOhUBPIrZrPa4R4/1EwUda6qRg74GoY3iwy1ZJkVL+spOg
+	 lSuXu4u/M3uf1hdY7QWusxs/n49wjLu3jHoW/gSq/Zqw22j+0hfGBDRMbdR1BCwucD
+	 KMPLs99xcwCXD9h09WiqOeold6neMAQfLSKbrTN8BwkQHr5E7xectVIkk8ki8W2/k4
+	 jJjMi1PncMuQA==
+Date: Mon, 2 Nov 2026 00:54:24 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Yu Zhang <yuz08559@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Stephen Boyd <swboyd@chromium.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: proximity: sx9310: report a hysteresis of 0
- when it is disabled
-Message-ID: <20261102004707.596faffd@jic23-hlaptop>
-In-Reply-To: <20261026112054.59895-1-kapoorarnav43@gmail.com>
-References: <20261026112054.59895-1-kapoorarnav43@gmail.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH] iio: trigger: fix use-after-free in
+ current_trigger_store() on concurrent writers
+Message-ID: <20261102005424.23c20e72@jic23-hlaptop>
+In-Reply-To: <20261026100246.68005-1-yuz08559@gmail.com>
+References: <20261026100246.68005-1-yuz08559@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,55 +65,95 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 16:50:49 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Mon, 26 Oct 2026 20:02:46 +1000
+Yu Zhang <yuz08559@gmail.com> wrote:
 
-> sx9310_read_hysteresis() turns a PROXHYST value of 0 (no hysteresis)
-> into a shift of 0 and reports the full threshold, which writing back
-> then usually fails with -EINVAL. Report 0, as sx9324 and sx9360 do.
+> current_trigger_store() holds iio_dev_opaque->mlock only around the
+> INDIO_BUFFER_TRIGGERED / trig_readonly checks and then drops it. The rest
+> runs unlocked: it reads the current trigger into oldtrig, acquires the new
+> one by name, stores it into indio_dev->trig, and drops the old trigger's
+> reference with iio_trigger_put().
 > 
-> Fixes: 08f0411c48f2 ("iio: sx9310: Support setting hysteresis values")
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-Seems correct to me, but not massively urgent. So with that in mind
-I've queued this one on the testing branch of iio.git.
-I've just rebased that on the newly available 7.4-rc1, so will give
-it a few days exposure to the bots before pushing out for linux-next.
+> sysfs does not serialize writes to the same attribute issued through
+> different open file descriptors (each open has its own kernfs_open_file),
+> so two threads can run current_trigger_store() on the same
+> .../trigger/current_trigger concurrently. Both read the same oldtrig, both
+> overwrite indio_dev->trig, and both call iio_trigger_put(oldtrig). The
+> extra put drops the trigger's refcount to zero while it is still in use,
+> frees it, and a concurrent writer then dereferences the freed trigger.
+> 
+> With two sets of writers hammering current_trigger between two software
+> triggers on an iio_dummy device, KASAN reports:
+> 
+>   refcount_t: addition on 0; use-after-free.
+>   WARNING: CPU: 3 PID: 3467 at refcount_warn_saturate+0xbb/0xe0
+>    kobject_get+0xf6/0x100
+>    current_trigger_store+0x15c/0x4b0
+>   ...
+>   BUG: KASAN: slab-use-after-free in current_trigger_store+0x168/0x4b0
+>   Freed by task 3468:
+>    kobject_put+0x125/0x220
+>    current_trigger_store+0x2cc/0x4b0
+>   Allocated by task 3454:
+>    __iio_trigger_alloc+0xc7/0x100
+>   ...
+>   Oops: general protection fault
+>    __module_get+0x27/0xd0
+>    current_trigger_store+0x192/0x4b0
+> 
+> Hold mlock across the whole operation so that reading oldtrig, swapping
+> indio_dev->trig and dropping the reference are atomic with respect to
+> other writers (and to buffer enable, which the -EBUSY check guards).
+> Acquiring the new trigger with iio_trigger_acquire_by_name() under mlock
+> is safe: it only takes iio_trigger_list_lock, and the buffer path already
+> calls iio_trigger_{attach,detach}_poll_func() with mlock held.
 
-Thanks,
+Sashiko correctly raises that the change means more directly
+mixing goto and cleanup.h magic than before.  To make this change
+we'll need to unwind that and just do mutex_lock / mutex_unlock or
+figure out another scheme using a helper.
+https://sashiko.dev/#/patchset/20261026100246.68005-1-yuz08559%40gmail.com
+
+Other than that, the fix feels correct but I would like some
+eyes on this one.
 
 Jonathan
 
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Yu Zhang <yuz08559@gmail.com>
 > ---
-> Changes in v2:
-> - Invert the conditional (Andy)
+>  drivers/iio/industrialio-trigger.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
 > 
-> v1: https://lore.kernel.org/all/20261026100041.16018-1-kapoorarnav43@gmail.com/
-> 
-> Compile-tested only (W=1); I don't have SX9310 hardware.
-> 
->  drivers/iio/proximity/sx9310.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-> index 79ba46d8a0aa..dc1b1c3f4776 100644
-> --- a/drivers/iio/proximity/sx9310.c
-> +++ b/drivers/iio/proximity/sx9310.c
-> @@ -446,11 +446,10 @@ static int sx9310_read_hysteresis(struct sx_common_data *data,
->  		return ret;
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index 76926fe..9241cd6 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -441,17 +441,18 @@ static ssize_t current_trigger_store(struct device *dev,
+>  {
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -	struct iio_trigger *oldtrig = indio_dev->trig;
+> +	struct iio_trigger *oldtrig;
+>  	struct iio_trigger *trig;
+>  	int ret;
 >  
->  	regval = FIELD_GET(SX9310_REG_PROX_CTRL10_HYST_MASK, regval);
-> -	if (!regval)
-> -		regval = 5;
-> -
-> -	/* regval is at most 5 */
-> -	*val = pthresh >> (5 - regval);
-> +	if (regval)
-> +		*val = pthresh >> (5 - regval);
-> +	else
-> +		*val = 0;
+> -	scoped_guard(mutex, &iio_dev_opaque->mlock) {
+> -		if (iio_dev_opaque->currentmode == INDIO_BUFFER_TRIGGERED)
+> -			return -EBUSY;
+> -		if (iio_dev_opaque->trig_readonly)
+> -			return -EPERM;
+> -	}
+> +	guard(mutex)(&iio_dev_opaque->mlock);
+> +
+> +	if (iio_dev_opaque->currentmode == INDIO_BUFFER_TRIGGERED)
+> +		return -EBUSY;
+> +	if (iio_dev_opaque->trig_readonly)
+> +		return -EPERM;
 >  
->  	return IIO_VAL_INT;
->  }
-> 
-> base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
+> +	oldtrig = indio_dev->trig;
+>  	trig = iio_trigger_acquire_by_name(buf);
+>  	if (oldtrig == trig) {
+>  		ret = len;
 
