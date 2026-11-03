@@ -1,92 +1,69 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.139
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793696767;
-	b=Pozdurcg535vjH+02tyhRk1e2UTRWSgGcroZ284JE406sC/kJL52tc9R0O3BqmAn8cbI
-	 TNehY1dggtLuKPNP9pKX3PseEHMy/8KuzwIUqV8edBkKhS6MJ3WXrcioduOzKulXn3+uB
-	 0VFHK7q29aB3q7Bz/4Fuecf/+TGaUeed1Y8SGN3TOhkkv4EH2t5EMMJEnAfYk8vZo1LU1
-	 SqycZL1NFAXdc+Kt2189KguoJNIXny1zjQg7kNr1b2/0viYDUDZhmDseup+acc/SjBi6b
-	 YZIXglBZAYnJHBCwAz13RQ4jEDDjvetXDdC9B5nW8JznihamsfxkiMMP0e1GVPQwZDQ==
+	t=1793697612;
+	b=R8HjrdRDwrybY0hLvEsRpxCLWxXKsIqqP4vMj1Zw9GXALbY0XZerkpnnvjqUqPNWJBGO
+	 0uQxLUmTENJqpK3LXZG02C5eqJHW7TdpKH+oTLtv6zfq0RPptlJWrjDaME9Mrme5NhzxE
+	 EX6vQ3XCux6vR7p4o1C1GyV3b+/xQW8Zh/H23S8ODKqQ5JYdly1Wbf3h7wa0dxIPRiJLU
+	 RjPwP2U70nUXNEEYRfykXygmzpHy+XrUKRYpJRLoTe5tNEGpkydznYIpQYXV9rieIq+/s
+	 oSADj+RnIPgV/Xx/mOyeLfmklGwdBdxc2RoRexzt7eCmneyDRjTldnGdXqhqBbu0KHg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793696767;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=/vrFL4kHP2eDGtJUZKQrjQzSBAgnCJvrdrlUYTMMEeA=;
-	b=sBmzypmCQMUV40Gg8fgRRi7qYkEKehTtJBWSWCuwSnH0eq6krdNl4qgTO0B8CkrtxnhS
-	 ZmjbbKsqLDj+2MpaBUpMUtd1uDX7iQ4jM9xMLCqL9q6Vylijd5k/ylORA0/Z/p+gBwPj3
-	 POIWP5TqNeaI1qBkvSFJedAqMNDkNDp8VJvY1BnkFrWgwCKH9UvWFlWZWn0qfPSeNsuil
-	 Ol+KmZ4LKUvgFvjNqxDdiDorp+rFqhlzPb2MvtxnnEe0etSOLp8+5Qa6rO+pfRg6XRJrC
-	 kF4Yr8mJR7U24MXZtXv8mmHHKGdxbSIwERIwyn0jwpSnzqWRJG1qqEDmTceSrqpzEdQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793697612;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=GoJJGnLjJbadu3Fw6HjM1zaWLD+B1Y7DHixLvyyq14M=;
+	b=yGMWRqUosdyG6xba4qrXfAYPTY6Gq3/zwHE5yIySpcVxCuueA0wk1znM4LxKtkvmQ/h5
+	 OzubpF9GquhYlQu2CSUrnE4YPx3zYE4Saot4VsN80PT/4WDkk0SG8JGWdfOpFwBbRfI+U
+	 xOhP7NFVOB83LS16cKzUdwQpLNo8VXAiZjYI6hv8Bg6otz1J0Be3bLV0U/7YXLrrB614U
+	 tc+vg4cXcrhz1PsvCDOjsSarFYKY9pfoa2CscP7FvgddhYrqnNqAROuaW+oTyoUy651E4
+	 5b3NY9no6C+G5z2lVCL+O3oK7WIHxJGsrYj4N90TgNmfukXkGUWKZvZ4I5jHBhiNLDw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WbvQOE91;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 0A370606A324;
-	Tue,  3 Nov 2026 09:06:07 +0000 (UTC)
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=fkioqmsJ;
+	arc=none smtp.remote-ip=111.22.67.139
+Received: from cmccmta6.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 22C53606A32E;
+	Tue,  3 Nov 2026 09:20:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22C53606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WbvQOE91
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id AD1DC1F000C1;
-	Tue,  3 Nov 2026 09:06:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793696766;
-	bh=/vrFL4kHP2eDGtJUZKQrjQzSBAgnCJvrdrlUYTMMEeA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=WbvQOE91Giayv3gYkrmhqO5vJ0WQM4qO9mwZJnSz/8a3bL30Z4BHDdOJlgP4YvIg3
-	 RR58S8IKpAuzUQOF1QCyf1hydtyNga6de5toJbtka98Ry74X9X62Tcsl90HhW1U9K8
-	 drOO9aHMv/T/Duej2QQohkw6k/Ue1hU9/4ojMa9w9vIiNL+mkB40o9tP9Q8TRyDoOW
-	 eFoarQWHgGxyseGO9ThB75JrIM4cAj9QeeVPuZkRE1+If0ubkcjH388NIs8Gkl66lO
-	 zxQ02VuUF7xP22Myc+A5hgZIwV4Tlp3gC9tV30bGC8ybKy2UrOOrhUGWE99jlqYNJ7
-	 XFIt/QM1TVreQ==
-Date: Tue, 3 Nov 2026 10:05:58 +0100
-From: Bartosz Golaszewski <brgl@kernel.org>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Vadim Fedorenko <vadim.fedorenko@linux.dev>, Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>, 
-	Jiri Pirko <jiri@resnulli.us>, Ivan Vecera <ivecera@redhat.com>, 
-	Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>, 
-	Linus Walleij <linusw@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Olivier Moysan <olivier.moysan@foss.st.com>, 
-	Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
-	Thierry Reding <thierry.reding@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, 
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>, Lee Jones <lee@kernel.org>, 
-	Srinivas Kandagatla <srini@kernel.org>, Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>, 
-	Ulf Hansson <ulfh@kernel.org>, Hans Ulli Kroll <ulli.kroll@googlemail.com>, 
-	Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>, 
-	Neil Armstrong <neil.armstrong@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, 
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Kunihiko Hayashi <hayashi.kunihiko@socionext.com>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Mark Brown <broonie@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
-	Lukasz Luba <lukasz.luba@arm.com>, Orson Zhai <orsonzhai@gmail.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>, 
-	Paul Kocialkowski <paul.kocialkowski@bootlin.com>, Shawn Guo <shawnguo@kernel.org>, 
-	Chanh Nguyen <chanh@os.amperecomputing.com>, Alistair Francis <alistair@alistair23.me>, 
-	Julius Werner <jwerner@chromium.org>, Paul Cercueil <paul@crapouillou.net>, 
-	Dmitry Osipenko <digetx@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, 
-	Thierry Reding <thierry.reding@gmail.com>, Ray Jui <ray.jui@broadcom.com>, 
-	Scott Branden <scott.branden@broadcom.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
-	dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	netdev@vger.kernel.org, chrome-platform@lists.linux.dev, linux-gpio@vger.kernel.org, 
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, linux-sound@vger.kernel.org, linux-input@vger.kernel.org, 
-	linux-tegra@vger.kernel.org, mfd@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Use hex unit address patterns
-Message-ID: <f3sq3awr2byfetufiuuh47bi5qf5kqtthqxwopumwsfpx46cx4@uiq7dvmvutvh>
-References: <20261102135330.2493332-1-robh@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=fkioqmsJ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=fkioqmsJ8ofUb4mCPa18sy0tfUBZBE9WmiJNXJEeNXN6OhG7rkMPhRxAOkxTb+YmuzGYiM4fsC9Sy
+	 pq/VJq2/vPNfFETuk6bfs66N1ybX85MHNP7QXqVyjBa3BqtXKBUVLgfPKzTWiiA3SLWVUDrnL2u3++
+	 m7WLJRiZqyCdCAtY=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee56ae9a7489cb-90bb0;
+	Tue, 03 Nov 2026 17:20:09 +0800 (CST)
+X-RM-TRANSID:2ee56ae9a7489cb-90bb0
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from  (unknown[223.108.79.98])
+	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee66ae9a744004-f3e3b;
+	Tue, 03 Nov 2026 17:20:09 +0800 (CST)
+X-RM-TRANSID:2ee66ae9a744004-f3e3b
+From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	andy@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	laixiangwu <laixiangwu@cmss.chinamobile.com>
+Subject: [PATCH v3 1/2] iio: gyro: mpu3050: Split data ready trigger enable/disable into helpers
+Date: Tue,  3 Nov 2026 17:20:01 +0800
+Message-ID: <20261103092002.1332-2-laixiangwu@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.50.1.windows.1
+In-Reply-To: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
+References: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -96,21 +73,239 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261102135330.2493332-1-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 02, 2026 at 07:53:22AM -0600, Rob Herring (Arm) wrote:
-> Unit-addresses by default (and most commonly) are hexadecimal. There's a
-> number of cases using decimal patterns. Fix all of them, limiting the
-> pattern to match the 'reg' limits if there are any.
-> 
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->  .../bindings/display/xylon,logicvc-display.yaml      |  2 +-
->  .../devicetree/bindings/dpll/dpll-device.yaml        |  2 +-
->  .../bindings/embedded-controller/google,cros-ec.yaml |  4 ++--
->  .../intel,ixp4xx-network-processing-engine.yaml      |  2 +-
->  Documentation/devicetree/bindings/gpio/gpio-mxs.yaml |  4 ++--
+From: laixiangwu <laixiangwu@cmss.chinamobile.com>
 
-Acked-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+mpu3050_drdy_trigger_set_state() implements both the enable and the
+disable path of the data ready trigger in the two legs of a large
+if/else statement.
+
+Split the two legs out into separate mpu3050_drdy_trigger_enable()
+and mpu3050_drdy_trigger_disable() helpers and reduce
+mpu3050_drdy_trigger_set_state() to dispatching to the appropriate
+one. This is a pure code move with no functional change, done to make
+the error handling of the enable path easier to read.
+
+Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
+---
+
+Changes in v3:
+- none; reposted in a new top-level thread.
+
+Link: https://lore.kernel.org/r/20261101092327.197-2-laixiangwu@cmss.chinamobile.com
+ drivers/iio/gyro/mpu3050-core.c | 173 ++++++++++++++++++--------------
+ 1 file changed, 99 insertions(+), 74 deletions(-)
+
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index 07c0f9011..d966911ab 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -946,103 +946,128 @@ static irqreturn_t mpu3050_irq_thread(int irq, void *p)
+ }
+ 
+ /**
+- * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
+- * @trig: trigger instance
+- * @enable: true if trigger should be enabled, false to disable
++ * mpu3050_drdy_trigger_enable() - enable the data ready trigger
++ * @mpu3050: device to configure
++ *
++ * Power up the device, enable the FIFO and configure the data ready
++ * interrupt.
+  */
+-static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+-					  bool enable)
++static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
+ {
+-	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+-	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+ 	unsigned int val;
+ 	int ret;
+ 
+-	/* Disabling trigger: disable interrupt and return */
+-	if (!enable) {
+-		/* Disable all interrupts */
+-		ret = regmap_write(mpu3050->map,
+-				   MPU3050_INT_CFG,
+-				   0);
+-		if (ret)
+-			dev_err(mpu3050->dev, "error disabling IRQ\n");
++	pm_runtime_get_sync(mpu3050->dev);
++	mpu3050->hw_irq_trigger = true;
+ 
+-		/* Clear IRQ flag */
+-		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+-		if (ret)
+-			dev_err(mpu3050->dev, "error clearing IRQ status\n");
++	/* Disable all things in the FIFO */
++	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
++	if (ret)
++		return ret;
+ 
+-		/* Disable all things in the FIFO and reset it */
+-		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+-		if (ret)
+-			dev_err(mpu3050->dev, "error disabling FIFO\n");
++	/* Reset and enable the FIFO */
++	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
++			      MPU3050_USR_CTRL_FIFO_EN |
++			      MPU3050_USR_CTRL_FIFO_RST);
++	if (ret)
++		return ret;
+ 
+-		ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
+-				   MPU3050_USR_CTRL_FIFO_RST);
+-		if (ret)
+-			dev_err(mpu3050->dev, "error resetting FIFO\n");
++	mpu3050->pending_fifo_footer = false;
+ 
+-		pm_runtime_put_autosuspend(mpu3050->dev);
+-		mpu3050->hw_irq_trigger = false;
++	/* Turn on the FIFO for temp+X+Y+Z */
++	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
++			   MPU3050_FIFO_EN_TEMP_OUT |
++			   MPU3050_FIFO_EN_GYRO_XOUT |
++			   MPU3050_FIFO_EN_GYRO_YOUT |
++			   MPU3050_FIFO_EN_GYRO_ZOUT |
++			   MPU3050_FIFO_EN_FOOTER);
++	if (ret)
++		return ret;
+ 
+-		return 0;
+-	} else {
+-		/* Else we're enabling the trigger from this point */
+-		pm_runtime_get_sync(mpu3050->dev);
+-		mpu3050->hw_irq_trigger = true;
++	/* Configure the sample engine */
++	ret = mpu3050_start_sampling(mpu3050);
++	if (ret)
++		return ret;
+ 
+-		/* Disable all things in the FIFO */
+-		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+-		if (ret)
+-			return ret;
++	/* Clear IRQ flag */
++	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
++	if (ret)
++		dev_err(mpu3050->dev, "error clearing IRQ status\n");
+ 
+-		/* Reset and enable the FIFO */
+-		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+-				      MPU3050_USR_CTRL_FIFO_EN |
+-				      MPU3050_USR_CTRL_FIFO_RST);
+-		if (ret)
+-			return ret;
++	/* Give us interrupts whenever there is new data ready */
++	val = MPU3050_INT_RAW_RDY_EN;
+ 
+-		mpu3050->pending_fifo_footer = false;
++	if (mpu3050->irq_actl)
++		val |= MPU3050_INT_ACTL;
++	if (mpu3050->irq_latch)
++		val |= MPU3050_INT_LATCH_EN;
++	if (mpu3050->irq_opendrain)
++		val |= MPU3050_INT_OPEN;
+ 
+-		/* Turn on the FIFO for temp+X+Y+Z */
+-		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
+-				   MPU3050_FIFO_EN_TEMP_OUT |
+-				   MPU3050_FIFO_EN_GYRO_XOUT |
+-				   MPU3050_FIFO_EN_GYRO_YOUT |
+-				   MPU3050_FIFO_EN_GYRO_ZOUT |
+-				   MPU3050_FIFO_EN_FOOTER);
+-		if (ret)
+-			return ret;
++	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
++	if (ret)
++		return ret;
+ 
+-		/* Configure the sample engine */
+-		ret = mpu3050_start_sampling(mpu3050);
+-		if (ret)
+-			return ret;
++	return 0;
++}
+ 
+-		/* Clear IRQ flag */
+-		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+-		if (ret)
+-			dev_err(mpu3050->dev, "error clearing IRQ status\n");
++/**
++ * mpu3050_drdy_trigger_disable() - disable the data ready trigger
++ * @mpu3050: device to configure
++ *
++ * Disable the data ready interrupt, flush the FIFO and drop the
++ * runtime PM reference taken in mpu3050_drdy_trigger_enable().
++ */
++static int mpu3050_drdy_trigger_disable(struct mpu3050 *mpu3050)
++{
++	unsigned int val;
++	int ret;
+ 
+-		/* Give us interrupts whenever there is new data ready */
+-		val = MPU3050_INT_RAW_RDY_EN;
++	/* Disable all interrupts */
++	ret = regmap_write(mpu3050->map,
++			   MPU3050_INT_CFG,
++			   0);
++	if (ret)
++		dev_err(mpu3050->dev, "error disabling IRQ\n");
+ 
+-		if (mpu3050->irq_actl)
+-			val |= MPU3050_INT_ACTL;
+-		if (mpu3050->irq_latch)
+-			val |= MPU3050_INT_LATCH_EN;
+-		if (mpu3050->irq_opendrain)
+-			val |= MPU3050_INT_OPEN;
++	/* Clear IRQ flag */
++	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
++	if (ret)
++		dev_err(mpu3050->dev, "error clearing IRQ status\n");
+ 
+-		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
+-		if (ret)
+-			return ret;
+-	}
++	/* Disable all things in the FIFO and reset it */
++	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
++	if (ret)
++		dev_err(mpu3050->dev, "error disabling FIFO\n");
++
++	ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
++			   MPU3050_USR_CTRL_FIFO_RST);
++	if (ret)
++		dev_err(mpu3050->dev, "error resetting FIFO\n");
++
++	pm_runtime_put_autosuspend(mpu3050->dev);
++	mpu3050->hw_irq_trigger = false;
+ 
+ 	return 0;
+ }
+ 
++/**
++ * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
++ * @trig: trigger instance
++ * @enable: true if trigger should be enabled, false to disable
++ */
++static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
++					  bool enable)
++{
++	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
++	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
++
++	if (enable)
++		return mpu3050_drdy_trigger_enable(mpu3050);
++
++	return mpu3050_drdy_trigger_disable(mpu3050);
++}
++
+ static const struct iio_trigger_ops mpu3050_trigger_ops = {
+ 	.set_trigger_state = mpu3050_drdy_trigger_set_state,
+ };
+-- 
+2.50.1.windows.1
+
+
+
