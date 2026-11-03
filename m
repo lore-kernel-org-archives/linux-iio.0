@@ -1,49 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793689656;
-	b=MMLWLJHGvmUOr4PkEfowPPi4LWJhh7z4EbKyO4gma8oPiSYsqTarSlN5Xrh7+IS02xny
-	 BLMUQj/9jTf9Xx+xqS6K13ofgPzJDeeuK7JuhZfaVZy9ayn+SSlfmL5GCTqxAddPnRyTg
-	 pU42z1+83CSght73aQHLvJ36/8DP/BBliuJFJ8bPhPGO141v69dl8kjQwM3dH57/31bXk
-	 GbCKxjGLqaqNMze12nipz/6/EWQ+L+lCTFnNCNQ/ueYhsqkPcCfAHbL3+0oV7INZGEVKJ
-	 B5pqub5ny/sYYmgF6VLfbihpn/4d+XuqpaYnYGYOlRhtLBdgNa4YW+VM81IFFOUkkqA==
+	t=1793691925;
+	b=fk5Sqq5zmXen3xHLgHgf5z9Anqh6/TzC1YREN3lZiQUYaHTSezFSIf6AsCr2D3VdzcCj
+	 J1ZA5lpAL5FHcktdvDJ275yKQNAmkYySgC8zydf6BPA1zm2Bs5Ar00iPVvRIDETLrj0D0
+	 48rXViNw9vdwHKZxpSQZW5zoQBBTZtc8PMqfOlTVPUGS9z2ePlUCkabs62VeZgk4prkjI
+	 fQu8cqNbiUvet2Pfctx9chBoXXAEPtQCXIoBSe5FjEcHjfQU2Ms1/LApaST59PgV65MxM
+	 OnF0zCOsvKBFp69ac8kj5W2Pr8P8J2bWNqde8cYOcsELvvT8GQgfro4thXAqm2sTviw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793689656;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
-	 X-Spam-Checker-Version;
-	bh=2tQek1qiZL4Js2GpnQFztu1faM+c6GSagpIcxNr7m9g=;
-	b=Z94wG/TUuoQIoaW7dKDjs+C5094Bc/sKq86cyUd02xHyvLROxkJFUkYYKfDEET3qKJzr
-	 nl7GRIT3GpoR4WogsWfFAxc8Ju67NaIgChFpuqJ0ODxdTx+AGxdAFu3lVdU9guTHGAEm0
-	 XIfU+m4JF7rJFVLMV2gZqW3TsM4l4AiUi3bZpcP66fCH3l186f3Yt/VUfQ6QwYyd+wxpW
-	 +RCYZh8cLIc3aCfYdsjBvVuCNbhMREoW1WZIjAJa9TUnwtSXm16AdrI6NFcn/Iy0uSced
-	 oI57kz3N5kZU2N0VwH+m4LZaDlDq/eGeqkVBRqiH3m9HKXKo4+181bhXvu5ywNIbRjQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793691925;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=R3lCFY/iPDgq9qRZrX8FpWfJn4XT1JIuiVLYHFf8MCU=;
+	b=AwB4dK5olMHUXkW0s8UJhsya2kClpaYH508cIwM/nNpJTCVhtC8V1/n0UukHD2hpEL0P
+	 z0u/A0WeBhM+tYM2RUatekz3zDYLXYGWXn+yppH138PEzvCKeDldtawpcCccdKh1NVypk
+	 Ci2/FQ39ILI4idvfZSQpdvGRSx1lcIuyH77C3rhVipnVGJP8LkH0GUsYYvLdQkKyKGv5A
+	 1OzWBTqvWPtJNh6xs8e/2lj4p4oqt9qEZeXBVPINXa4HdIIHrjfOd0p/CacJtowwv4Q5K
+	 zWmmfZ9N5rz4TKSumnXFPKi8vXOkrCIgzSDXAAhUIQyMNyXP+o4ydO3uUnsz7+L4DFQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.microsoft.com;
-	spf=pass smtp.mailfrom=linux.microsoft.com;
-	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=qkfKMdYn;
-	arc=none smtp.remote-ip=13.77.154.182
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E81B606A329;
-	Tue,  3 Nov 2026 07:07:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5E81B606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EK6wzxH8;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F074E606A329;
+	Tue,  3 Nov 2026 07:45:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=qkfKMdYn
-Received: from [192.168.1.10] (unknown [4.194.122.136])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 7A57D20B7166;
-	Mon,  2 Nov 2026 23:07:17 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7A57D20B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1793689640;
-	bh=2tQek1qiZL4Js2GpnQFztu1faM+c6GSagpIcxNr7m9g=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qkfKMdYn8BRvJp96+mIGOJodjPZo3QsLvaXaw0dXTIn9JjgXjWi0M9nKW9YQUP/7E
-	 BT/KjK7OBsK18zBgSiniHBuKfANsYwwSLjbiZFjokV2R/o5Apl8vwyLVrS6i1gWmEM
-	 0htMk9PnxumShIpq8GGOgt1lmI9EHfFxyVZoHOwQ=
-Message-ID: <4f330292-0fda-472b-8302-75ed5f6725eb@linux.microsoft.com>
-Date: Tue, 3 Nov 2026 12:37:29 +0530
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EK6wzxH8
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAEB71F000C1;
+	Tue,  3 Nov 2026 07:45:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793691924;
+	bh=R3lCFY/iPDgq9qRZrX8FpWfJn4XT1JIuiVLYHFf8MCU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=EK6wzxH8W0nn9XhVdMzuFfCLYlNzRXNl0sF6/lLjjvFku1wYeRCWHH13soaKxpoBv
+	 QQ6dsEv1Gvi4nKyGYQGTncreWEYDaTRPg1uMStLGhTpVfCUdcfj2C9toqmj1dMh5Z3
+	 h5zsOmKdOMD+eHxl/TR5s+lNgRyqVDX3Go6c934tcHq3QaxV7FqgsePvF2w0w28u3R
+	 HdokyHeDHZkbXk0PvZ+ZYF9i5esRSzCYVn6MNF82Zqj8xuvIYuoL0riAVIacBUMrG4
+	 PHZkPKlvPQabbs9xWbJoH4toRR4E9ahm/lEyqBXfs+k8oZBKRcyH+PndG1q/Hu9CP0
+	 KOw9Vn98KR8nQ==
+Date: Tue, 3 Nov 2026 08:45:19 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: jikos@kernel.org, jic23@kernel.org, bentiss@kernel.org, 
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	simeon@maryasin.name
+Subject: Re: [PATCH] HID: sensor-custom: Synchronize misc-device teardown
+ with file lifetime
+Message-ID: <e3qod6tmwqgabf7wixmwtmcz36fgk22zxstdwjzeimngz36hrk@7ma27oycfeur>
+References: <20261103015734.578613-1-srinivas.pandruvada@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -53,130 +59,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/6] iio: adc: versal-sysmon: disable interrupts on
- shutdown
-To: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>,
- Jonathan Cameron <jic23@kernel.org>, Michal Simek <michal.simek@amd.com>,
- Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- amitrkcian2002@gmail.com
-References: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
- <20261102122112.1723130-4-amit.kumar-mahapatra@amd.com>
-Content-Language: en-US
-From: Prasanna Kumar T S M <ptsm@linux.microsoft.com>
-In-Reply-To: <20261102122112.1723130-4-amit.kumar-mahapatra@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261103015734.578613-1-srinivas.pandruvada@linux.intel.com>
 
-Hi Amit,
+On 2026-11-02 17:57, Srinivas Pandruvada wrote:
+> The HID sensor custom misc device frees its per-sensor state in
+> remove() while userspace may still hold an open file descriptor. A
+> reader blocked in read() can remain queued on sensor_inst->wait after the
+> object has been freed, and a later wakeup races with teardown and
+> touches stale memory.
+> 
+> Synchronize the misc-device teardown with file lifetime before freeing
+> the per-sensor state. Set a removal flag, reject new opens, wake
+> blocked waiters, and wait for the last open file to close before
+> deregistering the misc device and freeing the FIFO. Fail in-flight read()
+> and poll() operations cleanly once removal is in progress so userspace
+> cannot access freed memory after the device disappears.
+> 
+> This avoids use-after-free on read(), poll(), release(), and open()
+> after the HID sensor custom character device has been removed
+> 
+> Reported-by: Семён Марьясин <simeon@maryasin.name>
 
-On 02-11-2026 17:51, Amit Kumar Mahapatra wrote:
-> Interrupt teardown is registered with devm_add_action_or_reset(), so
-> sysmon_disable_interrupts() runs when the driver is unbound but not when
-> the system shuts down: device_shutdown() invokes only the driver's
-> .shutdown callback, which this driver does not implement.
-> 
-> The device is therefore left with its alarm interrupts enabled in
-> hardware once Linux has stopped servicing them.
-> 
-> Add a .shutdown callback performing the same teardown, so the device is
-> quiesced before control is handed on. The helper lives in the core
-> module, so it is exported for the platform front-end. It skips a
-> device described without an interrupt, which never set up interrupt
-> handling.
-> 
-> Disabling the interrupts at shutdown is safe to have and not a must have
-> requirement for shutdown.
-> 
-> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-> ---
->   drivers/iio/adc/versal-sysmon-core.c | 19 +++++++++++++++++++
->   drivers/iio/adc/versal-sysmon.c      |  6 ++++++
->   drivers/iio/adc/versal-sysmon.h      |  1 +
->   3 files changed, 26 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
-> index 6595d07038c1..d39aaba9a8b6 100644
-> --- a/drivers/iio/adc/versal-sysmon-core.c
-> +++ b/drivers/iio/adc/versal-sysmon-core.c
-> @@ -1000,6 +1000,8 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
->   	if (!indio_dev)
->   		return -ENOMEM;
->   
-> +	dev_set_drvdata(dev, indio_dev);
-> +
->   	sysmon = iio_priv(indio_dev);
->   	sysmon->regmap = regmap;
->   	sysmon->temp_oversampling = 1;
-> @@ -1050,6 +1052,23 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
->   }
->   EXPORT_SYMBOL_NS_GPL(devm_versal_sysmon_core_probe, "VERSAL_SYSMON");
->   
-> +/**
-> + * versal_sysmon_shutdown() - Disable SysMon interrupts on system shutdown
-> + * @dev: SysMon device
-> + *
-> + * Interrupt teardown is a devm action, which runs on driver unbind but not
-> + * on system shutdown, so disable the interrupts here as well.
-> + */
-> +void versal_sysmon_shutdown(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +
-> +	if (sysmon->irq > 0)
-> +		sysmon_disable_interrupts(sysmon);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(versal_sysmon_shutdown, "VERSAL_SYSMON");
-> +
->   MODULE_LICENSE("GPL");
->   MODULE_DESCRIPTION("AMD Versal SysMon Core Driver");
->   MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
-> diff --git a/drivers/iio/adc/versal-sysmon.c b/drivers/iio/adc/versal-sysmon.c
-> index 529d0486c9f9..4d5e3d14cf15 100644
-> --- a/drivers/iio/adc/versal-sysmon.c
-> +++ b/drivers/iio/adc/versal-sysmon.c
-> @@ -71,6 +71,11 @@ static int sysmon_platform_probe(struct platform_device *pdev)
->   	return devm_versal_sysmon_core_probe(dev, regmap);
->   }
->   
-> +static void sysmon_platform_shutdown(struct platform_device *pdev)
-> +{
-> +	versal_sysmon_shutdown(&pdev->dev);
-> +}
-> +
->   static const struct of_device_id sysmon_of_match_table[] = {
->   	{ .compatible = "xlnx,versal-sysmon" },
->   	{ }
-> @@ -79,6 +84,7 @@ MODULE_DEVICE_TABLE(of, sysmon_of_match_table);
->   
->   static struct platform_driver sysmon_platform_driver = {
->   	.probe = sysmon_platform_probe,
-> +	.shutdown = sysmon_platform_shutdown,
->   	.driver = {
->   		.name = "versal-sysmon",
->   		.of_match_table = sysmon_of_match_table,
-> diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
-> index a1ac3289719c..a21dacc13471 100644
-> --- a/drivers/iio/adc/versal-sysmon.h
-> +++ b/drivers/iio/adc/versal-sysmon.h
-> @@ -122,5 +122,6 @@ struct sysmon {
->   };
->   
->   int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap);
-> +void versal_sysmon_shutdown(struct device *dev);
->   
->   #endif /* _VERSAL_SYSMON_H_ */
+Closes tag?
 
-Change looks good to me.
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-Reviewed-by: Prasanna Kumar T S M <ptsm@linux.microsoft.com>
-
-Regards,
-Prasanna Kumar
+-- 
+Kind regards,
+Joshua Crofts
