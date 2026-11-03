@@ -1,80 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793744582;
-	b=RJ7pwVJWkbqb2xHSmbXazKzIibWQCW4BfT6TNwC/M/KFmXbqrlIGx74UCd2Nhid1gAV1
-	 ZoYTzlKTVsqUWFFRt2hsFqHYkkOnPJDP2VHraGQHUSzh9TdlXG5o+w73tTwhuwp297Iva
-	 KGJW4hkCI4oyTq+oBObNYD1u3C8fBCXg+sURqT1ruYRVSzwDjqYF/FnYtFaUhOBZDEJj5
-	 SOSfGTwx4z0oa04uuhxn/4r0+z2eDnWBZb3nZQCgXeJC0qRZ4RIWRHU7JMTlCnJuXPDu7
-	 f8YaYDlREjeIgz5+sMBHy8HldqI0TvTgxDIU+nHEo5TMpDkRE5010tqe4TK4pv6GAeQ==
+	t=1793744588;
+	b=SfPusuw5Ii5v6hpZ7RPKhAKa0TNPMO5F7xlR21XwaY+5QeMtaH6mQ7lj2Kj3KZwGKwoe
+	 6CMFMH3bK43DhxlSQ+zT2HZ+omWhCzEpj5nnnDIXAY3r3Am9gdWrtWv23USmQrEO5cW8T
+	 87/a1OP4v66Tt3XPvQ5vZCdZgtbPEZZtnTOwO4LkLrvlufgomnziIsWWto7smgakAyWi+
+	 SRRx9fdali3n0mOQhfW4M1VFEbZgwQHFq7TjQFnV7KOk4K9q6Ut5CxTxys7B7WYl3R4su
+	 QmdK4cCIHhSSlMexczhMPTso7xlsrO27iQT3MPmviZgEsNxJV/ldjKDeEi4ZT8VDlPQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793744582;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793744588;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=vG7YyaR1jfJGT4Zyo7fUKW5YQdRxU04KVZC/8HRXsU0=;
-	b=ExOir7NyaAU/XNtazo24tg13fajDOhxw3CRUcQuz5kRMoG4LdXJF5cOSxe1pk4REde6s
-	 XUPGa9LlfbpFrZOcXBfn5h5yXmDY0nHNZfJ65Mw0ieAY2gIejxgam7bT+POGVtCDZDJlf
-	 Xy2NPw5f5dVzJi+l2Wwq5U0MOuzzdchVVtrHRsCbZPXdV5ZtOQRwTv7bXk4w8iHxw4OBT
-	 DcZmz9RxX0czxkIlF56wyQiLZxT0RBdCUe8jlyyp11ppx4nRCVrwF1B1f835W4nhSEU8K
-	 3shzWotEru+wCR0eMuKN8sjVX3ulQqVdF8QZXrE3Pap6P01EDL6xNwP4PyUVJVudHPg==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=f/GjwPB9R1GefsC7sb/ZiS61uSaQkMOnfI2lEQvw+YY=;
+	b=LJXvg/JIMWC2hVw/c+KYUSS3yQSgP2g2fXP4ipHd2QoyVoU1OyxhY22DAofBR3zeiq5X
+	 sYQsUSuST/Gv0OVwT8Fsnhi2p7VPs4mEkh1ATKtsop1XSkuuqECVQuV+zESZVl4aTrt60
+	 vjLsnKXhqs0LGZPo8iKsd0Ekc9pqiMrV3Kf57CVyydtiRfoNTaK9SSdqTAcEraj+uc3j2
+	 ME9kwo5EJVlFe7yG5t8c+A52nD37O2oxKBlJsN/2OAYZAyecyvbe8UYAMz5LkhUJIrnnJ
+	 AVykJUbHsP79X8nggviVxCdw9EyB1eTJSk1/iAeGSj5Lmom1nqm0x4dybs2gmv2tVvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=chromium.org;
 	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=mWQMoB0K;
-	arc=none smtp.remote-ip=74.125.82.49
-Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=WZ159z0d;
+	arc=none smtp.remote-ip=74.125.82.44
+Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 788C3606A31B
-	for <linux-iio@vger.kernel.org>; Tue,  3 Nov 2026 22:23:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 788C3606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5EB6606A338
+	for <linux-iio@vger.kernel.org>; Tue,  3 Nov 2026 22:23:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5EB6606A338
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=mWQMoB0K
-Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-1a2af4c8d00so297339c88.0
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 14:23:01 -0800 (PST)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=WZ159z0d
+Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-14394530ec6so176618c88.1
+        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 14:23:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1793744581; x=1794349381; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vG7YyaR1jfJGT4Zyo7fUKW5YQdRxU04KVZC/8HRXsU0=;
-        b=mWQMoB0K1VT+Qs08/4w1/EZaMZ962n0okVvivkeH/VyHpZt/S7I3EE2F9vs3758tTr
-         dnebJ9MLlplJjZatFyvy+fgG8n/uK3SweCHTHuddXhyKsueRyw0sP9Wx6NeuiO7igq1O
-         KckL+SOZCVvgBBgekcNt4p7ygVI2gei2ywWc0=
+        d=chromium.org; s=google; t=1793744587; x=1794349387; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=f/GjwPB9R1GefsC7sb/ZiS61uSaQkMOnfI2lEQvw+YY=;
+        b=WZ159z0d3cdyU5ZVhyL5x/B4/1Ju2qWuATdw6DxScbh0z6/a1Qj4iPmHsaGHAmRD20
+         XBK/glreKqfgoKH2lJatjUxFnN942Ieb84oy4GbFNnqldIrenK8Yo0S5eBsKLefsKiO3
+         qSK33XMlfPyP5N7vavJ78UHFBeM4n3HQ6+7qc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793744581; x=1794349381;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=vG7YyaR1jfJGT4Zyo7fUKW5YQdRxU04KVZC/8HRXsU0=;
-        b=DkCpwFCgNFhahx69YGnm6A2sA4gVSQcuUR5Da7+2jq/WuOH6g61ki3T70aMtcDtnNy
-         TJ2/ityRPAiRcSN1KRTbdWTJbB0rLOOterySi4ptNaSJv+egSTm1h6YQ+9C0pjRIvTrT
-         SGszfPW3HRDNbQ0daF5mbmYjMLcwgLqIrMH058efFvRnrGajXRKCbXYCUW3ARUsQZjc+
-         7XpSV//mGS7929sPZJmrTG/e8VlhBTMut08jy0aFImPJh32f8NJRk7IWFOxz/51Oi7ad
-         QXeAOErP4vgjfdm3eP5Y20z31YF4qX+udaJjggQn0tCtMd/pySwIf+Jd3IuT9/b7T3Zr
-         wu9Q==
-X-Forwarded-Encrypted: i=1; AKwUvBzSH50OBwfZaXgCM34SJACor5j7Es6nqjHq+wynj0ynEwSfpBx6YfT/wjT65tBzWNAbjxtzDEInx+I=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+V1f+Qf94GnqPHdKgexfEtWx6ljSPBUtfAxYYziuWOO6IcXEya
-	pD1HSnCliXvR6ckGXSjLYaXGXYPIo/fnwJhbE+8iGXRf8tTqoXjkxHXbwQYJabZELQ==
-X-Gm-Gg: AYBFou39XjfJmF+AzTNqcOonIppdOf4dt5QESPIjnBobv1Put3OyiW2Sw1PLQc5XR81
-	PeUKutZShu1AoKbI8HElv3ml8FdKcLpse1HIg3kBqCnRkCx8w+pqap0Ne70KH+rl1C77b6pl3o0
-	CmvK1ks7LcUQPlpUG+1bHWU4fZGOA/ITQMMvyt5zAubzzWFj8930sbIphC9LhtqSGmHxId04G9h
-	MEGSpm2LlJ14jCV/hRv0n9KykgmRT9rm6HATlPRz4QMYVA2SJncMnXDrYHKToag8DcMha6XPKkD
-	gUuBbwjRaGSMSHWSVOAJgQBF1nqEkNyi8o2of83wZPCrW3bQlR+deAdk7abRVOzOTaWQqDE/9yS
-	ivijOk6rid4wHvwwNOjnn9VQFzIrzVktgvWCc7yHnyxOiTEGUu8OZnlZbLCAsyMZXUdzfo9lWbU
-	BQ0mFfQNhktD0sR+C+cCbwXpU3AhyTXzilXitql8Cgc6nS5yJBEnNRT/Oz8StUXqLgOLqNAI3qv
-	AVU3n/bvGLX2YlpcF5VBfHTnViNDarQ1Qhb/B8NHTAY/kqcSrzE9WW8k1CUp+DVo82R/cs2tj5F
-	+tzK04bfcUH65mrX8XTtcR+q8e8IZDyddAo5cIAFkwiJRR2lJji9h2P7BC7jXigr50f9
-X-Received: by 2002:a05:7022:b0c4:b0:144:eb46:c3f with SMTP id a92af1059eb24-1ac560219bamr19881274c88.2.1793744580537;
-        Tue, 03 Nov 2026 14:23:00 -0800 (PST)
+        d=1e100.net; s=20260707; t=1793744587; x=1794349387;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=f/GjwPB9R1GefsC7sb/ZiS61uSaQkMOnfI2lEQvw+YY=;
+        b=GCKeptFy7RRxzESKEYuJlxT8fz/hrPRfJLo0wfIglQ2spQQgQHjupYHJD8DcKGXRfR
+         QBxeL8yScbsvArePPEeTldjYDcKF6WrM5Tq0puwX2U2K1VF/Q3A/94InYLrCS+4FQMOd
+         EJ0/mo+FMdlejmBadRtTp3IshUsusj+ATythV6/ooV/Ri9HHOHSGTeZVIQQ47ISsOt79
+         qvRjf5SNdY8V4KzOqEKe7NJpolLMShEgm3EZ8+4n45jdMCakmleW/TiZl/PluZkdgToG
+         57ITsHwMyDNej1Mujdao/Bl4X/EoRN4yHvg3lTitRGA35yizMwoKSshPspy5ciVkjWOk
+         zenw==
+X-Forwarded-Encrypted: i=1; AKwUvBwss5muSYb8J0xcIPuQQjVMrPFtmMkv6e13qieJCJqvYTU2BkEqrysIgl2L5gjzVPMRbwuMDAFbUvQ=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/8mKRMdTd1AG0gp55P/RKhxZXy2xPLE+Ox0Q4XZqXQuyzAThQK
+	Ms/wKzZmh1vo9nAABDXttuf/q0kbgiY5yjU8PhP+BDT2g3dY6oxgKteScx7Bi5TRnw==
+X-Gm-Gg: AYBFou1FNBAOjxDkH2KHY1IoctiOGidfyYko8v4A2+HlJKx/5eJ9lm/S9J34reuCb7p
+	I0klTPClMZah3hESuhnCW9cH0SRa7hnm8mXVPyY9mZmDZUmN57np8lIL/c0fw2WYQ7V0ykNqGvv
+	eH/5nbxMNmFdzyFMdB9C/vn8TIhe40H1jIDv2D02LjHH2zn18eLcoc7WWdRSMS3pP8gtV2Z2xxG
+	erQf6oL8WBvlbybuxF6OOFN2iuLI21UNyPW6jg87RbJ4oxR1Lt0Htb6VUeUCuDTQg0yzSl+Ml+a
+	5eF/pi1EBKqjldMCA4UaxeqjUdeuiKHTxlKrHhrD/J/TUzgVv242nGHIbU/2T85C6DFxo3J1tHD
+	A+EJV9XOtL+Em6UBIXiaeBV/ACW9kdGSycLI/uMZBtW95H5Cew/HPjM0KI2xJReHgH/27pIEEgt
+	yLDlepLsVIEISiWBh9tGuJ5xBkc4SjbbU0W1wlMe7Awvof6Ucx/cCc816IuLBuXJeMRBNMs2Ux4
+	Oows4tb3hGzDgnDlBLK8t94j+fy2CWvb4sIQEFDaiunYpcuSns7akbrEtviCSGdsir0vpG6K1Af
+	Mc2SRCNW+TVWYukWXgTsKOPtrjmYbBPlGJCgoRhAGgLfi1h9XMxFzIgVRHVHhgMooF2i
+X-Received: by 2002:a05:7022:7f17:b0:168:3243:c937 with SMTP id a92af1059eb24-1ac5cb1c8b3mr24793689c88.16.1793744586621;
+        Tue, 03 Nov 2026 14:23:06 -0800 (PST)
 Received: from localhost ([2a00:79e0:2e7c:8:ab71:b3df:693a:fbf2])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1b245b86fbesm1926506c88.1.2026.11.03.14.22.58
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36ca390df28sm1162364eec.18.2026.11.03.14.23.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Nov 2026 14:22:59 -0800 (PST)
+        Tue, 03 Nov 2026 14:23:05 -0800 (PST)
 From: Brian Norris <briannorris@chromium.org>
 To: "Rafael J. Wysocki" <rafael@kernel.org>
 Cc: Fabrice Gasnier <fabrice.gasnier@st.com>,
@@ -90,10 +90,12 @@ Cc: Fabrice Gasnier <fabrice.gasnier@st.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v2 0/5] PM: runtime: Improve autosuspend child to parent propagation
-Date: Tue,  3 Nov 2026 14:14:38 -0800
-Message-ID: <20261103221717.3840215-1-briannorris@chromium.org>
+Subject: [PATCH v2 2/5] PM: runtime: Convert last_busy to atomic64_t
+Date: Tue,  3 Nov 2026 14:14:40 -0800
+Message-ID: <20261103141442.v2.2.I998d26c0d635b80496ad12daa33b8de602030eb6@changeid>
 X-Mailer: git-send-email 2.56.0.398.g882cbad275-goog
+In-Reply-To: <20261103221717.3840215-1-briannorris@chromium.org>
+References: <20261103221717.3840215-1-briannorris@chromium.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,77 +105,89 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-v1:
-  https://lore.kernel.org/all/20261002230714.507921-1-briannorris@chromium.org/
-  [PATCH 0/5] PM: runtime: Improve autosuspend child to parent propagation
+I want to use the atomic64 compare/exchange helpers. There are no
+similar 32-bit-portable helpers for non-atomic64_t.
 
-See patch 3 for the primary change here.
+As a side effect, this also should avoid some minor load/store tearing
+corner cases on 32-bit architectures.
 
-In short: today, children can resume/suspend without extending the
-autosuspend expiration of their parent. For parents where their activity
-is largely driven by their children, this makes it easy to experience
-"premature" suspend.
-
-Many .runtime_idle() implementations seem to try to work around this
-problem, and one in particular (stm32-adc) documented their problems
-heavily in c537d3457542 ("iio: adc: stm32-adc: fix runtime autosuspend
-delay when slow polling").
-
-This is an attempt to improve the PM core, as suggested in review for that
-change:
-https://lore.kernel.org/all/CAPDyKFp=KTf8=zGBSzPYqhjnZpY8xwvjCeM1e-WTKT1QLSxaDA@mail.gmail.com/
-
-This will make it easier to simplify many other drivers too, as a
-significant use of .runtime_idle() is to simply extend a parent's
-last_busy timestamp, as a proxy for "last activity performed by a
-child".
-
-The changes:
-
-1) Preparatory fix, noticed while making the following changes
-
-2) Because the last_busy mathematics get a little more complex, I have
-   to change last_busy to use an atomic64_t type
-
-3) Propagate last_busy from dependent devices (children, consumers) to
-   their dependencies (parent, suppliers)
-
-4) Add KUnit tests
-
-5) Remove the pm_runtime_mark_last_busy() workaround from the stm32-adc
-   driver
-
-To follow on with #5: I believe almost every other .runtime_idle()
-implementation in the tree can be removed after patch 3. (There are a
-handful of drivers that should just use autosuspend. And perhaps 2 or 3
-other drivers that do other non-trivial work with .runtime_idle(). But
-most are redundant.) I may work on that next, if this works out.
-
-- Brian
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+---
 
 Changes in v2:
- * Update comments to explain when/why rpm_propagate_last_busy()
-   performs the update
- * Minor kunit test improvements
+ * Add <linux/atomic.h> to pm_runtime.h too
 
-Brian Norris (5):
-  PM: runtime: Only queue an idle check for RPM-linked suppliers (part
-    2)
-  PM: runtime: Convert last_busy to atomic64_t
-  PM: runtime: Propagate last_busy from dependent to dependency
-  PM: runtime: Add tests for last_busy propagation
-  iio: adc: stm32-adc: Drop runtime_idle()
+ drivers/base/power/runtime.c | 4 +++-
+ include/linux/pm.h           | 3 ++-
+ include/linux/pm_runtime.h   | 3 ++-
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
- drivers/base/power/runtime-test.c | 99 +++++++++++++++++++++++++++++++
- drivers/base/power/runtime.c      | 30 +++++++++-
- drivers/iio/adc/stm32-adc-core.c  |  9 +--
- include/linux/pm.h                |  3 +-
- include/linux/pm_runtime.h        |  3 +-
- 5 files changed, 132 insertions(+), 12 deletions(-)
-
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index 9d3508d9b4a2..2a117d6a776f 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -5,6 +5,8 @@
+  * Copyright (c) 2009 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
+  * Copyright (C) 2010 Alan Stern <stern@rowland.harvard.edu>
+  */
++
++#include <linux/atomic.h>
+ #include <linux/sched/mm.h>
+ #include <linux/ktime.h>
+ #include <linux/hrtimer.h>
+@@ -186,7 +188,7 @@ u64 pm_runtime_autosuspend_expiration(struct device *dev)
+ 	if (autosuspend_delay < 0)
+ 		return 0;
+ 
+-	expires  = READ_ONCE(dev->power.last_busy);
++	expires = atomic64_read(&dev->power.last_busy);
+ 	expires += (u64)autosuspend_delay * NSEC_PER_MSEC;
+ 	if (expires > ktime_get_mono_fast_ns())
+ 		return expires;	/* Expires in the future */
+diff --git a/include/linux/pm.h b/include/linux/pm.h
+index ef3f1310e749..531e46ff878e 100644
+--- a/include/linux/pm.h
++++ b/include/linux/pm.h
+@@ -8,6 +8,7 @@
+ #ifndef _LINUX_PM_H
+ #define _LINUX_PM_H
+ 
++#include <linux/atomic.h>
+ #include <linux/completion.h>
+ #include <linux/export.h>
+ #include <linux/hrtimer_types.h>
+@@ -812,7 +813,7 @@ struct dev_pm_info {
+ 	enum rpm_status		last_status;
+ 	int			runtime_error;
+ 	int			autosuspend_delay;
+-	u64			last_busy;
++	atomic64_t		last_busy;
+ 	u64			active_time;
+ 	u64			suspended_time;
+ 	u64			accounting_timestamp;
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index ae68a9dc7fc5..da537be94732 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -8,6 +8,7 @@
+ #ifndef _LINUX_PM_RUNTIME_H
+ #define _LINUX_PM_RUNTIME_H
+ 
++#include <linux/atomic.h>
+ #include <linux/device.h>
+ #include <linux/notifier.h>
+ #include <linux/pm.h>
+@@ -242,7 +243,7 @@ static inline bool pm_runtime_has_no_callbacks(struct device *dev)
+  */
+ static inline void pm_runtime_mark_last_busy(struct device *dev)
+ {
+-	WRITE_ONCE(dev->power.last_busy, ktime_get_mono_fast_ns());
++	atomic64_set(&dev->power.last_busy, ktime_get_mono_fast_ns());
+ }
+ 
+ /**
 -- 
 2.56.0.398.g882cbad275-goog
 
