@@ -1,64 +1,65 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.254.200.128
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793706110;
-	b=478XLX7y1dcgBS14N7HwmojR2B81oag7ejbshU+V4qSbuW1eDzdfCrMQso5RSbEtZkC0
-	 wKar5HccHuV2HR9sOrLOFDRj79NRIMo+Ht0MIfRzHbIoiw/J/u1kF0z7DulkvJfq3oWng
-	 9cAXAIQbA6d0duzhQAefKBvqoUlCUZQzViqQW046jXcksqzF0l6NcFQ0iLANo2re+MolO
-	 mnTd4/cO+VmbGVux9sY5RRTwXdzH6Y1HeFD1d4PpMC8sQrj0FcBlPUnF+TzI4EbfTYHxN
-	 x/ni+659a3BeJgEhiQnCaj/pKZ5wSAtSqMnpFFijB5gcxbgfUIwV84U7AHQ0gdofUDA==
+	t=1793706118;
+	b=mcd02qVetx7pSpAMmEVE6f3jxn8/B//ALAEFRfzoP8dCjbDT44cwfJCCL5g1e1w7yyzq
+	 lO1dkEWlWN4SND6DR/6Fr/4+MEtfFrouMeNmEozqxlEPt5/7dUtXmanCZDa443bhcgLf7
+	 kfdEf47S/zt+4j7NY8P45MtEA942UYqOla0JnuloAZyrUdiXCeCwzOa9C5Ple2thpecRI
+	 UPqC3Z3Pid8mbmiBOM0d4lmEisXY6WBawAZl6aE2JyXBZhbecQLa6ioAWlsaMUiRLhRUz
+	 h+5utgkR0/WuEpMYTaDxJOAUpvDqc1WMovIl+vyvNqWH2iPT5fdGBiD4Eev1cihX+Xg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793706110;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793706118;
 	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
 	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-Id:
 	 X-Mailer:MIME-Version:Content-Transfer-Encoding:X-QQ-SENDSIZE:
 	 Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=AHUtrGVVVpPripQgHM30mxejG4b6kABVp9lqtckcJZo=;
-	b=b2RSNSvk+w1pBcu4VT1ofZES4iESdCvCD6uq50h7FNRwcBPQPIFENaLJYHpvo10a9DdT
-	 I1Svxrg0P/lm1agmpj7lxnh1lPNgQmu7oM5zYnptehtVnNYpMKHbqDB512j6RAC4ez1cK
-	 7vwbJSdPdq7kvXmyDHGzJrV1y0B2eBecMlZgLA42//4ZgpDJjP6m5fexe5mvBbcYzYsVO
-	 Tfmngh2OMsl8wdO+bPD+1MM+2ohYCiB2VRvkabm68KFKQyM/O5rs7lKv1ctBRL2Y+gv11
-	 YtOJ9xiAHCeArQu36/fvVOvBwTf9vpjKnL4fv5p2W9xD06TgHPfB4xzKH4UqQDNyhVw==
+	bh=Quzn8tDSWOj9Otu16BaBrdI5t0AOEg7iQ6jj1NIMH5s=;
+	b=L4Ac786bx2tLaDR+VjnA5QkDVNuN7GYYd7C0+Bom9ek4P6Vt70swM5PlmIcVKfs3PcbQ
+	 gVqRZBUrmn9PW1W50HM603XgBnvOtKH4BHgRT6vWMRPGavz2cpnlLgFOnTCtFPYnb2THc
+	 kqdD/o+yV1knnVZOl7GehckgFp1wE+k3EBTk+Wr7kd4oCIU3DpNEFTvaAlOqWUtI3hyjz
+	 MTtFxxGVsca5nPdDIo8JSnGXSZM2tiPBOVXqzd3GjM7VeDG1JZFd4Gp04QQ14lWsfze+w
+	 xY0/SW88cwfV1uLkO/YNcRv46plnvcTL1qtNDjei2STR7QusPjXzhruCVMERWx9EyCQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=smail.nju.edu.cn;
 	spf=pass smtp.mailfrom=smail.nju.edu.cn;
-	dkim=pass header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.a=rsa-sha256 header.s=iohv2404 header.b=49f1Y1MS;
+	dkim=pass header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.a=rsa-sha256 header.s=iohv2404 header.b=TZSrww58;
 	arc=none smtp.remote-ip=54.254.200.128
 Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67B2C606EEA9;
-	Tue,  3 Nov 2026 11:41:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67B2C606EEA9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C06F6082BF4;
+	Tue,  3 Nov 2026 11:41:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1C06F6082BF4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.a=rsa-sha256 header.s=iohv2404 header.b=49f1Y1MS
+	dkim=pass (1024-bit key, unprotected) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.a=rsa-sha256 header.s=iohv2404 header.b=TZSrww58
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1793706067;
-	bh=AHUtrGVVVpPripQgHM30mxejG4b6kABVp9lqtckcJZo=;
+	s=iohv2404; t=1793706083;
+	bh=Quzn8tDSWOj9Otu16BaBrdI5t0AOEg7iQ6jj1NIMH5s=;
 	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=49f1Y1MSkXdbFMOnaqN7OaTzdKVCoLYPLgMFW7UuP/HfWDLsZV7blhMizh5yH0m/G
-	 t0+6NkzwuK5JDYtp13IWRDqWZ7GDIht1ivxGFhX6hj3lw/9ts+G3o6tMDG4oeg4Mx6
-	 kUaSGxOLJAghXo3g+ly9IWPUNMJql5l6HqB17qUI=
-X-QQ-mid: zesmtpip2t1793706062td5792a11
-X-QQ-Originating-IP: 6OE4mHE8SKQGXjON/lNok7v+0STxNPg+VR8JNlTF80I=
+	b=TZSrww58lP1j5o6LpJdN5E32hdgFibIQpneggjSR7qgD14H4tv3Fs1qd1dFpKQYOQ
+	 Aler6YFzel6hBmPDgCwigGd84CGESWs1YLQN5Nq3jOD8C9HQotT2Vmq3X63mFvb1Ey
+	 9PYJtcsvY9bwqccqUASoK7YFhhZIN8/3l2VXWwR0=
+X-QQ-mid: zesmtpip4t1793706077ta8017ae4
+X-QQ-Originating-IP: CgLr/o05gbHd9iLwh6qU6GiZ5/4CMdQLF2HKButkzRk=
 Received: from workstation-Precision-7920-Towe ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Tue, 03 Nov 2026 19:41:00 +0800 (CST)
+	id ; Tue, 03 Nov 2026 19:41:15 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 5616215956870493913
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 11776490591211574618
 From: Kang Chen <k.chen@smail.nju.edu.cn>
-To: Marius Cristea <marius.cristea@microchip.com>
+To: Matteo Martelli <matteomartelli3@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
+	Victor Duicu <victor.duicu@microchip.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: pac1934: validate the ACPI channel configuration
-Date: Tue,  3 Nov 2026 19:41:00 +0800
-Message-Id: <20261103114100.74050-1-k.chen@smail.nju.edu.cn>
+Subject: [PATCH] iio: adc: pac1921: validate the ACPI description
+Date: Tue,  3 Nov 2026 19:41:15 +0800
+Message-Id: <20261103114115.74662-1-k.chen@smail.nju.edu.cn>
 X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,168 +73,82 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:smail.nju.edu.cn:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: NQR8mRxMnur9YXYoFTeISnJlHBu+IOPI00FyHeaGER4PpHrrqG3Ldqtw
-	pm01eSs5KfUjGAAc25rq8t1Z5Z5suKhsTnvPDvkrLrip7TiwJDc2DMz7jUE8vuziBj6/7G/
-	KEeILyyb6rMJT/Dd26jA/knZ7aIs+9g5alOrLQVIjzE+TqEY9XCDjCAaKLXVrbfvXjCzqiA
-	wnhvkf1Fp93PXHhU5DWHYic4A6DXWuaXVQHCxB0J7TzBWEF7Z/GW5Yvo0eppso76FJNHzQ8
-	FkLx7rL+T7GPMHYZudQ/GPH4IF7RBvLLQn1r4CtsWPmJbvz0BKyridxb5IJqe7fMr7WDweV
-	Sq7GCR5WIKoBv/MrmVINvX3DIXCfJYiTraFey6MtpZZhgSQzt3Ocx/LrrPraLjOmRnCeiRb
-	M8WHfQbsg0L0k/t5Mfn7tpGFsgbnlUCJJj8IBeSS+fA6w5uO9UFnzAoy3wQ9eZ/TFVDgzhB
-	bWxw1o/d5mPa5h7q/jlGBpT0c1nuRlSPkkWWWZt9ZeQZ6LdXZc5ldvzxRUo+Txwf56a6x9S
-	F5vg50YRWibxs+qtsY/HhtB46lEbF+ocMwte7hhH3raNagMYIYBOi3LxMj1zswKjLVmZ6FU
-	LZx4e8VRQ4HZVhxhQzTmsd/24Ve3Vr82E+dngswT4dUEHWCABKVdOZDNMUDSa2F7Ti0lIs6
-	EH1Znfaa9PZ0V4PnXa+9SanODBJ5ril9LI/9oTBKtGufq1OzMoqfuPm//Pl5Lj5EmoSPaCf
-	YVDoGlEKdrXhapovpc43fELitE32DegTOSQSZ7jSJNGsVZ9ktoqwIhRVzFiWpSMdHcShS/R
-	WfI30LfVM+dRHNfr6GT6CLJ10BzKYCCmN8KvUa6jwE0unw/Y1vI5l9j+Z9kS4sT0SDp/9s4
-	Ud82dMGukqubwhCkOKtouWBI0oFEERvduV27awrvFWutkX5LtZbuhDYM8qNDcpXULMXUJ6+
-	ZkL4/Aaxfr5ietr4tkv7oC06a39Im2cVtWrnZcdmy/vCVRH98ZNYftkO+uDnIqt0/5XNIsr
-	k6u+IU378eEsVPA0fKml/c+GZF+jerJX+agpzoVPyuVFut9EdJDh0VSMMFsig=
-X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
+X-QQ-XMAILINFO: Mprg6+9faFwuonxFKdHsqYXJyipBWk+Ihch9dk758p6OMsnVcUufQDhv
+	FMKSFxrgtMUx4JrkNf/5af8YaFb586aUrTTu1+trSc8lZZ+80o3+NfXZOyRu3Z33WMK13ti
+	kRdl4CBi8pGIcXRHSbhrjHMld3XHoRY1DHaKhVsyjv4DvO0VrUStnQ5lkG71a8IeH5qBIgD
+	u0tgwLAhu5agB+Pb1HRv/BJz0vHq/BNqYfL7FimUrnSZCQemIs0BOx/g4HI4tRCi3RPxxKz
+	xZ0POSQDTh12jo1P1LdvJjDjj0RcFmEE1h+zdjbyKW/c+If9pNmVDTgfXfcwMlEENW26oP0
+	h9j6HLbtZP9cFHiiWOSmBWqDzIR7Y11pRtA2cmcQmDS2JH5UK/jQCEM31Y7POp7QfERPeW/
+	2MXY3tEJZRskwR+vgmNUZhEgMlKzXe/UbSCc10u04GWtHTfE+yyRVlRLSzftikG3dFsi14y
+	bDfTpTh6CErVJca28qAeTWajyUVw+MW6bsxhsf7gpc7Y2E+dKWaLiVn92eamCw9c4QDQ8cB
+	VfdMkIUwDW0dAUSqVEhpc96RN/GKXvCGcfC9MnYoEDzg/Hb1fz3Bjk2qC5YBR2JSdmo1At4
+	oxQXOOHJecOJCXIxMK0ezrAqb/ZpjsfsxNDgMX/WPr+Th7Xx4PobZPZAJwxxK2ppDUHUa+l
+	U4BQZcDc56hnhkk+yeYwO1qTER9+p4J04KqatASf5uKaQShKgYxoH411pFG9NJaL9RR6/nD
+	9+C1NO7eAW8wsWGaN4J9i8J5AtN5k23yYX9M8S52+CJDu2XVwMUMfdNQCrkvsW/kUFViMkI
+	T9vzyrI0fwGeD3YzA/bQc1GNI5A1qAa0ZaxoSOuV9HxnWU2DE8uQCSsoqnORpeH4XXPrlNC
+	4IhBAcQ0jUu7IknnWlGM8xVHD7mZ7qs47N2oEz1ablFbonh2nFJZztVVrx7/Dm28lqgI770
+	zE53iO2owilnDysHLvq5SFx9MvIzjTNVk3KiqRLPuynZQgLRL4LsVs4wpvmkpZPueaKs463
+	UMXGRE1CKY9SzAl9od4THfeCZVSz1pAAafkOJHMq+R8otL9DYAjZsxBMy+6Oqnf3BLEAACF
+	Q==
+X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
 X-QQ-RECHKSPAM: 0
 
-The four _DSM calls that describe the channel configuration trust the
-returned package.  The first one is walked in pairs and its count is
-used to index the four-element labels[], shunts[] and
-active_channels[] arrays; a longer package writes past them, and an odd
-count reads elements[i + 1] past the end.  Non-string or non-integer
-elements make the driver use union members that hold unrelated data,
-including a firmware-chosen pointer for devm_kmemdup().
+pac1921_match_acpi_device() reads elements[0] of both _DSM replies
+without checking the top-level object type, the package count, or the
+element type.  An empty package makes elements[0] an out-of-bounds
+read.  A string reply to the shunt query, or an integer reply to the
+label query, makes the driver interpret unrelated union members; for
+the label query this can pass a firmware-chosen pointer to
+devm_kstrdup().
 
-Validate the object type, the package count, and the type of every
-element before using it.  Allocate the labels with devm_kzalloc() and
-reject an impossible allocation length, so the terminating NUL cannot
-be written out of bounds on 32-bit systems.  Reject milliohm values
-that would overflow the u32 micro-ohm fields, and micro-ohm values that
-do not fit in u32.  Also validate the single-element bipolar and
-sample-rate packages before reading them.
+Require a package with at least one element of the expected type before
+reading it.  Also reject a shunt value that does not fit in the int
+range checked by the driver before it is truncated to u32.
 
-Fixes: 0fb528c8255b ("iio: adc: adding support for PAC193x")
+Fixes: 9fdf1d033316 ("iio: adc: pac1921: Add ACPI support to Microchip pac1921")
 Signed-off-by: Kang Chen <k.chen@smail.nju.edu.cn>
 ---
- drivers/iio/adc/pac1934.c | 72 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 63 insertions(+), 9 deletions(-)
+ drivers/iio/adc/pac1921.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
-index 5e901ab25c8e..b0447fc813fc 100644
---- a/drivers/iio/adc/pac1934.c
-+++ b/drivers/iio/adc/pac1934.c
-@@ -1094,7 +1094,7 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 	union acpi_object *rez;
- 	struct device *dev = &client->dev;
- 	unsigned short bi_dir_mask;
--	int idx, i;
-+	int idx, i, ret = 0;
- 	guid_t guid;
+diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
+index f0bab94462f4..3242928d80e4 100644
+--- a/drivers/iio/adc/pac1921.c
++++ b/drivers/iio/adc/pac1921.c
+@@ -1189,6 +1189,19 @@ static int pac1921_match_acpi_device(struct iio_dev *indio_dev)
+ 		return dev_err_probe(dev, -EINVAL,
+ 				     "Could not read shunt from ACPI table\n");
  
- 	handle = ACPI_HANDLE(dev);
-@@ -1105,18 +1105,44 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 	if (!rez)
- 		return -EINVAL;
- 
-+	if (rez->type != ACPI_TYPE_PACKAGE ||
-+	    rez->package.count % 2 ||
-+	    rez->package.count > 2 * info->phys_channels) {
-+		ret = -EINVAL;
-+		goto out_free;
++	if (status->type != ACPI_TYPE_PACKAGE || status->package.count < 1 ||
++	    status->package.elements[0].type != ACPI_TYPE_INTEGER) {
++		ACPI_FREE(status);
++		return dev_err_probe(dev, -EINVAL,
++				     "Invalid shunt value from ACPI table\n");
 +	}
 +
- 	for (i = 0; i < rez->package.count; i += 2) {
-+		size_t len;
-+		u64 mohm;
-+
-+		if (rez->package.elements[i].type != ACPI_TYPE_STRING ||
-+		    rez->package.elements[i + 1].type != ACPI_TYPE_INTEGER) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
-+		mohm = rez->package.elements[i + 1].integer.value;
-+		if (mohm > U32_MAX / 1000) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
-+		len = rez->package.elements[i].string.length;
-+		if (len == U32_MAX) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
- 		idx = i / 2;
--		info->labels[idx] =
--			devm_kmemdup(dev, rez->package.elements[i].string.pointer,
--				     (size_t)rez->package.elements[i].string.length + 1,
--				     GFP_KERNEL);
-+		info->labels[idx] = devm_kzalloc(dev, len + 1, GFP_KERNEL);
- 		if (!info->labels[idx]) {
--			ACPI_FREE(rez);
--			return -ENOMEM;
-+			ret = -ENOMEM;
-+			goto out_free;
- 		}
--		info->labels[idx][rez->package.elements[i].string.length] = '\0';
--		info->shunts[idx] = rez->package.elements[i + 1].integer.value * 1000;
-+		memcpy(info->labels[idx],
-+		       rez->package.elements[i].string.pointer, len);
-+		info->shunts[idx] = mohm * 1000;
- 		info->active_channels[idx] = (info->shunts[idx] != 0);
- 	}
- 
-@@ -1133,7 +1159,19 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 		return 0;
- 	}
- 
-+	if (rez->type != ACPI_TYPE_PACKAGE ||
-+	    rez->package.count > info->phys_channels) {
-+		ret = -EINVAL;
-+		goto out_free;
++	if (status->package.elements[0].integer.value > INT_MAX) {
++		ACPI_FREE(status);
++		return dev_err_probe(dev, -EINVAL,
++				     "Shunt value out of range from ACPI table\n");
 +	}
 +
- 	for (i = 0; i < rez->package.count; i++) {
-+		if (rez->package.elements[i].type != ACPI_TYPE_INTEGER ||
-+		    rez->package.elements[i].integer.value > U32_MAX) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
- 		idx = i;
- 		info->shunts[idx] = rez->package.elements[i].integer.value;
- 		info->active_channels[idx] = (info->shunts[idx] != 0);
-@@ -1145,6 +1183,12 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 	if (!rez)
- 		return -EINVAL;
+ 	priv->rshunt_uohm = status->package.elements[0].integer.value;
+ 	ACPI_FREE(status);
  
-+	if (rez->type != ACPI_TYPE_PACKAGE || rez->package.count < 1 ||
-+	    rez->package.elements[0].type != ACPI_TYPE_INTEGER) {
-+		ret = -EINVAL;
-+		goto out_free;
+@@ -1198,6 +1211,13 @@ static int pac1921_match_acpi_device(struct iio_dev *indio_dev)
+ 		return dev_err_probe(dev, -EINVAL,
+ 				     "Could not read label from ACPI table\n");
+ 
++	if (status->type != ACPI_TYPE_PACKAGE || status->package.count < 1 ||
++	    status->package.elements[0].type != ACPI_TYPE_STRING) {
++		ACPI_FREE(status);
++		return dev_err_probe(dev, -EINVAL,
++				     "Invalid label from ACPI table\n");
 +	}
 +
- 	bi_dir_mask = rez->package.elements[0].integer.value;
- 	info->bi_dir[0] = ((bi_dir_mask & (1 << 3)) | (bi_dir_mask & (1 << 7))) != 0;
- 	info->bi_dir[1] = ((bi_dir_mask & (1 << 2)) | (bi_dir_mask & (1 << 6))) != 0;
-@@ -1157,11 +1201,21 @@ static int pac1934_acpi_parse_channel_config(struct i2c_client *client,
- 	if (!rez)
- 		return -EINVAL;
- 
-+	if (rez->type != ACPI_TYPE_PACKAGE || rez->package.count < 1 ||
-+	    rez->package.elements[0].type != ACPI_TYPE_INTEGER) {
-+		ret = -EINVAL;
-+		goto out_free;
-+	}
-+
- 	info->sample_rate_value = rez->package.elements[0].integer.value;
- 
- 	ACPI_FREE(rez);
- 
- 	return 0;
-+
-+out_free:
-+	ACPI_FREE(rez);
-+	return ret;
- }
- 
- static int pac1934_fw_parse_channel_config(struct i2c_client *client,
+ 	label = devm_kstrdup(dev, status->package.elements[0].string.pointer,
+ 			     GFP_KERNEL);
+ 	ACPI_FREE(status);
 -- 
 2.34.1
 
