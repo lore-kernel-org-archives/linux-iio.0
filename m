@@ -1,78 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793739768;
-	b=mvkwoFSzFP0bfeR9pshHPa+PlJMIIywKKWMcjEZrI0LZxMWghC8cqvyktP3BnBtcvCW8
-	 0MgVXI2LXdD5wa6OOaeLZHHR4nye9ruxZQRTzd79Uz+U7dPUg7wvEokamC72ArVHiUxnx
-	 lETLWPcJbVECZd4DP4AK29xi/2a/V3RT/ghUgSZ6+PEHl3XixvXbyhS2twudIvHTEqH7u
-	 2opG5nL8GxQ2X0Dmzf8R8I1kVWouNfBWwCUWK9aIn16QUGSIxXgEl+QzyHS8fzVLaG4Da
-	 OpEFgjk47YiVdbkNSNWeNdwps39no9H+1+VyBBl4y18sFhZh5Io+/iuboEEtm7DIOQQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793739768;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=AoumBwPwca9miEGc1SHpoUEnfipBniOtLjtvtx30uCI=;
-	b=E+7Y6Zxfa91gclFY0eEXItH+hFvnMQfcEaV9g0ods8sQURVhQ82GIzcFGJGgAfls1xsP
-	 5xxchi1xwg5S/FOiULElbYkndc7vGYSQLtLGoeDKQYO1cC4PwvzLQmU7YibAuxAMvFymM
-	 eA9FmobZlpbwfLCEUamERTXsBLNAiNA7gtVMTaNjDzT7bDYHNjtMXbPaf4hWcMw2ciK0x
-	 RW3jvv2TLNqfEoSxPQ0fs4PSLOLUrUnVFX+OhU68dNicya8MMQTyD+dvJgXQlgyrG9V4a
-	 detk/NxWpi8f089HnlVp+o083IlmF3lGde+Tw65SrBBYXC44VcUjR68HwPQgk60EcVA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mMMhZfVB;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793740631;
+	b=zO036wBG0NzaFsKwsb7WB2Xw1+6hlaKIdt0/Fa+NCwr3ByfDeOOhny2qqARgssgDhm9p
+	 bws4fyXFbVSLciNlfhg0fv4W6mtMdExs8tBoZIsUFCqLnWz/n3mu5rCBxeXkfW6TK/LFz
+	 lD8epUYWgX/fS3IfR8dDtJOS4bxCHZnY6+X0ui6CXmKFbwnCxVeuwPYlTZjtlEbn8diH7
+	 YK2wsyxOqr3c7fPFDB1OdgJ5ytvzBWlCi2SW0S2yKCD1nlaZ5O6vNiB9hYvKaiVib5irO
+	 jUu1BbZkQsPaFNOHnacEkh3ZzV+pu1VRe/p6rd0mSyJ9i93ADaihP1zdoEoVRLzji5A==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793740631;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=17Xr34YktVCIPxD8sT9ELbr3cOLrvKfvPe2J49V593I=;
+	b=jqYjiYNN4B/y5CS3KudiURJ2KjBO+Yzn6oThNlEdMXT6ZnZ3z6547GE6kfllYG+83h4g
+	 L+U6Zp6QfES9VfQlGTwtAmMYkdSxSi6/50gEmS8ByX0Ft73sI87wcsJTkRGr8wYXcGX25
+	 +lQpQ4tP72vp+DulZq2oeLaRjO5L2ipPWuv+RDkTb8cjxN7lBOBRITH5TLBi/kXdIFS6u
+	 iqGe4ru1RRMEzcRiHjZIHzV5XNJcLkMHRq1FjNi6SM6STmnsvdx5WD36TfuDwsvPc4d2M
+	 kjsLh9MIo0AMoG74IWoRvncNxQmA/dp/vP5f14CdaQ7nBxhjDoB+DV51AQNyZuKExiA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AAk8HwD2;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7607606A31B;
-	Tue,  3 Nov 2026 21:02:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7607606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51FC5606A324;
+	Tue,  3 Nov 2026 21:17:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mMMhZfVB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793739767; x=1825275767;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VY4V0BE9B7xeQEiJCHEdVFtkYm8MR9SaAOpurGJlgvc=;
-  b=mMMhZfVBEpDyt8wKJD2CqDNdx0Wej5IN4lNIFI+vxRSPw1i/5lu+DKor
-   IoRRtBfyP9crk5yT2SJ+vgBOHEcYLcytQ5H8kpjH1btQMVIcWoULbQKcm
-   pCmM7ybiHb0XZojERu6BnkvIjEmhR1rIoZ0eLNb0otJdMQmovnTHCfvof
-   f89ekA65V8MtblN6Okf4DdkYTOxc3MDNlQD8BusFeLShFrs0YuHcB5YA0
-   t0h/dRiHlOr5KVEJ00Mqyc87nPZWOUFkYXQ8gdxoDU05aez1dGtMBLnGu
-   xnvO+9yenIfqyB3Lcasr0VwY0NQ1nuqFE5DxjiY+HSI4ebxhWQ9Rzhc09
-   g==;
-X-CSE-ConnectionGUID: BVLmEnh6RZ6Ou0poUshKeg==
-X-CSE-MsgGUID: yiTqIipmSJiNfTSXu0sgCg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2573482"
-X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2573482"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 13:02:46 -0800
-X-CSE-ConnectionGUID: hHDp9oAxTOeDV75A2FyxWA==
-X-CSE-MsgGUID: QtT5ImJoSvyYJ0V2Ml2LYA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6648815"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 13:02:44 -0800
-Date: Tue, 3 Nov 2026 23:02:41 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tristan Madani <tristmd@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, tristan@talencesecurity.com
-Subject: Re: [PATCH v7] iio: adc: pac1934: validate ACPI _DSM return type and
- bounds
-Message-ID: <aupL8Yb61IPDu_hH@ashevche-desk.local>
-References: <20261103185026.3139023-1-tristmd@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AAk8HwD2
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793740631;
+	b=ztXfjyS+535K2Z6Anc6OgwT7zRg4mwZ7up9wEIDN2TrEGxm3KC+b1vUz62D5wKb9iloh
+	 afmlhHZTsxbQK8iCZTN2rIfSXbA7vHWU8iM6hFbGL/5vYDl6X7W8fB2za0woWKQgDOA/3
+	 UhJtkdsf2igDCVZ4wwTDMFwpJE0hrbrLohrrzr3nkVOH41R+rN4nsGlihcVtR+M4qmZnL
+	 jHk+kNkSGbQCy/vJTJqkZnpydxZqwclqB3TAS1L83YCf00hMjiJtSY7vTCjoMeO8EOjEb
+	 O1njheMAz+UIlZZqRggvSeG74DKIMCEXuEuuDPRmuVFtDO29EAlQHAgcYZrM+H8fj2g==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793740631;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=17Xr34YktVCIPxD8sT9ELbr3cOLrvKfvPe2J49V593I=;
+	b=bV3ZwLmijhWjWobh/SUh8/hl6nlI1Fw+iJXT9zDipRjuqnCXoMDLR6AyKlxwb40fTo3v
+	 HJN27ilerGByy2Cf5YZC9JOLpfzxwVnCwaiX44hAUz5Zlin1zX+fPRdz4Zj9+seqkEsXV
+	 pXbbnNpW+7/ckSb/+0DCyacbKDMr64K0FlGe1uiE6oOCuK0LoktRwVkR4Ny11R/nXTTyZ
+	 ggbawIpoEaouLriWOq0bnUcBjeFjK1xNQrtQkvrYOke/yI+DvreSgCGNTsFTEzeNIubbY
+	 QtN/Lgp0JorQ1l/d+E3xci/KvR/NJmXFnb9U1ehz/chxtlM70tegvzEIhiuLeUguwLA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 272851F00919;
+	Tue,  3 Nov 2026 21:17:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793740631;
+	bh=17Xr34YktVCIPxD8sT9ELbr3cOLrvKfvPe2J49V593I=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=AAk8HwD2qGhwXSkVUSdbJymPIDmgBic9VgV88BdH5oCiDQyv5F1QXWie5c5KEytsP
+	 ksdD5EHCJSQsbdVbRQCvs7s8jZKtsCMqDD0eXT4MpWJ3rD1Y4EE8ZZJ+TupHEk4Kpa
+	 1wSXPBW+rRL7QCNF3u0Yi7jstPG3dj/u4rKX1Jbw2nQMf3aw1dDhjWcarr+jLGPrbR
+	 M4DChVxkiyYD2jROiD/WJfAb8jPzRxawHcbrNcGT/SWvrXSdMsSU2K/jn57YSkmOeI
+	 iQGQ/NfGp+qIjMDAh6Sko9ZzT4FRQaJR7p484FSWyO6IOSzJIbgPE4L3AcybC1or3+
+	 TFgAoboMwTRZQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id A08E346B34;
+	Tue,  3 Nov 2026 21:17:09 +0000 (UTC)
+From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Date: Tue, 03 Nov 2026 21:17:08 +0000
+Subject: [PATCH v3 2/2] iio: test: iio-test-format: add test case for char
+ format
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,41 +83,130 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261103185026.3139023-1-tristmd@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261103-iio-test-format-char-v3-2-d44074ecca70@gmail.com>
+References: <20261103-iio-test-format-char-v3-0-d44074ecca70@gmail.com>
+In-Reply-To: <20261103-iio-test-format-char-v3-0-d44074ecca70@gmail.com>
+To: Rodrigo Alencar <rodrigo.alencar@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793740628; l=3409;
+ i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
+ bh=j6hp8T4Cjj/hWoDuvMg1i82+SSxt038YUR09cQQDDKc=;
+ b=WLm3iidZxvUdA1MiDT4VYRulYg8QP01l9ov1EBzX2cFq5dj2IhiYIGd4eBnAACcf5yyZ75Nqg
+ Yw/Y38FIv04CfiZDJqCbXejkm5FWMH4w8TpQK81oAerZw2/rWLHH8OV
+X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
+ pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
+X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
+ with auth_id=1160
+X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 03, 2026 at 06:50:26PM +0000, Tristan Madani wrote:
-> 
-> pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
-> times to read channel configuration but does not validate the returned
-> object type or array bounds:
-> 
->   1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
->      firmware returns a different type, accessing rez->package.count
->      and rez->package.elements on a non-package object produces
->      unpredictable values.
-> 
->   2. The loop bounds use rez->package.count directly without capping
->      to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
->      than expected causes writes past the fixed-size labels[],
->      shunts[], and active_channels[] arrays.
-> 
->   3. The bipolar and sample rate DSM calls access elements[0] without
->      verifying package.count >= 1.
-> 
-> Use acpi_evaluate_dsm_typed() with ACPI_TYPE_PACKAGE to validate the
-> return type at evaluation time.  Cap loop iterations to
-> PAC1934_MAX_NUM_CHANNELS, and verify package count >= 1 before
-> accessing elements[0].
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-LGTM now,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+IIO_VAL_CHAR is used by thermocouple drivers to report the
+thermocouple type, but iio_format_value() has no test for it.
+
+Add a test case covering printable, special and non-printable
+characters, a NUL character, and values that do not fit in a char.
+
+Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+---
+ drivers/iio/test/iio-test-format.c | 67 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
+
+diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
+index 90cd23f25fd9..781ead359bab 100644
+--- a/drivers/iio/test/iio-test-format.c
++++ b/drivers/iio/test/iio-test-format.c
+@@ -217,6 +217,72 @@ static void iio_test_iio_format_value_multiple(struct kunit *test)
+ 	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1 -2 3 -4 5 \n");
+ }
+ 
++static void iio_test_iio_format_value_char(struct kunit *test)
++{
++	char *buf;
++	int val;
++	int ret;
++
++	buf = iio_test_format_alloc_buf(test);
++
++	/* Printable characters, e.g. a thermocouple type */
++	val = 'K';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "K\n");
++
++	val = 'j';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "j\n");
++
++	val = '0';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
++
++	/* Special characters are printed as is */
++	val = ' ';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\x20\n");
++
++	val = '%';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "%\n");
++
++	val = '\\';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\\\n");
++
++	/* Non-printable characters are printed as is */
++	val = '\n';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\n\n");
++
++	val = '\t';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\t\n");
++
++	val = 0x7f;
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\x7f\n");
++
++	val = 0xff;
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\xff\n");
++
++	/* A NUL character is emitted and counted like any other */
++	val = '\0';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\0\n");
++
++	/* Only the low byte of the value is used */
++	val = 0x100 + 'K';
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "K\n");
++
++	val = -1;
++	ret = iio_format_value(buf, IIO_VAL_CHAR, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "\xff\n");
++}
++
+ static void iio_test_iio_format_value_integer_64(struct kunit *test)
+ {
+ 	int values[2];
+@@ -326,6 +392,7 @@ static struct kunit_case iio_format_test_cases[] = {
+ 		KUNIT_CASE(iio_test_iio_format_value_fractional),
+ 		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
+ 		KUNIT_CASE(iio_test_iio_format_value_multiple),
++		KUNIT_CASE(iio_test_iio_format_value_char),
+ 		KUNIT_CASE(iio_test_iio_format_value_integer_64),
+ 		KUNIT_CASE(iio_test_iio_format_value_decimal_64),
+ 		{ }
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.56.0
 
 
