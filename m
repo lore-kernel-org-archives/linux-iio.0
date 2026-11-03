@@ -1,82 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793720759;
-	b=Vn9aaJTGZC4vESq/9/86cfwvcumygmRUbX3/LgfzKOFXcnHRvjozf2THEJnVoMnsJZ24
-	 XOKD7ymDTwHqe+VLdkqlRDg/7GnhRpzAEp1FNpXK7gdFcbQq27nhsS62KS6+/mQgbl7l8
-	 EDqKi5qsUUCSIm9SsmOfrRQyvR6YWMqJdxX6pdhCwlGbGYxZvzmh4pG/YQwHy0HwknvKh
-	 mtlhrbe+BbiSWpAfAIaN9RyylDQvUTtlO0svSpsyNEYSqFYzTRn0as2bB/EP2UcyU1UGQ
-	 uj6Yn0akbdmiwDJu7ybvjt6C/voOz5vLzOBHRvBoq2SQa97h5MWcdufefwmEMMK/kRA==
+	t=1793722393;
+	b=pQRufnk1QMCdom8f+fzQ1cy+euvsTZq0nd5D2uR8XpygezKv3cmmiv9g8YGyomla/uXK
+	 n/CoS16lh594xCmCF6zgUBvp6hmpCjq0t0HA57WFswlk7/dwo5+yPLo+gqzl8STYfaWJX
+	 Hu41IX/gQ1WSogQ1jC7Rhk4WCRLPtRz6cTjpHd58os9rU1bei01L0dMmIq8xSQr+GV6Rg
+	 X7zqUZc/lyYs2ey/HiQg/ej0/hKdGjs4ii6PWazxihhmouO1sdX3U1LxW1mw+ihP0Rd2b
+	 yAsGnpa68Y1aC49hsDHnM3ZO/AaUbn5fYoH475uh9ywfLuUEuSXcTVlp88X14L0v3BQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793720759;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793722393;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=f7Pn46So8jQHSwB+62GBHRAlUQBXhNesp3S3EaLzuus=;
-	b=HwNHX1EMkFRew4yoepHGX6SYzXISc+OI4j1MTR0RbxCgw2F7/qjvUb/AjPZ6/a+l7H6m
-	 8HgZtSdRQ7HqY3Onw3rh4ZNtK/3+ORbNllkW5bq13uY7rsa8dZcXv569mUMQJB35ZKBYa
-	 mS9h0WuPCqyAwnIkHg3NQ93Zlxh8GirlMYShtcyEspO2ypCuV34xwMnuFe2NwMvWMMKU0
-	 Mm/6sABybkMGXvor17DTB9Kg+qeXIQASKdj/hSubPRw9X5K7C4KtJ1b4p7pGRykbD6m+H
-	 AefTf6PokoKR4maGO/zGwNTQ5PjI21aaCTEiFX+CUJVKQAl453dij5+tjeA3EDx+sdA==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=ZUdSHGLaZ0x2ZTr7S5xk6f6VQ65wPDkIQdbNaQyecVU=;
+	b=W5a149CeJ0TlZP3YrdlF1+PYZ38MKG5lJx/zZ0uQ2R5/y7JlCt9jZ/idDtodaF93m1zb
+	 pH88thDjtEo6Le+/egPzMH2C4dQ6sza386WThKH//rbJer3BH/6SX4GsYeT48HZSR4PPh
+	 R6F2FbBEEvCiUWrkOMryuoAhTFiNgeO2eruPB24tkyO87uAObakEXNVNiG2ZQ6eZibayc
+	 CyDvMXUUXdc/WdEghfX8uKWBZq2x2cNw4n6eIvavULP730nhb+9DmjSFwQPmqdBgsy7vd
+	 VJFz3hM6pUmwekdbARzuhxJeWxhjIfQQysNDUFG50EchWL1JT3X6ge7jGzOMO85cqbQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=m2b1F9NO;
-	arc=none smtp.remote-ip=192.198.163.12
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mbFndIz1;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2DE8606A328;
-	Tue,  3 Nov 2026 15:45:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F2DE8606A328
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE5FA6082BFF;
+	Tue,  3 Nov 2026 16:13:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE5FA6082BFF
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=m2b1F9NO
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mbFndIz1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793720758; x=1825256758;
+  t=1793722393; x=1825258393;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=/hWz6No+TOy+Nqs6e3zuOEJoXU4KQWjUPwFN3ClO4YI=;
-  b=m2b1F9NO8SXz5vtWyaCB4S8GHXZVe/06CXxfc8tC4LWVb7tnL1wMU8Ix
-   QZIg51V2WTgQUJxqhFp55rBwgD9pgLLM8c7TtiS9mg7maisD2qLtIBS3a
-   iswwuHdXJQV7SlgSTTSHVdNnXPIBPJvFwQz1t2dcv3/HIiqxAWu/5uI0l
-   U7Q0BALyrxmCxMDa+hReeh0LJTHZYV4cPei5WaPTMxDZjzk2gwpTb1tP6
-   kOyEODhg0TSU52q706qEhyhYXYAq/DKCQz/3I8v/5rNWRcG6BC4lEZk9M
-   bZV50IBQ3SSKF1zH3wubXWYemDCjZBT6ODwDmHQMRNPxMJXRoIfULEM5S
+  bh=ij5ApUrtJjGnjtt0TprVV+c5oLMaSpv55TOI5b/crAI=;
+  b=mbFndIz1bUutQvFVJS646OzipwOd9+SL9YU/FGZESGV8TV0Q3Ka1MXuM
+   No9AbhB0POXqH8WSOvf1aWumagBvhqpN6OmCs0BkEyRXVo1kHuqpKZlAY
+   uzx9DVEO49KDc7501GW4ixSrMrdWD86jnKi0n4sBGN8+IQz/kTy3+XieD
+   FwCUwi9XPSP1NavSo0eKMLoIXAaMggTndUrdNooiAeupjvQGEAJhGgVkl
+   MLOJxNgn7p/e5glro2TbhYMmIBCW8Of/QFMQZdKvCixwQWHvd0Geq4Nlb
+   pqPjvAezdBQ8nIpZFAqwYwdNNw2hQP55hJVZtnhT5M8WCjNj7kLEDK4Kw
    Q==;
-X-CSE-ConnectionGUID: ke0dN1xsRGiWNOpQ6iQh7A==
-X-CSE-MsgGUID: MHZ9D4YMTFe4dDm1y8NROQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2345498"
+X-CSE-ConnectionGUID: Y9q/uQuTTCWBEYu2Y00vKQ==
+X-CSE-MsgGUID: uOcEEqzrSnahL+T/2iHKYw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2446662"
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2345498"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 07:45:57 -0800
-X-CSE-ConnectionGUID: o1ORyvq0Rp+i08G3uu5p/g==
-X-CSE-MsgGUID: WATM+HGzT0a73yy/LSr3UQ==
+   d="scan'208";a="2446662"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:13:12 -0800
+X-CSE-ConnectionGUID: bEkUO765QH2MUg9RIn00cw==
+X-CSE-MsgGUID: VlNKxX4pT5iLTAzgkZqpUQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6568401"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 03 Nov 2026 07:45:55 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xOGhs-00000000iu7-3RMG;
-	Tue, 03 Nov 2026 15:45:52 +0000
-Date: Tue, 3 Nov 2026 23:45:02 +0800
-From: kernel test robot <lkp@intel.com>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
+   d="scan'208";a="6527577"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:13:09 -0800
+Date: Tue, 3 Nov 2026 18:13:06 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
+	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Subject: Re: [PATCH v4 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <202611032339.9VCI3mxZ-lkp@intel.com>
-References: <SN1PR12MB25281F8D83D65C87BF4B6A43A56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Marius Cristea <marius.cristea@microchip.com>
+Subject: Re: [PATCH v5 2/5] iio: core: add IIO_CHARGE channel type
+Message-ID: <auoIEpE7KQ87wGDm@ashevche-desk.local>
+References: <20261103-pac1711-v5-0-71c20101a52e@microchip.com>
+ <20261103-pac1711-v5-2-71c20101a52e@microchip.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,36 +89,34 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SN1PR12MB25281F8D83D65C87BF4B6A43A56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
+In-Reply-To: <20261103-pac1711-v5-2-71c20101a52e@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Victor,
+On Tue, Nov 03, 2026 at 04:37:12PM +0200, Ariana Lazar wrote:
+> Add a new channel type for Coulomb counters, which accumulate current
+> measurements over time. The sysfs attribute is in_chargeY_raw and after
+> applying in_chargeY_scale, the value exposed is in milliCoulombs,
+> following the SI convention used by the IIO subsystem.
+> 
+> This new channel type will first be used by the pac1711 driver to report
+> Coulomb counter measurements.
 
-kernel test robot noticed the following build errors:
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_charge_raw
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_chargeY_raw
+> +KernelVersion:	7.4
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v7.3 next-20261030]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+7.5 at the best.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Victor-Chernyakin/iio-prepare-iio_format_value-to-handle-higher-precision-IIO_VAL_DECIMAL64_-formats/20261031-101327
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/SN1PR12MB25281F8D83D65C87BF4B6A43A56C2%40SN1PR12MB2528.namprd12.prod.outlook.com
-patch subject: [PATCH v4 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20261103/202611032339.9VCI3mxZ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 16.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261103/202611032339.9VCI3mxZ-lkp@intel.com/reproduce)
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Raw charge value read from the channel. The device acts as
+> +		a Coulomb counter by accumulating current measurements over
+> +		time. Units after application of scale are milliCoulombs. X
+> +		is the IIO index of the device.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611032339.9VCI3mxZ-lkp@intel.com/
+-- 
+With Best Regards,
+Andy Shevchenko
 
-All errors (new ones prefixed by >>):
 
-   arm-linux-gnueabi-ld: drivers/iio/cdc/fdc1004.o: in function `fdc1004_write_raw':
->> fdc1004.c:(.text.fdc1004_write_raw+0x344): undefined reference to `__aeabi_ldivmod'
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
