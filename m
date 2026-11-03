@@ -1,79 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793701386;
-	b=1UtphgD7KK4HJdXXPfYnVagqDYi4EfMpq51p5fgq9AtUDI/vOHRnSD3sRnbf1sB6cJ9e
-	 XFhWH8jjVywXOkNY+Ygkp6kZoNA900TVFCg5EVg/pN2hQol8Kk5MReB7X5q3yl9zu2HrL
-	 QPD58z7OAJYS8BTZ3+/rGvP1oRDATiaCz+Ldq+LSN3fIIs+gzdUHC7SWraNSVHzaA7YPJ
-	 gRTAMQSLvudCrYkBDC67Tb5BpGPbQY26HGRBHWzntxvmip1Mu/iZAHunhY3M79D37B64w
-	 pSYbV47skaovGHdtLPV+kqReV4LQ4S94DuIext386iSdcQxNeVevpZmJltUbBtwjaaw==
+	t=1793701597;
+	b=DFxtKK2eu/i/3q68A8m51SoJcWh0JaxZ3A1vTAdaPTrAVHzanvPeOo/QEOJurMbk7t5S
+	 QFVIkYCy6+BeBT2xl8QRqi8oF/54jO9QJOUTxlANvJ6QP8T0tTJZRpdRpnoXNebT6jPTf
+	 uM/WbFpk339eNSS/eoQIfl5TyDZ8zexonUMf9vU11IF+1iH8T08WZZv8KEANGecvwEnEj
+	 AfL14v1gxhO2bhqarVN8EN7HywQfLTCg9fJAWbZIQJcbehavcsdKChurSoZRkcpRb1sT/
+	 OCL24qxi9suUJLFb8OXUj0h/FufSI0ivVLl1MBW8MzVxKNY7ds5qk7PumFdJ6/hxCIw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793701386;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793701597;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=q8JFyquRieTUbfjjGw4jNjS6JFuSKqEwBfnEBnYPCjI=;
-	b=GBPt6I/GsX1gNoTh940F2SrAuVw/6lGZapv+Fy+LdSW8TVK3tOuCNKCS0aQ/MGakf2dg
-	 bG8hABO7EFggQ8xer90IprB39rxjBl4bmmLGd8o3J5cKF6eaoa92v/53fjgK6MGcBk9Vn
-	 7j7HFfWdlBnoylBY7limhS9IDPU3LZbTt7Y6jG9QdFOvyscjJkE80v5TnB3rWTJNCNnNv
-	 X28yTcdPTq9j1sXtjrPxVJEJd0C3hVyHt4b0un1/8eFXTegfXkxf3N3XRyFC8/3z990Wf
-	 DhvyypctTBfM/fDWly/BVjA0NvlwSJKnBTTdiii7Wy9tJQdrF8shg+sNk+JbNocWwMQ==
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=5x9Rr11HrEdahap39TQfO8SwszqIjV/38s8cyXHT6vA=;
+	b=sw70SZ1ab4c/xfAYU1VUFNrWh6/tzBkNRWBEAF9dPbGxth/zT0D90VsxrSyAWOhfZAhn
+	 zKBop4jKLI127CAZrbKYnkDuEC9kC6slzpA4SDbMO3U/zneRyHimotHmf1+mH59N9zFUG
+	 1nvFUIP5rmUtVnpt71SXCNVmDPm2izMpA9ow15Kd8cE/t7GUkZNnAVD8h6xMd3JcfhMuL
+	 ATdvcAyaPPUSlnE51cE5Z2UOoWsEMwmhCXrktTOMcqUW5mHlIwmoxRilkvp0VqARbK394
+	 /vLs1EoOBC4SvDxunhK2HEt9NAcH6HrpFmaFcLj5OXexm0357Ohx1ieOGmaMklRg71Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UxnsblkG;
-	arc=none smtp.remote-ip=192.198.163.13
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=W6A5mNJm;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2FE9606FAEB;
-	Tue,  3 Nov 2026 10:23:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C2FE9606FAEB
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02724608361E;
+	Tue,  3 Nov 2026 10:26:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02724608361E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UxnsblkG
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=W6A5mNJm
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793701384; x=1825237384;
+  t=1793701597; x=1825237597;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Gz/He+lzr6/0WjYdMg04Fv+kmVWNBx73IrzLorPrJ9Q=;
-  b=UxnsblkGPOPWnqo7QFQy62mkT6A+ACJLeK9Ple+f09hkV/e9paF++1Xs
-   gtNuasTLoOIFcOEFPMNyBfUFA++yWnbUyqxzCzL4IwiWPUfdoljuoQ3iE
-   2KxGotKK6G2pgnRGpZZw4G5ZtLVq99RJcI6MUy48x9kfrwy+njtcOO1yl
-   ePbQu4hkkZxY0VnQWGbNquFLCDJiXrESOTsdFhohhHabSGaAgKyIRcHxF
-   rf+yLpj6g8VeWAGB/Qh3iV4Hk9MfszMUMvKLQuu9eApxDhVjSPsXOQyz+
-   FSslG+F1HG0w811xsLuPKq3zFkqwpBpcKgQfGKCiQEWpDr215g/wnHBd7
-   g==;
-X-CSE-ConnectionGUID: 4fWFUA91SY+AYQ6bD4hxuw==
-X-CSE-MsgGUID: Fc+eUJeTR6SZSbL7giDPZQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2416220"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=bDZlbjutl0CIXovVxFWrgtRRTllYWh3L1VKIu+Yky5E=;
+  b=W6A5mNJmlYHlgneQl8KKu96VW7f2ZefFavWVrSEO3hSec5RMMj5UTYlB
+   eTXKvXlgTJHZnPz6QzEflJsF3qCyy2ek7kNESrxomrA1ffWLOvSMftKuy
+   Z/CIbwmp6j8zt+qkWVNdukpOceR9JtU/GCWD65yigsHpLrRj1FepgJGID
+   ko2nHT60OppfaQW3DX5+YsKuyfXhTkqF76yN0jg1X/GW1qAK9OTsvHWUR
+   B5Ar4IhGqSaXhwHlp0t4XW/5au48EGJOKeI4LQdt91wfmdOOjdeoKg4nV
+   Pg8LKobV+MDjAROoQNLkcvmZM2PH8g48P5bXED5IKzZa14L8DsFg4CioR
+   A==;
+X-CSE-ConnectionGUID: Cwk3PyR8TZOxmM+nbxKXBA==
+X-CSE-MsgGUID: OSSw0HrtTbK/dSDvqAmI0A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2300019"
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2416220"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 02:23:03 -0800
-X-CSE-ConnectionGUID: oqSdF9x9Ta6UmmvaUf9ynw==
-X-CSE-MsgGUID: utErKMwtQ32G6xpG5JZamQ==
+   d="scan'208";a="2300019"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 02:26:36 -0800
+X-CSE-ConnectionGUID: PmdpG4SRSkqCLrH8eOOXTA==
+X-CSE-MsgGUID: nsp7e0D/QtW5NyU2kB/Gtg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6380048"
+   d="scan'208";a="6479190"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 02:23:01 -0800
-Date: Tue, 3 Nov 2026 12:22:58 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 02:26:32 -0800
+Date: Tue, 3 Nov 2026 12:26:29 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tristan Madani <tristmd@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Tristan Madani <tristan@talencesecurity.com>
-Subject: Re: [PATCH v6] iio: adc: pac1934: validate ACPI _DSM return type and
- bounds
-Message-ID: <aum2ArpHeJAZIVfl@ashevche-desk.local>
-References: <20261101173736.1792283-1-tristmd@gmail.com>
+To: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
+Cc: jic23@kernel.org, Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Dragos Bogdan <dragos.bogdan@analog.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: ad7405: Add support for
+ ADuM7801/7802/7811/7812
+Message-ID: <aum21cmseqtOEs35@ashevche-desk.local>
+References: <20261102121352.23741-1-pop.ioan-daniel@analog.com>
+ <20261102121352.23741-3-pop.ioan-daniel@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,49 +88,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20261101173736.1792283-1-tristmd@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261102121352.23741-3-pop.ioan-daniel@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 01, 2026 at 05:37:36PM +0000, Tristan Madani wrote:
-> From: Tristan Madani <tristan@talencesecurity.com>
+On Mon, Nov 02, 2026 at 02:13:52PM +0200, Pop Ioan Daniel wrote:
+> Add a chip information structure and a device tree match table entry
+> for each of the ADuM7801, ADuM7802, ADuM7811 and ADuM7812. These parts
+> are handled the same way as the existing ADuM770x devices and differ
+> only in their full-scale input range: ±320 mV for the ADuM7801 and
+> ADuM7811, and ±64 mV for the ADuM7802 and ADuM7812.
 > 
-> pac1934_acpi_parse_channel_config() calls acpi_evaluate_dsm() four
-> times to read channel configuration but does not validate the returned
-> object type or array bounds:
-> 
->   1. No check that the returned object is ACPI_TYPE_PACKAGE.  If
->      firmware returns a different type, accessing rez->package.count
->      and rez->package.elements on a non-package object produces
->      unpredictable values.
-> 
->   2. The loop bounds use rez->package.count directly without capping
->      to PAC1934_MAX_NUM_CHANNELS (4).  A package with more elements
->      than expected causes writes past the fixed-size labels[],
->      shunts[], and active_channels[] arrays.
-> 
->   3. The bipolar and sample rate DSM calls access elements[0] without
->      verifying package.count >= 1.
-> 
-> Use acpi_evaluate_dsm_typed() with ACPI_TYPE_PACKAGE to validate the
-> return type at evaluation time.  Cap loop iterations to
-> PAC1934_MAX_NUM_CHANNELS, and verify package count >= 1 before
-> accessing elements[0].
+> Also list the new parts in the Kconfig help text.
 
 ...
 
-> -	for (i = 0; i < rez->package.count; i += 2) {
-> +	count = min(rez->package.count, PAC1934_MAX_NUM_CHANNELS * 2);
-> +	for (i = 0; i + 1 < count; i += 2) {
+>  	depends on IIO_BACKEND
+>  	help
+>  	  Say yes here to build support for Analog Devices AD7405, ADUM7701,
+> -	  ADUM7702, ADUM7703 analog to digital converters (ADC).
+> +	  ADUM7702, ADUM7703, ADUM7801, ADUM7802, ADUM7811, ADUM7812 analog
+> +	  to digital converters (ADC).
 
-Wouldn't
+This doesn't scale. See how the latest drivers reworked this to make it
+flexible.
 
-	count = min(rez->package.count & ~1, PAC1934_MAX_NUM_CHANNELS * 2);
-	for (i = 0; i < count; i += 2) {
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called ad7405.
 
-work?
+Also, do you need to change help text in tristate?
 
 -- 
 With Best Regards,
