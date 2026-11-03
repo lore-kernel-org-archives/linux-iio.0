@@ -1,67 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.151
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793697610;
-	b=yV5SOAA+MdVuyCHO/tF8vrdJ5xrv/JoSuNHNQyFgSokzZDj+mJF3Q0Im8bkqh+Dhmp/W
-	 pm4N0P57R3+FYVthg1G5/qw3Wvsns3GS/GAxilexWFH7gEfRT2eNOoMcBVBqUW0EunWo7
-	 tcim5ptNcPjXSBvgZIqU7CcOJ0tr60Kk2qtQjOqMzCqA2jGcXcEB9pSbhk7u8/ryqnPKl
-	 mBpRXnpznweVBpyFDRoiJ5d957kXTbczxBbvUPVinSvPasnJMjI/s6lvvEUKNOfwIRHlF
-	 Rg/7obw3R12C0okpfpUPEH534t/1XDoyN7Imhpoq0RvGx3oyVWwTuESqLm/Jd4kwJbQ==
+	t=1793698865;
+	b=rKot5yufonlNbee2FU4PUx6nQz5FmfT9G1FqF0nnTgYNXKC5o4M82PzoGAmJc/3Mf3CX
+	 Q8QOoNb7H9XCCGjrzWiOLBDVL1v6qXN4Vt+/ussND6K5thf+MhBixrk/gQTUSZa3+CqDU
+	 SzRWQJCJmHQHa4hhzw3SGi0QSfmMLFC7y20pBA2CxD32lwAdZn9CL1uGlB2+OQyxx9EH5
+	 4+pHRaIlvcBjwXfp9up9p5D+s+GI8X2RLs1I6yJ9N5OJr6piqmrnPF36lsL6vX7atTRZB
+	 WrV1dhZzCj+VqVVQRfH1AagKHSUo6fsOhmr2NOu+PjIKruAi+dLBcxPdEFOcHrO5eXw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793697610;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=qQUBwg7EWEuP3G99Ct4pTXSXiISjMvbZEC/5oHQfxf8=;
-	b=XNxHcGn6hD/zs5qGgn0mDT5i618Q7UmQ0FxEuSHwGDsUGEC6x2WdafTBF950hxK3NX0u
-	 2SVgx2t6K482QDQ2V3JSpKfyFUTWrxjUxbmt+xX3xqgY0hat8c4d1O0bewVPjButmHRtY
-	 BaZvtAV/1yf1+BEC45nlkcj100jrcKRryOTW+8ObYro+JeGXZMKo6b30U1pYyjXOdAyE2
-	 8ynbn5vnyFSzt0GshqHBOl961hCB4pdZ8+DN8REE3vcCEMDeaaUkP52jFnnueLX4WrzIF
-	 tnWa0y3Bqsm3Q/zsBWscsU2jPnPvO0X4usKubhzeT+YLn6d9eN8NZiE4ZcZ2b8Tj68g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793698865;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=c4cqAdmP/8MWIB/pdsOK0iBsN5mIxubdS4vXQ6mtVFY=;
+	b=wv+b+lMpP9/q8hFGtPBcCetVzqnyF0FUwZaGcF8MTHrJeIbbDT1a193Ww0hL1WP2ZHgT
+	 bMPHzB0kXvUF9oUvUWYYSUKt0KXeBnMDpvQtY7KHISf9Kuv/l2/KI23bxxJRNpLi7mCRS
+	 fxiFWcNUZ5iekloSqXHRuO/oPMVzGe0E4/0rnlvafiYmys8/K+XdCp87vkYu1oRGsi9+J
+	 eWEePfuoh15htqlfQpc9cQ/lKoDP3riJFadpzE7mltP5gWUIMgDSB9JtHyEDAynGSuaSE
+	 hsDveSEVq3RrfWl1o0WsJ4diCK5E+1FF/3bV48NFCJdX4NC5lQka8v2HojihEil+VCA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=OQGcGSi2;
-	arc=none smtp.remote-ip=111.22.67.151
-Received: from cmccmta8.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4CECD606A324;
-	Tue,  3 Nov 2026 09:20:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4CECD606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CYvPPrYP;
+	arc=none smtp.remote-ip=198.175.65.18
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1543606A331;
+	Tue,  3 Nov 2026 09:41:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1543606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=OQGcGSi2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=OQGcGSi2VP/ucliWfa2nm+eZ2jzFxRvzwnx79oycPDS+G+qjQFf5I0qO1PTtxxmGmoH8M2IyWGgv8
-	 WFdLqi/Ee/37oMkqIInyUnRlNI7X+YhWVEUpZmYuT09C5m5Dwa2ZjKqUJd5VFhXYklYUmMhPTbcXxg
-	 k3PxeR8BO4AfR2+k=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app06-12006 (RichMail) with SMTP id 2ee66ae9a74554a-5fcc9;
-	Tue, 03 Nov 2026 17:20:06 +0800 (CST)
-X-RM-TRANSID:2ee66ae9a74554a-5fcc9
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.98])
-	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee66ae9a744004-f3e30;
-	Tue, 03 Nov 2026 17:20:05 +0800 (CST)
-X-RM-TRANSID:2ee66ae9a744004-f3e30
-From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	laixiangwu <laixiangwu@cmss.chinamobile.com>
-Subject: [PATCH v3 0/2] iio: gyro: mpu3050: Fix runtime PM refcount leak in trigger enable path
-Date: Tue,  3 Nov 2026 17:20:00 +0800
-Message-ID: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.50.1.windows.1
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CYvPPrYP
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793698863; x=1825234863;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=M/cp1iW+rfSZJ6jmKcU5tSwLUpMwx5G6HERoO9ZQ2no=;
+  b=CYvPPrYPDUqK9mkFe45L5I+UhLcGjkNq01fa1chPaQSXt4AWcIfW0wg3
+   mLMewC475KPptm6ei3rveVrSqQxuTuwNunGaMhfyPl9jMyIgotbbURTon
+   arWrmOmVXwp3AOew7wn9rmeaV6/kBjmnw/4kIIxXRlPzO36poDZsI0Bvt
+   k2jzXJ3C56ctsHOIpYqNWvn4IngYhZLEVkB+HGIdFtz6PfQzGPls80lyC
+   LDY+Qgn8iUzbDA2y8LbEd4toNJAAx8azCL8Ygh3oSo0Hppn6lamloSPy1
+   XtAwK6XPdNS93KcHPh8swuWuMRMjfMmwbXVRMTTydgeik3I4O7INGkpdo
+   A==;
+X-CSE-ConnectionGUID: XfSMC3p8TtyM9DpkjmiXdw==
+X-CSE-MsgGUID: ideOaA02QSmmaiYamBl3MA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2428790"
+X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
+   d="scan'208";a="2428790"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 01:41:03 -0800
+X-CSE-ConnectionGUID: oOpU5dp4Q/aLaDS/hth2Lg==
+X-CSE-MsgGUID: ttu9stL2TmW64LxKe4tmjw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
+   d="scan'208";a="6377794"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 01:41:01 -0800
+Date: Tue, 3 Nov 2026 11:40:59 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com
+Subject: Re: [PATCH v3 4/4] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <aumsKylMrxSOC0XD@ashevche-desk.local>
+References: <auBTxjakiTKn1LL_@ashevche-desk.local>
+ <SN1PR12MB2528C775582FEF9B200A1FBCA56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -71,47 +80,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN1PR12MB2528C775582FEF9B200A1FBCA56C2@SN1PR12MB2528.namprd12.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: laixiangwu <laixiangwu@cmss.chinamobile.com>
+On Sat, Oct 31, 2026 at 10:22:34AM -0500, Victor Chernyakin wrote:
 
-Hi Jonathan,
+...
 
-This is a repost of the v2 series as a new top-level thread, as
-requested. There are no code changes since v2.
+> > > > +     /*
+> > > > +		 * Now read the two registers making up the measurement.
+> > > > +		 * The datasheet says to read MSB first, LSB second.
+> > > > +		 */
+> > > > 		// also note in this case we don't need to have _MSB in the name
+> > > > 		ret = regmap_bulk_read(map, FDC1004_REG_MEASn(0), reg_val, sizeof(reg_val));
+> > > 
+> > > I agree we could drop the _MSB if this was the only use
+> > > of FDC1004_REG_MEASn_MSB, but we use both _MSB and _LSB macros in the
+> > > volatile register table definition, and it would be weird to have one
+> > > macro with _LSB but the other without _MSB.
+> > 
+> > You can have three!
+> 
+> I suppose, but I would prefer to avoid duplicating the macro, and
+> I think having _MSB here helps to confirm what the comment is saying,
+> that we should be reading MSB first.
+> 
+> > > > 		if (ret)
+> > > > 			return ret;
+> > > > 
+> > > > #ifdef __LITTLE_ENDIAN
+> > > > 		reg_val = swahw32(reg_val);
+> > > > #endif
+> > > > 
+> > > > 		*val = sign_extend32(reg_val >> 8, 23);
+> > > > 
+> > > > 		// I assume the following is also possible in this case
+> > > > 		// *val = (int)reg_val >> 8;
+> > > > 		// but usually we use sign_extend32() in IIO even when simple
+> > > > 		// casting is okay
+> > > >
+> > > > This also reduces stack usage.
+> > > 
+> > > AFAIK a good optimizer should be able to see that reg_val and reg_vals are
+> > > never live at the same time and reuse the same stack slot for both (whether
+> > > GCC or Clang actually do that for this function, I can't be bothered to check).
+> > > 
+> > > If you and Jonathan prefer that version for other reasons though, I can
+> > > switch to it.
+> > 
+> > I gave an idea, I would wait for Jonathan to judge on it.
+> 
+> Since we're waiting for an answer, I've posted v4 without this change
+> so that the other parts of the patch can move forward, but I can
+> always add it to v5, etc.
 
-For context, this series fixes a runtime PM refcount leak in the
-mpu3050 data ready trigger enable path: patch 1 splits the enable
-and disable paths out of mpu3050_drdy_trigger_set_state() into
-separate helpers, and patch 2 applies the fix on top, using
-pm_runtime_resume_and_get() instead of pm_runtime_get_sync(), which
-also keeps the usage counter balanced when the resume fails.
-
-Changes in v3:
-- no code changes, the series is reposted as a new top-level thread
-  (v2 was mistakenly sent as a reply to the review comments).
-
-Changes in v2:
-- split the enable and disable paths out of
-  mpu3050_drdy_trigger_set_state() into a precursor patch, as
-  suggested by the reviewer.
-- use pm_runtime_resume_and_get() instead of pm_runtime_get_sync(),
-  as suggested by the reviewer.
-
-v2: https://lore.kernel.org/r/20261101092327.197-1-laixiangwu@cmss.chinamobile.com/
-v1: https://lore.kernel.org/r/20261030084305.1660-1-laixiangwu@cmss.chinamobile.com/
-
-laixiangwu (2):
-  iio: gyro: mpu3050: Split data ready trigger enable/disable into
-    helpers
-  iio: gyro: mpu3050: Fix runtime PM refcount leak in trigger enable
-    path
-
- drivers/iio/gyro/mpu3050-core.c | 182 +++++++++++++++++++-------------
- 1 file changed, 108 insertions(+), 74 deletions(-)
+Generally it's not recommended to post without waiting for the resolution.
+If you do so, at least make sure you have mentioned the opens.
 
 -- 
-2.50.1.windows.1
-
+With Best Regards,
+Andy Shevchenko
 
 
