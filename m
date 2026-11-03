@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793722393;
-	b=pQRufnk1QMCdom8f+fzQ1cy+euvsTZq0nd5D2uR8XpygezKv3cmmiv9g8YGyomla/uXK
-	 n/CoS16lh594xCmCF6zgUBvp6hmpCjq0t0HA57WFswlk7/dwo5+yPLo+gqzl8STYfaWJX
-	 Hu41IX/gQ1WSogQ1jC7Rhk4WCRLPtRz6cTjpHd58os9rU1bei01L0dMmIq8xSQr+GV6Rg
-	 X7zqUZc/lyYs2ey/HiQg/ej0/hKdGjs4ii6PWazxihhmouO1sdX3U1LxW1mw+ihP0Rd2b
-	 yAsGnpa68Y1aC49hsDHnM3ZO/AaUbn5fYoH475uh9ywfLuUEuSXcTVlp88X14L0v3BQ==
+	t=1793722499;
+	b=bH6iLgMX8B/rDxTdusfFQJHY9Mlt4Y1lMNTQHLxmPt0N3FD0DsIV3nczNOVvfh23NBuy
+	 JbGn0D8S2Ax3RQoWc1RKFFviSbjIaDsgIk3zMmv3fVgKKUtXP8gnnlbem8Kr/YFTcL4oV
+	 RmHEvFFRgOfYF+88bj5L6kaAzWWjaJHm1fI0N34VgyeoArwtyh1kYVzISWbirmlboLsd3
+	 mp6BDinoZm1gL3DgTSLwtjb97fC4x4s3QeyfxHu5jZLhO8tfg3z5Ei97jQ3qzfS0E0em4
+	 H/iN3BD3ELjcsxtPlLzs4ACR+u1tMiLGtCAocFjJnp2VP4vC2faK1v8N29zpFXxJ5QA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793722393;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793722499;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=ZUdSHGLaZ0x2ZTr7S5xk6f6VQ65wPDkIQdbNaQyecVU=;
-	b=W5a149CeJ0TlZP3YrdlF1+PYZ38MKG5lJx/zZ0uQ2R5/y7JlCt9jZ/idDtodaF93m1zb
-	 pH88thDjtEo6Le+/egPzMH2C4dQ6sza386WThKH//rbJer3BH/6SX4GsYeT48HZSR4PPh
-	 R6F2FbBEEvCiUWrkOMryuoAhTFiNgeO2eruPB24tkyO87uAObakEXNVNiG2ZQ6eZibayc
-	 CyDvMXUUXdc/WdEghfX8uKWBZq2x2cNw4n6eIvavULP730nhb+9DmjSFwQPmqdBgsy7vd
-	 VJFz3hM6pUmwekdbARzuhxJeWxhjIfQQysNDUFG50EchWL1JT3X6ge7jGzOMO85cqbQ==
+	bh=EKCJmsDojR6fmOrZt3xL3Qv8JIBHOSZUtNHfGzpr6gM=;
+	b=LyjlhfbeE09uWbxJ1VC/BEf+C9HZXrkzgU054AYmRqfTB2aV7IjsmRLAhcpckXwxyG6j
+	 hVuO+68dOIRjOD05d+JcNdyi3a9+bH9hGAtsZ5fSDGNY3zzp4O7JfwHuPqMxl7sdMBJau
+	 9F3i+b+AINzPsl1CQW98XY9uTnaRGKowcP69HshLXWGm3z4z1Pa60d8by5sPNYvxSQnB9
+	 JVnqqMjRxXV5Nj7dwlXBCy8VQpjtASn9QJ1oYNfDRurwYDz43SXggNW+bTnJAQFvEy2r2
+	 EY93McR21JH7wjrj+EwQytWwT3/8Rg0XWjG9Pny3oXWvbBjmRGySqeK4KPwbcNq7G7A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mbFndIz1;
-	arc=none smtp.remote-ip=198.175.65.16
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=U7915FKJ;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE5FA6082BFF;
-	Tue,  3 Nov 2026 16:13:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE5FA6082BFF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0683606A334;
+	Tue,  3 Nov 2026 16:14:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D0683606A334
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mbFndIz1
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=U7915FKJ
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793722393; x=1825258393;
+  t=1793722499; x=1825258499;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ij5ApUrtJjGnjtt0TprVV+c5oLMaSpv55TOI5b/crAI=;
-  b=mbFndIz1bUutQvFVJS646OzipwOd9+SL9YU/FGZESGV8TV0Q3Ka1MXuM
-   No9AbhB0POXqH8WSOvf1aWumagBvhqpN6OmCs0BkEyRXVo1kHuqpKZlAY
-   uzx9DVEO49KDc7501GW4ixSrMrdWD86jnKi0n4sBGN8+IQz/kTy3+XieD
-   FwCUwi9XPSP1NavSo0eKMLoIXAaMggTndUrdNooiAeupjvQGEAJhGgVkl
-   MLOJxNgn7p/e5glro2TbhYMmIBCW8Of/QFMQZdKvCixwQWHvd0Geq4Nlb
-   pqPjvAezdBQ8nIpZFAqwYwdNNw2hQP55hJVZtnhT5M8WCjNj7kLEDK4Kw
-   Q==;
-X-CSE-ConnectionGUID: Y9q/uQuTTCWBEYu2Y00vKQ==
-X-CSE-MsgGUID: uOcEEqzrSnahL+T/2iHKYw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2446662"
+  bh=Acx7f7PNUJNNihS9jXTISjx6ZVUeRGm4ZDOoBevZJME=;
+  b=U7915FKJa13azIbYE/daiFihw6YrsaPnjzrdtN2/0ho1ocDdZnzsic0F
+   hVEgweixGfLALxC/lzHXs09BGU6+/T1RnMS0PHixRChUNKvHrpQMcwiJN
+   TQVvlKahxTQ2pHp8xg7kA6OH1rmHbm3oEcysATpJ6E6Qc85v2m5j6hih4
+   Q+wLkR43BUSnUAPTE25n2J1X2igSSf4tZYSd4TiNdBBGhyPTYVKuuexhx
+   GsqM3nISxndBucA5CfscT8Y/LGRgjFjsMb3JC4H9INS9D/mgDv0RoHV7h
+   Hbv2xMLlVVu4ILCc9LB3ulqiBuf7OYxgT8J9/laVjteW+1jpjLjujm41b
+   w==;
+X-CSE-ConnectionGUID: euUmgpmvRBmqZbpFs8IxOw==
+X-CSE-MsgGUID: HiywbwjBReSTfCkptSPTSQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2452774"
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2446662"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:13:12 -0800
-X-CSE-ConnectionGUID: bEkUO765QH2MUg9RIn00cw==
-X-CSE-MsgGUID: VlNKxX4pT5iLTAzgkZqpUQ==
+   d="scan'208";a="2452774"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:14:58 -0800
+X-CSE-ConnectionGUID: nhPE4N1wTuS0wqrduR9jJw==
+X-CSE-MsgGUID: rdviNjH4Tj6XJ8HBUI6SdA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6527577"
+   d="scan'208";a="6620460"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:13:09 -0800
-Date: Tue, 3 Nov 2026 18:13:06 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:14:55 -0800
+Date: Tue, 3 Nov 2026 18:14:52 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Ariana Lazar <ariana.lazar@microchip.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
@@ -74,10 +74,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
 	linux-hwmon@vger.kernel.org,
 	Neil Armstrong <neil.armstrong@linaro.org>,
 	Marius Cristea <marius.cristea@microchip.com>
-Subject: Re: [PATCH v5 2/5] iio: core: add IIO_CHARGE channel type
-Message-ID: <auoIEpE7KQ87wGDm@ashevche-desk.local>
+Subject: Re: [PATCH v5 3/5] iio: core: add iio_fill_val_int_64() helper
+Message-ID: <auoIfKeWziFMy0zh@ashevche-desk.local>
 References: <20261103-pac1711-v5-0-71c20101a52e@microchip.com>
- <20261103-pac1711-v5-2-71c20101a52e@microchip.com>
+ <20261103-pac1711-v5-3-71c20101a52e@microchip.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,31 +89,19 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261103-pac1711-v5-2-71c20101a52e@microchip.com>
+In-Reply-To: <20261103-pac1711-v5-3-71c20101a52e@microchip.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 03, 2026 at 04:37:12PM +0200, Ariana Lazar wrote:
-> Add a new channel type for Coulomb counters, which accumulate current
-> measurements over time. The sysfs attribute is in_chargeY_raw and after
-> applying in_chargeY_scale, the value exposed is in milliCoulombs,
-> following the SI convention used by the IIO subsystem.
+On Tue, Nov 03, 2026 at 04:37:13PM +0200, Ariana Lazar wrote:
+> Add iio_fill_val_int_64() to populate the val and val2 output parameters
+> with the lower and upper 32 bits of a 64-bit value, as used for
+> IIO_VAL_INT_64. The helper wraps lower_32_bits() and upper_32_bits() in
+> order to split the value with a single call.
 > 
-> This new channel type will first be used by the pac1711 driver to report
-> Coulomb counter measurements.
+> The pac1711 driver will be the first user of this function.
 
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_charge_raw
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_chargeY_raw
-> +KernelVersion:	7.4
-
-7.5 at the best.
-
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw charge value read from the channel. The device acts as
-> +		a Coulomb counter by accumulating current measurements over
-> +		time. Units after application of scale are milliCoulombs. X
-> +		is the IIO index of the device.
+NAK. Use existing iio_val_s64_decompose().
 
 -- 
 With Best Regards,
