@@ -1,101 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.48
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793714625;
-	b=NrnDDB/CHqu1lLiRT7fp8UDo0ASfXSNeSDHe8u5T2M/88qaI7IRAjS4aLI2NHHWt/tfl
-	 cmibHz0oMpbPh0tXEwtyLEpiDnEFihFPDzEnzUBdWXXqWBm0x3XcFrcc7Frii79t/ebvB
-	 SOFofzMYwXrtjj5kRLjoWdLOZU6vaXFQsWp/lhs09iiTmh4U2Jmw6WC21wTToxwMZQ31W
-	 /Wa7z5/T2FXDeHq9DSJRj7ZMyfT19OsIwUrEm198QQPANnFzzsfiwVYVZoBRrerNE/lQZ
-	 Z4xpKhY1yky7SdhPC/5hpsiyfIxRQkL65MSfGYFbIL2H2pIE2IelyDazhs5g0K3SV0g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793714625;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=0mpQqPcx/wO2M/JeyOkuY7Hd6GV1/TOLmZZItrx8K9I=;
-	b=QafqcYj15gfzmUgZR3txEyhiZ3ugOrsfGnQ8vcN9G1o8s1a8pBsZc8bOUGueuezWHF9y
-	 YETYKl+BX34DOceKmAXmQNWdhRN3Y2QXd2pzxx5+JAKTgkjnu+P/sdz4nSlEFGClFc2lx
-	 Eiq93DnufAOFQ+g97gcUq1sx3yYHSKu4ZTGr7Qewrw5w9AAegJXBGoNdodfih7+1tUVMu
-	 pFWUOQXI2p94xDI0lIW/CJWWJu0cHSkLldSkYdrGh5IOZZGOs2O8og8UKxUoNOtz1aNH+
-	 jKZaXJ9l6TsL44eKMrwCm12f1q9MPdk0i48CHVay5jHTQzpQzZJ8uD74p+SQ7GAn1qw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=re4roQiG;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.48
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793715176;
+	b=FFB1bLGJovF3xqVbh8pD2A5pLHMXDXJA2uN0MCWwTk9g+Mj98FJxlVAikIy9vti4Ma6s
+	 YkndxPnS5cNRtkM3W4mczJwngxxDzU4/ABNS8XxBCiOifMgTv/YN7IH3Qzk+n9y6z5U9R
+	 yHHpmx78y/RTBQZ6oaOp+awhkeM7wqjlxtqLw+2FEMCXQYHFjYf3SoVPe9mLCSGhuBrpR
+	 a39+ZYadED72+Jrc7lk5jJ7cKvda8Qi86sEP80Aj2ViBwH06WCTvqpG0yHQjkrGr4t7a+
+	 Z8nYvwVXhxphBChYo+hc0fYBxagIo/kuFf8FYDiD8VTDNtGDmRmydXnezgGp2sbSOpA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793715176;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
+	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:User-Agent:MIME-Version;
+	bh=VJiYm7UJux9idX0JQ7Nj/k1JSHluv9DMg/+XlxnNVXM=;
+	b=XL+sRzvLgOm+KxlDrj1OYfS4madjdBc1RMdTuHU69QG7yp6Db94LYnWCnbD0cAVKN/g0
+	 IUF8VDeomECbikm/xl0UNA/yJKOyDMuh2gMZU8dAixo/WEIQSuaQtAGIeo1TFikX71+pj
+	 HWOUtnbtUAnW3ooEiIlz+3R3GBPT9dFJ7qyz0z2eKe+omEdg2JgbgEevV6ZW6K+Hh/uDd
+	 FtsvLOlDy31JOcwGS/XScIL3uffRuwl28kyW/cxFjQla3Hrp1zTULvmkHCxs/v1VlZz2c
+	 TktH5kYRB/Og925/BnwYfgzvUCroCyarpT2al436SK4q1qGgtK+iS4bCZa3hFk5+6TQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="G/MDCWAJ";
+	arc=none smtp.remote-ip=198.175.65.17
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F296071BCF
-	for <linux-iio@vger.kernel.org>; Tue,  3 Nov 2026 14:03:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A5F296071BCF
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2F79606A324;
+	Tue,  3 Nov 2026 14:12:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F2F79606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=re4roQiG
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-48e3b22e971so2149637f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 06:03:44 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793714623; cv=none;
-        d=google.com; s=arc-20260327;
-        b=l/ClVlfAlz0ArEC3ED70rNFJmJDsrGix34vwjcs8wRQvWEWs0sC0OAUIPbDrAYo32i
-         bbz+oF9bZt8hNuN9rybOVT/DvTHb67nNoUaITsoIQzXqNJzizaONOrccCrCIp6TSKYH2
-         BGJzD8umgIzcebCiTLKJfMcz5ncPLbz0yLuITKDV2NSveRsEqwQ/+QBIWNrBVpFIvIfx
-         rh8POjWZS8mkeTc9oqG7OxcruGgFBCLoce/lSL7W+GyQNEF/SCvxRlW6fN4hNpeVqYCq
-         1Fixh0+mI7OZ6EU10UVNZyFwlBAMsr1U4C6tSL92jjCyR10dDQV11kYswWllsVQR3rG+
-         dhTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=0mpQqPcx/wO2M/JeyOkuY7Hd6GV1/TOLmZZItrx8K9I=;
-        fh=3iUz5R0BUI2tBknW6KHw22/h2tEEGoXm2kaxx8lztBc=;
-        b=lsPjqubuTmAIgr5v5cyR+PXTvLiXYdaco4yoNpEKPMqfIGOAvwUXw9lJwbGhbxo/x2
-         Sd5mjXv3c7cDCd2DPrjriMOI2be0Xcbr1A6qrB8+lgNQ0YHrD5Y8800H629sC1/5YQLl
-         pjbjxutD6WQojyWnfAoFjQzLWfFUKenuBO+9sPTf6NXsIVGqQ91Jp5+9htdjA1quPa4E
-         mPhuH4NgXZ4BFuekJ8dyX2byUIimMndhisDutCsus2AjNzcvJw5bqVZ4UX5awn+HjKM+
-         5D0hiMTYuSLT5GfkQLU/ZVt5OeptBAs6tFIdJeRsGVrvp5pQIaUsCldd3QLeYD1ORLDK
-         eeLQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793714623; x=1794319423; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=0mpQqPcx/wO2M/JeyOkuY7Hd6GV1/TOLmZZItrx8K9I=;
-        b=re4roQiGcIOZUOxeSIUk13f6hFgq35N2BFn/TGdsSeJqrLYI9Z4m2veFBynY5CqJAZ
-         zjHkmGHKXBI0giMk+YB11PczLQpOwakV4NnHnKwLIpk/VvtpzZRplMw5A+j0rPZo2M6K
-         BiobOwVXJNUGgeyJhxYvRYVf8Rnpz0nYDP8z66R/UoKfL+QdA+eFKUW/WrGMQjfwrjhR
-         utsU5IbH78qri9akiLmCdD0lcd2pSloJ5JvM5+PfnI7Hk9vzGDK/WrNOkvIbGzUVoSHB
-         cOvIWCZ4RPp/wHS8o7W95EO7UgkTzMEG0uouNQni523u0Bh6eIXD/VfgC3+2oZUshjZh
-         S8lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793714623; x=1794319423;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0mpQqPcx/wO2M/JeyOkuY7Hd6GV1/TOLmZZItrx8K9I=;
-        b=xsA4wZ1nwce10yORtgvk/sdnt6Sru2j09m/tDK8LAV9oVRY0IF6n15NAixV3HWOmBf
-         0/D0FmGC0MQK+qumFl9mfYZ6CVpu84r89uWkxvi56NbkHUuWIUchs80n2eIXyKMjbBkw
-         c00kXmMlAqcl47SFK5LrQPVxE8ELQ1aIbksrRanbkQdMCyZrL6BE07Esz6DF7nFAYWHB
-         AD7JCNe3ksvOa9ZTeZ9jM6NVUszQ5lXB+9XE9vAH78/JDv96Ot0KCyKgx0f7TKyU2bz/
-         qmxOxt/DKFs7zLomSNpzn3jjf09owslOOQEl3X1Y9Qt8H4McSqZM9V0xXM6FeBTg6ZG6
-         Jh5w==
-X-Forwarded-Encrypted: i=1; AKwUvByTzB+ll1XiQdN3xhkbTZnGRwW5iKfAriIuccdG6FolL3VZRnjKJmJ52opbQQGKbbzIZoqe5HwFUaE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/X66INzyhsRY1Yq+L9IPKJysv8XpIFWOGiA0G+kBzg0kgTkG/L
-	m38++K7N4cpsYBxfN4AWA83aZHQJg3rBOJf1ACVeHBPRBj76ioSG3b+opZOAadgN/UQs4l6iEuZ
-	TQprPhCfxVEUlqvPP8cmrmSzR1BvEnpOT+DXc+oY=
-X-Gm-Gg: AYBFou3mJhJPAHx4GtkH6cUzyOaFCXTgxXPalAxamtRwHl9YUN3nWpp+7bvsJD0qEGE
-	tFbubBljPp6p0nRo7VQLEuVkVST0vQ8j2Td3ue441cWnvoTDZzSN5UhXd+1WZaVJqGm/dRWxyb0
-	aSXzOmuXaW7GzwfGf0j2mD6tFAZY74OT8iPHLpgXE2VSHbsz81i8ixSd6ZzCtVH0WCq6IE1sAPq
-	7eLiJXUzlzmPWsSLwCHshDmmxnOftoDnUVVwsORD2+R0G+vnLCr2ANKBXIpTztbXjSygV3Olt6H
-	RulMqdeh9sZl1kaQ6GwTDQU1TmJbY0z63CQszKaVyQkXVOwSPpgWN+5Xpj9PE64JY3Gm8QL3l3q
-	XDKZoMdbcRF6CH0KSPouMVHX81gSvc14nbJ9Ik1W/rooB+ZcCsdjxKj7BrwAoloS7modELqZhbJ
-	X//d/nOXA/HTvQY2OaAV3UA4ICpy3hklwHBQ9oRQu209QkJhUvIUVp3Jxc
-X-Received: by 2002:a05:600c:848c:b0:4a1:efd3:9862 with SMTP id
- 5b1f17b1804b1-4ac1765d977mr282488195e9.21.1793714622717; Tue, 03 Nov 2026
- 06:03:42 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=G/MDCWAJ
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793715176; x=1825251176;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=GEtSxpe7gQ6US0v+DeHjs5kOMzZtxFEAD5UmXw0Um+M=;
+  b=G/MDCWAJPihWNvGBHMVc2D64silIEmyMi7l6UviepbnvMnv/+ndPBidM
+   nWM1OcD8OPsyUHKgUegl1baX9SSD7pDJKo9ATnGGw9KuHPPxgLuYFcYgs
+   wdGORYmrOmcPLzutlkJ6aNgaQHMdYnWm07kxrF52bvULvlC4jNbrzUIRM
+   IcTqkFE+bwotaTTwNJQ+5nI1Ze4vRH/eAHTrhmTmK3CKmleBPfYxYoxMu
+   va479aUTVtHCFTG2CO1phGk20azLPT3PcmgHWBQrEJajryVg/Clkqragw
+   vyTt6CcX/AKvxasAZghzDNJOaASDNpxavcezmGRbsJfDFURcU9dDyUe6S
+   g==;
+X-CSE-ConnectionGUID: U5/SQhvmRkmpfyt+NXiKTw==
+X-CSE-MsgGUID: kny0DaCYTT6zzi3PpcJ+dw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2455525"
+X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
+   d="scan'208";a="2455525"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 06:12:56 -0800
+X-CSE-ConnectionGUID: ThEnGDMZQKabsvKHZ2R5FA==
+X-CSE-MsgGUID: h3UKpd6eTV6kDZLmRg6ckw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
+   d="scan'208";a="6772446"
+Received: from schen9-mobl4.amr.corp.intel.com (HELO [10.125.109.222]) ([10.125.109.222])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 06:12:55 -0800
+Message-ID: <e936116958efcf6b4220b1769654d60628f801af.camel@linux.intel.com>
+Subject: Re: [PATCH] HID: sensor-custom: Synchronize misc-device teardown
+ with file lifetime
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org, jic23@kernel.org, bentiss@kernel.org
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, simeon@maryasin.name
+Date: Tue, 03 Nov 2026 06:12:54 -0800
+In-Reply-To: <20261103015734.578613-1-srinivas.pandruvada@linux.intel.com>
+References: <20261103015734.578613-1-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,183 +83,152 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261102170911.3867389-1-Frank.Li@oss.nxp.com>
-In-Reply-To: <20261102170911.3867389-1-Frank.Li@oss.nxp.com>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Tue, 3 Nov 2026 14:03:15 +0000
-X-Gm-Features: AclHuK9lTBNUFEhnmVUe-0bw9b56qg4kVZy5zFZ6xKayAE9tcP58fndIr_XiG0M
-Message-ID: <CA+V-a8t0bf_8hc1vd7c+OXBQfgBjp6EJjDALm8+myVYRNzy-Xw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iio: use dmaengine_desc_set_callback()
-To: Frank.Li@oss.nxp.com
-Cc: Eugen Hristev <ehristev@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>, 
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	Daniel Lezcano <daniel.lezcano@kernel.org>, Stepan Ionichev <sozdayvek@gmail.com>, 
-	Felix Gu <ustc.gu@gmail.com>, Frank Li <Frank.Li@nxp.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
-	Shuvam Pandey <shuvampandey1@gmail.com>, Piyush Patle <piyushpatle228@gmail.com>, 
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>, Cheick Traore <cheick.traore-ext@st.com>, 
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>, Vinod Koul <vkoul@kernel.org>, 
-	"Rob Herring (Arm)" <robh@kernel.org>, Shi Hao <i.shihao.999@gmail.com>, 
-	Kees Cook <kees+treewide@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>, 
-	"open list:MICROCHIP SAMA5D2-COMPATIBLE ADC DRIVER" <linux-iio@vger.kernel.org>, 
-	"moderated list:ARM/Microchip (AT91) SoC support" <linux-arm-kernel@lists.infradead.org>, 
-	open list <linux-kernel@vger.kernel.org>, 
-	"open list:RENESAS RZ/T2H / RZ/N2H A/D DRIVER" <linux-renesas-soc@vger.kernel.org>, 
-	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>, imx@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 2, 2026 at 8:55=E2=80=AFPM <Frank.Li@oss.nxp.com> wrote:
->
-> From: Frank Li <Frank.Li@nxp.com>
->
-> Replace open-coded assignments to callback and callback_param fields
-> of struct dma_async_tx_descriptor with calls to the
-> dmaengine_desc_set_callback() helper.
->
-> No functional change intended. Prepare make to struct
-> dma_async_tx_descriptor private to the DMA engine.
->
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+On Mon, 2026-11-02 at 17:57 -0800, Srinivas Pandruvada wrote:
+> The HID sensor custom misc device frees its per-sensor state in
+> remove() while userspace may still hold an open file descriptor. A
+> reader blocked in read() can remain queued on sensor_inst->wait after
+> the
+> object has been freed, and a later wakeup races with teardown and
+> touches stale memory.
+>=20
+> Synchronize the misc-device teardown with file lifetime before
+> freeing
+> the per-sensor state. Set a removal flag, reject new opens, wake
+> blocked waiters, and wait for the last open file to close before
+> deregistering the misc device and freeing the FIFO. Fail in-flight
+> read()
+> and poll() operations cleanly once removal is in progress so
+> userspace
+> cannot access freed memory after the device disappears.
+>=20
+> This avoids use-after-free on read(), poll(), release(), and open()
+> after the HID sensor custom character device has been removed
+>=20
+Hi Simeon,
+
+Shashiko found issue with this change, so hold on for testing.
+
+Thanks,
+Srinivas
+
+> Reported-by: =D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=
+=8F=D1=81=D0=B8=D0=BD <simeon@maryasin.name>
+> Signed-off-by: Srinivas Pandruvada
+> <srinivas.pandruvada@linux.intel.com>
 > ---
->  drivers/iio/adc/at91-sama5d2_adc.c                 | 3 +--
->  drivers/iio/adc/nxp-sar-adc.c                      | 3 +--
->  drivers/iio/adc/rzt2h_adc.c                        | 3 +--
-For the T2H changes,
-
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-
-Cheers,
-Prabhakar
-
->  drivers/iio/adc/stm32-adc.c                        | 3 +--
->  drivers/iio/adc/stm32-dfsdm-adc.c                  | 3 +--
->  drivers/iio/adc/ti_am335x_adc.c                    | 3 +--
->  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 3 +--
->  7 files changed, 7 insertions(+), 14 deletions(-)
->
-> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sa=
-ma5d2_adc.c
-> index 78081cbfde5e8..d479c9bc9b3e8 100644
-> --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> @@ -1240,8 +1240,7 @@ static int at91_adc_dma_start(struct iio_dev *indio=
-_dev)
->                 return -EBUSY;
->         }
->
-> -       desc->callback =3D at91_dma_buffer_done;
-> -       desc->callback_param =3D indio_dev;
-> +       dmaengine_desc_set_callback(desc, at91_dma_buffer_done, NULL, ind=
-io_dev);
->
->         cookie =3D dmaengine_submit(desc);
->         ret =3D dma_submit_error(cookie);
-> diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.=
-c
-> index 2f716a2f97b80..82d8d921b0293 100644
-> --- a/drivers/iio/adc/nxp-sar-adc.c
-> +++ b/drivers/iio/adc/nxp-sar-adc.c
-> @@ -696,8 +696,7 @@ static int nxp_sar_adc_start_cyclic_dma(struct iio_de=
-v *indio_dev)
->         if (!desc)
->                 return -EINVAL;
->
-> -       desc->callback =3D nxp_sar_adc_dma_cb;
-> -       desc->callback_param =3D indio_dev;
-> +       dmaengine_desc_set_callback(desc, nxp_sar_adc_dma_cb, NULL, indio=
-_dev);
->         info->cookie =3D dmaengine_submit(desc);
->         ret =3D dma_submit_error(info->cookie);
->         if (ret) {
-> diff --git a/drivers/iio/adc/rzt2h_adc.c b/drivers/iio/adc/rzt2h_adc.c
-> index 8ba7b0fde8a19..3e52b7d660dd3 100644
-> --- a/drivers/iio/adc/rzt2h_adc.c
-> +++ b/drivers/iio/adc/rzt2h_adc.c
-> @@ -394,8 +394,7 @@ static int rzt2h_adc_start_dma(struct iio_dev *indio_=
-dev)
->         if (!desc)
->                 return -EBUSY;
->
-> -       desc->callback =3D rzt2h_adc_dma_callback;
-> -       desc->callback_param =3D indio_dev;
-> +       dmaengine_desc_set_callback(desc, rzt2h_adc_dma_callback, NULL, i=
-ndio_dev);
->
->         cookie =3D dmaengine_submit(desc);
->         ret =3D dma_submit_error(cookie);
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index 600f975f1d7b5..fa2a781e37777 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -1901,8 +1901,7 @@ static int stm32_adc_dma_start(struct iio_dev *indi=
-o_dev)
->         if (!desc)
->                 return -EBUSY;
->
-> -       desc->callback =3D stm32_adc_dma_buffer_done;
-> -       desc->callback_param =3D indio_dev;
-> +       dmaengine_desc_set_callback(desc, stm32_adc_dma_buffer_done, NULL=
-, indio_dev);
->
->         cookie =3D dmaengine_submit(desc);
->         ret =3D dma_submit_error(cookie);
-> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-df=
-sdm-adc.c
-> index 674767da3ac37..f0239f5f30afe 100644
-> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
-> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-> @@ -1006,8 +1006,7 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev=
- *indio_dev)
->         if (!desc)
->                 return -EBUSY;
->
-> -       desc->callback =3D stm32_dfsdm_dma_buffer_done;
-> -       desc->callback_param =3D indio_dev;
-> +       dmaengine_desc_set_callback(desc, stm32_dfsdm_dma_buffer_done, NU=
-LL, indio_dev);
->
->         cookie =3D dmaengine_submit(desc);
->         ret =3D dma_submit_error(cookie);
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_=
-adc.c
-> index e53c839e87ef3..230f1c990317a 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -259,8 +259,7 @@ static int tiadc_start_dma(struct iio_dev *indio_dev)
->         if (!desc)
->                 return -EBUSY;
->
-> -       desc->callback =3D tiadc_dma_rx_complete;
-> -       desc->callback_param =3D indio_dev;
-> +       dmaengine_desc_set_callback(desc, tiadc_dma_rx_complete, NULL, in=
-dio_dev);
->
->         dma->cookie =3D dmaengine_submit(desc);
->
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers=
-/iio/buffer/industrialio-buffer-dmaengine.c
-> index b9f8b5b3aa6b6..7ecb9d875b8e8 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> @@ -160,8 +160,7 @@ static int iio_dmaengine_buffer_submit_block(struct i=
-io_dma_buffer_queue *queue,
->                 return -ENOMEM;
->
->         if (!block->cyclic) {
-> -               desc->callback_result =3D iio_dmaengine_buffer_block_done=
-;
-> -               desc->callback_param =3D block;
-> +               dmaengine_desc_set_callback(desc, NULL, iio_dmaengine_buf=
-fer_block_done, block);
->         }
->
->         cookie =3D dmaengine_submit(desc);
-> --
-> 2.43.0
->
->
+> =C2=A0drivers/hid/hid-sensor-custom.c | 27 +++++++++++++++++++++++++--
+> =C2=A01 file changed, 25 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-
+> sensor-custom.c
+> index c2b425afd951..c9338ae47050 100644
+> --- a/drivers/hid/hid-sensor-custom.c
+> +++ b/drivers/hid/hid-sensor-custom.c
+> @@ -53,6 +53,14 @@ struct hid_sensor_custom {
+> =C2=A0	struct kfifo data_fifo;
+> =C2=A0	unsigned long misc_opened;
+> =C2=A0	wait_queue_head_t wait;
+> +	wait_queue_head_t remove_wait;
+> +	/*
+> +	 * Shared with the file operations; use
+> READ_ONCE()/WRITE_ONCE() for the
+> +	 * teardown state. The actual lifetime guarantee comes from
+> misc_opened:
+> +	 * removal waits for the last fd to close before
+> deregistering the misc
+> +	 * device and freeing the FIFO.
+> +	 */
+> +	bool removing;
+> =C2=A0	struct platform_device *custom_pdev;
+> =C2=A0};
+> =C2=A0
+> @@ -653,6 +661,9 @@ static ssize_t hid_sensor_custom_read(struct file
+> *file, char __user *buf,
+> =C2=A0	sensor_inst =3D container_of(file->private_data,
+> =C2=A0				=C2=A0=C2=A0 struct hid_sensor_custom,
+> custom_dev);
+> =C2=A0
+> +	if (READ_ONCE(sensor_inst->removing))
+> +		return -ENODEV;
+> +
+> =C2=A0	if (count < sizeof(struct hid_sensor_sample))
+> =C2=A0		return -EINVAL;
+> =C2=A0
+> @@ -662,9 +673,12 @@ static ssize_t hid_sensor_custom_read(struct
+> file *file, char __user *buf,
+> =C2=A0				return -EAGAIN;
+> =C2=A0
+> =C2=A0			ret =3D wait_event_interruptible(sensor_inst-
+> >wait,
+> +				READ_ONCE(sensor_inst->removing) ||
+> =C2=A0				!kfifo_is_empty(&sensor_inst-
+> >data_fifo));
+> =C2=A0			if (ret)
+> =C2=A0				return ret;
+> +			if (READ_ONCE(sensor_inst->removing))
+> +				return -ENODEV;
+> =C2=A0		}
+> =C2=A0		ret =3D kfifo_to_user(&sensor_inst->data_fifo, buf,
+> count,
+> =C2=A0				=C2=A0=C2=A0=C2=A0 &copied);
+> @@ -684,6 +698,7 @@ static int hid_sensor_custom_release(struct inode
+> *inode, struct file *file)
+> =C2=A0				=C2=A0=C2=A0 struct hid_sensor_custom,
+> custom_dev);
+> =C2=A0
+> =C2=A0	clear_bit(0, &sensor_inst->misc_opened);
+> +	wake_up_all(&sensor_inst->remove_wait);
+> =C2=A0
+> =C2=A0	return 0;
+> =C2=A0}
+> @@ -694,6 +709,8 @@ static int hid_sensor_custom_open(struct inode
+> *inode, struct file *file)
+> =C2=A0
+> =C2=A0	sensor_inst =3D container_of(file->private_data,
+> =C2=A0				=C2=A0=C2=A0 struct hid_sensor_custom,
+> custom_dev);
+> +	if (READ_ONCE(sensor_inst->removing))
+> +		return -ENODEV;
+> =C2=A0	/* We essentially have single reader and writer */
+> =C2=A0	if (test_and_set_bit(0, &sensor_inst->misc_opened))
+> =C2=A0		return -EBUSY;
+> @@ -712,6 +729,9 @@ static __poll_t hid_sensor_custom_poll(struct
+> file *file,
+> =C2=A0
+> =C2=A0	poll_wait(file, &sensor_inst->wait, wait);
+> =C2=A0
+> +	if (READ_ONCE(sensor_inst->removing))
+> +		return EPOLLERR;
+> +
+> =C2=A0	if (!kfifo_is_empty(&sensor_inst->data_fifo))
+> =C2=A0		mask =3D EPOLLIN | EPOLLRDNORM;
+> =C2=A0
+> @@ -736,6 +756,7 @@ static int hid_sensor_custom_dev_if_add(struct
+> hid_sensor_custom *sensor_inst)
+> =C2=A0		return ret;
+> =C2=A0
+> =C2=A0	init_waitqueue_head(&sensor_inst->wait);
+> +	init_waitqueue_head(&sensor_inst->remove_wait);
+> =C2=A0
+> =C2=A0	sensor_inst->custom_dev.minor =3D MISC_DYNAMIC_MINOR;
+> =C2=A0	sensor_inst->custom_dev.name =3D dev_name(&sensor_inst->pdev-
+> >dev);
+> @@ -751,10 +772,12 @@ static int hid_sensor_custom_dev_if_add(struct
+> hid_sensor_custom *sensor_inst)
+> =C2=A0static void hid_sensor_custom_dev_if_remove(struct hid_sensor_custo=
+m
+> =C2=A0								*sen
+> sor_inst)
+> =C2=A0{
+> -	wake_up(&sensor_inst->wait);
+> +	WRITE_ONCE(sensor_inst->removing, true);
+> +	wake_up_all(&sensor_inst->wait);
+> +	wait_event(sensor_inst->remove_wait,
+> +		=C2=A0=C2=A0 !test_bit(0, &sensor_inst->misc_opened));
+> =C2=A0	misc_deregister(&sensor_inst->custom_dev);
+> =C2=A0	kfifo_free(&sensor_inst->data_fifo);
+> -
+> =C2=A0}
+> =C2=A0
+> =C2=A0/*
