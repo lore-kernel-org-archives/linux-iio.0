@@ -1,78 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793717586;
-	b=qt9dhqhvnFMu/6VYWY3XgmwpLXporZ9SdONupzbxjPAxOxX+V1G26JaCmRx1MZ+eu6V2
-	 1KVTfrFN6uhpIbEsMmDwpVat0TUE0mPbvRdjHjFnc1qE3NC1Yy2r7jDODJc7i1KUrcsCL
-	 PhSrxG73XFKLg35qnJgiAHJia8Dwo27y67dKKowQKczu+3WEi5c/O7ajUN4pEu3dQThJx
-	 FFzejHKlAHgdFpxPkC11NGlp3HHzSI7ng5h89sx1BBNwhs4jukIgSIOJDDrVobuTvjcvC
-	 9ZreB3LBCYLtk6bWfulViE7Ul8cDCGAzS2OGXvofKnsHnpl1ha61ew7/CoGdi3uxG4Q==
+	t=1793717587;
+	b=CR8kXscAaZsXv4o2e2j06N3RyAUZs79A5OJwQzW+PxEoFqmZjbJqVEvU79K53cTYnOMF
+	 PAehzWPj2aA52eETudNCzf8sex4vJYZAzxAdVttf8YMnGLp06qzvJ3n8VeyISLm/ciNgN
+	 YtRZetcq+sFAefY7ZkGdRQRdcPooti2JKCEGAkb2PPcnP19+JtIa7o9suOaKTVhA3cfzp
+	 zGYVcniZaJaPwuulEmTwmNC/iqZVSb7S+Rw5OjUsPGLaz25gvdNrhE+7BzFfduz7oK3po
+	 pVT8t/WlMf7xsetkLRH4ZYoQn7bkpAbYmceop+f4ljptFpZhRA6VYHmKcxPnCEri4Tg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793717586;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793717587;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=6+KUMNWETbOIm1etOJvqfpofFQZLeiAo3ByMDioY4WU=;
-	b=fB8xVvSZyC6jSOhEE5TeMpV29OJPWDNFxd3pOlq/iClNHnfekVurb/yvTAXofJLhv7V6
-	 m5BHP6W5iEHkkaNAy5lS+MJyhl/u6+7irh7ud+Eu8PZCJOZZ2M97mMsJkb9Rh6QlKUk1V
-	 lCmGoJAvtxaqq2t871rnGoevWlgDqx4OSIK5pY0kgaLG2WCY41jOdyjJYUCKyEg/fdyFB
-	 D8qb2XYIdznTRJ9Qxvrqtz3PEj3+Rzpw+a9GVe4roVHp8+Pg7ojXUoBsYwc9vZY//27f1
-	 sEgBLzcJlCS9MgYQQSARLt3y5Etdl3CiCrUtY3KcQPA3pZ6LWOkZnlHIjUmMHjwounQ==
+	bh=3cd1RdBhkSm+ZiZ5rASD1/HLM+kjmk/X7A6n3LUzWeY=;
+	b=QNoYy9SS+VvxZ8ftUA6S8DpilaKiYxBm33ffyiBS32NAzo15eQrkavgGPzvRile6wC45
+	 ljPzvC2xepEOn1TzO6eEyvmaNFB0W/f2K6J/r6LcZu9FB0vuGinzcajNWZt2XC5Zf5q2X
+	 AHGj/uzcyCqOpMh2wWuzShn8RFiFVSNzJ729cpWz2qnF5OMyHaaD9ON0IR1zlTxR9eaB4
+	 HEgh3ejQZi0sszYSJYhl8WPK7waeJ2UkXszUZyq5O2vS7j9/ejBBUj1EwdJtr3VLk/vXm
+	 /wEfq0hW6nsVJaSowSzo5ZRCbd2kK/yfefvgRqzub0OYrJJ1bLfF8DPHktefgBmW5vA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ophI3+Zb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZFA0sdV1;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6A7B6082BCD;
-	Tue,  3 Nov 2026 14:53:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8345260A6F54;
+	Tue,  3 Nov 2026 14:53:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ophI3+Zb
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZFA0sdV1
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793717585;
-	b=lPrA3OD/V2IMByOoVOwA2VBDQxz29e6p95b/eHMt3Rj8FTwg9tO30uqvNBFUsFecsxyx
-	 CvPtqzxAvcL2FAzbqK7/ta3eZBUcIGCS5dqj7vcvder8zuCbxRAb80WZFIgXCLNz1/M+a
-	 nzQGcErZmt11wpulFMY5HRRvzH8ntRbCRF7PIOmz0FBBhGqBsoZXRhv8h9TDfjilS5XwO
-	 656cDbPSfeArTkUfJ63NMHRcinpqgY4Ws/ePnjEXur5J3pVZqtehaqlTCUjDw7pc0OcLq
-	 QFZWZ1lHaLnhWJ4BAgiOXivFmGB9pAHyoGECAFLtYFua9d2HBo++1ffywF7U0PHqfWg==
+	t=1793717586;
+	b=mwj6vUgGR8x2mbIpyVg2pgr5b1zwpjfakv3oQ1AzZHNoSK4BatF92yDc7O3K4Xii1atJ
+	 gyMzgTQdwpZKbWE37EdTaKwUmow2nIdMNKIiaxrjMwRnjwZoWLiuPSHRr9XSptpr0JVqV
+	 3D3n50wXY5Dh2a8ta/i/gsQjGKwT+rf+NRJveMGvouglow/fClv3uhp7ik+UO1U3UZ8H0
+	 /618zblUw14chgyn1SOuTJhfLLByORBwWYSil1ff0aduhaxFaSBmgTJHWvRoSoyCRaKbU
+	 9AggkuWZx+PXlIwTueXrDG3xUFCE+v7FUvQOxblaBLcqOeevCB/foXaCy32WRzxVtLg==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793717585;
+	c=relaxed/relaxed; t=1793717586;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=6+KUMNWETbOIm1etOJvqfpofFQZLeiAo3ByMDioY4WU=;
-	b=SPcDNV4fas5mgiq3kHzDSgOtyn6f9encT9ac9OW02RkY9MUya6PHVd5vNJ4bgN8gAiJe
-	 MwKTNWGvrjx0AjKjRQkh0CMpymcVvJbSnN5lDpSlS5GyWuqXq0w1zR4TDLqIAYVvPZhOc
-	 42CX/11HEA9Mlx7+wyvoBPZWjIJgq8HRM4VKgfBmZGvvYnYEW08c1uFiDfKZtPFLWegr5
-	 4T0mJhFglvqcVvvINifiI/Flp8S6coEBF5cwP+13FKPrOZoOEfgjEgFq4bMhwXE1WMCRF
-	 XFayzpaP87btVTHQQub+jxPvFkgBMqP2heZb/VaZMzclKRYoW3KJ+HfTVqMnLsSmnMQ==
+	bh=3cd1RdBhkSm+ZiZ5rASD1/HLM+kjmk/X7A6n3LUzWeY=;
+	b=RpSKPIfCG770MensTLGJXvPuUeY4nYs3limV342om3yzN1kVdYHD8ZCizXuO2GyfwtxF
+	 5LegRQh6NMYbj3JSscqFCHk3LSyQSJkJffYH2bg09xvbdkWyYH7mhoyDOhjAkTPAXxWmu
+	 Co0qdKmna9f8TpJLhB/bI6+8YGJ8mLosrwdxyc7LY2If7cPz/1+93ngmInJY7hn24A08Z
+	 muTPKIg2BYq6dOz5cg1FK+3gHX5fxOCKyhT5rcY+Jbox9rr66sV2a1nB0F9MLRHMboDEW
+	 4rivsx64dsIy848qOjZBZm7XMTwGAQj4bcnunAyWcrjs8DkUHbSucyD53vlkQey4CpA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C172B1F00A18;
+	by smtp.kernel.org (Postfix) with ESMTPS id 1478A1F00A17;
 	Tue,  3 Nov 2026 14:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793717585;
-	bh=6+KUMNWETbOIm1etOJvqfpofFQZLeiAo3ByMDioY4WU=;
+	s=k20260515; t=1793717586;
+	bh=3cd1RdBhkSm+ZiZ5rASD1/HLM+kjmk/X7A6n3LUzWeY=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=ophI3+Zbj+OMNNkQzA1dSV3YKkLRbLB6+AOf/i6mlIxgwKAFVSqBmtQBsSRYWPsNj
-	 RRgBA/Qcqs0Hx4L4f2iTTn336Q3vK1H3zrLVvkY2LGnwqYrGnpDwa77/vjyl46aTD0
-	 +Dxy+F/m+gxL3oAC+ez04xsgfp2OMXtI2ucvo4FNvb4xBeMgAyN9Qi6g+4HrCQU527
-	 mTYtGqH48RojghMO6lfvuUSwk1F4teMx2JnuEVUP5gkaf8KdNo84PYI06yUntT4PGN
-	 eZ7QVhBtf0QQ2ypvyzdzajQsLIVfAvbjgnFCWYrcBQ8jZB6SFfSC4ec+a1Ho0XHekH
-	 +5gz/w8wAOnEg==
+	b=ZFA0sdV1myM77wHdbcTOl+PshqoZgt1kFwjx1ipteMUPVHRhLxbFoOyo41jKpgN74
+	 Xud8wD6DOrdlEA5hSAZVGl0f303YGDe3bkBNzhcRFgj5RvJRsJlP2lB3szSEhvCX7W
+	 6HuK37vVtZ5JJPafGk2yBHrImzJUrqONBycooUC4oc2ci7lx0FELXaOr3ktHe8rQRg
+	 6BcuYmm3T1zFe5SmBYmKU7KkWouYReTKcSXEX+vo3JWfq2PYHiBDUi1WGUJKB0n817
+	 VTPm7hsW17ECciiu0Qg8HwVz/b+quN8DhrczAHfEh5RQ4bAh6DTONapueqIS8hoeHj
+	 SiUeEt1SnOVzg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id D2FB6469C2;
+	by lkml.kernel.org (Postfix) with ESMTP id A0D05469B2;
 	Tue,  3 Nov 2026 14:53:01 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 03 Nov 2026 11:53:06 -0300
-Subject: [PATCH v3 10/10] docs: iio: ad9910: document DRCTL pin control
+Date: Tue, 03 Nov 2026 11:53:02 -0300
+Subject: [PATCH v3 06/10] iio: frequency: ad9910: add axi backend driver
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,7 +83,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261103-ad9910-backend-support-v3-10-0e9224ddf7b7@analog.com>
+Message-Id: <20261103-ad9910-backend-support-v3-6-0e9224ddf7b7@analog.com>
 References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
 In-Reply-To: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -101,11 +101,11 @@ Cc: Olivier Moysan <olivier.moysan@foss.st.com>,
  Randy Dunlap <rdunlap@infradead.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793717581; l=6219;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793717581; l=19659;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=9AdEqIZ+bYqk9Lw6P7OuqM0LPTI0z5xHBJLcZX+ImKY=;
- b=SF1JYoXgO+FxUz2GP4/tQHNTweCPsntKfTq76xvARUEKSPTFgnFk+uhwJvEgELc01WUcw112a
- Cdfges/M0G1AcSavfuvKQFIVXvcBU9cQckmpKfutUvbedCaFwS5D+hn
+ bh=H51DWtTjuhg85n9f8ZRQ0VtM+IVF+9NeQFmrRp6rTDg=;
+ b=gtOYTrSDWCJj/rHGQiRxZokdmLFlKnB8olaqyIVMckyZW5k5ibF09+D5Eb8tmv/T4FRG14iJc
+ /vibK2nPxOtDVhfCfmlQpiDmAJodzmPc5Pfi9IfsBECmvrUWpHdPTII
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -116,161 +116,640 @@ Content-Transfer-Encoding: 7bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Document the integration_time attribute of the digital ramp generator
-(DRG) rising and falling channels, and describe how the DRCTL pin
-waveform is generated from those values according to the dwell_en
-configuration. Add usage examples for triangular and sawtooth sweeps
-driven through the DRCTL pin.
+Add the driver for the AD9910 AXI backend IP core, which interfaces with
+the data and control pins of the AD9910 DDS. It registers as an IIO
+backend that provides:
+
+- a DMA output buffer that streams data into the parallel data port;
+- the parallel data destination (F[1:0] pins) and data rate, derived
+  from the PDCLK frequency;
+- the PROFILE[2:0] pins control, through profile channel enables.
+
+It also registers a PWM chip with a single output driving the DRCTL
+pin, which the AD9910 driver uses to control the digital ramp generator
+direction. The PWM implements the waveform callbacks, with period, duty
+length and duty offset programmed in SYNC_CLK cycles. The duty offset
+is realized by a delay applied once, before DRCTL starts toggling. The
+waveform is reprogrammed when the SYNC_CLK rate changes, so that the PWM
+output keeps its timing.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- Documentation/iio/ad9910.rst | 90 +++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 84 insertions(+), 6 deletions(-)
+ MAINTAINERS                                |   1 +
+ drivers/iio/frequency/Kconfig              |  17 +
+ drivers/iio/frequency/Makefile             |   1 +
+ drivers/iio/frequency/ad9910-axi-backend.c | 551 +++++++++++++++++++++++++++++
+ 4 files changed, 570 insertions(+)
 
-diff --git a/Documentation/iio/ad9910.rst b/Documentation/iio/ad9910.rst
-index aab569f561db..bff55cca8c82 100644
---- a/Documentation/iio/ad9910.rst
-+++ b/Documentation/iio/ad9910.rst
-@@ -85,13 +85,13 @@ system clock (SYSCLK) which affects all other channels.
-      - ``drg_rising_frequency``
-      - ``drg_frequency``
-      - DRG frequency rising-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 64aa7b539ca3..abfbbf0b6b4e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1734,6 +1734,7 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910-axi-backend.yaml
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+ F:	Documentation/iio/ad9910.rst
++F:	drivers/iio/frequency/ad9910-axi-backend.c
+ F:	drivers/iio/frequency/ad9910.c
+ F:	drivers/iio/frequency/ad9910.h
  
-    * - ``out_frequency132``
-      - ``drg_falling_frequency``
-      - ``drg_frequency``
-      - DRG frequency falling-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
+diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
+index 994d199080eb..f7f5c3cce005 100644
+--- a/drivers/iio/frequency/Kconfig
++++ b/drivers/iio/frequency/Kconfig
+@@ -42,6 +42,23 @@ config AD9910
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad9910.
  
-    * - ``out_phase130``
-      - ``drg_phase``
-@@ -104,13 +104,13 @@ system clock (SYSCLK) which affects all other channels.
-      - ``drg_rising_phase``
-      - ``drg_phase``
-      - DRG phase rising-ramp parameters: limit code, dwell enable, ramp clock,
--       rate of change.
-+       rate of change, integration time.
++config AD9910_AXI_BACKEND
++	tristate "Analog Devices AD9910 AXI Backend driver"
++	depends on AD9910
++	depends on HAS_IOMEM && PWM
++	select IIO_BACKEND
++	select IIO_BUFFER
++	select IIO_BUFFER_DMAENGINE
++	select REGMAP_MMIO
++	help
++	  Say yes here to build support for the AXI Backend Driver for the
++	  Analog Devices AD9910 DDS. The IP core is used to drive digital ramp
++	  control pins and interface with the parallel data port of the AD9910
++	  device.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad9910-axi-backend.
++
+ endmenu
  
-    * - ``out_phase132``
-      - ``drg_falling_phase``
-      - ``drg_phase``
-      - DRG phase falling-ramp parameters: limit code, dwell enable, ramp clock,
--       rate of change.
-+       rate of change, integration time.
- 
-    * - ``out_altcurrent130``
-      - ``drg_amplitude``
-@@ -123,13 +123,13 @@ system clock (SYSCLK) which affects all other channels.
-      - ``drg_rising_amplitude``
-      - ``drg_amplitude``
-      - DRG amplitude rising-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
- 
-    * - ``out_altcurrent132``
-      - ``drg_falling_amplitude``
-      - ``drg_amplitude``
-      - DRG amplitude falling-ramp parameters: limit code, dwell enable,
--       ramp clock, rate of change.
-+       ramp clock, rate of change, integration time.
- 
-    * - ``out_altcurrent140``
-      - ``ram``
-@@ -493,6 +493,60 @@ Ramp channel attributes
-        from the hardware step size and the current ramp clock. Writing
-        requires ``sampling_frequency`` to be configured first.
- 
-+   * - ``integration_time``
-+     - s
-+     - Time interval assigned to the ramp direction, which is used to generate
-+       the DRCTL pin waveform. See `DRCTL pin control`_. Rising and falling
-+       ramp channels of all destinations share the same underlying value for
-+       their respective directions. The written value is adjusted to the
-+       resolution supported by the PWM provider.
+ #
+diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
+index e3b1d36ed620..bfac9e205e81 100644
+--- a/drivers/iio/frequency/Makefile
++++ b/drivers/iio/frequency/Makefile
+@@ -6,6 +6,7 @@
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_AD9523) += ad9523.o
+ obj-$(CONFIG_AD9910) += ad9910.o
++obj-$(CONFIG_AD9910_AXI_BACKEND) += ad9910-axi-backend.o
+ obj-$(CONFIG_ADF41513) += adf41513.o
+ obj-$(CONFIG_ADF4350) += adf4350.o
+ obj-$(CONFIG_ADF4371) += adf4371.o
+diff --git a/drivers/iio/frequency/ad9910-axi-backend.c b/drivers/iio/frequency/ad9910-axi-backend.c
+new file mode 100644
+index 000000000000..db99fa9f2dda
+--- /dev/null
++++ b/drivers/iio/frequency/ad9910-axi-backend.c
+@@ -0,0 +1,551 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * AD9910 AXI Backend driver
++ *
++ * Copyright 2026 Analog Devices Inc.
++ */
 +
-+DRCTL pin control
-+^^^^^^^^^^^^^^^^^
++#include <linux/bitfield.h>
++#include <linux/cleanup.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/kstrtox.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/pwm.h>
++#include <linux/regmap.h>
++#include <linux/units.h>
 +
-+The DRCTL pin selects the DRG slope direction: a logic high drives the ramp
-+towards the upper limit and a logic low drives it towards the lower limit.
-+When a PWM is assigned to the DRCTL pin (via the ``pwms`` and ``pwm-names``
-+devicetree properties), the driver generates the DRCTL waveform from the
-+``integration_time`` of the rising and falling ramp channels, according to the
-+``dwell_en`` configuration:
++#include <linux/iio/backend.h>
++#include <linux/iio/buffer-dmaengine.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
 +
-+.. flat-table::
-+   :header-rows: 1
++#include "ad9910.h"
 +
-+   * - Rising ``dwell_en``
-+     - Falling ``dwell_en``
-+     - DRCTL waveform
++/* Register addresses */
++#define AD9910_AXI_REG_RESET		0x040
++#define AD9910_AXI_REG_DRG		0x084
++#define AD9910_AXI_REG_PROFILE		0x088
++#define AD9910_AXI_REG_DRCTL_PERIOD	0x08C
++#define AD9910_AXI_REG_DRCTL_WIDTH	0x090
++#define AD9910_AXI_REG_DRCTL_DELAY	0x094
++#define AD9910_AXI_REG_BURST_COUNT	0x098
++#define AD9910_AXI_REG_BURST_DELAY	0x09C
++#define AD9910_AXI_REG_RAMP_CFG		0x0A0
 +
-+   * - 1
-+     - 1
-+     - DRCTL is held high for the rising ``integration_time`` and then held
-+       low for the falling ``integration_time``. The PWM period is the sum of
-+       both intervals. If a ramp reaches its limit before its interval
-+       elapses, the output dwells at that limit.
++#define AD9910_AXI_REG_UPDATE_CTRL	0x104
++#define AD9910_AXI_REG_PAR_RATE		0x108
++#define AD9910_AXI_REG_F_CFG		0x10C
 +
-+   * - 0
-+     - 1
-+     - Sawtooth rising ramp: a new ramp starts at every DRCTL rising edge,
-+       which happens periodically at the rising ``integration_time``. The
-+       falling ``integration_time`` is not used.
++#define AD9910_AXI_REG_RESET_CORE_MSK		BIT(0)
 +
-+   * - 1
-+     - 0
-+     - Sawtooth falling ramp: a new ramp starts at every DRCTL falling edge,
-+       which happens periodically at the falling ``integration_time``. The
-+       rising ``integration_time`` is not used.
++#define AD9910_AXI_REG_DRG_DRCTL_MSK		BIT(2)
++#define AD9910_AXI_REG_DRG_TOGGLE_EN_MSK	BIT(3)
 +
-+   * - 0
-+     - 0
-+     - Bidirectional continuous ramp. DRCTL is not relevant and it is held
-+       low.
++#define AD9910_AXI_REG_RAMP_CFG_ONE_SHOT_MSK	GENMASK(1, 0)
++#define AD9910_AXI_REG_BURST_COUNT_MSK		GENMASK(19, 0)
 +
-+The DRCTL output is disabled when the resulting PWM period is zero, e.g., when
-+the relevant ``integration_time`` attributes are set to ``0``. Without a PWM
-+assigned to the DRCTL pin, writing to ``integration_time`` fails with
-+``-EOPNOTSUPP``.
++#define AD9910_AXI_REG_UPDATE_RATE_MSK		BIT(0)
++#define AD9910_AXI_REG_UPDATE_PAR_IF_EN_MSK	BIT(1)
++#define AD9910_AXI_REG_UPDATE_EXT_TRIG_MSK	BIT(2)
 +
- Usage examples
- ^^^^^^^^^^^^^^
- 
-@@ -525,6 +579,30 @@ Configure a frequency sweep from 40 MHz to 60 MHz with a rate of change of
-   # Enable the DRG with frequency as the destination
-   echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency130_en
- 
-+With the same limits and rate of change, each ramp takes 0.8 ms to complete.
-+Configure a PWM-driven triangular sweep that dwells 0.2 ms at each limit:
++#define AD9910_AXI_REG_PROFILE_MSK		GENMASK(2, 0)
++#define AD9910_AXI_REG_IO_UPDATE_MSK		BIT(0)
++#define AD9910_AXI_REG_F_CFG_MSK		GENMASK(1, 0)
 +
-+.. code-block:: bash
++#define AD9910_AXI_F_CFG_AMP			0
++#define AD9910_AXI_F_CFG_PHASE			1
++#define AD9910_AXI_F_CFG_FREQ			2
++#define AD9910_AXI_F_CFG_POLAR			3
 +
-+  # Enable dwell on both limits, so DRCTL controls the ramp direction
-+  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency131_dwell_en
-+  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency132_dwell_en
++#define AD9910_AXI_PD_CLK_MAX_FREQ_HZ		(250ULL * HZ_PER_MHZ)
++#define AD9910_AXI_PAR_RATE_MAX			U16_MAX
++#define AD9910_AXI_ONE_SHOT_BURST		1
 +
-+  # DRCTL high for 1 ms (rising ramp) and low for 1 ms (falling ramp)
-+  echo 0.001 > /sys/bus/iio/devices/iio\:device0/out_frequency131_integration_time
-+  echo 0.001 > /sys/bus/iio/devices/iio\:device0/out_frequency132_integration_time
++struct ad9910_axi_state {
++	struct device *dev;
++	struct regmap *regmap;
++	/*
++	 * lock to protect multiple accesses to the device registers and global
++	 * data/variables.
++	 */
++	struct mutex lock;
++	u64 pd_clk_freq_uhz;
++	/* last applied DRCTL waveform, kept when the SYNC_CLK rate changes */
++	struct pwm_waveform drctl_wf;
++};
 +
-+Configure a rising sawtooth sweep that restarts every 1 ms:
++/* DRCTL waveform in SYNC_CLK cycles, a zero period means disabled */
++struct ad9910_axi_drctl_wfhw {
++	u32 period;
++	u32 width;
++	u32 delay;
++};
 +
-+.. code-block:: bash
++static u32 ad9910_axi_ns_to_cycles(struct ad9910_axi_state *st, u64 ns)
++{
++	return min(mul_u64_u64_div_u64(ns, st->pd_clk_freq_uhz,
++				       1ULL * NANO * MICROHZ_PER_HZ), U32_MAX);
++}
 +
-+  # No dwell at the upper limit: the ramp returns to the lower limit
-+  echo 0 > /sys/bus/iio/devices/iio\:device0/out_frequency131_dwell_en
-+  echo 1 > /sys/bus/iio/devices/iio\:device0/out_frequency132_dwell_en
++static u64 ad9910_axi_cycles_to_ns(struct ad9910_axi_state *st, u32 cycles)
++{
++	return mul_u64_u64_div_u64_roundup((u64)cycles * NANO, MICROHZ_PER_HZ,
++					   st->pd_clk_freq_uhz);
++}
 +
-+  # A new rising ramp starts every 1 ms
-+  echo 0.001 > /sys/bus/iio/devices/iio\:device0/out_frequency131_integration_time
++static int ad9910_axi_drctl_tohw(struct ad9910_axi_state *st,
++				 const struct pwm_waveform *wf,
++				 struct ad9910_axi_drctl_wfhw *wfhw)
++{
++	if (!wf->period_length_ns) {
++		*wfhw = (struct ad9910_axi_drctl_wfhw){ };
++		return 0;
++	}
 +
- RAM mode
- --------
- 
++	wfhw->period = ad9910_axi_ns_to_cycles(st, wf->period_length_ns);
++	if (!wfhw->period) {
++		/* round up to the shortest period, with no duty and no delay */
++		*wfhw = (struct ad9910_axi_drctl_wfhw){ .period = 1 };
++		return 1;
++	}
++
++	wfhw->width = min(ad9910_axi_ns_to_cycles(st, wf->duty_length_ns),
++			  wfhw->period);
++	/*
++	 * The delay is applied once, before DRCTL starts toggling, which
++	 * results in the duty offset of the periodic waveform. A delay of a
++	 * whole period is the same as no delay at all.
++	 */
++	wfhw->delay = ad9910_axi_ns_to_cycles(st, wf->duty_offset_ns);
++	if (wfhw->delay >= wfhw->period)
++		wfhw->delay = 0;
++
++	return 0;
++}
++
++static void ad9910_axi_drctl_fromhw(struct ad9910_axi_state *st,
++				    const struct ad9910_axi_drctl_wfhw *wfhw,
++				    struct pwm_waveform *wf)
++{
++	if (!wfhw->period) {
++		*wf = (struct pwm_waveform){ };
++		return;
++	}
++
++	wf->period_length_ns = ad9910_axi_cycles_to_ns(st, wfhw->period);
++	wf->duty_length_ns = ad9910_axi_cycles_to_ns(st, wfhw->width);
++	wf->duty_offset_ns = ad9910_axi_cycles_to_ns(st, wfhw->delay);
++}
++
++static int ad9910_axi_drctl_write(struct ad9910_axi_state *st,
++				  const struct ad9910_axi_drctl_wfhw *wfhw)
++{
++	int ret;
++
++	/*
++	 * DRCTL toggling restarts, applying the delay, when enabled or when
++	 * its period or width changes. Changing the delay alone does not
++	 * restart it, so disable toggling while updating the waveform.
++	 */
++	ret = regmap_clear_bits(st->regmap, AD9910_AXI_REG_DRG,
++				AD9910_AXI_REG_DRG_TOGGLE_EN_MSK);
++	if (ret)
++		return ret;
++
++	/* A zero period disables the PWM output, so leave toggling off */
++	if (!wfhw->period)
++		return 0;
++
++	ret = regmap_write(st->regmap, AD9910_AXI_REG_DRCTL_DELAY, wfhw->delay);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, AD9910_AXI_REG_DRCTL_WIDTH, wfhw->width);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, AD9910_AXI_REG_DRCTL_PERIOD, wfhw->period);
++	if (ret)
++		return ret;
++
++	/*
++	 * Register values reach the SYNC_CLK domain in snapshots, taken every
++	 * 64 AXI clock cycles. Make sure toggling being disabled is captured
++	 * by one of them before enabling it again.
++	 */
++	fsleep(2);
++
++	return regmap_set_bits(st->regmap, AD9910_AXI_REG_DRG,
++			       AD9910_AXI_REG_DRG_TOGGLE_EN_MSK);
++}
++
++static int ad9910_axi_f_cfg(unsigned int chan)
++{
++	switch (chan) {
++	case AD9910_CHAN_IDX_PARALLEL_AMP:
++		return AD9910_AXI_F_CFG_AMP;
++	case AD9910_CHAN_IDX_PARALLEL_PHASE:
++		return AD9910_AXI_F_CFG_PHASE;
++	case AD9910_CHAN_IDX_PARALLEL_FREQ:
++		return AD9910_AXI_F_CFG_FREQ;
++	/* polar amplitude and phase are a pair sharing the same destination */
++	case AD9910_CHAN_IDX_PARALLEL_POLAR_AMP:
++	case AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++		return AD9910_AXI_F_CFG_POLAR;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad9910_axi_chan_enable(struct iio_backend *back, unsigned int chan)
++{
++	struct ad9910_axi_state *st = iio_backend_get_priv(back);
++	int f_cfg, ret;
++
++	guard(mutex)(&st->lock);
++
++	switch (chan) {
++	/*
++	 * Profiles are mutually exclusive, as the PROFILE[2:0] pins always
++	 * select one of them. Enabling a profile channel selects it, which
++	 * implicitly disables the previously selected one, hence there is
++	 * nothing to do when disabling a profile channel.
++	 */
++	case AD9910_CHAN_IDX_PROFILE_0 ... AD9910_CHAN_IDX_PROFILE_7:
++		chan -= AD9910_CHAN_IDX_PROFILE_0;
++		return regmap_update_bits(st->regmap, AD9910_AXI_REG_PROFILE,
++					  AD9910_AXI_REG_PROFILE_MSK,
++					  FIELD_PREP(AD9910_AXI_REG_PROFILE_MSK, chan));
++	case AD9910_CHAN_IDX_PARALLEL_AMP ... AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++		f_cfg = ad9910_axi_f_cfg(chan);
++		if (f_cfg < 0)
++			return f_cfg;
++
++		ret = regmap_update_bits(st->regmap, AD9910_AXI_REG_F_CFG,
++					 AD9910_AXI_REG_F_CFG_MSK,
++					 FIELD_PREP(AD9910_AXI_REG_F_CFG_MSK, f_cfg));
++		if (ret)
++			return ret;
++
++		return regmap_set_bits(st->regmap, AD9910_AXI_REG_UPDATE_CTRL,
++				       AD9910_AXI_REG_UPDATE_PAR_IF_EN_MSK);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad9910_axi_chan_disable(struct iio_backend *back, unsigned int chan)
++{
++	struct ad9910_axi_state *st = iio_backend_get_priv(back);
++
++	switch (chan) {
++	case AD9910_CHAN_IDX_PROFILE_0 ... AD9910_CHAN_IDX_PROFILE_7:
++		return 0;
++	case AD9910_CHAN_IDX_PARALLEL_AMP ... AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++		return regmap_clear_bits(st->regmap, AD9910_AXI_REG_UPDATE_CTRL,
++					 AD9910_AXI_REG_UPDATE_PAR_IF_EN_MSK);
++	default:
++		return -EINVAL;
++	}
++}
++
++static struct iio_buffer *ad9910_axi_request_buffer(struct iio_backend *back,
++						    struct iio_dev *indio_dev)
++{
++	struct ad9910_axi_state *st = iio_backend_get_priv(back);
++	const char *dma_name;
++
++	if (device_property_read_string(st->dev, "dma-names", &dma_name))
++		dma_name = "tx";
++
++	return iio_dmaengine_buffer_setup_ext(st->dev, indio_dev, dma_name,
++					      IIO_BUFFER_DIRECTION_OUT);
++}
++
++static void ad9910_axi_free_buffer(struct iio_backend *back,
++				   struct iio_buffer *buffer)
++{
++	iio_dmaengine_buffer_teardown(buffer);
++}
++
++static int ad9910_axi_set_sample_rate(struct iio_backend *back,
++				      unsigned int chan, u64 sample_rate)
++{
++	struct ad9910_axi_state *st = iio_backend_get_priv(back);
++	struct ad9910_axi_drctl_wfhw wfhw;
++	u64 div, pd_clk_freq_uhz;
++	int ret;
++
++	guard(mutex)(&st->lock);
++
++	switch (chan) {
++	case AD9910_CHAN_IDX_PHY:
++		if (!sample_rate || sample_rate > 4 * AD9910_AXI_PD_CLK_MAX_FREQ_HZ)
++			return -EINVAL;
++
++		pd_clk_freq_uhz = sample_rate * MICROHZ_PER_HZ >> 2;
++		if (pd_clk_freq_uhz == st->pd_clk_freq_uhz)
++			return 0;
++
++		st->pd_clk_freq_uhz = pd_clk_freq_uhz;
++		if (!st->drctl_wf.period_length_ns)
++			return 0;
++
++		/*
++		 * DRCTL is clocked by SYNC_CLK, reprogram it so that the PWM
++		 * output keeps the applied waveform.
++		 */
++		ad9910_axi_drctl_tohw(st, &st->drctl_wf, &wfhw);
++		return ad9910_axi_drctl_write(st, &wfhw);
++	case AD9910_CHAN_IDX_PARALLEL_AMP ... AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE:
++		if (!sample_rate || sample_rate > AD9910_AXI_PD_CLK_MAX_FREQ_HZ)
++			return -EINVAL;
++
++		sample_rate *= MICROHZ_PER_HZ;
++		div = DIV64_U64_ROUND_CLOSEST(st->pd_clk_freq_uhz, sample_rate);
++		div = clamp(div, 1U, AD9910_AXI_PAR_RATE_MAX);
++		ret = regmap_write(st->regmap, AD9910_AXI_REG_PAR_RATE, div - 1);
++		if (ret)
++			return ret;
++
++		return regmap_set_bits(st->regmap, AD9910_AXI_REG_UPDATE_CTRL,
++				       AD9910_AXI_REG_UPDATE_RATE_MSK);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad9910_axi_read_raw(struct iio_backend *back,
++			       struct iio_chan_spec const *chan, int *val,
++			       int *val2, long mask)
++{
++	struct ad9910_axi_state *st = iio_backend_get_priv(back);
++	u32 div;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		switch (chan->address) {
++		case AD9910_CHAN_IDX_PARALLEL_AMP ... AD9910_CHAN_IDX_PARALLEL_POLAR_PHASE: {
++			guard(mutex)(&st->lock);
++
++			ret = regmap_read(st->regmap, AD9910_AXI_REG_PAR_RATE,
++					  &div);
++			if (ret)
++				return ret;
++
++			iio_val_s64_decompose(div64_u64(st->pd_clk_freq_uhz,
++							(u64)div + 1),
++					      val, val2);
++			return IIO_VAL_DECIMAL64_MICRO;
++		}
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad9910_axi_reg_access(struct iio_backend *back, unsigned int reg,
++				 unsigned int writeval, unsigned int *readval)
++{
++	struct ad9910_axi_state *st = iio_backend_get_priv(back);
++
++	if (readval)
++		return regmap_read(st->regmap, reg, readval);
++
++	return regmap_write(st->regmap, reg, writeval);
++}
++
++static const struct iio_backend_ops ad9910_axi_iio_back_ops = {
++	.chan_enable = ad9910_axi_chan_enable,
++	.chan_disable = ad9910_axi_chan_disable,
++	.request_buffer = ad9910_axi_request_buffer,
++	.free_buffer = ad9910_axi_free_buffer,
++	.set_sample_rate = ad9910_axi_set_sample_rate,
++	.read_raw = ad9910_axi_read_raw,
++	.debugfs_reg_access = iio_backend_debugfs_ptr(ad9910_axi_reg_access),
++};
++
++static const struct iio_backend_info ad9910_axi_back_info = {
++	.name = "ad9910-axi",
++	.ops = &ad9910_axi_iio_back_ops,
++};
++
++static const struct regmap_config ad9910_axi_regmap_config = {
++	.val_bits = 32,
++	.reg_bits = 32,
++	.reg_stride = 4,
++	.max_register = 0x0800,
++};
++
++static int ad9910_axi_pwm_round_waveform_tohw(struct pwm_chip *chip,
++					      struct pwm_device *pwm,
++					      const struct pwm_waveform *wf,
++					      void *wfhw)
++{
++	struct ad9910_axi_state *st = pwmchip_get_drvdata(chip);
++
++	guard(mutex)(&st->lock);
++
++	return ad9910_axi_drctl_tohw(st, wf, wfhw);
++}
++
++static int ad9910_axi_pwm_round_waveform_fromhw(struct pwm_chip *chip,
++						struct pwm_device *pwm,
++						const void *wfhw,
++						struct pwm_waveform *wf)
++{
++	struct ad9910_axi_state *st = pwmchip_get_drvdata(chip);
++
++	guard(mutex)(&st->lock);
++
++	ad9910_axi_drctl_fromhw(st, wfhw, wf);
++
++	return 0;
++}
++
++static int ad9910_axi_pwm_read_waveform(struct pwm_chip *chip,
++					struct pwm_device *pwm, void *_wfhw)
++{
++	struct ad9910_axi_state *st = pwmchip_get_drvdata(chip);
++	struct ad9910_axi_drctl_wfhw *wfhw = _wfhw;
++	u32 drg;
++	int ret;
++
++	guard(mutex)(&st->lock);
++
++	ret = regmap_read(st->regmap, AD9910_AXI_REG_DRG, &drg);
++	if (ret)
++		return ret;
++
++	if (!FIELD_GET(AD9910_AXI_REG_DRG_TOGGLE_EN_MSK, drg)) {
++		*wfhw = (struct ad9910_axi_drctl_wfhw){ };
++		return 0;
++	}
++
++	ret = regmap_read(st->regmap, AD9910_AXI_REG_DRCTL_PERIOD, &wfhw->period);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(st->regmap, AD9910_AXI_REG_DRCTL_WIDTH, &wfhw->width);
++	if (ret)
++		return ret;
++
++	return regmap_read(st->regmap, AD9910_AXI_REG_DRCTL_DELAY, &wfhw->delay);
++}
++
++static int ad9910_axi_pwm_write_waveform(struct pwm_chip *chip,
++					 struct pwm_device *pwm,
++					 const void *_wfhw)
++{
++	struct ad9910_axi_state *st = pwmchip_get_drvdata(chip);
++	const struct ad9910_axi_drctl_wfhw *wfhw = _wfhw;
++	int ret;
++
++	guard(mutex)(&st->lock);
++
++	ret = ad9910_axi_drctl_write(st, wfhw);
++	if (ret)
++		return ret;
++
++	ad9910_axi_drctl_fromhw(st, wfhw, &st->drctl_wf);
++
++	return 0;
++}
++
++static const struct pwm_ops ad9910_axi_pwm_ops = {
++	.sizeof_wfhw = sizeof(struct ad9910_axi_drctl_wfhw),
++	.round_waveform_tohw = ad9910_axi_pwm_round_waveform_tohw,
++	.round_waveform_fromhw = ad9910_axi_pwm_round_waveform_fromhw,
++	.read_waveform = ad9910_axi_pwm_read_waveform,
++	.write_waveform = ad9910_axi_pwm_write_waveform,
++};
++
++static int ad9910_axi_setup(struct ad9910_axi_state *st)
++{
++	int ret;
++
++	st->pd_clk_freq_uhz = AD9910_AXI_PD_CLK_MAX_FREQ_HZ * MICROHZ_PER_HZ;
++
++	ret = regmap_set_bits(st->regmap, AD9910_AXI_REG_RESET,
++			      AD9910_AXI_REG_RESET_CORE_MSK);
++	if (ret)
++		return ret;
++
++	return regmap_clear_bits(st->regmap, AD9910_AXI_REG_RESET,
++				 AD9910_AXI_REG_RESET_CORE_MSK);
++}
++
++static int ad9910_axi_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct ad9910_axi_state *st;
++	struct pwm_chip *chip;
++	void __iomem *base;
++	struct clk *clk;
++	int ret;
++
++	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*st));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++
++	st = pwmchip_get_drvdata(chip);
++
++	base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	clk = devm_clk_get_enabled(dev, NULL);
++	if (IS_ERR(clk))
++		return dev_err_probe(dev, PTR_ERR(clk), "failed to get clock\n");
++
++	st->dev = dev;
++	st->regmap = devm_regmap_init_mmio(dev, base,
++					   &ad9910_axi_regmap_config);
++	if (IS_ERR(st->regmap))
++		return dev_err_probe(dev, PTR_ERR(st->regmap),
++				     "failed to init register map\n");
++
++	ret = devm_mutex_init(dev, &st->lock);
++	if (ret)
++		return ret;
++
++	ret = ad9910_axi_setup(st);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to setup device\n");
++
++	chip->ops = &ad9910_axi_pwm_ops;
++
++	ret = devm_pwmchip_add(dev, chip);
++	if (ret)
++		return dev_err_probe(dev, ret, "Could not register PWM chip\n");
++
++	return devm_iio_backend_register(dev, &ad9910_axi_back_info, st);
++}
++
++static const struct of_device_id ad9910_axi_of_match[] = {
++	{ .compatible = "adi,ad9910-axi-backend" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ad9910_axi_of_match);
++
++static struct platform_driver ad9910_axi_driver = {
++	.driver = {
++		.name = "ad9910-axi-backend",
++		.of_match_table = ad9910_axi_of_match,
++	},
++	.probe = ad9910_axi_probe,
++};
++module_platform_driver(ad9910_axi_driver);
++
++MODULE_AUTHOR("Rodrigo Alencar <rodrigo.alencar@analog.com>");
++MODULE_DESCRIPTION("Analog Devices AD9910 AXI Backend driver");
++MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS("IIO_DMAENGINE_BUFFER");
++MODULE_IMPORT_NS("IIO_BACKEND");
 
 -- 
 2.43.0
