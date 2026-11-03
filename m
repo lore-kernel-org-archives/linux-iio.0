@@ -1,83 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793699736;
-	b=rmIArrVUjSlmjbWutXiA+Glktn5l4r4X9D6diyoPD/WKojjBihd6D+JDBMqjA5z+tSis
-	 remZQEIeMFQ3qplZpfO8EnjexjVvGSwAL0qAn+vKMxb3FfO6axXDFzUqM8xdzzuYQk0mp
-	 OSDIfJZCOl7XcbarAMtoDBQ9sB6eF9hs6Qvqo/TBqlgF0j1vo/qykL/aGsIqzAUQ/0TQI
-	 k0MObvw2Kpy9mGFSUGTNM9YBkDuo/CRfIeQ3yuMPGvQIkt7ULeDU7QocX08i9q8PNEeXr
-	 L7v/CbwZ4OZxUlmjg4Ap4cexPAc8wNO8nLKBkVdi9ZBMlplWZIiCVikNMiIPXluAb/w==
+	t=1793700103;
+	b=1PcwPVXo18Kdi1cQeyOrpjwMtjj1ZpUMyXfb/LtT6ojIaBnEiXhFbrQeB/TU+Fe2WGwu
+	 Dbn+oRM4Ik34f4WqiC6DiGgIxe5qpBR0y/x6gIhebu86CCXDD7tRJJtpEu18Xmm+dlSCU
+	 peO0KX/Tbw5UQAtgwVN7AQcsHG265gGKGVpglxU9TSfAw11/urWINiU0gu8MSSrHRCRQp
+	 Iak1AjcEh78oeAEJsTRQD2SzT3ksdQtTNL6qFsdbtrJi88XHFmyyn4vfO6EdBHMlH313F
+	 4aspKSif6tJOcM6Np+vKCuW6pbsXH31UWPSk+PnfLt7v4MSkAizIRqSIWlKkPRgRAcQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793699736;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793700103;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=BeQGUCOl1k+ajaLkli3SGFUKxG/MbdebyYfebJs1qjY=;
-	b=32cG/VyanLqV0WiCdGR2STENJo/LqmR+wq5bmVBdO9K9bhKLDF0owUQdM2xfIVTn+9C7
-	 w45JV83hiejtMkr5WydX8I+fUod3k/+mDViS+aLPXHy4G3U7+PBzL4SyYB+W52e159AzW
-	 pM+j5VXfcs9g24cLAlryMj01iqZc+UcO2M3lVz/wZ0H88Eyb/Gc/u7YfUVO78kTpopGPn
-	 7/m/wbqu8Cy5IY3uwJ81palSc1VyDBK4QGvo1ki5NjpbX7PbGc27fCSG9A+xPmJJHlueA
-	 M4wg4vCgfj1SEhF3g+buO/xT0JqWYbK45/O3xrjDH3R0A13PUIO/qN0Z+Ad85Ws84/A==
+	bh=FqjOBQ3xr5kwaGHmjLky3COOWtd1V+xD1/etHhnAFZU=;
+	b=2oplPyWtPzjjYbnCVPinPf0X5XxokknCKl1n6Q0aDyo1dh0ElhaiopJ/IQtImmmm8+Fd
+	 4EzJnZFT46wVWs2lvTc/PZIAbTSsOr4SuWfWNh32l6Y7TsmpZEoqNvgtVQImYdg5CtKjP
+	 6mHvlaZLvoNTRtU0NeAOnjZMtmcn3eWMRDpZsyaJlDdTGjhBnA7Hsa56GuTUm3bwVaXWO
+	 Xz6YME0vBNWQ6O6JBzToJo4INoANnQuzN3+b9330Yua+rn7yQN1UcsGbtbwOyQFrnHAvf
+	 CrKWMaAsKgbtZ4bFzTezUuG2KSuJ2RC2bLL32rdqoU7jeLu5V7GXqceRHJvM2x58PdQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="lB/78FF9";
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=S7Ux2+O+;
+	arc=none smtp.remote-ip=192.198.163.13
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80CD60A6F6C;
-	Tue,  3 Nov 2026 09:55:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E80CD60A6F6C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3542C606A326;
+	Tue,  3 Nov 2026 10:01:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3542C606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lB/78FF9
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=S7Ux2+O+
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793699735; x=1825235735;
+  t=1793700103; x=1825236103;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=0UZauren3FKcX2qFQSrZTnrqyYVdkjbCTu/nrHaJWM4=;
-  b=lB/78FF9SfGF3XuUMS4v3Taq1uW+GjkRtqt+rIEzLAMw6p/G49Oy9HgK
-   MN6EDznTCZwhdlXRuqF1d2jcWLPiSTa9aw50Cd2GeoB4jJSdCm7bMHi/d
-   AJ3WEqHBSks+wy7ICd9l1btwGbYAVH7W+4izl9orK1DOwc/u7TognEFiQ
-   cZXDwx1tNxi+bv5uc/afwOzQyc9yi+nBxF3WZVpG2+d4MWj3U5BDtcgC8
-   6/4UHH8ocIaCPBwAddPQFu8pTIAYjRa8qQ5zLYeEVzHOQcNKVW2+1uXWO
-   Qu2JC8/2+3VzyCZlzguaZkZmPvkv7+AQfwe7E9COwPrGqqOnzlzJyXMmi
-   Q==;
-X-CSE-ConnectionGUID: nGplRYa2RfSa4ZSX8AU5DA==
-X-CSE-MsgGUID: p//tAmR7RuaM9mEX+bPZeQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2306693"
+  bh=/UZzLak2/xNgfH1t1NAvGuxOOsCUaFsLQSniakLlK/4=;
+  b=S7Ux2+O+ulws937fC/4jLRfFsiesFBAmun5pMpyhF0inh7TAfi1Yy0WC
+   BJS2jMsRMTs5MlHPt5PJiJYXxqh4YlDrvpsgpO0ZQF76OLPny1nJZFnaf
+   X11E04864uHr08nLVkVa4X1ALvNR2mTJtdpkJ3LO/L/sCy/iV/d+enDBu
+   NQdi/Vt2rMZOVHvGBB3fNh5tARFUevwUxAWK23oHzBgpgTDaZIaY6fguk
+   4X1qORagJfCC7c3cgOa6Hluiw6nst+7U8bR7/F9j+sq0CGwa1Wuk9B4w7
+   jNTUg1Z7f2l/1vekHWxujveTR6q8AVn5PsFkx7VK3K7hoAFAm/BGhsQNn
+   A==;
+X-CSE-ConnectionGUID: YpZ0RBnGS1SDyQuBsRiBZA==
+X-CSE-MsgGUID: ANxxJBlVQhukfLtUC8dhPw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2413708"
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2306693"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 01:55:35 -0800
-X-CSE-ConnectionGUID: c9SjTP9tRECL/nhQYcKZXw==
-X-CSE-MsgGUID: U4AhdxKWR/+2AadWm0Giyw==
+   d="scan'208";a="2413708"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 02:01:42 -0800
+X-CSE-ConnectionGUID: 2ogpPpswSQWp0KB5mHcIhQ==
+X-CSE-MsgGUID: aST13NSzQCKvLHsSz43b1Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="8223937"
+   d="scan'208";a="6376728"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 01:55:32 -0800
-Date: Tue, 3 Nov 2026 11:55:29 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 02:01:39 -0800
+Date: Tue, 3 Nov 2026 12:01:37 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+To: Jaakko Koivisto <jmatko@utu.fi>
+Cc: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <crofts@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] staging: iio: addac: adt7316: replace kernel.h
- with explicit headers
-Message-ID: <aumvkSfdGIoJHtmn@ashevche-desk.local>
-References: <20261102094236.57757-1-abdelnasserhussein11@gmail.com>
- <20261102094236.57757-3-abdelnasserhussein11@gmail.com>
+Subject: Re: [PATCH v2 2/5] iio: chemical: sgp40: Replace manual locking with
+ guard()
+Message-ID: <aumxAT4Gg4Zm_hgw@ashevche-desk.local>
+References: <20261102091258.247402-1-jmatko@utu.fi>
+ <20261102091258.247402-3-jmatko@utu.fi>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,37 +85,31 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261102094236.57757-3-abdelnasserhussein11@gmail.com>
+In-Reply-To: <20261102091258.247402-3-jmatko@utu.fi>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 02, 2026 at 11:42:36AM +0200, Abdelnasser Hussein wrote:
-> Drop the proxy header <linux/kernel.h> and replace it with direct
-> inclusions per the Include What You Use (IWYU) principle. Also remove
-> unused headers and keep the list alphabetically sorted.
-
-> Explicitly add:
-> - <linux/bits.h> for BIT()
-> - <linux/err.h> for IS_ERR() and PTR_ERR()
-> - <linux/errno.h> for error codes (-EIO, -EPERM, -EINVAL, -ENOMEM,
->   -ENODEV)
-> - <linux/kstrtox.h> for kstrtou8(), kstrtou16(), and kstrtoint()
-> - <linux/pm.h> for EXPORT_GPL_SIMPLE_DEV_PM_OPS()
-> - <linux/string.h> for memcmp()
-> - <linux/types.h> for fixed-width and standard types (u8, u16, bool, s64)
+On Mon, Nov 02, 2026 at 11:12:55AM +0200, Jaakko Koivisto wrote:
+> Replace manual mutex_lock() and mutex_unlock() with RAII-style
+> guard(mutex)().
 > 
-> Drop unused headers:
-> - <linux/i2c.h> (no I2C symbols used in core driver)
-> - <linux/kernel.h> (proxy header)
-> - <linux/list.h> (no linked list symbols used)
-> - <linux/rtc.h> (no RTC symbols used)
-> - <linux/slab.h> (no kmalloc/kfree symbols used)
-> - <linux/workqueue.h> (no workqueue symbols used)
+> Extend the lock in sgp40_measure_resistance_raw() to cover the
+> I2C send and receive cycle, preventing I/O-errors if the device
+> is currently running a command, or clobbering the output of a previous
+> command if a new command is issued during the sleep-period between
+> i2c_master_send() and i2c_master_recv().
 
-This is too much for this type of change. Please, move it to the changelog and
-comment block (after '---' line).
+>  	/* we calculate as a multiple of 16384 (2^14) */
+> -	mutex_lock(&data->lock);
+> +	guard(mutex)(&data->lock);
+>  	x = ((int)resistance_raw - data->res_calibbias) * 106;
+> -	mutex_unlock(&data->lock);
 
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+We don't wont heavy code to be in the critical section. Here it's quite obvious
+that the call should be scoped_guard().
+
+Side note, in case of use guard()() make sure it's delimited by blank lines, so
+it's visible at a glance when reading a code.
 
 -- 
 With Best Regards,
