@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793724466;
-	b=3aDmivbK9mMvW7JzphIfmy+f8/9JL1orz2HFQqPIIDNK+pHfXBFpxaRKsqwN131NN8Ed
-	 hsS4NKbshiE6zgXr3FcP3s1ihFe57Cn64rOs56eVmCzkXk8e1sBGzJgBzZHZ2q5AjJbVt
-	 YKHLK1G+p+/XbmaeDSobpLcZAgjTG9Ii+FMwjzTSQi/rF1/h7Ko281WnkGi2L+HHwjvpE
-	 6bq2AnqupOmhRhpBcXRvDzztwaXBqBykCe1E2sbqfD5+oq5sKuFRl0cav8x2wE5MrZv1N
-	 1dCB6ykcRox4cK9LauzCgFNjSwHt9G6u2e6xtlabV+IpVLvU116DyhJMO/3bsvTKgjw==
+	t=1793724762;
+	b=3e30BRKJFzz327S8v3t6NbFWT75SL27C20akafrsABp/CvwfZhhv+uSEEzRncmXCHVJj
+	 KDBjmZy7IzoO/kvl9EwQbTjlmw8xM863/9EMChvm2D8aHg+qGDkI0nDY0dKTAWUKqPpzA
+	 7YLDWoNaO0EC0EJ+tuIeT2FV19SCZEK8edK0w5pvpW0nuGZ1qaqtOVDmYvwXWhn37qfJy
+	 xN+NvjL+Rq74etVeygd2yvXcVaov2Y46ab0URGNo+g7Gm8pPKhRBAI2qA6dZ0zJyv/YgZ
+	 4AcUDkEx5Nk4YDUNK2/6RwRqaNnUBOr84BBSpgg+xL6qiEZzt2Z7AbV9uPy5ez2KrKQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793724466;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793724762;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=soFe8FZSLjyPJHjFSdKiTxtQrK8J6hJHZTKQlP5gbhM=;
-	b=t+JSulpCGeGrouVEa3LhTUrFmkXHTG2YeGrFBIbSM9ToJzF+hg80xzp3r9JbMzYYX8RA
-	 jzRH78uxLB55/TYCJ9Zq0gF2Nd9TBSa1FzUgz9ryGJyKmQNJ5xx4KQccMB/zhTPyLCGxa
-	 fR1v9U04pYSVEswwcRV0X4n9VvhEOy3I2BsBUSivFopqPZGqmcwx8KnA3bK3NoUHME5xT
-	 s7M6tJI+JLPgLCj4zpuBPB5RJ/+SKUeq3BKIZSnADSlLlA8LKIHTrU4YFewXmKBgx8HSF
-	 r3xqmSFl9tu2KjRl3putmf7x0u3Ho9p7i88ZK0fcH5LKkfkbh6622KbFj1MHScCG+4g==
+	bh=eq9RBFV4mF9vmsivc1/ScTryAoUmzQgiPi33oC80fC8=;
+	b=OiKE9W12ul2or+b5z4Li3MhGvJ460l94WoWjz9epsREfsR4t8kCYUb75NILXFpDToqBW
+	 EHoN46YeOjWD2prLrwIWWtyDnHLtrWmaWrqPRoZB4DUCRz2NlfwnFLbqDo+TnK05W9ctA
+	 ZkrLyHw3PT2o16fluXBk70+jAKwMslXb9F0FhOW2DcmgeWer3/UQyeTak65Y/1ZgrdU0B
+	 vGZ1/VZRI7LOQCQZ5t3WoGFXha3rUpThKpx89G2MTpyHPwmn7NzGZWJ/8L0ewvTgViNbs
+	 o6uBRv2SlfoBsksQ3aaq15zMQVd5CEXQfavdQYUi+wfzLvKTH4wAtNUKyoYdOGaYU9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ac5PQogX;
-	arc=none smtp.remote-ip=192.198.163.13
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="G/fUaX24";
+	arc=none smtp.remote-ip=198.175.65.9
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B18B606A33A;
-	Tue,  3 Nov 2026 16:47:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B18B606A33A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B0ED606A327;
+	Tue,  3 Nov 2026 16:52:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B0ED606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ac5PQogX
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=G/fUaX24
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793724466; x=1825260466;
+  t=1793724761; x=1825260761;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=J4Le7fbGRKNvDYCgjVXxQqxQ8he0Z7WaCBdBn5Kt3fE=;
-  b=ac5PQogXx+QXLhDWtRpqdbg9vylJu5yPvfxAjrgetDhJyiudi9UpeE/I
-   UWF2xvQZkWOPR+bAkMD5GQn9Pp7FtAhjrwgh7++HkBdc1iTN6mJusL3SC
-   dBpJTeHoOjDz/QaaLR5LxO1uRVZI15uxpQzq+bTgcLRcezCD8qqnlfHZI
-   u+mIA6wYQipVb3ZzCCHlK0ojWlDoRtR4icVLNu/TFd8OUaffyN1iVmP/e
-   J27LdBr8faznZDbtghwnmp60ZZ8yYLV7N0Mw3DQFMANzJo3z6/Ay67n2l
-   GE75s91ujAYwIsy93mm1VgdEtdHYeAsMZXuZaYI5t6SWdodhUV1gjfpzP
-   g==;
-X-CSE-ConnectionGUID: /tq1EQFXRWWE9nDlx95L1A==
-X-CSE-MsgGUID: enjZCDYGQ2ephu233qxkdA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2454189"
+  bh=Q86yi8er8PEFdgAbKUVWCIlMTSmIPNbAIaFARD1QCSc=;
+  b=G/fUaX24vQJcPW1LgOY3iZD8i9105FYT34hMleYOGqnEHJr5rJSUrl3t
+   57iopSIPWOjXUW/69kK4YISB0RKqltSrQMBkbBMmtIucFLoq38zdMBx0G
+   Qv3c+6Ju6H9qWNTEt8nh6x20uHTNEolGbSwZGPM3lgaiUEvltvjz+U6J/
+   HEj8pJ/I8fF0KvCF3XZsonET/KzdU5aOqNNNDMXcWEKvPP6TEi11HUSLR
+   haWy5am2G9ITVk8dNY99W2keaJaSLHygEAmpQtPiH7Asl2e/nsOhYKcAg
+   3oe2mmVqKUXPh4yhTgBD96ZNBg6ZBbwKDQhHumU76M7z6itD/sxIeEsif
+   A==;
+X-CSE-ConnectionGUID: WYuX/jPeSau4d7sL5+Wifw==
+X-CSE-MsgGUID: lS0zhqCYQq2l/X05fW3iQQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2350942"
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="2454189"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:47:45 -0800
-X-CSE-ConnectionGUID: pOlBIEX1QIOAWZ3y1gJypg==
-X-CSE-MsgGUID: rAJO8y4YQ8+kLC3HQlRYMw==
+   d="scan'208";a="2350942"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:52:40 -0800
+X-CSE-ConnectionGUID: nVQB23KbTp+YIDlb2CRK2Q==
+X-CSE-MsgGUID: hD+kQ+rSQ5i45ca1PrVdNA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
-   d="scan'208";a="6479484"
+   d="scan'208";a="6324410"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.108])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:47:40 -0800
-Date: Tue, 3 Nov 2026 18:47:37 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 08:52:36 -0800
+Date: Tue, 3 Nov 2026 18:52:33 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -80,10 +80,10 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
 	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 07/10] iio: frequency: ad9910: support drctl control
-Message-ID: <auoQKX4CNb0sWkWH@ashevche-desk.local>
+Subject: Re: [PATCH v3 08/10] iio: frequency: ad9910: support iio backend
+Message-ID: <auoRUS-tsK4X0KoU@ashevche-desk.local>
 References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
- <20261103-ad9910-backend-support-v3-7-0e9224ddf7b7@analog.com>
+ <20261103-ad9910-backend-support-v3-8-0e9224ddf7b7@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -95,81 +95,89 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261103-ad9910-backend-support-v3-7-0e9224ddf7b7@analog.com>
+In-Reply-To: <20261103-ad9910-backend-support-v3-8-0e9224ddf7b7@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 03, 2026 at 11:53:03AM -0300, Rodrigo Alencar via B4 Relay wrote:
+On Tue, Nov 03, 2026 at 11:53:04AM -0300, Rodrigo Alencar via B4 Relay wrote:
 > 
-> The DRCTL pin controls the slope direction of the AD9910 digital ramp
-> generator (DRG). When dwell is enabled at a ramp limit, the DRG holds
-> that limit until the next DRCTL transition, so the sweep pattern is
-> defined by the waveform applied to that pin, which can be generated by
-> a PWM.
+> The AD9910 parallel data port allows modulation of the DDS core parameters
+> at up to the PDCLK rate, which requires a high-speed data source. Add
+> support for an optional IIO backend that provides such interface, with
+> data streamed into the device through an output buffer.
 > 
-> Get the optional "drctl" PWM and expose the integration_time attribute
-> in the DRG ramp up and ramp down channels, which sets the time interval
-> assigned to each ramp direction while the sweep parameter is accumulating.
+> The parallel port channels get scan indexes and scan types according to
+> the data destination: 14-bit amplitude, 16-bit phase, 16-bit frequency,
+> or the 8-bit amplitude and phase pair for polar modulation. As only one
+> destination can be active at a time, this is enforced by the available
+> scan masks. On buffer enable, the destination is configured in the
+> backend and the parallel data port is enabled. The sampling_frequency
+> attribute of the parallel port channels controls the backend data rate.
 > 
-> The DRCTL waveform is described with the PWM waveform API, using the duty
-> offset when DRCTL needs to start low. The PWM is disabled when the
-> resulting period is zero. The waveform is rounded by the PWM provider
-> before being applied, so that integration_time reports the intervals
-> achieved by it. Writing to integration_time fails with -EOPNOTSUPP when
-> no DRCTL PWM is available. As the waveform API has no stubs, the driver
-> now depends on PWM.
+> The backend is also notified about profile changes, as it may drive the
+> PROFILE[2:0] pins, and the debugfs source attributes now consider the
+> parallel data port when reporting which channel controls each DDS core
+> parameter.
 
 ...
 
-> +	if (!ndh && ndl) {
-> +		/* DRCTL low on the first half, so that it ramps down first */
-> +		wf.period_length_ns = st->ramp_down_time_ns;
-> +		wf.duty_offset_ns = st->ramp_down_time_ns / 2;
-> +		wf.duty_length_ns = wf.period_length_ns - wf.duty_offset_ns;
-> +	} else if (ndh && !ndl) {
-> +		wf.period_length_ns = st->ramp_up_time_ns;
-> +		wf.duty_length_ns = st->ramp_up_time_ns / 2;
-> +	} else if (!ndh && !ndl) {
-> +		wf.period_length_ns = st->ramp_up_time_ns + st->ramp_down_time_ns;
-> +		wf.duty_length_ns = st->ramp_up_time_ns;
-> +	} else {
-> +		wf.period_length_ns = st->ramp_up_time_ns + st->ramp_down_time_ns;
-> +	}
-> +
-> +	/* a zero period disables the PWM, nothing to round */
-> +	if (wf.period_length_ns) {
-> +		ret = pwm_round_waveform_might_sleep(st->drctl_pwm, &wf);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	ret = pwm_set_waveform_might_sleep(st->drctl_pwm, &wf, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!ndh && ndl) {
-> +		st->ramp_down_time_ns = wf.period_length_ns;
-> +	} else if (ndh && !ndl) {
-> +		st->ramp_up_time_ns = wf.period_length_ns;
-> +	} else if (!ndh && !ndl) {
-> +		st->ramp_up_time_ns = wf.duty_length_ns;
-> +		st->ramp_down_time_ns = wf.period_length_ns - wf.duty_length_ns;
-> +	}
+> +enum {
+> +	AD9910_SCAN_IDX_AMP = 0,
 
-This and above if-else-if chain can be simplified
+Why explicit assignment? Either we do all (for HW bits) or none and
+let the C programming language standard take care about these.
 
-	if (!ndh && !ndl) {
-		st->ramp_up_time_ns = wf.duty_length_ns;
-		st->ramp_down_time_ns = wf.period_length_ns - wf.duty_length_ns;
-	} else if (!ndh) {
-		st->ramp_down_time_ns = wf.period_length_ns;
-	} else if (!ndl) {
-		st->ramp_up_time_ns = wf.period_length_ns;
-	} else {		// for the above case
-		...		//
-	}
+> +	AD9910_SCAN_IDX_PHASE,
+> +	AD9910_SCAN_IDX_FREQ,
+> +	/* polar phase goes first, as it is placed in the lower byte, D[7:0] */
+> +	AD9910_SCAN_IDX_POLAR_PHASE,
+> +	AD9910_SCAN_IDX_POLAR_AMP,
+> +};
 
-Or with inverted logic.
+...
+
+> +static u32 ad9910_buffer_chan_idx(struct iio_dev *indio_dev)
+> +{
+> +	unsigned int scan_idx = find_first_bit(indio_dev->active_scan_mask,
+> +					       iio_get_masklength(indio_dev));
+
+Split assignment.
+
+> +	return ad9910_scan_chan_idx[scan_idx];
+
+Who guarantees the scan_idx to be in the boundaries?
+
+> +}
+
+...
+
+> +static int ad9910_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad9910_state *st = iio_priv(indio_dev);
+> +	int ret, ret2;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	st->scan_mask = 0;
+> +	ret = ad9910_reg32_update(st, AD9910_REG_CFR2,
+> +				  AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
+> +				  0, true);
+> +
+> +	/* disable the backend channel regardless, return the first error */
+> +	ret2 = iio_backend_chan_disable(st->back,
+> +					ad9910_buffer_chan_idx(indio_dev));
+
+
+I believe the second part of the previous comment should be split to standalone
+comment here:
+
+	/* Return first occurred error */
+
+Maybe even with more elaboration on how the caller is supposed to react in both
+cases.
+
+> +	return ret ?: ret2;
+> +}
 
 -- 
 With Best Regards,
