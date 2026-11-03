@@ -1,87 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793658944;
-	b=WBeqKhVOhZY59AMb8caBRX3+gJJu4E3ritDi2MOFNT41vcvNksqsBaBcICWRt6d/nvYc
-	 PQ6qwx/J3QmTcWJE00oz7mWcx33rL4DTbIOIeYAsWA85DPih8PUpJKvBl1zHEZnk2uGai
-	 RgGLCpXsycP+OJ0gENnufziqoLsKXyqKvrpxHVaNp7wydl21xEfjK6U39AdyHRTr7v/xF
-	 nnrBbPXLpiShQA4ncikXuxjqcuQUbDi5gkw5Ttqwx2sKynLNpW2V0VR8wKHkFKo6o3PHa
-	 Gqw93LojUe83ez/jbG0W4VED/HGWwMPbN4BfRm8UKGC6oc9oxBD/97pHlIYAnwYu7Ew==
+	t=1793671079;
+	b=w/3jR/0XyHCWELeCGRDr2eCFnWYqCBE6G4BWN7KwH/OO8pOphJzbi6+eC7ALE1gHHBI3
+	 kX2zoLy4VGvclvoEk6G0WQGdcgMZJjMmAOuu74ditwrKKZu1NT9VbiJZsJguSTO+PNPGn
+	 rZnsqwCd7+ZMa+TMLnrPemhLOyOp1Amgcfaj7z6WdmVYm1EqGDL46agy/XfUFu9TBwEGk
+	 YfsFECoUb+CFaoChqOOZVFRpDZLb9goUWAIv/eIXc81cSNwStBLwkDhu+I6TMXiLPA7Ga
+	 VbnlWkuhIDB7hT6XqnNv4VcEMaJuX4ceb/HII61/03rH4JR9SJk8WKwtmL2YmOZCBOA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793658944;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793671079;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=WB/3GQG/invUH430kybLJVqhzDKHnUACPSywPsPFm2Q=;
-	b=MnXw2CAoNNE1Da2FbZBKY8ea3TYXfL8KBtwhM4rDNL0PxFGCGayu8enwPy3o3BGj9J1e
-	 lEDeU0urw8eIaj3sTtQJLSfqZDfpXzVuhSt8Oyq9rBYspXJkrI+yHFmlnt8dPhc57eSjk
-	 pWeLxzZkJy3wDtR2To2me3oW0GzpySxcJN+rpWbxpcgJZ6wAJ/2N87g4u8HRvEo7k3dip
-	 /njUVLYoA4HhjboQv+OI9K4e8GZA40DwEcf0cVaCrC9z+C7WXDvLW2Edzytti293rmSFZ
-	 yii60sMzrfEKLSn4nUEV7xGQoZOfVqecaduZvbOB3TFrFNgVIYEZxI32df3wclR1zuA==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=6BMmYkvBaV2UeuFibHBJqJb3Uq5pcYuqhAGBMLexfV0=;
+	b=XUK35EAvmGn7/cwiGuzd/ANH9klVE3tyy5apO6i9xL13PR9/tWAxdIp95cZZ13Gqkhwh
+	 zO2ETPf9TCVfS21U+whWNxvh7nvuHAyWb7P6H3MBr89KtqPLmpYdkyFo1UC6OJxLrD+vG
+	 d/RcBjToYX2QWMGKgKKNH5HyI4p9ZjvEiVssfvZuR+YhNQxAo1r8ieSlgtFcb1EA0AqWd
+	 yK1UDNtrWvDl7KjA/cJR3ff/l4ji5cPQBdPFIpHS8q9KI+Sagnvc6nu739LS5zfaZVsqN
+	 pi8TPlEcI9nvcSkui5TA51wipv+o7f9oQqlKfooHRyKv2Rl2d7a7tm440IIuvYK8NkA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IyZOLzv8;
-	arc=none smtp.remote-ip=192.198.163.18
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EVRPO2S7;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B84606A324;
-	Mon,  2 Nov 2026 22:35:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15B84606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB151606A324;
+	Tue,  3 Nov 2026 01:57:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB151606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IyZOLzv8
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EVRPO2S7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793658944; x=1825194944;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=taGbRzqe3xus4DwQuds9A8WTMnWUJ2/NU/L5ww7heq0=;
-  b=IyZOLzv809qj4Cc5WiPsw/Nn2jZiidUxIn8et0VButqh1Pa+KLyQuab+
-   onXSYNOG/Xv9MCAtafPBA7yuA/m5tWaQyOtUW5bob6g+x4q/9SFb+iNOK
-   LU9Gfdt8aX3eEGUBgqqPVPQ2fLTerQXr82ITwFjwjKi9za5068DKfktpR
-   IW7IlztiS5m9B60TKyPGSMl9IZZGprSWGIF10enP97gWAF3HvdEqMY9FZ
-   FBWevK06927fv0cO7tzqFL8Cw7P7My0ilHrml0OyfJrjkViQCyueeqJqA
-   9WGB1oJxcdRMwrBxqaHtZPtYPFrkBDBEHIR3MA9N+e9SdvNfBZEntAZ04
-   w==;
-X-CSE-ConnectionGUID: TqcD3gLpQBavIu5EoXtN4w==
-X-CSE-MsgGUID: Oa1dL0lDSBuMvn+YSH+FOA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2400766"
+  t=1793671078; x=1825207078;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=uVTQQgSb4OaGSnhsc45KCPvCIIGpGttNQUAXMxI32p4=;
+  b=EVRPO2S7teSApMpyCT+gKv60aMoshQ8SwHICX2PPG2NvNSOSpEolPaAh
+   Qcyez09uCVTOPTb0+YmqlXMS9qaQgNtjkN+oD2WwejGGuHz6GEvshys4/
+   Wxuw0chTD7CsF3N1wniNNa27ocRU4ItxPOL+clH3Up/RkhTWSjEF99iEw
+   ESkJPsvHBix3yttiSs8neO/wgLvpprglGRY4giqdQ37NCavWbcJsnNtHO
+   ByNC1qYs2PmQYtjVN1YC99EPFQ2tSZHN8O/eVyb5DC1+gTc5XeyBuPYKq
+   jzPojp2qlMASf3RhiYWJUlDqL2ZYSN9Zxtfg8GBEiZHXATg2Xx5Bd8sqH
+   g==;
+X-CSE-ConnectionGUID: daUWwVzuSJW64E+/WaoLtw==
+X-CSE-MsgGUID: FMkPV9pmQRW5qmF1Px3YBQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2281683"
 X-IronPort-AV: E=Sophos;i="6.27,192,1787036400"; 
-   d="scan'208";a="2400766"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 14:35:43 -0800
-X-CSE-ConnectionGUID: 78N5Ry7URtq/fpdfkq8w4w==
-X-CSE-MsgGUID: aWBABTg9R6mGLnptiYovJQ==
+   d="scan'208";a="2281683"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 17:57:57 -0800
+X-CSE-ConnectionGUID: 7cBq2nKuSU2iu7GqQ5tElA==
+X-CSE-MsgGUID: nylNPrZUSYOx8mn//wzP0g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,192,1787036400"; 
-   d="scan'208";a="6563581"
-Received: from bradocaj-mobl.ger.corp.intel.com (HELO [10.125.109.189]) ([10.125.109.189])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2026 14:35:43 -0800
-Message-ID: <cb38e8c40a4f2af26ee87dc37eea9c0cf4398075.camel@linux.intel.com>
-Subject: Re: [PATCH v2 09/17] iio: hid-sensors: Discard
- pm_runtime_put_autosuspend() return values
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Brian Norris <briannorris@chromium.org>, Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Ulf Hansson	
- <ulfh@kernel.org>, linux-pm@vger.kernel.org, Andy Shevchenko
- <andy@kernel.org>,  David Lechner <dlechner@baylibre.com>,
- linux-iio@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>
-Date: Mon, 02 Nov 2026 14:35:42 -0800
-In-Reply-To: <20261102220546.6fa5c62d@jic23-hlaptop>
-References: <20261021235818.3059519-1-briannorris@chromium.org>
-		<20261021165858.v2.9.Idbac8a0f9ecdd345191130e256e8d881d991bfc7@changeid>
-		<20261102015255.487bd1bd@jic23-hlaptop>
-		<84d712c6aa3df7df8fdb6cb85b85d720bdab5840.camel@linux.intel.com>
-	 <20261102220546.6fa5c62d@jic23-hlaptop>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
+   d="scan'208";a="6350821"
+Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
+  by orviesa006.jf.intel.com with ESMTP; 02 Nov 2026 17:57:57 -0800
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	bentiss@kernel.org
+Cc: linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	simeon@maryasin.name,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] HID: sensor-custom: Synchronize misc-device teardown with file lifetime
+Date: Mon,  2 Nov 2026 17:57:34 -0800
+Message-ID: <20261103015734.578613-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.55.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -91,151 +83,123 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2026-11-02 at 22:05 +0000, Jonathan Cameron wrote:
-> On Mon, 02 Nov 2026 08:55:44 -0800
-> srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->=20
-> > On Mon, 2026-11-02 at 01:52 +0000, Jonathan Cameron wrote:
-> > > On Wed, 21 Oct 2026 16:57:10 -0700
-> > > Brian Norris <briannorris@chromium.org> wrote:
-> > > =C2=A0=20
-> > > > The hid-sensors driver propagates the return value of
-> > > > pm_runtime_put_autosuspend(), which is not particularly useful.
-> > > >=20
-> > > > Returning an error code from pm_runtime_put_autosuspend()
-> > > > merely
-> > > > means
-> > > > that it has not queued up a timer or work item to check whether
-> > > > or
-> > > > not
-> > > > the device can be suspended and there are many perfectly valid
-> > > > situations in which that can happen, like after writing "on" to
-> > > > the
-> > > > device's runtime PM "control" attribute in sysfs for one
-> > > > example.
-> > > >=20
-> > > > For this reason, modify this driver to simply discard the
-> > > > pm_runtime_put_autosuspend() return value.
-> > > >=20
-> > > > This will facilitate a planned change of the
-> > > > pm_runtime_put_autosuspend() return type to void in the future,
-> > > > similar
-> > > > to commit 3afd8df02433 ("PM: runtime: Change pm_runtime_put()
-> > > > return
-> > > > type to void").
-> > > >=20
-> > > > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>=C2=A0=
-=20
-> > > +CC the various hid-sensors maintainers.
-> > > =C2=A0=20
-> >=20
-> > =C2=A0=C2=A0=C2=A0 Acked-by: Srinivas Pandruvada
-> > <srinivas.pandruvada@linux.intel.com>
-> >=20
-> >=20
-> > > Anyone remember why this does
-> > > pm_runtime_use_autosuspend(&st->pdev->dev);
-> > > in this code?
-> > >=20
-> > > That is unusual...=C2=A0 My immediate instinct is to
-> > > get rid of it, but maybe there is something subtle
-> > > going on.=C2=A0=20
-> >=20
-> > When reading sensor via raw interface, you need to power-up, read
-> > and
-> > power-down (This is done via runtime PM). To avoid repeating this
-> > sequence of power up and power down for consecutive fast reads,
-> > auto
-> > suspend is used. If there are reads with in 3 seconds, the sensor
-> > will
-> > keep power up.
-> >=20
-> Ah. I was too vague in that query.=C2=A0 Why is it enabled only the power
-> state interface rather than at the start when runtime pm is enabled?
->=20
-> That seems to be done via a slightly unusually on first turning on
-> of the trigger rather than more generally.=C2=A0 Normally we'd expect
-> it to be enabled in driver probe and all paths that need the power
-> on to do a pm_runtime_resume_and_get().
->=20
+The HID sensor custom misc device frees its per-sensor state in
+remove() while userspace may still hold an open file descriptor. A
+reader blocked in read() can remain queued on sensor_inst->wait after the
+object has been freed, and a later wakeup races with teardown and
+touches stale memory.
 
-This function is called from probe() of each sensor instead of calling
-in each driver. I agree this can be different function than this
-particular one. This happen to be a common function.
+Synchronize the misc-device teardown with file lifetime before freeing
+the per-sensor state. Set a removal flag, reject new opens, wake
+blocked waiters, and wait for the last open file to close before
+deregistering the misc device and freeing the FIFO. Fail in-flight read()
+and poll() operations cleanly once removal is in progress so userspace
+cannot access freed memory after the device disappears.
 
-We can separate the function in a follow up patch.
+This avoids use-after-free on read(), poll(), release(), and open()
+after the HID sensor custom character device has been removed
 
-Thanks,
-Srinivas
+Reported-by: Семён Марьясин <simeon@maryasin.name>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-custom.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
+index c2b425afd951..c9338ae47050 100644
+--- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -53,6 +53,14 @@ struct hid_sensor_custom {
+ 	struct kfifo data_fifo;
+ 	unsigned long misc_opened;
+ 	wait_queue_head_t wait;
++	wait_queue_head_t remove_wait;
++	/*
++	 * Shared with the file operations; use READ_ONCE()/WRITE_ONCE() for the
++	 * teardown state. The actual lifetime guarantee comes from misc_opened:
++	 * removal waits for the last fd to close before deregistering the misc
++	 * device and freeing the FIFO.
++	 */
++	bool removing;
+ 	struct platform_device *custom_pdev;
+ };
+ 
+@@ -653,6 +661,9 @@ static ssize_t hid_sensor_custom_read(struct file *file, char __user *buf,
+ 	sensor_inst = container_of(file->private_data,
+ 				   struct hid_sensor_custom, custom_dev);
+ 
++	if (READ_ONCE(sensor_inst->removing))
++		return -ENODEV;
++
+ 	if (count < sizeof(struct hid_sensor_sample))
+ 		return -EINVAL;
+ 
+@@ -662,9 +673,12 @@ static ssize_t hid_sensor_custom_read(struct file *file, char __user *buf,
+ 				return -EAGAIN;
+ 
+ 			ret = wait_event_interruptible(sensor_inst->wait,
++				READ_ONCE(sensor_inst->removing) ||
+ 				!kfifo_is_empty(&sensor_inst->data_fifo));
+ 			if (ret)
+ 				return ret;
++			if (READ_ONCE(sensor_inst->removing))
++				return -ENODEV;
+ 		}
+ 		ret = kfifo_to_user(&sensor_inst->data_fifo, buf, count,
+ 				    &copied);
+@@ -684,6 +698,7 @@ static int hid_sensor_custom_release(struct inode *inode, struct file *file)
+ 				   struct hid_sensor_custom, custom_dev);
+ 
+ 	clear_bit(0, &sensor_inst->misc_opened);
++	wake_up_all(&sensor_inst->remove_wait);
+ 
+ 	return 0;
+ }
+@@ -694,6 +709,8 @@ static int hid_sensor_custom_open(struct inode *inode, struct file *file)
+ 
+ 	sensor_inst = container_of(file->private_data,
+ 				   struct hid_sensor_custom, custom_dev);
++	if (READ_ONCE(sensor_inst->removing))
++		return -ENODEV;
+ 	/* We essentially have single reader and writer */
+ 	if (test_and_set_bit(0, &sensor_inst->misc_opened))
+ 		return -EBUSY;
+@@ -712,6 +729,9 @@ static __poll_t hid_sensor_custom_poll(struct file *file,
+ 
+ 	poll_wait(file, &sensor_inst->wait, wait);
+ 
++	if (READ_ONCE(sensor_inst->removing))
++		return EPOLLERR;
++
+ 	if (!kfifo_is_empty(&sensor_inst->data_fifo))
+ 		mask = EPOLLIN | EPOLLRDNORM;
+ 
+@@ -736,6 +756,7 @@ static int hid_sensor_custom_dev_if_add(struct hid_sensor_custom *sensor_inst)
+ 		return ret;
+ 
+ 	init_waitqueue_head(&sensor_inst->wait);
++	init_waitqueue_head(&sensor_inst->remove_wait);
+ 
+ 	sensor_inst->custom_dev.minor = MISC_DYNAMIC_MINOR;
+ 	sensor_inst->custom_dev.name = dev_name(&sensor_inst->pdev->dev);
+@@ -751,10 +772,12 @@ static int hid_sensor_custom_dev_if_add(struct hid_sensor_custom *sensor_inst)
+ static void hid_sensor_custom_dev_if_remove(struct hid_sensor_custom
+ 								*sensor_inst)
+ {
+-	wake_up(&sensor_inst->wait);
++	WRITE_ONCE(sensor_inst->removing, true);
++	wake_up_all(&sensor_inst->wait);
++	wait_event(sensor_inst->remove_wait,
++		   !test_bit(0, &sensor_inst->misc_opened));
+ 	misc_deregister(&sensor_inst->custom_dev);
+ 	kfifo_free(&sensor_inst->data_fifo);
+-
+ }
+ 
+ /*
+-- 
+2.56.0
 
-> I'm not seeing why it is in this particularly location which doesn't
-> seem to be particularly sensible to me.
->=20
-> Jonathan
->=20
->=20
-> =C2=A0=20
->=20
->=20
->=20
-> > Thanks,
-> > Srinivas
-> >=20
-> > > =C2=A0=20
-> > > > ---
-> > > >=20
-> > > > Changes in v2:
-> > > > =C2=A0* Split iio patch into per-driver patches
-> > > >=20
-> > > > =C2=A0.../iio/common/hid-sensors/hid-sensor-trigger.c=C2=A0=C2=A0=
-=C2=A0 | 14 +++++-
-> > > > ----
-> > > > ----
-> > > > =C2=A01 file changed, 5 insertions(+), 9 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-
-> > > > trigger.c
-> > > > b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > > > index 60808e2430ca..d76a6d9f04f6 100644
-> > > > --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > > > +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > > > @@ -154,21 +154,17 @@ int hid_sensor_power_state(struct
-> > > > hid_sensor_common *st, bool state)
-> > > > =C2=A0{
-> > > > =C2=A0
-> > > > =C2=A0#ifdef CONFIG_PM
-> > > > -	int ret;
-> > > > -
-> > > > =C2=A0	if (atomic_add_unless(&st->runtime_pm_enable, 1, 1))
-> > > > =C2=A0		pm_runtime_enable(&st->pdev->dev);
-> > > > =C2=A0
-> > > > =C2=A0	if (state) {
-> > > > =C2=A0		atomic_inc(&st->user_requested_state);
-> > > > -		ret =3D pm_runtime_resume_and_get(&st->pdev-
-> > > > >dev);
-> > > > -	} else {
-> > > > -		atomic_dec(&st->user_requested_state);
-> > > > -		pm_runtime_use_autosuspend(&st->pdev->dev);
-> > > > -		ret =3D pm_runtime_put_autosuspend(&st->pdev-
-> > > > >dev);
-> > > > +		return pm_runtime_resume_and_get(&st->pdev-
-> > > > >dev);
-> > > > =C2=A0	}
-> > > > -	if (ret < 0)
-> > > > -		return ret;
-> > > > +
-> > > > +	atomic_dec(&st->user_requested_state);
-> > > > +	pm_runtime_use_autosuspend(&st->pdev->dev);=C2=A0=20
-> > > This is odd enough to make me nervous even though the patch is
-> > > obviously a no-op change.
-> > >=20
-> > > =C2=A0=20
-> > > > +	pm_runtime_put_autosuspend(&st->pdev->dev);
-> > > > =C2=A0
-> > > > =C2=A0	return 0;
-> > > > =C2=A0#else=C2=A0=20
-> > > =C2=A0=20
->=20
