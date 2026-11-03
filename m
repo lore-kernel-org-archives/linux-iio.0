@@ -1,55 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.139
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793697612;
-	b=R8HjrdRDwrybY0hLvEsRpxCLWxXKsIqqP4vMj1Zw9GXALbY0XZerkpnnvjqUqPNWJBGO
-	 0uQxLUmTENJqpK3LXZG02C5eqJHW7TdpKH+oTLtv6zfq0RPptlJWrjDaME9Mrme5NhzxE
-	 EX6vQ3XCux6vR7p4o1C1GyV3b+/xQW8Zh/H23S8ODKqQ5JYdly1Wbf3h7wa0dxIPRiJLU
-	 RjPwP2U70nUXNEEYRfykXygmzpHy+XrUKRYpJRLoTe5tNEGpkydznYIpQYXV9rieIq+/s
-	 oSADj+RnIPgV/Xx/mOyeLfmklGwdBdxc2RoRexzt7eCmneyDRjTldnGdXqhqBbu0KHg==
+	t=1793697614;
+	b=XsgZrpExv10G+wBSWLkGjrnkeRdgUBvKDP2b4MTNeAD3JCHIH/uGPJgI5ySuDDjkgm4j
+	 HdF4ExDN51RG7ljAC2EE5YhEyK5otZLpaQHWRkOoAOMoQ6Rq1PywchrrrTUoRwtdyMAFm
+	 usKfcih0PNT9YmIm8PeVeUpbWKp3jDGOgzBMx66Ix1h2xETdUK56Hnr97U4VH8y7nctwB
+	 cXAmVcHyVrV7iAggdOMYtea8hbKEyXqo9gOUCVG61NPdRnDxLUCMaOpxWp6hty9uyu3cz
+	 GDum66SzsZ0nbyCKtvQ/F7uoCI9llXdFTugv+ltRnOk+mYFp3528mWo+7gC7tOGCNMg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793697612;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793697614;
 	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
 	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
 	 To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=GoJJGnLjJbadu3Fw6HjM1zaWLD+B1Y7DHixLvyyq14M=;
-	b=yGMWRqUosdyG6xba4qrXfAYPTY6Gq3/zwHE5yIySpcVxCuueA0wk1znM4LxKtkvmQ/h5
-	 OzubpF9GquhYlQu2CSUrnE4YPx3zYE4Saot4VsN80PT/4WDkk0SG8JGWdfOpFwBbRfI+U
-	 xOhP7NFVOB83LS16cKzUdwQpLNo8VXAiZjYI6hv8Bg6otz1J0Be3bLV0U/7YXLrrB614U
-	 tc+vg4cXcrhz1PsvCDOjsSarFYKY9pfoa2CscP7FvgddhYrqnNqAROuaW+oTyoUy651E4
-	 5b3NY9no6C+G5z2lVCL+O3oK7WIHxJGsrYj4N90TgNmfukXkGUWKZvZ4I5jHBhiNLDw==
+	bh=TZHbUSdkUBb+ZI6wuGpXqeof9jscdgINriK8/nkPpvc=;
+	b=Z4IX16Z5cDdzSQa95q3r7Au9ns32jdf8Ed0BjGLZ33Bfqm2bFcywEHfrmjEajPXFasmZ
+	 pHr1I1sUhI/I/WMzO4IeIM45cpBVBvJAtmh8zdaiDj23BQeg/Vq+isnhf+KIsZFhTABUb
+	 LbLSaL6+4wwa68UMJKWYZXLNLlZ1WueBj9ARexf7gK7qcoC7Ecd3k+57Dcx3WXHTvTwGm
+	 8EKp2AXIgRMNNw0sAVG457C40dsV3mRCfbhtZRGaBC0XgV17STRnPEKZG+bIPtczv00Of
+	 HDBWB7yLV3xt5ftIpzPMJx7SAPrt2G9H/8dBW69i+Gfh1lE3Zyx8rGH6sbovWpXkCKg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=cmss.chinamobile.com;
 	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=fkioqmsJ;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=Bl6IzJ6l;
 	arc=none smtp.remote-ip=111.22.67.139
 Received: from cmccmta6.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 22C53606A32E;
-	Tue,  3 Nov 2026 09:20:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22C53606A32E
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AFDCE606A332;
+	Tue,  3 Nov 2026 09:20:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AFDCE606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=fkioqmsJ
+	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=Bl6IzJ6l
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=cmss.chinamobile.com; s=default; l=0;
 	h=from:subject:message-id:to:cc:mime-version;
 	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=fkioqmsJ8ofUb4mCPa18sy0tfUBZBE9WmiJNXJEeNXN6OhG7rkMPhRxAOkxTb+YmuzGYiM4fsC9Sy
-	 pq/VJq2/vPNfFETuk6bfs66N1ybX85MHNP7QXqVyjBa3BqtXKBUVLgfPKzTWiiA3SLWVUDrnL2u3++
-	 m7WLJRiZqyCdCAtY=
+	b=Bl6IzJ6lCZ/oHkZjk/H2XAtpYOE/r2umzKLSEcIBQP7X0F56dUurnzTjLYPsL9A6ciNFd9ih/1tjp
+	 WMfZeeVWZJ70mbqQoLkeumg/SomLWyI+vrKoGRIxjEZi89WAFABSLun4EQ65fxL1TvoRgND+PgkxqC
+	 nxoZ3niuuKNvoWqw=
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG:00000000
 Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee56ae9a7489cb-90bb0;
-	Tue, 03 Nov 2026 17:20:09 +0800 (CST)
-X-RM-TRANSID:2ee56ae9a7489cb-90bb0
+	by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee56ae9a74a9ce-90bb3;
+	Tue, 03 Nov 2026 17:20:10 +0800 (CST)
+X-RM-TRANSID:2ee56ae9a74a9ce-90bb3
 X-RM-TagInfo: emlType=0                                       
 X-RM-SPAM-FLAG:00000000
 Received:from  (unknown[223.108.79.98])
-	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee66ae9a744004-f3e3b;
-	Tue, 03 Nov 2026 17:20:09 +0800 (CST)
-X-RM-TRANSID:2ee66ae9a744004-f3e3b
+	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee66ae9a744004-f3e40;
+	Tue, 03 Nov 2026 17:20:10 +0800 (CST)
+X-RM-TRANSID:2ee66ae9a744004-f3e40
 From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
 To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
@@ -58,9 +58,9 @@ Cc: linux-kernel@vger.kernel.org,
 	dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	laixiangwu <laixiangwu@cmss.chinamobile.com>
-Subject: [PATCH v3 1/2] iio: gyro: mpu3050: Split data ready trigger enable/disable into helpers
-Date: Tue,  3 Nov 2026 17:20:01 +0800
-Message-ID: <20261103092002.1332-2-laixiangwu@cmss.chinamobile.com>
+Subject: [PATCH v3 2/2] iio: gyro: mpu3050: Fix runtime PM refcount leak in trigger enable path
+Date: Tue,  3 Nov 2026 17:20:02 +0800
+Message-ID: <20261103092002.1332-3-laixiangwu@cmss.chinamobile.com>
 X-Mailer: git-send-email 2.50.1.windows.1
 In-Reply-To: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
 References: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
@@ -77,233 +77,108 @@ Content-Transfer-Encoding: 8bit
 
 From: laixiangwu <laixiangwu@cmss.chinamobile.com>
 
-mpu3050_drdy_trigger_set_state() implements both the enable and the
-disable path of the data ready trigger in the two legs of a large
-if/else statement.
+mpu3050_drdy_trigger_enable() calls pm_runtime_get_sync() when
+enabling the data ready trigger, but all five error returns in the
+enable path return directly without the matching
+pm_runtime_put_autosuspend(). The disable path, in contrast, drops
+the reference correctly.
 
-Split the two legs out into separate mpu3050_drdy_trigger_enable()
-and mpu3050_drdy_trigger_disable() helpers and reduce
-mpu3050_drdy_trigger_set_state() to dispatching to the appropriate
-one. This is a pure code move with no functional change, done to make
-the error handling of the enable path easier to read.
+As a result, a failed trigger enable leaves the runtime PM usage
+counter incremented and the sensor can never runtime suspend. It also
+leaves hw_irq_trigger set to true, claiming the hardware IRQ is in
+use when it is not.
 
+Use pm_runtime_resume_and_get(), which does not leave the usage
+counter incremented when resume fails, and add an error label that
+drops the runtime PM reference and clears hw_irq_trigger so that a
+failed enable returns with the device in the same state as before
+the attempt.
+
+Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
 Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
 ---
 
 Changes in v3:
 - none; reposted in a new top-level thread.
 
-Link: https://lore.kernel.org/r/20261101092327.197-2-laixiangwu@cmss.chinamobile.com
- drivers/iio/gyro/mpu3050-core.c | 173 ++++++++++++++++++--------------
- 1 file changed, 99 insertions(+), 74 deletions(-)
+Changes in v2:
+- Rebase the fix on a new precursor patch that splits the enable and
+  disable paths of mpu3050_drdy_trigger_set_state() into separate
+  helpers, as suggested by the reviewer, so the error label only
+  applies to the enable path.
+- Use pm_runtime_resume_and_get() instead of pm_runtime_get_sync(),
+  as suggested by the reviewer; it also keeps the usage counter
+  balanced when the resume fails, so no manual
+  pm_runtime_put_noidle() is needed in the caller.
+
+Link: https://lore.kernel.org/r/20261101092327.197-3-laixiangwu@cmss.chinamobile.com
+Link: https://lore.kernel.org/r/20261030084305.1660-1-laixiangwu@cmss.chinamobile.com
+ drivers/iio/gyro/mpu3050-core.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 07c0f9011..d966911ab 100644
+index d966911ab..fc305564d 100644
 --- a/drivers/iio/gyro/mpu3050-core.c
 +++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -946,103 +946,128 @@ static irqreturn_t mpu3050_irq_thread(int irq, void *p)
- }
- 
- /**
-- * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
-- * @trig: trigger instance
-- * @enable: true if trigger should be enabled, false to disable
-+ * mpu3050_drdy_trigger_enable() - enable the data ready trigger
-+ * @mpu3050: device to configure
-+ *
-+ * Power up the device, enable the FIFO and configure the data ready
-+ * interrupt.
-  */
--static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
--					  bool enable)
-+static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
- {
--	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
--	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+@@ -957,20 +957,23 @@ static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
  	unsigned int val;
  	int ret;
  
--	/* Disabling trigger: disable interrupt and return */
--	if (!enable) {
--		/* Disable all interrupts */
--		ret = regmap_write(mpu3050->map,
--				   MPU3050_INT_CFG,
--				   0);
--		if (ret)
--			dev_err(mpu3050->dev, "error disabling IRQ\n");
-+	pm_runtime_get_sync(mpu3050->dev);
-+	mpu3050->hw_irq_trigger = true;
- 
--		/* Clear IRQ flag */
--		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
--		if (ret)
--			dev_err(mpu3050->dev, "error clearing IRQ status\n");
-+	/* Disable all things in the FIFO */
-+	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+-	pm_runtime_get_sync(mpu3050->dev);
++	ret = pm_runtime_resume_and_get(mpu3050->dev);
 +	if (ret)
 +		return ret;
- 
--		/* Disable all things in the FIFO and reset it */
--		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
--		if (ret)
--			dev_err(mpu3050->dev, "error disabling FIFO\n");
-+	/* Reset and enable the FIFO */
-+	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
-+			      MPU3050_USR_CTRL_FIFO_EN |
-+			      MPU3050_USR_CTRL_FIFO_RST);
-+	if (ret)
-+		return ret;
- 
--		ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
--				   MPU3050_USR_CTRL_FIFO_RST);
--		if (ret)
--			dev_err(mpu3050->dev, "error resetting FIFO\n");
-+	mpu3050->pending_fifo_footer = false;
- 
--		pm_runtime_put_autosuspend(mpu3050->dev);
--		mpu3050->hw_irq_trigger = false;
-+	/* Turn on the FIFO for temp+X+Y+Z */
-+	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
-+			   MPU3050_FIFO_EN_TEMP_OUT |
-+			   MPU3050_FIFO_EN_GYRO_XOUT |
-+			   MPU3050_FIFO_EN_GYRO_YOUT |
-+			   MPU3050_FIFO_EN_GYRO_ZOUT |
-+			   MPU3050_FIFO_EN_FOOTER);
-+	if (ret)
-+		return ret;
- 
--		return 0;
--	} else {
--		/* Else we're enabling the trigger from this point */
--		pm_runtime_get_sync(mpu3050->dev);
--		mpu3050->hw_irq_trigger = true;
-+	/* Configure the sample engine */
-+	ret = mpu3050_start_sampling(mpu3050);
-+	if (ret)
-+		return ret;
- 
--		/* Disable all things in the FIFO */
--		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
--		if (ret)
--			return ret;
-+	/* Clear IRQ flag */
-+	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error clearing IRQ status\n");
- 
--		/* Reset and enable the FIFO */
--		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
--				      MPU3050_USR_CTRL_FIFO_EN |
--				      MPU3050_USR_CTRL_FIFO_RST);
--		if (ret)
--			return ret;
-+	/* Give us interrupts whenever there is new data ready */
-+	val = MPU3050_INT_RAW_RDY_EN;
- 
--		mpu3050->pending_fifo_footer = false;
-+	if (mpu3050->irq_actl)
-+		val |= MPU3050_INT_ACTL;
-+	if (mpu3050->irq_latch)
-+		val |= MPU3050_INT_LATCH_EN;
-+	if (mpu3050->irq_opendrain)
-+		val |= MPU3050_INT_OPEN;
- 
--		/* Turn on the FIFO for temp+X+Y+Z */
--		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
--				   MPU3050_FIFO_EN_TEMP_OUT |
--				   MPU3050_FIFO_EN_GYRO_XOUT |
--				   MPU3050_FIFO_EN_GYRO_YOUT |
--				   MPU3050_FIFO_EN_GYRO_ZOUT |
--				   MPU3050_FIFO_EN_FOOTER);
--		if (ret)
--			return ret;
-+	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
-+	if (ret)
-+		return ret;
- 
--		/* Configure the sample engine */
--		ret = mpu3050_start_sampling(mpu3050);
--		if (ret)
--			return ret;
-+	return 0;
-+}
- 
--		/* Clear IRQ flag */
--		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
--		if (ret)
--			dev_err(mpu3050->dev, "error clearing IRQ status\n");
-+/**
-+ * mpu3050_drdy_trigger_disable() - disable the data ready trigger
-+ * @mpu3050: device to configure
-+ *
-+ * Disable the data ready interrupt, flush the FIFO and drop the
-+ * runtime PM reference taken in mpu3050_drdy_trigger_enable().
-+ */
-+static int mpu3050_drdy_trigger_disable(struct mpu3050 *mpu3050)
-+{
-+	unsigned int val;
-+	int ret;
- 
--		/* Give us interrupts whenever there is new data ready */
--		val = MPU3050_INT_RAW_RDY_EN;
-+	/* Disable all interrupts */
-+	ret = regmap_write(mpu3050->map,
-+			   MPU3050_INT_CFG,
-+			   0);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error disabling IRQ\n");
- 
--		if (mpu3050->irq_actl)
--			val |= MPU3050_INT_ACTL;
--		if (mpu3050->irq_latch)
--			val |= MPU3050_INT_LATCH_EN;
--		if (mpu3050->irq_opendrain)
--			val |= MPU3050_INT_OPEN;
-+	/* Clear IRQ flag */
-+	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error clearing IRQ status\n");
- 
--		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
--		if (ret)
--			return ret;
--	}
-+	/* Disable all things in the FIFO and reset it */
-+	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error disabling FIFO\n");
 +
-+	ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
-+			   MPU3050_USR_CTRL_FIFO_RST);
-+	if (ret)
-+		dev_err(mpu3050->dev, "error resetting FIFO\n");
-+
-+	pm_runtime_put_autosuspend(mpu3050->dev);
-+	mpu3050->hw_irq_trigger = false;
+ 	mpu3050->hw_irq_trigger = true;
+ 
+ 	/* Disable all things in the FIFO */
+ 	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+ 	if (ret)
+-		return ret;
++		goto err_put_pm;
+ 
+ 	/* Reset and enable the FIFO */
+ 	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+ 			      MPU3050_USR_CTRL_FIFO_EN |
+ 			      MPU3050_USR_CTRL_FIFO_RST);
+ 	if (ret)
+-		return ret;
++		goto err_put_pm;
+ 
+ 	mpu3050->pending_fifo_footer = false;
+ 
+@@ -982,12 +985,12 @@ static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
+ 			   MPU3050_FIFO_EN_GYRO_ZOUT |
+ 			   MPU3050_FIFO_EN_FOOTER);
+ 	if (ret)
+-		return ret;
++		goto err_put_pm;
+ 
+ 	/* Configure the sample engine */
+ 	ret = mpu3050_start_sampling(mpu3050);
+ 	if (ret)
+-		return ret;
++		goto err_put_pm;
+ 
+ 	/* Clear IRQ flag */
+ 	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+@@ -1006,9 +1009,15 @@ static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
+ 
+ 	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
+ 	if (ret)
+-		return ret;
++		goto err_put_pm;
  
  	return 0;
++
++err_put_pm:
++	pm_runtime_put_autosuspend(mpu3050->dev);
++	mpu3050->hw_irq_trigger = false;
++
++	return ret;
  }
  
-+/**
-+ * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
-+ * @trig: trigger instance
-+ * @enable: true if trigger should be enabled, false to disable
-+ */
-+static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
-+					  bool enable)
-+{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-+	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
-+
-+	if (enable)
-+		return mpu3050_drdy_trigger_enable(mpu3050);
-+
-+	return mpu3050_drdy_trigger_disable(mpu3050);
-+}
-+
- static const struct iio_trigger_ops mpu3050_trigger_ops = {
- 	.set_trigger_state = mpu3050_drdy_trigger_set_state,
- };
+ /**
 -- 
 2.50.1.windows.1
 
