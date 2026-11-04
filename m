@@ -1,85 +1,83 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793798542;
-	b=tncDPDRkqqDzz8paWNUJyurgE8mQE66MW4lP6il+EVV5j5oEP5vx0cgGKFgaPJEAcIDf
-	 R+1VTcuMXEGsIuls9wRTHk/tBDFC9B/mT52nYU5g+sVZV7Meg3/BUBOMy/jUkha6MRJw6
-	 S0Gw8cyjqaGOtyObAc6H8FZ553v0NMlVo8CSS1OkEjozimFyHsUgeXUc95829K1lKUIh6
-	 rugw5QqSjd234Uyhsg9p9pR/YtROyW2V14mgNc3G0SquhBH3MLmzL/Zze3kWQ/Y8uyVKR
-	 ku6jeDrs6RSqfn61nZ6Vd9bvaT7DIwlJSSq4G9GOr7G9iZpK0D4zGXUusQF1ORKj/JQ==
+	t=1793798534;
+	b=ospOLwAelfbooqMxg5aYwschULrykCMNJTOqZKkbel0So0716Es3FxcY9jRGB5g6Vgnt
+	 KXkzj7oWA8ALf3vMO/CfWDkTvsNvek4HydN/WmlftaTTJlJinzythFR2Xd9WDp8JwRYYM
+	 Ucpe86vljylY5EypTq1J41oXzNtKwoELSfQZiO73KxCxA6ctjvWc2SkN9jl0jmscwG/ID
+	 7LZXje3TA79SBz2iE/CP0xiOi9CaCkb00lr4gh6p+udBcfCHghUsMO31LYDQbRmexpwKt
+	 eAR8711jonatIL2l4VCM2Sl1kPatW5pIK8cAlw6yp9ExFe390jz6y3DAEBlDO/gekkA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793798542;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793798534;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
 	 Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
-	 X-Proofpoint-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
+	 Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type:X-ADIRuleOP-NewSCL:X-Authority-Analysis:
+	 X-Proofpoint-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-ORIG-GUID:
 	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=wj7IdaAdZuhAGKNv/HrQ0yJHDsJqs0v6JAP+eJCVLYk=;
-	b=mbKaE+TaI5DvcmzNhZ2NmfxuYQGdcxPB/kZCFn8lSflJd9+bPJC5K/QCWaKUlF6j6TIx
-	 zXX03j9SqIYTaBoBkTgvoH3TB4WuXjFXEKoc8geaGT0rDgS3PKVipIJa9GcceL5F0eJIi
-	 XfqixN99kdTMCmq7XqMPHJOwBXknUw1jF+otnE0uzPrlDGBtX1wBEIU/wL4bDmOcEmxHQ
-	 U2zGn0AjdfZH2EnUHULUfmjV7qedk9zaqfm1qOs0UPTXk2zGRmNJOHrMaTezfQB/6kFt0
-	 r/ik8XWF1uUSzMZR+E/Z3HGqAe0m3MXJxm7xL5jUY3ta9GAUmrDVZ03HDHGBRFNE1xw==
+	bh=ZSnMlVdo+fDOwZWDnMzKFtRjw1qYZbIIDQ1iNEEW1Fw=;
+	b=ZJ/Xfpro6cPJxx4mj6Sx2Thvx+0MEu63nDf7fVfhk4IrfVKmqlvK16cYMHZXwgQltHEV
+	 ThhghWFtxSIuacE1tvr8+AhsZgsbfhKCLF5P1+w3z76L7GZgJdHTVzEqcNwWI9k/Q/D2C
+	 8HZuqcuqIi5Q2Au8FaNxX/vkxgwa0G5aZRj5Q+TtdrUEn0xBdvUeJrp3uN1l0KUr+BWmO
+	 TqQYiOCalT4l5YUuaI6Bi0+6emKekNiiR8W/3bd1ZOY46seczid0HQpd5QsH2fjNbJ8li
+	 x8ebqqgRzOjgBQSSuGvYVZ6/cDW9MlhJ9uG6oBazXIYxMegN7ETYRztH2lizFV3Xp4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=analog.com;
 	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=o4QTZgYr;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=wQ7v2Okw;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=ai1ohK5M;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=jn289os9;
 	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE9B606A326;
-	Wed,  4 Nov 2026 13:22:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AFE9B606A326
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B941606A31B;
+	Wed,  4 Nov 2026 13:22:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B941606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=o4QTZgYr;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=wQ7v2Okw
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A4Bd6st1972338;
-	Wed, 4 Nov 2026 08:22:18 -0500
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=ai1ohK5M;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=jn289os9
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A4BcGAa1243214;
+	Wed, 4 Nov 2026 08:22:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=wj7IdaAdZuhAGKNv/HrQ0yJHDsJqs0v6JAP+eJCVLYk=; b=o4QTZgY
-	r3D8zJNkHjThZmei7gtLDRyNRvOIGMf10YztfHf8k1+z+5ORgRhrem1NGbUiKCfo
-	K6DGyvGxb/PGJv2zcdX+9RroW+rWZ/Gp2ck3ixMVnkZNP+aq0BhnZQiQaI15A41A
-	vb4MV6gSBzBQkeYXDzvHwF3FHNtrp8SdQ/fV8enhLdV1fRCTYO7gcMHwR0IHo2Za
-	0MWKXFf+S+gtdwpdQ5bt/ELFC/CFzdpuvIA93URLO7KddhLNRZfKc9fBOP1eeYUh
-	o5p0iIcsELUUDI6BnzWH20dt/fKlX9nvTznconu31b6b5/XtdW3gckJ78K8+/ltQ
-	iULq6brAlLvQkZg==
+	:message-id:mime-version:subject:to; s=DKIM; bh=ZSnMlVdo+fDOwZWD
+	nMzKFtRjw1qYZbIIDQ1iNEEW1Fw=; b=ai1ohK5M3eSwvQPGm+AawvK373D1K5Bi
+	6TOdl6zKIOTtceuXS3bnnpLj3lOTQNOLUYJ4v2kSlFiNZtRWWgOzQfVyYCJjUCFV
+	VUkZNCJHuIBQz48dNNW+q9m4YHApTtfwLg/dqtU5xNX+Yj3fSi9a7atJEujHjZ/g
+	NLY+eXUEmPtHjEJBwuTwyv8Kcx0Kq10O4C5+ciyel9p2sRAAwQxzDadM2Zt0pUGn
+	DSjsHLIDiDycy5zvWggYaOrVGe0x8SwRwXKH/ZByjxKd/asrOocyL3zlG5pADqQq
+	EMfFVyxBZKjyUvnh0Fz79hFCcqJIVkToOKlQQtzAlC/hc4BHTVuWww==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=wj7Id
-	aAdZuhAGKNv/HrQ0yJHDsJqs0v6JAP+eJCVLYk=; b=wQ7v2OkwkvhSsU8kYWCAU
-	AlfnULxs/WqiGff/frHKASCIw+QM3fXzFSR6PRtqVE9ixR2UQR/x/dvXJ2pGZHgM
-	dMjxEEjqWDjU1NkB2Mp6tbDK372FMHhHPGHaYkb/updNNMcF8YtOyrrU0+RMM0LR
-	qNYG8Ln0jnLNRsYFO2drvvzj6ntdklRnwrZ8vk6MG69RMEAQ0hGmM5Xb361NR9+Q
-	NifhPd/qBJ41mNp+5MQ6w/j1fyvs1Qv4EN3BHAAyqXHj2MJY7C26ipbiTYR7z4UD
-	Mb3LEOlIlu5HkzRHYcJx6mMXR53itGKBzwsmbUmITJbMDdcWr8I4wD1xbumeRdDh
-	A==
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=ZSnMlVdo+fDOwZWDnMzKFtRjw1q
+	YZbIIDQ1iNEEW1Fw=; b=jn289os9caAifXYrxoxMVsxj1oek+tRoueou8xiu8E/
+	vdXeNUJou7kjyDJp+6c/QQlfP55kMiMEr6ifVBFtJUzM9FTkfqdH02hBR2r+Johx
+	mBVZT+gLhquO7yOPqS5qiios8XfsjOsCRkVbVhhXISBulu/6tIbalQ1toOp0PglW
+	ChC2c3LPTLp0yKrb8Z6DSEZVLQSoNCKixB03FlROSpPfOqEmuTWg2+gyX+onKHap
+	Ymzdf5y3svAnLosrFjVBplKAuyY32PXl3GIMM/to9CKbsrYTAHPj6ztiwPLjUNEg
+	qlPebgNwG9NwX37pAAdrG8stwAhWmbIOSp/ST7XBUBA==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hqk2pwxwh-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4hqnfhn4hr-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Nov 2026 08:22:18 -0500 (EST)
+	Wed, 04 Nov 2026 08:22:08 -0500 (EST)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 6A4DMG3f028023
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 6A4DM7Fr028013
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 4 Nov 2026 08:22:16 -0500
+	Wed, 4 Nov 2026 08:22:07 -0500
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 4 Nov
- 2026 08:22:16 -0500
+ 2026 08:22:07 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 4 Nov 2026 08:22:16 -0500
+ Transport; Wed, 4 Nov 2026 08:22:07 -0500
 Received: from HYB-aFjnqsVU6Ag.ad.analog.com ([10.66.6.192])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6A4DLnan008011;
-	Wed, 4 Nov 2026 08:22:08 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6A4DLnal008011;
+	Wed, 4 Nov 2026 08:21:52 -0500
 From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>
 CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
@@ -102,12 +100,10 @@ CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Nicolae-Daniel
  Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Subject: [PATCH v2 2/5] pwm: axi-pwmgen: report the waveform step
-Date: Wed, 4 Nov 2026 15:21:40 +0200
-Message-ID: <20261104132143.215581-3-Nicolae-daniel.Deaconescu@analog.com>
+Subject: [PATCH v2 0/5] iio: adc: ad7625: add LTC2387 and ADAQ2387x support
+Date: Wed, 4 Nov 2026 15:21:38 +0200
+Message-ID: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
-References: <20261104132143.215581-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -120,72 +116,106 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: C7EqxUD2gIn-30GZsGURmG-RD2w9oQX4
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA0MDA1MyBTYWx0ZWRfX8J8gld1aiz/t
- gHWHf3RkaRi72deFi8HCVdnARkLihpKy1C/vlCBRZx8VVh6RFCTirBPW0cRS0DH1vfcj3o9XhaB
- rCcihBfSBZgx+WELFbGWBideGWbXPAJQ9AaG/wg8uplSemXVDU8U
-X-Authority-Analysis: v=2.4 cv=NPlAaE6g c=1 sm=1 tr=0 ts=6aeb318a cx=c_pps
+X-Authority-Analysis: v=2.4 cv=I6Pw19gg c=1 sm=1 tr=0 ts=6aeb3180 cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
  a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=aASXySr_LHO6eXd1yVMA:9
-X-Proofpoint-ORIG-GUID: C7EqxUD2gIn-30GZsGURmG-RD2w9oQX4
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA0MDA1MyBTYWx0ZWRfXy6xUmX+6vY31
- zByjP+mjnMYrNYAuvVgPtCbBuQvHUGDNtxe6qwGHSlCZNYAeM2gk/QnJ+hmHfqgcpwjO1GCoRLt
- Zdpa0p3FYjYilAc1GBDMggt6I97/6WGsEWKBUBfTdXoa4ofRvtH5HkSLVa726jb/YsZMfKLDGfm
- ZJQj+nSLIbOd7nadi9x0JiSq/+dq2Pd9vlXS3pJowWU3TPljAIx/qgWUAXep9OZLjAHlF+sUiQA
- 6suFyU1SXbexMoCVaxo8TOXLujphlFfrbZ2NSFwo+yCUzbTHsoc2Y5GU88LJLHd2Ri0Ulvwe6a+
- 8rNWDJoCmklh1S1Ih+4g8qMiic6fqUnEeYQMyT1WzXFK/RYkr4yIUt16ZZ4vO48UOu43EsCZkQJ
- zcnn+4GmMFdzRjHxpRigUBbaA9iZRK3f2Mqb7/xZHKSYmkGZLm2Z7Rm/t2ZDc9JX2Z9bR/ngfsP
- YShZmWaHFflqH28eq4A==
+ a=N--XFCr6TIEc_64PeIT2:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8
+ a=uswTXiEBe0Z7XUS-pM0A:9
+X-Proofpoint-GUID: eyFXndJRqEKYsB45abcWxyB0Ap-IDb5D
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA0MDA1MyBTYWx0ZWRfX+mnsrokxwq48
+ 9sl7wMHqpKMUiy2FLe2JWfUjGtT6jHBUhvlZWr3Ufk7vAQH2IpwO9HIv17RcFFrOaTu/Gg2Dm3h
+ G67jqSjA5eWz3l9nQHq8dMTWMb7SpxS4MaGZt6dsxat8+WoVm/6JnsDv3jnLwY83unDP0LJ+uCS
+ 7bXp1DKkJGVgJ8O8tL5xj5GeiBS6Z3pbLJApIovp5dCR6knml86xxFK61906x/XJTbNeEFHkQZp
+ YZQKWJj52EFnsLOLztHUt5tsT1W1ldul6O7SM0qpG2C3zG1cSXgnmkXnqg+B9zvyR0tjQWjumrZ
+ b8gqY4+oTBznB/fupZetQoWJ7abA/jdgNz3xX7J38pYzhHGqYL6HNyDccmATteiixHtbRf5u3s4
+ a3q+lFQQVON5Bw7xc+4IJknyhuAal2Ue7G1JIUxgo61yuc4SeTrpirorvFkFoXvL+aqRvVVTxxK
+ o9/DtxVaqAcmnhLq8dw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA0MDA1MyBTYWx0ZWRfX5Xdn39cBVjUE
+ uS1Qbirh8tXj6V9Ffmyo3jQ9vypzmgctv6PGaIzQSkY83eUAzfAtLc76lH2Xh+11vyVotaKQuke
+ 42o3rmE1YZsLol00PQNAhpSYqR3W+Xe/dvksobpIK/U6XfzdixcO
+X-Proofpoint-ORIG-GUID: eyFXndJRqEKYsB45abcWxyB0Ap-IDb5D
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-11-04_04,2026-11-03_04,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 phishscore=0 impostorscore=0 suspectscore=0 bulkscore=0
- clxscore=1011 priorityscore=1501 spamscore=0 adultscore=0 lowpriorityscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610300000 definitions=main-2611040053
+ priorityscore=1501 lowpriorityscore=0 adultscore=0 clxscore=1011
+ impostorscore=0 suspectscore=0 bulkscore=0 phishscore=0 malwarescore=0
+ spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2610300000
+ definitions=main-2611040053
 
-The period, duty and offset counters of the AXI PWM generator count
-cycles of its external clock, without a divider. Report that clock rate
-and one cycle per step.
+Hi all,
 
-Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
----
- drivers/pwm/pwm-axi-pwmgen.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+This adds the LTC2387-16, LTC2387-18, ADAQ23875, ADAQ23876 and ADAQ23878
+to the ad7625 driver and binding. v1 added them as a separate ltc2387
+driver. After receiving feedback, this version refactors the driver
+into the existing ad7625 and modifies the pwm backend for clear
+layering.
 
-diff --git a/drivers/pwm/pwm-axi-pwmgen.c b/drivers/pwm/pwm-axi-pwmgen.c
-index b40522f01002..5b6a6943d08a 100644
---- a/drivers/pwm/pwm-axi-pwmgen.c
-+++ b/drivers/pwm/pwm-axi-pwmgen.c
-@@ -136,6 +136,18 @@ static int axi_pwmgen_round_waveform_fromhw(struct pwm_chip *chip, struct pwm_de
- 	return 0;
- }
- 
-+static int axi_pwmgen_get_waveform_step(struct pwm_chip *chip,
-+					struct pwm_device *pwm,
-+					struct pwm_waveform_step *step)
-+{
-+	struct axi_pwmgen_ddata *ddata = axi_pwmgen_ddata_from_chip(chip);
-+
-+	step->clk_rate_hz = ddata->clk_rate_hz;
-+	step->clk_cycles_per_step = 1;
-+
-+	return 0;
-+}
-+
- static int axi_pwmgen_write_waveform(struct pwm_chip *chip,
- 				     struct pwm_device *pwm,
- 				     const void *_wfhw)
-@@ -201,6 +213,7 @@ static const struct pwm_ops axi_pwmgen_pwm_ops = {
- 	.round_waveform_fromhw = axi_pwmgen_round_waveform_fromhw,
- 	.read_waveform = axi_pwmgen_read_waveform,
- 	.write_waveform = axi_pwmgen_write_waveform,
-+	.get_waveform_step = axi_pwmgen_get_waveform_step,
- };
- 
- static int axi_pwmgen_setup(struct regmap *regmap, struct device *dev)
+The parts are single channel differential 16 and 18 bit SAR ADCs, up to
+15 MSPS. Like the AD762x and AD796x they are read with two PWMs (CNV and
+CLK) and an IIO backend that captures the LVDS data. The differences are
+handled as chip data and a few quirks:
+
+- Output is double data rate on one or two lanes (TWOLANES pin), so the
+  CLK burst is resolution / 4 or resolution / 2 pulses long.
+- The burst has to start at least t_FIRSTCLK after CNV and end at most
+  t_LASTCLK after the next CNV, so at high rates it runs into the next
+  conversion period. The sampling period is raised until it fits. With two
+  lanes 15 MSPS is reachable, with one lane the limit is about 10.9 MSPS
+  (16 bit) and 10 MSPS (18 bit) at a 120 MHz PWM clock.
+- No EN pins. The second PWM is named "clk" for these parts, as Conor
+  asked, and keeps the name "clk_gate" for the existing parts, as renaming
+  it would change their binding.
+- The ADAQ modules have a fully differential amplifier in front of the
+  ADC, so the scale is divided by its gain. The gain is fixed on the
+  ADAQ23875 and pin strapped on the ADAQ23876 and ADAQ23878, so it is
+  given in the devicetree (adi,gain-milli).
+
+Patches 1 and 2 add what the driver needs from the PWM. The timing of the
+burst has to be placed in whole steps of the PWM, and a rounding function
+that rounds down can't tell the consumer how big a step is. Conor pointed
+out that reading the rate from a clock breaks if the PWM provider has
+a mandatory divider. So the provider now reports the clock rate and the
+number of clock cycles per step.
+
+Changes since v1 (separate ltc2387 driver):
+- Joined to ad7625 (binding, driver, Kconfig and documentation).
+- Dropped the clocks property of the ADC, added the PWM waveform step API.
+- Compatibles use the adi, prefix and the datasheet part numbers.
+- Dropped the x4 parts.
+- Fixed The missing return of dev_err_probe() for the initial sampling
+ frequency.
+- Added the maintainers of the new parts to the AD7625 entry.
+
+AI disclosure: parts of the commit text and the code were checked with an
+AI coding assistant (Claude): the first version of the merge into ad7625,
+the PWM step API, the timing arithmetic and the test scripts. I reviewed
+every change, built it and ran tests on the ADAQ23875 + ZedBoard.
+
+Link to v1: https://lore.kernel.org/all/20261027134409.76824-1-Nicolae-daniel.Deaconescu@analog.com/
+
+Nicolae-Daniel Deaconescu (3):
+  pwm: core: add pwm_get_waveform_step_might_sleep()
+  pwm: axi-pwmgen: report the waveform step
+  iio: adc: ad7625: fix sampling frequency handling
+
+Sergiu Cuciurean (2):
+  dt-bindings: iio: adc: adi,ad7625: add LTC2387 and ADAQ2387x
+  iio: adc: ad7625: add LTC2387 and ADAQ2387x support
+
+ .../bindings/iio/adc/adi,ad7625.yaml          | 193 ++++++++-
+ Documentation/iio/ad7625.rst                  |  34 +-
+ MAINTAINERS                                   |   2 +
+ drivers/iio/adc/Kconfig                       |   7 +-
+ drivers/iio/adc/ad7625.c                      | 402 ++++++++++++++++--
+ drivers/pwm/core.c                            |  63 +++
+ drivers/pwm/pwm-axi-pwmgen.c                  |  13 +
+ include/linux/pwm.h                           |  32 ++
+ 8 files changed, 703 insertions(+), 43 deletions(-)
+
+
+base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
 -- 
 2.34.1
 
