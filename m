@@ -1,143 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793822018;
-	b=5UZlg2isOQ9GYvOwZ2a4Cm0GfCUHvBDlNanYyaXW6QMyK4tqBbub5ZXkGOzduxudD9It
-	 lZma9H5pNCyrdgIH+pugmr3G5oGlGCEGkMn0chTqGf6AR5gbUkfyrwUwbt64sfPyjHpRs
-	 4aUks89vULPgOY3TvRLxoP25qK0XgT2cFrCqmVQrTviBOWHFMtevbifzkNPP6/2PKXQDW
-	 IEpAP6W5LA/tO073VnSJodpVAns6H3aj1bTpGDbJ+0NNDUhj4iplAqzHEI0PFJjMPZLjM
-	 QJTgdyIYbwqdz+IhCpFEZD5HmsduseFTC4MOJ1dYYIWLFU+CZmHVh6VCMZ017AwNJzQ==
+	t=1793823255;
+	b=dR+29dxyu50rwtXLSFJvn2LGh+ixjaUSIafy18R+jax2scLf4v4ptrEjjk+2OjOZ9BUW
+	 IFMUdHzlbSZH1SSpGaNo2CJahR6Ti2a6Z/jpRR9gXcjGruwXnAtDIItz2fkR+rDR2DG5z
+	 6NrMri9zWC8pNerPqpcZooqgBFt9Ett4AOnoySBxSb/oJ/Lsk209rcGhUbXCuLC7iuDE9
+	 QEWkyMhYWraPvnojTZqWDWex178yoXT2Nj3xUbnbLHlOa217TKuME7uXZK2ib+kHaLyvG
+	 xJtWBuDEMW8FgWO1Kxo3qj5L1yH78pMGM3/trid9BWzdaRfCFbZ8QlrRtaf/QDtqeaw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793822018;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=j77TQJheY9BNkuAUNT0wTTk7+HF7XEvTQj5keMW7u/I=;
-	b=OmdKrKa+a04Y4Yf6g9VqouhWqkVPv64eIipq8ZmuIbphEsjnbUl7MKKXRbv9/Zvy5GFM
-	 BwlLiBTB2ZrA3D8sZrnzw1LBzL7UQNroOxTP5nLwjLbVCYnRGI3okkqfXDZXGGv543K4R
-	 jhatNvVxvgZ8RZ9H+uPYPLx5X3Hl3xBbn4QeFtXxh/bvS4xSk+X7G51ZRyj7Bbip1bcsX
-	 +kHRNgiQL9qfpZDKFV63ut+daTD/Dw3NvenEmUuilPdeqNOKbU2lMf2gpRm5zFQOou/UT
-	 AVSmwyTkqHK6bmFkaaXIHf/uvxFDvxx8Cf4atkfPMzlPlXy0cwjoXli97lmhPjM8cZg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793823255;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=+XhnkO/jaX2+F+V1+b+f12fn6p8V7sKwIgSwZYe9g0E=;
+	b=Yln5zvawCuVN6lmlttmnCVBAnYzdf3MVJK1poKwZjPcKndZ9eouzq9SRiaZvEhtlzDHB
+	 w9rn/4t+XatsFmBHBP/xPqYfCk3ddFERn9QoGnPq/hBUlKuAiuVm7pNuWGeIjPVKYKwEw
+	 +tJUgR1zvvjtL7UX7e6/V7PqHQbWn0HfohfoO1AB592RxYEA1wCZ5e09cERexrVFSrVRF
+	 uZ318fVRziIe3y+n9ZZ+6Pq7KFEOYYpAQ2PzAJCfr1y/wv3oaY+Zf1TKZlBOBRuFnp14l
+	 aaIs9BTyMwbirdkoR/eGYgKrWNucbYKixDU2vf9DlwSXQh0tAcVFDRCCLjB+esJl0Ug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=snwKVTUy;
-	arc=none smtp.remote-ip=74.125.82.47
-Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ikOF5zdS;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F94609765F
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 19:53:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C9F94609765F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6E0608176E;
+	Wed,  4 Nov 2026 20:14:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AF6E0608176E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=snwKVTUy
-Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-15ea896ddc8so1943065c88.0
-        for <linux-iio@vger.kernel.org>; Wed, 04 Nov 2026 11:53:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793822017; x=1794426817; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=j77TQJheY9BNkuAUNT0wTTk7+HF7XEvTQj5keMW7u/I=;
-        b=snwKVTUy9LvBIeZYEhCXzEnRQp2wodIFGKY4wUJ7ztWzLVbTd1bI4nr3mGXqrQXFPO
-         83/HtfEisb8NH+6TKxRanc+LHldo4EqJ43kuJQJyWdqbEb2qaKJ6REpFD/Jt5EslTB+S
-         zscnal0Mvh+NX91kiP+siOH9v7tqEITC6j8TarPFAWvrj5zWcfX48CLTn8neQnUjk0aG
-         DdWT6beozrR7hgNmLfQYYUBVHi+K7i2h0gb1c9TLmiQO015gt7sDVMBLhaHB5Rgu8J3E
-         vDvOsMZkyxTj1DF9F5rnA3mHVh2Jx0j8rAylzbJGVo40aem9854GCIhJgMsA/lSZgxl8
-         K73A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793822017; x=1794426817;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=j77TQJheY9BNkuAUNT0wTTk7+HF7XEvTQj5keMW7u/I=;
-        b=EQw32sLdwzMkRur1nnkCgoqHsR22w+C4VxqJTRHjyvaGB4OssequdODy4Q/KGX0hrQ
-         O1Q1G2Ng87v6PzgK3sGrE1+hdJFShfPk7Bgc0MhocLlP0EjqW5byj7O6u6+ce/lf/ZoV
-         x7awhQpJuLrSCNWMPrL3uiqVb6wfFad6wJwW1eE5La/t32zwenBJWZ3n1V7JaVVx+jS/
-         gfAzI7GYfH5hkf+HZuuAca8zWg1bzsK+Zu0ZLqT8yruXdBwzt3T2pYhBidk6g0tDKX7b
-         c3JxyijKSA8ffiFPRhhRrgw45TbC8xqFpMWUr3d366M6KyeL96iKZENwJOsp6al9m77a
-         LilQ==
-X-Forwarded-Encrypted: i=1; AKwUvBz2SqsxvnY2dB5lKYltaqimkZBUlNvNBi330ezoYR1tm6wG+3/1j9uuvY2kuuznP90henZmkrO52qU=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/bkRcM84JjsXqCcvK8ClxS4Lu5uqTTKxEgxiEmPBUperftAadp
-	63Ut+QaIjk5owcbtQTeFR64txJDG4CweLkGph700wiQqvWCZ5qiwg0c=
-X-Gm-Gg: AYBFou1NhbEnEroQqtaSYu9LDIMGkf1HUYLQOTkCY45bZpSdramfjXcZM4LdjHqKMx7
-	k/v+7I+ixAznrSUP+iDZ5UaQiqGe1UxbIlf/Zkl9fvPh2AL8A8fACTu1Wb9ogke7airSsqDfjV4
-	pR7jJe3pbR+5J0Gex6ri/wyUllsdqE2chHLF46QS+MZKibpSBbw5N/9Svz1092xLsyHfRIJbSTR
-	3TJ68t5ZqyDUp56Zz7+tlMBSqvqEADkEtBkCHDkZYfSKRlunlUs/gMPo3tMj9I9RHB6ELIZMDhx
-	s7riBnbO+rUe3x3DIAo1Q5kcluJH+PsuI6u0iKylmvWQgCRWIWySH//IcFt3iG4vMAUqJ1YIbdD
-	w4RM2AZ9eqcN0m4SKqjj137vA7VNZi3WbyxKGBHyiTZKfDiI49uQSZ0jzaMe3YQrjBhiFZY3Lo6
-	7P60KmxuyK73xqrcNmTKOUp+Tvth//7suO0RAkjPwoAXMwhHqyj42WK6YQ8UmMafCxC5YcqTixg
-	j6QA0CFLUgQmXcGtWhMbLZwnk4dEfo+Qbx+bm10Ixd7qbF7nwp2sYddlZpdScNxdRCDrhuj2FOc
-	bwvDwnAQFgA6Olf5+QZayU4epVpx89OlVnamFOzD/E6YkQFlGOM/BDU1yPmEDtWB
-X-Received: by 2002:a05:701b:4241:20b0:143:2968:564c with SMTP id a92af1059eb24-1ac5b9cb040mr26455364c88.26.1793822016817;
-        Wed, 04 Nov 2026 11:53:36 -0800 (PST)
-Received: from at-Standard-PC-Q35-ICH9-2009 ([106.194.66.249])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b245c2d69asm9239684c88.11.2026.11.04.11.53.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2026 11:53:36 -0800 (PST)
-From: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
-To: jic23@kernel.org
-Cc: alexandre.belloni@bootlin.com,
-	andy@kernel.org,
-	asahi@lists.linux.dev,
-	atharvatiwarilinuxdev@gmail.com,
-	bhelgaas@google.com,
-	bp@alien8.de,
-	brgl@kernel.org,
-	dave.hansen@linux.intel.com,
-	dlechner@baylibre.com,
-	dmitry.kasatkin@gmail.com,
-	eric.snowberg@oracle.com,
-	griffin@kroah.com,
-	hansg@kernel.org,
-	hpa@zytor.com,
-	ilpo.jarvinen@linux.intel.com,
-	j@jannau.net,
-	jarkko@kernel.org,
-	jmorris@namei.org,
-	keyrings@vger.kernel.org,
-	lee@kernel.org,
-	lenb@kernel.org,
-	linusw@kernel.org,
-	linux-acpi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ikOF5zdS
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793823254; x=1825359254;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qpZdBR620/UVypipUZjg/2IHhTj8BgeENBuaCqCsLmM=;
+  b=ikOF5zdSzHvb3fi4WcQtoeiPYVIyepMTfGuPoDw3j2yORNtT3ARrIKkz
+   15nTmB3zy2VUiwD2+yeNJ6nUUijOd4YQZUSwjSLHQtlhFUWsi0qQKI87n
+   2bNGUIL4fE9iMekkdOWiF+mKCqLpG1fbhkGednwqQmWbhgsrOGfmzCKTc
+   2qm0R0GjPrhSbseJnxoODl+VLuygpgHMKHhAE68MqArdRb6MOayiDTlyb
+   D39vTbowcBpshoMWkO0NToCstLjv17CjXiIVACw/VsshK+XrNoiwOZJ6g
+   4NJyed61gazkYe0ej6oFoeYc73r/S38mzwItreqWxVrGClQmBDUKUt+yr
+   w==;
+X-CSE-ConnectionGUID: lNgV6q9AT8GtxytvpEj59w==
+X-CSE-MsgGUID: fu0VXpotRdqhOrbXw4dHVA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2589110"
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="2589110"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 12:14:12 -0800
+X-CSE-ConnectionGUID: j31sdCJfQK6focoSXHBxrA==
+X-CSE-MsgGUID: DLJmGu9hRciiRyC7aAPSNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="6925627"
+Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
+  by orviesa009.jf.intel.com with ESMTP; 04 Nov 2026 12:14:09 -0800
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	bentiss@kernel.org
+Cc: linux-input@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	linux-integrity@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-leds@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-rtc@vger.kernel.org,
-	linux-security-module@vger.kernel.org,
-	linux-watchdog@vger.kernel.org,
-	linux@roeck-us.net,
-	mfd@lists.linux.dev,
-	mingo@redhat.com,
-	neal@gompa.dev,
-	nuno.sa@analog.com,
-	paul@paul-moore.com,
-	pavel@kernel.org,
-	platform-driver-x86@vger.kernel.org,
-	rafael@kernel.org,
-	roberto.sassu@huawei.com,
-	serge@hallyn.com,
-	sre@kernel.org,
-	sven@kernel.org,
-	tglx@kernel.org,
-	wim@linux-watchdog.org,
-	x86@kernel.org,
-	zohar@linux.ibm.com
-Subject: [RFC PATCH 14/14] mfd/macsmc: add ioctl to access smc keys
-Date: Wed,  4 Nov 2026 14:53:17 -0500
-Message-ID: <20261104195317.8284-1-atharvatiwarilinuxdev@gmail.com>
+	simeon@maryasin.name,
+	lixu.zhang@intel.com,
+	crofts@kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v2 1/7] HID: sensor: hub: Synchronize callback removal with raw events
+Date: Wed,  4 Nov 2026 12:13:57 -0800
+Message-ID: <20261104201403.2039921-2-srinivas.pandruvada@linux.intel.com>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261101013817.22d67ea7@jic23-hlaptop>
-References: <20261101013817.22d67ea7@jic23-hlaptop>
+In-Reply-To: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
+References: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -147,21 +87,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-> If this isn't matching some legacy interface, then we need more
-> on what these do.  Maybe they are suited to some other kernel
-> interface? In particular they might need the various controls
-> on how destructive they are that something like fwctl brings.
-> 
-> Generally an arbitrary opaque path to firmware isn't a good idea...
-> 
-> Jonathan
+Raw-event processing holds pdata->lock across callback lookup and
+invocation, and takes dyn_callback_lock during lookup. Removal must
+prevent both active callbacks and future lookups before client state can
+be released.
 
-Here its required, if we write CPU/GPU Pstates and PPT to
-some keys (MSTS MSPC HE0N), we can reduce the temp by 10C
-And We can fix the dreaded PROCHOT signals on macs, Giving
-Same temps as macOS.
+Take pdata->lock before dyn_callback_lock, matching raw-event order,
+and unlink the callback while holding both locks. This ensures active
+raw-event callbacks have finished and prevents future lookups.
 
-But you and Sasha are right, that exposing all keys is a
-bad idea, so i have restricted writing to some keys only.
+Fixes: 401ca24fb34a ("HID: sensors: introduce sensor framework")
+Reported-by: Семён Марьясин <simeon@maryasin.name>
+Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=eUdbPthG2xrLqwQQ@mail.gmail.com/
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-hub.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 6470a290ebfc..0c4884c5821f 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -173,7 +173,9 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
+ 	struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
++	/* Serialize callback removal with raw-event callback execution. */
++	spin_lock_irqsave(&pdata->lock, flags);
++	spin_lock(&pdata->dyn_callback_lock);
+ 	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
+ 		if (callback->usage_id == usage_id &&
+ 						callback->hsdev == hsdev) {
+@@ -181,7 +183,8 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
+ 			kfree(callback);
+ 			break;
+ 		}
+-	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
++	spin_unlock(&pdata->dyn_callback_lock);
++	spin_unlock_irqrestore(&pdata->lock, flags);
+ 
+ 	return 0;
+ }
+-- 
+2.56.0
+
