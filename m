@@ -1,60 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.101
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793751047;
-	b=xsLBG++AIFIc4dc+aEOXMdkpXjvfv3tJqKF6gm/fpdvHQi6Nyb+nAXF+38MapsrnCVLu
-	 HwcA+t5TKj/JhGo7PicqA5I9JRUF1/fgdOW5COn4auouBi3cS8QaO6xU+AoFq0PRD38Kg
-	 6pQ+W0cHjlDsachq+s8OqeVf8vUdS0/TcMlJb1pcKVwQNax7vZxaX03uSksl1xSg2zVcr
-	 BdDqdCBwHcS5IvNo6eB7A2fQNVHFICBz/vZ2rj7UDurykv2poVNv1ecxAIbpL329HNhDs
-	 Eg0KIwhO0C4Gcd4DrEzTcE4NlMimlP38MXtzP4r6vBxxQiqM59ZrENAK8uZFEVL2L0A==
+	t=1793751346;
+	b=rRtOzgH+eUbJ0rT1ScBPtPnETxvPJodcY6rwWOWK5Hes/qCZhlyADDtqx3DqSB5CJwWN
+	 HHJCkQFHRyMNMgsz4nZ5tzVXXaX8Rs9sOOHuOKS7+Vh0bijxYLVWDrDfgnj1QjWxNcaqG
+	 4z3hUJ2pMTTjQIc7Cuv+Kf04HgIujnbAnx5uoprCVUgrQvIFKHE8n2dJ1qN+Zoe3HhVec
+	 +g0LaLpmd9lvL+iiAWTl6CR8zhXvo4qEby+9fAmYqvbdIXmEpjQv6r+7hW0xT4XczBJz4
+	 4ASBHpVh4Lj8zMGS59d+pVkfWM4Cizh44sDs/khckMFqrnFQ6KXmeogk7X/hzcl3yqg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793751047;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=3vylrWaRZ6HTp6CEg2k0KLkoq+UuiUfB7tpMoG7CCXM=;
-	b=jsvDl5anMGbV4CoMUHy8H1kVSntaisvCYH1BqCHU4nicFLv3nj6ROrEj3rJZCfT6XHmb
-	 WvU6jCHJoNGEdtCxEnYHVR9ic60q6n9crNDfnhdcxcHd+wXE5GEsm+7ww0XwAo3LW39/c
-	 eFYzmRd/u9AI7qX2+dQOyYUeCg7TcsQpNKDa8xV2GrebLoO0qQHcSjtY9/6rHh6SXdrBp
-	 XJN4NVgfIz+iOjOZ5bb9lKDiXvL0nyQkch4nVQWrXnieADsmgczgwCFOcRmWC3epv5XBp
-	 AWmUYKPVy6HQZIOFwwqbZxlEngdptUn/Y8iOgVmhw4TsAQaRHR6DNXpR1KBsnZukknA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793751346;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=CZWeSPV6TtzxOobdW0CwXkqthFJr36xZqBQBmvhNYSU=;
+	b=WJ8ztsjf8T9JN0iizCQCmvA6bXcZDpiXxGajKlMcNtcXoV7O7eqfinPpFxud3MAMmDWC
+	 a5DMncgFC3xzcEyxfAU8g42RGCPk5ugFc+b9XWs9cAFdDa1VfpBE0tEZjwxv/2UNVTyED
+	 ssZxjEKK1rYV5dGTllTBPRphdXkNhcYKMbkEPP0W/JbVXgqWugLidOieidAmzFd+bsKhB
+	 ni0x59AH/Z+pY+WvyNwlWUQtIotY7sbSi3sddAN4v55Vn1jnRK/r+foLOt0wzY5qto7Pd
+	 0jPR3N0DeOovV7vWqXglTIpcXPzIYqlxbJtt7hDpGqFSpi48SKHvWq0s6XnCh7TwhGg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=LcTLJLdN;
-	arc=none smtp.remote-ip=79.135.106.101
-Received: from mail-106101.protonmail.ch (mail-106101.protonmail.ch [79.135.106.101])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C5Oilm58;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1B58606A324
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 00:10:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1B58606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A717606A31B;
+	Wed,  4 Nov 2026 00:15:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=LcTLJLdN
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1793751043; x=1794010243;
-	bh=3vylrWaRZ6HTp6CEg2k0KLkoq+UuiUfB7tpMoG7CCXM=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=LcTLJLdN7dls1Eb42LjjU0sljfzej/j0mRoJCoI/JEqpz84Og45n/iAdrYUTB7qG7
-	 g4zwCByzoKv14Lg9zt0AEEq+MZ7AXrWsiw2bO47lSaY3F9cMLdb2KF3mrra2drFOcl
-	 +RIsuP+9RS5hgnNbCT6DbgLsdNEUrnYeGkDfevYF6tFuuC1uugqvLCCm7i5u6NZaQ+
-	 /yNolww2zoiJrn668P4B5LcgdEQNEDrwd2tJbeDdRh+0xUYcD/XQ+e/poKB7QTGEZv
-	 iJORxSXjVKAOJfrDjGJSiXAXYNG0ArLRwPuYYH46IQ9RcfJ71dBvuQ2mXwmMoXysPp
-	 NHyujTgIkhH8A==
-Date: Wed, 04 Nov 2026 00:10:38 +0000
-To: Jonathan Cameron <jic23@kernel.org>
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, =?utf-8?Q?N=C3=ADcolas_F=2E_R=2E_A=2E_Prado?= <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 1/3] iio: adc: mt6359-auxadc: correct channel types to IIO_VOLTAGE
-Message-ID: <NgiLKE_H7ipL5Sr4a9BtoD_3Vgwbi2p9ENNExEER_LDALvpVi6rifnVhx_RgWJGljssso5HfyJ6KD61_viHbOnbv5EAQ7HpKZXWy4vsSf5c=@protonmail.com>
-In-Reply-To: <20261103234237.0dbbe924@jic23-hlaptop>
-References: <20261103-6768-6358-fixes-v1-0-2a868a33152b@protonmail.com> <20261103-6768-6358-fixes-v1-1-2a868a33152b@protonmail.com> <20261103234237.0dbbe924@jic23-hlaptop>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: 301f01c9cbd70ca9bf64fe0e7c75769350a9adc5
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C5Oilm58
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9737E1F000C1;
+	Wed,  4 Nov 2026 00:15:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793751345;
+	bh=CZWeSPV6TtzxOobdW0CwXkqthFJr36xZqBQBmvhNYSU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=C5Oilm58tJ4i2tpoH+UgNhBtKWWSlCAavrHl8VVN70b8kwHm5TOHbVaV3SZ0Eihi+
+	 HEnjbtGD4UhGZ1ibF1MonizVzkOPiCzSwsNkC6NwgPMB1sBkqCCrH+oDL+43nEZvmG
+	 y1jHz2sbWqWqgAVC6PI0v+di9Yf42VDlhE701l+cZzyX4TtgXSar/OuPuH84Hq49i7
+	 D+gok3AcGSPkBkT/ck5hij9rMVunPCfP7zF7l8Qaal7fmAPG0cWgOn7zmVXFERwYXt
+	 aLUqVghAz8T4DyQWoaPk64g6Q6GONiTMJXPAJEd4knPFE9bTFm5ibbAENVHueIhqr0
+	 j1H8FkWM8G47w==
+Date: Wed, 4 Nov 2026 00:15:35 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 07/10] iio: frequency: ad9910: support drctl control
+Message-ID: <20261104001535.46a1995b@jic23-hlaptop>
+In-Reply-To: <20261103-ad9910-backend-support-v3-7-0e9224ddf7b7@analog.com>
+References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
+	<20261103-ad9910-backend-support-v3-7-0e9224ddf7b7@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,67 +69,76 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+On Tue, 03 Nov 2026 11:53:03 -0300
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> 
+> The DRCTL pin controls the slope direction of the AD9910 digital ramp
+> generator (DRG). When dwell is enabled at a ramp limit, the DRG holds
+> that limit until the next DRCTL transition, so the sweep pattern is
+> defined by the waveform applied to that pin, which can be generated by
+> a PWM.
+> 
+> Get the optional "drctl" PWM and expose the integration_time attribute
+> in the DRG ramp up and ramp down channels, which sets the time interval
+> assigned to each ramp direction while the sweep parameter is accumulating.
+> 
+> The DRCTL waveform is described with the PWM waveform API, using the duty
+> offset when DRCTL needs to start low. The PWM is disabled when the
+> resulting period is zero. The waveform is rounded by the PWM provider
+> before being applied, so that integration_time reports the intervals
+> achieved by it. Writing to integration_time fails with -EOPNOTSUPP when
+> no DRCTL PWM is available. As the waveform API has no stubs, the driver
+> now depends on PWM.
+> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+The passing comment reflects discussion on v2.  Still seems worth
+tidying up to me!  Maybe as a follow up though.
+
+Jonathan
 
 
-Hi Jonathan,
+>  static void ad9910_hw_powerdown_action(void *data)
+>  {
+>  	struct ad9910_state *st = data;
+> @@ -2249,6 +2365,26 @@ static int ad9910_probe(struct spi_device *spi)
+>  
+>  	fsleep(AD9910_WAKEUP_DELAY_us);
+>  
+> +	/*
+> +	 * DRCTL is the only PWM used, so it is looked up by index. A named
+> +	 * lookup would fail with -EINVAL when pwm-names is absent, preventing
+> +	 * the optional handling below.
+> +	 */
+> +	st->drctl_pwm = devm_pwm_get(dev, NULL);
 
-On Wednesday, November 4th, 2026 at 1:42 AM, Jonathan Cameron <jic23@kernel=
-.org> wrote:
+Maybe not something for this series, but it might be nice to have
+a devm_pwm_get_optional() to avoid having to track specific error
+values. Probably return NULL for nothing specified,
+similar to your wrapper code here. 
 
-> On Tue, 03 Nov 2026 18:32:07 +0200
-> Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wro=
-te:
->=20
-> > From: Roman Vivchar <rva333@protonmail.com>
-> >
-> > All mt6357, mt6358, mt6359 and mt6363 declare their channel types as
-> > voltage, resistance and temperature. This is wrong, since the PMIC
-> > doesn't include any built-in conversion block. It simply measures
-> > voltage, while consumers are supposed to convert these readings to
-> > the actual temperature or resistance using efuse calibration.
-> Hi Roman,
->=20
-> Useful to have an example of the consumer that is doing this.
 
-I have sent a PMIC thermal driver in the past for mt6323. I will send
-a new version soon, but it will take some time. It should be compatible
-with both mt6323 and mt6358, since they use very similar formulas.
+> +	if (IS_ERR(st->drctl_pwm)) {
+> +		ret = PTR_ERR(st->drctl_pwm);
+> +		if (ret != -ENOENT && ret != -ENODEV)
+> +			return dev_err_probe(dev, PTR_ERR(st->drctl_pwm),
+> +					     "failed to get drctl pwm\n");
+> +		st->drctl_pwm = NULL;
+> +	} else {
+> +		ret = devm_add_action_or_reset(dev, ad9910_drctl_disable_action,
+> +					       st->drctl_pwm);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret,
+> +					     "failed to add drctl disable action\n");
+> +	}
+> +
+>  	ret = ad9910_parse_fw(st);
+>  	if (ret)
+>  		return ret;
+> 
 
->=20
-> >
-> > Correct all channel types to IIO_VOLTAGE.
-> >
-> > Fixes: 3587914bf61d ("iio: adc: Add support for MediaTek MT6357/8/9 Aux=
-iliary ADC")
-> > Fixes: d6f49313272b ("iio: adc: mt6359: Add support for MediaTek MT6363=
- PMIC AUXADC")
-> > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
->=20
-> This one makes me very nervous, not because it is wrong but rather
-> because there may be a bunch of userspace relying on these wrong
-> channel types.
->=20
-> It is horrible but I think we can't touch that :(  What we can do is
-> put the right interface in place as well. Thankfully it looks like
-> the channel index is independent of the channel type so we can duplicate
-> the wrong channels with voltage ones + some comments to make sure this
-> doesn't propagate to any new supported devices.
-
-I believe it's a bug, because all MediaTek PMICs I know can't report
-temperature or resistance without consumer. Some channels like battery
-voltage were overflowing sysfs, producing garbage result.
-
-> AngeloGioacchino, why did you go with the different channel types?
->=20
-> If we do decide to go ahead with this approach, are there other channels
-> that are validly using the channel type for non voltage? If not change
-> the macro to drop the parameter.
-
-I think mt6359 may be able to report battery current. I can't really tell
-though. mt6358 seems to wire current sensing to FGADC, which is separate
-block. Perhaps someone from MediaTek or ChromeOS knows more about this.
-
-Best regards,
-Roman
