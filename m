@@ -1,103 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793749847;
-	b=SJhQLf97HhapvImO0gEFvRObKsQrH5wHywmPY5pd1hdmdlDhDpCkRv6EeaXWCw6K9Uct
-	 h0N9Q9aCHN7IIyMZbXIgqVsJezq7flhZIVRmwp1jkgr5TevXkBJosSHAPq4LJ/PV6cqM0
-	 0ElRQ3BJDNTrbgD29PgwwqWW5bMeU81x+bvBIrtEDIq5x30l1s516hlyzHY2wLnY9yhyE
-	 wXJTCmnNoMUBw3ihDEzquYQxG9qg2p9cCemz3H7cH+a0P1oMacy++SXbIC/B+Xgt5xrt3
-	 GuXHkxC2D6CeZnTTz25p0qkaVwZlKLDS7oGWwHkEzrUvtwaSrF/t71khOkDUry0a7ig==
+	t=1793750954;
+	b=KXwV+2soBy04QebqJ2yMl88FT4Ee2O1+OBFqTAVjesJHBZuCXLSrlzn/G8ywtmXj1bPi
+	 fHWDSifdWGGPS2eNdDPDpa3DHQvRaSpiTsdrDbhyWmvVzWes/OYaS/FfRUh5z78EM7FmH
+	 YJzHOyCcUHbB5R57mCOO+pFFy8rQv5bUVvY09XdOjiFSYsNXRbFlajLxwRVjhbGtrKyZw
+	 2JvHmQpjl5w26KaBRM2768cyuGxj0GaHZ4v7iFzNJeGW8msBciAa0S+a1gM3+PQd1cLfb
+	 hQzSGM6z3lL8u0B55pFwW1kcPQUUO/ao7rjDu3EGvM8ge4E8w5o/Q2WI6rrhLLf8AmA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793749847;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793750954;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=0OloGj8iqKak18KyQuj2NIrdPY6e7xUKRD+nnxZZVqY=;
-	b=leIIO2zkba/RdyP7fOshpJHXuHz9zCTcG2gXxX/OBrU3UWpE8V+5sdLD0OgEvsVrhunM
-	 rPZnZQFBodcsTDSjCsDIO/owSOAfQM2jnWp07uYR3i0FUFaVj8aSobSaniHMnUXNc9jbI
-	 BKDP3GTU18sUIQgMwLf7978J4ad0mBJ68ctq+yYX6IXUYwnpe3uBPdMBZjRnHtCfZ+L7O
-	 fgPyhm6/AaV2KgBOry/eZT7/2vRR/Ywy3mk/PhPk0IPgOa5UtphTpnYOEJh3iF/OrZJTM
-	 TEepabgpo7bZi7Zae/hutFwG8p0j1kgilM4oC6fe3tcP38+F3eUxtFGdMMGxuaWXY9w==
+	bh=IYRPKhyfO4UMML71OXSlERrgz8hxI41+MGLebZDvWZQ=;
+	b=3akPTFqV5jKklzO31MMIQBAsvSU5CKHrNibiRA4DLcZPv0jR6l2Qpef76rgfNeKrCydF
+	 +Q7Dh4+w9/nIKGGcYzVvH99gS793PkW91X2cCM7I0tP9Ll/FsRJ5ZFRCZ7ihphy4IkmyL
+	 Q3hEgCgN5g469y1z7RfFkF1SXy0kV2zZ9KrI9SSwqBV4ZkwoAgopJ0x5KzNgUO5s4FtKC
+	 MTVCDuYYrQEKI/GBrlgHz+PeLoqbRa5JIcVoqk4uhc/dnGMPHnxDMvJMKJFTXJzq9S0m+
+	 jUj8Uvljn+VfqL3P0phiQle+ozj9e27KtsQKneM+TULwL6YxlYOAmWua24pKMRj7h0A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hkNOS+n3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=igqm35wy;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 236A1606A31B;
-	Tue,  3 Nov 2026 23:50:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45740606A31B;
+	Wed,  4 Nov 2026 00:09:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hkNOS+n3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E34F1F000C1;
-	Tue,  3 Nov 2026 23:50:38 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=igqm35wy
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ABDC1F000C1;
+	Wed,  4 Nov 2026 00:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793749846;
-	bh=0OloGj8iqKak18KyQuj2NIrdPY6e7xUKRD+nnxZZVqY=;
+	s=k20260515; t=1793750953;
+	bh=IYRPKhyfO4UMML71OXSlERrgz8hxI41+MGLebZDvWZQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hkNOS+n3+2hTgtkaxcCoOXsqKeBibGisfXFzrpRmY7LplYQFpzrmZHBGX9uZamzEK
-	 YIjrgp0RlH3L8+ZTpIXFWcKBVnKnqnQLdTPPdLzDV2f2TL5snlf5WELDPs0PLY5OG7
-	 TJ0L5VSvgIIB3U7F4ngv+ca8WBjyPoT6ljkRm6uN1a2CYlSsDFabcGGmiXq5HGFsBz
-	 OpXtK8CVAXjDBAlE5bL/EVWbXtP2bGQ6onIxxcOpUJC2QjJZrwvP6b4+MvSwrGPSvD
-	 5RPka96oZUfza5XWX0mEM4pW6Pt4lJ0RaeSfVs/rEUjhY2vlB0o3KWGlXxzcntQ/XA
-	 MdrsFZKUgSmgA==
-Date: Tue, 3 Nov 2026 23:50:33 +0000
+	b=igqm35wydeHHI+kdSVegLZu8Mr69s9J++syGXGApo9f9VYuvaa17zJFuPj/9sJgtb
+	 Ah3W1nldvbthpEtFoQTm2C8pdx9DsXBT8XQm46AyTVXS8MjVQfmZd5+aJ4d7qxNMtv
+	 /7u5q6OFx00Alx6ifRu0LlhczCzH3G1oqlLOqh6LGnPjp7pHhRq0VR8pSgFR6+mR19
+	 hmw/TweYgxtDVXLM8CEGgw7x2HUOKPeRrsX4dfE0qgtKjghKL2TegYZzuJW/nGfZIH
+	 ei+ZV725A6LeG5hsMAeUrtoHSxkrCA1e2h7lNwi5N0HSwjipzT90A2GuQqm+tisOUM
+	 PrQ1gYn2yJBuA==
+Date: Wed, 4 Nov 2026 00:09:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
- <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
- <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Vadim Fedorenko
- <vadim.fedorenko@linux.dev>, Arkadiusz Kubalewski
- <arkadiusz.kubalewski@intel.com>, Jiri Pirko <jiri@resnulli.us>, Ivan
- Vecera <ivecera@redhat.com>, Benson Leung <bleung@chromium.org>, Guenter
- Roeck <groeck@chromium.org>, Linus Walleij <linusw@kernel.org>, Bartosz
- Golaszewski <brgl@kernel.org>, Frank Li <Frank.Li@nxp.com>, Sascha Hauer
- <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre
- Torgue <alexandre.torgue@foss.st.com>, Olivier Moysan
- <olivier.moysan@foss.st.com>, Arnaud Pouliquen
- <arnaud.pouliquen@foss.st.com>, Dmitry Torokhov
- <dmitry.torokhov@gmail.com>, Thierry Reding <thierry.reding@kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, Fabrice Gasnier
- <fabrice.gasnier@foss.st.com>, Lee Jones <lee@kernel.org>, Srinivas
- Kandagatla <srini@kernel.org>, Ekansh Gupta
- <ekansh.gupta@oss.qualcomm.com>, Ulf Hansson <ulfh@kernel.org>, Hans Ulli
- Kroll <ulli.kroll@googlemail.com>, Andrew Lunn <andrew+netdev@lunn.ch>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
- <pabeni@redhat.com>, Vinod Koul <vkoul@kernel.org>, Neil Armstrong
- <neil.armstrong@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, Ray
- Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Broadcom
- internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>, Masami Hiramatsu
- <mhiramat@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
- <broonie@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
- Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Orson Zhai <orsonzhai@gmail.com>, Baolin
- Wang <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>, Shawn Guo
- <shawnguo@kernel.org>, Chanh Nguyen <chanh@os.amperecomputing.com>,
- Alistair Francis <alistair@alistair23.me>, Julius Werner
- <jwerner@chromium.org>, Paul Cercueil <paul@crapouillou.net>, Dmitry
- Osipenko <digetx@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>,
- Thierry Reding <thierry.reding@gmail.com>, Ray Jui <ray.jui@broadcom.com>,
- Scott Branden <scott.branden@broadcom.com>, Krzysztof Kozlowski
- <krzk@kernel.org>, dri-devel@lists.freedesktop.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, chrome-platform@lists.linux.dev,
- linux-gpio@vger.kernel.org, imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-sound@vger.kernel.org, linux-input@vger.kernel.org,
- linux-tegra@vger.kernel.org, mfd@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Use hex unit address patterns
-Message-ID: <20261103235033.3e508f69@jic23-hlaptop>
-In-Reply-To: <20261102135330.2493332-1-robh@kernel.org>
-References: <20261102135330.2493332-1-robh@kernel.org>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Olivier Moysan
+ <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
+ <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+ <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v3 06/10] iio: frequency: ad9910: add axi backend driver
+Message-ID: <20261104000906.61b07c44@jic23-hlaptop>
+In-Reply-To: <20261103-ad9910-backend-support-v3-6-0e9224ddf7b7@analog.com>
+References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
+	<20261103-ad9910-backend-support-v3-6-0e9224ddf7b7@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -111,24 +72,149 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon,  2 Nov 2026 07:53:22 -0600
-"Rob Herring (Arm)" <robh@kernel.org> wrote:
+On Tue, 03 Nov 2026 11:53:02 -0300
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> Unit-addresses by default (and most commonly) are hexadecimal. There's a
-> number of cases using decimal patterns. Fix all of them, limiting the
-> pattern to match the 'reg' limits if there are any.
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->  .../bindings/display/xylon,logicvc-display.yaml      |  2 +-
->  .../devicetree/bindings/dpll/dpll-device.yaml        |  2 +-
->  .../bindings/embedded-controller/google,cros-ec.yaml |  4 ++--
->  .../intel,ixp4xx-network-processing-engine.yaml      |  2 +-
->  Documentation/devicetree/bindings/gpio/gpio-mxs.yaml |  4 ++--
->  .../devicetree/bindings/hwmon/maxim,max31790.yaml    |  2 +-
->  .../devicetree/bindings/iio/adc/st,stm32-adc.yaml    |  2 +-
->  .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml         |  6 +++---
+> Add the driver for the AD9910 AXI backend IP core, which interfaces with
+> the data and control pins of the AD9910 DDS. It registers as an IIO
+> backend that provides:
+> 
+> - a DMA output buffer that streams data into the parallel data port;
+> - the parallel data destination (F[1:0] pins) and data rate, derived
+>   from the PDCLK frequency;
+> - the PROFILE[2:0] pins control, through profile channel enables.
+> 
+> It also registers a PWM chip with a single output driving the DRCTL
+> pin, which the AD9910 driver uses to control the digital ramp generator
+> direction. The PWM implements the waveform callbacks, with period, duty
+> length and duty offset programmed in SYNC_CLK cycles. The duty offset
+> is realized by a delay applied once, before DRCTL starts toggling. The
+> waveform is reprogrammed when the SYNC_CLK rate changes, so that the PWM
+> output keeps its timing.
+> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Really trivial stuff that I might have ignored, but given it looks like
+you'll be doing a v4 might as well tidy up.
 
-Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Thanks,
 
->  .../bindings/input/touchscreen/cypress,tt21000.yaml  |  2 +
+Jonathan
+
+> diff --git a/drivers/iio/frequency/ad9910-axi-backend.c b/drivers/iio/frequency/ad9910-axi-backend.c
+> new file mode 100644
+> index 000000000000..db99fa9f2dda
+> --- /dev/null
+> +++ b/drivers/iio/frequency/ad9910-axi-backend.c
+> @@ -0,0 +1,551 @@
+
+> +
+> +static void ad9910_axi_drctl_fromhw(struct ad9910_axi_state *st,
+> +				    const struct ad9910_axi_drctl_wfhw *wfhw,
+> +				    struct pwm_waveform *wf)
+> +{
+> +	if (!wfhw->period) {
+
+Maybe a comment on why this one matters, not the width or delay.
+If it's a case of all or none, just add a comment on that.
+
+> +		*wf = (struct pwm_waveform){ };
+> +		return;
+> +	}
+> +
+> +	wf->period_length_ns = ad9910_axi_cycles_to_ns(st, wfhw->period);
+> +	wf->duty_length_ns = ad9910_axi_cycles_to_ns(st, wfhw->width);
+> +	wf->duty_offset_ns = ad9910_axi_cycles_to_ns(st, wfhw->delay);
+> +}
+
+
+
+> +static int ad9910_axi_pwm_read_waveform(struct pwm_chip *chip,
+> +					struct pwm_device *pwm, void *_wfhw)
+> +{
+> +	struct ad9910_axi_state *st = pwmchip_get_drvdata(chip);
+> +	struct ad9910_axi_drctl_wfhw *wfhw = _wfhw;
+> +	u32 drg;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	ret = regmap_read(st->regmap, AD9910_AXI_REG_DRG, &drg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!FIELD_GET(AD9910_AXI_REG_DRG_TOGGLE_EN_MSK, drg)) {
+> +		*wfhw = (struct ad9910_axi_drctl_wfhw){ };
+
+Given I had to go look to check if you were initializing all fields
+in the other paths, maybe just do this zeroing at top of this function?
+
+Doesn't matter much.
+
+> +		return 0;
+> +	}
+> +
+> +	ret = regmap_read(st->regmap, AD9910_AXI_REG_DRCTL_PERIOD, &wfhw->period);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(st->regmap, AD9910_AXI_REG_DRCTL_WIDTH, &wfhw->width);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_read(st->regmap, AD9910_AXI_REG_DRCTL_DELAY, &wfhw->delay);
+> +}
+
+> +
+> +static int ad9910_axi_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct ad9910_axi_state *st;
+> +	struct pwm_chip *chip;
+> +	void __iomem *base;
+> +	struct clk *clk;
+> +	int ret;
+> +
+> +	chip = devm_pwmchip_alloc(&pdev->dev, 1, sizeof(*st));
+
+Use local variable dev given you have it.
+
+> +	if (IS_ERR(chip))
+> +		return PTR_ERR(chip);
+> +
+> +	st = pwmchip_get_drvdata(chip);
+> +
+> +	base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(base))
+> +		return PTR_ERR(base);
+> +
+> +	clk = devm_clk_get_enabled(dev, NULL);
+> +	if (IS_ERR(clk))
+> +		return dev_err_probe(dev, PTR_ERR(clk), "failed to get clock\n");
+> +
+> +	st->dev = dev;
+> +	st->regmap = devm_regmap_init_mmio(dev, base,
+> +					   &ad9910_axi_regmap_config);
+> +	if (IS_ERR(st->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
+> +				     "failed to init register map\n");
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = ad9910_axi_setup(st);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to setup device\n");
+> +
+> +	chip->ops = &ad9910_axi_pwm_ops;
+> +
+> +	ret = devm_pwmchip_add(dev, chip);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Could not register PWM chip\n");
+> +
+> +	return devm_iio_backend_register(dev, &ad9910_axi_back_info, st);
+> +}
+
+
