@@ -1,99 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793752370;
-	b=EKspekhs9vTWJVVYb8BS4pPz543P9yucC+KMzdXGgi66597FJ2zdYpnRggLDTTNUnYRo
-	 g/0wEu0BAJvtACVTLDfiOvi2m1+A3rmOUkudBfuFq8bzvMI1+WaxCmPVUxKoZyK8jpOPy
-	 05/BQjln4W7UzS2AZKUPhw6i6r2n/r8BHet7X0hk6JG+0uj5NScs48PxSkXgjj9ZwjLZf
-	 YidOXoEmQuVedSjt5fnZB/0yNAvGu5EMXIMXzzFZY1usnI5xvxJJevefO+3HjjD2OWrw3
-	 PxnMnbTLgS3PLHZ18n2tSVlTmAVlTGGmJgAN7pf64yQDxDdh+ApxqomPJjaRVyJz/tg==
+	t=1793753226;
+	b=W2qDh8emZeYqmIDgkWHp7neeDcGD1ahY+Jb/Nhn0VY7M0Ns9dYlOpU6bEJu6WJ7vdNtd
+	 9O7603jpAAp7d8RbOyz6jKmVM7+3dRigseWAmyrc/wjKwbhneqXBtlDNEW6d6yIU2oqHr
+	 mFwOCvmB5ytdB8+1x82u6j9VI+egIboGdu5gJJBnzCNgnFlAl5MNiEcWaBaB+FBTYDWuL
+	 igpRwuhj+ZFiq1ey9/myNuxHHbApUkMnWXdlm4nr3zDtmRaOk44ohfIvs/4G5E7CChP3m
+	 qepnHNaZzxbPCTdrzsuOXRDWfg7cnyCkwp4tX5IlmhGIfUoMiGBGhTvOOE1OsS/YG7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793752370;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=ia3DNRbB3tzN83nGHEc/6FKqQVPdb5ypWXD/ZK/mfh0=;
-	b=rkM9h4k6gv2Be4t+o6NV5lGRc6pxLsB95fb2rlALHjpX4xkvSSUvvz+QvVguIIvAC7Ma
-	 SZRHxb0/0fGA9h2wxuL4C/6qn62e1jus+Yg44KnNnvcWWxG2mcBNuaKDppZTdzrGVzq4H
-	 KKFtqJHpxVdGnBawxoCO73PJz7M3VErhcsIWJ3428tHmOWdqsbyI01eJ5YIlaUBMiA7RB
-	 xsb9sW+qGH3kgfKKmzNtB06vdP1egrMndrZgbMJwOSVGIIHLgdyCltgv5A2H05fatudQk
-	 O4BiCIXy6/h3QOTOQUKY3oPHWvzJHJzfTbM2tuvaE/0sVbJIXzGtO4oR5Itmxdve5Hw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793753226;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=d5KJfmnKlGtFw7NgfSB/GJ/Z3Gq/KQL5ojh/xtpl3rI=;
+	b=cMVOXu56c2VDlpM5au/mV5AgNTGNOHsiBzDUsArlUPEC2UFyFagiNRtz0/IZkEXhdJSi
+	 jFXXYjVIJy+0jV1A9SHbWb8LOct1JoKap1Kj3BGKys+LmzmWAKCr8D4xKgp0EEnU23SIo
+	 J26P3NV8TmodcQb+pDNVcXr7f9onY6x7P8uIop0ee3ZeaaXy5R1gu0c6Jab0DuY0QTZYZ
+	 wm5LlC/CfDrrPjnLc2Xziq2UMJLJbvt/Y664sw92pvdmBtOFuXoHC/1sXImYs5foe07RN
+	 kDMp9oVcCfVieT9ok0f60buis4u8iQNmPd2bJ03uTgn7MtIzGchD6dbZpseMoBC/guQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=UP76ig4E;
-	arc=none smtp.remote-ip=74.125.82.172
-Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MXWkF0Z+;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E481E606A324
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 00:32:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E481E606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CB7F606A324;
+	Wed,  4 Nov 2026 00:47:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3CB7F606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=UP76ig4E
-Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-33bf40b0c8bso283615eec.0
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 16:32:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1793752368; x=1794357168; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ia3DNRbB3tzN83nGHEc/6FKqQVPdb5ypWXD/ZK/mfh0=;
-        b=UP76ig4EnqFwzycYT6Ysj7CrOyM18lSpYenIwGvrudZlVBEYEVOcjL3r2Fc3IJ+6O0
-         eK1EL7REDE8e1jnFX+LCIp0kQj1EQfaFFgaE07aLE6y/U1pQGGTJfXSqZ69VUVRblVK/
-         s9xuSzqVqeaPedgUoM8rrEnltNuZstEvDac7s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793752368; x=1794357168;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ia3DNRbB3tzN83nGHEc/6FKqQVPdb5ypWXD/ZK/mfh0=;
-        b=r0BiSeudi1sg6EcCMfjQsL/vpFrcykcXAuMBCMp8ZXKTv1bBA57b+mKOuEctnh0TMy
-         yw/8Gj3WOSXHWKuWKndNpOQhDqp9m0L3EYPCQygmiVYmed/Wu1XDqTkAPtH/Km4uusYg
-         59M6pzjFHYP2Z0YGkCxbiHiJaP8/wPzbq1RfG0SeMhCjV8PWcH+22u17fc70DMQg27OC
-         hdLx1QqOESSX12uiEYv/U4CRkIm4KYZsGFN8UvLCaey5rV50jfnJCASauU/gYD/HNL0O
-         i9AoHYJTYiPKhQrYyWYVNTMiCH40GCOyfgq+5o5Y4RU86o+h8AW2OdjZ2QvMoM8GedlA
-         dscg==
-X-Forwarded-Encrypted: i=1; AKwUvBz6Rk7Uvgr/30VIGy7ki850dsa5BDv/3C/dg1xNwONUmuSwIJP+23FwUqIELtMJfd+9zcQqlVGpkMY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/aRLBfCPtTDKpWJdmobIocqH3qIIn/ltAezBHqxQJic0bVBaa5
-	VLFJPGaPKeBpmCmGA2RdbIRXaTByQXNmi4OMS+FSOYWsHgcXQSGzPo7RmGERjTUmBw==
-X-Gm-Gg: AYBFou00rTgxUCthvAIwVqQunXESOrHyw/wyQz60RLxhSCkNDDbEognfVg4VdZw5Rw0
-	DrtfeKjIVWz7PPgtpYW3vb4xdntAf/h/ceq/4BNdal+z497JizowLy0xBhYOF0g0FWsK80Pp6ea
-	XTmWvv2aq+CWM1g6Axxv2Xj68Ne1+ya7aMiULQYPm0q1CeOPi7dm2W0MqKsCHITJ8H5c19tWIcz
-	e4PxMA/QrR4ULunBNNglY/QuLCf0PzymWJuMskmo+PzkgXSSw9fmyqej2C4Bj4ADYfuRE0VvqXN
-	4v7Ew6oZ4t3L2y86GcWzWsg5Jl78wecz7xrwbJiWJqDickt0KLjsreoXRa0rKg3BTeY4Dk92WiQ
-	+a/FOlbfD8YC3TRQLrlEeuOlP/acXx2lU5py2PM34hJ6tZLMT3hQYLYLzSQVmJ6bInSEq7XAyT4
-	aHGDJK54kEbIU4XZLR0tq4iyzagyHdT0E67nmHZa0whV4SfWDzWcGTxV/W/M+9kTlosIjQCx9kJ
-	kBZlw/n6gLgtG20Wb8gf2J3RgKEWaLS8e7Esy4XJO4HPu7Fu8yYACbq4Uhdl8370ILxpecCiYYM
-	t6p6sBkiyjJrvNj1bBCSRaZxjgTgus21HXNSEddohmYR67AdlEQiGt61tX4rysw2uH0=
-X-Received: by 2002:a05:7300:c39f:b0:366:6644:2839 with SMTP id 5a478bee46e88-36a42203e90mr22173192eec.3.1793752367673;
-        Tue, 03 Nov 2026 16:32:47 -0800 (PST)
-Received: from localhost ([2a00:79e0:2e7c:8:ab71:b3df:693a:fbf2])
-        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36ca38a54ccsm2074587eec.4.2026.11.03.16.32.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Nov 2026 16:32:46 -0800 (PST)
-Date: Tue, 3 Nov 2026 16:32:44 -0800
-From: Brian Norris <briannorris@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
-	Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Subject: Re: [PATCH v2 3/5] PM: runtime: Propagate last_busy from dependent
- to dependency
-Message-ID: <aup9LKewaLr2B5cR@google.com>
-References: <20261103221717.3840215-1-briannorris@chromium.org>
- <20261103141442.v2.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
- <20261103231719.486a18de@jic23-hlaptop>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MXWkF0Z+
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793753224; x=1825289224;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eO9RgMFMHY/n7dfljbY+dPbmxddgUyWXLqsFPKPRdWc=;
+  b=MXWkF0Z+aJRAc9NG7OKe9rjHUUUBVL6pZ4T7Zr4WZzrVOHuK9ygeRzE8
+   KWVfmo4KaDw62G5oqdK2o/OjbRWZ5aoKcnOEpEfUJyUtJW30Wkq58Intn
+   QhrycdVG++gPyaUelPy3GDDomkmhV57YQIPp6Amj8cFSxdOXavDL70ra+
+   tazYeaIDMEyCSfTjIwn4wvHTDcOY5ERSIhkzJaC8SxXLXCT+nDU5hm5kw
+   vUm7iSRYnTVf4AZ9f3z1QVtddaK8Sja15QyPIZVaf+ZZ3kPrzQqJe0Doz
+   2q/ewU82DBLvIeAbPQyBTOxGyNH4srUvGOW4U1VUxW0XY8HKQXofkmHJV
+   A==;
+X-CSE-ConnectionGUID: 2WbCDCvGQG6PDWP/i0V1+g==
+X-CSE-MsgGUID: 43moedStT+apF5uJDzydMQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2494384"
+X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
+   d="scan'208";a="2494384"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 16:47:03 -0800
+X-CSE-ConnectionGUID: kXLDlRHLR7WPsm1F2JXkHA==
+X-CSE-MsgGUID: 9lcTGpPXSAGOpQwfEUq4KQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
+   d="scan'208";a="6688137"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa005.fm.intel.com with ESMTP; 03 Nov 2026 16:47:01 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xOP9X-00000000jYB-1zz3;
+	Wed, 04 Nov 2026 00:46:59 +0000
+Date: Wed, 4 Nov 2026 08:46:30 +0800
+From: kernel test robot <lkp@intel.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	jic23@kernel.org, andy@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iio: hid-sensors: fix fractional part for unit exponents
+ -7 and -8
+Message-ID: <202611040826.T95bI1SU-lkp@intel.com>
+References: <20261102222309.439895-1-srinivas.pandruvada@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,178 +88,52 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261103231719.486a18de@jic23-hlaptop>
+In-Reply-To: <20261102222309.439895-1-srinivas.pandruvada@linux.intel.com>
 
-Hi Jonathan,
+Hi Srinivas,
 
-On Tue, Nov 03, 2026 at 11:17:19PM +0000, Jonathan Cameron wrote:
-> On Tue,  3 Nov 2026 14:14:41 -0800
-> Brian Norris <briannorris@chromium.org> wrote:
-> 
-> > When a child device suspends, it does not update the last_busy timestamp
-> > for its parent. If that parent configured autosuspend and didn't
-> > otherwise maintain its last_busy timestamp, it may now be immediately
-> > eligible to suspend. This is probably not expected -- the parent should
-> > wait for its autosuspend delay before suspending.
-> 
-> So reading this again - I wonder if this text is describing the
-> expected behaviour.
+kernel test robot noticed the following build errors:
 
-Agreed, this might give the wrong impression, depending on the
-assumptions the reader makes about autosuspend delay. (I think I had a
-particular problem scenario in mind, but didn't translate that properly
-here.)
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on linus/master v7.3 next-20261030]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> If the child is also using autosupend then, in extreme case, that time
-> might be longer than the autosuspend time of the parent.
-> If so it seems odd the parent still waits.
+url:    https://github.com/intel-lab-lkp/linux/commits/Srinivas-Pandruvada/iio-hid-sensors-fix-fractional-part-for-unit-exponents-7-and-8/20261102-142308
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20261102222309.439895-1-srinivas.pandruvada%40linux.intel.com
+patch subject: [PATCH] iio: hid-sensors: fix fractional part for unit exponents -7 and -8
+config: i386-randconfig-1001-20261103 (https://download.01.org/0day-ci/archive/20261104/202611040826.T95bI1SU-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.4.0-5) 12.4.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261104/202611040826.T95bI1SU-lkp@intel.com/reproduce)
 
-Right, that seems wrong, and indeed that's not what this patch does.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202611040826.T95bI1SU-lkp@intel.com/
 
-> So most expected to me
-> would be if the parent were to suspend it's autosuspend time after
-> the parent or child was last used for something that indicate a
-> desire not to suspend (that shouldn't include actions the child
-> did whilst suspending).
+All errors (new ones prefixed by >>):
 
-(Not sure I'm parsing this sentence quite right, but...)
+   ld: drivers/iio/common/hid-sensors/hid-sensor-attributes.o: in function `split_micro_fraction':
+>> drivers/iio/common/hid-sensors/hid-sensor-attributes.c:102:(.text+0x573): undefined reference to `__udivdi3'
 
-The point is that last_busy should propagate (rather than, say, the
-expiration time). So each device still gets its own-delay-based
-autosuspend timer expiration. That may mean the parent waits longer than
-the child, but it may not, if the child's delay was longer than the
-parent's.
 
-> Maybe there isn't a sensible way to deal with this and what you have here
-> is the best we can do.  Note that this is just commenting on this
-> statement in the commit description.  From what follows I think
-> this is just a commit description thing rather than functional.
+vim +102 drivers/iio/common/hid-sensors/hid-sensor-attributes.c
 
-If I'm understanding what you're saying correctly: maybe it would be an
-improvement here to say:
+    95	
+    96	static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
+    97	{
+    98		int divisor = int_pow(10, exp);
+    99	
+   100		*val1 = no / divisor;
+   101		if (exp > 6)
+ > 102			*val2 = no % divisor / int_pow(10, exp - 6);
+   103		else
+   104			*val2 = no % divisor * int_pow(10, 6 - exp);
+   105	}
+   106	
 
-  If that parent configured an autosuspend delay longer than its child's
-  and didn't otherwise maintain its last_busy timestamp, it may now be
-  immediately eligible to suspend.
-
-I think that would more accurately describe the target problem, even if
-it doesn't cover all cases (such as when the parent delay is shorter).
-
-> > The effect of this behavior is that a parent device may suspend sooner
-> > than its autosuspend delay, simply because its usage was accounted by
-> > its children, and not by direct references to the parent device.
-> 
-> Sooner is indeed bad.
-> 
-> > 
-> > This was noticed in several cases, and some have implemented
-> > workarounds, such as in commit c537d3457542 ("iio: adc: stm32-adc: fix
-> > runtime autosuspend delay when slow polling"). At the same time, Ulf
-> > suggested these problems "should be solved in the runtime PM core" [1].
-> > 
-> > Instead of working around the problem in drivers, we propagate last_busy
-> > timestamps from a dependent device to its dependencies any time it may
-> > allow a dependency to suspend -- i.e., when releasing a refcount for its
-> > parent or suppliers. We take care to only propagate the timestamp if it
-> > is larger than the existing busy timestamp.
-> 
-> So this sounds fine but I don't think aligns with that first paragraph.
-> 
-> > 
-> > Note that this works best if the dependent device is using autosuspend
-> > (and therefore updates its last_busy timestamps appropriately), but even
-> > for a non-autosuspend child, this is still somewhat useful --
-> > non-autosuspend devices still automatically update their last_busy every
-> > time they resume.
-> 
-> Can we set the last busy on the suspend of child devices that aren't
-> suspending as a result of autosuspend timeout but for other reasons?
-> (may be some fiddly corners!)
-
-Do you have concrete use cases in mind, or do you bring this up simply
-because of my note?
-
-For one, I feel like for devices with power.use_autosuspend==true, it's
-reasonable to expect drivers to use the appropriate helpers to update
-last_busy at the appropriate times, and so any "corner cases" are from
-misuse.
-
-But if you mean non-use_autosuspend devices: I suppose it'd be possible
-but I haven't reasoned through the implementation very far yet. It
-almost seems like we'd need to plumb pm_runtime_mark_last_busy() into
-*all* the put() helpers, including the non-autosuspend ones
-(pm_runtime_put(), pm_runtime_put_sync()). I'm not quite sure if that's
-desirable. But I could try to look a bit more, if you think there are
-important use cases that would need this.
-
-Brian
-
-> > Link: https://lore.kernel.org/all/CAPDyKFp=KTf8=zGBSzPYqhjnZpY8xwvjCeM1e-WTKT1QLSxaDA@mail.gmail.com/ [1]
-> > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > ---
-> > Cc: Ulf Hansson <ulfh@kernel.org>
-> > 
-> > Changes in v2:
-> >  * Update comments to explain when/why rpm_propagate_last_busy()
-> >    performs the update
-> > 
-> >  drivers/base/power/runtime.c | 23 ++++++++++++++++++++++-
-> >  1 file changed, 22 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-> > index 2a117d6a776f..dd306cbabcd3 100644
-> > --- a/drivers/base/power/runtime.c
-> > +++ b/drivers/base/power/runtime.c
-> > @@ -318,6 +318,22 @@ static int rpm_get_suppliers(struct device *dev)
-> >  	return 0;
-> >  }
-> >  
-> > +/*
-> > + * Propagate last_busy timestamp from one device to another, typically when a
-> > + * device (@dev) releases a reference count on a dependency (@target) and might
-> > + * allow it to (auto)suspend. This can, for example, prevent overactive suspend
-> > + * when a dependency's usage is primarily driven by one of its dependents.
-> > + */
-> > +static void rpm_propagate_last_busy(struct device *dev, struct device *target)
-> > +{
-> > +	s64 busy = atomic64_read(&dev->power.last_busy);
-> > +	s64 target_busy = atomic64_read(&target->power.last_busy);
-> > +
-> > +	while (target_busy < busy)
-> > +		if (atomic64_try_cmpxchg(&target->power.last_busy, &target_busy, busy))
-> > +			return;
-> > +}
-> > +
-> >  /**
-> >   * pm_runtime_release_supplier - Drop references to device link's supplier.
-> >   * @link: Target device link.
-> > @@ -348,6 +364,7 @@ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
-> >  		if (!device_link_test(link, DL_FLAG_PM_RUNTIME))
-> >  			continue;
-> >  
-> > +		rpm_propagate_last_busy(dev, link->supplier);
-> >  		pm_runtime_release_supplier(link);
-> >  		if (try_to_suspend)
-> >  			pm_request_idle(link->supplier);
-> > @@ -710,6 +727,8 @@ static int rpm_suspend(struct device *dev, int rpmflags)
-> >  
-> >  	if (dev->parent) {
-> >  		parent = dev->parent;
-> > +		if (!parent->power.ignore_children)
-> > +			rpm_propagate_last_busy(dev, parent);
-> >  		atomic_add_unless(&parent->power.child_count, -1, 0);
-> >  	}
-> >  	wake_up_all(&dev->power.wait_queue);
-> > @@ -1368,8 +1387,10 @@ int __pm_runtime_set_status(struct device *dev, unsigned int status)
-> >  		goto out_set;
-> >  
-> >  	if (status == RPM_SUSPENDED) {
-> > -		atomic_add_unless(&parent->power.child_count, -1, 0);
-> >  		notify_parent = !parent->power.ignore_children;
-> > +		if (notify_parent)
-> > +			rpm_propagate_last_busy(dev, parent);
-> > +		atomic_add_unless(&parent->power.child_count, -1, 0);
-> >  	} else {
-> >  		spin_lock_nested(&parent->power.lock, SINGLE_DEPTH_NESTING);
-> >  
-> 
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
