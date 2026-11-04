@@ -1,56 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793757592;
-	b=XqC9IjxFVP4k/hrPe2F1Xlud2uq5xFh/GU2IaJ0RBFsBg+mZA4ZrkDX8PsdHSuY0lflC
-	 ybQo6W+5H32sNEkfF7EMXPxgjuikJcOxhwJ9rtVZr8rkc8dnloWHnmCtGAO3os34xfXGy
-	 Df7oYeUyIx2KYSW0me+5ALChBzJNmOwj/uAwj+szSWxfO1xc8lR84Ajprxi+MSiDJmqUc
-	 dEcV0Xi1hR8IAnmi3+WCWzPei0s/4HB2TWt/CaUWyhH9PJvbO5c0ej+6P9hIW7rW3SG1R
-	 U8ZdPz8RfvuQ1l11kWmBZTl0vQueV+Gj68gddGa2USreBWTvvQJzngZvzJuJkTdr6jA==
+	t=1793757696;
+	b=osX4m+L9bGAdjbTuNC9ggG/4DbFtXRAXTpjLeq8qBQ2TAvCCSv43lkADdBnddyJNS20F
+	 iljA56vfkacvbKcOMA12rI25Ugfu5VHNClUM8WjSLsENY6kFYMRo7FOPCq1hafKZGOV9l
+	 rWsN9aMPqPxvQhisqVX22YOmrydhsz8Lb/BOcVN/Nx8hydtLlvThRrrN/YNsYPkgSLM3k
+	 nHEkw2rrQzTdM4sCNc/H5L6hDU4HcsowT/zQSG9Kg2EmjwgTXoSxZNbFhkxhtLGQGXGr/
+	 ZwcCUxwWV3P3gk7+r6lJYO8l8nn/TJNd/XdCs5HnbXdofqbGlg/JroJhafptc18puvw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793757592;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793757696;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=iZ8ZEB69e99iUpBIdOKFs2774n2XFkLw9sMemZG3Lbg=;
-	b=Po1oO8kG+wJszA0IGWbQpTY5djMRzaSUQZ+Ifjt7NQfUNhlRVusfw/A22m+wb9zlNqJx
-	 B5CVKsqB80PBo7eGbTrUZHaliaPSHFK6SyjRyHqXSFxZFl809CY2G33vZJg06QDVx7c8i
-	 h34Anpg0Vg+yiXVVeHJGlNmjFCWY9DipIo1ZSlTiurVWbmh6EYBo6Hb8a/2zIlS6INXR4
-	 0sKapgXtN80UEJ65lsN8ODAz7iyNJRsIK4rS7UXJwZEA5y4le3mertcLJSsrD9dnNyHOt
-	 3+8kanJsGhVLfMMfR76KdR6Y4G1akIB1dA3sgShAu0QptFnOJ5MxnRUvjci2pebefsA==
+	bh=d3tRwg+6kmWQPvDHfDb0iceVZog2ETjF6XYA5PmVuHA=;
+	b=geGYTI07HDzYJTlzgzISiW5iRWsOwVMUNJyNu3TMRYjgGRRbPZDnt59cYNVpur01LISA
+	 qQ8nRQZgNUfx619t6jGP5nXLnIpwayg1K0OexNW1rUV94LtSnnsZgq/7LQDlNljrzOMS7
+	 vyexQngB3BezBfjWAC/AXUC6hAuiGm1F3Hb7PhK36LvIpF/7EcnVMVFXxqXOtnxE+8faJ
+	 dCq3atxYgit9sNnBPZ7e8i/ykrARC9MMI6gANC0wrbGRCQ014Q+nQ0P4LNSZFT3cf1loy
+	 61Gjoh069GbfXkdqzAtfDs+eIbU/O+3WrixR8MN9p/ls1vurgmSSJLseXM7MitOaNNA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ng90dtXe;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GDP5Vhmb;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBB21606A328;
-	Wed,  4 Nov 2026 01:59:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C97E5606A31B;
+	Wed,  4 Nov 2026 02:01:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ng90dtXe
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DEFF1F000C1;
-	Wed,  4 Nov 2026 01:59:49 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GDP5Vhmb
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72A011F000C1;
+	Wed,  4 Nov 2026 02:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793757591;
-	bh=iZ8ZEB69e99iUpBIdOKFs2774n2XFkLw9sMemZG3Lbg=;
+	s=k20260515; t=1793757695;
+	bh=d3tRwg+6kmWQPvDHfDb0iceVZog2ETjF6XYA5PmVuHA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Ng90dtXe6KTTpr5tRJMbsm4OVkaofi1qRqc+dGBnkPqN+PuXwkAnyJvklipaAtfle
-	 /IyGfXuuWqPYsJ3BHezY7dKmnRFt+iCohk0i43A1D4kYnb0YaNhkF8IUO+Lw5cMdfu
-	 uu/flybnsU8ldB5HewcxeViR8qPJ9DB4eIXQjO6jNqi6aFRHjOE5CUPlHzTGzxOiKY
-	 NKvrSA2fg9nA12/stnlLKF8TPs0tUkcti+VzwVRgOiFT8wJjV2UJ7vRsPiIWUA6ven
-	 NLfYIJVU2Z1uB3oFVTzL/+Zfkk69U496e0u3hbHnR+hE8bSyJds1yA4iK1u1pP/XEZ
-	 Df539qlOBs5sg==
-Date: Wed, 4 Nov 2026 01:59:45 +0000
+	b=GDP5VhmbB7nSGwNTGPLEyf3vLI8zxHVVBt1uzi91T/SK6RPMZqyv3oFq9Yq0GzmWh
+	 CxOHnaklmwm8XGgCPNokFjzObbtRBo087K5X+3sZL4H3m1hOUVNanoZ2lkVAGUnAq3
+	 tzgOp6gsDNIr7MSlFMzka493YKmMPnaLo2dXgmxruG4KvnQeeXThqJj44mX+hzrG4r
+	 lP4ZzXQmxSS+SrIENPp5iuB/bWMF8SbNCLSyia5GtFN+OIRbv33L4F+GIL8arz4XfL
+	 e5jigjCUUunBo2uvWCFa3m0K/lSJsxLGzh47m23fPnf/bqWvvMOhVAIi5L+WRp4Syo
+	 trHXvDnQj8sXA==
+Date: Wed, 4 Nov 2026 02:01:27 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com
-Subject: Re: [PATCH v3 1/2] iio: gyro: mpu3050: Split data ready trigger
- enable/disable into helpers
-Message-ID: <20261104015945.77c936c5@jic23-hlaptop>
-In-Reply-To: <20261103092002.1332-2-laixiangwu@cmss.chinamobile.com>
+Subject: Re: [PATCH v3 2/2] iio: gyro: mpu3050: Fix runtime PM refcount leak
+ in trigger enable path
+Message-ID: <20261104020127.4a9d7a2d@jic23-hlaptop>
+In-Reply-To: <20261103092002.1332-3-laixiangwu@cmss.chinamobile.com>
 References: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
-	<20261103092002.1332-2-laixiangwu@cmss.chinamobile.com>
+	<20261103092002.1332-3-laixiangwu@cmss.chinamobile.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,261 +64,115 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue,  3 Nov 2026 17:20:01 +0800
+On Tue,  3 Nov 2026 17:20:02 +0800
 Xiangwu Lai <laixiangwu@cmss.chinamobile.com> wrote:
 
 > From: laixiangwu <laixiangwu@cmss.chinamobile.com>
 > 
-> mpu3050_drdy_trigger_set_state() implements both the enable and the
-> disable path of the data ready trigger in the two legs of a large
-> if/else statement.
+> mpu3050_drdy_trigger_enable() calls pm_runtime_get_sync() when
+> enabling the data ready trigger, but all five error returns in the
+> enable path return directly without the matching
+> pm_runtime_put_autosuspend(). The disable path, in contrast, drops
+> the reference correctly.
 > 
-> Split the two legs out into separate mpu3050_drdy_trigger_enable()
-> and mpu3050_drdy_trigger_disable() helpers and reduce
-> mpu3050_drdy_trigger_set_state() to dispatching to the appropriate
-> one. This is a pure code move with no functional change, done to make
-> the error handling of the enable path easier to read.
+> As a result, a failed trigger enable leaves the runtime PM usage
+> counter incremented and the sensor can never runtime suspend. It also
+> leaves hw_irq_trigger set to true, claiming the hardware IRQ is in
+> use when it is not.
 > 
+> Use pm_runtime_resume_and_get(), which does not leave the usage
+> counter incremented when resume fails, and add an error label that
+> drops the runtime PM reference and clears hw_irq_trigger so that a
+> failed enable returns with the device in the same state as before
+> the attempt.
+> 
+> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
 > Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
 
-Hi. You have definitely picked some ugly code to work on!
-
-
+Other than the missing error return I called out in the previous patch this
+looks fine.
 
 > ---
 > 
 > Changes in v3:
 > - none; reposted in a new top-level thread.
 > 
-> Link: https://lore.kernel.org/r/20261101092327.197-2-laixiangwu@cmss.chinamobile.com
->  drivers/iio/gyro/mpu3050-core.c | 173 ++++++++++++++++++--------------
->  1 file changed, 99 insertions(+), 74 deletions(-)
+> Changes in v2:
+> - Rebase the fix on a new precursor patch that splits the enable and
+>   disable paths of mpu3050_drdy_trigger_set_state() into separate
+>   helpers, as suggested by the reviewer, so the error label only
+>   applies to the enable path.
+> - Use pm_runtime_resume_and_get() instead of pm_runtime_get_sync(),
+>   as suggested by the reviewer; it also keeps the usage counter
+>   balanced when the resume fails, so no manual
+>   pm_runtime_put_noidle() is needed in the caller.
+> 
+> Link: https://lore.kernel.org/r/20261101092327.197-3-laixiangwu@cmss.chinamobile.com
+> Link: https://lore.kernel.org/r/20261030084305.1660-1-laixiangwu@cmss.chinamobile.com
+>  drivers/iio/gyro/mpu3050-core.c | 21 +++++++++++++++------
+>  1 file changed, 15 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> index 07c0f9011..d966911ab 100644
+> index d966911ab..fc305564d 100644
 > --- a/drivers/iio/gyro/mpu3050-core.c
 > +++ b/drivers/iio/gyro/mpu3050-core.c
-> @@ -946,103 +946,128 @@ static irqreturn_t mpu3050_irq_thread(int irq, void *p)
->  }
->  
->  /**
-> - * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
-> - * @trig: trigger instance
-> - * @enable: true if trigger should be enabled, false to disable
-> + * mpu3050_drdy_trigger_enable() - enable the data ready trigger
-> + * @mpu3050: device to configure
-> + *
-> + * Power up the device, enable the FIFO and configure the data ready
-> + * interrupt.
->   */
-> -static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
-> -					  bool enable)
-> +static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
->  {
-> -	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> -	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> @@ -957,20 +957,23 @@ static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
 >  	unsigned int val;
 >  	int ret;
 >  
-> -	/* Disabling trigger: disable interrupt and return */
-> -	if (!enable) {
-> -		/* Disable all interrupts */
-> -		ret = regmap_write(mpu3050->map,
-> -				   MPU3050_INT_CFG,
-> -				   0);
-> -		if (ret)
-> -			dev_err(mpu3050->dev, "error disabling IRQ\n");
-> +	pm_runtime_get_sync(mpu3050->dev);
-> +	mpu3050->hw_irq_trigger = true;
->  
-> -		/* Clear IRQ flag */
-> -		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-> -		if (ret)
-> -			dev_err(mpu3050->dev, "error clearing IRQ status\n");
-> +	/* Disable all things in the FIFO */
-> +	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+> -	pm_runtime_get_sync(mpu3050->dev);
+> +	ret = pm_runtime_resume_and_get(mpu3050->dev);
 > +	if (ret)
 > +		return ret;
->  
-> -		/* Disable all things in the FIFO and reset it */
-> -		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
-> -		if (ret)
-> -			dev_err(mpu3050->dev, "error disabling FIFO\n");
-> +	/* Reset and enable the FIFO */
-> +	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
-> +			      MPU3050_USR_CTRL_FIFO_EN |
-> +			      MPU3050_USR_CTRL_FIFO_RST);
-> +	if (ret)
-> +		return ret;
->  
-> -		ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
-> -				   MPU3050_USR_CTRL_FIFO_RST);
-> -		if (ret)
-> -			dev_err(mpu3050->dev, "error resetting FIFO\n");
-> +	mpu3050->pending_fifo_footer = false;
->  
-> -		pm_runtime_put_autosuspend(mpu3050->dev);
-> -		mpu3050->hw_irq_trigger = false;
-> +	/* Turn on the FIFO for temp+X+Y+Z */
-> +	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
-> +			   MPU3050_FIFO_EN_TEMP_OUT |
-> +			   MPU3050_FIFO_EN_GYRO_XOUT |
-> +			   MPU3050_FIFO_EN_GYRO_YOUT |
-> +			   MPU3050_FIFO_EN_GYRO_ZOUT |
-> +			   MPU3050_FIFO_EN_FOOTER);
-> +	if (ret)
-> +		return ret;
->  
-> -		return 0;
-> -	} else {
-> -		/* Else we're enabling the trigger from this point */
-> -		pm_runtime_get_sync(mpu3050->dev);
-> -		mpu3050->hw_irq_trigger = true;
-> +	/* Configure the sample engine */
-> +	ret = mpu3050_start_sampling(mpu3050);
-> +	if (ret)
-> +		return ret;
->  
-> -		/* Disable all things in the FIFO */
-> -		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
-> -		if (ret)
-> -			return ret;
-> +	/* Clear IRQ flag */
-> +	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-> +	if (ret)
-> +		dev_err(mpu3050->dev, "error clearing IRQ status\n");
-
-The original code indeed didn't do anything beyond printing this
-error but to me that seems random and inconsistent.  So should
-probably be tidied up as part of this series. 
-
->  
-> -		/* Reset and enable the FIFO */
-> -		ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
-> -				      MPU3050_USR_CTRL_FIFO_EN |
-> -				      MPU3050_USR_CTRL_FIFO_RST);
-> -		if (ret)
-> -			return ret;
-> +	/* Give us interrupts whenever there is new data ready */
-> +	val = MPU3050_INT_RAW_RDY_EN;
->  
-> -		mpu3050->pending_fifo_footer = false;
-> +	if (mpu3050->irq_actl)
-> +		val |= MPU3050_INT_ACTL;
-> +	if (mpu3050->irq_latch)
-> +		val |= MPU3050_INT_LATCH_EN;
-> +	if (mpu3050->irq_opendrain)
-> +		val |= MPU3050_INT_OPEN;
->  
-> -		/* Turn on the FIFO for temp+X+Y+Z */
-> -		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN,
-> -				   MPU3050_FIFO_EN_TEMP_OUT |
-> -				   MPU3050_FIFO_EN_GYRO_XOUT |
-> -				   MPU3050_FIFO_EN_GYRO_YOUT |
-> -				   MPU3050_FIFO_EN_GYRO_ZOUT |
-> -				   MPU3050_FIFO_EN_FOOTER);
-> -		if (ret)
-> -			return ret;
-> +	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
-> +	if (ret)
-> +		return ret;
->  
-> -		/* Configure the sample engine */
-> -		ret = mpu3050_start_sampling(mpu3050);
-> -		if (ret)
-> -			return ret;
-> +	return 0;
-> +}
->  
-> -		/* Clear IRQ flag */
-> -		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-> -		if (ret)
-> -			dev_err(mpu3050->dev, "error clearing IRQ status\n");
-> +/**
-> + * mpu3050_drdy_trigger_disable() - disable the data ready trigger
-> + * @mpu3050: device to configure
-> + *
-> + * Disable the data ready interrupt, flush the FIFO and drop the
-> + * runtime PM reference taken in mpu3050_drdy_trigger_enable().
-> + */
-> +static int mpu3050_drdy_trigger_disable(struct mpu3050 *mpu3050)
-> +{
-> +	unsigned int val;
-> +	int ret;
->  
-> -		/* Give us interrupts whenever there is new data ready */
-> -		val = MPU3050_INT_RAW_RDY_EN;
-> +	/* Disable all interrupts */
-> +	ret = regmap_write(mpu3050->map,
-> +			   MPU3050_INT_CFG,
-> +			   0);
-> +	if (ret)
-> +		dev_err(mpu3050->dev, "error disabling IRQ\n");
->  
-> -		if (mpu3050->irq_actl)
-> -			val |= MPU3050_INT_ACTL;
-> -		if (mpu3050->irq_latch)
-> -			val |= MPU3050_INT_LATCH_EN;
-> -		if (mpu3050->irq_opendrain)
-> -			val |= MPU3050_INT_OPEN;
-> +	/* Clear IRQ flag */
-> +	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
-> +	if (ret)
-> +		dev_err(mpu3050->dev, "error clearing IRQ status\n");
->  
-> -		ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
-> -		if (ret)
-> -			return ret;
-> -	}
-> +	/* Disable all things in the FIFO and reset it */
-> +	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
-> +	if (ret)
-> +		dev_err(mpu3050->dev, "error disabling FIFO\n");
 > +
-> +	ret = regmap_write(mpu3050->map, MPU3050_USR_CTRL,
-> +			   MPU3050_USR_CTRL_FIFO_RST);
-> +	if (ret)
-> +		dev_err(mpu3050->dev, "error resetting FIFO\n");
-Obviously fine in this patch as it's a direct refactor, but
-shouldn't a failure to disable the trigger result in an error return?
-
-might be later in the series.
-Now the error return doesn't propogate far in the iio core.
-That's intentional because cleaning up this sort of failure
-to disable is hard and rarely useful.  I'd still expect the
-driver to not be making that decision however.
-
-I guess maybe it's not worth the effort to fix this.
-
-
-> +
-> +	pm_runtime_put_autosuspend(mpu3050->dev);
-> +	mpu3050->hw_irq_trigger = false;
+>  	mpu3050->hw_irq_trigger = true;
+>  
+>  	/* Disable all things in the FIFO */
+>  	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+>  	if (ret)
+> -		return ret;
+> +		goto err_put_pm;
+>  
+>  	/* Reset and enable the FIFO */
+>  	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+>  			      MPU3050_USR_CTRL_FIFO_EN |
+>  			      MPU3050_USR_CTRL_FIFO_RST);
+>  	if (ret)
+> -		return ret;
+> +		goto err_put_pm;
+>  
+>  	mpu3050->pending_fifo_footer = false;
+>  
+> @@ -982,12 +985,12 @@ static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
+>  			   MPU3050_FIFO_EN_GYRO_ZOUT |
+>  			   MPU3050_FIFO_EN_FOOTER);
+>  	if (ret)
+> -		return ret;
+> +		goto err_put_pm;
+>  
+>  	/* Configure the sample engine */
+>  	ret = mpu3050_start_sampling(mpu3050);
+>  	if (ret)
+> -		return ret;
+> +		goto err_put_pm;
+>  
+>  	/* Clear IRQ flag */
+>  	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+> @@ -1006,9 +1009,15 @@ static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
+>  
+>  	ret = regmap_write(mpu3050->map, MPU3050_INT_CFG, val);
+>  	if (ret)
+> -		return ret;
+> +		goto err_put_pm;
 >  
 >  	return 0;
+> +
+> +err_put_pm:
+> +	pm_runtime_put_autosuspend(mpu3050->dev);
+> +	mpu3050->hw_irq_trigger = false;
+> +
+> +	return ret;
 >  }
 >  
-> +/**
-> + * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
-> + * @trig: trigger instance
-> + * @enable: true if trigger should be enabled, false to disable
-> + */
-> +static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
-> +					  bool enable)
-> +{
-> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
-> +
-> +	if (enable)
-> +		return mpu3050_drdy_trigger_enable(mpu3050);
-> +
-Personally I'd use an else to give a visual clue that this is
-an either / or situation.
-
-> +	return mpu3050_drdy_trigger_disable(mpu3050);
-> +}
-> +
->  static const struct iio_trigger_ops mpu3050_trigger_ops = {
->  	.set_trigger_state = mpu3050_drdy_trigger_set_state,
->  };
+>  /**
 
