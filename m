@@ -1,61 +1,46 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=159.226.251.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793759436;
-	b=UwjzPCjvWKxbC3WnZzjjuO/28dnXIGse30D0AUuH6LYQ+0Zri+6b8T+4hxPZx4YhQVTL
-	 3BqPdVSMXRXp13/PTZC034lDt4O5cfATJYMqQMrEJbQzLWE//qklURLJePC7UU2OHD3ra
-	 oAzNxqdpeJHp6t8bvBuBbmgfWe8sZndLpxPu94k3iNPtghBbgHJ26JR475BCy8krBZy3F
-	 LBJN0YeyawpJUD9NnxY50lnUEB/z9Matin2HP0rdccGeSzKUfzeCVsz/qEFnbqrX5uBA5
-	 Inxf6KChZuWonZoRfKZPTBz6YT++F3yd/RRkngth75zH58i2PUoP7Hkoju5QuMIu/tA==
+	t=1793760050;
+	b=NDKhaF89bDpV69jtOyEDBpdEpPNQE2FLOF3yLdhMh5NHa+ec6EJRQl73ql7PyRy4xeE2
+	 5g69oCCu9xSjtU3r9n30NVaG7nmUF4oCzaLSUMToNvV96O1jakD8bAedb3ontxclou6JE
+	 AlY4j/STw42bDK90PlQCNHe+zEiN2Ojp/P/dzBzOZBoruaF0WmhNGKWsQfbsQ2AKZ7TtR
+	 EAVtnALZrZ0anlqUykgzcgxb1vyxjCKXmUloSsk1YIbGYYbLaVYb/+2pXjGQ2UvqxMPXf
+	 /Gtis8bQ0sPjZOu3OMnFegf/zzZdGtbVjpT8DvgITsUg3Ee1WvN766iBuuA51Tu26/Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793759436;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=/VTpplJVn4EIticjLNBtstxtOGlJSsZ7VaIs8mVEQYo=;
-	b=NU3tU9XoLM63EhhqImGVqxoC5I5bSkQoG2+4KwbDTUmCs5LjdTxVfj+hlcfi+22E+mln
-	 Bf4Qcl0i6Oz71jesAAfdenDVaSL9jATedwSiUZQXOhZfmXtvn+9gpLlKEhH2bBIGvjztG
-	 KHx/jl0WaLFtYT9JHMLQ7nGb1S34j0GaV7tCjbyEVX0E46UvXungTZdUe0p3wlQ4G+XHU
-	 IwtrKEEsIYXHriNZdg7eZaRTSaBoXlzOP57YorO1iriZwel6Z3PVZSdxQcln3yMjn6l6I
-	 Jxswv7rTdlmfndlW/v79TsTn5UNvsZTmZmRpndZniPtQAsfKtrWuyZkU+ygBAimt6nA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793760050;
+	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding:X-CM-TRANSID:
+	 X-Coremail-Antispam:X-Originating-IP:X-CM-SenderInfo;
+	bh=e6HrL2+lYtUGSBGVjQGed5bXaNpP3uRBcYulAh2GRVs=;
+	b=vk8zptSI65tockQj8mB2q1att7Uac6dZoWWm5qcWPbXHlAZFbh80rb2YIGZXIyag5KyM
+	 CZ0rcM6Q9J4XippIvII2abvxVoabyPYfZrsb2I/XH6irxDLF1YQimUkIcvZcIfHAtO/Mv
+	 XQ9LzUUmH/k5so0A/kJ/oQavot6MShn34EF+g8dLHx0jJYPIP4chlnmwSYukqU6JP9Va6
+	 OyB7fXF4YaDGhQefDIrMMum07SSW/dcIJ8YTJylpoIQlXqlqpvtTkA3phlM3qQ/vKH14t
+	 IwwU7l/r27/sYWqbYNMDbSEVSRutIxSTZRq+tjAuUyZ5tTpHAw0ZNEeV/vb1GVjnzvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aly6RPlZ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=none header.from=iscas.ac.cn;
+	spf=pass smtp.mailfrom=iscas.ac.cn;
+	arc=none smtp.remote-ip=159.226.251.21
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF139606A32C;
-	Wed,  4 Nov 2026 02:30:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aly6RPlZ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C3841F000C1;
-	Wed,  4 Nov 2026 02:30:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793759435;
-	bh=/VTpplJVn4EIticjLNBtstxtOGlJSsZ7VaIs8mVEQYo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aly6RPlZn1FhrDosrjt8AmZQQRqhhOB6BBgjurjomusOB1iTSaixn7vzMijgD+mI0
-	 aIzPA+r5TQLutXr6RK2XJR0YEEZ8NDSGCXO76O9Le9R5Mh/6OaIpjayJ0BZHMacFEc
-	 ts3Lfbv/YRqFF4VoVgZPgWdxSwFUMmU+jf/BspXpS3ScJtKzgi/AaktQdEz9jKGI9S
-	 6Vpz8Z1Zqju0v9PBBGwZDmZjpgLG2kpNzZjL4tNo7Tlc1oOKPffS2yNX9llh0q4bWT
-	 7mSrZ9zlXkKZ1JXxP9zA+bsE+AwP9g69gCE00qI3tDz0i4qIg2TOoi3/YDBzDI8wvr
-	 rEQfc529Jbvsw==
-Date: Wed, 4 Nov 2026 02:30:32 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v5 3/3] iio: adc: add driver for the MAX34417
- Four-Channel High Dynamic Range Power Accumulator
-Message-ID: <20261104023032.0a21da0d@jic23-hlaptop>
-In-Reply-To: <20261102-topic-sm8x50-iio-max34417-adc-v5-3-0ffa5e5f2d5c@linaro.org>
-References: <20261102-topic-sm8x50-iio-max34417-adc-v5-0-0ffa5e5f2d5c@linaro.org>
-	<20261102-topic-sm8x50-iio-max34417-adc-v5-3-0ffa5e5f2d5c@linaro.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57961606A331
+	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 02:40:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 57961606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from dfae2b116770.home.arpa (unknown [36.110.52.2])
+	by APP-01 (Coremail) with SMTP id qwCowAC35P4vm+pq1Lk+AA--.9684S2;
+	Wed, 04 Nov 2026 10:40:47 +0800 (CST)
+From: Wentao Liang <vulab@iscas.ac.cn>
+To: David Lechner <david@lechnology.com>,
+	William Breathitt Gray <wbg@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] counter: ti-eqep: balance runtime PM when the clock fails to enable
+Date: Wed,  4 Nov 2026 02:40:56 +0000
+Message-Id: <20261104024056.1508805-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,194 +50,59 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qwCowAC35P4vm+pq1Lk+AA--.9684S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7uFyfAF1rZr18tF1rKF45ZFb_yoW8Gr1Upr
+	4qvFyqyrWxZryIya47Xw1qvF90v3y2yFWrC34kGa48Zwn8Ja4S93WfJa4jqFyIyFykuw1U
+	trnrWa47AFZrCrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUkqb7Iv0xC_Kw4lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
+	cIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2
+	AK021l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v2
+	6r4UJVWxJr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14
+	v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xf
+	McIj6xIIjxv20xvE14v26rWY6Fy7McIj6I8E87Iv67AKxVW8Jr0_Cr1UMcvjeVCFs4IE7x
+	kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
+	6cx26r48ZrWUJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+	4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWUAwCIc40Y0x0EwIxG
+	rwCI42IY6xIIjxv20xvE14v26ryj6F1UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr
+	1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWxJVW8Jr1lIxAI
+	cVC2z280aVCY1x0267AKxVWxJr0_GcJvcSsGvfC2KfnxnUUI43ZEXa7IU5EQ6tUUUUU==
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCRQBA2rqY-nVhAAAsU
 
-On Mon, 02 Nov 2026 15:49:06 +0100
-Neil Armstrong <neil.armstrong@linaro.org> wrote:
+ti_eqep_probe() enables runtime PM and takes a usage reference before
+looking up the functional clock.  If devm_clk_get_enabled() fails the
+function returns immediately, leaving the usage counter incremented and
+runtime PM enabled; a failed probe means ti_eqep_remove() never runs to
+undo either, and devres does not manage runtime PM.
 
-> The MAX34417 is a specialized current and voltage monitor used to
-> determine power consumption of portable systems. The driver support
-> getting the channels voltage, average power, accumulated average
-> power and energy over an I2C/SMBUS serial interface.
-> 
-> The MAX34417 datasheet only specified on how to calculate the
-> accumulated average power, but with the Sample Per Second rate
-> we can easily get accumulated Energy in mJ.
-> 
-> By default the IIO driver only supports single-shot Voltage
-> and Power sensing, but the accumulation can be enabled by
-> enabling the Energy IIO channel which then enables the
-> Continuous Accumulation Mode.
-> 
-> The counter is common to all channels, so when reading a single
-> channel we will copy all accumulators to registers, so in order
-> to permit reading individual channels we must accumulate the
-> other channels in the driver when Continuous Accumulation Mode
-> is enabled.
-> 
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Drop the reference and disable runtime PM before returning, as the
+counter_add() error path already does.
 
-The use of the regmap_noinc stuff to deal with the variable
-size 'registers' is novel.  Might be worth just adding a little
-commentary on that to somewhere. Perhaps the regmap_config as a comment.
+Fixes: 0cf81c73e4c6 ("counter: ti-eqep: enable clock at probe")
+Cc: stable@vger.kernel.org
+Assisted-by: DeepSeek-V4.1-Flash and OpenAI Codex
+Signed-off-by: Wentao Liang <vulab@iscas.ac.cn>
+---
+ drivers/counter/ti-eqep.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Other than that, just a question about why we need the postfixes
-for the labels. That seems superfluous.
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index 0dda3f2b14c7..6da9df563fda 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -547,8 +547,11 @@ static int ti_eqep_probe(struct platform_device *pdev)
+ 	pm_runtime_get_sync(dev);
+ 
+ 	clk = devm_clk_get_enabled(dev, NULL);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
++		pm_runtime_put_sync(dev);
++		pm_runtime_disable(dev);
+ 		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
++	}
+ 
+ 	err = counter_add(counter);
+ 	if (err < 0) {
+-- 
+2.34.1
 
-Thanks,
-
-Jonathan
-
-
-> diff --git a/drivers/iio/adc/max34417.c b/drivers/iio/adc/max34417.c
-> new file mode 100644
-> index 000000000000..e679cf142141
-> --- /dev/null
-> +++ b/drivers/iio/adc/max34417.c
-
-> +
-> +static const struct regmap_config max34417_regmap_config = {
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-As noted above. This isn't really true.  You are just use noinc
-reads to pretend it is.  Those are normally only used for
-fifo registers so I think we should have a comment here talking
-about that choice.
-
-It is pretty neat so I'm not against it but it might rather
-surprise anyone looking at the datasheet!
-
-
-
-> +	.max_register	= MAX34417_BULK_VOLTAGE_READOUT_REG,
-> +	.writeable_reg	= max34417_writeable_reg,
-> +	.readable_reg	= max34417_readable_reg,
-> +	.volatile_reg	= max34417_volatile_reg,
-> +	/* No cache since the only non-volatile register is read-only */
-> +};
-
-
-
-> +
-> +static int max34417_read_label(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       char *label)
-> +{
-> +	struct max34417_data *max34417 = iio_priv(indio_dev);
-> +	const char *input_label = max34417->input_label[chan->channel];
-> +
-> +	if (input_label) {
-> +		switch (chan->type) {
-> +		case IIO_VOLTAGE:
-> +			return sysfs_emit(label, "%s-voltage\n", input_label);
-
-Why add the postfix? The channel type will turn up in the file name anyway.
-I don't think anything prevents us having the same label for channels of
-different types.  Is this a copy of something elsewhere?
-
-
-> +		case IIO_POWER:
-> +			return sysfs_emit(label, "%s-power\n", input_label);
-> +		case IIO_ENERGY:
-> +			return sysfs_emit(label, "%s-energy\n", input_label);
-> +		default:
-> +			return 0;
-> +		}
-> +	}
-> +
-> +	switch (chan->type) {
-> +	case IIO_VOLTAGE:
-> +		return sysfs_emit(label, "channel%d-voltage\n", chan->channel);
-Same applies here.  The postfix seems excessive.
-> +	case IIO_POWER:
-> +		return sysfs_emit(label, "channel%d-power\n", chan->channel);
-> +	case IIO_ENERGY:
-> +		return sysfs_emit(label, "channel%d-energy\n", chan->channel);
-> +	default:
-> +		return 0;
-> +	}
-> +}
-
-> +
-> +static int max34417_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct max34417_data *max34417;
-> +	struct iio_dev *indio_dev;
-> +	struct regmap *map;
-> +	int rc;
-> +
-> +	map = devm_regmap_init_i2c(client, &max34417_regmap_config);
-> +	if (IS_ERR(map))
-> +		return dev_err_probe(dev, PTR_ERR(map), "regmap_init failed\n");
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*max34417));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	rc = devm_regulator_get_enable(dev, "vdd");
-> +	if (rc)
-> +		return dev_err_probe(dev, rc, "failed to get vdd regulator\n");
-> +
-> +	rc = devm_regulator_get_enable(dev, "vio");
-> +	if (rc)
-> +		return dev_err_probe(dev, rc, "failed to get vio regulator\n");
-> +
-> +	max34417 = iio_priv(indio_dev);
-> +	max34417->regmap = map;
-> +	max34417->indio_dev = indio_dev;
-> +
-> +	rc = devm_mutex_init(dev, &max34417->lock);
-> +	if (rc)
-> +		return rc;
-> +
-> +	/* Set default input correction for all channels */
-> +	for (int i = 0; i < MAX34417_CHANNEL_COUNT; i++)
-> +		max34417->input_correction[i] =
-> +			max34417_calc_input_correction(MAX34417_DEFAULT_RSENSE);
-> +
-> +	device_for_each_child_node_scoped(dev, node) {
-> +		u32 rsense_uOhm, index;
-> +
-> +		rc = fwnode_property_read_u32(node, "reg", &index);
-> +		if (rc)
-> +			return dev_err_probe(dev, rc, "failure reading reg property of %pfwP\n",
-> +					     node);
-> +
-> +		if (index >= MAX34417_CHANNEL_COUNT)
-> +			return dev_err_probe(dev, -ECHRNG, "invalid reg %d of %pfwP\n",
-> +					     index, node);
-> +
-> +		if (fwnode_property_present(node, "label")) {
-> +			rc = fwnode_property_read_string(node, "label",
-> +							 &max34417->input_label[index]);
-> +			if (rc)
-> +				return dev_err_probe(dev, rc,
-> +						"failure reading label property of %pfwP\n",
-
-Don't worry about going a bit longer - stcik to aligning after (
-Or.. Maybe use a helper function for the per channel parsing.
-
-
-> +						node);
-> +		}
-> +
-> +		if (fwnode_property_present(node, "shunt-resistor-micro-ohms")) {
-> +			rc = fwnode_property_read_u32(node, "shunt-resistor-micro-ohms",
-> +						      &rsense_uOhm);
-> +			if (rc)
-> +				return dev_err_probe(dev, rc,
-> +						"failure reading shunt property of %pfwP\n",
-> +						node);
-> +
-> +			if (rsense_uOhm < MAX34417_MIN_RSENSE ||
-> +			    rsense_uOhm > MAX34417_MAX_RSENSE)
-> +				return dev_err_probe(dev, -EINVAL,
-> +						     "invalid shunt value %d of %pfwP\n",
-> +						     rsense_uOhm, node);
-> +
-> +			max34417->input_correction[index] =
-> +				max34417_calc_input_correction(rsense_uOhm);
-> +		}
-> +	}
