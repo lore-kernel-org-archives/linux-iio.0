@@ -1,67 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793806651;
-	b=LwwG3SH/L/i+yOSXqYTHWutCSB9puQrxmUdYHnjOgdK1IH/zSsSQp7kFNQgPdRacbXbm
-	 aUmmM+cZx0/9NFdYqaWW4fVfpSlYvyI/7/L/0iq5vfonZEjzn3FidblDV5GQk8+kO8k7h
-	 uFaF2YUzvyUXH9XgAWH+HdtlQsz9RjMtUI1pa8gT/6rZqgaZl3nGFOObWrvIdNj78ki9v
-	 PC+FgjqhC+Qo5Dcu0E1IYxKlIZQH7I7R/aZxA2SMOTqQUd3MtLnlQJMG6a0sq/o9Lurp4
-	 q2dl98hdU1VVvjafLB9Tu/FOrpqNDXXNE/rqy61LnB0X/iRE2b9LX0ouggx8xkpgJyw==
+	t=1793806900;
+	b=VejiqiPLvfp0xwclb4b9/Ia6f2ZaX8nvYk6GbamrPBeosLSHEs3g8hUde7Cgx8VNO65O
+	 xKhN4YEh0229jENhsq3iFUWx9hEceCDsuL2m5j1+78jmaS6KiqLsF3oyCMiFVtJKj01Op
+	 XpxLgn0S2DJIzZUE0fLLNDIE4FSlrVLsNmzGYQNAp624pqkJh5Wm+fOu7uaqbFytVu0Xe
+	 xX5uc/bfNni2ltCozNORsoYMFeBTn8ZYPdeqwrWaEJ0e9ZYv3XHIrDIMkgPqHbRAgw+sZ
+	 djqDCjURZsJN4SEX7QZVQ8PKzkz4RGyRqZ9EPMZ3cqbSl4oX3R8ZuABwFk9LqPsLzDw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793806651;
-	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-Scanned-By;
-	bh=6gr+1hN5mr88TUb6c1EFHl/+fcbV3ZF/wh6O3QIfUwQ=;
-	b=it0X9VqnBiCWLRYz++5uXx2iTIz9m0stP3SzJc8VpTRluhx4kvGxUodPHL1ahxV1bEQ9
-	 6sbiAzhuZURj5pPMYUfyBgNWFNeulj9V4oOLcpUcwkWg8xN/qX7igzdxafhtzzSbpXddJ
-	 01YesC7qRD1QHqX22dxZFic6NkMmTj/E54mkNx1bPfMjTTr+3RilSBkqtvXSt0JLFAeOh
-	 +rh2YGzO3BjCfVjXyEtCEeCg2FDOiimS3Nm8XmEL6Gr10K+M3lkjaao9cb9RXYJfZ/wJn
-	 6xUQXxcNuczZJFgNShrkQZvDHLOSPpdGleC4vqK0Gn38iT5R2/idEwuQAGTbv7MYIPA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793806900;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=iphqSsawpRaaen7vANjen5+GcoTtHf3xRM+kRPbqxW0=;
+	b=nCD+CI9v1pOELvjkQcrF9GIHvC+JIf7ZDfzOWxmVXK+etBEPOCdqs+kfWYqqROBdfMVu
+	 ziwzJRjKB8oWMoNuBgwLyUTUa5kGXxFxiYWs6YA9Y5ALCxFrgo1iQDl3LA4nlLl/13Z0p
+	 kS7RN2eotPfHUru3qfpZ6LtVCfvXrLRYukxFTSAWzllUrb1wEZae5+P6azCBsZ/1e4BET
+	 QSPkBY0SL2Ge00rNPh1eAUywhPbTn4XUtfMgdE158dwPK1NAHEjfh2HgSPGf981Yxi4Ys
+	 bV2TXadzIH30S10bs6Ds7xgb7l0qvJi+evbPvhEITLm2cCOFggSeUQBmYTDLcka/XqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=redhat.com;
-	spf=pass smtp.mailfrom=redhat.com;
-	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=W0wn3z2B;
-	arc=none smtp.remote-ip=170.10.133.124
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fU4ZajU6;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 056AD606EE99
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 15:37:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 056AD606EE99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8C4606A331;
+	Wed,  4 Nov 2026 15:41:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AF8C4606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=W0wn3z2B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1793806645;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6gr+1hN5mr88TUb6c1EFHl/+fcbV3ZF/wh6O3QIfUwQ=;
-	b=W0wn3z2BOvAbc0oeEJkHqkX2S0LSRx/eThaPn5jZL1pRaps1oGZSQqY6VV+fQdBfLFPZxh
-	qhNosmDxIFHbiZQ2ryCWQe/4RkRbU1JeGmz9ZD85jnkwSTr3S9pn78Al9r3hp5Zdk1vyYk
-	oGdHsjsGl+7qXQtH71WBwZ1CVIOwChc=
-Received: from mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-498-khiY1PBXPvuBLjBHwqeKGA-1; Wed,
- 04 Nov 2026 10:37:19 -0500
-X-MC-Unique: khiY1PBXPvuBLjBHwqeKGA-1
-X-Mimecast-MFC-AGG-ID: khiY1PBXPvuBLjBHwqeKGA_1793806624
-Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 8F010180059B;
-	Wed,  4 Nov 2026 15:37:02 +0000 (UTC)
-Received: from [100.91.101.41] (headnet04.pony-001.prod.iad2.dc.redhat.com [10.2.32.116])
-	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id D01FD1955F06;
-	Wed,  4 Nov 2026 15:36:38 +0000 (UTC)
-Message-ID: <8f74bba9-6484-4faf-a409-ce31cb42a63c@redhat.com>
-Date: Wed, 4 Nov 2026 16:36:37 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fU4ZajU6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793806898; x=1825342898;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0locde0rhGayPBqPOc/hjAfG1PM+Mqip+KEGed79GU0=;
+  b=fU4ZajU68sAQqkWF61VeRLTcGLymZIc6QT8PJ/PuLcdvJvu4/KZKUh+a
+   M2opUq0y/wFVrcU0TfWjRJtvrNqtrnCVWTUvjiPKjCCnipmBbkobdNIZx
+   YmP7ccHfZSzQ+NBOdeGc9g18xAVPPMfUiRnwS+mEKTjNyp9rgu04jkfjd
+   nRTd6XRxmp0XXCF7TQCfp9AbC4oKZtI0MoK21X/chPx8c6XSjhAViQBc2
+   N6DiX1LG2wRQdU5C4fwpmFhyYsFNKw0qUAd8Jk7FZBppLCMatD3g3utc9
+   GkzVZl9MLnUo0uTaqJjdPIjPExBn49S8pT9owqvpABcj5dgNtuQwALLmf
+   Q==;
+X-CSE-ConnectionGUID: ZFId9FDWRbOOw9rlB0zUCw==
+X-CSE-MsgGUID: PUqg5a6pRO2QvpKGN9vt0w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2560739"
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="2560739"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 07:41:37 -0800
+X-CSE-ConnectionGUID: nSTyb77nT0e5ME8AG9dCFA==
+X-CSE-MsgGUID: ENib+KKCQS+GRhxNWFZi5w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
+   d="scan'208";a="6895538"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 07:41:32 -0800
+Date: Wed, 4 Nov 2026 17:41:30 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <crofts@kernel.org>
+Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Rodolfo Giometti <giometti@enneenne.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Angelo Dureghello <adureghello@baylibre.com>,
+	Tobias Sperling <tobias.sperling@softing.com>,
+	Eason Yang <j2anfernee@gmail.com>,
+	Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	duje@dujemihanovic.xyz, herve.codina@bootlin.com,
+	thomas.petazzoni@bootlin.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: adc: add driver for Texas Instruments
+ TLA2528 adc
+Message-ID: <autSKpnh0hORsYT4@ashevche-desk.local>
+References: <20261104125726.1754980-1-maxime.chevallier@bootlin.com>
+ <20261104125726.1754980-3-maxime.chevallier@bootlin.com>
+ <20261104145641.000070f2@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -71,83 +98,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: Use hex unit address patterns
-To: "Rob Herring (Arm)" <robh@kernel.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Vadim Fedorenko <vadim.fedorenko@linux.dev>,
- Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
- Jiri Pirko <jiri@resnulli.us>, Benson Leung <bleung@chromium.org>,
- Guenter Roeck <groeck@chromium.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Frank Li <Frank.Li@nxp.com>,
- Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Olivier Moysan <olivier.moysan@foss.st.com>,
- Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Thierry Reding <thierry.reding@kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Fabrice Gasnier <fabrice.gasnier@foss.st.com>, Lee Jones <lee@kernel.org>,
- Srinivas Kandagatla <srini@kernel.org>,
- Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>, Ulf Hansson <ulfh@kernel.org>,
- Hans Ulli Kroll <ulli.kroll@googlemail.com>,
- Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Vinod Koul <vkoul@kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>,
- Manivannan Sadhasivam <mani@kernel.org>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
- Masami Hiramatsu <mhiramat@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Orson Zhai <orsonzhai@gmail.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- Shawn Guo <shawnguo@kernel.org>, Chanh Nguyen
- <chanh@os.amperecomputing.com>, Alistair Francis <alistair@alistair23.me>,
- Julius Werner <jwerner@chromium.org>, Paul Cercueil <paul@crapouillou.net>,
- Dmitry Osipenko <digetx@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Ray Jui
- <ray.jui@broadcom.com>, Scott Branden <scott.branden@broadcom.com>,
- Krzysztof Kozlowski <krzk@kernel.org>, dri-devel@lists.freedesktop.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- netdev@vger.kernel.org, chrome-platform@lists.linux.dev,
- linux-gpio@vger.kernel.org, imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-sound@vger.kernel.org, linux-input@vger.kernel.org,
- linux-tegra@vger.kernel.org, mfd@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
- linux-phy@lists.infradead.org, linux-pm@vger.kernel.org
-References: <20261102135330.2493332-1-robh@kernel.org>
-Content-Language: en-US
-From: Ivan Vecera <ivecera@redhat.com>
-In-Reply-To: <20261102135330.2493332-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261104145641.000070f2@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 11/2/26 14:53, Rob Herring (Arm) wrote:
-> Unit-addresses by default (and most commonly) are hexadecimal. There's a
-> number of cases using decimal patterns. Fix all of them, limiting the
-> pattern to match the 'reg' limits if there are any.
+On Wed, Nov 04, 2026 at 02:56:41PM +0100, Joshua Crofts wrote:
+> On Wed,  4 Nov 2026 13:57:25 +0100
+> Maxime Chevallier <maxime.chevallier@bootlin.com> wrote:
+
+...
+
+> > +#include <linux/types.h>
+> > +#include <linux/units.h>
+> > +
+> > +#include <linux/iio/adc-helpers.h>
+> > +#include <linux/iio/iio.h>
 > 
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->   .../bindings/display/xylon,logicvc-display.yaml      |  2 +-
->   .../devicetree/bindings/dpll/dpll-device.yaml        |  2 +-
+> + #include <asm/byteorder.h> for be16_to_cpu()
 
-Reviewed-by: Ivan Vecera <ivecera@redhat.com>
+Yep, but please before linux/iio/* block.
+
+...
+
+> > +static int tla2528_read(struct tla2528 *tla2528, u8 channel, int *val)
+> > +{
+> > +	__be16 data;
+> > +	int ret;
+> > +
+> > +	guard(mutex)(&tla2528->lock);
+> > +
+> > +	ret = regmap_update_bits(tla2528->regmap, TLA2528_CHANNEL_SEL_ADR,
+> > +				 TLA2528_CHANNEL_SEL_MANUAL_CHID, channel);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = i2c_master_recv(tla2528->client, (char *)&data, sizeof(data));
+> > +	if (ret < 0)
+> > +		return ret;
+> 
+> As rare as short reads may be, perhaps add a check whether the expected amount
+> of bits have been returned from the device?
+
+Bits? You probably mistyped bytes?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
