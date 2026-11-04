@@ -1,64 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793823255;
-	b=dR+29dxyu50rwtXLSFJvn2LGh+ixjaUSIafy18R+jax2scLf4v4ptrEjjk+2OjOZ9BUW
-	 IFMUdHzlbSZH1SSpGaNo2CJahR6Ti2a6Z/jpRR9gXcjGruwXnAtDIItz2fkR+rDR2DG5z
-	 6NrMri9zWC8pNerPqpcZooqgBFt9Ett4AOnoySBxSb/oJ/Lsk209rcGhUbXCuLC7iuDE9
-	 QEWkyMhYWraPvnojTZqWDWex178yoXT2Nj3xUbnbLHlOa217TKuME7uXZK2ib+kHaLyvG
-	 xJtWBuDEMW8FgWO1Kxo3qj5L1yH78pMGM3/trid9BWzdaRfCFbZ8QlrRtaf/QDtqeaw==
+	t=1793823256;
+	b=dER7h7coqv1O8IQNydeRmU601N9ddKEMbs5s/qdRaV2iF0nTOOn0yNJ3scMlNUS6GD8w
+	 CcoqBtk5kpz/LoAwQ9428Xb61uqFRRyGrSHKNCwtvynYtjwQKhMNC6aUg47+gaY9hvBRT
+	 FTVyfY1hBGNdsf5RNaaA8rDrtqioKr1FrY2znj4Szt2IiIvlflTc5AifThfbyIO6VTq2f
+	 sn/yQg2YnZiXtDYn4v7mIIlshhkKwGeNM1pTdx4ZzeoYmhZKt2EVoBOzo3PsETI7R4mu0
+	 MepBldOZMFvMSn2Nun0TfLm4vqVvbYQw5bywdJlLg6n+ohxBkqbwobxdace9fOkd6sQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793823255;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793823256;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=+XhnkO/jaX2+F+V1+b+f12fn6p8V7sKwIgSwZYe9g0E=;
-	b=Yln5zvawCuVN6lmlttmnCVBAnYzdf3MVJK1poKwZjPcKndZ9eouzq9SRiaZvEhtlzDHB
-	 w9rn/4t+XatsFmBHBP/xPqYfCk3ddFERn9QoGnPq/hBUlKuAiuVm7pNuWGeIjPVKYKwEw
-	 +tJUgR1zvvjtL7UX7e6/V7PqHQbWn0HfohfoO1AB592RxYEA1wCZ5e09cERexrVFSrVRF
-	 uZ318fVRziIe3y+n9ZZ+6Pq7KFEOYYpAQ2PzAJCfr1y/wv3oaY+Zf1TKZlBOBRuFnp14l
-	 aaIs9BTyMwbirdkoR/eGYgKrWNucbYKixDU2vf9DlwSXQh0tAcVFDRCCLjB+esJl0Ug==
+	bh=SJxTff1cMl7QHSZKQBQyxRfAMcM0E6EFnbRLNF1w36k=;
+	b=wyAbYFYWEnz+kwizxbO8IMdD0TTQ/TWW7PxfvrApi/bSweTZ5c3Jjaj++F3vY+7HGxnM
+	 oF3VkLpuhWYFWuyFDZMwzg0b89ys6JFe5/1OmXdZ8PN/pI639PtaXxzRXGxhhZch7GXqG
+	 GCIk1kytsllJ9ey4T9zQLJ3fpjfq3TNVZnbMT2G8Dqlcu7JvfkuIduis68y2OFzHUee4L
+	 sO1pOyEz1l2BLNf+ouyymoxKIoGRZok8kMPlsAxZs5h5aSuo+gD4vAcxBTeghc0H38fUh
+	 3sVZJj1YIqQgkexGyqm0PQisw1L+RoppiJEK07YL3HScn3eKrYejta+LJjJyDU+J8hQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ikOF5zdS;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SL8QvN5e;
 	arc=none smtp.remote-ip=198.175.65.16
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6E0608176E;
-	Wed,  4 Nov 2026 20:14:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AF6E0608176E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA165608208E;
+	Wed,  4 Nov 2026 20:14:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AA165608208E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ikOF5zdS
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SL8QvN5e
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793823254; x=1825359254;
+  t=1793823256; x=1825359256;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=qpZdBR620/UVypipUZjg/2IHhTj8BgeENBuaCqCsLmM=;
-  b=ikOF5zdSzHvb3fi4WcQtoeiPYVIyepMTfGuPoDw3j2yORNtT3ARrIKkz
-   15nTmB3zy2VUiwD2+yeNJ6nUUijOd4YQZUSwjSLHQtlhFUWsi0qQKI87n
-   2bNGUIL4fE9iMekkdOWiF+mKCqLpG1fbhkGednwqQmWbhgsrOGfmzCKTc
-   2qm0R0GjPrhSbseJnxoODl+VLuygpgHMKHhAE68MqArdRb6MOayiDTlyb
-   D39vTbowcBpshoMWkO0NToCstLjv17CjXiIVACw/VsshK+XrNoiwOZJ6g
-   4NJyed61gazkYe0ej6oFoeYc73r/S38mzwItreqWxVrGClQmBDUKUt+yr
-   w==;
-X-CSE-ConnectionGUID: lNgV6q9AT8GtxytvpEj59w==
-X-CSE-MsgGUID: fu0VXpotRdqhOrbXw4dHVA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2589110"
+  bh=in0N51fR+aemM5cbXmGXf2Ms35YjLvsrUGcBRLxHtNA=;
+  b=SL8QvN5ebnH8+0Vq6qzse7jE+Aer+ZpihLCpOazOMAMXn9N3Xk2ylyWn
+   6AprAulkiI3jhyTnKT1hsjFxh3sw0HyUm8eQaG7CHcSxVF8B0jqXvpAWx
+   +SQ7d2vcKfUq/tU2P9HWiNgkN1HgqUE8My4/tpf8Qg4mBGcgcts7gAXnK
+   IA3Dj2SEJlqpcyfF8m921DnDbrL3S9imiRfL2ff4WwRgHxeGgOD5IxCE9
+   v02aLxkBx6seNjFvtD4sR/WRwC8AJbH0MrW/oERWnNWO6aAiYV0ZFUaZN
+   Cl2aDGzOkrfHPoBNEZzbG9OXP5+dgYT0KU1NllPq4mI/qYw92qaqrp8eN
+   g==;
+X-CSE-ConnectionGUID: ZFLrl+CdSOGa68XpChZ2Xw==
+X-CSE-MsgGUID: ew+2uCqVSPO4hrKhGF2Npg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2589117"
 X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="2589110"
+   d="scan'208";a="2589117"
 Received: from orviesa009.jf.intel.com ([10.64.159.149])
   by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 12:14:12 -0800
-X-CSE-ConnectionGUID: j31sdCJfQK6focoSXHBxrA==
-X-CSE-MsgGUID: DLJmGu9hRciiRyC7aAPSNw==
+X-CSE-ConnectionGUID: ssh/SjEeRbymSkJgDHWq+Q==
+X-CSE-MsgGUID: azW72UW1Q+C6QehY/NGk5Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="6925627"
+   d="scan'208";a="6925634"
 Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
   by orviesa009.jf.intel.com with ESMTP; 04 Nov 2026 12:14:09 -0800
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
@@ -72,9 +72,9 @@ Cc: linux-input@vger.kernel.org,
 	lixu.zhang@intel.com,
 	crofts@kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v2 1/7] HID: sensor: hub: Synchronize callback removal with raw events
-Date: Wed,  4 Nov 2026 12:13:57 -0800
-Message-ID: <20261104201403.2039921-2-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v2 3/7] HID: sensor: custom: Disable sensor before hub close on removal
+Date: Wed,  4 Nov 2026 12:13:59 -0800
+Message-ID: <20261104201403.2039921-4-srinivas.pandruvada@linux.intel.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
 References: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
@@ -90,47 +90,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Raw-event processing holds pdata->lock across callback lookup and
-invocation, and takes dyn_callback_lock during lookup. Removal must
-prevent both active callbacks and future lookups before client state can
-be released.
+When removing an enabled sensor, set its power and reporting states to
+off before closing the hub. Keep the field descriptors alive until the
+state update has completed, and release the hub's open reference.
 
-Take pdata->lock before dyn_callback_lock, matching raw-event order,
-and unlink the callback while holding both locks. This ensures active
-raw-event callbacks have finished and prevents future lookups.
-
-Fixes: 401ca24fb34a ("HID: sensors: introduce sensor framework")
+Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
 Reported-by: Семён Марьясин <simeon@maryasin.name>
 Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=eUdbPthG2xrLqwQQ@mail.gmail.com/
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/hid/hid-sensor-hub.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/hid/hid-sensor-custom.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 6470a290ebfc..0c4884c5821f 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -173,7 +173,9 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
- 	struct sensor_hub_data *pdata = hid_get_drvdata(hsdev->hdev);
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&pdata->dyn_callback_lock, flags);
-+	/* Serialize callback removal with raw-event callback execution. */
-+	spin_lock_irqsave(&pdata->lock, flags);
-+	spin_lock(&pdata->dyn_callback_lock);
- 	list_for_each_entry(callback, &pdata->dyn_callback_list, list)
- 		if (callback->usage_id == usage_id &&
- 						callback->hsdev == hsdev) {
-@@ -181,7 +183,8 @@ int sensor_hub_remove_callback(struct hid_sensor_hub_device *hsdev,
- 			kfree(callback);
- 			break;
- 		}
--	spin_unlock_irqrestore(&pdata->dyn_callback_lock, flags);
-+	spin_unlock(&pdata->dyn_callback_lock);
-+	spin_unlock_irqrestore(&pdata->lock, flags);
- 
- 	return 0;
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
+index 72e5639cb1d9..8375697b459d 100644
+--- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -1053,6 +1053,13 @@ static void hid_sensor_custom_remove(struct platform_device *pdev)
+ 	/* Remove enable_sensor first as it uses fields via power_state/report_state. */
+ 	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
+ 			   &enable_sensor_attr_group);
++	mutex_lock(&sensor_inst->mutex);
++	if (sensor_inst->enable) {
++		set_power_report_state(sensor_inst, false);
++		sensor_hub_device_close(hsdev);
++		sensor_inst->enable = false;
++	}
++	mutex_unlock(&sensor_inst->mutex);
+ 	hid_sensor_custom_remove_attributes(sensor_inst);
+ 	sensor_hub_remove_callback(hsdev, hsdev->usage);
  }
 -- 
 2.56.0
