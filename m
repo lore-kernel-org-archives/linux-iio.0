@@ -1,62 +1,76 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793757860;
-	b=J4PSI523p3mF3QHQitt/2+KDspC8eoIZYhzSgcATEbav/nFVjL0cIlqjKZB3sBO2qjot
-	 6aRTEjqy3O1sVPsNy/aINT2KUBZqEPqIvHmGu7T0wE10FJyym43NJ9khNbSKlX9QXc6t3
-	 2WH2I2rwBmwztRMEdHQCH46TvbMGrB7Wg3RFzX9FByjAkVOOQ+YF5eBBIydtx+t+5Fa8S
-	 gIbNjCCsabyZ0rNKX4NgRFAK0INppDCBDrsnfu0UIxALok9TGVwJMagGBQnf+VQedN8Iq
-	 vaEjCMhnirxkJ2QB+Fian+C2zDwnCyeI7K3x98FQSFqXaLhKlNpKbPRWHCOJyPd/9vw==
+	t=1793758080;
+	b=DrPjPuAhUoU9cymyjWSUwjoJ552Q79qYIlR3PbVJXaj/vTggPRqF3iZYLG7zFtei8DRV
+	 NAdtI2oIzQpy8YLYx0TRSAbSZQQMVZX2x4CHWGxvPgKeDIutg1y9EyQAd0DuooGGJRxKn
+	 IhwMg5lmb0a3TSRP6e062DWnf3cH9mqO+dS5VdWNRdNXeMOcLg3sIMGAPk8R7cCIwMsHM
+	 pO4nw5YfyzPtiLfhdr6XsI0WGyUOT3HJjF3yL0675CQVgJAI5r3zdbSDrETmK4pR8Fd8G
+	 Qf89fLBuJtCKG+qADghhLLnDOAGjZBp+MkhrikxeZ6FvSGFaydqL7tf6dMjL0Agz/OQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793757860;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793758080;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=E3dxUxhVcbrBYug1uib0e6cBnVXo5pgOi0YOtDVoFUo=;
-	b=ydaM+nYHVEKKKhQmlOaP4nlF/YZmUwXEuWFrOgcTe3MJj4t6H5Dqe8UjJ7Yh0Yihywcl
-	 2hNwYv14k9pdo21f2XNGp3y/bjFQQijXwio4vRR+nQPj+dgYfDNzwieA5XBeIYsThTkXK
-	 PbUXJ9IUyd9mPE21K/CpgND301NNVX4BYCEkvkMw7CvisttmCkv4luJvhaSbBArVpsb/2
-	 jUwBmzx+tYC70uog7gLzNyc7QbusGNjexOgaAAGD9gYRNTdXufqlYNCQ075XzzGvisu25
-	 0cqT/fNS5McRFf1BHHTkZjjK2zAjS7bnhQk19TQvuONPdheyTR2Fr4Z40JSyhrNEhBA==
+	bh=fDVhLMuiku86DHiqPQ9whwOdau0RLv7fIK2bdbK2q6Q=;
+	b=hfTvv7KA68ECCoKW5MIM0iyEZ+78tw2QEbBPwBlrO9Pn2ZFHqCeaa3zjyUhuJYbLVIcJ
+	 tMHfDovQtzKJGm4oCIVyhzDObeq6hLhtSOTzi5fqUWXFmDXH31UWlxZ4YVhZMqP7s8VND
+	 uTrw2v3Q5QxHwCcgQFfOucg4EyPFdJqsJbVMyXynbr/dIUHQ1oKJzP3N9iAVRsLAL8P2Q
+	 GTKyoUJRj2kr919qZw4OJnaEI4/a1M5FljiwkPTkdpvhuScOSazIUXImBI3OskH1yb6mv
+	 8Gr0vXHloHsVDZY1Q3e5sdXgiSrqnFlC5bgKPzerKLJIFyWIhdy5a8PfKtmycXiQWoA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iktoxgKP;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="G/5VxXfq";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0555C606A31B;
-	Wed,  4 Nov 2026 02:04:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCA81606A31B;
+	Wed,  4 Nov 2026 02:07:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iktoxgKP
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E2711F000C1;
-	Wed,  4 Nov 2026 02:04:16 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G/5VxXfq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 120171F000C1;
+	Wed,  4 Nov 2026 02:07:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793757859;
-	bh=E3dxUxhVcbrBYug1uib0e6cBnVXo5pgOi0YOtDVoFUo=;
+	s=k20260515; t=1793758079;
+	bh=fDVhLMuiku86DHiqPQ9whwOdau0RLv7fIK2bdbK2q6Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=iktoxgKPUoPoBIf9gyHxjSub5uOdQ2apo7LTavHKPjZH23wVnL3IMKpkGCdN1VzZ3
-	 jXTOkp1CvOvY+3Chi5uzl4zjqEZ5ylzI4WZLXFnmytWNNtXHV17zousGCezrdSYh3w
-	 AucSlQoqjISkX9x22qiotc5WfYbKAO0tTb1Lhu8c37FhF0xKqdIm5pyKymMf/hGWnl
-	 1IA5x4IBCdajb+rzQvh7QRKMwo+2bd3UjjaJYLua+bLokKbz+/b1fv26lulSKgSzF9
-	 fSdhM1BGWN6/gYRWKiPg0OGXjVxOFnhAjnFrtZPJGJxTiXFYpvWTZzavqxr0d22ird
-	 mCEyfPedc+TcQ==
-Date: Wed, 4 Nov 2026 02:04:11 +0000
+	b=G/5VxXfqZ7dUwQ2BqLdiKSksgemsWxcKYzVba92K9ITd7seECvzGkMTCsggnyuzrF
+	 qhvgJ9/uad47m42ZIiaGLzrYk10SkkBMqk2O+YIEPlRF6mqyAYdTKBEemBbp6VeaA7
+	 wAJhSoKsU6tXHunaJIQK5xQpZuVTdG7ghWG+dCkgHRTDZ3/PJv9KHf0KDkq17y7pWr
+	 nTZzJ5bneFpaP+x62rTc5FVD+HBdiCOUg9SgOgp4/gkuPumzxdcPeLr0hWnsF0l/wN
+	 1E3k6PyBFM8BuW20XBwzV131sY1SAe8bw3ssZuevlA+uzZg/Ux5CtrKkqiokkS0w8u
+	 cTxaWPK0yWITg==
+Date: Wed, 4 Nov 2026 02:07:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Olivier Louvignes <olivier@mgcrea.io>, David Lechner
+To: Frank.Li@oss.nxp.com
+Cc: Eugen Hristev <ehristev@kernel.org>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Paul
- Cercueil <paul@crapouillou.net>, "H . Nikolaus Schaller"
- <hns@goldelico.com>, Joshua Crofts <joshua.crofts1@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: Add a driver for the Ingenic X1600 ADC
-Message-ID: <20261104020411.5adb2e2f@jic23-hlaptop>
-In-Reply-To: <aum7smuAHnSSb69e@ashevche-desk.local>
-References: <20261102201155.10948-1-olivier@mgcrea.io>
-	<20261102201155.10948-3-olivier@mgcrea.io>
-	<aum7smuAHnSSb69e@ashevche-desk.local>
+ Shevchenko <andy@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea
+ <claudiu.beznea@tuxon.dev>, Cosmin Tanislav
+ <cosmin-gabriel.tanislav.xa@renesas.com>, Maxime Coquelin
+ <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ Stepan Ionichev <sozdayvek@gmail.com>, Felix Gu <ustc.gu@gmail.com>, Frank
+ Li <Frank.Li@nxp.com>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable
+ Hub)" <u.kleine-koenig@baylibre.com>, Shuvam Pandey
+ <shuvampandey1@gmail.com>, Piyush Patle <piyushpatle228@gmail.com>, Fabrice
+ Gasnier <fabrice.gasnier@foss.st.com>, Cheick Traore
+ <cheick.traore-ext@st.com>, Giorgi Tchankvetadze
+ <giorgitchankvetadze1997@gmail.com>, Vinod Koul <vkoul@kernel.org>, "Rob
+ Herring (Arm)" <robh@kernel.org>, Shi Hao <i.shihao.999@gmail.com>, Kees
+ Cook <kees+treewide@kernel.org>, Michael Hennerich
+ <michael.hennerich@analog.com>, linux-iio@vger.kernel.org (open
+ list:MICROCHIP SAMA5D2-COMPATIBLE ADC DRIVER),
+ linux-arm-kernel@lists.infradead.org (moderated list:ARM/Microchip (AT91)
+ SoC support), linux-kernel@vger.kernel.org (open list),
+ linux-renesas-soc@vger.kernel.org (open list:RENESAS RZ/T2H / RZ/N2H A/D
+ DRIVER), linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
+ ARCHITECTURE), imx@lists.linux.dev
+Subject: Re: [PATCH 1/1] iio: use dmaengine_desc_set_callback()
+Message-ID: <20261104020750.47a3d04a@jic23-hlaptop>
+In-Reply-To: <20261102170911.3867389-1-Frank.Li@oss.nxp.com>
+References: <20261102170911.3867389-1-Frank.Li@oss.nxp.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,30 +84,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 3 Nov 2026 12:47:14 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon,  2 Nov 2026 12:08:47 -0500
+Frank.Li@oss.nxp.com wrote:
 
-> On Mon, Nov 02, 2026 at 09:11:55PM +0100, Olivier Louvignes wrote:
-> > The X1600's SAR ADC has four auxiliary channels, each with its own start
-> > bit, interrupt flag and 12-bit result, and none of the touchscreen or
-> > battery engines of the JZ47xx ADCs that ingenic-adc drives. Add a small
-> > driver that exposes the four channels as voltages against the 3.3 V
-> > reference.
-> > 
-> > The registers are in chapter 19 of the X1600 programming manual. The
-> > ADC clock divider is even, as the manual has it (an odd value divides
-> > by one less); the vendor kernel writes the divider minus one, which
-> > gives a slightly faster clock than it asks for.
-> > 
-> > Tested on a HiBy R1, whose play/pause and volume keys sit on channel 0
-> > behind adc-keys: all three read and report correctly.  
+> From: Frank Li <Frank.Li@nxp.com>
 > 
-> A few nit-picks below, otherwise feel free to add
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Replace open-coded assignments to callback and callback_param fields
+> of struct dma_async_tx_descriptor with calls to the
+> dmaengine_desc_set_callback() helper.
+> 
+> No functional change intended. Prepare make to struct
+> dma_async_tx_descriptor private to the DMA engine.
+> 
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Given this is obviously a like for like replacement I'll jump
+the gun on everyone seeing it and pick it up immediately.
 
-FWIW I took another quick look and don't have anything to add.
-So given this is clearly approaching being applied, feel free
-to send a new version once you've addresses the questions from
-Conor.  No need to wait the normal period under these circumstances.
+Obviously more reviews always welcome and I might still add
+more tags anyone sends.
+
+Applied to the testing branch of iio.git.
+
+Thanks,
 
 Jonathan
