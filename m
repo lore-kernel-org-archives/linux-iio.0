@@ -1,98 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.43
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793778447;
-	b=L9vKAfyOxWhgOrj0rIi6LE2yEBYBwU+ktkr0kTLJpUdjs6rbEhIkhmL2f4xbzHHiPYph
-	 54xCfK6mnck2RmbOnkgtMJXZgel64Sm++LQ7BnxP9RFOV3eqMt5L1DjfRofRIJLEctEVb
-	 pIin3FURY0QeolUkpBr2qF7F9wPfrFs2z3oWZgbMdsIVb+Xak3zmUK/VcKHqdEnP7y79M
-	 KvfTvSu909CQubAF6smkS5/rGOHpwEyRm0OkeiLBItV5umUd+7g+6hm1GPu803as4V5ur
-	 X5X5tZVnhLrwf+9oNtZt6Xqc+wAim2QVSVJVWTeDlGb+1jxy5nbAXQTzMJxHfLEHPQw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793778447;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=CJrVpzWSqXnZyMhmYQZlXezsPnpuAEBGvhZcWkwrTMY=;
-	b=KD80pAxmZer/EXQBqIb9FpouoTfL0AkHjx/5qFW85gpgUzE3IM2GQUCq4R19R68IOMF+
-	 vF1KobUpwvC13fMgesd4b938MtwretskZ9x7Bm4fWGoLntEhN0ozfEd+xRQPQNlBCbsZH
-	 3RPG6P1pWOObx7m8Phx0/DsC30f5SV5KbR4x4LWkPOchoEVGg78BTua3Wj2e5i30ifyPG
-	 xo5gO8QCD1f86beSGa0tjsUzLal/G0woTUc76cEW3YsQGkTeiZMW/y4lJjQcI/7eimtlp
-	 AKvsKadTfXOC9juTjSfTXjAjMlxzkvenZdCe2RwZ9rAae4F13llEV67i4isYOr3cGWQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YC3ClFBe;
-	arc=none smtp.remote-ip=209.85.128.43
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793778865;
+	b=l2xbMlv+FLWUz+b9wFGZF8t6w9Juk/gSklqRXgN+Xjqkhl6a+JoIhsLCrP3QLleSVzrj
+	 3uiutkQQMH4tL5AWCjJ5PrGg5JmR34sW4LcaXAn6S+DKwlCORmclBIRvUYnmNeT/oQJoa
+	 m3jrGiiEOwkJZSIJx3VJMgeuvVwbSb/QTQZs+BmWoPM6wkpq9IEkZoFuST1qzQcdqnevp
+	 /K7dssqzwd2DAByYyDe8PVGSnZiQRovWU12eIydWJN4Z6H9fHLORKfISUjtdG8yqZPsbn
+	 +lJ/FbZqVb/Rh1EVljhVY+Ska72K305r8SkQCn1feSz1ToeE8BD7NXuiSSJwWvTlFOg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793778865;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=Of08z6Vz8zX3aCMA4M/zY4MdFGWoIDjVyq3Rd8DU6CE=;
+	b=hMKF5RdfmwexrlyR7z4W//Fo3PhnNUYO+jIwNMXeKJxxTIP4uiRV/FvaGYMV6urA1AX4
+	 cRYPnqZ/4oNBRXoan4v7FWf9ONpiftqiEjGGg/DbxNqpivqqSeuPoFWDsuJoBxnJP/2+G
+	 BNos/48fIoT3iBGGVqHmWmfxXlJKNHGXYQc8pzpH019ifxkVNi2Esr8eQvGYmUwnOUWDn
+	 JtLtvwbLacw1443MBJR8Ai4TF7d0rQ421bYb3ToZa50qe9+Ez6m/SWQE68SJH5z5WV3hT
+	 xTTeBnbv0j/lI2aLpapf31jOJx6qSsZLdkBwxIKFpSZL1+k2S4THPbrd15r6CyTsZYQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VLB5jRJH;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B4B0606D80D
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 07:47:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9B4B0606D80D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 700F7606A333;
+	Wed,  4 Nov 2026 07:54:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YC3ClFBe
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4b467581b98so1824405e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 23:47:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793778445; x=1794383245; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=CJrVpzWSqXnZyMhmYQZlXezsPnpuAEBGvhZcWkwrTMY=;
-        b=YC3ClFBeP8skWuz8WHMGy4e7IPunuP4E0neJAvsPYxuk4p92X+lLQY15aWNDLCC/ed
-         Yd05k3cVKi0y7MNyJr+vJNGFp5y1OXdKiwhBoxqU4l12tyRWU/cNUXNvU0YmCV1Rao+E
-         R+k4MfdfUuS+Oe64aJ0CmWjLG2kb8pDh3gJlBhwy/+GUjqq1V9Bq2+3RFZIiSy+9qvQi
-         l7DjP6lhWdNbCEXdliwIygX7LgkNRrIzIh0GyRLQNtISfIe1hoH510M3WfVnv/eA97m1
-         YacxX8PN3wzv0irjFLl7iRqy3baQVHxNhT/rkjp94DCkd3S4noUFh8Cl/mSZbt1RZOEb
-         w8zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793778445; x=1794383245;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=CJrVpzWSqXnZyMhmYQZlXezsPnpuAEBGvhZcWkwrTMY=;
-        b=X7dVteiG9uYJHktEnZl7N3ACexZtTqi6xDvVPoVpjtRvykT7wJQXXS9skzP86jQw22
-         b4kKeFWVeLWxx8nzXNmgIYZ2ATqRD37sLo7i2BSwsQvDZShvOvhNlRe7eWANEKyFTWLF
-         CjIQSRHOArBVy9cr0CBYnoM4Hwtjfl4svl6KI3mfZqkkWiW4c65nnhlQ/3tA9FbTk/87
-         kmK61VgtK+hyes2JpYPBwpt2/q/Hwu9pnBJEt4xledufAfrGDVSIwH5AsCfYS+sCexw4
-         xDsLZcQHxicn5KbfOT+FtOFPz/xOY/BqL1K3zUJUW+tJktwtYwPsu1/WW+m5tVXd6kTD
-         02/w==
-X-Forwarded-Encrypted: i=1; AKwUvBzWsGyCs8j03e81J2CFuTA+5YGEroSJh/Tcb5CkeYhPAs6NUBtpirkPa5fdxx0H1aIgWnviOVDKZiY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/BxWZ27vyBwI1NsX2K9N8Uwegc1Jb5QXaTWQnyDsWNsVUbr0uS
-	WiJvmP8jMq7ZrhTdO6qfKqCC8gnW/RgN2usVFlj6V97PenFhVAk6Zuay
-X-Gm-Gg: AYBFou0qq3DRZcccy6Vlnr6Ir/DChfc7bToQBPih+j55v8OttrwHg6fagEO12nY5apX
-	Xl1xhFqkMQ+G0dQEBZPFoXfBCzUbcGLVEgznhF5x4T49TrJsXcbFWkqR7OXp/iZyldIQa43vmXf
-	LmqKykOrlW5mJczuZ6ZrcTGk+K8+RAAuZ9k6V67zZtRRd1EIyrXmCRDVzg0YMM/onD3DR0i2E4S
-	HliciCx7nbeLb4jNnUEoH+QLy93cAFUAQiN9C32Aaryoy+fi+vVnAEHFD33eHd9ha/+DS4hY++4
-	DDDk/cpu4SpkPXLMgqSd/NuXwT3oOY9jwRWL15jr//pdzZLorIbHB2AN7EI0NRDYG/ThZnP8KI9
-	gwSilSUXk1X/WP7+z6RvrhekHTGxRSkXk5sRhGPteQ5AwLh5wwmm2AHtREvFE7dxwDfqpSLp3O8
-	5oS+TwMjobB33tZRAF7UTEdjaH2+olTo2YMe62bNOb2IRWpZXortHJqzoGt6zszM8xLW66yv/OP
-	vWfH/i7wiDPZHV7p3dqlhLNSsZgP6rCke0RXn0Od1JRV3pSXXIoD1YJP8DiibN8vp/1UnFZoXHW
-	xSMu4kCe6EVgwU41hO0F0RM6SHMmJE/l9xAastx2FNGmv4eB0GVRruiPI9+8DAqlGSVxtPKgUFf
-	68/HQFa/6nWr3En6BbFzYVCx3+l8+BsuOwEDO4Ax/r0QmqMD1tnBB3iBfdtmUFVgxtOO0gnAzgB
-	Tws4gFeaXMycg=
-X-Received: by 2002:a05:600c:4fd4:b0:4a1:e250:b191 with SMTP id 5b1f17b1804b1-4ac180f2ff3mr345570805e9.17.1793778444927;
-        Tue, 03 Nov 2026 23:47:24 -0800 (PST)
-Received: from localhost ([2c0f:3d00:6be:8900:ce5e:9212:ea4b:f30])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b2ab010a66sm164324185e9.13.2026.11.03.23.47.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 23:47:22 -0800 (PST)
-Date: Wed, 4 Nov 2026 10:47:19 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Maria Sheikh <mariasheikh812@gmail.com>
-Cc: outreachy@lists.linux.dev, nuno.sa@analog.com,
-	Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, andy@kernel.org, gregkh@linuxfoundation.org,
-	linux@analog.com, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: addac: adt7316: return 0 in
- _adt7316_store_enabled
-Message-ID: <aurjB1B5sRHC6GsW@stanley.mountain>
-References: <20261104041237.7978-1-mariasheikh812@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VLB5jRJH
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793778865;
+	b=MK7NojtCwLDROdzNkc/0U/bWQY3FElUlCc8J/W1e1OJieQO/KVHE4+2BvxL8CVB8mWYV
+	 jFL1tJmqDJ2x7l2Bv2kjw114fT2Q1Sbh/ZcWcsrbpFaRULCyib8UdW8/z6fw/eknfK3SL
+	 BXxImKaLijcDxDw4JMYhZqOOTdrQooEhh/GCaJxnqAOTmAfNKnH9/kLGVj3R1VpEcNqrS
+	 EwSVVSggcJbRGwM0h+COB8zo0Ey4o7d1XId8eHIGMshag4yVrnIXFTfvnd94nQFHjWoiK
+	 0Ef2d4N+fgWYHzm9GwrmZUwWxGO+lVCutprAiTzykzgsJWHfeZsUobZ9EW4xeVQqD1A==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793778865;
+	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=Of08z6Vz8zX3aCMA4M/zY4MdFGWoIDjVyq3Rd8DU6CE=;
+	b=JBXAM0niG15zTG8o9WWoQ5AJBuyIVub2pCkmzitq+Xf6IWfmOU7iLhbOO2AoJzbnnYhR
+	 NVPBdxAaewdupEqTppru26seLgMMM8Hj16/lNXFGhNiyRq4JShZX6MnleIUK/cGvIEZ4p
+	 O6Ri8LQHQHjjqbUPYfmEAlqZCWe+0ePLrRZIc7LN//JfyGQg9bS6Pf26dBXicUvsdhwul
+	 Lv14uMI5J8x7nBx94ZA+P2tr8gLpPsWh9TSfzheezkdDompOsRQwvbF4h7rt4SbfqMwLv
+	 fZe3urQXVAmrHpHbXKdXFolq6gvOBEGThx/9FZ2X5jLdADpsvaxOhCEs+jqtef28MRg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=90.182.112.124
+Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPSA id C8C791F00919;
+	Wed,  4 Nov 2026 07:54:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793778865;
+	bh=Of08z6Vz8zX3aCMA4M/zY4MdFGWoIDjVyq3Rd8DU6CE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=VLB5jRJH6ANTcDNh/MxCplOqJlp/+2F/W778/hWLNovUE6myojf/A/3vrHDBbjQHj
+	 7EpPLarmxGnsWEpRjF5Q280Drj8sY/6SV0YF1MHc4jaFGkSwomoiKZsAlLw4rBve2S
+	 dnt0IP7jxJk03xYjatd0yNTUOv1op3bcZJ2TwTSLENJaNnWmRoZm42PAW3wZa6S1Bj
+	 yX4rtC6BrEdz4mkU+yCw5kZ/1NpcwMDPcYoE8rrA+7yCoCaCAm0y2B9csuX2vg0TRa
+	 /F+HtguXqxKXoerOWjE1NcE8ZyzyvlxLauc8zNYJ15XJySIJqvX4EWd9Aro95xk2UJ
+	 6f92BkDTdPjWw==
+Date: Wed, 4 Nov 2026 08:54:16 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-hwmon@vger.kernel.org>, Neil Armstrong <neil.armstrong@linaro.org>,
+ Marius Cristea <marius.cristea@microchip.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v5 1/5] unaligned: introduce be56 unaligned accessors
+Message-ID: <20261104085416.00004b55@kernel.org>
+In-Reply-To: <20261103-pac1711-v5-1-71c20101a52e@microchip.com>
+References: <20261103-pac1711-v5-0-71c20101a52e@microchip.com>
+	<20261103-pac1711-v5-1-71c20101a52e@microchip.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,28 +92,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261104041237.7978-1-mariasheikh812@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 04, 2026 at 09:10:45AM +0500, Maria Sheikh wrote:
-> _adt7316_store_enabled() writes the config register and returns -EIO if
-> the write fails. When execution reaches the final "return ret;", the
-> write has succeeded, so ret is always 0. Return 0 directly to make the
-> success path obvious.
+On Tue, 3 Nov 2026 16:37:11 +0200
+Ariana Lazar <ariana.lazar@microchip.com> wrote:
+
+> From: Marius Cristea <marius.cristea@microchip.com>
 > 
-> Found with cppcheck (identicalConditionAfterEarlyExit). All callers
-> either check for a negative return value or pass it through, so
-> behavior does not change.
+> The MAX34417, IIO driver, is using some unaligned 56 bit registers.
+> Provide some helper accessors in preparation for the new driver.
 > 
-> Compile-tested with W=1. The disassembly of adt7316.o is identical
-> before and after this change.
-> 
-> Signed-off-by: Maria Sheikh <mariasheikh812@gmail.com>
-> ---
+> Signed-off-by: Marius Cristea <marius.cristea@microchip.com>
+> [narmstrong: update commit message and move to include/linux/unaligned.h]
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Reviewed-by: Dan Carpenter <error27@gmail.com>
+This patch is missing your Signed-off-by tag. Even if you're just
+carrying someone's patch, the SOB serves as proof that you have the
+right to do so.
 
-regards,
-dan carpenter
-
+-- 
+Kind regards,
+Joshua Crofts
