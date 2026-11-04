@@ -1,65 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793751346;
-	b=rRtOzgH+eUbJ0rT1ScBPtPnETxvPJodcY6rwWOWK5Hes/qCZhlyADDtqx3DqSB5CJwWN
-	 HHJCkQFHRyMNMgsz4nZ5tzVXXaX8Rs9sOOHuOKS7+Vh0bijxYLVWDrDfgnj1QjWxNcaqG
-	 4z3hUJ2pMTTjQIc7Cuv+Kf04HgIujnbAnx5uoprCVUgrQvIFKHE8n2dJ1qN+Zoe3HhVec
-	 +g0LaLpmd9lvL+iiAWTl6CR8zhXvo4qEby+9fAmYqvbdIXmEpjQv6r+7hW0xT4XczBJz4
-	 4ASBHpVh4Lj8zMGS59d+pVkfWM4Cizh44sDs/khckMFqrnFQ6KXmeogk7X/hzcl3yqg==
+	t=1793751476;
+	b=NCJge1RWBFPK3ympVgbvL1fcr1jrubNDjCHgaGQfjGfi0ooZ6ujLuSBJCl41NbR9bnaE
+	 z8GNhCLkb+C4VJk2fABF73Zrz+W7lvoqhEp7G+zyKhEaEX+Rt1dRE7OcIdCnfAx+VbTeu
+	 CMzBS/vpufwVo5PYmRsgbm4ih5vmAsezMp5joFBJWNgZVVoKL1cvKpu5auJkCTbkORyH9
+	 zjKXRSIpptdPexON0CXwDvWMnFrlLsNhD3qTseN+8peyNfsPUOZJy4UWd5ylbAwyaOVbD
+	 dIKo8oRP/E6AbVTLqSKvEofpdhUw5dgFkKv0ol1//u+rjzVfHSeq25LseXLzrMlkssw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793751346;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=CZWeSPV6TtzxOobdW0CwXkqthFJr36xZqBQBmvhNYSU=;
-	b=WJ8ztsjf8T9JN0iizCQCmvA6bXcZDpiXxGajKlMcNtcXoV7O7eqfinPpFxud3MAMmDWC
-	 a5DMncgFC3xzcEyxfAU8g42RGCPk5ugFc+b9XWs9cAFdDa1VfpBE0tEZjwxv/2UNVTyED
-	 ssZxjEKK1rYV5dGTllTBPRphdXkNhcYKMbkEPP0W/JbVXgqWugLidOieidAmzFd+bsKhB
-	 ni0x59AH/Z+pY+WvyNwlWUQtIotY7sbSi3sddAN4v55Vn1jnRK/r+foLOt0wzY5qto7Pd
-	 0jPR3N0DeOovV7vWqXglTIpcXPzIYqlxbJtt7hDpGqFSpi48SKHvWq0s6XnCh7TwhGg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793751476;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=FXAXjRSUbOLjrS4vrWtde+SaB6uZ/+VB41woDrAbWOs=;
+	b=FFopj01b5BPRPlbaaB9H867cYTK+6ooq3s/RCXD2jEywjyvugcYWbhNhcWLms9487Dh6
+	 ynIhqnLyA5JSvbUN1aSwhduFs5spm180b6N/vgAChtkqDMySBpy9X9e3nL4X4KzO6u2iW
+	 DH/qIy9RxE1BQ3parY5fg2llN9Ith7kjDDi6bJqNE51R/AUFeu5NcfDDP4xNgDIH/OLTm
+	 ko35qlgh4aYrZGMNncSpMkmDoGa4Bthr+nfh/wKJAcUVK5NHgKF99Nax4iVEqyY/NTl1Y
+	 nV3m9E2OoFOeTSOqkQpX8A/khnh2ycNC9J08t9U2NuLwJF20bCIHd7ksjzOw2kKqvwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C5Oilm58;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="DOrkw/4D";
+	arc=none smtp.remote-ip=198.175.65.13
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A717606A31B;
-	Wed,  4 Nov 2026 00:15:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97882606A324;
+	Wed,  4 Nov 2026 00:17:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 97882606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C5Oilm58
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9737E1F000C1;
-	Wed,  4 Nov 2026 00:15:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793751345;
-	bh=CZWeSPV6TtzxOobdW0CwXkqthFJr36xZqBQBmvhNYSU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=C5Oilm58tJ4i2tpoH+UgNhBtKWWSlCAavrHl8VVN70b8kwHm5TOHbVaV3SZ0Eihi+
-	 HEnjbtGD4UhGZ1ibF1MonizVzkOPiCzSwsNkC6NwgPMB1sBkqCCrH+oDL+43nEZvmG
-	 y1jHz2sbWqWqgAVC6PI0v+di9Yf42VDlhE701l+cZzyX4TtgXSar/OuPuH84Hq49i7
-	 D+gok3AcGSPkBkT/ck5hij9rMVunPCfP7zF7l8Qaal7fmAPG0cWgOn7zmVXFERwYXt
-	 aLUqVghAz8T4DyQWoaPk64g6Q6GONiTMJXPAJEd4knPFE9bTFm5ibbAENVHueIhqr0
-	 j1H8FkWM8G47w==
-Date: Wed, 4 Nov 2026 00:15:35 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Olivier Moysan
- <olivier.moysan@foss.st.com>, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <ukleinek@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
- <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 07/10] iio: frequency: ad9910: support drctl control
-Message-ID: <20261104001535.46a1995b@jic23-hlaptop>
-In-Reply-To: <20261103-ad9910-backend-support-v3-7-0e9224ddf7b7@analog.com>
-References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
-	<20261103-ad9910-backend-support-v3-7-0e9224ddf7b7@analog.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DOrkw/4D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793751476; x=1825287476;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/MksnKs3/LA3Id6bFlj3XQy2BHXig5n194B3PRJNlvQ=;
+  b=DOrkw/4Dm2r9yDTxegel8WsQ+Zmk7F4j5yYaYGwEauT2pWXVC3fufTXc
+   CMoiQHXTYdwpIlqgq5LnsZuhHg0a/v6UTEGukJI1apuP05le/BpeoGnTV
+   /0Dv8ivK2aVc1XCHCkKJjsWEkYpFsF0GWSYecK1zhOb/piosG5tEiMctn
+   N5wcILMXdZXLdTA9pY+zvUdLn4nw4g8GJXcDyCqpBag7wIobgHYz/qglG
+   oB630WrUeS1vhb+165VRmuTRvs2wApaYOagpjYaudfKT/5UBGXq1au2If
+   SXUvu6iLMOkW1aBpOkuT1Pg4Baonm5p2iG+FW+vcpMZ6wjqrQ+TloJwa7
+   Q==;
+X-CSE-ConnectionGUID: rgwhwHCYS2m7ZUtQsRFI5g==
+X-CSE-MsgGUID: +NvEHjfmQ7SqeBsW90T73Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2376345"
+X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
+   d="scan'208";a="2376345"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 16:17:55 -0800
+X-CSE-ConnectionGUID: ExhY+f+vS6SE7GSEwgiZCw==
+X-CSE-MsgGUID: iWzs5gGfSFGiwucAwA5ITw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
+   d="scan'208";a="7116555"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa010.fm.intel.com with ESMTP; 03 Nov 2026 16:17:54 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xOOhL-00000000jWR-0aqD;
+	Wed, 04 Nov 2026 00:17:51 +0000
+Date: Wed, 4 Nov 2026 08:17:49 +0800
+From: kernel test robot <lkp@intel.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	jic23@kernel.org, andy@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iio: hid-sensors: fix fractional part for unit exponents
+ -7 and -8
+Message-ID: <202611040803.1mUBmX0y-lkp@intel.com>
+References: <20261102222309.439895-1-srinivas.pandruvada@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -69,76 +86,37 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261102222309.439895-1-srinivas.pandruvada@linux.intel.com>
 
-On Tue, 03 Nov 2026 11:53:03 -0300
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+Hi Srinivas,
 
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> The DRCTL pin controls the slope direction of the AD9910 digital ramp
-> generator (DRG). When dwell is enabled at a ramp limit, the DRG holds
-> that limit until the next DRCTL transition, so the sweep pattern is
-> defined by the waveform applied to that pin, which can be generated by
-> a PWM.
-> 
-> Get the optional "drctl" PWM and expose the integration_time attribute
-> in the DRG ramp up and ramp down channels, which sets the time interval
-> assigned to each ramp direction while the sweep parameter is accumulating.
-> 
-> The DRCTL waveform is described with the PWM waveform API, using the duty
-> offset when DRCTL needs to start low. The PWM is disabled when the
-> resulting period is zero. The waveform is rounded by the PWM provider
-> before being applied, so that integration_time reports the intervals
-> achieved by it. Writing to integration_time fails with -EOPNOTSUPP when
-> no DRCTL PWM is available. As the waveform API has no stubs, the driver
-> now depends on PWM.
-> 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+kernel test robot noticed the following build errors:
 
-The passing comment reflects discussion on v2.  Still seems worth
-tidying up to me!  Maybe as a follow up though.
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on linus/master v7.3 next-20261030]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Jonathan
+url:    https://github.com/intel-lab-lkp/linux/commits/Srinivas-Pandruvada/iio-hid-sensors-fix-fractional-part-for-unit-exponents-7-and-8/20261102-142308
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20261102222309.439895-1-srinivas.pandruvada%40linux.intel.com
+patch subject: [PATCH] iio: hid-sensors: fix fractional part for unit exponents -7 and -8
+config: parisc-randconfig-1000-20261104 (https://download.01.org/0day-ci/archive/20261104/202611040803.1mUBmX0y-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 8.5.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261104/202611040803.1mUBmX0y-lkp@intel.com/reproduce)
 
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202611040803.1mUBmX0y-lkp@intel.com/
 
->  static void ad9910_hw_powerdown_action(void *data)
->  {
->  	struct ad9910_state *st = data;
-> @@ -2249,6 +2365,26 @@ static int ad9910_probe(struct spi_device *spi)
->  
->  	fsleep(AD9910_WAKEUP_DELAY_us);
->  
-> +	/*
-> +	 * DRCTL is the only PWM used, so it is looked up by index. A named
-> +	 * lookup would fail with -EINVAL when pwm-names is absent, preventing
-> +	 * the optional handling below.
-> +	 */
-> +	st->drctl_pwm = devm_pwm_get(dev, NULL);
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Maybe not something for this series, but it might be nice to have
-a devm_pwm_get_optional() to avoid having to track specific error
-values. Probably return NULL for nothing specified,
-similar to your wrapper code here. 
+>> ERROR: modpost: drivers/iio/common/hid-sensors/hid-sensor-iio-common.ko: symbol '__udivdi3' undefined!
 
-
-> +	if (IS_ERR(st->drctl_pwm)) {
-> +		ret = PTR_ERR(st->drctl_pwm);
-> +		if (ret != -ENOENT && ret != -ENODEV)
-> +			return dev_err_probe(dev, PTR_ERR(st->drctl_pwm),
-> +					     "failed to get drctl pwm\n");
-> +		st->drctl_pwm = NULL;
-> +	} else {
-> +		ret = devm_add_action_or_reset(dev, ad9910_drctl_disable_action,
-> +					       st->drctl_pwm);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +					     "failed to add drctl disable action\n");
-> +	}
-> +
->  	ret = ad9910_parse_fw(st);
->  	if (ret)
->  		return ret;
-> 
-
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
