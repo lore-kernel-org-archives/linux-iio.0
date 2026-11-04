@@ -1,76 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793758080;
-	b=DrPjPuAhUoU9cymyjWSUwjoJ552Q79qYIlR3PbVJXaj/vTggPRqF3iZYLG7zFtei8DRV
-	 NAdtI2oIzQpy8YLYx0TRSAbSZQQMVZX2x4CHWGxvPgKeDIutg1y9EyQAd0DuooGGJRxKn
-	 IhwMg5lmb0a3TSRP6e062DWnf3cH9mqO+dS5VdWNRdNXeMOcLg3sIMGAPk8R7cCIwMsHM
-	 pO4nw5YfyzPtiLfhdr6XsI0WGyUOT3HJjF3yL0675CQVgJAI5r3zdbSDrETmK4pR8Fd8G
-	 Qf89fLBuJtCKG+qADghhLLnDOAGjZBp+MkhrikxeZ6FvSGFaydqL7tf6dMjL0Agz/OQ==
+	t=1793758630;
+	b=zLPyu0CIlOsO23JdpKkoIFWJaqmraNTBfNkA1egWXrmdCtrCRjn/p4hHzRD/zGC4V6nm
+	 y7oFTe/MplW3olmGItMWohV1aIkKffDE25DPQGYt4TL6GqMIxtK/ljJvir6E43ti/lSog
+	 5jOxb/Rzqn+bLHDYEAtqUC07XNK/sV6BBfi+Inrg41x9aYl5/dEFMuVmQVdocs6sDGP85
+	 ApV/BZFNKGDLuFtqJCNLon2AxYCQFsLkw9lL1s5DHdVmHoOugnVysjs11VzAJunU7nauD
+	 XcaEqhEPb0CU+EarGQkDj3CpTV1PMJsGwJstbsh2Hx7sfWuTeYaV9iBsruB3XHwBzRg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793758080;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793758630;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=fDVhLMuiku86DHiqPQ9whwOdau0RLv7fIK2bdbK2q6Q=;
-	b=hfTvv7KA68ECCoKW5MIM0iyEZ+78tw2QEbBPwBlrO9Pn2ZFHqCeaa3zjyUhuJYbLVIcJ
-	 tMHfDovQtzKJGm4oCIVyhzDObeq6hLhtSOTzi5fqUWXFmDXH31UWlxZ4YVhZMqP7s8VND
-	 uTrw2v3Q5QxHwCcgQFfOucg4EyPFdJqsJbVMyXynbr/dIUHQ1oKJzP3N9iAVRsLAL8P2Q
-	 GTKyoUJRj2kr919qZw4OJnaEI4/a1M5FljiwkPTkdpvhuScOSazIUXImBI3OskH1yb6mv
-	 8Gr0vXHloHsVDZY1Q3e5sdXgiSrqnFlC5bgKPzerKLJIFyWIhdy5a8PfKtmycXiQWoA==
+	bh=p3YG9kEFm3NPW8ft0/OqsZSKNoyKCRBirPcVbZhJlTk=;
+	b=AkbHXM7cB8cl0KV7ljBPKDZrP0U5P7l3d6lQw3CY50hRYxV48LRsg4N0L4G2XxF2x6UI
+	 3OvX8VvgTOIq0ICvM7FZ2rxWzi4AUIVOa80FmFD78NZBuQchMVwtcNUiEl8jDbz5R75NV
+	 MwDzJt722Ur7TEiXGxQMTWkBIpLbUYpZiA7Ui0XxveYUTYL8C8OZMzdznrzNPu06BT0cy
+	 jVUwvbEiuhZKSgvC+GdJxb/IbtcJF5BmwbEqY7mRwaoKgC7d1sXYbfqrzuD13CcJrckT7
+	 +iPXeDjOT/Ar/rJW7mZ8tiYWXIhBghZWVs0xW7VchoTDD8eDtKBNUzCMMq6eGDkdyBA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="G/5VxXfq";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LT0e8ddR;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCA81606A31B;
-	Wed,  4 Nov 2026 02:07:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D748606A31B;
+	Wed,  4 Nov 2026 02:17:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G/5VxXfq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 120171F000C1;
-	Wed,  4 Nov 2026 02:07:55 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LT0e8ddR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2AEC1F000C1;
+	Wed,  4 Nov 2026 02:17:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793758079;
-	bh=fDVhLMuiku86DHiqPQ9whwOdau0RLv7fIK2bdbK2q6Q=;
+	s=k20260515; t=1793758630;
+	bh=p3YG9kEFm3NPW8ft0/OqsZSKNoyKCRBirPcVbZhJlTk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=G/5VxXfqZ7dUwQ2BqLdiKSksgemsWxcKYzVba92K9ITd7seECvzGkMTCsggnyuzrF
-	 qhvgJ9/uad47m42ZIiaGLzrYk10SkkBMqk2O+YIEPlRF6mqyAYdTKBEemBbp6VeaA7
-	 wAJhSoKsU6tXHunaJIQK5xQpZuVTdG7ghWG+dCkgHRTDZ3/PJv9KHf0KDkq17y7pWr
-	 nTZzJ5bneFpaP+x62rTc5FVD+HBdiCOUg9SgOgp4/gkuPumzxdcPeLr0hWnsF0l/wN
-	 1E3k6PyBFM8BuW20XBwzV131sY1SAe8bw3ssZuevlA+uzZg/Ux5CtrKkqiokkS0w8u
-	 cTxaWPK0yWITg==
-Date: Wed, 4 Nov 2026 02:07:50 +0000
+	b=LT0e8ddRSNPYY//n/ZxIa18+6C92Lv3ZPkPppabBxkFX+baCn+lA8jhFNGsqMXDNt
+	 ruL3I/0VxHkBdR6TbY39mHqumXnaDfy2BnMZCHpHzwd7UYQYKsjMa8CCfhcdCgISrj
+	 7Lu4W0Rs9/bSPRZXve4sul+Pdi9l1kUoo6WEzAhNiQ5o22Mmm/e2eFqDCsrTU5hdTT
+	 /c7IbWOdQw3YDsWV2XqRaCZH9Y5wZGxsf4ENZFbUnkmCVZ2x2iYV9M38Ml+Ur2DvJO
+	 VQpaCfxDH5LBLSuvEzHjMAmLbhkVNFPIC3JCIMGAa5QSjEgs/DFSUCP5nZJMDbCKhG
+	 hc4CsyjRjVwpw==
+Date: Wed, 4 Nov 2026 02:17:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Frank.Li@oss.nxp.com
-Cc: Eugen Hristev <ehristev@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>, Claudiu Beznea
- <claudiu.beznea@tuxon.dev>, Cosmin Tanislav
- <cosmin-gabriel.tanislav.xa@renesas.com>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue
- <alexandre.torgue@foss.st.com>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- Stepan Ionichev <sozdayvek@gmail.com>, Felix Gu <ustc.gu@gmail.com>, Frank
- Li <Frank.Li@nxp.com>, "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable
- Hub)" <u.kleine-koenig@baylibre.com>, Shuvam Pandey
- <shuvampandey1@gmail.com>, Piyush Patle <piyushpatle228@gmail.com>, Fabrice
- Gasnier <fabrice.gasnier@foss.st.com>, Cheick Traore
- <cheick.traore-ext@st.com>, Giorgi Tchankvetadze
- <giorgitchankvetadze1997@gmail.com>, Vinod Koul <vkoul@kernel.org>, "Rob
- Herring (Arm)" <robh@kernel.org>, Shi Hao <i.shihao.999@gmail.com>, Kees
- Cook <kees+treewide@kernel.org>, Michael Hennerich
- <michael.hennerich@analog.com>, linux-iio@vger.kernel.org (open
- list:MICROCHIP SAMA5D2-COMPATIBLE ADC DRIVER),
- linux-arm-kernel@lists.infradead.org (moderated list:ARM/Microchip (AT91)
- SoC support), linux-kernel@vger.kernel.org (open list),
- linux-renesas-soc@vger.kernel.org (open list:RENESAS RZ/T2H / RZ/N2H A/D
- DRIVER), linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
- ARCHITECTURE), imx@lists.linux.dev
-Subject: Re: [PATCH 1/1] iio: use dmaengine_desc_set_callback()
-Message-ID: <20261104020750.47a3d04a@jic23-hlaptop>
-In-Reply-To: <20261102170911.3867389-1-Frank.Li@oss.nxp.com>
-References: <20261102170911.3867389-1-Frank.Li@oss.nxp.com>
+To: Neil Armstrong <neil.armstrong@linaro.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+ linux@analog.com, Conor Dooley <conor.dooley@microchip.com>, Marius Cristea
+ <marius.cristea@microchip.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v5 0/3] iio: adc: add support for the MAX34417
+ Four-Channel High Dynamic Range Power Accumulator
+Message-ID: <20261104021700.14e69abb@jic23-hlaptop>
+In-Reply-To: <20261102-topic-sm8x50-iio-max34417-adc-v5-0-0ffa5e5f2d5c@linaro.org>
+References: <20261102-topic-sm8x50-iio-max34417-adc-v5-0-0ffa5e5f2d5c@linaro.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -84,27 +70,13 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon,  2 Nov 2026 12:08:47 -0500
-Frank.Li@oss.nxp.com wrote:
+On Mon, 02 Nov 2026 15:49:03 +0100
+Neil Armstrong <neil.armstrong@linaro.org> wrote:
 
-> From: Frank Li <Frank.Li@nxp.com>
-> 
-> Replace open-coded assignments to callback and callback_param fields
-> of struct dma_async_tx_descriptor with calls to the
-> dmaengine_desc_set_callback() helper.
-> 
-> No functional change intended. Prepare make to struct
-> dma_async_tx_descriptor private to the DMA engine.
-> 
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
-Given this is obviously a like for like replacement I'll jump
-the gun on everyone seeing it and pick it up immediately.
+> The MAX34417 is a specialized current and voltage monitor used to
+> determine power consumption of portable systems. The driver supports
+> getting the channels voltage, average power and accumulated average
+> power and energy over an I2C/SMBUS serial interface.
+https://sashiko.dev/#/patchset/20261102-topic-sm8x50-iio-max34417-adc-v5-0-0ffa5e5f2d5c%40linaro.org
 
-Obviously more reviews always welcome and I might still add
-more tags anyone sends.
-
-Applied to the testing branch of iio.git.
-
-Thanks,
-
-Jonathan
+Sashiko had views and the dt one at least checks out.
