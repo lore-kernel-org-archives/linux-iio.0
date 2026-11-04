@@ -1,60 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793756897;
-	b=RaMfkqt12aSNUEjXL+i7CEkbQO8jrRH1HewButMGl55jzU575wvszsUXGAvu0/JktuzP
-	 QvAJgoI0K2uz5MyQNHhVnfFxC5W/MfyfdOB4s9ILFiH/Sl4FxG+8In7OyHC6IjDuem7hg
-	 7kRZPOZ7JvfjAbhGGoPO2JHLgwGi3aL6U67zjwt5ApnEnTJSqOZOsJw+iGRycr9k+rb5r
-	 d9781LDGdq03HthL7z4TfnhFh2f+wr9oaYvdcs1fIGbIkNP3HgumV43VUUh22whhyHLR+
-	 hCdhlrWF2lwts8ppJjWJe19RzzCvO7ql1c4v8k42XrWgF7g9JC40umhI+pg+peDdp7Q==
+	t=1793756988;
+	b=bO+6UP5RBwvziUAxBK7W4REgYFH/fBKRVicztdWa9D+/CEucqhz+oNE49YfwJ3Dsgh3x
+	 0LCFFOaWURWVxVDZMkPgJv77dq1/BU/BVehGbFYkdt4KrVbn5FQA4ucxLYKD4mfsM5R3u
+	 TpB4fGzaYqZQXA9EhVcncK8McwI1FAnRIqjwl0RjeHV/J0kPdhkH0xDTGQnAlqw1Rb8H4
+	 3NuEA6nAVA4aeSndoRg433bcBAVF8NseuLJKHroP2f+R/YIDzf3tz/qDfZ4e8midRl6tL
+	 fsLTnTedAPIu47WTB2qPQQjSuovd41Vtzq9osNJgOkdZ1l+ucSCIvx/jn3Z/7lz7Z0g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793756897;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793756988;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=QyFBrT3W/KJfm2VNPVTE0rU9qrI5bDLSgmmBzoZy2vo=;
-	b=ONSsbh3hOswBQtoVWkPFVgYkSG2zpYScF5T0SSi2/6xpHbEN3L1HcqNpc9HHPuj3JttB
-	 cI7VCjlyoY8iJEH7DxvHxoDQg+6OEzuXL5/B1tUotSfYnwaYamhZkmyqn3KHPzbEeabmj
-	 h/NZVPL4ADO932VRzuQS8AZsHMRjCYhs0oumnrxQycJvKVK+X8s4RzVLZ6CFiwZVdzzm1
-	 SdFyrH5mTcB7U2fCKi6+2fMvYingqRfQ0TBwpll63qwI0CGnq4sC7s6qkMxt31ZhsEqqX
-	 H+bxAx2xBhQbPNACIxbJ629gAxSma6SpVi3jPY1BmtT5Rqn3NRZtbXA2ueeEX70h2QQ==
+	bh=x2y/jrRuW1kOVkeI/kyVA0jAKmFvPNzDOon3GN/uQPs=;
+	b=jzZwcwW8xPWHAaTte5Xaf0/7Om/olMwVJ+Adani6cpWHfb5pcQHBpMTSPG8bfUxlk0hB
+	 /Ceik9PBtvKriDGiS5DoQqhiyeaIXuykHqAhsicoJw4SS8z4WNQcedHSmDpGakVjZiPxD
+	 MmAWeXtODMcRGwLn/AV3LAA0LrlNLrvSjJ8h56fzfbIma4+lT+seParBcYpEACTlILZek
+	 vFh5JEtL1LbX0JbKpRa0KIX+EgEsy1WC5HfzdkhAQCE+Xvn3ipajXBw+sJsYTQSweS9h2
+	 N7oRBYE9OJcwR1V7NJ81VsRfHGye6cwyoxsAL5ufm1HArGWHuGvV766HibJArdpKG5Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JExwITc3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OmwWK6LW;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36746606A31B;
-	Wed,  4 Nov 2026 01:48:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 807C1606A326;
+	Wed,  4 Nov 2026 01:49:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JExwITc3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ED341F000C1;
-	Wed,  4 Nov 2026 01:48:14 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OmwWK6LW
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB6F51F000C1;
+	Wed,  4 Nov 2026 01:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793756896;
-	bh=QyFBrT3W/KJfm2VNPVTE0rU9qrI5bDLSgmmBzoZy2vo=;
+	s=k20260515; t=1793756988;
+	bh=x2y/jrRuW1kOVkeI/kyVA0jAKmFvPNzDOon3GN/uQPs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JExwITc3RPXGZzLErEVSv3uDOgZwOgqQOPVdkHY5WjdsizvYos12+BBhXreZnIsPJ
-	 arLCxKsNuMnvUvOJinwNLHePub52z15nFSuQbEvtRnnVGP4a3MLQ/AlDDoUokeHyMS
-	 9ca/BAD5LwesYwQnSmZmhlx36+IGzyUGr+iICO0vzmJLzIc+TbVCW6GnIaLidEf9Xu
-	 STCEPNa14uczydI12JJnhgvros7gubpbgYKBSal9iRMd/9n84i30tGBiyMytYPz15P
-	 YW1mNETsGn5xhsSGt4jfQ2vgW5b9pmSLkeEehPsQL8EYaD615kd40YVuVkaj4Wqpo8
-	 WBM7da/I6qv/A==
-Date: Wed, 4 Nov 2026 01:48:09 +0000
+	b=OmwWK6LWBHsuAIc4CYoOo4VUNuEAq0PQhJmAv7o+GvrlV5bzf986F8gS2Sab+y2ak
+	 xlR1BPQ1Jv6VBdQ+bXTlY90xFEk9UWsSm3jo2B6AeGiwn5t7OBAHyF9JN2xXGNTMnI
+	 yLDIR9UQkeg1t0V9BAnwBMCLpZajvT0Da9uqCzSREaPgsL2m45nQ9mL5X3GkfPNQ1q
+	 c3B88X8x9zAwOVf0Dlt28RjnQHpYvBxGyueX93U8kcg2Yso6pfX7Wl/QQXrFHxhne3
+	 r6jWAD+UuNtiiyAhllQQkIEoWDHlhDdc2VCiiW9EFXTv5yfpJFAF4mY05eBIGk9epR
+	 J1mQ/X/+5KJSw==
+Date: Wed, 4 Nov 2026 01:49:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Raffaele Tranfaglia via B4 Relay
- <devnull+raffaele.tranfaglia.gmail.com@kernel.org>,
- raffaele.tranfaglia@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Dmitry Osipenko <digetx@gmail.com>, David Heidelberg <david@ixit.cz>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: al3010: fix out-of-bounds read of the scale
- table
-Message-ID: <20261104014809.75e92a17@jic23-hlaptop>
-In-Reply-To: <20261103140055.00000efd@kernel.org>
-References: <20261103-al3010-scale-bounds-v1-1-6110c2ffe3b4@gmail.com>
-	<20261103140055.00000efd@kernel.org>
+To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ andy@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com
+Subject: Re: [PATCH v3 0/2] iio: gyro: mpu3050: Fix runtime PM refcount leak
+ in trigger enable path
+Message-ID: <20261104014940.565b8fb0@jic23-hlaptop>
+In-Reply-To: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
+References: <20261103092002.1332-1-laixiangwu@cmss.chinamobile.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,49 +63,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 3 Nov 2026 14:00:55 +0100
-Joshua Crofts <crofts@kernel.org> wrote:
+On Tue,  3 Nov 2026 17:20:00 +0800
+Xiangwu Lai <laixiangwu@cmss.chinamobile.com> wrote:
 
-> On Tue, 03 Nov 2026 08:42:48 +0000
-> Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org> wrote:
+> From: laixiangwu <laixiangwu@cmss.chinamobile.com>
 > 
-> > From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-> > 
-> > The gain field read from the CONFIG register is three bits wide, so it
-> > can hold values from 0 to 7, but al3010_scales[] only has four entries.
-> > If the register holds a gain value of 4 or more, reading the scale
-> > attribute indexes past the end of the table and returns garbage.
-> > 
-> > Reject such values with -EINVAL instead of indexing past the end of
-> > the table.
-> > 
-> > Fixes: c36b5195ab70 ("iio: light: add Dyna-Image AL3010 driver")
-Dropped the fixes tag.  This is hardening against buggy hardware
-rather than fixing an issue anyone should encounter with a correctly
-functioning device.
+> Hi Jonathan,
+> 
+> This is a repost of the v2 series as a new top-level thread, as
+> requested. There are no code changes since v2.
+> 
+> For context, this series fixes a runtime PM refcount leak in the
+> mpu3050 data ready trigger enable path: patch 1 splits the enable
+> and disable paths out of mpu3050_drdy_trigger_set_state() into
+> separate helpers, and patch 2 applies the fix on top, using
+> pm_runtime_resume_and_get() instead of pm_runtime_get_sync(), which
+> also keeps the usage counter balanced when the resume fails.
+> 
+> Changes in v3:
+> - no code changes, the series is reposted as a new top-level thread
+>   (v2 was mistakenly sent as a reply to the review comments).
+Future reference. Don't do that unless specifically asked to do
+so. Obviously you should never be in that position again, so this
+is mostly for anyone else who sees your patch!
 
-I don't mind such hardening (when simple and maintainable which 
-your example here is) but I don't want to mark them as fixes
-as that tends to trigger backporting which may not be appropriate.
-
-Applied to the testing branch of iio.git with that tag dropped.
+Thanks,
 
 Jonathan
-
-> > Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-> > ---
-> > Found with LLM-assisted static analysis of drivers/iio, looking for
-> > table lookups indexed by unchecked register fields; the fix was drafted
-> > with the same assistant and reviewed and tested by me.
-> > 
-> > Tested on arm64 QEMU with i2c-stub and CONFIG_UBSAN_BOUNDS=y. After
-> > writing a gain value of 4 to CONFIG (0x10), reading
-> > in_illuminance_scale:
-> > - before: two array-index-out-of-bounds reports (al3010.c:137 and
-> >   :138), and the attribute reads 0.000000
-> > - after: the read fails with -EINVAL and no report is printed
-> > ---  
-> 
-> Reviewed-by: Joshua Crofts <crofts@kernel.org>
-> 
 
