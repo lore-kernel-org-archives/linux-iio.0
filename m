@@ -1,79 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793811204;
-	b=aGgWlTeP5Wo6PpgUrWVbWw6WwxAE18uzt9EMqxKjYQLWK7/Otdmg3s/vrWy2ygM2ixVJ
-	 WSBw41/PaB43qwmhEL8T9ZlxKtyKQ5qxjnN1Cgh8xzCz5UZIn8R1mn1c9iU/CW9SsD8Iy
-	 eDi7chsIvMKTsz++3Md4OWHQ57D0W33htSOgWY3qEa/GNvAXvwRq4uuLQIbLS6vO1MzLN
-	 nQngXTZ/d1WR8ePhvD/RLhRlUsSTbA4HZBzYA5S9K3FqmonYhjIhOgMTH5i0VefYEWXof
-	 0t9I+IDqCjeaJYtDKclzxpWTk3ej0Ibae/LJS1KxZMmn/5hnbkYMQyeUpWCGqKYVXIA==
+	t=1793813476;
+	b=Lr44da7jEqYInw7K3z8KSe2uVfhZRMsW9Hov6gENVmDhz1qk493+lJBMtqr7twalZUHC
+	 2ZRcs5ZSzgWGhN20X2pXErmVKrveM+DQuqhhMa1KSa9bNaZ4ueP2lNvI9Txppje0zuVmu
+	 PHruoLPoPIu7UaOUmgD0DXUNJXhEyd5qjhh/YF+xMKRermSz27HFog+KX3kr0nnGXt83+
+	 DEvN0wytgaZ9Gtjx933xqF79rtFP46fRmYUVcuvj2mW51XgqYl641HdWQ5f5irdK1fd4h
+	 +if+PfqVFHk95beS/dixnYOwbjZGqZa9EqYOEnqg646Xye3zOTSLKeCT15aIdEEzqAw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793811204;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793813476;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=UQ1bDXYKGYdl2Og2jD+uXrW+t00qIxcQlDDGCIWN6fs=;
-	b=S1KYZiUkTH7XaL356A0H5vH1YWriWbh+6BjviZosrIFuCTZJb9AMYnUkoMrtL89tYSPI
-	 p68u/Z6XHtgVX77TifxLK2eb63fRWTgSPWogi0zSfB/sEWjJJsXS+W5HtBJy3YnFOMtL5
-	 qJ6/4KIopg7rIaT4MJVW+Eyf24FWG5wrs71dD6pNsiqrxOKb1kOtTedNOSfFs1MMhHh81
-	 zMWuSBzeTo7ZKJ5pzNsrX5hD72QjoF8oKG5vOEy/N/DW+HlAbrwmtjQ99mvsS6IU6VRDm
-	 MoCEqREhWzxPrwegcf1xSe+cR0CWUxQn1ZGw9xYwAA4QSSjz1exZImF2/cNu7zTwZ8g==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=eEMB8r0budUtj3uGulxJe7mBeA6S1msIwjb4rAySSVk=;
+	b=hbS8THPCuK1pJQSG7ALX5kFlsV83YvkvN2zV3MFUvx6MNara0w4RecuWWoQPSnJAyZL8
+	 FJglRCLxRhE0Ovs5y+dQhLpZ+u1J7GImKUVgV2Rw5rAAr47+eJNhO9w8/NnpkdBq/doac
+	 1H7Jv0GcTV143NeSbvfv2b/6GBecRslNXdHvcOg8/+yltKxpwnJm4DhrQR0peJeCA8+zo
+	 pPUJ2YjkQnBoxJG5lkjgCmbtaD/UwYcFdYYY7AnWoM7nWuyD5Dir3G8D8FeYgthqHTfaN
+	 Q29+kakMvXMVPUOJwMLVHTwiPKr71R4UoHaKFoXIHLiX9P4wl9sT4sTMn/DQhhe7XAg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NfMVOP+W;
-	arc=none smtp.remote-ip=192.198.163.13
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MgBZ7EdZ;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE94C606D83E;
-	Wed,  4 Nov 2026 16:53:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EE94C606D83E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F6E60700E7;
+	Wed,  4 Nov 2026 17:31:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 20F6E60700E7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NfMVOP+W
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MgBZ7EdZ
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793811203; x=1825347203;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=d/n2sCxEobfdrct2quWj6oFiwwBQ5P4rZozc4rIP7Xg=;
-  b=NfMVOP+WDrBJ7nmgbpQG5+3XcEqQ2mdGTwV0zfV8E8NFqwTuT+55sZOi
-   6DS1AeqcZUhNzUdvhMWdvc5Pw6U9Uk5bjuINrQtSjY86EPHHKTbAzVs10
-   YRyPP50OT/Tt+FEDJetAzd00RSQopW6hENKVMm9gKcfPt8YOwytin1+eu
-   BAte0R2fgd15ffuubGW9njyokpBO+rgQOjPovNAVC+G/SyFB+Ah5hJ784
-   SBqx/ClK0M8rfAO/lf48+ijxtSd2BSdrHm5XTlYXYkOVTydV6bp0WzaJX
-   AmEhKWI2LgAI1r011dxO8u/Em9TUOB6LrpIdY98IIm7SeEBEAl5B+Etkx
-   w==;
-X-CSE-ConnectionGUID: 5L10r3jAR5S44wbh4OdvFw==
-X-CSE-MsgGUID: oWvfOwmCThaqEtMzB22AVg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2570439"
+  t=1793813474; x=1825349474;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=m4SPikyWXZLxiPSXE01IVVLmm0cbn4Cy/WXBcIsyOMs=;
+  b=MgBZ7EdZQVySHNUPLqQ7+dMLmPbfqyBXcWaeE33tm/dAcO8UoL70fiJ9
+   OvznilhRW1f8MIi3poIFOErr94ehUdhBm7u6EvxJmkgEw+JKHigtSBeHQ
+   CgN0b8Y+NO0ObFjzDTGQid/l7tJ9AaPD4kVUak1jyvULxxW2SX3xSpAay
+   PhVG8EI1hS0Bmu75XjtO9iDqy2D8e7YTs7Fgv9NjvhJatunYLcABQwQvg
+   3GYhfu3s/Lmitkp77JWdqE+OSijOY72Rxhs/FmIJX6l1hxqmTnlEkLQX/
+   LsO3tidV4FDnUoivgb7h+lwFDJfmq/ct7nq43IbiXqzV+KrdnvqxJgkva
+   g==;
+X-CSE-ConnectionGUID: YTXjr7k0QS2SWzHb6s/CQQ==
+X-CSE-MsgGUID: ZD88bbL7RDueOOcwVIv4jg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2458172"
 X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="2570439"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 08:53:23 -0800
-X-CSE-ConnectionGUID: NDo/dX6MRd6MKYnEtEiXrQ==
-X-CSE-MsgGUID: VEuzpK/CSRGIwueXMXEulg==
+   d="scan'208";a="2458172"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 09:31:13 -0800
+X-CSE-ConnectionGUID: l5z61l+QSJ2Zl7Xes/bhZw==
+X-CSE-MsgGUID: U8j/Qh3jQ3G6t95yNbxQew==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,195,1787036400"; 
-   d="scan'208";a="7087603"
-Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
-  by fmviesa008.fm.intel.com with ESMTP; 04 Nov 2026 08:53:23 -0800
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jikos@kernel.org,
-	jic23@kernel.org,
-	bentiss@kernel.org
-Cc: linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	simeon@maryasin.name,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] iio: hid-sensors: fix fractional part for unit exponents -7 and -8
-Date: Wed,  4 Nov 2026 08:53:19 -0800
-Message-ID: <20261104165319.1890851-1-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.55.0
+   d="scan'208";a="6676151"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.24])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 09:31:11 -0800
+Date: Wed, 4 Nov 2026 19:31:08 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Christoph Rudorff <chris@rudorff.com>
+Cc: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v4 2/3] iio: light: gp2ap002: add led power supply
+Message-ID: <autr3DH6UZLY_ys4@ashevche-desk.local>
+References: <20261104-iio-light-gp2ap002-v4-0-fa1cbaad2ce5@rudorff.com>
+ <20261104-iio-light-gp2ap002-v4-2-fa1cbaad2ce5@rudorff.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,50 +87,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261104-iio-light-gp2ap002-v4-2-fa1cbaad2ce5@rudorff.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-split_micro_fraction() scales the remainder to micro units by
-multiplying it by 10^(6 - exp). The unit exponent of a HID field goes
-down to -8, so exp can be 7 or 8 here. Then the argument of int_pow()
-is negative, which the unsigned parameter turns into a huge power of
-ten: 0 modulo 2^64. As a result, the fractional part of a value read
-from the hysteresis attributes is always reported as 0.
+On Wed, Nov 04, 2026 at 02:02:28PM +0100, Christoph Rudorff wrote:
+> Problem: no irq received. Not working.
+> 
+> According to datasheet page 8 "Recommended external circuit",
+> it got tree pins to supply: vio, vdd and vled->leda.
+> 
+> We were missing to power the led (pin leda)
+> 
+> * add leda regulator
+> * use regulator_bulk_*()
+> * pretty up set voltages
+> 
+> Tested on samsung-j5 (msm8916)
+> 
+> Signed-off-by: Christoph Rudorff <chris@rudorff.com>
+> 
 
-Divide by 10^(exp - 6) in these two cases. This matches the reverse
-conversion in convert_to_vtf_format().
+Missing '---' cutter line which makes this patch invalid and it may not be
+applied (your SoB should be a tag and it should be last in the chain; you may
+conduct an experiment, take the message ID of this email, run on a clean Linux
+kernel Git repository something like `b4 am -s $MSG_ID; git am ...` followed by
+`git log`, you will see the issue).
 
-Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and trigger")
-Cc: stable@vger.kernel.org
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
-v2:
-- Fix __udivdi3 link error on 32-bit by using a 32-bit divisor
-- Address Andy's comment:
-Keep no % divisor in a temporary variable next to no / divisor
+> v2: Use regulator bulk api.
+> v3: pretty up, rename vled to leda
+> v4: add namespace "GP2AP002", use separate value for setting vdd,
+>     moved static supply-data back to global, more readable imho
+> ---
 
- drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+...
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index 9e7c26e37880..d44091faf122 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -96,9 +96,14 @@ static void simple_div(int dividend, int divisor, int *whole, int *micro_frac)
- static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
- {
- 	int divisor = int_pow(10, exp);
-+	unsigned int rem;
- 
- 	*val1 = no / divisor;
--	*val2 = no % divisor * int_pow(10, 6 - exp);
-+	rem = no % divisor;
-+	if (exp > 6)
-+		*val2 = rem / (unsigned int)int_pow(10, exp - 6);
-+	else
-+		*val2 = rem * int_pow(10, 6 - exp);
- }
- 
- /*
+>  	int num_chan;
+>  	const char *compat;
+>  	u8 val;
+> -	int ret;
+> +	int ret, vdd_volt;
+
+Don't mix semantically different variables on the same line.
+Try to keep reversed xmas tree order.
+
+...
+
+>  	if (ret) {
+> -		dev_err(dev, "failed to sett VDD voltage\n");
+> +		dev_err(dev, "failed to set VDD voltage\n");
+>  		return ret;
+
+Unrelated change.
+
+>  	}
+> -
+
+Stray change.
+
+...
+
+I stopped here.
+
 -- 
-2.56.0
+With Best Regards,
+Andy Shevchenko
+
 
