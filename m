@@ -1,140 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793751650;
-	b=h+uGJ1K6R4nw6W2ok0WIyQ42WDfe13dD/WyA5Ce4gq9MU3zTe43UvYIt43oCpQY4oCi+
-	 jXmFDR/5S1n2fOp2ZoimA0z38EGRLO1Q55Wz39tLyneGzYxhnOIQrbSsXFBqLfoj4fY3U
-	 Km8TAfM2rLIjVid92URMf2gO+GldS8HR7z5PMI6FcA+RVWUGJ2YGjvbHOX55FPp2AIRET
-	 joiz6f9uTaTR1HCuRtkGASG2CUjREtJ5VWTkzzccV3c1XLt+Y6RDLpcbWyW+XeYo7fJuY
-	 zv08Npedc2xEGo9LbV7BjXNI4fyRnI4LDnhnCl4SZGi1W3UQDE+KGwBzZ51/xSbD53A==
+	t=1793752370;
+	b=EKspekhs9vTWJVVYb8BS4pPz543P9yucC+KMzdXGgi66597FJ2zdYpnRggLDTTNUnYRo
+	 g/0wEu0BAJvtACVTLDfiOvi2m1+A3rmOUkudBfuFq8bzvMI1+WaxCmPVUxKoZyK8jpOPy
+	 05/BQjln4W7UzS2AZKUPhw6i6r2n/r8BHet7X0hk6JG+0uj5NScs48PxSkXgjj9ZwjLZf
+	 YidOXoEmQuVedSjt5fnZB/0yNAvGu5EMXIMXzzFZY1usnI5xvxJJevefO+3HjjD2OWrw3
+	 PxnMnbTLgS3PLHZ18n2tSVlTmAVlTGGmJgAN7pf64yQDxDdh+ApxqomPJjaRVyJz/tg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793751650;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
-	 To:Cc:Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:X-Authority-Analysis:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=OfnNX61NtQ31WOejDUqbkK4HwJYzLMGKN6Wyl9m2oIs=;
-	b=Eg8R1KXumON+1/pBL7zcFuFW94+Ml5Dy6j/G1pmGzY/sAk8Uzfne9l6o8PZFga0vGLqD
-	 CH/vEjjRSTPAkUuEc82HOsdFQ1CmikVtubocnY/Zj+8L6XFofp1ovLWrK7NbicpU2QoJc
-	 NzJlRkt3QFc0h8EDbbKkYqiw0NjGSBNPymQ4ZRW//j3q1O9ZoqF4imqoMYMJ3Fq3JgJ58
-	 7h99R1O5hSxAITJ884ch8Hf3NDtzTdJyOgdi+df7yMdIj8EqlGzg8jupMTEwEbYQwqeqO
-	 04G8lpRXz5iODrK3VMVpqgNVtuzob5Xt0aF5ih3rTFh86x+PrlmKREcIalANwfsXaAg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793752370;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=ia3DNRbB3tzN83nGHEc/6FKqQVPdb5ypWXD/ZK/mfh0=;
+	b=rkM9h4k6gv2Be4t+o6NV5lGRc6pxLsB95fb2rlALHjpX4xkvSSUvvz+QvVguIIvAC7Ma
+	 SZRHxb0/0fGA9h2wxuL4C/6qn62e1jus+Yg44KnNnvcWWxG2mcBNuaKDppZTdzrGVzq4H
+	 KKFtqJHpxVdGnBawxoCO73PJz7M3VErhcsIWJ3428tHmOWdqsbyI01eJ5YIlaUBMiA7RB
+	 xsb9sW+qGH3kgfKKmzNtB06vdP1egrMndrZgbMJwOSVGIIHLgdyCltgv5A2H05fatudQk
+	 O4BiCIXy6/h3QOTOQUKY3oPHWvzJHJzfTbM2tuvaE/0sVbJIXzGtO4oR5Itmxdve5Hw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=O9aA2zlY;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b="Y7G/sx/h";
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=UP76ig4E;
+	arc=none smtp.remote-ip=74.125.82.172
+Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5164606A326
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 00:20:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5164606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E481E606A324
+	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 00:32:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E481E606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=O9aA2zlY;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Y7G/sx/h
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A3LKpEl415192
-	for <linux-iio@vger.kernel.org>; Wed, 4 Nov 2026 00:20:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	OfnNX61NtQ31WOejDUqbkK4HwJYzLMGKN6Wyl9m2oIs=; b=O9aA2zlY2c8+9sxr
-	hXQL4F6wd2IkKQ+VwK7lMQzQ46GiOvIpxp91H2p0JDnpQL8YFnWTpiDbyrffdXu7
-	ypY463gCS0OkSDzuxQzxK/Fbbir96u+n7p0fYBJeRuc9C875OBzhe9jDYuN2NPjL
-	kvpKI4W6w90/l1N8jpg98FvxduvmBFocU8BHFyTU0S89lQLzNwifnlKqgytRaF6h
-	mIYsWzV32M5cjjVSu7FDv46pqfrwr8BKkbkjOeqD7M8Vvy2X4rdwzkuJrz6tPmTT
-	+4mKx6bfXbBsk9xVem0omadSRCKRthgz4+7mXvn7GJecdizYtWODemcR+ODHZpA3
-	ou5kgw==
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hqkgp9qgb-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Wed, 04 Nov 2026 00:20:48 +0000 (GMT)
-Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-3acc98e3b3cso169634a91.3
-        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 16:20:48 -0800 (PST)
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=UP76ig4E
+Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-33bf40b0c8bso283615eec.0
+        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2026 16:32:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793751648; x=1794356448; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=OfnNX61NtQ31WOejDUqbkK4HwJYzLMGKN6Wyl9m2oIs=;
-        b=Y7G/sx/hkyqa7plfa6wvCEbOgFJjXACTY/Q9dWAqr4XFbRQqx4RKWhNoHxtlKW6u0o
-         ICRvbwMs6+XRgTMt8A8Ix5IPX5DKYBkDRLlhJO7d2/gKO2yMnRlcXLS7fDjIto9osA93
-         eDhOgPR3fVpF3/J1yTwph/607e2A1Q5Gfh/1dVJSBMKm5OCMLc+zowF66ekVuXcvk3jr
-         ARYpzIFR1okZb7AF8AEfazXOtF1S24DUhbO3s9jlyliLGtj0MlPObTgwzeJfByU0ye+P
-         XQ6iNYOfXQCMNLnXlT34cIKG0dO+OUM+DbWUDDwpjx5LKpzLojgNYDoXT1ysnRkKtmI2
-         rKqw==
+        d=chromium.org; s=google; t=1793752368; x=1794357168; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ia3DNRbB3tzN83nGHEc/6FKqQVPdb5ypWXD/ZK/mfh0=;
+        b=UP76ig4EnqFwzycYT6Ysj7CrOyM18lSpYenIwGvrudZlVBEYEVOcjL3r2Fc3IJ+6O0
+         eK1EL7REDE8e1jnFX+LCIp0kQj1EQfaFFgaE07aLE6y/U1pQGGTJfXSqZ69VUVRblVK/
+         s9xuSzqVqeaPedgUoM8rrEnltNuZstEvDac7s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793751648; x=1794356448;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1793752368; x=1794357168;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=OfnNX61NtQ31WOejDUqbkK4HwJYzLMGKN6Wyl9m2oIs=;
-        b=lPO7FNjcHqRTb3hHdv34SnZkiSO4bHJERwjUVy0/ai68awjrCoJpg5H3KLk81h3HZS
-         oJi2g8awtdIB6XYjUHHlO3ihb0aJKcfA58t2g1cJIBdrCeQpWM4dzG9IrS3fO1c3oyEN
-         0GyuVjw5LDEZiTjCWPI4dPFJwqKg2awPSQ5YHMjDc8BSGIrZsyFUl4SQCMkcJhENp8D2
-         NkV21g12su0fpzDQAniG9c80ZG3vUM4KnzEX+/641xPs5c7PQkSkakCkWFdffScTdWmj
-         Cbmu56ivR0llAxS3y9jrxA39YAZQss4/NniewdEKrePEc1yd77/l1AH0Q5leTowiAf9j
-         WHWA==
-X-Forwarded-Encrypted: i=1; AKwUvBweAf3cvh7GM3jRYO2/laJ7fx55ozTxX0ybsBmt3zw2GY7IePEnoId7RByHzryK7gRYHy77eybqEGY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8nCq5VFO434HUpLwBsI7NffW7y0aPTGNRQCxI4SAWx4QWlPpOq
-	aXxyeo4Oj4yjxMxDtpLDxHQ9lqTeLPFhSMdC/nSxgAdsjyZQTaCyJ3ZY4HNsaIJVIbNI1PzVgzR
-	MigwIlKDHgUdcwu+XBOFFcYXrgt/5iT1oebX1JeOIn/oAP4SmhbgJyumIGOGFMDs=
-X-Gm-Gg: AYBFou12aPyQ9ksBKCXCMYRYqlnKvx5aFLjOmkS4kVf98Be0nKSJeo/HN7GMglFB5GA
-	a5iFuKexQFlfYnVmD1th8HgS4stcl6dBHS6yt9qFMspcb5ErxdIY/RjghFlZkrrtKuvbb6dH4MW
-	1Gj0h1yW+Gr9M2NKFE/ivFM+gHKo5Xn9JaAUXbHMC1dtmNA1bDAIJDrr4v/M7oFFGBBl7BacSEf
-	bIZEP4QHYawWEnev6sCLgM3e/wrExgbdghylpsIFruESNE4Ys2jPqKHfjYeCCU+zw7MQo03CWGV
-	3FL2rFZmofZcosPlyiKnRY4XB1FAdIGOdv5XGHhqnrmXSHXTwEXk9dhEzfPMeOupw1dLoUjN6ju
-	khnETCJygBMqI76P7yGHn+S//F+ivGePO5YjP3Y1rHq906esaAt1uvTbXTrnIgVMACw==
-X-Received: by 2002:a17:90b:4c12:b0:3ae:5572:c4d1 with SMTP id 98e67ed59e1d1-3ae8986e3bamr13180549a91.62.1793751647537;
-        Tue, 03 Nov 2026 16:20:47 -0800 (PST)
-X-Received: by 2002:a17:90b:4c12:b0:3ae:5572:c4d1 with SMTP id 98e67ed59e1d1-3ae8986e3bamr13180527a91.62.1793751647042;
-        Tue, 03 Nov 2026 16:20:47 -0800 (PST)
-Received: from jic23-hlaptop ([50.35.44.179])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b094453532sm1090412a91.3.2026.11.03.16.20.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 16:20:46 -0800 (PST)
-Date: Wed, 4 Nov 2026 00:20:42 +0000
-From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@analog.com,
-        devicetree@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-doc@vger.kernel.org,
-        Olivier Moysan
- <olivier.moysan@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Michael
- Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <ukleinek@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan
- <skhan@linuxfoundation.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v3 01/10] iio: frequency: ad9910: powerdown fix
-Message-ID: <20261104002042.10064e8b@jic23-hlaptop>
-In-Reply-To: <20261103-ad9910-backend-support-v3-1-0e9224ddf7b7@analog.com>
-References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
-	<20261103-ad9910-backend-support-v3-1-0e9224ddf7b7@analog.com>
-Organization: Qualcomm
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+        bh=ia3DNRbB3tzN83nGHEc/6FKqQVPdb5ypWXD/ZK/mfh0=;
+        b=r0BiSeudi1sg6EcCMfjQsL/vpFrcykcXAuMBCMp8ZXKTv1bBA57b+mKOuEctnh0TMy
+         yw/8Gj3WOSXHWKuWKndNpOQhDqp9m0L3EYPCQygmiVYmed/Wu1XDqTkAPtH/Km4uusYg
+         59M6pzjFHYP2Z0YGkCxbiHiJaP8/wPzbq1RfG0SeMhCjV8PWcH+22u17fc70DMQg27OC
+         hdLx1QqOESSX12uiEYv/U4CRkIm4KYZsGFN8UvLCaey5rV50jfnJCASauU/gYD/HNL0O
+         i9AoHYJTYiPKhQrYyWYVNTMiCH40GCOyfgq+5o5Y4RU86o+h8AW2OdjZ2QvMoM8GedlA
+         dscg==
+X-Forwarded-Encrypted: i=1; AKwUvBz6Rk7Uvgr/30VIGy7ki850dsa5BDv/3C/dg1xNwONUmuSwIJP+23FwUqIELtMJfd+9zcQqlVGpkMY=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/aRLBfCPtTDKpWJdmobIocqH3qIIn/ltAezBHqxQJic0bVBaa5
+	VLFJPGaPKeBpmCmGA2RdbIRXaTByQXNmi4OMS+FSOYWsHgcXQSGzPo7RmGERjTUmBw==
+X-Gm-Gg: AYBFou00rTgxUCthvAIwVqQunXESOrHyw/wyQz60RLxhSCkNDDbEognfVg4VdZw5Rw0
+	DrtfeKjIVWz7PPgtpYW3vb4xdntAf/h/ceq/4BNdal+z497JizowLy0xBhYOF0g0FWsK80Pp6ea
+	XTmWvv2aq+CWM1g6Axxv2Xj68Ne1+ya7aMiULQYPm0q1CeOPi7dm2W0MqKsCHITJ8H5c19tWIcz
+	e4PxMA/QrR4ULunBNNglY/QuLCf0PzymWJuMskmo+PzkgXSSw9fmyqej2C4Bj4ADYfuRE0VvqXN
+	4v7Ew6oZ4t3L2y86GcWzWsg5Jl78wecz7xrwbJiWJqDickt0KLjsreoXRa0rKg3BTeY4Dk92WiQ
+	+a/FOlbfD8YC3TRQLrlEeuOlP/acXx2lU5py2PM34hJ6tZLMT3hQYLYLzSQVmJ6bInSEq7XAyT4
+	aHGDJK54kEbIU4XZLR0tq4iyzagyHdT0E67nmHZa0whV4SfWDzWcGTxV/W/M+9kTlosIjQCx9kJ
+	kBZlw/n6gLgtG20Wb8gf2J3RgKEWaLS8e7Esy4XJO4HPu7Fu8yYACbq4Uhdl8370ILxpecCiYYM
+	t6p6sBkiyjJrvNj1bBCSRaZxjgTgus21HXNSEddohmYR67AdlEQiGt61tX4rysw2uH0=
+X-Received: by 2002:a05:7300:c39f:b0:366:6644:2839 with SMTP id 5a478bee46e88-36a42203e90mr22173192eec.3.1793752367673;
+        Tue, 03 Nov 2026 16:32:47 -0800 (PST)
+Received: from localhost ([2a00:79e0:2e7c:8:ab71:b3df:693a:fbf2])
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-36ca38a54ccsm2074587eec.4.2026.11.03.16.32.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Nov 2026 16:32:46 -0800 (PST)
+Date: Tue, 3 Nov 2026 16:32:44 -0800
+From: Brian Norris <briannorris@chromium.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
+	Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v2 3/5] PM: runtime: Propagate last_busy from dependent
+ to dependency
+Message-ID: <aup9LKewaLr2B5cR@google.com>
+References: <20261103221717.3840215-1-briannorris@chromium.org>
+ <20261103141442.v2.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
+ <20261103231719.486a18de@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -144,111 +103,180 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA0MDAwMCBTYWx0ZWRfX7Q8B3uFPKJFV
- sLHVSfp1Hu/YwVSkvDs632Cez9C2PkGNvAcQDtnQxV89CPRKrx+PaJ/h129RW3n3pSBv+xU0rbD
- 6rW1N5qA5s7u2nSJqXKFXlDfXD1Cxc2koSn7v8sr9FRRYoeJ//3mgltzycfDIP1q9g0GwLZBKJV
- uiVexIRef734VBg1h30fFs0DUbhlkZqUwvs84jrzm77iyP/qBKW1urFFIPjU/SB2Ez89BGPL7A0
- m/xrhpt4JH4a+iPrR16Jn5LizCGGKJTopkN2R9chZWZSZbJLR9YcDwwHtcTzviLX9hY0KzjBjvm
- IRphtjTYB2lT9f9pJtFGNrqkQ9Xz2ZBtVcxHT+z4dh0v2+3ckst4ghQPldzkP3InyDLG3B8/88m
- vAV34nQIvfeePPam41zRjGRryZHV5+t7eAgtgy8Ck05VY7rOro8gWMQK2b5bm9NBqKv7JjjXZDX
- dqP8Ma/EOFKw79IBJ2w==
-X-Proofpoint-GUID: edLVlbpPHi1nWFBAsrbDA4YQgmz17ahS
-X-Authority-Analysis: v=2.4 cv=Yoya1IYX c=1 sm=1 tr=0 ts=6aea7a60 cx=c_pps
- a=0uOsjrqzRL749jD1oC5vDA==:117 a=aNnz9XPx1a4JIXSYt2cE/A==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=Pob1JPmMRzAnXopCxDUA:9 a=QEXdDO2ut3YA:10
- a=mQ_c8vxmzFEMiUWkPHU9:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA0MDAwMCBTYWx0ZWRfX5xcQAGx6T8B2
- tBSbB5oeKdaz1bxe2g3CO/Y66UfPyhOiGrfBBirp/59Lnle7bBv6Q2w7DJip8QrLBWphpuHjpwX
- HOha2NYjoY0+AJH9lxpXpsQ9i5WOTd4=
-X-Proofpoint-ORIG-GUID: edLVlbpPHi1nWFBAsrbDA4YQgmz17ahS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-03_05,2026-11-03_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 bulkscore=0 clxscore=1015 suspectscore=0 spamscore=0
- phishscore=0 impostorscore=0 priorityscore=1501 lowpriorityscore=0
- adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610300000
- definitions=main-2611040000
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261103231719.486a18de@jic23-hlaptop>
 
-On Tue, 03 Nov 2026 11:52:57 -0300
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org=
-> wrote:
+Hi Jonathan,
 
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->=20
-> Enable the software powerdown on all the applicable CFR1 register bits at
-> once with an IO update.
->=20
-> It turns out that DIGITAL and REFCLK_INPUT powerdown do need an IO update
-> when enabling the powerdown, but that is not the case when powering it up
-> again. It is an asymmetric behavior, which was observed while profiling
-> power consumption in the lab.
+On Tue, Nov 03, 2026 at 11:17:19PM +0000, Jonathan Cameron wrote:
+> On Tue,  3 Nov 2026 14:14:41 -0800
+> Brian Norris <briannorris@chromium.org> wrote:
+> 
+> > When a child device suspends, it does not update the last_busy timestamp
+> > for its parent. If that parent configured autosuspend and didn't
+> > otherwise maintain its last_busy timestamp, it may now be immediately
+> > eligible to suspend. This is probably not expected -- the parent should
+> > wait for its autosuspend delay before suspending.
+> 
+> So reading this again - I wonder if this text is describing the
+> expected behaviour.
 
-Just to be absolutely sure I understand this right... The bug today
-wastes power but otherwise doesn't break using the device?
+Agreed, this might give the wrong impression, depending on the
+assumptions the reader makes about autosuspend delay. (I think I had a
+particular problem scenario in mind, but didn't translate that properly
+here.)
 
-I'm just trying to judge urgency of applying this. Is it fine
-to go with the changes that follow later in the series or do
-I need to rush it in, potentially delaying the rest.
+> If the child is also using autosupend then, in extreme case, that time
+> might be longer than the autosuspend time of the parent.
+> If so it seems odd the parent still waits.
 
-Thanks
+Right, that seems wrong, and indeed that's not what this patch does.
 
-Jonathan
+> So most expected to me
+> would be if the parent were to suspend it's autosuspend time after
+> the parent or child was last used for something that indicate a
+> desire not to suspend (that shouldn't include actions the child
+> did whilst suspending).
 
->=20
-> Fixes: 22452fe6cd08 ("iio: frequency: ad9910: initial driver implementati=
-on")
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  drivers/iio/frequency/ad9910.c | 26 ++++++++------------------
->  1 file changed, 8 insertions(+), 18 deletions(-)
->=20
-> diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad991=
-0.c
-> index 04a4e184b873..8bc24d0b7442 100644
-> --- a/drivers/iio/frequency/ad9910.c
-> +++ b/drivers/iio/frequency/ad9910.c
-> @@ -621,26 +621,16 @@ static int ad9910_sw_powerdown_set(struct ad9910_st=
-ate *st, bool enable)
->  	if (ad9910_sw_powerdown_get(st) =3D=3D enable)
->  		return 0;
-> =20
-> -	/*
-> -	 * When powering down, the DAC and AUX_DAC (SW1) must be powered down
-> -	 * first, as they require an I/O update to take effect. The opposite is
-> -	 * true when powering up, the DAC and AUX_DAC must be powered up last,
-> -	 * i.e., after the DIGITAL and REFCLK_INPUT (SW0) power up.
-> -	 */
-> -	if (enable) {
-> -		ret =3D ad9910_reg32_update(st, AD9910_REG_CFR1,
-> -					  AD9910_CFR1_SW1_POWER_DOWN_MSK,
-> -					  AD9910_CFR1_SW1_POWER_DOWN_MSK,
-> -					  true);
-> -		if (ret)
-> -			return ret;
-> -
-> +	if (enable)
->  		return ad9910_reg32_update(st, AD9910_REG_CFR1,
-> -					   AD9910_CFR1_SW0_POWER_DOWN_MSK,
-> -					   AD9910_CFR1_SW0_POWER_DOWN_MSK,
-> -					   false);
-> -	}
-> +					   AD9910_CFR1_SW_POWER_DOWN_MSK,
-> +					   AD9910_CFR1_SW_POWER_DOWN_MSK,
-> +					   true);
-> =20
-> +	/*
-> +	 * When powering up, the DIGITAL and REFCLK_INPUT (SW0) must be powered
-> +	 * up first, as they do not require an I/O update to take effect.
-> +	 */
->  	ret =3D ad9910_reg32_update(st, AD9910_REG_CFR1,
->  				  AD9910_CFR1_SW0_POWER_DOWN_MSK, 0, false);
->  	if (ret)
->=20
+(Not sure I'm parsing this sentence quite right, but...)
 
+The point is that last_busy should propagate (rather than, say, the
+expiration time). So each device still gets its own-delay-based
+autosuspend timer expiration. That may mean the parent waits longer than
+the child, but it may not, if the child's delay was longer than the
+parent's.
+
+> Maybe there isn't a sensible way to deal with this and what you have here
+> is the best we can do.  Note that this is just commenting on this
+> statement in the commit description.  From what follows I think
+> this is just a commit description thing rather than functional.
+
+If I'm understanding what you're saying correctly: maybe it would be an
+improvement here to say:
+
+  If that parent configured an autosuspend delay longer than its child's
+  and didn't otherwise maintain its last_busy timestamp, it may now be
+  immediately eligible to suspend.
+
+I think that would more accurately describe the target problem, even if
+it doesn't cover all cases (such as when the parent delay is shorter).
+
+> > The effect of this behavior is that a parent device may suspend sooner
+> > than its autosuspend delay, simply because its usage was accounted by
+> > its children, and not by direct references to the parent device.
+> 
+> Sooner is indeed bad.
+> 
+> > 
+> > This was noticed in several cases, and some have implemented
+> > workarounds, such as in commit c537d3457542 ("iio: adc: stm32-adc: fix
+> > runtime autosuspend delay when slow polling"). At the same time, Ulf
+> > suggested these problems "should be solved in the runtime PM core" [1].
+> > 
+> > Instead of working around the problem in drivers, we propagate last_busy
+> > timestamps from a dependent device to its dependencies any time it may
+> > allow a dependency to suspend -- i.e., when releasing a refcount for its
+> > parent or suppliers. We take care to only propagate the timestamp if it
+> > is larger than the existing busy timestamp.
+> 
+> So this sounds fine but I don't think aligns with that first paragraph.
+> 
+> > 
+> > Note that this works best if the dependent device is using autosuspend
+> > (and therefore updates its last_busy timestamps appropriately), but even
+> > for a non-autosuspend child, this is still somewhat useful --
+> > non-autosuspend devices still automatically update their last_busy every
+> > time they resume.
+> 
+> Can we set the last busy on the suspend of child devices that aren't
+> suspending as a result of autosuspend timeout but for other reasons?
+> (may be some fiddly corners!)
+
+Do you have concrete use cases in mind, or do you bring this up simply
+because of my note?
+
+For one, I feel like for devices with power.use_autosuspend==true, it's
+reasonable to expect drivers to use the appropriate helpers to update
+last_busy at the appropriate times, and so any "corner cases" are from
+misuse.
+
+But if you mean non-use_autosuspend devices: I suppose it'd be possible
+but I haven't reasoned through the implementation very far yet. It
+almost seems like we'd need to plumb pm_runtime_mark_last_busy() into
+*all* the put() helpers, including the non-autosuspend ones
+(pm_runtime_put(), pm_runtime_put_sync()). I'm not quite sure if that's
+desirable. But I could try to look a bit more, if you think there are
+important use cases that would need this.
+
+Brian
+
+> > Link: https://lore.kernel.org/all/CAPDyKFp=KTf8=zGBSzPYqhjnZpY8xwvjCeM1e-WTKT1QLSxaDA@mail.gmail.com/ [1]
+> > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > ---
+> > Cc: Ulf Hansson <ulfh@kernel.org>
+> > 
+> > Changes in v2:
+> >  * Update comments to explain when/why rpm_propagate_last_busy()
+> >    performs the update
+> > 
+> >  drivers/base/power/runtime.c | 23 ++++++++++++++++++++++-
+> >  1 file changed, 22 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+> > index 2a117d6a776f..dd306cbabcd3 100644
+> > --- a/drivers/base/power/runtime.c
+> > +++ b/drivers/base/power/runtime.c
+> > @@ -318,6 +318,22 @@ static int rpm_get_suppliers(struct device *dev)
+> >  	return 0;
+> >  }
+> >  
+> > +/*
+> > + * Propagate last_busy timestamp from one device to another, typically when a
+> > + * device (@dev) releases a reference count on a dependency (@target) and might
+> > + * allow it to (auto)suspend. This can, for example, prevent overactive suspend
+> > + * when a dependency's usage is primarily driven by one of its dependents.
+> > + */
+> > +static void rpm_propagate_last_busy(struct device *dev, struct device *target)
+> > +{
+> > +	s64 busy = atomic64_read(&dev->power.last_busy);
+> > +	s64 target_busy = atomic64_read(&target->power.last_busy);
+> > +
+> > +	while (target_busy < busy)
+> > +		if (atomic64_try_cmpxchg(&target->power.last_busy, &target_busy, busy))
+> > +			return;
+> > +}
+> > +
+> >  /**
+> >   * pm_runtime_release_supplier - Drop references to device link's supplier.
+> >   * @link: Target device link.
+> > @@ -348,6 +364,7 @@ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+> >  		if (!device_link_test(link, DL_FLAG_PM_RUNTIME))
+> >  			continue;
+> >  
+> > +		rpm_propagate_last_busy(dev, link->supplier);
+> >  		pm_runtime_release_supplier(link);
+> >  		if (try_to_suspend)
+> >  			pm_request_idle(link->supplier);
+> > @@ -710,6 +727,8 @@ static int rpm_suspend(struct device *dev, int rpmflags)
+> >  
+> >  	if (dev->parent) {
+> >  		parent = dev->parent;
+> > +		if (!parent->power.ignore_children)
+> > +			rpm_propagate_last_busy(dev, parent);
+> >  		atomic_add_unless(&parent->power.child_count, -1, 0);
+> >  	}
+> >  	wake_up_all(&dev->power.wait_queue);
+> > @@ -1368,8 +1387,10 @@ int __pm_runtime_set_status(struct device *dev, unsigned int status)
+> >  		goto out_set;
+> >  
+> >  	if (status == RPM_SUSPENDED) {
+> > -		atomic_add_unless(&parent->power.child_count, -1, 0);
+> >  		notify_parent = !parent->power.ignore_children;
+> > +		if (notify_parent)
+> > +			rpm_propagate_last_busy(dev, parent);
+> > +		atomic_add_unless(&parent->power.child_count, -1, 0);
+> >  	} else {
+> >  		spin_lock_nested(&parent->power.lock, SINGLE_DEPTH_NESTING);
+> >  
+> 
