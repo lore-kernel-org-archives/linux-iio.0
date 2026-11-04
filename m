@@ -1,83 +1,86 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793779763;
-	b=wmDMu4BHDoks/jAnZWUelkbMlKfwDIgLJSJwI1hqIQLVKFwqunYlWxRu/yd1W3fbRFZg
-	 oUuMd0/2Tt9lWkYNx5sCn5SbINwNz6oUbHA/C0jn2400G1AiHDHxTPQooh8A3WFkZVHxa
-	 Ye7xQ0iZ86oZEXtP9HxMibeBtI7ECSChi3sf9JfEEiOwA8iG2hANoRIOuPJhlC2Z47MSn
-	 9uQ38Hzi0x4d3/KbkQoz/WTJcxxDnVBxU/ZZXKJLnf+Tl+/qeERh292xU8oG9wOHaVm6/
-	 tUS8XJ0E+pyC5AI/WRP/tycCUMFRvk4rtTX1OLcUwG/326TaHoGnitPsoaC8P27Jffw==
+	t=1793780516;
+	b=rFr86ke9XhvHubhfeGuMuDFP4xA4VKhTQvwtQfonJzF9/zEqWMgFCmghDfu/Rfb0i6hW
+	 3ZzkyuYiT7cRA91I6vKRX1jhA6Ig2AWTQOWb2GHgMqWVsUezyepYfscuEZyb5MnaL9FtM
+	 W4ErZg/wSy6BvhGHrLt8B94hedmc59iIGz3drZ3pSPn96SKDj35ksvQep7dGcQexKqMNe
+	 Juqfl27yF/Iewlmc4X5zIH9Y+gveIzyOLiFYg37NN8ZXAboG8+KI17qv0mYwjEokbJAqO
+	 NZe+aEr2zsPx9wANgHY5MSl/HXAEJpiXcLdRaaZ9gX7n7aW61VvPFOAIaue1qBOJUQg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793779763;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793780516;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=D3rpizKg9tVnjRCzjSz+putMSv33a6JsQ1St6jLrI3o=;
-	b=HglGGDqOwqKhtGLTdA0p0SjtubJbqTQKA63GBaFoJgAUMb8NskgSPKUEcZdy2baDNwSf
-	 ET9OUmq5BdtyjYmLuDCDaLYWzbCZssVEDq7Sb4oTH3gQXIA+tU7/ZKoKX+P1WUc8wTlRz
-	 GlCmPOPyJun3hLDzTJRpcH4a9okeCScOQ35wAeK7CtJ+/KkH6GWm3yAtbC741ibFKbfzR
-	 0L6023dv9Cq17TUMwygJncfbwSKLr3zCyHM2tO3ZWJyUgUQGVg5AEvYUYLgJjxTXGF8Cj
-	 /jxSY1RwQ3QiyYSlLR2KwQusxUSWAz6hVH4svgN8XzgGZLfNsrPapNgLiRcaxtMGLWg==
+	bh=oC53DZWwYgEwPzoWhOOW+rI9blG5esMjqlTZQyYiaTo=;
+	b=BxWj1/8As+2XrqxtIlET1+uHSMv7bUcLpZAhyzkWeOGrcTqMhT9aLERxdD9OwKLdMZ1u
+	 HGATxJV5LrWq91x79pzWH/eebt82D4Bzm6rZofHTGY+5JmY3AMmYCHqymJ0KWwqc2hfot
+	 /yMUnJjIu7B8mXvzczYJ3rAZeHuYg/xmhgwfolObK8ATlYS1TtJxMSDr+oIcgZcXDVMs9
+	 /t/WusvMR9+hL0hbKBMqs8XQkpv5h7EsScir/XwpQrKLJxa+SAJwSSyxQoiyOGsnSayuq
+	 rDU/Il0YuqPaj+yLao0PtuWVXgXCd/wduafgkUFFdfyIxbEOLu+jV8plYaA9+aoVAbg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="JG6/EEHQ";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SIsy9gn+;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61126606A329;
-	Wed,  4 Nov 2026 08:09:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0485606A31B;
+	Wed,  4 Nov 2026 08:21:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JG6/EEHQ
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SIsy9gn+
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793779763;
-	b=zI+lI7d6/9MGJPzvkuKuSXzQbAVcVnWhHw+rYb0Pxe+5x1Mf8elVx4+kAdmlD52y+Ypm
-	 CfyxGBicSdGnyBw8Fvf1JbN0Ro16DL6fgGNABGzk3gL8yp1fZHm9mlqxXvk0wIuf4bvHl
-	 KQBOX1xZuxCVnhOgeOYvoyPRdR/EMIlDQw+SHtry/wVCSfc2LwmW/cpxquwICnMUwaj5m
-	 SBMLlHvT2JTVKC4btIVFN2jcrRCGs7jswysa9CyTu8hwN1Q5aJ+ViA0PnQ1g4YB44qG3H
-	 LIP/Dx79ysUbZnP+joErX7ksLUYzsE7pEvWPuC/WhbgqHLAcXILAxOW0+jLRog1RuBQ==
+	t=1793780515;
+	b=n3pqtd+vyyyXsSIhYvEj9yRFbeJQkV9RcMxKPN6y+ck3G8ByC/jk9Sm1EvPS8ITKqepH
+	 90s2GXhroDHXMbnZWYzz8ENGPQM3zVxOtog7meuxQIgqbWnit8I1hVK1IVKiephB44Rnu
+	 URbVxCbeoSxCy/zkJwff1f1gF4G7zNDTJQW0Pmt3gFV/nSMwb27Z5e7jXrkD9IcvNod6z
+	 aymSAczyed84rvXhZTUzRH12rHqwuRqIw9TGs9eZKVkhBTYM6hN0RkOatbXoUQj8oCeCc
+	 8dLk+Wz7+WfhEVxIoWbEcKhDrsvb29ALFZGN2oP+qidjAHohGpZsask46xi2Uehv/EQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793779763;
+	c=relaxed/relaxed; t=1793780515;
 	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
 	 References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=D3rpizKg9tVnjRCzjSz+putMSv33a6JsQ1St6jLrI3o=;
-	b=moK5RAGlGwIMZyGvhQ4NAAwSC2zzLLbBKU+b14C7qyf6aF7sjcUs+AeG6pig0TYxtelD
-	 9FEcHtLmqhRnXKXAxhGXHuzyGjB3dNEe/2BXstZulaimTT05uhVQhVX6Rr3oqqnUavvWB
-	 hXw/iA1l22aiThgebP/o3VE6V9awXyMse/kjbGD/L1h2sWI9Qdjs7o0pi94Qo+mQOFT/9
-	 kyTnHGipPUBwmH2nxA3p5SOG41Q9NKYsYWFxRzUZ14xf9PJdGKifryHb7ChYdE2uzUfby
-	 VdyHQUQMUNsxr33vvnUxjRglRQud8GIrI7NkLRwVnXydLsubBq5EYnErK8s7LGW/roA==
+	bh=oC53DZWwYgEwPzoWhOOW+rI9blG5esMjqlTZQyYiaTo=;
+	b=voGAuOGCrW8IqH6PdJHkhEDDf69xHEmewA7Zt9VDsQEsfc/tkBxMlhi5P+Nk5sdfIu5h
+	 YX9nqg6uXkskjOtLBKXql7obWSTd3h4NqHnBkBLKckLRLX9k4MyDfEp92hfaDb0oGt24T
+	 mT5b5CYawDeNdw7uNu2iEZP8Z2d2ErjtXSqZw+ZUN2rz9p85I5K+ROTSrJN92RkCfmEnx
+	 Z3ktGUSslA0Kpwox+VqovZTWjSN5P3VBwDIwhKpEmSRvG9oADD4WdvzWlKoDmnOYxvBQQ
+	 GE+to5Pa4vXJhHgzSg1/LsC1I3z4zoTZ3wuRYbniOuDJcBD5svUpBlLxPfHwqKM5zPw==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=90.182.112.124
 Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 3E7881F000C1;
-	Wed,  4 Nov 2026 08:09:20 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPSA id 8E1421F00919;
+	Wed,  4 Nov 2026 08:21:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793779762;
-	bh=D3rpizKg9tVnjRCzjSz+putMSv33a6JsQ1St6jLrI3o=;
+	s=k20260515; t=1793780515;
+	bh=oC53DZWwYgEwPzoWhOOW+rI9blG5esMjqlTZQyYiaTo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JG6/EEHQobu8X1YvcxdpD3gEG2Q2GsQ22VzS0IhM62pq9a6iHPOYpxSVAAS+7xsvf
-	 Nl2LFYLUABeuq+3XVap26L/AtK8PwnxXV/mmVKw99uQ0yGOBL2vvYfzosLU+mKgNbO
-	 r1r5cuEktEEHAYm32R9tpYKlYhvOOaBNlHEswH4PGGfpORYZcWP/1hWSTkJKENG0il
-	 CaBjLoRaqq8NhXHbnZAVphgIarfd2qAq7VseA/nSQXuCOYy+LG7TYo9FL/o4A/s5Kr
-	 Lo7BHDsN6dBHqTfLLiPJb3L1Uhi5RZoYl+dQjSt8tYMnj88WV9wAtGM97+fiYFBwxi
-	 X5XJKlrcIkuGA==
-Date: Wed, 4 Nov 2026 09:09:15 +0100
+	b=SIsy9gn+qLBWR6bGwuamlupX1rUlZ0R66DblL1HeSB9cx9PjBXvqDY3nEdSf+z/B6
+	 w3rrVMjYM2tfELKtZpdLQDWysqmT+gzbcQXw0K5Lj80OGcWNHGvgEho5IGuq47ICHu
+	 DRJAAGcQwjkEUMGOgcKBID61rcwYUgFG/reCb0kNmyESrimrHBmMjIQTpyThMjvP2F
+	 Yc4fjfOSk1IwPV6tNlgJhpGYyjNB/Slw0ayP7UZzZl/FQRAj4/QKHlbiW502TiztDa
+	 yefpXtX7JT6E5qJ8LKidLwwq67s0NugQXFxOj6bhb78l3bo94bLtkn17fpcoToN1Pz
+	 b1avreert1lkw==
+Date: Wed, 4 Nov 2026 09:21:47 +0100
 From: Joshua Crofts <crofts@kernel.org>
-To: Chen Ni <nichen@iscas.ac.cn>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, Jonathan Cameron
- <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad4134: Fix duplicate data_read mux state
- request
-Message-ID: <20261104090915.00004ebb@kernel.org>
-In-Reply-To: <20261104044719.4120078-1-nichen@iscas.ac.cn>
-References: <20261104044719.4120078-1-nichen@iscas.ac.cn>
+To: Brian Norris <briannorris@chromium.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Fabrice Gasnier
+ <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Andy Shevchenko
+ <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Maxime Coquelin
+ <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v2 2/5] PM: runtime: Convert last_busy to atomic64_t
+Message-ID: <20261104092147.00002abb@kernel.org>
+In-Reply-To: <20261103141442.v2.2.I998d26c0d635b80496ad12daa33b8de602030eb6@changeid>
+References: <20261103221717.3840215-1-briannorris@chromium.org>
+	<20261103141442.v2.2.I998d26c0d635b80496ad12daa33b8de602030eb6@changeid>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -91,22 +94,14 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed,  4 Nov 2026 12:47:19 +0800
-Chen Ni <nichen@iscas.ac.cn> wrote:
+On Tue,  3 Nov 2026 14:14:40 -0800
+Brian Norris <briannorris@chromium.org> wrote:
 
-> devm_mux_state_get(dev, "data_read") is called twice in a row. The
-> second call's result is stored directly into
-> st->mux_st[AD4134_DOUT0_INPUT] without error checking, and then
-> immediately overwritten by the first call's result.
-> 
-> Remove the duplicate call and check the return value before saving the
-> state.
-> 
-> Fixes: f12ecb3e147b ("iio: adc: ad4134: Support SPI 4-wire mode")
-> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
-> ---
+> I want to use the atomic64 compare/exchange helpers. There are no
+> similar 32-bit-portable helpers for non-atomic64_t.
 
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
+IMO starting a commit message with "I want to use" isn't
+exactly great...
 
 -- 
 Kind regards,
