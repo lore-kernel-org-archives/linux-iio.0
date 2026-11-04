@@ -1,88 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.172
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793785819;
-	b=yyRpxhw99EnS7SxPj/IHKFq9Wyx0E1brp+ODmfUVpwi4Tr3wPUKFP4UqEL85lrAcbjvL
-	 0sOWv99Dr+uEgMlVNA9LYLGd7YSh0rnT6GNb8LuKTjiOyAfR89bss+8Ahmcnzo7YqInTT
-	 4ItGr18I8vkGJ5COO6x4lhnb1znNPdRi6JxW9ID0G5jG60AYVr51yKvRwXTYLt+38BxMh
-	 vHLNBaoC8xQAZbNpEHY/W082+PccR2f3sW89CKPChvQQdbxQk/F0v4D4bwrTp48OmIu9n
-	 Y/BWIyk657MIUgy037lqO3pRIiSIgucz1YlhewxoSm5N1EDPPHDQHOeSIzODIl7gFCQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793785819;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:Message-ID:To:Cc;
-	bh=z9ahkQoGqY4LXm5ulXS80YZleTn1KGfrTqpEsVzzvjo=;
-	b=abAItcUv25hNn36iNQm7r3skyQmu71cklqsEGYxG1xOje6Gwx2TKi/kQq4FszyFxt1rR
-	 p/9tN+U3eC59Un7JdQYxpMpnDRv1HKb0t+OOPpC8gVC3j6jwSmcjSJ2zYxnVLjGjerecn
-	 Dtu7vW5x9zioHXFJbcWc/bWj4lJmN8cy3ebzIoU+eIbnTkMiPvnrjoK5BzVWXoQ85S+Px
-	 Y9mj3KlhMAsXmApv/1LqRYK1tpFQIUs2I3WVW0J2z27OKw7onyK77EerugVp+Q3nU9LQc
-	 gW9eknIBSob1jwwmjnbUvppiydm9ijy5mtL8E+sUKfxC3jdI1P5eKN+vx8qdkdj15ig==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=R7Wx2uuD;
-	arc=none smtp.remote-ip=74.125.82.172
-Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793788107;
+	b=3zRze3e3ey6ugFp1HZHBYy4NS+Ul7WuGUkWGtG0FU4pb3pJ9HTBVc22MmYmDdHThB++A
+	 zqrIctIY5CT1gl2Ftaend6s5uqSXeXmPKvjqfpyyHbJAroSDOEKsoaa2DnzZ1VKy6bXKK
+	 HKJWFXxwuuuRtPWROVOnHMF7a7zkHMc0pgwdyLcUiqRzvKTZjVMNrxMpTDev9mP8Bn5r5
+	 j0Rkbjpw5G+sdrDle4TdgeBYfmDOr5IQo6FhSC728pCF7uNaBwxeBzjh0oVuevfdROp7/
+	 whwsnnVWDilc/fZXVMaTtm7Wv1MkokAzY9ohmnhOK/G8uD3EpCG4zIuW44nfHBXE07Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793788107;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=LLeYIGEM1LvlGypEmHJ5K72laj/fRggqINnoHOCWiUU=;
+	b=K24xDZ8gT0ZpUTAOcN3kvRCA9+z1IivHEoYU69cX2jQgSziSmlEhYsqebcvEJQ/MU9vf
+	 woy4Cx1zCpKofYKL5vB+OiEJuoCfmmsUJoSHeG5gjFSqqLXiWW/U3lL3LQf/W+uXxHl4L
+	 4BVrf8M8+Vh/PMDs/86FtgsMUl2SGJvStnp2wTkT/BlDDWh8BQMMuZLnikcI2OtR5Q5up
+	 Xv5oPOTDGEG/iGWPU4tEUpM7QLPbKbu8YcXkR6RoRbgf6aUigWk9Om34bn57rMeBWahZj
+	 NXlPGM+tmhLqMlAUvJudTbE1AtN4AbnwbrJNADEx8RQbAhsdyEG39CwkKYQOcDOmwQQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UgGBNkEU;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D702D606A32C;
+	Wed,  4 Nov 2026 10:28:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UgGBNkEU
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793788106;
+	b=3AhJO6ZCR12aHKYFPzkZnPYNCW7fSmd25eA4Aye+zA58qZqsJpCy1iUgkT7IjT2ZuDJv
+	 QHbmJIPg7OzC/N9zWzKucHrbYsnO3R6qZbtGsysr8/bdfETAsvtjH9A+suCzao7MBNTcb
+	 RfwngBtor9EodbH1+cGuYW9KOsa+kTrEfyyQqflIZ7WDQqwNE2Dz7eLZPdwVPZxHVaQGK
+	 emYKjd8bXVjc/gM0n+0dUp8srda5OuGZW5QxfbzR3BFacGw9OyIflSJc2ihI8QOCruFy6
+	 EFWvcEhYmhlkQpqYA5iJMeipKGSOnct0vfrU4nGjBi1uPTGxEFw+d0hSvfsURCr4lYA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793788106;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=LLeYIGEM1LvlGypEmHJ5K72laj/fRggqINnoHOCWiUU=;
+	b=jbc47dQ1FrEHXlxhcQvriwZ/lENLfqrF8sEl+qJPTIhdoYwU8PEL4IAexcPKymeeA8GQ
+	 W4VXxmyaNJLJ/TEpe05SzoOiswPrf8eBHlRt9JzVscbZHkxzNiaWvJxM6ZkY6q0BEftKM
+	 LfnoG2SLKOJ5gQJvV8Nlsq2lkjq9JKLR7qk4Z0EVrEh8k4vo5mIKtr9lRkePRRNi4aOpJ
+	 sups7ge6f9mRWYt73i1S0lsj8gSExeUvo0t7Vsx6wnu4GNaYO31RrkNNCn+sU7pLmto8f
+	 OVN8xIGwfK6+aFswaOJD/R14mS13dX+JZSL2drJzgYnzEcZQmeFyULBq/+VlVTccvUQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DBC8606A31B
-	for <linux-iio@vger.kernel.org>; Wed,  4 Nov 2026 09:50:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1DBC8606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=R7Wx2uuD
-Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-36cad25b8b0so700031eec.1
-        for <linux-iio@vger.kernel.org>; Wed, 04 Nov 2026 01:50:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793785818; x=1794390618; darn=vger.kernel.org;
-        h=cc:to:message-id:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=z9ahkQoGqY4LXm5ulXS80YZleTn1KGfrTqpEsVzzvjo=;
-        b=R7Wx2uuDBgNls+XoNlqzt23IZkEGWU94ycKy8gvIwI2P7FjUK+MliwC8wupB57/+Z6
-         rxW63Y/2vd+FDslj3mXWEG/NS2i4RuWieP1lCxwwlTTlXi8luo7EUzSPzvmWgukGHNre
-         iUOuC0b216RNvkQDZgKhrIkJaxmQLvRmXKaX082SNqWiyXkDFIE3aOZiP6698LOem09T
-         CVjuaPJgXj5XIxn7MwqGT0St47QT8uoDIc5Cq6ZdrWBV/p5LM9zFR+Or3YvapelgtbQL
-         Xz8SypqHeP+IEcgZHTSdyMKDMpV0lfzGqAj095SFAOYDmmmAy6Igqb60WbJPseV7TBQ+
-         INaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793785818; x=1794390618;
-        h=cc:to:message-id:subject:date:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=z9ahkQoGqY4LXm5ulXS80YZleTn1KGfrTqpEsVzzvjo=;
-        b=SkvgWz9Rd/V2dTuFstI8btILRI1hSobmpgdOivBv5tNjwd0fyG3xyFeU+qNbKrHJrG
-         tu610io4yxJf3PWPr5PjE0pN92I/gKVy8LnnabqyzxrFz+AId/Tw7EUcP/ld20YDnId0
-         dIJqHD5vEUxyCo5Hk+BAKN2keWZNVKuPg89dIZAbGZRM4T84ziQmBswgzw4iuy3nBCBo
-         Ry3ddsIAtmo9kSCe3ce+7bd9axmfhmwrhMULo3MqASZLS9TGv3QPKCdsOMKiFFj3Ysmb
-         kf3ZCDwS/qJmWlpMqtTefAetbu2NCei9s0Qta5NNGacixLBLxN0PBp3+ZsElbcJf27wV
-         IqHA==
-X-Forwarded-Encrypted: i=1; AKwUvBx6scg2MjKMLGBFBC8EUGzuunhk7IYtZPUaXW8oczHr5fs6Fp0ZwSEfYN1MlnFwN4OVbX6IDDSvFPw=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8drl1T5leR4DaRoQS3yKurQ+AQ+5RgZCbGQvubbPt9MyRRXTJE
-	3lO0kqvaF53lQYkoNWg5vSyhUbL4boVZYUsBXN0z7EU8YO5SVVewD7uM
-X-Gm-Gg: AYBFou26jYeyX2u4R0CFGxz8bstPXTNZ30QTDzv/cYgu6GAIcRMZkZo+aT19QCRxmhy
-	WywJn8buq8pUOKRfp4oj0cGMNk+loks2wGJvoYByLtWTXVRV5X79iKKfKH6CD1wOEu745oEEV4y
-	0ObEimezOVL4e+1m1P5RV+yQmnUmHByw8/5p0dx2MX7FAx9Yyas+ToyR06rDv4xGiCMmCPptBdc
-	kXUKK8NmT0xSL2KrEYy3WIv5nKJA0pJKLXAyEvN0AJoEa73qOuftIGvAXkL9Gw9Z/NSk0NAE1xb
-	w3KPHz124McVeoSGU4icUMRpH9g/gAySe0Kn4s6/1YG7MTd3ISpQWz38YTznYmSgHFTXPlAMgQt
-	pYThQ4MhgofhtQeWGneCR/5wB0bnnPqWuDUpqg+NJRqjQra1Jyk/5UvjmwE/CXEr1RtkU9+pGKZ
-	y5or+MYftoJweZhAUR8NOgc2dZKulnVzWLlPhfS+xh9zsq0Ma6GIY+1qLVtgsDDnEo2hQBEQp2t
-	+kCdlqY23PBWsuVVXMHPE8zNqYAVAU6PaKnENXcOo8fpyNUk8T5WTwEVGHJeON1sNd7Lm3L+M9t
-	gcfyvz6ufjZndJyyneyA9qCs1qw55r/leL5r+IiL+jMOIDIpIRgPhIqugCzfzPGsfJHKY3wjRPn
-	CVYZWYrpqk3Je
-X-Received: by 2002:a05:7300:c01c:10b0:36a:50ec:db3f with SMTP id 5a478bee46e88-36a50ecdd21mr22929780eec.7.1793785817978;
-        Wed, 04 Nov 2026 01:50:17 -0800 (PST)
-Received: from [127.0.1.1] ([23.247.137.158])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36ca362f38asm7068083eec.0.2026.11.04.01.50.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2026 01:50:17 -0800 (PST)
-From: Yaohan Li <shunsheng1218@gmail.com>
-Date: Wed, 04 Nov 2026 17:50:01 +0800
-Subject: [PATCH] iio: buffer: hold a reference while DMA-BUF is attached
-Message-ID: <179378580164.73301.2666197876060323279@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- paul@crapouillou.net, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	by smtp.kernel.org (Postfix) with ESMTPS id 27FF71F000C1;
+	Wed,  4 Nov 2026 10:28:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793788106;
+	bh=LLeYIGEM1LvlGypEmHJ5K72laj/fRggqINnoHOCWiUU=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=UgGBNkEU2DHtMbFY2OhEEkgpwjAwLqxTDynbu0FHJzenuuXHbRGjjGdXNRbBg8/si
+	 E2QMN7LJgzvlI1a+yyzxwCfZ0Iy5AB/HgCcdODJm0k7tFtsTIVH4Bkhobfg62lGYq9
+	 ISKEmEnYRvqijKtmD/5YNs14eZyWTWcC9sSQ/IqVep+EivjiKSmyGps28XN8ocmfBq
+	 e/pW8sKjGNeVXTACAnW4WrNN9fV7kaqzLkpdodtM0BC3cfu3vbMwr4cQxvQU2HHI/o
+	 4denZae5EFkboJ5YaNxNnUz5q4X8xKcAJ2rDdqfgwX/oK0gHnw3MahFHTC68mstUsM
+	 +BNY/GTfvakPw==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 97EE346DB2;
+	Wed,  4 Nov 2026 10:28:25 +0000 (UTC)
+From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Date: Wed, 04 Nov 2026 10:28:22 +0000
+Subject: [PATCH] iio: light: adux1020: harden sampling frequency table
+ lookup
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -91,64 +82,83 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261104-adux1020-rate-bounds-v1-1-2db71ad2cc21@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMwQqDMAyA4VeRnBdI6ihsrzJ2qDbdskMdjRVBf
+ HfrdvwO/7+BSVExuHcbFFnUdMoNfOlgfIf8EtTYDI6cZ6YrhlhXJkdYwiw4TDVHQ8/Sp3TzQqm
+ Hln6LJF1/28fzb6vDR8b5fMG+H6oMYnl4AAAA
+X-Change-ID: 20261104-adux1020-rate-bounds-61e3ff96e0f3
+To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793788105; l=1810;
+ i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
+ bh=cqE5CwXxkaaFLmmwvn2ph1c33wcfTad0JYMx5iByIGE=;
+ b=HsWSTDAh+Bqk5NAHtkm9e0sJLQeq4gRYJlTkT2QJ2TcqrrvK28afb3e5qZY1ydY360J4nNLGR
+ q8mKXJR+bnDDJdhmnRE2xFLGHP0mEn/Srx/n4zGYFyM0sPumlE5GhYM
+X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
+ pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
+X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
+ with auth_id=1160
+X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-iio_buffer_attach_dmabuf() stores an IIO buffer pointer in the DMA-BUF
-attachment without taking a buffer reference. A delayed DMA fence
-completion can release the attachment after the IIO device has been
-unbound and its buffer freed. The release callback then dereferences
-the stale buffer while detaching the DMA-BUF.
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-Take a reference when storing the buffer in the attachment, and drop
-it after the final detach or when the attach operation fails. This
-keeps the buffer alive for the asynchronous completion path.
+The proximity frequency field read from the FREQUENCY register is four
+bits wide, so it can hold values from 0 to 15, but adux1020_rates[] only
+has 14 entries. The driver never programs values 14 or 15, but if a
+misbehaving device reports one of them, reading the sampling frequency
+indexes past the end of the table and returns garbage.
 
-A KASAN-enabled test with a DMA-BUF-capable IIO test device reproduced
-the use-after-free on the unmodified kernel. The same delayed
-completion sequence produced no report with the change applied.
+Reject such values with -EINVAL instead of indexing past the end of
+the table.
 
-Fixes: 3e26d9f08fbe0 ("iio: core: Add new DMABUF interface infrastructure")
-Assisted-by: ZCode:GLM-4
-Signed-off-by: Yaohan Li <shunsheng1218@gmail.com>
+Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 ---
- drivers/iio/industrialio-buffer.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Found with LLM-assisted static analysis of drivers/iio, looking for
+table lookups indexed by unchecked register fields; the fix was drafted
+with the same assistant and reviewed and tested by me.
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 4294101810fd7..bfa6d19471126 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1597,6 +1597,8 @@ static void iio_buffer_dmabuf_release(struct kref *ref)
+Tested on arm64 QEMU with i2c-stub and CONFIG_UBSAN_BOUNDS=y. After
+setting the frequency field in FREQUENCY (0x40) to 14, reading
+in_proximity_sampling_frequency:
+- before: two array-index-out-of-bounds reports, and the attribute
+  reads 0.025000
+- after: the read fails with -EINVAL and no report is printed
+---
+ drivers/iio/light/adux1020.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
+index 0ea282ecc99a..d4281b9754c3 100644
+--- a/drivers/iio/light/adux1020.c
++++ b/drivers/iio/light/adux1020.c
+@@ -414,6 +414,10 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
+ 				goto fail;
  
- 	buffer->access->detach_dmabuf(buffer, priv->block);
+ 			regval = FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
++			if (regval >= ARRAY_SIZE(adux1020_rates)) {
++				ret = -EINVAL;
++				goto fail;
++			}
  
-+	iio_buffer_put(buffer);
-+
- 	dma_buf_detach(attach->dmabuf, attach);
- 	dma_buf_put(dmabuf);
- 	kfree(priv);
-@@ -1741,7 +1743,13 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
- 	}
- 
- 	kref_init(&priv->ref);
--	priv->buffer = buffer;
-+	/*
-+	 * Hold a reference for the asynchronous dmabuf completion path
-+	 * (iio_buffer_cleanup() -> iio_buffer_dmabuf_put() may run from a
-+	 * work item after the device has been unbound); released in
-+	 * iio_buffer_dmabuf_release().
-+	 */
-+	priv->buffer = iio_buffer_get(buffer);
- 	priv->attach = attach;
- 	attach->importer_priv = priv;
- 
-@@ -1789,6 +1797,7 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
- err_dmabuf_put:
- 	dma_buf_put(dmabuf);
- err_free_priv:
-+	iio_buffer_put(priv->buffer);
- 	kfree(priv);
- 
- 	return err;
--- 
-2.34.1
+ 			*val = adux1020_rates[regval][0];
+ 			*val2 = adux1020_rates[regval][1];
+
+---
+base-commit: 20ce8ef9c9e04cd6c5ae0422e251a9b5936c6b7c
+change-id: 20261104-adux1020-rate-bounds-61e3ff96e0f3
+
+Best regards,
+--  
+Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+
 
