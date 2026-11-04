@@ -1,61 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793756225;
-	b=MmALx15/O1LCytetM0W5MTOIfBxHhJyXbyoy40Prrc1sr6hp0X8SlSgFGPzKHacA1SFY
-	 T3vx1l/MKSxf+htY+fXwcitmZvSJ7r8YJphn8iYUMdSSvlyLIpTvuC00rmei0T8veaasK
-	 jVgPLsBYImN7XsLo0gjkXCDMPK496cqJvYY8i1vCZTLYrtUks6zOItYBE5fgDDPDmuiQ7
-	 /FwjfIS0yiEurIevccTZPJZZijjfzvybSDTtgAjf107P583A8kGQNBA5UzWhgKq4mQABU
-	 Qo7+aDp4S+yp5yKbiREd8XozNRZtXpXx7olZlRyXF7V9BwxN0KpDnFuATFONV9am+xQ==
+	t=1793756441;
+	b=b7MKMkjqksaD3sugahq5QQyMzVTZrno1WJFpv8g9cyvD5DMjo8p9/yrfxS8ms3/iBRAU
+	 I1pDVoUSAYZ/dJra56TKzb/gCHxBQZq2fD1Hlw4x7mOCiGhf56hOZ+xNYw0bNvUYEShwH
+	 H2QmgPhLvYWA81cZ8+Xd33XjS1FTOvdRkCxodimCf49oKgSnszMBACzIKjPhk761Ms4oy
+	 czmQkwdjUIOCUrZ+ZWa04szO0kjCiec/xClxM0wfkz3EzNa7hYX67OPwywI3+Vtv+7mOe
+	 blfnFfmvfF6Gi27ROMCrKfYaZ5ukxKOhOcYM6wKd2rQDb0pcClw1juV5gHjK/biGTKg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793756225;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793756441;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=KcOaDBN09o3E/8dmEwrEb/9xgty5DmiykPHBXrYWIh0=;
-	b=r1FiYxwiwUu4vFEyELuDaAxt+q9i64UeMFkbFU1OvnnmnslVO6u/bGYq0E8PwHK4FeEw
-	 3uIWXxRPJTCb9vB9Jv4AjBNvW/UT5LegmyvCav6zPPyxbuvoGrxBEhK50SM9EQ/N2fBrp
-	 mM2LkgdQPA0xFzfA9qXwiCLhLv7uv+G8avHE/8BHnwRv+PoIEM+U2kwk447Czvg3eXq+C
-	 Nt0Cw1yP+IIWQhE8j5yq8A4fQAUeWrzeP62ZDvX+clN8iXSbYqQFamyqJ4MGJJfmw7YY8
-	 Tpa2MmHMDwBtDVL4q5YV/pxn9LZ/VQu0uggmAP6olBeizoblMUVXgJbGXLFrjHbfASQ==
+	bh=ljoz0IZXV/fb7lLK+CyHT4EslT/P2ixwKVNk6JMrWWk=;
+	b=NYUNcGYAnJMailiDdKuNiCV98TsOb1zKdbjF4hF2AAlMZcif3Hmtzr2fm4RklbThRggM
+	 vdwg1OpKfzlmbjQFodl1nlRAjSdl9tUPOPnDkbzXp0ANH3VcCvtlfiApYdA58ky3ARLay
+	 OdgRSCzRjrbEal+ztJs5FBufhGVaaBf3WQnyTVOvhy34yoPip+cnwtDciyDGxXbZudb0T
+	 wcWrTuGM3qMyPcitswSpbG/EkgA/wVuYzjsrH9IIUOIGh1ZHgrVstNyjuE5sOU1yrEf6b
+	 XKnX2KFJ2wkfFe2zGYh546SwEJgFgnATi6ZyGkEW7GEVm0/bk5fbK5w+K70epXEaPxQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mMOankuS;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gGSLhNHq;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD6A9606A31B;
-	Wed,  4 Nov 2026 01:37:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4929B606A32F;
+	Wed,  4 Nov 2026 01:40:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mMOankuS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B4F41F000C1;
-	Wed,  4 Nov 2026 01:37:01 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gGSLhNHq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EECA01F000C1;
+	Wed,  4 Nov 2026 01:40:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793756224;
-	bh=KcOaDBN09o3E/8dmEwrEb/9xgty5DmiykPHBXrYWIh0=;
+	s=k20260515; t=1793756440;
+	bh=ljoz0IZXV/fb7lLK+CyHT4EslT/P2ixwKVNk6JMrWWk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mMOankuSFIV7MeePKoV4Wj800cUtzlXjqNO9u0jEzceg2IVUmdSuLwgrd04chSeT8
-	 mxhI/bXA0kqbLly2l/DsOns8BJbDSvlF6V0Yz///B47TJf65UHAUra+4l+lwT/0aKN
-	 a08rFJtBNwHXv2MnrJdLuaRHttRFlk0+K3XqPFM8FDRQR3bJyiV+IIfqfxglplHCCE
-	 YFvSH4PAqHQvP/uC8hrfc+KRBwN/XL4JG2XIAiO+K32vU0Facp9hxp1MfZ87WDEyy8
-	 OGl8sJXxdpdsgfUqX184baY1VYrqXsX0BjOvGo80UDv5dlFXu1mHfUBS6CBB3XZYeC
-	 rcca8b/EvVdPg==
-Date: Wed, 4 Nov 2026 01:36:57 +0000
+	b=gGSLhNHqVBzKwaf4HJL7lM2pZ/TPYOlAh7Y0eZkKQohx/dWkAsljuX3akBhY1jFQC
+	 Wl4hIyU2ToFGupDpg0XySxy+sBlNlAL3Tr8+ZVuB74X5TL6tjDp/Cm4dIQ/Fql4xmQ
+	 /lM9+uO5u7/yxYyX2FHMmL+XAS3FkCpkbsyA3rgHHHEzUP8LM+FzwQw03pjrgUlPnH
+	 zu2fjoRQtyPknxQY9pGdoj97RIayJkWeM04RRlBDpGFwzoo1cYTbcTMXfsc6V+F75D
+	 0n/rnU4p66QSXtFzR5RWxndilVNyB81DVIWabd8ohgl0/hr8qxj4Eq2lnDsl0ZvcMx
+	 cqwT/MJ2c7F+g==
+Date: Wed, 4 Nov 2026 01:40:31 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: Guenter Roeck <linux@roeck-us.net>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>, Neil
- Armstrong <neil.armstrong@linaro.org>, Marius Cristea
- <marius.cristea@microchip.com>
-Subject: Re: [PATCH v5 5/5] iio: adc: add support for PAC1711
-Message-ID: <20261104013657.66326d73@jic23-hlaptop>
-In-Reply-To: <20261103-pac1711-v5-5-71c20101a52e@microchip.com>
-References: <20261103-pac1711-v5-0-71c20101a52e@microchip.com>
-	<20261103-pac1711-v5-5-71c20101a52e@microchip.com>
+To: Brian Norris <briannorris@chromium.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Fabrice Gasnier
+ <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Andy Shevchenko
+ <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v2 3/5] PM: runtime: Propagate last_busy from dependent
+ to dependency
+Message-ID: <20261104014031.2aed1419@jic23-hlaptop>
+In-Reply-To: <aup9LKewaLr2B5cR@google.com>
+References: <20261103221717.3840215-1-briannorris@chromium.org>
+	<20261103141442.v2.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
+	<20261103231719.486a18de@jic23-hlaptop>
+	<aup9LKewaLr2B5cR@google.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,548 +71,192 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 3 Nov 2026 16:37:15 +0200
-Ariana Lazar <ariana.lazar@microchip.com> wrote:
+On Tue, 3 Nov 2026 16:32:44 -0800
+Brian Norris <briannorris@chromium.org> wrote:
 
-> This is the iio driver for Microchip PAC1711, PAC1721, PAC1811 and
-> PAC1821 single-channel power monitors with accumulator. The PAC1711 and
-> PAC1721 devices use 12-bit resolution for voltage and current measurements
-> and 24 bits for power calculations, while PAC1811 and PAC1821 have 16-bit
-> resolution and use 32 bits for power calculations. The 56-bit accumulator
-> register accumulates power (energy) or current (Coulomb counter).
+> Hi Jonathan,
 > 
-> PAC1711 and PAC1811 measure up to 42V Full-Scale Range, respectively 9V for
-> PAC1721 and PAC1821.
+> On Tue, Nov 03, 2026 at 11:17:19PM +0000, Jonathan Cameron wrote:
+> > On Tue,  3 Nov 2026 14:14:41 -0800
+> > Brian Norris <briannorris@chromium.org> wrote:
+> >   
+> > > When a child device suspends, it does not update the last_busy timestamp
+> > > for its parent. If that parent configured autosuspend and didn't
+> > > otherwise maintain its last_busy timestamp, it may now be immediately
+> > > eligible to suspend. This is probably not expected -- the parent should
+> > > wait for its autosuspend delay before suspending.  
+> > 
+> > So reading this again - I wonder if this text is describing the
+> > expected behaviour.  
 > 
-> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
-Hi Ariana
+> Agreed, this might give the wrong impression, depending on the
+> assumptions the reader makes about autosuspend delay. (I think I had a
+> particular problem scenario in mind, but didn't translate that properly
+> here.)
+> 
+> > If the child is also using autosupend then, in extreme case, that time
+> > might be longer than the autosuspend time of the parent.
+> > If so it seems odd the parent still waits.  
+> 
+> Right, that seems wrong, and indeed that's not what this patch does.
+> 
+> > So most expected to me
+> > would be if the parent were to suspend it's autosuspend time after
+> > the parent or child was last used for something that indicate a
+> > desire not to suspend (that shouldn't include actions the child
+> > did whilst suspending).  
+> 
+> (Not sure I'm parsing this sentence quite right, but...)
+> 
+> The point is that last_busy should propagate (rather than, say, the
+> expiration time). So each device still gets its own-delay-based
+> autosuspend timer expiration. That may mean the parent waits longer than
+> the child, but it may not, if the child's delay was longer than the
+> parent's.
+> 
+> > Maybe there isn't a sensible way to deal with this and what you have here
+> > is the best we can do.  Note that this is just commenting on this
+> > statement in the commit description.  From what follows I think
+> > this is just a commit description thing rather than functional.  
+> 
+> If I'm understanding what you're saying correctly: maybe it would be an
+> improvement here to say:
+> 
+>   If that parent configured an autosuspend delay longer than its child's
+>   and didn't otherwise maintain its last_busy timestamp, it may now be
+>   immediately eligible to suspend.
+> 
+> I think that would more accurately describe the target problem, even if
+> it doesn't cover all cases (such as when the parent delay is shorter).
 
-Various comments inline.  Biggest one is that i2c block reads of 2 bytes
-are i2c smbus word reads unless I can't read the 'diagrams' in
-https://www.kernel.org/doc/html/v5.5/i2c/smbus-protocol.html
-I forgot about that until this read through.
+Agreed. That covers the main case nicely.
 
-Even better we have swapped variants for when a device puts the bytes
-in big endian order.
+> 
+> > > The effect of this behavior is that a parent device may suspend sooner
+> > > than its autosuspend delay, simply because its usage was accounted by
+> > > its children, and not by direct references to the parent device.  
+> > 
+> > Sooner is indeed bad.
+> >   
+> > > 
+> > > This was noticed in several cases, and some have implemented
+> > > workarounds, such as in commit c537d3457542 ("iio: adc: stm32-adc: fix
+> > > runtime autosuspend delay when slow polling"). At the same time, Ulf
+> > > suggested these problems "should be solved in the runtime PM core" [1].
+> > > 
+> > > Instead of working around the problem in drivers, we propagate last_busy
+> > > timestamps from a dependent device to its dependencies any time it may
+> > > allow a dependency to suspend -- i.e., when releasing a refcount for its
+> > > parent or suppliers. We take care to only propagate the timestamp if it
+> > > is larger than the existing busy timestamp.  
+> > 
+> > So this sounds fine but I don't think aligns with that first paragraph.
+> >   
+> > > 
+> > > Note that this works best if the dependent device is using autosuspend
+> > > (and therefore updates its last_busy timestamps appropriately), but even
+> > > for a non-autosuspend child, this is still somewhat useful --
+> > > non-autosuspend devices still automatically update their last_busy every
+> > > time they resume.  
+> > 
+> > Can we set the last busy on the suspend of child devices that aren't
+> > suspending as a result of autosuspend timeout but for other reasons?
+> > (may be some fiddly corners!)  
+> 
+> Do you have concrete use cases in mind, or do you bring this up simply
+> because of my note?
 
-In general I agree with Andy that there this driver needs a good
-read through and tidy up. Various bits of inconsistent style
-and odd code flow seems to have evolved.  Happens to us all
-from time to time when working on too many versions of a driver!
+Just your note ;)
+> 
+> For one, I feel like for devices with power.use_autosuspend==true, it's
+> reasonable to expect drivers to use the appropriate helpers to update
+> last_busy at the appropriate times, and so any "corner cases" are from
+> misuse.
+> 
+> But if you mean non-use_autosuspend devices: I suppose it'd be possible
+> but I haven't reasoned through the implementation very far yet. It
+> almost seems like we'd need to plumb pm_runtime_mark_last_busy() into
+> *all* the put() helpers, including the non-autosuspend ones
+> (pm_runtime_put(), pm_runtime_put_sync()). I'm not quite sure if that's
+> desirable. But I could try to look a bit more, if you think there are
+> important use cases that would need this.
+If it is hard not a problem to leave it as is and call out the limitation
+as you have done.  Someone who needs it can figure it out!
 
-Thanks,
 
 Jonathan
 
-> diff --git a/drivers/iio/adc/pac1711.c b/drivers/iio/adc/pac1711.c
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..6adc37a7ba0be882397a15b749bd9b1a657a96d6
-> --- /dev/null
-> +++ b/drivers/iio/adc/pac1711.c
-
-> +
-> +static int pac1711_reg_snapshot(struct pac1711_chip_info *info, bool *refreshed)
-> +{
-> +	u32 wait_time;
-> +	int ret;
-> +
-> +	guard(mutex)(&info->lock);
-> +
-> +	/* No hardware refresh is needed */
-> +	if (refreshed)
-> +		*refreshed = false;
-> +
-> +	/* Return early if the minimum polling time hasn't elapsed */
-> +	if (!time_after(jiffies, info->chip_reg_data.jiffies_tstamp +
-> +			msecs_to_jiffies(PAC1711_MIN_POLLING_TIME_MS)))
-> +		return 0;
-> +
-> +	wait_time = (1024 * 1000) / pac1711_samp_rate_map_tbl[info->sample_rate_idx];
-
-3 of these?  helper.
-
-> +
-> +	/* A hardware refresh will happen */
-> +	ret = pac1711_reg_snapshot_locked(info, wait_time);
-> +	if (!ret && refreshed)
-> +		*refreshed = true;
-> +
-> +	return ret;
-> +}
-
-> +
-> +static int pac1711_set_acc_enable(struct pac1711_chip_info *info, int val)
-> +{
-> +	struct i2c_client *client = info->client;
-> +	struct device *dev = &client->dev;
-> +	u32 wait_time, sample_rate;
-> +	int ret = 0;
-> +
-> +	if (val != 0 && val != 1)
-> +		return -EINVAL;
-> +
-> +	guard(mutex)(&info->lock);
-> +
-> +	if (val == info->enable_acc)
-> +		return 0;
-> +
-> +	/*
-> +	 * Force a hardware refresh to zero out the internal accumulators
-> +	 * and start a new measurement window, as the chip accumulates
-> +	 * continuously in the background.
-> +	 */
-> +	if (val) {
-> +		sample_rate = pac1711_samp_rate_map_tbl[info->sample_rate_idx];
-> +		wait_time = (1024 * 1000) / sample_rate;
-> +		ret = pac1711_send_refresh(info, wait_time);
-> +	} else {
-> +		info->chip_reg_data.acc_val = 0;
-> +		info->chip_reg_data.vacc = 0;
-> +		info->chip_reg_data.acc_count = 0;
-> +	}
-> +
-> +	if (!ret)
-> +		info->enable_acc = val;
-> +
-> +	if (ret)
-> +		dev_err(dev, "failed to reset accumulator: %d\n", ret);
-Move this ahead of the if (!ret)  then return from it.
-
-	if (ret) {
-		dev_err(dev, "failed to reset accumulator: %d\n", ret);
-		return ret;
-	}
-	info->enable_acc = val;
-
-	return 0;
-
-is much easier to read.
-	
-> +
-> +	return ret;
-> +}
-
-> +static int pac1711_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct pac1711_chip_info *info = iio_priv(indio_dev);
-> +	int ret, shift;
-> +	u64 tmp = 0;
-
-Declare in more local scope (add {} to appropriate case statements
-and it is always set there anyway so don't init.
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = pac1711_retrieve_data(info);
-> +		if (ret)
-> +			return ret;
-> +
-> +		switch (chan->type) {
-> +		case IIO_VOLTAGE: {
-> +			guard(mutex)(&info->lock);
-> +			*val = info->chip_reg_data.vbus;
-> +			return IIO_VAL_INT;
-> +		}
-> +		case IIO_CURRENT: {
-> +			guard(mutex)(&info->lock);
-> +			*val = info->chip_reg_data.vsense;
-> +			return IIO_VAL_INT;
-> +		}
-> +		case IIO_POWER: {
-> +			guard(mutex)(&info->lock);
-> +			iio_fill_val_int_64(info->chip_reg_data.vpower, val, val2);
-> +			return IIO_VAL_INT_64;
-> +		}
-> +		case IIO_ENERGY:
-> +		case IIO_CHARGE: {
-> +			guard(mutex)(&info->lock);
-> +			iio_fill_val_int_64(info->chip_reg_data.acc_val, val, val2);
-
-Andy covered this. You raced with another helper being introduced that should work
-fine for you as well.
-
-> +			return IIO_VAL_INT_64;
-> +		}
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SCALE: {
-> +		u32 shunt;
-> +
-> +		guard(mutex)(&info->lock);
-> +		shunt = info->shunt;
-> +
-> +		switch (chan->address) {
-> +		case PAC1711_VBUS_REG_ADDR:
-> +			*val = info->features->voltage_millivolts_max;
-> +			*val2 = (info->vbus_mode == PAC1711_FULL_RANGE_BIPOLAR) ? 15 : 16;
-> +
-> +			return IIO_VAL_FRACTIONAL_LOG2;
-> +		case PAC1711_VSENSE_REG_ADDR:
-> +			/*
-> +			 * Currents - scale for mA - depends on the channel's shunt value
-> +			 * (100mV * 1000000) / (2^16 * shunt(uohm))
-> +			 */
-> +			*val = 1526;
-> +			*val2 = shunt;
-> +
-> +			if (info->vsense_mode == PAC1711_FULL_RANGE_BIPOLAR)
-> +				*val = *val << 1;
-> +
-> +			return IIO_VAL_FRACTIONAL;
-> +		case PAC1711_VPOWER_REG_ADDR:
-> +		case PAC1711_VACC_REG_ADDR:
-> +			if (chan->type == IIO_CHARGE) {
-> +				/*
-> +				 * Coulomb counter scale:
-> +				 * 16-bit resolution: (100mV * NANO) / 2^16
-> +				 * 12-bit resolution: (100mV * NANO) / 2^12
-> +				 */
-> +				u64 ref = info->features->has_16bit_resolution ?
-> +						  1525878906250ULL : 24414062500000ULL;
-> +
-> +				if (info->vsense_mode == PAC1711_FULL_RANGE_BIPOLAR)
-> +					ref = ref << 1;
-> +
-> +				ref = div_u64(ref, shunt);
-> +				*val2 = do_div(ref, 1 * NANO);
-> +				*val = ref;
-> +
-> +				return IIO_VAL_INT_PLUS_NANO;
-> +			}
-> +
-> +			/*
-> +			 * Power - uW - it will use the combined scale
-> +			 * for current and voltage
-> +			 * current(mA) * voltage(mV) = power (uW)
-> +			 */
-> +			tmp = info->features->voltage_pv_fsr;
-> +			do_div(tmp, shunt);
-> +
-> +			if (chan->type == IIO_ENERGY)
-> +				*val2 = info->features->has_16bit_resolution ? 32 : 24;
-> +			else
-> +				*val2 = 32;
-> +
-> +			if (info->vsense_mode == PAC1711_FULL_RANGE_BIPOLAR)
-> +				*val2 -= 1;
-> +
-> +			if (info->vbus_mode == PAC1711_FULL_RANGE_BIPOLAR)
-> +				*val2 -= 1;
-> +
-> +			shift = fls64(tmp) - 31;
-> +			if (shift > 0) {
-> +				tmp >>= shift;
-> +				*val2 -= shift;
-> +			}
-> +
-> +			*val = (int)tmp;
-> +
-> +			return IIO_VAL_FRACTIONAL_LOG2;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	}
-> +	case IIO_CHAN_INFO_SAMP_FREQ: {
-> +		guard(mutex)(&info->lock);
-> +		*val = pac1711_samp_rate_map_tbl[info->sample_rate_idx];
-> +		return IIO_VAL_INT;
-> +	}
-> +	case IIO_CHAN_INFO_ENABLE:  {
-> +		guard(mutex)(&info->lock);
-> +		*val = info->enable_acc;
-> +		return IIO_VAL_INT;
-> +	}
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int pac1711_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct pac1711_chip_info *info = iio_priv(indio_dev);
-> +	struct i2c_client *client = info->client;
-> +	struct device *dev = &info->client->dev;
-> +	int new_idx, ret, refresh_time;
-> +	s32 old_samp_rate;
-> +	__be16 val_be16;
-> +	u32 wait_time;
-> +	u16 val_u16;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ: 
-
-	case IIO_CHAN_INFO_SAMP_FREQ: {
-		guard(mutex)(&info->lock);
-
-is commonly done to avoid excessive indent in switch statements
-using guards.  Use it here.  You do so above, so clearly
-were aware of this.  Please check for consistency things like
-this through the whole driver.  Code will often evolve so that
-the style becomes inconsistent.  Happens to us all!
-
-
-
-> +		scoped_guard(mutex, &info->lock) {
-> +			old_samp_rate = pac1711_samp_rate_map_tbl[info->sample_rate_idx];
-> +			new_idx = pac1711_get_samp_rate_idx(val);
-> +			if (new_idx < 0)
-> +				return new_idx;
-> +
-> +			ret = i2c_smbus_read_i2c_block_data(client, PAC1711_CTRL_ACT_REG_ADDR,
-> +							    sizeof(val_u16), (u8 *)&val_be16);
-> +			if (ret != sizeof(val_u16)) {
-> +				dev_err(&client->dev, "cannot read regs from 0x%02X\n",
-> +					PAC1711_CTRL_ACT_REG_ADDR);
-> +				return ret < 0 ? ret : -EIO;
-> +			}
-> +
-> +			val_u16 = be16_to_cpu(val_be16);
-> +			FIELD_MODIFY(PAC1711_CTRL_SAMPLE_MODE_MASK, &val_u16, new_idx);
-> +			val_be16 = cpu_to_be16(val_u16);
-> +			ret = i2c_smbus_write_i2c_block_data(client, PAC1711_CTRL_REG_ADDR,
-> +							     sizeof(val_be16), (u8 *)&val_be16);
-> +			if (ret) {
-> +				dev_err(dev, "Failed to configure sampling mode in 0x%02X\n",
-> +					PAC1711_CTRL_ACT_REG_ADDR);
-> +				return ret;
-> +			}
-> +
-> +			info->sample_rate_idx = new_idx;
-> +			info->chip_reg_data.ctrl_act_reg = val_u16;
-> +
-> +			/* Force register snapshot and timestamp update with a refresh. */
-> +			refresh_time = msecs_to_jiffies(PAC1711_MIN_POLLING_TIME_MS) + 1;
-> +			info->chip_reg_data.jiffies_tstamp = jiffies - refresh_time;
-> +			wait_time = (1024 * 1000) / old_samp_rate;
-> +
-> +			/*
-> +			 * We must wait for cycle completion before updating the
-> +			 * sample rate value.
-> +			 */
-> +			ret = pac1711_reg_snapshot_locked(info, wait_time);
-> +			if (ret) {
-> +				dev_err(dev, "%s - cannot snapshot ctrl and measurement regs\n",
-> +					__func__);
-> +				return ret;
-> +			}
-> +		}
-> +
-> +		return 0;
-> +	case IIO_CHAN_INFO_ENABLE:
-> +		return pac1711_set_acc_enable(info, val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-
-> +
-> +static int pac1711_chip_identify(struct iio_dev *indio_dev, struct pac1711_chip_info *info)
-> +{
-> +	struct i2c_client *client = info->client;
-> +	struct device *dev = &client->dev;
-> +	u8 chip_rev_info[3] = { };
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_PID_REG_ADDR,
-> +					    sizeof(chip_rev_info), chip_rev_info);
-> +	if (ret != sizeof(chip_rev_info)) {
-> +		ret = ret < 0 ? ret : -EIO;
-> +		return dev_err_probe(dev, ret, "product ID not recognized\n");
-> +	}
-> +
-> +	info->features = pac1711_get_features_from_id(chip_rev_info[0]);
-
-I'll ask a silly question.  Can you just read the first byte if
-we don't care about the other 2?   Would be a bit unusual for that to
-cause trouble on an i2c device. If it does, add a comment.
-
-> +	if (!info->features)
-> +		return -ENODEV;
-> +
-> +	indio_dev->name = info->features->name;
-> +
-> +	return 0;
-> +}
-
-
-> +
-> +static int pac1711_chip_configure(struct pac1711_chip_info *info)
-> +{
-> +	struct i2c_client *client = info->client;
-> +	struct device *dev = &client->dev;
-> +	__be16 val_be16;
-> +	u32 wait_time;
-> +	u16 val_u16;
-> +	u8 val_u8;
-> +	int ret;
-> +
-> +	/*
-> +	 * The current/voltage can be measured unidirectional, bidirectional or half FSR
-> +	 * no SLOW triggered REFRESH, clear POR
-> +	 */
-> +	val_u8 = FIELD_PREP(PAC1711_NEG_PWR_FSR_VS_MASK, info->vsense_mode) |
-> +		FIELD_PREP(PAC1711_NEG_PWR_FSR_VB_MASK, info->vbus_mode);
-> +
-> +	ret = i2c_smbus_write_byte_data(client, PAC1711_NEG_PWR_FSR_REG_ADDR, val_u8);
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n",
-> +				     PAC1711_NEG_PWR_FSR_REG_ADDR);
-> +
-> +	ret = i2c_smbus_write_byte_data(client, PAC1711_SLOW_REG_ADDR, 0);
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n", PAC1711_SLOW_REG_ADDR);
-> +
-> +	/* Get sampling rate from PAC */
-> +	ret = i2c_smbus_read_i2c_block_data(client, PAC1711_CTRL_REG_ADDR,
-> +					    sizeof(val_u16), (u8 *)&val_be16);
-
-With two bytes is this different from i2c_smbus_read_word_data(). I checked
-the protocol docs and don't think it is.
-
-Fun bit is that assumes little endian.
-So if it's big endian like here i2c_smbus_read_word_swapped() does the work for
-you.
-
-Check for other places this applies (assuming I'm not missing something).
-
-
-
-> +	if (ret != sizeof(val_u16))
-> +		return dev_err_probe(dev, ret < 0 ? ret : -EIO,
-> +				     "cannot read 0x%02X reg\n", PAC1711_CTRL_REG_ADDR);
-> +
-> +	val_u16 = be16_to_cpu(val_be16);
-> +	info->sample_rate_idx = FIELD_GET(PAC1711_CTRL_SAMPLE_MODE_MASK, val_u16);
-> +	if (info->sample_rate_idx >= ARRAY_SIZE(pac1711_samp_rate_map_tbl)) {
-> +		/*
-> +		 * Use default sample rate in case the chip is configured with an sample
-> +		 * rate unsupported by the driver. The Control Register is updated.
-> +		 */
-> +		info->sample_rate_idx = PAC1711_SAMP_1024SPS;
-> +		FIELD_MODIFY(PAC1711_CTRL_SAMPLE_MODE_MASK, &val_u16, info->sample_rate_idx);
-> +	}
-> +
-> +	/* Configure the accumulation mode */
-> +	FIELD_MODIFY(PAC1711_CTRL_ACC_MODE_MASK, &val_u16, info->accumulation_mode);
-> +	val_be16 = cpu_to_be16(val_u16);
-> +	ret = i2c_smbus_write_i2c_block_data(client, PAC1711_CTRL_REG_ADDR,
-> +					     sizeof(val_be16), (u8 *)&val_be16);
-
-There is a i2c_smbus_write_word_swapped() as well that I think should work here.
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n", PAC1711_CTRL_REG_ADDR);
-> +
-> +	/*
-> +	 * Sending a REFRESH to the chip, so the new settings take place
-> +	 * as well as resetting the accumulators
-> +	 */
-> +	ret = i2c_smbus_write_byte(client, PAC1711_REFRESH_REG_ADDR);
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "cannot write 0x%02X reg\n",
-> +				     PAC1711_REFRESH_REG_ADDR);
-> +
-> +	/*
-> +	 * Get the current (in the chip) sampling speed and compute the
-> +	 * required timeout based on its value the timeout is 1/sampling_speed
-> +	 * wait the maximum amount of time to be on the safe side - the
-> +	 * maximum wait time is for 8sps
-> +	 */
-> +	wait_time = ((1024 * 1000) / pac1711_samp_rate_map_tbl[info->sample_rate_idx]);
-
-Excess brackets + helper as suggested below with that comment with the helper.
-Check whole patch for the brackets issue - I haven't looked that carefully
-and where this is one instance of this - others often hide!
-
-
-> +	fsleep(wait_time);
-> +
-> +	/*
-> +	 * VACC and ACC_COUNT registers increment continuously in hardware and do not
-> +	 * roll over, so without a periodic Refresh (any) command before the worst-case
-> +	 * overflow time is reached, the accumulated data would be silently lost.
-> +	 *
-> +	 * A periodic refresh works regardless of board pin configuration, while
-> +	 * A0/A1 pins are optional (shared with SLOW/GPIO functions and may not be
-> +	 * wired as ALERT on every board).
-> +	 */
-> +	INIT_DELAYED_WORK(&info->work_chip_refresh, pac1711_work_periodic_refresh);
-> +	/* Setup the latest moment for reading the regs before saturation */
-> +	schedule_delayed_work(&info->work_chip_refresh,
-> +			      msecs_to_jiffies(PAC1711_MAX_RFSH_LIMIT_MS));
-> +
-> +	return devm_add_action_or_reset(&client->dev, pac1711_cancel_delayed_work,
-> +					&info->work_chip_refresh);
-> +}
-
-> +
-> +static int pac1711_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct pac1711_chip_info *info;
-> +	struct iio_dev *indio_dev;
-> +	u32 wait_time;
-> +	int ret, err;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	info = iio_priv(indio_dev);
-> +	info->client = client;
-> +
-> +	ret = pac1711_chip_identify(indio_dev, info);
-> +	if (ret == -ENODEV) {
-> +		/*
-> +		 * If it fails to identify the hardware based on internal
-> +		 * registers, use compatible from devicetree.
-> +		 */
-> +		info->features = i2c_get_match_data(client);
-> +		if (!info->features)
-> +			return -EINVAL;
-> +
-> +		indio_dev->name = info->features->name;
-> +	} else if (ret) {
-> +		return dev_err_probe(&client->dev, ret, "Failed to identify chip\n");
-> +	}
-> +
-> +	/* Always start with accumulation channels enabled. */
-> +	info->enable_acc = true;
-> +
-> +	err = pac1711_parse_fw(client, info);
-> +	if (err)
-> +		return dev_err_probe(dev, err, "Error parsing devicetree data\n");
-> +
-> +	ret = devm_mutex_init(dev, &info->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = pac1711_chip_configure(info);
-> +	if (ret)
-> +		return ret;
-> +
-> +	info->iio_info = pac1711_info;
-> +	indio_dev->info = &info->iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = pac1711_setup_channels(indio_dev, info);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Invalid channel configuration\n");
-> +
-> +	/* Read what has been accumulated in the chip so far and reset the accumulators. */
-> +	wait_time = (1024 * 1000) / pac1711_samp_rate_map_tbl[info->sample_rate_idx];
-
-This is repeated a number of times.  A helper function with one clear comment for why it is
-this particular form would be helpful.
-
-> +	scoped_guard(mutex, &info->lock) {
-> +		ret = pac1711_reg_snapshot_locked(info, wait_time);
-> +		if (ret)
-> +			return ret;
-> +	}
+> 
+> Brian
+> 
+> > > Link: https://lore.kernel.org/all/CAPDyKFp=KTf8=zGBSzPYqhjnZpY8xwvjCeM1e-WTKT1QLSxaDA@mail.gmail.com/ [1]
+> > > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > > ---
+> > > Cc: Ulf Hansson <ulfh@kernel.org>
+> > > 
+> > > Changes in v2:
+> > >  * Update comments to explain when/why rpm_propagate_last_busy()
+> > >    performs the update
+> > > 
+> > >  drivers/base/power/runtime.c | 23 ++++++++++++++++++++++-
+> > >  1 file changed, 22 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+> > > index 2a117d6a776f..dd306cbabcd3 100644
+> > > --- a/drivers/base/power/runtime.c
+> > > +++ b/drivers/base/power/runtime.c
+> > > @@ -318,6 +318,22 @@ static int rpm_get_suppliers(struct device *dev)
+> > >  	return 0;
+> > >  }
+> > >  
+> > > +/*
+> > > + * Propagate last_busy timestamp from one device to another, typically when a
+> > > + * device (@dev) releases a reference count on a dependency (@target) and might
+> > > + * allow it to (auto)suspend. This can, for example, prevent overactive suspend
+> > > + * when a dependency's usage is primarily driven by one of its dependents.
+> > > + */
+> > > +static void rpm_propagate_last_busy(struct device *dev, struct device *target)
+> > > +{
+> > > +	s64 busy = atomic64_read(&dev->power.last_busy);
+> > > +	s64 target_busy = atomic64_read(&target->power.last_busy);
+> > > +
+> > > +	while (target_busy < busy)
+> > > +		if (atomic64_try_cmpxchg(&target->power.last_busy, &target_busy, busy))
+> > > +			return;
+> > > +}
+> > > +
+> > >  /**
+> > >   * pm_runtime_release_supplier - Drop references to device link's supplier.
+> > >   * @link: Target device link.
+> > > @@ -348,6 +364,7 @@ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+> > >  		if (!device_link_test(link, DL_FLAG_PM_RUNTIME))
+> > >  			continue;
+> > >  
+> > > +		rpm_propagate_last_busy(dev, link->supplier);
+> > >  		pm_runtime_release_supplier(link);
+> > >  		if (try_to_suspend)
+> > >  			pm_request_idle(link->supplier);
+> > > @@ -710,6 +727,8 @@ static int rpm_suspend(struct device *dev, int rpmflags)
+> > >  
+> > >  	if (dev->parent) {
+> > >  		parent = dev->parent;
+> > > +		if (!parent->power.ignore_children)
+> > > +			rpm_propagate_last_busy(dev, parent);
+> > >  		atomic_add_unless(&parent->power.child_count, -1, 0);
+> > >  	}
+> > >  	wake_up_all(&dev->power.wait_queue);
+> > > @@ -1368,8 +1387,10 @@ int __pm_runtime_set_status(struct device *dev, unsigned int status)
+> > >  		goto out_set;
+> > >  
+> > >  	if (status == RPM_SUSPENDED) {
+> > > -		atomic_add_unless(&parent->power.child_count, -1, 0);
+> > >  		notify_parent = !parent->power.ignore_children;
+> > > +		if (notify_parent)
+> > > +			rpm_propagate_last_busy(dev, parent);
+> > > +		atomic_add_unless(&parent->power.child_count, -1, 0);
+> > >  	} else {
+> > >  		spin_lock_nested(&parent->power.lock, SINGLE_DEPTH_NESTING);
+> > >    
+> >   
+> 
 
