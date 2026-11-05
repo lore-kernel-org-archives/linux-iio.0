@@ -1,47 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793910427;
-	b=AQ4tMJd/+YaKx9/NY/FdrLN8i7jtOQOp9vXTYvU7tWbVxzH6MtQfstDp/9j/Batq6Rjn
-	 3WTiymRHBmZsmsVpYJxpEnN3g5Up9aAJa2noaa/o23/qXstRdO81PPoa4ztkAPAPuKtjb
-	 cZxW0Ns9OPnju8nm/6gHDrshezqe7XrQHF6FkP+ZgLEtOvDkB73rH02rotfNFOxeKojBg
-	 vmysuDG//u1CkQ9BFr4EY1px8H6tMiTHld/OtaYTMH42imQvkdxNtp7FQmW+rw0wHja7b
-	 Zp11RbFLjf1QR0UUzq0c1z2c85yXZCd4eKsF4KFH19acBIZMmimrjepO/CesEPbDRRg==
+	t=1793912951;
+	b=z+T+hr8AZNehW1NlI8FUeUvkCA8fOyhuumQdLn3SWZD8/XwJ7aWp8hGs0NfcVu0EmXlR
+	 IMFnxyl7fC9P/4PiBXHbS3Ybgaj9aUjhQQrercC24bm18vvgVFK6AcIaBjif4aJP4UfnV
+	 juumJbGGDz7bXzS3mXLRtzWa5KE5x46xnMNMRrj8+facmb31dhX1jfsvokeXZI2o0eqCs
+	 UcSrdYupt/1C5fGNIoQIyg5IzvMtuTz/HytuBqrDNFLr+grHe5hrmaNS3vF18bH8pKK5Q
+	 JYDCPNiiEVLDxHB4OCKzPOIyRX70mgZpxXup84bcvAufaj2bo2D07IDe9H5NsYRjs6g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793910427;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=g8P8+TQ+mIFYXzxYjm6s16Bn2EXxuNT9/QxKsRhb6z4=;
-	b=hrXWz/6ZUWy1UEavvCQnJnuhslgXPxtpN/JUj3+gie3Pc8SGuG/icwZRE5/zAOKqyNRd
-	 A4B3DxJ8uevXWbWR6YSUXCrONLKgvRFndKZTdKyXV3r4nUAMXwT5LSMGfmCKeWw18Jf4h
-	 aQ/caZAPZqGknkGkUnRmg599/e7gB1BwYema7GCTRRcC895GMqUWz3Rgq7spmqwlq1+Ec
-	 dDuWD46n3auQMA80dI4ACk2e0xSMHpmTVfDiAFC0dVqtEygqVprGHDLrfPnmxG/2FvzWI
-	 QPhWJ9mEVMtDgsLEWsdAcfqxuag6nR0bCGxkMpR5VIpvYeMDFQkfoHb2wscdYNvTGCw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793912951;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=mmXsAkOvTe3WVQAMlZboYyv00aEx2jHw2gWIu9EAFE0=;
+	b=Y/Z5iNWtuIBpW8YwBTkZn+Qt0yh/ZgMut4+UFMILqXhtrx8ve50mA7YZaxcIPe70Ntgd
+	 HFchFFVcl6nstZV/o95JLMkgOGtLDQf87ahSaXu1Brno1RUUap7EVtWatm0TiWQ/XRXqS
+	 XcAca7toQItdO6ktEbX9J0Mq70Hcz+EFuS3KFYR1NH+v7v1z67K2HDSlzZqr5RzPF++SS
+	 IP74wWp0enaM9srPc1iu9Of1mV+CcS9UM/PTaFuFsLbZQ9UWYNSKrdfKHT4T5mU7J4Wrb
+	 0YT3hDA1myXrYE2YtpwEUzanQdmzNkzqgO4EPkbm+NtHYEqEBwk6UxbBgyYTGXtDcow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onhJ18i0;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IRmExOyB;
+	arc=none smtp.remote-ip=192.198.163.12
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A4B606A326;
-	Thu,  5 Nov 2026 20:27:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C257606EE85;
+	Thu,  5 Nov 2026 21:09:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6C257606EE85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onhJ18i0
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C931F0089F;
-	Thu,  5 Nov 2026 20:27:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793910426;
-	bh=g8P8+TQ+mIFYXzxYjm6s16Bn2EXxuNT9/QxKsRhb6z4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=onhJ18i0tmCwgMpxhDpIrwnZsqxTAUP71kru0jkQKWrnlu3UF4yXe+HlhhDgTa9r9
-	 4FnAUem3x7Ag+mReeb6h0tgIM7MSGVHpZ6mYWBKF4RyLg1Zzksm2EcnfRHEX9ftlHP
-	 8mUvYg1zbr21f8Db9D/nxHvBlPjWMRZuQv7FYx3GRB8FfOZjNww4biQscLeN5olRIA
-	 KX+M5+dxmZxFdVCYi8xryPr1KrU8Pt+/s699sEFiDAEFqp/MZJ/3AT+1SOfWZywkpt
-	 dLB+QwWDvdYw8Jdn2ybVSIr4InN3H6o9s3J+/TKwV+0E4ggz+ZCmOjvT3/jzOeSLSz
-	 pOByuqzWjN7ow==
-Message-ID: <9676c3f4-8b5d-4153-a6bf-9bd2b933aedd@kernel.org>
-Date: Thu, 5 Nov 2026 21:27:01 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IRmExOyB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793912951; x=1825448951;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=15sfF/mRhvZ1F7gdjnRCZKZBTwsyrEZmFW3hQmxHWxo=;
+  b=IRmExOyB7SgM0TwjrCrjAeih6W6sdQnJ1p222CTiK3mYVICs+fMdXyvm
+   w52DWwPacEnoyma0DEfRR15HAJwb3Gu3NYmunvjAgs9oCeu++Wwkaewhn
+   kCUzI6eME/PPjHtv5Z7E0GO65YjC/y9p77IrhOiAxz9kHFo+gpkVAkcFT
+   /qHo3Er8SU3pIPkpIw9kop38CCupea+nlK43E9taA8KMPolmAhwr3sRKY
+   5kIzPKlNEN6QrdkIVaXF8mmPmVj/bkdFAM8zZ95Q3lwVwmLBabYo5/KPk
+   wVazWacyApXnTakvIWTbVZxTDIDdrEeGp/daNm7mrySRC/F0xy5FGrKYL
+   A==;
+X-CSE-ConnectionGUID: UhAFtGrJSjuxdckhaosZOA==
+X-CSE-MsgGUID: bPDLOSPtRjadUfhfdc1jhw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2623512"
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="2623512"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 13:09:10 -0800
+X-CSE-ConnectionGUID: hgM2W9RuSFC+rx2wvSI2pw==
+X-CSE-MsgGUID: w+vm6vohQn6zuZh1/0dk1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="6944811"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by orviesa008.jf.intel.com with ESMTP; 05 Nov 2026 13:09:07 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xP4hk-00000000mrj-3UBk;
+	Thu, 05 Nov 2026 21:09:04 +0000
+Date: Fri, 6 Nov 2026 05:08:59 +0800
+From: kernel test robot <lkp@intel.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: Re: [PATCH v5] iio: chemical: ccs811: Make sampling frequency
+ configurable
+Message-ID: <202611060402.20veo4W8-lkp@intel.com>
+References: <20261104151138.9968-1-nikhilgtr@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,83 +85,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: proximity: Add Benewake TF-Luna
-To: vidhu.linux@gmail.com, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>
-References: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
- <20261031-tf-luna-v2-2-ce403579bb8a@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20261031-tf-luna-v2-2-ce403579bb8a@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261104151138.9968-1-nikhilgtr@gmail.com>
 
-On 30/10/2026 19:53, Vidhu Sarwal via B4 Relay wrote:
-> From: Vidhu Sarwal <vidhu.linux@gmail.com>
-> 
-> Add binding for the Benewake TF-Luna, a single point ToF
-> LiDAR distance sensor with a range of 0.2 m to 8 m.
-> 
-> The sensor talks either UART or I2C, selected by the level of pin 5 at
-> power-up. This binding covers both interfaces. Pin 6 is a data ready
-> output and is described as an interrupt.
-> 
-> Signed-off-by: Vidhu Sarwal <vidhu.linux@gmail.com>
-> ---
->  .../bindings/iio/proximity/benewake,tf-luna.yaml   | 66 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 ++
->  2 files changed, 72 insertions(+)
+Hi Nikhil,
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+kernel test robot noticed the following build errors:
 
-Best regards,
-Krzysztof
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on linus/master v7.4-rc1 next-20261105]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Nikhil-Gautam/iio-chemical-ccs811-Make-sampling-frequency-configurable/20261104-204138
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20261104151138.9968-1-nikhilgtr%40gmail.com
+patch subject: [PATCH v5] iio: chemical: ccs811: Make sampling frequency configurable
+config: x86_64-randconfig-1004-20261105 (https://download.01.org/0day-ci/archive/20261106/202611060402.20veo4W8-lkp@intel.com/config)
+compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261106/202611060402.20veo4W8-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202611060402.20veo4W8-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/iio/chemical/ccs811.c:359:2: error: cannot jump from switch statement to this case label
+     359 |         default:
+         |         ^
+   drivers/iio/chemical/ccs811.c:354:42: note: jump bypasses initialization of variable with __attribute__((cleanup))
+     354 |                 IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+         |                                                        ^
+   1 error generated.
+
+
+vim +359 drivers/iio/chemical/ccs811.c
+
+   345	
+   346	static int ccs811_write_raw(struct iio_dev *indio_dev,
+   347				    struct iio_chan_spec const *chan,
+   348				    int val, int val2, long mask)
+   349	{
+   350		struct ccs811_data *data = iio_priv(indio_dev);
+   351	
+   352		switch (mask) {
+   353		case IIO_CHAN_INFO_SAMP_FREQ:
+   354			IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+   355			if (IIO_DEV_ACQUIRE_FAILED(claim))
+   356				return -EBUSY;
+   357	
+   358			return ccs811_set_sampling_freq(data, val, val2);
+ > 359		default:
+   360			return -EINVAL;
+   361		}
+   362	}
+   363	
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
