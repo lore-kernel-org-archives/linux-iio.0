@@ -1,82 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793872807;
-	b=fQylMqJDSb9oKSijcqEs9FOxrk1HlxuBRXd3l+yrtZpX0NDGo7J3NW2Ezo4LpczJfUc3
-	 5XwqCnaVQae84IGUkJoxW3R6fcOL0b9x8wrRZ/A3TYYZpxH/XO1x+MnD8HRuZOQ7MULjZ
-	 stV4hjD0jnFctl1UAYSjI62DlGDZtoEPzKEsiXVj17oMuqAEQh+Z5q59aqB7/RkAANtzB
-	 OC4ql0XF3nI0lg+hNAdkEuNsL0yeG46aAkayEQ6nUfL5iiIUmmPri3xnMNSuRWG6ftDYs
-	 xoeZ9ROWoa3DMtst47YMqkpz3Srwbp+bPk23zgP/4Z/piQ0MtoVfhsD1OMPj4fxeGSQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793872807;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=370JADXfW9i0EWeJs1wgZBZqKsihj4K7fewf2qq0vn4=;
-	b=o5BImRaQtXXEMg2a0qXV+cXKrVkvnKKM2c9yjBz/9sk0vVZ6DdoFu5GN5xeeGqD8t/mX
-	 aEOOTEZWZutUc02TWcdj97MWJxYTHz6BFthxZ2gebmfsOMXvwS8rrU8lIpaYeaDLJ+st5
-	 LDx1Hc+WFZ0BqocLfN594ZMJa/Rp5P1vz1gV4pH36zs7rulUyHvWIby7f3mnCcJAhNtnr
-	 3WZXEDehZyRL8ucFQaSFMkT5jGBn/FfSbTTjtp8Z490hhlK91bmXS3F8rjzdywHSLdFEv
-	 QUnD08a3knbueeSxQqgmlghg8Yg6Svz3jir9SCgvez6iiLUekzkGOzWbu7oBYtD2IKA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RUUkonw4;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793874082;
+	b=s/UoWdyHlOFapdPFtpawjDGAB/jEk49BYHFING1Mx6U0MnocBSSyodQ+vxjrxUY+/pxL
+	 ks1+aAW8W7MlKsayy5Mkm11TK7Wc1kAgDc+S7ePQMwGcH/KtDDbzeE9rogb8L7K7+uxyi
+	 +GpzvvJAkcZWIN1OR5KcvszI53tTRFZ1IBVcQl5kTfb8bnqmb63wA2eRyY/BSmFs+2sGk
+	 WoWuNLUJC9XLASbQCNqr6pUdGBY9Eqmn1K0LfgP2iy5BNaCNHJHOPN/Hu31MNZSuNQQtS
+	 Lu0yClvzisLipVkO3vwiL6EXvyUAGFqKeC04/2MU4D74P/Dyae9rU3glFLjaSt76Geg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793874082;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=f8+V0rnxAQZoytXwU6raAwftOuX/dJxIAc4luNdjw80=;
+	b=oDGWsd6Deiqhy/lhYw9S3+NTdt6GUvt4SlDwyjUtJUS6v3gHXGdaJdBetCwkSoWYbUVq
+	 UAWGAbaNjFUvb9e2GzB7B8k4BJX4eU9yLFYxzoTqG3sdt2FW9B14Ce63l+HYK7iZ4cWNh
+	 7+tPvnwpd9R/KV1CtR0TBsC77+zAmkUqF6sPEVaQICz+RdbDKdcQsK8AZKeSfPIHtSlnj
+	 oLJ3/HkC101N4idlmc+MH4GqF/Q1udOImwAC17/6at8dfukejov4Of5Ohd07ZQaH/CHsy
+	 Kax52EJLjmsk3Ak+OHsCfwe1YeGyHSLFqNcde9GFtoCEsLRnjVc6s97xJ7bcs07yd7g==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ia5OX5I0;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6084A606A33F;
-	Thu,  5 Nov 2026 10:00:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6084A606A33F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03CCB606A31B;
+	Thu,  5 Nov 2026 10:21:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RUUkonw4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793872807; x=1825408807;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7+Ug2Y9DgI9SCO4BXtWTniKjKlY+RxuQM71CwBaxMws=;
-  b=RUUkonw4Vpd3QV6HVdYgfHs544n62CsxQf8JGMGUT3zgObVx8Hb80JVH
-   mKNfEhiIUXHXlWBXZnx2pjMgRSb1JH6AQfVhm8wVYzMWubQztXoAYdffy
-   sXeBYOKmaG/rABi6ddG5koaMzFFr60xIKNbwb/+Ke7c5k57DssS3zSR2a
-   C4FXYHI81EbDJztVGBI9lMjNHdnMThYrKUQh3YwX0WrhZ3zeH8L7s+KI2
-   EOkk4slLCougD9bPJfjdty9BogJVD7Rh8h7OhDe+e9Kht4PUjRtRjk6nZ
-   EXulMPy9aCKfWcpkfMXQX5CgR0xL2B/McuLFE1fDuWhLUEGcBdnkf2TYt
-   Q==;
-X-CSE-ConnectionGUID: YV5pZZh/QSyx+K8To4WkrQ==
-X-CSE-MsgGUID: vSRmDUhwSm+OLMklUFCgrA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2747324"
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2747324"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 02:00:06 -0800
-X-CSE-ConnectionGUID: +1AEHJ8uS9GaR+4rSJOonw==
-X-CSE-MsgGUID: z22zOkOUTlmfgKu1wErqGw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="7377686"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 02:00:03 -0800
-Date: Thu, 5 Nov 2026 12:00:00 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Satyam Gupta <sgsatyam@google.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Benson Leung <bleung@chromium.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	Tzung-Bi Shih <tzungbi@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>, linux-iio@vger.kernel.org,
-	chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: cros_ec: Use platform sensor_num to unregister FIFO
- callback
-Message-ID: <auxToA8qgIa7vR7k@ashevche-desk.local>
-References: <20261105073107.172121-1-sgsatyam@google.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ia5OX5I0
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793874081;
+	b=TNPKxmmtg184qPEeT/j08C5gV5MZhkhDU8wXPv/pn+JQyqjx/fMlgMOsGoMNtQcNYoQ1
+	 mDQw46PqyH79yKMnLzsC2B+k0u2hKXlfHlMfOhH/zboCRdQHBLRexfF5JprbQFsTxwdZG
+	 5oxYs7r3Bg1eI4ivHkJmyUnto/+wPCVENuGCAKK8KIPZvLk/wxXFGpUgzZIhLTqVLR7qE
+	 PPPRIgF0Mha+mLJUwimzrmm73YTN8uk7uiIAGvi7kprDqUerJ5u+ZIx/zL/PLYzyxLHbX
+	 3F79jbtI+hHMrX9OZbupZlWqHaY9FG+uIc/RI5Gf6vw39RdjwCMBeICnDSm3fRM0rjw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793874081;
+	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=f8+V0rnxAQZoytXwU6raAwftOuX/dJxIAc4luNdjw80=;
+	b=AGcN7LW3AQ96xFGyu3OyqbV7rEno5h8kEqwo9O0ZDMV/FrVNH5UZazIwH7qfVUtTDe80
+	 6bTmUpZDeR3d0rWpYv0PACLPUAh49BaUYRtnRa3/iKx6J2dEfdvfU99oNBtoBgvoaL1u4
+	 kSbQqCrnLd6ewBlzW1/4YEyA0hJd4hWhdhxKImxfTvvKeEOJhQhr5Gn0/1UJCcYXg/u4h
+	 K8Mn7v+ha7Sm+QJbf1LVzi/lh7Kw5YZMLeH9/XL3SM3nA1ppGUlVAXzfR65SBZed4pFJu
+	 ZF33FviIMZ6axncdNC2gh9HaUHz+cErEVNKkwludYqkMioK2Jaadqny9CstWmd+4k3Q==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=90.182.112.124
+Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPSA id 3E53E1F000C1;
+	Thu,  5 Nov 2026 10:21:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793874081;
+	bh=f8+V0rnxAQZoytXwU6raAwftOuX/dJxIAc4luNdjw80=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=ia5OX5I0hASq9892LbGZEIVCIT9f+ubYtcPKQpY8hHVu1pjxp5QmYPs8Axa3Ro9tj
+	 5WdoX7YaZVl59bA+2aeo6MAxHoFN0hVl+lvc1NajxJjMObzHpExrqshP7ZjRhy2OpU
+	 AzkKznOXicrPkQntBd8xF7gvc3QXn1d2vKfna2rBXAWhIZwNB38rJVmP6O2dIPrfgk
+	 jUglhEEojV/Q15jJzuXolHLtocewrZCIBWJ+FWquRBRaYI/hOGaiMkjGIZYNdrcvIX
+	 E/e46HsPBlYSB5AOCcEMf/JFlwOxEIajwJXWRlTtEuEhbPI62SdEIX018YU2X6c+BI
+	 V52TgMcUG660Q==
+Date: Thu, 5 Nov 2026 11:21:12 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: jikos@kernel.org, jic23@kernel.org, bentiss@kernel.org,
+ linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, simeon@maryasin.name, lixu.zhang@intel.com
+Subject: Re: [PATCH v2 3/7] HID: sensor: custom: Disable sensor before hub
+ close on removal
+Message-ID: <20261105112112.00003ba5@kernel.org>
+In-Reply-To: <20261104201403.2039921-4-srinivas.pandruvada@linux.intel.com>
+References: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
+	<20261104201403.2039921-4-srinivas.pandruvada@linux.intel.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,66 +87,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261105073107.172121-1-sgsatyam@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 05, 2026 at 07:31:07AM +0000, Satyam Gupta wrote:
-> cros_ec_sensors_core_register() registers the FIFO callback for the
-> sensor number found in the platform data. The matching cleanup action,
-> cros_ec_sensors_core_clean(), reads the number back from
-> st->param.info.sensor_num instead.
-> 
-> st->param is the EC host command buffer. Drivers fill it in under
-> cmd_lock before each command, while the cleanup action reads it without
-> that lock. It is also set only for physical sensors. If the field holds
-> another value when the device is unbound, the cleanup clears the wrong
-> slot and leaves the callback in place, still pointing to the iio_dev
-> that is about to be freed.
-> 
-> Use the platform data in the cleanup action too, so it always
-> unregisters the slot that cros_ec_sensors_core_register() registered.
+On Wed,  4 Nov 2026 12:13:59 -0800
+Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
 
-Sounds like a Fixes tag is good to have.
-
-> Signed-off-by: Satyam Gupta <sgsatyam@google.com>
+> When removing an enabled sensor, set its power and reporting states to
+> off before closing the hub. Keep the field descriptors alive until the
+> state update has completed, and release the hub's open reference.
+>=20
+> Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
+> Reported-by: =D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=
+=8F=D1=81=D0=B8=D0=BD <simeon@maryasin.name>
+> Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=3D=
+eUdbPthG2xrLqwQQ@mail.gmail.com/
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 > ---
-> Tested on an Android desktop device (6.18, Intel) with two
-> accelerometers and a lid angle sensor: each sensor was unbound and
-> bound 20 times while a reader kept EC commands in flight, then FIFO
-> samples were streamed. Also tested on a ChromeOS device (6.6) with an
-> RGB light sensor, together with downstream changes to that driver.
-> 
->  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 8 ++++----
-> @@ -216,11 +216,11 @@ static void cros_ec_sensors_core_clean(void *arg)
->  	struct platform_device *pdev = (struct platform_device *)arg;
->  	struct cros_ec_sensorhub *sensor_hub =
->  		dev_get_drvdata(pdev->dev.parent);
-> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> -	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> -	u8 sensor_num = st->param.info.sensor_num;
-> +	struct cros_ec_sensor_platform *sensor_platform =
-> +		dev_get_platdata(&pdev->dev);
 
-With context I see it would be better written in the following form:
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
 
-	struct platform_device *pdev = (struct platform_device *)arg;
-	struct device *dev = &pdev->dev;
-	struct cros_ec_sensorhub *sensor_hub = dev_get_drvdata(dev->parent);
-	struct cros_ec_sensor_platform *pdata = dev_get_platdata(dev);
-
-> -	cros_ec_sensorhub_unregister_push_data(sensor_hub, sensor_num);
-> +	cros_ec_sensorhub_unregister_push_data(sensor_hub,
-> +					       sensor_pdata->sensor_num);
-
-	cros_ec_sensorhub_unregister_push_data(sensor_hub, pdata->sensor_num);
-
->  }
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--=20
+Kind regards,
+Joshua Crofts
