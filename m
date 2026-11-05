@@ -1,80 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793903083;
-	b=HziGbH9qpq/2zWkF7MVgazfw8D8UGpzV7yDrFS200XvOUI6WL1FdlsILIkeE/5YtrtDa
-	 FHYzmPLnc5/rgSJHi/E674i95BtRzydlCrN1selRAO7D+zJdqzw9YB/NY3RLTL1WMaPad
-	 Bt8eAb/KcF0azbY5Q1dqxYJ9ugD8RE3lS/c8IYFowp52MzPbkoF1xs4V2F0ZTlrAT4BZL
-	 T7RKrY8RgBsZYDSjlt51bsMyYvmdX8i88SqBuSbh6Tp7H+SAqHXs9OaRf/USuC4rWpeTr
-	 QGC5fcDNtT1p74nB+5Hf0dU2SDz5ovQuspEguaGEelTJ0orpRL+XqO8lRs8/yWi3u6A==
+	t=1793905737;
+	b=MBFHi6i2LENk8/uCZ0j3wzKhPZ4UyQ9SPYiIhbujC2zCYDuaDIbiLxA0/5lZprDY6X7f
+	 smbdtovwRa0mLGcxor+HgxFSSSsNE9fS8zHDhhT45vrWX2gKyxm0qbQn9KrgN1lgTxj+b
+	 7wn+eEZQzAQEktHA7bqGOOv43Ndl4dUDH+dxJo9UpuRrfwQy255INVsmM37VOxk+VKjya
+	 P1o5q4lf5dT0Siw/LLBiMjIFiud9K732NP8MHf8Ricm0Au65myqn9WjUOoetraV5IMU06
+	 lDHvExCn/fWsRabfyg6vlZkPhhCS+NZ9/zoD8Vv7/WOBUmdFM1G06j1/uzgAenYlE6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793903083;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=E6Q8P1340lhjpphLE4vGSu5qYC4hlfkJAY0J5FgHtHo=;
-	b=St/DYKpityVrk253ujuRonaJDKP06bmgX0/LyRGPs9KbGf4DLi1Kw1huxytrhKzYYuXj
-	 4Tre2gd6Y0lKlE9cmdByA7DXm30DH7hqKg1bXdvcLvpTOR2QmdQH85QUayDqsUvQF/uul
-	 dkKtKZO2Y4yb2AHcWSenYxd3vVx06I1MaKOnBh123DYwllJIUOQuuodC8u5gKO1U1knEv
-	 6AjWW1f5etiIK4UzyDKs/aZq54zbO9ZYE7yy2EtwMDR4c2N6eH0Zuj8n1oi1Fmljc8YdJ
-	 cgNWu42cRD+03Ou35W3+3AKFGADClZ7v7gspKlh8YmNWV9LhO1+3a8YKy6sRdHhYlAw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793905737;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=V7cpDqfJH1y1hZnJH2Vx1+b0eI4492tyg6A/STECMPY=;
+	b=b3B/rdzArL09GGzEZNnuPTUZRP+uLJGHEY8LXSAJdvA/hbyDSeGTiPqLjRQyIwJLoYz7
+	 B4fsdZc1Koc80mXH50+/HbSx5NtVtULNa3x/bGIkFTafYh42O/FAMRpAcnChBQ29HL2Sj
+	 fmftHmzpS05ATerx65kslk9v7qtvfBvX0LDOkxJEqQgwExHmFb3s0ezfGjiYlEIslx9F1
+	 8gRVSnRc439PkexCDd6c1y8NGKbYlbGYJy8JTf4Yjc8OrC7ePgFzPAYousJCu1OlU7cFu
+	 ixFbF/uPr0cjqhnC1+0YdjWYSPMbGOYhIXIRbL7rlFzBbZAqut1j+dhiwzJtDVbRgoA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=E05Tioe+;
-	arc=none smtp.remote-ip=192.198.163.7
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LET9d5GD;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F8B606A31B;
-	Thu,  5 Nov 2026 18:24:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70F8B606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C0F606A326;
+	Thu,  5 Nov 2026 19:08:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=E05Tioe+
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793903083; x=1825439083;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GRIUUO0N0cBOPlANN2KKDeJN/d7vjvFPsFxRvjTj6Vo=;
-  b=E05Tioe+uLEdhEDatIhTEDqd0ycMRnJdWcEnaIabETxRbGSbCh4dXUaz
-   uCa4Sv/5kgTew+ilW8YMjOnnRxmk3N+9WPtOa6IYfmEzoMfjGD/7Bfb0O
-   /7hL1vOin/K6Q2DFumd9gIn89GhnvtvD/r4Thc4aYoVrxMmQu5LICSTG5
-   CbjYN1vT1Ox75K83qeApeowuQ1AeRJNHBtn9TKCcr3ZEgx70KfUVNdBZI
-   JijPz00kwyZJOaFL2E0xLYu3wsbnSEd4r00u0/yWu52UgDSAvtSgokNVi
-   xhJ/7tqRO6DgLNXMZLzmvQUuHcDumkn9enAbTlcGN0gngMaA/NzsE8x5X
-   Q==;
-X-CSE-ConnectionGUID: DxYEiW9jT2OhyU/5LCa6Ww==
-X-CSE-MsgGUID: x7oKkk9TSNeLGW5JTg4QTA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2576618"
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2576618"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 10:24:42 -0800
-X-CSE-ConnectionGUID: z4SZqRXTRa2RGIHBG7N8Cw==
-X-CSE-MsgGUID: WnIR7PMzQgymMHOCEdnnXQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="7395680"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa008.fm.intel.com with ESMTP; 05 Nov 2026 10:24:39 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xP28a-00000000mfb-3EkY;
-	Thu, 05 Nov 2026 18:24:36 +0000
-Date: Fri, 6 Nov 2026 02:23:39 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nikhil Gautam <nikhilgtr@gmail.com>, linux-iio@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, Nikhil Gautam <nikhilgtr@gmail.com>
-Subject: Re: [PATCH v5] iio: chemical: ccs811: Make sampling frequency
- configurable
-Message-ID: <202611060115.RlOXqnls-lkp@intel.com>
-References: <20261104151138.9968-1-nikhilgtr@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LET9d5GD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAD3D1F000C1;
+	Thu,  5 Nov 2026 19:08:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793905736;
+	bh=V7cpDqfJH1y1hZnJH2Vx1+b0eI4492tyg6A/STECMPY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=LET9d5GDd0AI7Q3ARWLfcNkSwf/TfYOAsmLg3K5t6xVeJvx7g/INQOasebQmjLKkg
+	 /PGg3W9WCO3J8LYuq3Ob6Qwl4zr6hU3JsTir091SentB8bi7EC0N6YmdGU1QJg8vAo
+	 aeKWauZcS849c6OH1T8KQXyEttfsdWBE7ndjjVcmZ5RQbrEzdz+8gw2VJm0IFdwdT7
+	 XQ3Sabv0bmNxxbgqxBlpZOUrQIuoZPlBgkRcPn+H9KwwM4mynp96WyjtOHn9pMg+en
+	 9xHWepFf4IQld04OQqXn+lg16EyR0quVDOQb4R5kzVixrOzEp41GyDZiPqjwpgfbZL
+	 umqHfLuBo+CAQ==
+Date: Thu, 5 Nov 2026 19:08:51 +0000
+From: Conor Dooley <conor@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Olivier Louvignes <olivier@mgcrea.io>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+Message-ID: <20261105-pregame-ditch-cb9fb68a0040@spud>
+References: <20261102201155.10948-1-olivier@mgcrea.io>
+ <20261102201155.10948-2-olivier@mgcrea.io>
+ <20261102-salute-cylinder-22c9a8896ca9@spud>
+ <C0C6F46A-45B7-4B1E-9398-71CD8A26FBD5@goldelico.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,62 +68,91 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="5rHQxFgV20QGdNEt"
+Content-Disposition: inline
+In-Reply-To: <C0C6F46A-45B7-4B1E-9398-71CD8A26FBD5@goldelico.com>
+
+--5rHQxFgV20QGdNEt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261104151138.9968-1-nikhilgtr@gmail.com>
+Content-Transfer-Encoding: quoted-printable
 
-Hi Nikhil,
+On Thu, Nov 05, 2026 at 10:57:58AM +0100, H. Nikolaus Schaller wrote:
+> Hi Olivier, Conor,
+>=20
+> > Am 02.11.2026 um 21:48 schrieb Conor Dooley <conor@kernel.org>:
+> >=20
+> > On Mon, Nov 02, 2026 at 09:11:54PM +0100, Olivier Louvignes wrote:
+> >> The X1600's SAR ADC has four auxiliary channels and none of the
+> >> touchscreen or battery engines of the JZ47xx ADCs in ingenic,adc.yaml,
+> >> so it gets a binding of its own.
+> >>=20
+> >> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+> >> ---
+> >> .../bindings/iio/adc/ingenic,x1600-adc.yaml   | 53 +++++++++++++++++++
+> >> MAINTAINERS                                   |  5 ++
+> >> 2 files changed, 58 insertions(+)
+> >> create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,x=
+1600-adc.yaml
+> >>=20
+> >> diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-a=
+dc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+> >> new file mode 100644
+> >> index 000000000000..f6356ea97980
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+> >> @@ -0,0 +1,53 @@
+> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >> +%YAML 1.2
+> >> +---
+> >> +$id: http://devicetree.org/schemas/iio/adc/ingenic,x1600-adc.yaml#
+> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >> +
+> >> +title: Ingenic X1600 ADC
+> >> +
+> >> +maintainers:
+> >> +  - Olivier Louvignes <olivier@mgcrea.io>
+> >> +
+> >> +description:
+> >> +  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input cha=
+nnels
+> >> +  measured against a 3.3 V reference.
+> >=20
+> > The wording here makes me wonder if a 3v3 supply is missing here? Or is
+> > this some internal supply on the soc?
+>=20
+> It is an external SADC_VREFP input pin (ball P12) which is usually connec=
+ted to
+> the 3v3 supply. But it is specified to be min=3D0V .. typical=3D3.3V ... =
+max=3DVADC
+> voltage levels.
+>=20
+> VADC is indeed the power supply for the SADC on a separate ball. It must
+> be in the range of 2.97V .. 3.3V .. 3.63V so that it is extremely likely =
+to be
+> connected to the system 3.3V rail.
 
-kernel test robot noticed the following build errors:
+Probably there should be at least an optional supply then, in case it
+has a dedicated one for $reasons.
+pw-bot: changes-requested
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v7.3 next-20261105]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Thanks,
+Conor.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nikhil-Gautam/iio-chemical-ccs811-Make-sampling-frequency-configurable/20261104-204138
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20261104151138.9968-1-nikhilgtr%40gmail.com
-patch subject: [PATCH v5] iio: chemical: ccs811: Make sampling frequency configurable
-config: arc-randconfig-1000-20261105 (https://download.01.org/0day-ci/archive/20261106/202611060115.RlOXqnls-lkp@intel.com/config)
-compiler: arc-linux-gcc (GCC) 8.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261106/202611060115.RlOXqnls-lkp@intel.com/reproduce)
+>=20
+> Therefore I do not see a necessity to require a separate regulator refere=
+nce here.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611060115.RlOXqnls-lkp@intel.com/
+--5rHQxFgV20QGdNEt
+Content-Type: application/pgp-signature; name=signature.asc
 
-All errors (new ones prefixed by >>):
+-----BEGIN PGP SIGNATURE-----
 
-   In file included from drivers/iio/chemical/ccs811.c:18:
-   drivers/iio/chemical/ccs811.c: In function 'ccs811_write_raw':
->> include/linux/cleanup.h:298:2: error: a label can only be part of a statement and a declaration is not a statement
-     class_##_name##_t var __cleanup(class_##_name##_destructor) = \
-     ^~~~~~
-   include/linux/cleanup.h:422:34: note: in expansion of macro 'CLASS'
-    #define ACQUIRE(_name, _var)     CLASS(_name, _var)
-                                     ^~~~~
-   include/linux/iio/iio.h:817:2: note: in expansion of macro 'ACQUIRE'
-     ACQUIRE(__priv__iio_dev_mode_lock_try_direct, claim)(dev)
-     ^~~~~~~
-   drivers/iio/chemical/ccs811.c:354:3: note: in expansion of macro 'IIO_DEV_ACQUIRE_DIRECT_MODE'
-      IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauzUQwAKCRB4tDGHoIJi
+0r8CAQCHI9gqXrfjEz8CofeFY5j+Ga0itdM/tPS1ksd1H+qUsAEA1KxEDpDfxkas
+NnICKTM6EXj60ZHCA3zoEw8srW6ZJA4=
+=0+bX
+-----END PGP SIGNATURE-----
 
-
-vim +298 include/linux/cleanup.h
-
-54da6a0924311c7 Peter Zijlstra 2023-05-26  293  
-2deccd5c862a033 Peter Zijlstra 2026-03-09  294  #define EXTEND_CLASS(_name, ext, _init, _init_args...)			\
-2deccd5c862a033 Peter Zijlstra 2026-03-09  295  	EXTEND_CLASS_COND(_name, ext, 0, _init, _init_args)
-2deccd5c862a033 Peter Zijlstra 2026-03-09  296  
-54da6a0924311c7 Peter Zijlstra 2023-05-26  297  #define CLASS(_name, var)						\
-54da6a0924311c7 Peter Zijlstra 2023-05-26 @298  	class_##_name##_t var __cleanup(class_##_name##_destructor) =	\
-54da6a0924311c7 Peter Zijlstra 2023-05-26  299  		class_##_name##_constructor
-54da6a0924311c7 Peter Zijlstra 2023-05-26  300  
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+--5rHQxFgV20QGdNEt--
