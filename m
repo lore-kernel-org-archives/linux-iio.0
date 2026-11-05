@@ -1,104 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.46.27
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793888646;
-	b=ebJ196OJpmg8ffeo50uA0ysICiWjvlfXuudvwjT12cQxgMolND6OZiG21ApE7Lne4liT
-	 lMBvCLUAcVXejWdlhQJcKc/TRb9QkTEsCDQPADQWEuJt4DknsH+qSFllW9iDqKkcTqBEX
-	 W0GHufGQO8fyPw0ZBVDdYheC9+/bxVzLewQFgptUTk5Paom+tQA4Vt0FLOGy9SOTNbM1R
-	 Ltn2Sa+AUQoz6veng0MCsFTlJXeXIfS20P1cfwpI10zWyoWnxHdLpDSjFLkZy6iGpGC7C
-	 bqN+7LpUnMJx+1HHdRYrbt57U2K2dMbzHHwyE/W8cJlvdsoh+hW4P9BKeeeUTjdAL6Q==
+	t=1793892691;
+	b=4ccI4EDlrHI0zWA4jMmmEbVK5j35hg7nvnhNtffOU2cc8pdhICaqJAr6ApmlYfzyMkZ/
+	 Rt4kWjGX95HFwS1h7KRSW5S6kvvRNWsNfxQvs/H+KJJzwPpkp4bplwkBncmHl9eKL2z0P
+	 A4LlV0fLTpEFr9EUlrwwjkzcxjqZGbrtitK0QU5B6Ia69yq+OoaI9FWoO/spOW+VtwuKK
+	 y8CChXvs19eGITG0cwiAf0BGXRJjJh/05x8yJDjQ7ZenvZtPjMgTwtB7ZH1JRsTTpOpRf
+	 Lb5dlZanOfGD219cIXkUN28fRz75ZM+HifXfNXWHdaE9Wxb3D7vHIbt+YKyZmoUsXSA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793888646;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=lKRyd6jPZ38O4z5cge9frYoPKfd8yqA+2zb6XL9yHDw=;
-	b=zkXaFpWvQf9skiBmNFOelv3iGDbM+Fp3A/+Y7XlpaKDiDX7HwqNMUgtaNGuy+q4oAmev
-	 gqmYqV3pP+mTc4cCiHonikvrm+wKMnxVytHPOvYlIZnUCaMAhKyEbPmRVfI4S8ER7Xh8o
-	 OwmVih+fIGV0p1OjrRtUXhWEm6xzQtPsuhG1AeCC+T04v58kgkjouh9FBUko+LWxvs3Jd
-	 9fIQcJN31sw521JEDFdZ0/IuhSwfexwK5T6BghqTKljbnbKV29ZNFT3rkQ7F7zpy5/Qt/
-	 Temgem03X75TnhfTWbFLoLIq25ZK6Cqsizijvy2biEcTRK0UW7PT3cAyvp28JUi68Pw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793892691;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=yiM2+qWqrWpX2d99iNyQUbswa+iIJehyzs1jXXgMmXs=;
+	b=Vgwr3OrrrGy2wy2Er1qLCGYoEkAEg8M5lMy5Y5PnNfZZlKN7rfu6bIpjHZrNNJ4DFt7M
+	 VzLHEU+yNCWAz8gSv4wZHLOxzTdpJvffIJtJuyIQkFWEz6JmcqWGFCN8ATrGVH/7H9W/M
+	 doeIvVytXPfnOqdoNzpXmjfaTpURjh4fd8crEmXnd56Ue+9d9DLdPAwOONfS5nW4MAYur
+	 slU/ehx85ftXFmgmd3pHe+XwpNB3jb9+0Cib8ypDqZbJfcMDrkiUIKLzFnGSTKwb5BzCo
+	 xQMCQDosksPJVxo9Nj8KCVooxiAsoODN0fpztXdMXHd2BzN5bRyYZ1Uraqc1ql9+gsQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EuPhVUPU;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.46.27
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010027.outbound.protection.outlook.com [52.101.46.27])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TgC0JBFU;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C62F6606A31B;
-	Thu,  5 Nov 2026 14:24:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C62F6606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0124606D82D;
+	Thu,  5 Nov 2026 15:31:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=EuPhVUPU
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=yTQ3lBP7t1HohBIxH0AxKro3SRKet1hE+wQ5PzLPI7+H99K1wz3a4pKvo2hb4WpbCkpGZnCCPrFMLxnu8O9+d0SGE+EcsIZHpPi166NYf+nGCfTncS2doKnrlew+a+s83vS0AiwNg4AmkeN0Q+iB/j06CYZF5b2HhcCaevENnsqZjbABGuvx7VSUXKj0RQDEM0j0crA2odfwRfuWwXrwMvFqIi0Q5Z41iagcBpECUbYq1uSnXbh6DH7eUVEZnC/zjqT2NofxwoLPt6Ae23I2x8zvwtm7uDjNbnnuDSGnfpTn45GhK9igkExvrshvodr/pmcm+Nzd3xHxLQw60kUCYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lKRyd6jPZ38O4z5cge9frYoPKfd8yqA+2zb6XL9yHDw=;
- b=awqBlvJ2NOd0+c0k24unn78+kCMb33PvFRi1dWF8f9b3RlGElLl3ZjpMrfcFgsiyvE8jJs2RgHTih2g0gph0BCckuAMecJ4KbtrImVaA/dsbbv6IFcP9X+Kgc7lBw+p0OQspc+CVHS39I3qc90bPCiLWpkrGhzmwQeTU/vT3By97VPJt0yv1+r0nmZ06bbhWer7MYcrjlt9P/1VLTvb+L/eFLsEGhjljcmoeFSUjnPcV2bQioS7n0SX6U5o//Yvmh7J8NNEkwXCUKlrjbbJoLEuORbsMnvMbvuPBIws8OWh9gW1u6AOE7UV/giudBRA1cia6c0Vv6P7uOJ5s0jAKOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lKRyd6jPZ38O4z5cge9frYoPKfd8yqA+2zb6XL9yHDw=;
- b=EuPhVUPUFDSXCSzpb/O5okXz68TN9xM1GftjG7fjBePou/nsV9J3SoBEU1KIhxaJ4sCZuTgfl/XgImBPmyXR0sSCB+qfODlZS+56Fj/0Gc75+IjDIG9XACcd7wW+QEQh5dU5/VH8ArBzHE58Wo4v6sz5NGgYCtZajLvMQWVOCPs=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by CH3PR12MB7523.namprd12.prod.outlook.com (2603:10b6:610:148::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Thu, 5 Nov
- 2026 14:24:02 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0592.009; Thu, 5 Nov 2026
- 14:24:02 +0000
-Message-ID: <e7943b6b-0f3a-4336-8a0b-306aa11c8d31@amd.com>
-Date: Thu, 5 Nov 2026 15:23:56 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] dma-buf: dma-fence: Add flags parameter to
- dma_fence_init()
-To: phasta@kernel.org, Tvrtko Ursulin <tursulin@ursulin.net>
-Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, amd-gfx@lists.freedesktop.org,
- etnaviv@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- imagination@lists.freedesktop.org, lima@lists.freedesktop.org,
- linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
- nouveau@lists.freedesktop.org, virtualization@lists.linux.dev,
- spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
- linux-tegra@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-usb@vger.kernel.org
-References: <20261105113529.1989375-2-phasta@kernel.org>
- <20261105113529.1989375-3-phasta@kernel.org>
- <2f377d0f-2760-4465-ac68-b62210b33bd6@ursulin.net>
- <005b77fd-5bd2-4ae5-a0c0-cff3f1f6c680@amd.com>
- <f284e3b9501acca2cf41fd19409004de84a36e15.camel@mailbox.org>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <f284e3b9501acca2cf41fd19409004de84a36e15.camel@mailbox.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR0P281CA0085.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1e::9) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TgC0JBFU
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793892691;
+	b=OSNrHhiGCw/FEHYe+LiY1nA4kzR/s+c169Yfx5GosxYK5gSlQGJGxPdILbTe2DKH8Asy
+	 fYOIkqhtOLmBU8awVQSNEaot33jW0S1lWy3Cd2GhkDqNziUms/uqOIuAGMhu0S32VStK0
+	 ziQIRiphSrdLGPkAEPp49LD1CA5BR4xtjuU9dcbh+ib00iwgX25n6DrmHkwy/tgMUfT4a
+	 wc0TCE/EoT+jc4GnpKSwAaFw9ccJE6PEmaHnZSx5xl64Suj1PcCWNvWSdA/x1cfSv4K6p
+	 8snYjRir+zZwoC6f3A95BotaEVQxQA4DQEM39AiyyUpSG8C2i4gnYDF+pra3R683bGQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793892691;
+	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=yiM2+qWqrWpX2d99iNyQUbswa+iIJehyzs1jXXgMmXs=;
+	b=q+fS3JzANzYqDmNA+x+8jU+ykhHExNGNCAximltdubICj3uUgA2WXuTWtWhQvwhb55u0
+	 S9kya/ErBk4/b6Xe4R+7RW7+kyK7kBDzDw7gyttkI8iyrePb/LbbjNzfDdtdrYxrZP1f1
+	 K/g9iBxpflcTkOsB24MVKSbEoZi4XSEyj9Pm8gBTaed38TGbPMiOzVynVS2o4Nu3b0ydc
+	 GxqJGEuPcFOhGUt3YP+iwsGB7OlggkNZX2pfukEF1VNSqRkYmL79E+MK+m13SZCfxO2RT
+	 7mlEDdLu7pZt4xZV0AsxFjd8HHLk76TrEvd5qjivq48WJAafgm+oaHpIcaxst0zpI5Q==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=90.182.112.124
+Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPSA id ED92E1F000C1;
+	Thu,  5 Nov 2026 15:31:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793892691;
+	bh=yiM2+qWqrWpX2d99iNyQUbswa+iIJehyzs1jXXgMmXs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=TgC0JBFUVrX7kzgYx4pzt2nKkXBfgZO+t1vgratxVy53uqq0Om1Ak6JpM/w8edKrH
+	 Tv0t12+v5pzcHrXG8FNqdfVh5lnrlhI+tR1rXVtgiFBeuWUPqLCt7n8ny2NlQvxj/a
+	 eOS7v5vq5unhtEvktM+Py2BDNpZ0QNdNoGPrzeYiRDeVU+l2ovrbseXrjrmIMkV2T9
+	 yr2LbOVfjmjhkXJaR9HU3KSg95Ra5uIWnLgTctmzJgd2hyFDftxS+VcgFIkaBdAVqV
+	 yq/HttVz81pGvo4b63s6/mZoY50VQOzOZjl6DX9jYgzVCwKnAut7g0fBemewgRiXSk
+	 Qd0ggY58UUwHw==
+Date: Thu, 5 Nov 2026 16:31:18 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, andy@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com
+Subject: Re: [PATCH v4 1/2] iio: gyro: mpu3050: Split data ready trigger
+ enable/disable into helpers
+Message-ID: <20261105163118.00001538@kernel.org>
+In-Reply-To: <20261104040008.1458-2-laixiangwu@cmss.chinamobile.com>
+References: <20261104040008.1458-1-laixiangwu@cmss.chinamobile.com>
+	<20261104040008.1458-2-laixiangwu@cmss.chinamobile.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,119 +87,107 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CH3PR12MB7523:EE_
-X-MS-Office365-Filtering-Correlation-Id: ec5a5c40-99f4-4e2e-b119-08df3b48704e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|7416014|23010399003|1800799024|376014|22082099003|6133799003|10067099003|18002099003|261026121527099003|56012099006|11063799006|4143699003|261021121427099003|261102123227099003;
-X-Microsoft-Antispam-Message-Info:
-	em4XYO2yBRkv3TPrZO9m5dOjdwSydqv1pRiSz4fLGp90mAQslFzUZPhQKp8HJDUmXH0BskJ7IT5reLK1Zq5C06JbVwjV0Tt0KTWDrEcAeddNJrB+rTW8TESR7wWBIQPLNput/KZ7ItE8V2CYXcxKa8HErwzzPX/8xoVGznoIRWbdDm0wRxH43RYWaxwyp+MDXhDx0Bko+GQr4l9RHtxgTfiYVs58t7QWQO4OVRfetNagjKOxzbf44pIW9TtiTLgOA5FhtiRRga7fmc8EwBYRO8i6EAQqyOnKhTNvfpLsPZS/C2dk5LxCyjF5UfjYbvHvu4PwF+pk63OYYxdA79HpKGdkV7A9raAwQLO6IJqmOIyTSzmnhjOnY3OeAh+e4bItE3pVF3KbkmzAl/6ZqDoYvaG8MFzP8TE+y5PL/gCPq/yXOe4FhEtpyd/Tvl64dCq9KOtsHI7TY0F0Kqy912RFE6O/IXS3/yzvkR+VXkmc5VjIVux91vDsXhsFk6gkze7Xov7m5/8jKNXyFZ5WdICgR3KBg8PGGgJsaRjSWX/yMS4ywRwj0+Ru76vqv2TG0zC0mw8A1cCDgNOmw0NiaMzHAffmb3pYVIfYeC3SjIv0MHNvdxtKMf20Oz03aF2A7NJhQStPYpgU1qT51HYat2MTVlMNTEcT5lMTkWteBOpxDeg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(23010399003)(1800799024)(376014)(22082099003)(6133799003)(10067099003)(18002099003)(261026121527099003)(56012099006)(11063799006)(4143699003)(261021121427099003)(261102123227099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SXlJUGFwRFRuam5mZDNaZGVYYmJGNlFaaitwOUllQTB6TkM1R3RGL2lXVDdP?=
- =?utf-8?B?dVByVTg3QWRNdDhNRnNBMGd6YURpRzA0V3orczRpdEN3ZFdnRExtSzE2TVRN?=
- =?utf-8?B?K0ZwNEVTcU12TWZVZW1vcmwvbVdTVkFUemdKV1p6dWRTWVIrN2tKdTRyYzZt?=
- =?utf-8?B?cHdQRFgzSmYrRGtreFZ1RzcxQlVYWmY5d2w1aldmSnpRRUZZc3JaYkc4TjYr?=
- =?utf-8?B?WFYySVlzQ2JkQ0UxcXM3elVkblBSNStCMWRhRkc3bWprVk50YUcrLzErSnJa?=
- =?utf-8?B?YkVSSkZQUVlMUFJsYVUzUTVid0kvYkxVNDhIRkNDdG9acEdxYVkyc2hQbWx6?=
- =?utf-8?B?MFZoUGI3T2dkVTloY3RGRjNRamhTSlR5RElNYk5wcGpITjY0N1NMU2VUcE1T?=
- =?utf-8?B?Q3pFRlpUaUtZbmErOGFKVW5jRCtMSHBCRGhKU0ZzbUdpZERLOFYzTEZXbEJZ?=
- =?utf-8?B?cHNOam11Nm92clpQUzhnbVJGTE54UzJPTnpvU0tpaWhES090K25mTmN3c3I1?=
- =?utf-8?B?cTdpZ21SMjl0LzN4R0ZBVXFwa25VZjgyZERmL3FtMGVsOUFSa2FoS0I4T2xX?=
- =?utf-8?B?Q3QzYmxLWGFNcFNLWnJ3OWRRbFdCcXdMZ09NSmliRnN1QmZMeTlCN1dSTjJw?=
- =?utf-8?B?R0p0MEl3Y3FjVEJEbU5FaTNTU3cwbTFmWWJzM05BOXNiQUkxMVp1L29CTzIv?=
- =?utf-8?B?ajJiV1BWUUhzSEZiT2tJSnBZZ0hTUnNZUEN4N1N6SDZ4b3lpSDlkQnRTYVhH?=
- =?utf-8?B?RkhaaGFGR0lnMG02Wm9hNW1OZm5mVkQ0c2RGdkp0S3pSd3ErUmdiUHRsMm5r?=
- =?utf-8?B?cjNHRm9GS3ZyclhpZnFvMGNUSkZEVjIyNWRaVnRJZnFQK1NHdGxpNHBwN3V5?=
- =?utf-8?B?a1d5cjMwdXlMMlFLZVB0K1R3cFBXT01QdE5MZVFpQ25lLzQ4ck16aVIzMElH?=
- =?utf-8?B?TnQrMVpXYk45QVVPNlladEdVclBBSWVjdVNNd2JwWkdLSTVoTGFrMlpTcEF2?=
- =?utf-8?B?NG1rdmkvVGxNcHhYOC9LNkZVWmVZOEhibU50OVRRTStRU0ROanRpQU1iK0FV?=
- =?utf-8?B?bVFoY1IvUkNzdDB5OGg5M01nVjdoei9xVEFnTGxLS3gweDV6cEJtVGJ2dmE3?=
- =?utf-8?B?VGdnQ2g3aEt1R0ZsYjFkTUgzdHJidnRDM2dkKzI3TFJZVWZjUFdZQm05YUVr?=
- =?utf-8?B?aEszbGRBTklVcmIzZ1RyaHZqcmRIeTFFWnc4TCs1TlBoRUF6WCtyQ21MRmRL?=
- =?utf-8?B?ZGo3MHJBbG15UGJnUEtNT3hpVDl4cUZiSFhhNytGVmRPeVpqcEU4aHBwMy9z?=
- =?utf-8?B?cDMxWE9lOU85SlFoeTlJRGdKS05mcTlBL3Q4TnJFZUMwQnJMT3R6SXU2T25J?=
- =?utf-8?B?ckZGdjYxZzVlN0loWXRyUU0zRXZBNGtXTFk3UTlYcWR6a1lQL3Era21NM3FI?=
- =?utf-8?B?YXJib21TYytoQ2krRGVWZ3l5ZEVVSmVmY3ZuTlVoM0s2dEFVdE1zTWM3Ni9l?=
- =?utf-8?B?WkQyZ3EvbEcyd0NNcldnUVdIbDJFNG1JbDQxam4vd3hjKytVd05oSWJxZHVi?=
- =?utf-8?B?MVcxUTRYK1dBY2cxTDF3UjdjeWZmWllrVHZOb0ZQUCtjYzd6T01iR1RkSVI4?=
- =?utf-8?B?eWF6NjdTN0lhTm9tQlRUNC9obnloWTNuUzhISHJGaE5aRHArdGZxMG9TdUVl?=
- =?utf-8?B?S3ExeTRwNWFoNmRkNmdsN2FSM1JDaU15TUVIME9reStNUU9MY2lsTVJDMEg1?=
- =?utf-8?B?elBienlmcitpaE9SVThUR2FGblBtdjl6UklDdlNDeWhLd2huYWRHbUlueWxL?=
- =?utf-8?B?NXZaUVVxOE1MTlI5VUV1eDZOWnhqc2M4cDhTdGlJMU1kS1pvWVVqMVpLamsv?=
- =?utf-8?B?ZTVxUW9rQ3lVWmh0R1A0MCthRDJEVFFTYzVKTkZja0VIYXJQRDNpTkQ3QW5j?=
- =?utf-8?B?Rmkvd0NRcm42TW8rSHliWm5rQm81SWFtTVBIclRVTloxQ3FlR3dQTG9qVDdT?=
- =?utf-8?B?YmJtMWNodDlpZERnaFNiM25ESExSN3lKR1B6ME0xWkFzZW96Z2haMlhxcWZX?=
- =?utf-8?B?RUFYSVZZU3hkaXVPVUVUcllNNmRtSVZjakYvSE9nV3ZzTVEvenM0RUJJaWk0?=
- =?utf-8?B?enUwcFU2MjhyUUdmaUxTUVBWUkVVRnh0ZXRhZDdLdWwwd0h5cEllYUJqOG1M?=
- =?utf-8?B?bGplN052VnJWOHNnMHJFcS9SZ1VSWkxmeXhGbzdUWXhOZFNUdURuN1QvbFBP?=
- =?utf-8?B?MTl1SWJ1TXRHRFNBRTQ1dlE5SkhMZmVpbTVOaW5peklLaXBraGFURW53U3Fy?=
- =?utf-8?Q?t5aCMoyO0mSOb5LNGt?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec5a5c40-99f4-4e2e-b119-08df3b48704e
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 14:24:01.9043
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8gut7kjbd5NTDxIdvP6ityKol10YUxTqhhdwlguD9tphlt2DkWnJS3/tYyaeX9Zj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7523
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 11/5/26 13:48, Philipp Stanner wrote:
-> -Cc rust-for-linux, since it was typo'ed and now misses the thread anyways..
+On Wed,  4 Nov 2026 12:00:06 +0800
+Xiangwu Lai <laixiangwu@cmss.chinamobile.com> wrote:
+
+> From: laixiangwu <laixiangwu@cmss.chinamobile.com>
 > 
-> On Thu, 2026-11-05 at 13:35 +0100, Christian König wrote:
->> On 11/5/26 13:06, Tvrtko Ursulin wrote:
->>>
->>> [I aggresively rewrote the To: list because my SMTP won't let me
->>> send this as it was.]
->>>
->>> On 05/11/2026 11:35, Philipp Stanner wrote:
->>>> Currently, there are two init functions for dma_fence,
->>>> dma_fence_init()
->>>> and dma_fence_init64().
->>>>
->>>> Since more future user options for dma_fence initialization would
->>>> require distinct init functions, too, it is better to do this in
->>>> a
->>>> unified way.
->>>
->>> Why not add something like dma_fence_init_flags() and leave the 99%
->>> of the callers out of the (huge) diff? Ie. just port
->>> dma_fence_init64() to dma_fence_init_flags().
->>
->> Well one advantage of the Linux kernel is to avoid such wrappers. I
->> think having more than one function for the same thing basically just
->> adds more confusion.
+> mpu3050_drdy_trigger_set_state() implements both the enable and the
+> disable path of the data ready trigger in the two legs of a large
+> if/else statement.
 > 
-> Do you think all future users would want SEQNO64 by default, btw?
-
-I was considering to invert the flag meaning, e.g. have SEQNO32 instead of SEQNO64.
-
-But as I recently learned even on brand new x86 Intel CPUs you can do non 64bit aligned 64bit writes (yeah x86 architecture!) and PCIe devices see that as two 32bit writes to system memory which might or might not read coherently.
-
-So assuming all future HW will be 64bit is clearly not possible.
-
->>
->> That's also why I would really like to just have one
->> dma_fence_signal() and not like five (or was it four?) variants.
+> Split the two legs out into separate mpu3050_drdy_trigger_enable()
+> and mpu3050_drdy_trigger_disable() helpers and reduce
+> mpu3050_drdy_trigger_set_state() to dispatching to the appropriate
+> one. This is a pure code move with no functional change, done to make
+> the error handling of the enable path easier to read.
 > 
-> It should be dma_fence_signal(fence, error), anihilating
-> dma_fence_set_error(), which is just another massive incentive to add
-> race conditions.
-
-Yeah I'm largely in favor of that as well.
-
-Regards,
-Christian.
-
+> Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
+> ---
 > 
+> Changes in v4:
+> - use an else for the either/or dispatch in
+>   mpu3050_drdy_trigger_set_state(), as suggested by the reviewer.
 > 
-> P.
+> Changes in v3:
+> - none; reposted in a new top-level thread.
+> 
+> Link: https://lore.kernel.org/r/20261103092002.1332-2-laixiangwu@cmss.chinamobile.com
+> Link: https://lore.kernel.org/r/20261101092327.197-2-laixiangwu@cmss.chinamobile.com
+>  drivers/iio/gyro/mpu3050-core.c | 173 ++++++++++++++++++--------------
+>  1 file changed, 99 insertions(+), 74 deletions(-)
+> 
+> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+> index 07c0f9011..62e416df3 100644
+> --- a/drivers/iio/gyro/mpu3050-core.c
+> +++ b/drivers/iio/gyro/mpu3050-core.c
+> @@ -946,103 +946,128 @@ static irqreturn_t mpu3050_irq_thread(int irq, void *p)
+>  }
+>  
+>  /**
+> - * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
+> - * @trig: trigger instance
+> - * @enable: true if trigger should be enabled, false to disable
+> + * mpu3050_drdy_trigger_enable() - enable the data ready trigger
+> + * @mpu3050: device to configure
+> + *
+> + * Power up the device, enable the FIFO and configure the data ready
+> + * interrupt.
+>   */
+> -static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+> -					  bool enable)
+> +static int mpu3050_drdy_trigger_enable(struct mpu3050 *mpu3050)
+>  {
+> -	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> -	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+>  	unsigned int val;
+>  	int ret;
+>  
+> -	/* Disabling trigger: disable interrupt and return */
+> -	if (!enable) {
+> -		/* Disable all interrupts */
+> -		ret = regmap_write(mpu3050->map,
+> -				   MPU3050_INT_CFG,
+> -				   0);
+> -		if (ret)
+> -			dev_err(mpu3050->dev, "error disabling IRQ\n");
+> +	pm_runtime_get_sync(mpu3050->dev);
+> +	mpu3050->hw_irq_trigger = true;
+>  
+> -		/* Clear IRQ flag */
+> -		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+> -		if (ret)
+> -			dev_err(mpu3050->dev, "error clearing IRQ status\n");
+> +	/* Disable all things in the FIFO */
+> +	ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+> +	if (ret)
+> +		return ret;
+>  
+> -		/* Disable all things in the FIFO and reset it */
+> -		ret = regmap_write(mpu3050->map, MPU3050_FIFO_EN, 0);
+> -		if (ret)
+> -			dev_err(mpu3050->dev, "error disabling FIFO\n");
+> +	/* Reset and enable the FIFO */
+> +	ret = regmap_set_bits(mpu3050->map, MPU3050_USR_CTRL,
+> +			      MPU3050_USR_CTRL_FIFO_EN |
+> +			      MPU3050_USR_CTRL_FIFO_RST);
+> +	if (ret)
+> +		return ret;
+>  
 
+Not sure if it's just me, but reading this patch is pretty hard;
+please use histogram as your default diff algorithm [1] when sending
+a patch next time.
+
+Otherwise LGTM (after viewing with the histogram option :)).
+
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
+
+[1] https://git-scm.com/docs/diff-algorithm-option.html
+
+-- 
+Kind regards,
+Joshua Crofts
