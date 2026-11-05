@@ -1,84 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=80.241.56.152
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793885053;
-	b=jqsgAMuofVRCxWa7m6PTsL7UUkulafa4jIIKTDo/b46bwLmiK+q672ycN2NJNaVvaAJs
-	 g85w0E1LXgd7uhuMcOBCuhOL5d7qDi9DgK4sLJ0Dca5YSyVMIcM6BwwrasW+fhKLOdlNK
-	 jAFvKKefQ+Dm2yMJ0iDdj9jdku8m4AztTNQg1ULUnclziZls6wbNcwDxGMkWfzA+GTshu
-	 DiICDzgWOepGNeTmyP4saakEl+Op4bv3IIqyFqrKwm9y4d6I4/b8vYHFcMQFMyhDhLtJr
-	 3MgAYZLByIOuh9giTnVcEUWc23YCUs48QexjuVJyQ19kEHhWfkTaNZ9DXJX958Vp/rA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793885053;
-	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:
-	 Reply-To:To:Cc:Date:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version:X-MBO-RS-ID:
-	 X-MBO-RS-META;
-	bh=cr7b357bQF9gcmhhu+T4xYlpo1IDNyxkNJbpgvGxS7k=;
-	b=WC+IwIPPh/3T3Ki44sWaozuRXYPRDajAznQa226JhsNuPnjXb7Z27npYFT52uxO+n0S9
-	 dTMibUVgsef1fZV7LWlViZ/De8eaPoIyN9niTvuxGcjc0HVIIMALUF8wXobQMBgcIEgaI
-	 pbH8V4v8f8OIkJaEftPX6n3raB3FowIinB3ZmCswoJycdc3T1f93Vit2ZYI/Gt7PeKXqG
-	 yf8DySk8B92Ph31leupBiikujX6poyw2YlLh2U+EGRpAy+WmfREP1qZ+SuzLigoa1yw5c
-	 hK6lTui9tpccLNTUMKJa7lQWC/bgX7EBO1OMLTLR6n0oiPaHjz9scNP9vuy02na3MWg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=mailbox.org;
-	spf=pass smtp.mailfrom=mailbox.org;
-	dkim=pass header.d=mailbox.org header.i=@mailbox.org header.a=rsa-sha256 header.s=mail20150812 header.b=qd0I7Vod;
-	arc=none smtp.remote-ip=80.241.56.152
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793886044;
+	b=BiLis5NOayA6toeBE/0JWqxlQaQAKuU84xGALenNGNNFcHLvzamEDm0spklVzLvOsyn6
+	 LmYP/NYHVWhbZAFrGd756ZYiZOQazd2fTcPyrs/KWQMR1vaTSiBL+LcvahvL7fdEHLEF4
+	 Fgq44bg4gfvxK+jzeSNds2Wjp6sYAkNZbOAUK1HYzKDVoJYAY7k5/yMmVl/CeZBu+ScFg
+	 +9AcaT5L9bS+Hd7jhpOHd5bHF74BsLIco9ESVeOk/GGJyFB3pDh3BMpxtKAKA7x9LfcZY
+	 y0UVqVmEvFiFhxKLzX8AJXNrtYHm3Rrnv/0vbQPGK1GwKAmE7jaJgof6K16/oKCoGPQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793886044;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=O/MF+yzHtwPFQ57KxiYeQDNOPG9nJ4b8etqrS0FvHw4=;
+	b=O4TpXa1yIdkbIxEo2m3lUIvrBDDfXsFI8ybSwQXq+txsyK1hTFwTJffO5Yq/qrkpO1m2
+	 986xqTZ46EBLoU49blYG1Twda4sftjLEkOjDr0IqE6yESCblXM5xaOddz5kLqa883Bt1P
+	 jgKwkJOramwwf7evLBpSWBZn3l20WTHIl17FdkvEzK5lW5b5NzvjuShLMw62Hpy14eEca
+	 GcQFuUxzyUW/lDmnss6Pg50Zo5irL1pZZzwGVc/rhCvC8sYXGR9ElhQNEx1esuqeREtUe
+	 N6eb1M2jDfScaFg33boL0NQHRtIJo0zK914+FGqLfA3nFpZHYQuM28IJDzPYTvvI2nA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C71HwqMy;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23528606A328;
-	Thu,  5 Nov 2026 13:24:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 23528606A328
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6549606A326;
+	Thu,  5 Nov 2026 13:40:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=mailbox.org header.i=@mailbox.org header.a=rsa-sha256 header.s=mail20150812 header.b=qd0I7Vod
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:b231:465::1])
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C71HwqMy
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1793886043;
+	b=T7TXzYPEg7PruJncEnv89umauJb7Vi5xYUB6uI1uDkIYTcjL2euuzwIggk3ldza/fOE0
+	 1INMjC3Y46UBFoxoQssAjVm/Drbuw9Vxe4cGHRN+2TgNxwZs3giMdQC2YXq5GCwuVQ0Rr
+	 cukwRERgNaQESyF0M1H4sPX8Ht1GQ5aOnuWjatYwXyPkqgfba8NBmm2zUwF/Rdt6VzGRa
+	 zOBhiCE8ZYdLt8FMYgWPcbmAzZV1p4MmpSQWqVvL9RTU96iVioVCp8cH7DwrjvN9Q5I7X
+	 5GvICb3r17bAlOOuCpW8N4t76aW/9z8qvVlN76pWYFAzd7BG34m3skAYGW+CYZxKIXA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1793886043;
+	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=O/MF+yzHtwPFQ57KxiYeQDNOPG9nJ4b8etqrS0FvHw4=;
+	b=xTsRWw8Awc3MJ5GwEcj2h5Zq0+lAHGaI7Ht9oL9cFdqzYrEQtUcOYGf1n9PFE+YP6Y/7
+	 tjgJRNTE7+aJLy9vtjIRx1bJNlM9AX8LwgCO62pqYiDi6DEzLAGP/YU0RYE8R3yKkyK1u
+	 8+wTF4krb4iGyWp2NCKs4712502ZUZ+b4+ezgffGYsaWF9ISXQhTxIt53vjjuH76qt2JW
+	 1HScwHKObBLW6aENHJxgyNjfRWRExbRYlMNjpE5x+aubNuMWscKhM13uDo42Sygq6EdMC
+	 Zu7+QeVsyRgb/Y620xc8QW08FY/uEipB1QFSvKhz+RN2lZDuR2jF6XASsyDsmdYs+ZQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=90.182.112.124
+Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4jL31M2Q9yzKp4M;
-	Thu, 05 Nov 2026 14:24:07 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-	t=1793885047; h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cr7b357bQF9gcmhhu+T4xYlpo1IDNyxkNJbpgvGxS7k=;
-	b=qd0I7VodEh/YGmDacD0GpRjBefhw/+7TY4fYCETDCELlDau43W4Iv1ZAtJX5YQM/vD7F/t
-	Io2f6fgGc/1F5ghEf/MwbMRYSvhnO23qAWB8qco1mS8wiPuKLqck7hVRtAjv9KvLCpRwsN
-	5BDGlkKRIyCWuqV/u+BODFeuOQ9d5alieCuk/+Y6suKKqh7/GA3zAEMoUY4UorCuzThBnx
-	RAoCZP1x6JKpPOjnRBqcV4hJHO2lbA1oGvP5u59rPEgEaDAqhk/4utGymk+LRznEokAtCo
-	zHJ1rjx+Yg28UFnUB1y5TF6dTQ9YwzaheqekvhLUbhZMsDBU6ghGaQzycEEhCw==
-Message-ID: <2fa6e631e133acfc7e7de1b287c8b3983168b1c6.camel@mailbox.org>
-Subject: Re: [PATCH 1/3] dma-buf: dma-fence: Add flags parameter to
- dma_fence_init()
-From: Philipp Stanner <phasta@mailbox.org>
-Reply-To: phasta@kernel.org
-To: Tvrtko Ursulin <tursulin@ursulin.net>, Christian
- =?ISO-8859-1?Q?K=F6nig?=	 <christian.koenig@amd.com>, Philipp Stanner
- <phasta@kernel.org>
-Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
-	etnaviv@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
-	imagination@lists.freedesktop.org, lima@lists.freedesktop.org, 
-	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
-	nouveau@lists.freedesktop.org, virtualization@lists.linux.dev, 
-	spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
-	linux-tegra@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-usb@vger.kernel.org
-Date: Thu, 05 Nov 2026 14:24:04 +0100
-In-Reply-To: <b8179edb-bc59-49af-b8d0-f62e39752f3a@ursulin.net>
-References: <20261105113529.1989375-2-phasta@kernel.org>
-	 <20261105113529.1989375-3-phasta@kernel.org>
-	 <2f377d0f-2760-4465-ac68-b62210b33bd6@ursulin.net>
-	 <005b77fd-5bd2-4ae5-a0c0-cff3f1f6c680@amd.com>
-	 <b8179edb-bc59-49af-b8d0-f62e39752f3a@ursulin.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
+	by smtp.kernel.org (Postfix) with ESMTPSA id B6C891F000C1;
+	Thu,  5 Nov 2026 13:40:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793886043;
+	bh=O/MF+yzHtwPFQ57KxiYeQDNOPG9nJ4b8etqrS0FvHw4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=C71HwqMyuXLLzXD6fqSJksKKfASWFITkp/Syu32qyyO8hKhvIPR4q14fxuVU4yd+X
+	 eYlBiYYhp9yIeLikIkieQdxenjMX/27t0RBSHytF42IKnGHqFCEKPPIOKbjxX1R8IC
+	 rMGAFhBLecARKgtNTXIX1DGCJ62usgTfeS2spxBXSTsFej+CtPDB/+NyA7WMuzH88n
+	 ysn3lJNU8Dwh6xQLMF92KeGsd+3PchhjKgFnAHMX89mFgVwqKIaBVcWlNSjyA8HrvW
+	 0pgOfqP7Ou85bMZz/bQCzfor+6Zo3p7Absua2gF2x2mlGpnYF224anllp00OM84Hhg
+	 S1qfQF39PDJfA==
+Date: Thu, 5 Nov 2026 14:40:36 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Sanjay Chitroda via B4 Relay
+ <devnull+sanjayembeddedse.gmail.com@kernel.org>
+Cc: sanjayembeddedse@gmail.com, Jiri Kosina <jikos@kernel.org>, Jonathan
+ Cameron <jic23@kernel.org>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-input@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/5] iio: Remove redundant probe error messages for HID
+ device drivers
+Message-ID: <20261105144036.00002e1e@kernel.org>
+In-Reply-To: <20261105-19-oct-hid-iio-unified-print-framework-v1-1-0b360d9552d9@gmail.com>
+References: <20261105-19-oct-hid-iio-unified-print-framework-v1-0-0b360d9552d9@gmail.com>
+	<20261105-19-oct-hid-iio-unified-print-framework-v1-1-0b360d9552d9@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,38 +91,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MBO-RS-ID: bba065728d0df46fffa
-X-MBO-RS-META: 6r63pcufosrhwuio4jrkztwnqgi8ttuw
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 2026-11-05 at 12:51 +0000, Tvrtko Ursulin wrote:
-> On 05/11/2026 12:35, Christian K=C3=B6nig wrote:
-> > Well one advantage of the Linux kernel is to avoid such wrappers. I
-> > think having more than one function for the same thing basically
-> > just adds more confusion.
->=20
-> Sure we can churn if we really want. But as 99% of callers will be=20
-> passing 0 it's not even very readable. Another option is variadic like=
-=20
-> kmalloc_objs so flags can be optional. Anyway, for consideration only.
+On Thu, 05 Nov 2026 18:11:43 +0530
+Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org> wrote:
+
+...
+
+> @@ -377,20 +377,16 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+>  
+>  	ret = devm_hid_sensor_setup_trigger(dev, indio_dev, name,
+>  					    &accel_state->common_attributes);
+> -	if (ret < 0) {
+> -		dev_err(&pdev->dev, "trigger setup failed\n");
+> +	if (ret < 0)
+
+You could also remove the comparison and just change the checks to `if (ret)`,
+as devm_hid_sensor_setup_trigger() always returns zero on success.
+
+>  		return ret;
+> -	}
+>  
+>  	accel_state->callbacks.send_event = accel_3d_proc_event;
+>  	accel_state->callbacks.capture_sample = accel_3d_capture_sample;
+>  	accel_state->callbacks.pdev = pdev;
+>  	ret = devm_sensor_hub_register_callback(dev, hsdev, hsdev->usage,
+>  						&accel_state->callbacks);
+> -	if (ret < 0) {
+> -		dev_err(&pdev->dev, "callback reg failed\n");
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+>  
+>  	return devm_iio_device_register(dev, indio_dev);
 
 
-It has the advantage of forcing the reader to think about whether he
-wants 64-bit sequence numbers or not. In Rust-fence, for example, we
-completely overlooked that for months:
-
-https://lore.kernel.org/rust-for-linux/20261023175750.2979015-2-phasta@kern=
-el.org/
-
-
-Besides unused flags fields are quite common in APIs. As I state in the
-description, this is also for future extensions, see my race-flag (if
-accepted) as one potential example.
-
-It could also be used for canonically setting the user-flags, which
-users currently do with a manual set_bit(NR, &fence.base.flags;
-
-So I think it's safe to say that it's the right thing for long-term
-reduction of churn and maintainability.
-
-
-P.
+-- 
+Kind regards,
+Joshua Crofts
