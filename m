@@ -1,64 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793905737;
-	b=MBFHi6i2LENk8/uCZ0j3wzKhPZ4UyQ9SPYiIhbujC2zCYDuaDIbiLxA0/5lZprDY6X7f
-	 smbdtovwRa0mLGcxor+HgxFSSSsNE9fS8zHDhhT45vrWX2gKyxm0qbQn9KrgN1lgTxj+b
-	 7wn+eEZQzAQEktHA7bqGOOv43Ndl4dUDH+dxJo9UpuRrfwQy255INVsmM37VOxk+VKjya
-	 P1o5q4lf5dT0Siw/LLBiMjIFiud9K732NP8MHf8Ricm0Au65myqn9WjUOoetraV5IMU06
-	 lDHvExCn/fWsRabfyg6vlZkPhhCS+NZ9/zoD8Vv7/WOBUmdFM1G06j1/uzgAenYlE6w==
+	t=1793906799;
+	b=lqsQeq3mCfFG7rFBJmYR4YWkB5o0Wn+ksPPyy7TOUesOjTi3eMNR4bAMwE7c2CwzYL8r
+	 gnzfULpDrkVIV7UdyGe5X2TvQChyqlSs+nFEDHHa+4GA8uwe8F2pUg1A+qQcYFwOmKibM
+	 xuCenzGdyyFMjgJEjlkN8ySCUBgARDWW/paeLaqIjY8L5NOvCphFH0gWozIFwzUopMcsT
+	 vjcANaIW33I7mZtRLo5vkre95L/hAeUjWjjnAmAhAvdwnjq00ZEJd16A56GgxLHZ/NzLm
+	 YqjyOI6EYoEqXUj9iy1s12zJoBNfEgtyFMySdH+ROYAkzVDNw81wxsDIWS0FebkvI9A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793905737;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=V7cpDqfJH1y1hZnJH2Vx1+b0eI4492tyg6A/STECMPY=;
-	b=b3B/rdzArL09GGzEZNnuPTUZRP+uLJGHEY8LXSAJdvA/hbyDSeGTiPqLjRQyIwJLoYz7
-	 B4fsdZc1Koc80mXH50+/HbSx5NtVtULNa3x/bGIkFTafYh42O/FAMRpAcnChBQ29HL2Sj
-	 fmftHmzpS05ATerx65kslk9v7qtvfBvX0LDOkxJEqQgwExHmFb3s0ezfGjiYlEIslx9F1
-	 8gRVSnRc439PkexCDd6c1y8NGKbYlbGYJy8JTf4Yjc8OrC7ePgFzPAYousJCu1OlU7cFu
-	 ixFbF/uPr0cjqhnC1+0YdjWYSPMbGOYhIXIRbL7rlFzBbZAqut1j+dhiwzJtDVbRgoA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793906799;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
+	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=TZphQxclz2gFW9ezkdnyrlJdzJISPtOa2u0+oLIYQtA=;
+	b=ocpp5xESatwVaeQscbUdhfJrbYr/JWfm8ELEIs0U+/r2yklrO3oiFFZj9SrJN0rLLf+j
+	 maJcAQOkZuSEJ5vskKxebR5Y/tO3XUfgCHkN/sjJSsHh8GjcoKuI3hsCpxmwZ3sH4o+9p
+	 +x2uA17Rnp6mTNuQvWbg3FEJTTw776cHJkwhz0YsqwH6Z4wq5zRdcDZXBrzYIsYSWcjre
+	 8xNsZMv241ETl9JZDvDNHgR7d0uu983O8V8wPxRnIOM8yzUOhWMoXk4chyGA/cUwzv/0l
+	 lG+jIrq/KoFHE+xRUHJbvqJZ5FVXf8DEKzWKmEAvXtqrlq/l5U2XtTiHHfNSuUyNv+Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LET9d5GD;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=maryasin.name;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.218.49
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C0F606A326;
-	Thu,  5 Nov 2026 19:08:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LET9d5GD
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAD3D1F000C1;
-	Thu,  5 Nov 2026 19:08:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793905736;
-	bh=V7cpDqfJH1y1hZnJH2Vx1+b0eI4492tyg6A/STECMPY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=LET9d5GDd0AI7Q3ARWLfcNkSwf/TfYOAsmLg3K5t6xVeJvx7g/INQOasebQmjLKkg
-	 /PGg3W9WCO3J8LYuq3Ob6Qwl4zr6hU3JsTir091SentB8bi7EC0N6YmdGU1QJg8vAo
-	 aeKWauZcS849c6OH1T8KQXyEttfsdWBE7ndjjVcmZ5RQbrEzdz+8gw2VJm0IFdwdT7
-	 XQ3Sabv0bmNxxbgqxBlpZOUrQIuoZPlBgkRcPn+H9KwwM4mynp96WyjtOHn9pMg+en
-	 9xHWepFf4IQld04OQqXn+lg16EyR0quVDOQb4R5kzVixrOzEp41GyDZiPqjwpgfbZL
-	 umqHfLuBo+CAQ==
-Date: Thu, 5 Nov 2026 19:08:51 +0000
-From: Conor Dooley <conor@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Olivier Louvignes <olivier@mgcrea.io>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Cercueil <paul@crapouillou.net>,
-	Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
-Message-ID: <20261105-pregame-ditch-cb9fb68a0040@spud>
-References: <20261102201155.10948-1-olivier@mgcrea.io>
- <20261102201155.10948-2-olivier@mgcrea.io>
- <20261102-salute-cylinder-22c9a8896ca9@spud>
- <C0C6F46A-45B7-4B1E-9398-71CD8A26FBD5@goldelico.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E67C606A329
+	for <linux-iio@vger.kernel.org>; Thu,  5 Nov 2026 19:26:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5E67C606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=maryasin.name
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-c49b431f022so108971666b.1
+        for <linux-iio@vger.kernel.org>; Thu, 05 Nov 2026 11:26:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793906798; x=1794511598;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=TZphQxclz2gFW9ezkdnyrlJdzJISPtOa2u0+oLIYQtA=;
+        b=f8kVjHwzSOMbtWX5a6owhXMO6nVxDVXw6pHcQpZvvRN3m8HWtXVoKSQ9avL8cyCVPf
+         03/IN9y3G8EALaLyhpLS4dZtIiYm67PS+01yIJxlHTVTpx+1/6ib1LBxNB/tsUwolofC
+         xRNXPisx8P4Zvx2FhGXfJWtZPbX6SmY/N0rhA3pSgcGFkZY8uzRyDzAO4LnbqSAM3iPO
+         2V74c/UYUK6oIEC3azxwzXnZkab59zQjmjy6+6QXNW5JVKr5muqft7Zya2ow0Kvx3UtX
+         Qi93Oz4nI/uAhn0QWtDat9sTahqaz2wv0VSvzR3KpEDO2T4YdHbjoBqkxwe+YyggcLmR
+         TXrg==
+X-Forwarded-Encrypted: i=1; AKwUvByR9yzJvshB+P1+dLVr4xYParV7hWW0hSZwpVXHpB2hO1Fkk9rXM0spC1AhZMzfSK6Ov/9o3HCsKYI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/VNHCCZzO4vhhnCgPuUu/Ff1B39WGeJOWagWbEJsJGYkva/TdF
+	GsqnOs+7ddmzz4hr/HPDHJteFsrUCjVg6tN1MV3mVZUcjnW1s3vYY3dQRCe0Ck/i/toPZg==
+X-Gm-Gg: AYBFou17hFCE0jMrw+FGDOxpEfEpHhqJs/GjscY4vvtbKqzSPhclO5TkJy/12pKgAHd
+	KzA50yocvtFvrp9PrEbcYqbesuwruFXolJCAJZPkA0Zf4jh44hSNE91vjkdQ7X/VIAe/rrFo8IB
+	9IVJzhm9Sz663dfYf6yWUEuYGLSRS+0cJ/cEPtTHgILfiv7cXXVcrhT/9h//YJxxJXKqZ5+RE9p
+	MZbf1H+b9bpM7AjjKWdj0GMxdz0r8f8rWjf9rwayTOQ8XrdJPhUWGLE0Swj0rT61faqLeMigPoy
+	9dd3Uvt9DXsJpjz/DnEyREKyD+geC5rej8MRvgDLO5JJn12V077KZgn73G5iur7uCpWDhyWEeIo
+	S7DC6KTDVNmG1vQSuZgE5M4iC7U6UZJ/PiAoG660iBUquVpos883BruEnfn/5x8Y22nEeg9XYoh
+	HdlUHC9yuBnqNwKkSkdIfrMpq8Izqj/EL564krm5YG1Ht2V8KnBZybHUUP/CiBl4AerlJqjuqyg
+	rUERTnj8USGN85B3/Vhv+RR33x8w4uL1AN9s8O+ZuuEipAVV17rs35vpeLLUfBN+MYouuIpBC/3
+	zQmgS5DCPNB0fBC8xMu4qLAFRyPW0jiQYy5wnpHADq1sntpUlSxONzyLC6BNjI8cT00SrQ0SrDo
+	Utn1i1ydWwxoHUmmMD7PJR0W7x/254sABFXNl56v0MdkY+n1aSAP+5nfQ3bCZLI+JNQ/qBGz8x3
+	pfeyvtk3hJ5C7A
+X-Received: by 2002:a17:907:72cc:b0:c42:3a77:80e5 with SMTP id a640c23a62f3a-c4d34cf1aebmr45037066b.29.1793906797526;
+        Thu, 05 Nov 2026 11:26:37 -0800 (PST)
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com. [209.85.208.54])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4d356c6025sm10735666b.73.2026.11.05.11.26.36
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Nov 2026 11:26:36 -0800 (PST)
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6af9a9451daso3636451a12.0
+        for <linux-iio@vger.kernel.org>; Thu, 05 Nov 2026 11:26:36 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AKwUvBy6RP32mh72RDUUA0zZ1qMimkUUheRVLaDB2sARwWQ1IW6WMS3rIGFHSy5aAZxPfqe8tI53OIYYxXo=@vger.kernel.org
+X-Received: by 2002:a05:6402:280f:b0:6b5:8674:c01d with SMTP id
+ 4fb4d7f45d1cf-6b5975277f0mr197220a12.5.1793906796627; Thu, 05 Nov 2026
+ 11:26:36 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -68,91 +83,104 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="5rHQxFgV20QGdNEt"
-Content-Disposition: inline
-In-Reply-To: <C0C6F46A-45B7-4B1E-9398-71CD8A26FBD5@goldelico.com>
-
---5rHQxFgV20QGdNEt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20261104165319.1890851-1-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <20261104165319.1890851-1-srinivas.pandruvada@linux.intel.com>
+From: =?UTF-8?B?0KHQtdC80ZHQvSDQnNCw0YDRjNGP0YHQuNC9?= <simeon@maryasin.name>
+Date: Thu, 5 Nov 2026 22:26:25 +0300
+X-Gmail-Original-Message-ID: <CAM2dg7dnvj7X3Fo9r_=Pn=EHxUwyFEwQN6XdLLPmOAdaY76JfQ@mail.gmail.com>
+X-Gm-Features: AclHuK9weJ0gP1AI6YK6eNmMlqgPCqXQEUZ4hk_XFsi6eDTrhg4oCQvVn1yYuq4
+Message-ID: <CAM2dg7dnvj7X3Fo9r_=Pn=EHxUwyFEwQN6XdLLPmOAdaY76JfQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: hid-sensors: fix fractional part for unit
+ exponents -7 and -8
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: jikos@kernel.org, jic23@kernel.org, bentiss@kernel.org, 
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 05, 2026 at 10:57:58AM +0100, H. Nikolaus Schaller wrote:
-> Hi Olivier, Conor,
->=20
-> > Am 02.11.2026 um 21:48 schrieb Conor Dooley <conor@kernel.org>:
-> >=20
-> > On Mon, Nov 02, 2026 at 09:11:54PM +0100, Olivier Louvignes wrote:
-> >> The X1600's SAR ADC has four auxiliary channels and none of the
-> >> touchscreen or battery engines of the JZ47xx ADCs in ingenic,adc.yaml,
-> >> so it gets a binding of its own.
-> >>=20
-> >> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
-> >> ---
-> >> .../bindings/iio/adc/ingenic,x1600-adc.yaml   | 53 +++++++++++++++++++
-> >> MAINTAINERS                                   |  5 ++
-> >> 2 files changed, 58 insertions(+)
-> >> create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,x=
-1600-adc.yaml
-> >>=20
-> >> diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-a=
-dc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-> >> new file mode 100644
-> >> index 000000000000..f6356ea97980
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
-> >> @@ -0,0 +1,53 @@
-> >> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >> +%YAML 1.2
-> >> +---
-> >> +$id: http://devicetree.org/schemas/iio/adc/ingenic,x1600-adc.yaml#
-> >> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >> +
-> >> +title: Ingenic X1600 ADC
-> >> +
-> >> +maintainers:
-> >> +  - Olivier Louvignes <olivier@mgcrea.io>
-> >> +
-> >> +description:
-> >> +  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input cha=
-nnels
-> >> +  measured against a 3.3 V reference.
-> >=20
-> > The wording here makes me wonder if a 3v3 supply is missing here? Or is
-> > this some internal supply on the soc?
->=20
-> It is an external SADC_VREFP input pin (ball P12) which is usually connec=
-ted to
-> the 3v3 supply. But it is specified to be min=3D0V .. typical=3D3.3V ... =
-max=3DVADC
-> voltage levels.
->=20
-> VADC is indeed the power supply for the SADC on a separate ball. It must
-> be in the range of 2.97V .. 3.3V .. 3.63V so that it is extremely likely =
-to be
-> connected to the system 3.3V rail.
+Tested-by: Semyon Maryasin <simeon@maryasin.name>
 
-Probably there should be at least an optional supply then, in case it
-has a dedicated one for $reasons.
-pw-bot: changes-requested
+Here is what I observe with this patch:
+1. Enable sensor and run xxd /dev/HID-SENSOR-2000e1.3.auto
+2. In the second terminal, do rmmod intel_ishtp_hid
+3. Observed result: xxd stops with "xxd: No such device"
+4. At the same time, in kernel logs I see the following:
 
-Thanks,
-Conor.
+=D0=BD=D0=BE=D1=8F 05 22:19:16 dook kernel: hid-sensor-hub 001F:8087:0AC2.0=
+005:
+timeout waiting for response from ISHTP device
+=D0=BD=D0=BE=D1=8F 05 22:19:19 dook kernel: hid-sensor-hub 001F:8087:0AC2.0=
+005:
+timeout waiting for response from ISHTP device
+=D0=BD=D0=BE=D1=8F 05 22:19:22 dook kernel: hid-sensor-hub 001F:8087:0AC2.0=
+006:
+timeout waiting for response from ISHTP device
+=D0=BD=D0=BE=D1=8F 05 22:19:25 dook kernel: hid-sensor-hub 001F:8087:0AC2.0=
+006:
+timeout waiting for response from ISHTP device
 
->=20
-> Therefore I do not see a necessity to require a separate regulator refere=
-nce here.
+No system crash, so I suppose this is okay?
 
---5rHQxFgV20QGdNEt
-Content-Type: application/pgp-signature; name=signature.asc
+After subsequent modprobe the sensor initializes and works properly.
+No kernel crash with this patch.
 
------BEGIN PGP SIGNATURE-----
+=D1=81=D1=80, 4 =D0=BD=D0=BE=D1=8F=D0=B1. 2026=E2=80=AF=D0=B3. =D0=B2 19:53=
+, Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com>:
+>
+> split_micro_fraction() scales the remainder to micro units by
+> multiplying it by 10^(6 - exp). The unit exponent of a HID field goes
+> down to -8, so exp can be 7 or 8 here. Then the argument of int_pow()
+> is negative, which the unsigned parameter turns into a huge power of
+> ten: 0 modulo 2^64. As a result, the fractional part of a value read
+> from the hysteresis attributes is always reported as 0.
+>
+> Divide by 10^(exp - 6) in these two cases. This matches the reverse
+> conversion in convert_to_vtf_format().
+>
+> Fixes: 73c6768b710a ("iio: hid-sensors: Common attribute and trigger")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+> v2:
+> - Fix __udivdi3 link error on 32-bit by using a 32-bit divisor
+> - Address Andy's comment:
+> Keep no % divisor in a temporary variable next to no / divisor
+>
+>  drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/dri=
+vers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index 9e7c26e37880..d44091faf122 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -96,9 +96,14 @@ static void simple_div(int dividend, int divisor, int =
+*whole, int *micro_frac)
+>  static void split_micro_fraction(unsigned int no, int exp, int *val1, in=
+t *val2)
+>  {
+>         int divisor =3D int_pow(10, exp);
+> +       unsigned int rem;
+>
+>         *val1 =3D no / divisor;
+> -       *val2 =3D no % divisor * int_pow(10, 6 - exp);
+> +       rem =3D no % divisor;
+> +       if (exp > 6)
+> +               *val2 =3D rem / (unsigned int)int_pow(10, exp - 6);
+> +       else
+> +               *val2 =3D rem * int_pow(10, 6 - exp);
+>  }
+>
+>  /*
+> --
+> 2.56.0
+>
+>
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCauzUQwAKCRB4tDGHoIJi
-0r8CAQCHI9gqXrfjEz8CofeFY5j+Ga0itdM/tPS1ksd1H+qUsAEA1KxEDpDfxkas
-NnICKTM6EXj60ZHCA3zoEw8srW6ZJA4=
-=0+bX
------END PGP SIGNATURE-----
 
---5rHQxFgV20QGdNEt--
+--=20
+=D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC,
+=D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=8F=D1=81=D0=B8=
+=D0=BD
