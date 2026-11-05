@@ -1,55 +1,103 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793913551;
-	b=CFdWWNpXpoZL9VOxrCyMKJODKOY8hqWhXZOrFhZLf7jLwLT5Z5b9oGpclxsNCt4yeRzV
-	 5/d4uZEMKuWzmm6FmeX6p17TXsqpIbV3lbJ3d/RS3hEwSEkNIN8j6DEQSIOWpr1tGQnJW
-	 ktJpBHCU+mBHCN/oNo8+VBHae81N69tDz3Z8L5GpYuvDMrDmiMk0Lm9frnNcyHyVZ5oL8
-	 f0eyOkOxBBvpnW+tB1xkiBJKUiqphkWVrZ0/eQEUNl4nyBbLYsfrGMEsc5mZ43e45Lcqu
-	 pYurRk3g6lG7b3wW+T8KDHv0o6Gs/jDDxNOzy1hqeXwiWn3eMZIG/+ZaFTetDtDouwQ==
+	t=1793914410;
+	b=RsiUg73wIqKLLgK0BS8bj/i9kqbTcNPSZnz6XUPVLE7KP/H2i3+RqLHNH4kDnTb1NPh+
+	 +qhrCzP/vspnubiy1TNSwrNp4i4OnhI3OaOZC8pYxNHBX1uPEYLuxGyRuuJErqxYsr/Zv
+	 VIoac+g33zCGcxwjFQKcvlCGsFGnk8FTsmG6Mi1DjrA2oqHF8hSwBUvo4ZfRZL3HBfapl
+	 kdvlvv4bgq3ts0Ah2tr3wWwQCN2LjQ34H40PXg7asFZvwWPUVPNLYdW8Uj0AMO+jJ7Hwg
+	 911fillsuK82mwyIBHbMbh9BXo6sKSYO0MohpNmii44Cw3SMFKemiKEQX2tQp82i7uQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793913551;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=1rj8tKO5/pFqbT+hKQWjyojZu6Y+BFNIgIDZkUjrPRE=;
-	b=YHIX02Ovp/x3oT0M7xeWwJn2K+Zm76a+S5Eq93iEEANosYDOd6lUiMs9HEoUs9hS0dT0
-	 FQlOhHs7uV1HmY9YUSKva+5xPD8BZXP6ow0atCX6MkXbvxSpkF4bmxzTWIPcTw5i7Wiyt
-	 hX4a96nLAMias0J9HUlzSR2DsnTPIJy4PSVMTeV3Wapij0EcMfchcEABxZPIshrqrN+M0
-	 4BtiTqDOhzBvjRS40Ixy2o9uFCo7LpO2YZcUEAPjseZ8bLM0lKUaGpSyWiPfn/rtt/Sl4
-	 wdYJh52UAaWgZzeWNbIqG8LzQZMIzHiNlrZT6mqJ0UCr7zSfz5Y/1vpagfpdn+bei4A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793914410;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=r/eRVXTXK7q+1xsN0z72ZiYGhuDDpDyu+MIjU/i0HJA=;
+	b=re7N+l6zeDfRfyyFyMGR6C2VEtokZWkUt9HlegC3le7qpuNX1EKCCNtI0gcRcoB5uwac
+	 G9RI1nAYw2r3ROpqTotUmK7LJ0/uBJnRmvWwaVWFUwFO44nZhu0sgSKMpdhTxK7QIzOlm
+	 voeRKFZ99jyw3ZkjYTee/QgzsdRll9S2KVInhy5F3GU5rhJlrgw/zHUEgkV6iRh4sg8g+
+	 1Eb7UdB/gDZ5trD41taxWUaJ8EYkcZS7Ft0RbdTN2z6282kRAVKDtWUbkWTR8X2Ij5iQM
+	 u/ziS0Ep5c3zoHBo2PTrPKpDHe814tVPPb0RufBIOMgM85QDJF+KZN2p+dXwzpvse1w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eQAfmjej;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=mgcrea.io;
+	spf=pass smtp.mailfrom=mg-crea.com;
+	dkim=pass header.d=mg-crea-com.20260707.gappssmtp.com header.i=@mg-crea-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HKpISvqV;
+	arc=none smtp.remote-ip=209.85.128.52
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B38C606A333
-	for <linux-iio@vger.kernel.org>; Thu,  5 Nov 2026 21:19:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7D3606D815
+	for <linux-iio@vger.kernel.org>; Thu,  5 Nov 2026 21:33:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BE7D3606D815
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=mgcrea.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mg-crea.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eQAfmjej
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A8D1F008A6
-	for <linux-iio@vger.kernel.org>; Thu,  5 Nov 2026 21:19:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793913546;
-	bh=1rj8tKO5/pFqbT+hKQWjyojZu6Y+BFNIgIDZkUjrPRE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=eQAfmjejgdnCzPDmmvL1g4LJ0FSdCE6YGj3poL/nTRncVJqtrGf9Q9sdCQFzE11Pu
-	 /lEVBQMzOx/43xG2n7rf9MHAQ3mwFDHSy0i7OzmcV7yeEzftKgxESCHD+jPPs2KOLv
-	 QX7XNYXqgT2MHjP2nM0zoLzX7fiNPfIZ7WeblwnPUWes7KGOOC5Nc3ZXiXLD+FSSBP
-	 l637S64oF3PGjMII3+031JqODU00rZZHTUKrMmk249le5undNVv4sk5TV7uBuH6XKA
-	 ANqHplOYmuq1Iy5KOQqh/ce3kYJyxQBBk+qE5TdT6nUWJWREJbcFfWdN5rVgtx54dI
-	 wDme9hKUsZMlA==
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5bffd1e177fso890602e87.0
-        for <linux-iio@vger.kernel.org>; Thu, 05 Nov 2026 13:19:05 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AKwUvByNuGJIus/ObBm0jUOUvcn0rTSoDHr3QCrrPQhy9q+Y+65pQsFonkVT65d6K1Xc2bGBSijCFIuUTM0=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8FtWcQYTpwJ9zC3/dZUuVGn+xSPlLYydOVAjVNQYvm0oHdbSpu
-	lGw1SfZQH1Hr+cZh8NHwoCctKK1watklss+BM1BI0sLOzyF6GYO0pkzc1e0CR8avOhq1jfFZeo8
-	4mEG1SwWQZ3LOrUDNTmVk6UmO4CupmD8=
-X-Received: by 2002:a05:6512:3d15:b0:5bc:f29b:1a5c with SMTP id
- 2adb3069b0e04-5c003ac490dmr84970e87.23.1793913544353; Thu, 05 Nov 2026
- 13:19:04 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=mg-crea-com.20260707.gappssmtp.com header.i=@mg-crea-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HKpISvqV
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4a20bdaf39cso20995e9.1
+        for <linux-iio@vger.kernel.org>; Thu, 05 Nov 2026 13:33:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mg-crea-com.20260707.gappssmtp.com; s=20260707; t=1793914408; x=1794519208; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=r/eRVXTXK7q+1xsN0z72ZiYGhuDDpDyu+MIjU/i0HJA=;
+        b=HKpISvqVCMdcqW4ndGKlzBdukD3Zxa88f3Nhojb/HqyF+yTJe3gpN3REw6lR4V3clk
+         4d1KejipAnVKFl3kHwPzl3BbYW4FHzZERRtK/fGDniwPKtajOzbENYBjws3zzEYZrpGP
+         UR7cx/AH23P6UTibJP00rEy92EvGJOJ4mJtLebYRem0JZtrO6cI4jLuyOopxfsnqD6Hx
+         dgj2XeWTklA4dDml3oRy5IaoNcxIrzdJIKi0ilFefbP0EU095dMIRXGmowVIzry0pAfz
+         RrgjsrACKyM56IcfDYsuHcgr8jCb24nUroiCOuFy25+WWB6W/lFWsXwIQ6uA16vzgvwx
+         BCzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793914408; x=1794519208;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=r/eRVXTXK7q+1xsN0z72ZiYGhuDDpDyu+MIjU/i0HJA=;
+        b=xenDJJVkg8yUYd5sKWIheIQhGH0nNJt4buO3HI1m4b78En8/Ol/97W89A2u1xW1u5e
+         ZtUa2CdgAPu9v0CM5zhTxX49mxufWU6YWUUHCA0Xrb/hDFlxX1r+undejvKYFLxGOL7X
+         ss58cLcNMhktXakJwzF1Yf7EYwau1mdcniMuXcdSjSW/MCd1HWSLfTcpMCuzz5HESElJ
+         Xdcv+H3DpHYSmPPbXE76QxOUyrnsqLzZmoMemWxg0Brrt5CXnpRifjuDtXqpu/M3JG39
+         lFs+A1R9dwWHNfYx6HUvO+0fD4wRq8m2MNFNoYDIUiWte/rPFU0ZyRFmfaDtppUvVfr4
+         cAKA==
+X-Forwarded-Encrypted: i=1; AKwUvBzjU6IIMet2JUxS2KQ2vzHNgtZK2cHLA0f7VQmp6zlGw2e9GbVRMB7VwAjzIEI1NA/r0pkeLIDa90U=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8Eks4yEOca8hdZ+hrRgdevYcteKYwKEkA6YkLMRWOTu/Ty2/7x
+	9pNehdnRxkKu0TYoOIeLZU9TNGZR2dQDwS19MzN6zS4rSy+E8irunie4HfaVqQ/GMQ6ggwD/i64
+	/FKEmXbM=
+X-Gm-Gg: AYBFou2rOVqNB0m+HOaCcvmJ3F8xrffKt0BiX22teZHT7B9E15Ns2RLYCTqyqTSaq6i
+	reMpyN0IY8GvxTECi0SumjMuouUxaCxGTj0cZL3rW/Vx/xb3rDuJ4cAJaYvfe9xHg9AzFUOEzGF
+	ORcNdfnL64NdxwlEiPrKhecV+Bjj//puzhaj5cW+JQ7GcvNHD7N2JJ1oP90f0sB/C+dt2teQUY/
+	FUZcwchnGMthYXacQYS946cNcP1WiErR2bj1Rak0c1mo7COws2JSXMDYMG9zGLboqSoKHg7Frb6
+	LzW8qMqxQSzEI35tw+w3/ERhWEGleeTqAR55Gi8Xinq08KFP5OTforbPURs3BKHtyN3eTyK29dd
+	DQX60Ttb28OQeyUg1ouDriorae2uRHmcRlkKle+WfEd+/uZx6X1tldctJ5smXtrwbUMHM80H+52
+	fXm1rgT0uGYA4lsFfYe9T7Cx9aJ5Bcc7ew3S55LyWfd1z6lrD1WnNVTAQh1GEI5XRqUva3u8MfL
+	T7FvDSMbzj55kfuKOrH05Yash5/H2Kb6Nvdiu2AfG6xI1RPtY5zRhnIMPyGifXlVmqc7Z9uxqMa
+	yqJmJciwbfbKe3lgS+jMtJvctYwTzoDWou1lAKpU+kZGs/GjLJEljT0QHjoO1Q==
+X-Received: by 2002:a05:600c:c10a:b0:4a1:fba8:b13d with SMTP id 5b1f17b1804b1-4b6e5ab6ec5mr4359795e9.9.1793914407493;
+        Thu, 05 Nov 2026 13:33:27 -0800 (PST)
+Received: from localhost.localdomain ([2a01:e0a:9d2:5a71:5c25:f8d1:d9d7:54c1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b411de95b4sm107798385e9.0.2026.11.05.13.33.26
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Thu, 05 Nov 2026 13:33:26 -0800 (PST)
+From: Olivier Louvignes <olivier@mgcrea.io>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Cercueil <paul@crapouillou.net>,
+	"H . Nikolaus Schaller" <hns@goldelico.com>,
+	Joshua Crofts <crofts@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Olivier Louvignes <olivier@mgcrea.io>
+Subject: [PATCH v5 0/2] iio: adc: Add the Ingenic X1600 ADC
+Date: Thu,  5 Nov 2026 22:32:08 +0100
+Message-ID: <20261105213210.87457-1-olivier@mgcrea.io>
+X-Mailer: git-send-email 2.54.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -59,307 +107,108 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261103221717.3840215-1-briannorris@chromium.org>
- <20261103141442.v2.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
- <CAJZ5v0jWCz0XDgzeETbmMfGOmvh2G9qcx7xLODrpQ9NiwsddKA@mail.gmail.com>
- <auuICAm4BC_8Pzs5@google.com> <CAJZ5v0jTX1FgeS9FCV=+V4uacSgLQBVsSPnU27ybgUGg57GUOA@mail.gmail.com>
- <auzlLwlleGLPsLcw@google.com>
-In-Reply-To: <auzlLwlleGLPsLcw@google.com>
-From: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>
-Date: Thu, 5 Nov 2026 22:18:52 +0100
-X-Gmail-Original-Message-ID: <CAJZ5v0g25xQeRaLJWJyAo2fcJko+gZ7w6JhX7FzMgRx2+uuimw@mail.gmail.com>
-X-Gm-Features: AclHuK_Rw1SqQ-ayyKUPK1R6gu5PeotgZxuqEl-8c-_ZkMhL2cIhEUfo-I4VHDo
-Message-ID: <CAJZ5v0g25xQeRaLJWJyAo2fcJko+gZ7w6JhX7FzMgRx2+uuimw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] PM: runtime: Propagate last_busy from dependent to dependency
-To: Brian Norris <briannorris@chromium.org>
-Cc: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 5, 2026 at 9:21=E2=80=AFPM Brian Norris <briannorris@chromium.o=
-rg> wrote:
->
-> Hi Rafael,
->
-> On Thu, Nov 05, 2026 at 12:59:24PM +0100, Rafael J. Wysocki (Intel) wrote=
-:
-> > On Wed, Nov 4, 2026 at 8:31=E2=80=AFPM Brian Norris <briannorris@chromi=
-um.org> wrote:
-> > >
-> > > On Wed, Nov 04, 2026 at 02:34:22PM +0100, Rafael J. Wysocki (Intel) w=
-rote:
-> > > > I should have responded to the v1 of this, but didn't manage to get=
- to
-> > > > it.  Sorry about that.
-> > >
-> > > Hehe, well that's what v2 is for :)
-> > >
-> > > Thanks for looking.
-> > >
-> > > > On Tue, Nov 3, 2026 at 11:23=E2=80=AFPM Brian Norris <briannorris@c=
-hromium.org> wrote:
-> > > > >
-> > > > > When a child device suspends, it does not update the last_busy ti=
-mestamp
-> > > > > for its parent. If that parent configured autosuspend and didn't
-> > > > > otherwise maintain its last_busy timestamp, it may now be immedia=
-tely
-> > > > > eligible to suspend. This is probably not expected -- the parent =
-should
-> > > > > wait for its autosuspend delay before suspending.
-> > > >
-> > > > Let's first talk about what autosuspend is for: My understanding is
-> > > > that it is there to avoid incurring the runtime PM suspend and resu=
-me
-> > > > latency (and cost in terms of energy) in the cases when the device =
-is
-> > > > known or at least is expected to be needed in the near future.  IOW=
-,
-> > > > we want to defer the runtime suspend of the device because if it
-> > > > suspended, it would be resumed shortly thereafter.
-> > > >
-> > > > I'm not sure if that is always the case when a dependent device
-> > > > suspends and its reference to the parent/supplier is dropped.
-> > >
-> > > To be clear: dropping a reference is not the point at which we extend
-> > > the timer -- it's simply the point at which we propagate the last_bus=
-y
-> > > timestamp.
-> > >
-> > > The naive algorithm is:
-> > > Every time a device updates its last_busy, sync that timestamp to all
-> > > its dependencies.
-> > >
-> > > My proposal modifies that naive algorithm so that it avoids additiona=
-l
-> > > graph walks -- it defers that "sync" step until later. (Now that I'm
-> > > spelling this out, I feel like I should have included this in the com=
-mit
-> > > message...)
-> >
-> > OK, thanks for explaining!
-> >
-> > You seem to be arguing that the current behavior is counter-intuitive
-> > because people would generally expect the parent's (or supplier's)
-> > last_busy to be automatically advanced to the last "busy" time of its
-> > last active child (or consumer).
->
-> More or less. Or, I don't see why "child was recently busy and may be
-> busy again soon" should not translate to "everything the child uses
-> might be needed again soon".
->
-> > That is a bit far-fetched IMV because the child's last "busy" time
-> > need not be the same as the parent's last "busy" time, at least in
-> > principle (of course, that is debatable, but that debate can be had
-> > later).
->
-> I don't get this -- I'm very much asking for that debate right now,
-> because so far, I disagree :)
->
-> > Still, the underlying observation seems to be that if the child
-> > suspends and then resumes relatively shortly, it may not make sense to
-> > suspend and resume the parent in the meantime, which is fair enough.
-> > Of course, advancing the parent's last_busy will only help here if its
-> > autosuspend delay is long enough though.
->
-> Right. But that's the whole point of this argument -- if all autosuspend
-> delays were the same, this wouldn't really matter. But the presumption
-> is that the parent wants delay because it's more costly -- it will be
-> imposing extra wakeup cost for its children if it's not accounted
-> properly.
->
-> > So you can argue that if the parent's autosuspend delay is long
-> > enough, then it should prevent the parent from suspending across
-> > relatively short periods of child suspension.  Again, this is fair
-> > enough, so why does it not happen at times?
-> >
-> > It certainly does happen when the parent actually has to resume
-> > because rpm_resume() calls pm_runtime_mark_last_busy() for it then and
-> > (given a sufficiently long autosuspend delay) it will stay active if
-> > the child resumes a short enough time after suspending.  However, when
-> > the child resumes, the parent is still active, so rpm_resume()
-> > triggered by the child does not advance its last_busy timestamp, so at
-> > one point in the future it will suspend when the child suspends.
-> >
-> > This arguably is inconsistent, so my approach to addressing the
-> > problem at hand would be the attached patch (sorry for the attachment,
-> > but GMail is generally not good at handling appended patches).  If I'm
-> > not mistaken, it should be sufficient to address the particular issue
-> > that triggered commit c537d3457542.
->
-> It's only sufficient if the child is not active for "too long". Suppose
-> the child stays active for 2s and then suspends briefly; your solution
-> does not work.
+A driver for the SAR ADC of the Ingenic X1600: four auxiliary channels,
+12 bits, one interrupt per channel. Tested on a HiBy R1, whose keys are on
+channel 0 behind adc-keys.
 
-It doesn't work in the sense that it doesn't do what you want.  But fair en=
-ough.
+As in v3 and v4, this version is X1600-only. The X1830 and the X2000 have
+the same register layout by their programming manuals, and a chip_info
+with the channel count and the resolution can add them later, with a test
+on either.
 
-> In commit c537d3457542, I imagine the 0.2s polling example is just an
-> example;
+Changes in v5:
+- Binding: the reference is the SADC_VREFP pin (X1600 datasheet: ball
+  P12, 3.3 V typical, at most the ADC's own supply), so an optional
+  vref-supply, and the description says so in Nikolaus's words. The
+  driver takes the supply's voltage, and 3.3 V without one. The ADC's
+  analog supply (SADC_AVDD) is left out, like the SoC's other supply
+  pins (Conor's question; Nikolaus answered it).
+- Binding example: reg covers the 4 KiB the programming manual's memory
+  map gives the SADC (Conor; Nikolaus on the map).
+- The driver's declarations in reverse xmas tree, the timeout macro in
+  jiffies with an if/else on the wait, a blank line, and clamp()'s
+  bounds on one line (Andy).
+- The clock stays unnamed: Krzysztof (on v2) and Conor (on v1) asked for
+  clock-names to go, as the block has one clock. A variant with more
+  would come with a compatible of its own and could name them there
+  (Andy asked for a name).
+- The name stays "adc" rather than the vendor's "sadc" (Nikolaus): the
+  JZ4740 datasheet calls its block the SADC too, and mainline binds it
+  as ingenic,jz4740-adc.
+- Andy's Reviewed-by on patch 2, and Nikolaus's Tested-by (LX16, driver
+  only, given on v4) on both.
+- Rebased on togreg after -rc1.
 
-I'm not sure about that, but OK, say it's just an example.
+Tested on the HiBy R1 with v5: without a vref-supply, as the R1 is
+described, the scale falls back to 3.3 V and the three buttons on
+channel 0 work through adc-keys; with a vref-supply pointed, for the
+test only, at the board's 3.3 V PMIC rail, the driver waits for the
+regulator and takes its voltage. v5 is also built with W=1 with and
+without CONFIG_REGULATOR.
 
-> what if that period was 0.1s, with some natural variance up or
-> down? Then I could easily see how the child remains active for longer
-> than 2s, and then occasionally is inactive for longer than 0.1s,
-> allowing both the child and parent to autosuspend.
->
-> Or in concrete terms: see the appended test diff, which attempts to
-> emulate:
->
->  - 200 cycles of child get/put
->  - delay in between each put -> get cycle
->  - delay of approximately 100ms, with a configurable +/- variation
->  - apply the shorter variation (e.g., 90ms) most of the time, with a
->    longer variation approximately every 2s
->
-> So for example, that looks something like:
->
->  cycle 0 to 22:   delay 90ms
->  cycle 23:        delay 110ms
->  cycle 24 to 46:  delay 90ms
->  ...
->
-> With your patch:
->
->    0ms variation =3D=3D PASS (child suspends 200 times, parent suspends 0=
- times)
->   10ms variation =3D=3D FAIL (child suspends 21 times, parent suspends 4 =
-times)
->   20ms variation =3D=3D FAIL (child suspends 7 times, parent suspends 7 t=
-imes)
->   30ms variation =3D=3D FAIL (child suspends 6 times, parent suspends 6 t=
-imes)
->   40ms variation =3D=3D FAIL (child suspends 5 times, parent suspends 5 t=
-imes)
->   50ms variation =3D=3D FAIL (child suspends 4 times, parent suspends 4 t=
-imes)
->   60ms variation =3D=3D FAIL (child suspends 3 times, parent suspends 3 t=
-imes)
->   70ms variation =3D=3D FAIL (child suspends 2 times, parent suspends 2 t=
-imes)
->   80ms variation =3D=3D FAIL (child suspends 1 time, parent suspends 1 ti=
-me)
->   90ms variation =3D=3D PASS (test didn't run long enough to fail)
->
-> With my patch, all cases pass. (The child suspends in the same pattern,
-> but the parent does not suspend in between.)
->
-> For comparison, with neither patch:
->
->    0ms variation =3D=3D FAIL (child suspends 200 times, parent suspends 1=
-0 times)
->   10ms variation =3D=3D FAIL (child suspends 14 times, parent suspends 8 =
-times)
->   20ms variation =3D=3D FAIL (child suspends 7 times, parent suspends 7 t=
-imes)
->   30ms variation =3D=3D FAIL (child suspends 6 times, parent suspends 6 t=
-imes)
->   40ms variation =3D=3D FAIL (child suspends 5 times, parent suspends 5 t=
-imes)
->   50ms variation =3D=3D FAIL (child suspends 4 times, parent suspends 4 t=
-imes)
->   60ms variation =3D=3D FAIL (child suspends 3 times, parent suspends 3 t=
-imes)
->   70ms variation =3D=3D FAIL (child suspends 2 times, parent suspends 2 t=
-imes)
->   80ms variation =3D=3D FAIL (child suspends 1 time, parent suspends 1 ti=
-me)
->   90ms variation =3D=3D PASS (test didn't run long enough to fail)
->
-> So, your patch makes an improvement, but it doesn't handle this kind of
-> variation very well.
+Changes in v4:
+- The Kconfig prompt, the header comment and MODULE_DESCRIPTION() are
+  the same text (Andy).
+- The read computes the data register's bank and half next to each
+  other, and the two macros take them (Andy).
+- X1600_ADC_CLK_RATE_HZ (Andy).
+- Read and write helpers that add the base (Andy). Plain MMIO rather
+  than regmap: nothing is cached or shared, and the only
+  read-modify-writes are under the conversion mutex or in probe.
+- The device clock rate is clamped before dividing (Andy); the divider
+  comes out the same for every rate.
+- Binding: the description's last sentence and clock-names dropped; the
+  driver takes its one clock unnamed (Krzysztof on v2 and Conor on v1:
+  their reviews and v3 crossed).
+- Joshua's Reviewed-by on patch 2: the changes to it are the points
+  above, with no change in behaviour.
 
-And it is not designed to do so.
+Changes in v3:
+- Cover letter (Andy, Joshua).
+- MAINTAINERS: no list line; the binding's path in patch 1, the driver's
+  in patch 2 (Joshua).
+- Includes for what the driver uses, copyright line, MODULE_AUTHOR(),
+  reverse xmas tree, open-coded return, no message after
+  devm_request_irq(), a blank line (Joshua; Andy on the return).
+- fsleep(2 * USEC_PER_MSEC) (Andy).
+- The ADC clock divider is now even, as the X1600 programming manual
+  has it; v2 wrote the divider minus one, as the vendor kernel does. The
+  divider fields are named as in the manual, and the two clocks only
+  repeated sampling uses stay at their reset values.
+- The probe comment on staying powered up no longer names the keys
+  (Jonathan).
 
-Of course, it will not prevent the parent from suspending if the child
-does not attempt to resume it for a time longer than its autosuspend
-delay.  That's by design and you didn't have to take the time to
-demonstrate it.
+Changes in v2 (Jonathan):
+- The comparison with the JZ47xx ADCs dropped from the file header.
+- No mod_devicetable.h include.
+- X1600_ADC_VREF_mV.
+- The status declaration split from its readl() in the interrupt
+  handler.
+- field_get() for the channel's result.
+- fsleep(2000) instead of usleep_range().
 
-The question is how often those kinds of patterns occur in practice.
-Or IOW, whether or not they occur often enough to justify adding
-complexity related specifically to addressing them.
+v4: https://lore.kernel.org/all/20261102201155.10948-1-olivier@mgcrea.io/
+v3: https://lore.kernel.org/all/20261026083631.48406-1-olivier@mgcrea.io/
+v2: https://lore.kernel.org/all/20261024041357.34346-1-olivier@mgcrea.io/
+v1: https://lore.kernel.org/all/20261023204209.48556-1-olivier@mgcrea.io/
 
-> > Note that I'm not worried about the potential raciness of this new
-> > last_busy update with other possible concurrent updates of last_busy
-> > because they all use approximations of the current time and if they
-> > are close enough to each other, it should not matter who wins the
-> > race.
->
-> Ack, that's one advantage in your style of solution, because you're only
-> handling timestamps "in the moment."
->
-> > > With that said:
-> > >
-> > > > The core calls pm_runtime_mark_last_busy() for resuming devices und=
-er
-> > > > the assumption that they are resumed for a reason and so it is like=
-ly
-> > > > that they will be needed in near future, but I'm not sure if that
-> > > > assumption can be extended to a child suspend case.
-> > >
-> > > But that's not what I'm doing: I'm not calling mark_last_busy() -- I'=
-m
-> > > just making mark_last_busy() transitive to all dependencies. So any t=
-ime
-> > > we *already* say the child is busy, I also extend that to the parent =
---
-> > > I'm not generating any new timestamps; I only reuse the timestamps we
-> > > already selected.
-> > >
-> > > My view on the logic (using your terms above): when a child calls
-> > > mark_last_busy(), it suggests that child might be needed in the near
-> > > future. Whenever a child device is needed, so is its parent (barring
-> > > ignore_children). Thus, mark_last_busy() should also refresh the
-> > > parent's busy timestamp.
-> >
-> > Of course, it can be argued this way though there are
-> > counter-arguments (probably not worth discussing in detail at this
-> > point) and there is the question how much of a difference this would
-> > make after addressing the rpm_resume() inconsistency mentioned above
-> > (which IMV needs to be address regardless because it is not limited to
-> > the parent-child or supplier-consumer situations).
->
-> I would love to hear your counterarguments.
+Olivier Louvignes (2):
+  dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+  iio: adc: Add a driver for the Ingenic X1600 ADC
 
-OK, I'll say more about that tomorrow (it's past 10 PM here, time to
-go away from the keyboard).
+ .../bindings/iio/adc/ingenic,x1600-adc.yaml   |  59 ++++
+ MAINTAINERS                                   |   6 +
+ drivers/iio/adc/Kconfig                       |  10 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/ingenic-x1600-adc.c           | 269 ++++++++++++++++++
+ 5 files changed, 345 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+ create mode 100644 drivers/iio/adc/ingenic-x1600-adc.c
 
-> I don't believe your solution solves the problem,
 
-That depends on what problem in particular you mean.
+base-commit: 1390ca4953a7400ca932cb49635f02c727f885a6
+-- 
+2.39.5
 
-It addresses an inconsistency in rpm_resume() and as I said above,
-this needs to be done anyway because it is not only related to the
-cases when children or consumers are involved.  There are other cases
-in which rpm_resume() gets called for an active device and the lack of
-last_busy update causes the device to suspend earlier than expected.
-
-> and my solution does while also handling
-> the inconsistency you mention.
-
-I'm not sure about that.
-
-For example, say a device has an autosuspend delay of 2 s.  Say it is
-initially suspended and user space writes "on" to its "power/control",
-so the device resumes.  Now, 1 s later, user space writes "auto" to
-the device's "power/control" and the autosuspend delay is respected,
-so the device doesn't suspend.  Next, 1.5 s after the first resume,
-user space writes "on" to the device's "power/control" and the device
-does not resume because it is active (its last_busy is not updated).
-Finally, user space writes "auto" to the device's "power/control", say
-1 s later, and the device suspends even though it can be expected to
-stay active for at least 1 s more.
-
-How is that going to be addressed by propagating last_busy from
-children/consumers to parents/suppliers?
-
-Note that I'm not dismissing your proposal, I'm just having doubts
-about the need to do this kind of thing in the core code.
