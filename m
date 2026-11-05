@@ -1,72 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.197
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=80.241.56.152
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793884861;
-	b=4FY2hEPSw/Dx0XjJTuK+Otl1c/dwA2Y9jwOc7Ypsom8bMMLNfgSbAeKlBHRSOC7njM8I
-	 hAJEmrv/hE/6LrYXB30UzhK6VKfwK4EHEyk4wbxvCA819pVmDAAq5d7zwMqrpRJso1QRs
-	 A5KEMWTClhhYRae5DoQbCjLEsNDZGrllyK/ONzBIspqoeABb3Jg0iYrs7eUFAKWxdj6pY
-	 AZ/QpBXMGVbx0sos2+z/Ojj0ldcrLYMLTxJ7l1wyR6qK/fQGtioXaYs6DRmxHJnXOaaWg
-	 ExdYZRvImNFWzesUazZMmSBofPAx16WA/O0kkkT/g1VXSx5GdOYEOeQ9RshkEW+KC/w==
+	t=1793885053;
+	b=jqsgAMuofVRCxWa7m6PTsL7UUkulafa4jIIKTDo/b46bwLmiK+q672ycN2NJNaVvaAJs
+	 g85w0E1LXgd7uhuMcOBCuhOL5d7qDi9DgK4sLJ0Dca5YSyVMIcM6BwwrasW+fhKLOdlNK
+	 jAFvKKefQ+Dm2yMJ0iDdj9jdku8m4AztTNQg1ULUnclziZls6wbNcwDxGMkWfzA+GTshu
+	 DiICDzgWOepGNeTmyP4saakEl+Op4bv3IIqyFqrKwm9y4d6I4/b8vYHFcMQFMyhDhLtJr
+	 3MgAYZLByIOuh9giTnVcEUWc23YCUs48QexjuVJyQ19kEHhWfkTaNZ9DXJX958Vp/rA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793884861;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
-	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=1hWitpRXSGa3f1x2WsNsj66oTlqZG1AdJZX2odfdwlE=;
-	b=k4kdV9jdTlQ8z3QaP5c2bNo6EQmfYwl9u2mjii6Thls9WrCbyb4DYr1i1NjoKRzOUnIU
-	 4C2Ch6n2B17AR+gztKcPtlbgojqcNxzsDS8k6lJiVBWZ/evnGiv8BdATfXr97LiWkyG7q
-	 DrlP0KFkeZZZtrmq7ffJKD/5AhG3A0nVdPXf/VlzSe2KA76WFKtk7Kh8C2zR4+nv/mCVa
-	 VBTWTRUeRPU4iOWWuWzbJLFh83yl+gtdv/fzGAZkpbotiwx03vhaZOGtvctzqm07dHiaP
-	 YG6rHfr4+pPmDayimBSuAgeule2ocZwATqh2FFhmRGAYTtaV/PTqbIu2IDOm0vdWymw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793885053;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:
+	 Reply-To:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:User-Agent:MIME-Version:X-MBO-RS-ID:
+	 X-MBO-RS-META;
+	bh=cr7b357bQF9gcmhhu+T4xYlpo1IDNyxkNJbpgvGxS7k=;
+	b=WC+IwIPPh/3T3Ki44sWaozuRXYPRDajAznQa226JhsNuPnjXb7Z27npYFT52uxO+n0S9
+	 dTMibUVgsef1fZV7LWlViZ/De8eaPoIyN9niTvuxGcjc0HVIIMALUF8wXobQMBgcIEgaI
+	 pbH8V4v8f8OIkJaEftPX6n3raB3FowIinB3ZmCswoJycdc3T1f93Vit2ZYI/Gt7PeKXqG
+	 yf8DySk8B92Ph31leupBiikujX6poyw2YlLh2U+EGRpAy+WmfREP1qZ+SuzLigoa1yw5c
+	 hK6lTui9tpccLNTUMKJa7lQWC/bgX7EBO1OMLTLR6n0oiPaHjz9scNP9vuy02na3MWg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--sgsatyam.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b="b/D3EHPA";
-	arc=none smtp.remote-ip=209.85.210.197
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com [209.85.210.197])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=mailbox.org;
+	spf=pass smtp.mailfrom=mailbox.org;
+	dkim=pass header.d=mailbox.org header.i=@mailbox.org header.a=rsa-sha256 header.s=mail20150812 header.b=qd0I7Vod;
+	arc=none smtp.remote-ip=80.241.56.152
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [80.241.56.152])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2800A606A331
-	for <linux-iio@vger.kernel.org>; Thu,  5 Nov 2026 13:20:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2800A606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--sgsatyam.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23528606A328;
+	Thu,  5 Nov 2026 13:24:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 23528606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=b/D3EHPA
-Received: by mail-pf1-f197.google.com with SMTP id d2e1a72fcca58-8aa185840bdso1649215b3a.3
-        for <linux-iio@vger.kernel.org>; Thu, 05 Nov 2026 05:20:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793884859; x=1794489659; darn=vger.kernel.org;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=1hWitpRXSGa3f1x2WsNsj66oTlqZG1AdJZX2odfdwlE=;
-        b=b/D3EHPAAjWjhusoL98yh5jWlwzCV43CXQwazJ5Pa52pgCXMWNzAAkNx/5miqaRUZq
-         76mDiTCXPQm+aYELtiVYGDyP65PIftPnb4Z1i785N5GK04Txu9/bsgfMakj+eJL+I4fw
-         C84K+zt/C9drRRKqgjq/y7paN31Y8DpMCU3LN0NZd8Y8vCMFYAL1cs+F3M58+ZhXqy5M
-         uESRtcQAAMoo1exUSa3etS7o8HzuHx3av2vQWK6op4zvYJV7l65tG6zuoQYYQdCIvTw6
-         UKYQtCEtJd0LTgZ32N7YBlgvcEi0Dg3GN0EcFafSizj7XKqu67NmWcW5hFtVp4+yQzxA
-         Wq/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793884859; x=1794489659;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=1hWitpRXSGa3f1x2WsNsj66oTlqZG1AdJZX2odfdwlE=;
-        b=i73bHP1kdSVO3n2P0MO0iahthnEzO7A8qEUZ+Ryl5QwM0lQKrhBGsZA6IlcM2sLf3P
-         DAgFtnidInTCYWHP2E3jGOTr+wq06vz2VBqL21PWqKt3tpiisle5bsrr5SVGhg5MY8Nb
-         tDgqpvwIkzFtqIOx0tY/01LWITmJnB+5V+l9X75E4TOjFz7cubrxDUVt25pn6DBSVUxe
-         go3MVZ1wkFaK00fhpVgTbB9jfa1tO6CulOc7HmYX46qVDpXoiXPena+3TVBXRdX4Zwce
-         u5cCWLEUYYCW/7uaz/3/I79DY516IJQ+7YvYTg43VBxn2p+ugv8Tl3CLmy76UMdwz4pf
-         HC/g==
-X-Forwarded-Encrypted: i=1; AKwUvBw2mjzp6GT/feUwg9I7vMs8uxGudV0hgdFmN1joZxeJr0R0pvPjMs2gU627D0hZzkQ9bFJQrF0/Gzc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+nRFOoca0/iwpHCHEQlI6bi90M9hvtpRcbVUNPmmepbwaUQsJp
-	KBxATR7u/qIOMCnoYu8uUgxsgxIPb1Ht3E44jsxWMO2iOrk8GolgEdaAEy5vuz03VuV6CKW8NcT
-	yk1t9SErUtfVsYw==
-X-Received: from pgme25-n2.prod.google.com ([2002:a05:6a02:6c99:20b0:cd8:c5f8:e73d])
- (user=sgsatyam job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6300:68cb:20b0:3eb:818f:619a with SMTP id adf61e73a8af0-3eb818f7477mr3915541637.33.1793884859215;
- Thu, 05 Nov 2026 05:20:59 -0800 (PST)
-Date: Thu,  5 Nov 2026 13:20:57 +0000
+	dkim=pass (2048-bit key, unprotected) header.d=mailbox.org header.i=@mailbox.org header.a=rsa-sha256 header.s=mail20150812 header.b=qd0I7Vod
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:b231:465::1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4jL31M2Q9yzKp4M;
+	Thu, 05 Nov 2026 14:24:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1793885047; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cr7b357bQF9gcmhhu+T4xYlpo1IDNyxkNJbpgvGxS7k=;
+	b=qd0I7VodEh/YGmDacD0GpRjBefhw/+7TY4fYCETDCELlDau43W4Iv1ZAtJX5YQM/vD7F/t
+	Io2f6fgGc/1F5ghEf/MwbMRYSvhnO23qAWB8qco1mS8wiPuKLqck7hVRtAjv9KvLCpRwsN
+	5BDGlkKRIyCWuqV/u+BODFeuOQ9d5alieCuk/+Y6suKKqh7/GA3zAEMoUY4UorCuzThBnx
+	RAoCZP1x6JKpPOjnRBqcV4hJHO2lbA1oGvP5u59rPEgEaDAqhk/4utGymk+LRznEokAtCo
+	zHJ1rjx+Yg28UFnUB1y5TF6dTQ9YwzaheqekvhLUbhZMsDBU6ghGaQzycEEhCw==
+Message-ID: <2fa6e631e133acfc7e7de1b287c8b3983168b1c6.camel@mailbox.org>
+Subject: Re: [PATCH 1/3] dma-buf: dma-fence: Add flags parameter to
+ dma_fence_init()
+From: Philipp Stanner <phasta@mailbox.org>
+Reply-To: phasta@kernel.org
+To: Tvrtko Ursulin <tursulin@ursulin.net>, Christian
+ =?ISO-8859-1?Q?K=F6nig?=	 <christian.koenig@amd.com>, Philipp Stanner
+ <phasta@kernel.org>
+Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
+	linux-media@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
+	etnaviv@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+	imagination@lists.freedesktop.org, lima@lists.freedesktop.org, 
+	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
+	nouveau@lists.freedesktop.org, virtualization@lists.linux.dev, 
+	spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
+	linux-tegra@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-usb@vger.kernel.org
+Date: Thu, 05 Nov 2026 14:24:04 +0100
+In-Reply-To: <b8179edb-bc59-49af-b8d0-f62e39752f3a@ursulin.net>
+References: <20261105113529.1989375-2-phasta@kernel.org>
+	 <20261105113529.1989375-3-phasta@kernel.org>
+	 <2f377d0f-2760-4465-ac68-b62210b33bd6@ursulin.net>
+	 <005b77fd-5bd2-4ae5-a0c0-cff3f1f6c680@amd.com>
+	 <b8179edb-bc59-49af-b8d0-f62e39752f3a@ursulin.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -75,90 +87,39 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.56.0.398.g882cbad275-goog
-Message-ID: <20261105132057.2429385-1-sgsatyam@google.com>
-Subject: [PATCH v2] iio: cros_ec: Use platform sensor_num to unregister FIFO callback
-From: Satyam Gupta <sgsatyam@google.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, "=?UTF-8?q?Nuno=20S=C3=A1?=" <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Benson Leung <bleung@chromium.org>, Guenter Roeck <groeck@chromium.org>, 
-	Tzung-Bi Shih <tzungbi@kernel.org>, Enric Balletbo i Serra <eballetbo@kernel.org>, linux-iio@vger.kernel.org, 
-	chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MBO-RS-ID: bba065728d0df46fffa
+X-MBO-RS-META: 6r63pcufosrhwuio4jrkztwnqgi8ttuw
 
-cros_ec_sensors_core_register() registers the FIFO callback for the
-sensor number found in the platform data. The matching cleanup action,
-cros_ec_sensors_core_clean(), reads the number back from
-st->param.info.sensor_num instead.
+On Thu, 2026-11-05 at 12:51 +0000, Tvrtko Ursulin wrote:
+> On 05/11/2026 12:35, Christian K=C3=B6nig wrote:
+> > Well one advantage of the Linux kernel is to avoid such wrappers. I
+> > think having more than one function for the same thing basically
+> > just adds more confusion.
+>=20
+> Sure we can churn if we really want. But as 99% of callers will be=20
+> passing 0 it's not even very readable. Another option is variadic like=
+=20
+> kmalloc_objs so flags can be optional. Anyway, for consideration only.
 
-st->param is the EC host command buffer. Drivers fill it in under
-cmd_lock before each command, while the cleanup action reads it without
-that lock. It is also set only for physical sensors. If the field holds
-another value when the device is unbound, the cleanup clears the wrong
-slot and leaves the callback in place, still pointing to the iio_dev
-that is about to be freed.
 
-No in-tree driver changes the field after probe, so mainline is not
-known to hit this. The ChromeOS RGB light sensor support does: it
-changes the field while a command is in flight, and unbinding the
-device then leaves a stale callback. Found by an AI code review agent.
+It has the advantage of forcing the reader to think about whether he
+wants 64-bit sequence numbers or not. In Rust-fence, for example, we
+completely overlooked that for months:
 
-Use the platform data in the cleanup action too, so it always
-unregisters the slot that cros_ec_sensors_core_register() registered.
+https://lore.kernel.org/rust-for-linux/20261023175750.2979015-2-phasta@kern=
+el.org/
 
-Fixes: aa984f1ba4a4 ("iio: cros_ec: Register to cros_ec_sensorhub when EC supports FIFO")
-Signed-off-by: Satyam Gupta <sgsatyam@google.com>
----
-Changes in v2:
-- Add a Fixes tag (Andy).
-- Use a local struct device pointer and name the platform data pdata,
-  so the unregister call fits on one line (Andy).
-- Say what triggers the problem and how it was found.
 
-v1: https://lore.kernel.org/r/20261105073107.172121-1-sgsatyam@google.com
+Besides unused flags fields are quite common in APIs. As I state in the
+description, this is also for future extensions, see my race-flag (if
+accepted) as one potential example.
 
-The patch was drafted with an LLM-based coding assistant (Gemini); I
-reviewed and tested it.
+It could also be used for canonically setting the user-flags, which
+users currently do with a manual set_bit(NR, &fence.base.flags;
 
-Tested on downstream kernels, together with fixes to the out-of-tree
-RGB light sensor support: ChromeOS 6.6 (Intel) and Android desktop 6.12
-(MediaTek) and 6.18 (Intel). Unbinding and binding the light sensor
-while its RGB channel is read in a loop failed within 1 to 46 cycles
-without the fixes (the stale callback slot makes the next probe fail
-with -EINVAL) and passed 200 cycles with them on all three. On the 6.12
-device the accelerometer and gyroscope were also unbound and bound
-repeatedly and still streamed FIFO samples. Mainline itself was only
-build-tested (W=1 and sparse, x86_64 and arm64).
+So I think it's safe to say that it's the right thing for long-term
+reduction of churn and maintainability.
 
- .../iio/common/cros_ec_sensors/cros_ec_sensors_core.c  | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index d03e40c91582..632036eea4f3 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -214,13 +214,11 @@ EXPORT_SYMBOL_GPL(cros_ec_sensors_push_data);
- static void cros_ec_sensors_core_clean(void *arg)
- {
- 	struct platform_device *pdev = (struct platform_device *)arg;
--	struct cros_ec_sensorhub *sensor_hub =
--		dev_get_drvdata(pdev->dev.parent);
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
--	u8 sensor_num = st->param.info.sensor_num;
-+	struct device *dev = &pdev->dev;
-+	struct cros_ec_sensorhub *sensor_hub = dev_get_drvdata(dev->parent);
-+	struct cros_ec_sensor_platform *pdata = dev_get_platdata(dev);
- 
--	cros_ec_sensorhub_unregister_push_data(sensor_hub, sensor_num);
-+	cros_ec_sensorhub_unregister_push_data(sensor_hub, pdata->sensor_num);
- }
- 
- /**
-
-base-commit: 1390ca4953a7400ca932cb49635f02c727f885a6
--- 
-2.56.0.398.g882cbad275-goog
-
+P.
