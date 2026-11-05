@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793881027;
-	b=Im2yMecQ+Voj6DDJ+QsPxfalSOH35SVhl+GRSVmNLuV8EWxBTaCBEpZPIGU70Y0VixHi
-	 g/noyIPgNFF8DeRSty7KopQzKrHvdNXzrhUEVJhD7hkptK056s12xUXRAEBh5D6VIIk7E
-	 Lz3hExTGAMW6/k6JLptjMpRAt7fkFlAiFiLgrh20Hem6bV1vDQJq/G/07LRDiNIWcAGWZ
-	 +FF/0JrWTCRtYrjUQNSFeDpNy6k9RDKSJYW7ehX0vSSoInBdeAEllbhmQRYDS366o4qgn
-	 yvCnERWjDadvj0tgwNRPV4k/CSJDNunQjetV8K+do7zUICyIutAly+NIesaLF+ZChwA==
+	t=1793881030;
+	b=K1fxAnDwFMf6LRksgGSIWA1/Ew1ro+B6Ij6g+XV5RHVrXqzTXnqJlBER7vfUdNgaoS0Y
+	 z1RNdEPvXBb2xHSTCbQi7JYAvOYGU+Qs6Ht1Ez9rGTrloBVyXN8LUBj+Cm66G501k0Yx4
+	 AslP1vrOEosJMMhYbn+rIEI84eRQJwHMVXDA98udKQShiJ7uWEtAOSBtPeTJ+yu9C1GPm
+	 Ys55RMFVET5s1D0oaB+KT70bQe9nziDf/Rq95xLDbppLiiYDHm3BJE+Gm40hF1nd7FSHy
+	 Qz2/5R3I4d0HwlSDxohxZ+402DBwP710WRydt6HMafFkiA0SzGsB8H/0vjXm5cXBzBA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793881027;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793881030;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=JZWUGcZ5u7WJGAMaT+eTPSh/6aXL9QXO1uj0eqCm/8M=;
-	b=E73pXT1UFBq9gBKa/Qim7xqCce6TPgkjI3GV+lEmQLn082HJM+BTsPNCfp4ucTWFL/z2
-	 AMuwOtr7N/rL7eCcCtBhLkY3dZTIrBz/QbGUlMrA8GatRhsi5s0u+UsOYAn8Wq7Q12I6K
-	 lJ/g9rZ6I9Z/jqKcvBPUO1U4YNVjiCfhPNPNrww74cxUC8eyPxpcTj4GHeZbtpy5kZT61
-	 aF7SZFv08g6fAIcs+oJwHzoV8GED81uUPvgqL4A4VEOzm4t+sBhUXebf5mcY2QoPXwanY
-	 rUnnP5Jp4GWqqOT3NAv3sLBvGYI8aYKCEbTZxLiEnLlbKxK3xyGGFuhq87JVmOi2Ywg==
+	bh=w/G/SZ3MRS0nVkYZ3P6OOxY7K1c3qFCCUcF4ElPyBrE=;
+	b=N6/x7fmWDA82iFLrnFwqLzmiZNZz+WTtRVoLbmPjhRrx8yOLBV+AwtlaKKz6uhpZMov6
+	 TQ+i3aZAbhhC2pSBNM/hsoKc2c6kaaLVSoTIQs3I3vRrrih9l5o5QIyTq2CeRy+khsAZ4
+	 d0qE0ze9WNV/x2zseJNeygGk5KiAU6hZiUPLorbTO6/GoLSxVIdMn/m/7n7Jv+IT28ZGj
+	 yFCzlyFx/p+oYB65ndt/gGSoCjwntx2+bjO6MBVZCzddyP6P5qfOmleJFAzXBdvuohcup
+	 uXYTVWOB+wmd0rvD9Oa83/5NdzevQsKLynqe9I9hTsu3CbsIiuUdBL8yTK3VRs+HX7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OzXB0Lon;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=V7dJGiwY;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F65A606EE9D;
-	Thu,  5 Nov 2026 12:17:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789E2606EEB4;
+	Thu,  5 Nov 2026 12:17:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OzXB0Lon
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A4F71F00A20;
-	Thu,  5 Nov 2026 12:17:04 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=V7dJGiwY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F3C71F00A1E;
+	Thu,  5 Nov 2026 12:17:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793881027;
-	bh=JZWUGcZ5u7WJGAMaT+eTPSh/6aXL9QXO1uj0eqCm/8M=;
+	s=k20260515; t=1793881030;
+	bh=w/G/SZ3MRS0nVkYZ3P6OOxY7K1c3qFCCUcF4ElPyBrE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=OzXB0Lon99UCSymj6rvC7HShLWnztmNTotIk344eHS7e8dQhxPcKs7l3Lt6aBMMqE
-	 evSwMkEZd8cfQ+CFA7+Vf/eC4Cu0p0QxqA7EbwsmpBZN6z8Vo+KxQld8T5pAMyvvkn
-	 FNY7OeBQ51A+zjlSI41SqL1rJ4KT55TlxVy5hrsbyUFQjh0AWQstpO2job2ekJNDbn
-	 RdAKowoNfBxJj2g+t39ycGKZbCG2qeXdHONIEjRc18lQO38OWv32X1iyQhgzajLP+1
-	 Pz3PRc5ACzjtJi2fGvnRMgUMxMesZreG2m7PCmaDS5A+oEInELMWa0UMJLBzvDPLu8
-	 lsjxKjs4S+r0w==
+	b=V7dJGiwYtoT4G7lSSHhbBlz1rNcR+P+46KzdFRg2BxsIuLIj2e0owSc2Uz/vWzWg9
+	 QCyENJd4jyVEN9GXt3rhFfQDVdIulOCNr7wZr55IuCnJmlb7rAxFjUib64YtKYb3kh
+	 CxfHqO1PrpJkI/8i1YjWnyRThSIzwz+SFW5dV9M31qge7DMMhalvfny3J9zQvXplAv
+	 CjGTWyIGVAnZA8841kXHI/kd2lkTXbONXrdxgESdw4JSoS/oYL/rkXxLoqgi9HFfm6
+	 0L0S1cqomF22mLQmn8zG8dCbQT1khczOT2pQbBq+yBN4txf+c7dLm/aOcrXsr/YGXQ
+	 9MF7k1l9uvgAg==
 From: Joshua Crofts <crofts@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -57,9 +57,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	imx@lists.linux.dev
-Subject: [PATCH 02/10] iio: accel: kxcjk-1013: remove redundant pm_runtime_dont_use_autosuspend() calls
-Date: Thu,  5 Nov 2026 12:16:27 +0000
-Message-ID: <20261105121635.1612-3-crofts@kernel.org>
+Subject: [PATCH 03/10] iio: accel: mma9551: remove redundant pm_runtime_dont_use_autosuspend() calls
+Date: Thu,  5 Nov 2026 12:16:28 +0000
+Message-ID: <20261105121635.1612-4-crofts@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261105121635.1612-1-crofts@kernel.org>
 References: <20261105121635.1612-1-crofts@kernel.org>
@@ -82,22 +82,22 @@ Remove the redundant function calls.
 
 Signed-off-by: Joshua Crofts <crofts@kernel.org>
 ---
- drivers/iio/accel/kxcjk-1013.c | 2 --
+ drivers/iio/accel/mma9551.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index 336914eb3b3e..18b1ba365f78 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1525,7 +1525,6 @@ static int kxcjk1013_probe(struct i2c_client *client)
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index b260e294606a..f1a39a9acd06 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -485,7 +485,6 @@ static int mma9551_probe(struct i2c_client *client)
  	return 0;
  
  err_pm_cleanup:
 -	pm_runtime_dont_use_autosuspend(&client->dev);
  	pm_runtime_disable(&client->dev);
- err_buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
-@@ -1547,7 +1546,6 @@ static void kxcjk1013_remove(struct i2c_client *client)
+ out_poweroff:
+ 	mma9551_set_device_state(client, false);
+@@ -500,7 +499,6 @@ static void mma9551_remove(struct i2c_client *client)
  
  	iio_device_unregister(indio_dev);
  
