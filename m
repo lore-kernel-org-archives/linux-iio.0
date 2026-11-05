@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793881021;
-	b=aF84TtpKxioFpCE3yWtV7rcJiDVSemSkIu9C3xN56lOOGcqFkPy9FjZKmdNh7PB0t4pl
-	 CHvJO00ts9tvnx9P94swjHZFucfW7x1wDNfd6jIxy5DuptLaMfhpQGwSH8p5CdnvkgKp4
-	 edVCC9wSzX9jVaVIjqtwP66V16k+4YmtbWJimgVgAvusUTeGBLVjvRS8V6YFup0EhIvgd
-	 9e9afavYtO+c240s43XQ2slt9kkjAeejhX2NYLFPI3ObBDUGvwmqJMBYk75z4tFVTakVY
-	 KMuG1D7eVpmpPMzN7JCgaX++75OvRvjIjVzhsbQbcIfvQuW3xpi5/zCnibHCMtmmirw==
+	t=1793881027;
+	b=Im2yMecQ+Voj6DDJ+QsPxfalSOH35SVhl+GRSVmNLuV8EWxBTaCBEpZPIGU70Y0VixHi
+	 g/noyIPgNFF8DeRSty7KopQzKrHvdNXzrhUEVJhD7hkptK056s12xUXRAEBh5D6VIIk7E
+	 Lz3hExTGAMW6/k6JLptjMpRAt7fkFlAiFiLgrh20Hem6bV1vDQJq/G/07LRDiNIWcAGWZ
+	 +FF/0JrWTCRtYrjUQNSFeDpNy6k9RDKSJYW7ehX0vSSoInBdeAEllbhmQRYDS366o4qgn
+	 yvCnERWjDadvj0tgwNRPV4k/CSJDNunQjetV8K+do7zUICyIutAly+NIesaLF+ZChwA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793881021;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793881027;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=UVkIIXb/q2/cPaHeiRUhrvGFwLmJPG5MCpguu9J85vE=;
-	b=ME4DuApqCHMq14/cs0zavs0GQeSQsFJYeDJKrQfuRHgqVHSc47NoGK04zGo8+q2x4OJj
-	 XDxjrb9mKrEQehdqs/4g986DgjqlEi1Zdtj0XvZMySq1UBqYh5aK2ES26EoCH9volwq9Z
-	 r7F9Wv7dldu5SO3ksVB4RvfJR9T1KZiN64NuV+IpFALXLO0K2Wh6rnspMXPUxu4vbsKuE
-	 sAaIy60TZLXisJB6UGS0vgjUBC6M9L9VT3zdUMjgH4obHNFyuadBN/HJ+RwahWW4/Gvqh
-	 Xi0yhsi3M13Cd2eGvwccJ0BOohL3GJ1CuTr5A87mJOwbKM+E/WW1EGqwCsFiie1P4yQ==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=JZWUGcZ5u7WJGAMaT+eTPSh/6aXL9QXO1uj0eqCm/8M=;
+	b=E73pXT1UFBq9gBKa/Qim7xqCce6TPgkjI3GV+lEmQLn082HJM+BTsPNCfp4ucTWFL/z2
+	 AMuwOtr7N/rL7eCcCtBhLkY3dZTIrBz/QbGUlMrA8GatRhsi5s0u+UsOYAn8Wq7Q12I6K
+	 lJ/g9rZ6I9Z/jqKcvBPUO1U4YNVjiCfhPNPNrww74cxUC8eyPxpcTj4GHeZbtpy5kZT61
+	 aF7SZFv08g6fAIcs+oJwHzoV8GED81uUPvgqL4A4VEOzm4t+sBhUXebf5mcY2QoPXwanY
+	 rUnnP5Jp4GWqqOT3NAv3sLBvGYI8aYKCEbTZxLiEnLlbKxK3xyGGFuhq87JVmOi2Ywg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="QdL/JfEY";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OzXB0Lon;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62965606D839;
-	Thu,  5 Nov 2026 12:17:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F65A606EE9D;
+	Thu,  5 Nov 2026 12:17:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QdL/JfEY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585AB1F00A15;
-	Thu,  5 Nov 2026 12:16:58 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OzXB0Lon
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A4F71F00A20;
+	Thu,  5 Nov 2026 12:17:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793881021;
-	bh=UVkIIXb/q2/cPaHeiRUhrvGFwLmJPG5MCpguu9J85vE=;
-	h=From:To:Cc:Subject:Date;
-	b=QdL/JfEYDKLa6NzBkN61MKh9VJbLFc1qgwKkrgJhPHH4mjmH2lUxQLh9Yk/AQhAac
-	 dNIs7RgRRk74I3rt7AlKwYN+eYOUSKM/vDcox8jDm70LVmPsVsKAH+ENRsbqtDV0/1
-	 CPb++Qylbu5JKhVxI0vQrq90JqMavGtnMOM3oXkS1Joi09wNcQxweUStVOugW7VYm4
-	 cLN6dWhU8TVkBMCGk6ySAXUEBAQ8t8qtfeqzTFx6+xSbjSH483ojnkusS2EavJ4RsC
-	 J/6IHsmPtNo2aXvmR6yehbtLvVN79i26k2xXprOOCh10yeMnKW0DWyr04cESwQ4ZCS
-	 Epby4mCiPf6LA==
+	s=k20260515; t=1793881027;
+	bh=JZWUGcZ5u7WJGAMaT+eTPSh/6aXL9QXO1uj0eqCm/8M=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=OzXB0Lon99UCSymj6rvC7HShLWnztmNTotIk344eHS7e8dQhxPcKs7l3Lt6aBMMqE
+	 evSwMkEZd8cfQ+CFA7+Vf/eC4Cu0p0QxqA7EbwsmpBZN6z8Vo+KxQld8T5pAMyvvkn
+	 FNY7OeBQ51A+zjlSI41SqL1rJ4KT55TlxVy5hrsbyUFQjh0AWQstpO2job2ekJNDbn
+	 RdAKowoNfBxJj2g+t39ycGKZbCG2qeXdHONIEjRc18lQO38OWv32X1iyQhgzajLP+1
+	 Pz3PRc5ACzjtJi2fGvnRMgUMxMesZreG2m7PCmaDS5A+oEInELMWa0UMJLBzvDPLu8
+	 lsjxKjs4S+r0w==
 From: Joshua Crofts <crofts@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -57,10 +57,12 @@ Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	imx@lists.linux.dev
-Subject: [PATCH 00/10] iio: remove redundant pm_runtime_dont_use_autosuspend() calls
-Date: Thu,  5 Nov 2026 12:16:25 +0000
-Message-ID: <20261105121635.1612-1-crofts@kernel.org>
+Subject: [PATCH 02/10] iio: accel: kxcjk-1013: remove redundant pm_runtime_dont_use_autosuspend() calls
+Date: Thu,  5 Nov 2026 12:16:27 +0000
+Message-ID: <20261105121635.1612-3-crofts@kernel.org>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261105121635.1612-1-crofts@kernel.org>
+References: <20261105121635.1612-1-crofts@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -78,42 +80,31 @@ pm_runtime_use_autosuspend() calls on driver exit.
 
 Remove the redundant function calls.
 
-Joshua Crofts (10):
-  iio: accel: bmc150: remove redundant pm_runtime_dont_use_autosuspend()
-    call
-  iio: accel: kxcjk-1013: remove redundant
-    pm_runtime_dont_use_autosuspend() calls
-  iio: accel: mma9551: remove redundant
-    pm_runtime_dont_use_autosuspend() calls
-  iio: accel: mma9553: remove redundant
-    pm_runtime_dont_use_autosuspend() calls
-  iio: adc: at91-sama5d2_adc: remove reduntant
-    pm_runtime_dont_use_autosuspend() calls
-  iio: adc: imx93_adc: remove redundant
-    pm_runtime_dont_use_autosuspend() call
-  iio: gyro: bmg160: remove redundant pm_runtime_dont_use_autosuspend()
-    call
-  iio: imu: kmx61: remove redundant pm_runtime_dont_use_autosuspend()
-    call
-  iio: light: vncl4035: remove redundant
-    pm_runtime_dont_use_autosuspend() call
-  iio: magnetometer: bmc150_magn: remove redundant
-    pm_runtime_dont_use_autosuspend() call
+Signed-off-by: Joshua Crofts <crofts@kernel.org>
+---
+ drivers/iio/accel/kxcjk-1013.c | 2 --
+ 1 file changed, 2 deletions(-)
 
- drivers/iio/accel/bmc150-accel-core.c  | 1 -
- drivers/iio/accel/kxcjk-1013.c         | 2 --
- drivers/iio/accel/mma9551.c            | 2 --
- drivers/iio/accel/mma9553.c            | 2 --
- drivers/iio/adc/at91-sama5d2_adc.c     | 2 --
- drivers/iio/adc/imx93_adc.c            | 1 -
- drivers/iio/gyro/bmg160_core.c         | 1 -
- drivers/iio/imu/kmx61.c                | 1 -
- drivers/iio/light/vcnl4035.c           | 1 -
- drivers/iio/magnetometer/bmc150_magn.c | 1 -
- 10 files changed, 14 deletions(-)
-
-
-base-commit: 1390ca4953a7400ca932cb49635f02c727f885a6
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 336914eb3b3e..18b1ba365f78 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1525,7 +1525,6 @@ static int kxcjk1013_probe(struct i2c_client *client)
+ 	return 0;
+ 
+ err_pm_cleanup:
+-	pm_runtime_dont_use_autosuspend(&client->dev);
+ 	pm_runtime_disable(&client->dev);
+ err_buffer_cleanup:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+@@ -1547,7 +1546,6 @@ static void kxcjk1013_remove(struct i2c_client *client)
+ 
+ 	iio_device_unregister(indio_dev);
+ 
+-	pm_runtime_dont_use_autosuspend(&client->dev);
+ 	pm_runtime_disable(&client->dev);
+ 	pm_runtime_set_suspended(&client->dev);
+ 
 -- 
 2.47.3
 
