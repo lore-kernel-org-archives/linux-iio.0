@@ -1,82 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793872639;
-	b=cECelNd73zDzgxsBjeRG6i8/e1oqbNMviJKlWZRCH+1QOVXZNf16Aeec/xK1MpExfJdQ
-	 qgmsizQ7gGtgTe3INHNFTlq4yLpt9X9ZI3Ff7nmBvAxzt+zcJ32UbMNz6QMszdB+hujdr
-	 ND0qf+f8zdbJH5/SCV+pJP22Gaobu3gOwjheK1olczPEgl/3uBl+m6ibi/Wk5moTCpsaq
-	 cdjv41osRW2/dJWBgIwVYRju4VhFUykL7X/fVoTk+12weGLp/FQM+KyuU8TxaQN2by9K0
-	 rarj1sxTQcmMzAWQw4SnZy9UulCAWxhncrnbvy4pmn6dKP6mPm70XuXZD5amC61U2cg==
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=85.215.255.83
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
+	t=1793872727;
+	b=pPMx8wcREH02fTMMxgqmBTB9DH3VFO/YaT8FsD9YkwLP4NhxGhKyOTGSJ1GTOkRjA7jW
+	 DADpOE7lSOfxQP//GbigkEDeuLwZTvZOFj6rDUL3YEJj0l3ac+X8VzEygKRSY9tdHGSqA
+	 0uRvdwJ8Qs26Ed/14CvT9+kWfELtB6DK3Iae6NPzF2t17a3JTWJGH7zqJxxdoHHrK7skf
+	 WX14h2pvOwzun2+GftDAUH1h2bzfVEj8kgxhcrcEspiB/FScJj8+pI1R0OEtEd1ElG7qW
+	 eioogIqactd7+IgMYo2gSDHBkUrsHB0PtZCyQZGB5UyFNuJZIBJtnhSyUXHrU3v/tqA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793872639;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=zznxmV7bl7CPlqJg9FJ1mO6UvyKXvVTzktwHEOuILeA=;
-	b=BBoIR1sF2nHgHb8/fhK7z5nRCYgjIHv4R4H2PkOk4UCcweE8DIvdbJfKtjj/B3B6y8NY
-	 2mkbAO03c2uTlSYbmac+zAGtpxV1bB0eJvCsQS11CyCIZ1rWfpTD+k6W9wpqQoKlCEXo2
-	 O231upLJt48isyvafufeSxy3eKqOGbSjgbtoz3ljSH9eMaPTtGpoT0KnwDC2weV2830He
-	 TqTsx2Mn7+Go4KpThGZEdn1usmypU8k229n/ucMyw4yQMzPTjr0QN/5yZjf8NDkYH/h2A
-	 7xBFwHhtLFh/8L5vtit4ZaVTDKPMMwcvmyeV3siHY+bTtab+kHsEaIUffxHLjhJhcgA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793872727;
+	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
+	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
+	bh=etX0oM+NPUcyBj4GYfCMypykgn7tdOqFDk42EcZaMdU=;
+	b=gKIzWPgcjAzj/l+sKeyLrbt6qe6+UcQLLVS0oEuTJRaTodtNhODSQBAgv3qBx39CbRyJ
+	 HTOxm7qNukExMa9LoZkzOhpnbhT8VuncO++lFH2ImYAj2B6SjGo2/zI0rurH+i7bW/w61
+	 J+0F0pnQhnMvEFQVTI6xcLBgPgi29KmyKNJg5uh07cHcl804PBPl4kFpb4yu9bT6X9nzf
+	 uMqg4fAV5BvSf84Yg1J+Ca8l5rb8CaCdlNbAtTgORmjH+mDiiCPzZ5ZbuvSD6xMc8vLzD
+	 LkCwwaunVQhDfa2qXWlfo2Rdx4k5edu/NXEDPlF6HlLwehUg1MzoJhn8Jo7b+g5Og3w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KmqDX68j;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=goldelico.com;
+	spf=pass smtp.mailfrom=goldelico.com;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=MuwPLE0E;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=2C0YJTtJ;
+	arc=fail smtp.remote-ip=85.215.255.83
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 664ED606A330;
-	Thu,  5 Nov 2026 09:57:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0652E606A31B;
+	Thu,  5 Nov 2026 09:58:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0652E606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KmqDX68j
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793872639;
-	b=lLYtc7kpfF2DFajYp5XZlXb5K3owqxzbtK7sjFlSdCtLR4Xswbi2P+xs5n8Q8E95fmJN
-	 JFE94Df3wm8nqbVI87WBed4IU6hybBWzc3acip+p4wUfphky0rIW73h88usJZPOSuaJAR
-	 jFQoTrFuJbBkMqvELvNGU4l0pDxzvKvILN44eE+rTf8QRzcWScsiTBmlp+4wy49UWE8nv
-	 CIN81DVdeuL/h35XcsU7j3JQlCosg7FaJq1dRSBgXmCP7iKj8mMGx5xw1OgD4zDgdOYwA
-	 EzXvojWRoqN0c4fpeNkkw+i/1GOgrR6lLLykRbGvLKsXbkScnSne4PmAce2ByvOQXpg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793872639;
-	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=zznxmV7bl7CPlqJg9FJ1mO6UvyKXvVTzktwHEOuILeA=;
-	b=nvSKmIOrZe/eJwu4MPJnwV4F/6fUd4swhK5JSMPvPUI5iykl+0frqu+JK1MwxgVkAv3L
-	 W8U+Z+07JKHgyqtAQeo/np46QxpBXHlUMQk2rNKFhubGx2oj12L7MrKF3ilR9Qs/Xdl8r
-	 c5WCYw/ohwHhI5q/a3jBuEGV83e3ZiPc3lE7p0jyVFtfK6+XsJwYtsOIZkejqKcCiwez6
-	 /OrvFRow/tKIlVF96rbIIraSP+4HmedW5wgD0D8C1BcnevcwFNOl2E2WFZZqrtcf2VdPK
-	 YGQvj9AuAOQjiELMqpSZ8eVMMUtTXoI2OFy3kjEWTrS4WmdIIfVSqJ+5tBgywoPoRaQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=90.182.112.124
-Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 953B21F00919;
-	Thu,  5 Nov 2026 09:57:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793872638;
-	bh=zznxmV7bl7CPlqJg9FJ1mO6UvyKXvVTzktwHEOuILeA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KmqDX68jv1ipBcIgXiYww16jeOCajaTDH34454igGL+gG06uSMkTtKqPzLSFhan3R
-	 70+j4Px7zuT7DHHuL4tjOaAAIIR1jC2yz/oTBU+SHofKKZWBvkvHi6xxRtBVZsV8oh
-	 CeWwmrFVWpSA55nS+humpY7MRZ6m9NxGwcgbnNWifChCet6VEfo44DQOJAt2kR+nWP
-	 LKW5FfqFpfD68ckWHaKg/7RcEz2pRhQr0y9Lt5g0AzC1NAWc1YXm3E6xLb4uzZNjf7
-	 hmEztQTOoV2EPZmHP+KJUHAQw746vQxKYb/M4n+GuH8FJz0qu0q46xjXh6RZ2FBLuj
-	 pv3nahzSXG9Jg==
-Date: Thu, 5 Nov 2026 10:57:14 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: jikos@kernel.org, jic23@kernel.org, bentiss@kernel.org,
- linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, simeon@maryasin.name, lixu.zhang@intel.com
-Subject: Re: [PATCH v2 2/7] HID: sensor: custom: Set owner for misc device
-Message-ID: <20261105105714.0000307e@kernel.org>
-In-Reply-To: <20261104201403.2039921-3-srinivas.pandruvada@linux.intel.com>
-References: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
-	<20261104201403.2039921-3-srinivas.pandruvada@linux.intel.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=MuwPLE0E;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=2C0YJTtJ
+ARC-Seal: i=1; a=rsa-sha256; t=1793872709; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=UAU7tFL6ASXSY5WfQoE+EY69DFAylUSfjkk6FFe9/YueQKCpKq/39gu1XrB5rHzij+
+    08joy3O1CPyI3+LkEO8nba02voBPS5BufTkj+wEJBIHmNfcdILnrAo3A8t2Pa/rmNHpR
+    6ncPrFH0RwQ2mTNcJiPoGuYXtEzaatAfizzbRWNOxMwIy1KL+MWbihquB05Qdgn8uRAT
+    p2HNMa7cgWBVpO+U0BQ+tYRho9AhIk5cAYlyOqUHf8ougnGWJ+5VieW5JSVk9DqLy34I
+    F+929gQIsvIZrDISCuQWSTf9UWQNAKNjdqwXUhzWEvUqrNUeIOo6I48UCNuwNIuXGqR+
+    FkIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1793872709;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=etX0oM+NPUcyBj4GYfCMypykgn7tdOqFDk42EcZaMdU=;
+    b=IyjgxLGHzWWsmhCtwfV0KSOWsqLb+VSKBTqivf7eXIpIyqH9NePtH/ciY79w8cPuuN
+    L9PgtkLcwlNqHuAdTlE2gE0kcJFuvXg/ZfGcBwlHd+mxZ9Qdvrrn8qYc7ZMpDcbwRGKZ
+    KV3iwZUT1TRtJz4fykc/Rxnv6q8T80sPn7gsl3M2/NW6G+sLh+xCIQD6NWPCiuhAjxR/
+    k6qz4kGKDB0gLDwq8RnEmyDoUSfmYrMuqcqOAMxtQ7/HokbVqpFrP4u+Q5TZMKPoABWC
+    CDXOhzmwEXmSEh9DL83GTRqNOyAZLIMJwHq7qqFca9NeRdkrAafukCkg0qxNJQ2U9LZp
+    ngKA==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo02
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1793872709;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=etX0oM+NPUcyBj4GYfCMypykgn7tdOqFDk42EcZaMdU=;
+    b=MuwPLE0EP7Q+7BN6r8irxnxS+h8RNDUOmjqEy2bWkl5ebfyFrpO6PSLLZN4xruoShZ
+    Z9uZmrGWCk2Lh1z4xsv0UubYeucolyNWk6QABsM9DspFfcnFprbDH1QL4JJfzwEW7+74
+    qhffCfjCcbV+dJASNNDvBMN39PbINcxkQWQkAUfL4rxjtqdS+YzZsmHU4Z0Gr8cFOuyr
+    0dpVkxdrXNWLyT9tXj/iuG41ufCxTDQnWRVdcky/zpzrH6zPGczLrqWvtiTr2D86HKOd
+    zKc9lpDQ9s0vhTDv0ce+G0sktilgPJiGrwHlZ3bHq9SUm79ie6BZPtOX0rImsiCyMGE9
+    /YuQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1793872709;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=etX0oM+NPUcyBj4GYfCMypykgn7tdOqFDk42EcZaMdU=;
+    b=2C0YJTtJ/OA1gU/RHPMXBtj7uxP9l+gu9vAVdXPPxKeDcMj02c3xpiqN9+Uf5S0nDA
+    RYCFZvcmV6xuVwnWHVBQ==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrV25oGlMiNUOZNJoYXSTSpu/Ae46f1NE9YxyvD"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 55.6.3 AUTH)
+    with ESMTPSA id Qb56a22A59wSi3s
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Thu, 5 Nov 2026 10:58:28 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,43 +93,172 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.10\))
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20261102-salute-cylinder-22c9a8896ca9@spud>
+Date: Thu, 5 Nov 2026 10:57:58 +0100
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>,
+ =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Paul Cercueil <paul@crapouillou.net>,
+ Joshua Crofts <joshua.crofts1@gmail.com>,
+ linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-mips@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Content-Transfer-Encoding: quoted-printable
+Message-Id: <C0C6F46A-45B7-4B1E-9398-71CD8A26FBD5@goldelico.com>
+References: <20261102201155.10948-1-olivier@mgcrea.io>
+ <20261102201155.10948-2-olivier@mgcrea.io>
+ <20261102-salute-cylinder-22c9a8896ca9@spud>
+To: Olivier Louvignes <olivier@mgcrea.io>,
+ Conor Dooley <conor@kernel.org>
+X-Mailer: Apple Mail (2.3826.700.81.1.10)
 
-On Wed,  4 Nov 2026 12:13:58 -0800
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+Hi Olivier, Conor,
 
-> Set .owner in the misc-device file operations so open file descriptors
-> keep the module loaded until their release callbacks have completed.
+> Am 02.11.2026 um 21:48 schrieb Conor Dooley <conor@kernel.org>:
 >=20
-> Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
-> Reported-by: =D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=
-=8F=D1=81=D0=B8=D0=BD <simeon@maryasin.name>
-> Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=3D=
-eUdbPthG2xrLqwQQ@mail.gmail.com/
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
->  drivers/hid/hid-sensor-custom.c | 1 +
->  1 file changed, 1 insertion(+)
+> On Mon, Nov 02, 2026 at 09:11:54PM +0100, Olivier Louvignes wrote:
+>> The X1600's SAR ADC has four auxiliary channels and none of the
+>> touchscreen or battery engines of the JZ47xx ADCs in =
+ingenic,adc.yaml,
+>> so it gets a binding of its own.
+>>=20
+>> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+>> ---
+>> .../bindings/iio/adc/ingenic,x1600-adc.yaml   | 53 =
++++++++++++++++++++
+>> MAINTAINERS                                   |  5 ++
+>> 2 files changed, 58 insertions(+)
+>> create mode 100644 =
+Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+>>=20
+>> diff --git =
+a/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml =
+b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+>> new file mode 100644
+>> index 000000000000..f6356ea97980
+>> --- /dev/null
+>> +++ =
+b/Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+>> @@ -0,0 +1,53 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/iio/adc/ingenic,x1600-adc.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Ingenic X1600 ADC
+>> +
+>> +maintainers:
+>> +  - Olivier Louvignes <olivier@mgcrea.io>
+>> +
+>> +description:
+>> +  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input =
+channels
+>> +  measured against a 3.3 V reference.
 >=20
-> diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-cus=
-tom.c
-> index c2b425afd951..72e5639cb1d9 100644
-> --- a/drivers/hid/hid-sensor-custom.c
-> +++ b/drivers/hid/hid-sensor-custom.c
-> @@ -719,6 +719,7 @@ static __poll_t hid_sensor_custom_poll(struct file *f=
-ile,
->  }
-> =20
->  static const struct file_operations hid_sensor_custom_fops =3D {
-> +	.owner =3D THIS_MODULE,
->  	.open =3D  hid_sensor_custom_open,
->  	.read =3D  hid_sensor_custom_read,
->  	.release =3D hid_sensor_custom_release,
+> The wording here makes me wonder if a 3v3 supply is missing here? Or =
+is
+> this some internal supply on the soc?
 
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
+It is an external SADC_VREFP input pin (ball P12) which is usually =
+connected to
+the 3v3 supply. But it is specified to be min=3D0V .. typical=3D3.3V ... =
+max=3DVADC
+voltage levels.
 
---=20
-Kind regards,
-Joshua Crofts
+VADC is indeed the power supply for the SADC on a separate ball. It must
+be in the range of 2.97V .. 3.3V .. 3.63V so that it is extremely likely =
+to be
+connected to the system 3.3V rail.
+
+Therefore I do not see a necessity to require a separate regulator =
+reference here.
+
+I would suggest:
+
+  The SAR ADC of the Ingenic X1600 SoC, with four auxiliary input =
+channels
+  measured against an external SADC_VREFP reference (typically 3.3 V).
+
+>=20
+> Otherwise, this looks fine really.
+>=20
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: ingenic,x1600-adc
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  '#io-channel-cells':
+>> +    const: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - clocks
+>> +  - interrupts
+>> +  - '#io-channel-cells'
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    adc@10070000 {
+>> +        compatible =3D "ingenic,x1600-adc";
+>> +        reg =3D <0x10070000 0x30>;
+>=20
+> That said, the 0x30 looks suspiciously small - but the region is =
+aligned
+> neatly so I suppose it's probably not problematic..
+>=20
+> Cheers,
+> Conor.
+>=20
+>> +
+>> +        clocks =3D <&cgu 28>;
+>> +
+>> +        interrupt-parent =3D <&intc>;
+>> +        interrupts =3D <11>;
+>> +
+>> +        #io-channel-cells =3D <1>;
+>> +    };
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index ecc22d1149d1..fd4bb5c6bf16 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -12925,6 +12925,11 @@ F: include/linux/mfd/ingenic-tcu.h
+>> F: sound/soc/codecs/jz47*
+>> F: sound/soc/jz4740/
+>>=20
+>> +INGENIC X1600 ADC DRIVER
+>> +M: Olivier Louvignes <olivier@mgcrea.io>
+>> +S: Maintained
+>> +F: Documentation/devicetree/bindings/iio/adc/ingenic,x1600-adc.yaml
+>> +
+>> INJOINIC IP5xxx POWER BANK IC DRIVER
+>> M: Samuel Holland <samuel@sholland.org>
+>> S: Maintained
+>> --=20
+>> 2.54.0
+>>=20
+
+BR and thanks,
+Nikolaus
+
+
