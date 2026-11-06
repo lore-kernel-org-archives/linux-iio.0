@@ -1,107 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793950827;
-	b=eLwVlWbseoAXPNG9WbUebNzvHR+wVdYlurwxv5bKWSzLfvRhIIG1WMKvHMdVUiBSlMNJ
-	 zWjxBEDkzV/HP1f3cmGTDP+alQe96XIXwGYSj8M2OtOzYEkZHUUf1DztrCQN4pNK7sw6C
-	 hjukJvIrc5CZ6whiY5ajOWVBeeseSa0Izpy9XqWuxFXXsJacBu7zohq5G8JrL+l6krb7j
-	 mXph1BnpW3oQMsOt9yrrGCFnIFogmB9/VqpNaRsh7yEcHwFzMgxiEonUWWSLQqujM3O3y
-	 10WMQHjy1JZRRpT0VVuHHk3wl7eV8+bcuPfaVI/MwM+WJ/qujRbCUUekBSItCrld2Vg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793950827;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Received:Received:From:To:CC:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-ADIRuleOP-NewSCL:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
-	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=u4oCT08njFkeGXfEt/T6Wc1zTH2R7y+7VZ4fKY1vwkw=;
-	b=s6bWyw8efyx873IncH/3+J2m4Syk1Q4ZlAgY+K6PVjwDAM9IfZBS3Xg9R2MG27lQxPIc
-	 cjnv3K9OlUOcRuh8f4lU7dI59gubVJBejZ7xxjNlFqr//DYALm5HBZsIqeoHF1jwue8V6
-	 iXq1eU6emPnvljFYkkuIN1bPnpBFgAdnuFWIt7tAHsoru+WFYxIcDpe0bzacTLI5RbQh6
-	 LZl8IRqdPYFFZs6gB6/TEF2+K7Via3VPYOtTXBS3AWm3o5sts3Rm6vQmPsSZ6Jsqk8XA7
-	 vW6fZ9wAE1zEPSBI1T6EaAt78nThxnuViX+K04vML37MY1KD42doPrrsLPV3scEJdbQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=EgwnVfsS;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=d6LLBPMn;
-	arc=none smtp.remote-ip=148.163.135.77
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.167
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793952373;
+	b=1CrxWsLM+IOpi1rZd4gXXTy0OmZ3OnyWsmVH+8owA8diRMsc6cGyjg5upIiaTYu0agzw
+	 1b3aiwk7OcmWWTGcRpbA19g2b2Qvqf1zpJYPO3z6K8aCN3UdrY/bORwVGg4BcZMRfg1rD
+	 rUPOYtH+WIjNeMlJTaAKGCSrYnni3+1vhJZoMXEFOEoa+KU/yeseeVxMWmK015bGaS7Nn
+	 InQ5I8uzmDb9WIs9sT063xsKfaW/H+Hm2pFWTbGq0uCjXYK9oOIy6Eik10V+GqUBIKwXh
+	 5/Dtg7OquFNp6IQfOV01fTdm+pD1nejwG35qo9hUQI0S/M8In86G0gpmHJ3o/7zSXoA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793952373;
+	h=DMARC-Filter:X-RZG-CLASS-ID:DKIM-Signature:DKIM-Signature:X-RZG-AUTH:
+	 Received:Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Content-Transfer-Encoding:Message-Id:References:To:X-Mailer;
+	bh=Q9BVJ84/wTutORsDRLBjhp7nynNi3hfQdIrA85jn/d8=;
+	b=Uf8T6fSeU+swZNFxdsesV5VKShhHR0CfEW7JuLXW0AHRLKV7QgC+QG2vwum0vRCb69Gu
+	 feq0dbOEBXbgYUS0Sw7h0ZzEKcPu8O4IZLnDxNvGsHbA90wohuczW4F0GwxmyBWn2/WmN
+	 NhcafGsXTpwiXbn1TbnXWa4Haq2uaNcY7CkT6MZKe0rrhAgNVP4MzphI59RcHjdIyU7oi
+	 CcEnEH1vcdfYjOjuCrIIMtWTT3F6VRi0oWQEqcvqCjlNC3ZfceyH3QPEiaNGsWbBJ0/Wf
+	 ABD4Jmfrq95ugrVjv2k72bq6JoINFg1alLJMiUBE5o9hYX44vMrdy5nzIqRTAMfZJbA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=goldelico.com;
+	spf=pass smtp.mailfrom=goldelico.com;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=sE2jP9xe;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=6cctkpTl;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=81.169.146.167
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03471606A32F;
-	Fri,  6 Nov 2026 07:40:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 03471606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C202606A328;
+	Fri,  6 Nov 2026 08:06:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C202606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=goldelico.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goldelico.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=EgwnVfsS;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=d6LLBPMn
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A67R5dt3164176;
-	Fri, 6 Nov 2026 02:40:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=u4oCT08njFkeGXfEt/T6Wc1zTH2R7y+7VZ4fKY1vwkw=; b=EgwnVfs
-	SsVyHNwO9qv2pJMOsVlB4fI8AgAVyzevJ62zL4N7Lh6kOTG0CfSs9sMQk4YyZgMi
-	gb9gIqfHfxE3lfWyhY7Tr1oNrUqRZVtkle2FoSRzAFao6NdFPiCvl0RoVGXIm+60
-	plhanZJrR69LwiLFJeuaD7XWnUBKGXO3dTHRupKn7gLn1EBln/HcVif4XKOHVMqy
-	rhZ4hqzQfCSEP8bXwH1RBSNjUW0A5nO+Mjk3yQk8DuL8vq/vRNtTFLqfx2VZMO2D
-	+jPy0HyR2Q8IfGYPSLaFNMU0mXix7+dShKvkAPBlt5fO/rp/7RJXAPzom+Gy1+2A
-	ZdcMAf4OTeJNsPg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=u4oCT
-	08njFkeGXfEt/T6Wc1zTH2R7y+7VZ4fKY1vwkw=; b=d6LLBPMn59Czhq1tUpAGa
-	wV46caOTS5J1ypk1pk+lFG4WlHLwR/Vj07ccbe5plyfRd9khPmobYs6Z35bPcjzN
-	lPdbBQQiJQ2+zxZYzakySZhPBjpsR7ZYs0AaZby7t8MTEsZ1Z4gmqW67PhZtfzZM
-	WS4ImN3AXZ1wwbmFjCeBPhRk7CMOMCbuM3k5X/JSY1hJq+5vTBTUJP6dgTlNtAzZ
-	m3iYZo1mJKtBvT8EyDhi6kWRalSNXr4Orpg8EWTpaKC56cKkVwq2oDy+AVik+k9r
-	bOw5qT6hf2e1ICRWHGNjt+5bIY0ilG6jcFuIPa6zNLRX6bD8F/qT6yBbdKmH62Wk
-	w==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hs3pytftb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 06 Nov 2026 02:40:23 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 6A67eMEK029374
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 6 Nov 2026 02:40:22 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 6 Nov
- 2026 02:40:22 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 6 Nov 2026 02:40:22 -0500
-Received: from HYB-0FPP35J6CsI ([10.66.6.193])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6A67eBwB028733;
-	Fri, 6 Nov 2026 02:40:13 -0500
-From: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
-To: <jic23@kernel.org>
-CC: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        David Lechner <dlechner@baylibre.com>,
-        Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Dragos
- Bogdan <dragos.bogdan@analog.com>,
-        Ioan Daniel <pop.ioan-daniel@analog.com>, <linux@analog.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 2/2] iio: adc: ad7405: Add support for ADuM7801/7802/7811/7812
-Date: Fri, 6 Nov 2026 09:39:37 +0200
-Message-ID: <20261106073937.13927-3-pop.ioan-daniel@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261106073937.13927-1-pop.ioan-daniel@analog.com>
-References: <20261106073937.13927-1-pop.ioan-daniel@analog.com>
+	dkim=pass (2048-bit key, unprotected) header.d=goldelico.com header.i=@goldelico.com header.a=rsa-sha256 header.s=strato-dkim-0002 header.b=sE2jP9xe;
+	dkim=pass header.d=goldelico.com header.i=@goldelico.com header.a=ed25519-sha256 header.s=strato-dkim-0003 header.b=6cctkpTl
+ARC-Seal: i=1; a=rsa-sha256; t=1793952361; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=sYPicSz9K+OA/ttfGobpS0AoBgQttoWnSmhUl/ruaP30eeI3N33dgehgVdyz85lZCB
+    iSkooThFjI0f+t2X/9jfUs9QFg6kXmDt99qnGp/yKOFxlgNBSKPTJUdUXqTls/Z9fVRh
+    oO79YIljDJUOlcUwKDUhLpMgHaFR6aVlHyehyVIam4c9xnbL1AIEnu57/Tt2ll+W+g81
+    wza9ckIZQ7wErERSZeYR6ZTO0XbJvjpnO8tjDmtRvmuJso6LFdzjbcepb0OTqAe/ApuL
+    DKhXZR8bsxT4FyxZqN/Fip7Eo1OqXzH5zyrFsGRyIyXiBW6bG2IabPbtim6baBE2rFu9
+    jzGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1793952361;
+    s=strato-dkim-0002; d=strato.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=Q9BVJ84/wTutORsDRLBjhp7nynNi3hfQdIrA85jn/d8=;
+    b=jL5N1kXaE+PfEwf6+uV+nDvYbvkBIUYAZtK8qMmmryIHSAnlXVr0sCJTGQDh/amV3k
+    GeKaNkMTel8RbUDaGoNeEOuRutPwQPTBDGZsu/nyzJAnGytC+K0Ibr78V5UlX7ltO9sG
+    gBsOXCS28egFtzp7OTCaRYBfoU1I3QbEbyq7ugFxfDPNy6kHKX2LuHWANOuFzjeAMSV/
+    zxTruoGYFxD8aiJLtpT0C/8lIjbx79T/uOMsY3aQoQUdIUPTOMASfHNm2bK+iRv8ScYL
+    Sn2uJJKKXtvHgqq8aXQjyFBtvj2LFN1JvPI6r+2O8GTaJa8lGbFHB3jxFJk49+kHLDq/
+    FyZw==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1793952361;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=Q9BVJ84/wTutORsDRLBjhp7nynNi3hfQdIrA85jn/d8=;
+    b=sE2jP9xeJsULXj9aKh0HwJnVmTcRgTnsndfxQziunyBKz4r+QheVv+ap0s53mKh2pi
+    UPTvxdDSYar2xNwx1nAeYkJaixJkKeLaKoYsHruUZGAUJERhsuv+kFyc9bVO+DFInf1h
+    Emo/MM/TUzRMCGuX1hODbKk+LXqYEQ2EZDwIqk65yaBTvPBSDLwwS2bXchUcmwd/4d/5
+    izc+GtWwXPswjrHakKRet5Y/43HjGf9S20U2o0XMub1I7qtN+uw3/rD9uXsiBlZCzKd9
+    SL8UOrKa7bBeANWe7ig1N6C6hMwXSAiFwA6C+hvm9Ri9FVaMNMuxTYkBoAgM8tTUEiDR
+    bHpA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1793952361;
+    s=strato-dkim-0003; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=Q9BVJ84/wTutORsDRLBjhp7nynNi3hfQdIrA85jn/d8=;
+    b=6cctkpTlM25k1sncn87ujd1S8oyDryVRM6l9cdF+xw4pQ3PU7sZfAnBK/lNdOCf2wu
+    Z/OtxKu9hcNY0r/jgQDA==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9qVpwcQVkPW4I1HrVjZoMy8iN4frnsPsBQ4l+mfK4O7kvgww6TmAq"
+Received: from smtpclient.apple
+    by smtp.strato.de (RZmta 55.6.3 AUTH)
+    with ESMTPSA id Qb56a22A6861lr0
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+	(Client did not present a certificate);
+    Fri, 6 Nov 2026 09:06:01 +0100 (CET)
+Content-Type: text/plain;
+	charset=us-ascii
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -110,147 +93,106 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA2MDAzMCBTYWx0ZWRfXzPSfodF6K+vX
- 6FOnqKkFjacuDOO/jCAq1jzX7WlxV4lQVwBcLXNf54ctNftoPNUXkgpUpXJHqYa+GrqY7wX+QkA
- H0BX1LEF/7w9u/nKVdCx+SAnNNl4/TST+9TKgQLmbIihmQ9e0DqU
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA2MDAzMCBTYWx0ZWRfX9oB4Hz2d2QZw
- Y4A542BAeidcWQQXMLEd2lj29JbYP3Jvw4brauJ+pCMop6GSlT4k8CB8I4gifIMTUSSugCiI0f3
- Zt14iUD0Hf964SkH8PHXi5BX18py6pkCylvc2kZPI1TBJIAqtXit4Y15Bkb32ttqy6X84lmU/hM
- +iB2WDYnMLU0t8upOsJsRQxWWyApm+NX0Ikwcp+FtWHbL6d4P5ppDGV7UoDeLeVkudToFb/40//
- wjmSc18Bzqhwru/VlXaIBy0fSoXTbizSZOeQrSdCyjEn+CTfN1twbo2IYz8o+8sPEwkok6UxyXI
- /P5EGlg++ZtvTocqoUVKP/DhuyqpQ+IYsV9RMdvxm3vejw1M31LGbXJCc1FHpBvB3uEjO/+VE9n
- GtkJkCNOh2deFk4W3HGFCWUmXkJYkfinvh6S9GgUAzKxqn3x+K3UdMkYqRo7f7lSKbGJw4xJXht
- eZcTKH/tI2Q5lEgqGcQ==
-X-Proofpoint-ORIG-GUID: nFC14UrCnqcCzmzJ0jzGfTtdPer0ZB_S
-X-Authority-Analysis: v=2.4 cv=TYcDJhQh c=1 sm=1 tr=0 ts=6aed8467 cx=c_pps
- a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
- a=x9WmffaYgfafupnZSc8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-GUID: nFC14UrCnqcCzmzJ0jzGfTtdPer0ZB_S
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-06_02,2026-11-04_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 priorityscore=1501 impostorscore=0 adultscore=0 clxscore=1015
- lowpriorityscore=0 phishscore=0 spamscore=0 suspectscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611060030
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.700.81.1.10\))
+Subject: Re: [PATCH v5 1/2] dt-bindings: iio: adc: Add the Ingenic X1600 ADC
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <49e69d9c-6cb1-453f-bbf5-e2202f97e4ef@kernel.org>
+Date: Fri, 6 Nov 2026 09:05:30 +0100
+Cc: Olivier Louvignes <olivier@mgcrea.io>,
+ Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>,
+ =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Paul Cercueil <paul@crapouillou.net>,
+ Joshua Crofts <crofts@kernel.org>,
+ linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-mips@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <30B040B3-D371-443C-A66D-11EF89FC7C63@goldelico.com>
+References: <20261105213210.87457-1-olivier@mgcrea.io>
+ <20261105213210.87457-2-olivier@mgcrea.io>
+ <49e69d9c-6cb1-453f-bbf5-e2202f97e4ef@kernel.org>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+X-Mailer: Apple Mail (2.3826.700.81.1.10)
 
-Add a chip information structure and a device tree match table entry
-for each of the ADuM7801, ADuM7802, ADuM7811 and ADuM7812. These parts
-are handled the same way as the existing ADuM770x devices and differ
-only in their full-scale input range: ±320 mV for the ADuM7801 and
-ADuM7811, and ±64 mV for the ADuM7802 and ADuM7812.
 
-The device tree binding lists the ADuM7701 and ADuM7702 as fallback
-compatibles, so the driver can handle these parts through the fallback
-alone. The dedicated entries are added so that the IIO device reports
-the real part name instead of the name of the fallback part.
 
-Rework the Kconfig help text to list one supported part per line, so
-that new parts can be added without rewrapping the text, and make the
-prompt generic instead of naming only the AD7405.
+> Am 06.11.2026 um 08:05 schrieb Krzysztof Kozlowski <krzk@kernel.org>:
+>=20
+> On 05/11/2026 22:32, Olivier Louvignes wrote:
+>> The X1600's SAR ADC has four auxiliary channels and none of the
+>> touchscreen or battery engines of the JZ47xx ADCs in =
+ingenic,adc.yaml,
+>> so it gets a binding of its own.
+>>=20
+>> Signed-off-by: Olivier Louvignes <olivier@mgcrea.io>
+>> Tested-by: H. Nikolaus Schaller <hns@goldelico.com> # LX16 - driver =
+only, no real world test
+>=20
+> Drop, did not happen. Even comment says it did not happen!
 
-Signed-off-by: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
----
-changes in v3:
- - use the same description in the Kconfig prompt, the top comment
-   and MODULE_DESCRIPTION()
+What did not happen? Are you expecting a software test or a full =
+hardware test?
 
- drivers/iio/adc/Kconfig  | 14 +++++++++++---
- drivers/iio/adc/ad7405.c | 28 ++++++++++++++++++++++++++--
- 2 files changed, 37 insertions(+), 5 deletions(-)
+>=20
+> Otherwise please explain me how this code was executed on a device.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index f8456c8039883..bdcb1f5c9a218 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -355,11 +355,19 @@ config AD7380
- 	  called ad7380.
- 
- config AD7405
--	tristate "Analog Devices AD7405 ADC Driver"
-+	tristate "Analog Devices AD7405 and similar isolated sigma-delta modulators driver"
- 	depends on IIO_BACKEND
- 	help
--	  Say yes here to build support for Analog Devices AD7405, ADUM7701,
--	  ADUM7702, ADUM7703 analog to digital converters (ADC).
-+	  Say yes here to build support for Analog Devices isolated
-+	  sigma-delta modulators:
-+	  - AD7405
-+	  - ADuM7701
-+	  - ADuM7702
-+	  - ADuM7703
-+	  - ADuM7801
-+	  - ADuM7802
-+	  - ADuM7811
-+	  - ADuM7812
- 
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called ad7405.
-diff --git a/drivers/iio/adc/ad7405.c b/drivers/iio/adc/ad7405.c
-index 0996f48d76f1e..4eaa272a48ae4 100644
---- a/drivers/iio/adc/ad7405.c
-+++ b/drivers/iio/adc/ad7405.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Analog Devices AD7405 driver
-+ * Analog Devices AD7405 and similar isolated sigma-delta modulators driver
-  *
-  * Copyright 2025 Analog Devices Inc.
-  */
-@@ -158,6 +158,26 @@ static const struct ad7405_chip_info adum7703_chip_info = {
- 	.full_scale_mv = 320,
- };
- 
-+static const struct ad7405_chip_info adum7801_chip_info = {
-+	.name = "adum7801",
-+	.full_scale_mv = 320,
-+};
-+
-+static const struct ad7405_chip_info adum7802_chip_info = {
-+	.name = "adum7802",
-+	.full_scale_mv = 64,
-+};
-+
-+static const struct ad7405_chip_info adum7811_chip_info = {
-+	.name = "adum7811",
-+	.full_scale_mv = 320,
-+};
-+
-+static const struct ad7405_chip_info adum7812_chip_info = {
-+	.name = "adum7812",
-+	.full_scale_mv = 64,
-+};
-+
- static const char * const ad7405_power_supplies[] = {
- 	"vdd1",	"vdd2",
- };
-@@ -232,6 +252,10 @@ static const struct of_device_id ad7405_of_match[] = {
- 	{ .compatible = "adi,adum7701", .data = &adum7701_chip_info, },
- 	{ .compatible = "adi,adum7702", .data = &adum7702_chip_info, },
- 	{ .compatible = "adi,adum7703", .data = &adum7703_chip_info, },
-+	{ .compatible = "adi,adum7801", .data = &adum7801_chip_info, },
-+	{ .compatible = "adi,adum7802", .data = &adum7802_chip_info, },
-+	{ .compatible = "adi,adum7811", .data = &adum7811_chip_info, },
-+	{ .compatible = "adi,adum7812", .data = &adum7812_chip_info, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad7405_of_match);
-@@ -247,6 +271,6 @@ module_platform_driver(ad7405_driver);
- 
- MODULE_AUTHOR("Dragos Bogdan <dragos.bogdan@analog.com>");
- MODULE_AUTHOR("Pop Ioan Daniel <pop.ioan-daniel@analog.com>");
--MODULE_DESCRIPTION("Analog Devices AD7405 driver");
-+MODULE_DESCRIPTION("Analog Devices AD7405 and similar isolated sigma-delta modulators driver");
- MODULE_LICENSE("GPL");
- MODULE_IMPORT_NS("IIO_BACKEND");
--- 
-2.34.1
+1. add decive tree entries, 2. compile, 3. install, 4. boot and load =
+module, 5. check sysfs
 
+root@letux-lx16v0-3:~# ls -l /sys/devices/platform/apb/10070000.sadc
+total 0
+lrwxrwxrwx 1 root root    0 Nov  6 08:00 driver -> =
+../../../../bus/platform/drivers/ingenic-x1600-adc
+-rw-r--r-- 1 root root 4096 Nov  6 08:00 driver_override
+drwxr-xr-x 3 root root    0 Nov  6 07:58 iio:device0
+-r--r--r-- 1 root root 4096 Nov  6 08:00 modalias
+lrwxrwxrwx 1 root root    0 Nov  6 08:00 of_node -> =
+../../../../firmware/devicetree/base/apb/sadc@10070000
+drwxr-xr-x 2 root root    0 Nov  6 08:00 power
+lrwxrwxrwx 1 root root    0 Nov  6 08:00 subsystem -> =
+../../../../bus/platform
+-rw-r--r-- 1 root root 4096 Nov  6 08:00 uevent
+root@letux-lx16v0-3:~# cat =
+/sys/devices/platform/apb/10070000.sadc/iio\:device0/in_voltage*
+1512
+1793
+1796
+1798
+0.805664062
+root@letux-lx16v0-3:~# cat =
+/sys/devices/platform/apb/10070000.sadc/iio\:device0/in_voltage*
+1512
+1760
+1766
+1773
+0.805664062
+root@letux-lx16v0-3:~# cat =
+/sys/devices/platform/apb/10070000.sadc/iio\:device0/in_voltage*
+1518
+1767
+1767
+1776
+0.805664062
+root@letux-lx16v0-3:~#=20
+
+You can see that the values look reasonable and fluctuate a little by =
+noise as you would
+expect from an ADC with floating inputs.
+
+But are you expecting a hardware test that the values are similar to the =
+real voltages?
+This is beyond my hardware capabilities.
+
+Maybe you are more happy with:
+
+Tested-by: H. Nikolaus Schaller <hns@goldelico.com> # LX16 - bindings =
+and driver function only, no real electrical performance test
+
+BR and have a good day,
+Nikolaus=
