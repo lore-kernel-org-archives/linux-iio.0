@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793953255;
-	b=4dQOh37hhxvHs4/iBO9s6LWJjZQ2FeJ3NPA2HkzMrT9dfNC8khZJbWTNaowm5UkHQDbx
-	 vQqyB6u3YiVmnk6Gb/SXoUUrQ1NST4dRkW9zKCSOqLCsV6pt+4dsP4jq4wbM5GI1D/Yd/
-	 3enLF0Cw0f1YLx0b2mPppq+vjW08u3wN4AThDhR1LKJhQ0Wknq1Q7YOVNvjDSCjuGrK20
-	 VE4rMuxgnODVAyRt/HPZo7BaI3m2DFHg1woC+dfQKPW5rbFDlS0Ff3C6bMN9pj5hVwFPF
-	 NI/v4NYVFn99oApP5XZ8v7LuNY4DItj0qKCildfQfiVYuS/u8e1RoSiWLyfvWlUPm2A==
+	t=1793953295;
+	b=qB9x6DatzjOicX4NEsDC1yPLTZ2M10t2KrJ/5bVO3BC5jeh4ywXoi0wZnYTlHqO1Ftqi
+	 4WPSRQ0Gd18rRXe1gq7DfNCHilD16pDwfWcZ32BFOR3vn9JUS0fe31wCA4gJ3jIJIcDWl
+	 IS3CnZXxdkBqI4YhMBzpL5sc6VmXwuhmw1RYLzdnXQa8uG6W5SfaRrSBrSZjjdWcCRXdh
+	 v9QQPyh/osre4rV7eVNqwpex+VIunDptLQPnsSkzNaK1bEumHdjveovpjGr00PsaDLrXi
+	 Bkdw/WgG3c9DeuDXesoLVQqPPgA2D2Rr6Si+huxED0nF64yGgq89xS0A05d877gdkSA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793953255;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793953295;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=8m9VNbUHSsZjDpQXOJ7mijVQXVGihNqWgKsG2q6oToM=;
-	b=Syb27TxAICDQ1JA38bZLSx5HZoCkUPUw2B176SE8BjtKsh9WNYkNEKH8ANEcZkrSzPSY
-	 HCum4K+1207STTw3QBHTKYxpQi9DV4PzXJPQwdoARp9T+QmMmsogkyKM5VMmO2zv4gPi8
-	 +MvU3QVJJfHzNSp3sPNojwvav2+IOZko0P7QhtNF7Jp5avZ3GM18zj66LdDlyxvAu0n46
-	 QVDRawg9zTZyvVPFf4vx0tLuRDA9Xof5cLpxucOhqJozeXLDoaQFwTYyMqHA8KaNdwvbt
-	 BnBhV8vToXAnhvGDADByR77JHhocKfQDZ79TEWkIUWYITvb3nceXCgf0XJ7CE6ds+vg==
+	bh=WmstpSnBSKpAZAcmaXaDjOLcmk+Ft1xPnpM15tWGe3Q=;
+	b=dyPzCvfuZ15g8kYK6JFQSaFv1Lvy8o80aAEcuvujUDzKKFx40Mr/jFOF3OX8xUuIaoSY
+	 Qdyj3t2Rj7yX7TyL5Ll0+Oi0msSwHXUzFeSv9TgR3PnwqIFTJqYKT0hex0E/LUFoC+i8E
+	 yi6534uI36dbZW9v27Z+EWawUIPtT+8lEcY35uOBTK50JxmhK479SEQ69Tc6q6emR2PLe
+	 JJdDlWQ1vJeONyePUSsk4dgOjXpaMMztJjAbVx9hsYJ/GGwxva9cUyxXw0+gQXJuBqKCk
+	 P7sS0q49sjvUU86ot6uPeJsxBhShv6ia3r9zBVJGrT+ZoEz4GkVIxu1dDrloJ42TUYg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mGucc50w;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T+4rSrdM;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E9B606A329;
-	Fri,  6 Nov 2026 08:20:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CED0606A33E;
+	Fri,  6 Nov 2026 08:21:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mGucc50w
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E06BA1F008A3;
-	Fri,  6 Nov 2026 08:20:53 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T+4rSrdM
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B1BC1F008A4;
+	Fri,  6 Nov 2026 08:21:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793953254;
-	bh=8m9VNbUHSsZjDpQXOJ7mijVQXVGihNqWgKsG2q6oToM=;
+	s=k20260515; t=1793953294;
+	bh=WmstpSnBSKpAZAcmaXaDjOLcmk+Ft1xPnpM15tWGe3Q=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mGucc50w9st8H4l0SGhUi8RQ2B3Fs68ci/z0pIvRBmwrI94kJHnjUfeiq0Xy1y5Mq
-	 j+ZkQOsNqWpMp5JV10RN9161jekIEkJbgpKE7Rkm+BSkHu80XgnHfTBwPKPzq7Xmri
-	 w21DC1K+T33EjQ9AGoJ2mJ4QJaowgXJ4hWcmzbJw1lm9qog2miIczg5GFYLz7NOOQs
-	 nxz+aIfYEkUxeZMAjmPVm7QH4xXalT6rXE9FJGe37dBrEdYsZSZYKy7riVJ7T//BkN
-	 L5dATkITXdlNULnDtjrLoH4vFGUL7Jnkh1TrwsHi9JwXZ0WUZoUUn2iPn2/o5JKGeA
-	 2sA476TGAOThg==
-Date: Fri, 6 Nov 2026 09:20:51 +0100
+	b=T+4rSrdM1ksGmp17lGef9LSrbvCSwHxtd0Zdk6C9U1MaNPfkHVEVPynGACD8ubKRG
+	 pFZvPwXBQltEwZZd8Jhl9JqFwL+nMgO9VGrZz1dyY6b2y9sUJPysEzWGvjvqjlWMzL
+	 nOtMgJs0ZI/r9wUE24sshR8r6Dr8In6QHx2s7u5HPX5nR/eBvwlrmYXyCsMl5FGfrW
+	 TG0vaZx2z88Yo0WqTM5SVyrAXw6OZrDx8FH2R1vnB1ucpkPAnyxPUW7JOxW5FkNFBQ
+	 rmhBQgpc9g8kqkrLbkDUwDAkBMGVYRtToGNpmrSMH7nY84MSrRSzmSEm7eJu4SHdfN
+	 fLbATTms0h7RA==
+Date: Fri, 6 Nov 2026 09:21:30 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Kanak Shilledar <kanak.shilledar@axis.com>
 Cc: Henrik Grimler <henrik.grimler@axis.com>, 
@@ -50,11 +50,10 @@ Cc: Henrik Grimler <henrik.grimler@axis.com>,
 	Chris Morgan <macromorgan@hotmail.com>, Joshua Crofts <crofts@kernel.org>, kernel@axis.com, 
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH v8 1/7] dt-bindings: iio: imu: icm42600: Drop interrupt
- requirement
-Message-ID: <20261106-jolly-hawk-of-spirit-d24cfa@quoll>
+Subject: Re: [PATCH v8 2/7] dt-bindings: iio: imu: icm42600: Add ICM-42670-P
+Message-ID: <20261106-jovial-rousing-baboon-277581@quoll>
 References: <20261105-b4-inv_icm42370p-v8-0-b44eb96020b6@axis.com>
- <20261105-b4-inv_icm42370p-v8-1-b44eb96020b6@axis.com>
+ <20261105-b4-inv_icm42370p-v8-2-b44eb96020b6@axis.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -66,29 +65,23 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261105-b4-inv_icm42370p-v8-1-b44eb96020b6@axis.com>
+In-Reply-To: <20261105-b4-inv_icm42370p-v8-2-b44eb96020b6@axis.com>
 
-On Thu, Nov 05, 2026 at 04:48:49PM +0100, Kanak Shilledar wrote:
-> The devicetree documentation for the invensense,icm426xx devices was
-> documented wrongly. As per the discussion in the thread[1], the IMUs can
-> work in polling mode, making the interrupts as not required.
+On Thu, Nov 05, 2026 at 04:48:50PM +0100, Kanak Shilledar wrote:
+> TDK Invensense, ICM-42370-P is a 3-axis accelerometer. The device can
+> support I2C, SPI and I3C. This device only has an accelerometer and
+> lacks gyroscope and it has very similar properties as that of the
+> icm42607/p the gyroscope feature is controlled via the driver depending
+> on the device. Add this device to the existing dt-binding and update the
+> description to match the devices.
 > 
-> Fix the dt-binding to not have interrupt property as mandatory. The
-> driver will need to be fixed to not fail if interrupts are missing from
-> the device tree. This will be done in a separate patch.
-> 
-> Link: https://lore.kernel.org/linux-iio/20261018034134.2bf170a0@jic23-hlaptop/ [1]
-> Fixes: 22addefdabdf ("dt-bindings: iio: imu: icm42600: Add icm42607")
-> Change-Id: I91ec65f6c00cbd6a48273ccd8cc476ee5266b995
+> Datasheet: https://www.invensense.tdk.com/en-us/products/3-axis/icm-42370-p
+> Signed-off-by: Kanak Shilledar <kanak.shilledar@axis.com>
+> ---
+>  Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 
-Your work is going to worse direction - quality decreases :/.  This was
-not here before.
-
-Please run scripts/checkpatch.pl on the patches and fix reported
-warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
-patches and (probably) fix more warnings. Some warnings can be ignored,
-especially from --strict run, but the code here looks like it needs a
-fix. Feel free to get in touch if the warning is not clear.
+Valid comments from bots, dropping.
 
 Best regards,
 Krzysztof
