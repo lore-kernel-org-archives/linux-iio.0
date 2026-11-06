@@ -1,22 +1,22 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=159.226.251.81
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793965081;
-	b=a04+smQ0ZwvODLlPm+YVx3GbvqsnZOCDaddtYjEmkKMm4pAg8ZwJriSr8uF6a9FPuMuP
-	 0BmUq7gLf0IU3z9TNvzoK/oYvm8KgxBqbgbgmPsZGeJ8HbDyfmAXxxewAJZv/lQH8TTFN
-	 4/ZpbsRKVcszqTV6Fm79co0rivJH+HzdWtuCVm0/1BqKngtjb4tY0TFTSjqmjDIE0AKyf
-	 4POgm8u/b97DAcsKjlxg1cSqBQEyIi4fMS0pwf5Jnn5KyF98OH0dr0MSPFVjkggDjjpKb
-	 Vqdkcj2glix5LjVt61wjRQeMsOzRZ+b669f3S29sD3UTbLmeJ+aMz+TgVlsAsKfWxXQ==
+	t=1793965469;
+	b=uI7h8yvGRHh2W1xPgkGnYuK3FQVl1kZjjA9U9qwASCXXJ5utsoJilZck3Zyjr8fXummc
+	 bsRPucxf7/vZMCIH2nB6JRgXeD/xmNN9hoP/f26/c1tUqvdu7cGl5Fhh/WyCQhXGi0Z2M
+	 ddUxcsbzyqKoCsKAdFTaszg6vTmgtbb8UoHvQfZZRMMH2WzqcpGshxUGLas+ifL2m+Jl4
+	 YKZ5EbmGXX0DeMXOIogAErq6/+GtSGu5x3iIQKvew8dwi/J527gEVyCqEmwoQ7DSQEZ9y
+	 yLuH8MZUBxWbWX9Poj19yYJLXgUK2nD4/YejHOaHUQdqJjAZIMwH/ZDlG8MngZWKe3Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793965081;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793965469;
 	h=DMARC-Filter:Received:From:To:Cc:Subject:In-Reply-To:References:
 	 Content-Type:Content-Transfer-Encoding:MIME-Version:Date:Message-ID:
 	 X-CM-TRANSID:X-Coremail-Antispam:X-Originating-IP:X-CM-SenderInfo;
 	bh=yZRVvWiLJU6lKe1IgV0S3vol1scJQqPQxcRJ6n5s7aQ=;
-	b=QI5gj5c7JoZkfk5iWT8g3v1EBlgVR+hcE2gOenOQFBYWkLHkpH6N10NUICmtolw+Jub2
-	 2yEomJEfZO6zgTvlJIJvYL6LoapYWUAocljqvLP8npsP9JRPDUlmG5D6u+N1IzPHuf8Qk
-	 1wn/RntBQ8HtQgMuFNP+Cvk+RruHXXSYypFez0XDeJhj8OMO+rviQ4wVlnur4TmMRF9MJ
-	 U1YARyWxzrTdLQpfD9utAXftfNxExkOdgsJp/yE67TUFcYPiJBV0k54Rh64yisTVSZK5z
-	 xPIa+nsrQIEe5Eee73bWcjeucLm1P0Aank5w/HDietZuZqfYzPo0Wyp+H6obQ1lZSJg==
+	b=DoIWlN79ZHvcwjl874w/q/lN8ma28b7darr1IOyhE+DOVq+G6mlF3/7nqX0jtIW8MPjJ
+	 Cz/S/+K5Yhp8PYe3WeWllj7pqsht+etr+aDAijBgGKwnaWoQwko0q5ZsqydzsJ2jIgZPO
+	 9Nplxkb/TN+2IT0DJP9AOfFR5dlwaXDaN8k00ibOXjp/mdAeedbhV34E2HJNEiKh2dh01
+	 CEF8G+s02kcR6pcaTUSRuR/XQQXvwC1wpjN2ehJzOIMjQGPr+u2ZLTqzTyX0gq6WujVEp
+	 OvvVW8bjY2ctzx81NQOUYDJTpO9XdiOfyxR5sWo26EPU+NFD5fpJQiAdWg5sxzQhx0w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=iscas.ac.cn;
 	spf=pass smtp.mailfrom=iscas.ac.cn;
@@ -25,24 +25,23 @@ Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D37C606C7F3;
-	Fri,  6 Nov 2026 11:38:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D37C606C7F3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80777606A90C;
+	Fri,  6 Nov 2026 11:44:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 80777606A90C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
 Received: from [172.100.0.8] (unknown [36.110.52.2])
-	by APP-03 (Coremail) with SMTP id rQCowACnro8RvO1qkOpsAA--.21855S6;
-	Fri, 06 Nov 2026 19:37:54 +0800 (CST)
+	by APP-03 (Coremail) with SMTP id rQCowACnro8RvO1qkOpsAA--.21855S16;
+	Fri, 06 Nov 2026 19:37:55 +0800 (CST)
 From: Wentao Liang <vulab@iscas.ac.cn>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Michael.Hennerich@analog.com, andy@kernel.org, dlechner@baylibre.com,
- lars@metafoo.de, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- nuno.sa@analog.com, stefan.popa@analog.com, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad7768-1: Fix trigger reference leak in
- ad7768_triggered_buffer_alloc()
-In-Reply-To: <20260917012641.282a948e@jic23-hlaptop>
-References: <20260916161726.2082904-1-vulab@iscas.ac.cn>
- <20260917012641.282a948e@jic23-hlaptop>
+Cc: andy@kernel.org, dlechner@baylibre.com, email@sirat.me,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, nuno.sa@analog.com
+Subject: Re: [PATCH] iio: proximity: vl53l1x: Fix trigger reference leak in
+ vl53l1x_probe()
+In-Reply-To: <20260917014027.757b0677@jic23-hlaptop>
+References: <20260916164255.2084644-1-vulab@iscas.ac.cn>
+ <20260917014027.757b0677@jic23-hlaptop>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,25 +53,24 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Date: Fri, 06 Nov 2026 11:38:04 -0000
-Message-ID: <179396508410.2291875.1731363248128654994@iscas.ac.cn>
-X-CM-TRANSID:rQCowACnro8RvO1qkOpsAA--.21855S6
+Date: Fri, 06 Nov 2026 11:38:05 -0000
+Message-ID: <179396508517.2291875.13493077005928497044@iscas.ac.cn>
+X-CM-TRANSID:rQCowACnro8RvO1qkOpsAA--.21855S16
 X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUOj7k0a2IF6w4kM7kC6x804xWl1xkIjI8I
+	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYp7k0a2IF6w4kM7kC6x804xWl1xkIjI8I
 	6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
 	8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-	cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4
-	A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
-	w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26F4UJVW0ow
-	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
-	42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8GFyrJr1UJwCF54CYxVAaw2AFwI
-	0_Jrv_JF1l4c8EcI0Ec7CjxVAaw2AFwI0_GFv_Wryl4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l
-	x2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14
-	v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IY
-	x2IY6xkF7I0E14v26F4j6r4UJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z2
-	80aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU
-	0xZFpf9x07bb8nOUUUUU=
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgYDA2rtkziawgAAs0
+	cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+	8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+	64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r126r1DMcIj6I8E87Iv67AKxVWxJr0_Gc
+	WlOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxAIw28IcxkI7VAKI48JMxAIw28I
+	cVCjz48v1sIEY20_Gr43Wr1UJr1l4c8EcI0En4kS14v26r1q6r43MxAqzxv26xkF7I0En4
+	kS14v26Fy26r43JwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18
+	MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr4
+	1lIxAIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4U
+	JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcV
+	C2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x07bb8nOUUUUU=
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiDAIDA2rtlCKYJAAAsD
 
 Hi Jonathan,
 
