@@ -1,42 +1,42 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=193.31.26.27
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793957636;
-	b=KGOQ5Ovs87EPR0BTc/iEbrPFXnzgMqfDUirXn8HWDZJWYnCMK1aw3ZJFWZ85Osgr61ZV
-	 gvvTzHccyopxxWpwHq1C29rMB4xl3ZKGEyNNWEWJW9JPlrMuNmcxtRBP6HrHcxqjd3gg4
-	 2Ho3CGokC8bgjO5suPyxzUGMM/eUVv2MgXT6KP6i5H5R+k3iaHcmijpLJjTjmxN4BmTqK
-	 waeX/Z+xCqTqcXPolfRSdd199Cs34KY8jwW0HOOlVOx6/YcH/iAw+Y3MSw1kkSoyse2La
-	 LU4bMHXems89u0WLfjl0aUt6K0qkNObUO7Zh3ESV7IozARNt6ebuBIimrW7BsIgLVTQ==
+	b=aEcDurcKfkFhZCxjDCB/zGpHoybO8Atqnw5rlv3Vi93xizHB2mwAGWbV/I04cJyNfW+2
+	 1wOyvoTQwRiVeZrkcIxQsfImrmQbDlxSvmuGaa40tInBa0EfEYwbGybZm8bF2ZVaIMyVk
+	 mAQrY4QUeshD9xmQs7hphdz+PJ1dWk7eHEnodVzHXqtXo4e9exiEbqCfiz0WRBzw6ZAW9
+	 axzLkuKrODbNRKgV/YCgV9pnEfkJQp0utS6FcFZWx4DkUhn0/LuZsfTtF/k7wBHvEMyu8
+	 vLZ+iDu7iAxlRGooHOEspSmMBtVXXyRdI4F+tPiv1s9bLC3pLxfNsdOcD3M89Fw2/hQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793957636;
-	h=DMARC-Filter:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer;
-	bh=JvdKZIEOWBKasj/2hhPNENnE38dnMCTRye+62CUj/EU=;
-	b=Jnm1KmqXTMixfM+/2xLL/8cTHKfGF7xBmpIPWYkshAPa8AGHGsizDYbDJCPsjDzVgPXx
-	 bTB9sPqXLsOHOX1dZ3mVTQw+mgFrYmkDrOGK+ad7p9wKHRDcm9tzaqIv4EbzZPcCHuYnV
-	 /fSVqssC18Hsw5CGwh1Ipjc/G8lyTPUHU0c8MESlj0cuN+e7e1GNSUsE34zyJNyYAlRwE
-	 ib4Io+lbWCpVo96l+qOJNG7BfbOrUVPvjKE7W0Cjx9xH0Zc4sZvIrFOrPCBygthS3Nwi8
-	 O7BSHxfSQocZYRzj+iW84aR8BaPG6+/pOnX/8DY10m98bTJj8DSd16dv2tHpRI8lVrQ==
+	h=DMARC-Filter:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
+	 X-Mailer;
+	bh=YM0Cas1lmuPvC0RCOoiARMUG2lWu7wZYO/f5PxM2lpk=;
+	b=tmW3cc+aOm7xahb73nNEuoLdYtA+WmeO28YlKxDm8Tzus64GhPegNm9yN6k3iu0oRbLn
+	 IJBOWGewa3NGaMqxjQlD55A6Nd2ikjsZr3xmc7eYu/PHhy06IkIR6VM+SdTFXujv21AgK
+	 rerWkMC4SUI+ryFkUwXMRG45N2Vcz4HBcfDoIzjdIwrvmPzD4Z8CplDxVuNIWjJ/QHqEi
+	 CD+wC7xFZ/Hf4PSsZpOSz5qmICwt7zHH8NLVkTySPAcUTWr23kpkQ4TMOYw6Nbpl4xtqv
+	 Pih5AM3CT+mbalKNDEZqtrM9Zq47UxWe2F35jq/gELTj3cB+qlVgkgX4yQK/aPzfvqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=rudorff.com;
 	spf=pass smtp.mailfrom=rudorff.com;
 	arc=none smtp.remote-ip=193.31.26.27
 Received: from rudorff.com (rudorff.com [193.31.26.27])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8DDD606D80C;
-	Fri,  6 Nov 2026 09:33:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8DDD606D80C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E34606EE84;
+	Fri,  6 Nov 2026 09:33:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43E34606EE84
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rudorff.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rudorff.com
 Received: from [127.0.1.1] (dynamic-002-211-221-196.2.211.pool.telefonica.de [2.211.221.196])
-	by rudorff.com (Postfix) with ESMTPSA id 02B3B40318;
-	Fri,  6 Nov 2026 10:33:45 +0100 (CET)
+	by rudorff.com (Postfix) with ESMTPSA id 581F640BE0;
+	Fri,  6 Nov 2026 10:33:47 +0100 (CET)
 From: Christoph Rudorff <chris@rudorff.com>
-Subject: [PATCH v5 0/3] MSM8916: improve gp2ap002 proximity sensor
-Date: Fri, 06 Nov 2026 10:33:25 +0100
-Message-Id: <20261106-iio-light-gp2ap002-v5-0-070631a7252c@rudorff.com>
+Date: Fri, 06 Nov 2026 10:33:28 +0100
+Subject: [PATCH v5 3/3] arm64: dts: qcom: msm8916-samsung-j5: Add proximity
+ sensor
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -47,13 +47,10 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAOWe7WoC/33PTW7DIBAF4KtErEsEA4bQVe9RdcHPYFO1wQLHa
- hX57sHJIlFjdfmkN9/TnEnFkrCS192ZFJxTTfnYQveyI36wxx5pCi0TYKA444qmlOlX6oeJ9iP
- YkTGgyoWuExa9k460w7FgTD9X9P3jluvJfaKfVmltDKlOufxeV2e+9v4dmDllVHsjBIdoD6F7K
- 6eQS4x7n7/JOjHDI6I3EWhIUAdttNJWSvWMiAcE2CYiGuI0MiOVN6jNMyLvCGdyE5ENiZZ7Z20
- Aj3/eWZblAoEkr0GXAQAA
-X-Change-ID: 20261016-iio-light-gp2ap002-6bd553aecb4b
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261106-iio-light-gp2ap002-v5-3-070631a7252c@rudorff.com>
+References: <20261106-iio-light-gp2ap002-v5-0-070631a7252c@rudorff.com>
+In-Reply-To: <20261106-iio-light-gp2ap002-v5-0-070631a7252c@rudorff.com>
 To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -63,87 +60,94 @@ To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
  Konrad Dybcio <konradybcio@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
- Christoph Rudorff <chris@rudorff.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+ Christoph Rudorff <chris@rudorff.com>
 X-Mailer: b4 0.16.0
 
-Samsung J5 is equipped with GP2AP002 proximity sensor.
-Unfortunally the driver wasn't working, no irq received.
+J5 got a gp2ap002 sensor, add it and it's supplies to the device tree
 
-According to datasheet page 8 "Recommended external circuit",
-it got tree pins to supply: vio, vdd and vled->leda.
-
-It missed to power up the LED.
-
-I found this looking in downstream kernel, where
-several #ifdefs handled the case of 2 or 3 supplies.
-
-Now it works. Tested on samsung-j5 (msm8916):
-
-$ cd /sys/bus/iio/devices/iio\:device1
-$ echo 1 > events/in_proximity_thresh_either_en
-
-$ iio_event_monitor /dev/iio\:device1
-
-Event: time: 1791460068846871297, type: proximity, channel: 0,
-evtype: thresh, direction: rising
-
-Event: time: 1791460068876669724, type: proximity, channel: 0,
-evtype: thresh, direction: falling
-
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 Signed-off-by: Christoph Rudorff <chris@rudorff.com>
-Assisted-by: gpio-hammer
 ---
-Changes in v5:
-- Add missing '---' cutter lines
-- clean up code semantic
-- Link to v4: https://patch.msgid.link/20261104-iio-light-gp2ap002-v4-0-fa1cbaad2ce5@rudorff.com
-
-Changes in v4:
-- reword commit messages
-- gp2ap002: Applied Andy Shevchenko suggestions, namespace etc...
-- Link to v3: https://patch.msgid.link/20261020-iio-light-gp2ap002-v3-0-b7e0946c9e79@rudorff.com
-
-Changes in v3:
-- rename vled leda
-- j5 dt: moved declarations from j5-common
-- Link to v2: https://patch.msgid.link/20261017-iio-light-gp2ap002-v2-0-d6879767a446@rudorff.com
-
-Changes in v2:
-- reorganized patch serie
-- gp2ap002: use regulator bulk framework
-- Link to v1: https://patch.msgid.link/20261016-iio-light-gp2ap002-v1-0-7c93312fa8d5@rudorff.com
-
-To: Linus Walleij <linusw@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-To: Nuno Sá <nuno.sa@analog.com>
-To: Andy Shevchenko <andy@kernel.org>
-To: Rob Herring <robh@kernel.org>
-To: Krzysztof Kozlowski <krzk+dt@kernel.org>
-To: Conor Dooley <conor+dt@kernel.org>
-To: Bjorn Andersson <andersson@kernel.org>
-To: Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-arm-msm@vger.kernel.org
-
+v4: moved declarations from j5-common to j5
 ---
-Christoph Rudorff (3):
-      dt-bindings: iio: light: gp2ap002: add leda power supply
-      iio: light: gp2ap002: add led power supply
-      arm64: dts: qcom: msm8916-samsung-j5: Add proximity sensor
+ arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts | 52 +++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
- .../bindings/iio/light/sharp,gp2ap002.yaml         |  3 +
- arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts    | 52 +++++++++++++
- drivers/iio/light/gp2ap002.c                       | 88 +++++++++++-----------
- 3 files changed, 97 insertions(+), 46 deletions(-)
----
-base-commit: a2de78ee6ed8bf8cd99d177c74865a6e8c3cb6ea
-change-id: 20261016-iio-light-gp2ap002-6bd553aecb4b
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts b/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts
+index ba8650971d6a..efac29485df8 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts
++++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts
+@@ -8,6 +8,17 @@ / {
+ 	model = "Samsung Galaxy J5 (2015)";
+ 	compatible = "samsung,j5", "qcom,msm8916";
+ 	chassis-type = "handset";
++
++	reg_leda_proximity: regulator-leda-proximity {
++		compatible = "regulator-fixed";
++		regulator-name = "proximity_leda";
++
++		gpio = <&tlmm 73 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++
++		pinctrl-0 = <&proximity_ldo_en_default>;
++		pinctrl-names = "default";
++	};
+ };
+ 
+ &accelerometer {
+@@ -19,6 +30,24 @@ &blsp_i2c5 {
+ 	status = "disabled";
+ };
+ 
++&i2c_sensors {
++	proximity-sensor@44 {
++		compatible = "sharp,gp2ap002s00f";
++		reg = <0x44>;
++		interrupt-parent = <&tlmm>;
++		interrupts = <113 IRQ_TYPE_EDGE_FALLING>;
++		vdd-supply = <&pm8916_l17>;
++		vio-supply = <&pm8916_l5>;
++		leda-supply = <&reg_leda_proximity>;
++
++		sharp,proximity-far-hysteresis = /bits/ 8 <0x2f>;
++		sharp,proximity-close-hysteresis = /bits/ 8 <0x0f>;
++
++		pinctrl-0 = <&proximity_int_default>;
++		pinctrl-names = "default";
++	};
++};
++
+ &pm8916_codec {
+ 	qcom,micbias1-ext-cap;
+ };
+@@ -30,3 +59,26 @@ &touchscreen {
+ &usb_hs_phy {
+ 	qcom,init-seq = /bits/ 8 <0x1 0x19 0x2 0x0b>;
+ };
++
++&pm8916_rpm_regulators {
++	pm8916_l17: l17 {
++		regulator-min-microvolt = <2850000>;
++		regulator-max-microvolt = <3100000>;
++	};
++};
++
++&tlmm {
++	proximity_ldo_en_default: proximity-ldo-en-default-state {
++		pins = "gpio73";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-disable;
++	};
++
++	proximity_int_default: proximity-int-default-state {
++		pins = "gpio113";
++		function = "gpio";
++		drive-strength = <2>;
++		bias-disable;
++	};
++};
 
-Best regards,
---  
-Christoph Rudorff <chris@rudorff.com>
+-- 
+2.39.5
 
