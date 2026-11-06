@@ -1,62 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.200
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793993537;
-	b=zgFvzPMUSlRuVol2do7l5ODYYzwP4+D3eR1BKQZY/5RSR947+crZFQN4N7PerAAy6ZrS
-	 gkWMumXOK2RBe0CstJu8Ia5HFJMZ/9Ckha5G3myLcekXsn60v9CNTU38pLDxx0M1aryHw
-	 MjlMEYBvd1fXTN/BZkOf6SqK03Y3IlbixWg4n8Bxm+dQvPtdWnwFoakNI6i5CRcVMFcqB
-	 4eA/DXOCLq/oWYicIUlfSmnfLaivzcJ4b62fbFTiYt38qtg5tNPFOM1NLrFn6A2FJuOdv
-	 HVWhz0KWzK3m44z3/qGJLQXutTT5Dd2kzI/NLUqUig8l9UCk5k6ETy8zTEj89d/BriA==
+	t=1793993575;
+	b=SrHiflSenpA76R4Lwj1RzIayxyd6GCCkJ4bNdEFrx3D4eZ8aAGmunBuczGULrHrcnR54
+	 iYRYtKUq8R/Ghh4WEzY+5cRZaR9hV1JH/OrJeujjQMGzTn5FYzn1ymOA4PgYaoUMIoWPR
+	 TzKYzC2B7wBXoDBO3REeslnscWjXl0sPuVh55FtQ3YT5weMeffztwFV9wAgh47+1laO1J
+	 a+e3JM3YQw8t78LCdkWxV7VsAkiP+B7sxMQ4VGpDtZUL8sqcLgvPc/H4PlGvjrYdlg84b
+	 nfJch8vvHMDT7zMrFLRYv/A4zaYBi4tquFGu7jco/bBrqJJjbtenUmQC07+RQuedu9A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793993537;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:X-Developer-Signature:
-	 X-Developer-Key:Content-Transfer-Encoding;
-	bh=473crE0SSGdE25OE/ZhuZNLv2HWb2HSt1DmR/h4oQgU=;
-	b=V4HJVAhRxs//uwy9JI4QN8SKv4CIRgMv6vyGhsJRQph+VLzZLujjAQ2lPK61QqTg/uv3
-	 /3gSxQtxUyB98HpoILMYO71ukVSqz5veIKP8LolYW4k2D/B/LvSRjFJWgqW7TYkHBNf+3
-	 0LqGa/pW7CaDNmACo3QpIP8IfgUgHXzAjMzQqA8Arapyw6f+Bi4g9jDJcDYNnkkFhp9qL
-	 jjw1+aExM495sLsIwcL72xiVRK+25KzHrUvGNECKuEYqrobjlzMBJ1eg4jke75gwuSj0j
-	 dwIp7o8T1hJyBaZBa/YFFDT62vDqYpEjSk4liAG2/zuPUgGG87UwDgRfEMrSHTR3x4Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793993575;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Received:Date:In-Reply-To:Mime-Version:
+	 References:X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=/r3iKwOujJ0k9iRfRMb2nXgYVKkbMoaxokk4Fx5YuMk=;
+	b=TNvQ9c3uMEcp/WMkUAT86Db82jNW2ogKNFMhNDbMDaqqCUnA0E/VoCU0bMpRqFE7NwVH
+	 ts7mf2C7mmj/1DkSZMR43samXxS6V5sGTXNxIvxcrgcFv1Awd5YYFO/B3gPhG4cDSGj73
+	 VhIly9VKZVs4t7KD7Yy7c3lJhT0U+40gn8hBR9OlqiGb5o04LnahmqR+QI/K/NVsA6hb1
+	 b3pBfMBVmUCHo6TlB0LwvL91iGuNsdkTkk7jwvyT+M4tfWmSvMXVwRk5+adky1k7JzThF
+	 Ne4TwmDEBUkPhhDbWVVYnArxku+AgbK6yJrNtGtpF6ZQJnRiYcy8tsqlwLa0XVnmCtg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iFTsCOI4;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--dbalint.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b="AJl/oz2K";
+	arc=none smtp.remote-ip=209.85.208.200
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9A7D606A326;
-	Fri,  6 Nov 2026 19:32:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2894606A329
+	for <linux-iio@vger.kernel.org>; Fri,  6 Nov 2026 19:32:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E2894606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dbalint.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iFTsCOI4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE53D1F0089F;
-	Fri,  6 Nov 2026 19:32:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793993537;
-	bh=473crE0SSGdE25OE/ZhuZNLv2HWb2HSt1DmR/h4oQgU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=iFTsCOI4oI1zkZNrVA8LjHza+UVYi6S7tdHT3B0oZiNyUC9EnIZg3H9jtS3N5DXKB
-	 VrjW1eRSqzNpLb/edNPgzKeTNcJ9TljYFmWZsL8NTyAZJByiFR0oQvpsbv6qtRqJlO
-	 G4SvuNU7RNHlY94j6vBFGGTvFa6c4MJHariBSV3gP3U5s77YifMVPInzpVFJ8DQWhN
-	 CTXte7G70bCVMJ0YYHoDfBevxvDM5DMvmAVftVWTMeBQzlD1+G0wR55VPQCJcjY7sE
-	 OWN5M28QAcGG+pzSHqGi08+1tT6m4Ay4SRXhV1ALW0wObbkJ9LzJokV9SLFGeI3dRg
-	 kE1+DyfXkeDKg==
-From: William Breathitt Gray <wbg@kernel.org>
-To: phucduc.bui@gmail.com
-Cc: William Breathitt Gray <wbg@kernel.org>,
-	andriy.shevchenko@intel.com,
-	andy@kernel.org,
-	dlechner@baylibre.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	m32285159@gmail.com,
-	nuno.sa@analog.com,
-	sozdayvek@gmail.com
-Subject: Re: [PATCH v3] counter: ti-eqep: use devm for runtime PM to
-Date: Fri,  6 Nov 2026 14:32:07 -0500
-Message-ID: <20261106193208.4136410-1-wbg@kernel.org>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261102100031.5573-1-phucduc.bui@gmail.com>
-References: <20261102100031.5573-1-phucduc.bui@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=AJl/oz2K
+Received: by mail-lj1-f200.google.com with SMTP id 38308e7fff4ca-3ab3061668eso4764161fa.1
+        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 11:32:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793993573; x=1794598373; darn=vger.kernel.org;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=/r3iKwOujJ0k9iRfRMb2nXgYVKkbMoaxokk4Fx5YuMk=;
+        b=AJl/oz2KTG1VBy0Y5l0VEECGhtquL5PzpdP1sb9PtaqIkbAB0THpeGHJb5TQPJNosk
+         ch/XJCUboLbbLC6YWhyjJIYB08eo6fRvDYaHCPkb2rltS1awwwPwc9foVExjND5mvrX4
+         mnPlVGdkq3KCw+eKHc1GrQ+onoCt0iBkP9w7fKKZ25P4tPX/Ekm5iwaO5lBVwOuA7l6b
+         sUdG/LgycgOGknHjoqA1+itwl9b1wD728YfdreBKbptA1s+NtbpZtSu/fiW5ChnryDuq
+         uYt4gzpJki1bS92vK5T/O2iKIKrHnVhagDegePiKgMl+ayazePUPy9paG1nYwKfCncF2
+         9dXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793993573; x=1794598373;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=/r3iKwOujJ0k9iRfRMb2nXgYVKkbMoaxokk4Fx5YuMk=;
+        b=PkVCMFwyHq6VkGW/8/mJdL9UcpJLMLvmr0SRy0M76/Gsi/qKas6J8RbS1JCRlVE1J6
+         69eCxJaBG3DzC0nVzZvoHEQneriRXLYBGEMCHdxhO+3qbeOj8R7+gaEAVE1rkH7WPmAh
+         CslsKdT9aXbxBsFnLi1Fz8HBaAEMyOiC2ijZhJToM0dlLfcXG/XAIffnvqWAl0wea1Yu
+         7U0hOjkbm/biZz0UEc/wQV+uaCbHb37qvwTvFFb+NdH86AwsBmAu8KJxkgEL6nts7aV2
+         QknFpktqQ6wSNtk6KWA+/u3U0sehL3BUxxfme9N4QwGwIlV522yc7kRAPyslKhdZBT/G
+         9Z2w==
+X-Gm-Message-State: APuU4Z/jSevsHU9OOzAlf+dC387TYZ16SYtjZx5T9HeWJDWPIvyhoIBu
+	q1rApL1XSzxy6owGbO310xz/qDC2JEZ4QkjmouwF0AdxxGEUwpLjrkxHgihq/d+fwdHkIdxVu0z
+	AZLuBcbUnhg==
+X-Received: from ljou21.prod.google.com ([2002:a2e:b815:0:b0:3ac:e012:5784])
+ (user=dbalint job=prod-delivery.src-stubby-dispatcher) by 2002:a2e:a80a:0:b0:3a9:8762:d77
+ with SMTP id 38308e7fff4ca-3ace3028f4dmr14685591fa.6.1793993573005; Fri, 06
+ Nov 2026 11:32:53 -0800 (PST)
+Date: Fri,  6 Nov 2026 19:31:15 +0000
+In-Reply-To: <20261106193129.43493-1-dbalint@google.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,30 +76,50 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=707; i=wbg@kernel.org; h=from:subject; bh=3e2hmBvwAtTabO9HdSERGS+iq1d9dFwYIQ8s6fwBlQg=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDFnvtBV1s+dZnM9KXO0VpSP78r3uNL6uuXsWaE/vmRnzz Y493i2no5SFQYyLQVZMkaXX/OzdB5dUNX68mL8NZg4rE8gQBi5OAZjILA6GvwKH/YVfpQSe5uGv u+9Yrn9GcL+TYtrkkOx2lwPT/9idaGP4Z3+EW+Hamg3WtZyiX68tn2G05R5r647ZPP1z7jlMuSl 3hgsA
-X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+References: <20261106193129.43493-1-dbalint@google.com>
+X-Mailer: git-send-email 2.56.0.455.g6c5a503b38-goog
+Message-ID: <20261106193129.43493-2-dbalint@google.com>
+Subject: [PATCH v1 1/3] platform/chrome: cros_ec: fix alignment of ec_params_pwrmon
+From: Daniel Balint <dbalint@google.com>
+To: Jonathan Cameron <jic23@kernel.org>, Benson Leung <bleung@chromium.org>, Lee Jones <lee@kernel.org>, 
+	Tzung-Bi Shih <tzungbi@kernel.org>
+Cc: linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev, 
+	mfd@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Daniel Balint <dbalint@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Nov 02, 2026 at 05:00:31PM +0700, phucduc.bui@gmail.com wrote:
-> Hi Stepan,
-> 
-> William pointed me to this thread after I sent a similar patch. It
-> looks like there has been no v4 since May. Are you still planning to
-> send one? If not, I'm happy to pick it up, keeping you as the author,
-> and address the comments from Andy and William.
-> 
-> Best regards,
-> Phuc
+Sync EC_CMD_PWRMON structure padding with ChromeOS EC firmware by adding
+explicit reserved padding to struct ec_params_pwrmon (2-byte union
+alignment) and struct pwrmon_dump_info (4-byte struct size alignment),
+as __ec_align2 and __ec_align4 expand to __packed in Linux.
 
-Hi Phuc,
+Fixes: b57af7f8d194 ("platform/chrome: cros_ec: Sync host command header with EC")
+Signed-off-by: Daniel Balint <dbalint@google.com>
+---
+ include/linux/platform_data/cros_ec_commands.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Go ahead and submit a v4 addressing the comments from Andy. Submit a
-follow-up patch as well to eliminate the ti_eqep_remove() callback as
-described in my earlier comment[^1] in this thread.
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index a7bd69d83522..6d74371c7074 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -6635,6 +6635,7 @@ enum ec_pwrmon_cmd {
+ 
+ struct ec_params_pwrmon {
+ 	uint8_t cmd;
++	uint8_t reserved;
+ 	union {
+ 		uint16_t set_rate;
+ 		uint8_t channel_id;
+@@ -6651,6 +6652,7 @@ struct ec_params_pwrmon {
+ struct pwrmon_dump_info {
+ 	uint8_t channel_id;
+ 	char channel_name[32];
++	uint8_t reserved[3];
+ } __ec_align4;
+ 
+ struct ec_response_pwrmon {
+-- 
+2.56.0.455.g6c5a503b38-goog
 
-Thanks,
-
-William Breathitt Gray
-
-[^1]: https://lore.kernel.org/all/20260604021902.891327-1-wbg@kernel.org/
