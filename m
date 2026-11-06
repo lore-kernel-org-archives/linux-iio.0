@@ -1,99 +1,117 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.175
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793979917;
-	b=x5TulZq/4tMU9/jbULPCAeYmpWnziBXoO+vrbOkcY4d0zgdZ3nT30oU60YlTYCmjKnaB
-	 8Hzh8L+pAnNdeTjQiuDpDc+KkYVnzGKjEogVns5i8G/Aj5uIPyA99xrs8RqZrKW7a8tcg
-	 H/VIk2bZEYapRUuoTyIXfwqPu91Xlx9E5TIX5ajPYvNTQXWpL/5B81yWyxn/riRshaGOW
-	 X26FL9wxORnj/OXVpzMpJTQAygHCL23ePq7GP6Mhm287gezFv2c+Z0BITPfUde7selhjJ
-	 HKPS8oeE5SWhFHp8p5ZHnwMEW+4L55dB8s5BPClornLqkGzvjd9zlimdGbiTHrZUJmA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793979917;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=l5tSVn8Mj/CO6j1uR03XuID6rPx5lFsALyBs+/EQOlk=;
-	b=ug9BWb5WRAULHWRNOZT/B4p9/aZ1qgw9VNHxNS+ZLY9Ygsdh+2ykGK+yicSC1N+gBKvS
-	 2ufWY8g9AX346t+hFuIhPbk54CAOgrDuvPTz88JUIknLEbhfbrRBb2NykvK86PLnFoPO+
-	 JKYCotzPmuxfYExrLaYZ5wf6L54oGLTkBU5cKrtZszthBfFgq0gDOto5nBzeKESMf+9NV
-	 KkphR4VK32tZO+bCy7P/FyypsdzRZ+Db3K4RLxpJYKDgKFSFS5fQcqMtTUYSER+4HZxHW
-	 3JLM6JHhp734frjbM1dxoOBZX2zVj1fPAT+HgrXzu5LwBUZI/UmVU+WIKLhsMDJhnMw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PVCIfsqA;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.175
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793981152;
+	b=JD7XxBtq69RLEMNnu5x+d+l8paPGmfl3HLe0jN198/5HgPaIUm09N2nQNCUBoWKyZfyB
+	 YYWQpS7Q10qQb/hrOVJk+i1SaxAQ+7TBnN1poNpu0hRFxGzKgeTtDJ0c/Wf7VRAl32R4R
+	 GlQ3q7PePHP8l6bACE8SQX7I08rdU7UbPpySmt6Ku4n5ZYi4z+hfWAPw6CqeQ47TSJH+7
+	 XeAMoF55gNRgvoRZ6hPjGpehoIDBCMAVvD1vrhJnaLAHsFckGpwHrkKXoIBR7JJC178j3
+	 PuNua4+Ehz73lTHOov0nAYLwoppOWS/TXhVbMtRgWgsaA8Tw30KqPW2lHziCCazB96Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793981152;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
+	 X-Proofpoint-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=+cNwt+gUJSYsLFI9L0pTVdxeZNg0s+CZpU43mw4icwE=;
+	b=2GaHz1y/nGKuWcy5B9iEv0vh5tAu/IGdwDysnm87iLfVJRzY6nfOFRvTwTue6BZWqSEu
+	 fNhdslV12RJ6WdrImhEVgdJr8b5An3T8rFK621z/7I7jqgGlzFyZimwCmthHl061qmKIH
+	 haU3M4BJPJ7zMVCEdkB6JaXdBd72q4VbqKLJH8MmBrVz8GkAeZ+6ew7dIHcmONx+hyM2u
+	 s+aJ+YHumRoR/BvhWx5iGzgJjyKiNL/iXet0y92IXeLtaO8winKs1JM33hh7V/ZEVVF0o
+	 YAYIEV12X5ItUPRAzqXaEZEPwz0hav7a0SahGPa93u5lN4Sg8hPtdQzGKbdNjEChu1Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=uHIamcs0;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=OpES2zhp;
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09564606D80E
-	for <linux-iio@vger.kernel.org>; Fri,  6 Nov 2026 15:45:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09564606D80E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40AB606A33F;
+	Fri,  6 Nov 2026 16:05:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C40AB606A33F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PVCIfsqA
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-3ace304021eso5451091fa.2
-        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 07:45:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793979915; cv=none;
-        d=google.com; s=arc-20260327;
-        b=shAOTcBoFT3ojZ5y29jqXpX8/w8u5pMYDmjm4ARdsH1PCZNLchHz9lFzH7Mk212Uim
-         9JLvS9YpvQQ/9131hPUfzsb2ids/8YNWMaqnzXRxcxm2dRoUrA2dRoSdv5w7nLqSDZH7
-         TrWqE8ptF0eQb6VKBXm2Uz9eNW72dvnXdo5/Cw+SVceHNcYzMbPpoAZSsZ3ecWU0cZx8
-         yP/0WPmLIQMaU5Y1PeUNa8jDe1+Pbvlj++eYggbeTnauGlYb4w3O2t3shXIPQ3KTF6TO
-         Hl0aZPuftl1Ax/osk5E/qlNPYyEV1YYYMFrfi3Lv4mB+81NcPKfskp930FbCKjR4/ZNY
-         wuTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=l5tSVn8Mj/CO6j1uR03XuID6rPx5lFsALyBs+/EQOlk=;
-        fh=/hf/ipXFGffJmJ5LN60p0acBmzh+GIA7e6dfvEO2zKA=;
-        b=pYS24KQhnYaZodi843Pm7Qh8h5/48Wz3qa+jSg+YdW0JBz/QqaZd+M3+jMItt33hmS
-         YIzArYPZKUZBa55i3nx93x0bnjY4W6bjETfIp3eia6B3yqEz7lKK+CkDnWiYV+XAq27S
-         C11G7nS+6ccSx5dSNJSo8UMElwCcuo/00htiWwgAUlB0QEuWAugRRYiNHD01icQpQ9Pa
-         9Z9vYIgy5ntp/5CwZll1mWuB1jenYxEqBhjvncS2XOcvsisXZwuGeXn0bc4/lzoT4ihu
-         NjY8jKB5vyqFcII39MUVk5ze0y3sY6L/zSSe+QjKCahIcQKoP9y6Bw8CmkLlL1GH2/d9
-         FUxA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793979915; x=1794584715; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=l5tSVn8Mj/CO6j1uR03XuID6rPx5lFsALyBs+/EQOlk=;
-        b=PVCIfsqAf5aued+4UX32Kej7j7opbHVpjVXl5FZhp8j7wmRx+DasE0lzqCRuCo3clz
-         qpbZownOonc5iRdpEU++sYYh99mbKPzkdcUIBKSCWol08MUuBedGLqibNKlos7VlUh8r
-         7A8x1Glzqk56FB6vNv9Ay8IAYUnQcclrwpbPUNZyW2agundbnQWocEB+qhdWhxiy0Ggk
-         OlnGvRba4fyzYD+DqcHCtBwKjxZ+t+hgEhg38kUVvHd2alHoa4rKFCAGAJ6as4EvXDZb
-         MrDVN32K6YE4CsqwBhQfmd3ez5azKL4hFjGjVZyDnPpHWxOysMEkGFCjyPG47s4ObB3R
-         evmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793979915; x=1794584715;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=l5tSVn8Mj/CO6j1uR03XuID6rPx5lFsALyBs+/EQOlk=;
-        b=sT+8De7CpruHwpz+ljaQp0Sl2CJnC/3h7f+8mqd3BqJgIR83UAr0W9RhoGZll+Dnho
-         iPync+DNzqvkZoPU3SylHyhoIu2qh7SmQktQMxVj6swUGIbLaL3tKLnVlEB+nylECMk2
-         i2FE0PtKgNdNIRQLC0hYwDUwJ152OcFY2xhoZTc354/zq8FhE3MCbDhE/bfUcvV+1mc4
-         b/DUb7oOx+fK8sOiYv6WXprynvb3FflbqRjnSZ8VF0ojYHKcimz8oZIa3LlujPTDKjzd
-         02JbPYWD4UKXmJpTwZjoX7amtVWG3CNrPyh1mbcxZopY99r4a163cUInD/qRLxYwEg1O
-         0LoA==
-X-Forwarded-Encrypted: i=1; AKwUvBywMOKci5Cde4ow89wDuSMt1WEBvKTxP17NdilLWpmAlC2Pba5wNziTaVJ22tgGhHRslfqYsq8zz9Y=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/ykXrtngCy9BfijS7CA/A+S1tFWc45kWIoRt63cQXRY6lH07J2
-	WHIS3gdExYsk85WBKgZ1CGj+yfLXVIb+xCq2JuxWqXFmHbmdhuhEgIbuK9rvk49rWJNHVlmtelV
-	SAGfoq8tZbrtfl4pM/tSLRb3v91oUImI=
-X-Gm-Gg: AYBFou27T77/Qlt75PJmHKIgRdSpH7GNBYzVJaFxpcDq0wnRZtk7w7P6jonNM8gfn70
-	4dmxfnrVREnVv4qfonol2nSDAjtK6rNGEgE1yJu54trcqd3njmiOASavT4VOZmxpeEfRjt8LxN7
-	FLd8mJ4DVRksOk/xGYiulAaLeazDZXp465SA40pC3rnRwCuZKIot2GKZwFBawBIEU0g1QN+rQ4m
-	QyQBJZaDB9P3U+bpSyV5CZWzJQCjCG9Ef7NDlCqpNIB0t3gnycGJXJNLg5Wlzv55Gva2GYGxk9m
-	xc499qOlcAXQFaIRbbxZ7beShfnuwhAeke7Mdzt7oLAbcFcXuwtwbOU/dJHFtwD2IhLmRBP2Yq6
-	J4YZACxkkdd0J0tkAzx06Le6gdFVzxGS1q2HAe7A=
-X-Received: by 2002:a05:651c:1612:b0:3ab:2a19:8624 with SMTP id
- 38308e7fff4ca-3acf3a11804mr5879131fa.5.1793979914945; Fri, 06 Nov 2026
- 07:45:14 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=uHIamcs0;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=OpES2zhp
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A6F49Qn833050;
+	Fri, 6 Nov 2026 11:05:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=+cNwt+gUJSYsLFI9L0pTVdxeZNg0s+CZpU43mw4icwE=; b=uHIamcs
+	0um3JNn34o/HTB8w/E9d6b80fooTke16mo1pFUXcxXtX7xGhy2qYUeugH7A8jVzy
+	GNPmX9GNw5kEXPXozCMXe/AXOGy+EXiIMe1r7RBQrCEM2OnFuCjiLF/undlo+ee1
+	409H9vwANybSoRN+VbvMdl469pCfz13qnv0o8Gm6M4zSbOW3tT0nd2NjvGSg4Rks
+	GXMopJNxR6X7aGPX1Baw5qrUUiOYHIMnnElvOFnLFnPJonUbv479jcV1GKGTKbXy
+	6zJnNYP70Q5d4vuNbuVYL/w3lNUHJgfk2AwlWVcpaAEe41TTa8iHssxuwMTxgKkY
+	mU+JmldsXqXaeLg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=+cNwt
+	+gUJSYsLFI9L0pTVdxeZNg0s+CZpU43mw4icwE=; b=OpES2zhpbS7W4jUw8uCQa
+	KHZvtq/GKjbYJyFHOpM17UOtfunVnucDKPhoJU/PnPIYubmrVbumESaLmUerV7YA
+	mYsTD3gKpP33tUGSOX+rZCrf9S3rSvKTjmhFRqc8VO5zyZCz41C7jFGNc+mchoCS
+	QdovSNv+JYhXSX/hc0Adb83eFo0HyC0STJXx8Vz900kXH4ku3gdyDFadj5hCzcuM
+	+/P3RqpoKxW3Ug05uqUqENB8nZCz+2jJXSOsiEO7MNFn7s/qBnrsOa7VKv51Ny68
+	ofl6cUmcJENS/XoDrk+xeJJm/TckPZkOt7FbcUJh+noFIv3HX5VcqlFnvvdes2gY
+	Q==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hs3q052bb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 06 Nov 2026 11:05:48 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 6A6G5llo052468
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 6 Nov 2026 11:05:47 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 6 Nov 2026 11:05:47 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 6 Nov 2026 11:05:47 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 6 Nov 2026 11:05:47 -0500
+Received: from arch ([10.135.2.92])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6A6G5TDJ016340;
+	Fri, 6 Nov 2026 11:05:39 -0500
+From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring
+	<robh@kernel.org>, David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        "Trevor
+ Gamblin" <tgamblin@baylibre.com>,
+        Joshua Crofts <crofts@kernel.org>,
+        "Sergiu
+ Cuciurean" <sergiu.cuciurean@analog.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Nicolae-Daniel
+ Deaconescu" <Nicolae-daniel.Deaconescu@analog.com>
+Subject: [PATCH v3 2/7] pwm: axi-pwmgen: report the waveform step
+Date: Fri, 6 Nov 2026 18:05:14 +0200
+Message-ID: <20261106160529.876251-3-Nicolae-daniel.Deaconescu@analog.com>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261106160529.876251-1-Nicolae-daniel.Deaconescu@analog.com>
+References: <20261106160529.876251-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,113 +121,76 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261016154819.17936-1-muchamadcoirulanwar@gmail.com> <tencent_173B7731E90B9624F9F82613DC3031B70907@qq.com>
-In-Reply-To: <tencent_173B7731E90B9624F9F82613DC3031B70907@qq.com>
-From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Date: Fri, 6 Nov 2026 22:45:02 +0700
-X-Gm-Features: AclHuK-XTflrXNbXUwnG9Gy_4IC-jvOmhlr3UlYx53CWnDfOKCsQP4T4U6VaP7U
-Message-ID: <CAO26r3TMHb=YxzwS7DYDUTS9U454zrq05yC-b8ojva-pAdCsRg@mail.gmail.com>
-Subject: Re: [RFC PATCH v6 0/4] iio: position: add Rust driver for ams AS5600
-To: Shuai Liu <847807867@qq.com>
-Cc: Igor Korotin <igor.korotin@linux.dev>, Danilo Krummrich <dakr@kernel.org>, 
-	Jonathan Cameron <jic23@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>, 
-	Alice Ryhl <aliceryhl@google.com>, Daniel Almeida <daniel.almeida@collabora.com>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Mark Brown <broonie@kernel.org>, Brandon StJohn <branstj@gmail.com>, 
-	linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	rust-for-linux@vger.kernel.org, driver-core@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: PkVuwnvN3SSgMF0l5I2ReT-_oU_8pf_6
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA2MDA2MyBTYWx0ZWRfXxtvIYXo9bPwP
+ modQXKAJA4wQ7Myld3b28MpDRlXlhfM1hN13i8wORYsIQx3VnFKx4h6OHyYjxqSjcrm77n/A6Un
+ eA5VmTKscWSMhoGSVD3TocOjul8oY1cHDfUv93kzp7SVeefWq+iK
+X-Authority-Analysis: v=2.4 cv=Lt8HWXdc c=1 sm=1 tr=0 ts=6aedfadc cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=aASXySr_LHO6eXd1yVMA:9
+X-Proofpoint-GUID: PkVuwnvN3SSgMF0l5I2ReT-_oU_8pf_6
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA2MDA2MyBTYWx0ZWRfX9Ty6O/eqwjGX
+ qvNxSQB4rZIsNEHZ9V3teZHKP5G9MOLhK81/6f6IjbXKcIIycD40NW+aXMQ1CjFCga9gTRmUhFA
+ ofUxybliw33Z8DTYkS+IChAts+37DkZPtIEPi3/sBY9NionvhyqtJlvM01kiDx/wMlKKsB5hNTC
+ /VXIzHgItWl2GThrCKRirRzuX4VqeBbBieQtHgUdWvgc91iGn81m4bRk3nsbQdWadz2JqMEQ/+4
+ CoX3fHLDvilg7I4bO1QY7gmsmcXIGtZWRr3CuinBuV+fou77pgWMiMIxft1JxJNUdPkB8qnkQbZ
+ nt4sYbcasysqtZSwsalRWtzCVL/D1LeImTz/9iaqMjEi/8H1ftjIfjHvbYice3vFrxecqFJaWZW
+ f+Ken7sbrkO3bCUgxooB8GkEPSa51EjFuxWCvhu2aLd1fvPcb5KQzJZsN1wnBRXJE7koVgbJzUG
+ P8FQn6gYw902AmcRNvw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-06_05,2026-11-06_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 phishscore=0 impostorscore=0 spamscore=0
+ lowpriorityscore=0 suspectscore=0 malwarescore=0 adultscore=0 clxscore=1015
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
+ definitions=main-2611060063
 
-On Tue, 3 Nov 2026 at 16:53, Shuai Liu <847807867@qq.com> wrote:
+The period, duty and offset counters of the AXI PWM generator count cycles
+of its external clock, without a divider. Report that clock rate and one
+cycle per step.
 
-> 1. clippy warnings
->
-> `make LLVM=1 CLIPPY=1` reports four warnings on this series, which the
-> Rust CI gates on. Three are `clippy::ptr_as_ptr` in the IIO abstraction
-> and one is `clippy::useless_conversion` in the driver:
->
->     --- a/rust/kernel/iio.rs
->     +++ b/rust/kernel/iio.rs
->     @@ -202,1 +202,1 @@
->     -    let priv_ptr = unsafe { (*indio_dev).priv_ as *mut T };
->     +    let priv_ptr = unsafe { (*indio_dev).priv_.cast::<T>() };
->
->     (the same pattern at lines 334 and 397; line 334 is already inside
->     an unsafe block and just needs `.cast::<T>()`)
->
->     --- a/drivers/iio/position/as5600.rs
->     +++ b/drivers/iio/position/as5600.rs
->     @@ -133,1 +133,1 @@
->     -                Ok(IioVal::Int(angle as i32))
->     +                Ok(IioVal::Int(i32::from(angle)))
+Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+---
+ drivers/pwm/pwm-axi-pwmgen.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-Hi Shuai
+diff --git a/drivers/pwm/pwm-axi-pwmgen.c b/drivers/pwm/pwm-axi-pwmgen.c
+index b40522f01002..6b15244efabf 100644
+--- a/drivers/pwm/pwm-axi-pwmgen.c
++++ b/drivers/pwm/pwm-axi-pwmgen.c
+@@ -136,6 +136,18 @@ static int axi_pwmgen_round_waveform_fromhw(struct pwm_chip *chip, struct pwm_de
+ 	return 0;
+ }
+ 
++static int axi_pwmgen_get_waveform_step(struct pwm_chip *chip,
++					struct pwm_device *pwm,
++					struct pwm_waveform_step *step)
++{
++	struct axi_pwmgen_ddata *ddata = axi_pwmgen_ddata_from_chip(chip);
++
++	step->clk_rate_Hz = ddata->clk_rate_hz;
++	step->clk_cycles_per_step = 1;
++
++	return 0;
++}
++
+ static int axi_pwmgen_write_waveform(struct pwm_chip *chip,
+ 				     struct pwm_device *pwm,
+ 				     const void *_wfhw)
+@@ -201,6 +213,7 @@ static const struct pwm_ops axi_pwmgen_pwm_ops = {
+ 	.round_waveform_fromhw = axi_pwmgen_round_waveform_fromhw,
+ 	.read_waveform = axi_pwmgen_read_waveform,
+ 	.write_waveform = axi_pwmgen_write_waveform,
++	.get_waveform_step = axi_pwmgen_get_waveform_step,
+ };
+ 
+ static int axi_pwmgen_setup(struct regmap *regmap, struct device *dev)
+-- 
+2.56.0
 
-Thanks for catching the Clippy warnings. I reproduced and fixed them,
-and the Clippy build now completes without warnings. I also replaced
-the ignored, AS5600-specific example with a generic `no_run` example,
-which is now compile-checked without being run.
-
-> 2. ignored doctest in the SMBus word helper
->
-> The example on `smbus_read_word_swapped()` (rust/kernel/i2c.rs:841) is
-> marked "ignore" and references driver-specific facts (the AS5600).
-> Ignored examples are not compiled or run by rusttest, so the helper
-> currently ships with no tested usage. A generic, compilable example
-> works here:
->
->     --- a/rust/kernel/i2c.rs
->     +++ b/rust/kernel/i2c.rs
->     @@ -841,8 +841,15 @@
->      /// ```
->     -/// // AS5600 stores the 12-bit raw angle at command byte 0x0C with its
->     -/// // high byte first, so the SMBus (low byte first) word result must
->     -/// // be swapped.
->     -/// let raw = client.smbus_read_word_swapped(0x0C)?;
->     -/// # Ok::<(), Error>(())
->     +/// use kernel::{i2c::I2cClient, prelude::*};
->     +///
->     +/// fn read_hi_first_register(client: &I2cClient<kernel::device::Bound>) -> Result<u16> {
->     +///     // A device whose 16-bit register selected by command byte 0x0C
->     +///     // transmits the high byte first needs the SMBus (low byte first)
->     +///     // word swapped.
->     +///     client.smbus_read_word_swapped(0x0C)
->     +/// }
->      /// ```
->
-> 3. repeated unsafe blocks in the SMBus access helpers
->
-> Patch 2 implements the `FallibleIoCapable` impls for `u8`/`u16` with
-> five near-identical unsafe blocks wrapping `bindings::i2c_smbus_*`
-> calls plus error conversion. Extracting four small safe helpers would
-> put the safety argument in one place and turn each call site into a
-> one-liner:
->
->     fn smbus_read_byte(client: &I2cClient<device::Bound>, reg: u8)
->         -> Result<u8>;
->     fn smbus_write_byte(client: &I2cClient<device::Bound>, reg: u8, value: u8)
->         -> Result;
->     fn smbus_read_word_data(client: &I2cClient<device::Bound>, reg: u8)
->         -> Result<u16>;
->     fn smbus_write_word_data(client: &I2cClient<device::Bound>, reg: u8, value: u16)
->         -> Result;
->
-> For example, `io_try_write` for `u8` then reduces to
-> `smbus_write_byte(client, reg, value)`. Happy to send the full diff if
-> that is useful as a starting point.
->
-> With 1 and 2 applied (and 3 sketched on top), `make LLVM=1 CLIPPY=1
-> drivers/iio/position/as5600.o` builds with no warnings and the rusttest
-> doctests pass.
-
-I also followed your I2C refactoring suggestion and added the four safe
-helpers as methods on `I2cClient<device::Bound>`.
-
-Thanks for taking the time to review this. I'll Cc you when I send v7.
-
-Thanks,
-Coirul
-
-> Thanks,
-> Shuai Liu
->
