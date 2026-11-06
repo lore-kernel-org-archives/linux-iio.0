@@ -1,22 +1,22 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=159.226.251.81
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793965082;
-	b=zxyaGkg+zuPITwvqeLY6qlsNyJS6DSiq/i97bRc9E/4iTS8Zt6GsBKIlkld2hb19p7md
-	 kQRqZBgEjUg5fDaZKeR2Ym6QAkIZK8IWK2FHZkidE0hNK3TfvaXD5oHYO7ZnP2wcuBfZ4
-	 Jxw1dpT64ikDzuNecwbB8vr8zfDnsmppl3RtGgrZnquZpCbVFiBhooYgmEDur7ujhpAOF
-	 XdE5EGdRlimZZI6dzJSj3b1+bsDEso/mdElsPE79aaHWQFLsAF8Vpanqf6l/3yR74ZCXo
-	 YXXCdaFL/7sCrFeP8Ze8LTnQhge66alKTsHaZoQzzbaZzBRIJRXtqSaph9zRZFGCh1w==
+	t=1793965081;
+	b=a04+smQ0ZwvODLlPm+YVx3GbvqsnZOCDaddtYjEmkKMm4pAg8ZwJriSr8uF6a9FPuMuP
+	 0BmUq7gLf0IU3z9TNvzoK/oYvm8KgxBqbgbgmPsZGeJ8HbDyfmAXxxewAJZv/lQH8TTFN
+	 4/ZpbsRKVcszqTV6Fm79co0rivJH+HzdWtuCVm0/1BqKngtjb4tY0TFTSjqmjDIE0AKyf
+	 4POgm8u/b97DAcsKjlxg1cSqBQEyIi4fMS0pwf5Jnn5KyF98OH0dr0MSPFVjkggDjjpKb
+	 Vqdkcj2glix5LjVt61wjRQeMsOzRZ+b669f3S29sD3UTbLmeJ+aMz+TgVlsAsKfWxXQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793965082;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793965081;
 	h=DMARC-Filter:Received:From:To:Cc:Subject:In-Reply-To:References:
 	 Content-Type:Content-Transfer-Encoding:MIME-Version:Date:Message-ID:
 	 X-CM-TRANSID:X-Coremail-Antispam:X-Originating-IP:X-CM-SenderInfo;
 	bh=yZRVvWiLJU6lKe1IgV0S3vol1scJQqPQxcRJ6n5s7aQ=;
-	b=Kz5drHYZ2JulH4klQANiZMa5Ya9JnHy1r2yLyahVqUsS6woR0DrYkj8a/Bs4xlLXr5j8
-	 E8pS0gGMpv5j7nDfEtQDPMPHXs4SJl2oNINkj7tvIULpA6EFnJd9LlgydnqNWCwt3YQ3V
-	 yqs/d0k+lJNh1lxACGkS5ullSGuWlwiO0YfKPLyzkHJn83NPELxZoMyljY1lVqsLkbmNJ
-	 A5BAv+8/Xl8bmNVDp51ZzpqFluri0cs0Jn7LaCHRr3YowzoioCFc3jCgGlBcXMMh964Xn
-	 IkBgBmvHvEgEhIO8QtKBIIYLOkJAgEAdBpQKjsso+zfftO1DU/aK6PHrP7c1YZV2Ovg==
+	b=QI5gj5c7JoZkfk5iWT8g3v1EBlgVR+hcE2gOenOQFBYWkLHkpH6N10NUICmtolw+Jub2
+	 2yEomJEfZO6zgTvlJIJvYL6LoapYWUAocljqvLP8npsP9JRPDUlmG5D6u+N1IzPHuf8Qk
+	 1wn/RntBQ8HtQgMuFNP+Cvk+RruHXXSYypFez0XDeJhj8OMO+rviQ4wVlnur4TmMRF9MJ
+	 U1YARyWxzrTdLQpfD9utAXftfNxExkOdgsJp/yE67TUFcYPiJBV0k54Rh64yisTVSZK5z
+	 xPIa+nsrQIEe5Eee73bWcjeucLm1P0Aank5w/HDietZuZqfYzPo0Wyp+H6obQ1lZSJg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=iscas.ac.cn;
 	spf=pass smtp.mailfrom=iscas.ac.cn;
@@ -25,24 +25,24 @@ Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C4CC606EE9D;
-	Fri,  6 Nov 2026 11:38:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C4CC606EE9D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D37C606C7F3;
+	Fri,  6 Nov 2026 11:38:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D37C606C7F3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
 Received: from [172.100.0.8] (unknown [36.110.52.2])
-	by APP-03 (Coremail) with SMTP id rQCowACnro8RvO1qkOpsAA--.21855S4;
+	by APP-03 (Coremail) with SMTP id rQCowACnro8RvO1qkOpsAA--.21855S6;
 	Fri, 06 Nov 2026 19:37:54 +0800 (CST)
 From: Wentao Liang <vulab@iscas.ac.cn>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: andy@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, nuno.sa@analog.com,
- srinivas.pandruvada@linux.intel.com, stable@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: kxcjk-1013: Fix trigger reference leak in
- kxcjk1013_probe()
-In-Reply-To: <20260917012032.5d5f84be@jic23-hlaptop>
-References: <20260916161054.2082486-1-vulab@iscas.ac.cn>
- <20260917012032.5d5f84be@jic23-hlaptop>
+Cc: Michael.Hennerich@analog.com, andy@kernel.org, dlechner@baylibre.com,
+ lars@metafoo.de, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ nuno.sa@analog.com, stefan.popa@analog.com, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad7768-1: Fix trigger reference leak in
+ ad7768_triggered_buffer_alloc()
+In-Reply-To: <20260917012641.282a948e@jic23-hlaptop>
+References: <20260916161726.2082904-1-vulab@iscas.ac.cn>
+ <20260917012641.282a948e@jic23-hlaptop>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,24 +54,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Date: Fri, 06 Nov 2026 11:38:03 -0000
-Message-ID: <179396508392.2291875.8286180281517201895@iscas.ac.cn>
-X-CM-TRANSID:rQCowACnro8RvO1qkOpsAA--.21855S4
+Date: Fri, 06 Nov 2026 11:38:04 -0000
+Message-ID: <179396508410.2291875.1731363248128654994@iscas.ac.cn>
+X-CM-TRANSID:rQCowACnro8RvO1qkOpsAA--.21855S6
 X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUY37k0a2IF6w4xM7kC6x804xWl1xkIjI8I
+	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUOj7k0a2IF6w4kM7kC6x804xWl1xkIjI8I
 	6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
 	8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
 	cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4
 	A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
 	w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26F4UJVW0ow
-	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41l42xK82IYc2Ij64vIr41l42xK82IY
-	6x8ErcxFaVAv8VW8GFyrJr1UJwCF54CYxVCY1x0262kKe7AKxVWUAVWUtwCFx2IqxVCFs4
-	IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1r
-	MI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJV
-	WUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j
-	6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJb
-	IYCTnIWIevJa73UjIFyTuYvjxUrKsjUUUUU
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCRUDA2rtky+cBwAAs8
+	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l
+	42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8GFyrJr1UJwCF54CYxVAaw2AFwI
+	0_Jrv_JF1l4c8EcI0Ec7CjxVAaw2AFwI0_GFv_Wryl4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l
+	x2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14
+	v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_JFI_Gr1lIxAIcVC0I7IY
+	x2IY6xkF7I0E14v26F4j6r4UJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z2
+	80aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU
+	0xZFpf9x07bb8nOUUUUU=
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgYDA2rtkziawgAAs0
 
 Hi Jonathan,
 
