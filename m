@@ -1,96 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.182
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793988279;
-	b=mXMKZ/Et47pOpBAnxj1LyvaBDZpNSCqOIUm5M41vUO4hXngzkuicN82W54wAirJ3W/QR
-	 2U5ozC6Ay/cAuwbs91qsFbISloI9cAAq473w+110jOeGeDjnTvBIcVT7w+Sc4uqRWe0Di
-	 oW3kSk8qoW3hz8q7qo62HCzWoX3mq2IlF/XLNcMXgFmPUS7pVdmydRYSvLSWMY3vFpp1t
-	 n6X4e8CSKOvBrqegYdDe1gPWkfwAG+sNmsOvfJV05t2YVhd73JntX3png9x2qEsjLuPUH
-	 fDx4VYe/9RAAib3tEtNxYCzJsNaBWetb6NhI35iKllOMGITvHgvfPGZ0DQDsNchYJFw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793988279;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=Ol4HWN1JMq7gbwHCjCL17fLj4wvViav0TAizd9NAY/o=;
-	b=3lIQpgAiJtXIK1tfGTcozBjV/fOWERIcF/TQU8obHMSZaMGTziJ4iJAYtw6ApVQBe4E9
-	 e4eby8gK2PQCTZU6BSpsyCvqIV48yvpMsuUN6wjFyaonoPzc0meNXzah60OzXkivm8wBq
-	 h0Fmxu51Ma97Tm/RBCuISfn8gJ4wWBFP8D1U9Ho4uyKdI9tCLMQe6SpknMHDlFpM6+vkg
-	 ryUsZc7ecVUMLS2PHi8L0hZw0B0TxLKB708jz/HTOkFtrxeFI2wOene/a/do6amAJJvB3
-	 Tku2VcPU4xm9q+CiIi7g0bPTqRcxu4aUyW5eAlBYHkR4M8XW8xWbkpYz8vROVtRJFEw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="goFTCv/D";
-	arc=none smtp.remote-ip=209.85.222.182
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.2.22
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793992431;
+	b=w83/czXg9UVR0h6bZ1fmra/nDy5CGLOYVdyiXjmI8aBR+iiWSUKae4E+bvqw6GMZlLF+
+	 d7K2UGNvdZz9NoyOiu/z9IhTPAyjM3jVsejsAG3wANRC8h8USa7LejbpntQgwrLY3g7x4
+	 STbibyexxRPhQLwM60WDx9KN3u4ZByWSB9L06g4TyqbEGpm7ravwuYmsIVldHnAH3aDjb
+	 3YVoxSMZHUjI6ZK6IS6gmNnJOnlMHcSlVptyXhwi/4NHGIme2aiW1tNpkdLeV/rG/yaz8
+	 w7xs/hGe4l8RAEJsSLNe+L/swZeOXXUBTHZ4PJXi/S3wIV5XQQz82pDcEWRHvN7lFvg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793992431;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:
+	 X-Microsoft-Original-Message-ID:MIME-Version:
+	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=oMaVdPTjsHiils8DUp9wTRkIGFjO3puDAsEO21JsW+4=;
+	b=nARhcFGX0tFpEte2O8eduD9cctIv+lCgt/bGJjxlR6h6S5XFwb8HJ0An8ooCV1WP5Ktg
+	 hDGurvtfUme5TtwDlrFs5gqUketW3dvY7j3CHUG64/7IZadU9eWBtjJhlt0NEyd/eW11C
+	 0ufZvoEU1DZarOXJ4uFLmkL4ymaL3+bF0pTTieoQqmKGvNJTj1lIfQu0M1fcvc8pPFbCy
+	 UcFC+bMHcpH00tdIGpe7SLXgKqzQ4I/uKBFXPzmmgXkmgLDprvZ8keqOkEBkokf44n2D4
+	 olohnmKbfZTkYAf98Zfed0OXeQ/lbGmePkSA8NxYSdk3URkN2j3ocrhTTrW6F3bfJRw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=outlook.com;
+	spf=pass smtp.mailfrom=outlook.com;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b="m0U/pXPo";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.2.22
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazolkn19010022.outbound.protection.outlook.com [52.103.2.22])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91D96606A32C
-	for <linux-iio@vger.kernel.org>; Fri,  6 Nov 2026 18:04:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91D96606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89BED606A326;
+	Fri,  6 Nov 2026 19:13:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89BED606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=goFTCv/D
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-93f1e5d7450so89607385a.2
-        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 10:04:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793988278; x=1794593078; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Ol4HWN1JMq7gbwHCjCL17fLj4wvViav0TAizd9NAY/o=;
-        b=goFTCv/Di5F9M3h4vRpM1KegaKPyd4PS+ip4ABx34kYWVW1PSZf1uHnCkrx/lS9l5o
-         DXbDFMxYt0avQ+b3NgdcBy6R+Du3wSfutCe7CnS8lroTC5qb1uQRXko4A+1CxYG8dFlv
-         JKlpmu1Nlf/I8dsE/daYFLhJAyIoeKF3LCjLPBqjnwLAyXvIgz+szPFBiNP7/lG5fQdF
-         572LUrinPBDRBrW4MLhASm1WdabFLdao4BRLNhBQZdMZxa7ZK67m2/RTZkFyB3DJMwBK
-         9bzmexc0bz1R4JTV32arsKjWimswFC98IYnqMBsyf1hw8rINPKw0BWT13MxUh84qCsFR
-         JcGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793988278; x=1794593078;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Ol4HWN1JMq7gbwHCjCL17fLj4wvViav0TAizd9NAY/o=;
-        b=vgns6AFkdBSVLMDArp2jgl4YOJSjtBuWe7DKIdQIsfaEjSP/SsOwuF+K0jYLUreYL+
-         +GwE3a5SwK7Rmsd735l8whhZYQTXgX6IFz3dwV0GkPtbdwwhQP7pEq9smBhTPNvFKmpJ
-         ZW+8fuP0aUCiC4i2To5XB3mVoDfUHu8n+hmHxF0XyX+NtUk3lDm1zFIPdvTcaD03g5y2
-         nQCgBLs27wtxLU23mLEAYjYgZs9dBe6IdufwlzYnRCSVnt4uTyVA4WIyugc6TkGLSlbZ
-         caduiVo+mShyn2XeF+Ts2Vk+zVJ2j0dWCbF947bRqfT0SfPImpa2iIxWcfona2sdmkQK
-         kabA==
-X-Forwarded-Encrypted: i=1; AKwUvBxC5am08a+lpj+i0GM85zeenmTXH1I86GJpZ1p+YgT7cwHNGsHMVyMlXTixlxA1z/aJjQVg3+ahHBA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z85VPdpkJcS9hNtnxeyZVjFZ3yDBY7rMtgCF/njMlPbn68dx412
-	s0c1r8K9tGslGKnSZxhthJtLOoJbb8x9yRsnNgfo2NpAvVEXxBNVychD
-X-Gm-Gg: AYBFou0fhyLAiJGqtH1yZQavKcYYWMKfdI+KEln2zan4hIa8culMLi1HK/uCPwZF3Uf
-	IAGzeeRDwDLSbaW+OYAbJBZMYMijsx3wgz1yz5nLPhG+9z07YfjsVp3+0OWUg6AYQbXBRSVDQHe
-	Yqo6gNZwQVkKguz+j2JXoIRLd9gXmYhUBdi7Aks0tQI+KNzSF3uOso9IlDQtJv/SwYXVsDFLpC1
-	Tu/nQwqlUx8a7ADUA6pJY16m2ynvrKeM+h8WFMfSNLBsmmcYTiz071NzxDXOQVctbCipMjM+S2X
-	7JX6Sh1wjh10VVWoEmgJvyzt0p5Xb9g0cHgzRoOpWM3Xvy0X7WexhUM/RoXiRBh/oarfBBOwZYt
-	jZdsbzHvezFcgaVgTPtY+VYNWWsqPEXw/78pz7MYB1OSZWN7V+bC6s1c8uOHoxNcovchWZHtskx
-	hHjUt3+RnJu8QPa4NKWUdCl3VttJmw0+XXh3yuLbv8O34FA0ZC1XBPlD8JBCf5CKcf0ER+leKTN
-	s+sRgWdXYcbe3+ZQJmI3/lgaIQGazlzVFhsCtmPT7h1BO9/J36shoHo5OOj+vNMSIQpjEYHgyrQ
-	4Y/6dnA1LYr+L3Qqldw=
-X-Received: by 2002:a05:620a:1b84:b0:93f:1af1:7952 with SMTP id af79cd13be357-945f32d0201mr435212585a.4.1793988278234;
-        Fri, 06 Nov 2026 10:04:38 -0800 (PST)
-Received: from linux.. ([8.34.174.240])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-945f599bcccsm195308285a.13.2026.11.06.10.04.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2026 10:04:37 -0800 (PST)
-From: Changyul Lee <lcy8047@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@nxp.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=m0U/pXPo
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=RtVaC1zFS9Qt/gMLP7jhoMFc0HIRshRm5qQqu7b6Wp8mbbyogCqDNlpB8xEm6VmtwFWulIljyHbXvywRP42QOr4E8tUYLEIQsuK7i1peXcflmyhsZqObH2ReLmZrZMvouXDc2VNO+91r2FLcMcLN4A1oFUtwiJxGs0Oqe9bIXlWh2eKWTKDp//MpMh+eA4CiTjMGac1K00aTfU6UvFfqTgImJbz+IUq/640wiPsEio7qs+R02DBx77hz7Uuf6WHFTbphVBjTlay2fBIXMdjmZHIFIj50d4uru01IBX7O/n93pjsCPDR8I1MbOlj6rHzzetlpxW068zg2VLozJmcBFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oMaVdPTjsHiils8DUp9wTRkIGFjO3puDAsEO21JsW+4=;
+ b=xxFdVXHenB4AO3fO4IoDNg8QfxK3ra4I+EdYidGptgJc7EsgMD0pVCb6tJEjYS1CT74SfvYqBvhvvtF2PtAKf1JQfkbYWnEn4aJe8/nq11i2STYqxQuXUt3lvFjPbEynMaXb+r5YsS2dNgUpD5HZlWN0xLQUpN358LlLhGrBaV6UaByDeHh7rrCACEBnXpcEZxejkZRrq13jZ83ArZiwpo2dPpgRMPTgSuCCQOX69o+TBVnGAlOeMiBT5QBWQcb1oC/3OYl3lpANyMkvN9bjsDMo5Nzib7hLEsJOdt/L6ObBnPG27HIFIyw3sQ39Co+pHSH5qYRPqRGHFLQWq4EPig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oMaVdPTjsHiils8DUp9wTRkIGFjO3puDAsEO21JsW+4=;
+ b=m0U/pXPo5S4/leykH7rAr4tY8yO7Flt0v4wwl9omCB8ZKZdDEonV8GEtuGK4poHf1BAxZmuIck3aZeugcWlCxatZBOMZMKvGgKYKeN2/mzLx/rI0ToVRUhfyx3Aaa2s2H2hZosrW++Ho4z2iKLhhKSUbfzXkiizw6lUrjzOKMgfJH2mP9FKyFYrK9UnYv+rrAjcVTmFTwdH2+ktocczQboP1u9VE8kb3AoZJ/oJEhJTItXQYyB+qu8QxjFTni3NKnDxojblG5auA51oNyTpEVZLLNgeoDTwvm+c9MLALjznJQT5EDdNprCd8demNLeeYdoVopZeCfFmTtYItse+OWA==
+Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
+ by SJ0PR12MB8167.namprd12.prod.outlook.com (2603:10b6:a03:4e6::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.11; Fri, 6 Nov
+ 2026 19:13:47 +0000
+Received: from SN1PR12MB2528.namprd12.prod.outlook.com
+ ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
+ ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0592.009; Fri, 6 Nov 2026
+ 19:13:46 +0000
+From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+To: viral8854@gmail.com
+Cc: andy@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	dlechner@baylibre.com,
+	jic23@kernel.org,
+	krzk+dt@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Changyul Lee <lcy8047@gmail.com>
-Subject: [PATCH] iio: trigger: free hrtimer and loop triggers on configfs release
-Date: Fri,  6 Nov 2026 13:04:35 -0500
-Message-ID: <20261106180435.2638701-1-lcy8047@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	Victor Chernyakin <chernyakin.victor.j@outlook.com>
+Subject: Re: [PATCH 2/2] iio: magnetometer: add Infineon TLE493D-W2B6 driver
+Date: Fri,  6 Nov 2026 13:13:35 -0600
+Message-ID:
+ <SN1PR12MB25289B6D8FD76DE3160299B5A5762@SN1PR12MB2528.namprd12.prod.outlook.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261105-tle493d-v1-2-3246e91e6394@gmail.com>
+References: <20261105-tle493d-v1-2-3246e91e6394@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: CH0PR13CA0012.namprd13.prod.outlook.com
+ (2603:10b6:610:b1::17) To SN1PR12MB2528.namprd12.prod.outlook.com
+ (2603:10b6:802:28::33)
+X-Microsoft-Original-Message-ID:
+ <20261106191335.813304-1-chernyakin.victor.j@outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -100,129 +105,87 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|SJ0PR12MB8167:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5377405a-3f9b-4d2e-bc6e-08df3c3a149f
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|39105399006|8060799015|15080799012|24021099003|22091999003|19110799012|23021999003|5072599009|24121999003|22121099003|25010399006|260925184616899003|4140399003|440099028|3412199025|10035399007|40105399003|26121999007|1710799026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?R30Da6bu7aYvH8CvlKgvRv2YR9aGw5bYDmDjrADch0QLmXRo7gzrcoJFS3dZ?=
+ =?us-ascii?Q?KLxdTv0dkWcPa/0rbPDavjaPvC0ORHozvfihjJ2X2IYDDIpNyD51LFKpa6vl?=
+ =?us-ascii?Q?xYgmaLXdZuyijkb0/ngNYJrqITDLCbFYkbMGnsLWOTBDj4ctOz+zGjL+5zpz?=
+ =?us-ascii?Q?+BnyJjsQnJU9go98w2P4AYqnacHmzJlLUx/pinEFEETVQEX6NUCvYwQWnQNU?=
+ =?us-ascii?Q?4waaemgVHavjXxNEFrsnn/dIW2UeHnuwxPQC1Zxz6xvdscNzUSpSQ77BaREH?=
+ =?us-ascii?Q?BZXqLAPNYj5U3vcHZsSyM6Q2slXDKK4GoSUgyN3F7pLEFI0++zIcItFajkSl?=
+ =?us-ascii?Q?uuW8d6Iv2HHlaLhjGLNW8nU2ZVNa0gCRO0ldUGsYckFO0v+IZJn/p3bmyNT7?=
+ =?us-ascii?Q?g9cBZ2W/gkSkw58xxuichU/SaYrXqQxS4medRLFhdGjQJuHFaWxa99ujFu9Y?=
+ =?us-ascii?Q?dCkK2NnkONBE08Z44DUQJ+EBbl0UdS9t1D+zo/7FyBuPFo3MafNdokujwOpc?=
+ =?us-ascii?Q?d0oexhdQK/pP7bQNallXEGcS8wK8CHSc8bj1ujoHKDo87bgS/xAQWvYBRRJI?=
+ =?us-ascii?Q?DNGtkOi+b3fCvskeQ5hIYYG1Qai0iBu5aFMKSxJJLcOBjhlbWqFF+oaqXhy2?=
+ =?us-ascii?Q?XchZANeZyRSn7s5QCJ9qm46rHUxCYNwQ3YOEgF9VeSIinP6AFC4wCUJkTV7C?=
+ =?us-ascii?Q?TsC7r0txG797l+dmcnnOyvJJIHBMddf2JrlOLFneucerr7SUqO6XLB0Y0fPA?=
+ =?us-ascii?Q?4XDjKu+W3lJCkLvMqtPN3njeWHpxTIQG57NkcmafNfbA/ABVBfXWH/lEIZls?=
+ =?us-ascii?Q?Mwz5n8AW15IYQLWWcvFei8ir4C83v4cKUu4DNc9deaVkiV0Hy9uPy1ivVyNe?=
+ =?us-ascii?Q?n6QEkpcJSQvCT14HbzYPYH7jWq+IkQWjst+oTrwRIIwPA75jGudi7vk+cWMC?=
+ =?us-ascii?Q?sGcvLxNVI5Zx/aX1ocYulHe2PuW69lFl7WUYP4VFLWvCEvPKFnHqJ4lX7bRN?=
+ =?us-ascii?Q?KS9CIlBFf9C6SmZLmou2aseqZeeZwlSTBnlJS1fGRAxZS2fakADVID9/HLse?=
+ =?us-ascii?Q?wFbZTZ167Cv27LpiEO2R7wAVdl1EnA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?tuJe8MwY3h9j0XgjjQ9dEK8siGstEhl9IaQtpNMnYZ93VY8CXXSqoT/VRSOO?=
+ =?us-ascii?Q?iL9oUyVHVlglcrZG6k/oR6nUR05D32g6n5tjYrl2qOMQlnWBTEKNde/Vchvb?=
+ =?us-ascii?Q?4j0XKd4awl+b6P4oKVsNryrCdecDBSdR/Hgsmz2aWlst1kUMh8ypfVZZi+xe?=
+ =?us-ascii?Q?HK11etDIHy92qoLdd03qmKwyTBKi+fc2yb7zzFkM1xH3WnBKpttAvNtWqdrv?=
+ =?us-ascii?Q?K0QQ/y/HDZcem5pbuHhr7vi5UCLY4UYiSWPcpGsRkWls9SWJz5LMnTfPimoS?=
+ =?us-ascii?Q?kXzuYaeJDNIxAyJ0O8wgWq/7btRz3b2298CvPK/9DFsN0fBqMjiP9LUOPQzZ?=
+ =?us-ascii?Q?jRWoFygSU3Mlclc29n+iT+DrECnjKYAKwkmtEj0gVVyuJm1QCo2rhfboQ4OC?=
+ =?us-ascii?Q?q5SmAuE2O9CyRbYlZ3AgVrJjLvcnakKdA8MUGt695Eg55fXzqordWrXSrtls?=
+ =?us-ascii?Q?/VZFSL8OCN/SUoYm+sr5loNn8LlhPSfODseYqyviiYrqCacWIk09JOhuOMyk?=
+ =?us-ascii?Q?n90KhxE3qarZw17ZhNSdhMPAX2SBRYMLnzECvIXPHDHilmgbZuNk6WAd/xic?=
+ =?us-ascii?Q?CqLMJ9PQ9Avs8L5efS979e5LgLL2rCEP9kRDLLHwlbMtiK3F+RV8/ABA0zeP?=
+ =?us-ascii?Q?/sBbemnhXsAPC47EYoQLGpltuq1ojVymHX7uHIj9UvI3XK/uW5hXZT2BLZNJ?=
+ =?us-ascii?Q?miuo7FYFh+nXB6MfEFmtSBhQSvRhBU6V05BvKT7U8i443kAPCEbrVrjJgSBG?=
+ =?us-ascii?Q?B0h77vpiIts12toFv9n81qoib/sckLy+8M38A0gd9Rbl0F/GQyAE8cDcVwHD?=
+ =?us-ascii?Q?6J4EVu26BzV1yHlHTdeBEyyMGaz7M0jpdMu64zNpWqGgN5j/QADw6dOn3CNZ?=
+ =?us-ascii?Q?Mw301X5aOUw01Er/WbWsxR8ZZ8w1FoRXXeBmxyX5gleSEZbZafo3g39hfPLZ?=
+ =?us-ascii?Q?1ievhJNhXKUI4UU8gCXvdurBUkTwzYrv9LKlsmt505+225xUhFoPJdqm5Zgr?=
+ =?us-ascii?Q?8DqbwPBEeBJBPDst95AyNWXb13sdEKtkWqKtArium+yVebykalRXvmbZEoUI?=
+ =?us-ascii?Q?biIwJrWtl4vjbDQgiwaRLahdqxjpSXZxmP3f3G7UYSBVW3BfPh6yfljl1eTe?=
+ =?us-ascii?Q?TSNydgxfp7qiJccNB5HYpBJrOv0WBcQvRVoxS09XFGgfuTO1pz1liZrFfmUq?=
+ =?us-ascii?Q?wlHNzqPynTHSZkhd0kz3Ww5OYJo+f3CZHm01SLzbaNdElIumh/7kdYMH0sBo?=
+ =?us-ascii?Q?mKq6kalY0S4WPuWyOomaPemBWdGLikIDz0YrocM75H3/IlToCGkmQTBi8rqT?=
+ =?us-ascii?Q?/VIvBAh62zcmJDXc9nVOXbt4uv7i1x3dv3jYjeLG0INip0epIXvpsiOUboef?=
+ =?us-ascii?Q?k3yfKuXiMC9zsjVDQcH8q+1sfrv7aNAKmbrepb4sDOYNwH7YOQ=3D=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5377405a-3f9b-4d2e-bc6e-08df3c3a149f
+X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2026 19:13:46.8429
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8167
 
-Removing an hrtimer or loop trigger through configfs causes a
-use-after-free:
+> Based on the TLE493D-W2B6 User Manual v1.11 and Datasheet v1.2.
+> 
+> Datasheet: https://www.infineon.com/assets/row/public/documents/30/49/infineon-tle493d-w2b6-datasheet-en.pdf
+> Signed-off-by: Viral Patel <viral8854@gmail.com>
 
-  BUG: KASAN: slab-use-after-free in config_item_put+0x1f/0x60
-  Write of size 4 at addr ffff888001bf322c by task rmdir/71
-  Call Trace:
-   config_item_put+0x1f/0x60
-   configfs_rmdir+0x7b7/0x9f0
-   vfs_rmdir+0x291/0x7b0
-   ...
-  Allocated by task 70:
-   iio_trig_hrtimer_probe+0x46/0x2b0
-   iio_sw_trigger_create+0x11b/0x210
-   trigger_make_group+0x2f/0x70
-   configfs_mkdir+0x477/0xf00
-   ...
-  Freed by task 71:
-   kfree+0x121/0x390
-   iio_trig_hrtimer_remove+0x86/0xb0
-   trigger_drop_group+0x78/0xd0
-   configfs_rmdir+0x7b7/0x9f0
-   ...
+You should link to the user manual too, since that's where most of
+the information relevant to programming the driver is.
+I see that it's not available from the Infineon website without a login,
+but it's easy to find elsewhere:
 
-On rmdir, trigger_drop_group() calls iio_sw_trigger_destroy(), and the
-->remove() callback of the trigger frees the structure that embeds the
-config_item. The config_item_put() in trigger_drop_group() and the
-final config_item_put() in configfs_rmdir() then access freed memory.
+https://assets.sourcengine.com/datasheets/c9ebe749-34ab-4924-ab2b-aa7d4dd15e25.pdf
 
-Free the structure from the ->release() callback of the
-config_item_type instead, which configfs calls when the last reference
-is dropped. Documentation/filesystems/configfs.rst requires this
-callback for dynamically allocated items.
+> +/* I2C addresses selected by IICadr, i.e. the default of variants A0 to A3 */
+> +static const u8 tle493d_i2c_addrs[] = { 0x35, 0x22, 0x78, 0x44 };
+> +
 
-Fixes: ac5006a2a558 ("iio: trigger: Introduce IIO hrtimer based trigger")
-Fixes: bc2e1126eccb ("iio:trigger: Experimental kthread tight loop trigger (thread only)")
-Signed-off-by: Changyul Lee <lcy8047@gmail.com>
----
-Found with KASAN.
-
-Reproduced in QEMU (x86_64, KASAN) by running mkdir and then rmdir on
-an hrtimer trigger and a loop trigger in configfs. Without this patch,
-KASAN reports the use-after-free on the first rmdir of each. With it,
-1000 rounds of mkdir and rmdir on both trigger types give no KASAN
-report.
-
- drivers/iio/trigger/iio-trig-hrtimer.c | 13 ++++++++++++-
- drivers/iio/trigger/iio-trig-loop.c    | 17 ++++++++++++-----
- 2 files changed, 24 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
-index 57550b581593..469bd83331b2 100644
---- a/drivers/iio/trigger/iio-trig-hrtimer.c
-+++ b/drivers/iio/trigger/iio-trig-hrtimer.c
-@@ -29,7 +29,19 @@ struct iio_hrtimer_info {
- 	ktime_t period;
- };
- 
-+static void iio_hrtimer_release(struct config_item *item)
-+{
-+	struct iio_sw_trigger *swt = to_iio_sw_trigger(item);
-+
-+	kfree(container_of(swt, struct iio_hrtimer_info, swt));
-+}
-+
-+static const struct configfs_item_operations iio_hrtimer_item_ops = {
-+	.release = iio_hrtimer_release,
-+};
-+
- static const struct config_item_type iio_hrtimer_type = {
-+	.ct_item_ops = &iio_hrtimer_item_ops,
- 	.ct_owner = THIS_MODULE,
- };
- 
-@@ -176,7 +188,6 @@ static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
- 	/* cancel the timer after unreg to make sure no one rearms it */
- 	hrtimer_cancel(&trig_info->timer);
- 	iio_trigger_free(swt->trigger);
--	kfree(trig_info);
- 
- 	return 0;
- }
-diff --git a/drivers/iio/trigger/iio-trig-loop.c b/drivers/iio/trigger/iio-trig-loop.c
-index 580a465035d1..e6bea96cc565 100644
---- a/drivers/iio/trigger/iio-trig-loop.c
-+++ b/drivers/iio/trigger/iio-trig-loop.c
-@@ -35,7 +35,19 @@ struct iio_loop_info {
- 	struct task_struct *task;
- };
- 
-+static void iio_loop_release(struct config_item *item)
-+{
-+	struct iio_sw_trigger *swt = to_iio_sw_trigger(item);
-+
-+	kfree(container_of(swt, struct iio_loop_info, swt));
-+}
-+
-+static const struct configfs_item_operations iio_loop_item_ops = {
-+	.release = iio_loop_release,
-+};
-+
- static const struct config_item_type iio_loop_type = {
-+	.ct_item_ops = &iio_loop_item_ops,
- 	.ct_owner = THIS_MODULE,
- };
- 
-@@ -111,13 +123,8 @@ static struct iio_sw_trigger *iio_trig_loop_probe(const char *name)
- 
- static int iio_trig_loop_remove(struct iio_sw_trigger *swt)
- {
--	struct iio_loop_info *trig_info;
--
--	trig_info = iio_trigger_get_drvdata(swt->trigger);
--
- 	iio_trigger_unregister(swt->trigger);
- 	iio_trigger_free(swt->trigger);
--	kfree(trig_info);
- 
- 	return 0;
- }
-
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
--- 
-2.43.0
+The manual seems to list these addresses as 0x6A, 0x44, 0xF0, 0x88 (Table 4,
+p. 14). Can you explain how you go from those values to the ones in
+the code?
 
