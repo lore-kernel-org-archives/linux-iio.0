@@ -1,99 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793995715;
-	b=NsVfsFdV6FgyyLN/MPDNA3O57Q/8xSNBjYd/UujmugCISomXNm7Fe042loE81HZNe2zX
-	 +clx38zYmNsdRCv29orGBMYNeI8SI0SvL6iYoMbmtoDKaSAz1e9EMocv7L1IW1nXgVZJt
-	 AIK9OniH5eV6JC3kE2g3ilSvOmuVn+2tYBrfl8NgOODs5SgpWL75g5ZArd7hmYMJ0jMVb
-	 3C4MG+UnHei1b6DCdmVd0Nrpmvu3YSDKao2meW4aq7BsQtETdhf8FHx1x6oV4P5JpgcGS
-	 +lpdw3vEas0TmiFpJNaMnkSRB2hUe5tBgLrd2zdy+8xTyRSOxaOXd2M0oCqCTYxiGkQ==
+	t=1793997594;
+	b=5eWMxyDICP798zEipuOLVrjPlTXiUZPwnYXdtKJcMb7rzv/n1aMM7u99l5L3X5vSknQG
+	 WE+SoRwhxi3lqgNalOCmG0APG5Hmd4DO9fhTWg9t9FAGbH0sTDYNTk5eeHZiZ9CoSKdUZ
+	 BwZcZ+mzTozEhLw1MJZREEY5yF6+4Hh8HPp6TMHXzt41qEC+8mWl6M58lLUsbyunsxH4T
+	 caxAjmD0Vs5V9Paqk49QdGdXd0nGZVsB8E4gMYbheo7CMSmZ9fe1tvG9IK/+a+lxXeNNm
+	 m3myggQmIpPcKWmuq6It/vvxhGljk6cAsfa5bVpZzE4HUb7EFdb2hzaMV9CHeu+QbRw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793995715;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=/izIbDRAeUawScEMYwccdPIVGb9e13gPN2dhH/CsbGg=;
-	b=vdJQR7qg7DQC+2TG1cPbKsPVV9Jfe2Jv4Ls5UVNfiZNgLD2OaOnrpp2dBsxYwELvX1jB
-	 JLPmlmwF9bDurLpK7icaK9uHbNmqGMEsq7nLMtlfiClaxvIsS0bVrunAV7gd5gqV0Hlju
-	 IlDwAatboTKpNL05jkQzb3Y51BFl499tCYD0RUGQwLfJ6ZS/APlCUKgWjUrpJUXlKm6lP
-	 KiU3YHrA3nWoLPcMWvFLjzlrLz0j+BqIJ3ZiP9A6mU2ChfBH8naoyHKXDNoJKI5RRh4i1
-	 AwXkuiLazilYPzno3WKHKR3TLvPzkzImitvd2qbQ15sY609zQshDFcWBDL14BayjZ0A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793997594;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To;
+	bh=wJrOzcEQroAAuzq1S9zpcuWlXHd3ETBGQmhVYJ/5Neo=;
+	b=5eMWSrcjSrp+h5gRrGc/W6jcvUKGooGCv5ljbhfyNV+eqaSWC51TGbQAOK2cWUO7QOCd
+	 xcn/Nw4vF3uXBXi4dF4kakzwNPJz+sMTsiC2/7PyP4OFyTy1eSUDhqmSvltrjSrGV6mE+
+	 px1xsiN+rFWS//iiJZ+9LZniQ0aH4ZRzCn9pZb0HVjN+cYo8ZpWlcT4pUpesv4BPRqjsJ
+	 hFDJMQvv1VoVETn05RIKaVI9g9OOpxuL43UAQ1i+3Bm++fffLoYtz0KEqxVPaU5WMw9g3
+	 Vx5BMV0nMVo3mymjtpt10rbf+TItJfyk2sO5+/EmybbdnBQvnW/IJqEntRLcD9kqleA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Ct7Rt5O5;
-	arc=none smtp.remote-ip=209.85.128.53
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aVgxCtXr;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1318606A326
-	for <linux-iio@vger.kernel.org>; Fri,  6 Nov 2026 20:08:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C1318606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8854606A326;
+	Fri,  6 Nov 2026 20:39:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Ct7Rt5O5
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4ac95761c85so7713505e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 12:08:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793995713; x=1794600513; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=/izIbDRAeUawScEMYwccdPIVGb9e13gPN2dhH/CsbGg=;
-        b=Ct7Rt5O5hRSK1vIxG5RBjzXK+jQ42CkDB7+Xtjgm7fcG/f8A3HYJO7l1ns9blSk8iH
-         FLPSMUKYRVgNA5+4GhjUWZA6iZ9SPG+aqDg10BVyTAPcHlHuSC6+1R6ynUc28tx4codn
-         upK0LeYFC5z0XBXFmiK/yF9rvRXuyDFjL0nauJJgq5xfgIepfOSAPosT+HglCOWMOkSt
-         xnXA9LkqeB2+joZ2iQQLAiAmpDx0eX3oaNkZYxGO+Buac7gnlPJPWpX35mvJrVaCoewp
-         UYh4H4ElT4VPIyXFD6HKX0NR6+fhNcf+8SLIgeW/FIgYALTbh4PbRLZm8hRWosFJgZpf
-         qd8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793995713; x=1794600513;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=/izIbDRAeUawScEMYwccdPIVGb9e13gPN2dhH/CsbGg=;
-        b=wNV2uPbMukk/Txkepr/saGEPdL7Fe09dhxzoqWFjDCvJNrNVUi5rchQovhbFM3s+bS
-         sXDwOuxYaD4x+dcpx+MnPztGP8fH9x3aeZnigtkNB2wdOOARdw3CvRes4LHClnb8Canf
-         ARU3/MXh+h/k0MeCmPr4IfwBzhR4SeXR02SZeMsSoX0pzZdSjZtbzJ47O/q3166HeuON
-         /SCeAd49YV2irurSy5VOzoqTaNvJDJyRvVL0rMxPfBe0Xr/UlLEYCBE++hVnGE8sd1P9
-         tsPYnc0DAOjxi3h2216XcNTtCkKbDttHPZP7DV4mLDRaI62TtLblssjiiMvknubvYKI3
-         Ad2g==
-X-Forwarded-Encrypted: i=1; AKwUvBwjWtdFJ4imPwc/Kd70nkD7gXD8BdJkjUXr2wxcAGhFkcHkM0TBbXE2RZPUwezMWaBos8VrxhzhVTg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/Q5b9Pm3e6anu8e6Q3Ac6p6XW8TOkIxTg5FSQp4yKkLh+DvU2h
-	7b7+K1ct8it7D1/rlDPbD3TEJl6SAYyoetjcLoe9uSwQ/gJ6f6FnGog0
-X-Gm-Gg: AYBFou18LgDyo6ppqRwVM8RIGZFw+WW+BeTgOS6xdMNEVLkaelTa0efiFw6qy648qVr
-	TYcRZxBiBRzTzzI6t4v2qYQdX2iyJCV02f8BmgqIXOe6hP2oEnIKzcWwBytsXV0NzxKp7odbdgg
-	dF6FelMaHcOkdoarZ5M8zzDlauHMaNQYt8+QkAX5/cEXKor4Lnc5/TvnvhWl8byxawOspmuX985
-	FEyOTgMUu6p0gJgwmTkFy7zVo2QnLFJp+07oPu5e8ExDU+mcWEXQVefqXyKCkRdTy2+6gnZSWMi
-	vlVld6bcD/oXf23nJAd1rWENotRAEPOe8zj5z43nuPT1Qh2SENAz4D1VOQeAP+D/6FASZDugRsU
-	urcBkQrF+xEO/ewhRDhClzu3dHR3ScV1oUb/jhUEy39CAYAFZaRuyO9zDX5gw9smguKrL8U5hwi
-	tVvvTdfA28eqsxFuB5wYnhSC8oSuiy7Lgu8FVQvpBLytIwBPbtsY8jwpxkVACmbwsgG2uBMs44f
-	rS6pKAA6aFYf3dDYw2PgcuB3z4PzHVhJwPUOxQgOJH61k6dZuTsDt9hPL1+vVUms4EVO2CeIJZO
-	/H7G1fsMWPSuiNIa30TcrLuYxKltTEk7RvK4iw==
-X-Received: by 2002:a05:600c:1c23:b0:4af:c210:5b3f with SMTP id 5b1f17b1804b1-4b6df3fd28amr69391975e9.24.1793995713061;
-        Fri, 06 Nov 2026 12:08:33 -0800 (PST)
-Received: from fedora ([154.182.80.200])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b76cbdb9cdsm17132835e9.1.2026.11.06.12.08.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2026 12:08:32 -0800 (PST)
-From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	nicolas.ferre@microchip.com,
-	alexandre.belloni@bootlin.com,
-	claudiu.beznea@tuxon.dev,
-	mripard@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH] iio: adc: at91_adc: fix NULL pointer deref in trigger removal
-Date: Fri,  6 Nov 2026 22:08:09 +0200
-Message-ID: <20261106200809.53799-1-abdelnasserhussein11@gmail.com>
-X-Mailer: git-send-email 2.56.0
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aVgxCtXr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B9FD1F0089F;
+	Fri,  6 Nov 2026 20:39:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793997593;
+	bh=wJrOzcEQroAAuzq1S9zpcuWlXHd3ETBGQmhVYJ/5Neo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=aVgxCtXrKIKwV8BnPAbg6C+6la+unNBGjIKGvx+9KLlUBqQAXpkd/70UiPVgVgMuU
+	 3+QI+vakOCthsK8j83gsY1JRor1AzSMzzfxRHfZY52bAzZzu8QlY+zkyAbSfIGPEzb
+	 ZvUazqMRKyeGzrvpvPQtk/X8PKqxLi3z8vx5mHaEvWs3OA0I7Lcei1jwaaJ9nguRv8
+	 o3dAtHq9PWJknTdDCMYOi/Op6pED0XiqbzvowCqbc3nrQpsgQzAh/18lsd+tnJq5/C
+	 F6PwxZGfM5yCCQqFHUVvmaN/hKYILeFVYwVRQu5SX9LWK44IXvpNA2IaspTLIXBGx9
+	 CfzZWcUAPmMOw==
+Date: Fri, 6 Nov 2026 14:39:50 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
+Cc: devicetree@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Dragos Bogdan <dragos.bogdan@analog.com>, linux@analog.com,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, jic23@kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: ad7405: Add
+ ADuM7801/7802/7811/7812 support
+Message-ID: <179399758998.1528830.11972412583872645520.robh@kernel.org>
+References: <20261105093531.7562-1-pop.ioan-daniel@analog.com>
+ <20261105093531.7562-2-pop.ioan-daniel@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,44 +65,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261105093531.7562-2-pop.ioan-daniel@analog.com>
 
-If 'atmel,adc-use-external-triggers' is not set in the device tree,
-at91_adc_trigger_init() leaves the external trigger slots in st->trig
-as NULL. at91_adc_trigger_remove(), also used by the probe error path,
-then calls iio_trigger_unregister() and iio_trigger_free() on them
-unconditionally, causing a NULL pointer dereference.
 
-Skip NULL triggers when unregistering and freeing.
+On Thu, 05 Nov 2026 11:35:30 +0200, Pop Ioan Daniel wrote:
+> Add compatible strings for the ADuM7801, ADuM7802, ADuM7811 and
+> ADuM7812 16-bit isolated sigma-delta modulators.
+> 
+> The ADuM7801 and ADuM7811 have the same ±320 mV full-scale input range
+> as the ADuM7701, and the ADuM7802 and ADuM7812 have the same ±64 mV
+> full-scale input range as the ADuM7702. Apart from that, software
+> handles them the same way. The ADuM780x support a master clock of up
+> to 25 MHz and the ADuM781x of up to 50 MHz, which needs no special
+> handling. Use the ADuM7701 and ADuM7702 as fallback compatibles.
+> 
+> Signed-off-by: Pop Ioan Daniel <pop.ioan-daniel@analog.com>
+> ---
+> changes in v2:
+>  - use adi,adum7701 as fallback compatible for ADuM7801/7811 and
+>    adi,adum7702 for ADuM7802/7812
+> 
+>  .../bindings/iio/adc/adi,ad7405.yaml          | 25 +++++++++++++++----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
+> 
 
-Fixes: 0e589d5fb317 ("ARM: AT91: IIO: Add AT91 ADC driver.")
-Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
----
- drivers/iio/adc/at91_adc.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 0ac74ad92fca..c7fc06214c05 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -660,6 +660,8 @@ static int at91_adc_trigger_init(struct iio_dev *idev)
- 
- error_trigger:
- 	for (i--; i >= 0; i--) {
-+		if (!st->trig[i])
-+			continue;
- 		iio_trigger_unregister(st->trig[i]);
- 		iio_trigger_free(st->trig[i]);
- 	}
-@@ -673,6 +675,8 @@ static void at91_adc_trigger_remove(struct iio_dev *idev)
- 	int i;
- 
- 	for (i = 0; i < st->caps->trigger_number; i++) {
-+		if (!st->trig[i])
-+			continue;
- 		iio_trigger_unregister(st->trig[i]);
- 		iio_trigger_free(st->trig[i]);
- 	}
--- 
-2.56.0
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
