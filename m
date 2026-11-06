@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793998613;
-	b=oBA/ykxcck79bPjBcS7eo3idhq1AjE/ZFOSwX/5Ihd2v9ccW5Mh2EEDw7PdaI4ltyVms
-	 /vsVjMkYeIK6o4KuFPSrJjd5Bik1pFXDCLavDOzO7V7+wi3jotADLaBS+9EHYGp0/+XnH
-	 VLtsig+RyqveBSkk5lehiPC9eqg6xBzwchEB/px94c4BVBSPLtBln3DXnnluruwi0N6G6
-	 f3vEmFQnXyZ/Aj1Rtw4DrI8749psmkgISnqP9CuQQbMaLkDNvWqPP85wznIAXHStL/6f8
-	 /EKdBeJxN/k93lMQIn2NP/CPAJe9iylMVDXVUsbehNXiSUUtL/tT/6Ug1kKA4FEMqLg==
+	t=1793998612;
+	b=MKfCQ05JkTjfa2bspT4QaOCDI+kyCWQRQ5zCH+sqjVGrILS6qGnoNtzY5RBCdO+7YSyd
+	 GLnPUCj+M05C5WgwD14qG2yireq/uSqWGOBEJyg8k6LYEPlqQs3xfmuAD6aKUN/rFMKew
+	 9KJkgoLBindRPY9Y48OSQFIkBhtIP6205AlMGf+EA+v/rwq5t1iNwJrZ6Sf53rdCMGr0t
+	 k2g1Eo1iStHsq7sYbRwFu3qfqeWsKWaFyQQ3AI0aFgA0bCytEud0a/8J7KciZ/exg1i9G
+	 W+kjB6iaOOYEsMqUQVryjMoAK3EOBaII5DOALOF976MwsI4Mb2GRuhhEJlvvCdKwRIA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793998613;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=MMaWQsczzZcm8K8JnEeTjc5hgg7jUrVOLpWrSWR254s=;
-	b=Py9+oly+b1eYcKDFNP50+5X+0Q/Nzk6fAndtSaGWrk9txXYSDkpgxKVaOqkatiRAfGWQ
-	 +k+Ggh8Vp9jrIVTEFU3DsOQsyj+NmCzK7S/IHLNDSOe2aDq+KCHjXHF0pJpVzQRWSRtk6
-	 acNSPT4A68eZFumcmVztnLzpyp5bGaEaEavmhBKWDfleAnoOkd7JcE9L1y62wtrZ5UoGV
-	 3Bhy7NLDuQfuu7DbvUhW9fWXEvjy4ifhLCWzjgVE/prWxGwzj/fD+bfdKA17HwEuE93mS
-	 8iuauth24BBZWj9DiK9y/BE3ngdiLbiFu49boHDwGyDV6iryif9uHcAiMsClu+IOgSQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793998612;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=hF/8cHol6oifLy6xHxGiLUqBkdJhttiK2PlLUMXUHto=;
+	b=4NN9ABib09U4Do6FAVm9ksPuxqWCwBMQG+Thm/H5341RNYh0dIexXc+cRbQrz2zdbbHy
+	 OxTIGBK1bY3WbaaLk3LixCLnvtq4OE7svfFOg6AmkUZK8GKL+Y7i+chwR1jZdnRORFCCw
+	 8ZCdXLgnMKH6PgJFiB983D+29vfrLHlSNykgNfqJaCsoHuD3wwQMZbFWw2JUCjGH4yUDv
+	 Ua/5ASlWCya/mZ0YKMs4IqYRXfiv5CRKbOqAW8AenAjS7v4fPBIKoYE7q4YSr4dktjkXl
+	 ZhOYkLR/BeXS9+jdmLoCkwSBLRu8D2Mm/fSQ/S+Y/7fZo7tlGhg4Wexr5ZMnpZGj/5g==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jfK9vcX4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="W/CTDNne";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3696606D804;
-	Fri,  6 Nov 2026 20:56:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E09606A338;
+	Fri,  6 Nov 2026 20:56:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jfK9vcX4
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W/CTDNne
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793998612;
-	b=Kxaw6trEaMa8Ny1++Bf12NvzqksJ7Gi/DkTGJ6fZ4i1w1bgeSZji3K8aUmiHSlAP3Wa9
-	 HW2ycvImuHtToAkpvhWlZHw+d/dyX27sio2bmiNijM228G1GguMlralkT87FK6kYxgbNw
-	 CFPRok4TsdYuyW80OIgmKg/7cIOM2zbQGS2z5Gw6Oykn+GJWs+Iuv1Ho8PeQ5qORV397q
-	 e2zqtnkUEVvHmT7Iq9XeA/exOUfBJ2kVtBzZluyLWXi/8CWiYyXh3Clv68FdLAg9GBCax
-	 0Vabtb+3pd+2V7rn8qYZaQu6EToLSpihrSoLtqhIJOwbo8f/kD04qUpnkONtPZNezuA==
+	t=1793998611;
+	b=Lcv0ja4HlZSJ3ByCo0P1DckYxgGvtXEEwHMXjfr+cjt009D5z1wKTPBjtk9S1OHCpppO
+	 qCzdfS5K5NXcYcvu5Z/3TGkmM6i7VBxQ29ehb9aALg4VHQLR4j3kbMJtdHfJdv+3XjLDc
+	 4svz6kjt+pPTAnJPo9oP9y8i+iM7/+Pk0ZbWgTI2tmOzrj78YStn2+A3wyAOSIFDykBOU
+	 NsIKl8c93z3nNWj2502oGVmQ6CDMEChD0bVhV4AHoesfEStgmI1A+Xus9hxF15x99C7aV
+	 YijnZyVarfh1NGMm6Bx7z6iC9s/nQFsVAZWZrCA9g/YoTjVS3mYaBewh06exUWQs0vA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793998612;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=MMaWQsczzZcm8K8JnEeTjc5hgg7jUrVOLpWrSWR254s=;
-	b=zC/7TuiRssRPBwYxxJP1d4Mofy9CQdmjubKrq484zpJr4sowotkS4y+5NTbCrmCL3n/D
-	 McecD0ogvluF1V4w2tIIf9MTIG9OyXy8q8vqFDToN5qSNakb3flKBsxyoyBTQOaQKVOD+
-	 c+7FKiIW12ptz+wHLOsl3IO923uoDbOCcbBJP79mUai3wAFs98vnTatO08svd0TVlKIwI
-	 ZBgmaiXWOJr6+I46gLg/8B8gCt/evieTeqImt0dO6nR0iwJQrZcMKxzW0+JaqsNrOdi0+
-	 cQJwu1zoBbEV3hVXZgur1NLMzJX0DBEjs7B0RMa+j9bYKuSSfQXBtO87beFWjC8Sd8A==
+	c=relaxed/relaxed; t=1793998611;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=hF/8cHol6oifLy6xHxGiLUqBkdJhttiK2PlLUMXUHto=;
+	b=DI8Gq7a4cK56t7wjpThIp/RV4kcdxuluxcLeb7ljZylgwRnq7yoe82wWljt6Kj/fEiVw
+	 1cK4mKVtEHM33Euvx0/TO8911hXchayfG2pWZ44g2GO5YeyHx9tjIUB6y0Z9QBED/XwkF
+	 8nW5t2SBK0xiCX4jk/RLY7eIpVt0Pk4M3ed+aQ0xxDedAU9NKRwpJSpBNBnMr32p/AvNJ
+	 MnlDKlxCi+VRMp7V9S1dU+0PCH38wbyVkGch/JeK5yGdBaGpoFLkXPqReiKt8DRx1852S
+	 BFoUn0x7R/Qyr7C0NkqHj08getFkVLis6Dg+3SZvV+68jR4K/dG+TfkIwbhWK2bMU0Q==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 30AD11F008A2;
+	by smtp.kernel.org (Postfix) with ESMTPS id 48AC11F0089F;
 	Fri,  6 Nov 2026 20:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793998612;
-	bh=MMaWQsczzZcm8K8JnEeTjc5hgg7jUrVOLpWrSWR254s=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=jfK9vcX4yxJvBWo4s2+L3MbCKIb10J8/FcjUPolxhSAUODlgKnGIUPAc6rxsIkhJd
-	 4MpL2qyeRcmCqjBNsQMyXXbjAwRkILhhGtvkx+YfeC8Ti6kMyXfVGYrU/ONo1QJhTV
-	 6mIBSjbSDdGMh4q6L78qDgwXHz6x0f16n75f8tRkRXMTJJPrL7MGyvnK/sENrlDqmD
-	 gvy0gS3gD6Gp5/bUEbNoelXhDHjb5SDg60wt1WYELYZx2h92zubCqu7VaSqa+EjzfS
-	 22cbqo/xwM4ZxScfkWORW/1r9c4g/+qJ0mP6nQXZEBH8ZShqrIfikyK0zOHyHSJNjU
-	 XxcbV51Qt7QmQ==
+	s=k20260515; t=1793998611;
+	bh=hF/8cHol6oifLy6xHxGiLUqBkdJhttiK2PlLUMXUHto=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=W/CTDNnenmcWp/VUovWshCWYE5fr7zps3g/LtbjD4hsLwuYiaWGqdroKal4xBCGin
+	 FKAaqm6YBoeyxCmP7x7rUoCqMNTWezLRbGgzouVpq6nvwn7dtNaw288ZLIx0sw5cNI
+	 wuDFNKrDF9CL5qaq1BbelJJc0qzpeWsrEz8rZaOAckDOcy7FHil3kgjmK66ykwhZRC
+	 sZvDIzHDd2KXO5HxUqsjI3hJi18DfwTVsE8Sd2CH/3SQoUiiwO3+evhbvdNqn+jv/z
+	 KnI+RM0b4QOIGJMdwOsfqiUqyvwkuDDVDjfY1HCsOQhshLdOrNTTrO8HicznOJW7or
+	 QhbHjR7de13fQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id B185A4787D;
+	by lkml.kernel.org (Postfix) with ESMTP id C8D7E4787B;
 	Fri,  6 Nov 2026 20:56:50 +0000 (UTC)
 From: Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org>
-Subject: [PATCH v2 0/2] iio: light: Add Capella CM3217 ambient light sensor
-Date: Fri, 06 Nov 2026 21:56:28 +0100
-Message-Id: <20261106-upstream-iio-cm3217-v2-0-d97adde9171c@tsv-stahl-riesa.de>
+Date: Fri, 06 Nov 2026 21:56:29 +0100
+Subject: [PATCH v2 1/2] dt-bindings: iio: light: Add Capella CM3217
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,12 +83,9 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/32OzQ6CMBCEX4X07Bq2/DTx5HsYDqUsskaEdEujI
- by7FO8ev2Tmm1mVkGcSdclW5Smy8PTaQZ8y5Qb7uhNwt7PSua4Rc4RlluDJjsA8gRsLjQao6LF
- 0palzqtTenD31/D6st+bHsrQPciGpUmJgCZP/HLMRU+7/QkTIoSI0unSWTGuuQSJIsMMT0n977
- kg127Z9AVqhuwvRAAAA
-X-Change-ID: 20261101-upstream-iio-cm3217-e3f14c4760e5
+Message-Id: <20261106-upstream-iio-cm3217-v2-1-d97adde9171c@tsv-stahl-riesa.de>
+References: <20261106-upstream-iio-cm3217-v2-0-d97adde9171c@tsv-stahl-riesa.de>
+In-Reply-To: <20261106-upstream-iio-cm3217-v2-0-d97adde9171c@tsv-stahl-riesa.de>
 To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>
@@ -100,106 +96,93 @@ Cc: David Lechner <dlechner@baylibre.com>,
  devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Patrick Fischer <admin@tsv-stahl-riesa.de>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793998608; l=4415;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793998608; l=2155;
  i=admin@tsv-stahl-riesa.de; s=20261020; h=from:subject:message-id;
- bh=kLKFgYm2QwqADdGOjoKVwsmNobJ9M++Xyl5SxExLuB0=;
- b=wr33SH4t4XPFdMDBe0HXzG4jVN0HMIE/A45qNcALpuiwmKap/kWziTKYeUsvpEq3BZCi1fbBi
- dW0pOFpZxfTDqJZrjVO03yAxoHR1L7rLGcmXCq5G/IcjPCzh69e7qFW
+ bh=RVztLRvLE2XHZl0smZ+iXBmMb3aWuOAd6PH4N53y5GY=;
+ b=C4AieDI9YGOFjRxPrCLPVknDSODMUmQygjomFWzyROfdpHyk1AkmT5fVQJ62JM3+b9ZfuXIGx
+ eSMzXKx1f7mAZTW8s3c5uML/kKZ6zXiQgBNfc1UOh8KgnlpzJOe+7y5
 X-Developer-Key: i=admin@tsv-stahl-riesa.de; a=ed25519;
  pk=D+v6EloYcEY9PIUHFyTM5sqcGIU/fIXzLUdkR8vjAtk=
 X-Endpoint-Received: by B4 Relay for admin@tsv-stahl-riesa.de/20261020 with
  auth_id=1251
 X-Original-From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 Reply-To: admin@tsv-stahl-riesa.de
+Content-Transfer-Encoding: 7bit
 
-The Capella CM3217 is a small ambient light sensor without registers.
-NVIDIA used it in the Tegra Note 7 and the Shield Tablet. Mainline has
-no driver for it: cm32181 and cm3232 expect registers and an ID, the
-CM3217 has neither.
+From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 
-Patch 1 adds the binding, patch 2 the driver with raw value, scale and
-integration time. The datasheet is not public, so the bit fields come
-from NVIDIA's downstream drivers and the scale from Capella's published
-detection range. Patch 2 explains both.
+The Capella CM3217 is an ambient light sensor with an I2C interface but
+without registers and without an interrupt line. It always answers on
+the two addresses 0x10 and 0x11. The node describes the first address;
+the second one is fixed.
 
-Tested on a Tegra Note 7 (P1640) with v7.3 and the driver built as a
-module, the device created through new_device. In room light all 32
-combinations of integration time and scale gave the same illuminance
-within the count resolution (6.0 to 7.3 lux), and the first read after
-each change matched the second one. The raw counts scale linearly with
-both fields. Svyatoslav Ryhel also tried it on the P1988 variant of the
-Tegra Note 7.
+The sensor is used in the NVIDIA Tegra Note 7 and the NVIDIA Shield
+Tablet.
 
-Probing through the device tree works with the real supply (vdd_dev,
-Palmas LDO6), and unloading and reloading the module twice brought the
-device back each time. Next to a phone light sensor the readings were
-about 7 to 20 times lower. NVIDIA's Android HAL for this tablet
-multiplies the count by 2.1505 at the same 2 T/100 ms setting, which is
-7.2 times the scale here, so most of that is the dark cover window. With
-that factor the tablet was within 15 % of the phone in bright light but
-a factor of three lower in dim room light; I could not tell whether that
-was my setup.
-
-Probing through the device tree was run with v1 and not repeated for
-v2. Suspend/resume was not tested.
-
-There is no MAINTAINERS entry: drivers/iio/light/cm* is covered by the
-Capella entry and the binding by IIO. I am happy to add one if you
-prefer.
-
-The device tree node for the Tegra Note 7 will follow with Svyatoslav's
-tegratab series.
-
-Tool use (see Documentation/process/generated-content.rst): this series
-was prepared with an LLM coding assistant (Claude Code). It read the
-NVIDIA downstream drivers and Capella's product data, wrote the driver,
-the binding and the texts from my instructions, and ran the build and
-binding checks. I reviewed the code and ran the tests on the device.
-
+Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
 ---
-Changes in v2:
-- Binding: describe the two I2C addresses under reg, including what each
-  one is used for (Jonathan).
-- Driver: replace the scale list that was recomputed on every change of
-  the integration time by a const table built at compile time;
-  read_avail() returns the row for the current integration time, so no
-  table is rewritten while a caller may hold a pointer to it (Jonathan,
-  Sashiko).
-- Driver: write the resolution constant with NANO and explain its unit
-  (Jonathan).
-- Driver: add cm3217_power_down() for the shutdown write used in three
-  places (Jonathan), and a helper for the table lookups in write_raw()
-  so the loop counter can live in the for statement (Jonathan).
-- Driver: take the conversion time from the integration time table and
-  drop the separate table in milliseconds.
-- Pick up Svyatoslav's Tested-by on patch 2 (given on v1).
-- Commit messages: name the downstream trees, note that the 4 T field
-  value differs from the vendor header, drop "driver" from the binding
-  text.
-- Rebase onto the current iio togreg branch (based on v7.4-rc1).
-- No functional change intended. The 32 scale values match the v1
-  computation. Run again on the Tegra Note 7 (P1640) as a module: each
-  integration time lists the same scales as with v1, all 32 settings are
-  accepted and read back, invalid values are rejected, and the sensor is
-  shut down when the device is removed.
-- Link to v1: https://patch.msgid.link/20261101-upstream-iio-cm3217-v1-0-5e1724cae7b7@tsv-stahl-riesa.de
+ .../bindings/iio/light/capella,cm3217.yaml         | 51 ++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
----
-Patrick Fischer (2):
-      dt-bindings: iio: light: Add Capella CM3217
-      iio: light: Add Capella CM3217 ambient light sensor driver
+diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
+new file mode 100644
+index 000000000000..7f2a0d5d0243
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/capella,cm3217.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Capella CM3217 ambient light sensor
++
++maintainers:
++  - Patrick Fischer <admin@tsv-stahl-riesa.de>
++
++description:
++  The CM3217 is an I2C ambient light sensor without registers or interrupt
++  line.
++
++properties:
++  compatible:
++    const: capella,cm3217
++
++  reg:
++    description:
++      The sensor always occupies the two fixed I2C addresses 0x10 and 0x11.
++      Writing a byte to 0x10 sets command byte 1 (shutdown and IT_T), reading
++      a byte from it returns the high byte of the light count. Writing a byte
++      to 0x11 sets command byte 2 (FD_IT), reading a byte from it returns the
++      low byte. Only the first address is given here, the second one is
++      implied.
++    const: 0x10
++
++  vdd-supply: true
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@10 {
++            compatible = "capella,cm3217";
++            reg = <0x10>;
++            vdd-supply = <&vdd_2v85_sen>;
++        };
++    };
++...
 
- .../bindings/iio/light/capella,cm3217.yaml         |  51 +++
- drivers/iio/light/Kconfig                          |  10 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/cm3217.c                         | 407 +++++++++++++++++++++
- 4 files changed, 469 insertions(+)
----
-base-commit: 1390ca4953a7400ca932cb49635f02c727f885a6
-change-id: 20261101-upstream-iio-cm3217-e3f14c4760e5
-
-Best regards,
---  
-Patrick Fischer <admin@tsv-stahl-riesa.de>
+-- 
+2.56.0
 
 
