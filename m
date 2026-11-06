@@ -1,22 +1,22 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=193.31.26.27
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793957636;
-	b=aEcDurcKfkFhZCxjDCB/zGpHoybO8Atqnw5rlv3Vi93xizHB2mwAGWbV/I04cJyNfW+2
-	 1wOyvoTQwRiVeZrkcIxQsfImrmQbDlxSvmuGaa40tInBa0EfEYwbGybZm8bF2ZVaIMyVk
-	 mAQrY4QUeshD9xmQs7hphdz+PJ1dWk7eHEnodVzHXqtXo4e9exiEbqCfiz0WRBzw6ZAW9
-	 axzLkuKrODbNRKgV/YCgV9pnEfkJQp0utS6FcFZWx4DkUhn0/LuZsfTtF/k7wBHvEMyu8
-	 vLZ+iDu7iAxlRGooHOEspSmMBtVXXyRdI4F+tPiv1s9bLC3pLxfNsdOcD3M89Fw2/hQ==
+	t=1793957635;
+	b=koGSZpL/pBDDv8uomlqoDHQ+uUwHTV7xCiEhFpteDKYVq8dhyvD2v9H22ZNIE6hsX6VC
+	 XI3OrHjMlDvYGqk6PkGGkY6JKhMO5dqdhgdEoihIfQCnhKiBxtnQksTSCqgq//aAHWoiu
+	 Q5UC70UDVPiDkrycxPQeq6LoIA5dZSNLgjiZBMsErWPWj+Hmyfr4zEgh1DNUJR4JsSG57
+	 j4ZjyKajK3IrRwv31alz6e+k4mNQhfBMMVMgIu7mtnoN94gbJJaMN1SGJOpkc24lNUyNq
+	 6sYK4FqtnSOBSz2Ny9/eOqDD+o+PU1cWAyiPc2OONGLvq7NXjAFktkBoqHmWLH80b6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793957636;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793957635;
 	h=DMARC-Filter:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer;
-	bh=YM0Cas1lmuPvC0RCOoiARMUG2lWu7wZYO/f5PxM2lpk=;
-	b=tmW3cc+aOm7xahb73nNEuoLdYtA+WmeO28YlKxDm8Tzus64GhPegNm9yN6k3iu0oRbLn
-	 IJBOWGewa3NGaMqxjQlD55A6Nd2ikjsZr3xmc7eYu/PHhy06IkIR6VM+SdTFXujv21AgK
-	 rerWkMC4SUI+ryFkUwXMRG45N2Vcz4HBcfDoIzjdIwrvmPzD4Z8CplDxVuNIWjJ/QHqEi
-	 CD+wC7xFZ/Hf4PSsZpOSz5qmICwt7zHH8NLVkTySPAcUTWr23kpkQ4TMOYw6Nbpl4xtqv
-	 Pih5AM3CT+mbalKNDEZqtrM9Zq47UxWe2F35jq/gELTj3cB+qlVgkgX4yQK/aPzfvqQ==
+	bh=quGIdAlr6cVbKO+/sUYwx3r9laCtkrX2RSOwIZ+MluE=;
+	b=XHEGuq4t+3bC1PUWVxbfsOb9Gs9h7A2t6xpvl6UM1MKmo2j79zA2lrBGYLXIeW7zsJZf
+	 he7Zd6p1kUdJGIRXWqAd0b6m9G/ksTkx8OVCnFptGmP3Rj8YJbbjzLDmpRc3+MiNlKUdc
+	 a4gTphGLIJaSTjw46kQW/LP30nH/iYzqWPWO3lZxdIuT7gNfODmQwY/reDgheyZmNeMfS
+	 eb2Wa6QhGlLBqykBkeA+bXoH0LcFxS5mzqkJnqEIVch8aXxv6PazH060KoAttdze6oUu5
+	 Kb6dBrZbHusWgeJatxoBhnEIOYhFg7sA+a3iQC+Yj9fkLBcsLAmzgINB5OE8OZspOlg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=rudorff.com;
 	spf=pass smtp.mailfrom=rudorff.com;
@@ -25,18 +25,18 @@ Received: from rudorff.com (rudorff.com [193.31.26.27])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E34606EE84;
-	Fri,  6 Nov 2026 09:33:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43E34606EE84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F613606EE9D;
+	Fri,  6 Nov 2026 09:33:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F613606EE9D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rudorff.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rudorff.com
 Received: from [127.0.1.1] (dynamic-002-211-221-196.2.211.pool.telefonica.de [2.211.221.196])
-	by rudorff.com (Postfix) with ESMTPSA id 581F640BE0;
-	Fri,  6 Nov 2026 10:33:47 +0100 (CET)
+	by rudorff.com (Postfix) with ESMTPSA id 7277F404D7;
+	Fri,  6 Nov 2026 10:33:46 +0100 (CET)
 From: Christoph Rudorff <chris@rudorff.com>
-Date: Fri, 06 Nov 2026 10:33:28 +0100
-Subject: [PATCH v5 3/3] arm64: dts: qcom: msm8916-samsung-j5: Add proximity
- sensor
+Date: Fri, 06 Nov 2026 10:33:26 +0100
+Subject: [PATCH v5 1/3] dt-bindings: iio: light: gp2ap002: add leda power
+ supply
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -48,7 +48,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261106-iio-light-gp2ap002-v5-3-070631a7252c@rudorff.com>
+Message-Id: <20261106-iio-light-gp2ap002-v5-1-070631a7252c@rudorff.com>
 References: <20261106-iio-light-gp2ap002-v5-0-070631a7252c@rudorff.com>
 In-Reply-To: <20261106-iio-light-gp2ap002-v5-0-070631a7252c@rudorff.com>
 To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
@@ -60,93 +60,35 @@ To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
  Konrad Dybcio <konradybcio@kernel.org>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
- Christoph Rudorff <chris@rudorff.com>
+ Christoph Rudorff <chris@rudorff.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.16.0
 
-J5 got a gp2ap002 sensor, add it and it's supplies to the device tree
+According to datasheet page 8 "Recommended external circuit",
+it has tree pins that need power: vio, vdd and leda ("vled" !)
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
 Signed-off-by: Christoph Rudorff <chris@rudorff.com>
+Reviewed-by: Linus Walleij <linusw@kernel.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 ---
-v4: moved declarations from j5-common to j5
 ---
- arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts | 52 +++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts b/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts
-index ba8650971d6a..efac29485df8 100644
---- a/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts
-+++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts
-@@ -8,6 +8,17 @@ / {
- 	model = "Samsung Galaxy J5 (2015)";
- 	compatible = "samsung,j5", "qcom,msm8916";
- 	chassis-type = "handset";
-+
-+	reg_leda_proximity: regulator-leda-proximity {
-+		compatible = "regulator-fixed";
-+		regulator-name = "proximity_leda";
-+
-+		gpio = <&tlmm 73 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+
-+		pinctrl-0 = <&proximity_ldo_en_default>;
-+		pinctrl-names = "default";
-+	};
- };
+diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+index 99bddf31cbed..643021f1d820 100644
+--- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
++++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+@@ -33,6 +33,9 @@ properties:
+   vio-supply:
+     description: VIO power supply a phandle to a regulator
  
- &accelerometer {
-@@ -19,6 +30,24 @@ &blsp_i2c5 {
- 	status = "disabled";
- };
- 
-+&i2c_sensors {
-+	proximity-sensor@44 {
-+		compatible = "sharp,gp2ap002s00f";
-+		reg = <0x44>;
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <113 IRQ_TYPE_EDGE_FALLING>;
-+		vdd-supply = <&pm8916_l17>;
-+		vio-supply = <&pm8916_l5>;
-+		leda-supply = <&reg_leda_proximity>;
++  leda-supply:
++    description: LED anode power supply a phandle to a regulator
 +
-+		sharp,proximity-far-hysteresis = /bits/ 8 <0x2f>;
-+		sharp,proximity-close-hysteresis = /bits/ 8 <0x0f>;
-+
-+		pinctrl-0 = <&proximity_int_default>;
-+		pinctrl-names = "default";
-+	};
-+};
-+
- &pm8916_codec {
- 	qcom,micbias1-ext-cap;
- };
-@@ -30,3 +59,26 @@ &touchscreen {
- &usb_hs_phy {
- 	qcom,init-seq = /bits/ 8 <0x1 0x19 0x2 0x0b>;
- };
-+
-+&pm8916_rpm_regulators {
-+	pm8916_l17: l17 {
-+		regulator-min-microvolt = <2850000>;
-+		regulator-max-microvolt = <3100000>;
-+	};
-+};
-+
-+&tlmm {
-+	proximity_ldo_en_default: proximity-ldo-en-default-state {
-+		pins = "gpio73";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	proximity_int_default: proximity-int-default-state {
-+		pins = "gpio113";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+};
+   io-channels:
+     maxItems: 1
+     description: ALSOUT ADC channel to read the ambient light
 
 -- 
 2.39.5
