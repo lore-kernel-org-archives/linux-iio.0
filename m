@@ -1,93 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793987262;
-	b=1AbLFzCIueH1TPfmEemnhkiKapNjtxbDTBpeirK0HUx8o1atduoMMYCpHKUV+2UODqbK
-	 z8Cbv35jTwRvlYb+Qll8/aj5mfKhGoimDszP8o6laEvJ7k4jAGRrlU7IlxmeukB28spnO
-	 BP0owIHfWk6PLvvqF0esbhYESLV1ExsMh2faKRfZ39eBFOwTHevfIbR+lMZ1NNce16VVz
-	 GCvq2dZkqt0UIVgDI2MygL7yM4YoNDRPC926/eR+YX6nWS/jhY9BFV/PCGrZuO8/s52fE
-	 tJJQoORTA2JYEYlO/HaT3BIB3Hl3XYV5l4uR01DKO4TXO1NB48ImT2UrjxGncrjmmsA==
+	t=1793988279;
+	b=mXMKZ/Et47pOpBAnxj1LyvaBDZpNSCqOIUm5M41vUO4hXngzkuicN82W54wAirJ3W/QR
+	 2U5ozC6Ay/cAuwbs91qsFbISloI9cAAq473w+110jOeGeDjnTvBIcVT7w+Sc4uqRWe0Di
+	 oW3kSk8qoW3hz8q7qo62HCzWoX3mq2IlF/XLNcMXgFmPUS7pVdmydRYSvLSWMY3vFpp1t
+	 n6X4e8CSKOvBrqegYdDe1gPWkfwAG+sNmsOvfJV05t2YVhd73JntX3png9x2qEsjLuPUH
+	 fDx4VYe/9RAAib3tEtNxYCzJsNaBWetb6NhI35iKllOMGITvHgvfPGZ0DQDsNchYJFw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793987262;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793988279;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=eRHNQnSyg+HxFwUHDEG9hXimdhxcL6M8ICyQ7BsYEvw=;
-	b=b1Fj1A1GC0tRws37JwykqG6k957nSc4yZnIoAmj9EYIHrCY+UR0w3jT3LRD25FZyX+89
-	 WD5aiyAIkv3jGfvaixS8PJJf6eMgfXi9NGFlqvtkB804TOj5IKXZV0m6ev/lq7+/DcCM2
-	 Za06ASdpWv2861Orl3vrfG0R6PzYr8RhQqj1cL/TRMQgX35UVV0WPfs52oSDO0jcg7vON
-	 9zzSvzu8eziARzIGPlps2jCqhQouIUsTf3/B/tMPUSonlstPnJaR15cpjVQ3AMrMS5n4m
-	 NgRFqKptIVVxz2Y7Yb/OSjH+V6LFpzX8HW4wGU8adYCdTCEVP5XG2UJOy2F/0xCjFpA==
+	bh=Ol4HWN1JMq7gbwHCjCL17fLj4wvViav0TAizd9NAY/o=;
+	b=3lIQpgAiJtXIK1tfGTcozBjV/fOWERIcF/TQU8obHMSZaMGTziJ4iJAYtw6ApVQBe4E9
+	 e4eby8gK2PQCTZU6BSpsyCvqIV48yvpMsuUN6wjFyaonoPzc0meNXzah60OzXkivm8wBq
+	 h0Fmxu51Ma97Tm/RBCuISfn8gJ4wWBFP8D1U9Ho4uyKdI9tCLMQe6SpknMHDlFpM6+vkg
+	 ryUsZc7ecVUMLS2PHi8L0hZw0B0TxLKB708jz/HTOkFtrxeFI2wOene/a/do6amAJJvB3
+	 Tku2VcPU4xm9q+CiIi7g0bPTqRcxu4aUyW5eAlBYHkR4M8XW8xWbkpYz8vROVtRJFEw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=irYQ0vGG;
-	arc=none smtp.remote-ip=209.85.219.45
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="goFTCv/D";
+	arc=none smtp.remote-ip=209.85.222.182
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A8AC606A32C
-	for <linux-iio@vger.kernel.org>; Fri,  6 Nov 2026 17:47:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5A8AC606A32C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91D96606A32C
+	for <linux-iio@vger.kernel.org>; Fri,  6 Nov 2026 18:04:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91D96606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=irYQ0vGG
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-91ea3f6a506so7755076d6.0
-        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 09:47:42 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=goFTCv/D
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-93f1e5d7450so89607385a.2
+        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 10:04:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793987261; x=1794592061; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793988278; x=1794593078; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=eRHNQnSyg+HxFwUHDEG9hXimdhxcL6M8ICyQ7BsYEvw=;
-        b=irYQ0vGGtJEO65oqBeVPfGhntnDs1Tg04R8NYPfcJIO8nCY2yk/xAla5YLR6XWgf12
-         V7/Hd8xR2/GalEG2wlDsKuyTK73e8tCswlih26s6RmqYGUI1dmEQVq0kl9uwLbQeFpBq
-         qCyaQok0PVrR3AYWyNGHK8Z1N+sa16mo6zl0IVyKP2xAStt9ERmUhSJgTtxEGwOzQJAD
-         asUzwgQUUlDQhG+txlGzi3DjEc8k218OYS9v28X/nZEGDXgaWpnStVwKqHYqPCyq1Ad7
-         UyM+b02QWrfJo70vyA3lX0NJCsAYGumArxT7I/duur6hdYakBgNo4YFvQYPh5k71Hd/U
-         qjnw==
+        bh=Ol4HWN1JMq7gbwHCjCL17fLj4wvViav0TAizd9NAY/o=;
+        b=goFTCv/Di5F9M3h4vRpM1KegaKPyd4PS+ip4ABx34kYWVW1PSZf1uHnCkrx/lS9l5o
+         DXbDFMxYt0avQ+b3NgdcBy6R+Du3wSfutCe7CnS8lroTC5qb1uQRXko4A+1CxYG8dFlv
+         JKlpmu1Nlf/I8dsE/daYFLhJAyIoeKF3LCjLPBqjnwLAyXvIgz+szPFBiNP7/lG5fQdF
+         572LUrinPBDRBrW4MLhASm1WdabFLdao4BRLNhBQZdMZxa7ZK67m2/RTZkFyB3DJMwBK
+         9bzmexc0bz1R4JTV32arsKjWimswFC98IYnqMBsyf1hw8rINPKw0BWT13MxUh84qCsFR
+         JcGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793987261; x=1794592061;
+        d=1e100.net; s=20260707; t=1793988278; x=1794593078;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=eRHNQnSyg+HxFwUHDEG9hXimdhxcL6M8ICyQ7BsYEvw=;
-        b=pmYGKXU6Ipcb56GtMd0l1tK5IyIF7jEM+NzXWEqCv8adW3u5tryzxWCHpq+QQ7ChS9
-         cMXTfYJp4e8JmqbgJbsjwexO1UdL7PoAdjJF8UADD7tryuVmwYwe0r/P7DkODOCfrkgP
-         Wcwkn295G1YSUbIhEw0MCgnxSAvjexw7sFDM2Fyrnl4WB72h/cl6wHe7PWUsrH6m483L
-         gNzdWiliF51tcwraGrIleb/5ODUto1u7SytbscvP2QXzNQe4qqG6fuhB4Yjbyez7G7/w
-         VpDST4RR4YSfvT2JizlM7Zy5P1Fr+fZOj+u00zsRHOmHC3XOz1siDAUSJqbd11Xg43On
-         FjpA==
-X-Forwarded-Encrypted: i=1; AL+hErHrjLRZ8+Uxvqe/B6WG1WphE74XrIybG5k6iqG11VWL9sw508ZbnWHTDPzP1huZhDzhzGNqaxv+SF0=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/9YyJMM+VN6BjmdG/eYqupaZ9YsN6yJMK5lPVFD1kew9kEnFja
-	I1Vy1rjdw9klLuzipEjBVFDKipNJ1kEJHdLJK0dq2TtuXGmcL8shEWkS
-X-Gm-Gg: AYBFou25+b/AG9YqzG7SpEy9e/jiRpRr7ZNRKHiqm9fbfTuz9ukzWIQHmWut2rgltSf
-	J2OOw5OGUzDr1Kg6ZwyNywKhZBgF2MHCpE3osV64sMjf0/xfO5YOAScAB+eraowQGIB+RXEoYF7
-	XypixZC3Wi6GfQG+c4f+mf3KaDmuNlMW8/AmQ4hhtDS6ae8wcOas7b6IUIFaoGYhFxe3B1CYaFT
-	hs1yomPhR4AQyyXLDWl9QrR/ZrxwfiQ/gwTTnHINZwff2Zy9y1ZAMxxCyFu0aqUoh/KxjKA864m
-	CTOZ9iCpbojyqWgrD/Z3IJew93cs9gFqR+lKqjUwKhaNRSr4N2kosGq1KpmQj3Ixp1Rmj4nnteG
-	JRJ9Esxg5pnn0dbFcyWnBZ82SbPxGdj9mEIqgMcuuNP2x/sim6O2p70ufGUlByeP90YMu2BK6/v
-	SoxjQKKEkuSVYlNg9yKVz9NEwPk1qQoXlHVhxv6B3ElLSQvBDmVMKeI3xXnOwJXiu+hEfNyFNLg
-	sdnUWqslofLZdd83VOuyriw+pCG2Wve+hkOOjC5NePB+YdhHc6eLGxs+c2uBEbgKBd2My+o/muh
-	gkZt6EAGqMa2JBFUgH3UmjAtvJ5hSEOIrxL7764=
-X-Received: by 2002:a05:6214:469e:b0:91c:6386:eca5 with SMTP id 6a1803df08f44-91ea977060fmr45840816d6.30.1793987260806;
-        Fri, 06 Nov 2026 09:47:40 -0800 (PST)
+        bh=Ol4HWN1JMq7gbwHCjCL17fLj4wvViav0TAizd9NAY/o=;
+        b=vgns6AFkdBSVLMDArp2jgl4YOJSjtBuWe7DKIdQIsfaEjSP/SsOwuF+K0jYLUreYL+
+         +GwE3a5SwK7Rmsd735l8whhZYQTXgX6IFz3dwV0GkPtbdwwhQP7pEq9smBhTPNvFKmpJ
+         ZW+8fuP0aUCiC4i2To5XB3mVoDfUHu8n+hmHxF0XyX+NtUk3lDm1zFIPdvTcaD03g5y2
+         nQCgBLs27wtxLU23mLEAYjYgZs9dBe6IdufwlzYnRCSVnt4uTyVA4WIyugc6TkGLSlbZ
+         caduiVo+mShyn2XeF+Ts2Vk+zVJ2j0dWCbF947bRqfT0SfPImpa2iIxWcfona2sdmkQK
+         kabA==
+X-Forwarded-Encrypted: i=1; AKwUvBxC5am08a+lpj+i0GM85zeenmTXH1I86GJpZ1p+YgT7cwHNGsHMVyMlXTixlxA1z/aJjQVg3+ahHBA=@vger.kernel.org
+X-Gm-Message-State: APuU4Z85VPdpkJcS9hNtnxeyZVjFZ3yDBY7rMtgCF/njMlPbn68dx412
+	s0c1r8K9tGslGKnSZxhthJtLOoJbb8x9yRsnNgfo2NpAvVEXxBNVychD
+X-Gm-Gg: AYBFou0fhyLAiJGqtH1yZQavKcYYWMKfdI+KEln2zan4hIa8culMLi1HK/uCPwZF3Uf
+	IAGzeeRDwDLSbaW+OYAbJBZMYMijsx3wgz1yz5nLPhG+9z07YfjsVp3+0OWUg6AYQbXBRSVDQHe
+	Yqo6gNZwQVkKguz+j2JXoIRLd9gXmYhUBdi7Aks0tQI+KNzSF3uOso9IlDQtJv/SwYXVsDFLpC1
+	Tu/nQwqlUx8a7ADUA6pJY16m2ynvrKeM+h8WFMfSNLBsmmcYTiz071NzxDXOQVctbCipMjM+S2X
+	7JX6Sh1wjh10VVWoEmgJvyzt0p5Xb9g0cHgzRoOpWM3Xvy0X7WexhUM/RoXiRBh/oarfBBOwZYt
+	jZdsbzHvezFcgaVgTPtY+VYNWWsqPEXw/78pz7MYB1OSZWN7V+bC6s1c8uOHoxNcovchWZHtskx
+	hHjUt3+RnJu8QPa4NKWUdCl3VttJmw0+XXh3yuLbv8O34FA0ZC1XBPlD8JBCf5CKcf0ER+leKTN
+	s+sRgWdXYcbe3+ZQJmI3/lgaIQGazlzVFhsCtmPT7h1BO9/J36shoHo5OOj+vNMSIQpjEYHgyrQ
+	4Y/6dnA1LYr+L3Qqldw=
+X-Received: by 2002:a05:620a:1b84:b0:93f:1af1:7952 with SMTP id af79cd13be357-945f32d0201mr435212585a.4.1793988278234;
+        Fri, 06 Nov 2026 10:04:38 -0800 (PST)
 Received: from linux.. ([8.34.174.240])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91ea6ab543csm25408536d6.39.2026.11.06.09.47.39
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-945f599bcccsm195308285a.13.2026.11.06.10.04.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2026 09:47:40 -0800 (PST)
+        Fri, 06 Nov 2026 10:04:37 -0800 (PST)
 From: Changyul Lee <lcy8047@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@nxp.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Changyul Lee <lcy8047@gmail.com>
-Subject: [PATCH] iio: trigger: free the trigger ID after device_del()
-Date: Fri,  6 Nov 2026 12:47:37 -0500
-Message-ID: <20261106174737.2580011-1-lcy8047@gmail.com>
+Subject: [PATCH] iio: trigger: free hrtimer and loop triggers on configfs release
+Date: Fri,  6 Nov 2026 13:04:35 -0500
+Message-ID: <20261106180435.2638701-1-lcy8047@gmail.com>
 X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -100,49 +102,125 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-iio_trigger_unregister() returns the trigger ID to iio_trigger_ida
-before device_del() removes the "trigger<N>" device. A trigger
-registered in between can get the same ID, and its device_add() fails:
+Removing an hrtimer or loop trigger through configfs causes a
+use-after-free:
 
-  sysfs: cannot create duplicate filename '/bus/iio/devices/trigger0'
+  BUG: KASAN: slab-use-after-free in config_item_put+0x1f/0x60
+  Write of size 4 at addr ffff888001bf322c by task rmdir/71
+  Call Trace:
+   config_item_put+0x1f/0x60
+   configfs_rmdir+0x7b7/0x9f0
+   vfs_rmdir+0x291/0x7b0
+   ...
+  Allocated by task 70:
+   iio_trig_hrtimer_probe+0x46/0x2b0
+   iio_sw_trigger_create+0x11b/0x210
+   trigger_make_group+0x2f/0x70
+   configfs_mkdir+0x477/0xf00
+   ...
+  Freed by task 71:
+   kfree+0x121/0x390
+   iio_trig_hrtimer_remove+0x86/0xb0
+   trigger_drop_group+0x78/0xd0
+   configfs_rmdir+0x7b7/0x9f0
+   ...
 
-For example, adding a sysfs trigger while an hrtimer trigger is being
-removed through configfs, or the other way around, hits this because the
-two paths do not share a lock.
+On rmdir, trigger_drop_group() calls iio_sw_trigger_destroy(), and the
+->remove() callback of the trigger frees the structure that embeds the
+config_item. The config_item_put() in trigger_drop_group() and the
+final config_item_put() in configfs_rmdir() then access freed memory.
 
-Free the ID after device_del(), as the error path of
-iio_trigger_register() already does, and drop the "Possible issue in
-here" comment.
+Free the structure from the ->release() callback of the
+config_item_type instead, which configfs calls when the last reference
+is dropped. Documentation/filesystems/configfs.rst requires this
+callback for dynamically allocated items.
 
-Fixes: 1637db44413e ("Staging: IIO: Trigger support added to core.")
+Fixes: ac5006a2a558 ("iio: trigger: Introduce IIO hrtimer based trigger")
+Fixes: bc2e1126eccb ("iio:trigger: Experimental kthread tight loop trigger (thread only)")
 Signed-off-by: Changyul Lee <lcy8047@gmail.com>
 ---
-Found with a static analysis tool we are developing.
+Found with KASAN.
 
-Reproduced in QEMU (x86_64) with two threads running for 20 seconds.
-One writes to add_trigger and remove_trigger of iio_sysfs_trigger, the
-other creates and removes an hrtimer trigger in configfs. Without this
-patch, device_add() failed with the error above 160 to 1148 times per
-run in three runs. With it, it never failed.
+Reproduced in QEMU (x86_64, KASAN) by running mkdir and then rmdir on
+an hrtimer trigger and a loop trigger in configfs. Without this patch,
+KASAN reports the use-after-free on the first rmdir of each. With it,
+1000 rounds of mkdir and rmdir on both trigger types give no KASAN
+report.
 
- drivers/iio/industrialio-trigger.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/trigger/iio-trig-hrtimer.c | 13 ++++++++++++-
+ drivers/iio/trigger/iio-trig-loop.c    | 17 ++++++++++++-----
+ 2 files changed, 24 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 76926fee0f84..206ede2c9b3c 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -105,9 +105,8 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
- 	scoped_guard(mutex, &iio_trigger_list_lock)
- 		list_del(&trig_info->list);
+diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+index 57550b581593..469bd83331b2 100644
+--- a/drivers/iio/trigger/iio-trig-hrtimer.c
++++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+@@ -29,7 +29,19 @@ struct iio_hrtimer_info {
+ 	ktime_t period;
+ };
  
--	ida_free(&iio_trigger_ida, trig_info->id);
--	/* Possible issue in here */
- 	device_del(&trig_info->dev);
-+	ida_free(&iio_trigger_ida, trig_info->id);
++static void iio_hrtimer_release(struct config_item *item)
++{
++	struct iio_sw_trigger *swt = to_iio_sw_trigger(item);
++
++	kfree(container_of(swt, struct iio_hrtimer_info, swt));
++}
++
++static const struct configfs_item_operations iio_hrtimer_item_ops = {
++	.release = iio_hrtimer_release,
++};
++
+ static const struct config_item_type iio_hrtimer_type = {
++	.ct_item_ops = &iio_hrtimer_item_ops,
+ 	.ct_owner = THIS_MODULE,
+ };
+ 
+@@ -176,7 +188,6 @@ static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
+ 	/* cancel the timer after unreg to make sure no one rearms it */
+ 	hrtimer_cancel(&trig_info->timer);
+ 	iio_trigger_free(swt->trigger);
+-	kfree(trig_info);
+ 
+ 	return 0;
  }
- EXPORT_SYMBOL(iio_trigger_unregister);
+diff --git a/drivers/iio/trigger/iio-trig-loop.c b/drivers/iio/trigger/iio-trig-loop.c
+index 580a465035d1..e6bea96cc565 100644
+--- a/drivers/iio/trigger/iio-trig-loop.c
++++ b/drivers/iio/trigger/iio-trig-loop.c
+@@ -35,7 +35,19 @@ struct iio_loop_info {
+ 	struct task_struct *task;
+ };
  
++static void iio_loop_release(struct config_item *item)
++{
++	struct iio_sw_trigger *swt = to_iio_sw_trigger(item);
++
++	kfree(container_of(swt, struct iio_loop_info, swt));
++}
++
++static const struct configfs_item_operations iio_loop_item_ops = {
++	.release = iio_loop_release,
++};
++
+ static const struct config_item_type iio_loop_type = {
++	.ct_item_ops = &iio_loop_item_ops,
+ 	.ct_owner = THIS_MODULE,
+ };
+ 
+@@ -111,13 +123,8 @@ static struct iio_sw_trigger *iio_trig_loop_probe(const char *name)
+ 
+ static int iio_trig_loop_remove(struct iio_sw_trigger *swt)
+ {
+-	struct iio_loop_info *trig_info;
+-
+-	trig_info = iio_trigger_get_drvdata(swt->trigger);
+-
+ 	iio_trigger_unregister(swt->trigger);
+ 	iio_trigger_free(swt->trigger);
+-	kfree(trig_info);
+ 
+ 	return 0;
+ }
 
 base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 -- 
