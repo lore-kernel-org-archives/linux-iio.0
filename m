@@ -1,16 +1,17 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.20
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793979724;
-	b=CDEM0cPe4ArpcEvHF/M2gHZSoECaFvE1oRuGh3kLRKOQxoTvcHxDoMIe9y8M0HOP3PDL
-	 p0SPJin9xjyO4gzHt0mmXO1oHny3jbK53MXuxlhFUwB9G1b1+RfkTDy4mJNN7hpYhBhyT
-	 9Yj6rKxyZfeiLtUtBfimrF0LuhJiKlNeblk3Cec5d0n0pg6bSuKr6f+1P3CjL1YnVRcGG
-	 rwS06B3AGBTkZBsRkg7o5E8YC6a+6twVMawMd/1ig4K1W0nDrgOc61JMqj0okCVVKIeDE
-	 SByvMJYu4BsLzcFrj53G8EsVT/IAtUpofl28dtZPRAcMcLlnsKyI2JXKKxHVyZ1ZxSQ==
+	b=Kz59WHhBHlkIsdHKXpIzW+wK1wR2xV0kzu1lfCr3QGCmgWNFeWRpdNjptXjgbIWVikbW
+	 DGLwNGG+omYRaZpFy82qY+7f6khnSrdS89K3SGAyYTKLhC40PnGiNgA20WAuNZWeDyMlK
+	 qMR6zn6c8tKqXkzmkCGU5cGOShWPwcuXTztSEOWfIhHE9Vq5YZ/hns91vUIFnrhs8aqKc
+	 zl1GkQTUkY8TbzM+QtUc9j0pvXWS7SHsQBmafWjFaRvs1Is9V/hrEaAn92rKq6AKN1BgT
+	 Mmd5ls4UhIofQherK8jsYLnJTFf6UVCidulUv0GdEdO1r6tDwHhNGUr4Rzj/seJjpNg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793979724;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:Content-Transfer-Encoding:Content-Type:
-	 X-ClientProxiedBy:X-Microsoft-Original-Message-ID:MIME-Version:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:
+	 X-Microsoft-Original-Message-ID:MIME-Version:
 	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
@@ -23,51 +24,51 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:
 	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=EVq9NkeNbf2BVon0DkB+sRZzgUh1/U8nKamsVvKqRtU=;
-	b=sxKF2gnra7Pu45wL/tfhtIKEXxg7puJpuL1Pwyv8uGDCkZbhRyroQ+oEP8ahUTHfExip
-	 RxSN980dg3CgrIvlHBCBkW0a/2Llbi4nEwZlK9Z86EOHf2iLFltHvgbZs+Q2qNMRaAzCd
-	 GzCyxOZPqd3ln3ymcaRTUxCy99386apZ4/bsgIqDQkGVCgoTU967bC29TBiLHMP6Pu/zj
-	 nWXpQLlHyfNPKulajkcWCN+ELS5OGDT2VKIoK/IK+TTyzc157GLkhbI8fKvn51NWtarz5
-	 mFgahHIukZi5MJqNJm/hTnTlpjXJGntABTSxhtRZ6Npt9U/TCjw1KI05aJtTMzzTZdg==
+	bh=rHdfqmh1sx28Y17GBtqfP8VlpKysSu2Fq76IJlSdA8g=;
+	b=c149owLYdpCucap6qljVR/kM5O967hORCluf9ZVyzDZ5RsOnBordMVBGTbiG06beoyXW
+	 Qol0CkVK5MesJaEeTPxF5YWRrdyTfn0odcaFMtUFLnOvyuEUl1BNfgM7/I8oYTAqx6wRk
+	 Y7WX1PAkWImiUisUyYPZXYYFiBZL4+RQ/C/bsgWEusRHAbU9s84lUHvUpTXbFcQor61Pn
+	 ddx9Q2JRDHo2yWPmqI0LdAKSUjjBNnBj/RQ8k+prlTVm3yar+VIXHftD87EfD2eKgMbl6
+	 L4EI4rXycV8m469NMiHp9xHP2rVNnYluo8NdYwDXn95yO0/VHjD1UTKgJOBLWQClBfw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=outlook.com;
 	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=Xkpk7d7H;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=ovtHlGDY;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.20
 Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazolkn19010020.outbound.protection.outlook.com [52.103.13.20])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB14606A329;
-	Fri,  6 Nov 2026 15:42:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7AB14606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22ADD606A32F;
+	Fri,  6 Nov 2026 15:42:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22ADD606A32F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=Xkpk7d7H
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=ovtHlGDY
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xbt7qlcDxLK61BcJxtAvtXpiPdcufqgqUrecLaSumVAaldQ8YISo/fx6jlCOfTFB0AIGRpzVA7J3cP5oxrm6h+ptS9w5ZylZRlwVZaa5hy5rlti+UBDhlGKGpoRleEz420XPPGC8sFmWXQlxLJcCx2DJkngfotRGou4PlAN0xK4oRLaNimR2HqgzrZ6GJrEVCR2f6Nc53jRck9lvjGEHxJIqQetq2/WYEUUua1jwalZEQnIvt6zVG1K9CJMh6GSHv+XrFuU1DeXjHJCNIRi/NZTcDTDLXgs2ZWBy33dugZcxHr3RwA1xz20ER8r87ik7iiXqPAyveUqPlBxd37Pk4w==
+ b=N8YXgRA8QxsQbhsTnw7T8YnJhI/FPeLVpDkWu/+3LAl9sUTGg+lgzsAwHEAPj0cmRJvLnlk+EODBzJ+ZtmMCtOUQSV81xMPibvp2hyTHCiAe42pyIpWRm2KM5ANsdWZ6UhggnKOCM3V1dybxANtaYIG29vnXbmoC8qciacv/T/sSrkmztX12Wdhg/v/bNp1GjsLJhmABK+T//qaBrllTeUEA2UeeyvlkYUmIFEoDsVaF0LKgD4BTpfMRgUXoWhpulsIstX8Oyobr9O5iFOTzqJQEYKQDGUyVJWovwebTZSQ4xxZfVpApPeypjf7HgBchoBPg9t+8lIuO/3yU7hItAg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EVq9NkeNbf2BVon0DkB+sRZzgUh1/U8nKamsVvKqRtU=;
- b=UI7KcwZsleAA/URMNTXPiucXPeampY/3S64ysk2nvT5pJs2FGENEXbLQoKSIl5KVL3cVzCjnbgks3LKfNha3WIPG3iDvTNufUe0/uEXHujvIh5EVfGWFZhcsKBnS5i9Q4/DFv1WiqvaHr76hMPX6doBL1ljwIAO+Tl4ilRJb1JIXgCMxK7OhCO8+2BGY8Bk5Ck37gMzv/lfHz7jKq27oe1GokHGctx2DFrYhsD58M2KQwKF4Cw81ZCYjBETWljvBBG+2pA7ma7GxU+GHICMNv1E+3T8wLZ66wG+42xU3hVtETvb8tZuHq4oeG9eccm631ExdGKjtKB75tcnwRTkHnA==
+ bh=rHdfqmh1sx28Y17GBtqfP8VlpKysSu2Fq76IJlSdA8g=;
+ b=FG7qH4EHSowegfYC9mIXYX8loJiJPzBRtncX47XDLk24gZxQzi4L1fAerme5LvOqPJLSKHskzTA3+1NPbCmcnjGffwQbUbTQxEDnQbkuFA8cyoNl8QMoPaRaZRpPeeb9V/U/G+k0d4+zpIQ4RUMZwD7vPj7wi+xD9QpR4EnTH9jPTVI959Di7qdOpFQDEXtT794gxMxrdOHmCg51POM9VUSuQbWkDGsxY84xXEuHn2AUpma4h3o5ufqMwNF0zpCWlRABEade840uHhURNf43lvqKW3GrFQeeCa6LOccZO8JtabybU9UOAWutHdhKSsaLxGFn8xRsU1QuR3VcR70oAA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EVq9NkeNbf2BVon0DkB+sRZzgUh1/U8nKamsVvKqRtU=;
- b=Xkpk7d7HJEbNU2SEbO3eRORhIiENnfs7llQu7o5uPL3eLvrtMui0st+8nTZx613vytmxN+F2lRVEJtdxcCJghlpyM5/xELpHq6vtS3iTl1sNSHXMJbLESxJpNddkvpm1aBMugcrbF98CsvGBb+dDDiGWdDLuR62gOR+l05aJjKD4rXF069XPkjKjPYb/c+3UmJ1Mctj4RDSiDei/ir8Pio1qq1gt1w+hGr7zVAn6p6oAVIumgeF4b9J6DMfD95FzUAmQliswBqxcyCsr8Z+N0o4SIreMIWhT6xYqkl/R/JL/eNIFv6jejpo0QHp7mzzglAGNcgThmE+U9yMp5BKH7Q==
+ bh=rHdfqmh1sx28Y17GBtqfP8VlpKysSu2Fq76IJlSdA8g=;
+ b=ovtHlGDYjlkyu0h64RVRyiEhB5MnU5G8KfnWOhS5mwU8Er/UjCteAzOjmKb/Mki6casnVLWI2dm01TmSFRjM0sz1WE9vUBhiHXyMEmN45GjZHs8Y3JCmAZ8aZ1xboydglCjmWN9VcdyS/jYt2rs8o9BquDMRplK7sKHSj5QMB70zjrvqrzFEjKzWweK5CY7F16wZvClzETm6yxR7QZzTLQfIAKHBq1YbhRBq6ZFqIV1opBbykbyNJAuOS1kAUyfCG65DMTKJ29FHtnP98Pz2MqTglwE8E3qhFRi8KFOKfWdxyKNcUklKHbevCBr9JD0ICAVbNd5m84N3znk3NYbPfw==
 Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
  by DM6PR12MB4329.namprd12.prod.outlook.com (2603:10b6:5:211::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.11; Fri, 6 Nov
- 2026 15:41:47 +0000
+ 2026 15:41:49 +0000
 Received: from SN1PR12MB2528.namprd12.prod.outlook.com
  ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
  ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0592.009; Fri, 6 Nov 2026
- 15:41:46 +0000
+ 15:41:49 +0000
 From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -76,18 +77,20 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Subject: [PATCH v5 0/4] iio: cdc: add Texas Instruments FDC1004 driver
-Date: Fri,  6 Nov 2026 09:40:25 -0600
+Subject: [PATCH v5 1/4] iio: prepare iio_format_value to handle higher-precision IIO_VAL_DECIMAL64_* formats
+Date: Fri,  6 Nov 2026 09:40:26 -0600
 Message-ID:
- <SN1PR12MB2528805DB17DD015E191111FA5762@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <SN1PR12MB2528B4A67B738F51950A916BA5762@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <SN1PR12MB2528805DB17DD015E191111FA5762@SN1PR12MB2528.namprd12.prod.outlook.com>
+References: <SN1PR12MB2528805DB17DD015E191111FA5762@SN1PR12MB2528.namprd12.prod.outlook.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: CH0PR03CA0011.namprd03.prod.outlook.com
  (2603:10b6:610:b0::16) To SN1PR12MB2528.namprd12.prod.outlook.com
  (2603:10b6:802:28::33)
 X-Microsoft-Original-Message-ID:
- <20261106154136.804370-1-chernyakin.victor.j@outlook.com>
+ <20261106154136.804370-2-chernyakin.victor.j@outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -100,61 +103,60 @@ MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|DM6PR12MB4329:EE_
-X-MS-Office365-Filtering-Correlation-Id: 072bb235-733a-4307-e4f3-08df3c1c7670
+X-MS-Office365-Filtering-Correlation-Id: 0ece19ff-b97d-45b7-9193-08df3c1c775d
 X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|23021999003|5072599009|24121999003|5062599005|22091999003|24021099003|15080799012|260925184616899003|8060799015|19110799012|4140399003|25010399006|440099028|3412199025|4302099013|1602099012|10035399007|53005399003|40105399003|26121999007|1710799026;
+	BCL:0;ARA:14566002|23021999003|5072599009|24121999003|22091999003|41001999006|24021099003|15080799012|260925184616899003|8060799015|19110799012|4140399003|25010399006|440099028|3412199025|53005399003|40105399003|26121999007|1710799026;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0LEWWxMj00MeP1svfcRCX+Nif0rSL/22981owSl3iyrHZa1HZS3L5Og4V6xf?=
- =?us-ascii?Q?oI5anEhU+0xzZkYm1DlutowW2Rj4QN2SKG1nkrnzEg0fCevl5fCmU6RxDGcZ?=
- =?us-ascii?Q?oOf5IotVQCoSZyIJMAN1OOrlDHMetK7jE31Wy0Hm2xCGAertuXxC7gtDjrAw?=
- =?us-ascii?Q?/poeNPfhpFrUfgyOMiRLk3CkcBOC4ceDwGq/8Are3R+Ac5HPdLPoooJrBp4S?=
- =?us-ascii?Q?KdGeq3pAk2LldrKJ0BZTqYNqMPA4vDpFDfoSVNgVEt9CVObujBU8xgeIAX4A?=
- =?us-ascii?Q?ts8lTtuaCRj/If1XscDJqgQFCbuXYwCOHVWCCkwErBYazMIBAOBQ/9Qwvst4?=
- =?us-ascii?Q?HHLvf6kmltgeG/TFR9QnILp3cwVfB6xz9v1bvVDwqK5fMAbUK0yBAld5W+s2?=
- =?us-ascii?Q?+I73tSucYTQkDs6G5ZMDXUSd4jLddpxtJ85MgB5u4W61BoXDk1mDZgJY1w9U?=
- =?us-ascii?Q?oEamjotIXcgBiY/KsQCGBDe5JxXmkX+wHvoS0+Tkze5K2L4JlqZUB4TXA11z?=
- =?us-ascii?Q?VDTe0dKrcjtFZrO5Lt9iyX9syLwro74TymJhOQcAaJi5syMRwzov28B312gb?=
- =?us-ascii?Q?rlg7jobXKKv3KazH9OkKPFGom3SocnNGbccnzvxSpFrj9VLTMyqfAlFb3EaC?=
- =?us-ascii?Q?RzBvLMmjHNc/liAYy0Il/ulTg0vWC9KrMjadldi38rfbeSHYeYtAU0hKX3Jr?=
- =?us-ascii?Q?k3QG66ERJylhKq64vZKcTyiCxEIdt0cDOjM2nxOPKAbMDEYpfKSrdLY/928h?=
- =?us-ascii?Q?K0YgbiXe9nmmadrR4C2qvPl5xEGvJNApfbtFJtFahxvqLOXcpJZhy60UIoyZ?=
- =?us-ascii?Q?OeCCKmX5PnZTDGvy5bVkghLLXAzqPJZbstwtzAefpm0uCB6hWa7UWsPLc2CB?=
- =?us-ascii?Q?i9iFn+NyXeiclYeqYu3vSdNzKpA03ZeEYOAVQbePG0gSIO0SuBamPJPlOT4W?=
- =?us-ascii?Q?jjcgRfEg6zvjBWeRc7mEM84VIF+qPMFN6NiiT/ZgZVZ2I5Ip11EootxKQ+oO?=
- =?us-ascii?Q?RgaNq4ZgwRzufnJvhSUkslAaL0IHRVKTPqobgx1JuxBM/QeNS2RKOXVBCUnf?=
- =?us-ascii?Q?XuxgvLYAczXtiQ0ITfQ0dGjKrJrVKhKVT4tqN+GSroRyp2TdUg95w8uSLFDo?=
- =?us-ascii?Q?sVdo2mgdYxBb?=
+	=?us-ascii?Q?EASPOkc9y5SufgsvP1MJhoHIVJxgrbp7FHOYY5X6HimO1Buw1W7nS4QE1g0U?=
+ =?us-ascii?Q?3NfQgD/CPz7ITU6sSJMzdt3TnrXg75qY2MUL3Sobrg09GByiAEGqWfDedt3J?=
+ =?us-ascii?Q?W99nEVIID0ukq43/98+uOOETbZeAg1zk1CX1AXd9kNXLmyjQex7n8MvrXxRy?=
+ =?us-ascii?Q?m0IhU016J75HF6aXtqwDKvaAhWTQNFaozyAQ3cIpEpOkvfrOntwQYsIE9QPB?=
+ =?us-ascii?Q?4dLmJOsonRkQ2zzGfpwMwNhQUsJaJcWLXzgkE1cEZtqXql0PB1M9hGnMxZDu?=
+ =?us-ascii?Q?DZOe6WT9mD2cBujnoJ6QH2H+HMkkkq3RNxXWdarSGV6q+DUyEchZsRCTpA2d?=
+ =?us-ascii?Q?AmLbdk5YSRTSKjBTMeo3zrBX/Zoo2Ild2XDEjwBfWcLTzApt/IgbNXvpmHWM?=
+ =?us-ascii?Q?ADrM575Zso6kfIhq82sqC9M8WzNmXi6tVccklLGOzMedRu604cbLzI9vsPrR?=
+ =?us-ascii?Q?dyPwMS97eoTPX5usszlsNkV4BCmIOgK0LHlJCXpHrEWDqRQVdAbhLJoZvxt5?=
+ =?us-ascii?Q?F1LzwWiVbkm2ZBTI7SfjcikdJGfk9YXZmacXN2Wak9HWlj+HaXFiofnP4Gjz?=
+ =?us-ascii?Q?xBpS+AJtqT4qV2kDTswJcJBydhvA6qfZGYaQB/VRtIoYEnrqa5A4V1okL5Er?=
+ =?us-ascii?Q?b1I9R9TL+ep77PKBgY3LtY0wmyhbqe2kYpjCwHPdzXlgjLXfme0V+PkstryG?=
+ =?us-ascii?Q?NVEtfX9IVAjy91wTByQ9IN5csAyOgIXk3G2xU9w1tTPIM4YST5ARXgKUSqdS?=
+ =?us-ascii?Q?MyBn0RqKhbR24T4CvCju2fJXWv4Cq5GWjWlKvEJ6ihfERR2OAngrWrFeJeh3?=
+ =?us-ascii?Q?3xN8NXdibTrT4gs05kfS3pPI+hmQ2TXCnmtjYy5ZZ2lvC+1QEzexoUJkp5K4?=
+ =?us-ascii?Q?Kjc31oOhG5QjDymg90YDr2arPZFMzpoQPV6lVmh0foVNXKLFNqx30QE6gCqv?=
+ =?us-ascii?Q?k+SfPRDxwuG6fHuQ6qyYngb+0eLWKWmckXSFkPu4rH4paXd0Oy3JLpFvVEvr?=
+ =?us-ascii?Q?j3VHxQjPvxO1sDc13i5em+EJ40oaoo7ToggHTB6hP+IJEIos0hm/SdYJLG4F?=
+ =?us-ascii?Q?9PdbxXjqbhKQK/66xPulggc/lz7d723t7vfHm11XXzqTuLbxiA8=3D?=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?FzHMQBvfNiREbIfmriNnSKoqEQEqR74fwnqxoAOEqpD9zuLu4Sr17pz60xb3?=
- =?us-ascii?Q?gnVf9hQ7KlBAaA7qu4Ke+gMk1qk2baWyMfM0vPhGq732XZCookoxvmeGIvq0?=
- =?us-ascii?Q?L7N23JiEhUMOFc/fCA3Qz8ZVl54S+yAaPVS6/ibwaWiDmHjVsG1ZCAmgE/GS?=
- =?us-ascii?Q?+pHmzlrMB/XxBztSugucchS3R+mPiLaHH2OSvkrwc53NBo8UiQoeQ53x/mpZ?=
- =?us-ascii?Q?19XwDQEgolV43h13NzcfiVH9qE3alToDPdr6dHj5hY4naQI2jSI2xnfdzieX?=
- =?us-ascii?Q?P1W67/nnmLGp7KxM2HYBe16R2jRPXRDvFSeoCPbadZMLfP/XvvFMMdQRP/rY?=
- =?us-ascii?Q?fLpnz/6UetJ4QpVrl4mI1oJEbel9baLUDSJ31zncVYpN6if0zz06pw+r50z8?=
- =?us-ascii?Q?C6174hPYFFd+aRS2g1g1+RGTrz7JhraGvoCy95s3gpoWrveN09ZPgqJfEcyg?=
- =?us-ascii?Q?kwxDyPOidtGuS14dq1ImGa/X1WEQcCw0RhD1E/sEVtNDBBcwM7KVRqNLFsan?=
- =?us-ascii?Q?KN7spfIc7ex/geYIgWu/dL+c06abvIDV8KKSqUKfOEu3C8Q3SDXPOHVrmm4V?=
- =?us-ascii?Q?TFeMgAg8dFUTt8tATu0v1MeatIuoOXYmRaGMzIAhlaphHBES5NIYBaiA5fwI?=
- =?us-ascii?Q?rm8PH7xBNTdvNH9N28sUrx85WoKhAWkVeC+l6Fl0v6BkIJ/BynuXdDFQulHZ?=
- =?us-ascii?Q?SjA2JFhGR0ZH7HSQoASFKmjNsUek1U6UDvknxr/+r+JzE2e5f2/uoO5rSuEk?=
- =?us-ascii?Q?BYPFqrmMGysZqHJy3mUEuAYYU9YLP4FtdcqL81QJwmCN3y6pRraePzNDwzyB?=
- =?us-ascii?Q?2Abimgf81cBKz99HUpcFTqYezMbM7sq5suDmfhJTkKu7GIAd6AONQSokCYLN?=
- =?us-ascii?Q?LYNrEJP82xPHsBzjF3WMMeLWSW3vxn18L9WzkGZsXVztQKiN9tBWLztYTjt8?=
- =?us-ascii?Q?sr+mv0U7p249PoGoAHXP5jWWx2nsRXxv9JLFghW33wVuzy1aA7Bj8IcHBOCO?=
- =?us-ascii?Q?VmM05XxiCJIUC946fSvuXjdC/VvJZu8aH7xwDyFn632MTE657tpGF+TqakAm?=
- =?us-ascii?Q?kTtSl9u5owuyAp7meO1fAKriW4/SMDk8wA1ip6r8GlDgSZ3KuCcuLoChsAUg?=
- =?us-ascii?Q?Q1scJT1J2ndw6IdM6T5DOc4hKOBLNm0/FmKeWHvR2gY8L+Z7AEB7d6H70PpL?=
- =?us-ascii?Q?/udnwxEzhLFNEvXiYNKgyJFpTyTO1Jp2KEgePZ4KS/rGZktz7H2MGbXxJR4Y?=
- =?us-ascii?Q?PtrGa80DX+Z+8S8mtx2tzs33X+DjWZOgOvlqFwNXHZgEUYoqhINYl5xC4+QL?=
- =?us-ascii?Q?7ynTKJcnk2xgUAzGHrFhv14WG2rBbE8R1TraAOMebtNLzdN0xnml/ZpSKH9W?=
- =?us-ascii?Q?fU109YzoVEJdJiHUuaFJNiNPBwLmayPvrgI+Xq56VSI6wd+eIA=3D=3D?=
+	=?us-ascii?Q?0A8LWEjGT5jAfcHL2hC8gEgxTAIPSey4X/706yUKgN67IDHuoqbvsaktDQbC?=
+ =?us-ascii?Q?vq3rgv9hz7OyBpgNHX9g5QVslCCJUtcabJybFxpbeDp1UIjnuCS6SZ/EZNjb?=
+ =?us-ascii?Q?OI0nfrN/upFnBiU4M5CkpTAJoKp0ouXFnD8nG09hxcWId/CxkHqPbmD7McFm?=
+ =?us-ascii?Q?pjn1dj9+JeKLymX1rITPLEOiih9wBAhSvJFRXpCfdo2rDTe4WiSPVs83ZKsw?=
+ =?us-ascii?Q?BqcxDPTiCGMgSashpdehZF+jKLcWM60P8/6dYnaaw4wWGy7onSVC/mXsUNh6?=
+ =?us-ascii?Q?YwIOyJvWaDBHNu5QJsZU9lLIo5W0zSjGIF5diINjEh/wm0ON0rJ7RBX9NXY8?=
+ =?us-ascii?Q?glsO0QcHZ7t5AqZJd0UfVOTKAngpCM0MotuF/hae+5dJMZX84sMspD6ymNwM?=
+ =?us-ascii?Q?nRxSmQC/wXn7O4j+mlza8bouKJVp9/wphe3HKAslUkK+Qjxktezo9yQ4Nqqm?=
+ =?us-ascii?Q?Zv+5maVTxSZ8PHAjMx6GeyOzSg7tihr18T+A7F47BAe5UHFwUsRYxtVRl8ys?=
+ =?us-ascii?Q?qMy9LBhjmgu5MIAwQsEGI//PGzxSal4rU7UQqVSSTu9y1bONxwry6FExx4e5?=
+ =?us-ascii?Q?e0hj+L2XxPnKuXPCOdYHNwA3qb780tiBfr063M8b+nTPMSGQlGxENoSQyS9W?=
+ =?us-ascii?Q?Gxtjigx5JnQMiH1BxPJXGZGhWO0EC9RlOQBCF/uKX/uXko7p+WFkDwydVljL?=
+ =?us-ascii?Q?DKivTp/JPNi6WPZW2XblNbDRzHX1Masy4GDe+j845RvzXIEsABRwnIaL8PpD?=
+ =?us-ascii?Q?1ZLt/v32nQqVbhJICtd/Ag9RoGTU4NYrLSXcO9nordL2p0Zvh9riZTkAMf2a?=
+ =?us-ascii?Q?W0PXMeqjDQ8pMX7vjmi/ZuittM+zlxTX3l/Kt7IY+H/iC17uEAExIrT/pfQG?=
+ =?us-ascii?Q?i5nGfA6KWCvqRiPv6ABDEGiS9D8v5A4t75mFiWHO1yiks3LxfWDe/orrwMhx?=
+ =?us-ascii?Q?RjDvzoIFkw5pqV7bmoXLxK0Mlyxp5BfUoMHDVHCbZeY71Zla19+woOEkFt2y?=
+ =?us-ascii?Q?N1QO1UELrPHRCk/RYWssOWAGHrK+I8Iz+8jG0pUeCuqxeTDtKRNJsX5MHlPx?=
+ =?us-ascii?Q?eVoSSVPmgz/PquLcSC5DwEvFq78UJsJ7YlfBrrXAQs7tfy5uPQJLhW2+3cHh?=
+ =?us-ascii?Q?lPLgyOheclYSzM/+dCQskbfg1ldXllWLCBscXobsS6dIJw2gMAqyLgYDagCI?=
+ =?us-ascii?Q?RUCPVxdQhoCw5KULi3O7ovb647jTvEqyfhLqPTaXhhE2GVwONXU42xG66ajs?=
+ =?us-ascii?Q?kkuA6dPPhWFmV9eR9IJTAcC5P8Xd8BUwHEnjSezmnOxhpx9pVlhAjnl1w3NV?=
+ =?us-ascii?Q?6dn0cH+8jkfmW1osWqC6lWVn+Y4bPak1ivECLYqqJbXs1w+YdyzrEWpRqb7r?=
+ =?us-ascii?Q?Z4JOfRbW51wxGWw4fxjoIgoKbGAbBd+44gXHa6R2olbOQfPoUw=3D=3D?=
 X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 072bb235-733a-4307-e4f3-08df3c1c7670
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ece19ff-b97d-45b7-9193-08df3c1c775d
 X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2026 15:41:46.1112
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2026 15:41:47.2150
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
@@ -162,94 +164,75 @@ X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4329
 
-This series adds support for the FDC1004 4-channel I2C capacitive sensor.
-This sensor can report single-ended measurements of any one of its
-channels, as well as differential measurements between any pair
-of them. It has a measurement range of +-15 pF and a resolution of 0.5 fF.
+Prepare iio_format_value for an upcoming patch that adds formats up
+to IIO_VAL_DECIMAL64_YOCTO (a scale of 24 digits) by avoiding
+computing 10^scale when doing so would overflow, and by avoiding
+undefined behavior due to abs(LLONG_MIN) (which couldn't happen
+previously).
 
-Patch 1 prepares iio_format_value to handle IIO_VAL_DECIMAL64_* formats
-introduced in Patch 2.
-Patch 2 adds higher-precision IIO_VAL_DECIMAL64_* formats, used
-in the driver.
-Patch 3 adds the devicetree bindings.
-Patch 4 adds the driver itself.
-
-Tested with the sensor connected over an i2c-tiny-usb adapter.
-
+Signed-off-by: Victor Chernyakin <chernyakin.victor.j@outlook.com>
 ---
-Changes in v5:
-- Patch 4
-  - Fixed 32-bit build failure by switching to math64.h division functions
+ drivers/iio/industrialio-core.c | 24 ++++++++++++++++++++----
+ include/linux/iio/iio.h         |  3 +++
+ 2 files changed, 23 insertions(+), 4 deletions(-)
 
-- Link to v4: https://lore.kernel.org/SN1PR12MB252803756D5D1C8F35122B8DA56C2@SN1PR12MB2528.namprd12.prod.outlook.com
-
----
-Changes in v4:
-- Patch 1
-  - Moved the floor(log10(S64_MAX)) constant to iio.h, renamed it to IIO_INTLOG10_S64_MAX
-  - Added corresponding floor(log10(U64_MAX)) constant
-
-- Patch 4
-  - Added "select REGMAP_I2C" to Kconfig
-  - Style/whitespace tweaks
-
-- Link to v3: https://lore.kernel.org/SN1PR12MB252882C0E885BF3368E036E5A5612@SN1PR12MB2528.namprd12.prod.outlook.com
-
----
-Changes in v3:
-
-Split Patch 1 into two patches.
-
-- Patch 1
-  - Expanded the comment above abs_s64_no_overflow()
-
-- Patch 4 (previously Patch 3)
-  - Added comment on what a negative capacitance bias is used for
-  - Reduced some line lengths by introducing a variable with a short name
-  - Joined consecutive assignments into single ones
-  - Fixed indentation
-
-- Link to v2: https://lore.kernel.org/SN1PR12MB2528DD1E6067CC4C0B76746FA5622@SN1PR12MB2528.namprd12.prod.outlook.com/
-
----
-Changes in v2:
-- Patch 1
-  - Added tests
-  - Fixed overflow in iio_format_value on 10^scale and UB on abs(LLONG_MIN)
-- Patch 2
-  - Made the power supply mandatory
-- Patch 3
-  - Switched from direct I2C calls to regmap
-  - Added of device table
-  - Removed scan indexes
-  - Build up complex values incrementally
-  - Adjusted list of includes
-  - More designed initializers
-  - Various style/whitespace tweaks
-
-- Link to v1: https://lore.kernel.org/SN1PR12MB25286BE4E1EA3B75F8E563A9A5652@SN1PR12MB2528.namprd12.prod.outlook.com
-
----
-Victor Chernyakin (4):
-  iio: prepare iio_format_value to handle higher-precision
-    IIO_VAL_DECIMAL64_* formats
-  iio: add IIO_VAL_DECIMAL64_{ATTO,ZEPTO,YOCTO} formats
-  dt-bindings: iio: cdc: add Texas Instruments FDC1004
-  iio: cdc: add Texas Instruments FDC1004 driver
-
- .../bindings/iio/cdc/ti,fdc1004.yaml          |  46 ++
- MAINTAINERS                                   |   6 +
- drivers/iio/cdc/Kconfig                       |  11 +
- drivers/iio/cdc/Makefile                      |   1 +
- drivers/iio/cdc/fdc1004.c                     | 490 ++++++++++++++++++
- drivers/iio/industrialio-core.c               |  30 +-
- drivers/iio/test/iio-test-format.c            |  16 +
- include/linux/iio/iio.h                       |   3 +
- include/linux/iio/types.h                     |   3 +
- 9 files changed, 602 insertions(+), 4 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/cdc/ti,fdc1004.yaml
- create mode 100644 drivers/iio/cdc/fdc1004.c
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 767a7794624a..42e92a79d1ee 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -653,6 +653,16 @@ int iio_read_mount_matrix(struct device *dev, struct iio_mount_matrix *matrix)
+ }
+ EXPORT_SYMBOL(iio_read_mount_matrix);
+ 
++/*
++ * Regular abs(LLONG_MIN) causes signed overflow, which is undefined
++ * behavior. This variant avoids that by performing the computation in an
++ * unsigned type, for which negation is always well-defined.
++ */
++static inline u64 abs_s64_no_overflow(s64 x)
++{
++	return x < 0 ? -(u64)x : (u64)x;
++}
++
+ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 				  int size, const int *vals)
+ {
+@@ -720,13 +730,19 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
+ 		int scale = type - IIO_VAL_DECIMAL64_BASE;
+ 		s64 frac;
+ 
+-		tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
+-				     int_pow(10, scale), &frac);
++		if (scale <= IIO_INTLOG10_S64_MAX) {
++			tmp2 = div64_s64_rem(iio_val_s64_compose(vals[0], vals[1]),
++					     int_pow(10, scale), &frac);
++		} else {
++			tmp2 = 0;
++			frac = iio_val_s64_compose(vals[0], vals[1]);
++		}
++
+ 		if (tmp2 == 0 && frac < 0)
+ 			l += sysfs_emit_at(buf, offset, "-");
+ 
+-		l += sysfs_emit_at(buf, offset + l, "%lld.%0*lld", tmp2, scale,
+-				   abs(frac));
++		l += sysfs_emit_at(buf, offset + l, "%lld.%0*llu", tmp2, scale,
++				   abs_s64_no_overflow(frac));
+ 		return l;
+ 	}
+ 	default:
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 711c00f67371..7cb72ae282b6 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -1132,4 +1132,7 @@ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+  */
+ #define IIO_M_S_2_TO_G(ms2) (((ms2) * 100000ULL + 980665ULL / 2) / 980665ULL)
+ 
++#define IIO_INTLOG10_S64_MAX 18
++#define IIO_INTLOG10_U64_MAX 19
++
+ #endif /* _INDUSTRIAL_IO_H_ */
 -- 
 2.53.0
 
