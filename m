@@ -1,48 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794066027;
-	b=YcBVJTMQQgf0WaDGzb7KMjo3mXRDloaY/whBeGkwhuw/nKHdRoYVb211EDJNcJ5CxopQ
-	 0/KkhR6nkryJmc2Y5AQcw0S8Rzqxx5b+DFdZrLiucBy+27w9YCbYJpblGmsmcGN1bmq56
-	 JULkAwH3UNu/1fiSmcWsx0OHCovFg5wLFcai/3wYTw7NBbab0cShM+03iQ7e+vpF4Tjhc
-	 3v39AGweh9Hp2HrnUoPWL3KCzYnOR73Wza9qfVwAgHjqmwvstbA7ruiwH5p3zSHHgsXpA
-	 whAl7Vk+1SY+/CxbafNTfA8wSD0Nf4sYGjQvPT+t98zfymjSgkEpJ3XJZsYVFIqlUuA==
+	t=1794078414;
+	b=v1QB/Ks+9/vAcHtPQobIOIM/GvNULjx+90QizL6LE+jLkZ7rlt+NFh2BTi7QjErWPU9N
+	 PM6z4zalz6DK3Y3KSFQsRYm9YskAYqtEGOQVmthqa8VIXCh4ZKEDHFvllxeDOW9TU68YC
+	 hKvjfwCfuH8U1af/nj1sEkNSOywoeDE/xTkr6plTvl14OSa8lICpdU20TSCo4Sgm+XZ9f
+	 gPFSKsF4jxRxS9yNpdMK9304bFGaOHwOXYHWKi0peHIruWCHWhdE2XBdPHn72Wn+QnkdY
+	 Xlt+QH0V0GDrhSujPzxJeV3sVQ5WA7V8lA/yLp5mYd7gk6BWD+sKWmeuRjc331DdxLw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794066027;
-	h=Received:DKIM-Signature:Received:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:References:
-	 Date:Message-Id:X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=0855Lhy/dON8JVTqKZXNVM88rgbhtEry4bgMTQuUuV0=;
-	b=uRON332w14PwyJzGGSzwXWlUy3a226X0rOxW/CORj9qhc9JmgAKr3wBg3SvHTp18M//m
-	 +6WR4UxJ2LmmRpwbGCG0gHPgUdLCcX5T7u8WmfyXtFkRAtPiZ6XL4aKgQ8D7xe6bnFJa4
-	 fjix/tbvb++F3A+8zt9pahw/uOoblibvd/zMrgwTunC8Z/hmQe6qLX/uwWqlnJOQHnPDU
-	 ZsKO9/yv+XEbOf3YKRgENQaP3onHUcNQhsQDeHCY5DBD3PCE4SzHUAZG1roZIcei/Eky1
-	 QIGmjq4YFG3kLrxyR46zCq+/JLeY7O3vPTvnCxLFKMtZj331dP6AHSFs90ZTHO1Ii7Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794078414;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=VIYjp1wmNavcNgbonukUegdtGGvEbio4bmblQ7wRVsI=;
+	b=nt1nESWotp+gZzpSgaKtbZQ2pljK9qV7pv/We0326yy/f2uzr2tOEGYc9twfw2dRQy18
+	 MnYs1dYv3L/BDpCUL8+7Z0Y6QwHDPrs7HuTCtQ4+YXLLYCcNJH2lZ1DGvif2evCOiWVFV
+	 fDZPZtOwBsYzUGb1qMUyF4p3XU/AKHcKv2zxDv+KvRzwOHZGoj5aSaxVGrPPYhgitrYZU
+	 C2Id/uswWV0Bnq8zhrFu5/2iG6Fts/k1iN7QrdOklu9EyR/u45Cf1XSSyy59d+UuxSEpF
+	 A6KCmwSmtRrZgwbHWEudie6ynz1mwHsu40Q/GzC15WZqbOKCb1+yWwHnzZJbtoVXufA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c8TI1Sgc;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VRQQWdUe;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A351B606A326;
-	Sat,  7 Nov 2026 15:40:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC109606A326;
+	Sat,  7 Nov 2026 19:06:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c8TI1Sgc
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7221F008A2;
-	Sat,  7 Nov 2026 15:40:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VRQQWdUe
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F8251F0089F;
+	Sat,  7 Nov 2026 19:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794066027;
-	bh=0855Lhy/dON8JVTqKZXNVM88rgbhtEry4bgMTQuUuV0=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=c8TI1SgcR2UQaFEN+sXtm92nv3SKKB/Ab3Sw0w0Y2S/n5I01TTrS4jPLmIFgTPvfD
-	 2tF3BVTYeSP3uNddy8u1hWpVQZPaenQ+gLf8hgZ424VGuzkp9huPArXCEhHbtcF5rr
-	 vKMvKeJmvCre6ffh8fm8E0ZSIR1T433Se6NQ3m52Zsnxswh4l9USGIrRtPXIr/BxL+
-	 s3iiY6EMD4vsisXDuXeLlxcMEj1g9fPCLatw1hcyY5kSIpvOfD3BbCUwmg6tTItGfa
-	 vibEzB0nAn02i8d8zo5Cs/i1bQN+DnjMfuQ89cVDJA6500JZDyO9RT+IevtOz4J/wX
-	 pdK1kZzmUftIg==
-Received: from traversing.sirena.org.uk (localhost [IPv6:::1])
-	by traversing.sirena.org.uk (Postfix) with ESMTP id 7D3DE2AB366B;
-	Sat, 07 Nov 2026 15:40:24 +0000 (GMT)
+	s=k20260515; t=1794078413;
+	bh=VIYjp1wmNavcNgbonukUegdtGGvEbio4bmblQ7wRVsI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=VRQQWdUems5bGs++C7Yqsj4CddHbcd5ZrFj/rvaD3nfVXDQaxe82zEPYpZUkEzwR/
+	 Jnb/9ewjljaL9MNPxLUHBS5cceE4wGc33aGr55y/OdFeI/rKvJGiiGgsZbBdSyWXLh
+	 6OjEBX046hR+pM/0afZXoe+saWR2ZBK0XUcLnKrtiqi93qKJZy8Qe9rVfCA9SVuBZa
+	 wAYi/Q6n7xDLMnKiYwnoKn152GEBVbpcV2VlSQ0teinso4XADm3q3mXCmZ5JQ9ddAA
+	 ObxZQNx0FI7srnkApWxaKwzdvC7j6pLjMEp7YpcqfC4IEuH9/WakK1SOCf8tT0Rm8g
+	 cE2UFcYguP9dQ==
+Date: Sat, 7 Nov 2026 19:06:45 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
+ Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: proximity: sx9310: reject unsupported hardware
+ gain values
+Message-ID: <20261107190645.403d5556@jic23-hlaptop>
+In-Reply-To: <20261107111710.442318-2-kapoorarnav43@gmail.com>
+References: <20261107111710.442318-1-kapoorarnav43@gmail.com>
+	<20261107111710.442318-2-kapoorarnav43@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,46 +64,67 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4 4/9] spi: restrict CS logical values to a contiguous
- sequence
-From: Mark Brown <broonie@kernel.org>
-To: Jonathan Santos <Jonathan.Santos@analog.com>
-Cc: linux-spi@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux@analog.com, 
- broonie@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
- conor+dt@kernel.org, Michael.Hennerich@analog.com, nuno.sa@analog.com, 
- jic23@kernel.org, dlechner@baylibre.com, andriy.shevchenko@intel.com
-In-Reply-To: <dd50e45bff4b59ad656f94fffecca28a49f1d2d3.1792435248.git.Jonathan.Santos@analog.com>
-References: <cover.1792435248.git.Jonathan.Santos@analog.com>
- <dd50e45bff4b59ad656f94fffecca28a49f1d2d3.1792435248.git.Jonathan.Santos@analog.com>
-Date: Sat, 07 Nov 2026 15:40:17 +0000
-Message-Id: <179406601716.3424803.6294014265604547763.b4-review@b4>
-X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=535; i=broonie@kernel.org;
- h=from:subject:message-id; bh=ZAf43SC5Wwsv9BlH9bz+p7xqTH/dS8B+Bfqtk7gFLeA=;
- b=owGbwMvMwCWm/754w+YLFp2Mp9WSGLLeuyUeeZjrqiUyK/LlS0OVF0un/opf/UHAJP8dW5ax+
- WxTzmW1HaUsDGJcDLJiiixxWdwv60ter+E7uLANZg4rE8gQBi5OAZiIqD7D/5CJi76LTHQ6v2I3
- x+0pZ+czpa27ce5kSt7c7+8lbkvHKT9g+Cv08ZyxsPjDa1e2bitOj7/FoK74T3J7ZOXBmU3fpPi
- uzGMFAA==
-X-Developer-Key: i=broonie@kernel.org; a=openpgp;
- fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
 
-> When a device uses more than one chip select, require the logical CS
-> numbers to be consecutive (for example 2, 3, 4). If they aren't,
-> __spi_add_device() now fails with -EINVAL and logs which CS breaks
-> the sequence.
+On Sat,  7 Nov 2026 16:47:03 +0530
+Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
 
-> Changes in v4:
-> * New patch, suggested by Andy. I assume this might have impacts on
->   existing users. Should we make something else to complement this?
+> sx9310_write_gain() passes any value from userspace to ilog2() and then
+> FIELD_PREP() into the 2-bit gain field without checking it. Only gains
+> of 1, 2, 4 and 8 are supported (and listed in hardwaregain_available),
+> but other values are not rejected; they are silently changed:
+> 
+>   - 3, 5, 6, 7 are rounded down to the next power of two;
 
-Indeed, see ge,achc for imx53-ppd.
+There is nothing in the ABI rules that says a driver should not round these
+values.  So whilst I don't mind a specific driver not doing that I'm not
+sure we should modify the ABI of a driver to start rejecting them after
+it has been out there for a while.  The only key thing is that value
+read back after a write reflects the true scaling.
 
-> +			dev_err(dev, "cs%d is not consecutive with cs%d\n",
+>   - 16 and larger wrap around in the 2-bit field, e.g. 16 sets a gain
+>     of 1 and 32 a gain of 2;
+>   - 0 and negative values set the maximum gain of 8, because ilog2(0)
+>     is -1 and a negative int becomes a large unsigned value.
 
-%u.
+These two improvements are good and unlike rounding behaviour setting (including
+reasonable rounding down to 32 - so anything that would not otherwise be 64) an
+out of range scale or 0 / negative are not things correct userspace should
+be doing.
 
--- 
-Mark Brown <broonie@kernel.org>
+
+> 
+> The write returns success in every case, so userspace cannot tell that
+> the gain it asked for was not applied.
+> 
+> Return -EINVAL for anything other than 1, 2, 4 or 8.
+> 
+> Fixes: 227c83faa2f8 ("iio: sx9310: Support hardware gain factor")
+> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> ---
+>  drivers/iio/proximity/sx9310.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+> index 2585b9c6fb69..27b5d604a409 100644
+> --- a/drivers/iio/proximity/sx9310.c
+> +++ b/drivers/iio/proximity/sx9310.c
+> @@ -665,6 +665,9 @@ static int sx9310_write_gain(struct sx_common_data *data,
+>  {
+>  	unsigned int gain, mask;
+>  
+> +	if (val <= 0 || val > 8 || !is_power_of_2(val))
+Upshot of above is check for <= 0 here.
+> +		return -EINVAL;
+> +
+>  	gain = ilog2(val);
+and check this fits in the field.  FIELD_FIT() will link that
+explicitly to where it is being written. That only works here
+because all the values that fit are valid (I think!)
+
+Jonathan
+
+>  
+>  	switch (chan->channel) {
+
