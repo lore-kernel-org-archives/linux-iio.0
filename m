@@ -1,62 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794012631;
-	b=sOayPfp5gU5hDLNwZQBi+7Oz+7O1dz57IwSORbUZLjz3l9q5QQhTMwMlPkmGpRwdx6su
-	 vosOnTmV2lO8Lsuwc0QlJeyWLiuQHwvlbFHWchxeN7E5UmRR9mBfgJj1O8rWKliQ8KPHT
-	 A6SLx0ioOhXMB/ujPuzrPHYXNtUF2DyliYp6u/1XvW22m9xk16LgUS5H4p7Cqm8qL8W9B
-	 ztO36IRXRwNdg3KpwQdCoi+8V8U3MCnmZbXmfSGm/xWejNqJChc0jcF9s5OaqtlxYCLGt
-	 ck/IwS2wS6fVHz1/wCAd7sQxHUR67gC+oFhNeTmr4be5APNcOhRLzW7UWKbjycLzkOw==
+	t=1794013206;
+	b=3Es5GFKbacWcQ04MZd3k9LPs3a8EJw3AaGHLS4yzG2y8POokiiky/2r95z8FFvxV5C1A
+	 Kanrgw5fnPlj9fhzTeR7By5FZ2PI1XaLx3mAeCA/t4NJWtvDhiQem1gGu6NtIi5559xoi
+	 FH7sUbYIEfaeMdUS1Vnbfm5BAkL0A5vKHI5oyBJxp2Qh8VRG5HKqin4HcTN8psaKy6TRs
+	 6VRAoFBYPDWYKaj/0Io0Sc2zzY+UZ62anH0MM0RuqtBtDHWh2AHL8ug5jpSpQjoplUTBj
+	 yt/8eCwQGVZ+AHLdG+8kg0r3GmlwWJ3I1E3S7fYwj5QNVtYVvipC/JfeOBe5iDzdk6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794012631;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794013206;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=YvuNwDxYdIJYtjv3UiiK3uOyQ+zAAh9DIMTs36nyuiU=;
-	b=PAy0sDOD6PODsVR9IPE4IZTZjd+kVFYUC2b5/VEnlG0qWetCqFm2uFkK4CScfuLES+A5
-	 Z7qT8HQSTMybNTwlxdLzjssTfOM4WG1sCYCDGsRTL4oISTaFFOVCxPM7sjNhRat++x8+l
-	 FjGGI4vSdsjDaD7CwnTz+2WHZuqv03EdmS+7oyw2k3zBvUdD6v8JBpQFKZNhQsJav/JrE
-	 o95myv/Dl8H+A74vfDAk1O/jG54w04bDIRKLz2XTgq9rOdT0+e1sP/ky+KEL2angxvp2G
-	 Oci2mVFD3+Bzawz7cq2igR5G2I5kRBYHZrucyynbtjKU2Jyik2oeqzlgmaUqqBhFQ2Q==
+	bh=f5siVNgFbxLBQ1QMnUvIOA6GSr9qzcA82CUcS7hu/DQ=;
+	b=wJdpBNNB+4PrfzXrY8UPTRIYvCjBFp3LSGucL/lI14I442G0yMF/g1KHiDm/rl2jlUGD
+	 LAZqW375+hjdQ8cnmNnezp8sZAnfDKsvOwrnQmCf0l6N7CdojLnR1245aPb7DfeCsWXOY
+	 nG4vgL9nwOfqCo21SBmeSGLOJGq62IUzw2pv2xMxv9KWSFxwNgqqEvssIxutUURhni4Jo
+	 g1tgnBSNB9QdvUk6p8H2yltjd8mfuNSHW7xrVgC7IOlBZbFjb4K0y49gWtad0WwrjeCiz
+	 q8eTfKmO92IKIQs6+b7a6nk92i06WycXBMFrCtlpxOqTiZwR52/fN4bYU55TTE3ovDA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=htAyK+qg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="P+Wf/7xZ";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24FA606D81A;
-	Sat,  7 Nov 2026 00:50:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87154606A326;
+	Sat,  7 Nov 2026 01:00:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=htAyK+qg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B45FC1F0089F;
-	Sat,  7 Nov 2026 00:50:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P+Wf/7xZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8311F008A2;
+	Sat,  7 Nov 2026 01:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794012630;
-	bh=YvuNwDxYdIJYtjv3UiiK3uOyQ+zAAh9DIMTs36nyuiU=;
+	s=k20260515; t=1794013206;
+	bh=f5siVNgFbxLBQ1QMnUvIOA6GSr9qzcA82CUcS7hu/DQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=htAyK+qg6c2lfK0GT5TnMv48XiWiuqvfkjaRI6aIz648REC5Twl5lgxRUHfUF7AZr
-	 JYKZfs4IlF7SkjxB2hREB9PjsIFdHtqjL7dA2Hz4whq34XjGSg7kue/SFOC8uYVJIK
-	 KtJmD8MjKZFcogCkEhEgDerpCqSgttfHva2lc0xaKuhoakzejPR95Mybyq0RoZHHD0
-	 I5kaCRI52JrcRg8ofWtDW0ufLZxiHQVnEz4uOpYFsgzVeC1AJbzIJgDOtNR2GITacX
-	 yiLsdK2lrRYmg8ZEph44mZbs9lqBSevPnIuaJdA99h8LSFfw2/IGs4eTEWYDEHbIQH
-	 U5MuwxO1WqerQ==
-Date: Sat, 7 Nov 2026 00:50:21 +0000
+	b=P+Wf/7xZtzjUn9Y3NP6BsZnSb87fAX68Z1jxc9Gc5/vQgc8oscEHlbx0cNhRqBliL
+	 GGEmnVIZhhZU2/Resp5s0VBve/5kPspsu64w7R1YcFKR87Jqho++cdiE3X4nkqVCig
+	 o3VAZdJjeE6UQbaWKfEbxkfc1Ad4fGrYOmYBJGRBiPuaaR609DyXRL8y57DPz3LPLC
+	 3e7unQ9wEA0PVOBXzxB/6ZNE+1QQFBKom5Zw3sN/NufhdPq11Cf7ShJWiB5tPhEk0M
+	 rpx2/WBSiWiAcgUchlwX9LRpPDuslKInhjThthrXxj1Sw/ZoGMp7OdYTZyq8WZVNcg
+	 7PPtaoPiLvgeg==
+Date: Sat, 7 Nov 2026 00:59:58 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Patrick Fischer via B4 Relay
- <devnull+admin.tsv-stahl-riesa.de@kernel.org>
-Cc: admin@tsv-stahl-riesa.de, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kevin Tsai
- <ktsai@capellamicro.com>, Svyatoslav Ryhel <clamor95@gmail.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: light: Add Capella CM3217 ambient light
- sensor driver
-Message-ID: <20261107005021.11405483@jic23-hlaptop>
-In-Reply-To: <20261106-upstream-iio-cm3217-v2-2-d97adde9171c@tsv-stahl-riesa.de>
-References: <20261106-upstream-iio-cm3217-v2-0-d97adde9171c@tsv-stahl-riesa.de>
-	<20261106-upstream-iio-cm3217-v2-2-d97adde9171c@tsv-stahl-riesa.de>
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, nicolas.ferre@microchip.com,
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+ mripard@kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: at91_adc: fix NULL pointer deref in trigger
+ removal
+Message-ID: <20261107005958.706c6bd8@jic23-hlaptop>
+In-Reply-To: <20261106200809.53799-1-abdelnasserhussein11@gmail.com>
+References: <20261106200809.53799-1-abdelnasserhussein11@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,54 +66,69 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 06 Nov 2026 21:56:30 +0100
-Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org> wrote:
+On Fri,  6 Nov 2026 22:08:09 +0200
+Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-> From: Patrick Fischer <admin@tsv-stahl-riesa.de>
+> If 'atmel,adc-use-external-triggers' is not set in the device tree,
+> at91_adc_trigger_init() leaves the external trigger slots in st->trig
+> as NULL. at91_adc_trigger_remove(), also used by the probe error path,
+> then calls iio_trigger_unregister() and iio_trigger_free() on them
+> unconditionally, causing a NULL pointer dereference.
 > 
-> The CM3217 has no registers and no ID. Writing a byte to address 0x10
-> or 0x11 sets command byte 1 or 2, reading a byte from 0x10 or 0x11
-> returns the high or low byte of the 16-bit light count.
-> 
-> Command byte 1 holds the shutdown bit and the IT_T field (1/2 T, 1 T,
-> 2 T or 4 T), command byte 2 the FD_IT field (800 ms down to 66 ms). The
-> count scales linearly with both. The driver exposes FD_IT as the
-> integration time and IT_T through the scale, so the scale list offers
-> four ranges for each integration time.
-> 
-> The datasheet is not public. The bit fields, the reserved bits that are
-> written as 1 and the startup setting of 2 T and 100 ms come from NVIDIA's
-> downstream drivers (drivers/staging/iio/light/cm3217.c in the 3.4 kernel
-> rel-tegranote-r8 and the 3.10 kernel
-> android-tegra-flounder-3.10-nougat-mr1.1). One value differs: the vendor
-> header defines 4 T as 4 << 2, which is outside the two-bit field. On a
-> Tegra Note 7 field value 3 gave four times the 1 T count, so the driver
-> uses that. For the resolution, Capella
-> gives a range of 0.01875 to 119156 lux. The driver takes 0.01875 lux
-> per count at 4 T and 800 ms. This matches both the upper end (65535
-> counts at 1/2 T and 66 ms) and the 0.3 lux per count that the NVIDIA
-> 3.4 driver uses at 2 T and 100 ms.
-> 
-> The sensor has no data-ready flag, and a new setting only takes effect
-> when the conversion in progress ends. A conversion takes IT_T times
-> FD_IT, up to 3.2 s. Leaving shutdown starts a new one at once, so the
-> driver passes through shutdown on every change and waits one conversion
-> period plus a margin before it reads the count. The timing was measured
-> on a Tegra Note 7.
-> 
-> Tested-by: Svyatoslav Ryhel <clamor95@gmail.com> # Tegratab P1988
-> Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
-Hi Patrick,
+> Skip NULL triggers when unregistering and freeing.
+Good catch.
 
-This looks good to me.
+There doesn't seem to be anything stopping us just moving the
+registration and tear down handling of these over to devm managed
+calls.  That way we'd not need to clean them up explicitly at all.
 
-I won't pick it up just yet though as need to allow time for
-dt-binding review and for anyone else who is interested to take
-a look.
+That would mean calling devm_input_allocate_device() for the input
+path and devm_iio_triggered_buffer_setup(), devm_iio_trigger_alloc()
+devm_iio_trigger_register() and devm_iio_device_register() for iio instead
+of the non devm cases.  The error handling and remove path would
+go away + the NULL dereference would be solved because no cleanup
+would be registered for the the case where the trigger was never
+there.  I'd consider carefully if the various helpers make sense
+after this change.  I suspect you'd be better off with these
+calls inline in at91_adc_probe()  for the IIO ones at least
+as less done in those than the input related one.
+
+Whilst it will be more lines of code changed, it would both fix
+the bug and improve the code.  So that would definitely be my
+preferred solution.
 
 Thanks,
 
 Jonathan
 
 
+> 
+> Fixes: 0e589d5fb317 ("ARM: AT91: IIO: Add AT91 ADC driver.")
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+> ---
+>  drivers/iio/adc/at91_adc.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 0ac74ad92fca..c7fc06214c05 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -660,6 +660,8 @@ static int at91_adc_trigger_init(struct iio_dev *idev)
+>  
+>  error_trigger:
+>  	for (i--; i >= 0; i--) {
+> +		if (!st->trig[i])
+> +			continue;
+>  		iio_trigger_unregister(st->trig[i]);
+>  		iio_trigger_free(st->trig[i]);
+>  	}
+> @@ -673,6 +675,8 @@ static void at91_adc_trigger_remove(struct iio_dev *idev)
+>  	int i;
+>  
+>  	for (i = 0; i < st->caps->trigger_number; i++) {
+> +		if (!st->trig[i])
+> +			continue;
+>  		iio_trigger_unregister(st->trig[i]);
+>  		iio_trigger_free(st->trig[i]);
+>  	}
 
