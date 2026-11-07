@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794094376;
-	b=QNDQeu49ek8FQan2OPJ+j2ZI3gE0dX4OhJGMtDdGOlIacyJzpkyMFzX2G+Yry1XJQyMq
-	 yjKBVA7wgGEyWx3e2C9s1mLt61rlJiw/qCw/qMfxwePP22fcOrartH4M7sGTt8hnOsAkj
-	 Prs+C92nUsmA1wTZUFuO8allMuYmQzufzNkfh/D96zQbUXk15X93eSde3K4sfFsYf8wCW
-	 4wO+NdQYXnj6A4nZXrKlWSSWXoV9Kow0gMeB9hpKdpOVic4zdn/35r79hmkuXBrQQb9Dg
-	 r4CQkawi9Yupmwu/rX1txYHT+/lC8upDocIPAxFboLkiXQ4ia1mnITJxHsYAEDtxQ0A==
+	t=1794095013;
+	b=ErXKGy3HW7g/nyUa3UsLXBa+mlfSGMBo1gJugSZeLZdvgOglpCGpHa1eaBUyySS3K0ij
+	 /s4Gd9SXOdzV2bbhN1T9D6YRQYkAEXJqbijqCh8cJ8qgu4WO1vUB7vGVuXUeQxax0RRO6
+	 zq/YUGeBhYNj8+veAz/6IWkSwsdBhN9bKQ99/qAQRNpu4CIW3H0uHeQ33ZuNITfOnFFro
+	 oYNsxs3ynJ7wadDSd8l6X8LyKJwfnx7Qkj5MMb1zt21kr9wPN/uiHgLLsK+0SxSefR6BW
+	 b6ppvvBGuwywinEPdn0GCSXaEIETUONVCz7cERTAcxW07q5bYKxrrVUV5719Wxprb2g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794094376;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794095013;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=k8f1Lml+DnNVCoJKZ2XRF0PGrEc1W5WYomf+X5t1Lfs=;
-	b=g3qVqcCBPHJaHh7v3sefI7QkjqwlWI+QcCxEIDXJ3cL2BhmfqQVeUoqfzRnMxO/6tP8T
-	 2qNgm5xTKVIsJ97rpc79srCy68YETii2X1vmBlgggUTu/vsPtm/d4UkapbPeB78/Ui1u8
-	 caIhO9vpDzBg5QF2ZpQo0j4g38w7I2xxOiHfjBVrwTYUwUfxCnvbHaAvdjjXlgUT+4Epm
-	 htrbZW4pROw2b9eKmIu8DUTL/7ZX7tqNGCcldOK8m3onoiXKKc8KXOEaMMPV+A7XVSk+J
-	 ay8PQljikEqEdsVILTJAn08bf3ng2ACd62qpwOMG5Qe1Gh11wWS+V2wPkUUQL9x37fA==
+	bh=9JVhoZv/kApjV5ecEB9wAeg1QHl094+ex1qsxNehnhc=;
+	b=LQ5fTY2lakWV6L0qnpUnrhFBoAOPBJV9qAyHBziDyvifY6CUz8Pd3lwh6veDvWsrYZ5F
+	 ED0CABDFWzGYw3sLg5a1hGgJn6gFlWnt6o1lEjPMxR/d9I2Cy0PMAqIfd4Kwgn1SIafQd
+	 DoyQdvWnWPxQs5xVO0dGzMMmWKFiISPWXUEcm45dKZ7eAC+re5ubjtRnLxiTELErftmB+
+	 K2YRlnwIsW3nEcv8vLgcV9BMxSDmnLGYOu18v2l9KU3ObvvsKTCmAR+Cz0/KWB/P27fKJ
+	 1zC9FfBziBfE+Z2RxK0PSnLnSkcq4OYl8II2Cn3JPoSJ9ugza4KiANgIOfCJngRw1XA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hy8Wind9;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UhhiDMTO;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F15606A32E;
-	Sat,  7 Nov 2026 23:32:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6A19606A326;
+	Sat,  7 Nov 2026 23:43:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hy8Wind9
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF2B1F0089F;
-	Sat,  7 Nov 2026 23:32:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UhhiDMTO
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EAD61F0089F;
+	Sat,  7 Nov 2026 23:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794094375;
-	bh=k8f1Lml+DnNVCoJKZ2XRF0PGrEc1W5WYomf+X5t1Lfs=;
+	s=k20260515; t=1794095012;
+	bh=9JVhoZv/kApjV5ecEB9wAeg1QHl094+ex1qsxNehnhc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Hy8Wind9uYXovSHKjGGJN9mum9JxtEuw2d1Fp1AkS3GD9uhNNMRbKh81VZxL19mdN
-	 6Lp8fWLax+Quzq7zXpUxF/acLnvRksiTY623w5vvlOSlWru/X+/YEQCpjHc8PsqDSR
-	 1GGoeVFzXt5l3QfP0myyHbgw+p2gYf0vc8J7jZyYZ5SwoDQCJVmv3flmCWuEgxW2SH
-	 waqWAaxKjAaBVdOANUTsBM89gcKQdHVkrWuCPo/AUA1Lz7NJ74xbVy7KfUMKIYbwVe
-	 TJ5RHnM2OR84hm1NEF85gwya6mjlTxPYUqhXB2S7dDX87VqWaf+XHv13ktO44smYne
-	 H+yEh0F1IcsBg==
-Date: Sat, 7 Nov 2026 23:32:44 +0000
+	b=UhhiDMTOXiySnfYDmTQByecsNuzvdkkUYa2f2XsT9gcuhd1owatVF5gjkOY95l2pQ
+	 qN7llj/K7lYPqktGk2IgIr0luMD7W21SVInSqvvKvMfuZx7GGgzDu/38wXrHchKlBI
+	 mW4RhKSpgi0IBfsbiak0KnlDzajD7qO4+wYIX8wtRdTEasE/rZNtcqdkgxTdc/udfU
+	 RD/1ss1OCeK4xjdco3O06oEA8eecxNZHkM5D/n28NcgNPB5Rmhe/XlHh+mRv3ZRu88
+	 vvcSuYb6SEodgyl6CDvK41XJTy8moTRsIG5MYuv2nZzety/bsx17nejZhY+puwwShA
+	 EHO8KKUg5MHBg==
+Date: Sat, 7 Nov 2026 23:43:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
 Cc: Michal Simek <michal.simek@amd.com>, Sai Krishna Potthuri
@@ -50,12 +50,12 @@ Cc: Michal Simek <michal.simek@amd.com>, Sai Krishna Potthuri
  Conor Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
  <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <linux-kernel@vger.kernel.org>, <amitrkcian2002@gmail.com>
-Subject: Re: [PATCH 3/6] iio: adc: versal-sysmon: disable interrupts on
- shutdown
-Message-ID: <20261107233244.63c35375@jic23-hlaptop>
-In-Reply-To: <20261102122112.1723130-4-amit.kumar-mahapatra@amd.com>
+Subject: Re: [PATCH 4/6] iio: adc: versal-sysmon: add over-temperature alarm
+ events
+Message-ID: <20261107234323.0aef5ae0@jic23-hlaptop>
+In-Reply-To: <20261102122112.1723130-5-amit.kumar-mahapatra@amd.com>
 References: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
-	<20261102122112.1723130-4-amit.kumar-mahapatra@amd.com>
+	<20261102122112.1723130-5-amit.kumar-mahapatra@amd.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,108 +69,99 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 2 Nov 2026 17:51:09 +0530
+On Mon, 2 Nov 2026 17:51:10 +0530
 Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com> wrote:
 
-> Interrupt teardown is registered with devm_add_action_or_reset(), so
-> sysmon_disable_interrupts() runs when the driver is unbound but not when
-> the system shuts down: device_shutdown() invokes only the driver's
-> .shutdown callback, which this driver does not implement.
+> The SysMon has two independent temperature comparators. The driver
+> exposes only DEVICE_TEMP on interrupt bit 9; the over-temperature alarm
+> on bit 8, with its own threshold pair at OT_TEMP_TH_LOWER and
+> OT_TEMP_TH_UPPER, is not reported to userspace at all.
 > 
-> The device is therefore left with its alarm interrupts enabled in
-> hardware once Linux has stopped servicing them.
+> The two are structurally identical: an upper threshold, a lower
+> threshold acting as the hysteresis floor, and a hysteresis mode bit in
+> ALARM_CONFIG, bit 0 for OT and bit 1 for DEVICE_TEMP. Per AM006 the
+> over-temperature shutdown response is a PMC function configured at
+> design time, so the kernel's role here is threshold configuration and
+> notification rather than acting on the alarm.
 > 
-> Add a .shutdown callback performing the same teardown, so the device is
-> quiesced before control is handed on. The helper lives in the core
-> module, so it is exported for the platform front-end. It skips a
-> device described without an interrupt, which never set up interrupt
-> handling.
-> 
-> Disabling the interrupts at shutdown is safe to have and not a must have
-> requirement for shutdown.
+> IIO identifies an event by channel, type and direction, and both
+> comparators are rising thresholds on the same aggregate temperature, so
+> they cannot share a channel. Add an event-only channel labelled "ot"
+> carrying the OT thresholds.
 
-So what is disadvantage of not doing it?  Otherwise, why have the complexity
-of doing so?
+So the reason we don't normally do multiple threshold levels is they
+have minimal use for an IIO interface - as you've discovered they've
+reported the same on the events interface.
 
-J
+If this wasn't an existing driver, the support of this is something that
+would strongly push in favour of an hwmon driver where the concept of
+warn and critical thresholds exists.  That's there precisely because
+the critical is often wired to a pmic or similar.
+
+However, that isn't normally a problem even in an IIO driver
+because that threshold should be a design time concern with the
+limits coming from firmware.   So why is this even settable by
+userspace? Feels like an interface to create the bad type of smoke.
+
+We have a few times discussed how we would perhaps add another
+layer of indexing to events, but it is hard given the the compact
+event codes and I'm not sure I'm seeing a usecase that justifies
+that complexity here.
+
+I also can't work out where your new channel turns up. What does
+the userspace ABI look like for this and the existing event controls?
+
+Thanks,
+
+Jonathan
+
+
+> 
+> The channel is appended after the device tree derived channels because
+> io-channels phandle arguments are raw array positions, and placing it
+> earlier would silently repoint existing consumers. It is created only
+> when the device has an interrupt, as without one it would carry no
+> events.
 > 
 > Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@amd.com>
-> ---
->  drivers/iio/adc/versal-sysmon-core.c | 19 +++++++++++++++++++
->  drivers/iio/adc/versal-sysmon.c      |  6 ++++++
->  drivers/iio/adc/versal-sysmon.h      |  1 +
->  3 files changed, 26 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/versal-sysmon-core.c b/drivers/iio/adc/versal-sysmon-core.c
-> index 6595d07038c1..d39aaba9a8b6 100644
-> --- a/drivers/iio/adc/versal-sysmon-core.c
-> +++ b/drivers/iio/adc/versal-sysmon-core.c
-> @@ -1000,6 +1000,8 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
->  	if (!indio_dev)
+>
+W
+> @@ -880,6 +932,9 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int ir
+>  
+>  	num_static = ARRAY_SIZE(temp_channels);
+>  	num_chan = size_add(num_temp, size_add(num_static, num_supply));
+> +	/* The over-temperature channel exists only when events do */
+> +	if (irq > 0)
+> +		num_chan = size_add(num_chan, 1);
+>  	sysmon_channels = devm_kcalloc(dev, num_chan, sizeof(*sysmon_channels), GFP_KERNEL);
+>  	if (!sysmon_channels)
 >  		return -ENOMEM;
+> @@ -960,6 +1015,25 @@ static int sysmon_parse_fw(struct iio_dev *indio_dev, struct device *dev, int ir
+>  		};
+>  	}
 >  
-> +	dev_set_drvdata(dev, indio_dev);
+> +	/*
+> +	 * Over-temperature alarm. The OT comparator watches the same
+> +	 * aggregate temperature as channel 0 but against its own threshold
+> +	 * pair, and IIO cannot express two rising thresholds on one channel.
+> +	 * It has no reading of its own, so only event attributes and a label
+> +	 * are exposed. Appended last, because io-channels phandle arguments
+> +	 * are raw array positions and inserting it earlier would silently
+> +	 * repoint every existing consumer.
+> +	 */
+> +	if (irq > 0)
+> +		sysmon_channels[idx++] = (struct iio_chan_spec) {
+> +			.type = IIO_TEMP,
+> +			.indexed = 1,
+
+indexed without an index? I'm not even sure what this
+turns up as. There are already 4 indexed temperature channels
+so why isn't this just landing on the index 0 one?
+
+> +			.address = SYSMON_OT_TH_UP,
+> +			.event_spec = sysmon_temp_events,
+> +			.num_event_specs = ARRAY_SIZE(sysmon_temp_events),
+> +			.datasheet_name = "ot",
+> +		};
 > +
->  	sysmon = iio_priv(indio_dev);
->  	sysmon->regmap = regmap;
->  	sysmon->temp_oversampling = 1;
-> @@ -1050,6 +1052,23 @@ int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap)
->  }
->  EXPORT_SYMBOL_NS_GPL(devm_versal_sysmon_core_probe, "VERSAL_SYSMON");
->  
-> +/**
-> + * versal_sysmon_shutdown() - Disable SysMon interrupts on system shutdown
-> + * @dev: SysMon device
-> + *
-> + * Interrupt teardown is a devm action, which runs on driver unbind but not
-> + * on system shutdown, so disable the interrupts here as well.
-> + */
-> +void versal_sysmon_shutdown(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> +	struct sysmon *sysmon = iio_priv(indio_dev);
-> +
-> +	if (sysmon->irq > 0)
-> +		sysmon_disable_interrupts(sysmon);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(versal_sysmon_shutdown, "VERSAL_SYSMON");
-> +
->  MODULE_LICENSE("GPL");
->  MODULE_DESCRIPTION("AMD Versal SysMon Core Driver");
->  MODULE_AUTHOR("Salih Erim <salih.erim@amd.com>");
-> diff --git a/drivers/iio/adc/versal-sysmon.c b/drivers/iio/adc/versal-sysmon.c
-> index 529d0486c9f9..4d5e3d14cf15 100644
-> --- a/drivers/iio/adc/versal-sysmon.c
-> +++ b/drivers/iio/adc/versal-sysmon.c
-> @@ -71,6 +71,11 @@ static int sysmon_platform_probe(struct platform_device *pdev)
->  	return devm_versal_sysmon_core_probe(dev, regmap);
->  }
->  
-> +static void sysmon_platform_shutdown(struct platform_device *pdev)
-> +{
-> +	versal_sysmon_shutdown(&pdev->dev);
-> +}
-> +
->  static const struct of_device_id sysmon_of_match_table[] = {
->  	{ .compatible = "xlnx,versal-sysmon" },
->  	{ }
-> @@ -79,6 +84,7 @@ MODULE_DEVICE_TABLE(of, sysmon_of_match_table);
->  
->  static struct platform_driver sysmon_platform_driver = {
->  	.probe = sysmon_platform_probe,
-> +	.shutdown = sysmon_platform_shutdown,
->  	.driver = {
->  		.name = "versal-sysmon",
->  		.of_match_table = sysmon_of_match_table,
-> diff --git a/drivers/iio/adc/versal-sysmon.h b/drivers/iio/adc/versal-sysmon.h
-> index a1ac3289719c..a21dacc13471 100644
-> --- a/drivers/iio/adc/versal-sysmon.h
-> +++ b/drivers/iio/adc/versal-sysmon.h
-> @@ -122,5 +122,6 @@ struct sysmon {
->  };
->  
->  int devm_versal_sysmon_core_probe(struct device *dev, struct regmap *regmap);
-> +void versal_sysmon_shutdown(struct device *dev);
->  
->  #endif /* _VERSAL_SYSMON_H_ */
 
