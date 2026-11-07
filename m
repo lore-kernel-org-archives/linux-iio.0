@@ -1,59 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.120
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794091191;
-	b=t1tpZ86HC8MXxnFkZMRB9w1UGNgSbG8Ofjm+xbH4ipCOIiTDtOLEHwgMfI0fXvXIh/Hg
-	 kEinSG6MVJFJKO6k7g4AK/m3SlvQ2F/wATJzRYFWb5/7NSYfuJbQ93znwjwQMpRT0kQ3u
-	 7oh2C4ccyZfYOtcpqgc5Usve9KAybTEz1m14Kfyq66F34i5zLDrdEqZoV/Ju6SXoMFgHx
-	 LNb+jVJ1BcOhbZ1Vh5bOkOi6tE6CWhCAYo8OsO2eaadQOZjADzH882vlwp7DC/S8rUmKd
-	 IfPPDy8So2YmV9T2ETClUq0us2fzMxuN6f+kbcAvFDdMZdLZcN3fq1Ri8yzRAA6kjAg==
+	t=1794091554;
+	b=u9tnFd/8D8BEwwwKeOcq2IxUOVoLLSXU40kfOme9vbU/jpKYHZoliq55NTFl1bQUZOvS
+	 cu6MZQ1Kn60dtQr9SJvwalcuPiTVYKWt3RcLncTuHXtQJO/hmMbl3skGpfFmxFnarYfLs
+	 2y4p+BPlhRkhD8rmR/FIqXQb+CCOE2TlP5dWKwuP84h19tIgB+Ih4rj7PpKYNBXLabYS7
+	 xhKCwldHUnCH2yEwOWH9YZlMiBUImGpkyz0GCfruaz61XjFx9RIe9W+HAtIbezN9NloIB
+	 u3IMdLud1w9f+YtlT1jTuwsOzExwvPl9ce7cclrYP3f5YGDIEgXR/Y59/NqSH/PnzpQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794091191;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=osD5+OBjagTxXN4lD90AGnaKeqSDfchEEYWp3KGPtrs=;
-	b=ejjUI1/XNq9/lhHms7wRKnidYGEXPK5cLxU55wLdRl9X1CeS8J1Ks/c7vySCVDx2uqoJ
-	 qpDcjdBQAY1neM0YUqZ9oxUkSIK5CDPk7pCwoW6wI0a2Gy6DqRTotNhkSQvxJ08ihl/KH
-	 A8uWbrKJ+wSULQvySojKo9v1vkyljY7hxeH09PV4yx1Rz5z/bAn4UoL8LAQP4Nih46FL/
-	 hQ/VaxeggaFhEv+3bcVmD6Pyde/MyDuhTNcdSHy1EJLkUdJQWXLydzthYL9z4xZWXZQYm
-	 8Qw1gAr1yMaA6mgl2pmuM8GISG+vXRqkLVqFZ71oWCyBWV5zh9G+eup58lDu7xqqGZQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794091554;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
+	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=nbpoxfxD/YxKAQmHcLsH5klOFWtwN75CT6T2h0Yqdqs=;
+	b=2VQzrX5Xw1aFAVEREFqm0MfYjc4gLOtwUaHTmoez+JCqxwLl2mKI7gDHOtqEheiJzuZG
+	 rZA6Han2gRJdhk41Z+Wlu/lPKJ/9DwzwG81/kWmGQ6IxKyI8JNygTdBS5cEGaCEIyxonB
+	 OC0ScC5lPorXLKdIuuX71WOS5tZpFgttMqBMcjY6FJCIyHJcw8vMLvqX/HU8RqcePLSX1
+	 z4DuvgBMqCZ0eiwQlNTvC0W0JaBbzjBoItgOKM7aYk5cEnvVihD7k6+KFHScOtGJhKiRP
+	 50UxMdOyqSjeUKKs8M4ss30gG22n3VVt951T00T1pZExX6av1rY8VRWOQevs954z65w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LjVjl49O;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=protonmail.com;
+	spf=pass smtp.mailfrom=protonmail.com;
+	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=U67rNd9T;
+	arc=none smtp.remote-ip=79.135.106.120
+Received: from mail-106120.protonmail.ch (mail-106120.protonmail.ch [79.135.106.120])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24902606A326;
-	Sat,  7 Nov 2026 22:39:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D762F606A326;
+	Sat,  7 Nov 2026 22:45:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D762F606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LjVjl49O
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E5C21F0089F;
-	Sat,  7 Nov 2026 22:39:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794091190;
-	bh=osD5+OBjagTxXN4lD90AGnaKeqSDfchEEYWp3KGPtrs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LjVjl49OLZdaKiwLmZr4YaWKneFC6c7lw9BaXBS3Q9N9XtuxP2wlGa0pOZYgIRpfG
-	 cdVGGVtvHBlh0gh+Mmm2ka8ALKj5YPEEiaMLKtCzFrf7rEzsYDSfolwh18lua9D4EP
-	 mf1CCH+Uw6BHILOxYIPPrf1USAiLjKyCREklUQpn0pmNlbTd/hVIlm+baoKUdm07sd
-	 Gr01c7WkpiWIKzDlZ1Wbo+luE16jzIalRbUyt4cKI211yrCSj6JJXG0sy0W7ojq0FT
-	 WX26rS4hVzp2NUKRR9Joazp+Ls7nv5EtFu+1EWdlQFvCnBS8Lm5mtSCatdkZGl1sZ7
-	 kvag0KU/39PLw==
-Date: Sat, 7 Nov 2026 22:39:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] iio: light: stk3310: add stk3337 support
-Message-ID: <20261107223943.40c5c38f@jic23-hlaptop>
-In-Reply-To: <20261108-6768-stk3337-v1-4-0340c99b0e33@protonmail.com>
-References: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com>
-	<20261108-6768-stk3337-v1-4-0340c99b0e33@protonmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=U67rNd9T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1794091550; x=1794350750;
+	bh=nbpoxfxD/YxKAQmHcLsH5klOFWtwN75CT6T2h0Yqdqs=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=U67rNd9TJxEIZwcB0EBj6XrEVzE3JPqwvLksmTXDYW/IuCAyd8lAHFB1VSbyh7vB9
+	 ROtOgggq1SLZEROiRrIivsbqLpN6kGVeGF6WTeAehMDrB0cxqD8Z/MKGMLUYtAnCsU
+	 ldxyjB0nTJak+5BPa1grO6VV35z6mLd6iN39tHEiOvDFIdk4uQmnO+8nTDCr75f+zO
+	 SDP8zOXEId/MsqFf1MKmlkdNFAKO1eCnFNxcxYclyh94YfpH8gVZfYXrFjan5TA0L9
+	 A6lwv7X7wQTvnWHUgFBufDGQa7Td5Ps4tfq1astOJ48IY/T52eO+XPVu3H+cPRRYzJ
+	 wa6z9jAe72s1g==
+Date: Sat, 07 Nov 2026 22:45:45 +0000
+To: Jonathan Cameron <jic23@kernel.org>
+From: Roman Vivchar <rva333@protonmail.com>
+Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: iio: light: stk33xx: add power supply support
+Message-ID: <geNqZOyrIjYLfmuUys8cQJU8FM53jylicArPsTGNXPnqSvHPCIc1Jad7dBOBy1GdE38RBEMSYQYDqEmaAqq2PDcglQcRBdkR0yZAjRExEUQ=@protonmail.com>
+In-Reply-To: <20261107223601.0ba9ffc6@jic23-hlaptop>
+References: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com> <20261108-6768-stk3337-v1-1-0340c99b0e33@protonmail.com> <20261107223601.0ba9ffc6@jic23-hlaptop>
+Feedback-ID: 173184497:user:proton
+X-Pm-Message-ID: ad140286fd2962c5d12143b1a1cc16b7d7e26120
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -63,102 +64,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 08 Nov 2026 00:15:06 +0200
-Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+Hi Jonathan,
 
-> From: Roman Vivchar <rva333@protonmail.com>
-> 
-> Add support for the stk3337 sensor, found in the Xiaomi Redmi Note 9
-> phone.
-> 
-> In addition to the standard stk3310 ambient light and proximity
-> channels, the stk3337 provides a clear intensity channel, matching the
-> layout already used by the stk36c61.
+On Sunday, November 8th, 2026 at 12:36 AM, Jonathan Cameron <jic23@kernel.o=
+rg> wrote:
 
-I think you should probably make it clear that this is a subset of
-the stk36c61 channel spec as that also has other colour sensors.
+> On Sun, 08 Nov 2026 00:15:03 +0200
+> Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wro=
+te:
+>=20
+> > From: Roman Vivchar <rva333@protonmail.com>
+> >
+> > On some boards, the chip shares a power rail with other components. If
+> > that rail is turned off, the chip can't function.
+> Not sure how the sharing is relevant.  Even if shared with nothing
+> else we need to turn it on.  So just mention that on some boards it
+> isn't always on.
+>=20
+> The only reason this would be optional in the binding is if there
+> was internal routing in some packaging or similar that meant there
+> was no pin to connect.
+>
+> Upshot, make this required in the binding. Note that doesn't mean
+> the driver must require it - we are simply documenting that the
+> device needs power.
+>=20
 
-I was briefly confused as to why you didn't just use the chan spec
-from that given this description.
+I agree this should be required, but that would break dt_binding_check
+for existing boards. I don't have their schematic nor boards themselves
+to verify the regulator for the power supply.
 
-Other than that, looks good to me.
-
-Thanks
-
-Jonathan
-
-
-> 
-> Datasheet: https://www.bestmodulescorp.com/en/amfile/file/download/file/1699/product/1048/
-> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-> ---
->  drivers/iio/light/stk3310.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> index 2f4747c06f43..6d629ce726fc 100644
-> --- a/drivers/iio/light/stk3310.c
-> +++ b/drivers/iio/light/stk3310.c
-> @@ -60,6 +60,7 @@
->  #define STK3311S34_CHIP_ID_VAL			0x1E
->  #define STK3311X_CHIP_ID_VAL			0x12
->  #define STK3335_CHIP_ID_VAL			0x51
-> +#define STK3337_CHIP_ID_VAL			0x5F
->  #define STK36C61_CHIP_ID_VAL			0x95
->  #define STK3310_PSINT_EN			0x01
->  #define STK3310_PS_MAX_VAL			0xFFFF
-> @@ -111,6 +112,7 @@ static const u8 stk3310_chip_ids[] = {
->  	STK3311X_CHIP_ID_VAL,
->  	STK3311_CHIP_ID_VAL,
->  	STK3335_CHIP_ID_VAL,
-> +	STK3337_CHIP_ID_VAL,
->  	STK36C61_CHIP_ID_VAL,
->  };
->  
-> @@ -233,6 +235,12 @@ static const struct iio_chan_spec stk3310_channels[] = {
->  	STK3310_PROXIMITY_CHANNEL,
->  };
->  
-> +static const struct iio_chan_spec stk3337_channels[] = {
-> +	STK3310_LIGHT_CHANNEL,
-> +	STK3310_PROXIMITY_CHANNEL,
-> +	STK36C61_INTENSITY_CHANNEL(CLEAR, STK36C61_REG_CLEAR_DATA_MSB),
-> +};
-> +
->  static const struct iio_chan_spec stk36c61_channels[] = {
->  	STK3310_LIGHT_CHANNEL,
->  	STK3310_PROXIMITY_CHANNEL,
-> @@ -260,6 +268,12 @@ static const struct stk3310_chip_info stk3310_chip_info = {
->  	.num_channels = ARRAY_SIZE(stk3310_channels),
->  };
->  
-> +static const struct stk3310_chip_info stk3337_chip_info = {
-> +	.name = "stk3337",
-> +	.channels = stk3337_channels,
-> +	.num_channels = ARRAY_SIZE(stk3337_channels),
-> +};
-> +
->  static const struct stk3310_chip_info stk36c61_chip_info = {
->  	.name = "stk36c61",
->  	.channels = stk36c61_channels,
-> @@ -870,6 +884,7 @@ static const struct i2c_device_id stk3310_i2c_id[] = {
->  	{ .name = "stk3310", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
->  	{ .name = "stk3311", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
->  	{ .name = "stk3335", .driver_data = (kernel_ulong_t)&stk3310_chip_info },
-> +	{ .name = "stk3337", .driver_data = (kernel_ulong_t)&stk3337_chip_info },
->  	{ .name = "stk36c61", .driver_data = (kernel_ulong_t)&stk36c61_chip_info },
->  	{ }
->  };
-> @@ -888,6 +903,7 @@ static const struct of_device_id stk3310_of_match[] = {
->  	{ .compatible = "sensortek,stk3310", .data = &stk3310_chip_info },
->  	{ .compatible = "sensortek,stk3311", .data = &stk3310_chip_info },
->  	{ .compatible = "sensortek,stk3335", .data = &stk3310_chip_info },
-> +	{ .compatible = "sensortek,stk3337", .data = &stk3337_chip_info },
->  	{ .compatible = "sensortek,stk36c61", .data = &stk36c61_chip_info },
->  	{ }
->  };
-> 
-
+Best regards,
+Roman
