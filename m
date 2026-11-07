@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1794066027;
-	b=YN3X/PE8H98J/UU5FMPNVMyxhycrXI4GNuS3/a335rs7kdqtgJJ0erJsoZrZb87HATYL
-	 s1Oczv9C6hCwsQDr4uuJZNSpSSC7LlKjv9ho9yv41SvrS6O64y1qIuWPju+VXhP7UwbCn
-	 cyY3q68r0URUBZEwJwwlCkR38lH/hpbAXbED1HBIvcTNge1yG5MOaFFGTHy5/DjUNr+Cu
-	 kUfUZiIbsmTbp81R1nUJPT+sOxbvXt+Adpq2DZ+EFm1zHAredah8yaCM3qPxiiOIkONGU
-	 EKyhjOkG5sxd0NDiDGPWbdL7o5w43bqUhHCKG0zoOqNyqY0xEVYSzlEodfn/9N/IMgA==
+	b=YcBVJTMQQgf0WaDGzb7KMjo3mXRDloaY/whBeGkwhuw/nKHdRoYVb211EDJNcJ5CxopQ
+	 0/KkhR6nkryJmc2Y5AQcw0S8Rzqxx5b+DFdZrLiucBy+27w9YCbYJpblGmsmcGN1bmq56
+	 JULkAwH3UNu/1fiSmcWsx0OHCovFg5wLFcai/3wYTw7NBbab0cShM+03iQ7e+vpF4Tjhc
+	 3v39AGweh9Hp2HrnUoPWL3KCzYnOR73Wza9qfVwAgHjqmwvstbA7ruiwH5p3zSHHgsXpA
+	 whAl7Vk+1SY+/CxbafNTfA8wSD0Nf4sYGjQvPT+t98zfymjSgkEpJ3XJZsYVFIqlUuA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794066027;
 	h=Received:DKIM-Signature:Received:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:References:
 	 Date:Message-Id:X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=xodo0tywrQtyKRXosiF2exS76mecM79ssvXhP0BMLRg=;
-	b=UailOozzi6JosWcSxMXoU5N/etqp3da3TXfESVxaE4uJc4JR4E+2IVV3xQ9twvZA/kfq
-	 SrH/ujF2B2nUlDq6nz2FV0lW+2nC4QGhuI54ALFMLgTGpJqOLXaBFjTHIxDH2Y3WTQoUG
-	 2Lurwv8oMLmd1QjnW8UFcS+XXuMyV/UnA8Jz+202mu02yH+L/3FBbK2/2k74dDUMcQvc7
-	 FunCxsRvmeBvfimQOCaiylLf/GlM+0qHUoeqMABel4JVLAqhX2N5+ZxNs5KRqUzGccLZ9
-	 yNgBwUtnvYou5hzkiS8YOw7aPu5ha/JQtaZEjLn7bcvMeMDcYorXHno6xfLLd0rqKLw==
+	bh=0855Lhy/dON8JVTqKZXNVM88rgbhtEry4bgMTQuUuV0=;
+	b=uRON332w14PwyJzGGSzwXWlUy3a226X0rOxW/CORj9qhc9JmgAKr3wBg3SvHTp18M//m
+	 +6WR4UxJ2LmmRpwbGCG0gHPgUdLCcX5T7u8WmfyXtFkRAtPiZ6XL4aKgQ8D7xe6bnFJa4
+	 fjix/tbvb++F3A+8zt9pahw/uOoblibvd/zMrgwTunC8Z/hmQe6qLX/uwWqlnJOQHnPDU
+	 ZsKO9/yv+XEbOf3YKRgENQaP3onHUcNQhsQDeHCY5DBD3PCE4SzHUAZG1roZIcei/Eky1
+	 QIGmjq4YFG3kLrxyR46zCq+/JLeY7O3vPTvnCxLFKMtZj331dP6AHSFs90ZTHO1Ii7Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iUfZ5AHs;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c8TI1Sgc;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3569606A32C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A351B606A326;
 	Sat,  7 Nov 2026 15:40:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iUfZ5AHs
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32D441F008A6;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c8TI1Sgc
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7221F008A2;
 	Sat,  7 Nov 2026 15:40:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1794066027;
-	bh=xodo0tywrQtyKRXosiF2exS76mecM79ssvXhP0BMLRg=;
+	bh=0855Lhy/dON8JVTqKZXNVM88rgbhtEry4bgMTQuUuV0=;
 	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=iUfZ5AHsLvdBUnG8bdhOVl81eCpH+5jE1V/usy/cC5biEtAXFYqDxegYf8djCo9S+
-	 xmpnwpG7TRJUg4Dej4rnLDBwwNPmV0nCRARb4alzqmfKKRzHm962tw69/Rx9yNtuNE
-	 ut9fpbBnb+/4fnMpHxX7Nq9rymktLh2cEs+JkS3CmH0W9ICMdnvPoJS6hCpQEnX8I6
-	 OXHJ28i8qArtu6fwx5c5ma7zj83g4Fdzh6yerx28AZp8KF4YogHfFLPMk2kddBm9W7
-	 rRBStLI29qDCrQEBqrvfZfw1EZJu2qL2O6ua7Wy6Mgt68GaduPBhIXg1VTcAWvj9Se
-	 55re/VOtn0xgw==
+	b=c8TI1SgcR2UQaFEN+sXtm92nv3SKKB/Ab3Sw0w0Y2S/n5I01TTrS4jPLmIFgTPvfD
+	 2tF3BVTYeSP3uNddy8u1hWpVQZPaenQ+gLf8hgZ424VGuzkp9huPArXCEhHbtcF5rr
+	 vKMvKeJmvCre6ffh8fm8E0ZSIR1T433Se6NQ3m52Zsnxswh4l9USGIrRtPXIr/BxL+
+	 s3iiY6EMD4vsisXDuXeLlxcMEj1g9fPCLatw1hcyY5kSIpvOfD3BbCUwmg6tTItGfa
+	 vibEzB0nAn02i8d8zo5Cs/i1bQN+DnjMfuQ89cVDJA6500JZDyO9RT+IevtOz4J/wX
+	 pdK1kZzmUftIg==
 Received: from traversing.sirena.org.uk (localhost [IPv6:::1])
-	by traversing.sirena.org.uk (Postfix) with ESMTP id 8493E2AB366D;
+	by traversing.sirena.org.uk (Postfix) with ESMTP id 7D3DE2AB366B;
 	Sat, 07 Nov 2026 15:40:24 +0000 (GMT)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -54,8 +54,8 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4 8/9] spi: spi-engine-ex: Add support for multi-CS
- devices
+Subject: Re: [PATCH v4 4/9] spi: restrict CS logical values to a contiguous
+ sequence
 From: Mark Brown <broonie@kernel.org>
 To: Jonathan Santos <Jonathan.Santos@analog.com>
 Cc: linux-spi@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -63,26 +63,35 @@ Cc: linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
  broonie@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
  conor+dt@kernel.org, Michael.Hennerich@analog.com, nuno.sa@analog.com, 
  jic23@kernel.org, dlechner@baylibre.com, andriy.shevchenko@intel.com
-In-Reply-To: <183539c950c013d472c6b46e3f1365b022e7c716.1792435248.git.Jonathan.Santos@analog.com>
+In-Reply-To: <dd50e45bff4b59ad656f94fffecca28a49f1d2d3.1792435248.git.Jonathan.Santos@analog.com>
 References: <cover.1792435248.git.Jonathan.Santos@analog.com>
- <183539c950c013d472c6b46e3f1365b022e7c716.1792435248.git.Jonathan.Santos@analog.com>
+ <dd50e45bff4b59ad656f94fffecca28a49f1d2d3.1792435248.git.Jonathan.Santos@analog.com>
 Date: Sat, 07 Nov 2026 15:40:17 +0000
-Message-Id: <179406601717.3424803.6101745794958168794.b4-review@b4>
+Message-Id: <179406601716.3424803.6294014265604547763.b4-review@b4>
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=292; i=broonie@kernel.org;
- h=from:subject:message-id; bh=QCp+I+vDYOjwPAhHVOlYaANLQj2Pf0vpWDyG3phbLK4=;
- b=owGbwMvMwCWm/754w+YLFp2Mp9WSGLLeu2XEJtzekrShqTnz5tx9ZZ+8S9tMtNdOswz0+7bu9
- YsvxcplHaUsDGJcDLJiiixxWdwv60ter+E7uLANZg4rE8gQBi5OAZhIsjojw6N9C198mbU76op6
- /Yxnr1JitZxWLs9MThKTm9Cg+aJySjnD/zzeD9G2y77mTHBb9C749dQL+SWzGhZqeDxx//t+7dn
- dvhwA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=535; i=broonie@kernel.org;
+ h=from:subject:message-id; bh=ZAf43SC5Wwsv9BlH9bz+p7xqTH/dS8B+Bfqtk7gFLeA=;
+ b=owGbwMvMwCWm/754w+YLFp2Mp9WSGLLeuyUeeZjrqiUyK/LlS0OVF0un/opf/UHAJP8dW5ax+
+ WxTzmW1HaUsDGJcDLJiiixxWdwv60ter+E7uLANZg4rE8gQBi5OAZiIqD7D/5CJi76LTHQ6v2I3
+ x+0pZ+czpa27ce5kSt7c7+8lbkvHKT9g+Cv08ZyxsPjDa1e2bitOj7/FoK74T3J7ZOXBmU3fpPi
+ uzGMFAA==
 X-Developer-Key: i=broonie@kernel.org; a=openpgp;
  fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
 
-> The SPI Engine controller only handled the first chip select when
-> asserting CS lines and configuring CS polarity inversion, ignoring
-> additional CS indices present in cs_index_mask.
+> When a device uses more than one chip select, require the logical CS
+> numbers to be consecutive (for example 2, 3, 4). If they aren't,
+> __spi_add_device() now fails with -EINVAL and logs which CS breaks
+> the sequence.
 
-Are we missing some per message configuration of SDx_MASK?
+> Changes in v4:
+> * New patch, suggested by Andy. I assume this might have impacts on
+>   existing users. Should we make something else to complement this?
+
+Indeed, see ge,achc for imx53-ppd.
+
+> +			dev_err(dev, "cs%d is not consecutive with cs%d\n",
+
+%u.
 
 -- 
 Mark Brown <broonie@kernel.org>
