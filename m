@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794083353;
-	b=Zz7kgBLDBmKH4p+IsH3YUaHHEEBybLwUlAQDN/f5obU36HQ9xjfg/ldWjJUT5vRW+N32
-	 WWQebH4OpgeuS9PqoP1ifq+ondQLWhYL1WF6x1zI5JLE/Eh4d6o+foVyTVClxSr1PmqnT
-	 /on4gKRJ7eVn7I98oOiR7qQBaTqbXiYLUaKK3Hgrdo1bpewtnKxU/8d0SBiKUJ5hJ4Amr
-	 9jr+QK0G3vOa+0gUTGt05MMo1TW8Jv7UxgwSFFZxG0lLO94BjHtkH+CDAPVTm84w6Kzrq
-	 Cn441x9IEPlK0RZeMrzzQ1nd9csw+FOqcKjRQ6tfnPNhXdGK9eTNxWfHUxrE7HuMvWw==
+	t=1794083488;
+	b=RDUE86+S5IhgA9iFW+X/qjO84fFQshVhUPR1QexMZjm7ToWPEKdArfnuIIkOH6m0FVFg
+	 lgG4GOI4HgC+9ihTQvhY0zdAJPk5GPHTAa2mRai79UesVBTATu8yBE/26hO8Nwy3tJbFc
+	 QwbDqeTePnICPl+/VmcsoLSNz734XZKj0ODLftTDgsV2CFhAXWnj3lz8UElaLF04Ltlzr
+	 WBahS03VIU6CZhIWxheK49izIdygFE1f4/72WJHipytYQcFBFfrkumPcaHEAD38vrZu44
+	 ubi8bkBEc3hntju08GrkqyLkLHAvqErxG48NBBl8S5EROL7QqgP0FS0DDYIsINd8NiA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794083353;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794083488;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=Wf8LRi7Uf3+oQW7K9E6o9x3Rb0ptS6c5Ok2tb6AzWHQ=;
-	b=jA2fSYSMXRG4wMwor84chlJM5TZ3UlIiJ7LDXY+KqGaLvT5tQeibVJwxyQ4RatFh3kJp
-	 kBccOVBVIHn4vzdYJgtCPzCBFedQ1onxbMDgNfH6cqYIQrJtjxFNqmCCoGtgNFIIrIOIC
-	 q0QWH3XtUqhx2vGpBGxlzVnEJxuUfqtI1aCVrf4cqNFOqli90FxEfLDlHZ6i+Qh2GLmql
-	 c1S1rV6N1wQ4L83f8vCErFuCc6mZVlq1eKUHJ4GWiMPvp21WNyLeShNTRZ9TEUZoul/y2
-	 Pc3CcWW6XWGKK/uFWwFXHvDSLiD/7YopTLnkbk3NXjBZ4df46UHmRzawsrFFDiejmtg==
+	bh=6R7bD2lGbyz5elKAgspeW/S1EvIUDAsU8iwuty7BhyI=;
+	b=G4wtYIDdhxu7Z1L6uL56r6XjK+qBobA3FpgzrYcbJgL2HEDNbAPEKzVG6k5ngrJJe9+2
+	 /5TJBUJibOuKWrsoJrkjOrNeoU0dXy/ztcENcXnVjalpPrY7Nto6ElTPUxKrp3NAfyv8G
+	 Pvd5yo1r/WFXhcHxmzvrxpuUuUHQlFGd75NWwB6e/rn2JySQNkbLt8qxaa7GpTPQiFg2X
+	 QLXF0y9ZiDhV19Us92GYoFi72cxWMgUUmOpynfrCAwcLdkqa76FRXrM/FGSeUnqeXzhWj
+	 yD4riXgwKbvpFEYnUNEhl5CbuM2kosWII8zpfyADYIcEF+umaWdM3txnVZuPdudHdPw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=edNNXuer;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G1cVQTNl;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 186F4606A326;
-	Sat,  7 Nov 2026 20:29:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66780606A326;
+	Sat,  7 Nov 2026 20:31:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=edNNXuer
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B922F1F0089F;
-	Sat,  7 Nov 2026 20:29:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G1cVQTNl
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84E591F0089F;
+	Sat,  7 Nov 2026 20:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794083352;
-	bh=Wf8LRi7Uf3+oQW7K9E6o9x3Rb0ptS6c5Ok2tb6AzWHQ=;
+	s=k20260515; t=1794083488;
+	bh=6R7bD2lGbyz5elKAgspeW/S1EvIUDAsU8iwuty7BhyI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=edNNXuer2i6+dBOSWwbk5rBCGZYCkrG3521+DcYD4chBZjmaFaFlMZMzWptLtHDqI
-	 pL4Ip40b13HeTbM5WzDLMLCTKJIrnrsvCHQ3rJBmRtk0BDXIieLy2a+icKRqYUcVnX
-	 ImGLItlkOgavPUhVJuGfqdU4uffn5r9nsr2WZQPfT7dpc4c3tjiuzBnLmZGIMyM3I3
-	 v3muTTIy5WSDf4whh69/sNWJLHHmSPxOxrkHF2zxy+hc7gyEGRTZ9eQXHBiyxay/fI
-	 efAxHA32MxAydnHlWUu+IGYnBOAsUYdMQ7Qx2OPZJg6RQ5Ungedbd/f/CDBP4JeLT0
-	 MO1svhtvh9RtQ==
-Date: Sat, 7 Nov 2026 20:29:04 +0000
+	b=G1cVQTNldgtph5Vl7FzQw6lgD987FMmUKcceFYmLXkcpHm/CymQloz/mqjqimF5kt
+	 /lb7DSrusTCKhmCMDI2ijXbpg41v8udtocU4o1bKt/qWtPVa2FWSyGAL8Z95yX//bZ
+	 Fm+Md35LnwH5XdSW6thEWIleORqaz4GLb53DU75LsmzEtCkuoypOeVF99StMNdB5jG
+	 J+SaFrwpygUe1uRS+LxKSPLXiDTfh4usayIqpHAYTZxjEW2D4gcWyFS787DKMG27WH
+	 zKDNvrkzaPWoeVdkAgo0np9eP0pcBtsJH0o1nghx+VwfWVE5d93HvWBNfN+qR+Aosf
+	 Ri1fDB40peycQ==
+Date: Sat, 7 Nov 2026 20:31:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nuno =?UTF-8?B?U8Oh?=
@@ -49,12 +49,11 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nuno =?UTF-8?B?U8Oh?=
  Joshua Crofts <crofts@kernel.org>, linux@analog.com,
  linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] staging: iio: addac: adt7316: sort headers
- alphabetically
-Message-ID: <20261107202904.2b3db8a0@jic23-hlaptop>
-In-Reply-To: <20261104183429.20125-2-abdelnasserhussein11@gmail.com>
+Subject: Re: [PATCH v4 0/2] staging: iio: addac: adt7316: clean up header
+ inclusions
+Message-ID: <20261107203121.4cc15592@jic23-hlaptop>
+In-Reply-To: <20261104183429.20125-1-abdelnasserhussein11@gmail.com>
 References: <20261104183429.20125-1-abdelnasserhussein11@gmail.com>
-	<20261104183429.20125-2-abdelnasserhussein11@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,56 +67,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed,  4 Nov 2026 20:34:28 +0200
+On Wed,  4 Nov 2026 20:34:27 +0200
 Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-> Sort included headers alphabetically without altering the list of
-> inclusions. Keep the <linux/iio/*> subsystem headers separated from
-> the <linux/*> group, and add a blank line before the local "adt7316.h"
-> header.
+> This series cleans up header inclusions in adt7316.c. Patch 1 sorts
+> the includes alphabetically. Patch 2 drops <linux/kernel.h> and
+> includes the headers the driver actually uses (IWYU), removing the
+> unused ones.
+Applied.
 > 
-> Reviewed-by: Joshua Crofts <crofts@kernel.org>
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Needed a small tweak as kstrtox.h was added recently.
-
-> ---
->  drivers/staging/iio/addac/adt7316.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
+> Changes in v4:
+>  - Moved the list of added/dropped headers out of the patch 2 commit
+>    message, as requested by Andy Shevchenko.
+>  - Added Reviewed-by from Joshua Crofts.
 > 
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> index 20f6052cc7fb..515f1fdae46b 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -5,22 +5,23 @@
->   * Copyright 2010 Analog Devices Inc.
->   */
->  
-> -#include <linux/interrupt.h>
-> +#include <linux/device.h>
->  #include <linux/gpio/consumer.h>
-> +#include <linux/i2c.h>
-> +#include <linux/interrupt.h>
->  #include <linux/irq.h>
-> -#include <linux/workqueue.h>
-> -#include <linux/device.h>
->  #include <linux/kernel.h>
-> -#include <linux/slab.h>
-> -#include <linux/sysfs.h>
->  #include <linux/list.h>
-> -#include <linux/i2c.h>
-> -#include <linux/rtc.h>
->  #include <linux/module.h>
-> +#include <linux/rtc.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/workqueue.h>
->  
-> -#include <linux/iio/iio.h>
->  #include <linux/iio/events.h>
-> +#include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +
->  #include "adt7316.h"
->  
->  /*
+> Changes in v3:
+>  - Split the series as suggested by Joshua Crofts: patch 1 only sorts
+>    the headers, patch 2 replaces kernel.h and adds/drops headers.
+> 
+> Changes in v2:
+>  - Split the original patch into a 2-patch series.
+> 
+> Abdelnasser Hussein (2):
+>   staging: iio: addac: adt7316: sort headers alphabetically
+>   staging: iio: addac: adt7316: replace kernel.h with explicit headers
+> 
+>  drivers/staging/iio/addac/adt7316.c | 22 ++++++++++++----------
+>  1 file changed, 12 insertions(+), 10 deletions(-)
+> 
 
