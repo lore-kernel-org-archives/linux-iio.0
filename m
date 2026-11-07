@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794021650;
-	b=Bm5bkr8g6Ohh724UfzhvVBogWUWuTpPEIcQfZrpQUKHRRDx95a7WgH34GKWmRgOMXsJ+
-	 HLb7V5Po+cb614EWuIJ+hcxQG2e+uO8ERc3stzeDsYbFQ9WHco9RtHMYPIz9DAf7YYjHH
-	 BkfbCsGF8ed8s/Ar/+qXSE/60/sDPiyVC3PaICJRb7MfF+x0i9FdDin6Y5RRr+1CH7IfS
-	 +fxYJPmvc+1gWWAEr4LORK7r3muaMLy+k1GcSWkYVedxpmtWcprD21BT+uevK7/88pFay
-	 nHAFdz72Gs0z2w2h0Or6gwGpcMIa3L415OzWEBcf2cgVo5OAM8wzqsLFz1gCLf7eoPg==
+	t=1794022238;
+	b=EIE+dMTJCMxcNpJnm1vM3uCK/Tu85iDYahoFYBQRutOeMDjvh4f8CGuDzgglsJZm9nqd
+	 TaFJj4LSzQQbzLKRJecenFN2oyW1nyPVi3VHDNvse5M0nTQbq4ksxLH7IS56wf70TrAPD
+	 /fAw3ihlDlYf/8seeVP3Lg0VmE6K+v33LfCJ17txEDLJk5qAY2Bvjt2UG+nlkYEhsH3uG
+	 PyuFkrcgMG/6inbeEGZzFudgUYkNb3xUV2x1MHtYAIhfdsCCg8o51oAL17/AKxv3k+++Y
+	 KSvS2oF/La0SskOGiUrCllhvoInvCrK7aXjVBXJSEMPyXchhKtV92bXb3NGsL4Ph1vw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794021650;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794022238;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=82d5k5q10xlQuPzF6hB++osn7kDtgfy9QN6IoYLOy/k=;
-	b=oQbkbVLA9TfAZ0LCWaSQe7ougpcC1wMvhsJi5Ir3XoWt2zFbpmBsKL/l5e+xuW02FRln
-	 J0+kXu76jlCc4ZSRfLsPfCbi1FNk8E8dtX+cHjGkk0+Jb9MsOm8gbbJoo8TB580I0OmTg
-	 WMEUiFobbs4QakG/5FU+Qz0PJ94frrp7Pzpjg6TBLMBnAXcCSokaSYucYaTf1xxUC6L8G
-	 YvdAWHOglEyYdWraSUvB0mQQjqCpgnmnG7x9xoG9U2TyBye3GRCYPd9lktFvFM4vDl5HY
-	 s0tClP11Lvqpwgf3rJP5M3O/HDPNi5FfroCTAS3170bSiIFfeBF6CHbYZtGj4m6iQhw==
+	bh=1bU+23Ts9k7fqwmVRnmBAtDOJpgOkQlk4RYG0pmWGro=;
+	b=BtPsEO4Rqgi9Sm7K3qtZVRpn9/7DtPGKEsfK9IroHzWCkltj+DPwyxli+S0Tv7O4ujDF
+	 z8DV84IrQlyeYQu6NJNjfp0QFO5yOa4sVMzaHfEYuncaoBLgeJqop/YSCbQO9/2m6Qs55
+	 QLF982LUGKQkCYkSRzZBcXKHdr/BfF8g9Rs4lRIAoKDBbDng+hpWB2tkQbFY4KNzW1vli
+	 K3lMf6cEum/CjbDxXX/w/vmQ3AnftfY2/jNma78lc4R5lrYrD5zoSUFVBZMnnPDCLLNHp
+	 0Ty0+Rj6IQWGji0Dnjs6FvozwZcZkNooWaodtprP7Ns8HJ6KXpOf6rrWX54ZSA/bsnA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jMngf8F4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LF6JEZge;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F01D4606A326;
-	Sat,  7 Nov 2026 03:20:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC0AD606A326;
+	Sat,  7 Nov 2026 03:30:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jMngf8F4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DADD1F0089F;
-	Sat,  7 Nov 2026 03:20:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LF6JEZge
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CC61F0089F;
+	Sat,  7 Nov 2026 03:30:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794021649;
-	bh=82d5k5q10xlQuPzF6hB++osn7kDtgfy9QN6IoYLOy/k=;
+	s=k20260515; t=1794022237;
+	bh=1bU+23Ts9k7fqwmVRnmBAtDOJpgOkQlk4RYG0pmWGro=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jMngf8F4QXzoCD778s1/OIeDwFBEm/hSSoTicSjz0dX5QsncRAXSyzTYKcDlVvYH5
-	 xz3fI5urPgrnPiPfwcQtyXtCr9HpxyZ0H13lCfAmGts579emuq0gNaUX/KYpzYc/7J
-	 gL1ww/yhDqV01NiQ9y6qd2fy/C/WGoTHe2WAmYIKXZlawPYWtxfZmmRQcb4A13JHJO
-	 s5LADZGFCeku1X4HgAfHVlTkIQOqaZMmXpNIJll5mZaLTSg6Gm9WZdVjBRAnnQzlOu
-	 N27BnaKgUZ8r+UF9bU002ZJmj7U0RPTAPQfEI31L5c0BYsS7I1VimLSfwKKgBfSC3x
-	 PH8z+FYdabPDA==
-Date: Sat, 7 Nov 2026 03:20:42 +0000
+	b=LF6JEZge394EUIaXdslskBxA6XnNuVGG0FH/X9Ocw+eniBhyZhgAOYCTxs9pnJYHE
+	 66rXQuuUdx0W0pqgCUt/AKbEO5KQRewAO+TVNbBrIIrAghPmwt4Zb+kG2B+QNWRNo1
+	 3Hbb45qmdrr9DLaCWSKInfNBDc+EtbJd4RNVwYm74CmmBNr+5VBP4KLCo2ACuHSQsY
+	 4x3OUBN9PcZNBAOiyK2KhBej8mG8rGkG7YTMjS3jMH2/PC/2KCugPFKR1DIabTNREj
+	 x/ik8QxpHu5y1l/bigYc0lKL8R+tGUNhQMRSSvrByFelEKxLdOJWglhoLqrQgOk3w9
+	 8dVt+vNakrHUg==
+Date: Sat, 7 Nov 2026 03:30:29 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Svyatoslav Ryhel <clamor95@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -54,12 +54,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] iio: light: ltr501: Switch to read_avail() op
- from manual attribute registration
-Message-ID: <20261107032042.0dd311fe@jic23-hlaptop>
-In-Reply-To: <20261106091943.35783-2-clamor95@gmail.com>
+Subject: Re: [PATCH v2 2/4] iio: light: ltr501: Switch to modern match
+ mechanism
+Message-ID: <20261107033029.0b2d3ee1@jic23-hlaptop>
+In-Reply-To: <20261106091943.35783-3-clamor95@gmail.com>
 References: <20261106091943.35783-1-clamor95@gmail.com>
-	<20261106091943.35783-2-clamor95@gmail.com>
+	<20261106091943.35783-3-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,74 +73,152 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri,  6 Nov 2026 11:19:40 +0200
+On Fri,  6 Nov 2026 11:19:41 +0200
 Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> Switch to the read_avail() operation from manual attribute group
-> registration. This eliminates the need for per-chip attribute_group
-> structures and related ltr501_chip_info iio_info entries.
+> Remove the chip enum, break the chip list structure into individual
+> elements, and pass each element using i2c_get_match_data().
+
+Sashiko calls out that for ACPI this results in an ABI change.
+The original code did the ABI wrong but that unfortunately doesn't
+mean we can change this one as it is an artefact of a time when
+we weren't so careful about those names.
+
+So you'll need to put special handling back in for the ACPI parts
+and that name. Some other things in the existing code noted inline
+that would be nice to clean up whilst you are here.
+
 > 
 > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
-Given you were quick off the mark on sashiko on v1, I guess
-you already saw:
-https://sashiko.dev/#/patchset/20261106091943.35783-1-clamor95%40gmail.com
-
-It seems correct that you'll only get one attribute where there were two
-before.  I suspect it's as simple as the mask should be set of
-shared_by_type_available not shared_by_all for scale and shared_by_all
-for only sampling frequency and integration time.
-
-The current code is odd in having per type sampling_freq and integration
-time as both apply to the light channel as well I think.  Not vital
-to fix that though so I'd just split the mask to make it work for both
-as it does today.
-
-The current way the two Intensity channels is done is very odd.
-The .info_mask_shared_by_type should be the same for both of them
-(only one set of attrs will be created).
-Ideally fix that as a precursor patch (don't label it as a fix
-though as it's just a code consistency thing rather than actually
-resulting in a change.)
-
-
 > ---
->  drivers/iio/light/ltr501.c | 153 +++++++++++++------------------------
->  1 file changed, 52 insertions(+), 101 deletions(-)
+>  drivers/iio/light/ltr501.c | 165 +++++++++++++++++--------------------
+>  1 file changed, 74 insertions(+), 91 deletions(-)
 > 
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index cc5d7af44d77c..d5ce6468a229b 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
 
->  static const struct iio_info ltr501_info = {
->  	.read_raw = ltr501_read_raw,
->  	.write_raw = ltr501_write_raw,
-> -	.attrs = &ltr501_attribute_group,
-> -	.read_event_value	= &ltr501_read_event,
-> -	.write_event_value	= &ltr501_write_event,
-> -	.read_event_config	= &ltr501_read_event_config,
-> -	.write_event_config	= &ltr501_write_event_config,
-> -};
-> -
-> -static const struct iio_info ltr301_info_no_irq = {
-> -	.read_raw = ltr501_read_raw,
-> -	.write_raw = ltr501_write_raw,
-> -	.attrs = &ltr301_attribute_group,
-> -};
-> -
-> -static const struct iio_info ltr301_info = {
-> -	.read_raw = ltr501_read_raw,
-> -	.write_raw = ltr501_write_raw,
-> -	.attrs = &ltr301_attribute_group,
-> -	.read_event_value	= &ltr501_read_event,
-> -	.write_event_value	= &ltr501_write_event,
-> -	.read_event_config	= &ltr501_read_event_config,
-> -	.write_event_config	= &ltr501_write_event_config,
-> +	.read_avail = ltr501_read_avail,
-> +	.read_event_value = &ltr501_read_event,
-> +	.write_event_value = &ltr501_write_event,
-> +	.read_event_config = &ltr501_read_event_config,
-> +	.write_event_config = &ltr501_write_event_config,
+> +static const struct ltr501_chip_info ltr301_chip_info_tbl = {
+> +	.partid = 0x08,
+> +	.als_gain = ltr501_als_gain_tbl,
+> +	.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
+> +	.als_mode_active = BIT(0) | BIT(1),
+> +	.als_gain_mask = BIT(3),
+> +	.als_gain_shift = 3,
+> +	.channels = ltr301_channels,
+> +	.no_channels = ARRAY_SIZE(ltr301_channels),
+> +};
+> +
+> +static const struct ltr501_chip_info ltr303_chip_info_tbl = {
+> +	.partid = 0x0A,
+> +	.als_gain = ltr559_als_gain_tbl,
+> +	.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> +	.als_mode_active = BIT(0),
+> +	.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
+> +	.als_gain_shift = 2,
+> +	.channels = ltr301_channels,
+> +	.no_channels = ARRAY_SIZE(ltr301_channels),
+> +};
+> +
+> +static const struct ltr501_chip_info ltr329_chip_info_tbl = {
+> +	.partid = 0x0A,
+> +	.als_gain = ltr559_als_gain_tbl,
+> +	.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> +	.als_mode_active = BIT(0),
+> +	.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
 
-I'd prefer a precursor patch tidying up the indent as that should make
-the diff on this patch easier to read.
+As below.  Same for all the others.  That would be a separate
+cleanup patch though -> perhaps do it with getting rid of
+the als_gain_shift.
 
+> +	.als_gain_shift = 2,
+> +	.no_irq_support = true,
+> +	.channels = ltr301_channels,
+> +	.no_channels = ARRAY_SIZE(ltr301_channels),
+> +};
+> +
+> +static const struct ltr501_chip_info ltr501_chip_info_tbl = {
+> +	.partid = 0x08,
+> +	.als_gain = ltr501_als_gain_tbl,
+> +	.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
+> +	.ps_gain = ltr501_ps_gain_tbl,
+> +	.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
+> +	.als_mode_active = BIT(0) | BIT(1),
+As below
+> +	.als_gain_mask = BIT(3),
+> +	.als_gain_shift = 3,
+> +	.channels = ltr501_channels,
+> +	.no_channels = ARRAY_SIZE(ltr501_channels),
+> +};
+> +
+> +static const struct ltr501_chip_info ltr559_chip_info_tbl = {
+> +	.partid = 0x09,
+> +	.als_gain = ltr559_als_gain_tbl,
+> +	.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
+> +	.ps_gain = ltr559_ps_gain_tbl,
+> +	.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
+> +	.als_mode_active = BIT(0),
+> +	.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
+Is it really 3 separate bits, or GENMASK(4, 2) to
+represent a 3 bit shift?  
 
+Whilst you are touching the driver can we get rid of the
+separate shift by using field_prep() field_get() using
+just the mask?
+
+> +	.als_gain_shift = 2,
+> +	.channels = ltr501_channels,
+> +	.no_channels = ARRAY_SIZE(ltr501_channels),
 >  };
+>  
+>  static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
+> @@ -1393,14 +1387,11 @@ static int ltr501_powerdown(struct ltr501_data *data)
+>  
+>  static int ltr501_probe(struct i2c_client *client)
+>  {
+> -	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+>  	static const char * const regulator_names[] = { "vdd", "vddio" };
+>  	struct ltr501_data *data;
+>  	struct iio_dev *indio_dev;
+>  	struct regmap *regmap;
+> -	const void *ddata = NULL;
+> -	int partid, chip_idx;
+> -	const char *name;
+> +	int partid;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> @@ -1480,18 +1471,10 @@ static int ltr501_probe(struct i2c_client *client)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	if (id) {
+> -		name = id->name;
+> -		chip_idx = id->driver_data;
+> -	} else {
+> -		name = iio_get_acpi_device_name_and_data(&client->dev, &ddata);
+> -		chip_idx = (intptr_t)ddata;
+> -	}
+> -	if (!name)
+> +	data->chip_info = i2c_get_match_data(client);
+> +	if (!data->chip_info)
+>  		return -ENODEV;
 
+As above. Unfortunately at this point we'll still need to
+do some special handling to match the existing indio_dev->name.
+
+>  
+> -	data->chip_info = &ltr501_chip_info_tbl[chip_idx];
+> -
+>  	if ((partid >> 4) != data->chip_info->partid)
+>  		return -ENODEV;
+>  
+> @@ -1502,7 +1485,7 @@ static int ltr501_probe(struct i2c_client *client)
+>  	indio_dev->info = &ltr501_info;
+>  	indio_dev->channels = data->chip_info->channels;
+>  	indio_dev->num_channels = data->chip_info->no_channels;
+> -	indio_dev->name = name;
+> +	indio_dev->name = client->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
