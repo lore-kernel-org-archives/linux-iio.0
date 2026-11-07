@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794082914;
-	b=5QXpFoi5aAC5eCMzXpWqHtsTxH4srYguO+A/k/Lq43eloDYiIf8SfuLfB6SIJQ9LJVW3
-	 2e1p2tCMbQYQG9RLg7KRSbuPidk/5pixmEwbzt02Tt868WhBSFsT6uElKsJxcYkGfcOBb
-	 3Z/tfVtOhGIq+8xk9d9vmy1mdG4gOjZP24f9awtKZ9G5qczB07YNxpd8teGnZYi32Tll+
-	 J1Q6xdqs5p9aFfTvivW16CdITKowgYLI9e/kJ8e4jr/gaPhGUu/IxFx8DNGrOtt8nuZ3Y
-	 eUn28KkmqkCNC7peY1E5SAMEXaVXQeH5ta6CD0xpPJUEASLz06JeHZ/GAafv7eWxjrQ==
+	t=1794083353;
+	b=Zz7kgBLDBmKH4p+IsH3YUaHHEEBybLwUlAQDN/f5obU36HQ9xjfg/ldWjJUT5vRW+N32
+	 WWQebH4OpgeuS9PqoP1ifq+ondQLWhYL1WF6x1zI5JLE/Eh4d6o+foVyTVClxSr1PmqnT
+	 /on4gKRJ7eVn7I98oOiR7qQBaTqbXiYLUaKK3Hgrdo1bpewtnKxU/8d0SBiKUJ5hJ4Amr
+	 9jr+QK0G3vOa+0gUTGt05MMo1TW8Jv7UxgwSFFZxG0lLO94BjHtkH+CDAPVTm84w6Kzrq
+	 Cn441x9IEPlK0RZeMrzzQ1nd9csw+FOqcKjRQ6tfnPNhXdGK9eTNxWfHUxrE7HuMvWw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794082914;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794083353;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=iOwit2Ku4CCe/YVLF5K+4NP4fyPujtIn150tHCKWHxk=;
-	b=ODYPRZP1jx76Xrn1mbgrdhAURpZefgBwWL2YAMpBMLqZQ9fwtbQn43ovr1PlFW7JdfSx
-	 BFTUp8K3+nwfbPxC3nSCRhKx380S8PAzVRhPeiHIwkdWSiWsjPL2sRGx1nPFvpE899z+E
-	 CAqUfzWq//nUMq2dH2nX0F5K4FLH6FkdrxiU/qYGSl1uyiIovdbjprcpt4qV2bE7zHJEI
-	 ONqaKKnTubyl/vUABKCB32h3dRrCKGPS3KDi6cl+cGEtioPETdOjC35M8TAWC1cIxp67s
-	 nozXJ/SB8TN7pq2AI6I5l0X0kyq9L6Eq/G4cA5tBny6MWub3V4XVdpsDxYXT1WnggcA==
+	bh=Wf8LRi7Uf3+oQW7K9E6o9x3Rb0ptS6c5Ok2tb6AzWHQ=;
+	b=jA2fSYSMXRG4wMwor84chlJM5TZ3UlIiJ7LDXY+KqGaLvT5tQeibVJwxyQ4RatFh3kJp
+	 kBccOVBVIHn4vzdYJgtCPzCBFedQ1onxbMDgNfH6cqYIQrJtjxFNqmCCoGtgNFIIrIOIC
+	 q0QWH3XtUqhx2vGpBGxlzVnEJxuUfqtI1aCVrf4cqNFOqli90FxEfLDlHZ6i+Qh2GLmql
+	 c1S1rV6N1wQ4L83f8vCErFuCc6mZVlq1eKUHJ4GWiMPvp21WNyLeShNTRZ9TEUZoul/y2
+	 Pc3CcWW6XWGKK/uFWwFXHvDSLiD/7YopTLnkbk3NXjBZ4df46UHmRzawsrFFDiejmtg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="kmhoz4B/";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=edNNXuer;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22721606A32C;
-	Sat,  7 Nov 2026 20:21:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 186F4606A326;
+	Sat,  7 Nov 2026 20:29:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kmhoz4B/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DAF1F0089F;
-	Sat,  7 Nov 2026 20:21:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=edNNXuer
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B922F1F0089F;
+	Sat,  7 Nov 2026 20:29:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794082913;
-	bh=iOwit2Ku4CCe/YVLF5K+4NP4fyPujtIn150tHCKWHxk=;
+	s=k20260515; t=1794083352;
+	bh=Wf8LRi7Uf3+oQW7K9E6o9x3Rb0ptS6c5Ok2tb6AzWHQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=kmhoz4B/0b2Xv7nnG6Swq1Pzb0a/Bud/bYmZr826wW3aB83Yi7EVOd9c/4DKQYRMm
-	 RXC6v0mnJsPbn38aoM3wUDwPko+FNPzaldyAoAlXif4EOnxGayt2JjcO1XfWysIlYi
-	 c9wXovv6QqksWbsTvVX17pMNrMlw4c+D+gaCMbTd1mmKtzEZ+nJO1ORywKh/O4tVxH
-	 RVbEEQhvY68libjvp1g9WMSZZQerDzaBQDu3ohC/+jOR1t7D7o71BM/TOhq56h6uuR
-	 pWqBsZkd2CqexTHFYaSnGXhEFFygZc0pfFXrt3GYgELKeA/+yJl71i+8CXyekmvTdg
-	 JvRSvTdpXKudw==
-Date: Sat, 7 Nov 2026 20:21:45 +0000
+	b=edNNXuer2i6+dBOSWwbk5rBCGZYCkrG3521+DcYD4chBZjmaFaFlMZMzWptLtHDqI
+	 pL4Ip40b13HeTbM5WzDLMLCTKJIrnrsvCHQ3rJBmRtk0BDXIieLy2a+icKRqYUcVnX
+	 ImGLItlkOgavPUhVJuGfqdU4uffn5r9nsr2WZQPfT7dpc4c3tjiuzBnLmZGIMyM3I3
+	 v3muTTIy5WSDf4whh69/sNWJLHHmSPxOxrkHF2zxy+hc7gyEGRTZ9eQXHBiyxay/fI
+	 efAxHA32MxAydnHlWUu+IGYnBOAsUYdMQ7Qx2OPZJg6RQ5Ungedbd/f/CDBP4JeLT0
+	 MO1svhtvh9RtQ==
+Date: Sat, 7 Nov 2026 20:29:04 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: jikos@kernel.org, bentiss@kernel.org, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- simeon@maryasin.name, lixu.zhang@intel.com, crofts@kernel.org
-Subject: Re: [PATCH v2 4/7] HID: sensor: custom: Fix state lifetime during
- removal
-Message-ID: <20261107202145.0348a033@jic23-hlaptop>
-In-Reply-To: <20261104201403.2039921-5-srinivas.pandruvada@linux.intel.com>
-References: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
-	<20261104201403.2039921-5-srinivas.pandruvada@linux.intel.com>
+To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Joshua Crofts <crofts@kernel.org>, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] staging: iio: addac: adt7316: sort headers
+ alphabetically
+Message-ID: <20261107202904.2b3db8a0@jic23-hlaptop>
+In-Reply-To: <20261104183429.20125-2-abdelnasserhussein11@gmail.com>
+References: <20261104183429.20125-1-abdelnasserhussein11@gmail.com>
+	<20261104183429.20125-2-abdelnasserhussein11@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,115 +65,59 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed,  4 Nov 2026 12:14:00 -0800
-Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+On Wed,  4 Nov 2026 20:34:28 +0200
+Abdelnasser Hussein <abdelnasserhussein11@gmail.com> wrote:
 
-> Open misc device files can outlive platform-device removal. Since the
-> devm-allocated state can be freed while a reader is queued on its wait
-> queue, subsequent file operations may access freed memory.
->=20
-> Allocate the state independently of devres and give every open
-> file a reference to keep the FIFO and state alive after removal.
->=20
-> On removal, mark the device as disconnected and wake readers; make reads
-> return -ENODEV and polls report hangup and error. Free the FIFO and state
-> when the final reference is released. Unregister the sensor hub callback
-> before tearing down the interface so in-flight raw-event processing
-> finishes before the sensor state can be freed.
->=20
-> Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
-> Reported-by: =D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=
-=8F=D1=81=D0=B8=D0=BD <simeon@maryasin.name>
-> Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=3D=
-eUdbPthG2xrLqwQQ@mail.gmail.com/
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Sort included headers alphabetically without altering the list of
+> inclusions. Keep the <linux/iio/*> subsystem headers separated from
+> the <linux/*> group, and add a blank line before the local "adt7316.h"
+> header.
+> 
+> Reviewed-by: Joshua Crofts <crofts@kernel.org>
+> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Needed a small tweak as kstrtox.h was added recently.
 
-Looks like fairly standard fix for this style of lifetime issue.
-
-One trivial comment inline.
-
-
-> =20
+> ---
+>  drivers/staging/iio/addac/adt7316.c | 17 +++++++++--------
+>  1 file changed, 9 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 20f6052cc7fb..515f1fdae46b 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -5,22 +5,23 @@
+>   * Copyright 2010 Analog Devices Inc.
+>   */
+>  
+> -#include <linux/interrupt.h>
+> +#include <linux/device.h>
+>  #include <linux/gpio/consumer.h>
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+>  #include <linux/irq.h>
+> -#include <linux/workqueue.h>
+> -#include <linux/device.h>
+>  #include <linux/kernel.h>
+> -#include <linux/slab.h>
+> -#include <linux/sysfs.h>
+>  #include <linux/list.h>
+> -#include <linux/i2c.h>
+> -#include <linux/rtc.h>
+>  #include <linux/module.h>
+> +#include <linux/rtc.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/workqueue.h>
+>  
+> -#include <linux/iio/iio.h>
+>  #include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +
+>  #include "adt7316.h"
+>  
 >  /*
-> @@ -978,8 +1004,7 @@ static int hid_sensor_custom_probe(struct platform_d=
-evice *pdev)
->  	int ret;
->  	const struct hid_sensor_custom_match *match;
-> =20
-> -	sensor_inst =3D devm_kzalloc(&pdev->dev, sizeof(*sensor_inst),
-> -				   GFP_KERNEL);
-> +	sensor_inst =3D kzalloc_obj(*sensor_inst);
->  	if (!sensor_inst)
->  		return -ENOMEM;
-> =20
-> @@ -989,6 +1014,7 @@ static int hid_sensor_custom_probe(struct platform_d=
-evice *pdev)
->  	sensor_inst->hsdev =3D hsdev;
->  	sensor_inst->pdev =3D pdev;
->  	mutex_init(&sensor_inst->mutex);
-> +	kref_init(&sensor_inst->ref);
->  	platform_set_drvdata(pdev, sensor_inst);
-> =20
->  	ret =3D hid_sensor_custom_get_known(hsdev, &match);
-> @@ -1000,7 +1026,7 @@ static int hid_sensor_custom_probe(struct platform_=
-device *pdev)
->  		if (ret) {
->  			dev_err(&pdev->dev,
->  				"register_platform_device failed\n");
-> -			return ret;
-> +			goto err_free;
->  		}
-> =20
->  		return 0;
-> @@ -1010,7 +1036,7 @@ static int hid_sensor_custom_probe(struct platform_=
-device *pdev)
->  					   &sensor_inst->callbacks);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "callback reg failed\n");
-> -		return ret;
-> +		goto err_free;
-
-Trivial but given it might free I'd all that label err_put
-
->  	}
-> =20
->  	ret =3D hid_sensor_custom_add_attributes(sensor_inst);
-> @@ -1035,6 +1061,8 @@ static int hid_sensor_custom_probe(struct platform_=
-device *pdev)
->  	hid_sensor_custom_remove_attributes(sensor_inst);
->  err_remove_callback:
->  	sensor_hub_remove_callback(hsdev, hsdev->usage);
-> +err_free:
-> +	kref_put(&sensor_inst->ref, hid_sensor_custom_free);
-> =20
->  	return ret;
->  }
-> @@ -1046,9 +1074,10 @@ static void hid_sensor_custom_remove(struct platfo=
-rm_device *pdev)
-> =20
->  	if (sensor_inst->custom_pdev) {
->  		platform_device_unregister(sensor_inst->custom_pdev);
-> -		return;
-> +		goto out;
->  	}
-> =20
-> +	sensor_hub_remove_callback(hsdev, hsdev->usage);
->  	hid_sensor_custom_dev_if_remove(sensor_inst);
->  	/* Remove enable_sensor first as it uses fields via power_state/report_=
-state. */
->  	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
-> @@ -1061,7 +1090,8 @@ static void hid_sensor_custom_remove(struct platfor=
-m_device *pdev)
->  	}
->  	mutex_unlock(&sensor_inst->mutex);
->  	hid_sensor_custom_remove_attributes(sensor_inst);
-> -	sensor_hub_remove_callback(hsdev, hsdev->usage);
-> +out:
-> +	kref_put(&sensor_inst->ref, hid_sensor_custom_free);
->  }
-> =20
->  static const struct platform_device_id hid_sensor_custom_ids[] =3D {
 
