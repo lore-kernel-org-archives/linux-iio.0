@@ -1,70 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794085548;
-	b=es3WcN5Gs9IDrfahp2nb2BnpYp4gq4l6JSjMCBByXbLI7+EdifaMb1vXXSSswZL4OSNh
-	 9guiwfgJvlKlxENKeBoqO0teET891Q0yIwoq4LVN4vnX9FAQMVq93/px2PZZk6oQDxIz9
-	 +bzruw2Jt8XmxC4O2kVZ2JNUhFuYC5B+maW+IftHTLAwFUMx3HY+5Wc41WlqRT6hoHy0+
-	 hr1WPCwrzrXf5yTweYlGxiq4zTySV983NQ4/2R3+JiYB0B6UStdTN4BSYI53iIeHTe+dl
-	 Njz2KQlndvrUj8A8fdVie/Z/IBE3IhgsKEcC+4kV/y1D8Qxa0ieg2QKLhMDdgCs27jg==
+	t=1794085830;
+	b=kp4rp8EZ3YBhA7Cc4ynL19Vl74ophGd54zofRJWETS8r6lhvYv/notWrgF/KYJvWZaJS
+	 REiv/TdRbP2YTqbBE9GQr227kVoQb/CvJ4eSxiC4EOWVmgyEv9NAvTko25JkYLYvpdTbG
+	 EzlreAzrOTZLJKaZMN7DBhr2zfSLQD6b7Dq9Bm/MjWekYyYrbNGK7use9ytHKcOYpBuxK
+	 uf1M0DWYLCaSQvh2Sljzfr62u/2kRHNJyhBU8Y69bopwYlu9TvSJbScTJ3o+vDh+DOwzo
+	 ZCEoD1Ezl0BX0KQ8CZwxwxaZFXyCsTdHbG/LlUpOCkxZCuNRiH+zDdR0VkT9TyFUj/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794085548;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794085830;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=r6zRw0G3FSC7lmcRxa5ULpKgHtq8pUwUp6SpSOUOi0A=;
-	b=NyD8pMhGl3UKuyKy5S0AhizbuCelp5/V/rZEtJr6WHtJ+xcDhQtZz79JsuhSpgt/sMNF
-	 yAf8khF2sPPMuBdjGMdnauzhk9i4YQ+uztDDKTHj3XCbeZpQQwgf2gJkRTKdVtOQrsaeB
-	 74Tnmw3iFJyyDN0cX26/4PkCQCNlywB0+Y64osOLbD1uTCsdSNqGqporZqFlXqX/Lruic
-	 JqJxREWUXEO5QNanqwxKYWPhkSyDt8mAVJ1k/nvOHtzpGMGDtPQH9OmLGQl6QcEN/v3Ne
-	 bB7KQ95wbX7ewjtWSZHjfnFXCt7ckwiC01FVXKMG4JUoPRmRZG6vpHx6OAak5+ZwvZw==
+	bh=ytl/23dencL1Kjh9JLygxJpOYoOZT3gKsICQUgciBFk=;
+	b=zCak/7yXs40tRC0S8JzYZ6Yqog5SqhIi13dUYrZXQHEet2POeeadq7lN05M2Y/n/z1wF
+	 n1UziNatu5w9ktwPFubVE4OamCmt6qeUn2Qv5I0lfsp1FRYfZ9SdIHO5pJeOWGVBEk2Jd
+	 ABFSQ6CnYJmxsgJLgXJKblT+48TevuoSZsBeMuNH+hrLzGbxNvcM104R3aIF4t/Ovbbun
+	 CvaqwjkU4QGxSBfelFR1BfK4ZTpfjNOzJZL8lHQGE0sG4p4WfkLMmrILKExT6qZakGocI
+	 mNXKePQRQy0t2hZZr8N3EMoo0xGiBFmyCm6vpr5AHNz7MxOU6Nsj/XdSQGy6MtmR5tA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SkBs8rpV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Me/gCXvJ";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC624606A326;
-	Sat,  7 Nov 2026 21:05:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 918D8606A326;
+	Sat,  7 Nov 2026 21:10:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SkBs8rpV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 914ED1F0089F;
-	Sat,  7 Nov 2026 21:05:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Me/gCXvJ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AEAC1F0089F;
+	Sat,  7 Nov 2026 21:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794085547;
-	bh=r6zRw0G3FSC7lmcRxa5ULpKgHtq8pUwUp6SpSOUOi0A=;
+	s=k20260515; t=1794085830;
+	bh=ytl/23dencL1Kjh9JLygxJpOYoOZT3gKsICQUgciBFk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=SkBs8rpVVu7uYfXSDaVsow63p6IcHHClJGK+4/hWXYgNfaZfaqHAswQmMvP5tC5vQ
-	 Eb8Y4fZG5B96uM26nDPCi18lFhPJZFqfN74g9qu3TuTq3GYTfcJ9b6AC94eEjIdZjO
-	 mZlCxxhwpkbKEFMzMUHnZhsGd7B+2Xd1XqMt8m35JpqAlbQhHtV5rGoPzB3HbhiuSo
-	 305/bDuYFIcW2XfBWoa28hFVaKmZV31WLcEOh5L6K0I+M/ZQ3pq1YyEWjugxmXDdiG
-	 CW8gQp5mizNqx2m8sZgwt5Z6HvlctbNHd1ZxZ9WGV51Qb6rXFjJmimARsJv1HZls57
-	 40USNaim7L0cQ==
-Date: Sat, 7 Nov 2026 21:05:38 +0000
+	b=Me/gCXvJupNPxDpMoeUd9lZVfdbXNEpLuQCr+IrxQ8JIZ6WeVdowPbwjTTlz4yooH
+	 VRbOllPF5DawZM93iZvi2oq2CzBhVcrXwb/OcUU0j4H7VQYjj78DuEVrqA+pDrPuTI
+	 B9KXYI6jr/KNBYA5PoUSsNC86H1LlYoAWhAM/inqhQVHPZ1fpmqg1Z5c2xHw6qF2Ux
+	 cyYdtdEbc0hwno/6eeTuZEY1eKRHeNgfKQTg7Zz1omEuTGPOqoE4DG1E3mGfE/J9Iw
+	 B7wPbNciEXtcnaOu8eD+W5HGEKCdRSDQAeo0QTsZwtueR25q2dCKLgIt9SMzSgyZU3
+	 E+j0pIPZ+Q5fw==
+Date: Sat, 7 Nov 2026 21:10:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc: Joshua Crofts <crofts@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Matti
- Vaittinen <mazziesaccount@gmail.com>, Rodolfo Giometti
- <giometti@enneenne.com>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>, Angelo Dureghello
- <adureghello@baylibre.com>, Tobias Sperling <tobias.sperling@softing.com>,
- Eason Yang <j2anfernee@gmail.com>, Marilene Andrade Garcia
- <marilene.agarcia@gmail.com>, Cosmin Tanislav
- <cosmin-gabriel.tanislav.xa@renesas.com>, duje@dujemihanovic.xyz,
- herve.codina@bootlin.com, thomas.petazzoni@bootlin.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: add driver for Texas Instruments
- TLA2528 adc
-Message-ID: <20261107210538.559bcd3a@jic23-hlaptop>
-In-Reply-To: <ac9f57f7-cb96-4a2c-85c0-5369b3bb0a64@bootlin.com>
-References: <20261104125726.1754980-1-maxime.chevallier@bootlin.com>
-	<20261104125726.1754980-3-maxime.chevallier@bootlin.com>
-	<20261104145641.000070f2@kernel.org>
-	<ac9f57f7-cb96-4a2c-85c0-5369b3bb0a64@bootlin.com>
+To: Chi-Wen Weng <cwweng.linux@gmail.com>
+Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ cwweng@nuvoton.com
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+Message-ID: <20261107211021.418a931c@jic23-hlaptop>
+In-Reply-To: <20261104091136.151269-2-cwweng.linux@gmail.com>
+References: <20261104091136.151269-1-cwweng.linux@gmail.com>
+	<20261104091136.151269-2-cwweng.linux@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,12 +66,84 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+On Wed,  4 Nov 2026 17:11:35 +0800
+Chi-Wen Weng <cwweng.linux@gmail.com> wrote:
 
-> I'll also address the other comments in V4, thanks a lot for reviewing,
-FWIW I took another look through and nothing to add, so should be good
-for v4! :)
+> From: Chi-Wen Weng <cwweng@nuvoton.com>
+> 
+> Add a binding for the Enhanced Analog-to-Digital Converter found on
+> Nuvoton MA35D1 SoCs.
+> 
+> The controller has eight external analog inputs. They can be used as
+> single-ended inputs or as the four fixed differential pairs 0-4, 1-5,
+> 2-6 and 3-7.
+> 
+> Use the common ADC channel properties to describe the physical input
+> independently of the logical channel index.
+> 
+> Signed-off-by: Chi-Wen Weng <cwweng@nuvoton.com>
+A couple of really trivial things inline.
+
+Thanks,
 
 Jonathan
+
+> ---
+>  .../bindings/iio/adc/nuvoton,ma35d1-eadc.yaml | 163 ++++++++++++++++++
+>  1 file changed, 163 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
 > 
-> Maxime
+> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+> new file mode 100644
+> index 000000000000..85b0feac0236
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+> @@ -0,0 +1,163 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/nuvoton,ma35d1-eadc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Nuvoton MA35D1 Enhanced Analog-to-Digital Converter
+> +
+> +maintainers:
+> +  - Chi-Wen Weng <cwweng@nuvoton.com>
+> +
+> +description: |
+
+Similar to below. I think this is overconstraining the formatting.
+
+> +  The Nuvoton MA35D1 Enhanced Analog-to-Digital Converter (EADC) is a
+> +  12-bit successive approximation converter with eight external analog
+> +  inputs and one internally connected VBAT input.
+> +
+> +  The external inputs can be used as eight single-ended channels or as
+> +  four fixed differential pairs: 0-4, 1-5, 2-6 and 3-7. The internally
+> +  connected VBAT input is not described by a channel child node.
+> +
+> +  The controller provides four interrupt outputs, ADINT0 through ADINT3.
+
+> +patternProperties:
+> +  '^channel@[0-7]$':
+> +    type: object
+> +    $ref: /schemas/iio/adc/adc.yaml#
+> +    description: |
+
+IIRC > instead of | is appropriate here. You want to maintain paragraphs but
+otherwise allow rewraapping.
+
+> +      External EADC channel description. The reg property identifies the
+> +      logical IIO channel index.
+> +
+> +      A single-ended channel may use single-channel to select an external
+> +      analog input independently of reg. If single-channel and diff-channels
+> +      are both absent, the external analog input is selected by reg.
+> +
+> +      A differential channel uses diff-channels to select one of the fixed
+> +      hardware input pairs: 0-4, 1-5, 2-6 or 3-7. Each single-ended input
+> +      and each differential input pair may be described at most once.
+> +
+>
+> +...
 
