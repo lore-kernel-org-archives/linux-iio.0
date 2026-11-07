@@ -1,59 +1,65 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794018809;
-	b=Hc340yla3nLk6M0dU1epbyCW2UJLBEmuiH0MXlTzZifjFt0eeArWkaA4PrwNxSyZKnX/
-	 wUI6eJse0uIemEbcI8MdD+JM6e+VCW245OlNoE4fGVyMBTXT6wYekSlBkTcIIUgfKkZ/X
-	 x+nzhVgjrIL8v6ttv92jinaVtZOpqPfrZbUOSwLMvoTR0V5kvQuUvTDzo3CQZtEx9b4XE
-	 qoixLF2MJUkzJ33aM7JMG6fEAgZWd7AtdGmiZxSUlZwKiBJajHeTEgx8jmJaiBwd0aIP3
-	 BRHIsgF/PAKPi2VsEag/9UKiRzqrx6uSGHTcsVm0hN4/CxiwfLUWbcr8ZnearWzoxDg==
+	t=1794021650;
+	b=Bm5bkr8g6Ohh724UfzhvVBogWUWuTpPEIcQfZrpQUKHRRDx95a7WgH34GKWmRgOMXsJ+
+	 HLb7V5Po+cb614EWuIJ+hcxQG2e+uO8ERc3stzeDsYbFQ9WHco9RtHMYPIz9DAf7YYjHH
+	 BkfbCsGF8ed8s/Ar/+qXSE/60/sDPiyVC3PaICJRb7MfF+x0i9FdDin6Y5RRr+1CH7IfS
+	 +fxYJPmvc+1gWWAEr4LORK7r3muaMLy+k1GcSWkYVedxpmtWcprD21BT+uevK7/88pFay
+	 nHAFdz72Gs0z2w2h0Or6gwGpcMIa3L415OzWEBcf2cgVo5OAM8wzqsLFz1gCLf7eoPg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794018809;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794021650;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=91V3omyskj++g5IXfnumXhkuwJ7mLrazZpEc4xXbXMs=;
-	b=btq8T81CtVa/63amuDJIWJpyDsvUBDqLFziEy0Wyacs6vupApGBBOB7Un/TjHjq0KqsU
-	 nAbT6pucSIXbosW9/a/ngek4DdbX70AqY4TnQN/xg5cucHQ+aqEpj/VlXcaC+Jno5I1p3
-	 Z5QWoJ1Vq7UotmqhjLeCYj9YvZlkfIUrac0XwEmm12I1u0366i6jTFamChrzTcTGOARGh
-	 7F92GnzyKTsNdPxeohKE7ibNIIw86AcvheTcoRMF/umxWnlh7Ga8CHxfL1Yx4uJT3T2nq
-	 d+ekt+zss4eUPa+1kAbV+0RFiKYhyDGUmvT9GXowTwT1JQv7UKBsuv5GEzYK7D41YVg==
+	bh=82d5k5q10xlQuPzF6hB++osn7kDtgfy9QN6IoYLOy/k=;
+	b=oQbkbVLA9TfAZ0LCWaSQe7ougpcC1wMvhsJi5Ir3XoWt2zFbpmBsKL/l5e+xuW02FRln
+	 J0+kXu76jlCc4ZSRfLsPfCbi1FNk8E8dtX+cHjGkk0+Jb9MsOm8gbbJoo8TB580I0OmTg
+	 WMEUiFobbs4QakG/5FU+Qz0PJ94frrp7Pzpjg6TBLMBnAXcCSokaSYucYaTf1xxUC6L8G
+	 YvdAWHOglEyYdWraSUvB0mQQjqCpgnmnG7x9xoG9U2TyBye3GRCYPd9lktFvFM4vDl5HY
+	 s0tClP11Lvqpwgf3rJP5M3O/HDPNi5FfroCTAS3170bSiIFfeBF6CHbYZtGj4m6iQhw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FWqVaU00;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jMngf8F4;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AAA7606A32C;
-	Sat,  7 Nov 2026 02:33:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F01D4606A326;
+	Sat,  7 Nov 2026 03:20:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FWqVaU00
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A85F91F0089F;
-	Sat,  7 Nov 2026 02:33:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jMngf8F4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DADD1F0089F;
+	Sat,  7 Nov 2026 03:20:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794018809;
-	bh=91V3omyskj++g5IXfnumXhkuwJ7mLrazZpEc4xXbXMs=;
+	s=k20260515; t=1794021649;
+	bh=82d5k5q10xlQuPzF6hB++osn7kDtgfy9QN6IoYLOy/k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FWqVaU002fBM9v5T5v6Bz8JR/KADIY6Cp3i0UQRtJ7SlXpidZMMpLSJ04BJ/ROX1Q
-	 8HpI3u68Y4sbz+tsgS7HRrqTazNfAfCIfB+6EpmvJ0/okgHfpWHROP3qn6NOII6Dgk
-	 DLmCKUrglC8jRwqtLKiHzfw/NJ0bQxel7oKYnEK53DIDpyyVUIPqZJKrwFtA7tPHl7
-	 g7emlSWFcusCHKkQPeoiFZVhryQN1NFaXUFB/G7/r5rsZvHA+hdDKmuvA07XbSvPgH
-	 BM1haezIVW0xUn/QatJKydcjR17ejZ5nlE1G5WuG7Z3x+49e6TiaAUfj52QpKljQqU
-	 QIlVMMQ2X4uIw==
-Date: Sat, 7 Nov 2026 02:33:23 +0000
+	b=jMngf8F4QXzoCD778s1/OIeDwFBEm/hSSoTicSjz0dX5QsncRAXSyzTYKcDlVvYH5
+	 xz3fI5urPgrnPiPfwcQtyXtCr9HpxyZ0H13lCfAmGts579emuq0gNaUX/KYpzYc/7J
+	 gL1ww/yhDqV01NiQ9y6qd2fy/C/WGoTHe2WAmYIKXZlawPYWtxfZmmRQcb4A13JHJO
+	 s5LADZGFCeku1X4HgAfHVlTkIQOqaZMmXpNIJll5mZaLTSg6Gm9WZdVjBRAnnQzlOu
+	 N27BnaKgUZ8r+UF9bU002ZJmj7U0RPTAPQfEI31L5c0BYsS7I1VimLSfwKKgBfSC3x
+	 PH8z+FYdabPDA==
+Date: Sat, 7 Nov 2026 03:20:42 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Olivier Louvignes <olivier@mgcrea.io>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Paul Cercueil <paul@crapouillou.net>, "H . Nikolaus
- Schaller" <hns@goldelico.com>, Joshua Crofts <crofts@kernel.org>,
+ <conor+dt@kernel.org>, Esben Haabendal <esben@geanix.com>, Kuppuswamy
+ Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, "Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+ <u.kleine-koenig@baylibre.com>, Pan Chuang <panchuang@vivo.com>, Hemanth
+ Selam <hemanth.selam@gmail.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 0/2] iio: adc: Add the Ingenic X1600 ADC
-Message-ID: <20261107023323.574fd918@jic23-hlaptop>
-In-Reply-To: <20261106105358.59616-1-olivier@mgcrea.io>
-References: <20261106105358.59616-1-olivier@mgcrea.io>
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] iio: light: ltr501: Switch to read_avail() op
+ from manual attribute registration
+Message-ID: <20261107032042.0dd311fe@jic23-hlaptop>
+In-Reply-To: <20261106091943.35783-2-clamor95@gmail.com>
+References: <20261106091943.35783-1-clamor95@gmail.com>
+	<20261106091943.35783-2-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,17 +73,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri,  6 Nov 2026 11:53:56 +0100
-Olivier Louvignes <olivier@mgcrea.io> wrote:
+On Fri,  6 Nov 2026 11:19:40 +0200
+Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> A driver for the SAR ADC of the Ingenic X1600: four auxiliary channels,
-> 12 bits, one interrupt per channel. Tested on a HiBy R1, whose keys are on
-> channel 0 behind adc-keys.
+> Switch to the read_avail() operation from manual attribute group
+> registration. This eliminates the need for per-chip attribute_group
+> structures and related ltr501_chip_info iio_info entries.
+> 
+> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Given you were quick off the mark on sashiko on v1, I guess
+you already saw:
+https://sashiko.dev/#/patchset/20261106091943.35783-1-clamor95%40gmail.com
 
-Applied to the testing branch of iio.git. I'll push that out as togreg
-for linux-next to pick up after 0-day has had a chance to give it a first
-poke.
+It seems correct that you'll only get one attribute where there were two
+before.  I suspect it's as simple as the mask should be set of
+shared_by_type_available not shared_by_all for scale and shared_by_all
+for only sampling frequency and integration time.
 
-Thanks
+The current code is odd in having per type sampling_freq and integration
+time as both apply to the light channel as well I think.  Not vital
+to fix that though so I'd just split the mask to make it work for both
+as it does today.
 
-Jonathan
+The current way the two Intensity channels is done is very odd.
+The .info_mask_shared_by_type should be the same for both of them
+(only one set of attrs will be created).
+Ideally fix that as a precursor patch (don't label it as a fix
+though as it's just a code consistency thing rather than actually
+resulting in a change.)
+
+
+> ---
+>  drivers/iio/light/ltr501.c | 153 +++++++++++++------------------------
+>  1 file changed, 52 insertions(+), 101 deletions(-)
+> 
+
+>  static const struct iio_info ltr501_info = {
+>  	.read_raw = ltr501_read_raw,
+>  	.write_raw = ltr501_write_raw,
+> -	.attrs = &ltr501_attribute_group,
+> -	.read_event_value	= &ltr501_read_event,
+> -	.write_event_value	= &ltr501_write_event,
+> -	.read_event_config	= &ltr501_read_event_config,
+> -	.write_event_config	= &ltr501_write_event_config,
+> -};
+> -
+> -static const struct iio_info ltr301_info_no_irq = {
+> -	.read_raw = ltr501_read_raw,
+> -	.write_raw = ltr501_write_raw,
+> -	.attrs = &ltr301_attribute_group,
+> -};
+> -
+> -static const struct iio_info ltr301_info = {
+> -	.read_raw = ltr501_read_raw,
+> -	.write_raw = ltr501_write_raw,
+> -	.attrs = &ltr301_attribute_group,
+> -	.read_event_value	= &ltr501_read_event,
+> -	.write_event_value	= &ltr501_write_event,
+> -	.read_event_config	= &ltr501_read_event_config,
+> -	.write_event_config	= &ltr501_write_event_config,
+> +	.read_avail = ltr501_read_avail,
+> +	.read_event_value = &ltr501_read_event,
+> +	.write_event_value = &ltr501_write_event,
+> +	.read_event_config = &ltr501_read_event_config,
+> +	.write_event_config = &ltr501_write_event_config,
+
+I'd prefer a precursor patch tidying up the indent as that should make
+the diff on this patch easier to read.
+
+
+>  };
+
