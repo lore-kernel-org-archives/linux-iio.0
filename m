@@ -1,58 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794090604;
-	b=roKNEILLa66Yscj8dwxbDNsNZOkbuOCjY5GDw5D99vT1D3fpPUdq53Z2WJYorbB6qd8P
-	 //Fkn7eemYgMlp9uTNkb8N+xhVn3On2FWgegKBCkqbjC2hcFuokgE9g7gXtOYwbEXlI3l
-	 Ddhbezksf9bpHMGoXGLBCKatEgxzHDN3cexcifClZV9KUlnuHrlbGScCHEMjKAhwSx2vh
-	 pBSIsdkvZKPBCSPAqZq6ywS1uf0/6TyEhzfPFAyh4l9Bvf888+o9HGgNQLwaYyoA2hn2j
-	 1yTYRAFa83i8pdVSsaAKZx5IWdDgG/R9uA35tcPscJ7g05pOI46q9LxvTgH4tRsOFAQ==
+	t=1794090724;
+	b=LGsESpZTfqYd8FxRpySuLdwJVuFCA7CQEskan5A1uDyTgbTIW0OnHjCzXDDvc0JSA24B
+	 X/q4ap8YKz7kIeX8/Jrg2gau329H/kZi1KZPlEa2ZKgnT168uNN/5kOzR70UUunv9xB9s
+	 ZnbVuScH/aMuiuqbvcDUvXJVDZInKWACkY8nUJXrS/de2srMEghTBqCfNjNqmZ0DGh5Np
+	 eHFZKpFvlYIqqn7vnrgff7jsDXxCXSJ2MOY6XQf41y9BeZMwzARAtG9PumuftsWbs2Hah
+	 xQ4BLDbhsZaOyb84Iw6J2ve6eCrLG9tW8FPqDnM8Mcz8bCnmPALqH+BBbh8gxswPqsA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794090604;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794090724;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=avppe/pzkXSHluZel5dJ8NQ+YEt4WNPu27v4dAsJ3dM=;
-	b=Im4zadt529yDu+5nTD75or8MBPPhAB9TKKaG4nV69o1nJCGuVPLpT3LYk415JqiA9+MT
-	 y+CQk+Vwr/2d2LEABIAq5gPQL7tfeNFsgr11dVPllJq3U1tYKdF9zR0niWfDXRYr4nSRZ
-	 uIseWS8zooMUmvcLGwqz6+PkMUipGyp1crNF6Kfy0u+SNAj0qujv0TBwYyaM2xO5fGeiP
-	 NspqBnt8dDngRTUqMsvChhdjgU1gGb7P+1REa321aj2H8wJwlb5Cl+XgLz3YoGq1MBTE1
-	 NRj0qjkuuY7U6poyTlYmDZui9hxlvw+RzJzzOvks4on6/KwSun5HFkNUg1gHey6gn9Q==
+	bh=5KMHHkzr0VrWngWsjnMLo1w51qe8S4fGQdolu2SQuO4=;
+	b=PHtmjtc4HCWdbIp0FP+RMIG7NI8idR0eOy6/ci04lCXG0u+3mQDR92xQ8iF/8JiGSAgp
+	 N3iD4zi5mYxVNaCQgAlbly/5P1woOagYQHRfA0DufdKOmFpSNVvt6kuXDoGHFW22b3h1I
+	 MC88hL4blkLhheyR9EuvT6Bo9+CyIyQ9gLOdeaVh91KDmUIWnjoADGsI9h0jPvN9Wbu2H
+	 r79zCKt5dUiLXTFsGqt8dNyupCRJZX6i45DzPcS5MPjeaFTTdOI4TLeyYOMmNg2IK5luO
+	 OD00eumcEL4XOsMKWcFD6i3er9UI4XdfsCqGku2mdstvFs0YOvYKkrRoW7krfe7EPoQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NVUanBvg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OwxhDpva;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65198606A326;
-	Sat,  7 Nov 2026 22:30:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04DD4606A326;
+	Sat,  7 Nov 2026 22:32:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NVUanBvg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6047E1F0089F;
-	Sat,  7 Nov 2026 22:30:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OwxhDpva
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 152B91F0089F;
+	Sat,  7 Nov 2026 22:32:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794090604;
-	bh=avppe/pzkXSHluZel5dJ8NQ+YEt4WNPu27v4dAsJ3dM=;
+	s=k20260515; t=1794090723;
+	bh=5KMHHkzr0VrWngWsjnMLo1w51qe8S4fGQdolu2SQuO4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NVUanBvg5JWmPcHGRcYjgp2K8xB64fIhZIat449xjQJnX/N7WWrj/c25DJlPRSyEH
-	 58CU2Y9ht62Hk+QCFLG4xl0fqN0ckX2VTwCZiVmMi5lVKLnAjOvp/93NX43A5qF8Im
-	 Ini0QKxOx9dduJBbUfEJC33r6sTfR81s8BXErHdGwzM5pmQLfpPFurTQnq6Udg5P2G
-	 5p98Dt3cB+sGAe70uAmpWo4M21MHb7lwGIDKAF5wJv+sfCivvZzyhoM6z2+wg7QfAh
-	 t8TLRlzdLSPaAgoAYNrZwV4ARZjYL4Pb5Zl+zwgloXjCsZdYlSILw+AwljkSCACa9d
-	 RKf0UfiRROjvw==
-Date: Sat, 7 Nov 2026 22:29:57 +0000
+	b=OwxhDpva3J+9FWhxhiI/B455DDEj+6L0o1HyPtEKO6nsUvHWRafl6zGPrfbtyNzwF
+	 k/hDZyedVKqCEWscPg/sBuMU9SvbGSAWemT0rTTK9ehUNYG63FCt3BlJH1YLOwyk9Z
+	 Q4+wsi9kR8KxAql11d6H0yfWaVj1i9MsexVF8FWongIkUJKiiEbzKI4TwMuwB988pj
+	 XKyBQjgDDF09qo0bwj7SpiHpEMp7ok8eA0S4FnOT6WhzmxRA2o37UfHDM7+kZc52tm
+	 9R0z6v158Voqv41KfdUFFoqJom295YFMTbW4Fft8KMy+2Vz+ODmdeF62chB3ayORtV
+	 8kk77Qy1ovIig==
+Date: Sat, 7 Nov 2026 22:31:56 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Raffaele Tranfaglia via B4 Relay
- <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Cc: raffaele.tranfaglia@gmail.com, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: adux1020: harden sampling frequency table
- lookup
-Message-ID: <20261107222957.5332237b@jic23-hlaptop>
-In-Reply-To: <20261104-adux1020-rate-bounds-v1-1-2db71ad2cc21@gmail.com>
-References: <20261104-adux1020-rate-bounds-v1-1-2db71ad2cc21@gmail.com>
+To: Joshua Crofts <joshua.crofts1@gmail.com>
+Cc: Maria Sheikh <mariasheikh812@gmail.com>, outreachy@lists.linux.dev,
+ nuno.sa@analog.com, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ andy@kernel.org, gregkh@linuxfoundation.org, linux@analog.com,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: addac: adt7316: return 0 in
+ _adt7316_store_enabled
+Message-ID: <20261107223156.7d64b095@jic23-hlaptop>
+In-Reply-To: <20261104090008.00002b25@gmail.com>
+References: <20261104041237.7978-1-mariasheikh812@gmail.com>
+	<20261104090008.00002b25@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,76 +65,36 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-On Wed, 04 Nov 2026 10:28:22 +0000
-Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@ker=
-nel.org> wrote:
+On Wed, 4 Nov 2026 09:00:08 +0100
+Joshua Crofts <joshua.crofts1@gmail.com> wrote:
 
-> From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
->=20
-> The proximity frequency field read from the FREQUENCY register is four
-> bits wide, so it can hold values from 0 to 15, but adux1020_rates[] only
-> has 14 entries. The driver never programs values 14 or 15, but if a
-> misbehaving device reports one of them, reading the sampling frequency
-> indexes past the end of the table and returns garbage.
->=20
-> Reject such values with -EINVAL instead of indexing past the end of
-> the table.
->=20
-> Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Hi Raffaele
+> On Wed,  4 Nov 2026 09:10:45 +0500
+> Maria Sheikh <mariasheikh812@gmail.com> wrote:
+> 
+> > _adt7316_store_enabled() writes the config register and returns -EIO if
+> > the write fails. When execution reaches the final "return ret;", the
+> > write has succeeded, so ret is always 0. Return 0 directly to make the
+> > success path obvious.
+> > 
+> > Found with cppcheck (identicalConditionAfterEarlyExit). All callers
+> > either check for a negative return value or pass it through, so
+> > behavior does not change.
+> > 
+> > Compile-tested with W=1. The disassembly of adt7316.o is identical
+> > before and after this change.  
+> 
+> I'd move the testing info below the ---, as it's only compile tested.
+> No need to resend however, this can be fixed up when applying.
+> 
+Done whilst applying.
 
-Change looks fine, but I'll not this code would benefit from use
-of guard() to handle the locks if anyone wants to do that as a follow up.
-=46rom a quick glance, looks like it is a very straight forward change
-for that type of modernization patch.
-
-Applied this to the testing branch of iio.git.
+Applied to the testing branch of iio.git
 
 thanks,
 
 Jonathan
 
-> ---
-> Found with LLM-assisted static analysis of drivers/iio, looking for
-> table lookups indexed by unchecked register fields; the fix was drafted
-> with the same assistant and reviewed and tested by me.
->=20
-> Tested on arm64 QEMU with i2c-stub and CONFIG_UBSAN_BOUNDS=3Dy. After
-> setting the frequency field in FREQUENCY (0x40) to 14, reading
-> in_proximity_sampling_frequency:
-> - before: two array-index-out-of-bounds reports, and the attribute
->   reads 0.025000
-> - after: the read fails with -EINVAL and no report is printed
-> ---
->  drivers/iio/light/adux1020.c | 4 ++++
->  1 file changed, 4 insertions(+)
->=20
-> diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
-> index 0ea282ecc99a..d4281b9754c3 100644
-> --- a/drivers/iio/light/adux1020.c
-> +++ b/drivers/iio/light/adux1020.c
-> @@ -414,6 +414,10 @@ static int adux1020_read_raw(struct iio_dev *indio_d=
-ev,
->  				goto fail;
-> =20
->  			regval =3D FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
-> +			if (regval >=3D ARRAY_SIZE(adux1020_rates)) {
-> +				ret =3D -EINVAL;
-> +				goto fail;
-> +			}
-> =20
->  			*val =3D adux1020_rates[regval][0];
->  			*val2 =3D adux1020_rates[regval][1];
->=20
-> ---
-> base-commit: 20ce8ef9c9e04cd6c5ae0422e251a9b5936c6b7c
-> change-id: 20261104-adux1020-rate-bounds-61e3ff96e0f3
->=20
-> Best regards,
-> -- =20
-> Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
->=20
->=20
-
+> Reviewed-by: Joshua Crofts <crofts@kernel.org>
+> 
