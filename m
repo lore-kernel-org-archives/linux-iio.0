@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794022238;
-	b=EIE+dMTJCMxcNpJnm1vM3uCK/Tu85iDYahoFYBQRutOeMDjvh4f8CGuDzgglsJZm9nqd
-	 TaFJj4LSzQQbzLKRJecenFN2oyW1nyPVi3VHDNvse5M0nTQbq4ksxLH7IS56wf70TrAPD
-	 /fAw3ihlDlYf/8seeVP3Lg0VmE6K+v33LfCJ17txEDLJk5qAY2Bvjt2UG+nlkYEhsH3uG
-	 PyuFkrcgMG/6inbeEGZzFudgUYkNb3xUV2x1MHtYAIhfdsCCg8o51oAL17/AKxv3k+++Y
-	 KSvS2oF/La0SskOGiUrCllhvoInvCrK7aXjVBXJSEMPyXchhKtV92bXb3NGsL4Ph1vw==
+	t=1794022429;
+	b=JJre7a6w5/LCXsSyXyhJp+4z3fD4UW4l4GtLpV0HQVbXc75Zni4cuekO/w9ZR4OzKEkb
+	 phPMHqQKauqJIljrtDr3MVBpfm6U/LdFzGN7TJOlgqruA+0BnNFw6jlS3uGKqsT73561X
+	 OjwqxSWEHdjA+gOsXi17jQfwv5s1rTP2xRDBzarv7+HIYW5OJRDI6/Ov2R7TO6Z5BPm3D
+	 rup+Zb5GOQTkfG2XtKQbBq/4nE49UPzH93jXtnwO5bhet3Qn0u8DCm4KhXvgnHbiHUINy
+	 Pk1+q5dxeCvKN2c3UtUcoxUdNq/dS4zOl2Rdkh5N4ZRRBsrVMcfKXeHRIzb9X5DnC/w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794022238;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794022429;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=1bU+23Ts9k7fqwmVRnmBAtDOJpgOkQlk4RYG0pmWGro=;
-	b=BtPsEO4Rqgi9Sm7K3qtZVRpn9/7DtPGKEsfK9IroHzWCkltj+DPwyxli+S0Tv7O4ujDF
-	 z8DV84IrQlyeYQu6NJNjfp0QFO5yOa4sVMzaHfEYuncaoBLgeJqop/YSCbQO9/2m6Qs55
-	 QLF982LUGKQkCYkSRzZBcXKHdr/BfF8g9Rs4lRIAoKDBbDng+hpWB2tkQbFY4KNzW1vli
-	 K3lMf6cEum/CjbDxXX/w/vmQ3AnftfY2/jNma78lc4R5lrYrD5zoSUFVBZMnnPDCLLNHp
-	 0Ty0+Rj6IQWGji0Dnjs6FvozwZcZkNooWaodtprP7Ns8HJ6KXpOf6rrWX54ZSA/bsnA==
+	bh=qDSVjPseL3QAEULLVfJL/AdxXAU5ASZY412c98qtMFA=;
+	b=2kQ8oc4kdXBgO+9HOad5v7SEBUczC2s181/Ea20WwN1ojcokA53+vehAwrNVBiSAgYBP
+	 ZyyADQuRnUcKMCVGIJedfxfZOZoiohIkVWTLwWnqBj7nsRoajr6IdJIEoiIwhKEbtqYiq
+	 H4yjmXRPWeVVrrIuxO/FTAOhB1I5XBvIU3LNzJXozOuKQLStDmkIXNYdsRRucR1MS5tM5
+	 CRqQG433MZQytvkvNOGrSMRqe8hY866vawSx6WQo/hifjO3uP/Er6/WMTjz+2Rjcvi0mf
+	 R+b2QftDEzV2DdbU+8zV/gWRt0ajx5VGkM5eMk1TWxe6xnrrRQ01nIHyIKBOFGLtcEg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LF6JEZge;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="C50r/fU/";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC0AD606A326;
-	Sat,  7 Nov 2026 03:30:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CB8F606A326;
+	Sat,  7 Nov 2026 03:33:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LF6JEZge
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CC61F0089F;
-	Sat,  7 Nov 2026 03:30:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C50r/fU/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB701F0089F;
+	Sat,  7 Nov 2026 03:33:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794022237;
-	bh=1bU+23Ts9k7fqwmVRnmBAtDOJpgOkQlk4RYG0pmWGro=;
+	s=k20260515; t=1794022429;
+	bh=qDSVjPseL3QAEULLVfJL/AdxXAU5ASZY412c98qtMFA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=LF6JEZge394EUIaXdslskBxA6XnNuVGG0FH/X9Ocw+eniBhyZhgAOYCTxs9pnJYHE
-	 66rXQuuUdx0W0pqgCUt/AKbEO5KQRewAO+TVNbBrIIrAghPmwt4Zb+kG2B+QNWRNo1
-	 3Hbb45qmdrr9DLaCWSKInfNBDc+EtbJd4RNVwYm74CmmBNr+5VBP4KLCo2ACuHSQsY
-	 4x3OUBN9PcZNBAOiyK2KhBej8mG8rGkG7YTMjS3jMH2/PC/2KCugPFKR1DIabTNREj
-	 x/ik8QxpHu5y1l/bigYc0lKL8R+tGUNhQMRSSvrByFelEKxLdOJWglhoLqrQgOk3w9
-	 8dVt+vNakrHUg==
-Date: Sat, 7 Nov 2026 03:30:29 +0000
+	b=C50r/fU/gYCO/scuZDU1ZoiTeRX2i4HNsWCLeerlwwkz8MHbM49wIYZ2TY9oTOnKM
+	 Bv1L3xvm0JXpAuSS84jpjAOAFNTGMoMfswCcmY/V8sHvE4kMwiTkuRNa4zV/cQ6qwn
+	 BSAlbcEG6jGCYCp6tvW22417kFS3XezoMcfL7iX0kIsLyarptD0EekpW6MAuFthCPK
+	 5ZX0ZS4aBp0Bo3ETeEiu2V3JWXpwBL05apP/dl6nAb0EEzJxEt0XbKIKzM+I9fRbQd
+	 Z0VoXRr+rc/yW+jR69hQAuAo5FqMJh5qoLnIZr2JC3X4iEU8x4t4t6GLOWz6qN7T1W
+	 F9OoCzF8EwMaw==
+Date: Sat, 7 Nov 2026 03:33:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Svyatoslav Ryhel <clamor95@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -54,12 +54,12 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: light: ltr501: Switch to modern match
- mechanism
-Message-ID: <20261107033029.0b2d3ee1@jic23-hlaptop>
-In-Reply-To: <20261106091943.35783-3-clamor95@gmail.com>
+Subject: Re: [PATCH v2 4/4] iio: light: ltr501: Add support for the
+ LTR-659PS-01 proximity sensor
+Message-ID: <20261107033340.64062192@jic23-hlaptop>
+In-Reply-To: <20261106091943.35783-5-clamor95@gmail.com>
 References: <20261106091943.35783-1-clamor95@gmail.com>
-	<20261106091943.35783-3-clamor95@gmail.com>
+	<20261106091943.35783-5-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,152 +73,83 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri,  6 Nov 2026 11:19:41 +0200
+On Fri,  6 Nov 2026 11:19:43 +0200
 Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> Remove the chip enum, break the chip list structure into individual
-> elements, and pass each element using i2c_get_match_data().
-
-Sashiko calls out that for ACPI this results in an ABI change.
-The original code did the ABI wrong but that unfortunately doesn't
-mean we can change this one as it is an artefact of a time when
-we weren't so careful about those names.
-
-So you'll need to put special handling back in for the ACPI parts
-and that name. Some other things in the existing code noted inline
-that would be nice to clean up whilst you are here.
-
+> Add support for the Lite-On LTR-659PS-01 proximity sensor. This device is
+> nearly identical to the LTR-559ALS-01, but omits all elements related to
+> ambient light sensing.
+> 
+> Add a no_als_support flag, similar to how no_irq_support is used, to
+> isolate ALS register access for the LTR-659PS-01, since ALS registers are
+> marked as reserved and interactions with them are discouraged.
+> 
+> The ltr501_trigger_handler relied on the scan index to identify channels.
+> This approach is fragile regarding channel status flags and can break if
+> the index is not strictly set. Switch to checking the channel type
+> instead.
 > 
 > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
 > ---
->  drivers/iio/light/ltr501.c | 165 +++++++++++++++++--------------------
->  1 file changed, 74 insertions(+), 91 deletions(-)
+>  drivers/iio/light/ltr501.c | 73 +++++++++++++++++++++++++++++++-------
+>  1 file changed, 61 insertions(+), 12 deletions(-)
 > 
 > diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index cc5d7af44d77c..d5ce6468a229b 100644
+> index d5ce6468a229b..e7762115df913 100644
 > --- a/drivers/iio/light/ltr501.c
 > +++ b/drivers/iio/light/ltr501.c
+> @@ -151,6 +151,7 @@ struct ltr501_chip_info {
+>  	u8 als_gain_mask;
+>  	u8 als_gain_shift;
+>  	bool no_irq_support;
+> +	bool no_als_support;
+>  	struct iio_chan_spec const *channels;
+>  	const int no_channels;
+>  };
+> @@ -192,6 +193,11 @@ static bool ltr501_has_irq_support(const struct ltr501_chip_info *info)
+>  	return !info->no_irq_support;
+>  }
+>  
+> +static bool ltr501_has_als_support(const struct ltr501_chip_info *info)
 
-> +static const struct ltr501_chip_info ltr301_chip_info_tbl = {
-> +	.partid = 0x08,
-> +	.als_gain = ltr501_als_gain_tbl,
-> +	.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
-> +	.als_mode_active = BIT(0) | BIT(1),
-> +	.als_gain_mask = BIT(3),
-> +	.als_gain_shift = 3,
-> +	.channels = ltr301_channels,
-> +	.no_channels = ARRAY_SIZE(ltr301_channels),
-> +};
+Is the helper bring enough value?  The !info->no_als_support
+where this is used seems clear enough to me.
+
+> +{
+> +	return !info->no_als_support;
+> +}
 > +
-> +static const struct ltr501_chip_info ltr303_chip_info_tbl = {
-> +	.partid = 0x0A,
-> +	.als_gain = ltr559_als_gain_tbl,
-> +	.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
-> +	.als_mode_active = BIT(0),
-> +	.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
-> +	.als_gain_shift = 2,
-> +	.channels = ltr301_channels,
-> +	.no_channels = ARRAY_SIZE(ltr301_channels),
-> +};
-> +
-> +static const struct ltr501_chip_info ltr329_chip_info_tbl = {
-> +	.partid = 0x0A,
-> +	.als_gain = ltr559_als_gain_tbl,
-> +	.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
-> +	.als_mode_active = BIT(0),
-> +	.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
-
-As below.  Same for all the others.  That would be a separate
-cleanup patch though -> perhaps do it with getting rid of
-the als_gain_shift.
-
-> +	.als_gain_shift = 2,
-> +	.no_irq_support = true,
-> +	.channels = ltr301_channels,
-> +	.no_channels = ARRAY_SIZE(ltr301_channels),
-> +};
-> +
-> +static const struct ltr501_chip_info ltr501_chip_info_tbl = {
-> +	.partid = 0x08,
-> +	.als_gain = ltr501_als_gain_tbl,
-> +	.als_gain_tbl_size = ARRAY_SIZE(ltr501_als_gain_tbl),
-> +	.ps_gain = ltr501_ps_gain_tbl,
-> +	.ps_gain_tbl_size = ARRAY_SIZE(ltr501_ps_gain_tbl),
-> +	.als_mode_active = BIT(0) | BIT(1),
-As below
-> +	.als_gain_mask = BIT(3),
-> +	.als_gain_shift = 3,
-> +	.channels = ltr501_channels,
-> +	.no_channels = ARRAY_SIZE(ltr501_channels),
-> +};
-> +
-> +static const struct ltr501_chip_info ltr559_chip_info_tbl = {
-> +	.partid = 0x09,
-> +	.als_gain = ltr559_als_gain_tbl,
-> +	.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
-> +	.ps_gain = ltr559_ps_gain_tbl,
-> +	.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
-> +	.als_mode_active = BIT(0),
-> +	.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
-Is it really 3 separate bits, or GENMASK(4, 2) to
-represent a 3 bit shift?  
-
-Whilst you are touching the driver can we get rid of the
-separate shift by using field_prep() field_get() using
-just the mask?
-
-> +	.als_gain_shift = 2,
-> +	.channels = ltr501_channels,
-> +	.no_channels = ARRAY_SIZE(ltr501_channels),
+>  static int ltr501_match_samp_freq(const struct ltr501_samp_table *tab,
+>  					   int len, int val, int val2)
+>  {
+> @@ -656,6 +662,29 @@ static const struct iio_chan_spec ltr301_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(2),
 >  };
 >  
->  static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
-> @@ -1393,14 +1387,11 @@ static int ltr501_powerdown(struct ltr501_data *data)
->  
->  static int ltr501_probe(struct i2c_client *client)
->  {
-> -	const struct i2c_device_id *id = i2c_client_get_device_id(client);
->  	static const char * const regulator_names[] = { "vdd", "vddio" };
->  	struct ltr501_data *data;
->  	struct iio_dev *indio_dev;
->  	struct regmap *regmap;
-> -	const void *ddata = NULL;
-> -	int partid, chip_idx;
-> -	const char *name;
-> +	int partid;
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> @@ -1480,18 +1471,10 @@ static int ltr501_probe(struct i2c_client *client)
->  	if (ret < 0)
->  		return ret;
->  
-> -	if (id) {
-> -		name = id->name;
-> -		chip_idx = id->driver_data;
-> -	} else {
-> -		name = iio_get_acpi_device_name_and_data(&client->dev, &ddata);
-> -		chip_idx = (intptr_t)ddata;
-> -	}
-> -	if (!name)
-> +	data->chip_info = i2c_get_match_data(client);
-> +	if (!data->chip_info)
->  		return -ENODEV;
+> +static const struct iio_chan_spec ltr659_channels[] = {
+> +	{
+> +		.type = IIO_PROXIMITY,
+> +		.address = LTR501_PS_DATA,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE) |
+> +						BIT(IIO_CHAN_INFO_SAMP_FREQ),
 
-As above. Unfortunately at this point we'll still need to
-do some special handling to match the existing indio_dev->name.
+The sampling frequency applies to both channels here. I'd just make that
+info_mask_shared_by_all
 
->  
-> -	data->chip_info = &ltr501_chip_info_tbl[chip_idx];
-> -
->  	if ((partid >> 4) != data->chip_info->partid)
->  		return -ENODEV;
->  
-> @@ -1502,7 +1485,7 @@ static int ltr501_probe(struct i2c_client *client)
->  	indio_dev->info = &ltr501_info;
->  	indio_dev->channels = data->chip_info->channels;
->  	indio_dev->num_channels = data->chip_info->no_channels;
-> -	indio_dev->name = name;
-> +	indio_dev->name = client->name;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 11,
+> +			.storagebits = 16,
+> +			.endianness = IIO_CPU,
+> +		},
+> +		.event_spec = ltr501_pxs_event_spec,
+> +		.num_event_specs = ARRAY_SIZE(ltr501_pxs_event_spec),
+> +		.ext_info = ltr501_ext_info,
+> +	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(1),
+> +};
+
