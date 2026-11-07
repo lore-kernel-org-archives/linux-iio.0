@@ -1,78 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794089707;
-	b=JsE7YV5QpC4tGbBaRiUgsYgtS4vTd/D/AMaz6sdjAkbY8lz719lAjMXK0TFjCNP/18gY
-	 O3XCHKy8G4TZ1wLdXjxDmoO9XB6FRJ240r7z81sGrI0T8MbKtO10j+KBLXTs2ShPg05qZ
-	 mncETBT8DXkf3dSrwJuYR1h747yCvE3N7QK3WVuoPsOfOCvGlvF4iJ9bCfB/rjeo7u3aA
-	 Dg7uQFJ32RP7o8XncPaIuIsaZbKJYJrEY7OFnUyHFTsLo/Tdl2u5Whe4lUtbhFD99dp5w
-	 v2kVrHMG1x+mXcOOwjV6Vi/guOPG6M904zHbvOMsgl5q3anSixObXVZ+4zIFOKU0hig==
+	t=1794089708;
+	b=gikOD4nPWs0CneyR6fqUhYr6/zNmIxCTBXp1AF2gISWbvliISpXLZZur8bsF0TgeHMYk
+	 XCE1Vlwtci8uuXY1G7kr0g1fhh7ARgpAh0N+EyX7cJKKYM2o84xIs0rSCwF2PnzaDQt+0
+	 TJSIy+RWEXeSWuxsW2BsMl+du5KahBrtHGbJDRDMRM+g5HP4CwhlB/vzIYlbLU9FBtGDS
+	 qx/yoxP9aL1wDM/N8+Hflvpssj+qe57J3A4BB6wqCuV1I94VEVwULewSh6Ai8SdDKNbJq
+	 fwR1d9wrKrtArGGtaMwnRYmltMSP0veopnQMdHx3OQywOzPu5LJWqu9BaU3QVxhPOOg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794089707;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=n01jHr5+VqNvF/Bd81ZAGr3sbTKfGvmwI8Pfr/ZYkLI=;
-	b=IBcWA9zxxiMCaRyevhA8YP2OIiWqrWKY2rvihJa355i1Dm2n+GHmZXLZgaeUa8j/DPng
-	 5nV+1OhnjvUW71QO9LuxpnkKCw7/lco0CExmaW9gVOnuzIEc+obpW8thlOnuzDT4X4d1I
-	 wIE7Zy+UiJVHgFkHmjDgBJiGZun305C1FRGXj9B4XYATV+xt+Cei9HEwK7bxCavCPh7qq
-	 z2g8BYAM/QhwLiPzv3x6GRD7TWnUCSXGmDTbWvN8N5c7XzCyIdCVL/dXfIZ9eV7N4FkvJ
-	 QB8CkjFUvXmfwkJVWIv6Wl8PJ4PghW6I3W2la34Zf0bnw9uFSyXH2n3oMpJOvQQjDRw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794089708;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=fC9nAZVA9V08d9m3Q524IxaflkcbRp6Mqgh25OsIK9o=;
+	b=IYtAWxs2VA7T4lo5R09f3SyGoi4NJff0K9CxifWbtnO6JfpINqv55nCnnlEChujGM6Iv
+	 43OO0yXIt5UU1uPr5EatPsw4b+PWOBmz0nHBdxS0poh/D5J4A9jQ3G7M2yKPA/e4Ekr5r
+	 ssRq5qacwF/4AaWsIjAX3zHdZhD7vwSbb18axgOe4gXnHahXTgHQ6f9ggLk44cO2UL/bb
+	 nMl9OsBx1EesfSPpC/KWgkTeVvsEFTv1Br+/k/mN4TxkN2mflZyk9pUvd+C87utRbIB2O
+	 44EodilH064om8sYiv5KETuhB70R7azVebhrz6BZR7hLBYHr7TeO9AJoqux36Y0HUBw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JLnF7h9r;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UTfZMhNO;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9926606A32C;
-	Sat,  7 Nov 2026 22:15:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9265606A33C;
+	Sat,  7 Nov 2026 22:15:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JLnF7h9r
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UTfZMhNO
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794089706;
-	b=ZmZaxOKFwH8UF2enuiYlSdN/Zr9Xr6wCNP2c9QWJ4GhImVlVjpGLKWin2HkUFx8K1pEi
-	 aVybgDndwt2j4GgTgxPVZ3XNRvnhZnaBiPGaoCfz+cWfIo7TcqZNFVKcBTPcYUJMFUoER
-	 Irs10HTr+wITGJGPtJ1XcDl68L34fgXBmV/mcumWDohLonADEyeD43cOWj3mZ8LFcQ2kY
-	 tt7mojvm/xwp3FjAs2laZeGwVsKLrUX2TMx5vz6dYNELuLQ8ENg+wcDVTkkkOGePn7vEy
-	 JJWBqu3F9aHpFJujDCBZCMnV6yHRCttyL8LQBQ7kupOb/b9L0q+njBeBUjLwsKFhtlQ==
+	t=1794089707;
+	b=lkuCOXoMp16nKNYxFA0KiZTk4AyZQSGm9iXrQskV3vhifC58swivsqtVy+0fGNLnVGKr
+	 iwyJEGnHlYAcXOA1FQukehHRsZciq6mfntOCql7dR0lAHuQW9oBfwFHXvs3iiYl0DR+tY
+	 Mzf5js/wjm1OFREl2sn7h8LhWUBFbciqzKNlSAc/WA/omh4hLnezg7IyyDoFccjTwyFtv
+	 AbyQfZcLW8lTsglb9nDPd8Tug8kR96MwVMJDArlo97r8CVxCkqtuuVKnEh8TP00lpjXuz
+	 BcxKNIT2oOiSi9KJYY4oC6iwYMuMPb46pgsusV6q629I+F6iZYnxSh828keNt9YkOvQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794089706;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=n01jHr5+VqNvF/Bd81ZAGr3sbTKfGvmwI8Pfr/ZYkLI=;
-	b=awkX8YBnsf/LtnsiStk8NnlXZBWyKlVtF5ylx+AQ1EkTjse6TQDmr3XP3S7z1qL/syJz
-	 DyoFNy59k1olCO5oiYHWJVxhw0kjIqlUWCIcDUmL7BpaBDvzACtb4HMQnTALL9Go5oPcn
-	 k0RkASDVFYKRdeHICkbd9xfdjsF5Y/o661SqSMHzIzi9bF3WGu2GuplXBFilN7sEozQAy
-	 L98+3Cipi6tW+UekbHetDn86hxCkO/yttQGhdsghnvDyZr61JZ5qWr/sjvlc11soCJznM
-	 Is6rE2IH8xlmCfPXzmP/zWZAUtnWXa+Vn6VkJ8dKBOpVB+jXTEVaMVe502lBLe9j6Lw==
+	c=relaxed/relaxed; t=1794089707;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=fC9nAZVA9V08d9m3Q524IxaflkcbRp6Mqgh25OsIK9o=;
+	b=kKkQobwCIE8R4rS2Bu1Bl/KyC4wiT5N0TinzIKJErbpMzvisegJ/fGDRpoJ1x9cW3hQ/
+	 uPGxgE3HCWgp6n3Sayd0wsngnlcOyUXkGlvT7r4bjDEp/i524PtPXRwKDr0ipJaF2+GUv
+	 YzaxxZLVty6BjPPv4BfwtuNiu2tapphZEiKIfwdeRyCh9fZcsfnFDHfus7m2mz4ukdTvn
+	 WV9YtjblGB6dYoJWk3921GjlWYGRL+kLcBZX8GN7Dv0l5oNjGIfzn7oOA2ujh7DOylkV+
+	 IJM0C0bJ7UEmqEqF+niIoBBgjmdb3t7JQBcEadqDARNYmgMSiCs8nKrXuJe3xIzz6fA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4F38A1F008A1;
+	by smtp.kernel.org (Postfix) with ESMTPS id 4F3BB1F008A2;
 	Sat,  7 Nov 2026 22:15:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794089706;
-	bh=n01jHr5+VqNvF/Bd81ZAGr3sbTKfGvmwI8Pfr/ZYkLI=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=JLnF7h9rqNnEw+kJ40k3gvn87jIqPovaWhnwy8Cx1ujvc1W2ez689Nv+lRq4eQ8RL
-	 0Z4d/GEPpeMyiS09kurBhbUdD2KqvxijGIV14fDEkd5BLnKYvg7ntelEiQq2TD03Mw
-	 UhSIPhofB0ZGsOFkgZVOVos7Z4MZJIg5E6l1G7Su6alaQaIEX+i4t4rpjA5nIDkWy6
-	 IFoQXAt7ysRgRH1st6oQsBnzhkiI9ImxMZ6l+wuIBVLDVB8DUdGtoR3d26a/34W0gq
-	 MZQHFNZBpqReVqup065s6MdOsCzVVlidVoMo2w+bq9T+k26j+QaekAm7NCVN27WeuB
-	 HyXcqKUr7VlTw==
+	s=k20260515; t=1794089707;
+	bh=fC9nAZVA9V08d9m3Q524IxaflkcbRp6Mqgh25OsIK9o=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=UTfZMhNOIVrZlcyRLdRoQAnnBKxze8hBe43Wq2HLep8PLOnx6bZhHb+UUHGlN7QoD
+	 44MqJdFQRw1RWoZZGKH35NKyGiQCM7yKsvmeHpOk7OEuhcIsKWBVfQ6OY+AqrHHznb
+	 s9UUNPVrgcpwY221jYGPVKzI4OI+g1529hAgBu4XZ8zGt7GqWXwVLCQLc0WWNResr7
+	 p5yrYRE84QhnOVrPp+iIQ4Bh/rGafPLVDDLaDsnT/LHB3PF3tCX+iPuZIMl/lfuKil
+	 Maj9c+0V+97Kl2Y2avq4mHVokUWT8VQIBmOX/49BYdDDNifuyalXq8mW0LV6bWBQdN
+	 BNVCpe6jZd2JQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id CA90F47D38;
+	by lkml.kernel.org (Postfix) with ESMTP id A098947D34;
 	Sat,  7 Nov 2026 22:15:04 +0000 (UTC)
 From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Date: Sun, 08 Nov 2026 00:15:04 +0200
-Subject: [PATCH 2/4] dt-bindings: iio: light: stk33xx: add stk3337
+Subject: [PATCH 0/4] iio: light: stk3310: stk3337 support + vdd supply
+Date: Sun, 08 Nov 2026 00:15:02 +0200
+Message-Id: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,9 +84,11 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261108-6768-stk3337-v1-2-0340c99b0e33@protonmail.com>
-References: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com>
-In-Reply-To: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com>
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDQwNzXTNzMwvd4pJsY2Njc11jkzTzRKOUJONEIxMloJaCotS0zAqwcdG
+ xEH5xaVJWanIJyAyl2loAwwIPuXAAAAA=
+X-Change-ID: 20261107-6768-stk3337-34f7a2db3a24
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -95,46 +98,42 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Roman Vivchar <rva333@protonmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794089703; l=1019;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794089703; l=969;
  i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
- bh=ulTXlsgUnqMlSx1fcDqcSjlgFN3edmGNunTnTFylHu4=;
- b=NHHDjJaw3clpHIxlMzAhLy8EGQDdoHFpb9U1I66vH75woPji8SlN/5LqVOOKKi04+Az2mIXLl
- 3T0wJNLfypvADeSkuW6rIc+xYQpNRL4uvepcWksifqBkvSERI+F/95M
+ bh=J7EpCcudKslIFmWVaj/lQjrcW5V1778FeNRCMHZxV0w=;
+ b=XeBpOofutHPzMGqYAXYM0cq2/fNQbuU0FzLK8+nly2nwniSkzxA+lSGzqbSFGta1w3+onjACD
+ vMo6ACJMzTXBEnmJ63XAcVVj4ruT8xL3D9amAZQpk3rZEh1we0IezUp
 X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
  pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
 X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
  auth_id=777
 X-Original-From: Roman Vivchar <rva333@protonmail.com>
 Reply-To: rva333@protonmail.com
-Content-Transfer-Encoding: 7bit
 
-From: Roman Vivchar <rva333@protonmail.com>
+This patch series adds support for stk3337 light sensor, found in the
+Xiaomi Redmi Note 9 phone. The sensor is compatible with stk3310
+registers, while having Clear channel, similar to the stk36c61.
 
-Add compatible string for the stk3337 ALSPS sensor. Its core registers
-are backwards compatible with the stk3310, while also providing a clear
-light channel like the stk36c61, so document it with sensortek,stk3310
-as a fallback.
+The series also adds vdd-supply property, since on this board the sensor
+is wired to the shared power supply.
 
-Datasheet: https://www.bestmodulescorp.com/en/amfile/file/download/file/1699/product/1048/
 Signed-off-by: Roman Vivchar <rva333@protonmail.com>
 ---
- Documentation/devicetree/bindings/iio/light/stk33xx.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Roman Vivchar (4):
+      dt-bindings: iio: light: stk33xx: add power supply support
+      dt-bindings: iio: light: stk33xx: add stk3337
+      iio: light: stk3310: add vdd regulator support
+      iio: light: stk3310: add stk3337 support
 
-diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
-index 114cf87eb54d..d5d7059fbc0f 100644
---- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
-+++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
-@@ -26,6 +26,7 @@ properties:
-       - items:
-           - enum:
-               - sensortek,stk3013
-+              - sensortek,stk3337
-               - sensortek,stk36c61
-           - const: sensortek,stk3310
- 
+ .../devicetree/bindings/iio/light/stk33xx.yaml      |  3 +++
+ drivers/iio/light/stk3310.c                         | 21 +++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
+---
+base-commit: ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b
+change-id: 20261107-6768-stk3337-34f7a2db3a24
 
--- 
-2.56.0
+Best regards,
+--  
+Roman Vivchar <rva333@protonmail.com>
 
 
