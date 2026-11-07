@@ -1,100 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.178
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.170
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794027956;
-	b=aYqRtJ5LJEAeOzbiM3eJzoj/lC1iqOaECt/nRGUzAfVCXM5kfYqxmmh2DhZ1IiFeO4CB
-	 JPhG8y9Qtz7gowSD2E4/hh5/S8pJWHmiFI47J1zcP/Vu2oCC6E7+xg4wxFUKobVRgAa49
-	 +PQycFbeZPIpMhHt9A3cjcyfDQ+k+2b/J2th4dHbxCpZZDLcHhSgfjMlNzTijs2OfYRHt
-	 s2z4zhpbJgoFPwGo4dmom+UWFHqmN2dxGtYEhZFPfp0tfVKE9m8nzNxcicfel8mtlodPb
-	 muI8C5eyNAgvUoXSzosN013evtLh8jKzljQz5k0nKMTYTpr/MTNOnK4Q8LKqpJ+FRAw==
+	t=1794046220;
+	b=QcBjd8pbwN5hNhDFG59t3LSxPIxk//jxLjGkcHImYp4hm3w5prdwB3vttGSnWi1pjlN8
+	 /VdYmDJRsxXZ7v9KWjMai+/oMk5fNe4cF/fErMnB9Hg6qCoYjnUQfwxZpksmXAqeZm0JN
+	 L+eVbcv577xmyu/7Lj9YJve/g8bl+uj0JX4PZXXdR4NSx678s1VKqwiAuLKanbeHASFiy
+	 Ezz1Puzrn6qXLK3xiEtms0NlMT7XDu5wYNssYsCLVTyOz+kIuKWD/KO7jkqPbCXyA4A2+
+	 EI5K779wj0KfqIP6b90w/0RmIcN/zKjQRq8RQHlDxSRzaveHilwosi1cPHziAUkQ+Ew==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794027956;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794046220;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=+3B/jiwJxW+xAIbQiYYm6bOuOVI/U/8kix0T1R+5+pM=;
-	b=Ns2iQPyR5OUlmHiQMqxMXjWbJyawhbwMkeah9sbZCjxRP6i1P5TfI2mUeTAYnPBi+wpP
-	 HDluQFKHz6mc2PjOMKw+vDjc/nHlrxQcWwtE5YCaG/5JCrFKgUTidZ5MbPTNvf0tk4AwR
-	 JAf+B9rL7/DRnMODoils9/njz1MFIjCNjwJaF6red6oWbE7Wb1+lM7H1s6ucCnO+RAcnf
-	 Lkq+4n8GZad5ANo4rTpwrbNUmTdl3d3J5WU1XafA098ss12GyD+9CaHPQcNvH4BaiUcSz
-	 YnLOSrC/SPpQKzrRYBFuiULv/zOPdtYmM9M4FrscNSLwBik+3Pi4oAYfFycrM0imTtA==
+	bh=hCl9zuACLpk26Br6YG5VYwrXg2uXCdyvVsty0gFOsYM=;
+	b=BfE9biNRPGWEBX58eWu1m3wzYQle7k5VB2ChrrBVDTu+/hr3erzOGXLFFWH5FbQid9q/
+	 WCu3lWmKUYHSkSD+7JD1VhNqp//BHL9uyzhD5A052/iPZLfgeiokiV02l5n3Nd/JjOeCC
+	 7oqAma/k0msvQ5M88b61IyWBLNQKjIyuMqrYT6f5zT+ck9Zp2UebFNzQUq8VNb+On30Eu
+	 kcGVNjmBqXtYzd/+58JA9IhlybgWvX3yKOfQAed134gJdvbPBauoJtCFXu9Ny6NymSQr4
+	 teTC6UjeAPcy/id8S1rMRF8f4HTkQPbZfWCzrfe04UGObkf2Esmqbzq6Vwas/xwy9oA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YJcr5TsZ;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.178
-Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="mqF2/7px";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.170
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CFA8606A32C
-	for <linux-iio@vger.kernel.org>; Sat,  7 Nov 2026 05:05:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9CFA8606A32C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E49C606A32C
+	for <linux-iio@vger.kernel.org>; Sat,  7 Nov 2026 10:10:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E49C606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YJcr5TsZ
-Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-3282db206d3so2877609eec.0
-        for <linux-iio@vger.kernel.org>; Fri, 06 Nov 2026 21:05:55 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794027955; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=mqF2/7px
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-3704d30b84fso1111638eec.1
+        for <linux-iio@vger.kernel.org>; Sat, 07 Nov 2026 02:10:19 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794046218; cv=none;
         d=google.com; s=arc-20260327;
-        b=gmtiALdWWkhqR22fscKFwWExE4rOzNJtK2JtN33794Ll6jeKkfDqd8YUPwsZCFOXkL
-         IIqOYoFL7WlY//a5qMa7fPTVetvhjMAgYTEYrCjW+Hx4WVkGuenGJp31XX1QpIxxKyMK
-         Cn6R2uhVD+DqAeE4cKw/Zo5P9v3pZSa2a8JXMbcEMWGDK+hZT1xU9muoMAHEafjblA0A
-         LZPpFnxqu0ekEnRQJVg2MMGFotNehDDtt/IUsflmg20jEmlXaVwebgU/4woa66zXv40n
-         b9DVdJsPtbw8VxUYeSMVnJpYTSlVO8Vi+m7GFMC0SYtIktMnXRxxd2T/de9x1YqrGtoE
-         9Y8A==
+        b=neYmjezKAnRKD87e0lsKNUFEVs2rWi+hRJpm4enaog5w7XY5D0Pdl4UOb6sNmhxoqr
+         XwveRfLYkXC4nS7oL+M0Wn2olDAdklzaAhReSzuQwhVdIAOkavOOf8YbubqeCG4biplB
+         fldwf9GEd4Q/tCCI8jZB5GiM68Z1Ee6K2gDNqR5WuR7A+0anhTkke3FCdtKygperkjw+
+         qU7eQntxBWzpXCSV0X5q9+LvR35ibfySRX/dWCE2CYnCyEwahTkj/H8ze/RnHzz4TRVY
+         JTxQofBP+ViZVnewmwfwG/nf16p0u6y0jX37XCtzSfYxIRfzv3whIVt9g75artLNeZf4
+         HvXQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=+3B/jiwJxW+xAIbQiYYm6bOuOVI/U/8kix0T1R+5+pM=;
-        fh=iosZeFsXgd0ZrI2DQS1zvZOW4/A1EOGUKWreQaOOb2Q=;
-        b=kmQnsbsr5UxTjNG4jU0QzHoJx2t1VwNFsioTOGk/z9GqKZa2M3dzPDi6XqS0wRx5fD
-         JAh22//TFVoUz9H+erMRvPxprAjzyJxszdcYw/vfNHKwF6rLbVTCGEH6RkPsmpa9WYFu
-         rZgJPpFcAV98mLIFDO6CEkSjWYZxbLHBdfpO0+KXiraPGSLazMnxD/xiH92Lr+uy5hzp
-         JZQWtnPzODC7IyH/dTkWilQR+VmvseUTnRd0A0I1hxe4BxgdkkBCLMV4kHYiegJ6fyH0
-         MyOzVj+ba8LVhQCRv2pBY+w0StQJak4BlODKzjKZjs1n/8ACBc2kMMxkeHSmSrsW0+0S
-         C6Cw==;
+        bh=hCl9zuACLpk26Br6YG5VYwrXg2uXCdyvVsty0gFOsYM=;
+        fh=GzpQ2iC04hiZ+tC2YTh1CuOiwrJfV9auTAd0mI95lD0=;
+        b=SZe/45tu755iNb2sJ3mdFZhKR3prLbHk8+TmkyFP2/guXDghC3d6LaIz0ybAAcS/EC
+         RGRG8i9E/ciu7EjWQu9fEuhjzGfwV4CmQuIzUFtGA/DuRV1NNHih1crmrlhA9TpFHiTN
+         9jCB0bcbzo/CWWJ38M1jb+lygy+1akykVtn2KyXKFntonqktxr+FK3XKexzpV1s4ecIG
+         r+Yvtttx/F2urFDfrnAaXxW9bUZFZXXVCPOVVZWmcR0TB0jt5UhqK0nk22/M/HCemcMf
+         7W1njmoC6DUaXUt3EtbmmETdCTeqj91rK+fTgqiWwbTxwC5E9RSvndRAPySoFdDL+26k
+         2kXQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794027955; x=1794632755; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794046218; x=1794651018; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=+3B/jiwJxW+xAIbQiYYm6bOuOVI/U/8kix0T1R+5+pM=;
-        b=YJcr5TsZSqjKmrNme1j5Ss5AEK7ZrpRBvARDJHjFsECerF+1r12Ypi9REnQfQ7S8aF
-         g9/RnnbNlZqeF7zaLQXfGlBpc3fpJgjwl60r1/Fmc1FJ3lPnBPdjQjF0rWOw3Dy70U8C
-         yTNQFx1UOTyuq/qaDmzaGLe8C8DOI+vzQA47fZ91jl97910j4Csx+AqZgb3oxrJTwT/U
-         3JfUM/NMbQuxRzzcbPI/wmc9QwSwy6x21DlZu6HGYR9G2K1yF9PqczMaeb3gJeTPJdH6
-         1UlZLfjzffLZh8ZpAsSD4HuJB3p9mNDWsalkugWMo/LmcH3MUY28NYfJ7t/IjlG3cluk
-         pySg==
+        bh=hCl9zuACLpk26Br6YG5VYwrXg2uXCdyvVsty0gFOsYM=;
+        b=mqF2/7pxuXrGosqT4DSNgVNPbzJ1NtX5iQs53NhZwR8xxSI+D/6MVM5o9f3tM6ezCj
+         HFepsPHsxY5rx7ezV1SRLR0YGB+WJbLgrd7zYAwnJkQNV60XYEX8qaVUMIw+JNYBWSX5
+         htJ8T56C5i/RPYPGMmqpVY3yLilgi5V0zbGaDu9QSJ1F+Xv9kwZhW8TMj0Eg+jXr8G2B
+         8MB0Jj3py6gnDGYajJ9nwG4vk1rQMTLbMYIFRY7b3p38oXFyHz3uhdh/xRw3TKXc7ke9
+         0JT1LcdgMqyFUTgxmTQov5ZeZp86W90n0xUqnqFr+sTiC6RcdYUVMf9MiVyOjvmopNDX
+         r6Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794027955; x=1794632755;
+        d=1e100.net; s=20260707; t=1794046218; x=1794651018;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=+3B/jiwJxW+xAIbQiYYm6bOuOVI/U/8kix0T1R+5+pM=;
-        b=ExKoK9zZ/wWmD839eNLh4t3exdoywhv3VAdyDkFZ/wmJnSow41xq38GoweYt8itDEy
-         LKNksiSo2V9Xm5x99JQuw7NGAdtznEFAqeHfcPYLXFHbImuxyDgN8+vlHCY3uIHcwPAc
-         RmI3XWNBMXS1uycVjOA/OomMSLMZIHMudQNaoiMLXKZg/ZKBMtH4JA+rAbXBxBLXZp8X
-         vrq41R9PthQbZx51Cb+tDxVvXAcmZjjiDg86gx2x1sCZ4qk6Cv9oDdewWFAOE+tkJ5eb
-         Pl8rLaO0XdidGKzIyQmzDMqi10puI2I36NYKMjaEtBqqrAjlo8LSnbut4p4ryanG/wMz
-         u0vA==
-X-Forwarded-Encrypted: i=1; AL+hErFT1KglR1yt15pusQhv5fe2DsirBfpJci/XdnMPt1T8z4hbmDFU2MIkTHWK84/9Ca3+NSl+slRH870=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/Y6fikmflgR3kCyCo4jN6dWYxC48Q3DJyNZU3oKxVbsKEpW3mO
-	dQAPidYiJhy5Mi0mJtq3J6X4dFOORcuz5gRfQnggkxr5PKRDGs8Jt9eDw8tLe+7aVWCRIMMM6GL
-	4h7GYHst+oNHv6ofPjCzv13vsZ0s91uQ=
-X-Gm-Gg: AYBFou0m8AOTu1qLizK35a03GqsjgHRihpd3SUmg8GgFnVrbsr5kJxWL5cEp4ZJzOkh
-	DdGOW5LFsjPoF/E6b3cWvUANWpGb/BLmdYXcWDRBE9EO7eOfeAnG3PdcH33RDIG1trWIsdg0HFO
-	SuyCVIJ5bRfRXVJIcgFMDNwwSzJR4maDMFbhff09yNiIESHQLkjo9i/gQEChp6mx68d79diNHSM
-	vIArTctIgkHc6Anqz/cyImt7hpwFK2zueVeV0xBcocXE/KMpTrPr51UlmSnFj2VvSPN2qayXuNc
-	I0N69MjDL42raX2Oyko/Mbe2Zy7lUiXQRlaUB6sZnNlwNqfCg1Dle150dFS+my6cOL8kh86SCzj
-	icA7wyc2Oq96mrWkIcT6NiAERX9wpBKg3IYk=
-X-Received: by 2002:a05:693c:2581:b0:36e:8410:ecf6 with SMTP id
- 5a478bee46e88-36f75440b61mr6095293eec.13.1794027954292; Fri, 06 Nov 2026
- 21:05:54 -0800 (PST)
+        bh=hCl9zuACLpk26Br6YG5VYwrXg2uXCdyvVsty0gFOsYM=;
+        b=wJKv6vhieWO3gpth1Mh31Kw4HQt2Bpwg6HiZdvmpx8DFip2QJcPS81ligjLaW+wvd1
+         /iP46K3I43rz2TgEyUAsOdRWWA1NMqL8WeRtMwpHAEy+2C1m9wqtZ9oRcGunjXNN/ee0
+         WNOetXJnuICidB6Zfbk6jJVWQL9JSx1fd3xe6UjZiKaRdyc2NkXJdNLcY7PbVqa3BQQp
+         2in5AZ35hp6SRYybvERCWf54sx6J+n8ndKs+OMx7c716GnOxAWCqMXRlgN7gmyCJGHos
+         yAsK40G/br527GGQZng7EbW2Mjeb4YkVffcfuWWW2WHI98irNtUmnOX+FKh83y2/NcGV
+         DXqw==
+X-Forwarded-Encrypted: i=1; AL+hErHW6+bEDw48yPGQKHmoY5NkKyCDhBIFEy3FwqdFYfuHe+UgZ9jXe8NIMdCPPcpTtB2YxtemxlxUsuU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9dBTPOclsX1wc6pmfUYBxXEjxiRw38NM7WvI572WNpKB+MhAMa
+	m51GQHxz7DxqwBnF49rcDMNJMfEze33fKP6xC7aXMKxoDubR32GnYv7QCBEzIIK2Hr1m2nRj1k3
+	akjvglAFyfaTSQUxVohqr5Owtyb5Jt0u02xKd
+X-Gm-Gg: AYBFou1vbRyov0SEUFi+M68dsbDBJWC8NP/Xl0AUYOwr0n4fFws9L1WE0aF9kxztgty
+	cjA5rNvbPeedSukm6NnRLSNX4vKjZA/PB4SsrMQtdFK0Bq7zramkQqyr00JBf9Mw2dOK55GjkuC
+	AfpSDpMCj8Jl5uz0Xw/jszM86yUbZ8xfBedKnst4vs09hfvCF9A7vZUbPV52H7yGpdeMYjeenrj
+	SQn64EmcHYxUANUVhzt+MdjAqzG+SOWVpY8ciPOf6UfHfy7R/EXkJloY3WXW1A2MfdGG9A0UuIk
+	XHiBbBDC0vvA9dI/9gacvjkh4BWBHy6fiCy7v0tiytfsxOr7AL4Ch/62PWDA3VYIkqcIN5pLY/T
+	4MQ4hkGyLox1gwuL0xbeGhFS+IOkmMxdnPqgkPRqiuimRrYmjNTir6LajphqH9FK5doAG6pzWdY
+	/3/C7kz5Nte1MamHpIEJy61UjkPicHSw==
+X-Received: by 2002:a05:7301:da8c:b0:36a:6106:4f63 with SMTP id
+ 5a478bee46e88-36f74e581c7mr6838802eec.16.1794046217888; Sat, 07 Nov 2026
+ 02:10:17 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,100 +105,143 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261106174737.2580011-1-lcy8047@gmail.com> <20261107013159.7df2ab9f@jic23-hlaptop>
-In-Reply-To: <20261107013159.7df2ab9f@jic23-hlaptop>
-From: Changyul Lee <lcy8047@gmail.com>
-Date: Sat, 7 Nov 2026 00:05:43 -0500
-X-Gm-Features: AclHuK_TZI3zXzHPNwo-Hv6kt65IHQinw_K9egau9dqqkvu3RgUIkBwnYQIoXcI
-Message-ID: <CAKefsHsnxGZttZ9rJGehiUX3PCSWyxFevExefkCc3mkg+FGaqw@mail.gmail.com>
-Subject: Re: [PATCH] iio: trigger: free the trigger ID after device_del()
+References: <20261106091943.35783-1-clamor95@gmail.com> <20261106091943.35783-2-clamor95@gmail.com>
+ <20261107032042.0dd311fe@jic23-hlaptop>
+In-Reply-To: <20261107032042.0dd311fe@jic23-hlaptop>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Sat, 7 Nov 2026 12:10:06 +0200
+X-Gm-Features: AclHuK9Ans9GsBXt-Xcq71SJaLUNKPLtu1bbEbUNSMYW5pmtGCOH2bEC3JfY9dQ
+Message-ID: <CAPVz0n33sktTgdWge64c+XVSDiijXgyY-uRfcpywhJ6LHjPPEA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] iio: light: ltr501: Switch to read_avail() op from
+ manual attribute registration
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Esben Haabendal <esben@geanix.com>, 
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>, 
+	Pan Chuang <panchuang@vivo.com>, Hemanth Selam <hemanth.selam@gmail.com>, 
+	Antoniu Miclaus <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, 7 Nov 2026 01:31:59 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> > -   ida_free(&iio_trigger_ida, trig_info->id);
-> > -   /* Possible issue in here */
-> This made me wonder - what is that on about?  I checked
-> the history and all the code on either side of that comment has
-> changed since it was added.  So who knows! :)
-
-Thanks for applying :)
-
-The code around the comment kept changing, but the ID was always
-freed before the device was removed. I guessed that was the issue it
-meant, so I dropped the comment once the order was fixed.
-
-Thanks,
-Changyul
-
-2026=EB=85=84 11=EC=9B=94 6=EC=9D=BC (=EA=B8=88) =EC=98=A4=ED=9B=84 8:32, J=
-onathan Cameron <jic23@kernel.org>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
+=D1=81=D0=B1, 7 =D0=BB=D0=B8=D1=81=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 05:20=
+ Jonathan Cameron <jic23@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
 >
-> On Fri,  6 Nov 2026 12:47:37 -0500
-> Changyul Lee <lcy8047@gmail.com> wrote:
+> On Fri,  6 Nov 2026 11:19:40 +0200
+> Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 >
-> > iio_trigger_unregister() returns the trigger ID to iio_trigger_ida
-> > before device_del() removes the "trigger<N>" device. A trigger
-> > registered in between can get the same ID, and its device_add() fails:
+> > Switch to the read_avail() operation from manual attribute group
+> > registration. This eliminates the need for per-chip attribute_group
+> > structures and related ltr501_chip_info iio_info entries.
 > >
-> >   sysfs: cannot create duplicate filename '/bus/iio/devices/trigger0'
-> >
-> > For example, adding a sysfs trigger while an hrtimer trigger is being
-> > removed through configfs, or the other way around, hits this because th=
-e
-> > two paths do not share a lock.
-> >
-> > Free the ID after device_del(), as the error path of
-> > iio_trigger_register() already does, and drop the "Possible issue in
-> > here" comment.
-> >
-> > Fixes: 1637db44413e ("Staging: IIO: Trigger support added to core.")
-> > Signed-off-by: Changyul Lee <lcy8047@gmail.com>
-> Nice find. Applied to the fixes-togreg branch of iio.git.
+> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> Given you were quick off the mark on sashiko on v1, I guess
+> you already saw:
+> https://sashiko.dev/#/patchset/20261106091943.35783-1-clamor95%40gmail.co=
+m
 >
-> One passing comment below given you also deleted a very 'odd'
-> comment!
+> It seems correct that you'll only get one attribute where there were two
+> before.  I suspect it's as simple as the mask should be set of
+> shared_by_type_available not shared_by_all for scale and shared_by_all
+> for only sampling frequency and integration time.
 >
+> The current code is odd in having per type sampling_freq and integration
+> time as both apply to the light channel as well I think.  Not vital
+> to fix that though so I'd just split the mask to make it work for both
+> as it does today.
+>
+
+-       .info_mask_shared_by_all_available =3D (_shared), \
++       .info_mask_shared_by_type_available =3D (_avail_type), \
++       .info_mask_shared_by_all_available =3D (_avail_all), \
+...
+
+ static const struct iio_chan_spec ltr501_channels[] =3D {
+        LTR501_LIGHT_CHANNEL(),
+-       LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0, IIO_MOD_LIGHT_BOTH, 0=
+,
++       LTR501_INTENSITY_CHANNEL(0, LTR501_ALS_DATA0,
+IIO_MOD_LIGHT_BOTH, 0, 0, 0,
+                                 ltr501_als_event_spec,
+                                 ARRAY_SIZE(ltr501_als_event_spec)),
+        LTR501_INTENSITY_CHANNEL(1, LTR501_ALS_DATA1, IIO_MOD_LIGHT_IR,
+                                 BIT(IIO_CHAN_INFO_SCALE) |
+                                 BIT(IIO_CHAN_INFO_INT_TIME) |
+                                 BIT(IIO_CHAN_INFO_SAMP_FREQ),
+-                                NULL, 0),
++                                BIT(IIO_CHAN_INFO_SCALE),
++                                BIT(IIO_CHAN_INFO_INT_TIME) |
++                                BIT(IIO_CHAN_INFO_SAMP_FREQ), NULL, 0),
+        {
+                .type =3D IIO_PROXIMITY,
+                .address =3D LTR501_PS_DATA,
+                .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+                        BIT(IIO_CHAN_INFO_SCALE),
++               .info_mask_separate_available =3D BIT(IIO_CHAN_INFO_SCALE),
+                .scan_index =3D 2,
+                .scan_type =3D {
+
+IIO_CHAN_INFO_SCALE is by type and IIO_CHAN_INFO_INT_TIME and
+IIO_CHAN_INFO_SAMP_FREQ by all
+
+> The current way the two Intensity channels is done is very odd.
+> The .info_mask_shared_by_type should be the same for both of them
+> (only one set of attrs will be created).
+> Ideally fix that as a precursor patch (don't label it as a fix
+> though as it's just a code consistency thing rather than actually
+> resulting in a change.)
+>
+
+No more precursor patches! I am just a random contributor, not a
+driver author, not a subsystem maintainer, not even a random code
+janitor. Stop using me for random unrelated fixes!
+
 >
 > > ---
-> > Found with a static analysis tool we are developing.
+> >  drivers/iio/light/ltr501.c | 153 +++++++++++++------------------------
+> >  1 file changed, 52 insertions(+), 101 deletions(-)
 > >
-> > Reproduced in QEMU (x86_64) with two threads running for 20 seconds.
-> > One writes to add_trigger and remove_trigger of iio_sysfs_trigger, the
-> > other creates and removes an hrtimer trigger in configfs. Without this
-> > patch, device_add() failed with the error above 160 to 1148 times per
-> > run in three runs. With it, it never failed.
-> >
-> >  drivers/iio/industrialio-trigger.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industria=
-lio-trigger.c
-> > index 76926fee0f84..206ede2c9b3c 100644
-> > --- a/drivers/iio/industrialio-trigger.c
-> > +++ b/drivers/iio/industrialio-trigger.c
-> > @@ -105,9 +105,8 @@ void iio_trigger_unregister(struct iio_trigger *tri=
-g_info)
-> >       scoped_guard(mutex, &iio_trigger_list_lock)
-> >               list_del(&trig_info->list);
-> >
-> > -     ida_free(&iio_trigger_ida, trig_info->id);
-> > -     /* Possible issue in here */
-> This made me wonder - what is that on about?  I checked
-> the history and all the code on either side of that comment has
-> changed since it was added.  So who knows! :)
 >
+> >  static const struct iio_info ltr501_info =3D {
+> >       .read_raw =3D ltr501_read_raw,
+> >       .write_raw =3D ltr501_write_raw,
+> > -     .attrs =3D &ltr501_attribute_group,
+> > -     .read_event_value       =3D &ltr501_read_event,
+> > -     .write_event_value      =3D &ltr501_write_event,
+> > -     .read_event_config      =3D &ltr501_read_event_config,
+> > -     .write_event_config     =3D &ltr501_write_event_config,
+> > -};
+> > -
+> > -static const struct iio_info ltr301_info_no_irq =3D {
+> > -     .read_raw =3D ltr501_read_raw,
+> > -     .write_raw =3D ltr501_write_raw,
+> > -     .attrs =3D &ltr301_attribute_group,
+> > -};
+> > -
+> > -static const struct iio_info ltr301_info =3D {
+> > -     .read_raw =3D ltr501_read_raw,
+> > -     .write_raw =3D ltr501_write_raw,
+> > -     .attrs =3D &ltr301_attribute_group,
+> > -     .read_event_value       =3D &ltr501_read_event,
+> > -     .write_event_value      =3D &ltr501_write_event,
+> > -     .read_event_config      =3D &ltr501_read_event_config,
+> > -     .write_event_config     =3D &ltr501_write_event_config,
+> > +     .read_avail =3D ltr501_read_avail,
+> > +     .read_event_value =3D &ltr501_read_event,
+> > +     .write_event_value =3D &ltr501_write_event,
+> > +     .read_event_config =3D &ltr501_read_event_config,
+> > +     .write_event_config =3D &ltr501_write_event_config,
 >
-> >       device_del(&trig_info->dev);
-> > +     ida_free(&iio_trigger_ida, trig_info->id);
-> >  }
-> >  EXPORT_SYMBOL(iio_trigger_unregister);
-> >
-> >
-> > base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+> I'd prefer a precursor patch tidying up the indent as that should make
+> the diff on this patch easier to read.
+>
+
+NO, either this, or I can drop alignment adjustment and you can fix it
+on your own whenever you like.
+
+>
+> >  };
 >
