@@ -1,98 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794095620;
-	b=GkatZxYNkPQYnltjtqGTFNbUniH1ep/Ajcw/3N8ywllrI/APAnwhDuUvfzqgJ0c86gnq
-	 9mhfLVO1DyaEkg8+tg9JdlcRwvu5yfQmSj6Pma1MMQrg+3imeJVn6oBjuotHKJ5SI+Hi7
-	 5dn7KCZ357KW5PzL/uhlOR+YBAqYvgj2UxqqFKcr8Sr2Simtaxp4Hx3a5/DvOsmUbh2Zl
-	 mWHd1owJBLsqjyrBSrHcQwE5k83qBfzSBibXvdghKB565RZhaMf1yK4sAlAHewM2hVpiA
-	 HbcnPbzMzDQ8gand8pGKuoyj3jdkMKBsmFLPGxxpzi84MTHQCdfx92q0XEXjGPFv0dA==
+	t=1794095632;
+	b=jLrl5ncFk4qng/SRXWqiGj2dACHXQdCkz47keR7SxOSclEBNxeeSJVz1oPBMytrcF5f1
+	 57F6ZwVS4UX5q2qLL2ksLWOqdRKKshis/dHseE5yLiAS/EfCgODZEeJvHMNZdcAbAdX63
+	 FlNIPRkRP7iTcirbNyx//qULRuAQ9fdUTOL9dz8jJwaGEI7gKLCnFkIsag5hHPNzr9g8R
+	 MZU4IUNFh6kzYiDxmzv/1ko8nVebumVukB4DoAGSO36f7vLCxzwjpIl1WMeipRPLzdAff
+	 6NYyIW5GFetiroSBODCPMsI97QbWQi4DS/2MUub5H9yUvFZVXhofWJfBliXVnXMEtag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794095620;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=KHl7FjLAzlF40pqV1aBsWmS/0qukI7VrjXFs4bBB8lA=;
-	b=NkxogIcWiV72GxHbkc6lrIEQ5c7QDKmHA5ahv+U0BSxGk/NP6uHh9/9c6jIo8LoyhjiU
-	 QFYSm+h6ro+xcmPq20GevkG3PHEokHCtEMAj4HBHr3rmkPF9CS5UGlfhAuzZFkC0BEP2D
-	 IDQvh8yYuB4r32EK+YJ321rvSTJEVlnveUhQS3TjJpOgYELcPJOMYjPfmuoxAYmkcX3Gt
-	 tfQRXYvAo3n7WOpuhSlgkITUU9+sfqeDVs/D9uDnChVVIv9u6CDQnsa/sk300pfHOBefW
-	 KJbBhIUqkoKDHHwf5Q05ol74PyP/T7Y9HcHcyyWXLkwWb7Dh8jxUChEJw2O+ixocclA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794095632;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=WFbhXnonUMB4MsMDpFD9tXyRvsBkUMaSQV0XLq68nDk=;
+	b=pDFA+IPdcXpkMFhVkB8an2NNOShicmFxu5I3+5QfbJYf2/VFfAFZ3BYSBN9W0AFp52N7
+	 qdDB9J3Hae1cINJFFtj7Jg0xZUw5M7pI9XIhw3C4qubaacJ7YjD9aPGqmH0WsygzNS41w
+	 BaA2fHZlxeZELv1kx0w4T9ZP9KCybDlksQd2nwLsDYK2fVxpwo1ZDuGhG5au9OMBzmjHW
+	 Sg1BuA0BISxkaO9+yJ77xgdjHq/6wG37Z5WccGbu7FiQfRBfV3VGg2gCkxjNdEaiokRMj
+	 VB1j29UeOXme90V1Cs4pqROkYvrCTskc23InRU95uqNsonFWssqMPOEoGt2HYOg4oqA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=HMu0EXKl;
-	arc=none smtp.remote-ip=209.85.214.176
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="BRyzq2S/";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33FEE606A32E
-	for <linux-iio@vger.kernel.org>; Sat,  7 Nov 2026 23:53:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 33FEE606A32E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F7C606A326;
+	Sat,  7 Nov 2026 23:53:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=HMu0EXKl
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2e9d7791b00so793645ad.0
-        for <linux-iio@vger.kernel.org>; Sat, 07 Nov 2026 15:53:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794095618; x=1794700418; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=KHl7FjLAzlF40pqV1aBsWmS/0qukI7VrjXFs4bBB8lA=;
-        b=HMu0EXKl3AkHe2G5WW57J0UAthtyRuDWCwgQMIDulH8hT6pVxVx3fUoSA7RxMy2hCg
-         oSqb+2Z5R5X/AVJ3E9+fNuFL9yjHeIhIq2CyUhRHc/WZoepDZvqNyDuK6gpl3YDDZwFL
-         cngmZ8F0oSqa5FV/6a/ycrpTefPf3DC0xgfWGp7FUJvzHcXS+SHTrhBzbOnH2rueLuU7
-         bRn0ieLddPKFeTfETtbbkH41UQ80PjR2mQCm1mh/yKywCXajWEXpm9vQZhRV7Es0e57g
-         NcgonmwSV+12Q5Q5otUWByMVTLNAhQHpvDuIHlD0ni6g24Cy+3bwg8+FPZ5mfqXLStfd
-         SrMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794095618; x=1794700418;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=KHl7FjLAzlF40pqV1aBsWmS/0qukI7VrjXFs4bBB8lA=;
-        b=SET60aYFwXDswPqVnir/tVi1hXhpVvo7DZvh7lBtb5e1jSll+6grIVjaf0jK71b7Ro
-         hbcyLnWHN2Rd3BMd4NdAcj4ID6JmBBnX1Vf/W8AqAWXKFH25EZU1euXvB51UCHwyL5nh
-         X3CQWM8LD1LiZ6Cfirf/IW0++tCjZE1R+W+r3oc5SFtB1Ut5TWzXRS2T0tyf6SsRnO1y
-         zgiOtvme5GFUHkue5Se/Jl1G8OLPkVRjeGcASFWAqlDp61it6ZX1oRwNQRU1dtoezb4y
-         CuYg608vwGWClioU3Nyo0aUnq7PcbR/QOr8TIn40rXs6QU5sSW13atnYFlmbrSa0ZP1V
-         TqTg==
-X-Forwarded-Encrypted: i=1; AL+hErG48ww95b/xK4Hz3Empp4dnezzohJja/H9zJUiYM18vgHWpCmaFZGdBS2qUB8mr1LFd1UKxagJonZA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9jyAMMGgai5ghlW833TooffCMh4kKh2tv1PDOQu81WDVNLMXe/
-	dSmbS/XloxHwUjR/oxyRpaSv9MgQAkHveolqcUFfFH9vdCX1g/e6lviKxpbQww/q/w==
-X-Gm-Gg: AYBFou22TIYWv8fq/YCkTCQh5pUiI/JvvLh8Ykup60yFEmk2Lg7Rz4ZQTqXBbKQDxiW
-	conbYnd+cs4MLSwZNwqzr7mr8w4cJC9d8U1ptw5GYcuFSYL4T51klXd8Y5m5jIk9WFMevixKy4d
-	5xf7y1eFW+sEGNMQ7IGgswsBCqc7UNP05qyY022V16Cf4PnllKb4ZwyeNcORZ97N4kwOq3nfuqD
-	rNmYD4Ea8rGpupVFFVFZZYQDEv97+mjT2uCUlrG7cRr3sFGs4Ckf3EKqBwVFAqCtMGk1yyKohCG
-	+FQHR+RXFgcnJnkJHMyK9Y8nx3JS/4bhi9JvDYSJpBf4fyPKEI56GCi+BXzpxCStpSFXLSP6ACH
-	9NLoJLYwMWYAhDtsLbShpVVEU/q2qxMBRNqmuUf5c7uTNLXLssnBxooqtFQllEvClrkyzgc8FJ9
-	0RUGPCYqNc96Ik2kSgVFpFaNvhchkH61G+g+PCiQqpdZk0XXjAa4No0D7lyu87K+MrqxG6Pehhq
-	tE6t/xGdF3Q8TDBTeRatTzJ9lNF15M4FxX6kKxROxaOjtZgAHU26p8E4hMx+5lsNk89E/UH0sxb
-	KqjhF5N7WTOBYxftkfndCDq+DY6NIWxnQufR5PY1MULXvcwk18oQmhGutfo/Jqap0WEym2VHvZC
-	Kyc79Vn4KcaJLJdYLztV/HQrNYo37FL63mlLRPH3yATHAtPiM147EXVFJFcybaoP2fWVY1NVHE5
-	QRCT5t4NI2
-X-Received: by 2002:a17:90a:df0d:b0:3ac:a203:e092 with SMTP id 98e67ed59e1d1-3b12d0e72e1mr64263a91.1.1794095617777;
-        Sat, 07 Nov 2026 15:53:37 -0800 (PST)
-Received: from google.com (196.126.197.35.bc.googleusercontent.com. [35.197.126.196])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b127712bd7sm678574a91.2.2026.11.07.15.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2026 15:53:36 -0800 (PST)
-Date: Sat, 7 Nov 2026 23:53:33 +0000
-From: Benson Leung <bleung@google.com>
-To: Daniel Balint <dbalint@google.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Benson Leung <bleung@chromium.org>,
-	Lee Jones <lee@kernel.org>, Tzung-Bi Shih <tzungbi@kernel.org>,
-	linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
-	mfd@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/3] platform/chrome: cros_ec: fix alignment of
- ec_params_pwrmon
-Message-ID: <au-5_dDwdf0j7kDi@google.com>
-References: <20261106193129.43493-1-dbalint@google.com>
- <20261106193129.43493-2-dbalint@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BRyzq2S/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73A9B1F0089F;
+	Sat,  7 Nov 2026 23:53:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794095631;
+	bh=WFbhXnonUMB4MsMDpFD9tXyRvsBkUMaSQV0XLq68nDk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=BRyzq2S/hsWT2dkTqFE5719cT1bq8K33GBpU2V0HVWwvIxANuQbkqbP+YFjLQsqfP
+	 KoJedX7+NjHe4l4wKmb3OveSu1wZ1jbpZxUrPaEq9jLWNN7JVFRnlqP7YSvcvjkcZP
+	 372vgkoLo1yTYAsxL8L+ax4oH0iAea6n/yjzN90tMcDw06+OIKMZ769IPqIpzHsfy9
+	 gdMhTHRtmWbNGnOLM0q82nCh6xEJyUfEnvQRNPIRZcEE1tj9RypWd0KDwnY51UA9OY
+	 ozageyHUfHuwgb0GH5YYAGHgAyY3Q2bJrx0Rg6OzOJqaKGUCdRk8OzFlOaXoC5uSx7
+	 RFl9Fc4VkDgVw==
+Date: Sat, 7 Nov 2026 23:53:42 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Roman Vivchar <rva333@protonmail.com>
+Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: iio: light: stk33xx: add power supply
+ support
+Message-ID: <20261107235342.40f2e45a@jic23-hlaptop>
+In-Reply-To: <geNqZOyrIjYLfmuUys8cQJU8FM53jylicArPsTGNXPnqSvHPCIc1Jad7dBOBy1GdE38RBEMSYQYDqEmaAqq2PDcglQcRBdkR0yZAjRExEUQ=@protonmail.com>
+References: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com>
+	<20261108-6768-stk3337-v1-1-0340c99b0e33@protonmail.com>
+	<20261107223601.0ba9ffc6@jic23-hlaptop>
+	<geNqZOyrIjYLfmuUys8cQJU8FM53jylicArPsTGNXPnqSvHPCIc1Jad7dBOBy1GdE38RBEMSYQYDqEmaAqq2PDcglQcRBdkR0yZAjRExEUQ=@protonmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,68 +67,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="SVqnLzRLk3+00m3z"
-Content-Disposition: inline
-In-Reply-To: <20261106193129.43493-2-dbalint@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+On Sat, 07 Nov 2026 22:45:45 +0000
+Roman Vivchar <rva333@protonmail.com> wrote:
+
+> Hi Jonathan,
+> 
+> On Sunday, November 8th, 2026 at 12:36 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > On Sun, 08 Nov 2026 00:15:03 +0200
+> > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+> >   
+> > > From: Roman Vivchar <rva333@protonmail.com>
+> > >
+> > > On some boards, the chip shares a power rail with other components. If
+> > > that rail is turned off, the chip can't function.  
+> > Not sure how the sharing is relevant.  Even if shared with nothing
+> > else we need to turn it on.  So just mention that on some boards it
+> > isn't always on.
+> > 
+> > The only reason this would be optional in the binding is if there
+> > was internal routing in some packaging or similar that meant there
+> > was no pin to connect.
+> >
+> > Upshot, make this required in the binding. Note that doesn't mean
+> > the driver must require it - we are simply documenting that the
+> > device needs power.
+> >   
+> 
+> I agree this should be required, but that would break dt_binding_check
+> for existing boards. I don't have their schematic nor boards themselves
+> to verify the regulator for the power supply.
+
+There aren't any upstream (from a quick grep) and so not your problem
+unless you have some in a downstream tree that need fixing.
+If you do then there is the option of a fixed regulator to close
+the gap.  I consider a missing supply a bug that we should fix but maybe
+others disagree.
+
+Jonathan
 
 
---SVqnLzRLk3+00m3z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> 
+> Best regards,
+> Roman
 
-On Fri, Nov 06, 2026 at 07:31:15PM +0000, Daniel Balint wrote:
-> Sync EC_CMD_PWRMON structure padding with ChromeOS EC firmware by adding
-> explicit reserved padding to struct ec_params_pwrmon (2-byte union
-> alignment) and struct pwrmon_dump_info (4-byte struct size alignment),
-> as __ec_align2 and __ec_align4 expand to __packed in Linux.
->=20
-> Fixes: b57af7f8d194 ("platform/chrome: cros_ec: Sync host command header =
-with EC")
-> Signed-off-by: Daniel Balint <dbalint@google.com>
-
-Reviewed-by: Benson Leung <bleung@chromium.org>
-
-
-> ---
->  include/linux/platform_data/cros_ec_commands.h | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/lin=
-ux/platform_data/cros_ec_commands.h
-> index a7bd69d83522..6d74371c7074 100644
-> --- a/include/linux/platform_data/cros_ec_commands.h
-> +++ b/include/linux/platform_data/cros_ec_commands.h
-> @@ -6635,6 +6635,7 @@ enum ec_pwrmon_cmd {
-> =20
->  struct ec_params_pwrmon {
->  	uint8_t cmd;
-> +	uint8_t reserved;
->  	union {
->  		uint16_t set_rate;
->  		uint8_t channel_id;
-> @@ -6651,6 +6652,7 @@ struct ec_params_pwrmon {
->  struct pwrmon_dump_info {
->  	uint8_t channel_id;
->  	char channel_name[32];
-> +	uint8_t reserved[3];
->  } __ec_align4;
-> =20
->  struct ec_response_pwrmon {
-> --=20
-> 2.56.0.455.g6c5a503b38-goog
->=20
-
---SVqnLzRLk3+00m3z
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCau+58gAKCRBzbaomhzOw
-wupqAQD31+MHMT2GMHa+8gZvTeOGQWK/Ucg+s4hL5AvoDdccuAD9GxQ4UPJP/cxM
-xa6kW3kvabTLe+wjpkqkA9kC7jHj2Ao=
-=kCAn
------END PGP SIGNATURE-----
-
---SVqnLzRLk3+00m3z--
