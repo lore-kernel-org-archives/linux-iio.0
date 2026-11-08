@@ -1,54 +1,50 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794172433;
-	b=oNLbNS3Ike5AXB3kwbxZjPkJFIV0/3mmOO+EQ7W1tvZ6ZJltzlaDKde1vB0eRv/LT/VT
-	 x97nnYk0fouDuCFiajjx97JzvP1bikIIU7grheb9g0RKGsIEEzTx5hHt9TNMa4wf8UwVu
-	 +AtLfyvSO1gJOJ8Ktt2CqedHLsT70fp5LlJDnizBIfLlVdyH8Ns1cP0NE353bpcoWvgoQ
-	 1oX2WPF28mk60fIn7KV2FH9sDmDUNGt790sc5fQ4nfTJPt+GoPUL6GzDFDeIf9ypVsZo4
-	 aBBdZZBWW744Z6MTW6gKlqdVByqEFxfT7MylzaXXVmhMjufbIOkjFthx+3w6mUTBqRA==
+	t=1794174244;
+	b=Ep++jCJ0sh7cR/nksyJ5RcjsfvXrhNt5ucbYa5xsCHk8gIpfR1pWBhK8R38msA9CZNIn
+	 kcbjsEmjer7y8I4I4NGBwO8X1wAWSkM2smnBI21KcIiH5gOiSuqc9cyNHa2eP8sLUUKIL
+	 Ep76mck7xxAD3JZ3Z98Kx76JRcSZYkHedKwgT4ILdbznidMjEgds5+dY6FMBGZvNzatG9
+	 hzc40sdIV9WYkhW1Nxj/Po30LPLTVv+EaWEulUAR6GkInTVSTNOdkpEMMCVH8F1zp+Q5C
+	 i9QliRANwqHu1xV8woSg07lZ6VrzFgnFSmNo5WoosjKSUn3ncxdTLfogdWTolULfqLg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794172433;
-	h=Received:DKIM-Signature:Received:X-Gm-Message-State:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:
-	 X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=NfsiPlfeChHXa7FHvQGdbAbZ+3j7yl2ALAzQCNxrtJ4=;
-	b=TzKu0Uy8Kqhzw8u8NEBbcUIoAYi5WiBmagGgDhO2V7WAvEQTPEfCDp0fFyrLzhmL74BD
-	 k37CRq0sxusqlYV0fOcTYqA3UmMpKbnL+pLAErXNeO+oWe1fmWJbwPrZ159hPF+DFqRY6
-	 UYlSrk3vtJXE1WfuKwbVKlBgitz6n7v9NBqN3ALp9S8k/xIWddpCyK8QN29+f9q8srLLT
-	 zokSLerBDqk0F9yzG3G2EH7YHPJmEh7E2vHPeiQbBpXo3sWmeT/u1kwzebUq4TybXdAf5
-	 ouB66tkRJKgr4xhvqu77xLf1VoVm16tMgVgfVQc+B2DtvmEMxP+s4DLo8GHQd02MItA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794174244;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer;
+	bh=HyY9LZsqXMqU6TJvTlAIMrH9fUfSEMURKgAuTO+sdGc=;
+	b=pLQOEMgyP1me+qhOYXwUsS5ZJZG7c5AJbVYPnjFl5wWYWXQopMF0ncu0YNnar/ExLghA
+	 A8MqcWjMimfvZ7Le9J4kwi4wZj5PnhymgXkcvpEbWA8wWBAtH3iQsXJ3xRIOj0014zdV5
+	 3P8TEyTDFrVJ0ioaykCuTsjUPXA3R6nmoAz+bt+vSEW0KhtFayXzx/+t18Z8H3rcHLcHL
+	 AtycfuwvbSA54hIIk6nqJ0tXHVPK7juUOXvle9lKvHON6L82NgXsV0jCJTMI1WinFIFTb
+	 CD2Lg/JT30q5KKzda+n9ht4vNrSBlJYe0vMlsfN8GOGV3EDYNAdyCtepfsJPQZo3WwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PhxDaZTL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lc247RHm;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0851606A320
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 21:13:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33178606A331;
+	Sun,  8 Nov 2026 21:44:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PhxDaZTL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B0A01F008A2
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 21:13:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lc247RHm
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 951B71F0089F;
+	Sun,  8 Nov 2026 21:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794172432;
-	bh=NfsiPlfeChHXa7FHvQGdbAbZ+3j7yl2ALAzQCNxrtJ4=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=PhxDaZTLZY29YJj12vefUX8VejuSNpYiKDMljPrZPNFItV/0Ksylb5Lbh0F0AnkzI
-	 uyaoWiKLlLJAkREBTeCBDzVVgsu9zuwpU6qDMR8iMg2KActNrJZYcLSPqmyx+9CkSl
-	 roZjaauC7Ph5khA6kCDq+L0BrHdeq7AbGCze3KZyRtqnJHzNmjOi37wJ0ksaF8fh2D
-	 vlIJjc6zDuE4kV0nI4u6feVXLZBUO9CHOrzLbNYZyLefnfj0ggV3NqHRgBsMu/GhnP
-	 0oROLr6cWtKgoduglgHVzeVCRgagD/CMmGfwiu6/rFwBPDFkVQCm7S914dnuGM2THV
-	 7JVjahEJ+uSVg==
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5c1479be604so124637e87.1
-        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 13:13:52 -0800 (PST)
-X-Gm-Message-State: APuU4Z+ViHUtSrSPu0QtUXLrsHsgwVlaz5ikSB6wh8FUszaU45c9wCgH
-	Icz9pGxpN2wHel4YhyPzprElAjeK6QuZhV3IKL6UoyJ3lqfrDFN+ucVyYmsS4gQ8cTp4ac/cMDU
-	AjanIQXjeDO8kbLJQhnrMsFrXGD9kxEY=
-X-Received: by 2002:a05:6512:1083:b0:5bc:f2fb:f50c with SMTP id
- 2adb3069b0e04-5c14c013534mr466477e87.53.1794172431399; Sun, 08 Nov 2026
- 13:13:51 -0800 (PST)
+	s=k20260515; t=1794174243;
+	bh=HyY9LZsqXMqU6TJvTlAIMrH9fUfSEMURKgAuTO+sdGc=;
+	h=From:Subject:Date:To:Cc;
+	b=lc247RHmlARewjRcFxCCexRTuj4+GL4V2SwuqVn7QPmPokNDo5/XO98uz5Es8wAFu
+	 Mkvt6vHR6iBPNsIySbwCPuJqdFjN9Y6B7bV0BjL3hL1kD9oCxjeW6MrMeNUaZArSgq
+	 SRBBMaXisjsC/B+ZI6DbWBzfBsJ+0sGkVzpR+m5od4TrTzAF9h4COpeQ/o8+heNw4O
+	 Jkt/M57/eIqxXgMW3QItxpMY5AqsG8UECn7AfnsGdXXax4SpfxG0cZgX/vsh4fTcfa
+	 jiRgTBMS1Vk6XgdWD0xNdfCjy17i6WCevbw93O9I1Svdgcotd7Jg33HD5Ipt3HiSVa
+	 s/ZaNF6VcumbQ==
+From: Linus Walleij <linusw@kernel.org>
+Subject: [PATCH v2 0/5] iio: light: gp2ap020a00f: Add VCC supply and
+ GP2AP030A00F support
+Date: Sun, 08 Nov 2026 22:43:58 +0100
+Message-Id: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,44 +54,67 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261108-gp2ap030-v1-0-55314eb7055b@kernel.org>
- <20261108-gp2ap030-v1-4-55314eb7055b@kernel.org> <20261108002155.29740ae6@jic23-hlaptop>
-In-Reply-To: <20261108002155.29740ae6@jic23-hlaptop>
-From: Linus Walleij <linusw@kernel.org>
-Date: Sun, 8 Nov 2026 22:13:38 +0100
-X-Gmail-Original-Message-ID: <CAD++jLkMRe-hNB0=8G_K5tmK6PU0H=zm1Evhm_azW=nLDa9C9w@mail.gmail.com>
-X-Gm-Features: AclHuK9Xc9_YTR7KHYkysEhO-qFuV54hOhTZVduK87r-rNPmyMy5nO7aPl1v8WQ
-Message-ID: <CAD++jLkMRe-hNB0=8G_K5tmK6PU0H=zm1Evhm_azW=nLDa9C9w@mail.gmail.com>
-Subject: Re: [PATCH 4/4] iio: light: gp2ap020a00f: Add GP2AP030A00F support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Kyungmin Park <kyungmin.park@samsung.com>, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAA/0XMSwrCMBAA0KsMs05kkjb2s/Ie0kWbjumgtCGRo
+ pTeXSyI27d4G2ZOwhlb2DDxKlmWGVuwCtBP/RxYy4gtoCV7NoYqHaLtIxWkm8ZR6e3oqahRAcb
+ EN3kd1bVTgJPk55Lex7yar/6S+p+sRpN2rjAlDxU5N1zunGZ+nJYUsNv3/QOKmLF/oQAAAA==
+X-Change-ID: 20261107-gp2ap030-99504c2dc038
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Kyungmin Park <kyungmin.park@samsung.com>
+Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>
+X-Mailer: b4 0.16.0
 
-On Sun, Nov 8, 2026 at 1:22=E2=80=AFAM Jonathan Cameron <jic23@kernel.org> =
-wrote:
+Describe and enable the optional VCC supply for the GP2AP020A00F and
+GP2AP030A00F. Preserve compatibility with existing device trees that only
+describe the LED supply.
 
-> > +     /* Bit 0 is reserved on the GP2AP030A00F. */
-> > +     if (!data->chip_info->has_als_auto)
-> > +             op_reg &=3D ~GP2AP020A00F_TYPE_MASK;
->
-> Perhaps set it explicitly to MANUAL_CALC
+Extend the existing binding and driver to support the GP2AP030A00F. It
+shares the register layout, but has different proximity resolution
+encodings and no automatic lux calculation. Select model-specific
+initialization, keep reserved bits clear and expose fixed-range raw
+clear and infrared counts. Keep generic supply handling in separate
+patches from the model-specific binding and driver additions.
 
-Jesus the name of that flag. I just shudder whenever I
-see code referring to "manual" in a computer program,
-as if there is a man in there, or we throw a prompt at the
-user to fix the issue as if there is a manual gearshift.
+Assisted by LLM.
 
-What it actually means is "imperative", as performed
-by a machine. I will grudgingly swallow my pride and
-go with this because I suppose it is the name in the
-register description in the manual.
+Signed-off-by: Linus Walleij <linusw@kernel.org>
+---
+Changes in v2:
+- Replace vdd/vio with one optional vcc supply, matching the VCC pin.
+- Use devm_regulator_get_enable() for VCC, allowing dummy regulators.
+- Move the VLED description into the generic supply binding patch.
+- Split variant infrastructure from GP2AP030A00F support.
+- Use "GP2AP020A00F and similar" in family descriptions.
+- Use reverse Christmas tree ordering for local declarations.
+- Explicitly select MANUAL_CALC when automatic ALS calculation is absent.
+- Reject missing chip match data before accessing the device.
+- Use fsleep() for the GP2AP030A00F startup delay.
+- Select static channel arrays and counts through chip_info.
+- Link to v1: https://patch.msgid.link/20261108-gp2ap030-v1-0-55314eb7055b@kernel.org
 
-Fixing up the rest of the comments!
+---
+Linus Walleij (5):
+      dt-bindings: iio: light: sharp,gp2ap020a00f: Add VCC supply
+      dt-bindings: iio: light: sharp,gp2ap020a00f: Add GP2AP030A00F
+      iio: light: gp2ap020a00f: Enable the VCC supply
+      iio: light: gp2ap020a00f: Prepare for chip variants
+      iio: light: gp2ap020a00f: Add GP2AP030A00F support
 
-Yours,
-Linus Walleij
+ .../bindings/iio/light/sharp,gp2ap020a00f.yaml     |  17 ++-
+ drivers/iio/light/Kconfig                          |   6 +-
+ drivers/iio/light/gp2ap020a00f.c                   | 136 +++++++++++++++++++--
+ 3 files changed, 143 insertions(+), 16 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261107-gp2ap030-99504c2dc038
+
+Best regards,
+--  
+Linus Walleij <linusw@kernel.org>
+
