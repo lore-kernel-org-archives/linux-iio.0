@@ -1,58 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794101352;
-	b=zYlv1AwCjKEZ+9ZePsk8OkiUNonDI85kx/3qjfSLQgLXXLwGzrFVHAHQ91dDs4+VxDfr
-	 BcB6ZFsnr2e7YRq2BkTtjQZdALA+kQXX2RlXCjv/63aknqjWn5WHIuvUv8x77u59G7p55
-	 +ptBLKKYe0QympgPTW9JkED7nl6anlK0g5xpDz32V42MeohnMtJBE/6gElupqJemi5x8/
-	 Bs57EWf/dCg++4V87vR20/pmc5InrKAqzng5Itt4rJJ7xpSlZxyhCm/AKp3kk4InjhQjC
-	 ymtxOQ7n/zvhD6IdAR/dg0K7cz2sr37F/rga0AFHgZuA3dh/Uk0JLz4mMkePGpDhDYA==
+	t=1794101436;
+	b=5lGW93u8NhIuM1TGeVx7tdPhCKqRnx+f+Czq2hQ+Ge2GU8BjUNxOywBz3LBWMzmuuoCu
+	 BY1gR56e1UUXvNt8PajwL/5TwxafhGWqOGL0ZZrdv8b2X5z/nJ91mL7EQOdMCyVT/gKb3
+	 ODZY7V+guJ40BN5fvtH/Wp2RL1Wh8MUiscMO/vMMwATbv9b/HbKyQFP8tDaulUnd/pwyo
+	 BLpV8AHYtoFx80DxhhlzRe7+mVSkcWlOuWZc58zIFyIbZeZZg9IsTc3oIc/Dp6bGovvXH
+	 3r6LFbDh3KVszmMPk3tPewLYLCkV0FIuwHC+oTO6kN9NLoPLGyb9xQIOP1e1XtZsZcw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794101352;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794101436;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=x2cfPYkeTIhQOJBkbx7qFVMAeRGd0MqXKIpv3aH2spY=;
-	b=qqLdzOykFbKN9koVIDyi+6T1mh4VEdw1Y5PgVUSPn6+tUT73b9IwtKqGu9nSq/0Fhm/b
-	 12u2dHYrsV2cIlKDuD47Q21kZgeHHXTQffmtYhfzub5ITF36xHAlcnlP5bIGKXRugTvtN
-	 p3aMU5gkZymjL4WprBiuiOL1rBNtYeTJCEdPpEiAwnyqbTNY62DJ+vJbVbILYj+GuJRGs
-	 C0eofOkvQfzUEGaembyhwYrwyimCx3QfpWM3MjV44WG99aPEi8rq3yvP8WycyRHirD95Z
-	 mrIX68XYLpviOJR4p7ZTuGIijBffuqD0UyOCm2EFkO4rMgfJi1EZmiEf8nyZmRtUcFw==
+	bh=cxolDekYi/UpNdRDGBoRVJhDPItFeUatyKLS8M2gJd8=;
+	b=0NAtXSZTbLfx4OKruoTCmHY6A54AvhygV0XMl9DcnBEl9RKQPm8L0zESboF/G6CjmJdk
+	 6XXDmlE/HRLtazSHxwptjz2TUlfTPxw09hKFDqw2CfsLTX+6DbdiWzTyIUBBc3PHzizJt
+	 oigpknTPFHc4dfFFLfz7IcAOERLhY9uCandczWCl8FMFdFCjSUsgrOV0WVHqccAUA6iHh
+	 48MHUBnUeYKe8m3KDAuClGdp8sZtgqeYnhqathD9i+UZUFlYu8RGl+ErZqWn7qMVJUByh
+	 n4CrSq/Xw71B/pOybGG4RUOE/j6WZd4oUpxs1wELm8hAVkLhcKbI097MZQrtkJnPa0g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B2Dxg2xJ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Tw9X5/QG";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF8F5606A326;
-	Sun,  8 Nov 2026 01:29:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD87606A326;
+	Sun,  8 Nov 2026 01:30:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B2Dxg2xJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D091F0089F;
-	Sun,  8 Nov 2026 01:29:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tw9X5/QG
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3461F0089F;
+	Sun,  8 Nov 2026 01:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794101351;
-	bh=x2cfPYkeTIhQOJBkbx7qFVMAeRGd0MqXKIpv3aH2spY=;
+	s=k20260515; t=1794101435;
+	bh=cxolDekYi/UpNdRDGBoRVJhDPItFeUatyKLS8M2gJd8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=B2Dxg2xJZkSYE6/K7n+/zY15/3ATJHNeZf5quVAvbr/6d7aYbfFoXfWp1Kw8w844p
-	 FWzOblv9oUO7qsOddeWg2f1Hk0/qBvI1B2Co2Y28Q5PCp04Fe8BAwE9s4AYbtnZTTs
-	 x66yvgtHB0vW41CDW7ksJFzjSaLldMqtJQ6r+1kKPY0tgB2LjHKSlOkwOJozkshJ6E
-	 9ZiaO+W1gqKfSZnhzSHc2pBsd9MWf3k5tZMFKJPbcTql3/b6XLVFXHRNTMZJqKx5pa
-	 SWQ1bRqRSyFoGEW9wzNNdCijpIjGuoPyZspOdNovW9NZE1hRwrd9ECL88u1hEPd+ba
-	 carjVIIEy9q0w==
-Date: Sun, 8 Nov 2026 01:29:04 +0000
+	b=Tw9X5/QG378HL3UXqjnxQX0TMDoKQRQ/FFnl55QeNxaImlwSCIgnzVX7WUvDIEymB
+	 P7WGd+KS774yQdxm4BQ+5jJylK4wOFeGjiBqFLBeEyMOa6unRaddZNs5L93sr5cd+F
+	 5yrVlKF5zo+sKkNYTUtnsDIpP3qDiV1BVnFlvQFYHFPTRVr9WAE75iPGo5PwlQCyJi
+	 3YhLGsPAREjTUNjJqsHqVh/RtLgk0+BKYP6NuBQ4P7Ly5Pr98XnFgds+w607MkQ/Z3
+	 DniI9hGXwcp5/aLaAU0ub04c5HvchRnJxKjpnOznyEtb21Z16tqpNW7B2i9Qv4B7/p
+	 4p+ok4OGD8hqA==
+Date: Sun, 8 Nov 2026 01:30:28 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
- Joshua Crofts <joshua.crofts1@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/3] iio: proximity: sx93xx: keep the IRQ balanced
- across suspend and resume
-Message-ID: <20261108012904.4555e72b@jic23-hlaptop>
-In-Reply-To: <20261101102518.22757-1-kapoorarnav43@gmail.com>
-References: <20261101102518.22757-1-kapoorarnav43@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Cc: Vidhu Sarwal <vidhu.linux@gmail.com>, Krzysztof Kozlowski
+ <krzk@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Shuah Khan
+ <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v2 0/3] iio: proximity: Add Benewake TF-Luna LiDAR
+ driver
+Message-ID: <20261108013028.5d68c966@jic23-hlaptop>
+In-Reply-To: <20261102222056.30f23d75@jic23-hlaptop>
+References: <20261031-tf-luna-v2-0-ce403579bb8a@gmail.com>
+	<20261102-massive-busy-woodlouse-8d0bbb@quoll>
+	<CAFqz8LJZQ+tw6wmLS-1FXvt6OxBESPEyz2-uK4D7B8X8epoKhg@mail.gmail.com>
+	<21b771dc-e9cd-46b9-a456-0950ae1270a3@oss.qualcomm.com>
+	<20261102222056.30f23d75@jic23-hlaptop>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,52 +72,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  1 Nov 2026 15:55:01 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Mon, 2 Nov 2026 22:20:56 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> sx9310, sx9324 and sx9360 disable the interrupt in suspend before
-> anything that can fail, and don't enable it again when suspend or resume
-> fails. One patch per driver, as the Fixes tags differ.
+> On Mon, 2 Nov 2026 13:23:56 +0100
+> Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com> wrote:
 > 
-> Changes in v4:
-> - Enable the interrupt first in resume, so resume mirrors suspend
->   (Jonathan). This also drops the sx9310_wake_up() helper from v3.
-> - Drop the IRQ 0 wording from the commit messages (Jonathan)
-> - Drop Joshua's Reviewed-by, as resume changed
+> > On 02/11/2026 12:48, Vidhu Sarwal wrote:  
+> > > On Mon, Nov 02, 2026 at 11:47:56AM +0100, Krzysztof Kozlowski wrote:    
+> > >> What changed exactly? b4 diff fails, the patchset cannot be applied on
+> > >> any known upstream revision I tried.    
+> > > 
+> > > I am really sorry for that, I didn't realise it was based on Jonathan's
+> > > iio.git (testing branch) instead of linux-next. Patch 3 conflicts in the    
+> > 
+> > That is fine in general, I'll wait for next linux-next.  
+> Might be a little longer. I've pushed out now. Was just waiting for
+> anything nasty from the bots on after rebasing on rc1 before pushing
+> out.
 
-All 3 of these look fine to me, but given they aren't totally trivial
-I'm going to leave them for a while in the hope someone will test at least
-one of them!  If it looks like that's not happening I may pick them
-up in a week or two.
+Applied to the testing branch of iio.git.
 
-Thanks,
+thanks
 
 Jonathan
 
 > 
-> v3: https://lore.kernel.org/all/20261028220444.70121-1-kapoorarnav43@gmail.com/
-> v2: https://lore.kernel.org/all/20261026112342.65917-1-kapoorarnav43@gmail.com/
-> v1:
-> https://lore.kernel.org/all/20261026100322.16720-1-kapoorarnav43@gmail.com/
-> https://lore.kernel.org/all/20261026100408.16874-1-kapoorarnav43@gmail.com/
-> https://lore.kernel.org/all/20261026100450.17023-1-kapoorarnav43@gmail.com/
-> 
-> Compile-tested only (W=1); I don't have the hardware and haven't
-> reproduced a failing suspend.
-> 
-> Arnav Kapoor (3):
->   iio: proximity: sx9310: keep the IRQ balanced across suspend and
->     resume
->   iio: proximity: sx9324: keep the IRQ balanced across suspend and
->     resume
->   iio: proximity: sx9360: keep the IRQ balanced across suspend and
->     resume
-> 
->  drivers/iio/proximity/sx9310.c | 32 ++++++++++++++++++--------------
->  drivers/iio/proximity/sx9324.c | 28 ++++++++++++++++------------
->  drivers/iio/proximity/sx9360.c | 30 +++++++++++++++++-------------
->  3 files changed, 51 insertions(+), 39 deletions(-)
+> J
+> > 
+> > Best regards,
+> > Krzysztof  
 > 
 > 
-> base-commit: 2ef6f5c4ee56e90c237c5f7687f09e635f7d30a9
 
