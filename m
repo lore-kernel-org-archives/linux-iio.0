@@ -1,58 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794102749;
-	b=CVuE1mVD2y+aMdGQDXJNLhKSMSG9TLAlzVAULmvmzZdWV3l4FbMcTSKr2lrhGUuBdPUo
-	 3DshpI3yQ+tu9fR+DIAHxL6KlVM+29tbX6IRdLELfM+GxQoGaQvftsfMij4GhQUZ1/3Mr
-	 193dOWtNf8ZUffezf72smzOK/xGxPXEM6SOlmwD7PtvFSwN4ziLtaaXVBwpQO3FDLQkAn
-	 cK5XOo7FtGOOR5zNVdzauMTODLHuW3EycLUo2WPzqK27a2hLyLUKBjMHvwswsoZIjFjIm
-	 8YeOEdMtEcXcZ23v2j1kwmMT58ozusFLmt0ng9/RSTBi8RUWlcwbLWboXGiA3elFaJw==
+	t=1794103460;
+	b=pp9Y617d09xWEJiked8fra+gTjmcJHw7OD8gutEzLa34g5NDiSdNnbgkgcORCqKROrdc
+	 MmPzRsJEz5Nyb5AjRdx2FwoRYHRI2ZQ2cBpV6p06qpEBHcJ2K88UvYQ/h+nWuCJgCj3tM
+	 Ji1om6yjLcWpEvCe+DQw+fPzuoqArozm+qnVBPNLZSIbmXrUuTIdiEGrr7jy+x+75/QPo
+	 c5Vh6jA4xMYvCdgTBaPcgmd90v/SHaMP/NBe4TmgnEUM5dAIosw8qAWv0mGCZ7lO9rS5j
+	 nzl6M4egihtta4iirTl0YSE7swjzOR+HdxJXSIgrXS1gxNOaKzd4qeOFCu39gr5maRg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794102749;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794103460;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=wRjAg+ka47rjN93TZXrPtjGopEDUOpnlYdiInVar/pc=;
-	b=0ZlwTbMO/MNzekEJSY8TDVsjww/oN2hIj3Ez7BGc29mG+L9BBkpIGPDLPe/yLEhPhyzj
-	 Q88kYHal/kV2/1JPPBwQIzliH4wV6v1vM8zQyQDv43tQpl/2xC48bNglOCwHBZH2R3/Be
-	 z4grqyCXCrDXgwGGfaViJQKdR2YvyCyZua1AD5peGBkgU73X9dbyyjA8GL+w+eFyBpiSZ
-	 WNUEXqVdDWoOZ1qzowK9hjeB8ygWufWaDEx2gh7e3ChFIQRSRFvYQnfd1g5SwH0Z79BFd
-	 YYpkZiy3qgdb6vLRbtLvqP5uA4Q6ahXoLdAt3Z9hxpzraRjs0vkVTjO0nx/AvZ2HxwQ==
+	bh=KdK+2Y31YGq/pziwmjaFOQoKLGl1Ioy8FCZaLYsW4Yc=;
+	b=czNCvWtYnpWoYAkrxL1EM9YGl6z12vLp52RxlLr0YAvknYF4EZykjTlfFNW+UfvZmX5S
+	 3ANsRZEDLEDLbyyf8Jd5kHUGt0PFQuBnM0GKieRJku0k7dQ5pLjDIPUCzyKQfgL+pU+mb
+	 Z7v+yAqSmxPCRTXnQNMLOCReDNd9BD/Aqh5WzfYu7aDvphepVq+Xd+gokgxqY0ChM+lN4
+	 dRcdZJ9UfRKVQk5sBEJdSDRRHSg0afMCzQG6+5Vsaap/5I7WL55w3Ny5V2MRG5c3c68nZ
+	 h+NmGRS26LmqK8m0U37pmYxhN6gKG+Bcr75KBqb7AJcDYOssC692RVyulPEzhBXtiSA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="E/e1DjG/";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RQ9+cVLx;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE62A606A31A;
-	Sun,  8 Nov 2026 01:52:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01BFA606A330;
+	Sun,  8 Nov 2026 02:04:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E/e1DjG/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 822E41F0089F;
-	Sun,  8 Nov 2026 01:52:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RQ9+cVLx
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B9A81F0089F;
+	Sun,  8 Nov 2026 02:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794102748;
-	bh=wRjAg+ka47rjN93TZXrPtjGopEDUOpnlYdiInVar/pc=;
+	s=k20260515; t=1794103459;
+	bh=KdK+2Y31YGq/pziwmjaFOQoKLGl1Ioy8FCZaLYsW4Yc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=E/e1DjG/A5xQ/FRHtLPSm1deEYeb/s5P4xjSgfrhBsf0g6rUoKRIFf2bq2Yxd7Nfs
-	 Eh/32d2omLbPSxpYxyUKUABG7qbZd0twUML5533zRSS0OoUZeDT99zmKZdrgPhkbVA
-	 dGItt9lFinL0h09s/vmfBt+NY6eHi/O5PaqcmI9glfLI5n66zXc5waaQ6ewe+k42fL
-	 VRCFaSWGkbjc0zhcprusmuCfQ2ktib7AB46wvqAnkbMd/BfcKt0cO7El3NZHAU4W59
-	 agxbLTCtl45quMtfhIwBUxkNH6vjG0mFTpGkmwLtXIvMLpxDA3ckbOGG2EMDgsXxLK
-	 LE77BFebVTeSw==
-Date: Sun, 8 Nov 2026 01:52:21 +0000
+	b=RQ9+cVLxeaJ1CXYlsWl5pI4Rkuo7vgXMMeFTaDljZ6av1cazPPfEihL617klilpxS
+	 DIocx9fFBjUR2+LUvy5qHtcA1KoM5f4pd38yGaDijUKrQ7tcguQ260DtVm19nM8V4m
+	 V4UGKNuEOYohuwHj4gFnNFzFT3fe2rKpr5t5Vg0qljkYRqtIs6Q6pTaH/5kVIcSTFW
+	 WPda/KFke8e3tLSsyxn90zXkVjgKi0jewqY3TyJijGul3mDEVptFUU/UKz6RXyl6EP
+	 CjA3mnZS9EiSfU6dAns8+dq7dcC2vaxE9WTJYcbraGKodfYgANEKRCMTpFqITVLF9h
+	 O9sjqc2V78zsA==
+Date: Sun, 8 Nov 2026 02:04:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Wentao Liang <vulab@iscas.ac.cn>
-Cc: andy@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, nuno.sa@analog.com,
- petre.rodan@subdimension.ro
-Subject: Re: [PATCH] iio: accel: bma220: Fix trigger reference leak in
- bma220_common_probe()
-Message-ID: <20261108015221.327af6e9@jic23-hlaptop>
-In-Reply-To: <179396508376.2291875.4312877838122457985@iscas.ac.cn>
-References: <20260916160823.2082283-1-vulab@iscas.ac.cn>
-	<20260917011518.297868ca@jic23-hlaptop>
-	<179396508376.2291875.4312877838122457985@iscas.ac.cn>
+To: Roman Vivchar <rva333@protonmail.com>
+Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: iio: light: stk33xx: add power supply
+ support
+Message-ID: <20261108020410.171489e5@jic23-hlaptop>
+In-Reply-To: <YGYT8qy3NVYYjUfYP3NfqDnjoQ7gdqYMw8opOaTfChdSx2z6jkaYxxJjj1Y4x6E4DMVykIDZzFjWGh_ywapgRTWmRuuCnBajjm89ZsN2JSA=@protonmail.com>
+References: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com>
+	<20261108-6768-stk3337-v1-1-0340c99b0e33@protonmail.com>
+	<20261107223601.0ba9ffc6@jic23-hlaptop>
+	<geNqZOyrIjYLfmuUys8cQJU8FM53jylicArPsTGNXPnqSvHPCIc1Jad7dBOBy1GdE38RBEMSYQYDqEmaAqq2PDcglQcRBdkR0yZAjRExEUQ=@protonmail.com>
+	<20261107235342.40f2e45a@jic23-hlaptop>
+	<YGYT8qy3NVYYjUfYP3NfqDnjoQ7gdqYMw8opOaTfChdSx2z6jkaYxxJjj1Y4x6E4DMVykIDZzFjWGh_ywapgRTWmRuuCnBajjm89ZsN2JSA=@protonmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,45 +72,88 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 06 Nov 2026 11:38:03 -0000
-Wentao Liang <vulab@iscas.ac.cn> wrote:
+On Sun, 08 Nov 2026 00:06:57 +0000
+Roman Vivchar <rva333@protonmail.com> wrote:
 
-> Hi Jonathan,
+> On Sunday, November 8th, 2026 at 1:53 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> I am sorry for the very late reply and for the extra review work caused by
-> sending many similar patches without first waiting for feedback.
+> > On Sat, 07 Nov 2026 22:45:45 +0000
+> > Roman Vivchar <rva333@protonmail.com> wrote:
+> >   
+> > > Hi Jonathan,
+> > >
+> > > On Sunday, November 8th, 2026 at 12:36 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> > >  
+> > > > On Sun, 08 Nov 2026 00:15:03 +0200
+> > > > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+> > > >  
+> > > > > From: Roman Vivchar <rva333@protonmail.com>
+> > > > >
+> > > > > On some boards, the chip shares a power rail with other components. If
+> > > > > that rail is turned off, the chip can't function.  
+> > > > Not sure how the sharing is relevant.  Even if shared with nothing
+> > > > else we need to turn it on.  So just mention that on some boards it
+> > > > isn't always on.
+> > > >
+> > > > The only reason this would be optional in the binding is if there
+> > > > was internal routing in some packaging or similar that meant there
+> > > > was no pin to connect.
+> > > >
+> > > > Upshot, make this required in the binding. Note that doesn't mean
+> > > > the driver must require it - we are simply documenting that the
+> > > > device needs power.
+> > > >  
+> > >
+> > > I agree this should be required, but that would break dt_binding_check
+> > > for existing boards. I don't have their schematic nor boards themselves
+> > > to verify the regulator for the power supply.  
+> > 
+> > There aren't any upstream (from a quick grep) and so not your problem
+> > unless you have some in a downstream tree that need fixing.  
 > 
-> I understand that mixing devm-managed resources with manual trigger
-> cleanup is not an acceptable solution here. A broader solution needs to
-> account for runtime trigger changes from userspace and distinguish the
-> references that managed cleanup should release.
+> I found these (next-20261015, 7.3-rc7):
+> $ rg "sensortek,stk" arch/
+> arch/arm64/boot/dts/exynos/exynos7870-on7xelte.dts
+> 467:		compatible = "sensortek,stk3013", "sensortek,stk3310";
 > 
-> Please disregard this patch; I will not resend this approach as v2.
+> arch/arm64/boot/dts/exynos/exynos7870-a2corelte.dts
+> 412:		compatible = "sensortek,stk3013", "sensortek,stk3310";
+> 
+> arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+> 526:		compatible = "sensortek,stk3311";
+> 
+> arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+> 219:		compatible = "sensortek,stk3311";
+> 
+> arch/arm64/boot/dts/mediatek/mt6768-xiaomi-merlin.dts
+> 348:		compatible = "sensortek,stk3337", "sensortek,stk3310";
+> 
+> arch/arm64/boot/dts/mediatek/mt6795-sony-xperia-m5.dts
+> 206:		compatible = "sensortek,stk3310";
+> 
+> arch/arm64/boot/dts/qcom/msm8916-wiko-chuppito.dts
+> 91:		compatible = "sensortek,stk3310";
+> 
+> arch/arm64/boot/dts/qcom/msm8916-alcatel-idol347.dts
+> 173:		compatible = "sensortek,stk3310";
+> 
+> arch/arm/boot/dts/qcom/msm8926-sony-xperia-yukon-eagle.dts
+> 169:		compatible = "sensortek,stk3310";
 
-I have a plan for a more general solution to these trigger references.
-Hopefully will get time tomorrow to try it out.
+huh.  I wonder how I failed to grep for those!
 
-Key I think is that we need to stop setting iio_dev->trig directly
-but instead just set a iio_dev->initial_trigger and then
-the get() can be done at iio_dev registration time - lining up with
-code that drops the reference in the remove paths.
+Oops - must have fat fingered the string.
 
-Anyhow, you got me to finally spend a bit of time thinking about
-the lifetimes of this stuff, so thanks for the push!
-
-Jonathan
+Ok, I guess that's a big enough set we can maybe just skip
+the required.
 
 > 
-> Thank you for explaining the lifetime issues and how this work should be
-> submitted. This has been an important lesson for me. I will personally
-> review and respond to the remaining feedback one item at a time, and I
-> will keep future submissions within my capacity to follow up promptly.
+> > If you do then there is the option of a fixed regulator to close
+> > the gap.  I consider a missing supply a bug that we should fix but maybe
+> > others disagree.  
 > 
-> For transparency, we use static analysis tools to identify candidates,
-> then DeepSeek and GPT-6.1 Sol to assist with auditing and preparing fixes.
-> I am responsible for verifying the findings and changes before submission.
+> Yeah in my tree I have added vdd-supply for my board :D
 > 
 > Best regards,
-> Wentao
-> 
+> Roman
 
