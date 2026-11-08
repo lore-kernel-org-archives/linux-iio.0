@@ -1,61 +1,61 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794178981;
-	b=RveM6g0n40I9Ezhb61C9V+KeuyHG8yUvWnjgccG3IIjyDKvAwMrwm0YJRkSiYPqzpQqs
-	 J1X0My1frksx4MdMebTCMxxs6SovS2rlW1Nl/rwjHJSx1+y52JIrzxdafrNc3V+xkfQDe
-	 Ec3BlE4ORLuR418SCZf/ogobqKIE1jUDPN8xdDxiAaqMQ2tbQDTxHfa84ct1kQH7SC5YW
-	 BB/l9B0qIED2kw1NmeQ8Wj9jl6gFTFLC0y5zHs5ijQ3ibuz57Z2Q+0Zj6/I+2ft2e0dYG
-	 epwH+Tpy623f7AuqfyjRIynLhHMQ1dcHXsieXeD41a75Sr0CuDcRye2mnxrtCyhTCbA==
+	t=1794181643;
+	b=gjKWXuqWnSdjKqv9F6UxBLcIhZt5cvI1fz/xMcdGkrPBvt/gAS32vf7fOloEhNoiq/sN
+	 cYsfBZ37EXRlF9rEOcOh1N30k2Iy08h1eZEb5gxa+GxsoDIr2sVSohDmZPTvczzrkDPUJ
+	 xB9kmBt9DeuO+kCxZjwBq6VMKExIqceV15OsTVuRmY46bKMiSOpoeMaUbCvKnLeeInMUg
+	 Pto8eGhEIj26wTBeiZaahyoj0IzURy6IaOvSoH81H+YM96T4YkdkJ+DiecETvpr5/1Flb
+	 f1ILDJRXpKf/+mby5OlJuNROEUYQmhJc29d3EP/TKczvq2b6pmzf4mmkO6mZq1yrNAg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794178981;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794181643;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=7lRipA1U3Vpr3W1XgShy4/lSpEPy2KcuVCNI6tVZLPM=;
-	b=EfhO4yALfmyQaW7pnJMGkX/iBgtyME9gDJHkipC7EcDtU5tVOB3Aacft0MgeUa/fvpnX
-	 bjcLeILmEo2KxeGGcVMPcR2v9E7iomzhrGbvq7PIapHCjNU1I6iIElNdN4URv91LidmbB
-	 qfq7jBYXgzcGX/+qA/ylokhAF8opf7B3vH7q4n6us3n3POgMskO4AivH7al9Lqf3PKfGS
-	 oXIRQ2C1zU6xGCYhIsKEZFcGy0mLVXrxI8RuZs6i43IZ0clC4HLIEcew87+j9Gst1fPob
-	 AjlQm6Z60GOjdmncTCG58hclmoeQM/ZjHWJ+ZvK/gi7lEggM/Oyc8kYBn0mQBJZIxiw==
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=UP64zfTLF9tzwFCB408JdJLYh5zQ49iXwMbnRPTqyVY=;
+	b=yZ+4ASkEXJu89QYljQrKvD9clwJ9YQ6tup4wFdCWehLKDnCeOkpS6D4vrcOTd6/RTL7X
+	 j21xyMVNgFrrm4NHHIh2aCsuD0wvdlzs1IGTeVJsBLzzlJiV6/QyCdqTleWAtgQpdM5IY
+	 lhsVNTaRHY427QTihFi/crzb2QXeYYMfmIQTsG85dRwENwQ8EZGDdk1gpOW3Rp9P304uF
+	 arRYSZuG1Rjed4oSnn4aq0eFTJmTbsr0cIN8JPVX4wdCpuA8F/2jJ2zQ7zFDFPZiFHwTG
+	 LJbFGzvYzAdz9m+fXVboCABChrM5NYl6JKVKQlJQiDIDl9eotSRUNsMf8RvZxbXNh9g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KW4avC1O;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h0MPp3oF;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC660606A31C;
-	Sun,  8 Nov 2026 23:03:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B115606A32A;
+	Sun,  8 Nov 2026 23:47:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KW4avC1O
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAA871F0089F;
-	Sun,  8 Nov 2026 23:02:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h0MPp3oF
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 878971F0089F;
+	Sun,  8 Nov 2026 23:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794178980;
-	bh=7lRipA1U3Vpr3W1XgShy4/lSpEPy2KcuVCNI6tVZLPM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=KW4avC1Oy7f9fYLC0CwIcCL61e9F/iM0JHkURcTzMGWEJuQpl94GKC9AsuSMi3LJ8
-	 b2M98SuhcyUyS43870lM9KPtzQQpx3r1EUSN+DoG/SkrrRw9TeX6WFIeyxrZqJcyFB
-	 lOUopIOie5P3vneIvOiBvfTkZLdRDWuFrwxRxl2UuSjJ7nBnCcaQkoZmWnOfJqBe7U
-	 my1C7FtW/TAKIv5ZOZz/mWG/cAAlZveYdgNhzveoFKENVRTANjAHkhzavNVbG4nvvE
-	 CkGVOgV2N5vEsEWKAjVTi5Y2kgIONf0bFMMps460v6/aE7n3gU2eGhxshhp7rEer+Q
-	 ArlOEEJ/y9xzg==
-Date: Sun, 8 Nov 2026 23:02:55 +0000
-From: Conor Dooley <conor@kernel.org>
-To: admin@tsv-stahl-riesa.de
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Kevin Tsai <ktsai@capellamicro.com>,
-	Svyatoslav Ryhel <clamor95@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: light: Add Capella CM3217
-Message-ID: <20261108-diploma-profound-df9901bb55f6@spud>
-References: <20261106-upstream-iio-cm3217-v2-0-d97adde9171c@tsv-stahl-riesa.de>
- <20261106-upstream-iio-cm3217-v2-1-d97adde9171c@tsv-stahl-riesa.de>
+	s=k20260515; t=1794181642;
+	bh=UP64zfTLF9tzwFCB408JdJLYh5zQ49iXwMbnRPTqyVY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=h0MPp3oF//jAiLET/XF4dib17f9UwhTWlIAfpfyMXk62i7uJz0g5Tshr2hYdZIND6
+	 xj61yixRJLKVMtxsUYZJFVGPoUiUHKElCPewdN2TuXxfFilOq+EqOdvQNTo0qDhdKA
+	 dX7xOaqPb8Es4+liSMndH/aUeF5I6mdCkh9JXHlj8KXBT3BWc824azl+FMkBht+Vty
+	 Yi78vltPGOamXGjRl+8LSlpjaa6Bool+2srfgikgUdJjgHzCWi7JyKLqo4ZYpmvknt
+	 1hc5mEKtphGdcMwg4ydNYF7k/Z/1CsadhkY6mcDiovvffdQvBCJYgsc5FdJ6jqo9g0
+	 Yeb5JslTuUKwA==
+Date: Sun, 8 Nov 2026 23:47:19 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Lee Jones <lee@kernel.org>,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-iio@vger.kernel.org, mfd@lists.linux.dev
+Subject: Re: [PATCH v1 3/4] iio: adc: Add support for MAX8907 ADC cell
+Message-ID: <20261108234719.42ede7b3@jic23-hlaptop>
+In-Reply-To: <20261108095634.100517-4-clamor95@gmail.com>
+References: <20261108095634.100517-1-clamor95@gmail.com>
+	<20261108095634.100517-4-clamor95@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,117 +65,280 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="iTafg9FVNCC4/vZk"
-Content-Disposition: inline
-In-Reply-To: <20261106-upstream-iio-cm3217-v2-1-d97adde9171c@tsv-stahl-riesa.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
---iTafg9FVNCC4/vZk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Sun,  8 Nov 2026 11:56:33 +0200
+Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-On Fri, Nov 06, 2026 at 09:56:29PM +0100, Patrick Fischer via B4 Relay wrot=
-e:
-> From: Patrick Fischer <admin@tsv-stahl-riesa.de>
->=20
-> The Capella CM3217 is an ambient light sensor with an I2C interface but
-> without registers and without an interrupt line. It always answers on
-> the two addresses 0x10 and 0x11. The node describes the first address;
-> the second one is fixed.
->=20
-> The sensor is used in the NVIDIA Tegra Note 7 and the NVIDIA Shield
-> Tablet.
->=20
-> Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
-> ---
->  .../bindings/iio/light/capella,cm3217.yaml         | 51 ++++++++++++++++=
-++++++
->  1 file changed, 51 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm3217.y=
-aml b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
+> The MAX8907 PMIC has a dedicated ADC cell, which provides 8 ADC channels
+> with information about different parts of the power system, including the
+> battery, charger/plug, jack and thermal readings.
+
+This is an unusual driver structure.  Seems like we really have
+a number of different i2c devices inside one package.  Is the only
+unified bit the power control?  
+
+I appreciate you just want to add a new feature to this ancient
+driver but it does feel like things would much simpler if the
+i2c regmap was registered in here rather than the parent using
+a platform device to wrap what seems to be a largely independent
+i2c device.
+
+I'll be looking from some input from Lee for the MFD aspects and
+whether he is happy with adding stuff to this driver with its
+current structure.  Doesn't make that much difference to the IIO
+part either way.
+
+> 
+> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+
+Other than that various minor things inline.
+
+
+> diff --git a/drivers/iio/adc/max8907-adc.c b/drivers/iio/adc/max8907-adc.c
 > new file mode 100644
-> index 000000000000..7f2a0d5d0243
+> index 0000000000000..d1acb5bc95c15
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
-> @@ -0,0 +1,51 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/capella,cm3217.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +++ b/drivers/iio/adc/max8907-adc.c
+> @@ -0,0 +1,195 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
 > +
-> +title: Capella CM3217 ambient light sensor
-> +
-> +maintainers:
-> +  - Patrick Fischer <admin@tsv-stahl-riesa.de>
-> +
-> +description:
-> +  The CM3217 is an I2C ambient light sensor without registers or interru=
-pt
-> +  line.
-> +
-> +properties:
-> +  compatible:
-> +    const: capella,cm3217
-> +
-> +  reg:
-> +    description:
-> +      The sensor always occupies the two fixed I2C addresses 0x10 and 0x=
-11.
-> +      Writing a byte to 0x10 sets command byte 1 (shutdown and IT_T), re=
-ading
-> +      a byte from it returns the high byte of the light count. Writing a=
- byte
-> +      to 0x11 sets command byte 2 (FD_IT), reading a byte from it return=
-s the
-> +      low byte. Only the first address is given here, the second one is
-> +      implied.
-> +    const: 0x10
+> +#include <linux/iio/iio.h>
+> +#include <linux/kernel.h>
 
-I think this should actually contain both addresses, the i2c-controller
-binding permits children with "one or many i2c target addresses".
+Don't include that.  Figure out which more specific
+headers in are in use and include those instead.
 
+> +#include <linux/module.h>
+> +#include <linux/mfd/max8907.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +
+> +/* MAX8907_ADC_RES_CNFG1 */
+> +#define RES_AUX1			BIT(7)
+> +#define RES_AUX2			BIT(6)
+> +#define RES_VCHG			BIT(5)
+> +#define RES_VBBATT			BIT(4)
+> +#define RES_VMBATT			BIT(3)
+> +#define RES_ISNS			BIT(2)
+> +#define RES_THM				BIT(1)
+> +#define RES_TDIE			BIT(0)
+> +
+> +/* MAX8907_ADC_AVG_CNFG1 */
+> +#define AVG_AUX1_EN			BIT(7)
+> +#define AVG_AUX2_EN			BIT(6)
+> +#define AVG_VCHG_EN			BIT(5)
+> +#define AVG_VBBATT_EN			BIT(4)
+> +#define AVG_VMBATT_EN			BIT(3)
+> +#define AVG_ISNS_EN			BIT(2)
+> +#define AVG_THM_EN			BIT(1)
+> +#define AVG_TDIE_EN			BIT(0)
+> +
+> +/* MAX8907_ADC_ACQ_CNFG1 */
+> +#define T_ACQ_AUX1			BIT(7)
+> +#define T_ACQ_AUX2			BIT(5)
+> +#define T_ACQ_VCHG			BIT(3)
+> +#define T_ACQ_VBBATT			BIT(1)
+> +
+> +/* MAX8907_ADC_ACQ_CNFG2 */
+> +#define T_ACQ_VMBATT			BIT(6)
+> +#define T_ACQ_ISNS			BIT(4)
+> +#define T_ACQ_THM			BIT(2)
+> +#define T_ACQ_TDIE			BIT(0)
+> +
+> +/* MAX8907_ADC_SCHED */
+> +#define AUTOSCH_ENABLE			BIT(1)
+> +#define AUTOSCH_TIME			BIT(0)
+> +
+> +#define TO_REG(n)			((n) & 0xff)
+> +#define TO_MEASURE(n)			(((n) >> 8) & 0xff)
+
+Similar to below, Give this a prefix.  Same for all the defines
+above.
 
 > +
-> +  vdd-supply: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        light-sensor@10 {
-> +            compatible =3D "capella,cm3217";
-> +            reg =3D <0x10>;
-> +            vdd-supply =3D <&vdd_2v85_sen>;
-> +        };
-> +    };
-> +...
->=20
-> --=20
-> 2.56.0
->=20
->=20
+> +enum {
+> +	TDIE, THM, ISNS, VMBATT, VBBATT, VCHG, AUX2, AUX1
 
---iTafg9FVNCC4/vZk
-Content-Type: application/pgp-signature; name=signature.asc
+I'd prefix these. Chances of a naming clash in the long
+run are high enough that usual IIO style is to prefix pretty
+much everything with the driver name.
 
------BEGIN PGP SIGNATURE-----
+> +};
+> +
+> +static const u32 max8907_default_ref[] = {
+Index these off the enum. Makes it easier to check what
+the value is for a specific channel.
+	[MAX8907_TDIE] = 4096,
+	[...]
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCavD/nwAKCRB4tDGHoIJi
-0t57AQDK4maf/RAmwAOplIx96ejSTOlAFhIoFS2LwLIGDZZTyAEAhEcFFs0JdsKK
-EZsNHK083RmofibAX2Ik7eUBl8PGdgU=
-=6wfh
------END PGP SIGNATURE-----
+> +	4096, 4096, 4096, 8192, 8192, 8192, 2500, 4096
+> +};
+> +
+> +#define MAX8907_CHAN(_type, _idname, _datasheet_name) {		\
+> +	.type = (_type),					\
+> +	.address = MAX8907_REG_##_idname##_MSB |		\
+> +		   MAX8907_REG_##_idname##_MEASURE << 8,	\
+> +	.indexed = 1,						\
+> +	.channel = (_idname),					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +			      BIT(IIO_CHAN_INFO_SCALE),		\
+> +	.scan_index = (_idname),				\
+> +	.scan_type = {						\
+> +		.format = IIO_SCAN_FORMAT_UNSIGNED_INT,		\
+> +		.realbits = 12,					\
+> +		.storagebits = 16,				\
+> +		.endianness = IIO_CPU,				\
+> +	},							\
+> +	.datasheet_name = (_datasheet_name),			\
+> +}
+> +
+> +static const struct iio_chan_spec max8907_adc_channels[] = {
+> +	MAX8907_CHAN(IIO_VOLTAGE, TDIE,   "tdiode"),
+> +	MAX8907_CHAN(IIO_VOLTAGE, THM,    "thermistor"),
+> +	MAX8907_CHAN(IIO_CURRENT, ISNS,   "isense"),
+> +	MAX8907_CHAN(IIO_VOLTAGE, VMBATT, "vmbatt"),
+> +	MAX8907_CHAN(IIO_VOLTAGE, VBBATT, "vbbatt"),
+> +	MAX8907_CHAN(IIO_VOLTAGE, VCHG,   "vcharge"),
+> +	MAX8907_CHAN(IIO_VOLTAGE, AUX2,   "aux2"),
+> +	MAX8907_CHAN(IIO_VOLTAGE, AUX1,   "aux1"),
+> +};
+> +
+> +static int max8907_adc_read(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct regmap **regmap = iio_priv(indio_dev);
+> +	unsigned char data[2] = { 0, 0 };
 
---iTafg9FVNCC4/vZk--
+No need for those 0.  = { }; is defined to do the same thing.
+There are some subtleties around that, but the kernel has used
+build options for a long time (and self tests to ensure that form
+is fine).  It is also part of more recent C specs.
+
+Use u8 rather than char.
+
+
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = regmap_write(*regmap, TO_MEASURE(chan->address), 0);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = regmap_bulk_read(*regmap, TO_REG(chan->address), data, 2);
+
+sizeof(data);
+
+> +		if (ret)
+> +			return ret;
+> +
+> +		*val = ((data[0] << 8) | data[1]) >> 4;
+
+Use get_unaligned_be16() then a shift.
+better still use a __be16 as the buffer.
+
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = max8907_default_ref[chan->channel];
+> +		*val2 = chan->scan_type.realbits;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info max8907_adc_info = {
+> +	.read_raw = &max8907_adc_read,
+> +};
+> +
+> +static int max8907_adc_init(struct regmap *regmap)
+> +{
+> +	u32 value;
+> +	int ret;
+> +
+> +	/* Enable internal voltage reference. Exact purpose of bits is not known. */
+> +	ret = regmap_update_bits(regmap, MAX8907_REG_TSC_CNFG1, GENMASK(1, 0), BIT(1));
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Check for internal reference IRQ */
+> +	ret = regmap_read_poll_timeout(regmap, MAX8907_REG_TSC_STA_INT, value,
+> +				       !(value & MAX8907_MASK_NREF_OK), 0, 1000);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable ADC scheduler with 1 second interval */
+> +	ret = regmap_update_bits(regmap, MAX8907_REG_ADC_SCHED,
+> +				 AUTOSCH_ENABLE | AUTOSCH_TIME, AUTOSCH_TIME);
+
+return regmap_update_bits()
+
+Bit odd to unset AUTOSCH_ENABLE in something that is commented as turning
+it on.  That is probably a field that needs a rename. 
+I'd also like those field names to reflect that they are in ADC_SCHED.
+
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int max8907_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct max8907 *max8907 = dev_get_drvdata(dev->parent);
+> +	struct iio_dev *indio_dev;
+> +	struct regmap **regmap;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*regmap));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	regmap = iio_priv(indio_dev);
+> +
+> +	*regmap = max8907->regmap_adc;
+> +
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = max8907_adc_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max8907_adc_channels);
+> +	indio_dev->name = dev_name(dev);
+> +	indio_dev->info = &max8907_adc_info;
+> +
+> +	iio_device_set_parent(indio_dev, dev->parent);
+
+Why this choice for the parent?  What is wrong with having the
+platform device in between?  Needs a comment.
+
+> +
+> +	/* Enable ADCREF */
+If it's called ADCREF can we just include that as part of the field
+name and remove need for the comment?
+> +	ret = regmap_set_bits(max8907->regmap_gen, MAX8907_REG_RESET_CNFG,
+> +			      MAX8907_MASK_RST_CFG_INT_REF_EN);
+
+Need to be more consistent with register vs field names. I'm fine
+with either form but it should be the same for how you shorten
+RESET_CONFIG
+
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = max8907_adc_init(max8907->regmap_adc);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+
+
