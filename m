@@ -1,58 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794167329;
-	b=qsNTi+hJLBtOifc5B6SGzSJTSOc4kD73GEfLgqY70OHLq9LGDYzjrqkIJ+7Q6vAk24nJ
-	 9RX6rWihQQLjAQAO3rvYfdUnwCtw22elCE2xkOBFeZD7B34aTQCjrAInxrnMOYgP8J+5s
-	 yUXInCeOIpwV7/5Gcl2hOJZupRHIVLHvVoiR0M7oVNUW603WxurxjbtXC2KPRLRbYEm1s
-	 ndhxiy7m01N/0LTILshYQeogiG5eCvqxsnZIWboKAlNfZMVQfJYxgUmTUrDeldU3F0cMB
-	 VItj7XaPgsbKUEjI0Q92bu+oRPFAyGF+tBE8Lq8pJddNZ5VN/+eWcSRZ3APCDRwBUSA==
+	t=1794167537;
+	b=E8LExl1qxmKDXU6mSCTAjyNvtQn6ByXB4xdb5BQxoNmyOCWJ4K39pj8nEGbaxU8817O+
+	 Ka6/GE1P07RjiSCR8taNVW9SKBkIRk5PO0e9d3+7JgzHwBhKvL90lCmWRjL/XZQn5w6VB
+	 TGuzyJnnDuLZHS+CQGreUtISP0oEJBmP8Hi/AhIZE+L/wyv6nX1WcywVISaUMBI4USTck
+	 SasxiJyZeZd+N0gyRBIX4+HFvFkQ/zlFxAiooO72hk8Douf0JzcjvOy27xpqHZq+aUSoh
+	 WyDcOo+9tq2gmkDGz/aN+j+sNhQycXkUwZYbr1bSuakLjIQhY9DJKVMD6RmOO5j69Gg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794167329;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794167537;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=DsMQNwNDiCWW1aTFXx3EfXXKFYgiH/gneXFX9OLWif4=;
-	b=NWhN2DF/FWdfAQVoHC4mtjJhtS/tAY7I1PnDHfNPD6zkO7ufHXHGoZ3qsaeCgYPqfDZf
-	 2KGcE47+JL2WHsylkjm33lmo5xuUuq3VMYijEdfBsujp1+0hgR8HPFxf4YbM8pLZf4TWI
-	 mgzfwTAY3DVDHit5GETiFmfcMS/H61sKfsqlNpd9Jua6TR9WmvVfrTDI7LLDPu19C9QsR
-	 6JTPTaKKbC28QAzjH/lytjMlMgaNBU2Y4B8QKdrsoTfROSMI1Q+Yy6H2DT7irYILMr0lk
-	 joL3DmK6UpcFrgD4f4Q6QFudUlybuN1XUdH1puiF5glmiKw6EMXbuobuUH8On+OfAYw==
+	bh=GgHKeuMXIr7h7giifAmuiivrib6WaMbioy4A3SnSoOA=;
+	b=PXYkw7lNz1PC1d6cbqnLNHzcEmAQLkg/O1sV2wGmjPKp7Lmp57uZKFjLhBuL7YOOwzcl
+	 T3MyyLMP/bGgE9fQgcldnjxanJiR39IqcNosDSLQOZvMss00q7hH9yv0jzr9mgWgc0Cop
+	 wFMWiBBFECS2OPhekEjpg1L3St2O34Xf5QYlbBoM1BBiKkIM7YS56zwPzkK0WsIXJWtWJ
+	 uCSqjNSSytuPOl54ytaVouXYRrAisI904bxQRaTRSgfMMKvOz/N5Do/Vt40IOkKwZbb/k
+	 /0qulFRzCTSxp8+hUCg9KXiKWchLiev+SMAQcSQEn0zMAAVDWZMfYk5ULqqnh+c4gQQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P4GS2e9g;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ju+iO+oq;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33A8606A31C
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 19:48:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D1B7606A31C
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 19:52:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P4GS2e9g
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B9BF1F0089F;
-	Sun,  8 Nov 2026 19:48:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ju+iO+oq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 452DD1F0089F;
+	Sun,  8 Nov 2026 19:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794167329;
-	bh=DsMQNwNDiCWW1aTFXx3EfXXKFYgiH/gneXFX9OLWif4=;
+	s=k20260515; t=1794167537;
+	bh=GgHKeuMXIr7h7giifAmuiivrib6WaMbioy4A3SnSoOA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=P4GS2e9gZKCu/wgRoOfrwySeBKNu9kJKE01IN/4jQHFOmRQZNKMVZiVR2OKvPqdYi
-	 n1KwmrA2Nci+jDsd9mOOLojd1pbZ2aroIsm6SH0yD+XyUH+FgOrEC3sL8coqvLYXBp
-	 uYtHq9yjBEUBY8J08oIs+mgkzsN90bhoAcOB0VMTy4f7oXyxpWidI9tyZOifD7jKfr
-	 jIPpEXZmGc/xwmwPR/gg+J9vHbgnDhJmTdPSqqmGt1NbuQLM/JSW4QYNCeOZ2iMZmV
-	 V3bmW69AO/h9t+DUEHl202umidNO8jMarM0V8ow3I3rbGi5AtP6y7z50dW76NRwVym
-	 hlTO+doZIXFGA==
-Date: Sun, 8 Nov 2026 19:48:43 +0000
+	b=ju+iO+oqvFUHt4tMboRK/NDsK7us3NE2v/0VnfV9jSdzAG82ZzBi3zkolgDBvB3C9
+	 kNTye0p2uGudwP8wEWGlSfWTCwa7AXElQvYHqXrGzPmuzmdLeHfzzTiRfEeFRKRY3h
+	 XrgMZb07YhpkhNHMmL+B1jGy/AupoJqvZj2czHn5zgOukZguCy3sv+RQLFtFmzcCjC
+	 WK6HL3Ne8QxxeiRErimWiXm9YS6CoBtNyAXyVVVZ8+XEfKE7wt6e1KuVZgiBtRH8Yg
+	 kc7TNxAVSpDYhtnb4V7S0Hfxq+5jO8y7WGNE9EsWn6lAeCvlt79Z/khd9no4lJHKc5
+	 UNh4WLlaaavew==
+Date: Sun, 8 Nov 2026 19:52:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  "Andrew F. Davis" <afd@ti.com>
-Subject: Re: [PATCH 17/39] iio: health: afe4403: use
+Subject: Re: [PATCH 18/39] iio: health: afe4404: use
  iio_push_to_buffers_with_ts()
-Message-ID: <20261108194843.467aa829@jic23-hlaptop>
-In-Reply-To: <auBf5WQlpOrJF6x0@ashevche-desk.local>
+Message-ID: <20261108195210.6c9da0c3@jic23-hlaptop>
+In-Reply-To: <auBga-hNhlTOSwAG@ashevche-desk.local>
 References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
-	<20261026-iio-v1-17-8b136778eedf@oss.qualcomm.com>
-	<auBf5WQlpOrJF6x0@ashevche-desk.local>
+	<20261026-iio-v1-18-8b136778eedf@oss.qualcomm.com>
+	<auBga-hNhlTOSwAG@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,29 +66,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 27 Oct 2026 10:25:09 +0200
+On Tue, 27 Oct 2026 10:27:23 +0200
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon, Oct 26, 2026 at 04:05:35PM -0700, Jonathan Cameron wrote:
+> On Mon, Oct 26, 2026 at 04:05:36PM -0700, Jonathan Cameron wrote:
 > > Replace the deprecated iio_push_to_buffers_with_timestamp() with
 > > iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
 > > 
-> > The pushed buffer is never a direct SPI/DMA transfer target, so move
-> > it from the per-device state to the stack. Use
+> > The pushed buffer is never a direct DMA transfer target, so move it
+> > from the per-device state to the stack. Use
 > > IIO_DECLARE_BUFFER_WITH_TS() since the timestamp offset depends on the
 > > number of enabled channels, and zero initialize it.  
 > 
 > ...
 > 
-> > static irqreturn_t afe4403_trigger_handler(int irq, void *private)  
+> > static irqreturn_t afe4404_trigger_handler(int irq, void *private)  
 > 
+> >  	struct iio_dev *indio_dev = pf->indio_dev;
+> >  	struct afe4404_data *afe = iio_priv(indio_dev);
 > >  	int ret, bit, i = 0;
-> >  	u8 tx[4] = {AFE440X_CONTROL0, 0x0, 0x0, AFE440X_CONTROL0_READ};
-> >  	u8 rx[3];
-> > +	IIO_DECLARE_BUFFER_WITH_TS(s32, scan, 8) = { };  
+> > +	IIO_DECLARE_BUFFER_WITH_TS(s32, scan, 10) = { };  
 > 
-> I would move it a bit up, giving the visible context to be even before
-> 'int ret...' line.
+> Move it one line up.
+> 
+> ...
+> 
+> >  	iio_for_each_active_channel(indio_dev, bit) {
+> >  		ret = regmap_read(afe->regmap, afe4404_channel_values[bit],
+> > -				  &afe->buffer[i++]);
+> > +				  &scan[i++]);  
+> 
+> Also possible to have now
+> 
+> 	struct regmap *map = afe->regmap;
+> 	...
+> 		ret = regmap_read(map, afe4404_channel_values[bit], &scan[i++]);
+> 
+> (which will have the same amount of LoC).
+> 
+> >  		if (ret)
+> >  			goto err;
+> >  	}  
 > 
 > ...
 > 
@@ -97,11 +115,9 @@ Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > > +	iio_push_to_buffers_with_ts(indio_dev, scan, sizeof(scan),
 > > +				    pf->timestamp);  
 > 
-> One line of 82 characters is okay I believe.
+> One line?
 > 
-Both done and applied.
-
-Thanks,
+All tweaks made and applied.
 
 J
 
