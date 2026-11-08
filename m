@@ -1,92 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794174527;
-	b=OIda35IoyfBZDaUIKFgphiHOM+xWWzfs7F8vqfWVlT2NpqM94NCBQtwDqxdTU1GrqhBe
-	 X3MAnLL6ODb1pUwL00rGFDZLNuzE5/k+cY+I9K4YFmZkVBq3SkKUF/IoAaJb7RIPbEjfx
-	 PwLT1G4/m3J090dtNnGuzRt/3wmKwnOvDjBoUl8RCr4TuTYDHy8VoMLG5w2NsZuN8UWxQ
-	 c6MJEel4d+laG1zKgJFcclrte1FcrSdjvSZffKFDTBwcZHxNZd/QpoWY7Qgy1jXSUyb8D
-	 6ciCUc6VDZhtWcvqldWags5PhaRv507g8oT3Sxb3BZKbPVW9W7wbihZxiUooShcXwFA==
+	t=1794178591;
+	b=uKwM4OOx+VRWUUu2BpijS7OR1dL6752qHOMqNot3+diX73Im370hClvf1tkA9wQEggud
+	 1Xul4hV6oU8gA0iQBE+m6jGuiNcmTAW6aUuPnCOUn/uSAK7yUFaLTEoGurEa/EiXK/Dso
+	 yvsIdYiCnL+cToGf0SdF5wKTc6RL7L20G+VU0K75I4ueHKmvlqk2GP8yE2oDz3vW2nTb8
+	 MDvIlDO7IVNaze+z8XZV94G73tkI4fxikOEHiKljsPgxpT9e4M6FNxGoP6prVbfsb5baR
+	 g1uOrut+N1C3o5wBBkpQr/mSAzYMwQq+9W/8nrtYmBIbhq78kvFJrvFFYZIsusw2DZw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794174527;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=d+hgfVdursC5BkNN1WVdsSZpLzmJ5l76P4zcjf+x04M=;
-	b=t2p72V0Doxye3TjJksrjF1kp6kiVbkAd64AQAOKnIT5zBm/OgbYIQxdiU2wh8MI90OGT
-	 RzdlH5Gau/2DP0SJFG7M0vochljlVBU6iPQUSYO/egczUtc10zAaRP6gklr5vD/mIE/1g
-	 AjNo6m5wjm3C+NrCeuk3TcRorwB99eSlm4G/sEpFuKlp71An6ok13KpQ1eQHX8J5b1pEs
-	 rpzbwNo+omSlSRoEqXjjkkRvc7QOOxqu61sSdpMavpLoHlIZ9VYLa4fPSvzP8PAF37fpk
-	 KxOUlUNwcqDyyIt7uIm3I/Kyia7YwViy6diPpPB8Uv4XzyzivC3M32HJ+OTc3Zj76sQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794178591;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key;
+	bh=Ong8M8NnsMoNWNiK2IwB98XwGEmnJ9d7Cx6T8KGpqG4=;
+	b=iEnXrtqJjyoTTcprHey5n2wdAo+1xk9SCuD2r3WuLxjY6lP7uJb/IX1UIZmCg3mjSlkc
+	 NO/it3hSAGCwKHaY/n6l78rG9UXFexdA3Nltv44U7moLwL6s8IiaHicEtQG0/ZZwfVpXZ
+	 Q1IWx8KTAuibdjCQhkxUdE9jWh9c5omdCs0wPmiwzHPEEK0WsjEt/SV0CFkVb5pY79JKJ
+	 GvPIypPhlVZ+5KsfDVl3dhcRyxdU4ffe+x5y54jiIsDr1a+nKqDx74nam+BIyh2bKIrCE
+	 t+TbCdECAchcqD/x7DhgxquUlKK/Hmd2dWzA8TlnaoaCoTPCUkODrN2deIzHJ24JM5w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=N0v6B1X9;
-	arc=none smtp.remote-ip=192.198.163.12
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="oTIm5aO/";
+	arc=none smtp.remote-ip=209.85.128.173
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3A15606A332;
-	Sun,  8 Nov 2026 21:48:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E3A15606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B303606A320
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 22:56:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B303606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=N0v6B1X9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794174525; x=1825710525;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lyC/gc2As/slOIQA1S8PUGv8GKu8g5O/yBmvasqYDQs=;
-  b=N0v6B1X9zoHZ73972uO4exYw0EJTdWhJlqfA6ezO/HYwV83GGWoigY+H
-   /kJIW0cwvUA1j5RnqAzxEo9/hhYCkQPbVmS9ebMeaFO9OrZDJxsYvN2As
-   ftKK9uH1BYIsgJ7wenrbpXkhKTsVmUUYJfI0l3+75+tTnQylzH+QmKfEk
-   K0XE3/cMA6/WfZbLw6AR8QP/M4FUyJrQva69bp2LFWzX86pZYYLy6/6Jk
-   CyQ7FM+dg7EsGI1sdEqV7sta9JuT/CKn6MiML49+cr5ivPOM9L/A6oTli
-   8ez1A+WvW+u1Y0cYjHJMbO3XRw30Pt9iPzPq714Snu4ICMFWALDDyb0YU
-   g==;
-X-CSE-ConnectionGUID: L5RqnJglQjSkWexB0U4pSw==
-X-CSE-MsgGUID: A5bORk13TkWiBhr8JFlZWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11960"; a="2803098"
-X-IronPort-AV: E=Sophos;i="6.27,202,1787036400"; 
-   d="scan'208";a="2803098"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 13:48:45 -0800
-X-CSE-ConnectionGUID: gCsiQnFUR5yxqBbKMgnRAw==
-X-CSE-MsgGUID: xTO+LEHbT3Cze3JGHLwMMw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,202,1787036400"; 
-   d="scan'208";a="7727084"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa004.fm.intel.com with ESMTP; 08 Nov 2026 13:48:41 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xQAkf-00000000tRx-21Y3;
-	Sun, 08 Nov 2026 21:48:37 +0000
-Date: Mon, 9 Nov 2026 05:48:09 +0800
-From: kernel test robot <lkp@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Esben Haabendal <esben@geanix.com>,
-	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Pan Chuang <panchuang@vivo.com>,
-	Hemanth Selam <hemanth.selam@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Nikita Travkin <nikita@trvn.ru>
-Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/4] iio: light: ltr501: Add support for the
- LTR-659PS-01 proximity sensor
-Message-ID: <202611090518.mm6yt2nO-lkp@intel.com>
-References: <20261108094253.83899-5-clamor95@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oTIm5aO/
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-8b31261e8a9so1774587b3.0
+        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 14:56:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794178590; x=1794783390; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=Ong8M8NnsMoNWNiK2IwB98XwGEmnJ9d7Cx6T8KGpqG4=;
+        b=oTIm5aO/zi5YcfOC6auPAsCQAocZYKj2aWt9GAeuuh5RcAFgrDzNETk6vzkRSzxuSQ
+         +sz1j2M1fgmBXHqcnQa2tt01gzYQDAHRcSDVIznDW43MwetiRLNrGMrFxN5tuynNVrro
+         BHESRr1qkclxcWS1vGyr4puumC39kywqq7YNawpFoqOpctspnIWmRIwHtPPSTctOAYQQ
+         WpFxWpUAfbXrowcxTVSJZxcKGNipPCtcnxMDfX8P4i4q4Fn4ihOpVUuh8nVWwWHCPbvD
+         nCs7eSSXzMX5oHYX6IgfT9cxTb/LOZ7Ja0hB1DVq965T4HwW/IfjcwrOxna/xJw8KUsk
+         LNDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794178590; x=1794783390;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=Ong8M8NnsMoNWNiK2IwB98XwGEmnJ9d7Cx6T8KGpqG4=;
+        b=VQ2p+QG/wFnpveiQ56SXkGQlBwJ0D3BM9rA86aISltyqUXCG1aoFxv9Arq/qP2ieEw
+         LV6cyx3uKlzjlBfGXGebh8ox+nEJOvK2/pPG2r0R3lj8gQOGVzKaGn7QSZ2zC1GSCVCu
+         7XR2xIlvblrGNOst76aTrMppM66Qo4pk0XgPx7LzQRgceTzaGttbcwHzwU/153luiPRn
+         p6mcwCarhUu0HWKHGdDQc4htjIAAYoI9fe9l6Z6sz+Uaa9Kg0y0ewoLjhpw5aFTynMOX
+         Au/1E/paOgzAZ792VWH2IcyfL1NC2PUwJpU2wcdfVBJggVTButnl0tBt2bgSBR3Ut7/l
+         bKgg==
+X-Forwarded-Encrypted: i=1; AL+hErFfgN7TDrCZFUqGkjWWG+bn/UhSLEwUh3rrKPjB9EGer7TMFsi4I4DLCDvQtnXifurO7k2VJBl1yo4=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9OkeV3x9fSvfl3S+sC7eCrh0KRRsg6MgoNDTm7MUfnlgtLVZ5b
+	5OyVE7QdUXMG5XUR8lEWnnK0hbIiZ/ER6FBtZ5ggWL8qN+nwvU6yKKE5CmlFwQ==
+X-Gm-Gg: AYBFou2ZwsiuqjfQuVZCpkPIMosLUZSN2+8MqxWz/oo9hRJvubyFAcZD/VnSiApTUqH
+	xWzNRT25Iq9K+rfJ1gQWuGLC0MrUQzvVzW3yjzesfZLT51dag0E2MxcxQq3l5hh6d2ozO5fkP5A
+	QHSkAfeW4O27G4hBWZax4znGxWjpqXsAikUc1x18BD8SMeo01iL4L2+LV8BL4er5EKcfUtUWWh4
+	CnwlTWoj1j3ozGqjv+UVKqc17MiHi9hs2CCZWc7EK779XvMBP0+/fnSvkOyi9PiRuW+bO2Chamn
+	rv6qUUj8+tbsHnOsi2fVGmD9vGVCdY6ElOj9N61rNuFTJGsPhL+KD6q1TRjoxz/d9ZSR/2XemN1
+	cCu7aQWkZ4d7RRGxrchFbE2xyBie8Vb6oboGyb/kfVaHx6czmhI1Iia15ccyTjJk+vrG8F8oEuM
+	UBCxYvUBp7UV4Dro056GZdDCsg56h1pncZyi50YWumCMuAqRKo9zcszCgH9RkLuXYuiItglO7+/
+	p/YKd23hfCmlUkzJfS8Q536N3EgaGnd1RibBpqqyvQ0cM14KbonguZabxi31RK6RyLznkK3Pfvf
+	UO+HyAs/tkOOUi0lYAFzSHArZ9ca
+X-Received: by 2002:a05:690c:660d:b0:8b2:bb94:8cb2 with SMTP id 00721157ae682-8b36cb31f80mr15270887b3.35.1794178590140;
+        Sun, 08 Nov 2026 14:56:30 -0800 (PST)
+Received: from [192.168.100.70] ([2800:40:44:f1f5:f400:4c49:91c1:9905])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b36be7d88dsm22485597b3.39.2026.11.08.14.56.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2026 14:56:29 -0800 (PST)
+From: Kurt Borja <kuurtb@gmail.com>
+Date: Sun, 08 Nov 2026 19:55:51 -0300
+Subject: [PATCH] iio: adc: ti-ads1262: use umin() for excitation array
+ lengths
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -96,40 +92,72 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261108094253.83899-5-clamor95@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261108-ti-ads1262-excitation-umin-v1-1-65929a66394d@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMwQrCMAyA4VcZORtoiivqq4iH2KUawSpNNwZj7
+ 746j9/h/xcwKSoGl26BIpOafnIDHTqIT84PQR2awTsfiNwJqyIPRj54lDlq5doKHN+akft05kC
+ ud8cEbfAtknTe59fb3zbeXxLr7wjrugEADYzlfgAAAA==
+X-Change-ID: 20261108-ti-ads1262-excitation-umin-a5f9a610504f
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>
+Cc: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ kernel test robot <lkp@intel.com>, Kurt Borja <kuurtb@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1861; i=kuurtb@gmail.com;
+ h=from:subject:message-id; bh=EO3cEjfaSpMTJmz44W6v6HuhGs+DvNb3D0mEU0wKIOM=;
+ b=owGbwMvMwCUmluBs8WX+lTTG02pJDFkf/v7OXJ996Ldf+/m5rC12UzyKbxtoB61htvtu+2pnw
+ UO/pKLmjlIWBjEuBlkxRZb2hEXfHkXlvfU7EHofZg4rE8gQBi5OAZjI8wWMDHsqP8k2RDf9MO7U
+ /D9R3OqzjutORcH5dxXTH204+dvRcSojw/ULc5bYKMxLvL1WRUZuovzBHe/uHJoWpqjsk/b0y93
+ Ad6wA
+X-Developer-Key: i=kuurtb@gmail.com; a=openpgp;
+ fpr=54D3BE170AEF777983C3C63B57E3B6585920A69A
 
-Hi Svyatoslav,
+min() rejects mixing the signed count with the unsigned ARRAY_SIZE()
+unless the compiler can prove count is non-negative, which fails on
+some configs and breaks the build. count is already checked to be
+non-negative, so use umin().
 
-kernel test robot noticed the following build errors:
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202610241549.J9R32Wf7-lkp@intel.com/
+Closes: https://lore.kernel.org/oe-kbuild-all/202611080814.7RmHoQ6e-lkp@intel.com/
+Fixes: b0b43a26dfc9 ("iio: adc: ti-ads1262: support excitation currents")
+Signed-off-by: Kurt Borja <kuurtb@gmail.com>
+---
+ drivers/iio/adc/ti-ads1262.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on linus/master v7.4-rc1]
-[cannot apply to jic23-iio/togreg next-20261105]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+diff --git a/drivers/iio/adc/ti-ads1262.c b/drivers/iio/adc/ti-ads1262.c
+index 66a7fedfefde..58a8eacc6ef5 100644
+--- a/drivers/iio/adc/ti-ads1262.c
++++ b/drivers/iio/adc/ti-ads1262.c
+@@ -1807,7 +1807,7 @@ static int ads1262_parse_channel_node(struct ads1262 *st,
+ 		pins[0] = ADS1262_IDACMUX_NO_CONN;
+ 		pins[1] = ADS1262_IDACMUX_NO_CONN;
+ 		ret = fwnode_property_read_u32_array(node, "excitation-channels",
+-						     pins, min(count, ARRAY_SIZE(pins)));
++						     pins, umin(count, ARRAY_SIZE(pins)));
+ 		if (ret)
+ 			return dev_err_probe(dev, ret,
+ 					     "%pfwP: failed to read excitation-channels\n", node);
+@@ -1820,7 +1820,7 @@ static int ads1262_parse_channel_node(struct ads1262 *st,
+ 		mags[0] = 0;
+ 		mags[1] = 0;
+ 		ret = fwnode_property_read_u32_array(node, "excitation-current-nanoamp",
+-						     mags, min(count, ARRAY_SIZE(mags)));
++						     mags, umin(count, ARRAY_SIZE(mags)));
+ 		if (ret)
+ 			return dev_err_probe(dev, ret,
+ 					     "%pfwP: failed to read excitation-current-nanoamp\n",
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Svyatoslav-Ryhel/iio-light-ltr501-Switch-to-read_avail-op-from-manual-attribute-registration/20261108-114250
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20261108094253.83899-5-clamor95%40gmail.com
-patch subject: [PATCH v3 4/4] iio: light: ltr501: Add support for the LTR-659PS-01 proximity sensor
-config: xtensa-randconfig-1000-20261108 (https://download.01.org/0day-ci/archive/20261109/202611090518.mm6yt2nO-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 8.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261109/202611090518.mm6yt2nO-lkp@intel.com/reproduce)
+---
+base-commit: b70566610b48ba49dec636019da4d696db64b085
+change-id: 20261108-ti-ads1262-excitation-umin-a5f9a610504f
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611090518.mm6yt2nO-lkp@intel.com/
+-- 
+Thanks, 
+ ~ Kurt
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
-WARNING: modpost: vmlinux: section mismatch in reference: trace_initcall_level+0x28 (section: .text.unlikely) -> initcall_level_names (section: .init.data)
-WARNING: modpost: vmlinux: section mismatch in reference: __arch_xprod_64+0xac (section: .text.unlikely) -> initcall_level_names (section: .init.data)
->> ERROR: modpost: drivers/iio/light/ltr501.ko: symbol 'iio_find_channel_from_si' undefined!
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
