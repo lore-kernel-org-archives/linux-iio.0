@@ -1,57 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794167237;
-	b=NHV59NP1kVSEVXbYSomzUVND1YCp1Qvr9c7NC6En7aiOklMVcQmbpfQf6jVGptheVJ+g
-	 lDwRDN23zDFFW8q07lyS3PUR0Qaazk6shW1Ws57z3bS5WS4vuCQBZl+eTXQNxZheXT38x
-	 ro2+IuseuPwcGI5tzKsEINFCPgbNKjT4zVKsXHfmGU7POnoqhUbPLeF8ppYrYuMSteiIR
-	 MZGGNwRKp4gwMv2GlD7p4Vkg2sPBGlzisNY5nKljCjCUdj9EXyyPhLPJFRZQk5zoPbcEV
-	 m0b9mRcCnBxBzxR72MmrYl2xWFEG0U8e3CvpZRQb+IgydkBAhxi+4O2ZxI/v/izGjUg==
+	t=1794167329;
+	b=qsNTi+hJLBtOifc5B6SGzSJTSOc4kD73GEfLgqY70OHLq9LGDYzjrqkIJ+7Q6vAk24nJ
+	 9RX6rWihQQLjAQAO3rvYfdUnwCtw22elCE2xkOBFeZD7B34aTQCjrAInxrnMOYgP8J+5s
+	 yUXInCeOIpwV7/5Gcl2hOJZupRHIVLHvVoiR0M7oVNUW603WxurxjbtXC2KPRLRbYEm1s
+	 ndhxiy7m01N/0LTILshYQeogiG5eCvqxsnZIWboKAlNfZMVQfJYxgUmTUrDeldU3F0cMB
+	 VItj7XaPgsbKUEjI0Q92bu+oRPFAyGF+tBE8Lq8pJddNZ5VN/+eWcSRZ3APCDRwBUSA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794167237;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794167329;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=9Jiv0cmXFAXTUW8roPFUJZcsI0jEurSSfNVu7fTt2gw=;
-	b=nGMcs0WN09yW+lo2odqXf5GMpsgmGAnIMe4cWyOGtap7ZA1BFr/zBbqWnUmJA0QO9Ppx
-	 OEtHQIcpC2vYexzX2Pl+8XxMv7T7z1o1Cd9OAAvwgJRf8VC/4EjNmVqAL37DJDPrj3qk8
-	 iIKk+Gam821MJUTz7B+kPA2SUQOWX1ByG55zLIApsQz9G4YQNL2hcTpq9eKHrtYMJ63E/
-	 nhCTnooJ0kbZ+ScVy7uuHboyWEvtDHgBcLIe3k53neEe6DyCswa1vtLdVnCbcycG760Ye
-	 AGylqFp419GTzOlbQ2li7WnZ+fQ5oDi6BBQ0pj1g9flo0Gy7b5iSk48m8ihr0Y5sS3g==
+	bh=DsMQNwNDiCWW1aTFXx3EfXXKFYgiH/gneXFX9OLWif4=;
+	b=NWhN2DF/FWdfAQVoHC4mtjJhtS/tAY7I1PnDHfNPD6zkO7ufHXHGoZ3qsaeCgYPqfDZf
+	 2KGcE47+JL2WHsylkjm33lmo5xuUuq3VMYijEdfBsujp1+0hgR8HPFxf4YbM8pLZf4TWI
+	 mgzfwTAY3DVDHit5GETiFmfcMS/H61sKfsqlNpd9Jua6TR9WmvVfrTDI7LLDPu19C9QsR
+	 6JTPTaKKbC28QAzjH/lytjMlMgaNBU2Y4B8QKdrsoTfROSMI1Q+Yy6H2DT7irYILMr0lk
+	 joL3DmK6UpcFrgD4f4Q6QFudUlybuN1XUdH1puiF5glmiKw6EMXbuobuUH8On+OfAYw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Mce/1wA6";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P4GS2e9g;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4A54606A31C
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 19:47:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33A8606A31C
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 19:48:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Mce/1wA6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A4F51F0089F;
-	Sun,  8 Nov 2026 19:47:14 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P4GS2e9g
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B9BF1F0089F;
+	Sun,  8 Nov 2026 19:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794167236;
-	bh=9Jiv0cmXFAXTUW8roPFUJZcsI0jEurSSfNVu7fTt2gw=;
+	s=k20260515; t=1794167329;
+	bh=DsMQNwNDiCWW1aTFXx3EfXXKFYgiH/gneXFX9OLWif4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Mce/1wA6YJsnKt/BD3HcLSRYl6EOsNI+nTd3vW6NnVWfYFa8/NVX8SHZPm1f5EKwS
-	 o9/oHmXWnXIrb0/FkCr73+sb0bwTF3F7SAMaOTgwR55KGKV7fz5oxVL8i56Zxa1pTw
-	 BIFz1G8bDP7aNOFrktr1dx1ddpJtfSv8siHI4sEsttMRhwTo7ZltmQqYcu6dr1BQP6
-	 8b4V64ZupJNIhZ8diS8KCiXSUiX1D2RjNN2FXQZjaPwl4HZWUDuf3Kj5+SKBh4zXGL
-	 DXnXIcLZHy8wB1sID8BG+qYe4hzv5OxSATjbCenNDA0UrQ8UuJa8xuGqFgH6zkNuEM
-	 Z9L2+Kdq4zefg==
-Date: Sun, 8 Nov 2026 19:47:09 +0000
+	b=P4GS2e9gZKCu/wgRoOfrwySeBKNu9kJKE01IN/4jQHFOmRQZNKMVZiVR2OKvPqdYi
+	 n1KwmrA2Nci+jDsd9mOOLojd1pbZ2aroIsm6SH0yD+XyUH+FgOrEC3sL8coqvLYXBp
+	 uYtHq9yjBEUBY8J08oIs+mgkzsN90bhoAcOB0VMTy4f7oXyxpWidI9tyZOifD7jKfr
+	 jIPpEXZmGc/xwmwPR/gg+J9vHbgnDhJmTdPSqqmGt1NbuQLM/JSW4QYNCeOZ2iMZmV
+	 V3bmW69AO/h9t+DUEHl202umidNO8jMarM0V8ow3I3rbGi5AtP6y7z50dW76NRwVym
+	 hlTO+doZIXFGA==
+Date: Sun, 8 Nov 2026 19:48:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jean-Baptiste
- Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Subject: Re: [PATCH 16/39] iio: imu: inv_icm42600: use
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ "Andrew F. Davis" <afd@ti.com>
+Subject: Re: [PATCH 17/39] iio: health: afe4403: use
  iio_push_to_buffers_with_ts()
-Message-ID: <20261108194709.27824e42@jic23-hlaptop>
-In-Reply-To: <20261026-iio-v1-16-8b136778eedf@oss.qualcomm.com>
+Message-ID: <20261108194843.467aa829@jic23-hlaptop>
+In-Reply-To: <auBf5WQlpOrJF6x0@ashevche-desk.local>
 References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
-	<20261026-iio-v1-16-8b136778eedf@oss.qualcomm.com>
+	<20261026-iio-v1-17-8b136778eedf@oss.qualcomm.com>
+	<auBf5WQlpOrJF6x0@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,51 +66,42 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 16:05:34 -0700
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> wrote:
+On Tue, 27 Oct 2026 10:25:09 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Replace the deprecated iio_push_to_buffers_with_timestamp() with
-> iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
+> On Mon, Oct 26, 2026 at 04:05:35PM -0700, Jonathan Cameron wrote:
+> > Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> > iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
+> > 
+> > The pushed buffer is never a direct SPI/DMA transfer target, so move
+> > it from the per-device state to the stack. Use
+> > IIO_DECLARE_BUFFER_WITH_TS() since the timestamp offset depends on the
+> > number of enabled channels, and zero initialize it.  
 > 
-> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> ...
+> 
+> > static irqreturn_t afe4403_trigger_handler(int irq, void *private)  
+> 
+> >  	int ret, bit, i = 0;
+> >  	u8 tx[4] = {AFE440X_CONTROL0, 0x0, 0x0, AFE440X_CONTROL0_READ};
+> >  	u8 rx[3];
+> > +	IIO_DECLARE_BUFFER_WITH_TS(s32, scan, 8) = { };  
+> 
+> I would move it a bit up, giving the visible context to be even before
+> 'int ret...' line.
+> 
+> ...
+> 
+> > -	iio_push_to_buffers_with_timestamp(indio_dev, afe->buffer,
+> > -					   pf->timestamp);
+> > +	iio_push_to_buffers_with_ts(indio_dev, scan, sizeof(scan),
+> > +				    pf->timestamp);  
+> 
+> One line of 82 characters is okay I believe.
+> 
+Both done and applied.
 
-Applied.  This one is obviously fine as the buffer is right there on the
-stack in both cases.
+Thanks,
 
-> ---
-> Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> ---
->  drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c | 3 ++-
->  drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 3 ++-
->  2 files changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-> index cc8c074777c9..d40300af9b3c 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-> @@ -1250,7 +1250,8 @@ int inv_icm42600_accel_parse_fifo(struct iio_dev *indio_dev)
->  		/* convert 8 bits FIFO temperature in high resolution format */
->  		buffer.temp = temp ? (*temp * 64) : 0;
->  		ts_val = inv_sensors_timestamp_pop(ts);
-> -		iio_push_to_buffers_with_timestamp(indio_dev, &buffer, ts_val);
-> +		iio_push_to_buffers_with_ts(indio_dev, &buffer, sizeof(buffer),
-> +					    ts_val);
->  	}
->  
->  	if (st->timestamp.accel_force_odr) {
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-> index 4e20d61d897b..f895226f4a39 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-> @@ -829,7 +829,8 @@ int inv_icm42600_gyro_parse_fifo(struct iio_dev *indio_dev)
->  		/* convert 8 bits FIFO temperature in high resolution format */
->  		buffer.temp = temp ? (*temp * 64) : 0;
->  		ts_val = inv_sensors_timestamp_pop(ts);
-> -		iio_push_to_buffers_with_timestamp(indio_dev, &buffer, ts_val);
-> +		iio_push_to_buffers_with_ts(indio_dev, &buffer, sizeof(buffer),
-> +					    ts_val);
->  	}
->  
->  	return 0;
-> 
+J
 
