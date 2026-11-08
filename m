@@ -1,97 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794101665;
-	b=qUMeo7sgHqG3lRzwlRLdMEM6qSFe1nipP52YT8QPB774dgijJnCPw7ZWWcJwzlZeCJAT
-	 ZKueikimwLUBOn2MTs/MeVFOgdM4pl/ZdlkkvVKysud6d9sj6FaYFW/BhSSXKd4NeBrRS
-	 pxqSbjvvBZdWeBbXSACJhELya8TX7VHOjrcQwxHF4+eMclrWC88Q2r/w2dg27s/bRz5ou
-	 Vf0aKRX+/KcIK6enCeXCJDGIK2xy3P6njPjRp8ekqV5gGYj+XzpuxtYwJ0DBQN2kykNxZ
-	 aBYkCjGky3kBS27deJ1Zno2LZx3xCzlVKKe7fOhf68s669ZrcMJ2lOUfT+e22PSW1Ww==
+	t=1794101744;
+	b=Z9oCirWcdUWGJnL8SkE02iI7nHr4EBJjvB1Ox2L0If0KoNFMnJzbg90fqubn6sJQG5hq
+	 PgRZ77aRNbUHAycguDBtec/3kfnkl23Focb5DaWHZhD1CjIc5n17iHTAg6SCQWgnkRkl9
+	 Hc/Ay/b6zb8G5gjDLjxTcXFKQVlEn9RLmXY8vqPx8gOyOktXGeWkG6eIFfcwmYLD9g5VF
+	 21lwPKlJWcMPntd6T+B6+8YEk0CYJ/QnbhL5Rj/ooS7cniF/8E131TafpO9y+1KW1bDBq
+	 9GJaqcVyuwrOgM3HOl/6bxO9CCLeKeXlut8R0BBG0bYoxxScs0YDngv83P/nDFqHk2Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794101665;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794101744;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=JGXeoEcc3kDlzKja01AIsaye9Z/+QuBp1KBLpsLMndA=;
-	b=GEAqL/1yBhZD8p13yMwWh/nsZc8vcUx/5Q9JvVBLKY9i1qq9pgq5HqKJZvXr8mZNMSQw
-	 l6DNZmHF1cANntxP7byRflLmK5kwLUh4S2Q89JxEDFgXIK4a5ERS9mlWZTYDO2EA1uPRE
-	 2SDXtKJs7BbhEwnHLocr6ONapbSHMnsCVHEca032MfeEJ9bNK2FRxPMthjgWxdEt15Wh3
-	 umNn93F//1bcTY/Qjx5UTLJRjB+waRWg+7/s7c/V/uLFfuWWSKzK8YGNunhfwFMj0/Se8
-	 2lSYi1Jb48BwVRz7rgL8+ZZvbdK5sSlTxc5exVlIcvVgcIrm1HNKh2IOjJXHTbkLRCA==
+	bh=1jjWt3b9VOCOhPOBER5bc1d0BDO1F3j/SxlqU5kxk0M=;
+	b=aBxNK2eMAykggAsrjTZYQHwJooM64QTQ1UVl9OeeXuspQbDcDBJQAFq8n5BGss7kJGHM
+	 LtFRRrc31oKmwveFo5BZLYfgZQIrw7EWrgwpLmGot5zrrd+o5XdAedKXen3oVjzqetMnz
+	 lIeScwlkpvfp+38w2jtgbLdF4kkvM1KUd6oo/ho7t4sN+KIezMCHGiSSKiNeFz9iYE3aF
+	 ZQcoORs+uwXO0zXXmbJWzmhYvSLrArRTbNgCHQ2nx1+p1lRvK+1MmupcsmbegZZ8JzDyJ
+	 MzGFuHkV06gVUV2xqCT8uf9L2K+cTIxfsyEaKSPgMz3S0uXN89j3temGyQXMrNiM44Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ByKYzU9H;
-	arc=none smtp.remote-ip=209.85.128.51
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n22PmfRL;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED310606A330
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 01:34:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ED310606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E41F606A326;
+	Sun,  8 Nov 2026 01:35:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ByKYzU9H
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a20bde60a0so817405e9.3
-        for <linux-iio@vger.kernel.org>; Sat, 07 Nov 2026 17:34:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794101663; x=1794706463; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=JGXeoEcc3kDlzKja01AIsaye9Z/+QuBp1KBLpsLMndA=;
-        b=ByKYzU9HB5DT/i7Ko829srtaxHhCrNZi84hheOwMY/9oJ2W4O1VIM01DuOraqtoTuX
-         LE0SbPtd0jXqd6gQbXxGph0tr066fVgGGlZD0nked4HX6OPrXhxCyFyP2yHGeuDFPvsP
-         mvFsasV27hKylXDrJh79101nD4FERPbSO0f36W8nQ36EIdcEkTKeM9JT6BbRPhPf77GL
-         W7GBY3j4NX0I045bPbzfceR7rzDUtBNslNf8KCI9kQMpqFH1DEB3GnSNEBWEy4D8l8Dl
-         oj6RUtgP/jXwFRVqLffZvmTUsw0eG9xLQZcOfj1OvU5JOg7Ki/7acfX5nZNIIpcDYIL5
-         8oMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794101663; x=1794706463;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=JGXeoEcc3kDlzKja01AIsaye9Z/+QuBp1KBLpsLMndA=;
-        b=Bz4358yqz3q6rffYDX+JB1vD/sbdnb2LZh6XWluG8hR25cj2MZjO3Vr2GfuSPyAzJC
-         JTBJMMTz7j+8aaVryKfnWE4Gem5TmWoCjCZVHBmPnp8S3WfgB/XHaQZEPwK5Oo+FTS4k
-         VrUPNjdB4MhLN5gcn6l9vAFCf047seMhk0abkhDksn7aXNUVaY9OFsgr9S4Ym/lvCyNl
-         wYOd2LSUtsuk6pZJ/lmwy5kJ70ObaSaPefBfSapcCG1Cu5eFyqla0xr1iYsEcxyLQCjQ
-         AxinuWBAslQRmL4raOl3dpgx7LssNAmCIYOBVZg7c6x8fqF/YaI/K6dHHPNpbyjrfgMj
-         fDNA==
-X-Forwarded-Encrypted: i=1; AKwUvBzsHgRGKCEUQ03+p/FwNLyEDyZmdjURNIQhiJIWggEJtbiZXMssa3WrmPzw2u25DB/cPj8d6RzCngE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9F0qJ9OM7qbdbrjFl1+K7yJq5ya9Ycxbfu5s34Wup1SPnLDrbv
-	IMYBZbDR0GU6+Zgj4+aZMzk4HO2y7AVHE5cIKDHFmRFRx5ifxD3lfKHG
-X-Gm-Gg: AYBFou0xI4Xn/oCsfebl6hdI6fTTfDEdtECvYK4+UV5hVNAKqnXppK5TTboL4kcSNtX
-	fCcSUpuH3MTbLAR2r+hqKN2ciCE0biBILGZeSFNyMMVUHTVS7NVmeDSgLu8qlUSwgbD+MPdZ3Es
-	LV7dxuNJ7FC2Wg5LyjskMYHrwzW3gSn+OBbhD37wXpz/hRnJSicHNrNQLuEBFwyqX3WqST0Mosj
-	3uO/dGCmaPZpirkOnOTQl0Bzmtt64f6fz293n8xbIctjIIKdkPvSZ0J8kysGzmlHhpEYUNgyesc
-	cmIVe2OxJOttgbajtwa4ivOkGObYwuSuuIypONjoE5eTD8/KGP4hRz/IQDfq1ufq0nKcuhqq3f0
-	RTt8G17q41qXToiCDPg3cS9Lgzn9i4V/XFP0IxudNL5Ne6UB9E5z1HBbPAKO63T1cDGVuhU5Xzg
-	zMqqaj2cea14eH+2/tGKk8YI6iT1Bpp79lNIPBQ5xy8p09bocWxsfyZsONyYa25VOV1XvytiFOE
-	qxFIYq/ymbtR9TuqAwq3CXG69l8TstDmDQH5D7DMReMcDx4AWMZ3LGj1wEdoJDv+T1KH1xDgSTn
-	nHqQfD6aMISt5Cu5TM11hFPIEenc+mZ/hrBuYTtjZWdaDU17ZmFFtvA=
-X-Received: by 2002:a05:600c:46d3:b0:4a2:cbe:bec2 with SMTP id 5b1f17b1804b1-4b963c9197cmr5815975e9.32.1794101663125;
-        Sat, 07 Nov 2026 17:34:23 -0800 (PST)
-Received: from legion.. ([5.43.81.125])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4959783e39esm1143137f8f.45.2026.11.07.17.34.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Nov 2026 17:34:22 -0800 (PST)
-From: =?UTF-8?q?Adi=20Kadu=C5=A1i=C4=87?= <kadusicadi1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Adi=20Kadu=C5=A1i=C4=87?= <kadusicadi1@gmail.com>
-Subject: [PATCH] iio: adc: ad_sigma_delta: use __free(kfree) for temporary buffers
-Date: Sun,  8 Nov 2026 02:33:28 +0100
-Message-ID: <20261108013328.125069-1-kadusicadi1@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n22PmfRL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1A21F0089F;
+	Sun,  8 Nov 2026 01:35:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794101743;
+	bh=1jjWt3b9VOCOhPOBER5bc1d0BDO1F3j/SxlqU5kxk0M=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=n22PmfRLwH9vCJiaf/Tt+q5Pj/mzwVjj35Dl5p8BHBpV+snYXVGYXUXIVhWCH+vZ5
+	 9iRoDhG4eAaL7n/LbL3EmdB5i19krST80SmH+RfJbi7mpm1MJMLpk6GW5GhPEjxoA0
+	 K1z2XWKVorZ+W5HfxdjPYkrxe5kMOA/HLrMZIaZn0Hs6/5GQyVAFBoV0NwsdimITOW
+	 rXF9485T/wduzPWB4ZH1hf3+Uc7dHxDmQ7j9mrS8KQaDEHfB+R7TOrBKb0RHR5Vodq
+	 XttgD1WjScEcDNv+bq3zPpto7nTtuz7OA2fL8FBNfbv3e/uwy5AYOwNBsHipIlyzwB
+	 2+1uX8N0AWvqw==
+Date: Sun, 8 Nov 2026 01:35:26 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Atharva Tiwari <atharvatiwarilinuxdev@gmail.com>
+Cc: alexandre.belloni@bootlin.com, andy@kernel.org, asahi@lists.linux.dev,
+ bhelgaas@google.com, bp@alien8.de, brgl@kernel.org,
+ dave.hansen@linux.intel.com, dlechner@baylibre.com,
+ dmitry.kasatkin@gmail.com, eric.snowberg@oracle.com, griffin@kroah.com,
+ hansg@kernel.org, hpa@zytor.com, ilpo.jarvinen@linux.intel.com,
+ j@jannau.net, jarkko@kernel.org, jmorris@namei.org,
+ keyrings@vger.kernel.org, lee@kernel.org, lenb@kernel.org,
+ linusw@kernel.org, linux-acpi@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+ linux-security-module@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ linux@roeck-us.net, mfd@lists.linux.dev, mingo@redhat.com, neal@gompa.dev,
+ nuno.sa@analog.com, paul@paul-moore.com, pavel@kernel.org,
+ platform-driver-x86@vger.kernel.org, rafael@kernel.org,
+ roberto.sassu@huawei.com, serge@hallyn.com, sre@kernel.org,
+ sven@kernel.org, tglx@kernel.org, wim@linux-watchdog.org, x86@kernel.org,
+ zohar@linux.ibm.com
+Subject: Re: [RFC PATCH 14/14] mfd/macsmc: add ioctl to access smc keys
+Message-ID: <20261108013526.1ce3b9b2@jic23-hlaptop>
+In-Reply-To: <20261104195317.8284-1-atharvatiwarilinuxdev@gmail.com>
+References: <20261101013817.22d67ea7@jic23-hlaptop>
+	<20261104195317.8284-1-atharvatiwarilinuxdev@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,76 +78,37 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Replace manual kfree() calls with the __free(kfree) cleanup attribute.
-No functional change.
+On Wed,  4 Nov 2026 14:53:17 -0500
+Atharva Tiwari <atharvatiwarilinuxdev@gmail.com> wrote:
 
-Signed-off-by: Adi Kadušić <kadusicadi1@gmail.com>
----
- drivers/iio/adc/ad_sigma_delta.c | 22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+> > If this isn't matching some legacy interface, then we need more
+> > on what these do.  Maybe they are suited to some other kernel
+> > interface? In particular they might need the various controls
+> > on how destructive they are that something like fwctl brings.
+> > 
+> > Generally an arbitrary opaque path to firmware isn't a good idea...
+> > 
+> > Jonathan  
+> 
+> Here its required, if we write CPU/GPU Pstates and PPT to
+> some keys (MSTS MSPC HE0N), we can reduce the temp by 10C
+> And We can fix the dreaded PROCHOT signals on macs, Giving
+> Same temps as macOS.
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index 119ddc5a13e2..66aba39f68a7 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -203,21 +203,14 @@ EXPORT_SYMBOL_NS_GPL(ad_sd_read_reg, "IIO_AD_SIGMA_DELTA");
-  **/
- int ad_sd_reset(struct ad_sigma_delta *sigma_delta)
- {
--	unsigned int reset_length = sigma_delta->info->num_resetclks;
--	unsigned int size;
--	u8 *buf;
--	int ret;
-+	unsigned int size = BITS_TO_BYTES(sigma_delta->info->num_resetclks);
- 
--	size = BITS_TO_BYTES(reset_length);
--	buf = kcalloc(size, sizeof(*buf), GFP_KERNEL);
-+	u8 *buf __free(kfree) = kcalloc(size, sizeof(*buf), GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
- 
- 	memset(buf, 0xff, size);
--	ret = spi_write(sigma_delta->spi, buf, size);
--	kfree(buf);
--
--	return ret;
-+	return spi_write(sigma_delta->spi, buf, size);
- }
- EXPORT_SYMBOL_NS_GPL(ad_sd_reset, "IIO_AD_SIGMA_DELTA");
- 
-@@ -249,7 +242,6 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- {
- 	bool pending_event;
- 	unsigned int data_read_len = BITS_TO_BYTES(sigma_delta->info->num_resetclks);
--	u8 *data;
- 	struct spi_transfer t[] = {
- 		{
- 			.len = 1,
-@@ -317,7 +309,7 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 	 * shorter than the reset procedure.
- 	 */
- 
--	data = kzalloc(data_read_len + 1, GFP_KERNEL);
-+	u8 *data __free(kfree) = kzalloc(data_read_len + 1, GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
- 
-@@ -340,11 +332,7 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 	memset(data + 2, 0xff, data_read_len - 1);
- 	spi_message_add_tail(&t[1], &m);
- 
--	ret = spi_sync_locked(sigma_delta->spi, &m);
--
--	kfree(data);
--
--	return ret;
-+	return spi_sync_locked(sigma_delta->spi, &m);
- }
- 
- int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
--- 
-2.43.0
+Being able to control them is good, but ideally we'd map
+these to appropriate subsystems rather than having a magic
+interface for them.  There might of course be some gaps
+that need plugging, but custom ioctl is rarely the way to go
+(except maybe due to legacy userspace we don't want to touch!)
+
+Jonathan
+
+
+> 
+> But you and Sasha are right, that exposing all keys is a
+> bad idea, so i have restricted writing to some keys only.
+> 
 
