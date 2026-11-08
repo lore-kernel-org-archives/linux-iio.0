@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794100346;
-	b=5A9HIMjGdq4vAylYdx09EnVQJ2elg5y5aTioTjxA++WGxOl7JAuFTP2HBcXtEGnPGBuv
-	 taZxRi/an2GI4H4M3SWGK+guKS2fjsvMht4JRxYvDDqWeQNQWdqHCsLoustmZYkpCTqex
-	 oClniXbWC+Jpn9P/7XxTIrXtLH+qm9qbi9iQWs/guHTv8xXiHMZj74xArtOGCoplFY6oK
-	 cDFIw6C0fPnOnH4FZC82Ldf+7Z/1Xe3WTbutgDu2U6q4aPHFoUtJDFXXOG04XG5alYd6C
-	 mUXvjIPjdVIStYbsaDlqoLp9vfgdgdhvG0gTpsrlmGH42LqGzl8KnZFN2F2IqdePAUA==
+	t=1794100469;
+	b=VP8p8+KjrbKfnZgglkFd1BKRoZbg8gl0GDOg9Kpvay4ccA+ABgQeBpXqhFety8xl5A5i
+	 wKGzl2XN8orkz2ps/qjcn1r3g4NwmUfFIFrE8tw00d/m5BPuqmf2bKcQdKvKdFfRbtoEJ
+	 /7EQZ1XjoxGtFfXlCQS9cb2auHvT4UTLCsIYvU+r75jwVKzhIDgxLKxz+Ic+yIy6DIbe2
+	 kaYN3lSUHArexxfPdU+Ls1lBE3htyIBGT3fXQjG1nxrUDVBQHiSHIX0ISei1LrhR7wbAv
+	 z2mvf5o1cS3DCf5jUvjN2p1LPSlBOGWVCxzl1OQpJrSHgzd5iwOsKqFaIhqN+3iEbaA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794100346;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794100469;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=iwdMWMqlQ02yEmWZxUvQtiX/14rErqQTe8wlPbAoNbM=;
-	b=Mj0d4YtTr1V0xxVeDh2gBGU6GqeV8n92u/1J+wJZEmWl2XwjwMiRGbmdtBcToI5HavcK
-	 PP5ixGolX2W6Ubrr52ambJiBeCPB4HI1rdYDyGVDNfM/9R2I7ck++meSRvPw3pfl/cVN8
-	 qq80iGGaUlwWfQP2kHYgH5F7Hab0fa785nTRqhQwFAdBOEl8GjCGGH4P32jgL/F9dO4RP
-	 nqTvnykoZ6N+9//CWGzRqzFhJ/0E2XeBWK8waG4gRMYKYylpXE/2DZDrrlr37uY4fv2U/
-	 +d9f7ix26jpnk0fTn7K5eg3JV7vGHFc+L2Lx7+A/CsVkhCIB5LZVlQk8pa7ZE6I9V1w==
+	bh=+J8fn8bo1zsLZcfVPVJ7A4AT3JTui3GKdfsF38JLpLs=;
+	b=FLdXdut6AV1XlfL3e56CbY6OYgqO9EVsx05ICVKTpLuJS9eRWv91ZiDVyCpL/kf6Hsw3
+	 rouG5wjMRf5t/wZ6zZN0brkoIelpHeKhGnrgG7ogLdlOAqzHIAt7bvTSPfcLsHjH7w3in
+	 jOD5J4pp6xkB4LJBUnsa6qX5yLvtqpvjq7mPqWMkSfLYdSaITH5EVSDkxTHzzTjaaUAld
+	 O7so/YnK/Cr1EAxk97oNj/LL3YmlwhTyUHCnH6Fvm7mc5zkbMcWm725jghboLo01jf7Cl
+	 Ui342T80pjOtnrusm7uAtMkKy6dUJ5Q8SDUUKxNecYMDL/tzvp4bWloFAspei74FKnw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hEOOPakg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n2Jups21;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A1DB606A326;
-	Sun,  8 Nov 2026 01:12:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4802D606A326;
+	Sun,  8 Nov 2026 01:14:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hEOOPakg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8021F0089F;
-	Sun,  8 Nov 2026 01:12:25 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n2Jups21
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ECA01F0089F;
+	Sun,  8 Nov 2026 01:14:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794100346;
-	bh=iwdMWMqlQ02yEmWZxUvQtiX/14rErqQTe8wlPbAoNbM=;
+	s=k20260515; t=1794100468;
+	bh=+J8fn8bo1zsLZcfVPVJ7A4AT3JTui3GKdfsF38JLpLs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=hEOOPakgj8YpZY+b/Z3xYgZSjDF1+6CtcSeRbZDg8KscbhqPAp/DxK4ECSq0941Qj
-	 mk21/IkBDGYzQXfRcUDhvNyNUHEMhImr4rL+tNmagjiAx7xkw9otvlYmncFcbbcCja
-	 K2jT4Wpc7deTs5aEbvChWRepw7tY6ovXbplm563lAjvUvxqBqs2BQWDHQvJDdsjs2H
-	 oiSih4ZIFwUOlXamTrMOVUSX7IT+wJgUU60DnO6otUxp2PfWEPfM4qBt0wKTsIN/y9
-	 Cy/zaUEyCTACHMQiLPfadozdhmEG+a4h6fg9PvNblgNvvpiFVUJ04RHRv9HYX3KDEf
-	 jJIFNiaNhdI4Q==
-Date: Sun, 8 Nov 2026 01:12:19 +0000
+	b=n2Jups21xwKNJUBVB4RseJFlwrRJPH2p80u2ZPEiIWEwlhqvk1qnvLVmpc/e9Xkxt
+	 O9aLgvWJrxxLL/AcWqHN2ZhteOxOwbB6Q1MvWwP3twYfJ1sBJ4VZhwEaOGYXY8xFGp
+	 6BTry1ipiozLxTGtX6VOXd+3m2QppLC9HFp5c2U2PsP4WJSUagqCRvzXDc2QnubhpJ
+	 2R2K7XDU++LGwzqFZgVBZ0t/TmvFs+kEBjzYIXHtCzURYXsZbzPx/SVIeQGLj+Rw7n
+	 hKwMaSUzBmEpb937YIKaARTr2q/FP2DqbFb5pM8RVUAzHAQ0VonB/z7D+gaOP8sMd5
+	 Yc8i+ne2/jdXQ==
+Date: Sun, 8 Nov 2026 01:14:20 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Arka Mondal <arka@arkamondal.net>
 Cc: Linus Walleij <linusw@kernel.org>, David Lechner
@@ -49,12 +49,12 @@ Cc: Linus Walleij <linusw@kernel.org>, David Lechner
  Ranostay <mranostay@gmail.com>, Robert Eshleman <bobbyeshleman@gmail.com>,
  Leonard Crestez <cdleonard@gmail.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/6] iio: light: max44000: Report the available lists
+Subject: Re: [PATCH 5/6] iio: humidity: hdc100x: Report the available lists
  via read_avail()
-Message-ID: <20261108011219.6e69e92b@jic23-hlaptop>
-In-Reply-To: <20261102074700.63075-5-arka@arkamondal.net>
+Message-ID: <20261108011420.0c0cbf95@jic23-hlaptop>
+In-Reply-To: <20261102074700.63075-6-arka@arkamondal.net>
 References: <20261102074700.63075-1-arka@arkamondal.net>
-	<20261102074700.63075-5-arka@arkamondal.net>
+	<20261102074700.63075-6-arka@arkamondal.net>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,40 +68,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon,  2 Nov 2026 16:46:58 +0900
+On Mon,  2 Nov 2026 16:46:59 +0900
 Arka Mondal <arka@arkamondal.net> wrote:
 
-> The light channel keeps IIO_CHAN_INFO_SCALE and IIO_CHAN_INFO_INT_TIME
-> in info_mask_shared_by_type, so userspace sees in_illuminance_scale
-> and in_illuminance_integration_time. Two custom attributes list the
-> values those accept, but they are named illuminance_scale_available and
-> illuminance_integration_time_available, without the in_ prefix the core
-> gives the attribute a list belongs to. Both land at the device level,
-> paired with nothing, so userspace that asks for either prefixed name
-> finds no such file.
+> The temperature and humidity channels have IIO_CHAN_INFO_INT_TIME in
+> info_mask_separate, so userspace sees in_temp_integration_time and
+> in_humidityrelative_integration_time. Two custom attributes list
+> the values they accept, named temp_integration_time_available and
+> humidityrelative_integration_time_available. Neither carries the in_
+> prefix of the attribute it describes, so both sit at the device level,
+> and userspace that opens either prefixed name finds no such file. A
+> third attribute, out_current_heater_raw_available, already has the right
+> name and keeps it.
 > 
-> Report both lists through read_avail() and delete the two attributes
-> along with the strings they printed.
+> Report all three through read_avail() and delete the attributes and the
+> group that held them.
 > 
-> Each list uses the format the write path accepts, which
-> max44000_write_raw_get_fmt() gives as IIO_VAL_INT_PLUS_MICRO for
-> scale and IIO_VAL_INT_PLUS_NANO for integration time. The scale
-> is read back as IIO_VAL_FRACTIONAL_LOG2, the same number written
-> another way. max44000_write_raw() still rounds a request against
-> the ulux table with find_closest() and against the ns table with
-> find_closest_descending(), so both tables stay and the lists are
-> separate arrays of value pairs.
+> The two time lists hold what hdc100x_set_it_time() accepts. Its loop
+> ignores a zero request, so the padding entry in the temperature row of
+> hdc100x_int_time cannot be selected, which is why the temperature list
+> has two entries and the humidity list three.
 > 
-> No value changes, but the core prints each one to the full precision
-> of its format. The scale now reads 0.031250 0.125000 0.500000 4.000000
-> where it read 0.03125 0.125 0.5 4, and the integration time reads
-> 0.100000000 0.025000000 0.006250000 0.001562500 where it read 0.100
-> 0.025 0.00625 0.0015625.
+> No value changes. The heater list still prints 0 1, and the core prints
+> the times to the six decimals of IIO_VAL_INT_PLUS_MICRO: temperature
+> reads 0.003650 0.006350 where it read 0.00365 0.00635, humidity 0.002500
+> 0.003850 0.006500 where it read 0.0025 0.00385 0.0065.
 > 
-> Fixes: d5d8f49b6345 ("max44000: Expose ambient sensor scaling")
+> Fixes: 4839367d99e3 ("iio: humidity: add HDC100x support")
 > Signed-off-by: Arka Mondal <arka@arkamondal.net>
-Applied this one to the testing branch of iio.git.
+Applied this one.
 
-Thanks,
+thanks,
 
 Jonathan
