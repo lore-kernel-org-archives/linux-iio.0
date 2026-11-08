@@ -1,61 +1,54 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794171112;
-	b=FRxKA5dSf5mzCetLMggHeqZJC38lwYAt3nCYm4bRyYi4Ce2qxCBhKB9Bk/FUUv7QQhU0
-	 bzgBsuSMBqoEDlGgLph4DPo8wmSAITAdfN4q2fZlof9+yh2/W/dbELhBkjX2rHsqxir0c
-	 nDxL7lRZ5TztNCg+vvfLOlVuoNDYM0hcCCWoNMuF0Quhqi560qIeAsVxy/NHiVNnst1fm
-	 YA0/KPV4hkUT6oD9HaLg0VsojWMJstly4kqUPgBSWpx9PSzafr0i7rx0iBth8d/E9HKWt
-	 xqP5hBd5vyU9mdjBI/piMoyJk3jJlQQAZ08Rbo89van9FblBqmSCTk68y3Qb0k3+1IQ==
+	t=1794172433;
+	b=oNLbNS3Ike5AXB3kwbxZjPkJFIV0/3mmOO+EQ7W1tvZ6ZJltzlaDKde1vB0eRv/LT/VT
+	 x97nnYk0fouDuCFiajjx97JzvP1bikIIU7grheb9g0RKGsIEEzTx5hHt9TNMa4wf8UwVu
+	 +AtLfyvSO1gJOJ8Ktt2CqedHLsT70fp5LlJDnizBIfLlVdyH8Ns1cP0NE353bpcoWvgoQ
+	 1oX2WPF28mk60fIn7KV2FH9sDmDUNGt790sc5fQ4nfTJPt+GoPUL6GzDFDeIf9ypVsZo4
+	 aBBdZZBWW744Z6MTW6gKlqdVByqEFxfT7MylzaXXVmhMjufbIOkjFthx+3w6mUTBqRA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794171112;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=X87kPqxtbmal3tbue4lsjoMJOKxCwD6E7IkS8YJjNaM=;
-	b=d4+sNqf+mzHGlxyzlu/iNQv0I/M7yRUMAxbce9lVm8fnJwfFhXZjB3MCljPqmWUIbWlI
-	 ZrTisAky8gVfqye/zDNNhCYKEYL+q3HeQya6Ys/RGK+HMZxzM5UBkcLjaR3lT8+PUpxZy
-	 +f1fGW4dmIkZlyeim0xKb71vBbmVHIT7NExHkZ82IlRBukDnIZtodlUFccz/3ta0znMaI
-	 Ey4JKhE+VtJVqr1lqYFlwlsmTbpMrvEHURyUnL8i/zVcLFy4+yPJkSScAMgNCCiWsg5PG
-	 f95JUmDREiJUYXf7o7pLluXvsXqltvcYznKdjcGctnFhsrXKlfw/oR97qoYYNLhrpZg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794172433;
+	h=Received:DKIM-Signature:Received:X-Gm-Message-State:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:
+	 X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:Subject:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=NfsiPlfeChHXa7FHvQGdbAbZ+3j7yl2ALAzQCNxrtJ4=;
+	b=TzKu0Uy8Kqhzw8u8NEBbcUIoAYi5WiBmagGgDhO2V7WAvEQTPEfCDp0fFyrLzhmL74BD
+	 k37CRq0sxusqlYV0fOcTYqA3UmMpKbnL+pLAErXNeO+oWe1fmWJbwPrZ159hPF+DFqRY6
+	 UYlSrk3vtJXE1WfuKwbVKlBgitz6n7v9NBqN3ALp9S8k/xIWddpCyK8QN29+f9q8srLLT
+	 zokSLerBDqk0F9yzG3G2EH7YHPJmEh7E2vHPeiQbBpXo3sWmeT/u1kwzebUq4TybXdAf5
+	 ouB66tkRJKgr4xhvqu77xLf1VoVm16tMgVgfVQc+B2DtvmEMxP+s4DLo8GHQd02MItA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PMP7vLbi;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PhxDaZTL;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9863F606A31C;
-	Sun,  8 Nov 2026 20:51:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0851606A320
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 21:13:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PMP7vLbi
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB5401F0089F;
-	Sun,  8 Nov 2026 20:51:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PhxDaZTL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B0A01F008A2
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 21:13:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794171112;
-	bh=X87kPqxtbmal3tbue4lsjoMJOKxCwD6E7IkS8YJjNaM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=PMP7vLbiA+IW3DL55XyjfV+QZfBHQNl9FAqzn2qNHONqMGSDOFqrN2a2fu0rulJWG
-	 2tBqpvV+KTOYhbX4DYN5IDUHXL/Axc2CFpXRq/k+4+k/RpEQw94BxYqJ7stwBhL2Ot
-	 l70bKJv3BKVBlHUhMkxpZHzzrGYDGAExA+D4qOp4QOtmXNPv0lgbwrpCaBjo95xyjC
-	 ezdHAbWSEYedR1ibqjFj796MElcqd9aY2a4Lyfbc4NVPmHE4OCHE33ZjJb2aAaO8HZ
-	 v6YEDSAQMNURyVzaCwmsLEJ9/I3n/7+XEgMNq+PYCFmpix8GnBsCIY0KPRCIPSFOXw
-	 EtxgnR8O2WEgA==
-Date: Sun, 8 Nov 2026 20:51:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Lee Jones <lee@kernel.org>,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- linux-iio@vger.kernel.org, mfd@lists.linux.dev
-Subject: Re: [PATCH v1 2/4] mfd: max8907: Add ADC client support
-Message-ID: <20261108205143.134d6aa0@jic23-hlaptop>
-In-Reply-To: <20261108095634.100517-3-clamor95@gmail.com>
-References: <20261108095634.100517-1-clamor95@gmail.com>
-	<20261108095634.100517-3-clamor95@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1794172432;
+	bh=NfsiPlfeChHXa7FHvQGdbAbZ+3j7yl2ALAzQCNxrtJ4=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=PhxDaZTLZY29YJj12vefUX8VejuSNpYiKDMljPrZPNFItV/0Ksylb5Lbh0F0AnkzI
+	 uyaoWiKLlLJAkREBTeCBDzVVgsu9zuwpU6qDMR8iMg2KActNrJZYcLSPqmyx+9CkSl
+	 roZjaauC7Ph5khA6kCDq+L0BrHdeq7AbGCze3KZyRtqnJHzNmjOi37wJ0ksaF8fh2D
+	 vlIJjc6zDuE4kV0nI4u6feVXLZBUO9CHOrzLbNYZyLefnfj0ggV3NqHRgBsMu/GhnP
+	 0oROLr6cWtKgoduglgHVzeVCRgagD/CMmGfwiu6/rFwBPDFkVQCm7S914dnuGM2THV
+	 7JVjahEJ+uSVg==
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-5c1479be604so124637e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 13:13:52 -0800 (PST)
+X-Gm-Message-State: APuU4Z+ViHUtSrSPu0QtUXLrsHsgwVlaz5ikSB6wh8FUszaU45c9wCgH
+	Icz9pGxpN2wHel4YhyPzprElAjeK6QuZhV3IKL6UoyJ3lqfrDFN+ucVyYmsS4gQ8cTp4ac/cMDU
+	AjanIQXjeDO8kbLJQhnrMsFrXGD9kxEY=
+X-Received: by 2002:a05:6512:1083:b0:5bc:f2fb:f50c with SMTP id
+ 2adb3069b0e04-5c14c013534mr466477e87.53.1794172431399; Sun, 08 Nov 2026
+ 13:13:51 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,44 +58,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20261108-gp2ap030-v1-0-55314eb7055b@kernel.org>
+ <20261108-gp2ap030-v1-4-55314eb7055b@kernel.org> <20261108002155.29740ae6@jic23-hlaptop>
+In-Reply-To: <20261108002155.29740ae6@jic23-hlaptop>
+From: Linus Walleij <linusw@kernel.org>
+Date: Sun, 8 Nov 2026 22:13:38 +0100
+X-Gmail-Original-Message-ID: <CAD++jLkMRe-hNB0=8G_K5tmK6PU0H=zm1Evhm_azW=nLDa9C9w@mail.gmail.com>
+X-Gm-Features: AclHuK9Xc9_YTR7KHYkysEhO-qFuV54hOhTZVduK87r-rNPmyMy5nO7aPl1v8WQ
+Message-ID: <CAD++jLkMRe-hNB0=8G_K5tmK6PU0H=zm1Evhm_azW=nLDa9C9w@mail.gmail.com>
+Subject: Re: [PATCH 4/4] iio: light: gp2ap020a00f: Add GP2AP030A00F support
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Kyungmin Park <kyungmin.park@samsung.com>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun,  8 Nov 2026 11:56:32 +0200
-Svyatoslav Ryhel <clamor95@gmail.com> wrote:
+On Sun, Nov 8, 2026 at 1:22=E2=80=AFAM Jonathan Cameron <jic23@kernel.org> =
+wrote:
 
-> The Maxim MAX8907 has an 8-channel ADC at a fixed location. Add client
-> support for it along with its regmap and interrupts.
-> 
-> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> > +     /* Bit 0 is reserved on the GP2AP030A00F. */
+> > +     if (!data->chip_info->has_als_auto)
+> > +             op_reg &=3D ~GP2AP020A00F_TYPE_MASK;
+>
+> Perhaps set it explicitly to MANUAL_CALC
 
-> diff --git a/include/linux/mfd/max8907.h b/include/linux/mfd/max8907.h
-> index 35b2ede54f856..cf304afc782d6 100644
-> --- a/include/linux/mfd/max8907.h
-> +++ b/include/linux/mfd/max8907.h
-> @@ -153,6 +153,51 @@
->  #define MAX8907_REG_MPL_CNTL		0x1E
->  
->  /* ADC and Touch Screen Controller register map */
-> +#define MAX8907_REG_TSC_STA_INT		0x00
-> +#define MAX8907_REG_TSC_INT_MASK	0x01
-> +#define MAX8907_REG_TSC_CNFG1		0x02
-> +#define MAX8907_REG_TSC_CNFG2		0x03
+Jesus the name of that flag. I just shudder whenever I
+see code referring to "manual" in a computer program,
+as if there is a man in there, or we throw a prompt at the
+user to fix the issue as if there is a manual gearshift.
 
-....
+What it actually means is "imperative", as performed
+by a machine. I will grudgingly swallow my pride and
+go with this because I suppose it is the name in the
+register description in the manual.
 
-> +/* Regulator stride */
+Fixing up the rest of the comments!
 
-I'm not sure what this means. Stride of what?  Seems to
-be some offsets in the register address.
-
->  #define MAX8907_CTL			0
->  #define MAX8907_SEQCNT			1
->  #define MAX8907_VOUT			2
-> @@ -165,6 +210,8 @@
->  #define MAX8907_MASK_OUT5V_ENSRC	0x0E
->  #define MAX8907_MASK_OUT5V_EN		0x01
->  #define MAX8907_MASK_POWER_OFF		0x40
-> +#define MAX8907_MASK_RST_CFG_INT_REF_EN	0x01
-> +#define MAX8907_MASK_NREF_OK		0x10
-
+Yours,
+Linus Walleij
