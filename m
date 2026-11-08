@@ -1,79 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794168976;
-	b=y9H2Ulm9boYlaY67Lmi73d56VSFLWTGf3Ktk6Zj9Wch3wetgFgj5RVfqYXW1xhBBKP9K
-	 OyL/VRvbrE06aeIUmyetYSAFzUA7CfU/Oy99FiOFdi5JNFIt1iVgTkvMPjADvkNOyROQ7
-	 1eIIMdJJp5oIJk8q+JxGtaLgsKLkr2zBd9lcVru6ofE4C3A6bouv4RoxeMe4Ov5RxZqaM
-	 CpwyGNIHhQKgcvlYjdRRWW9ObI+Emr23R0dt+Eitgw92cRgwRERgFvTjF1Zsm6aTQrVjb
-	 P2qpRh6BUarYWd8cndRAs04Ion7UvQdFrEIaApWvc1bcnqyAtaVJkPYFv9LpNje+6Iw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794168976;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=AvZj58LAAGduk/xpJ0dCyMoDVD5BG4cJyWLaCL3My4k=;
-	b=FJMjoegw60Af/Pk8ah0XVSXYDv3ReFfpZViBAPpL8ZnFl9T+bdcu6dX05L6fCWsw8yuC
-	 jx+vcsNGkbr53WFwiyRYfKWUybRw+SBdDZTYuEX9GP9EXjysODiJE7YVWgA7xx1Cw0oir
-	 xhT11yfLcZUvwA2/pY3Iy4pjyElEQHbrXHp8wfE42mbPNLRjire/DIoiIMN5N0ujMKYra
-	 5tUUyDPE6RqObL5SpEl8T4zD6PlsNqGE6Z6MOIQEgv7Atz029HbY5t6hP0r9qIwKnaCRv
-	 SjgheorO8uyknTcX4pqVLki6cD6480T8Ix8w07o0PzRBFpg1pvLWCGhvP0nUeXA2ceg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=egUwvLR0;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794169047;
+	b=G9q3ToFEagVx1fDVxSQ5k3faoFDHSLxuWpOk3xyFyNNhGceuHpe8YMtRaZnaPzwV0uO8
+	 RaMjm+L0+Ri2bAafC0ySdrTI287oHrGN7aDqbQskq2Lcr/Bkvcsy9du8wR2lQqWz5c7Dn
+	 i6k/L4bgpnVNr/iauqCWdQTz+cYJqDxBN7gxl5d6r2Q7FrDg0Xy4dN/Y3spSoHmdylwlN
+	 DGvMsJAsrYdor564WXLhubHwiwqPHfdgduLxI6iu8ZA5D3aq9k/meXmxhmodJ4J9wC+xG
+	 B8vlxsunCQ0+0XdXtBBrYPSx9dLIxHjdFrmDjMIY4/52gcshD7nJNg+zzy4XCA9z1ug==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794169047;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=6V+jSZb6mGqAzM+vviaKHJs1LRkhqKiI/bwUZE9dkw8=;
+	b=h6GEs0xf3tSgQ1EtNCi5f8/UZ5yjggYjKG4CVGF7VGvfDuddGhjK3RFr3/XPUMH19vwu
+	 e3L5GDnA8PucXL8shBWYt287zNuzYXN4KMHMwA/fNKr0QiWH8cFz+kcryF/u6CkH0tl/j
+	 70YNlCe0FmHStWTohe6TZ8JYlLzSBRcGvN1N53Qpr/zHVPrwIHLsU6x8Kny817sg8Jaly
+	 MJGaNqgUkoVutx7vmTQeQV/myhemyWoTxj4czsrr9zJhz/deAJ+yydock55Q+H70XUJmA
+	 FkUavt7JZC2LeompwMPJ/IJVJqtowMLExB+EMJeJXLqBWxHPp5ieFTJEskqDM4j8Ngw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SFOBHsAv;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31D11606A31C;
-	Sun,  8 Nov 2026 20:16:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2ED606A31C
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 20:17:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=egUwvLR0
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794168975;
-	b=S8o0V70BSVhWwf3RjwPjg5W1SzTQQ4IOib5m0gWzbknEMGg3fZAr9gjpYzTOBuCTylQU
-	 JYWyh669aT0dQcP+/hxtkM35JHd6mUggbyAUO7ehd639l2QVNqspaFqdtSYirUgT8Nq4G
-	 LNU2K6dFV4IWyFt+LKkPUQRlbGdgni31FKDQzrIXEtxpEPdZmu1X+EE/ibHVvpUHhvsQe
-	 n+glMRCras460U9PsdNQKacicXPphD9vzW3pKk54KPsWc6IU27bG/5y4yC+qCPyAWINwl
-	 rFSHben80ExkJJQZ//nnyN90+sksNO1H2eP1d7sJUUPWBVejT0SfP8XYSNWcAcZTK/g==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794168975;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=AvZj58LAAGduk/xpJ0dCyMoDVD5BG4cJyWLaCL3My4k=;
-	b=ktjKANZqnH0hLdrDgk12LvynW+l4lAfvQJcob7EHuPkyVNZzXeS+wn9cVW2u5weRT5UX
-	 IT/P14PxHZGcXqrjPwUoSLsnEIpUhqJYr9ZqYjAgu9PPqlpKQn452vN5GXKz9f5KuN0fA
-	 YTA+BVDQXEJ7aLwlyPqFWMCPPyOt7G+BP80nnu+JZQJWFGybCtpz9DxBWrpzjlmZK0oiW
-	 7/hVpUpPugomXewUoP3vwNZ6UiNWBJWH8i7G2jD0O20XVsX9paZ5zRlig7Q5BUduYgcNB
-	 YbNDHIhf78nLhiVgoLIdPoxXwd8g6ZjhDDSx0spYNoXKMT0t3SK/svcKX5SFhvXgdGw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 4C3481F0089F;
-	Sun,  8 Nov 2026 20:16:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SFOBHsAv
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 910671F008A1;
+	Sun,  8 Nov 2026 20:17:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794168975;
-	bh=AvZj58LAAGduk/xpJ0dCyMoDVD5BG4cJyWLaCL3My4k=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=egUwvLR0BitOqZdYNB3E5j0lG4nA+bRb3ERPTrdXlqZtgSRbkMyTrixc500DoTykf
-	 nMYkD9wM6928PsvzmnDmjyWKvvvymiW9ORw22+3ZaO5mEkSjiWPLVxzJHR3xVYJtRU
-	 k8zo4LLxzGb5WQHRwI/15MKB+c77Rsoi/7HdeHLsr7v/8NWwPKHlJdvEB4OTZT/94e
-	 hry2Xq+XL1FazcQYX6XMxfJtkJxxhxqrCLpkSipfLNKeD+rE7TuXj5s/iXQfflbHP6
-	 Ru/RpRsx2AuaQfbdMXB3pxmI454lvhJ9JtsVo5alVo9PJLq0FZ5iINmLpwOU1/XYFl
-	 5Njla/YHBrtZg==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id BEEBD480B2;
-	Sun,  8 Nov 2026 20:16:14 +0000 (UTC)
-From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Date: Sun, 08 Nov 2026 20:16:13 +0000
-Subject: [PATCH] iio: light: adux1020: use guard() to simplify lock
- handling
+	s=k20260515; t=1794169046;
+	bh=6V+jSZb6mGqAzM+vviaKHJs1LRkhqKiI/bwUZE9dkw8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=SFOBHsAv1hmUkkgOtYFILm2ZiBWuIKLgpgKBlEiQLXVm1m2rojv2ZdF1Stwkb9LWC
+	 mtwvXPLD/SlIrOTKMwcpXwvRNhZ0KpU94SxnRPFQYSqoo5wL2laXiYf8R75DA62BO5
+	 MS40znfwVPhTD6eLWnUFr7G3VSYwzC8oEG6KTVrWr8k/ACi63jFYTM63vcjUXT5fVy
+	 aBCQOnRyBPuOGtavhovph3Kw44p9meLLYD17xdEDhtXXJdiuwcQOjpmFsdVib6qZGw
+	 jY51X3iHv0+am1rU66A1lKIYzP+hbfY+qZvAS7bhw6j37FPUQJnIUR1ilsjK61/8N2
+	 1IPB/2jh4sQZQ==
+Date: Sun, 8 Nov 2026 20:17:18 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joshua Crofts <crofts@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH 32/39] iio: adc: ad7887: use
+ iio_push_to_buffers_with_ts()
+Message-ID: <20261108201718.6a3367e2@jic23-hlaptop>
+In-Reply-To: <20261027124629.00000fee@kernel.org>
+References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
+	<20261026-iio-v1-32-8b136778eedf@oss.qualcomm.com>
+	<auB7zg8H8bMGchzw@ashevche-desk.local>
+	<20261027124629.00000fee@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,296 +64,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261108-adux1020-guard-v1-1-db9c582f1eea@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMTQ7CIBBA4as0sy7J8BPFXqVxgTDiuMAGimlCu
- Luoy2/xXoNCmanAMjXI9ObCrzQg5wn8w6VIgsMwKFQnKdEKF+ohUaGI1eUgtFXo6Xwx1mgY0Zb
- pzsdvuF7/LvX2JL9/L9D7B8SmqstyAAAA
-X-Change-ID: 20261108-adux1020-guard-3820ce794843
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794168974; l=6978;
- i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
- bh=55DgnX1l0P6Wx7Y7PSWErzxISKBLMVyhkL//RtenSVw=;
- b=x3obLC4cZbut96blzDpJjPH6a2VtoPWL4w5PhctkC17cNEMyYBQ10YX1bzOLC3VbljvLQyLYU
- NkhkLMIVm9xANai0c+R/QV84E50MuWQtdN2fCQTDtH4PKoqvw6tR10M
-X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
- pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
-X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
- with auth_id=1160
-X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Reply-To: raffaele.tranfaglia@gmail.com
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+On Tue, 27 Oct 2026 12:46:29 +0100
+Joshua Crofts <crofts@kernel.org> wrote:
 
-Use guard(mutex) in adux1020_read_raw(), adux1020_write_raw() and
-adux1020_write_event_config() so the lock is released automatically on
-return. This allows returning directly instead of jumping to a common
-unlock label, and lets adux1020_write_raw() drop its ret variable.
+> On Tue, 27 Oct 2026 12:24:14 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> 
+> > On Mon, Oct 26, 2026 at 04:05:50PM -0700, Jonathan Cameron wrote:  
+> > > Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> > > iio_push_to_buffers_with_ts(), passing the size of the pushed buffer,
+> > > which is a structure within the iio_priv() data.
+> > > 
+> > > Replace the data buffer with one declared via
+> > > IIO_DECLARE_DMA_BUFFER_WITH_TS(), for 2 __be16 channels.
+> > > 
+> > > Use be16_to_cpu() to replace the opencoded equivalent.    
+> > 
+> > ...
+> >   
+> > > Otherwise I might just rip out the pdata path in the near future.
+> > > This patch being an example of how it is causing maintenance burden.    
+> > 
+> > I don't see users in the kernel, I think we may just drop it for good.
+> > If anybody wants that, they can use software nodes in the future, no
+> > revert will even be considered.
+> > 
+> > ...
+> >   
+> > > -	return (st->data[(ch * 2)] << 8) | st->data[(ch * 2) + 1];
+> > > +	return be16_to_cpu(st->data[ch]);    
+> > 
+> > Add asm/byteorder.h into include block. And yes, the include block is a mess
+> > in this driver.
+Done.
+> >   
+> 
+> I will probably do a series removing kernel.h from a subset of drivers
+> in IIO again (it's really painful though).
+> 
 
-No functional change intended.
+That one can be a long term project. It's nice to have as cuts down
+on wrong choices in new drivers (via cut and paste), but it is
+isolated to each individual driver so the blast radius of bad
+includes isn't huge!
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Link: https://lore.kernel.org/all/20261107222957.5332237b@jic23-hlaptop/
-Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
----
-This follows Jonathan's suggestion, made when applying the sampling
-frequency hardening patch. It applies on top of iio/testing.
-
-Tested on arm64 QEMU with i2c-stub and lockdep enabled: reading and
-writing the sampling frequency (valid and invalid values), reading the
-LED current, reading in_proximity_raw (error path) and enabling the
-threshold event. No lockdep warnings and no hangs after the error
-paths.
-
-I prepared this patch with the help of an AI coding assistant, and
-reviewed and tested it myself.
----
- drivers/iio/light/adux1020.c | 104 ++++++++++++++++---------------------------
- 1 file changed, 39 insertions(+), 65 deletions(-)
-
-diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
-index d4281b9754c3..3e8f53e5a1a0 100644
---- a/drivers/iio/light/adux1020.c
-+++ b/drivers/iio/light/adux1020.c
-@@ -9,6 +9,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/i2c.h>
-@@ -362,10 +363,10 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
- {
- 	struct adux1020_data *data = iio_priv(indio_dev);
- 	u16 buf[3];
--	int ret = -EINVAL;
-+	int ret;
- 	unsigned int regval;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -373,69 +374,56 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
- 		case IIO_PROXIMITY:
- 			ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
- 			if (ret < 0)
--				goto fail;
-+				return ret;
- 
- 			ret = adux1020_measure(data, ADUX1020_MODE_PROX_I, buf);
- 			if (ret < 0)
--				goto fail;
-+				return ret;
- 
- 			*val = buf[0];
--			ret = IIO_VAL_INT;
--			break;
-+			return IIO_VAL_INT;
- 		default:
--			break;
-+			return -EINVAL;
- 		}
--		break;
- 	case IIO_CHAN_INFO_PROCESSED:
- 		switch (chan->type) {
- 		case IIO_CURRENT:
- 			ret = regmap_read(data->regmap,
- 					  ADUX1020_REG_LED_CURRENT, &regval);
- 			if (ret < 0)
--				goto fail;
-+				return ret;
- 
- 			regval = regval & ADUX1020_LED_CURRENT_MASK;
- 
- 			*val = adux1020_led_currents[regval][0];
- 			*val2 = adux1020_led_currents[regval][1];
- 
--			ret = IIO_VAL_INT_PLUS_MICRO;
--			break;
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
--			break;
-+			return -EINVAL;
- 		}
--		break;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		switch (chan->type) {
- 		case IIO_PROXIMITY:
- 			ret = regmap_read(data->regmap, ADUX1020_REG_FREQUENCY,
- 					  &regval);
- 			if (ret < 0)
--				goto fail;
-+				return ret;
- 
- 			regval = FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
--			if (regval >= ARRAY_SIZE(adux1020_rates)) {
--				ret = -EINVAL;
--				goto fail;
--			}
-+			if (regval >= ARRAY_SIZE(adux1020_rates))
-+				return -EINVAL;
- 
- 			*val = adux1020_rates[regval][0];
- 			*val2 = adux1020_rates[regval][1];
- 
--			ret = IIO_VAL_INT_PLUS_MICRO;
--			break;
-+			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
--			break;
-+			return -EINVAL;
- 		}
--		break;
- 	default:
--		break;
-+		return -EINVAL;
- 	}
--
--fail:
--	mutex_unlock(&data->lock);
--
--	return ret;
- };
- 
- static inline int adux1020_find_index(const int array[][2], int count, int val,
-@@ -455,9 +443,9 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
- 			      int val, int val2, long mask)
- {
- 	struct adux1020_data *data = iio_priv(indio_dev);
--	int i, ret = -EINVAL;
-+	int i;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
-@@ -465,15 +453,13 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
- 			i = adux1020_find_index(adux1020_rates,
- 						ARRAY_SIZE(adux1020_rates),
- 						val, val2);
--			if (i < 0) {
--				ret = i;
--				goto fail;
--			}
--
--			ret = regmap_update_bits(data->regmap,
--						 ADUX1020_REG_FREQUENCY,
--						 ADUX1020_PROX_FREQ_MASK,
--						 ADUX1020_PROX_FREQ(i));
-+			if (i < 0)
-+				return i;
-+
-+			return regmap_update_bits(data->regmap,
-+						  ADUX1020_REG_FREQUENCY,
-+						  ADUX1020_PROX_FREQ_MASK,
-+						  ADUX1020_PROX_FREQ(i));
- 		}
- 		break;
- 	case IIO_CHAN_INFO_PROCESSED:
-@@ -481,24 +467,19 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
- 			i = adux1020_find_index(adux1020_led_currents,
- 					ARRAY_SIZE(adux1020_led_currents),
- 					val, val2);
--			if (i < 0) {
--				ret = i;
--				goto fail;
--			}
--
--			ret = regmap_update_bits(data->regmap,
--						 ADUX1020_REG_LED_CURRENT,
--						 ADUX1020_LED_CURRENT_MASK, i);
-+			if (i < 0)
-+				return i;
-+
-+			return regmap_update_bits(data->regmap,
-+						  ADUX1020_REG_LED_CURRENT,
-+						  ADUX1020_LED_CURRENT_MASK, i);
- 		}
- 		break;
- 	default:
- 		break;
- 	}
- 
--fail:
--	mutex_unlock(&data->lock);
--
--	return ret;
-+	return -EINVAL;
- }
- 
- static int adux1020_write_event_config(struct iio_dev *indio_dev,
-@@ -510,16 +491,16 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
- 	struct adux1020_data *data = iio_priv(indio_dev);
- 	int ret, mask;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_ENABLE,
- 			   ADUX1020_INT_ENABLE);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_POLARITY, 0);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	switch (chan->type) {
- 	case IIO_PROXIMITY:
-@@ -535,7 +516,7 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
- 			ret = regmap_set_bits(data->regmap,
- 					      ADUX1020_REG_INT_MASK, mask);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
- 
- 		/*
- 		 * Trigger proximity interrupt when the intensity is above
-@@ -544,20 +525,13 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
- 		ret = regmap_set_bits(data->regmap, ADUX1020_REG_PROX_TYPE,
- 				      ADUX1020_PROX_TYPE);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
- 
- 		/* Set proximity mode */
--		ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
--		break;
-+		return adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
- 	default:
--		ret = -EINVAL;
--		break;
-+		return -EINVAL;
- 	}
--
--fail:
--	mutex_unlock(&data->lock);
--
--	return ret;
- }
- 
- static int adux1020_read_event_config(struct iio_dev *indio_dev,
-
----
-base-commit: ee79148f1586fb0a6d6918995cfc84da6feb35da
-change-id: 20261108-adux1020-guard-3820ce794843
-
-Best regards,
---  
-Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Jonathan
 
 
