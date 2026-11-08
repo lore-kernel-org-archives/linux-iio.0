@@ -1,105 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794126737;
-	b=m/xNW/BDwIpAaEbb+O/0az/nEnU881xB+Y3JgtijTFVFBgK+VyskDC8f89+PkqFA6m1o
-	 NxazKuxLYLYZw/+etT3/KAbziLRJlDe4nWDCcq1gqycfEl8A9s1lVxb0UEcMVy5lJJHRF
-	 RvHzJ8Jt5oYnqlhi2rf2Q9Vb/6KOp38xxSVDX7TamY6LKlVq7E3Rq9LStxQJrTgQnYfLE
-	 p2pOi1hwrJvFAQv+LOq5bx/WefiHOk2ZKO/pn/vvJNqDuuA4znPt1kfdXSSUai2XXFYWP
-	 BMb5Pkl+AR7oYvrW/QFPl/VXNnNprPAdKHBbTAZkogWwePBPIZ27hZDt/bV6UuApc8A==
+	t=1794130998;
+	b=Ao+NUpSZsLpn0ThAl7jg6fZGGgaCMM2Yn5aPO1GF9HHarf3rwy0QCgOAK9lH955f/jrw
+	 MRuFuLpUNsKN2hClvW4qLHWSo9PRzG5372L59cuUPcy8Uki1pt/V3Daiye859V/Wxawap
+	 bhw3nsxKHYLn9Ub1CmDEw4+F3XQh7xQFIV1w/QygnexMs7essiu0OVNuzTZrfrlDipM10
+	 06Iul76x5OVMmp2ZGYx8d2XVaBAhIg/ChybDP14EP3KxiIgc90w2J3d8OtgArtLPFRAyF
+	 0VKoeS6Im2J7J0503bH4WyXJ4aebvkpjSmeWDVs8utTjmKkQNqeg2QgBCWgS1XRxzMw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794126737;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794130998;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=N8zgWG/m1wk1ElvtKBvqbB6y6J69miXFE8MYrY3hlgw=;
-	b=VFkgBOsGDiEDFR+8nvFa/u1d/sWKyFHO6UMYuIOEU7coTb8OU0Or6VvhkYNYzffmIe/I
-	 LJeCgzIOj0VCt7LhWoR+9/0lBQLYbqtgf1mLc3qoGnD7WpApSslvuafsp0py6bor97pwU
-	 DvtfOD+eBpABHErPCGm07jwicfQaxEWs+Ux2e5vsAB5R1PEnsX3gUakzRckHyFBM5LfnN
-	 atGoaUyypGVf3kylo/24Xkvp24yWN/rRcXSUQlaxFp0SYKvp9ZtsAyRRdTp1MiGaQbSq9
-	 pDV+oEh+reV3TCqEuym5jih7pc3SE6KRtNWl5YWKYzgFeYMssMTWCoNMD5b+gtjwoow==
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=GfUzsQqkjBFZnftE07kc579ADex8ACNapCg4XsBJkV0=;
+	b=OYpmKxDo5Wsj7GzSVf2iChjFq+cFhCNOJEoW5yFA7xviwVRL63Hz43/3kUrAk1mPwJ9D
+	 At223rj8M7MOe1pGgnQIBEFf3giFmisM43qT6peUEKfINoJ34nrVkXx/L9MhLYJ0oxUam
+	 o4cI0AmYEAsD6Atj3oPvM5t7yUkExs9rWkPubbRFPIT9LlG+Ng8KNeT3W5oQrwjU0lUEj
+	 SKITuOD6O6zT//CFOHXrgm/LsPj15s/N5a+Ai6e629c9zjIrYC8TBShyBpW+WMzoEj8jy
+	 C4RfkJ3W0DMz2i2YdYiT+TrggqD3eeWG97M1z5JrfmneHxdYOKIAkojD5eWz9pur6aQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=baylibre.com;
-	spf=pass smtp.mailfrom=baylibre.com;
-	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=XimmvAM6;
-	arc=none smtp.remote-ip=209.85.128.50
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CBvCECDt;
+	arc=none smtp.remote-ip=209.85.208.48
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCA07606A321
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 08:32:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CCA07606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B400606A332
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 09:43:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B400606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=XimmvAM6
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4a35ac4475dso1075915e9.2
-        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 00:32:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CBvCECDt
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6b587538a37so11328a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 01:43:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre.com; s=google; t=1794126734; x=1794731534; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=N8zgWG/m1wk1ElvtKBvqbB6y6J69miXFE8MYrY3hlgw=;
-        b=XimmvAM6MvuLGCxnPvd32X6MVNSf++ePdgANOfTnjNwg/vHm1rC5BlB8GLL0vpJbAF
-         spJn4cP8UxrRT2X6K8PZdZgxt4jBSdvSvxZk315N4UU3h9uEUOuOCHd+QrBm93O87i2r
-         y9P+xZFRJpT0qsSdB+NaHn34HVsdRzZihT7viVUJwP634lOahSySjkyC52n8vSQjOhme
-         87JjzIsDJ2LUSfuO5WWIOCXfCen3plmzrzWR3tbLsKGDcq2iRBIHGvn4OC9tpathkqoe
-         DQ4HGLirSrUNK4JKcQoj0qoDKnPENY8122iBmWiQxY2C7Norxfd3NAZ9TUEXNmbo7vXb
-         lcCg==
+        d=gmail.com; s=20260707; t=1794130996; x=1794735796; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=GfUzsQqkjBFZnftE07kc579ADex8ACNapCg4XsBJkV0=;
+        b=CBvCECDtMZ21MHgiuUBGSs384znpHFFtpjSrrAQkXfe85KqphHgLSFvfxAvdzrkMqp
+         lPQ6YLRo5/91Nah7agor6YI1kCUC13rbeClY8J5ktIkTBElwTG/IvI1ssJmrKYzwXeUX
+         BtPFXQfmZxkB8M4Os8xUBPTbuToUTi9YGVoIvI5RJoUJUJMO3x2zm+NRjeRvi3/Oub64
+         Ow3AXEq7yS97bbF7xquCHLnHJijBuaFnb3xDUTY5L0w4IkfIrjmUpdDq1OqHaVA35Z+h
+         URnmaCgOKTw9zoeybRl6ij3S1WZkzZ8jnUaa57gvI91NJ4v7a8i1Ja4Ry+1J1ohmkme6
+         vekw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794126734; x=1794731534;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=N8zgWG/m1wk1ElvtKBvqbB6y6J69miXFE8MYrY3hlgw=;
-        b=hlkCMAbDoVWunRES9CNtNhJxIP/AS5Qv5QgUAukvsVJGxq1xZTbdUsuFssTVAREefk
-         AyySYaF8zM+1xtG7FRo++nHw9esVmWa9Z8ts4kolbeAbZkmRFQ9kCoBLTyTM4xsC2nP1
-         fLvAyZoNVrxFmg60swUg9s2WY++6aY8Fz/ZtA32NJOnS8vLSZQwg5SAVLIw9NNTvsgAt
-         hcdlXw0BJm7V0/pXnQHsWNMRTpAf7SdUxw5agCbeCb0Gxb/SaeLF0pLafLCPQxQchKc2
-         HDgpTO9aOeBtGhAmrQsqaQgvVEWzAKn9FKOuBNWnJUJRXyu0f8TB2XVcBYjWx2xVuTdn
-         VBaQ==
-X-Forwarded-Encrypted: i=1; AL+hErGNOB/7FuXldtyo+G19nnkV4OkAFn+wuTj4p03NNbqweLhB8RW23MKqP+0Q7rFdXXll8exsbtDFT/k=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+PElL3MtG/lhFtx/JqbWe1Mr8vCgYbOl4NJH6PkF3J/Rctas4b
-	3aw6Y4YeJBo6srLs/SNeMATVI4/KDR6lCgfQj1VEm9lsJKWV97plT507pWYhKr+veMg=
-X-Gm-Gg: AYBFou1Ev9guhNutdd+I5CK85OmbHU+4rNACi5D9YLuNSZRXqYkJWwPHRcTXXXBCJBw
-	C28UmULoPlV8n9mF5oZNcZBWu3OzCQyuoM4sU1a5wEpRsI2q1zSKcoYv0HC5mHAA1N6hFze8EMs
-	N/AqDr33b3yk2eKjbiBmDGqVBf6V0T720ktQCJq0KDMWVsCEHRHvygvLeRP03QAxccZt/9O4RTC
-	B5xbU+PLE2KKcmEdAxFVemO1+1sSm6XHyKc+hVkrvaSZWA8314Xc8yxw/BbFzo8YWXOdpsZsYio
-	OGncX+2XLTj9Pth4AYOnbWlo3GKGHREsf2+NAmryzmJqi4WhYMJK8KjpObB/0se+IErqTPXWg3X
-	nkrhhZtipzMdgzsQgFF2h3z8tdGxTPIq/uy2bn59XHzAt04vPW+5w9F8QjZ+810y2Q38sC29fbk
-	mjHX7yBjWQiFD3ZBjMHOP5+0u/xe3r78JzMOaW2BQYtUFdvBHU0wUTIg0E2HjZdudYckC8EkHfe
-	bi9ohbid8SHCbSLAzTO7i9ynrhGfMhZH0UGV0dJ0W8k61yAl3NLyqdBEe2XnewrPzeU8asJkeyd
-	eyMuq/xSHUXBsqjjwAWabgOWeUJNW7kni5Ys/F+epzJxYBRyhnssKsw=
-X-Received: by 2002:a05:600c:8b86:b0:4b7:6942:39bd with SMTP id 5b1f17b1804b1-4b963c6e58dmr16840235e9.26.1794126733390;
-        Sun, 08 Nov 2026 00:32:13 -0800 (PST)
-Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4b76cb76697sm83632255e9.0.2026.11.08.00.32.11
+        d=1e100.net; s=20260707; t=1794130996; x=1794735796;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=GfUzsQqkjBFZnftE07kc579ADex8ACNapCg4XsBJkV0=;
+        b=BqLotgcikPqtDAdHY8Xz1KPhvNzm9vjLBN0viNgpcQNBZuz599HfEgde28PO6H32PU
+         pSu7052PA0fdLROpwrc2Q0xjYZjUXbgaHEuWnEaYowgZpV61jL5OPi9vAlCBVLPYOdyN
+         neB890OU/AGDDZk2jS3kAVG/hWoCFm7dzhZIq5iTKU2IZdOjvIgoc/KKC7zLsnTyu3Vw
+         sNG76JrwW06XNG3mTGL22LJyfkqZF69J152JzD9rR7WQhURveVnuGpj+OOGhEl5CDWVR
+         tKZH38ALvTi1Frwn8DvBQoxJqDyWuFY4PT4MaBwVVtJN3vNd+gbiWtvnW3XuN9Qt2lG2
+         rkKQ==
+X-Gm-Message-State: APuU4Z+kzuAxTjsoTmjHa5W0hvbbt/uCIEjbBDalHWVcZkFtAc+N315X
+	UFK2+OiKA+0smPfb/V8D4VE5KZoMcnHIfLIH5vE1ALuGt4EyFG4bLZdn
+X-Gm-Gg: AYBFou0Th6Hg1jqO23bv6iH6oQuIRf5BtuSI3crDgWrSav8J0l91TvZD+Qcm4myy1QJ
+	q6eUSoO85KhjQ6jLmo1VS2H1cArYkCMFzRTA/aZ+ZhSejpmkisKz/c2AedkkFBryqV1XuXxOiKJ
+	idSWOsw7Phi8mIUMYdOO2TERPTLsb50aG/haao7nr8CC4w29LfA4KWnlABbU9ghnaBT2dnNc92t
+	d4CWQCJjGFvr8J6r4QTpMaQQ5VPhRuGbxbAmi1/Gz1oDd8bTDHhqbzFbzcyp1EP1rn9h5ZZMFdE
+	OJE0je+TDF+tSz84b7rJZGQjWVJJPWtHLD6f5gd8eGcTCCDhmBmkk7Z0Oc/MLkx0mAgUZjcA4Dn
+	4MvnmpNDQ4wteEoesRPIy2L0KCKaNfKZzuNexavRE+TWfYGOl6uUML++t4BwUU4J20VRrRrmgUf
+	pj9CbMCkXaEKUDfcgG5MdnFU58vEIaeCnscVr2gfDA8KzcHpFEWEmPAaNshXFxVMc0tDP5XlKrj
+	UQr9hv113GnF7ZqLsYmUl2EsZb/ht9pqWnZbLOxd8tEkWodUrexFwdZWRJ8yon6f+/IMjF0qmKV
+	Uebq+2qabH0ciDUsmkUyR7uCCOdiIkFd5plCjLeoP9HCzLzjOQQxrWUZh8OmB/SyMn67PDaciOO
+	NRdoeenFz8w==
+X-Received: by 2002:a05:6402:4010:b0:6b6:f7f7:dd88 with SMTP id 4fb4d7f45d1cf-6b72246afc1mr634054a12.17.1794130995645;
+        Sun, 08 Nov 2026 01:43:15 -0800 (PST)
+Received: from xeon ([188.163.112.62])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b721ea56f2sm436321a12.8.2026.11.08.01.43.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Nov 2026 00:32:12 -0800 (PST)
-Date: Sun, 8 Nov 2026 09:32:10 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Matti Vaittinen <mazziesaccount@gmail.com>, Rodolfo Giometti <giometti@enneenne.com>, 
-	Marcelo Schmitt <marcelo.schmitt@analog.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>, 
-	Angelo Dureghello <adureghello@baylibre.com>, Tobias Sperling <tobias.sperling@softing.com>, 
-	Eason Yang <j2anfernee@gmail.com>, Marilene Andrade Garcia <marilene.agarcia@gmail.com>, 
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, duje@dujemihanovic.xyz, herve.codina@bootlin.com, 
-	thomas.petazzoni@bootlin.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+        Sun, 08 Nov 2026 01:43:14 -0800 (PST)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Esben Haabendal <esben@geanix.com>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Svyatoslav Ryhel <clamor95@gmail.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
+	Pan Chuang <panchuang@vivo.com>,
+	Hemanth Selam <hemanth.selam@gmail.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Nikita Travkin <nikita@trvn.ru>
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: adc: add driver for Texas Instruments
- TLA2528 adc
-Message-ID: <avAy6cemm3MRHSQO@monoceros>
-References: <20261030164705.297354-1-maxime.chevallier@bootlin.com>
- <20261030164705.297354-3-maxime.chevallier@bootlin.com>
- <auyjgDddFs3OvnC3@monoceros>
- <20261108013218.0fe627e7@jic23-hlaptop>
+Subject: [PATCH v3 0/4] iio: light: ltr501: Add LTR-659PS-01 prox sensor support
+Date: Sun,  8 Nov 2026 11:42:49 +0200
+Message-ID: <20261108094253.83899-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,64 +108,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="nzwaajfdqqb5x5jv"
-Content-Disposition: inline
-In-Reply-To: <20261108013218.0fe627e7@jic23-hlaptop>
+Content-Transfer-Encoding: 8bit
 
+Add support for the Lite-On LTR-659PS-01 proximity sensor. This device is
+nearly identical to the LTR-559ALS-01, but omits all elements related to
+ambient light sensing.
 
---nzwaajfdqqb5x5jv
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 2/2] iio: adc: add driver for Texas Instruments
- TLA2528 adc
-MIME-Version: 1.0
+---
+Changes in v2:
+- set IIO_PROXIMITY channel to scan_index 2 since driver will not handle other
+  id properly
+- add IIO_CHAN_INFO_SAMP_FREQ for IIO_PROXIMITY channel
+- isolate missed ALS register calls
+- add commit to use read_avail operation
+- convert to use modern chip info match
 
-On Sun, Nov 08, 2026 at 01:32:18AM +0000, Jonathan Cameron wrote:
-> On Thu, 5 Nov 2026 16:42:42 +0100
-> Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com> wrote:
->=20
-> > On Fri, Oct 30, 2026 at 05:47:04PM +0100, Maxime Chevallier wrote:
-> > > +#include <linux/i2c.h>
-> > > +#include <linux/mod_devicetable.h> =20
-> >=20
-> > Please don't include <linux/mod_devicetable.h>. <linux/i2c.h> already
-> > provides i2c_device_id and of_device_id. <linux/mod_devicetable.h>
-> > provides many more *_device_id and thus introduces a big list of
-> > unnecessary dependencies.
-> >=20
-> > I recommend to just drop <linux/mod_devicetable.h> here. If you insist
-> > on full iwyu, there is <linux/device-id/i2c.h> and
-> > <linux/device-id/of.h>.
->=20
-> IWYU is always a bit of a 'roughly' case in the kernel.
-> There are standards assumed sets of this header will always
-> include this other one. I've just started assuming that is
-> always the case for these ones.=20
+Changes in v3:
+- LTR501_INTENSITY_CHANNEL macro adjusted to set predefined info_mask_shared_by_type,
+  info_mask_shared_by_type_available and info_mask_shared_by_all_available
+- added info_mask_separate_available and info_mask_shared_by_all_available to
+  proximity channel
+- fixed IIO_CHAN_INFO_SCALE for IIO_INTENSITY since table has -1 entries
+- fixed indio_dev->name asignment
+- dropped ltr501_has_als_support helper
+- fixed channel finding in ltr501_trigger_handler
+- isolated more accesses to ALS registers if no_als_support is enabled
+---
 
-Not sure I understand you correctly, but I think it's safe to assume
-that including <linux/i2c.h> will always enough to get a definition of
-the structs i2c_device_id and of_device_id. My preference is also to not
-add includes for <linux/device-id/*.h> in drivers, but opinions differ
-and so I typically point out this possibility.
+Svyatoslav Ryhel (4):
+  iio: light: ltr501: Switch to read_avail() op from manual attribute
+    registration
+  iio: light: ltr501: Switch to modern match mechanism
+  dt-bindings: iio: light: ltr501: Document LTR659 proximity sensor
+  iio: light: ltr501: Add support for the LTR-659PS-01 proximity sensor
 
-Best regards
-Uwe
+ .../bindings/iio/light/liteon,ltr501.yaml     |   1 +
+ drivers/iio/light/ltr501.c                    | 424 +++++++++---------
+ 2 files changed, 208 insertions(+), 217 deletions(-)
 
---nzwaajfdqqb5x5jv
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.53.0
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmrwM4cACgkQj4D7WH0S
-/k7nfQf/dmSfUoe2s/ZZJPtCi+WOplpfP4laRiw1uBUXG0x4haFv7821WViD/bhF
-dvg4X3D486E8LLkSsWGz4mKh8N7M6EsL1Vddr0iCBrz0pbsjdVIkEFS8ymBvBOud
-gBHytbfcmR1LBJH/wNhfLqoPeEpJYhuL3511QmrCiBBwbtgSWL2Suj8GNF54a3pc
-BipU7Kk/io8HXiR6H3D6i3zmjoKT0adjlt2eiCw4egBAx+/vTIMqXF+/6/6MMMvi
-hrU3TjFMWokLNEdekI/XHecdT3dCdmHuRnJzriW8rw+zVxMMpheFcqb8fVjkPUA+
-2ozYOslTZ9RtLyy0OB9+omPbgKcEQw==
-=zcoz
------END PGP SIGNATURE-----
-
---nzwaajfdqqb5x5jv--
