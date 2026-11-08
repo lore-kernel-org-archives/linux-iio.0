@@ -1,49 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794174246;
-	b=Ugg74UIXtpDBMCUPoS2YWzYk3QZ6j07pPzRMKALWcs5TTIHvW6BsEDPHaF1sUghKpnHz
-	 Nc1fRquLQOkk15ahS2I7HyZ0E1IR7MR/Q0KpkGt5LzmJ38HV7PN2P6x/XQD6RSklqVzd+
-	 +kdR9ExvTGiAKG141S2dFrjRIlKErNbA2gdRIg55iKbnKaVLEuz2+WEHAphhqMoE+7l23
-	 LKXhhSIpByKlZ/y8ug6Xj8RefLRdRKF+Xsi+YXJbI5HC7ZEXn0NXws+GjQblZkbOcjNBj
-	 CoGBFOE4t2P+eO08o29ExZUdwItSr8VSrZCcOEte10pqL8BqM2LSEwuM+IqNSKSd27Q==
+	t=1794174249;
+	b=kCKw/yED7m9xtb4heX3mvg24tGUZNfP45/8bha0yAf3v6TOli5qdQvWTzmwlMtRZFU75
+	 a9vJ5Sq7vwX+K1Rqau/L8A+KBb0CWjJgKl5BBQWC+eB79EgqsFjlYbZ4jZwSzH37KhVHI
+	 lcRj3vrtuE2EeLzcGIuj9RxcupSMQhQ74YxnBWnyeG7QDzFosInBCyYpiyPi4S4jbCLp9
+	 1r3oVb72R6+DImGh67k9HzXXcALBxDET4tQL10hhGD0ZSZH+MTwmA+6XguuMNz3dn3lK7
+	 3w4ITT5BvelcBG7HbjgOlUJyhqWHn/W+Ji96gFsWuqVEGRMx2QfTYC6rfvvxr6KALMw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794174246;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794174249;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer;
-	bh=+047z846aobeT6SlqVSXPjajZwL65DqY7vA1g9DNMvM=;
-	b=ZBPBUQcxWNWCD6mfX10GbbRGQQ3JcLh3fLhBqyhzftAYecnMy01Gf+T5PLrNkTUB6d/I
-	 QhWpY7xRT5r4e8Cw9QlEZpS66QtbyN4UCBllP/B12xSlbLj1wquA3QjEq6ir9AIyBTJNb
-	 3y8lNE2mRPQ2AgWjKnj+q+W9vivwleVZiP6apPbUrrHwG8Pd2fLrV9dsevuI6KvDoL9uI
-	 eF2pA6n7Bf4Vyzep8R644v8XdY4+btnx7ssPofgJAIDYx3rkZdTTUn7AV5CQLh+dwuBe9
-	 XlpbFfgOI/wZ99ZjKnvLOqfjTNaWztmL2wumivCInG0LwxjlX1siP8773Lv4ZH1rtVQ==
+	bh=GiQf8J1mxKPhKnR2sI/CKk3x2cIlkp42oHh9MXFfHIY=;
+	b=3MkphdGpg08C+y7wcafsDbrs7zB1uiXNasbuKPgz0TW1ip9HdOxkhJP4E2wgA8gdHoMH
+	 Hghu/3hi1sm3xjwj6KwryrairNu0wQU8H6C9c4bhohRp3JN7R/fpfeFMDdIMfI+BeDsMG
+	 93ky/EgPszgcmoBGCidWs2+HRpQAHX8mNWjQfGtqauZQKt68bYufWFR+/fxektWpRSc0J
+	 Px3dxcT2KykcddGU7rI5/QbbZ+34xb5fyfExLqHwdHedShnoIftXJICNu+3CCQHpbwKy1
+	 QkilDJLyRCawi8Fcohgu7CwH81PHjMkTTYfuta7N3AmVKxwF5c95O7GOrLReClSGhBQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fmfovakw;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VOATcZW6;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F103606A320;
-	Sun,  8 Nov 2026 21:44:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B75606A321;
+	Sun,  8 Nov 2026 21:44:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fmfovakw
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 123871F008AB;
-	Sun,  8 Nov 2026 21:44:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VOATcZW6
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AE71F008A3;
+	Sun,  8 Nov 2026 21:44:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794174246;
-	bh=+047z846aobeT6SlqVSXPjajZwL65DqY7vA1g9DNMvM=;
+	s=k20260515; t=1794174248;
+	bh=GiQf8J1mxKPhKnR2sI/CKk3x2cIlkp42oHh9MXFfHIY=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=Fmfovakw2tTBB1DSjDBcuLa/R9lBo+js7BUA+0M8uqmd9dBUH9fkDW5nR9X8j4ELY
-	 fmhYBq5SdO8xMon6td+FOKBS+CnZH/245Nwi+mXQkRoetqkEn8z3DcN3daNMjIrKZB
-	 /Xk1OBYNAEtT+gSdzgSpyOdHM3VQSOjD00tEFxD1Z3soCH/OqF7WVIjCW6EjO7jgj/
-	 QFKKFL3T/mnzx4u9/rVVEm4p2qPLgw1m9+HUNk13rFe81Mg5Y7fxLpVrfHKt3RS+UK
-	 mkpmV524uU06h8da7gHjGwcr2L+xoXXStif4XmepW9o4l8FZ2Uu1LpcShaZSWH2HZy
-	 9busFOu2xBLkA==
+	b=VOATcZW6dRywSad3fFxjxD7EkTI8WQrAD8yGGF6GKtx3HNLPOR8eFuF2Ofb3rONNr
+	 9VGIKVu3EWcC2vuTsX5/IQk2bgOHe/E6MZqSCTsU2qbigBTdjOjVszKfUb4FW+W5aD
+	 MuYWDK3U1KQs3F2sGuqhKBLSFE6H1s2H6RW4+GO3ND3z9fnoG0fwS/59LGaHSh/KFD
+	 lDjXbJPHBTy7SFdOeRzPRkDqoQ+cAvIn8xKz7TwUc+x6wDOXYBHn58kEXKeK7fjxRf
+	 6SjaWt72m74i2U7yYAfb7YbMi4A3fw+OwRu8h9rZ3Xa8aZcd1U4mRUFqOp+8wmjvmb
+	 FybDWm/nKK/qQ==
 From: Linus Walleij <linusw@kernel.org>
-Date: Sun, 08 Nov 2026 22:43:59 +0100
-Subject: [PATCH v2 1/5] dt-bindings: iio: light: sharp,gp2ap020a00f: Add
- VCC supply
+Date: Sun, 08 Nov 2026 22:44:00 +0100
+Subject: [PATCH v2 2/5] dt-bindings: iio: light: sharp,gp2ap020a00f: Add
+ GP2AP030A00F
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -55,7 +55,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261108-gp2ap030-v2-1-24eaa1b9fe59@kernel.org>
+Message-Id: <20261108-gp2ap030-v2-2-24eaa1b9fe59@kernel.org>
 References: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
 In-Reply-To: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
@@ -68,40 +68,48 @@ To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>
 X-Mailer: b4 0.16.0
 
-Describe the sensor core supply as vcc-supply, following the VCC pin
-name in the GP2AP030A00F datasheet. VI2C denotes the I2C and interrupt
-pull-up voltage, not a separate sensor supply pin.
-
-Keep the property optional to preserve compatibility with existing
-device trees that only describe vled-supply.
-
-Document the existing LED supply as the infrared LED anode supply
-(LEDA).
+The GP2AP030A00F uses the same register address layout and interrupt
+interface as the GP2AP020A00F, but returns raw clear and infrared counts
+instead of providing automatic illuminance calculation. Describe it in
+the existing binding with its own compatible.
 
 Datasheet: https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2ap030a00f_e.pdf
-Link: https://global.sharp/corporate/news/110721.html
+Datasheet: https://jp.sharp/products/device/doc/opto/gp2ap030a00f_appl_e.pdf
 Signed-off-by: Linus Walleij <linusw@kernel.org>
 ---
- Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml     | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
-index 3fabf1f576cf..afba0b005b34 100644
+index afba0b005b34..f4a262dbc956 100644
 --- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
 +++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
-@@ -22,7 +22,11 @@ properties:
-   interrupts:
+@@ -4,17 +4,22 @@
+ $id: http://devicetree.org/schemas/iio/light/sharp,gp2ap020a00f.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Sharp GP2AP020A00F I2C Proximity/ALS sensor
++title: Sharp GP2AP020A00F and similar proximity and ambient light sensors
+ 
+ maintainers:
+   - Kyungmin Park <kyungmin.park@samsung.com>
+ 
+ description: |
+-  The proximity detector sensor requires power supply for its built-in led.
++  The sensors provide digital clear, infrared and proximity measurements.
++  The GP2AP020A00F can also calculate illuminance internally, while the
++  GP2AP030A00F exposes raw clear and infrared photodiode counts.
++  The proximity detector requires a power supply for its built-in LED.
+ 
+ properties:
+   compatible:
+-    const: sharp,gp2ap020a00f
++    enum:
++      - sharp,gp2ap020a00f
++      - sharp,gp2ap030a00f
+ 
+   reg:
      maxItems: 1
- 
--  vled-supply: true
-+  vcc-supply:
-+    description: Sensor core power supply (VCC).
-+
-+  vled-supply:
-+    description: Infrared LED anode power supply (LEDA).
- 
- additionalProperties: false
- 
 
 -- 
 2.56.0
