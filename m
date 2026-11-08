@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794099151;
-	b=zz8QgSiro6FXdx3rlFFOXG0Ir6yBo4E9h1325JrA+BHN9lQk01++pz2T5MtZU8KF0Onv
-	 sQHBtVO3Tsr7N+8nw4kfnFMwKWDcIUruhM4Aljv/ZyO+lVVXo0EVsmi2fhfCNxZgAU9eJ
-	 gjUew3JWXdT/7+gDS2YDTpQJaUs+8pkhVhzkk75RDdzeKRA/TlRbButhKQSE/Jz7iSwKv
-	 zFoirSYU+e2LEhRC69QBazeHGtnz+9v4uXksKQrGyDQ7EoZGsFT4UmNwuHMscGjW0M7oG
-	 CktFgfQM+1BOWl4nyi8oMwHwg3b3O+ijfvZF71tgtQEh3fgutQ95tBuqYXq9FpEpqYA==
+	t=1794099379;
+	b=KbO+gL8iICCDYTcDlTkqS3cNAH66XiTYn+z6O8E5OirF7fm6STIj6RF9ehdo9cvgDQXE
+	 Wygl2LQ+p9+sl46RHGbFo72Nayjfq67pmnVcfgTVUZ67SxfstBHixN3K5nT+XAJJI24NU
+	 cV4/zPcjeLF0qu4USo0FksmOsxw5WnhMq/WIJgVbkSWIGBulNvbGS0iGRWCAjrYpUi4ac
+	 UNJGrkIIdzOtiIlCn22lHEmt5qqb/b2o+36T7P6kX4meEu1xZg6+pgMLQuXEehET9uRVY
+	 jltCZAbusZ0p1DKeHsEJQdatWXMPdTNCQgs0LRBoHH0rj9Ixm8vC+Ov9AiqRK9XT7Aw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794099151;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794099379;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=maLB02cvNBbVMYlAfoB1uYt8bE13NZpelqMOahax1vM=;
-	b=jxY3mb46qA6CYALZX8SApPphhdpO7uUBiOM4XeT/8loLC3k+Hyq6H+wyGjc0Op+h3PqC
-	 uWzX10CfEMGqK1oVqKvvEOXgGarcdMDGoaZXQu3SUf00V2D9DsBk5cWfN1lVTnj+Ybool
-	 nrarXmBiEmn5Q8wm2TkNUcHdKxAgZlfYPMcyvIhrGUAqM71LRlw9V+fKVIS1R0d3TJEXj
-	 83bLmUS30WPeKO2suTR4kish7DFVRqSIisujGDXs4TgNLS9OcBUFYm8KTMMG9RRAZwLpr
-	 jZ7SfSoJUkPkR6Su4EjpQXewIq5QavqotdlaCxkFnC60tIz9tKHV2a5ngdlxjpbRe8Q==
+	bh=SI3q7E7jEhFxFVdYMt07AMqwaHWirFgexnffniyxwmY=;
+	b=o9tS6s/GUJ1hBVK3nx+g+NGj+NYWiXhDkOhIoAy5haWy0X0lyBN7AC7RdTA6kzTaA8MX
+	 HYhLIbFlPcHSttY4S+JVervDxdbBL1RJoLGIPn2OH5x1RCYmzXc2WOic23u/1nQUNyIIH
+	 zwEmb+MturhqiYBePiIe9vXOwBm3kTEBE81JwLITEh1hnl9i4AalSasnlKOlLwbnEwwct
+	 q8ghirUOmkwbApOeCSsaDvcRd5JWJXdKt9mjFFWrgbxRakGSJpT22nB1zqfwmDtoQ2Nm+
+	 cmsUUFHwRnjV+RSMlJqPWAE7/Ugc3AvBWmAU7aRIwoXWEn6mVMUPrcZC08rYKNK/QGw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CjUf9tif;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lPd+u5qx;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A335C606A326;
-	Sun,  8 Nov 2026 00:52:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 923A4606A326;
+	Sun,  8 Nov 2026 00:56:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CjUf9tif
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A6E1F0089F;
-	Sun,  8 Nov 2026 00:52:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lPd+u5qx
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C87501F0089F;
+	Sun,  8 Nov 2026 00:56:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794099150;
-	bh=maLB02cvNBbVMYlAfoB1uYt8bE13NZpelqMOahax1vM=;
+	s=k20260515; t=1794099379;
+	bh=SI3q7E7jEhFxFVdYMt07AMqwaHWirFgexnffniyxwmY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=CjUf9tifq0mqK9YdTPRQ4tY0/DMvibcf8Aoym94yLei9H4M2C2eXxQICHbm+4k45d
-	 RHtxhBQ6AJMh35qd6/RD1fHqmBjCLKm2U52F68eEclymLP+gS3KRGELm+JVlT0/IgX
-	 8KUadiS2hgWYkCX/zeHxlPYyQayYXGd7pooh7sxC+1x46S5wULi2T58QU0/+Sa2ybH
-	 etNnHtLkudqXulSTx+xf7xjQTUorrYEfDcNOVWYSaxyJT3N/4JuwTZwr08ptQM5cJ1
-	 FeAAaCMsMSTOGMB6aV4vRJjQuXHV85lgeJ9Y1Ccm14Y0iwJZA8Gp1ApZ6WDTsqL/xD
-	 KKqrtDWWiv38A==
-Date: Sun, 8 Nov 2026 00:52:27 +0000
+	b=lPd+u5qx+8E92fTTLeeKEH4arVT5m7zeLeSvu8ww8+oHMO2yVJOn2lrVHHLjQMonE
+	 dyXAuoUyacT9Z2U+WPfg/UgZOvmrDKFtJOq4IwzKbNe5blvfz6SayumyBrVs4DrD8+
+	 CNQuahZJk/50xaFrwmxJECXxR6eLcD8L8vk7o3XJDLnUgEtzPjJYHclKGo9VYmDRvx
+	 RVvenCVGDTHBLnAGroo3qXrkyupw7i+7xjDNvFJYWV5z49IQGYSplo6mZ7cwK82eMd
+	 xGcrx3W1ldxnzDGUMZUy4pdwq83JWy7wHEffEwi8XG60q1oDKP313uTMNelnv2NurL
+	 iEp1jKoQ2YSig==
+Date: Sun, 8 Nov 2026 00:56:09 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
 Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
@@ -50,12 +50,12 @@ Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
  <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com
-Subject: Re: [PATCH v5 6/8] iio: imu: adis16607: Add FIFO-based
- buffered/triggered capture
-Message-ID: <20261108005227.2dcd4697@jic23-hlaptop>
-In-Reply-To: <20261102-adis16607-v5-6-4f98b0d271ac@analog.com>
+Subject: Re: [PATCH v5 7/8] iio: imu: adis16607: Add external clock sync
+ support
+Message-ID: <20261108005609.7e8823f1@jic23-hlaptop>
+In-Reply-To: <20261102-adis16607-v5-7-4f98b0d271ac@analog.com>
 References: <20261102-adis16607-v5-0-4f98b0d271ac@analog.com>
-	<20261102-adis16607-v5-6-4f98b0d271ac@analog.com>
+	<20261102-adis16607-v5-7-4f98b0d271ac@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,132 +69,97 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 02 Nov 2026 11:25:42 +0200
+On Mon, 02 Nov 2026 11:25:43 +0200
 Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
 
 > From: Radu Sabau <radu.sabau@analog.com>
 > 
-> Add buffered capture via the device's hardware FIFO - the only
-> capture mode this driver supports. Popping the FIFO uses a dedicated
-> command and payload format (FIFO_DATA_CMD, 52 bytes, no checksum),
-> handled directly rather than through adislib's generic burst-read
-> helpers, which assume one fixed-shape read per trigger rather than a
-> variable-count drain loop.
+> Add support for an optional external clock (clocks property),
+> selecting between SYNC_DIRECT (1 kHz to 8 kHz) and SYNC_SCALED (1 Hz
+> to 400 Hz) depending on the supplied frequency, with the internal
+> 8 kHz clock used as the default when no clock is provided.
 > 
-> The watermark-met condition is signaled via DEV_NOK on the device's
-> one interrupt pin, which stays asserted (level-triggered) until
-> DIAG_STAT is read and cleared - matching adislib's has_fifo contract.
-> DEV_NOK fires on any DIAG_STAT flag, not just FIFO_THRESH_MET, so the
-> trigger handler checks that specific bit before popping anything.
-> DR_GPIO_MASK stays enabled unconditionally: DR pulses drive the FIFO
-> controller's internal sample enqueue, independent of pin routing.
-> 
-> Watermark is configurable via the standard hwfifo_set_watermark
-> callback and the usual hwfifo_* sysfs attributes.
+> The clock rate is requested as exclusive since the sample period and
+> the sync scale are derived from it. In scaled mode the sync scale is
+> chosen when the sampling frequency is set, so that the requested rate
+> is matched as closely as possible while keeping the clock multiplied
+> at or below the internal rate. Loss of sync or of the PLL lock is
+> reported from the trigger handler, as the device keeps sampling
+> without it.
 > 
 > Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-https://sashiko.dev/#/patchset/20261102-adis16607-v5-0-4f98b0d271ac%40analog.com
-Has some feedback on this and later patches.
+Hi,
 
-If you want to increase chance of me pickup up a patch I'd
-suggest watching for any feedback from sashiko and
-commenting on whether and why it is wrong before I get
-to catching up on reviews.  If it is repeatedly saying stuff
-you disagree with add a comment under the --- for the relevant patch.
-If you have looked at it and plan to make changes but haven't
-yet, please save reviewers time by replying to the thread to say
-that.  If you've just had a busy week and not gotten back to this
-then fair enough!
+Mostly a few stray changes that belong in earlier patches.
 
-Following what sashiko came up with, I'm not sure how the adis
-fifo handling works today.
-
-https://elixir.bootlin.com/linux/v7.3.1/source/drivers/iio/imu/adis_trigger.c#L90
-
-
-	if (adis->data->has_fifo)
-		ret = devm_request_threaded_irq(&adis->spi->dev, adis->spi->irq,
-						NULL,
-						&iio_trigger_generic_data_rdy_poll,
-						adis->irq_flag | IRQF_ONESHOT,
-						indio_dev->name,
-						adis->trig);
-
-uses a thread of:
-irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private)
-{
-	iio_trigger_poll(private);
-	return IRQ_HANDLED;
-}
-
-Which is calling iio_trigger_poll() not valid from a thread which
-should be using iio_trigger_poll_nested()
-
-If it were using nested form then the sashiko thing about interrupt
-storm would be fine as handle_nested_irq() calls in the same thread
-so it would wait for the fifo code to run before returning and IRQF_ONESHOT
-would be sufficient.
-
-Sashiko's final point about ideal being no trigger for a device that only
-does fifo based buffer capture is correct as well.
-
-
+Make sure to check series for this stuff. It is easy to clean up
+and patch tidiness issues like this can just slow down getting
+your code merged.
 
 Jonathan
 
-
-
-> ---
->  drivers/iio/imu/adis16607.c | 392 +++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 388 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
-> index 5e2c999e68ac..bd7752f7a1ec 100644
-> --- a/drivers/iio/imu/adis16607.c
-> +++ b/drivers/iio/imu/adis16607.c
-
-
-
-
-
-> @@ -817,6 +1180,8 @@ static int adis16607_probe(struct spi_device *spi)
->  	indio_dev->info = &adis16607_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
 >  
-> +	st->fifo_watermark = ADIS16607_MAX_FIFO_WM;
-> +
->  	st->adis.ops = &adis16607_ops;
+>  struct adis16607 {
+> @@ -115,6 +138,9 @@ struct adis16607 {
+>  	const struct adis16607_chip_info *info;
+>  	unsigned long clk_freq_mHz;
+>  	u64 sample_period_ns;
+> +	unsigned long ext_clk_Hz;
+> +	u32 sync_mode;
+> +	u16 sync_scale;
+>  	u16 fifo_watermark;
+>  	/* IIO buffer for reordered data - sized for max channels */
+>  	IIO_DECLARE_BUFFER_WITH_TS(u8, data, ADIS16607_SCAN_DATA_SIZE);
+> @@ -407,11 +433,18 @@ static void adis16607_fifo_drain(struct iio_dev *indio_dev, s64 irq_timestamp)
 >  
->  	ret = devm_regulator_get_enable(dev, "vdd");
-> @@ -855,6 +1220,25 @@ static int adis16607_probe(struct spi_device *spi)
+>  	adis_dev_auto_lock(&st->adis);
+>  
+> -	/* Check if FIFO threshold is met */
+
+Move the comment in the earlier patch, not here. It is perfect
+valid in its new location back in that patch, so why add to
+the code churn here?
+
+>  	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
 >  	if (ret)
->  		return ret;
+>  		return;
 >  
-> +	/*
-> +	 * DEV_NOK stays asserted until DIAG_STAT is read, so the interrupt
-> +	 * must be level-triggered, active high.
-
-I'm missing something in this comment.  Why does DEV_NOK staying asserted
-have anything to do with level triggered?
-
-> +	 */
-> +	irq_type = irq_get_trigger_type(spi->irq);
-> +	if (irq_type != IRQ_TYPE_LEVEL_HIGH)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "Invalid interrupt type 0x%x specified\n",
-> +				     irq_type);
+> +	/* The device keeps sampling without sync, so only warn about it */
+> +	if (diag_stat & ADIS16607_DIAG_SYNC_LOST)
+> +		dev_warn_ratelimited(&st->adis.spi->dev, "external sync lost\n");
 > +
-> +	st->adis.irq_flag = IRQF_TRIGGER_HIGH;
+> +	if (diag_stat & ADIS16607_DIAG_DPLL_UNLOCKED)
+> +		dev_warn_ratelimited(&st->adis.spi->dev, "sync PLL unlocked\n");
 > +
-> +	ret = devm_adis_setup_buffer_and_trigger_with_attrs(&st->adis, indio_dev,
-> +							    adis16607_trigger_handler,
-> +							    &adis16607_buffer_ops,
-> +							    adis16607_fifo_attributes);
+> +	/* Check if FIFO threshold is met */
+>  	if (!(diag_stat & ADIS16607_FIFO_THR_MET_MASK))
+>  		return;
+
+>  static int adis16607_config_clk(struct adis16607 *st)
+>  {
+
+> +	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_DEC_RATE, &dec);
 > +	if (ret)
 > +		return ret;
 > +
->  	ret = devm_iio_device_register(dev, indio_dev);
->  	if (ret)
->  		return ret;
+> +	/*
+> +	 * Sample period is (dec + 1) / clk_freq, with clk_freq_mHz in
+> +	 * millihertz. Same u64-first scheme as adis16607_set_freq().
+> +	 */
+> +	period_ns = NSEC_PER_SEC;
+
+Move this in earlier patch to avoid churn here.
+
+>  	period_ns *= MILLIHZ_PER_HZ;
+> +	period_ns *= dec + 1;
+>  	st->sample_period_ns = DIV_ROUND_CLOSEST_ULL(period_ns,
+>  						     st->clk_freq_mHz);
+> +
+
+Unrelated change. Check for these and move to the correct patch.
+
+>  	return 0;
+>  }
+>  
 > 
 
