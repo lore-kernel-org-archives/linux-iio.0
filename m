@@ -1,50 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794174244;
-	b=Ep++jCJ0sh7cR/nksyJ5RcjsfvXrhNt5ucbYa5xsCHk8gIpfR1pWBhK8R38msA9CZNIn
-	 kcbjsEmjer7y8I4I4NGBwO8X1wAWSkM2smnBI21KcIiH5gOiSuqc9cyNHa2eP8sLUUKIL
-	 Ep76mck7xxAD3JZ3Z98Kx76JRcSZYkHedKwgT4ILdbznidMjEgds5+dY6FMBGZvNzatG9
-	 hzc40sdIV9WYkhW1Nxj/Po30LPLTVv+EaWEulUAR6GkInTVSTNOdkpEMMCVH8F1zp+Q5C
-	 i9QliRANwqHu1xV8woSg07lZ6VrzFgnFSmNo5WoosjKSUn3ncxdTLfogdWTolULfqLg==
+	t=1794174246;
+	b=Ugg74UIXtpDBMCUPoS2YWzYk3QZ6j07pPzRMKALWcs5TTIHvW6BsEDPHaF1sUghKpnHz
+	 Nc1fRquLQOkk15ahS2I7HyZ0E1IR7MR/Q0KpkGt5LzmJ38HV7PN2P6x/XQD6RSklqVzd+
+	 +kdR9ExvTGiAKG141S2dFrjRIlKErNbA2gdRIg55iKbnKaVLEuz2+WEHAphhqMoE+7l23
+	 LKXhhSIpByKlZ/y8ug6Xj8RefLRdRKF+Xsi+YXJbI5HC7ZEXn0NXws+GjQblZkbOcjNBj
+	 CoGBFOE4t2P+eO08o29ExZUdwItSr8VSrZCcOEte10pqL8BqM2LSEwuM+IqNSKSd27Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794174244;
-	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer;
-	bh=HyY9LZsqXMqU6TJvTlAIMrH9fUfSEMURKgAuTO+sdGc=;
-	b=pLQOEMgyP1me+qhOYXwUsS5ZJZG7c5AJbVYPnjFl5wWYWXQopMF0ncu0YNnar/ExLghA
-	 A8MqcWjMimfvZ7Le9J4kwi4wZj5PnhymgXkcvpEbWA8wWBAtH3iQsXJ3xRIOj0014zdV5
-	 3P8TEyTDFrVJ0ioaykCuTsjUPXA3R6nmoAz+bt+vSEW0KhtFayXzx/+t18Z8H3rcHLcHL
-	 AtycfuwvbSA54hIIk6nqJ0tXHVPK7juUOXvle9lKvHON6L82NgXsV0jCJTMI1WinFIFTb
-	 CD2Lg/JT30q5KKzda+n9ht4vNrSBlJYe0vMlsfN8GOGV3EDYNAdyCtepfsJPQZo3WwQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794174246;
+	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
+	 X-Mailer;
+	bh=+047z846aobeT6SlqVSXPjajZwL65DqY7vA1g9DNMvM=;
+	b=ZBPBUQcxWNWCD6mfX10GbbRGQQ3JcLh3fLhBqyhzftAYecnMy01Gf+T5PLrNkTUB6d/I
+	 QhWpY7xRT5r4e8Cw9QlEZpS66QtbyN4UCBllP/B12xSlbLj1wquA3QjEq6ir9AIyBTJNb
+	 3y8lNE2mRPQ2AgWjKnj+q+W9vivwleVZiP6apPbUrrHwG8Pd2fLrV9dsevuI6KvDoL9uI
+	 eF2pA6n7Bf4Vyzep8R644v8XdY4+btnx7ssPofgJAIDYx3rkZdTTUn7AV5CQLh+dwuBe9
+	 XlpbFfgOI/wZ99ZjKnvLOqfjTNaWztmL2wumivCInG0LwxjlX1siP8773Lv4ZH1rtVQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lc247RHm;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fmfovakw;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33178606A331;
-	Sun,  8 Nov 2026 21:44:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F103606A320;
+	Sun,  8 Nov 2026 21:44:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lc247RHm
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 951B71F0089F;
-	Sun,  8 Nov 2026 21:44:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fmfovakw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 123871F008AB;
+	Sun,  8 Nov 2026 21:44:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794174243;
-	bh=HyY9LZsqXMqU6TJvTlAIMrH9fUfSEMURKgAuTO+sdGc=;
-	h=From:Subject:Date:To:Cc;
-	b=lc247RHmlARewjRcFxCCexRTuj4+GL4V2SwuqVn7QPmPokNDo5/XO98uz5Es8wAFu
-	 Mkvt6vHR6iBPNsIySbwCPuJqdFjN9Y6B7bV0BjL3hL1kD9oCxjeW6MrMeNUaZArSgq
-	 SRBBMaXisjsC/B+ZI6DbWBzfBsJ+0sGkVzpR+m5od4TrTzAF9h4COpeQ/o8+heNw4O
-	 Jkt/M57/eIqxXgMW3QItxpMY5AqsG8UECn7AfnsGdXXax4SpfxG0cZgX/vsh4fTcfa
-	 jiRgTBMS1Vk6XgdWD0xNdfCjy17i6WCevbw93O9I1Svdgcotd7Jg33HD5Ipt3HiSVa
-	 s/ZaNF6VcumbQ==
+	s=k20260515; t=1794174246;
+	bh=+047z846aobeT6SlqVSXPjajZwL65DqY7vA1g9DNMvM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc;
+	b=Fmfovakw2tTBB1DSjDBcuLa/R9lBo+js7BUA+0M8uqmd9dBUH9fkDW5nR9X8j4ELY
+	 fmhYBq5SdO8xMon6td+FOKBS+CnZH/245Nwi+mXQkRoetqkEn8z3DcN3daNMjIrKZB
+	 /Xk1OBYNAEtT+gSdzgSpyOdHM3VQSOjD00tEFxD1Z3soCH/OqF7WVIjCW6EjO7jgj/
+	 QFKKFL3T/mnzx4u9/rVVEm4p2qPLgw1m9+HUNk13rFe81Mg5Y7fxLpVrfHKt3RS+UK
+	 mkpmV524uU06h8da7gHjGwcr2L+xoXXStif4XmepW9o4l8FZ2Uu1LpcShaZSWH2HZy
+	 9busFOu2xBLkA==
 From: Linus Walleij <linusw@kernel.org>
-Subject: [PATCH v2 0/5] iio: light: gp2ap020a00f: Add VCC supply and
- GP2AP030A00F support
-Date: Sun, 08 Nov 2026 22:43:58 +0100
-Message-Id: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
+Date: Sun, 08 Nov 2026 22:43:59 +0100
+Subject: [PATCH v2 1/5] dt-bindings: iio: light: sharp,gp2ap020a00f: Add
+ VCC supply
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -56,10 +55,9 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAA/0XMSwrCMBAA0KsMs05kkjb2s/Ie0kWbjumgtCGRo
- pTeXSyI27d4G2ZOwhlb2DDxKlmWGVuwCtBP/RxYy4gtoCV7NoYqHaLtIxWkm8ZR6e3oqahRAcb
- EN3kd1bVTgJPk55Lex7yar/6S+p+sRpN2rjAlDxU5N1zunGZ+nJYUsNv3/QOKmLF/oQAAAA==
-X-Change-ID: 20261107-gp2ap030-99504c2dc038
+Message-Id: <20261108-gp2ap030-v2-1-24eaa1b9fe59@kernel.org>
+References: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
+In-Reply-To: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -70,51 +68,41 @@ To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>
 X-Mailer: b4 0.16.0
 
-Describe and enable the optional VCC supply for the GP2AP020A00F and
-GP2AP030A00F. Preserve compatibility with existing device trees that only
-describe the LED supply.
+Describe the sensor core supply as vcc-supply, following the VCC pin
+name in the GP2AP030A00F datasheet. VI2C denotes the I2C and interrupt
+pull-up voltage, not a separate sensor supply pin.
 
-Extend the existing binding and driver to support the GP2AP030A00F. It
-shares the register layout, but has different proximity resolution
-encodings and no automatic lux calculation. Select model-specific
-initialization, keep reserved bits clear and expose fixed-range raw
-clear and infrared counts. Keep generic supply handling in separate
-patches from the model-specific binding and driver additions.
+Keep the property optional to preserve compatibility with existing
+device trees that only describe vled-supply.
 
-Assisted by LLM.
+Document the existing LED supply as the infrared LED anode supply
+(LEDA).
 
+Datasheet: https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2ap030a00f_e.pdf
+Link: https://global.sharp/corporate/news/110721.html
 Signed-off-by: Linus Walleij <linusw@kernel.org>
 ---
-Changes in v2:
-- Replace vdd/vio with one optional vcc supply, matching the VCC pin.
-- Use devm_regulator_get_enable() for VCC, allowing dummy regulators.
-- Move the VLED description into the generic supply binding patch.
-- Split variant infrastructure from GP2AP030A00F support.
-- Use "GP2AP020A00F and similar" in family descriptions.
-- Use reverse Christmas tree ordering for local declarations.
-- Explicitly select MANUAL_CALC when automatic ALS calculation is absent.
-- Reject missing chip match data before accessing the device.
-- Use fsleep() for the GP2AP030A00F startup delay.
-- Select static channel arrays and counts through chip_info.
-- Link to v1: https://patch.msgid.link/20261108-gp2ap030-v1-0-55314eb7055b@kernel.org
+ Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
----
-Linus Walleij (5):
-      dt-bindings: iio: light: sharp,gp2ap020a00f: Add VCC supply
-      dt-bindings: iio: light: sharp,gp2ap020a00f: Add GP2AP030A00F
-      iio: light: gp2ap020a00f: Enable the VCC supply
-      iio: light: gp2ap020a00f: Prepare for chip variants
-      iio: light: gp2ap020a00f: Add GP2AP030A00F support
+diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
+index 3fabf1f576cf..afba0b005b34 100644
+--- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
++++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
+@@ -22,7 +22,11 @@ properties:
+   interrupts:
+     maxItems: 1
+ 
+-  vled-supply: true
++  vcc-supply:
++    description: Sensor core power supply (VCC).
++
++  vled-supply:
++    description: Infrared LED anode power supply (LEDA).
+ 
+ additionalProperties: false
+ 
 
- .../bindings/iio/light/sharp,gp2ap020a00f.yaml     |  17 ++-
- drivers/iio/light/Kconfig                          |   6 +-
- drivers/iio/light/gp2ap020a00f.c                   | 136 +++++++++++++++++++--
- 3 files changed, 143 insertions(+), 16 deletions(-)
----
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-change-id: 20261107-gp2ap030-99504c2dc038
-
-Best regards,
---  
-Linus Walleij <linusw@kernel.org>
+-- 
+2.56.0
 
