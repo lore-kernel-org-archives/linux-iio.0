@@ -1,97 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.41
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794168931;
-	b=UfCx5uq6gBFqgd6TwVg5u5ixWFTSouXTb8trlVCgrmpGbluc42J5Mw+U9NGqd3NmLyGc
-	 yb9ujlkGFb6DxnqAf6fj0oBIsqEz3wrTO2kEsDhElBQZZ50JORdWFeg7ZS9jBBCVM3w+U
-	 6yxMJrSw21b0+twUByaRFd6q7yTzJXsreVpN/svroT7b+kL+r/FcB/SBob53RgSI4izVp
-	 yCsOtUJ7aIXAQxqnIKLJfDW61+ohpnaSOGhTP33tHA08tSKGLxow1Bho3ORyH4H24Ynkv
-	 eFCb8v1FxsxgDGnIDcn3zy0/MO1ZtTrNHkxoyhva7l5Mq33nHFYkmYBHyIe6lkrHtdA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794168931;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=mwMelPe2uptqUBkelQM2Ts74WNYc83eK9MED/jsQkHU=;
-	b=0V4LjSPv2qmyzzJB8gp1BRoYVhWRgfgsTGIPLXGgUvvukt6gqRvTHDW7BJNc3WHsCcZt
-	 cehwvCCCGDDpQ5RvIHx8BygJEeQ03mlctFc2YtjJ6+bgXXUxUHgbwJ08+WGpxkOVZnKB/
-	 zrpJja65drRDw2/h6njEwD4K8gzS3zn+O+j+ellM86bzxP8xHH9gxKXtXqsWesx7pyTc7
-	 KFkGEkPNE9tw50QFvDWOhu7/xg16Z5hG3q/5uuo77HbT0Nn4nH7bn2zIAa3s2+nBR1rZY
-	 yQyVLsHiPfqYBG3IByzl7+xUeHKqKpBI9BJDjy4PixGD4iaEXX9vypXviK83ox7IJPA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T3XYe+DJ;
-	arc=none smtp.remote-ip=209.85.221.41
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794168976;
+	b=y9H2Ulm9boYlaY67Lmi73d56VSFLWTGf3Ktk6Zj9Wch3wetgFgj5RVfqYXW1xhBBKP9K
+	 OyL/VRvbrE06aeIUmyetYSAFzUA7CfU/Oy99FiOFdi5JNFIt1iVgTkvMPjADvkNOyROQ7
+	 1eIIMdJJp5oIJk8q+JxGtaLgsKLkr2zBd9lcVru6ofE4C3A6bouv4RoxeMe4Ov5RxZqaM
+	 CpwyGNIHhQKgcvlYjdRRWW9ObI+Emr23R0dt+Eitgw92cRgwRERgFvTjF1Zsm6aTQrVjb
+	 P2qpRh6BUarYWd8cndRAs04Ion7UvQdFrEIaApWvc1bcnqyAtaVJkPYFv9LpNje+6Iw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794168976;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=AvZj58LAAGduk/xpJ0dCyMoDVD5BG4cJyWLaCL3My4k=;
+	b=FJMjoegw60Af/Pk8ah0XVSXYDv3ReFfpZViBAPpL8ZnFl9T+bdcu6dX05L6fCWsw8yuC
+	 jx+vcsNGkbr53WFwiyRYfKWUybRw+SBdDZTYuEX9GP9EXjysODiJE7YVWgA7xx1Cw0oir
+	 xhT11yfLcZUvwA2/pY3Iy4pjyElEQHbrXHp8wfE42mbPNLRjire/DIoiIMN5N0ujMKYra
+	 5tUUyDPE6RqObL5SpEl8T4zD6PlsNqGE6Z6MOIQEgv7Atz029HbY5t6hP0r9qIwKnaCRv
+	 SjgheorO8uyknTcX4pqVLki6cD6480T8Ix8w07o0PzRBFpg1pvLWCGhvP0nUeXA2ceg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=egUwvLR0;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31D11606A31C;
+	Sun,  8 Nov 2026 20:16:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=egUwvLR0
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794168975;
+	b=S8o0V70BSVhWwf3RjwPjg5W1SzTQQ4IOib5m0gWzbknEMGg3fZAr9gjpYzTOBuCTylQU
+	 JYWyh669aT0dQcP+/hxtkM35JHd6mUggbyAUO7ehd639l2QVNqspaFqdtSYirUgT8Nq4G
+	 LNU2K6dFV4IWyFt+LKkPUQRlbGdgni31FKDQzrIXEtxpEPdZmu1X+EE/ibHVvpUHhvsQe
+	 n+glMRCras460U9PsdNQKacicXPphD9vzW3pKk54KPsWc6IU27bG/5y4yC+qCPyAWINwl
+	 rFSHben80ExkJJQZ//nnyN90+sksNO1H2eP1d7sJUUPWBVejT0SfP8XYSNWcAcZTK/g==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794168975;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=AvZj58LAAGduk/xpJ0dCyMoDVD5BG4cJyWLaCL3My4k=;
+	b=ktjKANZqnH0hLdrDgk12LvynW+l4lAfvQJcob7EHuPkyVNZzXeS+wn9cVW2u5weRT5UX
+	 IT/P14PxHZGcXqrjPwUoSLsnEIpUhqJYr9ZqYjAgu9PPqlpKQn452vN5GXKz9f5KuN0fA
+	 YTA+BVDQXEJ7aLwlyPqFWMCPPyOt7G+BP80nnu+JZQJWFGybCtpz9DxBWrpzjlmZK0oiW
+	 7/hVpUpPugomXewUoP3vwNZ6UiNWBJWH8i7G2jD0O20XVsX9paZ5zRlig7Q5BUduYgcNB
+	 YbNDHIhf78nLhiVgoLIdPoxXwd8g6ZjhDDSx0spYNoXKMT0t3SK/svcKX5SFhvXgdGw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C137606A31C
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 20:15:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3C137606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T3XYe+DJ
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48e46e449e8so157766f8f.3
-        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 12:15:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794168929; x=1794773729; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mwMelPe2uptqUBkelQM2Ts74WNYc83eK9MED/jsQkHU=;
-        b=T3XYe+DJ0ow+8/m5Nfkgc6YJZbcr6JXmCQE7X8NBAT4JUfoIP935lMDv0qqa13Uh23
-         w9N5pfUc4PNrMoYon5Dj/dh2x7ffGjyCw0VwRSKH+s1grA06t/M3Bi4qSqCoqFsGPKxr
-         DfIf9fYUzB5cVtktzxzM6WtP4yRi6lZ32B3HkyzFy8sT16YrS+LPXRLqJ/jJg1yf0MP1
-         e/Wlh1eDEIKGJ0PxJXc8YnqnDz6tySknzt5XL9K7M34pr2oeMk+YYyNjqIQoOzYwJkO/
-         cav0C53OnF8qWIHgShirvJR+X31IeGjzipeIu9n2lGhbUHUi9EHh1vIYnqGTChDP+957
-         fTmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794168929; x=1794773729;
-        h=content-transfer-encoding:content-type:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=mwMelPe2uptqUBkelQM2Ts74WNYc83eK9MED/jsQkHU=;
-        b=tCykqb7UOaXzki2AZiru4+XL9effJp4d3WeAWYRy7o2E6ZxMfS2RVVNEUDs5nWgzgB
-         ekvV/aqHCmlwF0C+9HTxqLS0Ta9xDdndyAJmMR2ZQPX/tcO1MHnvCTSIkmHdrufF/3nN
-         Upg6Ufxxk4AcU2+2pZo7Q+pBdSV1r2GYWYz2bMMKg9MVSusefkvOLNVN6nXdUcf0Kmyz
-         wCusSli92ViZEs8v/ZzqIYIDP3d59STabL0wqQapJPMwTqF25N50Qw88lQzbPerquauG
-         iPiN69rq3s8f5h1VfrNUaIt82qXgKsUpbLACp2QNEzz7Ob1fj75W2Dbva36paF5O27kR
-         w1vw==
-X-Forwarded-Encrypted: i=1; AL+hErHelv843QVpbFcxz5Sw7+EGsyfcVWrA8WFSzh/c8jA19iCct1gmfhQMSBK0VjkZW8WA6Wd/nM5mJnQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/2CyrluIGrMEOHW6ZzbPkVozpeaf379mREyk6mhKwmPJU15Lew
-	BoALZHM4ofeoVmwC4UxSbXN1mDTizIFT1qCbTJzeHns7hp7YlLl4NgVF
-X-Gm-Gg: AYBFou1sKdhKrZPrA4vrgIpe6mwK9T+/COI6RuEHZlHEV2lSKzCYlDTAWjOP3WB4E5Y
-	oEEMaOf1IiUEpDEuqMtEXmeQcM+hkszYRLtGSdOJCi8aMpCp0DtjWcIJElL3hmepsQQw0Tc/wCB
-	BJn3HQqv3wREW+/mfM333lfVGXa4ieUWn1GIKUVRHMDXeev7N/VD21APypAkWmTrA98u8ck2EBJ
-	Bfq4luH2V3/cY5U4ATmUGynJ2P8LCokQP2cte50QEDirNq/w/3z4L4A8wG+SfJjXPz12WE3f4N1
-	kZSCDFwcwr8VT9RvjmYtCRjtYrgZ14xxvQD7CV5lFura1eFhRs4sSysvNELYAfva8EuMstqqhr8
-	kVYcqYO6p4uJgyb49y9UFY/VzOY/jp+LXaJyB+7tjZsT1fiGULXOpyyJDLwUwt9LcYVkzBP/GFG
-	MWpVI2XOjCsX2sHQ6R2N9Fj6ciCeMlG7cE81OfD2EREsJ6T0OdiWeyO9DMHvBdtoSf49fPhdEA5
-	OP83hOBIKE7vnu4jjMa0/s9NbtG2RX1WBjGc/wihj/xntHlWk6Kgvnj0fVBcwQ/n1K+TAa39g2D
-	QigebhZQy4AX/MQMO/y6zA+Rj//aIkZY53d52+p1xgANCGAdFoDhVvg=
-X-Received: by 2002:a5d:588f:0:b0:48b:e50:714e with SMTP id ffacd0b85a97d-4958c3a134bmr4334789f8f.36.1794168929453;
-        Sun, 08 Nov 2026 12:15:29 -0800 (PST)
-Received: from legion.. ([5.43.81.125])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49597652ca7sm6047077f8f.39.2026.11.08.12.15.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Nov 2026 12:15:29 -0800 (PST)
-From: =?UTF-8?q?Adi=20Kadu=C5=A1i=C4=87?= <kadusicadi1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Adi=20Kadu=C5=A1i=C4=87?= <kadusicadi1@gmail.com>
-Subject: [PATCH v2] iio: adc: ad_sigma_delta: use __free(kfree) for temporary buffers
-Date: Sun,  8 Nov 2026 21:15:22 +0100
-Message-ID: <20261108201522.249539-1-kadusicadi1@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	by smtp.kernel.org (Postfix) with ESMTPS id 4C3481F0089F;
+	Sun,  8 Nov 2026 20:16:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794168975;
+	bh=AvZj58LAAGduk/xpJ0dCyMoDVD5BG4cJyWLaCL3My4k=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=egUwvLR0BitOqZdYNB3E5j0lG4nA+bRb3ERPTrdXlqZtgSRbkMyTrixc500DoTykf
+	 nMYkD9wM6928PsvzmnDmjyWKvvvymiW9ORw22+3ZaO5mEkSjiWPLVxzJHR3xVYJtRU
+	 k8zo4LLxzGb5WQHRwI/15MKB+c77Rsoi/7HdeHLsr7v/8NWwPKHlJdvEB4OTZT/94e
+	 hry2Xq+XL1FazcQYX6XMxfJtkJxxhxqrCLpkSipfLNKeD+rE7TuXj5s/iXQfflbHP6
+	 Ru/RpRsx2AuaQfbdMXB3pxmI454lvhJ9JtsVo5alVo9PJLq0FZ5iINmLpwOU1/XYFl
+	 5Njla/YHBrtZg==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id BEEBD480B2;
+	Sun,  8 Nov 2026 20:16:14 +0000 (UTC)
+From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Date: Sun, 08 Nov 2026 20:16:13 +0000
+Subject: [PATCH] iio: light: adux1020: use guard() to simplify lock
+ handling
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,79 +83,296 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261108-adux1020-guard-v1-1-db9c582f1eea@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMTQ7CIBBA4as0sy7J8BPFXqVxgTDiuMAGimlCu
+ Luoy2/xXoNCmanAMjXI9ObCrzQg5wn8w6VIgsMwKFQnKdEKF+ohUaGI1eUgtFXo6Xwx1mgY0Zb
+ pzsdvuF7/LvX2JL9/L9D7B8SmqstyAAAA
+X-Change-ID: 20261108-adux1020-guard-3820ce794843
+To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794168974; l=6978;
+ i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
+ bh=55DgnX1l0P6Wx7Y7PSWErzxISKBLMVyhkL//RtenSVw=;
+ b=x3obLC4cZbut96blzDpJjPH6a2VtoPWL4w5PhctkC17cNEMyYBQ10YX1bzOLC3VbljvLQyLYU
+ NkhkLMIVm9xANai0c+R/QV84E50MuWQtdN2fCQTDtH4PKoqvw6tR10M
+X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
+ pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
+X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
+ with auth_id=1160
+X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-Replace manual kfree() calls with the __free(kfree) cleanup attribute.
-No functional change.
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-Signed-off-by: Adi Kadušić <kadusicadi1@gmail.com>
+Use guard(mutex) in adux1020_read_raw(), adux1020_write_raw() and
+adux1020_write_event_config() so the lock is released automatically on
+return. This allows returning directly instead of jumping to a common
+unlock label, and lets adux1020_write_raw() drop its ret variable.
+
+No functional change intended.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Link: https://lore.kernel.org/all/20261107222957.5332237b@jic23-hlaptop/
+Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 ---
-Changes in v2:
-- Keep reset_length/size declarations in ad_sd_reset() as they were,
-  only declare buf with __free(kfree) at its allocation (Andy)
+This follows Jonathan's suggestion, made when applying the sampling
+frequency hardening patch. It applies on top of iio/testing.
 
-v1: https://lore.kernel.org/linux-iio/20261108013328.125069-1-kadusicadi1@gmail.com/T/#u
+Tested on arm64 QEMU with i2c-stub and lockdep enabled: reading and
+writing the sampling frequency (valid and invalid values), reading the
+LED current, reading in_proximity_raw (error path) and enabling the
+threshold event. No lockdep warnings and no hangs after the error
+paths.
 
- drivers/iio/adc/ad_sigma_delta.c | 17 ++++-------------
- 1 file changed, 4 insertions(+), 13 deletions(-)
+I prepared this patch with the help of an AI coding assistant, and
+reviewed and tested it myself.
+---
+ drivers/iio/light/adux1020.c | 104 ++++++++++++++++---------------------------
+ 1 file changed, 39 insertions(+), 65 deletions(-)
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index 119ddc5a13e2..934c9965c69b 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -205,19 +205,15 @@ int ad_sd_reset(struct ad_sigma_delta *sigma_delta)
+diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
+index d4281b9754c3..3e8f53e5a1a0 100644
+--- a/drivers/iio/light/adux1020.c
++++ b/drivers/iio/light/adux1020.c
+@@ -9,6 +9,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+@@ -362,10 +363,10 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
  {
- 	unsigned int reset_length = sigma_delta->info->num_resetclks;
- 	unsigned int size;
--	u8 *buf;
--	int ret;
+ 	struct adux1020_data *data = iio_priv(indio_dev);
+ 	u16 buf[3];
+-	int ret = -EINVAL;
++	int ret;
+ 	unsigned int regval;
  
- 	size = BITS_TO_BYTES(reset_length);
--	buf = kcalloc(size, sizeof(*buf), GFP_KERNEL);
-+	u8 *buf __free(kfree) = kcalloc(size, sizeof(*buf), GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
  
- 	memset(buf, 0xff, size);
--	ret = spi_write(sigma_delta->spi, buf, size);
--	kfree(buf);
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -373,69 +374,56 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
+ 		case IIO_PROXIMITY:
+ 			ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
  
+ 			ret = adux1020_measure(data, ADUX1020_MODE_PROX_I, buf);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			*val = buf[0];
+-			ret = IIO_VAL_INT;
+-			break;
++			return IIO_VAL_INT;
+ 		default:
+-			break;
++			return -EINVAL;
+ 		}
+-		break;
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+ 		case IIO_CURRENT:
+ 			ret = regmap_read(data->regmap,
+ 					  ADUX1020_REG_LED_CURRENT, &regval);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			regval = regval & ADUX1020_LED_CURRENT_MASK;
+ 
+ 			*val = adux1020_led_currents[regval][0];
+ 			*val2 = adux1020_led_currents[regval][1];
+ 
+-			ret = IIO_VAL_INT_PLUS_MICRO;
+-			break;
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+-			break;
++			return -EINVAL;
+ 		}
+-		break;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		switch (chan->type) {
+ 		case IIO_PROXIMITY:
+ 			ret = regmap_read(data->regmap, ADUX1020_REG_FREQUENCY,
+ 					  &regval);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			regval = FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
+-			if (regval >= ARRAY_SIZE(adux1020_rates)) {
+-				ret = -EINVAL;
+-				goto fail;
+-			}
++			if (regval >= ARRAY_SIZE(adux1020_rates))
++				return -EINVAL;
+ 
+ 			*val = adux1020_rates[regval][0];
+ 			*val2 = adux1020_rates[regval][1];
+ 
+-			ret = IIO_VAL_INT_PLUS_MICRO;
+-			break;
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+-			break;
++			return -EINVAL;
+ 		}
+-		break;
+ 	default:
+-		break;
++		return -EINVAL;
+ 	}
+-
+-fail:
+-	mutex_unlock(&data->lock);
+-
 -	return ret;
-+	return spi_write(sigma_delta->spi, buf, size);
- }
- EXPORT_SYMBOL_NS_GPL(ad_sd_reset, "IIO_AD_SIGMA_DELTA");
+ };
  
-@@ -249,7 +245,6 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
+ static inline int adux1020_find_index(const int array[][2], int count, int val,
+@@ -455,9 +443,9 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
+ 			      int val, int val2, long mask)
  {
- 	bool pending_event;
- 	unsigned int data_read_len = BITS_TO_BYTES(sigma_delta->info->num_resetclks);
--	u8 *data;
- 	struct spi_transfer t[] = {
- 		{
- 			.len = 1,
-@@ -317,7 +312,7 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 	 * shorter than the reset procedure.
- 	 */
+ 	struct adux1020_data *data = iio_priv(indio_dev);
+-	int i, ret = -EINVAL;
++	int i;
  
--	data = kzalloc(data_read_len + 1, GFP_KERNEL);
-+	u8 *data __free(kfree) = kzalloc(data_read_len + 1, GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
  
-@@ -340,11 +335,7 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 	memset(data + 2, 0xff, data_read_len - 1);
- 	spi_message_add_tail(&t[1], &m);
- 
--	ret = spi_sync_locked(sigma_delta->spi, &m);
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+@@ -465,15 +453,13 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
+ 			i = adux1020_find_index(adux1020_rates,
+ 						ARRAY_SIZE(adux1020_rates),
+ 						val, val2);
+-			if (i < 0) {
+-				ret = i;
+-				goto fail;
+-			}
 -
--	kfree(data);
+-			ret = regmap_update_bits(data->regmap,
+-						 ADUX1020_REG_FREQUENCY,
+-						 ADUX1020_PROX_FREQ_MASK,
+-						 ADUX1020_PROX_FREQ(i));
++			if (i < 0)
++				return i;
++
++			return regmap_update_bits(data->regmap,
++						  ADUX1020_REG_FREQUENCY,
++						  ADUX1020_PROX_FREQ_MASK,
++						  ADUX1020_PROX_FREQ(i));
+ 		}
+ 		break;
+ 	case IIO_CHAN_INFO_PROCESSED:
+@@ -481,24 +467,19 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
+ 			i = adux1020_find_index(adux1020_led_currents,
+ 					ARRAY_SIZE(adux1020_led_currents),
+ 					val, val2);
+-			if (i < 0) {
+-				ret = i;
+-				goto fail;
+-			}
+-
+-			ret = regmap_update_bits(data->regmap,
+-						 ADUX1020_REG_LED_CURRENT,
+-						 ADUX1020_LED_CURRENT_MASK, i);
++			if (i < 0)
++				return i;
++
++			return regmap_update_bits(data->regmap,
++						  ADUX1020_REG_LED_CURRENT,
++						  ADUX1020_LED_CURRENT_MASK, i);
+ 		}
+ 		break;
+ 	default:
+ 		break;
+ 	}
+ 
+-fail:
+-	mutex_unlock(&data->lock);
 -
 -	return ret;
-+	return spi_sync_locked(sigma_delta->spi, &m);
++	return -EINVAL;
  }
  
- int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
--- 
-2.43.0
+ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+@@ -510,16 +491,16 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+ 	struct adux1020_data *data = iio_priv(indio_dev);
+ 	int ret, mask;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_ENABLE,
+ 			   ADUX1020_INT_ENABLE);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
+ 
+ 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_POLARITY, 0);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
+ 
+ 	switch (chan->type) {
+ 	case IIO_PROXIMITY:
+@@ -535,7 +516,7 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+ 			ret = regmap_set_bits(data->regmap,
+ 					      ADUX1020_REG_INT_MASK, mask);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 
+ 		/*
+ 		 * Trigger proximity interrupt when the intensity is above
+@@ -544,20 +525,13 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+ 		ret = regmap_set_bits(data->regmap, ADUX1020_REG_PROX_TYPE,
+ 				      ADUX1020_PROX_TYPE);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 
+ 		/* Set proximity mode */
+-		ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+-		break;
++		return adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+ 	default:
+-		ret = -EINVAL;
+-		break;
++		return -EINVAL;
+ 	}
+-
+-fail:
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
+ }
+ 
+ static int adux1020_read_event_config(struct iio_dev *indio_dev,
+
+---
+base-commit: ee79148f1586fb0a6d6918995cfc84da6feb35da
+change-id: 20261108-adux1020-guard-3820ce794843
+
+Best regards,
+--  
+Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+
 
