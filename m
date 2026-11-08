@@ -1,56 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794169776;
-	b=Kjg5vHCsfZ5TFY1QUUUq+1FYIoKc852IPif/BmcpYquFfIcsLorW0fXnEectJ3b6qARp
-	 8VjbSVpXLOxQXagcHzRrH4W2PbDzEK9ECHQz8JkF8pa0ndQ47YLgtiDT3Jgv8o4NnAaZC
-	 axIAgAPlKMuPe4buNtEW3AKFyWrACEz9h5IZK3F/VhUAQaBOH01QDHDIP6uPZa5q9eho+
-	 biBJqEgXXjMEG3wrjtBlURiLUGettIVgK22i7rkT6ltv+RVjeRzF+OkeuuCje7kJezj8Y
-	 zjA0/ExqPiWWYJGXcAa1ATwvry8wifMj9aaR4CiqDe402sclIjGDIrcgODaRWClqEdg==
+	t=1794169849;
+	b=OPuI7ffwTiiboVziFXNZ5xmlN0urWY9bXuln39BfTRTly+M3FjRGogYOc3aIb1+kEY/1
+	 UpjkrtueFcPjcE3e16Nu8Hh8+A7Uotf/DMgDhzcMSSGsTkM+44QFoyhhm4OTcCu5ypDxv
+	 icZhegGdI5ZLIkhkjT0+WoJl+g2pi+a02icyeh3V0p6uStegYARZWtj3/zU8HdZIYuohx
+	 WTbpSMeiJEfYqKMjHsuTm1sEHkVEYKt4KKi3HimVr8JXckCxepBlVDeW1owtjDhPo53/1
+	 P/64tiidRaQ7NVbOolNxviT5sQGU8X3nSv4p/aZ1AEPc4W9SuzoIlqEE2mbXUz33L1A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794169776;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794169849;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=b9zeEJKsszthQW+o0qMgTtRbFqeedc09AcTN1l4NUHI=;
-	b=U4oOK0O212UO72d9W+VV5QBs8m1kmX5a94CdnGBou7hMnYWnrZfgDyBPWNlfqE6UwA1B
-	 AuGiAb/Ddo7iIZ9kAq7Yx8kB3oX8TfWkXgttyIvNKkrqltCVc15OkgK8W3oOWOqYXWX1d
-	 5n209teXAsJZXNbFMIzk6cXlfeLMLc/83fggwtttwPIzKsz8McEFqHImx1c9BdsNhjfSP
-	 maT4UXkmtET1MxN8u6+n2ie65icusrewP4q5190OxrmCswQbj+pPuhk6AiFLZyio3I57g
-	 Lxin3sVXhmfK78WHX3sl/VRJN6Rrzzaubqx8mmHIO3CAhae2LVOfw+/2EgpjZt8MEeg==
+	bh=U/L8bqmRJvsgcPmWTGdqRpbXnt5j3i3aDLDSgmpwY9A=;
+	b=SKuo4wW3iI/qnS/C7nJuKyjgNkJrb5gYRPBdlDbJSTujfZmuOuGiwoDQZRZ3QI030Vtn
+	 jQZl/rlGp0rRYq6/USemCVOk+tgXsampCC9R0fqGn+S9onfK51RMc7efQvrfCTtWlhYUE
+	 R7JjRWEGTPHvy5mBLUNA0g3STg/nVSrSOKnKVjuE8OP7j3JLegRQ+gK8tuovOQvAw3xbU
+	 Zt0bCINblisjhKg9roR28aoNnJA92OKcZpiJAc1xuOYPPUfixntIk0FRiBFmcB973UyJe
+	 LaJH9gCGp7ZZaPesf7la7x+yemxuxXp3G41IcwCRwPtHfzWO65S2S/jesol2Ua+NXjQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X5zaIDeb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cnU5VI1t;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 045EE606A320
-	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 20:29:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D666D606E532
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 20:30:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X5zaIDeb
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41CBD1F0089F;
-	Sun,  8 Nov 2026 20:29:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cnU5VI1t
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62BCB1F008A5;
+	Sun,  8 Nov 2026 20:30:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794169775;
-	bh=b9zeEJKsszthQW+o0qMgTtRbFqeedc09AcTN1l4NUHI=;
+	s=k20260515; t=1794169848;
+	bh=U/L8bqmRJvsgcPmWTGdqRpbXnt5j3i3aDLDSgmpwY9A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=X5zaIDebn+yiV0u0fFEuBqm/38MbnGexvRnPrcs62DH+gD2kMAdq9rQGNkfmjErZD
-	 pgGQiDayEq03XFw7I2dWW0wr3iG9vDXQKbxnRYoEPVd44UcKfhS5JAUBXsJJ911yTR
-	 WsPDMgCatLXNsFpOSU/fJj4pmRZTS37rzDt/dbau6TVCbkBhqrGOKGIPNdVnCL22Yt
-	 +RXOHdoO6q6E2fi1QzlaRH6fGvpPGFjx0p+2Fs3aemp/VYDgpZq7DXvAK2sL8Qh+oh
-	 WFj2L+zgfoAses28FmPgG9H/IXKuRMmnZhVAhz2Edj2O5W2Eb6O0qrXJ+FurvlebWB
-	 pGsv16HRZ0wTQ==
-Date: Sun, 8 Nov 2026 20:29:29 +0000
+	b=cnU5VI1tFeys4svB80Opp9B+SdQT4DkNPF3ic1VPyl6PiPQEgTD35p7Xq7rz97Yk3
+	 /7JyRoa1j0e4fkbzqnu5brUwpvx15wmn/csd4Rhl/sWFr22qggA9kV4KJ2uCaagygy
+	 5MUVU99eu97HurA11SDoS0y3ruOKNRqJiv9UY/9ZifiBk3l2qj0wdHggqhQrpSVXAs
+	 UXEnuf/sTeMVHu+HRW5qQkcooQIXLMho1Pt6gmUIUDFt92OMyFJE+Xw9yW8YVnj5Sm
+	 piT/iuFbAkSmlsUda8aDCxzj+FIgU1tnhVOyygQ9PjV9Rz4o9fWdGFzOHe6ATi8Lqw
+	 25WCiMS6rKo2Q==
+Date: Sun, 8 Nov 2026 20:30:41 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH 37/39] iio: common: ssp_sensors: use
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Francesco Lavra <flavra@baylibre.com>, Lorenzo Bianconi
+ <lorenzo@kernel.org>
+Subject: Re: [PATCH 38/39] iio: imu: st_lsm6dsx: use
  iio_push_to_buffers_with_ts()
-Message-ID: <20261108202929.2aa282a0@jic23-hlaptop>
-In-Reply-To: <20261026-iio-v1-37-8b136778eedf@oss.qualcomm.com>
+Message-ID: <20261108203041.2ccd3e40@jic23-hlaptop>
+In-Reply-To: <auCDIxUsvEO_gsvY@ashevche-desk.local>
 References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
-	<20261026-iio-v1-37-8b136778eedf@oss.qualcomm.com>
+	<20261026-iio-v1-38-8b136778eedf@oss.qualcomm.com>
+	<auCDIxUsvEO_gsvY@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,11 +67,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 26 Oct 2026 16:05:55 -0700
-Jonathan Cameron <jonathan.cameron@oss.qualcomm.com> wrote:
+On Tue, 27 Oct 2026 12:55:31 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Replace the deprecated iio_push_to_buffers_with_timestamp() with
-> iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.
+> On Mon, Oct 26, 2026 at 04:05:56PM -0700, Jonathan Cameron wrote:
+> > Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> > iio_push_to_buffers_with_ts(), passing the size of the pushed buffer.  
 > 
-> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Applied.
+> ...
+> 
+> >  				if (gyro_sensor->samples_to_discard > 0)
+> >  					gyro_sensor->samples_to_discard--;
+> >  				else
+> > -					iio_push_to_buffers_with_timestamp(
+> > +					iio_push_to_buffers_with_ts(
+> >  						hw->iio_devs[ST_LSM6DSX_ID_GYRO],
+> >  						&hw->scan[ST_LSM6DSX_ID_GYRO],
+> > +						sizeof(hw->scan[ST_LSM6DSX_ID_GYRO]),
+> >  						gyro_sensor->ts_ref + ts);  
+> 
+> Seems like a lot of code duplication in all three cases.
+> But yeah, it's out of scope of this change.
+
+True.  Maybe worth someone taking a look.
+
+Applied this one.
+
+Thanks,
+
+Jonathan
+> 
+> >  				gyro_sip--;
+> >  			}  
+> 
+
