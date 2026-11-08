@@ -1,59 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794100944;
-	b=eNL5G4ZSN9nHGFYZdJ1dRpataItr4lRFbFPOSyhEijVP2Q7sKEU67ZwYrN7xrzsefKgQ
-	 5clIQfO3A0TKYqeUPfELNuvPBezs6K+u/MFE8ykQ9RUIX8eveYFXr1eQmqUSnW0P3cRyp
-	 F0l320cUDY/o/Jz7kWDBs7uVS/a+r1wkJU8boVX+kVfIi824q7IO67JFYfvspvvm8Q9xn
-	 2mDj+y9yj46/2O/zt99nkrILT81XnPIZHRdObErzIm/+PmH7aQKuh8AqTW2rDF8vYL7u9
-	 /lG68zSVLNiD2X6d0t4cjosYWl/bxFcm/ZA52NCQ73K0YRxwBDgDp8yo7PilBRo4WOQ==
+	t=1794100990;
+	b=G891IcEQSHzAUDQzhGsEZ9r/+WZaRaNYxTzaK7VpgBZJ0ORt3eAXFTy4Ktu7Z2obG3ox
+	 I2WVQwy+OoG0v1GlO7uYKs908KRBSxcaf8TI0u9uQSb7FmopIapR/ug1J9kkUDc/Cz4AT
+	 jRnDaheX3mOa+GzbKE3UdsUsJQDFTVGIvDqv2C3hj1WswPEDPwd3d+uqsiKfySgA5BHYo
+	 fyeILCEn5tBmaM78QQLX+HKJ/sEv+C+Apdz8uf1dO7GZTFnOCSHWXeE/8gYsNkgi0Y8f6
+	 leLBkdVUipH/kdmzg8T1nPRXBLddHtVQyKV2FlEJFlPIkslpytcZkNQFw+7gDaP4+pQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794100944;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794100990;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=OsBxFOq7AXJhA+UmV56oiMWfcD4dV2CjI68wMbv34tQ=;
-	b=MtCpXmhN1mmE4WZpCFWdQ++OOoxNI9TFwvuIGA65rflVltn8AphPJSMo9U2tQj9SdBLB
-	 clMtlyA1QoaXEjg1WzI6CioxY0l1e5GSQu7ruLaqqmibxVvRF1WHHk/LzZUuFJ3sDjkdE
-	 3jxgmtGPGvsvqDk3er5XBOzDNoBs1+IUPGPRb47SAXiiDDW10GDGri+iAO+D0UnFm7GjJ
-	 YMMlHQ3YvqY8vI5bJYZPfmR4qR35q0bA5nBgHfq8ub/44jFUssG1lDc0PDDmoEwkEK7Zb
-	 S7ZV9+t/psx/6Go6OR/vPvkqabED57fl2urgVPGnCK2JFbZqVj9OYU13vJokU+zxqdA==
+	bh=0Hhx1lgBK0aFxl8xffENzmOWdnlm69gGFSyOYkCk8Bs=;
+	b=E9Mwp8Td9dF5veSBniZhJc1DTYyedYausyZgaVWjbpRPrsMryzjb1KtXpCKJyfjy6rj8
+	 9pfuFwaNYrQezTTLsU2aymSckQS1+1FS6Ux1vTIdqLbZOloHOJP3TAYPBj2ZBbcL3lC5w
+	 bDhSXrMh1S+xN6xWdupBNuIp648Ml4dp0qffzoFReaqdrMbqFEarw1kyAAn3ZRcCuDbMT
+	 cdUH0bOMZS3ECLl33EHywP1YOvgMTcqnlnqbMzif+qapgvC13qR6PZgr4VBR7dfQeee2f
+	 bb58BD1nUHGx1e4FpSzANAOUMPYU3g6/CEZc9/YXtxSGqkCp0iflQhB1Y4cU9OnY39A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DmAQIV9C;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m+muTwgu;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A59A606A326;
-	Sun,  8 Nov 2026 01:22:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 656EC606A326;
+	Sun,  8 Nov 2026 01:23:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DmAQIV9C
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 392551F0089F;
-	Sun,  8 Nov 2026 01:22:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m+muTwgu
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 655A91F0089F;
+	Sun,  8 Nov 2026 01:23:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794100943;
-	bh=OsBxFOq7AXJhA+UmV56oiMWfcD4dV2CjI68wMbv34tQ=;
+	s=k20260515; t=1794100989;
+	bh=0Hhx1lgBK0aFxl8xffENzmOWdnlm69gGFSyOYkCk8Bs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=DmAQIV9C8J5x+Q8w4O77t+6kudks0f0glrxhQJ5XSsFuyhuVFg4hGiYSYyca6yXK5
-	 o514zLLIu8lbE3sKlfiWWcU6q9AwHaZSvEaldcIpYpFnEUK7RcZV017vC46/Vh1Tei
-	 c1RLjpf4osf3kF7YgL6nPX9GMaarHyWoULMCdqIAdxOdoNMp+/AbIvmsvAqK2aGwU2
-	 s0O3jUc/sIJid2rAgoBcAIzZLLSxrCH95wT12jtiy1OKMrLO7Nnphg+wgGvsFLk+kA
-	 RxlkjTb3oyUvIriHmQJ9zEBPGdB1blcJXhUaiHTQ06Lp6OXfcmxnWx0c988brYrLeX
-	 J+Ih1rWhvD7qA==
-Date: Sun, 8 Nov 2026 01:22:20 +0000
+	b=m+muTwguWiOr2UBmGB896Epd8SufPKQhf/KvRFs8937FJzyCEV1hq39IJ530y8U+s
+	 lxHfrHoyQnC2tS/lsEczkGy3jRsL7k48VX9tZYXG1VGy+Sv46obHUJc8IDNSn7+V1Z
+	 wfYeR8dAVGW5fowR9V6TMOYTtDAQ+BR9hwlvlPvXLn5oEab342LqEL9SDrzoo0LptI
+	 R3Ad7NAQdgqqs6s9xQhD9faNtqLVkrPY4EgyEg4oJgVVljkzEhusHhCqONBVRJUM3h
+	 9kNOEssyg8uDsteeowyLFZDUPEptQEItVX7Tp5ubHd7njoezfDza1STRFUP9PwWJBa
+	 IgcOmNa8vclDQ==
+Date: Sun, 8 Nov 2026 01:23:02 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Paulius Zaleckas <paulius.zaleckas@gmail.com>
 Cc: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko
  <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Eddie James
- <eajames@linux.ibm.com>, Joel Stanley <joel@jms.id.au>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] iio: pressure: dps310: fix input checks and resets
-Message-ID: <20261108012220.3d09aae3@jic23-hlaptop>
-In-Reply-To: <20261104091351.710582-1-paulius.zaleckas@gmail.com>
-References: <20261029220635.18816-1-zoone.rupert@gmail.com>
-	<20261103223008.12675-1-zoone.rupert@gmail.com>
-	<20261104091351.710582-1-paulius.zaleckas@gmail.com>
+ <eajames@linux.ibm.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: pressure: dps310: put the chip in standby on
+ remove
+Message-ID: <20261108012302.3d5be612@jic23-hlaptop>
+In-Reply-To: <20261104091415.710751-1-paulius.zaleckas@gmail.com>
+References: <20261102072755.17043-1-zoone.rupert@gmail.com>
+	<20261104091415.710751-1-paulius.zaleckas@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,33 +66,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed,  4 Nov 2026 11:13:50 +0200
+On Wed,  4 Nov 2026 11:14:15 +0200
 Paulius Zaleckas <paulius.zaleckas@gmail.com> wrote:
 
-> On Tue, Nov 03, 2026, Rupesh Majhi wrote:
-> > Jonathan is holding this series for your Tested-by. Could you give it a
-> > run on the ZTS8032 when you have time?  
+> On Mon, Nov 02, 2026, Rupesh Majhi wrote:
+> > Remove resets the chip, though all it needs is to stop background
+> > measurement. Write 0 to MEAS_CTRL instead.  
 > 
-> Tested on a ZTS8032, on iio testing backported to 6.12:
-> 
-> - 0 and 0.5 are rejected for both rates and ratios.
-> - 64x at 4 Hz survives a timeout reset forced by putting the chip in
->   standby behind the driver's back.
-> - A warm reboot during a FIFO capture: FIFO_EN is clear after probe
->   and reads work.
+> On a ZTS8032, unbind leaves MEAS_CTRL at 0 with the configuration
+> intact, and 20 unbind/bind cycles read fine.
 > 
 > Tested-by: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-
-I'm going to take this the slow way mostly so other work
-can easily be applied on top.  
-
-Applied to the testing branch of iio.git which I'll push out
-as togreg for linux-next to pick up on sometime in next few days.
-
-Thanks to both Rupesh for the patch and Paulius for the testing!
-
-Jonathan
-
 > 
 > Paulius
+Nice and applied on to of the other series on the testing branch of
+iio.git. Thanks,
+
+Jonathan
 
