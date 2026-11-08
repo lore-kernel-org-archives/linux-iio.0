@@ -1,60 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794096242;
-	b=xHtMLy36hKrRI9gOnFg8SToT9Jrlv5x9PG0ILBG9xfZ1DGa2rWTeXCagjVt2LWHNDHyw
-	 6o5cvW8Ls0zXy8VyBCidZSLHOe6f4WrJsJiJIav1p05EAYggM6o7rxgXutsitTEJoA9Tw
-	 8yORqPhyBEg2DVAqjR4H4+LlEcJb5/xw4yopBaQpEClX7yBdaSj2NckHM6qSiJf+ZgvF7
-	 xqlOz+1pgG4gnEa8OqTCAznwEJstG+cH1/vdt7UhdTpMy41XAW0AEJdWlnqiCG4R8xsPG
-	 dSw40uTy2aUugDZRtVuFAllFYI14m4TkiejJEHoglORO0AqPWd+gsogKtn88STXbXfw==
+	t=1794096425;
+	b=XqSxWK1NW9cEqgUzUYeVqoyWsSFOmmX9poPZRsk2a9sU8uCauuMqgXl0OTGaNE6IbnrT
+	 rIndRxRHXJbxIoN+azLKdZeuW79SBJR3Cust5KsTS+I3L4meFYyCAnejmXQec5eMNvx5R
+	 Aw7Z4z9+KQSwWR8T9CTM0ap+fHUcRA0RQMMCz6IbIEtIzkLivumXfV6p1mA9lfOJPZkaB
+	 Ktjq/JPQxK6iAVxnfCmfjb6xA1cvS1sYYqJApoy8PmKTykhyQownsSpsRQyMqtxsjM+1o
+	 rrq1IzC3PGmzVRwvJigcuWyenmq6dg/n4dpQW/Jje9jSjEgqBn9jqxJO3gTDh3Xzj8A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794096242;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=/s3GtWBn4vO81epFmrbwaz60Z3/jK514SYAfdbFW67A=;
-	b=XvI+yeRxIfRauT6ExTqwbAlWt5Jnu2ghpwDiqdKZB+mD1ljbAWgAD/2/4SmsVTbQ41TU
-	 IThV1nC23drIGyU5nITylpa2qZ7LHNKGuBm5/4xjwvjNx7o52X5V8KTDIyefVMUPbmANs
-	 Dra56B8kdoXCatukFEWVcJMHdLNvzSg03gVHJFIUN8m9z4+pRVW459KsZJrVpYLb8VnCS
-	 OkUZ9qJRrlKJJBdPYpb2qhDJkxK/x3ahtNBAYEUWp4wGasqpaWFSEG4D8Z+5ddD+rKatC
-	 04GoHRrz5Hhbuoc9ZcX3iLjy0tSjj/iRoer6NBkQAU546ocLZs2zD2EQffY95i+4qGA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794096425;
+	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
+	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=6qOuA7y2WP7HgDg0keAEZ736pzM0WUNauVo87oL7QDQ=;
+	b=fMp0EJnUl5xWFzwRD9IZ7tfIcx9KPqOVM/jAV94Z2C+5aaRBjnS1FS87EOP4EG7zq7p5
+	 XqNE1Bqhk6u7UFgkFQPKsFkAAMYehVKSNTwRwaH4HK50rdp+iw0yT+SBNgOVWOT1iDPEL
+	 51CEQlvemwLLnC8523IJNq+qAUIZAFXm8g0FgeYnKpSgeKiQidKCqr2wLQ9nGY/MMPA9y
+	 tHl8qBD6YOsUGgA0+/vvxHugV82+y8h6cSKS5q6g2L0zFdszXToAOzqKPwO88a/2GS8EZ
+	 92kfGDJ6ZOdcX3/QVQi4UifBgswDvo476gGHYKwXhatB5xZXdlDLhTwJucIkQL8Z4+A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=csHQCDHR;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=protonmail.com;
+	spf=pass smtp.mailfrom=protonmail.com;
+	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b="ExbQd9d/";
+	arc=none smtp.remote-ip=109.224.244.17
+Received: from mail-24417.protonmail.ch (mail-24417.protonmail.ch [109.224.244.17])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8F3B606A326;
-	Sun,  8 Nov 2026 00:04:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2439D606A326
+	for <linux-iio@vger.kernel.org>; Sun,  8 Nov 2026 00:07:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2439D606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=csHQCDHR
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4975D1F0089F;
-	Sun,  8 Nov 2026 00:03:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794096241;
-	bh=/s3GtWBn4vO81epFmrbwaz60Z3/jK514SYAfdbFW67A=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=csHQCDHRlsMm9RFiLLSzdI5o8EMfD5mn0L6Ty4LrQ7+GpV5bQ8u/YvM220pGy4kYz
-	 oILAOxIvHgU1vBeaLBQa6fNSb01SohdFSe7l0s7DpG7PrE0vX2wCj/o9W9/udGcz5e
-	 KF595AIa9I/hUAEBEcDj0xFKKotGjdfpAV8k5tpaN6hFDCXrXuALlvx6TAjW6UNvsD
-	 diWtAILoGakaBxetkuI3UDZlD4Wz21jOO3ZDP0k6ITlIK0UbEFc406S7DE1xVWF+Kf
-	 JHH5bL8P/GeUuN72CLC6J9SRWdqeS03SWKXwEH/2ysrZYqWDiJhjZi1s0kv/Es+7Zo
-	 W3G/ppNS/4TyA==
-Date: Sun, 8 Nov 2026 00:03:54 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Linus Walleij <linusw@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Kyungmin Park
- <kyungmin.park@samsung.com>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] iio: light: gp2ap020a00f: Enable the core and I/O
- supplies
-Message-ID: <20261108000354.2e673da9@jic23-hlaptop>
-In-Reply-To: <20261108-gp2ap030-v1-3-55314eb7055b@kernel.org>
-References: <20261108-gp2ap030-v1-0-55314eb7055b@kernel.org>
-	<20261108-gp2ap030-v1-3-55314eb7055b@kernel.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=ExbQd9d/
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1794096421; x=1794355621;
+	bh=6qOuA7y2WP7HgDg0keAEZ736pzM0WUNauVo87oL7QDQ=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=ExbQd9d/zqU4W4IqsZQ0Xpzcap+AEfhxmo42cpiflMHmazViNoxbPfV+D5MBv51Vp
+	 V4tTvVjxk8nNMyZn7CKyPvQBEvz3bPZB21MEQqPNrhmyzpcqHaRlRv9Vv3YeD6E+Ki
+	 LvIc8nxgqPLOa8FN8mQxFusLB3krmv3mnVcZpR7elVF7ycvi3Tc9nsjOPtQXZHeSqw
+	 mV0vWl6/+584miesgzBBX5PVGSoWz7ElizDLSXHgRpR4GP4rO6e3K5QyJmMAvuMCqb
+	 yueZBXqE+9HNgDNeiAuSprGlimEoOs12EYqCfXnvEdOWAga9cntKdUAqvSM44Yu3HS
+	 PeEb+WywZnJ7g==
+Date: Sun, 08 Nov 2026 00:06:57 +0000
+To: Jonathan Cameron <jic23@kernel.org>
+From: Roman Vivchar <rva333@protonmail.com>
+Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: iio: light: stk33xx: add power supply support
+Message-ID: <YGYT8qy3NVYYjUfYP3NfqDnjoQ7gdqYMw8opOaTfChdSx2z6jkaYxxJjj1Y4x6E4DMVykIDZzFjWGh_ywapgRTWmRuuCnBajjm89ZsN2JSA=@protonmail.com>
+In-Reply-To: <20261107235342.40f2e45a@jic23-hlaptop>
+References: <20261108-6768-stk3337-v1-0-0340c99b0e33@protonmail.com> <20261108-6768-stk3337-v1-1-0340c99b0e33@protonmail.com> <20261107223601.0ba9ffc6@jic23-hlaptop> <geNqZOyrIjYLfmuUys8cQJU8FM53jylicArPsTGNXPnqSvHPCIc1Jad7dBOBy1GdE38RBEMSYQYDqEmaAqq2PDcglQcRBdkR0yZAjRExEUQ=@protonmail.com> <20261107235342.40f2e45a@jic23-hlaptop>
+Feedback-ID: 173184497:user:proton
+X-Pm-Message-ID: 13a2ddb5ce2211108c59898ea7f394030bbbe1ea
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,49 +64,83 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 08 Nov 2026 00:31:35 +0100
-Linus Walleij <linusw@kernel.org> wrote:
+On Sunday, November 8th, 2026 at 1:53 AM, Jonathan Cameron <jic23@kernel.or=
+g> wrote:
 
-> Enable the optional vdd and vio supplies before accessing the device.
-> Use managed helpers so both supplies are disabled on probe failure and
-> removal. Continue probing when an optional supply is absent, while
-> propagating other errors, including deferred probe.
-> 
-> Signed-off-by: Linus Walleij <linusw@kernel.org>
-> ---
->  drivers/iio/light/gp2ap020a00f.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-> index b435dc5e8706..62c4beb20cce 100644
-> --- a/drivers/iio/light/gp2ap020a00f.c
-> +++ b/drivers/iio/light/gp2ap020a00f.c
-> @@ -1414,6 +1414,14 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
->  
->  	data = iio_priv(indio_dev);
->  
-> +	err = devm_regulator_get_enable_optional(dev, "vdd");
-> +	if (err && err != -ENODEV)
-> +		return dev_err_probe(dev, err, "Failed to enable core supply\n");
-> +
-> +	err = devm_regulator_get_enable_optional(dev, "vio");
-> +	if (err && err != -ENODEV)
-> +		return dev_err_probe(dev, err, "Failed to enable I/O supply\n");
+> On Sat, 07 Nov 2026 22:45:45 +0000
+> Roman Vivchar <rva333@protonmail.com> wrote:
+>=20
+> > Hi Jonathan,
+> >
+> > On Sunday, November 8th, 2026 at 12:36 AM, Jonathan Cameron <jic23@kern=
+el.org> wrote:
+> >
+> > > On Sun, 08 Nov 2026 00:15:03 +0200
+> > > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>=
+ wrote:
+> > >
+> > > > From: Roman Vivchar <rva333@protonmail.com>
+> > > >
+> > > > On some boards, the chip shares a power rail with other components.=
+ If
+> > > > that rail is turned off, the chip can't function.
+> > > Not sure how the sharing is relevant.  Even if shared with nothing
+> > > else we need to turn it on.  So just mention that on some boards it
+> > > isn't always on.
+> > >
+> > > The only reason this would be optional in the binding is if there
+> > > was internal routing in some packaging or similar that meant there
+> > > was no pin to connect.
+> > >
+> > > Upshot, make this required in the binding. Note that doesn't mean
+> > > the driver must require it - we are simply documenting that the
+> > > device needs power.
+> > >
+> >
+> > I agree this should be required, but that would break dt_binding_check
+> > for existing boards. I don't have their schematic nor boards themselves
+> > to verify the regulator for the power supply.
+>=20
+> There aren't any upstream (from a quick grep) and so not your problem
+> unless you have some in a downstream tree that need fixing.
 
-Just use devm_regulator_get_enable() and the regulator
-framework should supply stub regulators if they aren't
-specified.  The optional bit here is for when we do
-something different if they aren't wired (usually for IIO that
-means using an internal reference rather than an external one).
+I found these (next-20261015, 7.3-rc7):
+$ rg "sensortek,stk" arch/
+arch/arm64/boot/dts/exynos/exynos7870-on7xelte.dts
+467:=09=09compatible =3D "sensortek,stk3013", "sensortek,stk3310";
 
-Jonathan
+arch/arm64/boot/dts/exynos/exynos7870-a2corelte.dts
+412:=09=09compatible =3D "sensortek,stk3013", "sensortek,stk3310";
 
-> +
->  	data->vled_reg = devm_regulator_get(dev, "vled");
->  	if (IS_ERR(data->vled_reg))
->  		return PTR_ERR(data->vled_reg);
-> 
+arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+526:=09=09compatible =3D "sensortek,stk3311";
 
+arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+219:=09=09compatible =3D "sensortek,stk3311";
+
+arch/arm64/boot/dts/mediatek/mt6768-xiaomi-merlin.dts
+348:=09=09compatible =3D "sensortek,stk3337", "sensortek,stk3310";
+
+arch/arm64/boot/dts/mediatek/mt6795-sony-xperia-m5.dts
+206:=09=09compatible =3D "sensortek,stk3310";
+
+arch/arm64/boot/dts/qcom/msm8916-wiko-chuppito.dts
+91:=09=09compatible =3D "sensortek,stk3310";
+
+arch/arm64/boot/dts/qcom/msm8916-alcatel-idol347.dts
+173:=09=09compatible =3D "sensortek,stk3310";
+
+arch/arm/boot/dts/qcom/msm8926-sony-xperia-yukon-eagle.dts
+169:=09=09compatible =3D "sensortek,stk3310";
+
+> If you do then there is the option of a fixed regulator to close
+> the gap.  I consider a missing supply a bug that we should fix but maybe
+> others disagree.
+
+Yeah in my tree I have added vdd-supply for my board :D
+
+Best regards,
+Roman
