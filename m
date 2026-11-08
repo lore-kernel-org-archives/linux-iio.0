@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794096129;
-	b=VEquOf/UeoUZzhEPKv47DOsr4Q4HO2LGzkgrb3E/aeKd6rjjL9IoDDHVUyDtb80xxR5X
-	 c7DL3ppmEFJj9J3NJpM0fOxISNItRGXC+zHdBS2lavct1bgd035BfPHGYEc+iOVwJhvGD
-	 SGXmz6Pf+nGIl6ZXx4fDRLQZW1B+eTlKDfV6t2268Ta6htgfRGJSmFFvtrhHj0u84QGWY
-	 OZZna1z9xqLkm4AzL0T2pGEStuKVSdHXLZhg8URGU+3r3PclczLGQul7k1aDQsIIkcwUJ
-	 HtT57o3A7qG/j/JUTIMS93cL3wfnNNPxaNkyAFjrAfIjxCfIRSuCAETl16Np9q6sbuw==
+	t=1794096242;
+	b=xHtMLy36hKrRI9gOnFg8SToT9Jrlv5x9PG0ILBG9xfZ1DGa2rWTeXCagjVt2LWHNDHyw
+	 6o5cvW8Ls0zXy8VyBCidZSLHOe6f4WrJsJiJIav1p05EAYggM6o7rxgXutsitTEJoA9Tw
+	 8yORqPhyBEg2DVAqjR4H4+LlEcJb5/xw4yopBaQpEClX7yBdaSj2NckHM6qSiJf+ZgvF7
+	 xqlOz+1pgG4gnEa8OqTCAznwEJstG+cH1/vdt7UhdTpMy41XAW0AEJdWlnqiCG4R8xsPG
+	 dSw40uTy2aUugDZRtVuFAllFYI14m4TkiejJEHoglORO0AqPWd+gsogKtn88STXbXfw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794096129;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794096242;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=RiFgaI7f3ypJNMcIbplVOR7YNw0OlO7nVVQJEyJUwpI=;
-	b=wcD9XNNV1nbtA1YdA6LCVTthYk48VHy4KAH4uacvehwqaalXvN+x+LymHMxuKGVi7SVl
-	 8SZjIvL0ckY/R9ZqGehpLGPu7QM6EBVMP/gsPGBfnds5mt+c7zvjf2VHikQK0/ZpJrPhD
-	 a/R45iZFBeh63zGmjI02WARBLLuYznhcp4nviUC/Y1LfWPHetuGmogNusOsAuorXgiJx+
-	 Asgv8aAx+I5mJToUkv6i2XvnrBtPv68UVKSe7kpayzb28iQk9k6qLmif3/wYe1BQBB9Yb
-	 iCvz4Gc7GLUDz1IIlF8dkxGpjO0/3V+SNkpecBYHlol10j65tEC8H8ZuAXtK2r2RNVQ==
+	bh=/s3GtWBn4vO81epFmrbwaz60Z3/jK514SYAfdbFW67A=;
+	b=XvI+yeRxIfRauT6ExTqwbAlWt5Jnu2ghpwDiqdKZB+mD1ljbAWgAD/2/4SmsVTbQ41TU
+	 IThV1nC23drIGyU5nITylpa2qZ7LHNKGuBm5/4xjwvjNx7o52X5V8KTDIyefVMUPbmANs
+	 Dra56B8kdoXCatukFEWVcJMHdLNvzSg03gVHJFIUN8m9z4+pRVW459KsZJrVpYLb8VnCS
+	 OkUZ9qJRrlKJJBdPYpb2qhDJkxK/x3ahtNBAYEUWp4wGasqpaWFSEG4D8Z+5ddD+rKatC
+	 04GoHRrz5Hhbuoc9ZcX3iLjy0tSjj/iRoer6NBkQAU546ocLZs2zD2EQffY95i+4qGA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=abmeSe+p;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=csHQCDHR;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E1D3606A32F;
-	Sun,  8 Nov 2026 00:02:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8F3B606A326;
+	Sun,  8 Nov 2026 00:04:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=abmeSe+p
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3102B1F0089F;
-	Sun,  8 Nov 2026 00:02:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=csHQCDHR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4975D1F0089F;
+	Sun,  8 Nov 2026 00:03:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794096129;
-	bh=RiFgaI7f3ypJNMcIbplVOR7YNw0OlO7nVVQJEyJUwpI=;
+	s=k20260515; t=1794096241;
+	bh=/s3GtWBn4vO81epFmrbwaz60Z3/jK514SYAfdbFW67A=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=abmeSe+pbHL+RjTLick9II18+AMmw2B6A2/jPcrweL/CDUYKSAs0+LwCL9ws9fHJ/
-	 IKhkp2f5dm5+e9b/ZuB17k+XPxIUVNYslv6cgzdmJm/w1T1HMnD54sKX34w9/sLEBm
-	 1pBARM1i2hAR43dx0T7XsLuQ9ddvL9RgLVfDHNjI4x4nCs3wBGm3RtjdVaRBt7sCPm
-	 mHhw99bCWUVPIsB7ci2UF5UpW9toJxuWzqq2/xJ5zYphUQjFJDkUbSaBKgsPvlc445
-	 HxpVhxbaWmm4Dr/0ETfQWmtch+CqPdmg+J5hHolLp2cz6+L7LMiG8MoGF0cMDEJIew
-	 Nv1E1ad8k73+g==
-Date: Sun, 8 Nov 2026 00:02:00 +0000
+	b=csHQCDHRlsMm9RFiLLSzdI5o8EMfD5mn0L6Ty4LrQ7+GpV5bQ8u/YvM220pGy4kYz
+	 oILAOxIvHgU1vBeaLBQa6fNSb01SohdFSe7l0s7DpG7PrE0vX2wCj/o9W9/udGcz5e
+	 KF595AIa9I/hUAEBEcDj0xFKKotGjdfpAV8k5tpaN6hFDCXrXuALlvx6TAjW6UNvsD
+	 diWtAILoGakaBxetkuI3UDZlD4Wz21jOO3ZDP0k6ITlIK0UbEFc406S7DE1xVWF+Kf
+	 JHH5bL8P/GeUuN72CLC6J9SRWdqeS03SWKXwEH/2ysrZYqWDiJhjZi1s0kv/Es+7Zo
+	 W3G/ppNS/4TyA==
+Date: Sun, 8 Nov 2026 00:03:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Linus Walleij <linusw@kernel.org>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
@@ -48,12 +48,12 @@ Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Kyungmin Park
  <kyungmin.park@samsung.com>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/4] dt-bindings: iio: light: sharp,gp2ap020a00f: Add
- GP2AP030A00F
-Message-ID: <20261108000200.38075bfb@jic23-hlaptop>
-In-Reply-To: <20261108-gp2ap030-v1-2-55314eb7055b@kernel.org>
+Subject: Re: [PATCH 3/4] iio: light: gp2ap020a00f: Enable the core and I/O
+ supplies
+Message-ID: <20261108000354.2e673da9@jic23-hlaptop>
+In-Reply-To: <20261108-gp2ap030-v1-3-55314eb7055b@kernel.org>
 References: <20261108-gp2ap030-v1-0-55314eb7055b@kernel.org>
-	<20261108-gp2ap030-v1-2-55314eb7055b@kernel.org>
+	<20261108-gp2ap030-v1-3-55314eb7055b@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,79 +67,46 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 08 Nov 2026 00:31:34 +0100
+On Sun, 08 Nov 2026 00:31:35 +0100
 Linus Walleij <linusw@kernel.org> wrote:
 
-> The GP2AP030A00F uses the same register address layout and interrupt
-> interface as the GP2AP020A00F, but returns raw clear and infrared counts
-> instead of providing automatic illuminance calculation. Describe it in
-> the existing binding with its own compatible.
+> Enable the optional vdd and vio supplies before accessing the device.
+> Use managed helpers so both supplies are disabled on probe failure and
+> removal. Continue probing when an optional supply is absent, while
+> propagating other errors, including deferred probe.
 > 
-> Keep the core and I/O pull-up supplies optional so boards with hardwired
-> power do not have to describe them.
-
-If they are needed for the chip to function we tend to require them
-anyway.  That's not to say the driver enforces it, but just that
-the binding indicates they should be there.  DT files can just
-spin up a fixed regulator if it is always on.
-
-The extra bit of led power description perhaps would be better
-in the previous patch given it isn't related to the new part introduction
-in a direct way.
-
-> 
-> Datasheet: https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2ap030a00f_e.pdf
-> Datasheet: https://jp.sharp/products/device/doc/opto/gp2ap030a00f_appl_e.pdf
 > Signed-off-by: Linus Walleij <linusw@kernel.org>
 > ---
->  .../devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml  | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
+>  drivers/iio/light/gp2ap020a00f.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
-> index d4bcca0f2d0a..45f1b53d6d7b 100644
-> --- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
-> +++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
-> @@ -4,17 +4,22 @@
->  $id: http://devicetree.org/schemas/iio/light/sharp,gp2ap020a00f.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+> index b435dc5e8706..62c4beb20cce 100644
+> --- a/drivers/iio/light/gp2ap020a00f.c
+> +++ b/drivers/iio/light/gp2ap020a00f.c
+> @@ -1414,6 +1414,14 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
 >  
-> -title: Sharp GP2AP020A00F I2C Proximity/ALS sensor
-> +title: Sharp GP2AP020A00F and GP2AP030A00F proximity and ambient light sensors
+>  	data = iio_priv(indio_dev);
 >  
->  maintainers:
->    - Kyungmin Park <kyungmin.park@samsung.com>
->  
->  description: |
-> -  The proximity detector sensor requires power supply for its built-in led.
-> +  The sensors provide digital clear, infrared and proximity measurements.
-> +  The GP2AP020A00F can also calculate illuminance internally, while the
-> +  GP2AP030A00F exposes raw clear and infrared photodiode counts.
-> +  The proximity detector requires a power supply for its built-in LED.
->  
->  properties:
->    compatible:
-> -    const: sharp,gp2ap020a00f
-> +    enum:
-> +      - sharp,gp2ap020a00f
-> +      - sharp,gp2ap030a00f
->  
->    reg:
->      maxItems: 1
-> @@ -28,7 +33,8 @@ properties:
->    vio-supply:
->      description: Supply for the I2C and interrupt pull-up resistors.
->  
-> -  vled-supply: true
-> +  vled-supply:
-> +    description: Infrared LED anode power supply (LEDA).
-Not related to rest of the patch.
+> +	err = devm_regulator_get_enable_optional(dev, "vdd");
+> +	if (err && err != -ENODEV)
+> +		return dev_err_probe(dev, err, "Failed to enable core supply\n");
+> +
+> +	err = devm_regulator_get_enable_optional(dev, "vio");
+> +	if (err && err != -ENODEV)
+> +		return dev_err_probe(dev, err, "Failed to enable I/O supply\n");
 
-Does explain the mention of the vled in the previous description though!
-Now I understand you were referring to what was already supported
-rather than what the patch did.
+Just use devm_regulator_get_enable() and the regulator
+framework should supply stub regulators if they aren't
+specified.  The optional bit here is for when we do
+something different if they aren't wired (usually for IIO that
+means using an internal reference rather than an external one).
 
->  
->  additionalProperties: false
->  
+Jonathan
+
+> +
+>  	data->vled_reg = devm_regulator_get(dev, "vled");
+>  	if (IS_ERR(data->vled_reg))
+>  		return PTR_ERR(data->vled_reg);
 > 
 
