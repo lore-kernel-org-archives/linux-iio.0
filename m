@@ -1,78 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794267599;
-	b=NfLpMZ3xLCHF9UNGhta81YrfiwYQr9SKERJ0gaAoDUebbqwXz9LxEd8lzLoOQHr6p1t8
-	 drm6NJHQE0sDqKiFn4Jp0Jb1CRMIlrjNYNZUNaoejocWnJFytgVRrwwvcpOqREwQ51UVI
-	 t1dttQ9QrVsqAU4Qu+wRV10lRHetGukqQygVgDZN+ukh6wbkqlV36/RURYqTzH0ehMZR8
-	 dZuP1u43/a8mQFPBV+MM5xHV9Q85UO+bAec5N6wsyY6ego2VQFkeRMrTEYSztFey3k3G8
-	 7kyEoAKlB5udgYptDnvfKA2T7ntnLCleZrH/GdPLE4ksBftS8r8O84d0v+2qp5+3GAA==
+	t=1794268183;
+	b=NrCRViL3skO1x2ty84Jq1gGLdd1xgRjU1E9Gu8n8DIgcZ5RKoRu44HmC7DP7/JuFqh8h
+	 CyREi+gRCKBiQrO8nRu3bEiC9H83Mb+jI8rtrDxsVrrbVy3hgI8IeXuLFtKtKeR326w9R
+	 bQ4q+88Pjs86rYiV49/U7SE8WDVpOQCOE+nIxUCx6D58Mhf/geMrHUZX4ikSSZtgq3LZO
+	 Nh0we+T43AUs72JGNQEGP71GjCUhXbpXuHO9jBSzpa0cY/+1Be/iuczbj0xyJynYlYBXm
+	 zYu0PhqEoTWSyia9faRbWUoOnFBjXBO61asRMXKkyJ7V1Fa8zv2in2sVh0yyY/mvWAg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794267599;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794268183;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=6h5zxCWn+DoijFiBqhdIQXlQP/2jlNHpgkQCpj9M10o=;
-	b=wWy3a754Dzk392HlYOeIQ618WW04fPpVEid9C5qkpwae54o3biPB9JZLMMObc7zEYVZl
-	 o/MPhgL2c5f8n+mIgh+8Tl4JMZSr0yzAUP5sxa+GCMDSu7AJYR0Je3PayMluU9gAnWrk0
-	 9OZ2N5khiTOoGPmofuiQfysvHWoyE39GY6rITqLZp6u3OhshMfQPKXSMIqxPUwvz+jI2k
-	 fQ9ZNU5PNfdHhIV3CAfIzoGbfr+OXvH9n/C54yU/7H3lUyOEApB3Tmb7BYq8jgJCffCIp
-	 DhJbrBimYDwodiBUFDNum9Cokb2y5CFQMvc7iMZxrHqGOQRrtRQSj0HQL5kAWV8y2wA==
+	bh=Jj40YZQ9cVoJSVmwJ5VvTTa+BLK2O7tycUOVE2dxpto=;
+	b=ZW2oSLmJ97XFZWINc3OsaXj5Q9ww2s43C6pjK24bnIK2S5sXqr56SNK2EWr4b2KOzvCv
+	 Luy5ZwOlMQLAbdsEXnq/mTo8x2+/7kb0wf8GkM59vHzsqsVXLnwF4/IgnuLyl/Bd7wODo
+	 K40dCttdDpOwCzoCnlrKBz+mpGA6kVyrEEAlVpkOEshav22DLQbGQHKICddC4PcsxmC+7
+	 NQoYgUPNenrs+CXBhmLCNlPBqXs0YHRt04+d/OHJ3G7GsnqAik2VoF52dhhNAlIqqJm2d
+	 HhFpVqSk0pibJlOS1w+9l1IuHd0W8vTKZUi7ItUYvVWLd9rux93PrPRZ5jeKY1SOXMw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=GYwl5OBQ;
-	arc=none smtp.remote-ip=192.198.163.10
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y8TlR4PE;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 690B4606A31C;
-	Mon,  9 Nov 2026 23:39:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 690B4606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E77D606A31C;
+	Mon,  9 Nov 2026 23:49:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9E77D606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=GYwl5OBQ
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y8TlR4PE
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794267599; x=1825803599;
+  t=1794268182; x=1825804182;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=6w3vUl81E6tgblJWSy1ZLmUFWpHHa31fSlMuBE4cMC0=;
-  b=GYwl5OBQwGGO6IX/233IO1p6lU3ob4E7RqBfa2LjhhvJvveaqgTeI/BV
-   d/z/HxSUL/IYXH1QK728b5tdoZmn6YFaMnOtdvgjS1tKZ/QEqPEwq+rnj
-   CHaNAhh+/5MNkfbneenekpbumfWS1c6q2G0ZPUwgRT/dV2rGqeQmaN8Td
-   ruZTQRQ1cGfIz7jVaO5ozYYvRw6Pv8UanuZX9Qhg6dBq8EdHyRzOdWt7m
-   xVvYlPQWumOyJ3NKE4PZzVUq3ks/6GPwEjdc76+Pb+EPczBalBFq7y69f
-   p+iR8hgRu5IKaMiVZkOKYagHFcf461bThNjifOOW+zdIU7CYxWmrO/SEY
-   w==;
-X-CSE-ConnectionGUID: Twe0VmJaSd6y3/7r6Qsq6Q==
-X-CSE-MsgGUID: 74JbfzAISlCEX6IMAd3X2g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2901751"
+  bh=JwrY6mPbucJ9MTS6HGIQYNNMZV2qvKzQRfFVtze/HFs=;
+  b=Y8TlR4PEnkyWCXmwZR+fMxxJorRbWoEOsxRwql+Ee+jV8sWSKr2dIrwr
+   p6nMC+WE8dW1ldTr1WuUBgqPP8EnKLufo6vKMj43AnZnPUUgVw1eYTvhd
+   m2kDzXAxDDL80tQlXV81vedNw700JPr+6A2R/rjkB/2bI8jXq5fbU4E3d
+   L4DkNTsnE05HaKWiSf5slOlubkYEp5zrIBnRiE7GfDR2pj20jCYrD/Dm7
+   unlEMhogur8wcD86xQG/PqLFSQ8pw81I+I5DjdUIFoXcUW87KLec9htwG
+   Orlsp3WWhwd0Q/3HUaZEstMTNFVxlm2iT+GTaattf/MEzE77CJcfSMb4e
+   Q==;
+X-CSE-ConnectionGUID: DbXJmKAkQn2Eu3WDBZLQRQ==
+X-CSE-MsgGUID: sCP4N26GSQ+QSGbHUYkKFg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2890674"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2901751"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:39:58 -0800
-X-CSE-ConnectionGUID: G7Q2+33BRXmRJMgFFA4eMw==
-X-CSE-MsgGUID: qpT5d+7gQbSo/V5qOwRjvg==
+   d="scan'208";a="2890674"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:49:42 -0800
+X-CSE-ConnectionGUID: uwmFmPSZTweSXoMhoi7mng==
+X-CSE-MsgGUID: 1IXFqebVRJKUUA3ki95l6A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8323616"
+   d="scan'208";a="7987234"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:39:56 -0800
-Date: Tue, 10 Nov 2026 01:39:53 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:49:40 -0800
+Date: Tue, 10 Nov 2026 01:49:37 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: raffaele.tranfaglia@gmail.com
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <avJZyb5S--smaHpX@ashevche-desk.local>
-References: <SN1PR12MB252841150D2280C7C1294A11A5742@SN1PR12MB2528.namprd12.prod.outlook.com>
- <SN1PR12MB25282CCC3930ABE760956095A5742@SN1PR12MB2528.namprd12.prod.outlook.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Manivannan Sadhasivam <mani@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: light: adux1020: fix interrupt clear value on
+ SMBus-only adapters
+Message-ID: <avJcESOPo2nGq5wy@ashevche-desk.local>
+References: <20261109-adux1020-measure-fixes-v1-0-fe1ba63f28bc@gmail.com>
+ <20261109-adux1020-measure-fixes-v1-1-fe1ba63f28bc@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,79 +87,40 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <SN1PR12MB25282CCC3930ABE760956095A5742@SN1PR12MB2528.namprd12.prod.outlook.com>
+In-Reply-To: <20261109-adux1020-measure-fixes-v1-1-fe1ba63f28bc@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 08, 2026 at 02:08:29PM -0600, Victor Chernyakin wrote:
-> The FDC1004 is a high-precision 4-channel capacitive sensor that talks
-> over I2C. It can report the values of each of its 4 channels individually,
-> as well as the difference between any two of them.
+On Mon, Nov 09, 2026 at 11:39:02AM +0000, Raffaele Tranfaglia via B4 Relay wrote:
 > 
-> This initial driver allows performing single reads and configuring
-> the sensor's various settings (sample frequency, calibration
-> gain/offset, etc.). It could be extended with support for triggered
-> buffers, repeated measurement mode, and/or power management.
+> adux1020_measure() clears the mode interrupt by writing the inverted
+> interrupt enable mask to INT_STATUS. The mask is a u16, but integer
+> promotion makes ~0x00f0 evaluate to 0xffffff0f, which does not fit in
+> the 16-bit register.
+
+Huh?! Where did you get it from? the mentioned promotion may only happen for
+a signed char which may not hold 0x00f0 in the first place. The above is some
+nonsense.
+
+> On adapters supporting plain I2C, regmap formats the value with
+> put_unaligned_be16() and silently truncates it to 0xff0f. On adapters
+> that only support SMBus word transfers, regmap_smbus_word_write_swapped()
+> rejects values above 0xffff with -EINVAL, so every proximity read fails.
+> 
+> Mask the value to 16 bits so that SMBus-only adapters send the same
+> 0xff0f that has always been written on plain I2C adapters.
 
 ...
 
-> +static int fdc1004_write_raw(struct iio_dev *indio_dev,
-> +			     const struct iio_chan_spec *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct fdc1004_data *data = iio_priv(indio_dev);
-> +	struct regmap *map = data->regmap;
-> +	s64 val64;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (unsigned int i = 0; i < ARRAY_SIZE(fdc1004_samp_freqs); i++) {
-> +			if (fdc1004_samp_freqs[i] == val) {
-> +				guard(mutex)(&data->lock);
-> +
-> +				data->samp_freq_index = i;
-> +				return 0;
-> +			}
-> +		}
-> +
-> +		return -EINVAL;
-> +	case IIO_CHAN_INFO_OFFSET: {
-> +		if (val < fdc1004_offset[0] || val > fdc1004_offset[2] ||
-> +		    val % fdc1004_offset[1])
-> +			return -EINVAL;
-> +
-> +		guard(mutex)(&data->lock);
-> +
-> +		data->offsets[chan->channel] = val / fdc1004_offset[1];
+>  	ret = regmap_write(data->regmap, ADUX1020_REG_INT_STATUS,
+> -			   (~adux1020_modes[mode].int_en));
+> +			   ~adux1020_modes[mode].int_en & 0xffff);
 
-Make a temporary variables to have division and modulo operations coupled
-together. The rationale is explained here:
-9b3cd5c7099f ("regmap: place foo / 8 and foo % 8 closer to each other")
+On top of that regmap should limit the value to 16-bit anyway. If there is a
+problem in regmap to cut the upper bits, it should be addressed rather there.
 
-> +		return 0;
-> +	}
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		val64 = iio_val_s64_compose(val, val2);
-> +		if (val64 < fdc1004_calibbias[0] || val64 > fdc1004_calibbias[2])
-> +			return -EINVAL;
-> +
-> +		return regmap_write(map, FDC1004_REG_OFFSET_CAL_CINn(chan->channel),
-> +				    (u16)DIV_S64_ROUND_CLOSEST(val64, fdc1004_calibbias[1]));
-
-Why casting? Shouldn't it be handled on the regmap_write() stage based on
-the register / field description?
-
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		val64 = iio_val_s64_compose(val, val2);
-> +		if (val64 < fdc1004_calibscale[0] || val64 > fdc1004_calibscale[2])
-> +			return -EINVAL;
-> +
-> +		return regmap_write(map, FDC1004_REG_GAIN_CAL_CINn(chan->channel),
-> +				    DIV64_U64_ROUND_CLOSEST(val64, fdc1004_calibscale[1]));
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
+>  	if (ret < 0)
+>  		return ret;
 
 -- 
 With Best Regards,
