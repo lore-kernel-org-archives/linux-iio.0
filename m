@@ -1,84 +1,82 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794225679;
-	b=xE6gq9PnOa492NiawS4q0tUghzr9OuTSmHVIPWF1WTedgHHzyXDVKk0qsubJQeCHr+dL
-	 412AS1ANy/XzsGqui3T8Cm5HI4k6ZeB5Kkc9dv1/KyBmcI/ZTj0yYoegacj9B2MclX+CX
-	 4JF3WM68X6ZmxKfJtrJPPcdrfhHyset0gJ0TRa+bIVOSWXCI7tXkFkskeYShammFVOgVl
-	 ErYho86yofloyktmM3pimNYnCUGUbevk+oWAzgO3baEXU/TyEP8r/ebLHtdcZRiymypuf
-	 qXYHOaPXgMFchp1PJ5eYo7Yz5ZJh6XzKds3Tb9bG+v5Uw6z7gJKLoK4SrieO+QCV86A==
+	t=1794226340;
+	b=z/bmC4za9sacc55g9syFuUC2ppgeERS546tc2kOA6BtZ9C5AbdG7VDMuRGnAhyfbNbTy
+	 DDHqXZ9mYzhRA7ze46DG9W0Ieeu0Ah6KdfDqIAc/IozOM8R44p2HPV0G9yiRR5+3XUbgr
+	 6sAzRwlsQfZiGhOQUBC5FIQw2pEhVPsLyu2yxbphtd9Dl0+OQCKjYWMlm7oGzIvR97H2L
+	 Nantmp54hYZAr1OSQaOd626mUPN/9qRxtu4w4bUoVmmuaTe2iSNDexaUagNp1Rcu+0yI3
+	 uUaN1Ojr2K7Yw1xJ++vA8X9J0E86idj0FFzGCVTH/R75J1Ls108vycWT7/FFl6V9oVg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794225679;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794226340;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=pxzG4Z9tUr84C+n4G473WYz9seP+45U8TnoBcPvES30=;
-	b=4pVfMdZHrY7Z84DMgoTrjBtzVXvegjoydJllnh3N4n+zJPvvMe+R+yTZdH3+7CpP7qe5
-	 H5nIwtnrwm0snTNQzH+nhX0iUJgNW9idsUTJc4CjRoM+GZSbmRNK+Ed0m3RX/wtplAVog
-	 oKLsD8jp6XlzhboITpzpe6qQfQXKOzAvbiRILM257tCWYJdXKy92c1T/7jx7FfwWqxUjO
-	 6IHz0PWz/+pGSTHfHHQJrYbqIHPrHTP0wAx3z8qEIbqnj7zWUCjz0ZBO4AWda08OhtPmh
-	 jOkTeezslPe4gyBMetJkKwpoqeRqT0lPnwgf4BfZq4hQOr0F81nzAwhVfFlGcizgk/w==
+	bh=6Ahqk8ZpP9+E3a7lm4QE+U0OG00vjkXyfuDjP8/SbDI=;
+	b=Hk6ar+3OlUFA5dnmjTJ29WYllZds+1lGaApqfihI9WZVEkG8EJxnmgWWMNKHlzWAICis
+	 xpGvAl/hEi1nhBR8ou6aw/FNPvIGhDGRPjIxx4baLyJ4gu3VY4JB/MiKLU87lMyJajxSy
+	 irGTh3MnJceDhTTwhBtYk4wvOsn8JX2W0unmW/nzEGL3kpmC450QBzdaynHVkxJjW7qdb
+	 O4A28miJ3lbhd7HkEAMkRLWRuwQw52EhaJtwkjEiaL1yWITkK9KDJytVBMxtbsKvYGq+P
+	 5Uvs6zhNUUjRZBHmkAlXNEaoRBYErw6Ca8uW8sMNpuSQkvz5KQA6lMzk5LT1Dmqe4ZA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Srlba1QQ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QqIucLVG;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B671A606A31C;
-	Mon,  9 Nov 2026 12:01:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3889606A31C;
+	Mon,  9 Nov 2026 12:12:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Srlba1QQ
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QqIucLVG
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794225678;
-	b=H6pnApyDwvQKJiIZCb3HhNC9v2+J3C5JqiPDz+Manf3ufmUimH6KWLzXq0mmZXGAic6p
-	 C2ueCr8fnU6wrtUBDQOKE6sDqwp8P3VgNngd9vdpB9D8bZ+Ns2BQC5I7OoFtl+BQ3wsWI
-	 6q0V0fzG4g79oP3OTzli2vuTVskgMjYan+ze8xy+tefDQjAssaQ1hd88EhwaYNs0sxoH/
-	 6PK/x1IyuJST370tcCktv/32RVdsmb8K7z51B1QdZ/TMwUlbsxxbywhzOgIpCpvL5CNYX
-	 FS0cAbgzu5oLRp8QD/bdT7y/Gp3dBuAINoQVd1SslNJEEt83RCsznZB2WqCkygTQkuA==
+	t=1794226339;
+	b=tJz8WwEBG0hJMIfG0A1m1sogIkujJ2XBTPP9hjDXOetrqXo2E6FQsaIZPbaJziNSeFST
+	 grOk887BQMbebBgJtsBSDrvc8i5JkcCC6ArZP5LJwMiaLGxnaC2+dLrMiX2ujTdyjSB+8
+	 ZOzEx7SgT5jBz8F6JLtJg+HbHbDcqQSKRGY8LKburJFoKkpuH/9xllk1d8saej59Upxau
+	 O9HezIH1v4QiHo0gUJLKOdJdu94peNm0i2D7mM6X3GRmL+ysvx1drRfpofDofO9UFNddf
+	 47JABJmhB9Erzii2eKqIU4flfG4d48/uKHa1IQ9vtI7S7KIwwH1QC3bw/qQzPIRTLvw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794225678;
+	c=relaxed/relaxed; t=1794226339;
 	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
 	 References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=pxzG4Z9tUr84C+n4G473WYz9seP+45U8TnoBcPvES30=;
-	b=oa3tCVDihpcrW0ftMjvjWyIpztvziRl5Vjq4grR+K+5MaSqldOypR+AtuadAmhHunSvi
-	 a4vujr2Njk3Si9QaidHaRj/ZXp/R4g4268sozU3rrPVqwsK0flaTAfW9twniF+jdnVJSg
-	 q9QxGVeUlto8owAVazlgy+QuJX7Ak6wSFeGLxBhSUSUgtd1Bb5vB5CqZE2cRkqWwrFvVA
-	 jqv/pusnVJFzxy8Igd79YgEbUtkh4DcVBvCEtpLvurwvrGtddV0ze+SqgmsmzYdf6Wk3N
-	 Cc1USby9/KcpjbQEryO6D4q5tuDU85FS/FdPvqjbok7OXxVmXjse5phnnfJDnMs2+Kg==
+	bh=6Ahqk8ZpP9+E3a7lm4QE+U0OG00vjkXyfuDjP8/SbDI=;
+	b=CzRXsX1faeJDN06aYngcaDFxAtzTawAbjM7YADvhZWg77ZtUWhjaMpaM1EVfer5BKl/A
+	 Qee2zwdDGFmVIE9dUNrplHuB96hnfkCVAllj8V746tomX28psKTpqAq71IAsZgbaO7GQ8
+	 2RdQG46McG3iBlA2AzWemGUzK2xfDL/6hoqHi6DhmSN6kWL1NpPlVDicyHJg5/g+t+8dd
+	 iuj5cocsXOO/YNdgHSl8M4UmU7C4pIHZPQDzEKgnSEZWcHvdZEe+fW7PgtYx5BOzHQ+G5
+	 DtF0QB1A3BsDqChl7QfuTSyyh3kqUksIW9hYd2oITBYlgynwh0q8MdN6+9hQyKgyYew==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=90.182.112.124
 Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 8A9AE1F008A1;
-	Mon,  9 Nov 2026 12:01:14 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPSA id CCBFF1F0089F;
+	Mon,  9 Nov 2026 12:12:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794225678;
-	bh=pxzG4Z9tUr84C+n4G473WYz9seP+45U8TnoBcPvES30=;
+	s=k20260515; t=1794226339;
+	bh=6Ahqk8ZpP9+E3a7lm4QE+U0OG00vjkXyfuDjP8/SbDI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Srlba1QQ6QNms9fdYyWQZmx/GjFcwwjH25qwjZj8EmvqEmODeEeiehT9y1c+OVoyH
-	 DmJeqxoVEIMrghgFYGxQac3PnwmT0fkcLVmqo1vPnfje0RmjLR1wBOjPr2x0p8AKcv
-	 X8uGGisEeu+m3AU2+uhij2JkIw8IcEhLftK4ES2r3ebS94RKsS/21Cl2PFNd6dGvsy
-	 EX7jkgOfi8islkmPcGRcg3cwl86pEP1JD9liS7x+314M9t6FMedGaSBM1ndaMj/Bwe
-	 UdlmkP+a9kl1XyApqYfvqf+Yr/B+VL9M9/p4Au+8Esf+nOLkHIC/iaAECpo5yPeyPQ
-	 +hLXkrhA8EadQ==
-Date: Mon, 9 Nov 2026 13:01:07 +0100
+	b=QqIucLVGJHLAfpODDVaGOCu6CdEu161HwHgPQ8hWtNxYKgY+D2BU+eKHYb1WcpQzI
+	 Syo39g9lIyhVng1aHa9o5w4LdcOIiBQCBOXGKZZdSP0GiHyh6gbDwP5DI23SnR3+yO
+	 gfDtJtdOFboifQaGwl288Y9djUwyHi0h4aVqOcSes0uzJ+veuFEvoh5c7EtP+rA53A
+	 qZh6BFsUS4UkEzGC/6cXQxJokgmMUHq5L0TzjgDmd/w3/CWKIce9sOnrOUBBq4pqnh
+	 uG96iGFwl6sCoMM4X+f2IBEbn94FxSea63D8BzAYBb/add/DI+dvovj76mF1zfrsaD
+	 w1v/mctI1W4jw==
+Date: Mon, 9 Nov 2026 13:12:08 +0100
 From: Joshua Crofts <crofts@kernel.org>
-To: Akhilesh Patil <akhilesh.patil@linux.dev>
-Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-rtc@vger.kernel.org, akhileshpatilvnit@gmail.com,
- akhilesh@ee.iitb.ac.in
-Subject: Re: [PATCH v2] MAINTAINERS: Update Akhilesh Patil Email address
-Message-ID: <20261109130107.000056f8@kernel.org>
-In-Reply-To: <20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com>
-References: <20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com>
-	<20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com>
+To: raoxu <raoxu@uniontech.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, luiz.von.dentz@intel.com, brgl@kernel.org,
+ pmenzel@molgen.mpg.de, pengpeng@iscas.ac.cn, u.kleine-koenig@baylibre.com,
+ lars@metafoo.de, mike.looijmans@topic.nl, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ltc2471: Fix LTC2473 differential offset
+Message-ID: <20261109131208.00006886@kernel.org>
+In-Reply-To: <AD0B78CBE86D2045+20261109100659.3796603-1-raoxu@uniontech.com>
+References: <AD0B78CBE86D2045+20261109100659.3796603-1-raoxu@uniontech.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -92,18 +90,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 9 Nov 2026 10:44:43 +0000
-Akhilesh Patil <akhilesh.patil@linux.dev> wrote:
+On Mon,  9 Nov 2026 18:06:59 +0800
+raoxu <raoxu@uniontech.com> wrote:
 
-> Move to my new linux.dev email address akhilesh.patil@linux.dev
-> I plan to use this email for kernel development going forward.
-> Also update email address in few yaml and driver source files.
+> From: Xu Rao <raoxu@uniontech.com>
 > 
-> Signed-off-by: Akhilesh Patil <akhilesh.patil@linux.dev>
+> The LTC2473 reports its differential conversion result as an unsigned
+> 16-bit value spanning -VREF to +VREF. The IIO scale is consequently
+> reported as 2 * VREF divided by 2^16.
+> 
+> IIO offsets are expressed in raw codes, but the driver currently returns
+> -LTC2471_VREF, which is a millivolt value. This makes the processed
+> reading incorrect: with a 1.25 V reference, the midpoint raw code is
+> shifted by 1250 instead of 32768 codes.
+> 
+> Return the raw-code offset so that the midpoint maps to 0 mV and the
+> endpoints map to -VREF and +VREF as intended. The single-ended LTC2471
+> does not expose the offset attribute and is unaffected.
+> 
+> The supplied fix was reviewed and this commit message prepared with
+> OpenCode AI assistance.
+> 
+> Fixes: 1d3eacbfa644 ("iio: Add LTC2471/LTC2473 driver")
+> Signed-off-by: Xu Rao <raoxu@uniontech.com>
+> Cc: stable@vger.kernel.org
 > ---
 
-Next time please don't send a v2 as a reply to v1, it can break
-tooling like b4.
+Looks fine, but please wait at least 24 hours before sending a
+new version. If you spot an issue after sending the patch, please
+reply to it describing the problem.
+
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
 
 -- 
 Kind regards,
