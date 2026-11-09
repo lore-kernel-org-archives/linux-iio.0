@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794198556;
-	b=C1AiWzonEfw25wxIf0cF+uJNDOvc71hIw6//3a9eEvyp88LQZFs8+lovjXLL+xocFXK3
-	 lL88OhukcbYYlKWLyhF6px8T915HDJbuHRWYbcIoyI1T39Q7JVlKc33raBDbg9/8RDhSb
-	 FHGsHyPuRbZ73qBqRcucY96PkyZKt+r/2AjzqwAFwoehJFXyJ3n/mHkPCqjw3qJtbe9Pc
-	 paORVLcrYRaZxv2zpdcM25VTLqZmt8PaW1uFoca6SUZdOVN0Mu9Pe4hv+0PnAoStDdkhy
-	 cG4Tq+ohQUQ/6q/Pmo8wWRuh2CiMAH/CmOf6FuO/vaKfRjeDBWH4+X79ac4vNoQ57vw==
+	t=1794198563;
+	b=ZU1IUYbdGQckP0Tgs+V/hlt1Gu8g9UF51zT6vZqQBcK0g1/Ws20Fk5ezMyW7DsZ0mrlZ
+	 JfEZGdWVebFRt7UCpzEjZYSkQR31tcIwS43eEG8dAy1RcSYL1vDdgvJsE8rQq0QYxZK+V
+	 1vV0WFnJ8ullRsNwZHeOeUVxep+iBV1ikbK5blz/diY+THwhqXMaX1vtX1w988j6M1HjR
+	 XfRLGmKF6OKr8NBo5n6gG7LWdj9v3cWcDTtUrYTcozRNDJfANIOs4qwWHVpHNbvjR9KpN
+	 3JSzWO9x4mhFHgio7aIosvZrIYFiFUEFGpOFdwRmS5ofKXxljZslXcHJTLnwwoUP1xA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794198556;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794198563;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=I7LWda9VcDO/rMIUhcFJBfu3q+cLbfZB0A4Yi23fMc4=;
-	b=VsYNIjUYa1uv+4kyISJBmV3NS5lo4ISWMMvVkY6yDbYD1f984RHH96g/scEQgwKhXdLM
-	 HQXXPsUVlyYT4CsKUu1IIxxEzu6UexCmxRM9baAWNrr11FCvPzSj5l8RrNbrRras9nTFn
-	 eVFm6naa2a1/LF7FRV+FuBkPKd8FjqlHSYxVXh7gR4pYKoA8Kr2bWgKS5YfEEomJnZ1z3
-	 QLyIfXqG4XemkA//o+BtwJjtb24KnDQMjIbr+GADeb6h52yt5oXgor/S5Ptp99T2NDCNV
-	 hPHsBRG/aGh3Om0Vl9mQTFwusTRIyf+161sV6pwM7xXbYL62t1gmtlw3AhrK0p5lV5A==
+	bh=nAzU2aEwFGvXBq3kemA/V5Nf6mODtkvSfg96CQhWfEw=;
+	b=31fgYTheSwurFWSPkSSlv7vbm6rDA+5s4L90alKLOgA3CGhRzMZNJDE+nEmJHaHSuRzX
+	 4NUE433CPvvdbL2Vf7BhRDeqdK2eLAglgI1LfrG3ITElepoUz1jdI7Dq5ZNtp5+Aq4OaC
+	 7xvnmQmyuU3zfV9usCDQ09+uekaNCd+u7elvD9dbOkBNf2Zmoh20JmF/l+8mVyxZ1hX+Y
+	 SEczlzPW/0IdOxIvjE0QJF2w3iQHDrStYKjkZjgBDpZg6/VkLbgigX3nVL634NxbrYcCE
+	 PfgXm1k/LuDtuelkb4OJWsFzw8MORkHMRdXs+uGzOBLajDvZ/t5DiMOnSGCUfDnjUOg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GtdWscg8;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m4wi0LUN;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1799B606D801;
-	Mon,  9 Nov 2026 04:29:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24ABD606A332;
+	Mon,  9 Nov 2026 04:29:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GtdWscg8
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FA9F1F008A7;
-	Mon,  9 Nov 2026 04:29:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m4wi0LUN
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B3891F008A6;
+	Mon,  9 Nov 2026 04:29:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794198555;
-	bh=I7LWda9VcDO/rMIUhcFJBfu3q+cLbfZB0A4Yi23fMc4=;
+	s=k20260515; t=1794198562;
+	bh=nAzU2aEwFGvXBq3kemA/V5Nf6mODtkvSfg96CQhWfEw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=GtdWscg8eg1YDIHa6Rim+cbadHt5rYIJ9dAYofGbKwz7PyP+K0fvHDqokWO4C81Az
-	 QOmky9qQy2TD7YUxv8C/Zb2sgeRHx0v687dTbnWdxs/R3Q5GZymEM9LchGqj8X1Vy/
-	 HrnZmgVJ1aKdgYcux3xGN4RqW+1tVTCr89QRiw+rVkgwpEhgjQ8TnU8BZZX5vYAtcE
-	 +Zr/pd+A49fZavVboVKF3c+gWaU2WtmFpAqykUubLELYDJ5gneCDWUQQ9M3FPW/U3y
-	 +A30gXXfRxx9YSz/mvXT9gG7OfLPrhCVQfE3IQwpJ/HS9fZuNIU21iY2Evq5e12dJ8
-	 dz2l9Z9RwTxdw==
+	b=m4wi0LUN2k/pYap5MyaRQ1cxirhJL4fguB/SPVUdWDRnJOX39Ik9UvMQKufA5DvwB
+	 qJSO1BC2ZCKFhgqXFRKQ/Y4aOXCjOSCNSjBlIQ9hoT2tvFfI1RdBs6UWpqhIJ3QZh+
+	 iFfdN7UmJ6+jC0tLPxgIBr8xeUzEQj6hfy2Ug9TugjdXJKj0mgK7gf7vh+fPSx8Gzu
+	 ys87tRmV2GZruXmLdMlnvAswP8BU3zjLj/XCsj+epjbmL5cEX/mRl5qGeDqLdJU29O
+	 5VqjvAHMC/PNlaxhIzGH9cX7lu0c1hccGqex/G2A9TaQVWH2eQDx17UnEbUpbi8LLt
+	 MRGGrUVgkIVcw==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	Miquel Raynal <miquel.raynal@bootlin.com>,
@@ -56,9 +56,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [RESEND PATCH 03/14] iio: adc: max1027: poll own trigger from interrupt handler
-Date: Mon,  9 Nov 2026 04:28:40 +0000
-Message-ID: <20261109042851.1326940-4-jic23@kernel.org>
+Subject: [RESEND PATCH 05/14] iio: adc: mxs-lradc-adc: poll own trigger from interrupt handler
+Date: Mon,  9 Nov 2026 04:28:42 +0000
+Message-ID: <20261109042851.1326940-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261109042851.1326940-1-jic23@kernel.org>
 References: <20261109042851.1326940-1-jic23@kernel.org>
@@ -75,31 +75,31 @@ Content-Transfer-Encoding: 8bit
 
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
-Poll st->trig from max1027_handler() rather than indio_dev->trig. The
-poll is only reached when the buffer is enabled and the device's own
-trigger is in use.
+Poll adc->trig from the interrupt handler rather than iio->trig.
+Conversions that raise this interrupt are only started when the
+driver's own trigger is enabled, via its set_trigger_state() callback.
 
 This removes a dependency on the trig field of struct iio_dev, which
 is to become private to the IIO core.
 
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/adc/max1027.c | 2 +-
+ drivers/iio/adc/mxs-lradc-adc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 8d282feea8b5..65a0e85faca9 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -481,7 +481,7 @@ static irqreturn_t max1027_handler(int irq, void *private)
- 	if (!iio_buffer_enabled(indio_dev) || !iio_trigger_using_own(indio_dev))
- 		complete(&st->complete);
- 	else
--		iio_trigger_poll(indio_dev->trig);
-+		iio_trigger_poll(st->trig);
- 
- 	return IRQ_HANDLED;
- }
+diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
+index dda5182a5076..0174c7bb8d58 100644
+--- a/drivers/iio/adc/mxs-lradc-adc.c
++++ b/drivers/iio/adc/mxs-lradc-adc.c
+@@ -393,7 +393,7 @@ static irqreturn_t mxs_lradc_adc_handle_irq(int irq, void *data)
+ 	if (iio_buffer_enabled(iio)) {
+ 		if (reg & lradc->buffer_vchans) {
+ 			spin_lock_irqsave(&adc->lock, flags);
+-			iio_trigger_poll(iio->trig);
++			iio_trigger_poll(adc->trig);
+ 			spin_unlock_irqrestore(&adc->lock, flags);
+ 		}
+ 	} else if (reg & LRADC_CTRL1_LRADC_IRQ(0)) {
 -- 
 2.56.0
 
