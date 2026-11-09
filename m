@@ -1,86 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794216347;
-	b=Kk0knY2VPMYmAxFeS522dDRcVQM5r93Q8ORcehM8p6PaASkEH1127Ig+nrgwv9AD469B
-	 3kAKyYmtUcFk4EwMlw3HkUTRzbDDpK21UiIIdriZ6l6F4GoULmBTDxA8Hw/TM8p7RdmwK
-	 RGff3M7yeSXSuPJh29CWSsZFOsn8WDAmWUgcs3QnfFz7VibU6LPtMwXxUZo3xK7G6sYGN
-	 nWkDw3X9c9rVSwQRjVLgjOJo1C9gUGjgZS+eac6Im5C+B4o1WLfr/OTwZifnACIszxb6j
-	 B4opCH74yS8Uj9x4JuywySIaVKulNfqWje0bln6Ax8964jTxHXF83RyesCruPud2x9g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794216347;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794216576;
+	b=X/wD5GSoQvGC6lJwrDdQpORPEYZeiVoN0BKLIdj1DuBAMbzj2w6VvD2MqabsSuDydH9w
+	 A1hCjhx6RyCj1RK8wgeVEH7k/2EDAXqCfqUGqyudf/nmHO5cwVAY9jX1HVO4ZGs9baVfk
+	 f6pu5tv8bA6mywMBnyh2Ed349CLqMccxR/G0JwQCK2w+moyQQCmFdYcTca/365n9mxgDJ
+	 xk+2iGJ2mveCt16FTxnBnl7pRkKGMcsB7qbPahVk1NggYBeysa7cMK2bwycMYUv3/tl9F
+	 /kRbNv0gnjnsZZ7CNsH/YetpzxJcv2pYUW9eH7WzXtyllDkSuEZT2qd6ARxpVu0nFkA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794216576;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=Y/5uDKm8Gk/asHC1Oh23UdShAn1rIG2NioBbNbUmrKc=;
-	b=2gY2FftIMm3RtjYQlkbYkAUn2O6sgQMbhh92wBHr4P13a08xXlZwjLTNwhRDTY64ohAd
-	 r0PUXyrrNWbu91sTsiE6qOxh2tTe1UvJTuAvhCs8oA79/dwTO2jOX4LgaIvF6yEKTLmhI
-	 G4AVuhhl9MPdNsw0nRIGkUCcRs4AjRhijf1tYVMABk0HqWsKWqWcXr6A8DFC/ubFddYfl
-	 AqRskBithOqryN9Nan6J5T/5XTuJ15yaKjMRUgZbahHXPjo0gVksRY6wEf1XtoKfQe6m9
-	 oMCUkq2Wic67RBXX9nDLh4KCNP3Bs9wirMMfIm/1Ih2EVDZnZXygQPrvPxlmzOraIeQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AoROOLYE;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=Ho2IhSaUqh3dPlHHU0H/LrPR7pgN8UNv5QNfyaCJbQE=;
+	b=xj5+r2Gago1rnDz9u8mr67JyLW1IFt+02vYsiBkK5j01KSAv14pHqX0idtO5kDLSXie8
+	 LYSXMY2ZMhmILgw8QgnpliucwNLSKX88Z95GLH7Nxb6ILCPDCp1g/PPJO6eRVPRYpSxIr
+	 HaR0Z1F1dL5ndEw718GsWFkwGwpi5Ne4jJ1TE38i0aOl0djZzK55JD5aVGCJafZrZJ4VW
+	 3AOXfpVy5nH1kSYpQtoPKgQYK5ooSMlvtRYGZdUPX94hJWC+XHdKCawksSKZ02ietbj0v
+	 KZtEqGu0EnFXyY74PZ9gwjeegE/0kED1bsddIPmtMgM/TS77PQLafpfJdSVv5tKgzwQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LrztFWH5;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4866F606D806;
-	Mon,  9 Nov 2026 09:25:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 57795606A33B;
+	Mon,  9 Nov 2026 09:29:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AoROOLYE
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794216346;
-	b=Jw3M9Ul+ilgvNp9dirDWwKQpchRAaE11pqfhjPvs107c75H1d+FgECzMdpmHrSMJPLrD
-	 HJFDoFhb4AnW6OwTfHS/rC7BbvPrEfM5H/+A09YPzO/ExFFlBCN9VSj032yyY8rSdZHMo
-	 kqSUuD3WaC150BcXmGlXZaSflbSOOZuhh8lVd/H/Zu+GUBPbPRuDog7z7vTB6Gaiwp2qs
-	 zxhTCz+4DFRWOAXBLXHKuQKh27IRicpUmSPb1XfUoCgymkeWmdtjLwi/kk1sTUnRzdnvO
-	 Q89EM9KlS+GL1cQDDP/aCcXb8uqagrZoVf1wXgmnnc4rHiFi2RUrPXSCMwSvB9QsukQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794216346;
-	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=Y/5uDKm8Gk/asHC1Oh23UdShAn1rIG2NioBbNbUmrKc=;
-	b=3pQQFFpxZbQH/4Jgw2TAG7U6b2d1gWunW5W7yW7BXXf9cnjDbr/pPuCOHRSfuT5fLfeA
-	 vHuYryatPx8qJHDGUwhc1muAGQx0gSUdLuAK/be/ybKHtZNMgGbVTLeQEtASh4Rd6XZ66
-	 RGCvvKhxg1W5zVIIKLOmqWBxva9Nttp8JoT+5co8LA4R7+RfLGeJfe88C5xznnWpEUCWj
-	 asDqJCn8tJkVKEMQ81SFxjwzoTTMv95UExoC4Vt+SklJgOTnkAs7w1jUGRyVyqCeU1oEK
-	 MBOxMQepyp9r6IEOKMSCU2c+awJfCYEHXDyWvITxsOFKQEWyIk/FNxPo6SeoiWZdZdg==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=90.182.112.124
-Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 4E9B71F008A3;
-	Mon,  9 Nov 2026 09:25:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LrztFWH5
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 1AAC11F0089F;
+	Mon,  9 Nov 2026 09:29:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794216346;
-	bh=Y/5uDKm8Gk/asHC1Oh23UdShAn1rIG2NioBbNbUmrKc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=AoROOLYEhDU0IduEsRTwpV6i8xKJN+4LXBKxzRz8d85z9o2vTKsjRXQQnvckunRRt
-	 iagn+2BiL/Z2VmKBD49X9L55+Vq73k48GyekknZQXzUCd2OWzqGdD/pjRJWMPEZLKt
-	 NE4qNeuWN0RwYm54twvA0Q3TU4Tozsvqx33sT+fvTW+ZjbSTnGSxK7bxOnxFxnrJn2
-	 5evJgV0+RuI4Xzxx9h8Tk2Ac5EZaPusRvYgK4R5Y0OhLlp/ADlMWmydnKrPF8UEagM
-	 T23vfCFqTfOHXJXeQCHTD8mI/61J2WomycadDIQUOK9dlw2raN5eGMtmlXnOeXEBi/
-	 iP45Mu9eLnkrA==
-Date: Mon, 9 Nov 2026 10:25:39 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Linus Walleij <linusw@kernel.org>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Kyungmin Park <kyungmin.park@samsung.com>,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: light: gp2ap020a00f: Add GP2AP030A00F
- support
-Message-ID: <20261109102539.0000674f@kernel.org>
-In-Reply-To: <20261108-gp2ap030-v2-5-24eaa1b9fe59@kernel.org>
-References: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
-	<20261108-gp2ap030-v2-5-24eaa1b9fe59@kernel.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	s=k20260515; t=1794216576;
+	bh=Ho2IhSaUqh3dPlHHU0H/LrPR7pgN8UNv5QNfyaCJbQE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=LrztFWH5bTzwac9JA/ZuA9c8Q5nT1No/4zyH/YQdlNvgvKfh4sgVBwrWtYWhVSOW0
+	 xP2iOKhRndjlkysG5+3O/WiJPMf4+y+UU8+GbYwWRmMHKvin9TnwEfz9qEaseZEXg+
+	 BBuicYlERK/FJydFbOqsCG3iXmjZ5l56jem2EDkECxcJltVMtvq5zuvVURNzeKs1Nv
+	 ntzc+Cms0pxTSoySEeoqRxZ0GmR/R6VmYZY99hFM+rj1lCAgC412aQ1oqAiPo4K8N1
+	 MOxMaHURsznwXUcrTSzRUQrh9zYORWG2H06FJ9csCBOZAy1qxAzbGnEY4Goq0F2QKS
+	 TWJCljEqtP4SQ==
+Date: Mon, 9 Nov 2026 10:29:32 +0100
+From: Bartosz Golaszewski <brgl@kernel.org>
+To: "David Lechner (TI)" <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Linus Walleij <linusw@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, Chris Hall <c-hall@ti.com>, Patrick Edwards <pedwards@ti.com>, 
+	Kurt Borja <kuurtb@gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: adc: ti-ads112c14: add gpio support
+Message-ID: <bmfjg3jeenesctngjuu4pwvbx5aqozfvkshly33jk6m5rmovry@7ipljwjtpsud>
+References: <20261106-iio-adc-ti-ads112c14-gpio-v3-0-7578ae66ee19@baylibre.com>
+ <20261106-iio-adc-ti-ads112c14-gpio-v3-2-7578ae66ee19@baylibre.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,26 +60,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261106-iio-adc-ti-ads112c14-gpio-v3-2-7578ae66ee19@baylibre.com>
 
-On Sun, 08 Nov 2026 22:44:03 +0100
-Linus Walleij <linusw@kernel.org> wrote:
+On Fri, Nov 06, 2026 at 04:00:07PM -0600, David Lechner (TI) wrote:
+> Add support for using the AIN4/GPIO0 to AIN7/GPIO3 pins as GPIOs when
+> the gpio-controller property is present.
+> 
+> Pins that are already used for something else according to the
+> devicetree are excluded from the valid GPIO mask. This includes analog
+> inputs and excitation current outputs used by channels, REFP/REFN when
+> an external reference is used, the /FAULT and /DRDY interrupts and the
+> external clock input.
+> 
+> Signed-off-by: David Lechner (TI) <dlechner@baylibre.com>
+> ---
 
-...
-
->  static const struct iio_info gp2ap020a00f_info = {
-> @@ -1450,6 +1540,9 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
->  		goto error_regulator_disable;
->  	}
->  
-> +	if (!data->chip_info->has_als_auto)
-> +		fsleep(1000);
-
-Maybe a comment on why 1000 specifically (datasheet reference etc.).
-
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
-
--- 
-Kind regards,
-Joshua Crofts
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
