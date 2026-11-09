@@ -1,102 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.170
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794213883;
-	b=a0ZVs5WD3WpKDhQEm/8AXr26s3ARi9CYxuttJx7T7vczPNBXA26ZZK8PQ/8rjKHcGwe6
-	 eV8Rr5LsjHYmPJOzzklNVMX5hijS735f3oxIZz/fVtac9avw+ef5GEazE4I4kSf6yBicK
-	 XPL/n18HnYrLvMsXd6MBkaSCbiu06tj89+mP/qlv4z0KczGC370pYfiUh+PGTtBZF5qiI
-	 9JXMdrUiHpQJ/pHpaf9kwRroYJYfh1Ki0qumBZKEoyAGQl3GRmgvmkJrqET5VOtf0SkHb
-	 b3yBRDhtHGZpVi2nphDDCwmbcLa2KVmBTfwC0N8BnDTmF7QUkCJKqW9HZADbeY9mLbg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794213883;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=cg2C9sgT2sD7yDisbnfHPJYeRJKqZMharkjHKRD6Qk0=;
-	b=cUt9xGuMmmxt4chpxTNUOQ+chlR6xR55udTRiq75czVUzB6MQVyi5MbmXXk/1NqfWsOk
-	 x1fvefHiTY0qcF+wd2AYGKUrJT9TxMVgyHNfjgRfbXH7reDY0xF12h6RcesCFQURYM5dR
-	 Dc97pHKimKOGJ4eEHUPIUGZVGTDsm72d8pxptTMnpjIKFhcqJ6Lq5RoCLr4Y2XyNsYrjo
-	 m0BOp3D2eId/F0TJVqH3yB4/rShgzInoIFBjLTtE+lBcgJhAocJte3dRf2HGXMQw+ULuU
-	 tusdG6vp4Hop7jSqmn1KDsAy5NEOQ9GUrdBb+mv8rVnlRW7w/vRpwzVzrKCrT+mUKpw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Kk0+41Ii;
-	arc=none smtp.remote-ip=209.85.210.170
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794214022;
+	b=yEkWhT4STe206nRBMnAHkxElZOzlPWRZ81giPr/Z1zoQ1NSy5tb45mzlR4Hst6sMAdBx
+	 PwWHbmuBKcumjzPelZJxvhcq0TqWAvisCNxVcSgvun1a/3K8k/CpVZ564yNf6gcVKyZn4
+	 kuiRjjIy11I4MsvqCcnEIyc9773QBVvMa3zFJS9mHXzLt1ewRO1G/XVNgLdgABLHWOwof
+	 IXL0RJC21oM7qUDidqao2d3q7zhfz4+5K++hPzlRdfaFdHeoyAzF8U2Z8+d1wnDn6P6K0
+	 F3A1+48IqJa4YVCmwZ4kyDqjje+2X8cswsiWavXJAKGbpVFg2AaMco6veOBzQuYhZkg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794214022;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=p6+qnX849jp/6JD+pVHbvJqGOwgNSqvsHvAosu48gKE=;
+	b=hzrFt6VSXdkDehPAxYPYb1fw/W5oT2Fd6PTdajTlVJwsTZ1E9gmyLkNYKj6+dD3gXP+T
+	 vNpm+NwaK4/2gbW5j7hNa5Mj6w5eZvfqrgrXBH7Xb/3hu0XOHaSGdnOAc5eNEaH3Vfty+
+	 +7aDwwy0YSeD4+yTc9s0dKsfsKqmAKIpd8g+O4is0E9nUylj8eoGMNg8k0XoFsPF9K3Mw
+	 Sl/FfciKUpC6tMqSEE8Yx0HX5fnox6CZ3Wt/Pkz6FaFrls6S+OM3iAppi4DiRA2t+Ob53
+	 I2TzSIn1sHOrGu45MP6DYY6OBsHfFmR/8Gl/V/HmhK/sp6/jQJZf2PRn93OJWsOPq8w==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cR4NptMk;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECDA3606D80B
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 08:44:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ECDA3606D80B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E488A606A33E;
+	Mon,  9 Nov 2026 08:47:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Kk0+41Ii
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-8b5efadd183so242324b3a.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 00:44:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794213882; x=1794818682; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=cg2C9sgT2sD7yDisbnfHPJYeRJKqZMharkjHKRD6Qk0=;
-        b=Kk0+41IiZ86WrtBrM2QWCnZtHtfihQTO7xbJBbL13BkGagpW//D2ACTv8mpEqVsMkK
-         JwsNfWvvenG5VWdl2R0/sRetLSSb9nqfoMfIdwrX5zsGV1R1AgTo3VIz8B8rCvF/hevA
-         kT25mQY3Z2sX2AMh0olrTtIrlEuKA39NdF85jfMtkjgiPYt3Ym7nlXuslrIxCTJhiyXs
-         k10MdfywZ8tcE3kgKhZYbOD00L+N9hchSGxE2hIlVtX4Jx6kt/eWCs9TEU+1rX/EXzTc
-         o7Sn8OeAK6bpcZJgvz2fOyNFyrvXeuEFEE5e1/z5cMT4HlEw+pAr+yKthVb+ljvy7IZZ
-         YANQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794213882; x=1794818682;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=cg2C9sgT2sD7yDisbnfHPJYeRJKqZMharkjHKRD6Qk0=;
-        b=xrkzoEPB9K1UWy78ZdD1K0tSceTsRsxi1ek4SI9czC3GOxI+qFKqA78vBdiAw7AbuK
-         OZIpjP/cUt3Vy95FOhcjUZsXrHL6WSI7j7h+B4dIOMAljILQixSzgfg+Vr7I3bKmyc+L
-         OVmfT+So/G2vew3pOsZY6mWzXiiP7XVYRSUM68sAWXCW5paCxgJLUCZSL8XV8yekgtOA
-         ZJBlpqBpV7xhlAsCiVepMl0m+A1xUdTIdwwpDuHAZ3GW3zVzRyu5T3G6NcmyQqEeRANH
-         lJnY+DRMsqhEvGjXOzOK9fNzzbh4pjdavfKSR4/stz1X+n0gBqyeA7f7uuMH+AKJMl0t
-         JaQQ==
-X-Forwarded-Encrypted: i=1; AL+hErFfokB8MbAUVWX/RDMUnFrTHVtuMyEn6ioLUBzMbwom2OBsfpIi851Q6N9Gb/LAOt05WqKPKH4tIOM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z85FH1siZC11K2Rog7qEqtsMc9TcYOQjcbo4kTvDt4P2bI6f+vj
-	kflEDHiPfkfkJtBtkzFxGmz+GAckquzgdZPCwALIE2FwTziJ6qjbprAdI0At9A==
-X-Gm-Gg: AYBFou3dxw9CdY9HLwAI4lepvDwK8dkkTFGmumPO6Gu77J7W8NHRwaZtvHDC/mzGvwY
-	ZnCq5L7foT62FEW3dfiI7+86naQ/fnr65+ER5di5lwxYEeqbsXYS4Z6tLzNqcpuU8Vl5q2vCd1D
-	8QhA4liflYh5qiurP17+8jbWbxFaSkcbhqfHwpBpAXZXPLo5DkaWpgc06/2ojXOv7xHIqiURd/h
-	Afe80xubdc61Al/wfSjNWLDng9weDLKxSP+VX0z8ZeEAkJ/hBUXtya66OcYBGHVlMY5nFHPHA60
-	6zoqN/RMc/M+icTWEXpoEVXsOtAx64TNHujPM5BnbZpXtTyTOPlG2wfc2K/FzbrkExXgQhJbEoM
-	XL7bjtfHA4vhburKWMwjdedogs9FBgGshyiJQ2Pv+7IxYgetwdkNt3T64YN6WglfdsSGMmMPsyf
-	QG5ruHu0BLyO69DRzrSwRjTjh6aWNH19AA4TXv5jOzu5EvN/cd+MJekfjk8ur50NEW3NSufRL1S
-	lA1U9aE+icOq3OYCHTuANywhQeFFhXPV00H+k4n81gog++JlaLm2fgV3BV3q80wgRBOdkTiCDBQ
-	nfpQx+ml9g61KJVcPQj23S0ZoNDEEMqcs/LGaBzI42oyBniqAUGCOP8Qw8U+PuaiKq0N91nJBDC
-	TfoZhmTYMhLRbD/5ghs6Y2j1fmc2N0eb70+zGcdm9QbSz
-X-Received: by 2002:a05:6a21:488b:b0:3e1:3734:63e0 with SMTP id adf61e73a8af0-3eed3a51361mr1937124637.41.1794213882243;
-        Mon, 09 Nov 2026 00:44:42 -0800 (PST)
-Received: from phuc-desktop.. ([183.91.15.56])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb96816fc6sm1413751a12.5.2026.11.09.00.44.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2026 00:44:39 -0800 (PST)
-From: phucduc.bui@gmail.com
-To: wbg@kernel.org,
-	andriy.shevchenko@intel.com,
-	David Lechner <david@lechnology.com>
-Cc: andy@kernel.org,
-	dlechner@baylibre.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	m32285159@gmail.com,
-	nuno.sa@analog.com,
-	phucduc.bui@gmail.com,
-	sozdayvek@gmail.com
-Subject: [PATCH v4 2/2] counter: ti-eqep: Use devm_counter_add()
-Date: Mon,  9 Nov 2026 15:43:42 +0700
-Message-ID: <20261109084342.51865-3-phucduc.bui@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261109084342.51865-1-phucduc.bui@gmail.com>
-References: <20261109084342.51865-1-phucduc.bui@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cR4NptMk
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794214021;
+	b=joUjlQj9B36vNEmRQZnPcL6n93O0xapZB9y2mYKm+4+N8qMxpOKpYEov77aiWTRGccrI
+	 zTO3p8tpaCN83CtUdZB7Y74LIv11rBoxs8n9KsvCp1UfMGiGTWcpX++/lbPiY2hW/IIi/
+	 0W4sDd85PPuftrMwULJhJl2G49jxmg17QaLUajVOuFUKQa11cqRzclAlYjHcVqzw4siSK
+	 Qd0CQuGoQIpQoaygmFQgC86ZS+5Qdt+iV3Bgjayov7WRLipm5q+YLY6N1MWJ821HBgPZo
+	 0RK9XWR52vWwBta8UkEI+yqwG4+2i3iuYSYDV7CgR8iH1y+qDjbj9UD5MiUjRc7gA7w==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794214021;
+	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=p6+qnX849jp/6JD+pVHbvJqGOwgNSqvsHvAosu48gKE=;
+	b=ItKdL4UJH8JH+nCv4Ck6TDwvbZxTYC5IIV0COFRn/vEH7oJYsjrPsLUaqCawxbHQMbey
+	 DajwS4aV29w7b2m/FRi2/MeBspoG8g07uIPNsrckdJ/Ah9h/csZ9pk/RSYVtmEFHYDxsX
+	 IkNnzfZrwYlWgCB6Z2vgWkDtBICHqPm1VbiUwGkPgBPgCFwFE5ab7C8+zc9wgZCWeCTS5
+	 zsCZLnsOIiFhRawf9tdaNfGDfjoC2H74CQKyx0Txqqevr77CiHGsgR9i2VA9h6WcFVr3x
+	 pJLd1E9LuDCaqpn78G+rdW7X4seijtTS4O24hu6fnsdPzqpxfSbmldDWCFtkyfVLe4g==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=90.182.112.124
+Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPSA id 2EAD31F0089F;
+	Mon,  9 Nov 2026 08:46:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794214021;
+	bh=p6+qnX849jp/6JD+pVHbvJqGOwgNSqvsHvAosu48gKE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=cR4NptMkOKvU2B1seiOg15pv1v+0ndJlc4XgdLwBeWxFx3bhEq9KovQFlDtC4m2pT
+	 pHx6najM9uGT1XR/vz9tfHSSYLMtGj7z16rB73/Qdbpub6su0raBmasuAZilD9qSX+
+	 vvIMWitsxtKPT40BwZE57q02b2nwLsALhqYlg37Bq8J+zNW9h7gMfBl7dY8YpHtiSc
+	 EsQxpOp/8L8XkqQ17Ko2Llp1k4Wk9c+ENUwLWiSx9bI9gf1W1TZrol/zW9rh7vUWQy
+	 XEaTUpcfYvRCn7H/VebSPOx0fzeRauqdIK7Iyc+vjwSK7QMiLxrCIZfSROlCnNMAQV
+	 Ka86d39Ku384Q==
+Date: Mon, 9 Nov 2026 09:46:32 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Song Qiang <songqiang1304521@gmail.com>, Radu Sabau
+ <radu.sabau@analog.com>, Maxwell Doose <maxwell@maxwelld.cc>, Tomasz
+ Duszynski <tduszyns@gmail.com>, Erikas Bitovtas <xerikasxx@gmail.com>,
+ Waqar Hameed <waqar.hameed@axis.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, Jonathan
+ Cameron <jonathan.cameron@oss.qualcomm.com>
+Subject: Re: [RESEND PATCH 13/14] iio: light: vcnl4000: poll own trigger
+ from interrupt handler
+Message-ID: <20261109094632.00002649@kernel.org>
+In-Reply-To: <20261109042851.1326940-14-jic23@kernel.org>
+References: <20261109042851.1326940-1-jic23@kernel.org>
+	<20261109042851.1326940-14-jic23@kernel.org>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,55 +94,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: bui duc phuc <phucduc.bui@gmail.com>
+On Mon,  9 Nov 2026 04:28:50 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Use devm_counter_add() instead of counter_add() to automatically
-unregister the counter when the device is removed or probe fails.
+> From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> 
+> Keep a pointer to the driver's trigger in struct vcnl4000_data and poll
+> that from vcnl4010_irq_thread() on a data ready interrupt rather than
+> indio_dev->trig.
+> 
+> With the driver's own trigger in use this is the same trigger. The
+> driver does not restrict which trigger may be used and the data ready
+> interrupt is enabled whenever the buffer is enabled, so with another
+> trigger in use the data ready interrupt previously also polled that
+> trigger, running its consumers in addition to when it fired itself.
+> Now samples are only captured when the selected trigger fires, with the
+> trigger handler clearing the data ready status as before.
+> 
+> This removes a dependency on the trig field of struct iio_dev, which
+> is to become private to the IIO core.
+> 
+> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> ---
+>  drivers/iio/light/vcnl4000.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+> index 911f8d1c74d4..cab6e0af8c7e 100644
+> --- a/drivers/iio/light/vcnl4000.c
+> +++ b/drivers/iio/light/vcnl4000.c
+> @@ -206,6 +206,7 @@ struct vcnl4000_data {
+>  	struct vcnl4200_channel vcnl4200_al;
+>  	struct vcnl4200_channel vcnl4200_ps;
+>  	uint32_t near_level;
+> +	struct iio_trigger *trig;
 
-This makes ti_eqep_remove() unnecessary, so remove it.
+Just swap near_level and trig and you'll eliminate a 4 byte hole.
 
-Suggested-by: William Breathitt Gray <wbg@kernel.org>
-Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
----
- drivers/counter/ti-eqep.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
-
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index 2326515d5585..1c26008846a0 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -564,20 +564,13 @@ static int ti_eqep_probe(struct platform_device *pdev)
- 	if (IS_ERR(clk))
- 		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
- 
--	err = counter_add(counter);
-+	err = devm_counter_add(dev, counter);
- 	if (err < 0)
- 		return dev_err_probe(dev, err, "failed to add counter\n");
- 
- 	return 0;
- }
- 
--static void ti_eqep_remove(struct platform_device *pdev)
--{
--	struct counter_device *counter = platform_get_drvdata(pdev);
--
--	counter_unregister(counter);
--}
--
- static const struct of_device_id ti_eqep_of_match[] = {
- 	{ .compatible = "ti,am3352-eqep", },
- 	{ .compatible = "ti,am62-eqep", },
-@@ -587,7 +580,6 @@ MODULE_DEVICE_TABLE(of, ti_eqep_of_match);
- 
- static struct platform_driver ti_eqep_driver = {
- 	.probe = ti_eqep_probe,
--	.remove = ti_eqep_remove,
- 	.driver = {
- 		.name = "ti-eqep-cnt",
- 		.of_match_table = ti_eqep_of_match,
 -- 
-2.43.0
-
+Kind regards,
+Joshua Crofts
