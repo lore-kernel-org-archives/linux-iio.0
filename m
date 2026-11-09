@@ -1,55 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794237888;
-	b=mt4bLFFM39qUxZUrUvX1DR4B6UBacROiLSta3DSd0iv3J+1V97AbAZfQ/jQTJj1CdSJx
-	 qvnhiblvF+sI72At0Sn7UZqsiT/+dgYdojMYSPo3eiijhsLI9lTbuIftZDTlI1A0wdxf7
-	 Eldwfh3s4xGfjHg53ExGzxdP3S+lUfJL4qIiYtTL5mwYlq2PhHJXj9BmZTXRBEOYce0kT
-	 wgA4R0Cw7yjugudHw7J41zy0C5Ss860MJ/oGSv6rvJKymJRDyk7QbCEZ7bUaxml74ufWe
-	 ea71Auci0muwbULU8COLY8edJbJ7nneHjT5bEyZOy6Uh+v0ZiubcECbos5J3gJV6zxg==
+	t=1794239872;
+	b=3WDs9g0vlgx1z8hd0KWfpfbVR9fO9DtISmNTuNEKGCJkQwqWOTZIGESFXXi29iYXi1L6
+	 0k4cCf+0Bz5htm3cN+cHGkM593C5aALXOGiM456YXIcWTWPurcGCiWHfzLXJzjEgpQLoG
+	 0zwGK0zmnqNEvMn9IwdCfc8UA+ymcGLViGcwoQyHCSmalA7Qzn1h7YkckQvmx1fyD6BML
+	 gHIJKL1NgEuRqX3wGJ/bEKRBNuX+69jZkIHt2KwVxxtXI8LJoKbuNzuYZKkdW9aBaFnJ6
+	 tckcyDQ8IoV/C8w5qmLPhilo6TPqyyD2og2XcuUDmnY+Ed++amdckly6H0bANPSyKgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794237888;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=8WX0F8nMHDszbM5NjizmqwpyrFNWwfILJpVqr66lwxI=;
-	b=RaUDZZBHN85XIiTUfzXQLKg7KtYNnYuikxIPur6qFmbM+f+e2uCZbqwT81ik/k3P5NGj
-	 x7OR3yawJQvSfzijfpl5SMqNH8OLbtyaslu4MdfulrW6GrLEI609UMzL6JkUQ3Ed0ED8F
-	 p5C4Fa2r8VAqDzdy34Hwsit9DMH109RTQuUtOksdi5yKPl4yLxbgUVTIs0WFydXCvw8b7
-	 WcqmLfXjLIsbYj4YFIVI+RDO3m9g0UwJN/6ujVWFdoMu9DWIvEkWvszu0IeUvom222Sla
-	 3emSO3A0RS6G2/g9O2Mx+iOPPXVV4UcPVDsUZPUS1XE15UxOYiRyUCCDrGGSXTJHe/w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794239872;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=KQFKpRV7NATJKFVseA51zGW96GPsJPPL3A6Ir3znGCk=;
+	b=GRXHnwPjhdNmy6+glDIW2yTxvI3FWBV5lo1jxSqFjA3vfLSHehTzMExUaoMPslAqBZIE
+	 Tov4S4becB3m2LRzRJd9ne8zvLYJKdNQy8w/VZXFpkWMM9bx5y8UrSm71/rLepMaFy63Q
+	 ywn92YhEMbhRGOiEPOiZ5v2bdzST7xYUCHhrWGhBiywk2rsxYFUoRXJomKry+vpJ6Qte0
+	 hMXP4sAyUjUyINAsLpxS4x4LlsRW8oNz5sTKk7aF6ozpqXe0Cgh7prV3H7rBkf7u5bgP5
+	 SxFcnL3KNsT8jCby9tOurjf1WaBA550QH4XC7vzSLyn4Qow+zHjMBjVlnJosxlJMT0Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WX+sG5u7;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hLXCDde0;
+	arc=none smtp.remote-ip=74.125.82.47
+Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C22606A32A
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 15:24:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EBEE606A321
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 15:57:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4EBEE606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WX+sG5u7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D48D1F008BE
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 15:24:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794237887;
-	bh=8WX0F8nMHDszbM5NjizmqwpyrFNWwfILJpVqr66lwxI=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=WX+sG5u7EcuZwen1naP7QcR0JG9gtzcmXxO66QIgi8DHcE6a+WdwYKaatDoMxcE32
-	 VefY+8zsWi578yt4cUpPkANrFgJYAfwdiYMMXIyktO72MKMQCusxwkPuBJs3peG8SF
-	 yFeuZNwUb+T/SqJdwuJiKZ5zRbhQdPTM06VvFJuEGEf//TYsH5GA6yimA8eWnTyDIh
-	 B7iuKorqeMjl7jYRIWvXxFmGZY5lBMX0undR4gJcqVGb/coDHJJ4huRd1v7xGJgoWr
-	 JuYL812qqj5sdqiwI1jG9ZgwoFROobCxvbFj0BhgRXpewTOo+c3ry2DEQeJ9+zT7oV
-	 IRvQw7UtMrttg==
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3adfcafaabbso9386471fa.3
-        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 07:24:47 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErF8dzS8sPOJpEnalm8V1MZozbH5T6vDjAJkd0QEXoNF7o3BfERqb+rAVOzQ5ien2oUcyEd3LVWnHPA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9e9POP8DvU46GK9q5YwIMVVSd9AfdzGdzhBYP2LeO7YQUM9COl
-	qEgbkv3RaSrtgtCKnDsdPGcEgtW5z/E1ilKBmqdGoIBqXZKee2rvahwAaEArRJlBag9qGtW9LuF
-	bRBVMxR05md086pARnJMeontcdCHYKo0=
-X-Received: by 2002:a05:6512:6cb:b0:5c1:4e41:3cdf with SMTP id
- 2adb3069b0e04-5c1514e0072mr709299e87.12.1794237885651; Mon, 09 Nov 2026
- 07:24:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hLXCDde0
+Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-1a2761c69fbso872588c88.0
+        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 07:57:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794239870; x=1794844670; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=KQFKpRV7NATJKFVseA51zGW96GPsJPPL3A6Ir3znGCk=;
+        b=hLXCDde04W5diwbe0GkjBt0uSOoYyhvOqcmGMnNaj7NHl8xd8mikVinjwWXV5VGYDf
+         AwY5T+giJ6h0sL3kz0BJcUmrPNgAGEvBEEK9+1Asx13b+O2UEonf7hU/l5SAciNMQT3N
+         NYhX6qkHr4zLhUfZy1I19FS+NoRlCkIfkPG3FEgEZx3Wp81xyYYYBuMolTUW+4dhZYbR
+         c2/CcY3Pcnx2vJ0tC4uYkDCdmXLy3CxFD/H+7BdHUxwvBmUwihpCZmvYgCKNAm5Lb2tz
+         T5GXBDlDSqPkTtPMHZT3ivSrS2qVs3W4VXdaihX5uvLvXeK5o4N/UA8lCEMozXWIaVfq
+         nXEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794239870; x=1794844670;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KQFKpRV7NATJKFVseA51zGW96GPsJPPL3A6Ir3znGCk=;
+        b=j5tzUj6gApJjlak2j7bajt7CPQrCPFSKntAYOSI7cX7MSkreXbWmVGnGsPDafU6i3y
+         Fac5QSq3k4k4G73hNdAIg1dNasvpAZycyxHFnX6ZRM2jhEC8KkQXiqVf3LZCur6c2Iex
+         o3ZTDSMmnBRc7mkVDTNHGC5FvZAwZvNrIzzs0L+CSb6/x0rumd7yLUzKvbkdM1YH1a/9
+         bN6+wIuvvp0ig9E9eAI359JiGAzEHAe5tqslNkYbYv09vNLPg91DWnMAiRaMwkU+7xkU
+         4ybJ5FaJws7V+k4VA3+Ul4lKXvpdnj7b5uMuACwLv1wPxhyxUAuOPoQyXJ614ZunmqoL
+         uVNQ==
+X-Forwarded-Encrypted: i=1; AL+hErGyQHMBDusmmpWWgGNgxehXy5NDw9sg4QXLILuVKX1B1AZ/5kw+Wd06i/fshfgiYQINmUpKh8VkKLk=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/kW0nA+yPAutlXLrNbZexuptHBqzrfbS8Z0KSdkFd/z1ojDiOi
+	4ObEHHCEScqba+KxiUyuUWmBWgIfl263NXiG70vQuiUbta2fN0N0T7h9
+X-Gm-Gg: AYBFou0dtgD1ELONRBKrrGFN8k1iPoCGThlq0qJ8ekr5F0MBA1qRQvReBt2rphiQnve
+	p3cqm5ls4OLO0jWOIvWBa1evhWB8oRu7OGUHkLwyVkv4qRvwFELvJCMv02s9VTVJSeEhPd+igt4
+	4hXyQr6VJybSehmxQKlOvw6+nbQlC4nXxDF0uA8qBKrDx9DFVvl60GrEtZ3JXPpgeR3yfCn9jFz
+	PXR7kvEpMGWOQqoI8yVqVznoFV7bIai3LMLOogIWQ/tIe0k5ujqE5vGHLZZ8gInbF/Pj6azsS7K
+	KFtwNZYgMSkkWCNQPqiqvM9F1Wbeiz1olEogPDsYdFxheXZ4eDkgdpsuWbp4QEHhM1NeeoBWHUW
+	RqhrN0qFRTSsyXeN2h7dMgsBiPDuO05ahVqMO9b+pisDAxaE/j0y0WIVTQiHUS4jgAmDwYXklbY
+	RY9ktpQmFv/XszVL3VA41IGm22+vTfZU9Wc5O+7spqw9+UEIEB9vcq/Dsr5Gvq2qxR1QUcSnjvU
+	7e7KjbCt7Ob1cQnsc8xXBfWhSKdzIi5jzDGVnupejNGgP2SkJj9CC99YRI9NJyCfhyTJcj22QtS
+	PZHzxuNPdxvnq0lrM/sa90jqSq6yHA+MqqNbzmIoTVVzR0H3Ezz4tAx298UxCMs6k407owA=
+X-Received: by 2002:a05:701a:c919:b0:166:af48:a2ba with SMTP id a92af1059eb24-1b39fdaf74fmr6537059c88.0.1794239870114;
+        Mon, 09 Nov 2026 07:57:50 -0800 (PST)
+Received: from localhost.localdomain ([125.166.179.225])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b3757214cbsm13020828c88.13.2026.11.09.07.57.45
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 09 Nov 2026 07:57:49 -0800 (PST)
+From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Igor Korotin <igor.korotin@linux.dev>,
+	Danilo Krummrich <dakr@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Daniel Almeida <daniel.almeida@collabora.com>,
+	Mark Brown <broonie@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Shuai Liu <847807867@qq.com>,
+	linux-iio@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	rust-for-linux@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v7 0/4] iio: position: add Rust driver for ams AS5600
+Date: Mon,  9 Nov 2026 22:57:39 +0700
+Message-ID: <20261109155743.83740-1-muchamadcoirulanwar@gmail.com>
+X-Mailer: git-send-email 2.50.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -59,230 +106,98 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261103221717.3840215-1-briannorris@chromium.org>
- <20261103141442.v2.3.I40c0bc917fa0b13111251844e9a54feb1d9cd7d2@changeid>
- <CAJZ5v0jWCz0XDgzeETbmMfGOmvh2G9qcx7xLODrpQ9NiwsddKA@mail.gmail.com>
- <auuICAm4BC_8Pzs5@google.com> <CAJZ5v0jTX1FgeS9FCV=+V4uacSgLQBVsSPnU27ybgUGg57GUOA@mail.gmail.com>
- <auzlLwlleGLPsLcw@google.com> <CAJZ5v0g25xQeRaLJWJyAo2fcJko+gZ7w6JhX7FzMgRx2+uuimw@mail.gmail.com>
- <au0oKFb9CmNzc6Cg@google.com>
-In-Reply-To: <au0oKFb9CmNzc6Cg@google.com>
-From: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>
-Date: Mon, 9 Nov 2026 16:24:33 +0100
-X-Gmail-Original-Message-ID: <CAJZ5v0hKpjMsGQm8Cpa89x5wkNxqkggDNbp+eQ0S-E52DETWjQ@mail.gmail.com>
-X-Gm-Features: AclHuK931oANkV8p6-cRViUQLiT63hdK6qIBRvMQXju8Za-NQWods2ppuhoMaf0
-Message-ID: <CAJZ5v0hKpjMsGQm8Cpa89x5wkNxqkggDNbp+eQ0S-E52DETWjQ@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] PM: runtime: Propagate last_busy from dependent to dependency
-To: Brian Norris <briannorris@chromium.org>
-Cc: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>, Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 6, 2026 at 2:06=E2=80=AFAM Brian Norris <briannorris@chromium.o=
-rg> wrote:
->
-> On Thu, Nov 05, 2026 at 10:18:52PM +0100, Rafael J. Wysocki (Intel) wrote=
-:
-> > Of course, it will not prevent the parent from suspending if the child
-> > does not attempt to resume it for a time longer than its autosuspend
-> > delay.  That's by design and you didn't have to take the time to
-> > demonstrate it.
->
-> To be clear, I wasn't just trying to demonstrate for fun or because it
-> wasn't clear. I think there's value in putting concrete reproducible
-> test cases out there. (KUnit is an easier common ground than some
-> particular piece of obscure hardware.)
->
-> > The question is how often those kinds of patterns occur in practice.
-> > Or IOW, whether or not they occur often enough to justify adding
-> > complexity related specifically to addressing them.
->
-> Well, I tried to keep very close to the spirit of the actual real
-> reports in question. So when commit c537d3457542 says, "As an example
-> [...] cat in_voltageY_raw at a 0.2s rate", I think it's not a far
-> stretch to test 0.1s too. And it's actually quite odd (IMO) if 0.2s
-> behaves *better* than 0.1s or 0.09s, just because it hits the parent's
-> rpm_resume() more often.
->
-> > > On Thu, Nov 05, 2026 at 12:59:24PM +0100, Rafael J. Wysocki (Intel) w=
-rote:
-> > > I would love to hear your counterarguments.
-> >
-> > OK, I'll say more about that tomorrow (it's past 10 PM here, time to
-> > go away from the keyboard).
->
-> Great! And don't rush on my account. I'm interested in eventual
-> progress, even if not rapid. I'm sure you're busy.
+This series adds a Rust driver for the ams AS5600 12-bit magnetic rotary
+position sensor. It also adds fallible I/O, SMBus access, and the IIO
+abstractions needed by the driver. The driver exposes raw angle and scale
+through IIO sysfs.
 
-Having to context-switch back to this later would probably be harder
-than continuing it now.
+Feedback on the I2C and IIO lifetimes, locking, and device teardown would
+be appreciated.
 
-> Or, maybe I should have gone to LPC...
+The Region-based view models byte-addressed registers and is not a
+general model for command-indexed 16-bit registers. The standalone
+word-read helpers accept any SMBus command byte.
 
-I was busy all the time there though, so I guess no regrets at least
-from that standpoint.
+The current interface is intentionally limited while a Rust regmap
+abstraction is unavailable. Feedback on whether this is an appropriate
+interim approach, or whether the work should wait for regmap, would be
+appreciated.
 
-> > > I don't believe your solution solves the problem,
-> >
-> > That depends on what problem in particular you mean.
-> >
-> > It addresses an inconsistency in rpm_resume() and as I said above,
-> > this needs to be done anyway because it is not only related to the
-> > cases when children or consumers are involved.  There are other cases
-> > in which rpm_resume() gets called for an active device and the lack of
-> > last_busy update causes the device to suspend earlier than expected.
->
-> Yes, on second thought, I agree that your patch addresses a real
-> problem, even if it's not (IMO) quite a full solution for commit
-> c537d3457542's.
+Based on Linux v7.3.
 
-No, it is not a full solution for this kind of a problem.
+Thanks to Igor Korotin for the device ownership and bound-client lifetime
+rework used in patches 3 and 4:
+https://lore.kernel.org/all/179286358623.55649.5397316745104390556@linux.dev/
 
-> > > and my solution does while also handling
-> > > the inconsistency you mention.
-> >
-> > I'm not sure about that.
->
-> Sorry, I see that part was inaccurate.
+Thanks to Shuai Liu for reviewing v6. This version addresses the Clippy
+warnings, replaces the ignored SMBus doctest, and moves repeated unsafe
+SMBus calls into safe helpers:
+https://lore.kernel.org/all/tencent_173B7731E90B9624F9F82613DC3031B70907@qq.com/
 
-No worries.
+---
 
-> > For example, say a device has an autosuspend delay of 2 s.  Say it is
-> > initially suspended and user space writes "on" to its "power/control",
-> > so the device resumes.  Now, 1 s later, user space writes "auto" to
-> > the device's "power/control" and the autosuspend delay is respected,
-> > so the device doesn't suspend.  Next, 1.5 s after the first resume,
-> > user space writes "on" to the device's "power/control" and the device
-> > does not resume because it is active (its last_busy is not updated).
-> > Finally, user space writes "auto" to the device's "power/control", say
-> > 1 s later, and the device suspends even though it can be expected to
-> > stay active for at least 1 s more.
-> >
-> > How is that going to be addressed by propagating last_busy from
-> > children/consumers to parents/suppliers?
->
-> Agreed, your patch addresses some scenarios mine doesn't.
->
-> I also agree the power/control behavior is a bit awkward, although it's
-> not very convincing to me as a use case.
+Previous versions:
 
-Well, that was just the first example I could think about while
-writing the above.
+  v6: https://lore.kernel.org/linux-iio/20261004130303.65432-1-muchamadcoirulanwar@gmail.com/
 
-> (Arbitrary/periodic fiddling
-> with power/control seems more like a nuisance API than a real expected
-> use case.) Or if it were, I would suggest solving that by adding
-> pm_runtime_mark_last_busy() to pm_runtime_allow() :)
+Changes since RFC v6:
 
-Interesting thought, and hold on to it.
+- Rebase on top of Linux 7.3.0.
+- Make register() return Device<T, Registered>, stored in the driver
+  data, so the IIO device is unregistered before its private data is freed.
+- Remove the bound parent parameter from IioDriver::read_raw(); the driver
+  now stores its bound I2C client reference directly.
+- Drop the parent lifetime parameter from UnregisteredDevice.
+- Use pin_init::raw_try_init() in Device::build_device().
+- Document sign conventions for IioVal::IntPlusMicro and
+  IioVal::IntPlusNano.
+- Add IIO=y and I2C=y dependencies to CONFIG_AS5600.
+- Use typed pointer casts and lossless integer conversion to fix Clippy
+  diagnostics reported by Shuai Liu.
+- Replace the ignored AS5600 doctest with a generic no_run example.
+- Move raw SMBus FFI calls and errno conversion into safe bound-client
+  methods, as suggested by Shuai Liu.
 
-> To me, a more convincing one is: a non-autosuspending child with an
-> autosuspending parent, in a situation otherwise similar to commit
-> c537d3457542. The child is not likely to intentionally update last_busy,
-> but only implicitly via rpm_resume(). When you solve the inconsistency
-> with your patch, then it enables my patch to be more effective w.r.t.
-> the parent.
->
-> > Note that I'm not dismissing your proposal, I'm just having doubts
-> > about the need to do this kind of thing in the core code.
->
-> OK. I agree it adds a bit of complexity, but at the moment, it seems to
-> me like the most thorough way to improve the ergonomics for clients
-> (drivers) here. And that's pretty much my entire motivation here: to
-> improve the ergonomics of runtime PM -- even if in this case, it
-> requires a little (core) complexity.
->
-> So, I'd love to hear what can make the ergonomics better here, with less
-> core complexity.
+Testing:
 
-Let me start with a clear problem statement to kind of refresh the context.
+Clippy and debug builds completed for ARM with Rust enabled, I2C built
+in, and AS5600 built as a module.
 
-In some cases, there are unwanted parent suspends occurring between
-child suspend and resume that delay the latter unnecessarily and
-generally waste energy.  They mostly occur when the child suspends and
-resumes relatively often and the parent's autosuspend delay is too
-short to cover the entire period between the child suspend and resume
-along with the preceding period of the child activity following the
-most recent update of the parent's last_busy timestamp, at least
-sometimes.
+Runtime testing was performed on a BeagleBone Black with an AS5600 on
+i2c-2 at 0x36. Raw angle and scale reads worked with the magnet detected,
+and reads returned ENODATA when the magnet-detected bit was clear.
 
-Of course, this also equally applies to suppliers and consumers, but
-let's focus the attention on parents and children.
+I2C errors were propagated when the bus was disconnected, and reads
+recovered after reconnection. Concurrent reads were tested with 10
+readers, including during 20 unbind/rebind cycles.
 
-The problem addressed by
+Lifecycle testing covered 50 unbind/rebind cycles, 50 module load/unload
+cycles, module removal during active reads, module removal with an open
+sysfs file descriptor, and module removal while the I2C bus was in an
+error state.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git/commit/=
-?h=3Dlinux-next&id=3D55b2b8af704f845e01fa2f31ee259b07641ce3a9
+KFENCE, UBSAN, lockdep, and kmemleak reported no issues. KASAN was not
+enabled because 32-bit ARM selects HAVE_RUST only when KASAN is disabled.
 
-makes the unwanted parent suppends to occur more often because it
-causes the parent to entirely miss its last_busy updates in the cases
-when pm_runtime_resume() (or equivalent) is called for it when it is
-active.  When this goes away, it should be possible to address those
-"unwanted parent suspends" at least in some cases by increasing the
-parent's autosuspend delay.  However, using larger autosuspend delay
-values generally causes system power to grow (on average) because it
-effectively causes devices to spend less time in suspend, so
-increasing autosuspend delay values is not a particularly attractive
-option.
+Muchamad Coirul Anwar (4):
+  rust: io: add FallibleIoCapable
+  i2c: rust: implement SMBus access via IoBackend
+  rust: add minimal IIO subsystem abstractions
+  iio: position: add Rust driver for ams AS5600
 
-Notice though that advancing the last_busy timestamp more often
-without reducing the autosuspend delay values of the affected devices
-is also likely to lead to the overall increase of system power because
-it would effectively cause the devices to spend less time in suspend
-(on average) likely increasing their power (unless the majority of
-their suspends are unwanted).
+ drivers/iio/position/Kconfig    |  11 +
+ drivers/iio/position/Makefile   |   1 +
+ drivers/iio/position/as5600.rs  | 186 +++++++++++++
+ include/linux/iio/iio.h         |   6 +-
+ rust/bindings/bindings_helper.h |   2 +
+ rust/kernel/bits.rs             |  29 ++
+ rust/kernel/i2c.rs              | 235 ++++++++++++++++
+ rust/kernel/iio.rs              | 463 ++++++++++++++++++++++++++++++++
+ rust/kernel/io.rs               |  62 +++--
+ rust/kernel/lib.rs              |   2 +
+ 10 files changed, 978 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/iio/position/as5600.rs
+ create mode 100644 rust/kernel/iio.rs
 
-Now, let me acknowledge that some drivers evidently want rpm_idle() to
-always set the autosuspend timer instead of suspending the device
-right away.  That may be because of the "unwanted parent suspends"
-problem at hand or for other reasons.  Regardless, it is effectively
-equivalent to setting last_busy in rpm_idle(), so they use their
-.runtime_idle() callbacks for calling pm_runtime_mark_last_busy().  It
-arguably would be nice to allow them to just declare that, for example
-by introducing something like pm_runtime_use_autosuspend_always() to
-be called instead of pm_runtime_use_autosuspend() if the driver wants
-rpm_idle() to always set the autosuspend timer instead of attempting
-to suspend the device directly.
-
-I think that using pm_runtime_use_autosuspend_always(), if it existed,
-might be attractive for a couple of reasons.  First off, which is
-rather obvious, a driver using pm_runtime_use_autosuspend_always()
-wouldn't need to worry about last_busy at all, so it would never need
-to call pm_runtime_mark_last_busy() or pm_runtime_put_autosuspend().
-It would just need to call pm_runtime_use_autosuspend_always() once
-and set the autosuspend delay (which may even be combined with the
-former).  Second, the autosuspend delay of a driver using
-pm_runtime_use_autosuspend_always() would only need to cover the
-period after the last runtime PM reference to the given device had
-been dropped while currently an autosuspend delay needs to cover that
-period along with some (usually unknown) period of device activity
-between the most recent last_busy update and the time when rpm_idle()
-gets called.  Thus, with pm_runtime_use_autosuspend_always(), the
-autosuspend delay usage would be arguably more straightforward and
-easier to reason about, and also the autosuspend delay might be
-reduced in the majority of cases.
-
-Of course, drivers that have the "unwanted parent suspends" problem
-might switch over to using pm_runtime_use_autosuspend_always() and
-adjust their autosuspend delay values to cover full periods of their
-children's suspension.  In theory, it should be possible to reduce
-their autosuspend delay values while at it, for reasons explained
-above, so the total average system power might even remain unchanged
-at least roughly.  That overall might be a zero-overhead change.
-
-Using pm_runtime_use_autosuspend_always() would also make autosuspend
-work consistently in all situations regardless of the reason why the
-last runtime PM reference to the given device had been dropped,
-including the "power/control" manipulations from user space, in which
-case it would be equivalent to calling pm_runtime_mark_last_busy() in
-the sysfs code path mentioned by you above.
-
-Moreover, suppose that pm_runtime_use_autosuspend_always() turns out
-to work for everybody, regardless of whether or not they have the
-"unwanted parent suspends" problem.  In that case, it will be possible
-to simplify the whole autosuspend delay handling quite a bit.
