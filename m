@@ -1,64 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794254397;
-	b=Jw3sqxC7X8qeEF5EjQ9Ie+XGmMaPFhyaOdBUb35mbDEwRP6x2jxOCFKdSOXa/Og3m+Sf
-	 yxX6y0v6iMOJMZ93h44ctU3BLFIpHf17+AONu55g97opFlarGgsJ+Cfg9rPdKxUBSCwO/
-	 Z+/ZySYz4ifuKQFH2bihwV0/fYxBrU3Z96ENVfHvB/ugd74mDFAQL90Md0DVlNDmlrrEO
-	 zuMPNtAcbahvjq+50ShSjwVaJhkAUB9TPOx4aPxR5R7LQmroROvH79tc5DMhwHKtL94C1
-	 ASIW9IG7Rk+kfcjpQuInaAqn1kwW4pLGDhvbl3v0ybAmKgvT2uVuJz3gmGMqBSWBssw==
+	t=1794254398;
+	b=Gzt8v3QNynZIfoAYcrRlJY/XMN/tXZyJmsz3cARrkJE8+ik64GG9pOf3wjEOtO29D0Kb
+	 brsQMEH0Nl+vKu+IvYkJLPGI0gIhZ5dsyZnD3uylcFGa0P8OQUAA+7dGxr0eGjv28ZQOi
+	 oLIqA4HyioNbjR6jH9ppQljA56KjBVMDfuRzExKTM5H77bJFBRQvEPcbQ7kk75P7Ktx9k
+	 TGltvw2pl+jtUlPteErdTesZNsAtxRHnBkiV6GFG5oC98/3oFoX6Me14tu1jitVHy1iNb
+	 2ehGqdijqrwwRZ+QxuqgMeI8gsMmtzsFrVcvziP9mQGObBf8AgP3HPFFvxskIcgx6/A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794254397;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794254398;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=E6ZM8eCSRqXyF2S7mN6AOzvccTBTYeL/LvlpvXWk/68=;
-	b=WoV7EDtJreHUND+wWqW3Dfqio8QZrSDnbzhCUu9+n7QzI6HbJMuHgObuEsg87a1nZqbu
-	 CUl2OVQRjR6GUaVAPUB+k4bvkfA5nI1qED4QwhAybU1rYIQeupMmGez2aB6do+wKWnQjK
-	 XEow98CAwjv6m+ACRmTK1Wgcd/g2EyPvEjry9nGfemSsbbvH0JCCDrOcxhbiqHlF7ooC+
-	 VpbP0K8NGntZvz2G8EjWbaB0NU+gdzrurXvIgO3tnkl1bBg9tiSuE9QVo+kv6zG07Pkuj
-	 bZtL1xTxPQ+ArXOqMtvUOGZOq91ax3708fqGu0t2mwd3GpmhxuDdCJ+l8wdp/CvemAQ==
+	bh=0+/fQ8RhUk0g3NV9tDrsYd5xAskBmzsDwmui/QUKhtQ=;
+	b=mnC5n5KyNYAZC89dFA3MmDm4ROiEmGqQxmzglST1/03ib1AscGNBEQUgdtdWyNbtaF/7
+	 1eNqhjp9oaDY+1MGl4C0raPVUdavOadBgchsUEK+6/XPWilelFrHXln/mRSyVaOtuqIRC
+	 VWsiSsL0FcA8iCpSgTHZeGDu2dbP0cjFbWmfM2vTtTVetK8Wl/fY5jx8mYFkhyGeF61T6
+	 MFO+N3HU7pZX/BJvBK2eK4iKpW42sHv6dEUIs1o/6zWE2wrO4ZUsgM8LE7kq5xQfEEM/m
+	 yfTAAIORrQ/byBfraRPLkmKmU5puYhs4NcL/HEcGACtGqfgfYPPKNMrDVEBRrfnMGDg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dBSpOwCn;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cNSd1RKM;
 	arc=none smtp.remote-ip=198.175.65.15
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B54260A2601;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B435660A2625;
 	Mon,  9 Nov 2026 19:59:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B54260A2601
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B435660A2625
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dBSpOwCn
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cNSd1RKM
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1794254398; x=1825790398;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=YjAQkNgnqiQWrokfZj4Rbpr1oo88Lx7XNyLDorA28hY=;
-  b=dBSpOwCnjnWfhhgE99eo+fEYDgDCN0wzqSYjNAWUHQj11BxOy9N+kS1e
-   oj7cWYNlyvoTtNxWCt1VH0Nwczy4Xbx7kGKNzkGUnpv1L3HdbmRT7pGQ3
-   MzUMeB2JoxjfffASVXbRi71JX0uMTSvtSdVP6epx9ZLh6M4WVXV1v5DLW
-   eKRf8pWNAKsrQrKPSdwoud476fYH+plP08G/gnygLAXx3i+jPF7OckjO6
-   qNe3Bj+BbuZaQspZRBDqDbuSpeTRc2a1a+ni4bliOBUq1H7ujcMH4qaxd
-   ThdhKgA+HlYP12LXPf+45TU34/hv6guqPogltxHK+MyPAdP3wh8acLj+M
-   Q==;
-X-CSE-ConnectionGUID: 4q3CDqBVSnO1wcVB0nOhWw==
-X-CSE-MsgGUID: yR9d7fwOTt25AJ9gX7SrkA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2986575"
+  bh=43FdOYVYaLYdH/YhTJIRaOkpMw1ayW6UOOxfrtGVnBs=;
+  b=cNSd1RKM76b2Wb7SKuNy33KBPf3pPZ0Ez3QqlJIP7yZw0650K0dP1QCH
+   L0TQ7T21xldvzXXP6nsk1YQ2MOXo4okcpuUxQ0B7njkDj5bKys8jQu8nQ
+   r08TvBRIrmOPFLsF/BogNOKWYyZUeGZmpX5j7GRwls5BYftQnPy9cRiG0
+   pzExkdHy8XyJcIDuLuPq+joUbkPayFRbp+uAUZJ52a1KqccbpOINBQBQ0
+   QDHhwMRcMMJG4kxghcimwjaa4CiB/j1lZwONIIWujUB7mNbmmfZGpTqvn
+   9j/L2CviDrTT5S93FzCsM5KT3z3NrS7/cKYXXS1CdQEz2fsCnJmFfs2co
+   w==;
+X-CSE-ConnectionGUID: V3K/FNLjS1WIPrh63EbQsA==
+X-CSE-MsgGUID: vkDjejxZRCmeTRJyYSexWA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2986578"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2986575"
+   d="scan'208";a="2986578"
 Received: from fmviesa005.fm.intel.com ([10.60.135.145])
   by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:59:56 -0800
-X-CSE-ConnectionGUID: QHy/Pq64RHij5bJfWNkYcA==
-X-CSE-MsgGUID: HEHWxVx3RfG6LBMqET1oXg==
+X-CSE-ConnectionGUID: DfcKyMnsQIK8wm4oa8xNWw==
+X-CSE-MsgGUID: lYQLSib2TlWtrKqHFGTYhg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8090670"
+   d="scan'208";a="8090673"
 Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
   by fmviesa005.fm.intel.com with ESMTP; 09 Nov 2026 11:59:55 -0800
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
@@ -72,9 +72,9 @@ Cc: linux-input@vger.kernel.org,
 	lixu.zhang@intel.com,
 	crofts@kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v3 6/7] HID: sensor: custom: Register enable attribute after misc device
-Date: Mon,  9 Nov 2026 11:59:48 -0800
-Message-ID: <20261109195949.384888-7-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v3 7/7] HID: sensor-hub: Remove clients before stopping hardware
+Date: Mon,  9 Nov 2026 11:59:49 -0800
+Message-ID: <20261109195949.384888-8-srinivas.pandruvada@linux.intel.com>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
 References: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
@@ -89,52 +89,82 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Register the enable_sensor sysfs group only after misc-device setup
-succeeds. This prevents userspace from opening the sensor hub while
-probe can still fail, which would otherwise leave the hub open reference
-unbalanced on unwind.
+Remove MFD clients before stopping the HID hardware so their close calls
+remain valid. Runtime-PM teardown may cancel a pending autosuspend without
+running the client suspend callback, leaving hub references after child
+removal.
 
-Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
+Clients share one HID open while ref_cnt is nonzero. After removing the
+children, drain any remaining references and call hid_hw_close() once if
+the count is nonzero. Then stop the HID hardware. This avoids both a
+leaked open and the underflow caused by an unconditional close.
+
+The pending-request walk runs before hid_hw_stop() disconnects HID-core
+children such as hidraw. Skip non-platform children and platform children
+without sensor-hub data before checking pending request state.
+
+Fixes: 1df3a401154a ("HID: Delay opening HID device")
 Reported-by: Semyon Maryasin <simeon@maryasin.name>
 Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=eUdbPthG2xrLqwQQ@mail.gmail.com/
 Tested-by: Semyon Maryasin <simeon@maryasin.name>
 Tested-by: Zhang Lixu <lixu.zhang@intel.com>
 Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/hid/hid-sensor-custom.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/hid/hid-sensor-hub.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
-index 55698dea5b86..8a71e86d247b 100644
---- a/drivers/hid/hid-sensor-custom.c
-+++ b/drivers/hid/hid-sensor-custom.c
-@@ -1059,20 +1059,19 @@ static int hid_sensor_custom_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_remove_callback;
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 98ae5352e2b6..2a7f2475171f 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -10,6 +10,7 @@
+ #include <linux/slab.h>
+ #include <linux/mfd/core.h>
+ #include <linux/list.h>
++#include <linux/platform_device.h>
+ #include <linux/hid-sensor-ids.h>
+ #include <linux/hid-sensor-hub.h>
+ #include "hid-ids.h"
+@@ -803,7 +804,14 @@ static int sensor_hub_probe(struct hid_device *hdev,
  
--	ret = sysfs_create_group(&sensor_inst->pdev->dev.kobj,
--				 &enable_sensor_attr_group);
-+	ret = hid_sensor_custom_dev_if_add(sensor_inst);
- 	if (ret)
- 		goto err_remove_attributes;
+ static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
+ {
+-	struct hid_sensor_hub_device *hsdev = dev->platform_data;
++	struct hid_sensor_hub_device *hsdev;
++
++	if (!dev_is_platform(dev))
++		return 0;
++
++	hsdev = to_platform_device(dev)->dev.platform_data;
++	if (!hsdev)
++		return 0;
  
--	ret = hid_sensor_custom_dev_if_add(sensor_inst);
-+	ret = sysfs_create_group(&sensor_inst->pdev->dev.kobj,
-+				 &enable_sensor_attr_group);
- 	if (ret)
--		goto err_remove_group;
-+		goto err_remove_dev_if;
+ 	if (hsdev->pending.status)
+ 		complete(&hsdev->pending.ready);
+@@ -817,8 +825,6 @@ static void sensor_hub_remove(struct hid_device *hdev)
+ 	unsigned long flags;
  
- 	return 0;
+ 	hid_dbg(hdev, " hardware removed\n");
+-	hid_hw_close(hdev);
+-	hid_hw_stop(hdev);
  
--err_remove_group:
--	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
--			   &enable_sensor_attr_group);
-+err_remove_dev_if:
-+	hid_sensor_custom_dev_if_remove(sensor_inst);
- err_remove_attributes:
- 	hid_sensor_custom_remove_attributes(sensor_inst);
- err_remove_callback:
+ 	spin_lock_irqsave(&data->lock, flags);
+ 	device_for_each_child(&hdev->dev, NULL,
+@@ -826,6 +832,14 @@ static void sensor_hub_remove(struct hid_device *hdev)
+ 	spin_unlock_irqrestore(&data->lock, flags);
+ 
+ 	mfd_remove_devices(&hdev->dev);
++	/* Clients share one HID open; release it if references remain. */
++	mutex_lock(&data->mutex);
++	if (data->ref_cnt) {
++		data->ref_cnt = 0;
++		hid_hw_close(hdev);
++	}
++	mutex_unlock(&data->mutex);
++	hid_hw_stop(hdev);
+ 	mutex_destroy(&data->mutex);
+ }
+ 
 -- 
 2.56.0
 
