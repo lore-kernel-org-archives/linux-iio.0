@@ -1,61 +1,162 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.43
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794221093;
-	b=0IC3LUnfKP7TeJY9dumqN5/aXgUF2UhWxwGZUfWwp850Lk8soHW6UwO9+6dRq+vpW/5Z
-	 qwjFlwkESzyUqzYy2Rn1XEpH7xZ/rip68UF4Fh3f/bx1mzefodYqPn9ZnyAY4F9PdxbtL
-	 d8MG6TRTdhzbT3Q0o89SkLa3nts5JhZrCBHNfrx7gBCpy+BnKrDNScRGCCBeFanA4ZkKb
-	 BwN0wh0Sm5BQ7WucNSkEPxMJ0OIgU2xvnz183gsy4wIYUSmKduOF8q7UAPi8qJsEAHOj6
-	 qnmDriq6y0zG3x4yfQy8zIqS3462Pm9FIexzEPuAVJhQSr17Ez/L+WGdO5jAWEQ90pQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794221093;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=jhRpB/3L64OWgVCzI6g0N4mh7LrBuRu768BeFhov7Os=;
-	b=BSoSL55lsU4jUh5pjqCAoY60D8TxxFefaFIflYqFzfVQhK42Q+dHqaobAuKmSaLEPhPv
-	 J6O3UbMcyvd/qQyhftFb9j7GHB9u+i+18P2njixPMbhMio8V8Kf2VAbbvsYIXBvGTFxut
-	 Kvxcynu1bMxcIhyhEmLTH3XA9LYUNpAETr7+uZ5lzT1S8PBKXDXEA0o6jkdp/VdcU0I7Q
-	 aNT7BSXnBIu/ivO9zDjBoTPp0gT6vNKuugvCoFqaDcJ45QmSTSUx3Jz2tAVI27F1rl0e5
-	 uPeVDACP5jKoY09RRfQa/tzYRrFtxXdd261tUvOaxoqVWwZ8WHpHAeY2vN2v57eLoMQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=HOjhnVfY;
-	arc=none smtp.remote-ip=91.218.175.43
-Received: from mta0.migadu.com (out-43.mta0.migadu.com [91.218.175.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.52
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794222437;
+	b=f4j+si5cppkhHWNx3NxLZwpNexQY5xRaXRHlTToUp0tV2ePolnvjgvqWlJaA0xPaWQiK
+	 sAgBi0OjilwSLkqmK7fqEg0s0tTpmHLdIx4Md45uzJit/n8zDteFrmfHZLSCVfyJYEJEF
+	 WCLrsb4eS1m8XnpNe1smvAJyb8odfFZ4A4GB6ogCN9lrKU0YRfXnfxG2kXesWptYtGKr2
+	 vRkJIcnvdk+k+PMbmJiGMpy+Hxojt5ue2xtKhghwl0E28/RWBtdcOEJZRDIKKL7gQvuYo
+	 04RaG7nnTQFZ2GA4o7D5ntECz1+CIAhVY7mmUY5i/BUNXhdJkCl05RYHYisSLDS0+qw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794222437;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:MIME-Version:
+	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=K3mjvFh/P1U++NcOUlXx2N+qncL/AlA1lxa57F/c9u8=;
+	b=Xn4ZKel9PJeFsNCBbtWY0wBFfNcICQyN+gGX49xyGrQdcD78+rG7jSjhd2SYyjT/oW8D
+	 diFHy+joGpkEwrfXgOr16YSdKUWae6Fig7m+m7ptuK02qaafLDbt6nbYecryIgxLMsq+8
+	 dUGzDgDG4CMumaENwK6YRCv9zxQtjOGOhuGQ2EkjEVITy6ZO4cWlL1sZCoBmsqeB3E6N6
+	 UQ6mhEXKjhJXnBQepn/2uLiIOq2beGRs0UnrC0/mDqczpU3RGfEpLeA/kuwRYR6DWUFOC
+	 wpPeLsF03JOqN4YBJ8vckHS6eiznTHiYCaBLYkeEtou4MpBg8Ky/9wcErGa99LnsJ5w==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=axis.com;
+	spf=pass smtp.mailfrom=axis.com;
+	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=L7yBqV15;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.52
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013052.outbound.protection.outlook.com [52.101.72.52])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AAD5606A322
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 10:44:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7AAD5606A322
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E8BA606A31C;
+	Mon,  9 Nov 2026 11:07:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E8BA606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=HOjhnVfY
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=n9yUochbuHx8y/anYILHlFK/BKbY5H9S/STmPJZqyQA=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794221089; v=1; x=1794825889;
- b=HOjhnVfYEClUjmyKsoac8lXoaH6LKyaEf/4JwcwlXSJOtwpIK1c83pIlmEymvLFacBUEh6R7
- YZuXoZy01D81CK+EPNHqEDiV+U82Ai0/YJ1DO+zZayEIIvXj5Pg4DlANmpWrwLdNHCRO32BoKok
- y9+TYo9cGtJND6iyEygCo5/0=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id 941375bb5fe624cb;
-	Mon, 09 Nov 2026 10:44:49 +0000
-X-Mizu-Trace-ID: 941375bb5fe624cb
-X-Migadu-Flow: FLOW_OUT
-Date: Mon, 9 Nov 2026 10:44:43 +0000
-From: Akhilesh Patil <akhilesh.patil@linux.dev>
-To: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
-	robh@kernel.org, crofts@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, alexandre.belloni@bootlin.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-rtc@vger.kernel.org,
-	akhileshpatilvnit@gmail.com, akhilesh@ee.iitb.ac.in
-Subject: [PATCH v2] MAINTAINERS: Update Akhilesh Patil Email address
-Message-ID: <20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com>
+	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=L7yBqV15
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=a86xGJhUpQnq3Ra/fpEgvTt615v14apWia+W9UlLwA/+atvN0ddDMx5ceMrGIfI1kW5+W/uKrWNXlEyLlhDYZ6geG/tm03JoxdQOJ3cHE7kLXuSsYvuSwQbbLUQcIQtVIYNRP2ICLFSgUQQHwJDgJNboASiyY7gDXoN80m3ZIJeFXwiyLHdhnVjZUNQa3fQ9/pYe5KK4uk6+sh2OBb9ffPl7doOL2l4NXTwj24ltet51tCbolNRgZF4dOwxQsqZQIfvsTINmZyQ4nqKtmLiqUzFopbR5IwgbdjMczNsxDoZpq7Wl6kxGqgZnHyuY+9tDEFv81leGrhJA3kZP3JGxxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K3mjvFh/P1U++NcOUlXx2N+qncL/AlA1lxa57F/c9u8=;
+ b=uXTlZMsC31Z1+3Mdp6YOHz2behf52RliZp6xGYPM4YaQuv1k7IVe/Q9oa8m7wJPqOtO1QIvJ81U/PlopvmjSrPWXtiwDeySoYmvO/Zk+o6gJjg6Q/Me6BbXTemJ/JGyShabWc5/jj7virsycIR/7twG9+MajTf+nc9I9GVV5HQk8gpgP/dgyQIOVxGL1+ATH/YYuDBIeKLUbGkZBhErYsN80QgOAHf9QByHX+8iZmov84vp+nZeq1rhnE8veN7Ot2q8TSjaiBWQ5Vd4s1bsT6j78CulpaP2e4KKrqLxNUKykYMzD7JtXhVvnyQPCsqpjHCJmrQvgIhw5pWiM3fkqlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
+ dkim=pass header.d=axis.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K3mjvFh/P1U++NcOUlXx2N+qncL/AlA1lxa57F/c9u8=;
+ b=L7yBqV15ySoX7G1ROmNKDuqmB1ShehegKxkBokzT2awpAIBJzSHqW4zUtJIOhnVJZk1NCcemjw5tESUJPW8MUCPEHO0vwWeMxk+p/aGv3X1HlX661qpMcq+0P/zI8O8Iz3Eaj+iE7Fq5OrDCMvYb6kqk6HskLr3Kuy3OJ+LYuSw=
+Received: from AM0PR02MB5281.eurprd02.prod.outlook.com (2603:10a6:208:101::12)
+ by DB9PR02MB6876.eurprd02.prod.outlook.com (2603:10a6:10:21a::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.12; Mon, 9 Nov
+ 2026 11:07:13 +0000
+Received: from AM0PR02MB5281.eurprd02.prod.outlook.com
+ ([fe80::bdd1:15c4:7979:b16f]) by AM0PR02MB5281.eurprd02.prod.outlook.com
+ ([fe80::bdd1:15c4:7979:b16f%6]) with mapi id 15.21.0592.007; Mon, 9 Nov 2026
+ 11:07:10 +0000
+From: Kanak Shilledar <Kanak.Shilledar@axis.com>
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: "robh@kernel.org" <robh@kernel.org>, "andy@kernel.org" <andy@kernel.org>,
+	"krzysztof.kozlowski@oss.qualcomm.com"
+	<krzysztof.kozlowski@oss.qualcomm.com>, Kernel <Kernel@axis.com>,
+	"macromorgan@hotmail.com" <macromorgan@hotmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, "jean-baptiste.maneyrol@tdk.com"
+	<jean-baptiste.maneyrol@tdk.com>, "crofts@kernel.org" <crofts@kernel.org>,
+	"dlechner@baylibre.com" <dlechner@baylibre.com>, "nuno.sa@analog.com"
+	<nuno.sa@analog.com>, "marcelo.schmitt1@gmail.com"
+	<marcelo.schmitt1@gmail.com>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"jonathan.cameron@oss.qualcomm.com" <jonathan.cameron@oss.qualcomm.com>,
+	Henrik Grimler <Henrik.Grimler@axis.com>
+Subject: Re: [PATCH v8 6/7] iio: imu: inv_icm42607: Implement MREGx register
+ access
+Thread-Topic: [PATCH v8 6/7] iio: imu: inv_icm42607: Implement MREGx register
+ access
+Thread-Index: AQHdbT0za3s1DFnvYkyCu5dK79jxS7ch+00AgAOfDwA=
+Date: Mon, 9 Nov 2026 11:07:09 +0000
+Message-ID: <d5c6a85f8978eefd0b8f609107e0d2e4622c8ab4.camel@axis.com>
+References: <20261105-b4-inv_icm42370p-v8-0-b44eb96020b6@axis.com>
+	 <20261105-b4-inv_icm42370p-v8-6-b44eb96020b6@axis.com>
+	 <20261107034846.429482a2@jic23-hlaptop>
+In-Reply-To: <20261107034846.429482a2@jic23-hlaptop>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axis.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: AM0PR02MB5281:EE_|DB9PR02MB6876:EE_
+x-ms-office365-filtering-correlation-id: 761f76be-6bf6-40aa-b784-08df3e519997
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|1800799024|6049299003|23010399003|376014|7416014|18002099003|22082099003|10067099003|4053099003|38070700021|3613699012|4143699003|5023799004|11063799006|261026121527099003|261102123227099003|261022075727099003|261021121427099003|56012099006;
+x-microsoft-antispam-message-info:
+ /KGRfUF5EkaV07SlMdeZT3UaW6aKGje2QM1f7TidVEA5Zd7elpHiOxr1jC2WKb78ZkGD/A0VsdqiBPsOEPOp1Tfl3uj6MNCx9viIyhWr10UooU5d+UF+HGuSgyEqPOzc+UiB2C6EIyNjeNda1oIxRUaGgLZkML4gsGI7WPwukllNSFTSwtBDiK5IjtDo9Kuf/kQRKf26SmAuIX5OCUxSi2j7glOh/hbvFi1BRKloYrlH7SXkDWiOEDB3/DgBqiYpCymoO3RErUUyijkJ+QcPYVpxluy4iI5G8bTn9xyAHaYdr6zASqhs8oCla6psJ+ZKqLyQpq8PESmsSVYWk4jsQrsfuHhKY3d+FjSEOeLuqmgFmH+ukJFUeACutj/z7iIUp8OmFeonh4dKNVVIVorpwBMmYxtzeIulhRTTtNrCLWKhKb13Bo8UDw9PLFOyVgvpYkY5UFk+6oCsdpacnpv3P8/Cc9Aub8Jn9VVaUpbynJwOpu9+DHlcu+QqGn9qO2HcrrhbyjfiihRjvVrwLA7q7GA/PC+GeWHI7xjIuVGSkUCJ4pd0FqHXxv/Vi5m1banO0/Aw0kQrn3VflvmMUiq8IW5repf3dejyQpYLXCoCdmyW8r8G1IzFOGNdpWPEi0JVsZEoiuznZSJJ1kSg85Hr1HE3r3QHXC6oVrvei4yLLfmWrIlc3U5KTb3YXvAKktJTGzn1NABh6To5MyOzTgNY7OXC+tdiSVe6eQAgWORLMD+qnAMPtR4n+yBKYynOzFAj
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB5281.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(6049299003)(23010399003)(376014)(7416014)(18002099003)(22082099003)(10067099003)(4053099003)(38070700021)(3613699012)(4143699003)(5023799004)(11063799006)(261026121527099003)(261102123227099003)(261022075727099003)(261021121427099003)(56012099006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?VFdJL3lDZElDZ0RZRmpVWmRSWlUyc1Z2Z0VZZSt6ZzYwL1dIODJCOHlNb2Q2?=
+ =?utf-8?B?WjhlakNsbmtLU1p0ZkQ0bDhjSlh2aXBCMzdwRVArRjNtUjdrTzVlUnJldlhX?=
+ =?utf-8?B?SVU3aWNGd0NJVW40QWtEOXlPdVpaZW5ucHRhMmk0VCt3SVdYRWd0UTluckhy?=
+ =?utf-8?B?SEp0V1NDT05KTXNsUWZnbjIrOG9EL3BvRC85bHJXclNDV1h5RkhYTGNRWHBM?=
+ =?utf-8?B?L0o5cjFpRTdBaUJZYkJzanJiV1FIZ2YyRmpvUHFnY1RmMUFnMVRPUE1zSGxM?=
+ =?utf-8?B?UDBrMzJJT2dPZDErajE2d2Zpa0Y2WDlQR05rVjMxT3ZFaXNPbnV1NFVLMGtl?=
+ =?utf-8?B?OUovbE85T1FWYW5UUnE3em5KRmlRLzVONmt4Z2lDS0dPeDdsV2RJU1kxM0I2?=
+ =?utf-8?B?QkxwVW9qa3Y0akdUOS9vVk1LNUdZdDF1UkJ0bS9PYWRJSkZLUTRWdlU2R0lz?=
+ =?utf-8?B?NS9XQWJJRm8yLzRFMUgzVCtPRTZnUVdkMm1BZkc0ZXRFTnY4cjdhMndLc2RV?=
+ =?utf-8?B?dHdheUlXUi9sbkw5OFFsQWkyVnl2c3ZzUjFQR2JwTGN0eEZmQWxHbFNWMDhu?=
+ =?utf-8?B?bVhBbFZFZUt0UjhaMDJDTUJDSU5xZUZkN0JkTmRYN1hGbmlEVlBMY2RLS2Vl?=
+ =?utf-8?B?Ymw2OU42dDFhblB5S2hCUzM4dGZLSExUOWlQdUo5WWlXaWp5cTk2bS9raGh3?=
+ =?utf-8?B?UzIxY08vTlFzblp1ZFRkNVJvR3pzRG1JSVpvZnVNVXJySFI5eDRIUjcrbUh5?=
+ =?utf-8?B?WXVOT0VoVGJuWWlGd1hOMFFXOXdCTDNLdkdERGlvWHl3ZWgrejBNMzc1VGR1?=
+ =?utf-8?B?QW1KWmRERmNkT1A1b0NDcHAveUhkeGxKd0Z0alJveHBRY2NDU1FSTCtwT2ZE?=
+ =?utf-8?B?dU9QZnFKWEl5Z1A2SXR3RUgyTWFsQXJvNFhxMVprU0lzN0dkSWg3WnhtYnNZ?=
+ =?utf-8?B?Y1RhR1NpN3E0WDVQeWZDdEp4SVF1ZE12bW5CeEpVV1RTcWdBKzJIWHZoUHVk?=
+ =?utf-8?B?eHAwQW9YRTlKWGM0emlmTmpwVDArc2VMNUdnaTVyV3FhZk5JQ1VOVVlqMWxM?=
+ =?utf-8?B?TW5SVFhTVDBjc3JtdHNnRmpaczQ5eXp3NFJnMTE5WDNSbG5vRSt4UWJTTTVV?=
+ =?utf-8?B?eUhmZldHTVI5cG9YV2hqTVBqWVZYdEdxSmgwclpXTGxvNzk2MHk0Vk9PNXlj?=
+ =?utf-8?B?SWF2QmNGN0doUXpSamNZS25CSkRUa2pRVDQrNUpiYW5Yb1E0YWVqb2ZLbTRq?=
+ =?utf-8?B?L0FxWkZVNHpZelFYN2tJWFhSaGlNa2lxOUVDbTlzblRVNUNVZXJMdW5CZlB2?=
+ =?utf-8?B?VFJ0YkZoOXFyWjIrUGdiaEVGYWQ0N09HT2owOTRUczI3bG5CSHBTNkN1Ui9Z?=
+ =?utf-8?B?OWRnU0cvMXhtcVZ2R1RkTVp3dy8yLzJoMC9ObkxoSEwxYUt2b3FRV2FjU1lu?=
+ =?utf-8?B?alV2UFhQWGcxV1Q0R29WeVdtemdzSjE0a2tUTW1vRXluVWJxelBHaFpWekt0?=
+ =?utf-8?B?RVVYNVpxdmUxQU91aUlIZVgwUTNBN2hpb0NOOE1wVWRSTGpQUm5lK0cvMjho?=
+ =?utf-8?B?REJZNW0wNFhDMXk0U0Z2UFFYRlU5WnZsY2pNQlNITnFwSmRYd1AxRE9FcXdC?=
+ =?utf-8?B?MnJaUU5CeW5JL2JaQlZOY3hmR3pUNGVybGdGU2lrNGs2WHdoRDJlTlhod1lw?=
+ =?utf-8?B?MmdRWjJqaHBMeEp5SWtHd0pwbFhSc1FFUE16S3lkZXRld1NERjRJaDNTSzBX?=
+ =?utf-8?B?WnpyTk9PRTBoNzN3djI2WGJDMlM5NVZxTTVJV2tEN3BUT1diNzZBNHNUdlcx?=
+ =?utf-8?B?Si80aUMxSW9qSlM2VFBiaVU5L2tVQ2RIdkFnVGxGdHJVRVRnWjQxdURoT1JY?=
+ =?utf-8?B?T05CMTNxL0E1aVJEaWUzS3hnQU9hc0t4d0Qzb1A0aVVnUjEzZFJoQW4wZmRk?=
+ =?utf-8?B?eGhtSmhxcmlPdkRSems1VFN6SGFLQWRULzFBMGhCaUp3a296c1QyNVZsSnFM?=
+ =?utf-8?B?VkxmQlVVNGNoTG9BWlJ6aUJJeHlJcUp6c05ZOFJNb08rNFNBc2VmMlh4K3N2?=
+ =?utf-8?B?OFo5NDVLeG40UkZ4NVAza0ZYWG5wMzBuZGVuczJMWUlheHlNcVRTeUMxbkhT?=
+ =?utf-8?B?bU5zT1U0VDdIbFg2dDVjZ2ZTOFRNV0o0QnZxUmd4R1Z1c25kTytiOHNxcTJX?=
+ =?utf-8?B?SEZGMStVQkpFSGVsdmFTamVoWTBWQ1F4Zi9ITlVGVnRzUzkvQ3BKckVFWFNQ?=
+ =?utf-8?B?RGRwRUUxdVNGd05MZDBGSjFidVBRd3lVdXM3cXpUbm1mZTROWXlObWZLNnF3?=
+ =?utf-8?B?QzNhNy93NWdoUWZxU3JMaDNRcHQwNlhQWWsyMmpUWGl1bFM0dnRyZz09?=
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="=-9f2+JuzNOYLY+4GvvrJa"
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,91 +166,86 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com>
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB5281.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 761f76be-6bf6-40aa-b784-08df3e519997
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2026 11:07:09.9907
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HakVwbJuWDcjeh0C07iT2a7r1F9hvfoI6AVU8cm4tjwkYfit/1L88L/q6Ig3gjvB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR02MB6876
 
-Move to my new linux.dev email address akhilesh.patil@linux.dev
-I plan to use this email for kernel development going forward.
-Also update email address in few yaml and driver source files.
+--=-9f2+JuzNOYLY+4GvvrJa
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Akhilesh Patil <akhilesh.patil@linux.dev>
----
- .mailmap                                                      | 1 +
- .../devicetree/bindings/iio/pressure/aosong,adp810.yaml       | 2 +-
- Documentation/devicetree/bindings/rtc/st,m41t93.yaml          | 2 +-
- MAINTAINERS                                                   | 2 +-
- drivers/iio/pressure/adp810.c                                 | 4 ++--
- 5 files changed, 6 insertions(+), 5 deletions(-)
+Hi Jonathan,
+On Sat, 2026-11-07 at 03:48 +0000, Jonathan Cameron wrote:
+> On Thu, 5 Nov 2026 16:48:54 +0100
+> Kanak Shilledar <kanak.shilledar@axis.com> wrote:
+>=20
+> > The device supports indirect register access to different banks. A
+> > specific routine needs to be followed when accessing the registers
+> > in
+> > another bank as documented in the datasheet (section 13). This is
+> > required for accessing registers configured via the user and
+> > implementing buffer support. The implementation is inspired from
+> > the
+> > icm45600 driver.
+> >=20
+> > The banks are defined based on their initial bank access code which
+> > are
+> > written to the BLK_SEL_* regs. However, there is a variation for
+> > MREG1
+> > as User Bank 0 and MREG1 both share the same 0x00, so User Bank 1
+> > has
+> > 0x00 and MREG1 has 0x01. When MREG1 register is accessed, then
+> > BLK_SEL_*
+> > is written with 0x00 instead of 0x01. All the register access goes
+> > through the 16 bit virtual regmap layered on top of the 8bit bus
+> > regmap.
+> > Bank id in the upper byte and the register address in the lower
+> > byte.
+> > Bank 0 accesses are forwarded to the bus regmap with the bank field
+> > stripped, while MREG accesses are forwarded to bank switching
+> > sequence.
+> >=20
+> > Due to the specific bank switching routine, it is not possible to
+> > use
+> > regmap-ranges. Only User Bank 0 supports bulk read/writes whereas
+> > other
+> > banks can only be accessed serially. Each time some data in the
+> > other
+> > bank needs to be accessed, it should go through the complete bank
+> > switching sequence.
+> Does turning off bulk accesses for user bank 0 have much impact on
+> performance
+> of existing features?=20
 
-diff --git a/.mailmap b/.mailmap
-index 7fb33babc931..54238d2f04dd 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -1030,3 +1030,4 @@ Zhu Yanjun <zyjzyj2000@gmail.com> <yanjunz@nvidia.com>
- Zijun Hu <zijun.hu@oss.qualcomm.com> <quic_zijuhu@quicinc.com>
- Zijun Hu <zijun.hu@oss.qualcomm.com> <zijuhu@codeaurora.org>
- Zijun Hu <zijun_hu@htc.com>
-+Akhilesh Patil <akhilesh.patil@linux.dev> <akhilesh@ee.iitb.ac.in>
-diff --git a/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml b/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-index ad5f26ce5043..ca4d4210f609 100644
---- a/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-+++ b/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: aosong adp810 differential pressure sensor
- 
- maintainers:
--  - Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-+  - Akhilesh Patil <akhilesh.patil@linux.dev>
- 
- description:
-   ADP810 is differential pressure and temperature sensor. It has I2C bus
-diff --git a/Documentation/devicetree/bindings/rtc/st,m41t93.yaml b/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
-index bdd995c5c1f4..837679dc01ac 100644
---- a/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
-+++ b/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
-@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- title: ST M41T93 RTC and compatible
- 
- maintainers:
--  - Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-+  - Akhilesh Patil <akhilesh.patil@linux.dev>
- 
- description:
-   ST M41T93 is spi based Real Time Clock (RTC) with time, date,
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 222b7fc2c3aa..3aa8fa3c068f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4095,7 +4095,7 @@ F:	Documentation/devicetree/bindings/iio/chemical/aosong,ags02ma.yaml
- F:	drivers/iio/chemical/ags02ma.c
- 
- AOSONG ADP810 DIFFERENTIAL PRESSURE SENSOR DRIVER
--M:	Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-+M:	Akhilesh Patil <akhilesh.patil@linux.dev>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-diff --git a/drivers/iio/pressure/adp810.c b/drivers/iio/pressure/adp810.c
-index 82aa433548d2..832df6ba0ee3 100644
---- a/drivers/iio/pressure/adp810.c
-+++ b/drivers/iio/pressure/adp810.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2025 Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-+ * Copyright (c) 2025 Akhilesh Patil <akhilesh.patil@linux.dev>
-  *
-  * Driver for adp810 pressure and temperature sensor
-  * Datasheet:
-@@ -219,6 +219,6 @@ static struct i2c_driver adp810_driver = {
- };
- module_i2c_driver(adp810_driver);
- 
--MODULE_AUTHOR("Akhilesh Patil <akhilesh@ee.iitb.ac.in>");
-+MODULE_AUTHOR("Akhilesh Patil <akhilesh.patil@linux.dev>");
- MODULE_DESCRIPTION("Driver for Aosong ADP810 sensor");
- MODULE_LICENSE("GPL");
--- 
-2.34.1
+No, after setting use_single_write to true, doesn't have much
+performance impact as the driver doesn't issue any bulk_writes in the
+current implementation. But there are some bulk_reads for reading the
+raw sensor data and those are not affected due to this.
 
+>=20
+> Otherwise looks fine to me,
+
+Thanks and Regards,
+Kanak Shilledar
+
+--=-9f2+JuzNOYLY+4GvvrJa
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTOMrdbv2P+LZwbQtLEY9j7t8KaZwUCavGpSgAKCRDEY9j7t8Ka
+Zw0/AP9O9bLrnmMa84CINHMY529DYlEr2bk7ntA1tjhgtNw3nQD/VxpJF+7CLQ5h
+h39B+wz7IMS2g2mIOrDoy2bNy2VRvA4=
+=aG1o
+-----END PGP SIGNATURE-----
+
+--=-9f2+JuzNOYLY+4GvvrJa--
