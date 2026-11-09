@@ -1,66 +1,65 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794254398;
-	b=Gzt8v3QNynZIfoAYcrRlJY/XMN/tXZyJmsz3cARrkJE8+ik64GG9pOf3wjEOtO29D0Kb
-	 brsQMEH0Nl+vKu+IvYkJLPGI0gIhZ5dsyZnD3uylcFGa0P8OQUAA+7dGxr0eGjv28ZQOi
-	 oLIqA4HyioNbjR6jH9ppQljA56KjBVMDfuRzExKTM5H77bJFBRQvEPcbQ7kk75P7Ktx9k
-	 TGltvw2pl+jtUlPteErdTesZNsAtxRHnBkiV6GFG5oC98/3oFoX6Me14tu1jitVHy1iNb
-	 2ehGqdijqrwwRZ+QxuqgMeI8gsMmtzsFrVcvziP9mQGObBf8AgP3HPFFvxskIcgx6/A==
+	t=1794254395;
+	b=sl2V8RVC1NjeixTSwu5wFPnbZt1GQlvQHN7g2NLd3qQcLlG9eZWWTNeyZxGl861ICyk2
+	 fTR6b95CWg2W2N2ncJjrhZZWMV3BiSB3v6QXk4L9B2yNc0CyAcPzqLjQabo6eLxD0C65D
+	 7VRBAsClpYyWDovevpHBo7VZT6cEpDBUrLfIpzNBL0ygI9JJ1O3iEzXqbIX9lz+7n1LVj
+	 zqExErI4+MmKG4TOv7eqBDyRT/FNEkgv82A3aNswyq2yYGmDwdKPeGLZfuqkfHHAKVE+m
+	 i2UtthyGRcVj6Z/OLwDsT36bN457cgc3eo2fsR8KKKuTjQRcYEy09lESFOi0AQcw4GA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794254398;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794254395;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=0+/fQ8RhUk0g3NV9tDrsYd5xAskBmzsDwmui/QUKhtQ=;
-	b=mnC5n5KyNYAZC89dFA3MmDm4ROiEmGqQxmzglST1/03ib1AscGNBEQUgdtdWyNbtaF/7
-	 1eNqhjp9oaDY+1MGl4C0raPVUdavOadBgchsUEK+6/XPWilelFrHXln/mRSyVaOtuqIRC
-	 VWsiSsL0FcA8iCpSgTHZeGDu2dbP0cjFbWmfM2vTtTVetK8Wl/fY5jx8mYFkhyGeF61T6
-	 MFO+N3HU7pZX/BJvBK2eK4iKpW42sHv6dEUIs1o/6zWE2wrO4ZUsgM8LE7kq5xQfEEM/m
-	 yfTAAIORrQ/byBfraRPLkmKmU5puYhs4NcL/HEcGACtGqfgfYPPKNMrDVEBRrfnMGDg==
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=bOwPx07Y5dGndVLgscD/JsYB//gpuKGzmabRmxhjMbQ=;
+	b=umByKgvNMJwlFVZsaUwaYW4/UNoSfdlGD4wHkhqecT401mB15oXiz5JkElh5Mnoxq3H8
+	 6nlkJQN67QexUmBx7OVG932BbNb9/suse15wQuNdefvLilgPq5t6+d8LahIU6O4XxT+0E
+	 cCif7Pp7IASAzS6tIkBQDYZ5KIRBQC6+hPNlAJerwqmQYhr5JiUXT3AB+BdoGQ4BdecMc
+	 NSIL731IxJaeZDwLct/RDmJcjSoyiUN9KYLuaa1f/qSThgPh1yZEeWzqnqkEE12DkN74/
+	 ku3N6g5m2G0zUmieYEbEKjmoHudZ7zq76AxKSto8SBiTB7xSWYOQ7DIy6Xd+HgMqeMg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cNSd1RKM;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=G5iaP4Jl;
 	arc=none smtp.remote-ip=198.175.65.15
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B435660A2625;
-	Mon,  9 Nov 2026 19:59:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B435660A2625
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82168606A325;
+	Mon,  9 Nov 2026 19:59:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 82168606A325
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cNSd1RKM
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=G5iaP4Jl
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794254398; x=1825790398;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=43FdOYVYaLYdH/YhTJIRaOkpMw1ayW6UOOxfrtGVnBs=;
-  b=cNSd1RKM76b2Wb7SKuNy33KBPf3pPZ0Ez3QqlJIP7yZw0650K0dP1QCH
-   L0TQ7T21xldvzXXP6nsk1YQ2MOXo4okcpuUxQ0B7njkDj5bKys8jQu8nQ
-   r08TvBRIrmOPFLsF/BogNOKWYyZUeGZmpX5j7GRwls5BYftQnPy9cRiG0
-   pzExkdHy8XyJcIDuLuPq+joUbkPayFRbp+uAUZJ52a1KqccbpOINBQBQ0
-   QDHhwMRcMMJG4kxghcimwjaa4CiB/j1lZwONIIWujUB7mNbmmfZGpTqvn
-   9j/L2CviDrTT5S93FzCsM5KT3z3NrS7/cKYXXS1CdQEz2fsCnJmFfs2co
-   w==;
-X-CSE-ConnectionGUID: V3K/FNLjS1WIPrh63EbQsA==
-X-CSE-MsgGUID: vkDjejxZRCmeTRJyYSexWA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2986578"
+  t=1794254395; x=1825790395;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9+xjPhcUiRHthyVAsrjw15Nk6/h5NQZTve3QpMEaEYY=;
+  b=G5iaP4Jln+xPPQV5tO8Bi+ULKge0kpf6003HSprLlWq+qiTwXiWSCUQC
+   P67lpRS73CiKTWTaZYs3lHLMWMxrxlI+ezHVHZtkesBc4q7DyZeHft43S
+   EKM1kWffRYPUS4NSm2ipwNdJjAauVFo6Slqe+Xbh8GxHBCczVTaWe01hV
+   WXb8mt5UDTUe9WN64ChhVQi8WlpSbMdbUwcAX5Hs/fMgvoeqkerb9V+hE
+   Qctp0BjfvOesjVRUdQ59R8Kb51LWpqApK/2pewjarai15kCzszAwMlIhn
+   GRze4Be/gZ20ZjD8ZqljNEsSItsGGyNwgM3Z2lZD4lyQqLu1lv0eWehw1
+   g==;
+X-CSE-ConnectionGUID: MNrXZwaxSOqgjCwnoMwpLw==
+X-CSE-MsgGUID: SI9AeG1jSF29ToNm4oCNlQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2986556"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2986578"
+   d="scan'208";a="2986556"
 Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:59:56 -0800
-X-CSE-ConnectionGUID: DfcKyMnsQIK8wm4oa8xNWw==
-X-CSE-MsgGUID: lYQLSib2TlWtrKqHFGTYhg==
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:59:54 -0800
+X-CSE-ConnectionGUID: buYK8KfoSnCGqYVTyA1exw==
+X-CSE-MsgGUID: Q+ZEx3t9QpCJZeoc0hqk3g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8090673"
+   d="scan'208";a="8090652"
 Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
-  by fmviesa005.fm.intel.com with ESMTP; 09 Nov 2026 11:59:55 -0800
+  by fmviesa005.fm.intel.com with ESMTP; 09 Nov 2026 11:59:53 -0800
 From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 To: jikos@kernel.org,
 	jic23@kernel.org,
@@ -72,12 +71,10 @@ Cc: linux-input@vger.kernel.org,
 	lixu.zhang@intel.com,
 	crofts@kernel.org,
 	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v3 7/7] HID: sensor-hub: Remove clients before stopping hardware
-Date: Mon,  9 Nov 2026 11:59:49 -0800
-Message-ID: <20261109195949.384888-8-srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v3 0/7] HID: sensor: custom: use-after-free after remove
+Date: Mon,  9 Nov 2026 11:59:42 -0800
+Message-ID: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
-References: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,82 +86,43 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Remove MFD clients before stopping the HID hardware so their close calls
-remain valid. Runtime-PM teardown may cancel a pending autosuspend without
-running the client suspend callback, leaving hub references after child
-removal.
+This is v3 version with changes suggested by shashiko-bot and Jonathan.
+Also rebased on top of 7.4-rc2 kernel release.
 
-Clients share one HID open while ref_cnt is nonzero. After removing the
-children, drain any remaining references and call hid_hw_close() once if
-the count is nonzero. Then stop the HID hardware. This avoids both a
-leaked open and the underflow caused by an unconditional close.
+This patch series is essentially the same version that was sent to
+Semyon for testing.
 
-The pending-request walk runs before hid_hw_stop() disconnects HID-core
-children such as hidraw. Skip non-platform children and platform children
-without sensor-hub data before checking pending request state.
+Following a feedback review conducted with various AI models, it was
+suggested to break each change into individual, separate patches. This
+makes perfect sense, which is why this series now contains more patches.
 
-Fixes: 1df3a401154a ("HID: Delay opening HID device")
-Reported-by: Semyon Maryasin <simeon@maryasin.name>
-Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=eUdbPthG2xrLqwQQ@mail.gmail.com/
-Tested-by: Semyon Maryasin <simeon@maryasin.name>
-Tested-by: Zhang Lixu <lixu.zhang@intel.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/hid/hid-sensor-hub.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+Additionally, these reviews identified issues in the adjacent probe and
+removal code when active sensor instances are present. I have addressed
+those issues in this version as well.
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 98ae5352e2b6..2a7f2475171f 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -10,6 +10,7 @@
- #include <linux/slab.h>
- #include <linux/mfd/core.h>
- #include <linux/list.h>
-+#include <linux/platform_device.h>
- #include <linux/hid-sensor-ids.h>
- #include <linux/hid-sensor-hub.h>
- #include "hid-ids.h"
-@@ -803,7 +804,14 @@ static int sensor_hub_probe(struct hid_device *hdev,
- 
- static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
- {
--	struct hid_sensor_hub_device *hsdev = dev->platform_data;
-+	struct hid_sensor_hub_device *hsdev;
-+
-+	if (!dev_is_platform(dev))
-+		return 0;
-+
-+	hsdev = to_platform_device(dev)->dev.platform_data;
-+	if (!hsdev)
-+		return 0;
- 
- 	if (hsdev->pending.status)
- 		complete(&hsdev->pending.ready);
-@@ -817,8 +825,6 @@ static void sensor_hub_remove(struct hid_device *hdev)
- 	unsigned long flags;
- 
- 	hid_dbg(hdev, " hardware removed\n");
--	hid_hw_close(hdev);
--	hid_hw_stop(hdev);
- 
- 	spin_lock_irqsave(&data->lock, flags);
- 	device_for_each_child(&hdev->dev, NULL,
-@@ -826,6 +832,14 @@ static void sensor_hub_remove(struct hid_device *hdev)
- 	spin_unlock_irqrestore(&data->lock, flags);
- 
- 	mfd_remove_devices(&hdev->dev);
-+	/* Clients share one HID open; release it if references remain. */
-+	mutex_lock(&data->mutex);
-+	if (data->ref_cnt) {
-+		data->ref_cnt = 0;
-+		hid_hw_close(hdev);
-+	}
-+	mutex_unlock(&data->mutex);
-+	hid_hw_stop(hdev);
- 	mutex_destroy(&data->mutex);
- }
- 
+v3:
+- Address comment on patch 6/7 by Shashiko on useless goto
+and suggestion to remove sensor_hub_remove_callback() for
+err_remove_dev_if.
+- On patch 4/7 : HID: sensor: custom: Fix state lifetime during removal
+Rename goto as suggested by Jonathan
+
+For using guard(), need a follow up patch as that will be a cleanup.
+
+
+Srinivas Pandruvada (7):
+  HID: sensor-hub: Synchronize callback removal with raw events
+  HID: sensor: custom: Set owner for misc device
+  HID: sensor: custom: Disable sensor before hub close on removal
+  HID: sensor: custom: Fix state lifetime during removal
+  HID: sensor: custom: Serialize misc device reads
+  HID: sensor: custom: Register enable attribute after misc device
+  HID: sensor-hub: Remove clients before stopping hardware
+
+ drivers/hid/hid-sensor-custom.c | 118 +++++++++++++++++++++++---------
+ drivers/hid/hid-sensor-hub.c    |  27 ++++++--
+ 2 files changed, 108 insertions(+), 37 deletions(-)
+
 -- 
 2.56.0
 
