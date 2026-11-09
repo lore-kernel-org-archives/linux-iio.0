@@ -1,79 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794254342;
-	b=4skd6yaYkDZ637gxjNpsGlKTPgpwrUTx+j3I7Td3NGP8k0buWX4qg4+/QmjD1Cy6EeZP
-	 1B77uzTIq5ZosFa8salq18ZYaz4elROiWX0pqgS1SkPvO8+OJVy/vTAEfWKK8fiAo0rwe
-	 0rmJKfjjEfezl+3z9D6iFmNHOghB2JXh0pjZfa5ZlKlpGXyN5FfdFkaIKhOWuCRj5QJWP
-	 Mx8dXw4MODc909aDSGEECp5mJlJR227Zvzpb4zqroEFgL30BWBU53r7S8p7OR6ickms50
-	 altrHS7J+y2F0KaoRz25vXMOmQUB+bANbazpO9ZR9XMxsmsUhnuoytVd75vTefiIRmQ==
+	t=1794254396;
+	b=gRDxpNoJcZQ+fzhWPJk3qmQ0/0xX+t3Ij0Wu+zmnnH7TWLWB40lS2J7aK44ous03kdeg
+	 z0JYWIVb9qxX7rMqUDJSwKSJnoGYXiUwoHTLBVB8xWBBocrpjuD2YRSvXywbdd8JWT964
+	 DS0co7bLmkVsQnRniiLGpAsUku4pSF2v3ClJ66pdc/9xY43Le1C/WKWw+PSvqrV9xGup9
+	 MobSsM8GR2+MH+IsAgLVeJn/xhXruPc4py5BfH24W+IcrUIDRGZQiB3uBrq+TIrCS13R3
+	 ppgUhNtwaPCpgzwVpZnASRfM5GiEWE/vwxOJgsFU7aqYvcwHAB5W05bVEGx3k0Q1zEA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794254342;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794254396;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=FdDGiZwOOWZwJVFv4FAVfW8R7nFxQhpPA6Hk8lq1wm0=;
-	b=OwwxouNg6tdIeMXiLQvWHcsk0mmjAp9s9pFbUEr1BW39XA4gemOkZMC/VypxGvPOdH1X
-	 4s2YDglWHLFlpYdCu1OB1r4zkefDr/FvNWynZvzh68zCvl/c6feHnyofcTVDaLHfJBp7U
-	 DY2zvUWVZA2vb3I0GWWz+ap3vffRF5Ni0ASrjywzeCFZRtCb7TyJULd8ZJPKXPLCLuHEb
-	 HvKO3+g0h+K17nk2bvai2YXP0appVYdNXtoqVtJ61RwSrkUbIauDERZZm7a64TNHVW0sn
-	 mwuyzP7/fvZVDxAGpMJeNYIw7u+95psVc+AnLXTqn9A+UIUvf871rvr3bim5lYUqWvA==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=A9yGIPf+Aoyw5oiXwa2KK5sUqghRssyWxs9xKam9uCc=;
+	b=Spf41SInNQH5qFn/CGv2EVwsOOLRd3x23RhrAnUM/WM1122MBstJo47WIFqV3S6tn2cK
+	 lmlHrh7VLIhDgMo7nf4bU+H5t6JRU45Zi26SeXskwNY3JkWjkczdGU1V7jpN93LZSpjKp
+	 zgi00ZlEid0LMyvx/1TA9B/XYTUs8NFOL1LjBb7rfTZzK3hTpAOwOqn8Fw5b1SEV4XDiz
+	 DHq2eI5Myy/rjtgBYS2ogzdtGPDJXTRqxDZakt3k61XMaqd4RWJk1c8ttX5tQvCitu8sT
+	 IszYUebBPHcdRX5LMKPfAe5k2HvnqgBFV4QK0mTt71mtTT5VHN4CUzAB61PRIb6GmIA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jXWW4+Jx;
-	arc=none smtp.remote-ip=192.198.163.12
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Fup6WEql;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D791606A325;
-	Mon,  9 Nov 2026 19:59:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D791606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3569606A336;
+	Mon,  9 Nov 2026 19:59:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B3569606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jXWW4+Jx
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Fup6WEql
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794254342; x=1825790342;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Aj9k4gUMpI3/HGNdSJDijxvjc23dI4AV4AHN6M0g14Q=;
-  b=jXWW4+JxAYUQoLAMiVD5kNOspERhRSur94988O1zoMInVceMIdtXvj8Z
-   eLwj+JNaLvkDsllL1PaAAUpA3N+Oc9qsMXtpl42dK5iBn/7c2JXM3GH9G
-   JGjWZhdlVGeL0/rvlvHz5r1ymrQCPPzG4SxkD1pUZZ19+6VZooMeId4CQ
-   w1PlHRy3OrPUrPULZvDSZs9Tl7MkFxk7O3iiI/lBQyeNIfdW5ZsU7S8MM
-   +G0inflGObJS1ACIO80xDPQlXT0mxWlyNLroh8+1/GC4vTvR4tQhmyWdE
-   Rakpf6QwJLO4UNHZ+u/w827GxvsreiLiDccYzRaGfdl5Z6ClhtTWntnIc
-   Q==;
-X-CSE-ConnectionGUID: Wi55mOgwQ+qdd2WiWVczJQ==
-X-CSE-MsgGUID: /jh498LcTTK48W5K8C0qXQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2886299"
+  t=1794254396; x=1825790396;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FP5/RsYhahtAfZDc2I1eI+qvRqzM7YupqPpLjENq7N8=;
+  b=Fup6WEql0VlU7Ha4jQpC8Bab+9TvkfvFvzV3caaC6ePjJfWPkwhp0YbD
+   /kDQp/UhAsBn6lPU93iJfsYizblv84/WrQ4Ezv+5sYQHBy+YpyBDXVeyo
+   zBzFIbvwUmGzmcuLDnxolI5LL9dxmAXrSUZgx+hdqHiskn3Zy0uvQ3Vi6
+   Y7oqgJn33zumCGXGMtzmkuHfYHTrM1gRa/16Wa0a7vcwyUHNFhqUflRiz
+   JZOTFKpVSZUrIpd+Sz88h5U+P8QjhAt8z8hsUW8FRVRos5v4abHSV+WSM
+   mEU/Kyj1reNfOGnWBWEhx1E/Vewf345jiYrBTKyTjeg532vwAcZZ9XM8M
+   w==;
+X-CSE-ConnectionGUID: HwtW/tznQ0K83Gnv6oMXHQ==
+X-CSE-MsgGUID: sC/pWsidQeCikY46GNoMOQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2986562"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2886299"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:59:01 -0800
-X-CSE-ConnectionGUID: KSSHuhRyR0evKU3HHjyUqg==
-X-CSE-MsgGUID: yBU8TTceSqqe7toJf5BuwQ==
+   d="scan'208";a="2986562"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:59:54 -0800
+X-CSE-ConnectionGUID: gN/Ag0suS4Ssnm2BN1eJyA==
+X-CSE-MsgGUID: A6nkNwa1R42UrD1Ttl7AqA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="7949720"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:58:58 -0800
-Date: Mon, 9 Nov 2026 21:58:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: raffaele.tranfaglia@gmail.com
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: adux1020: use guard() to simplify lock
- handling
-Message-ID: <avImAIJxoTQJOWzf@ashevche-desk.local>
-References: <20261108-adux1020-guard-v1-1-db9c582f1eea@gmail.com>
+   d="scan'208";a="8090658"
+Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
+  by fmviesa005.fm.intel.com with ESMTP; 09 Nov 2026 11:59:54 -0800
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org,
+	jic23@kernel.org,
+	bentiss@kernel.org
+Cc: linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	simeon@maryasin.name,
+	lixu.zhang@intel.com,
+	crofts@kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v3 2/7] HID: sensor: custom: Set owner for misc device
+Date: Mon,  9 Nov 2026 11:59:44 -0800
+Message-ID: <20261109195949.384888-3-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
+References: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,45 +87,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261108-adux1020-guard-v1-1-db9c582f1eea@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Sun, Nov 08, 2026 at 08:16:13PM +0000, Raffaele Tranfaglia via B4 Relay wrote:
-> 
-> Use guard(mutex) in adux1020_read_raw(), adux1020_write_raw() and
-> adux1020_write_event_config() so the lock is released automatically on
-> return. This allows returning directly instead of jumping to a common
-> unlock label, and lets adux1020_write_raw() drop its ret variable.
-> 
-> No functional change intended.
+Set .owner in the misc-device file operations so open file descriptors
+keep the module loaded until their release callbacks have completed.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor support")
+Reported-by: Semyon Maryasin <simeon@maryasin.name>
+Closes: https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=eUdbPthG2xrLqwQQ@mail.gmail.com/
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
+Tested-by: Semyon Maryasin <simeon@maryasin.name>
+Tested-by: Zhang Lixu <lixu.zhang@intel.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-custom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-...
-
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Link: https://lore.kernel.org/all/20261107222957.5332237b@jic23-hlaptop/
-
-It's not recommended to put unreferenced Link tags.
-
-...
-
-> static int adux1020_read_raw(struct iio_dev *indio_dev,
-
->  {
->  	struct adux1020_data *data = iio_priv(indio_dev);
->  	u16 buf[3];
-> -	int ret = -EINVAL;
-> +	int ret;
->  	unsigned int regval;
-
-While at it you can move 'ret' to be the last in the definition block.
-
+diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-sensor-custom.c
+index c12272479d82..3a65da64fd2a 100644
+--- a/drivers/hid/hid-sensor-custom.c
++++ b/drivers/hid/hid-sensor-custom.c
+@@ -719,6 +719,7 @@ static __poll_t hid_sensor_custom_poll(struct file *file,
+ }
+ 
+ static const struct file_operations hid_sensor_custom_fops = {
++	.owner = THIS_MODULE,
+ 	.open =  hid_sensor_custom_open,
+ 	.read =  hid_sensor_custom_read,
+ 	.release = hid_sensor_custom_release,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.56.0
 
