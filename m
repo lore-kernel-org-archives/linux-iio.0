@@ -1,82 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794185250;
-	b=BcNDEV61sytZSDpuXNX9TV6jwhSUTD4J3oARiz3/y0jNMAmHxCpzIcmstrf646BtqgXO
-	 gv0lFrLRY0gfxlcuetRjHhSpl1sSemg3NdUkGUVxRrtvmGex0nyFYMu9AylQ8ZtRroYs/
-	 daHC5m29E3+eimWRvmYgwCKCo+Mbn1R4Yn8T1qlIkyHyusf5doKsZ4ot6OE4p5tE9G0iW
-	 PofYKaAQtr3mXk8ZlUXdt6z7pNc9zBlWG838DNync9pOQkoeFAnYbMoinbG2u2OdaD/O0
-	 etMXVqxTn89I57aqE8Gmo+ZfIqcuaUfBeG7IXoB2ucuPjSXWMI9SxQGnQXlJpcfM4xg==
+	t=1794186441;
+	b=H2nHVs0BkVbPtdYKqVP/wAMMdKTY2WUe2fHOTwpqSpLWzcTYr3Ou3hiv9+bJq6dB7M0X
+	 BqM2TZcmuyJvFEhzbVVzr5oLDIieilIqa9OOtcW37UryODmUy7KCpu4lVdwTVxXK3i8ef
+	 EAvrB1bkPL+pOEGZpgTpykC3Ytzl0Ayy3QEPI462WntNCC+edPlrJyd9GCghEyPBiYFQ9
+	 +zq7Mo6Nh5EdR1XdDNWAXPgbWbnXskPlQWO90iUuGaDdiHe0QogwDdUlPGwFNSvTueGCO
+	 kNoPYMSbWv8uexQ7meQ9lugxnOsRu8obAtDXFt+IMd+ZOZ6gaj0AEehmYT3bkH0RMtA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794185250;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=TN4OnWdI7EsV7/wNiHyf3x6f9m0nwMthB86eoS3unrw=;
-	b=iZfwLeg7QluuqOLpp1BQBgx4xAkmiOcRZQ+ztOqVIZiIbCRL7jWtSAdGCjuAmjg9gXDO
-	 Bfz1taTccgGRgGTlCuzREtCJrOgQIdHd7nzzmBarRjeJma9j0NWbopb+/iY6kA9/f9jlw
-	 vaGhy5S4Kj4KWZXkKYAGYISLC4/xbqaWVhhQhpy98VdRniF8+mapWeC8cstFsU8I71Bvr
-	 DZ3nv31cbJszG6qUmPDBDb2hQYTIt5JcawYqzeyWjFPvXW2r4gggVHunb1s3Z31W8/RjU
-	 337arQ3e5N0MCg0HmNXzn7gkBi1CaIVN59nSpPDnuCoK9OUbjf0oD6jYWpaEaKxi08g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794186441;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=H8LL4QavzVaz8U86ha91aoM/kohbLJcMtYgGD3jemMM=;
+	b=QZBvtV/a8HNCa4apDtkidAyImKMggpui1d9VLycMb/vtzZV5qexKSP6cAJtUD2iYsgYJ
+	 ZiQSmiKzhI6/31c4HNkHh1scGNA96LK5yiZ/7EX58UM9mg5t9Eft+721+j6iPH9r+SemA
+	 7HxUJyPKXdKM7zdj20hnNws73BVO0Ysdj40ZDqoeKDeFaP8SO3Gs8+0LqITIH0E/HNOHY
+	 QEQlDsY59T3Tld92btO0y2Pn1u7KEyB3cDTuQBjWiXTe5iwq7zCJDY3BLb6yoiHRkecZ9
+	 ap4xhiTOOa/CorgS9WHCiiPnbBWSzB2tmYPgmfpNTp6E0pV/KDozqewFa/lUfP0YDow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XCs8VKrK;
-	arc=none smtp.remote-ip=198.175.65.13
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qMw1bSYd;
+	arc=none smtp.remote-ip=74.125.224.42
+Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFC9A606A320;
-	Mon,  9 Nov 2026 00:47:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EFC9A606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D876606A321
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 01:07:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2D876606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XCs8VKrK
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794185249; x=1825721249;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=mTzXtCSlzZ1PsCmCfZrmhVh5AnI/2A8x2G8S6bg4cZs=;
-  b=XCs8VKrKgfFVVQwWf32/MlM5a6mlUkeGWo7BJlA/YmiqX4IbQJxnCY8s
-   0wHvUozMdL53rKKK9I6M6susupMre5a9H0UzwPyhuCe8070zHEeC59wy+
-   caPzYRVbzVxb/dAuGC4JfxTi9w9XVwPLbufEjpbczCMG6VUegssVOLNnY
-   JnDlbncdmrCnmDaeyhTg1HQFevBcumYWGC/k2+ovQpOfVJbezRW6anuV+
-   XGrthS0DimfUJAc9RIoWq0kOfRL28HNytwyEJwN7M8EFA4YlmhWNqnm3c
-   WlXT+QR0ogHuGqmj3Q496hGOz7rt4qsqG5h4X/0HacH0zzZ3BIApvEflc
-   w==;
-X-CSE-ConnectionGUID: ZD0r5zOAQkSfzPE3apQ5iw==
-X-CSE-MsgGUID: z1FzX6nwR8e3p/aFFst1xQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11960"; a="2789273"
-X-IronPort-AV: E=Sophos;i="6.27,202,1787036400"; 
-   d="scan'208";a="2789273"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 16:47:29 -0800
-X-CSE-ConnectionGUID: j9o2byqpTNGJFe6A+Auimw==
-X-CSE-MsgGUID: Vg/aNMKpTVeBP/vi9y1bmQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,202,1787036400"; 
-   d="scan'208";a="9519236"
-Received: from spandruv-mobl5.amr.corp.intel.com (HELO [10.124.220.168]) ([10.124.220.168])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 16:47:28 -0800
-Message-ID: <b83129fac311b72376cb6fcef5448d3b66c3b45b.camel@linux.intel.com>
-Subject: Re: [PATCH v2 6/7] HID: sensor: custom: Register enable attribute
- after misc device
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: jikos@kernel.org, bentiss@kernel.org, linux-input@vger.kernel.org, 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qMw1bSYd
+Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-67be9601f31so259312d50.3
+        for <linux-iio@vger.kernel.org>; Sun, 08 Nov 2026 17:07:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794186440; x=1794791240; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=H8LL4QavzVaz8U86ha91aoM/kohbLJcMtYgGD3jemMM=;
+        b=qMw1bSYdA2G4Ithpx0ZGJFx93ETFKzisXZ2X4c8mjE2FWRjXSvf5mc6udtFkC33REk
+         8hHVm/RzeleJFxt1kVDP/AkmIDGZzySGZmvpqjOMTVksT62q/RLPvnITrD92RKLmIHof
+         2NO1TDeVh9W9CFbOcR+Ky+dSeOBGWvrib+FpwYmnXEk7nRIs3kjYTy/XQpif9G4jp0xr
+         mHCNZ+aWbxhskpiAZPqW04geXtQTVYjioEFWnx+6lZiEiXKktwBOVg35z3bJZMBf9e4i
+         jXpMpLFk28+wCCxjoxtFKrJr9JRBNZuKbSyanY96M5oZ2oi8Edkxg1w81boUEh9jFqMn
+         y0cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794186440; x=1794791240;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=H8LL4QavzVaz8U86ha91aoM/kohbLJcMtYgGD3jemMM=;
+        b=v30hBOU6QEbM8J0ooYgDCwckO35xWz2UQPzF20dp+p7qFZJ2JYsqz8i6fxBqQagFvT
+         audRHSj6axpO/X/4gQkhLROXJ4SRRV7SJ+TF1ORO+NKFsl4W97HKgS5sPNHSozAMc8j/
+         iG1z6DQ8s6UJ4+UryC6xgvP4h9MQWFGz6DYgn8ZAxCcWPpmRirBE2gt1swx0MLuZRIuI
+         9cc0g99u4l/LBqtzGUdpNtrFMDjdRghXI6V/6amj34oJylIKgnlZ8UArgZgbG6eqUaal
+         UMCGw1TuPPVmSLgf4LCLmXL/mM4vUTMAaeHnlaTbQykyuRL7XVAjOHoXg0x75BRSqYLL
+         kxtw==
+X-Forwarded-Encrypted: i=1; AL+hErGrmmuKSt557VQM3Sfjd0+eumqbDB7k+ged50fb0v8mNa7lckeNWR6gzKxEebytME6PTeDNgtW/ly4=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8rqb/pM0HB6s6tFadj0hl2ycju8/u4FviheiGW+nq3PDmbkXvY
+	KcTtXF74tuD4aTWOnnKvg9L7gL2R9Ymt2UgKuHxsH7Jrt9+67TszwL+S
+X-Gm-Gg: AYBFou1NP+eYTAHBySxgT/wxu5wzkOkFHpJRDkIS74irD100I54HQiw9boLoDzVmoL9
+	N3F8Hte+1a2xSJKF4BxuQHBJE7URemgaZkNwdBk9/uiAqGrqulVzkGOggVJryTZjx2Vz/5kk3Yd
+	ENHbHiiTfsSSs4Y6UOS2j5JN0p6So5s1ORWDGVDWOmi9ayDQItR553035W86T55ga96T7NBKZ2m
+	K+DkZqoKaJCBVUgE+LnAnZ80tRUUSpu6JYZshC4i3yvNgkhaBAucTHr/qW+8prRk5JeJEH8H4q8
+	HxUSdjIi8oxQm8O90N7RgS44I3hJzRAbdAC6nq7uNRmDSoQxkbrPuXRXOHnKmD0/kyaqoJVIEr8
+	dxNoGFb1uk8hBnMc+C0XAJfEldHKKiCLsUgRXHViBZ9FH61RBYOsrBs39b8sRfWS57uDIscndKL
+	C38qw+s7/ISby98LyUvUE9RBeRLuFspZ0MnwYcPMCy5wOJFuxpHuC+lXYQbJ34jUe7zXvYwU/2C
+	k85l58vz+ZD1tIJuSrMi++syMxpZbvFB/O06C2k1KmZnIL/wzLAgg2pQNqWBHd2Oj3KWlFKZIuy
+	znIAe1AVfk9c+jw3Ql2YsyKAWGRgDpFDKHA=
+X-Received: by 2002:a53:ed43:0:b0:67b:ff6c:bfd7 with SMTP id 956f58d0204a3-67c3da5d148mr1145159d50.73.1794186440116;
+        Sun, 08 Nov 2026 17:07:20 -0800 (PST)
+Received: from localhost ([2804:30c:2705:e00:f991:19e0:eea3:4f90])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67c3b83d780sm2931938d50.3.2026.11.08.17.07.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2026 17:07:19 -0800 (PST)
+Date: Sun, 8 Nov 2026 22:08:37 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Chen Ni <nichen@iscas.ac.cn>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>, linux@analog.com,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- simeon@maryasin.name, 	lixu.zhang@intel.com, crofts@kernel.org
-Date: Sun, 08 Nov 2026 16:47:27 -0800
-In-Reply-To: <20261107201601.7d5aa69f@jic23-hlaptop>
-References: <20261104201403.2039921-1-srinivas.pandruvada@linux.intel.com>
-		<20261104201403.2039921-7-srinivas.pandruvada@linux.intel.com>
-	 <20261107201601.7d5aa69f@jic23-hlaptop>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
+	Joshua Crofts <crofts@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v2] iio: adc: ad4134: Fix duplicate data_read mux state
+ request
+Message-ID: <avEdFaY6xtzGaGTu@debian-BULLSEYE-live-builder-AMD64>
+References: <20261105033120.387616-1-nichen@iscas.ac.cn>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,81 +103,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261105033120.387616-1-nichen@iscas.ac.cn>
 
-On Sat, 2026-11-07 at 20:16 +0000, Jonathan Cameron wrote:
-> On Wed,=C2=A0 4 Nov 2026 12:14:02 -0800
-> Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->=20
-> > Register the enable_sensor sysfs group only after misc-device setup
-> > succeeds. This prevents userspace from opening the sensor hub while
-> > probe can still fail, which would otherwise leave the hub open
-> > reference
-> > unbalanced on unwind.
-> >=20
-> > Fixes: 4a7de0519df5 ("HID: sensor: Custom and Generic sensor
-> > support")
-> > Reported-by: =D0=A1=D0=B5=D0=BC=D1=91=D0=BD =D0=9C=D0=B0=D1=80=D1=8C=D1=
-=8F=D1=81=D0=B8=D0=BD <simeon@maryasin.name>
-> > Closes:
-> > https://lore.kernel.org/all/CAM2dg7ewfVJSP4rFyhkCB1Rmd1+X56sAg=3DeUdbPt=
-hG2xrLqwQQ@mail.gmail.com/
-> > Signed-off-by: Srinivas Pandruvada
-> > <srinivas.pandruvada@linux.intel.com>
-> You probably already saw it, but sashiko had more feedback.
-> https://sashiko.dev/#/patchset/20261104201403.2039921-1-srinivas.pandruva=
-da%40linux.intel.com
->=20
-> I haven't looked closely at it though so might be either wrong
-> or material for a future patch.
->=20
-> One rather odd looking thing in here though.
->=20
->=20
-> > ---
-> > =C2=A0drivers/hid/hid-sensor-custom.c | 15 ++++++++-------
-> > =C2=A01 file changed, 8 insertions(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-
-> > sensor-custom.c
-> > index 4f824cadd370..990e653995e1 100644
-> > --- a/drivers/hid/hid-sensor-custom.c
-> > +++ b/drivers/hid/hid-sensor-custom.c
-> > @@ -1059,20 +1059,21 @@ static int hid_sensor_custom_probe(struct
-> > platform_device *pdev)
-> > =C2=A0	if (ret)
-> > =C2=A0		goto err_remove_callback;
-> > =C2=A0
-> > -	ret =3D sysfs_create_group(&sensor_inst->pdev->dev.kobj,
-> > -				 &enable_sensor_attr_group);
-> > +	ret =3D hid_sensor_custom_dev_if_add(sensor_inst);
-> > =C2=A0	if (ret)
-> > =C2=A0		goto err_remove_attributes;
-> > =C2=A0
-> > -	ret =3D hid_sensor_custom_dev_if_add(sensor_inst);
-> > +	ret =3D sysfs_create_group(&sensor_inst->pdev->dev.kobj,
-> > +				 &enable_sensor_attr_group);
-> > =C2=A0	if (ret)
-> > -		goto err_remove_group;
-> > +		goto err_remove_dev_if;
-> > =C2=A0
-> > =C2=A0	return 0;
-> > =C2=A0
-> > -err_remove_group:
-> > -	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
-> > -			=C2=A0=C2=A0 &enable_sensor_attr_group);
-> > +err_remove_dev_if:
-> > +	sensor_hub_remove_callback(hsdev, hsdev->usage);
-> > +	hid_sensor_custom_dev_if_remove(sensor_inst);
-> > +	goto err_remove_attributes;
->=20
-> If my eyes are tricking me, isn't this going to the next line?
-
-I realized that. Will fix this in next update.
+On 11/05, Chen Ni wrote:
+> devm_mux_state_get() is called twice in a row. The second call's result
+> is stored directly into st->mux_st[AD4134_DOUT0_INPUT] without error
+> checking, and then immediately overwritten by the first call's result.
+> 
+> Remove the duplicate call and check the return value before saving the
+> state.
+> 
+> Fixes: f12ecb3e147b ("iio: adc: ad4134: Support SPI 4-wire mode")
+> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
+> Reviewed-by: Joshua Crofts <crofts@kernel.org>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> ---
+LGTM
+If still worth anything,
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 
 Thanks,
-Srinivas
-
->=20
-> > =C2=A0err_remove_attributes:
-> > =C2=A0	hid_sensor_custom_remove_attributes(sensor_inst);
-> > =C2=A0err_remove_callback:
+Marcelo
