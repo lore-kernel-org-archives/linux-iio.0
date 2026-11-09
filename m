@@ -1,78 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794253419;
-	b=gpfjM5wS104Bf7xJyK0tuE6ulbnEEi3Q1nhEpAAXJZV9wSW7GjqI9LGJNvRDoYyPxTNs
-	 W/eR10R4PdsCfZliDw0mPnN0oTxHQ/i+yzX91SOTVj9PiL1Gzs7Z6FdH6pYzJT/JOaHHc
-	 fLWmBygmKHmRgey9DozuJ3caAonAxwIsXEJSyvwOOHdAaplHjRU/XYlTYfWBEOW0fA58k
-	 6g4O6WqqiNxylRPP9RNZ3L1h+nuJqFjH1f4NATgN/aLdCFm/06pR43A146eg6l0Q4Rnw1
-	 i838HD46IaG0LX/ccWYnJEtD/sSihcYP+3aIsW8f3JDa+H4c7rkicUPQxk7ZpkMNdog==
+	t=1794253537;
+	b=Y0YB8SirCDtNalEXFBCCOK1YHOE3K1uiAs9Mc5EVsLdFo3lLWkhtUyYksEhrR2JCjGNu
+	 O7loGR3UUrXT0oL9oYZBANB65WtNbMRnGZNV43n+HFs/+y4CpMOMbM3INKUNSBlDl45zX
+	 ALLPZsCRfgx93v7JDwvkKG/lssn0D8ANG2OUFerg7rGiOamHtVTdqoMuCCxUh9PeYjg6N
+	 +BVMdBG+pbO1YYJdOrQaWK3QcSzC6FsdZofpeysTYmxaF0wsaiI+TTr1qkgzDIhnozc7G
+	 cS9FBbub+IlGzNF70KCvwmifOS9yeyBlkv2ueN1xNxwGeU0uCgtMaPv1E/X+uqGNU0A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794253419;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794253537;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=4tzUHAD8cISFdwg6X2KpZ+wQl4rMETW33aQlL9cOx/g=;
-	b=RaXdfeZ46ifcVbsOKSiOW8fOms3mCqsrYHB79BXKmWa0NIAAjbtw+uYxJEjfg2fP5vwU
-	 kzfK/XGmr2LPfa/yKpHFya0nUcZOkFQhf455crd9mHOIsAEJht90MYF71qYey3j7GutYJ
-	 JrcWsOf3IrL88OGbB5v1cQWV07rPLWxOwFmFL8855I38xDLTznFCIHO2iYfdtkSaldS9M
-	 AYTOnYWc4XN8xNjYWuOjPTtbtnGcsqeX1rfF0lVB12mcaeOfjPcqDysIZY09xD9ygvkJA
-	 5wFVWb0ZJgsadyhug98GFKT9JMHGXjtPep8o2OM2l8oUYEl6/FuD+owEsHZvYDIDCPw==
+	bh=Q4lNPn/UK40kisCgS/o/tQFd2nFoymjIVtaW1cQeiCw=;
+	b=rJq1WlclWWlYd7DVcTCb8HIniS2Ui5SKktVERwVIKcwHJtUxs/fPZL25MugNC9RF+07j
+	 0tjLM/Fv5uBePz6hamijxWUsQLqF+vGlS5Duo3ytKFK4Ndmxfy+0nKM2Kyzy9D3yNKy23
+	 CbP7IlUZnPssE5XnW96Atxm7iFiA+FLKGjCZ8edQ+qjh2ctvRHkMXSyTtNN2YbUwR9V2S
+	 tph27iBwl0rqN7v+U8Lf1nNQaMHX4Y8QKOYZh3BcEMFOM/aZYjNv0nEPMLKPgW4xe7xRv
+	 p5J8biRV/kL0aY7UUxEMQiaLVd7cmXEZo9G/1QeWzxDv+s+77sbe1Qdb0YV1j2XEDlQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eHEtR6oj;
-	arc=none smtp.remote-ip=198.175.65.9
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FsVMDLq+;
+	arc=none smtp.remote-ip=198.175.65.17
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C63E1606A321;
-	Mon,  9 Nov 2026 19:43:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C63E1606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9306606A31C;
+	Mon,  9 Nov 2026 19:45:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B9306606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eHEtR6oj
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FsVMDLq+
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794253419; x=1825789419;
+  t=1794253537; x=1825789537;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=+R4YXXYgFDCqdcIFqhh4oFRdTM2C01Lzsqrhf/1eWbI=;
-  b=eHEtR6ojlBtCqrK9jkH+VDRjeQJJ8wT+/Zxp1/crgM8HexEa4/YzBToU
-   F+QPmEKNJ5jzJfMxAO+/kOK5xGSazjWOUqdbzBs3N1ImRMzjIhQBMOj95
-   hPT75pNX2uAqqHH0WT7lMYWMKgKBxCYGYKMV6f/P1XOWJg0VOm3ABmVgB
-   A6g6BmAlRE10t2tg5vLjRrB5nym2niuzTdmry7BYKtSuULqLW85EnGtAh
-   gv/Ap7yNH3rlY6oRQRH2jmy9yH1DfPmwfZHjDCNSX7VAnYq5DV4+8zGoF
-   zJhMat30xV837NMWp9kDbxQaBYpCBXGEqBJypnVQZsk1q1gWP0lUtO7QQ
-   Q==;
-X-CSE-ConnectionGUID: 0jLAi8bVRBiEZQcr7pECOQ==
-X-CSE-MsgGUID: w4dJjzUAT+iHNF7aWRDSOA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2887305"
+  bh=dmur0JcSjI2h2Sn4a6LIR095JVkgSSE5Iw2d6Hhzk9U=;
+  b=FsVMDLq+Mdg+QVKbt+CSMo6Sq+5KSUyoTO4shsrZSlV1LkhqsQs69Prs
+   cCj1NNM6n19THfymMJdgmTegwFmjfjsPcnDya9f6EJaomAjkqXPY+q9EV
+   BMAIccnBzg/Y7aKGkw2ouRKFxdocxLTUdyRv5cKK3WjLn1SJNIh6zDkWh
+   hSO/XSA/x22ZXQeVrD1JcPGMdlRqcarQHMQ+igrVRH+vnO3lIz63pFnsH
+   JjdgptXz6sgtpUw4tnyhqEupeNmkt0fDqutcdKcLtMwZxjqPCinveQcEU
+   q+eTPHcJWpuGKRaste5TFrsdoSfa9GUb37D5D2KQ/VclyaF0cqMO3T1qk
+   A==;
+X-CSE-ConnectionGUID: 9/HKqxbaTeW2/Fk7GwzrGg==
+X-CSE-MsgGUID: sKPmDPxsTPysgk8aTRqTQw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3015817"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2887305"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:43:38 -0800
-X-CSE-ConnectionGUID: X/wz/UWXTCSXCnc64O/XXg==
-X-CSE-MsgGUID: rha019tmQteNnHwzERLfyA==
+   d="scan'208";a="3015817"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:45:37 -0800
+X-CSE-ConnectionGUID: kViXZNE9R2ico6E4XGQLrA==
+X-CSE-MsgGUID: ymLHrCHYTDuxbi0VO1H2QQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8116064"
+   d="scan'208";a="8285756"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:43:36 -0800
-Date: Mon, 9 Nov 2026 21:43:33 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 11:45:33 -0800
+Date: Mon, 9 Nov 2026 21:45:30 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
-	nuno.sa@analog.com, u.kleine-koenig@baylibre.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	joshua.crofts1@gmail.com
-Subject: Re: [PATCH v6 11/11] iio: adc: ti-ads1015: Replace custom shift
- macros with FIELD_PREP/GET
-Message-ID: <avIiZfJtj0DTArWR@ashevche-desk.local>
-References: <20261109165805.31160-1-architanant5@gmail.com>
- <20261109165805.31160-6-architanant5@gmail.com>
+To: "Mahapatra, Amit Kumar" <amit.kumar-mahapatra@amd.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"Simek, Michal" <michal.simek@amd.com>,
+	"Potthuri, Sai Krishna" <sai.krishna.potthuri@amd.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"amitrkcian2002@gmail.com" <amitrkcian2002@gmail.com>
+Subject: Re: [PATCH 2/6] iio: adc: versal-sysmon: validate temperature
+ hysteresis
+Message-ID: <avIi2pDCcaKDx3Ro@ashevche-desk.local>
+References: <20261102122112.1723130-1-amit.kumar-mahapatra@amd.com>
+ <20261102122112.1723130-3-amit.kumar-mahapatra@amd.com>
+ <aumyreagvU6zewKI@ashevche-desk.local>
+ <DS7PR12MB9503E787CBD5E9292B5637CEDC762@DS7PR12MB9503.namprd12.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,32 +95,33 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261109165805.31160-6-architanant5@gmail.com>
+In-Reply-To: <DS7PR12MB9503E787CBD5E9292B5637CEDC762@DS7PR12MB9503.namprd12.prod.outlook.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 09, 2026 at 10:28:05PM +0530, Archit Anant wrote:
-> The driver currently uses custom _SHIFT macros and manual bitwise
-> operations to read and write to the configuration register.
-> 
-> Modernize the bitwise logic by replacing all manual shifts with the
-> standard FIELD_PREP() and FIELD_GET() macros from <linux/bitfield.h>.
-> This improves readability and prevents potential bitwise errors.
-> 
-> Remove the now-unused _SHIFT macros from the top of the file.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+On Fri, Nov 06, 2026 at 11:35:00AM +0000, Mahapatra, Amit Kumar wrote:
+> > -----Original Message-----
+> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Sent: Tuesday, November 3, 2026 3:39 PM
+> > On Mon, Nov 02, 2026 at 05:51:08PM +0530, Amit Kumar Mahapatra wrote:
 
 ...
 
-> +		mask = ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
-> +			ADS1015_CFG_DR_MASK;
+> > >     sysmon_q8p7_to_millicelsius(upper_reg, &upper_mc);
+> > >     sysmon_q8p7_to_millicelsius(lower_reg, &lower_mc);
+> > > -   *hysteresis = upper_mc - lower_mc;
+> > > +   *hysteresis = max(upper_mc - lower_mc, 0);
+> >
+> > But you can use abs_diff() and let it make the problem of the supplier.
+> 
+> I went with max() because an inverted pair (lower above upper) doesn't
+> really describe a hysteresis, so treating it as zero seemed the safest
+> reading. With abs_diff(), an inverted 80/90 pair would be read as
+> 10 degrees, and the next threshold write would then set the lower
+> threshold to 70.
 
-Indentation is broken here.
-
-> +		cfg = FIELD_PREP(ADS1015_CFG_MUX_MASK, chan) |
-> +		      FIELD_PREP(ADS1015_CFG_PGA_MASK, pga) |
-> +		      FIELD_PREP(ADS1015_CFG_DR_MASK, dr);
+Bu where did it come from? HW or DT? If the latter, we may just reject
+the wrong values at probe time, no?
 
 -- 
 With Best Regards,
