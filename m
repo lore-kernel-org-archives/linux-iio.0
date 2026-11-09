@@ -1,62 +1,54 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794188550;
-	b=y9GevLwJqdwuuI5NEasdpYz3GC+IAC2d1CyeWIopyco/4dmWaIXHw3Xmis4DGdTWW/DY
-	 Om2oQ5fwZtEay42cnhvjbOPvUvOpBLXdZKxKCd4zIV5Cb5lDFXKgwZtJKsXWMtKLVxbQi
-	 CDv7kgWTQt9oj1t3fyYmfHY7/AUwHBtGWqqffSsGwM7aF/b0XVXLYvtEjxea5G28XwAEi
-	 YiUEnZscTNejFohPou5/sLmZGyBpMnea+aYXAUK3vxio8dDuaxsPbkVpP8rSw023cRs1t
-	 sMRokjPKK+h2UJNBqTWOjK2tulN1YihZlamJzi81GMpIaKoGy8bIutW1SU1cJUnoyRQ==
+	t=1794189926;
+	b=4M6gtsDfFHXN/lXBQ7npHQjiEHj+PUOfzCTYOFBaK8lGuox06FD+mS4IqOJT7EKaKjWB
+	 UnZn49DGl0NHbuHdH3O2WBFlUNf3Y0mcIlm/7df+9CkgIuoV+aMg4O3rF3hJSEDDl2Bu+
+	 pYNvzPxXrwx5/kE3FZoYtyFgHKSpCdVn5HOccVa6DVB3a20yKlfZ2kFQtvb1T/3Tih+jO
+	 ikOnWPKRR4oekX00gSY9hfd93AinbY9ndoWzviafVvAIalMYvaW+wzggLuduOMVKi2any
+	 zDWk/WjC9hz/PvQ+3gm9vq35yVcG2B4dKXiWfjP+qAh3coZA/SSzLWpUJZ5s5gRJPyQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794188550;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794189926;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=5MDqAcZY9aksFeH5q+wRTzlQ8j65v5wPJh73bJ/o470=;
-	b=GKYVepYUMaE+2GAhO7h3xI0XQHwWlcDSlXHfUnxo8vQsGCbc5AljcqoLhqw0cB47pfa0
-	 gLrgDwmFhrBwLlcmIB8jfU7FO0V+eF5MsIxLOkWh6elI39JtjqDnGNQ94SXVw86SsQtOb
-	 95AFcsLWS9CfX8xhc5652RV97K20UZ8HmDTkruR/s+bvh09Sqb3QlMcB4Y/Iipa81uKJY
-	 f+HjYOJmvWDM3b0Qp0SzmXUwnJnRXDsx5Elu6UWxqZOKb4WgOrNAxb44GZ0ZosD2hTgtW
-	 1omnwV3T6StafZaZCg9OA36x5UHyGEdrnkB+WW9QkuCVpT79tPVUvbuFqknfY+2y/QA==
+	bh=QVukf7r+qSvPyCCZ7Q4kemGsEJniEb0Fh/dt9c4kYRc=;
+	b=fHVYT7zv/awjRbcy6nv1e7IIHasRcdZdq0cEoBw98OWWaB4kdeCSl7t/Lt3srCDKYbuv
+	 sHSNxnQX22oIFaWU9EKwgC3wcXyozlfHZLAYcjvRk0b11sAU/J6aIFh8aSIqlsRr7sM99
+	 7hkrmsE+3jMh2pfP0uehAB8ROHYVQTdaBvn3c+tfNo4DixOQ2NO8edCSk8mlEpbXpLifc
+	 v8AGCf/HaRjCsM1twla/xDLtz1m6GZC3FnpOO4gX5i7I+NCqADv0KiF6GCimmNXXaz5Ju
+	 9gsIkA5VVd9gto59ABW9WwX6VQ7jj9KbnR0mP/WElF3pdxHJ16lqaQyYsQEA4qMrCAw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mc0eoXnW;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CvE3WVTz;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4D0E606A31C;
-	Mon,  9 Nov 2026 01:42:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EBEF606A323;
+	Mon,  9 Nov 2026 02:05:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mc0eoXnW
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C2201F0089F;
-	Mon,  9 Nov 2026 01:42:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CvE3WVTz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE4E1F0089F;
+	Mon,  9 Nov 2026 02:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794188549;
-	bh=5MDqAcZY9aksFeH5q+wRTzlQ8j65v5wPJh73bJ/o470=;
+	s=k20260515; t=1794189925;
+	bh=QVukf7r+qSvPyCCZ7Q4kemGsEJniEb0Fh/dt9c4kYRc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=mc0eoXnWhQ2Iv5xiM4kAz7BaBUY6zJUaUwv7V6CCp9CuPKdKRk+tYGvFd6I1py/Rc
-	 JPrpWcjHltb78ijqJdY74zQWP1NrGwaWwOGLJBq4oJ9z5Qu+gD6e0dXWtnOto/YFuC
-	 Q5utkMe6QiY9KQUgHm/wIcFMpwEAbnHapuKD1myJNtyI8q5+M+Vr260dLClG6vS1b4
-	 wmQeGsihzWl6MCdRaKmWuOAnK+gU7joCSIFr9s61EA61+NO6YOpg5fvlBK+kY2TBMa
-	 JjwWiJxilnHrjHyJBqwosNWH1r7w/m6Dcg9Uw77xd5CP7bdr34c9Wr/h1TS+rM+cHd
-	 59MrC7443LXww==
-Date: Mon, 9 Nov 2026 01:42:25 +0000
+	b=CvE3WVTzlKhxY7BtYplP8zSimQAi8yDep8y8R0cetZ4aXbuOKHTyAwGPnhOlaV/o8
+	 fH5WYeZjRIDpk/Nj0LKzJGz6+AtYhWbT7QQQAGKLRMZOuwlPUPM2NNvYF3k3gbu/jX
+	 OMz397VBS/HtafPENpv2Tnbwxcc6J4dIXduh4aEmf6bqpOqosIN42XnzKU9x+qtv/J
+	 oHBL0iR8eNOSLSbtcPLlJdJkrrt0wjaxokQAZkeO7OOwPceuTNo+OUYzHCCwDRJN1m
+	 gMHz/4ec77vBpwGZQ7jBb0aGq9OFwCRsyA7DwGnraUc7od6YSTDojFH2FprDPult7T
+	 DjhTbp9hl50kA==
+Date: Mon, 9 Nov 2026 02:05:22 +0000
 From: Tzung-Bi Shih <tzungbi@kernel.org>
-To: Satyam Gupta <sgsatyam@google.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Benson Leung <bleung@chromium.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	Enric Balletbo i Serra <eballetbo@kernel.org>,
-	linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
+To: Daniel Balint <dbalint@google.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Benson Leung <bleung@chromium.org>,
+	Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+	chrome-platform@lists.linux.dev, mfd@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: cros_ec: Use platform sensor_num to unregister
- FIFO callback
-Message-ID: <avElARDvNGQWodN8@google.com>
-References: <au1FF5K9EALuqnNR@google.com>
- <20261106071904.142937-1-sgsatyam@google.com>
+Subject: Re: (subset) [PATCH v1 0/3] Introduce cros_ec power monitoring
+Message-ID: <avEqYjEp6ohwfmO2@google.com>
+References: <20261106193129.43493-1-dbalint@google.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -68,29 +60,34 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261106071904.142937-1-sgsatyam@google.com>
+In-Reply-To: <20261106193129.43493-1-dbalint@google.com>
 
-On Fri, Nov 06, 2026 at 07:19:04AM +0000, Satyam Gupta wrote:
-> cros_ec_sensors_core_register() registers the FIFO callback for the
-> sensor number found in the platform data. The matching cleanup action,
-> cros_ec_sensors_core_clean(), reads the number back from
-> st->param.info.sensor_num instead.
+On Fri, Nov 06, 2026 at 07:31:14PM +0000, Daniel Balint wrote:
+> This series adds the ChromeOS EC On-Device Power Monitoring 
+> (cros_ec_pwrmon) driver to read onboard power-monitoring ADCs,
+> such as PAC194x, wired through the embedded controller (EC).
 > 
-> st->param is the EC host command buffer. Drivers fill it in under
-> cmd_lock before each command, while the cleanup action reads it without
-> that lock. It is also set only for physical sensors. If the field holds
-> another value when the device is unbound, the cleanup clears the wrong
-> slot and leaves the callback in place, still pointing to the iio_dev
-> that is about to be freed.
+> Several ChromeOS platforms are equipped with onboard ADCs that are
+> connected to the EC via I2C bus. The driver interfaces with the EC
+> via the existing EC_CMD_PWRMON host command API (and EC_MKBP_EVENT_PWRMON
+> events) to manage ADC accumulation and expose accumulated per-rail energy
+> through an IIO sysfs attribute.
 > 
-> Use the platform data in the cleanup action too, and pass the struct
-> device pointer directly to devm_add_action_or_reset(), so it always
-> unregisters the slot that cros_ec_sensors_core_register() registered.
+> The driver is only loaded when the underlying hardware feature is present.
+> The series also fixes alignment padding in EC_CMD_PWRMON definitions.
 > 
-> Fixes: aa984f1ba4a4 ("iio: cros_ec: Register to cros_ec_sensorhub when EC supports FIFO")
-> Signed-off-by: Satyam Gupta <sgsatyam@google.com>
+> Daniel Balint (3):
+>   platform/chrome: cros_ec: fix alignment of ec_params_pwrmon
+>   iio: adc: add cros_ec_pwrmon driver
+>   mfd: cros_ec: load cros_ec_pwrmon on supported ECs
+>
+> [...]
 
-Other than the fact that it wasn't sent independently, the patch itself
-looks good to me.
+Applied to
 
-Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
+    https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git for-next
+
+[1/3] platform/chrome: cros_ec: fix alignment of ec_params_pwrmon
+      commit: 346739bcdf6577fb5f10845ce339e34e855aae78
+
+Thanks!
