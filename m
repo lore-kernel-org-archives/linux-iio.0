@@ -1,79 +1,85 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794224347;
-	b=xysNBLLh2+4xMNm9lyBmFDjHS0HBfiOaKIYM5Vh10W/JaPPk1VG8RL06oFe3qQsL5WQ2
-	 7MxaMBxkU9DlTSXlUTVCy7oVauunL/3SGe99UbNp08MGJhRXheswuJ6KgXgpqaS8LRfod
-	 pDdfs6eibQAMxkhswjvODk5NHKMZJ1ZRD2O5/AivY+O3VAIDOv+1VjcpHQRsq397WEckw
-	 sWOn622eKz1uxAUC0W8jc3cjKiJ/1HsVLB6pGn6ZOoXookpriQZxQIz/CTAPBEEZLIgpn
-	 zdxIH+nUZmWsl0ooIPqYr6stwdroypwUIUDhEXxOavd7pHhOQGEZKH9hwwMlDe7eYaQ==
+	t=1794225679;
+	b=xE6gq9PnOa492NiawS4q0tUghzr9OuTSmHVIPWF1WTedgHHzyXDVKk0qsubJQeCHr+dL
+	 412AS1ANy/XzsGqui3T8Cm5HI4k6ZeB5Kkc9dv1/KyBmcI/ZTj0yYoegacj9B2MclX+CX
+	 4JF3WM68X6ZmxKfJtrJPPcdrfhHyset0gJ0TRa+bIVOSWXCI7tXkFkskeYShammFVOgVl
+	 ErYho86yofloyktmM3pimNYnCUGUbevk+oWAzgO3baEXU/TyEP8r/ebLHtdcZRiymypuf
+	 qXYHOaPXgMFchp1PJ5eYo7Yz5ZJh6XzKds3Tb9bG+v5Uw6z7gJKLoK4SrieO+QCV86A==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794224347;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=sGURusLgWX86zeWwlkvJEoTgmEXteujAKyrxsu0OODc=;
-	b=rUSxAQ7UF7f+9OUZYcOvIo53dZPxT6/WrJ6IzzXeM++FrtiSR/2Hd94iLaBak/H0FutN
-	 PCkUYwhc4VNYSsErJqFxIpeLGSzsr6OYWPMUVQkleE/XvBAtJVRgC3Uzzn9EGnaIkE+nP
-	 8TraVIVz/p8WUKIX+nrNxNIVQm8IiTBokAaVXC0A9V37oxQ82HpEbsP20dq9MWqXWBE5b
-	 sKxnY0vni7FMThbMyYc90GywFiW31ymqjagfhwO0jIySxd8haHhTQoFK+TjDLWhyI2KxV
-	 kuefEsYH+TiddUXLw9Y75lhqLO4tRYpwpj4zAmU+d7u6RXx6DDgsvh2MXzz7iMBlUYg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794225679;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=pxzG4Z9tUr84C+n4G473WYz9seP+45U8TnoBcPvES30=;
+	b=4pVfMdZHrY7Z84DMgoTrjBtzVXvegjoydJllnh3N4n+zJPvvMe+R+yTZdH3+7CpP7qe5
+	 H5nIwtnrwm0snTNQzH+nhX0iUJgNW9idsUTJc4CjRoM+GZSbmRNK+Ed0m3RX/wtplAVog
+	 oKLsD8jp6XlzhboITpzpe6qQfQXKOzAvbiRILM257tCWYJdXKy92c1T/7jx7FfwWqxUjO
+	 6IHz0PWz/+pGSTHfHHQJrYbqIHPrHTP0wAx3z8qEIbqnj7zWUCjz0ZBO4AWda08OhtPmh
+	 jOkTeezslPe4gyBMetJkKwpoqeRqT0lPnwgf4BfZq4hQOr0F81nzAwhVfFlGcizgk/w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wm9qB9Q9;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Srlba1QQ;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 519D1606A325;
-	Mon,  9 Nov 2026 11:39:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B671A606A31C;
+	Mon,  9 Nov 2026 12:01:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wm9qB9Q9
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Srlba1QQ
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794224346;
-	b=tlF6/7yFWJEfzjjWmNiEQyzeX5MoW1LMYyLYX1a9+CnGCg11rXJtO3b2iGGVfoXEkuJT
-	 aakbyBzW56qtPVQA6J66rvc3Lb9+qZViMm5PfJ1QGWqDZPtk3Zt0Q6wMJ31npCg3IoGRQ
-	 vtvgT88uww9bQnVJi4msNr2Kfa7pf0nVrbGTV+CVfhzEeAcjSukrpum3r6wCNrVG+xVSG
-	 o6v1iBJMv4AcQxy+97QelXOqzQk4z6yTiExyE2jQXseQBLFxsB2D6mX20i85mI3tqz6bA
-	 ovddAi2+Lxe/EyE81VKYqEKX3yDpUkHbN4SGHOSX+VlJJWD7Sefx63ViotTjRzrDUZw==
+	t=1794225678;
+	b=H6pnApyDwvQKJiIZCb3HhNC9v2+J3C5JqiPDz+Manf3ufmUimH6KWLzXq0mmZXGAic6p
+	 C2ueCr8fnU6wrtUBDQOKE6sDqwp8P3VgNngd9vdpB9D8bZ+Ns2BQC5I7OoFtl+BQ3wsWI
+	 6q0V0fzG4g79oP3OTzli2vuTVskgMjYan+ze8xy+tefDQjAssaQ1hd88EhwaYNs0sxoH/
+	 6PK/x1IyuJST370tcCktv/32RVdsmb8K7z51B1QdZ/TMwUlbsxxbywhzOgIpCpvL5CNYX
+	 FS0cAbgzu5oLRp8QD/bdT7y/Gp3dBuAINoQVd1SslNJEEt83RCsznZB2WqCkygTQkuA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794224346;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=sGURusLgWX86zeWwlkvJEoTgmEXteujAKyrxsu0OODc=;
-	b=XM63riUldckC8tM5NZorkr2o7iyqRAxvtu2i7wS9gHcOJ7XmbE+uBYZ7HCQUujf8c4cu
-	 6GiaSOEy8G9Dptf9nQwVNBrJbsiPNwISz3D30q7EXJlv+5xmhJwIrOUQEMx9EBa3iLpQC
-	 BzW9guMwdIlxuj8UWhRpUGe9G83lpLiqLEFw4KVHMM8yYO3sYUYhHYcwRuIG/Wxt4918F
-	 fO9+wXmU8+w8dgX6Zm4Y8J9hwkCEOssmqBV53DzyQu5U2YyqxaFqV1L392CGbOhg5ZbW+
-	 viggcGlP/BNKN+R6zUX6+WljSqr7vL1NJba8XLngN0y03Z42T99Y4Z6hcd745LIC+8A==
+	c=relaxed/relaxed; t=1794225678;
+	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=pxzG4Z9tUr84C+n4G473WYz9seP+45U8TnoBcPvES30=;
+	b=oa3tCVDihpcrW0ftMjvjWyIpztvziRl5Vjq4grR+K+5MaSqldOypR+AtuadAmhHunSvi
+	 a4vujr2Njk3Si9QaidHaRj/ZXp/R4g4268sozU3rrPVqwsK0flaTAfW9twniF+jdnVJSg
+	 q9QxGVeUlto8owAVazlgy+QuJX7Ak6wSFeGLxBhSUSUgtd1Bb5vB5CqZE2cRkqWwrFvVA
+	 jqv/pusnVJFzxy8Igd79YgEbUtkh4DcVBvCEtpLvurwvrGtddV0ze+SqgmsmzYdf6Wk3N
+	 Cc1USby9/KcpjbQEryO6D4q5tuDU85FS/FdPvqjbok7OXxVmXjse5phnnfJDnMs2+Kg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	arc=none smtp.remote-ip=90.182.112.124
+Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 39BA81F008A1;
-	Mon,  9 Nov 2026 11:39:05 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPSA id 8A9AE1F008A1;
+	Mon,  9 Nov 2026 12:01:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794224346;
-	bh=sGURusLgWX86zeWwlkvJEoTgmEXteujAKyrxsu0OODc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Wm9qB9Q9JCG/TcTKLuZQCZCxr9FuMqLKUSJ6DGXo71qu4gNhFkPGqwxaV0uzzdG/5
-	 HZzeneNv8ZctOCzpeIERJxBMBw8s9clHDGCaBlSvN2QhBLab4UA2U/7Ekls8GMzDpE
-	 N5oE4q7AiYd5eml6vqYdX/87DVdGGjUCB7mXAQVYdJ6yZ4RApJyBOBotuQaC1Meuv0
-	 /4qnuXSkjJAo76Qzo8O8lqarhFg9AMx064oOeg1tjd+DkUYLcDlg2quY49SOb6In21
-	 NTwvvuabCxydJJmYHIywvDSOh+NMXHa0reb4PY1hMRL4wTUrcOfbbLH6Go/HTMSN47
-	 TfznoUV24JIfA==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id A326F483E2;
-	Mon,  9 Nov 2026 11:39:04 +0000 (UTC)
-From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Date: Mon, 09 Nov 2026 11:39:02 +0000
-Subject: [PATCH 1/2] iio: light: adux1020: fix interrupt clear value on
- SMBus-only adapters
+	s=k20260515; t=1794225678;
+	bh=pxzG4Z9tUr84C+n4G473WYz9seP+45U8TnoBcPvES30=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=Srlba1QQ6QNms9fdYyWQZmx/GjFcwwjH25qwjZj8EmvqEmODeEeiehT9y1c+OVoyH
+	 DmJeqxoVEIMrghgFYGxQac3PnwmT0fkcLVmqo1vPnfje0RmjLR1wBOjPr2x0p8AKcv
+	 X8uGGisEeu+m3AU2+uhij2JkIw8IcEhLftK4ES2r3ebS94RKsS/21Cl2PFNd6dGvsy
+	 EX7jkgOfi8islkmPcGRcg3cwl86pEP1JD9liS7x+314M9t6FMedGaSBM1ndaMj/Bwe
+	 UdlmkP+a9kl1XyApqYfvqf+Yr/B+VL9M9/p4Au+8Esf+nOLkHIC/iaAECpo5yPeyPQ
+	 +hLXkrhA8EadQ==
+Date: Mon, 9 Nov 2026 13:01:07 +0100
+From: Joshua Crofts <crofts@kernel.org>
+To: Akhilesh Patil <akhilesh.patil@linux.dev>
+Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-rtc@vger.kernel.org, akhileshpatilvnit@gmail.com,
+ akhilesh@ee.iitb.ac.in
+Subject: Re: [PATCH v2] MAINTAINERS: Update Akhilesh Patil Email address
+Message-ID: <20261109130107.000056f8@kernel.org>
+In-Reply-To: <20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com>
+References: <20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com>
+	<20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,67 +89,22 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261109-adux1020-measure-fixes-v1-1-fe1ba63f28bc@gmail.com>
-References: <20261109-adux1020-measure-fixes-v1-0-fe1ba63f28bc@gmail.com>
-In-Reply-To: <20261109-adux1020-measure-fixes-v1-0-fe1ba63f28bc@gmail.com>
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Manivannan Sadhasivam <mani@kernel.org>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794224343; l=1379;
- i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
- bh=r0ZSbO/Ld4MVFSPmXF2iaVAjnoCBKisOgRdgkZhMCRw=;
- b=Lv77MYIhtCIDIjnpPc9VCu9My+u0Qn91R1RGUysL3NaIsmiXtHiDCQ42UFSCBZ2Ncph52XTl0
- 1EgtEa/iXfOC5Ef15NlRhdop9O8WTPmIbbIYcj7wNb3HZyOIXszNGUs
-X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
- pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
-X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
- with auth_id=1160
-X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Reply-To: raffaele.tranfaglia@gmail.com
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+On Mon, 9 Nov 2026 10:44:43 +0000
+Akhilesh Patil <akhilesh.patil@linux.dev> wrote:
 
-adux1020_measure() clears the mode interrupt by writing the inverted
-interrupt enable mask to INT_STATUS. The mask is a u16, but integer
-promotion makes ~0x00f0 evaluate to 0xffffff0f, which does not fit in
-the 16-bit register.
+> Move to my new linux.dev email address akhilesh.patil@linux.dev
+> I plan to use this email for kernel development going forward.
+> Also update email address in few yaml and driver source files.
+> 
+> Signed-off-by: Akhilesh Patil <akhilesh.patil@linux.dev>
+> ---
 
-On adapters supporting plain I2C, regmap formats the value with
-put_unaligned_be16() and silently truncates it to 0xff0f. On adapters
-that only support SMBus word transfers, regmap_smbus_word_write_swapped()
-rejects values above 0xffff with -EINVAL, so every proximity read fails.
-
-Mask the value to 16 bits so that SMBus-only adapters send the same
-0xff0f that has always been written on plain I2C adapters.
-
-Fixes: 356543545576 ("iio: light: Add support for ADUX1020 sensor")
-Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
----
- drivers/iio/light/adux1020.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
-index d4281b9754c3..cccd509dd18a 100644
---- a/drivers/iio/light/adux1020.c
-+++ b/drivers/iio/light/adux1020.c
-@@ -346,7 +346,7 @@ static int adux1020_measure(struct adux1020_data *data,
- 
- 	/* Clear mode interrupt */
- 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_STATUS,
--			   (~adux1020_modes[mode].int_en));
-+			   ~adux1020_modes[mode].int_en & 0xffff);
- 	if (ret < 0)
- 		return ret;
- 
+Next time please don't send a v2 as a reply to v1, it can break
+tooling like b4.
 
 -- 
-2.56.0
-
-
+Kind regards,
+Joshua Crofts
