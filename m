@@ -1,84 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794243522;
-	b=I9FhIuzrUyDmOFQRMVdftXAe9+gz51VH1zXMZp16x0HEQoItld+5ZPA8wCdeZ/xcJBu4
-	 kWTZGnWcZmdp1orSdH5EG66yCa58B3iZWcDbe8JaTs5OqBg9Q9xcxAFOPnz77yHa5sq4p
-	 SGyNARvT1XzpvxDXhBvU4uYf5iEhrfb6Deluvac2ixdoee9APsAzL3BQwc/oPbzYgTezp
-	 wSYhBsTUA5N580fB1V7aAQRZYbX5GRQCm2xHGUeuqpPA5GKXQtCNW6WOJOYqsPjHTrBqi
-	 T07PNnFMdrhVd7Z6RZhGRYpILn3oZ5y7UgVIc4vW8CXGVx5mOWGkp9BBOf3Bt9FXUBg==
+	t=1794243527;
+	b=KadZGkV6rEnc14gVgOWKlGtPlrpfFfFOZ7v+S1jVpUWGKJSH7jSK3o+wj/pAd6t1W2RS
+	 pM4cVjFFEO2YyhLUzw42oXdLDJfhC9Ps7wChcS+yaQrX5zH3Y1ToTyfshJ8cc1zJxotgD
+	 IrKsTJc571SUHdLPfnCaykbg26C44DKl2aAS6PBEQL+6dtwGOq8CLH4HClBSSgmQuXFW2
+	 QWwR3rd0rTWFOIWs3UqkrTj1tnSB/rUybAiLyk/u6maFDwL2xq2YilGuOYlVZ5OjA7Q9I
+	 fMwwcvaT1HvhMB8yOaqORWlMkSwIzVwV03Yn4XLzPqIVOU4pPjQ/apvZphRDQWISqgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794243522;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794243527;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=8nH9XBvOrIjxAwP+5FR56uEJV1OKa47NfQAPenOGI40=;
-	b=SDu+VYF23McS3I/WHsYpLGgEzToH6crOmUy2oShYOMo5o0YIotYGe9+jbFlUGPvQbbU7
-	 7TOpaSHmh3iToFTZ+vsxkbYR/UgnGAZysVXFak4ML2IzoDj6aQcBe8Ap5eiUbFCLgC5pN
-	 JH2M87CwaZbeDT7gUzcsVUlQ83Z/mMym73aCxMNW1G3OiTxnMwWyPTwZkvEFWaquRtn/4
-	 29WtRIEHmiZiNnED0w21b7Bw+K5L0lGthLneUhoUNkvPvKsceYRPZqJKRBov6M+4k2amI
-	 bEWK5ditFZLIy0VPtSz6Nsg7S5v4E9WuqA3FK7zYnsDIXPgPx5TP+EU6e2wLyAsMsvQ==
+	bh=8/HNQ5vYcgTpt1NwnhKJpNsJpmPigqkI4i1xzO0yhCg=;
+	b=wEWn9BQptLytWjukIQJn1Kc+Rvz3yQTXObp0ZIC0UBz7Q+eHyo3JTJMLk1yp77+r7LM6
+	 /Q2nqvFOYwpQ+DJtfwaYbLAOr9FcI2yBmOPRyv49wgRd45W2gp+pSe2UIrcrBdnFCDc97
+	 IFG0IEoMRmeC4L/HjFl6WqQj7h2M00kliESb16kBNnXqBuyL6gx6yqUhjSJTAKuby/rOR
+	 5FQf6XtFjkg9hdxMZRm4nzV/VC55EpxZaOk3Wfie4L77IiuLotngV9Nq9WgRAkfW1FWFU
+	 gWE0ZWtKWEO85CFH7Ti3rdjmoQ3Dvooz1MDYb1JsAPVldk4okAaDUVwMc4w9iWlU2Xw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nYp+iQLk;
-	arc=none smtp.remote-ip=209.85.215.173
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=F9PxNa02;
+	arc=none smtp.remote-ip=209.85.215.169
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9BC860A2607
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 16:58:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B9BC860A2607
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB8AC606A895
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 16:58:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB8AC606A895
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nYp+iQLk
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-cdb9d5c1c8eso543086a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 08:58:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=F9PxNa02
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-cd60c5da24cso556328a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 08:58:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794243521; x=1794848321; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794243526; x=1794848326; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=8nH9XBvOrIjxAwP+5FR56uEJV1OKa47NfQAPenOGI40=;
-        b=nYp+iQLk+Z56YW/HSJa2WSNMGSYOMBRrORWbn8n57fQlP3tflrj/nQJd8gsR5+xDfu
-         u4cfQblbzxUy2vVt3GHNpXrVzExQig+33nDLbPCmQfgmoHDux01DFer3FF1NAbwTYq7E
-         BV/d6K0GjstvnJLeIZTsLGlG8WJkFHZTzgIHqlPHKQCA7wBBcUY5JFfInSYFInohq52j
-         57FEeZlprF5fpyaFTQxvlWzJ8IwT+17yG2VV6TzFDhISfdZSOP9jsU4oc1zt8Y1L6OJq
-         j3HMdo2UbpZUiBVzvpMC9oHxgWg683aq0KDWdZp85dktNn1DclT2xaPlh1mX1FDP85jZ
-         90sg==
+        bh=8/HNQ5vYcgTpt1NwnhKJpNsJpmPigqkI4i1xzO0yhCg=;
+        b=F9PxNa02IQYsdEPu/mDyLSJnDwZoSJn32tH+i4ySBoh4U8pdLcagmNFeTs2/k0cMGH
+         AAXAVz/w0+8v890SDCsXJ/PBryG1I2icI1SuVfDAEjCchS+Ry1HwOp6czszb9kGKMVRP
+         B6+yAuOtmBREQKgEVfMKRgu+KiM8oHoYqGsmA6PChF9agf2SrdRJd6tkpTnTU94BtTJe
+         2teq1U6YGkK+v9bR6ePcfAo0Ld3qk1hmmSyWxqIoNoTBsKekazEJxrFvDqPuOnLcGQgT
+         NtYm1K43scX15XAUD2pFLmHsSom+dz8R8FyaP+SoG3PVL3yHDHThM8jgyHzqxrMHle67
+         Liig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794243521; x=1794848321;
+        d=1e100.net; s=20260707; t=1794243526; x=1794848326;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8nH9XBvOrIjxAwP+5FR56uEJV1OKa47NfQAPenOGI40=;
-        b=dZ2rz+43tO8btgLmBmw8sCZzJyDQ7riWqdfj56fLxLHy3uQp5sCYP4Lh6zryjTGdVf
-         Y06QEY6BUvLodZ4zq9ISSftcgN+b17q1432WPI0YwzoWVh3olgWMcuW3wTZoHGnlZXez
-         1nQ0Ot++GeGmAOgP+Vk6iIOoysEsyBihUWB85TJF/TkuaNzIYkVN8ige1K7urNcJ6Ytz
-         O0WIlxYhjVLBjwWTGGRaVfSQdEhdrrdD1DUTkkN95H8veFYUxcIVKmHKKf7fpwik+N7a
-         VBaKOEEa7zammm8mh03ELXLhDsYwHBepk3sj3wTQ5lqmDg4IGelX0aPhTACTwh8aLcGR
-         pe+w==
-X-Forwarded-Encrypted: i=1; AL+hErGJev+UrzguC25eUK1Njun/Xm4ZFQU4OnjwWySgaRyLcnMVLug7vmwxgeFX2DgsndUKFk1rVFp5rU8=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8aevMZOlQpxFHI0iPsHmFQSyLykfbBwZRhBW9CaycRj04qfLyj
-	Rf9pMY0paphgYeDRwslMifShGVwSbcaMwj05edR+7NaEfZeczEEM3BqT
-X-Gm-Gg: AYBFou05+QDgAUUB0AdQYX2K1bZVWuOAcsJdrncRdgAfOjFFFfi7OnJQ2U9vCY0O5Qa
-	p8y6UgncTOcjAhtc7PopUkVnhxz5VFL30QdDpLIA0xD0rhFHgdMcp5W9tKPZBbmGRQUtSmN0RSG
-	4O8U39V+jeIQRhJiIL+2OI9LWwtCfU0RazuWy9eSftKqgHfeJMNWHUgRJ6j65Nir72Kq5Jxrn01
-	nU0ULjvW1AOnFoWkYnWWgo/paSMfRWtMWzGmNYV7MY0V0e9VIjhMVEBt00o1kLH5wnq/Gpm+aRg
-	s7pHZnRSOdjKpvEbkSMZtKseAdbysk8DGpD+233KVIoh3zzeNmmi+d/L6AyZ/RfddyCXbeX0oOu
-	dtIuQ6SznqvbeYfrmLQtW+INJCeFzkpmP08iitwlRn4zauQBPjLO1QnZai10Y3lBmGyIwbNWgu1
-	+JSE0+lHVjKn2V+e434UmYUOgZ6mLuWWGxE1erpYxtPSUvT7hJ1ck11zhAhXNgekK4Z9fNxkeAD
-	vFR7xCeU5Nl42PxRBCA7nkhrDz/ncoCA61shVMRGlwEpFFz3jgGfnD9z7JMr0wAjcl8KHNtY9BU
-	v5FzYymIKfiV0zjKfavmDCcMlg/mcLybcSPeC84pqjgaTLJqIBJP03w914BqeTXqClRdgxLfX4c
-	qNTIaPrjZHPv25OuFV2jmwGlnbQ==
-X-Received: by 2002:a17:90b:2b86:b0:3aa:fdad:7d6e with SMTP id 98e67ed59e1d1-3b166cc0430mr231963a91.10.1794243521079;
-        Mon, 09 Nov 2026 08:58:41 -0800 (PST)
+        bh=8/HNQ5vYcgTpt1NwnhKJpNsJpmPigqkI4i1xzO0yhCg=;
+        b=Or8P2EMOB4X5inatPmANbwR9SU6dFfj8RQMRV5kuq6Ubtnnlbd1Mf1laTQgY0gLE/T
+         LjBYQ+OVAMOx4lQgZkGnfQfL1trXieIW0xM0omeGmK6MpYqYU55ruOgl8eAmeNhKyynP
+         7PpQdnFWpFWyXXjkmg75l22jLEC1CfteEcQ0HbF71lugpR13zKtSvO01H83CqSiy//w4
+         rVmGxs24BqZLkXrNYk+G9YQ9hqmz+F0KJlwB1n3CH7WyQxtmjdVuLjRlOruWkaO3w2I/
+         zJ4iuxOfu/y0VuT2GKxW3mrWWFF0mQXSX6b9Su389SJNolsyPup0Z9HQXt2JHSAvpupp
+         65ow==
+X-Forwarded-Encrypted: i=1; AL+hErH/6cJKXaI6SyutCIKfudTphT0b8/g8O3JgK6zymBIvBCB0II/vOtcrll8KBYU+afll9WzmRGgUPS0=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+fn43VHffoMpdX2I2jAA7WFFL765C5ch04Fg7UA+vIgIwHnaIT
+	5maxT/eZIqHAHO4kuLT554YbWALwBsKAXoBW0KKdg9A7hKSEBzXzAXoc
+X-Gm-Gg: AYBFou1tT4UUxDasvR7zdvh1BkUCb5eFP9lRZ9CPyfrUXwN7xVjPsRfNtmtoTwkvc8t
+	ro9bWZidKJSQPlG0LBUtIu5IhxOrN2A11CFnFCwIYHmEk7cArz5+/Ec7Tq7Ssxr6ZTo8aBqqZ5L
+	IYB8Z76SK58VeSG4joAAP3ukB3RSbHsbrfmHIkdoyysYG80tHI9QYFdM2jLHttEJaKtVgJlmqDG
+	FpUdyCW6nxR1wBAkLtldqgzxPkx5DoyBWRRIV6vVgR957iTXMw2P1W2G992HewbTW6j0210o6ka
+	0NB4jZsDBTrmp984CCdRcXkA+sXkXR+2NghoFYro3MWVj3Tu+XRDFcSHZHt/mG2QC7qnAcI9Mih
+	Q5WwnyOPQB1uXGe8lqP8HB6Bb5wrhfmNgMWOVmM9mw4hufaG1d2GXpDnB86naS3bfjQwaDv9hZ2
+	cz6uNbm1Z02TBJmYlnYk6KSag7H0o8OayT5XlXkLtRcWeH/liTOQX5JV+YbvvjK3j2+mwUdhs0N
+	tTZDNEqdXlPLm4FGRa/6dS2ua1yt4MuMSL7acJMUZ6EXFLeTk5u7Zhz+a7MYMHcnF6AdEleEMLQ
+	FeODLDCkjkQMgGXBAkVcIWOIn0z/YNK/YMGBmclQ2W5BCgzRfTCqA5QoaG1Bbe4QmyeV8u0GPEW
+	Q+sSNSHheNi3nOIw3BdThVBhOpQ==
+X-Received: by 2002:a17:90b:1b0d:b0:3a8:9b79:e6ea with SMTP id 98e67ed59e1d1-3b166fd89a3mr183071a91.59.1794243525989;
+        Mon, 09 Nov 2026 08:58:45 -0800 (PST)
 Received: from debian.ari ([152.56.156.124])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b16779cf05sm138766a91.3.2026.11.09.08.58.37
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b16779cf05sm138766a91.3.2026.11.09.08.58.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2026 08:58:40 -0800 (PST)
+        Mon, 09 Nov 2026 08:58:45 -0800 (PST)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -87,10 +87,11 @@ Cc: dlechner@baylibre.com,
 	u.kleine-koenig@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	joshua.crofts1@gmail.com
-Subject: [PATCH v6 10/11] iio: adc: ti-ads1015: inline ads1015_set_conv_mode()
-Date: Mon,  9 Nov 2026 22:28:04 +0530
-Message-Id: <20261109165805.31160-5-architanant5@gmail.com>
+	joshua.crofts1@gmail.com,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v6 11/11] iio: adc: ti-ads1015: Replace custom shift macros with FIELD_PREP/GET
+Date: Mon,  9 Nov 2026 22:28:05 +0530
+Message-Id: <20261109165805.31160-6-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20261109165805.31160-1-architanant5@gmail.com>
 References: <20261109165805.31160-1-architanant5@gmail.com>
@@ -105,113 +106,203 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The ads1015_set_conv_mode() helper function is a single-line wrapper
-around regmap_update_bits().
+The driver currently uses custom _SHIFT macros and manual bitwise
+operations to read and write to the configuration register.
 
-Since the function is simple and only called during initialization and
-power management state transitions, the wrapper is unnecessary. Remove
-it and inline the regmap_update_bits() logic directly at the call sites
-to improve code readability and traceabilty.
+Modernize the bitwise logic by replacing all manual shifts with the
+standard FIELD_PREP() and FIELD_GET() macros from <linux/bitfield.h>.
+This improves readability and prevents potential bitwise errors.
 
-Where applicable, introduce a local 'map' pointer to keep the
-inlined function calls concise.
+Remove the now-unused _SHIFT macros from the top of the file.
 
 Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Archit Anant <architanant5@gmail.com>
 ---
- drivers/iio/adc/ti-ads1015.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ drivers/iio/adc/ti-ads1015.c | 79 ++++++++++++++++++++----------------
+ 1 file changed, 44 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 93a8318e950e2..2c3ba1b91aac4 100644
+index 2c3ba1b91aac4..8f7ec61314363 100644
 --- a/drivers/iio/adc/ti-ads1015.c
 +++ b/drivers/iio/adc/ti-ads1015.c
-@@ -932,21 +932,16 @@ static void ads1015_get_channels_config(struct i2c_client *client)
- 	}
- }
+@@ -11,6 +11,7 @@
+  *	* 0x4B - ADDR connected to SCL
+  */
  
--static int ads1015_set_conv_mode(struct ads1015_data *data, int mode)
--{
--	return regmap_update_bits(data->regmap, ADS1015_CFG_REG,
--				  ADS1015_CFG_MOD_MASK,
--				  mode << ADS1015_CFG_MOD_SHIFT);
--}
++#include <linux/bitfield.h>
+ #include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
+@@ -38,15 +39,6 @@
+ #define ADS1015_LO_THRESH_REG	0x02
+ #define ADS1015_HI_THRESH_REG	0x03
+ 
+-#define ADS1015_CFG_COMP_QUE_SHIFT	0
+-#define ADS1015_CFG_COMP_LAT_SHIFT	2
+-#define ADS1015_CFG_COMP_POL_SHIFT	3
+-#define ADS1015_CFG_COMP_MODE_SHIFT	4
+-#define ADS1015_CFG_DR_SHIFT	5
+-#define ADS1015_CFG_MOD_SHIFT	8
+-#define ADS1015_CFG_PGA_SHIFT	9
+-#define ADS1015_CFG_MUX_SHIFT	12
 -
- static void ads1015_power_down(void *p)
- {
- 	struct ads1015_data *data = p;
-+	struct regmap *map = data->regmap;
- 	int ret;
+ #define ADS1015_CFG_COMP_QUE_MASK	GENMASK(1, 0)
+ #define ADS1015_CFG_COMP_LAT_MASK	BIT(2)
+ #define ADS1015_CFG_COMP_POL_MASK	BIT(3)
+@@ -382,17 +374,24 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
  
--	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
-+	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
-+				 ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
- 	if (ret)
--		dev_warn(regmap_get_device(data->regmap),
-+		dev_warn(regmap_get_device(map),
- 			 "Failed to power down (%pe)\n", ERR_PTR(ret));
- }
+ 	pga = data->channel_data[chan].pga;
+ 	dr = data->channel_data[chan].data_rate;
+-	mask = ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
+-		ADS1015_CFG_DR_MASK;
+-	cfg = chan << ADS1015_CFG_MUX_SHIFT | pga << ADS1015_CFG_PGA_SHIFT |
+-		dr << ADS1015_CFG_DR_SHIFT;
  
-@@ -956,6 +951,7 @@ static int ads1015_probe(struct i2c_client *client)
- 	struct device *dev = &client->dev;
- 	struct iio_dev *indio_dev;
- 	struct ads1015_data *data;
-+	struct regmap *map;
- 	int ret;
- 	int i;
- 
-@@ -1007,8 +1003,9 @@ static int ads1015_probe(struct i2c_client *client)
- 	data->regmap = devm_regmap_init_i2c(client, chip->has_comparator ?
- 					    &ads1015_regmap_config :
- 					    &tla2024_regmap_config);
--	if (IS_ERR(data->regmap))
--		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+	map = data->regmap;
-+	if (IS_ERR(map))
-+		return dev_err_probe(dev, PTR_ERR(map),
- 				     "Failed to allocate register map\n");
- 
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-@@ -1041,7 +1038,7 @@ static int ads1015_probe(struct i2c_client *client)
- 			return -EINVAL;
- 		}
- 
--		ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
-+		ret = regmap_update_bits(map, ADS1015_CFG_REG,
- 					cfg_comp_mask, cfg_comp);
- 		if (ret)
- 			return ret;
-@@ -1054,7 +1051,8 @@ static int ads1015_probe(struct i2c_client *client)
- 			return ret;
+ 	if (ads1015_event_channel_enabled(data)) {
+-		mask |= ADS1015_CFG_COMP_QUE_MASK | ADS1015_CFG_COMP_MODE_MASK;
+-		cfg |= data->thresh_data[chan].comp_queue <<
+-				ADS1015_CFG_COMP_QUE_SHIFT |
+-			data->comp_mode <<
+-				ADS1015_CFG_COMP_MODE_SHIFT;
++		mask = ADS1015_CFG_COMP_QUE_MASK | ADS1015_CFG_COMP_MODE_MASK |
++		       ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
++		       ADS1015_CFG_DR_MASK;
++		cfg = FIELD_PREP(ADS1015_CFG_MUX_MASK, chan) |
++		      FIELD_PREP(ADS1015_CFG_PGA_MASK, pga) |
++		      FIELD_PREP(ADS1015_CFG_DR_MASK, dr) |
++		      FIELD_PREP(ADS1015_CFG_COMP_QUE_MASK,
++				 data->thresh_data[chan].comp_queue) |
++		      FIELD_PREP(ADS1015_CFG_COMP_MODE_MASK,
++				 data->comp_mode);
++	} else {
++		mask = ADS1015_CFG_MUX_MASK | ADS1015_CFG_PGA_MASK |
++			ADS1015_CFG_DR_MASK;
++		cfg = FIELD_PREP(ADS1015_CFG_MUX_MASK, chan) |
++		      FIELD_PREP(ADS1015_CFG_PGA_MASK, pga) |
++		      FIELD_PREP(ADS1015_CFG_DR_MASK, dr);
  	}
  
--	ret = ads1015_set_conv_mode(data, ADS1015_CONTINUOUS);
-+	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
-+				 ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
+ 	cfg = (old & ~mask) | (cfg & mask);
+@@ -403,7 +402,7 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
+ 		data->conv_invalid = true;
+ 	}
+ 	if (data->conv_invalid) {
+-		dr_old = (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_SHIFT;
++		dr_old = FIELD_GET(ADS1015_CFG_DR_MASK, old);
+ 		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data_rate[dr_old]);
+ 		conv_time += DIV_ROUND_UP(USEC_PER_SEC, data_rate[dr]);
+ 		conv_time += conv_time / 10; /* 10% internal clock inaccuracy */
+@@ -731,7 +730,9 @@ static int ads1015_enable_event_config(struct ads1015_data *data,
+ static int ads1015_disable_event_config(struct ads1015_data *data,
+ 	const struct iio_chan_spec *chan, int comp_mode)
+ {
+-	struct device *dev = regmap_get_device(data->regmap);
++	struct regmap *map = data->regmap;
++	struct device *dev = regmap_get_device(map);
++	unsigned int val;
+ 	int ret;
+ 
+ 	if (!ads1015_event_channel_enabled(data))
+@@ -744,10 +745,9 @@ static int ads1015_disable_event_config(struct ads1015_data *data,
+ 			comp_mode == ADS1015_CFG_COMP_MODE_WINDOW)
+ 		return 0;
+ 
+-	ret = regmap_update_bits(data->regmap, ADS1015_CFG_REG,
+-				ADS1015_CFG_COMP_QUE_MASK,
+-				ADS1015_CFG_COMP_DISABLE <<
+-					ADS1015_CFG_COMP_QUE_SHIFT);
++	val = FIELD_PREP(ADS1015_CFG_COMP_QUE_MASK, ADS1015_CFG_COMP_DISABLE);
++	ret = regmap_update_bits(map, ADS1015_CFG_REG,
++				 ADS1015_CFG_COMP_QUE_MASK, val);
  	if (ret)
  		return ret;
  
-@@ -1077,17 +1075,21 @@ static int ads1015_runtime_suspend(struct device *dev)
+@@ -936,10 +936,12 @@ static void ads1015_power_down(void *p)
  {
+ 	struct ads1015_data *data = p;
+ 	struct regmap *map = data->regmap;
++	unsigned int val;
+ 	int ret;
+ 
+-	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
+-				 ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++	val = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_SINGLESHOT);
++	ret = regmap_update_bits(map, ADS1015_CFG_REG,
++				 ADS1015_CFG_MOD_MASK, val);
+ 	if (ret)
+ 		dev_warn(regmap_get_device(map),
+ 			 "Failed to power down (%pe)\n", ERR_PTR(ret));
+@@ -951,6 +953,7 @@ static int ads1015_probe(struct i2c_client *client)
+ 	struct device *dev = &client->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct ads1015_data *data;
++	unsigned int cfg_mode;
+ 	struct regmap *map;
+ 	int ret;
+ 	int i;
+@@ -1020,19 +1023,20 @@ static int ads1015_probe(struct i2c_client *client)
+ 		unsigned int cfg_comp_mask = ADS1015_CFG_COMP_QUE_MASK |
+ 			ADS1015_CFG_COMP_LAT_MASK | ADS1015_CFG_COMP_POL_MASK;
+ 		unsigned int cfg_comp =
+-			ADS1015_CFG_COMP_DISABLE << ADS1015_CFG_COMP_QUE_SHIFT |
+-			1 << ADS1015_CFG_COMP_LAT_SHIFT;
++			FIELD_PREP(ADS1015_CFG_COMP_QUE_MASK,
++				   ADS1015_CFG_COMP_DISABLE) |
++			FIELD_PREP(ADS1015_CFG_COMP_LAT_MASK, 1);
+ 
+ 		switch (irq_trig) {
+ 		case IRQF_TRIGGER_FALLING:
+ 		case IRQF_TRIGGER_LOW:
+-			cfg_comp |= ADS1015_CFG_COMP_POL_LOW <<
+-					ADS1015_CFG_COMP_POL_SHIFT;
++			cfg_comp |= FIELD_PREP(ADS1015_CFG_COMP_POL_MASK,
++					       ADS1015_CFG_COMP_POL_LOW);
+ 			break;
+ 		case IRQF_TRIGGER_HIGH:
+ 		case IRQF_TRIGGER_RISING:
+-			cfg_comp |= ADS1015_CFG_COMP_POL_HIGH <<
+-					ADS1015_CFG_COMP_POL_SHIFT;
++			cfg_comp |= FIELD_PREP(ADS1015_CFG_COMP_POL_MASK,
++					       ADS1015_CFG_COMP_POL_HIGH);
+ 			break;
+ 		default:
+ 			return -EINVAL;
+@@ -1051,8 +1055,9 @@ static int ads1015_probe(struct i2c_client *client)
+ 			return ret;
+ 	}
+ 
++	cfg_mode = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_CONTINUOUS);
+ 	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
+-				 ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
++				 cfg_mode);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1076,9 +1081,11 @@ static int ads1015_runtime_suspend(struct device *dev)
  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
  	struct ads1015_data *data = iio_priv(indio_dev);
-+	struct regmap *map = data->regmap;
+ 	struct regmap *map = data->regmap;
++	unsigned int val;
  
--	return ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
-+	return regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
-+				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++	val = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_SINGLESHOT);
+ 	return regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
+-				  ADS1015_SINGLESHOT << ADS1015_CFG_MOD_SHIFT);
++				  val);
  }
  
  static int ads1015_runtime_resume(struct device *dev)
- {
+@@ -1086,10 +1093,12 @@ static int ads1015_runtime_resume(struct device *dev)
  	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
  	struct ads1015_data *data = iio_priv(indio_dev);
-+	struct regmap *map = data->regmap;
+ 	struct regmap *map = data->regmap;
++	unsigned int val;
  	int ret;
  
--	ret = ads1015_set_conv_mode(data, ADS1015_CONTINUOUS);
-+	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
-+				 ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
++	val = FIELD_PREP(ADS1015_CFG_MOD_MASK, ADS1015_CONTINUOUS);
+ 	ret = regmap_update_bits(map, ADS1015_CFG_REG, ADS1015_CFG_MOD_MASK,
+-				 ADS1015_CONTINUOUS << ADS1015_CFG_MOD_SHIFT);
++				 val);
  	if (!ret)
  		data->conv_invalid = true;
  
