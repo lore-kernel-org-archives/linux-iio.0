@@ -1,90 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794213747;
-	b=t4Dy3mnByC8txEbvFAOTGIf43pH6TfGDRQfP9Kez1H26h0yz51zblIeQDSwzH5PTH/Qv
-	 bWJRkVqPY92v88k/FBYO7HQj/besoeiZ/1Y99Ejyhbir3xX9uANALn474BEQZshgDHGjH
-	 MGQ/Xkm3TNgXa7HXqM0ZSOk0h6S3JEfJx01UaShfoZA8bsmxqxQ0Q8eAmiAqRfBqpTAMj
-	 TJnNnjvpvjZFVHQn/snWSTF2PUaeYMNFUiB9PDTJDOpCjIuilSIrgpCrlxsEzCBtyYRDZ
-	 IL/mrsLK27t/AjYCeE+LvWbRK3KOEjJGguaJ3lSaFWA14N7YROB6eBwZaIjWxKIom/w==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794213747;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.169
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794213870;
+	b=XgztUx5+FkAownvfO0eS2rlr5PDdScz/zrrMqkzyW68yFIO4Fl/CgSs6CAoeWL4xSgys
+	 4EhuPKXTwR2FquyPpzMa62HAzXF4bRzJYFHVBW0BC/gn+GwB/amk57LCYYXtmiRE9Z2nx
+	 06x6wUlqQ/jsSffWV/seXi5zqHI8nyLJbEjsrZJX4GY3G5e4cPGFiK0TlXyjR0aHQmqJT
+	 aMUTIXn4bDLaw/cytUsMd03q/is4dy/sYVQYJwsyL+ndtBnn6rUDfgwoQDdnYqgz4E+/D
+	 ePDD27vDr2+3//GI7pEiC2N4Yb8KAEHk5ul6axAf0yyPatVOJupW4jzGO9QsOQKEVPw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794213870;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=xq2W+DbzQKP7CTPJr7r8Z25kcdz5jvMXAXDiLOlCpBo=;
-	b=RNbtVNs/IHUb60IUBxtemC7OuhSn1+1qGiPy91wc4kG1MM2i/eybPXaKO+1pOyXucGmL
-	 kG9M3IgX6Oq2Zy3V60TuoLGYXrUbrqed8Uam6diP224hIlikugdls5yaU/WZ3DIBA3ndz
-	 glGaASYPMjTH3K3avGaS6YEbnFjVlBRa2NqOc0PF2Ezu0gdKqCRlVvHBz4dv0Ji/FuIi8
-	 W0G5ejF1DqCSilI0p2iksH446ZjOai4Gq2RErBisL8DrGaLefi3HMKvOT2tpmxg/hZYpM
-	 jlTG/QvZzHRc02V8ncRHY0OpWluRO45N8ImmcyJziB5lv2hABd04TC4jMTgkofqyj9A==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PjQGX5ik;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	bh=kSWF2kuv83msu0L1SOhEm6iVW6rIPqvCwEF2UoZ5xlg=;
+	b=gAXuFGRenLjeDWEUywcz7NhO9fpgwvprgqPNjG4hycYSTZTVrgPB6bhFe3qA7bW71HJX
+	 vq/6Mr8HbK3sSJiZrj2ByBD4+5QMr2vNwF2mQpQmiWiCyP/IpqTrjht1tPHNvQ3lXsM5e
+	 iPlW0kWRS7YlR7wvJLRadVyNXR61hkdSnP37s4bkdrv6f7L3G+UTuYF3VMXzuZnGJLP6x
+	 i/+cdHHs0yrpNT0r6IuUNceHtVPxB33mWshMCulnr42+FpWI7JdzRog3Uofp/YVfoZu23
+	 DJiIs7PPSJNAXtImDYBwmmrtCyORhsYYvi255hk/pxq2zl4zqXm+/hF7qRCTH3rRbkg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=x6cNtGK3;
+	arc=none smtp.remote-ip=209.85.210.169
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50102606A326;
-	Mon,  9 Nov 2026 08:42:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F99C606A321
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 08:44:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9F99C606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PjQGX5ik
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794213746;
-	b=3jl7BgMEglT1/ybJ6z8QI7dCnppBnk8/CnN+2qdu0qSiChSXFgr8zzK5tFdoE3OtS5Sw
-	 qzG81ABpM62GUomdY3lYHYyL4BK2VE9Ekt/NkJsJmg/jI0c4MsNlAP/zuHT939iPCgrTA
-	 3o6GRf5iz9aJ7p3ihIlC4Qw4DneUYs9NJF43gVeUKaoFlbqrQ0Se10nW1+H29W3HSQK6c
-	 qf0Bze9qlF0MFapJvss5wxrDEk0IfYsdNbrlRyW1l26Ru1+tJpauGXxyJ1kE/2pvpV8SM
-	 S046csFAHBh5PbHF20smmlRjUdoZ16pTbfX9muALB74PfLe3WwNO0UWHuP9MvuIn5JA==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794213746;
-	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=xq2W+DbzQKP7CTPJr7r8Z25kcdz5jvMXAXDiLOlCpBo=;
-	b=nfrKoRN91E//wEdojkR8umosiitGlg7T3XV7itKf1noGR+vyLdvReo1ryhpb8Rw+eQSg
-	 gOYtgEROYrzOnMK3Py/Be8bWMPWAOEZMagKJwyRp8k+MEz7N1oRZDhQk2jKTBvbdpSZ6R
-	 JfkYbba89y5TdsLvXmnRWs010N3s1sHQC95FWYLk78gJiqRanDJbOzhBv36aQrsuDQehz
-	 pW83k1TAHulJVlxYACM1qOG0IBGHTqGPAkzaBC9Uqo3cL+VVE/PhjhLKckrA7DDzpm4fY
-	 NFgjOOxY/hmM+ryv1EPwAX7w8VNSa4Y3nVwJlFaVlh6vC7g9Iv664yPOmG53/3eXAIw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=90.182.112.124
-Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 315541F008A1;
-	Mon,  9 Nov 2026 08:42:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794213746;
-	bh=xq2W+DbzQKP7CTPJr7r8Z25kcdz5jvMXAXDiLOlCpBo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=PjQGX5ikj18ixU1M1yk44tzTbySRzSCyrLcHVmojCQnbEGbaXhtDMSZJBSB2ZHDyv
-	 1+ldfZHSoDz619h3s7tUdPAZ5MjHjqqc9lzlAcKbp/+nGR+lG55mwNCrVKWsuoLyoO
-	 +EtR6+V8YfoCbeCRDxm4unLNtvOoEHdQnO7LqFGESZHzZkKDLx1mpZN6Y3rJFxo8rS
-	 04AVtFK4j/FJyAh/x99yNDKBZ3fLOFxPIYx7vhVj5hIAN1uWULHBSUzMe+jIvoDq85
-	 Uwgson9yMyo2d+0vbqkl3+RC7j+J+Gz6rQmQ/d2dgoMvrqi+fvMEtC3T+aF9tVPmGS
-	 WRC2AN9WC2EOQ==
-Date: Mon, 9 Nov 2026 09:42:02 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
- Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- Song Qiang <songqiang1304521@gmail.com>, Radu Sabau
- <radu.sabau@analog.com>, Maxwell Doose <maxwell@maxwelld.cc>, Tomasz
- Duszynski <tduszyns@gmail.com>, Erikas Bitovtas <xerikasxx@gmail.com>,
- Waqar Hameed <waqar.hameed@axis.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, Jonathan
- Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [RESEND PATCH 11/14] iio: proximity: vl53l1x-i2c: poll own
- trigger from interrupt handler
-Message-ID: <20261109094202.0000284f@kernel.org>
-In-Reply-To: <20261109042851.1326940-12-jic23@kernel.org>
-References: <20261109042851.1326940-1-jic23@kernel.org>
-	<20261109042851.1326940-12-jic23@kernel.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=x6cNtGK3
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-8b3577deeb0so237304b3a.3
+        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 00:44:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794213869; x=1794818669; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=kSWF2kuv83msu0L1SOhEm6iVW6rIPqvCwEF2UoZ5xlg=;
+        b=x6cNtGK3ePw318rIzwt0OFqFCFA9OEIncfFgZbuEzg9b59N1TYpAW/T1mmJGvPgwjl
+         FvNInd8U5QKUU5MUilph0RK9qxp4mSv67cyA110sKrj352y7h8cHRK5utB9KSSbhB6VW
+         xuWFx5eogWt0BNbTE0fsTkDwRaDPvssAPArt+88W/dFqqlBm5obog40uWk9xwndFS6H7
+         a6f0TKy4NHYQnLEWHfy876tISXw/+mJzbNTsQDqXva9pQGfV/9ZqRBwp0k01eTzKyGej
+         KwCbRYFLmDnjtSRHrMtDKFO2JNTlNsWgORSojOapdzfUKgZDY0EduxArBcSEwLng5Yiu
+         gFGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794213869; x=1794818669;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=kSWF2kuv83msu0L1SOhEm6iVW6rIPqvCwEF2UoZ5xlg=;
+        b=Ft8gMt0YzMnc1cUMHGfbs8eKvHdLcqnRwb0szbT9U3jXZzzwynZ19Q+tctrmZI4FUW
+         PjXXkyv9vLh8F9z2H5rL0ABXJD6jEh+ydiGFx7om6PG8yj4y2Vy3W9pcCp+DGGkry7p3
+         FgFT1iqC2hCDEQt+VX1tQI77IMYFQxrGAbJOcO8evCMksnV6J2xusLFlq4Hhng1Rtg+x
+         mHFvYvs31qg6LNPjDm3VU1QEQfxeJwuSoR0TYjaIZSLmbnXrMTfcJhazfxg+hLbdwiDr
+         Bh4ZIePbKnYQOjaXzdw/8AOncbHIYxO51BaGMbIK6ztESkWZG/xXUZWazaQz0B/1SAL4
+         uq3Q==
+X-Forwarded-Encrypted: i=1; AL+hErHXIrrxVMA3yXQgvv4enGBYfnsF8WIj7Fs9LbkTWpkkPujk/K1QL/M2mC0Lex0N6LVsANywinzJXmg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/izt+PVqA5qT9nZMcCTv5u0VYS3RRVo5rRRN/0m80QMRC+rDJB
+	pXpdtaF6rcZlfnaFVrQf1AbiXcS/WjOFmQO5vf7Uk3c5y6xUlItPNqXTIBCSfg==
+X-Gm-Gg: AYBFou0aYFIK0bS9jTfru279cZYvkfC5R3L0vRbeevDmcaqsJWnywTTd0rn8maxWZ39
+	YBcJW2JI/SLh4Czqp3w7VoG5D7rxSKLbhoQt3xOYkbIgXClexOiLxKzITV65DtPKB6qaMcoV6ZI
+	Fzi5KIaSiVBi/WdCVBu5Z3pTXjsUhgG9DapSRee4oN+bA0tfpBO/chgAPR2dz4+W4xJfn8KY9mb
+	K+sHSPq21nvy92lYbk0gke2M2tBTbKxUs+f01MUKtCaGvsP3BklsW2ZdcyJ0tjCR1Ir3l/uaizE
+	9e4LalgynAQ1/aS+4AbYsosz4XYEL9GXc8xI9yMLKxZNaUrqvrRtvkZro/8wrEXXgIx5gWWh5j6
+	hxp1SvQG583acY13WG4PLKT6O3k1rAv/B+0D+n8AniYhF/gc9gdma5A605+aqeUhEXUSlETxDDf
+	GeYMUVsVO7SalVmtWxMkR8e5cl3Dx7nA5Q2347UF0aIR76E4TRjojb2blwATV3fWNFGG1J0mMmg
+	lyr0itzw/a+zlIVvC4bKlAk9iERT+WRxpAC5xcoVcm50gkdaETAvHbZiqMQb6gitcwWTGgT8hbw
+	UlNV4MvUyEsdVZrcY6XAMGB5cvnChwDPvLvrxYXvxtFNplCkpg5llZDpgXl0TfTWIBzVNhNuw/m
+	1lRt3KwYr/URYO1kwkbbAKvaRmq1wk/hkWWvxnsauAYxy
+X-Received: by 2002:a05:6a21:e58c:b0:3eb:a628:1095 with SMTP id adf61e73a8af0-3eed2c07761mr2906916637.20.1794213868862;
+        Mon, 09 Nov 2026 00:44:28 -0800 (PST)
+Received: from phuc-desktop.. ([183.91.15.56])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb96816fc6sm1413751a12.5.2026.11.09.00.44.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2026 00:44:27 -0800 (PST)
+From: phucduc.bui@gmail.com
+To: wbg@kernel.org,
+	andriy.shevchenko@intel.com,
+	David Lechner <david@lechnology.com>
+Cc: andy@kernel.org,
+	dlechner@baylibre.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	m32285159@gmail.com,
+	nuno.sa@analog.com,
+	phucduc.bui@gmail.com,
+	sozdayvek@gmail.com
+Subject: [PATCH v4 0/2] counter: ti-eqep: Fix runtime PM leak and use devm_counter_add()
+Date: Mon,  9 Nov 2026 15:43:40 +0700
+Message-ID: <20261109084342.51865-1-phucduc.bui@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -94,52 +103,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Mon,  9 Nov 2026 04:28:48 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+From: bui duc phuc <phucduc.bui@gmail.com>
 
-> From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-> 
-> Keep a pointer to the driver's trigger in struct vl53l1x_data and poll
-> that from vl53l1x_irq_handler() rather than indio_dev->trig. Only the
-> driver's own trigger is accepted, via iio_validate_own_trigger(), so
-> with the buffer enabled that is the trigger in use.
-> 
-> This removes a dependency on the trig field of struct iio_dev, which
-> is to become private to the IIO core.
-> 
-> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-> ---
->  drivers/iio/proximity/vl53l1x-i2c.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
-> index bce238d1b6de..ffc6fe45b165 100644
-> --- a/drivers/iio/proximity/vl53l1x-i2c.c
-> +++ b/drivers/iio/proximity/vl53l1x-i2c.c
-> @@ -102,6 +102,7 @@ struct vl53l1x_data {
->  	enum vl53l1x_distance_mode distance_mode;
->  	u8 gpio_polarity;
->  	int irq;
-> +	struct iio_trigger *trig;
+Hi,
 
-Pahole reports a 4 byte hole between irq and trig. Reordering
-like this yields a better result:
+This series picks up Stepan's v3 [1], which had no follow-up since
+May, with William's agreement [2].
 
-struct regmap *            regmap;               /*     0     8 */
-struct completion          completion __attribute__((__aligned__(8))); /*     8    32 */
+v4:
+ - Reword commit message of patch 1 as suggested by Andy
+ - Add patch 2 to use devm_counter_add() and drop ti_eqep_remove()
+   as suggested by William.
 
-/* XXX last struct has 1 hole */
+Link v3: 
+https://lore.kernel.org/all/20260529095834.2561-1-sozdayvek@gmail.com/
+Link v2: 
+https://lore.kernel.org/all/20260525152137.7428-1-sozdayvek@gmail.com/
+Link v1: 
+https://lore.kernel.org/all/20260523184448.7609-1-sozdayvek@gmail.com/
 
-struct reset_control *     xshut_reset;          /*    40     8 */
-struct iio_trigger *       trig;                 /*    48     8 */
-enum vl53l1x_distance_mode distance_mode;        /*    56     4 */
-int                        irq;                  /*    60     4 */
-/* --- cacheline 1 boundary (64 bytes) --- */
-u8                         gpio_polarity;        /*    64     1 */
+[1] https://lore.kernel.org/all/20260529095834.2561-1-sozdayvek@gmail.com/
+[2] https://lore.kernel.org/all/20261106193208.4136410-1-wbg@kernel.org/
+
+Compile-tested only.
+
+Best regards,
+Phuc
+
+Stepan Ionichev (1):
+  counter: ti-eqep: Fix runtime PM leak on probe failure
+
+bui duc phuc (1):
+  counter: ti-eqep: Use devm_counter_add()
+
+ drivers/counter/ti-eqep.c | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
 -- 
-Kind regards,
-Joshua Crofts
+2.43.0
+
