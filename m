@@ -1,56 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794265288;
-	b=B0ukzn7k7I/RPJF25/U3ejPEQenoeRYWfm8duI8+4oLLF6+gmmSZB13lrsnSlC6pYZfb
-	 YkBZIcPJXU4wIJM+LXHwF89lTxY4+NYegecGJZHphvJnepW/OqUx1fY2VDuXuU0aAzg/s
-	 w3nHiTR90/GYSToZhA7wd+vHTuVHITd0rqsLwZHnTR/DpE6hzOkQtX8ZNpmjNvSUBSNfE
-	 wyF2FS8s6FnVtjn1OKPUKT9E46X3VaBwRlxnARnb4htvgOnr0SeueNYi0EXBLgXXAoJSn
-	 mD1xG6AvK0TFXpXk7AMr3ppIVOA7Adjc1YK58rJkmK+i3fqvk8F4yZhitdwAtII2Jig==
+	t=1794266084;
+	b=vguqtqfFJ7Eqfe/SQA5o0fnP7Cs0nvkTuVY6aYDugXl10JcZr5Z/2qxRGXeciEEpH7Sn
+	 OKPpry7Dg3P4s95TD2om9eJLTS+NeBeVX/HDNJ3vt37gFlFQ/KVSzkoPVDSUbfEMLB92Q
+	 zuqQb6FNnUc1HM2ChtXBwI7qmZixa/jMuczW2F04eJixPcB8KFQYdViUmJ7fkkE6dXOk/
+	 LsSMAu0+jocuRzR7KuzXCVZmbPXbe/mJQ7KdKjsctuBSGSzCwigG59DdizSgMxsPLEnz8
+	 4oPxIWa9e48lLQJSo0lpP6Z58Ha9+s8SC5/2+3iRuNqOREYbFcGKQ3dzLUE3wJy6KDg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794265288;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=5GhBcleH2N/xa0I356d+yJ9h754DmagFocrUOOqzJns=;
-	b=m4jpmI7KMXf3LMzO4LmTSHm95ZASSvWqGeCOG6ot7vBh2n8YuhHvXPpY6DHelT4+80kV
-	 1hDE/0e3S/CwZ5CFvU2uY0UYhtMAQU4Eio4qBMvR2M7+FvCDmpir4yJyfpnfgmDbNNzGD
-	 kbqQH/l2Y7A5nTr4zkTCvO9ll3kcGnZbAVVICXM+NhCltXJlOCvTAgpR0AjEWOPmq5UV5
-	 giKbEfyi3tzmujsFSB+UTXO7C4eyOluzJguEkxRWuiSgWmCt+TO6E5Ubqzpwcf2EpqsQP
-	 eS2VJ8RABJS5nyCTcq74CG+s9hPSGfFJAAiv+kj5OAOiHDeVhv307Qbv9o62FjHZWxw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794266084;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=CA8oxOfNWkyRfRkpN5+GCFsKEO1plCpY8w9DA3leZ2E=;
+	b=5fJPS7sbDYwNcYupjqy9RN5iiqZFgGpMVSpjciyj8mkWhWbM1D2BRNpSsetd40nLjGXx
+	 Yd9EfZE7/9GRvxHrXO+NJvP3LtRgHSrUF3AB9f2+p1OWq764H8s9aH9dFzxN9uiZ8AGFk
+	 31N8qeT7J9VznOZZZorse9exVZxDxkLGSP/xrPPV13qL1iAOXadBZlsGZKfpMZXopRNY3
+	 USelQdXr62AlVa/O8tAWyfUend5aOLxaGQNGUsJTEP6DrENmPsq2qtHkdaUrU8jmekGbE
+	 UQcApcZ99DzTlc88/b0mU9GBRg/suqRydiOp5RHushQu5nGOFy0Z7f0PzDpPZnWQMfQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QrXAXfrg;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EWhTxoa8;
+	arc=none smtp.remote-ip=198.175.65.18
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FB71606A31C;
-	Mon,  9 Nov 2026 23:01:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88D7606A31C;
+	Mon,  9 Nov 2026 23:14:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E88D7606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QrXAXfrg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574531F0089F;
-	Mon,  9 Nov 2026 23:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794265288;
-	bh=5GhBcleH2N/xa0I356d+yJ9h754DmagFocrUOOqzJns=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=QrXAXfrgAXf7URlJPE9O/A09xLcMxIz2gh/UJpY1zg6dk7MEBbLPvGrCztV/FGWzz
-	 AnuITH/uxzezeuhgGewSL79SeoD5Tqf2JLrn40u40LI9HVB/PiX15KN+x5Nwva38M/
-	 PbZTwzJOrEqSbUAVdIoLF9W+n1FRjDTNOfiZZcl8b+4541ohvEg6Y88xZfb6j5NRJT
-	 9Dzm1kR9qKyCxq1BVerl4xdapmd2ZnnoKxQDtrpv714KLHW9u0nha4Hl3PNdgUEz3v
-	 CSaEivkxl/69Tpya3OGWThOSm6VflF7asmfNI2t0NXQsC1Wt6OzChROCmb1VoPXFWG
-	 sV6p27cOvBU9g==
-Date: Tue, 10 Nov 2026 00:01:08 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: temperature: mcp9600: Bound thresholds before
- scaling
-Message-ID: <20261110000108.2f3ce0a5@systembl0wer>
-In-Reply-To: <20261109093518.5418-1-zhujun2@cmss.chinamobile.com>
-References: <20261109093518.5418-1-zhujun2@cmss.chinamobile.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EWhTxoa8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794266084; x=1825802084;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MehuQL4U6cstjaP13aY7pSpZfHsKcxcvjlN0DFYPXRQ=;
+  b=EWhTxoa8xPdJN0D4/OOKZofVfUPzfzh9yUbb3cH7AOONJJHx1JQr/U22
+   IEtNaTd4ViUDpZOFiinRgp4UHCqXsAFrPANd3q7DTc2gD6iSGNu87Omi3
+   VLe1cZuvAkMlnZLcQlLbIipDjuvvMrPcUscJc3KL+thCt+8tAcgdZXkbB
+   SwK8hviH1mSAXXB/fA9PmmY7K5jr9YhH4ge53v81dsnR00rBkLTzkWdHS
+   ZkHEV+9r9Y92p88NSbxUNfBKN2WPSjGl175OhA0K0N72vY/WIYc4umZcK
+   lCHnTIQGWWCzhDx5r1XokmwGN3ZCKL7kqxtk07X+d7IrPsqRvAdYvF6IA
+   w==;
+X-CSE-ConnectionGUID: K8Kbsd63TfWg2ADVyvS5xQ==
+X-CSE-MsgGUID: aLL516JtSFeiYtKd8sWumA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3014367"
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="3014367"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:14:43 -0800
+X-CSE-ConnectionGUID: AYiUQYxFSZO3OZO6G1QzKg==
+X-CSE-MsgGUID: O+evBWJaQi+fg6aOhDuoRg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="8321051"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:14:41 -0800
+Date: Tue, 10 Nov 2026 01:14:38 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Linus Walleij <linusw@kernel.org>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Kyungmin Park <kyungmin.park@samsung.com>,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 4/5] iio: light: gp2ap020a00f: Prepare for chip
+ variants
+Message-ID: <avJT3lRSjhl0EPmD@ashevche-desk.local>
+References: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
+ <20261108-gp2ap030-v2-4-24eaa1b9fe59@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -60,34 +86,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261108-gp2ap030-v2-4-24eaa1b9fe59@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon,  9 Nov 2026 17:35:17 +0800
-Zhu Jun <zhujun2@cmss.chinamobile.com> wrote:
-
-> From: zhujun <zhujun2@cmss.chinamobile.com>
+On Sun, Nov 08, 2026 at 10:44:02PM +0100, Linus Walleij wrote:
+> Introduce chip data for the device name, initialization table and channel
+> layout, including the channel count. Use I2C/OF match data to select it
+> during probe, preparing for sensors with shared register layouts and
+> different initialization settings.
 > 
-> mcp9600_write_thresh() multiplies the integer part by 1000000 before
-> clamping to the supported temperature range. The multiplication can
-> overflow int, so a request such as 3000 degrees can select the lower
-> threshold instead of the upper threshold.
-> 
-> Clamp the integer part to the hot-junction range before scaling. Keep
-> the existing final clamp for fractional values and the narrower cold-
-> junction range.
-> 
-> Fixes: dea750f8015b ("iio: temperature: mcp9600: add threshold events support")
-> ---
-> Validation: x86-64 and i386 driver objects built with W=1.
-> Source-extracted boundary tests passed on 32-bit and 64-bit;
-> the corresponding test fails on the base revision. I/O is mocked.
-> No physical sensor hardware or booted-kernel test was available.
-> OpenAI Codex assisted analysis, code, tests and changelog drafting.
+> Populate only the GP2AP020A00F data, keeping its register values,
+> channels and operating behavior unchanged.
 
-> The human submitter must review and add their Signed-off-by.
+...
 
-Just noticed this sentence... I guess this was copied 1:1 from Codex...
+>  	data = iio_priv(indio_dev);
+> +	data->chip_info = i2c_get_match_data(client);
+> +	if (!data->chip_info)
+> +		return -EINVAL;
+
+-ENODATA
+
+...
+
+>  static const struct i2c_device_id gp2ap020a00f_id[] = {
+> -	{ .name = "gp2ap020a00f" },
+> +	{ .name = "gp2ap020a00f",
+> +	  .driver_data = (kernel_ulong_t)&gp2ap020a00f_chip_info },
+
+It's unusual style, either make it 4 lines or 1 line per entry.
+
+>  	{ }
+>  };
 
 -- 
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
