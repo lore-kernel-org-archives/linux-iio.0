@@ -1,100 +1,128 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794243217;
-	b=A+4HR4/geRKcS85hqSmEwdf3WAm9g2XIZILhGDnSO0IqPgM8cL+gvmoQvRwnQcuV+pUD
-	 DT2eDKAKagZrRsheLoxPuP0/stb4DaBGq7lBvZZOX8rK8Odks767A6u2xzPgnldfSNZiB
-	 SYzEQpeQ69xC5JWk3G3HQqHbykyRQEPETqPXxKKkbemsq/EpahzbuuvU0wHuXoH3PgsCo
-	 cIPA766HbWBeMbH9z2T9a0yFGN79xwGUgMIwCwXXe+DcLFSLC15vKExG/IrZ03buaS2gS
-	 gJHKbZ5eMrKKE/CwyVBOxh0E8i2qpOSNMVtoJYeg9TL5OQiERZ59MczB4keWtcKq8Ig==
+	t=1794243340;
+	b=3TQENIa/p+8iHO32tOY0ablsjBIqH6DADIGAlxqKWZmT1KvTQK34k26tQfSzG9iMh3y4
+	 LRe03UCOkekZKokPpGqwHBzLmmGLlVC38jpg+R+SovY9A2dAS5OKRQkqStQFCFWFxanlz
+	 wSD01se6SNctr0o2wcEUZ2IhjxjNlgXfM46anFVZIqP34/Nx20etjL2CKSTXShH/eHaGC
+	 kNMRlD3m6vvZRYq72zUOhTCMUQxmMBgfn2q3hjo2DWjzac1eQuhQ1Bmm0XY6cqX0sUDh9
+	 zxMnvssnA4C2cMJ7yfZPrNEJVSyNmaDg0MANytDcY9zRIINCY/PKpuMjNWqIo7SBJUg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794243217;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=44v6KtyQHlKDjxBRLz0JvUcVR/HFDHmdgJx8X70B37M=;
-	b=uHIeHpdh4gMHyK0Fnmf1cgnJO+Yln8eMsseEbyqoTtdnpEBvSQQi4A+zJjiit2rxKtnk
-	 I7aX5XepbYQHC5ZTBaa4wjZVhf5CDNm01psQ7hDmGEmpS+84fK9Th7kghj6yc+ZYdPoUz
-	 Pu0hhqLdtTPN5aBVfqkU7n5zBlMfb5fCRYY1P1Gah8wdfrQNdxY/j0MeDU9So09FqTT5o
-	 r+Wuw+6xdblm9w7HQ/z4EaDPZuoTpgqUFFXulSadzVs7xgX/Ew0t2fBKyyMN0A7CBxAaW
-	 9S3Fhf/GRZGsxlZyxvxET+/ze46qljePXV9HFAiSh/5PbcpyoYnM71KNSpKE9OuFZZg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794243340;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
+	 To:Cc:Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=bjV9zPSqZzSjy7az1JAePwYJ6AKs5SGK11NxPTFGx44=;
+	b=cQXIE1Z4sp4f78nYtcNTTv8yQ2NkHJCrMi4imKMh7D/11qXEq+vko6H7pbyBhhvAHB8E
+	 3l76szbXc+kaAuC03p/InWv1aQE8bLB41QHcoWuVcRE52gykNU08H4Yt5tGQsZmigoFS8
+	 KLwntsXuopvYgR7YKUFqYWQ0H7/NnCnwDORutWhISsJ679JsuGE5QCSbH4EH39mHyNJ4B
+	 78kCbbZHfxDadj9NErLDHCPLlzsH9dLZZjd7A688ScH8rXzW4jgTNnRbywcpbSIVp0oiF
+	 j7XATVxVjmJzIb//urUP22fNnturPSu0pJpI2rgHhx+Nflz3ZP7tmnk+GBtau6oCukA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h2VyakrY;
-	arc=none smtp.remote-ip=209.85.216.42
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=T2k2haY3;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=c9MIWa9T;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0085D606EE80
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 16:53:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0085D606EE80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2526D606A33A
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 16:55:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2526D606A33A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h2VyakrY
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-3ac78f4c10bso554435a91.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 08:53:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=T2k2haY3;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=c9MIWa9T
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A9DF2Mv2928715
+	for <linux-iio@vger.kernel.org>; Mon, 9 Nov 2026 16:55:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	bjV9zPSqZzSjy7az1JAePwYJ6AKs5SGK11NxPTFGx44=; b=T2k2haY3g2VkEIHP
+	rxOCj1QXlc7k5c2V3lG6aArRReThBv1wOBb5c7QtL9w+7CTrXzAWe/kdGVWuh+RJ
+	JFfXZmEsl/6s9ZnkQ0CbUBxAcdfr6L+9NJKYZnarPJkSUZ1biPjSe41he3KO9b6v
+	pIjHH4gIc21NyqPk3ySmyo4T97lVjPhUrdzUdnqP/xCjSxwbnVc7BEFKwV2LaGfu
+	FBjfd4kKNhA9fBrDB7dcZuXHPUPjNmGK/l+rW8WfP+yGTh9sps5CTgYXjwtlFbm4
+	dI+1mojUKjovCrCnWelwAKWko00uVWuZnb4cKid9d6hdiHmvb0/bZT5ITKtXGeNu
+	T/rYDw==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hubt8sgkg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 16:55:39 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-3724667bc16so1049773eec.1
+        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 08:55:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794243216; x=1794848016; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=44v6KtyQHlKDjxBRLz0JvUcVR/HFDHmdgJx8X70B37M=;
-        b=h2VyakrY6Q86h0CPS7bV18MQ0sFP1t1kVU4cl4jyCkjP3WFSB77At3DuhrYg9Z7zam
-         58GIOXGcmTafcyfX0mcEVK3eE5rV88pYr1RLirXGN7oLMlBdpvsLgA5mpyljlIl/1RuP
-         obtLufU2TWYYO4Q8BCqLQvfa1UnWHaemPxOy5e+VFx3JsjI0su7AVtDehT2he7tOG0xI
-         cG2S/PDW1tPDavoyY8hzYHc40XNuzk3j1/y+rq4sq6X8BYy2CV8UNXtFdC/uizHoKf9S
-         vD0IjY6uInsP4ODO503yCjq1woUkXT+zQP48gVhvTc9tzXw9g4OuPQI1556oHc0AdUoh
-         zLow==
+        d=oss.qualcomm.com; s=google; t=1794243339; x=1794848139; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=bjV9zPSqZzSjy7az1JAePwYJ6AKs5SGK11NxPTFGx44=;
+        b=c9MIWa9TbaqaTZLBMC5VrjGXdrGKgNi6R+6f8Bp5hxdVL7h8pwC8aaeeZRDEv3iAgE
+         cEbXuRimNj+FGgv/e6KzN8g+yWlKa2Lo+5tz1bB+7wIcLCta+FvYZl6A9/QZf5wvmXXH
+         J586HyDW/l9mJGYzYsOsp+bcUuzLhu41ak0DAJeRilQf6E9BvyZ4BFobU8Fr7Ivqv22F
+         in1XvNIrgOXSrWC+WBRKUC+WUuxUtFiQK8Inl8oxD64Q1Wnn0iTPgXlffjkeW2B/mX2E
+         XVaZqg2AI7vMFiZp28gBWn92lzyxzFO/HOjvttR0JJgYvZDzV5Dyt5GVdZedm3HsPJRW
+         RhpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794243216; x=1794848016;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=44v6KtyQHlKDjxBRLz0JvUcVR/HFDHmdgJx8X70B37M=;
-        b=S0DqmC4/yHu2WXIq+OE42tDKPyaf2iCeHAgTpvAZiyh0ZTYqv2ZWfSOVg/Jw88SwkD
-         yZX7dJJ1PgPbtP9c9FaSfboMJ2JYGi5pShiQHB0mYMIMHpqD4QPet8yQAHzZQIroicHs
-         Hor3fbN3rlSmOJ6D8GzAD1Ji2AxQFUhVYiYBGrY2PQxtDqIUvdZelvkYBqtXn5mtHbS0
-         XBnyvmCAbzvryyXcH4opXVotrQGV3JgxBbLhqa6lVgm76T7cENHuaZGHx1JIILLx5hqp
-         dOuG0ZTbndNt0tCaYzwpYbRWwpFxYXrdWMkVDsO17p1LusQWglmmwz2sff5BkE6vri7J
-         80NQ==
-X-Forwarded-Encrypted: i=1; AL+hErGCWqnbjYLzf8O9czr0oSqeSLDB39Ikf8OMYrOgfrcCsKjuN9fG3leS7t5lQbwRSsjU3KMV62kg04I=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/WCOf5sXF2Aw3f2hvkkUJ9nNHecyfhnc5SSDS0dB44Q3Lh+/lQ
-	+YXyDxXXfAkpRj7Lf7xc7qN7f1Ao0o04S1t3zPyalrgN1PdCq+Y4VH1t
-X-Gm-Gg: AYBFou1+BR2DCPYajoTBzba4q6jaM9++j5BsYJtrjcxl0V+xH+GsFSSTSJsOWu60uYm
-	pGFWVXuLQBOjegfwc2g5bIWrw6oHGI5Z8Fk+8/pp4TV7HetG3Is599m73jzSE5rtH7rWECdA1SC
-	nPwvr/MPECFJ/bdTk9H3r/kVGTGZ3oMZTO+JVoPq4fgzWvtTLvzwq1Nwn6x/WzaMVxGKZNuqhAO
-	zCPDrA5FZWMRjFgoYOG8Y5oMXFoR7I7CAKDWvpkknQ/PMhGaPm3Dh7/NMvaxPdo3vSaQcPtoa0E
-	XLoHwuUu6f3jWjJIwZNjRCc65HTWwsRgOBvewF6HVV4/MRSVxdqR9zhviP/NfjKKCUkKeAsC8v0
-	OnMt9WI/2XzAht71hkCxSDDGPq+KOADMv1U8tFtzIISKE53dMn9PaAsNSGMy3JCWrXDiEniUh+p
-	9RZrCHmaEnPW94D1XrUYgOO5T+HNsZyryWtpd+vHpYcStXB+TATNMV3iOcvapWhzirpGAKkVPTZ
-	/CFkG05QT9qVNfMubiYrGgbP4Grm0u2DOygh6yJ4/enXb90OkunvMStZoF0NGjDkMj4Zmr27+Un
-	stQorNBBYyWaGevCAKsG3rLFNf+d3SioRd87XKJLi6KAjy13Lsn9iO4GZKUzmU3mQiYUzZDTGpe
-	zOMGB5A==
-X-Received: by 2002:a17:90b:5101:b0:3b0:934c:5e41 with SMTP id 98e67ed59e1d1-3b166caf0d6mr242689a91.29.1794243216288;
-        Mon, 09 Nov 2026 08:53:36 -0800 (PST)
-Received: from debian.ari ([152.56.156.124])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b1034718f8sm6455688a91.4.2026.11.09.08.53.31
+        d=1e100.net; s=20260707; t=1794243339; x=1794848139;
+        h=content-transfer-encoding:content-type:mime-version:organization
+         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=bjV9zPSqZzSjy7az1JAePwYJ6AKs5SGK11NxPTFGx44=;
+        b=FCzpSNo/kMplIoKJ2hkgnBjJn1xkn/dKqUptDsbJjVxVaEgYO7bZrUByr66lfe1JpJ
+         56Sy3bAraQ4+hBvqjDCIl05rkITDa1bdSPNh+FmOzvtTAi85AMpMdoeHI/bsIrRQm84L
+         WUuxg6vHmb6evKfUCWJFUt2+yA5OUiS6yDPiEOns+MaA76IxD4KNGUQpnqnY/bDBtwLy
+         ta7AlIZqsndJOm0Am85WhhjdjH7XeKp1q299evViGKRr9Mp6z+AZ08cr1vLiqHXMmWsL
+         GVHJHUn4E0aK09RewQ8ClILFpVxF7T29rV2M5vouxLxEWMHxXbGS/vl5+TzgIT4PPhbR
+         o23g==
+X-Forwarded-Encrypted: i=1; AL+hErE1o30uQ8Yh3ZsgV5t18z6+Q1YWsSSOb/Gx7omcvVvjZWYhzrqTrK1eQaDky2qQ1yPdYeFA7Q3Piac=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8qAIGERv2h7dXhHKtfBJf7ueUN20NPm5nEByRlmckraNislyOS
+	F1tQoGXxY3R2If3PibWxv3eReTBIbUEUgsAf7tyL1nmRjgMNALBCmCwJfpuyzUEE2lZmvmcNzg9
+	DFNlYOHxMrxB7j4jfQ0W8KtaH+QoZstDEEtuTRTK2qSORhh6nIXwFpjOomO4rv4M=
+X-Gm-Gg: AYBFou1ljTdrZ2MRu4CaCXjkGwhwfgXGI6t9cdzN3sXKLksBCPwU7FcYH/arK6Sbkdu
+	+db9qygYmawx8kM2zEZNMgyZN5/Ygk8Bip5Nnj+UBXlMF3Iau+10XkfuZW6izfJJrj3Q2AJ8hgK
+	q1LIcQt/dLG4B7Jilpzd3vYik+GJOhs+ja1uoXV0Bvo3h8JKwTU4ABHgZwFpIza+Gz9rrYZW9CR
+	+GagGZBCyNcLYnOe4y2K6ymySMFmssgrjadQ7OnFcJb4k+qFbhZmKtRy5I/gxmjTtiqYNbmJfNe
+	g/Jp8sSm9MQldJmeqvBw2o3AxCnQ8am0Dp5kM5Zgmgq2Yl/6cp+YmUJprmVVRYFT0Mh2+n8YVNE
+	O1Mz7Lk+YXFVsgPxqE6gU3+7UpIViUTALm2QWgzJwL1WxsAkrAFkzeumA97u/5AQhgIDGZogkhu
+	hG1NML3CgmxICy2dYPXWrFwD9nZg==
+X-Received: by 2002:a05:701b:4211:10b0:181:6b8:31f1 with SMTP id a92af1059eb24-1b3b5e25ca2mr80087c88.10.1794243338463;
+        Mon, 09 Nov 2026 08:55:38 -0800 (PST)
+X-Received: by 2002:a05:701b:4211:10b0:181:6b8:31f1 with SMTP id a92af1059eb24-1b3b5e25ca2mr80060c88.10.1794243337940;
+        Mon, 09 Nov 2026 08:55:37 -0800 (PST)
+Received: from localhost (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b3b5890584sm323466c88.3.2026.11.09.08.55.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2026 08:53:35 -0800 (PST)
-From: Archit Anant <architanant5@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
-	nuno.sa@analog.com,
-	u.kleine-koenig@baylibre.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	joshua.crofts1@gmail.com,
-	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v6 05/11] iio: adc: ti-ads1015: use dev_err_probe() for error handling
-Date: Mon,  9 Nov 2026 22:21:33 +0530
-Message-Id: <20261109165139.30803-6-architanant5@gmail.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20261109165139.30803-1-architanant5@gmail.com>
-References: <20261109165139.30803-1-architanant5@gmail.com>
+        Mon, 09 Nov 2026 08:55:37 -0800 (PST)
+Date: Mon, 9 Nov 2026 08:55:23 -0800
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+To: Lorenzo Bianconi <lorenzo@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        David
+ Lechner <dlechner@baylibre.com>,
+        Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
+        Lorenzo Bianconi
+ <lorenzo.bianconi83@gmail.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] iio: light: st_uvis25: notify the current trigger when
+ done
+Message-ID: <20261109085523.0000513e@oss.qualcomm.com>
+In-Reply-To: <avGKjh7GOtE2tPGt@lore-desk>
+References: <20261109025454.1260519-1-jic23@kernel.org>
+	<avGKjh7GOtE2tPGt@lore-desk>
+Organization: Qualcomm
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,73 +132,87 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA5MDA2NyBTYWx0ZWRfX02XuK7/9J+GG
+ 6psZv8PG8GjClIEpgJhirL4ckeFqOopMfZ6LS08PFwhKMjatNY+5qo31T73PPMW4bWFcHrQ9WjZ
+ 5KAsGydloa/sESOyQ9hWQ4wq2eOeQ/KUAQ8Xr2geLZXiGC4b8SjDSnRqOb5A1rT0FJxKWb8hmvp
+ vH3vJ2wFzdeM5K0SSm9XLkatsLeCF6aH/+APmQMjybJxYhSM10oLsI8mc4YUKydhUxDj1OjkWWL
+ RQaAdg+1tFEfYEGQIsbDO7Lfi5+EOCuzzP2tddPRoiaTRoX42MD2Vgrq75rucI1zv0K8qr6a9la
+ 7c14QmLZYdpGUn/2tlFJCVkq+ZFACG+XR+BT95aWOCxvLP/ggs0dBqODecF6L05+kDKLHsubxas
+ o0XIK01G0ELgQfI2e1mGjuuJhB54PwMHp7d1PeVM/fGN+81wrfE4SfTb5NJkpwBaZjOljlt7Di6
+ SDyGzaJIQubHZVpZobw==
+X-Proofpoint-GUID: qKce6aP7FM9iN7eqd0xZBbcsLjoIIS1e
+X-Proofpoint-ORIG-GUID: qKce6aP7FM9iN7eqd0xZBbcsLjoIIS1e
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA5MDA2NyBTYWx0ZWRfX5Zp8i6SZ5dLH
+ nbz3J7+J9CPj1uc1Mv3JjY+BAqPbhZ6b8RqrUjo4xKYuvcjd4HuMEUBX6Sv8r+Q7VaXkgv/vP86
+ 5TuASopY5tao2+iN9b5dq6PAv4piyyw=
+X-Authority-Analysis: v=2.4 cv=Yr+a1IYX c=1 sm=1 tr=0 ts=6af1fb0b cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=bMo6kmeCR_tHdpvFHWUA:9 a=CjuIK1q_8ugA:10
+ a=scEy_gLbYbu1JhEsrz4S:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-09_05,2026-11-06_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 phishscore=0 clxscore=1015 priorityscore=1501 bulkscore=0
+ suspectscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611090067
 
-Simplify the error handling paths in ads1015_probe() and
-ads1015_client_get_channels_config() by converting dev_err()
-calls that are immediately followed by a return statement
-over to the modern dev_err_probe() helper.
+On Mon, 9 Nov 2026 09:55:42 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Archit Anant <architanant5@gmail.com>
----
- drivers/iio/adc/ti-ads1015.c | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
+> > From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> > 
+> > The trigger handler calls iio_trigger_notify_done() on the driver's own
+> > trigger rather than on the trigger that is currently in use by the
+> > device. The driver does not restrict which trigger may be used, so if
+> > another trigger, for example an hrtimer trigger, is selected then that
+> > trigger's use_count is never decremented and it stops firing after the
+> > first sample. The driver's own trigger use_count also underflows,
+> > preventing it from firing later.
+> > 
+> > Use iio_dev->trig instead.
+> > 
+> > Fixes: 3025c8688c1e ("iio: light: add support for UVIS25 sensor")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>  
+> 
+> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index d18a2ac1205ff..9fd07ee21ede8 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -896,18 +896,16 @@ static int ads1015_client_get_channels_config(struct i2c_client *client)
- 
- 		if (!fwnode_property_read_u32(node, "ti,gain", &pval)) {
- 			pga = pval;
--			if (pga > 5) {
--				dev_err(dev, "invalid gain on %pfw\n", node);
--				return -EINVAL;
--			}
-+			if (pga > 5)
-+				return dev_err_probe(dev, -EINVAL,
-+						     "invalid gain on %pfw\n", node);
- 		}
- 
- 		if (!fwnode_property_read_u32(node, "ti,datarate", &pval)) {
- 			data_rate = pval;
--			if (data_rate > 7) {
--				dev_err(dev, "invalid data_rate on %pfw\n", node);
--				return -EINVAL;
--			}
-+			if (data_rate > 7)
-+				return dev_err_probe(dev, -EINVAL,
-+						     "invalid data_rate on %pfw\n", node);
- 		}
- 
- 		if (fwnode_property_present(node, "label")) {
-@@ -1018,18 +1016,16 @@ static int ads1015_probe(struct i2c_client *client)
- 	data->regmap = devm_regmap_init_i2c(client, chip->has_comparator ?
- 					    &ads1015_regmap_config :
- 					    &tla2024_regmap_config);
--	if (IS_ERR(data->regmap)) {
--		dev_err(&client->dev, "Failed to allocate register map\n");
--		return PTR_ERR(data->regmap);
--	}
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+				     "Failed to allocate register map\n");
- 
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
- 					      ads1015_trigger_handler,
- 					      &ads1015_buffer_setup_ops);
--	if (ret < 0) {
--		dev_err(&client->dev, "iio triggered buffer setup failed\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret,
-+				     "iio triggered buffer setup failed\n");
- 
- 	if (client->irq && chip->has_comparator) {
- 		unsigned long irq_trig = irq_get_trigger_type(client->irq);
--- 
-2.39.5
+Given content is all still here, rather than resend immediately to fix
+the linux-iio mailing list address, I've just fixed it in this reply.
+
+Thanks Lorenzo.
+
+> 
+> > ---
+> > Another LLM found one as part of refactoring how all the code around
+> > triggers works.  Definitely the wrong trigger. There are lots
+> > that access the right trigger via the wrong path (shortly to be
+> > cleaned up), this one manages to get the wrong one in many cases!
+> > ---
+> >  drivers/iio/light/st_uvis25_core.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/light/st_uvis25_core.c b/drivers/iio/light/st_uvis25_core.c
+> > index 94d5261b2663..5c63a68948d6 100644
+> > --- a/drivers/iio/light/st_uvis25_core.c
+> > +++ b/drivers/iio/light/st_uvis25_core.c
+> > @@ -248,7 +248,7 @@ static irqreturn_t st_uvis25_buffer_handler_thread(int irq, void *p)
+> >  				    iio_get_time_ns(iio_dev));
+> >  
+> >  out:
+> > -	iio_trigger_notify_done(hw->trig);
+> > +	iio_trigger_notify_done(iio_dev->trig);
+> >  
+> >  	return IRQ_HANDLED;
+> >  }
+> > -- 
+> > 2.56.0
+> >   
+> 
 
