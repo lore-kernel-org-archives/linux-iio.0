@@ -1,80 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794266403;
-	b=2mBggskTFZEOzeC1Y0cH5tciyMdXIvm5SwvygVwPqMrA6cnZSVMiqZenSKyP9Lm9t78T
-	 5fevI5izv3bUkwcR8LBT054LHK/pRzqHzRfZMUq7ZoFENDhUnu/UmfunLUBphSEu2WhUG
-	 j36VpLL5s7cOXgVbR1ufRFlBl2Y6GCd/8p9A+5oN8+7rBqeGbX2YeFjh3DJ4uBUJDXfHB
-	 xZhUOA0tSIIExQPQsZfCNwYEKuQdJU/NuJo0RWcXGHf9AwjgVHrHaMG6CzT8ufqldARRK
-	 9E9o7DGqe1r+v/2UssqZvpe2mw9p1oiRijyXdH9FXya4yTfWHj9+aQ2UCGet1ruc1dg==
+	t=1794266609;
+	b=xbYKBENNgzc/bmTqg0LKT3r/bCrYCw+qE4y82vD/eP4jkoXonKHodU/XDYCO2VUi/wdK
+	 Z7F8M0/6rIenCvdVfC4levSUaSareKRhNU4nI1VVZfOuSuIepJ93aIaliCV+HmsvJeL+U
+	 NVL2luXbKxirauagqgONMkcwFc8oGds8VssmT2RTjuVQuSTTOcIovxkgaIed3ERpmxKhl
+	 USB8QuDEW2PMZu1Ss52ToBQWkY9kjuzfF//K/dS/ZnJzNXH0Q/vGA8kxCZQU2yPTQsYo3
+	 S7qyeyIsScbaZOmvIrG3EvnuZgNZnZ9w4UWd1bc/4SahjXwOLkUe4apzJOCwrPYNAtA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794266403;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794266609;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=xG8QHT+oPQ4nzS3cFhoe9VjDL746KBdhVtGShXs3ha8=;
-	b=bO6i67Dm2wJ7b0Kpb1yk36idLMxPd6JkEIgh/zCEJszHO6+PYNXz0XOCS5TMcoz541IJ
-	 oIRMtplkdqX3xXTft1VBol88K9MHiNDE0XT7eDK3W6IkeTtyNQXvsZLlYASVyruirQsG3
-	 wIG8k38b163WSa5+BXOwVwanphDPjo4DzsZs+jS4slxW1JvEK1HyxHA5PWepE1/ttvVJc
-	 Sr3p8GOuMPYG1hJ71VfiM+ffmYVlKcrdb9owvzp6+DMlPp0eGbjxD3ZCMANMVKrF7CtbI
-	 wDJDSlrZwB+q07Y+hGcKiEPKUOSPQj/ik869jaXVWoXMUvMbFb8/o/J2GyfzyCN/ZqA==
+	bh=e48Nzbt7T7vOsDzpRwzz0Hu8bipDj10FGiC6Sxdi1sY=;
+	b=i2xlrwAWp/K0hyJgz6KpyT/Bb02fS9YJn6iafnMs+1Nig/LDiLh4MeKsW56OaK8SXfa6
+	 BCSX08wgrzYNwxTLedOa7h99ssWZiZ3l/qT4ROqyqskExseCJ9uNKkweT6I91ig0RTBef
+	 bQSJ2uPvfDckWIPAlMve29PiDFjN9cgThAg+dPtsmcXR5jbdwBFaPGlxMSHjuhkpMKt6B
+	 5CI7k58DYyN1hKbI9hkDVzdjVENMX3jRqA0OrECroCdMTqrusSecGLbeKNSTj6Yc1q/Ix
+	 87wX+JURtXj4UaxrSlqPts/16IIN5pLUGA/rMMlqQxnlzz1T80DjjmuvyKPD+sLPKpg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=k7Ye+cT6;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Dq0NYGHA;
 	arc=none smtp.remote-ip=198.175.65.16
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98309606A31C;
-	Mon,  9 Nov 2026 23:20:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 98309606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2096606A330;
+	Mon,  9 Nov 2026 23:23:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D2096606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=k7Ye+cT6
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Dq0NYGHA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794266403; x=1825802403;
+  t=1794266609; x=1825802609;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=4SdiW0YKLT7SmKutFZL+9Aq9+GkSZhGKdLq/aN5OhL4=;
-  b=k7Ye+cT6HFUUcemgPdzan9LJfIgkjZFmQHvjCark2scyR/O+/VavkJ9H
-   y322wdoVisjjflC/eY8f7TSfTEcGanJym+4B/wotasbBk+vwzpiDPkI/Z
-   oTcQpiLMpi6i8FOvoZ2Tk5xqehTGIyHJGi7QmczkG2zn0Q6IfKH0/TAyN
-   k291vKiBylus/2YOsvSnlXaKnEmOVPxio7ubTyx96SY8hoapIrkBNrR9w
-   rc57TRr8ehgW71VVTUD0ZJ8EyKRw6XKsyTQ3Nm0Sso+tpWQ0WnWIPvo8h
-   0QhLBq9Ad1ZCF+04bv13NHwI0dBCcDm6f12zeKeOB2A8JrS/07Y4Ezsky
-   g==;
-X-CSE-ConnectionGUID: SZAO9o0BQieIDG+iMPkWDA==
-X-CSE-MsgGUID: W9zPduynTNKO5ahT0MAnYw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2990594"
+  bh=m6P+ds4Bbd1GKkcp8yY0sONyxOaaxZa2C99Yj8FwDus=;
+  b=Dq0NYGHAK1iPyxsG7O4jZM0y6b9ZyyYUJQvvoG672eNvWbJsywtka64I
+   NrcQApTAl6QRK+tZ/Zatbx21ejH5AoxF+9HkADj//h7yoTaoz51GZJQVF
+   vj/HlYzTxl2MuJ+DeXmIoM08vixBdXiIsaRublVSP2baET3lBEzTDZoNr
+   9qXDMln61l6qR8b+SZf3tUBMIIJcLqBMMU0Jz17RPVSXzq90OND9WQqQJ
+   FXK3vcomFIFZxT2lyWkexgJjBNKdzv6l7Y4B6cuHuvRwltWuUanjxNLCQ
+   qIsCZYwszQoNZ25K2dgtNOep8JsMf0ntzavIQoxjjD1HHfqcYVILBwVsJ
+   w==;
+X-CSE-ConnectionGUID: WKTDsA00QOypYlEGIa4cwg==
+X-CSE-MsgGUID: +eHJXsBaR2G5vuRmKeUQUQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2990874"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="2990594"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:20:03 -0800
-X-CSE-ConnectionGUID: FlmBclUuSpa/cDZg+BtUnQ==
-X-CSE-MsgGUID: /QbryOxGSReVt7TKEIIfvw==
+   d="scan'208";a="2990874"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:23:29 -0800
+X-CSE-ConnectionGUID: dQSypIkGR3eJtkqx53WGJQ==
+X-CSE-MsgGUID: kWadeLQRRxK2HX51fQdeGg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8135492"
+   d="scan'208";a="8129706"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:20:00 -0800
-Date: Tue, 10 Nov 2026 01:19:57 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:23:26 -0800
+Date: Tue, 10 Nov 2026 01:23:23 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arka Mondal <arka@arkamondal.net>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Robert Eshleman <bobbyeshleman@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: light: max44009: Report the integration time
- via read_avail()
-Message-ID: <avJVHXMynrrMiSzK@ashevche-desk.local>
-References: <20261109050738.93424-1-arka@arkamondal.net>
- <20261109050738.93424-3-arka@arkamondal.net>
+To: phucduc.bui@gmail.com
+Cc: wbg@kernel.org, David Lechner <david@lechnology.com>, andy@kernel.org,
+	dlechner@baylibre.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, m32285159@gmail.com,
+	nuno.sa@analog.com, sozdayvek@gmail.com
+Subject: Re: [PATCH v4 1/2] counter: ti-eqep: Fix runtime PM leak on probe
+ failure
+Message-ID: <avJV68gHL_jvZ6dZ@ashevche-desk.local>
+References: <20261109084342.51865-1-phucduc.bui@gmail.com>
+ <20261109084342.51865-2-phucduc.bui@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,41 +84,31 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261109050738.93424-3-arka@arkamondal.net>
+In-Reply-To: <20261109084342.51865-2-phucduc.bui@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 09, 2026 at 02:07:38PM +0900, Arka Mondal wrote:
-> The integration times the light channel accepts are listed by a custom
-> attribute named illuminance_integration_time_available. That name has
-> no in_ prefix, so it is registered at the device level instead of
-> beside in_illuminance_integration_time, and userspace looking for
-> in_illuminance_integration_time_available finds nothing.
+On Mon, Nov 09, 2026 at 03:43:41PM +0700, phucduc.bui@gmail.com wrote:
+
+> ti_eqep_probe() enables runtime PM and takes a usage reference manually,
+> then returns directly via dev_err_probe() if devm_clk_get_enabled()
+> fails, leaking both.
 > 
-> Report the list through read_avail() and drop the custom attribute.
+> Manual cleanup via goto would mix managed and unmanaged resources,
+> which leads to the wrong release order. Instead, use
+> devm_pm_runtime_enable() and pm_runtime_resume_and_get() with a devm
+> action for the put, so every probe error path unwinds in the correct
+> reverse order. As a side effect, a runtime resume failure now aborts
+> the probe instead of being ignored.
+> 
+> ti_eqep_remove() no longer needs to touch runtime PM. While at it,
+> report counter_add() failures with dev_err_probe().
 
-Will break it user space?
+I'm confused. Why the PM runtime is used (and announced) in this driver at all?
+Do we have upper layer (like a bus driver) disable power before handing over to
+the device driver?
 
-> All eight values are a whole number of microseconds, so they go in as
-> IIO_VAL_INT_PLUS_MICRO pairs with nothing rounded. The values do not
-> change; the core prints them with six decimals, so the attribute reads
-> 0.800000 down to 0.006250 instead of 0.8 down to 0.00625. read_raw()
-> still reports the time itself as IIO_VAL_INT_PLUS_NANO.
-
-...
-
-> +static const int max44009_int_time_avail[] = {
-> +	0, 800000,
-> +	0, 400000,
-> +	0, 200000,
-> +	0, 100000,
-> +	0, 50000,
-> +	0, 25000,
-> +	0, 12500,
-> +	0, 6250,
-> +};
-
-Make it 2d array.
+TL;DR: what's the point in runtime PM here?
 
 -- 
 With Best Regards,
