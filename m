@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794266084;
-	b=vguqtqfFJ7Eqfe/SQA5o0fnP7Cs0nvkTuVY6aYDugXl10JcZr5Z/2qxRGXeciEEpH7Sn
-	 OKPpry7Dg3P4s95TD2om9eJLTS+NeBeVX/HDNJ3vt37gFlFQ/KVSzkoPVDSUbfEMLB92Q
-	 zuqQb6FNnUc1HM2ChtXBwI7qmZixa/jMuczW2F04eJixPcB8KFQYdViUmJ7fkkE6dXOk/
-	 LsSMAu0+jocuRzR7KuzXCVZmbPXbe/mJQ7KdKjsctuBSGSzCwigG59DdizSgMxsPLEnz8
-	 4oPxIWa9e48lLQJSo0lpP6Z58Ha9+s8SC5/2+3iRuNqOREYbFcGKQ3dzLUE3wJy6KDg==
+	t=1794266271;
+	b=HBqFv469ITJhOO75OYlZTpsFFM1qtsGtGqQPMXpRktzaqKEh5quS4SpgDHlE2bIULO3o
+	 alzT3Xfl7fFMKl8LRN+TZMiyzIuZqnlsljVgM3/hqwlxoL8Uou0RL/f12phS1Pmg0FvBp
+	 brvRd+8Yi2GrvErgOMMdlfZU4hZSKGXtapGYI/eq7wyfnQZlO4OxPKwFe0K2S63dtggOD
+	 NpYcmZ0d3F01+HnZkV1CZ/vml60lBkFo3Bcb3eeYllHv+SgDms3s6DUZZKCocuGpzGkAW
+	 UTygoFkfxSiZc1LYEeAjjVpMseglVYigRs0p/hyQE1UcyPZiLNOSKRMrJ8mO5r1zARg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794266084;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794266271;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=CA8oxOfNWkyRfRkpN5+GCFsKEO1plCpY8w9DA3leZ2E=;
-	b=5fJPS7sbDYwNcYupjqy9RN5iiqZFgGpMVSpjciyj8mkWhWbM1D2BRNpSsetd40nLjGXx
-	 Yd9EfZE7/9GRvxHrXO+NJvP3LtRgHSrUF3AB9f2+p1OWq764H8s9aH9dFzxN9uiZ8AGFk
-	 31N8qeT7J9VznOZZZorse9exVZxDxkLGSP/xrPPV13qL1iAOXadBZlsGZKfpMZXopRNY3
-	 USelQdXr62AlVa/O8tAWyfUend5aOLxaGQNGUsJTEP6DrENmPsq2qtHkdaUrU8jmekGbE
-	 UQcApcZ99DzTlc88/b0mU9GBRg/suqRydiOp5RHushQu5nGOFy0Z7f0PzDpPZnWQMfQ==
+	bh=NkJ7nhCGtP2bfpy6xch73us18gWd5z+wC6NK90PAwJQ=;
+	b=YIU7ECR+T+4HTd4YglzJnw2ryFMMgBrHZuRLjrEUpeLwpof3JJoT0C3UjhBCrNqMIbc6
+	 PwAJCWfWBjB1YxdMxr/fl54LoBc35gbajYQEC7/SRgGj7zhgxABNRiCASeEjnT/nZlbys
+	 FE6caVF97wUm0vFlLQG61d/+CigPla9DJlh8xJZ2deMI+BzSOSkd/UsMGey+4VUCXlGy4
+	 U4z7Zl43ML584a7bEDQMrd0qocWz0Ly1WAoWQ9hEIf3GC/cpy8EOUp/HFX++CHQXyyWF3
+	 wgsH/n+rEzw5orIaMs1V/R3VPtlfZeZZBGHDl/nnHHZZraPJ1jpBwiDY58FAF4fT5Dw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EWhTxoa8;
-	arc=none smtp.remote-ip=198.175.65.18
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WA5GcYLs;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88D7606A31C;
-	Mon,  9 Nov 2026 23:14:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E88D7606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02909606A31C;
+	Mon,  9 Nov 2026 23:17:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02909606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EWhTxoa8
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WA5GcYLs
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794266084; x=1825802084;
+  t=1794266269; x=1825802269;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=MehuQL4U6cstjaP13aY7pSpZfHsKcxcvjlN0DFYPXRQ=;
-  b=EWhTxoa8xPdJN0D4/OOKZofVfUPzfzh9yUbb3cH7AOONJJHx1JQr/U22
-   IEtNaTd4ViUDpZOFiinRgp4UHCqXsAFrPANd3q7DTc2gD6iSGNu87Omi3
-   VLe1cZuvAkMlnZLcQlLbIipDjuvvMrPcUscJc3KL+thCt+8tAcgdZXkbB
-   SwK8hviH1mSAXXB/fA9PmmY7K5jr9YhH4ge53v81dsnR00rBkLTzkWdHS
-   ZkHEV+9r9Y92p88NSbxUNfBKN2WPSjGl175OhA0K0N72vY/WIYc4umZcK
-   lCHnTIQGWWCzhDx5r1XokmwGN3ZCKL7kqxtk07X+d7IrPsqRvAdYvF6IA
-   w==;
-X-CSE-ConnectionGUID: K8Kbsd63TfWg2ADVyvS5xQ==
-X-CSE-MsgGUID: aLL516JtSFeiYtKd8sWumA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3014367"
+  bh=IYixSMqXWUtQF0nP2orfxiYyJRP1Caa+KvH552fQ4zw=;
+  b=WA5GcYLsGYoPjKZz9ycl9/6fhgrpQg1ypTYP72D6qjoMgu4RTOvniRGi
+   b2oH5rIDkttyjJGAt9Ezjmj31IR/H2Qc7+7yyMQayEJEfzZT1B+EI06ei
+   NxrKPgDDLzRdWdwaq6SvRxHNR+LHH8MDGcnOM0DFR3hAY36YTsOZiIEQL
+   jh8crt69DksPfPm4z5Jq47OkDnb1yDgbEY1RVn8rmnI6W/aD4ApoQ39TS
+   YqGg2IISWOrMJ9F6AampNGk7otJQ3h5fGpqDotnO43OnIKVCUyjK31I8M
+   5UPHAGjWgqPMnZTwhPxP8DgfFawQoNhZvzAKr0O/pepuKVfismRNuM3/J
+   Q==;
+X-CSE-ConnectionGUID: VOO9X9FxTPq2EHXVq6kYWw==
+X-CSE-MsgGUID: qQCo0t+gTfe94c8wW44xaw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="2998899"
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="3014367"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:14:43 -0800
-X-CSE-ConnectionGUID: AYiUQYxFSZO3OZO6G1QzKg==
-X-CSE-MsgGUID: O+evBWJaQi+fg6aOhDuoRg==
+   d="scan'208";a="2998899"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:17:49 -0800
+X-CSE-ConnectionGUID: P8vMSRmUSR+Tmy5ZSNRGNQ==
+X-CSE-MsgGUID: P/Qvs8lBSa2nsewI9/JduQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
-   d="scan'208";a="8321051"
+   d="scan'208";a="8426841"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:14:41 -0800
-Date: Tue, 10 Nov 2026 01:14:38 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 15:17:46 -0800
+Date: Tue, 10 Nov 2026 01:17:43 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Linus Walleij <linusw@kernel.org>
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
@@ -72,11 +72,10 @@ Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Kyungmin Park <kyungmin.park@samsung.com>,
 	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] iio: light: gp2ap020a00f: Prepare for chip
- variants
-Message-ID: <avJT3lRSjhl0EPmD@ashevche-desk.local>
+Subject: Re: [PATCH v2 5/5] iio: light: gp2ap020a00f: Add GP2AP030A00F support
+Message-ID: <avJUl-vxNWr2RNKe@ashevche-desk.local>
 References: <20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org>
- <20261108-gp2ap030-v2-4-24eaa1b9fe59@kernel.org>
+ <20261108-gp2ap030-v2-5-24eaa1b9fe59@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,39 +87,52 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261108-gp2ap030-v2-4-24eaa1b9fe59@kernel.org>
+In-Reply-To: <20261108-gp2ap030-v2-5-24eaa1b9fe59@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 08, 2026 at 10:44:02PM +0100, Linus Walleij wrote:
-> Introduce chip data for the device name, initialization table and channel
-> layout, including the channel count. Use I2C/OF match data to select it
-> during probe, preparing for sensors with shared register layouts and
-> different initialization settings.
-> 
-> Populate only the GP2AP020A00F data, keeping its register values,
-> channels and operating behavior unchanged.
+On Sun, Nov 08, 2026 at 10:44:03PM +0100, Linus Walleij wrote:
+> The GP2AP030A00F has the same register addresses and interrupt modes
+> as the GP2AP020A00F, but does not implement its automatic
+> illuminance calculation or selectable ambient-light cancellation.
 
 ...
 
->  	data = iio_priv(indio_dev);
-> +	data->chip_info = i2c_get_match_data(client);
-> +	if (!data->chip_info)
-> +		return -EINVAL;
+>  config GP2AP020A00F
+> -	tristate "Sharp GP2AP020A00F Proximity/ALS sensor"
+> +	tristate "Sharp GP2AP020A00F and similar Proximity/ALS sensors"
 
--ENODATA
+Also make sure the text in MODULE_DESCRIPTION() and perhaps top comment in the
+code matches the above (ideally be the same).
+
+>  	depends on I2C
+>  	select REGMAP_I2C
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	select IRQ_WORK
+>  	help
+> -	  Say Y here if you have a Sharp GP2AP020A00F proximity/ALS combo-chip
+> -	  hooked to an I2C bus.
+> +	  Say Y here to enable support for the Sharp GP2AP020A00F and similar
+> +	  proximity/ALS combo-chips hooked to an I2C bus.
+
+Here we actually want more precise list of supported part numbers.
 
 ...
 
->  static const struct i2c_device_id gp2ap020a00f_id[] = {
-> -	{ .name = "gp2ap020a00f" },
-> +	{ .name = "gp2ap020a00f",
-> +	  .driver_data = (kernel_ulong_t)&gp2ap020a00f_chip_info },
+/* ...a comment to explain the delay... */
 
-It's unusual style, either make it 4 lines or 1 line per entry.
+> +	if (!data->chip_info->has_als_auto)
+> +		fsleep(1000);
 
->  	{ }
->  };
+1 * USEC_PER_MSEC
+
+...
+
+> +	{ .name = "gp2ap030a00f",
+> +	  .driver_data = (kernel_ulong_t)&gp2ap030a00f_chip_info },
+
+Same comment about the chosen style.
 
 -- 
 With Best Regards,
