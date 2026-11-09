@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794239886;
-	b=hLp599+zB/GP+U2zsUv2aNie8c6Lh7LdkOuU4WExYXeS36nmKjj8y+kl00mTV5sY7ar0
-	 n9yDjvq0Xc0FYJHZ/Xan5UxOYg0fDACCZoIZxKH1zt7BxnAkb3K6KbRqsn6w6KAQthWBW
-	 x9bZMOgYGNgV5s19XaYSqNhwLDf5f7ajeRoBZVXUAcHtwcRMorkZg58WPLRpfWq5VuzZq
-	 u5rD4KO+VHKnz/uxrGYlCnLCGeRrU6u/twvDbW/CCIj9MdikPuOPH5CboI07s9b7noYMY
-	 LkObai3PQ05urLUWJH/W+cidWXlmQRlBf8ac3UjssruJ1yLDxIPU0zSPSdJLwNupSFA==
+	t=1794239891;
+	b=3QzPTJwH/uJX15S1oa9Bl/pij9ZKz+nXLJMwpgtg9Cqwonym34hhGktmTy3QPc5wpE16
+	 oVDZyXpgk9r4LZTZ4Si2cecVQpuTh7VYP4V07mJx6ssBKEXI0MkLFJ/g1+CQg73C764fF
+	 AROea6KVoGsLPLKpf/3ATvTtjOu0t64X+GGPdAzgoPpVPP7isvvdNNapi+svvbNTILE5M
+	 BXrrWDKDEzYB32HcH4Xi6VGwtlxNG03JKRELy8ak/H292LtHWV96yHobP2HUkjWvhYyAh
+	 AW1bPpbxRWc3DRI+ju5tQeWCqdNKKh6x/JCzhZiGIXb/4pYhY9o6p3/KCSOH2ZCQ6mA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794239886;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794239891;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=jGfuhn/5tnyoSv44dvWh4ZEhzqKE79bI1dn8Un7FDkU=;
-	b=14lN8bap7QiUVcdm7liZOGUz98dHRUpIPZ0hV/aAj+Nv3EpSCkH7m0vWLHY2cDm7oErN
-	 8ylCmKZvVgCyQM/PfRuXALy85AI32fW0E+ao8dxtgGltV29rJqfllEg4uZr8a1HcvTV7b
-	 qXbWvBnyNYiWMHtRk50e2aSmC/MdMgaLNrRJESnhutJ7ZUDrqg6TZbGX4EZ5sybSdLSDX
-	 SneFm1vmob0M6O99G+sK02IHB0i3BjAcf9KHRqe1VKosC2iMfaZUwu781idi7KRPRXZFw
-	 2cov+T5LMca2WJQfdffxhSBFsuJw5pTZ8AeYn47jQb4/PbJLqi/2bcnXj6KLrscVjOA==
+	bh=A0e3aWt9/XeLQ8ZaY9RAcjDuS8LnExeE5CFr2AzDlxc=;
+	b=z9B22xaC7hlDjPwo4JWfHhhUXu5jYoumRgZ+DmrOpfZsat3vHz+MDAllCCZuwSGyROw6
+	 bbGNWMdZ1ugmQLERdDV6ISWDYVvXBi7ilzYSstktp7/SoFBPlQmI9FeNeGkzIcHREwDY7
+	 a1UoBHE1YOoYuTQN7tbP5WSXPuW/pfm8K2o8JI7Xu1g+LWdawh91n6z1ibSFqNcMFx1+/
+	 Jzot1EUQ4ngRWG32c/HfJR4OH3bfu2DXYWUFFpH4bX0Qd0zevXNatky6p1mL13uyuXxuY
+	 cIlZ5FTvSbTS2OBCG6fS60t5Rl14NEqG/bccfOefpKfxR+o7rOdFkRO1+YW8ThDopwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="JauFfX2/";
-	arc=none smtp.remote-ip=74.125.82.46
-Received: from mail-dl1-f46.google.com (mail-dl1-f46.google.com [74.125.82.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=aTNUlqrV;
+	arc=none smtp.remote-ip=74.125.82.41
+Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D2D3606EE89
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 15:58:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D2D3606EE89
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A51C606EEA0
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 15:58:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7A51C606EEA0
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JauFfX2/
-Received: by mail-dl1-f46.google.com with SMTP id a92af1059eb24-15dd124bbe7so721653c88.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 07:58:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=aTNUlqrV
+Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-14394530ec6so1455340c88.1
+        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 07:58:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794239885; x=1794844685; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794239890; x=1794844690; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=jGfuhn/5tnyoSv44dvWh4ZEhzqKE79bI1dn8Un7FDkU=;
-        b=JauFfX2/kPwXo/3TGPnFd3DqgGyJgQVbytT2cNQaq/Jekjc/nysHnfTs3LMjfBWEj1
-         RUI2XRbXSlccMsPHtabv3BOkK4nS/aE9rkIm5vkQE21ZRK+98LS6tXooP9ufQe7Xch2h
-         OJ/LISyib4xQOueQXWeC1oXSuAFt8bFNjk360B4D+PFezNKJhuvKiZHIEZcIqAOH9Fzo
-         TaDj/o8ymr8wKOU1oXmZhYCsxMr4ycFnG9UwKyJbsMi+96nVt6YSFxR3bvDmNyBRAH8M
-         ISJo/jVFvlOWtiPjhwmz8Lhk9saX57LcazyRfaBixMH6ZMBhEjFIZd74haYUuuPdAFHi
-         GN5g==
+        bh=A0e3aWt9/XeLQ8ZaY9RAcjDuS8LnExeE5CFr2AzDlxc=;
+        b=aTNUlqrV4kxyktRy1aGltCk/fDtLtBSW6UXitr6C55os6pTdictNoH4KcfCNgu7PLh
+         LagRnFbd80YT07n/J/tguTuaEy0rNPnc+7etwOoe/VSPC6G6JnXNUO3u1nihPyQ0NPYr
+         Hdi8xkP8eHEOEJyC+Cq/+FQ3AcSb+9IOqvar/dVvHcC0WQD6khIUpq6OMSQ9IxwYG5b0
+         9aJ7gbCrLV+gvu6kO3L9rOZOHWvSeDT5Dq/gu7v+aMpSPu5nQjG0n6pEXhMv87p3UY3a
+         wFqbiemYEPH4CmWL8JTwjzCMFLQiwmQ4llXHxzLyxexCmlsEnmFTx8m16Pc8Fkg9dk8y
+         1f4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794239885; x=1794844685;
+        d=1e100.net; s=20260707; t=1794239890; x=1794844690;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=jGfuhn/5tnyoSv44dvWh4ZEhzqKE79bI1dn8Un7FDkU=;
-        b=yo3YDKaewZSSK97dKZxy2MV+vsfhwKUaMrI4/1pfjxa9uvQjlAKcXSd6PNsINqKD1J
-         yhL32q8C0NV/s4BEgqmGzbV/DuUtyoMZsTCl7yj5RPNChxCwAsNSnoIhuJYLgESBLlOa
-         r+7JMYxFMMHNzAhT8mUyaC1saBx9nw8F9CQtzRgMhvNUAdMm6V51/4Mea5YbIj3MJSqy
-         sEJslruQYy2/I4/6gzXRAOo3cSkoHV4fJ+2ND8SXpOz6KIOef7laotqCqJcyWyEKb36J
-         ZX56OUIoiCv8iDYA52ZaBwbOPRVCIqcjzjmL79QWOYayu/4zDGqeekyBUK4KJ8XyUu7G
-         OcMQ==
-X-Forwarded-Encrypted: i=1; AL+hErH0wF/yMog6BBNf7Idb73tle6U+ut5XvRPjitDt+ukx25Izzz4WymxZEt8Q93dTzdAPhdITCb+4720=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/uGRWkLhp8xTtwb/mjP3vvsOqjYSpxSgCjUlYwKkISdwCZ/Ke3
-	yt5+1Q7Uh8SuD7aZJIsQ4f/Z4Ay3NV5GiF69s9LMpROvd9xZjAhNESNB
-X-Gm-Gg: AYBFou01tcni7CUbeZwO+NKfcX+32wundInPRBgHlfE7F24COyfQUt40URY3gDrW+LH
-	u2gB4URARQoEcGlkez1764Az33eopeA2mwEXn3LVXvEUdE0HDiUVsnDvAz5a7dv2FiLZTgU6nza
-	0g4ZEE5Rkf+UapqiYd/J7QGogqmZwkmxoRoMtnGez4SOsgmzniH1vvaRHTX7zqVC/4dsu4V3YmN
-	VGkXjtJEQx1M50FxCg/x2W/x5rW1bNyWabioeEPpDOq3s2m6/PyhVoLvrl2b07AKoh6cx3H2heM
-	hL/4iqnoaQhzdkX3dKo4imftTWPg+dUO7l8LqtAhCY7Q7kNAZb10pKBwUE+8yaNTOwa3qfkRAMd
-	1S4iXOTrsOUuxAN99V9ET+EgAA5N5LArIoZvGQsgQdmXRp44qTdknCaC6N4CJ8j5FSaLMqdM64x
-	l8ikeHZXDxu9czxFODcHNvFTOV1hvvjt9eb6w4o5MvrgN0zlrN0+APxd9QcpeQ5ZxGGpxu8FFhM
-	yCMia7GSgtvV7DSs66xYOAz+CFDs724g6RDzsVbAScUafr80bVtxpgbkbSGhx/JNk6wGmTBIzlx
-	IuCNUf2O2xSfipT1/umj7sZQhG1D5EY/5AjtlW5mCqLqe98bzzsKpNRWRyV6yajVTq3bSQ4=
-X-Received: by 2002:a05:7022:ef07:b0:1b2:5128:df1b with SMTP id a92af1059eb24-1b39fed20f3mr7173796c88.45.1794239884680;
-        Mon, 09 Nov 2026 07:58:04 -0800 (PST)
+        bh=A0e3aWt9/XeLQ8ZaY9RAcjDuS8LnExeE5CFr2AzDlxc=;
+        b=cuxamfr1YXj/fET3a7zoIZsfhyTe65QdD74b/QA3HcrSR5z/aIyLbPNn83kwEPJbVw
+         bDbIdPWOtXEPrJRih89zirtiOOIaMKmGf93CoFlD5unHeCQFDhwTnwqbWGlSUF0GH60n
+         crlCMUmjiege67Ip1U9ePXs/sYBK71qxAIbmA6T2fpVD+Da9n/uwMNbzNdxrecIIKmPR
+         Y1JBq7UOd7lDJWVHwI4zpOZtt1NJcxx0jmv8IrLgFKvac5ixqA2I+3hCSnNf9jQT7XJl
+         Pcw7oz98vCDsCf0qCnwcutkrM1YS6r9RXtftnmeSCrYO8bFaUgMbzyLVca00ERC+TyyV
+         u9Eg==
+X-Forwarded-Encrypted: i=1; AL+hErEi88yNuOkT5ig0UIFnKQ7WIJEQrzPWazmuTG/XSj1Fr6/S7HwLDlX2jmiHhM0EzBJaKA4cJPGPEXg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/2DtamslpXoq+opjoUU8odQ4bKDnSqeVfNW54bOKnQxBu6CG+t
+	67Z3ZfTiH9VinEi0H8aQuOY8rNAkNfUuiwWUvuMFmtfZC4n4zmU3SLzF
+X-Gm-Gg: AYBFou3BQUOKcL+p/rp709oxdIPRceXy/+esB06pljRROfzwRa7hen7fhy3R4tIFkxZ
+	aq/oqbFyRhqFWlejoTGW2Abr06zDeB4/Nxw0NtxAlWJXXaWLE0XmChEux4Q+qrG0ymXQjCup7lb
+	+X5GBkfyz/nZ4UorCD35UP+P6b0clymmIvymtFD6JzOv34Zo29hsHuZP4dOCd1RWGPSt0eqnay7
+	ueTPkoB14pmT28gCYDMwnZjFgv+/R0GLN49q4OCWPM5cbqOiNIrVjV3By5DvQuZwBWGZ2lpU11l
+	x6tZ9gbP89wUJ86v5dLWqy1ZSmW4b5xf1+EuE9T2jH8Dq7rHg7Tz7Hw999myOFEUUB4jlymeNyS
+	Xs37pXxGD16b34eatw367+PD5RMrQlVJaTwDsHC+EF7/S8f9KO6BXw7A+FXu6hzA4KBtQ1vXv1o
+	dGRd06pcr9zbeWu6uKWBRWP8SzOyO4vlMUUIvlKm/aiU0Pd/tkptF+FQU0FcopypDPa5bjWFLer
+	o7cGgidh7RgvbpVSRZ1Tf9C49S4W1s4jQkXMOJHnUvfHmuJevJL9Gjbi0QotKQtnn8K6TLqoHVt
+	YIYCdlFohBbdEKuUDpOljXb2fbIEwhKHo5lEzNNfQn0kLjSGs5o1cp9YTo43W07q6NIym+Y=
+X-Received: by 2002:a05:701b:221a:b0:1a0:e3e2:22a3 with SMTP id a92af1059eb24-1b39feef1fbmr6370365c88.31.1794239889337;
+        Mon, 09 Nov 2026 07:58:09 -0800 (PST)
 Received: from localhost.localdomain ([125.166.179.225])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b3757214cbsm13020828c88.13.2026.11.09.07.58.00
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b3757214cbsm13020828c88.13.2026.11.09.07.58.04
         (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 09 Nov 2026 07:58:04 -0800 (PST)
+        Mon, 09 Nov 2026 07:58:08 -0800 (PST)
 From: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Miguel Ojeda <ojeda@kernel.org>,
@@ -94,9 +94,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	rust-for-linux@vger.kernel.org,
 	driver-core@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v7 3/4] rust: add minimal IIO subsystem abstractions
-Date: Mon,  9 Nov 2026 22:57:42 +0700
-Message-ID: <20261109155743.83740-4-muchamadcoirulanwar@gmail.com>
+Subject: [RFC PATCH v7 4/4] iio: position: add Rust driver for ams AS5600
+Date: Mon,  9 Nov 2026 22:57:43 +0700
+Message-ID: <20261109155743.83740-5-muchamadcoirulanwar@gmail.com>
 X-Mailer: git-send-email 2.50.0
 In-Reply-To: <20261109155743.83740-1-muchamadcoirulanwar@gmail.com>
 References: <20261109155743.83740-1-muchamadcoirulanwar@gmail.com>
@@ -111,551 +111,306 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add minimal Rust abstractions needed to register direct-mode IIO
-devices exposing read_raw channel information.
+Add a Rust driver for the ams AS5600 12-bit magnetic rotary position
+sensor.
 
-Provide a type-safe IioChanInfo selector, IioVal return types, and an
-IioDriver trait. Add a C callback trampoline that validates the channel
-information selector, invokes the Rust driver, and converts IioVal into
-the representation expected by the IIO core.
+Expose the raw angle and scale through the IIO sysfs interface in direct
+mode. Read the status register before each angle sample and return
+ENODATA when the magnet-detected bit is clear. Serialize the status and
+angle transaction sequence with a mutex and propagate I2C transport
+errors directly to userspace.
 
-Use typestate to distinguish unregistered and registered devices.
-Registration returns an owned registered device whose destructor
-unregisters it before destroying its Rust private data and releasing
-the allocation reference.
+Capture a bound I2C client reference during probe and store it in the
+IIO private data. The registered IIO device carries the same bound
+lifetime, keeping the client valid throughout read_raw callbacks.
 
-Allow private data to borrow resources tied to the bound parent
-lifetime. This lets drivers capture bus-specific resources during probe
-and use them directly from subsystem callbacks without recovering them
-from a generic parent device.
+The AS5600 stores the raw angle with the high byte at register 0x0c.
+Use the byte-swapped SMBus word helper and mask the result to 12 bits.
 
-Support read_raw in INDIO_DIRECT_MODE only. Buffers, triggers, events,
-and write operations are not supported.
+Add usize bit and mask helpers for constructing the IIO channel
+information mask.
 
-The registration ownership and bound-parent lifetimes are based on
-Igor Korotin's rework.
+The registered-device ownership and stored bound-client reference are
+based on Igor Korotin's rework.
 Link: https://lore.kernel.org/all/179286358623.55649.5397316745104390556@linux.dev/
 
 Suggested-by: Shuai Liu <847807867@qq.com>
 Link: https://lore.kernel.org/all/tencent_173B7731E90B9624F9F82613DC3031B70907@qq.com/
 Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
 ---
- include/linux/iio/iio.h         |   6 +-
- rust/bindings/bindings_helper.h |   2 +
- rust/kernel/iio.rs              | 463 ++++++++++++++++++++++++++++++++
- rust/kernel/lib.rs              |   2 +
- 4 files changed, 471 insertions(+), 2 deletions(-)
- create mode 100644 rust/kernel/iio.rs
+ drivers/iio/position/Kconfig   |  11 ++
+ drivers/iio/position/Makefile  |   1 +
+ drivers/iio/position/as5600.rs | 186 +++++++++++++++++++++++++++++++++
+ rust/kernel/bits.rs            |  29 +++++
+ 4 files changed, 227 insertions(+)
+ create mode 100644 drivers/iio/position/as5600.rs
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 9b63785d5aec..e2ffb2b35126 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -450,8 +450,10 @@ struct iio_trigger; /* forward declaration */
-  * @read_raw:		function to request a value from the device.
-  *			mask specifies which value. Note 0 means a reading of
-  *			the channel in question.  Return value will specify the
-- *			type of value returned by the device. val and val2 will
-- *			contain the elements making up the returned value.
-+ *			type of value returned by the device. val and val2
-+ *			point to writable integer storage valid for the
-+ *			duration of the callback. The return value determines
-+ *			which outputs contain meaningful data.
-  * @read_raw_multi:	function to return values from the device.
-  *			mask specifies which value. Note 0 means a reading of
-  *			the channel in question.  Return value will specify the
-diff --git a/rust/bindings/bindings_helper.h b/rust/bindings/bindings_helper.h
-index 3791af0aadc7..c2e2fb32ebe3 100644
---- a/rust/bindings/bindings_helper.h
-+++ b/rust/bindings/bindings_helper.h
-@@ -64,6 +64,8 @@
- #include <linux/fwctl.h>
- #include <linux/fs.h>
- #include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/types.h>
- #include <linux/interrupt.h>
- #include <linux/io-pgtable.h>
- #include <linux/ioport.h>
-diff --git a/rust/kernel/iio.rs b/rust/kernel/iio.rs
-new file mode 100644
-index 000000000000..cd62b765b050
---- /dev/null
-+++ b/rust/kernel/iio.rs
-@@ -0,0 +1,463 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2026 Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-+//! IIO subsystem abstractions.
-+//!
-+//! Provides [`Device`] for allocating and registering an IIO device, and
-+//! [`IioDriver`] for implementing `read_raw` callbacks. Implementing the
-+//! trait requires validating the raw channel specifications.
+diff --git a/drivers/iio/position/Kconfig b/drivers/iio/position/Kconfig
+index 1576a6380b53..7c278f82f53d 100644
+--- a/drivers/iio/position/Kconfig
++++ b/drivers/iio/position/Kconfig
+@@ -6,6 +6,17 @@
+ 
+ menu "Linear and angular position sensors"
+ 
++config AS5600
++	tristate "ams AS5600 magnetic rotary position sensor"
++	depends on IIO=y && I2C=y && RUST
++	help
++	  Support for the ams OSRAM AS5600 12-bit magnetic rotary
++	  position sensor. Provides in_angl_raw (0-4095) and
++	  in_angl_scale (radians per LSB) via sysfs.
 +
-+use crate::{
++	  To compile this driver as a module, choose M here: the
++	  module will be called as5600.
++
+ config IQS624_POS
+ 	tristate "Azoteq IQS624/625 angular position sensors"
+ 	depends on MFD_IQS62X || COMPILE_TEST
+diff --git a/drivers/iio/position/Makefile b/drivers/iio/position/Makefile
+index d70902f2979d..2d26f6d6ace3 100644
+--- a/drivers/iio/position/Makefile
++++ b/drivers/iio/position/Makefile
+@@ -4,5 +4,6 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ 
++obj-$(CONFIG_AS5600) += as5600.o
+ obj-$(CONFIG_HID_SENSOR_CUSTOM_INTEL_HINGE) += hid-sensor-custom-intel-hinge.o
+ obj-$(CONFIG_IQS624_POS)	+= iqs624-pos.o
+diff --git a/drivers/iio/position/as5600.rs b/drivers/iio/position/as5600.rs
+new file mode 100644
+index 000000000000..d5716501d48d
+--- /dev/null
++++ b/drivers/iio/position/as5600.rs
+@@ -0,0 +1,186 @@
++// SPDX-License-Identifier: GPL-2.0-only
++// Copyright (C) 2026 Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
++//! Driver for ams AS5600 12-bit magnetic rotary position sensor.
++//!
++//! Exposes `in_angl_raw` and `in_angl_scale` through the IIO sysfs interface
++//! in `INDIO_DIRECT_MODE`.
++//!
++//! Datasheet: AS5600, document DS000365.
++
++use kernel::{
 +    bindings::{
-+        __iio_device_register,
++        iio_chan_info_enum_IIO_CHAN_INFO_RAW,
++        iio_chan_info_enum_IIO_CHAN_INFO_SCALE,
 +        iio_chan_spec,
-+        iio_dev,
-+        iio_device_alloc,
-+        iio_device_free,
-+        iio_device_unregister,
-+        iio_info,
++        iio_chan_type_IIO_ANGL,
 +        INDIO_DIRECT_MODE, //
 +    },
++    bits::{
++        bit_u8,
++        bit_usize,
++        genmask_u16, //
++    },
 +    device::{
-+        self,
-+        Bound, //
++        Bound,
++        Core, //
 +    },
-+    error::{
-+        code::*,
-+        to_result,
-+        Result, //
++    error::code::ENODATA,
++    i2c::{
++        DeviceId,
++        Driver,
++        I2cClient,
++        IdTable, //
 +    },
++    i2c_device_table,
++    iio::{
++        Device,
++        IioChanInfo,
++        IioDriver,
++        IioVal,
++        Registered, //
++    },
++    io::Io,
++    module_i2c_driver,
++    of,
++    of_device_table,
 +    prelude::*,
-+    ThisModule, //
++    sync::{
++        new_mutex,
++        Mutex, //
++    }, //
 +};
 +
-+use core::{
-+    ffi::c_int,
-+    marker::PhantomData,
-+    mem::{
-+        forget,
-+        size_of,
-+        zeroed, //
-+    },
-+    num::NonZeroI32,
-+    pin::Pin,
-+    ptr::drop_in_place, //
-+};
++const AS5600_REG_STATUS: u8 = 0x0B;
++const AS5600_REG_RAW_ANGLE_H: u8 = 0x0C;
 +
-+use pin_init::{
-+    pin_data,
-+    pinned_drop, //
-+};
++const AS5600_STATUS_MD: u8 = bit_u8(5);
++const AS5600_RAW_ANGLE_MASK: u16 = genmask_u16(0..=11);
 +
-+/// IIO value type: single integer (`IIO_VAL_INT`).
-+pub const IIO_VAL_INT: c_int = crate::bindings::IIO_VAL_INT as c_int;
++module_i2c_driver! {
++    type: As5600,
++    name: "as5600",
++    authors: ["Muchamad Coirul Anwar"],
++    description: "I2C Driver for ams OSRAM AS5600 Magnetic Rotary Position Sensor",
++    license: "GPL",
++}
 +
-+/// IIO value type: integer plus micro part (`IIO_VAL_INT_PLUS_MICRO`).
-+pub const IIO_VAL_INT_PLUS_MICRO: c_int = crate::bindings::IIO_VAL_INT_PLUS_MICRO as c_int;
++i2c_device_table!(
++    I2C_TABLE,
++    <As5600 as Driver>::IdInfo,
++    [(DeviceId::new(c"as5600"), ())]
++);
 +
-+/// IIO value type: integer plus nano part (`IIO_VAL_INT_PLUS_NANO`).
-+pub const IIO_VAL_INT_PLUS_NANO: c_int = crate::bindings::IIO_VAL_INT_PLUS_NANO as c_int;
++of_device_table!(
++    OF_TABLE,
++    <As5600 as Driver>::IdInfo,
++    [(of::DeviceId::new(c"ams,as5600"), ())]
++);
 +
-+/// IIO value type: fractional (`IIO_VAL_FRACTIONAL`).
-+pub const IIO_VAL_FRACTIONAL: c_int = crate::bindings::IIO_VAL_FRACTIONAL as c_int;
++struct As5600Channels([iio_chan_spec; 1]);
 +
-+/// Generates a Rust enum wrapper for C `enum iio_chan_info_enum`.
-+///
-+/// This macro creates a type-safe enum with automatic `TryFrom<u32>`
-+/// conversion. Drivers match directly on `IioChanInfo` variants in
-+/// `read_raw`, and the compiler enforces match exhaustiveness.
-+/// Additional variants can be added as drivers require them.
-+macro_rules! build_iio_chan_info_enum {
-+    (
-+        $(
-+            $(#[$meta:meta])*
-+            $rust_name:ident = $c_const:ident
-+        ),* $(,)?
-+    ) => {
-+        /// Channel information selector for [`IioDriver::read_raw`].
-+        ///
-+        /// Wraps supported C `enum iio_chan_info_enum` values identifying
-+        /// the requested channel information.
-+        ///
-+        /// Conversion from an unsupported value returns `EINVAL`.
-+        #[repr(u32)]
-+        #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-+        pub enum IioChanInfo {
-+            $(
-+                $(#[$meta])*
-+                $rust_name = bindings::$c_const,
-+            )*
-+        }
-+        impl TryFrom<u32> for IioChanInfo {
-+            type Error = Error;
-+            fn try_from(value: u32) -> Result<Self, Self::Error> {
-+                match value {
-+                    $( bindings::$c_const => Ok(IioChanInfo::$rust_name), )*
-+                    _ => Err(EINVAL),
++// SAFETY: `iio_chan_spec` is a plain C struct with no interior mutability.
++// All pointer fields (`event_spec`, `ext_info`, `extend_name`, etc.) are
++// NULL - set via `zeroed()` and never reassigned - so no shared mutable
++// state exists behind them. The static is a compile-time constant with no
++// `&mut` access path, making concurrent shared access safe.
++unsafe impl Sync for As5600Channels {}
++
++static AS5600_CHANNELS: As5600Channels = As5600Channels({
++    // SAFETY: `iio_chan_spec` is a repr(C) struct where all-zeroes is valid
++    // (integers default to 0, pointers to NULL).
++    let mut chan: iio_chan_spec = unsafe { core::mem::zeroed() };
++    chan.type_ = iio_chan_type_IIO_ANGL;
++    chan.info_mask_separate = bit_usize(iio_chan_info_enum_IIO_CHAN_INFO_RAW)
++        | bit_usize(iio_chan_info_enum_IIO_CHAN_INFO_SCALE);
++    [chan]
++});
++
++#[pin_data]
++struct As5600Priv<'a> {
++    client: &'a I2cClient<Bound>,
++    #[pin]
++    io_lock: Mutex<()>,
++}
++
++// SAFETY: I2C core serializes transfers, and the bound client remains valid
++// for the lifetime of the registered device and its callbacks.
++unsafe impl Send for As5600Priv<'_> {}
++// SAFETY: I2C core serializes transfers through the shared bound client.
++unsafe impl Sync for As5600Priv<'_> {}
++
++// SAFETY: AS5600_CHANNELS contains one valid, immutable IIO_ANGL channel
++// exposing only RAW and SCALE. It has no event or extension callbacks,
++// and all optional pointer fields are null.
++unsafe impl IioDriver for As5600Priv<'_> {
++    fn read_raw(&self, _chan: *const iio_chan_spec, info: IioChanInfo) -> Result<IioVal> {
++        match info {
++            IioChanInfo::Raw => {
++                let _guard = self.io_lock.lock();
++                let client = self.client;
++
++                let io = client.smbus_io();
++                // Read status register to verify magnet presence before
++                // reading the angle.
++                let status = io.try_read8(AS5600_REG_STATUS as usize)?;
++
++                if (status & AS5600_STATUS_MD) == 0 {
++                    return Err(ENODATA);
 +                }
++
++                // Word read at register 0x0C returns big-endian data.
++                // smbus_read_word_swapped() handles the byte swap.
++                let raw = client.smbus_read_word_swapped(AS5600_REG_RAW_ANGLE_H)?;
++                let angle = raw & AS5600_RAW_ANGLE_MASK;
++                Ok(IioVal::Int(i32::from(angle)))
 +            }
++            // Scale factor: radians per LSB = 2*pi / 4096 ~= 0.001533981
++            IioChanInfo::Scale => Ok(IioVal::IntPlusNano(0, 1533981)),
 +        }
-+    };
-+}
++    }
 +
-+build_iio_chan_info_enum! {
-+    /// Raw unprocessed value from the channel (`IIO_CHAN_INFO_RAW`).
-+    ///
-+    /// For sensors, this is typically the ADC reading or register value
-+    /// before any scaling or offset correction.
-+    Raw = iio_chan_info_enum_IIO_CHAN_INFO_RAW,
-+
-+    /// Scale factor for converting raw values to channel units
-+    /// (`IIO_CHAN_INFO_SCALE`).
-+    ///
-+    /// Apply any offset before scaling: `(raw + offset) * scale`.
-+    /// The unit is defined by the IIO ABI for the channel type.
-+    Scale = iio_chan_info_enum_IIO_CHAN_INFO_SCALE,
-+}
-+
-+/// Represents the return value of a `read_raw` operation.
-+///
-+/// Each variant corresponds to an `IIO_VAL_*` constant and tells the
-+/// IIO core how to format `val` and `val2` for userspace.
-+pub enum IioVal {
-+    /// A single integer value.
-+    Int(i32),
-+
-+    /// A fractional value represented as `val / val2`.
-+    /// The denominator is `NonZeroI32` to prevent division-by-zero in
-+    /// `iio_format_value()`.
-+    Fractional(i32, NonZeroI32),
-+
-+    /// An integer part and a fractional part in millionths
-+    /// (`IIO_VAL_INT_PLUS_MICRO`).
-+    ///
-+    /// For negative values, put the sign on the integer part, or on the
-+    /// fractional part when the integer part is zero. For example,
-+    /// `IntPlusMicro(-1, 500_000)` represents -1.5, and
-+    /// `IntPlusMicro(0, -500_000)` represents -0.5.
-+    IntPlusMicro(i32, i32),
-+
-+    /// An integer part and a fractional part in billionths
-+    /// (`IIO_VAL_INT_PLUS_NANO`).
-+    ///
-+    /// Uses the same sign convention as [`IioVal::IntPlusMicro`].
-+    IntPlusNano(i32, i32),
-+}
-+
-+/// Trait implemented by IIO driver private data.
-+///
-+/// # Safety
-+///
-+/// The channel specifications returned by `channels()` must satisfy the
-+/// IIO core's requirements. Channel types, modifiers, strings, and
-+/// pointer/count pairs must be valid. Referenced storage must remain
-+/// valid for every access by the IIO core.
-+///
-+/// Channels must not expose events, buffers, extended attributes, or
-+/// available-value attributes. This abstraction currently supports only
-+/// channel information handled by its `read_raw` callback.
-+pub unsafe trait IioDriver: Send + Sync {
-+    /// Called by the IIO core to read channel information.
-+    ///
-+    /// `chan` identifies the channel, and `info` selects the requested
-+    /// information, such as its raw value or scale. Implementors must
-+    /// capture bus-specific resources during initialization rather than
-+    /// deriving them from a generic parent reference.
-+    fn read_raw(&self, chan: *const iio_chan_spec, info: IioChanInfo) -> Result<IioVal>;
-+
-+    /// Returns the channel specifications for this driver.
-+    ///
-+    /// The default implementation returns an empty slice.
 +    fn channels(&self) -> &'static [iio_chan_spec] {
-+        &[]
++        &AS5600_CHANNELS.0
 +    }
 +}
 +
-+/// C-compatible trampoline for the `iio_info.read_raw` callback.
-+///
-+/// # Safety
-+///
-+/// Callers must ensure that:
-+/// - `indio_dev` points to a valid `iio_dev` allocated with space for `T`.
-+///   Its private data contains an initialized `T` that remains valid and
-+///   may be shared for the duration of this callback.
-+/// - `chan` points to a valid channel specification for `indio_dev`.
-+/// - `val` and `val2` are non-null, properly aligned pointers to writable
-+///   `c_int` storage valid for the duration of this callback.
-+/// - The parent of `indio_dev` remains bound for the entire callback.
-+///   Registration ownership and callback teardown must enforce this.
-+unsafe extern "C" fn read_raw_callback<T: IioDriver>(
-+    indio_dev: *mut iio_dev,
-+    chan: *const iio_chan_spec,
-+    val: *mut c_int,
-+    val2: *mut c_int,
-+    info: isize,
-+) -> c_int {
-+    // SAFETY: `indio_dev` is valid and was allocated with space for `T` in its
-+    // private data area. The `priv_` field was initialized in `Device::build_device()`.
-+    let priv_ptr = unsafe { (*indio_dev).priv_.cast::<T>() };
-+    // SAFETY: The callback contract guarantees that `priv_ptr` points to an
-+    // initialized `T` that remains valid for the duration of this callback.
-+    let driver = unsafe { &*priv_ptr };
++struct As5600;
 +
-+    // `info` is `long` from C. Negative values and values > u32::MAX
-+    // are unsupported iio_chan_info variants; both map to EINVAL.
-+    let info_enum = match u32::try_from(info)
-+        .ok()
-+        .and_then(|value| IioChanInfo::try_from(value).ok())
-+    {
-+        Some(info) => info,
-+        None => return EINVAL.to_errno(),
-+    };
++#[pin_data]
++struct As5600Data<'bound> {
++    #[pin]
++    _iio_dev: Device<As5600Priv<'bound>, Registered>,
++}
 +
-+    match driver.read_raw(chan, info_enum) {
-+        Ok(IioVal::Int(v)) => {
-+            // SAFETY: `val` is valid per the function's Safety contract above.
-+            // `val2` is not written; `IIO_VAL_INT` signals to the IIO core
-+            // that only `val` carries meaningful data.
-+            unsafe {
-+                *val = v;
++impl Driver for As5600 {
++    type IdInfo = ();
++    type Data<'bound> = As5600Data<'bound>;
++
++    const I2C_ID_TABLE: Option<IdTable<Self::IdInfo>> = Some(&I2C_TABLE);
++    const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>> = Some(&OF_TABLE);
++
++    // `try_pin_init!` returns a concrete anonymous type that may expose more
++    // bounds than the trait signature declares (e.g. auto-traits like `Send`).
++    // This refinement of the RPITIT return type is intentional.
++    #[allow(refining_impl_trait)]
++    fn probe<'bound>(
++        dev: &'bound I2cClient<Core<'_>>,
++        _id_info: Option<&'bound Self::IdInfo>,
++    ) -> impl PinInit<Self::Data<'bound>, Error> + 'bound {
++        try_pin_init!(As5600Data {
++            _iio_dev: {
++                // Deref coercion: I2cClient<Core<'_>> -> I2cClient<Bound>.
++                let client: &'bound I2cClient<Bound> = dev;
++
++                let priv_init = pin_init!(As5600Priv {
++                    client,
++                    io_lock <- new_mutex!(()),
++                });
++
++                let unregistered =
++                    Device::build_device(dev.as_ref(), c"as5600", INDIO_DIRECT_MODE, priv_init)?;
++
++                unregistered.register(kernel::module::this_module::<crate::LocalModule>())?
 +            }
-+            IIO_VAL_INT
-+        }
-+        Ok(IioVal::Fractional(v, v2)) => {
-+            // SAFETY: both `val` and `val2` are valid per the Safety contract.
-+            unsafe {
-+                *val = v;
-+                *val2 = v2.get();
-+            }
-+            IIO_VAL_FRACTIONAL
-+        }
-+        Ok(IioVal::IntPlusMicro(v, v2)) => {
-+            // SAFETY: both `val` and `val2` are valid per the Safety contract.
-+            unsafe {
-+                *val = v;
-+                *val2 = v2;
-+            }
-+            IIO_VAL_INT_PLUS_MICRO
-+        }
-+        Ok(IioVal::IntPlusNano(v, v2)) => {
-+            // SAFETY: both `val` and `val2` are valid per the Safety contract.
-+            unsafe {
-+                *val = v;
-+                *val2 = v2;
-+            }
-+            IIO_VAL_INT_PLUS_NANO
-+        }
-+        Err(e) => e.to_errno(),
++        })
 +    }
 +}
+diff --git a/rust/kernel/bits.rs b/rust/kernel/bits.rs
+index 2daead125626..a6537a668dd6 100644
+--- a/rust/kernel/bits.rs
++++ b/rust/kernel/bits.rs
+@@ -41,6 +41,7 @@ pub const fn [<bit_ $ty>](n: u32) -> $ty {
+ impl_bit_fn!(u32);
+ impl_bit_fn!(u16);
+ impl_bit_fn!(u8);
++impl_bit_fn!(usize);
+ 
+ macro_rules! impl_genmask_fn {
+     (
+@@ -203,3 +204,31 @@ pub const fn [<genmask_ $ty>](range: RangeInclusive<u32>) -> $ty {
+     /// assert_eq!(genmask_u8(0..=7), u8::MAX);
+     /// ```
+ );
 +
-+// Device<T, State>: IIO device wrapper with typestate.
-+
-+/// Marker type for an unregistered IIO device.
-+pub struct Unregistered;
-+
-+/// Marker type for a registered IIO device.
-+pub struct Registered;
-+
-+/// An initialized IIO device awaiting registration.
-+pub struct UnregisteredDevice<T: IioDriver> {
-+    device: Device<T>,
-+}
-+
-+/// An owned IIO device with in-place initialized driver data.
-+///
-+/// Dropping a registered device unregisters it before destroying the driver
-+/// data. Dropping either state then releases the allocation reference with
-+/// `iio_device_free`.
-+///
-+/// # Invariants
-+///
-+/// - `indio_dev` points to an `iio_dev` allocated by `iio_device_alloc`,
-+///   and this wrapper owns its allocation reference.
-+/// - Its private data contains an initialized `T` that remains at a fixed
-+///   address until it is destroyed.
-+/// - `registered` is true exactly when this wrapper owns a successful
-+///   registration that has not yet been undone.
-+#[pin_data(PinnedDrop)]
-+pub struct Device<T: IioDriver, State = Unregistered> {
-+    indio_dev: *mut iio_dev,
-+    registered: bool,
-+    _p: PhantomData<(T, State)>,
-+}
-+
-+// SAFETY: Moving the wrapper transfers ownership without moving the separately
-+// allocated `iio_dev` or its private data. `T: Send` permits transferring the
-+// private data to another thread.
-+unsafe impl<T: IioDriver, State> Send for Device<T, State> {}
-+
-+// SAFETY: All `&self` access to the `iio_dev` is read-only or goes through the
-+// IIO core which provides its own synchronization. `T` is required to be `Sync`.
-+unsafe impl<T: IioDriver, State> Sync for Device<T, State> {}
-+
-+#[pinned_drop]
-+impl<T: IioDriver, State> PinnedDrop for Device<T, State> {
-+    fn drop(self: Pin<&mut Self>) {
-+        if self.registered {
-+            // SAFETY: `__iio_device_register` succeeded.
-+            //
-+            // iio_device_unregister() deletes the character device, disables
-+            // buffers, clears `info` while holding `info_exist_lock`, and removes
-+            // the remaining buffer sysfs state. Device removal also removes and
-+            // drains its sysfs files. In-kernel read helpers that use
-+            // `info_exist_lock` cannot race this `info` teardown.
-+            //
-+            // Any callback path not covered by those mechanisms requires a
-+            // separate teardown proof before this abstraction can expose it.
-+            unsafe { iio_device_unregister(self.indio_dev) };
-+        }
-+
-+        // SAFETY: `priv_` was fully initialized in `build_device` via
-+        // `pin_init::raw_try_init`. `drop_in_place` runs `T`'s destructor
-+        // (including any pinned fields like Mutex). After that, `iio_device_free`
-+        // calls `put_device` which decrements the kref. The underlying `iio_dev`
-+        // memory is only freed when kref reaches 0.
-+        unsafe {
-+            let priv_ptr = (*self.indio_dev).priv_.cast::<T>();
-+            drop_in_place(priv_ptr);
-+            iio_device_free(self.indio_dev);
-+        }
-+    }
-+}
-+
-+impl<T: IioDriver> Device<T> {
-+    // SAFETY:
-+    // - `read_raw_callback::<T>` is a valid function pointer whose signature
-+    //   matches the IIO core's `read_raw` contract.
-+    // - All remaining fields are pointers or function pointers; zeroed values
-+    //   are NULL, and the IIO core checks for NULL before invoking any optional
-+    //   callback or dereferencing any optional attribute group.
-+    const VTABLE: iio_info = iio_info {
-+        read_raw: Some(read_raw_callback::<T>),
-+        ..unsafe { zeroed() }
-+    };
-+
-+    /// Allocates an unregistered IIO device and initializes its driver data
-+    /// in place.
++impl_genmask_fn!(
++    usize,
++    /// # Examples
 +    ///
-+    /// `parent` becomes the IIO device's parent. `name` supplies its name.
-+    /// Only `INDIO_DIRECT_MODE` is supported.
++    /// ```
++    /// # #![expect(clippy::reversed_empty_ranges)]
++    /// # use kernel::bits::genmask_checked_usize;
++    /// assert_eq!(genmask_checked_usize(0..=0), Some(0b1));
++    /// assert_eq!(genmask_checked_usize(0..=3), Some(0b1111));
++    /// assert_eq!(genmask_checked_usize(1..=3), Some(0b1110));
 +    ///
-+    /// Returns `EINVAL` if `modes` is not `INDIO_DIRECT_MODE`, if the
-+    /// private-data size or channel count cannot be represented by the
-+    /// corresponding C type, if `T` is zero-sized, or if the private
-+    /// storage is not suitably aligned.
-+    /// Allocation and initialization errors are propagated.
++    /// // `200` is out of the supported bit range on all platforms.
++    /// assert_eq!(genmask_checked_usize(0..=200), None);
 +    ///
-+    /// Call [`UnregisteredDevice::register`] to register the device.
-+    pub fn build_device<E>(
-+        parent: &device::Device<Bound>,
-+        name: &'static CStr,
-+        modes: u32,
-+        init: impl PinInit<T, E>,
-+    ) -> Result<UnregisteredDevice<T>>
-+    where
-+        Error: From<E>,
-+    {
-+        if modes != INDIO_DIRECT_MODE {
-+            return Err(EINVAL);
-+        }
-+
-+        let modes = c_int::try_from(modes).map_err(|_| EINVAL)?;
-+
-+        let priv_size = i32::try_from(size_of::<T>()).map_err(|_| EINVAL)?;
-+        if priv_size == 0 {
-+            return Err(EINVAL);
-+        }
-+
-+        // SAFETY: `parent.as_raw()` returns a valid `struct device` pointer.
-+        // `iio_device_alloc` allocates an `iio_dev` with `sizeof(T)` bytes of
-+        // private data. Returns NULL on failure.
-+        let indio_dev = unsafe { iio_device_alloc(parent.as_raw(), priv_size) };
-+        if indio_dev.is_null() {
-+            return Err(ENOMEM);
-+        }
-+
-+        // SAFETY: `indio_dev` is non-null and was just successfully allocated by
-+        // `iio_device_alloc`. Accessing `priv_` yields a pointer to zeroed
-+        // memory (kzalloc'd) sized for `T`.
-+        let priv_ptr = unsafe { (*indio_dev).priv_.cast::<T>() };
-+        if !priv_ptr.is_aligned() {
-+            // SAFETY: `indio_dev` was allocated by `iio_device_alloc` and `priv_`
-+            // has not been initialized, so no destructor needs to run.
-+            unsafe { iio_device_free(indio_dev) };
-+            return Err(EINVAL);
-+        }
-+
-+        // SAFETY: `priv_ptr` is aligned and points to exclusively owned storage
-+        // large enough for `T`. The private data remains at a fixed address in
-+        // the separate IIO allocation until it is dropped. On initialization
-+        // failure, the error path only frees the allocation.
-+        let init_result = unsafe { pin_init::raw_try_init(priv_ptr, init) };
-+        if let Err(e) = init_result {
-+            // SAFETY: `pin_init` guarantees partial-init rollback internally.
-+            // `priv_` memory was not fully initialized, so we only free the
-+            // container without running `T`'s destructor.
-+            unsafe { iio_device_free(indio_dev) };
-+            return Err(Error::from(e));
-+        }
-+
-+        let device = Self {
-+            indio_dev,
-+            registered: false,
-+            _p: PhantomData,
-+        };
-+
-+        // SAFETY: `priv_ptr` points to the initialized `T` owned by `device`.
-+        // It remains valid for this shared borrow.
-+        let channels = unsafe { (&*priv_ptr).channels() };
-+        let num_channels = c_int::try_from(channels.len()).map_err(|_| EINVAL)?;
-+
-+        // SAFETY: `priv_ptr` is now fully initialized. We set up the IIO
-+        // device fields:
-+        // - `name` is a `'static` C string that outlives the device.
-+        // - The reference to `VTABLE` is promoted to static storage.
-+        // - `channels()` returns a static slice, so its backing storage
-+        //   outlives the `iio_dev` allocation.
-+        // - `modes` was checked to be `INDIO_DIRECT_MODE`, so registration
-+        //   does not expose unsupported buffer or trigger paths.
-+        // - `T`'s `IioDriver` safety contract guarantees that the channel
-+        //   specifications and their referenced storage satisfy the IIO
-+        //   core's requirements.
-+
-+        unsafe {
-+            (*indio_dev).name = name.as_char_ptr();
-+            (*indio_dev).info = &Self::VTABLE;
-+            (*indio_dev).channels = channels.as_ptr();
-+            (*indio_dev).num_channels = num_channels;
-+            (*indio_dev).modes = modes;
-+        }
-+
-+        Ok(UnregisteredDevice { device })
-+    }
-+}
-+
-+impl<T: IioDriver> UnregisteredDevice<T> {
-+    /// Registers the IIO device.
++    /// // Invalid range where the start is bigger than the end.
++    /// assert_eq!(genmask_checked_usize(5..=2), None);
++    /// ```
++    ,
++    /// # Examples
 +    ///
-+    /// The caller owns the returned [`Device<T, Registered>`] and must keep it
-+    /// alive while the registration should remain visible. Dropping it
-+    /// unregisters the device and tears down the private data.
-+    ///
-+    /// On failure, the device is released and any successful registration is
-+    /// undone.
-+    #[inline]
-+    pub fn register(self, module: &'static ThisModule) -> Result<Device<T, Registered>> {
-+        let Self { device } = self;
-+
-+        // SAFETY: `device.indio_dev` is a valid, fully-initialized `iio_dev`
-+        // allocated by `iio_device_alloc` with its name, info vtable, channels,
-+        // modes, and private data all set. `module.as_ptr()` provides the owning
-+        // module for proper reference counting.
-+        to_result(unsafe { __iio_device_register(device.indio_dev, module.as_ptr()) })?;
-+
-+        let registered: Device<T, Registered> = Device {
-+            indio_dev: device.indio_dev,
-+            registered: true,
-+            _p: PhantomData,
-+        };
-+        forget(device);
-+
-+        Ok(registered)
-+    }
-+}
-diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
-index 1ab41129d557..dd883c1b374e 100644
---- a/rust/kernel/lib.rs
-+++ b/rust/kernel/lib.rs
-@@ -85,6 +85,8 @@
- #[cfg(CONFIG_I2C = "y")]
- pub mod i2c;
- pub mod id_pool;
-+#[cfg(CONFIG_IIO)]
-+pub mod iio;
- #[doc(hidden)]
- pub mod impl_flags;
- pub mod init;
++    /// ```
++    /// # use kernel::bits::genmask_usize;
++    /// assert_eq!(genmask_usize(0..=0), 0b1);
++    /// assert_eq!(genmask_usize(0..=3), 0b1111);
++    /// assert_eq!(genmask_usize(1..=3), 0b1110);
++    /// ```
++);
