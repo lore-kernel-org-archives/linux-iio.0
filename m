@@ -1,84 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794213875;
-	b=Uh6jCWzsej3Prb42pOmy/NpUv7Pr+LQmVDcW6bMRJ4Qx5y22XKrYjtSDwe7eMgdDQRU9
-	 yu+wYk6O9xM8bSr323lL5PvKzUm50NM6rBcdWk+du54Nk8Z6Am+FXm42W6zAJ5+5V0fkf
-	 nMRK+L6EU6znC2HfP9NzJxMkVxPKh4W1w9J+4ztpmbBw8CTdXFdMF21Ctsv+cHidtUNSN
-	 CjwSLnihEyy6dPqGt/m7qfKPBNpdjDuCsbRwqmeyncAJqlz5fBME0ulUezp6vc9eAlDHU
-	 4ou34C26sW2iSw+j2NW0IHUFaUr7YgEliNZWllGKad6Dlck+Z9kCwAw2VWAYNi96jwQ==
+	t=1794213883;
+	b=a0ZVs5WD3WpKDhQEm/8AXr26s3ARi9CYxuttJx7T7vczPNBXA26ZZK8PQ/8rjKHcGwe6
+	 eV8Rr5LsjHYmPJOzzklNVMX5hijS735f3oxIZz/fVtac9avw+ef5GEazE4I4kSf6yBicK
+	 XPL/n18HnYrLvMsXd6MBkaSCbiu06tj89+mP/qlv4z0KczGC370pYfiUh+PGTtBZF5qiI
+	 9JXMdrUiHpQJ/pHpaf9kwRroYJYfh1Ki0qumBZKEoyAGQl3GRmgvmkJrqET5VOtf0SkHb
+	 b3yBRDhtHGZpVi2nphDDCwmbcLa2KVmBTfwC0N8BnDTmF7QUkCJKqW9HZADbeY9mLbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794213875;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794213883;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=2t//9uJx4ZB6YPMhb8XACeHYVkuv35YUrcSuSX+JzC8=;
-	b=sUMArlO6KnyBUxBf1DxcDJu3BryZjNYcEQLeh9xIMPFW2+jqSg/hf2e/vYcVh3m6Nqor
-	 UkanEJWZqF4Wuckty4Wbf1JjIKrvPyDligLt3OCE/56zTA/vl9KP1sDHfezzgspMRRiul
-	 1jcytUOYw+Tkhy+HEmKIG2ChU5oiFJ37r25GXEccBDfQD7jAKx1Tzd1SwARYhTnGTJprM
-	 /1nRaa9sxPe+xfZVPoBw3nSiJeBZK4JDI0gL5C7dYYIsv+1hRBSrWs69vsux8taiLn8Mb
-	 kkA76qzZ4PGiSB3dZyScgCOyfOnw+vfAqHXYjXlGoPjsP6Emgx++Dv8iKwkYN/xj2Lw==
+	bh=cg2C9sgT2sD7yDisbnfHPJYeRJKqZMharkjHKRD6Qk0=;
+	b=cUt9xGuMmmxt4chpxTNUOQ+chlR6xR55udTRiq75czVUzB6MQVyi5MbmXXk/1NqfWsOk
+	 x1fvefHiTY0qcF+wd2AYGKUrJT9TxMVgyHNfjgRfbXH7reDY0xF12h6RcesCFQURYM5dR
+	 Dc97pHKimKOGJ4eEHUPIUGZVGTDsm72d8pxptTMnpjIKFhcqJ6Lq5RoCLr4Y2XyNsYrjo
+	 m0BOp3D2eId/F0TJVqH3yB4/rShgzInoIFBjLTtE+lBcgJhAocJte3dRf2HGXMQw+ULuU
+	 tusdG6vp4Hop7jSqmn1KDsAy5NEOQ9GUrdBb+mv8rVnlRW7w/vRpwzVzrKCrT+mUKpw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Bm0G1mlB;
-	arc=none smtp.remote-ip=209.85.210.182
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Kk0+41Ii;
+	arc=none smtp.remote-ip=209.85.210.170
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB4ED606EE89
-	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 08:44:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB4ED606EE89
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECDA3606D80B
+	for <linux-iio@vger.kernel.org>; Mon,  9 Nov 2026 08:44:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ECDA3606D80B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Bm0G1mlB
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-8a05b210703so218012b3a.0
-        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 00:44:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Kk0+41Ii
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-8b5efadd183so242324b3a.1
+        for <linux-iio@vger.kernel.org>; Mon, 09 Nov 2026 00:44:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794213874; x=1794818674; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794213882; x=1794818682; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=2t//9uJx4ZB6YPMhb8XACeHYVkuv35YUrcSuSX+JzC8=;
-        b=Bm0G1mlBg36VOlOKbaYtfvd7iz02XxXqEqyu3Yu3B0ZwafhpkmREZyzSIhQzXTMAyj
-         H0bvBX+5pXaS350DSa5D9S/ESPF34LYyUWYSPPOWK2foyW/e8ckSvao9odPEB3S/BiJz
-         gWxL4Bc+vP8DmSNBuDj5ckTDkLsCX5/4xYbzNY/IRybLyYMCVon/8fQVRRZ6vWrlODtP
-         x1bdQVfsSuo7A6leT8sQsGOEOYp+DWByFkqgRNB6XkznZwClvjFWoym6/2IAODONtI7U
-         W8nMCgzaW8AERLPQAAAx5h9KPPeXfaR2Hp67Bs9S22684hEKAIIuynvvYb8fdcfbNNtn
-         TA/Q==
+        bh=cg2C9sgT2sD7yDisbnfHPJYeRJKqZMharkjHKRD6Qk0=;
+        b=Kk0+41IiZ86WrtBrM2QWCnZtHtfihQTO7xbJBbL13BkGagpW//D2ACTv8mpEqVsMkK
+         JwsNfWvvenG5VWdl2R0/sRetLSSb9nqfoMfIdwrX5zsGV1R1AgTo3VIz8B8rCvF/hevA
+         kT25mQY3Z2sX2AMh0olrTtIrlEuKA39NdF85jfMtkjgiPYt3Ym7nlXuslrIxCTJhiyXs
+         k10MdfywZ8tcE3kgKhZYbOD00L+N9hchSGxE2hIlVtX4Jx6kt/eWCs9TEU+1rX/EXzTc
+         o7Sn8OeAK6bpcZJgvz2fOyNFyrvXeuEFEE5e1/z5cMT4HlEw+pAr+yKthVb+ljvy7IZZ
+         YANQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794213874; x=1794818674;
+        d=1e100.net; s=20260707; t=1794213882; x=1794818682;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=2t//9uJx4ZB6YPMhb8XACeHYVkuv35YUrcSuSX+JzC8=;
-        b=YPA9KQcxGt8834ULw9Ba6tBdJkuE3Lm5YCRln/gm6+77Orjs+RKEWBjRtCh6mYUgXO
-         7aVGRENgquG++Q/gWdvd+6oYmdmPlqd2t2YnpF7yMzEb7YZw+gdQcKTFDsJmlV3Gxa8+
-         SKtUsC2b56xffR3DXJBcl53BmBEcBoQy8DWvKK7sfQlgwrI+KgRt2rVb8J3v/Vr3EiVn
-         yDiXXcAr5+u/gKg48qOr8b8Iu0GuqIoTrIMp6Kmjx3u7VN5zhDVvBPVkv195gYFzN1xG
-         2DJIuE3LAAeqGX9aj4NMFXRgydYG7/QvmMnMv7JkLUakVKTCV4Pih6MIZZyzcuS/sANH
-         fhYA==
-X-Forwarded-Encrypted: i=1; AL+hErGyASlf9TuuuTCp7ZlHNcZp5dU46v3Y9xQ18pEH7Y3fmm0GEbZyw0TSIRnRZPxuglLyRhSh6kwwVaA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/E9Qp6Zs9+zSg6ItpDXl40JxjBog7DLRHjarFZofJDtkiA6rjs
-	QbuPAMIh7YI21yXKlpw7pHjG0a82xvG5PtRL74iaVYXk/R12IuXpFqnM
-X-Gm-Gg: AYBFou2Iz74dB2058SUa0W6HaecdbDtrzlBaK/BLSCPE4osM1M3sphWA0+8zYQkdYvH
-	oQ4TJo4vXi5ULcU+oMFbe2xeaVq4pUPfaqKwRiZ36cs7rC3m3v9E1ZvorsOE4iI5qZbQc1lP+ux
-	WRfdXJNJUjz+xfoUapsxQEWT+ZYye+YDy6f3YHtVXR7cbR6kF9MvplxzrwMISI5ZTlt76VxREUl
-	/9TmuGI56sL8rvE/Et6YLDPYwLu5Ck+Q66jXOVTwC/uNa4BXruV0Y092tzLqZPyjR/LZAVFK8/6
-	8SXm0J3v1WaphHa7r35kt1mU+7O3ciGcVeF/NsUDHCYsYk7AT9hANQlZ9e5qLrDD2jhqr15BOTv
-	fuhvUx23Z1URR+3XNto8V5guaj0TzPoz2FRUuEMnBRS99XfG2F+d1yE/LUR+/Q4XOBXAcQr6SkS
-	rACHpHPXK8pa5HY9kxXmPw1JjKJkx+mvYHrLuPli1JekJjd1nJ1YzLGxYFZwNIno/QWvWVJPj3j
-	07w6e/pkXC64N/71zOkGBhJ9iSk0RJaQsrwHZRm3ipqizSJ/s5toD7zHqt6vD03Luo6tr75VMV6
-	wuxYWy7uqlBKkKrN6q/Z814Ku7PmGsO3tM+XnlXxf3zuok3Ifl+I8G/xMDPZeLe2i1NW8oLF3JZ
-	5Ql8RDIfg+Zwy2yXij3NXYo79h9jNJt+cTHAJDQnCIXDD
-X-Received: by 2002:a05:6a20:e212:b0:3dd:a009:3182 with SMTP id adf61e73a8af0-3eed408b25bmr3360834637.42.1794213874193;
-        Mon, 09 Nov 2026 00:44:34 -0800 (PST)
+        bh=cg2C9sgT2sD7yDisbnfHPJYeRJKqZMharkjHKRD6Qk0=;
+        b=xrkzoEPB9K1UWy78ZdD1K0tSceTsRsxi1ek4SI9czC3GOxI+qFKqA78vBdiAw7AbuK
+         OZIpjP/cUt3Vy95FOhcjUZsXrHL6WSI7j7h+B4dIOMAljILQixSzgfg+Vr7I3bKmyc+L
+         OVmfT+So/G2vew3pOsZY6mWzXiiP7XVYRSUM68sAWXCW5paCxgJLUCZSL8XV8yekgtOA
+         ZJBlpqBpV7xhlAsCiVepMl0m+A1xUdTIdwwpDuHAZ3GW3zVzRyu5T3G6NcmyQqEeRANH
+         lJnY+DRMsqhEvGjXOzOK9fNzzbh4pjdavfKSR4/stz1X+n0gBqyeA7f7uuMH+AKJMl0t
+         JaQQ==
+X-Forwarded-Encrypted: i=1; AL+hErFfokB8MbAUVWX/RDMUnFrTHVtuMyEn6ioLUBzMbwom2OBsfpIi851Q6N9Gb/LAOt05WqKPKH4tIOM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z85FH1siZC11K2Rog7qEqtsMc9TcYOQjcbo4kTvDt4P2bI6f+vj
+	kflEDHiPfkfkJtBtkzFxGmz+GAckquzgdZPCwALIE2FwTziJ6qjbprAdI0At9A==
+X-Gm-Gg: AYBFou3dxw9CdY9HLwAI4lepvDwK8dkkTFGmumPO6Gu77J7W8NHRwaZtvHDC/mzGvwY
+	ZnCq5L7foT62FEW3dfiI7+86naQ/fnr65+ER5di5lwxYEeqbsXYS4Z6tLzNqcpuU8Vl5q2vCd1D
+	8QhA4liflYh5qiurP17+8jbWbxFaSkcbhqfHwpBpAXZXPLo5DkaWpgc06/2ojXOv7xHIqiURd/h
+	Afe80xubdc61Al/wfSjNWLDng9weDLKxSP+VX0z8ZeEAkJ/hBUXtya66OcYBGHVlMY5nFHPHA60
+	6zoqN/RMc/M+icTWEXpoEVXsOtAx64TNHujPM5BnbZpXtTyTOPlG2wfc2K/FzbrkExXgQhJbEoM
+	XL7bjtfHA4vhburKWMwjdedogs9FBgGshyiJQ2Pv+7IxYgetwdkNt3T64YN6WglfdsSGMmMPsyf
+	QG5ruHu0BLyO69DRzrSwRjTjh6aWNH19AA4TXv5jOzu5EvN/cd+MJekfjk8ur50NEW3NSufRL1S
+	lA1U9aE+icOq3OYCHTuANywhQeFFhXPV00H+k4n81gog++JlaLm2fgV3BV3q80wgRBOdkTiCDBQ
+	nfpQx+ml9g61KJVcPQj23S0ZoNDEEMqcs/LGaBzI42oyBniqAUGCOP8Qw8U+PuaiKq0N91nJBDC
+	TfoZhmTYMhLRbD/5ghs6Y2j1fmc2N0eb70+zGcdm9QbSz
+X-Received: by 2002:a05:6a21:488b:b0:3e1:3734:63e0 with SMTP id adf61e73a8af0-3eed3a51361mr1937124637.41.1794213882243;
+        Mon, 09 Nov 2026 00:44:42 -0800 (PST)
 Received: from phuc-desktop.. ([183.91.15.56])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb96816fc6sm1413751a12.5.2026.11.09.00.44.30
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb96816fc6sm1413751a12.5.2026.11.09.00.44.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Nov 2026 00:44:33 -0800 (PST)
+        Mon, 09 Nov 2026 00:44:39 -0800 (PST)
 From: phucduc.bui@gmail.com
 To: wbg@kernel.org,
 	andriy.shevchenko@intel.com,
@@ -91,9 +91,9 @@ Cc: andy@kernel.org,
 	nuno.sa@analog.com,
 	phucduc.bui@gmail.com,
 	sozdayvek@gmail.com
-Subject: [PATCH v4 1/2] counter: ti-eqep: Fix runtime PM leak on probe failure
-Date: Mon,  9 Nov 2026 15:43:41 +0700
-Message-ID: <20261109084342.51865-2-phucduc.bui@gmail.com>
+Subject: [PATCH v4 2/2] counter: ti-eqep: Use devm_counter_add()
+Date: Mon,  9 Nov 2026 15:43:42 +0700
+Message-ID: <20261109084342.51865-3-phucduc.bui@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261109084342.51865-1-phucduc.bui@gmail.com>
 References: <20261109084342.51865-1-phucduc.bui@gmail.com>
@@ -108,95 +108,53 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Stepan Ionichev <sozdayvek@gmail.com>
+From: bui duc phuc <phucduc.bui@gmail.com>
 
-ti_eqep_probe() enables runtime PM and takes a usage reference manually,
-then returns directly via dev_err_probe() if devm_clk_get_enabled()
-fails, leaking both.
+Use devm_counter_add() instead of counter_add() to automatically
+unregister the counter when the device is removed or probe fails.
 
-Manual cleanup via goto would mix managed and unmanaged resources,
-which leads to the wrong release order. Instead, use
-devm_pm_runtime_enable() and pm_runtime_resume_and_get() with a devm
-action for the put, so every probe error path unwinds in the correct
-reverse order. As a side effect, a runtime resume failure now aborts
-the probe instead of being ignored.
+This makes ti_eqep_remove() unnecessary, so remove it.
 
-ti_eqep_remove() no longer needs to touch runtime PM. While at it,
-report counter_add() failures with dev_err_probe().
-
-Fixes: f213729f6796 ("counter: new TI eQEP driver")
-Signed-off-by: Stepan Ionichev <sozdayvek@gmail.com>
-[phuc: reworded commit message]
+Suggested-by: William Breathitt Gray <wbg@kernel.org>
 Signed-off-by: bui duc phuc <phucduc.bui@gmail.com>
 ---
-
-v4:
- - Reword commit message of patch as suggested by Andy
-
- drivers/counter/ti-eqep.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+ drivers/counter/ti-eqep.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
 diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index 0dda3f2b14c7..2326515d5585 100644
+index 2326515d5585..1c26008846a0 100644
 --- a/drivers/counter/ti-eqep.c
 +++ b/drivers/counter/ti-eqep.c
-@@ -491,6 +491,11 @@ static const struct regmap_config ti_eqep_regmap16_config = {
- 	.max_register = QCPRDLAT,
- };
- 
-+static void ti_eqep_pm_put(void *dev)
-+{
-+	pm_runtime_put_sync(dev);
-+}
-+
- static int ti_eqep_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -543,19 +548,25 @@ static int ti_eqep_probe(struct platform_device *pdev)
- 	 * parent PWMSS bus driver. On AM17xx, this comes from the PSC power
- 	 * domain.
- 	 */
--	pm_runtime_enable(dev);
--	pm_runtime_get_sync(dev);
-+	err = devm_pm_runtime_enable(dev);
-+	if (err)
-+		return err;
-+
-+	err = pm_runtime_resume_and_get(dev);
-+	if (err)
-+		return err;
-+
-+	err = devm_add_action_or_reset(dev, ti_eqep_pm_put, dev);
-+	if (err)
-+		return err;
- 
- 	clk = devm_clk_get_enabled(dev, NULL);
+@@ -564,20 +564,13 @@ static int ti_eqep_probe(struct platform_device *pdev)
  	if (IS_ERR(clk))
  		return dev_err_probe(dev, PTR_ERR(clk), "failed to enable clock\n");
  
- 	err = counter_add(counter);
--	if (err < 0) {
--		pm_runtime_put_sync(dev);
--		pm_runtime_disable(dev);
--		return err;
--	}
-+	if (err < 0)
-+		return dev_err_probe(dev, err, "failed to add counter\n");
+-	err = counter_add(counter);
++	err = devm_counter_add(dev, counter);
+ 	if (err < 0)
+ 		return dev_err_probe(dev, err, "failed to add counter\n");
  
  	return 0;
  }
-@@ -563,11 +574,8 @@ static int ti_eqep_probe(struct platform_device *pdev)
- static void ti_eqep_remove(struct platform_device *pdev)
- {
- 	struct counter_device *counter = platform_get_drvdata(pdev);
--	struct device *dev = &pdev->dev;
  
- 	counter_unregister(counter);
--	pm_runtime_put_sync(dev);
--	pm_runtime_disable(dev);
- }
- 
+-static void ti_eqep_remove(struct platform_device *pdev)
+-{
+-	struct counter_device *counter = platform_get_drvdata(pdev);
+-
+-	counter_unregister(counter);
+-}
+-
  static const struct of_device_id ti_eqep_of_match[] = {
+ 	{ .compatible = "ti,am3352-eqep", },
+ 	{ .compatible = "ti,am62-eqep", },
+@@ -587,7 +580,6 @@ MODULE_DEVICE_TABLE(of, ti_eqep_of_match);
+ 
+ static struct platform_driver ti_eqep_driver = {
+ 	.probe = ti_eqep_probe,
+-	.remove = ti_eqep_remove,
+ 	.driver = {
+ 		.name = "ti-eqep-cnt",
+ 		.of_match_table = ti_eqep_of_match,
 -- 
 2.43.0
 
