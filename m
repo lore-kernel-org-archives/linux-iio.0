@@ -1,62 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794254568;
-	b=Vssy2k4bqDy1QB/ca1RsXuZJ2VgRjZznsveBxuHfCueNyFRyYfejg8W9LqQyHNd1iBo7
-	 v0eU7XKwcbH2I1AcBYcQdK6x4OoLRQ/i6QE3WEYsE+jfiY03TaTaqOcUT/MbTosiAMnWl
-	 LRIxO3OAF/dc54w3f/j/hUNwQPeOphb57+lA8zKiykBtvsCXZUCdBN01WMzPI+0txmAEy
-	 Y9n0QCUmV8W/OmaE7zm6es0IVpu78mrfkmdt+Y91U3ix3w0BzY1t5Br8Ya3a0gL1KO4/2
-	 j+mHaduqjCgc3UudznVfDoIGbxepVxqkoRtAtXP/a7q5qBNw++RjEzMI1h1oJodm0BA==
+	t=1794254605;
+	b=ElnIrFsrdGHETjbKxXd0xTrmlj+Zhl8odQqOIhGm96r4xEMzrceMpa/s6XWBuTEQKY8w
+	 ky/mu8phQTmUUbJK+Erqa8yy1/up0Joj7xR2s457RuSIIFjLC/RPVysh3v7+N8/L0RuoE
+	 /0wVFOuZnm+2JEBtby6s7IOf08bOQlr3evbhAx2pI90ejkTzu9TDztEI6AJKr9V+KcU3c
+	 mxN70m9Pyn/OsJt5aiPmIwP+X1BVNaSOwYS+IXgqaQNljvkY+fB7TOGSmKhK9I6dUUu2K
+	 KT1SQFIFX8a0+fB+Q5T28YlIDx/hLN5Y8CxDOcrwQwkPcZrkFltrjtP7SjC+7qeEaGg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794254568;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=vNR0ykVAHEtqTIkdYCm9V6E0Gs8h5risRxDrcudv7l4=;
-	b=JvvTqhUIpVr9YektNn5ayZ/0m+MJsEN1ZyOiCakldohD0Ej3a/2/V1a1pv+3VH5TEVhC
-	 wqTjV+hQWdwbd87u+2lpfAFxghkfo2rDLVxVA1WHke18LGO+JsrUoxessPBGLUp0t9HIS
-	 hzGun4gPziEfPRsgCG6anOqFcjF39m+9qtZOMtASaxSuWlNPZWZowHKzOgKZmQ8KpeEe3
-	 ntLhD4ow1iSN8W7BzgBF0mjs1iiCZRQaZCCWrfnmfYxT5ReOYiGN8nEAKBgFHztTQWEmP
-	 X/245T4glLlt8TOCsSj7Ft7YtA/Wc0LMBmFxH0tPHikYsEj47mx20Z2qNDgpXTtCqjQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794254605;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=XdJLJbVIQHqVGKpuMShdQSgSFsm+69CBaBnXPW98sOs=;
+	b=vs4pVYePCXhHjIdXpzBQ6tynyAJKBxWp+tkOw7uMUceNrKKOEXlGJkQdM7fPyngEZnaI
+	 jNljZOHTaDDYouyhwyFrTcNbIfhaL9BbSW0Q3y8QDBdEk8KhbKnGi6InJJgqdXv8V9NsZ
+	 djZvU8ob8lUFFLllpBIA2rFwXY/jjfX3ctZmIDRhPGE8HkYlZKGXJcJUQdJagrW8YbWFL
+	 aKhi8E1uLz0wtpHUNBXYrIvKsS6QFrDxTTLfZiDMthzPi6iiHYmLJLqe2F3RwqONy16W3
+	 v5NM/UAcc1torSg7LtA36IQEbC3Pa7IRM6NM7tSeiEP/KF6IRc0toVfYqw4DmU6n6vQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wc10VUTz;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CgcfhwZg;
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38EA2606A321;
-	Mon,  9 Nov 2026 20:02:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C851606A338;
+	Mon,  9 Nov 2026 20:03:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6C851606A338
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wc10VUTz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4867D1F0089F;
-	Mon,  9 Nov 2026 20:02:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794254568;
-	bh=vNR0ykVAHEtqTIkdYCm9V6E0Gs8h5risRxDrcudv7l4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Wc10VUTzHqmn7VHFrA2EeDbMEi790+7b6BBK/XYspp1338MBDZJNKaoPwcC5FNdWq
-	 v4XW3Jfm9koRq6Ok+1zR2T4FsF/xKHbmp8GxFiP9r+n8rUy5me2zg/JYKAHpTlU5vj
-	 7sAZj6Bb136TA4u8LshcIYV1czDoU4uwwIZ4CgfjdNNHDkxgxYhAy/DasHCV3vN3hT
-	 07v82vj7rDkJZH7vQbswjdu26LiXhfjIB5tBl7Uwo0VW4Bb80FTarWp/G0m8detQl3
-	 AK/d8tZhgW2TFk48U5cjqmeJZqlhYUmzz640sL/KbiqthCQv8gxexiLoPgbG2TgEM9
-	 Ibjc3lbUW2uZw==
-Date: Mon, 9 Nov 2026 20:02:43 +0000
-From: Conor Dooley <conor@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CgcfhwZg
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794254605; x=1825790605;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XiFIr4wIIdZ1lLJz6CyLg064mfrzts0usX5vfZ3FSIQ=;
+  b=CgcfhwZgUSX1lY81cRELxJRoEomZ8Wu4haOPqMQ1jS2OqwhSz+hnH+Qv
+   hVsSjm4yjZNXut4e9p+fgsRJcbJWVA1K852M4GxDiqU/o62om20BJ7+Ox
+   985zt2OAk5FfQODDwxmFmcrABzIYq0017USjPxl5jBa4MyofzFX0nHSqi
+   j4yoAcIdIo9AK+EccLpi23pKbo4OqBekWiUWNG4ZPvxbx+msQNUzVBY0j
+   fy4TaV5J5VjFMZEyd0jSUoTNi8WY/6NxDMCJVcum1GlBGtO7j2ZdrRcEy
+   Im7KsEtxeeVTNTEleL331iNBGxXAu/nVHUCVW9CQdX9Nzb7t/lJIlekyH
+   g==;
+X-CSE-ConnectionGUID: bmOTn4s5QE+pSxL+dJUBCQ==
+X-CSE-MsgGUID: pVLlQRE5R6mlk9cbcXU2yQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3024009"
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="3024009"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 12:03:22 -0800
+X-CSE-ConnectionGUID: Nz1IaT65RqW47aDh6LK3Dg==
+X-CSE-MsgGUID: BKmsxJrwTT6uIgKFs3l55A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,204,1787036400"; 
+   d="scan'208";a="7777487"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.144])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2026 12:03:17 -0800
+Date: Mon, 9 Nov 2026 22:03:15 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Lee Jones <lee@kernel.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, mfd@lists.linux.dev
-Subject: Re: [PATCH v1 1/4] regulator: dt-bindings: maxim,max8907: Document
- io-channel-cells property
-Message-ID: <20261109-chop-antiques-207024c192de@spud>
-References: <20261108095634.100517-1-clamor95@gmail.com>
- <20261108095634.100517-2-clamor95@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Esben Haabendal <esben@geanix.com>,
+	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig_=28The_Capable_Hub=29?= <u.kleine-koenig@baylibre.com>,
+	Pan Chuang <panchuang@vivo.com>,
+	Hemanth Selam <hemanth.selam@gmail.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Nikita Travkin <nikita@trvn.ru>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] iio: light: ltr501: Switch to read_avail() op
+ from manual attribute registration
+Message-ID: <avInA0Qgi841Fd9f@ashevche-desk.local>
+References: <20261108094253.83899-1-clamor95@gmail.com>
+ <20261108094253.83899-2-clamor95@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -66,28 +92,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="LDUk9pA1Tl28Sgma"
-Content-Disposition: inline
-In-Reply-To: <20261108095634.100517-2-clamor95@gmail.com>
-
---LDUk9pA1Tl28Sgma
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20261108094253.83899-2-clamor95@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-With JOnathan's requested change,
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: changes-requested
+On Sun, Nov 08, 2026 at 11:42:50AM +0200, Svyatoslav Ryhel wrote:
+> Switch to the read_avail() operation from manual attribute group
+> registration. This eliminates the need for per-chip attribute_group
+> structures and related ltr501_chip_info iio_info entries.
+> 
+> Adjust LTR501_INTENSITY_CHANNEL to account for the new
+> info_mask_*_available layout, allowing the removal of _shared since all
+> intensity channels share the same layout of available entries.
 
---LDUk9pA1Tl28Sgma
-Content-Type: application/pgp-signature; name=signature.asc
+...
 
------BEGIN PGP SIGNATURE-----
+> +static const int int_time_avail[] = {
+> +	0, 50000,
+> +	0, 100000,
+> +	0, 200000,
+> +	0, 400000
+> +};
+> +
+> +static const int samp_freq_avail[] = {
+> +	20, 0,
+> +	10, 0,
+> +	5,  0,
+> +	2,  0,
+> +	1,  0,
+> +	0,  500000
+> +};
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCavIm4wAKCRB4tDGHoIJi
-0k22AQD2RiPcErtLmCDgjFTS6DBOlpTiIqr87AKu8fpmvXl2TAEA5QV1Ps/+wa3v
-rSz3rotu4XV94o3kkTmtXwPJhpFBtgQ=
-=twVy
------END PGP SIGNATURE-----
+When an entry is not a clear terminator, add trailing comma.
 
---LDUk9pA1Tl28Sgma--
+On top of that it's better to use 2d arrays (yes, it will need some casting,
+but this will make it clear that there is a tighten dependency between odd
+and even indices).
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
