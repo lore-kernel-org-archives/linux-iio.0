@@ -1,47 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794313533;
-	b=myf9LpHz78mn06VUM9GfX++RTHklBJALeY+7/sTq/6p4lS3Q957p9hoLDycQUr9tc2m9
-	 LbVFytoxvhVvSfKTEdui8X7bjSh/TrEAqXzGeve6OB4L5R8SAGi8ghyYZJfFuL/PxuT0F
-	 5gv3+LgPKA2zibZ4ckqt4Ehjv9diNc4Uxm+UhMMidZHibgP5ilTOIPQESCtdW6+27q3kE
-	 7VEpRQBeA7+DzZj/ThtSgpJZhWv2TR0Gj7fH3I9NLBchdi/W1yin8YUmrRMqOSWnb9Xc4
-	 RWedDtYIf/NzkwtLwaFoNk6+u5bgvstQOQuk7qg1oAl4Y9ZP5faZ3ByoiW7OJjcsKBQ==
+	t=1794319487;
+	b=RQ2MzSA1LTRqvr9Cyutolk7VIOe44V7JbPISaWrFBCOk2mPJ7nTwDjEkf0FrZiIWjv4a
+	 eHRyDMSlWNrc5dHQ7Cy6hkifzITO/h3hB/7sjxlmQQg8KN8XdtIJ2iH3LbB8uqRjfFXSN
+	 E7LAay6gqBDX2K4N3pX762ENTYqrHtaymE2b5aJ1y0R94Zu9iIWzMZPNXfZqd7JwHvuN9
+	 h6wwFu3fW9tUirY/gK1nHg7EIGHG82NZVDsstoPpD5w93ktfCtS/QGD8x+nkx5CwR8hNs
+	 98ZYHXXS+9DkE3Fqv7sorppjZg/G1wZeROBFVhaf/+h/eikVFF2wgy0FWwNnO27G00w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794313533;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:From:
-	 Subject:To:Cc:References:Content-Language:In-Reply-To:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794319487;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=o8vOqPjQp+qIgT4SjBM1vuuP9NkLzsqzq4almCwh0ns=;
-	b=oFQ1RvRXS406PJsCj+QZ3nmxN4FQMJSwNxDmPp6y0MI4P1A5rNsJpOXT7zMx1yhYn1aW
-	 Ci3fTwyfSCCcjN+Ib0ST0u4abDM9kFBhWClJP9SipalzSk5A4awWWuN7lSY3tKe0M7lR0
-	 lCmQCCHc1ZiijrSbRRx8ph3E/tCsQd9NTnKuIuqMZ/rJifKpCus2ssalM55pkKz2k5pfZ
-	 uZFaEt4ZE3VcWZP/K76qrRY1b5QDNC90wsSWaMCo4F5Tr5q+ymQQ+aI6waPkb+wOeHxaJ
-	 Hte7eSR3a3y/++xAGCiYdTr2mYxDhyRQh6JRw8xK3vw6YIGSfCDJG2cCI2AJVW/+29A==
+	bh=418qL2keCn/YC9lRyTTJ32argrNbioPNqzsGFZM0jp0=;
+	b=jXL3EKTNnw6wxQTmejK2uPBcqoSstZZ6DtyKXZFvnp0quL/Vtw1y3tkhjwt6hlAuY86g
+	 iFXCiXKhJrnGAf6gUeXdF3jhaR7qQJD5Kcx9XtLgRN7J5jCmrHJRpjRDDdrkOId1NS1BE
+	 9l/1fClFGjfnDv36Sn+BlcYmGO+aEj2LpbSVJzXjUxBgFDzvGZyjrXIU95PSnDQSQ+cc4
+	 gU9oUwkOeZDKu/gu67yIaM+0Kw0NVAgiJ9sdXU5kRrpsDHxzBW+esvdPXHVCZbx3sppP8
+	 pNBNcOws8Cu2O3N5BjAbJD6fIqFWB+ntQxbmHNIyrxg/vQWCaPcI4lwiB3EYBiElBJA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gr5nohgX;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vWtTmGCr;
+	arc=none smtp.remote-ip=209.85.215.181
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9AC606A32A;
-	Tue, 10 Nov 2026 12:25:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B46260A260A
+	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 14:04:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0B46260A260A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gr5nohgX
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A651F008A2;
-	Tue, 10 Nov 2026 12:25:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794313532;
-	bh=o8vOqPjQp+qIgT4SjBM1vuuP9NkLzsqzq4almCwh0ns=;
-	h=Date:From:Subject:To:Cc:References:In-Reply-To;
-	b=Gr5nohgXHm1YYyj6tvLEZ2lSM8AwTngl7Y9YhcAEKBH+Qk95txebAZ9NtKzrDhbMu
-	 /kcVhI4wBuCa61a001FzAROnBPqNtiO/ytzlzOWo7XJ5chQlrrTZ0jAur7hkGa2Dea
-	 9e8VcncC+5ovHWHZPm9Udas/YhDeQJz+/Hw/DgiFOKQphYC3tCbIwtuUfnQDwnkr0A
-	 NlkNf0d03csKo9TcHJmIS39u4zkv/CzH2xeQIMrUlC8N+o3OuHRReJJo3cYKVKlsnW
-	 Ok7Bxat5Tx0PnCcbiQSm1rkYigOOsx53IhuLC4CVONUmhMnelBCuvRRROviPHPq5B4
-	 hzmGl2iyPjB0A==
-Message-ID: <69a3552e-1fca-49e9-a9c0-66963319d2a9@kernel.org>
-Date: Tue, 10 Nov 2026 13:25:23 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vWtTmGCr
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-cdba1bbde0bso755806a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 06:04:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794319486; x=1794924286; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=418qL2keCn/YC9lRyTTJ32argrNbioPNqzsGFZM0jp0=;
+        b=vWtTmGCrwobFP4zJww8Q+XzfMCl9hyZEiswN2YzfeLyaZY+ThZgKsYFihWrzRdrF7V
+         SwcsnfuoYO+jpoLlnekqtsQFMxUDvHewDr/dYNu/eiGhKpQg5n3vPGWj9sT1jDhNFWZ3
+         B9tESisHXDW9JO6kvF3mg+OA5+edOc5ljNGp6fsEb0fr3zIzuDbGIAl/3Gwdgpbc6EM7
+         g9FJ8LOEYTpTlGif5N9inWvR5ST7Ns5mEZZbF3eLripB0v9gUYhkvfPfFG4frDaAQg+I
+         I8AxymV8Zruu4E8L1ERDWepQ6Cxsp2L6q4Xir/wauUyPAFl/jVpumFuCPcybwSt8INhY
+         dvJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794319486; x=1794924286;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=418qL2keCn/YC9lRyTTJ32argrNbioPNqzsGFZM0jp0=;
+        b=YphzXLb8lp3ODPDwPQRsV1ntYBFJswHkOFkNi/E5IafOYC3z19hObt7lDNV14ZXJej
+         BZ0ftmVE3t8qfUwGMgj55teyH91YRBNTp/DTxzeaQ2xsJ5audWq3qxV6kW9SbXkjmjMY
+         3QxsUIwiKoFVNtwg6XoDrdFjmIO14yqamUAKN6NXbYRj3q8vJDa9XBgvroOZUfUvOFxU
+         SnoQl/ZU4jaBjeskFVvvALJfqjQ9obg7Hx0sQgkISdicga8mRNPwsWHr9GVv4twhDXMI
+         VHcuA21/QIXEVQD+bQAPKUXWXheNDUojz1Ji5AHn+u4WWdJBzC/I4RDY3lnhcWjCRXFh
+         dLWA==
+X-Forwarded-Encrypted: i=1; AL+hErFlL+B11nnTSUw97FbjO9z9s3OxRWgk0SGAlwWdJ2jFmM/MXD5e6cJ4xBbmU+WNvc0dnahecm1tEcU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8B0fUaVVbWF0zRMXtB7iCPgJ0dfYGKo15jSZ6zRMkVjsDbnOBp
+	feTP90kbuA1qf/Py0rquglqhpJt2lep+OMYIpocF3zv6wEsV8VC3mkBC
+X-Gm-Gg: AYBFou1o6ajXIT4O4p+8raoprCIcNmiU51SkTrm9YMvByYnIq2VepMqIA+pTU+qtkPv
+	gi35n1tYD+whJEK0dJfdb8Puml1we5vkAzSzqdeQy5lLxaglig40VucZauRuWrM4fHLcWKi6j+6
+	/nHVXak3ZXDa98guLwAzN20YCadOUAKvqxdIAl+hUdd6O+2Jnfo3tVYKrIatojoRrnUXhLzf3UI
+	/hv1yCnFA9WkdeTYXS76P80CPxVk7iDsYmBOl8XrMZo0/8lW7IZepWLZlL/mXUyA2png5B6r4jp
+	5fQb17RnFnJkF7qSz7ZK2y7ixyAbkA2RqlzIKS5r//8sX4dIeU5A8X0eeIHFjFM60y/SIqbQ7Bm
+	JGCiI/BhvBJmCWBw/D2mq85svux2Kb8btZSktgAeVNhEuL15nqFGLzPoRtR96lZWd5Iz8Ig7SYf
+	idtFDjF8iweRghkoRHshDa2N/Oh9fFADQrWfWH9440IAQD3LHl+suCEa5fnH8f5pkXZ2q08ihAy
+	AaSQrfEuccRA3qshlNYvOEfT7odPz38mjtEijYaV7k1OnyZAHJP2oDSYP4lfSyL76Q/G/SSzWKh
+	9wK803wIafkCRAfwARQnpla1LTBuz+ntPsKYnIyKsr0+gvqtAyI/oS9Ca+5D
+X-Received: by 2002:a17:90b:1a86:b0:3b1:2810:dfdb with SMTP id 98e67ed59e1d1-3b166d1edf5mr2895888a91.48.1794319486272;
+        Tue, 10 Nov 2026 06:04:46 -0800 (PST)
+Received: from LAPTOP-6IS184GT ([104.28.251.150])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b16903edfesm1875444a91.2.2026.11.10.06.04.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2026 06:04:44 -0800 (PST)
+From: Nick <nick21042013@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jic23@kernel.org
+Cc: lars@metafoo.de,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Nick <nick21042013@gmail.com>
+Subject: 
+Date: Tue, 10 Nov 2026 20:33:54 +0630
+Message-ID: <20261110140354.2047-1-nick21042013@gmail.com>
+X-Mailer: git-send-email 2.52.0.windows.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,89 +98,125 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Hans Verkuil <hverkuil+cisco@kernel.org>
-Subject: Re: [PATCH 03/14] mfd: remove unused si476x driver
-To: Arnd Bergmann <arnd@kernel.org>, Lee Jones <lee@kernel.org>,
- mfd@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>,
- Jingoo Han <jingoohan1@gmail.com>, Mauro Carvalho Chehab
- <mchehab@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Pavel Machek
- <pavel@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>,
- Support Opensource <support.opensource@diasemi.com>,
- Sebastian Reichel <sre@kernel.org>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
- linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, linux-hwmon@vger.kernel.org,
- patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
- linux-fbdev@vger.kernel.org, linux-sound@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, llvm@lists.linux.dev
-References: <20260909132153.1596191-1-arnd@kernel.org>
- <20260909132153.1596191-4-arnd@kernel.org>
-Content-Language: en-US, nl
-In-Reply-To: <20260909132153.1596191-4-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 09/09/2026 15:21, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The si476x driver was added in linux-3.9 without devicetree
-> support, and has always failed the probe function in the
-> absence of a si476x_platform_data definition.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+From: Nick <nick21042013@gmail.com>
 
-For drivers/media/radio, include/media/drv-intf/si476x.h,
-Documentation/admin-guide/media and include/uapi/linux/v4l2-controls.h:
+Date: Tue, 10 Nov 2026 19:57:26 +0630
 
-Acked-by: Hans Verkuil <hverkuil+cisco@kernel.org>
+Subject: [PATCH] staging: iio: adt7316: fix camelCase violations
 
-Regards,
 
-	Hans
 
-> ---
->  .../admin-guide/media/radio-cardlist.rst      |    1 -
->  Documentation/admin-guide/media/si476x.rst    |  160 --
->  .../admin-guide/media/v4l-drivers.rst         |    1 -
->  drivers/media/radio/Kconfig                   |   17 -
->  drivers/media/radio/Makefile                  |    1 -
->  drivers/media/radio/radio-si476x.c            | 1523 ----------------
->  drivers/mfd/Kconfig                           |   13 -
->  drivers/mfd/Makefile                          |    3 -
->  drivers/mfd/si476x-cmd.c                      | 1543 -----------------
->  drivers/mfd/si476x-i2c.c                      |  861 ---------
->  drivers/mfd/si476x-prop.c                     |  233 ---
->  include/linux/mfd/si476x-core.h               |  532 ------
->  include/linux/mfd/si476x-platform.h           |  256 ---
->  include/linux/mfd/si476x-reports.h            |  154 --
->  include/media/drv-intf/si476x.h               |   28 -
->  include/uapi/linux/v4l2-controls.h            |    4 +-
->  sound/soc/codecs/Kconfig                      |    5 -
->  sound/soc/codecs/Makefile                     |    2 -
->  sound/soc/codecs/si476x.c                     |  263 ---
->  sound/soc/fsl/fsl-asoc-card.c                 |    8 -
->  20 files changed, 2 insertions(+), 5606 deletions(-)
->  delete mode 100644 Documentation/admin-guide/media/si476x.rst
->  delete mode 100644 drivers/media/radio/radio-si476x.c
->  delete mode 100644 drivers/mfd/si476x-cmd.c
->  delete mode 100644 drivers/mfd/si476x-i2c.c
->  delete mode 100644 drivers/mfd/si476x-prop.c
->  delete mode 100644 include/linux/mfd/si476x-core.h
->  delete mode 100644 include/linux/mfd/si476x-platform.h
->  delete mode 100644 include/linux/mfd/si476x-reports.h
->  delete mode 100644 include/media/drv-intf/si476x.h
->  delete mode 100644 sound/soc/codecs/si476x.c
-> 
+Rename Vref and AIN to lowercase characters.
+
+This fixes the style violations and brings
+
+the driver into line with the kernel style
+
+guidelines.
+
+
+
+Signed-off-by: Nick <nick21042013@gmail.com>
+
+---
+
+ drivers/staging/iio/addac/adt7316.c | 12 ++++++------
+
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+
+
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+
+index 20f6052cc..a71502cf0 100644
+
+--- a/drivers/staging/iio/addac/adt7316.c
+
++++ b/drivers/staging/iio/addac/adt7316.c
+
+@@ -663,7 +663,7 @@ static IIO_DEVICE_ATTR(da_high_resolution, 0644,
+
+ 		adt7316_store_da_high_resolution,
+
+ 		0);
+
+ 
+
+-static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
+
++static ssize_t adt7316_show_ain_internal_vref(struct device *dev,
+
+ 					      struct device_attribute *attr,
+
+ 					      char *buf)
+
+ {
+
+@@ -677,7 +677,7 @@ static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
+
+ 		!!(chip->config3 & ADT7516_AIN_IN_VREF));
+
+ }
+
+ 
+
+-static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
+
++static ssize_t adt7316_store_ain_internal_vref(struct device *dev,
+
+ 					       struct device_attribute *attr,
+
+ 					       const char *buf,
+
+ 					       size_t len)
+
+@@ -704,9 +704,9 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
+
+ 	return len;
+
+ }
+
+ 
+
+-static IIO_DEVICE_ATTR(AIN_internal_Vref, 0644,
+
+-		adt7316_show_AIN_internal_Vref,
+
+-		adt7316_store_AIN_internal_Vref,
+
++static IIO_DEVICE_ATTR(ain_internal_vref, 0644,
+
++		adt7316_show_ain_internal_vref,
+
++		adt7316_store_ain_internal_vref,
+
+ 		0);
+
+ 
+
+ static ssize_t adt7316_show_enable_prop_DACA(struct device *dev,
+
+@@ -1684,7 +1684,7 @@ static struct attribute *adt7516_attributes[] = {
+
+ 	&iio_dev_attr_enable_smbus_timeout.dev_attr.attr,
+
+ 	&iio_dev_attr_powerdown.dev_attr.attr,
+
+ 	&iio_dev_attr_fast_ad_clock.dev_attr.attr,
+
+-	&iio_dev_attr_AIN_internal_Vref.dev_attr.attr,
+
++	&iio_dev_attr_ain_internal_vref.dev_attr.attr,
+
+ 	&iio_dev_attr_da_high_resolution.dev_attr.attr,
+
+ 	&iio_dev_attr_enable_proportion_DACA.dev_attr.attr,
+
+ 	&iio_dev_attr_enable_proportion_DACB.dev_attr.attr,
+
+-- 
+
+2.52.0.windows.1
+
