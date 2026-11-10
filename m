@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794327919;
-	b=1Uysuf7xE4LImfaN0K7aJw0Et1KrbgBCQvDF+7JM8PwfIYtiaxQRHlsO8UgVujoi24MM
-	 1hWj9dTWKEUx/WkU6DxCFiMQu5RZxyRtCywnsMHb+K7KDz4XeBahh2Eo1cNtK0BUJaq4s
-	 zqK1JG5B56qVQSqNacLN97p+Ls/WPE6ZPPwK/Iq5Ic08Lh0wNWGw4PAc95+suJDJmzcbI
-	 wCjUK1r/Fx0i90DgTm2kY/vm04zcFsiBtfZPfkWtYv4aqazD++h+REZ2CBwgDh0NRWgWc
-	 Kc3gB3rQpb75L6AVm2eSD5Df7o1ZkMWr8Q/18PEuGUhB/YF5+zE0uu8TEdLws9bOgkA==
+	t=1794328185;
+	b=cXuPqiSYmecXoBT7DVrY7Cnz6mBm6c1/zFBSxwrljYVEoaBAil6g4u51nFwfGo0SoD8p
+	 fItbmb3Ksy8jkGIQRIM7+qCh/nJfQq6fzDwLkBm+PQ+N1+aKAc3lDn/9pcPVZjL/Uvfzz
+	 tr9ONFIu/xRXwvW8zcBi3dEidxEz3qLWWZCs+RUqIXnuX8RboCYT8GrS1jk+YqUZLmx6o
+	 qO8JpE8wkaKETADtLz0iXj1+hgmT+sIK05IL3rgBYigroz8mE6rWJpDiQYqAFmeQWVzjb
+	 BH5u9cVY4R+DeE708/B2z291x18mVUGLydbcgeuu8pcqphptkh9pGgX01Zhl+MUcuJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794327919;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794328185;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=EeDJ3iXHw1eTGr3jYLp8sNAP6zgbBAsImYmgoG9HH1E=;
-	b=UKzxiB/M6wqYdre0nYr5JHmfg7bYFt7LVg4ahIP2eNgSjvyaU2eRJx7R+JLYeBgHYY30
-	 uPZlUkvgrXxaER1PlJOSkpksvWNVSNe6oDfmYxPARnvkIq1qrkefZxVfn9m4yAlC6IHla
-	 k1gzSOYsBFHjz4FNQBpjASheglbBL1RdJg6gBiODO58K982spavEPFo/jY8zAmRKKltPt
-	 aCFFYV31p/k7cnaVPhc+Yrdx3f0VOH8paZtDwTpd+0xwtML0VZ/w41+m0Zc0tcI/ZAvhm
-	 mfg9zmHOcN8oVuPBO75G9wdywSdaWGxZK4ubBElzV7WP+G/aVHhQFBBH/jJR7PIFD2w==
+	bh=eSliAbjh7RZqlvKIXCr1lf7kB+SLn3Ee8ByU0n0PH90=;
+	b=Z2PncI4erhDz3B0+dK/c8e/o3PGgqBHSDWLL+USy5N0fJPqIWlafSMDC2icSpDrWo4NO
+	 p9brufWuTlficjzsKYN6zsaESCpKjGV7sIhOrLf7+VMnL/n1vDdsSZ8VP1C5z3qtwejLd
+	 36boFzRwQq8M4ptUV/S6tWEeC+dv27l1umyd1S+LRSsinydEnE/8oQvskV0q8O8ZqJUwp
+	 WcVQECp/YfA7UQHmRmZXFvZyb4aYbE8TVQEgHlMzRjk6OrvHHMhiq4YGX5fSGbkuJt/s6
+	 WyIPjkwQjFtXdQBXVEgNP/uORgNeYDKB9vDJm4aAZ06YlsuxQehGkl6odSbLa7MXeug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aUEhOHj2;
-	arc=none smtp.remote-ip=192.198.163.17
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bcyXhzEW;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FC24606A33E;
-	Tue, 10 Nov 2026 16:25:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4FC24606A33E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEE6760A6F63;
+	Tue, 10 Nov 2026 16:29:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BEE6760A6F63
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aUEhOHj2
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bcyXhzEW
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794327919; x=1825863919;
+  t=1794328183; x=1825864183;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=lyuz2D4EmFcet2JRZyG53EVIYy8D1CxnxYUn7KkldQw=;
-  b=aUEhOHj2SvaeWr/fGfZlqJfy4skYaQjqfwpJr1+wwLgOGQl1zEQ6CnEi
-   Y/cWWZBkCTkKI+mM+Saj4L57FSvSyU1EDYrFm6AvjHMHwNXdiNa9HjzwU
-   COrgSVal1qbDTrgcpPblyoTlQmD8u3BNdK9vppL1E1fZgblqqJWWo5bxL
-   PSUrI4zE+mTtIhYCqNXEdLfh5bBLTP4pbt5vYu32CuatYTx9DCxuMIXX1
-   HwFmmLCdp7V3+AFnYehR0Lz6PVHqc8XjZFVpjpeGmdGMOith/UcTd6kN4
-   r7b0xEOntyTf6sVsGntaHqT67G0Mlhgt5VKcXzmSe4XyL3+WUSdD2vL8x
-   w==;
-X-CSE-ConnectionGUID: 4jqyuKGJQzC+X3laTfuSDA==
-X-CSE-MsgGUID: R8eCt+8bTqmlYPY91rQ3jg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="3082520"
+  bh=fJlR0bo8pnYc/LIMgKmawcndi2oTRuM9VysMmlsls1I=;
+  b=bcyXhzEWdqdVKXUJni+XQxGQrQ0nj+I3c1D5ob3qiMpkecqK81MdAshc
+   IzX13UzcWwu/8IN+cD6dUgCsFonYMCjbKIRGfCa4W2idx5uLjFaX6xoDV
+   3Q3q3BwU1cwBmKLsap29is4SjZWWUYnIGPah2wNWXwL9jK9IkScWLLOsR
+   jmjuCQuEAemR+2SXahalptNl4Dzx4KUc2qs0dbNhrWq0GQptNCGODBZyp
+   7Eq+6NuclvvfbWpzeeb/imEdD5QsbqJt6sq48XPTlK7krBnAwvMJ2pvlk
+   Hs4X6qtnxQwzNNGJOO/O75nXkuZk5fz2JyMx+qgj5VVSpMbsEXTzHB05v
+   Q==;
+X-CSE-ConnectionGUID: gDWygFMcQ7CCAK1Bzb+7Aw==
+X-CSE-MsgGUID: vZIS1/PzQsO7guTt+zw2mg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="2986939"
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="3082520"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:25:18 -0800
-X-CSE-ConnectionGUID: rpPa5ikRQqOeounq2lJdXA==
-X-CSE-MsgGUID: GpEMo1VERpSvxmHTl/EiMw==
+   d="scan'208";a="2986939"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:29:43 -0800
+X-CSE-ConnectionGUID: MiXN/1QDQnqyJU4w66cS4Q==
+X-CSE-MsgGUID: P3r/DpS6R9WNXmCnTfY5LA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="8784099"
+   d="scan'208";a="8063104"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:25:14 -0800
-Date: Tue, 10 Nov 2026 18:25:12 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:29:40 -0800
+Date: Tue, 10 Nov 2026 18:29:38 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -72,11 +72,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Conall O'Griofa <conall.ogriofa@amd.com>, linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v5 13/16] iio: adc: xilinx-xadc: Add helper functions for
- the device setup
-Message-ID: <avNFaNki0m47M80d@ashevche-desk.local>
+Subject: Re: [PATCH v5 14/16] iio: adc: xilinx-xadc: Split driver into core
+ and platform files
+Message-ID: <avNGcpcemoeE3J7O@ashevche-desk.local>
 References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
- <20261110050201.1850399-14-dileepkumar.nagavarapu@amd.com>
+ <20261110050201.1850399-15-dileepkumar.nagavarapu@amd.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,65 +88,49 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110050201.1850399-14-dileepkumar.nagavarapu@amd.com>
+In-Reply-To: <20261110050201.1850399-15-dileepkumar.nagavarapu@amd.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 10, 2026 at 10:31:58AM +0530, Dileep Kumar Nagavarapu wrote:
-> Refactor the platform driver probe function by extracting device
-> setup and configuration logic into reusable helper functions:
-> xadc_device_setup(): handles IIO device allocation and basic setup
-> xadc_device_configure(): handles device tree parsing and bipolar mask
-> configuration
+On Tue, Nov 10, 2026 at 10:31:59AM +0530, Dileep Kumar Nagavarapu wrote:
+> Split the xilinx-xadc-core.c into separate core and platform specific
+> files to prepare for I2C interface support.
 > 
-> Move the bipolar channel mask calculation immediately after
-> xadc_parse_dt(), as the channel information used to build
-> the mask is populated there and remains unchanged before it is consumed.
+> xilinx-xadc-core.c is reorganized as follows:
+> xilinx-xadc-core.c:
+>   - Platform-independent IIO/ADC operations
+>   - Channel definitions and management
+>   - Buffer and trigger management
+>   - Device tree parsing
 > 
-> This refactoring reduces code duplication and prepares for sharing the
-> common setup logic between platform and I2C drivers.
+> xilinx-xadc-platform.c:
+>   - ZYNQ platform (FIFO-based) register access and interrupt handling
+>   - AXI platform (memory-mapped) register access and interrupt handling
+>   - Platform-specific setup and configuration
+>   - Platform device probe function
+> 
+> Update Kconfig to introduce XILINX_XADC_CORE as a helper module selected
+> by XILINX_XADC and update Makefile to build the split modules:
+>   - xilinx-xadc-common.o (core + events)
+>   - xilinx-xadc-platform.o (platform-specific)
+> 
+> Reorganize the code with no behavioral changes.
+> 
+> Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
+> ---
+>  drivers/iio/adc/Kconfig                       |   8 +-
+>  drivers/iio/adc/Makefile                      |   5 +-
+>  drivers/iio/adc/xilinx-xadc-core.c            | 690 +--------------
+>  drivers/iio/adc/xilinx-xadc-events.c          |   1 +
+>  ...inx-xadc-core.c => xilinx-xadc-platform.c} | 818 +-----------------
+>  drivers/iio/adc/xilinx-xadc.h                 |  27 +
+>  6 files changed, 72 insertions(+), 1477 deletions(-)
 
-...
-
-> +	if (irq <= 0)
-> +		return 0;
-
-When == 0 is true?
-
-...
-
-> +static int xadc_device_configure(struct iio_dev *indio_dev, int irq,
-> +				 unsigned int *conf0, unsigned int *bipolar_mask)
-> +{
-> +	int ret;
-> +
-> +	ret = xadc_parse_dt(indio_dev, conf0, irq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*bipolar_mask = 0;
-> +	for (unsigned int i = 0; i < indio_dev->num_channels; i++) {
-> +		if (indio_dev->channels[i].scan_type.sign == 's')
-
-Wasn't that changed to format?
-
-> +			*bipolar_mask |= BIT(indio_dev->channels[i].scan_index);
-> +	}
-> +
-> +	return 0;
-
-Don't we have a specific for_each type of macro to iterate over all channels?
-
-> +}
-
-...
-
->  	irq = platform_get_irq_optional(pdev, 0);
->  	if (irq < 0 && (irq != -ENXIO || !(ops->flags & XADC_FLAGS_IRQ_OPTIONAL)))
-
-Side note, this conditional is wrong. It doesn't handle properly deferred probe.
-
->  		return irq;
+This is weird statistics... I think it's a bug in Git. What it did, it copies
+-core.c twice and uses statistics on each file after that without duplicating
+the *original* amount of lines.
 
 -- 
 With Best Regards,
