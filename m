@@ -1,99 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794302947;
-	b=rKAXePks9WC9YTOo7vVs8rq8U6Nnp5hRkY4x+g/xE+0Nb6wKoc3nK+2+xDfT9FaA/J3N
-	 54AUFPLtqbwV8NTE07pMwpSdLCquybhjUcqt4+5l6wpiTE+wSAqiFyq5L8W2kjjdh+z7h
-	 RhcjoGvgeDSaupPZBu7DGTXBdmq9gScnOxL6MDO7kjO3f+pfv5+WDw7PCTuAq8sqe8SEE
-	 3EOk6wIbxf3hhMc3P8MLMUDhu4XTX1RuImSiMZNA73YfLkWlpKixdepf6S+NpMT+/UFXr
-	 deUa62GPCxF0Be6+jCnUbMwT9pOaMm/RdHZFXfI6y00prSClnEa3BOfhai+Q6DaMc6Q==
+	t=1794303610;
+	b=h4yFccLTdchv3Cqrkd2bWLViYSU84GZ8c+h+bQs87FV9jtlcVO7XZdBY08q2aByH0bsh
+	 xPrfehdW5LK1FuCmgiJlSuToQOLO8K7Nfr1T7cqykvlrAJQ+nZdpElB4AiX3+Wi/1x+dw
+	 BCNMQSYwKj1eC8h9pdx+UfQSWmfX0RDeclR24aCs+a8fHJTfZ+a5J1vX9EEI7cxxnf+Jc
+	 e/vD1F2SrENPYg5TqQKaX5w2RemAGb0BIZwdy+EvhG6uK2xP5D6ImfBJRK2S5Zv9mM22X
+	 2Q5uStA7s3WzH/EZOR7usN+S2zTpM6WHyyjj+j8hY5oVQZioA/ruBLfVHMJRqjw/R3g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794302947;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794303610;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=s1yLVKZqUlNj3njloZ4RcEDWvW8KSQFnV995646mHlk=;
-	b=GrAPqgLiuuHVZRQPuydTexlOfMilHksjNTdG11Sw/myTQPMJ4uJmIHmgz8AhQaAdPmHa
-	 1+zai6bC4iV/AFiPkdc74p5XB0h/yir6kvFBovRYU430Cua4JxAByvuLdIonP/FZFeY65
-	 0wTyf9AEm4f7JdawKjZNQhBPxS1aov/3vsU0mro1hnuwWuASL0sDcfsEXc7R79asIS/QA
-	 8XB+tWsnh9JqhMAKM5D2ay4Xc0uTp5b8kVcNFw5sPZsH0h0ElyLFG4ge64hnt2E/uJJdc
-	 +X9Ps8ze2rbA5UqGMTGRSn3myQTZU4L60ze5KSjX+sJ3xeL8l1ig63otT+io2i1WMTA==
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=XQa27/t7HuzOBuNW1CeD2HKdjuOcRupBblm3fp1zI2g=;
+	b=ky0fK0z94/T9XTGQZCUIFU7qggB/0DRUv5unNxVSHfahO++HCzMu7T8dN/TTm9lulbBS
+	 N0WMhP6X8w46UOZ7yZZAorM/qZPQToWw5j7MFBSWdwpspUoL5EAFUW/iC9j8KChVZj3Dv
+	 6beR2TcJx8rVoLZIuhHtRgD7yIhUbkfPXDZ1+CDnhyjxOU1SXgsYm2um0hQn5b2x8gXCZ
+	 DyJYNpeJTD8yl7Q5x00rHhNfkNjXTcscKD+im7xtB36LY/UeOFR32CSejVcSVUnTouBgd
+	 Mw/3g0W/m7p92achUQnKnD9CYsJdfTEoHh1obcH4cG4t4FjDDoVj7MIZLwVzjo+xA1g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UDxXKQMo;
-	arc=none smtp.remote-ip=209.85.221.45
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b="TF/xYG7t";
+	arc=none smtp.remote-ip=209.85.128.43
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C2D606B157
-	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 09:29:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C3C2D606B157
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA8E6071E56
+	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 09:40:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5EA8E6071E56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UDxXKQMo
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-48b001cd92bso856096f8f.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 01:29:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=TF/xYG7t
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a3517554f7so18813595e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 01:40:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794302945; x=1794907745; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=s1yLVKZqUlNj3njloZ4RcEDWvW8KSQFnV995646mHlk=;
-        b=UDxXKQMoogTknpK1OPVncqXSm0G22RJgQ0FxIgPiMQaF2OJT500Q9tbbv+Tv+t5bOv
-         4w4+ZxmMhb/fgy0FHH4HvD6vfIxqnkl62PfN6mzqtCgRUnOREeSSWtOQWr/3RpfQuzP9
-         Ns9uxY/Hs523nHUL4cXA7tQPO+07rJxzz8OQ2lgiS3l53zWH2iYySdKiJjv9eoPrRR6+
-         HG2NtC3puEQ2q0fLaWcsrC35e7r6LIpBPxaymZalvjNPFLK2YQNupKVOcThyOqqmsdXh
-         NNTc4B1yrJzTS+OI2uma7W0eA97/oW3fgeNX2ntRzUoAQXjiYZXiIuGxDvrZXR6pSLpl
-         001g==
+        d=baylibre.com; s=google; t=1794303608; x=1794908408; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=XQa27/t7HuzOBuNW1CeD2HKdjuOcRupBblm3fp1zI2g=;
+        b=TF/xYG7t7x1jbQ2fkewApK9XPbzgcslO0bbHQVtZ5wAEbYigvOl3NpUKklUkDpBtpr
+         2DRSJ1ReEvAsRGPpys6MGzFXuDCRkWzzbdedmHZ19KvHYtblOIk1XnFmA7Wg1d9TmSGe
+         ShnhjNlgjmAOhYxzi7mMtg0IW9yAaF8cFZeBoU1kxKP7SNTJ9ltKduxXeUZx4qzkME9H
+         fwvBZZvDXV/Vv8OeYBUZBIlVhXwnwqleCIlKHNUQpKs1lAVi0ldCU0n4Yh+5HqT35etm
+         QTh8y217ftPTp6spLfo4rfV9SHbIUgmQwkI+zz5fykOeFWCn3LqsFiuRnjs+qywhyfk7
+         Yxkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794302945; x=1794907745;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=s1yLVKZqUlNj3njloZ4RcEDWvW8KSQFnV995646mHlk=;
-        b=isex6aGmGZfvnKTLJxuQtvjXjJNvBolIh3gyaifRIrZ/KsW0Cvhq3nTghfeifEAZi6
-         mSMr7BkxHsHHqNFHu/y0YuGLtslBGrMRg/P1zjoU1nZ4hv0z7l85HezOhd19hRuXNeo6
-         TIupCs6S5rw1uWVDrRQnq4aMP5k4X/ml+8E2TImeft5VCicpAT02lqX9urtAYES03RBl
-         fNnmzwd4GCctfFSfxE9qW19EX5PuErOsTecL8iO+0WV4fHuQ1RNHMfMJXf+ctM+Z886M
-         x7woIoZHhxh265r+U36qkCc8OpwxkgBlIBv4KBU1/Tf3fhiSNRI24Si0413JXwODslzj
-         Acrg==
-X-Forwarded-Encrypted: i=1; AL+hErHjPDFKQPLUt+/C/cj3uqt3y3UT+CebZSqAjqumriwv2jvfnkyJ3lc23eOr7t0KT+8f6OYGVHOPBbU=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8GDWiYq3AFrpqZ0gwIOGH0BGoH3G4/E9dCwFjL4VCDSBHJzeox
-	fqS+e9IhxL7q5s3wVs8ph2wrQ9Ss0sbupWll4lhIWAnkyGVTjKjElgIU
-X-Gm-Gg: AYBFou3mkdxQ6fmjGmchz28fXOZODCEdV82hiyUO4Jmx6eebQkDY5q/OtKf8RNY8PLY
-	n6K/dbO54aNDDa/ZHhhG9PMPxIp3CPksvwDaQ/QrYK+jJZSFqzV1Fh62DpFNIGCpcr2mI849mFd
-	iTtEl4a9Is/RmpS2Vgm2rA7Lsqc7xOiEv9kXklWW8rscjfsLtKvidEFB/boy+S1FNWvYz9UJniV
-	m1EGVRWW8zsjqiqL+zatsS8P+nPqoeruS00YGiDZT1TMBOiMT5UjVaiqi/9H91+GX0VikdHdYwD
-	LM+m9PoScexGLXKxBmTxwPYSSXk9VVgUnqYltbfGx6I870SsJ3Q5uEvM1mcpsPRL3hhRjrgbiw+
-	cQnfsdcHoW3S6lRtdmH9Uv5yIeQ4YEcht7tsXE89iyykpwAEK8sYqOLnUXg1+F3EbBzj/a4Rett
-	nmnpSPar7c15VJew+9pgN+XrTw0CEMu9O/koAiu03GmiYBSxwFG7bsWi5IhRiAOiOzgYq/CI44u
-	B+Op0/UiCI5MP9CQLPRmJT+HJBkaYZds5G0oI5qI8xSanpWx9tPEzZe7mkighyx3WRsgjJNH2X4
-	0jz7DP26DBBNoCLz8Z4kLSX5lsMTT8hR6358
-X-Received: by 2002:a05:6000:3c5:b0:48e:f10:ceb8 with SMTP id ffacd0b85a97d-4982e641f90mr3524247f8f.11.1794302944660;
-        Tue, 10 Nov 2026 01:29:04 -0800 (PST)
-Received: from fedora ([154.182.80.200])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4983f7801bbsm3839798f8f.5.2026.11.10.01.29.01
+        d=1e100.net; s=20260707; t=1794303608; x=1794908408;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XQa27/t7HuzOBuNW1CeD2HKdjuOcRupBblm3fp1zI2g=;
+        b=iJscysEVyPDIlAOhguz+FFwnijMWvnZhaNoY2LOZc1p7c/Su+xdWTiNePXc7LIVHEt
+         8F+KivPF8NgFNf6+w48RYJxb47IuLNBxTFdwMvLP8uWSVd2ZvzjRsMIm8L05IuWzdj/x
+         7SsHIv/3h00/M0NzJlIcOLT8BUaZFV4lHrgfNW9fDZ+icPt8kxLWhHKNj1/pfHSJr0cA
+         Mt3D6soIWd/QM5supbJqvl+Zk+HCbJyOR4daYXMy8eHVzWiHrhj/r/seRAJXAFdep/sp
+         aY7l/0xr/yBGOm6r1knTxmwDlpHuT8OuYHULVL8DeuPLtyNZV6PM89N+9QHNyYAmWPte
+         mEfA==
+X-Forwarded-Encrypted: i=1; AL+hErEbjJuBf1WaOr2SXUsTXUN84dreD2x5hceY2ULaDP/gpcGZQZM4i2vjGdYecGeKjl6pmoyfimfayVM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/2FzyZ34tvPJZQTYEOlRc6FS82tWpaPONtKKhplHdbTQd9X8ty
+	YxuOfeR45sauBmxZG4Xk9P5c1TpqOJYh/x0IzqJgAjRMquypcG5Q0i/UXuWOSgWCdrU=
+X-Gm-Gg: AYBFou3uibcfvwkDTKqcqr6UBytI90zaZIjxDVF6s9M8RBNncOCjEO0xBz0kbqC4btE
+	5JWbKJaP5kLmI1n4YvYTViNo3MBkOQji+eW7PMHpqswhstrZ3/n6jigylOUcORzMqUImyrlC0BQ
+	K1DLHc0J6XAX7tZkAltOxFYtaQ6muV29JZyp+oTAwpu7ChqMJ09TAIPHtbe1gWXUaWa7CBJJYMj
+	2me+31T1YG1EyD1EVxdWnHf+NjnNGraw1iXFtjdZaWX48o6EqBG78aohiBdbJxfORK2cpqOXfvq
+	aYlL5nAj2XJ+0B1et1/UnNuc1WGCM/r2GYvda0kp+cKWAwaf5PiOKvK4teTbdc2HwvQPCdjJF4f
+	emPiFuGbjoca4iSyeUmnt8Xat0V7GGjd4B19yxRn86GLIBy3hKFHFVuoef8kmPufiS5CKg+rYR4
+	SWMAE9eoDu/LBX4YOM3mxqkwXZ+xE9Lfy+HPQ21r+ddzZaCwuccgwTKAs4jRmRAp2zixqbr55eO
+	WFE9cuy1SS1HjtZUqstbFFv70hWuLenfbfNyqfV6h9Pyo9K7GfhqWXePKBknX8a0QC/IHlvsB13
+	Yt+rg3HOi8kwAHsMp4APRXyYn5UlZRRmABg=
+X-Received: by 2002:a05:600c:6296:b0:4a1:fe26:24f0 with SMTP id 5b1f17b1804b1-4ba02348dd9mr31353275e9.20.1794303607698;
+        Tue, 10 Nov 2026 01:40:07 -0800 (PST)
+Received: from localhost ([2a02:8071:56d1:2de0:1d24:d58d:2b65:c291])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4ba022ff5c3sm23953585e9.0.2026.11.10.01.40.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2026 01:29:04 -0800 (PST)
-From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	nicolas.ferre@microchip.com,
-	alexandre.belloni@bootlin.com,
-	claudiu.beznea@tuxon.dev,
-	mripard@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH v2] iio: adc: at91_adc: move to devm_* to fix NULL pointer deref
-Date: Tue, 10 Nov 2026 11:28:48 +0200
-Message-ID: <20261110092848.141854-1-abdelnasserhussein11@gmail.com>
-X-Mailer: git-send-email 2.56.0
+        Tue, 10 Nov 2026 01:40:06 -0800 (PST)
+Date: Tue, 10 Nov 2026 10:40:05 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	Maxime Chevallier <maxime.chevallier@bootlin.com>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Matti Vaittinen <mazziesaccount@gmail.com>, Rodolfo Giometti <giometti@enneenne.com>, 
+	Marcelo Schmitt <marcelo.schmitt@analog.com>, Antoniu Miclaus <antoniu.miclaus@analog.com>, 
+	Angelo Dureghello <adureghello@baylibre.com>, Tobias Sperling <tobias.sperling@softing.com>, 
+	Eason Yang <j2anfernee@gmail.com>, Marilene Andrade Garcia <marilene.agarcia@gmail.com>, 
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, duje@dujemihanovic.xyz, herve.codina@bootlin.com, 
+	thomas.petazzoni@bootlin.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: adc: add driver for Texas Instruments
+ TLA2528 adc
+Message-ID: <avLluP28gVZEfFfe@monoceros>
+References: <20261030164705.297354-1-maxime.chevallier@bootlin.com>
+ <20261030164705.297354-3-maxime.chevallier@bootlin.com>
+ <auyjgDddFs3OvnC3@monoceros>
+ <20261108013218.0fe627e7@jic23-hlaptop>
+ <avAy6cemm3MRHSQO@monoceros>
+ <avIGbBH88xZwndaC@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,264 +111,65 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="xrvk6vw4g5gzbbvg"
+Content-Disposition: inline
+In-Reply-To: <avIGbBH88xZwndaC@ashevche-desk.local>
 
-If 'atmel,adc-use-external-triggers' is not set in the device tree,
-at91_adc_trigger_init() leaves the external trigger slots in st->trig
-as NULL. The error paths and remove function unconditionally called
-iio_trigger_unregister() and iio_trigger_free() on them, causing a
-NULL pointer dereference.
 
-Instead of just checking for NULL, refactor the driver to use the
-device-managed (devm_*) API for registration and allocation. This
-modernizes the code, eliminates the need for manual cleanup functions
-(at91_adc_trigger_remove, at91_adc_buffer_remove, at91_ts_unregister,
-and at91_adc_remove), and inherently fixes the NULL pointer dereference
-since the core handles the cleanup of properly allocated triggers.
+--xrvk6vw4g5gzbbvg
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 2/2] iio: adc: add driver for Texas Instruments
+ TLA2528 adc
+MIME-Version: 1.0
 
-As part of this simplification, the remaining trigger initialization
-logic has been inlined into at91_adc_probe().
+Hello,
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Fixes: 0e589d5fb317 ("ARM: AT91: IIO: Add AT91 ADC driver.")
-Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
----
-v2:
- - Dropped the simple NULL check approach.
- - Refactored the driver to use devm_* API as suggested by Jonathan Cameron.
- - Removed manual cleanup functions and error paths entirely.
- - Inlined remaining trigger initialization into probe().
+On Mon, Nov 09, 2026 at 07:44:12PM +0200, Andy Shevchenko wrote:
+> On Sun, Nov 08, 2026 at 09:32:10AM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Sun, Nov 08, 2026 at 01:32:18AM +0000, Jonathan Cameron wrote:
+> > > On Thu, 5 Nov 2026 16:42:42 +0100
+> > > Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com> wrote:
+> > >=20
+> > > > On Fri, Oct 30, 2026 at 05:47:04PM +0100, Maxime Chevallier wrote:
+> > > > > +#include <linux/i2c.h>
+> > > > > +#include <linux/mod_devicetable.h> =20
+> > > >=20
+> > > > Please don't include <linux/mod_devicetable.h>. <linux/i2c.h> alrea=
+dy
+> > > > provides i2c_device_id and of_device_id. <linux/mod_devicetable.h>
+> > > > provides many more *_device_id and thus introduces a big list of
+> > > > unnecessary dependencies.
+> > > >=20
+> > > > I recommend to just drop <linux/mod_devicetable.h> here. If you ins=
+ist
+> > > > on full iwyu, there is <linux/device-id/i2c.h> and
+> > > > <linux/device-id/of.h>.
+>=20
+> It must also imply acpi.h.
 
- drivers/iio/adc/at91_adc.c | 146 +++++++++----------------------------
- 1 file changed, 33 insertions(+), 113 deletions(-)
+That's true, but irrelevant for the patch under discussion because it
+doesn't use acpi stuff. So at least here even with full iwyu you don't
+need to care about <linux/acpi.h> or <linux/device-id/acpi.h>.
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 0ac74ad92fca..911838150116 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -608,85 +608,32 @@ static const struct iio_trigger_ops at91_adc_trigger_ops = {
- static struct iio_trigger *at91_adc_allocate_trigger(struct iio_dev *idev,
- 						     const struct at91_adc_trigger *trigger)
- {
-+	struct device *dev = idev->dev.parent;
- 	struct iio_trigger *trig;
- 	int ret;
- 
--	trig = iio_trigger_alloc(idev->dev.parent, "%s-dev%d-%s", idev->name,
--				 iio_device_id(idev), trigger->name);
--	if (trig == NULL)
-+	trig = devm_iio_trigger_alloc(dev, "%s-dev%d-%s", idev->name,
-+				      iio_device_id(idev), trigger->name);
-+	if (!trig)
- 		return NULL;
- 
- 	iio_trigger_set_drvdata(trig, idev);
- 	trig->ops = &at91_adc_trigger_ops;
- 
--	ret = iio_trigger_register(trig);
--	if (ret) {
--		iio_trigger_free(trig);
-+	ret = devm_iio_trigger_register(dev, trig);
-+	if (ret)
- 		return NULL;
--	}
- 
- 	return trig;
- }
- 
--static int at91_adc_trigger_init(struct iio_dev *idev)
--{
--	struct at91_adc_state *st = iio_priv(idev);
--	int i, ret;
--
--	st->trig = devm_kcalloc(&idev->dev,
--				st->caps->trigger_number, sizeof(*st->trig),
--				GFP_KERNEL);
--
--	if (st->trig == NULL) {
--		ret = -ENOMEM;
--		goto error_ret;
--	}
--
--	for (i = 0; i < st->caps->trigger_number; i++) {
--		if (st->caps->triggers[i].is_external && !(st->use_external))
--			continue;
--
--		st->trig[i] = at91_adc_allocate_trigger(idev,
--							st->caps->triggers + i);
--		if (st->trig[i] == NULL) {
--			dev_err(&idev->dev,
--				"Could not allocate trigger %d\n", i);
--			ret = -ENOMEM;
--			goto error_trigger;
--		}
--	}
--
--	return 0;
--
--error_trigger:
--	for (i--; i >= 0; i--) {
--		iio_trigger_unregister(st->trig[i]);
--		iio_trigger_free(st->trig[i]);
--	}
--error_ret:
--	return ret;
--}
--
--static void at91_adc_trigger_remove(struct iio_dev *idev)
--{
--	struct at91_adc_state *st = iio_priv(idev);
--	int i;
--
--	for (i = 0; i < st->caps->trigger_number; i++) {
--		iio_trigger_unregister(st->trig[i]);
--		iio_trigger_free(st->trig[i]);
--	}
--}
--
- static int at91_adc_buffer_init(struct iio_dev *idev)
- {
--	return iio_triggered_buffer_setup(idev, &iio_pollfunc_store_time,
--		&at91_adc_trigger_handler, NULL);
--}
-+	struct device *dev = idev->dev.parent;
- 
--static void at91_adc_buffer_remove(struct iio_dev *idev)
--{
--	iio_triggered_buffer_cleanup(idev);
-+	return devm_iio_triggered_buffer_setup(dev, idev,
-+					       &iio_pollfunc_store_time,
-+					       &at91_adc_trigger_handler, NULL);
- }
- 
- static int at91_adc_read_raw(struct iio_dev *idev,
-@@ -924,9 +871,8 @@ static int at91_ts_register(struct iio_dev *idev,
- {
- 	struct at91_adc_state *st = iio_priv(idev);
- 	struct input_dev *input;
--	int ret;
- 
--	input = input_allocate_device();
-+	input = devm_input_allocate_device(&pdev->dev);
- 	if (!input) {
- 		dev_err(&idev->dev, "Failed to allocate TS device!\n");
- 		return -ENOMEM;
-@@ -951,8 +897,7 @@ static int at91_ts_register(struct iio_dev *idev,
- 		if (st->touchscreen_type != ATMEL_ADC_TOUCHSCREEN_4WIRE) {
- 			dev_err(&pdev->dev,
- 				"This touchscreen controller only support 4 wires\n");
--			ret = -EINVAL;
--			goto err;
-+			return -EINVAL;
- 		}
- 
- 		input_set_abs_params(input, ABS_X, 0, (1 << MAX_RLPOS_BITS) - 1,
-@@ -964,27 +909,14 @@ static int at91_ts_register(struct iio_dev *idev,
- 	st->ts_input = input;
- 	input_set_drvdata(input, st);
- 
--	ret = input_register_device(input);
--	if (ret)
--		goto err;
--
--	return ret;
--
--err:
--	input_free_device(input);
--	return ret;
--}
--
--static void at91_ts_unregister(struct at91_adc_state *st)
--{
--	input_unregister_device(st->ts_input);
-+	return input_register_device(input);
- }
- 
- static int at91_adc_probe(struct platform_device *pdev)
- {
- 	unsigned int prsc, mstrclk, ticks, adc_clk, adc_clk_khz, shtim;
- 	struct device_node *node = pdev->dev.of_node;
--	int ret;
-+	int i, ret;
- 	struct iio_dev *idev;
- 	struct at91_adc_state *st;
- 	u32 reg, prop;
-@@ -1140,11 +1072,23 @@ static int at91_adc_probe(struct platform_device *pdev)
- 			return dev_err_probe(&pdev->dev, ret,
- 					     "Couldn't initialize the buffer.\n");
- 
--		ret = at91_adc_trigger_init(idev);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "Couldn't setup the triggers.\n");
--			at91_adc_buffer_remove(idev);
--			return ret;
-+		st->trig = devm_kcalloc(&pdev->dev,
-+					st->caps->trigger_number, sizeof(*st->trig),
-+					GFP_KERNEL);
-+		if (!st->trig)
-+			return -ENOMEM;
-+
-+		for (i = 0; i < st->caps->trigger_number; i++) {
-+			if (st->caps->triggers[i].is_external && !(st->use_external))
-+				continue;
-+
-+			st->trig[i] = at91_adc_allocate_trigger(idev,
-+								st->caps->triggers + i);
-+			if (!st->trig[i]) {
-+				dev_err(&idev->dev,
-+					"Could not allocate trigger %d\n", i);
-+				return -ENOMEM;
-+			}
- 		}
- 	} else {
- 		ret = at91_ts_register(idev, pdev);
-@@ -1154,36 +1098,13 @@ static int at91_adc_probe(struct platform_device *pdev)
- 		at91_ts_hw_init(idev, adc_clk_khz);
- 	}
- 
--	ret = iio_device_register(idev);
-+	ret = devm_iio_device_register(&pdev->dev, idev);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Couldn't register the device.\n");
--		goto error_iio_device_register;
-+		return ret;
- 	}
- 
- 	return 0;
--
--error_iio_device_register:
--	if (!st->touchscreen_type) {
--		at91_adc_trigger_remove(idev);
--		at91_adc_buffer_remove(idev);
--	} else {
--		at91_ts_unregister(st);
--	}
--	return ret;
--}
--
--static void at91_adc_remove(struct platform_device *pdev)
--{
--	struct iio_dev *idev = platform_get_drvdata(pdev);
--	struct at91_adc_state *st = iio_priv(idev);
--
--	iio_device_unregister(idev);
--	if (!st->touchscreen_type) {
--		at91_adc_trigger_remove(idev);
--		at91_adc_buffer_remove(idev);
--	} else {
--		at91_ts_unregister(st);
--	}
- }
- 
- static int at91_adc_suspend(struct device *dev)
-@@ -1333,7 +1254,6 @@ MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
- 
- static struct platform_driver at91_adc_driver = {
- 	.probe = at91_adc_probe,
--	.remove = at91_adc_remove,
- 	.driver = {
- 		   .name = DRIVER_NAME,
- 		   .of_match_table = at91_adc_dt_ids,
--- 
-2.56.0
+Best regards
+Uwe
 
+--xrvk6vw4g5gzbbvg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmry5nIACgkQj4D7WH0S
+/k5A0Qf/UlVG2sAQs+UgFERuB1rhQInSRoLdCeHto+8YE/qkryzNXfzSyOCOV13b
+/4pNCDCt0zmQeG7W6eHGlvBpZiSUL9nHf6qsm+/Sciw7X7qMOKZUJbE092MErD+I
+F9LUxplu7GHBBDeVVwgNSmiIQW1gRlMcNTWHJahPCplAj0sv1g8OEZXOl8FZk08C
+6qjffOFMonsW4Q+oKUrQhW8lPsHU74Ah5LooLSWhdfEaWsgrgpXrRYRilKAmDGJw
+Q/32M3v6YNBZjZparnKx/Ycw0xsdBW4BrzeKro5GBXDJjyHyEMeipV3I4ecZBVDg
+/uBtYslaJ/7hIygWqlHNxNzvlVAWvg==
+=3Cj6
+-----END PGP SIGNATURE-----
+
+--xrvk6vw4g5gzbbvg--
