@@ -1,78 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794344563;
-	b=KEaDrXXJDatlDPJJIcdo052E9FEdDCgfQ8vSpexYu63pcHCGGjXjkmvVBH9EyxGTFZLz
-	 Okx49R1rAUzDwObcpSUkX1Yq7ixjt8C/KKlObSBd6gvJIxtvSzsswNxGx+CvKTtwc3lo7
-	 1Fh6Ma6aBGGHcl4c12UbnlVxcAwpblfJrv1443sjs+xcplzVaEfeGISmbr+HHkSLWckaN
-	 iup9SbTxyJff+M1VlxOvQIq+FGVALvQBt/9cltx+IbVt2oF0W6q9ckwNxDzIiiJylpqQ3
-	 kjBxiVm/P3IlVWuzMV7nDMajAGeo3wjiBIbYJwkp87ef0hMGVMDAYsCAzh6t+SE75Eg==
+	t=1794345491;
+	b=Y1fCcPEWnbeus9OAxIH7mli4AeC7XesYbWvLKFVjKH+6bnscpPS7Eh4A/cBVRFxeX5P8
+	 v07s+dMe79kMvt9mX3fJyAOpaHYQDV3JOaps3Jooz6gEO5yL2lJjQna17mVSdyfYUJ/yW
+	 N7iv0GaW+i8/mQ2kO+ehgb6j+QFKCFviqI+RjYVQVYBSQG0jVyxQUlHQmd4y6sVfJ4vD+
+	 P9ZK/HJuYyh+ypODJQFzP4VK2hBQdCfSzmoyHUHlpcQRNBwvfFmE45KFmgIeY1WJHzqRv
+	 8iB8+gGmGZ5I2DFV1IDv9a85NWCWp5ww5cAKuq3vxe+r+vVpSuCElxIdrgOAzKI3ZWA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794344563;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794345491;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=hpKPnv6LQCf20/ZkdM8jFTGSWfWUSzTRAK+io33NZfg=;
-	b=2x1vsGBCu+gPzbYdUwHlFLJslYNEYYgwL2XKIePZMcF9+eBd4ixSRZpZgcIjVTM/2x5e
-	 3voxGPtOqECPiDmvJzLL/x4cFV2JDRCiwn78ql4v6v1G+AUgTKiVs6YQ8Ve51m+fNj57z
-	 gZUe/W9aikPHFyMCEZ73CshPwA43AS5z0xcqZDcDGNOWLh5yqyaxVMF4eyR+3J5AQWj9E
-	 8J2NHmjf2pN6W61L7WOOdRH7TCjLiwuxyc05gqbIw/EKiixCOFOmhrjgsfEaoTBd1Y57e
-	 Cs4pqNhuN7IM25sLL/YmVUNZYigh06YPrOoCp4gicROeKnHiSxXYD051bqQWO4aEKzw==
+	bh=K4Bn/AxY3R847Ni+gw7yt5bTetT/8VPQbq6aTbCCdis=;
+	b=nNdX1AcZ5iWD930IJ23BmWTgnYDZRsy+AU9HOBxUggLoh/DpRPWCOWuf5dg+pXWMgQkT
+	 wTpEicK+KaXzwkkJ0sB3WIwLsG+NeelKQl+iCGdLQJteavUdvjUmX3D8VfFrcBR/8aZ/0
+	 RiPkJuLY9sz16wrF59RA5cAwOx3AxTKwU6A3tsQ6gnwJk3CfnPnjlQ4qsMdktJJrPeOsN
+	 7FkxzbUfjQp1tbk95Ya0hSY8sOy7OvHJbz/2KPluI6kNYeQSHWW7yvVvMv8MO47pwmkjm
+	 awttGr9wiHxwa/orSPgm5zjUmdcZAwxf8ETmki0P6qXsmBlKOd3VXqXAzutPoNBYVbA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WzGIh2AN;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LtmGsile;
+	arc=none smtp.remote-ip=192.198.163.10
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AB2F606A326;
-	Tue, 10 Nov 2026 21:02:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5AB2F606A326
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CC2B606A31C;
+	Tue, 10 Nov 2026 21:18:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2CC2B606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WzGIh2AN
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LtmGsile
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794344563; x=1825880563;
+  t=1794345490; x=1825881490;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=63+0yrmJwzlPZjE6WYIeaX8J9iDrfSQT6kKOvmN1rCI=;
-  b=WzGIh2ANPuLt0Scv5LqbZRwbLXECnYcWyrAJ9DwOEhtbN8hsNjRJi1p1
-   q4MfIHetFght8zssiF4mC7KNEYJGr+Jk2FyJmttf7k6i9woMX5Kczvn3L
-   4b32OjU+nY5NbB3rK9LygiURAXK9omk9rSObxw4Oy/saA95HZ/12ZbVg3
-   7BuJfEtTgjOsVLLsmfzEcba8e7b87/cHpR+jxOSbyfK4MU4f7qLWat0Mu
-   GDEAgmAVq6denWVVRfi1ZCWno5wNCqemmN8B4IWC6hkwfYaNENhCjRwxR
-   hXngC1zUKVmPIrgD5xuN3u1HQ4MqUg5jS7tRtYTiOzDhw1D9wqkgCEyam
-   Q==;
-X-CSE-ConnectionGUID: 4J13QXh9QnO98zNl5HjLXQ==
-X-CSE-MsgGUID: XhzOuGxST1GRwTHdotf0/w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="2996545"
+  bh=ZhkKr7Z0NgW54lPiWU2ysSosYmPc7dT/lq+ki47djYI=;
+  b=LtmGsileLglUbuUt0wrtMqiVev9nGCE6j6zTgpSR9wxmtY2ThFzvmvrD
+   Ld6Wyu1UDASxYwhD/LncGP3t2n69Kj9RJBs4uVNOVhEWdS7PAZJ8rO47b
+   ZzPIUucHhupjqVk6vjNa6CcTmwRvoUCjUtQM0Zc5CtQHa3/wBFtlChK/j
+   QW3kv9fy5vRQMGFHNAfl1kjB0DwcdIRSaXKRkyndRhHuIlkHHsiB4xLK7
+   N64MJuZ86AfmculkUAm50eZWFZjwStpaBkVqIKLzgAb8DWasTNeDEZC9p
+   GDNY1EzrdYyjjhHilLSbDDVd7v6k2DVq+C31SjlAzzNnohp89FSX9AlP7
+   w==;
+X-CSE-ConnectionGUID: ajz6KtyRQFKiubY+4/gURQ==
+X-CSE-MsgGUID: lvsIjru2R/ChXJsFLn3d1Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="3006624"
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="2996545"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 13:02:42 -0800
-X-CSE-ConnectionGUID: CU/3jIPSSwCRObP1Fv88Wg==
-X-CSE-MsgGUID: hOiKvxcgTryr9vIsbA7O6A==
+   d="scan'208";a="3006624"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 13:18:09 -0800
+X-CSE-ConnectionGUID: qQDNqPZoRLWMkMRug8Bxqw==
+X-CSE-MsgGUID: thDUmj42Q6O4xT3RZvTJ5w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="8578905"
+   d="scan'208";a="8545551"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 13:02:38 -0800
-Date: Tue, 10 Nov 2026 23:02:36 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 13:18:08 -0800
+Date: Tue, 10 Nov 2026 23:18:05 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: lee@kernel.org, maz@kernel.org, andy@kernel.org, jic23@kernel.org,
-	dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
-	mfd@lists.linux.dev, linux-iio@vger.kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
-	imx@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] mfd: mxs-lradc: Pass parent IRQs to child drivers
-Message-ID: <avOGbAYDCQyuzd6Q@ashevche-desk.local>
-References: <20261110141934.42490-1-festevam@gmail.com>
- <20261110141934.42490-2-festevam@gmail.com>
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 4/4] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <avOKDbkkDwqhHEaC@ashevche-desk.local>
+References: <SN1PR12MB2528F139EE6C0B4576C3A0CCA5722@SN1PR12MB2528.namprd12.prod.outlook.com>
+ <SN1PR12MB2528B1D75F35447B0DF9A88CA5722@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,64 +84,61 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110141934.42490-2-festevam@gmail.com>
+In-Reply-To: <SN1PR12MB2528B1D75F35447B0DF9A88CA5722@SN1PR12MB2528.namprd12.prod.outlook.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 10, 2026 at 11:19:34AM -0300, Fabio Estevam wrote:
-> The MFD driver stores raw DT interrupt indices in IRQ resources but
-> registers its child devices without an IRQ domain or IRQ base. The child
-> drivers consequently receive the indices as if they were mapped Linux
-> IRQ numbers. IRQ index 0 triggers the platform_get_irq_byname() warning:
+On Tue, Nov 10, 2026 at 02:24:22PM -0600, Victor Chernyakin wrote:
+> The FDC1004 is a high-precision 4-channel capacitive sensor that talks
+> over I2C. It can report the values of each of its 4 channels individually,
+> as well as the difference between any two of them.
 > 
->   0 is an invalid IRQ number
-> 
-> The children then try to recover the indices from their resources and
-> map them against the parent OF node. Besides duplicating IRQ names in
-> the parent and children, this relies on invalid platform IRQ resources
-> and fails when IRQ 0 is rejected.
-> 
-> Resolve the interrupts with platform_get_irq() in the MFD parent and
-> store the mapped IRQs in the shared LRADC data. Drop the child IRQ
-> resources and duplicated name arrays, and have both child drivers
-> request the mapped IRQs directly. Use the MFD memory base support to
-> translate a single relative memory resource shared by both cells.
-> 
-> Tested on an i.MX28 EVK. The mxs-lradc-ts driver probes successfully,
-> touch events are reported, and the touch-detect and LRADC channel 7
-> interrupt counters increase as expected.
-> 
-> Cc: stable@vger.kernel.org
-> Suggested-by: Lee Jones <lee@kernel.org>
-> Closes: https://lore.kernel.org/linux-input/CAOMZO5CgTzo6GuXptD4mFTN=UsJJqpkixDW1Q64gqZGrij8+uQ@mail.gmail.com/
+> This initial driver allows performing single reads and configuring
+> the sensor's various settings (sample frequency, calibration
+> gain/offset, etc.). It could be extended with support for triggered
+> buffers, repeated measurement mode, and/or power management.
 
-He-he, this rings a bell! I have still a copy of the mbox of this thread
-locally to maybe (likely never) look into that. So, I am so glad to see this
-being eventually addressed!
+Basically a single nit-pick below (add a comment) and I'm totally fine with
+this to go (we may polish it later on).
 
-> Fixes: a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 ...
 
->  	struct device_node *node = dev->parent->of_node;
->  	struct mxs_lradc *lradc = dev_get_drvdata(dev->parent);
->  	struct mxs_lradc_ts *ts;
-> -	int ret, irq, virq, i;
-> +	int ret, i;
->  	u32 ts_wires = 0, adapt;
+> +static const struct regmap_config fdc1004_regmap_config = {
+> +	.name = "fdc1004",
+> +	.reg_bits = 8,
+> +	.val_bits = 16,
 
-Can we, while at it, kinda follow the reversed xmas tree order here?
+Add a relatively short summary here as a comment on why the below is true.
+
+> +	.use_single_read = true,
+> +	.val_format_endian = REGMAP_ENDIAN_BIG,
+> +	.max_register = FDC1004_REG_GAIN_CAL_CINn(3),
+> +	.rd_table = &fdc1004_readable_reg_table,
+> +	.wr_table = &fdc1004_writeable_reg_table,
+> +	.volatile_table = &fdc1004_volatile_reg_table,
+> +	.cache_type = REGCACHE_MAPLE,
+> +};
 
 ...
 
-> -	lradc->soc = (kernel_ulong_t)device_get_match_data(&pdev->dev);
-> +	data = device_get_match_data(dev);
+> +static const int fdc1004_calibbias_decomposed[] = {
+> +	lower_32_bits(fdc1004_calibbias[0]), upper_32_bits(fdc1004_calibbias[0]),
+> +	lower_32_bits(fdc1004_calibbias[1]), upper_32_bits(fdc1004_calibbias[1]),
+> +	lower_32_bits(fdc1004_calibbias[2]), upper_32_bits(fdc1004_calibbias[2]),
+> +};
+> +
+> +static const int fdc1004_calibscale_decomposed[] = {
+> +	lower_32_bits(fdc1004_calibscale[0]), upper_32_bits(fdc1004_calibscale[0]),
+> +	lower_32_bits(fdc1004_calibscale[1]), upper_32_bits(fdc1004_calibscale[1]),
+> +	lower_32_bits(fdc1004_calibscale[2]), upper_32_bits(fdc1004_calibscale[2]),
+> +};
 
-Is this driver affected by driver_override case? If so, this has to be checked
-against NULL and return -ENODATA.
-
-> +	lradc->soc = data->soc;
+Can we prepare them dynamically at runtime? Use global variables and a macro
+from once.h to make the populate function a singleton, so we don't have as many
+copies as devices on the system that are driven by this code. We can probably
+do this later, though.
 
 -- 
 With Best Regards,
