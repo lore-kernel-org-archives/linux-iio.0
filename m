@@ -1,18 +1,18 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.209.26
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.12
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794287331;
-	b=n7iXeOKsMEoqGMAdS7FhBUFTM+9TrZRFQoTVs0NT8ej2RrVewFuJ765fk/vqxrPamXxG
-	 P1/s1et14KN2VVPVdhNkJnOuID3sZaNakmVZ9SiyO2tlwPjYa57a/WGzrSGrHmYtxOSaT
-	 7wNxgW2vYAtCIlXV5COVCRhyR8TBar3f1SyLPFT2dplV0/iTLQyM26dXDhe9Ffs+2Chlv
-	 bF+osjzCEnHWNgMdUHzE3MUUS4D6kgO/qNYsm6/S4BrySRfKENOCPM7VB38Sd2SZxomL2
-	 wXkwd/6j8T/pVwAgYNbsSezgGEEr617sYbbEBIGBTodwspXpDL6FvrQEG7tWd0ztwfg==
+	t=1794287349;
+	b=xwi4YoWI/bg4b0UoNpdDvZZjgwgm7V1yimKB6SS9nO13zeGs3qtsMu8yGTKxL38EuO8w
+	 GBsaZFbL1YL7aZgkwLzPyyPJavamXNT+S0oio+34UufjcSdj1YxQ/euyGy/t3i+Eon5Gu
+	 gEOLdSA9baxmmA6JIE5E/qqD52De/VEOugs4OTyN3an/5cILxd7Wk5xjZL8bc2LDme6vZ
+	 Xx6wJy1/cKbu2ba/cCAX3YJuXFvWdCjjedB3K6OPEJCGQ91wj8p6HxOv4DgCwMMzmf4ew
+	 sOJ0Jn8XWHF0dRoXsSsHAjP5Z4FKZKxgCO49IfTH9wrtgQIjmY82nbTB/S7pIozrqKQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794287331;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794287349;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type:X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
 	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
@@ -26,74 +26,74 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=+3va/jBpndWAC2rG923npLLwpGONMtCneZPbBBZ6gGM=;
-	b=sAo5TzrRehZCKAZsA1K91SJCTmVGhSpF8hJEJqxlZlodNLd85xveyi+JdLqdHeKoqD5R
-	 FCPMRlEdnbTvl7CrHIyzmrUJgUJWk3+fUjsMvOPvZlqeOjz71E/tY1WYlvlrBg3YhLmrC
-	 Yr7XEsCdoqdFmEkwtK3A0bpMqx69f9VDMpEn1vOc/83+fG2a79uW5SsUOK19Wsh18sLti
-	 jGreo7u2+BiYlZL3I5WfvnhYdmpIQOvH3IEEsnaAs0RlaVvsaxFSu0re7JaEzd7SiAi+1
-	 N4hJl6hioC2RG3Qm98zI6t1x6srWMjM2gnEdwt7nSxFsOkzmtKIAv6x8rtT9KSCCwkw==
+	bh=HBIzyYfWaWfrxhyqqo6fxxsGZAcxkOjXNSkU/+9k1vw=;
+	b=1rBMu1SVtR1X4hhKA9wUmQGHVDTHhWKnXcnID8mB3uzhM/2qUQW5QvUFhD/OOAaQ6gCD
+	 HOa0dX8b9nLP7mZDTM4MXsHZiUicSnBP7jYfwKs7ssYcqpavc013GfvOseYx/eBuXkpJQ
+	 MgQXvRMABX7Is7Lkpkuaf3in1t1RV802pcwvl8WrQ9Dsi3DNlwx3vhoB/k2x18Zb9Lr0f
+	 9ydwibHKCxP9eZl0E0rkCzTowWIn5Ybk3jeCBab1zwWk2l5MRljujJudxDP6crZ6t5D/F
+	 mOR2PdQmFqb83lQM7to0U7evXe9ZH+RkYhblPm4BTfllIQw0vGz1DvLfw0BBxhQPsew==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=Ty8MJxEW;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.209.26
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012026.outbound.protection.outlook.com [40.107.209.26])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=rFBSQVyj;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.12
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010012.outbound.protection.outlook.com [52.101.201.12])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A82C5606A32E;
-	Tue, 10 Nov 2026 05:08:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A82C5606A32E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE5860A2611;
+	Tue, 10 Nov 2026 05:09:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3AE5860A2611
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=Ty8MJxEW
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=rFBSQVyj
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=N8AZPNsS4Q6GpoMtdaNWuxNcsluyCgEnwPzmkCrgMEg9L34WKj9ewIK97Ckio/CSMCcsSMdyBtnWYMrktmIh9BMHxbn82XAe/aeb8VXkUQGxBxZV4xmd4Xo65V0d9mGjafmii8p11BRDw3A19EeX/GRFV/sJScK4JloWdztuSTKDR9WeMPrLsULEbS8Xlyhen5ZZ43yGCMuYiRrGI5f0BfDJIbj9zEWBav4XZKi7hqpxWIvlpaKSrbsiOMIIDnTR41IEe1bHEwotcmLk9krcxnTEu0VN3ZHZOTNXZ3X1omma7Yb8nZecJiWk2TSyMSoYqgHFlJ3nvjZnLspg2a7ieA==
+ b=hI5Md4v/NQj/oauqIuvg2zNc4b6ZrCwGGDsdFl37IwsTDbuH6QnAqFe+7M+wwHhp4ivEe0yFoXYEhhR6z7DNHTAghnblHQxKm+grWHhRp6UXmS4aipm/zGl6R/W5D5g6S/XVimliK094Qn6krKzUF1vj67v44/nohPJI9kCX5xujm9NBb7YO1ezp3ar1ZtANpiVbmEGLX9G0FnWFPOywQW9B0Mf+PAYtSwz3s2HGBjwZd2vKUUl/EeKKxCg20aLRw/v2pEtZXFOjKPYDEqxJ2KceRdJgaCn3Enc3iW8kMQFsVZPNa331h4ZLektl2iWxyCGsK7HbZ6i7amlN2rhItw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+3va/jBpndWAC2rG923npLLwpGONMtCneZPbBBZ6gGM=;
- b=Bo/7oZMxHslI4i0b+QXtS+2S7AewePqCvtkGDqu4HijBuy/H3bv60fHPlIWLC7A/0JciB2Ucb79lpUGrzVFHa7mqM/zdWn6Zzp8++ttDPkwjzao4hBG+67lDKrh5D8YN2l62LjJZBnEbQezC0m1akvRonNKiShd6Ka07cwxhJCQ33UZXNXbDP7/vtT9o6XNJ1YNKmjruOvYXQSA+76kq9iTuhJla3FwMkUkxOkmZIdwWI7/O7WGvVsmGtS2F6wUIJ4CUCXlumaLM63gqD3Lc3DdCiHupWrh+b5liGe6fPYTKbNIOyksUFlp2DLfV0W6Ko7SoXP6q4NfyiNRsasCf9A==
+ bh=HBIzyYfWaWfrxhyqqo6fxxsGZAcxkOjXNSkU/+9k1vw=;
+ b=FrI4PcN7bvd2tlf+kTwb4nRVYdUkE+B7Sn92FauHbGpR27hlMxnus437UEaEazIaiZEqIms+yBEm2Bx2NCX9cctG7TwAR3o0yd2ahUEVYatfAgrl9wjJCleoJQpPcJfG5F2uXnFD/jhkIzrSQphYUyx2Gd7Nnd7a6KMBeGB8erP3JxndOAWSIgCmeCeFK6slgp0lDUiqHVXGsvWM7fHMfXitFtoq+HzTJyASLQtxhNZ1LXwK3ygfYwS+49RbtpgNyiBF5IcMzJklD8bmZ+InV51BVVh9e72Y36yF81+YeupQeBTuc8CdGcEH7WYo82rSYS35EiY6t7OsN+RbxHe90Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+3va/jBpndWAC2rG923npLLwpGONMtCneZPbBBZ6gGM=;
- b=Ty8MJxEWjdb7YwpF9gjli4JtWOeTNj79IyQUSRFYfbq52/PLIE8ThXphVWRc0wLr089XpkRxotL9qlQJW4dSVqS+bpHHAcVUnGFCLt0QXfOvTYonDNzbQz1dne692T+liTdg+7sO5ig4WNp9I1ISApLUWTy2Fj+tpk2gaSFoZZ0=
-Received: from MN0PR03CA0007.namprd03.prod.outlook.com (2603:10b6:208:52f::6)
- by BY5PR12MB4116.namprd12.prod.outlook.com (2603:10b6:a03:210::13) with
+ bh=HBIzyYfWaWfrxhyqqo6fxxsGZAcxkOjXNSkU/+9k1vw=;
+ b=rFBSQVyjKnobcYV0mTL8rKzJ/cVUPrpETQyy++9eiOdFpHWenqHsfizCwb7N/+taWPtKfikcmrGotNq4jGnXysjCFN+EXWBDxwpdMMPh4K2jtaUDLKcibt0OdecNvERsE+SicqiWfL0zxOua5ULTDRk2ns5uvWhs8wLGz00CZuM=
+Received: from BYAPR21CA0004.namprd21.prod.outlook.com (2603:10b6:a03:114::14)
+ by SJ0PR12MB6830.namprd12.prod.outlook.com (2603:10b6:a03:47c::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Tue, 10 Nov
- 2026 05:08:32 +0000
-Received: from IA0PEPF0000003E.namprd03.prod.outlook.com
- (2603:10b6:208:52f:cafe::8b) by MN0PR03CA0007.outlook.office365.com
- (2603:10b6:208:52f::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.8 via Frontend Transport; Tue, 10
- Nov 2026 05:08:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.12; Tue, 10 Nov
+ 2026 05:09:04 +0000
+Received: from BY1PEPF0002695A.namprd05.prod.outlook.com
+ (2603:10b6:a03:114:cafe::44) by BYAPR21CA0004.outlook.office365.com
+ (2603:10b6:a03:114::14) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.639.0 via Frontend Transport; Tue, 10
+ Nov 2026 05:09:04 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- IA0PEPF0000003E.mail.protection.outlook.com (10.167.249.75) with Microsoft
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BY1PEPF0002695A.mail.protection.outlook.com (10.167.244.171) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Tue, 10 Nov 2026 05:08:31 +0000
-Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.615.4 via Frontend Transport; Tue, 10 Nov 2026 05:09:04 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 9 Nov
- 2026 23:08:31 -0600
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
- (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
+ 2026 23:09:03 -0600
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 9 Nov
- 2026 23:08:30 -0600
+ 2026 23:09:02 -0600
 Received: from xhdappanad40.xilinx.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
- Transport; Mon, 9 Nov 2026 23:08:27 -0600
+ Transport; Mon, 9 Nov 2026 23:08:59 -0600
 From: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	<dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -101,11 +101,14 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	Conall O'Griofa <conall.ogriofa@amd.com>
 CC: <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>, <git@amd.com>, Dileep Kumar Nagavarapu
-	<dileepkumar.nagavarapu@amd.com>
-Subject: [PATCH v5 00/16] iio: adc: xilinx-xadc: Add I2C interface support for System Management Wizard
-Date: Tue, 10 Nov 2026 10:31:45 +0530
-Message-ID: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
+	<dileepkumar.nagavarapu@amd.com>, Sai Krishna Potthuri
+	<sai.krishna.potthuri@amd.com>
+Subject: [PATCH v5 09/16] iio: adc: xilinx-xadc: Add unit suffixes to macro names
+Date: Tue, 10 Nov 2026 10:31:54 +0530
+Message-ID: <20261110050201.1850399-10-dileepkumar.nagavarapu@amd.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
+References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -115,281 +118,170 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA0PEPF0000003E:EE_|BY5PR12MB4116:EE_
-X-MS-Office365-Filtering-Correlation-Id: 958bf88e-7097-4bd1-9443-08df3ee8aa3e
+X-MS-TrafficTypeDiagnostic: BY1PEPF0002695A:EE_|SJ0PR12MB6830:EE_
+X-MS-Office365-Filtering-Correlation-Id: 149e4f55-90d7-4ba3-1c86-08df3ee8bdd0
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|23010399003|36860700016|1800799024|82310400026|10067099003|11063799006|5023799004|56012099006|261021123027099003|261021121427099003|261009223027099003|261102130727099003|261102123227099003|261026140227099003|261022075727099003|261026121527099003|261022105027099003|261028144727099003|20046099003|18002099003|6133799003|13003099007|3023799007;
+	BCL:0;ARA:13230040|1800799024|376014|82310400026|36860700016|23010399003|11063799006|261009223027099003|261021121427099003|56012099006|261022105027099003|261022075727099003|261021123027099003|261026140227099003|261028144727099003|261102123227099003|261026121527099003|10067099003|22082099003|18002099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	Zjt6ekBNoiREx+f5Od6NzPUapppe7ekvRhTJu5AATYEe1oaGsj9rY5QZa6M1FVoZUpMdyaUeiQjibEXwlWW0X57rspvoQ0OQfLVpnOJaNL2BoTcylc0KwTD3uytywFCZ71kT75lV5S2Le+qbz4mISXSy2rHyKjwjBZku7to3FUh8g8w4Sf4Ec0QIzRZygmYlJIfiQaQRGpnMoyJUrn+fUZD2PF/KBNuAjfbRS9ukV8ogiuwnJhyZiEuWCPOTUpJoNeowmIVQvKLDRQTUXLa2IsRELxAjYZ7FmzIPgOKOX11rgww+YAej/zvC4d9wDuTV3YDo2nM6o8TKxM8TlF9acpfE5sF8+qXxxIWSb7JuY69QF3/8vEUKg8IEMee9RiQQbv+xo82efhi2Pv4asNd3RHCIRKM2njd9iDRmX0FMo05POG4KCiOcvmjMcneVva1GOGEmGqHIOXxDgAOJBgtBTY/BBjsd76KClVNxc9HqEtlAdsYEPNZ74RyciCG6L5DE3KHesxtDlaGpsJ2aD5hfIPGfyepQ6hEs1+b33neW4NdRxxpfzcSOcaMiRXuOJ+75QxNw0lXSd+Hc4mVB7TwHOnV1qVEtep6qaoz5shWFuRRFG5U5BaBBXqQ/feaGFc21O+y2t8dmcTjRp1/WjXd7Hg==
+	05YYWS0yBm4MwRDc5U81wfYz3gPrYqGSr8Y81oIXm7oIPN9c59YdxTJYUvIOdHAur/g5/ruF9iVGO3QgiUOdllj1I14RGACAMfckUsfqxHVPAic09Xv75m6R2y60z6Xmf0UZeIp5GXUPcdY4+kkHT6lKkzcxkO5qqKzZfBpZ1k0vB2XyZm983PakN7ERiv8Eo0sv/newrTWQggaYfsvWPEJDjNTgZp8IBYPCzzxKv+u/Zva8OclPN0A4UXkmMlwYrbl34l7bawpNkqMvzhe4D7H9Z5CY723qparS6L2puOY7as9Qa1l4cJQjX4XkUXCVj/OEWhMCDXTBJcfzMtTMP3W8969sZ9TyTI4hJQeoGgS4y3GRKj9/qYIS4q/1R7uLnHT/j0xkShtg/K+w+BAA9hDn2lopFzgz1QZStKP7T9fg/ojmPAaJh5I7qp4JOobmZki7nkpIFU3vIJCudAIH9QQbOTheahr0psFzkvr1zMR83Q8hvv933Fyg5IcL1hbbpHfgHAF5CnKpARudKI6a5zNHnHNX1oGfvN5JuUy3UPQks5zXe5RsMYMMdQlV8u8b/F1QKj81VQhXgPMRzgtc+QjakKiGmwZW61vOHtlU2gIPGUfZogdJsqDbmtXUvlL7doLGPN560ehLmBsJ8PdhB+NR+BYcbbXS+vvnX3IqIDbZEemUBoKVeDK6NsJqNg0Gdz9ValZEDASohl9/zhRdrg==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(23010399003)(36860700016)(1800799024)(82310400026)(10067099003)(11063799006)(5023799004)(56012099006)(261021123027099003)(261021121427099003)(261009223027099003)(261102130727099003)(261102123227099003)(261026140227099003)(261022075727099003)(261026121527099003)(261022105027099003)(261028144727099003)(20046099003)(18002099003)(6133799003)(13003099007)(3023799007);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(82310400026)(36860700016)(23010399003)(11063799006)(261009223027099003)(261021121427099003)(56012099006)(261022105027099003)(261022075727099003)(261021123027099003)(261026140227099003)(261028144727099003)(261102123227099003)(261026121527099003)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	YrkQab2uIVz9byiDzioTaCaUYKtzlyOdd7aAqqAdAWl5Xk44Ow9qwaTmfOG/wmOe782y960Cl7pdDTzrVPE0+IyZ44wK/XPUREI+xg82Bg2bluJTbyPflcNK21LbwgjKjoYMqwS4pQi9VTEtmlzKaO4S+AG0EbThR740z551wiJtZLGGxcdw5L/vWhwLw7mJUzQR/pDUfcDjKzmM+/hZwQhDXRzLslshJqdnYBwGKsYElhPNWLnqq3Vzthmn8VwY40EqDJ0ueCbMWd3zaGurYJmb61gkwrGLnGHbir6Itv6/q51a26Z9pobOrXJwjR7d9gmRynFEe16z+HBZJ6EFv/+lnqAbsPj8u9XyEJeW9vQlQVtPAiU2c91aeFxgiYrEaA6g86kLuPuzJySGbslt7AqUoUiQe/BYSW4+Uar/W/XKp52iucUgB2BWS3tIN9UF
+	nzcWX6EJStRbPmV9i+s9eQg7dq4u8ETOZ0YBodad3BNwcgablE7JucPo0gM4cfXMz4ijqMIO1g7v2SDDrln3qJm7LvC8n1VBl43EBykDBY82VcN0FKlpEcGaYOMsHoNT4zcUjUT+y0f/spylbKmoajnesUhMiWj+2GrBAJZqpYUi0LlGj0IOwD6s1jk6YZ5psZoEWdsP3zptNW7spo0BJRQR2913rMYNnGSADiRtK943MT1sloIaKjL4aT4fbriiXvNCSbObGe5+9cfPz41d3jnqeZAG2GcBnrYiRWgKiUYo8XiD4y/KM3irHWhxnnR9Hu44tw85h8onrbwVrXU9ySac2xIXQGao1s8IVc4ir++uaEN3V7AUiBOt7DPyJkqYYG1rUh32P4fIsmrkpU4ftCqDdT+PHc36bOHRsp2BzFdBFmdTA57oRQmP1AEiyjHo
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 05:08:31.9113
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 05:09:04.7057
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 958bf88e-7097-4bd1-9443-08df3ee8aa3e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 149e4f55-90d7-4ba3-1c86-08df3ee8bdd0
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	IA0PEPF0000003E.namprd03.prod.outlook.com
+	BY1PEPF0002695A.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4116
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6830
 
-The existing driver only supported AXI memory-mapped access to the System
-Management Wizard IP. This series extends the driver to support I2C-based
-access, which is particularly useful for System Controller usecases.
+Append the unit to the relevant macro names (_HZ, _MS, _CYCLES, _SPS)
+so that the expected unit of each value is clear at the point of use
+and to avoid ambiguity.
 
-Key Changes:
-- Split the xilinx-xadc-core.c file into two files(xilinx-xadc-core.c and
-  xilinx-xadc-platform.c)
-- Add required helper functions and callbacks
-- Add channel configuration via callback mechanism
-- New I2C driver for UltraScale+ System Management Wizard for basic
-  voltage and temperature monitoring
+No functional change intended
 
-Note: We are working on x86 platform support where fixed channel
-configuration is used(no DT support). The .setup_channels() function
-pointer introduced in patch 2/4 enables different channel configuration
-approaches for various platforms.
+Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 36 +++++++++++++++---------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-This series was originally posted by Sai Krishna Potthuri.
-
-Link:https://lore.kernel.org/all/20260323074505.3853353-1-sai.krishna.potthuri@amd.com/
-
-I will be maintaining the series going forward and posting updated
-revisions.
-
-Changes in v5:
--> 4/16
-    (Comments from Jonathan Cameron)
-    - Retained the unused register field macros for register field
-      documentation
--> 5/16
-    (Comments from Jonathan Cameron)
-    - Define TCKRATE and power-down mode constants as field values
-      instead of shifted bit masks
-    - Split the combined alarm masks into their individual register fields
-    - Update the sequencer mode definitions according to the documented
-      field encoding
--> (Comments from Jonathan Cameron and Joshua Crofts)
-    - Introduced a new patch for mutex handling as patch 7/16 in v5;
-      patches 7/15 through 15/15 in v4 are now patches 8/16 through
-      16/16 in v5
-    - Convert mutex locking to guard() helpers and remove goto-based
-      cleanup
--> 8/16
-    (Comments from Jonathan Cameron)
-    - Retained explicit == 0 comparisons for auxiliary scan mode
-      field checks
--> 10/6
-    (Comments from Jonathan Cameron and Joshua Crofts)
-    - Updated the patch title and commit message to reflect both added and
-      removed header files
-    - Added linux/bitmap.h explicitly for for_each_set_bit() in
-      xilinx-xadc-events.c instead of relying on an indirect include
--> 13/16
-    (Comments from Jonathan Cameron)
-    - Added an early return when no IRQ is available to reduce indentation
-      in xadc_setup_buffer_and_triggers()
-    - Moved device_get_match_data() to the caller and passed the XADC type
-      directly to xadc_device_setup()
--> 16/16
-    (Comments from Jonathan Cameron)
-    - Moved interface-specific properties (info, has_adc_b) into struct
-      xadc_ops to avoid explicit XADC type checks
-    - Added has_adc_b to struct xadc_ops to indicate whether the device
-      has an ADC B, in place of checking the device type. UltraScale
-      System Monitor devices have only one ADC, so has_adc_b is
-      false for them
-    - Reworked the I2C DRP packet definitions using an enum for the byte
-      offsets and packet size
-    - Simplified I2C DRP data handling using get/put_unaligned_le16() and
-      removed unnecessary bitfield operations
-    - Added short-transfer checks for I2C transactions
-    - Added xadc_common_init() helper to initialize operations, mutex, and
-      spinlock
-    - Updated the I2C of match table terminator
-
-Changes in v4:
--> Updated the sign-off email from uppercase letters to all lowercase
-   letters
--> Dropped the commit message related to the binding YAML schema
-   format from the cover letter, since it was sent separately
--> Dropped the MAINTAINERS entry from this patch series
--> Split the previous 1/6 "Modernize driver code" patch into 10 smaller,
-   single-concern patches (2/15 - 10/15) as per the Joshua Crofts and
-   radhey review comments.
-   the combined result is equivalent to v3's patch 1/6:
-    2/15 - Fix coding style issues
-    3/15 - Use kernel integer types
-    4/15 - Drop unnecessary masking and dead code
-    5/15 - Use bitfield helpers and bit macros
-    6/15 - Use guard()/scoped_guard() for spinlock locking
-    7/15 - Simplify common coding patterns
-    8/15 - Add unit suffixes to macro names
-    9/15 - Drop unused header files
-    10/15 - Add clarifying comments
-    11/15 - Refine Zynq read/write error handling on timeout/interrupt
--> Patches 2/6 - 5/6 from v3 carry forward and renumbered to
-    11/15 - 15/15.
--> 1/15
-    - Reworded the commit message and subject
-    - Added stable@vger.kernel.org to after the Signed-off-by block
-    - Added Co-developed-by: Conall O'Griofa immediately before
-      his Signed-off-by line
-    (Comments from David Lechner)
-    - Moved patch 6/6 "Correct Write edge in CFG" to 1/15
-    - Updated the Fixes tag and explaining a commit message
-      for write edge configuration issue.
--> 3/15
-    (Comments from Joshua Crofts)
-    - Included <linux/types.h> header
--> 5/15
-    - Dropped unused macros
--> 8/15
-    - Reformatted the XADC_ZYNQ_TCK_RATE_MAX_HZ,
-      XADC_ZYNQ_IGAP_DEFAULT_CYCLES, and XADC_ZYNQ_PCAP_RATE_MAX_HZ
-      macro definitions to use the standard "#define NAME<TAB>VALUE"
-      style, instead of the single-line run-together form.
--> 9/15
-    - Replaced #include <linux/kernel.h> with the required headers
-      array_size.h, bitops.h, and container_of.h
--> 11/15
-    - Changed the timeout errno from -EIO to -ETIMEDOUT in both
-      xadc_zynq_read_adc_reg() and xadc_zynq_write_adc_reg(), for
-      a more precise error code on wait_for_completion timeout.
-    - Kept propagating an interrupted wait's error instead of
-      forcing ret = 0 (success) in both functions
-    - Added xadc_read_reg after the
-      wait_for_completion_interruptible_timeout, Now DFIFO read
-      unconditional so it always runs immediately after the wait
-      completes, regardless of whether it timed out, was
-      interrupted, or succeeded — avoiding a stale response word
-      being left for the next transaction.
--> 12/15
-    - Reordered dev/xadc declarations in
-      xadc_setup_buffer_and_triggers() (reverse christmas tree).
-    - Dropped the unused dev parameter from xadc_device_configure(),
-      keeping the header prototype and definition in sync.
-    - Added a commit-message note that the bipolar_mask computation
-      is also moved to run immediately after xadc_parse_dt().
-    - Removed the error handling from xadc_zynq_write_adc_reg()
-      in patch 2/6 of v3 and moved it to a separate error handling
-      patch 11/15 in v4.
--> 13/15
-    - Changed the new xilinx-xadc-platform.c SPDX identifier from
-      GPL-2.0 to GPL-2.0-only, for consistency with core.c and
-      the header.
-    - Tab-aligned XADC_MAX_SAMPLERATE_SPS, XADC_FLAGS_BUFFERED, and
-      XADC_FLAGS_IRQ_OPTIONAL to match the XADC_AXI_* block below
-      them.
-    (Comments from Uwe Kleine-König)
-    - Removed <linux/mod_devicetable.h> header file
--> 14/15(Comments from David Lechner)
-    - Added a commit message explaining the export of xadc_parse_dt()
--> 15/15
-    - Fixed missing spaces before opening parens in the commit
-      message ("DRP(Dynamic" and 'string("xlnx,...")').
-    - Consolidated the four redundant deferred-init rationale
-      bullets into a single explanation.
-    - Fixed the Kconfig typo "can also be build" -> "built" in the
-      new XILINX_XADC_I2C entry.
-    - Changed write_buffer/read_buffer from char to u8 in
-      xadc_i2c_read_transaction()/xadc_i2c_write_transaction().
-    - Added named defines for the DRP packet byte offsets
-      (XADC_I2C_DRP_DATA_LOW etc.) instead of bare 0/1/2/3
-      literals.
-    - Dropped the redundant "xadc->clk = NULL;" in xadc_i2c_probe().
-    - Fixed the devm_mutex_init(xadc->mutex) build error to
-      devm_mutex_init(dev, &xadc->mutex).
-    - Added the missing MODULE_IMPORT_NS("IIO_XADC").
-    - Added Dileep Kumar Nagavarapu to MODULE_AUTHOR alongside
-      Sai Krishna Potthuri.
-
-Changes in v3:
--> 1/6 - Modernized the driver code with latest kernel coding styles
-         and guidelines.
-       - Restored one-variable-per-line declarations where no
-         functional change  was intended.
-       - Added unit suffixes to timing and clock-rate constants.
-       - Replaced GENMASK() and FIELD_PREP() in appropriate places.
-       - Added guard(spinlock_irq) helper to manage the spinlock
-         automatically on scope exit.
-       - Added MAINTAINERS entry for XILINX XADC driver.
--> 2/6 - Refactored the xadc_setup_buffer_and_triggers function
-         with only two arguments.
-       - Added xadc_device_setup() and xadc_device_configure() to handle
-         device initialization and configuration separately.
--> 3/6 - Added IIO_XADC namespace to all exported symbols and
-         imported the namespace in platform specific modulue.
-       - Spliting the driver with modrern driver changes.
--> 4/6 - Added .setup_channels() to handle custom channel setup
-         and configuration.
--> 5/6 - Replaced mutex initialization with devm_mutex_init()
-       - Removed unused i2c_set_clientdata() usage.
-       - Added comments describing the DRP packet layout used
-         for I2C  transactions.
-       - Added comment for hardware initialization check from xadc i2c
-         write and read functions.
-       - Wrapped Kconfig help text to conform to kernel style guidelines.
-       - Switched device setup error handling to dev_err_probe().
--> 6/6 - Removed write edge default configuration in XADCIF_CFG register.
--> Dropped the binding to YAML conversion patch as this is already sent by
-   Pramod Maurya and is in discussion.
-
-Changes in v2:
--> 1/4 - Split the xilinx-xadc-core.c file into two files
-         xilinx-xadc-core.c and xilinx-xadc-platform.c(comments from Andy).
--> 2/4 - Referred as .setup_channels instead of setup_channels.
--> 3/4 - Created separate functions for i2c read and write.
-       - Created separate file for i2c interface handling.
--> 4/4(comments from Krzysztof)
-       - Removed $defs and use it directly under xlnx,channels.
-       - Documented the error information in the commit message due to
-         vendor prefix properties.
-
-
-Dileep Kumar Nagavarapu (16):
-  iio: adc: xilinx-xadc: Correct write edge in CFG
-  iio: adc: xilinx-xadc: Fix coding style issues
-  iio: adc: xilinx-xadc: Use kernel integer types
-  iio: adc: xilinx-xadc: Drop unnecessary masking and dead code
-  iio: adc: xilinx-xadc: Use bitfield helpers and bit macros
-  iio: adc: xilinx-xadc: Use guard()/scoped_guard() for spinlock locking
-  iio: adc: xilinx-xadc: Use guard() for mutex locking
-  iio: adc: xilinx-xadc: Simplify common coding patterns
-  iio: adc: xilinx-xadc: Add unit suffixes to macro names
-  iio: adc: xilinx-xadc: Include appropriate header files
-  iio: adc: xilinx-xadc: Add clarifying comments
-  iio: adc: xilinx-xadc: Refine Zynq read/write error handling on
-    timeout/interrupt
-  iio: adc: xilinx-xadc: Add helper functions for the device setup
-  iio: adc: xilinx-xadc: Split driver into core and platform files
-  iio: adc: xilinx-xadc: Add .setup_channels() to struct xadc_ops
-  iio: adc: xilinx-xadc: Add I2C interface support
-
- drivers/iio/adc/Kconfig                       |   23 +-
- drivers/iio/adc/Makefile                      |    6 +-
- drivers/iio/adc/xilinx-xadc-core.c            |  909 +++-----------
- drivers/iio/adc/xilinx-xadc-events.c          |   79 +-
- drivers/iio/adc/xilinx-xadc-i2c.c             |  242 ++++
- ...inx-xadc-core.c => xilinx-xadc-platform.c} | 1095 +++--------------
- drivers/iio/adc/xilinx-xadc.h                 |  125 +-
- 7 files changed, 688 insertions(+), 1791 deletions(-)
- create mode 100644 drivers/iio/adc/xilinx-xadc-i2c.c
- copy drivers/iio/adc/{xilinx-xadc-core.c => xilinx-xadc-platform.c} (34%)
-
-
-base-commit: 1390ca4953a7400ca932cb49635f02c727f885a6
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index 7dc43a3bf3c3..145bb7614523 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -38,7 +38,7 @@
+ 
+ #include "xilinx-xadc.h"
+ 
+-static const unsigned int XADC_ZYNQ_UNMASK_TIMEOUT = 500;
++static const unsigned int XADC_ZYNQ_UNMASK_TIMEOUT_MS = 500;
+ 
+ /* ZYNQ register definitions */
+ #define XADC_ZYNQ_REG_CFG	0x00
+@@ -126,7 +126,7 @@ static const unsigned int XADC_ZYNQ_UNMASK_TIMEOUT = 500;
+  * limits the maximum samplerate 150kSPS. At this rate the CPU is fairly busy,
+  * but still responsive.
+  */
+-#define XADC_MAX_SAMPLERATE 150000
++#define XADC_MAX_SAMPLERATE_SPS 150000
+ 
+ static void xadc_write_reg(struct xadc *xadc, unsigned int reg, u32 val)
+ {
+@@ -279,7 +279,7 @@ static void xadc_zynq_unmask_worker(struct work_struct *work)
+ 	/* if still pending some alarm re-trigger the timer */
+ 	if (xadc->zynq_masked_alarm) {
+ 		schedule_delayed_work(&xadc->zynq_unmask_work,
+-				      msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
++				      msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT_MS));
+ 	}
+ }
+ 
+@@ -318,15 +318,15 @@ static irqreturn_t xadc_zynq_interrupt_handler(int irq, void *devid)
+ 
+ 		/* unmask the required interrupts in timer. */
+ 		schedule_delayed_work(&xadc->zynq_unmask_work,
+-				      msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT));
++				      msecs_to_jiffies(XADC_ZYNQ_UNMASK_TIMEOUT_MS));
+ 	}
+ 
+ 	return IRQ_HANDLED;
+ }
+ 
+-#define XADC_ZYNQ_TCK_RATE_MAX 50000000
+-#define XADC_ZYNQ_IGAP_DEFAULT 20
+-#define XADC_ZYNQ_PCAP_RATE_MAX 200000000
++#define XADC_ZYNQ_TCK_RATE_MAX_HZ	50000000
++#define XADC_ZYNQ_IGAP_DEFAULT_CYCLES	20
++#define XADC_ZYNQ_PCAP_RATE_MAX_HZ	200000000
+ 
+ static int xadc_zynq_setup(struct platform_device *pdev, struct iio_dev *indio_dev, int irq)
+ {
+@@ -339,8 +339,8 @@ static int xadc_zynq_setup(struct platform_device *pdev, struct iio_dev *indio_d
+ 	int ret;
+ 
+ 	/* TODO: Figure out how to make igap and tck_rate configurable */
+-	igap = XADC_ZYNQ_IGAP_DEFAULT;
+-	tck_rate = XADC_ZYNQ_TCK_RATE_MAX;
++	igap = XADC_ZYNQ_IGAP_DEFAULT_CYCLES;
++	tck_rate = XADC_ZYNQ_TCK_RATE_MAX_HZ;
+ 
+ 	xadc->zynq_intmask = ~0;
+ 
+@@ -348,8 +348,8 @@ static int xadc_zynq_setup(struct platform_device *pdev, struct iio_dev *indio_d
+ 	if (!pcap_rate)
+ 		return -EINVAL;
+ 
+-	if (pcap_rate > XADC_ZYNQ_PCAP_RATE_MAX) {
+-		ret = clk_set_rate(xadc->clk, (unsigned long)XADC_ZYNQ_PCAP_RATE_MAX);
++	if (pcap_rate > XADC_ZYNQ_PCAP_RATE_MAX_HZ) {
++		ret = clk_set_rate(xadc->clk, (unsigned long)XADC_ZYNQ_PCAP_RATE_MAX_HZ);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -358,7 +358,7 @@ static int xadc_zynq_setup(struct platform_device *pdev, struct iio_dev *indio_d
+ 		div = 2;
+ 	} else {
+ 		div = pcap_rate / tck_rate;
+-		if (pcap_rate / div > XADC_ZYNQ_TCK_RATE_MAX)
++		if (pcap_rate / div > XADC_ZYNQ_TCK_RATE_MAX_HZ)
+ 			div++;
+ 	}
+ 
+@@ -379,7 +379,7 @@ static int xadc_zynq_setup(struct platform_device *pdev, struct iio_dev *indio_d
+ 		       XADC_ZYNQ_CFG_REDGE | FIELD_PREP(XADC_ZYNQ_CFG_TCKRATE_MASK, tck_div) |
+ 		       XADC_ZYNQ_CFG_IGAP(igap));
+ 
+-	if (pcap_rate > XADC_ZYNQ_PCAP_RATE_MAX) {
++	if (pcap_rate > XADC_ZYNQ_PCAP_RATE_MAX_HZ) {
+ 		ret = clk_set_rate(xadc->clk, pcap_rate);
+ 		if (ret)
+ 			return ret;
+@@ -957,8 +957,8 @@ static int xadc_write_samplerate(struct xadc *xadc, int val)
+ 		return -EINVAL;
+ 
+ 	/* Max. 150 kSPS */
+-	if (val > XADC_MAX_SAMPLERATE)
+-		val = XADC_MAX_SAMPLERATE;
++	if (val > XADC_MAX_SAMPLERATE_SPS)
++		val = XADC_MAX_SAMPLERATE_SPS;
+ 
+ 	val *= 26;
+ 
+@@ -971,7 +971,7 @@ static int xadc_write_samplerate(struct xadc *xadc, int val)
+ 	 * limit.
+ 	 */
+ 	div = clk_rate / val;
+-	if (clk_rate / div / 26 > XADC_MAX_SAMPLERATE)
++	if (clk_rate / div / 26 > XADC_MAX_SAMPLERATE_SPS)
+ 		div++;
+ 	if (div < 2)
+ 		div = 2;
+@@ -1348,8 +1348,8 @@ static int xadc_probe(struct platform_device *pdev)
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		if (ret > XADC_MAX_SAMPLERATE) {
+-			ret = xadc_write_samplerate(xadc, XADC_MAX_SAMPLERATE);
++		if (ret > XADC_MAX_SAMPLERATE_SPS) {
++			ret = xadc_write_samplerate(xadc, XADC_MAX_SAMPLERATE_SPS);
+ 			if (ret < 0)
+ 				return ret;
+ 		}
 -- 
 2.34.1
 
