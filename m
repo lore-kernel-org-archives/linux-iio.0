@@ -1,97 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.23.19
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794311712;
-	b=2Ye6Svx4XsxPZSkibYnM8iS45gw50RWShHSKOtWOj8dH62EV1uV36wSaoLuqo5aCRGSR
-	 ffJvmGFWLyPgurrVsE14JNm6QGErdv5zmb/a3aHPk6kUX3xTQmlJdvLrcPMc+La8Hm4my
-	 EkpN0aTvacF5ZCrdgeEpyHFXAm1TtOTkz8t++jDqDcPEUlWCTJxMaqZ80ZikmyJLzSf8V
-	 myyAunlwR4OIqOL7CboepIOQ4okGTQrVh2QoRP1a1o/QZdE0joZk4JEmnpLvW8Gi4ZzG8
-	 f26Tl3fCi7tNK7Q1R89RJyU40sdG8cKX4xKBz5H1NuL7RRmks97w7lfd2UeQNQzpSHw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794311712;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:
-	 X-Microsoft-Original-Message-ID:MIME-Version:
-	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=9tehReWZepAVd84Aey9zm+1K+nAt9gNgPoPTE7PfRVM=;
-	b=v2qMsIiClkVGAtkNf19yKAuCvuOJLklSwPNfZSYTauQrA3qDeYQ9sFdHOFZSAaLBOmQz
-	 AIDWnD6I3u2pa+NaiBTa8n2IvV0Pe+9nenFe2hMUTkQTVRI9SiA/wnrSB9PZvOjcaH4s2
-	 XzSD2wgD1p7pgIovHyMB+jQkIlF64gKZq25jFkSVeWffLDntGWrhb4wtKZqAqTfNtvuVj
-	 s05NpRal5+YDfiDDk2IdEYXTuoWQo20EauNHyOpbSFzI9crj1cq4Hm9Sruw+DPGMplcz4
-	 y5VIuYl5J7j3lMNA96v9Jf75jCs/hgJUIlp7LPD9GuuE1LAr1YpPnTP2HVhIjtouzMQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=outlook.com;
-	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=EkzHDQ89;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.23.19
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azolkn19010019.outbound.protection.outlook.com [52.103.23.19])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.59.177.22
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794313536;
+	b=Slz9pHLSgfJDT+1dX4T4nZT+MIthv4+fCBkeM4R++VkbAvdS29UVHlnXw1rIW9zSZAMM
+	 XHHm5c/meI2nC/9XsEBQuPaawFl6j2DACsGfqUi4fYGkZdn9HI6j1IyvmWt57zzKg1ngJ
+	 h/zugw2FYEit68S5jjHYFdHNJ5508DSJEtMW4TI73J5FcePKaNMu927fpLaZzVmLpt358
+	 1wVbSPXLp/+p+3ipEBCyb2XRbB3dpIK/V/vcuW8GIqxzh+/HwmAeTIYAJrfM2bDOcSPYt
+	 EClQ1z4XCKFYNYcT2ITyE6ZaRlvwQnfsI1uKQumgj8TIz1xcWWhF+3YB4GfHuy643Wg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794313536;
+	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
+	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:EX-QQ-RecipientCnt:From:To:Cc:
+	 Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:
+	 X-QQ-XMRINFO:X-QQ-RECHKSPAM;
+	bh=8lWCiB0JHEA7qzkmIFqBVO/U/0hIioLfNPjh2IrIufs=;
+	b=bm/4GTjkXfE+PK0RGXN4fZljO6A8yHcWyHwbhWp45n5Vsy58CQ6yxbAudx7fl77QyAfU
+	 rGVlFPd8M8Axgg8uN4VKLejYnCZJVErJXeOxofnXS+E8YA5xKWD2OpeuJi74Pb+e7f5O4
+	 f1OU/nX9UcRgK/Qnx2599t1IeNmf52KZw+fKuBlxV/3zj61fb0/U+hq9gxetk1MMVmOOf
+	 k/qDoKzX3MwfU+m3Gm6KLK1fJm1Dh/CDwzxe2uPhfBYmV1IFlUyyzfKpcvCIf4Sbb2sEp
+	 jZrvNgyEbSWfldaoi5jZSXalX86QITXJEfMvU/yrCdx3J9RedKba0wrYI5PMrC1busw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=uniontech.com;
+	spf=pass smtp.mailfrom=uniontech.com;
+	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=SI4Wmh9i;
+	arc=none smtp.remote-ip=52.59.177.22
+Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31984606A331;
-	Tue, 10 Nov 2026 11:55:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 31984606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E58B606A31C;
+	Tue, 10 Nov 2026 12:25:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E58B606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=EkzHDQ89
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZCO2AdaQHgJBQB8LsZ/1CiF5QePY/L8VDOdm2COicg/e4lJ0PQ6uH40BOueNAyhWtCgX2gvPsk+neHpZx6K2iaMFU6rE3R6i9XsA1MgXJmzZ1N09mmuQg1IW236o3YONvs3ZmxXgDFBKw4LcLcFUJvoHI1OhEUDvAaDL0eSgRp3NBZKEzmiLtdqWSbdWfeWZwFEpjP2ik9uG8s5joek1pHFHbbMIsihjEGZwg5KsdyKKO6A99wGLmgzSlbH8h8d9TkyzxNaEHh6j0qgB3Xdj9yMoplmCEDbs7vowWG4NF3wTD/CVLu62yNQEnleb1iiMXpdmBV8H2fNn9DHrZXUU/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9tehReWZepAVd84Aey9zm+1K+nAt9gNgPoPTE7PfRVM=;
- b=EGgbunGbllL2qJxsN/1nt0PP5bTr5Ax4mRtVcGNlW6Zfgsqgg30aM+w0xZrqbqN3S0iGC2UjS9HVdvHE1CfqDnhFGEMSLtnlhLysyu8gyNzVJmre5+rUedI7BePB6V+mIPIGuTBRkRrhpJ93So3Jt1gHHKsaeEbz7CnkVzpJ6rXXFV5zBSVw+GlQtukuQ3TkR1sw4B6hJpPRL9XNNDo2bdlI9rEp4QiDfvpbLF2fSMJ9sDtuQewHAxUdkW+ve0q08FOAfFsME39Vsc882bcyhWCbEv3uWgA8sMm3CsrRif2lN1ZzLRgBRz/enP4VKcnDWJSmfIPrMs4JzQ+OoUBVtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9tehReWZepAVd84Aey9zm+1K+nAt9gNgPoPTE7PfRVM=;
- b=EkzHDQ89Q+ptWb2lIwZoHhGtaKcLXSrGmLWZ2P2WBQ1551jmMSCNJNwmqLI2J2krRREw+egAFrOeNaTwEyrCIy9qqLvLHt/ippSHQloPcmcCfpt+IWa9LmDYB5hNYepl3yl/4aG/ieCXZEH4zpo/pvlxu0GVwYCGIkYsuwOWJ8NNuoMdkKijLa34nOZ+VhTygDf+fvw0j37412bvTeBV+sYh2NWHs/qYgFfXh8drDnUbMGJ2uAOMIdjTc5xBC+NeZbHUt30w40x01h7RRUlUEdwfA3fSql5+RGWho1fagy02+WUfzgYvANVfrIejH7g5xa+dF/Vv7Zo2s1dHgVa+pA==
-Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
- by CH4PR12MB795688.namprd12.prod.outlook.com (2603:10b6:610:518::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Tue, 10 Nov
- 2026 11:55:09 +0000
-Received: from SN1PR12MB2528.namprd12.prod.outlook.com
- ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
- ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0592.010; Tue, 10 Nov 2026
- 11:55:08 +0000
-From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-To: andriy.shevchenko@intel.com
-Cc: andy@kernel.org,
-	chernyakin.victor.j@outlook.com,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
+	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=SI4Wmh9i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1794313477;
+	bh=8lWCiB0JHEA7qzkmIFqBVO/U/0hIioLfNPjh2IrIufs=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=SI4Wmh9iiZypCLWl2/XmG5ygxz0S3I5Z10l+nJIgGIVpILB4LN2UlWwSRzb31TfoQ
+	 x/B+HSOe+aDRdA5c9OzxJvq/SBnj3tP9j1rHR9EJEUjmEr5dxQvZON4ThYtB+Beu1H
+	 TBxAbaI6dNtJYDvkK+tHjnEdiyr/7dxfu37cS3GY=
+X-QQ-mid: zesmtpgz8t1794313460t52fdad64
+X-QQ-Originating-IP: 7YJuLs4em+I2CqTud3IbnSVjn7y41TF7S7cgnCx37EU=
+Received: from PEN202512010004 ( [113.57.152.160])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Tue, 10 Nov 2026 20:24:17 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 10375027920850177401
+EX-QQ-RecipientCnt: 16
+From: raoxu <raoxu@uniontech.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	luiz.von.dentz@intel.com,
+	pengpeng@iscas.ac.cn,
+	pmenzel@molgen.mpg.de,
+	brgl@kernel.org,
+	u.kleine-koenig@baylibre.com,
+	lars@metafoo.de,
+	mike.looijmans@topic.nl,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com
-Subject: Re: [PATCH v7 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Date: Tue, 10 Nov 2026 05:54:58 -0600
-Message-ID:
- <SN1PR12MB2528684E196432864FD48626A5722@SN1PR12MB2528.namprd12.prod.outlook.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <avLpEA6CoZvicvDN@ashevche-desk.local>
-References: <avLpEA6CoZvicvDN@ashevche-desk.local>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH5P221CA0022.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:610:1f2::23) To SN1PR12MB2528.namprd12.prod.outlook.com
- (2603:10b6:802:28::33)
-X-Microsoft-Original-Message-ID:
- <20261110115458.1087401-1-chernyakin.victor.j@outlook.com>
+	raoxu@uniontech.com,
+	stable@vger.kernel.org,
+	Joshua Crofts <crofts@kernel.org>
+Subject: [PATCH v3] iio: adc: ltc2471: Fix LTC2473 differential offset
+Date: Tue, 10 Nov 2026 20:24:14 +0800
+Message-ID: <B29B7229F9C3B748+20261110122414.373459-1-raoxu@uniontech.com>
+X-Mailer: git-send-email 2.50.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -101,108 +80,86 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|CH4PR12MB795688:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1f67d770-a409-4916-9363-08df3f217660
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|260925184616899003|4140399003|24021099003|25010399006|23021999003|12121999013|8060799015|5072599009|19110799012|15080799012|22091999003|24121999003|41001999006|1602099012|10035399007|40105399003|52005399003|26121999007|3412199025|440099028|4302099013|1710799026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?4TDwScSYByPjnXa5OiqAFPBkT75r990wMO3m2BFEvNWKfBzVllrpDZWjLxWU?=
- =?us-ascii?Q?ZnhMkYCXISRHxq3MfG3XEFBVnds9m4NS05Jnw4obOj3vSd98bc2tsPulu3Yt?=
- =?us-ascii?Q?E1DlPEaGjsArFo1+XkccS3Q3ViQ6J8zpNz0EQjuLK0naDc4teKewke5y6Div?=
- =?us-ascii?Q?nuSjkC5r3LpR+D6BFn5nYlO6bgD1PK4A/hHaZQlxZcVyCfxbFlhWnUpWGf8p?=
- =?us-ascii?Q?xgdFVyklH/h3Mwpp4fNt8S1UgUn/ZXtHws72KdUGSjOM6hCiMD2UZfhGJV/t?=
- =?us-ascii?Q?R+D5strPtEaIQKG1Czhzt66ZjCKpnJ4Ik0j6YZtqFnh56pFz20Wi+BptolnG?=
- =?us-ascii?Q?2kItwqd3GrcNRy3y1XTZm/HtI9stKXX3QgtPiZqOzyty+U8WZ5xXqww3d+3I?=
- =?us-ascii?Q?AB63zfqSOt9TF10xj6TE9E5F9nAMlywIILb7z8+kUDlVuJV1ADy0qZCnXQwL?=
- =?us-ascii?Q?VX1I49UuYGy28a9/3cndfpkB8VfGnO1weYFOIL5G6xsiSIu87WRY0EItWg5O?=
- =?us-ascii?Q?8a72vG0ECrH20MW6vGtQR5RyKdK1ycRKQI3VkgIGw5QOhlw5LFTqUW1Tde6a?=
- =?us-ascii?Q?hRkivcGdN2869Fgk68mBWrvblwQkE3hDrzX93kTN+QfvUvLs9VyHP6wDcOBA?=
- =?us-ascii?Q?bkvWLIEP1TnUFiHCROq3wUzW4UiOXvCJLPbswaVQvpHglU+8p5B6l+F5T2FS?=
- =?us-ascii?Q?wXMqB5om2jOfDQS+K4fgwKzShhwkZYoA4hVKkFk+tPdGyFPWxxjsaYlDRwuc?=
- =?us-ascii?Q?tBvl3IUHuYfYrKUu2Gf//9sE2X01FGddkBbM/dAEd8ZjNDZ1zpbfxQlRG9lI?=
- =?us-ascii?Q?90ozXKGc6qQV07hzPqBOG+w7KNpGgP6wweipp0JOrSsKWTVZiUih9YB9KL4v?=
- =?us-ascii?Q?Ed/hlvYRGF6wRrE7TpdnwlmI8rZBSAtZyiEIKawjGC5fA/0yZuK1Ka1pj8KG?=
- =?us-ascii?Q?NkjKi9bJhyHPMU/I51nciUzi9UIrLIHytmxaFmsmYiA6dtphLsp1n1e0ecGD?=
- =?us-ascii?Q?V2lN1RqLbaz14x9cqmkrzDXUSfxK4521xaBednZrQ4AVDH2UvFIVvtAKxAj0?=
- =?us-ascii?Q?WbZMpGoAWs3cgIhmIAchOylB+xPGmrJz/ptrims7VdtAixkQw7/BB0FCncwc?=
- =?us-ascii?Q?r7Zxk6xspj+/NT9s/RF3zoL75s01x5271fwG4jx2BtNDR+/TmTXI4Lg=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?StmmJbPMP82sd/N8f5YnLIjBfEnWr40HJen6/VUgZc0H+PbH7vwnQEvy5YPz?=
- =?us-ascii?Q?l/6Xw36NvwC5YLab8IVGM4tQe5nQMQQZMqbH3WPFhs6N1jkzVkiUMR2dnxjD?=
- =?us-ascii?Q?U7lAHyICX+7+VUxrMjDoU5SPtg9KZy7+XYHeMEMLM8YwqCXArZOhPyCwQDLm?=
- =?us-ascii?Q?14uFWLmympXkLKRLlx1otqMWVFwYpm8ahjS0Wn526GDNRb7EK88TAq+WElpu?=
- =?us-ascii?Q?u3qXSgsmAMGqNIrWIs7XOy+E0Owd7hFamNGnu6gYbwvfy9yQsyyu5XeFepbR?=
- =?us-ascii?Q?dnqnMjv3FFSzXTrTAKKrHu2nQOeSMWMyn0M6mNilrk6Xlfsvv7fFNm83FWt0?=
- =?us-ascii?Q?Ziwqfm1ilEifpXtWVf9/T/u/oJGSO184XFWwe+zZnPHOb9Ianmz9/TaRL6vF?=
- =?us-ascii?Q?HecoQ8Fb+jkfsMzhjZXTiNDlyIKh1ciHmOHv3yq43WZq50AxwyU7+F7IAw39?=
- =?us-ascii?Q?fXSxe+HR/1UMCPOjB+s0FXiNHtXZwPbO6bn9UHuzsCg9ZQ6cpheHZpsEP1q9?=
- =?us-ascii?Q?YrC9/ju+EY61dwlZaSjFQcsbla9dAp8DWWuF+FKeHrMVbGAQ4laQR5lKzO9d?=
- =?us-ascii?Q?/ddRLwPy4gKrwdYB0/pW6xvAVf/TfYppzhZIn0xWX9w+sbWAz20bqUCMxHGY?=
- =?us-ascii?Q?ZIbvssE3jpepKnsxCbsSzueXPo2xMf72mk/YVqiJtWsTC5CMcDLpq8PU+yB7?=
- =?us-ascii?Q?DH8Ys7uC7F2kuM03YUql0SAPRYzgeg/sWWexhw7ygehc2sN2Su041prF7eUk?=
- =?us-ascii?Q?0XWAc8MaFG2q+ayqZVpSZi30eef+8TRJ3igNYkSM7UyMzomy+I7Zph4d4Ab/?=
- =?us-ascii?Q?ORwvZn+zu5wbn8xoUP3UEkzDm2m6bm3kDLRebjJTGcEq3rZ4bYrU+EA1RO62?=
- =?us-ascii?Q?6O+LIn4swkDG7yKBskrOUzSUQ4CWcRgjmv9Vxx75Iyola6WsPmsHWiA0bEfg?=
- =?us-ascii?Q?zpgivG2GcG0Rn8sKSJxEW+Vyq+/FEYaUvXs3ZwKs/slYECzQ04gAtMVOuiUU?=
- =?us-ascii?Q?L0m5epe6iO4R62z36JBZ5zdX2Pmmy2248LUDZkYA8v2ov3BUJkQnPixHzLzJ?=
- =?us-ascii?Q?/+Dyrnbf9xY9MApZXafGRQ3OhGQm65RqkeGLL/t48gezvjSOFtQ+ksXHQ1mF?=
- =?us-ascii?Q?OkVK27E7QT/hNDiR30QTjUPXoeU0bJKwggt+R0a138NgqlJ8SBm6uZQNiTVg?=
- =?us-ascii?Q?ST6n81huacoT9y+a1rsYff10pH1HNjHiyP51+xx2Meqqk3OvN/HQOYOkuNxT?=
- =?us-ascii?Q?cT+Bpsh3lVqUdmYipf0lBV1UooF2eHCCuFCwxfj1Crymw1/6S2mwLgNSfJBC?=
- =?us-ascii?Q?JtFL5L0gc9rpD2MZLpzwyx6OdjN5FhJF4pAFEiDOTZ2wT+uvwZbPHHHTLNoT?=
- =?us-ascii?Q?VQ7PTTaQBSmcsYFlV1YOSh3CqFBOkAs2qR72GM5qCP5FJwOb4Q=3D=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f67d770-a409-4916-9363-08df3f217660
-X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 11:55:08.3376
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH4PR12MB795688
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz6b-0
+X-QQ-XMAILINFO: Nc4Sv39/e83WFeryTqrHNtJMOj01Y+f0ORTzGpEKG9K0/C7vSde8aTRX
+	y/qMc8n/tgq+FMlEVe/lRS9F0KkGjR3APk0ev9oxRLubtn3yqwsgYusnb8cVywJaE4UZvwV
+	i5E5xqio9BD2SAQA9BmhyHwIctS/G304cjq9Ompv9GKJgdwAHLT7J2BTpmJKcgknghVshgw
+	tkf5eFiuFk+CpFBnoshnkwle3c+keK+tQJIzLZbpiAH3VcUK/iSkdxgK+SG6ii+izKmNHoF
+	ulmGGT0f+0a7dYEWzI1I3AWepIao5fTPgXbVQWoho0de2byMm9OIKda7QMo8DkdXfzxk/A5
+	1+xquYHAlIXNwGmUJh33GCQmqD5ALlcMCbphGzXdiRVPcxET5YTlV0dRrbtdGagXSiS7Zy6
+	yR70M3Ec9jBLjTY+ZZsz04VWHgBAfbQRxdxKTUyg8vmIuSe8154gFZMvYewJnXUg2A88STa
+	jv0ddqh1t3FVg9TN+vYkH0kVdMcYhaqGZywYbEcIga/l4XuGiqiaNopkQEoztvzS58bbqv3
+	X3kZRDDRH+ywiABL53LcCmr9nf2g6PkkhqfKSw7f7TjW6tdITacG6LzVVOCIIcd25q4K1PP
+	baCGg3AIwvuHUdL8jdq++7xWjFSij+b/alWWX0dxd+Ct35wiuDcl5hr8x4NmwzxGZ96twF1
+	Xismda0KS0Ie09Pu7I9KswrbzhrOSbziulVOJQ5nT6L/GGQvUyK7+AqKY2zuYHNBaETd5UN
+	TadUTiXM2cq38YPRi8ul5RoyRWDcDCbh8w0oKywt/h46VNxODnr38k6+w+iIaAV+l/Q1RJV
+	go0t2TyLIhS5fLo3YYy3adv9TKUvE2N5nQXcACAs14e+EFjzrNw9YqbisSB2uu8/dTE3phq
+	t0OcPDPw6FWKf+EuBN9ISVASKVVXbHJ/IT4GWFUuYOtnTLejMSOKDmeIk5MUrmj9WP9xTNd
+	IDMT+p4Kw36e+p1Cbd27YC/1hl7cR+qQgFdP9/m+4C/gP652tXy+10VSmQmirXpmRuBf2Oo
+	QKXpkgkQx0SUUjhVtXqGegBCBtjX+PZOGz/poUvMQOvayUvoUmT+wS6IUnjpzpHUcdjQR38
+	fhES24ep8VKgzg0e8r1J/5oTLJNMnc/0+Nt8zPOgx2e
+X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
+X-QQ-RECHKSPAM: 0
 
-> > > > +		return regmap_write(map, FDC1004_REG_OFFSET_CAL_CINn(chan->channel),
-> > > > +				    (u16)DIV_S64_ROUND_CLOSEST(val64, fdc1004_calibbias[1]));
-> > > 
-> > > Why casting? Shouldn't it be handled on the regmap_write() stage based on
-> > > the register / field description?
-> > 
-> > This was prompted by this sashiko review:
-> > 
-> > https://lore.kernel.org/SN1PR12MB252888B43D53AB1723952D21A5742@SN1PR12MB2528.namprd12.prod.outlook.com
-> > 
-> > TLDR I'm not certain the cast is necessary, but I'm also not certain
-> > it's not necessary (if regmap does handle it, I couldn't figure out
-> > where), so I've added it out of caution.
-> 
-> Yes, regmap core code is tricky in many places. So, as far as I read it,
-> the I2C default bus with val_bits == 16 (if you have no custom regmap IO
-> accessors) uses internal format operation regmap_format_16_be() along
-> with format_write kept at NULL and hence defer_cache set to true (cache
-> after formatting). The default working buffer for the data is work_buf,
-> to which the above formatter puts the data, it doesn't put anything outside
-> 16 LSBs.
-> 
-> Since the code is tricky, please double check my way of understanding the code
-> and confirm or point out any mistakes I made.
+From: Xu Rao <raoxu@uniontech.com>
 
-So to explain it to myself, the call chain is:
+The LTC2473 reports its differential conversion result as an unsigned
+16-bit value spanning -VREF to +VREF. The IIO scale is consequently
+reported as 2 * VREF divided by 2^16.
 
-regmap_write() forwards to _regmap_write() forwards to map->reg_write().
-What is map->reg_write() at this point? It is _regmap_bus_raw_write,
-because that's what it was set to in __regmap_init().
-_regmap_bus_raw_write() formats the value using map->format.format_val(),
-which at this point is regmap_format_16_be(), also set in __regmap_init().
-regmap_format_16_be() discards the top 16 bits.
+IIO offsets are expressed in raw codes, but the driver currently returns
+-LTC2471_VREF, which is a millivolt value. This makes the processed
+reading incorrect: with a 1.25 V reference, the midpoint raw code is
+shifted by 1250 instead of 32768 codes.
 
-I still haven't quite grasped all the logic in __regmap_init,
-but I'm relatively sure of that description. Okay, that makes
-me confident enough to remove the cast.
+Return the raw-code offset so that the midpoint maps to 0 mV and the
+endpoints map to -VREF and +VREF as intended. The single-ended LTC2471
+does not expose the offset attribute and is unaffected.
 
+Fixes: 1d3eacbfa644 ("iio: Add LTC2471/LTC2473 driver")
+Cc: stable@vger.kernel.org
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Xu Rao <raoxu@uniontech.com>
+---
+Changes in v3:
+- Add Reviewed-by tags from Nuno Sá and Joshua Crofts.
+- Move the AI assistance disclosure out of the commit message.
+- No code changes from v2.
 
+Changes in v2:
+- Replace the raw -32768 literal with the named LTC2473_DIFF_OFFSET
+  macro.
 
+The supplied fix was reviewed and this commit message prepared with
+OpenCode AI assistance.
+
+ drivers/iio/adc/ltc2471.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/ltc2471.c b/drivers/iio/adc/ltc2471.c
+index 369af700969f..eb418c0fa732 100644
+--- a/drivers/iio/adc/ltc2471.c
++++ b/drivers/iio/adc/ltc2471.c
+@@ -25,6 +25,7 @@ struct ltc2471_data {
+
+ /* Reference voltage is 1.25V */
+ #define LTC2471_VREF 1250
++#define LTC2473_DIFF_OFFSET (-32768)
+
+ /* Read two bytes from the I2C bus to obtain the ADC result */
+ static int ltc2471_get_value(struct i2c_client *client)
+@@ -69,7 +70,7 @@ static int ltc2471_read_raw(struct iio_dev *indio_dev,
+
+ 	case IIO_CHAN_INFO_OFFSET:
+ 		/* Only differential chip has this property */
+-		*val = -LTC2471_VREF;
++		*val = LTC2473_DIFF_OFFSET;
+ 		return IIO_VAL_INT;
+
+ 	default:
+--
+2.50.1
