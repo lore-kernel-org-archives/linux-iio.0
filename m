@@ -1,65 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.59
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.139
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794289167;
-	b=MY74TJq/SjeFm1LNHu19MBMbAD2cUhQTRC164RWbTVu4KUypK2e2JADDJvySbbPAEddf
-	 yO8OSnARyUODSifTP30WcmgmiMangzrL2wCLJbEng4CSpo/+YXClFPMRamPvftq0LoJHs
-	 Yn1jvJBrQnO8L0fNQ9/iRt0RYV370sYRML6kubtoJKG3kOCZMa9xYFHj/ZxrTDAkgnFZm
-	 dQWYiOnwVNDiWknP2pT4wEz7em7ziBA3ducZ+WTpvkYWhyOstZN/EUmJc6JlkxGs9IJNY
-	 IMau9u05qnXS224lu1r9UQzRjfHbxdjpMPAgZNzlvva7lEXIQ21bZlyAvmSiGWr+fRg==
+	t=1794294132;
+	b=vbx3/vyE5XUv6a08Kp44IIxvwBZG80qFQ/AzZ0b3tDxR6vUOl/kHhh9bGxhmpSS4AdQb
+	 EEwH2Hla7KjqCHfuqalzW09KXF/aLEcCV7bYPJIaasn/AOdpFY8jUz/YIlWK4gZgLCRUW
+	 M/v7QYKM4BolHhgHvj/+z6g/DkKy8QDlW+3v4K7nRmlzADXyHfKKB38BDqZxzoZpGGggg
+	 W9bQwlevVUsLnTn+e7G6rjc1NhG5GMpYV9KxlhOcouGupYD4ePQwekhWjbaKwcRuQGdXe
+	 W/uDcbTY+JlJwTaUbuCo5IoqMM33x/pDSaf33C5GAVweUg4lmBflgNOdRToRwoC4Hdg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794289167;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=NZXjw7iHdBYOz25+dloLm4rv1gSDvBYEq3SFSQ7c0Jo=;
-	b=QYh0GbFgOAQ5wvoW5bAP4h1SXyCAiBCyb3keu/I/vA2+AjcT/2YyDjOSxUpEZvkQj/un
-	 mPxSHVZvL+4KexBkqIgYEWXVLyhevVYkGjL9a5dWfbio5YSi4jDujJ8Yp7jSxL9rIB2iX
-	 hbnS70ATMlb9vSo9SjviOzAu4GQsQlOZ62Nla+sjrDYjM6ewAJOqeEUu1S41uj1Mx/Aie
-	 cSukPIClH7MNYKGuim+vTrjVeYFVlbEU5Ey/ekyZVNq+YWEok4Pd/QDouaGTR7H13MDM8
-	 ornQEfD30B4jsUrzYi4c1mK0SvAesKBehUfOIaP9wBq7imDRt4CABcC5ny0PG37vBHQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794294132;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=jTHiZ4jJN/E8yIGpxapjAZs2O+sKVcXlYf7ss7FEZYQ=;
+	b=lTif4V/SRFwi0WBXcvlTT7Y+SXTmHnLhOhVrWOT1lqqObCRUmWvRly/F37B2NmrfQMEA
+	 tnxkEa31MWYJ6tlhvx0bZW5U2gkqnhbKRWWYcWFueQC5WdlCTzTdTOkirlDK7BrJO24/0
+	 J5fbvFjRVNwdYpJvS6fDLXFWnU+z61KwBhkbOgAEQ4ryPgfleI0qSXiLbXm/FZuwj2pqf
+	 n7WsV2CPnutxKF5epntf2w4PpzxHNbYP7SGREF21HqaKTAxvFzJIyBU8bVzxuAtzjDiTb
+	 xdL7qrJeWsMmVEfde4qpDFRVfigrBsvYUd1uQAqtTN4SEze8AF8ywXjBedSLvgGGJWA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=Q11nkyxb;
-	arc=none smtp.remote-ip=91.218.175.59
-Received: from mta0.migadu.com (out-59.mta0.migadu.com [91.218.175.59])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA31C606A32A
-	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 05:39:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA31C606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=B7TXg070;
+	arc=none smtp.remote-ip=111.22.67.139
+Received: from cmccmta6.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8EF5606A31C;
+	Tue, 10 Nov 2026 07:02:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8EF5606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=Q11nkyxb
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=BeEpc+Ak8iIFPGrajMqKB8SxEGKljrqyyyjENWLZtvI=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794289164; v=1; x=1794893964;
- b=Q11nkyxbklIE7a1OsVUnYsONQBP5jWofJRTEVU0/oWy+6WSrq/bHw4x4gRHBRY4SwsaMdsdp
- BYsG96ilsPlaO/d8VUJKJvWIkyJmkfmLe/paVGp/pwYf1d6FqQaeKKoZepI2k692UO0FCFZgp8r
- Tdy50+7jtPYLV79K5wddcwRs=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id 13f18eadacae033a;
-	Tue, 10 Nov 2026 05:39:24 +0000
-X-Mizu-Trace-ID: 13f18eadacae033a
-X-Migadu-Flow: FLOW_OUT
-Date: Tue, 10 Nov 2026 05:39:15 +0000
-From: Akhilesh Patil <akhilesh.patil@linux.dev>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, andy@kernel.org,
-	robh@kernel.org, crofts@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, alexandre.belloni@bootlin.com,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-rtc@vger.kernel.org,
-	akhileshpatilvnit@gmail.com, akhilesh@ee.iitb.ac.in
-Subject: Re: [PATCH v2] MAINTAINERS: Update Akhilesh Patil Email address
-Message-ID: <20261110053915.GB2506228@u5ce4748bae3b54.ant.amazon.com>
-References: <20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com>
- <20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com>
- <avG6iHBBDp0ATTsi@ashevche-desk.local>
+	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=B7TXg070
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=B7TXg070/gXUzm5z54hkm/3Xpi2NMmsBhkTy3TMMflpNysvYQ66QByshODi7gfNjBSgBKrL+eOpUD
+	 1ers/voTH5kRVvm4219Kv0NbtjqyJxYBTdXYQHDdVTjfkl8vX4/Ssu8iJNF+iDb1mArqX/ZDTU84sS
+	 rH4d3BdCJSj8gRrU=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app09-12009 (RichMail) with SMTP id 2ee96af2c1720a4-d137e;
+	Tue, 10 Nov 2026 15:02:10 +0800 (CST)
+X-RM-TRANSID:2ee96af2c1720a4-d137e
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from DESKTOP-3K8GUTQ (unknown[223.108.79.98])
+	by rmsmtp-syy-appsvr03-12003 (RichMail) with SMTP id 2ee36af2c16f620-aa48e;
+	Tue, 10 Nov 2026 15:02:09 +0800 (CST)
+X-RM-TRANSID:2ee36af2c16f620-aa48e
+From: Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Xiangwu Lai <laixiangwu@cmss.chinamobile.com>
+Subject: [PATCH] iio: accel: mc3230: Leave chip in standby on mount matrix probe failure
+Date: Tue, 10 Nov 2026 15:02:06 +0800
+Message-ID: <20261110070206.1452-1-laixiangwu@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.50.1.windows.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -69,35 +71,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <avG6iHBBDp0ATTsi@ashevche-desk.local>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 09, 2026 at 02:20:24PM +0200, Andy Shevchenko wrote:
-> On Mon, Nov 09, 2026 at 10:44:43AM +0000, Akhilesh Patil wrote:
-> > Move to my new linux.dev email address akhilesh.patil@linux.dev
-> > I plan to use this email for kernel development going forward.
-> > Also update email address in few yaml and driver source files.
-> 
-> ...
-> 
-> > --- a/.mailmap
-> > +++ b/.mailmap
-> > @@ -1030,3 +1030,4 @@ Zhu Yanjun <zyjzyj2000@gmail.com> <yanjunz@nvidia.com>
-> >  Zijun Hu <zijun.hu@oss.qualcomm.com> <quic_zijuhu@quicinc.com>
-> >  Zijun Hu <zijun.hu@oss.qualcomm.com> <zijuhu@codeaurora.org>
-> >  Zijun Hu <zijun_hu@htc.com>
-> > +Akhilesh Patil <akhilesh.patil@linux.dev> <akhilesh@ee.iitb.ac.in>
-> 
-> It's not a rocket science to see the order in this file...
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+mc3230_probe() switches the chip to WAKE mode before reading the
+mount matrix from firmware, but when the mount matrix cannot be read
+it returns directly and leaves the chip in WAKE mode.  The
+iio_device_register() failure path, in contrast, correctly puts the
+chip back into STANDBY, so the mount matrix error path is clearly
+missing the same cleanup.
 
-I missed the instructions in the file, Thanks.
-Updated in V3 patch.
+The mount matrix is read from firmware only and does not need the
+chip at all, so move it before the WAKE transition.  That way the
+chip is only woken up once the remaining steps cannot fail anymore.
 
-Regards,
-Akhilesh
+Fixes: e59c6acfd5fa ("iio: accel: mc3230: add mount matrix support")
+Signed-off-by: laixiangwu <laixiangwu@cmss.chinamobile.com>
+---
+ drivers/iio/accel/mc3230.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
+index b45897210..9ee71da7e 100644
+--- a/drivers/iio/accel/mc3230.c
++++ b/drivers/iio/accel/mc3230.c
+@@ -183,14 +183,14 @@ static int mc3230_probe(struct i2c_client *client)
+ 	indio_dev->channels = mc3230_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(mc3230_channels);
+ 
+-	ret = mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
+-	if (ret < 0)
+-		return ret;
+-
+ 	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
+ 	if (ret)
+ 		return ret;
+ 
++	ret = mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
++	if (ret < 0)
++		return ret;
++
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "device_register failed\n");
+
 
