@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794327538;
-	b=ta6nfGdHcavXSLRp/qi9jbWRG1pE/yo6N304GMYL9UdkIBAzb4v228JfqI0O593UEog/
-	 hTD2tn0NBH/we03NvSvBNZqWQkf+mdb98Sz9nRXvih8z6HQhMYpBKkcbhm8LuyyZOy5Wp
-	 GcmTPAy18b9bDt0SNpsaovjc82dEocYM009k4Sit5KHW8fe/RxroN8Oy8XWeAxfhgskpo
-	 L8CUtBZuitHBG9GGQFJh9G/nu1cJLJ7vM31E9aunMsC4jJw1w8xWLpd+2D2wZj9+sUI+Y
-	 DqKODuiNEB5UdRiIgrG+78qbwFHBcCBhxWO7BaVmPO0wUZTb+wkMWxIsMr6fXpE4dYQ==
+	t=1794327723;
+	b=JUT+SshrFiROYtWWZJVS+yI7NoXP+SNb8pfp25DYgy7nIXF2WGxH6v0YF4LP//ovu27O
+	 lcwphAizdJLW6+rQ2TbwamIcta2/9dmGU6fvcyUru2PBPasrnlwXxvR75UAr9DesZpnfj
+	 5rbj5w1YgubOeIMRaoXzCa8Wro3Z4+44UlBzq0b8yaPBxO4JXtr3e0o3aUTwvVtj1tCkp
+	 NSqqeg7sc9xoArFECQpi4Ido2j/E1qbgyKcszG5YOx5q6OCt++OYMt8QM3XqsNy0bHfW+
+	 9vBRZfwKAxq/qgQc0rwIvVty3DkHAmJlJHGqdcF8dgN9Gp2mkTx2t6LQzVq+QUVnVWw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794327538;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794327723;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=yYskAYVnH6XbVjZCWrX9MMKwY8O7EPYghGutgzkZiEk=;
-	b=gYI8Ql1bq1A/TSE5fm5DQ+lTBSCnYbLHyLEo/tUuv9gMv367M1zR4GsvHHLZhYb2Jl+r
-	 5FocWLqHbRkzFNQM235LLFv6Go4cZFyECnNHjr7c8B8wz6coDLN1vIXMXSdV87N9knmWB
-	 mgMJNYyR4NIpd4iC8uXeeqKu6uutnSRLTUKGaVX50eg3w1TPn4V/e/pQZagcCyqLu0OSe
-	 eVx0uz9W40UDCN7D2+uDV++5uPdw78BAlNsd085XkE0KIRylznv2NrYoP94agYYH1Fjju
-	 ocVHKL4cYn/gNlvGCn8T/V9/NPf+35FrYH7cqafOt0c69ufgfHGjrujCQPY43lBMpXA==
+	bh=CBpuD9EN7mGAnC0N09j6dxtwPl1Nk8UemTazmCtVEmo=;
+	b=ji8PlE3IBs84EyOGQBZNcCGWUxIvka6rvUJTw8pJ/VS3q7tr0ssI+gHm0/vLWjt7IT4P
+	 u+l1yuEVXmm1w3hYe5U4/Tx2Z0yKPEShf5JkWw/SIDk5FqMSh4H9Qo+oaU4Fgr2SsIs0r
+	 s5whZJ8WEgk/IBukepjH4HZTa6zfhQORYn+c5/hen40KwgXQoXNnDM6IMZnXRwHaRIx5t
+	 SEHorFTCXHeitT4hIBiLofOehsnBy/hS3FZqV4QsnLQB55Nlnfi7SXMTTG4ZiznGwIHeg
+	 8DHC+ObAE+zkEESbyFIDSZhR4EA+jPHrBc2B1YOurIW92rAB9otPicKka4/ABKT7dag==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fsxeVPOQ;
-	arc=none smtp.remote-ip=192.198.163.12
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MCOMSxH0;
+	arc=none smtp.remote-ip=198.175.65.14
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 483CA606A31C;
-	Tue, 10 Nov 2026 16:18:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 483CA606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D9BE606A320;
+	Tue, 10 Nov 2026 16:22:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1D9BE606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fsxeVPOQ
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MCOMSxH0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794327537; x=1825863537;
+  t=1794327722; x=1825863722;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=XLgFMvrq3yUqIfrDH4auZGnz7OE5EcbDwFNADMKNHJ0=;
-  b=fsxeVPOQii9m1JAsbbCsy2rwRi9H1dQxwy8u/nYR95aM/AkAsCgSJqlq
-   q5VhFMk9I4THSXMhz70Zyl9ZPPb4WhKvbN5iLCgrSGIjepRqOjsdNC3Eu
-   HqWAe7PtXD7asvPLgqm71IY2jVgOAUVbYxsQ1YDA/ICwEox/LCULFpAVk
-   e/k8tF6wfAntsA6fmZhw3yTGFpAdgS0FtY5m366PUuY84BfCOdKpPAj2W
-   78X82VcvgB9FocWq7L3CaMbPoCBv1ykWv46p8fkVI2Zwmbd/diH02ZSpk
-   ptLvfnvQhXqlKLStmbEEXDBUn8jUNKM64F1ysAN4uPs5Mi7GhxQf0AUZ6
-   A==;
-X-CSE-ConnectionGUID: U7OfC/ipRkaiQTnxWxvAGQ==
-X-CSE-MsgGUID: hChN51gfRj20k7r22eAgFQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="2979647"
+  bh=cy+rZt1gNtVr4opsRLmcs7QTL/zYCRzwfuBXOZCZ7sM=;
+  b=MCOMSxH0Q0tnrrazeDCeiFeBsy9/G1568ARzAi9XJFa65XoOmt7od/3y
+   aHU/3yYcZeB6UzIxWpDQV6nRa+rhQU6EKEZiGJQABaVQpIQ29UVEsRSSj
+   +TPZUXMmiP8o4/VDLdnTZLMTPClLCGU0WrqXiADJqi2T8VBQc3bfWpfbq
+   F2u+7oEujpDZt9xTwMCLJq617wbAdySfs2du7dtFNovj5BC70I16WRgRO
+   pPCmoKGq55mkDK1vbXr1OA28YRK9b3pzNaXlhtiY9rtVhjdhZbvyIpQ6P
+   OKeCWdNGHSLBUwuR63rdV+1VMxWmsXUItWRn9JWcB4uZsTiLa6678GaOc
+   g==;
+X-CSE-ConnectionGUID: nxd2x6UNRI2HEG+Q6/bwaw==
+X-CSE-MsgGUID: 18L8v8f7RESvf+NQVpcaRQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="2973430"
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="2979647"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:18:56 -0800
-X-CSE-ConnectionGUID: MneuRwbwRX2t1Z8hvWZwaw==
-X-CSE-MsgGUID: P73odN+YSh+sOAsPzzVs0A==
+   d="scan'208";a="2973430"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:22:01 -0800
+X-CSE-ConnectionGUID: rskXrzBaQJa6lenaPAoyjA==
+X-CSE-MsgGUID: EUnsRGwFTlyeG6iuM9I8lg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="9967128"
+   d="scan'208";a="8018663"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:18:54 -0800
-Date: Tue, 10 Nov 2026 18:18:51 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:21:59 -0800
+Date: Tue, 10 Nov 2026 18:21:56 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -72,11 +72,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Conall O'Griofa <conall.ogriofa@amd.com>, linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v5 09/16] iio: adc: xilinx-xadc: Add unit suffixes to
- macro names
-Message-ID: <avND64ZLHcSPFUkX@ashevche-desk.local>
+Subject: Re: [PATCH v5 12/16] iio: adc: xilinx-xadc: Refine Zynq read/write
+ error handling on timeout/interrupt
+Message-ID: <avNEpH6KGJkeI7dX@ashevche-desk.local>
 References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
- <20261110050201.1850399-10-dileepkumar.nagavarapu@amd.com>
+ <20261110050201.1850399-13-dileepkumar.nagavarapu@amd.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,50 +88,55 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110050201.1850399-10-dileepkumar.nagavarapu@amd.com>
+In-Reply-To: <20261110050201.1850399-13-dileepkumar.nagavarapu@amd.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 10, 2026 at 10:31:54AM +0530, Dileep Kumar Nagavarapu wrote:
-> Append the unit to the relevant macro names (_HZ, _MS, _CYCLES, _SPS)
-> so that the expected unit of each value is clear at the point of use
-> and to avoid ambiguity.
+On Tue, Nov 10, 2026 at 10:31:57AM +0530, Dileep Kumar Nagavarapu wrote:
+> Refine the error codes returned from the wait, the same way in both
+> xadc_zynq_write_adc_reg() and xadc_zynq_read_adc_reg(): a timeout
+> (ret == 0) now returns -ETIMEDOUT instead of the previous -EIO,
+> giving a more precise errno for this condition. An interrupted wait
+> (ret < 0) now propagates that error to the caller instead of being
+> silently treated as success.
 > 
-> No functional change intended
+> xadc_zynq_write_adc_reg() waits on xadc->completion after issuing the
+> Zynq DRP write command, then drains the response word from
+> XADC_ZYNQ_REG_DFIFO. The DFIFO read already ran unconditionally after
+> the wait, regardless of outcome.
 
 ...
 
-> -#define XADC_MAX_SAMPLERATE 150000
-> +#define XADC_MAX_SAMPLERATE_SPS 150000
+>  	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+> -	if (ret == 0)
+> -		ret = -EIO;
+> -	else
+> -		ret = 0;
+>  
+>  	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
+>  
+> -	return ret;
+> +	if (ret == 0)
+> +		return -ETIMEDOUT;
+> +
+> +	if (ret < 0)
+> +		return ret;
 
-Not sure if _SPS makes it anyhow better, but you may use (150 * KILO)
+First check for generic errors, then for exclusive conditions ( == 0).
+
+> +	return 0;
 
 ...
 
-> -#define XADC_ZYNQ_TCK_RATE_MAX 50000000
-> -#define XADC_ZYNQ_IGAP_DEFAULT 20
-> -#define XADC_ZYNQ_PCAP_RATE_MAX 200000000
-> +#define XADC_ZYNQ_TCK_RATE_MAX_HZ	50000000
-> +#define XADC_ZYNQ_IGAP_DEFAULT_CYCLES	20
-> +#define XADC_ZYNQ_PCAP_RATE_MAX_HZ	200000000
+>  	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+>  	if (ret == 0)
+> -		ret = -EIO;
+> +		return -ETIMEDOUT;
+> +
+>  	if (ret < 0)
+>  		return ret;
 
-We have units.h full of useful multipliers, use them.
-
-_HZ --> _Hz
-
-...
-
->  	div = clk_rate / val;
-> -	if (clk_rate / div / 26 > XADC_MAX_SAMPLERATE)
-> +	if (clk_rate / div / 26 > XADC_MAX_SAMPLERATE_SPS)
->  		div++;
-
-Side note, you can get rid of one division.
-
-	if (clk_rate / div > 26 * XADC_MAX_SAMPLERATE_SPS)
-
->  	if (div < 2)
->  		div = 2;
+Ditto.
 
 -- 
 With Best Regards,
