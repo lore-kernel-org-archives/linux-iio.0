@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794327233;
-	b=gdj+pibLKb/MWOY4EBBUVlbhrTA+7llCsosnYSn2li4nAOTKcP30+pI5FI2C3bB8XEbw
-	 uwgFGUjqF2CFU3Izai5g81OYXFAdICfG4Cd0477nOr7ZYRMW1BT+zm/UKxsm3STQzVTPB
-	 5hy8rhlgEXhZDeLBFBMRmiaWH4d9DYdLeT1TrzXu+v1BPJOxky1duK3CFs2Y2ulhdJAaF
-	 h+ltoUP8zPmJpUcAs2v05XhKBv/wWav51wA22S7gjqXcuev6BjTSoVdRBluTOdhSnEKWT
-	 BLlGvf3sEfPFSZGPhxi1zHFFb7yfya50uF2IaHVkECER6d5YEudPEF3lIprTeOAw43A==
+	t=1794327538;
+	b=ta6nfGdHcavXSLRp/qi9jbWRG1pE/yo6N304GMYL9UdkIBAzb4v228JfqI0O593UEog/
+	 hTD2tn0NBH/we03NvSvBNZqWQkf+mdb98Sz9nRXvih8z6HQhMYpBKkcbhm8LuyyZOy5Wp
+	 GcmTPAy18b9bDt0SNpsaovjc82dEocYM009k4Sit5KHW8fe/RxroN8Oy8XWeAxfhgskpo
+	 L8CUtBZuitHBG9GGQFJh9G/nu1cJLJ7vM31E9aunMsC4jJw1w8xWLpd+2D2wZj9+sUI+Y
+	 DqKODuiNEB5UdRiIgrG+78qbwFHBcCBhxWO7BaVmPO0wUZTb+wkMWxIsMr6fXpE4dYQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794327233;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794327538;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=oHP5B0UlB7/SoTwhxB0AOYNlEwskAwU+hgd9yWW6YwA=;
-	b=hHlJcA49ClLG9M7WV92YDcJ8xoHvhE9CgIo4Lz0dgt5pxEtEXDgxuKA1t04k3+gLZx//
-	 6OuwNkqSRQF0CJilXzO8Mi3nWPemzc0Z7rjWsowgUnLJ0RejJiRoGkgfkK93Afsun5HSf
-	 8etiL8heloofpdqyGhO/AToDMailMcJszRBlvLxx0LIU7jX1wiqYm1tCdeeYOlZuzXV+p
-	 kKQnxJMlPEdfQYOQ6cUXcFUgc6zTnSoqw5uUJu5Pk7whKZgETMs1uR3jfpwUEFjH9tFjv
-	 lkmgzfGrjFMEK84rSLor5Vsspf63fqiCdOrL9qKwB5M+ivTOMvAWCb7yS/5bRf5N3JQ==
+	bh=yYskAYVnH6XbVjZCWrX9MMKwY8O7EPYghGutgzkZiEk=;
+	b=gYI8Ql1bq1A/TSE5fm5DQ+lTBSCnYbLHyLEo/tUuv9gMv367M1zR4GsvHHLZhYb2Jl+r
+	 5FocWLqHbRkzFNQM235LLFv6Go4cZFyECnNHjr7c8B8wz6coDLN1vIXMXSdV87N9knmWB
+	 mgMJNYyR4NIpd4iC8uXeeqKu6uutnSRLTUKGaVX50eg3w1TPn4V/e/pQZagcCyqLu0OSe
+	 eVx0uz9W40UDCN7D2+uDV++5uPdw78BAlNsd085XkE0KIRylznv2NrYoP94agYYH1Fjju
+	 ocVHKL4cYn/gNlvGCn8T/V9/NPf+35FrYH7cqafOt0c69ufgfHGjrujCQPY43lBMpXA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="iuhyK01/";
-	arc=none smtp.remote-ip=192.198.163.7
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fsxeVPOQ;
+	arc=none smtp.remote-ip=192.198.163.12
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C253E606A32A;
-	Tue, 10 Nov 2026 16:13:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C253E606A32A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 483CA606A31C;
+	Tue, 10 Nov 2026 16:18:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 483CA606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=iuhyK01/
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fsxeVPOQ
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794327231; x=1825863231;
+  t=1794327537; x=1825863537;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=b+GfY+61OeZggR11g46pkfalBMS7RT2Vza+al9X93H4=;
-  b=iuhyK01/N5bPFL6pJWyckSnPXskOBFd+00DROYC4tpEDnjevG0gM8yVj
-   roIIv8ewdkZ8Z0al1klzwil5rIK608Lprg8ffxqcx5dYfNimORPk/eht3
-   ghmGBEl4LEaSxnsg8rhK3dkRXqYNSf8vDiiE/gsU59rvRyeRirfegiWob
-   0mkNXsiqQMKAe3US34OkzwDIYSDjgpWOvGFSD+Wq6+2Ut4GtU87KoJOWc
-   C9ozSLCrtMYfbgX6u7r+6Ggg7WoARqdePe/UcBRVKUhtHCFgtIHU0Vwa5
-   1d42g9dUIApWAqpsuY7Ec2lItI5/PKTH/soRQzHYMf7iL6NKz04MEHlqF
-   w==;
-X-CSE-ConnectionGUID: bkxSH62jQSutgqTU5vg8Pw==
-X-CSE-MsgGUID: mOE50LdpTE+6selZY1buEA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="2949302"
+  bh=XLgFMvrq3yUqIfrDH4auZGnz7OE5EcbDwFNADMKNHJ0=;
+  b=fsxeVPOQii9m1JAsbbCsy2rwRi9H1dQxwy8u/nYR95aM/AkAsCgSJqlq
+   q5VhFMk9I4THSXMhz70Zyl9ZPPb4WhKvbN5iLCgrSGIjepRqOjsdNC3Eu
+   HqWAe7PtXD7asvPLgqm71IY2jVgOAUVbYxsQ1YDA/ICwEox/LCULFpAVk
+   e/k8tF6wfAntsA6fmZhw3yTGFpAdgS0FtY5m366PUuY84BfCOdKpPAj2W
+   78X82VcvgB9FocWq7L3CaMbPoCBv1ykWv46p8fkVI2Zwmbd/diH02ZSpk
+   ptLvfnvQhXqlKLStmbEEXDBUn8jUNKM64F1ysAN4uPs5Mi7GhxQf0AUZ6
+   A==;
+X-CSE-ConnectionGUID: U7OfC/ipRkaiQTnxWxvAGQ==
+X-CSE-MsgGUID: hChN51gfRj20k7r22eAgFQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="2979647"
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="2949302"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:13:50 -0800
-X-CSE-ConnectionGUID: OLMcxOxJRmK8fg92V8WCXQ==
-X-CSE-MsgGUID: tTtacSy3SlKPGm6b8dLczg==
+   d="scan'208";a="2979647"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:18:56 -0800
+X-CSE-ConnectionGUID: MneuRwbwRX2t1Z8hvWZwaw==
+X-CSE-MsgGUID: P73odN+YSh+sOAsPzzVs0A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="8518342"
+   d="scan'208";a="9967128"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:13:47 -0800
-Date: Tue, 10 Nov 2026 18:13:45 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:18:54 -0800
+Date: Tue, 10 Nov 2026 18:18:51 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -72,11 +72,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Conall O'Griofa <conall.ogriofa@amd.com>, linux-iio@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v5 07/16] iio: adc: xilinx-xadc: Use guard() for mutex
- locking
-Message-ID: <avNCuWIuS5iFrId-@ashevche-desk.local>
+Subject: Re: [PATCH v5 09/16] iio: adc: xilinx-xadc: Add unit suffixes to
+ macro names
+Message-ID: <avND64ZLHcSPFUkX@ashevche-desk.local>
 References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
- <20261110050201.1850399-8-dileepkumar.nagavarapu@amd.com>
+ <20261110050201.1850399-10-dileepkumar.nagavarapu@amd.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,51 +88,50 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110050201.1850399-8-dileepkumar.nagavarapu@amd.com>
+In-Reply-To: <20261110050201.1850399-10-dileepkumar.nagavarapu@amd.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 10, 2026 at 10:31:52AM +0530, Dileep Kumar Nagavarapu wrote:
-> Use guard() helper for mutex handling instead of explicit
-> mutex_lock()/mutex_unlock() sequences.
-> 
-> This removes the need for explicit unlocks and the
-> error-path labels that only existed to release the mutex,
-> simplifying the control flow
+On Tue, Nov 10, 2026 at 10:31:54AM +0530, Dileep Kumar Nagavarapu wrote:
+> Append the unit to the relevant macro names (_HZ, _MS, _CYCLES, _SPS)
+> so that the expected unit of each value is clear at the point of use
+> and to avoid ambiguity.
 > 
 > No functional change intended
 
 ...
 
->  {
->  	int ret;
->  
-> -	mutex_lock(&xadc->mutex);
-> +	guard(mutex)(&xadc->mutex);
->  	ret = _xadc_update_adc_reg(xadc, reg, mask, val);
-> -	mutex_unlock(&xadc->mutex);
->  
->  	return ret;
->  }
+> -#define XADC_MAX_SAMPLERATE 150000
+> +#define XADC_MAX_SAMPLERATE_SPS 150000
 
-I believe somebody already told you two things on this:
-1) make guard()() be delimited by blank lines, so it's visible at a glance;
-2) don't leave unneeded variables, like 'ret' in this case.
+Not sure if _SPS makes it anyhow better, but you may use (150 * KILO)
 
 ...
 
-> @@ -101,9 +101,8 @@ static inline int xadc_read_adc_reg(struct xadc *xadc, unsigned int reg, u16 *va
->  {
->  	int ret;
->  
-> -	mutex_lock(&xadc->mutex);
-> +	guard(mutex)(&xadc->mutex);
->  	ret = _xadc_read_adc_reg(xadc, reg, val);
-> -	mutex_unlock(&xadc->mutex);
->  	return ret;
->  }
+> -#define XADC_ZYNQ_TCK_RATE_MAX 50000000
+> -#define XADC_ZYNQ_IGAP_DEFAULT 20
+> -#define XADC_ZYNQ_PCAP_RATE_MAX 200000000
+> +#define XADC_ZYNQ_TCK_RATE_MAX_HZ	50000000
+> +#define XADC_ZYNQ_IGAP_DEFAULT_CYCLES	20
+> +#define XADC_ZYNQ_PCAP_RATE_MAX_HZ	200000000
 
-Same story and so on...
+We have units.h full of useful multipliers, use them.
+
+_HZ --> _Hz
+
+...
+
+>  	div = clk_rate / val;
+> -	if (clk_rate / div / 26 > XADC_MAX_SAMPLERATE)
+> +	if (clk_rate / div / 26 > XADC_MAX_SAMPLERATE_SPS)
+>  		div++;
+
+Side note, you can get rid of one division.
+
+	if (clk_rate / div > 26 * XADC_MAX_SAMPLERATE_SPS)
+
+>  	if (div < 2)
+>  		div = 2;
 
 -- 
 With Best Regards,
