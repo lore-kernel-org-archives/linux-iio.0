@@ -1,101 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.54
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794320503;
-	b=kv/3X5XOYDEwVkqJTaxTD+jJcK8nS8egY6qqHDOPuclw6yddQPgOCOMRpXWUP2naNKcD
-	 m6N5cx8d6rid/rwhVOJiW/+twd5BRXubs8L0igTC4IPTqoSZeiEItFxgfQHY2PZa0pFtE
-	 ldpnw5HR2CxEYgJ50AcHZQ3Du/8NO/jJkOV0TnbDXb4/nRJg8R62ay/zdvqsKMAjiO1SG
-	 MdV33Pjln+rD5p78asx/0dg/DgRczHUVbAyrcHEC1B0uTjY91w+eNa/clq7GiD6xaG6qB
-	 ZkJun8b00LDO5V/6xFPwTLpw5a95h+q9c02+W/e+sDoKOjgD99WuA5/CUmNyk0ntyaA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794320503;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=Ejm8pe9G15DYxQ7Hb5OdNIp8qY5r8fdDKVN+ZYBfwxM=;
-	b=GWBBRixAcyAFFZr66F4XbmNqWem8G2CRo7cKLtHlLFThHssS0v+0+DF1WKSEQMVH/XfT
-	 pUHqHBGTtPd+raMCJO5kkBxv1NRJ6rmWdyEmoc2N5Q2XoPnmqGwQUBUOZrzgw5DC2zBvU
-	 DWOiwgqaYZp0AVONs/YJF7My6gn4NIV6njO8jtqHwPNF/CbK8mzdO1T1VbtguMn+Jr+vZ
-	 95h2oCDaA3JqYgZw0fyYAugD4wvb6MZlgSRiD1sNSyDwIeB10zQIl3vMofi89xWaNk3oS
-	 RUI+SuJbqYo8w9RcYxkj7qwaR0iCfeZZ63bE/Gn3e/zpaAp5GgsVQfYMMIMq0EEMWIw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=uArSYa94;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.54
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=66.235.175.158
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794321605;
+	b=J0z/u/e/KUWZbt6AGuGEQ/B3aQ0F4z0xVoR/aHI6Znfs3M0bMJ1yn5L2usptYeRuCf8L
+	 HkiKJXOp4DQKxn97jFYZmcyjGGx8XQCNq4ZelL6Vr5hfgshH+CtqB8uJF72iJr7TjcDLx
+	 hR9Bap7qDtDLXGMY0gYOgjAToknuLA36JBc+1aLCpbpldpX1ksqhPvu13jpW3cSEkZFXd
+	 X4y+UPKw03IRxfW0Dg4HjcLECfrxG47N2BHgCJE4m3s2IKJFkJxzs3sWnjIrFX49CiNcT
+	 vE3876O3Bqwr/yiUfuZyyhZ6naJc1u+glEhMQwkesokIInJ2nwZ8eD6HYIROQRHC16A==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794321605;
+	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:Autocrypt:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-AntiAbuse:
+	 X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
+	 X-Get-Message-Sender-Via:X-Authenticated-Sender:X-Source:
+	 X-Source-Args:X-Source-Dir;
+	bh=M6B7wm/MjtuZzcE3OhjP1XVp/XFHOdLD4wUFd9qjfr4=;
+	b=oKrIZryz5mn/mHQlZSCuQfZ8mgsZxAVAuFu6vduMzrVBaE+ou6WKcaXvlJz1GU+c/9HX
+	 vnYbhg/cELYFZ1cvqZh6EWljvLH5lHZl16xgHjx/bzDGbf7kIT4cStU8Ir3sg5l1pqdWH
+	 MDH/fBHuTn3CU3XwoQmRUWP9wozg/2IPWAHfeyAxe5zjnfLncRcAoUg42DnFrPfHh+tH+
+	 MFhKmOYAwOv+C+co+pyXh6gXz1tS8T7iXBRMtD8jgqid1D7WKA8wj9NSJ2LGweTrVazDd
+	 qkY5Q64uOFYQMudgT8Tv3RJYLCgxUj+8lt2yOLoKz+VCkNbwnmjGWOg/SOeu+3zbSPA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=lechnology.com;
+	spf=pass smtp.mailfrom=lechnology.com;
+	dkim=pass header.d=lechnology.com header.i=@lechnology.com header.a=rsa-sha256 header.s=default header.b="0lbZ5Ks/";
+	arc=none smtp.remote-ip=66.235.175.158
+Received: from galaxy.gendns.com (galaxy.gendns.com [66.235.175.158])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A840D60A3834
-	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 14:21:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A840D60A3834
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5863606A321;
+	Tue, 10 Nov 2026 14:40:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5863606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lechnology.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lechnology.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=uArSYa94
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5c15956ce07so458209e87.0
-        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 06:21:42 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794320501; cv=none;
-        d=google.com; s=arc-20260327;
-        b=OIFKEM0lteMKTSmujfQ8GNCPENC+5cTc+zsenq/549qsIYYmBwXb17/xQYJcqOVe3i
-         uI1hm3ZxT+8ek5jDrszJaRX1yr34b2JsSxZBjJb4Ts6Vy6APAwjG90wpYSpz8A6exxPl
-         oEtkFy4POwVkscOhfi+uN6saLUG1hqGRdy5tWpKzvW3hUjmzG5hc9KZgT2Vcm5gW4I1z
-         kPclnCyE4b+2Ag9WDCCC3Ofisr1UtfmMIhKHuSjGhRPSvH++AodZZ0aukoE4GBg+xvwE
-         KziLcG4gRNMm77EOb0sWzCr3P3PfC5qTinU43s166vOWXbQh7KF7ieCTm5d6U06qQswK
-         EslQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Ejm8pe9G15DYxQ7Hb5OdNIp8qY5r8fdDKVN+ZYBfwxM=;
-        fh=JaNMA6RP8n3ZuXfLCwCnDS+cY7H2oEPJJS56ysrsh0c=;
-        b=a8biuIBn/m8TQeQqSZ95oU1esRCyTQhWHyBs30A0dADnjpuIiww0t50TfmjjFuq8uP
-         0ugNoY9QMt8rf95fx7auulfJqCnocuj5gN1r3bnBjD7Dj97BQmOb4nG53irtRCSnR4qJ
-         0cgTmTICmrZ5X5fM+kaOKDA+Cgzit0KpAjkHd30dllng27Drvjl4tswV2fHLA09LQWb3
-         xdq9TFhcPsz6iKBOrzkuQw60GlpTbPG2HAmCCJV1KIKPol4oM81Vx523WdBz8b3z+slY
-         mpVUmhg7/Tu4azUWwAROZCrFq0Iv8ByYydO8M/D5OXF2i36pLTe168OZTLfooa7RI1DS
-         CbAQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794320501; x=1794925301; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Ejm8pe9G15DYxQ7Hb5OdNIp8qY5r8fdDKVN+ZYBfwxM=;
-        b=uArSYa94ATnFMRAypTPoIZopEiWjn7Q5TSFwOXUFzIXVd3gI2H/IZPRINtu6zbzQEm
-         pzUccU7eoX0n2I3adAPcdkf5jZ9Hsi4QFTmUHFbgJYiTTbjBmID6AkvnWbg4NOJjd5T8
-         Dqm42cOmZI4RPyjuQkR2/mN0ZfR/aSE8uHmmI//8W2Zvq7cgII+cNDJoVB+7s50E58rd
-         0RCD6uBKE015IERTcPJqUkP3latdSh5W/Gx+gcFc9sSQfx0sKWWmNmpKUOcxWqiD+OOH
-         Y5ObIIgUTlDOcqBZnY6TxngSwu6z90aQzL9512gnSsayMyEa8pzZG+Wie37BxTf4h4Yj
-         lkgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794320501; x=1794925301;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ejm8pe9G15DYxQ7Hb5OdNIp8qY5r8fdDKVN+ZYBfwxM=;
-        b=m++d8HEYWtzRVEcO6tkDWL47JqcfJ1pa6MQf/FCSRwZSV1M4B3suCothHqteWtvmBC
-         oVNRt/4iRwOBRyx82NAlOLN2QvEcDKJaxI2MJoK0JDdP0Yh1F/c4dFqPPauH+TadGsFm
-         Z7AIbP5jtfNKft4/z7Klq9dk67pcfmcEyQhNJhY6kq3BAoH523nibL0T/ZfE3tRTVlOQ
-         4nKBAWT8RRwyG5RIf07FGBQfsh/qswByTNifu9SYjsGUxpsNe8hXD3wZkXz4le6wWjD3
-         CMTjEZxGXvIQbx3wOToCGp7TTnci98vZf/CSnVKcsm8TIwCgClLSVmXZu7YZLirhPZ1t
-         c7yQ==
-X-Forwarded-Encrypted: i=1; AL+hErHkz1PX36ij1bF77toHuhBH1W07WDwYLsxByX0pzvZ48iy48cU8FAnAbUXRIxX20HWMbUATEMLGH7A=@vger.kernel.org
-X-Gm-Message-State: APuU4Z97js8yUVykSTyVYAy3JAx4OktIs27kdnSfF90G9NANO2PjfUqX
-	z8RcD+tZ8BopvAREdh1URzDE8dBWyTIz8IM6v4b/Bn7CJanvqR/ZYl6oEX1y6QxjTFB//OUDze2
-	ND5KsFQoYGjWpEZam7MfQNoTC6QE5w4A=
-X-Gm-Gg: AYBFou227wsHf210sqWhnrDnnkLNlTUkL3NBQqyBQDTJp53orB7ZHuAd6CEOCBSg2eL
-	ItsHAFrN2SHx3K852RXIXJH6UXe4hUMHa2xrA6xRy4tyjVC9SMG9Noy9Ge8DEbxgM+sP05uuVu/
-	hfBJwpcaYQGgcyRV34AmIyd9ZhgXkfbgQXIgrXUllVPVqNRaHXGNSd+11C3ttWTE6oDEPUnV6ug
-	vKUC8ew/HnMUcqjsyOrtvIR/po5R+JPL/SGIrvqFQN6tCBJ8J+wKqZi2kiUCOVJ14pcjuM78bnQ
-	ggafEqWNei4yhY3eM9r/EKRPa8161n1NygGyjL0S3mvRNPnlWK/VTPolDGsw7zP26j5MUNt4/it
-	CNZHvLUxNE3H6M4ULv1MaFzwGb/tE4J44m7chFCfRX1DSCcCXAo0dK1iPzIzbO4iYY5tswe8pAM
-	Q2VpCMB52e12+Adiq/9YxbUck6gA==
-X-Received: by 2002:a05:6512:15a8:b0:5c1:4bb3:afbc with SMTP id
- 2adb3069b0e04-5c156de82b9mr828897e87.26.1794320500715; Tue, 10 Nov 2026
- 06:21:40 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=lechnology.com header.i=@lechnology.com header.a=rsa-sha256 header.s=default header.b=0lbZ5Ks/
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
+	List-Archive; bh=M6B7wm/MjtuZzcE3OhjP1XVp/XFHOdLD4wUFd9qjfr4=; b=0lbZ5Ks/8q3d
+	2flJwauKAUZ/lQ/0eIhBVx4B0LheQPzvnyXEwe//ZBLGwmNl6+yDDI0TEZjfhJlvX7wc7YnErkVTT
+	1nHnQP62X+qVph2pfPiLjwfDPRJ91GBF6uJJifymDYt/4Rtrn7FUsfUywMc0BJZHOw2IEFgSDTTt4
+	latPJOylZtToWiOO2E0nthwP6Luu4sOa1dtcD1RiIB3kNSNXjShojLx+Q+n5rgw7LyuEVJRC7HopH
+	OW541pPhuCGuPve5xxt725r3zTo8mwLEqa6TjvcxO9diJtUx2NHwzewzQHMIN/XSmr4pxDZ+ixBpF
+	BBhIf87u+4izrYytBDXH1A==;
+Received: from ip98-183-112-25.ok.ok.cox.net ([98.183.112.25]:34610 helo=[192.168.1.143])
+	by galaxy.gendns.com with essmtpa  (TLS1.3) tls TLS_AES_128_GCM_SHA256
+	(Exim 4.100.1)
+	(envelope-from <david@lechnology.com>)
+	id 1xQn0x-0000000BUxP-1wd6;
+	Tue, 10 Nov 2026 09:39:57 -0500
+Message-ID: <75f2bbfe-23e8-4455-b042-3570c123832a@lechnology.com>
+Date: Tue, 10 Nov 2026 08:39:56 -0600
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,25 +65,101 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261018022400.599028-1-festevam@gmail.com> <20261104105829.GI792264@google.com>
-In-Reply-To: <20261104105829.GI792264@google.com>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Tue, 10 Nov 2026 11:21:25 -0300
-X-Gm-Features: AclHuK-TGMXiiM572Q7C7MqR_s9Ybhyu13xf-9p15OjOQAwSBPcq2XTBncA1S4E
-Message-ID: <CAOMZO5AjeeNdeysBuoUoejg0yECiNWjX6o=Q+_iPUfF4=uiVOQ@mail.gmail.com>
-Subject: Re: [PATCH] mfd: mxs-lradc: Pass mapped IRQs to child devices
-To: Lee Jones <lee@kernel.org>
-Cc: dmitry.torokhov@gmail.com, jic23@kernel.org, linux-input@vger.kernel.org, 
-	mfd@lists.linux.dev, linux-iio@vger.kernel.org, stable@vger.kernel.org, 
-	Marc Zyngier <maz@kernel.org>, Andy Shevchenko <andriy.shevchenko@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/2] counter: ti-eqep: Fix runtime PM leak on probe
+ failure
+To: Andy Shevchenko <andriy.shevchenko@intel.com>, phucduc.bui@gmail.com
+Cc: wbg@kernel.org, andy@kernel.org, dlechner@baylibre.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ m32285159@gmail.com, nuno.sa@analog.com, sozdayvek@gmail.com
+References: <20261109084342.51865-1-phucduc.bui@gmail.com>
+ <20261109084342.51865-2-phucduc.bui@gmail.com>
+ <avJV68gHL_jvZ6dZ@ashevche-desk.local>
+From: David Lechner <david@lechnology.com>
+Content-Language: en-US
+Autocrypt: addr=david@lechnology.com; keydata=
+ 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
+In-Reply-To: <avJV68gHL_jvZ6dZ@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - galaxy.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: galaxy.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: galaxy.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-Hi Lee,
+On 11/9/26 5:23 PM, Andy Shevchenko wrote:
+> On Mon, Nov 09, 2026 at 03:43:41PM +0700, phucduc.bui@gmail.com wrote:
+> 
+>> ti_eqep_probe() enables runtime PM and takes a usage reference manually,
+>> then returns directly via dev_err_probe() if devm_clk_get_enabled()
+>> fails, leaking both.
+>>
+>> Manual cleanup via goto would mix managed and unmanaged resources,
+>> which leads to the wrong release order. Instead, use
+>> devm_pm_runtime_enable() and pm_runtime_resume_and_get() with a devm
+>> action for the put, so every probe error path unwinds in the correct
+>> reverse order. As a side effect, a runtime resume failure now aborts
+>> the probe instead of being ignored.
+>>
+>> ti_eqep_remove() no longer needs to touch runtime PM. While at it,
+>> report counter_add() failures with dev_err_probe().
+> 
+> I'm confused. Why the PM runtime is used (and announced) in this driver at all?
+> Do we have upper layer (like a bus driver) disable power before handing over to
+> the device driver?
 
-On Wed, Nov 4, 2026 at 7:58=E2=80=AFAM Lee Jones <lee@kernel.org> wrote:
+Your guess is right. There is a parent bus shared by eQEP, ECAP and EHRPWM
+that has to be turned on so that any of them can work.
 
-> If this all seems like too much, let me know and I'll spin-up an RFC for
-> you to test.
+> 
+> TL;DR: what's the point in runtime PM here?
+> 
 
-Thanks for your help. I sent a v2 with your suggestions.
