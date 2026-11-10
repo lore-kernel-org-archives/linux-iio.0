@@ -1,83 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794305844;
-	b=0OJWrPViLJQ8/Dc5tQ2lykJRaeKONzWimhp5UybzbhlavUfN5XY68ukY7+1EbxLGd6jF
-	 9xvSPJWm6e4otngDK3QuHJzFfgZn4LuIfWF5kb1AduODQkSGWb6WFm6ELQ83GeQVXXLEd
-	 DzVFXawIkCZJRaJ8v0Jb4xsg+eOrp+h+JydLF2RWMtVJ1t3gaJTMOVzGxT73HergioSXy
-	 TQVEoDOAYKLErVpmFr0SUxpuAUdmm03ucRue1b2R3SZx3Qfwi31Jshe3ZORfYxbcCf+LS
-	 lB9yWvNE3jtnp4SLi8yBVsmHUCeePzDKTraCduDnDVzDp5L4/R7iFtQVSebN/gu1QHw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794305844;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=EiiyUW4LhfhoupdBR6K/6xhO2OGTwywPtZJXF5QlIQE=;
-	b=WVDgY+GGKZJRwAciKVS+fSPMIiy7QXcx5xExeeY1vutANKXNnQ0XnSg8KjwnFTkMc0bV
-	 pOPtr35jJQ7z8LXDrfFqOcu2wBRtjOEx5U54HfTg6u4RrPoFN2y/3rUPtIl6sbIiilpG4
-	 CLTeoBO4GBl3SNpjlojK8RiSCjvPevcVb1m2xG8TAg0htm8s1yrGV9kZVZKYj+MqNW8k4
-	 f6quC0s02FBwTgfFaybLbyVyJq4he6lC+YD95HcAf+i8UZn+V7vPILyrh9lZpOwHMuclK
-	 VdLeBXvg1fy6YYx5SGxEqP3VmA/Nxdi5wIMj1mSrruLSVVB/wFkpLqiQZJdz8tJvM5A==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZKA5cNCp;
-	arc=none smtp.remote-ip=198.175.65.16
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.214.182
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794308508;
+	b=AvEwaDqYBkIBwmAlM1YD4CwQApjNpjg0JU2wHngbbny5H4r22YPcuTAQM6tqg65p/iKQ
+	 olSbKTMPPXFTwZAT444L/27Lb9rT9tB1RZVda4aIjl0dHPPQC1+AtVVwBcn7TqM4+2nwe
+	 7H1dvFZWF8hxlMS13ayqsxlFNQnazuPUWNxm5q1K8qUgpUDoh07D3FatJokLNy7x807gO
+	 v/MoQSB2YcrotPx+eMBW1kosnfjR3A1klBvS4R2ubkzKQJ/HSvWCJVE8BSmoO9cJmfV9l
+	 728uyPp817UHWut6+HTck1L+0qdaYyyYOOdQRCjfez5KnpwesZ6i/gYBTOo1tzbBRZQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794308508;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type;
+	bh=u+pnAEAogTXmyhvTk/a0K5L/Z3iUQwLe7oBpKWqSXIY=;
+	b=i5ExWZY1luwHUNrEkg5M+sPq4DCake1GKEFAXv490CgR1kpFWfj9qvLowv8MG3XUN/kq
+	 pzDoxp2fUj9demKwUD/FdGrGQ6atIqp0LxcWfrlc4ezIUOqdjZhDJAYNomvfihOOQlRYx
+	 ApevM6DCuf9jwwy+A5pbqxpbUFZu0qwo3QqaVELQc6Y6/f9yJ6obldXB/UhdGtZCIGhlz
+	 U3IhM41HNE4sOOWYeov9h7gCQYiAPKONG6W32lzcN5XN1qRuUOcQHo6oEcZDU9voOqxbT
+	 2/Q9sQKliT0cq92n89Og/nJ0r6KL0oB+kEeE8Uz/bkKbyvNq52RWjehQfsyg2erxStw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IA3+lFov;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.214.182
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5B28606A31C;
-	Tue, 10 Nov 2026 10:17:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5B28606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7E46606A325
+	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 11:01:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D7E46606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZKA5cNCp
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794305843; x=1825841843;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nfRCJYywYAsVBk0ZrF3rtdPYsdfYfXANdK0WmfFSxTY=;
-  b=ZKA5cNCpEnmT5K4ITVjeW/anbXqqUF+kbeayUE9AydndcuSA0KOLO/Ue
-   3bjoe4LHIqROZyT5GmDVSEQnQtKtpwhTHl5WKrYNxQerj9860Bzc+rLvH
-   4wgSg7gnGsury7gEwMSkrGr4Tm/8ch0QWfpV/CfPqEHLzl5Ec9NFSUuPI
-   rk4d7wrxeB96mF/Fr34nGZ+DbhfAEInux0vxFB3xgcIgNnEI+OVX6IHsD
-   hHHIhoaaZrL6S3ypWAQ6xhOJp81qtk+bIgVT+ldwupgXcapxCLXMxwn9n
-   RvuI8Dg3lzt5W1ga9j7b00DHh0kmQhb+f6Bxxn0DNe4EXOGpxqJRve0gK
-   w==;
-X-CSE-ConnectionGUID: z4lkS0BPSO6Yslp86PVblA==
-X-CSE-MsgGUID: 97gqcW+tSM6bDeJT7HUvfQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11961"; a="3036364"
-X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
-   d="scan'208";a="3036364"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 02:17:14 -0800
-X-CSE-ConnectionGUID: TfOWLCMdTlW/PctG7Vggjw==
-X-CSE-MsgGUID: YM1TXIzlTs6/TrxsyFwXLA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,205,1787036400"; 
-   d="scan'208";a="7946583"
-Received: from kniemiec-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.244])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 02:17:11 -0800
-Date: Tue, 10 Nov 2026 12:17:08 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>, linux@analog.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: light: adux1020: fix interrupt clear value on
- SMBus-only adapters
-Message-ID: <avLvJK2SmQ5Gs9Xm@ashevche-desk.local>
-References: <20261109-adux1020-measure-fixes-v1-0-fe1ba63f28bc@gmail.com>
- <20261109-adux1020-measure-fixes-v1-1-fe1ba63f28bc@gmail.com>
- <avJcESOPo2nGq5wy@ashevche-desk.local>
- <CAJsKa+6JDCVLtWsfQ0gJzX185ywWiYA_FwbV52q=N7vzgRYDVA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IA3+lFov
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2e8da6ef7ddso11046685ad.3
+        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 03:01:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794308507; cv=none;
+        d=google.com; s=arc-20260327;
+        b=jVuIgZ82A495b9XHDjOXLVQ85MXA7xNmK/emBuAz7cPVBOeY811KFVEzWfcRiBu+oK
+         7F1CP3SKvHlM73U2Km6sHUrinjCoVphV3WGG8aUu0unCggXap4mgL93R+VLmA6y66GYe
+         GfwYjLg1JwxPdubjIZ/GmTf98FuzNqfVjcNS2LZXDr7C0mW77ZKJNflvmruyIkli+ZX/
+         Y/tFz7J2oVTQ6ZDydPyhYymHrIwWBOFlQgwfdzAVMrMUjo2n6/mFkrBFQgGqP6sCgvXg
+         9gxgfXrOgTD/rQYanoaLgRIzCkWXVNI5bKfLDm+YR9EGJbidheNexqNN8UH2thOJienO
+         rweg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=u+pnAEAogTXmyhvTk/a0K5L/Z3iUQwLe7oBpKWqSXIY=;
+        fh=YMU+tdXnxAhKXiGYVTrsphodcH1EPZ1he0VSXP+JFMw=;
+        b=PDKxknGPzlFTCkrHxG4NSkhcAe7+R2vgniuJnDj4LkXXv7Gke67+kRkDyjjaYcD5I2
+         vMQLk82AxrQv6rvBra7tHVTknLgd8i0rlK28JSyKJJKSrjKxwtxZ+eLwObM1+u9Q2xV7
+         AwbGNdmUoHZ8vQm0NnEQB45fe48GW9JEXrjyZFojq7HFCTlSN/I7jKnYi5Z05RxP09IA
+         wMustkYedDOLYm6tTN39q15++5ciPUzN7UTOyhL5/Se6suBAF3ssOlz5NczeuSAVEeDM
+         R9rDwzkkUcZvYaKMadlyQrj+NhlN3sJChDpsQCQI81bP2fUOpoGTfMCacc8ilmbKB8C/
+         +jXQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794308507; x=1794913307; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=u+pnAEAogTXmyhvTk/a0K5L/Z3iUQwLe7oBpKWqSXIY=;
+        b=IA3+lFov7wk4cck+PKW1kKOX0dUp+TRgOVphQaAkoiIa+yMhmnVT4jOkjFsD/rijcR
+         xm255poTXAXwkNJfRg/dE3eLYJNEsEaEk9odb/iEwMVYDKhgy0HWzhupxOlVeyHWhX+m
+         mJ/kWccd5xz09Zz7tnlG91DvNDnIp0F2SvgUOro0T/vbqq65J1yE1oYK3Z37r2scvTUp
+         UWPw7CntxLoAXSmvb1hdczhH+XnUxqgKv08bkyHh/31zoX6KRMj7OpKs/ti967FkEWzp
+         2MYeeeRWp8Z9rOAzucLj0dwrfgxMkmeGQO/qKUHMzcJ27p7URRoxERVx7lrXEnSg55m6
+         UbnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794308507; x=1794913307;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=u+pnAEAogTXmyhvTk/a0K5L/Z3iUQwLe7oBpKWqSXIY=;
+        b=nV4Kl0qS+SnjZkj5k4y+x/L3lBdUi5DmrPhJHxqwh8Ri1ZWmph69tFKEtihkKT6b5Q
+         KSBvzFgayj3z5X3+AdgcA/ObLQjO1ztkGwb72RqoUhs34PNBgeSpGQIOvx8KICL9QOx0
+         RRyXh1VdXce/vhWw8/PjsccWiNTvqwbiNTIcmvg7gdDYkTRsCLCmQFl4WRkuHORZP3q7
+         L50UYEZ31Yl0b8dbO9DU0uDVgaU/A+yJPEFnBbJB/7b+8GMksYylTNC+49S0+TWymuy3
+         0Hbz2ubHz1JopTjcO19qyQc713nXhSfOGWI9WbyWy8FKQGN75XgJ+OsomfufTKavmj5B
+         3Hxw==
+X-Forwarded-Encrypted: i=1; AL+hErFEGu9+RnK77cyTb1zgzmIhIJnK5gQcxgIIIYpZTh+myqPe+yP6tyGsbRegWxOW4Ubwj9mjtw6iFmo=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+kwbLHhwSDSsBJmb+XlZDalsbvfHo04cHdB8CD3KI2J3BCNuK7
+	aFzTFK3hUTIWuSwWzpng5+zdclMYodXTvDNKVbaOsQVK0MsZwI1Bx9uWtrT0ijdX81RooA0/MrA
+	jjqHrbkAA4B2Q5r+RhTVf8Ueggo1GmJk=
+X-Gm-Gg: AYBFou3xDGsNm1RACVnnkbcLLpBL8BOoSaemlxI024sF9l1xRTAuZvmZgatLmVtPaLO
+	KcKeaP09wCEhRNLqn8+zTESgXfvH0QMNLD+2Cp28bpM3HAvx4UnlnbEoh068DxR4QfVa04Gm+K+
+	Dl9HHXEX7eWdkOtUgGrrj0JL9kkfDtr8oZbMQfWVkpT446pSpF4P3CPwj2llboOK296kaP54RG/
+	vXpvUb2nDUWtI3r9uIT6j2pjjFmG4d6MkIpc1Taje+D1+oncRNIfPurs6KwV6VQGra7kf36rBX5
+	ruq8F/GCLuO87znGpUPHt4y8Y3jngFpIo5Knhx+tAY/qxzjjD1UxB34+sN7o9XCkR/Og9T33E+C
+	1GiLXicHT9HeSXQ4T4XJAgBlDCOXNmTuebP2ZOCjUqSvL+mT2YiO2uLsx1vnchhdw/3Wkku30Ko
+	6K/seN6VbmPylG6Anq6F6BXH3VTXsQ+HXS1CQCXwVoHJf09hn8/JIVmEfPqT2gmXiCn0Kx5g==
+X-Received: by 2002:a17:903:2282:b0:2e9:5714:6079 with SMTP id
+ d9443c01a7336-2edb91f238emr22931735ad.31.1794308505437; Tue, 10 Nov 2026
+ 03:01:45 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,85 +104,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJsKa+6JDCVLtWsfQ0gJzX185ywWiYA_FwbV52q=N7vzgRYDVA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20261109084342.51865-1-phucduc.bui@gmail.com> <20261109084342.51865-2-phucduc.bui@gmail.com>
+ <avJV68gHL_jvZ6dZ@ashevche-desk.local>
+In-Reply-To: <avJV68gHL_jvZ6dZ@ashevche-desk.local>
+From: Bui Duc Phuc <phucduc.bui@gmail.com>
+Date: Tue, 10 Nov 2026 18:01:32 +0700
+X-Gm-Features: AclHuK_WH4hOWPrihC_Nnz1Ye8k0FcFOdmrzVk9_s62_8IblVFD_31IpCmsJblg
+Message-ID: <CAABR9nHZ2XVLj6a3NG-0_fhDWvqZPNa=AX7gJosc2NEofaXfpg@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] counter: ti-eqep: Fix runtime PM leak on probe failure
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: wbg@kernel.org, David Lechner <david@lechnology.com>, andy@kernel.org, 
+	dlechner@baylibre.com, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, m32285159@gmail.com, nuno.sa@analog.com, 
+	sozdayvek@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Nov 10, 2026 at 08:12:06AM +0000, Raffaele Tranfaglia wrote:
-> On Mon, 9 Nov 2026 at 23:49, Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Mon, Nov 09, 2026 at 11:39:02AM +0000, Raffaele Tranfaglia via B4 Relay wrote:
+Hi Andy,
 
-...
+> I'm confused. Why the PM runtime is used (and announced) in this driver at all?
+> Do we have upper layer (like a bus driver) disable power before handing over to
+> the device driver?
+>
+> TL;DR: what's the point in runtime PM here?
+>
 
-> > > adux1020_measure() clears the mode interrupt by writing the inverted
-> > > interrupt enable mask to INT_STATUS. The mask is a u16, but integer
-> > > promotion makes ~0x00f0 evaluate to 0xffffff0f, which does not fit in
-> > > the 16-bit register.
-> >
-> > Huh?! Where did you get it from? the mentioned promotion may only happen for
-> > a signed char which may not hold 0x00f0 in the first place. The above is some
-> > nonsense.
-> 
-> The integer promotions apply to all types with a rank lower than int
-> (e.g. char and short, signed or unsigned), as long as int can represent
-> all their values (C11 6.3.1.1p2 [1]). For ~ the standard says "The
-> integer promotions are performed on the operand" (6.5.3.3p4 [2]). So the
-> u16 0x00f0 becomes the int 0x000000f0, and ~ yields 0xffffff0f, which
-> regmap_write() receives as an unsigned int. sizeof(~v) is 4 for a u16 v.
+This patch does not change the runtime PM design. It only fixes the handling of
+the existing runtime PM state and usage reference, ensuring they are properly
+released on probe failures and driver removal.
 
-Indeed, I missed that u16 --> int, which is signed. Oh, well...
+If there are concerns about whether runtime PM is needed at all, that can be
+investigated and addressed separately without mixing it with this cleanup fix.
 
-> It is also what I observed: with i2c-stub (SMBus only), every read of
-> in_proximity_raw fails with -EINVAL from the val > 0xffff check in
-> regmap_smbus_word_write_swapped(), and succeeds with this patch.
-
-Can you give a Kunit test case? Because regmap specifies the val_bits == 16.
-See also [3].
-
-> That said, I can reword the commit message to make this clearer.
-> 
-> [1] https://port70.net/~nsz/c/c11/n1570.html#6.3.1.1p2
-> [2] https://port70.net/~nsz/c/c11/n1570.html#6.5.3.3p4
-
-[3]: https://lore.kernel.org/linux-iio/avLpEA6CoZvicvDN@ashevche-desk.local/
-
-> > >       ret = regmap_write(data->regmap, ADUX1020_REG_INT_STATUS,
-> > > -                        (~adux1020_modes[mode].int_en));
-> > > +                        ~adux1020_modes[mode].int_en & 0xffff);
-> >
-> > On top of that regmap should limit the value to 16-bit anyway. If there is a
-> > problem in regmap to cut the upper bits, it should be addressed rather there.
-> 
-> Currently regmap is inconsistent here: the SMBus backends in
-> regmap-i2c.c (and regmap-fsi.c) reject out-of-range values with -EINVAL,
-> while the formatted plain I2C path silently truncates them. If you
-> think regmap_write() is the right place to mask the value to val_bits,
-> I can try to fix it there as a separate patch to regmap.
-
-I believe this is due to some specific value formatters in the regmap, where
-format_write is defined (!= NULL) or other similar cases.
-
-> However, even if regmap changed, the driver would still be passing a
-> 32-bit value for a 16-bit register.
-
-Is it a problem?
-
-> regmap_write() takes an unsigned int, but logically it accepts values of the
-> register width, so I think the driver should be fixed in any case. From a
-> quick search, this is also what other drivers do when writing an inverted
-> value to a narrower register, e.g. ad4691 uses ~BIT(chan->channel) &
-> GENMASK(15, 0) and zpa2326 uses (u8)~ZPA2326_CTRL_REG1_MASK_DATA_READY.
-> Fixing the driver is also the change that can be backported cleanly through
-> the Fixes: tag.
-
-Well, I disagree based on the above analysis. But if you make a KUnit test case
-(against regmap) to prove your point, it will be well appreciated!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+Phuc
