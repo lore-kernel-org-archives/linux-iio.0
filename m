@@ -1,82 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794329304;
-	b=srvyF96+JGvwyZ1Jv7/WUTQMREgGgx2hePFs+QI6CwpZDhB59nGK0V/UfjMp4sWew+7c
-	 UN0vf9s6tGpKLN+Pyle1PPprmDEggAeFTgTKFikDOvJfa+6QkgyShz+9+00d0hEiwSifz
-	 HY+e1PCLj+PfIo1smZT/CL4zEj/DK3+ZaW4mWaS+43UiaigCG6d4e/8Jli+2Ang88PVgJ
-	 3oTHQH66TVB3mK/ij7fXATyvgtlYN+LY1GvfN71yIO33P4AWXuzNyJy7w48O2qcdjiBcm
-	 91EZlj9ZjZvep0UeokFnrSOoXdP1EZTY5VMXWVB7dpVlrrfiAbmC189f1/vhdkB3Psw==
+	t=1794331737;
+	b=4S0AR/i1L07QhwFhJt790194Z1DHGkJl7udzwAVqDYK8AW6al/7tLs2vZP8oziKxCeMc
+	 KmEarHIupgRdOyVqgX3uKs8VoWoivmz2fU0Uz9Wd817mcs9rdPJvj+F8Ou8jxbEQgeR56
+	 wYZe4Lm9G9Ksk8185FTppDr3jd1RcLX3pqh1fW5T542eMtVYbn8dU5XXXsaq8gkCUMUx0
+	 0S6Fes/Pv8aCjtCSsw2WQhOh/PoNUvc+8jle4y8VI6qm27BYlgTNypbq6E+h8vzb7bb58
+	 kNnY2vCCAQse9Ix2AtOD2nSXnNniL+Q5iNsUhcwMCDmsv32ulTAi9lPCMQDYjr4Hvag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794329304;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794331737;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=2iT2z9deD3v2LTiCM0NOycxK+0oeR8FJkn/kz5VClR8=;
-	b=sEpddUezBuhqA18TN1NKyyzaO4j2f9rbRaY0D5pOqwpmWh1e9X4LdKtjPae1KBMsKX/y
-	 FxTH/0Z1xPJFtUIjNhbULs/ClG/g5XWkY/6wV3pZicQC16hu1dPa31djRr2zBeeL16jeI
-	 M6wTDrm0W893SgbrlwEXeyBpogQJ9chrJhxRhUrFDtIX119Re2Xxcz1iacdl0iqs08QaY
-	 ikVGZvOlXvRlmx2q4uvDCOh/x8cs84UG/caUZTLSgoiDitJXO+Xz4QV4dqlqKdbQeFb/I
-	 Fzqf8d+PQtJoQHu74DDuLCZvMH3ZHI4XK0U/Uvw5Hh3WdM7Of++ZTgcktQ9u1lBayRw==
+	bh=v1t6k43bQ2Byw+/wZiY72CgKH2+WAb+CWOG9enjweYQ=;
+	b=sBbyVfgy9iQ1p4h8zHAaoch7rDg4JOtOSthe7izi5zD/fCrBSXpm2WtD6rJ3H5WYyKnH
+	 Ea/wEzFg2DB/owUTeLeOiwscB2yccwBqJfIPXiEBp8DXAr1GqaV6vMCcPSY7fyOb1eWmJ
+	 FOFafpYGeco4zojaVJqUaHxJKP0s1+bguvykyJXV658WZNzenq9zozSYimTMEEV20S2fx
+	 61evHc41r8qnL/9W3FyvXchi8qmerBy1qz6k7419W69oBBfO4GEnsCheaBeeFLmcq5CwA
+	 53pGaYaQLbVSt5MdIfVjujAJvVgGCqSHG9KMMurQqxs2P/A6NEzjAhdFi7PabKyzaOw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aH9t1QJu;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LvZkcw+e;
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BFD7606A330;
-	Tue, 10 Nov 2026 16:48:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8BFD7606A330
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE2CC606A320;
+	Tue, 10 Nov 2026 17:28:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE2CC606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aH9t1QJu
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LvZkcw+e
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794329302; x=1825865302;
+  t=1794331736; x=1825867736;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=o4UdVx86IM4K7U+2Y3fruIEQKmiuo2wLg8MXLMOMdCQ=;
-  b=aH9t1QJu53zPlhACTqQU1X/omwi6eSehZf1qlxxE0GTZKWeKOF6JSUa8
-   2EkE9HLfDV2iGiHGKpGQsRKh4fJL4rHz6GzbWdwi2ShuYKMJgsVilmKET
-   BHOIYUofAb3gMSig3P2sTAHznB+PVY9Rg1vUHUIAPjhIh21813cWaDkdB
-   Xz+eGodtO0Pw4IzlXI0D1MXLe30xk6zf9JD6dJ9apqCLAZKduJROVUAYl
-   27tN7Kdo0euy+JiW/DfDFMRQZo6MpI+FfBVoeY43VNs2egBkHzkG/+qd6
-   cB7eShQskUN+wUpQZTXbteMLc6LNo7E6T/nBZyHXiQl+kDcWoOaqmKxfw
-   g==;
-X-CSE-ConnectionGUID: wRDzD+m9T92TpxZuHaXKTQ==
-X-CSE-MsgGUID: v2BlIVsCQpGcrJOuYEjTBQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="3083388"
+  bh=vivqdtdU9xup6JlsXUXQl4ZgoCQ1zw2yqZVDybSI0x4=;
+  b=LvZkcw+eImgK66dy0cEKAIVXtCl41ytXaz0ONixY5gKfa0CjFxucKvNJ
+   kMcG7awrBxFooZXLpjoHvlclKVCbjJxE1SviGyVIBlunUXOrBNAFrMJOn
+   yiIuD/L8vzuhOHeDe+Na/fH3ilS15nMGNi66vtz/ZlBCEB0uOP9bcyo7F
+   8DwcCofDPEsPgdmQo3QpmhVJp6KCCkg5f9DW59wEZnpScRWGmRgRDtGXU
+   KxHfwhs3KrmfY/VDqqexNGI5HJ6xMn+gerVhHsdLv+3ORykBJUbnmXUUG
+   4GNEliQJDZ+QwjmGh+9w4V393b9Kv+4/CCfGC82rTonh5Ypkx4FaxqQdd
+   Q==;
+X-CSE-ConnectionGUID: ji1jYhTFTF2G+gWtxRALYw==
+X-CSE-MsgGUID: rAC4RvtwQ92LtjyBpzFfDQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="3120572"
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="3083388"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:48:22 -0800
-X-CSE-ConnectionGUID: KjvyDt4+TQOaqKPGq7kkmg==
-X-CSE-MsgGUID: kfbUK6o9TzGt6oYNNEFwlw==
+   d="scan'208";a="3120572"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 09:28:55 -0800
+X-CSE-ConnectionGUID: 7UgS1+E/Sz2HQDwj6SutOg==
+X-CSE-MsgGUID: 3aWmuVZvTPmqbJ5JKRBLeQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,206,1787036400"; 
-   d="scan'208";a="8298130"
+   d="scan'208";a="8791849"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.78])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 08:48:19 -0800
-Date: Tue, 10 Nov 2026 18:48:16 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2026 09:28:52 -0800
+Date: Tue, 10 Nov 2026 19:28:50 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+To: Nithishvelan M <mnithishvelan@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Nuno Sa <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Subject: Re: [PATCH 2/2] iio: pressure: dps310: add a data-ready trigger
-Message-ID: <avNK0EldiZVxrhE8@ashevche-desk.local>
-References: <20261110154254.39092-1-zoone.rupert@gmail.com>
- <20261110154254.39092-3-zoone.rupert@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: frequency: ad9832: use guard(mutex)
+Message-ID: <avNUUuDNEiVOp_-e@ashevche-desk.local>
+References: <20261110164711.552-1-mnithishvelan@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,99 +85,48 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110154254.39092-3-zoone.rupert@gmail.com>
+In-Reply-To: <20261110164711.552-1-mnithishvelan@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 10, 2026 at 05:42:54PM +0200, Rupesh Majhi wrote:
-> With an interrupt wired to SDO, the chip can signal each new pressure
-> result. Expose it as a trigger, so captures follow the measurements and
-> scans carry the time the result was ready, not when the handler ran.
-> 
-> Polarity follows the interrupt type. Status latches while the interrupt
-> is disabled, so it is cleared before enabling. The trigger is not the
-> default, so FIFO mode without a trigger is unchanged.
+On Tue, Nov 10, 2026 at 04:47:11PM +0000, Nithishvelan M wrote:
+> Use guard(mutex) to automatically manage the state lock in
+> ad9832_write(). This simplifies error handling by allowing direct
+> returns from each switch case and error branch, eliminating the
+> manual mutex_unlock() calls and the goto error label.
+
+Patch is okay, below some ideas for further improvements.
 
 ...
 
-> +static int dps310_trigger_set_state(struct iio_trigger *trig, bool state)
-> +{
-> +	struct dps310_data *data = iio_trigger_get_drvdata(trig);
+>  	case AD9832_PINCTRL_EN:
+>  		st->ctrl_ss &= ~AD9832_SELSRC;
+>  		st->ctrl_ss |= FIELD_PREP(AD9832_SELSRC, val ? 0 : 1);
 
-	struct regmap *map = data->regmap;
-
-> +	unsigned int status;
-> +	int rc;
-> +
-> +	guard(mutex)(&data->lock);
-> +
-> +	/* Status latched while disabled would fire a stale interrupt */
-> +	if (state) {
-> +		rc = regmap_read(data->regmap, DPS310_INT_STS, &status);
-
-(as per below)
-
-> +		if (rc)
-> +			return rc;
-> +	}
-> +
-> +	return regmap_assign_bits(data->regmap, DPS310_CFG_REG, DPS310_INT_PRS,
-> +				  state);
-
-	return regmap_assign_bits(map, DPS310_CFG_REG, DPS310_INT_PRS, state);
-
-> +}
+This is basically FIELD_MODIFY() (and in many similar places in the driver).
 
 ...
 
-> +static int dps310_trigger_probe(struct dps310_data *data)
-> +{
-> +	struct device *dev = &data->client->dev;
+>  	case AD9832_FREQ_SYM:
+>  		if (val == 1 || val == 0) {
+>  			st->ctrl_fp &= ~AD9832_FREQ;
+>  			st->ctrl_fp |= FIELD_PREP(AD9832_FREQ, val ? 1 : 0);
 
-	struct regmap *map = data->regmap;
+Here ternary is unneeded, however might be still okay to have to be consistent
+with the above case(s).
 
-> +	struct iio_dev *iio = data->iio;
-> +	int irq = data->client->irq;
-> +	bool active_high;
-> +	int rc;
-> +
-> +	switch (irq_get_trigger_type(irq)) {
-> +	case IRQ_TYPE_LEVEL_HIGH:
-> +	case IRQ_TYPE_EDGE_RISING:
-> +		active_high = true;
-> +		break;
-> +	case IRQ_TYPE_LEVEL_LOW:
-> +	case IRQ_TYPE_EDGE_FALLING:
-> +		active_high = false;
-> +		break;
-> +	default:
-> +		return dev_err_probe(dev, -EINVAL, "Unsupported interrupt type\n");
-> +	}
+...
 
-> +	rc = regmap_assign_bits(data->regmap, DPS310_CFG_REG, DPS310_INT_HL,
-> +				active_high);
+>  	case AD9832_PHASE_SYM:
+> -		if (val > 3) {
+> -			ret = -EINVAL;
+> -			break;
+> -		}
+> +		if (val > 3)
+> +			return -EINVAL;
 
-	rc = regmap_assign_bits(map, DPS310_CFG_REG, DPS310_INT_HL, active_high);
-
-> +	if (rc)
-> +		return rc;
-> +
-> +	data->trig = devm_iio_trigger_alloc(dev, "%s-dev%d", iio->name,
-> +					    iio_device_id(iio));
-> +	if (!data->trig)
-> +		return -ENOMEM;
-> +
-> +	data->trig->ops = &dps310_trigger_ops;
-> +	iio_trigger_set_drvdata(data->trig, data);
-> +
-> +	rc = devm_request_threaded_irq(dev, irq, dps310_irq_handler,
-> +				       dps310_irq_thread, IRQF_ONESHOT,
-> +				       iio->name, data);
-> +	if (rc)
-> +		return rc;
-> +
-> +	return devm_iio_trigger_register(dev, data->trig);
-> +}
+In the above and here we might use FIELD_FIT(), but I haven't checked
+the actual ranges.
 
 -- 
 With Best Regards,
