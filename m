@@ -1,101 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.45
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794326927;
-	b=IyYGDHKQzoOYHG5uvSGlPFb4LXonn4Vs837Z8tTHsxaE+OObO+GksjSHtX52xj05NJsp
-	 KRZWGcrcoHk8BXW7dpPOQmrFQRMsLVduehuvsRL8ARNWjOdg6gUhvuq9qSS3eCeMpgj38
-	 qDcQkHXqXXjiuuvGiwE3/SLkp1TldK1qNO06+DKbw5Nh7KvRkdQjTje4CZQKeFqxnB1Kf
-	 Y3Kj6221R/aQazyRleicHAZvR3TfjxkSBIyMimmxPVIalFJM+d7VEK4bG6sk/wACEBK9i
-	 tSwXapOsaK/ZU9ZL3uJeoFEiPOPlrNBj7yz8EqGs+x7/tc/wIdb2UjIqyyhJUliX75g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794326927;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=WPm+Vr6nQIbCRb4yT5UWIVEBEuiJoTmih+ganpauvx4=;
-	b=xheNaDQmChsSc7OjZHiCbd6shWf/TlxdaLIU1gA7RQXw8Ek2kD+IYyJ6lYdBa34c16PO
-	 SZnggf6mabZyuLWPws3XQGKTjDYm7lUwknI0nzAwRmKsCF5w2X5qXpomghivTRvPknfbV
-	 ZgvPjBn+ID5/DQbc7FsbH9/FxoJ7rZRGqnHpqL1/I0vC9Y1xzPnceYBI9HIf8cQYtT4o4
-	 aA3NZFydr2h+k7TWAcSMuHAyGMLEVYMIkMm1I9TmhNWHs9fx5/JzkFBDLgTkTqlVVeGuD
-	 Euy7r8gDQ/m9BlgeQxRbaTKWlRbtWIQUD3cvy1ywARSUb3HwESbJJaOPlZVjd/JeBqw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=axis.com;
-	spf=pass smtp.mailfrom=axis.com;
-	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=phRhtZQZ;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.45
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011045.outbound.protection.outlook.com [52.101.70.45])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.142
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794327195;
+	b=Gqc7OisNv+NhCyTNh5nTeprXbCooEibzYcVwk4CF5rY9oYO7+81/eA45pVOGARHLJrqb
+	 1PfeU9nD4RrTUfFy8033savzLS5UZGCNOnhcx6j2p99q0sc986ByUZFntKh2TOa5qfvx2
+	 FCVu4tCRVFfERV0XfVpK60fEoFSuUTigUyDNYvPRTeND+WyEZOaYE9bjFf/CC3+YLCVEc
+	 5OmFqzid4EfCfY1c5379wkLIub1r7XaX6EshS1xAlg0QjcKnxFWcxM6Pm2qbcatDvpE5C
+	 I0dsO33euTOFDetZGkDCDVnE0+ajDBeHF6VJV4lZSaSFJVvd5On2ZDLFEKMQij1HnFQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794327195;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:X-Mailer:
+	 MIME-Version:X-ThreadId:Date:From:To:Cc:Message-Id:In-Reply-To:
+	 References:Subject:Content-Type:Content-Transfer-Encoding;
+	bh=4stWdQp7BpJLS0676322fsmeG4ymFjAT9IbMRkPmpp0=;
+	b=cedQsYPKFjB/q4/BIoppCTrpuip9nx7Dx/VW5UvFL3Vj6fP2CJPwvb+0jBoGQmOTRZCC
+	 ZKqGjTu1bqRnDlJhhR/4iHZ64N6rV4qVFBHRRwJ4Mw0ELR9cx5Tz9V9DI+d8q8BgroCp/
+	 dtXPkfn+DFTvgfFBg138euzXLOvE6EVHxhyJiRbJvQ0TfonpohFSsdJNz6m8Nn6IWB+qV
+	 U7aKfF6akx9Udr4F+MOQ42SuxB98BrscLPmzcubRnNHRlJLY9pxFdSjOtQlT1k0qO3GPq
+	 SCciAFiBXN8BITQ3tCJfhtbFHZYX1g3nW6E0rLyo2QkYrjbLXToc+zlQAfpjx6z2Z2g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=arndb.de;
+	spf=pass smtp.mailfrom=arndb.de;
+	dkim=pass header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm2 header.b=asQC+qHD;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=pjDZKFBW;
+	arc=none smtp.remote-ip=103.168.172.142
+Received: from flow-a7-smtp.messagingengine.com (flow-a7-smtp.messagingengine.com [103.168.172.142])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02761606A31C;
-	Tue, 10 Nov 2026 16:08:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02761606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB20606A335
+	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 16:13:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1DB20606A335
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=phRhtZQZ
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Njw2ZpPpQllFzgQC3GjyglutzHsXWiMM+6U+mtGK+0Xs7WUweEfpmxs2hoAHerhqPABzyb4aAQ5mtaPpyFo3ZZjUGazJF2+QAmOiejGwWUbaVilV6iWEWfnTRLcV5BHjE6cUtlTj79a76g5ewL2dIvydSgjEjw8hu6lssAt3lpGOWhQ5SXzC28Hkly8ygwiiHM+dDGdJOL8R2YoymEb9QFqOeuN6xYeMANghPGM3vL5zbhDM7fN90RpT3StAwOv0SSQ7gGzG0BrJGlFpC5dH673mHZPuSFjgNS4nAOk4h9CAjD6oaCQjWc1Th3dHEELbJNMWlK3injtqNNUV5qPEig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WPm+Vr6nQIbCRb4yT5UWIVEBEuiJoTmih+ganpauvx4=;
- b=HmGE049/sc0KgrP9G2QnlF35SN1U+VRYn3LiH9yCDD/mhOmklLpTqLPW3sp6+Id2cBkabf2Z5BmvazFeX/X9IEnIdz/YKyNJUd9ZW0ETf1f/xK1MIyjgmfrELksBlc8iEXN1Ijzs16FW6u4M0rUQ97YQJfqwaBsWRSLwOtoOUdY+nKP5BQxnwyCwucNBxOmDgFIHRpbF0cVaydcgazBiRf6ElACW8uoDtqwdJONLLb2b6ylJqy76vvIBUBmJzFb93BrdTXVKQmN9gjUfhyg1HOXLebzllP5FNI5QiXQntwnVrpi1V7l/TzVakyNrV+KZX889MWrs6KWXCtNNiNgT4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=axis.com; dmarc=pass action=none header.from=axis.com;
- dkim=pass header.d=axis.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WPm+Vr6nQIbCRb4yT5UWIVEBEuiJoTmih+ganpauvx4=;
- b=phRhtZQZNIVCCY9GSuRPLe9KWelC6OMXHO7YxLTTsgWQEnNRIReSQKX7dIs/ozWZs/pMatLWd0cugpBAqB0I/B2mo5ug0KYL00y59/+YHB8Znu/IBkF02XikC4CdgodfIqmcLb6tOIV+uMvVW5EfEdSslyd0Xl0QgQnFSqNEPds=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axis.com;
-Received: from DU4PR02MB12006.eurprd02.prod.outlook.com (2603:10a6:10:62a::23)
- by GV1PR02MB11143.eurprd02.prod.outlook.com (2603:10a6:150:1ee::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.13; Tue, 10 Nov
- 2026 16:08:41 +0000
-Received: from DU4PR02MB12006.eurprd02.prod.outlook.com
- ([fe80::7584:3ff:da11:e6b3]) by DU4PR02MB12006.eurprd02.prod.outlook.com
- ([fe80::7584:3ff:da11:e6b3%5]) with mapi id 15.21.0592.012; Tue, 10 Nov 2026
- 16:08:40 +0000
-Message-ID: <389d5226-b147-4b8f-b3c3-b6bffc5ca78e@axis.com>
-Date: Tue, 10 Nov 2026 17:08:38 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/4] This series adds support for Texas Instruments
- OPT4041 Ambient light sensor
-To: Jonathan Cameron <jic23@kernel.org>,
- Jesper X Nilsson <jesper.x.nilsson@axis.com>
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Stefan Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, kernel@axis.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20261023-opt4041-v2-0-ee320812804c@axis.com>
- <20261023215858.623ef46b@jic23-hlaptop>
-Content-Language: en-US
-From: Jesper X Nilsson <jesperni@axis.com>
-In-Reply-To: <20261023215858.623ef46b@jic23-hlaptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MM0P280CA0116.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:190:9::33) To DU4PR02MB12006.eurprd02.prod.outlook.com
- (2603:10a6:10:62a::23)
+	dkim=pass (2048-bit key, unprotected) header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm2 header.b=asQC+qHD;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=pjDZKFBW
+Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
+	by mailflow.phl.internal (Postfix) with ESMTP id 2E3D613813E0
+	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 11:13:14 -0500 (EST)
+Received: from ams-imap-03 ([10.64.2.23])
+  by ams-compute-02.internal (MEProxy); Tue, 10 Nov 2026 11:13:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1794327177;
+	 x=1794334377; bh=4stWdQp7BpJLS0676322fsmeG4ymFjAT9IbMRkPmpp0=; b=
+	asQC+qHDAv/I83EYngLJ0bkBe+uuEnPcLg0jrc2OX9kVtaPYAd/md3quox9jqmy4
+	S/jELTpXjA2k1IxJWtdK3HZW4IriVAHis0xufJR256BBPAzbfZ5QsGw2eqYq1k/I
+	S4qzaUtb3Ob4GAV2mxThnKp0r/zG0TfcXAK+eUmyQOHhHqtyGONG7gkgzRBQG2d0
+	/gzJT11LHsGNvLKSZnn9JL3iytYjrT3V7KZt2FZsHfjjQeZHywjaesrjJhD0e7vN
+	Y6/iN3Jg7w8xS8OVdYMBSUZOfxDnVhVfPJGqKe/oSxsAZXPn7y2e4GOOItdMLZ2R
+	LLVckhHoSzC+MGE1iJu5eg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1794327177; x=
+	1794334377; bh=4stWdQp7BpJLS0676322fsmeG4ymFjAT9IbMRkPmpp0=; b=p
+	jDZKFBWlX484yfO06iZThedU7MnSaqyMkXKHKaXomC5/xVavgZU65SsCjokZJWML
+	GjeTj8Lq4+LWeI1CWzzxuQj2m4isbVa0ssa9g7eZhXilCypVINe5kxTBiobUF6uZ
+	Gtle0jaTmJtlAyGlrtNmbTTDPt9uAjbADo1dgbyzsDA47ykOoKjYt1o87LKBSqHb
+	mP2YIbspjWDiF2EJOgZRHTKT7VhzsY0TtBEN2nWcPAnRSw5Q7HRlPmorpTONvfpP
+	auvP37j94bGeH1y2GQ4LwX12DjFEZi+3xGQave3kINRA2PBRPI5FXxcFzbhhhvXR
+	Tsc8Y3Jb1FgwsS6Y0dcjg==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=arndb.de a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1794327177; d=arndb.de;
+	mf=PGFybmRAYXJuZGIuZGU+;
+	rt=PGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc+;
+	s=fm2:rsa-sha256:Aa2KOk4DIJcCvXrw1UaD8VVnResE1Ri2zOeexBXv443h/Ax
+	HDxuDvo5u8ziF9lr8XJUwuekMy4sPd5nu2nC7dapJC7bHl0v8DSOkuBSH3AQQTWU
+	bYllst9HKr79NJUnMIVhyxvyYvlInCaZ2FLb97tPruCDmCN6xpavfYQusH9Bqtdb
+	4pz+g+9Se05GthAx9ivz8xGNc7GQ2RiH2+YbAAWR2D+37slQSJ9Mzs0LcBBiulih
+	JTYtj28RhtMotD3BhXT8ZszR7gnpeh4pPmO6rDZHZKcz7gpU+e+96xSYLseSrgIY
+	K/N2u3FU4gocjZKUaloNbxqvU1xTgpcNePnQ8sw==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=12;
+	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
+	from,in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:NY+qH6VFe1gb9eaYka4u3Pju9dQg6z2rB5jHAxzea+M=:YUoKa4y1cAE3r8AhMFawDzVW7orX9AEZ4cmB97mmTGA=;
+X-ME-Sender: <xms:gELzat-KhdG49YOXD28knxP-wmxhvouurLuqg65ijoK_1PztTiM67w>
+    <xme:gELzashOw3MORHNRaj5VZYoHPjgRatChT2__Hps4-a7QS4ExIju8qL8_9B3SiDtB2
+    sGKQug7JFF_lfIFqrxv09JzfzrzZWKrRlvdLjWPWqavJafwb6XI9q0tBA>
+X-ME-Proxy-Cause: dmFkZTEwJqmeu88i0D1P4NSr1o0RdeyL0ncQrpwlZpsRiyH4mGhKK76jqiY9/AURvmAyKQ
+    Xh2LjT8fovpOgpIQnvH5QYWZs5UCg8lDhPsbwXo4GfEZeWp/aOvfLOYPWjqnmAFI1BwG/q
+    XyZG43p0HoLIgnysLFo6MzsLlgysOWgB08DJdha5yxDuEjeXR7MU6VvvNb4tgDJLpz9WaL
+    DOmlUn0Mje4CQssJm+pxYVCWPCE7uxZNBjliBSIc14Pa1+Q+euFKNdLxxVitjY9vJ+1g1T
+    +rig9iVkFuoti3t+qEcHMM2vh4+G+ag1IzrG3We9+FcQnC6cOfB1bItA6vAPi6A+u1KULf
+    wxoJ36bIqa+kM9OWApvgKo4MId3H8RRe0FCkMwp8Cj2i2hPzQqFijO+zALFklT7XBp4yQ4
+    D0Bsmvzif3sMMCJY2OSk1bwCPIIRPEFuJI4Mi/vpw7sfUa+jfrhN159tiieQQE7aztSV43
+    DlSawBFw+hJYm5oAPkD2NlBoL/gRh3vgmwf+Y/GbihlHM/o3EcsWCertLTOcD6iStWXR7G
+    LAS2aVSdVtxoGSiZj2/kYUSfLhEBFCn05KpxcrFYCW/FmzT2YT72YPVx3p0wR8sMiJ3lAW
+    x+8+3z8XttowLJjfinG9ew4R0xJsilSkEkmhmN5AqofFDl0uTCDo7P0ixMQQ
+X-ME-Proxy: <xmx:hkLzak2BPEyGi10FxxkrY3byRVHSjq_0wLclV2jUuSmkyRE3xcj4fw>
+    <xmx:hkLzakkySXPgYGwh_r1Ql-VHDAdYXcQ3p0tjVOV29OCOWQo8MbFMmw>
+    <xmx:hkLzavloJp1yUj6WriMMnPneQ8pVgU9Ew-sH84r-kdZ-OdXPheHDYw>
+    <xmx:hkLzarPnZB-B1EOixQtLefzjQeDp3wnHNrTbJ3SPpTKyjOvpO-EsFA>
+    <xmx:iULzajThipr-UxTyuQQEJ7jWDCsE73KlfzXTf41eZRpd8Rpi4a2MNCT2>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.ams.internal (Postfix, from userid 501)
+	id AC32432A0097; Tue, 10 Nov 2026 11:12:48 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,113 +115,97 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU4PR02MB12006:EE_|GV1PR02MB11143:EE_
-X-MS-Office365-Filtering-Correlation-Id: f5184f4e-4ff3-499e-f0d2-08df3f44e253
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|23010399003|18002099003|22082099003|261022105027099003|261026140227099003|261026121527099003|261028144727099003|56012099006|10067099003|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	esASLNdZYEpIJIgW14EyK1fERkUwou79McGE0GaWG5wvyk+EGubB7WdOcFVIVa0Hpdazb0Z4YwwjkO/pdNIXE3aJdHB4w91UdC8ReidfX7NvlycmEKbyGd7C/bXlSdR1dVUqescnwmZ6HZXgv/0YCi/vlydE8I7ouIexgk0ZNdGkOY6z3r9JF3w9C31I12e8wtKm9MkoXEkaYeRn91L97F3oIkes6Ua7quA/8B6BWAlAJzU/cpIY5YeDbVX21WB+ljSUqxALLST0aXhw2AnimoINrZYsFdKtplkbGSd2C3mX3orAhNGsi6HhQj3yHIqU0+uNjq/5eQIz+IDOmAZ1Qn8/qKE18OillghXz+gNObRrvL/6QMkZqfRmeto6wyt6ARViSfwUtrTZ2FzvR21FObBV8ddVSRTWNonG9RXA3oBh25fmhq6AQWWZI0kRWgTZhOz/Z9LMvC+mnv74OBrSgpwQzlh3d7rfrMLiO7aJ/6EfFzStIGUcp/lx3esScscu0wHmE4wP2ol2L81DWilwzHvGxtXm1MNUsv7WGPe8v7JU3lfJMf38ksPnNUvHEcdFCR5wwE+WmLr5k5O5Bord7zbxYaT/8dk7IXA7QfXNOOCSZEL4U++X1njMy7F3eDJiRwO93bNwMqCxbFqsaVfrBtngZsLjafm701cjycqvXLQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU4PR02MB12006.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(23010399003)(18002099003)(22082099003)(261022105027099003)(261026140227099003)(261026121527099003)(261028144727099003)(56012099006)(10067099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Wk9iRFpIdXpXWDhaV1VRSnZWUWEwdmpURUQ1bERtdUFWYlltZWEyNmhQckd0?=
- =?utf-8?B?c0lZZGV0MEJVNjdTUGx6UExQZzZyQUtVaE5RVEV2QzIvOGVHYXNBOUxEUGlm?=
- =?utf-8?B?UDdjS3lWQ0VDanBwWVIvTE9zdzZUTldIRW85TG1tZVdVSDFwZEIzRFFvZXVp?=
- =?utf-8?B?d3pBOEJEbWNONjM5SldNaGdySWJuZkl0NFFMM0dzT1IxN3ZpdGlJUThtQXZs?=
- =?utf-8?B?bVowK0JkNnpYbnArSGdOZ0V0cHRveERsb2ZVNTRjdFk1N041WHVzeGlBOTRT?=
- =?utf-8?B?dk9sK3l0N2ViUS8wMnN6RlRlRWFPSkZnTzA4SEVReDY1Q0VacEdGR25mOTUx?=
- =?utf-8?B?aVA4bjdRUmcxd3dCOGl0WkNUR0s5OEltZ3BYWW5PZlBwU3BTU2hHbDJoVHJC?=
- =?utf-8?B?d2FIaUd1V29BYVJjOFRUeHpCZUxCeDJEdjJRZDV5eFlJWVF4b0szbXNVTXIx?=
- =?utf-8?B?emFHWEd5ZDNpOUdDVnZsNkpkU3l4a00xQzN2UldOU1g2U05MQnk2UE9wVUU2?=
- =?utf-8?B?L3ppUVc0RGRoc2U4V0hQSWlVT3cySG5TR0srRnNNVEtoNXBoV0xvd1EzWXlS?=
- =?utf-8?B?UkNleTd1V1FBQ1R0T0J2aTJFTDV1Vk9zWGswSHZSYXhSL3JHVnc3UXp3MUlh?=
- =?utf-8?B?Tkd4K3VTUGVqMVVYUlJpN1hMc0V1OVRMSGV0WXJVb2pTUHd0S0dEYmJqUm1Z?=
- =?utf-8?B?ODBIQ002ay9FcVAxdHo5OFBPYmttTEhlWVhXM05QUmJTZUlPR1BxNGVvNGFw?=
- =?utf-8?B?eS9vMWFtN01GcXZYdUtsNXh3TTRhN2xGbHphODFMMTllb1VscEwrdTM5emdn?=
- =?utf-8?B?WXdEZjBiOUZHS3loeHM4YndST1pQSmt6ckI5dXljQmVvUkIrcDBzWi8vdlow?=
- =?utf-8?B?QU1nanZScXRMTGI3RVNBYWd4UmFYYVVIMkhLK3NXb1ZGSGlCTVpWemNNM1B3?=
- =?utf-8?B?aUdqdy9nbmlqWE9LRjBpNG91aXhCUGVMUWYyZ0hMVEdhS04wU29rNHVpYXVm?=
- =?utf-8?B?MkNtbmJtUmxPZE56eDY1eGdVWlpUOGVrMFRtd0dpZ0RTS3d0WDExSW1CcHMx?=
- =?utf-8?B?NHRleFJzYUQ2dkQ2ME94MlUzbFFzRGdIbUh5TmVyNmVaaUZENmNRVGNCRmlp?=
- =?utf-8?B?RHlHUlJXS2V5Z1RhdEhmS1Q4bzlSWFY3N254em9Gb3NIRUpSZE5sVjF4TXBu?=
- =?utf-8?B?MmdKN2NTTHEzcG5KS0JVZDhxS2pTVUZrc25yM1Q0RndVRFVONFl6WTBuVTJ6?=
- =?utf-8?B?OTFmRlF5UUNNTlZKUmV0dzNxQzVGVmlDYXNqVFd3d2FHRXcxS2QwMXVqbVAx?=
- =?utf-8?B?WEFNaE04SkF3am4veEx6QTY0Tk1udDREVjcxVkUvaHNaa2tmcmtwYVd4eHdS?=
- =?utf-8?B?Mk9iVTNnR2FpYjd3WFExMzE4S1RlRzVnQWNnRmI1WHM1RzVnRmc5M3M3WVdr?=
- =?utf-8?B?bTRkaEMvU2JWRDBMeXV1bSs5WnBBZFVxNzJ5QURmQXRuekM3SVE5bmwyWDVo?=
- =?utf-8?B?ZWlOSDhjSG9NbHZydGdxYzFkMFVHZ1dUc21QYm1MbEcvMGpuSGdZbDI3aVlw?=
- =?utf-8?B?VCtHY1VyblhySFpUTlVMTCtIRVlCek1jajJiMDJSVjVjZW9qMmJ4ZnZpRkwy?=
- =?utf-8?B?VUFKTkIyeStVVXlEM0Rha29lVllLT215RDAzVjh2c1VpS1lEY252MWM2OFpG?=
- =?utf-8?B?S2xNMUxpK0RaM09ueEkzZUMwalBzZGd6a0JHa0wxa2dudDZkSys0RG04c2lB?=
- =?utf-8?B?Wi80d2s4TngrZkR3TWFFTDJYYWQyYUVIbnpTS3ErL0UySm0yKzR2S1RZY054?=
- =?utf-8?B?dWlPQVN3aFNTL2E2YTBWTm5SR0ZaWm1zSTQ4WStCZm4vVzQ2T0QrSk5yQWIz?=
- =?utf-8?B?UDNxLzAra0RuczM4czNTYkJpc1hmend4a3F1V1Fsc3FMV1E0ek14QTVWL3hC?=
- =?utf-8?B?cVliZjJmbklEdkdtVEhSTVhSM2czTGwrbmxIZVdQbk1YRUxaazl6VzY2dGNS?=
- =?utf-8?B?aCt3azl5QmxxeCtOMXBRTzd5VFlqQkFlVDlpRlp5ZGlzU1NzYVBzbHFneVlV?=
- =?utf-8?B?bmx5aW9RWm1MYnBGT2FTVXp4YW1OazhpTkhUWEVCSG9wSDRCTkluRmcxSjZs?=
- =?utf-8?B?WGpkMWQwTDA2VjZHVDhBdlNxbEl4SEZOUlpIVkN5eWdkdGpYRXVzMDErRzNq?=
- =?utf-8?B?c013K1UrMkR6YXBRNWRSUGpwOWdiVDFaV2xwRmdLVEMvcENGMnhWUWdCRm9Z?=
- =?utf-8?B?dkVDNGZGSDB2dlh6RWVNc2VJbXI5TzZ2V0pLdlVud0FTMnZwRVhiRlVnZytY?=
- =?utf-8?B?T2x2QVQ0Mi9KZVoyNkwzTWxRL1lSaEpBQ3huaU5NWk1jREJNeStOQT09?=
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f5184f4e-4ff3-499e-f0d2-08df3f44e253
-X-MS-Exchange-CrossTenant-AuthSource: DU4PR02MB12006.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 16:08:40.0721
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rVvYLhROZbaBA6ian/+7zq+Py7T90yZnmhIe1uE9D7Jo+snclxjAMUl5AoSD65SsvBjkVHbOIw8OjW1ToVtp0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR02MB11143
+X-ThreadId: AK-jVwBtQCQR
+Date: Tue, 10 Nov 2026 17:12:28 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ "Jonathan Cameron" <jic23@kernel.org>
+Cc: "Svyatoslav Ryhel" <clamor95@gmail.com>,
+ "Arnd Bergmann" <arnd@kernel.org>,
+ "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+ "Bartosz Golaszewski" <brgl@kernel.org>, "Mark Brown" <broonie@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>, "Daniel Thompson" <danielt@kernel.org>,
+ "Helge Deller" <deller@gmx.de>, devicetree@vger.kernel.org,
+ "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+ dri-devel@lists.freedesktop.org, "Jingoo Han" <jingoohan1@gmail.com>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Lee Jones" <lee@kernel.org>,
+ "Liam Girdwood" <lgirdwood@gmail.com>, "Linus Walleij" <linusw@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+ linux-fbdev@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ "Guenter Roeck" <linux@roeck-us.net>, linuxppc-dev@lists.ozlabs.org,
+ llvm@lists.linux.dev, "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+ mfd@lists.linux.dev, "Michael Hennerich" <michael.hennerich@analog.com>,
+ patches@opensource.cirrus.com, "Pavel Machek" <pavel@kernel.org>,
+ "Rob Herring" <robh@kernel.org>, "Sebastian Reichel" <sre@kernel.org>,
+ "Support Opensource" <support.opensource@diasemi.com>
+Message-Id: <991009b6-e62b-46bd-9a0b-43c3b7a6d10a@app.fastmail.com>
+In-Reply-To: <avM5EnC9yujUZcCO@nsa>
+References: 
+ <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
+ <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
+ <20260912232047.19c4cb10@jic23-hlaptop> <avM5EnC9yujUZcCO@nsa>
+Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 10/23/26 22:58, Jonathan Cameron wrote:
-> On Fri, 23 Oct 2026 14:30:27 +0200
-> Jesper X Nilsson <jesper.x.nilsson@axis.com> wrote:
-> 
->> Extend the opt4001 driver to support OPT4041, since it is so similar to
->> OPT4001. The OPT4041 adds a second channel, a wide band channel ranging
->> from 380nm to 1000nm. The register map is almost the same for both
->> devices. OPT4001 has an internal fifo of size four, OPT4041 has two
->> fifos of size two, one for each channel.
->>
->> Since OPT4041 has two channels it has one bit in register 0Bh to select
->> which channel is compared to the threshold register. The driver does not
->> support setting the threshold registers, so no new support has been
->> added for this.
->>
->> The OPT4041 is pin compatible and has the same package as
->> opt4001-sot-5x3. Although the device id is different, I added a new
->> compatible string since the driver already had different compatible
->> strings to differentiate between the two OPT4001.
->>
->> Datasheet: https://www.ti.com/lit/gpn/opt4041
->> Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>
-> 
-> 
-> Normally I'd say slow down to give more time for review, but seems
-> you got good reviews anyway and the code looks clean to me.
-> 
-> Ah well, sometimes you win - but generally wait a few days at lesat
-> between versions.
-> 
-I will keep that in mind. Since I got good comments so fast, I was eager 
-to fix them.
+On Tue, Nov 10, 2026, at 16:39, Nuno S=C3=A1 wrote:
+> On Sat, Sep 12, 2026 at 11:20:47PM +0100, Jonathan Cameron wrote:
+>> On Thu, 10 Sep 2026 20:14:15 +0200 "Arnd Bergmann" <arnd@arndb.de> wr=
+ote:
 
-> Applied to the testing branch of iio.git. I'll be rebasing that
-> on rc1 once available.
-> 
-Have the changes been applied? I can not see them on the testing branch 
-of iio.git
+>> > drivers/iio/adc/ad7793.c
+>> Maybe. Analog devices ack needed.
+>>=20
+>> Production part but this one indeed fails to probe.  Analog
+>> folk, do you want to fix this one up?
+>
+> Given it's production we should fix. Looking at platdata seems to nice=
+ly
+> fir in DT. Issue is that I don't have HW with me to test. So I'll maybe
+> just remove platdata and assume some defaults.
 
-Best regards,
-Jesper
+Sounds good. I already dropped my removal patch for this one.
 
-> thanks,
-> 
-> Jonathan
+>> > drivers/iio/frequency/ad9523.c
+>> Maybe. Analog Devices ack needed.
+>>=20
+>
+> Hmm we definitely use this one and we have OF support out of tree with
+> likely some DT abuse of what can be in DT or not. Not sure if I have
+> some HW around but we'll need to fix it.
+>
+> In general for ADI parts, I think we can drop the ones that are not
+> recommended for new designs. All the others I tempted to say we should
+> keep. Naturally we need to fix all the drivers that do not compile
+> without platdata. And for the ones with defaults we can also just remo=
+ve
+> platdata and use the plain defaults.
 
+Ok, I'll leave it alone as well now.
+
+I currently still have patches to remove adp8860/8870 (backlight), ad7877
+(touchscreen), ad714x (touch) and adxl34x (input, not the iio one), which
+are currently unusable with DT but are all listed as in production.
+
+I assume you want to fix all of these and keep them in the kernel,
+but possibly still remove the adxl34x and only keep the IIO driver for
+that part?
+
+I also have patches to remove platform_data probing from ad5761, adf4350,
+ad5791, ad5421 and ad5504, these all have DT support.
+
+See=20
+https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/=
+?h=3Dboard-remove-7.4
+for the updated series. I hope to slowly get through that. Let
+me know if you want me to skip any more of those patches.
+
+Thanks,
+
+    Arnd
