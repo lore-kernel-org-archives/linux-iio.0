@@ -1,157 +1,146 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.178.134
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794322635;
-	b=yyN7SHNCchNIThvotJNRBUdV7cFb48/XuYe9I+jea+Rf+6qe+R9HQjXoIEQIfB9oH5Se
-	 5eHslUS+TevYevoVNZAa00dMGyvnp0IjcF568K32uOw5kiQ3EWGfqFd6DfmIM8lJuqIxe
-	 JJTfNZVuh9P0TFiPP8ZWYI9556/B9TPx/Z9ubiCBS0Ucc+x6XzEMhUXTfjie0jFaWDTLl
-	 1ZkodWpnZQOjiDB+5bElevy7kUA51TZySiUMmEf6NCJO4rJIGZTjP3c1AClShkjp0Qjpp
-	 aELE8L0nRkg3+RmL+owSfOb9DfsW+bg3FgSx9maB0FqitRxUwiz0hjs0yEY0tLNZtJQ==
+	t=1794325120;
+	b=yI/0WpBTVFBqtEJFbGIZhGhsP01NaU/fZamvW80EmBk9mrCnfTI9ERn8SAd2gu9e6Num
+	 4PQelN5KsNgainoTlxRyMmk1CldLnoG3KWEgg1d/ZWH8wRSN6yuQjhiHQYvhBkykusBXC
+	 yVG1/ZiS+xdxXOPXX38L9KTo4oIOZL2/3lOSz2DaDNle6qyL2cyWznq+VkEg1ikXn44cJ
+	 2frrQNzMtZuse5oXM6DNOHVc3SBEyLc9xfndhQrtAy82YIXM3QS5HBsAVlkA7sLnLdlVj
+	 IKYpP5ir4yY01ofY2ND73DCRtbCy5MyI4i6vUxqap4nM2cjFSSDxjv7DAUf18Sq3/WQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794322635;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Received:Received:From:
-	 To:CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-	 In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-	 X-MS-TNEF-Correlator:msip_labels:x-ms-publictraffictype:
-	 x-ms-traffictypediagnostic:x-ms-office365-filtering-correlation-id:
-	 x-ms-exchange-senderadcheck:x-ms-exchange-antispam-relay:
-	 x-microsoft-antispam:x-microsoft-antispam-message-info:
-	 x-forefront-antispam-report:
-	 x-ms-exchange-antispam-messagedata-chunkcount:
-	 x-ms-exchange-antispam-messagedata-0:
-	 x-ms-exchange-antispam-messagedata-1:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version:
-	 X-Exchange-RoutingPolicyChecked:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-originalarrivaltime:
-	 X-MS-Exchange-CrossTenant-fromentityheader:
-	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-	 X-MS-Exchange-CrossTenant-userprincipalname:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794325120;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-Exchange-RoutingPolicyChecked:
+	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Spam-Info:X-Authority-Analysis:X-Proofpoint-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=bcOpLt9f2DKMZRA9+JiJmUnZ8OLy8VAQVpMUCemfQwI=;
-	b=b/jmxuQiIEBtvt2sBHnqrj2Ybr0WjdYLStZFB5ZSoZI0bSAOw5155xIsIUPAEJA1yXNe
-	 plIPyiixN3wbkMxEy/x8uAHTqe6L2v4JvKvBkWj0I/WUmzo4lzY4Rueo13izuYnRavlPc
-	 AyrEDfeYjPkDb2J0S5Nv3r3qqDIydckI3aQNdHXqFy1ZK3z3vFvTqRllF1LZAe3luPt+3
-	 dqyFBPv6bTrNCmtGWBj1N9Aub9IcYvHruaK8cgxqAQS476lXPUmRyGEj2oNQ7mpYdPN92
-	 wSFsPsJQM2FfV79jDbnFcBWSaOiIRLYrChukwTDB8WxG5jgpRTsPgDu4k+y1Gl7Fssw==
+	 X-Proofpoint-Spam-Info:X-Authority-Analysis:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=NKYT9g5PeHo9rz1Xs7oNrSVftCpyKqKw0cqdvwF/aHM=;
+	b=jMy8xxaNr2GBrCsUyIkgmNkzl87SLDlHaa3XG00ULAakgSkhtR0VmetabGvGTU9P/T5X
+	 I4ur/luDy81wu8TsrqqSC1GRn5K8FmtX3Boub1iiFNr9+ylD6Vp25ZulC0Xpfhbso1jPU
+	 MExaDWwIVhbKTNHKrCpOfnKFobzh+WIi9rXuQ0A/iWDN3lzOR3Y//9ewJ7y0mhWN7Gs5K
+	 kwUHmYIKEcMKs/3IkFJoxZ0GyrlbCz7K69SpdW7UOkSwU7y0Aca/49B2H4jbANvSH2Guf
+	 pLtJIIED2VO7ebWWXBPGMlSyaIcQ0YY0WVTej8FArXlcIvCful03MzVRzoZ7eMKUwlQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=tdk.com;
-	spf=pass smtp.mailfrom=tdk.com;
-	dkim=pass header.d=tdk.com header.i=@tdk.com header.a=rsa-sha256 header.s=selector1 header.b=RQ1thSCn;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.178.134
-Received: from mx0b-00549402.pphosted.com (mx0b-00549402.pphosted.com [205.220.178.134])
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=OQVSB9Gh;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=QDWlZPPv;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D0CE606A31C
-	for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 14:57:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7D0CE606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tdk.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA32606A321;
+	Tue, 10 Nov 2026 15:38:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7EA32606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=tdk.com header.i=@tdk.com header.a=rsa-sha256 header.s=selector1 header.b=RQ1thSCn
-Received: from pps.filterd (m0233779.ppops.net [127.0.0.1])
-	by mx0b-00549402.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AAEf8KU2882175;
-	Tue, 10 Nov 2026 14:57:06 GMT
-Received: from fr4p281cu032.outbound.protection.outlook.com (mail-germanywestcentralazon11012062.outbound.protection.outlook.com [40.107.149.62])
-	by mx0b-00549402.pphosted.com (PPS) with ESMTPS id 4hswbhjpff-1
+	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=OQVSB9Gh;
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=QDWlZPPv
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AAFBALJ4188857;
+	Tue, 10 Nov 2026 10:38:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=NKYT9g5PeHo9rz1Xs7oNrSVftCpyKqKw0cqdvwF/aHM=; b=OQVSB9G
+	hW55mimjtsBJnYSwTyX0+38NthMKQBRTo3jyz/NZ41Zk4bFBPrzV0bApMQQLBE1l
+	Vb6BzMB1WUuWsQM3cRxOVpln2fyTkyeRdoyntaV39cv+xVtZuyM0OwtWaukTJU9c
+	iRI1QpoeqFiOKjtoTpqhLB3sOf6BrLCL1cagh5IAaywUAqqm09JCsz/+TNXXmO6+
+	fv07AT+gtI/QjdIZrqbVzw+Ablqa35nXM0LELKWnTC6To0pRIlNTjIC1hrCp42BJ
+	Y6J3PyZHFWaztWkpd05rmypyPfzKGbI7qgrV9zLcQEV3oq/BJAPbc9npL6WVYIyp
+	jnhs9bEUcjNWV0w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=NKYT9
+	g5PeHo9rz1Xs7oNrSVftCpyKqKw0cqdvwF/aHM=; b=QDWlZPPvfcOTa1AqqdFS9
+	02kPpHJoRdmoOhlgqjTY92woEQVfyoeMXCJm1te4gN9Kum1NUB+Qp9c1bM5b3otc
+	13iWVqiYaw9pklZDDpUVBuI0kn7atPZ+nfUgLZ3H0rZ+L+gyuYkwMu+b0mSeckwA
+	GSQOMgRl5tkSKiMso5zMxmPy7EdqT2Yv5x4QC3XwqMygeu6/o9A+VCcuAZ/NRS+5
+	KiXTiQdydXCqkZzNkz19DFQoBcI1WWDwIBLzKOHizLXSZcvQiQQdJkvnblA7/sWh
+	qwT/mfH82aGxaRL1f9A5F+Jz/Zrz/rKCW7rP0INpNeExoQplcq9GpjRieeQwOygJ
+	w==
+Received: from sa9pr02cu001.outbound.protection.outlook.com (mail-southcentralusazon11013014.outbound.protection.outlook.com [40.93.196.14])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hv5pdr6rk-1
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Tue, 10 Nov 2026 14:57:05 +0000 (GMT)
+	Tue, 10 Nov 2026 10:38:01 -0500 (EST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PYU+SatKrqg7L+tM/6u8kcJHjPuAlx9rWvmtk3HyQHw4Rua9+wDH+GyKR8dddiiRxKivqKWsD9xlJeE0/stDeZNQDhLx03869X33ByGh1G2nODhuHHM1dU+zzpR8JBfG9QIvwQAuGIlqR92vjqWJ3h31i1kyavKX2C8LCiqVKS1PfnO9Qh2u13UV3u/8NGPS7uDeOkjBWj3sYi5+nxRsmySzRoqNr/kQP3Lh359NxGcQb7xAjNaXyB7xpPutmC7N6/hb66Bpw+PEPqTg6dQZ4zDWhJwxqJYgAjRF78OFyUbuCYxFw18ewyUX554C9MDyEaI0qcbBb6HQGsaln18jDg==
+ b=NonMVmbxe8RNspZkfxL0t+i63k5Q4iPNq0X7QmsKoezGKIzq72QPFS8gI2ChFhWZ8njvGblPP7hTexO/g8zxw+AOL+4jwhKv1p6I+q1UKK3VqpBAfpyQ09COJYe5RDKDaXQAPuqd7XAVubXz4HtA1lTGsh26g2QdsbngCJIrGe75Gkj4KlRGkYSfP1ZMICY/tNmnUmyhgJP71zHwKzTn1FmYbWoRV6rDWMXzKSdHMcexJ6o0XD2HS3g9B1dYC1NcoJGqecBJ87q+4Slm+J62MMNOIxSVN/xskHgUubdqRezEAkBOw4H5oUfe5bjcB7G82YsOeq6s29bPAohVO5McKg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bcOpLt9f2DKMZRA9+JiJmUnZ8OLy8VAQVpMUCemfQwI=;
- b=EJihPImXxIPKup8v5U5Hp3hjxTP4pCi3hkMG8DhsVaYuC0BCUByB7QHWszyO+6buiX9harRi1ng9UtcZuolcl8mHwCqgc81CdQSZKKfC7jMMzsrKGGe+byTz7GOkBloxcMStNf9ss5DlZJ5seo9JuzCka8woeK0Tc01vFt4ZB8zLXPrLD6PGDF3nfPD9TyF8NLgToqrH8X0UrDthbBe2FWteK6G06nf14Gc8OHCv2nI2tH1K9ltqn/j3dpPWYsCmMA9SY32wqvN8t9R8HOR0doV1C2VUWBdNvKYW8HgYYW/9eR0Co/NkSHAUk9kgLjY8y4rTaT51oZcYgLzJEiFhWw==
+ bh=NKYT9g5PeHo9rz1Xs7oNrSVftCpyKqKw0cqdvwF/aHM=;
+ b=rjcDdK6vng8EdPq89KIXo0gmbqwnLRaX4UnH3HRgZSlGft8u/xY3Bmh4jww6B9gw3xrKqp9B6QyqnuuFHys+nSuv3XZgy6dsz02VUfaHcF9sdM9gZuLsY7BZweOUkTF+nbfOKdCRA/BkChYVWjS/x6s+kDItr58efZkdW5FiAY43xgoiNOe3YjkXI8rzdMFlJ2Z/BfPxcl8q2oFnVz+Fa2WPoPsZRc56Qu5VKatcR5JpPkTwYthnW+gU1ZiopM9k1qi1nTImGhf1N6nknGrjWVJY1kq8LKOaRRkQ7L1R3krxnM8l5eGgqNB8Kjsg92ZZ3Ty5aiCCsa4FdiSvXW/uEQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=tdk.com; dmarc=pass action=none header.from=tdk.com; dkim=pass
- header.d=tdk.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tdk.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bcOpLt9f2DKMZRA9+JiJmUnZ8OLy8VAQVpMUCemfQwI=;
- b=RQ1thSCnOhlUoyIK3yjhe6naXLry2IUod6At3hYOPkSM3foOTSUW8p/WIYyaQqY2CEqUGUpffCqyQqRbQ6BD3d9QcJ56AMI7fdl3XZn4akJI/hfJjRq7PeHOVxCkk2YMjLKwnyZYPVlC/1UxAosNcN4JZv+YByQOhvqcRnckFNX2Ah48Uazjuvt5KcWyolEFDAF3BjmIbraEoQhg/UmG0C0Xp4hnnkK3nSTkydYsJazmXy9myOIi7oUjViB+QPPZty4sraWX4cgyYty7iGzD8VavsYURYjde95IbKhq1Ksmki6JHjgFpmV/C5A3HDmYVuTB3I/h/UKuovaLlRpANEw==
-Received: from FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:62::7) by
- FR7P281MB6460.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:1ef::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.13; Tue, 10 Nov 2026 14:57:02 +0000
-Received: from FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM
- ([fe80::5b9c:5d9c:df1d:84af]) by FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM
- ([fe80::5b9c:5d9c:df1d:84af%5]) with mapi id 15.21.0592.012; Tue, 10 Nov 2026
- 14:57:02 +0000
-From: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-To: Joe LeVeque <joe.l@reflexrobotics.com>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: iio: imu: inv_icm42600: large gyro offset with temperature sensor
- disabled (ICM-42688-P)
-Thread-Topic: iio: imu: inv_icm42600: large gyro offset with temperature
- sensor disabled (ICM-42688-P)
-Thread-Index: AQHdbjZvHiFX5I14+kSLz140Z0K89LcnaXaj
-Date: Tue, 10 Nov 2026 14:57:02 +0000
-Message-ID:
- <FR2P281MB310391F1880DC67B2FC446DBCE722@FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM>
-References:
- <CAJLMkXY6wS7ErVT5YUyp=c0TJDPmGePJiDua4MPw47V83JQ0Fw@mail.gmail.com>
-In-Reply-To:
- <CAJLMkXY6wS7ErVT5YUyp=c0TJDPmGePJiDua4MPw47V83JQ0Fw@mail.gmail.com>
-Accept-Language: en-US, fr-FR
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=tdk.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: FR2P281MB3103:EE_|FR7P281MB6460:EE_
-x-ms-office365-filtering-correlation-id: ef5b8be8-0c6d-473b-7c83-08df3f3ae12a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|19092799006|1800799024|23010399003|10070799003|366016|376014|22082099003|18002099003|6133799003|10067099003|38070700021|3613699012|261028144727099003|11063799006|5023799004|261102123227099003|261021121427099003|261022075727099003|261026140227099003|261021123027099003|261026121527099003|261022105027099003|56012099006|261009223027099003;
-x-microsoft-antispam-message-info:
- 3OFxKTr3ke9Rt7NC2uRemxkHsgFTF/1cXQib+cRhGSuYCqL4A+/fwVe6AQslC0nMrrcHjQKzqQ9YL6pIGg9npJr/UGPHBScUa0X5L/hItCJbf2bMparbeY1FuABnybgrezx+XNGW1f6fbLbFRI1SaOIdpoG6Wu/94E+dQrVDfEbWO51C41/no1fgLAZP0NDWiC9IEcETzDAAmETTOygTc6PnUf13PqbFhrmnHjLoLdnIb3UuwvFPNEyHiQ7wnWQDnYGgNtKpO5H48BTJD96K+MGYI6LfY+nciPyukH5xHM2Pq7K41fsFyPWWdsaZDbtaKxNvLujDIqG93yPHbEkDM7l0h8LZp8CIRF3mCYdc6ekgsGJaDfOR4ziUdYK5UME26LKpp5+ZxOCI+LEdwSFlodpBmmTlUbxgI2CnkeIRY+WCL382dQ8Ec5kWiDzCLGT++ze8teIN0TtOYVFnQTpXqIxSvnMO60RYnNOz6vYgj5zwwor3/yKTnFSoyW7jDUxf8bVpN7nSE+n/L27zW91wCNfA0hG+Dfui4EhSeGBhlBQPo18GKDR3dShzQhtSzCQNyoQwyoCT+YJQX/JDiuLyDO3bBPFX1lm1V4WtnFaRbxy740fWA0GnY60+mu9d/BFvTCt6OGA5/MjXWgZI/P/7t7E8UJhCXP5KaNPBNDlC5idHFwhEefLpJ3AAd6BKZ71xAI5Ph/JV5sym7NQjoTR6a2OfeUGEJuvNYv2o/OrU1QRULo1eMVUIfvUQMg2Cigrn
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(1800799024)(23010399003)(10070799003)(366016)(376014)(22082099003)(18002099003)(6133799003)(10067099003)(38070700021)(3613699012)(261028144727099003)(11063799006)(5023799004)(261102123227099003)(261021121427099003)(261022075727099003)(261026140227099003)(261021123027099003)(261026121527099003)(261022105027099003)(56012099006)(261009223027099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?TFU9qUoieP8B+LwZ9h8IrkZYoDJ9OIwaJHXJJyPQZJPZORLp4UxcNOjOiB?=
- =?iso-8859-1?Q?Hi7R7FOIM3F64gN1FrvF+kVCqC7RLTvhgMzsjsgSynzwhT3B6Fg63tCyJh?=
- =?iso-8859-1?Q?ukKMXO8KQHVNqhs+Oj+bUI7O51c8MHG9tW0NuUENRos5sswaesxH9+lYTy?=
- =?iso-8859-1?Q?6x8ScjOvbCvyV90a58Pcu+pzx1qE/g2TOKXp/Z8o1attDN+GjPDX1P+ZYb?=
- =?iso-8859-1?Q?Gkmm/Ix39bEEoRsU7jr1uLvLLl0tHTokHaOR3w7TXoU42/G5jj2DTTwU2W?=
- =?iso-8859-1?Q?+uosv7XpXw2telV06lYFniQcWfpvSBdS1xBD9NETZHrVJOSJgriZx1qoea?=
- =?iso-8859-1?Q?cDu4w5AWxvus/uiQAju3+oS/INvXudPtXWrYOB6bFyrsXcUKmU4ps2UTwz?=
- =?iso-8859-1?Q?RVyKawAifwqYzRabmaLKQJDdacXeGDsFEBk9ENCLHwYPzPSUUvBxaZREci?=
- =?iso-8859-1?Q?lD2IHZvPMfEVNHUY9XC8hE5cvAreiO+Py+1Pv6poorL3cQ9QmRUgZPjCdv?=
- =?iso-8859-1?Q?FbSW+n+46kqIAgX+Riu20fe04wuakimIRx+DINRRps3vJImVy6ZDYmWQA8?=
- =?iso-8859-1?Q?/0zWEK5dDTOZfnY9i1wBMdAyMv10QUBFeqf5idyrSwOXZSfuYIJ7MCimq8?=
- =?iso-8859-1?Q?yD/HvAISHtaafERUoLleypgDLkjmhlr13TiAtWAf0oK/1fBFmC3mue4U9l?=
- =?iso-8859-1?Q?XQkg6Nwqv0jnb7SmOrhHf3UoZvRfTzvSC+uzmsOwGl1xBIW9DC7bXCrxuY?=
- =?iso-8859-1?Q?Yppymz0jRicVyxmBuTV+Lovw6VSvBj56bS2cTVkdOpKlDx7IMzKH1G3BR8?=
- =?iso-8859-1?Q?/oH7PKMeKipF+MDikL6V9ooL5bDVJtg3rzKS7oGjXUKnB3Rd8ku8D7p0P2?=
- =?iso-8859-1?Q?jMHi+C1unieHD7NURrv0/Aopuzw1ImfFGbkxqz14IR85xrE9kDgIaij9CI?=
- =?iso-8859-1?Q?uxgwNwINwlLPnI4pVC4B0Hpf9mI5ECx/aYivjIvCzT2EQKdUjiB1nsEe0G?=
- =?iso-8859-1?Q?AOYI4pHMQIN94Zyr6hkD53jVGAdzMH97+ogz8QKL8g0qOSqMtuXL7GMhHP?=
- =?iso-8859-1?Q?iimpdslMf9OnK+qR3SHPkKONmTMhdVZDyMsLDT9zs3CuXCJXgoTWkqgm0V?=
- =?iso-8859-1?Q?8VqnkUdw+v8yyORbddbo8ATv8WT8XxTLfNjt1Gbi6dfSwKIwc0fAezCbB9?=
- =?iso-8859-1?Q?jnd/O57xvQG1CkUVleNaOpay89e4bJkcgQDfLXS5tQk8PGUcuryssKrjTM?=
- =?iso-8859-1?Q?BcVR+EF3MmkzVZ5kg2dlcmIXt/CRA4mQ+kPWHsqn7UbH/MPsluEYxhkV+a?=
- =?iso-8859-1?Q?n2SZJfkJwzZZGti5i1b531dDo0joG2QDP7+vmfPWgTy/YrW/g976aIa8LY?=
- =?iso-8859-1?Q?/FEEu8paxyNh/UNPRBcOHgphHwMNpNwlw50lESRBnPPZnFdExT+UEt2KtT?=
- =?iso-8859-1?Q?ncpDOV4FULLBrFWGyzxMLPsVQ2l9nZ8RyRZmrszMdzKR0WwghCIKXA4g+U?=
- =?iso-8859-1?Q?sZG9FlVHGDtQ4YIPvIWOdDcvKFNl7svq07lvxmeGNigIXRTASgx+4VX3VG?=
- =?iso-8859-1?Q?JC3QwI403WD1bY30cCX9idvX6oCu9SYrXFstUTm1FxKNhCLjrEaJz5zGLH?=
- =?iso-8859-1?Q?0ZECFzYw43ni4ZcqIEk5V0AtMhC3dxJkO/n9mFyfEkCFaB5T30kYTmcXys?=
- =?iso-8859-1?Q?gHIIqRCjMlO/miekNCi2j4vICXjaKH9WRUX0pzbYALZ6zE9eJ+kUNpw7k7?=
- =?iso-8859-1?Q?F4yJ8dP04Tnd1PNE/a967DjUtrcV9emqSt4ptemGo/wrHOWeDmC+rPcz9D?=
- =?iso-8859-1?Q?JX2I4XU++R+ohmc6sgrGKvTVR7bZMxYLuyOpS9xxgNA1k1bSuT4acp9fH8?=
- =?iso-8859-1?Q?/I?=
-x-ms-exchange-antispam-messagedata-1: BPQ+hgi+Ybef6Q==
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analog.com;
+Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
+ by CH5PR03MB7862.namprd03.prod.outlook.com (2603:10b6:610:216::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.13; Tue, 10 Nov
+ 2026 15:37:54 +0000
+Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
+ ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
+ ([fe80::2a19:76b2:e731:8c5a%6]) with mapi id 15.21.0592.012; Tue, 10 Nov 2026
+ 15:37:53 +0000
+Date: Tue, 10 Nov 2026 15:39:12 +0000
+From: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Svyatoslav Ryhel <clamor95@gmail.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Bartosz Golaszewski <brgl@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Daniel Thompson <danielt@kernel.org>, Helge Deller <deller@gmx.de>,
+        devicetree@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>, Lee Jones <lee@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>, Linus Walleij <linusw@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-fbdev@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-sound@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>, linuxppc-dev@lists.ozlabs.org,
+        llvm@lists.linux.dev, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        mfd@lists.linux.dev, Michael Hennerich <michael.hennerich@analog.com>,
+        patches@opensource.cirrus.com, Pavel Machek <pavel@kernel.org>,
+        Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>,
+        Support Opensource <support.opensource@diasemi.com>
+Subject: Re: [PATCH 08/14] mfd: remove unused aat2870 driver
+Message-ID: <avM5EnC9yujUZcCO@nsa>
+References: <CAPVz0n0ryOns2sCJE_jFana9MVzwEj1QZuPEa8FNhGbHXnMB+A@mail.gmail.com>
+ <11652e5e-053e-45b0-98a0-0c1cb2aeedc4@app.fastmail.com>
+ <20260912232047.19c4cb10@jic23-hlaptop>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260912232047.19c4cb10@jic23-hlaptop>
+X-ClientProxiedBy: MA3P292CA0069.ESPP292.PROD.OUTLOOK.COM
+ (2603:10a6:250:49::9) To SJ0PR03MB5469.namprd03.prod.outlook.com
+ (2603:10b6:a03:28a::17)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -161,131 +150,172 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|CH5PR03MB7862:EE_
+X-MS-Office365-Filtering-Correlation-Id: 44c1e083-4b3b-45a2-3c13-08df3f409584
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|23010399003|376014|7416014|18002099003|22082099003|10067099003|11063799006|261021135927099003|261028144727099003|261026121527099003|261009223027099003|261022075727099003|261022105027099003|261026140227099003|56012099006|261009221227099003|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	r4iYqk8EHHH+i/qgK9yrK95M6PAOmp2cwmEY2M8D/7Tkj3vz75/Y+CUeY2I0RNhZNltTDfbsPLz3HvFd02ePt8rInHyMSvjQZ/KQ1Ored1Za4tGaJSCPCgAy52OC9JfRAhp3k7J9bRd8YWpXetCpGvBqofsp04YkOB7cDMtvD269OZYKA75g3kGuo2unSg27ZqKHwzqSKLZmsEnTShOux+3o/J8cnlzVN0gnkKS8nmKWYwKuequdVi+4d5g6foMugkmocOayYO0Ax3bqTeiPPfy8Z7+oi1UCZK+buvIp7am5Q40BxdK9rLDXnawlaUd5mFGn2OhISsPKiU3rveCVWpmAlvofcKUKd11L1BUx/dSKI/ir7vV3tal3MKADfg4sJeFMT1iKH7h+qIdoztNnRWYII9ZGec9eAzHliRZV7NKCmcv4IVpQ3pvDzN5n0Lt2Ole71quqeAnpJ9nn7nsrS7W1NjEGWDkEIX++ZwRruHLpdRts2yCrl5qYQJLqtKrtZogkL3oM7Ab8OyzNR/0Dm2F+ukXoO3eHcH5E/IHrODaFQ10ydnVni3tewcSL/4yvIuwiyIOs12S71RuwlPw7T1Z5H7hnH0KHZ8xzCzLF3UfO0td9rs4fPxgeXpSJ34Ek
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(376014)(7416014)(18002099003)(22082099003)(10067099003)(11063799006)(261021135927099003)(261028144727099003)(261026121527099003)(261009223027099003)(261022075727099003)(261022105027099003)(261026140227099003)(56012099006)(261009221227099003)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SkJuTGZWZDhzdnoyb3BSeUd6Q2xTbnBGeTBUQ1l6THdoNjVWTXpwblVMK1h6?=
+ =?utf-8?B?eWJXbkh2WHZvSENJRjNZRWFjVzRzTTh5OWJZNGthM0lydFVSenFuT0UrNUlx?=
+ =?utf-8?B?Y1ZqQ1JjNWJIWFIrT3BQMHgzc1lHNkRKRnRKVHpxVkxQNk5zZDhqVW5lS0JZ?=
+ =?utf-8?B?TXRFbmowSlA4emlpZG9PMjVSRkxHM1l1SWFhaFRRa0Z3MHMwRUFNZWZrQ1JZ?=
+ =?utf-8?B?YzNNWFlTeW5wNE9BUzhnNWpOY2lWWERzeEZEMEFjbFNINEpyZkhGbE9HZ3g5?=
+ =?utf-8?B?YXhlaThBTkd0TzFHdDFKMk9GOGs1YXczNUdZRFQvc0Vwb1JBTDZwd0U1TDVG?=
+ =?utf-8?B?ckZmcjV3dlc2WDFMWCtoMlhQZGNtalZWZlpqcFlNTEtHb09MNGVPelA2dzEy?=
+ =?utf-8?B?K1c1TFNPem53aThEaUJRZEVYZTNId2prRW9GOHFLb1dpcXgwcWVCZWF3TG4v?=
+ =?utf-8?B?L1BUTTFZUk5rZUNFMS81eUt5ZnJ1Qjdpa0lIT0ZnSUNialI1NVgrZW9pTW1i?=
+ =?utf-8?B?eGRENEEyM2F5dFMwQU12VEZIRHJ5SHdOcFBGMzhuS245OW5YUUR0VFNLL3o3?=
+ =?utf-8?B?T25JRTRSeXlLRmx1aXErVzRZY29QRy8vNXJ1bFdNYU4zS25DYXlIV1daenRK?=
+ =?utf-8?B?Q1dYUHFFeUtVRUlwUmR5bTJRdHcrYTBZcTFmaGJXc1Y5M3BWTTgrdUJyUERt?=
+ =?utf-8?B?OVdmYjI3T0xOREdOQUtXcmZPazdOd3lEVmhwU20rTlNtMFNtOE92VHhvdUJV?=
+ =?utf-8?B?dk1Dc1NRSzcrdDZTYWYyQSs5VDFldVRWTG56VXVEY0NoSG9Bb0ZMcGlLelp2?=
+ =?utf-8?B?N0pzYkRGWXQ5NGZJNFZlSGI4Y0xGRjNqT01Cc0FqSDl5N0tBb2Q0RjY0WnBX?=
+ =?utf-8?B?SDlwODNNY1NjRHJSVDJ0cGNodUtvWndiNzQ1cm5aSFh6eTk4RHVPQi9KR3Fz?=
+ =?utf-8?B?YmNGVkRkRWlpUDU5TEYxdERNdTc1V2ZQV2xZdUxvSXBIK21SNGkwSnphOHVE?=
+ =?utf-8?B?WE1wV1NTcU5NOWZkR1VNUGdLOFFYWXlQdkxxTHlhekFUbW5wSTc2bDVYZk5N?=
+ =?utf-8?B?dE1MR3FyUDFWYjBxZkJXbXAwZXRheHFnM1Q2RXU4VHg1ZGZpWHdpaGtIaTAr?=
+ =?utf-8?B?TmZQZ1hoajhhbnNBN0ZpTWlEY3dMNWQ1ZjVuMWw5NEQwVHZTZ01YN1JjYmNF?=
+ =?utf-8?B?SU1yZmwra3UybWw0TXRCMXM4cDhmMUlZWHBLSWVzM1ZMU0xLWTk4SWxsSWxm?=
+ =?utf-8?B?MUZXZkRFcytXTS9vR1QxTjRsQTcwN0thMFJIYmFibjA2clVPOWQyOW1mZ0s4?=
+ =?utf-8?B?NDR4M2ZSczFWZWttaEVqcnMwTUVWZFFtRWNUZnlsM3cwSFc3dzJqNFNUR0xS?=
+ =?utf-8?B?VDZVM01sQk5ZS1lZcTZCUjdlVkxZRFc3VDB2ZjlFRDIrZW9YcWhpOE1SY2tw?=
+ =?utf-8?B?b2kxWUhiZ2paZjdsTXhoSkFNYkl1Wm42MmgycHp1d0JGNVI3VHk4SGVxSHJF?=
+ =?utf-8?B?Y0dQdXIvZkVzb0t3MENRbmVzZldMd3p2UDViTGtKdkpDeE4yWUFoTDRoZUF2?=
+ =?utf-8?B?ZTZsK296N0xaSVdWb0VWbkNyL3pHL2lBdFNhaWNoS2IydnFxRW0vQ01DcEI5?=
+ =?utf-8?B?YXpIYjVtWDNDZmZraWR0RlJ1cmFNekIxQVRDM3RXWDEwMjRWOUN3VzYwU2tq?=
+ =?utf-8?B?OVByeEpOcmJ3cTlpVlVXQXZWZnhKaU1yejhUWHh0YzY3c0wxSmdISjVEQ1cy?=
+ =?utf-8?B?c1dDY3F6QnluQVJvbndWeDNyemhSZWsvQ2greFBpZFIxNkUvRWg4RHVHMldI?=
+ =?utf-8?B?K0NkUWMzRy9zMGNtYU1CeElKcXUzZllNSWdiQ3ZjQldPM1FhdWdPSFBwOXo3?=
+ =?utf-8?B?ZGRDMENzTTc0ZlBtL0N4bEJJS2FWem1ldFpTKzZtNnRWV1N5ZnpXRk0reUx1?=
+ =?utf-8?B?cjJlTnpJRVgzZHZZRk43ZC9CTjdONnlLL09CVzBuQjduUjg5WjllazJOMW9t?=
+ =?utf-8?B?cVlEVnBmSFZDQmlXa0lteWFOUGRtZ2ZrRmljTXZLZkhDVDV5VGJZQzU1S21T?=
+ =?utf-8?B?cjNyMWNmOW1SeWV4cGt1THZRUU1yQkFoUUl1VGtMRUYzYWFLd29lQjJHVDF5?=
+ =?utf-8?B?dkU1MjgzQ1dCTjMwL1BoWDRpTHM3YmRyQXNwZTV0ZEptTVdneTNUNWZ3akNz?=
+ =?utf-8?B?dkJyeFdqaHVwR1BhUWE2VUlHRFlMVE96Q2JnK2ZxQVVDN21IQ0U2dHdMTFdJ?=
+ =?utf-8?B?SlJacFV2NHNZNU4rNEM3a3g4Qko3NmRGNTNZejhtcFJnVkk4d0x0S0RIT1U1?=
+ =?utf-8?B?ZlhLSlVlWExhT1dtMTkrVkVNRld6a3N5UTUwdXZTUG9FY1EwYzl2dz09?=
 X-Exchange-RoutingPolicyChecked:
-	NLMzViHMW6JxU/xYgfAcA0BYl6TBlY4sc4aSySwDG2HWGhqwyn1AxoOSxeK5LU88x7SOPhdQdXKvTAZWe+dcknhGUYWQBgJLEKFznxqovyjH8jRAdVDp5AV6rfobS/ZO7MlhryiPPnOh9TocDyKYqUU4PQkK93sD56Vl9rmg/1huAjrh2j81bUIPcyXQc1pn9r4MeSgCVbmTHM5VVpFG5k7gNCsn/HJ0SS0yw4nOKWwpApx2wDph0tyeiO86a83aAtPaPh+whgW0T3TOt2HQ4Tly3TBKJMrr+GtnSRtM/ioVFC5sciQmpDWnoNLvDpgeOXW9u+tWZQZAyczNn5mgkQ==
-X-OriginatorOrg: tdk.com
+	Fg+4odflvOVg/qC3P0jcHuVvFP05frllrULlxzqWiA0rjJRtOCB7laUbrOKmNBlsobPk6qqFYc5dNMGNPTIMv3D9n/qaajEBGPKmXvJhW5QXfY1uVHj1qtBfl3RiZdF4/mKbbi3VPSkVjvVM23s8jn8TDewGkCV/2ocCz+x35DA4TP4SxxKHQkU/MvWGyy4cRDgd0NV01hdpyaZIqcd9cC2YEM0w7X1HD2CTlrLzahoEM9lGAhYtTbhjq94SILROlt98EzbW0Y7es9uujk7YF8jjl8RdFFsJrKbN7yKiJDjoNlnYOa0ZAEHbMrRNNio/Kvsn+rmDPPeKCUoAbq8cvw==
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44c1e083-4b3b-45a2-3c13-08df3f409584
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef5b8be8-0c6d-473b-7c83-08df3f3ae12a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2026 14:57:02.7615
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 15:37:53.1789
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7e452255-946f-4f17-800a-a0fb6835dc6c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Bv3j0OyNGRQtUCY8OTTPfVzPOxLlcFSLAtY2jJP67QRQ6Ljjdc5tjbtFlPRtsMl7QZKpiYMcVAzpx0u1i2YMNm9nkbNChA+FIsCWKk79d/k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR7P281MB6460
-X-Proofpoint-ORIG-GUID: 6v_VFdtcDrhpzTqDLRZH69zZauxcisNw
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEwMDA1OSBTYWx0ZWRfX2sv7iW91l1wO
- gm9CQEFcR9uG5mXE63yWE8DIonkrMHVn4wK5RzVYKEWtCiQUqLBZ1p4seF/q4VPrqnneOn6EHk9
- UkF+1jGEWhJ3JA2RS0hvjAigFG9WorW+V1yejLvL9oBAH/nsw8OaMIObtsTK+Jym+MfxkGNZMKc
- tSPNTgcDIz8VE9IR9IFUHx/723Stgb1byJWQZJS2jRoKtagmOGaGzTK0OCQpLPpi78hJ8SZOofD
- c4txKeMBh5bP414h0SHbBXbNUR9JWR0oSbgcTcaENrq8xRm8zLDs6N8ez2tsXAjqYnO54+wH2Zq
- tfGn+6YTtbL0WhVTUcMH5tSHB8fn46ZBMALK30yZxrNVR4s6QESHg66HYO+7/kZzzAc0oN78Kzo
- /d9Xy1Mq+bDaN7UkLcN+06mWPciq5VstWiPsf+PzZfziOmeNf6NWndwGTmwr0DwxRhOKLEnDY1s
- 6rFUn9ZKaFxFbcf3OKQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEwMDA1OSBTYWx0ZWRfX/uEWrYI8mZ/e
- 9Gp5mq3sMsoOUPGf3nu5NWNUIviFjfEhESa6V6uCrNbdu6/eaKXZgiGcEiet5eA5xNLSmWMiV4i
- 0ufOKpMguaiS5Ckl7kH6qNMErioHoCW1qcTx4sHIoM/gGBDC4vBD
-X-Authority-Analysis: v=2.4 cv=IpyL47/g c=1 sm=1 tr=0 ts=6af330c2 cx=c_pps
- a=98V9EubDbGS02EwLOPzuig==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10
- a=zJRp6_cAMcgA:10 a=Uwzcpa5oeQwA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=W6z64dnQKVPvYeLC5f8l:22 a=NpUDEC63da1vOGE9rZHW:22 a=CA_R3AIv3TqSSSP9Ml8A:9
- a=wPNLvfGTeEIA:10 a=zY0JdQc1-4EAyPf5TuXT:22
-X-Proofpoint-GUID: 6v_VFdtcDrhpzTqDLRZH69zZauxcisNw
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 40YI0i0n9DrLFb8UnBhArvkQDq0TmY2CwSLUQ8JKLyyb0aZ0I5O5Jh5q9aRWmNPNDh68oDSdthtG2UlYbXpZcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH5PR03MB7862
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEwMDA2MiBTYWx0ZWRfX8Buy1TM7wQUd
+ xaUZRKo88Fv4gDL1P/kcE4ud+LRnchUcG1Zf3RHHLpTdUrWKTqqierVfwn3Iz2HoN8EbmHptBAY
+ QnDzbghGPHXTXD01aZp5SO7vqUGC28ic+Cl7MUd8le7PQqzk09xw
+X-Authority-Analysis: v=2.4 cv=W/qtxhWk c=1 sm=1 tr=0 ts=6af33a59 cx=c_pps
+ a=hwAR686YzpmZ7aH69gEPcA==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
+ a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
+ a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M51BFTxLslgA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22
+ a=VwQbUJbxAAAA:8 a=bolBC-KKTCpxfz2DwocA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEwMDA2MiBTYWx0ZWRfXw6vgjpF5SlYK
+ hHALji/BXTTq3OrYRC7QNQpd0MF3ibX/2RoazbDeK1k4NOtrAkvyDwr6CRK/yDegrLSMMCNKnps
+ kkb4VfGCuCn6k9PkFcgkMVLhW6B2babWEodJYRdUQ61t0f/3VXdqQKuhPeLwzcHIl+vry61AZCt
+ DjZLqDn187P8b6rAKCrNHWtvjl8Ycl+hewFd4soUdJfIkvRzU5GRu125hmGKTDnUlZQcbsZKhl7
+ FC2JOEx8JiIA6KikLDXaSHb5vjle9Hys4GkGUWcQrlt6E+MViszgVcG3YWO4CvU0Jn6+QfhKEAu
+ p4cUh/b0F4i+YCK9dwSFSiFXPnYJB0a+mob2xIeHQW9zIB73ZdZRBiD96RKCzqy+7iNAe/4rmAd
+ s6XsK0X9NU/+pxAhluumGHJ4kfPiGTGcPWeSQSw5HorW/quUKOXVwjC5YjVDTKVeh5LH/+d51iV
+ i6bZBurNd/goH3iiS2g==
+X-Proofpoint-GUID: xguw2edFALpIk2drdCtE7HoauRhX0SQQ
+X-Proofpoint-ORIG-GUID: xguw2edFALpIk2drdCtE7HoauRhX0SQQ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-10_04,2026-11-06_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
- lowpriorityscore=0 suspectscore=0 spamscore=0 priorityscore=1501
- malwarescore=0 adultscore=0 phishscore=0 bulkscore=0 clxscore=1011
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
- definitions=main-2611100059
+ definitions=2026-11-10_05,2026-11-06_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ spamscore=0 lowpriorityscore=0 phishscore=0 suspectscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611100062
 
-Hello Joe,=0A=
-=0A=
-it seems to be a good catch. With temperature sensor disabled, gyro values=
-=0A=
-are likely to not be temperature compensated internally.=0A=
-=0A=
-I think the best solution would be to completely delete the temperature=0A=
-enable/disable feature. There is really no interest in disabling the=0A=
-temperature sensor since it is really bad for the gyro values. And it=0A=
-would simplify the driver that is already quite complex.=0A=
-=0A=
-Deleting all core temperature enable/disable and make temperature sensor=0A=
-always working. And we keep enabling/disabling of temperature reporting in=
-=0A=
-the FIFO.=0A=
-=0A=
-Is that something you could work on?=0A=
-=0A=
-Thanks for your reporting,=0A=
-JB=0A=
-=0A=
->Hello Jean-Baptiste,=0A=
->=0A=
->I'm bringing up an ICM-42688-P (WHOAMI/ID 0x0007c1f2, on SPI) on a=0A=
->custom i.MX8M-Plus carrier board, and I'm seeing a gyro behavior I'd=0A=
->like to check with you before sending a patch.=0A=
->=0A=
->Setup: kernel 6.6 (NXP/CompuLab BSP) with the inv_icm42600 driver plus=0A=
->the upstream "add support of ICM-42688-P" commit backported. I've=0A=
->compared the relevant code paths with current mainline and they are=0A=
->unchanged there, so I believe mainline behaves the same way.=0A=
->=0A=
->Observation: right after boot, reading the gyro through sysfs=0A=
->(in_anglvel_*_raw, default +-2000 dps range) gives a large, very=0A=
->stable offset at rest:=0A=
->=0A=
->- Temperature sensor off (after boot):   x =3D -139, y =3D 379, z =3D -229=
-=0A=
->LSB  (about 8 to 23 dps)=0A=
->- After one read of in_temp_raw:         x =3D    9, y =3D  -7, z =3D   -3=
-=0A=
->LSB  (under 0.5 dps)=0A=
->=0A=
->The large offset does not decay with time or with spaced-out reads. A=0A=
->single in_temp_raw read removes it, and it stays away as long as the=0A=
->temperature sensor remains enabled. Buffered capture with the=0A=
->temperature channel enabled also gives the small values. The pattern=0A=
->is reproducible across boots and power cycles.=0A=
->=0A=
->Looking at the driver, the default configuration has .temp_en =3D false,=
-=0A=
->inv_icm42600_set_pwr_mgmt0() sets PWR_MGMT0.TEMP_DIS whenever temp is=0A=
->false, and inv_icm42600_gyro_read_sensor() enables the gyro through=0A=
->inv_icm42600_set_gyro_conf(), which passes the current=0A=
->st->conf.temp_en through unchanged. So after boot (or runtime=0A=
->suspend), the gyro runs with the temperature sensor disabled, which=0A=
->matches what I see.=0A=
->=0A=
->As a fix, I'm currently keeping the temperature sensor on whenever the=0A=
->gyro or accel is on, in inv_icm42600_set_pwr_mgmt0(), just before the=0A=
->"if nothing changed" check:=0A=
->=0A=
->if (gyro !=3D INV_ICM42600_SENSOR_MODE_OFF ||=0A=
->   accel !=3D INV_ICM42600_SENSOR_MODE_OFF)=0A=
->temp =3D true;=0A=
->=0A=
->With this, the gyro reads correctly from the first read after boot.=0A=
->=0A=
->My questions:=0A=
->=0A=
->1. Is this expected behavior for the ICM-42688-P (gyro offset=0A=
->compensation depending on the temperature sensor), and does it also=0A=
->apply to the other chips supported by this driver?=0A=
->2. Would you accept a fix along these lines, or would you prefer it=0A=
->handled differently, for example only for some chips, or in the gyro=0A=
->read path instead of inv_icm42600_set_pwr_mgmt0()?=0A=
->=0A=
->If this approach is acceptable, I'm happy to send a proper patch=0A=
->against the IIO tree. I can only test on 6.6 with the backported=0A=
->driver, and I would state that in the patch.=0A=
->=0A=
->Thank you for your time.=0A=
->=0A=
->Best regards,=0A=
->Joe LeVeque=0A=
->=0A=
+On Sat, Sep 12, 2026 at 11:20:47PM +0100, Jonathan Cameron wrote:
+> On Thu, 10 Sep 2026 20:14:15 +0200
+> "Arnd Bergmann" <arnd@arndb.de> wrote:
+> 
+> > On Thu, Sep 10, 2026, at 18:40, Svyatoslav Ryhel wrote:
+> > > __ 
+> > > Hello Arnd! May you please spare AAT2870 from being removed? I have a 
+> > > device which uses aat2870 (LG Optimus 2X P990 Tegra 2, not upstreamed 
+> > > yet, but in process as well) and atm I am working on converting this 
+> > > driver to use OF. Thank you!  
+> > 
+> > Sure, I have removed this patch from my series now.
+> > 
+> > > P. S. If you are planning to remove more old drivers, please CC me in 
+> > > since I may be interested in some additional driver upgrades for 
+> > > devices I own.  
+> > 
+> > Please have a look at
+> > 
+> > https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git/log/?h=board-remove-7.3
+> > 
+> > I tried to be careful about figuring out exactly which drivers are
+> > unused, but I'm sure there are still a few false positive and false
+> > negative ones in there. I've added the current list of driver files below,
+> > let me know if you see something that shouldn't be there.
+> Hi Arnd
+> 
+
+...
+
+> 
+> > drivers/iio/adc/ad7793.c
+> Maybe. Analog devices ack needed.
+> 
+> Production part but this one indeed fails to probe.  Analog
+> folk, do you want to fix this one up?
+
+Given it's production we should fix. Looking at platdata seems to nicely
+fir in DT. Issue is that I don't have HW with me to test. So I'll maybe
+just remove platdata and assume some defaults.
+
+> 
+> > drivers/iio/adc/ad7887.c
+> No to dropping this.
+> 
+> Production part - should work fine with defaults in driver.
+> Could like the others drop the platform data handling.
+> 
+> > drivers/iio/adc/lp8788_adc.c
+> Probably
+> 
+> Sub driver of an MFD.  I'm fine with that going if we know
+> the mfd is no longer in use.
+> 
+> > drivers/iio/adc/lpc18xx_adc.c
+> > drivers/iio/dac/lpc18xx_dac.c
+> Probably
+> 
+> Likewise these two.
+> 
+> > drivers/iio/frequency/ad9523.c
+> Maybe. Analog Devices ack needed.
+> 
+
+Hmm we definitely use this one and we have OF support out of tree with
+likely some DT abuse of what can be in DT or not. Not sure if I have
+some HW around but we'll need to fix it.
+
+In general for ADI parts, I think we can drop the ones that are not
+recommended for new designs. All the others I tempted to say we should
+keep. Naturally we need to fix all the drivers that do not compile
+without platdata. And for the ones with defaults we can also just remove
+platdata and use the plain defaults.
+
+- Nuno Sá
+
