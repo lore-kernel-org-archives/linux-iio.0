@@ -1,76 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.59.177.22
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794313536;
-	b=Slz9pHLSgfJDT+1dX4T4nZT+MIthv4+fCBkeM4R++VkbAvdS29UVHlnXw1rIW9zSZAMM
-	 XHHm5c/meI2nC/9XsEBQuPaawFl6j2DACsGfqUi4fYGkZdn9HI6j1IyvmWt57zzKg1ngJ
-	 h/zugw2FYEit68S5jjHYFdHNJ5508DSJEtMW4TI73J5FcePKaNMu927fpLaZzVmLpt358
-	 1wVbSPXLp/+p+3ipEBCyb2XRbB3dpIK/V/vcuW8GIqxzh+/HwmAeTIYAJrfM2bDOcSPYt
-	 EClQ1z4XCKFYNYcT2ITyE6ZaRlvwQnfsI1uKQumgj8TIz1xcWWhF+3YB4GfHuy643Wg==
+	t=1794313533;
+	b=myf9LpHz78mn06VUM9GfX++RTHklBJALeY+7/sTq/6p4lS3Q957p9hoLDycQUr9tc2m9
+	 LbVFytoxvhVvSfKTEdui8X7bjSh/TrEAqXzGeve6OB4L5R8SAGi8ghyYZJfFuL/PxuT0F
+	 5gv3+LgPKA2zibZ4ckqt4Ehjv9diNc4Uxm+UhMMidZHibgP5ilTOIPQESCtdW6+27q3kE
+	 7VEpRQBeA7+DzZj/ThtSgpJZhWv2TR0Gj7fH3I9NLBchdi/W1yin8YUmrRMqOSWnb9Xc4
+	 RWedDtYIf/NzkwtLwaFoNk6+u5bgvstQOQuk7qg1oAl4Y9ZP5faZ3ByoiW7OJjcsKBQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794313536;
-	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
-	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:EX-QQ-RecipientCnt:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:
-	 X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=8lWCiB0JHEA7qzkmIFqBVO/U/0hIioLfNPjh2IrIufs=;
-	b=bm/4GTjkXfE+PK0RGXN4fZljO6A8yHcWyHwbhWp45n5Vsy58CQ6yxbAudx7fl77QyAfU
-	 rGVlFPd8M8Axgg8uN4VKLejYnCZJVErJXeOxofnXS+E8YA5xKWD2OpeuJi74Pb+e7f5O4
-	 f1OU/nX9UcRgK/Qnx2599t1IeNmf52KZw+fKuBlxV/3zj61fb0/U+hq9gxetk1MMVmOOf
-	 k/qDoKzX3MwfU+m3Gm6KLK1fJm1Dh/CDwzxe2uPhfBYmV1IFlUyyzfKpcvCIf4Sbb2sEp
-	 jZrvNgyEbSWfldaoi5jZSXalX86QITXJEfMvU/yrCdx3J9RedKba0wrYI5PMrC1busw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794313533;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:From:
+	 Subject:To:Cc:References:Content-Language:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=o8vOqPjQp+qIgT4SjBM1vuuP9NkLzsqzq4almCwh0ns=;
+	b=oFQ1RvRXS406PJsCj+QZ3nmxN4FQMJSwNxDmPp6y0MI4P1A5rNsJpOXT7zMx1yhYn1aW
+	 Ci3fTwyfSCCcjN+Ib0ST0u4abDM9kFBhWClJP9SipalzSk5A4awWWuN7lSY3tKe0M7lR0
+	 lCmQCCHc1ZiijrSbRRx8ph3E/tCsQd9NTnKuIuqMZ/rJifKpCus2ssalM55pkKz2k5pfZ
+	 uZFaEt4ZE3VcWZP/K76qrRY1b5QDNC90wsSWaMCo4F5Tr5q+ymQQ+aI6waPkb+wOeHxaJ
+	 Hte7eSR3a3y/++xAGCiYdTr2mYxDhyRQh6JRw8xK3vw6YIGSfCDJG2cCI2AJVW/+29A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=uniontech.com;
-	spf=pass smtp.mailfrom=uniontech.com;
-	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=SI4Wmh9i;
-	arc=none smtp.remote-ip=52.59.177.22
-Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gr5nohgX;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E58B606A31C;
-	Tue, 10 Nov 2026 12:25:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E58B606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9AC606A32A;
+	Tue, 10 Nov 2026 12:25:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=SI4Wmh9i
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1794313477;
-	bh=8lWCiB0JHEA7qzkmIFqBVO/U/0hIioLfNPjh2IrIufs=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=SI4Wmh9iiZypCLWl2/XmG5ygxz0S3I5Z10l+nJIgGIVpILB4LN2UlWwSRzb31TfoQ
-	 x/B+HSOe+aDRdA5c9OzxJvq/SBnj3tP9j1rHR9EJEUjmEr5dxQvZON4ThYtB+Beu1H
-	 TBxAbaI6dNtJYDvkK+tHjnEdiyr/7dxfu37cS3GY=
-X-QQ-mid: zesmtpgz8t1794313460t52fdad64
-X-QQ-Originating-IP: 7YJuLs4em+I2CqTud3IbnSVjn7y41TF7S7cgnCx37EU=
-Received: from PEN202512010004 ( [113.57.152.160])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Tue, 10 Nov 2026 20:24:17 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 10375027920850177401
-EX-QQ-RecipientCnt: 16
-From: raoxu <raoxu@uniontech.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	luiz.von.dentz@intel.com,
-	pengpeng@iscas.ac.cn,
-	pmenzel@molgen.mpg.de,
-	brgl@kernel.org,
-	u.kleine-koenig@baylibre.com,
-	lars@metafoo.de,
-	mike.looijmans@topic.nl,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	raoxu@uniontech.com,
-	stable@vger.kernel.org,
-	Joshua Crofts <crofts@kernel.org>
-Subject: [PATCH v3] iio: adc: ltc2471: Fix LTC2473 differential offset
-Date: Tue, 10 Nov 2026 20:24:14 +0800
-Message-ID: <B29B7229F9C3B748+20261110122414.373459-1-raoxu@uniontech.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Gr5nohgX
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A651F008A2;
+	Tue, 10 Nov 2026 12:25:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794313532;
+	bh=o8vOqPjQp+qIgT4SjBM1vuuP9NkLzsqzq4almCwh0ns=;
+	h=Date:From:Subject:To:Cc:References:In-Reply-To;
+	b=Gr5nohgXHm1YYyj6tvLEZ2lSM8AwTngl7Y9YhcAEKBH+Qk95txebAZ9NtKzrDhbMu
+	 /kcVhI4wBuCa61a001FzAROnBPqNtiO/ytzlzOWo7XJ5chQlrrTZ0jAur7hkGa2Dea
+	 9e8VcncC+5ovHWHZPm9Udas/YhDeQJz+/Hw/DgiFOKQphYC3tCbIwtuUfnQDwnkr0A
+	 NlkNf0d03csKo9TcHJmIS39u4zkv/CzH2xeQIMrUlC8N+o3OuHRReJJo3cYKVKlsnW
+	 Ok7Bxat5Tx0PnCcbiQSm1rkYigOOsx53IhuLC4CVONUmhMnelBCuvRRROviPHPq5B4
+	 hzmGl2iyPjB0A==
+Message-ID: <69a3552e-1fca-49e9-a9c0-66963319d2a9@kernel.org>
+Date: Tue, 10 Nov 2026 13:25:23 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -80,86 +51,89 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: Hans Verkuil <hverkuil+cisco@kernel.org>
+Subject: Re: [PATCH 03/14] mfd: remove unused si476x driver
+To: Arnd Bergmann <arnd@kernel.org>, Lee Jones <lee@kernel.org>,
+ mfd@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Arnd Bergmann <arnd@arndb.de>, Daniel Thompson <danielt@kernel.org>,
+ Jingoo Han <jingoohan1@gmail.com>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Pavel Machek
+ <pavel@kernel.org>, Michael Hennerich <michael.hennerich@analog.com>,
+ Support Opensource <support.opensource@diasemi.com>,
+ Sebastian Reichel <sre@kernel.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+ linux-doc@vger.kernel.org, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-hwmon@vger.kernel.org,
+ patches@opensource.cirrus.com, linux-watchdog@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-rtc@vger.kernel.org,
+ linux-fbdev@vger.kernel.org, linux-sound@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, llvm@lists.linux.dev
+References: <20260909132153.1596191-1-arnd@kernel.org>
+ <20260909132153.1596191-4-arnd@kernel.org>
+Content-Language: en-US, nl
+In-Reply-To: <20260909132153.1596191-4-arnd@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz6b-0
-X-QQ-XMAILINFO: Nc4Sv39/e83WFeryTqrHNtJMOj01Y+f0ORTzGpEKG9K0/C7vSde8aTRX
-	y/qMc8n/tgq+FMlEVe/lRS9F0KkGjR3APk0ev9oxRLubtn3yqwsgYusnb8cVywJaE4UZvwV
-	i5E5xqio9BD2SAQA9BmhyHwIctS/G304cjq9Ompv9GKJgdwAHLT7J2BTpmJKcgknghVshgw
-	tkf5eFiuFk+CpFBnoshnkwle3c+keK+tQJIzLZbpiAH3VcUK/iSkdxgK+SG6ii+izKmNHoF
-	ulmGGT0f+0a7dYEWzI1I3AWepIao5fTPgXbVQWoho0de2byMm9OIKda7QMo8DkdXfzxk/A5
-	1+xquYHAlIXNwGmUJh33GCQmqD5ALlcMCbphGzXdiRVPcxET5YTlV0dRrbtdGagXSiS7Zy6
-	yR70M3Ec9jBLjTY+ZZsz04VWHgBAfbQRxdxKTUyg8vmIuSe8154gFZMvYewJnXUg2A88STa
-	jv0ddqh1t3FVg9TN+vYkH0kVdMcYhaqGZywYbEcIga/l4XuGiqiaNopkQEoztvzS58bbqv3
-	X3kZRDDRH+ywiABL53LcCmr9nf2g6PkkhqfKSw7f7TjW6tdITacG6LzVVOCIIcd25q4K1PP
-	baCGg3AIwvuHUdL8jdq++7xWjFSij+b/alWWX0dxd+Ct35wiuDcl5hr8x4NmwzxGZ96twF1
-	Xismda0KS0Ie09Pu7I9KswrbzhrOSbziulVOJQ5nT6L/GGQvUyK7+AqKY2zuYHNBaETd5UN
-	TadUTiXM2cq38YPRi8ul5RoyRWDcDCbh8w0oKywt/h46VNxODnr38k6+w+iIaAV+l/Q1RJV
-	go0t2TyLIhS5fLo3YYy3adv9TKUvE2N5nQXcACAs14e+EFjzrNw9YqbisSB2uu8/dTE3phq
-	t0OcPDPw6FWKf+EuBN9ISVASKVVXbHJ/IT4GWFUuYOtnTLejMSOKDmeIk5MUrmj9WP9xTNd
-	IDMT+p4Kw36e+p1Cbd27YC/1hl7cR+qQgFdP9/m+4C/gP652tXy+10VSmQmirXpmRuBf2Oo
-	QKXpkgkQx0SUUjhVtXqGegBCBtjX+PZOGz/poUvMQOvayUvoUmT+wS6IUnjpzpHUcdjQR38
-	fhES24ep8VKgzg0e8r1J/5oTLJNMnc/0+Nt8zPOgx2e
-X-QQ-XMRINFO: MPJ6Tf5t3I/ylTmHUqvI8+Wpn+Gzalws3A==
-X-QQ-RECHKSPAM: 0
+Content-Transfer-Encoding: 7bit
 
-From: Xu Rao <raoxu@uniontech.com>
+On 09/09/2026 15:21, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The si476x driver was added in linux-3.9 without devicetree
+> support, and has always failed the probe function in the
+> absence of a si476x_platform_data definition.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-The LTC2473 reports its differential conversion result as an unsigned
-16-bit value spanning -VREF to +VREF. The IIO scale is consequently
-reported as 2 * VREF divided by 2^16.
+For drivers/media/radio, include/media/drv-intf/si476x.h,
+Documentation/admin-guide/media and include/uapi/linux/v4l2-controls.h:
 
-IIO offsets are expressed in raw codes, but the driver currently returns
--LTC2471_VREF, which is a millivolt value. This makes the processed
-reading incorrect: with a 1.25 V reference, the midpoint raw code is
-shifted by 1250 instead of 32768 codes.
+Acked-by: Hans Verkuil <hverkuil+cisco@kernel.org>
 
-Return the raw-code offset so that the midpoint maps to 0 mV and the
-endpoints map to -VREF and +VREF as intended. The single-ended LTC2471
-does not expose the offset attribute and is unaffected.
+Regards,
 
-Fixes: 1d3eacbfa644 ("iio: Add LTC2471/LTC2473 driver")
-Cc: stable@vger.kernel.org
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Xu Rao <raoxu@uniontech.com>
----
-Changes in v3:
-- Add Reviewed-by tags from Nuno Sá and Joshua Crofts.
-- Move the AI assistance disclosure out of the commit message.
-- No code changes from v2.
+	Hans
 
-Changes in v2:
-- Replace the raw -32768 literal with the named LTC2473_DIFF_OFFSET
-  macro.
-
-The supplied fix was reviewed and this commit message prepared with
-OpenCode AI assistance.
-
- drivers/iio/adc/ltc2471.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/ltc2471.c b/drivers/iio/adc/ltc2471.c
-index 369af700969f..eb418c0fa732 100644
---- a/drivers/iio/adc/ltc2471.c
-+++ b/drivers/iio/adc/ltc2471.c
-@@ -25,6 +25,7 @@ struct ltc2471_data {
-
- /* Reference voltage is 1.25V */
- #define LTC2471_VREF 1250
-+#define LTC2473_DIFF_OFFSET (-32768)
-
- /* Read two bytes from the I2C bus to obtain the ADC result */
- static int ltc2471_get_value(struct i2c_client *client)
-@@ -69,7 +70,7 @@ static int ltc2471_read_raw(struct iio_dev *indio_dev,
-
- 	case IIO_CHAN_INFO_OFFSET:
- 		/* Only differential chip has this property */
--		*val = -LTC2471_VREF;
-+		*val = LTC2473_DIFF_OFFSET;
- 		return IIO_VAL_INT;
-
- 	default:
---
-2.50.1
+> ---
+>  .../admin-guide/media/radio-cardlist.rst      |    1 -
+>  Documentation/admin-guide/media/si476x.rst    |  160 --
+>  .../admin-guide/media/v4l-drivers.rst         |    1 -
+>  drivers/media/radio/Kconfig                   |   17 -
+>  drivers/media/radio/Makefile                  |    1 -
+>  drivers/media/radio/radio-si476x.c            | 1523 ----------------
+>  drivers/mfd/Kconfig                           |   13 -
+>  drivers/mfd/Makefile                          |    3 -
+>  drivers/mfd/si476x-cmd.c                      | 1543 -----------------
+>  drivers/mfd/si476x-i2c.c                      |  861 ---------
+>  drivers/mfd/si476x-prop.c                     |  233 ---
+>  include/linux/mfd/si476x-core.h               |  532 ------
+>  include/linux/mfd/si476x-platform.h           |  256 ---
+>  include/linux/mfd/si476x-reports.h            |  154 --
+>  include/media/drv-intf/si476x.h               |   28 -
+>  include/uapi/linux/v4l2-controls.h            |    4 +-
+>  sound/soc/codecs/Kconfig                      |    5 -
+>  sound/soc/codecs/Makefile                     |    2 -
+>  sound/soc/codecs/si476x.c                     |  263 ---
+>  sound/soc/fsl/fsl-asoc-card.c                 |    8 -
+>  20 files changed, 2 insertions(+), 5606 deletions(-)
+>  delete mode 100644 Documentation/admin-guide/media/si476x.rst
+>  delete mode 100644 drivers/media/radio/radio-si476x.c
+>  delete mode 100644 drivers/mfd/si476x-cmd.c
+>  delete mode 100644 drivers/mfd/si476x-i2c.c
+>  delete mode 100644 drivers/mfd/si476x-prop.c
+>  delete mode 100644 include/linux/mfd/si476x-core.h
+>  delete mode 100644 include/linux/mfd/si476x-platform.h
+>  delete mode 100644 include/linux/mfd/si476x-reports.h
+>  delete mode 100644 include/media/drv-intf/si476x.h
+>  delete mode 100644 sound/soc/codecs/si476x.c
+> 
