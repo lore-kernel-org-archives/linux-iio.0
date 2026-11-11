@@ -1,93 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794421238;
-	b=y+uCqZMecF/iAQdVwarK1FnFMIPy/1DtNRXNKpwS5jrcCFef26xou6ppmKA2PljnIbPI
-	 i8ZqvP4WoNOwja0p4z831EK5MqPObdx9FiSWvWI9SSJ7W+z3TP6OUlssCjgkJmD/Ou+dQ
-	 MbY1zb0m2hnvoPL926RHXZpr33VHT9MYLbN2OHNlrNqiX0PnQozxBdZ8LnC0IOq1Tpx7J
-	 +ikEdjV/B7+TUypslRQgHU+8Hz9D6ZPlV+2cSMwYHYamgYftkVxM5RAYUihPNcLe2HIZj
-	 zQbJR94sevsZyKSWWs2zyJc7fRv59hUfaRnkGk+1/j+bw2ZvJcv2BAV9UJJNTH2bMcw==
+	t=1794426685;
+	b=et9J6ek7qdmXOHUfi1ABO9gK1nfm8T3JFvW4dRUPYxYaAvEShcaV2+4lrzhbrxg4BzBv
+	 jpfIzRYO+bpUu+jo/cpv6iIFKISHHOizl2Z+obG3jznT0JKZ48lMGFBApG+AGEjPfZLG5
+	 j2LCqKrGRG5dDwRhzy/0ROZ2K9ET9DiMp27Xd3OufHCMG5EnB19fjp7095OUxAVPGpJhU
+	 YP+ZnA9O9R2U3lbEKXmLDUCEZ9aCeyJmlDcMH5ENThjC8MaGNZ9NUQNg5oBF+dUTJm2WY
+	 DYbUI3MxsKPwlJWT1l6T6p/rxf+4q155nK2Sh1ig8+r5hhkKsCuDa8bcf0LmU97vzsA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794421238;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794426685;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=fOYd5ZaOeADhD4tIe7KmLNJoUGjDoAdQhQUbMCR5XZg=;
-	b=108wtb1eRAhQ8oK/3lzDXTf8lPUUy2DtjcBh3xixoOUSACpGFPpCe8iV8PDiBe/pXsYW
-	 APOt6vjKIJSLNdo3EjIP4uPxkdQOwCZYFd8p8ylSRgTdQO9X1JcCrIcMr4l1DL/wP07uX
-	 VzhGRglYhZMWWuI2p9dg5j4J7v9IX4mc+iBbBl/f4CKk7xh9nOmhERz4vqa3xoEROCdXR
-	 /KtNRaUQ8icnW2Tv7by/jS54e+E7m3O0n64AroMvpNUIaEi3ss65y/LUb1wfSWO4FMu/0
-	 ZNbaOmMVd+9qg8jQzUXihUpMOJsidKu+RfQSKnpnxQsrBsvy9MkMAkHp829G1MxYc9g==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=EHqk5x0/CdtJJ9kWtMupw3SjoX3qOmIdHB2cbrSmA1o=;
+	b=3kgeuMTXFz+IbkRMgOqKNZIpRI3h4uu3QCxZRXNtzUzHY9/OITsqGftQalucxaKQDIj2
+	 URQAoKIMr+DztasrmAvCHIqZXdGmyzRsB8KydngSrpM7kdAu8rxMPjT1G1dztufA0a+/J
+	 idJa9yyy+Sd4FDMOdZcXcY+mgxkPLkRNj6fHsFAAf+pJsc7pzKUCRujxmx9wI2sCLF3Vy
+	 SUDGVYQxs9AXt5Eh+5U2Xrw5PcnR5rmTAUD2OXKEaCz1Tb2npLFAatv8dz2U2UcocfAmK
+	 KeCHILJ3G4SA73jVdvJbl/H2hWVZYpQeM7WtK0vxldBttihUanSut3G3Ten9Y3IqEZw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=chromium.org;
-	spf=pass smtp.mailfrom=chromium.org;
-	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=HeBshIKC;
-	arc=none smtp.remote-ip=74.125.82.45
-Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TTUsavW6;
+	arc=none smtp.remote-ip=209.85.208.170
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9958C606A33E
-	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 18:20:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9958C606A33E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F53D606A31C
+	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 19:51:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1F53D606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=HeBshIKC
-Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-1a2761c69fbso5850622c88.0
-        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 10:20:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TTUsavW6
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-3ae0eb56ba1so18456311fa.2
+        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 11:51:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1794421237; x=1795026037; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=fOYd5ZaOeADhD4tIe7KmLNJoUGjDoAdQhQUbMCR5XZg=;
-        b=HeBshIKCZ3c1YhzQ39PfZ6aMIiTWxve1gcL/S0yWtxWipXjQctQgyI1sgENUCcIon6
-         5qNh5/RSVxEtuf8ru4y2TVLSy7O8bYvfwt7ZfMeEiJuNFNnIzeIGaXAsG9gIwkcCkRJ3
-         WkK2bcUf33rZ3lADYtzCT/pysuWuy9U6rhURQ=
+        d=gmail.com; s=20260707; t=1794426683; x=1795031483; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=EHqk5x0/CdtJJ9kWtMupw3SjoX3qOmIdHB2cbrSmA1o=;
+        b=TTUsavW6f+bJswyOgz2ua6vEAAfh43q2oOBQvLQ+dTaempbqyL3YYlFGjC1MWfvvFK
+         gCeAbR34ULFr1ma9GHqqNk2GHifHebsOeIrfteb8KApcrNXzX6dHu39m4NG1mjQpQy0v
+         hNlASEZUsh/EoEfKbFR0fJ5m9r26a6bNMlJ+wDq8ca8oEyArnskGhmChATV16JG56tyH
+         2ksn3cEfiMvXC6C2lKeV1mqqQU0hcku2GzY7EolJbh7s+n/JLCjWNC2wp/x6HTZPIZkC
+         A3cbQmEmopiUBePR/+ky0bLB4hhdnJlxkQSyXhWceB/9zZw8LDvs4H/FTebWRY/SFIzs
+         N2Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794421237; x=1795026037;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=fOYd5ZaOeADhD4tIe7KmLNJoUGjDoAdQhQUbMCR5XZg=;
-        b=arx4aoLQIkC5kjmQHkzVvlS3kuGvqhXBAMXzSNpcsLiYgkM63OaIDWtbLUdbQkFu/n
-         WYCc5aw2EXCNDRI0PHGrf9Oq0Ra/00qeX4is4DEWSD+W+Q6crK1K82fgnIDhrcI3qMLt
-         zullR4OptV/Yb5iBoI2SqMsH7czEu1AvySUb5Z3dVuSWqfNMRWqgeuGV2y0QxouO5bGD
-         zOo+8WcqWdFLKj4xSoIA7EP0vtevMRKWc4PhYmltoO77Q1LY3osXGK47Nt+dUlUa8vvW
-         OdBWN5GAV0X46AcnW1YydtVky6a1TNfYgW5tnezMY6wN2j8eNd3Cqf0d6tZkt/9PPXOh
-         9QDA==
-X-Gm-Message-State: APuU4Z/yG6CXxhcbQbusPgjFhOblWUTkX8/mX0MlQpWsQMQVO6CMnomM
-	0qgfoPEOIdJz6DR7SRHzIuSD19EENLzP7BAXcsnVxjYDOnasPrSmiu4kZMZLC85C2w==
-X-Gm-Gg: AYBFou1tgu+f7kFPbg/WdVSPmXF0S366QgotM4nL2Vr34f9QoExAxXqNI/QmuyZYFjs
-	OdXSHwb0ub/HXFDzZ7G9WAG/l4FiXFWyeKjLnJ3/pBy1pmfqx7kIFVEmbM4XrSizk1FMkkaFDqn
-	rk1Ulj3g1RTKYOXqYWytMSUbInI760UGfcywMTmGb1YL0rElEmiGiwFxS7+fG1s1SfI2uj4+vCj
-	LENvQwDAptNWkXJy1iZXlxgIo3B3qLDQMQOb7soSyPbleWPpU13qRgO2Sm3v0SDD/9VMh07iC5k
-	4A3YGiW/9S2LAlSEOu9zWjOzJARlnrJBt4mz04EeyZonLnGYEvTC5uxVl9YqOTjQ9+QIgWaJCzL
-	3SdqP5xZZbm8SKvXvY/Q9u9OiCmy7Rr1tDhMBGIaIuVyAZ3JRL8//nlrNxpNOJSALbLwbZCgOh6
-	ZTMgMuzYSfU8jF3gbxg19Cw8PHhNzcGIxKNLxOFGZr117hWC9Cu64nu8JDY519W1/H9f2Y4CmdS
-	TZ9T8QrV7P6lw58AF1SEF8Zg0pjMWQZWJcGEH7szfOWEB4/XWV63aKZmDiPVbICOmvFWOJm56gZ
-	4DBKvlsHooEfS8prtyYbyR0ChHJUslnzkJMwuU/3Obwhe85Q4T6IV78d+/hKMwnB5a0=
-X-Received: by 2002:a05:701b:2504:b0:15a:9834:73f2 with SMTP id a92af1059eb24-1b3c0346852mr2790013c88.38.1794421236627;
-        Wed, 11 Nov 2026 10:20:36 -0800 (PST)
-Received: from localhost ([2a00:79e0:2e7c:8:1fca:3f2:2d78:dd60])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1b3b5b4efc2sm15239325c88.15.2026.11.11.10.20.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Nov 2026 10:20:35 -0800 (PST)
-Date: Wed, 11 Nov 2026 10:20:34 -0800
-From: Brian Norris <briannorris@chromium.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-pm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, linux-kernel@vger.kernel.org,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [PATCH v3] iio: gyro: bmg160: Discard
- pm_runtime_put_autosuspend() return values
-Message-ID: <avSx8m0KegrXO8D4@google.com>
-References: <20261102014830.679216-1-jic23@kernel.org>
- <auj9j3sbYa4sVoil@google.com>
+        d=1e100.net; s=20260707; t=1794426683; x=1795031483;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=EHqk5x0/CdtJJ9kWtMupw3SjoX3qOmIdHB2cbrSmA1o=;
+        b=BGcnqViYiLruel0qnDbFELy9QA1qsALTFA9vKRn2GJsuE0yxs6RuXbDx2mvkvxqOwC
+         3eFPhvp49p//rq+/IJ3/24Nde81JXGFEwgsztxTcdt3/iy1hXXvO6Jj8nyVDdysRxeX0
+         Lpazc4m9ePap0SOh6V8RUbIGnY02Tj57F+8a/iRENrHkvzUMpVUEkuOhDJeGkv4i8EZI
+         qWqfBFXs9QhlV6WitYXr5lMSEVhCTTOQ9BSZINIzHD3Fr1GJO+ZEJd0HmIsptR0aEMS1
+         yorxsOxkh95ugipi+60nc2EzBrjCCxxjj5jJopLrGBPLUJ4cy5RxAyaXafT51GLIyqaQ
+         r6gg==
+X-Forwarded-Encrypted: i=1; AL+hErGeaWCt+/guhgPUNd4PBfDhuwlUPJ44d9wVSSjD3RDsggr3L35PPudviD8gBirJK86MxIpeXVrWJVU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+FjJOplZuMP2d5/CD1IgZff1wIFqElVDSWmuUUIFK4ycn5lM9H
+	Iv9R7A4Fmb6ML6OsScpsKoiGwy1WttueCtlp5IM9I7z1JWzbeu3y6orX
+X-Gm-Gg: AYBFou2ulqxvd9QxvtTNb36x2aXniDpOWmVfgu5MGWiC+0HwZPf7QcZOXW/+9EbwstB
+	0bw0buaSqhIP30ZxwQi4y9Jj/HIbPmdRoinbiNBVAjvbNhuo/hdsc2P3cOYcR8hX8oSA1mmHhFo
+	nRSWfPfqVc/01yS9KaoEg/V2bm0Lx64RCI11dGQOlKQmXck/2U/2oJTymCl4QVVFAergGNdyJA6
+	WoL5F6H59FYFEMnZU3n7pNGglO95iioObVh9li4MuFOZha8pFO2qCryai+6+iW4e6k1Te9557ni
+	t95TJX5bLt0GS/mMU7KsYG4u69pC7ld1pUcSpP7jbWl23kwofTwEzTG4lH7SdQIMmdeM8Uz7wjv
+	EBoBCL9scrC4DrsC3ipD77Lu1n7PmpX6KDxcbUMJqZDQP61zLAdNWeiGe0KqTegcQtcDjPOzyuH
+	frnXjvvMoT6ypQ4MKoex5/XpKqxLx46oQ0Qc2XqRBwQ3RqZASnghcETLuS5y/Nlg8vDLzXUEjbV
+	l3D53ek5hYQDE+hHQI0AwSzyGruYu14QO+5ROo3BUcTIHETAHufFWmPTmpgJdVE6g9Tz8iGaZN8
+	SwzhgLt1eE8lJQmIZNaUT0Z7dqNgmIkT+jXt1bCItMcq8/iuO1U3+4e8o/ud4zuUnfjGuEZUA5L
+	xfgITWBtFAR/+FIzcFGIeOoMsm71GIQ3arCP6
+X-Received: by 2002:a05:651c:146f:b0:3ab:3bf3:1604 with SMTP id 38308e7fff4ca-3ae126bac4bmr7165201fa.26.1794426683005;
+        Wed, 11 Nov 2026 11:51:23 -0800 (PST)
+Received: from yantra.. (nekmmqtce067ylb1za0-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:5558:447:baa4:a7d8])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae091739edsm13147341fa.1.2026.11.11.11.51.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2026 11:51:21 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>
+Subject: [PATCH] iio: pressure: dps310: don't wait for new temperature in trigger handler
+Date: Wed, 11 Nov 2026 21:51:18 +0200
+Message-ID: <20261111195118.36853-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -97,42 +102,65 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <auj9j3sbYa4sVoil@google.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Jonathan,
+Each scan waits for a new temperature result before reading pressure.
+With pressure sampled faster than temperature, scans then come at the
+temperature rate: an 8 Hz trigger with temperature at its default 1 Hz
+gives one scan a second.
 
-On Mon, Nov 02, 2026 at 01:16:02PM -0800, Brian Norris wrote:
-> On Mon, Nov 02, 2026 at 01:48:30AM +0000, Jonathan Cameron wrote:
-> > --- a/drivers/iio/gyro/bmg160_core.c
-> > +++ b/drivers/iio/gyro/bmg160_core.c
+Read pressure first and take the latest temperature, as a direct
+pressure read already does. Wait for temperature only when pressure is
+not in the scan.
 
-> > -	data->ev_enable_state = state;
-> 
-> This is an unexpected (to me) delta vs v2: you've stopped setting
-> data->ev_enable_state here. I think that's a regression.
-> 
-> This is also one reason I think it's unwise to make so many changes
-> together here. One person's "churn" (to apply several patches to similar
-> code) is another person's "hard to review / easy to make mistakes".
+Fixes: 9b7cad9ce2ed ("iio: pressure: dps310: add triggered buffer support")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Closes: https://sashiko.dev/#/patchset/20261110154254.39092-1-zoone.rupert%40gmail.com
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+---
+ drivers/iio/pressure/dps310.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-Gentle ping on this one. I'd like to advance my
-pm_runtime_put_autosuspend() series one way or another. I'm willing to
-respin this one for you if you'd like, even if I'm still personally
-hesitant to make so many of these changes together.
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 85df58ac1809..c4d779f8bbc6 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -910,10 +910,18 @@ static int dps310_fill_channels(struct dps310_data *data,
+ 	unsigned int i;
+ 	int rc;
+ 
+-	/* Compensation needs a temperature, so it is sampled either way */
+-	rc = dps310_read_temp_raw_locked(data);
+-	if (rc)
+-		return rc;
++	if (test_bit(DPS310_SCAN_PRESSURE, scan_mask)) {
++		rc = dps310_read_pres_raw_locked(data);
++		if (rc)
++			return rc;
++
++		/* Waiting here would hold scans to the temperature rate */
++		dps310_refresh_temp_locked(data);
++	} else {
++		rc = dps310_read_temp_raw_locked(data);
++		if (rc)
++			return rc;
++	}
+ 
+ 	i = 0;
+ 	if (test_bit(DPS310_SCAN_TEMP, scan_mask)) {
+@@ -924,10 +932,6 @@ static int dps310_fill_channels(struct dps310_data *data,
+ 	}
+ 
+ 	if (test_bit(DPS310_SCAN_PRESSURE, scan_mask)) {
+-		rc = dps310_read_pres_raw_locked(data);
+-		if (rc)
+-			return rc;
+-
+ 		/* Pascals, see the channel definition */
+ 		rc = dps310_calculate_pressure(data, &channels[i++]);
+ 		if (rc)
 
-I'm also open to going back to a minimal series -- that only drops the
-return codes, and inlines functions that are trivial candidates.
+base-commit: 79c8dffd84e9784ec05bea68dbe5e71f7ec9941a
+-- 
+2.43.0
 
-Your call.
-
-Brian
-
-> 
-> > -	mutex_unlock(&data->mutex);
-> > +		pm_runtime_put_autosuspend(dev);
-> > +	}
-> >  
-> >  	return 0;
-> >  }
