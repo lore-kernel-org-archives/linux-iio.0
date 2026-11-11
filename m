@@ -1,76 +1,138 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=80.241.56.161
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794386506;
-	b=pUcWeQ3r6Lb8FBKOj8oL3qjOzrrHie3mYiZK5O7E5zQOasFfe68H5FMWdz7UPOpfjc19
-	 /DSG7TbMlnZVgKFgWePM8VnVIP03+8J/wbCgjah04+7XQLrvwvAA7ezimUpvW6NwxBl2m
-	 52sx7xem7Amw5kXFpZZHhXvZled39e7gSZ/A7pIcZACnuCewRg7pLpR2o1r+qyZKzSiff
-	 TIHM5h/HsHd6/P5FRsw8Jav7JS1TgLi9sUohjkqTxzK1LDvBJE83X6peYU3/PAivpdJkB
-	 +eALKJQrqg+vd9RW2dcEkFpP0F1Fw5yq6ETrqn1JAglI8w7eV7t1G0YoGYkYo3B1/9A==
+	t=1794387228;
+	b=bvqNkidlCKmXBAyGampW222zDoZ6bOxAuIMKkoA8xbEZZYVVP7OjoIdSfKHg8O9zVlxA
+	 Xv0aTZp1i1VmkxPDiB8BUqFhI1u5QDoaA9ljjxn4ifc6EROx99OZClOPoWa+rTpFgBnPq
+	 nsfHnUr0yHiqnUhYqM/MrmuabPj5aHDowsHWYMkTjQ8lr7VXk4VFYZea4gQ9AZ2Xt65U7
+	 gA7+Lu/bA/9sdigUrMFZR8CmWvVIt8owd4/lSUxs8DLjulxCAv/grxaIZo4/MNE/PagX9
+	 i8TQv2aeS48xLvxY/oXeXYnR+KwT2zIvwrPBNP9jTqyuZY5lcpEWvZYhzHrqywGjoaA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794386506;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=Z9LfUtXUIH0h9LuWEMESz7PfYddMA6xbpQRbaf34nzQ=;
-	b=XJv/vbAYkD66XvYvNMsYBuYMKvXJH6Hb7awGRbgE6/hSwbYWwwevqtKuhyX7De6UQThg
-	 z0FEEl1mndnHOyOmRaXtW1U+f6WhDIV360LS5/FG6OOnZyb8MowfMawRan0czHARXmNse
-	 mYJorzXmZdEPTP3EbTQ9dgqXlaUvZNlh1uK69M9O70JU1YATNp4o1/+WhQYqC7f04jRgk
-	 ILvp7tiuBC2MR5WaYB1d3Ox7nz5DBwZYyI68/1P5tAsRp33pXMM5XzHg6ejeQN+fpruVj
-	 OH3NWhdlDVeqPdnwfHgDtZfBMMYFWyxwhNMPgcFPmZYTn7TuJG9V+wErOVjubnPyv8Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794387228;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:
+	 Reply-To:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:User-Agent:MIME-Version:X-MBO-RS-ID:
+	 X-MBO-RS-META;
+	bh=VRiZhzrsDkrLspAml0XRBl5rak3lI4bTzhSsupMJ/y8=;
+	b=Spaq2VioqTkTuF5sdkwEGqC/wTdg4fczpQ/Pm6kBtgyVkFOphmb+3eoE1WLjqmYfA8r/
+	 Xgl+Ya1f8dhbGGSMC5oC4SJVnAfJUEDAwlem8BeehTuTv08TcHI5tKroKey/LEspFHjdT
+	 7JEUQmsx7ejgYFqHGlw5yQWuyRwGX9SeQ5BO4GWj/Fv6zTL5T8V92T8xNyUWbwq/5Fdb2
+	 Dc6/vPF7zecd0pZ1NDh7fnZZVnGGxdrLKM+CiKqesiXVZLRKC+uzrxQw+U9CZAXhk09Cu
+	 2YqCWovJFQnOIaUNptsaIEmQsLZwCN4Cb1WG4YDQPe/sjD4D9UJwHYFJcs/HCg5St0g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=m8CYrk6G;
-	arc=none smtp.remote-ip=198.175.65.11
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=mailbox.org;
+	spf=pass smtp.mailfrom=mailbox.org;
+	dkim=pass header.d=mailbox.org header.i=@mailbox.org header.a=rsa-sha256 header.s=mail20150812 header.b=td12n49U;
+	arc=none smtp.remote-ip=80.241.56.161
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B861606A31C;
-	Wed, 11 Nov 2026 08:41:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B861606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AABC5606A31C;
+	Wed, 11 Nov 2026 08:53:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AABC5606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mailbox.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mailbox.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=m8CYrk6G
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794386505; x=1825922505;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Y/XOELi0xXFCVMEtPO8EZ8t4PWPLUJNKHA9Qs/A4IDM=;
-  b=m8CYrk6GBUBGbL7sT0jWeVpd1cLOnFei0Cmp0jI6+b8tWKghEcGufO+R
-   6mjH7ivVKWebxbbPI3ehfMGCRunaNjmBBpUyTmDoipcYRn3rnWgacIWeP
-   S9omnROiL5EFQlcrsNI7TVIPL1D/G/EIZ3mNr9a6Iaq5dK5deZqB0Wbtr
-   VcZF+G2+XqkrVH2z6jVkfwvYc3d8gBD2pqkBKdh91/Nk+575fQNxtubut
-   3te8zlNTTWRoEiUsjf1x6oxUAj6PhMLikhcz91fxZRDSGqDUnKJA22sb1
-   SwACZMZYARsLlL6kbigLnckiwrvrflLkGMG5K/H0375bfoi0PjMZQtMMK
-   A==;
-X-CSE-ConnectionGUID: lz9Vt/GFSg+UE0vvSM4WNQ==
-X-CSE-MsgGUID: tH4IhHvESkW7Lbh5AUMSYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="3049158"
-X-IronPort-AV: E=Sophos;i="6.27,207,1787036400"; 
-   d="scan'208";a="3049158"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 00:41:43 -0800
-X-CSE-ConnectionGUID: bnats4KYRiuBX5RMJ/YMhA==
-X-CSE-MsgGUID: Af5AvszQRWGa6J8xSAUotQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,207,1787036400"; 
-   d="scan'208";a="8442906"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.142])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 00:41:41 -0800
-Date: Wed, 11 Nov 2026 10:41:39 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com
-Subject: Re: [PATCH v8 4/4] iio: cdc: add Texas Instruments FDC1004 driver
-Message-ID: <avQqQ8s3-fkvIiGX@ashevche-desk.local>
-References: <avOKDbkkDwqhHEaC@ashevche-desk.local>
- <SN1PR12MB252866C4690F808A80429926A5712@SN1PR12MB2528.namprd12.prod.outlook.com>
+	dkim=pass (2048-bit key, unprotected) header.d=mailbox.org header.i=@mailbox.org header.a=rsa-sha256 header.s=mail20150812 header.b=td12n49U
+Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519MLKEM768 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4jPckV6nT2zKmwl;
+	Wed, 11 Nov 2026 09:53:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+	t=1794387219; h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=VRiZhzrsDkrLspAml0XRBl5rak3lI4bTzhSsupMJ/y8=;
+	b=td12n49UKDo56vCxSTn09U/FbdYGCk/hjrgkPwsYYmfR0Gs5QBppPCBDtVxxLchIEUwdQb
+	qOgaQ7bu4TKe2ydp1VVhzS3MjouOIvhK3svhqAqL4/zeXX6snq3K7vPx9e14jLpaWSPfrN
+	CC8kqaWegcbNN3dhGKGxAUSh8tFn4cT6u0zUeVOhFHv7yRgcI2X3Hx2TJKeot6Qlqt1EwC
+	lXHAwJBaYus+xC2WzZaQgsfOSySsNxfufDkkyksnvgI5eJB6EDfy5i8Q8e6p4IJt1EIvEW
+	KDNGmFpUTrOi351V8lzioglBOuHpSOovM/WIAIwzWjYiS+xktKSPpS25dn1MEg==
+Message-ID: <a2e7519ab463dec876aa806d91961456f31a725a.camel@mailbox.org>
+Subject: Re: [PATCH 0/3] dma-buf: dma-fence: Remove dma_fence_init64()
+From: Philipp Stanner <phasta@mailbox.org>
+Reply-To: phasta@kernel.org
+To: Philipp Stanner <phasta@kernel.org>, Min Ma <mamin506@gmail.com>, Lizhi
+ Hou	 <lizhi.hou@amd.com>, Oded Gabbay <ogabbay@kernel.org>, "Rob Herring
+ (Arm)"	 <robh@kernel.org>, Tomeu Vizoso <tomeu@tomeuvizoso.net>, Karol
+ Wachowski	 <karol.wachowski@linux.intel.com>, Andrzej Kacprowski	
+ <andrzej.kacprowski@linux.intel.com>, Heiko Stuebner <heiko@sntech.de>, 
+ Sumit Semwal <sumit.semwal@linaro.org>, Christian =?ISO-8859-1?Q?K=F6nig?=
+ <christian.koenig@amd.com>,  Felix Kuehling <Felix.Kuehling@amd.com>, Alex
+ Deucher <alexander.deucher@amd.com>, David Airlie	 <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst	
+ <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+ Thomas Zimmermann <tzimmermann@suse.de>, Lucas Stach
+ <l.stach@pengutronix.de>, Russell King	 <linux+etnaviv@armlinux.org.uk>,
+ Christian Gmeiner <christian.gmeiner@gmail.com>,  Jani Nikula
+ <jani.nikula@linux.intel.com>, Joonas Lahtinen
+ <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tursulin@ursulin.net>, Alessio Belle	
+ <alessio.belle@imgtec.com>, Luigi Santivetti <luigi.santivetti@imgtec.com>,
+  Qiang Yu <yuq825@gmail.com>, Rob Clark <robin.clark@oss.qualcomm.com>,
+ Dmitry Baryshkov	 <lumag@kernel.org>, Abhinav Kumar
+ <abhinav.kumar@linux.dev>, Jessica Zhang	 <jesszhan0024@gmail.com>, Sean
+ Paul <sean@poorly.run>, Marijn Suijten	 <marijn.suijten@somainline.org>,
+ Lyude Paul <lyude@redhat.com>, Danilo Krummrich <dakr@kernel.org>, Boris
+ Brezillon <boris.brezillon@collabora.com>, Steven Price	
+ <steven.price@arm.com>, =?ISO-8859-1?Q?Adri=E1n?= Larumbe	
+ <adrian.larumbe@collabora.com>, Liviu Dudau <liviu.dudau@arm.com>, Dave
+ Airlie	 <airlied@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>, Matthew
+ Brost	 <matthew.brost@intel.com>, Natalie Vock <nat@pixelcluster.dev>, Arun
+ Pravin	 <arunpravin.paneerselvam@amd.com>, Matthew Auld
+ <matthew.auld@intel.com>,  Thomas =?ISO-8859-1?Q?Hellstr=F6m?=	
+ <thomas.hellstrom@linux.intel.com>, Melissa Wen <mwen@igalia.com>, 
+ =?ISO-8859-1?Q?Ma=EDra?= Canal	 <mcanal@igalia.com>, Dave Stevenson
+ <dave.stevenson@raspberrypi.com>,  Raspberry Pi Kernel Maintenance	
+ <kernel-list@raspberrypi.com>, Dmitry Osipenko
+ <dmitry.osipenko@collabora.com>,  Gurchetan Singh
+ <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>, Zack Rusin
+ <zack.rusin@broadcom.com>,  Broadcom internal kernel review list	
+ <bcm-kernel-feedback-list@broadcom.com>, Thierry Reding	
+ <thierry.reding@kernel.org>, Mikko Perttunen <mperttunen@nvidia.com>, 
+ Jonathan Cameron	 <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Neill Kapron	 <nkapron@google.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Alice Ryhl
+ <aliceryhl@google.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng
+ <boqun@kernel.org>,  Gary Guo <gary@garyguo.net>, =?ISO-8859-1?Q?Bj=F6rn?=
+ Roy Baron <bjorn3_gh@protonmail.com>,  Benno Lossin <lossin@kernel.org>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+  Daniel Almeida <daniel.almeida@collabora.com>, Tamir Duberstein
+ <tamird@kernel.org>, Alexandre Courbot	 <acourbot@nvidia.com>, Onur
+ =?ISO-8859-1?Q?=D6zkan?= <work@onurozkan.dev>,  Sunil Khatri
+ <sunil.khatri@amd.com>, Prike Liang <Prike.Liang@amd.com>, Vitaly Prosyak	
+ <vitaly.prosyak@amd.com>, Jesse Zhang <Jesse.Zhang@amd.com>, Timur
+ =?ISO-8859-1?Q?Krist=F3f?=	 <timur.kristof@gmail.com>, Srinivasan Shanmugam
+ <srinivasan.shanmugam@amd.com>,  David Rosca <david.rosca@amd.com>, Marco
+ Crivellari <marco.crivellari@suse.com>, Krzysztof Karas	
+ <krzysztof.karas@intel.com>, Andi Shyti <andi.shyti@linux.intel.com>,
+ Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>, Shixiong Ou
+ <oushixiong@kylinos.cn>, Jouni =?ISO-8859-1?Q?H=F6gander?=	
+ <jouni.hogander@intel.com>, Joel Fernandes <joelagnelf@nvidia.com>, Thadeu
+ Lima de Souza Cascardo	 <cascardo@igalia.com>, Pierre-Eric Pelloux-Prayer	
+ <pierre-eric.pelloux-prayer@amd.com>, Al Viro <viro@zeniv.linux.org.uk>, 
+ Michael Bommarito <michael.bommarito@gmail.com>, Sam Day <me@samcday.com>,
+ Gabriel Prostitis	 <prostitisgabriel@gmail.com>
+Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
+	linux-media@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
+	etnaviv@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+	imagination@lists.freedesktop.org, lima@lists.freedesktop.org, 
+	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
+	nouveau@lists.freedesktop.org, virtualization@lists.linux.dev, 
+	spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
+	linux-tegra@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-usb@vger.kernel.org
+Date: Wed, 11 Nov 2026 09:53:25 +0100
+In-Reply-To: <20261105113529.1989375-2-phasta@kernel.org>
+References: <20261105113529.1989375-2-phasta@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -80,42 +142,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN1PR12MB252866C4690F808A80429926A5712@SN1PR12MB2528.namprd12.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-MBO-RS-ID: 63c1ec95d89f50e0830
+X-MBO-RS-META: pdph9mgme6uj6kihqyt55uq9zqcpmeni
 
-On Tue, Nov 10, 2026 at 06:18:16PM -0600, Victor Chernyakin wrote:
+On Thu, 2026-11-05 at 12:35 +0100, Philipp Stanner wrote:
+> We recently had a discussion about reworking dma_fence init to close a
+> race-window [1].
+>=20
+> The community agreement seems to have been that we can get rid of
+> dma_fence_init64(), so let's do that already. In the meantime we can
+> continue our discussions regarding the race in [1].
+>=20
+> This also touches the Rust dma_fence, which actually should use 64-bit
+> seqnos (was forgotten so far). Rust fence has no users currently, so
+> needs no backporting, so I would like to address that in a distinct
+> patch.
+>=20
+> Tested on Nouveau with and without the SEQNO64 flag. Nouveau also uses
+> the USER flag, so I hope we're fine.
+>=20
+>=20
+> P.
+>=20
+> [1] https://lore.kernel.org/dri-devel/20261029095542.1526750-3-phasta@ker=
+nel.org/
+>=20
+>=20
+> Philipp Stanner (3):
+> =C2=A0 dma-buf: dma-fence: Add flags parameter to dma_fence_init()
+> =C2=A0 dma-buf: Port users of dma_fence_init64()
+> =C2=A0 dma-buf: dma-fence: Remove dma_fence_init64()
 
-...
-
-> > > +static const int fdc1004_calibbias_decomposed[] = {
-> > > +	lower_32_bits(fdc1004_calibbias[0]), upper_32_bits(fdc1004_calibbias[0]),
-> > > +	lower_32_bits(fdc1004_calibbias[1]), upper_32_bits(fdc1004_calibbias[1]),
-> > > +	lower_32_bits(fdc1004_calibbias[2]), upper_32_bits(fdc1004_calibbias[2]),
-> > > +};
-> > > +
-> > > +static const int fdc1004_calibscale_decomposed[] = {
-> > > +	lower_32_bits(fdc1004_calibscale[0]), upper_32_bits(fdc1004_calibscale[0]),
-> > > +	lower_32_bits(fdc1004_calibscale[1]), upper_32_bits(fdc1004_calibscale[1]),
-> > > +	lower_32_bits(fdc1004_calibscale[2]), upper_32_bits(fdc1004_calibscale[2]),
-> > > +};
-> > 
-> > Can we prepare them dynamically at runtime? Use global variables and a macro
-> > from once.h to make the populate function a singleton, so we don't have as many
-> > copies as devices on the system that are driven by this code. We can probably
-> > do this later, though.
-> 
-> Are you sure there's a separate copy for each device? In my understanding,
-> these static variables are loaded along with the module, and the module
-> is loaded only once and shared between all devices.
-
-I started my paragraph with "Can we prepare them dynamically at runtime?"
-which assumes that the rest of the paragraph is elaborating that idea.
-
--- 
-With Best Regards,
-Andy Shevchenko
+@Christian, what do you think, shall we go on with this one?
 
 
+P.
