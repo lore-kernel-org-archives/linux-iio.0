@@ -1,98 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794426685;
-	b=et9J6ek7qdmXOHUfi1ABO9gK1nfm8T3JFvW4dRUPYxYaAvEShcaV2+4lrzhbrxg4BzBv
-	 jpfIzRYO+bpUu+jo/cpv6iIFKISHHOizl2Z+obG3jznT0JKZ48lMGFBApG+AGEjPfZLG5
-	 j2LCqKrGRG5dDwRhzy/0ROZ2K9ET9DiMp27Xd3OufHCMG5EnB19fjp7095OUxAVPGpJhU
-	 YP+ZnA9O9R2U3lbEKXmLDUCEZ9aCeyJmlDcMH5ENThjC8MaGNZ9NUQNg5oBF+dUTJm2WY
-	 DYbUI3MxsKPwlJWT1l6T6p/rxf+4q155nK2Sh1ig8+r5hhkKsCuDa8bcf0LmU97vzsA==
+	t=1794427231;
+	b=RYpQqZuIRTQdupG9r5ynGajx+qeY1lfas49em9K9zlY7waYZ9x4iPBMTL9ONPuScBLrM
+	 9HIr87YrcoeqFSgOX1qYUTUNyF8B90l1a3uccGQsQjm1a3btV3c/fVXh2n7zI6JqSeBUp
+	 /csLN6aksxcYtctODkkagUNYdNtPR1Sk8OpG70UjjK6cPbksKQUAXwo49U9zz35rZxNTl
+	 0YqAb3v9nicRKTb8WouJirRkwg/Bo9AqiBLh+xKcYbaSbjUHv4Oidb/FEZ3OJoe7S9dJF
+	 4o9ILI9rYlIMrWNMpDaB2hL0zQ8q+RT2s1SqC6i+wEXfZjRHeUZH0ttEcLdrCS9TEag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794426685;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794427231;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=EHqk5x0/CdtJJ9kWtMupw3SjoX3qOmIdHB2cbrSmA1o=;
-	b=3kgeuMTXFz+IbkRMgOqKNZIpRI3h4uu3QCxZRXNtzUzHY9/OITsqGftQalucxaKQDIj2
-	 URQAoKIMr+DztasrmAvCHIqZXdGmyzRsB8KydngSrpM7kdAu8rxMPjT1G1dztufA0a+/J
-	 idJa9yyy+Sd4FDMOdZcXcY+mgxkPLkRNj6fHsFAAf+pJsc7pzKUCRujxmx9wI2sCLF3Vy
-	 SUDGVYQxs9AXt5Eh+5U2Xrw5PcnR5rmTAUD2OXKEaCz1Tb2npLFAatv8dz2U2UcocfAmK
-	 KeCHILJ3G4SA73jVdvJbl/H2hWVZYpQeM7WtK0vxldBttihUanSut3G3Ten9Y3IqEZw==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=p+2Z0iAhcp8VOXafcysdCm6gOgr7IJoVThJ4qYkpC4o=;
+	b=4KpDMnR7BfyBxEl+kUI9Va/5BFMMO4J2FxLndZiZgCjMplAOZaitKdyVF9029zdvuA3y
+	 K9+OpQ6ryHU19Zzs7rtdccmp6pUF2pBPKHnIiPU0ZsTFK2nSkt40Rw8xtoRxorp+yDtR+
+	 rLwNjoKeLikIVMe6k+VP+FbouNYv8QPs9ux/uEn63bSHjsJKVmZt4e0f5QkFe9oyE7fIZ
+	 WvSwaVABOsPG9LKNx9G9Y7S+qRUNfh1XXSOWJuVfZE7r4BAVqAHevyLf1XV625KlJgIRr
+	 cWoTn9kH96D0+ubRFOVQByL+EGO76wzewEWkH+fwbr5K+zz63+8MgcuhvRQU3f8up4g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TTUsavW6;
-	arc=none smtp.remote-ip=209.85.208.170
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ICpsNtDj;
+	arc=none smtp.remote-ip=209.85.167.54
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F53D606A31C
-	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 19:51:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1F53D606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D2E606A32A
+	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 20:00:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95D2E606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TTUsavW6
-Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-3ae0eb56ba1so18456311fa.2
-        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 11:51:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ICpsNtDj
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5bfa7c09c9eso2411997e87.2
+        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 12:00:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794426683; x=1795031483; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=EHqk5x0/CdtJJ9kWtMupw3SjoX3qOmIdHB2cbrSmA1o=;
-        b=TTUsavW6f+bJswyOgz2ua6vEAAfh43q2oOBQvLQ+dTaempbqyL3YYlFGjC1MWfvvFK
-         gCeAbR34ULFr1ma9GHqqNk2GHifHebsOeIrfteb8KApcrNXzX6dHu39m4NG1mjQpQy0v
-         hNlASEZUsh/EoEfKbFR0fJ5m9r26a6bNMlJ+wDq8ca8oEyArnskGhmChATV16JG56tyH
-         2ksn3cEfiMvXC6C2lKeV1mqqQU0hcku2GzY7EolJbh7s+n/JLCjWNC2wp/x6HTZPIZkC
-         A3cbQmEmopiUBePR/+ky0bLB4hhdnJlxkQSyXhWceB/9zZw8LDvs4H/FTebWRY/SFIzs
-         N2Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794426683; x=1795031483;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1794427230; x=1795032030; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=EHqk5x0/CdtJJ9kWtMupw3SjoX3qOmIdHB2cbrSmA1o=;
-        b=BGcnqViYiLruel0qnDbFELy9QA1qsALTFA9vKRn2GJsuE0yxs6RuXbDx2mvkvxqOwC
-         3eFPhvp49p//rq+/IJ3/24Nde81JXGFEwgsztxTcdt3/iy1hXXvO6Jj8nyVDdysRxeX0
-         Lpazc4m9ePap0SOh6V8RUbIGnY02Tj57F+8a/iRENrHkvzUMpVUEkuOhDJeGkv4i8EZI
-         qWqfBFXs9QhlV6WitYXr5lMSEVhCTTOQ9BSZINIzHD3Fr1GJO+ZEJd0HmIsptR0aEMS1
-         yorxsOxkh95ugipi+60nc2EzBrjCCxxjj5jJopLrGBPLUJ4cy5RxAyaXafT51GLIyqaQ
-         r6gg==
-X-Forwarded-Encrypted: i=1; AL+hErGeaWCt+/guhgPUNd4PBfDhuwlUPJ44d9wVSSjD3RDsggr3L35PPudviD8gBirJK86MxIpeXVrWJVU=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+FjJOplZuMP2d5/CD1IgZff1wIFqElVDSWmuUUIFK4ycn5lM9H
-	Iv9R7A4Fmb6ML6OsScpsKoiGwy1WttueCtlp5IM9I7z1JWzbeu3y6orX
-X-Gm-Gg: AYBFou2ulqxvd9QxvtTNb36x2aXniDpOWmVfgu5MGWiC+0HwZPf7QcZOXW/+9EbwstB
-	0bw0buaSqhIP30ZxwQi4y9Jj/HIbPmdRoinbiNBVAjvbNhuo/hdsc2P3cOYcR8hX8oSA1mmHhFo
-	nRSWfPfqVc/01yS9KaoEg/V2bm0Lx64RCI11dGQOlKQmXck/2U/2oJTymCl4QVVFAergGNdyJA6
-	WoL5F6H59FYFEMnZU3n7pNGglO95iioObVh9li4MuFOZha8pFO2qCryai+6+iW4e6k1Te9557ni
-	t95TJX5bLt0GS/mMU7KsYG4u69pC7ld1pUcSpP7jbWl23kwofTwEzTG4lH7SdQIMmdeM8Uz7wjv
-	EBoBCL9scrC4DrsC3ipD77Lu1n7PmpX6KDxcbUMJqZDQP61zLAdNWeiGe0KqTegcQtcDjPOzyuH
-	frnXjvvMoT6ypQ4MKoex5/XpKqxLx46oQ0Qc2XqRBwQ3RqZASnghcETLuS5y/Nlg8vDLzXUEjbV
-	l3D53ek5hYQDE+hHQI0AwSzyGruYu14QO+5ROo3BUcTIHETAHufFWmPTmpgJdVE6g9Tz8iGaZN8
-	SwzhgLt1eE8lJQmIZNaUT0Z7dqNgmIkT+jXt1bCItMcq8/iuO1U3+4e8o/ud4zuUnfjGuEZUA5L
-	xfgITWBtFAR/+FIzcFGIeOoMsm71GIQ3arCP6
-X-Received: by 2002:a05:651c:146f:b0:3ab:3bf3:1604 with SMTP id 38308e7fff4ca-3ae126bac4bmr7165201fa.26.1794426683005;
-        Wed, 11 Nov 2026 11:51:23 -0800 (PST)
+        bh=p+2Z0iAhcp8VOXafcysdCm6gOgr7IJoVThJ4qYkpC4o=;
+        b=ICpsNtDjl8RpGDWPxeboydSu/EEH2dc3F1U/ihmVr5TvqmB9GXzkPDgrSdb4pTybmq
+         rSXYND5og4GcBCQzlUFJdJ7g1a0Wg25xXHOc0oR5VBOQCimogGtybB77X2IzzJAL4QCY
+         u/rPxDk7NZAtRuT5zgOxildkgI8fjUqWbzfA8BpS1lDpmeugNImYN4GZjcm5G/yE5pEa
+         Bmh8Ui1PeSQVZNNz0MEFnx4+oVTDI3tlGl04FCJBhH39Bt9Bpi3W0D18XWQJ6YEjdkdF
+         oF1V2Lh3uJOAsQow9V6jQCoClk4BzSTaL6w3T4gVUiqgEkTBavTQWVWq12QqWIUd5r1n
+         sSSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794427230; x=1795032030;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=p+2Z0iAhcp8VOXafcysdCm6gOgr7IJoVThJ4qYkpC4o=;
+        b=gHo7kEbKFmD3vG2yuURtk1y6p6xAXgzZF9zdqyKYH93bx5Cxd7AP0UvfcV/vRuVlz/
+         t2lx8FxxVNUgG5mCldMv1x4E7+pAn5qSDPPEcrDqSHElCpfmmk0TRKnSYmWGROlqhve+
+         RfOZYqhlKfFtuxwCqWisMlAdl356H8CxmwfM7pEI1HFe7M/v+lBIHcz9qUl/D7JTi/TK
+         WZqBfDdtsAXoayRt6MIMKClaWQINGLzgbBK+ikFHiN7QI/lEaTTBEbFEhbcgmcpxspIm
+         qbcAJOrv+BGHp2+/TRu0QT1MwrJcw2wg0uoDfryq3XBO7yaOclwid/JbCYHGgtUf5bGH
+         v/CQ==
+X-Forwarded-Encrypted: i=1; AL+hErELbV9ODthRlCD6NNpTTyBrDyLPZzZC9uB9uenmtt3WhWN/13b+AZVneup9u66P7Kg3YvxYgrQHQYc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9BSbSa8o7X14Y2Hiy3yrqwUl+x+xrTSYdYbBOq6EdoxvANyGhu
+	dFoA+x1S5KV9nTzcUdc1TWGxSx8T1gAOdquNMzHy40NNiYpm734tKzpY
+X-Gm-Gg: AYBFou0UoIbvuQGll343cJRASVr/GK+WOJ15szv08T5CRJy4rfJeTCQ+jYNlcQ9TRnc
+	J1rlJ+mdxCnbfjL4sg0ytuVZ6riCNCodqdcrLNGgaDS5qUZ0AmVhObNNQNEriFOqg8psXqjXfau
+	rdgUJj7YMMMFRdVWc8WPNwuSn0BHOYUTLTmULxDmDvF5mcMn4qRtYNuQMfag3APPW1iOzOiHV+c
+	CK4VLTaUX+0iZWJsOmugTVNBHCeilN8bALvkS87STbXxOfkCQCXPcS1tLKq/mrzsbcipO4Nl3Jd
+	NhJp95fyFhRGcb7tEH2cMsH6sdo7ZPPhOA0DG5IwKgLfbEQW2I0WNr7bZxC+B/RBX8NyCbmqtXI
+	GfHbj4v+QY9332xpISHRWg6bz/aIvbGXdmrt1Lt0E/Xu5u2ZoPb5UkQeaTNA/qyz4MYA6R1sI2o
+	jEzEml/iRbfEam6XbsEmYMc1DaCHqMbIShUNtpApmy4hTf7tVoE2Sj1e73pqrb7rtdVah/+CDtD
+	kxkO4nWlsU6V5cnxXxjZnnN3yGEZt41njhbYnJve61DKUhy5GxseTfNQmUVA69haSFVe0jtnZ/9
+	z/t6u9kxL5Cpc3NQsw5XQxbnk3d7jE1D+j3e3+GnndDNfgyyzinnrwUrRdz8rdM+VLw9f/l7LHJ
+	oEsv1ak7jL8nRcovc/lS45NHpkN5/+F+UAPMD
+X-Received: by 2002:a05:6512:b8e:b0:5c1:5cce:7f1d with SMTP id 2adb3069b0e04-5c15d58a87amr1050525e87.9.1794427229586;
+        Wed, 11 Nov 2026 12:00:29 -0800 (PST)
 Received: from yantra.. (nekmmqtce067ylb1za0-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:5558:447:baa4:a7d8])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae091739edsm13147341fa.1.2026.11.11.11.51.21
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c157bbe89csm1102957e87.81.2026.11.11.12.00.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2026 11:51:21 -0800 (PST)
+        Wed, 11 Nov 2026 12:00:29 -0800 (PST)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>,
+To: sashiko-reviews@lists.linux.dev
+Cc: Andy Shevchenko <andy@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Eddie James <eajames@linux.ibm.com>,
 	Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Rob Herring <robh@kernel.org>,
+	devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Sashiko <sashiko-bot@kernel.org>
-Subject: [PATCH] iio: pressure: dps310: don't wait for new temperature in trigger handler
-Date: Wed, 11 Nov 2026 21:51:18 +0200
-Message-ID: <20261111195118.36853-1-zoone.rupert@gmail.com>
+	Paulius Zaleckas <paulius.zaleckas@gmail.com>
+Subject: Re: [PATCH 2/2] iio: pressure: dps310: add a data-ready trigger
+Date: Wed, 11 Nov 2026 22:00:25 +0200
+Message-ID: <20261111200025.38344-1-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <sashiko-outbox-208073@kernel.org>
+References: <20261110154254.39092-1-zoone.rupert@gmail.com> <20261110154254.39092-3-zoone.rupert@gmail.com> <sashiko-outbox-208073@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,63 +110,19 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Each scan waits for a new temperature result before reading pressure.
-With pressure sampled faster than temperature, scans then come at the
-temperature rate: an 8 Hz trigger with temperature at its default 1 Hz
-gives one scan a second.
+On Wed, 11 Nov 2026 02:15:48 +0000
+sashiko-bot@kernel.org wrote:
 
-Read pressure first and take the latest temperature, as a direct
-pressure read already does. Wait for temperature only when pressure is
-not in the scan.
+> Should dps310_fill_channels() read pressure first and use
+> dps310_refresh_temp_locked() like dps310_read_pressure_value() does?
 
-Fixes: 9b7cad9ce2ed ("iio: pressure: dps310: add triggered buffer support")
-Reported-by: Sashiko <sashiko-bot@kernel.org>
-Closes: https://sashiko.dev/#/patchset/20261110154254.39092-1-zoone.rupert%40gmail.com
-Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
----
- drivers/iio/pressure/dps310.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+Yes. The wait came with the triggered buffer support, so it is older
+than this patch and holds any trigger faster than temperature to the
+temperature rate. Fixed on its own:
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 85df58ac1809..c4d779f8bbc6 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -910,10 +910,18 @@ static int dps310_fill_channels(struct dps310_data *data,
- 	unsigned int i;
- 	int rc;
- 
--	/* Compensation needs a temperature, so it is sampled either way */
--	rc = dps310_read_temp_raw_locked(data);
--	if (rc)
--		return rc;
-+	if (test_bit(DPS310_SCAN_PRESSURE, scan_mask)) {
-+		rc = dps310_read_pres_raw_locked(data);
-+		if (rc)
-+			return rc;
-+
-+		/* Waiting here would hold scans to the temperature rate */
-+		dps310_refresh_temp_locked(data);
-+	} else {
-+		rc = dps310_read_temp_raw_locked(data);
-+		if (rc)
-+			return rc;
-+	}
- 
- 	i = 0;
- 	if (test_bit(DPS310_SCAN_TEMP, scan_mask)) {
-@@ -924,10 +932,6 @@ static int dps310_fill_channels(struct dps310_data *data,
- 	}
- 
- 	if (test_bit(DPS310_SCAN_PRESSURE, scan_mask)) {
--		rc = dps310_read_pres_raw_locked(data);
--		if (rc)
--			return rc;
--
- 		/* Pascals, see the channel definition */
- 		rc = dps310_calculate_pressure(data, &channels[i++]);
- 		if (rc)
+https://lore.kernel.org/linux-iio/20261111195118.36853-1-zoone.rupert@gmail.com/
 
-base-commit: 79c8dffd84e9784ec05bea68dbe5e71f7ec9941a
--- 
-2.43.0
+With the fix, this trigger keeps up at 8 and 32 Hz with temperature at
+1 Hz. I'll mention it in v2.
 
+Rupesh
