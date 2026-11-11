@@ -1,98 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794386184;
-	b=QbGLu8SXvZzRtj4BJch928TiJHLt89sV+RIUtzNHMpAbLj/WvQPh+lwwTLLLo2izSmD5
-	 RP1HC6inA+JAPw0A9h9SheNDzcD3tG59dwIGOCZHR2EJyrfAAR2+Qd/2nP2kfH4xd94Mh
-	 enJToRvXnCkKfanPJtRu/J5tOKfwHb051v5+LemD/51hVC+P6VJYGmmKBYUEBWmrleLIg
-	 /0AwGdiwvxTS5EYc/zfNDwf/5VMZz0jAYvxnqPycQ3bmZhVPLPNXR6rgadh25JQYM2EIr
-	 LpP0CViP9XeUQxdQi0LDGMMxQSvWzkyknB4k76TTQJ+kOBUy8wUXO5S6yUIjw1Fd3Mg==
+	t=1794386506;
+	b=pUcWeQ3r6Lb8FBKOj8oL3qjOzrrHie3mYiZK5O7E5zQOasFfe68H5FMWdz7UPOpfjc19
+	 /DSG7TbMlnZVgKFgWePM8VnVIP03+8J/wbCgjah04+7XQLrvwvAA7ezimUpvW6NwxBl2m
+	 52sx7xem7Amw5kXFpZZHhXvZled39e7gSZ/A7pIcZACnuCewRg7pLpR2o1r+qyZKzSiff
+	 TIHM5h/HsHd6/P5FRsw8Jav7JS1TgLi9sUohjkqTxzK1LDvBJE83X6peYU3/PAivpdJkB
+	 +eALKJQrqg+vd9RW2dcEkFpP0F1Fw5yq6ETrqn1JAglI8w7eV7t1G0YoGYkYo3B1/9A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794386184;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Sender:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=hwCzX3wFkjwi9d1zxYJZk9eA77a7avCCt18YWRijvq4=;
-	b=Vt1hGcVZYv/HoEfeqJY6v3kMyxlpgPARvoxC0h8l/RsowVNtYA7nTbGJ3qZeXeDvLkKA
-	 FFyQUYsbc86XfD9KBKemTY3phLGeqfdp+M0YkxkG4+Q0BbpfgpF3SZoq1cSetet3KBmh3
-	 7Snyz8QtopXLZvCYJgJ2Ss7+SgqQYhDOsb8F3Q++8j93x3B1OBljglwg/AVfHz30vCB6/
-	 FEWQhs/QgSjxiOd0v3vmHGViwkWAzSJ/jCkZy6B/octDfaY60Kv4Wvz0PB68zcrQgwrFF
-	 BeO16oeE+3tVngTHWB7whMPxl8Rov7GlMB9q08i1Xv7UazdRg4T0EH3XKPiarQBFS7Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794386506;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=Z9LfUtXUIH0h9LuWEMESz7PfYddMA6xbpQRbaf34nzQ=;
+	b=XJv/vbAYkD66XvYvNMsYBuYMKvXJH6Hb7awGRbgE6/hSwbYWwwevqtKuhyX7De6UQThg
+	 z0FEEl1mndnHOyOmRaXtW1U+f6WhDIV360LS5/FG6OOnZyb8MowfMawRan0czHARXmNse
+	 mYJorzXmZdEPTP3EbTQ9dgqXlaUvZNlh1uK69M9O70JU1YATNp4o1/+WhQYqC7f04jRgk
+	 ILvp7tiuBC2MR5WaYB1d3Ox7nz5DBwZYyI68/1P5tAsRp33pXMM5XzHg6ejeQN+fpruVj
+	 OH3NWhdlDVeqPdnwfHgDtZfBMMYFWyxwhNMPgcFPmZYTn7TuJG9V+wErOVjubnPyv8Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=chromium.org;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=da8Yt6+l;
-	arc=none smtp.remote-ip=209.85.214.174
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=m8CYrk6G;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02F16606A31C
-	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 08:36:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02F16606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B861606A31C;
+	Wed, 11 Nov 2026 08:41:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B861606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=da8Yt6+l
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2ea7190aea1so12468775ad.1
-        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 00:36:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794386183; x=1794990983; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:sender:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=hwCzX3wFkjwi9d1zxYJZk9eA77a7avCCt18YWRijvq4=;
-        b=da8Yt6+loKDHP3T/IbJVtjlnMUo3fPvnNU6t0ZzaWLb0qOFftg9MJmTJwa9iH4RU7H
-         O7ZlCq1qrpsff3drm77RcUV3HWK75KdpP4ZoAPY5ZDtnA23dZInLIKx5Ndfczn4vs6KG
-         3LwSWbGXCB84crZ61ALLkDMoUdzicDnBzgKButMoTEEfl27Jj9s/zwto+zF0dMu8QnXg
-         5UAXiGRPLOuC97vdv8UTnC4ClQnUEMEr53y86M5+gHg7ZM+WSWQyyiI8Bt65DiNYIwSK
-         Df6emGo/MTC5BqGCobTWiyX/QfzAul9UikCPvMTfQ1HejeSvhyaA+Ec7nXf8f3fHExjm
-         KEzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794386183; x=1794990983;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:sender:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hwCzX3wFkjwi9d1zxYJZk9eA77a7avCCt18YWRijvq4=;
-        b=vmE5xh/X1MxVt+8oXy76lWghblOCXTUYsiKjaPP1pcxnFVXKLbERYYh1mwzexF+esR
-         Q3062upwcU0EGzBOaqTpWpMEuRmxffMf+LqLn4HQFMoVgLzMlbcC8PZMXqn1UsCExr97
-         p5LQ1lcKvksmcSJcRqJaEEiVMHIEe+K79KLLmySOOMH8kXLt5K1ddTM8Dg6Y9MnHuIev
-         4noM60KleBwRIX7fWSlNQuldXEY9B08oTXg35FISj84xI5GVfGy7432OlJu0b+ZktpYJ
-         acyXlxQ5vvuFwbiT6ytiNPrYx5BOrW3kbKfV+JZ4tEfFb/mzD/0VK4E65k6D7dqaHOFW
-         q+EA==
-X-Forwarded-Encrypted: i=1; AL+hErE0JksxiTYsbIkgly+wSeTYRW7wFLY7Ju9xKc7Ur1CH9pPWC/q3iC4Y52XUEpjoVECVyFj7FqoUT+s=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/q2U2u3V9lrSOQKl7NO1n/Rf/kw1DVo4hZjiZ9uv69llztTIMA
-	XQxXX0LvMWVMDDNk9Jq5G/wuVlZMkVhTQj3CZ480dM9hgvJuaPsWUYVlS/NR2K4pEyPB8yuWEKl
-	h3JPkg06LK+U=
-X-Gm-Gg: AYBFou3J0yNriAAQ9u+Ka4UsrZj6qtYU+WPmk/VS6Ro1Xp0feE4NaZEZMcr4reMp6Bj
-	VT7RIqy32N9j2H64ELtgCOLv35L966Gj5KqFryHEGBWfaYifxEHWKcugDRWZEf0jBljJfkLTcPP
-	NgZS2Z64N95s45fBiwaz7vCJnTsKImDERChpaYCWG2LKL4JhzyUusTUsmNmTeitxJjzIehDdxLd
-	PnyOsDM4MRoHysIsBWmqZ09eytQtBbJs8ooa46irv5fBWL+xL9YS0be4yK82S092aLrxgPv3FN0
-	R8i3rTSJdvRUzY8fYRUNGBIvxxHquS3SRQeyOmHAoVMegGG5bKmQR0QZH0DEW6RC8nCYe+rQFiV
-	PpxxbdyO2TxlbTXEocCmWvgrEzKmPF28V76YE58dgyWn/wuKnlpEpAT0Bc+W1d7H6KtjWZ0XWpf
-	cErBepKv1+1GNDBQNMpf7aJCYScjMxTnMWX8rQ3e/REhEtuCRTBc9hNkTI9wZSXV1y5b6svgots
-	duhl1VwmfJrR8a08FHNIL9EdMy+Z4NxzUYnhaXNZAe3tYnVe5QB38+b+nlry7OCtw7Nst+Ey9ko
-	3Te2itLcOE7zusPrW8q30dOrQ271AJ5KikmaZGYeugNzYT1pWvmcvTpoY0UIxh5WXGzA0KaDS/H
-	Pcnj7Uwg+Zy1SJ5mL74sPAodJA/2C7fyWPLCST6dgEn9CVcoPELOd8VnPt0QyS41urLdVc6r1WC
-	bwI04/EhQLpbI2
-X-Received: by 2002:a17:902:da87:b0:2ed:294c:2b9c with SMTP id d9443c01a7336-2edd7ac1ea6mr22278895ad.51.1794386181887;
-        Wed, 11 Nov 2026 00:36:21 -0800 (PST)
-Received: from google.com (196.126.197.35.bc.googleusercontent.com. [35.197.126.196])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2edb6dd43bbsm17865115ad.57.2026.11.11.00.36.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2026 00:36:20 -0800 (PST)
-Sender: Benson Leung <bleung@google.com>
-Date: Wed, 11 Nov 2026 08:36:18 +0000
-From: Benson Leung <bleung@chromium.org>
-To: Di Wu <diwux@google.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, bleung@chromium.org, groeck@chromium.org,
-	tzungbi@kernel.org, linux-iio@vger.kernel.org,
-	chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: cros_ec: use sysfs_emit() in show callbacks
-Message-ID: <avQpArYRzrCb5MDq@google.com>
-References: <20261111072608.3490763-1-diwux@google.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=m8CYrk6G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794386505; x=1825922505;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y/XOELi0xXFCVMEtPO8EZ8t4PWPLUJNKHA9Qs/A4IDM=;
+  b=m8CYrk6GBUBGbL7sT0jWeVpd1cLOnFei0Cmp0jI6+b8tWKghEcGufO+R
+   6mjH7ivVKWebxbbPI3ehfMGCRunaNjmBBpUyTmDoipcYRn3rnWgacIWeP
+   S9omnROiL5EFQlcrsNI7TVIPL1D/G/EIZ3mNr9a6Iaq5dK5deZqB0Wbtr
+   VcZF+G2+XqkrVH2z6jVkfwvYc3d8gBD2pqkBKdh91/Nk+575fQNxtubut
+   3te8zlNTTWRoEiUsjf1x6oxUAj6PhMLikhcz91fxZRDSGqDUnKJA22sb1
+   SwACZMZYARsLlL6kbigLnckiwrvrflLkGMG5K/H0375bfoi0PjMZQtMMK
+   A==;
+X-CSE-ConnectionGUID: lz9Vt/GFSg+UE0vvSM4WNQ==
+X-CSE-MsgGUID: tH4IhHvESkW7Lbh5AUMSYQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="3049158"
+X-IronPort-AV: E=Sophos;i="6.27,207,1787036400"; 
+   d="scan'208";a="3049158"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 00:41:43 -0800
+X-CSE-ConnectionGUID: bnats4KYRiuBX5RMJ/YMhA==
+X-CSE-MsgGUID: Af5AvszQRWGa6J8xSAUotQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,207,1787036400"; 
+   d="scan'208";a="8442906"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.142])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 00:41:41 -0800
+Date: Wed, 11 Nov 2026 10:41:39 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com
+Subject: Re: [PATCH v8 4/4] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <avQqQ8s3-fkvIiGX@ashevche-desk.local>
+References: <avOKDbkkDwqhHEaC@ashevche-desk.local>
+ <SN1PR12MB252866C4690F808A80429926A5712@SN1PR12MB2528.namprd12.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,85 +80,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="jEief8IRC6172HB4"
-Content-Disposition: inline
-In-Reply-To: <20261111072608.3490763-1-diwux@google.com>
-
-
---jEief8IRC6172HB4
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <SN1PR12MB252866C4690F808A80429926A5712@SN1PR12MB2528.namprd12.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Nov 11, 2026 at 07:26:08AM +0000, Di Wu wrote:
-> Replace sprintf() and snprintf() with sysfs_emit() in the sysfs show
-> and ext_info read callbacks. sysfs_emit() is aware of the sysfs buffer
-> PAGE_SIZE limit and is the preferred helper for show callbacks.
->=20
-> Signed-off-by: Di Wu <diwux@google.com>
+On Tue, Nov 10, 2026 at 06:18:16PM -0600, Victor Chernyakin wrote:
 
-Reviewed-by: Benson Leung <bleung@chromium.org>
+...
+
+> > > +static const int fdc1004_calibbias_decomposed[] = {
+> > > +	lower_32_bits(fdc1004_calibbias[0]), upper_32_bits(fdc1004_calibbias[0]),
+> > > +	lower_32_bits(fdc1004_calibbias[1]), upper_32_bits(fdc1004_calibbias[1]),
+> > > +	lower_32_bits(fdc1004_calibbias[2]), upper_32_bits(fdc1004_calibbias[2]),
+> > > +};
+> > > +
+> > > +static const int fdc1004_calibscale_decomposed[] = {
+> > > +	lower_32_bits(fdc1004_calibscale[0]), upper_32_bits(fdc1004_calibscale[0]),
+> > > +	lower_32_bits(fdc1004_calibscale[1]), upper_32_bits(fdc1004_calibscale[1]),
+> > > +	lower_32_bits(fdc1004_calibscale[2]), upper_32_bits(fdc1004_calibscale[2]),
+> > > +};
+> > 
+> > Can we prepare them dynamically at runtime? Use global variables and a macro
+> > from once.h to make the populate function a singleton, so we don't have as many
+> > copies as devices on the system that are driven by this code. We can probably
+> > do this later, though.
+> 
+> Are you sure there's a separate copy for each device? In my understanding,
+> these static variables are loaded along with the module, and the module
+> is loaded only once and shared between all devices.
+
+I started my paragraph with "Can we prepare them dynamically at runtime?"
+which assumes that the rest of the paragraph is elaborating that idea.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> ---
->  .../iio/common/cros_ec_sensors/cros_ec_sensors_core.c  | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/=
-drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> index d03e40c91582..624d4b32b034 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -149,9 +149,9 @@ static ssize_t cros_ec_sensor_get_report_latency(stru=
-ct device *dev,
->  	if (ret < 0)
->  		return ret;
-> =20
-> -	return sprintf(buf, "%d.%06u\n",
-> -		       latency / 1000,
-> -		       (latency % 1000) * 1000);
-> +	return sysfs_emit(buf, "%d.%06u\n",
-> +			  latency / 1000,
-> +			  (latency % 1000) * 1000);
->  }
-> =20
->  static IIO_DEVICE_ATTR(hwfifo_timeout, 0644,
-> @@ -165,7 +165,7 @@ static ssize_t hwfifo_watermark_max_show(struct devic=
-e *dev,
->  	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
->  	struct cros_ec_sensors_core_state *st =3D iio_priv(indio_dev);
-> =20
-> -	return sprintf(buf, "%d\n", st->fifo_max_event_count);
-> +	return sysfs_emit(buf, "%d\n", st->fifo_max_event_count);
->  }
-> =20
->  static IIO_DEVICE_ATTR_RO(hwfifo_watermark_max, 0);
-> @@ -465,7 +465,7 @@ static ssize_t cros_ec_sensors_id(struct iio_dev *ind=
-io_dev,
->  {
->  	struct cros_ec_sensors_core_state *st =3D iio_priv(indio_dev);
-> =20
-> -	return snprintf(buf, PAGE_SIZE, "%d\n", st->param.info.sensor_num);
-> +	return sysfs_emit(buf, "%d\n", st->param.info.sensor_num);
->  }
-> =20
->  const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[] =3D {
->=20
-> base-commit: b70566610b48ba49dec636019da4d696db64b085
-> --=20
-> 2.56.0.455.g6c5a503b38-goog
->=20
-
---jEief8IRC6172HB4
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCavQpAQAKCRBzbaomhzOw
-wnMVAP9z09pQgMCDirHGoNohxo1OdmFC8Hu9n9+XFZhqMxV9XgEAu7GyPH/nMTCS
-qVL+/Vey4OZJEroKyiCXHqlZZf2WJgc=
-=nQzv
------END PGP SIGNATURE-----
-
---jEief8IRC6172HB4--
