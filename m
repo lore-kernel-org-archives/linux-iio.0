@@ -1,104 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.177
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794427231;
-	b=RYpQqZuIRTQdupG9r5ynGajx+qeY1lfas49em9K9zlY7waYZ9x4iPBMTL9ONPuScBLrM
-	 9HIr87YrcoeqFSgOX1qYUTUNyF8B90l1a3uccGQsQjm1a3btV3c/fVXh2n7zI6JqSeBUp
-	 /csLN6aksxcYtctODkkagUNYdNtPR1Sk8OpG70UjjK6cPbksKQUAXwo49U9zz35rZxNTl
-	 0YqAb3v9nicRKTb8WouJirRkwg/Bo9AqiBLh+xKcYbaSbjUHv4Oidb/FEZ3OJoe7S9dJF
-	 4o9ILI9rYlIMrWNMpDaB2hL0zQ8q+RT2s1SqC6i+wEXfZjRHeUZH0ttEcLdrCS9TEag==
+	t=1794428422;
+	b=AXKk0gY/wElWO9SvPrs7F/VbYdwYLiU7YjPK+8ISKE0aoDgFX7hciKRRPIGTF/bkCJqA
+	 s9eZeArpzP6LnRR1rQDB5zYKhfmP5d225KSk0qeadi6BFaKsaq3OpHNCpLEJ7UT2ItQuQ
+	 8IfTKRwPwMIj3J+sF//hiNsR3/tr4c4oldW/2aVit66c3vSrK7DTQsVw2jW/LvfHxJafQ
+	 h7qilBoBgzmngKayoKhnlIUMDPV+u+MhAYPcNasetmESkNfHOzxLvm8dbegq8j2vpbv+7
+	 74bjdqAC/OjrsjOOOOD+cGTfIhcOy2P/PpUnO7993BdI7wNxfq6QwNom40NIJUrOgvg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794427231;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794428422;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=p+2Z0iAhcp8VOXafcysdCm6gOgr7IJoVThJ4qYkpC4o=;
-	b=4KpDMnR7BfyBxEl+kUI9Va/5BFMMO4J2FxLndZiZgCjMplAOZaitKdyVF9029zdvuA3y
-	 K9+OpQ6ryHU19Zzs7rtdccmp6pUF2pBPKHnIiPU0ZsTFK2nSkt40Rw8xtoRxorp+yDtR+
-	 rLwNjoKeLikIVMe6k+VP+FbouNYv8QPs9ux/uEn63bSHjsJKVmZt4e0f5QkFe9oyE7fIZ
-	 WvSwaVABOsPG9LKNx9G9Y7S+qRUNfh1XXSOWJuVfZE7r4BAVqAHevyLf1XV625KlJgIRr
-	 cWoTn9kH96D0+ubRFOVQByL+EGO76wzewEWkH+fwbr5K+zz63+8MgcuhvRQU3f8up4g==
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=yjMHwJowCgljXYdOuz17suaOhns7jTmqFcuqV1/rikE=;
+	b=rulaIj+VKbM3lBqcyBE+2OIxk5IahvqH5Fa7sIs/WeOQE+TAADEmvVn657z5zdQZ/BMi
+	 zeCn6MZfprRBigHDarUD+vd+YCL3RkmWS9D8A2uWm8Jt8ri4IdF56O/VDYt6QJWecgNm9
+	 jpW5FP4ahHlE2dRcTzdZ19652Y1RZ1XiB6bkJkc9JzE18gjI0E7J7gvVQuX5RfozsIyfS
+	 SyDYd0IiIJSq4vo3DU5H974McyTFiwbSLsfP35PZrrWb+jI1lynGP+J6H5VzvKyWLJL9H
+	 cXuu2qqDBm5EZVEPge5T6WRaQKtWskRWYrZ4tKEHqop1zCaUhsQNCT7VcUUUughiM8A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ICpsNtDj;
-	arc=none smtp.remote-ip=209.85.167.54
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	dmarc=pass header.from=rowland.harvard.edu;
+	spf=fail smtp.mailfrom=g.harvard.edu;
+	dkim=pass header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=R9JrZi7N;
+	arc=none smtp.remote-ip=209.85.160.177
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D2E606A32A
-	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 20:00:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95D2E606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF67606A334
+	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 20:20:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BCF67606A334
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rowland.harvard.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=g.harvard.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ICpsNtDj
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5bfa7c09c9eso2411997e87.2
-        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 12:00:31 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=R9JrZi7N
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-53665358476so34678191cf.2
+        for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 12:20:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794427230; x=1795032030; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=p+2Z0iAhcp8VOXafcysdCm6gOgr7IJoVThJ4qYkpC4o=;
-        b=ICpsNtDjl8RpGDWPxeboydSu/EEH2dc3F1U/ihmVr5TvqmB9GXzkPDgrSdb4pTybmq
-         rSXYND5og4GcBCQzlUFJdJ7g1a0Wg25xXHOc0oR5VBOQCimogGtybB77X2IzzJAL4QCY
-         u/rPxDk7NZAtRuT5zgOxildkgI8fjUqWbzfA8BpS1lDpmeugNImYN4GZjcm5G/yE5pEa
-         Bmh8Ui1PeSQVZNNz0MEFnx4+oVTDI3tlGl04FCJBhH39Bt9Bpi3W0D18XWQJ6YEjdkdF
-         oF1V2Lh3uJOAsQow9V6jQCoClk4BzSTaL6w3T4gVUiqgEkTBavTQWVWq12QqWIUd5r1n
-         sSSA==
+        d=rowland.harvard.edu; s=google; t=1794428421; x=1795033221; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=yjMHwJowCgljXYdOuz17suaOhns7jTmqFcuqV1/rikE=;
+        b=R9JrZi7NhUwEn136m7E7v6uW/VyeO3KBnSCiP7uP8RpJdMefZ8oTNA9WKPWMkHrvQ4
+         0EDwYZIYVnLJsSemT0msnGLMqFhMKuk4Dgv++96Q0v6mS0RNsDkig9WcT40aqrc5Q/ZP
+         KTQvF2GHk+0SLyodeJuDNWtz6mM922L0VqSjINr19G87vX2YhdGIdpbn9w1OR0gNfrrV
+         YA80STcTMFbLyLoVjqNgh4UrqwGPpahlWDVwIxHLz7GCLa78O/MLv/Djsor2liS/awpP
+         RZb6uDj4L/Xc+oTtWIes+OgGGBzE+T2LYTrYfn1THeLqazb312TL3J0bA/M+WHYabnB+
+         fyBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794427230; x=1795032030;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=p+2Z0iAhcp8VOXafcysdCm6gOgr7IJoVThJ4qYkpC4o=;
-        b=gHo7kEbKFmD3vG2yuURtk1y6p6xAXgzZF9zdqyKYH93bx5Cxd7AP0UvfcV/vRuVlz/
-         t2lx8FxxVNUgG5mCldMv1x4E7+pAn5qSDPPEcrDqSHElCpfmmk0TRKnSYmWGROlqhve+
-         RfOZYqhlKfFtuxwCqWisMlAdl356H8CxmwfM7pEI1HFe7M/v+lBIHcz9qUl/D7JTi/TK
-         WZqBfDdtsAXoayRt6MIMKClaWQINGLzgbBK+ikFHiN7QI/lEaTTBEbFEhbcgmcpxspIm
-         qbcAJOrv+BGHp2+/TRu0QT1MwrJcw2wg0uoDfryq3XBO7yaOclwid/JbCYHGgtUf5bGH
-         v/CQ==
-X-Forwarded-Encrypted: i=1; AL+hErELbV9ODthRlCD6NNpTTyBrDyLPZzZC9uB9uenmtt3WhWN/13b+AZVneup9u66P7Kg3YvxYgrQHQYc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9BSbSa8o7X14Y2Hiy3yrqwUl+x+xrTSYdYbBOq6EdoxvANyGhu
-	dFoA+x1S5KV9nTzcUdc1TWGxSx8T1gAOdquNMzHy40NNiYpm734tKzpY
-X-Gm-Gg: AYBFou0UoIbvuQGll343cJRASVr/GK+WOJ15szv08T5CRJy4rfJeTCQ+jYNlcQ9TRnc
-	J1rlJ+mdxCnbfjL4sg0ytuVZ6riCNCodqdcrLNGgaDS5qUZ0AmVhObNNQNEriFOqg8psXqjXfau
-	rdgUJj7YMMMFRdVWc8WPNwuSn0BHOYUTLTmULxDmDvF5mcMn4qRtYNuQMfag3APPW1iOzOiHV+c
-	CK4VLTaUX+0iZWJsOmugTVNBHCeilN8bALvkS87STbXxOfkCQCXPcS1tLKq/mrzsbcipO4Nl3Jd
-	NhJp95fyFhRGcb7tEH2cMsH6sdo7ZPPhOA0DG5IwKgLfbEQW2I0WNr7bZxC+B/RBX8NyCbmqtXI
-	GfHbj4v+QY9332xpISHRWg6bz/aIvbGXdmrt1Lt0E/Xu5u2ZoPb5UkQeaTNA/qyz4MYA6R1sI2o
-	jEzEml/iRbfEam6XbsEmYMc1DaCHqMbIShUNtpApmy4hTf7tVoE2Sj1e73pqrb7rtdVah/+CDtD
-	kxkO4nWlsU6V5cnxXxjZnnN3yGEZt41njhbYnJve61DKUhy5GxseTfNQmUVA69haSFVe0jtnZ/9
-	z/t6u9kxL5Cpc3NQsw5XQxbnk3d7jE1D+j3e3+GnndDNfgyyzinnrwUrRdz8rdM+VLw9f/l7LHJ
-	oEsv1ak7jL8nRcovc/lS45NHpkN5/+F+UAPMD
-X-Received: by 2002:a05:6512:b8e:b0:5c1:5cce:7f1d with SMTP id 2adb3069b0e04-5c15d58a87amr1050525e87.9.1794427229586;
-        Wed, 11 Nov 2026 12:00:29 -0800 (PST)
-Received: from yantra.. (nekmmqtce067ylb1za0-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:5558:447:baa4:a7d8])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c157bbe89csm1102957e87.81.2026.11.11.12.00.28
+        d=1e100.net; s=20260707; t=1794428421; x=1795033221;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=yjMHwJowCgljXYdOuz17suaOhns7jTmqFcuqV1/rikE=;
+        b=fckNinfCgFlXVLKlO+yB06xTmqhPGI5rgSAeEz5bPU+tIl/LJ4FKsG6EuyZOp8uxVC
+         0EJ2tV4YcKiblre2Ox2DflYWMYD5pMN584BN1MIeZv5Hyr95yvUxLFxmwQ38JJKmJm6H
+         YFDv33fissMvXnrSk0DONm1ZxaXaILMQzqfdfGBKyqO3G7/EOeLuJiKA9k3goVLnC7/X
+         DjmUwUCVM5+EvDlI1ICIVfsKSdpkQOUDdCyKX8e1Kq9POy7eXbPzJbjNtuRq/8ZXTBAM
+         6eDjcK2mdodhQk7b88tE2VkaUchLBPVtSQ09rmde+hyWDBD7c7TXGxcLkjsHEoou44E3
+         C2LA==
+X-Forwarded-Encrypted: i=1; AL+hErHTnePvQ5faaIDwDAsp2YIc1BxqHUcjTqdU1lsXNu4G8RCfSsGzJmpfd+YqnwTplYCDzrsN2eavCY0=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9b8EwXxcpuQ5QjSbCYpMyffwSe0sOG+F87vpqsnRjHIX5/fUu+
+	p6RQ0ko40iiVTNOXcmCeHxSIujn7kQrLwlnPVrEvosS0MKuxx7IFD8n2WckH8IVv2A==
+X-Gm-Gg: AYBFou1asB8kFSulHGPrpKWuqOHA5hSUp5wPIEY6XSu7ja8clcWwCRd6MQcXBY3MRqg
+	YdDiEpQ1/TGYmvz9LieZD/rc04WfATwuvPQRxEJ56wnwuxGWrorNCjtVJzDrUYURlfTVJfljcT/
+	flEv3EvnHcp4CmhTexwsiFFMM4fVtc7XyBDxkBK1gbGEJBdCUWUHRi91PfP/RDWJJaQcMv8Eryr
+	TwqJsFx0w4zTy2HMDjJ4GCJ9i9sfG+MXGsr7Z3DvRitcVbEEK+8Wx6RF3lTAFz86vGqEVKidyON
+	mESnWjtG5mxwJaSJ/rDo4wojZGbLgjTH+Oy/cQhYZJMMJfw9yDwUILnCR6I0HPN+koSHCjGubqi
+	Ohycm+ZTUxK4clOLyHqzVAKM2OKeRoixBcBVeex9+LbxHTbPdvc8ML+Wr2NViwylks4WeNtDqzB
+	vztpqMaVx2Uc0eoTSlHH6LWu4IztYwcGIyz/Ia+rvBGeUWGTm6CMwixCd7UzMZK13lcxbopWfZN
+	wojW3OE43Iy5NnyuA3dAtKMXsD2QCBcsUqfkJQPLBfcoAaJmvrRLqJhsaOlgfUf/GvvnBTvCrbD
+	/K6t+qY2aYlx80/dM0H3b7wKi+nTyMI=
+X-Received: by 2002:ac8:5713:0:b0:545:c5ec:fa3f with SMTP id d75a77b69052e-556c04f0896mr55320911cf.45.1794428420597;
+        Wed, 11 Nov 2026 12:20:20 -0800 (PST)
+Received: from rowland.harvard.edu ([2601:19b:d01:d210::d355])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5550b93ee00sm57646591cf.16.2026.11.11.12.20.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2026 12:00:29 -0800 (PST)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: sashiko-reviews@lists.linux.dev
-Cc: Andy Shevchenko <andy@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
+        Wed, 11 Nov 2026 12:20:19 -0800 (PST)
+Date: Wed, 11 Nov 2026 15:20:16 -0500
+From: Alan Stern <stern@rowland.harvard.edu>
+To: Brian Norris <briannorris@chromium.org>
+Cc: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>,
+	Fabrice Gasnier <fabrice.gasnier@st.com>, linux-pm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, Ulf Hansson <ulfh@kernel.org>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Subject: Re: [PATCH 2/2] iio: pressure: dps310: add a data-ready trigger
-Date: Wed, 11 Nov 2026 22:00:25 +0200
-Message-ID: <20261111200025.38344-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <sashiko-outbox-208073@kernel.org>
-References: <20261110154254.39092-1-zoone.rupert@gmail.com> <20261110154254.39092-3-zoone.rupert@gmail.com> <sashiko-outbox-208073@kernel.org>
+	David Lechner <dlechner@baylibre.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Subject: Re: [PATCH v2 3/5] PM: runtime: Propagate last_busy from dependent
+ to dependency
+Message-ID: <fc43eb13-816b-4cd0-9711-848fdab605ef@rowland.harvard.edu>
+References: <CAJZ5v0jWCz0XDgzeETbmMfGOmvh2G9qcx7xLODrpQ9NiwsddKA@mail.gmail.com>
+ <auuICAm4BC_8Pzs5@google.com>
+ <CAJZ5v0jTX1FgeS9FCV=+V4uacSgLQBVsSPnU27ybgUGg57GUOA@mail.gmail.com>
+ <auzlLwlleGLPsLcw@google.com>
+ <CAJZ5v0g25xQeRaLJWJyAo2fcJko+gZ7w6JhX7FzMgRx2+uuimw@mail.gmail.com>
+ <au0oKFb9CmNzc6Cg@google.com>
+ <CAJZ5v0hKpjMsGQm8Cpa89x5wkNxqkggDNbp+eQ0S-E52DETWjQ@mail.gmail.com>
+ <avOw_4ZkqtKFHu1B@google.com>
+ <2c3bda2b-ccc3-4430-8e09-81b25f6fcda7@rowland.harvard.edu>
+ <avSa97F1Nu1LTSCA@google.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,21 +114,117 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <avSa97F1Nu1LTSCA@google.com>
 
-On Wed, 11 Nov 2026 02:15:48 +0000
-sashiko-bot@kernel.org wrote:
+On Wed, Nov 11, 2026 at 08:42:31AM -0800, Brian Norris wrote:
+> Hi Alan,
+> 
+> On Tue, Nov 10, 2026 at 10:47:59PM -0500, Alan Stern wrote:
+> > So yes, in the current scheme a parent's inactivity period doesn't start 
+> > until all its children are suspended (unless the ignore_children flag is 
+> > set, but never mind that now).
+> 
+> But to be clear, that's not actually how runtime PM works today. It only
+> works this way for the very small handful of drivers where the parent
+> calls pm_runtime_mark_last_busy() in .runtime_idle(). I think several
+> people have acknolwedged that this is a bit of a hack, or at least a
+> missing feature in runtime PM, and probably should be extended more
+> widely.
 
-> Should dps310_fill_channels() read pressure first and use
-> dps310_refresh_temp_locked() like dps310_read_pressure_value() does?
+I have to agree; it seems like something we missed.  But then, I've 
+always had something of a blind spot for pm_runtime_idle().  In fact, my 
+overall impression has been that in practice, drivers relying on 
+pm_runtime_idle() for anything nontrivial would be more or less mutually 
+exclusive with drivers relying on autosuspend.  But of course, 
+maintainers are free to do whatever they want.
 
-Yes. The wait came with the triggered buffer support, so it is older
-than this patch and holds any trigger faster than temperature to the
-temperature rate. Fixed on its own:
+> > The parent's autosuspend delay therefore 
+> > should take into account the expected time before one of the children 
+> > may have to be resumed, as well as the expected time before the parent 
+> > itself may be asked to do something that doesn't involve any children.
+> > (Note that if a device has more than one child, the expected time before 
+> > any of its children will be resumed can be different from the expected 
+> > time before any single particular child will be resumed.)
+> 
+> "Expected time before a child may have to resume": isn't that child
+> last_busy + child delay?
 
-https://lore.kernel.org/linux-iio/20261111195118.36853-1-zoone.rupert@gmail.com/
+No; that value is the expected time before the child may be 
+autosuspended.  Not to mention that you're mixing up clock times 
+(last_busy) with time intervals (time before).
 
-With the fix, this trigger keeps up at 8 and 32 Hz with temperature at
-1 Hz. I'll mention it in v2.
+>  So that expected time is already in the past by
+> the time the child autosuspends.
 
-Rupesh
+You must have misunderstood what I wrote.  Think of it this way: Let's 
+say the last remaining active child goes into runtime suspend at time T.  
+Let's also say that the parent expects none of the children will need to 
+resume until time T + D.  Is D sufficiently large to make it worthwhile 
+for the parent to suspend and then resume?  If not, the parent should 
+remain active.  If yes, the parent should autosuspend -- and the length 
+of time the parent should wait before autosuspending is on the order of 
+the value of D (let's call it D*) that corresponds to this crossover 
+point.  Thus the parent's autosuspend delay should be set to D*, or 
+something close to it, in order to achieve both objectives.
+
+> My point here was that I think Rafael was overly concerned about
+> precisely tuning parent autosuspend delays at the same time as changing
+> the runtime PM core behavior. Yes, they clearly can be tuned in user
+> space; but he was suggesting a phase-in / opt-in approach to this
+> change, because it might harm system power if it's not re-tuned.
+
+Is anybody really trying to tune precisely parent autosuspend delays?  
+On what basis?  I'm doubtful that anyone is sufficiently serious about 
+it to be annoyed at this PM core change (i.e., setting last_busy when a 
+child suspends).
+
+> > > At the same time, it makes it harder to reason about the runtime PM API
+> > > surface -- because currently, .runtime_idle() is a primary reason that
+> > > pm_runtime_put() and pm_runtime_put_autosuspend() are different.
+> > 
+> > I wouldn't put it that way.  My feeling is that pm_runtime_put() could 
+> > be replaced by pm_runtime_put_autosuspend(), since they should behave 
+> > identically for devices that don't use autosuspend.
+> 
+> Ah, but that's not actually true! pm_runtime_put_autosuspend() skips
+> .runtime_idle(). It (semi)directly calls rpm_suspend().
+
+Like I said above, a blind spot regarding pm_runtime_idle().  And/or an 
+impression that a driver might want to use pm_runtime_idle() or 
+autosuspend but not both.
+
+Anyway, pm_runtime_put_autosuspend() could easily be modified to call 
+pm_runtime_idle() before rpm_suspend() if the device doesn't use 
+autosuspend.  That's not likely to bother anybody.
+
+> I appreciate all the responses. One particular part I did have questions
+> on, which I'll mostly copy/paste:
+> 
+> [Rafael:]
+> > Now, let me acknowledge that some drivers evidently want rpm_idle() to
+> > always set the autosuspend timer instead of suspending the device
+> > right away.  That may be because of the "unwanted parent suspends"
+> > problem at hand or for other reasons.
+> 
+> Do we have any idea what the "other reasons" could be? For example,
+> because driver writers found it too difficult to find all the
+> appropriate places to call pm_runtime_mark_last_busy()? (Does commit
+> b3db492e8335 ("PM: runtime: Mark last busy stamp in
+> pm_runtime_put_autosuspend()") help? Or should pm_runtime_put() behave
+> similarly?)
+
+I have no idea.  Outside the area where I mainly work, I don't know what 
+sorts of things driver writers are doing.  If you know any people who 
+are doing this, you should ask them directly.
+
+> I see that USB is one of the subsystems where .runtime_idle() calls
+> pm_runtime_mark_last_busy(), and I thought you (Alan) might have some
+> more background on that.
+
+I don't remember exactly why that was done, but probably it was meant to 
+carry out the behavior we've been discussing (autosuspend delay should 
+start when the device and all its children become idle).
+
+Alan Stern
