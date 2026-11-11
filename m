@@ -1,102 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.20
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794362910;
-	b=OV6+8GujdSOgCCkUcyuLdwemAFB3dhLODIFz074jMzj4c1Tg6D8tAKU167PrOMOwp3yR
-	 k3KgkocRKRv7bOxWKMirpmrpSb0NgH/es2PzliUmx4nQAmCopwkpOrSUVdtoPleA9fzK2
-	 2ZH9ct1iYV7KSnfRBT9ZRmoovLomd6HyFjnsfyNVxirMOZ1XC0ES5xe4BOp+pAqv89bSF
-	 r0Cn2uPPTZz0ux25mXI0j/OPH1ps64+24CsfzpwZiWcMPrukCnDS+/+CSrwbr/NunXJKB
-	 9fderLnKe8XgG99S/4PlY6dM4WAsSIN9EMUZRnROfzXBJmB5zppgakUGgIME4ST6oqQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794362910;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:
-	 X-Microsoft-Original-Message-ID:MIME-Version:
-	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=nPNc2OM8u7bLEgvo/SguSftNhmsxCeRNKpZIyE2R+g8=;
-	b=z6gEYr1kjdUkdLU3GoMAcJ79KJbJdgvPddM+mZmtowSQu3cYQPI8NEmFIj6ReVInoXUT
-	 4zjGEgiy3XVBu4YTl3XP3c3+De2RjYY0JjgQ1H3qojDTDpqJY3+OYJQG2l/sdUpstERZX
-	 8NT9lurRbocknOfVYzROx4BUTZWaeniumOlKHkFswT62Xtgo+4GjEnAnFy8qQmeKzXSBB
-	 JSqY4ZfaBBu/OG4rlhLi8DxIhd/quAk138tUxCd/Mp7Rsl1p/BxoQ/9W0G+JnKIWWUVwm
-	 TPc+A+OrtDcByX4G81M5G0DwnbQgb4jEvFF880oKAsYTQ0gbkDJLX7gKsFky0x04/YA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=outlook.com;
-	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=iiIIRphl;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.20
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazolkn19010020.outbound.protection.outlook.com [52.103.13.20])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.177
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794363357;
+	b=aPgM0c0UAKGReaF4IQbS/yu/ezR0eBSVa+tckgPURudrlpLrQ+z7H9/V4wsNm5/qBMrB
+	 MAgsinavknxf8h1ZnEtALLm6q5XwZCTBQV2fTnj4OVc4Ejr6CoHQa1Jc3S1ONRSvUkbLL
+	 jQWpimKXPCT9aJtRvkjzJMVTRNQ/fVl+F6VoIvzwIvuAdzmwSEA+uuYWTZeZaAoRP6znq
+	 aG0Z1mKVgyIItiARFACWNYQ6nIjxuC3WdmLPbV5buuQWWhv+AYE8hkTsVU2hEXHl4vBzR
+	 fVbDhP8QOj9wgzli0Q5H62iEb0CjCjJfTPYb2Oe1/LTaVDYvqzYSXCaL3QyA4rfmQEQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794363357;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=T+BHmu+//774PUA/C/Ol2aryXkGv6dUO8fp7NLeJH6s=;
+	b=BdVovERY8MtdEUer887CzQhKHncJ5X2+Sg2C8hMDAfuKEMJhakdfd3QspvybJMvAU8y0
+	 cPWNOSkvXx/cJFY5HishJVEKMyNoLLrTO6t3y+6N6kllzQUbFS3thqi7y43reSzNHnLp3
+	 /uwVC9t4T/TBoDIt/sARQyRTQ9NlnUiyDdXIW6vTILndoEvNhg/kL/YoYK3h9totsJHdx
+	 PxXPzkcGyozNdkwSeTONEi6u0Mt1m55cmJEZI0zkgUHv1lzwqAyuUB774Fmt4eRi+Wa4X
+	 xsKXr0yVGrexorWfCeUY9KJHjUwCSsDsjCvhCwesmNWZK+HdfQwXBnm7X234ZZAICYA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CXt+3qNM;
+	arc=none smtp.remote-ip=209.85.215.177
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2507606A31C;
-	Wed, 11 Nov 2026 02:08:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A2507606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E8CA60A260A
+	for <linux-iio@vger.kernel.org>; Wed, 11 Nov 2026 02:15:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1E8CA60A260A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=iiIIRphl
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vlYqe7c4uTKTQKpeXnnCSVeeoJFVYogDqf7aDRMoc50U4SBxvcXClfd070dtVtElNNfU+qH88lvp1xHjg62qwUpsSuINVCwyQc9nWh0gO73a5p82l5IVKsr94L4uaCrkufDM+NA4OkRuW1vhvxvoRbC4fC36ipBp0Gb/Ue4/raDrswQuq6PMYRCsnzAvEBF9k7WikkNwx8xoTYVXysgsq6HqdcMQ053NLeZ5XJwX8EQU1P3VeydGOdYPVh1tyuXASEHB0/a7Ypw7WZR+lejDKjkLYvx+SEZDpMs7d+u/pfZvGMFXCPnrje5FgyXvmIBEJ/QQ26j3rMCbi2sFh/kt+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nPNc2OM8u7bLEgvo/SguSftNhmsxCeRNKpZIyE2R+g8=;
- b=gX/aTdMkSIA7TceQAqV0IabYuRvAtsz/450bVXAkHjbSx94lR50yV43QW57dFRCYPepXShEbgvEQIRQQg9lGt0aYv16IQuW7sHfGWXqcPVyWU48Njp/nX3PYI3Uc3xTEIHqJRWV4wQJ4TRWcFAqeDhXVGJbjA2fsyaeYu9u8UPhPCnJ2JN/1Br2UffRPBFEhOkKX+8Kgp3ATSqmEbHCQl40XVlU/xI/vESg3AH0L8v5Cw4u64BMlT8JqukuZSgEwhiQcaFMK59dP0EFJNMqowTnJqhDAY45TDh72TdTgJyNEvHyNnJl+2tzF8igxYkKdlAWmPHQaOhUtlGEjHEeGcQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nPNc2OM8u7bLEgvo/SguSftNhmsxCeRNKpZIyE2R+g8=;
- b=iiIIRphlX3Bly8vNEkBoI0D1SNNOEwnExWAMvkSkvPW8bK4G1krY+bAaqOilR6MMC3PRVM4EvvcbuzQgmhfc7thHyvuZFIftYAqjE73EJNKT6xkcLz4ooO8ggvUdBKXMg44nfO23J/0Od4DGXV2VOZXsXDD1ZjRkJykQFOKyhlcLZIUbbS72eTD+yPrZ4QSUsvXUJ9yZeH82RNLXbNBENVX+GDRdAFPSN1pLlmzh5TtDvJCfdtvO14/7rhqcMSji7qJE8trpQ0TP32pcdFFlKWDILLw9kw3hywliHNmov0R3DvSSXgyDYWQSEF2gF4+TjFOmZIXsMIn0lb7eXcahGg==
-Received: from SN1PR12MB2528.namprd12.prod.outlook.com (2603:10b6:802:28::33)
- by CY8PR12MB8409.namprd12.prod.outlook.com (2603:10b6:930:7f::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.12; Wed, 11 Nov
- 2026 02:08:13 +0000
-Received: from SN1PR12MB2528.namprd12.prod.outlook.com
- ([fe80::9875:58c0:928e:cf0a]) by SN1PR12MB2528.namprd12.prod.outlook.com
- ([fe80::9875:58c0:928e:cf0a%6]) with mapi id 15.21.0592.010; Wed, 11 Nov 2026
- 02:08:13 +0000
-From: Victor Chernyakin <chernyakin.victor.j@outlook.com>
-To: cwweng.linux@gmail.com
-Cc: andy@kernel.org,
-	conor+dt@kernel.org,
-	cwweng@nuvoton.com,
-	devicetree@vger.kernel.org,
-	dlechner@baylibre.com,
-	jic23@kernel.org,
-	krzk+dt@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com,
-	robh@kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: Add Nuvoton MA35D1 EADC driver
-Date: Tue, 10 Nov 2026 20:08:03 -0600
-Message-ID:
- <SN1PR12MB2528F7F6F04801AB698A5A60A5712@SN1PR12MB2528.namprd12.prod.outlook.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261104091136.151269-3-cwweng.linux@gmail.com>
-References: <20261104091136.151269-3-cwweng.linux@gmail.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH0PR03CA0181.namprd03.prod.outlook.com
- (2603:10b6:610:e4::6) To SN1PR12MB2528.namprd12.prod.outlook.com
- (2603:10b6:802:28::33)
-X-Microsoft-Original-Message-ID:
- <20261111020803.1121900-1-chernyakin.victor.j@outlook.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CXt+3qNM
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-cdab8873d9dso1148945a12.1
+        for <linux-iio@vger.kernel.org>; Tue, 10 Nov 2026 18:15:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794363355; x=1794968155; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=T+BHmu+//774PUA/C/Ol2aryXkGv6dUO8fp7NLeJH6s=;
+        b=CXt+3qNMRUnbm9t+MkTTz3ayoItXXbLXGTb74ZqGgPCAYHfi0DgG/z6y5RITKqItsk
+         k6vvHupJDYBt9YcOMj1oXW+YxBam1oSfWseWvPvBxUfYbjgceCN/TaxzLrmJACeAFMWp
+         JS62vrb1VX+E9RFoZkNgBEVCriCTfDiVjpT8xQsYSK2aR/vkWhpHE5KeqS0isSjwdPpa
+         k4tBoQoxvFvaalIeSSHUTn13nE/54eyRsv4aQeeOyJrrwR2/m27MeVGYf4eL20Z9DfM8
+         /h04UGc5MrxyAuwJN9eNAqC0/eQVvYXSkKeGn9/QlmKdQSoEb5QZOd3PZFpg5gjrheq2
+         osuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794363355; x=1794968155;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=T+BHmu+//774PUA/C/Ol2aryXkGv6dUO8fp7NLeJH6s=;
+        b=Dt7JQd3bjyntGzpnRMh6s3eJGKqb/5Pm5bWc2E+PoZPTPQYLUOhEUViJaJFu3FUC0m
+         TU5ZhOduen+49htVR5SOqb+k5xnqTTY0cPUzTea36SZ1cdshkAMi0vgghm9Q78JMoH6n
+         p5l7qehKIdIgCbL1o5cF0nGlkf7o7cS1Wf+RT5TJMxoOknCmqEHkfFWBbitILVX523Md
+         VL98lzaB58rMZodDI+k4uDzkLelaMhkFliAiqjx9hbEwEj3rqwYD5ztekhq3ArxjnD32
+         iA6s4/IDsbGt8M+yMk1pf6fnncx9DqXnFZIxy9tk5NGdPipfVIjycHgKXPbiASYOKrr6
+         b7rQ==
+X-Forwarded-Encrypted: i=1; AL+hErHaTdbf13CSxcNxi7zyQRxO4A/KMF9UnQjno1sSaFdv9cDqPm6zZThlNemlLoe7GlqPtxbP6UFXClw=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/b+AjSQudaaPa9hS4fcapw0nGYIzYR16pgEF/RGJklmDAdPE6p
+	QEhBBzVTABJmdc74e/K6XuAOLR7bWEaIKBZaheoULUHYuDdVYu9QQTRA
+X-Gm-Gg: AYBFou1cbwA+KMIuus1VmPKNQvCpENMS5mtQP4kfYd9tubYnVGrwgX29c2LVTlR340g
+	i2BvPIShKM5z+/YdtQX2DHxubofID5TmJfypJeCM6XZpdn5R9g4P4GOMixJYqVqwDR6oiNBl99f
+	ghzkNuDrQSldPvoWbsOsLOE5MStIrhMuX//Nlz3IrGXKQlCbRq7tUDng1QAfW8jkgsee3jjLV5u
+	p6BkVt20ZeS/fiYOiOxxt5y7QHdJW9DMk9Et6QRqGilrh//g+UCCeSTdGuNLtfolpMqgh3yQKow
+	Wydnsz56+/Gkf/Z3y55YU5a8tma1cRUv3r7yaTHE5zGucN3dnK+R/GMBJvDCHmj1Rb+5Mg6ZyXT
+	36G7hGxkVp0pmtIAwnjypnE/HUBMsF6XeG5tIIPHXrv8Hn+SD/F11DFIouJBbZaHot+6wO7WCNK
+	6KYgfjdnboeNEOp9sub9U7GEL6Ou6gCO2+4Joh9wppdP03/o0oFWO3p0FWJK9/eCaGmOvPN0rCg
+	NEjFc8ga/x/U+toouVY9mLajciuwafUkPij9D7y+tlGttJb48e4ga51ZehPbP7ZLm6qc8xILrn8
+	rS49+zY4s+ixDaEx1X5pu4cHXMgB8HVFa29fjYYGgCTLwYTZssBaCf5qhbpcj5RagkfAzWV94yu
+	+9VYP0gRCe1dw+sCcWzvrlCwn8w==
+X-Received: by 2002:a17:90b:2e83:b0:3a7:8350:3f7e with SMTP id 98e67ed59e1d1-3b182fe6fc9mr915474a91.44.1794363355359;
+        Tue, 10 Nov 2026 18:15:55 -0800 (PST)
+Received: from [172.19.1.42] (60-250-196-139.hinet-ip.hinet.net. [60.250.196.139])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b17e1d73d1sm1920215a91.11.2026.11.10.18.15.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Nov 2026 18:15:54 -0800 (PST)
+Message-ID: <f01f7e4b-8c71-461b-bd1f-28de2594abbc@gmail.com>
+Date: Wed, 11 Nov 2026 10:15:51 +0800
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,110 +93,195 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2528:EE_|CY8PR12MB8409:EE_
-X-MS-Office365-Filtering-Correlation-Id: 05408700-a35c-49a8-5018-08df3f98a36c
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|260925184616899003|24021099003|4140399003|25010399006|22121099003|22091999003|24121999003|23021999003|41001999006|39105399006|5072599009|19110799012|15080799012|8060799015|40105399003|26121999007|440099028|3412199025;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?8O2xGncXhaXosalckQDdHB2cHHzLBLWf77ld5aLp5hJEmNxwpjBY1iv7F7UH?=
- =?us-ascii?Q?pibcB7o/ZAAtYsddQ50YkaIlGTkCKdoUwpOO9wmw1wyzKoLK73EFEXvQ/8k0?=
- =?us-ascii?Q?yg7+dNQkKfoRaEMqoBSeZGPPnlliD8M3B/FSIhLAB5TjI8U+YvaBmbpxdos+?=
- =?us-ascii?Q?ltsT81N6jSM8hgvUTCfTvt9zUOQEewmwRXCTIUyrpQFVSbazgxcP4yyMZ0pg?=
- =?us-ascii?Q?/lsHRPj8oyfyRGo1CJ3K+G+iUp2XB5ML9UWccemWjy1v8LfhEhzXgbUKqHpg?=
- =?us-ascii?Q?U27vSPC4/DKWIYzvzIuXAt3040nxKkL+HNwpIWDwL6mdHMZRtY6rs5Sux2Y3?=
- =?us-ascii?Q?xT8iiJjy2GLxUqJPD2GDZW9/HNnYWyQqjx3OWTcAqnStjMFg43BlA5A7D0oZ?=
- =?us-ascii?Q?ZY46tWYMRXgvxexmD8JlodznlQLbuP4Jr6hPmOqCITutTR1fdWH0EE1l/2Ad?=
- =?us-ascii?Q?TH6a78lFkeqB+6jRUXznlRPUW2SJDwLI6yueD0wK6zx126gxLQZycOMhYQLF?=
- =?us-ascii?Q?aIQ+/z3Jx9CjJEnCAaTRa/U7U8SSYjG3EbiY1QvNuIVwAs7JM/4ABafj/Nip?=
- =?us-ascii?Q?1xttbR1sXvO0Py3H5H4LY2YNb+imsfBIlim0mN5ZRXHdIp9A25Yi1E3wLuoo?=
- =?us-ascii?Q?8RKSl7xPF+CoBeQeCddAMEVYQIeGGb9l76CoYA3f2CN9yGWn8M940gemHBUy?=
- =?us-ascii?Q?/dAhIQ1U1GxOgE7xnDRv4PvtksWe2ns07H8y3YhCjwvNtaDkp8Jy+Y/TEkoX?=
- =?us-ascii?Q?lX1xmrmp9YFKs/RxBnn2wMRi/IzkN1Yt2xF5s3u/GzOiOwO9wsdBdfeGONJk?=
- =?us-ascii?Q?85mJ0oqVYqvAUqf1lgfiwevqGq8yyJbOmKv0BkPVJyEJox83sR4LKTV8jxvS?=
- =?us-ascii?Q?AGqvzDJXrFnQntp41VoER3J3VZlBCl+hCIPo7MbJqoUXm5llIUIwqxHavjaX?=
- =?us-ascii?Q?u168f9+tlys3CI7FnmtLTjp1oZxXnQM/qkL40YQTI3WpAygVNrHHg2TjhK2L?=
- =?us-ascii?Q?UstsEF60ZdYaIkSo6Zx/q5SPfpcOi5AmNSfoziqoIxWNfBJlGV+mH0oepYjB?=
- =?us-ascii?Q?v9ttWDUnx9S2ts4Qm2BIkwEfisWAryaH1HKOtkP2txzsjYWNK+I=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Wj6Kc8iNA8i1j+qb4aTeICGrEL9wlgDmIXLKOBaxdkMkoMtr8F+fr6WS4h/+?=
- =?us-ascii?Q?GP0EkM0GJyBwoKkz9lV9qVuykbdTEbh9N2A6JLn81TiXuPkpO52St+Zc1HwV?=
- =?us-ascii?Q?cfmQr6eaIq6u5h0TmPf0LnzK23MYrOt4mjIhfCiT42oyTutKFZMidulR/D48?=
- =?us-ascii?Q?zndY88WYqLHn8lMQaiWnFIHeuZxUKQG/d1Ric79npF2Xl89xePsisF9lS9qK?=
- =?us-ascii?Q?Mzj2LqcCiJNC7MH6FsA/Q3VuYVaqRE3s5qDGgYcB6XF4pq+dTMeuZlNGJrtt?=
- =?us-ascii?Q?cpg558W/n9wUHC8ABlCC9RnttvdjtkEzsRWcDbEGYTxrSTLWSA54UTpclzRU?=
- =?us-ascii?Q?Mgox9eSbxn4HdtJdBtY9MrUuuKPF3ldoXJZDkRnkulKeXbLKOKxDyJk0wiKW?=
- =?us-ascii?Q?Tgr42We/yyo/dLSmJZR4PAyALlI7GSgMmyHhbKTo4r/M1MAlscBFSt4Ewf8x?=
- =?us-ascii?Q?nTTkJcze0Tq+EchtkROFmhsiNiK97vf9uox07yFGDKKAR1/7chxOCLufSrsx?=
- =?us-ascii?Q?oQxQmLut7l8jz6Zf+8xM6odxOV962DfNiWR2Ohfj23bT806LmQOfboNxWHvw?=
- =?us-ascii?Q?E1A4uFEyksYwfcWyE8OzLdBmnh5BbsrUu/XQobvk7ytg6KrTSdPx7FsrJ5gI?=
- =?us-ascii?Q?p6/TlZ/Y00PZGkJVUr7mntHf/P6nn3DsdodIcqgLEMbmxBGqEbzF9xMntaEa?=
- =?us-ascii?Q?bpz3J7+Z9/OdsOIUWqwFJMq0baZtj/OUVoK6MJwcuOIb8Y3AI0cXP5XP/Vay?=
- =?us-ascii?Q?vJP3pIUpe04vJcqOnhof9XO4suunc+Ve36Gtme6KXDp3u9KjuddSL28LkT9F?=
- =?us-ascii?Q?Ce2TLF2o3Z1uuTHJDk9RA+7pGnR9DGGPW/WC5senZSs07vGvL5VuKzTxbuTl?=
- =?us-ascii?Q?qR1iVjUvFJXtxkd6+ZKOp0JLTTLQ/IJD7MebMRk/zbZbGypNmpRMS945Pg1f?=
- =?us-ascii?Q?uTLOysiWv+tNKYZ1JxsTeioCZT1xtum/Oe0CVATxQnehd7r0iRB7Vozvasq7?=
- =?us-ascii?Q?bkLaVYkcUzdtkT0rB8TCxgVpw6S63YN6euIGMFuzqys1Z8CszxwFQRSOI5Iw?=
- =?us-ascii?Q?cOVUQck+xCDu0FqyMhUbckKNMs1WjophwLXLVEn75Rm6KyhCtkSCoMEM4y0U?=
- =?us-ascii?Q?aSGLAKeShh6TZCCDr+TMhE+hNd0gPJKNLjznZe3g8MgFQqfvOcwnnuBnoutp?=
- =?us-ascii?Q?1ZQIRZysMaoc+84K/6Ta+31O0SbtICWo7OHeNZrAhbp1I0mWuLyYT/jN++2t?=
- =?us-ascii?Q?u66A9WPv7oxRxDvsIHbNgYTw/rNgbv19fwEknJb8E3+6IDFvNRtsSYwr/85v?=
- =?us-ascii?Q?cFUG0kVi4co2DT6fgBH2LYJFpCU9Hp5oHf2v9ymY3nVxWsLfKEMLN7rg8XkQ?=
- =?us-ascii?Q?cdkqbDe7sfpaOGc8WXhoU8h//LRaoDl1F50k/zupNgY4TUoSDw=3D=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 05408700-a35c-49a8-5018-08df3f98a36c
-X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2528.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2026 02:08:13.0026
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8409
-
-> +static void ma35d1_adc_trigger_capture(struct iio_poll_func *pf)
-> +{
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ma35d1_adc *adc = iio_priv(indio_dev);
-> +	struct {
-> +		u16 channel;
-> +		aligned_s64 timestamp;
-> +	} scan = { };
-> +	u16 raw;
-> +	int ret;
-> +
-> +	guard(mutex)(&adc->lock);
-> +
-> +	if (adc->suspended || !adc->scan_chan)
-> +		return;
-> +
-> +	ret = ma35d1_adc_read_conversion(adc, adc->scan_chan, &raw);
-> +	if (ret)
-> +		return;
-> +
-> +	scan.channel = raw;
-> +	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan), pf->timestamp);
-> +}
-
-Do you need 'raw'? Seems like you could read into scan.channel directly:
-
-ret = ma35d1_adc_read_conversion(adc, adc->scan_chan, &scan.channel);
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+To: Rob Herring <robh@kernel.org>
+Cc: jic23@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, cwweng@nuvoton.com
+References: <20261104091136.151269-1-cwweng.linux@gmail.com>
+ <20261104091136.151269-2-cwweng.linux@gmail.com>
+ <20261110190827.GA1322356-robh@kernel.org>
+Content-Language: en-US
+From: Chi-Wen Weng <cwweng.linux@gmail.com>
+In-Reply-To: <20261110190827.GA1322356-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
-> +	num_channels = device_get_child_node_count(dev);
-> +	if (!num_channels)
-> +		return dev_err_probe(dev, -ENOENT, "no ADC channels configured\n");
-> +
-> +	if (num_channels > MA35D1_EADC_MAX_EXT_CHANNELS)
-> +		return dev_err_probe(dev, -ENOSPC, "too many ADC channels\n");
-> +
-> +	channels = devm_kcalloc(dev, size_add(num_channels, 1),
-> +				sizeof(*channels), GFP_KERNEL);
 
-Couldn't size_add() just be regular +?
-(Question to Andy who originally suggested it)
-We've just checked that num_channels is small and won't overflow.
+Rob Herring 於 2026/11/11 上午 03:08 寫道:
+> On Wed, Nov 04, 2026 at 05:11:35PM +0800, Chi-Wen Weng wrote:
+>> From: Chi-Wen Weng <cwweng@nuvoton.com>
+>>
+>> Add a binding for the Enhanced Analog-to-Digital Converter found on
+>> Nuvoton MA35D1 SoCs.
+>>
+>> The controller has eight external analog inputs. They can be used as
+>> single-ended inputs or as the four fixed differential pairs 0-4, 1-5,
+>> 2-6 and 3-7.
+>>
+>> Use the common ADC channel properties to describe the physical input
+>> independently of the logical channel index.
+>>
+>> Signed-off-by: Chi-Wen Weng <cwweng@nuvoton.com>
+>> ---
+>>   .../bindings/iio/adc/nuvoton,ma35d1-eadc.yaml | 163 ++++++++++++++++++
+>>   1 file changed, 163 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+>> new file mode 100644
+>> index 000000000000..85b0feac0236
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+>> @@ -0,0 +1,163 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/iio/adc/nuvoton,ma35d1-eadc.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Nuvoton MA35D1 Enhanced Analog-to-Digital Converter
+>> +
+>> +maintainers:
+>> +  - Chi-Wen Weng <cwweng@nuvoton.com>
+>> +
+>> +description: |
+>> +  The Nuvoton MA35D1 Enhanced Analog-to-Digital Converter (EADC) is a
+>> +  12-bit successive approximation converter with eight external analog
+>> +  inputs and one internally connected VBAT input.
+>> +
+>> +  The external inputs can be used as eight single-ended channels or as
+>> +  four fixed differential pairs: 0-4, 1-5, 2-6 and 3-7. The internally
+>> +  connected VBAT input is not described by a channel child node.
+>> +
+>> +  The controller provides four interrupt outputs, ADINT0 through ADINT3.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: nuvoton,ma35d1-eadc
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    items:
+>> +      - description: ADINT0
+>> +      - description: ADINT1
+>> +      - description: ADINT2
+>> +      - description: ADINT3
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  resets:
+>> +    maxItems: 1
+>> +
+>> +  vref-supply:
+>> +    description:
+>> +      Optional external reference voltage connected to the VREF pin. If this
+>> +      supply is absent, the controller uses its internal 1.6 V reference.
+>> +
+>> +  dmas:
+>> +    maxItems: 1
+>> +
+>> +  dma-names:
+>> +    const: rx
+>> +
+>> +  '#io-channel-cells':
+>> +    const: 1
+>> +    description:
+>> +      The cell selects the logical EADC channel identified by the reg value
+>> +      of the corresponding channel child node.
+>> +
+>> +  '#address-cells':
+>> +    const: 1
+>> +
+>> +  '#size-cells':
+>> +    const: 0
+>> +
+>> +patternProperties:
+>> +  '^channel@[0-7]$':
+>> +    type: object
+>> +    $ref: /schemas/iio/adc/adc.yaml#
+>> +    description: |
+>> +      External EADC channel description. The reg property identifies the
+>> +      logical IIO channel index.
+>> +
+>> +      A single-ended channel may use single-channel to select an external
+>> +      analog input independently of reg. If single-channel and diff-channels
+>> +      are both absent, the external analog input is selected by reg.
+>> +
+>> +      A differential channel uses diff-channels to select one of the fixed
+>> +      hardware input pairs: 0-4, 1-5, 2-6 or 3-7. Each single-ended input
+>> +      and each differential input pair may be described at most once.
+>> +
+>> +    properties:
+>> +      reg:
+>> +        maximum: 7
+>> +
+>> +      single-channel:
+>> +        maximum: 7
+>> +
+>> +      diff-channels:
+>> +        oneOf:
+>> +          - items:
+>> +              - const: 0
+>> +              - const: 4
+>> +          - items:
+>> +              - const: 1
+>> +              - const: 5
+>> +          - items:
+>> +              - const: 2
+>> +              - const: 6
+>> +          - items:
+>> +              - const: 3
+>> +              - const: 7
+>> +
+>> +    allOf:
+>> +      - not:
+>> +          required:
+>> +            - single-channel
+>> +            - diff-channels
+>> +
+>> +    required:
+>> +      - reg
+> 
+> The allOf and required are effectively covered by adc.yaml already.
+> 
+> Rob
+
+Hi Rob,
+
+ > The allOf and required are effectively covered by adc.yaml already.
+
+The channel-level required list is redundant; I'll remove it.
+
+For the allOf, adc.yaml currently has:
+
+anyOf:
+   - oneOf:
+       - required:
+           - reg
+           - diff-channels
+       - required:
+           - reg
+           - single-channel
+   - required:
+       - reg
+
+When both single-channel and diff-channels are present, the inner
+oneOf fails, but the reg-only branch still satisfies the outer anyOf.
+Removing the local constraint would therefore allow both properties
+together, which the driver rejects.
+
+Should I keep the local check, or move the mutual-exclusion constraint
+into adc.yaml?
+
+Thanks,
+Chi-Wen
+
+
 
