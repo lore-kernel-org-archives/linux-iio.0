@@ -1,68 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.139
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794448662;
-	b=tsz0kMCCm2TJvtGaLKi0+nS0h47xSO9JbmX76ZpoyE3QLTyGh1JNXlMjCjg9qs5iQ2KT
-	 WlIa1Pt38PRvYqdaAQaw6debxs+OjjFSBm20gASYHJqx3hHMfcfU1F9TXNfOGRYfAFFcE
-	 F2q34PKqlSAp4iSB9b8tDNRzuum3GErcF3VLxP5Rw0HJjziVf7rJm8i3iqgrON8Ni16Z3
-	 EfHbgn7bOvqvxaUN3ohD5Myf2VsgMrIbJeVu5EmjAH+P8tr8xIukPnTWTthv85CVAWY8+
-	 xCntx99KmHp48/kzzFptB8kphY5a9w5c1hpCtJNSswkDx5nOpxFBaOK5csOiWuO2cAg==
+	t=1794449087;
+	b=nYL0Olmlwj6JfDztgwZts7hZ8x5D3pMk+17hG/+cBclECAzLb6888w7gqzQyLyOjcyv2
+	 2HmWmudAKFTytaajrydsGJ+UenMv4C2SR7p6+9ZVTUExonNDas6ApEdFc6012unfrcg94
+	 dfHyKfLQG00+vh+EeLdiaQ5Dujpm4rBJstikfZ2mJQ0u6/geuxm1KTnv2jK2UfX9ExHPG
+	 80MqaCPUcs8EVFgipfu+xBsl5f+zQs3Irev+WslgtvdDMxvUk5loUwul02RoS9FnAMqMQ
+	 tRUkxozpIMY5lZDmHud17y38t8+eB9yyGyboGSFVkCJTGAMDIJHEsDpv3Pl9HY15dWA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794448662;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794449087;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=RlMi5qRbVg28z/a6dBARCAv0cTB7nwEjI1lh0Bith44=;
-	b=NxJSzYKwh59/f2jKawN9bbmPn8SlS1xTns/0u1Y5adIxeRySfq3Jo8O9exRYsPIendYa
-	 7GaiFuKISggL464UbFq2uUC1UBxT2/dDD5Rt3AP1fFzWRLobGZmqqbT2BAtfmbF9rlCoZ
-	 KF+v8S/Nz3vhDRpNCoVoS2d7cKH1AoyIEMfDQ69EAZZtFlDGznJ/zjjhAhkgKbth+sF4K
-	 DRkUAadXlH7XO15ll6pat79kjMrB2HbwEC46EDQKjwddBcc81WFMNh37DggOX2NM5t0vb
-	 9eIEcbMHyGtSrORW8WD6Azs5+ZqoY5iCqMvOhPnp6gkaoTvGSKnypK3k5mDh85gSSLw==
+	bh=SlrT5FMkoprSdPGG77EqIOzZqXql0Ov4MKTjkyte/Ss=;
+	b=Bbn04wD4p+8cOHd7Oj5KEqdJYKTGwOFZ7rVn91zPU9GsBTDXi+47FwOa3sxmYtmjShjy
+	 Uk9CrMVgtVJ2r8mXsss+fbjfH8QZ2U+RDRkarntMNm9gM4LAl1b/DoMFM6hZ1kr/pUYJp
+	 C+7mx5j+/vptsHLRL/mLbIjY2bw25JRAqp8Rt4Sr2lQKP1cFwr6CgRXKAq9JAD3I131+E
+	 BIpOXlqbScFdla3/qksgtwV5svGA+zJcDh1BhzI3R0F5Ndq/EFjWlGbG6cgjmtVPDaZDh
+	 Xo/qE8x/xfnc9CeyXnlu3EHKBX0EFIlEVhTKf0ggzmSA+e6CE5+qePJQadNf4/jUtbg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=b1eopLMU;
-	arc=none smtp.remote-ip=111.22.67.139
-Received: from cmccmta6.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B6296606A321;
-	Thu, 12 Nov 2026 01:57:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B6296606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TLhzPzQY;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84F36606A31C;
+	Thu, 12 Nov 2026 02:04:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=b1eopLMU
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=b1eopLMU7z+leSaQUWheyW2TWYbWGInAMthmPwR4O6Gd3Xxf358Mz78UNtpMIOnNSnzq6Oc8zRPBX
-	 0PeV+itGC3QGFcNPIuPkflZvc4g7cngJx5umIQ1XnTfcb+fmAMCNLtV3lJbql3YqETIPg8oUrw3fej
-	 DSiNTWP6jbyVeNbM=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app09-12009 (RichMail) with SMTP id 2ee96af51d101e7-e15de;
-	Thu, 12 Nov 2026 09:57:40 +0800 (CST)
-X-RM-TRANSID:2ee96af51d101e7-e15de
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from devin-VMware-Virtual-Platform (unknown[10.55.1.72])
-	by rmsmtp-syy-appsvr08-12008 (RichMail) with SMTP id 2ee86af51d12a9f-eddaf;
-	Thu, 12 Nov 2026 09:57:40 +0800 (CST)
-X-RM-TRANSID:2ee86af51d12a9f-eddaf
-From: Zhu Jun <zhujun2@cmss.chinamobile.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andriy.shevchenko@intel.com,
-	crofts@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Zhu Jun <zhujun2@cmss.chinamobile.com>
-Subject: [PATCH v3] iio: temperature: mcp9600: Bound thresholds before scaling
-Date: Thu, 12 Nov 2026 09:57:38 +0800
-Message-ID: <20261112015738.115833-1-zhujun2@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TLhzPzQY
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 509E91F00A05;
+	Thu, 12 Nov 2026 02:04:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794449087;
+	bh=SlrT5FMkoprSdPGG77EqIOzZqXql0Ov4MKTjkyte/Ss=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=TLhzPzQYivj9D+1Mpdm76pfOciiUhGkHSAN7OPihm8tRsqyLtVzJKIg9rRxjx7TRD
+	 C/z0q2JhKwbZON7YsFshnEKseqG4Xr1vFiZDeGgHsGmrPv8rSVka6zMqFxFJOn2dGa
+	 qAyKi0o+fHaffVcqdQFfNQKrUbmNUoKnhyxoXVzW4OVEGN6PWPvrBdI4XaYc1FzNOa
+	 c/hup6oQhuEw4ItracQHkJb5y5OFQ3+9Xq3jVV73FVFQSCqIFMXxA7a/Z0lGshGYBH
+	 MMkqxf8vcIvegHaz/8e5+PgbhPL/wd09eQ7uOyZk2wdX8TOzTLGmyooRE2ZSmIAM6o
+	 cnk2coplo/OaQ==
+Date: Thu, 12 Nov 2026 02:04:39 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Di Wu <diwux@google.com>, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, bleung@chromium.org, groeck@chromium.org,
+ tzungbi@kernel.org, linux-iio@vger.kernel.org,
+ chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: cros_ec: use sysfs_emit() in show callbacks
+Message-ID: <20261112020439.37b0da70@jic23-hlaptop>
+In-Reply-To: <avR-KT-6e77EexZn@ashevche-desk.local>
+References: <20261111072608.3490763-1-diwux@google.com>
+	<avR-KT-6e77EexZn@ashevche-desk.local>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -72,53 +62,32 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-mcp9600_write_thresh() multiplies the integer part by 1000000 before
-clamping to the supported temperature range. The multiplication can
-overflow int, so a request such as 3000 degrees can select the lower
-threshold instead of the upper threshold.
+On Wed, 11 Nov 2026 16:39:37 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-Clamp the integer part to the hot-junction range before scaling. Keep
-the existing final clamp for fractional values and the narrower cold-
-junction range.
-
-Fixes: dea750f8015b ("iio: temperature: mcp9600: add threshold events support")
-Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
----
-Changes in v3:
-- Use clamp() instead of clamp_val(); all operands are int (Andy Shevchenko).
-
-Changes in v2:
-- Use MICRO from <linux/units.h>, cast to int to preserve
-  signed division for the negative temperature limit (Andy Shevchenko).
-
- drivers/iio/temperature/mcp9600.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iio/temperature/mcp9600.c b/drivers/iio/temperature/mcp9600.c
-index b0ff0c7b4891..00f1acb348a5 100644
---- a/drivers/iio/temperature/mcp9600.c
-+++ b/drivers/iio/temperature/mcp9600.c
-@@ -17,6 +17,7 @@
- #include <linux/math.h>
- #include <linux/minmax.h>
- #include <linux/module.h>
-+#include <linux/units.h>
- 
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
-@@ -326,6 +327,8 @@ static int mcp9600_write_thresh(struct iio_dev *indio_dev,
- 	i = mcp9600_get_alert_index(chan->channel2, dir);
- 	switch (info) {
- 	case IIO_EV_INFO_VALUE:
-+		val = clamp(val, MCP9600_MIN_TEMP_HOT_JUNCTION_MICRO / (int)MICRO,
-+			    MCP9600_MAX_TEMP_HOT_JUNCTION_MICRO / (int)MICRO);
- 		/* Scale value to include decimal part into calculations */
- 		s_val = (val < 0) ? ((val * 1000000) - val2) :
- 				    ((val * 1000000) + val2);
--- 
-2.51.0
-
-
+> On Wed, Nov 11, 2026 at 07:26:08AM +0000, Di Wu wrote:
+> > Replace sprintf() and snprintf() with sysfs_emit() in the sysfs show
+> > and ext_info read callbacks. sysfs_emit() is aware of the sysfs buffer
+> > PAGE_SIZE limit and is the preferred helper for show callbacks.  
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> ...
+> 
+> > -	return sprintf(buf, "%d.%06u\n",
+> > -		       latency / 1000,
+> > -		       (latency % 1000) * 1000);
+> > +	return sysfs_emit(buf, "%d.%06u\n",
+> > +			  latency / 1000,
+> > +			  (latency % 1000) * 1000);  
+> 
+> As David said, since you touched these lines, make the less amount of them
+> while at it.
+> 
+> (But no need to resend, usually Jonathan is kind to tweak this small thing.)
+> 
+Done and applied.
 
