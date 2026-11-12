@@ -1,80 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794498128;
-	b=SzudeiO2MCmeQ/mmB4f9pGWmJBF8yhm1Hi4Rn88bpK+ddKMN2Zfh/bpdGidLOh3u6A+t
-	 O3korybAA2fluWk3Vd4PKsk/sjZPc0uvvwG2V7m7G15uRFZlZsUSOFoKh/zBxiMRykhjV
-	 9GFQJXhBM0Z0oJKSAdAH6HC0UTJCblyqk2IP4xSMawY6Nrj03YLmLPxCOegMgkRhJv+C1
-	 06Y8UQLPA3YUbxWP+XevnxWCvFKlpgy920onF6H4cEDrtakNyL2Wj0HTJGTyepSlJOzzf
-	 PuSaOXN+PcHrE8dulmccyoDVMv/Sl2FoEyTpKDejbZtB4eVLgW3jObRbCsSBqXoLV+Q==
+	t=1794499421;
+	b=frz3Jrkf76YWezs3adiMe5xIlhne6RTpXtzkk0oAh/ZAoKUJQPhPGJfxG2TnOfex2YL0
+	 W2UuTzdTq+AfVLLihPbyno4jfyiNnZJai6IL69FI6lcEPFSwopQHlwfST9tHCYYHiqbN/
+	 GULOUi8DusQ5QO2n/LZR5rQSsjCh84owg+EESJm0LhbrA/vfR8LphSw+MkK5Z+EVVKJJN
+	 KE+2+eRpugrMQatkVAfisY04nw1KLMHdBAOseCknpzxt32yjg1f6Gi0ZlMCzJR/IMcjgG
+	 PmMeFt/pff5ZXsEz+itSu7YfT/m0O+XhXYKh9wTVRAK6Fg6V0QzxG7NAYpVV/IWneWg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794498128;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794499421;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=hAeTOjf174STEwxwVgfITibCbRsXn3ujgkdfM5DYTis=;
-	b=tmEFjNY7dNgzKjemiJv8putYjzxR2aP0uFlBAa81QEVhN2ggI17rr9oPOqOYRuD2SdwK
-	 DLjNnLy8UoQ7Ey6o99xohbwWhXfHtgDLsaue2Esyj5dz8gHD+BUfQ2KBqMqIZERCLxtKl
-	 PBavY6u/e3VVV9R5AG2WZuayJD6fH8qsP2ObCYykr2GSsb7JiOw9fHnPMAS/duOZigntl
-	 ZzOkedf6ukUzVuKFOuPs1L8US0PF4Ri788tBJIVwspdF3mckVWoHQSuIDBxhsuvlr4Pu8
-	 cKGG2DC64vaDjo6pbFIU71kUvmuHLQSxvQhmYePb4BBftZtdDbPjIOyo9lJxtuHsfGQ==
+	bh=OyE71Zkb3/iNBTw7B3Y5CiHqSYL/RCxpNgb4AnO35ec=;
+	b=Nn3XXjk8euIt49oPiB2KE0yRDiERwC599NYHcPvDC51vccxFKYxEDUbrYr7nSeKT7wtd
+	 mY0O9p9/txbokmI31TT1MojOmdK4XGkFj80vUVf7ljpGIl4WWIoPj+AQOlJDJl4LOvriP
+	 8qECSnyQ8SmekPU5TjF2ugRCHBjT8E4Qj+HZ7kvvEdSUhqGGLbKARqBmhcLAcdEU02sNJ
+	 u0CkNHE6LrFtuoZyFAwmJs3kzEpsw6opwnSf32P5CfJnmjAsppftpN77ZZImMaZAERnnM
+	 TiZG6JUZESakB52nYwvDFXuNqx6DWvtdb1WnBqZ5NkWHcQqyetka0MxbJ1SzFJQyW9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dIeVsekf;
-	arc=none smtp.remote-ip=198.175.65.9
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SKFzgVtc;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E82C606A32D;
-	Thu, 12 Nov 2026 15:42:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4E82C606A32D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6DDF606A327;
+	Thu, 12 Nov 2026 16:03:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6DDF606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dIeVsekf
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SKFzgVtc
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794498128; x=1826034128;
+  t=1794499421; x=1826035421;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=qF0v4s9qDer1hJ6UNByTJb00HU/4skZhp/e4qG6xHw8=;
-  b=dIeVsekfdYPwOQjvi6uICdL2buZol5Ei3ZG5PJ/mqzA5eROGDDwaWZr6
-   aMBFZzkRHt2iMFNvfIZWlK1H/EKtJKDlDKXaEP6o8oB3rbk1BcXYWrh9P
-   vnbjKozKUvkmruY++Zc04Eo8xQ0nuLsy5gdgTNFvPRkXxROcsTQeISbXG
-   AXkbb8Xih9D0hulDeT9oPQuIWo34c65vk/vlxlyfN5ym88Pc7Sup2q/+n
-   Cppq4gpUrK1T0hbjsbpTaE2kx6o3ZkvxFmC50lrha9rnO05sa24jl2JJo
-   rkWmiaLqiWbZhQM2FZhf4l9okYcr2h24zOs5teiQWeBmk3DXxfM4+o1wC
-   Q==;
-X-CSE-ConnectionGUID: cwr8qA/PQ4mnVLMcvsT3mg==
-X-CSE-MsgGUID: qmR/VzlPSy2V2oRNI0v0Tg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11964"; a="3151845"
-X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
-   d="scan'208";a="3151845"
+  bh=vgX+TuR+T/y+mCUnRazPzYVyOyYgWRIMq0F8DIw16KI=;
+  b=SKFzgVtcUjg9sLRbtg8w+UbkNPyZG6zxMBhR63u0ghkn1yLtvN9f74/Z
+   08YL5zMrHKQYhGv67GHTzUqoKJU5ixnkJOqtRdZsAFpvTkRVr2VnKP0AE
+   DS8e65+/kn2XIVlBRMJ+vppUlh1ewAl/3e8KSjIzQfeJNWdH5mrQ9vJrE
+   cndl4q2pyZ98I76mxTm8ZX8NeixgF6emnFjeVoL0sF2t+e+doAKCcd8PL
+   WEM/KhMTtoqtXmE2QsyPSvtg0ymPJjyPdMINVEBC1w5DnCKaJq/N0BNva
+   xLvDEkkr/T39L0XSFXVwLRVENxuzZahEwvexymMl7/qWwcsh65qFhV1Xu
+   w==;
+X-CSE-ConnectionGUID: aVBcHn2fQSabovI4jpXDTQ==
+X-CSE-MsgGUID: EblE1RFQTc+g951iBmgp8Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11964"; a="3373954"
+X-IronPort-AV: E=Sophos;i="6.27,210,1787036400"; 
+   d="scan'208";a="3373954"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 07:42:06 -0800
-X-CSE-ConnectionGUID: yEGXgSmzQzS6LILfxkKDmQ==
-X-CSE-MsgGUID: vuC+XqfCTeGz9LT9vC5kiA==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:03:40 -0800
+X-CSE-ConnectionGUID: s55KVvyZSauzH6MOMc2QLw==
+X-CSE-MsgGUID: MsNmaZNaRfmMDF4K0cEDIg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
-   d="scan'208";a="8858312"
+X-IronPort-AV: E=Sophos;i="6.27,210,1787036400"; 
+   d="scan'208";a="8865964"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.6])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 07:42:03 -0800
-Date: Thu, 12 Nov 2026 17:42:01 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2026 08:03:38 -0800
+Date: Thu, 12 Nov 2026 18:03:36 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
+To: Zhu Jun <zhujun2@cmss.chinamobile.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] iio: proximity: sx9310/sx9360: reject
- out-of-range hardware gain values
-Message-ID: <avXeSbAEGhkMjMJa@ashevche-desk.local>
-References: <20261111164041.341776-1-kapoorarnav43@gmail.com>
+Subject: Re: [PATCH] iio: potentiostat: lmp91000: Handle configuration write
+ errors
+Message-ID: <avXjWG56o9_O7x9o@ashevche-desk.local>
+References: <20261112071747.154626-1-zhujun2@cmss.chinamobile.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,19 +82,71 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261111164041.341776-1-kapoorarnav43@gmail.com>
+In-Reply-To: <20261112071747.154626-1-zhujun2@cmss.chinamobile.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Nov 11, 2026 at 10:10:35PM +0530, Arnav Kapoor wrote:
-> sx9310_write_gain() and sx9360_write_gain() squeeze ilog2() of any
-> integer into the register field. Values that don't fit wrap around,
-> and 0 and negative values turn into the maximum code, while the write
-> reports success. Reject those. One patch per driver, as the Fixes tags
-> differ.
+On Thu, Nov 12, 2026 at 03:17:47PM +0800, Zhu Jun wrote:
+> lmp91000_read_config() ignores errors when unlocking and programming
+> the TIA and reference registers. Probe can then succeed even though
+> the hardware configuration does not match the parameters used to
+> interpret measurements.
+> 
+> Check the configuration writes and return the first error. After a
+> successful unlock, attempt to restore write protection even if a
+> configuration write fails, and report a relock failure as well.
 
-Now it looks better.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+...
+
+> static int lmp91000_read_config(struct lmp91000_data *data)
+>  {
+>  	struct device *dev = data->dev;
+>  	unsigned int reg, val;
+> -	int i, ret;
+> +	int i, ret, lock_ret;
+
+While at it, it's better to split semantically different variables:
+
+	int ret, lock_ret;
+	int i;
+
+> +	ret = regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
+> +	if (!ret)
+> +		ret = regmap_write(data->regmap, LMP91000_REG_REFCN,
+> +				   LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
+> +
+> +	/* Restore write protection even if programming the registers failed. */
+> +	lock_ret = regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
+> +
+> +	return ret ? ret : lock_ret;
+
+It doesn't use any guard()() or so, hence just make a goto instead
+(and use Elvis):
+
+	ret = regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
+	if (ret)
+		goto restore_lock;
+
+	ret = regmap_write(data->regmap, LMP91000_REG_REFCN,
+			   LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
+
+restore_lock:
+
+	/* Restore write protection even if programming the registers failed. */
+	lock_ret = regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
+
+	return ret ?: lock_ret;
+
+>  }
+
+Alternatively, wrap the existing function (this will make code cleaner in some
+maintainer's opinion).
+
+...
+
+In any case there is a question how may the caller distinguish the error from
+register write and from the lock restoration? And what will it do in either of
+the cases?
 
 -- 
 With Best Regards,
