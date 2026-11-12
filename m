@@ -1,53 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.168
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.177
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794503388;
-	b=T0WHO86Q+weGe1H7wOyvwfQd+stFVzAOUN4Kb/lVxEqazSL5+IFYDn5M8n52HOqxkiPx
-	 rRotH2qULpfhGTuN/MIvlsmryz4ayG6UK6GKXKa0ftCWXXbKud/PfKT9Prmklndzj5YBH
-	 psCJVS+fGRKb/9dXPu3Pmb+DFuSG/Lkgg6cckOkn6HBJozxMVYKmrSHfo472DgJcT3Q06
-	 XXlwL1Yh80lfX71oQcYoD68+9QH8s270zr0ywOo5+Dfz/XgjkZJ/UU1LIyzmr6g2cn+je
-	 I1rdAziqowUABksm4mJA89WkqsGZfgZ15cnyK1151R3hj3gT+v00kG0SR3Q9oY/Wtyw==
+	t=1794503399;
+	b=zFLZ1EpMPtZH0xxKxd7XrpyhEp9Vg1PbiBMws7w3YDgmEA4Hl4WyIpqsA3G8afTr15ih
+	 qkxgQVlNNtxLOkdPzSGzCsd6epNAO9AUtx2Q1XBpavT9U+5o+uz1HpuCbuiEThFrbyVMf
+	 LNcuMceQQ7cr0a00SgeA+K2vpr8TEgutJFRtGIugjHj5PIKMuNtW6JoEhhhwivmadhyLt
+	 Bs93FsaU0ZUiQ2f5uCugPtTBp0LgaK40M747Lsz4SZnPHbI5KePzNpQvKm33/RXhORJOt
+	 ICWXQgB2llA+GbKshNqMayshN6keKbgD1QtCaMIufHIYPj5+fRVMbYNo67hMohK41AA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794503388;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794503399;
 	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
 	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
 	 X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=BGgWKkrRQl2lSND/U2uqoO60aN3FWXpk1m/u2Tb52v0=;
-	b=Ng+XX9W+PEWwU1iYpiD8uNuZq4kXXoZfOiatPKIJH7T+DsrhuiD4V+Iqud+mVufN9wXM
-	 wJl8I0NuoZJfgBsR4wXpGxHdFBEWqTg26PdmnqJRUAsGCvpIZdvnx4UM8Ien1RzMtG01f
-	 OOFL/benE1cgSxmVSVOcqy3Hcb7ribtuwT3Ruu7g1Un+H+F6zklwTWGQbVCGDeBUsrdSM
-	 VjpYIefaXJ8it3dQAqJuI7JO+63MecIM/tolhCsbjSaadXKtQ2Jk77Ij57cuvf/oeoMRu
-	 kUtDUuiJT+p4BgVpSh1alYsbs5spzfJZvuzlCZlzLrykkEyVOrNyJuM4adenBzJsAhA==
+	bh=TO5hZF60fpsvaG7wW/pQxTHc33GQs6tLzXWQ6VKBs6w=;
+	b=LS9Y8WWMa4T8tvUyJTnVkDkKquGwuC+eGbMeUsvP6bSR6Y+Rtnhn5jKdgewFHQ+9mNbe
+	 OshXH5ONSjjm6cP7OnBVWe7TJbZMwUAnHfDiWGAFCwsK2S1eBdqhBnDhCpJeXEm6Vj7rW
+	 noRwGktEVdOGG3Iysa8BiKnUJ/Wo57TV0+ElLp2vMg+xgqNV3vIckCLMxvjwnYtSpo2cR
+	 acDlGazqIMDrvoOqPhl9shJYZlMBgt4dviO+z1yz+mnJ4LTUgLDfOYoGE9tEvXvz9jzAN
+	 5UbIKR85acj+a5ouQOpW/YH6GTym7FViz021ku1uApuFNXD22FYLH1clEH4DGOoSTbQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=packett.cool;
 	spf=pass smtp.mailfrom=packett.cool;
-	dkim=pass header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=pYPsXGqL;
-	arc=none smtp.remote-ip=91.218.175.168
-Received: from mta0.migadu.com (out-168.mta0.migadu.com [91.218.175.168])
+	dkim=pass header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=cpcIslPG;
+	arc=none smtp.remote-ip=91.218.175.177
+Received: from mta0.migadu.com (out-177.mta0.migadu.com [91.218.175.177])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2920F606A32D
-	for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2026 17:09:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2920F606A32D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95681606A8AD
+	for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2026 17:09:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95681606A8AD
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=packett.cool
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=packett.cool
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=pYPsXGqL
+	dkim=pass (2048-bit key, unprotected) header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=cpcIslPG
 X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=qPsNvOqpGJ3pwA3WfkNEk+1ZJzUEL1h3NDg+2/5l8xs=;
+DKIM-Signature: a=rsa-sha256; bh=Q718G4IRORkXt111lb1vaKDUhjnIbg9uCJWm7J0ppfo=;
  c=simple/simple; d=packett.cool;
  h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794503386; v=1; x=1795108186;
- b=pYPsXGqL45Wq3wn8jbxvE4KpZ24WxNKrk0W6akWqsfsjl7D4QrRL3+sFHXdih63yAxLJ8jBH
- m7F4y8htTxmp8KggwazeJmY7eFoJ7h8AY6bATXE7P6j73ohQYQJYLwjmzVpcY4b0FBrev8f+lKY
- bDh6xP2+qAp5KKqbbZXI0BhIBAjROVyBj0P2wyfh2XANGO2DV2JRiVySwMCe556nPjofW0jzNNO
- C3skSyunXr3EXExiH9GWYgYEXwiHA2/oH5T6gRH+J8GCWwjRe4Kfl3hsi4oiNuAjn0VIa0nNaGW
- vtNKt+CbzYRbPrM7VCAHxdXPs4+P3C0cRH3aXNic4Q3Ww==
+ t=1794503396; v=1; x=1795108196;
+ b=cpcIslPG9I+dA6Np8LmxDtYP6jNNlb8ptLb0MfC+l2eq07jBhW/gMO5Hu9qwF198n9OVrT9W
+ QwM3RULDmQQv+Wf80F0vnX5N0xFsdZg+p2IfH4G1y65xS2Fetv4GzCmyqiY7yQjfFIdHXtJOQ87
+ liUWpwlEf/7cKjKNfo24c7en+4euUsB43fecNqwx1GrTmYfwxmt9/eivrWe4rZQnd4f7BuDsx/V
+ i5Hwnmbou93gpac1lSA4UKOw3fkbzehWZ6dRZZi3kP5cujPsrzIOkjFpEZLYe8pVHLbjCIK4EO4
+ KBtqixIJX7I118TQzxUeOsqF2zOxs8XpDStZSBLPROoiA==
 X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id 3082e74ed36220db;
-	Thu, 12 Nov 2026 17:09:46 +0000
-X-Mizu-Trace-ID: 3082e74ed36220db
+Received: by smtp.migadu.com with ESMTPS id 33f881be3497a386;
+	Thu, 12 Nov 2026 17:09:56 +0000
+X-Mizu-Trace-ID: 33f881be3497a386
 X-Migadu-Flow: FLOW_OUT
 From: Val Packett <val@packett.cool>
 To: Bjorn Andersson <andersson@kernel.org>,
@@ -72,9 +72,9 @@ Cc: Val Packett <val@packett.cool>,
 	phone-devel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/5] arm64: dts: qcom: pmi632: Add missing bat_therm ADC channel
-Date: Thu, 12 Nov 2026 14:07:30 -0300
-Message-ID: <20261112170841.2189322-5-val@packett.cool>
+Subject: [PATCH 5/5] arm64: dts: qcom: pmi632: Add battery fuel gauge node
+Date: Thu, 12 Nov 2026 14:07:31 -0300
+Message-ID: <20261112170841.2189322-6-val@packett.cool>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261112170841.2189322-1-val@packett.cool>
 References: <20261112170841.2189322-1-val@packett.cool>
@@ -89,32 +89,63 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the temperature channel that is used with the battery fuel gauge.
+Add a node for the "qgauge" battery fuel gauge at 0x4800, and for the
+SDAM region at 0xb100 which contains the full charge capacity.
 
 Signed-off-by: Val Packett <val@packett.cool>
 ---
- arch/arm64/boot/dts/qcom/pmi632.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/qcom/pmi632.dtsi | 33 ++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/pmi632.dtsi b/arch/arm64/boot/dts/qcom/pmi632.dtsi
-index ab850050eb22..82b5d7b7bb5b 100644
+index 82b5d7b7bb5b..5e9e82563884 100644
 --- a/arch/arm64/boot/dts/qcom/pmi632.dtsi
 +++ b/arch/arm64/boot/dts/qcom/pmi632.dtsi
-@@ -124,6 +124,14 @@ channel@9 {
- 				label = "chg_temp";
- 			};
+@@ -163,11 +163,44 @@ pmi632_adc_tm: adc-tm@3500 {
+ 			status = "disabled";
+ 		};
  
-+			channel@4a {
-+				reg = <ADC5_BAT_THERM_100K_PU>;
-+				qcom,hw-settle-time = <200>;
-+				qcom,pre-scaling = <1 1>;
-+				qcom,ratiometric;
-+				label = "bat_therm";
-+			};
++		pmi632_qgauge: fuel-gauge@4800 {
++			compatible = "qcom,pmi632-qg";
 +
- 			channel@4b {
- 				reg = <ADC5_BAT_ID_100K_PU>;
- 				qcom,hw-settle-time = <200>;
++			reg = <0x4800>;
++
++			interrupts = <0x2 0x48 0x0 IRQ_TYPE_EDGE_BOTH>,
++				     <0x2 0x48 0x1 IRQ_TYPE_EDGE_BOTH>,
++				     <0x2 0x48 0x2 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x48 0x3 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x48 0x4 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x48 0x5 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x48 0x6 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "batt-missing",
++					  "vbat-low",
++					  "vbat-empty",
++					  "fifo-done",
++					  "good-ocv",
++					  "fsm-state-chg",
++					  "event";
++
++			nvmem = <&pmi632_sdam_2>;
++
++			status = "disabled";
++		};
++
+ 		pmi632_pbs_client3: pbs@7400 {
+ 			compatible = "qcom,pmi632-pbs", "qcom,pbs";
+ 			reg = <0x7400>;
+ 		};
+ 
++		pmi632_sdam_2: nvram@b100 {
++			compatible = "qcom,spmi-sdam";
++			reg = <0xb100>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0 0xb100 0x100>;
++		};
++
+ 		pmi632_sdam_7: nvram@b600 {
+ 			compatible = "qcom,spmi-sdam";
+ 			reg = <0xb600>;
 -- 
 2.56.0
 
