@@ -1,79 +1,202 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794573217;
-	b=Nft3mhnbvjnRQdNjJZe6ALC75KbeEjm1zTAV1SkoYat9uJg1FPnSk1zUTwOWstiU1d7u
-	 Z3c37cqCXRLkFgXEWp6OzgL1F7/5wXI8I1eDYZCzGetCeJGENHIx9BDC/7lrqOsH9bteb
-	 E3rT/k2LckWrt7bJ4w1ewwmOWenGpFf9ShqYTFHHypY5HcYklqY/iadIIjCwFyerlmDxK
-	 wvtD2/szV9Oe4iF/HGe5Tyfq46MTTgY1gfpmXDYiBXRmanJT7WCFk7kj6nxQR24OhEsng
-	 WSKT+AoGd4q0RvFz3t4p4RujqnW1k8omEEq/J7Ki91FQXCtt/3yUu1XiOU8rCaqW3/w==
+	t=1794573690;
+	b=z8rfiy9dGDwGsyCq/wLYqXM6wUdXdX+Z2gsdmEYmA/gZup/JFlj2NwRkC++rQNGIPRaX
+	 n5zmK3hu40Xn7uQzK80b/ZeWObIHaebRvLyQ1i+2qp2nhZkkIA+OHPD0GVAyxcJFcVLPr
+	 8sokMYASM1W94f1rHFrbo3msK9gg9H7xqqK9XS0GA1uh+DJLrFY7ZnZrBrV5eBt96e28j
+	 y6xycJK8y3Bbq0rgrpSv/+Ea4+8Hn+/0D2qRO+AQ2mCis4ZVtjFnvIzIKmMiohMK4tNgR
+	 ScxrlZ+zeMjuKpjyLDQ4rXDPYe28h8Zfy5wIzHufDpqcYYKBRWhd0QDIeWrBB3jRWLg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794573217;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=6A4dlvKzHL/3QSzbVbK4UA6r+QZeFEpkCIzP0GJe8Y0=;
-	b=n+2bHo86wsM0olZUh3wEWz2LoyNdgwDenXhSqfaA65ehpzYMnaOMRktM4WoQI5pn+0to
-	 O5t/SB02LL6AO/YYKdarSA+QC2+LBQXDy0qC7cuMdfqqU6DAd1pLlF41l3iuIkJqXipnD
-	 DXnC6WKiQEbVLlhjaW1gTgESPgegHZJuMZ2qYjC4ecHr1JgZHvSRim1QxbCIZslHR1Fur
-	 rm1duPYDacTK7dcXe8ovKIstHGiuCH6xiCY6JdCgEQvcyd2Z2AzSlLL5Qyxk8qWn8SwAM
-	 dIy7mx90ATBaG1j0puya7eSudDRvXmJT2Gh5YrJwZ3sNiq86KqOcfd+5/ox/zO5Tmvw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794573690;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:From:To:CC:Subject:Thread-Topic:Thread-Index:Date:
+	 Message-ID:References:In-Reply-To:Accept-Language:Content-Language:
+	 X-MS-Has-Attach:X-MS-TNEF-Correlator:x-ms-publictraffictype:
+	 x-ms-traffictypediagnostic:x-ms-office365-filtering-correlation-id:
+	 x-ld-processed:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:
+	 x-ms-exchange-antispam-messagedata-1:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:
+	 X-Exchange-RoutingPolicyChecked:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-GUID:X-Authority-Analysis:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=z/TTxHf3+dxvBhtGDsdESV7FG4HrUfOe7yhJkN9n6+4=;
+	b=Yipa1SIBTdTunRBV4/qySB2sc5wGKKEDMuKk4TTtHHbymNMRlvtS1U4KPE14rDLUanZ8
+	 TeIYBIgtr6XFpmLKR4htXxuLKXO8Fkj+sWasf/eZdZCoID8KoalMDvA67RjT0MBEpjfTd
+	 ElMuVcH/leHtXNM2u4AKAb/1OTPwuLCZCNwmhmlNGLXe1eZ1WEASCDhcFn77M0rDySN0l
+	 Vykkg1gN6p4aAsRDDXjt4dWoHKTE63/0IHxXCkVeRx3d0LCT/4+aYeQwTCysCLKKxT5WZ
+	 CDCRf4JICn02LyIKzFz1XH0ZefDCVhMl5kW84/HNyAMxvtZLnUgaSI1hd4NSSPHxpWQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Q/wCunKC";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D0A0606A897;
-	Fri, 13 Nov 2026 12:33:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Q/wCunKC
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794573217;
-	b=Fh3F7E6/r786ltZ9styNPhq0GcetXQsGGjBwfjeG+/8onSBNclwIK3r0Gq570TUCPxBb
-	 j+p0/aHjwe4nky4855IO1yQJciK5PZ9FTjfVkViBs8zg12qDWIE9rHIaofExzC4qbWtfi
-	 ZcOWcpZFfUAQCDkAd/rTUFbyOu8laruYO1tWyyhDrH/c5TUijO6kNe2yVR0ktHssuZ8mJ
-	 v5z6pEdlYjWhNdRCAb1cXFrUTkZmk8DoQyj3v/NxgERY3mkLjKA1skDKSvIBqNwhiL69V
-	 pWMUXm4cfsKoEL4nb9w2F5mFBs9Qu8if1qHdF3uKK1HCUwmT76+Gt1cgHdg8BgX39Xw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794573217;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=6A4dlvKzHL/3QSzbVbK4UA6r+QZeFEpkCIzP0GJe8Y0=;
-	b=3BPjXQYpQwAyAXQh7+OIHCjLSuK+w0omjJBPbjH8EjJjt4cmVybWYwWtuSZMTWSd4ma4
-	 UhuwSAzBPgeIm6tJmtKJPhH03eeoPGZmM9ZlVnjAigab1H8aCiKDSyJysrIK8wINogE/g
-	 CdhUtvYQJ3Hzd6A66wIBQFbbvdzMa9NFw4Kh8vZa/xWjBCYZwTJffc3ug3yTKen1Sn/zw
-	 2mCJG5IqlP7Btfy+Squ57bbIXhz4veMcusuROQ2xZj+e7FImSjuuyM6T5APw60iLVlGbx
-	 QvQblui4pielzzzLvBaaARBFtsvh0OdblOXUvk5ZnYS2Sz4OOc0WsWUoh5AWXjNKOWQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=RfX8fCEh;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=pTBCWGTX;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 2E07C1F000CF;
-	Fri, 13 Nov 2026 12:33:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794573217;
-	bh=6A4dlvKzHL/3QSzbVbK4UA6r+QZeFEpkCIzP0GJe8Y0=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Q/wCunKClR+Z14HVXaG4Ca7MWmdcOOCEV6FFDWvXNubfrip0ca4TcbTu3aUgxyeDK
-	 B/nh580ZC21M0+3CdclNdJkI06xNw2Gd6+TqBQve5quIXc+iMou8f5QpPkVk/NxDTA
-	 G/Wd7PNQ4wDg4i0ULE9ZSag9iQoXsuZVABwgvAZ0p/muPVx6piQwf8SfHAYifiP+rt
-	 uuXjkLlmbpAWJ+zPBXwZ5PTw2G/NT5HjmWNsMs5dlticxbEYk/If21ryiAA+3o+HJc
-	 RQm2TOn0vErDklVjf4R/tpLLgXWk8feO05gdDCoLl6TTQnRxi4HFqhOsa85MaQ6InO
-	 wmiOIaIBCyBqw==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id DC33E477A8;
-	Fri, 13 Nov 2026 12:33:33 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Fri, 13 Nov 2026 14:33:36 +0200
-Subject: [PATCH v6 6/8] iio: imu: adis16607: Add FIFO-based buffered
- capture
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70671606A323;
+	Fri, 13 Nov 2026 12:41:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70671606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=RfX8fCEh;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=pTBCWGTX
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6ADC2mNm3177804;
+	Fri, 13 Nov 2026 07:41:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=z/TTxHf3+dxvBhtGDsdESV7FG4HrUfOe7yhJkN9n6+4=; b=RfX8fCE
+	hXrcxFDBATAke9FUmhy5xXnOcMV4qdE++k/XYkoCW+7AKu5iN6su31zv9ASeUAzb
+	nSrayYAYWMT2Dm+GJx79ZttcbkNM3rkzJbP7AU5Udi5/7OBnwklk62u46w2roSSs
+	UExkbD5kfLYXk87mKrZWAGskphLXTFDkFR/8OnwPoCB6IOgLjAqnamYGfMeU4xCC
+	4n9RAUDskkTHlU+e7VRBg3KERhFbtzXt6PnPLr2b6M6vKCg4a9t88POP0yacPIgV
+	VyBtGyVeunvEwnM4USfa51LpQ864t2wIEUemvMaBA7Xw/V9Dg9d22LjokKtzJYpy
+	IYFhlvT2jp8VX1A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=z/TTx
+	Hf3+dxvBhtGDsdESV7FG4HrUfOe7yhJkN9n6+4=; b=pTBCWGTXCIJrLD+9+dVRi
+	dbdf4IjgSVs+eG20Cqb7VwIDE7duAfSo/6yvHptTAIM+HX+PJNiqipcyKGzFN39L
+	ZaGNOUAMxSRsAbLOjd/3bHrFuAsP1xbo8Sszb8n++EEDMufoK1NeJelnwwfHtMMw
+	bb+nZLtK+eEMk82OWPzOQ6kZ7VR81wDpxKcKwKW1rFFS7evWHs1Z7JvCpPm7aAfS
+	icHSraBnBPK5R0FTEt3kCdzKfRpA1dmzo0pANoyjoawofBJUE3l9tf5YNMyPT5HE
+	cnRAVupDpDWn1Fp6eNjMTvVUV41k5t6rI0vYFjbueGIBSju3OFC9Wq6d9zPgPeuL
+	A==
+Received: from bn1pr04cu002.outbound.protection.outlook.com (mail-eastus2azon11010045.outbound.protection.outlook.com [52.101.56.45])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4hwme4b5ue-2
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Fri, 13 Nov 2026 07:41:10 -0500 (EST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OEGRBjZbcNjMwrOr+8iuqLKHP2w45hC6ytD7Rar0/TsfYt9juQg3JP/VKBKaHJwstxoAeZaFpq2CxprbxGLCnCxqYU6eI1bH+aJDGdmQwyltlJAjvAFvkGQ+WvHutK2//BZz/zmN3EX+YgCG4MGdCA1B2a7Wzz+Dp4Me+eUsp7zXWMud55P0LZU9cHxbyDgbNwAtDswfeCYd2RUF03AmeSJrC9PWXh97lps00iU12Zcl435d0xwL7TuJzjvfKyvQL6OUyxIKRdtmlvnz9fwEFs3MM9fzfMpTQlmdMkO2qbp4KIJcL5o6avYEmsv/ZgLkXwA/Ok/G4mqqXCRhQppcCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z/TTxHf3+dxvBhtGDsdESV7FG4HrUfOe7yhJkN9n6+4=;
+ b=aXgj8HEeZUa25zDhH1pBejeMvUe7X1nxgemNmd0td85lJEXB0YrLFzR3QoQkGIznbAEOiVmJP4TV81scMCAkIbUAUzNkz3OFjGtGNFI8u1HqNU7FvKhPJmRAcEvKtyBOSUzyPT53ogM4fp6SLCl69eMrGEIcPJ57ONxJpf7cIKpR0gi7oEvn50n9W0c86Uy9TRDB/bxpC/jGQ5IV9rnRL18zjoMKvLowPlV7pdZR+SnWxLTwPy1lPwXuuqAs1qQnkYFgkbqNzA4SE/YD26V61VG+4irSdvar5NoPT5oxu6jAFp7tRNNEEKPDYVPeeOBcF2AnnCp1izRT28E2RSSXyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+Received: from LV9PR03MB8414.namprd03.prod.outlook.com (2603:10b6:408:367::23)
+ by PH0PR03MB6956.namprd03.prod.outlook.com (2603:10b6:510:173::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Fri, 13 Nov
+ 2026 12:41:05 +0000
+Received: from LV9PR03MB8414.namprd03.prod.outlook.com
+ ([fe80::d661:7c16:d052:cc81]) by LV9PR03MB8414.namprd03.prod.outlook.com
+ ([fe80::d661:7c16:d052:cc81%2]) with mapi id 15.21.0615.009; Fri, 13 Nov 2026
+ 12:41:05 +0000
+From: "Sabau, Radu bogdan" <radu.sabau@analog.com>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "Sa,
+ Nuno" <Nuno.Sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Alexandru
+ Ardelean <alexandru.ardelean@analog.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
+        "Budai, Robert"
+	<Robert.Budai@analog.com>,
+        "Gradinariu, Ramona"
+	<Ramona.Gradinariu@analog.com>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        linux
+	<linux@analog.com>, Conor Dooley <conor.dooley@microchip.com>
+Subject: RE: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
+Thread-Topic: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
+Thread-Index: AQHdc2s9Qg3RNVIBC0mRongyWaIGSbcr8J3g
+Date: Fri, 13 Nov 2026 12:41:04 +0000
+Message-ID:
+ <LV9PR03MB84148ACD16DBA8896A81582DF77F2@LV9PR03MB8414.namprd03.prod.outlook.com>
+References: <20261113-adis16607-v6-0-3f678719942a@analog.com>
+In-Reply-To: <20261113-adis16607-v6-0-3f678719942a@analog.com>
+Accept-Language: en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analog.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: LV9PR03MB8414:EE_|PH0PR03MB6956:EE_
+x-ms-office365-filtering-correlation-id: 3a4a195e-e2ea-4f15-47bd-08df418361ff
+x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|7416014|376014|23010399003|10070799003|1800799024|18002099003|22082099003|6133799003|921020|11063799006|261102123227099003|261026121527099003|261022075727099003|261021121427099003|56012099006|38070700021|10067099003;
+x-microsoft-antispam-message-info:
+ jixc+5IDpcDzkt7ototUDK9V4p7vbh/yrkIiKHb152tXzAi+8T5wL6afdqSeHnMLG7b2x/+bcfyUTUwkGbQ5lLu5Na8afxozeXxyE0JpCp1BxndO348NoSSYEkH7qENpjZGwLl1ecE6JfDGudmpZsH7YAXE45b7ozXim0S6iiFyVBBlBtFIoYpfuQ5ZUOrAyd/zmU1E5tr0vM5QCp/0docoroDfsh6ES1le53+iPSdVnCnIATGJdECzXIv39a7Oc2oKMREq7I1GKxy3APhi1AkJ3JPDiicTKmB88bWCFAznKjdRfaPN8nPgNdx2ydKvVxeH6joRM2nOC95YDoZYZLIDlDMeyqPxJ1hFTphRvzh4YLJbb4c6PPbp8ebWZfb0iGkGMXw2ZoKyCUglx7J7UMJZifmlf+4AfthqA/EYwXt3xggwuQEnOuA1C3+Eafxn78qxDZKvwErW+t+5rgwkS8cmSASXzqFeQBI8hfTpUw1LeFzbnjNlcpQNcBDaYsO1dwzY25jJUJ4hnNEx66Y+anqS91FXf43/VUcwhfiutXa5D9+ByjqrZtsou6b4IOJpd+4M75sfGOJPTEGH2RpoHG3ReuIpJwXaAbXpSJvKhjYhqvw4w++yNAszKK4MmIsxXWQaP8VgAAjCJ6Dhim+f3cg7W2rRr/bk5SV3W103hxVb0+MdSdvWUzqikpQQZ7tkHyt9XxaH3ANO8U93UfROA/lZht0IARgjOYXgQvdjjBeTg6k1IJ6zXKXeQwCPnYUGk
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV9PR03MB8414.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(23010399003)(10070799003)(1800799024)(18002099003)(22082099003)(6133799003)(921020)(11063799006)(261102123227099003)(261026121527099003)(261022075727099003)(261021121427099003)(56012099006)(38070700021)(10067099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 2
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?dUtIOFRITnJTalBHMmdwKzZ1cDNkQmdWQkRnY1VCbUtOa2xTWSt4ZkF1dk5p?=
+ =?utf-8?B?enpnUGVsc1FwV0oyNWZuNDVhMk5TLzJseWs2YlRWK0ZxV3pUY3RwNmpYZWZx?=
+ =?utf-8?B?em5TSTdTM1doSkdLMlJKTmtzREJROW9XS1JGWm5CbUtpNWFPSmVHNzRtTXFV?=
+ =?utf-8?B?NDlwUjQyN1F5bEVGV0pJeE9iUXluOXpjVFZVL3RHS1hBb2FNVXJndXlEUkRU?=
+ =?utf-8?B?RFczdEtkNitLdGMxQjNNamF5ZzR2TEtIQWhpQmIzQlR2UFRNT1A2NXdLU2lX?=
+ =?utf-8?B?dndlWkhIbXhsK20yeTRNY0REWm1JbkZtSElYZC83WEJFcVhuUC82bUhPc2kw?=
+ =?utf-8?B?UzJ2QVZJcUo4OVlkdVRUcVA2d1lJdDdjTTNBN1IrajExMnJoRmJ5UUdyUUxp?=
+ =?utf-8?B?RU9ZMUlMY2Q1RHpYWG1nV1IzcmZMc05QaFF3MjJ5VC95VXgwUGxlbW90ZllQ?=
+ =?utf-8?B?dUV0eExQV0pKTjczNzVtYURaWUV3QmNtVUdmR3hyYktEc1habU5aQUxmc1dW?=
+ =?utf-8?B?WWJONlUxRXdNNVVGYkxIbmc1dDBIKzRFRTNKWkVRTmlpd0x5cXdyazR0TDc2?=
+ =?utf-8?B?L2RzYTlyYzhqL2JUMUNFb2YyUTJCTzZwODJRckhxbnVwYUd3UHE0VGF1Z1lY?=
+ =?utf-8?B?WGh5VGFkYzVGUUliNGkvd0lNNGxJYXNyS3dLZWJ0MmQ0d1ZEWllzSDF0aU5z?=
+ =?utf-8?B?a21yL205TVBZTS9oZEpaSSsxZkpEOXErMjRDZ1Q1OVpic2pYMzQxOThPRktj?=
+ =?utf-8?B?NUlLZ2c3Skl0aWIvYld4aHBVYTVUNE01eDUxV201ZjNvSlhWdnd5djR4akxJ?=
+ =?utf-8?B?WVZqZjNSVXUrakxyMnQwSmdCaXVqcGIydWVpS3U3dU9UVlJEYkozbUlBbU9I?=
+ =?utf-8?B?a0RTTDNCMnZ2Yno5ZnhrbDZpQnNxU1RWYWRaOUxaaWpjdTZ4d1IvU0o0UmdS?=
+ =?utf-8?B?WjhITzBTbzNEUXhjVHdRVHcrWmx0dmFBL0xPUGp5ZVlPUnVieU1XaUxFWVAz?=
+ =?utf-8?B?aDREMTlEbFhrZmVTNGc5eE53aWh0bllXV1o2QkpSSnB1a1hWUlRGbjVQOUpN?=
+ =?utf-8?B?MDlvdTdQNzFiOVJtYThucGhrd3JzOUlVbXNuK0lieWhGTGNOTlVCcFJRZG5U?=
+ =?utf-8?B?RzVpa1NFV2tYaktDV0dRdWpiaHRYV3RNeCtYSUNmeEYzWitaUEVUNUhUbExq?=
+ =?utf-8?B?MUszdUJkTVJWcVFEaXVueFVnQVZqWnAxWHpRUkltaEpWbFR3bnl2SDhpSFVl?=
+ =?utf-8?B?UVlLVWZ2TjVzNVhNc0Z2M2ZBak9HMUNncm5iaVdmWUdzU1c2V0daczA0Uklh?=
+ =?utf-8?B?WUhNS0JqR3NtWk9TR0R1S0xCMm15TC90dTZ2N2FwNTQ0UG5xZCs5T2lSNWZx?=
+ =?utf-8?B?ekJSelhXTWtROFM3SkpiWnhVWXR1QUFPekI0ODFWa084SUJyKzIwdjIvWGtL?=
+ =?utf-8?B?Z25INmkyMmgrMWNmNG1MejVkUDE4RS9Eb2xLcjFNSExaRGxaenNYOGZ5RVIz?=
+ =?utf-8?B?SlFtUTlYaGNnSDhOWVlTNUtMcjNqWWhINm02V3hNUTlVTDcyU3dPUXZZc3Jo?=
+ =?utf-8?B?UXFsemVKdkg2NEIxK1ZwQThZbGppdnBmaTZxc3VRNTBiWU1ocFlQSVoxTWxi?=
+ =?utf-8?B?NHFhNFhNZnBpVEJTUGZUZGp0eHRPckpqQzFVNGl6a050S29LN09Xa3pNYjRW?=
+ =?utf-8?B?TUtPOXNxSTAxa3h4bGFvcUZNcVdJTGw5dUxaNzdCcHB2NWYyTHRsTWd2Vm12?=
+ =?utf-8?B?MDFoTnpsTFVIeDcxWnFkSTJ4dDNpUDBEWitlc3h2ZnM5Sm1JRzVpTW5vbHhZ?=
+ =?utf-8?B?VjRCTzB5R1ZmbzIwY2JKTmpLMGovUDNMLzdpWjhiYzNtaWh4OGdKZXArWlVI?=
+ =?utf-8?B?aGg5RUFUUGVHamNyRzBwbWl1ak5VU01SZjVadGFYSlpaN3NZSzlsTjN0bTk2?=
+ =?utf-8?B?bnJrdVo0cyswU3EzTWxnNVprNWxQektncStuMC8zTk1obEFhRmFXVzJSUTNL?=
+ =?utf-8?B?bDhEb2NRRWh1QUNDek1rdWllM2RCckNJRlY5a0NoY3piYnVSMCtOU2YzZVRZ?=
+ =?utf-8?B?TW1XSVRxVzRWYTBPamtELzBKTlAxbmM1d0RvVmNrVWdOYldnMG5LZWhoNXp1?=
+ =?utf-8?B?c3NialVUdXliOW1LYzFhVGVNdDduRXJJanBrNUM1RXZaSmc2UFpTQmNHcU5D?=
+ =?utf-8?B?bWFyYTJsTUVWZkRMdkNNRXZsMy9ScEhzdlR2ZTFyZU5ScUF4MVlOazVtUytI?=
+ =?utf-8?B?SnpWc3JJRUhqWi83MDZlQ1lCK1llUkRCSTRBNElYMGJsTVhRZk8vU3VDcThx?=
+ =?utf-8?B?RGJvMTNTK04wOXU4TzlwQ2dKdjluYW9qNytGSUxOYTdlVGlaTTdWRG44N3hE?=
+ =?utf-8?Q?NutfdgFa+YPLUqvuTRc1jynZsK0Ng5G64nXhbDGuxQ6bV?=
+x-ms-exchange-antispam-messagedata-1: 2k3N4g+nXuvMiQ==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,593 +206,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261113-adis16607-v6-6-3f678719942a@analog.com>
-References: <20261113-adis16607-v6-0-3f678719942a@analog.com>
-In-Reply-To: <20261113-adis16607-v6-0-3f678719942a@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Alexandru Ardelean <alexandru.ardelean@analog.com>, 
- Radu Sabau <radu.sabau@analog.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Antoniu Miclaus <antoniu.miclaus@analog.com>, 
- Robert Budai <robert.budai@analog.com>, 
- Ramona Gradinariu <ramona.gradinariu@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux@analog.com, 
- Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794573212; l=18559;
- i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=A+w3V5RpzQA0KZjZwjfxdewsXcZlv2nZBDsactbDBUk=;
- b=RDXLI9QO+XmQhDXB6C6yYugBnGpvzruE8ihRccr5TPyyJxMVTjvPGtAg8D+qqJV0qS/NzenEn
- 8/SY1+HJ2oZBrypBGNwuoYQ4DyLAuPqTO5Dro8u6+0pLEgRK52jQrW1
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
- auth_id=1094
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
-Content-Transfer-Encoding: 7bit
+X-Exchange-RoutingPolicyChecked:
+	tAec8wNZS+PSTHN4Unm5+kpP0ZUhx8K6A7BZ1qLjhFWRWbJ3h/RikdxforEG6IjDIr6L06zcboAYmid/UV86qNzX+DfIUT0ik4R6WQN1m1ls1kKN1qLVRHwVfcmh37NAHWTV5sLevE9PTlEvmhZ/0y42zZwVwOp0AFY56Z74B7VP2xFmm4sAoD6sMW95EdmdtgRa7cqgetDpXLbJok2/n5Q/lZBNpCBtLywJdf2rwYayl/6GBsxo82SxRfUqNNu2IsX4QnUEyX8vnHIbAdYCP7dVxaPxXdWQTUWJy/S+anHevmfk7KxJ06gP7ccbGU06fR+N4VlmjzbNr8/9ntqCvQ==
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: LV9PR03MB8414.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a4a195e-e2ea-4f15-47bd-08df418361ff
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2026 12:41:05.0166
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dAevDM3xQhQ6bZD4cZppVZvnkLjfTSco9BW6oQD9GC772ehqTEDC6CYc1ZmuGhMHmR2SIR6yQEHBz2XZE9jgfw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR03MB6956
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEzMDA1MCBTYWx0ZWRfX6b8idFmmEsER
+ KkflcGYQiuM4u8eEVY0SRdF6toAedbP0d3qCqu/5OvXQm/1S/ld0Jmn2s5OiJPciG3rMXunAU+Y
+ +Xg8+RvJ561FsUK0UKeNNBxNVjs91X07mufcxmgaKYpIcilN81fZ
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEzMDA1MCBTYWx0ZWRfXyYcDFdEQA2gY
+ 6RcvHUMOL0BECAFrPv8B8/2+G4QAGcwLWOPCu9daPubnn33qzKIjC7034BCFJ2Q5FJgFHdPz27j
+ adVlQogWDqQedxNBJVCuwVbo/K69v4z7QmRgSxpPNDH3gWvoA5eBK8uil93A6wL+0d68l04iYiK
+ fZIFRiBhoBmEbhKINSYwLY4DS+2LFoICmw/fRWVqbjQlbLXguoEz86PKicom8NcGByYHQ5RfHP5
+ /kXWO9yRxaEM48p6FhlL6l0LZnhe7DEI7ewZOozrkxtP1XR82/F32YXpazkujBfwq1oKEVwD4B7
+ EU2EgK3zFVP0/MqA2ky0vH4NaZH1aOgX+PNLTcCwPTF2qOD4aBFibobTetNo4zG+b/tYv4z7Vvu
+ Zbo3Cjjn5nTq0pF+TUF12ko8wO/DWmJQFtvzfTd/hnJLYE1RlM5CSeNEzOX94qqvP/EbPjMu0qD
+ xzG7LOTfQsdPhcMpJkg==
+X-Proofpoint-GUID: uZ8QGmWRSXZVsnlFr4nngjtkrvVKU_f3
+X-Authority-Analysis: v=2.4 cv=QYnzLcbv c=1 sm=1 tr=0 ts=6af70566 cx=c_pps
+ a=jCeAeT6ZWnoYcCLLvvbvuw==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
+ a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=VwQbUJbxAAAA:8 a=vsJVfKZZMOGeL7vXrOQA:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: uZ8QGmWRSXZVsnlFr4nngjtkrvVKU_f3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-13_04,2026-11-11_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 spamscore=0 phishscore=0 malwarescore=0
+ adultscore=0 suspectscore=0 clxscore=1011 bulkscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611130050
 
-From: Radu Sabau <radu.sabau@analog.com>
-
-Add buffered capture via the device's hardware FIFO - the only
-capture mode this driver supports. Popping the FIFO uses a dedicated
-command and payload format (FIFO_DATA_CMD, 52 bytes, no checksum).
-
-The samples go to a kfifo buffer that a threaded interrupt handler
-fills, with no IIO trigger: the device raises one interrupt per
-watermark, not per sample, so there is nothing to trigger on. The
-watermark-met condition is signaled via DEV_NOK on the device's one
-interrupt pin, which stays asserted until DIAG_STAT is read and
-cleared. The interrupt is therefore level-triggered and oneshot, so
-the line stays masked until the handler has read DIAG_STAT, and it is
-enabled only while the buffer is. DEV_NOK fires on any DIAG_STAT flag,
-not just FIFO_THRESH_MET, so the handler checks that specific bit
-before popping anything. DR_GPIO_MASK stays enabled unconditionally:
-DR pulses drive the FIFO controller's internal sample enqueue,
-independent of pin routing.
-
-Watermark is configurable via the standard hwfifo_set_watermark
-callback and the usual hwfifo_* sysfs attributes. Changing the sampling
-frequency while the buffer is enabled returns -EBUSY, as the decimation
-can't change during capture.
-
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
- drivers/iio/imu/Kconfig     |   2 +
- drivers/iio/imu/adis16607.c | 416 +++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 415 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-index 8b91426f60d0..af6910e2c862 100644
---- a/drivers/iio/imu/Kconfig
-+++ b/drivers/iio/imu/Kconfig
-@@ -69,6 +69,8 @@ config ADIS16607
- 	tristate "Analog Devices ADIS16607 and similar IMU driver"
- 	depends on SPI
- 	select IIO_ADIS_LIB
-+	select IIO_BUFFER
-+	select IIO_KFIFO_BUF
- 	help
- 	  Say yes here to build support for Analog Devices ADIS16607-2
- 	  and ADIS16607-3 inertial sensors containing triaxis
-diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
-index f5dc37c54191..377e7c46f860 100644
---- a/drivers/iio/imu/adis16607.c
-+++ b/drivers/iio/imu/adis16607.c
-@@ -10,8 +10,12 @@
- #include <linux/build_bug.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/imu/adis.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/interrupt.h>
- #include <linux/math.h>
- #include <linux/minmax.h>
- #include <linux/module.h>
-@@ -42,8 +46,11 @@
- #define ADIS16607_REG_Y_DELTANG		0x1A
- #define ADIS16607_REG_Z_DELTANG		0x1C
- #define ADIS16607_REG_TEMP		0x20
-+#define ADIS16607_REG_FIFO_WORD_CNT	0x2B
- #define ADIS16607_REG_USER_GPIO_CFG	0x2F
- #define ADIS16607_REG_SPI_HALFDUPLEX	0x32
-+#define ADIS16607_REG_USER_DATA_CFG	0x34
-+#define ADIS16607_REG_USER_FIFO_CFG	0x35
- #define ADIS16607_REG_SOFT_RESET	0x36
- #define ADIS16607_REG_SELF_TEST		0x39
- #define ADIS16607_REG_DEC_RATE		0x3A
-@@ -54,8 +61,29 @@
- 
- /* Masks */
- #define ADIS16607_RESET_GPIO_MASK	GENMASK(2, 0)
-+#define ADIS16607_DR_GPIO_MASK		GENMASK(11, 9)
-+#define ADIS16607_DEV_NOK_MASK		GENMASK(14, 12)
-+#define ADIS16607_DATA_CNTR_EN_MASK	BIT(14)
-+#define ADIS16607_BURST32_MASK		BIT(15)
- #define ADIS16607_BOOTLOADER_BUSY_MASK	BIT(0)
- 
-+/* FIFO masks */
-+#define ADIS16607_FIFO_THR_MASK		GENMASK(10, 0)
-+#define ADIS16607_FIFO_FLUSH_MASK	BIT(15)
-+#define ADIS16607_FIFO_THR_MET_MASK	BIT(0)
-+#define ADIS16607_FIFO_DATA_CMD		0xA9
-+
-+/* FIFO limits */
-+#define ADIS16607_MAX_FIFO_WM		38
-+#define ADIS16607_FIFO_WORDS_PER_SAMPLE	26
-+#define ADIS16607_FIFO_DATA_LEN		52
-+
-+/* FIFO_DATA read - Half-Duplex: 2-byte command phase, then the FIFO data */
-+#define ADIS16607_FIFO_DATA_CMD_SIZE	2
-+
-+/* Largest scan: 12 channels of 24 bits stored as 32, plus 16-bit temperature */
-+#define ADIS16607_SCAN_DATA_SIZE	(12 * sizeof(s32) + sizeof(s16))
-+
- /* Self-test registers and masks */
- #define ADIS16607_REG_SELF_TEST_DATA(x)	((x) + 0x23)
- #define ADIS16607_SNSR_SELF_TEST_MASK	BIT(6)
-@@ -86,6 +114,12 @@ struct adis16607 {
- 	const struct adis16607_chip_info *info;
- 	unsigned long clk_freq_mHz;
- 	u16 dec;
-+	u16 fifo_watermark;
-+	/* IIO buffer for reordered data - sized for max channels */
-+	IIO_DECLARE_BUFFER_WITH_TS(u8, data, ADIS16607_SCAN_DATA_SIZE);
-+	/* Scratch buffer used for FIFO pop operations, see adis16607_fifo_pop() */
-+	u8 fifo_buf[ADIS16607_FIFO_DATA_CMD_SIZE + ADIS16607_FIFO_DATA_LEN]
-+		__aligned(IIO_DMA_MINALIGN);
- };
- 
- enum {
-@@ -228,6 +262,333 @@ static const struct adis_ops adis16607_ops = {
- 	.reset = adis16607_reset,
- };
- 
-+/*
-+ * FIFO/burst data offsets for each channel (in bytes from the data start,
-+ * i.e. after the 4-byte command prefix).
-+ * Each 32-bit inertial channel occupies 4 bytes (MSW + LSW), TEMP is 2 bytes.
-+ *
-+ * FIFO data layout (52 bytes, DATA_CNTR enabled, no checksum):
-+ *   Offset 0-3:   ACCEL_X  (32-bit: MSW, LSW)
-+ *   Offset 4-7:   ACCEL_Y
-+ *   Offset 8-11:  ACCEL_Z
-+ *   Offset 12-15: GYRO_X
-+ *   Offset 16-19: GYRO_Y
-+ *   Offset 20-23: GYRO_Z
-+ *   Offset 24-27: DELTVEL_X
-+ *   Offset 28-31: DELTVEL_Y
-+ *   Offset 32-35: DELTVEL_Z
-+ *   Offset 36-39: DELTANG_X
-+ *   Offset 40-43: DELTANG_Y
-+ *   Offset 44-47: DELTANG_Z
-+ *   Offset 48-49: TEMP (16-bit)
-+ *   Offset 50-51: DATA_CNTR (16-bit)
-+ *
-+ * Each 32-bit value encodes 24-bit sensor data as:
-+ *   value_24bit = (MSW << 8) | (LSW >> 8)
-+ */
-+static const u8 adis16607_burst_offsets[] = {
-+	[ADIS16607_SCAN_ACCEL_X] = 0,
-+	[ADIS16607_SCAN_ACCEL_Y] = 4,
-+	[ADIS16607_SCAN_ACCEL_Z] = 8,
-+	[ADIS16607_SCAN_GYRO_X] = 12,
-+	[ADIS16607_SCAN_GYRO_Y] = 16,
-+	[ADIS16607_SCAN_GYRO_Z] = 20,
-+	[ADIS16607_SCAN_DELTVEL_X] = 24,
-+	[ADIS16607_SCAN_DELTVEL_Y] = 28,
-+	[ADIS16607_SCAN_DELTVEL_Z] = 32,
-+	[ADIS16607_SCAN_DELTANG_X] = 36,
-+	[ADIS16607_SCAN_DELTANG_Y] = 40,
-+	[ADIS16607_SCAN_DELTANG_Z] = 44,
-+	[ADIS16607_SCAN_TEMP] = 48,
-+};
-+
-+/*
-+ * Pop a single sample from FIFO using FIFO_DATA command (0xA9).
-+ * Returns the raw FIFO data in the provided buffer.
-+ */
-+static int adis16607_fifo_pop(struct adis16607 *st, u8 *data)
-+{
-+	struct spi_message msg;
-+	struct spi_transfer xfer = {
-+		.tx_buf = st->fifo_buf,
-+		.rx_buf = st->fifo_buf,
-+		.len = ADIS16607_FIFO_DATA_CMD_SIZE + ADIS16607_FIFO_DATA_LEN,
-+	};
-+	int ret;
-+
-+	/* FIFO data command */
-+	st->fifo_buf[0] = ADIS16607_FIFO_DATA_CMD;
-+
-+	spi_message_init(&msg);
-+	spi_message_add_tail(&xfer, &msg);
-+
-+	ret = spi_sync(st->adis.spi, &msg);
-+	if (ret)
-+		return ret;
-+
-+	/* Copy data starting after command bytes */
-+	memcpy(data, st->fifo_buf + ADIS16607_FIFO_DATA_CMD_SIZE, ADIS16607_FIFO_DATA_LEN);
-+	return 0;
-+}
-+
-+/*
-+ * Process a single FIFO sample and push to IIO buffer.
-+ * FIFO data format differs from regular burst - no DIAG_STAT, data starts immediately.
-+ *
-+ * FIFO data layout (52 bytes):
-+ *   Offset 0-3:   ACCEL_X (32-bit)
-+ *   Offset 4-7:   ACCEL_Y (32-bit)
-+ *   Offset 8-11:  ACCEL_Z (32-bit)
-+ *   Offset 12-15: GYRO_X (32-bit)
-+ *   Offset 16-19: GYRO_Y (32-bit)
-+ *   Offset 20-23: GYRO_Z (32-bit)
-+ *   Offset 24-27: DELTVEL_X (32-bit)
-+ *   Offset 28-31: DELTVEL_Y (32-bit)
-+ *   Offset 32-35: DELTVEL_Z (32-bit)
-+ *   Offset 36-39: DELTANG_X (32-bit)
-+ *   Offset 40-43: DELTANG_Y (32-bit)
-+ *   Offset 44-47: DELTANG_Z (32-bit)
-+ *   Offset 48-49: TEMP (16-bit)
-+ *   Offset 50-51: DATA_CNTR (16-bit)
-+ */
-+static void adis16607_fifo_push_sample(struct iio_dev *indio_dev,
-+				       u8 *fifo_data, s64 timestamp)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	u16 msw, lsw;
-+	s32 val24;
-+	int bit, offset = 0;
-+
-+	memset(st->data, 0, sizeof(st->data));
-+
-+	iio_for_each_active_channel(indio_dev, bit) {
-+		u8 burst_off;
-+
-+		/* Skip the soft timestamp channel - it has no burst offset */
-+		if (bit >= ARRAY_SIZE(adis16607_burst_offsets))
-+			continue;
-+
-+		burst_off = adis16607_burst_offsets[bit];
-+
-+		if (bit == ADIS16607_SCAN_TEMP) {
-+			/* TEMP is 16-bit */
-+			put_unaligned_be16(get_unaligned_be16(&fifo_data[burst_off]),
-+					   &st->data[offset]);
-+			offset += 2;
-+		} else {
-+			/* All other channels are 24-bit stored as 32-bit */
-+			msw = get_unaligned_be16(&fifo_data[burst_off]);
-+			lsw = get_unaligned_be16(&fifo_data[burst_off + 2]);
-+			val24 = sign_extend32(((u32)msw << 8) | (lsw >> 8), 23);
-+			put_unaligned_be32(val24, &st->data[offset]);
-+			offset += 4;
-+		}
-+	}
-+
-+	iio_push_to_buffers_with_ts(indio_dev, st->data, sizeof(st->data),
-+				    timestamp);
-+}
-+
-+/* Called with the adis lock held, so dec and clk_freq_mHz match each other */
-+static u64 adis16607_sample_period_ns(struct adis16607 *st)
-+{
-+	u64 period_ns;
-+
-+	/* clk_freq_mHz is in millihertz, hence the MILLIHZ_PER_HZ factor */
-+	period_ns = NSEC_PER_SEC;
-+	period_ns *= MILLIHZ_PER_HZ;
-+	period_ns *= st->dec + 1;
-+
-+	return DIV_ROUND_CLOSEST_ULL(period_ns, st->clk_freq_mHz);
-+}
-+
-+/*
-+ * Drain the device FIFO. Triggered by the DEV_NOK interrupt, which fires on
-+ * any DIAG_STAT flag, not just FIFO_THRESH_MET - the DIAG_STAT read below
-+ * both checks which flag(s) raised the interrupt and clears the latched
-+ * status, and must happen before any FIFO pop, or we'd pop for nothing on
-+ * an unrelated flag.
-+ */
-+static void adis16607_fifo_drain(struct iio_dev *indio_dev, s64 irq_timestamp)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	u8 fifo_sample[ADIS16607_FIFO_DATA_LEN];
-+	u16 diag_stat, word_cnt, sample_cnt;
-+	u64 period_ns;
-+	s64 timestamp;
-+	int ret;
-+
-+	adis_dev_auto_lock(&st->adis);
-+
-+	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
-+	if (ret)
-+		return;
-+
-+	/* Check if FIFO threshold is met */
-+	if (!(diag_stat & ADIS16607_FIFO_THR_MET_MASK))
-+		return;
-+
-+	/* Read FIFO word count */
-+	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_FIFO_WORD_CNT, &word_cnt);
-+	if (ret)
-+		return;
-+
-+	/* Calculate number of complete samples */
-+	sample_cnt = word_cnt / ADIS16607_FIFO_WORDS_PER_SAMPLE;
-+	if (!sample_cnt)
-+		return;
-+
-+	/*
-+	 * irq_timestamp is the IRQ-fire time, i.e. when the newest (last
-+	 * enqueued) sample tipped the FIFO over watermark. The FIFO pops
-+	 * oldest-first, so back-date the first popped sample's timestamp by
-+	 * the batch duration - the loop then counts back up to irq_timestamp
-+	 * for the newest sample, instead of projecting past it.
-+	 */
-+	period_ns = adis16607_sample_period_ns(st);
-+	timestamp = irq_timestamp - (s64)(sample_cnt - 1) * period_ns;
-+
-+	/* Pop and process each sample */
-+	for (unsigned int i = 0; i < sample_cnt; i++) {
-+		ret = adis16607_fifo_pop(st, fifo_sample);
-+		if (ret)
-+			return;
-+
-+		adis16607_fifo_push_sample(indio_dev, fifo_sample, timestamp);
-+		timestamp += period_ns;
-+	}
-+}
-+
-+static irqreturn_t adis16607_irq_thread(int irq, void *p)
-+{
-+	struct iio_dev *indio_dev = p;
-+
-+	adis16607_fifo_drain(indio_dev, iio_get_time_ns(indio_dev));
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* FIFO sysfs attributes */
-+IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_min, "1");
-+IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_max, __stringify(ADIS16607_MAX_FIFO_WM));
-+
-+static ssize_t hwfifo_watermark_show(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adis16607 *st = iio_priv(indio_dev);
-+
-+	return sysfs_emit(buf, "%u\n", st->fifo_watermark);
-+}
-+
-+static ssize_t hwfifo_enabled_show(struct device *dev,
-+				   struct device_attribute *attr,
-+				   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	u16 val;
-+	int ret;
-+
-+	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_USER_FIFO_CFG, &val);
-+	if (ret)
-+		return ret;
-+
-+	return sysfs_emit(buf, "%d\n", (val & ADIS16607_FIFO_THR_MASK) ? 1 : 0);
-+}
-+
-+static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
-+static IIO_DEVICE_ATTR_RO(hwfifo_enabled, 0);
-+
-+static const struct iio_dev_attr *adis16607_fifo_attributes[] = {
-+	&iio_dev_attr_hwfifo_watermark_min,
-+	&iio_dev_attr_hwfifo_watermark_max,
-+	&iio_dev_attr_hwfifo_watermark,
-+	&iio_dev_attr_hwfifo_enabled,
-+	NULL
-+};
-+
-+static int adis16607_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	struct adis *adis = &st->adis;
-+	u16 threshold;
-+	int ret;
-+
-+	adis_dev_auto_lock(adis);
-+
-+	/* Flush FIFO to start clean */
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
-+				  ADIS16607_FIFO_FLUSH_MASK);
-+	if (ret)
-+		return ret;
-+
-+	/* Enable FIFO with watermark threshold (in word count) */
-+	threshold = st->fifo_watermark * ADIS16607_FIFO_WORDS_PER_SAMPLE;
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
-+				  threshold & ADIS16607_FIFO_THR_MASK);
-+	if (ret)
-+		return ret;
-+
-+	enable_irq(adis->spi->irq);
-+
-+	return 0;
-+}
-+
-+static int adis16607_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+
-+	/* Waits for a running handler, so no drain races the FIFO disable */
-+	disable_irq(st->adis.spi->irq);
-+
-+	return 0;
-+}
-+
-+static int adis16607_buffer_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	struct adis *adis = &st->adis;
-+	u16 diag_stat;
-+	int ret;
-+
-+	adis_dev_auto_lock(adis);
-+
-+	/* Disable FIFO */
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG, 0);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Leave the device clean at the end of a session, so the next one
-+	 * does not start on leftover samples and a still-latched
-+	 * FIFO_THR_MET.
-+	 */
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
-+				  ADIS16607_FIFO_FLUSH_MASK);
-+	if (ret)
-+		return ret;
-+
-+	return __adis_read_reg_16(adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
-+}
-+
-+static const struct iio_buffer_setup_ops adis16607_buffer_ops = {
-+	.postenable = adis16607_buffer_postenable,
-+	.predisable = adis16607_buffer_predisable,
-+	.postdisable = adis16607_buffer_postdisable,
-+};
-+
-+static int adis16607_set_watermark(struct iio_dev *indio_dev, unsigned int val)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+
-+	val = clamp(val, 1, ADIS16607_MAX_FIFO_WM);
-+	st->fifo_watermark = val;
-+
-+	return 0;
-+}
-+
- /*
-  * Check if the delta between two values is within specified range.
-  */
-@@ -315,7 +676,8 @@ static int adis16607_sensor_self_test(struct adis16607 *st)
- 
- /*
-  * Called by __adis_initial_startup() right after reset, before self-test:
-- * SPI Half-Duplex locking, dev_id verification and the bootloader check.
-+ * SPI Half-Duplex locking, dev_id verification, the bootloader check,
-+ * enabling 32-bit burst mode + DATA_CNTR and the DR/DEV_NOK pin routing.
-  */
- static int adis16607_init(struct adis *adis)
- {
-@@ -356,7 +718,29 @@ static int adis16607_init(struct adis *adis)
- 	if (digital_status & ADIS16607_BOOTLOADER_BUSY_MASK)
- 		return dev_err_probe(dev, -EBUSY, "bootloader is busy\n");
- 
--	return 0;
-+	/* Enable 32-bit burst mode and DATA_CNTR - one-time, used by FIFO pops */
-+	ret = __adis_update_bits_base(adis, ADIS16607_REG_USER_DATA_CFG,
-+				      ADIS16607_BURST32_MASK | ADIS16607_DATA_CNTR_EN_MASK,
-+				      ADIS16607_BURST32_MASK | ADIS16607_DATA_CNTR_EN_MASK, 2);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * DR_GPIO_MASK and DEV_NOK_MASK are updated here rather than written
-+	 * blind, so this doesn't clobber the RESET_GPIO_MASK bit already
-+	 * configured earlier in probe(). Per datasheet, DR pulses are what
-+	 * drive the FIFO controller's internal enqueue logic. DR and
-+	 * DEV_NOK are separate physical pins, so enabling DR_GPIO_MASK here
-+	 * does not put DR's full-sample-rate pulses onto the interrupt line
-+	 * - DEV_NOK_MASK routes the aggregate "any DIAG_STAT flag asserted"
-+	 * signal onto the one physically-wired interrupt pin, which is what
-+	 * actually fires on FIFO_THRESH_MET, at the (much lower) watermark
-+	 * rate, not the sample rate.
-+	 */
-+	return __adis_update_bits_base(adis, ADIS16607_REG_USER_GPIO_CFG,
-+				       ADIS16607_DR_GPIO_MASK | ADIS16607_DEV_NOK_MASK,
-+				       FIELD_PREP(ADIS16607_DR_GPIO_MASK, 1) |
-+				       FIELD_PREP(ADIS16607_DEV_NOK_MASK, 1), 2);
- }
- 
- /*
-@@ -593,7 +977,12 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
- 	u32 tmp;
- 
- 	switch (info) {
--	case IIO_CHAN_INFO_SAMP_FREQ:
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		/* The decimation must not change while the buffer is running */
-+		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-+		if (IIO_DEV_ACQUIRE_FAILED(claim))
-+			return -EBUSY;
-+
- 		if (val < 0 || val2 < 0)
- 			return -EINVAL;
- 
-@@ -601,6 +990,7 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
- 		tmp = val * MILLIHZ_PER_HZ +
- 		      val2 / (MICROHZ_PER_HZ / MILLIHZ_PER_HZ);
- 		return adis16607_set_freq(st, tmp);
-+	}
- 
- 	default:
- 		return -EINVAL;
-@@ -700,6 +1090,7 @@ static const struct iio_info adis16607_info = {
- 	.read_raw = adis16607_read_raw,
- 	.write_raw = adis16607_write_raw,
- 	.debugfs_reg_access = adis_debugfs_reg_access,
-+	.hwfifo_set_watermark = adis16607_set_watermark,
- };
- 
- static const char * const adis16607_status_error_msgs[] = {
-@@ -792,6 +1183,8 @@ static int adis16607_probe(struct spi_device *spi)
- 	indio_dev->info = &adis16607_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
-+	st->fifo_watermark = ADIS16607_MAX_FIFO_WM;
-+
- 	st->adis.ops = &adis16607_ops;
- 
- 	ret = devm_regulator_get_enable(dev, "vdd");
-@@ -830,6 +1223,23 @@ static int adis16607_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
- 
-+	ret = devm_iio_kfifo_buffer_setup_ext(dev, indio_dev, &adis16607_buffer_ops,
-+					      adis16607_fifo_attributes);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * DEV_NOK is the OR of the DIAG_STAT flags and stays high until
-+	 * DIAG_STAT is read. Use a level interrupt so a flag raised while it
-+	 * is already high is not lost; ONESHOT keeps it masked until the
-+	 * handler has read DIAG_STAT. It is enabled along with the buffer.
-+	 */
-+	ret = devm_request_threaded_irq(dev, spi->irq, NULL, adis16607_irq_thread,
-+					IRQF_TRIGGER_HIGH | IRQF_ONESHOT | IRQF_NO_AUTOEN,
-+					indio_dev->name, indio_dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = devm_iio_device_register(dev, indio_dev);
- 	if (ret)
- 		return ret;
-
--- 
-2.43.0
-
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBSYWR1IFNhYmF1IHZpYSBCNCBS
+ZWxheSA8ZGV2bnVsbCtyYWR1LnNhYmF1LmFuYWxvZy5jb21Aa2VybmVsLm9yZz4NCj4gU2VudDog
+RnJpZGF5LCBOb3ZlbWJlciAxMywgMjAyNiAyOjM0IFBNDQoNCi4uLg0KIA0KPiBQYXRjaGVzIDUt
+OCBhZGQgdGhlIGRyaXZlciBpbiBmdW5jdGlvbmFsIGdyb3VwaW5ncywgYXMgcmVxdWVzdGVkIGlu
+DQo+IHYxIHJldmlldzoNCj4gIC0gUGF0Y2ggNTogYmFzZSBkcml2ZXIgLSBwcm9iZSwgcmF3IGNo
+YW5uZWwgcmVhZHMsIGRlY2ltYXRpb24vc2FtcGxlDQo+ICAgIGZyZXF1ZW5jeSwgc3RhcnR1cCBh
+bmQgc2VsZi10ZXN0IHZpYSBhZGlzbGliLCBkZWJ1Z2ZzIGlkZW50aXR5DQo+ICAgIGVudHJpZXMu
+IE5vIGJ1ZmZlcmVkIGNhcHR1cmUgeWV0Lg0KPiAgLSBQYXRjaCA2OiBidWZmZXJlZCBjYXB0dXJl
+IHZpYSB0aGUgZGV2aWNlJ3MgaGFyZHdhcmUgRklGTywgaW50byBhDQo+ICAgIGtmaWZvIGJ1ZmZl
+ciBmaWxsZWQgZnJvbSBhIHRocmVhZGVkIGludGVycnVwdCAobm8gSUlPIHRyaWdnZXIpLg0KDQpO
+b3RlOiB0aGlzIHNlcmllcyBpbXBsZW1lbnRzIHRoZSBGSUZPIGJ1ZmZlcmVkIGNhcHR1cmUgd2l0
+aCBhIGtmaWZvDQpidWZmZXIgZm9yIHRoZSBhZGlzMTY2MDcgb25seSwgdXNpbmcgaXRzIG93biB0
+aHJlYWRlZCBpbnRlcnJ1cHQgaW5zdGVhZA0Kb2YgYWRpc2xpYidzIGhhc19maWZvIHRyaWdnZXIg
+cGF0aC4gSSB0ZXN0ZWQgaXQgb24gaGFyZHdhcmUgYW5kIGl0DQpiZWhhdmVzIGJldHRlciB0aGFu
+IHRoZSB0cmlnZ2VyLWJhc2VkIHZlcnNpb24gaW4gdjU6IHRoZSBpbnRlcnJ1cHQgbm93DQpmaXJl
+cyBvbmNlIHBlciB3YXRlcm1hcmsgYmF0Y2ggaW5zdGVhZCBvZiByb3VnaGx5IG9uY2UgcGVyIHNh
+bXBsZSwgYW5kDQpjYXB0dXJlIHN0YXlzIGNsZWFuIGFjcm9zcyByZXBlYXRlZCBidWZmZXIgZW5h
+YmxlL2Rpc2FibGUgY3ljbGVzLg0KDQpJIHBsYW4gYSBmb2xsb3ctdXAgc2VyaWVzIHRoYXQgdXBk
+YXRlcyBhZGlzbGliIGFuZCB0aGUgb3RoZXIgYWZmZWN0ZWQNCmRldmljZXMgKHRoZSBhZGlzMTY0
+NzUgRklGTyB2YXJpYW50cykgdG8gdXNlIGEga2ZpZm8gYnVmZmVyIGFzIHdlbGwsIGFuZA0KdGhl
+biBjb252ZXJ0cyB0aGlzIGRyaXZlciB0byB1c2UgdGhlIGFkaXNsaWIgaGVscGVycy4NCg0KSWYg
+eW91IHdvdWxkIHJhdGhlciBoYXZlIGl0IGhhbmRsZWQgaGVyZSwgSSBjYW4gaW5zdGVhZCBkbyB0
+aGUgYWRpc2xpYg0KYW5kIGFkaXMxNjQ3NSBjaGFuZ2VzIGluIHRoaXMgc2VyaWVzLCBhcyBwYXRj
+aGVzIGFoZWFkIG9mIHRoZSBkcml2ZXIuDQo=
