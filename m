@@ -1,59 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794534834;
-	b=bLLMxXDtukp9qxw/EvevosRA7tDTRujdKHwuC20sv7lQvTsTZciGhujGGu8AFsP8csnC
-	 wieQx+Tt5eISLR51zwroCiHnsixNEkK0x4GjH46LIreb8QFwMe7fz87dABom56sTKyTaD
-	 91+7ZWgQZjcGEtw9VN0kVPz5HRvIgHuhLr+gBTQgcb2AZ+ykOzv44+QsF8+VOButbX7gd
-	 vM+pei25ch18cWcuXccSpWslBh6WpMjKrEjTDjspT5FYb00jfmr6tVbTIN4lVLK+k5Vki
-	 EEq1s1C2/VIEpAx03UkSm4vq3pxuQ1NeIXpfgCW1KPCrGW3Ck6Po/iSjnc5Pskl/JPw==
+	t=1794535172;
+	b=C4OoT426TjYUj421Fdcv13DW5Ow0H0MCInQr3S3kZbFNtI85Ydg9+NbZZBlqFfrzNLWv
+	 /J/PaGePrEnLR3GMVGRdrEseE+UMues1sjAlZSNrfPVeKxpQk8INZh5FK9+gB6mvSUm4G
+	 uTX5oBNcnfmqsQHYkSqnXDwoZgnghqzJ2b+05i94iUQvoI46EKEIdzpHWC9+pY4+48CK6
+	 4HyMb5MqfqbYiz6DqDYuInP5EMhF3Ds1xb3OWkg4LP+Nh6db1zwIVN7t/yAez20steFFH
+	 hC+0RCMHEYBoHn5W/T1vkOblxzCFN/kj3FS6lCoYUpqoDR4nHQRUdjPtDbBbI5N22zQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794534834;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794535172;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=DJGW9+6zznTnsyPYZZe/qVXufV83u2YocM25E6tMsGc=;
-	b=4sQ2yGHnaUrxKXcLS928kzVhkzImJiolSa4C81zajld557v7Y4Fb3pvg9/i/LbtZGSMW
-	 l61DI+nD3ecbnt5BNjqAXULnhz60e4Apbn2BODXEuwpj/IsxBwlfIgcBSQKbE+z0n2qxG
-	 WnQIzNgsxU4umoTDNfYEkvt/6tgAJzX+ZgcikVk8igNI3b6O5/ZdlJCXAqv1DGUw8xCpW
-	 0GA7/YWPMLYhUFbr6bCJuOtl07uUKhWNbq420kQN6NNrIhU4g6vNae0GTMA23Ma8JxzLZ
-	 ZZ8x1M7pwhNsyQvsyTB2FFMS2LZUisI3eHvAIrIqx1iOjq7CSJ6B3JNxHH0SvYKe7lg==
+	bh=B3TZduTnFzChcHGfYfZGHRmxnY1aolOmHvj30T88wh4=;
+	b=XUXZscWqB90Uu2iRLPWm1/i0gcd6GC23BD9M8NI3hkEc1DEKYFb9OsAj9DBNt2c6qDNq
+	 kkayAvfOzmh1MY/pNCN2j+xrzxznr9IXvHFZ/CadqGWSbhJUAgUmTX6qi6/lCBt6PuJCR
+	 nQ4hc3Jaef/JfuV6VNZbumfm1b1Jz+KG77W8HeUZlzSsGgruT5EoQUR54XqV/ZXs4Ng2J
+	 340VO+z+e4YuPKELpI54TIz4uD/lTSot70XKaXkiaGL8pBKt+052vw8WoG0mm8D+Df8BG
+	 IhO7SXxubjzHFlMmX7CIPljhiWZRbxq/5msY9IpPmEqwDyaQ2Dv9YAov2RwvDFRMB1A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G+c7WqgT;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZJtPH+Hu;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B95A4606A31C;
-	Fri, 13 Nov 2026 01:53:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F187606A31C;
+	Fri, 13 Nov 2026 01:59:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=G+c7WqgT
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E700E1F000C4;
-	Fri, 13 Nov 2026 01:53:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZJtPH+Hu
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82FDB1F000C4;
+	Fri, 13 Nov 2026 01:59:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794534834;
-	bh=DJGW9+6zznTnsyPYZZe/qVXufV83u2YocM25E6tMsGc=;
+	s=k20260515; t=1794535171;
+	bh=B3TZduTnFzChcHGfYfZGHRmxnY1aolOmHvj30T88wh4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=G+c7WqgTV6j00Wcllc5IjpzxFwZEPNBztFkyixxZAYsI5bl96nLbmBxtY+D/a1Fvl
-	 NvgGUrKnLRdqKb3YfItix7EGTbEA/cZGvSsRuXmbh5eN7acwd3VwmwLIeQzMEdKrte
-	 MXH4ygAiIaKaI/RV27ChUX/sg2fqSYs3uiNHS6JGuNlDXdyCVOryq1G4jCKbz8llRa
-	 /0Ezhwn2UvfUW+J9GGJynG39Njnq2IJo8/8sFXItdpt+anyKooIIXugbbqNV9B557Y
-	 j0k7WAfiGL90ri/MdMPqhqjqWGdWwvp940nf6gYnV5yMs3drh4d36V0tAUjXetrFU3
-	 5ovpanT3IdbAw==
-Date: Fri, 13 Nov 2026 01:53:48 +0000
+	b=ZJtPH+HuttCaLSL5bTWc5HpRiOYvBtGXoHMqgof5AZ+sEI0dZb431ygMgMQ5rPowq
+	 H++BwoQzN5ON489nM5N+yGtnjTzpPCmcKq4ukuNLRODNJSfT1zFjY02dJRgOdkq1DW
+	 +RnXyaNcrWzjysibtdgsrxtXnYwlWb19l9WuJX2T1z2lWIBwDkzwH6D5LLoCa9TMoQ
+	 jOfFFJMp+B+2EQIfr+1AkCPiBlCNHKza+pexxxt0n0UhzvujEH1mP5BRC0Qb9P9gHe
+	 6NCecFcdJir1/tk49DfAF4o11rpCWZnoKDHmyRnIBWPmDVhHuEVRYATAyaIu+oJGRg
+	 5rWrB0EbpSk8w==
+Date: Fri, 13 Nov 2026 01:59:28 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Gwendal Grignou <gwendal@chromium.org>,
- Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: proximity: sx9360: reject out-of-range
- hardware gain values
-Message-ID: <20261113015348.75a452bb@jic23-hlaptop>
-In-Reply-To: <20261111164041.341776-3-kapoorarnav43@gmail.com>
-References: <20261111164041.341776-1-kapoorarnav43@gmail.com>
-	<20261111164041.341776-3-kapoorarnav43@gmail.com>
+To: Kanak Shilledar <kanak.shilledar@axis.com>
+Cc: Henrik Grimler <henrik.grimler@axis.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ "Jean-Baptiste Maneyrol" <jean-baptiste.maneyrol@tdk.com>, Marcelo Schmitt
+ <marcelo.schmitt1@gmail.com>, Chris Morgan <macromorgan@hotmail.com>,
+ "Joshua Crofts" <crofts@kernel.org>, <kernel@axis.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, Jonathan Cameron
+ <jonathan.cameron@oss.qualcomm.com>, Krzysztof Kozlowski
+ <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: Re: [PATCH v9 0/7] Add support for InvenSense ICM-42370-P
+ accelerometer
+Message-ID: <20261113015928.7a691cf1@jic23-hlaptop>
+In-Reply-To: <20261112-b4-inv_icm42370p-v9-0-875c828a281e@axis.com>
+References: <20261112-b4-inv_icm42370p-v9-0-875c828a281e@axis.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,65 +72,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 11 Nov 2026 22:10:37 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Thu, 12 Nov 2026 15:29:26 +0100
+Kanak Shilledar <kanak.shilledar@axis.com> wrote:
 
-> sx9360_write_gain() passes the value from userspace to ilog2() and then
-> FIELD_PREP() into the 3-bit PROX_CTRL0 gain field without checking it,
-> so some values silently program a gain unrelated to the one requested,
-> and the write still reports success:
-> 
->   - 16 to 255 write gain codes 4 to 7, which the driver does not
->     advertise, and the next read reports gains of 16 to 128;
->   - 256 and larger wrap around in the field, e.g. 256 sets a gain of 1;
->   - 0 and negative values write code 7 (read back as 128), because
->     ilog2(0) is -1 and a negative int becomes a large unsigned value.
-> 
-> Return -ERANGE for values <= 0 and for values above the gain of 8 code.
-> FIELD_FIT() is not enough here, as the field also holds codes 4 to 7,
-> which the driver doesn't support. Values between the supported gains
-> of 1, 2, 4 and 8 are still rounded down, as before.
-> 
-> Fixes: 1cdb4c47f7f5 ("iio:proximity:sx9360: Add sx9360 support")
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-The whole off by one thing you had an RFC for can be handled
-on top of this which is just making sure existing values actually
-fit etc.
-
+> InvenSense ICM42370P is a high performance MEMS MotionTracking 3-axis
+> accelerometer. It supports I2C, I3C and SPI protocols. It has a 2.25kB
+> FIFO and two programmable interrupts with support for ultra-low-power
+> wake-on-motion support. It has a built-in temperature sensor. This
+> patch series adds basic support for the sensor with functionality of
+> performing raw reads and writes via the I2C interface.
 Applied to the testing branch of iio.git.
 
-Thanks,
+I'll let it sit there until sometime next week and if all looks
+good then that tree will get pushed out as the togreg branch that
+linux-next picks up.
+
+In the meantime, last minute tags and feedback can probably still
+be handled.
+
+Thanks
 
 Jonathan
-
-> ---
->  drivers/iio/proximity/sx9360.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iio/proximity/sx9360.c b/drivers/iio/proximity/sx9360.c
-> index 2a9b37df8f62..22b6b751c0a3 100644
-> --- a/drivers/iio/proximity/sx9360.c
-> +++ b/drivers/iio/proximity/sx9360.c
-> @@ -68,6 +68,7 @@
->  #define SX9360_REG_PROX_CTRL0_PHM	0x41
->  #define SX9360_REG_PROX_CTRL0_GAIN_MASK	GENMASK(5, 3)
->  #define SX9360_REG_PROX_CTRL0_GAIN_1		0x80
-> +#define SX9360_REG_PROX_CTRL0_GAIN_8		0x3
->  #define SX9360_REG_PROX_CTRL0_RAWFILT_MASK	GENMASK(2, 0)
->  #define SX9360_REG_PROX_CTRL0_RAWFILT_1P50	0x01
->  #define SX9360_REG_PROX_CTRL1		0x42
-> @@ -625,7 +626,13 @@ static int sx9360_write_gain(struct sx_common_data *data,
->  {
->  	unsigned int gain, reg;
->  
-> +	if (val <= 0)
-> +		return -ERANGE;
-> +
->  	gain = ilog2(val);
-> +	if (gain > SX9360_REG_PROX_CTRL0_GAIN_8)
-> +		return -ERANGE;
-> +
->  	reg = SX9360_REG_PROX_CTRL0_PHR + chan->channel;
->  	gain = FIELD_PREP(SX9360_REG_PROX_CTRL0_GAIN_MASK, gain);
->  
-
