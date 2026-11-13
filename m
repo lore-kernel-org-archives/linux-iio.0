@@ -1,55 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794533019;
-	b=tq7R+nBRnlgUhiNDS9TV0cVML5QhG3aHnEQyu0bx6xXhuF7NkLPwfT54Z80iWmDFJ+Cl
-	 jW/X2VoRSKo2VxEWwpE2UzP3ZIbQIr6fgSzodjDI3Ekbc2XD+ZnpxoiMHUHJGQX5qxW9o
-	 Zr3BlodPaqyTQwlVRlQ0J239jG+FT/vN9EsoFsb/iMDPrzv+707pk6qHGjMUblKfOFDrn
-	 NDsM2KxPxgkP+Ubp0pZd9tLKVFDCtXH8vLYCT82mEY3XdrWJ2HAd1/R3zDg3418tJi2G5
-	 6RPWVuZBu4BWeToWPni+Jz47vms4apFaqj5GPP7ynXQO6Os35B+x8HiEPY4RMg7fj8w==
+	t=1794533166;
+	b=mZdReb547LSWV80B9t4i4dKPOC20l1p8PoNRpgAYrmFcAVV8oJ2mnHXd9BAjeJfOxSIp
+	 o1JvRMfYsnGUYPMpH3OxOhmHM1Q2SQOrMglk7Mlv3wf52ZNt1XUdPzCr44gU9gNmU3Wl2
+	 h2qtjjjz3IBZGk1qiy3bYztArX8dH9sbVoW9WO7kR7vkwYfgIdQSxEBtWRfFw3WyYwwfu
+	 Vh31mQxyPtgwWT1weo8YL9T8yHK4ekt5yVkjyDHd03v1pgXqYAKlWA1/OOEZ7CZfUGB4F
+	 FRGctDpbKzx4JmEQqml0EyXbqaP9ounaTP7xIQ4Tvk0guubPzTxTpWNXSp7IpHVcFXg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794533019;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794533166;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=k1Mts7cCBH+Sxlevciq38wr7yODppUz/Qexc6piMtgs=;
-	b=R/kkn/UCPy82oTIeZPmWQSHGQ3Pzb52/Hlfla3GQIOgJ9/sNng930+lhJttdfRT0ciYt
-	 mkXWFlG+7lnF5aQNvD7SLsYDuyEx8QixciByaMHbll0hz+lfWF+N+ygrz2VYlG/dM5VBh
-	 YanyPfPUYHoQbj9MCw4/+lIV5eFo6whHCcKnygzYRIiHvZ9HMHqgDVEYFb6/R2qTMpmlS
-	 sxm3h4fJpHmORR95eP8SImvxX1kR3iC1KY8ME0P9fZT4Yi25abdJcSvhGTwZufU/Dny1l
-	 hNlPop7roFZdiL7ndmweXKqPiIbPe9nxX98qikPvsDlVNIoADuispujI8j1TpFzi1Gg==
+	bh=hn4/JimcjLWSomeENzWQ26kW3zxyIacdt8yyhBA+LZ4=;
+	b=UKMsRyohjicoruVC0HgqycroqWwTMTRk1PFjmTACwqjQ9KBTg/o9E3xk2jrknLK4vG1x
+	 iWRvL/SyaZCEmPInCiJqgzDHk49TqZKYmyCPjw6lu4VdKMqzmWX3ZTZpH/JlM9LaTcCaZ
+	 4SBQ9p2Y+mA4eMAzBsQivojEfYgDtrA938jJlvTWs1dGxnvlShpbvAVb+Z8jdq8FRYKMS
+	 uASbvD3Zf9iT/99qfStTa4OWqwGDg+z4iMOOqYAsjUoZdKRbHcBJIQ6jn5UZ/xaqobDZo
+	 40bXHxyeLV18hPSIyIR4RmWdUnuUyE/yPZ1+99RQPO9cGtNmh9wWB4vmRngRmkh1bBQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VGLwZSob;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BfkdJxfF;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBF71606A321;
-	Fri, 13 Nov 2026 01:23:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34EB7606A321;
+	Fri, 13 Nov 2026 01:26:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VGLwZSob
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9D831F000C4;
-	Fri, 13 Nov 2026 01:23:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BfkdJxfF
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 942CA1F000C4;
+	Fri, 13 Nov 2026 01:26:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794533018;
-	bh=k1Mts7cCBH+Sxlevciq38wr7yODppUz/Qexc6piMtgs=;
+	s=k20260515; t=1794533165;
+	bh=hn4/JimcjLWSomeENzWQ26kW3zxyIacdt8yyhBA+LZ4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VGLwZSob3GFWot4zgQ1z2wJ3AUgQ4trf1uYlC0rF1GlHdvyyQGcco0h3e60HasMXb
-	 oOj+4BSwrC8OnG3zLnrMQZtZAKDtIyap+vfDqYYUh5tmbZZzeCB42z0xbWtOTv+hf+
-	 6X9ScGsgbSksgSpgmlx81sFTPq0Ygo34sbt7mA42lZQtbJdC1Tm7Ynd4UdL9ttkNrB
-	 WY72kQcvMkHR1tDMcZ1qEbw8j0khktCx/4/H/JIAsKp6QVdV6iFLN4TKJ0wr3umaZB
-	 K9e4brDiymXDhbF/YZDOQ5K4wFHBS5BOLT3gFzvJ9StQgJHMdIF+Ofmx6HBKncRANW
-	 Eu6WsraabcmrA==
-Date: Fri, 13 Nov 2026 01:23:32 +0000
+	b=BfkdJxfF7XAGqqVR1I/JBZnDT6HYfYly0snwkGUTlXl5oLy0Y1kO7oz/FnO0Lfnh9
+	 kxLZ7+rpCNP6pvklcLhgiFkk2jalYh6+Nx3JA+9uDdobh8YkjQi+zpFmsJFg4xdewA
+	 hC+s6G1QyRBRd8Ki4ZK53V2Equlo81pgoYsAcYnjcJa7ZE2DV1uk4S245znJi0/hxk
+	 CRPP75sTzc96+bw+gnR0bfoj4T75tByR1HYe+tgHuZewWUyfQ9NrvnEStGf+A63lx5
+	 a1POXoZMGbHX/sAbxk3OA/uKHt/ahIOy3xviwxIWt3Z/HaRyWV2ckplQGS2JaJhM2M
+	 mYkEQOLqwgGHQ==
+Date: Fri, 13 Nov 2026 01:25:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: potentiostat: lmp91000: Handle configuration write
- errors
-Message-ID: <20261113012332.1be06bf9@jic23-hlaptop>
-In-Reply-To: <20261112071747.154626-1-zhujun2@cmss.chinamobile.com>
-References: <20261112071747.154626-1-zhujun2@cmss.chinamobile.com>
+To: Yaohan Li <shunsheng1218@gmail.com>
+Cc: nuno.sa@analog.com, dlechner@baylibre.com, andy@kernel.org,
+ paul@crapouillou.net, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: buffer: hold a reference while DMA-BUF is
+ attached
+Message-ID: <20261113012559.103d333a@jic23-hlaptop>
+In-Reply-To: <20261112070940.2527455-1-shunsheng1218@gmail.com>
+References: <20261112070940.2527455-1-shunsheng1218@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,96 +61,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 12 Nov 2026 15:17:47 +0800
-Zhu Jun <zhujun2@cmss.chinamobile.com> wrote:
+On Thu, 12 Nov 2026 15:09:40 +0800
+Yaohan Li <shunsheng1218@gmail.com> wrote:
 
-> lmp91000_read_config() ignores errors when unlocking and programming
-> the TIA and reference registers. Probe can then succeed even though
-> the hardware configuration does not match the parameters used to
-> interpret measurements.
-> 
-> Check the configuration writes and return the first error. After a
-> successful unlock, attempt to restore write protection even if a
-> configuration write fails, and report a relock failure as well.
-> 
-> Fixes: 67e17300dc1d ("iio: potentiostat: add LMP91000 support")
-> Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
-
-Minor comment on the approach used inline.
+> iio_buffer_attach_dmabuf() stores an IIO buffer pointer in the DMA-BUF
+> attachment without taking a buffer reference.  A delayed DMA fence
+> completion can release the attachment after the IIO device has been
+> unbound and its buffer freed.  The release callback then dereferences
+> the stale buffer while detaching the DMA-BUF.
+>=20
+> Take a reference when storing the buffer in the attachment, and drop
+> it after the final detach or when the attach operation fails.  This
+> keeps the buffer alive for the asynchronous completion path.
+>=20
+> A KASAN-enabled test with a DMA-BUF-capable IIO test device reproduced
+> the use-after-free on the unmodified kernel.  The same delayed
+> completion sequence produced no report with the change applied.
+>=20
+> Fixes: 3e26d9f08fbe0 ("iio: core: Add new DMABUF interface infrastructure=
+")
+> Signed-off-by: Yaohan Li <shunsheng1218@gmail.com>
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+>=20
+Applied to the fixes-togreg branch of iio.git.
 
 Thanks,
 
 Jonathan
-
-> ---
->  drivers/iio/potentiostat/lmp91000.c | 20 +++++++++++++-------
->  1 file changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> index 00cb3fea97ca..4a29fe627af7 100644
-> --- a/drivers/iio/potentiostat/lmp91000.c
-> +++ b/drivers/iio/potentiostat/lmp91000.c
-> @@ -205,7 +205,7 @@ static int lmp91000_read_config(struct lmp91000_data *data)
->  {
->  	struct device *dev = data->dev;
->  	unsigned int reg, val;
-> -	int i, ret;
-> +	int i, ret, lock_ret;
->  
->  	ret = device_property_read_u32(dev, "ti,tia-gain-ohm", &val);
->  	if (ret) {
-> @@ -250,13 +250,19 @@ static int lmp91000_read_config(struct lmp91000_data *data)
->  		return ret;
->  	}
->  
-> -	regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-> -	regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-> -	regmap_write(data->regmap, LMP91000_REG_REFCN,
-> -		     LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
-> -	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-> +	ret = regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-> +	if (ret)
-> +		return ret;
->  
-> -	return 0;
-> +	ret = regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-> +	if (!ret)
-> +		ret = regmap_write(data->regmap, LMP91000_REG_REFCN,
-> +				   LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
-> +
-> +	/* Restore write protection even if programming the registers failed. */
-> +	lock_ret = regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-
-I'm never a fan of flows where we pick between ret values. tHey make for very messy
-code.  It is easier to read with one line effectively duplicated.
-
-
-	ret = regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-	if (ret)
-		return ret;
-
-	ret = regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-	if (ret)
-		goto unlock;
-	
-	ret = regmap_write(data->regmap, LMP91000_REG_REFCN,
-			   LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
-	if (ret)
-		goto unlock;
-
-	return regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-
-unlock:
-	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-	
-	return ret;
-	
-> +
-> +	return ret ? ret : lock_ret;
->  }
->  
->  static int lmp91000_buffer_cb(const void *val, void *private)
-
