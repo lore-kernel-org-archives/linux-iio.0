@@ -1,100 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.24
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794590453;
-	b=moQNsbV6xUnLEB7p3P5u57WuOvwy98kiWfwJSJ/viaRVu5eAlv38jnIPX8UK03TRv6DW
-	 /YUyQ9TBQFYb7YuYGyeJLpqsWY5bfLDvQEwRX9KR8H1bLLSQwIvurhlDG/vmTJ6RC1EQ+
-	 j0pM8PDlOh+mdG6L2oOzxI+xU/i0aDs+rQI6QtD5Hq1l2runHsustEPgq4mJWgIu9ug3E
-	 8DynVGp9H/utFoK808m/4fnq1LNpzTtOtFLdB3PePabC/y4d6/Kzg9RIuAiGY25Sox0tx
-	 qhclawPHPSvqqXDzfsHekwvo9uzWN2iyTS4UvGQiqoRGwBG86IW3xUR/GDHDDUBCGqw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794590453;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 From:To:CC:Subject:Message-ID:Date:MIME-Version:Content-Type:
-	 X-Originating-IP:X-ClientProxiedBy:X-EOPAttributedMessage:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=nGbff918eyCPhtwdYUj1WSUu2qGTzXJqox35FYEb9cU=;
-	b=V8yRVnTc8oL7su65zQQ3K2PvNFd0IVOWmDK9DK4WcEs2Ni08Jt9jkKreWWUE0qaHaebw
-	 cb3RbB5asp8aXHIWNA3B4Z7YhLfRXLEIp6nugFwiV7noq8MU/8WVCl8ZFjhd4TP04tzRi
-	 5uVf7xYfNYmhZQakNOQmKiCJDeR2yD2jj0NRECAbndlJtrp+YxmCoyC1M4jXbV066pZU5
-	 7Tilr/rnpH01+Y0c5bpdvPHXjbRLTQFwrpyAuqwc4+78YZrAX0loJvKCS3cnZVaVYJ21z
-	 QNDy9LTJLsYIWsLYesmOtI8WX+HuqJcYxD6mhh7hbIjv78rvPrxI2BVP0XbGAM8rj0g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=axis.com;
-	spf=pass smtp.mailfrom=axis.com;
-	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=BFwSRehn;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.24
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013024.outbound.protection.outlook.com [52.101.72.24])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.171.202.116
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794592254;
+	b=5o/ZDBlmeHw0JgQuBwyKcKkbugSqPwtK6aPZ9iazgn7t3Tz+lMA2soGUgwlL2yfF5sYx
+	 Hizh/cjJCFnx7sFOGJGD4aSu0RCUbD5yESLyPxJlJX4KcrDLwoZBTKvFsWR1jfYfOLvLs
+	 a3ApHi+C61h/yLCUagvhPX77/sLlccGSMbxOOFuzB5PK2oHHjdc3eiyT/imRl815RHEUC
+	 LxG418rJl5j45ix1A8nwqYC/MurNgrmxaT6ziyfZoidEnHGdoibyGjCM5AL+rxokPbovh
+	 vPi3bQ73iTScLYVWqJlhf6+Bt9MAa9Vp6QACa8/gKHU41BIAQW2cZL3NGhDkiX7WAiw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794592254;
+	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:Message-ID:
+	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Last-TLS-Session-Version;
+	bh=6h0Dqd6RFqs20ugxkWa0E6efevDQATF3OOGQG5vDX9E=;
+	b=H4UvJFmdf8ZCx1mDWMGYS2dHa9HaohhjbBXqEvVg8kn9J36E0K5flkdFJcLaAk94XcKi
+	 Yg6AV6qNRHDZAgFgwloV9BBslrM8Cy7n5W6ePNYtLUxhApSjpPEXUGtqEBe+eRVzHyJcu
+	 y3qKQJQatpdoDq2nTTYrZYK4Y563D9i0whOIzPVlJysvhqCb/Ls0MKB7rf3J2PnI5UbIb
+	 Uf3l5BUakG8WgLp+OLbluK8hllBscyjUWPauCYPweSXDN5BiY7DUhloonnUhfGoIpl9bS
+	 26PEo4xl2PwrWs7LUC/J3+3UYRjiVpBtY5UxID66PaFfc82IM5FG9S4f0XiLaCp2aAA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=bootlin.com;
+	spf=pass smtp.mailfrom=bootlin.com;
+	dkim=pass header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=ibjhmY4D;
+	arc=none smtp.remote-ip=185.171.202.116
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A3A16070F28;
-	Fri, 13 Nov 2026 17:20:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8A3A16070F28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90AB7606D484;
+	Fri, 13 Nov 2026 17:50:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90AB7606D484
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=BFwSRehn
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FZyJx7tW0/M9paQsimjHmgfDmB6Ox5VkzUDUaPZKgVj5jpIRkFov7dK0CZuvCIhjNQiRlEls+6/RJXWSBFwyswaTbucTpDKt6xRK+A9+sajjAv7DiTaT+Ytfj/mbW6RXesKOQPsp1cBJDdFRZtEXKDYl6FudJcAae3sZhi9DBb/rDReiJ9DQtwdowQ8CIeqyRoCQ7Snzp1cPS0YSx0IwPtzx2OGpwFyfyZPSN6pV+NAVqCZntHqwNGE8oj1FpWUFggraU2VhL1Q58gqwmpRKBxAPW34osoWVHYoV77OTd8IoDieT8i427mTNaVRrC5IoNF0RVQWd2NKJzecZzK1Q+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nGbff918eyCPhtwdYUj1WSUu2qGTzXJqox35FYEb9cU=;
- b=vGqIjsxPgC8oQmah19C2oLK5S6ks+p7/PL9LDkBAdyzbE4MFxoj3CCPWEAA59SMWRThMrlU2meRC9HrW/v9FlOdbSMEHzHxVlKnZ4TvSewli8RhcNnWnubxUyf1UCH2pxtuYhB/MlqvgqDJgUxt8QL08arz3ZVPbjnP65wv6XPIGb41An4kPVn6X3uTkEo8QZw2bGKrznMr2F3AN3I8n2WCqxguGfn2zHtGtS6xZgtTDKc+Ry955m5wAxU7kXbZdNK/3iMeTrA/ZrPEOgHEDHTmYUvEa9bLZ7fc6/1+tjffRYCK111+iRRNUgbSyT2AJJcm9sCeoBHPHgqD/Sp+DqQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nGbff918eyCPhtwdYUj1WSUu2qGTzXJqox35FYEb9cU=;
- b=BFwSRehn28kH8Q5bv9b5Od78AUt+l330cJtfVAZYnwnDkzkuF7n+/dBj1yDNl2I3fQ2g2X74fkB78WKLRpyJouA4locGPl1bd8M4LR6+3ckpj1GVptD7qOGmPap+Dpco5Of14Vw8p4vt5wuVpjYMbA+qpgoIlo740OHHmcAyx8Q=
-Received: from DUZP191CA0039.EURP191.PROD.OUTLOOK.COM (2603:10a6:10:4f8::13)
- by GV1PR02MB10760.eurprd02.prod.outlook.com (2603:10a6:150:15f::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.11; Fri, 13 Nov
- 2026 17:20:43 +0000
-Received: from DU2PEPF00028CFE.eurprd03.prod.outlook.com
- (2603:10a6:10:4f8:cafe::8d) by DUZP191CA0039.outlook.office365.com
- (2603:10a6:10:4f8::13) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.10 via Frontend Transport; Fri,
- 13 Nov 2026 17:20:42 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 195.60.68.100) smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=axis.com;
-Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
- 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com; pr=C
-Received: from mail.axis.com (195.60.68.100) by
- DU2PEPF00028CFE.mail.protection.outlook.com (10.167.242.182) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Fri, 13 Nov 2026 17:20:42 +0000
-Received: from pc67007-2609 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Fri, 13 Nov
- 2026 18:20:41 +0100
-From: Waqar Hameed <waqar.hameed@axis.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?Q?S=C3=A1?=
-	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, <kernel@axis.com>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: [PATCH 0/2] iio: Add some drivers supported by Axis Communications
- to MAINTAINERS
-Message-ID: <cover.1794589264.git.waqar.hameed@axis.com>
-Date: Fri, 13 Nov 2026 18:20:41 +0100
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=ibjhmY4D
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 86189C4F76D;
+	Fri, 13 Nov 2026 17:50:54 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id A0D2F601F0;
+	Fri, 13 Nov 2026 17:50:51 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 561B311BC12A2;
+	Fri, 13 Nov 2026 18:50:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1794592247; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:content-language:in-reply-to:references;
+	bh=6h0Dqd6RFqs20ugxkWa0E6efevDQATF3OOGQG5vDX9E=;
+	b=ibjhmY4Dn2tURhTrqtGtPu8gNw82Ui+RZy0Yt98PWN259aeg897IKBTUcITcGEvrW7wwn9
+	1fO5y4X0k0HqrmMMa7u8a+UJW3xl/JHWBIDW+LCgxMI0cJZAql0PuT6zK/Gomq/FdAYNn5
+	TqfhDwBA0EOu8JNSaFNINtgAg5raHVqeI/2l2LFC5EXi4oKCdfH4gEIIrIFYX/MT2B0uqt
+	wVVViFZh9M9znX2iKYCwGBQpRHbIbaIqJ/KJeVY9uA1Prk5Q8pvPAlqauPat1U1/4OisOZ
+	m4otyYcG125i7g5fWqP0e0N9DpGR7D4GUwQ0a5+qoo+oJBNQZ2g5lngk3Djtrw==
+Message-ID: <5a68f043-7c9a-44ef-b297-2821886bdcfe@bootlin.com>
+Date: Fri, 13 Nov 2026 18:50:22 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,49 +62,74 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: se-mail10w.axis.com (10.20.40.10) To se-mail10w.axis.com
- (10.20.40.10)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DU2PEPF00028CFE:EE_|GV1PR02MB10760:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2218bac8-915c-4894-fa6f-08df41aa7263
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|36860700016|82310400026|376014|18002099003|10067099003|11063799006|56012099006|261102123227099003|261026140227099003|261021135927099003|261021121427099003|261009223027099003|261022105027099003|261028144727099003;
-X-Microsoft-Antispam-Message-Info:
-	Cdo9MFgLzVd+R56YyZlNWrzuY4HrzGDbp5olk3G6DY3w9+wA+0uvhHDydSXdR+MoP12Bu8JrSQNOYGJrYRKw9gx6HEV+saPGbt474TqZtK7Bt312qFsYciht1b5FeKPEisHZ4A92ovth+jhQYakc2POHFJG6qMs6QIpVaoJ7FEvGIBMW9JC5coPZQ5vqoNQegx9v1HynCts9WIf/QYTyXz98be0QPNYmrjH4fUrtJn2mTMRKLZoSudGRZ1WnBhiWzmDmH3aAoethgIRmtb0Zj8QErrdqwG5WfjqKX+Jv7iHoE4B2UeBsS6/xL1Kju/DMuTg7HdBe1QFdjy+y9v7oUmfw6n5HFPpNSogocLVqJEvQhWj+zM2ENm6eJvU1u2rMm/tAce1/edidhxxcDtoRQuYTtLQBr8tPNTQwY/1H9pKW+16Lf0KYe9Yo6e6+PcdJ+llRiUi4iMOhAzTdFk6xET8MFBAY7kvX6lMfGiHZunQ0vlLVnhuuMYYb9/xUqwkjxRdiHtDiiSQ8uq3iRLg3wO/YASLrptBgXCR7urdZvz19XPHoszGqm/ZNh+jRskpd6yRDeJ8KYbZNMxfCOGn1z8A/KrbAb3nbeclwOoGLYvmyK5K/4F/WeOr0cNVFnRz3Qqccu2bH+e4Y6M56jXJbfUUAtdMmYrD1zvoms39UiD+3J1uPBt4+V4XrUk0RDhP5YuQqpfGCLDcuPUDSNWEFJw==
-X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(36860700016)(82310400026)(376014)(18002099003)(10067099003)(11063799006)(56012099006)(261102123227099003)(261026140227099003)(261021135927099003)(261021121427099003)(261009223027099003)(261022105027099003)(261028144727099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	qhPy/h8uX7rbXWw3CmqTMO3djMpl6zlApMS+f1LTRjoQqeKZIi4wgL/VAEEPvnoR2t/t8XQTBn/mzpzHVGGGGHIUUDGXrYv/VIF+mKLK5SKppbB1a4aF05XaShiAo9AajgYVRmQlsz/PHZOs0UMhW0A16hef5rDN02EtP20p+RjLQ1W9mkyS9EuVkFpQm2k7U8XjB6p+8+N7oZ527kms2m7HZIBPe3CozEQCBjmlBVwn0U/244zdVmvXRTKkRbu0CBm+c8fkbCplPBZVrMQP+ws+xhIpnC5FPcHMN4DzYtdw3JbyuDHsY8LYf5Ln1RlUa9UWuZq91mDKAB7qhJb5viZBPIvWEIzu3l3WalnggjJT/u5TJRHD6eUhdh9cTybJ+/f3onIhlYduZ6uNwSHic5WY8hxadwKH/DcGlWF4C8NBp9kuco7+q99nLwKxg1Mf
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 17:20:42.8071
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2218bac8-915c-4894-fa6f-08df41aa7263
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU2PEPF00028CFE.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR02MB10760
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/27] mfd: Assorted resource lifetime, teardown, and
+ error-handling fixes
+To: Lee Jones <lee@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org
+Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, Andi Shyti <andi.shyti@kernel.org>,
+ Andreas Kemnade <andreas@kemnade.info>, Andy Shevchenko <andy@kernel.org>,
+ AnilKumar Ch <anilkumar@ti.com>, Arnd Bergmann <arnd@arndb.de>,
+ Binbin Zhou <zhoubinbin@loongson.cn>, Brent Casavant <bcasavan@sgi.com>,
+ Chong Qiao <qiaochong@loongson.cn>, Corey Minyard <corey@minyard.net>,
+ David Lechner <dlechner@baylibre.com>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>,
+ Gyungoh Yoo <jack.yoo@maxim-ic.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>,
+ Huacai Chen <chenhuacai@kernel.org>,
+ Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+ Jonathan Cameron <jic23@kernel.org>, Joshua Kinard <linux@kumba.dev>,
+ Kai Svahn <kai.svahn@nokia.com>, Kevin Hilman <khilman@baylibre.com>,
+ Kumar Sanghvi <kumar.sanghvi@stericsson.com>,
+ Linus Walleij <linusw@kernel.org>, linux-crypto@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-omap@vger.kernel.org,
+ Mattias Nilsson <mattias.i.nilsson@stericsson.com>,
+ Mattias Wallin <mattias.wallin@stericsson.com>,
+ Matti Vaittinen <mazziesaccount@gmail.com>, mfd@lists.linux.dev,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Milo Kim <woogyom.kim@gmail.com>, Ming Yu <tmyu0@nuvoton.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Pantelis Antoniou <panto@antoniou-consulting.com>, Pat Gefre <pfg@sgi.com>,
+ Paul Burton <paulburton@kernel.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>,
+ Qunqin Zhao <zhaoqunqin@loongson.cn>,
+ Rabin Vincent <rabin.vincent@stericsson.com>, Rachna Patil <rachna@ti.com>,
+ Roger Quadros <rogerq@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>,
+ Sascha Hauer <s.hauer@pengutronix.de>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Shi Hao <i.shihao.999@gmail.com>,
+ Srinidhi Kasagar <srinidhi.kasagar@stericsson.com>,
+ Stanislaw Skowronek <skylark@unaligned.org>,
+ Stephen Warren <swarren@nvidia.com>, Sundar Iyer
+ <sundar.iyer@stericsson.com>, syed khasim <x0khasim@ti.com>,
+ Thomas Bogendoerfer <tbogendoerfer@suse.de>, Tony Lindgren
+ <tony@atomide.com>, Yinggang Gu <guyinggang@loongson.cn>
+References: <20261027093306.2812695-1-lee@kernel.org>
+ <179458365250.76424.12505088783548230611.b4-ty@b4>
+Content-Language: en-US
+From: Thomas Richard <thomas.richard@bootlin.com>
+In-Reply-To: <179458365250.76424.12505088783548230611.b4-ty@b4>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-This patch series adds some drivers that Axis Communications originally
-authored to the MAINTAINERS file. We have resources to maintain and
-review patches for these, e.g. hardware and test frameworks.
+Hi Lee,
 
-Waqar Hameed (2):
-  MAINTAINERS: Add Murata IRS-D200 PIR sensor driver
-  MAINTAINERS: Add Nicera D3-323-AA PIR sensor driver
+On 11/13/26 4:27 PM, Lee Jones wrote:
+> [26/27] i2c: cgbc: Propagate hardware errors when polling read status
+>         (no commit info)
 
- MAINTAINERS | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+I noticed you did not applied this patch. It conflicts with my ongoing
+series "Congatec Board Controller: Add storage devices support". For the
+V5 I rebased it on top of Krzysztof's series that you applied and this
+series.
 
+I don't know what is your plan for this patch. Will you apply it? Should
+I pick it into my series, or should we have to deal with I2C tree?
+Please let me know.
 
-base-commit: 6d582d78fad9d828e575ca0cdcff8ea47a77220b
--- 
-2.43.0
-
+Best Regards,
+Thomas
