@@ -1,65 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794531768;
-	b=y16pTUm+k9mrZ8fI1YBr8BfQw0rjQbNizDe5S8SznR9IdStfK/Z0j0FxsfryfkhvbfOX
-	 hd8OTCb3KZGzsWl5Pleej9r8ilRQSBI2aaVDBFPwggNvk8FTiAZnunOdx1T15uMHksqfZ
-	 F6aycYf8WwpmKYbZgQIsirc1cvlwN/SSMKUILZ2kk1hdZ7SJW63hCNNOC842Mo90cXphu
-	 0SPIKR7bGoRfd0NzRB9uKvF/Lqv+I+CIlcnQtbaCKUVK0xHcyUbtkVxb7YLTXOLkzj0zM
-	 Lftmp8kzSLo8Fy1aDzHMB33iwcv0paUkOVN5f/DVZBmfuReWknQ4qaDuWY85r8OURqg==
+	t=1794532804;
+	b=JxrYKBGQ/dG/9B4vJ6XjvrUG7/UPhBhMOZwG19aV4xkCOVi+tvUZlL1SE01nC5gQZEa3
+	 FYg/rvpeKVrEXs7k0QJQEYoJcE9xNZwKLpnLnis8Tgj7AKJtnSL+tsa7/ufmsOQtExeoa
+	 sHVs8qsGJRSW/s1DmvpoJwJdGug6KDTFzV2aTDd+aW+nWwMX8ayA0VAvNFT/oiRRsyvHT
+	 eYuEprSi01H8lPHvFDL+EMdDBVu+qUxjz99Blse8NicvS6+nsaEq4Y2RD1RmEuFIaQl72
+	 vq6Fg1PgduzKuJ4bzA5DaRX4GndBkHHnlZ/4qhvo4zr0WsaM0P1N7fQVW8U+hkXnROw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794531768;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794532804;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=XtdvEuKeodVtDzB/4eB7y3ob7xjJavFKFolqpUylUuw=;
-	b=NoCFMZANJWqMMMBZdWdld/uszKsYCkf7egGf5n8no73KVzUgk73TnZ5gBWZ0cZL+vdPk
-	 O2NpgglZTygl3FzY3DcdaFt4JVPTsFiVOJU21QCzr7Do8rDZpjju7rhm1D4asyUFpCKPG
-	 bOk94m0Nxe1JxFrUBV/UDF6kodsSnVA5yZO0lv4GCb2B/9qTvV6k2NEp4lawloeJ8i2Kw
-	 ljx0YdaDK5EfC1oDIvH7T7uAEQ1IywxFaWuzrnaMsdBwwWeEQwG1xVAi4/GCBjASnll95
-	 jLylEZRFmxJUkK7MXJfuWobcN99Pt6QTUEk6xfsdz22J4t9vRbPoB9jLC1A+wofaYRQ==
+	bh=ihVMGHo1BmleIkV3EOT0D9R5nIHHW1mYzBlrGw9jfGs=;
+	b=YOJjSfBAcAi8Do1iZZ592g7botkhepTrLxWnX4jEwYHiP+i2dGwv4xU8Hmdop4MQqruv
+	 PEJF7G1BrbMdrr7kotMQbnM9wLNzAZ0klaD6bjK+i35bAGLgkFl1uxLbzwcLYqR+V3s05
+	 tgNOnLmSksLvBvt7pK0ZeHebIjWrISZYLNUj8XjpcfuuyPWxxBV7twA/uH4G82YM5ge9L
+	 5+EHgbSUyiDOHOx1hVTyW5RWZO7uiACrmc1dSbnb/9+CGlrbfmdaZzhDNUoHVLthuSb1z
+	 x0Scp0JfSZaYfV0YQLs9iWzHA8X/c7W2IqFoJdFmUra/lEhDv+rqKA2fBPLir4oISbg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GDzEvUBg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hJVTzpjW;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11677606A321;
-	Fri, 13 Nov 2026 01:02:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0FF5606A323;
+	Fri, 13 Nov 2026 01:20:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GDzEvUBg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 571401F000C4;
-	Fri, 13 Nov 2026 01:02:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hJVTzpjW
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8EB91F000C4;
+	Fri, 13 Nov 2026 01:20:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794531767;
-	bh=XtdvEuKeodVtDzB/4eB7y3ob7xjJavFKFolqpUylUuw=;
+	s=k20260515; t=1794532803;
+	bh=ihVMGHo1BmleIkV3EOT0D9R5nIHHW1mYzBlrGw9jfGs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=GDzEvUBgEaXspkMbc8RJurxMEtNcNXNP3ZhLD8NspGvjCK170O6+6/OE906oznxfp
-	 /e1QXDWJWqiNoNDswojpBvF5ZneDETXry7uFiwQjkWBj/tqkQEMx6ePPqqtMQgZQnn
-	 8Bm4cBFQbNSHPwyu7DPqTKj3iAm9LMojB7uDkVah03unCyC7fADNS52ZrnBa8egoQD
-	 HpAoKP7YL3UYgg9d7PK2do2rcYXOgOTlvcXQjRsp5HorisJ8oCVumcnNHOz1dL2Hms
-	 JLU91DZv/ZA/q7higagnsST7WfFrv+SNpGZRqGTtVsmfaeQdgG8in+bzqtY2mZgmtl
-	 abBa6blFIeLVQ==
-Date: Fri, 13 Nov 2026 01:02:38 +0000
+	b=hJVTzpjWkmPY0v3/KVrmMhVkRvcRtGSnUzNTZ/4hUNWmc4LjO4zfXjHbuQ8hV8/vZ
+	 fK613O872Bdx0JJDQbaC6RZByiVHo3JEmetLyjkqhMmed5YIm7QfOo9U2+8YQIyYIP
+	 McBQcK0R3OisJdmCy+DxZu10DZwPCmkpWrxgk+IIqTyPKtnbelc9NDsirKVYXqABxK
+	 6/yHEticQ5mzgqTM1XcQTP7mKSpQElkjVaaq5PyqWG+t07ZzTCg4b0nXRTvoZaFa0C
+	 BtQtOdduxum2riLmUmP0Q/PrY0L/0nQNZR+Pur30+AB3eBl6gb+rx3OaUS8VgvMHEE
+	 0q1cZyhyLzmZA==
+Date: Fri, 13 Nov 2026 01:19:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Val Packett <val@packett.cool>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Marc Lainez
- <marc.lainez@gmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
- =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
- Danila Tikhonov <danila@jiaxyga.com>, Sebastian Reichel <sre@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
- linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
- devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] iio: adc: qcom-spmi-adc5: Add
- ADC5_BAT_THERM_100K_PU
-Message-ID: <20261113010238.17b371c8@jic23-hlaptop>
-In-Reply-To: <20261112170841.2189322-4-val@packett.cool>
-References: <20261112170841.2189322-1-val@packett.cool>
-	<20261112170841.2189322-4-val@packett.cool>
+To: Akhilesh Patil <akhilesh.patil@linux.dev>
+Cc: andy@kernel.org, krzk+dt@kernel.org, dlechner@baylibre.com,
+ robh@kernel.org, crofts@kernel.org, conor+dt@kernel.org,
+ alexandre.belloni@bootlin.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-rtc@vger.kernel.org, akhileshpatilvnit@gmail.com,
+ akhilesh@ee.iitb.ac.in
+Subject: Re: [PATCH v4] MAINTAINERS: Update Akhilesh Patil Email address
+Message-ID: <20261113011957.5d8836ff@jic23-hlaptop>
+In-Reply-To: <20261112091641.GA3643677@u5ce4748bae3b54.ant.amazon.com>
+References: <20261112091641.GA3643677@u5ce4748bae3b54.ant.amazon.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,34 +66,118 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 12 Nov 2026 14:07:29 -0300
-Val Packett <val@packett.cool> wrote:
+On Thu, 12 Nov 2026 09:16:41 +0000
+Akhilesh Patil <akhilesh.patil@linux.dev> wrote:
 
-> Even though it existed in bindings for the longest time,
-> ADC5_BAT_THERM_100K_PU was never assigned in the driver. Do so.
+> Move to my new linux.dev email address akhilesh.patil@linux.dev
+> I plan to use this email for kernel development going forward.
+> Also update email address in few yaml and driver source files.
 > 
-> Signed-off-by: Val Packett <val@packett.cool>
+> Signed-off-by: Akhilesh Patil <akhilesh.patil@linux.dev>
+
+I can pick this one up with an rtc ack, or it can go through that
+tree. I don't mind which.
+
+Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+
+Thanks,
+
+Jonathan
+
 > ---
->  drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-> index d57ba8526e0c..c27ff89429f5 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
-> @@ -542,6 +542,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
->  					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 0,
->  					SCALE_HW_CALIB_XOTHERM)
-> +	[ADC5_BAT_THERM_100K_PU]	= ADC5_CHAN_TEMP("bat_therm", 0,
-> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
-Whilst alignment isn't exactly consistent, this should probably match
-the one two down that has same number of chars in the _PU] bit.
-So use a space rather than a tab.
-
-Otherwise seems fine to me.
-
->  	[ADC5_BAT_ID_100K_PU]	= ADC5_CHAN_TEMP("bat_id", 0,
->  					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
+> Changes in v4: 
+> - No source change.
+> - Added entire change log for all versions.
+> - Link to v3: 
+> https://lore.kernel.org/linux-iio/20261110052942.GA2505113@u5ce4748bae3b54.ant.amazon.com/
+> 
+> Changes in v3: 
+> - Fixed order of entry in .mailmap
+> - Link to v2: 
+> https://lore.kernel.org/all/20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com/ 
+> 
+> Changes in v2:
+> - Updated email ID in relevant device tree source files and driver source files.
+> - Link to v1: 
+> https://lore.kernel.org/linux-iio/20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com/
+> 
+>  .mailmap                                                      | 1 +
+>  .../devicetree/bindings/iio/pressure/aosong,adp810.yaml       | 2 +-
+>  Documentation/devicetree/bindings/rtc/st,m41t93.yaml          | 2 +-
+>  MAINTAINERS                                                   | 2 +-
+>  drivers/iio/pressure/adp810.c                                 | 4 ++--
+>  5 files changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/.mailmap b/.mailmap
+> index 7fb33babc931..d09fd3708023 100644
+> --- a/.mailmap
+> +++ b/.mailmap
+> @@ -27,6 +27,7 @@ Adrian Bunk <bunk@stusta.de>
+>  Ajay Kaher <ajay.kaher@broadcom.com> <akaher@vmware.com>
+>  Akhil P Oommen <akhilpo@oss.qualcomm.com> <akhilpo@codeaurora.org>
+>  Akhil P Oommen <akhilpo@oss.qualcomm.com> <quic_akhilpo@quicinc.com>
+> +Akhilesh Patil <akhilesh.patil@linux.dev> <akhilesh@ee.iitb.ac.in>
+>  Alan Cox <alan@lxorguk.ukuu.org.uk>
+>  Alan Cox <root@hraefn.swansea.linux.org.uk>
+>  Aleksandar Markovic <aleksandar.markovic@mips.com> <aleksandar.markovic@imgtec.com>
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml b/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
+> index ad5f26ce5043..ca4d4210f609 100644
+> --- a/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
+> +++ b/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: aosong adp810 differential pressure sensor
+>  
+>  maintainers:
+> -  - Akhilesh Patil <akhilesh@ee.iitb.ac.in>
+> +  - Akhilesh Patil <akhilesh.patil@linux.dev>
+>  
+>  description:
+>    ADP810 is differential pressure and temperature sensor. It has I2C bus
+> diff --git a/Documentation/devicetree/bindings/rtc/st,m41t93.yaml b/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
+> index bdd995c5c1f4..837679dc01ac 100644
+> --- a/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
+> +++ b/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
+> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: ST M41T93 RTC and compatible
+>  
+>  maintainers:
+> -  - Akhilesh Patil <akhilesh@ee.iitb.ac.in>
+> +  - Akhilesh Patil <akhilesh.patil@linux.dev>
+>  
+>  description:
+>    ST M41T93 is spi based Real Time Clock (RTC) with time, date,
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 222b7fc2c3aa..3aa8fa3c068f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4095,7 +4095,7 @@ F:	Documentation/devicetree/bindings/iio/chemical/aosong,ags02ma.yaml
+>  F:	drivers/iio/chemical/ags02ma.c
+>  
+>  AOSONG ADP810 DIFFERENTIAL PRESSURE SENSOR DRIVER
+> -M:	Akhilesh Patil <akhilesh@ee.iitb.ac.in>
+> +M:	Akhilesh Patil <akhilesh.patil@linux.dev>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
+> diff --git a/drivers/iio/pressure/adp810.c b/drivers/iio/pressure/adp810.c
+> index 82aa433548d2..832df6ba0ee3 100644
+> --- a/drivers/iio/pressure/adp810.c
+> +++ b/drivers/iio/pressure/adp810.c
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+>  /*
+> - * Copyright (c) 2025 Akhilesh Patil <akhilesh@ee.iitb.ac.in>
+> + * Copyright (c) 2025 Akhilesh Patil <akhilesh.patil@linux.dev>
+>   *
+>   * Driver for adp810 pressure and temperature sensor
+>   * Datasheet:
+> @@ -219,6 +219,6 @@ static struct i2c_driver adp810_driver = {
+>  };
+>  module_i2c_driver(adp810_driver);
+>  
+> -MODULE_AUTHOR("Akhilesh Patil <akhilesh@ee.iitb.ac.in>");
+> +MODULE_AUTHOR("Akhilesh Patil <akhilesh.patil@linux.dev>");
+>  MODULE_DESCRIPTION("Driver for Aosong ADP810 sensor");
+>  MODULE_LICENSE("GPL");
 
