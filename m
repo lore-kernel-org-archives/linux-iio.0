@@ -1,89 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794584200;
-	b=otiZwa8JTnAv4+gzyOtuv5p8mWIOkR9t9qpIKjCa+nHlrpFQY4a3Gnxg5IVphLAlyfka
-	 0Pah3e48XJblXfMX9Bw/CUImRTvjBDx+lBrC5FC3nAgnpqFZcDH3yzZjgkIBlOMKXOggN
-	 XGXXSW7sT8wulN/AxzPqJOfoOSdxTytG7Fz8lmZAU4F1meN8KL4hu89rIVuUq/Q+4p/F+
-	 AOTKIqm1kqP1p0LzmgkGindiRbH2NXg5aPpJx9OVeMycEcF7/VVLQbedz86q0SOa/x76N
-	 6HFMAZ33voxKsfW4tysCtLfXAFG+ZrSNB06BE6KDdCuCd+KxyEnmxL9xrbQKIYehg4A==
+	t=1794584455;
+	b=vvmbx5FHLfbNbMF01PeDaOYfBPyx6+lqWooIKR1nImef0Jv+RziwRoasw3LqyOk3cOKM
+	 rl1Ldg2RrPq8mDCvfiQfAKYGjo9XlpRP05D8D6ps4mIfOUs/sy3gq/hBn1G00s7OO3HkA
+	 N4s60PFoVlwS/h3sUQlS1NPFW/StF2TmE4nSmI6VTYuajvOnQSWOy5bO2IDLSuHIKHE6g
+	 moaNltzxef5cxZSxqMIk/ENO+lxdyxr06yer0k2mgaK6TQtiLSNbjTPgZrOMNwb/m/Fbx
+	 /1oxCLjmWiMNGtEi2t21F8g5eeNVZQbDcOYxESf/bCdaPOmY3TbsODYbAiMvswBNU2A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794584200;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=x62ZihgS7kh4nWdNrWclZKqO2BrkWNZR/gkUNOF/E3Q=;
-	b=2DLUs/SM2UjtQP0wrGGf1UP2nz4yHqFkvIQZ2tSZ8vu4yzQlEI4rXX1I7Mx2w7ZdXuNC
-	 oxu6MCrVo4bbS1uK/ecbJYXlQBNMOkT5dTdlLDSOhn/vBtkXTr4Y8nkNOh5uJb9clPO5c
-	 Gjj1BPGpgnz91UYj/Ji2etxRyEN2t4oBhNLU3yAWGxigVtNMcuRavuZ1ulmtVEQM+bpCF
-	 cZ+wOBWezbqrBratnJY6zxfh88URiRlF5r8ix/7V4kwGvxbwJDqQoMzJ/v4a5SyweTnXr
-	 6/Gudbhn3quZb4U+Zl641mIZLWHogZMvE2tGQHbTYwOcWUUq6YnCRGjqSA2T302tRJQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794584455;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=M/5AfdX/Z0i/Rm+LooPoSTOr+dHyCrjT6srdLcYz5lY=;
+	b=isf9D3bKVG+0/slT1KvCQ7+vWmuEE91Z7REAz9k3WPLxmdi2goaOYE9lAvW9KOuHCxsO
+	 HjzVI0gByMGtDB81+/d8PYpznRXZNrepWtdgkawfyRhOo68yskpPWB6NUfFjAG+EuULaM
+	 1aOAHF4aYbmpDqdcM/YCBOW0dLY0Dc5oQgsckN3x5YQAfBEqK83c9nTSvqECsrcQuFhCH
+	 WcJQx9fVla+PnL7T73sSV4swwN1mYlRZGtQ7/RsamPlYUzaL3vga4t7MbmV1OzWZNfdRn
+	 CNx25lVJyav7LoZ3RNct6r8RdAWiLKdfiG/dD8eUgfgKnr/Qwbdg/Uaux61BlxTH16w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=rOwFdNzH;
-	arc=none smtp.remote-ip=209.85.208.173
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AbTQAM7Z;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8DE606A327
-	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 15:36:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B8DE606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B7D6606A327;
+	Fri, 13 Nov 2026 15:40:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B7D6606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=rOwFdNzH
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-3ab46699a09so15825031fa.0
-        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 07:36:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794584198; x=1795188998; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=x62ZihgS7kh4nWdNrWclZKqO2BrkWNZR/gkUNOF/E3Q=;
-        b=rOwFdNzH/fyJv94XjX1UieKx8ePFP8iuZ7nP4Ih6XTpFMPP/l6PmZbpLrStQb/Ejbb
-         SB2PTsN7A/l1Y4z5fNNxcv4gkf/VPebjCxm1aUE+9wAHG000TkHrndxkA0+z0d0dXCZg
-         kaRKYraNW2gB6WcJp8h3+yoXHLyfR4UAlI5z1YEgK11EAg8u1LcnD8VqPrmODmZYMw90
-         37xoGDhB7724r6OLL6En9NLUqfD+aOrgp05SWbCiyUua9YX+kieQcuMsKnEi9gQbJsyJ
-         GjzEFTZrCtDeL1vkX/LZ1KOjgUjtPNMsUb3oZPy+++9COmIMLAYtDC9aB2lnGZpa4T7x
-         mkAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794584198; x=1795188998;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=x62ZihgS7kh4nWdNrWclZKqO2BrkWNZR/gkUNOF/E3Q=;
-        b=XCYqu1ThkIWOKQ0PtuXWm8T+FQ1rnFm6qhbX2wCxl+GCsFBg7Ie/Th1EI44cCdv7wH
-         ZiSs50WwOhE8OebosIw75exylesk4A4K9QZB/tlh/P0gn9d9UUDt6LR5M7I6o4Qeb+u6
-         aq+lQ6CP916nnbcugJyu61rGpCygzQKnXU4MJekIQc1FKtp+1zJBf60DghDG70CqkLqW
-         +dOpauOf2ypMjudX8wcWCite48B8/8rmpUKUNwDl1p8Yz/yGus5DT8hrryGXmtoBy8GE
-         xMcGT7DlwFro0TxcEo18nSonbVZnUkY1lsSPf/Bj2vhXEE04UHfORBp+40AgKkurdP2n
-         q1Bw==
-X-Forwarded-Encrypted: i=1; AL+hErFo6jxTGvCq1Yp9qaLx4vHGhR/RZhfhtEyl+nZD0dCVkAXJQktJFnlPYY5TT5KKXH3ZvCadCukU0BI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/yUj5eb9Ubv7MQqjyKy3c6O7CED+yGq92RcI4KV/qQvo6JyHLo
-	RAKhjkSBFwgepaSPxj2aIUFZpQNFY5YSssFGOypYtreZxpUzJliW13zl
-X-Gm-Gg: AYBFou0t/xc9cKscX2PBne9XqodYEnaahUrktr5auFAVcBdEqQPchuURc0fbsA3zemE
-	YbtyHmQ/YcMeD0pgstmPbdrCeYrJGYaM/RmrCT1yWyOxgZQIULrcnRU1Dmn7zS6hqNuCKFiabzX
-	Fz5aWaKxjNjGOjNxJ86EzneH/ugJjAvPoYbMZk6Mc3bWo0cwcWkk+fTcYAbnQE+39Q0gNFPPR8W
-	7R4twnPRo6UbdCT5Z7UpKEicluW494ktUSsv0X03TDFF6Xuz+h5XbDKIqTnC+4tSKjqTgGyJjLC
-	Cg3md8wgPnBwpez7rh5B1C6LfOaAZ3T3AChn3IWG1SdFxUyMQ8WNHWBws56nbdqUb9/IG3buyjF
-	VY8eMKw8hLg/XxC+7yc1P7klX6ZtSYiObaKyiYT3gp4apNRsZMAsAofetgtfxr1pe+6SPVr7xl4
-	se+rSUiQ2NZ//4psS/2uz/XMw2jhWS8z2KbsMQ+Z9qO5WUSbd+KNv6Gja1tIrisiYU3d+AH1Ibs
-	iynA6tkxIx3SBDQ9E6HGn7/zGxW3wIcHgljyr5wfIlQTde0KkG9aWUsl3zccbHns4dqzbCw4Ee8
-	T/xB81k98KED1Ge/RG+l6nCuhMACFZikdM6GmtY8807WT83z0nyMl0hxArKi1ksdDLg1X5l8fzq
-	ccJLXCy5yBdEXcSDKnhkevXu9INEve1A=
-X-Received: by 2002:a05:651c:1596:b0:3ac:97e4:4987 with SMTP id 38308e7fff4ca-3ae2b4c77cemr10278541fa.7.1794584198178;
-        Fri, 13 Nov 2026 07:36:38 -0800 (PST)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae2b7808cbsm9395051fa.14.2026.11.13.07.36.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Nov 2026 07:36:37 -0800 (PST)
-Message-ID: <ef47542e-308c-4211-9b42-ba2de13f5f82@gmail.com>
-Date: Fri, 13 Nov 2026 17:36:36 +0200
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AbTQAM7Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794584455; x=1826120455;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HYt69qA5pD83okxtiPgkSwKaBYtyhJX/GokhDg6mGag=;
+  b=AbTQAM7Z8D4B7nubOOKXPzBW8Ok6rioYbXWZZTchOJp6A8SFy2hYIm+L
+   VLxYD9pBf2mDyLn4ATRgFxUVYU1quBTnKg4xyA+cPmy/JqiCM+V1yqMfR
+   re9Z4Cotl/NI3E8ooq0ZT37xxK1sZyqWiG7QtdXyvkTm1I14TLOOdYSjr
+   fvYeObvcmepZtc6P+UgoBqDfA8e23amiYcpN/k8bQTEAT2Scwbe8TSxiQ
+   bid0Y+KOzQFPn6nU4sVqnlrQgxHmaT8olclbfV0LFHLh2Ux0WnF93adUZ
+   xF+hggt/9tz1hpEFyw9s/VbDFPFVUKZlTPd9EvMhY7ew/7dUYG7n8d4+w
+   w==;
+X-CSE-ConnectionGUID: cHGKfiPnQK6R1Bk+cHm0dw==
+X-CSE-MsgGUID: aCAS+WrvSK6kho9lj+YDXg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3378286"
+X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
+   d="scan'208";a="3378286"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 07:40:54 -0800
+X-CSE-ConnectionGUID: KWT4RppXRsG0aNLHEpi2SA==
+X-CSE-MsgGUID: HInV2e6jSwydOlqN47o/Sw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
+   d="scan'208";a="9220464"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.148])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 07:40:48 -0800
+Date: Fri, 13 Nov 2026 17:40:45 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Rodolfo Giometti <giometti@enneenne.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Angelo Dureghello <adureghello@baylibre.com>,
+	Tobias Sperling <tobias.sperling@softing.com>,
+	Eason Yang <j2anfernee@gmail.com>,
+	Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	duje@dujemihanovic.xyz, Joshua Crofts <crofts@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
+	Victor Chernyakin <chernyakin.victor.j@outlook.com>,
+	herve.codina@bootlin.com, thomas.petazzoni@bootlin.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: adc: add driver for Texas Instruments
+ TLA2528 adc
+Message-ID: <avcvfUcFwdJWjvs8@ashevche-desk.local>
+References: <20261113151543.2241604-1-maxime.chevallier@bootlin.com>
+ <20261113151543.2241604-3-maxime.chevallier@bootlin.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,57 +99,80 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/2] iio: adc: add driver for Texas Instruments TLA2528
- adc
-To: Maxime Chevallier <maxime.chevallier@bootlin.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: Rodolfo Giometti <giometti@enneenne.com>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Angelo Dureghello <adureghello@baylibre.com>,
- Tobias Sperling <tobias.sperling@softing.com>,
- Eason Yang <j2anfernee@gmail.com>,
- Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
- Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
- duje@dujemihanovic.xyz, Joshua Crofts <crofts@kernel.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
- Victor Chernyakin <chernyakin.victor.j@outlook.com>,
- herve.codina@bootlin.com, thomas.petazzoni@bootlin.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20261113151543.2241604-1-maxime.chevallier@bootlin.com>
- <20261113151543.2241604-3-maxime.chevallier@bootlin.com>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20261113151543.2241604-3-maxime.chevallier@bootlin.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 13/11/2026 17:15, Maxime Chevallier wrote:
+On Fri, Nov 13, 2026 at 04:15:42PM +0100, Maxime Chevallier wrote:
 > Add a new driver for the TI TLA2528 ADC chip. It has 8 12-bit
 > channels, that can also be configured as 16-bit averaging channels.
-> 
+
+I forgot to check if there is a justification of the brand new driver,
+I assume there is.
+
 > This is a very simple driver, allowing reading raw values for each
 > channel. GPIO mode isn't supported for now, as well as buffered mode and
 > the 16-bit averaging mode.
-> 
-> Co-developed-by: Rodolfo Giometti <giometti@enneenne.com>
-> Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-This looks very familiar to me. I am pretty sure I've reviewed this. Is 
-there a reason the RB-tag wasn't carried over? (Sorry if I've missed 
-some change(s))!
 
-Yours,
-   -- Matti
+Some nit-picks below, but they do not prevent from this patch being accepted,
+so
+
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+...
+
+> +static int tla2528_read(struct tla2528 *tla2528, u8 channel, int *val)
+> +{
+> +	__be16 data;
+> +	int ret;
+> +
+> +	guard(mutex)(&tla2528->lock);
+> +
+> +	ret = regmap_update_bits(tla2528->regmap, TLA2528_CHANNEL_SEL_ADR,
+> +				 TLA2528_CHANNEL_SEL_MANUAL_CHID, channel);
+> +	if (ret)
+> +		return ret;
+
+Ideally this needs a comment explaining in short why regmap IO accessors may
+not be used.
+
+> +	ret = i2c_master_recv(tla2528->client, (char *)&data, sizeof(data));
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != sizeof(data))
+> +		return -EIO;
+> +
+> +	*val = be16_to_cpu(data) >> 4;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +	ret = regmap_write(tla2528->regmap, TLA2528_GENERAL_CFG_ADR,
+> +			   TLA2528_GENERAL_CFG_RST);
+
+With locally defined
+
+	struct regmap *map;
+	...
+	map = devm_regmap_*init*(...);
+	...
+	tla2528->regmap = map;
+	...
+	ret = regmap_write(map, TLA2528_GENERAL_CFG_ADR, TLA2528_GENERAL_CFG_RST);
+
+this can kill two birds with one stone:
+- make this one line (yes, 82 characters is okay)
+- keeping data structure free from error pointers
+
+> +	if (ret)
+> +		return ret;
 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductors
-Oulu Finland
+With Best Regards,
+Andy Shevchenko
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+
