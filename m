@@ -1,56 +1,66 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794524189;
-	b=QdPBhvPLLCbJaIZhBtrSRM1d/74GPJYwfRafo74sKxLvdBbUn6GYJoOUbgQcBVNxo/W3
-	 kw72NMeaLgW21oXUdX3W1DJYa8cBtbB3Rrik6q3NVrD9qEqRi0kdmRn+LvSq59/Pyy/ul
-	 axPE2m/AwA4Wez5UEeXPqSmYdo7AGIrFWmT3DaslpBgimtlwcYvkUHMov5pRsKfeEDs8z
-	 CSo3ilG7vzIsFI6wAHYTV+DhSYKS8TmSzWdVRKrnwUKTUDc99SSrScDsZ+2WePwBqypQY
-	 rgjPsNT2CnuPNyziMAfYelbFZYwH0Neoq9DHGdU0MAHZhkWwQDhTY9LkT9qQnZFs9eg==
+	t=1794531768;
+	b=y16pTUm+k9mrZ8fI1YBr8BfQw0rjQbNizDe5S8SznR9IdStfK/Z0j0FxsfryfkhvbfOX
+	 hd8OTCb3KZGzsWl5Pleej9r8ilRQSBI2aaVDBFPwggNvk8FTiAZnunOdx1T15uMHksqfZ
+	 F6aycYf8WwpmKYbZgQIsirc1cvlwN/SSMKUILZ2kk1hdZ7SJW63hCNNOC842Mo90cXphu
+	 0SPIKR7bGoRfd0NzRB9uKvF/Lqv+I+CIlcnQtbaCKUVK0xHcyUbtkVxb7YLTXOLkzj0zM
+	 Lftmp8kzSLo8Fy1aDzHMB33iwcv0paUkOVN5f/DVZBmfuReWknQ4qaDuWY85r8OURqg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794524189;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794531768;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=3LmFrsBQFbZEhx18usBDVPj20osM9FeVGPojC5J12gQ=;
-	b=OpswdMuVYOMDVbp3t5KYapquPW4l57s1yMRbT3XiaiUqK8+0ce0oUWt8x+rifQPLfryx
-	 tmCj6cFOXk3cbnJSTgCk9lurMF048xsier380nbLfKxmiWI/fGXqJe2IkwYqTQWOqFR+o
-	 toWPmkbknWk/atcVRGbyDt65l37HdQ5m/YgEnw0mLDZLnpDXdt8lk+PuHeDhM2G5aqCjA
-	 kL3pSyBUQjQK9srR5Xgnq8IszCqy+qrBpGJ/g8MhFNRMm5C4Y0UeTSAUPiCNT9sjPzHaF
-	 M9C4t6M/fT1Gy6dQy9pDVBStFycrj+8dsAxz1qbcSpi6HLeL8wb6jGXnBEkG7frJdBg==
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=XtdvEuKeodVtDzB/4eB7y3ob7xjJavFKFolqpUylUuw=;
+	b=NoCFMZANJWqMMMBZdWdld/uszKsYCkf7egGf5n8no73KVzUgk73TnZ5gBWZ0cZL+vdPk
+	 O2NpgglZTygl3FzY3DcdaFt4JVPTsFiVOJU21QCzr7Do8rDZpjju7rhm1D4asyUFpCKPG
+	 bOk94m0Nxe1JxFrUBV/UDF6kodsSnVA5yZO0lv4GCb2B/9qTvV6k2NEp4lawloeJ8i2Kw
+	 ljx0YdaDK5EfC1oDIvH7T7uAEQ1IywxFaWuzrnaMsdBwwWeEQwG1xVAi4/GCBjASnll95
+	 jLylEZRFmxJUkK7MXJfuWobcN99Pt6QTUEk6xfsdz22J4t9vRbPoB9jLC1A+wofaYRQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HllWrPif;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GDzEvUBg;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64002606A880;
-	Thu, 12 Nov 2026 22:56:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11677606A321;
+	Fri, 13 Nov 2026 01:02:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HllWrPif
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8BEB1F000C4;
-	Thu, 12 Nov 2026 22:56:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GDzEvUBg
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 571401F000C4;
+	Fri, 13 Nov 2026 01:02:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794524188;
-	bh=3LmFrsBQFbZEhx18usBDVPj20osM9FeVGPojC5J12gQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=HllWrPifUSJqBkdjY9YrTJzDMsN5rQUpW6Vx4PfZBFkAsYhoO8HT33ivCvtOTCtuj
-	 zvLdNe1lCLQwolmIiVhQ+NWBEI4pRdu6cmbrqxYsvFWAewlPa7jifPDtT4J3b1C6lG
-	 7fbCQ9voHcbxeFjngoMH7O2XVRMufhTrVuBP0ZndRTP0zCWo1W9cwSreWiSUOHo3uz
-	 M0v1ysihN0Yg44yNlZtCqZisx65YDM8kHbdwgcl3NPUWELg+HyYsFXeXNslX9kXnIx
-	 vEQNyAauKKkf5+oPAUG0/IztXO8zJgoOAZPpCBupJ43ZRlkA9ccutBVy5ySGQGKDCm
-	 qedFueBi7YI2A==
-Date: Thu, 12 Nov 2026 16:56:26 -0600
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Akhilesh Patil <akhilesh.patil@linux.dev>
-Cc: andy@kernel.org, krzk+dt@kernel.org, linux-rtc@vger.kernel.org,
-	akhileshpatilvnit@gmail.com, crofts@kernel.org,
-	alexandre.belloni@bootlin.com, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, conor+dt@kernel.org,
-	linux-iio@vger.kernel.org, akhilesh@ee.iitb.ac.in, jic23@kernel.org,
-	dlechner@baylibre.com
-Subject: Re: [PATCH v4] MAINTAINERS: Update Akhilesh Patil Email address
-Message-ID: <179452418643.1857011.17712598174525760162.robh@kernel.org>
-References: <20261112091641.GA3643677@u5ce4748bae3b54.ant.amazon.com>
+	s=k20260515; t=1794531767;
+	bh=XtdvEuKeodVtDzB/4eB7y3ob7xjJavFKFolqpUylUuw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=GDzEvUBgEaXspkMbc8RJurxMEtNcNXNP3ZhLD8NspGvjCK170O6+6/OE906oznxfp
+	 /e1QXDWJWqiNoNDswojpBvF5ZneDETXry7uFiwQjkWBj/tqkQEMx6ePPqqtMQgZQnn
+	 8Bm4cBFQbNSHPwyu7DPqTKj3iAm9LMojB7uDkVah03unCyC7fADNS52ZrnBa8egoQD
+	 HpAoKP7YL3UYgg9d7PK2do2rcYXOgOTlvcXQjRsp5HorisJ8oCVumcnNHOz1dL2Hms
+	 JLU91DZv/ZA/q7higagnsST7WfFrv+SNpGZRqGTtVsmfaeQdgG8in+bzqtY2mZgmtl
+	 abBa6blFIeLVQ==
+Date: Fri, 13 Nov 2026 01:02:38 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Val Packett <val@packett.cool>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Marc Lainez
+ <marc.lainez@gmail.com>, Luca Weiss <luca.weiss@fairphone.com>,
+ =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
+ Danila Tikhonov <danila@jiaxyga.com>, Sebastian Reichel <sre@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
+ linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+ devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] iio: adc: qcom-spmi-adc5: Add
+ ADC5_BAT_THERM_100K_PU
+Message-ID: <20261113010238.17b371c8@jic23-hlaptop>
+In-Reply-To: <20261112170841.2189322-4-val@packett.cool>
+References: <20261112170841.2189322-1-val@packett.cool>
+	<20261112170841.2189322-4-val@packett.cool>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -60,42 +70,37 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261112091641.GA3643677@u5ce4748bae3b54.ant.amazon.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Thu, 12 Nov 2026 14:07:29 -0300
+Val Packett <val@packett.cool> wrote:
 
-On Thu, 12 Nov 2026 09:16:41 +0000, Akhilesh Patil wrote:
-> Move to my new linux.dev email address akhilesh.patil@linux.dev
-> I plan to use this email for kernel development going forward.
-> Also update email address in few yaml and driver source files.
+> Even though it existed in bindings for the longest time,
+> ADC5_BAT_THERM_100K_PU was never assigned in the driver. Do so.
 > 
-> Signed-off-by: Akhilesh Patil <akhilesh.patil@linux.dev>
+> Signed-off-by: Val Packett <val@packett.cool>
 > ---
+>  drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Changes in v4:
-> - No source change.
-> - Added entire change log for all versions.
-> - Link to v3:
-> https://lore.kernel.org/linux-iio/20261110052942.GA2505113@u5ce4748bae3b54.ant.amazon.com/
-> 
-> Changes in v3:
-> - Fixed order of entry in .mailmap
-> - Link to v2:
-> https://lore.kernel.org/all/20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com/
-> 
-> Changes in v2:
-> - Updated email ID in relevant device tree source files and driver source files.
-> - Link to v1:
-> https://lore.kernel.org/linux-iio/20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com/
-> 
->  .mailmap                                                      | 1 +
->  .../devicetree/bindings/iio/pressure/aosong,adp810.yaml       | 2 +-
->  Documentation/devicetree/bindings/rtc/st,m41t93.yaml          | 2 +-
->  MAINTAINERS                                                   | 2 +-
->  drivers/iio/pressure/adp810.c                                 | 4 ++--
->  5 files changed, 6 insertions(+), 5 deletions(-)
-> 
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> index d57ba8526e0c..c27ff89429f5 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> @@ -542,6 +542,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
+>  					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 0,
+>  					SCALE_HW_CALIB_XOTHERM)
+> +	[ADC5_BAT_THERM_100K_PU]	= ADC5_CHAN_TEMP("bat_therm", 0,
+> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+Whilst alignment isn't exactly consistent, this should probably match
+the one two down that has same number of chars in the _PU] bit.
+So use a space rather than a tab.
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Otherwise seems fine to me.
+
+>  	[ADC5_BAT_ID_100K_PU]	= ADC5_CHAN_TEMP("bat_id", 0,
+>  					SCALE_HW_CALIB_DEFAULT)
+>  	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
 
