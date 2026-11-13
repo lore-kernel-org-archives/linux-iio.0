@@ -1,67 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.137
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794558352;
-	b=Odi3bp+O8IZ35/PI6Ih+raEXq7YDArjYaS4BUwWHxfEedpuIckbT9A4EeXAbSRfySOa4
-	 CUMkDArlgDaCMzuCjJDx0QpOPocaA6jLlcKEaNNmgsH8dQRG2R7/sc2m70I4wO1Bq4f66
-	 p+kBKdMGSfxYSg6CxYjuJEJEYM5DTnpJ3kY+WqZJgrrZl/GPKiERPCLLbX5aJjkIQFGb1
-	 hssfh5dLzf2W90c6G9XStqwBUx+W2oOKDq7Mkyh4rGzrNq9Mr5Xozr7FttWoZ61reKbUe
-	 8yIml042z3ge4fFkffiofSXhKyIV3XcAXsZMbhNX2jM7UC3ENZxAGiR+V1lPVGnZwJw==
+	t=1794559024;
+	b=AHy1vSG4a2yyvKF5yv2x7jCs0KCcnnolF/5XcCiLXbvRMmoD/3Ls4+xlvHN1gm7UoGdo
+	 9fhEtAK/LYz14K713RKoPXMV1L/vJb11p2BMCOFnAbkfFKK/Mwo+8qMNcitlIsMW229bp
+	 0HE1umJwhubQ9pbQA1Owe4i1Ajcss6wgdYJpBA1OOo5N5iSRv6kGA3HZyq7VGayu4DkSC
+	 TItecyvRm5wsI/HSNVXHMGleTzbIr6WSPBmg/B3Qvjt6C119wgGptE9rXQtE/I4Hk/Cnm
+	 TFROnaZnz/VoyJwbs9w24X61GpDnx4W6SrpWMQgIfk24Fk1xbxkcyfMkG/TWnNBXqQQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794558352;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=fOyA+/mIxQw8aulmJJ6drlntxz+JUhzM5Zq2n9iEbYU=;
-	b=LGnTr2M3VLOOibdOKRt/JoyDh6uoA4NtsyYGENsCeRWr+elG9BPfrGZQQLcvGL+07U+7
-	 ciVezRBJsRIpMsYVuTabmybI9r8mjAdrBF6WZmfQLgT0+HPugUvD98NqSHXxmkaEQCiUf
-	 l94UZ8SwH9SNAyKFmnv7otYXf36EiXCH+IBblkaTqENA32C2k7QR5VT+USsqnhMqapHmO
-	 KmUDRgJk/ipkmxR7YUelTRuERJD45CG5cK7fpTLjF7RF3F1xR1E/aoCdBDEOs9JK+K6ZH
-	 fzusxqZocpw/FMLN6h/hTLwi/MXYexbl7dIovsREImd6H11P+Pw8o7glc+M37ZHTajg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794559024;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=TOlR5TLM959EjV+Tl1kFJWd+Kt4GG1AJI6ZYw3eVYKM=;
+	b=bUeaxFpfjkeQuhUdHK0lOCgYl2lWeul4O9FC3oZlQ1q248h3tWHDAwKqlQWj84jPrPyN
+	 5ghh7rlDu9ooXnm50WDXq38CffmciFWrVNOmcQVIPfo1yjz8q4DtBMdLq4Rj/WeahwHHq
+	 DOKQV+w5zhZ4Y6XPXk0MlUQgJmHTyR6+/Z2CUxUNIm0/28FtJFJzA25YzpmJfiy5KboU/
+	 6jMGt37Y9khk7O9ZnmpDww2I7x1XWnHrVCD3OUd0FzUNYS1FJ/uLMtgEoNY0QyiaW9qp1
+	 5a6VAX2UgD57ECTXzx86THAht4wJc6B0BNLrEjoocEfkqnQaKHKwDe0CLUHGsJP4fXg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=b8os27o2;
-	arc=none smtp.remote-ip=111.22.67.137
-Received: from cmccmta4.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 259DD606A31C;
-	Fri, 13 Nov 2026 08:25:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 259DD606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vn9MROCv;
+	arc=none smtp.remote-ip=209.85.167.42
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C52E606A31C
+	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 08:37:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C52E606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=b8os27o2
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vn9MROCv
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5c08539c827so688043e87.2
+        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 00:37:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=b8os27o2WF93BP5j5fLBwLzoEpXglGJ2tTkraxcy0bwjYBjbqf2vJTcaIdlZqp8HPlL9l5rrEjkU1
-	 TDoOLxsn0ieiAEzRGtI9/aDJEbOMpX4/UUVkRZKirKjgyerUEGGMzfQSqz0DvoKBnrayj7gFDZ0yHQ
-	 BCbOByYrQHpRnFn4=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app08-12008 (RichMail) with SMTP id 2ee86af6c98beda-8a1a3;
-	Fri, 13 Nov 2026 16:25:48 +0800 (CST)
-X-RM-TRANSID:2ee86af6c98beda-8a1a3
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from devin-VMware-Virtual-Platform.localdomain (unknown[10.55.1.72])
-	by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee66af6c988111-1e8d6;
-	Fri, 13 Nov 2026 16:25:48 +0800 (CST)
-X-RM-TRANSID:2ee66af6c988111-1e8d6
-From: Zhu Jun <zhujun2@cmss.chinamobile.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	zhujun2@cmss.chinamobile.com
-Subject: [PATCH v3] iio: potentiostat: lmp91000: Handle configuration write errors
-Date: Fri, 13 Nov 2026 16:25:46 +0800
-Message-ID: <20261113082546.176582-1-zhujun2@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.51.0
+        d=gmail.com; s=20260707; t=1794559022; x=1795163822; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=TOlR5TLM959EjV+Tl1kFJWd+Kt4GG1AJI6ZYw3eVYKM=;
+        b=vn9MROCvuEiH+7iw29UiR47jK9n08u9V9/N6OsGS8apFoILOW8SavY5S0ROJCq56s+
+         Y1fxtDVPR954ZwhMYkjHeqxYl6g15XGdHYRvidhx5zOYfHWfChfJ0p/7YBCwiKyCgVjN
+         WdE6tgme7pnMEfr39/LMCoxg7z++liRKwiW8jWO67wo8YwLbme0gdXzyClI9++hOGUjd
+         GVCTnEqerhjIHgbGvZzsMVKDtYacVJ3nuQE0voYdgDhPHjJeLgO3Oajey7BVh7Kzr5TX
+         UwOOS86URPDNVPwYv9qS61iBzA/dFOxZiC4JeHr1nCoPbHmODKVq1tP/yAhsQZ9V78YR
+         +kNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794559022; x=1795163822;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=TOlR5TLM959EjV+Tl1kFJWd+Kt4GG1AJI6ZYw3eVYKM=;
+        b=RgXQWAddMAPJ8a0oKwVu/XghEyuNMevznv9szb2RxIgrNgRYhnnmE25JR/xeqIiL9U
+         zSWnW2/VMnBdYdkQ76NY8PRM5nSedaQQKjFgBsL51M6ndCodWBwqauZRUUiFz2NQCU2M
+         cp67M2U60s2FNvUSM3KAocxHM6nIQ//2iSqLMiOqK+0Cp/bs/IBEHr2QMi/ZP+ogbLdd
+         pPreIk3GmAcDN+PdVmMVIV/3Fe/xZMLVvtyiVC5w3BMXV0ZVB3nCfWY9++c/Ya6Lmyti
+         Mx1U/UUJLle9WQPIfBoWh+ZDGF3Iegyw0J98EfO3w2cudA0VGqJQAex2prI3wx5lCDuj
+         qhAQ==
+X-Gm-Message-State: APuU4Z/C0lUHnNkzJUrMh8M+LppnpV7J1hAe8p4/5rn2zySN02BUNKDf
+	m7p82iAzXlxfh5e4Ruaq4mKIWS/Gj7cpVAJWONjCkd9j9SYCDRitm70O4WGxNu7y
+X-Gm-Gg: AYBFou0ZXhLeE7G6SFSAowbRQ5/6Fab5XK8Z2C8XIdEY0nIowPpDO3zO63S0CEJWXvK
+	K0IW6vz+o94Glz1/mwDphnbL16tJ6rt3Uxnak1QrfCnhfUpOu+2EzrTtoTYaeOSRodlM2xywj8c
+	6cQrl4WiInYGVCmu3CC8IccdqjYcgW8pl1NR24aLvOxFTOzeHMZ4/RVihqsGpduV+2cR9brutvt
+	mpoaUuAJiM0Rk2LECinq9Wsf2snyLIPeHVZsv1vvR4Xos6hdUcPSP/MLGdqbOi8eWkO56s6pz5N
+	/9x7Ni7nvnyyXcwNTJszYjDWPrSFcOOZ9sEl26iR0vXybwdfpR0J8JV8nQ/hqc9Jx9I/cka1NsI
+	luXTjgMozpyCIWlM5zlAq6+C7osWPjfrpJuXa+TRe3ioy1L2pacQzVEJSJd8ORMU9EeTQg7i7lW
+	vlyjjowLtIJKct/E51wWcGY7cNPz42EbV+C6a2nKaydQzHeStr9XutBZUu+dNPkXN6LxxJuHied
+	GqYBpOyBF398+WVjIKkJobn/btN1FUfUw4JAUArDFOv5/dMtCegAtuwyU0zyvR2RuBWW4DqZbfR
+	rA3bZLcGXK4Ok/xO+JHOQU7hwr10ZFTgn4DEXBNNYIj00aPrD/OuPlczmSYorIo4TwJ9nzIy12+
+	u5hsDlNCW1Q==
+X-Received: by 2002:a05:6512:250d:b0:5c1:4e6b:6491 with SMTP id 2adb3069b0e04-5c17099fe45mr922206e87.59.1794559022260;
+        Fri, 13 Nov 2026 00:37:02 -0800 (PST)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c17133e1bdsm526954e87.43.2026.11.13.00.37.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Nov 2026 00:37:01 -0800 (PST)
+Message-ID: <d12ee272-8dc3-46f2-997a-5de019ed6baa@gmail.com>
+Date: Fri, 13 Nov 2026 10:37:00 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -71,84 +91,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iio: gts-helper: fix duplicate NOTE section in struct
+ iio_itime_sel_mul
+To: =?UTF-8?Q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20261112-iio-kernel-doc-v1-0-e382fc9a47c2@gmail.com>
+ <20261112-iio-kernel-doc-v1-2-e382fc9a47c2@gmail.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20261112-iio-kernel-doc-v1-2-e382fc9a47c2@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-lmp91000_read_config() ignores errors when unlocking and programming
-the TIA and reference registers. Probe can then succeed even though
-the hardware configuration does not match the parameters used to
-interpret measurements.
+On 13/11/2026 07:25, Oscar Alejandro Sánchez Lucero wrote:
+> Replace the repeated 'NOTE:' prefixes in struct iio_itime_sel_mul
+> kernel-doc comments with plain sentences to avoid the duplicate section
+> name warning.
+> 
+> Verified with ./scripts/kernel-doc, checkpatch.pl --strict, and a W=1
+> build of drivers/iio/industrialio-gts-helper.o.
+> 
+> Signed-off-by: Oscar Alejandro Sánchez Lucero <aleszlucero@gmail.com>
+> ---
+>   include/linux/iio/iio-gts-helper.h | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/iio/iio-gts-helper.h b/include/linux/iio/iio-gts-helper.h
+> index 0c4b2e9fbe1e..3f07a46ddff2 100644
+> --- a/include/linux/iio/iio-gts-helper.h
+> +++ b/include/linux/iio/iio-gts-helper.h
+> @@ -47,9 +47,9 @@ struct iio_gain_sel_pair {
+>    * @time_us:	Integration time in microseconds. Time values must be positive,
+>    *		negative values are reserved for error handling.
+>    * @sel:	Selector (usually register value) used to indicate this time
+> - *		NOTE: Only selectors >= 0 supported.
+> + *		Note that only selectors >= 0 are supported.
+>    * @mul:	Multiplication to the values caused by this time.
+> - *		NOTE: Only multipliers > 0 supported.
+> + *		Note that only multipliers > 0 are supported.
+>    */
+>   struct iio_itime_sel_mul {
+>   	int time_us;
+> 
 
-Check the configuration writes and return the first error. After a
-successful unlock, attempt to restore write protection even if a
-configuration write fails. Return a relock error when both configuration
-writes succeeded.
+I am unsure the "Note that..." serves any real value. Might as well be 
+short and concise:
+"NOTE: Only multipliers > 0 supported." => "Only multipliers > 0 supported."
 
-lmp91000_probe() returns either error before registering the IIO device,
-so the caller does not need to distinguish their source. Preserve the
-configuration error if restoring write protection also fails.
+Well, "Note that only multipliers > 0 are supported." isn't much longer 
+so it works well enough for me unless you respin this for some other reason.
 
-Fixes: 67e17300dc1d ("iio: potentiostat: add LMP91000 support")
-Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
----
-Changes in v3:
-- Declare the loop counter separately from the return code (Andy Shevchenko).
-- Explain how probe handles configuration and relock failures.
+Thanks for the fix!
 
-Changes in v2:
-- Use an explicit error path to restore write protection and return the
-  original configuration error, as suggested by Jonathan Cameron.
-- Return the final lock write result directly on the successful path.
+Yours,
+	-- Matti
 
- drivers/iio/potentiostat/lmp91000.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-index 00cb3fea97ca..1e07917ff76a 100644
---- a/drivers/iio/potentiostat/lmp91000.c
-+++ b/drivers/iio/potentiostat/lmp91000.c
-@@ -205,7 +205,8 @@ static int lmp91000_read_config(struct lmp91000_data *data)
- {
- 	struct device *dev = data->dev;
- 	unsigned int reg, val;
--	int i, ret;
-+	int ret;
-+	int i;
- 
- 	ret = device_property_read_u32(dev, "ti,tia-gain-ohm", &val);
- 	if (ret) {
-@@ -250,13 +251,25 @@ static int lmp91000_read_config(struct lmp91000_data *data)
- 		return ret;
- 	}
- 
--	regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
--	regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
--	regmap_write(data->regmap, LMP91000_REG_REFCN,
--		     LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
-+	ret = regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-+	if (ret)
-+		goto relock;
-+
-+	ret = regmap_write(data->regmap, LMP91000_REG_REFCN,
-+			   LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50_ZERO);
-+	if (ret)
-+		goto relock;
-+
-+	return regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-+
-+relock:
- 	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
- 
--	return 0;
-+	return ret;
- }
- 
- static int lmp91000_buffer_cb(const void *val, void *private)
 -- 
-2.51.0
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-
-
+~~ When things go utterly wrong vim users can always type :help! ~~
