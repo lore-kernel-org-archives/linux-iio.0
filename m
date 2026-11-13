@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794535437;
-	b=mXdfYQ3dNBH251ifIOhN+KWHlI0MagzLWrN7UesC+vTKSj5YhHkwEYzd5cP+Vs13yPSj
-	 VppTNg5eBLkCuSrU2AXuZo27Y2kagGpUaFt3pVonYXT+IEEkttpKPDs7iFLpywE2/ej+O
-	 7K2Cts8kiMVOMy5zhZsec5vRtASoaCyOoOrQ6K5WtjTWINHBD7sBW3ImLH3uJHNOPlSjz
-	 kdVOIUAdB8nMEvN03IxA8M5VJloMbGc3PqITm2wiRJEjCqqlChrh7S5GqsbaZ4cknAs8r
-	 8h+Nl11yCa/0jS7NGCg5LSfR1MxTgQpsyA5dp2f8k56vRC8ta2hs9FWXoYUghqH7GrQ==
+	t=1794536239;
+	b=COzADknVvkcn6ZRIa0RQcubRK01+EjsvWnfyeziEyvNvgV3eTMuHEXW/9PRGweWkdJBj
+	 NH96ZlPSgUP08+DdiZkuFqDikQgj+fuDJsx7Z9A3FPyVztJmctqqoolX25BgIhaFOFaZn
+	 a/D9aUmlBJ3R5gleR7oUA0UFxnWbFEwcvIEFSbLkoS/omgHvb9do7AXR6RnKhNruR8Z8G
+	 C3KCqydzR4PG+sFrFzzyTs2G1OySURLGBOeZjxEjbkY3fRPDpkMDxZq9MqwbfTiWszw17
+	 cH7c1Bkg7kXyxcRJIi42NhdqOI/AGjiwiflIgsUeDkjMj/j/ZajtbdEN0u2PRu/flcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794535437;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794536239;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=52ypZZbH0W5iPBW6QvuskKZ2OD4EQJiTD+ro0Z2NwZc=;
-	b=g7NbwCmpcfUBesrzPzElrlrGOMqOCpjzGwT8QYGS95eVKpk3R4yAqXQ/xNwblj4hkOfV
-	 u07jk4f1B8Wuav6UdcqZZL/IFgqrbeHXbuVxkK/RgAqZ4MSSoq9y4BOJKL4xC2xJ/xOqz
-	 6eCxY00pVb8uLx9fpYiiPPMbEbTKAvB2vqZuuG18NEguAM70jI3HqsF/wplAJqIkAdSOY
-	 3j4m3SpdoIvi3zhf5khETlSuTgG7jCHm0B1lq+pT3Snv8dbzF5Erdd0mAqY7QJjTvJzQY
-	 StislIWExvmVdLokOSRybx2zJ/1DNZQJ9yu7J10ntsg156DZ642dmIhssCYqwfNBZwQ==
+	bh=6K2ZQ58mfhfrypYFAVRN9Vv3y7y6wCLRsHy328DMCaQ=;
+	b=pd4JmbDlX+P4ZcFnzZyo/v3XVh+45JH+/q/7anhF+Vqsy6CGyOCw10GxFZo9wcabSy3l
+	 gt+xSvLLycgGd+HzcgPV2k8zamoDTJI0/w80bDxQxxOY8MLDVhs8e+k3UOjoNlk0sqOYz
+	 gYCHIUcGywx9YMsQqva1uO4pmZ1GUPB9mgcgGPaUs4jcuCHB722twjB69evFXtnxcJo9U
+	 GOoPol0CJ5sSH+pmt2Wa6krNJVIqRlZtXBt4lXPSuIHBKkrqA2LC3eJTmpgCyzyzJHCe+
+	 F4hV6rm4X5BWSj05ImLlinSIxcDDesJibKD9U4dysmtzPscMhSVQDtQBvMcWhaNufnQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E1O3kJia;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TQxOi3rO;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EBCB606A31C;
-	Fri, 13 Nov 2026 02:03:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1E4606A31C;
+	Fri, 13 Nov 2026 02:17:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E1O3kJia
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A201F000C4;
-	Fri, 13 Nov 2026 02:03:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TQxOi3rO
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 078671F000C4;
+	Fri, 13 Nov 2026 02:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794535436;
-	bh=52ypZZbH0W5iPBW6QvuskKZ2OD4EQJiTD+ro0Z2NwZc=;
+	s=k20260515; t=1794536239;
+	bh=6K2ZQ58mfhfrypYFAVRN9Vv3y7y6wCLRsHy328DMCaQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=E1O3kJiaCdQbu6ToQsMC6pBJVhVyZiXJgkiz/fyhhMKKT1CQA8kQOtjv2a/oQZLyH
-	 KJ9pywLNBb1TaQk0mOPiIRthynunZatHN62BIcUfplhdH4W//SUfTzRNo/bmLiRO2e
-	 YtzQ08uzikWZlKd7ekJHGzyk0O4kdJ9a04dtdt8/mRHgULmCpLAQ7XDKIAqSbX/1+I
-	 6J0B7zzB3nlqQXj71hE23uG6ydIUu8A0/GTJkOI4ahzhONO6uZaNgvWVFm84quu6df
-	 2+ORblExCh4+BLfQyQpdNfH5XZAv0rMuF+6al7mItV9ZpI87livQHuiWhjM+SolSOk
-	 uttcqvGXYdWSg==
-Date: Fri, 13 Nov 2026 02:03:53 +0000
+	b=TQxOi3rOwLFY/tgl0aHU5xWmlFZNin0cbTN0hBrfwxUysOVLvuBFl4T0GBU+7zwW5
+	 W/WyFebtCw/7E2P+eE005jUvSvx5lr8iWg6cjrDWZ7f8hqw6ajoj0BaP1rHRPiP2/k
+	 ty09/QqyfM5tXvas85evPrhhwrSzBaGhe3FolNelyYoz70L2VdjTCKHuVCVIi1Ul+H
+	 IwmXKdPGEM2GEV5Me4FOqZmnmXJzKjo4OyrKhxfO6I4F0x5afl7d033HB01Ogn4Uf8
+	 CaJIpkLO4kjJXzQgEzzBc7H/qg7ttsM6OpXWQ74TWb9hXAwZlBjmvJ80gevFz3uyJN
+	 kh5L2C6dhPinA==
+Date: Fri, 13 Nov 2026 02:17:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_icm42600: update gyro start and stop
- delay
-Message-ID: <20261113020353.6d57fd46@jic23-hlaptop>
-In-Reply-To: <20261110-iio-imu-inv-icm42600-update-gyro-start-stop-delay-v2-1-c6f5d35290d4@tdk.com>
-References: <20261110-iio-imu-inv-icm42600-update-gyro-start-stop-delay-v2-1-c6f5d35290d4@tdk.com>
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
+ devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Paulius Zaleckas <paulius.zaleckas@gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: infineon,dps310: Add
+ interrupts
+Message-ID: <20261113021710.7211ade3@jic23-hlaptop>
+In-Reply-To: <20261110154254.39092-2-zoone.rupert@gmail.com>
+References: <20261110154254.39092-1-zoone.rupert@gmail.com>
+	<20261110154254.39092-2-zoone.rupert@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,70 +65,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Nov 2026 16:57:17 +0100
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com=
-@kernel.org> wrote:
+On Tue, 10 Nov 2026 17:42:53 +0200
+Rupesh Majhi <zoone.rupert@gmail.com> wrote:
 
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
->=20
-> From internal specifications maximum start time for gyroscope is 45ms.
-> Stop time is required for letting gyroscope mechanical structure settle
-> down before enabling it back. 50ms is a sufficient value for that.
->=20
-> Update values to these numbers.
->=20
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Applied to the testing branch of iio.git.
+> DPS310 signals new results and a full FIFO on its SDO pin. In I2C mode
+> the same pin sets the address LSB, and interrupt polarity must be the
+> opposite of how SDO is strapped.
 
-Thanks,
+Some hardware engineer is presumably proud they made that work!
+
+I'm not sure why we never had the SPI part of this binding but
+given it's not there and it gets more complicated wrt to this
+that can be addressed if anyone ever adds SPI.
+
+Anyhow, to me this looks fine.
 
 Jonathan
 
+
+> 
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 > ---
-> Changes in v2:
-> - Do not refer to datasheet since these values are not available.
-> - Link to v1: https://patch.msgid.link/20261020-iio-imu-inv-icm42600-upda=
-te-gyro-start-stop-delay-v1-1-ed52290a4ca4@tdk.com
->=20
-> To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> To: Jonathan Cameron <jic23@kernel.org>
-> To: David Lechner <dlechner@baylibre.com>
-> To: Nuno S=C3=A1 <nuno.sa@analog.com>
-> To: Andy Shevchenko <andy@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  drivers/iio/imu/inv_icm42600/inv_icm42600.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/im=
-u/inv_icm42600/inv_icm42600.h
-> index 3737e79dbcc1..c4a928fd3b8a 100644
-> --- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-> +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-> @@ -439,8 +439,8 @@ struct inv_icm42600_sensor_state {
->  #define INV_ICM42600_POWER_UP_TIME_MS		100
->  #define INV_ICM42600_RESET_TIME_MS		1
->  #define INV_ICM42600_ACCEL_STARTUP_TIME_MS	20
-> -#define INV_ICM42600_GYRO_STARTUP_TIME_MS	60
-> -#define INV_ICM42600_GYRO_STOP_TIME_MS		150
-> +#define INV_ICM42600_GYRO_STARTUP_TIME_MS	45
-> +#define INV_ICM42600_GYRO_STOP_TIME_MS		50
->  #define INV_ICM42600_TEMP_STARTUP_TIME_MS	14
->  #define INV_ICM42600_SUSPEND_DELAY_MS		2000
-> =20
->=20
-> ---
-> base-commit: 43ffda3c7f8456bbe641ae8249a077a361b97880
-> change-id: 20261019-iio-imu-inv-icm42600-update-gyro-start-stop-delay-68d=
-afe160210
->=20
-> Best regards,
-> -- =20
-> Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
->=20
->=20
+> Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>
+> 
+>  .../bindings/iio/pressure/infineon,dps310.yaml         | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+> index 416117dfd927..cded6e0af147 100644
+> --- a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+> +++ b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+> @@ -23,6 +23,12 @@ properties:
+>    reg:
+>      maxItems: 1
+>  
+> +  interrupts:
+> +    maxItems: 1
+> +    description:
+> +      New result or full FIFO, on SDO pin. SDO also selects I2C address, so
+> +      interrupt is active high at 0x76 (SDO low) and active low at 0x77.
+> +
+>    "#io-channel-cells":
+>      const: 0
+>  
+> @@ -42,6 +48,8 @@ additionalProperties: false
+>  
+>  examples:
+>    - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+>      i2c {
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> @@ -49,6 +57,8 @@ examples:
+>          dps: pressure-sensor@76 {
+>              compatible = "infineon,dps310";
+>              reg = <0x76>;
+> +            interrupt-parent = <&gpio0>;
+> +            interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
+>              #io-channel-cells = <0>;
+>              vdd-supply = <&vref1>;
+>              vddio-supply = <&vref2>;
 
