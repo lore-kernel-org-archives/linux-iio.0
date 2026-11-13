@@ -1,58 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.246.84.56
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794587144;
-	b=WZ9eMgX/tFYXi9mlQyZnaIgXrJCMXQ0EoqnPmCF0KytvTTZXq/tPSgPp3GDNvWPBC7WR
-	 lzRS5N275kX9rBkC023LeQ7hH9fNbmTG0JxaXYgdqOVE2BLF6SEHZyLkcRH/Nu/d60UOQ
-	 dbTJTc+/RHzbNj48UzDI0p5e5v34wFcBCHy2bPVNTtrVHTqR+ivmcMYRrX1hybfGdP6hQ
-	 ipc8JS9Md3FqmtiLf8vo+jWfe6shzBDmTX2dNCew6/dAiPGACNDOjLBdoxjSBkTxZ2Cuc
-	 UcIhV745Ve5ocPNfxx0SvvSnB6mS0ieKcNZ7a6lRheY7X3IwQIrpoIAHSrDSmg8dkxA==
+	t=1794587303;
+	b=uyFs6FIB6cUwvSHvxSAMzxUcGah+39BjzXmOLFiJ0Hhxm2zekQ+ZPr17NDv/yWpfuO6N
+	 w43nHseP8rCDSMqtDuaTEi1w/HJbAmGLotInTGQu2ZVsxPTG7YcxuowxP3DfSVEeID8kw
+	 8cr7MJuqi+TBXtPQAhi/ZYJchkTjydYf3VGCRh3YPU6hYXis4GubKflCqU3C2XGd2Ng+F
+	 UnYqIoWZlLZcvYVbNOpvY6InAQCCIZ79Mo7Fpbn70bwBxvvQpIFeHDNjqK3w8iNxE2C+r
+	 YT90Ff8FCD1Nf+YzrfimBaZiHJDJNI1wk0ij2nkTiRWihT2asB9O9r/Y0HCR4PDTqlg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794587144;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 X-Last-TLS-Session-Version;
-	bh=b7NmDtV0PqprOLTs1md4OfGCm51DCX09C9kORwNtvtM=;
-	b=Q8GSZfmkIzjw0FGCwxjbX2oNy9fgTqFwblt79RzNj6ptDUxW74B9hwiwQRaqPzkAWkKo
-	 vDjPSiZaITbObiYVr2R/wlGT3c9vnOW4NYTcziSnF5oxjNFKmfUZ3ZXACa8JrS+svVq/7
-	 Dxf2mUGd6OnQzlTdZYQlYgFlZKFDvzuxM2qbfr0JeIndaWNOSGGec0LfPo9EYHtQYF8Um
-	 V1x6bntiE97mgDYI2Z5sda1XwEdkwWtFgsYBwRWUuk1hI0d9MbSPoXTaq+2nO4YeMTFUY
-	 xArSjxvgf0pyNbnCmudr6I8/6OwAAucL1r9YD0jfuCWy+stzz+gdvHVS4LwQBhdiIiQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794587303;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=oVjHsSJnI32gsi62IORtdTOjPWH7UtaoD2O+G5+4p6c=;
+	b=FXhmAgf1kYZ6PwFVstaQZqgDzSALhUg7wK/ggto8PSwxSNOUy+rF6+gsHlvoagAND6uj
+	 9jHSVnooBW2JlptbiJ6xkm5F77OThJ9tHwvZOHGYB6t9Ejd+l4kvs8hKHql8RGSE9xKaG
+	 Oinl7Aw/owX1EN5vTaRQ8CHRG/m+9CvV48GJy5wieBR2MKI90/tt5nK1a8EZV1AhvOy+4
+	 VU7eCmQbB3y7l91l55UPEO6CH6v2kJSmwsyr3WqwunveyuEWEi/E9DVuSzEbUk4JYaQRx
+	 /i8MHEr7/mMWqGdwc3iCA5IVIfot3tU8bitkybMwLUmalNGVKviIAcah2wlqPryJ+KA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bootlin.com;
-	spf=pass smtp.mailfrom=bootlin.com;
-	dkim=pass header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=OCOuyuwG;
-	arc=none smtp.remote-ip=185.246.84.56
-Received: from smtpout-02.galae.net (smtpout-02.galae.net [185.246.84.56])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=k6J4Eiac;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3023606A327;
-	Fri, 13 Nov 2026 16:25:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B3023606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40F76606A323;
+	Fri, 13 Nov 2026 16:28:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40F76606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=OCOuyuwG
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-02.galae.net (Postfix) with ESMTPS id 2D7F11A1646;
-	Fri, 13 Nov 2026 16:25:42 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id EB1B860015;
-	Fri, 13 Nov 2026 16:25:41 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 48E1211BC0069;
-	Fri, 13 Nov 2026 17:25:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1794587140; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:content-language:in-reply-to:references;
-	bh=b7NmDtV0PqprOLTs1md4OfGCm51DCX09C9kORwNtvtM=;
-	b=OCOuyuwG5KLMpusWNquL6+4C1/rhbuepLLTbLuKdTKfFdo8RJUl5Ty1HLBbGeDFdl97gEc
-	fRxAcfGGQNfPY1udAvHunXuGOt04vOBNX/NPHF2/x1srIul/rjHWPMs3a4wdfvCFzl6yQv
-	+6XtvPBdDsHYdGf/1BvKgtuY+iLq6e36qLCoACosoUhmFtGxwLGhHmIEa0dyNtxyF9igBZ
-	nusr0CjAo0kOoLWx8dY8I3D6/TiSY0w1w8cJ1OGAtPWHll/FZK2r5t2g3Pbi7bnETN3fDm
-	V8EW3DvM8yL3FVcG7G5sHoCHmyvTkeUiXHOjWuG0VlvxM73eMylglAnjOFLRtw==
-Message-ID: <1be528e6-9189-42d5-afe5-298be5af6b39@bootlin.com>
-Date: Fri, 13 Nov 2026 17:25:32 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=k6J4Eiac
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794587303; x=1826123303;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3rOUS3iehnNsPxQbbRnzZKCyix4huWoVr2RynSHzw+Y=;
+  b=k6J4EiacdOP8a1nceXd8iDU+kzyc3cFzqb6l4Y6pJhcA0hr7AxyAayk7
+   sAN+BS6nhnvxiek1OOisHgwBuV/lvDNlavrJabqLrWHXUjlBnzi/m6x0W
+   yB3Dda5LFlxLIREsgEgbimETPjE9NI4g0fxpL9gADQKXZBQzHqCPacKN6
+   lEnTGLnQTZ5uYEbVHFhbNja714XMY/YE/sVYHvpEmMyoAoIpvJoZKUL/c
+   KDymzqXJgxhYv5w2gUZhKtg5NyIWQ3kexAg4tAwM64Cq8z14uKhqvcq6D
+   W3lumWihbpE6xgg11F4JEUK8Rnrm2YW4JDZdOjVwUP7J3d7oigZAqjSnk
+   A==;
+X-CSE-ConnectionGUID: 5YCkNVdJScOfd6hcFcIrug==
+X-CSE-MsgGUID: 5TkXX387RE6IAPqoh2HnlQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3471713"
+X-IronPort-AV: E=Sophos;i="6.27,212,1787036400"; 
+   d="scan'208";a="3471713"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 08:28:22 -0800
+X-CSE-ConnectionGUID: 98uHgAxrRwuvD7TBI0jFoA==
+X-CSE-MsgGUID: wiSuJyN9RiGKpAjmjTIesQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,212,1787036400"; 
+   d="scan'208";a="9277191"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.148])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 08:28:17 -0800
+Date: Fri, 13 Nov 2026 18:28:14 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Luca Weiss <luca.weiss@fairphone.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Hans de Goede <hansg@kernel.org>,
+	Jens Reidel <adrian@mainlining.org>,
+	Casey Connolly <casey.connolly@linaro.org>,
+	Val Packett <val@packett.cool>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 3/5] thermal/drivers/generic-adc: Allow probe without
+ TZ registration
+Message-ID: <avc6niMcZC0TV4QD@ashevche-desk.local>
+References: <20261113-bat-temp-adc-v3-0-743979a8fd90@fairphone.com>
+ <20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -62,64 +99,60 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/2] iio: adc: add driver for Texas Instruments TLA2528
- adc
-To: Matti Vaittinen <mazziesaccount@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: Rodolfo Giometti <giometti@enneenne.com>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Angelo Dureghello <adureghello@baylibre.com>,
- Tobias Sperling <tobias.sperling@softing.com>,
- Eason Yang <j2anfernee@gmail.com>,
- Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
- Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
- duje@dujemihanovic.xyz, Joshua Crofts <crofts@kernel.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
- Victor Chernyakin <chernyakin.victor.j@outlook.com>,
- herve.codina@bootlin.com, thomas.petazzoni@bootlin.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20261113151543.2241604-1-maxime.chevallier@bootlin.com>
- <20261113151543.2241604-3-maxime.chevallier@bootlin.com>
- <ef47542e-308c-4211-9b42-ba2de13f5f82@gmail.com>
-From: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Content-Language: en-US
-In-Reply-To: <ef47542e-308c-4211-9b42-ba2de13f5f82@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Matti,
-
-On 11/13/26 16:36, Matti Vaittinen wrote:
-> On 13/11/2026 17:15, Maxime Chevallier wrote:
->> Add a new driver for the TI TLA2528 ADC chip. It has 8 12-bit
->> channels, that can also be configured as 16-bit averaging channels.
->>
->> This is a very simple driver, allowing reading raw values for each
->> channel. GPIO mode isn't supported for now, as well as buffered mode and
->> the 16-bit averaging mode.
->>
->> Co-developed-by: Rodolfo Giometti <giometti@enneenne.com>
->> Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
->> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> This looks very familiar to me. I am pretty sure I've reviewed this. Is there a reason the RB-tag wasn't carried over? (Sorry if I've missed some change(s))!
+On Fri, Nov 13, 2026 at 04:56:44PM +0100, Luca Weiss wrote:
+> If the devicetree node is not referenced in a zone under /thermal-zones,
+> devm_thermal_of_zone_register() will fail with -ENODEV.
 > 
-> Yours,
->   -- Matti
+> Since the driver is now also registering as an IIO device[0], allow the
+> probe to continue without the thermal zone.
+> 
+> We also can't use gadc_thermal_get_temp() anymore because we haven't
+> necessarily initialized tz_dev.
 
-You did add a Rb tag on V2, but I dropped it for V3 as the delta between V2
-and V3 was quite substantial and included changes requested by other people
-than you :)
+...
 
-I mentionned your tag being dropped on the V3 cover, but I didn't carry that info
-for V4, sorry about that...
+>  	if (IS_ERR(gti->tz_dev)) {
+>  		ret = PTR_ERR(gti->tz_dev);
+> -		if (ret != -EPROBE_DEFER)
+> -			dev_err(dev,
+> -				"Thermal zone sensor register failed: %d\n",
+> -				ret);
+> -		return ret;
+> -	}
+> +		if (ret != -ENODEV)
+> +			return ret;
+>  
+> -	devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
 
-Anyways thanks a lot for the help,
+> +		dev_info(dev, "Thermal zone sensor register failed: %d\n",
+> +			 ret);
 
-Maxime
+It fits one line.
+
+> +	} else {
+> +		devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
+> +	}
+
+Can we write it as
+
+	ret = PTR_ERR_OR_ZERO(gti->tz_dev);
+	if (ret == -ENODEV)
+		dev_info(dev, "Thermal zone sensor register failed: %d\n", ret);
+	else if (ret)
+		return ret;
+	else
+		devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
+
+?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
