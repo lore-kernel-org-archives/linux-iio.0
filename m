@@ -1,109 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.11
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794577434;
-	b=ObwbVPprkr0PlsxbGFfFNtfcwJALmQl2A7vorbAFXU7t9dawy8xJbtHILmnc5F7ppufe
-	 Be2zJEgftM9Ak50BD8Db4JvQ4SyAL2TeRapvm7RzLbIS//4azE2cMwHM7ZKItF7Mhmi3i
-	 MoDaq4sOhlxNsu7XLlcXYR4ggGJkVcltkBqyOndgi6sKHzgr47tmYuQcgJpXPangs35I0
-	 /rBcNasUc1ejtcDQ6AVbdtfmdVdskFTLTHo/ZLSTCYIsBAote6zrXadX87y79tEWuoc4X
-	 +sEjVR20+APylxMNsYwEMmRQLrODuF5qet6e6NfNnJ9jxdjk4lB47MK0Hk9m0bRydSQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794577434;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 From:To:CC:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type:X-Originating-IP:X-ClientProxiedBy:
-	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=jzF6nkO3wAAi295W3hP9o9Ax4abn0eu7uzs33OgK7n8=;
-	b=O1Yixmeu0ca9Hh9Y4WhQ3mPBl5ieiTdHZfZHqw5t1PnCqOzqb25JLHf7EK6RtFgAfn00
-	 O+YBnEmKKPuv4f8ZVmWg0lyIFC+C4Tq6FeV5Jif5KuhDjLFVd5PbZ66CzOjeXrBheAx0B
-	 etFuO7QXrKqHJeZ0UAuKd3gnvMKWHsAT7+PfIbXGiDcSBMH3e7m5Y8qkDiUnqBT1ohf5B
-	 Rb7cOjVxh2I5IZgvaVMIGsBkLi4gJEFwnhk9f5m1KQ5LnAXktEVH3jdNNl6MhYnlGSQII
-	 24vpZZ2yMDnbBBihdMzbrLN4zBQvCjiNpEIvei+mB9mYQPs4BtbQZMcH5udZmO4uTzw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=axis.com;
-	spf=pass smtp.mailfrom=axis.com;
-	dkim=pass header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=pSPvUa9j;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.11
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013011.outbound.protection.outlook.com [40.107.162.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794578887;
+	b=HpQCBN9XZG1RjRLBoscMIszEd95i/p34vYSqP+M6KGdcn3LqDmtnPX+sNwpAvM3oKqUB
+	 INUTL6ZDiAfjU7N0CmxGlbPbjhcWzMPmwDEYtvlYTVwLrXqGE6JuYsnlU1h2akxaw9w88
+	 XUb988Kir8Q7tHiwd5ewdsA+07+1OxDTWvxuGyLEmM1i8zMEW51MRGBZi5WIvWMNct2EU
+	 XdVLY5s4EMU4V6AY+UvYbKUdUvlLBfsW6x4TFvKqkckjCyJPPaaPZL81Ry0P92673LS8i
+	 +nnQesUQ5YjJhpW82sH1YoDX2r8EOGSEleo1re8KBtjpxRlCkso+3+Fx9MjXhsg3cgQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794578887;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=n7cVia9sMCuK38IPq0c2Vj047wAgXP1lK8/kz0AS6VY=;
+	b=Q28mh2ZrkAV66pH3Oh7RwS7Dg0K0SwOVE01a2XHtxG1W3eAmDYUNJKg7Ln7eMUK6YWw3
+	 S8/BOO8eaYiZ6Uo/FGg45fuktzv5zeruDMIC42o4kJ4vAHZvmK4l1bUjRqm280MYgMMAm
+	 BZMZF4gEhldpguWnDBmhhHq2c9kiSYTTT/iqTvsqOIljhrk0Ys08tU0BuigGQydqKyfmm
+	 Z5Zcc28yt1Pf7GqA395aMsUSYmo++c4LOOvDalCauqsYOoFdMDyc3PKXI9VPluldvDJ3Z
+	 WkG2oIH5HD9uvhKJbqXaqyFi2zUkygOI1sRJevoL8pNs97n21QHIbt1F/4fh6pffxUA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CWlte0AN;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0BB606A331;
-	Fri, 13 Nov 2026 13:43:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2B0BB606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A748606A323;
+	Fri, 13 Nov 2026 14:08:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3A748606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=axis.com header.i=@axis.com header.a=rsa-sha256 header.s=selector1 header.b=pSPvUa9j
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pFYSU0q2BzhIPLiuRYwwgROdEI/5jdSXEP02xqt4zQfKzvnbIZXXAOwVJ/WpyQ8W6KkOqHvv0dal7C3WCys51Xfar/5ue1XrHU8X8VkSCtkZX4TShGgrzJnNeaONGH6D3L4TG0lvZrkZM7oSp9r7Z9KeKVOoZaSmp4/4ghcwPKDmsJcc+vO3xBHfrDs76HDweOySQXhwVAcmJ35L1FUT0b9i61xOUj/Gk38nv3PYCRv9GVhgvINGhLeczW+KXVwoiiZJHb40U/YvwOhp7muIbt/mYlR+Z2BfXcTf6+ouKhVTWKxP+2bjwraGAT76mCjnYB1hC/NP04Tcu/hyrXpYpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jzF6nkO3wAAi295W3hP9o9Ax4abn0eu7uzs33OgK7n8=;
- b=mG8UI5Bq5NfvOGiNo/Zox8Ie9Rh8YcICIKjgiDs9Ge0SETWJxHtHsZQ0yGd106DyNbrILnlUnjsQV2OBU/6++YaMzgwq0Fg1ojr3FkgTOFVTpPurQc1EMMAKskxaBBwZ9BEdLPlfdE3182KAZH+pa5qalOgWPJe/DIwgldsumfXV4suT6PVNzOiNbK1LzisouYketNQXm/amR4yG0M4g9lBVoTAZPbiUBajHCHKItdbgAspwW8uNlGg/Vay2T8hXC6w2QoGGuyIN9AfvFpgLkbUWYvMMS4dHYKR1wviRSHkz4V9hUhn/91AoPZliJg75PIlynMrWbO12QUHtaYg7qg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=oss.qualcomm.com smtp.mailfrom=axis.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jzF6nkO3wAAi295W3hP9o9Ax4abn0eu7uzs33OgK7n8=;
- b=pSPvUa9jtQmr4e/qc0CmTYFr1nNnSI0JnkCE27Uq2ElPqDqjuHIRXxPURedbhGa8wsEUIZSKOQIZoaaCMxg1kePo1dPUqDettjMe/mylbREYAFkHx7fN/ABpEh+bbmO7B0DFvsnUVCZ9lGmFRQAdC0Y18oSPPjMZX9u9K/j4mIk=
-Received: from AS4P251CA0024.EURP251.PROD.OUTLOOK.COM (2603:10a6:20b:5d3::16)
- by DB4PR02MB8584.eurprd02.prod.outlook.com (2603:10a6:10:384::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.11; Fri, 13 Nov
- 2026 13:43:49 +0000
-Received: from AM1PEPF000C1ADB.eurprd02.prod.outlook.com
- (2603:10a6:20b:5d3:cafe::5b) by AS4P251CA0024.outlook.office365.com
- (2603:10a6:20b:5d3::16) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.10 via Frontend Transport; Fri,
- 13 Nov 2026 13:43:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
- smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=axis.com;
-Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
- 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com; pr=C
-Received: from mail.axis.com (195.60.68.100) by
- AM1PEPF000C1ADB.mail.protection.outlook.com (10.167.242.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Fri, 13 Nov 2026 13:43:46 +0000
-Received: from pc67007-2609 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Fri, 13 Nov
- 2026 14:38:26 +0100
-From: Waqar Hameed <waqar.hameed@axis.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, Miquel Raynal <miquel.raynal@bootlin.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
-	<alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Song Qiang <songqiang1304521@gmail.com>, Radu Sabau <radu.sabau@analog.com>,
-	Maxwell Doose <maxwell@maxwelld.cc>, Tomasz Duszynski <tduszyns@gmail.com>,
-	Erikas Bitovtas <xerikasxx@gmail.com>, David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko
-	<andy@kernel.org>, <linux-kernel@vger.kernel.org>, Jonathan Cameron
-	<jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [RESEND PATCH 00/14] IIO: Ensure iio_trigger_poll() is of the
- device owned trigger.
-In-Reply-To: <20261109042851.1326940-1-jic23@kernel.org>
-References: <20261109042851.1326940-1-jic23@kernel.org>
-Date: Fri, 13 Nov 2026 14:38:26 +0100
-Message-ID: <pndpkw8df71.a.out@axis.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CWlte0AN
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794578887; x=1826114887;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bhznoLiBqCl32w7oDyhSSediGWB4SNiiwODIA4P/vmo=;
+  b=CWlte0ANEODbPz5wWin/8WWTFUlhORPogNwA5gcPaiXpTqD89IwkBo2u
+   svXxfoNUrUuOJT5PHUtSk3uPgu7KtwnyRXlb/ZGITzsO6yKBbgVoojYXN
+   /NACReiy7DKBNkXI41l6QcDFo0RD/ib4N/F6UZbH0Jrfuf7k5Hocq3sBE
+   Jf8VPGWHg2/khf8DxF/f/VYYTbA/SchOfOCLDOmOTOrVPELOQ2769W2zU
+   FeS+ajsODT2PdLTUrxB/iJZK9AZxr9rBQNDKaYCytY3tGS9xi0XyjZePX
+   cyLs0f243c9j0y21StiYtxUkrOFY/4ArIvAicAPx5ldE/hEi1CsupNuzq
+   A==;
+X-CSE-ConnectionGUID: icMUxm9yQBufp4EJte2f/g==
+X-CSE-MsgGUID: dDqFtO0gSZCWBeS4TSUh9Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3269812"
+X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
+   d="scan'208";a="3269812"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:08:06 -0800
+X-CSE-ConnectionGUID: 9N6ttaSDTv2JjFfr2B3SqA==
+X-CSE-MsgGUID: deacJUKmTWOJlI4xNenDLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
+   d="scan'208";a="9014490"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.148])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:08:04 -0800
+Date: Fri, 13 Nov 2026 16:08:01 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Zhu Jun <zhujun2@cmss.chinamobile.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	crofts@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] iio: temperature: mcp9600: Avoid overflow when
+ scaling thresholds
+Message-ID: <avcZwcY8HQrUjbF5@ashevche-desk.local>
+References: <20261113080558.173889-1-zhujun2@cmss.chinamobile.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -113,60 +80,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: se-mail11w.axis.com (10.20.40.11) To se-mail10w.axis.com
- (10.20.40.10)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM1PEPF000C1ADB:EE_|DB4PR02MB8584:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6e4d277c-fb49-4b18-3f68-08df418c242b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|7416014|376014|1800799024|82310400026|261026140227099003|56012099006|261022075727099003|261022105027099003|11063799006|261021121427099003|261102123227099003|261028144727099003|5023799004|18002099003|10067099003|22082099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	kZHIKXU/+aivxdj1feLciucfpxpDDSyBgHvp0jqKVKgRYPah2Z3q/JSI3OPIesaheynUnhq+1Idfes+spMmXT0pl+U6l6WQek9GXeBRq25dPEz1fEt37qE6P1bodTKiid4mnepdgnYyuVwb1a4dplgOfGXXrZrNPq30AtV8qmJ44MGmqYA99vASlQZHwxGTLRrpT9GnkdAyEK4Z8rdcdvNyyhSqchO2aaQ/x4O/ICM9hJUrWRlnWvPvGvV+wCa1HZ8vmrOGQA2ZgxTvUg7tzL2amfe5RjCAFiVpzt92fBa19MBEwMfvj0GScUeXpmSTohjdDWAIlUjgb/zSD1KKanC9mZA62o2MzFLkkJAA2Cuv9dnkI0p40h/SDa1wc1ETqzPDnU4Mjxvqgl1LCl1mefiohxuhphuaH/nlMte9iQEjfPxh9THiI66oqHeVoV5QpTcSFDDhaFJMGhU7mY2PtlZ4saGzS0oSvJ4D2M78Ld2+5POo3N37rNIEmEvaEa/kSYWgUqAey7sr8t3yqpxc5qFRHzmYRlD34GiYFsgs+pAQ8KuRpwvV/uxM5+9E/tIrRFggB+erof4+988JUblzv6XrzcoKiA3265oFpRTtyGUs2RLm1zHda5WyHGcnOspjqQ5U3Tx+Icv254kvEfilQJtfn7NmhcggDZcV1eHYJHGzhLepnOS8cTppp1YAS1wFsLFxdQzw5bsc/SJ2NX8Xx2g==
-X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(7416014)(376014)(1800799024)(82310400026)(261026140227099003)(56012099006)(261022075727099003)(261022105027099003)(11063799006)(261021121427099003)(261102123227099003)(261028144727099003)(5023799004)(18002099003)(10067099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	nfLMG27S4khxIfDD4XZJ6RF2DAPuVbG+GOl44ao21KTYLPnOUPPGAWbuBoQ91ormHJ8Rh9YV+E9nOqlYsv7wL5UJynJPBzo0wMeQGdjSDH9LZPrIISTSFTqJgMsqoswZIc/uajg0FfNmzuMlsF9xdEag0FgUP1ijdanPKsYa02c60LZsgHlgORmf0C56wbKl5DSVm+1YJ97pSjWxX7zTmV4B0SL67oSEEmUwXe8uFZkD19HX5WU+N/u1TzRVIvvO4R9l6h0cmGy5YFON8l7zergWPZAtFBGR4mEGH2LN3U+aAI6sQseOLhhvWzewVelXCed6pYC2wKHbQFvLP9TP5QLM4tMU16gsowq80ZGJcj/sSPTOG1nKG2nQ9s9B59W6sHt/8oTR2rVrv2mJTHkDUJfgvK4MlsKPW6RQ1wm6GYh98r63nfWfyRPB2Y4vmmWe
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 13:43:46.4415
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e4d277c-fb49-4b18-3f68-08df418c242b
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AM1PEPF000C1ADB.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB4PR02MB8584
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261113080558.173889-1-zhujun2@cmss.chinamobile.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 09, 2026 at 04:28 +0000 Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, Nov 13, 2026 at 04:04:56PM +0800, Zhu Jun wrote:
+> mcp9600_write_thresh() scales the integer part by 1000000 in int
+> arithmetic before clamping to the supported temperature range. The
+> multiplication can overflow, so a request such as 3000 degrees can
+> select the lower threshold instead of the upper threshold.
+> 
+> Cast MICRO to s64 before multiplying so that scaling and the fractional
+> addition or subtraction use signed 64-bit arithmetic. Let the existing
+> per-junction bounds clamp the result. Use MICRO consistently and use
+> div_s64() for the final conversion to support 32-bit architectures.
 
-> From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
->
-> Resend due to wrong linux-iio email address. Sorry for the noise!
->
-> LLM used to help pull this fairly straight forward series together.
->
-> The primary aim here is to ensure a clean layering between the two sides
-> of the trigger / pollfunc (push to buffers) divide.  The caller of
-> iio_trigger_poll() and iio_trigger_poll_nested() should be using data
-> relevant to the trigger, not iio_dev->trig which is the
-> current_trigger for the device. Most drivers got this layering right,
-> but not this set!
->
-> This is also step 1 in a plan to make iio_dev->trig opaque allowing
-> more control of how it is assigned and avoiding traps around lifetimes.
->
-> Includes one precursor fix that has been broken long enough I think
-> we can just merge it via the slow path along with the rest of these.
+...
 
-I had the same comments as Joshua about packing the `struct`s (`pahole`
-reports a lot of holes in `at91_adc_state` in patch 14, but that's
-nothing new that was introduced in this patch series, and should
-probably be addressed separately...). Other than that:
+>  #include <linux/interrupt.h>
+>  #include <linux/irq.h>
 
-Reviewed-by: Waqar Hameed <waqar.hameed@axis.com>
+>  #include <linux/math.h>
+
+This can be dropped now as it's implied by math64.h.
+
+> +#include <linux/math64.h>
+>  #include <linux/minmax.h>
+>  #include <linux/module.h>
+> +#include <linux/units.h>
+
+...
+
+>  	struct mcp9600_data *data = iio_priv(indio_dev);
+>  	struct i2c_client *client = data->client;
+> -	int s_val, i;
+> +	s64 s_val;
+> +	int i;
+
+Please, keep the reversed xmas tree order.
+
+>  	s16 thresh;
+>  	u8 hyst;
+
+...
+
+>  		/* Scale value to include decimal part into calculations */
+> -		s_val = (val < 0) ? ((val * 1000000) - val2) :
+> -				    ((val * 1000000) + val2);
+
+> +		s_val = (val < 0) ? ((val * (s64)MICRO) - val2) :
+> +				    ((val * (s64)MICRO) + val2);
+
+I think we can avoid casting by doing
+
+		s_val = val < 0 ? -((val * MICRO) + val2) : ((val * MICRO) + val2);
+
+>  		if (chan->channel2 == IIO_MOD_TEMP_AMBIENT) {
+>  			s_val = max(s_val, MCP9600_MIN_TEMP_COLD_JUNCTION_MICRO);
+>  			s_val = min(s_val, MCP9600_MAX_TEMP_COLD_JUNCTION_MICRO);
+
+This is also clamping.
+
+...
+
+> -		thresh = (s16)(s_val / (1000000 >> 4));
+> +		thresh = (s16)div_s64(s_val, MICRO >> 4);
+
+Do you need casting here?
+
+>  		return i2c_smbus_write_word_swapped(client,
+>  						    MCP9600_ALERT_LIMIT(i + 1),
+>  						    thresh);
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
