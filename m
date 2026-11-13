@@ -1,56 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.91
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.229.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794566950;
-	b=TybWuw/DPR5PKXQDkP1VFWVkxk3iKVWxKeTRiM010aE6SY9z53XJJv5NAed33SoyYUeT
-	 7jo/ikosE3WPgkJOZ6x5wVqI/722BeHzX7GNaGek0KwThBaVW0NEN3DXAIf+PhkpNTVTG
-	 p9Qw0z32qbpAZ15aXWJpPXliKTe13ohFIhvr9DEKPsn8f2F8654NihDPvXYcTWSA95yEg
-	 Nm1s0OmYNc1dGbcO3XgFO/APJS4fT1euq2L3xmpRvNS4WAepzcuxqx4Pc22//Z0IkhKc2
-	 1g/CdrV+JIvHF7aAbePeTN2umXUephTDvWVuFw4svdn5uLUfwOwSiXjoj0z15JFz11w==
+	t=1794567721;
+	b=rai+vBKJzdvG2p1SleeUGMfwlYS4wHfuhPDLqrA6W5EzARRHf2rdAmGs68ghCEmuOOGt
+	 4iWqWNgsWSwgyjgFz+oRjY2utq4EGfHdmscvcxj9x2sYRzaIugUZwrE8YyH0Oc3iJzUMU
+	 NWdXmbmlVzRPFt/9mjovkApb8i/dU7+/1BQGzmTv9caFDfVXPHrQSA2+TFVa94Dbz74zX
+	 3ooIk/wg7wArLkQP6/kF55wO+Khww/qzTKd1jCz7X2Mq+Eb5eJ8zymHeST0eeyrW9/KOx
+	 9oeOXYHxPEgGoMuYyFBFFzqUL7iaRtcv69OInms32na7/hn0JQJG8BjhKKEosk9qOPg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794566950;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=L9d6tPMOZAxjfoonjzvY06kxXI/XywJdcquCBInJ17c=;
-	b=EYmSUbdW+QOucpIuHdRyxPGCi70mnbabhlGtXatablP3DYTLC4t5f3m+9ngKs00hsFyd
-	 U60JOzWCITqsl06ADsv3ONJNoq9390FrIAe9xTOUaa7pW9mekkYkv9O9d5hjgzu7PJyeL
-	 PQPS8AjcuzFCOWYNd0j8g4z33USnh9VrDLDNaUPYPIHX1AuoS9HR3EQPRA8QfRP2jUsH9
-	 LSWlgpYxMbMNmNF0vI+kc5rnggMtUBDqYioNdH2Ei43Qm4/Wdbykyk0BFkxfuWS82o4PC
-	 NSzb3nWKmP6GMmH+lR8zxm7n18Xs5mK62RvyeuwSMRhf96jVcWQaGfHM8ohBE98OuIA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794567721;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=XrQXIIJcWWHsCurNHxzIBKzj+WWkbswf8BCsQIq75cU=;
+	b=oo1vjMztGYenr4bOHmM4n5PJJ+PzMFfH5H/MHPjIOh+pErAKIloW8iN0XclwSxvtPPOt
+	 0BlAlAZPDGjhArTHTQhCws0VIrEdRvPj2HcCRfSjcuyvUPqFXxBo9IEm5XJafzKIBidmU
+	 sBD7WODexBGj0S9v2DqgaDNbl4A9kWyr4KpcYYRHLajzdW4oHfalXarklWIYj6Zn+67Uv
+	 e9ijvOyDopjWkJhPdbJAqPhlkI2pm1Osh9sEhXxtmg/Fmz1PeLQ2lgGWdy1K+1r1pDj4u
+	 LiDHnDgk8pdmkMzIcthHX0HN2AnLoECrlCXH5eSAQfL2n9xVMslQxGjiTUXYTTx8OJQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=packett.cool;
-	spf=pass smtp.mailfrom=packett.cool;
-	dkim=pass header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=N+MqUjTo;
-	arc=none smtp.remote-ip=91.218.175.91
-Received: from mta0.migadu.com (out-91.mta0.migadu.com [91.218.175.91])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=QoScEWo5;
+	arc=none smtp.remote-ip=74.125.229.9
+Received: from mail-dy2-f9.google.com (mail-dy2-f9.google.com [74.125.229.9])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 887C9606A32A
-	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 10:49:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 887C9606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=packett.cool
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=packett.cool
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1E25606A8A6
+	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 11:02:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B1E25606A8A6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=N+MqUjTo
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=JTVI8dsnYYKY9XmmTsofIbVRVxeIG9KyE+kWPKidMJw=;
- c=simple/simple; d=packett.cool;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794566945; v=1; x=1795171745;
- b=N+MqUjToFyi255sl31+u90pvQ3RiTlVM/dwQ/63jjJhQRZj/LNPb8qitKVPuDlqPEbLemB0r
- vbCPFyr0flQwrHffI/GWK0i9rJ2O8LL8cB3gVXn3vOUwzIcrV7xaCbEVaDZOaUMJ0hFYqB7Eh/G
- wEv4A2OfzEPdjleofByLzHC14NNBCQeByTSPOoMZyVoetspMbiNKseACDhTvKrFMTYYe5KydZLW
- hV5Lar5GOYmxrxxMo32AmYf3iw6ZixdfHljM3dxOtWVoD85ESIJZiNryZIaQFSdTmo9LIJlwB4Y
- qZIv2rPyOlziNen2TvwhXRyvol31jV1jj4fOKRkAfi9fg==
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id 49f6fcf4643467b8;
-	Fri, 13 Nov 2026 10:49:05 +0000
-X-Mizu-Trace-ID: 49f6fcf4643467b8
-X-Migadu-Flow: FLOW_OUT
-Message-ID: <1ac861f9-e6d4-4d16-912b-711fffab3063@packett.cool>
-Date: Fri, 13 Nov 2026 07:48:57 -0300
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=QoScEWo5
+Received: by mail-dy2-f9.google.com with SMTP id 5a478bee46e88-3678f64d078so1036857eec.1
+        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 03:02:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794567720; x=1795172520; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=XrQXIIJcWWHsCurNHxzIBKzj+WWkbswf8BCsQIq75cU=;
+        b=QoScEWo5v5xuUnykj2i71ZG+ixB3qmy6gmDh7j7qPyzKZvXBsWfvMPfrLtSxyebLTT
+         ghm6WSr7XDsuwPgIK7yq45JM4MHJ2vIE+/8wAaeeBtsZ9l0jEgqqIlq/rP2GWnm+fRPi
+         JObAx1icFUlLtPFfEwLZloJ+W9ju50CTzX/l7uck2J4xciCb6OQqqEKgSxnDt02I9UUl
+         CIEx+fsRa6YcOn8RgWCnHYDvaqFMjbOrZpfGYY1kQ84KU0XAHN7lbbLIvBm3xcuZArlD
+         y3/wUPhhAP+D/Ar+qdspq5R7dEffAak32FxHfC8Z+RSODqd3vJdb1un6Z7R85iGfqCz/
+         yA+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794567720; x=1795172520;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=XrQXIIJcWWHsCurNHxzIBKzj+WWkbswf8BCsQIq75cU=;
+        b=vkZlY9mh6s2njH53bKmaF/OAD9gyMM0xzpfXUMGRRm2mhItcFhXYUHq08lN3KPZ4o9
+         DWZqUZczCD4/LP9aLZhe/1tytE5ULUsihSh8j9jGuERf6XzxJ18T7AxOzAuadUojcCzc
+         76DL2LD2ZsVc7zRw5IT2/aWVwC2nyIxLsosHCHeOUrqOV/RkBqELHG+EBx6cqTZvk1j+
+         /eJj9SsDkYm1QCuFWN3Xz95Vq6Iq4FA4ckq/rVpZDkKsEoSctaNFdTYk/ohEtjTc/MyP
+         oUaEuwcAbhfo9csB4Ju8/hkOvakcOWsyUJyE0nKMv6RUFM83gNDiEH0a04cOrB7s3CrD
+         idQQ==
+X-Forwarded-Encrypted: i=1; AL+hErHuP1skXOEePYYleU8UvX0fO/oK+Fr0HyCdCtp9RAmw+uobLK5uMpYzvh6E2NLCUUWjt0+WwoRDpj8=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9WPrJHMByvMBSiaGVc+Dw1wtGtfBedT1wwxxUOUVZCR0Mk2Gl3
+	ahe+VIa1/1wcitXh5jZYXAvlW+V7pYhLkmhuy39SC49AWoG6dbrhyZOoSe7TMi5v+rto1g==
+X-Gm-Gg: AYBFou10ek/lASutR2VRglyiVuRCkDeOAgr8HcxPRGYPsdomg2zWJs9cLIeFFUkSaA5
+	kwNYlA1qz9d30MQH4/gNwLfZhLiG2Hmru1NG+vmpx1/s9jgF0p2CdTokvGsqnsGm/7u3qCrGPXm
+	9KEATvWLOQXYr2rz6rNXyOaZT6ctnj3bxSZntjYtDTNHBVrXeQv/ivRIa9nN34yt6Mo66AJlDm4
+	3j0wTbfdU1gSv7cM7W9UaqQH44nLa/YHZWzBs2PFRzP4mxT+hjTzkuYt0VNfcxSM7m7k+/VctuO
+	fYj437FGKC+wFgb3Loxp3lE+W4i8ZiEHIrVRTOZn2/xJT5nUyNrPVbbbEMgwTU/29M6K0ghE5Oe
+	hdVi4eNX/7XjIMqeN0nUoBGvENtdNryOU7QKGedHge9JKg67y5+hCE+ZJc7y8tlvjdRsKc/Ifci
+	5ckWLFyU+gcAp54lfWH8Tit5wVsXc9QdpewvsaAsQ6DiHxmQBU8LNXwCFUqh3NUHsWNcmy/ghJZ
+	GZWdQmVOR0FzrQofVERlBU/XFN0QSK3mtM0uUEuYABz+sCtFeWq0tQtgtTcHxTLI32Ci+FhkElS
+	NwYbIE1DxLYVXs4VzEorbtiP0VIr9cNot8JowxbyjLXW1MP3beAVY0muBaljPbtXwx0xFVOoFwy
+	vFG0LVK92oYAGO7jauMS3NdQaJ5fTPgkk2780uw==
+X-Received: by 2002:a05:7300:f794:b0:351:207d:bff4 with SMTP id 5a478bee46e88-37963376965mr1902056eec.4.1794567718572;
+        Fri, 13 Nov 2026 03:01:58 -0800 (PST)
+Received: from localhost.localdomain ([98.148.34.5])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-37955822d58sm6461589eec.10.2026.11.13.03.01.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2026 03:01:58 -0800 (PST)
+From: Hungyu Lin <dennylin0707@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Parthiban Nallathambi <pn@denx.de>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH] iio: light: vcnl4035: Fix swapped raw channel readings
+Date: Fri, 13 Nov 2026 11:01:23 +0000
+Message-ID: <20261113110123.96084-1-dennylin0707@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -60,93 +100,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/5] iio: adc: qcom-spmi-adc5: Add ADC5_BAT_THERM_100K_PU
-To: Luca Weiss <luca.weiss@fairphone.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>
-Cc: Marc Lainez <marc.lainez@gmail.com>,
- =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
- Danila Tikhonov <danila@jiaxyga.com>, Sebastian Reichel <sre@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
- linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
- devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261112170841.2189322-1-val@packett.cool>
- <20261112170841.2189322-4-val@packett.cool>
- <DMU0219YWEL8.35KQSMY192RH4@fairphone.com>
-Content-Language: en-US
-From: Val Packett <val@packett.cool>
-In-Reply-To: <DMU0219YWEL8.35KQSMY192RH4@fairphone.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+The IIO_LIGHT channel has channel number 0 and the IIO_INTENSITY
+channel has channel number 1. vcnl4035_read_info_raw() selects the ALS
+register for a nonzero channel number, so in_illuminance_raw returns
+the white-channel sample and in_intensity_both_raw returns the ALS
+sample. This also causes the illuminance scale to be applied to a
+white-channel sample.
 
-On 11/13/26 7:09 AM, Luca Weiss wrote:
-> Hi Val,
->
-> On Thu Nov 12, 2026 at 6:07 PM CET, Val Packett wrote:
->> Even though it existed in bindings for the longest time,
->> ADC5_BAT_THERM_100K_PU was never assigned in the driver. Do so.
->>
->> Signed-off-by: Val Packett <val@packett.cool>
->> ---
->>   drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
->> index d57ba8526e0c..c27ff89429f5 100644
->> --- a/drivers/iio/adc/qcom-spmi-adc5.c
->> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
->> @@ -542,6 +542,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC5_MAX_CHANNEL] = {
->>   					SCALE_HW_CALIB_DEFAULT)
->>   	[ADC5_XO_THERM_100K_PU]	= ADC5_CHAN_TEMP("xo_therm", 0,
->>   					SCALE_HW_CALIB_XOTHERM)
->> +	[ADC5_BAT_THERM_100K_PU]	= ADC5_CHAN_TEMP("bat_therm", 0,
->> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
-> While this will work fine for some devices, unfortunately this won't
-> work for quite some other devices that don't use a 30K, 100K or 400K
-> NTC in the battery - or when the NTC beta (B) is differing to the
-> hardcoded lookup table.
->
-> For example on Fairphone 4 (pm7250b fwiw), the battery has a 10kΩ NTC,
-> so using the ADC5_BAT_THERM_30K_PU with the hard-coded lookup tables
-> would result in very wrong temperature values. Even ignoring the whole
-> NTC beta topic.
->
-> You can see my proposed patch series at
-> https://lore.kernel.org/linux-arm-msm/20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com/
->
-> Unfortunately it's from February and I haven't spent more time on this
-> topic since then, mostly because fuel gauge anyways was downstream, so
-> pushing just this upstream wouldn't make much difference.
->
-> Now it does, so I should get back to it... Let me know your thoughts!
+Select the ALS data register for IIO_LIGHT and the white data register
+for the intensity channel.
 
-Looks like your series has had very positive feedback so far, from a 
-quick look I haven't even noticed any pending changes really..
+Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
+Link: https://www.vishay.com/docs/84251/vcnl4035x01.pdf
+Cc: stable@vger.kernel.org
+Signed-off-by: Hungyu Lin <dennylin0707@gmail.com>
+---
+ drivers/iio/light/vcnl4035.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-It's orthogonal to the qgauge driver itself as the driver just consumes 
-an IIO channel which can be whatever's appropriate for the device, but 
-that's informative in that I probably should not set a default channel 
-and rather leave an explanation in the example in the bindings that it's 
-very battery-specific.
+diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
+index f1cc75245001..4bbb3b458eb5 100644
+--- a/drivers/iio/light/vcnl4035.c
++++ b/drivers/iio/light/vcnl4035.c
+@@ -156,7 +156,7 @@ static int vcnl4035_read_info_raw(struct iio_dev *indio_dev,
+ 	if (!iio_device_claim_direct(indio_dev))
+ 		return -EBUSY;
+ 
+-	if (chan->channel)
++	if (chan->type == IIO_LIGHT)
+ 		reg = VCNL4035_ALS_DATA;
+ 	else
+ 		reg = VCNL4035_WHITE_DATA;
 
-> (Fairphone 3 with SDM632/PMI632 would actually be fine-ish as-is because
-> the battery has a 100kΩ NTC and the beta probably is close enough to
-> what's in adcmap_100k_104ef_104fb_1875_vref)
->
-> Regards
-> Luca
->
->>   	[ADC5_BAT_ID_100K_PU]	= ADC5_CHAN_TEMP("bat_id", 0,
->>   					SCALE_HW_CALIB_DEFAULT)
->>   	[ADC5_AMUX_THM1_100K_PU] = ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
-
-
-Thanks,
-~val
-
+base-commit: 9752760146e642f3e4a2ec860f8767fa72030d2c
