@@ -1,99 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794608857;
-	b=QwXYYe637NedOV6CBmzfw+UBc3KRRZc2oEcy2SyGPQvTa/R3FjgimaZBoTj/bXEGkQQI
-	 yyCDy5GmO05PP1pGpWOLzpJjHINbY0Xci/Ag4rJxIBZgydQ/gnpoj5r1W5ucOFGoJaJbx
-	 tCJlvNTJc7JUsqOTibK3ZIy+vtwjTkeQUgeGW+QtAFRZNBjjcXfkxgCL8GREuQVwX6kzz
-	 O21WSe9e6WQM4sT6QjQwJYOIeS+oQJ5Smtah3AkMlxUIlljIKDjcOYaz6TAyLxFntVwB7
-	 8l+G3SO7GUcYgZHF9OjjwbexjkU2q0e0qkTg6EqDK4N3pwerURYiyfrFDx9voSfJ21g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794608857;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.182
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794610971;
+	b=cpU51D/gyF587MALnoE4SFLnQ/+bL78AMdfjLbjJDb9rmgJk3tafBjk3x2+dZQ+Qdbza
+	 2Fzhm9+4j+m806zh60NYP7VFJn5H18X2XBsYaK9q06n4eYAHqzZ+Bp7wcs5vbUCZWI0Do
+	 i/UzMGJvkdRHpcVC84lvCRoNxOveXYacJNkRqq5JXvdqcCP7Ua75HhgKYnTvl8jAPYvoa
+	 rJWHYAq6MzQpgIpq7AiLotf2mM+DPFKTj3pJAQ1awXzQgRhU0VbvxgIdtBZvoIjs3iaNo
+	 y1XVyztmp++eC6sl4dswVv7ijcZCOPeluFnSLLrfZznfNcGtGnTVomFLAT3aYRKiOAg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794610971;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=OeBYMLqvn2SfxO3PVYzGyoQJDU+e7YEFRkI3J+GdfZU=;
-	b=TBp6Ls2aA9Kar4x2gcuGpChEU+9ElQwlgZRt2gXuJ2FQ/5rGaghs89sr0HZf/mbyOY7s
-	 Ewfqj9WS7swhyY5uDcUJ4/iJY58bFgrbW7KXK56nwHUIv/GZFhVaSZnsTNaRNbiEaH8pC
-	 oCgNGEABE5lY/kXNacx0vPv8qg2z4HmmkCGD9FQpO1fis0pvgRPG3xAsCLFef9iDTjtbS
-	 zTcyIWwyl5nMYlUL7L1GSggM5+M6SU+HjI7FlJMXcd7fAkA9iVRlUZ2vnjjtFHluvxXrT
-	 Tf2AIWcNwUE9RYmNBptqTm16qDYDsDKzfHdtZQh+8Z9SuLEmCd9ohWZoegePs+N3VWw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=none header.from=reflexrobotics.com;
-	spf=pass smtp.mailfrom=reflexrobotics.com;
-	dkim=pass header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HkqBE0Dg;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=75A5kNao/8hiq8uHxtP1L7BaRjFLXZ5Ia6WGhmfWzYs=;
+	b=cs4b54m9lJ9nIA4TK9sP5bmogfddrictw4JtZy0Z4dIOUWFTaQAVwiCyo/nsoOa5RA7/
+	 GtBm8KYYLhq9ScCuzIoWyhbfVauIztJ3mqqygJbrAqYkDYoON1sXew4rX9d6sd/g0t0+J
+	 sWDBQITb55Ms2kubncd+InB2/mBN3mqUqVHQI0bEVS+sjMMbXGVQLv/f+g6TwuY8sfLgv
+	 Gdnu4TBUC5bGHV9QEzXUdklpMgaJFpDvkYzPD4SNVsOMcX1V21Ob4wilJwNRUbVlYGIc0
+	 blvIijNWTIlz7cUaw0BpdAEA3ZbA/9vk1vHVXiFk/usyYP9ijtOWT3WoMVIn/+DftgA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=H8hPk4bq;
+	arc=none smtp.remote-ip=209.85.208.182
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59032606A88E
-	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 22:27:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59032606A88E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reflexrobotics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reflexrobotics.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A92D606A323
+	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 23:02:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3A92D606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HkqBE0Dg
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6b577addee9so2935453a12.1
-        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 14:27:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794608855; cv=none;
-        d=google.com; s=arc-20260327;
-        b=YSXLJxkJyuZdF/Ms107+liNlOIWbfuAJb7swhxdbolmUcOftBGV1NBTj1alHBQy374
-         o9LcD99eupoXiFqtJFNm0KZnB6gKIO9paSYOA3j4Or+ACsbiWiGU4dk2Z0DHe3CMM6r+
-         EMLG61xI3L1MtdiAD+yOD/p42oVc0ZtWzaja/OnVgoeM4DsCwFawVgLOEsmiKslL+twK
-         o79dgcO+AqMp6amRV816Tq8g+5kkdTFYlAU9hCVgsmUbDJSWlrznLB7imX+amIvyaEM7
-         2sbi32HyGS7tbPTqAZP6w97bJszAhhls+aA1cwYXu9LpORqaLzme4tQpaH0iwnQDHIlc
-         GQ7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=OeBYMLqvn2SfxO3PVYzGyoQJDU+e7YEFRkI3J+GdfZU=;
-        fh=Yl+5qAR6kt3jg0jAyACLjzFPuqpuVWjmouZnQ8M5qbE=;
-        b=HTUvss0FEEnG6FR5Icq5lI8TQkO0mBg29nABU0iarmgrTEOPU9EuOcUWuS9H/MOgVd
-         A8JxwXWGLJWpx/QQv4H3DDyb+8UDbZd0XS7oxUxyex15fQGw46DXchMgxhSSrPbYP7hU
-         jR3/AMjQVfCxSn6wv+sRKdJfCSpOyNrc+5Fi3eEOBlbdwr7PEFcaJRZHNsB/GnjZu+L6
-         mW/lK5fksjVVzqfOVxP+ywTPMvWIEn6qOjDf6j7Q82TWiCUrt/FMv0vmDigN11JtyMT8
-         nxoejlX3pHP+Ci3THCIq3C4d+0DYDbKWNayJ2Nn1KC16q3DWaZNwTCdjbTPVYQSVF0nF
-         BXpg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=H8hPk4bq
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3acd523a802so19685511fa.2
+        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 15:02:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=reflexrobotics-com.20260707.gappssmtp.com; s=20260707; t=1794608855; x=1795213655; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=OeBYMLqvn2SfxO3PVYzGyoQJDU+e7YEFRkI3J+GdfZU=;
-        b=HkqBE0DgfXH0J+M+zP1TuZcvnGNc2kR9gMHHiIVyxAKrBDFVWwWLYZxmQjGTME4PZT
-         TKZXlxX579nhewI65oXnlQHF8+zX+7rmLfMzUaa3Kf3yzR4Y7YmTFwC5Ygib2ptt455o
-         4IEB5sWmlWj1EbcnPu0XfSJDAxS+I+FlhE/TuXjz/fenQoM7s500tE2JChsaGUs8A4tl
-         0vbp9S8QxhDW/OPhK/4woCtW0drldCx2zpk+dGnevPNKIDEK/jmbhVknmy7U23d6IKvW
-         K8Qf+kjWEQwQjFvq0Nhpy00z0BMGdI5iZy891p9H/Aw9AYv8EFWtBM4HkBNGG8oAgn6z
-         XAZg==
+        d=gmail.com; s=20260707; t=1794610967; x=1795215767; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=75A5kNao/8hiq8uHxtP1L7BaRjFLXZ5Ia6WGhmfWzYs=;
+        b=H8hPk4bqqv2uzLN1+SwOiPXsjRSVw7VvBDQlpXBb7s8jZwnJYk1tKzdVd8x2K9ShTu
+         3JIFR9A1ZBBCmclZpa6i022vPlUfg9EHk9C2iMTA82vWp+vL9owY4HDLmH25x4Fv7TaN
+         FNUPiRml4Igung9MUgW4ce212oks1b+VXUIb2MjRAphfdjamySyo1AHmHVRQrRw79uR6
+         HIJduxqVE0a0+K54sXswycvlGEbLSDAl8z3ZMVsyWZSHggW2MVhLCXiHCAU3l8hMu+8R
+         kOFo4JYnByClHAYoyL+COGXEuOxpMsp2/cQQF7F5LUlX7O890yioIMvLzPnpwHxpyU6O
+         Cj7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794608855; x=1795213655;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=OeBYMLqvn2SfxO3PVYzGyoQJDU+e7YEFRkI3J+GdfZU=;
-        b=zOVQJZNUUSnhQtq5ZYKAlJhjrhk4UBug80KNEF5TRImqzAtvkGV6nbNYbJkYWxT5lQ
-         qBnKcGpdxU3Vk4QKY3h1/NalP3vcp9sBh7/LrOQSkp8SQQW5FBxfoW3THT1veeWZxsUH
-         GRERzUVUoOee3kago86ce+R5+7adsfpn4Egjq8C9G2jifaaeOQe8YEQnBjZ6Cqo3aJDf
-         U683B8slAPv9Sw27BD3bVlEOt8PMrq9H08Ay1KgOTrGPt7JWS3c7ptvLODjj8AWvvKYq
-         s95GsJ3rQB6AcqjDDv7ULOTMLmEVIZ5s/QuR8riek6eJbzdfC6KX0R3qYaBo9cURlg97
-         qsLA==
-X-Gm-Message-State: APuU4Z+gMOyh5lDXQaUBgVnhfKBd2UDlciroQmSQARzzyTt62hqhhDhN
-	jVVjO15TREvN0x2B2nSt/o+ZUD2xgOVcxNVzC6tPNgKL323NsV3ggt3joct13udhhs415vK5dTR
-	iC46UzpJOCnPvDS49evikiE0BRtiDkXpm73MQvA+AVi+WCuVxLhPimTvOCw==
-X-Gm-Gg: AYBFou23bRdbQeIzRYQ0w9a37fxSd0gi42B9vD+niiadRFxYB3xjJ0a/XROR64fm0Xw
-	X3um9v4KK42zBqwFomBotFMVnUuPSJ24Pwb2Xs8sk5hI74F1uC7nZpL1ngYYYQgeujHlP7eAbD8
-	qDB+2D+2e+WQ9J3qvatanKhZg+xFI+kmSuRFFByCdpm6GNkGklB5aoZWyYCCsme3eaoWsAraMjn
-	/aiwKjZJnqHVTSbv7ybPGfLgvccsThBv0Wo1XiZ00twcdSCny/DAQH2iASSfYOFSDG7DBQpK269
-	rh81hgfrT41ssni4/SOv2+jzWl2lgnhW+e5o00lONBKUvxScS9XcOXkz5t4fDqIuP2CTRnJLJ3h
-	bqIhU77/MmQq1xh/7+0COCrNKAWTAsvPHkY3GhnG+jEkpncBe953lriSJrylDkvY5uEyS
-X-Received: by 2002:a05:6402:5483:b0:6b7:b872:27b4 with SMTP id
- 4fb4d7f45d1cf-6b7c0c1bd4fmr3498045a12.21.1794608854760; Fri, 13 Nov 2026
- 14:27:34 -0800 (PST)
+        d=1e100.net; s=20260707; t=1794610967; x=1795215767;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=75A5kNao/8hiq8uHxtP1L7BaRjFLXZ5Ia6WGhmfWzYs=;
+        b=q+N4Y2/5BsecaMrfr/uUNVrSIlcs6/VTPRbWHn9dIsVCOngkI+/ZGrwbO4zub78JZD
+         iUBFWRNQJQSucECoSt8JIwxoIee8FI7mfTu0LrtrqMqGi+UnVtS+a12YtgCT1YHqpiW+
+         YCT9Kss2Tp47ZJCE3IreGljQyK7suVNIrK4Wpq+VUjI5mTp0L2Sdf+4Wv/dbaOITNYVN
+         1X7Ha/BzeSqGYtD4Ce/sZ++p+LHXenh155lXeZOTldxw1YwO/FZ2DN7XxsqoAsHdIsq7
+         ve2AlozGFwqs6hwxGsY5HbA6Uy8AIQssQZuAKghN/oT5lwTblu5AD0j7X0sVbM1WBNBN
+         Y+Og==
+X-Forwarded-Encrypted: i=1; AL+hErGhVvcrxRyOofNjJLA2fldQh2vtpjWshE7TN/JvAlFs79F9+H6oMHT6LIRY868AhRQV9q8Wy5TSS2E=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/cqaSOfZHBVuVK2KVEsQI7Be7fkx9X6bGSuI6kqhGQo0Cayi2D
+	rFoWfvckuvAXw4jHVVqRM8nOAS1bSvSYZ9nCBXqI6JfW0kmz/cypl/o9
+X-Gm-Gg: AYBFou3rsMBLKNpZmZRWDWgkoewSNkrc24zkGosDhJzV2BqWIsvqj7qovWfvT++wikD
+	Tokd/syOJvHydvcjXUiRCKJJOGF1szuLQoli44IH5J36PYliM9xHL1J4sdAy/LwfG+pqDvHrDGd
+	Y+opoEG0Q4ZACgoxeDoLQ9Ph9+BPXf0g78jFAHAo8lG/DHa2ORSI+ucT9Kw4ZOTv5B8jOseOWIy
+	ApAbLwvJ/84nAU/j349ypXssAjuJvfTKXufrRrZkA8t3DxYRX3mt2NIKwXBUZzO79D6y8wnprsa
+	ezjAwSLz13domSap0si89QERxZRvvfD31sFbEAHwUbmmsNsD/YmIFpc6CF34kz8CqwCT7YU4xAU
+	Rmz0HBfYUBDkORK+RRsxOlxfKzUKtfWPJiftP/wVZTnFd0jFm+R7bQMQ7Qmvya2j4+gMRWIhTOf
+	qhOGqQdM39V23Vambokbpc7APsUp+hnqhH8O86nPgTefPFlQKIVOv27DVtmynuX1EX+yZckbCFl
+	4e5KyzZuNt7pPCDcbBSaEp9oPr99I4gzKuYI9ElNrdPtiE9BVtsojG388oNmsc8xEkl5NI2/mtL
+	hVEojPxWAQTcJbQLlRl1D8dkEr98fMlggFire6ZIPLVTaJ1hapAHEV9CIyht21/10ewtW/+tHrA
+	CocyZt6N2AIQ92Q/kD/gUMfGgNKDDEcOg1Fvvaw==
+X-Received: by 2002:a2e:a105:0:b0:3a9:a1ed:634a with SMTP id 38308e7fff4ca-3ae2b5223dbmr12343971fa.21.1794610967171;
+        Fri, 13 Nov 2026 15:02:47 -0800 (PST)
+Received: from yantra.. (nekmmqsrubyk7w1qlch-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:2fd0:3310:f4e5:7f91])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae2b7e62e6sm11752691fa.38.2026.11.13.15.02.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2026 15:02:45 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH v2] iio: pressure: dps310: don't wait for new temperature in trigger handler
+Date: Sat, 14 Nov 2026 01:02:41 +0200
+Message-ID: <20261113230241.82046-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,207 +103,85 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <CAJLMkXY6wS7ErVT5YUyp=c0TJDPmGePJiDua4MPw47V83JQ0Fw@mail.gmail.com>
- <FR2P281MB310391F1880DC67B2FC446DBCE722@FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM>
- <CAJLMkXYB9NjwN1ZxfkGPE=y2NESRc=ir7B80cVpVk=d-tyPoVw@mail.gmail.com>
-In-Reply-To: <CAJLMkXYB9NjwN1ZxfkGPE=y2NESRc=ir7B80cVpVk=d-tyPoVw@mail.gmail.com>
-From: Joe LeVeque <joe.l@reflexrobotics.com>
-Date: Fri, 13 Nov 2026 14:27:22 -0800
-X-Gm-Features: AclHuK8mQzcWtdwa4xwJzhZ43h7xvYnakeor9UKSVD0VA0ZoNSi3c8isfWVGu0s
-Message-ID: <CAJLMkXYNpRWWqNbUn72J8p7Fqi1jCy4FC2fdAtjkzJ4eW_9r2Q@mail.gmail.com>
-Subject: Re: iio: imu: inv_icm42600: large gyro offset with temperature sensor
- disabled (ICM-42688-P)
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi Jean-Baptiste,
+Each scan waits for a new temperature result before reading pressure.
+With pressure sampled faster than temperature, scans then come at the
+temperature rate: an 8 Hz trigger with temperature at its default 1 Hz
+gives one scan a second.
 
-I've implemented the change as you suggested (temperature sensor always
-on, temp_en, set_temp_conf() and the TEMP_DIS handling removed, FIFO
-temperature reporting unchanged) and tested it on my ICM-42688-P (SPI,
-i.MX8M Plus, 6.6 kernel with the driver backported).
+Read pressure first and take the latest temperature, as a direct
+pressure read already does. Wait for temperature only when pressure is
+not in the scan. Read a temperature in probe, so there is a latest one
+from the first scan on.
 
-The gyro reads correctly from the first read after boot (about 3, -6, 0
-LSB at rest at +-2000 dps), including after runtime suspend, and the
-accel is unchanged.
+Fixes: 9b7cad9ce2ed ("iio: pressure: dps310: add triggered buffer support")
+Reported-by: Sashiko <sashiko-bot@kernel.org>
+Closes: https://sashiko.dev/#/patchset/20261110154254.39092-1-zoone.rupert%40gmail.com
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+---
+v2: read a temperature in probe, so the first scans have one (Arnav Kapoor)
+v1: https://lore.kernel.org/linux-iio/20261111195118.36853-1-zoone.rupert@gmail.com/
 
-Regarding my question about temperature reads with both gyro and accel
-off, testing shows the data is not marked invalid. The temperature
-register retains the last measurement:
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
-  gyro and accel off (runtime suspended), 10 reads 1 s apart:
-    3598 3598 3598 3598 3598 3598 3598 3598 3598 3598  (about 52.2 C)
+ drivers/iio/pressure/dps310.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-  gyro running (sysfs gyro read before each temp read), 10 reads:
-    4934 4956 4950 4958 4956 4958 4956 4958 4962 4958  (about 62.4 C)
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 85df58ac1809..3d05540f95dd 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -910,10 +910,18 @@ static int dps310_fill_channels(struct dps310_data *data,
+ 	unsigned int i;
+ 	int rc;
+ 
+-	/* Compensation needs a temperature, so it is sampled either way */
+-	rc = dps310_read_temp_raw_locked(data);
+-	if (rc)
+-		return rc;
++	if (test_bit(DPS310_SCAN_PRESSURE, scan_mask)) {
++		rc = dps310_read_pres_raw_locked(data);
++		if (rc)
++			return rc;
++
++		/* Waiting here would hold scans to the temperature rate */
++		dps310_refresh_temp_locked(data);
++	} else {
++		rc = dps310_read_temp_raw_locked(data);
++		if (rc)
++			return rc;
++	}
+ 
+ 	i = 0;
+ 	if (test_bit(DPS310_SCAN_TEMP, scan_mask)) {
+@@ -924,10 +932,6 @@ static int dps310_fill_channels(struct dps310_data *data,
+ 	}
+ 
+ 	if (test_bit(DPS310_SCAN_PRESSURE, scan_mask)) {
+-		rc = dps310_read_pres_raw_locked(data);
+-		if (rc)
+-			return rc;
+-
+ 		/* Pascals, see the channel definition */
+ 		rc = dps310_calculate_pressure(data, &channels[i++]);
+ 		if (rc)
+@@ -1017,6 +1021,12 @@ static int dps310_probe(struct i2c_client *client)
+ 	if (rc)
+ 		return rc;
+ 
++	/* Pressure compensation needs a temperature from the start */
++	scoped_guard(mutex, &data->lock)
++		rc = dps310_read_temp_raw_locked(data);
++	if (rc)
++		return rc;
++
+ 	/*
+ 	 * The device measures continuously in background mode, so a capture is
+ 	 * just a read of the latest results. The trigger is not aligned with
 
-  gyro started fresh each time (reads 3 s apart, autosuspend 2 s):
-    4952 4960 4964 4960 4956
+base-commit: 9752760146e642f3e4a2ec860f8767fa72030d2c
+-- 
+2.43.0
 
-So with both sensors off, a temperature read returns a stale value, here
-about 10 C out of date, instead of INV_ICM42600_DATA_INVALID. The invalid
-value only seems to appear before the very first measurement after
-power-up. The fresh-start results show the first sample after a sensor
-starts is current, so it appears the separate temperature startup delay is =
-not
-needed.
-
-With the patch as it stands, inv_icm42600_temp_read() would therefore
-silently return stale data when both sensors are off. I see two options:
-
-1. Return -EBUSY based on the driver state: if both st->conf.gyro.mode
-   and st->conf.accel.mode are INV_ICM42600_SENSOR_MODE_OFF, return
-   -EBUSY without reading the register. Small, and maintains the documented
-   behavior.
-
-2. Have the temperature read turn on the accel (for example in low
-   power mode), wait for its startup time, read the temperature, and let
-   runtime PM turn it off again. A current value is then always
-   returned, at the cost of a delay on that read.
-
-Which one would you prefer? I'm happy to implement either in the patch.
-
-Thanks,
-Joe
-
-
-On Tue, Nov 10, 2026 at 2:28=E2=80=AFPM Joe LeVeque <joe.l@reflexrobotics.c=
-om> wrote:
->
-> Hi Jean-Baptiste,
->
-> Thank you for the quick reply and the explanation!
->
-> > I think the best solution would be to completely delete the temperature
-> > enable/disable feature. [...]
-> > Deleting all core temperature enable/disable and make temperature senso=
-r
-> > always working. And we keep enabling/disabling of temperature reporting=
- in
-> > the FIFO.
-> >
-> > Is that something you could work on?
->
-> Yes, I'm happy to work on it. My plan is to remove `temp_en` from the sen=
-sor
-> configuration and the suspend state, drop the `temp` argument and the `TE=
-MP_DIS`
-> handling from `inv_icm42600_set_pwr_mgmt0()`, remove
-> `inv_icm42600_set_temp_conf()` and its callers in the temperature read an=
-d
-> buffer paths, and leave the FIFO temperature reporting as it is.
->
-> Two questions before I begin:
->
-> 1. Temperature read with both gyro and accel off: since the chip turns th=
-e
->    temperature sensor off by itself in that case, I would keep the curren=
-t
->    behavior (invalid data reported as -EBUSY). Or would you prefer a
->    temperature read to turn on one of the sensors itself?
->
-> 2. Should this go in as a fix, with a "Fixes:" tag for stable backports, =
-or
->    as a regular change? It is larger than a typical stable fix. I'm plann=
-ing
->    to base it on the IIO "togreg" branch unless you or Jonathan prefer
->    otherwise.
->
-> I'll test it on my ICM-42688-P board (on a 6.6 kernel with the driver
-> backported) and mention that in the patch.
->
-> Thanks again,
-> Joe
->
-> On Tue, Nov 10, 2026 at 6:57=E2=80=AFAM Jean-Baptiste Maneyrol
-> <Jean-Baptiste.Maneyrol@tdk.com> wrote:
-> >
-> > Hello Joe,
-> >
-> > it seems to be a good catch. With temperature sensor disabled, gyro val=
-ues
-> > are likely to not be temperature compensated internally.
-> >
-> > I think the best solution would be to completely delete the temperature
-> > enable/disable feature. There is really no interest in disabling the
-> > temperature sensor since it is really bad for the gyro values. And it
-> > would simplify the driver that is already quite complex.
-> >
-> > Deleting all core temperature enable/disable and make temperature senso=
-r
-> > always working. And we keep enabling/disabling of temperature reporting=
- in
-> > the FIFO.
-> >
-> > Is that something you could work on?
-> >
-> > Thanks for your reporting,
-> > JB
-> >
-> > >Hello Jean-Baptiste,
-> > >
-> > >I'm bringing up an ICM-42688-P (WHOAMI/ID 0x0007c1f2, on SPI) on a
-> > >custom i.MX8M-Plus carrier board, and I'm seeing a gyro behavior I'd
-> > >like to check with you before sending a patch.
-> > >
-> > >Setup: kernel 6.6 (NXP/CompuLab BSP) with the inv_icm42600 driver plus
-> > >the upstream "add support of ICM-42688-P" commit backported. I've
-> > >compared the relevant code paths with current mainline and they are
-> > >unchanged there, so I believe mainline behaves the same way.
-> > >
-> > >Observation: right after boot, reading the gyro through sysfs
-> > >(in_anglvel_*_raw, default +-2000 dps range) gives a large, very
-> > >stable offset at rest:
-> > >
-> > >- Temperature sensor off (after boot):   x =3D -139, y =3D 379, z =3D =
--229
-> > >LSB  (about 8 to 23 dps)
-> > >- After one read of in_temp_raw:         x =3D    9, y =3D  -7, z =3D =
-  -3
-> > >LSB  (under 0.5 dps)
-> > >
-> > >The large offset does not decay with time or with spaced-out reads. A
-> > >single in_temp_raw read removes it, and it stays away as long as the
-> > >temperature sensor remains enabled. Buffered capture with the
-> > >temperature channel enabled also gives the small values. The pattern
-> > >is reproducible across boots and power cycles.
-> > >
-> > >Looking at the driver, the default configuration has .temp_en =3D fals=
-e,
-> > >inv_icm42600_set_pwr_mgmt0() sets PWR_MGMT0.TEMP_DIS whenever temp is
-> > >false, and inv_icm42600_gyro_read_sensor() enables the gyro through
-> > >inv_icm42600_set_gyro_conf(), which passes the current
-> > >st->conf.temp_en through unchanged. So after boot (or runtime
-> > >suspend), the gyro runs with the temperature sensor disabled, which
-> > >matches what I see.
-> > >
-> > >As a fix, I'm currently keeping the temperature sensor on whenever the
-> > >gyro or accel is on, in inv_icm42600_set_pwr_mgmt0(), just before the
-> > >"if nothing changed" check:
-> > >
-> > >if (gyro !=3D INV_ICM42600_SENSOR_MODE_OFF ||
-> > >   accel !=3D INV_ICM42600_SENSOR_MODE_OFF)
-> > >temp =3D true;
-> > >
-> > >With this, the gyro reads correctly from the first read after boot.
-> > >
-> > >My questions:
-> > >
-> > >1. Is this expected behavior for the ICM-42688-P (gyro offset
-> > >compensation depending on the temperature sensor), and does it also
-> > >apply to the other chips supported by this driver?
-> > >2. Would you accept a fix along these lines, or would you prefer it
-> > >handled differently, for example only for some chips, or in the gyro
-> > >read path instead of inv_icm42600_set_pwr_mgmt0()?
-> > >
-> > >If this approach is acceptable, I'm happy to send a proper patch
-> > >against the IIO tree. I can only test on 6.6 with the backported
-> > >driver, and I would state that in the patch.
-> > >
-> > >Thank you for your time.
-> > >
-> > >Best regards,
-> > >Joe LeVeque
-> > >
