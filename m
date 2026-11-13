@@ -1,85 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.228.139
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794564597;
-	b=EXZLNj7s3PyRucMuayCsvH+ICNUKXMYCzmLCAqFQFsuueriWdGglc4Xoij56ipHoh47r
-	 rQGSlSauXiZppgctrdyc69AAH+HxQFZhqib4zdxByDrod+6von4QQWCtDVbD5Tpn99ZpT
-	 JOxKp3hcoTRcfcaSb2Coij97P/5WseKz9f+FolbnzRhXgZZJVdqEz5SYawwa2O+GyHgx+
-	 3nBRdSWUWkxrNJTXovsrDS2Sy1rm0PfdcOn/+Oc++E3FP59C0HsdDjKKvDM4FMct/0ijf
-	 7jQ7gB08LGerYuIvYQ41SXKM2HMzGh+V9hmlvlxgK4Jy/UKi+2qKtXQVFP+uX5TcpIA==
+	t=1794566800;
+	b=m5eDrd/J9LDcEnKFtVnjHY1PhRbghMMjaJBeprBLyUUyVroMhx8dYdqzIyaHfBvamJ+r
+	 6fzqAlD+MaR1vUm69O7nNNqM4PatAdWdiE7tssv4eN7tu80C7KxC+ilslAD6yVZPhxp5l
+	 7tvOttbTF9Mdq7yFaPV/KMjn6wkLnIN/PT/tIIwmOEvwxh7RRVqD3Sh383k9f1Q9JDIh1
+	 gqfYFdAwAH596QCK3IlvTZKGhuQx5iDw5qktatqAQ9QC2v+zJH5QLuU7DgRgrWI4Dfg6I
+	 mPf8KQW/H3+i3+s0tr8N45gZH4uJTfYt9l8iQhOR0BGLSRSWkUZJqFt8liTKOwf3waA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794564597;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
-	 Cc:Subject:From:To:X-Mailer:References:In-Reply-To;
-	bh=DI86z/0Iql/9v/K5OtJPg8rVycvTnslIkr8t7coMOfc=;
-	b=v6shfIVgKKSH049NUb31CyVovJm8bn7r8NtyB9NBAc0vjv0E74qfg+eHiajfapkKYXWc
-	 TwatiqRdm0ylNtnFfpOTXtXayzKSbXR/jclnG8DHwUht78vWdamLBvu+7IvWS6ouSDtO6
-	 Dc5hytRn9Ct4dT6HHya0EP42t313gVqAVxk4gCe1Ch4a8pk+LkusD98XKijUnUKhCKR3n
-	 cucFcCLzgZPcm03QXvHDKUC9+ekeFA2decxP1ATPxoX7+qx386gwocckfbljHKWcf8/Lb
-	 bKDAOZrRxfie2cYXtj42YxsnfPpTUxrGQr5R3t+dSXtLTmL2B3Y7mtvXNCT9t+PpPVA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794566800;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=XczvsKfXdTFmV2DxL3CKTLf3/akob6g9zYogIKwkEhs=;
+	b=Jsg/ba/nIhyaOT9+nMFVWnci2kIyGAzO90GtgQqeJVKuZEjKMevzHzzrZ3TPb3DCIRNr
+	 gDDVGQcDrxApNa9wHrejd0k6tqKn10He+lIHRbCixn7Jk3eo3qgk3IZyKZOCilmPLWwYX
+	 HCPqeHHmhMnrwWfe76vVV1uz2EY7CC7aIiAG1uZNuydtvEYxKMT3NQm31cGDKI6l0ILL1
+	 pFtiJfnZ8zwckcvOKcrlg6MGOu5dznVj47/kQ5k/rjwZKRoKIamcNqKbb9g0yPUX1ouhU
+	 RqPUPIrRTxNe94Fx1p3rzWo+3Px++Wj7sL7q4Aonm82K55tsRxQ0hyMz3B3KGtSh0JQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=fairphone.com;
-	spf=pass smtp.mailfrom=fairphone.com;
-	dkim=pass header.d=fairphone.com header.i=@fairphone.com header.a=rsa-sha256 header.s=fair header.b=p6TyeFko;
-	arc=none smtp.remote-ip=74.125.228.139
-Received: from mail-ej2-f11.google.com (mail-ej2-f11.google.com [74.125.228.139])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d7QF+2dy;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 868A2606A8BD
-	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 10:09:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 868A2606A8BD
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7346C606A31C;
+	Fri, 13 Nov 2026 10:46:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.a=rsa-sha256 header.s=fair header.b=p6TyeFko
-Received: by mail-ej2-f11.google.com with SMTP id a640c23a62f3a-c504c069dcaso50671166b.1
-        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 02:09:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1794564595; x=1795169395; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=DI86z/0Iql/9v/K5OtJPg8rVycvTnslIkr8t7coMOfc=;
-        b=p6TyeFkoVOUeZsZn+YShv7EPwTXNl4nm5v+8cd6w4mNijv/76ZHOonPgnttdyGWHSZ
-         uIdexMvZ9JRZBPffyXh2pUxZFR4jWSuGrFipiIfD+EG+eg5YTLuoEOXo9FEdqpooZBMC
-         rGdSQVMdhAxOa9pGZzVjc3efrhntuBZexoEB+v1b8dbGr+vzSeRSe7zFJnaKeTpnx2Nt
-         B590OHIZSOAFKWdHE3H1S5NCMDILzqfTkV77AkZBPtflgccLep9cwQb5FK6Zf+L4F30k
-         ry/j3H8g59MVDo+3QQxIWzqBneHeP5D97A/+Jo1ZnDLPRw3bPwE4QoZEeO2FeUb+zx5l
-         PJhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794564595; x=1795169395;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=DI86z/0Iql/9v/K5OtJPg8rVycvTnslIkr8t7coMOfc=;
-        b=SzufZTuFNpAVdgls85Cx5mysLz9CEL42qyxkMQmYiQZkhbX7aUH3WdkWJL4xZZTlPr
-         XpY6k1EstPoqCSfcTnf7MIQyJHawvY7xqOgrnngqAriIyCLvpGxBN+Wgu52YxIOO+PNx
-         yj2zJc5uv+j30dxHqYKTE8zMLpsMAmfDAhzZUVUbElQ6IWORK0rV9LfKgvCob8lvqiga
-         8hHe4qYNCA6lpRXOyCtcb2HjC2H8+2MALszPmZooFD+OzUXXPeiadhcIgiO0yr3Shj4M
-         7IyS9yimjEaRXE4tZPttYth3A4s9fDQ28RBdbZy4WfkP5p6E5JLKYIsU9d79uoQWc+HD
-         hWPw==
-X-Forwarded-Encrypted: i=1; AL+hErF8ZDZxK/OdbpTkEbDKtIwKHPsaqYH6FNNzPNU6UDaNOFL9+MEii7GL6yd1H93+XZcgY8rnPcsguE8=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+zrAfRI570PBu1kCLbdFPqSHqMuqVepF8swrsx8PZqIMQVOp+k
-	ZF8BZO03JuO/3rh/m0zJcxIU0OKuE1lezVz9vqPafESQNpvGgHYtKdN9GxA323BRaB8=
-X-Gm-Gg: AYBFou2Im1U2Vnxb2YxkEqMi4MOV0TAlqSoaovft1iDq9KhnhPqyDDgj2PmvFN8jho8
-	RzooXKSpmS9Z5ZedbJHrM8JUD+3qVPNNNxTvrn0yEpSMoUs9r9WHxdQ0UnMf2AF+ZjITzPECQTV
-	+mW2kAtPGZWYipnnUpeGM5BcHAjtRmOLTiSMg2wYNfTu1gxVZiEQWTqttxIVAOCdPOSdRJCm3vi
-	DRZgDcZjOWN+IlhKrkouJvdPM7lpBHXi5oqF+rVcap6/VDqI4cqS9Dvz4d1FFcWkzhFr3Uk53A/
-	Yrt13jGF/Qjg8J7v0s84DrK0ej6hBLQfR4k1JrJhaB9lEXvJWAgMCXYmnixjK/ebVKfkx/LG4S8
-	q2GCzyTLxbop+53UxrJ3T74O2p5tZ0V0XGj0k6UYP+0+NKudjJTOKOZaAgtagkJm6yul5L2KvyE
-	Vo2HFnYEFlfF55HJUOC0d8kdjJo2UrmEsfDmrrKQN6qJdf0ZzN7NvpMTz4fHlf+YBW1dunsgi9K
-	qTPZsf3u7i96pxL/2Gc9sbXWIW2ZBu8G7brsBnCpmt3ggpv8cszvFQeHKB5idtSPWIlP8uC/7Nj
-	2M4/0yPNwPPIFZL2TxFfzKNerPv0O89P2y6fdLSXc4IAmLfYixcD5oWCGlgT7cssZFVYx2D39g=
-	=
-X-Received: by 2002:a17:907:d40d:b0:c25:504a:1e25 with SMTP id a640c23a62f3a-c5096372189mr164295066b.13.1794564594691;
-        Fri, 13 Nov 2026 02:09:54 -0800 (PST)
-Received: from localhost (144-178-202-142.static.ef-service.nl. [144.178.202.142])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095a5b93csm75758766b.5.2026.11.13.02.09.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Nov 2026 02:09:54 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d7QF+2dy
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 052211F000C4;
+	Fri, 13 Nov 2026 10:46:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794566800;
+	bh=XczvsKfXdTFmV2DxL3CKTLf3/akob6g9zYogIKwkEhs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=d7QF+2dytAP776yfunWBlKYTgAtsWDIDtZXMZyS4/VuR+GhWurzUlZicXFhiGrS/x
+	 42pv++p06ej1a9Sf1mRh01LI26X9fYat/YsFnILpbndEgsxBSEgmssVbngbOZ0CI8L
+	 KsDNTtlEv0JZb2JMFyj4p9dF+ENib/nIAuKzbvcMlYYbALFvyD2nQHBUwhQbuwCT4L
+	 VJoFbz7r2pI7/pUHgFK8rCt92Qhu1xF8AcKKsIRJoBN3iUXTGhBzy5Sa33ZXOi5UBk
+	 D62L8nTjIgz5OElv+owJJgrSLsMTQKUD/DfWTYAytUSHELfW8VBb1LkL4eoZQjD9gt
+	 BCoq6svkonaFg==
+Date: Fri, 13 Nov 2026 11:46:36 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>
+Cc: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Liam Beguin <liambeguin@gmail.com>, linux@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: adc: lltc,ltc2497: Make vref-supply
+ optional for LTC2305/LTC2309
+Message-ID: <20261113-zircon-taipan-of-health-d4170d@quoll>
+References: <20261110-ltc2497-vref-optional-v1-1-35c9657f3c0f@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,85 +60,53 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 13 Nov 2026 11:09:53 +0100
-Message-Id: <DMU0219YWEL8.35KQSMY192RH4@fairphone.com>
-Cc: "Marc Lainez" <marc.lainez@gmail.com>, "Luca Weiss"
- <luca.weiss@fairphone.com>, =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?=
- <barnabas.czeman@mainlining.org>, "Danila Tikhonov" <danila@jiaxyga.com>,
- "Sebastian Reichel" <sre@kernel.org>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
- <conor+dt@kernel.org>, "Bjorn Andersson" <andersson@kernel.org>, "Konrad
- Dybcio" <konradybcio@kernel.org>, "Abel Vesa" <abelvesa@kernel.org>,
- <linux-arm-msm@vger.kernel.org>, <linux-pm@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <phone-devel@vger.kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/5] iio: adc: qcom-spmi-adc5: Add
- ADC5_BAT_THERM_100K_PU
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Val Packett" <val@packett.cool>, "Jonathan Cameron" <jic23@kernel.org>,
- "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>
-X-Mailer: aerc 0.22.0-0-gc2f86b7abde3-dirty
-References: <20261112170841.2189322-1-val@packett.cool>
- <20261112170841.2189322-4-val@packett.cool>
-In-Reply-To: <20261112170841.2189322-4-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261110-ltc2497-vref-optional-v1-1-35c9657f3c0f@gmail.com>
 
-Hi Val,
-
-On Thu Nov 12, 2026 at 6:07 PM CET, Val Packett wrote:
-> Even though it existed in bindings for the longest time,
-> ADC5_BAT_THERM_100K_PU was never assigned in the driver. Do so.
->
-> Signed-off-by: Val Packett <val@packett.cool>
+On Tue, Nov 10, 2026 at 04:42:59PM +0800, Kyle Hsieh wrote:
+> The LTC2305 and LTC2309 have an internal 4.096V reference, so their REF
+> pin does not need to be driven by an external supply. The LTC2497 and
+> LTC2499 have no internal reference and require one.
+> 
+> Only require vref-supply for the LTC2497 and LTC2499, so boards using
+> the internal reference can be described without a dummy regulator.
+> 
+> Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
 > ---
->  drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi=
--adc5.c
-> index d57ba8526e0c..c27ff89429f5 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
-> @@ -542,6 +542,8 @@ static const struct adc5_channels adc5_chans_pmic[ADC=
-5_MAX_CHANNEL] =3D {
->  					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_XO_THERM_100K_PU]	=3D ADC5_CHAN_TEMP("xo_therm", 0,
->  					SCALE_HW_CALIB_XOTHERM)
-> +	[ADC5_BAT_THERM_100K_PU]	=3D ADC5_CHAN_TEMP("bat_therm", 0,
-> +					SCALE_HW_CALIB_THERM_100K_PULLUP)
+> The ltc2309 driver already uses the internal reference when vref-supply
+> is absent. This is needed by the Meta Ventura2 BMC devicetree, which
+> describes LTC2305 ADCs that use their internal reference:
+> https://lore.kernel.org/all/20261106-ventura2-dts-update-v1-0-b085ece9bf57@gmail.com/
+> ---
+>  .../devicetree/bindings/iio/adc/lltc,ltc2497.yaml      | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> index 4df5aadd1e1d..22abc6885b5a 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> @@ -47,14 +47,28 @@ properties:
+>        - lltc,ltc2499
+>  
+>    reg: true
+> -  vref-supply: true
 
-While this will work fine for some devices, unfortunately this won't
-work for quite some other devices that don't use a 30K, 100K or 400K
-NTC in the battery - or when the NTC beta (B) is differing to the
-hardcoded lookup table.
+Blank line
 
-For example on Fairphone 4 (pm7250b fwiw), the battery has a 10k=CE=A9 NTC,
-so using the ADC5_BAT_THERM_30K_PU with the hard-coded lookup tables
-would result in very wrong temperature values. Even ignoring the whole
-NTC beta topic.
+> +  vref-supply:
+> +    description:
+> +      Reference voltage supply. The LTC2305 and LTC2309 have an internal
+> +      4.096V reference which is used when this property is absent.
 
-You can see my proposed patch series at
-https://lore.kernel.org/linux-arm-msm/20260220-bat-temp-adc-v2-0-fe34ed4ea8=
-51@fairphone.com/
+Blank line here as well.
 
-Unfortunately it's from February and I haven't spent more time on this
-topic since then, mostly because fuel gauge anyways was downstream, so
-pushing just this upstream wouldn't make much difference.
+>    "#io-channel-cells":
+>      const: 1
 
-Now it does, so I should get back to it... Let me know your thoughts!
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
-(Fairphone 3 with SDM632/PMI632 would actually be fine-ish as-is because
-the battery has a 100k=CE=A9 NTC and the beta probably is close enough to
-what's in adcmap_100k_104ef_104fb_1875_vref)
-
-Regards
-Luca
-
->  	[ADC5_BAT_ID_100K_PU]	=3D ADC5_CHAN_TEMP("bat_id", 0,
->  					SCALE_HW_CALIB_DEFAULT)
->  	[ADC5_AMUX_THM1_100K_PU] =3D ADC5_CHAN_TEMP("amux_thm1_100k_pu", 0,
-
+Best regards,
+Krzysztof
 
