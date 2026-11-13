@@ -1,90 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794579004;
-	b=rH5ajH4oiVgYuM+FlgL4KSmuXvfC/TSuBSTnP8VkSW0vTKtACSlR7CNO4Za9nWhlBIYR
-	 dzlwQcvFoRgLasGCmAzK3U3TL5wUpTEjkpCd84l1zvMoBcBMoLSyraxlgpvtIJt2ibC6H
-	 lBatQFCtThGu5vww2GjQTPgCxf15loQG8KaA3GmBVeh7kIatg6b/PjFBio+UrNAyhOQmo
-	 XXTFimZ+6xB/wIoBM6eq2Pn0So8BqhWlhhctGa1k3n9ADFWrPchXpPwPHUjArPB5m/NSB
-	 aCSQFACQN9ACBadH8mp0il6ErQPxNvlLFQ1S/NOelTYH0Kb2tGI9azAmrK01egDXkHw==
+	t=1794579936;
+	b=dhvH3ZPXMQDNUW0Om4yldIgD3RKv4elie7cvJtEREI2meW7B7VEIErS3EwulOFAO4Bhs
+	 Iysywx3sqWk47SutlJLk0Ln2MSK//yP7nvnP1gN1Mr1vbaWWcKA8KNz9MpdTY2/qFZHpf
+	 7JCSFV2hye/EiZyLifRSFUzaDx6HrkRRvBhcVH1w/1mzabBLivgEgRuiIKyKZYbJUhkCV
+	 3/ai1IL15E+yiqcMl7od4ZcPwIDpJp7Ky5ZW8KjdiQ76qx/QEVglDpHf91iTTuqdnT+RE
+	 6pwy/P7GF2wPMLzst9+Sr9j57X9cLSWK976AGQL0AKVXeLMCwZpHK+cPQYQJjkjJzBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794579004;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=oc5tqgUx2jgGl39zoG7TRqGoMncEFONZmst1nlS9KHg=;
-	b=YTv4lj9tOmdqENzVVdCEtAGutyzf8NfFM8ba/S1sWwufktC8Lo2IbEpgTky2wJk2RS0r
-	 Qe1rXOjf+fB1k4uTV4lcaszmWcT6UQs8gpoFEoUbn7mXfSKIxTsWi57nG5N9rk6lq1O+S
-	 KWCuh4KwL9NXgftXdiW9h9BPrWxzNY9Cnyg4/Ki1vnjIxUg55B7X5VS+5frzZh9p4r/vg
-	 KNLdQBAU6iSse3XQAjVhAwWRMklB0xzPofipI1PaCXvQufhSkZZz0huVPnFCoUQhOQKt5
-	 dvSbEIHNycm68xit0rVuBFslVn6k2CbqzsVbfD/E9gqwNFI5Af03vscbL6LrRQONUxQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794579936;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=iPdpKJXi8RfcmX40aTJs1ytH9Wi9hRg6/+LGPmxS/5M=;
+	b=ZtqaX/VKf++BkqZhnYatiFxF7YOghUCX4vOE2ctBSdeJLOWlFChuA/pC+4eEzfyxl+nY
+	 ayNig+leijz3lt1A39nmr4wTtsQZQK1WWUg7QE5T8WNASw3xbCBvEi/4h59k+/QKq7jvJ
+	 uhMAZlKkHC6G2PtapnVQu+VOdk7LsMPzkPmKjvENqshET7krdJ49bqWt7H+lXi7DNcyr2
+	 XSbBD5DYHx6v2QZMXGf25idiGJTsOgPv8bwSRDVVeewLCnbg8Eeb7XvQCyo74faUoYwck
+	 znm0UNCIbdxboo707kldqqsH3+tEkywhb+SffvoCOYbhl6n7n6vMDt+xEBeCZuuU6KQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=boOmEMDF;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FgHsqs11;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 130C5606A323;
-	Fri, 13 Nov 2026 14:10:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 130C5606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A3DA606A327;
+	Fri, 13 Nov 2026 14:25:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=boOmEMDF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794579004; x=1826115004;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NTiwvRZrh4h1yNEnLF6InFjE9odSaqV2VRbkYVv00UM=;
-  b=boOmEMDFMGyijuKHa0ZzOu2GDS3fzpg3tfxRAwy2dwV9W35J0x723sI6
-   h8OFcntUxToz6qrIG47G4qbHPpHDq6axRv3mcy3LjeG1IlIfcP6iIXPRI
-   LitSxWVoxnoPScMU+DDw2ftlin6WKw5NtBi1C7GxcxVIPYOKoxtQnAe37
-   b6YZIshZ9W+3Vyma2PLLVSvRb+OX3qwo/S3Zm3/tcAzDbW5ZTeO5qTC74
-   0FTwiIAalhTsYzQkrmSF0+dXFNPSD0MrQCYYzOc+ycPwy0lynRSq03tfu
-   6Db7z6+1AYLU4yM+4FNNHLt3hXUaxQFIxGQsjDzrSdU8tew0jMpEvGsFX
-   Q==;
-X-CSE-ConnectionGUID: RLiSwbFAR/GvoObnCzSftg==
-X-CSE-MsgGUID: tmRHbv+qQ0iVOefi0++7wg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3477707"
-X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
-   d="scan'208";a="3477707"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:10:03 -0800
-X-CSE-ConnectionGUID: AAfmjh9MQYCCU4mIiNf7CQ==
-X-CSE-MsgGUID: 1toIfdcIRzGzl4mnE80QTg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
-   d="scan'208";a="8953701"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.148])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:09:57 -0800
-Date: Fri, 13 Nov 2026 16:09:54 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Sabau, Radu bogdan" <radu.sabau@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Alexandru Ardelean <alexandru.ardelean@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FgHsqs11
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEEEE1F000C4;
+	Fri, 13 Nov 2026 14:25:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794579935;
+	bh=iPdpKJXi8RfcmX40aTJs1ytH9Wi9hRg6/+LGPmxS/5M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=FgHsqs11QfRipLad4Rw6gJ9/LIQUFB0kN2R02FuNVMWvPbey56DXGDHs7FK/sLPmY
+	 P9/7fJ/u2ggeVqM4bCB+U9WLZ9fH3EDJMkekRm2IFEWy09XSBsb8xje/OC6TDfM8hW
+	 06Kp8RDbuVJhzQ9gmjH3HWNIRZqNIS6s/3/TB6Ic6mrwARPEXuvdDwpjxgl71sSV7v
+	 bUK3GAwT6o+SLdeebJh+c5WGaVTldlfavWMwrwCBqFEG/qEXtii+C+DjGrQzXsOPai
+	 K7UtK1KRiF5fXXaDNoMrVifE7wNBtA6q/ehoIy77f3/5EHbY9AZRxpepofK54TB8BS
+	 cRfqGbFWscRng==
+Date: Fri, 13 Nov 2026 08:25:33 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Cc: David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org,
+	Randy Dunlap <rdunlap@infradead.org>, linux@analog.com,
+	Jonathan Cameron <jic23@kernel.org>, linux-doc@vger.kernel.org,
 	Conor Dooley <conor+dt@kernel.org>,
-	"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
-	"Budai, Robert" <Robert.Budai@analog.com>,
-	"Gradinariu, Ramona" <Ramona.Gradinariu@analog.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	linux <linux@analog.com>, Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
-Message-ID: <avcaMvcntGjnKPAK@ashevche-desk.local>
-References: <20261113-adis16607-v6-0-3f678719942a@analog.com>
- <LV9PR03MB84148ACD16DBA8896A81582DF77F2@LV9PR03MB8414.namprd03.prod.outlook.com>
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 03/10] dt-bindings: iio: frequency: add
+ adi,ad9910-axi-backend
+Message-ID: <179457993302.748838.1907399146153848587.robh@kernel.org>
+References: <20261103-ad9910-backend-support-v3-0-0e9224ddf7b7@analog.com>
+ <20261103-ad9910-backend-support-v3-3-0e9224ddf7b7@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -96,44 +70,25 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <LV9PR03MB84148ACD16DBA8896A81582DF77F2@LV9PR03MB8414.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20261103-ad9910-backend-support-v3-3-0e9224ddf7b7@analog.com>
 
-On Fri, Nov 13, 2026 at 12:41:04PM +0000, Sabau, Radu bogdan wrote:
-> > -----Original Message-----
-> > From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-> > Sent: Friday, November 13, 2026 2:34 PM
 
-...
-
-> > Patches 5-8 add the driver in functional groupings, as requested in
-> > v1 review:
-> >  - Patch 5: base driver - probe, raw channel reads, decimation/sample
-> >    frequency, startup and self-test via adislib, debugfs identity
-> >    entries. No buffered capture yet.
-> >  - Patch 6: buffered capture via the device's hardware FIFO, into a
-> >    kfifo buffer filled from a threaded interrupt (no IIO trigger).
+On Tue, 03 Nov 2026 11:52:59 -0300, Rodrigo Alencar wrote:
+> Add bindings for the AD9910 AXI backend IP core. The FPGA IP core
+> interfaces with the data and control pins of the AD9910 DDS, streaming
+> data from memory via DMA into the 18-bit parallel data port (F[1:0] and
+> D[15:0] pins), which is clocked by the PDCLK output of the device. It
+> also drives the PROFILE[2:0] pins and the DRCTL pin, which controls the
+> slope direction of the digital ramp generator (DRG). The DRCTL pin is
+> driven by a PWM generator, so the IP core is described both as an IIO
+> backend and as a PWM provider.
 > 
-> Note: this series implements the FIFO buffered capture with a kfifo
-> buffer for the adis16607 only, using its own threaded interrupt instead
-> of adislib's has_fifo trigger path. I tested it on hardware and it
-> behaves better than the trigger-based version in v5: the interrupt now
-> fires once per watermark batch instead of roughly once per sample, and
-> capture stays clean across repeated buffer enable/disable cycles.
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
+>  .../iio/frequency/adi,ad9910-axi-backend.yaml      | 74 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 75 insertions(+)
 > 
-> I plan a follow-up series that updates adislib and the other affected
-> devices (the adis16475 FIFO variants) to use a kfifo buffer as well, and
-> then converts this driver to use the adislib helpers.
-> 
-> If you would rather have it handled here, I can instead do the adislib
-> and adis16475 changes in this series, as patches ahead of the driver.
 
-As you explained above I think the proper change is update the library followed
-by the driver.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
