@@ -1,60 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794536239;
-	b=COzADknVvkcn6ZRIa0RQcubRK01+EjsvWnfyeziEyvNvgV3eTMuHEXW/9PRGweWkdJBj
-	 NH96ZlPSgUP08+DdiZkuFqDikQgj+fuDJsx7Z9A3FPyVztJmctqqoolX25BgIhaFOFaZn
-	 a/D9aUmlBJ3R5gleR7oUA0UFxnWbFEwcvIEFSbLkoS/omgHvb9do7AXR6RnKhNruR8Z8G
-	 C3KCqydzR4PG+sFrFzzyTs2G1OySURLGBOeZjxEjbkY3fRPDpkMDxZq9MqwbfTiWszw17
-	 cH7c1Bkg7kXyxcRJIi42NhdqOI/AGjiwiflIgsUeDkjMj/j/ZajtbdEN0u2PRu/flcA==
+	t=1794536521;
+	b=4cVYe8BgkwGWWi3qIsRDf+IzAtJ1nCnvG9H24WR8xthRsdPLYL5YlVK5RPkfSDCHXaDZ
+	 dmLiIFOLroK50WrtSYyJPjBxUOkuUQ/0ZxGypiy8PUTl6ZSjO6PU1QisQ5Kp3MCu08Qes
+	 xy9I/Ha5UDUWD+e3PzLog6nlyPECUmmowYSXKvHirPWEd2ArVFU1U7Y6f/sVQDGfOwW7v
+	 voKVot7WU2V4U3sHnzuV4yDdx0VuQOH/mR018GmcLYuKUxDwFlPof20c8M2s+jtrFqqW6
+	 m4jJ/ckop05Ibw/w7QolSE0GHIqzeihQeyaIJRDhZo25oFlVKOkxpcBHDmH/BeCBaVQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794536239;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794536521;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=6K2ZQ58mfhfrypYFAVRN9Vv3y7y6wCLRsHy328DMCaQ=;
-	b=pd4JmbDlX+P4ZcFnzZyo/v3XVh+45JH+/q/7anhF+Vqsy6CGyOCw10GxFZo9wcabSy3l
-	 gt+xSvLLycgGd+HzcgPV2k8zamoDTJI0/w80bDxQxxOY8MLDVhs8e+k3UOjoNlk0sqOYz
-	 gYCHIUcGywx9YMsQqva1uO4pmZ1GUPB9mgcgGPaUs4jcuCHB722twjB69evFXtnxcJo9U
-	 GOoPol0CJ5sSH+pmt2Wa6krNJVIqRlZtXBt4lXPSuIHBKkrqA2LC3eJTmpgCyzyzJHCe+
-	 F4hV6rm4X5BWSj05ImLlinSIxcDDesJibKD9U4dysmtzPscMhSVQDtQBvMcWhaNufnQ==
+	bh=1e8Zov3aIUvbqlTHnCV5QfqsM4RMN8sn9PqG4yCFyy8=;
+	b=xfvBdT9bWs4TRHrXzPbagNN4VFKjT4GybMsAw3umarnD62sabBulkqGlwNi4vX/uPh0/
+	 85GLl5DE2jq5HeM5m+nn3pr22zgDocgKmv8+rLyL/hYndWdM4CcY5cQXmEbcUVcwk4s7C
+	 d9plou4YRk3I3UKwW6lW+AGSBEUYKv69mer8DKyAVZrAwKNIQl+zVegFtS9WIkT1q7eki
+	 6aD1L9fAoDusW9bnfZuTLzSBxRzDuPgp3NEmcNRAJn+sUYWyhsSwQ/licOJQhovi3a6HX
+	 5P87zjsVKfJct3EV+aDtM7KQYMlRIp+IJqL85f5+xlFMJ+uO06lmFP/TVWPY2G7nZ3Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TQxOi3rO;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NVGbk9a7;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1E4606A31C;
-	Fri, 13 Nov 2026 02:17:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3310F606A31C;
+	Fri, 13 Nov 2026 02:22:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TQxOi3rO
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 078671F000C4;
-	Fri, 13 Nov 2026 02:17:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NVGbk9a7
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C09C1F000C4;
+	Fri, 13 Nov 2026 02:21:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794536239;
-	bh=6K2ZQ58mfhfrypYFAVRN9Vv3y7y6wCLRsHy328DMCaQ=;
+	s=k20260515; t=1794536520;
+	bh=1e8Zov3aIUvbqlTHnCV5QfqsM4RMN8sn9PqG4yCFyy8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TQxOi3rOwLFY/tgl0aHU5xWmlFZNin0cbTN0hBrfwxUysOVLvuBFl4T0GBU+7zwW5
-	 W/WyFebtCw/7E2P+eE005jUvSvx5lr8iWg6cjrDWZ7f8hqw6ajoj0BaP1rHRPiP2/k
-	 ty09/QqyfM5tXvas85evPrhhwrSzBaGhe3FolNelyYoz70L2VdjTCKHuVCVIi1Ul+H
-	 IwmXKdPGEM2GEV5Me4FOqZmnmXJzKjo4OyrKhxfO6I4F0x5afl7d033HB01Ogn4Uf8
-	 CaJIpkLO4kjJXzQgEzzBc7H/qg7ttsM6OpXWQ74TWb9hXAwZlBjmvJ80gevFz3uyJN
-	 kh5L2C6dhPinA==
-Date: Fri, 13 Nov 2026 02:17:10 +0000
+	b=NVGbk9a7SZ6LNOs7VeeCV6jFglmrl5Q9ybXiIdX7ALRKshWpZ4jQPsUcl9vbsaJRK
+	 Y3Cx+ODsIjqrLoVZZ27Z7ptov73B9+KTNSd4HvZdkqMiuzUuFB32eAhOgenw+pH9YC
+	 VUrb7gVT6pJFPnecIhXTwuBNzsCaWUw9Ik27EaOvVqXPdXJ5UdRgDBz2aJnIRmi5H/
+	 2UAJOFiAJaOtRLP7ghqQo4YG+qm45vK6FKODKQJLvLqISFpm8o0/hYkJlk5t7vQlUd
+	 nKvzIcmTqZEmlEeX7+yyThGiwntlR9viGrZZvCkZ0UMW97XQ1uNG/yYWhsyjSUQ8h4
+	 2/HGg3w5YylAg==
+Date: Fri, 13 Nov 2026 02:21:53 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>,
- devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: pressure: infineon,dps310: Add
- interrupts
-Message-ID: <20261113021710.7211ade3@jic23-hlaptop>
-In-Reply-To: <20261110154254.39092-2-zoone.rupert@gmail.com>
-References: <20261110154254.39092-1-zoone.rupert@gmail.com>
-	<20261110154254.39092-2-zoone.rupert@gmail.com>
+To: raoxu <raoxu@uniontech.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ luiz.von.dentz@intel.com, pengpeng@iscas.ac.cn, pmenzel@molgen.mpg.de,
+ brgl@kernel.org, u.kleine-koenig@baylibre.com, lars@metafoo.de,
+ mike.looijmans@topic.nl, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org, Joshua Crofts
+ <crofts@kernel.org>
+Subject: Re: [PATCH v3] iio: adc: ltc2471: Fix LTC2473 differential offset
+Message-ID: <20261113022153.445fdcb7@jic23-hlaptop>
+In-Reply-To: <B29B7229F9C3B748+20261110122414.373459-1-raoxu@uniontech.com>
+References: <B29B7229F9C3B748+20261110122414.373459-1-raoxu@uniontech.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,68 +63,75 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 10 Nov 2026 17:42:53 +0200
-Rupesh Majhi <zoone.rupert@gmail.com> wrote:
+On Tue, 10 Nov 2026 20:24:14 +0800
+raoxu <raoxu@uniontech.com> wrote:
 
-> DPS310 signals new results and a full FIFO on its SDO pin. In I2C mode
-> the same pin sets the address LSB, and interrupt polarity must be the
-> opposite of how SDO is strapped.
+> From: Xu Rao <raoxu@uniontech.com>
+>=20
+> The LTC2473 reports its differential conversion result as an unsigned
+> 16-bit value spanning -VREF to +VREF. The IIO scale is consequently
+> reported as 2 * VREF divided by 2^16.
+>=20
+> IIO offsets are expressed in raw codes, but the driver currently returns
+> -LTC2471_VREF, which is a millivolt value. This makes the processed
+> reading incorrect: with a 1.25 V reference, the midpoint raw code is
+> shifted by 1250 instead of 32768 codes.
+>=20
+> Return the raw-code offset so that the midpoint maps to 0 mV and the
+> endpoints map to -VREF and +VREF as intended. The single-ended LTC2471
+> does not expose the offset attribute and is unaffected.
+>=20
+> Fixes: 1d3eacbfa644 ("iio: Add LTC2471/LTC2473 driver")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Joshua Crofts <crofts@kernel.org>
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> Signed-off-by: Xu Rao <raoxu@uniontech.com>
+Applied to the fixes-togreg branch of iio.git
 
-Some hardware engineer is presumably proud they made that work!
-
-I'm not sure why we never had the SPI part of this binding but
-given it's not there and it gets more complicated wrt to this
-that can be addressed if anyone ever adds SPI.
-
-Anyhow, to me this looks fine.
+Thanks
 
 Jonathan
 
-
-> 
-> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 > ---
-> Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-> 
->  .../bindings/iio/pressure/infineon,dps310.yaml         | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
-> index 416117dfd927..cded6e0af147 100644
-> --- a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
-> +++ b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
-> @@ -23,6 +23,12 @@ properties:
->    reg:
->      maxItems: 1
->  
-> +  interrupts:
-> +    maxItems: 1
-> +    description:
-> +      New result or full FIFO, on SDO pin. SDO also selects I2C address, so
-> +      interrupt is active high at 0x76 (SDO low) and active low at 0x77.
-> +
->    "#io-channel-cells":
->      const: 0
->  
-> @@ -42,6 +48,8 @@ additionalProperties: false
->  
->  examples:
->    - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
->      i2c {
->          #address-cells = <1>;
->          #size-cells = <0>;
-> @@ -49,6 +57,8 @@ examples:
->          dps: pressure-sensor@76 {
->              compatible = "infineon,dps310";
->              reg = <0x76>;
-> +            interrupt-parent = <&gpio0>;
-> +            interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
->              #io-channel-cells = <0>;
->              vdd-supply = <&vref1>;
->              vddio-supply = <&vref2>;
+> Changes in v3:
+> - Add Reviewed-by tags from Nuno S=C3=A1 and Joshua Crofts.
+> - Move the AI assistance disclosure out of the commit message.
+> - No code changes from v2.
+>=20
+> Changes in v2:
+> - Replace the raw -32768 literal with the named LTC2473_DIFF_OFFSET
+>   macro.
+>=20
+> The supplied fix was reviewed and this commit message prepared with
+> OpenCode AI assistance.
+>=20
+>  drivers/iio/adc/ltc2471.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/adc/ltc2471.c b/drivers/iio/adc/ltc2471.c
+> index 369af700969f..eb418c0fa732 100644
+> --- a/drivers/iio/adc/ltc2471.c
+> +++ b/drivers/iio/adc/ltc2471.c
+> @@ -25,6 +25,7 @@ struct ltc2471_data {
+>=20
+>  /* Reference voltage is 1.25V */
+>  #define LTC2471_VREF 1250
+> +#define LTC2473_DIFF_OFFSET (-32768)
+>=20
+>  /* Read two bytes from the I2C bus to obtain the ADC result */
+>  static int ltc2471_get_value(struct i2c_client *client)
+> @@ -69,7 +70,7 @@ static int ltc2471_read_raw(struct iio_dev *indio_dev,
+>=20
+>  	case IIO_CHAN_INFO_OFFSET:
+>  		/* Only differential chip has this property */
+> -		*val =3D -LTC2471_VREF;
+> +		*val =3D LTC2473_DIFF_OFFSET;
+>  		return IIO_VAL_INT;
+>=20
+>  	default:
+> --
+> 2.50.1
 
