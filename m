@@ -1,60 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794533815;
-	b=u1kiaKoGQ/SKORPrFXw/esrDUIXHuia9gEecG/X6757EmjxUQSibkHF8GOZc5YG268a9
-	 WYT4cg6ywcHAzY9yyhdfMC9+8LHkAkz1X3kPnX8QbW8kB7oGjJooP9gq3ZrHIziXsTjmo
-	 yokNVoDUDMW2b5dPLMhXIE4Y8ncp6J2frfte+1rQysusInOP29qe88C0iUt+3gAemMnNj
-	 6jHZikRz6HZbukcujq/pxLN8piV7YioaBQZ37bkqcxYO8J9mI01th02rs8hUn8yjMkGuQ
-	 b98Z5OIZnelGQEUPqkrS3xHE8QpqvH1Gc5sLgpv5YzDB1aJn+1FlWFNrke1BYmgYjZw==
+	t=1794534535;
+	b=QqP0Cc9QnLpK2Eit6Vh9lPw3z3xGVyrwONqvGVGYZFpFqPUg1VNDvXeNmNnBZkdFPHSZ
+	 cI/AP34KpWOoAgaAFAdGv6d9wa1C/BAF9lhQmXhFxNJkCBLvSdSS+0m/PcOqW48wMZO+O
+	 67LkT59psPlA8LNtPQXgEXo1fUKqtpzsz1CzsAxCCvUmpa3IJG4nOGN0IfZ4rOxLCzoct
+	 8rPW2XJB355PK/RpLZwxht2XzkUb2DcgZ18SzLPFbO808Je+dlRMHMbbm0e1qiEVPqmMr
+	 yT79EpT9SggiladHgk8TbwPHhCIj4JpMUm8/CLfYXKClT8vB+dthd5BsagOyvJ261Ug==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794533815;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794534535;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=arMA0v5t1o98BajxZAqpCJPUMRuqqdv471JMZzK6vk8=;
-	b=UbMe+QHfFZAqf1euV4V14f5pl7JvJFV/4G+buoU3KCpdiscJy6RefKh0l27iVl+8mGiS
-	 ZIOmvkk41LtyU7utz/3bGSk/1uOQNX7iR7AALF5xqkqwbhj26kjNwiYP2Xd+a3hSFAo5k
-	 RVuvtz8gGu0aIY7GeRmqQX/1XRuwLCBY4MfrOFzwwPh2qQ8JXk1HjODhIHNTZ9BEdVQqO
-	 9/Q1bGICxRyV26Qg3h5O1g1Rp6igrVxczRgB1Xna8nb8p+32aOPTOgQIiNjVHF4MvT1Qe
-	 NIhdfhVxoY9Oo3YVoCURMe8BuQqJBEJsXyNPclNe7l0Qx2RRuKM/2+cwhhjeGzxoI+w==
+	bh=+t2Wz+7xHGJsYmdZFUvkouxudHhMKG8B+4FhaqdWGpM=;
+	b=jCo9/U6VydfBeHkjhkbAHkNuQIMMYdA3JqnqSo6+1RcIVmF+dWp1GK2KTB6DLxq3vfN6
+	 yWAkJCaB/JOHvK8X3bVg9sXSar1Xmfkocf/Kr1mZxKC04AVpPnS51SPCqVa+IvRM1FiWc
+	 C8tI5iiWCPGfuvdUT2c1ZEyz4reyvb29xYh4aXe1DVWMjYbaIsUyBZZy3kLia8iG+y303
+	 T4jx5VMOUXxvgD2Uzd8PTVyJH+PaO4YGXootBNXc+adDb1ChXCny1h/VMWzLjm0BEXQGp
+	 CZYG3DfciRLjqvUCIOebqmOcBsB7euXOIPnamL+8uPkWgM/xQQBxkepw3LE5i1wiVKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NSbPldpL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RGqKFfR1;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50012606A321;
-	Fri, 13 Nov 2026 01:36:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95819606A330;
+	Fri, 13 Nov 2026 01:48:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NSbPldpL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2E31F000C4;
-	Fri, 13 Nov 2026 01:36:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RGqKFfR1
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E40181F000C7;
+	Fri, 13 Nov 2026 01:48:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794533814;
-	bh=arMA0v5t1o98BajxZAqpCJPUMRuqqdv471JMZzK6vk8=;
+	s=k20260515; t=1794534535;
+	bh=+t2Wz+7xHGJsYmdZFUvkouxudHhMKG8B+4FhaqdWGpM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NSbPldpLgz4V6yCT5f2eIjnWlQqFg/91G4ZwJaqJkWdXQ/RdIDx7vKcKh+kmn6+RT
-	 ffI3QvvK5Vz/fLdEzNRi/6YV2tPL1njOZDJeF7ziub2vRX+jfUMzz2KTHm9wv4JNwV
-	 kyRpjfMJ53BS88y+8htuT/VUacCo8JnnpOLBa36caXSs3+lCkTT0RBhjQlxHBcpuZJ
-	 DUHGLve2kZYetHSyE0ZzY7rDsmHrQntu8T/amkbgm0Gd3AHRrKBAXlgK69+AHiKsvZ
-	 EoS0wTziKM3wyTLCh8dpJHnAsJ+IgpTOR9zNUTzL7Bhv+7B+k1Q1ND6wgNnMPsyqk9
-	 qg3NV+aZ2Oidw==
-Date: Fri, 13 Nov 2026 01:36:46 +0000
+	b=RGqKFfR14FqCDbj8hteCgpex08X+i7U9RKSxhx6f1tB3HnkRWrlq7h4Q+9nZ5vizd
+	 FRDjlhmzNqKkgNuSqdEEZ7hIAondo41S3G2fZ0tV3Shz5tOEVVxcyhk5jc4lDO0SvQ
+	 PWA5rdsuACWmj/ZV4lD+UNVw4OgOPdo+hns0xTnrXTclk3E1XyBzIfNkFaKNBd+CZv
+	 AoqdZqojyAJwKI3tG9WTQugOVFSj7Bjmi906+9Sg5inYDxJpphyqd5CIT8quPzbEUA
+	 PM9qDViimUSY44BcIxxrE1+egZgRhklNMsHG3HXEvmq215W/e35+LPleUY6Zu70GJy
+	 222sozkcYhFLA==
+Date: Fri, 13 Nov 2026 01:48:49 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Laight <david.laight.linux@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Di Wu <diwux@google.com>,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- bleung@chromium.org, groeck@chromium.org, tzungbi@kernel.org,
- linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: cros_ec: use sysfs_emit() in show callbacks
-Message-ID: <20261113013646.4c2f8456@jic23-hlaptop>
-In-Reply-To: <20261112220218.1adae5e5@pumpkin>
-References: <20261111072608.3490763-1-diwux@google.com>
-	<avR-KT-6e77EexZn@ashevche-desk.local>
-	<20261112020439.37b0da70@jic23-hlaptop>
-	<20261112220218.1adae5e5@pumpkin>
+To: Victor Chernyakin <chernyakin.victor.j@outlook.com>,
+ andriy.shevchenko@intel.com
+Cc: andy@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, nuno.sa@analog.com
+Subject: Re: [PATCH v9 0/4] iio: cdc: add Texas Instruments FDC1004 driver
+Message-ID: <20261113014849.06ab464d@jic23-hlaptop>
+In-Reply-To: <MW2PR12MB252344E62EC2FDEB8237D5DBA5712@MW2PR12MB2523.namprd12.prod.outlook.com>
+References: <avSBP7Ib1dYpu_Ek@ashevche-desk.local>
+	<MW2PR12MB252344E62EC2FDEB8237D5DBA5712@MW2PR12MB2523.namprd12.prod.outlook.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,49 +64,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 12 Nov 2026 22:02:18 +0000
-David Laight <david.laight.linux@gmail.com> wrote:
+On Wed, 11 Nov 2026 09:16:12 -0600
+Victor Chernyakin <chernyakin.victor.j@outlook.com> wrote:
 
-> On Thu, 12 Nov 2026 02:04:39 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Wed, 11 Nov 2026 16:39:37 +0200
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> >   
-> > > On Wed, Nov 11, 2026 at 07:26:08AM +0000, Di Wu wrote:    
-> > > > Replace sprintf() and snprintf() with sysfs_emit() in the sysfs show
-> > > > and ext_info read callbacks. sysfs_emit() is aware of the sysfs buffer
-> > > > PAGE_SIZE limit and is the preferred helper for show callbacks.      
+> > > > Changes in v9:
+> > > > - Patch 4
+> > > >   - Added comment explaining why we set use_single_read = true
+> > > > 
+> > > > - Link to v8: https://lore.kernel.org/SN1PR12MB2528F139EE6C0B4576C3A0CCA5722@SN1PR12MB2528.namprd12.prod.outlook.com  
 > > > 
-> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > > 
-> > > ...
-> > >     
-> > > > -	return sprintf(buf, "%d.%06u\n",
-> > > > -		       latency / 1000,
-> > > > -		       (latency % 1000) * 1000);
-> > > > +	return sysfs_emit(buf, "%d.%06u\n",
-> > > > +			  latency / 1000,
-> > > > +			  (latency % 1000) * 1000);      
-> > > 
-> > > As David said, since you touched these lines, make the less amount of them
-> > > while at it.
-> > > 
-> > > (But no need to resend, usually Jonathan is kind to tweak this small thing.)
-> > >     
-> > Done and applied.
+> > > I think I gave a tag, why it's not here, please?  
 > > 
-> >   
+> > I meant for the patch 4/4.  
 > 
-> I just looked at that line again.
-> Why is it multiplying the remainder by 1000?
-> It could be:
-> 	return sysfs_emit(buf, "%d.%03u000\n", latency / 1000, latency % 1000);
-> if the 6 digits after the decimal point are required.
+> I addressed your comments and then forgot to edit the patch description :(
+> Could you give it again under this version, so that it's picked
+> up if it's merged?
 
-Good point, I guess unrelated change that we could have on top.
-Those trailing zeros shouldn't matter.
+I snaffled Andy's tag from v8 given clearly he expected it to be here.
 
-> 
-> David
+Applied to the testing branch of iio.git.
 
+I'll let the bots poke at that for a few days at least before
+pushing out as togreg which linux-next picks up.
+
+thanks,
+
+Jonathan
