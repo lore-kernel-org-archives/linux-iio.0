@@ -1,76 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794578887;
-	b=HpQCBN9XZG1RjRLBoscMIszEd95i/p34vYSqP+M6KGdcn3LqDmtnPX+sNwpAvM3oKqUB
-	 INUTL6ZDiAfjU7N0CmxGlbPbjhcWzMPmwDEYtvlYTVwLrXqGE6JuYsnlU1h2akxaw9w88
-	 XUb988Kir8Q7tHiwd5ewdsA+07+1OxDTWvxuGyLEmM1i8zMEW51MRGBZi5WIvWMNct2EU
-	 XdVLY5s4EMU4V6AY+UvYbKUdUvlLBfsW6x4TFvKqkckjCyJPPaaPZL81Ry0P92673LS8i
-	 +nnQesUQ5YjJhpW82sH1YoDX2r8EOGSEleo1re8KBtjpxRlCkso+3+Fx9MjXhsg3cgQ==
+	t=1794579004;
+	b=rH5ajH4oiVgYuM+FlgL4KSmuXvfC/TSuBSTnP8VkSW0vTKtACSlR7CNO4Za9nWhlBIYR
+	 dzlwQcvFoRgLasGCmAzK3U3TL5wUpTEjkpCd84l1zvMoBcBMoLSyraxlgpvtIJt2ibC6H
+	 lBatQFCtThGu5vww2GjQTPgCxf15loQG8KaA3GmBVeh7kIatg6b/PjFBio+UrNAyhOQmo
+	 XXTFimZ+6xB/wIoBM6eq2Pn0So8BqhWlhhctGa1k3n9ADFWrPchXpPwPHUjArPB5m/NSB
+	 aCSQFACQN9ACBadH8mp0il6ErQPxNvlLFQ1S/NOelTYH0Kb2tGI9azAmrK01egDXkHw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794578887;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794579004;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=n7cVia9sMCuK38IPq0c2Vj047wAgXP1lK8/kz0AS6VY=;
-	b=Q28mh2ZrkAV66pH3Oh7RwS7Dg0K0SwOVE01a2XHtxG1W3eAmDYUNJKg7Ln7eMUK6YWw3
-	 S8/BOO8eaYiZ6Uo/FGg45fuktzv5zeruDMIC42o4kJ4vAHZvmK4l1bUjRqm280MYgMMAm
-	 BZMZF4gEhldpguWnDBmhhHq2c9kiSYTTT/iqTvsqOIljhrk0Ys08tU0BuigGQydqKyfmm
-	 Z5Zcc28yt1Pf7GqA395aMsUSYmo++c4LOOvDalCauqsYOoFdMDyc3PKXI9VPluldvDJ3Z
-	 WkG2oIH5HD9uvhKJbqXaqyFi2zUkygOI1sRJevoL8pNs97n21QHIbt1F/4fh6pffxUA==
+	bh=oc5tqgUx2jgGl39zoG7TRqGoMncEFONZmst1nlS9KHg=;
+	b=YTv4lj9tOmdqENzVVdCEtAGutyzf8NfFM8ba/S1sWwufktC8Lo2IbEpgTky2wJk2RS0r
+	 Qe1rXOjf+fB1k4uTV4lcaszmWcT6UQs8gpoFEoUbn7mXfSKIxTsWi57nG5N9rk6lq1O+S
+	 KWCuh4KwL9NXgftXdiW9h9BPrWxzNY9Cnyg4/Ki1vnjIxUg55B7X5VS+5frzZh9p4r/vg
+	 KNLdQBAU6iSse3XQAjVhAwWRMklB0xzPofipI1PaCXvQufhSkZZz0huVPnFCoUQhOQKt5
+	 dvSbEIHNycm68xit0rVuBFslVn6k2CbqzsVbfD/E9gqwNFI5Af03vscbL6LrRQONUxQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CWlte0AN;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=boOmEMDF;
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A748606A323;
-	Fri, 13 Nov 2026 14:08:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3A748606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 130C5606A323;
+	Fri, 13 Nov 2026 14:10:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 130C5606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CWlte0AN
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=boOmEMDF
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794578887; x=1826114887;
+  t=1794579004; x=1826115004;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=bhznoLiBqCl32w7oDyhSSediGWB4SNiiwODIA4P/vmo=;
-  b=CWlte0ANEODbPz5wWin/8WWTFUlhORPogNwA5gcPaiXpTqD89IwkBo2u
-   svXxfoNUrUuOJT5PHUtSk3uPgu7KtwnyRXlb/ZGITzsO6yKBbgVoojYXN
-   /NACReiy7DKBNkXI41l6QcDFo0RD/ib4N/F6UZbH0Jrfuf7k5Hocq3sBE
-   Jf8VPGWHg2/khf8DxF/f/VYYTbA/SchOfOCLDOmOTOrVPELOQ2769W2zU
-   FeS+ajsODT2PdLTUrxB/iJZK9AZxr9rBQNDKaYCytY3tGS9xi0XyjZePX
-   cyLs0f243c9j0y21StiYtxUkrOFY/4ArIvAicAPx5ldE/hEi1CsupNuzq
-   A==;
-X-CSE-ConnectionGUID: icMUxm9yQBufp4EJte2f/g==
-X-CSE-MsgGUID: dDqFtO0gSZCWBeS4TSUh9Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3269812"
+  bh=NTiwvRZrh4h1yNEnLF6InFjE9odSaqV2VRbkYVv00UM=;
+  b=boOmEMDFMGyijuKHa0ZzOu2GDS3fzpg3tfxRAwy2dwV9W35J0x723sI6
+   h8OFcntUxToz6qrIG47G4qbHPpHDq6axRv3mcy3LjeG1IlIfcP6iIXPRI
+   LitSxWVoxnoPScMU+DDw2ftlin6WKw5NtBi1C7GxcxVIPYOKoxtQnAe37
+   b6YZIshZ9W+3Vyma2PLLVSvRb+OX3qwo/S3Zm3/tcAzDbW5ZTeO5qTC74
+   0FTwiIAalhTsYzQkrmSF0+dXFNPSD0MrQCYYzOc+ycPwy0lynRSq03tfu
+   6Db7z6+1AYLU4yM+4FNNHLt3hXUaxQFIxGQsjDzrSdU8tew0jMpEvGsFX
+   Q==;
+X-CSE-ConnectionGUID: RLiSwbFAR/GvoObnCzSftg==
+X-CSE-MsgGUID: tmRHbv+qQ0iVOefi0++7wg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11965"; a="3477707"
 X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
-   d="scan'208";a="3269812"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:08:06 -0800
-X-CSE-ConnectionGUID: 9N6ttaSDTv2JjFfr2B3SqA==
-X-CSE-MsgGUID: deacJUKmTWOJlI4xNenDLA==
+   d="scan'208";a="3477707"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:10:03 -0800
+X-CSE-ConnectionGUID: AAfmjh9MQYCCU4mIiNf7CQ==
+X-CSE-MsgGUID: 1toIfdcIRzGzl4mnE80QTg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,211,1787036400"; 
-   d="scan'208";a="9014490"
+   d="scan'208";a="8953701"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.148])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:08:04 -0800
-Date: Fri, 13 Nov 2026 16:08:01 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2026 06:09:57 -0800
+Date: Fri, 13 Nov 2026 16:09:54 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	crofts@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] iio: temperature: mcp9600: Avoid overflow when
- scaling thresholds
-Message-ID: <avcZwcY8HQrUjbF5@ashevche-desk.local>
-References: <20261113080558.173889-1-zhujun2@cmss.chinamobile.com>
+To: "Sabau, Radu bogdan" <radu.sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Alexandru Ardelean <alexandru.ardelean@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
+	"Budai, Robert" <Robert.Budai@analog.com>,
+	"Gradinariu, Ramona" <Ramona.Gradinariu@analog.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	linux <linux@analog.com>, Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
+Message-ID: <avcaMvcntGjnKPAK@ashevche-desk.local>
+References: <20261113-adis16607-v6-0-3f678719942a@analog.com>
+ <LV9PR03MB84148ACD16DBA8896A81582DF77F2@LV9PR03MB8414.namprd03.prod.outlook.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,77 +96,41 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261113080558.173889-1-zhujun2@cmss.chinamobile.com>
+In-Reply-To: <LV9PR03MB84148ACD16DBA8896A81582DF77F2@LV9PR03MB8414.namprd03.prod.outlook.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Nov 13, 2026 at 04:04:56PM +0800, Zhu Jun wrote:
-> mcp9600_write_thresh() scales the integer part by 1000000 in int
-> arithmetic before clamping to the supported temperature range. The
-> multiplication can overflow, so a request such as 3000 degrees can
-> select the lower threshold instead of the upper threshold.
+On Fri, Nov 13, 2026 at 12:41:04PM +0000, Sabau, Radu bogdan wrote:
+> > -----Original Message-----
+> > From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+> > Sent: Friday, November 13, 2026 2:34 PM
+
+...
+
+> > Patches 5-8 add the driver in functional groupings, as requested in
+> > v1 review:
+> >  - Patch 5: base driver - probe, raw channel reads, decimation/sample
+> >    frequency, startup and self-test via adislib, debugfs identity
+> >    entries. No buffered capture yet.
+> >  - Patch 6: buffered capture via the device's hardware FIFO, into a
+> >    kfifo buffer filled from a threaded interrupt (no IIO trigger).
 > 
-> Cast MICRO to s64 before multiplying so that scaling and the fractional
-> addition or subtraction use signed 64-bit arithmetic. Let the existing
-> per-junction bounds clamp the result. Use MICRO consistently and use
-> div_s64() for the final conversion to support 32-bit architectures.
+> Note: this series implements the FIFO buffered capture with a kfifo
+> buffer for the adis16607 only, using its own threaded interrupt instead
+> of adislib's has_fifo trigger path. I tested it on hardware and it
+> behaves better than the trigger-based version in v5: the interrupt now
+> fires once per watermark batch instead of roughly once per sample, and
+> capture stays clean across repeated buffer enable/disable cycles.
+> 
+> I plan a follow-up series that updates adislib and the other affected
+> devices (the adis16475 FIFO variants) to use a kfifo buffer as well, and
+> then converts this driver to use the adislib helpers.
+> 
+> If you would rather have it handled here, I can instead do the adislib
+> and adis16475 changes in this series, as patches ahead of the driver.
 
-...
-
->  #include <linux/interrupt.h>
->  #include <linux/irq.h>
-
->  #include <linux/math.h>
-
-This can be dropped now as it's implied by math64.h.
-
-> +#include <linux/math64.h>
->  #include <linux/minmax.h>
->  #include <linux/module.h>
-> +#include <linux/units.h>
-
-...
-
->  	struct mcp9600_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
-> -	int s_val, i;
-> +	s64 s_val;
-> +	int i;
-
-Please, keep the reversed xmas tree order.
-
->  	s16 thresh;
->  	u8 hyst;
-
-...
-
->  		/* Scale value to include decimal part into calculations */
-> -		s_val = (val < 0) ? ((val * 1000000) - val2) :
-> -				    ((val * 1000000) + val2);
-
-> +		s_val = (val < 0) ? ((val * (s64)MICRO) - val2) :
-> +				    ((val * (s64)MICRO) + val2);
-
-I think we can avoid casting by doing
-
-		s_val = val < 0 ? -((val * MICRO) + val2) : ((val * MICRO) + val2);
-
->  		if (chan->channel2 == IIO_MOD_TEMP_AMBIENT) {
->  			s_val = max(s_val, MCP9600_MIN_TEMP_COLD_JUNCTION_MICRO);
->  			s_val = min(s_val, MCP9600_MAX_TEMP_COLD_JUNCTION_MICRO);
-
-This is also clamping.
-
-...
-
-> -		thresh = (s16)(s_val / (1000000 >> 4));
-> +		thresh = (s16)div_s64(s_val, MICRO >> 4);
-
-Do you need casting here?
-
->  		return i2c_smbus_write_word_swapped(client,
->  						    MCP9600_ALERT_LIMIT(i + 1),
->  						    thresh);
+As you explained above I think the proper change is update the library followed
+by the driver.
 
 -- 
 With Best Regards,
