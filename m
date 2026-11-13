@@ -1,95 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794583664;
-	b=rYkZETrBn7sO9WdOAHdb0F5TEgzBIca3rfZuZ+3VjV4vfa2X7VRg2j8mESYFziHEwDK+
-	 +ht7TZKg45EAkdKQdt9xgnDoX5PPzUJMCPYFGxyF1UuB3r8GAepMFM1qDps4+XHVpKuJ0
-	 gxZ+sI3i+DcEkkC/JcrC4TeU4tEVXNZFT1hwtABJt/pme0YE3yQcYQA1ABun5ovPRrVfg
-	 l9bdiQBmB2gpCqGbLuD84mKlcJ5NtzRnUVRQzd7udnAdPThh4+I9cSZHVfHWXN2Ybq6Uy
-	 Ii+KAvEhsOUufrIZw+CftrB4+KMy4grZrQz1MHhh6+mRJlfVuBUKFwcJH2y3vpN35Ig==
+	t=1794584200;
+	b=otiZwa8JTnAv4+gzyOtuv5p8mWIOkR9t9qpIKjCa+nHlrpFQY4a3Gnxg5IVphLAlyfka
+	 0Pah3e48XJblXfMX9Bw/CUImRTvjBDx+lBrC5FC3nAgnpqFZcDH3yzZjgkIBlOMKXOggN
+	 XGXXSW7sT8wulN/AxzPqJOfoOSdxTytG7Fz8lmZAU4F1meN8KL4hu89rIVuUq/Q+4p/F+
+	 AOTKIqm1kqP1p0LzmgkGindiRbH2NXg5aPpJx9OVeMycEcF7/VVLQbedz86q0SOa/x76N
+	 6HFMAZ33voxKsfW4tysCtLfXAFG+ZrSNB06BE6KDdCuCd+KxyEnmxL9xrbQKIYehg4A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794583664;
-	h=Received:DKIM-Signature:From:To:Cc:In-Reply-To:References:Subject:
-	 Message-Id:Date:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 X-Mailer;
-	bh=dn1PYMhmAemnRiDJqW2cW62E5ZzPoGIhWGuklhK85T4=;
-	b=wsQdJWzVlbJgti60M7Kz87Mh2Kp7Rbp8GbHryRaSBo7H42hxZNN5aYxCa+9vHK6alGWN
-	 HYJ2zwAgkToV81tBqrtdbYk0a36qFMi0ehswYJIQZUM9pUCT0KH+P9BQs8qGId7ZL6r0R
-	 cyUDC9RMDFOceTLZntd/fA2zZDaVZ2tCwNXu6tvTPAxwiFIvMo56KTIT2ZwPqwgnXn7/7
-	 S9q+qrLdeRMyRdNa3xPD/qFDxPWdl6ESwZUT+Vs56aWuaglET7+LUjxOmOx0ik7zw8xa8
-	 ZxXy10yxVWR5nAs/ZwK2zcRO8P8SeSrf4gmFRcBuDMVBpRxgK11+AjkHNhyADe8YvWw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794584200;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=x62ZihgS7kh4nWdNrWclZKqO2BrkWNZR/gkUNOF/E3Q=;
+	b=2DLUs/SM2UjtQP0wrGGf1UP2nz4yHqFkvIQZ2tSZ8vu4yzQlEI4rXX1I7Mx2w7ZdXuNC
+	 oxu6MCrVo4bbS1uK/ecbJYXlQBNMOkT5dTdlLDSOhn/vBtkXTr4Y8nkNOh5uJb9clPO5c
+	 Gjj1BPGpgnz91UYj/Ji2etxRyEN2t4oBhNLU3yAWGxigVtNMcuRavuZ1ulmtVEQM+bpCF
+	 cZ+wOBWezbqrBratnJY6zxfh88URiRlF5r8ix/7V4kwGvxbwJDqQoMzJ/v4a5SyweTnXr
+	 6/Gudbhn3quZb4U+Zl641mIZLWHogZMvE2tGQHbTYwOcWUUq6YnCRGjqSA2T302tRJQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WZu7uyDc;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=rOwFdNzH;
+	arc=none smtp.remote-ip=209.85.208.173
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD7C7606A88C;
-	Fri, 13 Nov 2026 15:27:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8DE606A327
+	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 15:36:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B8DE606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WZu7uyDc
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8B411F000C4;
-	Fri, 13 Nov 2026 15:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794583664;
-	bh=dn1PYMhmAemnRiDJqW2cW62E5ZzPoGIhWGuklhK85T4=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date;
-	b=WZu7uyDctg0eCwV+wpjftd0x5++UZFQP/ONB5i24vRp/Dhw7pGnVM+QJ6VhLRk1FC
-	 JVDSFUo9c4f1WL6yMr6G2Vd2rv6q+XzIabY08dIp8KNAKlQqDZmB19p04fsGXFV8QB
-	 h/Zdf2CV4t3nzJ4kOiYATXNF8tGXDDWgEsQDfiixoa2bErw0FomcYpLFLLcKLp4o18
-	 3ufw1rRI3NgqNsykygCHHQmGdmYL51p5aN3ZUNEqRNNUkQ0to2TO6x6ZcsYMVKsSZx
-	 OkijanQXK9iCjcHzgEY/zX+46RJVztRuspN4xKxpNLQMXZVWvJk3II6eXn2OBSYmnU
-	 pO4u4wAFhj0og==
-From: Lee Jones <lee@kernel.org>
-To: Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-mediatek@lists.infradead.org, Lee Jones <lee@kernel.org>
-Cc: Aaro Koskinen <aaro.koskinen@iki.fi>, 
- Andi Shyti <andi.shyti@kernel.org>, Andreas Kemnade <andreas@kemnade.info>, 
- Andy Shevchenko <andy@kernel.org>, AnilKumar Ch <anilkumar@ti.com>, 
- Arnd Bergmann <arnd@arndb.de>, Binbin Zhou <zhoubinbin@loongson.cn>, 
- Brent Casavant <bcasavan@sgi.com>, Chong Qiao <qiaochong@loongson.cn>, 
- Corey Minyard <corey@minyard.net>, David Lechner <dlechner@baylibre.com>, 
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Felipe Balbi <balbi@ti.com>, 
- Gyungoh Yoo <jack.yoo@maxim-ic.com>, 
- Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
- Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>, 
- Huacai Chen <chenhuacai@kernel.org>, 
- Jarkko Nikula <jarkko.nikula@linux.intel.com>, 
- Jonathan Cameron <jic23@kernel.org>, Joshua Kinard <linux@kumba.dev>, 
- Kai Svahn <kai.svahn@nokia.com>, Kevin Hilman <khilman@baylibre.com>, 
- Kumar Sanghvi <kumar.sanghvi@stericsson.com>, 
- Linus Walleij <linusw@kernel.org>, linux-crypto@vger.kernel.org, 
- linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-input@vger.kernel.org, linux-omap@vger.kernel.org, 
- Mattias Nilsson <mattias.i.nilsson@stericsson.com>, 
- Mattias Wallin <mattias.wallin@stericsson.com>, 
- Matti Vaittinen <mazziesaccount@gmail.com>, mfd@lists.linux.dev, 
- Mika Westerberg <mika.westerberg@linux.intel.com>, 
- Milo Kim <woogyom.kim@gmail.com>, Ming Yu <tmyu0@nuvoton.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Pantelis Antoniou <panto@antoniou-consulting.com>, Pat Gefre <pfg@sgi.com>, 
- Paul Burton <paulburton@kernel.org>, Peter Ujfalusi <peter.ujfalusi@ti.com>, 
- Qunqin Zhao <zhaoqunqin@loongson.cn>, 
- Rabin Vincent <rabin.vincent@stericsson.com>, Rachna Patil <rachna@ti.com>, 
- Roger Quadros <rogerq@kernel.org>, Samuel Ortiz <sameo@linux.intel.com>, 
- Sascha Hauer <s.hauer@pengutronix.de>, 
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
- Shi Hao <i.shihao.999@gmail.com>, 
- Srinidhi Kasagar <srinidhi.kasagar@stericsson.com>, 
- Stanislaw Skowronek <skylark@unaligned.org>, 
- Stephen Warren <swarren@nvidia.com>, 
- Sundar Iyer <sundar.iyer@stericsson.com>, syed khasim <x0khasim@ti.com>, 
- Thomas Bogendoerfer <tbogendoerfer@suse.de>, 
- Thomas Richard <thomas.richard@bootlin.com>, 
- Tony Lindgren <tony@atomide.com>, Yinggang Gu <guyinggang@loongson.cn>
-In-Reply-To: <20261027093306.2812695-1-lee@kernel.org>
-References: <20261027093306.2812695-1-lee@kernel.org>
-Subject: Re: [PATCH v2 00/27] mfd: Assorted resource lifetime, teardown,
- and error-handling fixes
-Message-Id: <179458365250.76424.12505088783548230611.b4-ty@b4>
-Date: Fri, 13 Nov 2026 15:27:32 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=rOwFdNzH
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-3ab46699a09so15825031fa.0
+        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 07:36:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794584198; x=1795188998; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=x62ZihgS7kh4nWdNrWclZKqO2BrkWNZR/gkUNOF/E3Q=;
+        b=rOwFdNzH/fyJv94XjX1UieKx8ePFP8iuZ7nP4Ih6XTpFMPP/l6PmZbpLrStQb/Ejbb
+         SB2PTsN7A/l1Y4z5fNNxcv4gkf/VPebjCxm1aUE+9wAHG000TkHrndxkA0+z0d0dXCZg
+         kaRKYraNW2gB6WcJp8h3+yoXHLyfR4UAlI5z1YEgK11EAg8u1LcnD8VqPrmODmZYMw90
+         37xoGDhB7724r6OLL6En9NLUqfD+aOrgp05SWbCiyUua9YX+kieQcuMsKnEi9gQbJsyJ
+         GjzEFTZrCtDeL1vkX/LZ1KOjgUjtPNMsUb3oZPy+++9COmIMLAYtDC9aB2lnGZpa4T7x
+         mkAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794584198; x=1795188998;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=x62ZihgS7kh4nWdNrWclZKqO2BrkWNZR/gkUNOF/E3Q=;
+        b=XCYqu1ThkIWOKQ0PtuXWm8T+FQ1rnFm6qhbX2wCxl+GCsFBg7Ie/Th1EI44cCdv7wH
+         ZiSs50WwOhE8OebosIw75exylesk4A4K9QZB/tlh/P0gn9d9UUDt6LR5M7I6o4Qeb+u6
+         aq+lQ6CP916nnbcugJyu61rGpCygzQKnXU4MJekIQc1FKtp+1zJBf60DghDG70CqkLqW
+         +dOpauOf2ypMjudX8wcWCite48B8/8rmpUKUNwDl1p8Yz/yGus5DT8hrryGXmtoBy8GE
+         xMcGT7DlwFro0TxcEo18nSonbVZnUkY1lsSPf/Bj2vhXEE04UHfORBp+40AgKkurdP2n
+         q1Bw==
+X-Forwarded-Encrypted: i=1; AL+hErFo6jxTGvCq1Yp9qaLx4vHGhR/RZhfhtEyl+nZD0dCVkAXJQktJFnlPYY5TT5KKXH3ZvCadCukU0BI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/yUj5eb9Ubv7MQqjyKy3c6O7CED+yGq92RcI4KV/qQvo6JyHLo
+	RAKhjkSBFwgepaSPxj2aIUFZpQNFY5YSssFGOypYtreZxpUzJliW13zl
+X-Gm-Gg: AYBFou0t/xc9cKscX2PBne9XqodYEnaahUrktr5auFAVcBdEqQPchuURc0fbsA3zemE
+	YbtyHmQ/YcMeD0pgstmPbdrCeYrJGYaM/RmrCT1yWyOxgZQIULrcnRU1Dmn7zS6hqNuCKFiabzX
+	Fz5aWaKxjNjGOjNxJ86EzneH/ugJjAvPoYbMZk6Mc3bWo0cwcWkk+fTcYAbnQE+39Q0gNFPPR8W
+	7R4twnPRo6UbdCT5Z7UpKEicluW494ktUSsv0X03TDFF6Xuz+h5XbDKIqTnC+4tSKjqTgGyJjLC
+	Cg3md8wgPnBwpez7rh5B1C6LfOaAZ3T3AChn3IWG1SdFxUyMQ8WNHWBws56nbdqUb9/IG3buyjF
+	VY8eMKw8hLg/XxC+7yc1P7klX6ZtSYiObaKyiYT3gp4apNRsZMAsAofetgtfxr1pe+6SPVr7xl4
+	se+rSUiQ2NZ//4psS/2uz/XMw2jhWS8z2KbsMQ+Z9qO5WUSbd+KNv6Gja1tIrisiYU3d+AH1Ibs
+	iynA6tkxIx3SBDQ9E6HGn7/zGxW3wIcHgljyr5wfIlQTde0KkG9aWUsl3zccbHns4dqzbCw4Ee8
+	T/xB81k98KED1Ge/RG+l6nCuhMACFZikdM6GmtY8807WT83z0nyMl0hxArKi1ksdDLg1X5l8fzq
+	ccJLXCy5yBdEXcSDKnhkevXu9INEve1A=
+X-Received: by 2002:a05:651c:1596:b0:3ac:97e4:4987 with SMTP id 38308e7fff4ca-3ae2b4c77cemr10278541fa.7.1794584198178;
+        Fri, 13 Nov 2026 07:36:38 -0800 (PST)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae2b7808cbsm9395051fa.14.2026.11.13.07.36.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Nov 2026 07:36:37 -0800 (PST)
+Message-ID: <ef47542e-308c-4211-9b42-ba2de13f5f82@gmail.com>
+Date: Fri, 13 Nov 2026 17:36:36 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -99,85 +93,57 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.16-dev-ad80c
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/2] iio: adc: add driver for Texas Instruments TLA2528
+ adc
+To: Maxime Chevallier <maxime.chevallier@bootlin.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: Rodolfo Giometti <giometti@enneenne.com>,
+ Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Angelo Dureghello <adureghello@baylibre.com>,
+ Tobias Sperling <tobias.sperling@softing.com>,
+ Eason Yang <j2anfernee@gmail.com>,
+ Marilene Andrade Garcia <marilene.agarcia@gmail.com>,
+ Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+ duje@dujemihanovic.xyz, Joshua Crofts <crofts@kernel.org>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+ Victor Chernyakin <chernyakin.victor.j@outlook.com>,
+ herve.codina@bootlin.com, thomas.petazzoni@bootlin.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20261113151543.2241604-1-maxime.chevallier@bootlin.com>
+ <20261113151543.2241604-3-maxime.chevallier@bootlin.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20261113151543.2241604-3-maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 27 Oct 2026 09:30:29 +0000, Lee Jones wrote:
-> These issues were reported by Sashiko.
+On 13/11/2026 17:15, Maxime Chevallier wrote:
+> Add a new driver for the TI TLA2528 ADC chip. It has 8 12-bit
+> channels, that can also be configured as 16-bit averaging channels.
 > 
-> This series addresses a collection of resource lifetime, teardown
-> ordering, error-handling, and bounds-checking bugs across several MFD
-> drivers.
+> This is a very simple driver, allowing reading raw values for each
+> channel. GPIO mode isn't supported for now, as well as buffered mode and
+> the 16-bit averaging mode.
 > 
-> v1 => v2:
->  - Collected Acked-by, Reviewed-by, and Tested-by tags from the list
->  - Dropped "mfd: cgbc: Zero-initialise version buffer in
->    cgbc_get_version()" in favour of Thomas Richard's upcoming central
->    cgbc_command() validation series
->  - Restored Fixes: tags (without Cc: stable@vger.kernel.org) on the four
->    non-Stable MFD cell stack-pointer clean-ups (ls2kbmc, bd96801,
->    ti_am335x_tscadc, and db8500-prcmu)
-> 
-> [...]
+> Co-developed-by: Rodolfo Giometti <giometti@enneenne.com>
+> Signed-off-by: Rodolfo Giometti <giometti@enneenne.com>
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+This looks very familiar to me. I am pretty sure I've reviewed this. Is 
+there a reason the RB-tag wasn't carried over? (Sorry if I've missed 
+some change(s))!
 
-Applied, thanks!
+Yours,
+   -- Matti
 
-[01/27] mfd: nct6694: Allocate USB DMA buffers with kzalloc_obj()
-        commit: 962b44ae8126d8781ec26fc955a1fea5e2e1b78d
-[02/27] mfd: ls2kbmc: Unregister GPIO GSI via devm_add_action_or_reset()
-        commit: 6f1219f4275efd1e93bf5e7c96fa672c2be7b1c5
-[03/27] mfd: ls2kbmc: Cancel reset work on teardown via devm_work_autocancel()
-        commit: 4ed5d8d1418f1d787687d18b1adaecde323494cb
-[04/27] mfd: ls2kbmc: Allocate simplefb platform_data on the heap
-        commit: 7e6d7bd25e0c0f47cdcaac7b3546be3879acbb74
-[05/27] mfd: bd96801: Allocate watchdog IRQ resource on the heap
-        commit: c345011f0780b5924c9a2c7fc6a17ac00f6f2e8c
-[06/27] mfd: ti_am335x_tscadc: Retrieve parent driver data via dev_get_drvdata()
-        commit: 3d459ad2804581237bc23ad7c4d6b2accab63a1f
-[07/27] mfd: db8500-prcmu: Make AB8500 cell and IRQ resource static
-        commit: 512e96d26fef42f68d8aa7265b38ccb87f970a59
-[08/27] mfd: nct6694: Do not resubmit interrupt URB on endpoint stall (-EPIPE)
-        commit: 0b80f3fc196088829b020f23a324d4a7ba09a513
-[09/27] mfd: ioc3: Request parent IRQ via request_irq() and free before domain removal
-        commit: 7437e0842f5ade793e35e907b061407bf9167c08
-[10/27] mfd: intel-lpss: Remove registered MFD child devices on probe failure
-        commit: 55746e2587c6b69b322c0faa16d994397d35a639
-[11/27] mfd: max8907: Manage power-off handler via devm_register_sys_off_handler()
-        commit: c80daea8faed7d60467b5d2fdcb51b565768035f
-[12/27] mfd: twl-core: Clear pm_power_off callback in twl_remove()
-        commit: e1ef39e0adf2c344f05e0848ae22d2626300c6c9
-[13/27] mfd: twl-core: Clear twl_priv pointer on teardown and probe failure
-        (no commit info)
-[14/27] mfd: loongson-se: Check return value of dma_set_mask_and_coherent()
-        commit: ba2a6579f3c86db76dbd1bed3017267c140ba149
-[15/27] mfd: loongson-se: Zero-initialise controller command structures
-        commit: 781e5a3f2b0505163d97231e0be94349a0fb5b43
-[16/27] mfd: loongson-se: Reinitialise completions and wait uninterruptibly for commands
-        commit: 4ff8867e3fe3d70cf491625b431b6e6031f3dea7
-[17/27] mfd: loongson-se: Zero-allocate driver data and initialise engine completions in probe
-        commit: 5310684a8d3aa2837dcbae87b0297fe1ac7db598
-[18/27] mfd: loongson-se: Prevent out-of-bounds engine access in se_irq_handler()
-        commit: 28c94eeef56571ac1532a4df90a962654959802a
-[19/27] mfd: loongson-se: Stop controller and mask interrupts on teardown and shutdown
-        commit: c49c190dd05861286457b70357037ffd22896662
-[20/27] mfd: loongson-se: Validate engine ID, DMA buffer size, and IRQ registration
-        commit: ffedf030b26988c036341f2f3ed5153f8fdd7c87
-[21/27] mfd: abx500-core: Unregister device ops on devm release
-        commit: c4f3a69260795c48b759ac5341130edaaeeccf89
-[22/27] mfd: ab8500-core: Register sysfs attribute groups via devm_device_add_group()
-        commit: 42b533eb84f75015a60f5e135ae34cb621ac8f14
-[23/27] mfd: tps65217: Manage IRQ domain teardown via devres
-        (no commit info)
-[24/27] mfd: mt6397: Manage IRQ domain lifecycle with devres
-        commit: af087513b4455617454945783b24143af217e78a
-[25/27] mfd: mt6397: Unregister PM notifier on probe failure and unbind
-        commit: c0b211ae3636084d9fb45603c2adb328ef969dc7
-[26/27] i2c: cgbc: Propagate hardware errors when polling read status
-        (no commit info)
-[27/27] mfd: ti_am335x_tscadc: Remove redundant ti_tscadc_dev_get() helper
-        commit: c92739a23a80f5f0a7c6f3c10aa792102d252ac4
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
---
-Lee Jones [李琼斯]
-
+~~ When things go utterly wrong vim users can always type :help! ~~
