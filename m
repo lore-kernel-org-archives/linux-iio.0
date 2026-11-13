@@ -1,55 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794533683;
-	b=RIzmEur17OhlPSUX2xE50nMdQl6rguFD3P1pNNf+A7AC4ICOb3slaRi1U4IbBoDVsdK2
-	 XtUTkIQoMWQiInGgQWgZM7afnuWOrFvIPiJY+juize4iKcNp6TNr0XXRbCok7l6gtfrjJ
-	 /PPm0C6m7UKFYUqKfCRDUQXUaydJYNhYLJk/TjE/t8Y6VNHCYcA+BJ/PcW8XEvH3+oS1f
-	 SxViHV6znAUhV7vB3HQRDdzgD/oFlzVT2sz7G7zaa182m203FXV2c0ZqjidEHJZDFGNMK
-	 s9fXXwlBcZrPXtrktyGlhWF6gIK+FVSBrdxu+MxoYp1MIO5M9UdlgSfPiewQ8yMJLFg==
+	t=1794533815;
+	b=u1kiaKoGQ/SKORPrFXw/esrDUIXHuia9gEecG/X6757EmjxUQSibkHF8GOZc5YG268a9
+	 WYT4cg6ywcHAzY9yyhdfMC9+8LHkAkz1X3kPnX8QbW8kB7oGjJooP9gq3ZrHIziXsTjmo
+	 yokNVoDUDMW2b5dPLMhXIE4Y8ncp6J2frfte+1rQysusInOP29qe88C0iUt+3gAemMnNj
+	 6jHZikRz6HZbukcujq/pxLN8piV7YioaBQZ37bkqcxYO8J9mI01th02rs8hUn8yjMkGuQ
+	 b98Z5OIZnelGQEUPqkrS3xHE8QpqvH1Gc5sLgpv5YzDB1aJn+1FlWFNrke1BYmgYjZw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794533683;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794533815;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=XWWULNm4gDfaGx4HLrLcbbjJf4raoMm14Hd9VUJrj94=;
-	b=DW/O9TGoqQdOqmPYMHAUacprfkdDGvthNP+bIB6OzjhzSABWGmjfNtaiOYNO46sxLXEh
-	 yda7tC0v6pg1yRHTDyAHRrJ3X34j8JWyi4b3k84BMaWczt2ES6VZI1LoDY3CfQA8pT5sP
-	 WScPzT7x2xPWKpLYprWyeANIj6OuUSN6WrQ0dYgdS26+Y4YfI8PoL5iVvUojsK0V6CwU7
-	 gel4Z4FC2cFGhmyRZI7llXbqOySuVzM7/ykEhhVT5VJg7V/OAjSWladqjGethvmvGxFnw
-	 eUjgnEm8doY/3di5tKgC1Hdi221lnxMJq2yVmnDL9qQXD5czU1sXq834sFkLpyXThbg==
+	bh=arMA0v5t1o98BajxZAqpCJPUMRuqqdv471JMZzK6vk8=;
+	b=UbMe+QHfFZAqf1euV4V14f5pl7JvJFV/4G+buoU3KCpdiscJy6RefKh0l27iVl+8mGiS
+	 ZIOmvkk41LtyU7utz/3bGSk/1uOQNX7iR7AALF5xqkqwbhj26kjNwiYP2Xd+a3hSFAo5k
+	 RVuvtz8gGu0aIY7GeRmqQX/1XRuwLCBY4MfrOFzwwPh2qQ8JXk1HjODhIHNTZ9BEdVQqO
+	 9/Q1bGICxRyV26Qg3h5O1g1Rp6igrVxczRgB1Xna8nb8p+32aOPTOgQIiNjVHF4MvT1Qe
+	 NIhdfhVxoY9Oo3YVoCURMe8BuQqJBEJsXyNPclNe7l0Qx2RRuKM/2+cwhhjeGzxoI+w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n8T6aPwo;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NSbPldpL;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C92606A31C;
-	Fri, 13 Nov 2026 01:34:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50012606A321;
+	Fri, 13 Nov 2026 01:36:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n8T6aPwo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB7C71F000C4;
-	Fri, 13 Nov 2026 01:34:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NSbPldpL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2E31F000C4;
+	Fri, 13 Nov 2026 01:36:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794533682;
-	bh=XWWULNm4gDfaGx4HLrLcbbjJf4raoMm14Hd9VUJrj94=;
+	s=k20260515; t=1794533814;
+	bh=arMA0v5t1o98BajxZAqpCJPUMRuqqdv471JMZzK6vk8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=n8T6aPwodMDQ44RzkWNdXaZKFE20faCf6Y6wygm5TGygTsIsN4kbk3Lic4upTrRgf
-	 xqs1lZRqnEfUjUzhCVBDtGqNjwTqkGBoQWEQq5WkVpKGuleyutG0PSkQmqRcOsQ1W9
-	 H2Yu9jjCZa4v5PmE09tR6ny6Wpy86UAALWKc+3Kj42/xVz5lF1mIoMuqya6o/LYodl
-	 UOU0+ZJhHZUXCq/OiWY/QDxw6UWXNy2HNcMKkeu2wYzwzZt4QFdjGvwvn/IkZk2HPr
-	 xWKqSYsoJ1+gvRtLbc1XCPMhGTA+GnRRSVB2tVZdftSr2cjYrbqVZSphL6DCjBaxl8
-	 P93g9ArCaTatA==
-Date: Fri, 13 Nov 2026 01:34:35 +0000
+	b=NSbPldpLgz4V6yCT5f2eIjnWlQqFg/91G4ZwJaqJkWdXQ/RdIDx7vKcKh+kmn6+RT
+	 ffI3QvvK5Vz/fLdEzNRi/6YV2tPL1njOZDJeF7ziub2vRX+jfUMzz2KTHm9wv4JNwV
+	 kyRpjfMJ53BS88y+8htuT/VUacCo8JnnpOLBa36caXSs3+lCkTT0RBhjQlxHBcpuZJ
+	 DUHGLve2kZYetHSyE0ZzY7rDsmHrQntu8T/amkbgm0Gd3AHRrKBAXlgK69+AHiKsvZ
+	 EoS0wTziKM3wyTLCh8dpJHnAsJ+IgpTOR9zNUTzL7Bhv+7B+k1Q1ND6wgNnMPsyqk9
+	 qg3NV+aZ2Oidw==
+Date: Fri, 13 Nov 2026 01:36:46 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andriy.shevchenko@intel.com,
- crofts@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: temperature: mcp9600: Bound thresholds before
- scaling
-Message-ID: <20261113013435.54514091@jic23-hlaptop>
-In-Reply-To: <20261112015738.115833-1-zhujun2@cmss.chinamobile.com>
-References: <20261112015738.115833-1-zhujun2@cmss.chinamobile.com>
+To: David Laight <david.laight.linux@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Di Wu <diwux@google.com>,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ bleung@chromium.org, groeck@chromium.org, tzungbi@kernel.org,
+ linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: cros_ec: use sysfs_emit() in show callbacks
+Message-ID: <20261113013646.4c2f8456@jic23-hlaptop>
+In-Reply-To: <20261112220218.1adae5e5@pumpkin>
+References: <20261111072608.3490763-1-diwux@google.com>
+	<avR-KT-6e77EexZn@ashevche-desk.local>
+	<20261112020439.37b0da70@jic23-hlaptop>
+	<20261112220218.1adae5e5@pumpkin>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,75 +68,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 12 Nov 2026 09:57:38 +0800
-Zhu Jun <zhujun2@cmss.chinamobile.com> wrote:
+On Thu, 12 Nov 2026 22:02:18 +0000
+David Laight <david.laight.linux@gmail.com> wrote:
 
-> mcp9600_write_thresh() multiplies the integer part by 1000000 before
-> clamping to the supported temperature range. The multiplication can
-> overflow int, so a request such as 3000 degrees can select the lower
-> threshold instead of the upper threshold.
+> On Thu, 12 Nov 2026 02:04:39 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> Clamp the integer part to the hot-junction range before scaling. Keep
-> the existing final clamp for fractional values and the narrower cold-
-> junction range.
+> > On Wed, 11 Nov 2026 16:39:37 +0200
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> >   
+> > > On Wed, Nov 11, 2026 at 07:26:08AM +0000, Di Wu wrote:    
+> > > > Replace sprintf() and snprintf() with sysfs_emit() in the sysfs show
+> > > > and ext_info read callbacks. sysfs_emit() is aware of the sysfs buffer
+> > > > PAGE_SIZE limit and is the preferred helper for show callbacks.      
+> > > 
+> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > > 
+> > > ...
+> > >     
+> > > > -	return sprintf(buf, "%d.%06u\n",
+> > > > -		       latency / 1000,
+> > > > -		       (latency % 1000) * 1000);
+> > > > +	return sysfs_emit(buf, "%d.%06u\n",
+> > > > +			  latency / 1000,
+> > > > +			  (latency % 1000) * 1000);      
+> > > 
+> > > As David said, since you touched these lines, make the less amount of them
+> > > while at it.
+> > > 
+> > > (But no need to resend, usually Jonathan is kind to tweak this small thing.)
+> > >     
+> > Done and applied.
+> > 
+> >   
 > 
-> Fixes: dea750f8015b ("iio: temperature: mcp9600: add threshold events support")
-> Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
-> ---
-> Changes in v3:
-> - Use clamp() instead of clamp_val(); all operands are int (Andy Shevchenko).
+> I just looked at that line again.
+> Why is it multiplying the remainder by 1000?
+> It could be:
+> 	return sysfs_emit(buf, "%d.%03u000\n", latency / 1000, latency % 1000);
+> if the 6 digits after the decimal point are required.
+
+Good point, I guess unrelated change that we could have on top.
+Those trailing zeros shouldn't matter.
+
 > 
-> Changes in v2:
-> - Use MICRO from <linux/units.h>, cast to int to preserve
->   signed division for the negative temperature limit (Andy Shevchenko).
-> 
->  drivers/iio/temperature/mcp9600.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iio/temperature/mcp9600.c b/drivers/iio/temperature/mcp9600.c
-> index b0ff0c7b4891..00f1acb348a5 100644
-> --- a/drivers/iio/temperature/mcp9600.c
-> +++ b/drivers/iio/temperature/mcp9600.c
-> @@ -17,6 +17,7 @@
->  #include <linux/math.h>
->  #include <linux/minmax.h>
->  #include <linux/module.h>
-> +#include <linux/units.h>
->  
->  #include <linux/iio/events.h>
->  #include <linux/iio/iio.h>
-> @@ -326,6 +327,8 @@ static int mcp9600_write_thresh(struct iio_dev *indio_dev,
->  	i = mcp9600_get_alert_index(chan->channel2, dir);
->  	switch (info) {
->  	case IIO_EV_INFO_VALUE:
-> +		val = clamp(val, MCP9600_MIN_TEMP_HOT_JUNCTION_MICRO / (int)MICRO,
-> +			    MCP9600_MAX_TEMP_HOT_JUNCTION_MICRO / (int)MICRO);
-
-Using micro here.
-
->  		/* Scale value to include decimal part into calculations */
->  		s_val = (val < 0) ? ((val * 1000000) - val2) :
->  				    ((val * 1000000) + val2);
-
-and not in these is less than obvious.
-
-I also don't like the follow up of then clamping s_val to either similar bounds, or
-tighter ones.  Whilst I understand the inclination to keep to the
-current behavior of clamping, that is really for things that are just
-outside the range allowed due to numerical errors or similar. But doing it twice
-is less than ideal
-
-Two options here.
-
-1. Just use a bigger type so we don't overflow.  Then let the clamping that follows
-do the work of dragging the massive value back down to sensible one.
-
-2. Use the overflow checked add and mul from overflow.h  Probably overkill.
-
-Thanks,
-
-Jonathan
-
- 
-
+> David
 
