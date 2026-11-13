@@ -1,67 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.137
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794555367;
-	b=VJ42Rjuj13uh41AIy4Agtck1TN+5fuNhlNgmsqFTBNxNAhohXvSvgVYdqtu3gKf8+Fmg
-	 GS5dJUq/BUUzygDHEjwcfmiAfzEWt1/9vJgyMrFIGTUv/Du/kRD9lknTl6GBRQZiiH3Bb
-	 Y9ltlWFMadi5B1VLBXlWqFyhfQN/u0RJWuf8CSIxql0pU3mir+fpiEgquxYelAtV6DyK7
-	 3ZZygUXRtc5u8dPBPt6Qux1AUIaHcn69Ldrm1RJJJg4MMfqZsNRT9hYj7oMGtpgwXyWU+
-	 UuHy05pHx1pxSxde4thPzdgHwb9Ob3nmFLSLBTlGkRGIC8T/M9Q9T/R6WpJiJOR6MXg==
+	t=1794557165;
+	b=iy08drU3RnimFSqMSd4ehb4PLjpkwKCf95qo6/9m2vD5KqL+Qy7MM3o6hZMSyau7Mp40
+	 /bNUy5dpnH+po3KCCPKSfITRZPw6jUXCNoFEax6WeZk/z4TnIU5k9eyFjsRhKt0SaLYh4
+	 uJJWZskA/0Ixlib7mtNWnpJxi47ZuOJ1beypg312i1+6CvapfbGD7GFrjdDApQ+GylamR
+	 wbUQmUUjcQOrSLxz4s5CMuKXfmK/PX0HxPjU/htPzR/4690grW3jxwc27ip/3jRjZX5em
+	 JMggpQpqXJYVZWwwZ6NkxLpG8+EfTGbrh8ksn5asX21SAGRc2lIMPga3ZKkoJ1Dnqhw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794555367;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Last-TLS-Session-Version;
-	bh=p3p1ImInZyOAgLYhOXYS79QUWFUn7k/0GTAJo+Jk4ME=;
-	b=QDldw0I5xjZP6ZxLSx/4erUXHix++JTTQc/72AO/9QKJIqgLTvArI+UnqzI9BBypuyUx
-	 3Wc41ippY9Uz1awYkhISKMeaXQN2vlNRma34VLbKkYhnka6Kp1iwRKRK0qAlsQBpMg8jV
-	 OG0AEbwVvDYBJjooCNbBbDeFEWv01YJDDqyQWhy8Rci+m0IJUhP45Edx99CXHUWvF3zZt
-	 Tu4PGShoTJ5mdtq/IcFLrt02M4xP+47EHVP1qtwrMd8AWGy71jrqlBWAjwPyosaqRvYTW
-	 OfDyWThJ85tlZaiEfdk59JeRAkbziQe3PTGxLam4ucjjHrlFdCjuyrO2UEqnnVPXNCw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794557165;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=WsoBtPLZ/wICL+nBq/TAYapDiPOQ5oe4SwX5gG6ou7o=;
+	b=e1T77meuuAzrb/lCRseOxveyPgQfZXl5sV9hGEhgUXsGjx7MeWToamm+oVm5DM16JQer
+	 FpsLRt0rffQstijdAJjsDZbpeJzfKxecqK8ufyyhVJzfy76RXIcPQY+f0vsFsiXP94Usa
+	 mOMJewc0Jw57lRqM2n0F87pm3l+X5953AKg+Ka23Cg/LSy5ilwQZ5o6+6HzzZB084SBkH
+	 /IxkUqt+iqwLAZYLDHWUbjfHcFBKJBK66AnYQAi8it1f3HO04f/ddRRNFJfi69kU9QlRO
+	 AUWttA7osO5pCbBHKd9N8X8zqYtsIkT1fhJkf1Tv85fiTar1896UdGZxNh3l6LTXCBg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bootlin.com;
-	spf=pass smtp.mailfrom=bootlin.com;
-	dkim=pass header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b="P/y05MVy";
-	arc=none smtp.remote-ip=185.171.202.116
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ECE3606A31C;
-	Fri, 13 Nov 2026 07:36:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5ECE3606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=KN9zAsHE;
+	arc=none smtp.remote-ip=111.22.67.137
+Received: from cmccmta4.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 332B3606A321;
+	Fri, 13 Nov 2026 08:06:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 332B3606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=bootlin.com header.i=@bootlin.com header.a=rsa-sha256 header.s=dkim header.b=P/y05MVy
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id 22B60C4F76E;
-	Fri, 13 Nov 2026 07:36:06 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 5919B601D5;
-	Fri, 13 Nov 2026 07:36:03 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 335D911BC0C91;
-	Fri, 13 Nov 2026 08:35:58 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1794555362; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=p3p1ImInZyOAgLYhOXYS79QUWFUn7k/0GTAJo+Jk4ME=;
-	b=P/y05MVysnOwomEB1s6hACIPho+j457rQ2Mxxw12gLloSPACX19pFPweWYaVPbPiHbHl/5
-	51I+5svqPXRVWZePUJre/Fr5+0dyXO0cH4fgkFaKG4Hmk9VIc/C3gw+TOzizO7FS594e8Z
-	HfWPLNXzFz9X4ROFd8VRj/G4ghmV8lRGOcq575bae8Ya3GLziwRplzm+xC2A/mWIStcWm7
-	i9QJDoiVkeI3n3vmkjPlNGNaQ+jqBatjvixwTguzr9SHWiNJWG01CWxAZeETry8QYoSn5I
-	n6m4PUz2brdL+/CODsQyA65erQXIZN/zRTx19boBppI+VhUM2Qt2UwsdfNP0VQ==
-Date: Fri, 13 Nov 2026 08:35:57 +0100
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Akhilesh Patil <akhilesh.patil@linux.dev>, andy@kernel.org,
-	krzk+dt@kernel.org, dlechner@baylibre.com, robh@kernel.org,
-	crofts@kernel.org, conor+dt@kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-rtc@vger.kernel.org,
-	akhileshpatilvnit@gmail.com, akhilesh@ee.iitb.ac.in
-Subject: Re: [PATCH v4] MAINTAINERS: Update Akhilesh Patil Email address
-Message-ID: <202611130735579e063959@mail.local>
-References: <20261112091641.GA3643677@u5ce4748bae3b54.ant.amazon.com>
- <20261113011957.5d8836ff@jic23-hlaptop>
+	dkim=pass (1024-bit key, unprotected) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=KN9zAsHE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=KN9zAsHEwJgOJNXF4UVrVdk/vfaXZw7qSKbqmTni1oS1pwXfDZ2EI/lwpala7dZc6WT1rMkJ0LAyT
+	 9bQyIwPXdLc7STa6UYUFDscNE3/OD/tt/HAsR16Q3Fk0DwnCzFbx9E7ri+PiJAD/06JbxZwWzpinNU
+	 2RvhBqWQG7oEmYzg=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app04-12004 (RichMail) with SMTP id 2ee46af6c4e7aec-89b27;
+	Fri, 13 Nov 2026 16:05:59 +0800 (CST)
+X-RM-TRANSID:2ee46af6c4e7aec-89b27
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from devin-VMware-Virtual-Platform.localdomain (unknown[10.55.1.72])
+	by rmsmtp-syy-appsvr09-12009 (RichMail) with SMTP id 2ee96af6c4e63d1-1ddd9;
+	Fri, 13 Nov 2026 16:05:59 +0800 (CST)
+X-RM-TRANSID:2ee96af6c4e63d1-1ddd9
+From: Zhu Jun <zhujun2@cmss.chinamobile.com>
+To: jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andriy.shevchenko@intel.com,
+	crofts@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	zhujun2@cmss.chinamobile.com
+Subject: [PATCH v4] iio: temperature: mcp9600: Avoid overflow when scaling thresholds
+Date: Fri, 13 Nov 2026 16:04:56 +0800
+Message-ID: <20261113080558.173889-1-zhujun2@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.51.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -71,137 +72,85 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261113011957.5d8836ff@jic23-hlaptop>
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi,
+mcp9600_write_thresh() scales the integer part by 1000000 in int
+arithmetic before clamping to the supported temperature range. The
+multiplication can overflow, so a request such as 3000 degrees can
+select the lower threshold instead of the upper threshold.
 
+Cast MICRO to s64 before multiplying so that scaling and the fractional
+addition or subtraction use signed 64-bit arithmetic. Let the existing
+per-junction bounds clamp the result. Use MICRO consistently and use
+div_s64() for the final conversion to support 32-bit architectures.
 
-On 13/11/2026 01:19:57+0000, Jonathan Cameron wrote:
-> On Thu, 12 Nov 2026 09:16:41 +0000
-> Akhilesh Patil <akhilesh.patil@linux.dev> wrote:
-> 
-> > Move to my new linux.dev email address akhilesh.patil@linux.dev
-> > I plan to use this email for kernel development going forward.
-> > Also update email address in few yaml and driver source files.
-> > 
-> > Signed-off-by: Akhilesh Patil <akhilesh.patil@linux.dev>
-> 
-> I can pick this one up with an rtc ack, or it can go through that
-> tree. I don't mind which.
-> 
+Fixes: dea750f8015b ("iio: temperature: mcp9600: add threshold events support")
+Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
+---
+Changes in v4:
+- Use signed 64-bit arithmetic instead of clamping the integer part before
+  scaling, as suggested by Jonathan Cameron.
+- Use MICRO for both scaling and conversion back to the register value,
+  with div_s64() for the final signed division on 32-bit architectures.
 
-It makes more sense that you take it.
+Changes in v3:
+- Use clamp() instead of clamp_val(); all operands are int (Andy Shevchenko).
 
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Changes in v2:
+- Use MICRO from <linux/units.h>, cast to int to preserve
+  signed division for the negative temperature limit (Andy Shevchenko).
 
-> Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> > 
-> > Changes in v4: 
-> > - No source change.
-> > - Added entire change log for all versions.
-> > - Link to v3: 
-> > https://lore.kernel.org/linux-iio/20261110052942.GA2505113@u5ce4748bae3b54.ant.amazon.com/
-> > 
-> > Changes in v3: 
-> > - Fixed order of entry in .mailmap
-> > - Link to v2: 
-> > https://lore.kernel.org/all/20261109104443.GA531570@u5ce4748bae3b54.ant.amazon.com/ 
-> > 
-> > Changes in v2:
-> > - Updated email ID in relevant device tree source files and driver source files.
-> > - Link to v1: 
-> > https://lore.kernel.org/linux-iio/20261109063924.GA118887@u5ce4748bae3b54.ant.amazon.com/
-> > 
-> >  .mailmap                                                      | 1 +
-> >  .../devicetree/bindings/iio/pressure/aosong,adp810.yaml       | 2 +-
-> >  Documentation/devicetree/bindings/rtc/st,m41t93.yaml          | 2 +-
-> >  MAINTAINERS                                                   | 2 +-
-> >  drivers/iio/pressure/adp810.c                                 | 4 ++--
-> >  5 files changed, 6 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/.mailmap b/.mailmap
-> > index 7fb33babc931..d09fd3708023 100644
-> > --- a/.mailmap
-> > +++ b/.mailmap
-> > @@ -27,6 +27,7 @@ Adrian Bunk <bunk@stusta.de>
-> >  Ajay Kaher <ajay.kaher@broadcom.com> <akaher@vmware.com>
-> >  Akhil P Oommen <akhilpo@oss.qualcomm.com> <akhilpo@codeaurora.org>
-> >  Akhil P Oommen <akhilpo@oss.qualcomm.com> <quic_akhilpo@quicinc.com>
-> > +Akhilesh Patil <akhilesh.patil@linux.dev> <akhilesh@ee.iitb.ac.in>
-> >  Alan Cox <alan@lxorguk.ukuu.org.uk>
-> >  Alan Cox <root@hraefn.swansea.linux.org.uk>
-> >  Aleksandar Markovic <aleksandar.markovic@mips.com> <aleksandar.markovic@imgtec.com>
-> > diff --git a/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml b/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-> > index ad5f26ce5043..ca4d4210f609 100644
-> > --- a/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-> > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
-> >  title: aosong adp810 differential pressure sensor
-> >  
-> >  maintainers:
-> > -  - Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-> > +  - Akhilesh Patil <akhilesh.patil@linux.dev>
-> >  
-> >  description:
-> >    ADP810 is differential pressure and temperature sensor. It has I2C bus
-> > diff --git a/Documentation/devicetree/bindings/rtc/st,m41t93.yaml b/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
-> > index bdd995c5c1f4..837679dc01ac 100644
-> > --- a/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
-> > +++ b/Documentation/devicetree/bindings/rtc/st,m41t93.yaml
-> > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
-> >  title: ST M41T93 RTC and compatible
-> >  
-> >  maintainers:
-> > -  - Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-> > +  - Akhilesh Patil <akhilesh.patil@linux.dev>
-> >  
-> >  description:
-> >    ST M41T93 is spi based Real Time Clock (RTC) with time, date,
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 222b7fc2c3aa..3aa8fa3c068f 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -4095,7 +4095,7 @@ F:	Documentation/devicetree/bindings/iio/chemical/aosong,ags02ma.yaml
-> >  F:	drivers/iio/chemical/ags02ma.c
-> >  
-> >  AOSONG ADP810 DIFFERENTIAL PRESSURE SENSOR DRIVER
-> > -M:	Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-> > +M:	Akhilesh Patil <akhilesh.patil@linux.dev>
-> >  L:	linux-iio@vger.kernel.org
-> >  S:	Maintained
-> >  F:	Documentation/devicetree/bindings/iio/pressure/aosong,adp810.yaml
-> > diff --git a/drivers/iio/pressure/adp810.c b/drivers/iio/pressure/adp810.c
-> > index 82aa433548d2..832df6ba0ee3 100644
-> > --- a/drivers/iio/pressure/adp810.c
-> > +++ b/drivers/iio/pressure/adp810.c
-> > @@ -1,6 +1,6 @@
-> >  // SPDX-License-Identifier: GPL-2.0-only
-> >  /*
-> > - * Copyright (c) 2025 Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-> > + * Copyright (c) 2025 Akhilesh Patil <akhilesh.patil@linux.dev>
-> >   *
-> >   * Driver for adp810 pressure and temperature sensor
-> >   * Datasheet:
-> > @@ -219,6 +219,6 @@ static struct i2c_driver adp810_driver = {
-> >  };
-> >  module_i2c_driver(adp810_driver);
-> >  
-> > -MODULE_AUTHOR("Akhilesh Patil <akhilesh@ee.iitb.ac.in>");
-> > +MODULE_AUTHOR("Akhilesh Patil <akhilesh.patil@linux.dev>");
-> >  MODULE_DESCRIPTION("Driver for Aosong ADP810 sensor");
-> >  MODULE_LICENSE("GPL");
-> 
+ drivers/iio/temperature/mcp9600.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/temperature/mcp9600.c b/drivers/iio/temperature/mcp9600.c
+index b0ff0c7b4891..a7a37687bccc 100644
+--- a/drivers/iio/temperature/mcp9600.c
++++ b/drivers/iio/temperature/mcp9600.c
+@@ -15,8 +15,10 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/math.h>
++#include <linux/math64.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
++#include <linux/units.h>
+ 
+ #include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+@@ -319,7 +321,8 @@ static int mcp9600_write_thresh(struct iio_dev *indio_dev,
+ {
+ 	struct mcp9600_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+-	int s_val, i;
++	s64 s_val;
++	int i;
+ 	s16 thresh;
+ 	u8 hyst;
+ 
+@@ -327,8 +330,8 @@ static int mcp9600_write_thresh(struct iio_dev *indio_dev,
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+ 		/* Scale value to include decimal part into calculations */
+-		s_val = (val < 0) ? ((val * 1000000) - val2) :
+-				    ((val * 1000000) + val2);
++		s_val = (val < 0) ? ((val * (s64)MICRO) - val2) :
++				    ((val * (s64)MICRO) + val2);
+ 		if (chan->channel2 == IIO_MOD_TEMP_AMBIENT) {
+ 			s_val = max(s_val, MCP9600_MIN_TEMP_COLD_JUNCTION_MICRO);
+ 			s_val = min(s_val, MCP9600_MAX_TEMP_COLD_JUNCTION_MICRO);
+@@ -341,7 +344,7 @@ static int mcp9600_write_thresh(struct iio_dev *indio_dev,
+ 		 * Shift length 4 bits = 2(15:2) + 2(0.25 LSB), temperature is
+ 		 * stored in two’s complement format.
+ 		 */
+-		thresh = (s16)(s_val / (1000000 >> 4));
++		thresh = (s16)div_s64(s_val, MICRO >> 4);
+ 		return i2c_smbus_write_word_swapped(client,
+ 						    MCP9600_ALERT_LIMIT(i + 1),
+ 						    thresh);
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.51.0
+
+
+
