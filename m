@@ -1,103 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.42
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794559690;
-	b=KAWVcFWxVjqpxIK2PYAWd2mmEt7DPGw2R1mOZ2dFr0raGyTns/XuJpDCosrmgyMHMos3
-	 1iZJcqki/bx48S6ELEQi6zDITDS9vl5sScYUyYb1wveTasgdzjc9MRaxBEBemtz8UhTn+
-	 WPrpBSCPWX72AzqZBKol89rmHWM9EWPMERpG1E59gNraZKfhKK0Dl+k7aEcAb6jx7ZcsR
-	 HxW30iKDac3kKqIa2WpZHghXsSMMHy+LCFqHBCyYY5/P/TqpEukEU3jiGlqZvL5CT/+TU
-	 kNDmBLE4upLiWq9gK3TUUUU9uDCZ+5Tim9U40Sd/hMe+oBsjyWMB6Sq5rVNlWVXufQg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794559690;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794561789;
+	b=AJ4ClntSYh4I260YtN3PgNTgiF2QHXzkV0bGyoZRXPJGp4sLFUARjuNerbhTJ5FWn6KJ
+	 ukk9IpsRGI3O7E/UmVJMe2Y8hminOWhGpEx3AbEq/zj30Lww7OZ1yr6SCLjbQ1H4ZNoUt
+	 5tpnPoy/MtGcyxsEul9kl/b3uNz0DRbqK8sOxQEYiIjDD0txUXZPrfpnnNmJcFP65J/vn
+	 10jmp5U2EKqyHfU4irztzdb6p2iFNxHX79l5s0TioPx/a5nEJ442AsoUImLfGwIs/tGNs
+	 3y8D8o/+Edspl6YsLg9pK4z8Y/dEy1W4rQJxIYKcZH6xWJD/2erbDKU4kGtblI8N74g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794561789;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=Sb4C2w/d5w6+ocGzHVnaU8bpcCXtQ0zPQIONnx/cfo8=;
-	b=CHXy+Z8SvbeVgYXt+lNp/GSSs4apbPHxQyo/IS0bIngp2qLss0cnCczlHatysgRU+2T5
-	 4Yi6wvhVa0C+uWXZFlqSIdFtEjKtBoFTQgpXwIPDUWAMpsNyt0IQ+yFlX4qWFH5sZT9Ri
-	 6iQnDPVmCRTdmpt+87lWUm83KuhI0VoD7oNDMwNtKNeV4+4Yj1FvOk/Dc+2GWDDGbIbAK
-	 7QOrS8jG6D8IogQWiAGjrJaJqQ6P4m4fCiVE6BVDkpBVBZkxtavreQPYPJk8WZRCUHJ9H
-	 vDsTUMpO6mZHvpf+jUFUtI57cQbYiHnq1nsz8KzQk1IkFKVQf6oiUrtkptPh9Ya9kFg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=L4U6uoKIPIkNv7imLu7Hv5jSI4mySZg6QE0cGj6iXh0=;
+	b=coarYDqbQF5p/L6EPHjzK2iEc3gc1I6h6t0nl84/OcMTAtxXuN+C+CDcdl5zOEFmB4E1
+	 ve/PCMzdjm62dxCsLRWwBvD0/Xh2lNbQVoeFhMVeSt7g1OK3VB2nrQ/rV2rvWl7HGiTEE
+	 Sqv+LkMEcYSYF4PyX8JzkOGSNUBpQGfMfUj8TK1vSUuCruoHz/MKtUQAtZdwNSILB5sZl
+	 jW9W9I0ywrfpLgaaz3C0IJJ4zmr7EB63lyc7AAYJtj7gze22fUammg+9Yzf0AICTWcjtR
+	 pFwTFQ/7eYxtTTOCyWEeexaJ/MWKrpd0+yRubsIfbAtMF185qv99wvGvVD2N41AqfxA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=QSZlkHq+;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.42
-Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LP59ItsB;
+	arc=none smtp.remote-ip=209.85.221.45
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A4F606CB3B
-	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 08:48:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F1A4F606CB3B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90659606A327
+	for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 09:23:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90659606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=QSZlkHq+
-Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-675617e81f9so635902d50.3
-        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 00:48:09 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794559689; cv=none;
-        d=google.com; s=arc-20260327;
-        b=SQJVS5GS/uDOZCwggA2Vq7fqoc5IMl3ZNC7aTkctvUSQ4CNSiJS/EmgyFDevpBScXE
-         +QZoD75muhRsEDEKGRBumUVa30r+b5t8Sb8d0miPn5KALTNXVii13h/SSUHMgGuL/woQ
-         6qWt5jR8foJAIl4Gmbr5okpI+3hFoY/yXpLw0A9mQpDJZZ5CPpSaAKTmU17YT55mNW25
-         CZ5ODafWUIqve/p2k7HT55c3zP8s0XZlc03PfQ7BpmErNFb+LdohzxfBgj+47gAUVeEP
-         GhB1jIjdVFfE9fqIJRmvswVCRqumJ33/BpMtTAv4syBQnYg7aLiyPTnbNubQcSmDf3yA
-         Jj9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Sb4C2w/d5w6+ocGzHVnaU8bpcCXtQ0zPQIONnx/cfo8=;
-        fh=ITQ1lUCCNujcn0t4txOznAap8m8/YDm6yQXxA6Utcro=;
-        b=Ft6NlDE/OjJLsBT+vRdRgCz+wtSI9f8Iy6wVkLQBFzIuxzTjT76lDmv00ayySRT+q3
-         Zj1Yl4nI7ncF3pKdRvES6+k3q0W9OPPGrsmqpdNK75NpJpXdvNERtZtFviB401RWYEpU
-         KCcbCnxpwnrSNre+QZ5/nVQ32XkmBsmKkra8Mfnw61TzWy0UJWiwiHKIgyQar2WTuCD8
-         gCGSpLWcreMdcomZyLiZr75Zyl70p3ixwDY5+xmtgkrXr/P5yPEtBjnkBINbTEwhlEXV
-         KeiV9h8oSEHzP9/qKFOCriDRk6xrlWkwg/Y+j5Qz2fJnPMOSxPBYdovys4UPk5qKxWnX
-         YySw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LP59ItsB
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-490a0e72588so244427f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 01:23:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794559689; x=1795164489; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=gmail.com; s=20260707; t=1794561787; x=1795166587; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Sb4C2w/d5w6+ocGzHVnaU8bpcCXtQ0zPQIONnx/cfo8=;
-        b=QSZlkHq+cmszNgUi7FcavufnIwocDZOFiFULftEhiI2WI5o8l0XNNv2JA9f7ikENig
-         M4VUV4Pn8ONiz52MKMdn//q0tre9wN5Olo5ZPdpCqt3tNXa+W5oSpH5dyue0D5wUVffv
-         hVqAxRW0RrWGJcgrTWsV+gyzqcPapFKQTa7Jibcih4pcg3mItoSOGxVce1wmIfmCVNko
-         szZOKA4dVpwlC7M7ckSnTzFwB+nKkBtyVXDjHIhY2+rySyJfsIO4PBb/v8cqPmU4LwJQ
-         /YyHy5JP5bZceFKfXrcCyaBx4iDcQUQTSAprwE6PMJZSdYhzPGNb1wzJRCh+BVTzTSHJ
-         w4jw==
+        bh=L4U6uoKIPIkNv7imLu7Hv5jSI4mySZg6QE0cGj6iXh0=;
+        b=LP59ItsBjzPAPmAVpc9v5qfl4h2UfsCvzmw2kW9VSD8yXDKbNQ9n3stqsizVnnaE9E
+         4B73SbKv4HsMlbRbNF8saT66sJDybIX2y37gQsarpEzTzCBHQLlJrZfpIIgg0EMBv8NQ
+         NcnFrvkWg8QIR9wh9XIdRjKhOszDzKRjWbfBUP2NEf78xvgkDm5k00dk4PrX54gJRuUD
+         tsuI6uCmNcaAZYtb/784LaIEg+Z5OE2IWrxiCcaT0bCmCs1IiZ4zNakOjxi2PA42+BQN
+         HkK5y0rUrPf82itvRCMNgwsKuP3l6/S5MiHVO+cjaPHvhIJdu0dcyn4va0DLc/7OFsI/
+         dNWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794559689; x=1795164489;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1794561787; x=1795166587;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Sb4C2w/d5w6+ocGzHVnaU8bpcCXtQ0zPQIONnx/cfo8=;
-        b=OLNTRdhFum5ZE4OOHGTTIiFxTmQRWXfklrtpwkXcE7/GZ119zbHYMqG7zvnqTk8LnS
-         PzZAUt5LbqRXPeRKKyH3km8mjqCQ0Q/cLp9BEJ2Y143jLpcvfO4YD43EsESJK5Ls+G25
-         nPE6PhN6Y6f+c8Btdzq8khYNbxfkxr122qsbrMztOazaWbOixnl9912GWJFFf+oTjAMV
-         7Nr+meHfxnZfW6skpv+Z9vaHCW+PzvUgrVyN6bFfBBFj5H4ZvQXW0hjDSaiq9OhWqAI2
-         6VjtujLGkKVAmFTpQrykedPfHZDAHpsnUw4hz8E5fy/UWoi7L18CnUhoMxBMPoMwHeA0
-         Es3g==
-X-Forwarded-Encrypted: i=1; AL+hErHxSMikNVg+TRnt48hQBZfJP7vtyIVhJA41SxcY+EMVCSFNSM6JdfW6oV8tTJQ1tYqkGULg4sV3BzE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9FfhK3LkIcJcpybNOubLdxqp/HwNQKBv86A9+EJ7PPccHCdCke
-	lKlW26+166HpzqarZOxHPOp5Ew/uee/9+kkwQhwbP+Gdblewk2UYfPKe4CTvedQ64zY7z3I9Eny
-	YkXOZFx/q6yXx4kPcy3V7cyUt48izDXo=
-X-Gm-Gg: AYBFou0aAepyYXk+6ZYB164e8I6BeoUiYxsMuX1GKRw5qMGIynBn/v4iwLU+0hFPWKn
-	YnJxRU3jKcUeyOANDp1KN279XWHkyj7mhK3iyiaXGyAbiPIt/UWk/fjLMGYg2+xy6I/WRydyDFC
-	9NGWkrWZfY+8qEY9HqpI2ylSHxbyhKxFI/9DCksKR6L3YZKNt+JKBteDn/IglOql0fBPLvand9/
-	woq+XkUslKaS7NXhug2sfTYzSEcLy0yUuiRfUPXa/sgGDrTKmmFdHNwXlJczeHWnHuFVN00TCRt
-	fXa8zBkzo8x/z7LXwcCQu7NIVUqh8FajPxPXLmpCQ93a7Krb3heEu6yEIKF488IE6n0nYplbpfy
-	/mcPRamcjzCNv5aE+c0ai3VhhvZN3HJCzGVFMq1DatGlpMEMbAvfafeCsuaAEaH2TavxBrbx5u/
-	q2hrTZl1d+xGpe1Oi7Y/qjevvAuS5khm/YqnTOO6DpXooBikUqS0vPXy82hm+iSqEHPFzw3hlU3
-	SIWjstZ9HgNeIH78UnHfT3OhEAR3U3RQwKj77mTYIiiNhqXs9HwXl4L0ozGDAO0y+K47kFif9/o
-	5SpW7Sg=
-X-Received: by 2002:a53:d682:0:b0:67c:1d73:fd3d with SMTP id
- 956f58d0204a3-67d897d5059mr810181d50.108.1794559689013; Fri, 13 Nov 2026
- 00:48:09 -0800 (PST)
+        bh=L4U6uoKIPIkNv7imLu7Hv5jSI4mySZg6QE0cGj6iXh0=;
+        b=yc47RgF0YTSgLZ0Vb48sEPjcx9a67CYN7x9X4hkt6qu0KaOM6L3gMv7WzdzT1YhzgX
+         vDTcBO5lRGrUy08ySXbuersQDKCIKcXB/mhQdQrlQIa2LS6DICvb9zEW8ZmNqeRVo06b
+         DYkz0jpnuQDVxeJuZXQ0sp5bm1GpRCFgAF9BKAnJ7XEfnlzQ5/KM21ougq59a7lE7SAu
+         lVi0jr1vAmXPutC2G2AWx62jYV23f2XHPWHSzRq9wF/31x4YKyrAcwDSMq+j/Z3IbQYv
+         gCjwYWKZ8EsqRo82n3ii7KH6FWC4wv9wCFznQuuFL5zhSif3hI3E1jkojNgNCyHWY1AN
+         wrAg==
+X-Forwarded-Encrypted: i=1; AL+hErHAf1WxfqIhVCM2AUq0H1i9Uiq4QWgQ3Mglv7L3QaEZ15zDLOiaP+beE0wvEkFDCfz2EFCFTCzPd+Q=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8W6zxb7QUPSqdJ4UqqhZ9f3Eyem7zw1hb+Fvp5RUaWHRxRE0Bc
+	tfIr+75Z4ByK9nXxQFlD2I6Pn5chDre+EPGqEAkCHlbWmq9dpeHylVvU
+X-Gm-Gg: AYBFou0CXnquDXn8pH2jgHrN4+23IlHPAGodOAxREtsBhH6fykWu44Y1hsgOmXTuabn
+	VltOMJVZXqCbscXlxdcRQZlC9JAj/gP+PIN3TxdiKqQ2JoWNr49DBN1joEF/Wm35tHCJVPEy19M
+	P+ojUqma7pBlH0IByHN1azxEGRsCSX3tdbiGSnnm9flyO7C9An9Uzs1GIHIXqOUzrIRuhFJIQZr
+	3pjYQbdYwY+ltb3EmLvK6b4QEz39Ikq0C4nCr21TlOx3yBnlhmCuyMJaAjytpNFycjjE/avkI0Z
+	Qx7FD23CodBkyc73xTM/585X1TnViWck+wavvt5fNK6CrMzIjYowFzNfqTMCPeQ2fEeFrF0pIwj
+	Xr8A18n1k1wnyyWF50j6tlmy2ZIJ+oGbqXsd/N5f8ilKnbGyWTaCcIetsjcD09u36PLRd1/bMjW
+	uOItZmJasGTLp8/7xqsrkQ1DZpVVARTTST9sj5F/1s3mFs5r0zU0eS722JkD3C0ObPJcDpT41GS
+	HMpk9+0t9DpI5dwJTg6WZbLN1ivNlKTlox4VWOwikp0pZ1Y6ZkDzdI+N3UZ73lKo6nfXbjBVGpD
+	XIaCM1tWvKdXXn/o8bvObxPZVgZwNKZA5vqqTHpKTcM+vMnugHDUctSWVcoP967U+g==
+X-Received: by 2002:a05:6000:4305:b0:48d:e61d:68da with SMTP id ffacd0b85a97d-49c712ac8cbmr4676987f8f.20.1794561786746;
+        Fri, 13 Nov 2026 01:23:06 -0800 (PST)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49c69406640sm3853502f8f.12.2026.11.13.01.23.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2026 01:23:06 -0800 (PST)
+Date: Fri, 13 Nov 2026 09:23:05 +0000
+From: David Laight <david.laight.linux@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Di Wu <diwux@google.com>,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ bleung@chromium.org, groeck@chromium.org, tzungbi@kernel.org,
+ linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: cros_ec: use sysfs_emit() in show callbacks
+Message-ID: <20261113092305.00ec8be5@pumpkin>
+In-Reply-To: <20261113013646.4c2f8456@jic23-hlaptop>
+References: <20261111072608.3490763-1-diwux@google.com>
+	<avR-KT-6e77EexZn@ashevche-desk.local>
+	<20261112020439.37b0da70@jic23-hlaptop>
+	<20261112220218.1adae5e5@pumpkin>
+	<20261113013646.4c2f8456@jic23-hlaptop>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,92 +105,77 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261113082546.176582-1-zhujun2@cmss.chinamobile.com> <CAHp75VeOjqWoEM36OMgtiiwu3XWiu5wfJf59vYFuGSApbWpPaA@mail.gmail.com>
-In-Reply-To: <CAHp75VeOjqWoEM36OMgtiiwu3XWiu5wfJf59vYFuGSApbWpPaA@mail.gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 13 Nov 2026 10:47:32 +0200
-X-Gm-Features: AclHuK9rjEqJxLRL5SgQJUJktkIm-qEWvtfM6EjpPfAvf3U0-d31BCeAdrVtQ3o
-Message-ID: <CAHp75Vfy97JHMaURigbF92z7Eypfuny8PUk94=-43S6p6PhknQ@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: potentiostat: lmp91000: Handle configuration
- write errors
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Nov 13, 2026 at 10:41=E2=80=AFAM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Fri, Nov 13, 2026 at 10:25=E2=80=AFAM Zhu Jun <zhujun2@cmss.chinamobil=
-e.com> wrote:
+On Fri, 13 Nov 2026 01:36:46 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-...
+> On Thu, 12 Nov 2026 22:02:18 +0000
+> David Laight <david.laight.linux@gmail.com> wrote:
+> 
+> > On Thu, 12 Nov 2026 02:04:39 +0000
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> >   
+> > > On Wed, 11 Nov 2026 16:39:37 +0200
+> > > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > >     
+> > > > On Wed, Nov 11, 2026 at 07:26:08AM +0000, Di Wu wrote:      
+> > > > > Replace sprintf() and snprintf() with sysfs_emit() in the sysfs show
+> > > > > and ext_info read callbacks. sysfs_emit() is aware of the sysfs buffer
+> > > > > PAGE_SIZE limit and is the preferred helper for show callbacks.        
+> > > > 
+> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > > > 
+> > > > ...
+> > > >       
+> > > > > -	return sprintf(buf, "%d.%06u\n",
+> > > > > -		       latency / 1000,
+> > > > > -		       (latency % 1000) * 1000);
+> > > > > +	return sysfs_emit(buf, "%d.%06u\n",
+> > > > > +			  latency / 1000,
+> > > > > +			  (latency % 1000) * 1000);        
+> > > > 
+> > > > As David said, since you touched these lines, make the less amount of them
+> > > > while at it.
+> > > > 
+> > > > (But no need to resend, usually Jonathan is kind to tweak this small thing.)
+> > > >       
+> > > Done and applied.
+> > > 
+> > >     
+> > 
+> > I just looked at that line again.
+> > Why is it multiplying the remainder by 1000?
+> > It could be:
+> > 	return sysfs_emit(buf, "%d.%03u000\n", latency / 1000, latency % 1000);
+> > if the 6 digits after the decimal point are required.  
+> 
+> Good point, I guess unrelated change that we could have on top.
 
-> > Check the configuration writes and return the first error. After a
-> > successful unlock, attempt to restore write protection even if a
-> > configuration write fails. Return a relock error when both configuratio=
-n
-> > writes succeeded.
-> >
-> > lmp91000_probe() returns either error before registering the IIO device=
-,
-> > so the caller does not need to distinguish their source. Preserve the
-> > configuration error if restoring write protection also fails.
+Indeed.
 
-Btw, this is still unclear. See below.
+> Those trailing zeros shouldn't matter.
 
-...
+There is a matching oddity in the set function (just above).
+It calls iio_str_to_fixpoint(buf, 1000000, &integer, &fract)
+then does latency = integer * 1000 + fract/1000.
+Just replace the 100000 by 1000 and you don't need the divide.
 
-> > -       regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-> > -       regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-> > -       regmap_write(data->regmap, LMP91000_REG_REFCN,
-> > -                    LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_REFCN_50=
-_ZERO);
-> > +       ret =3D regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       ret =3D regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-> > +       if (ret)
-> > +               goto relock;
-> > +
-> > +       ret =3D regmap_write(data->regmap, LMP91000_REG_REFCN,
-> > +                          LMP91000_REG_REFCN_EXT_REF | LMP91000_REG_RE=
-FCN_50_ZERO);
-> > +       if (ret)
-> > +               goto relock;
-> > +
-> > +       return regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-> > +
-> > +relock:
-> >         regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
->
-> What's the point of duplicating this?
-> Before label you can easily do
->
->   ret =3D 0;
->
-> relock:
->   ...
+iio_str_to_fixpoint() will ignore are extra fractional digits.
 
-Ah, okay, I see that the relock error is returned only on success of
-the configuration update. Why is this inconsistency? Really, you need
-to elaborate first on what the caller is suppose to do when
-1) unlock failed;
-2) unlock was successful, but configuration was failed;
-3) unlock and configuration was successful, but relock failed.
+Although I'm not at all sure its handling of negative value is correct.
+It converts -1.5 to -1/5 and -0.5 to 0/-5.
+I can't see how that is useful since i*10+f for both gives -5.
 
-In all of these cases the user gets an error, but it doesn't know
-which stage was failed. What is the caller supposed to do?
+I'd have though that either the fractional part should always be positive
+so -1.4 would need converting to -2/6 or it would have the same sign as
+the integer part and -1.4 would be converted to -1/-4.
 
-No need to send a new patch, let's keep discussion here to understand
-the code flow better.
+David
 
-> > -       return 0;
-> > +       return ret;
-> >  }
+> 
+> > 
+> > David  
+> 
 
-
---=20
-With Best Regards,
-Andy Shevchenko
