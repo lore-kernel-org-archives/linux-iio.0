@@ -1,101 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794645331;
-	b=dLLYoWEqk9R2/+x2/yiDVw364nUt+Kv9r6efenq2qaNqR1/e4QEEQcLJjZ8CK0zoPIkf
-	 yo0F4rGBff+B1i444SnVdCvXFS5lzgoPfATCx5YR6FgYf2bWmKXegJ9qYfzubu5CS9jkn
-	 2teIdPeuzNSjUgVLG/rIeHdOBG1OPFiFFGCpvzbdafESHgfZ3IYfLjBqD1ZZiqnUsTWmW
-	 9jSYynejJudevge7zHuK6mymGutzLWXwpL3BkR5SoEno7epU9/vP+e6HB4vaUXsvMpYe1
-	 41N7OplMXKdSTFLgiS0X4xFMr5w3vbiPNEQG1WxA8CrP8PKlGRm4daD87Z73Cmg8yog==
+	t=1794645519;
+	b=ltwRksGJRYkqihu1ojCjUCX9AGskAsXulyQmZDSAb2QgbU3h0hqI1S3K7hDpVLUtViKY
+	 6yYkOQGS+Gl1oeqYTlDFOoggxY3dYr2L+Xe570wp+/kkkIztHIvwz4gcA6gD40FeJibBx
+	 EdGGIN4G1cpiB2fhlawZsCHRfzdIXKQrb3f+UzLcszXXBJ/FylvQ48yey80BWNx0dwJwB
+	 UVTv4ZObElqoeCvmEbSzOmMzI8NxXDcNxOpRwWTXIytmX1Gs4dacVXJhFCA4sbR6WKTW6
+	 SXrMADN2BfBMU8j9OsThSB4H0qZwUKs4xAwjvK3xwzedVH9jRiN0F3Ja2N3Kel8O23g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794645331;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794645519;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=yfnJG4iiDKKQuxyCDYfideniNtJsvgutAwnUooh0Jdk=;
-	b=EX7EyG/RT3K7l1yDzn21JPap0EoejKtsp/O7ftRD8K8SGCHKwGDb/PoS7x0utBgWAZch
-	 XdesMLkelspmEbp8sD7AMP53FKEx25YIGkBUlBMeyE7wgD6KW6rD4oSt+yU26oZCn/AlJ
-	 yqY2ABYvCvQ1NlJxaMVUtN+1rwYmFurjlBbVBm4lqcuexCmRLw1aVhKLSI6dbImvhFUF7
-	 ZAvwSX6xoZpAZUTFzK/tIbCUuc9usMOUP5R3jlsiOQdKuaNZUbEAXqDlM/7lhOzQR4nCL
-	 qydgbBC0zebPNLv0sWjyGFZAMCrRLOYVAP+gON6/3b44MtL/YufdXE2NlsHCR11a7HA==
+	bh=IrLTARzuKGpNCEUALTN/Yh4br8W0rH7Am+lSrApsbX0=;
+	b=FvybM0tjG+ONVaLeKHhexkfQ8JHN7PlLmPu4vHZ6dzmOSIVIhhpeQjhoUBnEOC2QTomS
+	 yV6W+fojvu1H1fM6zZVLkzgbC6APrTtohCgjRwUGkT6GgLn2L/7P8SuXYOrSD7cU8xn6T
+	 LQaM0lD2x1oAKWcXYiZTR8gVFmFZeeR7lXm9MJ0fkb4IoU9fHwvitzTatx+/HLoYAXIx3
+	 dBU+LVmA6wuXR4iN75C7E1a2NoIWDJOf5A5j9DI6Kwlmw+30ZV43VHh0qcS+6ulx5S6yD
+	 UFC8jX9daJnL2KHBPNXiT2UTmVP4/vlG0mXD6yuvyeB9HZCOavR8SkxlBLva7USNEgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Y37AXEGZ;
-	arc=none smtp.remote-ip=209.85.167.49
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=t0Mb++yI;
+	arc=none smtp.remote-ip=209.85.208.172
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68416606A329
-	for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 08:35:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 68416606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D748A606A89A
+	for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 08:38:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D748A606A89A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Y37AXEGZ
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5c1465bbbdaso1909984e87.3
-        for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 00:35:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=t0Mb++yI
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-3ada7d53082so27543661fa.0
+        for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 00:38:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794645329; x=1795250129; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794645517; x=1795250317; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=yfnJG4iiDKKQuxyCDYfideniNtJsvgutAwnUooh0Jdk=;
-        b=Y37AXEGZNRjjow8p4LgjZLoRKWt+vX4mg8SYvuImT7FGNVyGidP9cBiU+r9aFgF/Yk
-         APWWK33jwEvWKXta0k6KDONTButeyotr3NxYw05JrR9yVuPscVHnKuuaKSwyqY87IvAZ
-         f0clJOvbwYnoDcdd2V8hHQs+lUqQ9EKgm/h6fUsnrrZ3QVo8TxEDcrj0ZxFIXJJntXPU
-         2wQ0t9E2rUx5W1SnFl1JVxao7ECM8XiXbyLpN6PGyQV0Ezph2uKLrCpUUgjKy0aLhmXq
-         A8nMvYmMfMSW7YkUUHEd7/vSv9ZOhTX6HGsYZV7J4USXZmbpEg6e8kSbiLzLfaFLv3ZB
-         QEMQ==
+        bh=IrLTARzuKGpNCEUALTN/Yh4br8W0rH7Am+lSrApsbX0=;
+        b=t0Mb++yIbpunMuxHHwKZuirS6kHgEIlj7XoC7EmEihDJtgIj3Cwk0gKAO0305MGXd0
+         3x9PYJr/2WJaI9StZ+dQCTjk2p4jiHiIeqgQTk4fJ+hofbbc05trklIFVtT1OxHXg2XI
+         0rOiEvHMjiOs39KnOMCkVnXpKveQgC3j3e+eX1JYHZMAyGiJ7NEa4p2Q7ZK2QCH26w7F
+         MuGf0LMQ7sun8vH0IRFRrUBUvHvrTNgqKhkWKtd3+t8rn3n6g782HAAhCOUvS6Hjzwyi
+         D99bK9fHfdNZ5mSEyRLhMpESKW2A2+gOb1Di6Y1cQMdqIqyJHuQFV+Uqz8IKAjb3BKNQ
+         L2+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794645329; x=1795250129;
+        d=1e100.net; s=20260707; t=1794645517; x=1795250317;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=yfnJG4iiDKKQuxyCDYfideniNtJsvgutAwnUooh0Jdk=;
-        b=k6py7ZxJlAoRWsUnkTP6MnaO1SDkiziamLYl+ssAD7nDjF+89oVtn4BjH/O/5E4tQI
-         uh4v6fZI90ol5DELRUpmAnLENfGxi5EwkPDeKqseTs0PoroCqTT/tPDglcnlEIQrWYRy
-         VolMa3jdzcZJcxEzH13vGgaj3fYRj7pXEUqRBtxjqAWzUeg+3FVRe8g/r9zpKHJ1/E8o
-         tGan2bGNWNTMmZUve2uEzw17jjawEMGaex07hSwvfVI/ydX+MXFaWcp3tVCoC79hUCIz
-         XEJn1Tt5Y68QosE03IcTOJD+kF9NbMFuPuouAa9/0U6EKsu6CIzLyS3wo0BvTYXVxFjb
-         tXpw==
-X-Forwarded-Encrypted: i=1; AL+hErFT+pIuobreGDj7mkHzR2/Ck+GWrx/Yoa4dbojWLxTS7eca7PPNSozCBFGKFBUUU+DS1jBHggxV8Vo=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8GEu0NMCVr60NDDl3/Dsh4ztPuzLTg4Cstj6RPgxgOV1RQaSb8
-	MRpC/HNFh+HYGjOYq0g8b1zJO/P+2lAYCJCOpM4i82TzvRBld9O2y+48
-X-Gm-Gg: AYBFou34fyJL9iYaguJW+gdGWvObcl8uWD280vEA71kR0nQmVy41+jBtBGjOVPEVC3T
-	Iih5uxBRKb38bsTdmCCUBX0jCZjAG4SN/7fcFj4a9bj8z1F33xKK5Obsn5GJ6C9FQyypF8kdHKe
-	5lvAE6rGjF0pc8VE6pImII4Dtdqbl3dNFE0T1k89DdmM6tCu6bDWXp1UfB7YCD3wdkIwYFDpQda
-	2qeMRasKAuGd8nYTOnC/f4n26A/PluzMvtCUbNWZK+uOptMWBsFpr1zoDsKdWWLHnev6XD/HWBt
-	mu+FexS1rTeHVTj2EL8EKCOqTvBkMfh+Minu3r4Qfq0NoDWBZioj7+TTcwEFFR9JWI4G9Ph3Bw9
-	iVtaF4D/42JmAMHIeSi6/VQtXPUoLBCZtp9FyRPZ11weT6R/OqPJRwJwY/pUeTx7kh4cz0FGhRD
-	UOABzR6XALIWctFgB25Sm0Tyc0bYNvbj+ygqQ+LggddUej0arRNFvqzAf6vDiK3DrqYAXX/6ZJ3
-	eKpxeSy5n0jTwFIC05IPaHOhIa9rDDsRxz6dr/fDOb6ijwzTDLfbGSUP8EpqeEvpFbEfO1VwOJC
-	6D7Ch/KQ0zepX+rOuMK19MN0Ti4gEjv7RczElFdV8srsuFLvQHdOfDuJwXp2zFwZDNEDkH4T164
-	TN6xoq1DydB+ob9118i9IwNKJ4xAiYYduEeIzXw==
-X-Received: by 2002:a05:6512:3a88:b0:5c1:488e:a069 with SMTP id 2adb3069b0e04-5c17079a9d0mr1861830e87.13.1794645329214;
-        Sat, 14 Nov 2026 00:35:29 -0800 (PST)
+        bh=IrLTARzuKGpNCEUALTN/Yh4br8W0rH7Am+lSrApsbX0=;
+        b=b6hkBkiE4l38nQ1eWZUNtoGOHxu0T59dVF+Y0RfoGgTq6/2tk4Ub5sJg+e0JoRWxja
+         aeesqW3A3NDiyOKiMT9AzHidpP7ZWrbQVhS3mYWwFim416TJjMvcji1vFCP/Ztx4canO
+         kqPp9V80W56sI6hgTevbovh3AqhNxfwnYpE+D7SGj4ESaE9GCGhlyqN5WzzeQ+aSiGhq
+         ABwa8EBp2LluRlQayW+FUJ8Wj/wn2Bzb+1mGZqb/7kht+YwfyQXR9FemnDmMUmAI3WZt
+         J4YAXgIsj0yy+14QD72TO+Ncn5Tec80cj/FGj+/2440al9lpgPxIwkETubNQYTNhO8JP
+         V6ng==
+X-Forwarded-Encrypted: i=1; AL+hErGre+L8p+cZmo7MtJjXvhPsS9gDPyiA6m/SlEn3cOBjBGpdRx7fjoVlN3omhmXtoaIo80kno9N4gsg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+b57W77YiYEm1UGGr+/gXk/VjTej+WMYaW2kq+mZRirwEuQOFh
+	WU3QMY/MEwIJjAfE6nvvLKiYWyIeoBYeTpSpcEPojdj5aV+ooSe3lS7XU2YsEk0U
+X-Gm-Gg: AYBFou00NKT65/Iys1nufSAy9h11PH73WkVtxF+3SecvVNOJqBKeYJjdSQiqG4aisuW
+	oJnzBpOhVpxBg2P1plS08Z+PtsgGydTYMnMh6C8b6+EfIfd7gUByHkY3mqDEcFAeN+i3JQDO2tD
+	WfZ0+sxX/tlDTlmwugrgAwwprFZfycJNAK1HzOYrwWFGXxIvzjHn8JXlbwgjYmZW09GzVpy1PmN
+	blOp1dHAQtEhxMaEw4WGXk83NkQRfYK/9eHegpURzHHm2fqWjFrHXrc5KveGVRrLKxidxK/SsoN
+	yTQbhOXaUwpwgx8Qiw5KXI7QPRQ7Eg5Nl8rbD5k6oCLRfZtlaurWHXKriRlY7rCb/KX61lVzK6G
+	61EGVCuS4Fky06YHFVQWyNlVvJ1IK3M1YiWp4qDGFY0j1wJf06A2vHEjLS3ret6gV7BchxThDIL
+	1i0ryJ4cjrARwmXJEGiHhI+YOeQZIQ6zsO6QuxfusA1oyVseBSVzjQ3zmYjtw3hu1aA/vaYh/69
+	KpVFfAaqUek3OUScNk4XUQdfZV4ioMB4NwOACSe2xvV6rxapRsSuTAdJUuw02IyfxfYLGheTeSe
+	ztOSDSN1tMdzhvBc+poaDIGGj7bE9xDhExoytPzFIvCdHkl0ty8uLJtyE+03Cz4LKJN97pa697B
+	zHrdXJU9pvzRSC89AhhvQK9MiqONSLD1zaBbbyA==
+X-Received: by 2002:a05:651c:1596:b0:3ae:920:ac4f with SMTP id 38308e7fff4ca-3ae1bfb800fmr22203951fa.8.1794645516894;
+        Sat, 14 Nov 2026 00:38:36 -0800 (PST)
 Received: from yantra.. (nekmmqusxj170dz200l-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:b551:8edb:536d:8395])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c171356581sm1487024e87.66.2026.11.14.00.35.28
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1713565a6sm1527803e87.78.2026.11.14.00.38.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2026 00:35:28 -0800 (PST)
+        Sat, 14 Nov 2026 00:38:36 -0800 (PST)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: jic23@kernel.org
-Cc: Andy Shevchenko <andy@kernel.org>,
+To: Andy Shevchenko <andy@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Sashiko <sashiko-bot@kernel.org>,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: Re: [PATCH v2] iio: pressure: dps310: don't wait for new temperature in trigger handler
-Date: Sat, 14 Nov 2026 10:35:25 +0200
-Message-ID: <20261114083525.11972-1-zoone.rupert@gmail.com>
+	Rupesh Majhi <zoone.rupert@gmail.com>,
+	Paulius Zaleckas <paulius.zaleckas@gmail.com>
+Subject: [PATCH v2 1/2] dt-bindings: iio: pressure: infineon,dps310: Add interrupts
+Date: Sat, 14 Nov 2026 10:38:27 +0200
+Message-ID: <20261114083828.18059-2-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261114013817.476f8fb9@jic23-hlaptop>
-References: <20261113230241.82046-1-zoone.rupert@gmail.com> <20261114013817.476f8fb9@jic23-hlaptop>
+In-Reply-To: <20261114083828.18059-1-zoone.rupert@gmail.com>
+References: <20261114083828.18059-1-zoone.rupert@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,23 +110,54 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Sat, 14 Nov 2026 01:38:17 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+DPS310 signals new results and a full FIFO on its SDO pin. In I2C mode
+the same pin sets the address LSB, and interrupt polarity must be the
+opposite of how SDO is strapped.
 
-> > Read pressure first and take the latest temperature, as a direct
-> > pressure read already does. Wait for temperature only when pressure is
-> > not in the scan. Read a temperature in probe, so there is a latest one
-> > from the first scan on.
->
-> That was potentially a while back.  Why not do it in preenable for the buffer?
-> Will make the buffer start a bit slow but should 'work' from there on.
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+---
+v2: no change
 
-Probe value only lasts until the next temperature result. By the
-time the buffer starts TMP_RDY is set, so first scan takes a new
-temperature anyway (checked on the board, buffer enabled 5 s after
-probe). The probe read also covers direct pressure reads.
+Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>
 
-Happy to move it to preenable if you prefer.
+ .../bindings/iio/pressure/infineon,dps310.yaml         | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Thanks,
-Rupesh
+diff --git a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+index 416117dfd927..cded6e0af147 100644
+--- a/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
++++ b/Documentation/devicetree/bindings/iio/pressure/infineon,dps310.yaml
+@@ -23,6 +23,12 @@ properties:
+   reg:
+     maxItems: 1
+ 
++  interrupts:
++    maxItems: 1
++    description:
++      New result or full FIFO, on SDO pin. SDO also selects I2C address, so
++      interrupt is active high at 0x76 (SDO low) and active low at 0x77.
++
+   "#io-channel-cells":
+     const: 0
+ 
+@@ -42,6 +48,8 @@ additionalProperties: false
+ 
+ examples:
+   - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
+     i2c {
+         #address-cells = <1>;
+         #size-cells = <0>;
+@@ -49,6 +57,8 @@ examples:
+         dps: pressure-sensor@76 {
+             compatible = "infineon,dps310";
+             reg = <0x76>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
+             #io-channel-cells = <0>;
+             vdd-supply = <&vref1>;
+             vddio-supply = <&vref2>;
+-- 
+2.43.0
+
