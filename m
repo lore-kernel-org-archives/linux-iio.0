@@ -1,108 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794676756;
-	b=DvWGwHtei8JDKXj3dKfEX8niyvf4mSGn7fyqSHsgBe0ZqEHuo4kdfdwVJoLN5tDuXmK7
-	 S4P2muT4Aa8Q8pOVGu/i2/BN7jJYNmc4BZdl2iJ541lmkHFC1C3b+6CFNXGD/2TcW/LOX
-	 aqMsshriw/7MC87Me5rmJPqUiu6/QIeuDfb+PvXleHc22sTAxJ7Dj4LdbisHH+5k849L/
-	 NJPFzgRcugMxLcrjvPC0nHNcv8pEBto5fhMKPRe17gsyJaYtwA9xuNPiiBb6Pi5CFyvaM
-	 4gtm+8fbrX+3GKSuMfoVWy9kiYVLVvVTwomb5p5QicHmfaqpg3HOShVWpM293GZNrPQ==
+	t=1794681311;
+	b=O/ThwGflH6NhrVkPPRiagZEr06ZDDDEuHvrc14QQpsAKbOxFQs6PBCdX5nJWrZunDupT
+	 R4TO4YCoig7kmm5moOTT+msVHVvtzP9LgCI1jjkkKYuyqnS+4+hBn2pRPzBwZjPWUi68I
+	 /2KPf5tP5lU/BFB+r2kc3gzemKGr5eSgO/rfHpX+Vzl6CdJK9hwhrM2OrBkTVWqzrP7kM
+	 3KJN6ayMz+4abs/AK3DopnrEzzh6l8MtlBA7MoaqF2HUpIUXubUiWNdUEzJnOjGKvn7Ki
+	 rUvIargcHEwK+2sIupuVaaXxPm8CAylHuSYYDyxNstz44ah7dmLTicw8nCRBSGKmWgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794676756;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:Content-Type;
-	bh=YTwcRMSWQ/WwFbflIYFwTeimqUcsUNTJOHfLHF8Dqo0=;
-	b=MjiMqLvU66bN5RgNNoaNtT+vmlpYAwQYKAWlywFbrKuOqoiaoBEaAhNI5DkI3SeRxC/1
-	 zMSkaUpNHApfaifWsNdph6twQ6vQuUFb0gHZM1yOfQUvK0bdYmuqPdcaj+edbmhTsUBTJ
-	 gilOm5blMTVNMI1nuBh7pYw2F5y3YcbFjQpLVcXWVlYBvYWtwfEVVR/QPt2DCIbEZpC9y
-	 cUOF4dsAR4skZp4pcmqQMUA9ZK++CbkATEYTN/gRZV3k2A1USBEXJPyfyjjphVL5YxhI5
-	 lO8UEEXBGiDeMKPGZ/YpzgOY+bDHTNhB0sL4c3n5sD0/7gxCJnr6eqV0Xs6CK9+2aKA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794681311;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=TvSKSRkg9AFrTcntLh7QJ1VF0aRsTmwl0gLaj0FgbTg=;
+	b=d8vzj9dSklRskP8qyfDn6zeE+bU5MDPIHGv1ZV4Q5bDZCVMcCNdMggFNtR2UXN/mfTaN
+	 onhf4pmRnWsnl/a3uwGG+OUay7xcDrhkJ/pX+Ks4qQvpJFvY7oBv7dSgxb64mnQQo1HAC
+	 GbjIuJo2gWQLT8wNDDPsj3RdUbFNod1fkjXqPvOr5ArgTmaSzLreGzsAYeoC0FacCJd2h
+	 Eql1lNwdPgYEVQYOLNSuDS4xyeIEvq3u2cVn4sX4T9BLJTXZJlnNHqUJQ8rpCS9ZeQb7s
+	 igMmnHndDw4raK7aixJuzXRheSgWLKOUYrOnTxw7YKJCUqpvDpyfAQsUcoFWFQ4lT8g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vHw3eyv7;
-	arc=none smtp.remote-ip=209.85.128.43
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WkrWyKA0;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22ACC606A330
-	for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 17:19:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22ACC606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD9A606A323;
+	Sat, 14 Nov 2026 18:35:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vHw3eyv7
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a2153c8525so12654355e9.3
-        for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 09:19:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794676754; x=1795281554; darn=vger.kernel.org;
-        h=content-type:content-transfer-encoding:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=YTwcRMSWQ/WwFbflIYFwTeimqUcsUNTJOHfLHF8Dqo0=;
-        b=vHw3eyv7tVnu7ujo/f014gkgAnXfEOQX+ah3pcWkkUpbq6/tPFuCYxNQdUyvHdFjHq
-         2anngKr5UUeaxV7xvlr5ZsZMq6lwaam/S4Bwe7WVITK02XSKNI9U1r14CG3Iojp3n3fL
-         1DQY2rBZzTay3cOVSvPXlmNOlufTR6Mc7AuAw8vJEgmJU01qccyWgckLhFY9He1MQxRM
-         zdcnv7adqnSQQYqNCWVXdfQPYYCVW1rLdOp61m7NbeiOZPBpyAFu+jRBRNk2Gjx//FB0
-         u8hsxePhaRe8UACcS0A6UkPbM/uCRbu8JTOBFmSca6ZflsfRhZTUAblYhES7tIEww7zi
-         iuqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794676754; x=1795281554;
-        h=content-type:content-transfer-encoding:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=YTwcRMSWQ/WwFbflIYFwTeimqUcsUNTJOHfLHF8Dqo0=;
-        b=xRME4n8nf7eCpqodHyCjuAh8NtadvSU5/prRl7/Avjuu3MQX+8MsaAxWvaFc1BdvxT
-         SGpMECkM5VPMmqSQIzRnhkJBQc4lHzT2FJE/DQDknH/vZRzDCJjaj9jRn4bfNfSFXX5t
-         zO3JP4ECjUuJfnUVCjhPdLHmQA44SFUtiQiyRH1ruUmWkiZjVIoJZmr9nSjOQoS+AiYT
-         MVte80bSEIvlAaVXMn5Hw7gYXGiUKOBRJ7rhZ0AdQuk6SJPa4/dPDGJcj4VZmJoXNLg7
-         3rQa4CqWNkJJJSOxVlTTnLbdVFHeHhvFAh36T8/jdgLi1cLdJ+2CCh2PMFRZw71QNfyL
-         +JNw==
-X-Forwarded-Encrypted: i=1; AL+hErEXmqcxETXZvK12DNENKISadW7GqmLUt+vFLLR1WOEGUAULfxqzL9jpErYnNrr0O2MjzmxyDrxd5eA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8+BFosDxpcv/BjzS9c8KkMKjbG0U+pbWhsq4xZkSLxmW8p8RPb
-	NrA1fZ/veATVMP8pxCwzmtXIDKvSI64KekYRogN1kra0QnGmueC1hdrB
-X-Gm-Gg: AYBFou3b6sg6BBpn5cYBtSgC4841NwZ6NSbppaQB2N2vNWZMPLbEl+SJFqWJ67FYVEk
-	FCXwZyZyqFg1DuhnFfCfU76sC16t7O7i+41AnrSI1/vE4B/qkd9XJRoiZl70e+lkWstQhWGr0ZC
-	e/O8zM4DiKOnrKzGWViININeSX4fZUbUUVIssf+05it9TXwbn1fZ7M58IVrr47cDaJKnNijKeaN
-	g9jqYNuG1y3bD4D4uYJPV+QALPDtIMtvGuWwD0Jz6mKapbTwdxfymivRU5vUWYJ/dKL2kcvLjPH
-	V+0pQoZfzzjcw4S7qAkhcIeibgM9dr8H5LVicngeyqLbaE1LrUHErP8gwTEutFrTbuD7bdOHpqK
-	BceFVe3iTWLw1Q9Gb7SQfHuzknGWKt7qd4kyH/ZCfFxreJVMWJV88t5qB6stNoyfW0opOj+ILzG
-	OdmqoYo51GxF3QniICNuDSmzRhK/2uvMj2ZKsR4ENl92OY4bKHYSGZe6Y/PFaXil+TTrGPfSVw5
-	Dr7Baq3duAE5U3ipbpYw/s4YysD4ycRTcHR2/Zj8XBAQe3+OIgBRhAM/+x7QX3xZNYVvTvtzaiO
-	h7S7uEsLc0vRTzefqyux4Kno390cR6gclBsamuesSPN73LUuHU3OBUc4KVEDyyb/WfUc52Dc/Vc
-	7JsCA+QKE+Nr+iUqktlEip5LUFYSthLEpdCsM89Aomf6Hs4QDBJFZJLiQA93ptg7H/5D5P7RyWY
-	N/chc0hxZvkLY4nJRgJYVmJwfhwrzIi8FeAzHNLIZvkuKKqNHRPIY++l0IXDDFhtyleCaEmDA8+
-	vuz9L9OGTHBfXwHB7xqRRTAuQ==
-X-Received: by 2002:a05:600c:5395:b0:49f:ce78:356d with SMTP id 5b1f17b1804b1-4bb55abba24mr132258135e9.30.1794676754290;
-        Sat, 14 Nov 2026 09:19:14 -0800 (PST)
-Received: from jernej-laptop.localnet ([2a00:ee2:6a02:9300:bb69:6bcf:1b11:e85b])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49c8d286480sm20031827f8f.7.2026.11.14.09.19.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2026 09:19:13 -0800 (PST)
-From: Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To: linux-sunxi@lists.linux.dev, linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, Andy Shevchenko <andy@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Chen-Yu Tsai <wens@kernel.org>,
- David Lechner <dlechner@baylibre.com>,
- Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Michal Piekos <michal.piekos@mmpsystems.pl>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Samuel Holland <samuel@sholland.org>,
- Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@baylibre.com>,
- Markus Elfring <Markus.Elfring@web.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org,
- Felix Gu <ustc.gu@gmail.com>
-Subject:
- Re: [PATCH] iio: adc: sun20i-gpadc: Use
- devm_reset_control_get_exclusive_deasserted() in sun20i_gpadc_probe()
-Date: Sat, 14 Nov 2026 18:19:12 +0100
-Message-ID: <lGotwwBTRaeZcOCAphaQBQ@gmail.com>
-In-Reply-To: <368d548f-2b86-4da5-857a-6ee9473a8d0e@web.de>
-References: <368d548f-2b86-4da5-857a-6ee9473a8d0e@web.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WkrWyKA0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AA741F000C4;
+	Sat, 14 Nov 2026 18:35:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794681311;
+	bh=TvSKSRkg9AFrTcntLh7QJ1VF0aRsTmwl0gLaj0FgbTg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=WkrWyKA0yhj2F7gLBdmu0ep02BeBs/qlh6XcoAvZc0PYKQLjrtJEm9Ie9H3qJGCXQ
+	 bBdij8IjcqjGt8Z4S6ix+u5Za/iczJo8mvxr6c6gZhWNJZu8nnfYLIjLI8j3LuZFoy
+	 MK/fMV/BcM4ZaMJGjThZ9wng4q/WDh2i/xaYMv6dx0r4ivkcjw8nzooPv2b/L4C1uK
+	 rGR15aqmdWyHApyC2AiuQnn0fQRvoOopOe71APw7YU7k5E89U6/5fqYCj+8NuddsDq
+	 BXOUtWhw1V6u0dqa4MkdfFN09km3ep7W73HmcsSuFLwUwNzT/4sQTKyezFz04JXBWv
+	 nuzTVQNW3NbFA==
+Date: Sat, 14 Nov 2026 18:34:59 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Christopher Hoover <ch@murgatroid.com>
+Cc: Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Lixu Zhang
+ <lixu.zhang@intel.com>, Joshua Crofts <joshua.crofts1@gmail.com>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] iio: hid-sensors: fix shared callbacks in
+ temperature and humidity
+Message-ID: <20261114183459.78fc3e31@jic23-hlaptop>
+In-Reply-To: <CACw0PsZ43YAQUcPuP7ec6gjd03Srn5QYUWp74SMZ0gzPLUp71A@mail.gmail.com>
+References: <20261019023420.83976-1-ch@murgatroid.com>
+	<20261102215606.5e36a2a2@jic23-hlaptop>
+	<20261111025336.051fbbcb@jic23-hlaptop>
+	<CACw0PsZ43YAQUcPuP7ec6gjd03Srn5QYUWp74SMZ0gzPLUp71A@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -112,78 +68,101 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
 
-Dne sobota, 14. november 2026 ob 18:08:10 Srednjeevropski standardni =C4=8D=
-as je Markus Elfring napisal(a):
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Sat, 14 Nov 2026 17:55:16 +0100
+On Tue, 10 Nov 2026 19:11:31 -0800
+Christopher Hoover <ch@murgatroid.com> wrote:
+
+> >> Dropped patch 1, that should go via the hid tre =20
 >=20
-> Use devm_reset_control_get_exclusive_deasserted() to replace the
-> explicit reset acquisition, deassertion, and cleanup action registered
-> with devm_add_action_or_reset().
-> Simplify reset handling and remove the custom reset assertion callback
-> while preserving reset assertion during cleanup.
+> Do i need to do that ?    Sorry for the possibly dumb question -- I'm
+> well out of practice with the process.
+Ideally Jiri will notice this thread and pick it up.
+
+If that is looking unlikely by say rc5 then send a new version
+with just that patch so that it stands out a little better
+
+Thanks,
+
+Jonathan
+
 >=20
-> The source code was transformed by using the Coccinelle software.
+> -ch
 >=20
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-
-Best regards,
-Jernej
-
-> ---
->  drivers/iio/adc/sun20i-gpadc-iio.c | 20 +++-----------------
->  1 file changed, 3 insertions(+), 17 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun20i-=
-gpadc-iio.c
-> index baa7661db13b..070d061572c6 100644
-> --- a/drivers/iio/adc/sun20i-gpadc-iio.c
-> +++ b/drivers/iio/adc/sun20i-gpadc-iio.c
-> @@ -157,13 +157,6 @@ static const struct iio_info sun20i_gpadc_iio_info =
-=3D {
->  	.fwnode_xlate =3D sun20i_gpadc_fwnode_xlate,
->  };
-> =20
-> -static void sun20i_gpadc_reset_assert(void *data)
-> -{
-> -	struct reset_control *rst =3D data;
-> -
-> -	reset_control_assert(rst);
-> -}
-> -
->  static const struct iio_chan_spec sun20i_gpadc_chan_template =3D {
->  	.type =3D IIO_VOLTAGE,
->  	.indexed =3D 1,
-> @@ -225,17 +218,10 @@ static int sun20i_gpadc_probe(struct platform_devic=
-e *pdev)
->  	if (ret =3D=3D 0)
->  		return dev_err_probe(dev, -ENODEV, "needs at least one clocks\n");
-> =20
-> -	rst =3D devm_reset_control_get_exclusive(dev, NULL);
-> +	rst =3D devm_reset_control_get_exclusive_deasserted(dev, NULL);
->  	if (IS_ERR(rst))
-> -		return dev_err_probe(dev, PTR_ERR(rst), "failed to get reset control\n=
-");
-> -
-> -	ret =3D reset_control_deassert(rst);
-> -	if (ret)
-> -		return dev_err_probe(dev, ret, "failed to deassert reset\n");
-> -
-> -	ret =3D devm_add_action_or_reset(dev, sun20i_gpadc_reset_assert, rst);
-> -	if (ret)
-> -		return ret;
-> +		return dev_err_probe(dev, PTR_ERR(rst),
-> +				     "failed to get and deassert reset\n");
-> =20
->  	irq =3D platform_get_irq(pdev, 0);
->  	if (irq < 0)
->=20
-
-
-
+> On Tue, Nov 10, 2026 at 6:53=E2=80=AFPM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Mon, 2 Nov 2026 21:56:06 +0000
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> > =20
+> > > On Sun, 18 Oct 2026 19:34:17 -0700
+> > > Christopher Hoover <ch@murgatroid.com> wrote:
+> > > =20
+> > > > hid-sensor-temperature and hid-sensor-humidity share one static
+> > > > struct hid_sensor_hub_callbacks across instances and overwrite its =
+pdev
+> > > > on every probe. With two temperature sensors, reports for one go to
+> > > > the other's pdev; once that device is removed,
+> > > > temperature_capture_sample() dereferences NULL. I hit this on 7.0
+> > > > with two uhid-created sensors.
+> > > >
+> > > > Patches 2-3 make the callbacks per instance, as the other HID sensor
+> > > > drivers do. Patch 1 makes sensor_hub_remove_callback() take
+> > > > pdata->lock, as sensor_hub_raw_event() does, so a report racing an
+> > > > unbind cannot call through the freed callbacks. =20
+> > > Applied to the fixes-togreg branch of iio.git with the ordering tweak=
+s Andy suggested. =20
+> >
+> > One day I'll remember some bits of this driver are in hid.
+> >
+> > Dropped patch 1, that should go via the hid tree.
+> >
+> > Sorry Jiri / Christopher.
+> >
+> > I only seem to notice I've done this whilst writing pull requests :(
+> >
+> > Jonathan
+> >
+> >
+> > =20
+> > >
+> > > Thanks,
+> > >
+> > > Jonathan =20
+> > > >
+> > > > Changes in v3:
+> > > > - Patches 2-3: set the callbacks with one compound literal (Jonatha=
+n).
+> > > > - Kept Joshua's Reviewed-by on all three; patches 2-3 changed only =
+in
+> > > >   style.
+> > > > - Rebased onto v7.3.
+> > > > - Sent as a new thread, not a reply to v2.
+> > > >
+> > > > Changes in v2:
+> > > > - New patch 1, for the use-after-free on unbind found by the Sashiko
+> > > >   review of v1.
+> > > >
+> > > > v2: https://lore.kernel.org/all/20261007184423.622445-1-ch@murgatro=
+id.com/
+> > > >
+> > > > Christopher Hoover (3):
+> > > >   HID: hid-sensor-hub: Synchronize callback removal with raw events
+> > > >   iio: temperature: hid-sensor-temperature: Use per-instance callba=
+cks
+> > > >   iio: humidity: hid-sensor-humidity: Use per-instance callbacks
+> > > >
+> > > >  drivers/hid/hid-sensor-hub.c                     | 12 ++++++++++--
+> > > >  drivers/iio/humidity/hid-sensor-humidity.c       | 14 +++++++-----=
+--
+> > > >  drivers/iio/temperature/hid-sensor-temperature.c | 14 +++++++-----=
+--
+> > > >  3 files changed, 24 insertions(+), 16 deletions(-)
+> > > >
+> > > >
+> > > > base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222 =20
+> > >
+> > > =20
+> > =20
 
