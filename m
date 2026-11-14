@@ -1,59 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794621893;
-	b=WcVqFxVS+NceoFDK4Qdo04e5f9cZuGg17ewmLfdsK4apgMMOFKuYSW9k3GLr50pNvpdw
-	 PaQvZfCfl7dsNuplfwv6EDqR3hW8sCq6Cl6lbTkl2gMl61IXtC1ESww84An7XJ6KsiIsK
-	 BOvlXCDK30pxdo2VqbB9ZU209n6HmdhQuyjilezR+sTArxfGN/RY8hJSx8EPLMLUEBPM0
-	 zj1rPrJf6ARmvIntf2F3uuHbpE5HvmVxpomT7JZhFrp61V89q/GkD5sA+Rk0pY8UTS1RV
-	 +7kLRKZUwtXfo9yYDaoslYkqfkuQuLF1DEqWQbELcukaBL/84xIQPWrXAHdH0A2Z/DA==
+	t=1794622563;
+	b=nKo9ExdarRvN6EdXv06TY82Rec278W+7P692NGYj5rCW2EDLEPMNLiJ/1jLt7WGE9/Kn
+	 jjtUAXZUDYHP8PAb193JU4hmDw0OhTpJiN5gvtxsNk2YMPRVajapZwPcR53h3X2x8RR+b
+	 G7YLNokNCe2OjezrBshpTcFRQJve2YSpTPGIPzjBnixwtcLCi0V7yvvdsgaiFEJJRAzbo
+	 pXdDSGoNYFYgQ0KYBVX1aA/HppZJk989cAqDsoyjH0WVxVtzeaPpC1AoJJaUkcHsJ3BRs
+	 KgB6LErw+Fnv0RN3WE3gfJtuMorERxhU9STZVUXmIIr2xM1zWceeS3Uly+qHSU9P3nQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794621893;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794622563;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=c3TMKQvGudvZgsPILw4nmz5grw8WhZuLvbEH6M2mYGQ=;
-	b=GulsV7vxXVaq0uWVEGixWyYcQHuSgBXhOIIBLuINJacMhjcYMQJ0jFKP/FFJR74UEpHQ
-	 UMH3BAPXOfXbNvRG7zDqdYuhWzOTkdD27LhXbiQaoM0nzDA09kdXKift5Y7i37BYyja3c
-	 XxzLgiGy8c/FktCfqIFP2Q9/diKHs6peRrPdgp62RpS91973scKC29UKRStQvYoW0uiQH
-	 qC76dKISEcxc/XntPcaOm7mfly7E8TYrrUml2mLtopYAikmfG+awZwDGsPwZdlfxVK5h2
-	 HSSqV82YhZHf4NJKCjiYgpi2OvgsA2GKDJ6E2DixBS2hQukZLkMIhfBsXSbwTUGFZXw==
+	bh=Roggx5/wkV3KhVWt1yynfm1Kzg49sxJrPoIQ3oBO9m8=;
+	b=AYnBi5C+vBvY0kcQ+X2JW8sTHL4KMeDsCpjlayUWffKupMlO8eQEyF5hxJ2TBXUPk1hK
+	 nw2eFN51JNIeObHW2YT0Bvxwcca1fGKCQQQB+56+gNebY3Z5+JZaFCI1WKph8Al5zzcsb
+	 u2OaSAs2ut1jahbvE1+Y5HfkQTRYxtQiGN1FuXChw+C0NRiJNVHLCnfFBKP8/tAcno148
+	 WJge8y3Ae3F0YlB9RLb37Y2KsV6dFVB34apyk9ml7koVvqym38UYPo2EwSOaK/hQq9lHt
+	 GGh00XvWNgr5farmuIkNXQYELpL4KTwCBEIMyOmgH25caXRmyzorVPtLDTQ2eYPdxvg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dunwn7t6;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UsfTA3oB;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1547B606A331;
-	Sat, 14 Nov 2026 02:04:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451A7606A327;
+	Sat, 14 Nov 2026 02:16:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dunwn7t6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E00941F000C4;
-	Sat, 14 Nov 2026 02:04:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UsfTA3oB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA43A1F000C7;
+	Sat, 14 Nov 2026 02:16:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794621892;
-	bh=c3TMKQvGudvZgsPILw4nmz5grw8WhZuLvbEH6M2mYGQ=;
+	s=k20260515; t=1794622563;
+	bh=Roggx5/wkV3KhVWt1yynfm1Kzg49sxJrPoIQ3oBO9m8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dunwn7t6OF5BWqY7ESWPFycpyqyP3T4yNXkPQgI5zCq85NoZuGdkl8K+OQLpGxuhj
-	 aZfyQ79ujvGmg9XYCmqWqZaQGfYNLFp7ruAlDNqV5Cm84fRiv5Zj5BB6jzXZ7+d0uI
-	 E5CFDFO/nY3T2vMUt2LkZzsiR/qMv7L3XrbwhTppxrYcIOsJ51a42VEvNPt6M6b1iS
-	 zgHMQ8RmmYwmwXYf8pCs/68KriYAqBdX6VrBWHV53KWxWIBbyrJAKitQ2fHtAXhS2f
-	 Tjc5ss42PvCwwAS82P9ZNhUaTuE2XZ3zC6zjf+Z9hQ73oOOWa9PNQIMftV9LkSwYsm
-	 prwrUht0iB9gQ==
-Date: Sat, 14 Nov 2026 02:04:47 +0000
+	b=UsfTA3oBI9zmZPuhfAO275YEO5Fc4IZbie/mxutRpY5aIKga/xk2aSXHOiKLiCDjq
+	 egH90qo6xXyAyPvXuWzNGYnBfheL4ZW8oWWccd6AZWrbxONaVpac3fVVS+FmnMsu8t
+	 8J6zPL49FoPsCTd1R8JJWAymrVOxKZR9O4gVxNHbQhCw3ShswD5+DZxzJU0oJ3PEzf
+	 hDuZ65m21mAgPoCXaSAHy25+Ah8y6wGkZ31CrJbP6FddrDC1+qI+oU3ycaj4Y06Owe
+	 RN2qeG+9Z/DMXih5VdeP+x++K6fGQ7sYpzqjx+LiCE9RM4ZmvdcJxZfYwJGxAm2EqF
+	 3RToxtXb55x/g==
+Date: Sat, 14 Nov 2026 02:15:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: lee@kernel.org, maz@kernel.org, andy@kernel.org,
- dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
- mfd@lists.linux.dev, linux-iio@vger.kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- imx@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] mfd: mxs-lradc: Pass parent IRQs to child
- drivers
-Message-ID: <20261114020447.7a0b71d5@jic23-hlaptop>
-In-Reply-To: <20261113013212.470981-2-festevam@gmail.com>
-References: <20261113013212.470981-1-festevam@gmail.com>
-	<20261113013212.470981-2-festevam@gmail.com>
+To: David Laight <david.laight.linux@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Di Wu <diwux@google.com>,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ bleung@chromium.org, groeck@chromium.org, tzungbi@kernel.org,
+ linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: cros_ec: use sysfs_emit() in show callbacks
+Message-ID: <20261114021554.2165a2bf@jic23-hlaptop>
+In-Reply-To: <20261113092305.00ec8be5@pumpkin>
+References: <20261111072608.3490763-1-diwux@google.com>
+	<avR-KT-6e77EexZn@ashevche-desk.local>
+	<20261112020439.37b0da70@jic23-hlaptop>
+	<20261112220218.1adae5e5@pumpkin>
+	<20261113013646.4c2f8456@jic23-hlaptop>
+	<20261113092305.00ec8be5@pumpkin>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,98 +70,93 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 12 Nov 2026 22:32:12 -0300
-Fabio Estevam <festevam@gmail.com> wrote:
+On Fri, 13 Nov 2026 09:23:05 +0000
+David Laight <david.laight.linux@gmail.com> wrote:
 
-> The MFD driver stores raw DT interrupt indices in IRQ resources but
-> registers its child devices without an IRQ domain or IRQ base. The child
-> drivers consequently receive the indices as if they were mapped Linux
-> IRQ numbers. IRQ index 0 triggers the platform_get_irq_byname() warning:
+> On Fri, 13 Nov 2026 01:36:46 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
->   0 is an invalid IRQ number
+> > On Thu, 12 Nov 2026 22:02:18 +0000
+> > David Laight <david.laight.linux@gmail.com> wrote:
+> >   
+> > > On Thu, 12 Nov 2026 02:04:39 +0000
+> > > Jonathan Cameron <jic23@kernel.org> wrote:
+> > >     
+> > > > On Wed, 11 Nov 2026 16:39:37 +0200
+> > > > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > > >       
+> > > > > On Wed, Nov 11, 2026 at 07:26:08AM +0000, Di Wu wrote:        
+> > > > > > Replace sprintf() and snprintf() with sysfs_emit() in the sysfs show
+> > > > > > and ext_info read callbacks. sysfs_emit() is aware of the sysfs buffer
+> > > > > > PAGE_SIZE limit and is the preferred helper for show callbacks.          
+> > > > > 
+> > > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > > > > 
+> > > > > ...
+> > > > >         
+> > > > > > -	return sprintf(buf, "%d.%06u\n",
+> > > > > > -		       latency / 1000,
+> > > > > > -		       (latency % 1000) * 1000);
+> > > > > > +	return sysfs_emit(buf, "%d.%06u\n",
+> > > > > > +			  latency / 1000,
+> > > > > > +			  (latency % 1000) * 1000);          
+> > > > > 
+> > > > > As David said, since you touched these lines, make the less amount of them
+> > > > > while at it.
+> > > > > 
+> > > > > (But no need to resend, usually Jonathan is kind to tweak this small thing.)
+> > > > >         
+> > > > Done and applied.
+> > > > 
+> > > >       
+> > > 
+> > > I just looked at that line again.
+> > > Why is it multiplying the remainder by 1000?
+> > > It could be:
+> > > 	return sysfs_emit(buf, "%d.%03u000\n", latency / 1000, latency % 1000);
+> > > if the 6 digits after the decimal point are required.    
+> > 
+> > Good point, I guess unrelated change that we could have on top.  
 > 
-> The children then try to recover the indices from their resources and
-> map them against the parent OF node. Besides duplicating IRQ names in
-> the parent and children, this relies on invalid platform IRQ resources
-> and fails when IRQ 0 is rejected.
+> Indeed.
 > 
-> Resolve the interrupts with platform_get_irq() in the MFD parent and
-> store the mapped IRQs in the shared LRADC data. Drop the child IRQ
-> resources and duplicated name arrays, and have both child drivers
-> request the mapped IRQs directly. Use the MFD memory base support to
-> translate a single relative memory resource shared by both cells.
+> > Those trailing zeros shouldn't matter.  
 > 
-> Tested on an i.MX28 EVK. The mxs-lradc-ts driver probes successfully,
-> touch events are reported, and the touch-detect and LRADC channel 7
-> interrupt counters increase as expected.
+> There is a matching oddity in the set function (just above).
+> It calls iio_str_to_fixpoint(buf, 1000000, &integer, &fract)
+> then does latency = integer * 1000 + fract/1000.
+> Just replace the 100000 by 1000 and you don't need the divide.
 > 
-> Cc: stable@vger.kernel.org
-> Suggested-by: Lee Jones <lee@kernel.org>
-> Closes: https://lore.kernel.org/linux-input/CAOMZO5CgTzo6GuXptD4mFTN=UsJJqpkixDW1Q64gqZGrij8+uQ@mail.gmail.com/
-> Fixes: a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
-For this change
-Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-With assumption it'll go through mfd.
+> iio_str_to_fixpoint() will ignore are extra fractional digits.
+> 
+> Although I'm not at all sure its handling of negative value is correct.
+> It converts -1.5 to -1/5 and -0.5 to 0/-5.
+> I can't see how that is useful since i*10+f for both gives -5.
+> 
+> I'd have though that either the fractional part should always be positive
+> so -1.4 would need converting to -2/6 or it would have the same sign as
+> the integer part and -1.4 would be converted to -1/-4.
 
-However, one of those, whilst you are here comments below....
+That is rather odd use of the output of iio_str_to_fixpoint()
+which admittedly is a bit unusual because of the need to handle there
+being no where to put that negative when the integer is 0.
 
-> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
-> index 30a66e268169..d16dfea89207 100644
-> --- a/drivers/mfd/mxs-lradc.c
-> +++ b/drivers/mfd/mxs-lradc.c
-
->  static int mxs_lradc_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
->  	struct device_node *node = dev->of_node;
-> +	const struct mxs_lradc_soc_data *data;
->  	struct mxs_lradc *lradc;
-> -	struct mfd_cell *cells = NULL;
->  	struct resource *res;
-> +	unsigned int num_cells;
->  	int ret = 0;
->  	u32 ts_wires = 0;
->  
-> @@ -137,7 +161,11 @@ static int mxs_lradc_probe(struct platform_device *pdev)
->  	if (!lradc)
->  		return -ENOMEM;
->  
-> -	lradc->soc = (kernel_ulong_t)device_get_match_data(&pdev->dev);
-> +	data = device_get_match_data(dev);
-> +	if (!data)
-> +		return -ENODATA;
-> +
-> +	lradc->soc = data->soc;
->  
->  	lradc->clk = devm_clk_get(&pdev->dev, NULL);
-
-This is what would need changing to fix potential ordering issues with devm / non devm
-mixing.
-
->  	if (IS_ERR(lradc->clk)) {
-> @@ -187,38 +215,15 @@ static int mxs_lradc_probe(struct platform_device *pdev)
-
->  
-> -	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
-> -				   &cells[TSC_CELL], 1, NULL, 0, NULL);
-> +	num_cells = lradc->touchscreen_wire ? ARRAY_SIZE(mxs_lradc_cells) : 1;
-> +	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
-> +				   mxs_lradc_cells, num_cells, res, 0, NULL);
->  	if (ret) {
-> -		dev_err(&pdev->dev,
-> -			"Failed to add the touchscreen subdevice\n");
-> +		dev_err(dev, "Failed to add subdevices\n");
-
-Not related to what you are changing here, but a devm call with a goto that
-follows it is usually an alarm bell...
-
-Can we fix that with a change to devm_clk_get_enabled()?
+Can get away with it here though as latencies aren't negative so.
+The code doesn't seem to actually check that though which might
+be a nice useability improvement rather than setting it to something odd.
 
 Jonathan
 
 
->  		goto err_clk;
->  	}
 
+
+
+> 
+> David
+> 
+> >   
+> > > 
+> > > David    
+> >   
+> 
 
