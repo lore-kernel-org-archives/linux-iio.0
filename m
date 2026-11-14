@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794682137;
-	b=lByVpWmXM44qyk6d+8TaJEyL06xSMfmYQ+C+QM3EHPcX6fljoScMjBUPJFhmuYUSnVqf
-	 YeTcWef2wucve5QnxvDNLftl9rBBzOHgEpNtZHWv51HTyWVjVQML5AsPUcdLg9B0gR5RQ
-	 csnGPhov9A/rcfxNfVNQRVrPosfBtgG9bcSnYEAVBQnWMUbQTzOFo9HPwhcHyICg+ElxJ
-	 nxrvupFiZtkjPfU4FCk4L0Cmhzcw5WUEC1xXztxU82I6GztTVORAm3u8q9vD2PKIvbF+P
-	 JKKZqDQQ8iKNcD/VgFqVwJohnm/KxCr/1DB++svOoKspmcCSHDv4By5ragAPPwLEjBw==
+	t=1794682260;
+	b=dYrtemFy835VUk3TCG7zdaXcLQGqoOT1djJXaUmt1+a1w9kSY1ZfFhJTDNATbUR4Fpzf
+	 euHu0lUB+EQ86GfcUu8L0HjZ6BseksSk1sBG0dSw7wjUWGXaMc0phoIU7Kw+3kuztGJiR
+	 oLCrtApfI3hK/PoMqTRQJlYneIduk1+ijmZUwMdvVOaNB53rg9DkM08KKMGAkhjeDLzET
+	 fagblts2E54Tvgw+dCgsd+suKZa8sQOi+OdWb/UJ/u/z/H2GXMb3zb4/S24WQh7NhQjca
+	 MTecQzqtbwqv4eKmto0r/TPPZMxqAKlnbQ8p1w3kqd0GUqk45dHK0FnZ/WA7Dc0ZaWg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794682137;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794682260;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=LPmuSB4GQqVZUVPJgtjDEsgFvIRG4UWskQFfExXoCUc=;
-	b=5jWaiAsCrOc2gNzQIPpQ/YD/AwW/CfWjX5g4S3TgkjlEt2T4Wjpx5CRAHUWOQyYhfKCi
-	 bk0peCK3YDKCcWvXAPmMsdTFvLoQcYEUqam4ry77jSMxrakrvqotTtIo/6wK8R88TlkuL
-	 BWkCYo3rNG1PcFx0zaqaRpUCuAWT9jj/xu1xRiCBA6t0xvn1NbB9J200MpcjVd5Vpkw4N
-	 efhtGWg0SQp095WbAZOQGdAAcJ78Eeohnqc7g1ph9d0axuHV7hLKKnKoJ56XF5fgKjWKT
-	 NiOs+IBTd2qEE2HFpM8MDhq+3tZb5hGr7R4F/SSSmjnmERcX2vCaFqC+zp4Qwp3SO2w==
+	bh=sMXrHsolRG3J/I2nE1oI1F3DJZKjH3O2j2E6lRmGAtI=;
+	b=N1J72bmZiohbAT6uEicY+mu1a337nDkXkhojjtgXONmWkaJRDL+i7I1VZwTrwvbLICGd
+	 in71SfmXpvANoQRUtgw4NjGRFM8V2ZrqpI+/tx72Rj4ff9CtVvfrG/BFtmHSXRBnTrRdi
+	 duWOHrKwOTiV6Njz2qczPZhVv3FYVhUYwtUekbKugMuAO/ww05zODjHF/sDVTvhhrmrC8
+	 Wd/dNEDimrwp6z/I0oHm0C8UwFla1Ef5u3B9ErDDRjpW+L82Qyli2GDSbYig6gfj9ppjM
+	 yR1zAI1Db3yp4Gr7wHiJuBo+m++yaKmIFbefnnqfqsqOpBSI5cRfMEgmQFw8eOVzKMA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Qf3TA9Z9;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NlsSzBI4;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C09C6606A333;
-	Sat, 14 Nov 2026 18:48:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E96606A329;
+	Sat, 14 Nov 2026 18:50:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Qf3TA9Z9
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 784E71F000C4;
-	Sat, 14 Nov 2026 18:48:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NlsSzBI4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CCB71F000C4;
+	Sat, 14 Nov 2026 18:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794682137;
-	bh=LPmuSB4GQqVZUVPJgtjDEsgFvIRG4UWskQFfExXoCUc=;
+	s=k20260515; t=1794682259;
+	bh=sMXrHsolRG3J/I2nE1oI1F3DJZKjH3O2j2E6lRmGAtI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Qf3TA9Z9IUpGXCTCgXO8VGJ+5zD41Nhg53sssKh9r+3WC0nHHXYXHTG/AsEvRLrid
-	 1wDu48Z7mhY/Sku+jBg7GS7COL5lzOOW14Ycr8uIUEh/qyQRhchbH0LTq1LaCsrVI3
-	 SiEE11KJZ7HOwWEsiONpjUcJPfLxPl0FFv8weHhscfI6lBFAQ7Ma6kRZBF6coW/fBk
-	 vG/HwO3oyE+rT4xONb63unA+WU/WZD/sevxJNXGYvcNuUmH3N4b1M1wz/XOf7lKTCz
-	 keLngttJk5aFQ8SRZAO0wzl9F4/DC8pCrvxmDwU0Yb8v4SpM8JMeWTnw5dqLb4E8xI
-	 g4KcVDb/lJJIg==
-Date: Sat, 14 Nov 2026 18:48:47 +0000
+	b=NlsSzBI45RTY2QD9JZZw15/cPFKHjhMg1sEMEBxkV8amdg1yO+DFVQ8AQqHYY0z5L
+	 jLO7hZiQS0cqtBZ68PLHxfjCWzE7EJAJHPFzXQx63FHzG0S4XE6FZ4grX2dWC4Ih5f
+	 rvcGcgSTx6Fs7qzSYnN+fiGVYf997qz9wsTJFwqspOPNZI5xchKyzHRea03RDyxBUx
+	 ZV8pGBQREZ5dfECdGUF/1oOF7pOed9HxTfJ5JMRvWaN73lIXS/Jdw1fm/FldNWmZrZ
+	 JtH6Ok24KutZDvWBMjCZuXBj25LaiYExQ04VwC7l62ECsPgSZocMAVi/fgXZweQn7Z
+	 +fNbHAAymlQGg==
+Date: Sat, 14 Nov 2026 18:50:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Roman Vivchar <rva333@protonmail.com>
 Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
@@ -51,14 +51,14 @@ Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
  A. Prado" <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 1/3] iio: adc: mt6359-auxadc: correct channel types to
- IIO_VOLTAGE
-Message-ID: <20261114184847.70ae590e@jic23-hlaptop>
-In-Reply-To: <LVXIwHr3ekY5Ao7bcfza5XGvBZor-SdLtC_MF1qWu5S0zG2vylGpgamn2xVPcw5hQ5Vedb4ALvs1oyzs7Td3ssP1pF6OjogIICu97Suo1bI=@protonmail.com>
+Subject: Re: [PATCH 2/3] iio: adc: mt6359-auxadc: mask conversion ready bit
+ in mt6358_read_imp
+Message-ID: <20261114185050.1aa08612@jic23-hlaptop>
+In-Reply-To: <hAkgxe6jt5EJW-8bHBs53r3CWCxKxjjzGm6u-l-RzYaGedsBunJrv8nOB48zDSLaMD_jJqtC1Xt1wlz0zDdGF28li-clCdIjUzE9xSbh7Hk=@protonmail.com>
 References: <20261103-6768-6358-fixes-v1-0-2a868a33152b@protonmail.com>
-	<20261103-6768-6358-fixes-v1-1-2a868a33152b@protonmail.com>
-	<20261103234237.0dbbe924@jic23-hlaptop>
-	<LVXIwHr3ekY5Ao7bcfza5XGvBZor-SdLtC_MF1qWu5S0zG2vylGpgamn2xVPcw5hQ5Vedb4ALvs1oyzs7Td3ssP1pF6OjogIICu97Suo1bI=@protonmail.com>
+	<20261103-6768-6358-fixes-v1-2-2a868a33152b@protonmail.com>
+	<20261103234540.46cc8c1b@jic23-hlaptop>
+	<hAkgxe6jt5EJW-8bHBs53r3CWCxKxjjzGm6u-l-RzYaGedsBunJrv8nOB48zDSLaMD_jJqtC1Xt1wlz0zDdGF28li-clCdIjUzE9xSbh7Hk=@protonmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,63 +72,70 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Nov 2026 20:39:47 +0000
+On Wed, 04 Nov 2026 00:19:33 +0000
 Roman Vivchar <rva333@protonmail.com> wrote:
 
-> Hi Jonathan,
+> On Wednesday, November 4th, 2026 at 1:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> On Wednesday, November 4th, 2026 at 1:42 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Tue, 03 Nov 2026 18:32:07 +0200
-> > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:  
-> 
-> ...
-> 
+> > On Tue, 03 Nov 2026 18:32:08 +0200
+> > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+> >   
+> > > From: Roman Vivchar <rva333@protonmail.com>
 > > >
-> > > Correct all channel types to IIO_VOLTAGE.
+> > > In mt6358_read_imp() the raw ADC value is returned directly without
+> > > masking out ready bit, resulting in incorrect battery voltage reporting.  
+> > 
+> > Can you add where the ready bit is.  That might help someone
+> > looking at wrong values and wondering if this is what is causing them.  
+> 
+> It's at the end of mt6359_auxadc_read_adc() function, which is included in
+> the commit message. Do you mean include the code part too?
+> "*out = val & GENMASK(chan->scan_type.realbits - 1, 0);"
+
+Nope. I mean which bit is the one that will be set and shouldn't be.
+Is it Bit 15 for instance? 
+
+Just having a note in the commit message may help someone (or these days
+an LLM most likely) find this.
+
+
+> 
+> > This one is pretty glaring as bugs go (given I think this means the
+> > top bit is set?) so any reason it wasn't obvious to anyone testing
+> > this device?  
+> 
+> I can't really tell if the driver was properly tested. As far as I understand,
+> Chromebook devices use some embedded controller, which likely manages this
+> kind of stuff without PMIC ADC. There's no in-tree mobile SoCs with mt6357,
+> 6358 or 6359, nor fuel gauge or thermal drivers (yet), so maybe that's why.
+> 
+> > Jonathan
+> > 
+> >   
+> > >
+> > > Apply the mask to strip the ready bit, matching the behavior in
+> > > mt6359_auxadc_read_adc() function.
 > > >
 > > > Fixes: 3587914bf61d ("iio: adc: Add support for MediaTek MT6357/8/9 Auxiliary ADC")
-> > > Fixes: d6f49313272b ("iio: adc: mt6359: Add support for MediaTek MT6363 PMIC AUXADC")
-> > > Signed-off-by: Roman Vivchar <rva333@protonmail.com>  
+> > > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> > > ---
+> > >  drivers/iio/adc/mt6359-auxadc.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
+> > > index 951d236f972b..09432d0974cf 100644
+> > > --- a/drivers/iio/adc/mt6359-auxadc.c
+> > > +++ b/drivers/iio/adc/mt6359-auxadc.c
+> > > @@ -502,7 +502,7 @@ static int mt6358_read_imp(struct mt6359_auxadc *adc_dev,
+> > >  	mt6358_stop_imp_conv(adc_dev);
+> > >
+> > >  	if (vbat)
+> > > -		*vbat = val_v;
+> > > +		*vbat = val_v & GENMASK(chan->scan_type.realbits - 1, 0);
+> > >  	if (ibat)
+> > >  		*ibat = 0;
+> > >
+> > >  
 > > 
-> > This one makes me very nervous, not because it is wrong but rather
-> > because there may be a bunch of userspace relying on these wrong
-> > channel types.
-> > 
-> > It is horrible but I think we can't touch that :(  What we can do is
-> > put the right interface in place as well. Thankfully it looks like
-> > the channel index is independent of the channel type so we can duplicate
-> > the wrong channels with voltage ones + some comments to make sure this
-> > doesn't propagate to any new supported devices.  
-> 
-> Sorry I forgot to include this in my previous reply, but do you suggest
-> duplicating the old channels and adding the fixed ones as separate entries?
-
-Yes.
-
-> 
-> That would cause issues for in-kernel consumers. In my tree I have a
-> battery thermal zone driven by ntc_thermistor (which is actually how I
-> found this bug, as it refused to probe due to the wrong channel type),
-> and I will soon send a new revision of the PMIC thermal driver. They all
-> require IIO_VOLTAGE channels to operate properly. If we duplicate the
-> channels, consumers will get the wrong type unless we reorder the array
-> or add a custom xlate callback.
-
-Indeed, one of those two solutions should deal with this.
-> 
-> Existing userspace tools would get bogus values from the current ABI
-> anyway. The driver applies a raw mV scale to all channels, while thermal
-> needs efuse calibration with a special formula applied, and even plain
-> voltage channels like bat_adc and cdt_v were mislabeled as resistance and
-> temperature.
-
-Ah.  If the values are effectively useless we can hopefully assume no
-one is actually using them and hence the risk is low.
-> 
-> Given all this, I think it's better to simply fix channel types.
-> 
-> Best regards,
-> Roman
-> 
+> >  
 
