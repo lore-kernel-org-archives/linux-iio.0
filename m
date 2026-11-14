@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794699352;
-	b=wQHjy1FJxojIIPfG2F0Bl8SAu6d0u/f2h64mCtIA4Ulgq2N+vSDV3/RyAassq5EufnzF
-	 7lxDJsCUscZkwtPXu9woEhS3EDYx1bhBZ463XzYxj4bxmqYwjbv8NCYLHOqKXdhPiNRs8
-	 ot7eH0OJMwD7K62Y9MUOC7aW2mSfFV1JxW/JMcFepVi0OKrSg5FIU479Tpgl5rXXNh5As
-	 nqbGpS2rLTNVBzEbncFsXL+33K7RY6tv1Za1MPlb6ar7300apJElbqyIdnB4J5OHJ4HUO
-	 +Azm0tbUbR+c7j7uGokM27mOakqg7jiX9t3ifUewJkRJP3SWAlUVviCwlEx0Yz4X+5w==
+	t=1794699463;
+	b=yAPxvISg7O1R4h7RAO1nWS1F4GGJ3Xf8PsVT7bVFKxtUYVzfAdLCgEQsf6h2ZcpuSC5x
+	 1jeTTIg+hzmsvZ+Pk9uQXTeQkbX83Eyz74PEmgAM0th1aSTEw6HRE0a5KpZXL0cw1lYJo
+	 WWnyYQC7ViEok7+KzF0b3ZrPRTD8rWhdbaJj6muFA/WWesP74Ld457Ur5GK7upXueS+Z7
+	 kJv51pfgJ2QJsYK5n7hkKVT9WyQmzE593T1Eg+V4uh2oqe+3rOtVdIBbOKcfGJkHsRuFm
+	 XaGbEXfljd+stBQVSuniz90NYBaM6BG6fqQBn0ymq9fJekZQjh3v118ZD0nhx6f1zsg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794699352;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794699463;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=0hLijEQmrtO8f9MefoCcZ2hV97tr8JlMlp8crB1A2uo=;
-	b=4YAYWGu1EhPn2mAOVPr7I5K53eejxljy5hZ8dcWyY5MCgBuSH5qcVVe3CxBOa1uXYjJH
-	 QeY2D6lWlAmtdRQDOmgecVWFqWkH7SEw6E/8+8FJDr3FEQy96Dpw6VzOmk00I6W24z/td
-	 /ZgKy4byf3usoPfv7hb+odAQNT5OgqtepSGNDp5U2ldMA8xGHOsPSnjEX5uM+JRMCLKz4
-	 1UxWuPLpXnHuWh6bbVSS/6A3IWwilAPpPn3LPVN5GX9TFIm3FYzOF59Jcj85jHTRz0VdE
-	 Pw6Cf2mikWMcT7KTdMkOeBUtvKTqelL2/R1KaEYyLCBWwRAEGIyxAOPmqMDxI9EVXig==
+	bh=y5XyzBRavuP4okaOGXZ90TZzSPFe6fQb6IrQp9skEtQ=;
+	b=b9cbJR0lA1CX4TzWIucAyDWE/WtEmwGbTVFmTlUcYAshL8ptGzI4ykWqY1WilMr3vml1
+	 TD7JDJLmXMPv64O+CZXA9luMbx4ttovyTlJnTwrIkxJ+QWD6xrRzFkdrcT0OjZenc8/8L
+	 51MejjjcxEw5VXVc5XPplDei/hAMCxvkm3lzUUM8y6FSswTYVMqGCN1FtvFj65hA2ZfGS
+	 anNyumvFSFhl1zEZBhIfJmppTF2258Syh74ej+wljZSkHTLBmEaKZ4d2H0lQ+NcIr9cBf
+	 sIVPmNwwVuDIBiigauLnAnUX/3FU5Vo+ouKpjAvjvLVJxI042syCACYpdWvGzAiLfXQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nPgquv5P;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ar702gn6;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DB24606A329;
-	Sat, 14 Nov 2026 23:35:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC225606A33B;
+	Sat, 14 Nov 2026 23:37:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nPgquv5P
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9361F000C5;
-	Sat, 14 Nov 2026 23:35:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ar702gn6
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64FBE1F000CE;
+	Sat, 14 Nov 2026 23:37:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794699352;
-	bh=0hLijEQmrtO8f9MefoCcZ2hV97tr8JlMlp8crB1A2uo=;
+	s=k20260515; t=1794699463;
+	bh=y5XyzBRavuP4okaOGXZ90TZzSPFe6fQb6IrQp9skEtQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=nPgquv5P6XwYkI2+baujnMYvwXejM9eYxtLRD5WmDc2AKewb1ObR2EBWVId3VSye+
-	 TkDJ4ZQc4aJWQkjWBfMXqeWonIFrxQUrghK6yie7Kx3HxT/WRWGvo0a/r/kpSvYWBy
-	 GUbsPCuyNE5UD5XUY1wWzcPu1xShU7TNwCmU/FJWut4a1us6IqSHLvAAbFftu2RDfH
-	 X//JssVyWr0MC0IkFjDLMI0sBrZIdnQ9/8EPF39gEaKr9VopNxRBatpic9EkXxeJBP
-	 hQqvOuWoBkgCIBZNAJAhtlLcA41kFJnIOsMmP/B+CGoNK8RX/jXvGiExHL215TrT29
-	 //frY5Q/S1GKw==
-Date: Sat, 14 Nov 2026 23:35:43 +0000
+	b=ar702gn6RMjcVpitImhXqL/NBu8WsHD/TjxzO6jHikyWtfI0RfUlO9xpncbL4vdjw
+	 t2F/pL8gHd/ltW4wJml5iBUKijn14FyPfUnTzw5+CA9N/vv4Z2+lWmZt6MeKxac3Lw
+	 xU6zoGu7E/F8HYNXsJsnRY2iBGa/B37Z7Z1R9teV8tXj3alTyonN4+Kan7PaqKfFXO
+	 zU4Y+zwtMYK2MuWdSDxkwhBp7j4WfuJGdU3SnT5KkGzQ9dlt7hreUHOkk2hu5lFmnR
+	 OzoNtYZw8wXW35hEpx5/m+Rho1mnbi33I36pF2FxFhEo1n1/7Kx0942xFP+YqwTL/B
+	 3mlS1pxUy4oYw==
+Date: Sat, 14 Nov 2026 23:37:34 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Joshua Crofts <crofts@kernel.org>
 Cc: linux-iio@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
@@ -53,13 +53,13 @@ Cc: linux-iio@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, Jonathan
  Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [RESEND PATCH 11/14] iio: proximity: vl53l1x-i2c: poll own
- trigger from interrupt handler
-Message-ID: <20261114233543.66b66ae7@jic23-hlaptop>
-In-Reply-To: <20261109094202.0000284f@kernel.org>
+Subject: Re: [RESEND PATCH 13/14] iio: light: vcnl4000: poll own trigger
+ from interrupt handler
+Message-ID: <20261114233734.360afe30@jic23-hlaptop>
+In-Reply-To: <20261109094632.00002649@kernel.org>
 References: <20261109042851.1326940-1-jic23@kernel.org>
-	<20261109042851.1326940-12-jic23@kernel.org>
-	<20261109094202.0000284f@kernel.org>
+	<20261109042851.1326940-14-jic23@kernel.org>
+	<20261109094632.00002649@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,58 +73,46 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 9 Nov 2026 09:42:02 +0100
+On Mon, 9 Nov 2026 09:46:32 +0100
 Joshua Crofts <crofts@kernel.org> wrote:
 
-> On Mon,  9 Nov 2026 04:28:48 +0000
+> On Mon,  9 Nov 2026 04:28:50 +0000
 > Jonathan Cameron <jic23@kernel.org> wrote:
 > 
 > > From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 > > 
-> > Keep a pointer to the driver's trigger in struct vl53l1x_data and poll
-> > that from vl53l1x_irq_handler() rather than indio_dev->trig. Only the
-> > driver's own trigger is accepted, via iio_validate_own_trigger(), so
-> > with the buffer enabled that is the trigger in use.
+> > Keep a pointer to the driver's trigger in struct vcnl4000_data and poll
+> > that from vcnl4010_irq_thread() on a data ready interrupt rather than
+> > indio_dev->trig.
+> > 
+> > With the driver's own trigger in use this is the same trigger. The
+> > driver does not restrict which trigger may be used and the data ready
+> > interrupt is enabled whenever the buffer is enabled, so with another
+> > trigger in use the data ready interrupt previously also polled that
+> > trigger, running its consumers in addition to when it fired itself.
+> > Now samples are only captured when the selected trigger fires, with the
+> > trigger handler clearing the data ready status as before.
 > > 
 > > This removes a dependency on the trig field of struct iio_dev, which
 > > is to become private to the IIO core.
 > > 
 > > Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 > > ---
-> >  drivers/iio/proximity/vl53l1x-i2c.c | 4 +++-
+> >  drivers/iio/light/vcnl4000.c | 4 +++-
 > >  1 file changed, 3 insertions(+), 1 deletion(-)
 > > 
-> > diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
-> > index bce238d1b6de..ffc6fe45b165 100644
-> > --- a/drivers/iio/proximity/vl53l1x-i2c.c
-> > +++ b/drivers/iio/proximity/vl53l1x-i2c.c
-> > @@ -102,6 +102,7 @@ struct vl53l1x_data {
-> >  	enum vl53l1x_distance_mode distance_mode;
-> >  	u8 gpio_polarity;
-> >  	int irq;
+> > diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+> > index 911f8d1c74d4..cab6e0af8c7e 100644
+> > --- a/drivers/iio/light/vcnl4000.c
+> > +++ b/drivers/iio/light/vcnl4000.c
+> > @@ -206,6 +206,7 @@ struct vcnl4000_data {
+> >  	struct vcnl4200_channel vcnl4200_al;
+> >  	struct vcnl4200_channel vcnl4200_ps;
+> >  	uint32_t near_level;
 > > +	struct iio_trigger *trig;  
 > 
-> Pahole reports a 4 byte hole between irq and trig. Reordering
-> like this yields a better result:
+> Just swap near_level and trig and you'll eliminate a 4 byte hole.
 > 
-> struct regmap *            regmap;               /*     0     8 */
-> struct completion          completion __attribute__((__aligned__(8))); /*     8    32 */
-> 
-> /* XXX last struct has 1 hole */
-> 
-> struct reset_control *     xshut_reset;          /*    40     8 */
-> struct iio_trigger *       trig;                 /*    48     8 */
-> enum vl53l1x_distance_mode distance_mode;        /*    56     4 */
-> int                        irq;                  /*    60     4 */
-> /* --- cacheline 1 boundary (64 bytes) --- */
-> u8                         gpio_polarity;        /*    64     1 */
-> 
-Good point. I guess I need to poke my llm to take this into account.
-
-tweaked whilst applying.
-
-Thanks,
-
-Jonathan
+tweaked.
 
 
