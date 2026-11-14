@@ -1,56 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794614783;
-	b=pUCbs/s8o79pJ7Vpiq+X0OCA33xmm9kaV4z4404O9qVk3HgUIJXWCsLukrnFDIE6F0wW
-	 xrtu/chqcGYIHCr5nwUqaY0XukZ+24mdqBLcvKcnWiUseDVdNqYMIVQXpEFEokd8GdrBE
-	 gil8IJ8Fl6hQfetyLucJu79gK7VlQgz6b7VhcqmxeDdlGdCMMl+Sh5tjOIzVAQda4ePQe
-	 zCxxFcd0iAjOsQt9PoM9QxMwPrmYrt4GZauxnL9FNxn/xCKm3KoFlrPzaa3mJvEYkf/67
-	 dHDlch7tCNUiVrRCY/D4r5bG/i9O4KmYWNu5pvZl36fvb4SGEMGCChTZ2WjXVRA3R7A==
+	t=1794615365;
+	b=KqbPMcTCVs+ZQl+7W3oARPgmo0i68geb6KMWis+ETDLajwmWxrAgVeRZ9ZyC6FBCMlEi
+	 PLAZCzo+owTbJyAQA2JKlaT256K6YNjzyKU0Xl9XQz43EWqYg3tE85k9ptXT7bbD9uS8e
+	 vmkBiWHgGy/EWmDiCU8NTpvuumhaLNwT2reEzLnjlrjCCEzmmFKNFsOlF09W7sjnqLmU1
+	 3K8B6QXJOoXoGg9xpFOFilJkGhlYkl2UQOZ5+UkUjlzAWju1FU4k8JFRdAFbed2yApwa2
+	 XQbw60Ta7BgLYxviSTKsd24HObF3rNCN607OlGRWMbvQWN+QeeKKPmTXnD+eZjO3H2A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794614783;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794615365;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=wE03TbsB9gImhYnU2nKTXD/1I5ExgnTiNLVen12piB8=;
-	b=bVJeJjKHR81is8RDEKSt9hpN4gvHPN4g3Z85SxEJFUqLUh1pYLZpK3WCh2rCz6ybUovc
-	 QoXXJY8+gMdZ2NHkl9a22tIgHmFlQwJ67rTmVNrs3p+1Xnwaxky8b/+eUZPw7Xkco7LTb
-	 gX7l6CbQutp13K4t/vMukFerIOg/kF5OAvswTRDFhcffPyjt+RDxF2R5AS8VmC8VZK5NB
-	 QAtv/dcdNbOQr5JNOPxQvzueFiulGRvc731Bk4od3tANneV5P1QojkehVn8k9NhCN4SRn
-	 Impvu8bjLNBqKAN6Px+u87jWgQ4Kya5qsmF/Ng6u/bTiJXXEMaujBCdpeaeTHoVYudA==
+	bh=H/O+Mo0VVNCwn6G0Coe3gZ4s1DLGig40Bsnf3oJKl+Q=;
+	b=e610Wx4BXxjwYwaWcG85pIaNx4YKEtJ6iEp7jbc+VA422yGa78Ai8euXwhLJriphV36/
+	 ucQM+7dQ65Go7peMpdUiwXPCWhItN1US2OnrQ10uLfrroqccluFHJM/wPTmbplTY9DL2r
+	 Cb6fPkCe2G/gVxxQGYBRFUB7L0GXVe3CF7qPTde339z8NQguzcg7u11VsvsACUTIl1Z67
+	 bU1TTI5MaHTIvTtb/fMEDZl/ByKr1poSGsrpMAy6FhfO14eCXYhEl0G+IzSyJVLzfNB1b
+	 Nzu4uFZjSKlSYOBXHIlmBm2KBJ72e1gFc8XTF2lt70hNrJ4RTQQTK5Ru0gPH0Pq0RYw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k4AWpDRt;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dCDutom7;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFFF6606A32D;
-	Sat, 14 Nov 2026 00:06:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACFFD606A32D;
+	Sat, 14 Nov 2026 00:16:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k4AWpDRt
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDD661F000C4;
-	Sat, 14 Nov 2026 00:06:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dCDutom7
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FFD81F000C4;
+	Sat, 14 Nov 2026 00:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794614783;
-	bh=wE03TbsB9gImhYnU2nKTXD/1I5ExgnTiNLVen12piB8=;
+	s=k20260515; t=1794615365;
+	bh=H/O+Mo0VVNCwn6G0Coe3gZ4s1DLGig40Bsnf3oJKl+Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=k4AWpDRt8LvwPevye0mEuE5EvOZY+d4tlO8zpe60/D44bONfLBzIpNvyKdBckF+sL
-	 S9DPoXRrauM8EhUrnx/IXRWqm89zHXKxYaob9vvMqwfvvqkTo2CGi21FvCWf8PYbrs
-	 9GyPav1lSxd+4RL3BKoL+L8LVL48GJa0TsmfaE+0rfojt1iD3d1FRVOWQZI/CiXoGj
-	 p/17LFrQRfqUtYtMMss4HvtNrj4TS7kw5X/mwDhYgIkCOe7vM19EGeeOwLlfA3mGdS
-	 KoDkadPjAskREnC+MQpWcNtLgkq7TjzyCTtaRbY4VyJN1fZGgIexxyu20Q3W1ekF3d
-	 AyW9ykmo6QYlg==
-Date: Sat, 14 Nov 2026 00:06:17 +0000
+	b=dCDutom77k2RDxhVXA+pNPIua+fqPi9LCaPbyP7f926WWu3xjdSU7LdPc3YHSx1Lv
+	 o8gTzM51nncEAIU+63cLubC7f85H7GDLrwRb0Ggsr2WImuG3ACFXWKWpxwFx4QgHGX
+	 baFSXtGFPOvsvJmyflUQ+sn0c/4aTVSogDuuAlJiiNwEg95fyZPCqUSzhoczLOIc5W
+	 sRuFsARvUMds8rkuutA2mw4MWOQrB85qDK73DF76CPO0L+I3mGh81GUW6weUQI9bO9
+	 8BIg8H7P8EHwTsSIvt9RocaHjHzU8rlsD9QKokyBkEq284j8RQKG4Dl0ZA7IT8jVnf
+	 oKG18v0SLnrrw==
+Date: Sat, 14 Nov 2026 00:15:52 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Waqar Hameed <waqar.hameed@axis.com>
+To: Luca Weiss <luca.weiss@fairphone.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, <kernel@axis.com>,
- <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 0/2] iio: Add some drivers supported by Axis
- Communications to MAINTAINERS
-Message-ID: <20261114000617.57be5556@jic23-hlaptop>
-In-Reply-To: <cover.1794589264.git.waqar.hameed@axis.com>
-References: <cover.1794589264.git.waqar.hameed@axis.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, "Rafael J.
+ Wysocki" <rafael@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba
+ <lukasz.luba@arm.com>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Laxman Dewangan
+ <ldewangan@nvidia.com>, Bjorn Andersson <andersson@kernel.org>, Konrad
+ Dybcio <konradybcio@kernel.org>, Hans de Goede <hansg@kernel.org>, Jens
+ Reidel <adrian@mainlining.org>, Casey Connolly <casey.connolly@linaro.org>,
+ Val Packett <val@packett.cool>, Daniel Lezcano <daniel.lezcano@kernel.org>,
+ ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 3/5] thermal/drivers/generic-adc: Allow probe without
+ TZ registration
+Message-ID: <20261114001552.3ae8f05e@jic23-hlaptop>
+In-Reply-To: <20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
+References: <20261113-bat-temp-adc-v3-0-743979a8fd90@fairphone.com>
+	<20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,28 +75,79 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 13 Nov 2026 18:20:41 +0100
-Waqar Hameed <waqar.hameed@axis.com> wrote:
+On Fri, 13 Nov 2026 16:56:44 +0100
+Luca Weiss <luca.weiss@fairphone.com> wrote:
 
-> This patch series adds some drivers that Axis Communications originally
-> authored to the MAINTAINERS file. We have resources to maintain and
-> review patches for these, e.g. hardware and test frameworks.
+> If the devicetree node is not referenced in a zone under /thermal-zones,
+> devm_thermal_of_zone_register() will fail with -ENODEV.
 > 
-> Waqar Hameed (2):
->   MAINTAINERS: Add Murata IRS-D200 PIR sensor driver
->   MAINTAINERS: Add Nicera D3-323-AA PIR sensor driver
-Excellent. 
+> Since the driver is now also registering as an IIO device[0], allow the
+> probe to continue without the thermal zone.
 
-Applied to the testing branch of iio.git
-
-thanks,
-
-Jonathan
+Papering over problems, or expected path for some devices?  If it's
+expected path we probably don't want to print a message with the
+word failed in it.
 
 > 
->  MAINTAINERS | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+> We also can't use gadc_thermal_get_temp() anymore because we haven't
+> necessarily initialized tz_dev.
 > 
+> Link: https://git.kernel.org/torvalds/c/3762f5851ac5 [0]
+> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> ---
+>  drivers/thermal/thermal-generic-adc.c | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
 > 
-> base-commit: 6d582d78fad9d828e575ca0cdcff8ea47a77220b
+> diff --git a/drivers/thermal/thermal-generic-adc.c b/drivers/thermal/thermal-generic-adc.c
+> index c6a7a65aa6a6..40a34e97a515 100644
+> --- a/drivers/thermal/thermal-generic-adc.c
+> +++ b/drivers/thermal/thermal-generic-adc.c
+> @@ -86,14 +86,16 @@ static int gadc_thermal_read_raw(struct iio_dev *indio_dev,
+>  				 int *val, int *val2, long mask)
+>  {
+>  	struct gadc_thermal_info *gtinfo = iio_priv(indio_dev);
+> +	int iio_val;
+>  	int ret;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_PROCESSED:
+> -		ret = gadc_thermal_get_temp(gtinfo->tz_dev, val);
+> -		if (ret)
+> +		ret = iio_read_channel_processed(gtinfo->channel, &iio_val);
+> +		if (ret < 0)
+>  			return ret;
+>  
+> +		*val = gadc_thermal_adc_to_temp(gtinfo, iio_val);
+
+Maybe spin a helper that is used both in adc_thermal_get_get_temp()
+and here?  Whilst it won't save much code (may actually be a touch longer)
+it will put the two relevant steps in one place.
+
+
+>  		return IIO_VAL_INT;
+>  
+>  	default:
+> @@ -195,14 +197,14 @@ static int gadc_thermal_probe(struct platform_device *pdev)
+>  						    &gadc_thermal_ops);
+>  	if (IS_ERR(gti->tz_dev)) {
+>  		ret = PTR_ERR(gti->tz_dev);
+> -		if (ret != -EPROBE_DEFER)
+> -			dev_err(dev,
+> -				"Thermal zone sensor register failed: %d\n",
+> -				ret);
+> -		return ret;
+> -	}
+> +		if (ret != -ENODEV)
+> +			return ret;
+>  
+> -	devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
+> +		dev_info(dev, "Thermal zone sensor register failed: %d\n",
+> +			 ret);
+> +	} else {
+> +		devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
+> +	}
+>  
+>  	return gadc_iio_register(&pdev->dev, gti);
+>  }
+> 
 
