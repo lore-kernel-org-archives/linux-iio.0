@@ -1,64 +1,61 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794682260;
-	b=dYrtemFy835VUk3TCG7zdaXcLQGqoOT1djJXaUmt1+a1w9kSY1ZfFhJTDNATbUR4Fpzf
-	 euHu0lUB+EQ86GfcUu8L0HjZ6BseksSk1sBG0dSw7wjUWGXaMc0phoIU7Kw+3kuztGJiR
-	 oLCrtApfI3hK/PoMqTRQJlYneIduk1+ijmZUwMdvVOaNB53rg9DkM08KKMGAkhjeDLzET
-	 fagblts2E54Tvgw+dCgsd+suKZa8sQOi+OdWb/UJ/u/z/H2GXMb3zb4/S24WQh7NhQjca
-	 MTecQzqtbwqv4eKmto0r/TPPZMxqAKlnbQ8p1w3kqd0GUqk45dHK0FnZ/WA7Dc0ZaWg==
+	t=1794694569;
+	b=FsMANxQflayQdBkfnJkotSYvPjNJsKv51M20akraYAwr1X9GFrZalaE8MLeA5Vzoogt1
+	 ec9mJ+ILfjzT08uVu/Yl0QwCruOqSoWzWUwdroaz+AxH3620TQmPk1CPrKbosRWjTYdgj
+	 0P+yQnXyiHKCmimvJYj5Q4LhgRiYueyyu0G2FJUVog3z+4upOu4t6JAz7EVuq1NTfKoqD
+	 rgJjpniqgT3FdixdCvtYJ4URzFrL/6JSwlTt7MNxJqAS4Z4vGAyyI05A8SffT82px0b6I
+	 fvvkFwevDW0CQK/REIyNxXQ8cl/KwB8IHR4pWtyU04P6J2ojy0iTpelbcPDNLCHekJg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794682260;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794694569;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=sMXrHsolRG3J/I2nE1oI1F3DJZKjH3O2j2E6lRmGAtI=;
-	b=N1J72bmZiohbAT6uEicY+mu1a337nDkXkhojjtgXONmWkaJRDL+i7I1VZwTrwvbLICGd
-	 in71SfmXpvANoQRUtgw4NjGRFM8V2ZrqpI+/tx72Rj4ff9CtVvfrG/BFtmHSXRBnTrRdi
-	 duWOHrKwOTiV6Njz2qczPZhVv3FYVhUYwtUekbKugMuAO/ww05zODjHF/sDVTvhhrmrC8
-	 Wd/dNEDimrwp6z/I0oHm0C8UwFla1Ef5u3B9ErDDRjpW+L82Qyli2GDSbYig6gfj9ppjM
-	 yR1zAI1Db3yp4Gr7wHiJuBo+m++yaKmIFbefnnqfqsqOpBSI5cRfMEgmQFw8eOVzKMA==
+	bh=IDjZSVgHwAuIz39+r5A66Sm/O8aoe/1wLhdOdEPnhHY=;
+	b=snAmPwDabU05HreSLfhil1SYLW1Ltvp60W9GTQnvUwshrgKPxvEA7qwDviMgjo8KQEaz
+	 wZQGuDgHShJd3JCUeAnht10T3MrA/1VAc9WpqUMXxk59aLSKC1vdiQsQ+IIECrwfw0Khk
+	 ozCOY7QHpAeDdYvYeK90s0Ndb4vrke0ipm+c/2b8coUQ6XVNAS3t9pjp7HTg/v/OiuLX6
+	 8KHMfAbpfqhNNJsPXBUBKqufxJCo/vUubyfHjqqTZ3+OWRssyOu5Yqjfni+aszcD5tF2e
+	 mvxzo/odwg0MpJArFm6xkpyJtqPEiSSAPohdH4BqqSSNhyC31L58YozNK77iEdBRqAw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NlsSzBI4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PdyS2TkR;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28E96606A329;
-	Sat, 14 Nov 2026 18:50:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FCA6606A329;
+	Sat, 14 Nov 2026 22:16:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NlsSzBI4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CCB71F000C4;
-	Sat, 14 Nov 2026 18:50:56 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PdyS2TkR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0161C1F000C6;
+	Sat, 14 Nov 2026 22:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794682259;
-	bh=sMXrHsolRG3J/I2nE1oI1F3DJZKjH3O2j2E6lRmGAtI=;
+	s=k20260515; t=1794694569;
+	bh=IDjZSVgHwAuIz39+r5A66Sm/O8aoe/1wLhdOdEPnhHY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NlsSzBI45RTY2QD9JZZw15/cPFKHjhMg1sEMEBxkV8amdg1yO+DFVQ8AQqHYY0z5L
-	 jLO7hZiQS0cqtBZ68PLHxfjCWzE7EJAJHPFzXQx63FHzG0S4XE6FZ4grX2dWC4Ih5f
-	 rvcGcgSTx6Fs7qzSYnN+fiGVYf997qz9wsTJFwqspOPNZI5xchKyzHRea03RDyxBUx
-	 ZV8pGBQREZ5dfECdGUF/1oOF7pOed9HxTfJ5JMRvWaN73lIXS/Jdw1fm/FldNWmZrZ
-	 JtH6Ok24KutZDvWBMjCZuXBj25LaiYExQ04VwC7l62ECsPgSZocMAVi/fgXZweQn7Z
-	 +fNbHAAymlQGg==
-Date: Sat, 14 Nov 2026 18:50:50 +0000
+	b=PdyS2TkRxRUFB1AbigR8BuzeBsDPUfFp3gvfRlGbyK402/zw9q0NtFRTQwbVxWD15
+	 bOFBsnVLxvZGL+LxdA77H9w06jZqOsnIcqWXMa6a43ESfyLrGgXWDCDFbKPZih5Zrf
+	 RzN4rejU43FNyNcGfCBiWv/uAVNc2lrUULYEN0V8wgdkUngqHrx+ixzODj6gj3snJb
+	 1KXvIhGgB2VfbvfaabPSpuHbHF448CT9z3x+alnWitCNf3YLyNHZVBD4h8yNVL0Nys
+	 7u52Y6jAsHvlqSnOiMkm1t2p4OCqmbTLOoEc3MCyoPISIKY0xgmMjsLXkW1s9FN1/T
+	 WuohnOztKqFsg==
+Date: Sat, 14 Nov 2026 22:15:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Roman Vivchar <rva333@protonmail.com>
-Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, "=?UTF-8?B?TsOtY29sYXM=?= F. R.
- A. Prado" <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>,
+To: Chi-Wen Weng <cwweng.linux@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Victor Chernyakin
+ <chernyakin.victor.j@outlook.com>, andy@kernel.org, conor+dt@kernel.org,
+ cwweng@nuvoton.com, devicetree@vger.kernel.org, dlechner@baylibre.com,
+ krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH 2/3] iio: adc: mt6359-auxadc: mask conversion ready bit
- in mt6358_read_imp
-Message-ID: <20261114185050.1aa08612@jic23-hlaptop>
-In-Reply-To: <hAkgxe6jt5EJW-8bHBs53r3CWCxKxjjzGm6u-l-RzYaGedsBunJrv8nOB48zDSLaMD_jJqtC1Xt1wlz0zDdGF28li-clCdIjUzE9xSbh7Hk=@protonmail.com>
-References: <20261103-6768-6358-fixes-v1-0-2a868a33152b@protonmail.com>
-	<20261103-6768-6358-fixes-v1-2-2a868a33152b@protonmail.com>
-	<20261103234540.46cc8c1b@jic23-hlaptop>
-	<hAkgxe6jt5EJW-8bHBs53r3CWCxKxjjzGm6u-l-RzYaGedsBunJrv8nOB48zDSLaMD_jJqtC1Xt1wlz0zDdGF28li-clCdIjUzE9xSbh7Hk=@protonmail.com>
+ nuno.sa@analog.com, robh@kernel.org
+Subject: Re: [PATCH v4 2/2] iio: adc: Add Nuvoton MA35D1 EADC driver
+Message-ID: <20261114221559.1867c183@jic23-hlaptop>
+In-Reply-To: <c52e7b57-9d40-456c-a2f6-545c0bca9b46@gmail.com>
+References: <20261104091136.151269-3-cwweng.linux@gmail.com>
+	<SN1PR12MB2528F7F6F04801AB698A5A60A5712@SN1PR12MB2528.namprd12.prod.outlook.com>
+	<avR2DaxSJJwpnWP9@ashevche-desk.local>
+	<c52e7b57-9d40-456c-a2f6-545c0bca9b46@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,73 +66,60 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 04 Nov 2026 00:19:33 +0000
-Roman Vivchar <rva333@protonmail.com> wrote:
+On Thu, 12 Nov 2026 09:26:00 +0800
+Chi-Wen Weng <cwweng.linux@gmail.com> wrote:
 
-> On Wednesday, November 4th, 2026 at 1:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Tue, 03 Nov 2026 18:32:08 +0200
-> > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
-> >   
-> > > From: Roman Vivchar <rva333@protonmail.com>
-> > >
-> > > In mt6358_read_imp() the raw ADC value is returned directly without
-> > > masking out ready bit, resulting in incorrect battery voltage reporting.  
-> > 
-> > Can you add where the ready bit is.  That might help someone
-> > looking at wrong values and wondering if this is what is causing them.  
-> 
-> It's at the end of mt6359_auxadc_read_adc() function, which is included in
-> the commit message. Do you mean include the code part too?
-> "*out = val & GENMASK(chan->scan_type.realbits - 1, 0);"
+> Andy Shevchenko =E6=96=BC 2026/11/11 =E4=B8=8B=E5=8D=88 10:05 =E5=AF=AB=
+=E9=81=93:
+> > On Tue, Nov 10, 2026 at 08:08:03PM -0600, Victor Chernyakin wrote:
+> >=20
+> > ...
+> >  =20
+> >>> +	if (!num_channels)
+> >>> +		return dev_err_probe(dev, -ENOENT, "no ADC channels configured\n");
+> >>> +
+> >>> +	if (num_channels > MA35D1_EADC_MAX_EXT_CHANNELS)
+> >>> +		return dev_err_probe(dev, -ENOSPC, "too many ADC channels\n");
+> >>> +
+> >>> +	channels =3D devm_kcalloc(dev, size_add(num_channels, 1),
+> >>> +				sizeof(*channels), GFP_KERNEL); =20
+> >>
+> >> Couldn't size_add() just be regular +?
+> >> (Question to Andy who originally suggested it)
+> >> We've just checked that num_channels is small and won't overflow. =20
+> >=20
+> > While that's true, the other aspect(s) of this is in play. Namely we wa=
+nt to
+> > have the same pattern over the kernel that makes code robust (tomorrow =
+some
+> > cases can be modified unnoticed with opening such an issue again) along=
+ with
+> > the potential of finding those patterns and update in case of mass-upda=
+tes
+> > of low-level API, and I have heard for the matter of fact that devm_*al=
+loc*()
+> > are in the plans to move to something like k*alloc_obj*() or k*alloc_fl=
+ex().
+> >  =20
+For what is is worth we now have devm_kzalloc_objs() in tree.=20
+I'd imagine a mass conversion is on the cards, similar to what
+was done for the other allocation functions.=20
+However, it's controversial so probably don't jump on that just yet!
 
-Nope. I mean which bit is the one that will be set and shouldn't be.
-Is it Bit 15 for instance? 
-
-Just having a note in the commit message may help someone (or these days
-an LLM most likely) find this.
+https://lore.kernel.org/all/CAHk-=3DwgYBrhvo2NAG_Ja-0ovPf=3DxO20Gcopv9Yrr1u=
+=3DQVxECZw@mail.gmail.com/
 
 
-> 
-> > This one is pretty glaring as bugs go (given I think this means the
-> > top bit is set?) so any reason it wasn't obvious to anyone testing
-> > this device?  
-> 
-> I can't really tell if the driver was properly tested. As far as I understand,
-> Chromebook devices use some embedded controller, which likely manages this
-> kind of stuff without PMIC ADC. There's no in-tree mobile SoCs with mt6357,
-> 6358 or 6359, nor fuel gauge or thermal drivers (yet), so maybe that's why.
-> 
-> > Jonathan
-> > 
-> >   
-> > >
-> > > Apply the mask to strip the ready bit, matching the behavior in
-> > > mt6359_auxadc_read_adc() function.
-> > >
-> > > Fixes: 3587914bf61d ("iio: adc: Add support for MediaTek MT6357/8/9 Auxiliary ADC")
-> > > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-> > > ---
-> > >  drivers/iio/adc/mt6359-auxadc.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
-> > > index 951d236f972b..09432d0974cf 100644
-> > > --- a/drivers/iio/adc/mt6359-auxadc.c
-> > > +++ b/drivers/iio/adc/mt6359-auxadc.c
-> > > @@ -502,7 +502,7 @@ static int mt6358_read_imp(struct mt6359_auxadc *adc_dev,
-> > >  	mt6358_stop_imp_conv(adc_dev);
-> > >
-> > >  	if (vbat)
-> > > -		*vbat = val_v;
-> > > +		*vbat = val_v & GENMASK(chan->scan_type.realbits - 1, 0);
-> > >  	if (ibat)
-> > >  		*ibat = 0;
-> > >
-> > >  
-> > 
-> >  
+>=20
+> Thanks Victor and Andy for the discussion.
+>=20
+> I'll keep size_add() for consistency and future-proofing, as Andy suggest=
+ed.
+>=20
+> Thanks,
+> Chi-Wen
+>=20
 
