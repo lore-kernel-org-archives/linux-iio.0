@@ -1,99 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794637283;
-	b=dHQiKeCaTA8h/4pFr92BWQTfHFWoW5agFMe8qJjfC9P5FHYfzCuIiO9fG+4L6L3F4UhT
-	 SLEPZ1OMPPQAMGaSXrliK7FNU03UVGDwxD14kLSLWbkiEwe1mqou1WGBUPQAuiXGjEpVL
-	 8QUqbAI+y1RLIzLcE4t+zC4VbamxrB8O14iE727ZReY9gz1kT9PLb5CZs55upEOLTD7PR
-	 8ypAvZcNPz3iqae62+0SahGWqJIgJbqjpeD7B0Y6XVlgNbv97RGWMPa8z8NxNqlzFqGK1
-	 nkLwURFop/bxAjnIOv2a75IObcw1WPMb0nxySqGG7TQ5p9siOBv4sUUJkElaBol3bjQ==
+	t=1794641248;
+	b=ZLdKGt6KXbHjf+08SMoBX6e1jbI95Au3a385BZagHrAjwSTrzMntn+8EJFnrwR3G6wgS
+	 /mM16ix7WnCh+ZDUTavP1i9H9J1ujwjDAudnhnd5vO8uAr249r+1Uhz8SuWc7DaBwyR1Z
+	 daj931vTPt2diQt4cSftmu0Q78dXNR7SEY0w2dafEMLWJ7w+cn6E2ctYJfT5iFvftP7FR
+	 MPF2qESI5QfPlNZUkDIDHC1CqP8ObzxNtI5Y/aGffNEyirWPvbH2hc9AztmcRjWI0F0R2
+	 oiWHnAayZQZzFNWmQeVCsyYIVnwFMnKm3g+IN1egBWaeVIkJsU2t8lnTJ127MWkNywg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794637283;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794641248;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=abVHe5Yq8xpjvjNcf4nXdIo33DFUomEvkrSWJnINeGU=;
-	b=Vb2pXhKeggLog61+5qH3yQVVjqk6qe5sJML/QslwNnHCpFvJJrw0KCOL9DCsEPMkkMZ2
-	 01ivz2yQOPsA/vO+unL364CdpQhXQa/PoQbNtBv6rrwdgmqyUu79ExdZxQrPIODuc44Sj
-	 LSjXg/up5G7+zCJYvJAMhQxkREkSyK2CNd+7pmqNMOBVQwC4er2gVwwuU+r45HEVlnzpP
-	 z5nvjZZ/N31N0z+67ZtnEqE6/I9u0YDL+2rVepOBnHIKfDoni8wwD2q+QEjeZe9hGmzCe
-	 59avIbXvtUeeTc2x2EBHFKUGiH00oxbmM8ZjXiOhermr4cyNQJk/dh/A+rJFlKj44Pg==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=HRL6vIGNzmBBlS3DC/VjwZ6m9MHEtJ+5vgV+r63OYc0=;
+	b=wI3IfZKmZB0oVcvMB9+AGdM/ZoxKRmKOWRNloC9cUv5bUpDLWw/bySu1gZ7Vc2VUsUQQ
+	 /gCD5a9Qk1q1cLx5Y0pDhor4kBsl8bFICqPeq+cDQBkpCAZxPoMsY/8uxixFu73EO+UMv
+	 iyoaz76cGtz9Gh2xmDFBYEiwerzrSioXuXEYTNaYf9olMW3CKF2shd5oB4Lucpe0PLvMr
+	 zsTbIZkrgyiDFgym8VMJsRD+VnVTZWGoQgMdsmIa0lqSMvJeqx1vXc/Q9fekuJqtP/UhJ
+	 +2tYWPkQrVCmtKan5CnpYXxAq7PzF5pNQXiUkcPwXYwi6NYKQ5RxqlW7ghQSvwv76wA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FMrelVvG;
-	arc=none smtp.remote-ip=74.125.82.44
-Received: from mail-dl1-f44.google.com (mail-dl1-f44.google.com [74.125.82.44])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qIGXU3Z4;
+	arc=none smtp.remote-ip=74.125.82.174
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 394A7606A330
-	for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 06:21:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 394A7606A330
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A9B3606A329
+	for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2026 07:27:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1A9B3606A329
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FMrelVvG
-Received: by mail-dl1-f44.google.com with SMTP id a92af1059eb24-1aefd1bf74aso1269273c88.1
-        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 22:21:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qIGXU3Z4
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-33bf40b0c8bso3417614eec.0
+        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2026 23:27:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794637282; x=1795242082; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=abVHe5Yq8xpjvjNcf4nXdIo33DFUomEvkrSWJnINeGU=;
-        b=FMrelVvGEGRP9SrqMgasxA/KJYJ+/JFNu+5AbzinUjZAP+nbyaLR9aiDX+md5Sdrsd
-         Wi8Xqw6tVdzsLFP3SVg/U73LtR3JsN6AIR/NFrraNGV3XkRlzseGQqVCjT795A0etIfb
-         FTQRXG+bKfIVWPnI3VDSygtCKvvE+B1nPcBKLYUq4O08dmdgQqOiPU6eJADwLq2itgMH
-         yunKcMQGgfTtCA3giaRuWaNJoOpdJ7I5fc7+NrB4YKBINky0c5rnrRZK8Iv5HMAEehUt
-         P9YN4KIQrsPRoT5sAuc9Dw10TPCWZoHvt5h/lUamhw/DPXMtg4w0dMcdp69EN7/Q88HH
-         GMtg==
+        d=gmail.com; s=20260707; t=1794641247; x=1795246047; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=HRL6vIGNzmBBlS3DC/VjwZ6m9MHEtJ+5vgV+r63OYc0=;
+        b=qIGXU3Z4jXmEM9CVu3DsWA2oTW/VefTlhNjJk5xexnyCRaPHMVrOEt5ZHF5tpSeo+S
+         yVZjdIsrjqqTw0QN9xKxIyPoJYejmZse+YJsc9al/rsEAO7qJnWxUmKiVQ7N3EJFgxdD
+         qUcoGD9oWOj/Pw5ehg3zurOY0GjHiwsBmRPflt45AiWZg/HKY2q4somD2ncVeKUaDyup
+         hjeZPNdhak+QPasVFlUhs0gc5smXGuAeOi5X0GBJMLo4Nz87M/M0R+palV/EEOerBI1t
+         /0yhaOszCGlK5tKDfLfRz3brBtBUEAJ6v3WJLcW17cbyRQpFC9Y0M3wSY0PQPbVDCrXz
+         f6UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794637282; x=1795242082;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=abVHe5Yq8xpjvjNcf4nXdIo33DFUomEvkrSWJnINeGU=;
-        b=nwApF7H6bXPLfuD+cyOqPb1LmeqbUb3b7FFEpojxTRJzju49RMat4XQ7V1OlL9au0V
-         HPCDaKeYCsATXgs3+SU8pkmk86JFvaeGFOCUy4zDEpKJfjXj+hEVwVJrPG36s4co4YE3
-         N9Bjk2X1mwhCJGFvGQqpehpbLkjWvl+ae9g044YAdVwgO5gSVZWQHtCIvAYqR/NCn9yT
-         Iscw1d5asdj9LqNjZH5G4Dg0MJ4y7rb5YxdjJDwDlc5HAZ/rAJMDidRUt87YtrHf9XsH
-         k/8yvqLYSxWKrcrBnoU3PtdHEGwCoMMYWS4hSrmgca4841FWHt5gvvvp4SmLJ8cAlnHb
-         KfBg==
-X-Forwarded-Encrypted: i=1; AL+hErE85d6OyMqTKv/L+csS75P+hRt/8MOgMW2qwksi9Gi+A2GwnKgtL75WFAWuFhHtk8WHedusaNAxJa4=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/VO+noc5UnzTeX8mtPtoU5RiJEjuafbjfBYb5arpW77OP6FivC
-	sfYL65hvUxLnZJdyCrmTGWKqF1mX3agMyCN894NwyBr0xtak5leC/mOo
-X-Gm-Gg: AYBFou3THVCycxOoayaXvyjcAqBI+oDf9ybGp559XJTQETO18M2mhLMVm8CRfEztTNq
-	iN//646jSzSz4LdShsHpTDn7U8FoZGGPJzKTdA5mw3PY/b52g3OVumsgU5D2EUJyagJbrm07guB
-	cDNLZgMz8RviRXxuKipwHJlEIItN7hl/mGFjIytsg9HGwO/E0yFVn6sFu4qZPP+VoHS1YV/+PGl
-	akN9ZGsOYYUvHDJKI282PUnQIxiUZQTKKF6u5sNBg0XXI/dJ/aPGrKO1TOKu306lvlj2OSnjPKV
-	I1a1XEdtJ31Wi4WUwzhxzDYkqOe21D2C94KzZYzCJ6hsEeMvERX4g1zdOVUDrLFvYM6wMEyrZgv
-	V4f8JgEnecLsSO8X2aqlJh2AH1nuV4sTwBUzVAttMLPnFFcYZG4wpYZHSuJQ0V4R9K0XNRXprzD
-	VXm3KnpRZU/brPp1v+8ry8Gy4RVucnjAtXhQm+cAdc17016dPcshPs2ZcRs6IaFsxhhaMXdAv2N
-	d2eApRycBS/ER7dMCidS8ARm7/BF1nhZ3ae1FzS4n1Z7JatzvEbw5Ow0feCcEtlv2c78ycGjfSL
-	OEel9qxOClUmoAJqUN0tAJ66EXF0GQJBMYh/+Lov8sCF2jpQhAN5wjKDWorSTN0gHPoC+EASHpY
-	ZSAeC1A==
-X-Received: by 2002:a05:7022:7e84:b0:1b2:6b17:28e6 with SMTP id a92af1059eb24-1b505b6c46fmr3635557c88.9.1794637282100;
-        Fri, 13 Nov 2026 22:21:22 -0800 (PST)
-Received: from kdev ([131.179.133.114])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50313d990sm15468809c88.4.2026.11.13.22.21.21
+        d=1e100.net; s=20260707; t=1794641247; x=1795246047;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=HRL6vIGNzmBBlS3DC/VjwZ6m9MHEtJ+5vgV+r63OYc0=;
+        b=t7JTHosoiEOJdNs03Xmx812rlULF8pA3G3QHddtiKlggqUCHsPip/kwskikCEiBavL
+         WUrr+VnZEAJRmiafPSuVo3GqmpVg6Ml4FRDIi7MSjjYhdZG1Tpi5w03IBj5eyq5/tvEx
+         5CLvPcMTdQdZF1DE/pQQBNn1fBDDkdWon9MIoKX8iLhYELkQAVIj7fCi4KMDiiEAQsm/
+         e08LYUWUM5JTHaJC9rEsLsDtPFtjQKsU3RP+Np9DISALH+jft07KJ13cD04c6+1hDHPv
+         wkIcMTE+EpPUDyBxJ+GfhmR7xskCN4IEkhTkTb4yBdrZd05c5wLRzDTlE5v+zXI3Ccff
+         xrkg==
+X-Forwarded-Encrypted: i=1; AL+hErHmoJBNdFEvWUPS817EBpAJt4B3lobXTPQv4EYYnjLVGCPChMVg8HKPkA87uYhAZ4CVUL1nPOijCdQ=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+pR8h96vTn1fJRk6F98BtYwk1EqymUrYq7Dn6kKlomAeNvNvir
+	osJNhLDJUbt/fRtiwsx2qHHVhOqdSk2XKuqHu0GZQwmcI8NmMIOoHs85
+X-Gm-Gg: AYBFou3cI4mDzcqOoYBaE6yMzKZ5JYmmitsLXn/HSiVecR5BsXSv9nY0SosWskhY2IW
+	EU8L3Fbiq1FptwMl3F9MLECPLO4z9CF1WPKy1UDn3FUq384VpWZrTk4uPgG0lQKIpL9bo/vej9t
+	gR8Y1T40Bt8//BRXgT5v0DwPO88ztSzqDwJe0qdknyNTRaBMADvxYa6gqOCds63XwAZpVhmsJgh
+	BOiSgf3InWMqO8A3TMoDr4gKN8HCmLCLa+gJi3RdBiWIf0Abb+vuc5ljnqYmQ9OeNKoKJYr2esv
+	Uj6675oVqlnVk1FeAB6lU6oZ5gLVAzASl4xlvpf9Goh0CAcspOtAivvXLC6j3ZxoxAhoAcKHazV
+	H/DwkXHMPA+nLcj5yQ3w58BZ4bFfn1JThOPbbxScRNlqLx5M/L6Z7Jxw+gRj1pO3KvvZg122uWf
+	VvpwgeoKMJVPVmzEdZVA8/1iXKG7wU/zhCCKQZF8aiO+xWZXcHZJjje7DNaiaSGnZM+bgyzAbH9
+	jT6v93O7pyeGp/pYC02j+tQ/X6ZK8hT+1XwAUzeZUt+8mDZ2esVhM+wigyJu6iQVkBPITXYCwH0
+	6xVBOBDfr3UnYLzkL+Qo2NoeSS5EAODszD4Vm/PJMluH8jiKC3IzWi73S9g3p1rHh+K2Pr7kBKK
+	HFXDjBqbZnhOMWaK9vNlQeOMc64AwZALnBIOmspzE5zcJlqcvxZcYIR3OyM+bHaQPT5yXaFRlnW
+	Nw9jyh9IiYFNisF4vqSCrFsp9slBHtCSLFQLId+zxkKg==
+X-Received: by 2002:a05:7300:828e:b0:375:dbeb:b363 with SMTP id 5a478bee46e88-37966a575camr4240798eec.28.1794641246996;
+        Fri, 13 Nov 2026 23:27:26 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-379563df84fsm25914706eec.20.2026.11.13.23.27.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Nov 2026 22:21:21 -0800 (PST)
-From: Niloy Meharchandani <niloymeharchandani@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Fri, 13 Nov 2026 23:27:26 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Niloy Meharchandani <niloymeharchandani@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux@analog.com,
 	linux-iio@vger.kernel.org,
 	linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Niloy Meharchandani <niloymeharchandani@gmail.com>
-Subject: [PATCH] staging: iio: frequency: ad9834: use devm_mutex_init()
-Date: Fri, 13 Nov 2026 22:20:21 -0800
-Message-ID: <20261114062021.142296-1-niloymeharchandani@gmail.com>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: frequency: ad9834: use devm_mutex_init()
+Date: Sat, 14 Nov 2026 12:57:19 +0530
+Message-ID: <20261114072719.21558-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261114062021.142296-1-niloymeharchandani@gmail.com>
+References: <20261114062021.142296-1-niloymeharchandani@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,39 +108,15 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Initialize st->lock via devm_mutex_init() instead of mutex_init() in
-ad9834_probe() and propagate any initialization error. Since ad9834
-already manages its remaining resources with devm_* helpers and defines
-no remove() callback, using devm_mutex_init() ensures proper mutex
-cleanup on probe failure or device removal when CONFIG_DEBUG_MUTEXES is
-enabled.
+On Fri, Nov 13, 2026 at 10:20:21PM -0800, Niloy Meharchandani wrote:
+> Initialize st->lock via devm_mutex_init() instead of mutex_init() in
+> ad9834_probe() and propagate any initialization error. Since ad9834
+> already manages its remaining resources with devm_* helpers and defines
+> no remove() callback, using devm_mutex_init() ensures proper mutex
+> cleanup on probe failure or device removal when CONFIG_DEBUG_MUTEXES is
+> enabled.
 
-No functional change intended. Compile-tested only.
-
-Signed-off-by: Niloy Meharchandani <niloymeharchandani@gmail.com>
----
- drivers/staging/iio/frequency/ad9834.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 3d97502d5909..9cb1fcbcb1ba 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -412,7 +412,11 @@ static int ad9834_probe(struct spi_device *spi)
- 	if (!indio_dev)
- 		return -ENOMEM;
- 	st = iio_priv(indio_dev);
--	mutex_init(&st->lock);
-+
-+	ret = devm_mutex_init(&spi->dev, &st->lock);
-+	if (ret)
-+		return ret;
-+
- 	st->mclk = devm_clk_get_enabled(&spi->dev, NULL);
- 	if (IS_ERR(st->mclk))
- 		return dev_err_probe(&spi->dev, PTR_ERR(st->mclk),
--- 
-2.53.0
-
+Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
