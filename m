@@ -1,65 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794699463;
-	b=yAPxvISg7O1R4h7RAO1nWS1F4GGJ3Xf8PsVT7bVFKxtUYVzfAdLCgEQsf6h2ZcpuSC5x
-	 1jeTTIg+hzmsvZ+Pk9uQXTeQkbX83Eyz74PEmgAM0th1aSTEw6HRE0a5KpZXL0cw1lYJo
-	 WWnyYQC7ViEok7+KzF0b3ZrPRTD8rWhdbaJj6muFA/WWesP74Ld457Ur5GK7upXueS+Z7
-	 kJv51pfgJ2QJsYK5n7hkKVT9WyQmzE593T1Eg+V4uh2oqe+3rOtVdIBbOKcfGJkHsRuFm
-	 XaGbEXfljd+stBQVSuniz90NYBaM6BG6fqQBn0ymq9fJekZQjh3v118ZD0nhx6f1zsg==
+	t=1794699672;
+	b=Vh8gRQh2AiYyJRir1ymjZ59yure0wBDXCCkGwGryQyX1Zy3KaWDFHIb7mHjKCKSty9ba
+	 hWucHWjo4Q6aNyAzNi3N0ja0mbEzZnUSfyxyb7xBJIAYKiPuawqwV7c+7SMfqujeVCNQT
+	 lQO+lytV4IGyAXFwUfJVRKWC8KT8/DrTqwAno0W5nsaPr+Bx8Zasvzl1eTK/aZUPsVmTz
+	 fiFtVS7ADluusLzdQFPk+nC/HNeAiR69DvrPEtCyguNa2GpeM9+z/k/ATqlchxGih53Z9
+	 1/Kn+wyGvW4Fj40zDEv5B8Qo2TgVmbFCtroCvr/1XnpVwdaWr4z7C7e88q3yqHISY5g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794699463;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794699672;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=y5XyzBRavuP4okaOGXZ90TZzSPFe6fQb6IrQp9skEtQ=;
-	b=b9cbJR0lA1CX4TzWIucAyDWE/WtEmwGbTVFmTlUcYAshL8ptGzI4ykWqY1WilMr3vml1
-	 TD7JDJLmXMPv64O+CZXA9luMbx4ttovyTlJnTwrIkxJ+QWD6xrRzFkdrcT0OjZenc8/8L
-	 51MejjjcxEw5VXVc5XPplDei/hAMCxvkm3lzUUM8y6FSswTYVMqGCN1FtvFj65hA2ZfGS
-	 anNyumvFSFhl1zEZBhIfJmppTF2258Syh74ej+wljZSkHTLBmEaKZ4d2H0lQ+NcIr9cBf
-	 sIVPmNwwVuDIBiigauLnAnUX/3FU5Vo+ouKpjAvjvLVJxI042syCACYpdWvGzAiLfXQ==
+	bh=7jIg84RYZgIQMkeAqHqr537eDa1BlrYALqloBqR+ZMk=;
+	b=ewUKP7Ym/PctcscQ/LpyypQjzwrOZf5UXPD/DhzeowVxh2mtR73L7vgtGZ2mWxod3ei1
+	 79C3FevF90I0Joedk/95HZ678NCiNr4hI72GGE4gjARTAZIaqCwoa4X9xre41PDazA41J
+	 LwAAKdZmjL1AGDIrQEyxkZ4BWCnAnWcSPU9O02IHlREnxQFpoY5R6z+07nlT3xJLiwadQ
+	 OwAq9i6S2A/d+pbd5C/OMNP/31Acz8VcxPCII76Uw+YKMaL6s/B4lqdgnIT61oWZUlBCA
+	 waAYrtKtQvXVzVn4PuapoSu8ZIf16PHSkY3+5y7GpIAWjHf9XuJqlHP1NKCYMC2/h8A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ar702gn6;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="j1impk/S";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC225606A33B;
-	Sat, 14 Nov 2026 23:37:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD35606A323;
+	Sat, 14 Nov 2026 23:41:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ar702gn6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64FBE1F000CE;
-	Sat, 14 Nov 2026 23:37:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=j1impk/S
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95EE91F000C4;
+	Sat, 14 Nov 2026 23:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794699463;
-	bh=y5XyzBRavuP4okaOGXZ90TZzSPFe6fQb6IrQp9skEtQ=;
+	s=k20260515; t=1794699672;
+	bh=7jIg84RYZgIQMkeAqHqr537eDa1BlrYALqloBqR+ZMk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ar702gn6RMjcVpitImhXqL/NBu8WsHD/TjxzO6jHikyWtfI0RfUlO9xpncbL4vdjw
-	 t2F/pL8gHd/ltW4wJml5iBUKijn14FyPfUnTzw5+CA9N/vv4Z2+lWmZt6MeKxac3Lw
-	 xU6zoGu7E/F8HYNXsJsnRY2iBGa/B37Z7Z1R9teV8tXj3alTyonN4+Kan7PaqKfFXO
-	 zU4Y+zwtMYK2MuWdSDxkwhBp7j4WfuJGdU3SnT5KkGzQ9dlt7hreUHOkk2hu5lFmnR
-	 OzoNtYZw8wXW35hEpx5/m+Rho1mnbi33I36pF2FxFhEo1n1/7Kx0942xFP+YqwTL/B
-	 3mlS1pxUy4oYw==
-Date: Sat, 14 Nov 2026 23:37:34 +0000
+	b=j1impk/SgSHpSoJEjSBbK66+ND0z3mHggjZB4Wf/li3eCXLYH+79CYiA//6xNgLCV
+	 iKHukdtL95uRmva8I+iRHEjXSfKCq0UgcbXwiS2D1pepYCXkuFtUUquPts3d1CnaVq
+	 wq8WKMmrjB8uerF60SzRtYkrmpH6dtj7PIUHA5aRmMxA+eiNDaU+JXPkFYGJtTzrOm
+	 Avu/zQcuYXuSBoBBfy9fheXNnJU1W0HpDKc2t8s0riFhuVsn4t8r1OudKvsWO6hzx9
+	 uAEz5Ir83pDNB6x+0AJu/EL1vqa2VBS92GUdnxBAPxZ2KNl93Fe7I3cP1Qe4YeKkfY
+	 z5j+/44jxqo7A==
+Date: Sat, 14 Nov 2026 23:41:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: linux-iio@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
- Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- Song Qiang <songqiang1304521@gmail.com>, Radu Sabau
- <radu.sabau@analog.com>, Maxwell Doose <maxwell@maxwelld.cc>, Tomasz
- Duszynski <tduszyns@gmail.com>, Erikas Bitovtas <xerikasxx@gmail.com>,
- Waqar Hameed <waqar.hameed@axis.com>, David Lechner
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Arka Mondal <arka@arkamondal.net>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, Jonathan
- Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [RESEND PATCH 13/14] iio: light: vcnl4000: poll own trigger
- from interrupt handler
-Message-ID: <20261114233734.360afe30@jic23-hlaptop>
-In-Reply-To: <20261109094632.00002649@kernel.org>
-References: <20261109042851.1326940-1-jic23@kernel.org>
-	<20261109042851.1326940-14-jic23@kernel.org>
-	<20261109094632.00002649@kernel.org>
+ Shevchenko <andy@kernel.org>, Robert Eshleman <bobbyeshleman@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: light: max44009: Report the integration
+ time via read_avail()
+Message-ID: <20261114234106.3b7b0f0b@jic23-hlaptop>
+In-Reply-To: <avJVHXMynrrMiSzK@ashevche-desk.local>
+References: <20261109050738.93424-1-arka@arkamondal.net>
+	<20261109050738.93424-3-arka@arkamondal.net>
+	<avJVHXMynrrMiSzK@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,46 +67,56 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 9 Nov 2026 09:46:32 +0100
-Joshua Crofts <crofts@kernel.org> wrote:
+On Tue, 10 Nov 2026 01:19:57 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon,  9 Nov 2026 04:28:50 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
+> On Mon, Nov 09, 2026 at 02:07:38PM +0900, Arka Mondal wrote:
+> > The integration times the light channel accepts are listed by a custom
+> > attribute named illuminance_integration_time_available. That name has
+> > no in_ prefix, so it is registered at the device level instead of
+> > beside in_illuminance_integration_time, and userspace looking for
+> > in_illuminance_integration_time_available finds nothing.
+> > 
+> > Report the list through read_avail() and drop the custom attribute.  
 > 
-> > From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-> > 
-> > Keep a pointer to the driver's trigger in struct vcnl4000_data and poll
-> > that from vcnl4010_irq_thread() on a data ready interrupt rather than
-> > indio_dev->trig.
-> > 
-> > With the driver's own trigger in use this is the same trigger. The
-> > driver does not restrict which trigger may be used and the data ready
-> > interrupt is enabled whenever the buffer is enabled, so with another
-> > trigger in use the data ready interrupt previously also polled that
-> > trigger, running its consumers in addition to when it fired itself.
-> > Now samples are only captured when the selected trigger fires, with the
-> > trigger handler clearing the data ready status as before.
-> > 
-> > This removes a dependency on the trig field of struct iio_dev, which
-> > is to become private to the IIO core.
-> > 
-> > Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-> > ---
-> >  drivers/iio/light/vcnl4000.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> > index 911f8d1c74d4..cab6e0af8c7e 100644
-> > --- a/drivers/iio/light/vcnl4000.c
-> > +++ b/drivers/iio/light/vcnl4000.c
-> > @@ -206,6 +206,7 @@ struct vcnl4000_data {
-> >  	struct vcnl4200_channel vcnl4200_al;
-> >  	struct vcnl4200_channel vcnl4200_ps;
-> >  	uint32_t near_level;
-> > +	struct iio_trigger *trig;  
-> 
-> Just swap near_level and trig and you'll eliminate a 4 byte hole.
-> 
-tweaked.
+> Will break it user space?
 
+Yes, but given no standard tools would have looked for that naming
+we should be able to get away with it without anyone noticing.
+
+Given it's an optional attribute I'm guessing everything just assumed
+it wasn't provided.
+
+Always the risk of a custom board script of course that might cause
+us to have to carry the old broken ABI.
+
+Arka, you should clearly state thee concerns in the patch description
+to answer questions like the one Andy raised.
+
+Thanks
+
+Jonathan
+
+> 
+> > All eight values are a whole number of microseconds, so they go in as
+> > IIO_VAL_INT_PLUS_MICRO pairs with nothing rounded. The values do not
+> > change; the core prints them with six decimals, so the attribute reads
+> > 0.800000 down to 0.006250 instead of 0.8 down to 0.00625. read_raw()
+> > still reports the time itself as IIO_VAL_INT_PLUS_NANO.  
+> 
+> ...
+> 
+> > +static const int max44009_int_time_avail[] = {
+> > +	0, 800000,
+> > +	0, 400000,
+> > +	0, 200000,
+> > +	0, 100000,
+> > +	0, 50000,
+> > +	0, 25000,
+> > +	0, 12500,
+> > +	0, 6250,
+> > +};  
+> 
+> Make it 2d array.
+> 
 
