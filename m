@@ -1,63 +1,66 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794681686;
-	b=rcImd7cB6YBlklE/9Tr4CxZ2jFSa89ABxfZK6NLfHgAYoHgO0TbUFNGVNtiIWZWO7q4U
-	 nyDX86Fnb1BOK43qAcwwAKTNRfcxasBqryhIDPmiC6Pt4mPeKGCmFx6lcaxR4Ejgu9Lhe
-	 +P3EXYm5uSnj7TccC/BF6lboCpXN3mnrXOnKQrTKdrKt9DgFWJLtHW4umMVI7y3rpVzja
-	 j+WfDf0UKzOBzAoNpowNxm4othWOIYDehfUexZ0q1ouJlPOCZlJi/m2ApF/LbMy46d+DG
-	 OFHV28+VPZciPxyFIcAU8ROrXY4ucoOjtWrN+KXeVXNYoCVLPlg1aTt00jkV8Xd8qjw==
+	t=1794681994;
+	b=JXNkw4xBosAoo/x962wFpDpSPyh/3ZJBucx6THGQ3lXIdYz/rVCQ6YQIbfT6LK0siykz
+	 8rxCq5YZRQSxYIlIrYkFksLw2Po14r0S+RSSXs82RDKf8Ima/ep+1Jsq7Tu22YPIxr77+
+	 tpX/YJAyYVJTuDqNjtSjVzdlieVm6uSE6ifFtwEd43uhK4mU5kW4fQ+eybFTc30xjuUa0
+	 lvmDHNzqwc4+FtuusA9xA5FbAudAs12igfxWUFz9blNxTK6wr30igVwhH9yJMEFLK9ZUG
+	 Tk6A+Yd3NadG8xXYT4RBC6PqHSkDybNRSTqCXpQAMdextd/Ck9FAxtSVWcuqBN8VMbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794681686;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794681994;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=hbmmDlDuo/Aafn1uwFBtlXGmOEUSg36qvHcz00UKSls=;
-	b=QZZ50/NyxcL9OeNUfXFiWsIaBlum2lPDK+K3mbHSlU4N2uyac09gxs5AVDkK/lNh7q4E
-	 a1y2TtrlzBhVTdFdS8yn+J6n7UPRI0+8mjB2oRnBfJ3hQFRSxIcaykUdRPIFVQHhpmBKq
-	 URGgSjQObJKi9Ul9a00Yu7gd2sOPcuOiYqL2E0W/UQIpVHSFGU0G4rNXKxfH4woMJwEc4
-	 kvh0G07Y7eP6xMues7xih9+Ry6z9D7hirmCPrx0KL3Ex+nPn3TCkiBFgm10Ry1l8f7NOe
-	 FO5yKl105CVvDBmKVoZGFAKx/fUYAVR0o5CMB4Nn8TkYpogqGBaWrWRsKxs+bsXlZMQ==
+	bh=ATBXE6mL2rkywyDuVY/BzHx2Pz3wTKC3ekdScyG0NSg=;
+	b=dyYrBuHt2BmP5QCg8ClNqNcj7QF0w0v/sHnh0dkcqLNoNIjbNsV9MnUtrugn07BK/34E
+	 oAGoRE81oWsknj83Vfy9yCN588jQvMIoqXuNaPl2jmeNJLdahCuOgHuVnEYwvEZMTBEC5
+	 KghK5TaC/U5bkW+gmI2AUyviDdqdCsLErSdnI7RG9Y5nwOY6YUE6SbjgkJ/LQOB4apVQz
+	 +EwSF7q0n8a4fleHEZ/KMLW3c5lJcb7MJ1te9q9DzizMuwX8E+GyKnznT+C4FOfJF3KEm
+	 U0FdS4yKRNsetvIqDev5ACChxIMWqUk8GPPPaAw7Z1fYsP38ShTXdKyPj3Jt5YnipvA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Yp4LV16z;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=icl4Hk4f;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F477606A323;
-	Sat, 14 Nov 2026 18:41:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF86606A327;
+	Sat, 14 Nov 2026 18:46:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Yp4LV16z
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E651F000C4;
-	Sat, 14 Nov 2026 18:41:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=icl4Hk4f
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32B261F000C4;
+	Sat, 14 Nov 2026 18:46:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794681685;
-	bh=hbmmDlDuo/Aafn1uwFBtlXGmOEUSg36qvHcz00UKSls=;
+	s=k20260515; t=1794681994;
+	bh=ATBXE6mL2rkywyDuVY/BzHx2Pz3wTKC3ekdScyG0NSg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Yp4LV16zuDcpZ3+Y/qLVygQckl2pM5SMQe/KLSlyF5e/QS8BXQvbS3cu/RBNl+TkX
-	 SCgfa1fj1U+D99vVto6E4de9vK8/tAxEblZGb4RbFH8WE4EJ4dd2D7TdQP3OotV14/
-	 CLeqDPBCzCbWXc9t9+bD9QiK98zHjhExPWGSmwwZKNjrKgp0pj5obm2DNwRbk9tCqe
-	 Eo8IEeCv46Og75PXtmxFGtsIy38fXY2n08lz91pZEq9z44B3x8iYiq54V2tUocyM/7
-	 /c6iAZ1hIo2bgggcM+WpSR2wy94N6zQSuVpKjFKeisk3GsyMys9ZnKxnqb02/Ik3pz
-	 Vt70aZ1irNAOQ==
-Date: Sat, 14 Nov 2026 18:41:18 +0000
+	b=icl4Hk4fFpQ+ghPZ30yRMDdKzukd7AH0T121nHHmHmbIczLLoyLoTl9bbGQybuAx6
+	 AAp2a5gFrXFqvV2mo0vDmq8ql5PqWxCosQVT/Xw+DCoZKbptmhH04wmS2L2BwfoVo0
+	 eAIVqgQm40Saj9AUbXJIvHbEMVpbuG/ainHMWNp1k0ouD6Nf7H7bkOpRC6/8tB1Ixj
+	 mjIL6n329UmEeIOS7Eft1olzLZRAjXLSxTTIV4QoHvjVx6psZBVeP2zJaUcurHiagS
+	 oUtpBsZINXCBb8AiyelVg4B6US2MrebttfPR5yo8GbUV/+J0iITyX4lcHoW/cfr7l+
+	 U3OuvIgSjQNDw==
+Date: Sat, 14 Nov 2026 18:46:22 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jesper X Nilsson <jesperni@axis.com>
-Cc: Jesper X Nilsson <jesper.x.nilsson@axis.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Stefan
- Windfeldt-Prytz <stefan.windfeldt-prytz@axis.com>,
+To: Neil Armstrong <neil.armstrong@linaro.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Michael Hennerich <Michael.Hennerich@analog.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, kernel@axis.com, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 0/4] This series adds support for Texas Instruments
- OPT4041 Ambient light sensor
-Message-ID: <20261114184118.6b558a20@jic23-hlaptop>
-In-Reply-To: <389d5226-b147-4b8f-b3c3-b6bffc5ca78e@axis.com>
-References: <20261023-opt4041-v2-0-ee320812804c@axis.com>
-	<20261023215858.623ef46b@jic23-hlaptop>
-	<389d5226-b147-4b8f-b3c3-b6bffc5ca78e@axis.com>
+ linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+ linux@analog.com, Conor Dooley <conor.dooley@microchip.com>, Marius Cristea
+ <marius.cristea@microchip.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v5 0/3] iio: adc: add support for the MAX34417
+ Four-Channel High Dynamic Range Power Accumulator
+Message-ID: <20261114184622.5d47903f@jic23-hlaptop>
+In-Reply-To: <51eaa37a-9634-42cb-9aac-4c842ab2af07@linaro.org>
+References: <20261102-topic-sm8x50-iio-max34417-adc-v5-0-0ffa5e5f2d5c@linaro.org>
+	<20261104021700.14e69abb@jic23-hlaptop>
+	<01fe2a71-ba6f-470b-b6bf-e536a1013b09@linaro.org>
+	<20261107230925.5e66b234@jic23-hlaptop>
+	<51eaa37a-9634-42cb-9aac-4c842ab2af07@linaro.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,58 +74,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Nov 2026 17:08:38 +0100
-Jesper X Nilsson <jesperni@axis.com> wrote:
+On Mon, 9 Nov 2026 10:52:22 +0100
+Neil Armstrong <neil.armstrong@linaro.org> wrote:
 
-> On 10/23/26 22:58, Jonathan Cameron wrote:
-> > On Fri, 23 Oct 2026 14:30:27 +0200
-> > Jesper X Nilsson <jesper.x.nilsson@axis.com> wrote:
-> >   
-> >> Extend the opt4001 driver to support OPT4041, since it is so similar to
-> >> OPT4001. The OPT4041 adds a second channel, a wide band channel ranging
-> >> from 380nm to 1000nm. The register map is almost the same for both
-> >> devices. OPT4001 has an internal fifo of size four, OPT4041 has two
-> >> fifos of size two, one for each channel.
+> On 11/8/26 00:09, Jonathan Cameron wrote:
+> > On Wed, 4 Nov 2026 09:45:02 +0100
+> > Neil Armstrong <neil.armstrong@linaro.org> wrote:  
+> 
+> <snip>
+> 
+> >> But for the other reports:
+> >> - [Medium] iio: adc: max34417: shared accumulators clobbered on CAM power/energy read
 > >>
-> >> Since OPT4041 has two channels it has one bit in register 0Bh to select
-> >> which channel is compared to the threshold register. The driver does not
-> >> support setting the threshold registers, so no new support has been
-> >> added for this.
-> >>
-> >> The OPT4041 is pin compatible and has the same package as
-> >> opt4001-sot-5x3. Although the device id is different, I added a new
-> >> compatible string since the driver already had different compatible
-> >> strings to differentiate between the two OPT4001.
-> >>
-> >> Datasheet: https://www.ti.com/lit/gpn/opt4041
-> >> Signed-off-by: Jesper X Nilsson <jesper.x.nilsson@axis.com>  
+> >> This is a tough one, today if either we read power or energy, we erase the accumulated
+> >> power+count in the context, the context accumulator is only here to make sure we don't
+> >> loose data from other channels, like if we had a single HW channel.
+> >> This simulates this, if we had a single HW channel, at each UPDATE we would get back
+> >> to 0 in hardware anyway if we did read the power or energy.  
 > > 
 > > 
-> > Normally I'd say slow down to give more time for review, but seems
-> > you got good reviews anyway and the code looks clean to me.
+> > I'm only half understanding this.  Let me see...
 > > 
-> > Ah well, sometimes you win - but generally wait a few days at lesat
-> > between versions.
-> >   
-> I will keep that in mind. Since I got good comments so fast, I was eager 
-> to fix them.
+> > I'd expect userspace to see accumulated values since we enabled the channel
+> > rather than since last read.  I think that's the final suggestion from
+> > sashiko.  
 > 
-> > Applied to the testing branch of iio.git. I'll be rebasing that
-> > on rc1 once available.
-> >   
-> Have the changes been applied? I can not see them on the testing branch 
-> of iio.git
-> 
-I clearly messed something up because indeed they aren't there.
+> Oh this changes quite a lot of things.
+> How do we handle overflow in this case ? we disable the channel and enable again to reset the state ?
 
-Sorry about that.   Now actually applied and pushed out on the testing branch.
+Is it possible to accumulate into a sufficiently large type that overflow won't happen in a feasible
+timescale?  Anything else is going to be a but unpredictable for userspace if it
+is expecting an accumulated number.   The other things that accumulate in IIO tend to be
+moderately small so it's never been an issue (things like step counters).
+
+Jonathan
 
 
-> Best regards,
-> Jesper
-> 
-> > thanks,
-> > 
-> > Jonathan  
-> 
 
