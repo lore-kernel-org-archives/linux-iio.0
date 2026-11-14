@@ -1,69 +1,65 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794697184;
-	b=3ZPR8xIH/6W+3BI/7IjCOW3uWzgj7qj3UiDdk4YZ+UCnHwhC+Cg0pQNFtucM3VXfjl9f
-	 AtOSEct+k8iO+oOJNFlQXaOcXJJfde+M4733jdsD5hhTEDow//deitwxUV2ot5H9BS/j2
-	 GwVtIoT0Z5QN5obq9gEU0QzzIyJpJcAkYo/+9SkiS1Hjf2rbf3nNvlNh4ZnTd8XgZ6AAP
-	 JruaYGyU40pcE5AwgiA8nMZpzgQcQFaWGF5k9nW1070VNOsR8qMy1I/U4avU3tpynpG1c
-	 THR+0Hx05J2iVRS2W9IloDTQXiORZZL6xS0k0rMtLVBMBTSesFcwgMBke2Kxv3qyJnA==
+	t=1794697338;
+	b=ZZkHoitr0FHlNvrmZyLfdJFZfnOF6yPmrcoQM72g3YoCKP524CnUGKoW4YXNpViCqdRz
+	 H2+ddo/BFOQpZfJiDjJjpf4djcs/8N8nrNSjuLrlIHGH7JkonIkJPJT2D23wq1yxRKvEc
+	 RDo+qxpQYUJW5GNwB6/XoZ1abWqqv6g/s6tRGtSnKrMZvFCiqiVi9HUsU9o+rKjKuqldl
+	 03CN/6qPhRuIdSnzp/qLZ2i5K0oNrzpEgxv8NTAGOPC052uxLrDU2SpStrnQJaTcizA63
+	 iNCV0k16wBeShEP5G7s1ToZCOh5mBY4RLFteFFCicgxB7JKce2aNCLk5X51tebwbCIg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794697184;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794697338;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=1RjSw3udwOeS4kl1fq7ydLZRlJKs8s+Pg2HK9HfkKlc=;
-	b=bGjPKmKzueMVSn+Yi7Va+zR9zdfOzDt7I184mh42pm2Ha7XG9Lg4rntOAYdME09M2MBz
-	 9VzkBIaIcPu2nBegCdBm+U1/PkKJUpOlUX9dNmszrkHKnZzGkeFvB9x0bC+o/GPFH0KO2
-	 EEWY0RtYapdZ02Q00wTKjCps+ERabVHR8RHaU+umnB7E5oh31BgJki2fEkoX9Lq2Wc/Ts
-	 dc8hsgSwLjxVcksu86UAeeyCadqdzgyBlJWRqsrOTlkRtLMl2ioIfPkUXO1DJ5FC/I0cB
-	 PJt7leEj1JWGWX01f6BEfA3opsWIo9Q9lOY0Zz0gsz0n/TGm6mV/1A7I16YuIE51q4g==
+	bh=E+c6urLa23eP640Q2vfarHT1qxBNlCLeaHxHasRT0Qs=;
+	b=VqIbDryPSFa4Os/1ekW08Vtj5kx3AAj4g4VIO+01aAnkkc+h0bKXGp57P/E+vU2gXQG6
+	 F5R9hU49+nIZ3g69sZcwiIuPII7zS2/Pe8kuQ6YgeqT2eIrs+Xppp1i9LiqgUoarDCZHK
+	 YJnlU34BkCnGRWdIhCpf+21uUV60hKMGMxfyI+l1h8HXc34iNSVd0z8TvPX/uKby4s7W9
+	 klIFoSErJm+DmIK3FdAxOPlv9YGuBeLXSZHfVnBrCcVme2PRzjEJnrg8aCqjrtRgnfJt6
+	 h3kRgmk2Mz08bkOKyq7Y9/4Z8yvvSgJMoxdEHaF5ZK1v1W87VmSQFJbCV1mXrTNXuHQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VlbqojKC;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T2628vlL;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 474D1606A323;
-	Sat, 14 Nov 2026 22:59:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 999E5606A33F;
+	Sat, 14 Nov 2026 23:02:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VlbqojKC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65F91F000C4;
-	Sat, 14 Nov 2026 22:59:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=T2628vlL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF071F000C4;
+	Sat, 14 Nov 2026 23:02:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794697183;
-	bh=1RjSw3udwOeS4kl1fq7ydLZRlJKs8s+Pg2HK9HfkKlc=;
+	s=k20260515; t=1794697338;
+	bh=E+c6urLa23eP640Q2vfarHT1qxBNlCLeaHxHasRT0Qs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=VlbqojKCq4unXRlhspCIOKhbgHOEd32Kg9g8Wtkh5qqzDw7ZrQ+P1RN5/sGnTWY69
-	 9GhV3SUTmOio6dz7cvltBdz2MDXK1BrLK/QZcycgBg+XRJwXtkwwfDM832GFpY5TjN
-	 2YOpjNsmr9sTFjJgiNSl7WgRzjWFMPlZIibZGteSqqw8b9Qk8qp4LnEQce/lu40loF
-	 H4ukeEMd0d+DOYu1WvAAZX8pebPdN9KQNw8v8HoHoYgrde6t+xH0L16Rfyhs2sAC+v
-	 DdqddnwOiM0+Cfpn0uYdkiadvTKT2w+EJIlXV9YF9G+GUXNfeTisLLMtRZ0/88G7Sr
-	 OUguS3/FYiZuQ==
-Date: Sat, 14 Nov 2026 22:59:34 +0000
+	b=T2628vlLSIX57XLkLM9tFnjgFDv3qSjioBl2xHn5oX4Cisv/4yf9k09J19zvSuE9o
+	 pOYcA2UNFj/LaHThfqN34fbiCAmHjolzAZ2qoc1J82K7jHS81ulyRQ7Zd0wXFoUtdO
+	 lk3H+v4DwTD7/xKGglzy1JJPU2oMMH9gmXUCJX8bUGyK2vWulrw4U8BZjZLFlPRmk9
+	 ihPGOvTgATyu8yFYJUdyOpdAaCIv979hIWHzKEsHW0KjHYNf423t9HWCKHJKBnLMt8
+	 /hnxAiQNtRjk0bSBc3FzP94IG4HNACJKXUZsOYg/FlbsK5R0LHW4sfhmi/ciST2Qji
+	 YElkorXkGGgDw==
+Date: Sat, 14 Nov 2026 23:02:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, kernel test robot
- <lkp@intel.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Esben Haabendal <esben@geanix.com>,
- Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
- "Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Esben Haabendal <esben@geanix.com>, Kuppuswamy
+ Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>, "Uwe
+ =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= (The Capable Hub)"
  <u.kleine-koenig@baylibre.com>, Pan Chuang <panchuang@vivo.com>, Hemanth
  Selam <hemanth.selam@gmail.com>, Antoniu Miclaus
  <antoniu.miclaus@analog.com>, Nikita Travkin <nikita@trvn.ru>,
- oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v3 4/4] iio: light: ltr501: Add support for the
  LTR-659PS-01 proximity sensor
-Message-ID: <20261114225934.396da0ae@jic23-hlaptop>
-In-Reply-To: <CAPVz0n1UG6L8divtcXgg7mfS7C3bO9tKv9d-Xh6VbyayG7p8-w@mail.gmail.com>
-References: <20261108094253.83899-5-clamor95@gmail.com>
-	<202611090518.mm6yt2nO-lkp@intel.com>
-	<avInQ08dVrsc-Rbo@ashevche-desk.local>
-	<CAPVz0n1FqXV-XXyBJpnp1ivd+uk6+zGvngobQZfUXMNBBPyORA@mail.gmail.com>
-	<CAPVz0n1UG6L8divtcXgg7mfS7C3bO9tKv9d-Xh6VbyayG7p8-w@mail.gmail.com>
+Message-ID: <20261114230210.4b2c4cb1@jic23-hlaptop>
+In-Reply-To: <20261108094253.83899-5-clamor95@gmail.com>
+References: <20261108094253.83899-1-clamor95@gmail.com>
+	<20261108094253.83899-5-clamor95@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,55 +70,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, 14 Nov 2026 16:45:02 +0200
+On Sun,  8 Nov 2026 11:42:53 +0200
 Svyatoslav Ryhel <clamor95@gmail.com> wrote:
 
-> =D0=BF=D0=BD, 9 =D0=BB=D0=B8=D1=81=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 22:=
-07 Svyatoslav Ryhel <clamor95@gmail.com> =D0=BF=D0=B8=D1=88=D0=B5:
-> >
-> > =D0=BF=D0=BD, 9 =D0=BB=D0=B8=D1=81=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 2=
-2:04 Andy Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5=
-: =20
-> > >
-> > > On Mon, Nov 09, 2026 at 05:48:09AM +0800, kernel test robot wrote: =20
-> > > >
-> > > > kernel test robot noticed the following build errors: =20
-> > >
-> > > ...
-> > > =20
-> > > > All errors (new ones prefixed by >>, old ones prefixed by <<):
-> > > >
-> > > > WARNING: modpost: vmlinux: section mismatch in reference: trace_ini=
-tcall_level+0x28 (section: .text.unlikely) -> initcall_level_names (section=
-: .init.data)
-> > > > WARNING: modpost: vmlinux: section mismatch in reference: __arch_xp=
-rod_64+0xac (section: .text.unlikely) -> initcall_level_names (section: .in=
-it.data) =20
-> > > > >> ERROR: modpost: drivers/iio/light/ltr501.ko: symbol 'iio_find_ch=
-annel_from_si' undefined! =20
-> > >
-> > > Forgot to import namespace?
-> > > =20
-> >
-> > It is not exported in the core
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tre=
-e/drivers/iio/industrialio-core.c?h=3Dnext-20261109#n319
-> > =20
->=20
-> Should I export it? Do you have any suggestions?
+> Add support for the Lite-On LTR-659PS-01 proximity sensor. This device is
+> nearly identical to the LTR-559ALS-01, but omits all elements related to
+> ambient light sensing.
+> 
+> Add a no_als_support flag, similar to how no_irq_support is used, to
+> isolate ALS register access for the LTR-659PS-01, since ALS registers are
+> marked as reserved and interactions with them are discouraged.
+> 
+> The ltr501_trigger_handler relied on the scan index to identify channels.
+> This approach is fragile regarding channel status flags and can break if
+> the index is not strictly set. Switch to checking the channel type
+> instead.
+> 
+> Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Just trivial stuff inline.
 
-Sure. Export this one.  It is a very simple helper so I have no concerns
-about it being used in drivers rather than opencoding the same loop
-(which I suspect some are doing!)
+Thanks,
 
->=20
-> > > --
-> > > With Best Regards,
-> > > Andy Shevchenko
-> > >
-> > > =20
+Jonathan
+
+> @@ -1260,16 +1295,21 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
+>  		aligned_s64 ts;
+>  	} scan = { };
+>  	__le16 als_buf[2];
+> +	unsigned int i;
+>  	u8 mask = 0;
+>  	int j = 0;
+>  	int ret, psdata;
+>  
+>  	/* figure out which data needs to be ready */
+> -	if (test_bit(0, indio_dev->active_scan_mask) ||
+> -	    test_bit(1, indio_dev->active_scan_mask))
+> -		mask |= LTR501_STATUS_ALS_RDY;
+> -	if (test_bit(2, indio_dev->active_scan_mask))
+> -		mask |= LTR501_STATUS_PS_RDY;
+> +	for_each_set_bit(i, indio_dev->active_scan_mask, indio_dev->num_channels) {
+
+iio_for_each_active_channel() should work here.  The longer term plan is
+to make some of this stuff opaque so I have a series that I haven't posted
+yet converting most users over to this macro.
+
+> +		const struct iio_chan_spec *chan = iio_find_channel_from_si(indio_dev, i);
+Fine exporting that helper.
+
+Thanks,
+
+Jonathan
+
+> +
+> +		if (chan->type == IIO_INTENSITY)
+> +			mask |= LTR501_STATUS_ALS_RDY;
+> +
+> +		if (chan->type == IIO_PROXIMITY)
+> +			mask |= LTR501_STATUS_PS_RDY;
+> +	}
+
 
