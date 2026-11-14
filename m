@@ -1,67 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794615365;
-	b=KqbPMcTCVs+ZQl+7W3oARPgmo0i68geb6KMWis+ETDLajwmWxrAgVeRZ9ZyC6FBCMlEi
-	 PLAZCzo+owTbJyAQA2JKlaT256K6YNjzyKU0Xl9XQz43EWqYg3tE85k9ptXT7bbD9uS8e
-	 vmkBiWHgGy/EWmDiCU8NTpvuumhaLNwT2reEzLnjlrjCCEzmmFKNFsOlF09W7sjnqLmU1
-	 3K8B6QXJOoXoGg9xpFOFilJkGhlYkl2UQOZ5+UkUjlzAWju1FU4k8JFRdAFbed2yApwa2
-	 XQbw60Ta7BgLYxviSTKsd24HObF3rNCN607OlGRWMbvQWN+QeeKKPmTXnD+eZjO3H2A==
+	t=1794615689;
+	b=pjjvp0zRwpmJbOdx2wyp9ZQXEu+10d6WtNVD4CsrZ6//r3DMmxE4PFv7MsAVBur/k2U7
+	 DJlyyIJdEdezsQPKj2MdIJ2qEpGxaN8kNtIbrhlHxHH7q2cYIo9IYc9sZfbwn+gbA+ACL
+	 V4GvEd3dhMfm9f3jA9N7O+pfaboiRjb8vwmoCD5R3FrQUDXcB8hNhBKbkeRMK1bZ2dKMg
+	 K+BFkdQG7e0zBRXma/vyq3HeZaB91iCqEd7i8ITpvTVHug5OfknURxOUQBBh1jNIaevs7
+	 C3aIhj7Uf+xnC8m3FAtfD035g+wNuetcopuAGE58vISXkzcL6E5jLA9v+yHMKw8LroQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794615365;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794615689;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=H/O+Mo0VVNCwn6G0Coe3gZ4s1DLGig40Bsnf3oJKl+Q=;
-	b=e610Wx4BXxjwYwaWcG85pIaNx4YKEtJ6iEp7jbc+VA422yGa78Ai8euXwhLJriphV36/
-	 ucQM+7dQ65Go7peMpdUiwXPCWhItN1US2OnrQ10uLfrroqccluFHJM/wPTmbplTY9DL2r
-	 Cb6fPkCe2G/gVxxQGYBRFUB7L0GXVe3CF7qPTde339z8NQguzcg7u11VsvsACUTIl1Z67
-	 bU1TTI5MaHTIvTtb/fMEDZl/ByKr1poSGsrpMAy6FhfO14eCXYhEl0G+IzSyJVLzfNB1b
-	 Nzu4uFZjSKlSYOBXHIlmBm2KBJ72e1gFc8XTF2lt70hNrJ4RTQQTK5Ru0gPH0Pq0RYw==
+	bh=9jnJqepH4Tqqtn3e0pqmMzgDUi7SBDCFkpGSogJI5dE=;
+	b=Nyo/eJVXqPevl5e1B5ECr+7VWDjYXbqzeTpEDSY/EOO8shfFftz8orIRd0UQ/GWkuMZi
+	 ANuNE+oa5vPcJttx4zVScqNDf3qmaiPqVnHFamYDhujpKWO1uOmvk3Z04g0d2MF+y2jyX
+	 Jc9vUfAI2B6SGmjqZiEMST7TIKxpO0qgvCleo1TJYKzA7UTtKj22gKc2JNStbSVk37p4F
+	 aIHmMISfcD9h/VsSmrfAoJGwAFMR7rPD7l+0b+dGyEPyn0mOWDxZc3Wv1pTRbgESgfWQN
+	 4IilMwoU/9aOu78rNwa7ppf9MBG7xm+AaHIrCAq0xffRpeCsaM/2Ef89V7fwuUBXMWg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dCDutom7;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l3FUY3lS;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACFFD606A32D;
-	Sat, 14 Nov 2026 00:16:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB783606A32D;
+	Sat, 14 Nov 2026 00:21:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=dCDutom7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FFD81F000C4;
-	Sat, 14 Nov 2026 00:15:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l3FUY3lS
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699091F000C4;
+	Sat, 14 Nov 2026 00:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794615365;
-	bh=H/O+Mo0VVNCwn6G0Coe3gZ4s1DLGig40Bsnf3oJKl+Q=;
+	s=k20260515; t=1794615689;
+	bh=9jnJqepH4Tqqtn3e0pqmMzgDUi7SBDCFkpGSogJI5dE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=dCDutom77k2RDxhVXA+pNPIua+fqPi9LCaPbyP7f926WWu3xjdSU7LdPc3YHSx1Lv
-	 o8gTzM51nncEAIU+63cLubC7f85H7GDLrwRb0Ggsr2WImuG3ACFXWKWpxwFx4QgHGX
-	 baFSXtGFPOvsvJmyflUQ+sn0c/4aTVSogDuuAlJiiNwEg95fyZPCqUSzhoczLOIc5W
-	 sRuFsARvUMds8rkuutA2mw4MWOQrB85qDK73DF76CPO0L+I3mGh81GUW6weUQI9bO9
-	 8BIg8H7P8EHwTsSIvt9RocaHjHzU8rlsD9QKokyBkEq284j8RQKG4Dl0ZA7IT8jVnf
-	 oKG18v0SLnrrw==
-Date: Sat, 14 Nov 2026 00:15:52 +0000
+	b=l3FUY3lSAsDBs4dlXwOZiI2wI+W7IliEjvpsFCdUXzgppXVrDpIl0xIKbTEYqFfya
+	 ltxvkR47H0hkWAB4kThcoO/53kgTh8N9DbPAlzWEAv21iqRwt2wk94AfQAH8x0lM3h
+	 F8AVPLpEfGeKd+uo/LHq+hRJJ0Nw1JbeiL4cwCt8TImTGo4ZqMHsiyq3MunyHISbAV
+	 /1QEyIu3LtM2BDsCgNBMjtxQSxtW0VqrJgfuwGUaHvYFMSZToJHNZWYJmr+UqE4PZ8
+	 FxGvxgZA9Qqf0/z7xvf9Yh9IeMhfWyhmnStMm7ptrSi1S/wjCivMfv4P1WeCpcdwal
+	 EtOmGA6U+xGKA==
+Date: Sat, 14 Nov 2026 00:21:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, "Rafael J.
- Wysocki" <rafael@kernel.org>, Zhang Rui <rui.zhang@intel.com>, Lukasz Luba
- <lukasz.luba@arm.com>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Laxman Dewangan
- <ldewangan@nvidia.com>, Bjorn Andersson <andersson@kernel.org>, Konrad
- Dybcio <konradybcio@kernel.org>, Hans de Goede <hansg@kernel.org>, Jens
- Reidel <adrian@mainlining.org>, Casey Connolly <casey.connolly@linaro.org>,
- Val Packett <val@packett.cool>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 3/5] thermal/drivers/generic-adc: Allow probe without
- TZ registration
-Message-ID: <20261114001552.3ae8f05e@jic23-hlaptop>
-In-Reply-To: <20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
-References: <20261113-bat-temp-adc-v3-0-743979a8fd90@fairphone.com>
-	<20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: "Sabau, Radu bogdan" <radu.sabau@analog.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ "Sa, Nuno" <Nuno.Sa@analog.com>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>, Alexandru Ardelean
+ <alexandru.ardelean@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>, "Budai, Robert"
+ <Robert.Budai@analog.com>, "Gradinariu, Ramona"
+ <Ramona.Gradinariu@analog.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>, linux <linux@analog.com>, Conor Dooley
+ <conor.dooley@microchip.com>
+Subject: Re: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
+Message-ID: <20261114002118.2b7e1d22@jic23-hlaptop>
+In-Reply-To: <avcaMvcntGjnKPAK@ashevche-desk.local>
+References: <20261113-adis16607-v6-0-3f678719942a@analog.com>
+	<LV9PR03MB84148ACD16DBA8896A81582DF77F2@LV9PR03MB8414.namprd03.prod.outlook.com>
+	<avcaMvcntGjnKPAK@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,79 +75,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 13 Nov 2026 16:56:44 +0100
-Luca Weiss <luca.weiss@fairphone.com> wrote:
+On Fri, 13 Nov 2026 16:09:54 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> If the devicetree node is not referenced in a zone under /thermal-zones,
-> devm_thermal_of_zone_register() will fail with -ENODEV.
+> On Fri, Nov 13, 2026 at 12:41:04PM +0000, Sabau, Radu bogdan wrote:
+> > > -----Original Message-----
+> > > From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+> > > Sent: Friday, November 13, 2026 2:34 PM  
 > 
-> Since the driver is now also registering as an IIO device[0], allow the
-> probe to continue without the thermal zone.
-
-Papering over problems, or expected path for some devices?  If it's
-expected path we probably don't want to print a message with the
-word failed in it.
-
+> ...
 > 
-> We also can't use gadc_thermal_get_temp() anymore because we haven't
-> necessarily initialized tz_dev.
-> 
-> Link: https://git.kernel.org/torvalds/c/3762f5851ac5 [0]
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
->  drivers/thermal/thermal-generic-adc.c | 20 +++++++++++---------
->  1 file changed, 11 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/thermal/thermal-generic-adc.c b/drivers/thermal/thermal-generic-adc.c
-> index c6a7a65aa6a6..40a34e97a515 100644
-> --- a/drivers/thermal/thermal-generic-adc.c
-> +++ b/drivers/thermal/thermal-generic-adc.c
-> @@ -86,14 +86,16 @@ static int gadc_thermal_read_raw(struct iio_dev *indio_dev,
->  				 int *val, int *val2, long mask)
->  {
->  	struct gadc_thermal_info *gtinfo = iio_priv(indio_dev);
-> +	int iio_val;
->  	int ret;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_PROCESSED:
-> -		ret = gadc_thermal_get_temp(gtinfo->tz_dev, val);
-> -		if (ret)
-> +		ret = iio_read_channel_processed(gtinfo->channel, &iio_val);
-> +		if (ret < 0)
->  			return ret;
->  
-> +		*val = gadc_thermal_adc_to_temp(gtinfo, iio_val);
+> > > Patches 5-8 add the driver in functional groupings, as requested in
+> > > v1 review:
+> > >  - Patch 5: base driver - probe, raw channel reads, decimation/sample
+> > >    frequency, startup and self-test via adislib, debugfs identity
+> > >    entries. No buffered capture yet.
+> > >  - Patch 6: buffered capture via the device's hardware FIFO, into a
+> > >    kfifo buffer filled from a threaded interrupt (no IIO trigger).  
+> > 
+> > Note: this series implements the FIFO buffered capture with a kfifo
+> > buffer for the adis16607 only, using its own threaded interrupt instead
+> > of adislib's has_fifo trigger path. I tested it on hardware and it
+> > behaves better than the trigger-based version in v5: the interrupt now
+> > fires once per watermark batch instead of roughly once per sample, and
+> > capture stays clean across repeated buffer enable/disable cycles.
+> > 
+> > I plan a follow-up series that updates adislib and the other affected
+> > devices (the adis16475 FIFO variants) to use a kfifo buffer as well, and
+> > then converts this driver to use the adislib helpers.
 
-Maybe spin a helper that is used both in adc_thermal_get_get_temp()
-and here?  Whilst it won't save much code (may actually be a touch longer)
-it will put the two relevant steps in one place.
+For those other affected devices be careful of ABI changes.
+I'm not sure there will be any though. Not really figured out what you
+are proposing changes! Don't worry about that though, I'll see it
+when you send the code.
 
-
->  		return IIO_VAL_INT;
->  
->  	default:
-> @@ -195,14 +197,14 @@ static int gadc_thermal_probe(struct platform_device *pdev)
->  						    &gadc_thermal_ops);
->  	if (IS_ERR(gti->tz_dev)) {
->  		ret = PTR_ERR(gti->tz_dev);
-> -		if (ret != -EPROBE_DEFER)
-> -			dev_err(dev,
-> -				"Thermal zone sensor register failed: %d\n",
-> -				ret);
-> -		return ret;
-> -	}
-> +		if (ret != -ENODEV)
-> +			return ret;
->  
-> -	devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
-> +		dev_info(dev, "Thermal zone sensor register failed: %d\n",
-> +			 ret);
-> +	} else {
-> +		devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
-> +	}
->  
->  	return gadc_iio_register(&pdev->dev, gti);
->  }
+> > 
+> > If you would rather have it handled here, I can instead do the adislib
+> > and adis16475 changes in this series, as patches ahead of the driver.  
 > 
+> As you explained above I think the proper change is update the library followed
+> by the driver.
+> 
+I suspect that we can in the meantime merge patches 1-5?  This exciting bit
+only affects the fifo part of the series?  I might speculatively apply those
+to reduce review load for the follow on series.
+
+Jonathan
 
