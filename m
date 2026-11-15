@@ -1,58 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794704617;
-	b=ie8+WJrvGNNH5e9t1m6YsCeeoju4fEkpOz0L35Fu0R4hjNiPWTJFiG1zCq197T9Jwbnu
-	 8tbYaZO2LKTf0/6o9L525n4dfcK6sXX4yEK5ChAul8pTS8ORxd9a1XUL/G4KUE14Bbykm
-	 1QnI+tOOz8EiTTTA8PWYDQop5vvQJAyhTf9jQz9jSzCY7CruziT7QR2TGLK72VTa/aFgP
-	 PWNESSMFB1OiC78wGLw2fiLgk22Dn3GPIT0qEFsomXrnggVvGPhj1gGOqEB82fiYAeILa
-	 5eQu7HFXdaNIVF2IIyVSV/krcIuvGybyjGmBuhYsja6uFJ6ZKPKW6+3Qhgazm/XKUbw==
+	t=1794704680;
+	b=poTYMdKn1foXpAMDDJVs96j/kVT/8vY6KK/2WXd2XrFEGjhfBbhLmAuRBVZ40V+FPmgm
+	 zzGLWMfLyII9nun0fDMClYDEMetRzaFaj82E6SS6Oue6oqRyPzh6HI7mBVR4w8gEGSR4M
+	 wW5Nj0k6r3Fdtzr5dCrEZKRcaMEvkvIa1TfPJE1eFqU7FGuQ8DLeC8AZe5CkbycCh8TY8
+	 ZENVSU8aINOxPaRwCteSJFjdruWE2FQWrh/HdePX+fIUmdXQ+Bd6vqGavz3bRCdnXBuz9
+	 dPMG2B59WlYX8RvO88D8eIBZMWgn0aJIoYTiHcTHQKWxh268AVrB5hsnVxsWzdkRccQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794704617;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794704680;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=azdkMwcps7Uxh2CJ3w5mNX0OF+3zqka0dgJ8u/srPjo=;
-	b=c7G3Y6TmeL9nZyWCEhhFrXAV4sqJllBSvBozh3+0Cbw1yCxq1CukKmM/dj7HBvfCf6Nx
-	 hiLGwAEMV9sXx6KqtCbtkkxbS5gP4kSL9VLQyFSKCv2CD5IeixLPNU6V3v/2zN1it4MMv
-	 EEjLgrZSfVdFirvQVQf3EhuycldPt0dpVCieq23Wm8dlQbNVOSrPt9P/cfZLocWMAJJH+
-	 bEEXXJW4wxJA0fvLerSeexwVPL7yznNDzL+8OslSPc4VLdPRR7+S3PsA4JExdLDs/t3ru
-	 Tx3Fz9m22c449LUUuI07SRciFoGqvWJUle0pidkuJndV5kM+/uEWCkn2fcFqOzDmZFg==
+	bh=HnyOtoGbIdsMHcvfxedNuN3t/UhzRek1o6FJLK+Mj10=;
+	b=JmJ02va7uXe+bWznXbB26JMtS1u5BrN+dRt5pFGj97XQzCsJoFI5vVXjiwAl6mHS4rvM
+	 WHIMzHVISQfbo4rtvCurDF+ZxAYzzxv0A9YtV7qjazpXmBdoOF6iegZEFcDr8OHt3Brhk
+	 N41kseCsK3WoKiaJy4AY44S0y38YX/+Cr/PDo5chKEJZuqRb69jE7iK6kcwqPMLw1buSs
+	 Z5NT03HoEXlUhdKW9eYcO2rRSdfI2EXaLZbCqrpjx64G1Tcy5BxLpV/TR7kUah+MqGB4n
+	 gZOElcLoQDJL4kbYc2kunjGCsnL/vIdm8U1qfV5Q/nj84FppU4cSbaGq2+CGJubjskA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mjSQY4gQ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="fdX6L/+N";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19AB606A327;
-	Sun, 15 Nov 2026 01:03:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F77F606A323;
+	Sun, 15 Nov 2026 01:04:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mjSQY4gQ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CD181F000C5;
-	Sun, 15 Nov 2026 01:03:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fdX6L/+N
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 612CA1F000C4;
+	Sun, 15 Nov 2026 01:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794704617;
-	bh=azdkMwcps7Uxh2CJ3w5mNX0OF+3zqka0dgJ8u/srPjo=;
+	s=k20260515; t=1794704679;
+	bh=HnyOtoGbIdsMHcvfxedNuN3t/UhzRek1o6FJLK+Mj10=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mjSQY4gQkTpvEXrE8ZSHkGMQXWjKSl68TQyTy3HY6L+vJYzgVQzwnWpLP+K2Opu/f
-	 KuSU7UugCPhbS9XYSiW7G2tUrWWJ9WUpgDy/fvuVqjQO28OHsb8rL1rgn4N6LKsp/U
-	 h0wPW+4ws6gHR0zCwp2pyIYVIq//ZPzrI0pvJDz6J02A8IYIK+4MEPiJNrY3zqg/j8
-	 hPkMF9n7LP7ThEEQswzOD//lmZZF0bnjN/oGfUGFRMfMRgOPYXKUf36uQFkKZNMp3H
-	 z2GjBaZWNhEVmCOEjPmrpOx7yBUEH9nuY8qiDocAZ8NNWU9i2q6atR0TN7siL+awTH
-	 3m+6fx4Hp/BzQ==
-Date: Sun, 15 Nov 2026 01:03:28 +0000
+	b=fdX6L/+NS45OPHNpewhftWjh5Ts0+oER/MuBnaDZvYoy5+6Dz37swt2NkIjQC/Dwg
+	 Y8sS4P4BWLX548ohO3Dt1+6khFbWO5QI29FrKj4cuyL/eFDvLZ+M45AVzNV9pLq6e8
+	 w2wsBGvnVfA5NHiuEXIygvkJklRRRpO0CXGyKp+oX8pSOemGiQYny65x+67sOLZoJ9
+	 qnihgDfAqhXulvDEMtVabgk3RY9VY5DjwBspjF9KERqet69zQczfwuwtDmKf9nma3T
+	 SDyKDOiExIFASAZLL7g6nuiBDEEVurM5KwtCfGRVhNGXELF+1HCF7dC+l0bUR2H0j9
+	 Ftk632XuzIkLQ==
+Date: Sun, 15 Nov 2026 01:04:31 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
-Cc: <sai.krishna.potthuri@amd.com>, <dlechner@baylibre.com>,
- <nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
- <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <michal.simek@amd.com>,
- <pramod.nexgen@gmail.com>, <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>, <git@amd.com>
-Subject: Re: [PATCH v6] dt-bindings: iio: adc: Convert xilinx-xadc bindings
- to YAML schema
-Message-ID: <20261115010328.74732486@jic23-hlaptop>
-In-Reply-To: <20261114054826.3222636-1-dileepkumar.nagavarapu@amd.com>
-References: <20261114054826.3222636-1-dileepkumar.nagavarapu@amd.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Niloy Meharchandani <niloymeharchandani@gmail.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: frequency: ad9834: use devm_mutex_init()
+Message-ID: <20261115010431.0b1e7971@jic23-hlaptop>
+In-Reply-To: <20261114072719.21558-1-kapoorarnav43@gmail.com>
+References: <20261114062021.142296-1-niloymeharchandani@gmail.com>
+	<20261114072719.21558-1-kapoorarnav43@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,27 +67,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 14 Nov 2026 11:18:26 +0530
-Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com> wrote:
+On Sat, 14 Nov 2026 12:57:19 +0530
+Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
 
-> From: Pramod Maurya <pramod.nexgen@gmail.com>
+> On Fri, Nov 13, 2026 at 10:20:21PM -0800, Niloy Meharchandani wrote:
+> > Initialize st->lock via devm_mutex_init() instead of mutex_init() in
+> > ad9834_probe() and propagate any initialization error. Since ad9834
+> > already manages its remaining resources with devm_* helpers and defines
+> > no remove() callback, using devm_mutex_init() ensures proper mutex
+> > cleanup on probe failure or device removal when CONFIG_DEBUG_MUTEXES is
+> > enabled.  
 > 
-> Convert the Xilinx XADC and UltraScale System Monitor device tree binding
-> from the legacy plain-text format to a YAML.
+> Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 > 
-> The new binding covers the same hardware and compatible strings:
->   - xlnx,zynq-xadc-1.00.a (ZYNQ hardblock)
->   - xlnx,axi-xadc-1.00.a  (AXI softblock)
->   - xlnx,system-management-wiz-1.3 (UltraScale System Management Wizard)
-> 
-> The xlnx,channels subnode retains its legacy name (including the comma)
-> for backwards compatibility with existing device trees. The reg property
-> of the channel subnodes is limited to the valid channel range of 0 to 16.
-> 
-> Signed-off-by: Pramod Maurya <pramod.nexgen@gmail.com>
-> Co-developed-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
-> Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+
 Applied to the testing branch of iio.git.
 
 Thanks,
