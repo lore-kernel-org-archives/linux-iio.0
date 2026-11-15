@@ -1,65 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=27.111.92.109
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794730645;
-	b=zbRlp6NOQTrkTuUxG8g10n/gQH4hkl/CsD4j2IqQjyZSTDynn0Ov0oJJvyPDF03ujjvR
-	 9NY3J4mwmsuPQyT8kSgyxWyFD++smnopOjwnevQS3hrNdWoxru9yYfbMxwjj+UBSKpxZ3
-	 m5hWRuY4K6Mc45kvlp/9DWdkwkIIV6iu5n4mYuajO00BNJIZE5PdJCILE2XRG5zdc9eFH
-	 i/+Qju5/bQbmei9f6RYKpHNzCVloP7JNPe7He7sttLcNMd227cyzedSmVn34Hfuk55nv5
-	 mQzigFG7WL3Q1mPfUbrbTHwOUBIRgE3SvJv7/40zXPTFI5CJs7nuMSTKH7iLNgi+0oA==
+	t=1794731472;
+	b=Vrq13d8cy5T0KU/18pZpW/c3IaTaboenKaCzesSncfvxeyPGphzYdk+6+x/Tra49UcxF
+	 goxnOGIcsk/ZIunHYnAQO0tHLiXmhHSdw53IrRnpM/rEHGqfyYFLorvfWeFP7E2ZslGTh
+	 Jaa4JCOrvNJeWewC5P4FSQfd0u3IK1bYMDKr5kAsVS9FQulz2G6VWSUUOcNt/oJRzQEed
+	 UjBEO0OvAGhtmC61Rh9AclkhrgByM5dsoB/ZoV5A1frMvbFMPPhowFpoqbdqHSBpY68Ym
+	 b+xvKnPRtCYNQX9bG/V7CeaP9xY9VAgh8Fqp8jH6FenEAo7sZ8G9nAtLCOjo1uQwk6g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794730645;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Content-Type:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-AntiAbuse:X-Get-Message-Sender-Via:
-	 X-Authenticated-Sender:X-Source:X-Source-Args:X-Source-Dir;
-	bh=+xB/EiJURGaS8AnrKP8tu56DXfZyQqbE3+5bWGnca1Y=;
-	b=z1l8l/KXWLV30jJeVlzj55G+otpkSRzLHg6Pw/NfoYIlzhCaUSZgBmb6a0hQJwkI9J+8
-	 EVJupFeIeFmPvHgDXMzATneyY0zDaAU0VW02Ir1JFxNfxczlDlRJsvXEfYGBLm0RvuUVi
-	 xqcsxml7GN0OU/Eq5yfs6vKz1jWhOMKh+YrhNfZ5+SIGOzZ++keoEtqTSqmc0q5fwmv80
-	 4v0TWEb8ls5aShjtwLHOJDbFBQvv+9avWRNeUl7M4oZQHKaVwbywfO0wWm0e1wKTtQc1Q
-	 cEeuBzCXDpexqUvqr2FIdTTzQ5XUKmeKm10Ec/AIX3s8O5a9MlCPCF4GmZ6nXdJjjAg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794731472;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=zuSlxP/wZehSt0jCPWAa5AKI3q/TR1ZMAo89fzmDo6s=;
+	b=OrAxua6gccRgbHDyPemnoDZJtgW9X18xFkl60GtMCtKpxMrBJKuIBL2muKh8/1DdxdzE
+	 YG7kJLRt0QYbSf3UHsW/MTJockyLQWb41YW54XKRotZoMXnfG/7vBRYEtCXF2ggkpf8zv
+	 h8bCVCP6M+G3oAyvl2IvyzU/+ZbF7Z/OHzYE5vTuTSh/ksYBNJIsvGEwaur+HfLZXoMSU
+	 5H5Ts0eoDX5Du4v/RpAVT1UdJBTN5+JyMf/HsG8q1gnOPKn28VyB/YcZLyHpdqbsfy7l+
+	 s7vHc1kiyCBWtWpodM8jhZrNu/InG1VFXRXNTaQONBx3CiIABlAo9jR38Z9Fm36taLQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=advisoft.co.nz;
-	spf=pass smtp.mailfrom=advisoft.co.nz;
-	dkim=pass header.d=advisoft.co.nz header.i=@advisoft.co.nz header.a=rsa-sha256 header.s=default header.b=ZviZSrwd;
-	arc=none smtp.remote-ip=27.111.92.109
-Received: from mail-p1-f31.ipv4.au.ds.network (mail-p1-f31.ipv4.au.ds.network [27.111.92.109])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=b1ZcCoPt;
+	arc=none smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18307606A31E
-	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 08:17:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 18307606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=advisoft.co.nz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=advisoft.co.nz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA844606A31D
+	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 08:31:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DA844606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=advisoft.co.nz header.i=@advisoft.co.nz header.a=rsa-sha256 header.s=default header.b=ZviZSrwd
-Received: from server-72-r70.ipv4.per01.ds.network (ip7ac97cc8.ipv4.syd02.ds.network [122.201.124.200])
-	by filter-out02.au.ds.network (Halon) with ESMTPS
-	id f6ad2fbc-e0cc-11f1-9d06-63c11cf4efbd;
-	Sun, 15 Nov 2026 19:17:14 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=advisoft.co.nz; s=default; h=In-Reply-To:From:References:Cc:To:Subject:
-	MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:
-	List-Owner:List-Archive; bh=+xB/EiJURGaS8AnrKP8tu56DXfZyQqbE3+5bWGnca1Y=; b=Z
-	viZSrwdxRt3u/UJd+n3kzfKRtqxCrIj8yKHFmNlLspsBPskyhKVqn0japSb6Gc+76G+dyuCXgdsnC
-	tON0RL7wVKvA9ey/6ujdlqLuZRYNh/5eZFpB15KIahI4G+Sncs5fK5X0UwI2nNnZW1mebUXOGcIXS
-	CLJddU2/dIA84mmBffxb5Z6dhldTDNr+sslOL5Df+bCUX8pQvg0Ovtyg6+ZujdNS4anV+2ZXuLJOv
-	fbJ4KglQjtA8ABodBrAHXGXrF78BMPDJoOgv00Zw771FcFtx1WP/OlinhqMSdLeJ6tFF3BuVzUYr2
-	4Ch8czkmmJ3/xpf1I4QcYyaKC/eRhlnmA==;
-Received: from [115.69.178.245] (port=51528 helo=[192.168.2.211])
-	by cp-fp09.syd02.ds.network with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.100.1)
-	(envelope-from <phil.williams@advisoft.co.nz>)
-	id 1xSVQI-000000001wz-0DHJ;
-	Sun, 15 Nov 2026 21:17:14 +1300
-Content-Type: multipart/mixed; boundary="------------DaHNjVFhfxuojXo2uFT7yvOM"
-Message-ID: <6a9cbbcc-bdfb-4af1-a678-4f6f4b8a5f0e@advisoft.co.nz>
-Date: Sun, 15 Nov 2026 21:17:13 +1300
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=b1ZcCoPt
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b785ca42ebso3785277a12.2
+        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 00:31:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794731470; x=1795336270; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=zuSlxP/wZehSt0jCPWAa5AKI3q/TR1ZMAo89fzmDo6s=;
+        b=b1ZcCoPtryXV2AC72mGe3XYRkd6Hb9ynWgrJFia3BIgx4xI+Y/7FZ8ELverDnFrmfh
+         KtJANrjQtLz5C7dpINAV+qb1ZbFmoR0ZtdnlLwJBkjRQRf3+KaU93X1E0rz+WixvlcsH
+         Xn9R5YFcZ2iKe+V5CexVcEZOpV+UuZyoY8M29oPnrFQuyB1+5v2MvZx4iy8j5lCZeDhM
+         Q+2whO4e/XF+u7DDPYaS0D7Iw1KmS6TEuVwoyR51VUl1CzjsUV93ra/H/buP12zXquNI
+         7OkkM70vS2uRgz0Id/W0DID0tZBCazEGwsM1QBBMYGX2fvdUAIEJzefTBwAK1QtpiAho
+         plzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794731470; x=1795336270;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=zuSlxP/wZehSt0jCPWAa5AKI3q/TR1ZMAo89fzmDo6s=;
+        b=EekAuTZgY2MPgblaGgCFaPz6nAIz9v4ArUI51VgAMtdc2i9emZdFzFJnSzGnocrbhL
+         Fq46SQ1aQyA/Wba08gIE4959HikNkSYug98iBc2pFVSpNKbarKbS5zfXLNrTDVde0PHz
+         GEiQ6sx0hikJtgMrxj0rAxPtsDvC9ycFC8eeuJvWXRVFimFe9W7l9W+VgLyrqev32NqR
+         2HrAmjNCe4LxqJeIu632S7XefvAygBfPQ65IBNmVo/0CeorxjewAUy9mW8n19JkBNYop
+         xwv5GAWCAHUKb4wU2pzaTiMMYsjaxGyzbSD6Z1AMi4vaY9wnVjtyWem15iXqpW+rYsKe
+         fbKw==
+X-Gm-Message-State: APuU4Z/1D5UcZ3YJAy2pnk21flbL/OwiIBDC/sT2szwBNHHfY9r8kgTp
+	QpNT/n6m469bt+POXRDbc5YFAnENhh0xlppV5ydeErs+E6mr/S/6puGc
+X-Gm-Gg: AYBFou19jXjeFUYZj2EuMTtRxEiBJH4zVEMMvtWvQEuLYmj3XdwrLG3WUQGIPDyShxx
+	iJu9diKJUsOU4rKu7K/jKwB4qYqIAyiuoFC7H0ZjQenY2vUIFkFGoq+wM2Y6MNJfeX9ihP2B21P
+	6wBJPfZYUpYgA+qCxFV+bNVRpENWl6TquEbBIJdPvH5LbUzptyq1dT80wsItbbZY3kWfmJNProb
+	QyEpqfkAgcBxvZnBY6t5v+OEeNbOiSO586lWLzLZRs7xsBFZ+ATfWWBJH54nGXEbrjkTyXyXt5K
+	g0E1BxwoCMLzt5Jq3tR0bxAQZMiRbZoAs/IalzIxC1Z5P6NAWiNoSIQ6yBvmWSWXYgmHxsjPWN3
+	czjKp2OH299NfoJZUDE7lHy2+wzGYM6cxjORiOnOlxyqYDgacyeDMM8Uh1iJo7jwZqmy2l5/LL/
+	ljN09IWgJ9hdasHfaYSTQJRaEywfmLrLIT9MEvB9V+VvLUgur3hj96bgz7pbOM7HS5xxdzp7aBw
+	mjGvYYsYCDX06EGqeLvESQwY4Zs93eDNu7IUQZEXmeZjuBcgwvku8efEFOr7gAe2Txxmnw1eGXS
+	GHzK05tB1qgQp2AzGck+LhP9hDIWO9njbKEDjlBUtPLIA6J1B11JLQUgtIfhx2kIXbs9pTLm0/q
+	nBFrkwHr1Qg==
+X-Received: by 2002:a17:907:96a3:b0:c1c:4a80:30c4 with SMTP id a640c23a62f3a-c50962eeff0mr571434666b.11.1794731470128;
+        Sun, 15 Nov 2026 00:31:10 -0800 (PST)
+Received: from xeon ([188.163.112.62])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c50d9009bc9sm14019666b.15.2026.11.15.00.31.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2026 00:31:09 -0800 (PST)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1] iio: core: Export iio_find_channel_from_si() helper
+Date: Sun, 15 Nov 2026 10:30:49 +0200
+Message-ID: <20261115083049.46840-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -69,183 +96,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: [PATCH] iio: imu: st_lsm6dsx: fall back to 25 us/tick without a trim
-To: Francesco Lavra <flavra@baylibre.com>, Jonathan Cameron
- <jic23@kernel.org>, linux-iio@vger.kernel.org,
- Lorenzo Bianconi <lorenzo@kernel.org>
-Cc: mario.tesi@st.com, linux-iio@vger.kernel.org, stable@vger.kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
-References: <a3a00c75-c830-4d1a-9a89-dd55641a422f@advisoft.co.nz>
- <20261115000940.24215eb0@jic23-hlaptop>
- <2cc30a3e725639667085f3f82d453a7dfc9f853c.camel@baylibre.com>
-Content-Language: en-GB
-From: Phil Williams <phil.williams@advisoft.co.nz>
-In-Reply-To: <2cc30a3e725639667085f3f82d453a7dfc9f853c.camel@baylibre.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cp-fp09.syd02.ds.network
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - advisoft.co.nz
-X-Get-Message-Sender-Via: cp-fp09.syd02.ds.network: authenticated_id: phil.williams@advisoft.co.nz
-X-Authenticated-Sender: cp-fp09.syd02.ds.network: phil.williams@advisoft.co.nz
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-
-This is a multi-part message in MIME format.
---------------DaHNjVFhfxuojXo2uFT7yvOM
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Hi all,
+Export iio_find_channel_from_si() in the Industrial I/O (IIO) core to
+allow modular drivers to locate channel specifications by scan index.
 
-Patch attached. It is the fallback in st_lsm6dsx_init_hw_timer() as 
-discussed.
+Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+---
+ drivers/iio/industrialio-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Toradex Linux 6.6.142, an ISM330DLC on SPI (whoami 0x6a) on a Verdin 
-i.MX8M Plus published every FIFO sample with one timestamp until the 
-scale was 25000 ns/tick again. After that the timestamp bytes advanced 
-and pitch updated. I have not booted this patch on mainline. It applies 
-cleanly on mainline 23c62304dde2.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 825cf7f32059b..b59983d35239f 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -325,6 +325,7 @@ const struct iio_chan_spec
+ 			return &indio_dev->channels[i];
+ 	return NULL;
+ }
++EXPORT_SYMBOL_GPL(iio_find_channel_from_si);
+ 
+ /* This turns up an awful lot */
+ ssize_t iio_read_const_attr(struct device *dev,
+-- 
+2.53.0
 
-This is my first kernel patch, please let me know if there is anything 
-else I need to do.
-
-Thanks,
-Phil
-
-On 15/11/2026 8:11 pm, Francesco Lavra wrote:
-> On Sun, 2026-11-15 at 00:09 +0000, Jonathan Cameron wrote:
->> On Tue, 10 Nov 2026 02:38:14 +1300
->> Phil Williams <phil.williams@advisoft.co.nz> wrote:
->>
->>> Hey Guys,
->>>
->>> I ran into an issue where every FIFO sample from an ISM330DLC came out
->>> with the same timestamp, so our attitude math froze the pitch. The
->>> accelerometer and gyroscope values were fine. I've patched it locally,
->>> so this is just an FYI.
->>>
->>> Make what you want of it, but here is an AI generated description of
->>> the
->>> issue:
->>>
->>> Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
->>> calculation") drops the timestamp scale for the older parts in this
->>> driver. Stable backport 981f3da383ce is what we hit, in 6.6.142.
->>>
->>> st_lsm6dsx_init_hw_timer() used to do:
->>>
->>>       hw->ts_gain = ST_LSM6DSX_TS_SENSITIVITY; /* 25000 ns/tick */
->>>
->>> That commit deletes the constant and reads the gain from the per-chip
->>> table:
->>>
->>>       hw->ts_gain = ts_settings->ts_sensitivity;
->>>
->>> ts_sensitivity is only filled in on the entries that already had
->>> freq_fine (LSM6DSO / LSM6DSR / LSM6DSV and that generation). The
->>> untagged-FIFO entries have no freq_fine register, so they were left at
->>> 0:
->>>
->>>       LSM6DS3
->>>       LSM6DS3H
->>>       LSM6DSL, LSM6DSM, ISM330DLC, LSM6DS3TR-C
->>>
->>> st_lsm6dsx_read_fifo() still does:
->>>
->>>       ts = data[1] << 16 | data[0] << 8 | data[3];
->>>       ts *= hw->ts_gain;
->>>       iio_push_to_buffers_with_timestamp(..., sensor->ts_ref + ts);
->>>
->>> With ts_gain == 0 every sample is published as ts_ref, the
->>> CLOCK_REALTIME value taken when the buffer was enabled. The accel and
->>> gyro values are fine. Only the timestamp is stuck. The raw count is
->>> still checked against 0xff0000 before the multiply, so ts_ref is
->>> refreshed when the counter gets there. At 25 µs/tick that is about 7
->>> minutes. The driver comment says 1.638 s, which is 2^16 ticks, but the
->>> test is 0xff0000.
->>>
->>> How we found it: an ISM330DLC on SPI (whoami 0x6a), on a Toradex Verdin
->>> i.MX8M Plus, after moving onto 6.6.142. Userspace integrates attitude
->>> from the delta of the IIO buffer timestamp and treats a non-increasing
->>> timestamp as dt = 0, so pitch, roll and yaw froze at the first sample.
->>> A
->>> strace of the process reading /dev/iio:deviceX showed the xyz int16s
->>> changing and the 8 timestamp bytes identical across samples. The same
->>> binary against the previous kernel, which still used the 25000
->>> constant,
->>> did not do this.
->>>
->>> Setting the old scale on those three entries fixes it. freq_fine stays
->>> unset, so the trim register is not read and the gain stays exactly
->>> 25000, which is what those parts had before:
->>>
->>>       .ts_sensitivity = 25000,
->>>       .ts_trim_coeff = 37500,
->>>
->>> After booting that kernel the timestamp bytes increment and pitch
->>> tracks
->>> the unit again. The entries that already had ts_sensitivity (25000, or
->>> 21701 on the freq_fine 0x4f part) were left alone.
->>>
->>> Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
->>> calculation")
-> This analysis looks correct to me too.
-> But I wouldn't set .ts_trim_coeff for the parts where .freq_fine is 0: for
-> those, there is no trimming to be done.
-> So either set .ts_sensitivity = 25000 for all parts that currently don't
-> have it set, or maybe better use 25000 in st_lsm6dsx_init_hw_timer() as a
-> fallback value when .ts_sensitivity is not set.
---------------DaHNjVFhfxuojXo2uFT7yvOM
-Content-Type: text/plain; charset=UTF-8;
- name="0001-iio-imu-st_lsm6dsx-fall-back-to-25-us-tick-without-a-trim.patch"
-Content-Disposition: attachment;
- filename*0="0001-iio-imu-st_lsm6dsx-fall-back-to-25-us-tick-without-a-tr";
- filename*1="im.patch"
-Content-Transfer-Encoding: base64
-
-RnJvbSAxNDFhYTMxNDU0YmQ4N2VkMjBiMTg1NTQ0NDU2YmYyODY5MmM0YzJkIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBQaGlsIFdpbGxpYW1zIDxwaGlsLndpbGxpYW1zQGFk
-dmlzb2Z0LmNvLm56PgpEYXRlOiBTdW4sIDE1IE5vdiAyMDI2IDIxOjA0OjA2ICsxMzAwClN1
-YmplY3Q6IFtQQVRDSF0gaWlvOiBpbXU6IHN0X2xzbTZkc3g6IGZhbGwgYmFjayB0byAyNSB1
-cy90aWNrIHdpdGhvdXQgYSB0cmltCgpDb21taXQgOGFiYmY0NWZjZGEwICgiaWlvOiBzdF9s
-c202ZHN4OiBGaXhlZCBjYWxpYnJhdGVkIHRpbWVzdGFtcApjYWxjdWxhdGlvbiIpIHRha2Vz
-IHRoZSBGSUZPIHRpbWVzdGFtcCBzY2FsZSBmcm9tIHRzX3NlbnNpdGl2aXR5LgpUaGF0IGZp
-ZWxkIGlzIG9ubHkgZmlsbGVkIGluIGZvciBwYXJ0cyB0aGF0IGhhdmUgZnJlcV9maW5lLiBU
-aGUKdW50YWdnZWQtRklGTyBwYXJ0cyBhcmUgbGVmdCBhdCB6ZXJvOgoKICBMU002RFMzCiAg
-TFNNNkRTM0gKICBMU002RFNMLCBMU002RFNNLCBJU00zMzBETEMgYW5kIExTTTZEUzNUUi1D
-CgpzdF9sc202ZHN4X3JlYWRfZmlmbygpIG11bHRpcGxpZXMgdGhlIHJhdyBjb3VudGVyIGJ5
-IGh3LT50c19nYWluLCBzbwpldmVyeSBzYW1wbGUgaXMgcHVibGlzaGVkIHdpdGggdGhlIHRp
-bWVzdGFtcCB0YWtlbiB3aGVuIHRoZSBidWZmZXIKd2FzIGVuYWJsZWQuIFRoZSBhY2NlbGVy
-b21ldGVyIGFuZCBneXJvc2NvcGUgdmFsdWVzIHN0aWxsIHVwZGF0ZS4KVXNlcnNwYWNlIHRo
-YXQgaW50ZWdyYXRlcyBhdHRpdHVkZSBmcm9tIHRoZSB0aW1lc3RhbXAgZGVsdGEgdHJlYXRz
-IGEKc3R1Y2sgdGltZXN0YW1wIGFzIGR0ID0gMC4KClRoZXNlIHBhcnRzIGhhdmUgbm8gZnJl
-cV9maW5lIHJlZ2lzdGVyLCBzbyB0aGVyZSBpcyBubyB0cmltIHRvIGFwcGx5LgpVc2UgdGhl
-IHByZXZpb3VzIGZpeGVkIHNjYWxlIG9mIDI1MDAwIG5zL3RpY2sgd2hlbiB0c19zZW5zaXRp
-dml0eSBpcwp1bnNldC4gRW50cmllcyB0aGF0IGFscmVhZHkgc2V0IGl0IGFyZSBsZWZ0IGFs
-b25lLgoKRml4ZXM6IDhhYmJmNDVmY2RhMCAoImlpbzogc3RfbHNtNmRzeDogRml4ZWQgY2Fs
-aWJyYXRlZCB0aW1lc3RhbXAgY2FsY3VsYXRpb24iKQpDYzogc3RhYmxlQHZnZXIua2VybmVs
-Lm9yZwpTdWdnZXN0ZWQtYnk6IEpvbmF0aGFuIENhbWVyb24gPGppYzIzQGtlcm5lbC5vcmc+
-ClNpZ25lZC1vZmYtYnk6IFBoaWwgV2lsbGlhbXMgPHBoaWwud2lsbGlhbXNAYWR2aXNvZnQu
-Y28ubno+Ci0tLQogZHJpdmVycy9paW8vaW11L3N0X2xzbTZkc3gvc3RfbHNtNmRzeF9jb3Jl
-LmMgfCA4ICsrKysrKystCiAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCAxIGRl
-bGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vaW11L3N0X2xzbTZkc3gvc3Rf
-bHNtNmRzeF9jb3JlLmMgYi9kcml2ZXJzL2lpby9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4
-X2NvcmUuYwppbmRleCA4MjNmOGFjLi45OGRiOTBhIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lp
-by9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4X2NvcmUuYworKysgYi9kcml2ZXJzL2lpby9p
-bXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4X2NvcmUuYwpAQCAtMjUyNSw4ICsyNTI1LDE0IEBA
-IHN0YXRpYyBpbnQgc3RfbHNtNmRzeF9pbml0X2h3X3RpbWVyKHN0cnVjdCBzdF9sc202ZHN4
-X2h3ICpodykKIAkJCXJldHVybiBlcnI7CiAJfQogCi0JLyogY2FsaWJyYXRlIHRpbWVzdGFt
-cCBzZW5zaXRpdml0eSAqLworCS8qCisJICogUGFydHMgd2l0aCBubyBmcmVxX2ZpbmUgcmVn
-aXN0ZXIgaGF2ZSBubyB0cmltIGFuZCBsZWF2ZQorCSAqIHRzX3NlbnNpdGl2aXR5IHVuc2V0
-LiBUaG9zZSBwYXJ0cyB1c2VkIGEgZml4ZWQgMjUgdXMvdGljay4KKwkgKiBBIHplcm8gZ2Fp
-biBwdWJsaXNoZXMgZXZlcnkgRklGTyBzYW1wbGUgd2l0aCBvbmUgdGltZXN0YW1wLgorCSAq
-LwogCWh3LT50c19nYWluID0gdHNfc2V0dGluZ3MtPnRzX3NlbnNpdGl2aXR5OworCWlmICgh
-aHctPnRzX2dhaW4pCisJCWh3LT50c19nYWluID0gMjUwMDA7CiAJaWYgKHRzX3NldHRpbmdz
-LT5mcmVxX2ZpbmUpIHsKIAkJZXJyID0gcmVnbWFwX3JlYWQoaHctPnJlZ21hcCwgdHNfc2V0
-dGluZ3MtPmZyZXFfZmluZSwgJnZhbCk7CiAJCWlmIChlcnIgPCAwKQotLSAKMi41My4wCgo=
-
-
---------------DaHNjVFhfxuojXo2uFT7yvOM--
