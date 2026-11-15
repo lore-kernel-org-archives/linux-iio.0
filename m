@@ -1,81 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794777599;
-	b=PqzPHBRkeLDHsJ0I5CaYDKCcicE0z319SEUhwIhDI3tMwyAr+0RwziX5TMWOsVjyolUD
-	 3ImfLzxJB+G/xr8yeAa1rjDqF4nbO9suMhswVDPckH3JbWfLACTyLLwpF6WSf+1zJFtaN
-	 tXYnCKERyho53hCAIkCyNAxXZ4MpXxBPmrudhxuLP8i/EDE/e8ooC9CqHlz3FfLyAf/pZ
-	 Z4MXJznRfoVvu6AwFtrIAzkxmxvhbOtPbz0J5Tehg8V1i4LiZ2eydGJiO9pVc5MXC+OJu
-	 x8fTwWMdsa0VlThV6qbIA7/wURmbYbyRhXoOKaBTeu7oCtZi23pbw12an/WBSEVla8A==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794777599;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=/4uby6K+dvhEKI9jlVOohhHd2SunK9ZcoGm5SRjDqP0=;
-	b=ymsXXrpsDgsTW9ClK9E0w5jjHAm+1PBcAk8btfwdDFrx12OWu6/Yr/dAC4K+f33RtHx0
-	 q3uGGXdGBidd2XkBk1TWJ8LDAOQcyBmMnnkAvq/7c6S3eqb3gOzVFXgo4M+h6ifl6qnfu
-	 XspaTNLKiA6gnzMGQ0fkKOLn+pGPV/E7PjMrGoOtoBljAsHfA7lZX8dtvfZ3/LRAP4NpS
-	 /+DevRDUwc3L6gwu/5QdoZroihg3MliwKManXdzVLzPKO6BhiigSznu55JfsfPunMBQyv
-	 RUmV4cy6xUh8ABuy0e2ec+9IUtDtdnopExj+nGfZNHo6+2gOXYvpM1ZVqA710cjHG2A==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ia2iY8lu;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794778803;
+	b=VHraiFOMUwt2t5KIxBPLA2D9lcD1B5gmCsxkp1ETIuZn3rhVpvMYbpmwD+mkplPAKz3o
+	 99Rh87T4eAiaqn9RHV1vyIgYp65uXbdt9GVpwQPQo/zlaQecMyzyuJp3GPIjlvXITzVzs
+	 aFdL2utc3oBr5CX0+jnRnNpjveMlGNHIKeM2ZC/hBmbLaT+DKMSX2gVVoF9x2m8D8XGyd
+	 sfRtwKFm8ZcmtQgwvMw5fJZR+UIHtQ/SQN55OSCj2/XJtRO95BMQtAl/bvrucIouBHzki
+	 HCrPHWKFbj4utg0TO7MzxsgXxTKtJlkEH4h6bJidz0Y33iX9PpD8DNxCgs55He4e8xw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794778803;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=xNjAalZIzvUFa5Xbxji9aRdEkgxtocXL1VL40VOFD/c=;
+	b=1owK+qDy/2RF+uKPsy84lehi4LXIGUT1iT3UT4BnYNBPTeaQcszsRurjYwJClr27hutt
+	 jkDgBr94+ngITQw14oU/pspuZn0PxK7xmxRxRB065Qn3oa6eGAGuQV2HJgNXFsQctKYQh
+	 a3xV3ZoyYOfnlKoJaZIefQ/o1s0c5h9ClaFgSi2RgedVYembufdv1hW8icofxFTw2lkzZ
+	 k0NVDLDOPhcPGW9OWOVbpkuf1MN00FplDByzjo3ef3m6vGyUTAaNfMTCXlNqj2FEF9J/y
+	 t1AH9z8UV2A+v1jbqyjkQ5GXibmHYHrOuTYtT0IdaV00AY+rnVr8epGA9+23D1MQLtw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bVYON9ny;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A40CA606A32C;
-	Sun, 15 Nov 2026 21:19:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A40CA606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15544606A31F;
+	Sun, 15 Nov 2026 21:40:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ia2iY8lu
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794777599; x=1826313599;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MoUWYmdXOVPS3N4vpeXkJku4pGrtk8drmvbX/dNJtPY=;
-  b=ia2iY8luIMv1xMGTsZt3RYGozMTiTUZlRHtZpvyzLEsftfKJ8UT6CFOY
-   aKAfOHUfLaQ0vwRVuM4nEu0nflGwB4xhFT10tKbkPjmEh+52kxEguTA1W
-   mUG0+2aVG4FqKDpHUq8ztz0+OJ5jF4NBwUSyjISo3gMtrJ8lbxa/msPrD
-   3ifs9ZvUaANWuOprWBOA/gLQmf3429RMJUhwlqhcQQCysVKDMyc/WdmFX
-   paz/65sl18uN+Qyba0TfVDhRAv+/Jk4egkH5YXO4yWBBH7NUCJg5QCEzT
-   +GEUXOJpHE2U2UnOqKA22iKCEP4xw68bC9leF+rTzoVMLfUMaTh9oNaUK
-   w==;
-X-CSE-ConnectionGUID: ZUTtrHKqRBOHCdxDW/AMXg==
-X-CSE-MsgGUID: JMwdK4w6SLGm7l77Gg6mZA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3590508"
-X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
-   d="scan'208";a="3590508"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 13:19:59 -0800
-X-CSE-ConnectionGUID: K/x7qEOiTNW0RCeCPiu0XQ==
-X-CSE-MsgGUID: B/XzAGmCREqNcfhvpwAexg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
-   d="scan'208";a="9812155"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 15 Nov 2026 13:19:56 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xShdg-000000017Ki-2C5w;
-	Sun, 15 Nov 2026 21:19:52 +0000
-Date: Mon, 16 Nov 2026 05:19:03 +0800
-From: kernel test robot <lkp@intel.com>
-To: Akshat Chandra <notmissinge@gmail.com>, linux-iio@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, jic23@kernel.org, andy@kernel.org,
-	Lukasz Kulga <lukasz.kulga@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: chemical: Add support for Sensirion SGP41
-Message-ID: <202611160427.m6uyOPMn-lkp@intel.com>
-References: <20261115055941.362185-3-notmissinge@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bVYON9ny
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794778802;
+	b=CftTzxgyLMJwm3bhBexRcZOHJBaFWxsp8vYFCWCinTzrCkITLfydDSr35THNXpJyiBF+
+	 hOB1Ciuna76PFXLHMcjoAGDws26sj+vPx2r6xgNcfMowo+ai92ruy8njvPRZY7aSTZytx
+	 coQSEXjNCdoVUfKK2IY9PVdAuKGAg1X+1Otv2PbC1sdTEvHnbRg0XVrAZ1QBVvgB1r2VW
+	 NlEuN5pVlfkb/oe+iG+ei4XRYDEsYzHQz6F41kdj0KVt/HVNxMjfDa8QJF3q8NZoGaRBW
+	 4nmAAHFLoQo7dw3qWYXkyW15n8tx6X4aJQcbzYfZoXVW5/RhY9qHWxiTUpq0GG9qU7w==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794778802;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=xNjAalZIzvUFa5Xbxji9aRdEkgxtocXL1VL40VOFD/c=;
+	b=0QUf1UOk33npcTZknKyyCBniXFHLnQfyiVsQ8cI6pBTBdgx+Rrw7MkPlgfvQ6eDMbqKq
+	 ubkuxe7ee/pJli1LXzjmueEkChv6uipfvhckE9DyqnuziS9t0Vh+y7mQfs6hNjv8suT3r
+	 nlRIZmBT1fUcpjp2kahqnJLm57QfEJD1TfV+E7s/BzKUzYKrtFvMRHpyT4BGPDMeS6NjU
+	 3oPeIO3QOCAclHpkCGe7DunyT3PO/P6+3ZQFCRCdAvQWlnLZNR6hhd0EamhiYIMdIarUa
+	 pH4BT+MM0VLzYmDKXW2kf3ONk9h67sP+tmolIaShnXVbOvlB29itfyM4rz+66aDPSvw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 200EB1F000C4;
+	Sun, 15 Nov 2026 21:40:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794778802;
+	bh=xNjAalZIzvUFa5Xbxji9aRdEkgxtocXL1VL40VOFD/c=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=bVYON9nyiNA1ScxrHvAukf882icY23Dl2rKcC1Gf4Zlmxw1gCWNzSz/UOVm9VWm4M
+	 1x1cXO4Rrcu/6fV962cC2v92Yu4WBfsT3mvA1qiKyVIcSxw0wcnNZ2t/TX14CSv/Yb
+	 9NvLtsjKEqCOt3FewQlx77UmOEcYtDNAnS0NE+QQmx0ABUYOQb3Yn1REQoYZPu24RS
+	 7QO3AdP1fAG7fL8eXPjI35qjPtG60negVgJ+KALKsXfOlfEPtqAX9bqERldLBBBb7P
+	 H5Px1YzwHY8R/h5tdw5OgEsCqn+AMwSAerrd9AqQClu1oe7vEfkMmNvGdxBzd6Kd7L
+	 zre8Bx7aPBs7g==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 92BB94A205;
+	Sun, 15 Nov 2026 21:40:01 +0000 (UTC)
+From: Phil Williams via B4 Relay <devnull+phil.williams.advisoft.co.nz@kernel.org>
+Date: Mon, 16 Nov 2026 10:40:01 +1300
+Subject: [PATCH] iio: imu: st_lsm6dsx: fall back to 25 us/tick without a
+ trim
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,45 +83,92 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261115055941.362185-3-notmissinge@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261116-st-lsm6dsx-ts-fallback-v1-1-8ace30afbfb5@advisoft.co.nz>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMMQ6DMAxA0asgz1jCQcrQq6AOIXFaQ6BVnFZIi
+ LuTlvEN/++gnIUVbs0Omb+i8lorqG3AP936YJRQDaYzlogsasGkiw26YVGMLqXR+Rl9MBQpEPc
+ dQ43fmaNs//Fwv6yfcWJffjc4jhNT60DqegAAAA==
+X-Change-ID: 20261116-st-lsm6dsx-ts-fallback-cd21f1d1e30e
+To: Lorenzo Bianconi <lorenzo@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Mario Tesi <martepisa@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
+ Phil Williams <phil.williams@advisoft.co.nz>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794778800; l=2231;
+ i=phil.williams@advisoft.co.nz; s=kernel; h=from:subject:message-id;
+ bh=uHlYPZd4leaL6BZM5UhiWipgD8U4U669fNKN8B6lxPA=;
+ b=swvwjnWL3dHnjOwF5N49mxp+jQkSzO5f8iKsDykvNkJoG9nL5N9gOV1dfEDQAgYLgtVenSNDn
+ mmz43EWAIvwD7R8bnl+BqLxRMaYraCgYT3m1eKkeiSTLJO89BB/7Zg6
+X-Developer-Key: i=phil.williams@advisoft.co.nz; a=ed25519;
+ pk=t0M8TApJRlA/rHh3lIu1XTiWO2+evmU8VnO43/qqLPk=
+X-Endpoint-Received: by B4 Relay for phil.williams@advisoft.co.nz/kernel
+ with auth_id=1538
+X-Original-From: Phil Williams <phil.williams@advisoft.co.nz>
+Reply-To: phil.williams@advisoft.co.nz
+Content-Transfer-Encoding: 7bit
 
-Hi Akshat,
+From: Phil Williams <phil.williams@advisoft.co.nz>
 
-kernel test robot noticed the following build errors:
+Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
+calculation") takes the FIFO timestamp scale from ts_sensitivity.
+That field is only filled in for parts that have freq_fine. The
+untagged-FIFO parts are left at zero:
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on robh/for-next linus/master v7.4-rc2 next-20261113]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+  LSM6DS3
+  LSM6DS3H
+  LSM6DSL, LSM6DSM, ISM330DLC and LSM6DS3TR-C
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Akshat-Chandra/iio-chemical-Add-support-for-Sensirion-SGP41/20261115-112940
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20261115055941.362185-3-notmissinge%40gmail.com
-patch subject: [PATCH v2 2/2] iio: chemical: Add support for Sensirion SGP41
-config: nios2-allmodconfig (https://download.01.org/0day-ci/archive/20261116/202611160427.m6uyOPMn-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261116/202611160427.m6uyOPMn-lkp@intel.com/reproduce)
+st_lsm6dsx_read_fifo() multiplies the raw counter by hw->ts_gain, so
+every sample is published with the timestamp taken when the buffer
+was enabled. The accelerometer and gyroscope values still update.
+Userspace that integrates attitude from the timestamp delta treats a
+stuck timestamp as dt = 0.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611160427.m6uyOPMn-lkp@intel.com/
+These parts have no freq_fine register, so there is no trim to apply.
+Use the previous fixed scale of 25000 ns/tick when ts_sensitivity is
+unset. Entries that already set it are left alone.
 
-All error/warnings (new ones prefixed by >>, old ones prefixed by <<):
+Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp calculation")
+Cc: stable@vger.kernel.org
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Phil Williams <phil.williams@advisoft.co.nz>
+---
+Resending inline. The first copy went out as an attachment.
+No code changes.
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
->> drivers/iio/chemical/sgp41.c:478:12: warning: 'sgp41_probe' defined but not used [-Wunused-function]
-478 | static int sgp41_probe(struct i2c_client *client)
-|            ^~~~~~~~~~~
->> drivers/iio/chemical/sgp41.c:459:13: warning: 'sgp41_remove' defined but not used [-Wunused-function]
-459 | static void sgp41_remove(struct i2c_client *client)
-|             ^~~~~~~~~~~~
---
->> ERROR: modpost: drivers/iio/chemical/sgp41.ko: missing MODULE_LICENSE()
->> WARNING: modpost: drivers/iio/chemical/sgp41.ko: missing MODULE_DESCRIPTION()
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 823f8ac66..98db90a30 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -2525,8 +2525,14 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
+ 			return err;
+ 	}
+ 
+-	/* calibrate timestamp sensitivity */
++	/*
++	 * Parts with no freq_fine register have no trim and leave
++	 * ts_sensitivity unset. Those parts used a fixed 25 us/tick.
++	 * A zero gain publishes every FIFO sample with one timestamp.
++	 */
+ 	hw->ts_gain = ts_settings->ts_sensitivity;
++	if (!hw->ts_gain)
++		hw->ts_gain = 25000;
+ 	if (ts_settings->freq_fine) {
+ 		err = regmap_read(hw->regmap, ts_settings->freq_fine, &val);
+ 		if (err < 0)
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+---
+base-commit: fa2933aac170dd19c6a7f0d7b81a8f537e40915c
+change-id: 20261116-st-lsm6dsx-ts-fallback-cd21f1d1e30e
+
+Best regards,
+--  
+Phil Williams <phil.williams@advisoft.co.nz>
+
+
