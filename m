@@ -1,101 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794767995;
-	b=5bSeV16FILP0OmvA2Wh8TF9fXJUlC1/zFcoaVQHzwFl9DETi4Ca+qGq48gGch9tgEMb2
-	 MGpPlMnmOUXeOIlFJfE2WXuyM7eM1ob/mBSx5TMWCH8t4poSP3oV6LuWAD4Rqep2/NiPS
-	 sJOqSI2e9Kjr3aSrU6CCXU0+hlG4zwAEw+SEQvm4/wZNl33vzu7IGDX0m7OT2Vn3PtPKo
-	 BcqpScqzJSUn/KSwdnP0mSCQ+aNMqsW2hVzGjfnkdSAPIcqVNBspnMSI8IZhqVPutzr8W
-	 N7+b+gXIKpTEcUiEg7WP6Hj/IrEX6i8XpI6a4Lx2LmjLyLgIehD7MJEIB3XQx1JgGzw==
+	t=1794773165;
+	b=eyoiZf31hqEGhr6FJ+NJaLLTmkCzN/rfm6R5B4j4rPScUqbx32u90WwlSF+/MhKldAsx
+	 BoplGa06IOtqkq1p09b9WOe9h+uoqvsz0+rfzNNAwgIyav33GLczfpvvbFO5vhqbX35nA
+	 R49Z27HmlDjdP7Li8VjEN1JVmXpGCvJl5F/LzY+7nWMKmuia9wGQhCd5TP942DFf2fP2m
+	 pBc32Pll7V1o6r3T/zfZJ1Vr9QX9b+w86vPhplbmoWHJM0wlrjCTDbgUJm+AgeBObPPfq
+	 nhI5tRAu3HAoKvpQ7IM+WAIga7jGCqHSvrMjjKYI9oDV1UiCUUfcUCBYBRmL7nG8vgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794767995;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=dlZpADIpQe7KCMb/+6RlQ2VbIrVPTUiha7CxAd+TEZ8=;
-	b=NzE/AhlLeqceAbXWmc/B0gDGr1z5XOK+kuFp97ttRtUdwUSWCbMnXNkAaZ0vb5VQ8onD
-	 f2bptmmDlsVjoOPcdXYO3VdlA1hp9htNIB41ddKnl5KncVy/Yohn3F1jtxbfutX64Rg7r
-	 tWjm+0CCXI9iCw8wk99GqWgMfbBpA6G2BWaHw+mriCubQvAMT3jwd16Y1oRqgabrKG5iC
-	 7fozkOEYSq5+87D2rzeJKRdqMN+zSre+cufPwx4Boya2f7FJygta5lzH0JMIuiZZZirKu
-	 0Oz/nHEHW9mjkeISTIXx91kpj9LvwPbIMyhya2qqWTAU+i0KcIPcpHfMkQrUJyTxbEQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794773165;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
+	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:User-Agent:MIME-Version;
+	bh=V6f8F8LNy9YAU6rCYBHu+cFkP1DOJUinUgDyONhmTEU=;
+	b=zBgjc+FKzF0yjU7gMNxf1yjXmBJTm9Tt7B/6wN+i7x0fwGRvCnOPoCFMwNuDMWX3Mx6S
+	 RhqqNSLEM8GwLFRWESOm0WBkY6NN9BM0H40eld4EnrHnh54pfJYnaxYjcHcQqbtFlwybX
+	 wv70eMatak4c6aJhQAB5ZIvm6LrUkPswQVronF/GNXd4zAgP29uXL5BriNarzWqluV3+3
+	 x6F2gJmkQ02FO/tKkd3jDfGRIubyhZHXyPKu8Uo0g2zc1LQ1IDzb2ipGyiPE813R9Epq/
+	 SMmzSHv42vQg11isxrv9u7Mw66AIe32zOLSIi9y13zqHD6oVsdssGNkMkl9QeHws5MA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VlJps22F;
-	arc=none smtp.remote-ip=209.85.167.52
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Hpcq9d6Z;
+	arc=none smtp.remote-ip=198.175.65.19
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99B4E606A31F
-	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 18:39:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 99B4E606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1156606A31F
+	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 20:06:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F1156606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VlJps22F
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5c15ccd7fb5so2452244e87.2
-        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 10:39:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794767994; x=1795372794; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dlZpADIpQe7KCMb/+6RlQ2VbIrVPTUiha7CxAd+TEZ8=;
-        b=VlJps22FPn47sddPz17DzkkRJRee5hZY1O7X22u8+0EcgI5CnnvVRxSakufd/WoG2H
-         R8WscVnazSdfoSPaKXgY2frrGTQczJ7TJX9G6NOFKhxRjpfYeTwSNymp6h2DLrKhu3ku
-         pKuLZJTtpEEBLeilit4PtYDtflgYqkA+xxGqygF//R7oSSJx0+Csv1kGi0AchKXktmcM
-         UaU7EyHR08uSCNV3l+o+kFImPfPYHICXivwG8NmMQLN9K0+czNEETaDHKr+7IbA2oafT
-         F6F3kw8gZmBHjaNF1aqA4ltciHIBjY+aEER0Y07OTWJkfR61OAoJ694GKj2ILCfkFCDR
-         EnWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794767994; x=1795372794;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=dlZpADIpQe7KCMb/+6RlQ2VbIrVPTUiha7CxAd+TEZ8=;
-        b=N1DjUTu2H1HR0jcwuXOKw4FFtAIjy915WjSUVWYI+A6ATLPo3eCAKCvTm3B5JN9x5C
-         d8Vnv9CdGDrIXrYv9GEooI8I6RiWwE/mb2KuHUikx0ldKPPrgosaXk528V6BeScyjRtT
-         kwb0asAyt8q1/DgA30+RE4F3zsfSJubmcb/sTBENN8cBN90yHaofJaC0vWzynPIi587q
-         Ys8RVWJBc+bxh1Hx1FgeV5YEZgYu8GE4HHxqUQguPIrchS6Fpkjhn3224Lbf9Qyv92vg
-         9t0GA8jaRKfOq/eL+1vo30AIsX7nZzcsxjySC9Y2tUQg8QHyXifMo1xDUGtbbfT4ODPz
-         YYBA==
-X-Forwarded-Encrypted: i=1; AL+hErFldTKv5zn59FAQktv8v0qc8sGZ4Vb5bF9eQRodrAIu8oJ9QMMt4tjrfS7K/F/A/WeavLDekQTadFg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8ZdQ+B3XqqUUk81Tiqr0tSGrDkijFsF7+LJDKsLBDU4hmciBwb
-	b7yRmIMbTnASqExFg+eN3EDfQOFjt7xjt6AJ7PMDYBzI4n5et7hkyZvr
-X-Gm-Gg: AYBFou1tNf9E3MrexZoq6QvdJ1CIdcbUvv2R7v8XciTCt0G75IuzxCE9bf5q4EIYldj
-	yUirY3B1y1jwHAvlzrnP3ZlgabAz0XW3xXrqEs/syb/1LTfCyGmm1+jmF1YMyP8W2IHKz8j9ho3
-	FueUkrRmBSJ8R8JTk12N4KEf7wyW1qOtuNK9nUxYxgminW01HoCSW1oyZY3NjFqGO4hrV5ETZIB
-	g7CU9BQ281YFxE4g66v/aGVyH69vfZQV/Gq3wwhwbvv0lvB4ddGtaT4PND1mj7DNlSVSAls6xar
-	4za8rYK8tt/78LHNFgdXsrD+RRiIAXDRy2S7jaT9mV2uALu1PS1Y5JWZJfOIxB5eZIpSirX+ONQ
-	B5ef63LOxLkUak2krOoM16nMNwX1/yP5lYD1+hF+BIoR5Dipdgvo3VbNDYE6r9rvkNadnao9PTe
-	HAzD+EfuQm7RtGsgSbb8cIpSRisK/mKBfni76HBHUKmJzxNKoindexecC+fw1DR9yjFcHK/XdNO
-	cgAw4+FrljP8sASd13x4EcyvVbzgY7LFsmB72InGQzP3/KhNLV1Por/trNYnyP2AY37La/ddipj
-	qvZVOTQaEByxQ8hDDu4YctqEvcDfwyxkR8KgXE7c0BzhMPrGB3NcHDoGXu2O538S+H2w6lmtraX
-	RhD7dgcCknZOhYE71CLBS78UIgs9CK0tjXc2s5DiOV4U6SXhlY5U1qgNfp+M=
-X-Received: by 2002:a05:6512:15a6:b0:5bf:b22f:19af with SMTP id 2adb3069b0e04-5c1709991d4mr3424142e87.18.1794767993422;
-        Sun, 15 Nov 2026 10:39:53 -0800 (PST)
-Received: from yantra.. (nekmmqug99g6ubyegcg-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:9e2a:fc94:8694:1840])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1713571aasm2532348e87.73.2026.11.15.10.39.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2026 10:39:52 -0800 (PST)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: jic23@kernel.org
-Cc: Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Sashiko <sashiko-bot@kernel.org>,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: Re: [PATCH v2] iio: pressure: dps310: don't wait for new temperature in trigger handler
-Date: Sun, 15 Nov 2026 20:39:49 +0200
-Message-ID: <20261115183949.11591-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261115010203.2a939bd6@jic23-hlaptop>
-References: <20261113230241.82046-1-zoone.rupert@gmail.com> <20261114013817.476f8fb9@jic23-hlaptop> <20261114083525.11972-1-zoone.rupert@gmail.com> <20261115010203.2a939bd6@jic23-hlaptop>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Hpcq9d6Z
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794773165; x=1826309165;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=Q0jJChWGWJWoEKUUxOiITP+u33PYvHpoloeOqWhc1RA=;
+  b=Hpcq9d6Zp2qy9UqMEF/5Qi2oYtIHMJQqiuWgvO1jYVp6qbpqhZ1Bs4hO
+   Tu1kj8NpWIr6FWjhHGXZHXiYtUTMyFxVYU9w2E8rr9Mxp23pgxEZECZhr
+   4efDXWEeCiG09tT3q7F0QKQkuQiVOwo5kK6rSYB/wAmFRa8tflolQKlVO
+   ezCGcSgwqDWVTjiwx/rr5Fx6496UvKEVO1+pZlwUUgotbKVGmhAX8hyzk
+   u3q2EU5FBKoskRX+/GT/kVNlIZNY+r8AcX0ynTQzd5I3aHcy3lV0DgHd6
+   LJSSLEP+UVxnqk6UbNJHOzGD95D5tcR9rVNVoiPjuG3LzLQOkg6RTsrFg
+   A==;
+X-CSE-ConnectionGUID: BaKZXRMtT3ejE65wmenZzA==
+X-CSE-MsgGUID: sUs34cHMQR+SOjpnzZzKqg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3550701"
+X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
+   d="scan'208";a="3550701"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 12:06:04 -0800
+X-CSE-ConnectionGUID: h4/cUxGcQFOsKi7g0qJUUw==
+X-CSE-MsgGUID: 5nIPvTXFQYKMsMq+L3h3/A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
+   d="scan'208";a="9302472"
+Received: from aschofie-mobl2.amr.corp.intel.com (HELO [10.125.108.92]) ([10.125.108.92])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 12:06:04 -0800
+Message-ID: <a1fc89c153490fa0bf0e0f9e4f112831db90ec07.camel@linux.intel.com>
+Subject: Re: [PATCH 05/39] iio: hid-sensors: use
+ iio_push_to_buffers_with_ts()
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=
+	 <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jiri Kosina
+	 <jikos@kernel.org>, Zhang Lixu <lixu.zhang@intel.com>
+Date: Sun, 15 Nov 2026 12:06:03 -0800
+In-Reply-To: <20261108203306.1599d000@jic23-hlaptop>
+References: <20261026-iio-v1-0-8b136778eedf@oss.qualcomm.com>
+		<20261026-iio-v1-5-8b136778eedf@oss.qualcomm.com>
+		<60eab26805ad63d1b39d80fb9a47b0ba9bb5789d.camel@linux.intel.com>
+	 <20261108203306.1599d000@jic23-hlaptop>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.60.2 (3.60.2-2.fc44) 
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,22 +88,225 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-On Sun, 15 Nov 2026 01:02:03 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+Hi Jonathan,
+On Sun, 2026-11-08 at 20:33 +0000, Jonathan Cameron wrote:
+> On Mon, 26 Oct 2026 17:06:23 -0700
+> srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+>=20
+> > On Mon, 2026-10-26 at 16:05 -0700, Jonathan Cameron wrote:
+> > > Replace the deprecated iio_push_to_buffers_with_timestamp() with
+> > > iio_push_to_buffers_with_ts(), passing the size of the pushed
+> > > buffer.
+> > >=20
+> > > For hid-sensor-magn-3d, use IIO_DECLARE_BUFFER_WITH_TS() to suize
+> > > the
+> > > buffer for the maximum number of channels supported avoiding need
+> > > for separate allocation.
+> > >=20
+> > > Signed-off-by: Jonathan Cameron
+> > > <jonathan.cameron@oss.qualcomm.com>=C2=A0=20
+> >=20
+> > LGTM.
+> > I will do some quick test on this and let you know.
+>=20
+> No huge rush.=C2=A0 This is the only one I'm going to leave unapplied
+> that doesn't need changes (as far as I know!) for now.
+>=20
 
-> > Probe value only lasts until the next temperature result. By the
-> > time the buffer starts TMP_RDY is set, so first scan takes a new
-> > temperature anyway (checked on the board, buffer enabled 5 s after
-> > probe). The probe read also covers direct pressure reads.
-> I'm a bit lost.  So how stale can it be in the direct pressure read case?
-
-One temperature period, so 1 s at the default 1 Hz. A direct pressure
-read takes new temperature result whenever TMP_RDY is set.
-
-Probe read is for a pressure read that comes before first
-temperature result after probe. That one would use temp_raw = 0.
+Tested-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
 Thanks,
-Rupesh
+Srinivas
+
+
+> Thanks,
+>=20
+> Jonathan
+>=20
+> >=20
+> > Thanks,
+> > Srinivas
+> >=20
+> > > ---
+> > > Cc: Jiri Kosina <jikos@kernel.org>
+> > > Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > > Cc: Zhang Lixu <lixu.zhang@intel.com>
+> > > ---
+> > > =C2=A0drivers/iio/gyro/hid-sensor-gyro-3d.c=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 5 +++-=
+-
+> > > =C2=A0drivers/iio/humidity/hid-sensor-humidity.c=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 5 +++--
+> > > =C2=A0drivers/iio/magnetometer/hid-sensor-magn-3d.c=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 | 21 ++++++-
+> > > ----
+> > > ----------
+> > > =C2=A0drivers/iio/orientation/hid-sensor-incl-3d.c=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 7 ++++---
+> > > =C2=A0.../iio/position/hid-sensor-custom-intel-hinge.c=C2=A0=C2=A0=C2=
+=A0 |=C2=A0 4 ++--
+> > > =C2=A05 files changed, 18 insertions(+), 24 deletions(-)
+> > >=20
+> > > diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > index 66778315e86d..083e82cf561c 100644
+> > > --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > @@ -182,8 +182,9 @@ static int gyro_3d_proc_event(struct
+> > > hid_sensor_hub_device *hsdev,
+> > > =C2=A0		if (!gyro_state->timestamp)
+> > > =C2=A0			gyro_state->timestamp =3D
+> > > iio_get_time_ns(indio_dev);
+> > > =C2=A0
+> > > -		iio_push_to_buffers_with_timestamp(indio_dev,
+> > > &gyro_state->scan,
+> > > -						=C2=A0=C2=A0 gyro_state-=C2=A0=20
+> > > > timestamp);=C2=A0=20
+> > > +		iio_push_to_buffers_with_ts(indio_dev,
+> > > &gyro_state-=C2=A0=20
+> > > > scan,=C2=A0=20
+> > > +					=C2=A0=C2=A0=C2=A0 sizeof(gyro_state-=C2=A0=20
+> > > > scan),=C2=A0=20
+> > > +					=C2=A0=C2=A0=C2=A0 gyro_state-
+> > > >timestamp);
+> > > =C2=A0
+> > > =C2=A0		gyro_state->timestamp =3D 0;
+> > > =C2=A0	}
+> > > diff --git a/drivers/iio/humidity/hid-sensor-humidity.c
+> > > b/drivers/iio/humidity/hid-sensor-humidity.c
+> > > index 12c88efe66be..c09986346c8f 100644
+> > > --- a/drivers/iio/humidity/hid-sensor-humidity.c
+> > > +++ b/drivers/iio/humidity/hid-sensor-humidity.c
+> > > @@ -132,8 +132,9 @@ static int humidity_proc_event(struct
+> > > hid_sensor_hub_device *hsdev,
+> > > =C2=A0	struct hid_humidity_state *humid_st =3D
+> > > iio_priv(indio_dev);
+> > > =C2=A0
+> > > =C2=A0	if (atomic_read(&humid_st-
+> > > >common_attributes.data_ready))
+> > > -		iio_push_to_buffers_with_timestamp(indio_dev,
+> > > &humid_st->scan,
+> > > -						=C2=A0=C2=A0
+> > > iio_get_time_ns(indio_dev));
+> > > +		iio_push_to_buffers_with_ts(indio_dev,
+> > > &humid_st-=C2=A0=20
+> > > > scan,=C2=A0=20
+> > > +					=C2=A0=C2=A0=C2=A0 sizeof(humid_st-
+> > > >scan),
+> > > +					=C2=A0=C2=A0=C2=A0
+> > > iio_get_time_ns(indio_dev));
+> > > =C2=A0
+> > > =C2=A0	return 0;
+> > > =C2=A0}
+> > > diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> > > b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> > > index c8b4fa7785c9..f869560b47fc 100644
+> > > --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> > > +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> > > @@ -37,8 +37,8 @@ struct magn_3d_state {
+> > > =C2=A0	struct hid_sensor_common rot_attributes;
+> > > =C2=A0	struct hid_sensor_hub_attribute_info
+> > > magn[MAGN_3D_CHANNEL_MAX];
+> > > =C2=A0
+> > > -	/* dynamically sized array to hold sensor values */
+> > > -	u32 *iio_vals;
+> > > +	/* array sized to hold maximum set of sensor values */
+> > > +	IIO_DECLARE_BUFFER_WITH_TS(u32, iio_vals,
+> > > MAGN_3D_CHANNEL_MAX);
+> > > =C2=A0	/* array of pointers to sensor value */
+> > > =C2=A0	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
+> > > =C2=A0
+> > > @@ -275,9 +275,10 @@ static int magn_3d_proc_event(struct
+> > > hid_sensor_hub_device *hsdev,
+> > > =C2=A0		if (!magn_state->timestamp)
+> > > =C2=A0			magn_state->timestamp =3D
+> > > iio_get_time_ns(indio_dev);
+> > > =C2=A0
+> > > -		iio_push_to_buffers_with_timestamp(indio_dev,
+> > > -						=C2=A0=C2=A0 magn_state-=C2=A0=20
+> > > > iio_vals,=C2=A0=20
+> > > -						=C2=A0=C2=A0 magn_state-=C2=A0=20
+> > > > timestamp);=C2=A0=20
+> > > +		iio_push_to_buffers_with_ts(indio_dev,
+> > > +					=C2=A0=C2=A0=C2=A0 magn_state-
+> > > >iio_vals,
+> > > +					=C2=A0=C2=A0=C2=A0 sizeof(magn_state-=C2=A0=20
+> > > > iio_vals),=C2=A0=20
+> > > +					=C2=A0=C2=A0=C2=A0 magn_state-
+> > > >timestamp);
+> > > =C2=A0		magn_state->timestamp =3D 0;
+> > > =C2=A0	}
+> > > =C2=A0
+> > > @@ -379,16 +380,6 @@ static int magn_3d_parse_report(struct
+> > > platform_device *pdev,
+> > > =C2=A0		return -ENOMEM;
+> > > =C2=A0	}
+> > > =C2=A0
+> > > -	/* attr_count include timestamp channel, and the
+> > > iio_vals
+> > > should be aligned to 8byte */
+> > > -	st->iio_vals =3D devm_kcalloc(&pdev->dev,
+> > > -				=C2=A0=C2=A0=C2=A0 ((attr_count + 1) % 2 +
+> > > (attr_count + 1) / 2) * 2,
+> > > -				=C2=A0=C2=A0=C2=A0 sizeof(u32), GFP_KERNEL);
+> > > -	if (!st->iio_vals) {
+> > > -		dev_err(&pdev->dev,
+> > > -			"failed to allocate space for iio values
+> > > array\n");
+> > > -		return -ENOMEM;
+> > > -	}
+> > > -
+> > > =C2=A0	for (i =3D 0, *chan_count =3D 0;
+> > > =C2=A0	i < MAGN_3D_CHANNEL_MAX && *chan_count < attr_count;
+> > > =C2=A0	i++){
+> > > diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > b/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > index b5f70732d035..3880e479a499 100644
+> > > --- a/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > +++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > @@ -194,9 +194,10 @@ static int incl_3d_proc_event(struct
+> > > hid_sensor_hub_device *hsdev,
+> > > =C2=A0		if (!incl_state->timestamp)
+> > > =C2=A0			incl_state->timestamp =3D
+> > > iio_get_time_ns(indio_dev);
+> > > =C2=A0
+> > > -		iio_push_to_buffers_with_timestamp(indio_dev,
+> > > -						=C2=A0=C2=A0 &incl_state-=C2=A0
+> > > > scan,=C2=A0=20
+> > > -						=C2=A0=C2=A0 incl_state-=C2=A0=20
+> > > > timestamp);=C2=A0=20
+> > > +		iio_push_to_buffers_with_ts(indio_dev,
+> > > +					=C2=A0=C2=A0=C2=A0 &incl_state->scan,
+> > > +					=C2=A0=C2=A0=C2=A0 sizeof(incl_state-=C2=A0=20
+> > > > scan),=C2=A0=20
+> > > +					=C2=A0=C2=A0=C2=A0 incl_state-
+> > > >timestamp);
+> > > =C2=A0
+> > > =C2=A0		incl_state->timestamp =3D 0;
+> > > =C2=A0	}
+> > > diff --git a/drivers/iio/position/hid-sensor-custom-intel-hinge.c
+> > > b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
+> > > index 101d84b533c9..98a5e3e03bba 100644
+> > > --- a/drivers/iio/position/hid-sensor-custom-intel-hinge.c
+> > > +++ b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
+> > > @@ -198,8 +198,8 @@ static int hinge_proc_event(struct
+> > > hid_sensor_hub_device *hsdev,
+> > > =C2=A0		if (!st->timestamp)
+> > > =C2=A0			st->timestamp =3D
+> > > iio_get_time_ns(indio_dev);
+> > > =C2=A0
+> > > -		iio_push_to_buffers_with_timestamp(indio_dev,
+> > > &st-=C2=A0=20
+> > > > scan,=C2=A0=20
+> > > -						=C2=A0=C2=A0 st-
+> > > >timestamp);
+> > > +		iio_push_to_buffers_with_ts(indio_dev, &st-
+> > > >scan,
+> > > +					=C2=A0=C2=A0=C2=A0 sizeof(st->scan),
+> > > st-=C2=A0=20
+> > > > timestamp);=C2=A0=20
+> > > =C2=A0
+> > > =C2=A0		st->timestamp =3D 0;
+> > > =C2=A0	}=C2=A0=20
+> >=20
