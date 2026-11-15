@@ -1,58 +1,103 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794732742;
-	b=Pg1m7Job+c9gOHlLB2NKvtp+Ze6hEaaaQ7C+PIBnRbus7q77pBCpfZ2J+uCqAWH06AO5
-	 K17LJZpJgB1GCIJe5MA0cjTSsdvn/p7Yi3uK/a/kYmrndG+3l1zH8qpyNoAwP8HfqnidW
-	 wfwVsvGz5kNkOGaiKyY3yhAniT2bXyyUoD7TnEV8ol7ZI/jdi6OrHo1MmvBRA6XjPkXVk
-	 faLE9OXeNE+w6oZReZ5kximnZ0pxz+5sCZdFrTA0eVCpf2MOgFz8UXsEGzIPnLFR8M8Pn
-	 xXcETBBHwpA4Fz3XxZUXwjPvbp3JJc8skzHxL8PRHC2JZBh7mFABNSN850xqE9nJ8gA==
+	t=1794733892;
+	b=mRPPIs++W1tQPBjbMWclYHqawJNMyBtmFgviyJuPw1600W7EBTvpvbH22GGi6hDapPgU
+	 J09nseTbB+1obtz8pO5rq+Bfp2IYVNoVW+NEUGK3IwlPggFPGGRJmUO+GIVG1kTF5USVj
+	 41vrKbY8dzMI/rY5CjNWPkHZcGNqjC01lVMQ+VmNrEWhFSKsq50VHOmZUvtD9C/K16dyM
+	 GzzyuFFcSZuAGPJDVfACEFAceiAc0UG4PqomeTqxJp78Lj7Re0pIVyY0zHaCDEqaXK44i
+	 Yxe7KxWaFmpE/u1y/dZNIFbO/qTSOvqH/u/8tlGHtYIoCOXYmspQp2OBgQJ836IQQBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794732742;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=X7R2ObYq1Fhv6av8RxsP4ymD1EUZRl057ikwLLDbUE0=;
-	b=uOWAI3IOADonH2dkdiLj3emqcmGfo2AOP+K//eOxpInET/GsHXMFHikmAWV7YCrva8cu
-	 HyPfRK3tpio588L/g39Dg9d8g2oMc+/2yTOvIEEtO8CVFQVOLyr2yWCx8CuD28C9InX5Q
-	 ec1xaiyF3YRklcRgZ3R61t4+QhKsrTzylVxKJ5LM+sWgACZE7IKQAjcO/Mxf5XPL9mJzB
-	 obOeLC/eOZ6pMAqZPfCnbIwgoiJZKFDRY5O5kb9i8JBUQmZs7gxJuOmYbm0p+ftSZ7hUL
-	 32IiwRlrcdo+9nOyxAZTES/qTMUrkEuBZHwClVmnPYfq52JdLW3z7MqHUMbi/DjIcZA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794733892;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=j40ibOKM4mRf4qD2apM+zYLryIz6pOPTKlMB8WE+osk=;
+	b=KoPY9DkS0qhQiB0Pm9TCATdp6OXiZevefh1aX4rEJWovJUobeTOXjpBCG6942t8g434z
+	 J+baarIE9sVZo2hpyBuPZQS7VndgKXlAL/x7tiRYhLS9xlVPZU/2vMsG6NGCJ06CVngWn
+	 6hLJjLjyQY8C8fruOlM1t/vaEdULjnk7590JayXqRM18VR10xsBhb1eIGF/rbzHJW8KOr
+	 nKH+3VKmhJEAuBFc237UzcnSj2AE/KGs1HoXQNwWjnJy7aI5YtXE3iVoUUBV6pm65gQg4
+	 CzLm2nblvjwZI27vw7VTPf4sMMuqchwwO+0P6ROHVEK16wReJ92uRUhaaNUzgo5UNNQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SPFyQqxp;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="ndht/p0t";
+	arc=none smtp.remote-ip=209.85.218.48
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B141E606A31A;
-	Sun, 15 Nov 2026 08:52:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C14B606A31D
+	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 09:11:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3C14B606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SPFyQqxp
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4DA01F000C4;
-	Sun, 15 Nov 2026 08:52:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794732742;
-	bh=X7R2ObYq1Fhv6av8RxsP4ymD1EUZRl057ikwLLDbUE0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=SPFyQqxp364A5+UCdbNct6E/GefvCzxlwuzQ4YGVWiJbvq08+SYDi8ktpdhsiaXHK
-	 cJ/Q0gncnh7YSjg0NouoqRHyJ5DN7Y+cK8sI4F8QDQUjUNrb6E4fBYHkZf5rT8fiBf
-	 xixklkpC3g4NwsHnjx1berYoq9xsGF9pEG1iEyjukrOqynRwQDPo08q9eMFwL/WeLa
-	 3ZCnmFuTbzgbQAyuC6O1vI4wW68IvbW/xFtJEfHe98I/ju/WhUrqwPXG3oVo86hIR4
-	 OaYtZ4RpnAfRhnj+BmUM8hd1TjHK6kJQBumDtVBkcSjxlcEZMCGLdR4EkTzBWIFqFS
-	 jX8fGe9h8dPng==
-Date: Sun, 15 Nov 2026 09:52:19 +0100
-From: Lorenzo Bianconi <lorenzo@kernel.org>
-To: Phil Williams <phil.williams@advisoft.co.nz>
-Cc: Francesco Lavra <flavra@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	mario.tesi@st.com, stable@vger.kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: fall back to 25 us/tick without a
- trim
-Message-ID: <avlyw4qzdFUnM1DC@lore-desk>
-References: <a3a00c75-c830-4d1a-9a89-dd55641a422f@advisoft.co.nz>
- <20261115000940.24215eb0@jic23-hlaptop>
- <2cc30a3e725639667085f3f82d453a7dfc9f853c.camel@baylibre.com>
- <6a9cbbcc-bdfb-4af1-a678-4f6f4b8a5f0e@advisoft.co.nz>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ndht/p0t
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c50ac25cdd4so189577066b.1
+        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 01:11:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794733891; x=1795338691; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=j40ibOKM4mRf4qD2apM+zYLryIz6pOPTKlMB8WE+osk=;
+        b=ndht/p0t8qzPcRCOk7ccV7NMJ0aBn5qjhK+k0s7XUYFCqoS9bzZHxRR1qN/xgeDfsL
+         E6/Sf6PNlDF1X1BQXrcYiBXlZ+4GLcOEp1c12bIHqSLtfR2YXxMyHbZJ98z6ERj93u+R
+         FR4Qe4j5xhltHAUb6ZRtMHSBttLlZkSHCWbmlNCMcmrH5Fn84HZa6zNDd3e6bGAjN69C
+         nWXawJB7gkePvTobYFw9qCja34OCVO+rqyvTPMvo7D9zQBce7nXm5vfZ/v3p8+vIa4kd
+         nakgFWlEPbxaIg0T0RyqqsN2vSJ8lsrr71fizH+flVDIz1xLClUJLBo0CY4aEXJZn6Hh
+         pHLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794733891; x=1795338691;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=j40ibOKM4mRf4qD2apM+zYLryIz6pOPTKlMB8WE+osk=;
+        b=1KJMP7bmwG8cLAxfZrvd+3YV2ilSDtMeNrkkQ0HuZ8aP/31d+X3yMpjuaMcaXXO+mE
+         JMyO+5x+jly4ACT5rBn0dEvKMBKpVYqyLLutdvebPf/vW86rgabztd7Hm3YAebeBFtsx
+         HetP6xOHTkBR9QdfrYOKlYHBbnzawT376hI9kc7P5waP5ZCCwnIi17u0b39rJI8UPGdX
+         fu+7UJqdJBBzyjbsxLQtQlzEfQAX8hRZ7oy3D861+TU81/uggRkEVaga0jm8Y7KtdMrV
+         k5My6pqIKHDyt/PjtOsP4BW6YitbaS4KQr0Cu6f90iK7O9ipfghCJYWvXJqlUTanKPQF
+         ImxQ==
+X-Forwarded-Encrypted: i=1; AL+hErFzeCrMSWqLlRM/fKWb+zNIzPb6Fav6bMvWjW7zKk58jG/dodk5NLB1JOYIm0I4uc1R1QnSePPsEvg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9UAlm87GEYU5jaQ/F3Wx1sftaaPti/ba5WjVnc2XgkOA1SL/Yf
+	/T7Jx6Rln2YNxcuPuF2rOoU3x25YjxRH/oxpcKk59ZrOWomML9uovSo7
+X-Gm-Gg: AYBFou3ntlJ35L6hk5oOKMq4CSG9+vmAmhsZvR/e0xfBFYyOYqjcN41ZkaKRY02Tkyv
+	Lctz1QsEFBA261IJof+jpv5NON8CMfudDWdNMpSnZGlg4U6oblnrAT2kI7ds57pqRwxVmAGVExp
+	vpeIWfiYBP48fJjRPYvSim2ktK8Y7Ic19ZaMzwYIUYoOO6q90UWvwFVPp0FFtkfF1UjDwcKQCyU
+	Aawzk5hXyPGQnVY3xtU3BEgfNAgWHVjHgTGNxYJPZt1kukOT4QpfWA7tDX3j3UUz6oYanN73kTv
+	N3TSoRxQyxNeE4dmwt48B9iC+5nmaU6nLGr2wPN9J/FTa6l1JivDAUe0bs2yWYKH5VDJbBFLU/2
+	0jXizkNUk2cmEEtZu7K71mMwYcKTwJdowUhOsdFygym+CCOa+zGsCplRvcZewR4gI2B1tDowP/Q
+	eezNlmIwfPNeJpzQdVbPnHSf2LZV9kVOlGuQupYMmD2nSIbSJgjxEtOZO0k/TVtPASTvnO8yqkH
+	4eSO/cxfsD1ZppqnCDNRu23R0ejmJnZjLzNqq78nVsR96mytaMzuf0kT4HUEJ2it+6xzsgijwP2
+	qQ/tUlh7uJbllzonrhjqAVf9uPGVHXe9uVKLdIwGuq9WCo2SuSu6JOvzklRFcZvBo3ne1INN/X1
+	4ZQIQm/8Rpg==
+X-Received: by 2002:a17:907:7b96:b0:c50:62ca:6f7 with SMTP id a640c23a62f3a-c50963b3398mr628172366b.25.1794733890485;
+        Sun, 15 Nov 2026 01:11:30 -0800 (PST)
+Received: from xeon ([188.163.112.62])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b3dbaesm289392366b.32.2026.11.15.01.11.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2026 01:11:29 -0800 (PST)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	mfd@lists.linux.dev
+Subject: [PATCH v2 0/4] iio: adc: Add support for MAX8907 ADC cell
+Date: Sun, 15 Nov 2026 11:11:16 +0200
+Message-ID: <20261115091120.108684-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -62,222 +107,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="BSc6zn2TSPAs0pUK"
-Content-Disposition: inline
-In-Reply-To: <6a9cbbcc-bdfb-4af1-a678-4f6f4b8a5f0e@advisoft.co.nz>
+Content-Transfer-Encoding: 8bit
 
---BSc6zn2TSPAs0pUK
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The MAX8907 PMIC has a dedicated ADC cell, which provides 8 ADC channels
+with information about different parts of the power system, including the
+battery, charger/plug, jack and thermal readings.
 
-> Hi all,
->=20
-> Patch attached. It is the fallback in st_lsm6dsx_init_hw_timer() as
-> discussed.
->=20
-> On Toradex Linux 6.6.142, an ISM330DLC on SPI (whoami 0x6a) on a Verdin
-> i.MX8M Plus published every FIFO sample with one timestamp until the scale
-> was 25000 ns/tick again. After that the timestamp bytes advanced and pitch
-> updated. I have not booted this patch on mainline. It applies cleanly on
-> mainline 23c62304dde2.
->=20
-> This is my first kernel patch, please let me know if there is anything el=
-se
-> I need to do.
->=20
-> Thanks,
-> Phil
->=20
-> On 15/11/2026 8:11 pm, Francesco Lavra wrote:
-> > On Sun, 2026-11-15 at 00:09 +0000, Jonathan Cameron wrote:
-> > > On Tue, 10 Nov 2026 02:38:14 +1300
-> > > Phil Williams <phil.williams@advisoft.co.nz> wrote:
-> > >=20
-> > > > Hey Guys,
-> > > >=20
-> > > > I ran into an issue where every FIFO sample from an ISM330DLC came =
-out
-> > > > with the same timestamp, so our attitude math froze the pitch. The
-> > > > accelerometer and gyroscope values were fine. I've patched it local=
-ly,
-> > > > so this is just an FYI.
-> > > >=20
-> > > > Make what you want of it, but here is an AI generated description of
-> > > > the
-> > > > issue:
-> > > >=20
-> > > > Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
-> > > > calculation") drops the timestamp scale for the older parts in this
-> > > > driver. Stable backport 981f3da383ce is what we hit, in 6.6.142.
-> > > >=20
-> > > > st_lsm6dsx_init_hw_timer() used to do:
-> > > >=20
-> > > >  =A0=A0 =A0 hw->ts_gain =3D ST_LSM6DSX_TS_SENSITIVITY; /* 25000 ns/=
-tick */
-> > > >=20
-> > > > That commit deletes the constant and reads the gain from the per-ch=
-ip
-> > > > table:
-> > > >=20
-> > > >  =A0=A0 =A0 hw->ts_gain =3D ts_settings->ts_sensitivity;
-> > > >=20
-> > > > ts_sensitivity is only filled in on the entries that already had
-> > > > freq_fine (LSM6DSO / LSM6DSR / LSM6DSV and that generation). The
-> > > > untagged-FIFO entries have no freq_fine register, so they were left=
- at
-> > > > 0:
-> > > >=20
-> > > >  =A0=A0 =A0 LSM6DS3
-> > > >  =A0=A0 =A0 LSM6DS3H
-> > > >  =A0=A0 =A0 LSM6DSL, LSM6DSM, ISM330DLC, LSM6DS3TR-C
-> > > >=20
-> > > > st_lsm6dsx_read_fifo() still does:
-> > > >=20
-> > > >  =A0=A0 =A0 ts =3D data[1] << 16 | data[0] << 8 | data[3];
-> > > >  =A0=A0 =A0 ts *=3D hw->ts_gain;
-> > > >  =A0=A0 =A0 iio_push_to_buffers_with_timestamp(..., sensor->ts_ref =
-+ ts);
-> > > >=20
-> > > > With ts_gain =3D=3D 0 every sample is published as ts_ref, the
-> > > > CLOCK_REALTIME value taken when the buffer was enabled. The accel a=
-nd
-> > > > gyro values are fine. Only the timestamp is stuck. The raw count is
-> > > > still checked against 0xff0000 before the multiply, so ts_ref is
-> > > > refreshed when the counter gets there. At 25 =B5s/tick that is abou=
-t 7
-> > > > minutes. The driver comment says 1.638 s, which is 2^16 ticks, but =
-the
-> > > > test is 0xff0000.
-> > > >=20
-> > > > How we found it: an ISM330DLC on SPI (whoami 0x6a), on a Toradex Ve=
-rdin
-> > > > i.MX8M Plus, after moving onto 6.6.142. Userspace integrates attitu=
-de
-> > > > from the delta of the IIO buffer timestamp and treats a non-increas=
-ing
-> > > > timestamp as dt =3D 0, so pitch, roll and yaw froze at the first sa=
-mple.
-> > > > A
-> > > > strace of the process reading /dev/iio:deviceX showed the xyz int16s
-> > > > changing and the 8 timestamp bytes identical across samples. The sa=
-me
-> > > > binary against the previous kernel, which still used the 25000
-> > > > constant,
-> > > > did not do this.
-> > > >=20
-> > > > Setting the old scale on those three entries fixes it. freq_fine st=
-ays
-> > > > unset, so the trim register is not read and the gain stays exactly
-> > > > 25000, which is what those parts had before:
-> > > >=20
-> > > >  =A0=A0 =A0 .ts_sensitivity =3D 25000,
-> > > >  =A0=A0 =A0 .ts_trim_coeff =3D 37500,
-> > > >=20
-> > > > After booting that kernel the timestamp bytes increment and pitch
-> > > > tracks
-> > > > the unit again. The entries that already had ts_sensitivity (25000,=
- or
-> > > > 21701 on the freq_fine 0x4f part) were left alone.
-> > > >=20
-> > > > Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
-> > > > calculation")
-> > This analysis looks correct to me too.
-> > But I wouldn't set .ts_trim_coeff for the parts where .freq_fine is 0: =
-for
-> > those, there is no trimming to be done.
-> > So either set .ts_sensitivity =3D 25000 for all parts that currently do=
-n't
-> > have it set, or maybe better use 25000 in st_lsm6dsx_init_hw_timer() as=
- a
-> > fallback value when .ts_sensitivity is not set.
+This patchset has 2 dependencies:
 
-> From 141aa31454bd87ed20b185544456bf28692c4c2d Mon Sep 17 00:00:00 2001
-> From: Phil Williams <phil.williams@advisoft.co.nz>
-> Date: Sun, 15 Nov 2026 21:04:06 +1300
-> Subject: [PATCH] iio: imu: st_lsm6dsx: fall back to 25 us/tick without a =
-trim
->=20
-> Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
-> calculation") takes the FIFO timestamp scale from ts_sensitivity.
-> That field is only filled in for parts that have freq_fine. The
-> untagged-FIFO parts are left at zero:
->=20
->   LSM6DS3
->   LSM6DS3H
->   LSM6DSL, LSM6DSM, ISM330DLC and LSM6DS3TR-C
->=20
-> st_lsm6dsx_read_fifo() multiplies the raw counter by hw->ts_gain, so
-> every sample is published with the timestamp taken when the buffer
-> was enabled. The accelerometer and gyroscope values still update.
-> Userspace that integrates attitude from the timestamp delta treats a
-> stuck timestamp as dt =3D 0.
->=20
-> These parts have no freq_fine register, so there is no trim to apply.
-> Use the previous fixed scale of 25000 ns/tick when ts_sensitivity is
-> unset. Entries that already set it are left alone.
->=20
-> Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp calcula=
-tion")
-> Cc: stable@vger.kernel.org
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Phil Williams <phil.williams@advisoft.co.nz>
+- patch 1 of the series requires this patch
+  ("regulator: dt-bindings: maxim,max8907: Convert to DT schema")
+  https://lore.kernel.org/lkml/20261027114634.79706-2-clamor95@gmail.com/
 
-Hi Phil,
+- patch 4 of the series requires this patch
+  ("leds: Add driver for MAX8907 LED cell")
+  https://lore.kernel.org/lkml/20261027115006.86032-1-clamor95@gmail.com/
+  Or to be sspecific, part that adds max8907-leds to max8907_cells
 
-just a nit inline Fixing it:
+---
+Changes in v2:
+- remove unused register fields
+- add prefixes to used register bits and macros
+- default reference values indexed off the enum
+- swap data array to __be16
+- set bulk read size with sizeof
+- return directly last regmap_update_bits in the max8907_adc_init()
+- added comment for iio_device_set_parent()
+- MAX8907_MASK_RST_CFG_INT_REF_EN > MAX8907_MASK_INT_REF_EN
+- dropped kernel.h
+---
 
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Svyatoslav Ryhel (4):
+  regulator: dt-bindings: maxim,max8907: Document io-channel-cells
+    property
+  mfd: max8907: Add ADC client support
+  iio: adc: Add support for MAX8907 ADC cell
+  mfd: max8907: Add ADC cell
 
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/i=
-mu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 823f8ac..98db90a 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -2525,8 +2525,14 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6=
-dsx_hw *hw)
->  			return err;
->  	}
-> =20
-> -	/* calibrate timestamp sensitivity */
-> +	/*
-> +	 * Parts with no freq_fine register have no trim and leave
-> +	 * ts_sensitivity unset. Those parts used a fixed 25 us/tick.
-> +	 * A zero gain publishes every FIFO sample with one timestamp.
-> +	 */
->  	hw->ts_gain =3D ts_settings->ts_sensitivity;
-> +	if (!hw->ts_gain)
-> +		hw->ts_gain =3D 25000;
+ .../bindings/regulator/maxim,max8907.yaml     |   3 +
+ drivers/iio/adc/Kconfig                       |  10 ++
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/max8907-adc.c                 | 169 ++++++++++++++++++
+ drivers/mfd/max8907.c                         |  75 ++++++++
+ include/linux/mfd/max8907.h                   |  53 ++++++
+ 6 files changed, 311 insertions(+)
+ create mode 100644 drivers/iio/adc/max8907-adc.c
 
-What about re-adding the macro here?
+-- 
+2.53.0
 
-#define ST_LSM6DSX_TS_SENSITIVITY	25000UL /* 25us */
-
-Regards,
-Lorenzo
-
->  	if (ts_settings->freq_fine) {
->  		err =3D regmap_read(hw->regmap, ts_settings->freq_fine, &val);
->  		if (err < 0)
-> --=20
-> 2.53.0
->=20
-
-
---BSc6zn2TSPAs0pUK
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCavlywwAKCRA6cBh0uS2t
-rIT0AP9cHXc0QioukxwlysOLwcCCE8JC7e3JG7/3Pg3nzlq3hQEAxTHXd8kiKpeW
-WmEbP8jRFB7HpItvglwQokuMjO7RDwY=
-=IkzA
------END PGP SIGNATURE-----
-
---BSc6zn2TSPAs0pUK--
