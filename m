@@ -1,79 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794778803;
-	b=VHraiFOMUwt2t5KIxBPLA2D9lcD1B5gmCsxkp1ETIuZn3rhVpvMYbpmwD+mkplPAKz3o
-	 99Rh87T4eAiaqn9RHV1vyIgYp65uXbdt9GVpwQPQo/zlaQecMyzyuJp3GPIjlvXITzVzs
-	 aFdL2utc3oBr5CX0+jnRnNpjveMlGNHIKeM2ZC/hBmbLaT+DKMSX2gVVoF9x2m8D8XGyd
-	 sfRtwKFm8ZcmtQgwvMw5fJZR+UIHtQ/SQN55OSCj2/XJtRO95BMQtAl/bvrucIouBHzki
-	 HCrPHWKFbj4utg0TO7MzxsgXxTKtJlkEH4h6bJidz0Y33iX9PpD8DNxCgs55He4e8xw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794778803;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=xNjAalZIzvUFa5Xbxji9aRdEkgxtocXL1VL40VOFD/c=;
-	b=1owK+qDy/2RF+uKPsy84lehi4LXIGUT1iT3UT4BnYNBPTeaQcszsRurjYwJClr27hutt
-	 jkDgBr94+ngITQw14oU/pspuZn0PxK7xmxRxRB065Qn3oa6eGAGuQV2HJgNXFsQctKYQh
-	 a3xV3ZoyYOfnlKoJaZIefQ/o1s0c5h9ClaFgSi2RgedVYembufdv1hW8icofxFTw2lkzZ
-	 k0NVDLDOPhcPGW9OWOVbpkuf1MN00FplDByzjo3ef3m6vGyUTAaNfMTCXlNqj2FEF9J/y
-	 t1AH9z8UV2A+v1jbqyjkQ5GXibmHYHrOuTYtT0IdaV00AY+rnVr8epGA9+23D1MQLtw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bVYON9ny;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15544606A31F;
-	Sun, 15 Nov 2026 21:40:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bVYON9ny
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794778802;
-	b=CftTzxgyLMJwm3bhBexRcZOHJBaFWxsp8vYFCWCinTzrCkITLfydDSr35THNXpJyiBF+
-	 hOB1Ciuna76PFXLHMcjoAGDws26sj+vPx2r6xgNcfMowo+ai92ruy8njvPRZY7aSTZytx
-	 coQSEXjNCdoVUfKK2IY9PVdAuKGAg1X+1Otv2PbC1sdTEvHnbRg0XVrAZ1QBVvgB1r2VW
-	 NlEuN5pVlfkb/oe+iG+ei4XRYDEsYzHQz6F41kdj0KVt/HVNxMjfDa8QJF3q8NZoGaRBW
-	 4nmAAHFLoQo7dw3qWYXkyW15n8tx6X4aJQcbzYfZoXVW5/RhY9qHWxiTUpq0GG9qU7w==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794778802;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=xNjAalZIzvUFa5Xbxji9aRdEkgxtocXL1VL40VOFD/c=;
-	b=0QUf1UOk33npcTZknKyyCBniXFHLnQfyiVsQ8cI6pBTBdgx+Rrw7MkPlgfvQ6eDMbqKq
-	 ubkuxe7ee/pJli1LXzjmueEkChv6uipfvhckE9DyqnuziS9t0Vh+y7mQfs6hNjv8suT3r
-	 nlRIZmBT1fUcpjp2kahqnJLm57QfEJD1TfV+E7s/BzKUzYKrtFvMRHpyT4BGPDMeS6NjU
-	 3oPeIO3QOCAclHpkCGe7DunyT3PO/P6+3ZQFCRCdAvQWlnLZNR6hhd0EamhiYIMdIarUa
-	 pH4BT+MM0VLzYmDKXW2kf3ONk9h67sP+tmolIaShnXVbOvlB29itfyM4rz+66aDPSvw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.51
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794782304;
+	b=A4fWiyIpWGbIFH4H2x1r0pMKucIU9qy17EVupHsGd37SgPLKxgSXAWJyEpHYQgs7+h5p
+	 jGZvKc3PwIKJUg2FrHA1oT6SDXsxUw+Fe6iIjN6reUZOk+EELlbG9U7mItImuTGfJyu01
+	 5/QcBXJAEjX42N8RwqMroB/aeVy3TJw0FQjkzVKlipqHlDLf3qmeIh6DC+vF4S6gzBuWy
+	 E7QpL5CtSn/gCYpoNC/IoAYU7/rjH3moJ4fCTAIxn3nZAaNbX1bak+n6RzikVA5y+JO0U
+	 uKh//jJ+iRXl2RUFs8CujZrk/EBDlQrBdCZDvVZafxDAzhn5T2b36aEOX8SufUSO5BA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794782304;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=jP2BTh7rVpWo9Im/wV5enbfenEoL6kTHcUKyx3s6YMc=;
+	b=bR1P9OVC+chkBJYDvJX8P/DWG4wnyQ1kezFXkYcvOjvalhg/wqJ6IAETqbMb9z4TERDb
+	 efg5Oo6WaWkxMQT0cm7xof0QkiZeMVqidF0hIlzXjS6+IYBkgR8QIAISWn2mUK07yXmC4
+	 XufbaE1Y0zIJgtByI7Q0vZBXchXwENQA/Ta7FeQTXGKbMEirN5BqS1B0T5AIcPYSDy17L
+	 KsYe/eqfKxkr7MKNLLYo9HDQDULGZ0Nx0svzrmRNqYr4Hbck9eii55X9mDJcpaxf088gD
+	 tIUfz+ZpqB9OZip4BgzShtjjACS2MUvppFKb5COoqKwEEzxjniLzC0j1HD9Ucr8NYZw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j3lG3ihj;
+	arc=none smtp.remote-ip=209.85.167.51
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 200EB1F000C4;
-	Sun, 15 Nov 2026 21:40:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794778802;
-	bh=xNjAalZIzvUFa5Xbxji9aRdEkgxtocXL1VL40VOFD/c=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=bVYON9nyiNA1ScxrHvAukf882icY23Dl2rKcC1Gf4Zlmxw1gCWNzSz/UOVm9VWm4M
-	 1x1cXO4Rrcu/6fV962cC2v92Yu4WBfsT3mvA1qiKyVIcSxw0wcnNZ2t/TX14CSv/Yb
-	 9NvLtsjKEqCOt3FewQlx77UmOEcYtDNAnS0NE+QQmx0ABUYOQb3Yn1REQoYZPu24RS
-	 7QO3AdP1fAG7fL8eXPjI35qjPtG60negVgJ+KALKsXfOlfEPtqAX9bqERldLBBBb7P
-	 H5Px1YzwHY8R/h5tdw5OgEsCqn+AMwSAerrd9AqQClu1oe7vEfkMmNvGdxBzd6Kd7L
-	 zre8Bx7aPBs7g==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 92BB94A205;
-	Sun, 15 Nov 2026 21:40:01 +0000 (UTC)
-From: Phil Williams via B4 Relay <devnull+phil.williams.advisoft.co.nz@kernel.org>
-Date: Mon, 16 Nov 2026 10:40:01 +1300
-Subject: [PATCH] iio: imu: st_lsm6dsx: fall back to 25 us/tick without a
- trim
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F7B606A32F
+	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 22:38:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D7F7B606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j3lG3ihj
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5c158c4c15fso3546938e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 14:38:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794782302; x=1795387102; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=jP2BTh7rVpWo9Im/wV5enbfenEoL6kTHcUKyx3s6YMc=;
+        b=j3lG3ihjCmXBRSjnJqfN6ORSYkKfksPwGSeBXneAiBHnDt/KFj6KriUjeYuN+YiuXs
+         K++zqwRNb760hiJ7UBo40cdx23MOLJ4f1kvArUpP358FKJPhYZk7Bw+6FmKzYG/w/DoI
+         8r9a+IiyvkRU8BR6uhKUMmLUIr0jnPUncUyY28/0J4JK6wSG7U3pVfMIkUgHCIX0nwPK
+         +/wlx0iNi7+k3XCyauiBMkhYq8F4xiN3Z8o/bjO2gC0c5fUQZvPVUY8ycrp/9hlbAzHg
+         xi35KmSe/ag7cDkawGFUCb/G4pQzByS0eb1GIxnoPwvB2Wmn9ylnYl6XRcMdnHAf6vdK
+         SDew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794782302; x=1795387102;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=jP2BTh7rVpWo9Im/wV5enbfenEoL6kTHcUKyx3s6YMc=;
+        b=KMtY5yerjWC7Ge4nEBkL+vDIzrn3DSF49g7Sq/b27VN5zurWs3LX2WyoiqkfwvSSko
+         Auh1SZgCDqVTbWYS2a91Qw+47/pM0v+7WyZIFvNCuC3pNQWcd56bl72OZHNQ7w2TwGl0
+         R5D2oDHzzTYFhoPIJXIPE1bgE1Xcp44moPHHJwuVFlp2t0DL2fG1W63CzX/HfNagmeUn
+         /gvpb7lP8wrPmrh8RW7GV2Rj7XdQCsuERbLOb9HoRB1HuAofCuM/d1wvmM8CabvMDxuW
+         S1nXAst10ZgGWkHA+HwmP3eL3w2UcGTNWo7M5XMGHSj10sFc0jWLJVogqXBFwPnaeSfE
+         RqHg==
+X-Forwarded-Encrypted: i=1; AL+hErFSuN9764p8K0UkI8ope3b7KLlmBNm67/axMrBKjfjUFcLXoZWFZCLwZrOMXGrUlYOW8WOU4dOW56g=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9fCKCm5zPMJkcorlTyULpTULBN+eJ9D0lG+X8Or/OtaEiUoKlh
+	2F/NyK4bPEBOHpupyrqKppxcXJEJ6a+jRYJmpTyUaHO6E5nCoJfI3FdC
+X-Gm-Gg: AYBFou367DykujxdQCZz4MxZxwqvV9qPCFW+xyw/9byu5P8TaUti518yVdd8O1xS4nw
+	yDCL8KtcAuhB7MU/PWiDghzUuSHkE3oKHOXCRBuDUn2AmXFMDKQ6c7uBsdBfP28c9mrorZ+4Ptg
+	N9G92ll1Q/p2SdZ3HIPbVOt08txdUklzhbGoGRL5F3WbHVCx/2VpfBaWxtF11BVkZix46+tn/03
+	m7A1b62sTXKElh+jlNfu9qIAozhvliTGzM/AY8MAE/9zbRE5gmbvYUD3kANB0xSE56gMQhtuEzY
+	nOnEPQ5f5FPyNMDit5X/DZYn8oHxV8XXghHC+aeGOO6U8q8hb1ismEdiLYEXGzML1ZjUEuQoKr0
+	GaFLTvldBozCPqMqVfE8unlLyJJsEbyEUTYunKWZloQviu7OqItloTJTFWQCtOKLCoIRyxmy+Lb
+	sps2Th7hFk/tt2ucWNoJoOBCf89f7ylKzbIKeayOOeyVcu1ARnPyDdYGjKlOpRU3ccC6rRLUkyu
+	ZskBq5b4OpXlbaH1Oumt1nYVtrW3tMWBqlOFgaDfG1dfy1q0WrvX/3u4fLXLnPW7tsbilxRUMls
+	s/pxDqZCQbjrLlBkYRyzeMG9zW82cEsNra+k5w239UKf8N/I4nkiKbru9vnf23TBmos60+8+giW
+	vQrQVM0rZx09G1Ql/uLwwpaUVP6eU/tU1wH9CFqI=
+X-Received: by 2002:ac2:4bd1:0:b0:5c1:4817:2c03 with SMTP id 2adb3069b0e04-5c164ebe9cdmr3717369e87.36.1794782301710;
+        Sun, 15 Nov 2026 14:38:21 -0800 (PST)
+Received: from yantra.. (nekmmqvelexmc8nt5ae-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:dce3:b876:6f6e:9706])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c171357477sm2759609e87.74.2026.11.15.14.38.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2026 14:38:21 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: jic23@kernel.org
+Cc: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: Re: [PATCH v2] iio: pressure: dps310: don't wait for new temperature in trigger handler
+Date: Mon, 16 Nov 2026 00:38:17 +0200
+Message-ID: <20261115223817.10568-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261115203150.7faed0b1@jic23-hlaptop>
+References: <20261113230241.82046-1-zoone.rupert@gmail.com> <20261114013817.476f8fb9@jic23-hlaptop> <20261114083525.11972-1-zoone.rupert@gmail.com> <20261115010203.2a939bd6@jic23-hlaptop> <20261115183949.11591-1-zoone.rupert@gmail.com> <20261115203150.7faed0b1@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,92 +105,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261116-st-lsm6dsx-ts-fallback-v1-1-8ace30afbfb5@advisoft.co.nz>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMMQ6DMAxA0asgz1jCQcrQq6AOIXFaQ6BVnFZIi
- LuTlvEN/++gnIUVbs0Omb+i8lorqG3AP936YJRQDaYzlogsasGkiw26YVGMLqXR+Rl9MBQpEPc
- dQ43fmaNs//Fwv6yfcWJffjc4jhNT60DqegAAAA==
-X-Change-ID: 20261116-st-lsm6dsx-ts-fallback-cd21f1d1e30e
-To: Lorenzo Bianconi <lorenzo@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Mario Tesi <martepisa@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>, stable@vger.kernel.org, 
- Phil Williams <phil.williams@advisoft.co.nz>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794778800; l=2231;
- i=phil.williams@advisoft.co.nz; s=kernel; h=from:subject:message-id;
- bh=uHlYPZd4leaL6BZM5UhiWipgD8U4U669fNKN8B6lxPA=;
- b=swvwjnWL3dHnjOwF5N49mxp+jQkSzO5f8iKsDykvNkJoG9nL5N9gOV1dfEDQAgYLgtVenSNDn
- mmz43EWAIvwD7R8bnl+BqLxRMaYraCgYT3m1eKkeiSTLJO89BB/7Zg6
-X-Developer-Key: i=phil.williams@advisoft.co.nz; a=ed25519;
- pk=t0M8TApJRlA/rHh3lIu1XTiWO2+evmU8VnO43/qqLPk=
-X-Endpoint-Received: by B4 Relay for phil.williams@advisoft.co.nz/kernel
- with auth_id=1538
-X-Original-From: Phil Williams <phil.williams@advisoft.co.nz>
-Reply-To: phil.williams@advisoft.co.nz
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-From: Phil Williams <phil.williams@advisoft.co.nz>
+On Sun, 15 Nov 2026 20:34:11 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
-calculation") takes the FIFO timestamp scale from ts_sensitivity.
-That field is only filled in for parts that have freq_fine. The
-untagged-FIFO parts are left at zero:
+> That all sounds good.  I tried to apply it to the testing branch of iio.git
+> but I'm getting some build errors (+ a load of fuzz). I guess this
+> has dependencies that I'm missing?  If they are fixes, then I may just have
+> to wait until I can merge back into my tree (after they are upstream).
 
-  LSM6DS3
-  LSM6DS3H
-  LSM6DSL, LSM6DSM, ISM330DLC and LSM6DS3TR-C
+No dependencies. It is based on fixes-togreg. On testing probe
+hunk no longer matches and with fuzz it lands in
+dps310_fifo_interval(). git am -3 gets it right there and it builds.
 
-st_lsm6dsx_read_fifo() multiplies the raw counter by hw->ts_gain, so
-every sample is published with the timestamp taken when the buffer
-was enabled. The accelerometer and gyroscope values still update.
-Userspace that integrates attitude from the timestamp delta treats a
-stuck timestamp as dt = 0.
+I can send a version on testing if that is easier.
 
-These parts have no freq_fine register, so there is no trim to apply.
-Use the previous fixed scale of 25000 ns/tick when ts_sensitivity is
-unset. Entries that already set it are left alone.
-
-Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp calculation")
-Cc: stable@vger.kernel.org
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Phil Williams <phil.williams@advisoft.co.nz>
----
-Resending inline. The first copy went out as an attachment.
-No code changes.
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 823f8ac66..98db90a30 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -2525,8 +2525,14 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
- 			return err;
- 	}
- 
--	/* calibrate timestamp sensitivity */
-+	/*
-+	 * Parts with no freq_fine register have no trim and leave
-+	 * ts_sensitivity unset. Those parts used a fixed 25 us/tick.
-+	 * A zero gain publishes every FIFO sample with one timestamp.
-+	 */
- 	hw->ts_gain = ts_settings->ts_sensitivity;
-+	if (!hw->ts_gain)
-+		hw->ts_gain = 25000;
- 	if (ts_settings->freq_fine) {
- 		err = regmap_read(hw->regmap, ts_settings->freq_fine, &val);
- 		if (err < 0)
-
----
-base-commit: fa2933aac170dd19c6a7f0d7b81a8f537e40915c
-change-id: 20261116-st-lsm6dsx-ts-fallback-cd21f1d1e30e
-
-Best regards,
---  
-Phil Williams <phil.williams@advisoft.co.nz>
-
-
+Thanks,
+Rupesh
