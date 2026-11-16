@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793822;
-	b=gekYMQkvDnPA04ihBPasEjM5/4aVsuU06LUw3Rr4ZfwFm64RAgQWIFnjBAbWJpoqyqsA
-	 8vr1+0Ma9QwM46qn33cweGUJpiuHtkJElbISiJOPmkz6KwKjshIFuvFi8A30NBWoFahzx
-	 a5fPZWXnKIWvu0rOV41stoOYS4F5Dr99m2bu1CA85omA5KbxzZKwDj/JqeqckSJJYOIAe
-	 BDg5T7ghtE27V5ANYdRTLz6NfRVdRNIAuT0NHnByU17qGS0GyUz4CoxSduy2N9FmXXmk2
-	 NsmYeEvpThjZ4LF/g2Ow/xh5JsQKvCBJzF5gICrjlhgFDXyr0ABKoHSnP2pwFlCFyew==
+	t=1794793830;
+	b=XzwdyUBTvToJ0qWY1dSDsRTDKptpVUtWHrXl9tFfe3JrXax1bf/PzT6b+FSTx/YNSzoP
+	 4oStPmhzORxVvAxHroorgw9cTv1hPGWy8L1xmunIGAqE4UVh6B/QzAXCngPAsqP+ldo12
+	 qUEW9xYtDHzAZUyQijiBBCvzg5Hv9IjwUZBloxLJe2gmHURaUSUnCMSoG1tx0jZfbfLgn
+	 7OjoXDz5RKYC0gOMsLsOVrq/5hT1zPBEihdAbd5I9P3s8jtlaSTps2YChNqYHcDfxv70E
+	 2f2RVj9ZMdlLEiOzUKZoMDtIcwD66QMLTEwQa/4ZkKj+FmT35Jc5a/NqAHuzFDQnxDg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793822;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793830;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=AUqW3sTkO/HA0HuGL21JS9LkoBx0wgTCgRNeOyjxYIU=;
-	b=H81blQwUXH8pqa5CnGeB3ruLfhHxSrJi9H3OTH+9C0uqFWd22e1t/RmttIottY+btz9l
-	 M0MoH97qbsXg9cjSAG7xc0hfFgNUFyAjI91EIH+0XQhvB7G/gXtlfIpmxGgl5UyK0kr9P
-	 b4NvCM1eTtYM9zQNEOzxp99AN/e6jzJszc1NnnTLdIrjfTVf497a75HFLq8e3J5MHS73L
-	 1RITfG+tQVSdjwWsEbIXZ0KfgMAo44pki/jzkZWCJFf7NXPvVHKnudNmiKeYOnqNmic8t
-	 z0xDPIOMWhZeNGO0wo/+v4XPkmL0In7zsatg2pcsDQrJxP/0q7mjgb6xcL3hYk6dKXQ==
+	bh=IbBgTnZWi71j0RHkbBN9yvtHl5SKp3Gp9O9PBrzzwHQ=;
+	b=CRnU04KO+9m1Rb8SEQvyycTtA/DmoolyAy9OKIgy7ywZe8+1zNSHmQ/is7voXFgPDJlr
+	 GbFIBQ6lj6RheQCpPOgLTEEjeKfo4pWjq7KGVZNGOlvbSIr2FHmf/SxYr+BCDYT+s62HQ
+	 H3ZY9M2s6cGfHBmxvGZi4Sa0hSl3v42L6Igl+V61i4qqU+6J12e+gzCQRqeffnXUuSFeh
+	 7ZguanJRgWMJkMH+DIn0OQ719rYZ+OCynwvt/o3mYmeTLdCRCh2GXZThjSdK5SlI+6ZPv
+	 MO2xXWrKS6wZNsMjuXplYP9fOmY8fweU9cRicnE1WkwQvVrvEhmcaAXFjamT4Z9qICg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HtlkEsUn;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L4YclfdR;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D581A606A321;
-	Mon, 16 Nov 2026 01:50:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A99606A31C;
+	Mon, 16 Nov 2026 01:50:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HtlkEsUn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 546421F000C5;
-	Mon, 16 Nov 2026 01:50:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L4YclfdR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E22D11F000C4;
+	Mon, 16 Nov 2026 01:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793822;
-	bh=AUqW3sTkO/HA0HuGL21JS9LkoBx0wgTCgRNeOyjxYIU=;
+	s=k20260515; t=1794793829;
+	bh=IbBgTnZWi71j0RHkbBN9yvtHl5SKp3Gp9O9PBrzzwHQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=HtlkEsUnvV+wM77QdLes4Jc6OGAq7juWx68FiMmaYlcbxsOlyFOeaG0Eu6S2JzyUf
-	 jZwDS5cpg9WYg7GwSHhmfqWBL5rIPfGn0+Ign7q9rMcMBRTmbrNKJKCUtPWI2EArIr
-	 y2ltzc0ZCtla3IRe3OO+TCmDA/Pg4AuAIwk5Ptep3jJ+5OZZ7eWvov24zYMxwluTNZ
-	 YyWPONxDhP6DFjxakUTueB/4542MXtDO+z9DK44GwT8mEhkW5Ts563Tv/8YwPY4FHi
-	 oH6tRgO+qczpSMVJQYMvKQQSMCXGCTtXxcMRS0lb6Lx3YjTOf4zu5v1culLz5+TiZZ
-	 IqU7sRjzgacwQ==
+	b=L4YclfdRMthCECEDxrSOmWPFziW6UVRE6R3jdsrb1tvPXv+XKmDbu9oeZP9RKlozY
+	 YJfnXBDYxsxQyVgIPzIFYicGAnRqPNLYykEwB1lNiBqsWnCFR4k9SMGMpz4mNxFbqt
+	 2xoJNEc6FQNUCqs8Kjkq/sdllgT8MNaBj3dxKk72ZFJdjUkpxEManZbPEUzXnWkko8
+	 tUZ/lJ+nSoXlQ4JejO0kIOEGxsMgqs7UUz3MxQh/a6p7wWzKUOBUD2P+QTd+KHpNz7
+	 hIQaq57ZW8fZah5bxguahTf9/tQ87WU7lG4Nz5ZE3h1iZ6OcW/BLOGXhV6XJbKeN3q
+	 cp6FhxQeV7wWg==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 15/35] iio: imu: smi330: use default_trigger
-Date: Mon, 16 Nov 2026 01:48:03 +0000
-Message-ID: <20261116014823.3132576-16-jic23@kernel.org>
+Subject: [PATCH 16/35] iio: light: acpi-als: use default_trigger
+Date: Mon, 16 Nov 2026 01:48:04 +0000
+Message-ID: <20261116014823.3132576-17-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -94,29 +94,28 @@ From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Set indio_dev->default_trigger rather than taking a reference to the
 trigger in probe(). The IIO core now takes the reference during
 iio_device_register(), so it is not leaked if probe() fails after
-the trigger is set up. This makes the ordering less fragile
+the trigger is set up. This also makes the ordering a lot less fragile
 going forwards.
 
-Fixes: 6f3d8de8886d ("iio: imu: smi330: Add driver")
+Fixes: 24b84444eb6f ("iio: acpi_als: Add trigger support")
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/imu/smi330/smi330_core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/light/acpi-als.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/smi330/smi330_core.c b/drivers/iio/imu/smi330/smi330_core.c
-index ef7f00825b4a..de9a0ea1569e 100644
---- a/drivers/iio/imu/smi330/smi330_core.c
-+++ b/drivers/iio/imu/smi330/smi330_core.c
-@@ -888,8 +888,7 @@ int smi330_core_probe(struct device *dev, struct regmap *regmap)
- 			return dev_err_probe(dev, ret,
- 					     "IIO register trigger failed\n");
- 
--		/* Set default operation mode to data ready. */
--		indio_dev->trig = iio_trigger_get(data->trig);
-+		indio_dev->default_trigger = data->trig;
- 	}
+diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+index 9faaffb94b8f..b4434fdb561f 100644
+--- a/drivers/iio/light/acpi-als.c
++++ b/drivers/iio/light/acpi-als.c
+@@ -214,7 +214,7 @@ static int acpi_als_probe(struct platform_device *pdev)
+ 	 * Set hardware trigger by default to let events flow when
+ 	 * BIOS support notification.
+ 	 */
+-	indio_dev->trig = iio_trigger_get(als->trig);
++	indio_dev->default_trigger = als->trig;
  
  	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+ 					      iio_pollfunc_store_time,
 -- 
 2.56.1
 
