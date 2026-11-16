@@ -1,96 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794858144;
-	b=QFG0cWxINmUlvLnQLhmvuKr9znoxtJDiDgbxC2yCY88QG+o9e/rv018IjOgYxWOSXNMJ
-	 mfN/2FBY6UqEruU1tOrAk84F5t6dIpFmryJ/jjn0tct/f3gAGarROO5gSdgJOKKzsATYQ
-	 PO/9sgPYGX76UDnNB6TBQ2gYtVfar4vcssNh591vq9ATv7+uP4aeTNCMRqL5Zfl9pQIWN
-	 z2o7ihJBiDLL9dAVuvqH/zvErw8732DG0BROaai+1tTReUMadSGqd0KzGM3U2eaDWAVyd
-	 DrGWfSDOroYgWL2IugHTdjddJka76+pvs3UV+qJ8Nkywu77DbFkxcGg1u5WHaWaxVxQ==
+	t=1794862412;
+	b=e5VsdguqOqdCx2DVOUgPm72fsmbwyoGeVQ9M7xO8rhLTq7y+vmX2NSxwtjNd7q2u4HLh
+	 LFAnOJuujKKRz1nXS11pv+o8r1ktpeIzJUzT80vXcyZdcMHyPFnRh3maFZcZFHHdxQs5i
+	 wPOIgRj0ZHVkre0JZohETlg2ZgMjXKcrwiFbN3/eUKcVHB389l7jR+QkOnT7RPYDirpuC
+	 Z7mG5h3bPe/Mls5nvYnk51ugojOk5IjVLGLh16bFVu2no/4df5+3EBYZBfHTbOe1yj4Ds
+	 XNbl6NhXsD+M3b4OBC4JmkAXIZVhFdxZJt9BYKkcRGAfeMHqQEZsEnMo69SAARurbhQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794858144;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794862412;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=YQ2w1SKYNQZpDiN+RPlgH5e5kIzAXTbHX2JmN1bVYs8=;
-	b=OrJ7l4cB7tqKZ5UHDAfBfdB4uFYtkzOKOzLh8LREqlJsKFEdAksejEMXDURYGfGRC9k2
-	 izil+3099OquyxYsqbCvYOD7q0zkA3sYxzehXGVKBbn28QVkjD8KElTqJhrnoC2MLoobz
-	 e/8ACJPVc4cSZnaROERqO/og5jSXQ0V/NTh0esNENI8siBG7c105LWzvG+oSzOqtiZiKn
-	 Tnxlf4dtAURrGIa1+t9LheaSTUVkIyN/3S4FUHMbeFbkko0J4CPnHws+O5XzhWQmBNn4i
-	 tYfAOWjmRHu99jnbLugmnTIX1QBxM/WXHaiXn5RrgK+PXjdrbOsmxeZTZgLoGNke3Aw==
+	bh=cvMupzOZtYxKix8i7YVSQn/OkBYaiL8fo+IIInVPVHE=;
+	b=hbqrwyx/6FNTyoHY+cTonrA46EosCB6+yMrgiizCz8kZCFmNgfauE5PpzP+r+2R6O7FQ
+	 nJmCJWCzLb3sN3uU6xkkJzLLBG981qa38rtBAWkR0VTK25DCJpqxBqKxOlsCrq9B3uFIY
+	 tZdydpbXLadRHO/gKlMYajoqLU1lGHV4itjS74BROgV69oF+dfppdQb33tEnjSlsyHXgu
+	 JvJLmTgWdtapqdeNSvpgMNik25G3JfSTA8rgusqYi5E/kokIuyM2/+/cLPvVasIDHNNpy
+	 THEuqrEsOSQgBOklEhbFAQNIhJSN7657xyIoEHnMVpbLc3g4B2zMw2dd2a/rz27X97Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="E/0nh+BP";
-	arc=none smtp.remote-ip=74.125.82.173
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TkQD9kNY;
+	arc=none smtp.remote-ip=74.125.82.53
+Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B16606A322
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 19:42:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15B16606A322
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 984A3606A333
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 20:53:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 984A3606A333
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=E/0nh+BP
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-37628596783so6474523eec.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 11:42:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TkQD9kNY
+Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-14394530ec6so4901583c88.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 12:53:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794858143; x=1795462943; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794862411; x=1795467211; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YQ2w1SKYNQZpDiN+RPlgH5e5kIzAXTbHX2JmN1bVYs8=;
-        b=E/0nh+BPbckGUnmAJe4GE0O8g2kmQhtn83sBlsn6Y6a04e4BISc5m2L5hTs8UDvzb3
-         bYgz38bh4PLy/HK0ueN7+vPC6ApKmZseRXUgu6VHsmxiSNX4QXnWPn2tt0Xdp8bdBow7
-         s0K1VO/EU0ZH+Zsw2UDxxmp97O1j82ms48rXuF24tbc8BEwQomHrzLeAnDTnbOWBysN+
-         Nba2PmAvy1FGSbJpDZArGIKwhX0e1K00rDja9wDqDSAKCq15IWG+88tOpiSNa1xD6aXI
-         +7k/lAFovvO9Tp0KfypCpnNi0+NG9dv4UD2kkbDGkmWMxwf2nqyJzFARVY2u+CvwugC1
-         lTsQ==
+        bh=cvMupzOZtYxKix8i7YVSQn/OkBYaiL8fo+IIInVPVHE=;
+        b=TkQD9kNYr0ubQles2l/V1+jSh7+ys0KC1QAirijznyR5rFoIh55v746WOULNwPqeNx
+         n+Fdy05eSychRqgXKCSpZ4iWzs3SwK1AxLvsiL5KWB2nuFv9Gl2XGHHwyWgo1AR6gtT6
+         cYw9YopVqdB7zw9FKjWQuTvVgPYHPIZzFjtdGv2XW41pAiHGT4dLumODZ/8dxrhfteul
+         DithxtNiWApU8WxvXqWdE2ulwdpMk5E90zbkALdi6SMXn5AX3Qhd2GTmoiUyPAajYhNx
+         bw1n3vQmR2FG/IiHCaHlc22311sR8DO+2fZcEk5eirijC11CgxoTfl/3jGumS3LLJz9a
+         Ui6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794858143; x=1795462943;
+        d=1e100.net; s=20260707; t=1794862411; x=1795467211;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=YQ2w1SKYNQZpDiN+RPlgH5e5kIzAXTbHX2JmN1bVYs8=;
-        b=oNzfh5E298TOpG6lObcVgx9uOnPZ1/YrHtzX+y7ygNXBf6PY4Xc6Kn902DIBOPZDyF
-         reUYDaklL0v48zgK/f4/nuEPUMPvwlwYKMcb0VZzAOo71NZJ5cHGnE+w4Bh/rApeVC7q
-         e3HU+GIsNgSN3sQmua5oJl3PZi7YEJ3M3vTYrcHBaE3nVsl2B6+xoJo8S3vM66l1mAyv
-         nRtsN6im3qguwNJDhac+unodG/tO6q790ZjZrF4s2Ale0p03HQX3GoPQbLVQMHAQTbCk
-         5L+sKaPIqnCekLxURcW4wnhnNkNKWr1RbL86SPM2Xe2TkCVF0VxC8ZvSg94TdGuPpS/S
-         Y06g==
-X-Forwarded-Encrypted: i=1; AL+hErF4lFTyxT42CJP+xv3fZAHkqMvXhxcNoT75M9zRLpmqxtHkaNuCsq9GdkfD9mze3D2dkt2L9arnEhQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+ir7xtUadJi1s8hCEdmpz8/0CNeuNHJJ19tpJLA+J+BDmyyipK
-	TJ0YiecQPE600k3vbSQtUpd8BgZN81KS17vy8yBGusGpbTHzEE29LneV
-X-Gm-Gg: AZFdTZcqG74lyeMfMbL2rBRa++V/5scISza5mJoklSoOTT/+1E6LJeS/KnSNgMcvghc
-	5xcLYAkCwugmpJXywO8Ho2iIiVBO0V5jVXOf3nsKQRZxRpjjeaOaFxn8X25HI+u/iVYqhQKW23A
-	A90SLDfwGGM21pS0RL3rh0mgbXy/Tl+ead/gw7Fxlh+elVgmK8NlmGj12+8zY7aLlB7JdtNDFCv
-	SHVkALsczI6ebPle1uzlU/qB4gxh0BEVPMaPPyvbjAtEsJPQYm2LPObHef9VGQEBrYJzmGVqUaw
-	Ri/2HhbE/Wi76bl/nTjPY+HtSXU847C0iAAw0AQYasOk114IiDzoRgu9UPpaG0mhHZUMYgj50zE
-	HEAC7EzA31n9FqCUD8Cy12sE8eE5iX2P4jatn2svXehEKMS0pwQQTPqXHB7xn6WTwImrFdhoFL+
-	gQpVsBmCxv5jlS1mxTv9/rfVJF9oC5UnuggJaGoWxaAWEwy8c11Fk8d+OTMTqORyaVwL3JUvli5
-	OrMmjXc2dmoOHTdlmAvUun1uny/HM5DlQorfwjozNTrhDXyRr5Q2/B5eKxcOEPmmYBD32tySIeT
-	DQ4c/wUsZhbGYM0pw4OPV6P/FF6+Vtyt/pVEO/ivQ6LPM3HuDX5YMZjQYPOwEaXRW0K42/UWfzt
-	wEq2B81XtM3YomwJxVaJQ4fbE/0sJquVoXvDIKaaHw3H5YjtATrD3YMqI1FC+tlq02S38pbDRsG
-	wlFQjG43H6v56VS6RhXmOvysrJDqfBKY6l391H4XJO1ZxunvAp1cn1+F7PnKStyeo=
-X-Received: by 2002:a05:7301:d189:b0:36e:e349:f2cb with SMTP id 5a478bee46e88-3796628e28amr11639657eec.19.1794858143008;
-        Mon, 16 Nov 2026 11:42:23 -0800 (PST)
+        bh=cvMupzOZtYxKix8i7YVSQn/OkBYaiL8fo+IIInVPVHE=;
+        b=Rw4oy1fzIpzM4UcOxMbpSMEG8EXjJJtrqS3q0VjT0I4oDLWIhTAu1hZSJJ/Rx2Vs1v
+         M3ayYLgBvvxdZhxXRT5iEtmanATz1iq6qOFvTWlG3OYjlJRNCO3tGmhcoEe/NMl7YR5T
+         FMxXozpN4UKoQXspLyvoK4SyO11X0hyOzD86AAyuV5Nqro3ys6nY84DS4iC0GKuRRDlV
+         fRl67m+fyBVHGd8v9ZHKEC3qkvVU1j7p7zo/fupLOk6Zjp01CCtIf2yB9XPObr1R6CFG
+         FaW7Rpx1yyaDSJi1tgzsXCMFI3iNsedaBTXsKvrK7/M+A2F7AMWP4Qr1i4rLuqkM/JwT
+         1vrA==
+X-Forwarded-Encrypted: i=1; AL+hErFv7wnPh1MNjPhzbk0htbE6ukASpXXEJzhh7kcE2GlKlAUoW8Sd8otJMQWrKE3nYedguynjvPMhiKo=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9xt9OOvugFSZs9Qdbu1ah3xK74NnhTAHtdH+KRCFlVXdq1eLKE
+	5a4eUEIZgIzFMBqzDJ5XqOhUM5Apyqwtw4zJNpngDuhfZvGk0XQWugKq
+X-Gm-Gg: AYBFou1PRbqq9MCZfa9NWHEoXLtFu0lX75yk9uLxSDe5E3jRYZ+UZCcECpz+sdrwPNo
+	dBP/nMfcG9eFLlYXQaJDBFp3ogVtE/qtx+LXBpDwHYPPwoK6wiovsVockLTMHcBtOCStOnFF6S8
+	tQgJHCXSs6u7s41LS6CFqY3ZPhX8NyuRdHzA6UDUJiyGj4OLD3CYTbNO7vyCqfErO8cMNqYhM6Y
+	N2kU/WbOUncRL+f3XCqOSmp4FUfYuF1uJetVIfLi9S7LKUsde7G9Eu9rEskIyGoHRKIWpIVZyV2
+	gIw34VDkjlQMksnn1migV3d1v/XTjcH8qZUakoLPg/y0XwxtP09qpMub9jmTO6GXggG6k3BDY5j
+	Jw+F/hZWe3QUrvDo7aDfnmHx2VvOQw5AOpHR4zlc68sxRDmUUkemx42tS3IkCJh24x0YXspt2zA
+	0rH3hrJ4hFgm6FmNP/mx6Gy2/aDDXkWRJaBZ6/VyyEK1rwlgyO7qdElut1+YmRe2PnrBgGMvIDq
+	6auPJOPfYKGPCuyvCQiYbmQS6vNlRBLy5xgMJ7QUeomO1awzvOsdRIGfzv5fnzkff85jnjYPWzy
+	Pn344yd6LdlXNfJ4og0sdneEKEvgmbZ3beRvCqV+z+beBwE14EsEzR5VCSm7aib0s419OP1OyIY
+	mYXx5+O7HPGQZ/vG1Kd9eNuaFkLKEJbHvfWqP7Vog2aZ/G5a6lBpY2Ma3PfMHq4RyLHAkeclvjm
+	gdt4PSQXiOf2d8XhMaT1qNYtILNgxNCLceVq64Z+DZ9w==
+X-Received: by 2002:a05:701b:4354:b0:143:26cf:8615 with SMTP id a92af1059eb24-1b5031111afmr10808448c88.25.1794862410435;
+        Mon, 16 Nov 2026 12:53:30 -0800 (PST)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-380e031f3e5sm3238446eec.12.2026.11.16.11.42.19
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b524049e0asm15293497c88.4.2026.11.16.12.53.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 11:42:22 -0800 (PST)
+        Mon, 16 Nov 2026 12:53:29 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Mudit Sharma <muditsharma.info@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Stephen Boyd <swboyd@chromium.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH] iio: light: bh1745: fix 16-bit register accesses
-Date: Tue, 17 Nov 2026 01:12:10 +0530
-Message-ID: <20261116194214.45174-1-kapoorarnav43@gmail.com>
+Subject: [PATCH 0/6] iio: proximity: sx93xx: fix raw reads, thresholds, hysteresis and gain
+Date: Tue, 17 Nov 2026 02:23:08 +0530
+Message-ID: <20261116205320.26070-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -103,152 +105,57 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The 16-bit colour data and threshold registers are little-endian
-LSB/MSB pairs, but the driver accesses them through regmap_bulk_read()
-and regmap_bulk_write() with an int or u16 buffer and no byte-order
-conversion:
+The remaining sx93xx fixes I had, sent as one series and grouped by
+driver, as asked by Jonathan.
 
-- bh1745_read_raw() reads 2 bytes into an uninitialised int, so the
-  upper 16 bits returned to user space are stack contents.
-- bh1745_read_thresh() reads 2 bytes straight into *val, which the IIO
-  core leaves uninitialised, with the same result for the event
-  threshold attributes.
-- bh1745_write_thresh() writes the first 2 bytes of an int, which are
-  the upper (zero) bytes on big-endian.
-- bh1745_trigger_handler() stores the raw bytes in a u16 although the
-  scan type is IIO_CPU.
+1: sx_common: a raw read can return on a stale completion (left by an
+   interrupted read, or by conversions while another device uses the
+   sensor's trigger), and it then turns off the CONVDONE interrupt the
+   trigger depends on. The interrupted-read case was reported by
+   Sashiko on Zhang Jie's sx9324 resolution patch.
+2, 5: sx9324/sx9360 read_thresh() reports code r as r * r / 2, but
+   write_thresh() inverts it with int_sqrt(2 * val), so writing back a
+   value that was just read lowers odd codes by one; some negative
+   values also wrap around instead of being rejected.
+3, 6: sx9324/sx9360 write_hysteresis() turns negative values into the
+   largest hysteresis.
+4: the sx9360 gain encoding fix from the RFC, now a patch on top of
+   "iio: proximity: sx9360: reject out-of-range hardware gain
+   values" (in iio testing), as suggested by Jonathan. It uses the 
+   encoding sx9324 got in 108e4d4de2b5 and that Semtech's own SX9360
+   driver uses (codes 1..4 = x1..x8, 0 reserved).
 
-Use an __le16 buffer for all of them and convert with le16_to_cpu() /
-cpu_to_le16().
+Based on iio testing with the patches applied there since it was last
+pushed (sx9324 reserved gain on read, sx9310 proxraw-strength = <0>,
+sx9360 out-of-range gain).
 
-Fixes: eab35358aae7 ("iio: light: ROHM BH1745 colour sensor")
-Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
----
-Compile-tested only (W=1, checkpatch --strict clean); I don't have
-BH1745 hardware. On little-endian the raw read currently returns the
-register value plus whatever was on the stack in the upper 16 bits of
-the uninitialised int; the threshold read has the same problem through
-iio_ev_value_show(), whose val is not initialised either.
+Changes to patch 4 since the RFC:
+- Rebased on the applied out-of-range gain patch; GAIN_8 becomes 0x4
+  and the range check uses ilog2(val) + 1
+- Commit message cites the Semtech vendor driver
 
- drivers/iio/light/bh1745.c | 29 +++++++++++++++++++----------
- 1 file changed, 19 insertions(+), 10 deletions(-)
+RFC: https://lore.kernel.org/all/20261107112335.444813-1-kapoorarnav43@gmail.com/
 
-diff --git a/drivers/iio/light/bh1745.c b/drivers/iio/light/bh1745.c
-index 2b8ff36071b8..9c14499f848a 100644
---- a/drivers/iio/light/bh1745.c
-+++ b/drivers/iio/light/bh1745.c
-@@ -421,19 +421,20 @@ static int bh1745_read_raw(struct iio_dev *indio_dev,
- 			   int *val, int *val2, long mask)
- {
- 	struct bh1745_data *data = iio_priv(indio_dev);
-+	__le16 value;
- 	int ret;
--	int value;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		if (!iio_device_claim_direct(indio_dev))
- 			return -EBUSY;
- 
--		ret = regmap_bulk_read(data->regmap, chan->address, &value, 2);
-+		ret = regmap_bulk_read(data->regmap, chan->address, &value,
-+				       sizeof(value));
- 		iio_device_release_direct(indio_dev);
- 		if (ret)
- 			return ret;
--		*val = value;
-+		*val = le16_to_cpu(value);
- 
- 		return IIO_VAL_INT;
- 
-@@ -503,6 +504,7 @@ static int bh1745_read_thresh(struct iio_dev *indio_dev,
- 			      enum iio_event_info info, int *val, int *val2)
- {
- 	struct bh1745_data *data = iio_priv(indio_dev);
-+	__le16 value;
- 	int ret;
- 
- 	switch (info) {
-@@ -510,18 +512,22 @@ static int bh1745_read_thresh(struct iio_dev *indio_dev,
- 		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			ret = regmap_bulk_read(data->regmap, BH1745_TH_LSB,
--					       val, 2);
-+					       &value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-+			*val = le16_to_cpu(value);
-+
- 			return IIO_VAL_INT;
- 
- 		case IIO_EV_DIR_FALLING:
- 			ret = regmap_bulk_read(data->regmap, BH1745_TL_LSB,
--					       val, 2);
-+					       &value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-+			*val = le16_to_cpu(value);
-+
- 			return IIO_VAL_INT;
- 
- 		default:
-@@ -547,6 +553,7 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
- 			       enum iio_event_info info, int val, int val2)
- {
- 	struct bh1745_data *data = iio_priv(indio_dev);
-+	__le16 value;
- 	int ret;
- 
- 	switch (info) {
-@@ -554,10 +561,12 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
- 		if (val < 0x0 || val > 0xFFFF)
- 			return -EINVAL;
- 
-+		value = cpu_to_le16(val);
-+
- 		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			ret = regmap_bulk_write(data->regmap, BH1745_TH_LSB,
--						&val, 2);
-+						&value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-@@ -565,7 +574,7 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
- 
- 		case IIO_EV_DIR_FALLING:
- 			ret = regmap_bulk_write(data->regmap, BH1745_TL_LSB,
--						&val, 2);
-+						&value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-@@ -741,18 +750,18 @@ static irqreturn_t bh1745_trigger_handler(int interrupt, void *p)
- 		u16 chans[4];
- 		aligned_s64 timestamp;
- 	} scan = { };
--	u16 value;
-+	__le16 value;
- 	int ret;
- 	int i;
- 	int j = 0;
- 
- 	iio_for_each_active_channel(indio_dev, i) {
- 		ret = regmap_bulk_read(data->regmap, BH1745_RED_LSB + 2 * i,
--				       &value, 2);
-+				       &value, sizeof(value));
- 		if (ret)
- 			goto err;
- 
--		scan.chans[j++] = value;
-+		scan.chans[j++] = le16_to_cpu(value);
- 	}
- 
- 	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
+The threshold change was checked against a userspace copy of both
+conversions: all 256 codes round-trip, and every write picks the
+largest code whose reported threshold doesn't exceed the request.
+Compile-tested only (W=1); I don't have SX93xx hardware.
 
-base-commit: a6d9114f68c4b5507b2d945bd6d1e37415f913c5
+Arnav Kapoor (6):
+  iio: proximity: sx_common: fix raw reads while the trigger is in use
+  iio: proximity: sx9324: fix proximity threshold writes
+  iio: proximity: sx9324: reject negative hysteresis values
+  iio: proximity: sx9360: fix hardware gain encoding
+  iio: proximity: sx9360: fix proximity threshold writes
+  iio: proximity: sx9360: reject negative hysteresis values
+
+ drivers/iio/proximity/sx9324.c    |  9 ++++++++-
+ drivers/iio/proximity/sx9360.c    | 29 ++++++++++++++++++++++-------
+ drivers/iio/proximity/sx_common.c | 25 +++++++++++++++++++------
+ 3 files changed, 49 insertions(+), 14 deletions(-)
+
+
+base-commit: 8fda275449b68a96f0a38a61daa35cc39b0fb9d8
 -- 
 2.53.0
 
