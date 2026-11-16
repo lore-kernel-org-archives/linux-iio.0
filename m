@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794847202;
-	b=rODlFo6Ko9+DwgQpnXnL2wWC0sa1tGaOGkCIJ0IWResEI48tiri3cINWDgSGwbQJyck3
-	 Q8Ue2TeLmqbX+o89WXRXav9I5zz0PcH0fQ02lORKoir2hJA/aeVTu+WugYQhCVG0HPke9
-	 r36sAzcLfB1ir6ke3TFuiZs3lUXtqLttEpFd0HEGjXMz+PIaxEEDtdGFCoAOH9k0E9zrk
-	 Q0BrLewElz0FNwQXPZ6zxNuyI99O8qCc+cDJV6clTF6v2i85a1YVjtRTsRhz0Ff9tUuGy
-	 mBLmoRWHHWRNbahDi7lJTACN6lofVnPfr2rfSdyqjn7PAmghdmQBiGCn2uR7lrPVNkw==
+	t=1794847204;
+	b=u5f9/hhahLKs6YyOXrw6Dsgb4tCrQ21Q6DnKVZSbdkH8Z+O2BWQC9ZzrT8yYvJDpwNAe
+	 AsNCC/piZdbI5UPQ3TkBzVvJwLPTDhEOKakB1KPv83dM/KSi//KIOCyzBnkicZvYr6Or0
+	 RNTYWrRGVnRdWWCPhb8J1KkpSKustslmMp93RNF4/Ho8lv3eErPBJSU9zuSfFUBzUX1/2
+	 1XKG4dBcELsb3GWK0irc0AKkOCLpwJYsxzw4nU2p9uAiz9UkZy+2gXpbBMjWuhJsm6MDW
+	 0BfpKgkdrzUOa1pnqaf8xHTbWJKdTiUbrSAqPqCq/sVs5oqZAkb8zXM5dFbWdm15AKg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794847202;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794847204;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=tspvrJnpoKFHb7HbQbrWvZ9PGJAK8DVOcpQAjMGTVTU=;
-	b=AfA12iirSYzFuB8ThP36e1NUI/6MxuddQcrR0QxQ1GOkrpVuJT6PdcxPG2fKwGV9gs/0
-	 n6dBNu7CzgBAxdkL3iG3LgLBhlXhFYc4uK5lU7FJ4cc2gvg71J4VMOXoY5RQjhfXy8/a7
-	 mRFJQGDi/Yo/RmhcjvCGPXkwZ890PZ5Tj6CKLWyaxsC0ZdZjDIhooxqi/6dBAj+r8m65h
-	 VfJZlO+Y5zTzKQUYEdKiZKY4w42MOPwslu9Ehs3s8lewgatMkuOUPVwY0i0s57EWa3G6c
-	 2Elr3t1VkpouqCs3OIya5fSSC+06EV1SaWXGV6fKCveda3VaMzVHI5w3E53xM+/h7Ig==
+	bh=riwJVkXXXY98ikf3VHi8s78+yiqK/Cu9IX+o8diodTk=;
+	b=xkO9p1XdyW+91iauiSzZsBABm4sBbnNJPHJ2gHxdCFWGqRCjo6oq3IwBIDL2Uw0nP8YY
+	 wlh+NEcFzFEKP+/T7fk1DFy7A/Nx8xrcCh5tnP9fakZ5JcbKjzLIYwK2LJA9fsUdDMqUU
+	 /In1ed8jX98L0Yb7KGl9XAuPP91EgAJa/8jfabHrl2bqruSMeFgSm1jL5HWPOB1ga2k0K
+	 EJRIwnacRZWwsbvL0O8d78eQ4wFAAymHQqcGUCQC1S1yE7/+pEVmHgkborjuBJzqepouB
+	 lcHqdIxCvJUN+8wPeAOJFpqhkb2rKnI3GGOXt/eLdWN4tpFAatmhieFAeS2Zrwo+xQQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QbZjfmZb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cyaYND59;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C249606A8B8;
-	Mon, 16 Nov 2026 16:40:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7080860A261F;
+	Mon, 16 Nov 2026 16:40:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QbZjfmZb
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cyaYND59
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794847202;
-	b=vosvZ5BepwCtkGU50YmYkrtBgk4DksF97iarJ1ffo20Z0RXS6qWCye4HmYADkpeb4oBS
-	 EpMLTi859e2TZ5QxfEXreNiA1TplIFIRl83y51MuvvlNZWjlw0Frbk3h6ENILJT639/zA
-	 0/Ep2+o4SoO6QOYI1bn+Urfoaw+RRNOq3F7Ww5epfQ/dNFP9jDYzCTkEgqI7ryAOjvu53
-	 3rJieZTzVkvDdTdIWPhxKtX3vjPpO2QlshlbFUd2ncUg7L3HX3y6kOqzRKOQoguL638JN
-	 oSM5d7UunYUBZQ4UrUW4n3jxFo1/ckRNKGpl6gIsOIUKxu+DTaX0nElraOKDV6sBmUQ==
+	t=1794847204;
+	b=myNzfDcM2cfOognTzyaS0EyQyE2OemkXHK6HdJlt9lXLVqDNlSj/jOYp3ARMRx/aIv9H
+	 AHQv1OxoyjGeUzIOaHE90arJEbFLW3fS8OOXyJ80/ALUQYS2usKqjNd8TgOeeJ4JMKsSH
+	 KPgi97SlsjkhoLohKh+UGPjunK/gJECbodWctVkme0kjLt4qr+xs0UOu8vCTpv+QRLJSB
+	 gjO5mFBzZAHQaKueOeyBRKfaM7BBpFeHjyI0pVQ+GmkbBl3yPgkNEmofjSZM8+brFlHVA
+	 5e88cW7ZDmf50415vqJNCMym4DfOSCglck+DpDMKH7PKYLxo0g344bqIrHYhv7JtGNA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794847202;
+	c=relaxed/relaxed; t=1794847204;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=tspvrJnpoKFHb7HbQbrWvZ9PGJAK8DVOcpQAjMGTVTU=;
-	b=NIlf/pzWMuRI/w+Kcaf9m4/k0efOSLSwMTiezsKzjmb/M39JJzIyIibQH6xwlhxDVV52
-	 JR/PJj7YbUYPIEp74aQzNHvfi7PsQo684fWYE6jgBslyxblkFtaToo0IXq7NpVJVnVeEV
-	 9kK9boUqY8FKHR82LmPJi7Lu7uTPBJ0Eo+vUXni/t+SRvDe3bmxuJp/mDswpb47v/l4b7
-	 RWKwbskwZNiiYPOphAQrjiN5P23l/9AOx7FQEPd2yJCKDprpfcscXl66Zo8qoLxXvlqtn
-	 /8bhq0UOUYhTXOOsDTHC1k7daroZvy5mU3InVJX0PcTSlNHL/hHztYKBJn9w4tokB8Q==
+	bh=riwJVkXXXY98ikf3VHi8s78+yiqK/Cu9IX+o8diodTk=;
+	b=fGQnDlRRy8MNiC2ABkW8ocwmqcqZb23etEmjOSRIP+JrmZKrWqUwycajpnBncxieHBu3
+	 MoD2r9qH3XD+S7YLzlfLkXk4r5+D/J4gObmGgR3qf3xNJ+t5TRsjfpuHwEta07OnnBqok
+	 RMw14EEOjrz+y0FVqkJ3kaBCTvEwpRo42U1Fb1nTIplmnMLEybHhdIVuRibuuZ8TPYEaO
+	 HWKeXK9f1fA3OAfm7SYqBrn2ty5OWW8TOfc7eQyJI3hw9NRTCa+F6geXAGGMLH2qac7P/
+	 DyyYk0pJ/6ZbLvf5SAnpE3SEKPR6Q/wwSG067T1ikRN2NzpSgMfUANKavE21bdluIZg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 83CFE1F000CD;
-	Mon, 16 Nov 2026 16:40:00 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id CB3591F000C9;
+	Mon, 16 Nov 2026 16:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794847202;
-	bh=tspvrJnpoKFHb7HbQbrWvZ9PGJAK8DVOcpQAjMGTVTU=;
+	s=k20260515; t=1794847204;
+	bh=riwJVkXXXY98ikf3VHi8s78+yiqK/Cu9IX+o8diodTk=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=QbZjfmZbBzAuZSDdELlKJf8yS6vz4KWkyqpKsNNAXT6tSs1KO/qbT/AZy84AT23kZ
-	 imTThWJ1vKBmjfInwAz2iRARHy7h736M4vEV92L6FH0iz9S0YzMoQSAZ2Gr+GFiR4t
-	 9Gl0IrBI6muEg5ZFthYlpv5y/TI6QEKuLrawqHqfldYp8/osz0arCOB85rL8h2CIdf
-	 H09jh957NvgjhDQ1zHn8zT1D0LVC7Fpv4kKyvJe9IAXoTplpUkixgv4+2bTHAmHXni
-	 g1oEk8avw7DEQaLigaGhxqRAk5ic53AX+0CzlpbBtBq44urDxie4z+aasYg+vvJvzn
-	 k1kwGOYc9gMcg==
+	b=cyaYND595ZkwUqpUmcsp3p7Eh42gsehEMGy2G+Y5m2Vu5bM/fnDdOigspspadI+D6
+	 VQKXG3VF6uVMjuyxB4HTlFAKLVW0xUHNIGWXhWsv0AiKGDOKhwzaukWMyZBQ9kgbPT
+	 rkcixJAbGzB9CG8VfEm3526HkXs9Zz7rKnl/7Qv70lrPeg8xg37dh5XOXyCH1uVshU
+	 ATBuY8XYVXs8BAAc+WbQP53LER53xeI6ekDRjM1W+ISCCD6WHfLBTOR/elLAH1iYYM
+	 chsk5npzbbqswrx5kIqwmSseWUfOJbiVrQ39MpJTqcWhETsyFs+KXA6L3tYVTA/5wH
+	 hkiEnauyOF8jg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 3BE734A52E;
+	by lkml.kernel.org (Postfix) with ESMTP id AED2F4A542;
 	Mon, 16 Nov 2026 16:39:59 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 16 Nov 2026 16:39:58 +0000
-Subject: [PATCH v4 06/12] dt-bindings: iio: frequency: ad9910: add
- io-backends property
+Date: Mon, 16 Nov 2026 16:40:03 +0000
+Subject: [PATCH v4 11/12] iio: ABI: add integration_time for output
+ channels
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261116-ad9910-backend-support-v4-6-fcf1ad364ed5@analog.com>
+Message-Id: <20261116-ad9910-backend-support-v4-11-fcf1ad364ed5@analog.com>
 References: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
 In-Reply-To: <20261116-ad9910-backend-support-v4-0-fcf1ad364ed5@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
@@ -100,93 +100,64 @@ Cc: Olivier Moysan <olivier.moysan@foss.st.com>,
  =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Randy Dunlap <rdunlap@infradead.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794847197; l=2580;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794847197; l=2039;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=j5dklZUTaCzTsmtRwls0MFDoIhZtjambNyK1FFjRxqs=;
- b=tlu2PdHBcsP/jZkRQbqD74n4mvZvwhoZCJ95ooMYlIhKwlmwDSRbX4Tdj3zV+fNDYGoK8vf5q
- qm6ZBMbSdABA/ZBdEgX4ua31FHNmdTmW0vNqKlccbTdnKlwE+EbgOTf
+ bh=ArKliXzwidNFOs9CJk/f2j2v2U2NbJL4NaNVqhddipA=;
+ b=Q5g0nX6WMGgj7rZG6tdRZ2HXOf3pZ0naLyBp29XIQutPkkLPl/GjZI1NRcP/XdyJ9TXdYGcWD
+ bgdASXVcH6UBZV83IEUpjNT68+veYVYo0to57sDUFv7rMaTw7oSe/cE
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
  with auth_id=561
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-The AD9910 parallel data port allows high-speed modulation of the DDS
-core parameters, which requires a data source such as an FPGA IP core
-connected to the F[1:0] and D[15:0] pins. Add the io-backends property,
-so that an IIO backend providing such interface can be referenced.
+Document the integration_time attribute for output channels, which is
+the time interval during which the output is generated by integrating
+a quantity, such as its rate of change. It is the output counterpart of
+the integration_time already defined for input channels.
+Add entries for the altcurrent, frequency and phase channel types, which
+are going to be used by the AD9910 DDS driver.
 
-The property is optional as the parallel port is. The device remains
-functional through the SPI control interface only, as other modes can
-be used to drive the DDS core.
-
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../bindings/iio/frequency/adi,ad9910.yaml         | 38 ++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-index 4eebbd388b27..02fd49db93ff 100644
---- a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-@@ -120,6 +120,13 @@ properties:
-     items:
-       - const: drctl
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5e987c502b13..54800847f2ca 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1744,6 +1744,23 @@ Description:
+ 		seconds. If shared across all channels of a given type,
+ 		<type>_integration_time is used.
  
-+  io-backends:
-+    maxItems: 1
-+    description:
-+      IIO backend that interfaces with the parallel data port, enabling data
-+      streaming into the device. The backend may also drive the PROFILE[2:0]
-+      and DRCTL pins, the latter being exposed as a PWM provider.
++What:		/sys/bus/iio/devices/iio:deviceX/out_altcurrentY_integration_time
++What:		/sys/bus/iio/devices/iio:deviceX/out_frequencyY_integration_time
++What:		/sys/bus/iio/devices/iio:deviceX/out_phaseY_integration_time
++KernelVersion:	7.5
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to get/set the integration time in
++		seconds of an output channel, i.e., the time interval during
++		which the output is generated by integrating (accumulating) a
++		quantity over time, such as the rate of change (roc) of the
++		channel. The output variation over this interval corresponds to
++		the integral of that quantity, which may be bounded by limits
++		configured through other channel attributes. The written value
++		may be adjusted to the nearest interval supported by the
++		hardware. If shared across all channels of a given type,
++		<type>_integration_time is used.
 +
-   adi,pll-enable:
-     type: boolean
-     description:
-@@ -206,4 +213,35 @@ examples:
-             adi,refclk-out-drive-strength = "disabled";
-         };
-     };
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        dds@0 {
-+            compatible = "adi,ad9910";
-+            reg = <0>;
-+            spi-max-frequency = <1000000>;
-+
-+            #clock-cells = <1>;
-+            clock-output-names = "sync_clk", "pdclk", "sync_out";
-+
-+            clocks = <&ad9910_refclk>;
-+            clock-names = "ref_clk";
-+
-+            dvdd-io33-supply = <&vdd_io33>;
-+            avdd33-supply = <&vdd_a33>;
-+            dvdd18-supply = <&vdd_d18>;
-+            avdd18-supply = <&vdd_a18>;
-+
-+            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
-+            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
-+            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
-+            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
-+
-+            io-backends = <&ad9910_backend>;
-+            pwms = <&ad9910_backend 0 1000000 0>;
-+            pwm-names = "drctl";
-+        };
-+    };
- ...
+ What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_integration_time
+ KernelVersion:	4.0
+ Contact:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
