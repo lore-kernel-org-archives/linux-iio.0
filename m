@@ -1,85 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.228.71
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.232.247.4
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794816137;
-	b=WwsqALGQ3JSaBVJKt3GNRsRiWcrn80crKqyCD8sw/0TGQRLRRMNOEyX8FjvxpAEaSLqq
-	 Em9nVCCNtsGmKGWqs7skzq9cwoxh5C/eaaJeAWBENMZ3M2USVoNiA+Dk/9PZbJblX0dR2
-	 bp7GVLB2fCISm03JHH0tqwnWh5ZVIsPv0LjXlW+4L2z2Gm7+uCzWlaCFrkknz/caRid8M
-	 LhGCBG08Di1/NmpKMU2fciE3X865t+ABpsuWhcRUkkyd2D7uJNuyfwFXU1pruULBtzH3Y
-	 +JsNchhbIN9dE99DUXYCk04SPYe00syQG+IVuGBf3NBiNYWeS5eZzWuEwf3LLr//0Gw==
+	t=1794818391;
+	b=HxTeJqGr/rGBgYxqgobs3d/0BOJy+NdFBoGQRBi/c8rBsXiqdaR/JiBfO+2ZWvhtymNf
+	 9LcOuG8fg+fUfroArpnHvsn0PRG8PyFnG0IoLw+RlMrhgaVDD2ykHLzhcmDpnK+qrHfVT
+	 lRamEC7AbmM2bYOmIF1sWoul8ZyXEDe8H3UbV+6/MM2wmE/g6B5ixbG6Ejvttg+alEuak
+	 N3VHu0gVF/j1Bp3xH6Xfs6/9THBSzoq94HTO7R+lSfLgP0J3nKnjxYbL6ubSHdD2bWeJz
+	 GFMbU04mOwHJumlg96uS+umyIFPCY/iwjFj+L09DeV9MJfmA9Og2gAAerj5IQmTT68A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794816137;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
-	 From:To:Cc:Subject:X-Mailer:References:In-Reply-To;
-	bh=ZyK7/PztODOd9Q5CVGcTP8UYa9FIHfRTvvxAFMt+8YU=;
-	b=a2izmAvX489wGA+b9DnDdv9wvIYk+c/Zn+E8+XaGQHPk1Qi0aoGSYDFrlvKTfU9TChC5
-	 T8LsRhV8XMqTMjQE/NSNlDRSvOEw7s/cVifwBrU69o6lg5lQvNidLQLcGmGiCa8mpo8Gy
-	 lE61YxzfYf4az2dAZ37CBs9e5nQsl6IlxgSSp3lO+trcrxb04LR1Hyto00gVB0A4Hk8cD
-	 3S+/dTiOPzhoEH/hQd02TVsgOwmWBZ/dhj0ce9THp75fWIrGg6o8QM/IGTK0ewtvuXer8
-	 hXAme1c/q2KVFeG3qWbJr2VlP12QcYLsf0W2KO1Uj/rkp8y3stFe14vnn+eCWHyVeMw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794818391;
+	h=DMARC-Filter:Received:Received:Received:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:Date:Message-ID:Subject:From:
+	 To:CC:X-Mailer:References:In-Reply-To:X-Originating-IP:
+	 X-ClientProxiedBy:X-FEAS-BEC-Info:X-FEAS-Client-IP:
+	 X-FE-Last-Public-Client-IP:X-FE-Policy-ID:X-FE-Hostname:
+	 DKIM-Signature;
+	bh=jk8S6zm+nkol5uqf/eF0yM1FdYjVHlezq8oEpC2nPXM=;
+	b=poSyImHq5m9oTbT7CiimKcOZkIq6CCpCMY2WZwmPVXbIU8T+AuoJRPqOLN9kq+18mtG3
+	 G4eEXmNUyUOCpcXWnOvhCCadTCfig6Oa7yUgHEPzdi2dnLD92SLZe0wGhKEW+cPe3mlYy
+	 Q+iO//5vkHp7d68+I2yocQ+ygR37DbfsJ4eLhZhh+1jzaAoFnS/gHUzmKwoCCvNodpz+A
+	 gUy+AsxCCBaeWO+UHxrpbVRjKmPtAUTwJ7PNsRpC6JUKB2d2gpsgS9Kt8DKxKobyCHwC5
+	 1TAoOStjWUatQlWw7NijDeiO9dlzNcJ4o6NBR06ip888DsjoOt1XuynnlNzjJbeYxrw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=fairphone.com;
-	spf=pass smtp.mailfrom=fairphone.com;
-	dkim=pass header.d=fairphone.com header.i=@fairphone.com header.a=rsa-sha256 header.s=fair header.b=NIsF+uDH;
-	arc=none smtp.remote-ip=74.125.228.71
-Received: from mail-ed2-f7.google.com (mail-ed2-f7.google.com [74.125.228.71])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=utu.fi;
+	spf=pass smtp.mailfrom=utu.fi;
+	dkim=pass header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=O0PG8EOo;
+	arc=none smtp.remote-ip=130.232.247.4
+Received: from fortymile.utu.fi (fortymile.utu.fi [130.232.247.4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06B9F606A32F
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 08:02:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06B9F606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04FF9606A31C;
+	Mon, 16 Nov 2026 08:39:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 04FF9606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utu.fi
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.a=rsa-sha256 header.s=fair header.b=NIsF+uDH
-Received: by mail-ed2-f7.google.com with SMTP id 4fb4d7f45d1cf-6aa912db07bso2329999a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 00:02:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1794816134; x=1795420934; darn=vger.kernel.org;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=ZyK7/PztODOd9Q5CVGcTP8UYa9FIHfRTvvxAFMt+8YU=;
-        b=NIsF+uDHDmPTfADfQhpj6r1fyuJAuD1caSpBsd+mCKdzTNO4k/YUXY4WwfhsgEu1CP
-         7GmcJQANvfcXjV0osFh7yKq6fnyzvIMfxrU3LkWziN/vtLkRibFPJAdKNxdgp6+pPJtK
-         SbUotDugzsnA+IB2Tr4Ee1SoJ1lwvCRPyLRwUrFpibxL32XemZV3OfgpCfmKkh4233/d
-         cKm0WW+N6zBMekAvmPv1hUhUMvoStHcLLFoJZrWpmFuRSWHxdHzTAv+kxrYu/narMqUS
-         9XL3V7v2gZ/kN8v83ZGg7sCpBpXn6XCLx28HXnfAkBonAXIaZqmAc8AFxLHUPYP2taJB
-         MmHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794816134; x=1795420934;
-        h=in-reply-to:references:subject:cc:to:from:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ZyK7/PztODOd9Q5CVGcTP8UYa9FIHfRTvvxAFMt+8YU=;
-        b=ZU0VUO3K+zKO69BLUseFEGQWL/25/Lvrq1F03CGDhTzGgMI8haOq824d8hKNGJ5VBX
-         lexq3zbIqcaGkLgwbuC+d4OqvtwDucpo4YjvbVm0BuE5Yosq6W1FwNmrIOHzZfRSfnZ3
-         KiTgLWPry1EFPpZ+dXO35X8RZTA8Bwyg+slsM62mJiCjlNM8HUeFjXjYmzDkvuOJY5VE
-         YUFzv0eCpY4/ZJAjqpJnNDwF6GfpDFqDEpAOFq7YdRFChrp7wdJHJMDg71KwYQeE2KGk
-         uZuv/N39di7W5vwnJ3BhddmXZsF2PwL+9SHpMSyruDpZ4iMXfNEqmxfG1m1utQS565V4
-         xFPQ==
-X-Forwarded-Encrypted: i=1; AL+hErEiDEcHsIECqHScv3FNrEyDkxc4n9ip7oiw4TuNEnTw5eK87CYVszRJqq4R23YquQSYHeYKXToUKyA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9BYyBoWzI1nSj+kuXRaV0MOc3E+MTV7y1WLo8irZKmiDT9W5rf
-	QLTXQ2H/6+0iGTMnmwlRy8U6/BlDd5HJ0sx2w8lMaXI2Wyb37+Q+pRFUTrvBAOjoVL0=
-X-Gm-Gg: AYBFou1ETIjAb7erWXBgPze26U+lvxD6vxfVt8pVjIh1yhOuQP6aD8QSH7uuCjkCLWJ
-	Gla6a97mDhNhwx18J0lL9cHm9wK11X4HDvn+x+VVt09sPeNZvxiagL4Do66ehko5QJCNIzKNCaY
-	7Sl6Za6wwOdnczgsGE/MEsf+dz3vbkBZPL8KXMkLL6XOdAgXB7ukATXm7oCPxpboUJ+K1Slrvm9
-	qj0UU6oa42O49Qk+HOYU3MovdHyewJRvwRYwpCiO6UsfyavSjCKQbT4JHMK9HvZZmwIQsVDX2YN
-	OW/LZD/Im3320Dsqbrq0rYymehp0gk2TWUNXuN7BMhgREhwC7DEHo8YiSmgmYJwM3TTKsx5GW9r
-	qzYJvdHPnzOOvnVmuNwQPKV86Rhzv2OGAD7vZUpG1bS1sdnqFs8KwfrQQRVJRBlOb2ElZwfubTu
-	eioEiOARJcE4NwzlINm41gx3KO9T7D6/H/nLAk1cHk1X1MPFFLp1eIVhhXbNPaYVZMak8u50CNH
-	Bbln9Z6oBz6O4VHH7s46II2gw0QhdydvLvWFx+9AbLQH8Pih5EvPL4WR16Sirsuq7Qs6f7yqvKA
-	7vN2n6vs/2CKG4G1bo2jlR5XYTCiVYT6fPrPU+dn5QRxRAfQtGxSgNfcM+BHFqIhuAZXX0oISw=
-	=
-X-Received: by 2002:a05:6402:11cd:b0:6b6:fa19:41c1 with SMTP id 4fb4d7f45d1cf-6b7c09580e6mr6535428a12.8.1794816132167;
-        Mon, 16 Nov 2026 00:02:12 -0800 (PST)
-Received: from localhost (144-178-202-142.static.ef-service.nl. [144.178.202.142])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b7c264d99csm4159399a12.36.2026.11.16.00.02.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2026 00:02:11 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=O0PG8EOo
+Received: from smtp-04.utu.fi (smtp-04.utu.fi [130.232.207.47])
+	by fortymile.utu.fi  with ESMTPS id 6AG8dCRx023350-6AG8dCS1023350
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+	Mon, 16 Nov 2026 10:39:12 +0200
+Received: from ex19-16.utu.fi ([130.232.247.56])
+	by smtp-04.utu.fi with esmtps  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <jaakko.ma.koivisto@utu.fi>)
+	id 1xSsF6-00HaY6-2w;
+	Mon, 16 Nov 2026 10:39:12 +0200
+Received: from localhost (91.145.105.139) by ex19-16.utu.fi (130.232.247.56)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Mon, 16 Nov
+ 2026 10:39:11 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,125 +58,193 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-Mime-Version: 1.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 16 Nov 2026 09:02:10 +0100
-Message-Id: <DMWH7VNNWDQG.1BM1P88WUJZT9@fairphone.com>
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Jonathan Cameron" <jic23@kernel.org>, "Luca Weiss"
- <luca.weiss@fairphone.com>
-Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Rafael J.
- Wysocki" <rafael@kernel.org>, "Zhang Rui" <rui.zhang@intel.com>, "Lukasz
- Luba" <lukasz.luba@arm.com>, "Rob Herring" <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- "Laxman Dewangan" <ldewangan@nvidia.com>, "Bjorn Andersson"
- <andersson@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Hans de
- Goede" <hansg@kernel.org>, "Jens Reidel" <adrian@mainlining.org>, "Casey
- Connolly" <casey.connolly@linaro.org>, "Val Packett" <val@packett.cool>,
- "Daniel Lezcano" <daniel.lezcano@kernel.org>,
- <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
- <linux-arm-msm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
- <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 3/5] thermal/drivers/generic-adc: Allow probe without
- TZ registration
-X-Mailer: aerc 0.22.0-0-gc2f86b7abde3-dirty
-References: <20261113-bat-temp-adc-v3-0-743979a8fd90@fairphone.com>
- <20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
- <20261114001552.3ae8f05e@jic23-hlaptop>
-In-Reply-To: <20261114001552.3ae8f05e@jic23-hlaptop>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 16 Nov 2026 10:39:11 +0200
+Message-ID: <DMWI07YONKKS.1UI59C2I60ONX@utu.fi>
+Subject: Re: [PATCH v2 3/5] iio: chemical: sgp40: Implement
+ get_serial_number-command
+From: Jaakko Koivisto <jmatko@utu.fi>
+To: Joshua Crofts <crofts@kernel.org>, Jaakko Koivisto <jmatko@utu.fi>
+CC: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+X-Mailer: aerc 0.22.0-0-gc2f86b7abde3
+References: <20261102091258.247402-1-jmatko@utu.fi>
+ <20261102091258.247402-4-jmatko@utu.fi>
+ <20261102112020.00007167@kernel.org>
+In-Reply-To: <20261102112020.00007167@kernel.org>
+X-ClientProxiedBy: ex19-15.utu.fi (130.232.247.55) To ex19-16.utu.fi
+ (130.232.247.56)
+X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFxYWFhYWFBeUVxfSFhISFpdSAIJCQMDB0YFCUYDBwEeARscBygdHB1GDgFIWUhZX0gLGgcO
+ HBsoAw0aBg0ERgcaD0hYSFpIWVxIWVtYRlpbWkZaWF9GXF9IUEhYSFhIXUhYSFhIWEhZXkgJAygBHEUDBAEGDw0aRgwNSFhIWV1ICQYMESgDDRoGDQRGBxoPSFhIWllI
+ DAQNCwAGDRooCgkRBAEKGg1GCwcFSFhIWl1IBAEGHRBFAQEHKB4PDRpGAw0aBg0ERgcaD0hYSFlQSAYdBgdGGwkoCQYJBAcPRgsHBUhY
+X-FEAS-Client-IP: 130.232.207.47
+X-FE-Last-Public-Client-IP: 130.232.207.47
+X-FE-Policy-ID: 3:5:2:SYSTEM
+X-FE-Hostname: fortymile.utu.fi
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=utu.fi; s=out-utu-v3; c=relaxed/relaxed;
+ h=mime-version:content-type:date:message-id:subject:from:to:cc:references;
+ bh=jk8S6zm+nkol5uqf/eF0yM1FdYjVHlezq8oEpC2nPXM=;
+ b=O0PG8EOoKTeJWxDYchUMhjRD0eoRGjvJ9tJBfgt8Kp7Y7Pe0L2lBB2KVnWe2MiXdN5P2A0rchE3k
+	3bflUoGg+z74TLKqPtVVlGx+rOpWErF8pwIo4iJ7x96Iy4qfjg5M+uqbQFkYsKnJNI7f09TRpPNq
+	cM1+YZuKbMtLWNWqIiojCU5mSM6cFjqwPD1MJDAJ4o0Pxi2Q9/w0tJkoClUNq0EBqlJ3BbBM+gzv
+	dmKRmTme5Q8EyYPg4golg07Sl0TUubFP939DiAlpUd3nQxqM4OG+W716N7YOMwrr1fyQvmmcNt4U
+	R5z09ih2l0dJA87ZSWDz9rusj1107taMj/jvxQ==
 
-Hi Jonathan,
-
-On Sat Nov 14, 2026 at 1:15 AM CET, Jonathan Cameron wrote:
-> On Fri, 13 Nov 2026 16:56:44 +0100
-> Luca Weiss <luca.weiss@fairphone.com> wrote:
+On Mon Nov 2, 2026 at 12:20 PM EET, Joshua Crofts wrote:
+> On Mon, 2 Nov 2026 11:12:56 +0200
+> Jaakko Koivisto <jmatko@utu.fi> wrote:
 >
->> If the devicetree node is not referenced in a zone under /thermal-zones,
->> devm_thermal_of_zone_register() will fail with -ENODEV.
+>> Add functionality for retrieving SGP40 sensor serial number
+>> and present it to the userspace using serialnumber ABI.
 >>=20
->> Since the driver is now also registering as an IIO device[0], allow the
->> probe to continue without the thermal zone.
->
-> Papering over problems, or expected path for some devices?  If it's
-> expected path we probably don't want to print a message with the
-> word failed in it.
-
-Expected path for some devices. Should I make this into dev_dbg then or
-remove the print completely?
-
->
->>=20
->> We also can't use gadc_thermal_get_temp() anymore because we haven't
->> necessarily initialized tz_dev.
->>=20
->> Link: https://git.kernel.org/torvalds/c/3762f5851ac5 [0]
->> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+>> Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
 >> ---
->>  drivers/thermal/thermal-generic-adc.c | 20 +++++++++++---------
->>  1 file changed, 11 insertions(+), 9 deletions(-)
+>> Currently only the bno055 driver uses the serialnumber ABI, and presents
+>> the SN in hex. Documentation gives hex output as example format, not har=
+d
+>> requirement, but should we use the same format here anyway?
 >>=20
->> diff --git a/drivers/thermal/thermal-generic-adc.c b/drivers/thermal/the=
-rmal-generic-adc.c
->> index c6a7a65aa6a6..40a34e97a515 100644
->> --- a/drivers/thermal/thermal-generic-adc.c
->> +++ b/drivers/thermal/thermal-generic-adc.c
->> @@ -86,14 +86,16 @@ static int gadc_thermal_read_raw(struct iio_dev *ind=
-io_dev,
->>  				 int *val, int *val2, long mask)
->>  {
->>  	struct gadc_thermal_info *gtinfo =3D iio_priv(indio_dev);
->> +	int iio_val;
->>  	int ret;
->> =20
->>  	switch (mask) {
->>  	case IIO_CHAN_INFO_PROCESSED:
->> -		ret =3D gadc_thermal_get_temp(gtinfo->tz_dev, val);
->> -		if (ret)
->> +		ret =3D iio_read_channel_processed(gtinfo->channel, &iio_val);
->> +		if (ret < 0)
->>  			return ret;
->> =20
->> +		*val =3D gadc_thermal_adc_to_temp(gtinfo, iio_val);
+>>  drivers/iio/chemical/sgp40.c | 76 ++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 76 insertions(+)
+>>=20
+>> diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
+>> index 080d51f9f53c..e0a300720fce 100644
+>> --- a/drivers/iio/chemical/sgp40.c
+>> +++ b/drivers/iio/chemical/sgp40.c
+>> @@ -35,6 +35,7 @@
+>>  #include <linux/mutex.h>
+>>  #include <linux/i2c.h>
+>>  #include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
 >
-> Maybe spin a helper that is used both in adc_thermal_get_get_temp()
-> and here?  Whilst it won't save much code (may actually be a touch longer=
-)
-> it will put the two relevant steps in one place.
+> Could you add an additional patch to your series adding any
+> missing includes? Just looking at this patch I can see that
+> types.h, asm/byteorder.h and delay.h are missing.
+>
 
-Sure, can do that.
+I can do that. Small question, is it ok to leave compiler_attributes.h and =
+stddef.h
+out? Former one is not included in any IIO drivers and the latter one only
+in three drivers.
 
-Regards
-Luca
-
->>  		return IIO_VAL_INT;
+>>
+>>  /*
+>>   * floating point calculation of voc is done as integer
+>> @@ -70,6 +71,18 @@ struct sgp40_tg_result {
+>>  	u8	res_crc;
+>>  } __packed;
 >> =20
->>  	default:
->> @@ -195,14 +197,14 @@ static int gadc_thermal_probe(struct platform_devi=
-ce *pdev)
->>  						    &gadc_thermal_ops);
->>  	if (IS_ERR(gti->tz_dev)) {
->>  		ret =3D PTR_ERR(gti->tz_dev);
->> -		if (ret !=3D -EPROBE_DEFER)
->> -			dev_err(dev,
->> -				"Thermal zone sensor register failed: %d\n",
->> -				ret);
->> -		return ret;
->> -	}
->> +		if (ret !=3D -ENODEV)
->> +			return ret;
->> =20
->> -	devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
->> +		dev_info(dev, "Thermal zone sensor register failed: %d\n",
->> +			 ret);
->> +	} else {
->> +		devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
->> +	}
->> =20
->>  	return gadc_iio_register(&pdev->dev, gti);
+>> +/*
+>> + * Datasheet table 16. Serial number is given as 48-bit value 0xAAAABBB=
+BCCCC.
+>> + */
+>> +struct sgp40_serial_number_result {
+>> +	__be16	A;
+>> +	u8	A_crc;
+>> +	__be16	B;
+>> +	u8	B_crc;
+>> +	__be16	C;
+>> +	u8	C_crc;
+>> +} __packed;
+>> +
+>>  static const struct iio_chan_spec sgp40_channels[] =3D {
+>>  	{
+>>  		.type =3D IIO_CONCENTRATION,
+>> @@ -161,6 +174,41 @@ static int sgp40_calc_voc(struct sgp40_data *data, =
+u16 resistance_raw, int *voc)
+>>  	return 0;
 >>  }
->>=20
+>> =20
+>> +static int sgp40_get_serial_number(struct sgp40_data *data, u64 *serial=
+_number)
+>> +{
+>> +	int ret;
+>> +	struct i2c_client *client =3D data->client;
+>> +	struct sgp40_tg_measure get_sn =3D { .command =3D {0x36, 0x82} };
+>> +	struct sgp40_serial_number_result res;
+>
+> Reverse xmas tree order.
+>
+
+Will fix for v3.
+
+>> +
+>> +	guard(mutex)(&data->lock);
+>> +
+>> +	ret =3D i2c_master_send(client, (char *)&get_sn, sizeof(get_sn.command=
+));
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	if (ret !=3D sizeof(get_sn.command))
+>> +		return dev_err_probe(data->dev, -EIO,
+>
+> Sashiko points out that this function isn't called from probe(),
+> therefore it shouldn't use dev_err_probe().
+>
+
+From the dev_err_probe() documentation I got the impression that using
+it is allowed outside probe() and even if the return is never
+-EPROBE_DEFER, just to condense the "dev_err(); return ret;" into single
+line and also take advantage of the prettier error formatting of dev_err_pr=
+obe().
+
+If this is not the case I can change back to dev_err().
+
+> Also, you can use a local variable for dev.
+>
+
+Will fix for v3.
+
+>> +		       "i2c_master_send ret: %d, expected %zu\n", ret, sizeof(get_sn.=
+command));
+>> +
+>> +	fsleep(1000); /* Max duration for get_serial_number command. Datasheet=
+ table 8. */
+>> +
+>> +	ret =3D i2c_master_recv(client, (char *)&res, sizeof(res));
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	if (ret !=3D sizeof(res))
+>> +		return dev_err_probe(data->dev, -EIO,
+>> +		       "i2c_master_recv ret: %d, expected: %zu\n", ret, sizeof(res));
+>> +
+>> +	if (crc8(sgp40_crc8_table, (u8 *)&res.A, 2, SGP40_CRC8_INIT) !=3D res.=
+A_crc ||
+>> +	    crc8(sgp40_crc8_table, (u8 *)&res.B, 2, SGP40_CRC8_INIT) !=3D res.=
+B_crc ||
+>> +	    crc8(sgp40_crc8_table, (u8 *)&res.C, 2, SGP40_CRC8_INIT) !=3D res.=
+C_crc)
+>> +		return dev_err_probe(data->dev, -EIO, "CRC error in get_serial_number=
+\n");
+>> +
+>> +	*serial_number =3D ((u64)be16_to_cpu(res.A) << 32) | ((u64)be16_to_cpu=
+(res.B) << 16) | (u64)be16_to_cpu(res.C);
+>> +	return 0;
+>> +}
+>> +
+>>  static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *r=
+esistance_raw)
+>>  {
+>>  	int ret;
+>> @@ -306,9 +354,37 @@ static int sgp40_write_raw(struct iio_dev *indio_de=
+v,
+>>  	return -EINVAL;
+>>  }
+>> =20
+>> +static ssize_t serialnumber_show(struct device *dev,
+>> +				  struct device_attribute *attr,
+>> +				  char *buf)
+>> +{
+>> +	int ret;
+>> +	u64 serial_number;
+>> +	struct sgp40_data *data =3D iio_priv(dev_to_iio_dev(dev));
+>
+> Reverse xmas tree.
+>
+> ...
 
 
