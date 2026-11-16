@@ -1,54 +1,54 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794824019;
-	b=b1ji2yV4yZ8LqnGkbIho+usD4YjEE62/4jYPWCaE0JMcp7Jc1eKwHLV4h4o91yyE7V+a
-	 x9cVz14dF/8BJqFYlktGb/5GryURd8iEogMippiQeEbUz8U1Z/HoajqakyxofeuY4v+FY
-	 GnFBG9E1IVBaw6jtQTmEGmq4Vhaub/MHmqJkwc+yFABKE64Azz7t7BWZS7AU32XPdPX/k
-	 e0synbYDdXWgJK/tbtE6KPHuIfiiYnVrJVq33u+IjfK7jkyMhhpOPViSeBdglJcrQ6Y53
-	 dmsthXbZq2SjSi20d6P1Ny2ATUPZRM/X3u6xcPshM/VkdNgCpjml5NSq7X4SPaf85EA==
+	t=1794824059;
+	b=0OlhTBj4N1gLdJskxW1Rbwt2LpQnvXjl7e0dta24UllNFViZVVpu2/d3eajJsXeEcaus
+	 7OCOGfCc8wvmjltesj3YZceqrnNOkRVsq82w1nLiTsaGKB3h5JcXCHStDZ4dsbHbuiJr7
+	 SYFlFHX/Ki6XL4jfi6ddIJslkloqhPYDIwiNMKeuiEo392hFDbWByItUS2C5LTsCZcHPt
+	 eDdF/igjXbGUhfUt9WwSSe+Gpxgrp72v89bLtgDKrbsCzZwyvO8qr+gDywdP89dJK5fe2
+	 86d5QzwiK679FW9RwszlD5V6r7e+D3F7APvnDy+GB+Z1UOkt94ilekYOb5FD1CPOwgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794824019;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794824059;
 	h=Received:DKIM-Signature:Received:X-Gm-Message-State:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:
 	 X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:Subject:To:Cc:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=dvvN8xAjOZj2qJ3T0RWutZTar0lZaTKJFlwYsylUpC0=;
-	b=DNlquxs8vigKzyiAHNTiLCE7cq2EDmeyld3jQIoxX+z6BR0Q3fev0XeUD9+ee9XyoP+2
-	 OpzaDrvYu0bTFozbjuh8UO//v+Uk9jUhfp9qvFH1CHcGl50T79ruclBAxaC7GuLE5l9qv
-	 7DcX94yJete17VJ/nS6pRdpY74kRaagxKdxsceF7yNk962PBpdiIlI1PEpLjTNH0yPU8q
-	 pGwUnpaqsEz3FNdfzalWi7g0Ec0OdkL6EE92XLVJqyWPKs1t2vdOwp7mZu6d9oOyfkqWr
-	 k7YaNnbHUZ8UsCmhOLagPvcVy2OTWktkSCAGz9a5jzA/vEJhqiIyyX01DAL6OrSm6yA==
+	bh=BZzHsumxcgOWtim9VqzUNbgAn5hXsFY8z0Dp1dc6OzQ=;
+	b=LPGNC0b+lCjsQUIcqVqmYcHuXPUlKNiXCSqVdnXkx5fG8Ew8j0kBYrxSqZXoLQrzXi/8
+	 KqVvI5VoU3RGniMslrPPdMiPPL28IAmDpb2/GwydQCp6T6Tp3Rzp3PdFrbmKT7nhqpM84
+	 zqx+lf1j4hC6oknLkh9u7ntj5NrnBrj2n4CqsOL2VsX2bfpm67UQxqXkFxsNgD3H/Jelt
+	 TD+A4uCQ4lBMMe/EiuEd/M8A0fOYgPbTi0SQbEAXXv712cVGi8k2BG3GrbyD49X+DXNQE
+	 7tC51A84Yo/g7ywfJQ1i0lIsZ8efTGDtjwvE7BxMoAPJjPCYIhb+064hUHlosc/bjhw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LHwg3Zwx;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oezlQ5JP;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFAAB606A334
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 10:13:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B801606A323
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 10:14:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LHwg3Zwx
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CBB01F000CF
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 10:13:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oezlQ5JP
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 767DB1F00930
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 10:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794824018;
-	bh=dvvN8xAjOZj2qJ3T0RWutZTar0lZaTKJFlwYsylUpC0=;
+	s=k20260515; t=1794824059;
+	bh=BZzHsumxcgOWtim9VqzUNbgAn5hXsFY8z0Dp1dc6OzQ=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=LHwg3ZwxbN02r6fIxteD1RvNA6Y9pOXEzqlzC3sUB8AKvy7RcUsl3uIzeTc/fD063
-	 2P+KJVBQFEj+Uv2PFLCu04PqFi6/Q6oMHpn05+JBvjbV32bART7CHGqJnaX2tm+nBV
-	 SPoqccwRAJ3Z2+3cAPz/RXYoENpQ7U103MANOoTLswJKtdn33JceG58bN0ha4Jjlvj
-	 8VOYndx5KQnTeZdRcJkXfBjroGNaMQ/hrI7AidEfOFnFLtxApePDuAnfmVp+0Vr9mm
-	 zupozQ/X0NirjLDtd+2jC9D56BkEqWPZxMdP0YkDpG0Fnl2SWSvuRjAomX3EHKVUI0
-	 QCal6pu/6SgCg==
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5c14f3dab09so2027198e87.0
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 02:13:38 -0800 (PST)
-X-Gm-Message-State: APuU4Z/E46WyihhHNjD3TKQjYxNvsLz9BLc7F367kDx2V0ik/Khxq4wr
-	MM/hL3bUQdzjBFLOnzulIoycuFQrNLIQaXdkzXxSNrPaZi/t/Rtdo/0Co2CoK1t4cniZO6trhbv
-	v9/0yGSqtJmDxpRIzjpoWgt5EskoTv44=
-X-Received: by 2002:a05:6512:224e:b0:5bf:d000:bca3 with SMTP id
- 2adb3069b0e04-5c170b20ec4mr3464665e87.49.1794824017275; Mon, 16 Nov 2026
- 02:13:37 -0800 (PST)
+	b=oezlQ5JPj4CYiV6ain908larzCb/hez4Awd0ILTk49jaVy/RMRZtx+AaF0cbGt0Dx
+	 4wAnOMH+Tb8WjCzjUOoLKo6mxsMg+VdPm2nXDBXfZgJDk7zGoTKXeaqTCxWyy53g+y
+	 eYSH02Mjz9rqwg5rqdHPOqUgWRGXPW+d2xmfnofgowFMFXTONIM66CAzOGCJr1h6j3
+	 +hiT6Bi5ryi7rUNrRvY1TTa4ETy7eKiU7fUWATcS+PXMWuhGUAMhsAT/ZofEm4LObf
+	 2KSa0E/JTgcPP9mPJK2vXt7NDeanTt1NVibXyAMLkz/x9gYtqEP389b8wBbyMg0C2Z
+	 i7x3aZ6TKNL7w==
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5c14e307f29so3768938e87.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 02:14:19 -0800 (PST)
+X-Gm-Message-State: APuU4Z/tLNcw+TfoelG5jieYAEPBJsjsxBH06n4WdP/DCzYZc/XSgFwA
+	HF6FD8Y8jmgF/k94/XZY7H8fvqPnKUUp1pNkUZnRUCNYda1F2ASxH6cXXuX0lJJEFmf3A0sKJgG
+	FPC9glR6r+5m2GE+0sThl7074EtC28QM=
+X-Received: by 2002:ac2:568d:0:b0:5c1:597d:aa93 with SMTP id
+ 2adb3069b0e04-5c1709f4d9fmr3837170e87.24.1794824058184; Mon, 16 Nov 2026
+ 02:14:18 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,14 +58,15 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261116014823.3132576-1-jic23@kernel.org> <20261116014823.3132576-14-jic23@kernel.org>
-In-Reply-To: <20261116014823.3132576-14-jic23@kernel.org>
+References: <20261116014823.3132576-1-jic23@kernel.org> <20261116014823.3132576-2-jic23@kernel.org>
+In-Reply-To: <20261116014823.3132576-2-jic23@kernel.org>
 From: Linus Walleij <linusw@kernel.org>
-Date: Mon, 16 Nov 2026 11:13:23 +0100
-X-Gmail-Original-Message-ID: <CAD++jLmz=30ptZ12qZwP6_-3Xbv3nta_VBg1Zb1QA9an3bOfwA@mail.gmail.com>
-X-Gm-Features: Aa3M54oi56LPPit1kNG3TyrHHkUySoftJp80E4lui0_LsVjTYMRYknwsXP58xFU
-Message-ID: <CAD++jLmz=30ptZ12qZwP6_-3Xbv3nta_VBg1Zb1QA9an3bOfwA@mail.gmail.com>
-Subject: Re: [PATCH 13/35] iio: accel: bma220: use default_trigger
+Date: Mon, 16 Nov 2026 11:14:04 +0100
+X-Gmail-Original-Message-ID: <CAD++jLka6iViPZetASEx-P1EUM2o+rK7qf6hi5gMV1mowGGArw@mail.gmail.com>
+X-Gm-Features: Aa3M54rZ0ybcg4V5aKB01QbjbOok1gJ1DSyW-SPRyEtOWR9BL0YJ1PmZWar8GsY
+Message-ID: <CAD++jLka6iViPZetASEx-P1EUM2o+rK7qf6hi5gMV1mowGGArw@mail.gmail.com>
+Subject: Re: [PATCH 01/35] iio: core: add default_trigger and take reference
+ in iio_device_register()
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
@@ -89,20 +90,40 @@ Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 16, 2026 at 2:50=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+On Mon, Nov 16, 2026 at 2:48=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
  wrote:
 
 > From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 >
-> Set indio_dev->default_trigger rather than taking a reference to the
-> trigger in probe(). The IIO core now takes the reference during
-> iio_device_register(), so it is not leaked if probe() fails after
-> the trigger is set up.  Whilst this patch closes the specific
-> bug, it also makes the ordering less fragile going forwards.
+> Some drivers choose to set a default trigger in probe() via
+> indio_dev->trig =3D iio_trigger_get(trig). The matching iio_trigger_put()
+> is in iio_device_unregister_trigger_consumer(), called from
+> iio_dev_release() only if indio_dev->modes includes one of the triggered
+> modes. If probe() fails after the reference is taken but before
+> INDIO_BUFFER_TRIGGERED is set (e.g. by iio_triggered_buffer_setup()),
+> the reference is leaked. In devm managed flows there is no simple way
+> for the driver to drop the reference on error.  Whilst it is possible
+> to have enforce strict registration order so that the reference is
+> only taken once conditions for tear down are met, the requirements are
+> not intuitive. So move the point of reference acquire later in sequence
+> to a point where cleanup will always happen.
 >
-> Fixes: b7e17ca10793 ("iio: accel: bma220: add interrupt trigger")
+> Add struct iio_dev::default_trigger. Drivers then set this without taking
+> a reference. The reference is instead taken in
+> iio_device_register_trigger_consumer(), which pairs with the existing put
+> under the same modes check, so they always balance.
+>
+> Also check the return value of iio_device_register_trigger_consumer(),
+> add an error_unreg_trigger_consumer unwind path for failures that occur
+> later in registration, and clear indio_dev->trig after the put so the
+> subsequent call from iio_dev_release() does not drop it again.
+>
+> Immutable triggers are a little more complex and left for a follow
+> on patch.
+>
 > Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
+I like the concept and reasoning here, and code looks good so a clear:
 Reviewed-by: Linus Walleij <linusw@kernel.org>
 
 Yours,
