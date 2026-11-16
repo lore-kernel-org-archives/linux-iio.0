@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793747;
-	b=1Thsrz9Z8snGA40waIBSoNL2gEtCKAxWe5n3jygCdSyiKn3ni3fUQf8RMz5PfHc2lfZn
-	 NC1tHEwV9mKt+qUDVq8EFGRAextGj9kuUZqz2BWTcBI6RMH6sUclQUfHuV0mu7VgrpPzU
-	 qCA8FDGxlLpQfJFqhviRrntNOPpT9KZCPaQPm5ZSX/FyrZHexd334sQo2o3GwYg+O//Kd
-	 /d9zRHlMp1I+QWJK9nCgeoeGM4RVuYChMohRcsgfalFT/tSvxwwM64f1KG1X/vY/vLre5
-	 Jj8lMQGCOEmw7oTehFqWmmHiya42crsP22Q6s3JhnniHMcQ2hX+M5DEpT/hoyhP9q3Q==
+	t=1794793753;
+	b=vHgwh29VXAs99qRWxHj++dXKCkPFlupW915M5Rdx3WvpWctHTw66AAuCWvG60+8v7/C1
+	 4X5wDA3zrr3RLorrRoepwRpVePfb8nOmP8YeJCtXbzJqSJGia3GdMn9U9wydcqlgPDf+6
+	 ti36hYHujimre4xinIQ/qttB5eYlr1VfxUgnEaAjYDbkugm/3xPm3XUmFuevYck/3qgbv
+	 kf5evmY6iggT4RtA2pt+klO/xIl3A2Wz4X4STXJhE6LDwM3coZ8UFTI4/7bi5JwNl9KjS
+	 reiuV+pysTO0XvT2aYmgDHnZjryUnSKH8i+W8Lcbq2NMniqg/9DykYzvuzTT6b8b2fg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793747;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793753;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=SMnlz+UKmlvy+V5NM8eD5m7WpHRvN0c1AJo9dr/OXAw=;
-	b=l/TW7kIWaNN2goPdv/5EiyU141Eu9GcGNNx0Gw17wul7Bxr/WZI/2S/jM09YZJtv6Xcb
-	 uPXI/OmHpvwwMLhkzo0Ok7tVVup6uU7BiozGAPKie98tQAluLkkvJac0ZkW0kkfI7igUd
-	 O3a1DMVIyo9DwsgffDwS3+WfVIrXqnQqefkkXPRz2JfH1rJyjPuuLytmHMsRMXrtWGse5
-	 hHlYm4EKQAmigsobk9T+aFKoJNOP1Bwlbl5jEMufUkZ+UHCWIyvW4O/bR3qp5L2U4Opmq
-	 AqaN+3i8WM84TZuAS4v9k3wqaLO4IeA/8sPVytko1Z6Bm9O1YZx2vdEftZbVGXCJxCw==
+	bh=uRMIIewxVeu+ht7LO7h/BFu7l52guGdF1d2s1R6V9yk=;
+	b=Uu77QdvNDJc8wSGQDte2nPrEM+lQy34kynO5SPWQx3QCJbob4AKcqx50zFkcpT4+qQg5
+	 tB8cmTCQG4IHZqlsNKOn0f7UQ+eBG+TzwpsTnK2NU/xigfoFVI3zO+PL6lK2t2MW15ihL
+	 XjICRLB96P/8a0oR0wcGznvNlykWbcnZEfoSodmIi+q7pHsXTG1E+UJItjqFml6lCRZ/z
+	 pSeKNCfd9/+jt5khPbCdI1lawsBvsvMj/AuT2DU5Eq2kBHhWoei2X8yO7jXgSw9C9SeYl
+	 RbOvr/mfFIumwaDwFpioDjQB37vxlc0TXM8duVQpC/+E6Jkjeyg6ZDgriW5og9eMp+A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aTmTp9vh;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZosUqJy9;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF2FA606A31C;
-	Mon, 16 Nov 2026 01:49:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4106606A321;
+	Mon, 16 Nov 2026 01:49:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aTmTp9vh
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F8E1F000CF;
-	Mon, 16 Nov 2026 01:49:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZosUqJy9
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 439C81F000CA;
+	Mon, 16 Nov 2026 01:49:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793747;
-	bh=SMnlz+UKmlvy+V5NM8eD5m7WpHRvN0c1AJo9dr/OXAw=;
+	s=k20260515; t=1794793753;
+	bh=uRMIIewxVeu+ht7LO7h/BFu7l52guGdF1d2s1R6V9yk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=aTmTp9vh5vwc7vw6vQgmqA6obeXgSnsnd4YMXMpsrGDv7UPwdVIjqPPbIOGa24WE6
-	 qEp/lMyj+9yxuvOId0AdED7gcxRwWqES7f8E4O21UCBv93gmD6TANQZtaL949hwKu8
-	 Zzo0NY5wN/ZTPoYotOXM1JeRYs0IvaE5YUQa6g+Zg8/S879gs1ghdIp6yKMzNeZxAf
-	 A0HymrHVncnWbM6fzGwWshQaOas4/xIeL23Rw4wksYT952mQ1yXfXL+jepcbbEWMOE
-	 j7QKRYFm/xLel6fIQ+Hq5Q9oZCifE2aC2KHjkSXMt4egBCmC7JyaukQ5oWOlW/azOL
-	 c9iwtZfY856jg==
+	b=ZosUqJy9hByTWKMCTgYWdv/TJ0lEs9E5ChrcXD2W0CCAnrD4RUCngZpUVfcQ+YW0u
+	 23r69QjPrbmZM8ozIT+XQAUwzidhq8E7onQ0VTNZfWskCbWvmsXtWcz00hixwljzev
+	 cTmUKH9RVHF4GJuy/BYMs0CleZQsKqPiPfyUfqlXY+7ffsQRzDVtbEMpD3PtAo4uhE
+	 y7rcDIcuVLrcyKR7bLe4DTxFbLQvLi02ravbu6ASnkmjvH5rqaJyZONAUuytC3i2Eh
+	 yqPJ4HSitBaRZVi40EDXmfU9m20yvAN6YMPEXAEV4UWcCFl7DfPGWxh9zf5ZbxZ9FC
+	 JabSd7smua9TQ==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 03/35] iio: chemical: ens160: use default_trigger
-Date: Mon, 16 Nov 2026 01:47:51 +0000
-Message-ID: <20261116014823.3132576-4-jic23@kernel.org>
+Subject: [PATCH 04/35] iio: adc: ad4130: use default_trigger
+Date: Mon, 16 Nov 2026 01:47:52 +0000
+Message-ID: <20261116014823.3132576-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -93,44 +93,33 @@ From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
 Set indio_dev->default_trigger rather than taking a reference to the
 trigger in probe(). The IIO core now takes the reference during
-iio_device_register().
+iio_device_register(), so it is not leaked if probe() fails after
+the trigger is set up. This makes for less fragile and unintuitive
+ordering rules in probe.
 
-Previously the reference was taken before devm_iio_triggered_buffer_setup()
-set INDIO_BUFFER_TRIGGERED, so a failure in that call leaked the trigger
-reference as iio_dev_release() only drops it for devices with triggered
-modes.
-
-As indio_dev->trig is no longer set during probe(), pass the local trigger
-pointer to devm_request_irq().
-
-Fixes: 0fc26596b4b3 ("iio: chemical: ens160: add triggered buffer support")
+Fixes: ec98c3b50157 ("iio: adc: ad4130: add new supported parts")
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
 ---
-Technically a fix but only for a leak on an error path and backporting
-this plus the infrastructure probably doesn't mkae sense.
+The fixes tag might seem unlikely but that patch also introduced
+the default trigger.
 ---
- drivers/iio/chemical/ens160_core.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ad4130.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/chemical/ens160_core.c b/drivers/iio/chemical/ens160_core.c
-index 5e2b15463c99..7325f22ddf26 100644
---- a/drivers/iio/chemical/ens160_core.c
-+++ b/drivers/iio/chemical/ens160_core.c
-@@ -309,11 +309,10 @@ static int ens160_setup_trigger(struct iio_dev *indio_dev, int irq)
+diff --git a/drivers/iio/adc/ad4130.c b/drivers/iio/adc/ad4130.c
+index 9763a811caa3..a8fc21eb829b 100644
+--- a/drivers/iio/adc/ad4130.c
++++ b/drivers/iio/adc/ad4130.c
+@@ -1666,7 +1666,7 @@ static int ad4130_triggered_buffer_setup(struct iio_dev *indio_dev)
  	if (ret)
  		return ret;
  
--	indio_dev->trig = iio_trigger_get(trig);
-+	indio_dev->default_trigger = trig;
+-	indio_dev->trig = iio_trigger_get(st->trig);
++	indio_dev->default_trigger = st->trig;
  
- 	ret = devm_request_irq(dev, irq, iio_trigger_generic_data_rdy_poll,
--			       IRQF_NO_THREAD, indio_dev->name,
--			       indio_dev->trig);
-+			       IRQF_NO_THREAD, indio_dev->name, trig);
- 	if (ret)
- 		return ret;
- 
+ 	return devm_iio_triggered_buffer_setup(indio_dev->dev.parent, indio_dev,
+ 					       &iio_pollfunc_store_time,
 -- 
 2.56.1
 
