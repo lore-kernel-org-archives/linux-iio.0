@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793790;
-	b=5e9ksIz500KHRdvUicb0SoJkb9SmG8ePyszxqLPtxZ5oYeoiMJ8s4j/sHJQ9Xa5Uwabg
-	 Ev1vZ9JD/modpk1nhf3sKJ2Uyf0WAykmVjZtq56Dbf5f8evTqrxcQ07GB638ITJIOGZ1G
-	 oeoch4sKVX/q62It4D0V8eev6vnJ7p1pNJ1j+20GB///tCy4YEWX4xW/5tELqVnHxe24E
-	 vYY+qUVnp1tgAmIUYcAYiw4ppbugb2Mvn9yTQMvMoyjvHkerj5r61sbFCIZaAVvlOFADP
-	 V2bjPK1vxJGLTwwEFB26g1cFrP56PNEsD+Fu0mxVLv/RLviRtpmFkgkN02joacoof/g==
+	t=1794793798;
+	b=HE6KDT+cgA0nt6Gd/RFx57yfcObmuZXHERyFAC3IQ+DNY9Q73dPWqfXHYPcqr2Mrt7dc
+	 W3lW/8ZsLtCf0ceDyCRf03CT50Cn/eCHjfeAO0pjwkD4IT4tKtldvKTA3vKNKn8YOcKbK
+	 ra+0GlcMEa8MibU7hMUTGqY6q2gpvV54SxzeyRBZGnMMAK936KaUDZzTjJyE7dBOd5eY1
+	 ltIrC2oEhRFxzgA33F0vyoyazaVBBgV5U6cNlrS48hVmU4rHQ0SyMkVTVazrth0Lq709U
+	 KZ7vj3/aCcVgvBT9/Grjrlmrtn2p+eL7QOvq70n3fkSyj1REhFh45cwhqnqBgUjCTfQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793790;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793798;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=0mP3nns6ON6fSm3e0baH3UComUCoOgYezkFcLGDHpQ8=;
-	b=2RccpvoYjUbVe+RutHMak/pWtO4ggdch7AQuu9nnOOh6Iuij58JHthoxJJEp9TLlGsCn
-	 gLrTBpbSMoWybouhgWoaZzg4RM2yiCy6/qaeS1eTSSYGECGlR6hCYrAmc1uhbVfCpGzik
-	 bDphpqd6jDUiG8nKqyDPAnYWFqIm//SY/hUB7JW3jDlvf+qmnsqnKf8LPzjXQWaSXs7ez
-	 ZqTYN7bs0ZqYVI10u5qc9Pdrb1ucpcY2HgTJxsfpEtIycNSmxR9icYXGqXxaS+PT7bjl0
-	 k+FYbz60+CEkPdQs7c8DWQIwiZcjOlL2fognAuHwPBgccT877x89z7J3IcgEfg1HoXA==
+	bh=8zx/VSsNnqy+Um+lGT28GPN1/fckFuWw5yHBN6QYvdQ=;
+	b=lAzW930tt7Kads5/zEB0VmvjPRhcpIapEGxXoYdZZhhjTP1PmTKEZeQdMQ069jS29IPh
+	 Gidqt4QMo3290YziNv/gb5vQuYC4RIlfWnwB5peSjXlqkqkYBYRnn7qJZYvyLpeaumMro
+	 tO0lJ8QEEUwa9ALg/q0vvFzMQM5d17LleKGA7oA15LYNz0lIO5BgkqMU0vJh6JyqvsIoD
+	 fVVBqC3TWtBMevBeNnLr6ItDpf2L8P+3CzzjT4BRqB9YNrQXZDdJjKpYkr9o9XmbetbJp
+	 +LBOUB7NByQmcXsA6ZvSLoNEG1QncMUt7NZFBD2Bw8Ko0pPvZ/RobhCqV81M//NNrMg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JhzfNmPo;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bz1NTFM5;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE5C8606A323;
-	Mon, 16 Nov 2026 01:49:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D911A606A31F;
+	Mon, 16 Nov 2026 01:49:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JhzfNmPo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47AA61F000C4;
-	Mon, 16 Nov 2026 01:49:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bz1NTFM5
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 868DF1F000C5;
+	Mon, 16 Nov 2026 01:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793790;
-	bh=0mP3nns6ON6fSm3e0baH3UComUCoOgYezkFcLGDHpQ8=;
+	s=k20260515; t=1794793798;
+	bh=8zx/VSsNnqy+Um+lGT28GPN1/fckFuWw5yHBN6QYvdQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=JhzfNmPoUdM99/FFlaArtlsWhwnRnbGJx8FtLZFbw3HCA2aZX1Xw31anZKQK6yV1m
-	 KZGG9ZJ7MtZV041LcPzh5c7X3lQoj6TRzqbQlWyrjF99IgwbXAyves9At1NnCb4bce
-	 5AoS7AWV4j5Z2JKl4r1WheLp8zcP/scVlIBULUqihq5EVJjojFdrHx5OQO5xfOP+Tp
-	 X/rGyjHLFGOCZX4SRJLrICv+zteldJGTHO+TH8jwlMfCTDRfxqtbJQkc7CDUlIOx2s
-	 o8dd+WtQX6BWi5cjblhK+SUThMepa5QZY7PSfQNiWkPwLAIbGd+8xPrGy/XYgC66xk
-	 lo+6sNpZmRt4Q==
+	b=bz1NTFM5MWThJYCwvljMzsVws0ueLG81a80cChtG+6wzBpEXe7V4k457UCU5SLzsP
+	 +TiujbKaN3cYf3G4pB4kZM7jMM64DGyuEb/TgpjR6HES7M5evKOfOsnGTvmz/bwWwD
+	 ZlVyyKe8lyF88rLgzmA911VBG67bej9JoVrxtlngJ8uRy1VkkyhOKHe1DCmP091hdZ
+	 OdUn+83saX0xb0xGOwPR11KtYGh6A0FhglKbYFMO1VMLsNym29B8NAJKPrb6+0yj9C
+	 WXVZmj9QGO8T2gESJrLJMPTulrVtkvup22MBI6kEkH/BmJ7gRQ+Z9+wEU2w7MCEMkj
+	 1Q5rFyG9ik4fQ==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 10/35] iio: addac: ad74413r: use default_trigger
-Date: Mon, 16 Nov 2026 01:47:58 +0000
-Message-ID: <20261116014823.3132576-11-jic23@kernel.org>
+Subject: [PATCH 11/35] iio: temperature: tmp006: use default_trigger
+Date: Mon, 16 Nov 2026 01:47:59 +0000
+Message-ID: <20261116014823.3132576-12-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -94,32 +94,77 @@ From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Set indio_dev->default_trigger rather than taking a reference to the
 trigger in probe(). The IIO core now takes the reference during
 iio_device_register(), so it is not leaked if probe() fails after
-the trigger is set up.  In this driver there are a lot of places
-that could previously happen.
+the trigger is set up. That leak can occur in this driver, but more
+generally the intent is to avoid fragile ordering constraints.
 
-Fixes: fea251b6a5db ("iio: addac: add AD74413R driver")
+The copy of the trigger pointer in data->drdy_trig is only used during
+probe(), so replace it with a local variable.
+
+Fixes: 91f75ccf9f03 ("iio: temperature: tmp006: add triggered buffer support")
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
-
-This one is a fix, but given impact is a reference leak on an
-error path I don't propose to push for a backport of the fix.
+This one is a fix, but I'm not planning to push for backport given
+the impact is a reference and resulting leak of data in an unlikely
+error path only.
 ---
- drivers/iio/addac/ad74413r.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/temperature/tmp006.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
-index 8d9d3d5f09c6..41675ff47f47 100644
---- a/drivers/iio/addac/ad74413r.c
-+++ b/drivers/iio/addac/ad74413r.c
-@@ -1397,7 +1397,7 @@ static int ad74413r_probe(struct spi_device *spi)
- 	indio_dev->name = st->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &ad74413r_info;
--	indio_dev->trig = iio_trigger_get(st->trig);
-+	indio_dev->default_trigger = st->trig;
+diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/tmp006.c
+index d9f6449ec0d8..51196ea9211d 100644
+--- a/drivers/iio/temperature/tmp006.c
++++ b/drivers/iio/temperature/tmp006.c
+@@ -45,7 +45,6 @@
+ struct tmp006_data {
+ 	struct i2c_client *client;
+ 	u16 config;
+-	struct iio_trigger *drdy_trig;
+ };
  
- 	ret = ad74413r_reset(st);
- 	if (ret)
+ static int tmp006_read_measurement(struct tmp006_data *data, u8 reg)
+@@ -297,6 +296,7 @@ static int tmp006_probe(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct tmp006_data *data;
++	struct iio_trigger *trig;
+ 	int ret;
+ 
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+@@ -340,25 +340,23 @@ static int tmp006_probe(struct i2c_client *client)
+ 		return ret;
+ 
+ 	if (client->irq > 0) {
+-		data->drdy_trig = devm_iio_trigger_alloc(&client->dev,
+-							 "%s-dev%d",
+-							 indio_dev->name,
+-							 iio_device_id(indio_dev));
+-		if (!data->drdy_trig)
++		trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
++					      indio_dev->name,
++					      iio_device_id(indio_dev));
++		if (!trig)
+ 			return -ENOMEM;
+ 
+-		data->drdy_trig->ops = &tmp006_trigger_ops;
+-		iio_trigger_set_drvdata(data->drdy_trig, indio_dev);
+-		ret = devm_iio_trigger_register(&client->dev, data->drdy_trig);
++		trig->ops = &tmp006_trigger_ops;
++		iio_trigger_set_drvdata(trig, indio_dev);
++		ret = devm_iio_trigger_register(&client->dev, trig);
+ 		if (ret)
+ 			return ret;
+ 
+-		indio_dev->trig = iio_trigger_get(data->drdy_trig);
++		indio_dev->default_trigger = trig;
+ 
+ 		ret = devm_request_irq(&client->dev, client->irq,
+ 				       iio_trigger_generic_data_rdy_poll,
+-				       IRQF_NO_THREAD, "tmp006_irq",
+-				       data->drdy_trig);
++				       IRQF_NO_THREAD, "tmp006_irq", trig);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
 -- 
 2.56.1
 
