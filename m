@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793856;
-	b=hcFZj7q8nFNB6tbOxaGeRgvIxKBqArdHSDjTkg/LYi/1C7CMr+7m4IkDz2MaPK+2l5wI
-	 Z9svY4bg3FeFh8epXO+htQedau/yaJTOvX6pxS189yIAZXmQm1XJf0iaSZ8CaYh4weMxq
-	 iXxoEUKTwgNbguSrIw9y471Y+jSN9n/E3PUtd3RCuHhjtMxWH1df7ydoFSc7wsRHeB/Bn
-	 SKhzuOnpoQ7L+WLFyYH7OqnBWVj/j5Mq6qsWpCNq6kdjkXvGhypr+rMuPR0Y4w5Fz/3kj
-	 cJ03pOUiXTgOaKFr8NU/ryivx0Oec23xXnERcA6qX9/+t2Fs4Z5djy8ncUAKbVlLedA==
+	t=1794793851;
+	b=i1/Sdc8Cv0wlVqMIh6he4oktQla7kwGOn8Yjiy9156OcK/7b4o5kY6KmiRgKUn9JDrse
+	 nDsJVEmYX0b05VX5zLwDIUo2s89IuXUgDWah95+3H9p4+QqJyflq1JYMw3Ivcv8zesHcI
+	 TqvGgMewPPoRqZeSecDnhOPn3amOMRk5PPay4xy/Zn+E1IJQwuSntDQKBXT/kzBUXblW0
+	 C8VKn5ORccMcPHLQQMomU54ckgHRZQ5pp+lH/INTCdc23AajhS+XNpVA8pRIXRjbT6F9b
+	 FM7iaFQTAu0xAKTpFIKLTPUapb0Z95O1vGszH6N3QLR41YGCPl3BbK9EtoCrz1UfG8w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793856;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793851;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=NA2WPbMsSF9Vb+39rUVltD8lcd6ZGsqb59wquimKCTs=;
-	b=Eq0w0QoD28ZwwT96K+EG0x831I1j4bLfQKC+h4pHQ95OboLc3mcGUYWfVI+J81QaqWR9
-	 g0F+hth1olVmfRcyQCw2/u0ZRHiMO2GrmRHHFTjRQ6+OntCywnSFc7kEH/n5GlZE7c5rU
-	 vO2J4cWmksavZ9xlVRGXQSnKxDUE3gNbyf7QAWLvx6JWfKnfiSOCNjq5lfvW/aPpvvkhC
-	 Ghanca3AthSGpoESFzJ40Cm5kFAu1BZvT2atUAg6g9oMZszGekmK9EZ/LAjJMaLnf9ngJ
-	 7M05jDfMMRcheg6tOO9npxqlvaMcgQiMT/8IG4JWDrNcDIkXCAysYN+6A54Wf+wrWew==
+	bh=R/wV5ONXbiUQc77QRLQYTe6JUWsAaji6ejsayor3X1w=;
+	b=QAL4aixXOZJzof+A+B6yhUvC6RGhCUZ5UnxuQveCcucfpExCnG7l0R1ZPtjkK7Eudizx
+	 FqFwh5PYm4J3wWtet1b4tCYPwxxetTwetjcjcmARFANDqxMGCDp4UIsGVm7Lc737G5qIP
+	 zcWB45ygQ4xSCaX0DttUQDgqVy0EoDp2P+VaTgg0Pbu7/fjpk4D2jZkhzgCwApNH8b0Fx
+	 fIXD2Ceb6640OZyhssEBiHOJ1Rbz2Gic5W0bBDlzY/dXd7kinlFdI2JnW6ao0Tjeh038p
+	 2bgXe/Cn6yf/doZEtaCg7QZkDjNqU0Y2rg0cewuHVWqwv2E+KBGhTRMlnxCTk5yLtxQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Iz7IJO2o;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bblh6coz;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 796A360A5BE7;
-	Mon, 16 Nov 2026 01:50:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFFB7606A8B4;
+	Mon, 16 Nov 2026 01:50:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Iz7IJO2o
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B82B1F0182E;
-	Mon, 16 Nov 2026 01:50:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bblh6coz
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0856B1F0092C;
+	Mon, 16 Nov 2026 01:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793856;
-	bh=NA2WPbMsSF9Vb+39rUVltD8lcd6ZGsqb59wquimKCTs=;
+	s=k20260515; t=1794793851;
+	bh=R/wV5ONXbiUQc77QRLQYTe6JUWsAaji6ejsayor3X1w=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Iz7IJO2otNJuBqCEMv2yby2O1jHUFDTiSN8T2le+TyXiSuuiIrbR7w7LMjg0wu90I
-	 0BFCHPTHwGGtPqMj5maGH5AAw/Eya6SsIhnU8bXVFFP6HEFdVSAjpfUsvsO5mbbqoI
-	 U4oh2TkngsEfhFyZP4hVqxEb1JzZRdaZHTMy046ZlVT92tTqlUN6kUuQkxz/MXZAsv
-	 RLYjP+uxqD4Q8CpLULM3zW8oj2xXCjUPaGWkMIBYIUMHdGZ8FymI1QJHH3EF92oOmR
-	 PRQjxHFEUl3qaiPAsEBr5XTN9nTVHYcGSEr6p+tTavqr+7bzrxW/Elb9ykW8+TPJWf
-	 XkRQ95ONuaK2w==
+	b=bblh6cozVG+lzNYs1OW5+ah4wEC/T4gFCjFB406zCmWOcjucJEHRF2hJWK57m+Lfi
+	 5DBoG5tJQuZLPOBZXjyrTr3jlqhghGElG1iGUYtdnzpreIY+M9G6/EwFZ78aWNrqa1
+	 r/Qd6rLsb90xtd4FzYseKpT3aKAVEvSRdavJkoDBlmbs5l3iVDOq0iLc8OH33ai+9R
+	 xYy7A83fA5PqLG02/i06781+rvQSw50txl0zU69M7/VIBvKkLxDwffnv23ADXS0SjF
+	 rf0lI+a+xJTaRLODWnzWNrFxtk1DCDx01zloLFm7ejnWJtw07+4+BTtzwqQtvo1oAt
+	 haZDTyIhDUsLA==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 32/35] iio: light: si1145: use default_trigger
-Date: Mon, 16 Nov 2026 01:48:20 +0000
-Message-ID: <20261116014823.3132576-33-jic23@kernel.org>
+Subject: [PATCH 26/35] iio: light: vl6180: use default_trigger
+Date: Mon, 16 Nov 2026 01:48:14 +0000
+Message-ID: <20261116014823.3132576-27-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -94,48 +94,28 @@ From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Set indio_dev->default_trigger rather than taking a reference to the
 trigger in probe(). The IIO core now takes the reference during
 iio_device_register(), so it is not leaked if probe() fails after
-the trigger is set up. Note this driver doesn't have this leak.
-This avoids fragile registration ordering constraints and enables
-additional refactors on top.
-
-The copy of the trigger pointer in data->trig is only used during
-probe(), so drop it.
+the trigger is set up. In this particular case the ordering does
+not result in a leak so the intent is to make that less fragile
+going forwards.
 
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/light/si1145.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/iio/light/vl6180.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/si1145.c b/drivers/iio/light/si1145.c
-index bb7c99041819..b160dd5dba86 100644
---- a/drivers/iio/light/si1145.c
-+++ b/drivers/iio/light/si1145.c
-@@ -166,7 +166,6 @@ struct si1145_part_info {
-  * @scan_mask:	Saved scan mask to avoid duplicate set_chlist
-  * @autonomous: If automatic measurements are active (for buffer support)
-  * @part_info:	Part information
-- * @trig:	Pointer to iio trigger
-  * @meas_rate:	Value of MEAS_RATE register. Only set in HW in auto mode
-  * @buffer:	Used to pack data read from sensor.
-  */
-@@ -178,7 +177,6 @@ struct si1145_data {
- 	const struct si1145_part_info *part_info;
- 	unsigned long scan_mask;
- 	bool autonomous;
--	struct iio_trigger *trig;
- 	int meas_rate;
- 	/*
- 	 * Ensure timestamp will be naturally aligned if present.
-@@ -1258,8 +1256,7 @@ static int si1145_probe_trigger(struct iio_dev *indio_dev)
- 	if (ret)
- 		return ret;
+diff --git a/drivers/iio/light/vl6180.c b/drivers/iio/light/vl6180.c
+index 44fd0446b583..249d383b5292 100644
+--- a/drivers/iio/light/vl6180.c
++++ b/drivers/iio/light/vl6180.c
+@@ -736,7 +736,7 @@ static int vl6180_probe(struct i2c_client *client)
+ 		if (ret)
+ 			return ret;
  
--	data->trig = trig;
--	indio_dev->trig = iio_trigger_get(data->trig);
-+	indio_dev->default_trigger = trig;
+-		indio_dev->trig = iio_trigger_get(data->trig);
++		indio_dev->default_trigger = data->trig;
+ 	}
  
- 	return 0;
- }
+ 	return devm_iio_device_register(&client->dev, indio_dev);
 -- 
 2.56.1
 
