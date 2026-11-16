@@ -1,55 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.232.247.4
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794819015;
-	b=rU8SM9GtPEupLvWxCBSwKNjxmOE6S1AHiXwvnQh1hLS7+esgHU5qkHvJ2nZBo9LqDqJQ
-	 Cdc76oHwYi9y+HDY3/ENtK1odtfQ2VwjkV1eQfr0aMGxgVTCMKXkQVAr276KjRE1aS3VE
-	 J91ZOsSHdoUsBSHZJkUBFfA+HiefRzA2OebwKUBvjVWI07qfuQlDZhNN+XQBjbni6vl25
-	 QAxSUHxzQgz117z/88o7AXeAtNHOPwkq6txR7/T6PPMgd612rIjiSydqYzAfNqYK6fXbt
-	 Qyg7tAUTFMinPa2DBcmDTVN0ktbdjbj5eGr9RZ9cBy0v6Sr46AKeKqj9gHODLFM9QnA==
+	t=1794819232;
+	b=AZxA0Ps/2xZGmZhjNz7lPH5u6ZBJgEIA9l/VlhmL2TmG1b/3ZEbqk17pRgMvSCV+heCX
+	 CPSJ1z7I1G3KZj/ly5GiwInJz+CS/O3Z+8Sw1GOT9SPYzQ8g/wyTYXCAIncYXh2rrBSHH
+	 5hCZrZj0qIZeD3/DmQ73NlfuzitSZ43UQFDj/r9bP7i1Za/L6+vwTmDzR0W6NRmA/8+80
+	 boe2aw1dD21LrdBFBxdP5/gwMybuldmQE4kALKACpHBw04cM15N3339gZqckklFrEtNLA
+	 G+5WRT33ftRI6bzu/fXcjrI6A8NyYLeMICDX5aKMxtugnYJNt+8A94qI+7PfqxmnrcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794819015;
-	h=DMARC-Filter:Received:Received:Received:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:Date:Message-ID:From:To:CC:
-	 Subject:X-Mailer:References:In-Reply-To:X-Originating-IP:
-	 X-ClientProxiedBy:X-FEAS-BEC-Info:X-FEAS-Client-IP:
-	 X-FE-Last-Public-Client-IP:X-FE-Policy-ID:X-FE-Hostname:
-	 DKIM-Signature;
-	bh=Ge4JppD5tZ3m94duBlkRytI2wXpdAfMlxVq1gwuajRI=;
-	b=D/CHgEyEQLUFFBWNq6CR14dtLTSZYWctJa1ENSxEaFYBmtrZZSIiXZelT6k3FZUyFVaM
-	 AcR/fRWwGCk+TGClT1MoUWy7adURob+wozucWFapfL6tJYN9WkF9HfOrA0lH2vSuheglh
-	 XZ8vZNtslFbvyf+GKrNqp/p6PfFfOsGVDuoJxIFDP+l2FD5FcGLHwPrOFfVjJkw/TvhK0
-	 aBSBkoajgzx1TNzKm7VG0L/T+AD79oEdp9fcg6WglwgCIzOTMeAWexlrpcDJPsjxmKZhQ
-	 ObSNtGhdlWYJ/yrnLF5R98XGhwSmuK2pwF2kd6FpIbCOn9pLO9vKd5ZHusTIC3twuCg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794819232;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=WJHptjq5aiJfdXZI3gT+b9duppbFkdL96tNofJMtcsc=;
+	b=0VB/KXMZS6p1rVdPpZ2EAaiGcS7Gp6op0JrAw+b53n0hRsqpTon5MKdhuWX3IsUQcTLL
+	 N/cVLEg0A9GtFp5X9CyDcH9AhAMQfdNxfpr5guh/cP895/1vxbwF8QbCjOXqy1Tr3oBLV
+	 sQeQZeoiOprJ+5rnlQxuU6l+5h9rtPp0BlK6LVlBiMuU+sEs87ohSffs/dG0MHQUiVGsX
+	 nQiYbMicMApQzLMXW8uMDrQ0MSxaW5DrhIz2Rj6aAZwaNgFQu/EHV4zCI0Ur8WT30gfem
+	 scxO87m1bBbO7lbrJ/BovyyADjnrusZFGPKbCLkBGc4JG0WbaZpXCu8Bvv+fr2dfjZw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=utu.fi;
-	spf=pass smtp.mailfrom=utu.fi;
-	dkim=pass header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=Ta8wlLoh;
-	arc=none smtp.remote-ip=130.232.247.4
-Received: from fortymile.utu.fi (fortymile.utu.fi [130.232.247.4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="J+2/szqW";
+	arc=none smtp.remote-ip=198.175.65.19
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371CD606A31C;
-	Mon, 16 Nov 2026 08:50:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 371CD606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utu.fi
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utu.fi
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E39A7606A329;
+	Mon, 16 Nov 2026 08:53:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E39A7606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=utu.fi header.i=@utu.fi header.a=rsa-sha256 header.s=out-utu-v3 header.b=Ta8wlLoh
-Received: from smtp-03.utu.fi (smtp-03.utu.fi [130.232.207.30])
-	by fortymile.utu.fi  with ESMTPS id 6AG8nq3E001961-6AG8nq3G001961
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-	Mon, 16 Nov 2026 10:49:52 +0200
-Received: from ex19-16.utu.fi ([130.232.247.56])
-	by smtp-03.utu.fi with esmtps  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <jaakko.ma.koivisto@utu.fi>)
-	id 1xSsPQ-000YcX-2Y;
-	Mon, 16 Nov 2026 10:49:52 +0200
-Received: from localhost (91.145.105.139) by ex19-16.utu.fi (130.232.247.56)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Mon, 16 Nov
- 2026 10:49:51 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=J+2/szqW
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794819233; x=1826355233;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4G4yGIqnrHxQl+5LajxFWIp2dJ6cElXZhM/BoJ9cdY4=;
+  b=J+2/szqWQxZLxusz+NAHwE62IP3wZWddOmF9nQWR5qIL5GjrbjmeD/NL
+   aTEv2qrqaKO3wKu6G3LJBSN1lXRgLPdtlhmR3l3b8CjREneynn6frsVM4
+   4xRFYVE8WcTvw9aOLg8Fw7LFPe+43EmNXFVHNtw00Qq3OxqjkQlq188so
+   PNzaqYqC5EtJpmOxDdTeHv05LPK7S3zwEwD1N0GMj/M0tP80Og/SkwwHl
+   aR9UZfV+WYRKLOuSsSz4ZFchETn7n41Sz/v2+1YAMxHOInOzbduVMN3o6
+   JMoAfIVobIqnmPnICp8zy61Y29WmiwEWXaBfyzuILe7IxpVMB6+z1tLvP
+   Q==;
+X-CSE-ConnectionGUID: klUIzpNaSb2vFuSvoteQCw==
+X-CSE-MsgGUID: MhM/0ajqTEGLAbFFlCIiNQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3588429"
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="3588429"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 00:53:50 -0800
+X-CSE-ConnectionGUID: 2IZIwq5zRBa1Yz4XQCXOEA==
+X-CSE-MsgGUID: +HN8DcJpRSyF/9wpu5KGow==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="9507060"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 00:53:47 -0800
+Date: Mon, 16 Nov 2026 10:53:45 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] iio: proximity: sx9310/sx9360: reject
+ out-of-range hardware gain values
+Message-ID: <avrEmbZJSX5qtGS2@ashevche-desk.local>
+References: <20261111164041.341776-1-kapoorarnav43@gmail.com>
+ <avXeSbAEGhkMjMJa@ashevche-desk.local>
+ <20261115014333.120063-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -59,96 +86,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 16 Nov 2026 10:49:51 +0200
-Message-ID: <DMWI8DZPNBKM.2GHPISPEOA7G5@utu.fi>
-From: Jaakko Koivisto <jmatko@utu.fi>
-To: Joshua Crofts <joshua.crofts1@gmail.com>, Jaakko Koivisto <jmatko@utu.fi>
-CC: Andreas Klinger <ak@it-klinger.de>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
-	<nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/5] iio: chemical: sgp40: Replace manual locking
- with guard()
-X-Mailer: aerc 0.22.0-0-gc2f86b7abde3
-References: <20261102091258.247402-1-jmatko@utu.fi>
- <20261102091258.247402-3-jmatko@utu.fi> <20261102111020.00000194@gmail.com>
-In-Reply-To: <20261102111020.00000194@gmail.com>
-X-ClientProxiedBy: ex19-08.utu.fi (130.232.247.48) To ex19-16.utu.fi
- (130.232.247.56)
-X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFxYWFhYWFBeUVxfSFhISFpdSAIJCQMDB0YFCUYDBwEeARscBygdHB1GDgFIWUhaXEgCBxsA
- HQlGCxoHDhwbWSgPBQkBBEYLBwVIWEhaSFlcSFlbWEZaW1pGWlhfRltYSFBIWEhYSF5IWEhYSFhIWV5ICQMoARxFAwQBBg8NGkYMDUhYSFldSAkGDBEoAw0aBg0ERgca
- D0hYSFpZSAwEDQsABg0aKAoJEQQBChoNRgsHBUhYSFpcSAIHGwAdCUYLGgcOHBtZKA8FCQEERgsHBUhYSFpdSAQBBh0QRQEBBygeDw0aRgMNGgYNBEYHGg9IWEhZUEgG
- HQYHRhsJKAkGCQQHD0YLBwVIWA==
-X-FEAS-Client-IP: 130.232.207.30
-X-FE-Last-Public-Client-IP: 130.232.207.30
-X-FE-Policy-ID: 3:5:2:SYSTEM
-X-FE-Hostname: fortymile.utu.fi
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=utu.fi; s=out-utu-v3; c=relaxed/relaxed;
- h=mime-version:content-type:date:message-id:from:to:cc:subject:references;
- bh=Ge4JppD5tZ3m94duBlkRytI2wXpdAfMlxVq1gwuajRI=;
- b=Ta8wlLohWshmIOOIJydXCbqQu5petrhrWm36h5kCE7Vv42HdJzT2UzK6crTbabxWSJxafp8P6sSQ
-	vub8lod+ssoSo1GQdpAJct3UYhr14sl/+RSh6+1N2BBhHfy0jcPIJAOX1hIJoQL5C6wqrMOSTM4N
-	/BGyjEz0UvMulhyy23RzeVc0h8ZCnJ6m9N50accZ6EqcNfuCpVdlnrpo+rBbs5H8GasFn4boPB6M
-	QI5+LYfgNH3QU23d4fFEC0WTk6xwR3JdViuqKydYTU9xyWQXcf86pIf4fmVq0otJ6Z7tPn/SmX/q
-	2Kp0j8JltN/V+JZXfp8Hmkpo6364KqHAfgXW7Q==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261115014333.120063-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon Nov 2, 2026 at 12:10 PM EET, Joshua Crofts wrote:
-> On Mon, 2 Nov 2026 11:12:55 +0200
-> Jaakko Koivisto <jmatko@utu.fi> wrote:
->
->> Replace manual mutex_lock() and mutex_unlock() with RAII-style
->> guard(mutex)().
->>=20
->> Extend the lock in sgp40_measure_resistance_raw() to cover the
->> I2C send and receive cycle, preventing I/O-errors if the device
->> is currently running a command, or clobbering the output of a previous
->> command if a new command is issued during the sleep-period between
->> i2c_master_send() and i2c_master_recv().
->>=20
->> Signed-off-by: Jaakko Koivisto <jmatko@utu.fi>
->> ---
->>  drivers/iio/chemical/sgp40.c | 33 +++++++++++++--------------------
->>  1 file changed, 13 insertions(+), 20 deletions(-)
->>=20
->> diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
->> index 3a239fb6847f..080d51f9f53c 100644
->> --- a/drivers/iio/chemical/sgp40.c
->> +++ b/drivers/iio/chemical/sgp40.c
->> @@ -148,9 +148,8 @@ static int sgp40_calc_voc(struct sgp40_data *data, u=
-16 resistance_raw, int *voc)
->>  	u32 exp =3D 0;
->
-> + #include <linux/cleanup.h>
->
->>  	/* we calculate as a multiple of 16384 (2^14) */
->> -	mutex_lock(&data->lock);
->> +	guard(mutex)(&data->lock);
->
-> Blank lines around any guard() statement. You want to emphasize the fact
-> that guard is being utilized.
->
+On Sun, Nov 15, 2026 at 07:13:32AM +0530, Arnav Kapoor wrote:
+> On Thu, Nov 12, 2026 at 05:42:01PM +0200, Andy Shevchenko wrote:
+> > Now it looks better.
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> Thanks, Andy.
 
-Should this be applied also for guard() inside switch-case -blocks?
-The extra blank lines makes them look strange.
+You're welcome!
 
->>  	x =3D ((int)resistance_raw - data->res_calibbias) * 106;
->> -	mutex_unlock(&data->lock);
->
-> If only a segment of the code has to hold a lock it's better to use
-> scoped_guard() instead of regular guard().
->
+> Jonathan, a related question while this thread has the right people
+> on it: the Semtech SX9xxx proximity drivers (sx9310, sx9324, sx9360,
+> sx9500 and sx_common) have no MAINTAINERS entry, so get_maintainer.pl
+> only finds the IIO maintainers and reviewers for them.
+> 
+> I've been working through bugs in these drivers for the last few weeks
+> and would like to keep doing that. Would you be OK with a patch that
+> adds a "SEMTECH SX9XXX PROXIMITY SENSOR DRIVERS" entry with me as R:,
+> or M: if you'd prefer the drivers to have a maintainer?
+> Gwendal, as the author of most of this code, you'd be very welcome on
+> the entry too, if you want to be listed.
+> 
+> I don't have the hardware, so anything that needs a real device would
+> still need someone who has one.
 
-Will fix for v3.
+I believe for an M entry it's kinda implied that you get an HW to play with
+(at least one of the supported sensors by the driver in question).
 
->> =20
->>  	/* voc =3D 500 / (1 + e^x) */
->>  	exp =3D sgp40_exp(x, SGP40_CALC_POWER, 18);
->> @@ -172,7 +171,7 @@ static int sgp40_measure_resistance_raw(struct sgp40=
-_data *data, u16 *resistance
->>  	struct sgp40_tg_measure tg =3D {.command =3D {0x26, 0x0F}};
->>  	struct sgp40_tg_result tgres;
->> =20
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
