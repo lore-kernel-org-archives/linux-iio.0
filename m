@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793726;
-	b=K1HcTHEcLCBWJ+xaUJaXqhtvDKTGnQkdqqUdsCxHHWbRXMF7FZTvt1MrOblfu1y/JrEI
-	 YPaLuOXYJTf8y4Yl7zGcqaBleZft5mg//x+V1E7x6aBGhQL5bO4vksMDbt/TZPkQsrWk3
-	 UYEOdsDOgMQVPaZF9FR9mYbXTU8XyNZ5szEmqHc/i6SErEDDCsE4nu0dbbIwOAJBt1su7
-	 ZSjsERrhn3NVyjIiTI4+1h01CaoQf6HXvVf8C7x5GGGdabTFFyEHtFvawGpk+VVkynmrC
-	 Fau+QMOh80WgqDfaEBHh+0q8TBfxDZdlxHUyEW1KlbjvK2NJECWP8WO/kJg9RUDqz+A==
+	t=1794793733;
+	b=dSkL3oyjEWAI6Lhibi4tarXBfugo5GrzJH6KF7lXLuTwv3ngOZWlTLwHlhleCSXvQbEH
+	 Mlcr+KH6ClpRncjGMgBiMxRd9nueLiv54WgDx6uiG9xTpBdelyu6BMLdF5RRvT2IPQQij
+	 ddo05NmtsXZX+ySA99nYWdVXE0s/jsfNFZGt5h19t/UI5olMHZWn/IdAcu1Pr3OExTWzo
+	 nlDk3pi8av56cIVlfjIgDzXi0IKPB6ptGZzdreC15FwYnebSzVXdecvLMcIlyVB/3IuQa
+	 n2kjyYpZcewqwdYzR2Su0DtPx9iJGUHWSrMXWlVvqYVzXtep47N4TOHDPg0ax8aLYqA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793726;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793733;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=ywtOqJAsM2bjb8qlWKSfscVg6+9YAEeCvH9RDxo3V7w=;
-	b=a7suVyIBSRYSH0H79fdUVTvjjP0+t8hcgDnEDqKnrd7IqpyztIflpLyOmhjlooUmI8Qe
-	 nseygksnDvYnYeSw5VYeByBpX9kf2jmjhwsoFtdO15xeaylxZtywtHqWWN4z8kRH8VpLC
-	 r53hrqhllG/Eu3CA/tjt5Nl+17jjuDsqfg5f1oMEuYYNv9CBz734RDEE1oHOZN/zrjeyD
-	 I1yAdTLx8nG7ATFR9QLzg+Zt4f8+Dzv9Bj5RdtC1mk8a5tTeIU7z/2pRQgr+HfmaXjbRK
-	 CjLI9qqRqm0SGamcH0wOH9Z9yfCurssJ2LUURhFzTiQifSCBmArjroGGYF54m7zr7Rw==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=tp3wQadL3Gn2RoJEuSW9xzPxfsOsX8PEn9E9rJ60UzA=;
+	b=lXd/izCh/UaT1ssYjyCvXng18sy3Tin1nZiNlbCj+pjj51IYy36mxRmf7/dIiA9ZXcZA
+	 yeSdtmJ5tfqG27zHUnFflqFsO4L84JPwf7l4RclIbzPumpfrxA+YXIivxTqnuAa+JJOnD
+	 wV7K5lBCIgezjKFTexCzA9dLrgWwj+y8bHLdbK7uM4M0cRNL/OqFWCOqpQj+lxzVE/8Wc
+	 EM/Ad6rAKEsFNfjPSjE8dRiq9m66HsHSuyG4GtJqeE/q8EIGROnZd1t0pDcGLxkGti/yW
+	 xLPFk+8CQ+r38X6mMDYwVJLarY9Jkx6p+R9rcVBip6s8Mjt6BDpPPfkuCMSbnCC7cUA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IgWNSTzt;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PAPBCWb3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0091606A321;
-	Mon, 16 Nov 2026 01:48:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416D1606A329;
+	Mon, 16 Nov 2026 01:48:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IgWNSTzt
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D921F000C4;
-	Mon, 16 Nov 2026 01:48:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PAPBCWb3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D52DE1F000C5;
+	Mon, 16 Nov 2026 01:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793726;
-	bh=ywtOqJAsM2bjb8qlWKSfscVg6+9YAEeCvH9RDxo3V7w=;
-	h=From:To:Cc:Subject:Date;
-	b=IgWNSTzt8U8o5SeNtfglHcQRf0/mYnUGkt7aixsvfAMphxlG99RgV7XUSBqsxxggz
-	 fmT1UHdKIN+7OpwTjpem+hp3HY4aQIKTKxLPyaITqKOQZefM2RO7XOGeTOAjR6Api1
-	 DRngc6NcsWWsRh7YgOBpKAwNjdlOzjgp09XLoJhNzPFTRzC6jyBo3QAQWiKtBSZEZh
-	 mQadyZqhfyaVpzpZnl6K6qIoJV/TR45PS37xIhAeMJEosiF2q3MTuxwIm6gh9O78tw
-	 VRmU5exlPrrlHTyigmNZEG4jFj4QmQt1RkVrqLBBAeI9AXO3B0Xdmolsxq1xMRxzmR
-	 rZ3ZGjEsA1iVg==
+	s=k20260515; t=1794793732;
+	bh=tp3wQadL3Gn2RoJEuSW9xzPxfsOsX8PEn9E9rJ60UzA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=PAPBCWb3H6AWeemU2R8JOJ7TcRqeqXbYEfYC6wR1rqm+uYI2N6nL8DvectYmHDArW
+	 nRjrNmtSBOEUD7ORWaW1tXFHiE3blbPNiIu7kWI3MlFS4FIod5OXyQpUudDtJPxYtA
+	 Nh4PW8aBG1F9qm0xs05D+meuW+0llR06IekQEEMPb8gkhIToJzQFmE1KTwo1ynLNxX
+	 4w2PHbYFMKyjgzgr5ucdbqTF7xm3XCC394sg58i5DMLERodLjtZB66BvKP1iwfs5hR
+	 lIQ+ZfKFkcGLrZrYUj8HJBpxSlvz2ezE/LiygxjGvsMy5rRq/MTibTq7swYg2Uia9K
+	 eaLc6g0Tlgvlw==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,10 +72,12 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 00/35] iio: closing default trigger handling leaks
-Date: Mon, 16 Nov 2026 01:47:48 +0000
-Message-ID: <20261116014823.3132576-1-jic23@kernel.org>
+Subject: [PATCH 01/35] iio: core: add default_trigger and take reference in iio_device_register()
+Date: Mon, 16 Nov 2026 01:47:49 +0000
+Message-ID: <20261116014823.3132576-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
+In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
+References: <20261116014823.3132576-1-jic23@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,120 +91,135 @@ Content-Transfer-Encoding: 8bit
 
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
-Note this is compile tested only!  I definitely want a few people
-to test that I didn't break everything.
+Some drivers choose to set a default trigger in probe() via
+indio_dev->trig = iio_trigger_get(trig). The matching iio_trigger_put()
+is in iio_device_unregister_trigger_consumer(), called from
+iio_dev_release() only if indio_dev->modes includes one of the triggered
+modes. If probe() fails after the reference is taken but before
+INDIO_BUFFER_TRIGGERED is set (e.g. by iio_triggered_buffer_setup()),
+the reference is leaked. In devm managed flows there is no simple way
+for the driver to drop the reference on error.  Whilst it is possible
+to have enforce strict registration order so that the reference is
+only taken once conditions for tear down are met, the requirements are
+not intuitive. So move the point of reference acquire later in sequence
+to a point where cleanup will always happen.
 
-This is the first part of what I think is a long term solution to the
-currently really fragile ordering constraints around setting default
-triggers. Today these are set by iio_dev->trig = iio_trigger_get(trig).
-The reference is only released on the iio_dev.release callback and
-only if we have set the mode to include one that means there might be
-a trigger set. That mode set only occurs when a buffer is registered.
-Thus trigger release only works if we have already registered a buffer.
+Add struct iio_dev::default_trigger. Drivers then set this without taking
+a reference. The reference is instead taken in
+iio_device_register_trigger_consumer(), which pairs with the existing put
+under the same modes check, so they always balance.
 
-One solution would be to reorder so that the default trigger is always
-set after the buffer registration (we have had various recent proposed
-patches to do that for individual drivers) but that is non obvious and
-fragile.
+Also check the return value of iio_device_register_trigger_consumer(),
+add an error_unreg_trigger_consumer unwind path for failures that occur
+later in registration, and clear indio_dev->trig after the put so the
+subsequent call from iio_dev_release() does not drop it again.
 
-The solution here is easier to reason about. Decouple the setting
-of the default trigger from the acquisition of a reference. Thus
-we can acquire the reference in iio_device_register() when we know
-all the conditions for it's release have been achieved.
-So that's all we do in this part 1 series.
+Immutable triggers are a little more complex and left for a follow
+on patch.
 
-Part 2 will address immutable triggers and those that are effectively
-immutable but predate that logic. That is those that set a one to one
-relationship between device and trigger.  That change is rather less
-mechanical than this one and 35 patches is really a bit big anyway
-even if most of them are small!
+Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+---
+ drivers/iio/industrialio-core.c    | 15 ++++++++++++---
+ drivers/iio/industrialio-trigger.c | 21 ++++++++++++++++++---
+ include/linux/iio/iio.h            |  4 ++++
+ 3 files changed, 34 insertions(+), 6 deletions(-)
 
-Part 3 and beyond will move to a situation where the iio_dev->trig
-will become opaque. That should stop anyone manipulating that directly.
-I have a few related cunning plans to test out before we get to that,
-not because the particular challenge is hard, but because they will
-trample on the same code.
-
-Jonathan Cameron (35):
-  iio: core: add default_trigger and take reference in
-    iio_device_register()
-  media: pci: mgb4: use IIO default_trigger
-  iio: chemical: ens160: use default_trigger
-  iio: adc: ad4130: use default_trigger
-  iio: adc: ad4170-4: use default_trigger
-  iio: adc: ad7768-1: use default_trigger
-  iio: adc: ad7779: use default_trigger
-  iio: adc: ti-ads131e08: use default_trigger
-  iio: addac: ad74115: use default_trigger
-  iio: addac: ad74413r: use default_trigger
-  iio: temperature: tmp006: use default_trigger
-  iio: adc: ad4062: use default_trigger
-  iio: accel: bma220: use default_trigger
-  iio: accel: bma400: use default_trigger
-  iio: imu: smi330: use default_trigger
-  iio: light: acpi-als: use default_trigger
-  iio: chemical: scd30: use default_trigger
-  iio: accel: bma180: use default_trigger
-  iio: accel: kxcjk-1013: use default_trigger
-  iio: accel: mma8452: use default_trigger
-  iio: chemical: ccs811: use default_trigger
-  iio: pressure: mpl3115: use default_trigger
-  iio: common: st_sensors: use default_trigger
-  iio: common: hid-sensors: use default_trigger
-  iio: pressure: bmp280: use default_trigger
-  iio: light: vl6180: use default_trigger
-  iio: gyro: itg3200: use default_trigger
-  iio: imu: bmi160: use default_trigger
-  iio: accel: adxl355: use default_trigger
-  iio: gyro: adxrs290: use default_trigger
-  iio: accel: adxl372: use default_trigger
-  iio: light: si1145: use default_trigger
-  iio: adc: ti-tsc2046: use default_trigger
-  iio: accel: mxc4005: use default_trigger
-  iio: gyro: mpu3050: use default_trigger
-
- drivers/iio/accel/adxl355_core.c              | 19 ++++++++--------
- drivers/iio/accel/adxl372.c                   |  2 +-
- drivers/iio/accel/bma180.c                    |  2 +-
- drivers/iio/accel/bma220_core.c               |  2 +-
- drivers/iio/accel/bma400_core.c               |  2 +-
- drivers/iio/accel/kxcjk-1013.c                |  2 +-
- drivers/iio/accel/mma8452.c                   |  2 +-
- drivers/iio/accel/mxc4005.c                   |  2 +-
- drivers/iio/adc/ad4062.c                      |  2 +-
- drivers/iio/adc/ad4130.c                      |  2 +-
- drivers/iio/adc/ad4170-4.c                    |  2 +-
- drivers/iio/adc/ad7768-1.c                    |  2 +-
- drivers/iio/adc/ad7779.c                      | 20 ++++++++---------
- drivers/iio/adc/ti-ads131e08.c                |  2 +-
- drivers/iio/adc/ti-tsc2046.c                  |  3 +--
- drivers/iio/addac/ad74115.c                   |  2 +-
- drivers/iio/addac/ad74413r.c                  |  2 +-
- drivers/iio/chemical/ccs811.c                 |  2 +-
- drivers/iio/chemical/ens160_core.c            |  5 ++---
- drivers/iio/chemical/scd30_core.c             |  2 +-
- .../common/hid-sensors/hid-sensor-trigger.c   |  3 ++-
- .../common/st_sensors/st_sensors_trigger.c    |  2 +-
- drivers/iio/gyro/adxrs290.c                   | 19 ++++++++--------
- drivers/iio/gyro/itg3200_buffer.c             |  3 +--
- drivers/iio/gyro/mpu3050-core.c               |  2 +-
- drivers/iio/imu/bmi160/bmi160.h               |  1 -
- drivers/iio/imu/bmi160/bmi160_core.c          | 22 +++++++++----------
- drivers/iio/imu/smi330/smi330_core.c          |  3 +--
- drivers/iio/industrialio-core.c               | 15 ++++++++++---
- drivers/iio/industrialio-trigger.c            | 21 +++++++++++++++---
- drivers/iio/light/acpi-als.c                  |  2 +-
- drivers/iio/light/si1145.c                    |  5 +----
- drivers/iio/light/vl6180.c                    |  2 +-
- drivers/iio/pressure/bmp280-core.c            |  2 +-
- drivers/iio/pressure/mpl3115.c                |  2 +-
- drivers/iio/temperature/tmp006.c              | 22 +++++++++----------
- drivers/media/pci/mgb4/mgb4_trigger.c         |  2 +-
- include/linux/iio/iio.h                       |  4 ++++
- 38 files changed, 114 insertions(+), 97 deletions(-)
-
-
-base-commit: 94921bc9eb214f838481faa847cda5c42e486013
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index ed7aa7fd9391..6c704920d619 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -2180,8 +2180,14 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ 			"Failed to register event set\n");
+ 		goto error_free_sysfs;
+ 	}
+-	if (indio_dev->modes & INDIO_ALL_TRIGGERED_MODES)
+-		iio_device_register_trigger_consumer(indio_dev);
++	if (indio_dev->modes & INDIO_ALL_TRIGGERED_MODES) {
++		ret = iio_device_register_trigger_consumer(indio_dev);
++		if (ret) {
++			dev_err(indio_dev->dev.parent,
++				"Failed to register trigger consumer\n");
++			goto error_unreg_eventset;
++		}
++	}
+ 
+ 	if ((indio_dev->modes & INDIO_ALL_BUFFER_MODES) &&
+ 		indio_dev->setup_ops == NULL)
+@@ -2202,10 +2208,13 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ 
+ 	ret = cdev_device_add(&iio_dev_opaque->chrdev, &indio_dev->dev);
+ 	if (ret < 0)
+-		goto error_unreg_eventset;
++		goto error_unreg_trigger_consumer;
+ 
+ 	return 0;
+ 
++error_unreg_trigger_consumer:
++	if (indio_dev->modes & INDIO_ALL_TRIGGERED_MODES)
++		iio_device_unregister_trigger_consumer(indio_dev);
+ error_unreg_eventset:
+ 	iio_device_unregister_eventset(indio_dev);
+ error_free_sysfs:
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 76926fee0f84..a0149a5d0163 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -760,15 +760,30 @@ EXPORT_SYMBOL(iio_trigger_validate_own_device);
+ 
+ int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+ {
+-	return iio_device_register_sysfs_group(indio_dev,
+-					       &iio_trigger_consumer_attr_group);
++	int ret;
++
++	/* Drivers must not both set a default trigger and take a reference */
++	if (indio_dev->default_trigger && WARN_ON(indio_dev->trig))
++		return -EINVAL;
++
++	ret = iio_device_register_sysfs_group(indio_dev,
++					      &iio_trigger_consumer_attr_group);
++	if (ret)
++		return ret;
++
++	if (indio_dev->default_trigger)
++		indio_dev->trig = iio_trigger_get(indio_dev->default_trigger);
++
++	return 0;
+ }
+ 
+ void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
+ {
+ 	/* Clean up an associated but not attached trigger reference */
+-	if (indio_dev->trig)
++	if (indio_dev->trig) {
+ 		iio_trigger_put(indio_dev->trig);
++		indio_dev->trig = NULL;
++	}
+ }
+ 
+ int iio_device_suspend_triggering(struct iio_dev *indio_dev)
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 67718f3b9b7d..8b3fd7673293 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -632,6 +632,9 @@ struct iio_buffer_setup_ops {
+  * @active_scan_mask:	[INTERN] union of all scan masks requested by buffers
+  * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
+  * @trig:		[INTERN] current device trigger (buffer modes)
++ * @default_trigger:	[DRIVER] optional trigger to use by default. The driver
++ *			does not hold a reference to it; the IIO core takes
++ *			one in iio_device_register().
+  * @pollfunc:		[DRIVER] function run on trigger being received
+  * @pollfunc_event:	[DRIVER] function run on events trigger being received
+  * @channels:		[DRIVER] channel specification structure table
+@@ -657,6 +660,7 @@ struct iio_dev {
+ 	const unsigned long		*active_scan_mask;
+ 	bool				__private scan_timestamp;
+ 	struct iio_trigger		*trig;
++	struct iio_trigger		*default_trigger;
+ 	struct iio_poll_func		*pollfunc;
+ 	struct iio_poll_func		*pollfunc_event;
+ 
 -- 
 2.56.1
 
