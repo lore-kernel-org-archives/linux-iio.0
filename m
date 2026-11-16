@@ -1,101 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794782304;
-	b=A4fWiyIpWGbIFH4H2x1r0pMKucIU9qy17EVupHsGd37SgPLKxgSXAWJyEpHYQgs7+h5p
-	 jGZvKc3PwIKJUg2FrHA1oT6SDXsxUw+Fe6iIjN6reUZOk+EELlbG9U7mItImuTGfJyu01
-	 5/QcBXJAEjX42N8RwqMroB/aeVy3TJw0FQjkzVKlipqHlDLf3qmeIh6DC+vF4S6gzBuWy
-	 E7QpL5CtSn/gCYpoNC/IoAYU7/rjH3moJ4fCTAIxn3nZAaNbX1bak+n6RzikVA5y+JO0U
-	 uKh//jJ+iRXl2RUFs8CujZrk/EBDlQrBdCZDvVZafxDAzhn5T2b36aEOX8SufUSO5BA==
+	t=1794793726;
+	b=K1HcTHEcLCBWJ+xaUJaXqhtvDKTGnQkdqqUdsCxHHWbRXMF7FZTvt1MrOblfu1y/JrEI
+	 YPaLuOXYJTf8y4Yl7zGcqaBleZft5mg//x+V1E7x6aBGhQL5bO4vksMDbt/TZPkQsrWk3
+	 UYEOdsDOgMQVPaZF9FR9mYbXTU8XyNZ5szEmqHc/i6SErEDDCsE4nu0dbbIwOAJBt1su7
+	 ZSjsERrhn3NVyjIiTI4+1h01CaoQf6HXvVf8C7x5GGGdabTFFyEHtFvawGpk+VVkynmrC
+	 Fau+QMOh80WgqDfaEBHh+0q8TBfxDZdlxHUyEW1KlbjvK2NJECWP8WO/kJg9RUDqz+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794782304;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793726;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=jP2BTh7rVpWo9Im/wV5enbfenEoL6kTHcUKyx3s6YMc=;
-	b=bR1P9OVC+chkBJYDvJX8P/DWG4wnyQ1kezFXkYcvOjvalhg/wqJ6IAETqbMb9z4TERDb
-	 efg5Oo6WaWkxMQT0cm7xof0QkiZeMVqidF0hIlzXjS6+IYBkgR8QIAISWn2mUK07yXmC4
-	 XufbaE1Y0zIJgtByI7Q0vZBXchXwENQA/Ta7FeQTXGKbMEirN5BqS1B0T5AIcPYSDy17L
-	 KsYe/eqfKxkr7MKNLLYo9HDQDULGZ0Nx0svzrmRNqYr4Hbck9eii55X9mDJcpaxf088gD
-	 tIUfz+ZpqB9OZip4BgzShtjjACS2MUvppFKb5COoqKwEEzxjniLzC0j1HD9Ucr8NYZw==
+	bh=ywtOqJAsM2bjb8qlWKSfscVg6+9YAEeCvH9RDxo3V7w=;
+	b=a7suVyIBSRYSH0H79fdUVTvjjP0+t8hcgDnEDqKnrd7IqpyztIflpLyOmhjlooUmI8Qe
+	 nseygksnDvYnYeSw5VYeByBpX9kf2jmjhwsoFtdO15xeaylxZtywtHqWWN4z8kRH8VpLC
+	 r53hrqhllG/Eu3CA/tjt5Nl+17jjuDsqfg5f1oMEuYYNv9CBz734RDEE1oHOZN/zrjeyD
+	 I1yAdTLx8nG7ATFR9QLzg+Zt4f8+Dzv9Bj5RdtC1mk8a5tTeIU7z/2pRQgr+HfmaXjbRK
+	 CjLI9qqRqm0SGamcH0wOH9Z9yfCurssJ2LUURhFzTiQifSCBmArjroGGYF54m7zr7Rw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j3lG3ihj;
-	arc=none smtp.remote-ip=209.85.167.51
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IgWNSTzt;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F7B606A32F
-	for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 22:38:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D7F7B606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0091606A321;
+	Mon, 16 Nov 2026 01:48:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j3lG3ihj
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5c158c4c15fso3546938e87.1
-        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2026 14:38:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794782302; x=1795387102; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=jP2BTh7rVpWo9Im/wV5enbfenEoL6kTHcUKyx3s6YMc=;
-        b=j3lG3ihjCmXBRSjnJqfN6ORSYkKfksPwGSeBXneAiBHnDt/KFj6KriUjeYuN+YiuXs
-         K++zqwRNb760hiJ7UBo40cdx23MOLJ4f1kvArUpP358FKJPhYZk7Bw+6FmKzYG/w/DoI
-         8r9a+IiyvkRU8BR6uhKUMmLUIr0jnPUncUyY28/0J4JK6wSG7U3pVfMIkUgHCIX0nwPK
-         +/wlx0iNi7+k3XCyauiBMkhYq8F4xiN3Z8o/bjO2gC0c5fUQZvPVUY8ycrp/9hlbAzHg
-         xi35KmSe/ag7cDkawGFUCb/G4pQzByS0eb1GIxnoPwvB2Wmn9ylnYl6XRcMdnHAf6vdK
-         SDew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794782302; x=1795387102;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=jP2BTh7rVpWo9Im/wV5enbfenEoL6kTHcUKyx3s6YMc=;
-        b=KMtY5yerjWC7Ge4nEBkL+vDIzrn3DSF49g7Sq/b27VN5zurWs3LX2WyoiqkfwvSSko
-         Auh1SZgCDqVTbWYS2a91Qw+47/pM0v+7WyZIFvNCuC3pNQWcd56bl72OZHNQ7w2TwGl0
-         R5D2oDHzzTYFhoPIJXIPE1bgE1Xcp44moPHHJwuVFlp2t0DL2fG1W63CzX/HfNagmeUn
-         /gvpb7lP8wrPmrh8RW7GV2Rj7XdQCsuERbLOb9HoRB1HuAofCuM/d1wvmM8CabvMDxuW
-         S1nXAst10ZgGWkHA+HwmP3eL3w2UcGTNWo7M5XMGHSj10sFc0jWLJVogqXBFwPnaeSfE
-         RqHg==
-X-Forwarded-Encrypted: i=1; AL+hErFSuN9764p8K0UkI8ope3b7KLlmBNm67/axMrBKjfjUFcLXoZWFZCLwZrOMXGrUlYOW8WOU4dOW56g=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9fCKCm5zPMJkcorlTyULpTULBN+eJ9D0lG+X8Or/OtaEiUoKlh
-	2F/NyK4bPEBOHpupyrqKppxcXJEJ6a+jRYJmpTyUaHO6E5nCoJfI3FdC
-X-Gm-Gg: AYBFou367DykujxdQCZz4MxZxwqvV9qPCFW+xyw/9byu5P8TaUti518yVdd8O1xS4nw
-	yDCL8KtcAuhB7MU/PWiDghzUuSHkE3oKHOXCRBuDUn2AmXFMDKQ6c7uBsdBfP28c9mrorZ+4Ptg
-	N9G92ll1Q/p2SdZ3HIPbVOt08txdUklzhbGoGRL5F3WbHVCx/2VpfBaWxtF11BVkZix46+tn/03
-	m7A1b62sTXKElh+jlNfu9qIAozhvliTGzM/AY8MAE/9zbRE5gmbvYUD3kANB0xSE56gMQhtuEzY
-	nOnEPQ5f5FPyNMDit5X/DZYn8oHxV8XXghHC+aeGOO6U8q8hb1ismEdiLYEXGzML1ZjUEuQoKr0
-	GaFLTvldBozCPqMqVfE8unlLyJJsEbyEUTYunKWZloQviu7OqItloTJTFWQCtOKLCoIRyxmy+Lb
-	sps2Th7hFk/tt2ucWNoJoOBCf89f7ylKzbIKeayOOeyVcu1ARnPyDdYGjKlOpRU3ccC6rRLUkyu
-	ZskBq5b4OpXlbaH1Oumt1nYVtrW3tMWBqlOFgaDfG1dfy1q0WrvX/3u4fLXLnPW7tsbilxRUMls
-	s/pxDqZCQbjrLlBkYRyzeMG9zW82cEsNra+k5w239UKf8N/I4nkiKbru9vnf23TBmos60+8+giW
-	vQrQVM0rZx09G1Ql/uLwwpaUVP6eU/tU1wH9CFqI=
-X-Received: by 2002:ac2:4bd1:0:b0:5c1:4817:2c03 with SMTP id 2adb3069b0e04-5c164ebe9cdmr3717369e87.36.1794782301710;
-        Sun, 15 Nov 2026 14:38:21 -0800 (PST)
-Received: from yantra.. (nekmmqvelexmc8nt5ae-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:dce3:b876:6f6e:9706])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c171357477sm2759609e87.74.2026.11.15.14.38.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2026 14:38:21 -0800 (PST)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: jic23@kernel.org
-Cc: Andy Shevchenko <andy@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IgWNSTzt
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D921F000C4;
+	Mon, 16 Nov 2026 01:48:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794793726;
+	bh=ywtOqJAsM2bjb8qlWKSfscVg6+9YAEeCvH9RDxo3V7w=;
+	h=From:To:Cc:Subject:Date;
+	b=IgWNSTzt8U8o5SeNtfglHcQRf0/mYnUGkt7aixsvfAMphxlG99RgV7XUSBqsxxggz
+	 fmT1UHdKIN+7OpwTjpem+hp3HY4aQIKTKxLPyaITqKOQZefM2RO7XOGeTOAjR6Api1
+	 DRngc6NcsWWsRh7YgOBpKAwNjdlOzjgp09XLoJhNzPFTRzC6jyBo3QAQWiKtBSZEZh
+	 mQadyZqhfyaVpzpZnl6K6qIoJV/TR45PS37xIhAeMJEosiF2q3MTuxwIm6gh9O78tw
+	 VRmU5exlPrrlHTyigmNZEG4jFj4QmQt1RkVrqLBBAeI9AXO3B0Xdmolsxq1xMRxzmR
+	 rZ3ZGjEsA1iVg==
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Sashiko <sashiko-bot@kernel.org>,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: Re: [PATCH v2] iio: pressure: dps310: don't wait for new temperature in trigger handler
-Date: Mon, 16 Nov 2026 00:38:17 +0200
-Message-ID: <20261115223817.10568-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261115203150.7faed0b1@jic23-hlaptop>
-References: <20261113230241.82046-1-zoone.rupert@gmail.com> <20261114013817.476f8fb9@jic23-hlaptop> <20261114083525.11972-1-zoone.rupert@gmail.com> <20261115010203.2a939bd6@jic23-hlaptop> <20261115183949.11591-1-zoone.rupert@gmail.com> <20261115203150.7faed0b1@jic23-hlaptop>
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	Martin Tuma <martin.tuma@digiteqautomotive.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	linux-media@vger.kernel.org,
+	Gustavo Silva <gustavograzs@gmail.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Ramona Alexandra Nechita <ramona.nechita@analog.com>,
+	Tomislav Denis <tomislav.denis@avl.com>,
+	Jorge Marques <jorge.marques@analog.com>,
+	Petre Rodan <petre.rodan@subdimension.ro>,
+	Dan Robertson <dan@dlrobertson.com>,
+	Jianping Shen <Jianping.Shen@de.bosch.com>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Maxwell Doose <maxwell@maxwelld.cc>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Esben Haabendal <esben@geanix.com>,
+	Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Vasileios Amoiridis <vassilisamir@gmail.com>,
+	Abhash Jha <abhashkumarjha123@gmail.com>,
+	Puranjay Mohan <puranjay@kernel.org>,
+	Nishant Malpani <nish.malpani25@gmail.com>,
+	Oleksij Rempel <o.rempel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Subject: [PATCH 00/35] iio: closing default trigger handling leaks
+Date: Mon, 16 Nov 2026 01:47:48 +0000
+Message-ID: <20261116014823.3132576-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.56.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,19 +87,122 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Sun, 15 Nov 2026 20:34:11 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
-> That all sounds good.  I tried to apply it to the testing branch of iio.git
-> but I'm getting some build errors (+ a load of fuzz). I guess this
-> has dependencies that I'm missing?  If they are fixes, then I may just have
-> to wait until I can merge back into my tree (after they are upstream).
+Note this is compile tested only!  I definitely want a few people
+to test that I didn't break everything.
 
-No dependencies. It is based on fixes-togreg. On testing probe
-hunk no longer matches and with fuzz it lands in
-dps310_fifo_interval(). git am -3 gets it right there and it builds.
+This is the first part of what I think is a long term solution to the
+currently really fragile ordering constraints around setting default
+triggers. Today these are set by iio_dev->trig = iio_trigger_get(trig).
+The reference is only released on the iio_dev.release callback and
+only if we have set the mode to include one that means there might be
+a trigger set. That mode set only occurs when a buffer is registered.
+Thus trigger release only works if we have already registered a buffer.
 
-I can send a version on testing if that is easier.
+One solution would be to reorder so that the default trigger is always
+set after the buffer registration (we have had various recent proposed
+patches to do that for individual drivers) but that is non obvious and
+fragile.
 
-Thanks,
-Rupesh
+The solution here is easier to reason about. Decouple the setting
+of the default trigger from the acquisition of a reference. Thus
+we can acquire the reference in iio_device_register() when we know
+all the conditions for it's release have been achieved.
+So that's all we do in this part 1 series.
+
+Part 2 will address immutable triggers and those that are effectively
+immutable but predate that logic. That is those that set a one to one
+relationship between device and trigger.  That change is rather less
+mechanical than this one and 35 patches is really a bit big anyway
+even if most of them are small!
+
+Part 3 and beyond will move to a situation where the iio_dev->trig
+will become opaque. That should stop anyone manipulating that directly.
+I have a few related cunning plans to test out before we get to that,
+not because the particular challenge is hard, but because they will
+trample on the same code.
+
+Jonathan Cameron (35):
+  iio: core: add default_trigger and take reference in
+    iio_device_register()
+  media: pci: mgb4: use IIO default_trigger
+  iio: chemical: ens160: use default_trigger
+  iio: adc: ad4130: use default_trigger
+  iio: adc: ad4170-4: use default_trigger
+  iio: adc: ad7768-1: use default_trigger
+  iio: adc: ad7779: use default_trigger
+  iio: adc: ti-ads131e08: use default_trigger
+  iio: addac: ad74115: use default_trigger
+  iio: addac: ad74413r: use default_trigger
+  iio: temperature: tmp006: use default_trigger
+  iio: adc: ad4062: use default_trigger
+  iio: accel: bma220: use default_trigger
+  iio: accel: bma400: use default_trigger
+  iio: imu: smi330: use default_trigger
+  iio: light: acpi-als: use default_trigger
+  iio: chemical: scd30: use default_trigger
+  iio: accel: bma180: use default_trigger
+  iio: accel: kxcjk-1013: use default_trigger
+  iio: accel: mma8452: use default_trigger
+  iio: chemical: ccs811: use default_trigger
+  iio: pressure: mpl3115: use default_trigger
+  iio: common: st_sensors: use default_trigger
+  iio: common: hid-sensors: use default_trigger
+  iio: pressure: bmp280: use default_trigger
+  iio: light: vl6180: use default_trigger
+  iio: gyro: itg3200: use default_trigger
+  iio: imu: bmi160: use default_trigger
+  iio: accel: adxl355: use default_trigger
+  iio: gyro: adxrs290: use default_trigger
+  iio: accel: adxl372: use default_trigger
+  iio: light: si1145: use default_trigger
+  iio: adc: ti-tsc2046: use default_trigger
+  iio: accel: mxc4005: use default_trigger
+  iio: gyro: mpu3050: use default_trigger
+
+ drivers/iio/accel/adxl355_core.c              | 19 ++++++++--------
+ drivers/iio/accel/adxl372.c                   |  2 +-
+ drivers/iio/accel/bma180.c                    |  2 +-
+ drivers/iio/accel/bma220_core.c               |  2 +-
+ drivers/iio/accel/bma400_core.c               |  2 +-
+ drivers/iio/accel/kxcjk-1013.c                |  2 +-
+ drivers/iio/accel/mma8452.c                   |  2 +-
+ drivers/iio/accel/mxc4005.c                   |  2 +-
+ drivers/iio/adc/ad4062.c                      |  2 +-
+ drivers/iio/adc/ad4130.c                      |  2 +-
+ drivers/iio/adc/ad4170-4.c                    |  2 +-
+ drivers/iio/adc/ad7768-1.c                    |  2 +-
+ drivers/iio/adc/ad7779.c                      | 20 ++++++++---------
+ drivers/iio/adc/ti-ads131e08.c                |  2 +-
+ drivers/iio/adc/ti-tsc2046.c                  |  3 +--
+ drivers/iio/addac/ad74115.c                   |  2 +-
+ drivers/iio/addac/ad74413r.c                  |  2 +-
+ drivers/iio/chemical/ccs811.c                 |  2 +-
+ drivers/iio/chemical/ens160_core.c            |  5 ++---
+ drivers/iio/chemical/scd30_core.c             |  2 +-
+ .../common/hid-sensors/hid-sensor-trigger.c   |  3 ++-
+ .../common/st_sensors/st_sensors_trigger.c    |  2 +-
+ drivers/iio/gyro/adxrs290.c                   | 19 ++++++++--------
+ drivers/iio/gyro/itg3200_buffer.c             |  3 +--
+ drivers/iio/gyro/mpu3050-core.c               |  2 +-
+ drivers/iio/imu/bmi160/bmi160.h               |  1 -
+ drivers/iio/imu/bmi160/bmi160_core.c          | 22 +++++++++----------
+ drivers/iio/imu/smi330/smi330_core.c          |  3 +--
+ drivers/iio/industrialio-core.c               | 15 ++++++++++---
+ drivers/iio/industrialio-trigger.c            | 21 +++++++++++++++---
+ drivers/iio/light/acpi-als.c                  |  2 +-
+ drivers/iio/light/si1145.c                    |  5 +----
+ drivers/iio/light/vl6180.c                    |  2 +-
+ drivers/iio/pressure/bmp280-core.c            |  2 +-
+ drivers/iio/pressure/mpl3115.c                |  2 +-
+ drivers/iio/temperature/tmp006.c              | 22 +++++++++----------
+ drivers/media/pci/mgb4/mgb4_trigger.c         |  2 +-
+ include/linux/iio/iio.h                       |  4 ++++
+ 38 files changed, 114 insertions(+), 97 deletions(-)
+
+
+base-commit: 94921bc9eb214f838481faa847cda5c42e486013
+-- 
+2.56.1
+
