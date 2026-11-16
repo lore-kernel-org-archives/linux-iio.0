@@ -1,58 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794832045;
-	b=DanfBqPFpZkw95rvywfgEDOxn/+2iG2H1R7ZJot84zB1MUkW3hFeHSGZ+A06gUdSggYA
-	 I7SAqum6Ep0hcWu8x3rzhfbKP+CDKUonxLe538amlN/C0lU6521nUff9YSJK++BvWbfVV
-	 gtjY9v5HsqKUzF2ZdCC66tYXxxzVxD/+B0cF44LzE6vfjkObskH2MitGqMy+8lwL7yo7H
-	 KRHOpeb2WLXuXBhglb2SigMrUmgosXAx+TW1O65EIBpNdwalzrOwBpOAfoDZIOIWm2+3R
-	 cbv7w1q+qzrzdlIV7flLyH5HebYtliTOD1W2Qs/Rg4V2OQU3c6rihRHAX27g/+WK4jA==
+	t=1794832124;
+	b=x7wIEl0hf3OFVRaEfcfYhF9fORQB83/MJCkxPYBW3DyHosX03icvJtuJknrIJ9ZAAxrI
+	 8AtO/nbnP4VKqVqcqm3duCF9ZKI/rq8hE5gakBFThMNeqowAdIb0PRMhssW15/LF96bB8
+	 vBqBNDTQ+MLyXZrU9h2p+TfJTs/f6Zl3oohdZs/E6I1Httiuf14gKTOrCm/v+4hoTOkJe
+	 gZfFxI9T9DQj1hNRAi0w6OBDZ7vMXFeiosgjrhPm55Ls2oddgObnpT4hQiw6BRtuB/83E
+	 tTCQFxlPoEXqA5I4zr3/TSD+BWPZRVoBFJTEuVM2U9q4IQVW5GKqSGmnD9iq9+NYIbQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794832045;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794832124;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=e+MXT5G42ichN0VEZBqXRUEe1pc7/5RJl8z2YA8uggY=;
-	b=FfBv5x8Kwi86O6wdjIgkHSov9w7TQhd19z2dweMMqOXnF4QnrWVh4fCptJiYjrgYW0IG
-	 9Wd39BLrBglLlLm7yrvJvRt8T/IVDkr0Mb2w7+xkqACA/4gfAGjJW5jkBBrwkzyTXETmP
-	 Qa11Lv6agNe1P2eyZOPHcuFkkiKjZBMX11ucSeND5iVsp+SIvZ5BEJm+qy+ceVHw1JyVN
-	 XnpTg+kgRCR6HC+gScTsnc0/VHlucnlGs5punEMkEp1IotdDhAYV9JzeiOzUXNip2jJmI
-	 wOGOh85jm6jXXU+kMpBeEKUZ6cc5wCyKSuHPuDmd1VKVmJmyFaLh1NlKJRA2u8eLlTw==
+	bh=fwRQP7cKryYxbdezG2O16iT/PFMqteep/2pksLEIx6k=;
+	b=ehQoDEAxEJUUoMmjW4JjXaZWdJMZwd3rLAnlKIHHBN6CwhCGtRBR3w2zpB/7f/lW9FyM
+	 Aarov+uUP/MMqHVOhq6pmot5f5BJes6PT6K9F8Ip+Mqfe0qErsk3yT4ofAL/PPRp3qEv2
+	 TBW4l2/YysqaXKSOl3xSA/TLbVokPxaqnU5u/WvenTOEgHfkMItXTwCDD9nBtJHrI+C2p
+	 vlmFsUj0rsDCuml5hl8LrP/poL+y9jQ4NHc3cIvBVk+8jLWhWXo4TJvug5tRo7Ze+9Sgc
+	 ESbfrGtVtPXDwHM1yt7IT2GyHLEvg9ImTa9udRTg3Itt2PvWCQcsnNBzAUIu+M3B8JA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WPgOJ5oY;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eumIoxfG;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2877606A32A;
-	Mon, 16 Nov 2026 12:27:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB28B606A31C;
+	Mon, 16 Nov 2026 12:28:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WPgOJ5oY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E071F000C6;
-	Mon, 16 Nov 2026 12:27:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eumIoxfG
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64C4C1F000C4;
+	Mon, 16 Nov 2026 12:28:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794832044;
-	bh=e+MXT5G42ichN0VEZBqXRUEe1pc7/5RJl8z2YA8uggY=;
+	s=k20260515; t=1794832124;
+	bh=fwRQP7cKryYxbdezG2O16iT/PFMqteep/2pksLEIx6k=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=WPgOJ5oYivlHCrBMgmJ/+iUI8QDUenv567pO0kaLiMgZ4J1WZqZEEpuAoECboass9
-	 30GO6vP4s8UPYt7pcyd8NjurRl0gKMOy9feY4TgPeKgq/ZpdzkjqMRO1slxKcwqocm
-	 2P+xa1LTxDSSEC1/1NgTQOUJ3cslLylri5QSuJ6F5JhsSsHXbgj2qexOkXuIDB8QDO
-	 zcKopcc6pe7mBm7t0SelS4+ZT2jcXougqsy9cigZg72FATGTzD3WHBc5+IC23BGjr7
-	 VzXXJv0uJwY7WiCBJF106OVWwif1ipA6aEYAthWWc/EJbFQwJeGNEC79/pzCgWxk8G
-	 vzImZpZ8UUWbQ==
-Date: Mon, 16 Nov 2026 13:27:20 +0100
+	b=eumIoxfG9j9tRNg+4f/KkVH6NgbIRsjvPyTMbBWoo3aIlCKehQ3oka71EQsYUCN8X
+	 Gd6iJKrR+lmLNv5+mk1LJUeWqJqeYyn6+SyiA8niqSSB5miWqe9MeScmf/Ac/V7DO6
+	 k7rGLxWB8FYUjjTKse/ZK27LzMA/CYKp87lugWoZFc5B60UWy+EYYmlJxGvj3KneVC
+	 jqmVg6EVybxMJRVPuP/ievGZf2Ds89oslixPXpxFJ2cf/S6Ip1bSihl0Kb7EOgEcpm
+	 QgCuAkNdfDhET6mpepDk34dobf5On8F7tFFwCVIRbmYMkXM6f+ekGcd0kaeDCSuacY
+	 B3Gj/vofMJtJw==
+Date: Mon, 16 Nov 2026 13:28:38 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>, 
-	Jonathan Cameron <jic23@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Paulius Zaleckas <paulius.zaleckas@gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: pressure: infineon,dps310: Add
- interrupts
-Message-ID: <20261116-neon-spiffy-chipmunk-cc91ab@quoll>
-References: <20261114083828.18059-1-zoone.rupert@gmail.com>
- <20261114083828.18059-2-zoone.rupert@gmail.com>
+To: Akshat Chandra <notmissinge@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, andy@kernel.org, 
+	Lukasz Kulga <lukasz.kulga@gmail.com>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: chemical: Add Sensirion SGP41
+ binding
+Message-ID: <20261116-eager-loutish-moose-0fdcfb@quoll>
+References: <20261115055941.362185-1-notmissinge@gmail.com>
+ <20261115055941.362185-2-notmissinge@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,23 +63,66 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261114083828.18059-2-zoone.rupert@gmail.com>
+In-Reply-To: <20261115055941.362185-2-notmissinge@gmail.com>
 
-On Sat, Nov 14, 2026 at 10:38:27AM +0200, Rupesh Majhi wrote:
-> DPS310 signals new results and a full FIFO on its SDO pin. In I2C mode
-> the same pin sets the address LSB, and interrupt polarity must be the
-> opposite of how SDO is strapped.
+On Sun, Nov 15, 2026 at 11:29:39AM +0530, Akshat Chandra wrote:
+> Add a Device Tree binding for the Sensirion SGP41 VOC and NOx gas
+> sensor, including its VDD supply.
 > 
-> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+
+Few nits except Sashiko comments:
+
+A nit, subject: drop second/last, redundant "bindings". The
+"dt-bindings" prefix is already stating that these are bindings.
+See also:
+https://elixir.bootlin.com/linux/v7.1-rc7/source/Documentation/devicetree/bindings/submitting-patches.rst#L23
+
+> Signed-off-by: Akshat Chandra <notmissinge@gmail.com>
 > ---
-> v2: no change
+>  .../iio/chemical/sensirion,sgp41.yaml         | 43 +++++++++++++++++++
+>  1 file changed, 43 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,sgp41.yaml
 > 
-> Cc: Paulius Zaleckas <paulius.zaleckas@gmail.com>
-> 
->  .../bindings/iio/pressure/infineon,dps310.yaml         | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/sensirion,sgp41.yaml b/Documentation/devicetree/bindings/iio/chemical/sensirion,sgp41.yaml
+> new file mode 100644
+> index 000000000000..28528a695cf3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/chemical/sensirion,sgp41.yaml
+> @@ -0,0 +1,43 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/chemical/sensirion,sgp41.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Sensirion SGP41 VOC and NOx gas sensor
+> +
+> +maintainers:
+> +  - Akshat Chandra <notmissinge@gmail.com>
+> +
+> +description: |
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Do not need '|' unless you need to preserve formatting.
+
+> +  Sensirion SGP41 indoor air quality sensor measuring raw VOC and NOx
+> +  signals over I2C.
+> +
+> +properties:
+> +  compatible:
+> +    const: sensirion,sgp41
+> +
+> +  reg:
+> +    const: 0x59
+> +
+> +  vdd-supply: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vdd-supply
+
+Missing blank line.
+
 
 Best regards,
 Krzysztof
