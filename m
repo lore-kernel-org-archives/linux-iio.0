@@ -1,85 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794862422;
-	b=jbWJOvslgAIpWkQSDnijkVkojDb3vO727mf2Cr29Rwqb8n0e745GovvFSTlv5KzSt9rx
-	 VKTTOf2xf+Y6yfTTqpIvNrQgV5uKHoDcEotAVLjaBu/WmND2jR8V7mpvyEYk54421qpv9
-	 Fg1T0vfLJw9bAMoaXH39kuks/MoYC+x4hK5VCcRaS8xrgJSE811tnl217HcjiAjfnTyoS
-	 Hep8PkFpTgGxZAIE7raQr52/Zgo+ALnsZeKShaY6gUew1iJ+tAAUZhWmeT8l7a/zsGBc3
-	 MEFIVaw8WDqwGJLHPO8HdDoamQM0csFfwkJ4JMSJs1yG2RR4VuAk0QDA8IdCi5vc08w==
+	t=1794862428;
+	b=WNDIJkBCs65/CYE40lqtHXOPga/AzziERE6WLWEmvwzQncmJCYU23krfWQXAuEu45swq
+	 EYBWjKwih5Q+nowvCYVV0s4odFUVBY8pT/1zJRx273/9Qym53C9bCoULs5OGXknS8vwog
+	 KZCFoisiRL01IP+jLf2qV9Tz8cp1vdfRh+LQ3KhTu1LndZN2F/NDOH5k5h4Dng0lG4+HO
+	 Kz2N/nU0uJkyOCbcWwB8HNOECRNgXR00ufI7uVTcU+BPq5fgsrVfTh7+SIetXnmQysC6T
+	 pNWVlUU5uSLahMz8+vvP4GY7j3o+lNqIzX6JEwKKWcR3rqC9SGo+UrFoVVPVEr9lxAg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794862422;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794862428;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=et8BZDPK3IqwhJJygWhGMdcldXGkpkfpRn1M7UllLC8=;
-	b=vtszafQFESt+Iwdaj9pgRla5077TRaBi/It+xzIC7ZvPx7JcZVIkTnwD4GAk5B55atg7
-	 YlS/JON+noks9aqU5uBurlWLmX0GxAfLOHTVs3rZZjo78NHrsu4k1t+91V67KcN3GGSOG
-	 Z3vfcsYmbsCC71H5SbVP7Gi/stOviZj/VYngZs1fKALRfa0H5pQ0mpS4WrfGoGvQCraGz
-	 p1XaqDh5cupLG0oNI9souO9K/d+xcD1Cg+/h1tQwNkn+TF//i3M/77nH46ESqtkAvw1Jg
-	 zRjzhyyLE3zSRLF82wysGxLiXZZr0vUvxUnKV5MTUgXXrl4TqjY6Ssrb8p5NF3KaLJQ==
+	bh=lERwLl6L3SB+cW2u0pTxZJmstnyAKlq8LHXRUJrT0o4=;
+	b=3t1pscI6uHhPnMdJwA54L8Wn5lNoWv2n4L3PRXZgkgl8+TEjfQO58/laXaH5TVTXGTHZ
+	 gvXiDrvQkXg5KYrluMMymcE8kmE9YiR3TKes6XKesN41R6MnJcV1X7VdhI2+9wh+JcAoi
+	 eAazrwe+0K61NZKIGALckmKgMQYqGDMQZpt33m/JTThe7aeVSvZwZ5/Qp4PPc86hTSdmC
+	 y8ZOsYTD4sjn6h55SfEze1znaM/f8myn+r6RILe+D6EgCkhDtB0otGoQYRtb3GOrCKnMU
+	 otMLIkxbrV680qOBvYozTFM3j53+uDKEcSH/UyaxJQ3SVoI0ueuJCr9ADLzsuHVe6AQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zmpao8n3;
-	arc=none smtp.remote-ip=74.125.82.43
-Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=n6sTjwj4;
+	arc=none smtp.remote-ip=74.125.82.48
+Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32509606A322
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 20:53:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32509606A322
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C176606A330
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 20:53:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C176606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zmpao8n3
-Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-1b3ada81853so3594212c88.0
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 12:53:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=n6sTjwj4
+Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1b3ada81853so3594301c88.0
+        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 12:53:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794862421; x=1795467221; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794862427; x=1795467227; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=et8BZDPK3IqwhJJygWhGMdcldXGkpkfpRn1M7UllLC8=;
-        b=zmpao8n3WNOs4kj5j6g6PlfLwITwpUjUxRTaTPV2pqSkv5rzZ2LJMWIZyVeM3Bm90z
-         Wq8kumxBJnmunE+koK0CQN8uJogAyX2rNbAu39ZrrX5M/+nsjMPjqkEV2LWKyJKGeSTQ
-         A7qfZV3/Fkht06AwfGV2sRU9u2DxHR4GbQJQnbxIly/hEF1AeBvCNcquXNeAZYzRx8br
-         M6M1aQvDwYwWXfye6wSXJ790fl6qD17Ahwtv+vMn1j7imSlmI6b/Kc/PU2Gk5uVv31HF
-         j2BM0PLPH8cctkt091hBpw6dd1S2aewoyeD35Lkd1gj61K/pG8ovRNmIW4dcYIYeZfKf
-         UKZw==
+        bh=lERwLl6L3SB+cW2u0pTxZJmstnyAKlq8LHXRUJrT0o4=;
+        b=n6sTjwj4rgk+1fS9VfWSzK4SVhUEPnjiU+zeYTildALtOMi9u/kBGtcwgu9CCmANDD
+         N+Z0pEU7LWaNBrvKNNXPd8ckyhIrRWuuhVaZYStJCWAzQdf7RuBegp3UXjJAQ9xK8Lid
+         h6TwCvLCHX4R1CJ66H1sGaZr0uzDN+lrb41UgwgUumh+2LQivp6QmSHftQ8CQXcrdbm2
+         OycwRc19yNRBFD/8IB/6GcZjqsW1YYm/gn6mmz0F/dTUxg32GAcMDvuYJkaeQgN9jTVb
+         yGKuJ6u2R+MXPMksmyZB4gepvv+kO3uas+dfyBvVB39OXa1pXJmT0qL23VIfKgw9F+J4
+         ipGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794862421; x=1795467221;
+        d=1e100.net; s=20260707; t=1794862427; x=1795467227;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=et8BZDPK3IqwhJJygWhGMdcldXGkpkfpRn1M7UllLC8=;
-        b=yFyJNT1K7JKIBIs849B3VZS/MLIHz/wOEy0e0h3yz+XkJ5A6YxVhHSqzx0+BxN6wrp
-         ylfvtud/zt+qlcMErX263wl/Ol4V3kLSaVCtMqUNTDpjL/ms0ZgAq0/fgR2BgsBbPzA7
-         Rs5LSrA9CImmFuJM7taHeQe4p5jB6hWGT870TnSOrllqnT634I9cZEyBp23fljeE4uXE
-         jaFzwVYJcKsQrZG7XKGyK8PESjU3aDMVxL7xUY3dmVNjtR6nOQSj/pkuPfPgkkoh1+Q/
-         Km7ghNg+ZcnQGOA3glrCf0OzPRdNzV5NtbNg3QlMdsbhubeTIpczzIBs7BL1k2kAX6Qu
-         jHBQ==
-X-Forwarded-Encrypted: i=1; AL+hErHo4B9V5ZmZ0JGoaV2MLoUEgAHz1odBlrew6WbVvpderbdbpgsYBuVf6BL/19tdc6vOZZZ9dHdjqBo=@vger.kernel.org
-X-Gm-Message-State: APuU4Z957x/yTC5c5ZQHZrg0DfuSWPtiNFR2wQhj5FpGEB30hEttba7X
-	U2iiCTgWMRNBbmwiu/q2oXyFZBzXuQeKRFqzeLEYTYp8lx393rP1Hucy
-X-Gm-Gg: AYBFou2k1TnHl4yTc1KfXy72g35VOsyQx2TZ+K0iesRP7jdCUwDaZTU9klh6+UxrG/m
-	1b7z1gullXGSCNS7rSFLv74+7FNBJlGsWjKa01qtPlBM0UdbB9KP567XdMfpgfxQb7s1qKWc3mB
-	PXB4P9aTSg3lKBl5UJEUiXSs65cwRzyHPurzxP7nU61fZab6f4gpJwcmgKsD4izcrw5qY+bd5/o
-	zeQnLHCRi74OsTRs5vvP2ip1xvrJm+DrMsNiDB6pj0xFcq6wfJwvaYoFSA7weBcNqxoJN1lihOW
-	qLwwiprqyoR+wUKiz8WtHqWOIh5duSuR01e8Y191QHVjedvuUTZyfYSCmCItpKp0sE5N2Aaxp+Q
-	C1RDlvv89Na/45IY64AL7oAv/KY7t2sm/ruk3CCg0mfq9cDP30I/3Mp8TWycfactE3G+pKoqPoR
-	Rph25FgwsY6I5oina1d/3OvmORBanwRVqYfkELxW78Qmbr16GDxhfCV1BKEw/G04uARD/Ej0cQS
-	32+bS9w1GI7yfGDCbqF3NEVljaHNl/qp7uR457hSvs6YBV6h/S0uiUB8hdHsFRY1GrIF2DGUBSP
-	YspxGGKq5HSzT0GmULnlZs9qSp/tqK0ien8B8sL0epo6CUGRAkdbmvdXp1WRZw9d3qCvXp/+v62
-	66tHo4yIdPV7Rxhhy1lXdrfUpDX7fVO3VtKr7c09DxuVLVu/4L7apSnF9nUke6YmQ4hGe7Hv6O7
-	ZP9VUiv5oXZunJu8ynuTNLzTovI1a4ZOz6dm4ZPQXWHw==
-X-Received: by 2002:a05:701b:2608:b0:1b3:a22c:7f68 with SMTP id a92af1059eb24-1b50311d3d5mr9990641c88.29.1794862420977;
-        Mon, 16 Nov 2026 12:53:40 -0800 (PST)
+        bh=lERwLl6L3SB+cW2u0pTxZJmstnyAKlq8LHXRUJrT0o4=;
+        b=0d2phtxDhcjb/OSID09fg91rRbg9899ldq66lVE4gV5vg9Y3h0XzErn9jUPV+AgEP+
+         9nKLNQcxpvRvjckmeeohnlLJtef0iAWPrrnSK6d2rEuVlX8301FIWTfqGaVEk6k+Ouyv
+         1Jhbl1zd/a+uHMcsLi95Dm+8eAI580Qw7Ni/msI0WofGELqthOy2+3fZlXyWVb8GXWLB
+         r4GloJfHAFcLyKLa3RspORvIUgs+BbCywQiGHEBvmip7wWcXNFsorIcQTR/H3+0vt+TH
+         S22i75y3QNobdWoixogV5aQHkP/6f0ouVSdQhC7h83OfaAzMA+lb/GtmIifcQIkdXDQv
+         2oHA==
+X-Forwarded-Encrypted: i=1; AL+hErE1v88UqignOPYI4Tyer1pIC3evpzDaO1Ic7JqqwrmT41G4qsGt6CDu4w4uweqQNtzkLkO2UdlH0MI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/r884koMwrNGqUlCVQGjbzeK8ZPzPVn3BTdOlIgooq0Ws0A1YF
+	mA1k+gcBWIYqeoHq2UixQW/aJcrHpUm92gXpCZKN/hNpuxp2C/hocTYc
+X-Gm-Gg: AYBFou1SRyAn2blV9TPHv3jJgT8gUPGIpTsHTZT8h1YgmEsLCT+D8KFxwcO3pnDMpP9
+	0gUzlNdiEC8MZJVgq6qWtIU3epzoAhK/ReDdS0ysPmtOAFlp8iZKc+VnBm4d3fG4mcMZEnISA8E
+	xwXUuwaGLTu6iOseut+UMIxwuy8LfIuJph2qK+3Nl962ty+Hh4Un9R8DOf33rGONVcFkYUFl1pM
+	1Ksbs4q2wecwAU+LD4YiqxxD6xwkV+LZj3MAzCWFaYij8MMHBJ/1R9Bo/+OJ2e7qfOsZMLgdq0w
+	QNecJmyIHDL8vnUBCIVtTA9tvUtNdaaJKiuneaY1Ya6lTI9db9XAAytQfQgc/Qb6UXkV3fR9kG6
+	7bxSDSpVV+1+S7JLTp22gzZR5AM4+GGZ4hIcXFA+14NQ9NwF416etZ7CkoF0SLfI2trHjD0Tsua
+	tEFZL+Mj3P+oyjqscmasmfFUmyxMrT4X3nkzglGBnvBvTCZjvPW+3VzwKZg7+78fI1bSYhhW06/
+	bK42bQ5nI49vy3mxA9oEStvy9hmSXCoQDco2I+rD5mk+hpVa3WeHw+gUugvN/KlCn8J4T0ZdxRT
+	Ad0l8s9MAFMhcJlwr4aDjrmp2uXL08+K+wOsw7U2lvUF5dwx3Bdh28z/A/l6WVyPfhd7arVYGVW
+	PweBSXPfs0fgFaPnyXgrXdNw8nnMH/K3BY485teSv6BdMFG6xixF/bGV1aYorT775HnC/67ifuM
+	0w8sYgnGX5hFvg2EbLnkKaOMeT8LZ0lHJoKU1oXjoLIQ==
+X-Received: by 2002:a05:7022:3c01:b0:1b2:43ac:d3a3 with SMTP id a92af1059eb24-1b5031007b5mr9815178c88.24.1794862426641;
+        Mon, 16 Nov 2026 12:53:46 -0800 (PST)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b524049e0asm15293497c88.4.2026.11.16.12.53.37
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b524049e0asm15293497c88.4.2026.11.16.12.53.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 12:53:40 -0800 (PST)
+        Mon, 16 Nov 2026 12:53:46 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -91,9 +91,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH 2/6] iio: proximity: sx9324: fix proximity threshold writes
-Date: Tue, 17 Nov 2026 02:23:10 +0530
-Message-ID: <20261116205320.26070-3-kapoorarnav43@gmail.com>
+Subject: [PATCH 3/6] iio: proximity: sx9324: reject negative hysteresis values
+Date: Tue, 17 Nov 2026 02:23:11 +0530
+Message-ID: <20261116205320.26070-4-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261116205320.26070-1-kapoorarnav43@gmail.com>
 References: <20261116205320.26070-1-kapoorarnav43@gmail.com>
@@ -108,46 +108,32 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-sx9324_read_thresh() reports a PROX_THRESH code r as r for r <= 1 and as
-r * r / 2 otherwise, but sx9324_write_thresh() converts back with
-int_sqrt(2 * val). For odd r the read value is (r * r - 1) / 2, so
-writing back the value that was just read programs r - 1: setting the
-threshold to the value it already has lowers it, for 127 of the 256
-codes (3, 5, 7, ...).
-
-The int to unsigned int conversion also lets some negative values
-through: 2 * val wraps, so e.g. INT_MIN is written as 0 and values just
-above INT_MIN as small thresholds instead of being rejected.
-
-Reject negative values and use int_sqrt(2 * val + 1), which picks the
-largest code whose reported threshold does not exceed the requested
-value and makes read_thresh() and write_thresh() inverses of each
-other for all 256 codes.
+sx9324_write_hysteresis() copies the value into an unsigned int before
+comparing it with the threshold, so a negative value becomes a large
+one, passes the "val >= pthresh >> 2" check and sets the largest
+hysteresis instead of being rejected. Return -EINVAL for negative
+values.
 
 Fixes: 4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
- drivers/iio/proximity/sx9324.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/proximity/sx9324.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
-index 93f9577bbda7..39760c92552b 100644
+index 39760c92552b..9b7ac1d56e53 100644
 --- a/drivers/iio/proximity/sx9324.c
 +++ b/drivers/iio/proximity/sx9324.c
-@@ -617,8 +617,12 @@ static int sx9324_write_thresh(struct sx_common_data *data,
- 
- 	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
+@@ -638,6 +638,9 @@ static int sx9324_write_hysteresis(struct sx_common_data *data,
+ 	unsigned int hyst, val = _val;
+ 	int ret, pthresh;
  
 +	if (_val < 0)
 +		return -EINVAL;
 +
-+	/* Inverse of read_thresh(), so that writing back a read value is a no-op */
- 	if (val >= 1)
--		val = int_sqrt(2 * val);
-+		val = int_sqrt(2 * val + 1);
- 
- 	if (val > 0xff)
- 		return -EINVAL;
+ 	ret = sx9324_read_thresh(data, chan, &pthresh);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.53.0
 
