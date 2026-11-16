@@ -1,200 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.139.77
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794831531;
-	b=nCbHZ0nnNxQieVqrsu+goUmxhohC+xEPk0iMvxRemfIzrrU7Drh90pO+imP7cGSohyQx
-	 em8hAkLpje4zX8VwE9ctzFredaqJuvCFvaRJFTUZGNwj1bZO6olEPKcCIAjwX4NAh24Sa
-	 dkezgXE/3AGiIrtVdsfycgwioNk3N2Q6+3CPKNxAbroEFZ2Vn46Yfh+ZKlma7of+MwgJA
-	 x/M1y8+EQu1ize/Zjuk5D4zyiId3yqZn7AkSjiGIK76j1ZKoh0MaJDq5lQnYQxsP0QzW7
-	 Z5++z4s9NVyrP8HxlDZIjBGAjE98gZWlAhCBO4IkBUjaYn8HlGXs2joiKNT6GqOSPdQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794831531;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:From:To:CC:Subject:Thread-Topic:Thread-Index:Date:
-	 Message-ID:References:In-Reply-To:Accept-Language:Content-Language:
-	 X-MS-Has-Attach:X-MS-TNEF-Correlator:x-ms-publictraffictype:
-	 x-ms-traffictypediagnostic:x-ms-office365-filtering-correlation-id:
-	 x-ld-processed:x-ms-exchange-senderadcheck:
-	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
-	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
-	 x-ms-exchange-antispam-messagedata-chunkcount:
-	 x-ms-exchange-antispam-messagedata-0:
-	 x-ms-exchange-antispam-messagedata-1:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version:
-	 X-Exchange-RoutingPolicyChecked:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-originalarrivaltime:
-	 X-MS-Exchange-CrossTenant-fromentityheader:
-	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-	 X-MS-Exchange-CrossTenant-userprincipalname:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
-	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=Q102HdOr1bjq+z5hzVHQBppbK3mYmpKCbrogOIOtKmE=;
-	b=Dj5+E1VPHQw9mHgiIYgWQOhBhyuwtf2+qvcMHju1Vr/TvTq4XXqstptrYyNrf87IK/xW
-	 O9YE6hVy5IZt7GoCcbJBnBUwevaMyNrvjRr+cfDuIlpdNj+e53NZ9tuWjk2s0WU568wp7
-	 ljuIINh2+C66FIEbMqxwosgrvzbsMYMwXAfcX6W0YOZScSFQCRrqHJaqcVM2ho6FKHKlh
-	 fYRF9Jt5PmLcZdXtsntBRq1hYgL8gmDnIPXxX/9Sh2e+QhDsTwf5leETbzpRbPYKURryw
-	 ZFgefkkXiSdArt1xx8MDBamE+Ay5IQ7cgIALHXLv0O672sSjOhfPyJKwcb2F1YtVUAQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=rQkrsl77;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=VJMFNmkC;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.139.77
-Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794831659;
+	b=wMkHmWuRCKjuIb4HBZBn8KRqgpJb6418batOC+l4EIL8973DP22mxrsif/gqlsgfOU6O
+	 oIhxZHT8Gu0kpTd3YJq5rEQ0Fy2CntUTtE/1lX0Crxigo9HAp1NBLVcCvaM2xCiDnIlrA
+	 Bdfz7Q57uuA/P68YHoqn0pyfX76AO+fi4LTGpQElyII+liMzsv4bpsWcdwar08x/dvJc2
+	 uq/8r55JX3HX0iH3TkAY4Ef4XRk4SJx7cz8c9TX6sgu3xlpzsLYJhdD+kGgWi1/fYHy3k
+	 8QpGkG9ADzZBVgKn2PUuSF1N/ec9BO/GPseLpzO7S1wrpWKM0qLmmkJsAGkm+myWSQg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794831659;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=UCBtW4WNXnijqY2UrX0YzgH6qhTWYBzMablcvNyvWSo=;
+	b=suVcwk05JDUdTYvYw8BhTuLRMES431mbOoZciT0axXyfeCQLBfXKNEV7NjL4u2+ZDwBD
+	 zJs0Wi0Tw6/zH+ecS8xUhKn623nG1rk9s9VyY0XRZmWJ0ktVLdzG2LAIX3oXexa3h2A+2
+	 rUNo34jJLR+LUkgv6ExQd1TL8TBCJDYGU8xQ73WI2tBXU7SaUe1NdwY480z+hPLuWzTP+
+	 jrlx3ng1ZdGh4OzbEEB5bf2Iyr3Mbrl5FFoYl+SRGFJCU2ZCz3331/R9LEd86Rbl0VuId
+	 1wpanW7V3nhlElxV6lCARJdwq4dPXhbOKJ6L1H0EJpuVQ6rHCHE1oVYNes973jsqRRA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bIwZ6Z8t;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC059606A323;
-	Mon, 16 Nov 2026 12:18:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC059606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6416B606A31C;
+	Mon, 16 Nov 2026 12:20:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6416B606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=rQkrsl77;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=VJMFNmkC
-Received: from pps.filterd (m0516786.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AGBxSsL1596304;
-	Mon, 16 Nov 2026 07:18:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=Q102HdOr1bjq+z5hzVHQBppbK3mYmpKCbrogOIOtKmE=; b=rQkrsl7
-	7d4bilTqaF8ZR48MWJmpyXrlMO1sGq6Vdig2FIFksRGhFs++3FDp4VtKkN1QfJsD
-	KNoKVa2XB29UztZ4Dkq6i157rLFEnJhrQZThYV9qSF4kc5oaoTD3mj5lzTOBxfzM
-	hv3JrRG3MnVD+FohEBgTQnovozXEDQvlhae6LHIskK9blUFozg02xoUZBTJ3++OJ
-	GmzrvdC75gPhAXuAd9kYyizmMiuwg9v4qFJycD+ECuV3ZnUYBPsXAsy0JoNMD3fM
-	lhkYGcDiDVAfB+3jC3D2T9H3o6PSYfrmypc6EO02zebvD2abMKlXBjH55/PxDBiF
-	pbmy7wG853DMa4Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Q102H
-	dOr1bjq+z5hzVHQBppbK3mYmpKCbrogOIOtKmE=; b=VJMFNmkCgM6bsQ9LiZz1E
-	u0BPVSc5JbfkvYnNap63Vt5WoU4jyzqybccGPL+raABFpgNrF5WHRiSw+F9ox0gC
-	Vw/7VNqXSB84gv6uXnjz/QxlRVcFFrLYPi+U+WOudzChVUe4GNwu1etyfcyBftII
-	1sXibhP9rip1fYD3MY8GzbFCELEE9ZNjFGTpQZevUNqQSfD+b5XW4cSzOeA7GMCc
-	Wl3z5R/K3rzso7k5gXKOSQND1pAmut67pjEOALJbUqekObLRGaJspyikhGYhC3b2
-	WcDHjwX0r+KN6j06f24269m0mo3xkKi7BQHFpl0SzZ1V9oOTNyHapGEQ7n6+R0HK
-	g==
-Received: from ph0pr06cu001.outbound.protection.outlook.com (mail-westus3azon11011051.outbound.protection.outlook.com [40.107.208.51])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4hy94n58xy-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Mon, 16 Nov 2026 07:18:31 -0500 (EST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VnJaLAJ4Q+kThYlqrsYUK4Q7gAMKCixv+fhF/hjaYGchrvhTusJqh9A/ijGshmBgIr98d7BaedPNtBwvWO/X17DIgM1inm9NGJTf76tQbY4kYXwGvFw2nc7RYy33cCQIu1MxQO/6h/WYU5aQrfOIB82+ttulyqpkWK8DFV72cx9x7XLWdxifGl5KZ6gT8/WmH17VlsFcjAPobfEGahDfCBgV5sbPN/RhVUdsddehy+zJHUjSIcpslTnDDLLYr4Y9meoZJvAISlQU+bE3hVSiGl4LQOIEO++1eMqHdl04ib6TzBk6BCmLm97chpq095fqxW8MSTRwYdpFxxYldf3MWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q102HdOr1bjq+z5hzVHQBppbK3mYmpKCbrogOIOtKmE=;
- b=p2u2QXcc8loKKPp0iosq31ZE0UGGiefgtuuIfSRYR1WRYocIM7+yV8Ro+LDyL0b/l3WAnQjBp8IVJC3UPU0Sc9XMjAvhvu2uhMTAW+xy7QHuJvl3jIjfOGXw8VububTJI3qJGgty0HMXGdCxHGrgrF3jMvr/hQAczmUS/2O6KsjucWkOXHaeHcO0e6EGpk6pM78A6pIf5XquONP6i5F4ZSC372E/9CK2z36/qbezW5y8MQSoKEX3uTDBAswGyDubxLKimEnbVNPsrbBX4mohZ27tCXCbxvgM5YozkidVQ9mDeg+mJUvgIcFU+CnAuImVVQyR4UMtykZ51HQcJ6EzJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from LV9PR03MB8414.namprd03.prod.outlook.com (2603:10b6:408:367::23)
- by SJ2PR03MB7069.namprd03.prod.outlook.com (2603:10b6:a03:4fe::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Mon, 16 Nov
- 2026 12:18:27 +0000
-Received: from LV9PR03MB8414.namprd03.prod.outlook.com
- ([fe80::d661:7c16:d052:cc81]) by LV9PR03MB8414.namprd03.prod.outlook.com
- ([fe80::d661:7c16:d052:cc81%2]) with mapi id 15.21.0615.013; Mon, 16 Nov 2026
- 12:18:27 +0000
-From: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Radu Sabau via B4 Relay
-	<devnull+radu.sabau.analog.com@kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>,
-        "Sa, Nuno" <Nuno.Sa@analog.com>,
-        David
- Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Alexandru
- Ardelean <alexandru.ardelean@analog.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
-        "Budai, Robert"
-	<Robert.Budai@analog.com>,
-        "Gradinariu, Ramona"
-	<Ramona.Gradinariu@analog.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>,
-        linux <linux@analog.com>, Conor Dooley
-	<conor.dooley@microchip.com>
-Subject: RE: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
-Thread-Topic: [PATCH v6 0/8] iio: imu: Add support for the ADI ADIS16607
-Thread-Index: AQHdc2s9Qg3RNVIBC0mRongyWaIGSbcstm4AgAAG3ICAA6tY4IAAOXUA
-Date: Mon, 16 Nov 2026 12:18:27 +0000
-Message-ID:
- <LV9PR03MB84141F84CA155F8CDD2587FAF77C2@LV9PR03MB8414.namprd03.prod.outlook.com>
-References: <20261113-adis16607-v6-0-3f678719942a@analog.com>
-	<20261114002522.34f8aeff@jic23-hlaptop>
- <20261114004955.71c7ed7f@jic23-hlaptop>
- <LV9PR03MB8414D877E31EFC41535C9FF0F77C2@LV9PR03MB8414.namprd03.prod.outlook.com>
-In-Reply-To:
- <LV9PR03MB8414D877E31EFC41535C9FF0F77C2@LV9PR03MB8414.namprd03.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-GB
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analog.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: LV9PR03MB8414:EE_|SJ2PR03MB7069:EE_
-x-ms-office365-filtering-correlation-id: 920eaf9e-9f2f-49d9-7f5b-08df43dbb806
-x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|376014|7416014|10070799003|23010399003|38070700021|10067099003|11063799006|4143699003|56012099006|261021121427099003|261022075727099003|261021135927099003|261026140227099003|261026121527099003|261022105027099003|261028144727099003|261102123227099003|18002099003|22082099003|6133799003|3023799007;
-x-microsoft-antispam-message-info:
- EGk95j20eQRp7PwiCttEoLdnw7hMJ6EBV3r74qq9YewOQBwqzP+2/mh4qy1jNrbudMXOqPR50GryqwLiZdJOQjLkX4ZIGE0kT9dE8Yo6Zgcxt8HSTRw3m79YCzGGcf4PMZ/jTpVw33h9cozz4Q59J5k7vrx83WW101/dlt2MdzRaRPT/aspwUAH8DrvFozjSyK675uiQSqSeFF/Lc4wb+wAa6U5dm52ooMFW/9iK2uaylKd1rnQFZP4vZjitwZRi7yFxFCrF1EewElcNs3amYMskjRnoQBa5i8sB1wFiWjpuvA8zwa1u2F18uvDJW+rt0fo9t/fTC1/Iz0kmmdIFsEnSFxXgfmRxY4WY/++tLh/M5YJc2yHXd8odc+1pwK8vwSWmunGzKnIn6prJfIE/U82C4YoTKKzd6wRbOSZ2IX1+oOq7EQNQFFDj4UwjuXTJoNZCH44nnhOGs7stjiGiW8LJxnjebIn3xAovLgyQWNUVZ2RIwyv5eokxfPUuxggCyLCAikCzQa5uM4zzMN/ckBJuHKh7Z9BfLhmiTuyDdT6oLLKWr790SXIx6quSRtSkyEC6tZTSXpCqzG04bjC2IxqGPSIOzXYb8UjGepUrXtxByCwJ1sADTFHa57jF2Bc8838KOTxFz87OAOMisY9CvQNy/vOzXXtLL5PeQRT8SgvXgfOvpVKz/l5KFyOrqAZ9BY0VWn/sql/KRe7eIufL+Rt4SlWWmohn2kwLsKgs4SI=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV9PR03MB8414.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(10070799003)(23010399003)(38070700021)(10067099003)(11063799006)(4143699003)(56012099006)(261021121427099003)(261022075727099003)(261021135927099003)(261026140227099003)(261026121527099003)(261022105027099003)(261028144727099003)(261102123227099003)(18002099003)(22082099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?AipFY8rjGkek0dOIwX4nG7WiowTuXkJW0wJUiLDpxgEM0i7x3ttlqDPPNb7l?=
- =?us-ascii?Q?i0jHga2sVdfXaQAWUMjQkiMVVxwdrrOs9wLtIJfpiYWBVKYNkPPPAXqQ+YMJ?=
- =?us-ascii?Q?BnPf91qTWfgTAiuLPI3lYMWBnrqTOzGhwk6skjICgiW1OcY2BGwH9qWzpZuF?=
- =?us-ascii?Q?6PssmqBA98Q0sRDBzxa8YhNmW1hACIwTKErK5TMOCF/JeDerjR4Lb+BnQ/a0?=
- =?us-ascii?Q?dXNzzak7p80Z+5hV4KZmfohTo2/sDykvhTswxlWaUI68gSXikWKa/4svT3wC?=
- =?us-ascii?Q?bvqf5tLnKGqPhTlImiyrLpK6Jj2YvCq5WWbJP7KYWloRpBa8Y6kZKCc6F12V?=
- =?us-ascii?Q?c9DsJMHuwb8q4PjEHB9FItnwhZH8bbVFZtiGJRPuq2TkO2VmkNy/M0FWXCMH?=
- =?us-ascii?Q?Fn07nBGYk+9ZGMCM1xarnd0eONHRP/FCnm03fknUYVlluhfbKQUdb75TY4OM?=
- =?us-ascii?Q?BBGbD1iRNyXW0p+rceyUKNuzedjMsX6RegAnskvK5EpusvkmGb6RVncElsoe?=
- =?us-ascii?Q?HmCNnat3x8isqVDbbj31tJe0hL0p26An+dNAUocPPB0LpqMlRwCwNirVZHMw?=
- =?us-ascii?Q?Ay8/bjreO7pyq442aU/Rwn1cldM2gOvsmqgUdzw0v9iq1WG23YQWbrVYslO9?=
- =?us-ascii?Q?LFkOdvcDnqHqT9k4hvZvjyBWCUdnw97VUlGB6zaJ6vxTKIjWYkxK9KXRVsyN?=
- =?us-ascii?Q?MU78cSb68uYcbI3kFfdxGrCNrNKQPW6O++amloPna7PwQ5rCAa79wYennswo?=
- =?us-ascii?Q?E1NPydAJNM5bhkw0ExZZ/GTkbakjFbgQSXU5CQ5hlo9JEWYS0Psbqc1tDEs9?=
- =?us-ascii?Q?CG1T0KLlBpVDfsOQWDRCek89mXmthuSLHbeukuaowrxx7QO3J2oGKgWKRcwj?=
- =?us-ascii?Q?DzK6uC5Pekau/boGeHHP2ZWn+/A/42MkME75sATwAYHq6jKwKf/o0hxj01HR?=
- =?us-ascii?Q?HXQ8Iy0Y95vWy/34I9pcym5a/IfTfZ4RIZ2NUMcM4i+AM4p/RBu8fsnRxqYX?=
- =?us-ascii?Q?8dBmyZQ4P7TRJ5lagUT+pVSMOK2Y5CA1Tp8QaXp2o9nxqmIGpSDXBRSzIW+K?=
- =?us-ascii?Q?B3g/9aYTr/NLw6NaD05scTZXShxN0s+DMKRhKBPA+90sIdQwgWUkivQk0ZN8?=
- =?us-ascii?Q?DL41vcLu4gTVs0jfzbwLDlNl4hbInfab+pymv32mYlRIwGhNKfy8vNx9Kh0/?=
- =?us-ascii?Q?gL4wRw+Zth2H9Oz+GKpUYsAgNyVSPbKwIDeXY+k6UqBPkX8JfT1TasjQpuns?=
- =?us-ascii?Q?40N/IYw2W6AU/cri0/GbpA28sjmCWSRJ7TMjglXym0W3qscJF53CYtM7USoO?=
- =?us-ascii?Q?7vlT82swguTT7tkQEDqo3ip9C5m8aX3S9Fi1GfoXUZ/g/mvuseZsoxwG8fSp?=
- =?us-ascii?Q?jWy2cvRrbnavM40Wko0AwtqM7509MUYkZ3lDW8SHlCR71brisXoK3pxILs00?=
- =?us-ascii?Q?r2DOFqwrx3of2ieqWDtDlwAzukekmnl+OMstNHNGmcD+uLKtdBwWBTawExnN?=
- =?us-ascii?Q?aJX3fvE0IxYFME2QqM3TYqT5n7H59SciJWe6di5UqcAEaHP4j77Z5f4uhnwF?=
- =?us-ascii?Q?WI+aSYaiol3mDDOY5Yy7ijcUgeQan+0TwLbC90T+4+oCKSU1NbPnlekDzY/x?=
- =?us-ascii?Q?68N7Ge4MyJbHze97Wmxu4K5FGmaB1Ahin3Dky/OLIP4PrZe7Qmq1AWVdH+rk?=
- =?us-ascii?Q?2UfWDMTK4oNidYocXI5bJnD2c/QuwRPPhGME3tGKYk6ISCnL5WHQgZ0bCsAw?=
- =?us-ascii?Q?h5ln54tXoEW9BUZ0em2stODvKQwEIEZ8Avbp96scuq7g4i+dMMunr2F0ImED?=
-x-ms-exchange-antispam-messagedata-1: aqpxktLzPpGkEw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bIwZ6Z8t
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794831658; x=1826367658;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LMUfc6CH4MdDWm++pSdc8W4CjzPaIvkyeQVQxQQL2lM=;
+  b=bIwZ6Z8ttydv3vodUnApQIhfI4SLR9mZjVQPuPqrJux7yLao7s/dKd+p
+   epJ30LAvXWZjvKDDjOc3JIqsXccovST85UYYw8wuWNwkeTA/BXo3NEgPO
+   eOOanIDhEcMtxlXUEmaCfn/os89WS2wUUsGQAgEd6p6o7Fgcz+cfsu4mt
+   yTNrv8dM5BqkQ3/rs3ofq1i/EcpBgK3Y8ZYDKzeTSN1lnd8Go6B7ioQQ8
+   VShBnmMBunEQK5174PNn0/5x6iepgOTV9ceBJS3GVRc/xssyTZbcl/Cfx
+   bqKhzch4ygg7+1wOlxPGs8iWRVD9+tIAdUesSdxJGJ/0P89Lb+02BPNyG
+   g==;
+X-CSE-ConnectionGUID: nxDnBDzmQU+gWGH0FbAb1A==
+X-CSE-MsgGUID: 3jdzR2K+SLGoeqYHYqmFMA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3562558"
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="3562558"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 04:20:57 -0800
+X-CSE-ConnectionGUID: Q2b1Ky2PT+65bCPaveAyQw==
+X-CSE-MsgGUID: XbqK+JAZRmCF4Ok0bvgUdw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="11321924"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 04:20:52 -0800
+Date: Mon, 16 Nov 2026 14:20:50 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Akshat Chandra <notmissinge@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, andy@kernel.org,
+	Lukasz Kulga <lukasz.kulga@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: chemical: Add support for Sensirion SGP41
+Message-ID: <avr1IgExD8Rmt4eP@ashevche-desk.local>
+References: <20261115055941.362185-1-notmissinge@gmail.com>
+ <20261115055941.362185-3-notmissinge@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -204,109 +82,350 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked:
-	dR+MOWOXzYtc9zvN3mB3vdLy2+7Z0kZhM8hV9CcUCfFRT6DM0h6XZS3qklnqv3VAS31FAAvrBgMdVyMTqoY3UF9WphKQXBXOeS32x8JEF1vcbbJPuIXp7U0LU5N7rg/XWiEXRs9FkfCEh9V7mOw1RQwr7SXx2Xda2z8W699FNWlpm74YKO2ds1TQyBYNePSLTz3bOYxjzozm4lrO+tjojrur+BJedmhrJxG4jPaYtVBngcR0xouG5IRG+cWh4QoXaUBFfP5nca5Z04tNZfZartxKjnZNda8lJaJJ1N1GyChcI6PLGyTteUPLCoySRjn3GD7JJ35nSn7NC3QmZn+8Sg==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: LV9PR03MB8414.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 920eaf9e-9f2f-49d9-7f5b-08df43dbb806
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Nov 2026 12:18:27.3812
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1LTu/kvIro+0+Fo7rCxvhAozQZSUspD0JOBWQNKzSu5EbVRD6Nqih6nadQa3V5zmZGRFfW8Vnj/A6Kh+T8NB1w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR03MB7069
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTE2MDA0OCBTYWx0ZWRfX2vWAUX3gTWJF
- IMIy1pS3Bd198FDIdkHHFHmL75KUY7ZYuj4RJL6Gib441trjWAFnXjUc3qkewciZjejHfQUv8TF
- 3lOA5VPYXWBQADktrLhCa3PU8h5qfmii8NshmMmKoh8h2cG+cMvRQntXmWMXpg9P/By6zP9rblW
- oaqURoU/RBsofpZz6Wi0fSZpSW3+bmXuPIQKo4x8uiQbRufcoz1PBfzIJ29LIeu5H3zieJ0vYjC
- SPmmOxtnfP/IWO86V8HpU7W5AAa7J8TAUvap5l1wA/+iDr7uuqAMLqoV+XVZL/blwLmvEI7L5Ve
- /iGXY6Wbq9DYSW+Pl6VwnLmcKptxVB7Gq07asOiEwnSA0ysW9q8RsZoN4kYz2Gli83xJ4jZVaZe
- 62LoaZSxhVPq7KMdn87iiF8glPiUbDNmjJMtbivz9pTNQFO1H4kqdACypJ3/6yPKWIr7lKsVoke
- PQLzaxrxx2wT8OF5TaQ==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTE2MDA0OCBTYWx0ZWRfX0CNIESxxoLXQ
- 5pTuaVnKJEwdGan0sVyit3mAn9l1GUQ0qz1zeMCLYgaxIbeXPWZ7mijhIG0qalD9gxT3F7kNFhZ
- FV5nfvhcEFvDYNUkkV2hpiR9kw/sWI42qDM2uPxlcuvUH9PuTVIK
-X-Authority-Analysis: v=2.4 cv=WvK+otfv c=1 sm=1 tr=0 ts=6afaf497 cx=c_pps
- a=4ayr6ClP8xx6lw6zA/3NoQ==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=ZQxX5BWu6Z8IJBb2zLX7:22 a=q_CrZHE8tHj81X5FTsMA:9 a=CjuIK1q_8ugA:10
-X-Proofpoint-GUID: hbvqKm0sBKNN2DUEXEacM8c6DKJWoioc
-X-Proofpoint-ORIG-GUID: hbvqKm0sBKNN2DUEXEacM8c6DKJWoioc
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-16_04,2026-11-16_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 clxscore=1015 adultscore=0 lowpriorityscore=0
- impostorscore=0 bulkscore=0 suspectscore=0 malwarescore=0 phishscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
- definitions=main-2611160048
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261115055941.362185-3-notmissinge@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-
-
-> -----Original Message-----
-> From: Sabau, Radu bogdan
-> Sent: Monday, November 16, 2026 10:55 AM
+On Sun, Nov 15, 2026 at 11:29:40AM +0530, Akshat Chandra wrote:
+> Add a driver for the Sensirion SGP41 VOC and NOx gas sensor,
+> connected over I2C.
+> 
+> Expose raw VOC and NOx signals as resistance channels and
+> allow userspace to write temperature and relative humidity
+> compensation values.
+> 
+> Run sensor conditioning lazily before the first raw measurement.
+> Calculate an estimated VOC index and leave NOx-index calculation
+> to userspace.
 
 ...
 
-> > >
-> > > > This series adds support for the Analog Devices ADIS16607, a precis=
-ion
-> > > > MEMS IMU with triaxial gyroscope, triaxial accelerometer, and
-> > > > temperature sensor, communicating over a non-standard SPI Half-Dupl=
-ex
-> > > > protocol.
-> > >
-> > > Applied 1-5 to the testing branch of iio.git.
-> > >
-> > > I 'think' the proposed changes for the fifo handling shouldn't affect
-> > > those and I don't fancy reviewing a mega series with library changes
-> > > and the new device support.  So build on the base of these first 5 pa=
-tches.
-> > >
-> > > You will need to provide a base commit for dependency list though
-> > > or sashiko may get confused.
-> > >
-> > Change of plan. Dropped it over channel type issues in patch 5.
->=20
-> Thank you guys again for the review, and sorry about patch 5. I'll move t=
-he
-> scan_index/scan_type and the timestamp channel into the FIFO patch and
-> resend.
->=20
-> On the FIFO side: adis16475's has_fifo variants register an IIO trigger
-> today and are used through trigger/current_trigger. Converting them to a
-> trigger-less kfifo buffer, as discussed for the library, would remove
-> that attribute on the six ADIS1657x variants, so it is an ABI change on
-> existing devices. Is that acceptable to you?
->=20
-> If not, the alternative is a smaller fix in adislib: iio_trigger_poll_nes=
-ted()
-> for the has_fifo path, plus a prep patch taking the sample timestamp in
-> the handlers instead of pf->timestamp (the nested path does not run the
-> pollfunc top half). That keeps the ABI as is, and the adis16607 would
-> then use the adislib trigger path again.
+> +config SENSIRION_SGP41
+> +	tristate "Sensirion SGP41 gas sensor"
 
-Thinking about how to split this: sync and calibration bias do not depend
-on the FIFO, so I could resend the series as the adislib patches, the
-binding, the base driver (raw reads only), external clock sync and
-calibration bias, with no FIFO. Then a follow-up series with the FIFO.
-Would that work for you?
+Make sure this text is the same or quite similar to what is used in the top
+comment and MODULE_DESCRIPTION().
 
-For that follow-up I would still like to know which way you prefer to
-go for the adislib FIFO handling:
+> +	depends on I2C
+> +	select CRC8
+> +	help
+> +	  Say Y here to build I2C interface to support Sensirion SGP41 gas
+> +	  sensor
+> +
+> +	  To compile this driver as module, choose M here: the
+> +	  module will be called sgp41.
 
- - kfifo helper: a trigger-less kfifo buffer with its own threaded IRQ,
-   used by the adis16607 and the adis16475 FIFO variants. It removes the
-   trigger/current_trigger attribute on those variants, so it is an ABI
-   change.
- - iio_trigger_poll_nested(): a smaller fix in adislib for the has_fifo
-   path, plus a prep patch taking the sample timestamp in the handlers.
-   It keeps the ABI, and the adis16607 would use the trigger path again.
-   It is only two or three patches, so if you think it is the better
-   alternative it could also be done in this series.
+...
+
+> +/*
+> + * sgp41 - Support for Sensirion SGP41 Gas Sensor
+
+Avoid mentioning name file in the file.
+
+> + * Copyright (C) 2026 Akshat Chandra <notmissinge@gmail.com>
+> + *
+> + * I2C slave address: 0x59
+> + *
+> + * Datasheet can be found here:
+> + * https://www.sensirion.com/file/datasheet_sgp41
+> + *
+> + * There are two functionalities supported:
+> + *
+> + * 1) read raw logarithmic resistance value from sensor
+> + *    --> useful to pass it to the algorithm of the sensor vendor for
+> + *    measuring deteriorations and improvements of air quality.
+> + *    The values can be read from the in_resistance_voc_raw and
+> + *    in_resistance_nox_raw.
+> + *
+> + * 2) calculate an estimated VOC index (0 - 500) and expose it through
+> + *    the in_concentration_voc_input attribute.
+> + *
+> + *    The VOC index is calculated using the raw VOC resistance and a
+> + *    configurable calibration bias, exposed through
+> + *    in_resistance_voc_calibbias (default 30000).
+> + *
+> + * The driver does not calculate a NOx index.
+> + *
+> + * Conditioning runs before the first raw measurement, once per second
+> + * for a total of 10 seconds.
+> + *
+> + * Compensation values for relative humidity and temperature can be
+> + * configured through the corresponding output attributes.
+> + *
+> + * The sensor heater is turned off when the device is removed.
+> + */
+> +
+> +#include<linux/cleanup.h>
+
+Wrong indentation. Also note that you are supposed to follow IWYU principle,
+for instance bits.h is absent.
+
+> +#include <linux/crc8.h>
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+
+...
+
+> +struct sgp41_data {
+
+> +	struct device *dev;
+> +	struct i2c_client *client;
+
+One of them is redundant.
+
+> +	int rht;
+> +	int temp;
+> +
+> +	int voc_calibbias;
+> +
+> +	struct mutex lock; /* Protects sensor state and I2C transaction.*/
+> +	bool conditioned;
+> +	u8 condition_count; /*Counter for conditioning_cmd sent.*/
+
+All over the file you have an issues with indentation.
+
+> +};
+
+...
+
+> +struct sgp41_tg_measure {
+> +	u8 command[2];
+
+Is it really 2 independent bytes?
+
+> +	__be16 rht_ticks;
+> +	u8 rht_crc;
+> +	__be16 temp_ticks;
+> +	u8 temp_crc;
+
+This...
+
+> +} __packed;
+> +
+> +struct sgp41_tg_result {
+> +	__be16 voc_res_ticks;
+> +	u8 voc_res_crc;
+> +	__be16 nox_res_ticks;
+> +	u8 nox_res_crc;
+> +} __packed;
+
+...and this are the same. Why not to abstract?
+
+// find better names
+struct sgp41_result {
+	__be16 a_ticks;
+	u8 a_crc;
+	__be16 b_ticks;
+	u8 b_crc;
+} __packed;
+
+struct sgp41_tg_measure {
+	u8 command[2];
+	struct sgp41_result tg;
+} __packed;
+
+struct sgp41_tg_result {
+	struct sgp41_result tg;
+} __packed;
+
+(note, I don't know which approach is better, just a question)?
+
+...
+
+> +static u32 sgp41_exp(int exp, u32 power, u32 rounds)
+> +{
+> +	u32 x, y, xp;
+> +	u32 factorial, divider, xmax;
+> +	int sign = 1;
+> +	u32 i;
+> +
+> +	if (exp == 0) {
+> +		return 1 << power;
+> +	} else if (exp < 0) {
+> +		sign = -1;
+> +		exp *= -1;
+> +	}
+> +
+> +	xmax = 0x7FFFFFFF / exp;
+> +	x = exp;
+> +	xp = 1;
+> +	factorial = 1;
+> +	y = 1 << power;
+> +	divider = 0;
+> +
+> +	for (i = 1; i <= rounds; i++) {
+> +		xp *= x;
+> +		factorial *= i;
+> +		y += (xp >> divider) / factorial;
+> +		divider += power;
+> +		/* divide when next multiplication would overflow */
+> +		if (xp >= xmax) {
+> +			xp >>= power;
+> +			divider -= power;
+> +		}
+> +	}
+> +
+> +	if (sign == -1)
+> +		return (1 << (power * 2)) / y;
+> +	else
+> +		return y;
+> +}
+
+This really requires to get some comments to explain the math behind. Also we
+have intlog10(), rational_best_approximation(), and other nice math-related
+helpers. Can you check if anything may help you with this?
+
+...
+
+> +static void temp_rht_payload(struct sgp41_data *data,
+> +			     struct sgp41_tg_measure *tg)
+> +{
+> +	s64 ticks;
+> +	u16 ticks16;
+> +
+> +	ticks = div_s64((s64)data->rht * 65535, 100000);
+> +	ticks16 = (u16)clamp_t(s64, ticks, 0, 65535);
+> +	tg->rht_ticks = cpu_to_be16(ticks16);
+> +	tg->rht_crc = crc8(sgp41_crc8_table, (u8 *)&tg->rht_ticks, 2,
+> +			   SGP41_CRC8_INIT);
+> +
+> +	ticks = div_s64((s64)(data->temp + 45000) * 65535, 175000);
+> +	ticks16 = (u16)clamp_t(s64, ticks, 0, 65535);
+
+No _t variant. And why do you need a casting after that?
+
+> +	tg->temp_ticks = cpu_to_be16(ticks16);
+> +	tg->temp_crc = crc8(sgp41_crc8_table, (u8 *)&tg->temp_ticks, 2,
+> +			    SGP41_CRC8_INIT);
+> +}
+
+...
+
+> +static int sgp41_calc_voc(struct sgp41_data *data, u16 voc_raw, int *voc)
+> +{
+> +	int x;
+> +	u32 exp = 0;
+> +	int voc_calibbias;
+> +
+> +	/* we calculate as a multiple of 16384 (2^14) */
+> +	scoped_guard(mutex, &data->lock)
+> +		voc_calibbias = data->voc_calibbias;
+> +
+> +	x = ((int)voc_raw - voc_calibbias) * 106;
+
+Any type (signed or unsigned) shorter than int will be promoted to *signed*
+int, no need to have this casting.
+
+> +		/* voc = 500 / (1 + e^x) */
+> +	exp = sgp41_exp(x, SGP41_CALC_POWER, 18);
+
+Also look at nexp_u32() and sgp40 driver, perhaps we need to extract something
+nice to math library?
+
+> +	*voc = 500 * ((1 << (SGP41_CALC_POWER * 2)) / ((1 << SGP41_CALC_POWER) + exp));
+> +
+> +	dev_dbg(data->dev, "voc_raw: %d voc_calibbias: %d x: %d exp: %u voc: %d\n",
+> +		voc_raw, data->voc_calibbias, x, exp, *voc);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +static int sgp41_run_conditioning(struct sgp41_data *data)
+> +{
+> +	struct sgp41_tg_measure tg = {
+> +		.command = { 0x26, 0x12 },
+> +	};
+> +	int i;
+
+Why signed?
+
+> +	int ret;
+
+> +	for (i = 0; i < SGP41_COND_ITERATIONS; i++) {
+
+i is not used outside, hence
+
+	for (unsigned int i = 0; i < SGP41_COND_ITERATIONS; i++) {
+
+> +		if (data->condition_count!= i)
+> +			i = data->condition_count;
+> +
+> +		temp_rht_payload(data, &tg);
+> +		ret = i2c_master_send(data->client, (const char *)&tg,
+> +				      sizeof(tg));
+> +		if (ret != sizeof(tg)) {
+> +			dev_warn(data->dev,
+> +				 "i2c_master_send ret: %d sizeof: %zu\n",
+> +				 ret, sizeof(tg));
+> +			return ret < 0 ? ret : -EIO;
+> +		}
+
+Unnest the conditionals.
+
+> +		data->condition_count++;
+> +		msleep(50);
+
+> +		if (i != SGP41_COND_ITERATIONS - 1)
+> +			msleep(950);
+
+This is invariant to the loop, also, why so long? Each sleep (especially this
+long) must be explained.
+
+> +	}
+> +
+> +	data->conditioned = true;
+> +
+> +	return 0;
+> +}
+
+...
+
+> +		switch (chan->channel2) {
+> +		case IIO_MOD_VOC:
+> +			ret = sgp41_measure_raw(data, &voc_raw, &nox_raw);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret = sgp41_calc_voc(data, voc_raw, &voc);
+> +			if (ret)
+> +				return ret;
+
+> +			*val = voc / (1 << SGP41_CALC_POWER);
+
+			*val = voc >> SGP41_CALC_POWER;
+
+> +		/*
+> +		 * calculation should fit into integer, where:
+> +		 * voc <= (500 * 2^SGP41_CALC_POWER) = 8192000
+> +		 * (with SGP41_CALC_POWER = 14)
+> +		 */
+> +		*val2 = ((voc % (1 << SGP41_CALC_POWER)) * 244) /
+> +			(1 << (SGP41_CALC_POWER - 12));
+> +		dev_dbg(data->dev, "voc: %d val: %d.%06d\n",
+> +			voc, *val, *val2);
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +		default:
+> +			return -EINVAL;
+> +		}
+
+How many AI agents wrote this all crap?
+
+...
+
+I stop it here, this driver needs much more work. Please, don't rush, take your
+time to make it shiny first.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
