@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793849;
-	b=waE5cJCc50pXJGAw6FPkqvwGvxZgQvrAB+uXTaxz6Y5xRJRVSVBP0DuWVpFDtjL6Exoi
-	 5IJpAjsnVucrewvfhYAJAoRdqhblZOKejD0B3HtZqpSCyUIxqoWilw5Wf0hCreWGtIWHp
-	 i/nHiOkiFVbOtt9CnuPoND9lhQrZ3uR05CQd8RMi5Ps6GNoH1+8WZsSuoFyKldnYXOKFT
-	 vwDUgfRpdduGxkbp+xeC0nZ76tgEpc7oP8QMXMf/afqPabdpwGwjwmoA+dDkYhL3sUA9N
-	 z5TeyQ1qfCrRx4561MKPnwXgbOeHPI90Ye45i0nL6oQuSPPBjkt4wFqfpMeQJgW1wcw==
+	t=1794793845;
+	b=rrz3FMEIB0Q4tYoW+OUymmVqwqirjzoObbJ1hTXt0XTprHqkACN7YpIbaOdJTFGJB8Kl
+	 HXqDgjGIPi5MYp0vlisaaGRxe+he6yTJ1PUgeEvWKQqzSsAP+fYy8BVs79Ztw3pKqCtcg
+	 +f24K/eSkbH2dPH1a3rGFBWIwtclf47v9e1qltdOYGAkw2g86md5HyPv2JhVDn0LAkhQK
+	 PrXi4humrN5d1blwq6DBbB2E0iJ2xN1XCO73DwgihWiFW+g9/u2vU4kH1jng9UmluGsAt
+	 be7delNkZez+oslt+gi0JhkDa631pd8CE/aHgnRHUQZqjMUCIvSFNXcbxlngpepsPLw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793849;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793845;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=EDthb/j3v6LTX3qxnfQi48xFcZR5CX0H+dpvplf1gDg=;
-	b=08XiCQe8j2PkMrsFWCj5tJtb9Na+t8DE7St9qNBE8dctOXjcLl4Yx3Of72P7ypw+l8e6
-	 4LTZGkP8mN3+gag8NrxEn+4r33tGUKSTCwqI/jGldmw5Zxd9jpzRj/HWyCKe+NbdH6cL+
-	 icjnEgyTbqXyhllg5F7AHFoFT/UPQ977uqHvCNIJLxM358DPBEM5lNdAkTFT5LCC+Z5Mk
-	 FAkx5SfVySEgYxiwHYkXRcWJpkrT3Xmwm31TAsOCH6HX5mG+EzP3KRFQqiLMp/TK4Yofz
-	 DNT7QgeTPWS1nxvpLNr3l6RdNp0z8gpvDytRb0aUg0hS8PFlgaxShekw6BEXvhsPcbQ==
+	bh=hTR1yvwzc729C0DY1RPrs8AOb2jJEM2ENyRkMpYFTgw=;
+	b=YXWu8JKLTAkCLOVJaF/saqxyCoX1GYRDEKVq9DUxgIQ4SD6EtcVuwLQssF/lOf5Mmvds
+	 9QlI/VMyiFQAve1WWna36PUvENuNhIy1YDHH+QaeUhUQi5Dzs21BSRfrQ6MYxsPwb8Y+u
+	 5NfvXNptta2pFDTzWgq2KWx5O7kgAx87CXBGCZt8GNze6wmsnPk5w1gfpvvOMQqIaQ2YL
+	 ssGznG2KFlaR+AbVXyp3nd7UGRm81aacV6IJHgvGU+kW6TtIN3XCa8lUj87uv4mOLJzDD
+	 3a31tW6/B5jpRScMS8T9pOq98DWhJFsZDwDT4YllsfclF8A+4+ZT/AySyAcCwgINHQQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X1U++bNd;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y8lx6lQl;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 904E7606A338;
-	Mon, 16 Nov 2026 01:50:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E50C9606A321;
+	Mon, 16 Nov 2026 01:50:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=X1U++bNd
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D042B1F000CF;
-	Mon, 16 Nov 2026 01:50:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y8lx6lQl
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0778B1F000C4;
+	Mon, 16 Nov 2026 01:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793849;
-	bh=EDthb/j3v6LTX3qxnfQi48xFcZR5CX0H+dpvplf1gDg=;
+	s=k20260515; t=1794793844;
+	bh=hTR1yvwzc729C0DY1RPrs8AOb2jJEM2ENyRkMpYFTgw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=X1U++bNdAv3Oji935yE958c034sL8DS4WJupSBvZaVpyqJrBMZ0pP2taBsNZ3mIGR
-	 TjETI9UeH1pitlRlngX+iMHcgxvPft8a3Ic8FIxFZyM16xf0MVsXTN9Vaz3fvwZ8Bs
-	 4/gGNN4bwJi8Waij4vS52z8AFzNRBUyD3KcRq0pzaeeprwdGIvQ64t/wqD4macdF9e
-	 gEomSSHLrvyQzga/UnmVKoKQp8Q2hoYTTaCQ3fv5lkFDQpbEWb8OkYqxb/h+/LLxII
-	 fNgY0Fx+0S7kU0uqtQn8v0OzbhumYaKHpCAHsyItp3oLsmzenyrbfhy2HmqtaYfRv6
-	 8KD1Iy/2+ep9Q==
+	b=Y8lx6lQly7f5veLZXvq70nC2js+VUslZW8g8n1RxLZCYEPXgxpTOzwq0xe5JUJYEJ
+	 84Sszbtri+VkPS/3mDziSIxDHVW/RmOE7Z0lF1sfsitIfatD+z9wC9lrlHeniPB3QX
+	 TsAIaK0ghQ2l1/lKeM+U2kwH8nuXbFdB74Y7cYjUEA0ogWEtM9h/BzX+hhRHrLJPco
+	 QNvye90qxWmOvGLdpBkY+almHdXle6zNxBaVycyQoPQacetjKgdZeGoB7IE6kcG+Oy
+	 2fCXbzN6fa255NEwCcaD7NsHtYF/XIYSxJnGI7ZZ2jF53vo+Xkb2nf9CcYRiFQRQxh
+	 da7sf2ZHl7d9g==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 23/35] iio: common: st_sensors: use default_trigger
-Date: Mon, 16 Nov 2026 01:48:11 +0000
-Message-ID: <20261116014823.3132576-24-jic23@kernel.org>
+Subject: [PATCH 18/35] iio: accel: bma180: use default_trigger
+Date: Mon, 16 Nov 2026 01:48:06 +0000
+Message-ID: <20261116014823.3132576-19-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -92,36 +92,30 @@ Content-Transfer-Encoding: 8bit
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
 Set indio_dev->default_trigger rather than taking a reference to the
-trigger in st_sensors_allocate_trigger(). The IIO core now takes the
-reference during iio_device_register(), so it is not leaked if probe()
-fails after the trigger is set up.
+trigger in probe(). The IIO core now takes the reference during
+iio_device_register(), so it is not leaked if probe() fails after
+the trigger is set up. As well as closing that leak, this also makes
+the ordering a lot less fragile.
 
-All users (st_accel, st_gyro, st_magn and st_pressure) allocate the
-triggered buffer and trigger before calling devm_iio_device_register()
-and do not access indio_dev->trig before that point. The interrupt
-handlers are passed the trigger directly.
-
-The ordering is such in here that their is no leak today, but in general
-this change will make things less fragile going forwards.
-
+Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 2 +-
+ drivers/iio/accel/bma180.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index 7b3e9732cc3e..c450b1e2812d 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -219,7 +219,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
- 		dev_err(parent, "failed to register iio trigger.\n");
- 		return err;
- 	}
--	indio_dev->trig = iio_trigger_get(sdata->trig);
-+	indio_dev->default_trigger = sdata->trig;
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index e7dbbd4766dd..fb10e5c2897c 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -998,7 +998,7 @@ static int bma180_probe(struct i2c_client *client)
+ 		if (ret)
+ 			goto err_trigger_free;
  
- 	return 0;
- }
+-		indio_dev->trig = iio_trigger_get(data->trig);
++		indio_dev->default_trigger = data->trig;
+ 	}
+ 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
 -- 
 2.56.1
 
