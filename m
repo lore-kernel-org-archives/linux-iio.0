@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793853;
-	b=cVR1HevcmHTlmxLaI+zX/wgNWq8lQp8/voERtjLySjKnx6T2LClQbEtRB0BcRe2jvZDC
-	 vY3EoC3lZkPOkNQzv0IIgVX4Imtwsfz4xzJvI6HdoMW3suoSwthY6VleW9QYJ/r/L5F+F
-	 91gdsqgdBkfkRhUL5bYVeIwE12g/RILTU3Te0BsJxOG9Skf/yfB7ar05nDhYA1EVdVKRm
-	 /jrayu+G666TOx7LS48c493NJjnYyVv8yQlTVfCjZ+5PmhK2iJrRHND7IX3qbIlxZB7Os
-	 ieBENNQeTiBG/fpW9uiwLLclFnQnbXmMVs2hHk56+mmKh/qawsI0rW4XpqttbrzlWBQ==
+	t=1794793858;
+	b=nXVgW8/oXiHVMVFQRqX90w075vANx6OYsdvfecSXYusYJ25hqXvfKt58s5hA42m1A//4
+	 AYukRpq2D8TUUOCQS9GBPJAoZqvcfLwQjedzH6QjpFSTq0Cwz4+Yj5dSwCxweSFM5o9P2
+	 Z/bNpzUB68S5B+WadOSiI9dF3Vh/JqP82izwHflEawSFZZdAWDLzRjJBUFzplJjqTe6p5
+	 WpLEposOGbb9YR0wdOjBo45xe1jUaxTru//VPkT94mMNd+OJLQPjGNfusSvCwkV2KonTw
+	 7GofgyKwfO549pzM/CzXRboaNwS/7omuhuos8lndk+S3bytxr7H8PIHLhKhFY7jZ9yg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793853;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793858;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=B6KCe+IfaTxTcL1yex+HoKG7FtMVLlnwihy0XT1ygvU=;
-	b=JuEchFhOlFEsjVLtzxGxZFybrTMBLFPuYIt59SjaroGSxZq6SO82K8rHndNE4tYULSJO
-	 4rPfUO4DPjUCJPqjyWPJXAQUJQQxxzbLE18ZtKDyzp1I81GXz8U8BAIAiZWHeeo0ZEf9b
-	 82UpN2XA3w0G+JbS1/tqWuIbGomnKA4XS2W6JFyjvCXjo1bw/mvsGROu5QVkYJeaZarQF
-	 dVXO3r/hXab/PnEn7J+VWzVEXElb/6MEQaYuU51o5ka8CyF/QYyr3pRF0BUPwG1sRo3w1
-	 f1Tv1yzNo03KkUEKhduJC2+lVdQqvISkgET/Hymm9VH3hZbwUKX+lWwMeD5eMvngxTw==
+	bh=duWd/BYGrc/SgNO1yjiwxhebtQlS71yvSw6I6HGeNQQ=;
+	b=f2gqotXuXXNHsqkWndrsz5VYZ3aisKERLOdkszkbckbqMs/VPdsTJ4hPp+Rgx0o5ntAv
+	 lrUJ3W3ZhTKwyS4YE7MB75BfhUqDPA3krIFLhuAZP42hbyMzesC0w/CgL2zF3MryyiBch
+	 9aohti6aFKsU6kKW6E8DBBP1vAmSl8RCHSalwRg/QJ9ZtaN4xxyPN7+uHLco7FdLWS47g
+	 kPzmh8fwtEMOXNWlnVqBupEas7pzg9jAJYCLPs/AdiQ65TFRl5iIkxAuq19N8CoHzelY9
+	 t0g+041ZA4W3S+RdmxXzFti76qJSmO/i0zYKMvDinrE6RsiEdOkr9+RtfPzp1zGlE7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P8bjF3S3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="I7Fx4/M5";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B5D9606A896;
-	Mon, 16 Nov 2026 01:50:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DBC606A8B5;
+	Mon, 16 Nov 2026 01:50:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=P8bjF3S3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFCC1F00939;
-	Mon, 16 Nov 2026 01:50:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I7Fx4/M5
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CFE1F02803;
+	Mon, 16 Nov 2026 01:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793853;
-	bh=B6KCe+IfaTxTcL1yex+HoKG7FtMVLlnwihy0XT1ygvU=;
+	s=k20260515; t=1794793858;
+	bh=duWd/BYGrc/SgNO1yjiwxhebtQlS71yvSw6I6HGeNQQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=P8bjF3S3QW8RpZWqSMNhw/BZ2R5Q1rcGfYO07mvtvqMLCNltd5j2d53kQJHzMs6xQ
-	 ANOD6WaXabeJzwau5ufudSG/KLcdNp54V4uue+fUBQ5ap4N0U8D4dfxdFEusw5rLai
-	 bsg1cI/12xgoKsBpiHPt1iAPIjpPIeSqbYkpxLpegKGmLRSNvg84mQa4oQiBZ6HeLU
-	 p7NiE28QU4QoVedLwVMB+1NMqt79DxEqn38pbAUJ32CXfOf/p1WOiq0iW5alFE+kIo
-	 X1hQYRVKAWAa2lLs3rxAwrNW7a2XxDO4KYxsQAX0EYt1epoTmwlxnVlNbPx+Yh8h7Q
-	 KOklg/li9Cdzw==
+	b=I7Fx4/M5SNWErxbC5PG03L+nsDuhCEEfhQnwugK13Y2mo8PhpjDpu8tgPTlZAf/hM
+	 pJXkJU/UONbqlxsvspBGuIlVMitzRgXdEZEGPKEJ1F7pYtMEPiUpGWBf3KQ5vrSeug
+	 MjpR0wF5aDJ1mB2UJbwLhlkUOuristGR5rK4iryTwOi1QMHhtFyT3SR0zkPAs7UeKX
+	 xozwFg8WvmZ96R/kt10wpnOVgRLZhihP8CY/JfKSxSCSrNown6UAjuZJhPE7qT4Mef
+	 G4Ae07lioPBlJgmVTfD2xjH5pCX8iUraNoReMDs5ruFCkYSCLNiw30cO5VwSsUn5xw
+	 90Rl/uqepmksA==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 28/35] iio: imu: bmi160: use default_trigger
-Date: Mon, 16 Nov 2026 01:48:16 +0000
-Message-ID: <20261116014823.3132576-29-jic23@kernel.org>
+Subject: [PATCH 35/35] iio: gyro: mpu3050: use default_trigger
+Date: Mon, 16 Nov 2026 01:48:23 +0000
+Message-ID: <20261116014823.3132576-36-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -94,78 +94,28 @@ From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Set indio_dev->default_trigger rather than taking a reference to the
 trigger in probe(). The IIO core now takes the reference during
 iio_device_register(), so it is not leaked if probe() fails after
-the trigger is set up. This particular driver doesn't have that leak
-due to the specific ordering of calls. Hence this is just making
-things less fragile and enabling further rework on top.
-
-The copy of the trigger pointer in data->trig is only used during
-probe(), so replace it with a local variable.
+the trigger is set up. Whilst the ordering is such that there is
+no leak in here today, this will make the ordering less fragile
+going forwards.
 
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/imu/bmi160/bmi160.h      |  1 -
- drivers/iio/imu/bmi160/bmi160_core.c | 22 +++++++++++-----------
- 2 files changed, 11 insertions(+), 12 deletions(-)
+ drivers/iio/gyro/mpu3050-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
-index 629844c34f1a..1c4ce2e07b68 100644
---- a/drivers/iio/imu/bmi160/bmi160.h
-+++ b/drivers/iio/imu/bmi160/bmi160.h
-@@ -7,7 +7,6 @@
- 
- struct bmi160_data {
- 	struct regmap *regmap;
--	struct iio_trigger *trig;
- 	struct regulator_bulk_data supplies[2];
- 	struct iio_mount_matrix orientation;
- };
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index a27efa42e682..50007725f4cc 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -778,31 +778,31 @@ static const struct iio_trigger_ops bmi160_trigger_ops = {
- int bmi160_probe_trigger(struct iio_dev *indio_dev, int irq, u32 irq_type)
- {
- 	struct bmi160_data *data = iio_priv(indio_dev);
-+	struct iio_trigger *trig;
- 	int ret;
- 
--	data->trig = devm_iio_trigger_alloc(&indio_dev->dev, "%s-dev%d",
--					    indio_dev->name,
--					    iio_device_id(indio_dev));
--
--	if (data->trig == NULL)
-+	trig = devm_iio_trigger_alloc(&indio_dev->dev, "%s-dev%d",
-+				      indio_dev->name,
-+				      iio_device_id(indio_dev));
-+	if (!trig)
- 		return -ENOMEM;
- 
- 	ret = devm_request_irq(&indio_dev->dev, irq,
- 			       &iio_trigger_generic_data_rdy_poll,
- 			       irq_type | IRQF_NO_THREAD,
--			       "bmi160", data->trig);
-+			       "bmi160", trig);
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index 7fbd30068764..954164cefadf 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -1171,7 +1171,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
  	if (ret)
- 		return ret;
+ 		goto err_iio_trigger;
  
--	data->trig->dev.parent = regmap_get_device(data->regmap);
--	data->trig->ops = &bmi160_trigger_ops;
--	iio_trigger_set_drvdata(data->trig, indio_dev);
-+	trig->dev.parent = regmap_get_device(data->regmap);
-+	trig->ops = &bmi160_trigger_ops;
-+	iio_trigger_set_drvdata(trig, indio_dev);
- 
--	ret = devm_iio_trigger_register(&indio_dev->dev, data->trig);
-+	ret = devm_iio_trigger_register(&indio_dev->dev, trig);
- 	if (ret)
- 		return ret;
- 
--	indio_dev->trig = iio_trigger_get(data->trig);
-+	indio_dev->default_trigger = trig;
+-	indio_dev->trig = iio_trigger_get(mpu3050->trig);
++	indio_dev->default_trigger = mpu3050->trig;
  
  	return 0;
- }
+ 
 -- 
 2.56.1
 
