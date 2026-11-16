@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793858;
-	b=nXVgW8/oXiHVMVFQRqX90w075vANx6OYsdvfecSXYusYJ25hqXvfKt58s5hA42m1A//4
-	 AYukRpq2D8TUUOCQS9GBPJAoZqvcfLwQjedzH6QjpFSTq0Cwz4+Yj5dSwCxweSFM5o9P2
-	 Z/bNpzUB68S5B+WadOSiI9dF3Vh/JqP82izwHflEawSFZZdAWDLzRjJBUFzplJjqTe6p5
-	 WpLEposOGbb9YR0wdOjBo45xe1jUaxTru//VPkT94mMNd+OJLQPjGNfusSvCwkV2KonTw
-	 7GofgyKwfO549pzM/CzXRboaNwS/7omuhuos8lndk+S3bytxr7H8PIHLhKhFY7jZ9yg==
+	t=1794793854;
+	b=ImMCUf1Wl+vResUMk0wOlVwogqfVildzBWbZkts7PmeMFFgGKpOAB28rrM3/qXWm/ZP5
+	 +kuXjPU7O4BmP7K79P4ZptUbyyBa5rJQpxQeLYQyH0cGhVliUavDpdTPjBCHfMbeuTF7X
+	 5LtpZq9DcQjzvgxfD2MnUp6h8ZPoQTVWYVKCRhA66kUM2sYZn8SMnQ2GFP4Bu05OmBqPN
+	 U/yvdB+Jj3cCdr/p7lkhp7XgUF6AFfPIHNtp7HbOqf5GPMx+OmoDPbpLazncrRIovMZNO
+	 qIrjgqaWJTebUXSQQrgjtdRzCoJsfQi5ywyJBAUo347YkJq4PGteoeKQDvSYEu+7nOg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793858;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793854;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=duWd/BYGrc/SgNO1yjiwxhebtQlS71yvSw6I6HGeNQQ=;
-	b=f2gqotXuXXNHsqkWndrsz5VYZ3aisKERLOdkszkbckbqMs/VPdsTJ4hPp+Rgx0o5ntAv
-	 lrUJ3W3ZhTKwyS4YE7MB75BfhUqDPA3krIFLhuAZP42hbyMzesC0w/CgL2zF3MryyiBch
-	 9aohti6aFKsU6kKW6E8DBBP1vAmSl8RCHSalwRg/QJ9ZtaN4xxyPN7+uHLco7FdLWS47g
-	 kPzmh8fwtEMOXNWlnVqBupEas7pzg9jAJYCLPs/AdiQ65TFRl5iIkxAuq19N8CoHzelY9
-	 t0g+041ZA4W3S+RdmxXzFti76qJSmO/i0zYKMvDinrE6RsiEdOkr9+RtfPzp1zGlE7w==
+	bh=QjjANKyH2B04aoOQLB9RFscAuqij9MjBaHoeAmqnqeY=;
+	b=elA+V44iHdDtDKuYdgxs5vp1cMaZcOcnzhXWUjw7I96FbNHiO6Huthr937ZZ05sxCKea
+	 3xFoSkWbDCVWk9BvnwGM6PiDWvN34kedpyFZEYTCh1PIrs5Nk2X+mkkxF0jI7qrlgmJfy
+	 v7GI7mvhhD5rZHo6/z4VgsfrOoPuj41VtTKtnNNG8HhbXOXh9SkF2bBgaMHOQBlFXSEm/
+	 obtJ5lzkl7Aij8IFKCMVS+v5ZZc9ptvlGajb3C1OIR6DJ0WcOchDwMAPAW4sqcZkNyQ5l
+	 DgHM5f17ugRhbYpdOsnXeRImbKPbUwz7bSnRCq3I2wIeqZWYZ6zC0yu2mvq96f1aWbQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="I7Fx4/M5";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Fx/Szn9K";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DBC606A8B5;
-	Mon, 16 Nov 2026 01:50:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E68660A263C;
+	Mon, 16 Nov 2026 01:50:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I7Fx4/M5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CFE1F02803;
-	Mon, 16 Nov 2026 01:50:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fx/Szn9K
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487F01F000C6;
+	Mon, 16 Nov 2026 01:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793858;
-	bh=duWd/BYGrc/SgNO1yjiwxhebtQlS71yvSw6I6HGeNQQ=;
+	s=k20260515; t=1794793853;
+	bh=QjjANKyH2B04aoOQLB9RFscAuqij9MjBaHoeAmqnqeY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=I7Fx4/M5SNWErxbC5PG03L+nsDuhCEEfhQnwugK13Y2mo8PhpjDpu8tgPTlZAf/hM
-	 pJXkJU/UONbqlxsvspBGuIlVMitzRgXdEZEGPKEJ1F7pYtMEPiUpGWBf3KQ5vrSeug
-	 MjpR0wF5aDJ1mB2UJbwLhlkUOuristGR5rK4iryTwOi1QMHhtFyT3SR0zkPAs7UeKX
-	 xozwFg8WvmZ96R/kt10wpnOVgRLZhihP8CY/JfKSxSCSrNown6UAjuZJhPE7qT4Mef
-	 G4Ae07lioPBlJgmVTfD2xjH5pCX8iUraNoReMDs5ruFCkYSCLNiw30cO5VwSsUn5xw
-	 90Rl/uqepmksA==
+	b=Fx/Szn9K+O55WlhD4D7RUGINk+awqlzfAv1ueZy9nS6T2qxYuQ03EAaRQIqvp3Ymw
+	 UP6VIUXxdHYx8WcAAehdilHupCo+UgPaIhlISPaEx4wGCniHg8lRPOi5OBqJuXki/S
+	 effSUA2CFm73j9+VA7ICk4i0gMRYWYvQbb9m0aXhPvD4CHZby1lNyjfW1yC5NG+Zxy
+	 e7cK8pyfXQI8yxYNFqkFZMTXjuny1wiDRDPyvLOXIDIpCaal6YZXTX0iDETq6FrP99
+	 TqRMUVwSWyAjBoY3pBO2KZoxl6LcEPJCyxE5FEQrrrrs2c22Z5xfjo/qNQrVTXvIQu
+	 qLBg3zesnZlrw==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 35/35] iio: gyro: mpu3050: use default_trigger
-Date: Mon, 16 Nov 2026 01:48:23 +0000
-Message-ID: <20261116014823.3132576-36-jic23@kernel.org>
+Subject: [PATCH 29/35] iio: accel: adxl355: use default_trigger
+Date: Mon, 16 Nov 2026 01:48:17 +0000
+Message-ID: <20261116014823.3132576-30-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -92,30 +92,69 @@ Content-Transfer-Encoding: 8bit
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
 Set indio_dev->default_trigger rather than taking a reference to the
-trigger in probe(). The IIO core now takes the reference during
-iio_device_register(), so it is not leaked if probe() fails after
-the trigger is set up. Whilst the ordering is such that there is
-no leak in here today, this will make the ordering less fragile
-going forwards.
+trigger directly in probe(). The IIO core now takes the reference during
+iio_device_register(), so it is not leaked if probe() fails after the
+trigger is set up. The ordering in this particular driver is such that
+there is no leak, so this is just reducing fragility going forwards
+and enabling addition refactors on top.
+
+The copy of the trigger pointer in data->dready_trig is only used during
+probe(), so replace it with a local variable.
 
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/gyro/mpu3050-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/adxl355_core.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 7fbd30068764..954164cefadf 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1171,7 +1171,7 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
- 	if (ret)
- 		goto err_iio_trigger;
+diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+index 080c9f6f9a11..ff7e9fbdad77 100644
+--- a/drivers/iio/accel/adxl355_core.c
++++ b/drivers/iio/accel/adxl355_core.c
+@@ -227,7 +227,6 @@ struct adxl355_data {
+ 	enum adxl355_hpf_3db hpf_3db;
+ 	int calibbias[3];
+ 	int adxl355_hpf_3db_table[7][2];
+-	struct iio_trigger *dready_trig;
+ 	union {
+ 		u8 transf_buf[3];
+ 		struct {
+@@ -754,27 +753,27 @@ static const struct iio_chan_spec adxl355_channels[] = {
+ static int adxl355_probe_trigger(struct iio_dev *indio_dev, int irq)
+ {
+ 	struct adxl355_data *data = iio_priv(indio_dev);
++	struct iio_trigger *trig;
+ 	int ret;
  
--	indio_dev->trig = iio_trigger_get(mpu3050->trig);
-+	indio_dev->default_trigger = mpu3050->trig;
+-	data->dready_trig = devm_iio_trigger_alloc(data->dev, "%s-dev%d",
+-						   indio_dev->name,
+-						   iio_device_id(indio_dev));
+-	if (!data->dready_trig)
++	trig = devm_iio_trigger_alloc(data->dev, "%s-dev%d", indio_dev->name,
++				      iio_device_id(indio_dev));
++	if (!trig)
+ 		return -ENOMEM;
+ 
+-	data->dready_trig->ops = &adxl355_trigger_ops;
+-	iio_trigger_set_drvdata(data->dready_trig, indio_dev);
++	trig->ops = &adxl355_trigger_ops;
++	iio_trigger_set_drvdata(trig, indio_dev);
+ 
+ 	ret = devm_request_irq(data->dev, irq, &iio_trigger_generic_data_rdy_poll,
+-			       IRQF_NO_THREAD, "adxl355_irq", data->dready_trig);
++			       IRQF_NO_THREAD, "adxl355_irq", trig);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = devm_iio_trigger_register(data->dev, data->dready_trig);
++	ret = devm_iio_trigger_register(data->dev, trig);
+ 	if (ret)
+ 		return dev_err_probe(data->dev, ret, "iio trigger register failed\n");
+ 
+-	indio_dev->trig = iio_trigger_get(data->dready_trig);
++	indio_dev->default_trigger = trig;
  
  	return 0;
- 
+ }
 -- 
 2.56.1
 
