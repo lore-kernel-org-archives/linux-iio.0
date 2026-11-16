@@ -1,101 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.50
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794869477;
-	b=EJ+qNch4E6+TDYIQtiK7Cr2VUrLJadWB9aPi6mSG1RCcHwt89/pTlLfDytBJ6LBRr648
-	 zFB9DA93gBrsgcowoQJQF1sXraffJsuy+asRTdqWziTc6JFE3kZF/kWnHW6BIr557TQf8
-	 EPrDULp9zQt9wsmVWTP6Ff9gN2BPe43O+DabpUp+V1rrpGcF9upbzk0/KXrViZ+YUSTxM
-	 BoiZ/HZkE94s64zx21WDA05SVoxLaB3Yn/I2DuIy2wevs3kdyQLz/Ah7hxHf7be7/6O6W
-	 vAzvjKUmfcjbbr7/qXDd7NroQDDDY5q2/WXqJ4seMeSyzwbSW64blaNdYA8TYsEG4ng==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794869477;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=4R6GMf+N1WSGNe7ynv/fMp2cLGWJ15ixMnxyfrCx9Yw=;
-	b=LdYN78+zGQMJ9tcBLvfQ4lVFvBK0INhu9xbyyzOtfRN19+4nHJ9tpPDoO0ldRK2jjinx
-	 /1+X2GzzV5wp/ZhzIfBPqdWUWtY5IsjFcmgm4JoPbwz6hXtwU1ZPv5a1cMi6S1wsEfoOW
-	 ByfWRyyHzjCaVt/mGhQOi6eFT0GEsgcxRZd2WRS2k6zm/62J1nupTEMYaxVSNvDiHOTU1
-	 A7FoQQ+Z+tV76ueQ0FPj8H7LPdr7hSemu5UyjeAM1zQH4p9v9/9lBSFTW3HAyCLROdENF
-	 nz0OBS9SxzXse2Q+LmBR6++KakTfjwBTfBnJusLckLBmFDOPsEZHG/Nv+7LgkpKcz0g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.176
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794870009;
+	b=ynA3zrZv9PbRa9+TTKiYlTWpW4ADb96B7A64trvZAVme/q28L1zBp/qIHWWEKpCe3We/
+	 a9lR4tIRL9jOkZtszBTdKeJMtdUcg552edHuCy8X8HYdE7Xo0a2mQv+3dXg0dg8Favll/
+	 sIsOUVlqe5lqyxmHiXzA/pWIwhVHxGhMCPyDTrjDTcOLBMXa77G7tbPZo+07RqW2m0qKL
+	 13CW5aqEKLLq7PxJ2BCDzSQpSPeiuQG8bKWgMAtdNmPN9uEeZYWzN8o8US1kx0fpAWGxO
+	 OHUIqETop3YWZRwm/+LcR2OFbxvuNwXVBnqHTXOKyKXcJk/hv9Oj7XxwtEoZnsYz43w==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794870009;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
+	 X-Gm-Gg:X-Received:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer;
+	bh=WUolhYDZbslOOIbkyOEoOPPNwXhWzrlgPsJ43aUqTJk=;
+	b=woLuo6QrQek2VM0V7yr7rlRZD8+JKqtWhmRsBac5Jghc/5fkWltcz21h5j87tZZswJOA
+	 VwIkl90PEKCKisQYvcnpyJhmVQLcQ2JosuJ0xr05dUDSGhK8mgU8yAZ3MiIgbblOZ02Sp
+	 f6ZdtfETAIeWI0Zi1m3fnt9PA2x2T3PD2H7oA53Rj+fuMddhvsiCjtjjDZcWOlq0XNgHj
+	 qaoHnB7EAJUZqNqZD5uFLwQDrQ0kiDJecSHgyl1jVoZzuyH+3zY9qTmWJqHdH81sKU5v4
+	 0WsKw7hQakWdPVJG+SzF+A6gFpDGUZPWZY9+qBN4lEgh0I2GwT5824hazYcHV5iUb0A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=telaak.dev;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="kk/p/EUZ";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.50
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	arc=none smtp.remote-ip=209.85.128.176
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACED606A32F
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 22:51:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0ACED606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA00A606A323
+	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 23:00:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA00A606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=telaak.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=kk/p/EUZ
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5c14f7768acso3278180e87.3
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 14:51:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794869475; cv=none;
-        d=google.com; s=arc-20260327;
-        b=YsMpXaISsdK4LJOjVTvJzKlEmPtnljahWQa8kaf5kyxGvdbZ8YpelUyu0FanoLnXd4
-         nzR8Ui6oK8o3ngg/r73jFz5OrwzjniVJO1UFLYNvLh9BLPs9Mc+tc4pLRqrUoC8JK56/
-         FwtC1WwaLaSCPBBxYeXKX0HO/wrH1UzFlWQjq1G3KSkTi2kd7IQk1wUM4aRBBpnaQd78
-         fhpQsctXvEFsNHdWrJrcEa/Rs5M2DGFEcDLq/bvgWiuaVfDwM3KIxECgbAjth8yUrjBL
-         0bkfZKtMbJY+payI4zLLnDjcBvzCrk8oBKIxtxtrorSfQV1tGXGBHrXpj89tjPtfWwg+
-         FZRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=4R6GMf+N1WSGNe7ynv/fMp2cLGWJ15ixMnxyfrCx9Yw=;
-        fh=XsmMOGsKUN7fvE0cf6t3s6EeE3db1v7nYMheUJJltMQ=;
-        b=iDUee6Yaw1uI9zx+894oTPzT9hXxa7RAWrYUCzvv2elc9Y7dZXj2G/1cjQnflLFjWA
-         COzcAco4c82jddOa98kjaV33Z3KKPk9bPWot2NOlUAf/Ac/0NUa9ECsF0XKo/NAmmN9/
-         RT04+aINck4+OFordj+SF53Ly+idrOOZ3hxRpEy343w5p1uddVZcSOuaM/JceZcghnS5
-         eRkCSklLVda2Ov7Nfhq87NIHuMOrXaVmn6o0dAm+aQhlThsTUZOjNNFEMtv7ypGoAS1M
-         UXAQfeXaKlqLpWfvBjBuITpx/TLeCLnG8jzdfi0TYBG4QQjjebc1YifS/LP5KcQDo9gZ
-         UFfg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794869475; x=1795474275; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4R6GMf+N1WSGNe7ynv/fMp2cLGWJ15ixMnxyfrCx9Yw=;
-        b=kk/p/EUZ42VJ5YgKv1Wn3i+cPwj2SErCTRW7L793OJ0KFsNhCm9BuTgxw25M436hxE
-         V+gWlsQN7/eDt/WsiMaip+OKOnsd8INibpn5VjqY0nM8LEycYyq8fhFtSzsxtVa09VYI
-         mX1qReotK4FksPWQDUjL98HvDzHNaBfLnKgBYWSR17ox+RhuSN+LMYvEsxJvXJH2IUHW
-         BHmkCG2FVqHRuiswoAB0HnlpuNtJsPDeRalmZzkIGnNMdhEtE/lVhJyBu2SepnE9Dqzb
-         wC2kJSVYH3Y1/rbV6xzEoYbWB7cHhGoewD2w7T2axTp0Mv+VXe4PGlgaLvzVgchabuwg
-         wldQ==
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-8b4d6981c67so11763707b3.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 15:00:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794869475; x=1795474275;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4R6GMf+N1WSGNe7ynv/fMp2cLGWJ15ixMnxyfrCx9Yw=;
-        b=knWBLpdvmIuloCFSWRXyvnoDWqLt5QDKGbBxj6c7FjiArQn7v9Pcdlx+94vnV4G7la
-         54zmNG2/xylhK9ADOWGVMJus7EjZ+dj20sRDwFX2dqvMgRSA19Vav9OWhkb/BCnJNmRI
-         8pKOYAeUX5FzyUYCSBiOHAAi9xLA+Goum9sb1N3S7BZOMmvrgrIGZ6baVbBACU9nveXQ
-         yOLnl82hZ7CdOI/Cf6wrzh4UxBeHCcmOuaX57wiXZd7MkCaWWNnY/x3cWSAaLLcsSdf3
-         mMQv+FCCtQjltE7kArYkWTkNhYYVJkj1mRvwnBLBfrFnrIkSVkIU8bwS3Yks9SsSYLD1
-         o+XA==
-X-Forwarded-Encrypted: i=1; AL+hErGqqF+CmdX88Y+j87Sais9Za264UT/H7Ok4T/2GfyvMMSQqISoUzZsxNqhZwjvXiWl66KKJAzYbFaU=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8dfhRKAaK5UtTZvygFIJawT/77JDU8nQfSdytBbBCVaewwNhqv
-	5a4eViBtJ/VCaiP7bR+X37BMckdJIg4dchFnQJB4b8pvkTWa7dV72QYXePMgGVpfNqdlmtpQgvR
-	BGG6dlQTPbT9hHo0wr/uX6t1FAsLq7y4=
-X-Gm-Gg: AYBFou1pkFdWNjfYZeW+kEuKqWToFlz0cImihSDfvECtiLQV85DR3EQjCHUVRBWUS7P
-	WP6Nvk9y9dt0/TdN7MaRynazHrZn9sGzz5CbjLZ5/uleCQpM1Rg5MUIjo+axWL5PNLGfVzV2ucD
-	5WF000eQvorhSOlGVFj7TdaAOlmcfw34g/DqVen2wozlq2nddp13vvURSIhP/Ee61j1jGM/evku
-	SO5WGBK4WMBf+46RzLHGhtuKfHxKXlcDDyptfBcauiigy9nmxNekMcpEYc2HfZmeo05RaZK4/e/
-	xCix20CzrXJuSUTIC20UfulW37NyFV//0hWNRbsSbuqVpCJ3qp6pXzJugpFSF0BwIzAov/H3d9j
-	2pwCwMdzjqhsHMTY5Ck8+MmcLhDLVW4P4m4jINHAk53DFRcwVBF5VtzciuCQVwVD8yW6FyXn3Wo
-	RKiNZq3TL/BTHyzkLJHw8lkMVeug==
-X-Received: by 2002:a05:6512:31c3:b0:5c1:4f6f:564c with SMTP id
- 2adb3069b0e04-5c1709c5b64mr4475988e87.39.1794869474886; Mon, 16 Nov 2026
- 14:51:14 -0800 (PST)
+        d=1e100.net; s=20260707; t=1794870008; x=1795474808;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=WUolhYDZbslOOIbkyOEoOPPNwXhWzrlgPsJ43aUqTJk=;
+        b=Z1AdrFWcQWOkt/298PeKSmEbpsReUrWuCgZEJMCZY8/yCPQ1Z4XxT+Z/5EAVr1RbbB
+         65Ab38j5ujL0ySO0eJSlSwJUxmYVo7hW35sbivbjHdkONuIjJPYaAosfuD5B1mzeG82u
+         zkyUcL9hzosU8cfT4/qS9UIh92KWQaq4h56DFEkr9j527Ak6RoAjFUv7DVt9Q/Xzq7ES
+         h/SNL0TDGFPrZV0zwSTZqXBRnGU5SgjMvIwbw3bN1MEaanT6fuJ7u/qCQiAa6y82Jf1d
+         2MNgZUenRq9ekOfVMC9mtz/kpRwe35a90covSLzVQkv5TtiWp5AuXupIISVPnNEG5ZtA
+         QOPA==
+X-Gm-Message-State: APuU4Z+5W40s+eLQssNSITZ8KiOaO5tmlrMKKRLudgfrvRw4whErdcgh
+	9ClejsIHTrIzsynMpSyysxYNTkOp/GiyJshTpPo6gQvsMGmR+XLFPxV5
+X-Gm-Gg: AZFdTZfaYPzwGBSUbrDbVyHPDHSSuEw3/ISBY9MXIt0GSp1XrP3EhP0Vl65nTx+FKeR
+	4/q9dcQCZrncqV3bwCRuoxigcA5xdajEBrLCRX9LNc3JEL8RXdzKZEAqppncGg3vNY9YJhss1sV
+	NS2o0Gx18dtH5GRWV538JYQdEfHBLgwrMpZolfe+GEAMg4Rcelo2zrNRoijGYcYtJhe25Kqa/vR
+	BviSH5hud/ShUDF2sR6seeND/MMQq3gq0FXAeKAgmOdXRlgUjcMdsnYuxvNHy34tYRe+QBXDpx7
+	NmYh9bTqQmK4vmFYTSgot4n1xJbNHXvyDLZOQCKLm8NAeCnTFXj0ggwSMOndSVKjlocI0ALaYl6
+	PqqYvKHtJcSsc3XUoI68G3UXmlQRE2UP1ViuP5MG1EFGZ46EUlO9Dch0LgcP1uiK6JsIAFoYKB1
+	LHxUwlookm40ZMoDmjM/1DX6a0TuSeWrCVv2v4bLxEZtlgJz2yb3g5X7YpFCUYo7U1rbq8abcFo
+	sitYZwoapGdyuQ3HsF8QTl4zxs319Sy2PxptXqZ0T4qhCFEUnZU8VJA9w0EV2hxm5myUG1ILhPc
+	ZcQdTK6SJKwxFYA21r9fXjwT5KISQEctoFpMozw8KuDyCeoF+D30aC2MprqW2hEsjJPhjl/Uuy7
+	7IAILCf4Y1TPc1YXuL3ivyceeOltywrglZBKmIFX6x8H+9LJoyZmQIA==
+X-Received: by 2002:a05:690c:e3ed:b0:8b0:89ea:6aca with SMTP id 00721157ae682-8b4aa0d0116mr67609057b3.6.1794870007633;
+        Mon, 16 Nov 2026 15:00:07 -0800 (PST)
+Received: from 1.0.0.127.in-addr.arpa ([71.68.170.161])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4ebc50e40sm10721347b3.17.2026.11.16.15.00.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2026 15:00:06 -0800 (PST)
+From: Joseph Telaak <joseph@telaak.dev>
+Subject: [PATCH 0/5] iio: potentiometer: mcp4018: Add Analog Devices AD5246
+Date: Mon, 16 Nov 2026 17:59:49 -0500
+Message-Id: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,37 +76,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261116224803.61154-1-festevam@gmail.com> <20261116224803.61154-3-festevam@gmail.com>
-In-Reply-To: <20261116224803.61154-3-festevam@gmail.com>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Mon, 16 Nov 2026 19:51:01 -0300
-X-Gm-Features: Aa3M54oXe-IAn7x15degHvby6uCIkABaEwDsnl3MJEDi4r1Iu6Ak5t9VY_ssJ7s
-Message-ID: <CAOMZO5CPym+AYFLv7D-mAH+OQXL_83yForV3GaSk4ReT_x1HrQ@mail.gmail.com>
-Subject: Re: [PATCH v4 3/4] mfd: mxs-lradc: Pass parent IRQs to child drivers
-To: lee@kernel.org
-Cc: maz@kernel.org, andy@kernel.org, jic23@kernel.org, 
-	dmitry.torokhov@gmail.com, linux-input@vger.kernel.org, mfd@lists.linux.dev, 
-	linux-iio@vger.kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, devicetree@vger.kernel.org, imx@lists.linux.dev, 
-	stable@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAA/yXMQQ5AMBBA0avIrDUxVa24iligg7FAWkTSuLti+
+ Rb/B/DkmDxUSQBHJ3telwhME+indhlJsI0GmUmNiFowr6K1hVRalFblxqAsjTIQg83RwNc3q5v
+ f/uhm6vf3APf9AOCXSituAAAA
+X-Change-ID: 20261116-iio-ad5246-8d4377128747
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Peter Rosin <peda@lysator.liu.se>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Joseph Telaak <joseph@telaak.dev>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux@analog.com, devicetree@vger.kernel.org
+X-Mailer: b4 0.16.0
 
-On Mon, Nov 16, 2026 at 7:48=E2=80=AFPM Fabio Estevam <festevam@gmail.com> =
-wrote:
+The AD5246 is a 128-position I2C rheostat that speaks the MCP4017/18/19
+protocol. This series adds it to the mcp4018 driver, so it can be an IIO
+channel provider for an in-kernel consumer, here one that sets a fan's
+speed through the channel.
 
+Patch 1 moves the out_resistance*_raw_available ABI to the generic file,
+patch 2 reports the wiper range, patch 3 adds the binding, patch 4 turns
+on the vdd supply, and patch 5 adds the parts.
 
-> Changes since v4:
-> - Map the LRADC MMIO range once in the parent.
-> - Share lradc->base with both children.
-> - Remove duplicate child memory resources, preventing the unbind use-afte=
-r-free,
-> as reported by Sashiko:
-> https://sashiko.dev/#/patchset/20261110141934.42490-1-festevam@gmail.com?=
-part=3D2
+---
+Joseph Telaak (5):
+      iio: ABI: Move out_resistance_raw_available to sysfs-bus-iio
+      iio: potentiometer: mcp4018: Report the available wiper positions
+      dt-bindings: iio: potentiometer: Add Analog Devices AD5246
+      iio: potentiometer: mcp4018: Turn on the vdd supply
+      iio: potentiometer: mcp4018: Add Analog Devices AD5246
 
-Sorry, the correct URL is:
+ Documentation/ABI/testing/sysfs-bus-iio            |  9 ++++
+ .../testing/sysfs-bus-iio-potentiometer-mcp4531    |  8 ---
+ .../bindings/iio/potentiometer/adi,ad5246.yaml     | 54 ++++++++++++++++++++
+ MAINTAINERS                                        |  2 +-
+ drivers/iio/potentiometer/Kconfig                  |  6 +--
+ drivers/iio/potentiometer/mcp4018.c                | 59 +++++++++++++++++++---
+ 6 files changed, 120 insertions(+), 18 deletions(-)
+---
+base-commit: 94921bc9eb214f838481faa847cda5c42e486013
+change-id: 20261116-iio-ad5246-8d4377128747
 
-https://sashiko.dev/#/patchset/20261113013212.470981-1-festevam@gmail.com?p=
-art=3D2
+Best regards,
+--  
+Joseph Telaak <joseph@telaak.dev>
+
