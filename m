@@ -1,54 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794824059;
-	b=0OlhTBj4N1gLdJskxW1Rbwt2LpQnvXjl7e0dta24UllNFViZVVpu2/d3eajJsXeEcaus
-	 7OCOGfCc8wvmjltesj3YZceqrnNOkRVsq82w1nLiTsaGKB3h5JcXCHStDZ4dsbHbuiJr7
-	 SYFlFHX/Ki6XL4jfi6ddIJslkloqhPYDIwiNMKeuiEo392hFDbWByItUS2C5LTsCZcHPt
-	 eDdF/igjXbGUhfUt9WwSSe+Gpxgrp72v89bLtgDKrbsCzZwyvO8qr+gDywdP89dJK5fe2
-	 86d5QzwiK679FW9RwszlD5V6r7e+D3F7APvnDy+GB+Z1UOkt94ilekYOb5FD1CPOwgg==
+	t=1794826109;
+	b=G9VgE/QPNTfah1VDMgpRi6WEugrdvzA5Mcxm0i1vZeJJMDTV+Rs5oVQ7w5dlSwvrwxGG
+	 /mlo8Mz1GMfk4OR6GS9CafoasBppRWATeA7zqnRKVj+lUXw+ivFe9pmV4cIFV89f6WmUY
+	 nQAYqqEoNgRiuWfmUDdNdeu0fztCFtSRP9r27YDGrJ/i4BmwECZXJqFEXswMky4WWa0HH
+	 ne49SnaZxEWnSqYTuqVzYnnA08qJYMDsnoKftZgpEwqSuzdm8ze1KLwc3LadV47uFTC/M
+	 w8heB3tVxshGTWm5Zc9Zn+pQA1zIk7yPeRpYMxdUDlGmp1cVD05KpTH4Nd9KdGq7x3w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794824059;
-	h=Received:DKIM-Signature:Received:X-Gm-Message-State:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:
-	 X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=BZzHsumxcgOWtim9VqzUNbgAn5hXsFY8z0Dp1dc6OzQ=;
-	b=LPGNC0b+lCjsQUIcqVqmYcHuXPUlKNiXCSqVdnXkx5fG8Ew8j0kBYrxSqZXoLQrzXi/8
-	 KqVvI5VoU3RGniMslrPPdMiPPL28IAmDpb2/GwydQCp6T6Tp3Rzp3PdFrbmKT7nhqpM84
-	 zqx+lf1j4hC6oknLkh9u7ntj5NrnBrj2n4CqsOL2VsX2bfpm67UQxqXkFxsNgD3H/Jelt
-	 TD+A4uCQ4lBMMe/EiuEd/M8A0fOYgPbTi0SQbEAXXv712cVGi8k2BG3GrbyD49X+DXNQE
-	 7tC51A84Yo/g7ywfJQ1i0lIsZ8efTGDtjwvE7BxMoAPJjPCYIhb+064hUHlosc/bjhw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794826109;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=8RXywwsZ9AZmLU1zClqzYGdbInCCuXneMgvMDOLwy/M=;
+	b=mAX1awtrxdOTESU9bH5gApQACMaxdQa3PYroEJGemHaGCj8RvvopOGzU5GmQDS/nOR7R
+	 2hGWsUZPNW7b17mvc3Kzankynkhv4EK5PkPNR6iyNPHNZ626Vh4bFGLcBs+LhloM5Ywfn
+	 y6+LwSH0iUWWOnQvGdxfEoYxxbPaig8loVi0VRlD1WT6Z5iDbLkOZobkKY8VJF7yX1ide
+	 6QAYQ/5MeEhuf8d+6DbwhoGWskjSNnoj2HZqWkXEmFhV4mPIwiHxmOfx2SXd5ham/LNvW
+	 IU92UMR5IUJm9p4bQGRLPdq8TUlycowJXnrcXOgDKDKoo4IofxVqSa+9QPEoaCwnfgA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oezlQ5JP;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="L+Q/deRn";
+	arc=none smtp.remote-ip=192.198.163.11
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B801606A323
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 10:14:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32D0606A32A;
+	Mon, 16 Nov 2026 10:48:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E32D0606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oezlQ5JP
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 767DB1F00930
-	for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 10:14:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794824059;
-	bh=BZzHsumxcgOWtim9VqzUNbgAn5hXsFY8z0Dp1dc6OzQ=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=oezlQ5JPj4CYiV6ain908larzCb/hez4Awd0ILTk49jaVy/RMRZtx+AaF0cbGt0Dx
-	 4wAnOMH+Tb8WjCzjUOoLKo6mxsMg+VdPm2nXDBXfZgJDk7zGoTKXeaqTCxWyy53g+y
-	 eYSH02Mjz9rqwg5rqdHPOqUgWRGXPW+d2xmfnofgowFMFXTONIM66CAzOGCJr1h6j3
-	 +hiT6Bi5ryi7rUNrRvY1TTa4ETy7eKiU7fUWATcS+PXMWuhGUAMhsAT/ZofEm4LObf
-	 2KSa0E/JTgcPP9mPJK2vXt7NDeanTt1NVibXyAMLkz/x9gYtqEP389b8wBbyMg0C2Z
-	 i7x3aZ6TKNL7w==
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5c14e307f29so3768938e87.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 02:14:19 -0800 (PST)
-X-Gm-Message-State: APuU4Z/tLNcw+TfoelG5jieYAEPBJsjsxBH06n4WdP/DCzYZc/XSgFwA
-	HF6FD8Y8jmgF/k94/XZY7H8fvqPnKUUp1pNkUZnRUCNYda1F2ASxH6cXXuX0lJJEFmf3A0sKJgG
-	FPC9glR6r+5m2GE+0sThl7074EtC28QM=
-X-Received: by 2002:ac2:568d:0:b0:5c1:597d:aa93 with SMTP id
- 2adb3069b0e04-5c1709f4d9fmr3837170e87.24.1794824058184; Mon, 16 Nov 2026
- 02:14:18 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=L+Q/deRn
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794826108; x=1826362108;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+qqV1FaPOgpA/CAWwvnFgJPa0wgo6U3qzrnbn+rslMI=;
+  b=L+Q/deRn8Lx9cEuH7tIucRhA/OpFM1SgYOs6OP5spw1Dnq35S4oRtGCW
+   q/tRLuaxFADtnlkVvzeZWyQYCzEXN+DM6my6OuuMPE/c7yrv8w6yS8xmD
+   Ne0TF6YUg0JdSAdtofwa44Nb+XzvoJanN44xNV3llJtOtt0gty2GR7ir0
+   oVxJUh8e0cAMUeY6AnIPpsbidh1sCGTL0SZXvZJzTHcBkqKdRzZ8hrnBX
+   XFjf5phbgZVcUqDuuembLc+pClPePUI6S6g0zb5hLNLewAS2LPcgX+9OO
+   XoqSNZjCf2ZG3nR/zPObtT8GcyAVUZit1+WgKAiU8t8hQu8QbLPqmF+eD
+   g==;
+X-CSE-ConnectionGUID: dd0wGUeWSl6M/HHhGo2Xdw==
+X-CSE-MsgGUID: 7Iuq3/v7QSqDDB72nwZI2A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3474479"
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="3474479"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 02:48:26 -0800
+X-CSE-ConnectionGUID: aOaSJUSOT6euyHcLWqrl7A==
+X-CSE-MsgGUID: 5LFiVV7hQ6ygTvGIAcj/KQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="11228579"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 02:48:21 -0800
+Date: Mon, 16 Nov 2026 12:48:18 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Adil =?iso-8859-1?Q?H=FCsrev?= Tepe <tadilhusrev@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/2] iio: proximity: add Imagis ISG5320A (Samsung
+ Galaxy XCover5)
+Message-ID: <avrfcgqyASTtaVhu@ashevche-desk.local>
+References: <20261116074013.355363-1-tadilhusrev@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,73 +85,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261116014823.3132576-1-jic23@kernel.org> <20261116014823.3132576-2-jic23@kernel.org>
-In-Reply-To: <20261116014823.3132576-2-jic23@kernel.org>
-From: Linus Walleij <linusw@kernel.org>
-Date: Mon, 16 Nov 2026 11:14:04 +0100
-X-Gmail-Original-Message-ID: <CAD++jLka6iViPZetASEx-P1EUM2o+rK7qf6hi5gMV1mowGGArw@mail.gmail.com>
-X-Gm-Features: Aa3M54rZ0ybcg4V5aKB01QbjbOok1gJ1DSyW-SPRyEtOWR9BL0YJ1PmZWar8GsY
-Message-ID: <CAD++jLka6iViPZetASEx-P1EUM2o+rK7qf6hi5gMV1mowGGArw@mail.gmail.com>
-Subject: Re: [PATCH 01/35] iio: core: add default_trigger and take reference
- in iio_device_register()
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org, 
-	Martin Tuma <martin.tuma@digiteqautomotive.com>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, linux-media@vger.kernel.org, 
-	Gustavo Silva <gustavograzs@gmail.com>, Marcelo Schmitt <marcelo.schmitt@analog.com>, 
-	Antoniu Miclaus <antoniu.miclaus@analog.com>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Ramona Alexandra Nechita <ramona.nechita@analog.com>, Tomislav Denis <tomislav.denis@avl.com>, 
-	Jorge Marques <jorge.marques@analog.com>, Petre Rodan <petre.rodan@subdimension.ro>, 
-	Dan Robertson <dan@dlrobertson.com>, Jianping Shen <Jianping.Shen@de.bosch.com>, 
-	Gwendal Grignou <gwendal@chromium.org>, Maxwell Doose <maxwell@maxwelld.cc>, 
-	Tomasz Duszynski <tduszyns@gmail.com>, Esben Haabendal <esben@geanix.com>, 
-	Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>, Jiri Kosina <jikos@kernel.org>, 
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
-	Vasileios Amoiridis <vassilisamir@gmail.com>, Abhash Jha <abhashkumarjha123@gmail.com>, 
-	Puranjay Mohan <puranjay@kernel.org>, Nishant Malpani <nish.malpani25@gmail.com>, 
-	Oleksij Rempel <o.rempel@pengutronix.de>, 
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261116074013.355363-1-tadilhusrev@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 16, 2026 at 2:48=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
- wrote:
+On Mon, Nov 16, 2026 at 10:40:11AM +0300, Adil Hüsrev Tepe wrote:
+> This series adds an IIO driver and its binding for the Imagis ISG5320A
+> capacitive SAR/grip proximity sensor, as fitted on the Samsung Galaxy
+> XCover5 (Exynos850).
+> 
+>   1  dt-bindings: add imagis,isg5320a
+>   2  the IIO proximity driver
+> 
+> The driver exposes one IIO_PROXIMITY channel (the B-channel signal minus
+> its baseline) and a rising/falling threshold event. Tested on an XCover5:
+> it probes, registers the IIO device and reads a stable baseline value.
+> 
+> Based on v7.4-rc1.
+> 
+> Tool usage
+> ----------
+> Derived from the Samsung vendor driver during XCover5 mainline bring-up
+> with an AI coding assistant (Claude Code, Anthropic), which drafted the
+> mainline IIO driver and the binding. I reviewed every line and tested
+> probe and read-back on hardware. Review comments are welcome and I will
+> answer them myself.
 
-> From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
->
-> Some drivers choose to set a default trigger in probe() via
-> indio_dev->trig =3D iio_trigger_get(trig). The matching iio_trigger_put()
-> is in iio_device_unregister_trigger_consumer(), called from
-> iio_dev_release() only if indio_dev->modes includes one of the triggered
-> modes. If probe() fails after the reference is taken but before
-> INDIO_BUFFER_TRIGGERED is set (e.g. by iio_triggered_buffer_setup()),
-> the reference is leaked. In devm managed flows there is no simple way
-> for the driver to drop the reference on error.  Whilst it is possible
-> to have enforce strict registration order so that the reference is
-> only taken once conditions for tear down are met, the requirements are
-> not intuitive. So move the point of reference acquire later in sequence
-> to a point where cleanup will always happen.
->
-> Add struct iio_dev::default_trigger. Drivers then set this without taking
-> a reference. The reference is instead taken in
-> iio_device_register_trigger_consumer(), which pairs with the existing put
-> under the same modes check, so they always balance.
->
-> Also check the return value of iio_device_register_trigger_consumer(),
-> add an error_unreg_trigger_consumer unwind path for failures that occur
-> later in registration, and clear indio_dev->trig after the put so the
-> subsequent call from iio_dev_release() does not drop it again.
->
-> Immutable triggers are a little more complex and left for a follow
-> on patch.
->
-> Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Why a brand new driver?
 
-I like the concept and reasoning here, and code looks good so a clear:
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Yours,
-Linus Walleij
+
