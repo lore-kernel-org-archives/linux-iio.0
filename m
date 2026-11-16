@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793830;
-	b=XzwdyUBTvToJ0qWY1dSDsRTDKptpVUtWHrXl9tFfe3JrXax1bf/PzT6b+FSTx/YNSzoP
-	 4oStPmhzORxVvAxHroorgw9cTv1hPGWy8L1xmunIGAqE4UVh6B/QzAXCngPAsqP+ldo12
-	 qUEW9xYtDHzAZUyQijiBBCvzg5Hv9IjwUZBloxLJe2gmHURaUSUnCMSoG1tx0jZfbfLgn
-	 7OjoXDz5RKYC0gOMsLsOVrq/5hT1zPBEihdAbd5I9P3s8jtlaSTps2YChNqYHcDfxv70E
-	 2f2RVj9ZMdlLEiOzUKZoMDtIcwD66QMLTEwQa/4ZkKj+FmT35Jc5a/NqAHuzFDQnxDg==
+	t=1794793836;
+	b=0Btf9H2lT3bWgUfxRwA+6a2o7j0d5ZL6FyY/S0Q3VAPy8c6j+3OU2LOszrF8dkVyMWjx
+	 rnzrVRGqi8xV6VeFBHFOmZFH1FRyuzD2Av4hcJEjmFjyMBiUknyp9uWhGt6WDFBKLis4R
+	 tYFurTF46x4TnAQwVNTUIOEhSRlOPIsEK94m0yf/MSKvoMQI0R52a/jGFKTBCU5+fDqs2
+	 tV7CJE/ryM/C9o+fvLf26xlogwVFlnMYd3GgGEuK+qop1o54AlKDHv5lvb99/cBxY1B/9
+	 BC0Ii1mGVc7fRG7EKQ3rnyfAoqx2dWzIOcj/CAR9OUbcnNjG+L9G7ZS58K9t/ygmoyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793830;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793836;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=IbBgTnZWi71j0RHkbBN9yvtHl5SKp3Gp9O9PBrzzwHQ=;
-	b=CRnU04KO+9m1Rb8SEQvyycTtA/DmoolyAy9OKIgy7ywZe8+1zNSHmQ/is7voXFgPDJlr
-	 GbFIBQ6lj6RheQCpPOgLTEEjeKfo4pWjq7KGVZNGOlvbSIr2FHmf/SxYr+BCDYT+s62HQ
-	 H3ZY9M2s6cGfHBmxvGZi4Sa0hSl3v42L6Igl+V61i4qqU+6J12e+gzCQRqeffnXUuSFeh
-	 7ZguanJRgWMJkMH+DIn0OQ719rYZ+OCynwvt/o3mYmeTLdCRCh2GXZThjSdK5SlI+6ZPv
-	 MO2xXWrKS6wZNsMjuXplYP9fOmY8fweU9cRicnE1WkwQvVrvEhmcaAXFjamT4Z9qICg==
+	bh=x667OETHLQ5eiU24XMRh9m/YaJP0mqPvPFdZV2j+y+g=;
+	b=Q1+Mo4Xe2xAWWNp5cf8iLaA5ZYt0nwuyP2lYgI0m+4SPDx5wjVlOsfTpeDS2MSBpN4yd
+	 6Vz3mBYT4cfgyx5+Pt5xN68igOtdz9kd1aKXxO8BPsfS79a2AQ7LACQhrvMK8R7IAIawL
+	 DMawUC+zBd1E+6Pm0exyc2UE6Pszwt2DyyV6CXgPpg/8mHhOCUrA52kieGcUgV/m3HHji
+	 U1jI2BCPfyZjJrJZBRwlp8s9mEBTEQo7i5Uv/NYWqzLYUxdBUPJ/RH4QBBYwGmU97H6yD
+	 YJbpvoFxQ0nhPM+Q8ejAlpICic5S19ynfCrwoG3GP165eOpwQzuv7Z2m+hDAtT4A5qw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L4YclfdR;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R3w+FVDn;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A99606A31C;
-	Mon, 16 Nov 2026 01:50:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C580606A331;
+	Mon, 16 Nov 2026 01:50:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L4YclfdR
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E22D11F000C4;
-	Mon, 16 Nov 2026 01:50:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R3w+FVDn
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE6E91F000CA;
+	Mon, 16 Nov 2026 01:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793829;
-	bh=IbBgTnZWi71j0RHkbBN9yvtHl5SKp3Gp9O9PBrzzwHQ=;
+	s=k20260515; t=1794793835;
+	bh=x667OETHLQ5eiU24XMRh9m/YaJP0mqPvPFdZV2j+y+g=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=L4YclfdRMthCECEDxrSOmWPFziW6UVRE6R3jdsrb1tvPXv+XKmDbu9oeZP9RKlozY
-	 YJfnXBDYxsxQyVgIPzIFYicGAnRqPNLYykEwB1lNiBqsWnCFR4k9SMGMpz4mNxFbqt
-	 2xoJNEc6FQNUCqs8Kjkq/sdllgT8MNaBj3dxKk72ZFJdjUkpxEManZbPEUzXnWkko8
-	 tUZ/lJ+nSoXlQ4JejO0kIOEGxsMgqs7UUz3MxQh/a6p7wWzKUOBUD2P+QTd+KHpNz7
-	 hIQaq57ZW8fZah5bxguahTf9/tQ87WU7lG4Nz5ZE3h1iZ6OcW/BLOGXhV6XJbKeN3q
-	 cp6FhxQeV7wWg==
+	b=R3w+FVDn73DaIjMWAkAkWjlUmmnx5oiDNs3YSSk0iB79hwKvxDfbzn82cmtPOyyai
+	 GP/5FG3YmCm5okQ8TLj4Rj7rb6fmOwrBaUG4QJXH5HRZ/KVECiBNpuP0LGUEgL2AQn
+	 cYL7yP9udvzd50YZEoNEn+y0sZO3dt5TZripR9iY8Pwf0lXoO35gzNzQQFB0Z+QaJl
+	 KzVjXIU4/7gohtlsQrPO2hWnwl5oIAf2bRLQkSnItcSX5wjr4dTAGsRvrOqSAVaWTE
+	 ogBgr8KAt2q/xC8dpR0yQMNr7bAZL1kuuS1XsI537Eer22XfAlF2guIgudVf46qVrn
+	 BJg3o1+YbGKZg==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 16/35] iio: light: acpi-als: use default_trigger
-Date: Mon, 16 Nov 2026 01:48:04 +0000
-Message-ID: <20261116014823.3132576-17-jic23@kernel.org>
+Subject: [PATCH 17/35] iio: chemical: scd30: use default_trigger
+Date: Mon, 16 Nov 2026 01:48:05 +0000
+Message-ID: <20261116014823.3132576-18-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -94,28 +94,28 @@ From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 Set indio_dev->default_trigger rather than taking a reference to the
 trigger in probe(). The IIO core now takes the reference during
 iio_device_register(), so it is not leaked if probe() fails after
-the trigger is set up. This also makes the ordering a lot less fragile
-going forwards.
+the trigger is set up.  As well as closing that leak, this makes
+the ordering a lot less fragile going forwards.
 
-Fixes: 24b84444eb6f ("iio: acpi_als: Add trigger support")
+Fixes: 64b3d8b1b0f5 ("iio: chemical: scd30: add core driver")
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 ---
- drivers/iio/light/acpi-als.c | 2 +-
+ drivers/iio/chemical/scd30_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-index 9faaffb94b8f..b4434fdb561f 100644
---- a/drivers/iio/light/acpi-als.c
-+++ b/drivers/iio/light/acpi-als.c
-@@ -214,7 +214,7 @@ static int acpi_als_probe(struct platform_device *pdev)
- 	 * Set hardware trigger by default to let events flow when
- 	 * BIOS support notification.
- 	 */
--	indio_dev->trig = iio_trigger_get(als->trig);
-+	indio_dev->default_trigger = als->trig;
+diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+index ca824436f60e..2710a3cf97a6 100644
+--- a/drivers/iio/chemical/scd30_core.c
++++ b/drivers/iio/chemical/scd30_core.c
+@@ -675,7 +675,7 @@ static int scd30_setup_trigger(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		return ret;
  
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 					      iio_pollfunc_store_time,
+-	indio_dev->trig = iio_trigger_get(trig);
++	indio_dev->default_trigger = trig;
+ 
+ 	/*
+ 	 * Interrupt is enabled just before taking a fresh measurement
 -- 
 2.56.1
 
