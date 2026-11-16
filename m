@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794793733;
-	b=dSkL3oyjEWAI6Lhibi4tarXBfugo5GrzJH6KF7lXLuTwv3ngOZWlTLwHlhleCSXvQbEH
-	 Mlcr+KH6ClpRncjGMgBiMxRd9nueLiv54WgDx6uiG9xTpBdelyu6BMLdF5RRvT2IPQQij
-	 ddo05NmtsXZX+ySA99nYWdVXE0s/jsfNFZGt5h19t/UI5olMHZWn/IdAcu1Pr3OExTWzo
-	 nlDk3pi8av56cIVlfjIgDzXi0IKPB6ptGZzdreC15FwYnebSzVXdecvLMcIlyVB/3IuQa
-	 n2kjyYpZcewqwdYzR2Su0DtPx9iJGUHWSrMXWlVvqYVzXtep47N4TOHDPg0ax8aLYqA==
+	t=1794793740;
+	b=E3KDwYalCTqRts9sAQ7TlLPkNsny5hbht3w4lvZqlghu29xDtkLWjnXd7LRFkRGBJMMD
+	 qzd5/xyYmO89bjpYW4UZedfOl3KkU5uGpzRgkdSrn8XFDPefOubzGoXZPmCTlHLio4EqT
+	 nbpYSmpa8gsrms+3xjilhS4bI6RYUS/i+lKmcr2FLuJj9n+1xIT2IIS1vF714W1S6uI8F
+	 Y/fDi4CE+w/MtE7VcMvjJVjIG0OIC/2r7sK0mgsDF4OvA+bpbkAl+bVLHv7qHCYp9Tj7S
+	 +HLrEzF2Tr7qGKrnuterL0whkqGZSPmQQGMufn7GFs110Jk4jyKz4aD7MyRftunkNJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794793733;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794793740;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=tp3wQadL3Gn2RoJEuSW9xzPxfsOsX8PEn9E9rJ60UzA=;
-	b=lXd/izCh/UaT1ssYjyCvXng18sy3Tin1nZiNlbCj+pjj51IYy36mxRmf7/dIiA9ZXcZA
-	 yeSdtmJ5tfqG27zHUnFflqFsO4L84JPwf7l4RclIbzPumpfrxA+YXIivxTqnuAa+JJOnD
-	 wV7K5lBCIgezjKFTexCzA9dLrgWwj+y8bHLdbK7uM4M0cRNL/OqFWCOqpQj+lxzVE/8Wc
-	 EM/Ad6rAKEsFNfjPSjE8dRiq9m66HsHSuyG4GtJqeE/q8EIGROnZd1t0pDcGLxkGti/yW
-	 xLPFk+8CQ+r38X6mMDYwVJLarY9Jkx6p+R9rcVBip6s8Mjt6BDpPPfkuCMSbnCC7cUA==
+	bh=5QlkdgiEt3bFKeaMjJR+PirbC0QvZV3PxdIlagr3OCY=;
+	b=OjPSx/6J/pt45fWhVSx0YyrohwPBZcarozXxRCl+pnH66YE+ApaqZtNziir3u38EVrSs
+	 FEeI/s6bxlTLVhmfUuy0aK1a6jYepKolza74mDIV03klEUz1yHrFpxjiJXkIF8FXOXzUw
+	 KYS+rDtgWCw+UlHQUQoFIyaS8PoOc8z0XxLG7O1QuYfPL9BPyc72Gz5o4N7Dn9L4bumTN
+	 vXpo2U5CkCRRkDq8JcoR/pdkuaIStfIYHxC88MVnGP5Rn49MQhJxBDe4Os3Cu+Gy/saVu
+	 uS8L7NLH+GrNK+nhcDAKrqhW9jKNsIyNPUzZsLUbZXvOpidGT22y7L9asblH0UU5iFw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PAPBCWb3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CqjFF0tF;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416D1606A329;
-	Mon, 16 Nov 2026 01:48:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F003F606A32F;
+	Mon, 16 Nov 2026 01:48:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PAPBCWb3
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D52DE1F000C5;
-	Mon, 16 Nov 2026 01:48:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CqjFF0tF
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80AA91F000C5;
+	Mon, 16 Nov 2026 01:48:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794793732;
-	bh=tp3wQadL3Gn2RoJEuSW9xzPxfsOsX8PEn9E9rJ60UzA=;
+	s=k20260515; t=1794793739;
+	bh=5QlkdgiEt3bFKeaMjJR+PirbC0QvZV3PxdIlagr3OCY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=PAPBCWb3H6AWeemU2R8JOJ7TcRqeqXbYEfYC6wR1rqm+uYI2N6nL8DvectYmHDArW
-	 nRjrNmtSBOEUD7ORWaW1tXFHiE3blbPNiIu7kWI3MlFS4FIod5OXyQpUudDtJPxYtA
-	 Nh4PW8aBG1F9qm0xs05D+meuW+0llR06IekQEEMPb8gkhIToJzQFmE1KTwo1ynLNxX
-	 4w2PHbYFMKyjgzgr5ucdbqTF7xm3XCC394sg58i5DMLERodLjtZB66BvKP1iwfs5hR
-	 lIQ+ZfKFkcGLrZrYUj8HJBpxSlvz2ezE/LiygxjGvsMy5rRq/MTibTq7swYg2Uia9K
-	 eaLc6g0Tlgvlw==
+	b=CqjFF0tFuyi7R6UjySyzwdbMIOnu1UnrM0OTQx7u+fyb/Ob0ZiB/XVD+iayq72t0f
+	 VQgPvqhoQxgepJwUVT86A62IKv7a3d/pJtFswHx80ZcDjvI/PNeziXN4NU6MjiP5Ah
+	 EZlBMhn0QKDBoanQdjYgSdsiFld3imYcWXrAWY2kVwXMOoOotQzJ5SkipasyjNSYhg
+	 AJlgZ/dIxyiJLJDW8BkjALuH7/7pjz9mq87eX86P8RZUqhRHTwnd7gHR5RSt79qlsx
+	 d15P5JERCJO5WPd/N4krEvx9idRgtG/bQ8guobMsp+XULIoivcR/vlbyZEaWuGS3Bx
+	 QqNlsb2g6LcjA==
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
@@ -72,9 +72,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Oleksij Rempel <o.rempel@pengutronix.de>,
 	Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: [PATCH 01/35] iio: core: add default_trigger and take reference in iio_device_register()
-Date: Mon, 16 Nov 2026 01:47:49 +0000
-Message-ID: <20261116014823.3132576-2-jic23@kernel.org>
+Subject: [PATCH 02/35] media: pci: mgb4: use IIO default_trigger
+Date: Mon, 16 Nov 2026 01:47:50 +0000
+Message-ID: <20261116014823.3132576-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 References: <20261116014823.3132576-1-jic23@kernel.org>
@@ -91,134 +91,42 @@ Content-Transfer-Encoding: 8bit
 
 From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
-Some drivers choose to set a default trigger in probe() via
-indio_dev->trig = iio_trigger_get(trig). The matching iio_trigger_put()
-is in iio_device_unregister_trigger_consumer(), called from
-iio_dev_release() only if indio_dev->modes includes one of the triggered
-modes. If probe() fails after the reference is taken but before
-INDIO_BUFFER_TRIGGERED is set (e.g. by iio_triggered_buffer_setup()),
-the reference is leaked. In devm managed flows there is no simple way
-for the driver to drop the reference on error.  Whilst it is possible
-to have enforce strict registration order so that the reference is
-only taken once conditions for tear down are met, the requirements are
-not intuitive. So move the point of reference acquire later in sequence
-to a point where cleanup will always happen.
+Set indio_dev->default_trigger rather than taking a reference to the
+trigger in probe_trigger(). The IIO core now takes the reference during
+iio_device_register().
 
-Add struct iio_dev::default_trigger. Drivers then set this without taking
-a reference. The reference is instead taken in
-iio_device_register_trigger_consumer(), which pairs with the existing put
-under the same modes check, so they always balance.
+Previously the reference was taken before iio_triggered_buffer_setup()
+set INDIO_BUFFER_TRIGGERED, so a failure in that call leaked the trigger
+reference as the IIO core only drops it for devices with triggered modes.
 
-Also check the return value of iio_device_register_trigger_consumer(),
-add an error_unreg_trigger_consumer unwind path for failures that occur
-later in registration, and clear indio_dev->trig after the put so the
-subsequent call from iio_dev_release() does not drop it again.
-
-Immutable triggers are a little more complex and left for a follow
-on patch.
-
+Fixes: 0ab13674a9bd ("media: pci: mgb4: Added Digiteq Automotive MGB4 driver")
 Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
----
- drivers/iio/industrialio-core.c    | 15 ++++++++++++---
- drivers/iio/industrialio-trigger.c | 21 ++++++++++++++++++---
- include/linux/iio/iio.h            |  4 ++++
- 3 files changed, 34 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index ed7aa7fd9391..6c704920d619 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -2180,8 +2180,14 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 			"Failed to register event set\n");
- 		goto error_free_sysfs;
- 	}
--	if (indio_dev->modes & INDIO_ALL_TRIGGERED_MODES)
--		iio_device_register_trigger_consumer(indio_dev);
-+	if (indio_dev->modes & INDIO_ALL_TRIGGERED_MODES) {
-+		ret = iio_device_register_trigger_consumer(indio_dev);
-+		if (ret) {
-+			dev_err(indio_dev->dev.parent,
-+				"Failed to register trigger consumer\n");
-+			goto error_unreg_eventset;
-+		}
-+	}
+---
+Ideally I'd like to take this though the IIO tree. There are load of
+other changes coming on top of this, ultimately making the
+struct iio_dev->trigger opaque to drivers. I can provide an immutable
+branch if that is likely to be necessary.
+
+Note as these are just a case of a resource leak in an obscure
+error path I haven't been marking them as fixes and it probably
+isn't worth backporting them.
+---
+ drivers/media/pci/mgb4/mgb4_trigger.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/pci/mgb4/mgb4_trigger.c b/drivers/media/pci/mgb4/mgb4_trigger.c
+index 70cad324df60..f48052b76d6d 100644
+--- a/drivers/media/pci/mgb4/mgb4_trigger.c
++++ b/drivers/media/pci/mgb4/mgb4_trigger.c
+@@ -126,7 +126,7 @@ static int probe_trigger(struct iio_dev *indio_dev, int irq)
+ 	if (ret)
+ 		goto error_free_irq;
  
- 	if ((indio_dev->modes & INDIO_ALL_BUFFER_MODES) &&
- 		indio_dev->setup_ops == NULL)
-@@ -2202,10 +2208,13 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 
- 	ret = cdev_device_add(&iio_dev_opaque->chrdev, &indio_dev->dev);
- 	if (ret < 0)
--		goto error_unreg_eventset;
-+		goto error_unreg_trigger_consumer;
+-	indio_dev->trig = iio_trigger_get(st->trig);
++	indio_dev->default_trigger = st->trig;
  
  	return 0;
- 
-+error_unreg_trigger_consumer:
-+	if (indio_dev->modes & INDIO_ALL_TRIGGERED_MODES)
-+		iio_device_unregister_trigger_consumer(indio_dev);
- error_unreg_eventset:
- 	iio_device_unregister_eventset(indio_dev);
- error_free_sysfs:
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 76926fee0f84..a0149a5d0163 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -760,15 +760,30 @@ EXPORT_SYMBOL(iio_trigger_validate_own_device);
- 
- int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
- {
--	return iio_device_register_sysfs_group(indio_dev,
--					       &iio_trigger_consumer_attr_group);
-+	int ret;
-+
-+	/* Drivers must not both set a default trigger and take a reference */
-+	if (indio_dev->default_trigger && WARN_ON(indio_dev->trig))
-+		return -EINVAL;
-+
-+	ret = iio_device_register_sysfs_group(indio_dev,
-+					      &iio_trigger_consumer_attr_group);
-+	if (ret)
-+		return ret;
-+
-+	if (indio_dev->default_trigger)
-+		indio_dev->trig = iio_trigger_get(indio_dev->default_trigger);
-+
-+	return 0;
- }
- 
- void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)
- {
- 	/* Clean up an associated but not attached trigger reference */
--	if (indio_dev->trig)
-+	if (indio_dev->trig) {
- 		iio_trigger_put(indio_dev->trig);
-+		indio_dev->trig = NULL;
-+	}
- }
- 
- int iio_device_suspend_triggering(struct iio_dev *indio_dev)
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 67718f3b9b7d..8b3fd7673293 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -632,6 +632,9 @@ struct iio_buffer_setup_ops {
-  * @active_scan_mask:	[INTERN] union of all scan masks requested by buffers
-  * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
-  * @trig:		[INTERN] current device trigger (buffer modes)
-+ * @default_trigger:	[DRIVER] optional trigger to use by default. The driver
-+ *			does not hold a reference to it; the IIO core takes
-+ *			one in iio_device_register().
-  * @pollfunc:		[DRIVER] function run on trigger being received
-  * @pollfunc_event:	[DRIVER] function run on events trigger being received
-  * @channels:		[DRIVER] channel specification structure table
-@@ -657,6 +660,7 @@ struct iio_dev {
- 	const unsigned long		*active_scan_mask;
- 	bool				__private scan_timestamp;
- 	struct iio_trigger		*trig;
-+	struct iio_trigger		*default_trigger;
- 	struct iio_poll_func		*pollfunc;
- 	struct iio_poll_func		*pollfunc_event;
  
 -- 
 2.56.1
