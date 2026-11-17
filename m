@@ -1,102 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=91.99.108.219
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794904900;
-	b=hS7ZM7I/vPtN+93FN6msCLrsyY8tRapoVhhSh659JBNjOWBw1eVwr+qEeA7dul/BsLXa
-	 Uy7TRgpR8SsunCWKf/iglBcpSX0xs4D5Y1kRaPfmkS6XJUZ5EGUZLwtMx3m6ESH0ackT9
-	 5vLUAQ9c+dREsGR5KQBYTnOwK3/u9UmRm93pKWrRVR5eF6Q2TxpIzcQJGBSvYpNZZdlJK
-	 1dPfkp5VK8HKx9PZdWonbb8hSGu++1pVRKPTVPM8vsf2w19mTkBuhtaVW8ruKRBTWfUil
-	 LLosip9Me9sBoD+QUH00uTjkZJ9HdJFIwvwkTbu4mKN11ACoIbNec7MVofDqdE4ch5w==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794904900;
-	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:Date:
-	 Message-ID:In-Reply-To:References:MIME-Version:Content-Type:
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794906611;
+	b=BPpWLnibUe0sOqWOOWi1iO0DWzUZyL4sbqcwxHz3bxp2jtSMDo+3AaJyi6rQ59i5jCKW
+	 rN4RKn6uNmD7fqSlB0fLe3wjuHL7YfmCwKni/G+X6oNjhHQAGXzIc3InWXUq0LtVyPBjz
+	 Ku4wjLW32Wtpo4RNvzYD5RhKf0poNMmRu3IGtUg7RNKiqINeI3BW/aZgcS00AQhSWgXFX
+	 2AP0lAC6c7YkmHHU+CKJSnSqj0bQIwabwyMlBwNp55aVbKbGU1LlBJ8DqZVy23HVYS/Pr
+	 USTDYCfNgr1BGiju0lLJMEzjo38CiifcM+Gl0OROlDYf46fQew8y0XttbowPKrzTbPw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794906611;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:From:To:Cc:
+	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=H9je0lU4+ntBTXv39mm93LUN3Jyv/9j/FoEJztnH290=;
-	b=nhxfn/N5t4B/L624vEzdcrUCt1o7yxPq7cMsuB9O3l9VgBKR522vVId7XJi4nWykPxRU
-	 lI4Y+rP6JrS4BhYFBfct4oN3GtWqqIvdLS18vh3hHYuMGWCi4nSSnZBl0ewb61yzi8rmY
-	 wOEJ+T2LsxYN+smDU0kGAJd6tXclrNMiA2B+g0C9/llBZsYc6ycBQhYYgD9TY22oSrh6A
-	 g4/YLA4VDtA3y8Bi7YOF4Mhvfs+scDMBcQE8ldoHzYSiVZaQuTURQxpgVH6kT1KOC68Pf
-	 9zhXRBfdqDFTQ58cWAew98bAO64rRmhcN/8I80s65xrd5XwC9i7YBTVgzjZA1yZJN1A==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=catcrafts.net;
-	spf=pass smtp.mailfrom=catcrafts.net;
-	dkim=pass header.d=catcrafts.net header.i=@catcrafts.net header.a=rsa-sha256 header.s=mail2026 header.b=aQofHHF3;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=91.99.108.219
-Received: from mail.catcrafts.net (mail.catcrafts.net [91.99.108.219])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	bh=ywuM15k7Y1lHbNzqXX5bV+0RaESQUsSSZKpjMWtqTeU=;
+	b=OyEVPymXJPpkjrnSCf0SDN6laqsIhD05y2TFEmsleXYeZJIFTMMX8yRp0WnrQtiSL9mD
+	 SwpBihGQka+Uw7gyaLHEK4Ku+eCA3wmi4JcCKk3GxD75+1F04McOCd+6Uvg7kf6D3BfSz
+	 rJUo1Yg1Jmdyu2KoFOitpIr8xDGDuDdLOoBw38LqiLoufXG+gobOCBAkZNl/298fKmKjo
+	 uK9b911o+faj7UdRMxTsX6brNA2Eou5ksSrfHJbcEIvSCkSVhWOfDcfmctgk7aTBjV5XP
+	 gK427L4Zf7TeOg8mriyyllrw2q1BOOkcllTL7YDjd+oBYP7ogP6ZluNtxisf64nJkLA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i0TzJEpn;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF9CC606A894;
-	Tue, 17 Nov 2026 08:41:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BF9CC606A894
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=catcrafts.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=catcrafts.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E95606A32C
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 09:10:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 24E95606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=catcrafts.net header.i=@catcrafts.net header.a=rsa-sha256 header.s=mail2026 header.b=aQofHHF3
-Received: from jorijnpc (unknown [87.215.145.39])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by mail.catcrafts.net (Postfix) with ESMTPSA id 18246FA9F6;
-	Tue, 17 Nov 2026 08:41:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=catcrafts.net;
-	s=mail2026; t=1794904890;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=H9je0lU4+ntBTXv39mm93LUN3Jyv/9j/FoEJztnH290=;
-	b=aQofHHF3y4gXLjus16EXmEcn0OEDrRg4km5CkqxMb9jhrEZ1YxW7r1TNKdFJrt/g21KioN
-	78ALX782bZZeZ42DUGA0O3hV56PFr48JnTQJupbgla/hkyUdqeWM1MfojTCt44ATbvJPIG
-	rjBfURZ04nDXJZg5RKhOKCxe0DGtLrJ2yxKwEfiV8BTwMH6t5uRRnoSW/xSYc9GixoFSgX
-	00iVEhi6dka4ZW5EoaAICDePwpGQPBryjzIsmvE3KRdwJFYycDpijtOmJqWdXGaK3Zn0za
-	TFlT7OD96R7g1SruV3P4Xs3VG/Miag+IRwq8J3x6j6LB/kr6t8kRdGUt473lNw==
-Authentication-Results: ORIGINATING;
-	auth=pass smtp.auth=jorijnvdgraaf@catcrafts.net smtp.mailfrom=jorijnvdgraaf@catcrafts.net
-ARC-Seal: i=1; s=mail2026; d=catcrafts.net; t=1794904890; a=rsa-sha256;
-	cv=none;
-	b=bytWCVzhFKQnz5RHVTt9mKSqVM9aGV2VttS4UOKM9S0PhVOF/HrmE5bCPm/EFMSzgEBks6
-	2L0oK1z02P7fQ0W085XbZFyG9/Ua9qLytXh8Yp26BeluJetVF352Ujk1LVaIU/3mD0Ji/7
-	z7fO3lwTXV4+O3gjpEQR+CVCIAjYvgpbgvDeBCv+jwLpJl3BQgFuV5nuux1KcpKrZLQLPZ
-	uVgeq946PaxrYk3TLWnKz5AJ/u2eS/bVttcNaamH7VuDLcZv8hfgPCHfSSiL4JJ9I731DK
-	TmAkXCL41t0zXWap4vC9QnKEZ1OTtyNAXqsZIRxnC2lEHwHwIWDPfTmoFdc4bQ==
-ARC-Authentication-Results: i=1;
-	ORIGINATING;
-	auth=pass smtp.auth=jorijnvdgraaf@catcrafts.net smtp.mailfrom=jorijnvdgraaf@catcrafts.net
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=catcrafts.net;
-	s=mail2026; t=1794904890;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=H9je0lU4+ntBTXv39mm93LUN3Jyv/9j/FoEJztnH290=;
-	b=cq57s59gujIH8NeBwNruqlzF4nhsLT9BEBClF/dTyKyGrjP7tors+6+orkKeEi8Dzr7BC7
-	jW0AWgBI8eGBZTYr03gmuUnxhPHbdj/ORfU01tTrM49KNvYpkOp2S23OaGLL6Y7Ruo8Su8
-	tnVn9uzBbnXt9Lu7JkDKyiYV33qJLqM+imR2ykH9FjgOSgCLfcEOeqBjzc7jQmosdwIS9G
-	QUep5/D9XlxdRHKrMTC5RNMwHSMjTNc9T/5SekOQIG8H/3Hf85raJnMKQEtKkn37xWrMAi
-	i2i7xb9wXKruBWWYfSoUpz6zBvlfEQyJePicmJnqqiOq1dm9Bxlk8CYW7ZSvPA==
-From: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-To: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i0TzJEpn
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794906611; x=1826442611;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zXxgmbyttqtgR5wQ56h8ITgHeXyKPcLYeQBe616pJ80=;
+  b=i0TzJEpnXwgAbRwj4HBOu62rIzpmyxRHLorAthK3NXxl0dtzMxwO8Wj8
+   i2qDlD2CUH/5vYvuMBlgnHmMl5Aq6M2JnuEAM5yh8MR2oGME+yRdhK+6D
+   8oWOd+wgFCKAD60Q0gBJQJa+v3IXIHfAXdbtbmqodittE7upMzp3lbQ0H
+   3iy+QSsY/X98Wl1vXI4fsguvGDgqUKCpZNiNaJPHtTtPTyu4q8vXL1qEI
+   yXuSBfZpI0gWuH+Tv52nMKhxMN8Xdgqy68fn2YnNTWeAIJHtm4YyOha9K
+   8IWqWgCEEc4B8pukOUCKWuJTn+yfsoBppKPPWftoOup7slUao8q1af9F6
+   A==;
+X-CSE-ConnectionGUID: 3SfiBYukTJ2quSy3RJVnBw==
+X-CSE-MsgGUID: NUqdL9WTTrKhTAOooBLa6Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3670972"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3670972"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:10:10 -0800
+X-CSE-ConnectionGUID: tlZpRHiBS+aXWcsPbb+xmQ==
+X-CSE-MsgGUID: jbkmIQg6T66Ue82Q+gFK6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="10048977"
+Received: from black.igk.intel.com ([10.91.253.5])
+  by fmviesa008.fm.intel.com with ESMTP; 17 Nov 2026 01:10:08 -0800
+Received: by black.igk.intel.com (Postfix, from userid 1003)
+	id B7AB499; Tue, 17 Nov 2026 10:10:07 +0100 (CET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Kurt Borja <kuurtb@gmail.com>,
 	linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>,
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Eddie James <eajames@linux.ibm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Paulius Zaleckas <paulius.zaleckas@gmail.com>,
-	Rupesh Majhi <zoone.rupert@gmail.com>,
-	Joshua Crofts <crofts@kernel.org>,
-	Luca Weiss <luca.weiss@fairphone.com>,
-	Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Subject: [PATCH 3/3] iio: pressure: dps310: add Goermicro SPL07-003 support
-Date: Tue, 17 Nov 2026 09:39:54 +0100
-Message-ID: <20261117083954.335814-4-jorijnvdgraaf@catcrafts.net>
-In-Reply-To: <20261117083954.335814-1-jorijnvdgraaf@catcrafts.net>
-References: <20261117083954.335814-1-jorijnvdgraaf@catcrafts.net>
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] iio: light: opt4060: Remove dead code
+Date: Tue, 17 Nov 2026 10:10:06 +0100
+Message-ID: <20261117091006.1452131-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.50.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,139 +85,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The Goermicro SPL07-003 needs what the ZTS8032 chip data already
-describes: c31 and c40 in the pressure polynomial, and TMP_CFG bit 7, a
-rate bit on this chip too, left clear. Its TMP_EXT is MEAS_CFG bit 3 and
-stays at the reset value, the internal sensor the datasheet recommends.
+The struct opt4060_channel_factor data type was never used. Remove it.
 
-Its c31 and c40 are 12 bit values packed into 0x22-0x24, where the
-ZTS8032 has 16 bit values in 0x22-0x25, so the coefficient block is 21
-bytes. Add a chip flag for that layout, the chip data and the I2C and OF
-IDs.
-
-Tested on a Fairphone (Gen. 6). The DPS310 temperature workaround skips
-this unit: bit 1 of register 0x32 is set.
-
-Datasheet: https://media.digikey.com/pdf/Data%20Sheets/Goertek%20Microelectronics%20PDFs/SPL07-003.pdf
-Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/pressure/Kconfig  |  1 +
- drivers/iio/pressure/dps310.c | 32 ++++++++++++++++++++++++++++----
- 2 files changed, 29 insertions(+), 4 deletions(-)
+ drivers/iio/light/opt4060.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-index ffd072e4bb8f..26bbfe944980 100644
---- a/drivers/iio/pressure/Kconfig
-+++ b/drivers/iio/pressure/Kconfig
-@@ -116,6 +116,7 @@ config DPS310
- 	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Support for the following digital barometric pressure sensors:
-+	  - Goermicro SPL07-003
- 	  - Infineon DPS310
- 	  - Zilltek ZTS8032
- 	  They can be accessed over I2C bus.
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 5cee23986f30..22ed88d17926 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -9,6 +9,11 @@
-  * calibration coefficients (c31, c40) and temperature calibrated against
-  * the internal sensor.
-  *
-+ * The Goermicro SPL07-003 has c31 and c40 too, as 12 bit values, and its
-+ * datasheet recommends the internal temperature sensor.
-+ *
-+ * https://media.digikey.com/pdf/Data%20Sheets/Goertek%20Microelectronics%20PDFs/SPL07-003.pdf
-+ *
-  * Temperature calculation:
-  *   c0 * 0.5 + c1 * T_raw / kT °C
-  */
-@@ -71,6 +76,7 @@
- #define  DPS310_RESET_MAGIC	0x09
- #define DPS310_COEF_BASE	0x10
- #define DPS310_COEF_LEN		18
-+#define SPL07_COEF_LEN		21
- #define ZTS8032_COEF_LEN	22
- 
- #define MAX_COEF_LEN		22
-@@ -115,6 +121,7 @@ struct dps310_chip_info {
- 	bool coef_for_ext_sensor;
- 	u8 coef_len;
- 	bool has_c31_c40;
-+	bool c31_c40_12bit;
+diff --git a/drivers/iio/light/opt4060.c b/drivers/iio/light/opt4060.c
+index 8253a6a8bee4..3413b1c64d01 100644
+--- a/drivers/iio/light/opt4060.c
++++ b/drivers/iio/light/opt4060.c
+@@ -145,11 +145,6 @@ struct opt4060_chip {
+ 	bool thresh_event_hi_active;
  };
  
- static const struct dps310_chip_info dps310_chip_info = {
-@@ -123,6 +130,14 @@ static const struct dps310_chip_info dps310_chip_info = {
- 	.coef_len = DPS310_COEF_LEN,
- };
- 
-+static const struct dps310_chip_info spl07_chip_info = {
-+	.name = "spl07-003",
-+	.coef_for_ext_sensor = false,
-+	.coef_len = SPL07_COEF_LEN,
-+	.has_c31_c40 = true,
-+	.c31_c40_12bit = true,
-+};
-+
- static const struct dps310_chip_info zts8032_chip_info = {
- 	.name = "zts8032",
- 	.coef_for_ext_sensor = false,
-@@ -234,8 +249,8 @@ static int dps310_get_coefs(struct dps310_data *data)
- 
- 	/*
- 	 * Calculate pressure calibration coefficients. c00 and c10 are 20 bit
--	 * 2's complement numbers, while the rest are 16 bit 2's complement
--	 * numbers.
-+	 * 2's complement numbers, while c01, c11, c20, c21 and c30 are 16 bit
-+	 * 2's complement numbers.
- 	 */
- 	c00 = (coef[3] << 12) | (coef[4] << 4) | (coef[5] >> 4);
- 	data->c00 = sign_extend32(c00, 19);
-@@ -258,7 +273,14 @@ static int dps310_get_coefs(struct dps310_data *data)
- 	c30 = (coef[16] << 8) | coef[17];
- 	data->c30 = sign_extend32(c30, 15);
- 
--	if (data->info->has_c31_c40) {
-+	if (!data->info->has_c31_c40)
-+		return 0;
-+
-+	if (data->info->c31_c40_12bit) {
-+		/* Two 12 bit values in three bytes, like c0 and c1 */
-+		data->c31 = sign_extend32(get_unaligned_be16(&coef[18]) >> 4, 11);
-+		data->c40 = sign_extend32(get_unaligned_be16(&coef[19]), 11);
-+	} else {
- 		data->c31 = sign_extend32(get_unaligned_be16(&coef[18]), 15);
- 		data->c40 = sign_extend32(get_unaligned_be16(&coef[20]), 15);
- 	}
-@@ -810,7 +832,7 @@ static int dps310_calculate_pressure(struct dps310_data *data, int *val)
- 
- 	/*
- 	 * Section 4.9.1 of the DPS310 spec, Horner form to avoid overflow.
--	 * c40 and c31 are ZTS8032 only and zero on the DPS310.
-+	 * c40 and c31 are zero on the DPS310.
- 	 */
- 	if (!dps310_horner_step(&prs, data->c40, p, kp) ||
- 	    !dps310_horner_step(&prs, data->c30, p, kp) ||
-@@ -1495,12 +1517,14 @@ static int dps310_probe(struct i2c_client *client)
- 
- static const struct i2c_device_id dps310_id[] = {
- 	{ .name = "dps310", .driver_data = (kernel_ulong_t)&dps310_chip_info },
-+	{ .name = "spl07-003", .driver_data = (kernel_ulong_t)&spl07_chip_info },
- 	{ .name = "zts8032", .driver_data = (kernel_ulong_t)&zts8032_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, dps310_id);
- 
- static const struct of_device_id dps310_of_match[] = {
-+	{ .compatible = "goermicro,spl07-003", .data = &spl07_chip_info },
- 	{ .compatible = "infineon,dps310", .data = &dps310_chip_info },
- 	{ .compatible = "zilltek,zts8032", .data = &zts8032_chip_info },
- 	{ }
+-struct opt4060_channel_factor {
+-	u32 mul;
+-	u32 div;
+-};
+-
+ static const int opt4060_int_time_available[][2] = {
+ 	{ 0,    600 },
+ 	{ 0,   1000 },
 -- 
-2.56.0
+2.50.1
 
