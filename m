@@ -1,80 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794910341;
-	b=CRqzRyVmv4JmhIaZRsStPj1DZOm0uZL9gwI+l60Z9yD5Jc1n7fuEdm01VbJVnM93+llf
-	 lbUtv24EN4IRu2VoTddEEKjSfRtmpbv3Ul2SKlGtra3Senph1U+1UyKcWLOf4YKqyB0S1
-	 p/D0I7CQVWsYrsc+htDzojVDaDdYUBqUW6tyt/K12bPgYcVFqpweiR3o2IcKDuSNWAdu9
-	 4TRZEEcHArtwNqLgVQyd4N0gVGdpYq80SSmuqbmG+3OqHBiJWydkGZFj+vnI98MsqyQrZ
-	 lAWpVUT4kJ5r03gymkHnSdjLD2B6RzFbvcV7seWTu1gtZ3hOmVwvETwDPAeW7BbmOCg==
+	t=1794910908;
+	b=khQUVSgn7Ht7bcvBheVvw//yEzo8On2fTRHxzUgg2hkjl/fiVZ3BIMUrts00x89IV2dP
+	 e3ju0XILn1l0gPT2M+b0q7mzy6Ewk4mF3mU5pTuYaJg5vr6B+CsjRJXxjQFQNJ3Ibl1rP
+	 rUlkeiI7xhb++Bj0jo22gfws2idluKzXt7j7YqUYcBwuGBHc06oJzoHJNUX0hVtONlLki
+	 d9nK4Y7OXnim1QZpxFRT8cGOmIre36ccsmbWnu1u3CbwxP95jT2sleEGPJ+6FZctI54fO
+	 8HQUphaERDJ6aHv8Ik3ES55Sm16NN7r1JEBoLx2o1SGbyYOcvcOzjgZJBY7xlfEQ7zg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794910341;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794910908;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=TPBqw6R12FU3nw8EgY2HDURUEtbzCSZfVal7HlkpVXU=;
-	b=llv3232wnrlafdufifHumEDEyXAOxfbTA4ML0ym99i/q5XGQjElWo9p7IHbSlESSkwpz
-	 EfFWsHerXztClf0bn+R+rz8ku0hUr5mwrDCgKYmYNqw6P4+ZxvZ3qmTWV4+qhUh2oO7z9
-	 34X9uSQSSktLSo6q64n10cw47SDLBbGBFYDil9UJmgxKGB8SGMyVjE1ikur4Q91J7Cj8B
-	 TAtXEaKHyTQwsoxg98vhPHy3IRy1TQIrBfcuisynToDbl/ygQOSzIMERxUuIUY0Gg+t7B
-	 99sdMZTP1xRq4Eg8L5HfbcwcRh20TDMTTUXEl8L/nr+fLrSfCG9hbkAnN2cGaacTGMA==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=EaOV9WO5qtb2YHPP46vOg4EtZLM1r5qyyr6pytop72I=;
+	b=pqsWoe+d1G2nnA/9VtEmO4IuOPvb1hFPYZQxgyrtztJQPGFoBhLEZ46dNbDq+n+tS4EW
+	 BzXet7LdXX1G3UYAXXNyJri2rZTjaVA+J9RbaQZ41LJzPVRT68prwUcoIduWkQHCB4zD6
+	 KiqK2DBA8XeXxRIq2epY4Lr6N5EhtMbPmYv0udXyToctU3ZpIxq8/rsOZnxv/xaoIxFA/
+	 MZuk+CUBNgHBVAfhCqMewHgRQ7NSVH2dI48hoFRjeVqJ4axq7yQYhBRAKi2veZJREHFy8
+	 dMsupYM7sm5lVEb289aKEydhhy2AVim0QuE4HkjTHUdACpKot20Yh2erz+Ik8ZkpkXw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="L/x/k6KE";
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fzJq5mfD;
+	arc=none smtp.remote-ip=198.175.65.16
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1AE606A889
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 10:12:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC1AE606A889
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A1B5606A32C;
+	Tue, 17 Nov 2026 10:21:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3A1B5606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=L/x/k6KE
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fzJq5mfD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794910341; x=1826446341;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IRJ4vkIfN0VOBbV2J2t72U46gMPi4o1z/qnn9iXiXd4=;
-  b=L/x/k6KEpJ4Z/sPiCYmuyj6ly2oTCBnZ0L0mMDDBgZA7tvF7moXbXLCR
-   g3E3bb4bAGv6WYDvHKEClwm5iW0QbFb5dFb91RQabY3MwHcu2anNJpgFx
-   lKIU6Z0V4uEyrQlFe8bQidBOycGtgrDWONrDLfddE4XM+VIZ5SPMZm8Mk
-   kg2gEHaq/GL6fhTcwCd3qyu8WwgYO3xnyIBgPs4eEfu+KhZs2PSGBFF1e
-   tO6K6FHz11noYKrvea0Lg27b+hHBe2AyTiE0itC7djlqxLDuogMOSZCke
-   +QuFE6sx4459knMVadu2KoQzfGVDlrKQopVPLADWxMooh95OSlLIMDqPi
-   A==;
-X-CSE-ConnectionGUID: nfWTQmjNTMmT5MrBAYQmwA==
-X-CSE-MsgGUID: zzpMaEkQT1Oe0RF0QWBeYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3570036"
+  t=1794910907; x=1826446907;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+uTMWuT6D/iKk+Oboc3PMt2EYstxhtXrE3u2XNyl6zs=;
+  b=fzJq5mfDzvcx0XPYdaVQcMArEmJD3EynavIRP849FuxOpmP5Jci5nFHm
+   W9+fMlK6y0KSL/0gOzsHnlEM9EmFMvLilLx5gHR5mAj4SjyMNZyAwd3RW
+   8h2an1MyC2uj/MZeNB3Eeo1tYED6jTp/bn3y55/z/JivWLO5E0V977Z2m
+   yUCIf9gFsrgS8nJVfTiP9P4OhcBYdp4t5XUPnbUtcZRKOFbMtNn9lf55H
+   9fBLNFnCiXz+dCaCkm2XBBscYKRDfix4+AFg2fTRLuHfFlCMAZ6kzbCnN
+   gBciuEIx7e1AFJuboAD3aFmLghThIaGCeac8TsqyXr461oxpTH9EGmh8C
+   g==;
+X-CSE-ConnectionGUID: +sOr7SvHS/mj/u3j4bSScQ==
+X-CSE-MsgGUID: M9uhb7rZRqe4k577HdREBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3668145"
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3570036"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:12:21 -0800
-X-CSE-ConnectionGUID: vcGPzK3+SD2VjtflPP+3Hw==
-X-CSE-MsgGUID: YEO9uxwmS7epEac4XUN7MQ==
+   d="scan'208";a="3668145"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:21:46 -0800
+X-CSE-ConnectionGUID: LrMiaeS3SLixjVVL2Vw09w==
+X-CSE-MsgGUID: BrXfmnB9StKvEQZHkNoaNA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="9734937"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa007.jf.intel.com with ESMTP; 17 Nov 2026 02:12:19 -0800
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id D286B99; Tue, 17 Nov 2026 11:12:17 +0100 (CET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-iio@vger.kernel.org
-Cc: Peter Rosin <peda@lysator.liu.se>,
-	Jonathan Cameron <jic23@kernel.org>,
+   d="scan'208";a="9754083"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:21:44 -0800
+Date: Tue, 17 Nov 2026 12:21:42 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Mudit Sharma <muditsharma.info@gmail.com>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v1 1/1] iio: afe: rescale: Don't use ULL(1) << x instead of BIT(x)
-Date: Tue, 17 Nov 2026 11:12:16 +0100
-Message-ID: <20261117101216.1486231-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: bh1745: fix 16-bit register accesses
+Message-ID: <avwqtvhrxmgLe8np@ashevche-desk.local>
+References: <20261116194214.45174-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,31 +82,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261116194214.45174-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-ULL(1) << x is just an open-coded implementation of BIT_ULL().
-Replace the former by the latter.
+On Tue, Nov 17, 2026 at 01:12:10AM +0530, Arnav Kapoor wrote:
+> The 16-bit colour data and threshold registers are little-endian
+> LSB/MSB pairs, but the driver accesses them through regmap_bulk_read()
+> and regmap_bulk_write() with an int or u16 buffer and no byte-order
+> conversion:
+> 
+> - bh1745_read_raw() reads 2 bytes into an uninitialised int, so the
+>   upper 16 bits returned to user space are stack contents.
+> - bh1745_read_thresh() reads 2 bytes straight into *val, which the IIO
+>   core leaves uninitialised, with the same result for the event
+>   threshold attributes.
+> - bh1745_write_thresh() writes the first 2 bytes of an int, which are
+>   the upper (zero) bytes on big-endian.
 
-Note, the rest of the code properly uses BIT()/BIT_ULL() already.
+> - bh1745_trigger_handler() stores the raw bytes in a u16 although the
+>   scan type is IIO_CPU.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/afe/iio-rescale.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I didn't get this, what's the problem here?
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index b3cc610b48b8..25e179a3706b 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -67,7 +67,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 		if (scale_type == IIO_VAL_FRACTIONAL)
- 			tmp = *val2;
- 		else
--			tmp = ULL(1) << *val2;
-+			tmp = BIT_ULL(*val2);
- 
- 		rem2 = *val % (int)tmp;
- 		*val = *val / (int)tmp;
+> Use an __le16 buffer for all of them and convert with le16_to_cpu() /
+> cpu_to_le16().
+
+Otherwise seems legit to me.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+And you also need to add
+
+asm/byteorder.h.
+
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
