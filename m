@@ -1,82 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.171
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794941953;
-	b=ra+tTKFof5XIiUl4lMvaNH8Gz8a+DHSZ1aOdHn0Zo0/6umUMa76PIdkVC+Ra+z6tACd1
-	 qSHjo8jDIFCFZMbYjOkAtSKEpPkNAyMVxTN03rEEhBrdrOHM9wYPH8c2Vht2XxFVGiB6U
-	 zQYLiDTNlmz2RTJkxjrK5cUdAwJN5sWMqL34zj/1ILc7otQuBU1BU5PHnz9SQqsueYZY0
-	 cwMWrq2bbZ1Cbhh2FD3AmE2zh4VLmULYnDa+DPbfsLz89BJTwZMHXjbVnyW50i966OzHC
-	 iBysndO91eqsOG75XbDkr4OkzJJ4WmZMPmwxnEOOUY2uVIhNKjf006ee2nMvYQtSf0A==
+	t=1794942124;
+	b=MJR1DgCaCCzOyzolwwL67UZTeoUF1dz+1MAP/nTtLNPu7TLERcp9IBx58lHgmO3fjcez
+	 Ld5hAzSIbb8vJbvLOiNbpbp3jPKRauAJgQq6IOuUMJpx8neeXciEPK/lj45gmaChYna0Z
+	 AjLtsyxo3iyKKoFviZRSfI5zvuTKpo4liulkVI2Ha29guM57UoS7kmz9Eba+j/S/rZ9CC
+	 zFzcJMfpHRFexN0xMBUJ0EbI72kfJw2PnbulYpI2+rtpNR/b5qZUnm+U2jzRUmuUEJ6LX
+	 0RxTKU+GOCRQmpCJ+7vuveuYqE4CdqnKNjqXFr9YFnTYN6aigEMaCBxT9kwFX2ouzFA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794941953;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-	 Organization;
-	bh=7hJxtqXBPfqark14BY8bw5v3+/Teimr8R1AXsM1mMRI=;
-	b=c9nWdcocak0XpNcla5zekbD5dWy/8KOB9eKfjxGC3fr+/HIqWsq/znC9hK5OarjDvOlC
-	 WDO/nEN2pkGGIFR53v2kXdaIEqOcqzEGBwJbvjasOapRtxOBLDtqLqM2HZ5Bjm40/Eyfm
-	 Ek5hIif2FH7+cLhCN9VqJ+NaDIh8OfohbzDf1x97yvAPtZpnOWLeU/yT3LR4Wj6o2/tBg
-	 NbNIOp6SEz3qIqOnirEYb68I+AnhMAKnAN9TFEzV/oC1UpblsDJHYdLIwpEbPk+lb93N8
-	 RgUnFlWjrcoe4oOk6bG6VXZ5xZDPYy9BMqO3KTfHAiVeiwMZFxx3r00o01cjVNy6Ykw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794942124;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=4RYfNMG1eKpHA0KEjn+s6+L4SEDBs5GP7IGY9wLwXNc=;
+	b=uHl0nPC2njTm7Ewq5cI5zCfhUp4RvsKBpvRMaro+COX1OI+oO6xssiIGB1j+On5cp0Yl
+	 AJE0LxGx2v8pKKZmVelTSyFNH/SxUvw+Y+lMzKZyTWxfGpp2ThZbPAQrFRCp65FbMtZZg
+	 DwFJQsR1g/QY5w+LvUwycLntTrSfKRh1QjX6DmQ1OXc2WXaKJ94pWfpS8SWgpJ+mXA0Nj
+	 jVbfvdg/Wz0gV79sxNbofOlUcICaR6Z4Nw3qEhiJkUnYpxYwMUBBQaP3Cm7gkWh+syVey
+	 3RmomMY1Fx9SoUw8ks9syykAepaTmrK4VORorahO79rzV2NPvqet738Zh2KgNKvWB6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hWBmnMLa;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zCEBpQme;
+	arc=none smtp.remote-ip=74.125.82.171
+Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5447E606A32A;
-	Tue, 17 Nov 2026 18:59:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5447E606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD4D3606A31C
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 19:02:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD4D3606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hWBmnMLa
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794941953; x=1826477953;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=vkhc7EfR0Bckp6Ddz+uAhm9P/S4T58+7MYjBoqJB++c=;
-  b=hWBmnMLaguV2VdP19SYGbFwXAFCY39HMrqo+SL3Qk+L7j+sYckIc3+cA
-   WAYq3RSspB7BT++hsce3TiXfx0zquNc/32TRRl60J416EBdhrqWU/Iwu8
-   OVazX9Us0vFRr5lrtno7GVzEaJ7uHg5Wn4+bGYigad1QYIkVBiQQGaQEd
-   leN+4U1upKP/5LJyFlGRl+yOiDYnp9n3WoSglGG/kPDMnx5VfungT24/r
-   mpdxWvLho3b2RrhF5xflt/5YSq4N6b6X0g6tPlIKoQWZ7K7yKYMY7Vxg8
-   /9oPO+MT2XQC7DbKv0TGdVr39LLlOCYrcrzVa5v2M1FvA9HeJflC8SRgj
-   w==;
-X-CSE-ConnectionGUID: TqTRbcJFSbyQexm1IQBeNQ==
-X-CSE-MsgGUID: m/rp8wG7RvqJ8B2bR85RLQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3622458"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3622458"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 10:59:12 -0800
-X-CSE-ConnectionGUID: p0WP9NnaTJCTHj6/n3Z58Q==
-X-CSE-MsgGUID: qtspzAJ3SliWgSU7v9IE7g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="9907548"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 10:59:09 -0800
-Date: Tue, 17 Nov 2026 20:59:06 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zCEBpQme
+Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-3704d30b84fso370942eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:02:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794942123; x=1795546923; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=4RYfNMG1eKpHA0KEjn+s6+L4SEDBs5GP7IGY9wLwXNc=;
+        b=zCEBpQmeKODCcUnjNt3SwTVc9vCY9g4p4A1QpJYIYztkjpn7a9GsEGU2qeQ6XA358B
+         XFgrI/EVWTuJujdI4g39EkK0EuQSWLPGdYvdQMfYnCOpkFjqitTiwIFs//Mj2e3Hiza4
+         VFF9hyrefKmjPZMCpbji5mSK5QmhieAyjgJS8KScpm8UZGtbti2tRQKtkCRxzgWzUknA
+         5JmlR2olm7l4oqWaiMZxHXe5+sfnJDSMoRXKRhw+CwAP2QMaafvkTsvWRNeS/BGVAsYf
+         vEfjHXqIYYEhLTWxx2jda9HfhBQx+MdYgzG3xKw7/lVkzRdnT1z5J3xHAY0ZTKkpmCY+
+         z0zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794942123; x=1795546923;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=4RYfNMG1eKpHA0KEjn+s6+L4SEDBs5GP7IGY9wLwXNc=;
+        b=xde6B2TGtTWzP1K1ipB6HI4NKYoqLdXyh648TgWxeuQN3W/3X9fKNEH0dAT7qSIyJR
+         Tq669c7lcnp17xpDnOklIETVl0Z6CWEscPlCgNrIHDLqh0zrtlgMO2+GT1i9sr6v4CXp
+         0aNOCP3oJx7XEpyIIV+ArnxNWr8gDl6anvPbHkEep3MmsB0j6k5ScPB9evbCG35Xsitm
+         xeC1Houy+KAWbAAiO06EehywxeU87fqb7KQaR6I43PJM6WPBJXIJRLarNO3bHGVKLNPP
+         WqHiY+moTQSBgjIRZcf4TB+0b2W20a0nny01XtBTxcV89VOgOHCRWNL+R3MdzKA3Ib+a
+         enVw==
+X-Gm-Message-State: APuU4Z+pSMkRw5/q656+O8mCdvtsYfGpT/g+K0JQ1sgR/QSVO/F31YVo
+	/vYbWZXsTxrAWA/7VJa2xmgsTh2SYg0m9MQ+Mb8GNN62c6rnCYR0cJp/
+X-Gm-Gg: AZFdTZeBbAxAkt7zWwv6eyk9r3IKwi4+XbViAYfqX6lJqXcEAVLiy/fW1hDYHrMW55A
+	Qi4EJYE1i6oKPua8T7rI+jmoGcZ0OTKaqYXlC7gwEgAd8fOsQN/PX1pD5+xYIcfyN6+ozgq+EwB
+	cP2XAIa13fBusv3SQA6dXLCr4iFZbQtdqv8JUfK+8XXILz9aDEXWJOdDQA3QHbuiHWP8NlBxT+H
+	WfReLTJAyLOO/hTX+Gz8pIDDCwuEVtJOf09qp1j5/kggtMqtuoV6cmyLDnOLDolDnoS7o2rTLDm
+	A+VmkWQSxbse6nKW4Jc/a07EriYKwSl2viHH9I9SbqflzZLQyjRjQ2IxHg1jGCkfqJR6YlcNrRt
+	TiX9S/ExkMMfjGWEi02lmqM6/DJB+7IO9Rz7PeSjEp4ZJGHAoF4mkEx++Bm/gNrktw36cTs8/3E
+	vSj1lD0FVNdK9OjvYLUxACiF9VHmdKfV1bQr6SQqkC7OAt32/npkJRNbldQFSsq1YxFz3t7WW/g
+	/rqMbab9dhmTnNZ6RFpNLXvu2E9aNFN4/MFL49XZmMg7m0Pw0o+YhJhQDq4nsKJ3jYdbF4eMl6a
+	8pgGK9Qyz1BzfuKJr2YGFVMF9ms7WCfhZGuYZm4Yt4v94/UzDroN5brtvTbWu2DR1phDLxFB5Hx
+	ugkxiVqfBMr4qt1INyu1LosRtOR8p9YpwwbsVs2OyEVgUVuHr8pRW+4DFVESYfCYtdaMOf2jgrh
+	siJyuCjLx2QNwKwURE6ug/FXR0rISi4lxcyOCbND7/wg==
+X-Received: by 2002:a05:7300:cd90:b0:36c:a154:db1d with SMTP id 5a478bee46e88-3827d8222b6mr545636eec.4.1794942122580;
+        Tue, 17 Nov 2026 11:02:02 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-379559189e8sm46300587eec.11.2026.11.17.11.01.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 11:02:02 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] iio: proximity: sx9324: fix proximity threshold
- writes
-Message-ID: <avyj-lOGvj04A_Ak@ashevche-desk.local>
-References: <20261116205320.26070-1-kapoorarnav43@gmail.com>
- <20261116205320.26070-3-kapoorarnav43@gmail.com>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: proximity: sx9324: Convert GENMASK() to use static parameters
+Date: Wed, 18 Nov 2026 00:31:55 +0530
+Message-ID: <20261117190155.47641-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
+References: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,110 +102,16 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261116205320.26070-3-kapoorarnav43@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 17, 2026 at 02:23:10AM +0530, Arnav Kapoor wrote:
-> sx9324_read_thresh() reports a PROX_THRESH code r as r for r <= 1 and as
-> r * r / 2 otherwise, but sx9324_write_thresh() converts back with
-> int_sqrt(2 * val).
+On Tue, Nov 17, 2026 at 03:35:56PM +0100, Andy Shevchenko wrote:
+> There is no need to use run-time calculated masks in the code. Besides,
+> GENMASK() over non-static parameters might lead compiler to generate
+> much worse code.
 
-> For odd r the read value is (r * r - 1) / 2,
+The new extraction and packing are equivalent to the old per-pin masks
+for all register values and DT inputs (checked exhaustively), and the
+patch applies cleanly on top of my pending sx93xx series.
 
-No, it's r²/2 but in integer arithmetics. That's why for odd number squares
-it gives 1/2 that becomes 0.
-
-> so writing back the value that was just read programs r - 1: setting the
-> threshold to the value it already has lowers it, for 127 of the 256
-> codes (3, 5, 7, ...).
-> 
-> The int to unsigned int conversion also lets some negative values
-> through: 2 * val wraps, so e.g. INT_MIN is written as 0 and values just
-> above INT_MIN as small thresholds instead of being rejected.
-> 
-> Reject negative values and use int_sqrt(2 * val + 1), which picks the
-> largest code whose reported threshold does not exceed the requested
-> value and makes read_thresh() and write_thresh() inverses of each
-> other for all 256 codes.
-
-So, for the read part
-
-	reg		value
-	0		0
-	1		1
-	2		2
-	3		4
-	4		8
-	5		12
-	6		18
-	7		24
-	....
-
-For the write part (the negative is problematic only on 32-bit case IIUC)
-
-	value		reg
-	-INT_MIN	0
-	-INT_MIN + 1	1
-	-INT_MIN + 2	2
-	-INT_MIN + 3	2
-	...
-	0		0
-	1		1
-	2		2
-	3		2
-	4		2	// has to be 3
-	5		3
-	6		3
-	7		3
-	8		4
-	9		4
-	...
-	12		4	// has to be 5
-	13		5
-	...
-	18		6
-	...
-	24		6	// has to be 7
-	...
-
-Yep, what we see is off-by-one for full squares. This is because division
-by 2 in integer arithmetics makes it floor number. So, what you want
-to have is a correction for all odd numbers.
-
-...
-
-> static int sx9324_write_thresh(struct sx_common_data *data,
-
->  	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
-
-This one is not used in the conditionals, so the new check may well be done
-before it.
-
-> +	if (_val < 0)
-
-Checking _val after assigning val to it is confusing.
-
-> +		return -EINVAL;
-> +
-> +	/* Inverse of read_thresh(), so that writing back a read value is a no-op */
->  	if (val >= 1)
-
-First of all, I would drop the '=' here.
-
-> -		val = int_sqrt(2 * val);
-> +		val = int_sqrt(2 * val + 1);
-
-And here I would rather use (val % 2) instead of 1. See above why.
-
->  	if (val > 0xff)
->  		return -EINVAL;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
