@@ -1,85 +1,103 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794904033;
-	b=oUtinbFmwjC/xKM4p88InPvxMbLRfiBs98AZ7AOb3VTYFhDgfTWcz1oVTawDbTKkx9jP
-	 o0rngSowoDMCwxGcO1oXOp/ML3JGTf3y6GKEecUvIJlSe5GnL5lrz4UGVTc/uGzfYcxXE
-	 AcC+lhD+E87nUVrT0ag1huL7oB9qHItUhfmvwEuOja/YToH6FdAXq8DERoyjD0FPSAwj9
-	 7G8NNuyftIiDYuudcAcRPbhzsX551Ac5jxWFRw0i7Rsrkp7PIHT+gnf0dbj03pt24YsVh
-	 tOAcGH3ZzGY/DLjvw/PB1ZQSsWx8Ub1LX29E6CgQU/XQb2O6mS5UaMQ8xcGytLhLOsQ==
+	t=1794904153;
+	b=IDR6Eb9KnJzeYNuIuvI6ka0DdTRE8X5HXBzo6QgNRVzhNVi+obyKYfc4R4EcRKUA8mqh
+	 XJKkK4b07+jJKMEFJOj4KdzKoot7cDkdpHkCNlvhVvJ5+Cgum5DVM9xnV1kgupwG9TN6w
+	 l9+mrDgNSgGAFga4G9pjG+xNwEJraC9T9wpMFbH5EBQ/WNqcdMO21Z0cAQDa/lVchvyoS
+	 nPsIyzJYdnxjN0vp5jtMFCId/6+K4dDMz/2upSS9+gPveWXqCWQEJLA3Lg7VBne1QfIKv
+	 lmxs/LrbSX6eFjsgf6DbkH5uF64niSN2eU01ZAs3bN1VchFKsjaQEUeusxssvzn0bZA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794904033;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=Ed7iUS0U5CnvPsuOYpamrbAR5C5+fE6nd2B780j81oU=;
-	b=Bqniaa3CwGSGU0u7RNkoFaWMtZccdJyeUsf8BziCw9q7tsa+viYQ2pbZpxHIvNQorL52
-	 I8uF54meSMhiBo9ippPMygBFP5qfo495U1KZZWBDyJv1a0JxzeROPsPOHWNyBtWaKDKaB
-	 hs186NzD2hbRFSA+oQlcNsnR60kUfV5rHK60nDCBCL6ZdRqD+e7pcNhkpUL2e51tKfzjU
-	 IAVjWeq2GmnU4mbJv/v404icajFRf0aICJpeOIOKM52fPfsE/BWa5JcDdq0f2vqse+eMd
-	 n7GlqLVgesrmbrajIEt1vPuHDu33pp7XvUigFvTWRxpkLzoqPbapyPglJuj1/wcxPnA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794904153;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=6oO12UtU+mARzb/f/lHQkDV3mWLu+MrESDSJBwclKIw=;
+	b=3iOSH89/DAMplzMWrj/MHgky/RS2MI45rGvU2+nbJkxt6ke28CKwyXP/gwOHE2AJGxYo
+	 x1rL/FTo7r8TXJs80g+wiAPsUvvmbJ75X5VbiHOXCMzrE3l8/BdDGe9jt2WTSfTJNjr+0
+	 BO7zgjJwah2j//zm7yKHl2jtC/TdeOHRr0fH/dOA+RhbUbnljvQ4n7PklGi5juTndlvzm
+	 Ndk8j/0FMZLeNOsUMoBqSGZDF/vIhtdWDcEeoOOVkKtk+HX8g53DBsOwAA/Ey7qGcAeHv
+	 PHpmUWVz9gw7CS35RGFdsnJ2Jv79GJTNHZ3qiHtr1a3TrXoDSVXWHk0V0XsakuzbrSA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=h+zXrz95;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nB+Uumtt;
+	arc=none smtp.remote-ip=209.85.210.172
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57830606A31C;
-	Tue, 17 Nov 2026 08:27:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 57830606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0436D606A89D
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 08:29:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0436D606A89D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=h+zXrz95
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794904032; x=1826440032;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dMXD8ZD8ryDSCMyt3FwGmokXKv5XQH3eCmXH6aPFcug=;
-  b=h+zXrz95/JDaFfvlTL7OWpMdQoxG1nt0xmRHXWSnOmWtuUGn08aPCotl
-   l05Wi/XBf4zMYu8yYH9G0IE7dEO5akVbkk3CZps1VAx4u/M1cDilKvjpZ
-   m3aziIXNi2G/1gdHi2tm/+tzy+v86i6I0rmiuGvEejwx7MEb7UwQfBynd
-   HQLQR3sLq+/4YcIS2e05C6HqWkeGjw2mER/v5U56LW58xS1iKD4xpleAI
-   iuY4g0SU8FfvrA8y3Wm087QAXay9Df7UowHQ7CZVrX51M8CbputzWllRK
-   fXTAgzuFYHsjnEuh8X6bsFniR9pRlLdnoK0Yv1B/ZKecRGIObNcuhenIc
-   g==;
-X-CSE-ConnectionGUID: G9Eka+AAQeudJIrRTAz3yw==
-X-CSE-MsgGUID: cKmJJYiASriiFHovMqCxyg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3774903"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3774903"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 00:27:11 -0800
-X-CSE-ConnectionGUID: Jk00HV35TASG//wsHNBoJA==
-X-CSE-MsgGUID: xt88/7hFRkKbVtmnzqxi7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="9853008"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 00:27:07 -0800
-Date: Tue, 17 Nov 2026 10:27:04 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joseph Telaak <joseph@telaak.dev>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Peter Rosin <peda@lysator.liu.se>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 5/5] iio: potentiometer: mcp4018: Add Analog Devices
- AD5246
-Message-ID: <avwP2P1zTgFteODM@ashevche-desk.local>
-References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
- <20261116-iio-ad5246-v1-5-ef6b7c06d4b0@telaak.dev>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nB+Uumtt
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-8c20d68c83fso381639b3a.0
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 00:29:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794904150; x=1795508950; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6oO12UtU+mARzb/f/lHQkDV3mWLu+MrESDSJBwclKIw=;
+        b=nB+Uumtt8XY1eeIvqfgultY8e61E/Fz76yEglyiAPOuohIePvWCG6l3BUHRbvJeQYE
+         1AwlTYTRH8aa/s1WxPBtb8A7L7kbOkb2re0TgO0c/6F3p0ZqXhcqrfA6zqUugFKnCR4I
+         bJHIB+2nLROeqXWnVuFrFGUx4/6xLJXtxZ6XYyOCrBeqBMWD8+O3b67+vKoX1pyYTW5o
+         KPbt3ZQQQoAKNVzwmEXP3PMpxg/4lflWbSeXPNTQKeOgyf/LEiYm0JM9+DHDnbRgs67W
+         uPNOytV565o2Yg/irsmo3MOwBpI6cPX4qyRq780Yczzh1dBjRQFxivuH63AXISa0+3Nh
+         y/JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794904150; x=1795508950;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=6oO12UtU+mARzb/f/lHQkDV3mWLu+MrESDSJBwclKIw=;
+        b=ux6nwiaii8dVbD/SJFh/3Nh2YnxE9Gr/4z48HjUt5Nv69+CqDj+f/dcHmNi5mhTQTy
+         094aM9RegvVVEmd9pC9+vkwK0U4Cm/KCareFgQ49+S5Fh7dTf7gTPhtt4sZobt0eZzUg
+         TTqO1VMDEa5eaA9NSF8gBr8HO2sJXualSfOodHnPAQAHOrrHEy8WZXiZix1vdStMiZ2X
+         ktinEppBDLLOZFqGoYtXxtoXEcqVl8KpRYsLO6Enu/xJKvry1nxa3ihuZ5wh7UL+TZTz
+         HlRRK4kwgZjPpJ6stS6UVpJp79cQqovfhH3cgLQIpMv+DKvQ763vJVF4SgIgcs/h0M1u
+         PMHw==
+X-Forwarded-Encrypted: i=1; AL+hErE8iNmzLRmq4n0bXz+2y7t8PzkwHvIVNbVPHEYEdswdBCFuBwEKLdRX6V79NiuQ9KtcjoQUQETC/Ts=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/MrZvxTsXD+pk8P5c1lOjJhdcoKWLX2CyoRgbO0FugegJ4C2sJ
+	O/IzqlZDzvbqhCBN1OlU8AoS6TctNhVa0gcvzAnL+ODMJTsCYSUc51qd
+X-Gm-Gg: AYBFou3kv+YRVRQiy7/fDg/xwQp4+WtMBeWp7E6YE26SDVzKJwqW7alref5KWesgwy4
+	IH0W5Sqs5qFksdar4va38AUM+HXTsqPo/Num+bOhue0QCB7GBAgkeyyluLhkan8cBSolLPZ45HP
+	W5pnzcOrbaWe52kpWcVHajKobr1sFFXdBEzwMwOmNmbi2jPk2XXpeMRXXeVdHNv9kHbg/Y/dvYJ
+	9Dr2/pVkZY+qYeICYAAOsTfvEuoj8tDCiRsAAWvrW16eXAwKeBByfpix+yKcoj4QMBFYw3/v5S/
+	ck584aFYHsyq6guip4x38N7FlXqoL1HiAD87AkBXD5Wf5pYoc2qCoggd8jzTMgjRFQ1yfVHkPII
+	niiKTJ3A7gWFx7EXMCSWGJj11hzklVgDnB8a07uj2myEVLdYlDFmu1BfQ8a2Ke1jcZpTPqt/jH/
+	/9uRcw0frHMdrYIUJCQJZhQOYSCpVEwr17XpxOA27VsgoG3I9B2Y7KMPWQoZEx8AdsQ/5baqRfm
+	9QGs/ERxBbJkrdwB9RPNv0WPBM5fiNWs5PEX0Xr1X1jhBE11PiTyshl2Hw8b6F22b7VZqLXj44a
+	LZTpvTIdpO8CTdAg9uPXZv+dr7NAGmbdIR3Me9xn0hSL50cG5cjB7OkRWKZy1qCPd+WWqU8KPXp
+	QIH5hJ9l0SAbWZdw=
+X-Received: by 2002:a05:6a20:431f:b0:3e2:3de2:5947 with SMTP id adf61e73a8af0-3fd2d7d033cmr1617615637.16.1794904150073;
+        Tue, 17 Nov 2026 00:29:10 -0800 (PST)
+Received: from localhost.localdomain (60-250-196-139.hinet-ip.hinet.net. [60.250.196.139])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cddc18a2191sm5422907a12.21.2026.11.17.00.29.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 00:29:09 -0800 (PST)
+From: Chi-Wen Weng <cwweng.linux@gmail.com>
+To: jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	chernyakin.victor.j@outlook.com,
+	cwweng@nuvoton.com,
+	cwweng.linux@gmail.com
+Subject: [PATCH v5 0/3] iio: adc: Add Nuvoton MA35D1 EADC support
+Date: Tue, 17 Nov 2026 16:28:29 +0800
+Message-Id: <20261117082832.1551574-1-cwweng.linux@gmail.com>
+X-Mailer: git-send-email 2.25.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,141 +107,215 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261116-iio-ad5246-v1-5-ef6b7c06d4b0@telaak.dev>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 16, 2026 at 05:59:54PM -0500, Joseph Telaak wrote:
-> The AD5246 is a 128-position digital rheostat with the same I2C
-> interface as the MCP4017/18/19: a single data byte writes the 7-bit
-> wiper and a single-byte read returns it, with no command byte. Add its
-> four resistance options.
-> 
-> Its resistance is D/128 of the end-to-end value, where the MCP401x's is
-> D/127, so the scale divisor moves into the per-part config.
-> 
-> The misc ad525x_dpot driver also knows the AD5246, by I2C id only and
-> through its own sysfs files. It can't provide an IIO channel, which a
-> consumer such as dpot-dac needs. The AD5272 is likewise in both drivers.
-> 
-> Tested on an AD5246 at 0x2e that sets a fan's speed, described as
-> adi,ad5246-010 with a vdd-supply. It probes, out_resistance0_raw_available
-> reads [0 1 127] and out_resistance_scale reads 78.125000000. Raw writes
-> of 0, 64, 100 and 127 read back the same value, and 128 is rejected.
-> Writes through iio_write_channel_raw() from an in-kernel consumer of the
-> channel read back as well (127, 38, 0 and 76).
+From: Chi-Wen Weng <cwweng@nuvoton.com>
 
-...
+This series adds IIO support for the Enhanced Analog-to-Digital
+Converter (EADC) found on Nuvoton MA35D1 SoCs.
 
->  config MCP4018
-> -	tristate "Microchip MCP4017/18/19 Digital Potentiometer driver"
-> +	tristate "Microchip MCP4017/18/19 and Analog Devices AD5246 Digital Potentiometer driver"
+The EADC provides eight external analog inputs which may be used as
+single-ended inputs or as four fixed differential pairs: 0-4, 1-5,
+2-6 and 3-7. The VBAT input is internally connected and needs no
+devicetree description. It is not supported by this initial driver.
 
-Make it shorter and more generic, in this way you spread the same text to the
-top comment in the file
+The initial driver supports direct conversion and triggered buffered
+capture using sample module 0. Although the hardware provides multiple
+sample modules, this version uses only sample module 0 and therefore
+supports one active voltage channel per buffered scan.
 
-- * Industrial I/O driver for Microchip digital potentiometers
-+ * Industrial I/O driver for $SAME_TEXT_AS_PER_ABOVE
+The series also fixes the common ADC channel validation to reject
+configurations specifying both single-channel and diff-channels. The
+corresponding redundant constraints are removed from the MA35D1 binding.
 
-and to MODULE_DESCRIPTION().
+A reset control is required to put the EADC into a known state at
+probe and resume, and to recover from power-up failures without
+clearing ADCEN while the start-up sequence is still in progress.
 
-For example,
+The series is based on Linux v7.4-rc1.
 
-	tristate "Microchip MCP4018 and compatible Digital Potentiometer driver"
+Changes in v5:
+- Fix the common adc.yaml channel validation by replacing the existing
+  anyOf constraint with an explicit reg requirement and a mutual-exclusion
+  constraint for single-channel and diff-channels, as suggested by
+  Rob Herring.
+- Remove redundant channel-level validation constraints from the
+  MA35D1 binding.
+- Require a reset control in the binding and driver to reset the EADC
+  during probe and resume and to recover from power-up failures.
+- Clarify that the VBAT input is internally connected and needs no
+  devicetree description.
+- Do not specify the internal reference voltage in the vref-supply
+  description.
+- Use folded YAML scalars for prose descriptions.
+- Reorganize register definitions so register addresses, fields and
+  values are grouped together.
+- Describe the individual INTSRC0 sample-module interrupt-enable bits
+  explicitly instead of treating them as a single field.
+- Add paired ADC interrupt enable and disable helpers and simplify the
+  conversion error paths.
+- Document the ordering used when aborting a timed-out conversion.
+- Correct the comment describing PDREF.
+- Remove the trivial differential sign-extension helper.
+- Validate the effective scan mask in update_scan_mode() so callback
+  buffers and merged masks cannot request multiple voltage channels.
+  Commit the selected channel only after validation.
+- Wait for PWRM.PWUPRDY after enabling the ADC.
+- Use a full module reset to recover from power-up failures instead of
+  clearing ADCEN before PWUPRDY is set. Preserve the original error and
+  report any reset failure.
+- Read DAT0 during timeout recovery to discard an unread result and
+  clear stale VALID and OV flags.
+- Reset the whole EADC module at the start of hardware initialization
+  in both probe and resume, replacing the control-circuit reset and the
+  register-by-register clearing of inherited interrupt, compare and
+  trigger configuration. This also removes the access to the
+  non-existent SCTL8 register.
+- Split single-ended and differential channel parsing into separate
+  helpers.
+- Initialize local channel-tracking bitmaps directly using = { } instead
+  of separate bitmap_zero() calls, as suggested by Victor Chernyakin.
+- Remove the unnecessary raw variable in the triggered capture path
+  and read the conversion result directly into scan.channel.
+- Rework suspend and resume hardware handling around scoped mutex
+  locking.
+- Remove the buffer predisable callback. Every conversion path already
+  leaves the ADC interrupt disabled and ADIF0 cleared, and the callback
+  could access EADC registers while the clock was gated after a failed
+  resume.
+- Make repeated suspend handling safe after an unsuccessful resume and
+  avoid unbalanced clock disable operations.
+- Only call iio_device_suspend_triggering() and
+  iio_device_resume_triggering() while the buffer is enabled.
+  pollfunc->irq is not initialized until the pollfunc is first attached
+  to a trigger, so calling them unconditionally, as v4 did, could pass
+  an uninitialized IRQ number to disable_irq() and enable_irq().
+- Drop the redundant clk_enabled flag pointed out by Andy Shevchenko;
+  the suspended flag already tracks whether the clock is gated.
+- Add a comment explaining why the EADC register map is left uncached.
+- Describe the readable, writable and precious EADC registers in the
+  regmap configuration.
+- Apply the requested structure layout, variable scope, formatting and
+  control-flow cleanups, including the if/else chain in init_vref().
+- Drop the unused linux/io.h and linux/iio/trigger.h includes.
+- Require at least one external channel child node.
 
- * Industrial I/O driver for Microchip MCP4018 and compatible Digital Potentiometer
+Changes in v4:
+- Use the common ADC diff-channels property to describe differential
+  inputs and keep reg as the logical channel index.
+- Restrict differential inputs to the four hardware-supported pairs.
+- Restrict channel child nodes to the ADC properties supported by the
+  MA35D1 EADC.
+- Prevent single-channel and diff-channels from being specified
+  together.
+- Document that each single-ended input and differential input pair
+  may be described only once.
+- Remove interrupt-names and simplify the interrupt descriptions.
+- Update the binding example to demonstrate separation of the logical
+  channel index from the physical ADC inputs.
+- Update channel parsing to match the revised binding semantics.
+- Store physical ADC inputs in the IIO channel/channel2 fields and use
+  address for the logical DT channel index.
+- Reject duplicate physical single-ended inputs and differential input
+  pairs.
+- Use the physical positive input when programming the sample-module
+  channel selection and the logical index for firmware-node channel
+  translation.
+- Use interrupt index 0 instead of looking up ADINT0 by name.
+- Add the standard one-hot scan-mask validation callback.
+- Use iio_for_each_active_channel() when selecting the buffered
+  channel.
+- Use a fixed scan structure for the single-channel buffered layout.
+- Limit conversion results to the 12-bit ADC data width.
+- Always report -ETIMEDOUT when a conversion times out.
+- Make timeout recovery best effort so interrupt disable, control reset,
+  IRQ synchronization and stale status cleanup are all attempted even
+  if an earlier recovery step fails.
+- Use devm_regulator_get_enable_read_voltage() for the optional
+  external reference supply.
+- Rework clock management to explicitly balance prepare/enable state
+  across probe, suspend, resume, error paths and driver teardown.
+- Improve suspend and resume error-path handling.
+- Remove the redundant explicit REGCACHE_NONE setting.
+- Split interrupt status read failures from interrupt-source checks and
+  handle failures when clearing the interrupt status.
+- Use symbolic definitions for the ADC resolution and differential
+  scale width.
+- Use cleanup guards for mutex handling in buffered capture and keep
+  trigger notification outside the locked section.
+- Use more specific error codes for channel capacity, duplicate channel
+  definitions and out-of-range physical inputs.
+- Apply the requested regmap, control-flow and coding-style cleanups.
 
-MODULE_DESCRIPTION("Microchip MCP4018 and compatible Digital Potentiometer driver").
+Changes in v3:
+- Document all four ADINT0 through ADINT3 hardware interrupt outputs
+  and add interrupt-names.
+- Document ADINT3 as the shared conversion and result-compare interrupt
+  output.
+- Remove the redundant minItems/maxItems constraints from the fixed
+  interrupts items list.
+- Rework the channel binding for the fixed differential pairs and use
+  single-channel for single-ended inputs.
+- Add #io-channel-cells so the EADC can be referenced by DT IIO
+  consumers, and define the cell as the logical channel index.
+- Add firmware-node channel translation so sparse or reordered channel
+  child nodes are mapped by their logical channel index.
+- Restrict unsupported generic ADC channel properties including bipolar,
+  common-mode-channel, settling-time-us and oversampling-ratio.
+- Explicitly configure INTPOS for end-of-conversion interrupt
+  generation.
+- Explicitly configure the ADINT0 sample-module source and clear unused
+  sample-module routing.
+- Reset the EADC control circuits during hardware initialization and
+  clear inherited ADC interrupt enables, result-compare interrupt
+  enables and sample-module trigger sources.
+- Add timeout recovery using the EADC control-circuit reset, followed by
+  IRQ synchronization and stale status/completion cleanup.
+- Use iio_push_to_buffers_with_ts() for triggered buffered capture.
+- Avoid mixing cleanup guards with goto paths in the trigger handler.
+- Add ARCH_MA35 || COMPILE_TEST and HAS_IOMEM Kconfig dependencies.
+- Drop redundant linux/bitops.h and linux/mod_devicetable.h includes.
+- Use direct regmap helpers, explicit REGCACHE_NONE and
+  regmap_assign_bits() where appropriate.
+- Use fixed-width register offsets and kernel time/unit helpers.
+- Use size_add() for channel array allocation.
+- Request ADINT0 by interrupt name.
+- Improve system suspend and resume handling.
+- Address review comments from Jonathan Cameron, Rob Herring,
+  Andy Shevchenko, Uwe Kleine-König and automated review/testing.
 
->  	depends on I2C
->  	help
->  	  Say yes here to build support for the Microchip
-> -	  MCP4017, MCP4018, MCP4019
-> -	  digital potentiometer chips.
-> +	  MCP4017, MCP4018, MCP4019 digital potentiometer chips
-> +	  and the Analog Devices AD5246 digital rheostat.
+Changes in v2:
+- Reworked the driver to use regmap.
+- Added optional external reference supply support and IIO scale
+  reporting.
+- Added optional reset handling.
+- Added externally triggered buffered capture.
+- Added signed differential conversion handling.
+- Added fixed differential-pair validation.
+- Added system sleep support.
+- Added optional DMA properties to the binding.
 
-And here make it list that is scalable to expand
+Patch 1 fixes the common ADC channel property validation.
+Patch 2 adds the MA35D1 EADC devicetree binding.
+Patch 3 adds the MA35D1 EADC IIO driver.
 
-	  Say yes here to build support for the Microchip
-	  digital potentiometer chips:
+Chi-Wen Weng (3):
+  dt-bindings: iio: adc: Fix channel property validation
+  dt-bindings: iio: adc: Add Nuvoton MA35D1 EADC
+  iio: adc: Add Nuvoton MA35D1 EADC driver
 
-	  - MCP4017, MCP4018, MCP4019
+ .../devicetree/bindings/iio/adc/adc.yaml      |   17 +-
+ .../bindings/iio/adc/nuvoton,ma35d1-eadc.yaml |  174 +++
+ drivers/iio/adc/Kconfig                       |   14 +
+ drivers/iio/adc/Makefile                      |    1 +
+ drivers/iio/adc/ma35d1_eadc.c                 | 1036 +++++++++++++++++
+ 5 files changed, 1232 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,ma35d1-eadc.yaml
+ create mode 100644 drivers/iio/adc/ma35d1_eadc.c
 
-	  and Analog Devices digital rheostats:
 
-	  - AD5246
-
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called mcp4018.
-
-...
-
->   * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)
->   * mcp4017	1	128		5, 10, 50, 100
->   * mcp4018	1	128		5, 10, 50, 100
->   * mcp4019	1	128		5, 10, 50, 100
-> + * ad5246	1	128		5, 10, 50, 100
-
-Keep it sorted.
-
-...
-
->  struct mcp4018_cfg {
->  	int kohms;
-> +	/* Wiper position divisor: R = raw * kohms / div. */
-> +	int div;
-
-Why signed? Can the HW return something negative?
-
->  };
-
-...
-
->  enum mcp4018_type {
-
->  	MCP4018_103,
->  	MCP4018_503,
->  	MCP4018_104,
-> +	AD5246_005,
-> +	AD5246_010,
-> +	AD5246_050,
-> +	AD5246_100,
-
-Keep it sorted.
-
->  };
-
-...
-
->  static const struct mcp4018_cfg mcp4018_cfg[] = {
-> -	[MCP4018_502] = { .kohms =   5, },
-> -	[MCP4018_103] = { .kohms =  10, },
-> -	[MCP4018_503] = { .kohms =  50, },
-> -	[MCP4018_104] = { .kohms = 100, },
-> +	[MCP4018_502] = { .kohms =   5, .div = MCP4018_WIPER_MAX, },
-> +	[MCP4018_103] = { .kohms =  10, .div = MCP4018_WIPER_MAX, },
-> +	[MCP4018_503] = { .kohms =  50, .div = MCP4018_WIPER_MAX, },
-> +	[MCP4018_104] = { .kohms = 100, .div = MCP4018_WIPER_MAX, },
-
-Strictly speaking this patch can be split to two:
-- adding 'div' member and providing it for the existing chips
-- adding new chip support
-
-> +	/* The AD5246's resistance is D / 128 of the end-to-end value. */
-> +	[AD5246_005] = { .kohms =   5, .div = 128, },
-> +	[AD5246_010] = { .kohms =  10, .div = 128, },
-> +	[AD5246_050] = { .kohms =  50, .div = 128, },
-> +	[AD5246_100] = { .kohms = 100, .div = 128, },
-
-Keep it sorted.
-
->  };
-
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
