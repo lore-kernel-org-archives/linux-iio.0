@@ -1,98 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794942124;
-	b=MJR1DgCaCCzOyzolwwL67UZTeoUF1dz+1MAP/nTtLNPu7TLERcp9IBx58lHgmO3fjcez
-	 Ld5hAzSIbb8vJbvLOiNbpbp3jPKRauAJgQq6IOuUMJpx8neeXciEPK/lj45gmaChYna0Z
-	 AjLtsyxo3iyKKoFviZRSfI5zvuTKpo4liulkVI2Ha29guM57UoS7kmz9Eba+j/S/rZ9CC
-	 zFzcJMfpHRFexN0xMBUJ0EbI72kfJw2PnbulYpI2+rtpNR/b5qZUnm+U2jzRUmuUEJ6LX
-	 0RxTKU+GOCRQmpCJ+7vuveuYqE4CdqnKNjqXFr9YFnTYN6aigEMaCBxT9kwFX2ouzFA==
+	t=1794942387;
+	b=arvYb0Bc2K0EsjsbSseLL9q3GWIW8hQVwRof9X/I3Mr3K9I0ZLO6uhfmF8oIIJOwnGZM
+	 lYdhw9zf/0prf2RwJe2WyedpqjJW7nyCDfkoV3jTjpiVbmsLwtMtH+OUZUIGp07SWb5ms
+	 yoYzerw6cLErH11pYgH0DIZHtby8m2MQmM+p9RBSvmMWNRDWk8cgux/mmdrs6TUEHILB4
+	 4qB/1Um0FQRPqzX4gWcyiH/K+wk6iBCOvxfguPvQh9wg2MCAiMQLH9z5tVtolqsZ9Tq0V
+	 otsFcng0j0P1+yT3mmqQ+CVY5peB9z0ipC1qLQpvsU+2oOiRGMu+YO2Lu1DynysCR+w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794942124;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=4RYfNMG1eKpHA0KEjn+s6+L4SEDBs5GP7IGY9wLwXNc=;
-	b=uHl0nPC2njTm7Ewq5cI5zCfhUp4RvsKBpvRMaro+COX1OI+oO6xssiIGB1j+On5cp0Yl
-	 AJE0LxGx2v8pKKZmVelTSyFNH/SxUvw+Y+lMzKZyTWxfGpp2ThZbPAQrFRCp65FbMtZZg
-	 DwFJQsR1g/QY5w+LvUwycLntTrSfKRh1QjX6DmQ1OXc2WXaKJ94pWfpS8SWgpJ+mXA0Nj
-	 jVbfvdg/Wz0gV79sxNbofOlUcICaR6Z4Nw3qEhiJkUnYpxYwMUBBQaP3Cm7gkWh+syVey
-	 3RmomMY1Fx9SoUw8ks9syykAepaTmrK4VORorahO79rzV2NPvqet738Zh2KgNKvWB6g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794942387;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=ONV8yidisx/RIQoXMY9+iP5IXiVVLo6SvS4RZj3FJfk=;
+	b=boCDHir35SaUENiDKb/xRDEGSUYOxtHxiHcwN9wisyLARybUEB0Pv+VRcS5VyYNjtgTW
+	 c0TBOEzVmHONBbWcNYdKnGLkWLkoroBvTYlYDo8ajeOr7HWM6ew/9BqHJwO/vPY/wvU7y
+	 KLwunu1tS9HhAq6EoejH9vSgYKNFzA0eUOKajpUvn5Erxrd06M1DDp61EeFEKviOUZTit
+	 VDFWpmczBbMu7WCzEvWSTY2RzjshpMeQS55pJcFlB6MQVOvd68PM7wdGTM6tHW/E4F22u
+	 eU/hZqT9ocrNnd46UZ0aVgf3VZrXkTx4GSNh+OvTMzJT8wmJMn+QllemOhA/ettY0kg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zCEBpQme;
-	arc=none smtp.remote-ip=74.125.82.171
-Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YBdSkgGP;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD4D3606A31C
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 19:02:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD4D3606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92622606A31C;
+	Tue, 17 Nov 2026 19:06:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 92622606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zCEBpQme
-Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-3704d30b84fso370942eec.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:02:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794942123; x=1795546923; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4RYfNMG1eKpHA0KEjn+s6+L4SEDBs5GP7IGY9wLwXNc=;
-        b=zCEBpQmeKODCcUnjNt3SwTVc9vCY9g4p4A1QpJYIYztkjpn7a9GsEGU2qeQ6XA358B
-         XFgrI/EVWTuJujdI4g39EkK0EuQSWLPGdYvdQMfYnCOpkFjqitTiwIFs//Mj2e3Hiza4
-         VFF9hyrefKmjPZMCpbji5mSK5QmhieAyjgJS8KScpm8UZGtbti2tRQKtkCRxzgWzUknA
-         5JmlR2olm7l4oqWaiMZxHXe5+sfnJDSMoRXKRhw+CwAP2QMaafvkTsvWRNeS/BGVAsYf
-         vEfjHXqIYYEhLTWxx2jda9HfhBQx+MdYgzG3xKw7/lVkzRdnT1z5J3xHAY0ZTKkpmCY+
-         z0zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794942123; x=1795546923;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4RYfNMG1eKpHA0KEjn+s6+L4SEDBs5GP7IGY9wLwXNc=;
-        b=xde6B2TGtTWzP1K1ipB6HI4NKYoqLdXyh648TgWxeuQN3W/3X9fKNEH0dAT7qSIyJR
-         Tq669c7lcnp17xpDnOklIETVl0Z6CWEscPlCgNrIHDLqh0zrtlgMO2+GT1i9sr6v4CXp
-         0aNOCP3oJx7XEpyIIV+ArnxNWr8gDl6anvPbHkEep3MmsB0j6k5ScPB9evbCG35Xsitm
-         xeC1Houy+KAWbAAiO06EehywxeU87fqb7KQaR6I43PJM6WPBJXIJRLarNO3bHGVKLNPP
-         WqHiY+moTQSBgjIRZcf4TB+0b2W20a0nny01XtBTxcV89VOgOHCRWNL+R3MdzKA3Ib+a
-         enVw==
-X-Gm-Message-State: APuU4Z+pSMkRw5/q656+O8mCdvtsYfGpT/g+K0JQ1sgR/QSVO/F31YVo
-	/vYbWZXsTxrAWA/7VJa2xmgsTh2SYg0m9MQ+Mb8GNN62c6rnCYR0cJp/
-X-Gm-Gg: AZFdTZeBbAxAkt7zWwv6eyk9r3IKwi4+XbViAYfqX6lJqXcEAVLiy/fW1hDYHrMW55A
-	Qi4EJYE1i6oKPua8T7rI+jmoGcZ0OTKaqYXlC7gwEgAd8fOsQN/PX1pD5+xYIcfyN6+ozgq+EwB
-	cP2XAIa13fBusv3SQA6dXLCr4iFZbQtdqv8JUfK+8XXILz9aDEXWJOdDQA3QHbuiHWP8NlBxT+H
-	WfReLTJAyLOO/hTX+Gz8pIDDCwuEVtJOf09qp1j5/kggtMqtuoV6cmyLDnOLDolDnoS7o2rTLDm
-	A+VmkWQSxbse6nKW4Jc/a07EriYKwSl2viHH9I9SbqflzZLQyjRjQ2IxHg1jGCkfqJR6YlcNrRt
-	TiX9S/ExkMMfjGWEi02lmqM6/DJB+7IO9Rz7PeSjEp4ZJGHAoF4mkEx++Bm/gNrktw36cTs8/3E
-	vSj1lD0FVNdK9OjvYLUxACiF9VHmdKfV1bQr6SQqkC7OAt32/npkJRNbldQFSsq1YxFz3t7WW/g
-	/rqMbab9dhmTnNZ6RFpNLXvu2E9aNFN4/MFL49XZmMg7m0Pw0o+YhJhQDq4nsKJ3jYdbF4eMl6a
-	8pgGK9Qyz1BzfuKJr2YGFVMF9ms7WCfhZGuYZm4Yt4v94/UzDroN5brtvTbWu2DR1phDLxFB5Hx
-	ugkxiVqfBMr4qt1INyu1LosRtOR8p9YpwwbsVs2OyEVgUVuHr8pRW+4DFVESYfCYtdaMOf2jgrh
-	siJyuCjLx2QNwKwURE6ug/FXR0rISi4lxcyOCbND7/wg==
-X-Received: by 2002:a05:7300:cd90:b0:36c:a154:db1d with SMTP id 5a478bee46e88-3827d8222b6mr545636eec.4.1794942122580;
-        Tue, 17 Nov 2026 11:02:02 -0800 (PST)
-Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-379559189e8sm46300587eec.11.2026.11.17.11.01.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 11:02:02 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YBdSkgGP
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794942386; x=1826478386;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lpi+TTbxwx568hEuDzt3sLnsrTMp++AYoozCyuX0ehc=;
+  b=YBdSkgGPltLUKshcORYrtFLdMpOqLzEc9ScSaMfLx3G7uCS4Bh73a8LE
+   JbjMEQVgRIF0agbq4jtJwTRCyazAsEqnAYbtYVDna2D3csSZdxYND85gS
+   S0E+aK1Nga7v73n6fnMlX6kaW6kEabKqCm7VetzUtfL2gNVjo7DKAt3+i
+   /Us51oI9DjOINh//jvPRmL5jP1TKJCYrsXgBw67EV2eFvJnIrL13d9aqz
+   FsqkQ3dEDGes1rnssPrv2NZpDobUMI6pWQ5JMJACx3RRYHj4mlYhlp4ZL
+   hNfvI/DIZpyg8mLS2KfLTdVGPvRV4PXRnAfj4PKKauKVJ80BFn0sgbUGw
+   A==;
+X-CSE-ConnectionGUID: NHs2o3yDQOOLHywGB6mj2Q==
+X-CSE-MsgGUID: zxuiPNOVRHefUmvFdw8Z/Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3650906"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3650906"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 11:06:26 -0800
+X-CSE-ConnectionGUID: KEH076GzQMuK8nmGl3WZww==
+X-CSE-MsgGUID: MVdfJmBvSU+PA7xzAc0CNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="11846763"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 11:06:23 -0800
+Date: Tue, 17 Nov 2026 21:06:21 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: raffaele.tranfaglia@gmail.com
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: proximity: sx9324: Convert GENMASK() to use static parameters
-Date: Wed, 18 Nov 2026 00:31:55 +0530
-Message-ID: <20261117190155.47641-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
-References: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
+	Andy Shevchenko <andy@kernel.org>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: light: adux1020: return early on unsupported
+ channel types
+Message-ID: <avylrU1cexaQp1mM@ashevche-desk.local>
+References: <20261117-adux1020-guard-v2-0-89707fa070c9@gmail.com>
+ <20261117-adux1020-guard-v2-2-89707fa070c9@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,16 +84,216 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261117-adux1020-guard-v2-2-89707fa070c9@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 17, 2026 at 03:35:56PM +0100, Andy Shevchenko wrote:
-> There is no need to use run-time calculated masks in the code. Besides,
-> GENMASK() over non-static parameters might lead compiler to generate
-> much worse code.
+On Tue, Nov 17, 2026 at 07:11:02AM +0000, Raffaele Tranfaglia via B4 Relay wrote:
+> 
+> Now that adux1020_read_raw() and adux1020_write_raw() can return
+> directly, check the channel type with an inverted condition and return
+> -EINVAL early instead of nesting the work in an inner switch or if
+> block. This removes one level of indentation and makes the two
+> functions consistent with each other.
+> 
+> While at it, drop the stray semicolon after the closing brace of
+> adux1020_read_raw().
+> 
+> No functional change intended.
 
-The new extraction and packing are equivalent to the old per-pin masks
-for all register values and DT inputs (checked exhaustively), and the
-patch applies cleanly on top of my pending sx93xx series.
+...
 
-Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> static int adux1020_read_raw(struct iio_dev *indio_dev,
+
+	struct regmap *map = data->regmap;
+
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		switch (chan->type) {
+> -		case IIO_PROXIMITY:
+> -			ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+> -			if (ret < 0)
+> -				return ret;
+> -
+> -			ret = adux1020_measure(data, ADUX1020_MODE_PROX_I, buf);
+> -			if (ret < 0)
+> -				return ret;
+> -
+> -			*val = buf[0];
+> -			return IIO_VAL_INT;
+> -		default:
+> +		if (chan->type != IIO_PROXIMITY)
+>  			return -EINVAL;
+> -		}
+> -	case IIO_CHAN_INFO_PROCESSED:
+> -		switch (chan->type) {
+> -		case IIO_CURRENT:
+> -			ret = regmap_read(data->regmap,
+> -					  ADUX1020_REG_LED_CURRENT, &regval);
+> -			if (ret < 0)
+> -				return ret;
+>  
+> -			regval = regval & ADUX1020_LED_CURRENT_MASK;
+> +		ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = adux1020_measure(data, ADUX1020_MODE_PROX_I, buf);
+> +		if (ret < 0)
+> +			return ret;
+>  
+> -			*val = adux1020_led_currents[regval][0];
+> -			*val2 = adux1020_led_currents[regval][1];
+> +		*val = buf[0];
+>  
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> -		default:
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		if (chan->type != IIO_CURRENT)
+>  			return -EINVAL;
+> -		}
+> +
+> +		ret = regmap_read(data->regmap, ADUX1020_REG_LED_CURRENT,
+> +				  &regval);
+
+		ret = regmap_read(map, ADUX1020_REG_LED_CURRENT, &regval);
+
+> +		if (ret < 0)
+
+While at it, drop ' < 0' parts for regmap error codes.
+
+> +			return ret;
+> +
+> +		regval = regval & ADUX1020_LED_CURRENT_MASK;
+> +
+> +		*val = adux1020_led_currents[regval][0];
+> +		*val2 = adux1020_led_currents[regval][1];
+> +
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		switch (chan->type) {
+> -		case IIO_PROXIMITY:
+> -			ret = regmap_read(data->regmap, ADUX1020_REG_FREQUENCY,
+> -					  &regval);
+> -			if (ret < 0)
+> -				return ret;
+> -
+> -			regval = FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
+> -			if (regval >= ARRAY_SIZE(adux1020_rates))
+> -				return -EINVAL;
+> -
+> -			*val = adux1020_rates[regval][0];
+> -			*val2 = adux1020_rates[regval][1];
+> -
+> -			return IIO_VAL_INT_PLUS_MICRO;
+> -		default:
+> +		if (chan->type != IIO_PROXIMITY)
+>  			return -EINVAL;
+> -		}
+
+> +		ret = regmap_read(data->regmap, ADUX1020_REG_FREQUENCY,
+> +				  &regval);
+> +		if (ret < 0)
+> +			return ret;
+
+Ditto.
+
+> +		regval = FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
+> +		if (regval >= ARRAY_SIZE(adux1020_rates))
+> +			return -EINVAL;
+> +
+> +		*val = adux1020_rates[regval][0];
+> +		*val2 = adux1020_rates[regval][1];
+> +
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>  	default:
+>  		return -EINVAL;
+>  	}
+
+> -};
+> +}
+
+Strictly speaking this doesn't belong to the patch, but since it's intrusive
+enough and the change is in the same (touched) function I don't mind it be
+here.
+
+...
+
+> static int adux1020_write_raw(struct iio_dev *indio_dev,
+
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		if (chan->type == IIO_PROXIMITY) {
+> -			i = adux1020_find_index(adux1020_rates,
+> -						ARRAY_SIZE(adux1020_rates),
+> -						val, val2);
+> -			if (i < 0)
+> -				return i;
+> -
+> -			return regmap_update_bits(data->regmap,
+> -						  ADUX1020_REG_FREQUENCY,
+> -						  ADUX1020_PROX_FREQ_MASK,
+> -						  ADUX1020_PROX_FREQ(i));
+> -		}
+> -		break;
+> +		if (chan->type != IIO_PROXIMITY)
+> +			return -EINVAL;
+> +
+> +		i = adux1020_find_index(adux1020_rates,
+> +					ARRAY_SIZE(adux1020_rates), val, val2);
+
+Split logically.
+
+		i = adux1020_find_index(adux1020_rates,
+					ARRAY_SIZE(adux1020_rates),
+					val, val2);
+
+or make the first line longer
+
+		i = adux1020_find_index(adux1020_rates, ARRAY_SIZE(adux1020_rates),
+					val, val2);
+
+> +		if (i < 0)
+> +			return i;
+> +
+> +		return regmap_update_bits(data->regmap, ADUX1020_REG_FREQUENCY,
+> +					  ADUX1020_PROX_FREQ_MASK,
+> +					  ADUX1020_PROX_FREQ(i));
+>  	case IIO_CHAN_INFO_PROCESSED:
+> -		if (chan->type == IIO_CURRENT) {
+> -			i = adux1020_find_index(adux1020_led_currents,
+> +		if (chan->type != IIO_CURRENT)
+> +			return -EINVAL;
+> +
+> +		i = adux1020_find_index(adux1020_led_currents,
+>  					ARRAY_SIZE(adux1020_led_currents),
+>  					val, val2);
+> -			if (i < 0)
+> -				return i;
+> +		if (i < 0)
+> +			return i;
+>  
+> -			return regmap_update_bits(data->regmap,
+> -						  ADUX1020_REG_LED_CURRENT,
+> -						  ADUX1020_LED_CURRENT_MASK, i);
+> -		}
+> -		break;
+> +		return regmap_update_bits(data->regmap,
+> +					  ADUX1020_REG_LED_CURRENT,
+> +					  ADUX1020_LED_CURRENT_MASK, i);
+>  	default:
+> -		break;
+> +		return -EINVAL;
+>  	}
+> -
+> -	return -EINVAL;
+>  }
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
