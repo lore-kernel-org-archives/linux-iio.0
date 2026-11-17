@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794910061;
-	b=McqfXCK1S+tv2xActuLEFlC661EgwJsN5LDJH31ewhIX2jM0/eK5bQGOd5rgZmQx8dZ8
-	 ZJaO6KB8oqIG7yRDY3KZceHzacsCBBZNXV98U0h6C7ojYYKorHR6kFuSzCEcUe2c2MsTa
-	 jgpUunkS+PArh0GNKUF79hPgSk76p8+Q2CtAEpljJQ9i/ucslgnq0aya4gMfxOSIx+iC6
-	 09YM7pm7VknxHlI2+1OcneyJD6Aj4RC5rJcekdtlZMT+Jf0tgo0zamm/Lym4P5baWPs/B
-	 arBpjL6mlvT7RaEBokKeYbx+rkIOo6IWRGyyeTlsmSNaf1RsUk77Tc/8oZVBr8C0cng==
+	t=1794910107;
+	b=2RFbxlzNNB8JXGa+ep+FSqGtcleSeqdIbWmEcp1jXdigigSwFczJIl9cFlfoxZCH35pZ
+	 nNyy96LNcNcinC/M6383kOX3cdsic1sGsvl8Zt8y1aPjxg7iT/d2dV2rN2LhQCtSCbTlr
+	 0R862b0ckiun+fRPcDhlWGljt1+tPL40Ix2g2t8Xv0nErDSwaPzhq0rtyGDmTp0GScI3Y
+	 JYRA/QA/zxloDjMOyH9argE2UYy4EuZOitOiajWm0QdrKCZiXzW24I3/gBEVn3XDn2yWd
+	 NR1+JY0x/Mndx07bcm0aQqmAyVkUjuZBwP+YwGMd51f9fc7HBEZe8kxK1ZaN9Pk/Efg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794910061;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794910107;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=17chT4EBDMs4sITu71o7D6b6rDrrQPlxWjwVIzQs+Jk=;
-	b=oSeAHC41xKd2equgYqmZUjh6OczHFBmOF00uj7CkZ0BMyqR4h7Te5eZSdnjfIIYI2yP0
-	 FaJvhoRUvU95oyKYoWG2W0lYbkeTv+aXAAcnyRsfpfH/7zr46zAmLmHXp6/7IAozpJLMW
-	 ysoq4gXfw8dIlaS2SQ30lO40iDbDPdTtOYQuCHsboZ+d9VQ4i1OQbXVGCJazTTs69Z3FZ
-	 D4UmMLkD2iYF0X3QQG3bTL0lVPKwlNo6IaWhsfjvIYPYPrURJZL1yeF7/e6YXlHvFROQQ
-	 h5g3CmRu0geYHhDBDv7CyyzXGNhAtSLhUaSqA5WOpNDpGb2CMwELpokElWUxVIX8zZQ==
+	bh=2MOjzfVw9zEhxCXEWR+uQy702vVkV/S6dPUKnI5Smdo=;
+	b=1k3sOcRmBxIi5QKSzKwvIuoT14m60Kt6h+R2oHgMDwHvOSHexke46YBwgDvxSgOSrDeC
+	 7edzwrIol0xXqx0sdx3Bm9GwmOl+lvRm+Abi1rBzHKHkPxah5F2fGz/1qGvsvczHb95UD
+	 qCN3ISHrsf1Yi1+cavtNTuiDYx75YeVwEXAQ1MyEEUhsAC2kFaAR4HP+hVxV17MTHOppp
+	 hjSft6Jg8OYE6Wl/l6wwJ+TCA0p5laGtWikKmO7/DIeOWQ0crotnzPDlRfcsXiXOhYwnD
+	 BLTlFfAodAXEv+BUXyyNeU6awTKe7ZQIjzhfbWNIv6eK4D0cxkR4y8uyqvC3WofuDdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UGGK2Bry;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wwvic1u4;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E193606A330;
-	Tue, 17 Nov 2026 10:07:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C2A8606A331;
+	Tue, 17 Nov 2026 10:08:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UGGK2Bry
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BD71F000C6;
-	Tue, 17 Nov 2026 10:07:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wwvic1u4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D312B1F000C8;
+	Tue, 17 Nov 2026 10:08:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794910060;
-	bh=17chT4EBDMs4sITu71o7D6b6rDrrQPlxWjwVIzQs+Jk=;
+	s=k20260515; t=1794910107;
+	bh=2MOjzfVw9zEhxCXEWR+uQy702vVkV/S6dPUKnI5Smdo=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=UGGK2BrynGLkr7M5PvnlvQNhff4+qT9mlBHsaVI1DAAt5DYktdyvmLh15o3G9tJjR
-	 BR79jw92/MCMbO9Wy399we37EamIe41NeIM7VpY5xq3eEurHNx3i7gAgZVZZkqfQ57
-	 eSJp/dC1GKM6KcoH54c3nWXgTiEKidGYSkHPyz23nkYK1Jq2NFigyglXGTbQ6iYLhC
-	 CUoJv/YNei0wSOT9PdjX4nDJGNl2EoWz6rl2en4nkmcx13k7LtKsKVcHQ2YVo726mY
-	 jhZx6b5Kgs4XY9bo7Biq+awXHfZSyVk8tzLV4s8+HsgsE3IcyEWDY8kjKe9aC5FYqW
-	 q8XldQdbu7aqA==
-Message-ID: <0af6991a-d77e-4a00-959b-cce82a30ec62@kernel.org>
-Date: Tue, 17 Nov 2026 11:07:33 +0100
+	b=Wwvic1u41TDIKvR6E/oovI6QoS0hC9OqG/ZHcH+P4UOTbltq5eHIPHmjikAY30xLQ
+	 7Fs325hTS8ysjQ7kevUNcJHwxlplixCjP4gsgiuJ7f81L1qtm85xUC+rK0Y3VyBqsx
+	 WZLUby+5viwTnHIG2uWV4xt5cR+0vv6U9eOALoqVAYUmztHfmbSIzl+I70yUyOUwwS
+	 3ZZ9ph9ZtPXi1+A2zwwzknpEot2aKSSc/Dj4sQ4Y3sSengSWcKnoMRQ4LkvrcBbQGq
+	 dJKOv8+CtwYA6+FwwAeMSMGuS0A5lG2F9GiuN0CWV7By2dSz8/IpFC8s1GNyCDKWW4
+	 LW1c0Fbyi1e1Q==
+Message-ID: <2c4b6d5e-2b4e-4f55-aa8c-cde2760f37a6@kernel.org>
+Date: Tue, 17 Nov 2026 11:08:20 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,7 +52,8 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] dt-bindings: vendor-prefixes: Add Goermicro
+Subject: Re: [PATCH 2/3] dt-bindings: iio: pressure: infineon,dps310: Add
+ Goermicro SPL07-003
 To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
  Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
@@ -64,7 +65,7 @@ Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  Rupesh Majhi <zoone.rupert@gmail.com>, Joshua Crofts <crofts@kernel.org>,
  Luca Weiss <luca.weiss@fairphone.com>
 References: <20261117083954.335814-1-jorijnvdgraaf@catcrafts.net>
- <20261117083954.335814-2-jorijnvdgraaf@catcrafts.net>
+ <20261117083954.335814-3-jorijnvdgraaf@catcrafts.net>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -110,16 +111,19 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20261117083954.335814-2-jorijnvdgraaf@catcrafts.net>
+In-Reply-To: <20261117083954.335814-3-jorijnvdgraaf@catcrafts.net>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 17/11/2026 09:39, Jorijn van der Graaf wrote:
-> Goermicro (Goertek Microelectronics Inc.) makes sensors and sensor
-> modules such as the SPL07-003 barometric pressure sensor. It is a
-> subsidiary of Goertek Inc. with its own name and domain.
+> The Goermicro SPL07-003 is register compatible with the DPS310, but has
+> two more pressure calibration coefficients, and bit 7 of TMP_CFG is a
+> rate bit where the DPS310 selects its temperature sensor.
 > 
-> Link: https://en.goermicro.com/
+> So the DPS310 compatible cannot be a fallback. The ZTS8032 compatible
+> cannot be one either: the ZTS8032 has the two coefficients as 16 bit
+> values in four bytes, the SPL07-003 as 12 bit values in three.
+> 
 > Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
 > ---
 
