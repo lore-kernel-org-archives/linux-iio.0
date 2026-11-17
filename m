@@ -1,67 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794933879;
-	b=X78UvgUwzbe1FEcJHNKTSo4rsh9JNrGXJ6bjhbKDOBteppYygiD52vtZ7aAQnLrSIEH6
-	 k+1oW09Y/1n2rsI2mNmIyHl+uJbRYhKmSneh0zkl3x/+Xp5I5AnW+jZ3+yInSTG0IvaNf
-	 axfzXgPlW3SKBGmT6QIBJ+5R0P3t1c7LTY5E9Eua+0GvitpOFLamB/Uqxl+GqgPXGQCZt
-	 H0rvYU9Ut+BWQTyELwhQdnwh354qHw71Meyk92S8h5qtRmCkOOQjE0mlH24wNnq2pNKEn
-	 DyRSVx/HWMN3md/6iv+X5SgSQI4AoxRBcVNQuat113p4FV1or361HUizm32efWhu8Fw==
+	t=1794933935;
+	b=bF/nz7pScGgKnlwGwmWVFzayeOkb/ByxI3EuNrBkwUVa4Cu8mDu5ymkSizhKv/xZjqDX
+	 V2D0WF/DsOyPR4gHF0hSbJ47KvPxYsIxSpd916nqNK9d/gZUQ3HrJdgenNejjBfwzIUCW
+	 IYOeZMxCGthqn8iLCfO3wKAOm4AVCk+bLGnAK1GXzza31aJ9e8IbHS6A0mcVm4zzY1ar8
+	 5v9iaFzq3wOT9ZHJWUlT79bGPpjB2HILZ8nxTMpYxQSKL4DIp1cErONmK3YxQzRkAo80h
+	 Uj/Zrm+F0LDfSjQtkHpHOqiy7SdcKSZKh/hm+xgeRpeSNrLQfWpTTcWFGZoMIzFONxA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794933879;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794933935;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=D4lWNtZpY5yf+w+jF193Q7eCu5UhHFdmIhkqgVri7l8=;
-	b=JUvXlrCKV28uBrRkFQBmnxwjPb5zd82VN79C3OHtFhbXOe4R+xp3qUVDpReBnCFmRkfT
-	 FXYA155eH5GQbl1RahijhLCuc0HKowh+oyTrtun8bk43BJNKf8yKMzUCR3bHmL8OErgM5
-	 REprK0SrdyNFrRfEcKUDRZNJ8MoskIfjfU+ykP/pc9LrESoJskrtxtNzdYK7DwkP7kHfe
-	 AnYsbnv5Uzmko3sSuFW6GFfVNOYz4pVOqyauq1dq3jwwXoA6Ur7ql+XiOQZtNXpQ/Z0iO
-	 4ZTzCVYPaAxa9kF1gyUSFdU9lPwKSEBFnII+kgJz9ahQyU9XXHlTwknPDpA7BEyp/1Q==
+	bh=n9s+Iv6o4T44HnlSLGtNszPAgrcaF+/YdTYKaUuhfQU=;
+	b=bbDhSvs15qniDM9J/kZzj4RtjkDpzt2IPTi2qjjhSGrzuvx16LeaLgTqO8SISkMQuUsl
+	 BFf2Hzq+emgJ46RtPUCTeRIu14H7oblFC0UVzJ7A+BfimxsU3d+ilCVZUlU4kSPUTWft/
+	 uYwdj+2rXaBhs8bt0l+5K+al/8Xh5+TQSQNsqPV29+CWa5h5JM7R5zNdOJvBiZK8GB+zu
+	 L0fGcdyJZQgjoW92qrMHGIJRYsiEZyK6BwlhQu3wFzehsRcPPSvYvX5u1oAkh0mO/OyIp
+	 k4bH1pyPHwZDDoIekoyDOqw87fTlQEc8b0khcTNhqxAbpeewqNBGbx1JQCrTaOwKvLw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dKCyE4Vg;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Le5cC+P8;
 	arc=none smtp.remote-ip=198.175.65.19
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A10606A32F;
-	Tue, 17 Nov 2026 16:44:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36A10606A32F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78356606A31C;
+	Tue, 17 Nov 2026 16:45:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 78356606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dKCyE4Vg
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Le5cC+P8
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794933879; x=1826469879;
+  t=1794933936; x=1826469936;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=QOxWIIE+hizNvCqiDlwiHj72tnFkpkIA/gz3CsEwsNs=;
-  b=dKCyE4Vgqu+dv2La7m8aqU3LfywgsPUwL1EWyTzzdkNSSjLbizSGsYDA
-   R0C0f74/ZWDGb72sM2CAbIeb2Jg9mNS8rLKtyoj0niTVmVCXOEuScj8y9
-   cRJGLjPQICouUEZxyQuGosvyLfNoikdRIGlMdKXek8FbKaN0w+dtMlfmx
-   kUZiYUb621g+fgy/Dajk/pCm8qlmjN5Gf+IBYiCoucqLOMLuiKSs8gMae
-   8METdlac4XwZnG7kyeaWvCQyAfOdrupV6nkOS9T0b96BSIPrGSR/MSVc6
-   P01JKr2omTtfT94Mmm9c6UkplEwPbLU0C0+ADJXwbt2DLYi5/eoxceIGE
-   w==;
-X-CSE-ConnectionGUID: QKVp0BDASs2y9h29VUqEew==
-X-CSE-MsgGUID: D7ZCTmWFRQasptKGBSFiIA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3755162"
+  bh=N+d66yr6C0e8MRXHvNBLsN+m8f+qKcd72SfnRt9GtX0=;
+  b=Le5cC+P8jMubLDGyFfSVF2mnYYoiiEKnf7S+62AcCANQIhhjU0FwfGGn
+   fqm9F5JnZynz/A/YDr8rl4k4N9Iaf3TUFj25VMIiaOTpAv3GE7U0fVgv0
+   ZisZk0iYKGftay+ibXgto/32s83DJcdlD6/2HpRYWzwBncwKTGFgdopVT
+   VMbCyYbhllkMHsH5HQOd46ncSDgjiWF+g6lqvqvakXLiXRJrQmPbuzVWv
+   nYghRv0rQMOc+JKdm2KnOlx2UNQikVyZ3YVe6DNHKXUKh37o/IrU7fWOZ
+   1FUpU6lbuiVswVp3+86F7jOPMFi62wzeg9hJ2Wnrr2TsjpFaDevoqb0Aj
+   A==;
+X-CSE-ConnectionGUID: JStyL1/3RTyqlJfXqIKfEw==
+X-CSE-MsgGUID: mR2u/2lVTqy3ee7kv5nlpA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3755259"
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3755162"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 08:44:38 -0800
-X-CSE-ConnectionGUID: cIHBCJjZTHqSCHUntJ9yLA==
-X-CSE-MsgGUID: KPEa74UsTrWq5ls7tngLFg==
+   d="scan'208";a="3755259"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 08:45:35 -0800
+X-CSE-ConnectionGUID: BiGz+kCjTaG1Jkk1oxiCfg==
+X-CSE-MsgGUID: 3rejU2SxSEGqQl4sVSDFOg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="10200067"
+   d="scan'208";a="10412452"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 08:44:34 -0800
-Date: Tue, 17 Nov 2026 18:44:31 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 08:45:31 -0800
+Date: Tue, 17 Nov 2026 18:45:29 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com,
@@ -73,9 +73,10 @@ Cc: jic23@kernel.org, linux-iio@vger.kernel.org, dlechner@baylibre.com,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v4 1/3] iio: adc: at91_adc: fix NULL pointer dereference
  on trigger remove
-Message-ID: <avyEb9La1tqS90Cp@ashevche-desk.local>
+Message-ID: <avyEqQEL3A_YNcgg@ashevche-desk.local>
 References: <20261117140510.391907-1-abdelnasserhussein11@gmail.com>
  <20261117140510.391907-2-abdelnasserhussein11@gmail.com>
+ <avyEb9La1tqS90Cp@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,36 +88,28 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261117140510.391907-2-abdelnasserhussein11@gmail.com>
+In-Reply-To: <avyEb9La1tqS90Cp@ashevche-desk.local>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 17, 2026 at 04:05:08PM +0200, Abdelnasser Hussein wrote:
-> When the "atmel,adc-use-external-triggers" property is not set in the
-> Device Tree, at91_adc_trigger_init() skips the external trigger slots
-> and leaves the corresponding entries in st->trig as NULL.
-> 
-> In the error rollback path of at91_adc_trigger_init() and in
-> at91_adc_trigger_remove(), iio_trigger_unregister() and
-> iio_trigger_free() are called on every slot without checking for NULL,
-> causing a NULL pointer dereference whenever an external trigger slot
-> was skipped, either because of a partial allocation failure or because
-> the external triggers are simply not used.
-> 
-> Skip NULL trigger slots in both teardown loops so that only triggers
-> that were actually allocated are unregistered and freed.
+On Tue, Nov 17, 2026 at 06:44:37PM +0200, Andy Shevchenko wrote:
+> On Tue, Nov 17, 2026 at 04:05:08PM +0200, Abdelnasser Hussein wrote:
 
 ...
 
->  	for (i = 0; i < st->caps->trigger_number; i++) {
-> +		if (!st->trig[i])
-> +			continue;
->  		iio_trigger_unregister(st->trig[i]);
->  		iio_trigger_free(st->trig[i]);
->  	}
+> >  	for (i = 0; i < st->caps->trigger_number; i++) {
+> > +		if (!st->trig[i])
+> > +			continue;
+> >  		iio_trigger_unregister(st->trig[i]);
+> >  		iio_trigger_free(st->trig[i]);
+> >  	}
+> 
+> Yes, but no. Please, rather fix the above mentioned IIO trigger APIs to be
+> NULL-aware.
 
-Yes, but no. Please, rather fix the above mentioned IIO trigger APIs to be
-NULL-aware.
+Actually the iio_trigger_free() is already NULL-aware, so make it only for
+iio_trigger_unregister().
+
 
 -- 
 With Best Regards,
