@@ -1,106 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794936395;
-	b=xRU5pgZHkYdhQutR9SHFBMuNO8AgVR10ny12eufJAeknVZZCE9pll0HQW5ZXfA3q/S15
-	 Zw0EW2LBdLGgwUO55L6GOk4lhlWk7XtGZAEFWoWVdzWiJNQ+dNXF0kFNpZUFpdbyqpreF
-	 R8Fws/V2NO8vb6VtflHc/8e2r6BMRXGggTAXMFLBbND4TeSpfTI6+964CVEBS31dRfUQY
-	 AtaAoLxl7sgSc1XFJ3Fk+y+m7h0aaUdEHWlTso7lhdtMtUwl6mN8fd6GvEM/rYt2XcsAW
-	 y+1zUacYaSCy8JScTtrNov2ztSL85NkeGuJseQKjrK5ua+DMduFAlk0+6XE1uYqZZOQ==
+	t=1794936818;
+	b=bwJt//cSt1bGjitEj5O4/wTXYkBZv23QQau/70tkbvmVGfHDRfuTMeQ3eaWuQyVrhI8I
+	 gnpnOJ/1cCrdy1oznx1PdP6fj670IyzisbjOI38722r9ou9c1S/lqMBL0WQSBJRmNd4Tv
+	 j8Sl4CpW9XdHEo9xNcS1UQ4J0bRb9d9Q1FUIWUQeqM62SemHhnBm32rayFlP9IEMjzoi/
+	 Hqt0+AZDLxSvautKHre0f2Djia+O0D4ePz6BDVaixFY9EkXLg4X4K1zCG3xrWEZ8f3gjQ
+	 oZCo096l2SRMWHwKfIYo3aAbTApUvBx4QD5yaiVzIZ9vhYMEdVg4iGu3Nx0OUChPcnA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794936395;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794936818;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=ilc5G8/+9aQdYBwvZEflFTD39tX1L4K1WEy9bWOEMNM=;
-	b=W7F5ZqkBX2EzgLtxfX7L8m32joMG25r3iM4Zndz+SCUNxWjaXZ0jQY8bwxPCDH8azrgl
-	 S4j2F5jY82Aed35PqaVWuNLdvujx0HJHsitGn2bMDeQkclMWkIe2xeWyd5ap+WVfqVxen
-	 HuVAzrBCOK/5PF6KzJrndc1PNEAD9OhXJaHZAHkPvJKHE5UXdD/bAKf1m7I0KnPGrBFBs
-	 dAoF94dajtOIQAV3UCq0pHNoj092blCdnUkQpDdserm7HvbpyH/XOtswiS5XwOZKBaWkC
-	 oTCTZMAZTXW1+6muWvXNNw80fJx/1EjAA7kMeelf/DUHD1bDuxTarhuAGLdEUgg+I1g==
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=BrMcWd7pvu75CincI1DxjIJtK+iHHZhWACFR9OMESAw=;
+	b=KQpKEA2FTTL1rmz1rt0ZyKQR90qk7/em9VTijAiAL07UeSYuH3x9ZB1ukz7iN3m2fIOy
+	 NhL1f2/Cl5tBL93mJVZrVZd4w+6jhAxnFeFtcmlWoVupTfMB1ztmJwIT/rADw17KwJNg2
+	 GTHTs81B1oRCyxPagQtjWu0/WtUd3dJcsyRLR/OH0P3cAmJvM43wDFS1Eyru9OP/S24SA
+	 TgEEmCHawo8UsKp2AgrTHk0vS0nl3isPLTyVCDy+AbYO+/k4wQyCJ/OXhqRJf4GKpFJsR
+	 4Ssqa3uyLSttKrGLQI3UdnKAn6Y7ior+tGgfufa44z+my6Rsg5UNVfSR1Bwmyz1XCiw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=B80da3Sk;
-	arc=none smtp.remote-ip=74.125.82.52
-Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Qq9cWzZj;
+	arc=none smtp.remote-ip=209.85.221.46
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E8AE606A32C
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 17:26:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E8AE606A32C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA99606A32A
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 17:33:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1EA99606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=B80da3Sk
-Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-1aefd1bf74aso956390c88.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 09:26:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Qq9cWzZj
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-4a2f4ca0dcfso7713f8f.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 09:33:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794936394; x=1795541194; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ilc5G8/+9aQdYBwvZEflFTD39tX1L4K1WEy9bWOEMNM=;
-        b=B80da3SkgBI11VadNDdAFufDegu8m3LbosxJ910Pb03+r/lraAIaeoWVSAyTuAKbU2
-         /XWZf2yp0sgkjPdPjoEhhXBcw6eU+x9qN4PbpyqMlPcydZM0g6kAvK1LrS5diujAmtIw
-         L/1aN6JoRkr22C+na+CwR4sI1dHML/+YZROfBtqQmD7+YuoDAd9fLAFTJqncqpcva6/U
-         HMIdo4hI3KL3ALTOIUAdiTVTIy9dG3OAw6FTMW6hoJY/DKISbzvV569JB2VJR8tiAz8g
-         rmDIebT1J3lhY9JQ1awTQ578oy6Ns2qnbPF4FQ0HlLzO7zq6l6xUQwlev9MXenEYi2Gm
-         Q6kg==
+        d=gmail.com; s=20260707; t=1794936815; x=1795541615; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=BrMcWd7pvu75CincI1DxjIJtK+iHHZhWACFR9OMESAw=;
+        b=Qq9cWzZjrgVRuhct9Bs3XWPLq2gc4ngF99znVrHxGFg29CgIdyg5bdv1KU+5GCR47Z
+         W/1CNTm0RFuyhIpOtfdFSDIYysMReXu9u5BkGqEZl1RqmCPbOIpv5apywR/27GszE4xG
+         sl08M+PNPYGAaFy52pn8LZWsyjKd17q0jvIWtgJXTmK7bvHJfJz86Ijb2NIXSk61GxXR
+         zBKdUn0p+UXoSd7HduOaTpXCQJXHXjJJ6Nw66bDPKeK3vhAgokzBUMH1YIrff1SLlMp7
+         NQ5jTq/wn1Mn4jvL+AluffZnEGf9Wm+FP/G/j+Inm9WVYi4S4dABC0428Tgjx2HmggXu
+         m7rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794936394; x=1795541194;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ilc5G8/+9aQdYBwvZEflFTD39tX1L4K1WEy9bWOEMNM=;
-        b=RTd6ZOvxsVNjq0E1ckEaMoc9XtXbvO6e/8YOaPYMHH5owo4tOXnqx/HWbDT3cTlQCW
-         jqTRD6K1hUns5EDd7pSKKltwNudZ9rPumM/6w/shAr2N5Ln+4xijBFz9UTiy9R09CCTr
-         b8b+4JXswNQnkaw7hk0kOrpdzGr1YW8BvJq1unXPGuj0UaLWXoNDlnslUIWkQsWO0v+F
-         ojGRGTnUGFMbW/Unsc2a3BxOjVFKCXahjHNl/qQDgveazAcxrvzGhhTfw2BjhkwteJlq
-         dynIbfYhbuTAPMMPwxCab47FAZg2C1y9mIMyx+lOZDv58ARXm38Efa9+DqHqzrUsEbTf
-         3Iaw==
-X-Forwarded-Encrypted: i=1; AL+hErFuQBeiLZemxXQlMKu8M1A1ugcmhG3efzJNJ8P+1a69ByETD7+nhdMJOchnjViMv1uJvbRUwvM65mc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+2eufbkkcgI2N4BcFczQP/Blsx7IcTRS8PcI12b9Rk+QeVslry
-	ZcN5TVSsllcmmGOH9bDy2mOBUqEUdX6Q95g+2OK3pSgN3pv3Bj/9yFJl
-X-Gm-Gg: AYBFou0OChnI8ziZ014oZIYXyMaemVzm3ESfpscUeEZMCj7GXHA0+2tdBqBTsTduqit
-	9SMj7ipoVY+/UX4/jmTn/fbhSTIWhYJ0hpZ8AXgdCJgEjJEu0eokQf25kuJj324rbs6cDJfuV1q
-	2NB+QI3zdaXRGv4IF+Hc/PSMiaB9ZgF/v/iukcnCfcwCz63dG8t4nLrCR289ZXHui0XRsmR+xR7
-	Q1SmTdBqinCf4WoMVl5uHXkhIHPOrXl6WP4dQIzc9QHnj3slpsed0+iTUiJT/K7npCzDYZrfnJq
-	MKg/fWIjPN6V7Nv4+hvHHdVsbhakVjfYBa/a5eWBHjkuUtROoojFdVwwweDVWIniD+TFc+voBX1
-	YeB6qDV1pnXc2zpE6HUbCtxmafPz/IDBMd2eGLfDoRwrh/FVE2BJfUbER5GPJkBq5gQ59LZgkij
-	tLo7JrFma4EALIWExl0DeOdg9glOcufj4o/zXh19BfyDoMEUnMMyauLs0hjhA4t++PgAEq6/03p
-	+Y4O1u1q7hThaSto+LvdMYlDmNASSSGIt3hONBaVn21irJbYGTYTsqBSXSbxQnM7DGv1sD14UgX
-	0ns7GQzehHvPuBLm0rHJZ/orSXyNtBQLo/S43Jruxm5LkRVZwZHgnvfQoNVJHFeQSvkDA1gXN/z
-	ToqTQgC/o5riySRD+Ldh7I8mb0D+CRRUI8+WL4rBlwK7hwKcySlc1lupgOTKl09/0QX2y3wozmD
-	UZsY4dLIUZrgVYUskh08xNbGuzs3W5dIkptnUOiACOcrkZX58hqzb2HmVeJD5bUJk=
-X-Received: by 2002:a05:701a:cc90:20b0:1b5:32d6:6784 with SMTP id a92af1059eb24-1b53a470058mr2566794c88.20.1794936394335;
-        Tue, 17 Nov 2026 09:26:34 -0800 (PST)
-Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5329ec87bsm14263079c88.0.2026.11.17.09.26.29
+        d=1e100.net; s=20260707; t=1794936815; x=1795541615;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=BrMcWd7pvu75CincI1DxjIJtK+iHHZhWACFR9OMESAw=;
+        b=wzoYRs46x7rUMqoUAnTbbiaiPoK+/bIN4K3EJwJQlqJr3mOVmwCSzVYTAS2PPHNKgB
+         /JoyEz6UkgRS9KarGtMQ28Wo+emLIVq0hhOLu2LqDGhgV7PS9V2JmHfz+gaoTaacSRrr
+         o28cElcRV7FUgoqr8LVSyiuvs2K1Ny28JsYdIhVtXIu7st9HKLocPzGtj7W6grI/qnEL
+         BWU6g5n1gFeEJsBVtDE1/DNdXfJQptaIev044SjIA/JWKcgpFKj1rLR1DlzN9yXsfZPw
+         x/X2Onkej3oziALoIUaGwZutO8d4I61bPqXeZsJ3WCBFhApp/X9ySt/lwp5b44SIX5WP
+         8tSA==
+X-Forwarded-Encrypted: i=1; AL+hErH2aIvTzgs2Ric/JbLY7saVIGJXpHnvH9I8pio8OkkMlfxr+Pz6YhIT03wTEsNbsUv7T/6hRnmQmFc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9EjxADaUNUOhCcYk2NI7jvQfI2lf/FThFnxpNvZTdkGebxf5NH
+	2C2/lvOp/wB1y1fCfL4SzJI2Dv4kSTqx8mVYTf78UzjbzP1jzn9KKzWw
+X-Gm-Gg: AZFdTZebO+tlEEHjUnWKXgfligTLWYKI788k+OTCSR3bG5LAjL90SNPznyTQETkBMRe
+	nY0/zI/w62K0cgO5G6FgJYQKSxzXWnSlEQaha91SCIJCFPXLNPGCLF9bWq2deYtO2ffw80uAENG
+	2Mo1Z0iXr0HivarvnQ4oYEp9lg56i0imTV7Ht3qNsmKUirWE/tk4e38AR2pPjaobzAHNctm3gtt
+	1nIKj7mtZUR2DQlJ7ZRdWqiKbVQ17azpREAPwLmUtufbYpXntlcjtvJr9lt3PddMTU2gTc/BNPN
+	BfA7eFtrnmmDwYPqQUJbrfSPNPfMVxcJEwWNY613TJuPiJp+3dOxgR8+wMClb+q6ZgqoWIa/vIe
+	NemOrk4LsytfSPv69pRjrTtEF7BLPkjBbO5aZlAJGq3TFtxj7C2MCKCuaXmHqKkiiHox3J0dqPW
+	Fbi6g8C9uw+YskHheypYSAX1ZhwBXRDxU+DrrVU7bZVgvYY7Bg35ourBdhCCkPTrbpiNnHlJf/w
+	I0Gt9JjvWkBB3+3pdD3oLWNgaYwUPl9uWirxuRr8iJCwl74OTeka7Y7Fj1KQKdGLnT4bBM4XkLU
+	cZUcDlIo45E=
+X-Received: by 2002:a5d:5e85:0:b0:490:f775:b00b with SMTP id ffacd0b85a97d-4a63f64de54mr255493f8f.52.1794936815359;
+        Tue, 17 Nov 2026 09:33:35 -0800 (PST)
+Received: from dl360p ([130.61.107.245])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a2e6c765dfsm8165024f8f.33.2026.11.17.09.33.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 09:26:33 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Gwendal Grignou <gwendal@chromium.org>,
-	Daniel Campello <campello@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
+        Tue, 17 Nov 2026 09:33:35 -0800 (PST)
+From: =?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
+To: jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v3 2/2] MAINTAINERS: add a reviewer entry for the Semtech SX9xxx proximity drivers
-Date: Tue, 17 Nov 2026 22:56:09 +0530
-Message-ID: <20261117172612.25535-3-kapoorarnav43@gmail.com>
+	=?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
+Subject: [PATCH v3 0/2] iio: proximity: add Imagis ISG5320A (Samsung Galaxy XCover5)
+Date: Tue, 17 Nov 2026 20:33:31 +0300
+Message-ID: <20261117173333.1853986-1-tadilhusrev@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261117172612.25535-1-kapoorarnav43@gmail.com>
-References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
+In-Reply-To: <20261116074013.355363-1-tadilhusrev@gmail.com>
+References: <20261116074013.355363-1-tadilhusrev@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -110,41 +106,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The Semtech SX9310, SX9324, SX9360 and SX9500 proximity sensor drivers
-and the shared sx_common code have no MAINTAINERS entry, so
-get_maintainer.pl only lists the IIO maintainers and reviewers for them.
+This series adds an IIO driver and its DT binding for the Imagis
+ISG5320A capacitive SAR/grip proximity sensor (I2C), as fitted on the
+Samsung Galaxy XCover5 (SM-G525F, Exynos850).
 
-Add an entry with me as reviewer. There is no M: or L: line: the IIO
-subsystem entry already covers these files, so maintenance and the
-mailing list come from there.
+  Patch 1  dt-bindings
+  Patch 2  the IIO driver
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+v3 fixes the real review findings on v2: Sashiko AI caught a High-
+severity INT-polarity bug in the reset sequence (eliminated by
+dropping int-gpios from the driver and binding entirely, since the
+pin is already described by the required "interrupts" property) plus
+a Medium-severity devm unwind-order bug and a Low-severity unchecked
+enable_irq_wake(). Both are now live-tested, not just built. Per-patch
+details are below each patch's "---" line, as Andy Shevchenko asked.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0017755f593b..f1fd14dfa448 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -25448,6 +25448,14 @@ F:	include/uapi/linux/selinux_netlink.h
- F:	scripts/selinux/
- F:	security/selinux/
- 
-+SEMTECH SX9XXX PROXIMITY SENSOR DRIVERS
-+R:	Arnav Kapoor <kapoorarnav43@gmail.com>
-+F:	drivers/iio/proximity/sx9310.c
-+F:	drivers/iio/proximity/sx9324.c
-+F:	drivers/iio/proximity/sx9360.c
-+F:	drivers/iio/proximity/sx9500.c
-+F:	drivers/iio/proximity/sx_common.*
-+
- SENSABLE PHANTOM
- M:	Jiri Slaby <jirislaby@kernel.org>
- S:	Maintained
--- 
+Tested on a Samsung Galaxy XCover5 running 7.4-rc1 plus this series
+(2026-11-17, kernel 7.4.0-rc1-00023-gdcb8b91fb779+ #30): the driver
+binds, registers as iio:device4 "isg5320a", and in_proximity0_raw
+tracked a live hand-proximity test (baseline ~0, swinging to
+-12817/9748/10759 as a hand approached/withdrew the sensor).
+checkpatch.pl --strict and dt_binding_check are clean.
+
+Based on v7.4-rc1.
+
+Tool usage
+----------
+This series was developed during XCover5 mainline bring-up with the
+help of an AI coding assistant (Claude Code, Anthropic), which drafted
+the IIO driver from the Samsung vendor driver's register map and
+drafted these changelogs. I reviewed every line, built it (arm64, 0
+warnings), ran checkpatch --strict (clean), and tested it on hardware
+as described above, and take full responsibility for the contribution.
+Review comments are welcome and I will answer them myself.
+
+Adil Hüsrev Tepe (2):
+  dt-bindings: iio: proximity: add Imagis ISG5320A
+  iio: proximity: add Imagis ISG5320A SAR sensor driver
+
+ .../bindings/iio/proximity/imagis,isg5320a.yaml   |  55 ++
+ drivers/iio/proximity/Kconfig                     |  11 +
+ drivers/iio/proximity/Makefile                    |   1 +
+ drivers/iio/proximity/isg5320a.c                  | 848 +++++++++++++++++++
+ 4 files changed, 915 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/imagis,isg5320a.yaml
+ create mode 100644 drivers/iio/proximity/isg5320a.c
+
+--
 2.53.0
-
