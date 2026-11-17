@@ -1,98 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794913416;
-	b=wYzfdAkMB/MRMvVqKbqzkZ0q3tyish/MGqt9bc/pYXftI+o4/ldHKhE6oUiy2hzD95o/
-	 uYYBGPNO7FhvyPygvICY/VROhf7/Cbvdu60LqGkocBYIrVZkEwZOiqRaP4GTm395kHqwo
-	 9iMqc4m8PDfirjiUWHYJ03XmirEmse8alUc2nkQZQnteKqyfIHJAaeF6hBqC6zBZ25Vru
-	 6/ZHKHjHPSuMrsTH2ZKp/3w44MAa5jiaZGLmOYkX8b1abfrwkYozB0f+KG7Naj3BrTYZe
-	 qKFsGCXtFIUt0CFFAStWslmBLTbjC2j4SSYwt29b3VCfEagFzWxTzl0V3G24wkt4REA==
+	t=1794913661;
+	b=25pVS50ujA1Rl9Q4aIHVmnm8Wtmg/Y5kXKigYlNybCIh1GDAj1k3GKFuw/n1wisb6Sik
+	 vEVX+LKZKCDZRRJQgXEdkdD6AAfhoWlKUGeA+LKB90Osn73nO5h6txNEp6DMAGYaxaILq
+	 KQ9p3ggh8SHLEOFilRaa5HtHyxiuP/ouBZLZG1yJvJO3s2wFi6knAm4NAb+cG9PwYcLdf
+	 ilsKIK/ObGT/2Ki+1oTxmmf2jGqrawYe6/ycw/wopbWFgoOsZ9IOhcgpIqTNMFOsa6x8/
+	 Ues6Dkpa6iggj6uBPUMmVkEPIoKFV+uMbfdraJY5yDGT0cRxpRNxNDNIlTvmDE3Kxsg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794913416;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794913661;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=pBP2YxVQh3ontLZCFQlFA3EEOT/EhtaV+AKjxMibSVc=;
-	b=i1vX6fMWpfgGBUQ2lgRcJa3mUaFOFoxMszNldg5H1e4tkAituwm4PsSZ4X+zwlRL+Pkn
-	 15vICSZowhWvT25wi90mZBOz3tEeWXff43cLMv7HsyZEyfd6JRIbQPTmo3kxVeHiRNO09
-	 +OljrhFOvr4LFmPehIBBFXWDRKrmhY1cUzGjKt7VVYtago9IK8CMaEVpt1EfYebO11x8e
-	 OSkoLEU52GnWHTj9SdDgySlpc40eM2txtacAlBX1yJBRklbfs6z7J2wmX+dmCQ5zQjb4X
-	 vvB6P4wjyvTZUkE7Oms3PtOk7x6uZ8VylUyCgdnnJW17BVFq9H+DNAnd+zuvYBvpNeg==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=SDu+8SSFg3qgFJ8GozgNasE9VCP5i/wjR68oWFn0pao=;
+	b=Lf7UXgGyIB8vPUBf+B/v4olHG5ENbty+MsuEfdGvnle6T6hgwLT3wL/+MWv9lkUMUpeH
+	 NVOKj84sLR/arPxwWO1FuxNTZVGC4TyplTf/S4xlJ15XmW8uds0gePp+NkwZjCGsx0wgI
+	 eWFMhddOYXrqLS6KWDMIKNt2ktf5yEl9+t+VSSGA3HVnebELU+CASXLLJYE49dSDMOK1G
+	 EE3mBv5V2RyTJRfzC3cZhfZui31H8HI9GKZ4fGcStYkVZOx0PvX9yaE+XAkmCC/wQHVrF
+	 bzGQ8/ccPxBlfNpNhT13KpnxYwP/NAcSlKVTTi/7V1iOn12b+IrtBahhIOM8l7BxOQA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pF61gJfK;
-	arc=none smtp.remote-ip=74.125.82.52
-Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=f+Z4L6xj;
+	arc=none smtp.remote-ip=209.85.167.49
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67253606A31C
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:03:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67253606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB143606A32A
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:07:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB143606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pF61gJfK
-Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-1438d9363fbso557205c88.0
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 03:03:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=f+Z4L6xj
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5be416e603cso3320002e87.2
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 03:07:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794913414; x=1795518214; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=pBP2YxVQh3ontLZCFQlFA3EEOT/EhtaV+AKjxMibSVc=;
-        b=pF61gJfKJ82vwmSaya6jxWXA610wiYhVQsAj/HvXjfpTHVeax7PbmHAte2c/h1w1mv
-         reDfDdZzjY3MBA9fwLSs+zrj2yqW9lM/K7Q4Trsu/9pSH/qcg6lOXeDEeXAJB/G1Hi0R
-         DKcM0nSXVkx3hEIGq2RMIYO23o2lFgVAoFAcfe1cnGmSCPx5Ldy9keqCt/4T1GFV8uKE
-         UWMO5Gz4VzOwUTNUHJmHue/NXA1Wh7qdppzBBO3XXQaVSse7AZasMovdxMxfh5vrocmJ
-         gotAmVGsD5MOk+r1ZtO8ks4CfEqrBCSDYFKholpwb0Cpi2tmKm/H5JsnezACSW1T7O7n
-         cKZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794913414; x=1795518214;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1794913659; x=1795518459; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=pBP2YxVQh3ontLZCFQlFA3EEOT/EhtaV+AKjxMibSVc=;
-        b=PucqQ7+0BlA3DSbXVaPtKszCih86C2SVhpTVsL4S+IYcNAr7aC8ucbQVcueSe8KUKE
-         atgO1OUQrrMfbIlrzpHKUEpPiL0vi8gh+iqxq0H+aaEsQTIuZaB+TS8wIX+EiSXfZWMb
-         iYhfhbWv019+/e3QKxV9KopxXotQagqmHtd9oP73D3mFQgS0ad9ilrCo0Ds0I4Y5tPJR
-         cMjyJhchTNHXEOdNQE6j0fmNtUQWKYPwGkeo1XJn5JeAsT6JoPITk3yHAT51TDdfp9q+
-         a0+Qd40JKj50Kryg3YQGUozS/FeZ0NtyeyEg+3fFrdAwdpQfVCbU+DuKCLQ7XhztPlvE
-         YlGQ==
-X-Forwarded-Encrypted: i=1; AL+hErEi92wbLpwbKIB7qNbTv26oJw7XpSkUCuhLejnzI7aBOBk3CxeqDDdPbBmXNcYhuO/3TquiJHIvXgg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8Tfpxv/DEXfGp8LKBewaQ0oRBNFkDFwwuNTo5a8ZnpfKp5DihD
-	dAKywKeqKxKjzZ/oaiUd1p/Zf2CZCPAZiijkTjWTsWsYHsQqDqj+bRV/GkDwgmCb7kw=
-X-Gm-Gg: AYBFou3FbSS1ZI5Qv8q0HOEEnw92c1dN9dXdRVQ7t4bY/KpZpPEGqlvh5i38Z5pWg4+
-	ILEIpyWVUCIbbMreYJMxujrXtBwIfmF9JbriODGUwsqAJWJHDX5jCEqEixkp2jPCnIBym/eXVnj
-	URbT0j0FxncG6epUgZyXfvBRg8i5lfbCbFYwRnB3CO4W8qrDpYMyXqTQdsU3lKZznjswj94gUim
-	cCqaAKVzkkiID0d70b6cv0Dd+UqCjy4Mm14e2ZKXzvvmZl6MbrJmSHIpSj5QKgRMDlrZXk4hiFA
-	3FjH/3pyJiygEx7FbwKrb7qJ8Uiv91p2WPjP2BopeRhemenw637F9zYWH3JBadSOebmlmDZAHQA
-	5AuT/BFWvemNw3YUDIxjsRe1U9/uJbp4peD8uKdJilS6huxrXXeZXdQJsVcW09gxTp2+6pS8N9e
-	NooVH+jWEghYAtkfzFZ/rWrc3Xmfw6yK+1y7Oa/9uyc4ei3P7XmhmfBC02fTb+T+87ydMDVeNZi
-	evZ+UO/dGrIejAwZ7CqorK2xsy1VE9Lw2EZ1llvE/3pUUgzTFPzWDpk/WcAouTNIyvFNsSLPmoD
-	EAU8hQKByGH1LEowmUhpID8fStWIYOYFScNPThvdUV35DMAw9uQZo7vq5nU0Bfm87pBLjiW4S/i
-	LEyAwmv2QHBtIAb1b8G9l5GxcAcpTVCh4xXukAo0WK4d0LcX4/X2jbguEuFgS2vLp81wcxHPf2M
-	RFcxOvZLXecrnzbXy3bFpnTDB+jOATKqCIL+nP8E4LKQ==
-X-Received: by 2002:a05:701a:8458:10b0:1a7:77ae:11f6 with SMTP id a92af1059eb24-1b53a3e47dcmr1951148c88.17.1794913414396;
-        Tue, 17 Nov 2026 03:03:34 -0800 (PST)
-Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50316d9c2sm36604525c88.7.2026.11.17.03.03.30
+        bh=SDu+8SSFg3qgFJ8GozgNasE9VCP5i/wjR68oWFn0pao=;
+        b=f+Z4L6xj/dCgh5W9WP9jwevl1qBdc/IXGonzbBcUUUwG80wyK3QSzgIFTPJa66aCZr
+         sFfdsmVLn1qq2mVmZT8He1t26FEF2/Z1+VbllkRIOssBeT09KnAaV5KnVoyL7ZhBqLYo
+         2Md6mTiOHAWoRJ7hFWzGqAdVIV9DtnOpdnmAJ+yi0/A8hfGFlVKJdTQR+Nu49YHEo3cf
+         HetZvk4LB9BB9BLLy0jThtOpZ0LlZyimUJqo0U4bnxCtkEXFiX/YoxpruM7Jpg2xGf2L
+         6d9Drcwukh/6zOs4MvoU9sBRguxXrqlMMEGJnj0jOUr6eYbUi4lYGRl24XGSnZ2wb9Jc
+         KGqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794913659; x=1795518459;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=SDu+8SSFg3qgFJ8GozgNasE9VCP5i/wjR68oWFn0pao=;
+        b=aETaGdXWLkWaT+4PbEC2IsiaOJFABAqooAtfTr3htj6noIf9nHustNlFaVnysffgRy
+         d7rAx+wONkvgduU3gFkn+o/O0s4AQjMTCea8YTFqJ2OXRtbKuRzKUyU+w5M75e6oqysP
+         kJCXViGB1NIp4TqQlduDoiAIG8GLKUHQ3CKE7v08r7CXfoN3umLDMWInvfTOmZF7c0Nx
+         ML90nYrIdb+LU7hNbDYxAXZCy3drLIW60SnPMxJHAn6RT93FwY7QlARxtpLQCZVQbVLx
+         WsP4fTu2rPmZaNIqspXjms1Ik0lMMjOrn+e7Mb23c+qbjkXwWM8yQmro8gSZds8Bi1Ae
+         glQg==
+X-Forwarded-Encrypted: i=1; AL+hErEwM2uMXwCU6pB9enr7qXHZzedBQDVBcPCFtGkmscwvVrkcIh3tZw4gXEuaNazOAa4qm3Pi3werbb4=@vger.kernel.org
+X-Gm-Message-State: APuU4Z87b/s+BBHlHI53iwwK5VOL2+RlYGWVtdxMDF83Na2KtJIQGvV6
+	YqKVhzojVgokQOEl80Jrjp09BG/vlfgTmK7PQkPpYto9KNQBxS8n48uC
+X-Gm-Gg: AYBFou3t45TuwFqiz4S0f0k+rAKyiviVogoIRn2dx4OLsxR7BRHTuPhiGaD9EkAZLlb
+	1xZblclVzkk/UU87yWv5DnXDFn0pCa+SHHuVD/n/+XlwhxA24YYbQf5N17LfaqIXJQSG1hABSwr
+	oQkh7npD+jwzyNzYKS5kPMBfyHF8qAK4f6AfNMjQ/PHKQP+GKnhwA4VLifpimsoBIhVZ/M/w4AJ
+	01dfpdoSIll0++FnrUdzuG7PCmjE4H2O1fWpb1k7TDqUQW7LS4SePPzhTNWDw+0E3buVGjTDaAd
+	26v9X/Y6imJkK//VmhjVyy0hlTcv9vgN/QFUnhHt7m1mLlwVwQVqwsrmmDgncyoajmZidJxxskO
+	IUQKKXxD2i1Jme2DyKvBM0bNZujoM9J7d9NfcjBWvhvQDxSmm9Q0hXPDp8yoAAgaJ4uvydZYXFi
+	FSzkE3DOVkEqsnnTE+K+anYMkil0PkpHhF761QhyPpChKojJGbqKGrojopweUb1Y/jD6JAC6cLr
+	LemoeZOyRv4pqzE3CdIHMFY3APGtwfOR49grk+EYuG2MT2MfHHGZEGa+QU+mq5gtFwIrFb4mEJ9
+	qdnd1BpvBLJZBrfb21vNwNjn0KbP7UQjqHAvorA9BIW1TEU/bbxHlpyqgouGQIo/xQRYvRnHY4/
+	JWrkv3DuHEzKkfbMyM0RBrt8VkxvxSyDCj4+ccuGxI3gaHrYBncDxCWEGkg==
+X-Received: by 2002:a05:6512:669c:10b0:5bf:d063:608 with SMTP id 2adb3069b0e04-5c1a132425cmr611403e87.17.1794913658742;
+        Tue, 17 Nov 2026 03:07:38 -0800 (PST)
+Received: from yantra.. (nekmmqtgno85zc1flee-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:5d24:e63:61b2:db16])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c17133c8f5sm3935812e87.44.2026.11.17.03.07.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 03:03:33 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Mudit Sharma <muditsharma.info@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Tue, 17 Nov 2026 03:07:38 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: jic23@kernel.org
+Cc: Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
+	Sashiko <sashiko-bot@kernel.org>,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v2] iio: light: bh1745: fix 16-bit register accesses
-Date: Tue, 17 Nov 2026 16:33:25 +0530
-Message-ID: <20261117110327.198084-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
+Subject: Re: [PATCH v2] iio: pressure: dps310: don't wait for new temperature in trigger handler
+Date: Tue, 17 Nov 2026 13:07:34 +0200
+Message-ID: <20261117110735.46400-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261117033741.39724519@jic23-hlaptop>
+References: <20261113230241.82046-1-zoone.rupert@gmail.com> <20261114013817.476f8fb9@jic23-hlaptop> <20261114083525.11972-1-zoone.rupert@gmail.com> <20261115010203.2a939bd6@jic23-hlaptop> <20261115183949.11591-1-zoone.rupert@gmail.com> <20261115203150.7faed0b1@jic23-hlaptop> <20261115223817.10568-1-zoone.rupert@gmail.com> <20261117033153.608b124e@jic23-hlaptop> <20261117033741.39724519@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,168 +107,53 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The 16-bit colour data and threshold registers are little-endian
-LSB/MSB pairs, but the driver accesses them through regmap_bulk_read()
-and regmap_bulk_write() with an int or u16 buffer and no byte-order
-conversion:
+On Tue, 17 Nov 2026 03:37:41 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-- bh1745_read_raw() reads 2 bytes into an uninitialised int, so the
-  upper 16 bits returned to user space are stack contents.
-- bh1745_read_thresh() reads 2 bytes straight into *val, which the IIO
-  core leaves uninitialised, with the same result for the event
-  threshold attributes.
-- bh1745_write_thresh() writes the first 2 bytes of an int, which are
-  the upper (zero) bytes on big-endian.
-- bh1745_trigger_handler() pushes the raw register bytes, which are
-  little-endian, in a u16 to a buffer whose scan type is IIO_CPU, so
-  user space gets the samples byte-swapped on big-endian.
+> > I actually looked at what was messing up this time.  It was just that
+> > int rc; had been dropped.  It's just used locally in this patch so I
+> > put a declaration in.
 
-Use an __le16 buffer for all of them and convert with le16_to_cpu() /
-cpu_to_le16().
+On testing (d922ed738439) temperature read ended up in
+dps310_fifo_interval() instead of probe. That runs with data->lock
+held, so enabling the buffer without a trigger hangs on the board.
 
-Fixes: eab35358aae7 ("iio: light: ROHM BH1745 colour sensor")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
----
-Changes in v2:
-- Include asm/byteorder.h for le16_to_cpu() / cpu_to_le16() (Andy)
-- Reword the trigger handler bullet: the samples are byte-swapped on
-  big-endian because the scan type is IIO_CPU (Andy)
-- Add Andy's Reviewed-by
+Diff below on top of testing moves it to probe, tested on the board.
 
-v1: https://lore.kernel.org/all/20261116194214.45174-1-kapoorarnav43@gmail.com/
+Thanks,
+Rupesh
 
-Compile-tested only (W=1, checkpatch --strict clean); I don't have
-BH1745 hardware.
-
- drivers/iio/light/bh1745.c | 31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/light/bh1745.c b/drivers/iio/light/bh1745.c
-index 2b8ff36071b8..e2c03cd0d1e3 100644
---- a/drivers/iio/light/bh1745.c
-+++ b/drivers/iio/light/bh1745.c
-@@ -17,6 +17,8 @@
- #include <linux/bits.h>
- #include <linux/bitfield.h>
- 
-+#include <asm/byteorder.h>
-+
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/iio/trigger.h>
-@@ -421,19 +423,20 @@ static int bh1745_read_raw(struct iio_dev *indio_dev,
- 			   int *val, int *val2, long mask)
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 9b52cbc2372a..ebfaa67a6b91 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -1058,16 +1058,9 @@ static unsigned int dps310_fifo_interval(struct dps310_data *data,
  {
- 	struct bh1745_data *data = iio_priv(indio_dev);
-+	__le16 value;
- 	int ret;
--	int value;
+ 	unsigned int drain_interval_ms, fill_ms, want_ms;
+ 	int scan_rate;
+-	int rc;
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		if (!iio_device_claim_direct(indio_dev))
- 			return -EBUSY;
+ 	fill_ms = MSEC_PER_SEC * DPS310_FIFO_DEPTH / (prs_rate + tmp_rate);
  
--		ret = regmap_bulk_read(data->regmap, chan->address, &value, 2);
-+		ret = regmap_bulk_read(data->regmap, chan->address, &value,
-+				       sizeof(value));
- 		iio_device_release_direct(indio_dev);
- 		if (ret)
- 			return ret;
--		*val = value;
-+		*val = le16_to_cpu(value);
+-	/* Pressure compensation needs a temperature from the start */
+-	scoped_guard(mutex, &data->lock)
+-		rc = dps310_read_temp_raw_locked(data);
+-	if (rc)
+-		return rc;
+-
+ 	/*
+ 	 * There is no hardware watermark, so take it as the number of scans
+ 	 * the user will wait for and drain at that rate. Scans come from
+@@ -1478,6 +1471,12 @@ static int dps310_probe(struct i2c_client *client)
+ 	if (rc)
+ 		return rc;
  
- 		return IIO_VAL_INT;
- 
-@@ -503,6 +506,7 @@ static int bh1745_read_thresh(struct iio_dev *indio_dev,
- 			      enum iio_event_info info, int *val, int *val2)
- {
- 	struct bh1745_data *data = iio_priv(indio_dev);
-+	__le16 value;
- 	int ret;
- 
- 	switch (info) {
-@@ -510,18 +514,22 @@ static int bh1745_read_thresh(struct iio_dev *indio_dev,
- 		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			ret = regmap_bulk_read(data->regmap, BH1745_TH_LSB,
--					       val, 2);
-+					       &value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-+			*val = le16_to_cpu(value);
++	/* Pressure compensation needs a temperature from the start */
++	scoped_guard(mutex, &data->lock)
++		rc = dps310_read_temp_raw_locked(data);
++	if (rc)
++		return rc;
 +
- 			return IIO_VAL_INT;
- 
- 		case IIO_EV_DIR_FALLING:
- 			ret = regmap_bulk_read(data->regmap, BH1745_TL_LSB,
--					       val, 2);
-+					       &value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-+			*val = le16_to_cpu(value);
-+
- 			return IIO_VAL_INT;
- 
- 		default:
-@@ -547,6 +555,7 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
- 			       enum iio_event_info info, int val, int val2)
- {
- 	struct bh1745_data *data = iio_priv(indio_dev);
-+	__le16 value;
- 	int ret;
- 
- 	switch (info) {
-@@ -554,10 +563,12 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
- 		if (val < 0x0 || val > 0xFFFF)
- 			return -EINVAL;
- 
-+		value = cpu_to_le16(val);
-+
- 		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			ret = regmap_bulk_write(data->regmap, BH1745_TH_LSB,
--						&val, 2);
-+						&value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-@@ -565,7 +576,7 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
- 
- 		case IIO_EV_DIR_FALLING:
- 			ret = regmap_bulk_write(data->regmap, BH1745_TL_LSB,
--						&val, 2);
-+						&value, sizeof(value));
- 			if (ret)
- 				return ret;
- 
-@@ -741,18 +752,18 @@ static irqreturn_t bh1745_trigger_handler(int interrupt, void *p)
- 		u16 chans[4];
- 		aligned_s64 timestamp;
- 	} scan = { };
--	u16 value;
-+	__le16 value;
- 	int ret;
- 	int i;
- 	int j = 0;
- 
- 	iio_for_each_active_channel(indio_dev, i) {
- 		ret = regmap_bulk_read(data->regmap, BH1745_RED_LSB + 2 * i,
--				       &value, 2);
-+				       &value, sizeof(value));
- 		if (ret)
- 			goto err;
- 
--		scan.chans[j++] = value;
-+		scan.chans[j++] = le16_to_cpu(value);
- 	}
- 
- 	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
-
-base-commit: a6d9114f68c4b5507b2d945bd6d1e37415f913c5
--- 
-2.53.0
-
+ 	/*
+ 	 * The device measures continuously in background mode, so a triggered
+ 	 * capture is just a read of the latest results. The setup ops run the
