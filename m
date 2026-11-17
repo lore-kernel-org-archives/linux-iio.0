@@ -1,68 +1,58 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.137
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794881237;
-	b=X/0AQcCBBP8wawvenyqBGWJPhQUnaREdn6rd8OTtZvLFBYbO1UfgZekVwMfnQe8BCcrB
-	 DWgBT0UIgH4PvxB+vx4sjWPaPLyBXAPNk5YAAMNemi5rq2ojP+rlg+4Pdi/85hqsqBZee
-	 InSYub8tQSgip/cmuICOIcVe8Rv1hVdwGmN8Tfq0F5Le00yeNT9sk5+i260myHFj3UcMD
-	 ZhEX8lWMf6zvUcbokZ6BZnGYYWVrxCKOgJF9cYvP9nakDxrUpSRLJm4sobb/bxUnFFMHO
-	 EAnBQegNFoWSD85C680TH+xPdUPqwWAz1F9RzNqaPHUNyNe0b7I617zN439cOeLy2Uw==
+	t=1794884587;
+	b=KcobqpXwgBVFFkJU+8PQQzH2E4PLmV74MZsk+8CMG+paX9qffY63CthlEivzPt5oUPta
+	 IO6Hg9pxNVRqb7GbAknCvkMOVi97sSeAcY0cWlQwQi6XvB+R4twimM/W2+1cnj+NJLURM
+	 3KkfIqtq1HLIb3B5fPvR7KW5VYDubqzsz+H77LIgutYKvKyfkfUTA8vDYfLTI75aIxpvQ
+	 QOIa9CBlqE0Jtp10mo/lucsFpeinEbW7Gw9pKrcSqQSbhVnmTTsRKbIKujCQVmCGOvYcu
+	 IjzO+Bn+JPwdzRCIAF0PNsK8dc6F5Ad77gI3XZ3yzMAvLEuZp68j3QdWFitOrjAtLgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794881237;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794884587;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=OLUnGvYwOC48SloSAiu0WufUKOV5tVIRadr3I27DxbQ=;
-	b=LNI7Q7oeq0cBFwym3D1SFIxFXzsQed0DBTL1hYYqQgS+mWZsc3m34oo4PZPe5Uf2Yd70
-	 xrojZLwzQijfH6CixhYHkPbUo+eHP1FVXnZVy1zBdOroSnvMOOONB5iHKXdX+ITB5FRM/
-	 EVhIEQ1W/ls/hqXPE2460dC4+B6C1wZX+vCE3TGh/VPF3CP9o9MLuXpVhTIxkd5PbsSYy
-	 9ruLkVJMyHaSXpV8AaxlM9QOzBbQzSqZYHquJeRvg2st8wvjohccbuzg/4t9mDTa6iAXD
-	 8ojZIaoFFoXOO0RRxwq0tVBe7ZTNPe1NDpmN+JqCNrJ9iV7BC4cwuaMV2iyabaxl4HQ==
+	bh=v86ECrw4hTZS+oi6SL4n7LCSWP3uQBdnZrQC4d8hSfE=;
+	b=MVKG/3v9MxVKiz7oa48EjinJbnqj2dDWmbvS2z87Gf2POmZlLKEDcRhIhAZyrourSBZi
+	 akGa2NuOl2AampstTnjsWNkqnI+27qy9TGvRkDuQcW2Xa1YM6qzSU4dLHRa4cMNv6UOpj
+	 zGMcC5d0uOQOyc4lTmfsWF43igY4tSxre7Ee4h6xudcAGF8Lzm3goyWSIeVdbwe4sLbIm
+	 Uj9IR5w+VhPnlwazRm7iw2qQeeKFvKO5IRsCYoSQ1ywe1o3St9VYIlJHgnyeHpLo6TbQT
+	 HMfqpPTt5fir/qoO8vVGHDkAEz3IUlElJYgDmaVJblLZvbwXlUpgBL7WbhLxwYTnlXA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=Q3HQ8yTx;
-	arc=none smtp.remote-ip=111.22.67.137
-Received: from cmccmta4.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E330606A335;
-	Tue, 17 Nov 2026 02:07:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E330606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="EAF/911a";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C27F5606A31C;
+	Tue, 17 Nov 2026 03:03:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=Q3HQ8yTx
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=Q3HQ8yTxEirvq4yYQgtq/FUTOSFxUVY9KJQrXPH/kXTOJ/5EteUaqG8tlTkBlZnqe484niPxQfpRt
-	 B8oVS0nWe/Q3SvU8kyyMjHaNZP9CtbrucUEIUahKxtsbuIRx/yY2krQ0gn1ZYHkvE3XPVI2cXni15b
-	 pZiXklSoaJUnml/c=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app08-12008 (RichMail) with SMTP id 2ee86afbb6cb8f2-a3e28;
-	Tue, 17 Nov 2026 10:07:08 +0800 (CST)
-X-RM-TRANSID:2ee86afbb6cb8f2-a3e28
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from localhost.localdomain.localdomain (unknown[10.55.1.72])
-	by rmsmtp-syy-appsvr05-12005 (RichMail) with SMTP id 2ee56afbb6ca618-9edcb;
-	Tue, 17 Nov 2026 10:07:08 +0800 (CST)
-X-RM-TRANSID:2ee56afbb6ca618-9edcb
-From: Luo Yifan <luoyifan@cmss.chinamobile.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Eugen Hristev <ehristev@kernel.org>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] spi: pl022: handle clk_prepare_enable() failure on runtime resume
-Date: Tue, 17 Nov 2026 10:07:11 +0800
-Message-Id: <20261117020711.20158-1-luoyifan@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.24.4
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EAF/911a
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA6D1F000C4;
+	Tue, 17 Nov 2026 03:03:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794884587;
+	bh=v86ECrw4hTZS+oi6SL4n7LCSWP3uQBdnZrQC4d8hSfE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=EAF/911aT3K/HgLF7Z/UTT8qhiixqrvj+5cC5G9mJXdj9Bm4icfnFSRvuognvA+4d
+	 TJC6Ir5HtYyI1539/i7VyL30DbqZ8gLppaMkDoYfqpMINGAwQMbwpzGXKRBgXQ/7We
+	 hpjy2c1Sj0KRpWS9HwAQbT3fp8dDy1KTMloD2IjIthAFnnGBNUwtjTexfF091/gwSL
+	 NB8/UB5kZUf0j5qea6V6f+owdNjBu/Voqmlb8s0Ht9ZKtKOvQ0JvRzOO33JEtSUT1a
+	 n/7EZFowKNUWhsz8t0owOk0tI6hK1K5YJ7qc3OOSrQylSoq4ws4ZejpfONouuwKlzD
+	 rN6VzJv88KSAQ==
+Date: Tue, 17 Nov 2026 03:02:58 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Luo Yifan <luoyifan@cmss.chinamobile.com>
+Cc: linux-iio@vger.kernel.org, Eugen Hristev <ehristev@kernel.org>, Nicolas
+ Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] spi: pl022: handle clk_prepare_enable() failure on
+ runtime resume
+Message-ID: <20261117030258.364ba429@jic23-hlaptop>
+In-Reply-To: <20261117020711.20158-1-luoyifan@cmss.chinamobile.com>
+References: <20261117020711.20158-1-luoyifan@cmss.chinamobile.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -72,36 +62,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-pl022_runtime_resume() ignores the return value of clk_prepare_enable()
-and always returns 0.  A failed runtime resume is therefore reported as
-success and the controller is used with its clock off.
+On Tue, 17 Nov 2026 10:07:11 +0800
+Luo Yifan <luoyifan@cmss.chinamobile.com> wrote:
 
-Return the error from clk_prepare_enable().
+> pl022_runtime_resume() ignores the return value of clk_prepare_enable()
+> and always returns 0.  A failed runtime resume is therefore reported as
+> success and the controller is used with its clock off.
+> 
+> Return the error from clk_prepare_enable().
+> 
+> Signed-off-by: Luo Yifan <luoyifan@cmss.chinamobile.com>
 
-Signed-off-by: Luo Yifan <luoyifan@cmss.chinamobile.com>
----
- drivers/spi/spi-pl022.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+You should probably resend including linux-spi and appropriate maintainers
+and dropping IIO folk.
 
-diff --git a/drivers/spi/spi-pl022.c b/drivers/spi/spi-pl022.c
-index f52130465a..64bf9c4b0a 100644
---- a/drivers/spi/spi-pl022.c
-+++ b/drivers/spi/spi-pl022.c
-@@ -2067,9 +2067,8 @@ static int pl022_runtime_resume(struct device *dev)
- 	struct pl022 *pl022 = dev_get_drvdata(dev);
- 
- 	pinctrl_pm_select_default_state(dev);
--	clk_prepare_enable(pl022->clk);
- 
--	return 0;
-+	return clk_prepare_enable(pl022->clk);
- }
- 
- static const struct dev_pm_ops pl022_dev_pm_ops = {
--- 
-2.24.4
-
-
+> ---
+>  drivers/spi/spi-pl022.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/spi/spi-pl022.c b/drivers/spi/spi-pl022.c
+> index f52130465a..64bf9c4b0a 100644
+> --- a/drivers/spi/spi-pl022.c
+> +++ b/drivers/spi/spi-pl022.c
+> @@ -2067,9 +2067,8 @@ static int pl022_runtime_resume(struct device *dev)
+>  	struct pl022 *pl022 = dev_get_drvdata(dev);
+>  
+>  	pinctrl_pm_select_default_state(dev);
+> -	clk_prepare_enable(pl022->clk);
+>  
+> -	return 0;
+> +	return clk_prepare_enable(pl022->clk);
+>  }
+>  
+>  static const struct dev_pm_ops pl022_dev_pm_ops = {
 
