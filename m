@@ -1,82 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794943026;
-	b=cPnd0l4dkBmBGWcTHYwQdIqD+kuA/cU/kWuNLW+GHzaeFbDEd09f+n7H8zJYMITa++33
-	 HJrzEnBnGh8x47vPiOVMP79TWseVUpSTlTWREe2Fli2DDbYleFneXFJnxrc7hRVeIoxs8
-	 AsS0KxQ2IQD+a6orrRkSE1zDUhn9SnOe2sq4fpCp+Ex/f/dmXri0mi5e47Sdzq+YGjpe7
-	 +NsQ39TjGMaARQIDp2Bb5oqkO7Q71dVamqS4Kw9saadfbwQGQISztdEQLRT2HfgtXJcJd
-	 clN5jG6jhavlJ7LnhTyTn1Ihwt+wnLoINyWzDDShH8wfbAO2wN8Ql2WgF/Wb7jNHGjg==
+	t=1794943922;
+	b=L4d1q2ps+50CtoxjxVbjdG9BsO29+298fw/blh9+CITBecrD56Zu6ODa0yygfQgq9SAi
+	 ZFwd+VWGXcLBNyeXXCADeHr5Y8VHkBVBPh9L5C8kIaqLWhNkWHRcNqgtAo8hzVQAFKSA2
+	 zFZsjHaTCfZm2hj4+8tNaRnQRnfjvJQWRTj3z/YXNZWEFtZQNxWz8CnfK+u1qVniWFcNJ
+	 906DKS0DEF1mK0raTL/RcQJseD4+KYumdff54X/SwFTW2xwElMV/DGESTPZ7Lz9QwuN/t
+	 M6duiTdG0OmabhEvyvEbjNWNIlHk+rmrqPQ6VNjEal65Tpz0IPooJpbb3UmpC3zuOtw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794943026;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=FYJEgbgWj1001DFbh2xaEfMnqumhuslKfSmLo2I8NaQ=;
-	b=YyiqJIKGl/HeDGX/yr/QHvcNLO5W9Rz5VUTV6DxQB4ijEkwmLGDLTHYY8jjpqneZGw6Q
-	 SYmYC/GMgbY4/9BoygB/F6KCFVa2zfzswguSck6ua5UyMav6nHR+q7r/GP/aDRNjKTPoe
-	 D/aA55oe0WdCi7pqTmiMzsbIpf3iS7ldI0tIJABZnnZWGUmNtBeBGeR8mKvZJG8xfvHSV
-	 0wZ7dxiJ2DZRfdPDOJyX7aab7tlBAfjV6xNyP+rMaH/2NueqzGCFS82w5UswwGGVoEC2s
-	 RA5fk/IVRtCLmqCa3LP4il0g+6wmJRChKEPigF8WH3UjZS2XjKSypSJJWSQPNSggT/w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794943922;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
+	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type;
+	bh=q2L8DXdCwld9OCOazUytyYg/1wnMDhs89QIOzCqPxzI=;
+	b=dj7gk1vj9F8Cy0o2Z8GwXIl7o91zb5PglyTzwJwtHjg5jic88eQrKfIsk7S6KfVOJpUn
+	 FU9iqtKJUQg1xc+G0JgKoNb8TWERpuxdfs47wEHwe5Fh+UHhUgV/ACeF0GHJRq5yTsc49
+	 1bUhbJlsSC1TTgdVb2koyJIIYi+7vqe2l8uivmC1NApbBU6OprRkoQ8SezpinXoCIruis
+	 dnvo69PrpbMF5nihE7rA5Tm9rsmUcwVFFcmsa9HTmzDFas2WdwumSD7upa6KtU/mwu4ER
+	 LEmwIDciByeavHFf9dJDauvEPp8j1PuLKBw2JQ0ENpQ8N1ATSeLtzWs14PsX0eI3zZg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SjYhkCMJ;
-	arc=none smtp.remote-ip=192.198.163.16
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=telaak.dev;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.214.182
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58395606A32A;
-	Tue, 17 Nov 2026 19:17:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 58395606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SjYhkCMJ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794943026; x=1826479026;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KOV0DBczU4q1DkAermQBydrpIkEwz8s9NSQiCDYutP4=;
-  b=SjYhkCMJkGcW+iCNpMAr1fB5C0I/gqPu2xDcMNS3AjZzvpwmBpLmIuJk
-   E2xVrsK7s/FswZbLdB/L0B8UPNJRug8vNpJKd3NCgeB2/QqZcHPUGFAUx
-   FmfiG9zZLlbBeMOuUoZxWtzuUq8y5ZjkfS+ar98SbkjX1hn1pXZl6R/9D
-   dGks0GqubFZ/N8EBzhEQLh4D88gZ4bGTbHeI/+APMgLV5hwLiFxwRxYia
-   nYs7MKOyLaksSkyPeTJBs23ZdKuTQwRmPEIyrJununj83KUZd1zXmKfH7
-   X6zQIW/mGwtfT/bBsqI40epr3tLS5SpjQCvui79eSLSUt1IlckV5iUs0W
-   Q==;
-X-CSE-ConnectionGUID: vQh0G24QSlKh6UVhn8JZPg==
-X-CSE-MsgGUID: 5LyqOzCtTCKe0Y3ToHgmqQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3763280"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3763280"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 11:17:06 -0800
-X-CSE-ConnectionGUID: w7GccVdkREq1mQzn5e0yFg==
-X-CSE-MsgGUID: 1bMSIU5TT3Cly5I4i3vbsg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="9887442"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 11:17:03 -0800
-Date: Tue, 17 Nov 2026 21:17:00 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Daniel Campello <campello@chromium.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] Semtech SX9xxx: add a reviewer entry and binding
- maintainer
-Message-ID: <avyoLGkkCkxu11TA@ashevche-desk.local>
-References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92109606A89C
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 19:32:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 92109606A89C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=telaak.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2ed08b07213so606405ad.2
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:32:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794943922; x=1795548722;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=q2L8DXdCwld9OCOazUytyYg/1wnMDhs89QIOzCqPxzI=;
+        b=Ol+C3tOZqdmrrAXvVfjewNqGinUYv3Z0lMU/ncMEAI0eEhQgdThu70p7kcaATMpCK4
+         nOYwNr75pLfU2wKZjQa9QqP8SV/NCypzvYjNxZtVB3SbBV7H/wh9gkpEbhRXwevwOksI
+         PNN5EipVGxmv9kLf/rKFgsBWo232bmf3ZcDy+4sbC964xybDV1IxjwbGg08+H6j1fyBi
+         GVBfLflsvQRdeJv6TIwmEBwy41Cv5teGaP7oDNhEaRxHLqLOaZBwit1N8Bl+Uq6m0dxU
+         kHtiPi8nX+kOWi6vSdBq2zwTyUOXrupigfaNefhg1iXkIGVkSSVAwj5cVPNd792MUWcJ
+         1emw==
+X-Forwarded-Encrypted: i=1; AL+hErHMI9HpaLY7hvMw9HdBqrlq2PUM4PAlUtpxxei+SbjzgaP2Rh8TMePuFMTnaf6tj4iZ0ouwngSDhGM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z89dEd9nkv1TKRYMoQfH7cHZXxlbLF4J1Ifkaji5+fJFMYg7tRD
+	F8aM8kGxhBFAQ504D0wBGLwS3uvUJftII/CT6KQvZPh4z1WnrNuzHPPzbMtNL2mt
+X-Gm-Gg: AZFdTZdeVr3JAvuOUqEZjygHrmZPDQ6HaAua5yqzQl3dqpPk4mXnRA9GqQTBYm6xBFh
+	wu54gNBiflIVAVyUCfIrtNIbWGbv5GryPZB5EZhhE3AzJXN+nldaYFrXkDQ78F/h0f8dYTHWmeg
+	dUJH9yB+FoRUGeTEP9c6VpKt4qYA+miAHoF6hvmDYrB4fIKcktwwoeXkEanC5myHLTuE1enp2au
+	VnryDejY7WCQRCY44O9H3tUkD+zhh9nR1DaIIrf5oDFo3+Ki/1/jMKdcW5ADfJkghzCff+AN/qe
+	+QmaDy213+3SX3k9kKagVDGyENU7DoBHdBqGis6A1d6JqzNsWuqM6CaxejNBAJTVfZMkyn4JBPE
+	/L0KpeWJD4R+5IgOTvu1431TtWmkgt4AukUq0w3aUaBmHK4Z1p7eJKE7AeiJMzX5aR0VAIbQl/O
+	DzB5PInUFA7I4FbPr98Tg0kKwfDs/Eaewoe73n+1ZItHbGg15JvE26xZfKurGrEg1i/Jo9vjovM
+	qDz7hYPsQCIe1q0Rwe7s9pGlz+oO8brcdJ3evF85GDeSDQbH5wReW+5pC6WMm8Pn3tyLNwljSSl
+	Fi/qOrO0J53qYeXUx0P7BrnSbr6A42eq93GYEV2U68cti+tAhZZDSbj619sxLftA+zKKsiH4q0i
+	3+9nJHyHkZnWJK2oHgR+bzd627hO5tEE3JZ8OCvIz
+X-Received: by 2002:a17:902:f78c:b0:2e9:4e83:1969 with SMTP id d9443c01a7336-2eff751a4d8mr2390335ad.34.1794943921833;
+        Tue, 17 Nov 2026 11:32:01 -0800 (PST)
+Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com. [74.125.82.53])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2eff6192086sm1930765ad.38.2026.11.17.11.32.00
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Nov 2026 11:32:00 -0800 (PST)
+Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-15dd124bbe7so405314c88.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:32:00 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AL+hErFLYJXVEqU+/gmancW8LOaQ464vL5AE8D+oHo7eFh+fbytkHXzqjbtq/XZ7TjS3J2nac1d66NZPsFU=@vger.kernel.org
+X-Received: by 2002:a05:7300:c382:b0:35d:4185:5395 with SMTP id
+ 5a478bee46e88-38280c3453amr432872eec.16.1794943919489; Tue, 17 Nov 2026
+ 11:31:59 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,39 +81,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261117172612.25535-1-kapoorarnav43@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
+ <20261116-iio-ad5246-v1-5-ef6b7c06d4b0@telaak.dev> <avwP2P1zTgFteODM@ashevche-desk.local>
+In-Reply-To: <avwP2P1zTgFteODM@ashevche-desk.local>
+From: Joseph Telaak <joseph@telaak.dev>
+Date: Tue, 17 Nov 2026 14:31:48 -0500
+X-Gmail-Original-Message-ID: <CAPY4CJ4zHV-wCszetvFnVNA=v5O_rhY1YAeMNhS8r3nWC5wJCw@mail.gmail.com>
+X-Gm-Features: Aa3M54rCns0V1-iSP2as8kRCd3gnBbNDEFw_nlMpPdbVKkD4iVYzP69Wrp7Z5RM
+Message-ID: <CAPY4CJ4zHV-wCszetvFnVNA=v5O_rhY1YAeMNhS8r3nWC5wJCw@mail.gmail.com>
+Subject: Re: [PATCH 5/5] iio: potentiometer: mcp4018: Add Analog Devices AD5246
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Peter Rosin <peda@lysator.liu.se>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Nov 17, 2026 at 10:56:07PM +0530, Arnav Kapoor wrote:
-> Add a MAINTAINERS reviewer entry for the Semtech SX9310, SX9324, SX9360
-> and SX9500 proximity drivers, and add myself to the maintainers of their
-> DT bindings.
-> 
-> Jonathan agreed to a reviewer-only entry here:
-> https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
-> 
-> Changes in v3:
-> - Patch 2: replace the Link: tag and the reference to it with a
->   Suggested-by: tag (Andy)
-> - Patch 2: drop the L: line, the IIO subsystem entry already provides
->   linux-iio for these files (Andy)
+On Tue, Nov 17, 2026, Andy Shevchenko wrote:
+> Make it shorter and more generic, in this way you spread the same text to the
+> top comment in the file
+> ...
+> and to MODULE_DESCRIPTION().
 
-> - Patch 2: drop the DT binding F: lines, patch 1 already lists me in
->   the maintainers: field of the bindings (Andy)
+Will do in v2, with your wording.
 
-I was expressing my opinion, it was not an AR, it was rather the start for
-the discussion. I'm not DT maintainer, I don't know what the rules for the
-maintainer records there, OTOH I don't know if DT parts belong to the
-MAINTAINERS records that have only R: lines (and no M:).
+> And here make it list that is scalable to expand
 
-You need to clarify all this before blindly doing something.
-Also even for this patches, wait 24h hours before a respin.
+Will do.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> Keep it sorted.
 
+Will do, for the DEVID comment, the enum and the cfg table.
 
+> Why signed? Can the HW return something negative?
+
+No, I'll make it unsigned int in v2.
+
+> Strictly speaking this patch can be split to two:
+> - adding 'div' member and providing it for the existing chips
+> - adding new chip support
+
+Will split it in v2.
