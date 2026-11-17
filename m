@@ -1,103 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794912261;
-	b=coaiQ6u2lUs7gIsrFXtc9OTI7/57xiKHir3FgK8cerOC2yyWZPyNopd6g6T63v0Mn3aF
-	 poIm0LiFTcrBoy15kC2eJuANWDO2jQu4KXMpCuHIrMnpTVJFfOmXRp0OwCpyC/qjsYcQR
-	 Vql/3n+La0ZuVMM72Tc7+7X2MfA0MyHNrxHLfk/6dGeyG00eCpbFIcPIjXTlLj8dbUhcH
-	 1y8bzecxKPvPjr5L5k3WmBo3n1W09x4kCBoGlqa/WbzIlpVDVaNblMO8qTR1g8dFxJf4Y
-	 2VcEZvswaxe2pSHOC0OQvwu926oaS3Jw/pG9jxq86YrgSeJE/sruwofGDsaRf0GfArw==
+	t=1794912480;
+	b=Wc/cLFdOw0MhaRoIDAJnLj53xDlzwhlgIqA36LkJYpah1NOGpdW+pNxvB0Zpu6d/cLmN
+	 0gTJ6EDer1Uk/yDpo7B/XJudyIcOh4NdGPJSlRz43ZyVF/femE0jSCx2Y9iV3O7kNKpI/
+	 amfZZl4R7THGDfeI/XU8k8aoPD/lm2ZSv9aHP7GxO2n+OiQXJgAji6Gvrz3yxY1+/PqxJ
+	 TTXMHwgPjQg/Mok12jC39KLGvQ2cr8Q/vg00C1p/ubdzImtZjuZJalkhqwafiR1XeQsZp
+	 oDn33EnWHndY0W4jbUqK0Cm1CkZMMGqccrTBDyCiIGW4NvuHzdzg4KV4Eiitpa2AihA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794912261;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=WoYIou0u7Qr75qOLD/S/a36nO+9CQZjTuxvaJIPLNjQ=;
-	b=s0j9S00pAKq7YqeiTj9haOMNH/VdBMB0D6gMYgYyrtD8Puk4oiQQyoDkbFe9PhEnGfFa
-	 XtQFjrS7/YPv5WM5Jm0kQm3erthsU670BzuaKfm7qmBeIWX5t7JeeJN0jLn5JGAzF6Ccz
-	 nBirIJOmoSfU9prI2JB8EpQ9/8D7HeXMeMydMleA/aJNInF0HFqxB3PGVxlxy/FevYkqS
-	 nbgyzwB4THhfdLbpBE84HMBxe+GcgZwVw+muHro/AiT8lB8OpH6d09hdpD0k71jj7t71Y
-	 54kOHKbJsalM0Dgrcn+ondUZ/xD5yDmbGXUaQOEQNOlewYfEcSJ8u/DCSMpeTiEUpxg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794912480;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=JIxCmE/jn2GPb4zKjgDed23TAonlzb2lFWRnVD2IiAQ=;
+	b=QsW1r2d7aGpj+XhuBjPz4Qn0PUnoHA4H9KE++ErKA4qSmhHmwFujcv8TPNm2qbRC0PnD
+	 WcN1lJQo4pXU6g31/ePiEHUBWtYDGU06AjF15W8uYv86YaRbATO2fpbDDArVOSk/9UA1g
+	 EL2OeU65yuETE5gHXH6YlGO1sjBDThXtyBsxw9qetcolnpzuVh8mWmTVlr06xV4NxFqXr
+	 dPHB4iSOypV9tKZyIQ6RjRWOVmg2/u0xWnzsIm+n10jaL+JY7HtLNsyf6wD2BDQxwXhLa
+	 5LaRId5XA5VikF1B13emYybjEf/7fw+01oEFuGfgz8+oZMrcxLTOGmq6/GVxwXVRj2g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="LLIAwM/k";
-	arc=none smtp.remote-ip=209.85.221.53
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RmnUNSlS;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F16C606A33E
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 10:44:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F16C606A33E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B82F8606A331;
+	Tue, 17 Nov 2026 10:47:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B82F8606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LLIAwM/k
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-4a358881793so458961f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 02:44:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794912259; x=1795517059; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WoYIou0u7Qr75qOLD/S/a36nO+9CQZjTuxvaJIPLNjQ=;
-        b=LLIAwM/k9oeJHdIF+c7YDiPXSl92iTASRM5FZu3cZ6rvTR2ogXZGu7KhSI2WHuwbA7
-         6x3pW53pXZt704qeFOBD1LUITg7lFG4kwEPRNO6LbCEBP3PGXUkMNJEO98yZvrEp0w30
-         K1T+V2vONfKhvoRMeeYhp2vLb3yZvufwU37l3+kdpS37X/49HdrbuDIHrpn5+HN3zWek
-         WzvKCggDpS65ilMnyiAIMeveqdbyHedW7/ZuebXu9jcVpjZvYfdb7iYANAtMwsn2qc1B
-         +TL88Oj5NeEInS+5qClZbwUHdhAQE9s8x14S4Aky8c0pvRhnCv5dfuajVfVYB0aOnXK3
-         evSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794912259; x=1795517059;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WoYIou0u7Qr75qOLD/S/a36nO+9CQZjTuxvaJIPLNjQ=;
-        b=a4Zu5rCP1AsvfR1C3Mj2wmKw7sqtKdl/hO3/lQY95SEpd75iHnCjARwMny2wpOuLEV
-         4lzCemzi04k44W1nPiAj53E/GlgXhVRD2zpU8VN7BbDDI1GTq/PAoyzDcpB9Ll+g06LM
-         rHfSedtUoVHU4VTcKKWT4MD3j2cH7pdLndljHctdDps44b+SUZC93SP7nv/Sp0gV8+kG
-         YkgMFU1GeV2u7veuEkMeeT60zjjo9zE6fCOBjD/2xNIAxtN2JKjB45r2Ndex4RcBGdFI
-         Zih+0/c9ia43uXJKnQMZkkmqSjOb7KKXZWhA/yVxhDwOk3mlsAdrUnOq0s8bgfOPLQ84
-         Ov6A==
-X-Forwarded-Encrypted: i=1; AL+hErG6pEoQofxJFA07gA6x1snHsKY1yIRdX48xS36ewatpD6y6nMUsJdD0fW8yh+KfXE/t/oKU4R5IKZc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z94o0S2QIvE/ZspaZCYmdXGPfbLOGz668XNUAqXG30eQ/r+wyGO
-	4Lvl2QFffroY8m5/HizjCCi7F4UdHFSqzpdNP51U+p5/mYAE6euC1QJu
-X-Gm-Gg: AZFdTZddvdmHrhUFJyP+WUDG5DO1B4l38MCGPcr/JF9YWe/H7XmeiqAlFB39aXYaQ+B
-	oXTAYG1vUUMjuHRvJPalpqqR16lWXbNmQR/PEZchOCvuk5KIQonH5eP1VDGVVJtHhu+qWGL8ZDW
-	J2lM5MZbS+asrqCfeOq6KKs16T3Vt063mjAn3zsy3kFBuskz0psf1e7V9CAidD0MqmZM7p+dlPy
-	dY4teZOUjC6hxbk+Zmg7CbvjYrdEW30NwAEqfS67HiN4FoMp43aadzmIH0AG+11lIhN/Mn3YqWh
-	7RPGqY1mGXysv3WE3ODYNNezcv5uBeg33mBD5tWr925u4GBjPOjVi2rGSgixbwMHVudqVtl9tKb
-	ipCqCJ++lrHJ6e2O5ZToH/Yq4vrDuDXuscAe7/zTmC++GRlOy4X4X4zZER/WRlBnIktUwmd+6HD
-	vw/IdGFWIrst/lhFnF81braqf3+T0JU1uw4U4ewphrboZ8NVoKs+en5FM3Hs/azdmWslS67tisB
-	IyAI8Y9zui496pfoFFebZ9HVhbUcO7XMCtvKMSM9AVGim20c9E/DS++FiQOt0oplAI9vBFTjpKs
-	nnUqLjpXr7k=
-X-Received: by 2002:a05:6000:25ee:b0:493:4426:96c7 with SMTP id ffacd0b85a97d-49c740bc03dmr25516194f8f.57.1794912258439;
-        Tue, 17 Nov 2026 02:44:18 -0800 (PST)
-Received: from dl360p ([130.61.107.245])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a2e6c765dfsm6167711f8f.33.2026.11.17.02.44.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 02:44:18 -0800 (PST)
-From: =?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
-To: jic23@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	=?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
-Subject: [PATCH v2 2/2] iio: proximity: add Imagis ISG5320A SAR sensor driver
-Date: Tue, 17 Nov 2026 13:44:14 +0300
-Message-ID: <20261117104414.1182364-2-tadilhusrev@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261117104414.1182364-1-tadilhusrev@gmail.com>
-References: <20261116074013.355363-1-tadilhusrev@gmail.com>
- <20261117104414.1182364-1-tadilhusrev@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RmnUNSlS
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794912480; x=1826448480;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Xz22oPpsqmWIXwAra7whKiWI16mTZm7bN2zqd/8pMCQ=;
+  b=RmnUNSlSlu/8TNtwEG9W/B7Mu1f1FsBkUjr4y26H3jgFFwod/AuJz+Bw
+   Awaa28VtQ7EtDh7ib2oWx4P9M7o2I1gN0YjiPe9ILnMWaJ/vkF4AeFGJj
+   A8SQW+Tmr+9RLKko+xLAUN9YpkpMwX/s9DYYLlv11opvK0CucygncGLkk
+   i73yI/OeALh0qb+9thvio1sWr+RkK9M/RFbuKpua3YR2md3J7QygeNRsN
+   jqfwCOZKfPiPU7XWEsal61o2lGhWC7mWrUxr5CR6iBvlfAimxFJEOCpad
+   wXcZuz5FXe/gRO2FRatVBv0pK45h69+3du/HWZbEmmWjns9U6bu9DNbf9
+   g==;
+X-CSE-ConnectionGUID: 4zwIxiIDS3Wjwm5bkAN59g==
+X-CSE-MsgGUID: /+zjZ4WLRa+egNtK5yCZ3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3760362"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3760362"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:48:00 -0800
+X-CSE-ConnectionGUID: 8V5XDOljRDWjxd83tWvriA==
+X-CSE-MsgGUID: N/6wuTEfS5ODpe9KyL7V5A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="9888454"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:47:57 -0800
+Date: Tue, 17 Nov 2026 12:47:54 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: add a reviewer entry for the Semtech SX9xxx
+ proximity drivers
+Message-ID: <avww2kChMteEjGnV@ashevche-desk.local>
+References: <20261117094737.15253-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,983 +83,46 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261117094737.15253-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add an IIO driver for the Imagis ISG5320A capacitive SAR/grip sensor
-(I2C), as fitted on the Samsung Galaxy XCover5. It exposes one
-IIO_PROXIMITY channel (the B-channel signal minus its baseline) and a
-rising/falling threshold proximity event.
+On Tue, Nov 17, 2026 at 03:17:35PM +0530, Arnav Kapoor wrote:
+> The Semtech SX9310, SX9324, SX9360 and SX9500 proximity sensor drivers
+> and the shared sx_common code have no MAINTAINERS entry, so
+> get_maintainer.pl only lists the IIO maintainers and reviewers for them.
+> 
+> Add an entry with me as reviewer. There is no M: line, so maintenance
+> falls back to the IIO subsystem entry, as Jonathan suggested.
 
-v1 -> v2 (addressing Andy Shevchenko's and Sashiko AI's review of v1,
-https://sashiko.dev/#/patchset/20261116074013.355363-1-tadilhusrev@gmail.com?part=2):
-- Drop the unused #include <linux/kernel.h>; audit includes for the
-  IWYU principle (array_size.h, cleanup.h, errno.h, types.h for
-  symbols actually used).
-- Use ACQUIRE(pm_runtime_active_auto_try_enabled)/ACQUIRE_ERR() in
-  isg5320a_get_sample() instead of open-coded
-  pm_runtime_resume_and_get()/pm_runtime_put_autosuspend().
-- Make the Kconfig prompt, this file's top comment, and
-  MODULE_DESCRIPTION() use the same wording.
-- Propagate the PROTECT-unlock write failure in isg5320a_reset()
-  instead of only warning (matches the existing SOFTRESET handling).
-- isg5320a_wait_int() now reads the INT gpio with
-  gpiod_get_value_cansleep() (logical, polarity-aware) instead of
-  _raw_, and returns a real error instead of looping to -ETIMEDOUT on
-  a failed read.
-- Cache device_may_wakeup() at isg5320a_events_on() time
-  (irq_wake_enabled) and use that cached value in
-  isg5320a_events_off(), instead of re-checking device_may_wakeup() at
-  disable time: toggling /sys/.../power/wakeup between enable and
-  disable no longer produces an unbalanced
-  enable_irq_wake()/disable_irq_wake() pair.
-- isg5320a_shutdown() now calls isg5320a_events_off() (disables the
-  IRQ and takes data->lock around the IRQFUNC write) instead of
-  writing IRQFUNC unlocked with the IRQ still enabled, and only calls
-  isg5320a_mode_sleep() when the device isn't already
-  runtime-suspended.
-- Register the isg5320a_teardown() devres action right after
-  isg5320a_mode_normal() succeeds instead of after the IRQ request, so
-  a later probe failure (e.g. devm_request_threaded_irq()) still puts
-  the chip back to sleep instead of leaving it scanning unbound.
-- Use a named initializer in isg5320a_id[].
+> Link: https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
 
-The driver was derived from the Samsung vendor driver during XCover5
-mainline bring-up with the help of an AI coding assistant (Claude Code,
-Anthropic), which drafted the mainline IIO driver; I reviewed every
-line, built it (arm64, 0 warnings), ran checkpatch --strict (clean),
-and tested it live on a Samsung Galaxy XCover5 (2026-11-17): the driver
-binds and registers as iio:device4 "isg5320a", with a live
-in_proximity0_raw read-back.
+This is unreferred in the text above, so orphaned Link tag.
+Make it Link: $URL [1] and refer in the text, so we will understand why it's
+here.
 
-Signed-off-by: Adil Hüsrev Tepe <tadilhusrev@gmail.com>
----
- drivers/iio/proximity/Kconfig    |  11 +
- drivers/iio/proximity/Makefile   |   1 +
- drivers/iio/proximity/isg5320a.c | 880 +++++++++++++++++++++++++++++++
- 3 files changed, 892 insertions(+)
- create mode 100644 drivers/iio/proximity/isg5320a.c
+...
 
-diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-index bb77fad2a..311a7b9e4 100644
---- a/drivers/iio/proximity/Kconfig
-+++ b/drivers/iio/proximity/Kconfig
-@@ -67,6 +67,17 @@ config IRSD200
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called irsd200.
- 
-+config ISG5320A
-+	tristate "Imagis ISG5320A capacitive SAR/grip sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  Say Y here to build a driver for the Imagis ISG5320A capacitive
-+	  SAR/grip sensor.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called isg5320a.
-+
- config ISL29501
- 	tristate "Intersil ISL29501 Time Of Flight sensor"
- 	depends on I2C
-diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
-index 4352833dd..6aa606fa5 100644
---- a/drivers/iio/proximity/Makefile
-+++ b/drivers/iio/proximity/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_CROS_EC_MKBP_PROXIMITY) += cros_ec_mkbp_proximity.o
- obj-$(CONFIG_D3323AA)		+= d3323aa.o
- obj-$(CONFIG_HX9023S)		+= hx9023s.o
- obj-$(CONFIG_IRSD200)		+= irsd200.o
-+obj-$(CONFIG_ISG5320A)		+= isg5320a.o
- obj-$(CONFIG_ISL29501)		+= isl29501.o
- obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
- obj-$(CONFIG_MB1232)		+= mb1232.o
-diff --git a/drivers/iio/proximity/isg5320a.c b/drivers/iio/proximity/isg5320a.c
-new file mode 100644
-index 000000000..baa8d07ec
---- /dev/null
-+++ b/drivers/iio/proximity/isg5320a.c
-@@ -0,0 +1,880 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Imagis ISG5320A capacitive SAR/grip sensor.
-+ *
-+ * Register map, init table and every write sequence below come from the
-+ * Samsung vendor driver (drivers/sensors/isg5320a.c + isg5320a_reg.h,
-+ * Galaxy XCover5 5.10 tree, Copyright (C) Imagis Technology). Citations of
-+ * the form "vendor :NNN" refer to lines in that isg5320a.c. This driver
-+ * writes no register the vendor driver does not write, and only with the
-+ * values the vendor writes; regmap enforces that through writeable_reg.
-+ *
-+ * The chip is used as one proximity channel: the vendor's "diff" value
-+ * (CDC16_T - BSL16_B, i.e. the B-channel signal minus its baseline) is
-+ * exposed as in_proximity0_raw, and the chip's CLOSE/FAR interrupt is
-+ * exposed as IIO threshold events (rising = grip, falling = release).
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/cleanup.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/errno.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/pm.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/pm_wakeup.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/events.h>
-+#include <linux/iio/iio.h>
-+
-+/* Registers (vendor isg5320a_reg.h :19-79) */
-+#define ISG5320A_REG_IRQSRC		0x00	/* read releases the INT line */
-+#define ISG5320A_REG_IRQSTS		0x01
-+#define   ISG5320A_IRQSTS_PROX		BIT(4)	/* ISG5320A_PROX_STATE, reg.h :81 */
-+#define ISG5320A_REG_OSCCON		0x06
-+#define   ISG5320A_OSC_SLEEP		0xB0
-+#define   ISG5320A_OSC_NORMAL		0xF0
-+#define ISG5320A_REG_IRQFUNC		0x07
-+#define   ISG5320A_IRQFUNC_ENABLE	0x0D
-+#define   ISG5320A_IRQFUNC_DISABLE	0x13
-+#define ISG5320A_REG_BS_ON_WD		0x19
-+#define   ISG5320A_BS_WD_OFF		0x0A
-+#define   ISG5320A_BS_WD_ON		0x8A
-+#define ISG5320A_REG_SCANCTRL1		0x38
-+#define   ISG5320A_SCAN_STOP		0x00
-+#define   ISG5320A_CFCAL_START		0xDD
-+#define ISG5320A_REG_SCANCTRL2		0x39
-+#define   ISG5320A_SCAN2_RESET		0x00
-+#define   ISG5320A_SCAN2_CLEAR		0x60
-+#define   ISG5320A_BFCAL_START		0x07
-+/* CDC16_T_H, CDC16_T_L, BSL16_B_H, BSL16_B_L (vendor :453) */
-+#define ISG5320A_REG_CDC16_T_H		0x5C
-+/* B_PROXCTL3..5: threshold, close hysteresis, far hysteresis (vendor :890) */
-+#define ISG5320A_REG_B_PROXCTL3		0x9B
-+#define ISG5320A_REG_DIGITAL_ACC	0xA4
-+#define ISG5320A_REG_PROTECT		0xCD
-+#define   ISG5320A_PROTECT_UNLOCK	0xDE
-+#define ISG5320A_REG_SOFTRESET		0xFD
-+#define   ISG5320A_SOFTRESET_VAL	0xDE
-+#define ISG5320A_REG_CHIPID		0xFE
-+#define ISG5320A_MAX_REG		0xFE
-+
-+#define ISG5320A_VENDOR_CHIP_ID		0x32	/* vendor :39, never checked */
-+#define ISG5320A_RESET_CONDITION	5000	/* reg.h :99, for cfcal_th */
-+
-+#define ISG5320A_AUTOSUSPEND_MS		5000
-+
-+struct isg5320a_reg_data {
-+	u8 addr;
-+	u8 val;
-+};
-+
-+/*
-+ * Vendor setup_reg[] for "XCOVER5 ALL" (isg5320a_reg.h :283-435). The other
-+ * table (:130-282) is under CONFIG_SENSORS_ISG5320A_XCOVER5_KOR, which the
-+ * stock exynos850-xcover5xx_defconfig leaves unset; it differs only in
-+ * 0x9C (threshold low byte), 0xA0 (far hysteresis low byte) and 0xBA.
-+ */
-+static const struct isg5320a_reg_data isg5320a_setup_reg[] = {
-+	{ 0x05, 0xFC }, { 0x06, 0xF1 }, { 0x07, 0x13 }, { 0x08, 0x01 },
-+	{ 0x09, 0x80 }, { 0x0A, 0x20 }, { 0x0B, 0x00 }, { 0x0C, 0x00 },
-+	{ 0x12, 0x89 }, { 0x19, 0x8A }, { 0x1B, 0x28 }, { 0x1D, 0x20 },
-+	{ 0x1E, 0x00 }, { 0x1F, 0x18 }, { 0x20, 0x05 }, { 0x21, 0x10 },
-+	{ 0x22, 0x10 }, { 0x23, 0x00 }, { 0x24, 0x00 }, { 0x25, 0x05 },
-+	{ 0x26, 0x05 }, { 0x27, 0x10 }, { 0x28, 0x20 }, { 0x29, 0x00 },
-+	{ 0x2A, 0x20 }, { 0x2B, 0x00 }, { 0x2C, 0x00 }, { 0x2D, 0x20 },
-+	{ 0x2F, 0x18 }, { 0x30, 0xC0 }, { 0x41, 0x11 }, { 0x60, 0xF0 },
-+	{ 0x61, 0x8F }, { 0x62, 0x0C }, { 0x63, 0x00 }, { 0x64, 0x00 },
-+	{ 0x65, 0x44 }, { 0x66, 0x3C }, { 0x67, 0x01 }, { 0x68, 0x00 },
-+	{ 0x69, 0x00 }, { 0x6A, 0x10 }, { 0x6B, 0x00 }, { 0x6C, 0x10 },
-+	{ 0x6D, 0x40 }, { 0x6E, 0x22 }, { 0x6F, 0x00 }, { 0x70, 0x01 },
-+	{ 0x71, 0x60 }, { 0x72, 0xFF }, { 0x73, 0xFF }, { 0x74, 0xFF },
-+	{ 0x7B, 0x08 }, { 0x7C, 0x00 }, { 0x7D, 0x0C }, { 0x7E, 0x00 },
-+	{ 0x7F, 0xF8 }, { 0x80, 0xF8 }, { 0x81, 0x00 }, { 0x82, 0xF0 },
-+	{ 0x83, 0xF0 }, { 0x84, 0xF0 }, { 0x85, 0xF0 }, { 0x86, 0xF0 },
-+	{ 0x87, 0xF0 }, { 0x88, 0x00 }, { 0x89, 0x00 }, { 0x8A, 0x08 },
-+	{ 0x8B, 0x00 }, { 0x8C, 0x02 }, { 0x8D, 0x00 }, { 0x99, 0x21 },
-+	{ 0x9A, 0x3C }, { 0x9B, 0x01 }, { 0x9C, 0x2C }, { 0x9D, 0x00 },
-+	{ 0x9E, 0x00 }, { 0x9F, 0x00 }, { 0xA0, 0x96 }, { 0xA1, 0xC0 },
-+	{ 0xA2, 0x22 }, { 0xA3, 0x00 }, { 0xA4, 0x08 }, { 0xA5, 0x60 },
-+	{ 0xA6, 0xFF }, { 0xA7, 0xFF }, { 0xA8, 0xFF }, { 0xA9, 0x00 },
-+	{ 0xAF, 0x40 }, { 0xB0, 0x00 }, { 0xB1, 0x60 }, { 0xB2, 0x00 },
-+	{ 0xB3, 0xD0 }, { 0xB4, 0x10 }, { 0xB5, 0x28 }, { 0xB6, 0xF0 },
-+	{ 0xB7, 0xF6 }, { 0xB8, 0xFD }, { 0xB9, 0xDE }, { 0xBA, 0xFD },
-+	{ 0xBB, 0xF0 }, { 0xBC, 0x00 }, { 0xBD, 0xFF }, { 0xBE, 0x01 },
-+	{ 0xBF, 0x5E }, { 0xC0, 0x00 }, { 0xC1, 0x69 }, { 0xC2, 0xF0 },
-+	{ 0xC3, 0x00 }, { 0xC4, 0x00 }, { 0xC5, 0x00 }, { 0x13, 0x3A },
-+	{ 0x18, 0xF1 }, /* A ch : CS0, B ch : CS1 */
-+	{ 0x1C, 0x18 }, { 0x35, 0x00 }, { 0x36, 0x00 }, { 0x3A, 0x0A },
-+	{ 0x3B, 0x50 }, { 0x3C, 0x0A }, { 0x3D, 0x50 }, { 0x3E, 0x60 },
-+	{ 0x94, 0x10 }, { 0x95, 0xA9 }, { 0x96, 0x11 }, { 0x2E, 0x14 },
-+	{ 0x0E, 0xE0 }, { 0x0F, 0x1E }, { 0x10, 0xC0 }, { 0x11, 0xC1 },
-+	{ 0xD0, 0xE0 }, { 0xD1, 0x08 }, { 0xD2, 0x00 }, { 0xD3, 0xFF },
-+	{ 0xD4, 0xFF }, { 0xD5, 0x1E }, { 0xD6, 0x32 }, { 0xD7, 0xFF },
-+	{ 0xD8, 0x20 }, { 0xD9, 0x70 }, { 0xDA, 0x7F }, { 0xDB, 0xE0 },
-+	{ 0xDC, 0x00 }, { 0x76, 0x08 }, { 0x77, 0x00 }, { 0x79, 0x02 },
-+	{ 0x7A, 0x00 }, { 0xAA, 0x36 }, { 0xAB, 0xB0 }, { 0xAD, 0x04 },
-+	{ 0xAE, 0x00 },
-+};
-+
-+struct isg5320a_data {
-+	struct device *dev;
-+	struct regmap *regmap;
-+	struct gpio_desc *int_gpio;
-+	int irq;
-+	/* Serialises multi-register chip sequences and the cached sample. */
-+	struct mutex lock;
-+	/* Serialises event enable/disable (sleeps in disable_irq()). */
-+	struct mutex ev_lock;
-+	bool ev_enabled;
-+	bool irq_wake_enabled;
-+	bool close;
-+	u16 cdc;
-+	u16 base;
-+	u16 thresh;
-+	u16 close_hyst;
-+	u16 far_hyst;
-+	u32 cfcal_th;
-+};
-+
-+static bool isg5320a_writeable_reg(struct device *dev, unsigned int reg)
-+{
-+	unsigned int i;
-+
-+	switch (reg) {
-+	case ISG5320A_REG_OSCCON:
-+	case ISG5320A_REG_IRQFUNC:
-+	case ISG5320A_REG_BS_ON_WD:
-+	case ISG5320A_REG_SCANCTRL1:
-+	case ISG5320A_REG_SCANCTRL2:
-+	case ISG5320A_REG_PROTECT:
-+	case ISG5320A_REG_SOFTRESET:
-+		return true;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(isg5320a_setup_reg); i++)
-+		if (isg5320a_setup_reg[i].addr == reg)
-+			return true;
-+
-+	return false;
-+}
-+
-+static bool isg5320a_precious_reg(struct device *dev, unsigned int reg)
-+{
-+	/* Reading IRQSRC acknowledges the interrupt; keep debugfs off it. */
-+	return reg == ISG5320A_REG_IRQSRC;
-+}
-+
-+static const struct regmap_config isg5320a_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = ISG5320A_MAX_REG,
-+	.writeable_reg = isg5320a_writeable_reg,
-+	.precious_reg = isg5320a_precious_reg,
-+	.cache_type = REGCACHE_NONE,
-+};
-+
-+/* Wait for the INT line to reach @level: up to 10 x 5 ms (vendor :262, :281). */
-+static int isg5320a_wait_int(struct isg5320a_data *data, int level)
-+{
-+	int cnt, val;
-+
-+	if (!data->int_gpio) {
-+		msleep(50);
-+		return 0;
-+	}
-+
-+	for (cnt = 0; cnt < 10; cnt++) {
-+		/* Logical, not raw: honours the GPIO's DT polarity. */
-+		val = gpiod_get_value_cansleep(data->int_gpio);
-+		if (val < 0)
-+			return val;
-+		if (val == level)
-+			return cnt;
-+		usleep_range(5000, 5100);
-+	}
-+
-+	return -ETIMEDOUT;
-+}
-+
-+/* vendor isg5320a_reset(), :247-292, plus a CHIPID read the vendor never does */
-+static int isg5320a_reset(struct isg5320a_data *data)
-+{
-+	struct device *dev = data->dev;
-+	unsigned int val;
-+	int ret;
-+
-+	usleep_range(5000, 5100);				/* :255-256 */
-+
-+	ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &val);	/* :258 */
-+	if (ret)
-+		return dev_err_probe(dev, ret, "no response at IRQSRC\n");
-+
-+	ret = regmap_read(data->regmap, ISG5320A_REG_CHIPID, &val);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "CHIPID read failed\n");
-+	if (val == ISG5320A_VENDOR_CHIP_ID)
-+		dev_info(dev, "CHIPID 0x%02x\n", val);
-+	else
-+		dev_warn(dev, "CHIPID 0x%02x (vendor header says 0x%02x; not enforced)\n",
-+			 val, ISG5320A_VENDOR_CHIP_ID);
-+
-+	if (isg5320a_wait_int(data, 1) < 0)			/* :262-266 */
-+		dev_warn(dev, "INT did not go high before reset\n");
-+
-+	ret = regmap_write(data->regmap, ISG5320A_REG_PROTECT,	/* :268-271 */
-+			   ISG5320A_PROTECT_UNLOCK);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "unlock protect failed\n");
-+
-+	ret = regmap_write(data->regmap, ISG5320A_REG_SOFTRESET,	/* :273-276 */
-+			   ISG5320A_SOFTRESET_VAL);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "soft reset write failed\n");
-+
-+	usleep_range(1000, 1100);				/* :278 */
-+
-+	ret = isg5320a_wait_int(data, 0);			/* :280-289 */
-+	if (ret < 0)
-+		return dev_err_probe(dev, -EIO, "INT not asserted after soft reset\n");
-+	dev_dbg(dev, "reset done, wait cnt %d\n", ret);
-+
-+	return 0;
-+}
-+
-+/* vendor isg5320a_initialize(), :614-660, without the /sdcard override */
-+static int isg5320a_initialize(struct isg5320a_data *data)
-+{
-+	struct device *dev = data->dev;
-+	unsigned int i, val, mismatch = 0;
-+	u8 buf[6];
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &val);	/* :625 */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(data->regmap, ISG5320A_REG_SCANCTRL1,	/* :626 */
-+			   ISG5320A_SCAN_STOP);
-+	if (ret)
-+		return ret;
-+	msleep(30);						/* :627 */
-+
-+	for (i = 0; i < ARRAY_SIZE(isg5320a_setup_reg); i++) {	/* :631-637 */
-+		const struct isg5320a_reg_data *r = &isg5320a_setup_reg[i];
-+
-+		ret = regmap_write(data->regmap, r->addr, r->val);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "init write 0x%02x failed\n",
-+					     r->addr);
-+		ret = regmap_read(data->regmap, r->addr, &val);
-+		if (ret)
-+			return ret;
-+		if (val != r->val) {
-+			mismatch++;
-+			dev_dbg(dev, "reg 0x%02x wrote 0x%02x read 0x%02x\n",
-+				r->addr, r->val, val);
-+		}
-+	}
-+	dev_info(dev, "init table: %zu writes, %u read back different\n",
-+		 ARRAY_SIZE(isg5320a_setup_reg), mismatch);
-+
-+	/* :646-650 reads the threshold; :890-897 reads all six bytes */
-+	ret = regmap_bulk_read(data->regmap, ISG5320A_REG_B_PROXCTL3, buf,
-+			       sizeof(buf));
-+	if (ret)
-+		return ret;
-+	data->thresh = (buf[0] << 8) | buf[1];
-+	data->close_hyst = (buf[2] << 8) | buf[3];
-+	data->far_hyst = (buf[4] << 8) | buf[5];
-+
-+	ret = regmap_read(data->regmap, ISG5320A_REG_DIGITAL_ACC, &val);	/* :653-657 */
-+	if (ret)
-+		return ret;
-+	data->cfcal_th = ISG5320A_RESET_CONDITION * val / 8;
-+
-+	dev_info(dev, "threshold %u, close hyst %u, far hyst %u, cfcal_th %u\n",
-+		 data->thresh, data->close_hyst, data->far_hyst, data->cfcal_th);
-+
-+	return 0;
-+}
-+
-+/* vendor isg5320a_set_mode(SLEEP), :749-755 */
-+static int isg5320a_mode_sleep(struct isg5320a_data *data)
-+{
-+	unsigned int val;
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &val);
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(data->regmap, ISG5320A_REG_SCANCTRL1, ISG5320A_SCAN_STOP);
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(data->regmap, ISG5320A_REG_OSCCON, ISG5320A_OSC_SLEEP);
-+	if (ret)
-+		return ret;
-+	return regmap_write(data->regmap, ISG5320A_REG_BS_ON_WD, ISG5320A_BS_WD_OFF);
-+}
-+
-+/*
-+ * vendor isg5320a_set_mode(NORMAL), :749 + :757-758, which runs
-+ * isg5320a_force_calibration(data, false), :302-321.
-+ */
-+static int isg5320a_mode_normal(struct isg5320a_data *data)
-+{
-+	struct regmap *map = data->regmap;
-+	unsigned int val;
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	ret = regmap_read(map, ISG5320A_REG_IRQSRC, &val);			/* :749 */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(map, ISG5320A_REG_BS_ON_WD, ISG5320A_BS_WD_ON);	/* :757 */
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(map, ISG5320A_REG_SCANCTRL1, ISG5320A_SCAN_STOP);	/* :303 */
-+	if (ret)
-+		return ret;
-+	msleep(30);								/* :305 */
-+	ret = regmap_write(map, ISG5320A_REG_BS_ON_WD, ISG5320A_BS_WD_OFF);	/* :306 */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(map, ISG5320A_REG_SCANCTRL2, ISG5320A_SCAN2_CLEAR);	/* :307 */
-+	if (ret)
-+		return ret;
-+	msleep(100);								/* :309 */
-+	ret = regmap_write(map, ISG5320A_REG_OSCCON, ISG5320A_OSC_NORMAL);	/* :310 */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(map, ISG5320A_REG_BS_ON_WD, ISG5320A_BS_WD_ON);	/* :312 */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(map, ISG5320A_REG_SCANCTRL2, ISG5320A_SCAN2_RESET);	/* :313 */
-+	if (ret)
-+		return ret;
-+	ret = regmap_write(map, ISG5320A_REG_SCANCTRL1, ISG5320A_CFCAL_START);	/* :316 */
-+	if (ret)
-+		return ret;
-+	msleep(500);								/* :318 */
-+	ret = regmap_write(map, ISG5320A_REG_SCANCTRL2, ISG5320A_BFCAL_START);	/* :321 */
-+	if (ret)
-+		return ret;
-+
-+	/* The vendor sw_reset path waits 300 ms after BFCAL before reading (:850-852). */
-+	msleep(300);
-+
-+	return 0;
-+}
-+
-+/* vendor isg5320a_get_raw_data(), :445-466; caller holds data->lock */
-+static int isg5320a_read_sample(struct isg5320a_data *data)
-+{
-+	u8 buf[4];
-+	u16 v;
-+	int ret;
-+
-+	lockdep_assert_held(&data->lock);
-+
-+	ret = regmap_bulk_read(data->regmap, ISG5320A_REG_CDC16_T_H, buf,
-+			       sizeof(buf));
-+	if (ret)
-+		return ret;
-+
-+	/* 0x0000 and 0xFFFF are discarded and the last value kept (:459-464) */
-+	v = (buf[0] << 8) | buf[1];
-+	if (v != 0 && v != 0xFFFF)
-+		data->cdc = v;
-+	v = (buf[2] << 8) | buf[3];
-+	if (v != 0 && v != 0xFFFF)
-+		data->base = v;
-+
-+	return 0;
-+}
-+
-+static int isg5320a_get_sample(struct isg5320a_data *data, u16 *cdc, u16 *base)
-+{
-+	struct device *dev = data->dev;
-+	int ret;
-+
-+	ACQUIRE(pm_runtime_active_auto_try_enabled, pm)(dev);
-+	ret = ACQUIRE_ERR(pm_runtime_active_auto_try_enabled, &pm);
-+	if (ret < 0)
-+		return ret;
-+
-+	scoped_guard(mutex, &data->lock) {
-+		ret = isg5320a_read_sample(data);
-+		*cdc = data->cdc;
-+		*base = data->base;
-+	}
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * The vendor cal_work (:1640-1647) force-recalibrates when cdc drops
-+	 * below cfcal_th. That loop is not ported; only report the condition.
-+	 */
-+	if (*cdc < data->cfcal_th)
-+		dev_warn_ratelimited(dev, "cdc %u below cfcal_th %u (vendor would recalibrate)\n",
-+				     *cdc, data->cfcal_th);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t isg5320a_irq_thread(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct isg5320a_data *data = iio_priv(indio_dev);
-+	s64 timestamp = iio_get_time_ns(indio_dev);
-+	unsigned int src, sts;
-+	bool changed = false;
-+	bool close = false;
-+	int ret;
-+
-+	scoped_guard(mutex, &data->lock) {
-+		isg5320a_read_sample(data);				/* :581 */
-+
-+		ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &src);	/* :583 */
-+		if (ret)
-+			break;
-+		ret = regmap_read(data->regmap, ISG5320A_REG_IRQSTS, &sts);	/* :598 */
-+		if (ret)
-+			break;
-+
-+		close = sts & ISG5320A_IRQSTS_PROX;			/* :518 */
-+		changed = close != data->close;
-+		data->close = close;
-+	}
-+
-+	if (ret) {
-+		dev_err_ratelimited(data->dev, "irq status read failed: %d\n", ret);
-+		return IRQ_HANDLED;
-+	}
-+
-+	dev_dbg(data->dev, "irq src 0x%02x sts 0x%02x cdc %u base %u\n",
-+		src, sts, data->cdc, data->base);
-+
-+	if (changed && READ_ONCE(data->ev_enabled)) {
-+		enum iio_event_direction dir;
-+
-+		dir = close ? IIO_EV_DIR_RISING : IIO_EV_DIR_FALLING;
-+		iio_push_event(indio_dev,
-+			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-+						    IIO_EV_TYPE_THRESH, dir),
-+			       timestamp);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int isg5320a_read_raw(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct isg5320a_data *data = iio_priv(indio_dev);
-+	u16 cdc, base;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = isg5320a_get_sample(data, &cdc, &base);
-+		if (ret)
-+			return ret;
-+		*val = (int)cdc - (int)base;				/* :465 */
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int isg5320a_read_event_config(struct iio_dev *indio_dev,
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_event_type type,
-+				      enum iio_event_direction dir)
-+{
-+	struct isg5320a_data *data = iio_priv(indio_dev);
-+
-+	if (type != IIO_EV_TYPE_THRESH || dir != IIO_EV_DIR_EITHER)
-+		return -EINVAL;
-+
-+	return READ_ONCE(data->ev_enabled);
-+}
-+
-+/* vendor isg5320a_set_enable(), :681-742 (minus the work items) */
-+static int isg5320a_events_on(struct isg5320a_data *data)
-+{
-+	struct device *dev = data->dev;
-+	unsigned int val;
-+	int ret;
-+
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret)
-+		return ret;
-+
-+	scoped_guard(mutex, &data->lock) {
-+		ret = regmap_read(data->regmap, ISG5320A_REG_IRQSTS, &val);	/* :700 */
-+		if (ret)
-+			break;
-+		data->close = val & ISG5320A_IRQSTS_PROX;		/* :708-713 */
-+		isg5320a_read_sample(data);				/* :704 */
-+		ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &val);	/* :718 */
-+		if (ret)
-+			break;
-+		ret = regmap_write(data->regmap, ISG5320A_REG_IRQFUNC,	/* :719 */
-+				   ISG5320A_IRQFUNC_ENABLE);
-+	}
-+	if (ret) {
-+		pm_runtime_put_autosuspend(dev);
-+		return ret;
-+	}
-+
-+	WRITE_ONCE(data->ev_enabled, true);
-+	enable_irq(data->irq);						/* :721 */
-+	/* Cache the decision: device_may_wakeup(dev) may change before events_off(). */
-+	data->irq_wake_enabled = device_may_wakeup(dev);
-+	if (data->irq_wake_enabled)
-+		enable_irq_wake(data->irq);				/* :722 */
-+
-+	dev_dbg(dev, "events on, initial state %s\n", data->close ? "close" : "far");
-+
-+	return 0;
-+}
-+
-+static void isg5320a_events_off(struct isg5320a_data *data)
-+{
-+	struct device *dev = data->dev;
-+	int ret = 0;
-+
-+	scoped_guard(mutex, &data->lock)
-+		ret = regmap_write(data->regmap, ISG5320A_REG_IRQFUNC,	/* :726 */
-+				   ISG5320A_IRQFUNC_DISABLE);
-+	if (ret)
-+		dev_warn(dev, "IRQFUNC disable failed: %d\n", ret);
-+
-+	WRITE_ONCE(data->ev_enabled, false);
-+	disable_irq(data->irq);						/* :728 */
-+	if (data->irq_wake_enabled) {
-+		disable_irq_wake(data->irq);				/* :729 */
-+		data->irq_wake_enabled = false;
-+	}
-+}
-+
-+static int isg5320a_write_event_config(struct iio_dev *indio_dev,
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_event_type type,
-+				       enum iio_event_direction dir,
-+				       bool state)
-+{
-+	struct isg5320a_data *data = iio_priv(indio_dev);
-+
-+	if (type != IIO_EV_TYPE_THRESH || dir != IIO_EV_DIR_EITHER)
-+		return -EINVAL;
-+
-+	guard(mutex)(&data->ev_lock);
-+
-+	if (state == data->ev_enabled)
-+		return 0;
-+
-+	if (state)
-+		return isg5320a_events_on(data);
-+
-+	isg5320a_events_off(data);
-+	pm_runtime_put_autosuspend(data->dev);
-+
-+	return 0;
-+}
-+
-+static int isg5320a_read_event_value(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir,
-+				     enum iio_event_info info,
-+				     int *val, int *val2)
-+{
-+	struct isg5320a_data *data = iio_priv(indio_dev);
-+
-+	if (type != IIO_EV_TYPE_THRESH || info != IIO_EV_INFO_VALUE)
-+		return -EINVAL;
-+
-+	/* vendor normal_threshold_show, :896-897 */
-+	switch (dir) {
-+	case IIO_EV_DIR_RISING:
-+		*val = data->thresh + data->close_hyst;
-+		return IIO_VAL_INT;
-+	case IIO_EV_DIR_FALLING:
-+		*val = (int)data->thresh - (int)data->far_hyst;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_event_spec isg5320a_events[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-+	},
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-+	},
-+	{
-+		/* One chip-level IRQ enable (IRQFUNC) covers both directions. */
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_EITHER,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-+	},
-+};
-+
-+#define ISG5320A_CHANNEL(_events, _nevents)			\
-+	{							\
-+		.type = IIO_PROXIMITY,				\
-+		.indexed = 1,					\
-+		.channel = 0,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-+		.event_spec = _events,				\
-+		.num_event_specs = _nevents,			\
-+	}
-+
-+static const struct iio_chan_spec isg5320a_channels[] = {
-+	ISG5320A_CHANNEL(isg5320a_events, ARRAY_SIZE(isg5320a_events)),
-+};
-+
-+static const struct iio_chan_spec isg5320a_channels_noirq[] = {
-+	ISG5320A_CHANNEL(NULL, 0),
-+};
-+
-+static const struct iio_info isg5320a_info = {
-+	.read_raw = isg5320a_read_raw,
-+	.read_event_config = isg5320a_read_event_config,
-+	.write_event_config = isg5320a_write_event_config,
-+	.read_event_value = isg5320a_read_event_value,
-+};
-+
-+static const struct iio_info isg5320a_info_noirq = {
-+	.read_raw = isg5320a_read_raw,
-+};
-+
-+/* vendor isg5320a_remove(), :2030-2033 */
-+static void isg5320a_teardown(void *arg)
-+{
-+	struct isg5320a_data *data = arg;
-+	struct device *dev = data->dev;
-+
-+	pm_runtime_disable(dev);
-+
-+	if (data->ev_enabled) {
-+		isg5320a_events_off(data);
-+		pm_runtime_put_noidle(dev);
-+	}
-+
-+	if (!pm_runtime_status_suspended(dev))
-+		isg5320a_mode_sleep(data);
-+
-+	pm_runtime_set_suspended(dev);
-+	pm_runtime_dont_use_autosuspend(dev);
-+}
-+
-+static int isg5320a_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct isg5320a_data *data;
-+	struct iio_dev *indio_dev;
-+	unsigned long irqflags;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	data->dev = dev;
-+	data->irq = client->irq;
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	ret = devm_mutex_init(dev, &data->lock);
-+	if (ret)
-+		return ret;
-+	ret = devm_mutex_init(dev, &data->ev_lock);
-+	if (ret)
-+		return ret;
-+
-+	/* The vendor node has no supply; the board relies on an always-on LDO. */
-+	ret = devm_regulator_get_enable_optional(dev, "vdd");
-+	if (ret && ret != -ENODEV)
-+		return dev_err_probe(dev, ret, "failed to enable vdd\n");
-+	/*
-+	 * If the rail was just switched on, give the chip time to come out
-+	 * of power-on reset. The vendor never switches it, so this value
-+	 * (10 ms) is a guess, not from the vendor source.
-+	 */
-+	if (!ret)
-+		usleep_range(10000, 11000);
-+
-+	data->regmap = devm_regmap_init_i2c(client, &isg5320a_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap), "regmap init failed\n");
-+
-+	/*
-+	 * Optional: lets the reset sequence watch the INT level as the vendor
-+	 * does. It is requested before the IRQ (same order as vendor :1873 vs
-+	 * :1931), since on Samsung pinctrl the IRQ request switches the pin
-+	 * back to its EINT function.
-+	 */
-+	data->int_gpio = devm_gpiod_get_optional(dev, "int", GPIOD_IN);
-+	if (IS_ERR(data->int_gpio))
-+		return dev_err_probe(dev, PTR_ERR(data->int_gpio), "int gpio\n");
-+	if (!data->int_gpio)
-+		dev_info(dev, "no int-gpios, reset uses fixed delays\n");
-+
-+	ret = isg5320a_reset(data);				/* :1915 */
-+	if (ret)
-+		return ret;
-+
-+	msleep(300);			/* vendor runs init_work 300 ms later, :1981 */
-+
-+	ret = isg5320a_initialize(data);			/* :1620 */
-+	if (ret)
-+		return dev_err_probe(dev, ret, "init failed\n");
-+
-+	ret = isg5320a_mode_normal(data);			/* :1621 */
-+	if (ret)
-+		return dev_err_probe(dev, ret, "start failed\n");
-+
-+	/*
-+	 * Registered now, with the chip already active, so that a later
-+	 * failure (e.g. the IRQ request below) still puts it back to sleep
-+	 * instead of leaving it scanning with nothing bound to it.
-+	 */
-+	pm_runtime_set_autosuspend_delay(dev, ISG5320A_AUTOSUSPEND_MS);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_runtime_set_active(dev);
-+	pm_runtime_get_noresume(dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	ret = devm_add_action_or_reset(dev, isg5320a_teardown, data);
-+	if (ret)
-+		return ret;
-+
-+	if (data->irq > 0) {
-+		irqflags = irq_get_trigger_type(data->irq);
-+		if (!irqflags)
-+			irqflags = IRQF_TRIGGER_FALLING;	/* :1932 */
-+
-+		ret = devm_request_threaded_irq(dev, data->irq, NULL,
-+						isg5320a_irq_thread,
-+						irqflags | IRQF_ONESHOT |
-+						IRQF_NO_AUTOEN,
-+						"isg5320a", indio_dev);
-+		if (ret)
-+			return dev_err_probe(dev, ret, "irq request failed\n");
-+
-+		if (device_property_read_bool(dev, "wakeup-source"))
-+			device_init_wakeup(dev, true);
-+	}
-+
-+	indio_dev->name = "isg5320a";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	if (data->irq > 0) {
-+		indio_dev->info = &isg5320a_info;
-+		indio_dev->channels = isg5320a_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(isg5320a_channels);
-+	} else {
-+		indio_dev->info = &isg5320a_info_noirq;
-+		indio_dev->channels = isg5320a_channels_noirq;
-+		indio_dev->num_channels = ARRAY_SIZE(isg5320a_channels_noirq);
-+	}
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+/* vendor isg5320a_shutdown(), :2071-2080, synchronized like isg5320a_teardown() */
-+static void isg5320a_shutdown(struct i2c_client *client)
-+{
-+	struct isg5320a_data *data = iio_priv(i2c_get_clientdata(client));
-+	struct device *dev = data->dev;
-+
-+	guard(mutex)(&data->ev_lock);
-+
-+	if (data->ev_enabled) {
-+		isg5320a_events_off(data);
-+		pm_runtime_put_noidle(dev);
-+	}
-+
-+	if (!pm_runtime_status_suspended(dev))
-+		isg5320a_mode_sleep(data);
-+}
-+
-+static int isg5320a_runtime_suspend(struct device *dev)
-+{
-+	struct isg5320a_data *data = iio_priv(dev_get_drvdata(dev));
-+
-+	return isg5320a_mode_sleep(data);
-+}
-+
-+static int isg5320a_runtime_resume(struct device *dev)
-+{
-+	struct isg5320a_data *data = iio_priv(dev_get_drvdata(dev));
-+
-+	return isg5320a_mode_normal(data);
-+}
-+
-+/*
-+ * Runtime PM only. System sleep leaves the chip as it is, as the vendor
-+ * does (its suspend/resume only stop and restart the work items), so an
-+ * enabled grip event can still wake the system.
-+ */
-+static const struct dev_pm_ops isg5320a_pm_ops = {
-+	RUNTIME_PM_OPS(isg5320a_runtime_suspend, isg5320a_runtime_resume, NULL)
-+};
-+
-+static const struct of_device_id isg5320a_of_match[] = {
-+	{ .compatible = "imagis,isg5320a" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, isg5320a_of_match);
-+
-+static const struct i2c_device_id isg5320a_id[] = {
-+	{ .name = "isg5320a" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, isg5320a_id);
-+
-+static struct i2c_driver isg5320a_driver = {
-+	.driver = {
-+		.name = "isg5320a",
-+		.of_match_table = isg5320a_of_match,
-+		.pm = pm_ptr(&isg5320a_pm_ops),
-+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-+	},
-+	.probe = isg5320a_probe,
-+	.shutdown = isg5320a_shutdown,
-+	.id_table = isg5320a_id,
-+};
-+module_i2c_driver(isg5320a_driver);
-+
-+MODULE_AUTHOR("Adil Hüsrev Tepe <tadilhusrev@gmail.com>");
-+MODULE_DESCRIPTION("Imagis ISG5320A capacitive SAR/grip sensor");
-+MODULE_LICENSE("GPL");
-+
+> +F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
+> +F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> +F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
+> +F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9500.yaml
+
+These have maintainer field inside each of the file (it's a requirement
+by DT AFAIR). So, if you want, you probably need to add yourself inside
+each of that as maintainer.
+
+...
+
+> +F:	drivers/iio/proximity/sx_common.c
+> +F:	drivers/iio/proximity/sx_common.h
+
+.* ?
+
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
