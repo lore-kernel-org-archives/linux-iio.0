@@ -1,80 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794906611;
-	b=BPpWLnibUe0sOqWOOWi1iO0DWzUZyL4sbqcwxHz3bxp2jtSMDo+3AaJyi6rQ59i5jCKW
-	 rN4RKn6uNmD7fqSlB0fLe3wjuHL7YfmCwKni/G+X6oNjhHQAGXzIc3InWXUq0LtVyPBjz
-	 Ku4wjLW32Wtpo4RNvzYD5RhKf0poNMmRu3IGtUg7RNKiqINeI3BW/aZgcS00AQhSWgXFX
-	 2AP0lAC6c7YkmHHU+CKJSnSqj0bQIwabwyMlBwNp55aVbKbGU1LlBJ8DqZVy23HVYS/Pr
-	 USTDYCfNgr1BGiju0lLJMEzjo38CiifcM+Gl0OROlDYf46fQew8y0XttbowPKrzTbPw==
+	t=1794907004;
+	b=qwPAEeOQGYc75BxOPTJPOHZiPbUmAsyrSHO9QDmAHKW+P1l9cgyLK4B155l1t6ufcKIL
+	 ph3jHW0uxLJ/2EFyYiRCfa7ioLpx/5dm+29UR2suBexQrolQYHDcDoziuZAgtE+5Ogkbe
+	 iblBt5Vg82JMjwh0czuX0+KKj4MW0DtnfCaBVCECW2f2XqPNv/XYRetBtAdmMFaTYI8oK
+	 K9GQasyAYofLneO2feo4KlZD4TmGAXWdENWQ9qyuFijX+i+gdEAYKGfYIthEl+t/G/Rzc
+	 ogbOsent5j9Lh5y7yiGPiPMFvlhcN50qE7t6FIu7xpeStsy4Sde5saNZI8NOfpgR9Cg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794906611;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794907004;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:From:To:Cc:
 	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=ywuM15k7Y1lHbNzqXX5bV+0RaESQUsSSZKpjMWtqTeU=;
-	b=OyEVPymXJPpkjrnSCf0SDN6laqsIhD05y2TFEmsleXYeZJIFTMMX8yRp0WnrQtiSL9mD
-	 SwpBihGQka+Uw7gyaLHEK4Ku+eCA3wmi4JcCKk3GxD75+1F04McOCd+6Uvg7kf6D3BfSz
-	 rJUo1Yg1Jmdyu2KoFOitpIr8xDGDuDdLOoBw38LqiLoufXG+gobOCBAkZNl/298fKmKjo
-	 uK9b911o+faj7UdRMxTsX6brNA2Eou5ksSrfHJbcEIvSCkSVhWOfDcfmctgk7aTBjV5XP
-	 gK427L4Zf7TeOg8mriyyllrw2q1BOOkcllTL7YDjd+oBYP7ogP6ZluNtxisf64nJkLA==
+	bh=ENLb0c995WFDdbTZ76+5KazXvgIj1Nkaa6Go10nFBrA=;
+	b=MLaB/juyaI+9XqKOtBzr03K110JuXec14dSAW6L8CziCtqk0r08vSpvJg9MhyL0FsL6C
+	 Yiu3+8kchV9xwZoWhsBXUKOA2NBy7fLYxcHpqRCcQihG7lId8n/BaWRj4QqTOh07wy9gs
+	 6oI/kvQglAdVZxsJC3LghpLJpRVuHnnv4nrSzririXvImpndf4vCCwcL413WZxExvTtlk
+	 HEj6frOEHzZhHFBRoXqRuPcIEQxfhVBb0ExmfUkf+NclScj1cg0PoVrGONbZAK1ACd3N6
+	 +nBbdn8OMiT8ljKM2aXvQkOBoGZFfNO2KDWK4uvj73Otw5MHq5IGolOqbMCVyOky7RA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i0TzJEpn;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UBZB0YyJ;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E95606A32C
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 09:10:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 24E95606A32C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AEF606A323;
+	Tue, 17 Nov 2026 09:16:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A4AEF606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i0TzJEpn
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UBZB0YyJ
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794906611; x=1826442611;
+  t=1794907003; x=1826443003;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=zXxgmbyttqtgR5wQ56h8ITgHeXyKPcLYeQBe616pJ80=;
-  b=i0TzJEpnXwgAbRwj4HBOu62rIzpmyxRHLorAthK3NXxl0dtzMxwO8Wj8
-   i2qDlD2CUH/5vYvuMBlgnHmMl5Aq6M2JnuEAM5yh8MR2oGME+yRdhK+6D
-   8oWOd+wgFCKAD60Q0gBJQJa+v3IXIHfAXdbtbmqodittE7upMzp3lbQ0H
-   3iy+QSsY/X98Wl1vXI4fsguvGDgqUKCpZNiNaJPHtTtPTyu4q8vXL1qEI
-   yXuSBfZpI0gWuH+Tv52nMKhxMN8Xdgqy68fn2YnNTWeAIJHtm4YyOha9K
-   8IWqWgCEEc4B8pukOUCKWuJTn+yfsoBppKPPWftoOup7slUao8q1af9F6
+  bh=CwpqPPX9+w3rRm+quPuzhQxltj10PfTCUhv8FQQd3CM=;
+  b=UBZB0YyJwRlDxbRUVaX4g8YVS4j6Un9xY57ibcUu9cc8j1/ZZkFAf8m+
+   quO6F6jOQTo/LmYJsy3uB6bIJl7sTaOYkH5Jk+8pM9TtG5GkVTyxEIKs1
+   ZUCrzVT+i2tjzBl9yBC+d739aHrxe+aNdYNB06uvkzWcjmmQXbB0yATYW
+   kfN3Hr/AqBSphFtgBVQjuFXS1IDoZMFVxxhTR2U2jpjzGvPzk6JrogZ2p
+   TwrV7YT+3uuKbjh01LCpjXdtFunduIkp0iczvV+U0oSoT0AsfA9J1zSta
+   U6QOqDq5c6iSpHoj1G7HywwPoXS4Uad525+LSG1YUsmgAqKrag+NopUlr
    A==;
-X-CSE-ConnectionGUID: 3SfiBYukTJ2quSy3RJVnBw==
-X-CSE-MsgGUID: NUqdL9WTTrKhTAOooBLa6Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3670972"
+X-CSE-ConnectionGUID: 9bdmndt3T5qU4drq1W8kaw==
+X-CSE-MsgGUID: wNbbZgG6RNaHZ2OZ9RIVhw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3751679"
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3670972"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:10:10 -0800
-X-CSE-ConnectionGUID: tlZpRHiBS+aXWcsPbb+xmQ==
-X-CSE-MsgGUID: jbkmIQg6T66Ue82Q+gFK6Q==
+   d="scan'208";a="3751679"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:16:43 -0800
+X-CSE-ConnectionGUID: WnMy9s8fRuS3iWBWzpGvBw==
+X-CSE-MsgGUID: f16LsWyCT760siavWNcctg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="10048977"
+   d="scan'208";a="9785900"
 Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa008.fm.intel.com with ESMTP; 17 Nov 2026 01:10:08 -0800
+  by orviesa006.jf.intel.com with ESMTP; 17 Nov 2026 01:16:40 -0800
 Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id B7AB499; Tue, 17 Nov 2026 10:10:07 +0100 (CET)
+	id 808CA99; Tue, 17 Nov 2026 10:16:39 +0100 (CET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Kurt Borja <kuurtb@gmail.com>,
-	linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+	linux@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Michael Hennerich <michael.hennerich@analog.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iio: light: opt4060: Remove dead code
-Date: Tue, 17 Nov 2026 10:10:06 +0100
-Message-ID: <20261117091006.1452131-1-andriy.shevchenko@linux.intel.com>
+	Esteban Blanc <eblanc@baylibre.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 0/3] iio: adc: Provide mult_fract() and make use of it
+Date: Tue, 17 Nov 2026 10:14:39 +0100
+Message-ID: <20261117091638.1463621-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.50.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -87,29 +92,21 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The struct opt4060_channel_factor data type was never used. Remove it.
+In a couple of IIO ADC driver the suggested new helper mult_fract()
+may be used. So, provide it and update the straightforward users.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/light/opt4060.c | 5 -----
- 1 file changed, 5 deletions(-)
+The helper has potential treewide, hence it's provided directly in math.h.
 
-diff --git a/drivers/iio/light/opt4060.c b/drivers/iio/light/opt4060.c
-index 8253a6a8bee4..3413b1c64d01 100644
---- a/drivers/iio/light/opt4060.c
-+++ b/drivers/iio/light/opt4060.c
-@@ -145,11 +145,6 @@ struct opt4060_chip {
- 	bool thresh_event_hi_active;
- };
- 
--struct opt4060_channel_factor {
--	u32 mul;
--	u32 div;
--};
--
- static const int opt4060_int_time_available[][2] = {
- 	{ 0,    600 },
- 	{ 0,   1000 },
+Andy Shevchenko (3):
+  math.h: Add mult_fract() that takes struct __Txx_fract as argument
+  iio: adc: ad4030: Switch to use mult_fract() helper
+  iio: adc: ltc2378: Switch to use mult_fract() helper
+
+ drivers/iio/adc/ad4030.c  | 13 ++++++-------
+ drivers/iio/adc/ltc2378.c |  4 +++-
+ include/linux/math.h      |  4 ++++
+ 3 files changed, 13 insertions(+), 8 deletions(-)
+
 -- 
 2.50.1
 
