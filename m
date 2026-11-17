@@ -1,86 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794908951;
-	b=hlc/DVAfonayP7FlDCgiJK1mNGOOF003x0xyIL0UFDjbCSTlXSt0pPruj6+VgyifS2ix
-	 rdI+Qh2S0XTwiLj2aH2eRW0mXDu86O3F2YW62dtvlsHRXLkEW17IhVElwmyJcTzvzysOh
-	 E6C6IWbjMp1YdjUD/Pj6y/3mQAKmqtAHRQ9J00QmdgfiJ3prGHsmqrjqWgjULaC2i9UhB
-	 qqc80LsnxMuTxbneHHRQHyQX5TuCymwKxHZyAfXmX3SjLV8m1DXoqWCKqEwfqb2Zb4WzA
-	 vR3SUI28MmAA9lXX2Du8QQinDKBUxysTxPh7UOAllnYq1oj4eIkN11LQmZwuL3srtpQ==
+	t=1794910061;
+	b=McqfXCK1S+tv2xActuLEFlC661EgwJsN5LDJH31ewhIX2jM0/eK5bQGOd5rgZmQx8dZ8
+	 ZJaO6KB8oqIG7yRDY3KZceHzacsCBBZNXV98U0h6C7ojYYKorHR6kFuSzCEcUe2c2MsTa
+	 jgpUunkS+PArh0GNKUF79hPgSk76p8+Q2CtAEpljJQ9i/ucslgnq0aya4gMfxOSIx+iC6
+	 09YM7pm7VknxHlI2+1OcneyJD6Aj4RC5rJcekdtlZMT+Jf0tgo0zamm/Lym4P5baWPs/B
+	 arBpjL6mlvT7RaEBokKeYbx+rkIOo6IWRGyyeTlsmSNaf1RsUk77Tc/8oZVBr8C0cng==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794908951;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=3Q7tJA/hWkM7pBtd/K4GljKp9oRMuO4CBdoh0ya9JKg=;
-	b=r0HrnvMzBZszkL5dlhLOIC4V3lSOIRcZwiHlQGojQ+FrCLyN6jtARHGkiKQl8P18xsq0
-	 ICNIDgx3a94J0v8Ndp01Px6QutIvBeO7BdQBzLKl0rlbW/gJ2Z9KOeuYXR1HSbLt0J6vI
-	 PXX17vmhV5mf9egN2h0sdkWWyBaolaI7KO+mHhXzGE56I06o/VEOvG8CO2CJItdcDL3JB
-	 RihezdWx5e+TMSZf+GnVUZkxYTeMMyeTSEf68OIuABct9UfTg6GfEFS3ROQAblQJqb4JW
-	 sY3ZrgsNh+Li2Jy483Xtkvai328AbIaYh1UeoV2u1tSFh76JyypoI/jUcaNLsPnWNVA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794910061;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=17chT4EBDMs4sITu71o7D6b6rDrrQPlxWjwVIzQs+Jk=;
+	b=oSeAHC41xKd2equgYqmZUjh6OczHFBmOF00uj7CkZ0BMyqR4h7Te5eZSdnjfIIYI2yP0
+	 FaJvhoRUvU95oyKYoWG2W0lYbkeTv+aXAAcnyRsfpfH/7zr46zAmLmHXp6/7IAozpJLMW
+	 ysoq4gXfw8dIlaS2SQ30lO40iDbDPdTtOYQuCHsboZ+d9VQ4i1OQbXVGCJazTTs69Z3FZ
+	 D4UmMLkD2iYF0X3QQG3bTL0lVPKwlNo6IaWhsfjvIYPYPrURJZL1yeF7/e6YXlHvFROQQ
+	 h5g3CmRu0geYHhDBDv7CyyzXGNhAtSLhUaSqA5WOpNDpGb2CMwELpokElWUxVIX8zZQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ihtgyhuq;
-	arc=none smtp.remote-ip=198.175.65.9
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UGGK2Bry;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75BAB606A323;
-	Tue, 17 Nov 2026 09:49:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 75BAB606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E193606A330;
+	Tue, 17 Nov 2026 10:07:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ihtgyhuq
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794908951; x=1826444951;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sJ18Jf4VXrBJ6WMpaYmgubx0JBlxlmL0zAQrq13QY6I=;
-  b=ihtgyhuqzhnpbHHfALaslfdcLGExtm6k+GijdOrJfh6MbDY5YOg8cH8L
-   qbq2hOWraT2kslyl+AXHvg9z0ZtsBcKRduq1BWT40YdAdSa8kLNhMygFV
-   PCEtcKSRdvAAE71c3senohQWafjRxQDxNpjDV8X7kj6EEqIko9OY8YfGc
-   9/M8ZzSwkBLBLzi1pidkejqic43sBzeV2cvXIUKSk+47EiS3lu04tbuLV
-   +yCkTtBhw02JzThcqPexkIU9PaQemcWsVAj+bncDbeokgpnorJaiJ6oe8
-   ZCoFj9gUw+78HnJoxs1ivX61kxBrJMbbjf1eGgsfv6qxDETRkpDc2bAKs
-   A==;
-X-CSE-ConnectionGUID: QVx72QgLRaC1bBLNPMWorQ==
-X-CSE-MsgGUID: fCPjOlq3QvuEdm2pk01XGQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3525949"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3525949"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:49:09 -0800
-X-CSE-ConnectionGUID: j1RkJ33xS92Q0uicRK6A9Q==
-X-CSE-MsgGUID: KL8ggzyTQnWQHsQiXPUGlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="9868687"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:49:06 -0800
-Date: Tue, 17 Nov 2026 11:49:03 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Eddie James <eajames@linux.ibm.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Paulius Zaleckas <paulius.zaleckas@gmail.com>,
-	Rupesh Majhi <zoone.rupert@gmail.com>,
-	Joshua Crofts <crofts@kernel.org>,
-	Luca Weiss <luca.weiss@fairphone.com>
-Subject: Re: [PATCH 3/3] iio: pressure: dps310: add Goermicro SPL07-003
- support
-Message-ID: <avwjD41YxQ8dL2gx@ashevche-desk.local>
-References: <20261117083954.335814-1-jorijnvdgraaf@catcrafts.net>
- <20261117083954.335814-4-jorijnvdgraaf@catcrafts.net>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UGGK2Bry
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86BD71F000C6;
+	Tue, 17 Nov 2026 10:07:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794910060;
+	bh=17chT4EBDMs4sITu71o7D6b6rDrrQPlxWjwVIzQs+Jk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=UGGK2BrynGLkr7M5PvnlvQNhff4+qT9mlBHsaVI1DAAt5DYktdyvmLh15o3G9tJjR
+	 BR79jw92/MCMbO9Wy399we37EamIe41NeIM7VpY5xq3eEurHNx3i7gAgZVZZkqfQ57
+	 eSJp/dC1GKM6KcoH54c3nWXgTiEKidGYSkHPyz23nkYK1Jq2NFigyglXGTbQ6iYLhC
+	 CUoJv/YNei0wSOT9PdjX4nDJGNl2EoWz6rl2en4nkmcx13k7LtKsKVcHQ2YVo726mY
+	 jhZx6b5Kgs4XY9bo7Biq+awXHfZSyVk8tzLV4s8+HsgsE3IcyEWDY8kjKe9aC5FYqW
+	 q8XldQdbu7aqA==
+Message-ID: <0af6991a-d77e-4a00-959b-cce82a30ec62@kernel.org>
+Date: Tue, 17 Nov 2026 11:07:33 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,31 +51,80 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261117083954.335814-4-jorijnvdgraaf@catcrafts.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] dt-bindings: vendor-prefixes: Add Goermicro
+To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
+ Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Eddie James <eajames@linux.ibm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Paulius Zaleckas <paulius.zaleckas@gmail.com>,
+ Rupesh Majhi <zoone.rupert@gmail.com>, Joshua Crofts <crofts@kernel.org>,
+ Luca Weiss <luca.weiss@fairphone.com>
+References: <20261117083954.335814-1-jorijnvdgraaf@catcrafts.net>
+ <20261117083954.335814-2-jorijnvdgraaf@catcrafts.net>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20261117083954.335814-2-jorijnvdgraaf@catcrafts.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 17, 2026 at 09:39:54AM +0100, Jorijn van der Graaf wrote:
-> The Goermicro SPL07-003 needs what the ZTS8032 chip data already
-> describes: c31 and c40 in the pressure polynomial, and TMP_CFG bit 7, a
-> rate bit on this chip too, left clear. Its TMP_EXT is MEAS_CFG bit 3 and
-> stays at the reset value, the internal sensor the datasheet recommends.
+On 17/11/2026 09:39, Jorijn van der Graaf wrote:
+> Goermicro (Goertek Microelectronics Inc.) makes sensors and sensor
+> modules such as the SPL07-003 barometric pressure sensor. It is a
+> subsidiary of Goertek Inc. with its own name and domain.
 > 
-> Its c31 and c40 are 12 bit values packed into 0x22-0x24, where the
-> ZTS8032 has 16 bit values in 0x22-0x25, so the coefficient block is 21
-> bytes. Add a chip flag for that layout, the chip data and the I2C and OF
-> IDs.
-> 
-> Tested on a Fairphone (Gen. 6). The DPS310 temperature workaround skips
-> this unit: bit 1 of register 0x32 is set.
-
-I haven't checked with Datasheet, but code wise it is nice and clean
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
+> Link: https://en.goermicro.com/
+> Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
+> ---
 
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+
+Best regards,
+Krzysztof
