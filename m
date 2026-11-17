@@ -1,57 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794913371;
-	b=zvr7NJKjnxIlFNtfapWDWLt+f8DoIbD6PY9ouHWe58jl0jaC9f0BYKTZDkaEPZnL0rZO
-	 q2zU2+ij4etDME+bmeDceMmg+NaPIXcIgG4IG/heQVchmJLI9j2C6UdAEy0YjR6Cak0m9
-	 TnPYx6bCA9sQkXVGJhRTPTuoSLNOEewKTMq3SRAHo1lY21NdIXCAHcKiPUKuBse4lSX2z
-	 DeWKd3/7kfLMVKh/1cVL5zXAomKmLC33dgnttur+qqlFhd+OmgKfgFjVn9CyyC2cyY8Ze
-	 mAXwjv5PnFXMxtcoY72EaoBmMsE7yrP4US0yq8rZsodhwkbD4ddKci3Mfq86NaYkTPg==
+	t=1794913416;
+	b=wYzfdAkMB/MRMvVqKbqzkZ0q3tyish/MGqt9bc/pYXftI+o4/ldHKhE6oUiy2hzD95o/
+	 uYYBGPNO7FhvyPygvICY/VROhf7/Cbvdu60LqGkocBYIrVZkEwZOiqRaP4GTm395kHqwo
+	 9iMqc4m8PDfirjiUWHYJ03XmirEmse8alUc2nkQZQnteKqyfIHJAaeF6hBqC6zBZ25Vru
+	 6/ZHKHjHPSuMrsTH2ZKp/3w44MAa5jiaZGLmOYkX8b1abfrwkYozB0f+KG7Naj3BrTYZe
+	 qKFsGCXtFIUt0CFFAStWslmBLTbjC2j4SSYwt29b3VCfEagFzWxTzl0V3G24wkt4REA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794913371;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:From:To:Cc:References:Content-Language:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=4/Fvf7E+Un4aLup2xhf6vcvvyKFWGICv9YQQYKVltHc=;
-	b=fSVcg/yob4jaWXPPsOovh5+xFvALllonXICm7qTOGLkVTyOTnhqWDuSPYzaCB1MZpP9e
-	 PiEfXe5AfkwS/707ueONlw7wVEnL6BH5BK03qAzs04yfkMvvUbGLPHYzvXZstPge1QDDu
-	 LIErhewxVcUmvhBTrEgZJlJQjqoVGoojb+/fSw8gFIQ4s0AVwOjSh/eNcj4pLOgCmUvjI
-	 Gnocie8xSIV5KwVUauUHXbdkD/+yfmuT2//IY681U8dzEwivvsR1lgFReWamQ/uXrM8y1
-	 THCYrVB+TpQFzcMWOqDDexlv99I3PLt5bf91dtOVHKN59Nk1QxLr5ptozL+/V95yHkQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794913416;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=pBP2YxVQh3ontLZCFQlFA3EEOT/EhtaV+AKjxMibSVc=;
+	b=i1vX6fMWpfgGBUQ2lgRcJa3mUaFOFoxMszNldg5H1e4tkAituwm4PsSZ4X+zwlRL+Pkn
+	 15vICSZowhWvT25wi90mZBOz3tEeWXff43cLMv7HsyZEyfd6JRIbQPTmo3kxVeHiRNO09
+	 +OljrhFOvr4LFmPehIBBFXWDRKrmhY1cUzGjKt7VVYtago9IK8CMaEVpt1EfYebO11x8e
+	 OSkoLEU52GnWHTj9SdDgySlpc40eM2txtacAlBX1yJBRklbfs6z7J2wmX+dmCQ5zQjb4X
+	 vvB6P4wjyvTZUkE7Oms3PtOk7x6uZ8VylUyCgdnnJW17BVFq9H+DNAnd+zuvYBvpNeg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=fyr8mDax;
-	arc=none smtp.remote-ip=148.251.105.195
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A461606A323;
-	Tue, 17 Nov 2026 11:02:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8A461606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=fyr8mDax
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1794913368;
-	bh=zNPAVFB5OHAo9dWfi5NdM3L/flQEMCi7yaBTq7F5x6E=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-	b=fyr8mDaxrdN0nrHbklcFLZg6yKwey9bhue9l4WbPrR6jDlIQgZ45r6nBBnxtZ8rSY
-	 zuaa9r/ZAFY1gNs6+lYMz5HQ5Vq9aqNXlj9kG29lLNLau5v7CRAt/iinEFH8J/UDZ9
-	 kW/cPJIPqGZH6+C2taBZ3eOM3PRQEOcN0nmCqz1EtFLTp2/M3o+P84zwV6D7LTNNad
-	 RKeJPDRR43Y+F23gG4+GWe/dioQcLzlHpnN/oPEx7oMRkU4PKLW/AI0x6Q7Gw+/YKf
-	 7we3Jrflsk3UsV0m+bEMt9fRIF498b/DrLPIKnwlyU/kk+SVDggCR6cuH92H6+D9bi
-	 zmlQ6mYCWJ1zA==
-Received: from [100.64.1.21] (unknown [100.64.1.21])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pF61gJfK;
+	arc=none smtp.remote-ip=74.125.82.52
+Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 17EC717E05D6;
-	Tue, 17 Nov 2026 12:02:48 +0100 (CET)
-Message-ID: <60eeaaf9-57db-4ca7-b4f5-bdec111dcdbb@collabora.com>
-Date: Tue, 17 Nov 2026 12:02:47 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67253606A31C
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 11:03:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67253606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pF61gJfK
+Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-1438d9363fbso557205c88.0
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 03:03:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794913414; x=1795518214; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=pBP2YxVQh3ontLZCFQlFA3EEOT/EhtaV+AKjxMibSVc=;
+        b=pF61gJfKJ82vwmSaya6jxWXA610wiYhVQsAj/HvXjfpTHVeax7PbmHAte2c/h1w1mv
+         reDfDdZzjY3MBA9fwLSs+zrj2yqW9lM/K7Q4Trsu/9pSH/qcg6lOXeDEeXAJB/G1Hi0R
+         DKcM0nSXVkx3hEIGq2RMIYO23o2lFgVAoFAcfe1cnGmSCPx5Ldy9keqCt/4T1GFV8uKE
+         UWMO5Gz4VzOwUTNUHJmHue/NXA1Wh7qdppzBBO3XXQaVSse7AZasMovdxMxfh5vrocmJ
+         gotAmVGsD5MOk+r1ZtO8ks4CfEqrBCSDYFKholpwb0Cpi2tmKm/H5JsnezACSW1T7O7n
+         cKZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794913414; x=1795518214;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=pBP2YxVQh3ontLZCFQlFA3EEOT/EhtaV+AKjxMibSVc=;
+        b=PucqQ7+0BlA3DSbXVaPtKszCih86C2SVhpTVsL4S+IYcNAr7aC8ucbQVcueSe8KUKE
+         atgO1OUQrrMfbIlrzpHKUEpPiL0vi8gh+iqxq0H+aaEsQTIuZaB+TS8wIX+EiSXfZWMb
+         iYhfhbWv019+/e3QKxV9KopxXotQagqmHtd9oP73D3mFQgS0ad9ilrCo0Ds0I4Y5tPJR
+         cMjyJhchTNHXEOdNQE6j0fmNtUQWKYPwGkeo1XJn5JeAsT6JoPITk3yHAT51TDdfp9q+
+         a0+Qd40JKj50Kryg3YQGUozS/FeZ0NtyeyEg+3fFrdAwdpQfVCbU+DuKCLQ7XhztPlvE
+         YlGQ==
+X-Forwarded-Encrypted: i=1; AL+hErEi92wbLpwbKIB7qNbTv26oJw7XpSkUCuhLejnzI7aBOBk3CxeqDDdPbBmXNcYhuO/3TquiJHIvXgg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8Tfpxv/DEXfGp8LKBewaQ0oRBNFkDFwwuNTo5a8ZnpfKp5DihD
+	dAKywKeqKxKjzZ/oaiUd1p/Zf2CZCPAZiijkTjWTsWsYHsQqDqj+bRV/GkDwgmCb7kw=
+X-Gm-Gg: AYBFou3FbSS1ZI5Qv8q0HOEEnw92c1dN9dXdRVQ7t4bY/KpZpPEGqlvh5i38Z5pWg4+
+	ILEIpyWVUCIbbMreYJMxujrXtBwIfmF9JbriODGUwsqAJWJHDX5jCEqEixkp2jPCnIBym/eXVnj
+	URbT0j0FxncG6epUgZyXfvBRg8i5lfbCbFYwRnB3CO4W8qrDpYMyXqTQdsU3lKZznjswj94gUim
+	cCqaAKVzkkiID0d70b6cv0Dd+UqCjy4Mm14e2ZKXzvvmZl6MbrJmSHIpSj5QKgRMDlrZXk4hiFA
+	3FjH/3pyJiygEx7FbwKrb7qJ8Uiv91p2WPjP2BopeRhemenw637F9zYWH3JBadSOebmlmDZAHQA
+	5AuT/BFWvemNw3YUDIxjsRe1U9/uJbp4peD8uKdJilS6huxrXXeZXdQJsVcW09gxTp2+6pS8N9e
+	NooVH+jWEghYAtkfzFZ/rWrc3Xmfw6yK+1y7Oa/9uyc4ei3P7XmhmfBC02fTb+T+87ydMDVeNZi
+	evZ+UO/dGrIejAwZ7CqorK2xsy1VE9Lw2EZ1llvE/3pUUgzTFPzWDpk/WcAouTNIyvFNsSLPmoD
+	EAU8hQKByGH1LEowmUhpID8fStWIYOYFScNPThvdUV35DMAw9uQZo7vq5nU0Bfm87pBLjiW4S/i
+	LEyAwmv2QHBtIAb1b8G9l5GxcAcpTVCh4xXukAo0WK4d0LcX4/X2jbguEuFgS2vLp81wcxHPf2M
+	RFcxOvZLXecrnzbXy3bFpnTDB+jOATKqCIL+nP8E4LKQ==
+X-Received: by 2002:a05:701a:8458:10b0:1a7:77ae:11f6 with SMTP id a92af1059eb24-1b53a3e47dcmr1951148c88.17.1794913414396;
+        Tue, 17 Nov 2026 03:03:34 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50316d9c2sm36604525c88.7.2026.11.17.03.03.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 03:03:33 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Mudit Sharma <muditsharma.info@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH v2] iio: light: bh1745: fix 16-bit register accesses
+Date: Tue, 17 Nov 2026 16:33:25 +0530
+Message-ID: <20261117110327.198084-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -61,237 +102,170 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 0/2] iio: adc: add mt6397 PMIC AUXADC support
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: Ryan Brue <ryanbrue.dev@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Roman Vivchar <rva333@protonmail.com>,
- Luca Leonardo Scorcia <l.scorcia@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-References: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
- <89c8cadb-0ccb-4aac-9b95-89f355beb24a@collabora.com>
-Content-Language: en-US
-In-Reply-To: <89c8cadb-0ccb-4aac-9b95-89f355beb24a@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 11/17/26 11:56, AngeloGioacchino Del Regno wrote:
-> On 10/25/26 06:18, Ryan Brue wrote:
->> The MediaTek mt6397 PMIC has a 10-bit AUXADC that nothing in-tree can
->> reach. On boards built around it that ADC is the only path to the battery:
->> the SoC's AUXADC is wired to board thermistors, and the charger ICs these
->> boards use have no ADC at all, so without it there is no pack voltage and
->> no state of charge.
->>
-> 
-> I picked the Amazon Fire HD 10 series, confident that this series will also
-> be picked for this cycle by the IIO maintainers, as this was fully reviewed.
-> 
-> So please-please-please pick this one ASAP so that we don't get dt warnings.
-> 
+The 16-bit colour data and threshold registers are little-endian
+LSB/MSB pairs, but the driver accesses them through regmap_bulk_read()
+and regmap_bulk_write() with an int or u16 buffer and no byte-order
+conversion:
 
-I reiterate - I couldn't pick the series because, of course, that one depends
-on the binding being merged, otherwise the header won't be there and the build
-fails.
+- bh1745_read_raw() reads 2 bytes into an uninitialised int, so the
+  upper 16 bits returned to user space are stack contents.
+- bh1745_read_thresh() reads 2 bytes straight into *val, which the IIO
+  core leaves uninitialised, with the same result for the event
+  threshold attributes.
+- bh1745_write_thresh() writes the first 2 bytes of an int, which are
+  the upper (zero) bytes on big-endian.
+- bh1745_trigger_handler() pushes the raw register bytes, which are
+  little-endian, in a u16 to a buffer whose scan type is IIO_CPU, so
+  user space gets the samples byte-swapped on big-endian.
 
-So I can't pick the DTS until the next cycle (granted that this series lands).
+Use an __le16 buffer for all of them and convert with le16_to_cpu() /
+cpu_to_le16().
 
-Cheers,
-Angelo
+Fixes: eab35358aae7 ("iio: light: ROHM BH1745 colour sensor")
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+---
+Changes in v2:
+- Include asm/byteorder.h for le16_to_cpu() / cpu_to_le16() (Andy)
+- Reword the trigger handler bullet: the samples are byte-swapped on
+  big-endian because the scan type is IIO_CPU (Andy)
+- Add Andy's Reviewed-by
 
-> Cheers,
-> Angelo
-> 
->> Patch 1 adds the compatible to the existing MediaTek PMIC AUXADC schema and
->> the header naming the channels, patch 2 the driver. The MFD cell that
->> instantiates it was patch 3 of v4, which Lee has applied [1].
->>
->> The mt6397 is not given mediatek,mt6359-auxadc as a fallback because the
->> two are not register compatible; patch 1 has the detail.
->>
->> Only the two channels a board needs for its pack are described, so patch 1
->> ships a header naming them: a channel ID is an index into the driver's
->> array and not the PMIC's channel number, as in mt6323-auxadc. The register
->> sequences are the ones the vendor kernel's pmic_auxadc.c programs.
->>
->> Tested on an Amazon Fire HD 10 (2017), an mt8173 with an mt6397. Both
->> channels are exercised: the battery channel by a fuel gauge, which reads
->> 817 counts, 3830 mV with the pack at rest, and the thermistor channel by an
->> ntc-thermistor consuming it. The error paths are driven by injecting a
->> regmap failure into each helper in turn. The read returns the injected
->> error, and every bit is cleared again. The teardown writes were also made
->> to fail, one at a time. When one write fails, the others still run, and
->> only the failed write's bits are left set. The next read clears them
->> anyway. Run the same way, v3 stopped at the first failed write and left the
->> later bits set. v5 gives the same results as v4 in all of these. Loading
->> the two modules alternately on the board, their readings differ by 0.3 LSB
->> on the battery channel and 0.1 LSB on the thermistor, both inside the
->> comparison's own noise.
->>
->> A new driver was created here, instead of modifying an existing driver such
->> as mt6323-auxadc or mt6359-auxadc, for the following reasons:
->>
->>   - Both mt6323-auxadc and mt6359-auxadc select channels through a request
->>     register (1 bit per channel), while mt6397 uses a 4-bit numeric field
->>     CHSEL in CON1 (10:7), and then pulses a START bit (CON1 bit 0).
->>
->>   - For mt6323-auxadc, which is the closest I could find to the mt6397
->>     (CON0..CON27), it has 13 more registers than the mt6397 (CON0..CON14).
->>     It uses CON22 for its request register, and reads the result value
->>     from the same register as the ready bit. We don't do that - the mt6397
->>     has a factory-calibrated value for each channel at 0x16 higher than the
->>     raw value. mt6323 also has a 1800 mV / 15 bit scale / resolution while
->>     we have 1200 mV / 10 bits. We also have some per-channel preparation
->>     that we have to do before the burst, that the mt6323 doesn't have to
->>     do.
->>
->>   - For mt6359-auxadc, it has a more generic framework for describing the
->>     AUXADC, but it assumes requests are channel-per-bit, and so we would
->>     have to basically ignore req_idx, req_mask, rdy_idx, and rdy_mask.
->>
->>   - We also have our own software sampling, which the vendor does too
->>     (Amazon Fire OS based on Linux 3.18). We'd have to have our own
->>     sampling callback to do it.
->>
->> I have two things in the driver different from the vendor (Amazon
->> Fire OS based on a 3.18 kernel). Verified with over 150 interleaved reads
->> per setting:
->>
->>   - Leaving the ISENSE input enabled between reads, as the vendor does,
->>     makes no difference to the value, so the driver switches it off again.
->>     Both ADC input enables are clear when idle, unless a teardown write
->>     itself fails: the rest of the teardown still runs, and the next read of
->>     the channel clears whatever was left set.
->>
->>   - The chip's sample accumulator makes no difference at 4, 8, 16 or 31
->>     samples and costs no measurable time, so it is left at one. Software
->>     averaging helps, but only by about a quarter: in one interleaved run,
->>     0.92 LSB standard deviation for one conversion against 0.67 for sixteen,
->>     where independent samples would have given 0.23. Conversions in a burst
->>     are correlated.
->>
->> The reading was checked against the charger, which regulates the pack to
->> a programmed voltage in constant-voltage mode. Over twelve such voltages
->> from 3904 to 4080 mV, and charge currents from 111 to 778 mA, the driver's
->> reading is a mean of 0.9 mV from the regulated value, well inside
->> the charger's regulation tolerance. That also settles reading the chip's
->> trimmed result register rather than the raw one - the raw register is
->> 20.7 mV low at every one of the twelve points.
->>
->> This series was developed with the help of an LLM coding assistant.
->>
->> [1] https://lore.kernel.org/all/179206667779.1910726.5341177428334836457.b4-ty@b4/
->>
->> Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
->> ---
->> Changes in v5:
->> - Split the read into one helper per channel, each doing its own setup,
->>    burst and teardown, and a caller that takes the lock and dispatches on
->>    the channel. mt6397_auxadc_release() is gone. The register sequence is
->>    unchanged on every path, including every failure path, and retested on
->>    hardware. (Jonathan)
->> - Keep Andy's Reviewed-by on patch 2, since the change is a restructure
->>    that does not change behavior. If that's incorrect let me know.
->> - Drop the MFD cell patch, applied by Lee from v4.
->> - Rebase onto iio/testing. The MAINTAINERS entry now follows the MT6323
->>    PMIC NVMEM one.
->> - Drop the Assisted-by trailers per the new kernel guidance, and put the
->>    disclosure in the cover letter.
->> - Link to v4: https://patch.msgid.link/20260928-rbrue-suez-upstreaming-mt6397- 
->> auxadc-v4-0-23533a0d30e3@gmail.com
->>
->> Changes in v4:
->> - Attempt every teardown write even if a previous one fails, so a failed
->>    write doesn't leave the buffer, bias, or input powered. Reverses the v3
->>    change. The teardown neither checks nor logs errors for failed writes,
->>    similar to mt6358_stop_imp_conv(). The next read will rewrite those bits
->>    anyway. (Angelo, sashiko-bot, Andy)
->> - Move teardown into mt6397_auxadc_release(), keep error paths out of line
->>    with goto, and use mutex_lock() / mutex_unlock() rather than guard().
->>    (Jonathan)
->> - Reword the comment above the BATSNS disable prior to ISENSE enable.
->>    (Jonathan)
->> - Collect tags.
->> - Link to v3: https://patch.msgid.link/20260920-rbrue-suez-upstreaming-mt6397- 
->> auxadc-v3-0-c00edacbee64@gmail.com
->>
->> Changes in v3:
->> - Move the sample loop into its own function, so read_channel() is setup,
->>    then a conditional burst, then an unconditional teardown, with no goto
->>    mixed with guard(). (Andy, sashiko-bot)
->> - battemp_bias_off() and isense_disable() now return on the first failed
->>    write, as mt6323_auxadc_release() does, and twelve other teardowns in
->>    drivers/iio that I could find. A failed write can leave the later bits
->>    set; the teardown runs at the end of every read, so the next read of that
->>    channel clears them. (Andy)
->> - Drop the "if (!ret) ret = err;" accumulators with it. A teardown failure
->>    now goes to dev_err() rather than being returned, since the caller cannot
->>    act on it, and read_channel() takes the iio_dev so no struct device * is
->>    stored. (Andy)
->> - Split battemp_bias(adc, bool on) into battemp_bias_on() and
->>    battemp_bias_off(), and drop the bool. (Andy)
->> - Make the SCALE case an if-else. (Andy)
->> - Move the "why a new driver" rationale below the --- marker in patch 2,
->>    out of the commit message. (Andy)
->> - Reduce the CHSEL regmap_update_bits() call from four lines to two. (Andy)
->> - Drop the comment above guard(mutex). (Andy)
->> - Say in a comment why lowering START needs no settling delay. The ready
->>    bit survives the fall and is cleared by the rise before the next
->>    transaction on the PMIC wrapper can observe it. I measured this, and the
->>    details are in the reply on 2/3. (Andy)
->> - Cc Luca Leonardo Scorcia with a trailer rather than in prose. (Andy)
->> - Link to v2: https://patch.msgid.link/20260917-rbrue-suez-upstreaming-mt6397- 
->> auxadc-v2-0-db35882a6080@gmail.com
->>
->> Changes in v2:
->> - Add justification for this being a new driver rather than folded into
->>    mt6323-auxadc.c or mt6359-auxadc.c, in the cover letter and patch 2.
->> - Drop the "ret = ret ?: ..." chains, and let teardown fall through on
->>    errors, allowing the chance for all bits to be properly torn down. The
->>    errors are now held rather than discarded. (Andy and sashiko-bot)
->> - Run teardown even when per-channel setup fails part-way through, so we
->>    don't leave bits enabled that would have been cleared. (sashiko-bot)
->> - Set ISENSE settle time to (1 * USEC_PER_MSEC). (Andy)
->> - Write the two channel descriptors out instead of using a macro. Also
->>    gets rid of the padded column. (Andy, Jonathan)
->> - Move the MAINTAINERS entry for the dt-bindings header into patch 1, as
->>    the mt6323 series does.
->> - Declare the sample loop counter in the loop, instead of with sum, and
->>    split the declaration of sample and ret. (Andy)
->> - Keep the two CHR_CON16 ADCIN bits as BIT()s rather than turning them
->>    into values of a GENMASK field. Fix OR operator on the bits, treat them
->>    as mutually exclusive. (Jonathan)
->> - The rest of Jonathan's v1 review: two-space indent separating a register's
->>    fields from the register, a blank line before the settle times, a lock
->>    comment that says why the lock is held, the two CON1 START writes on one
->>    line each, the single-call init helper inlined into probe, and { } for the
->>    of_device_id sentinel.
->> - Add the additional three CHR_CON16 ADCIN defines that make up the 5
->>    single-bit enables. These are currently unused.
->> - Link to v1: https://patch.msgid.link/20260915-rbrue-suez-upstreaming-mt6397- 
->> auxadc-v1-0-d35d2ac3d6f0@gmail.com
->>
->> ---
->> Ryan Brue (2):
->>        dt-bindings: iio: adc: mediatek,mt6359-auxadc: add mt6397 PMIC AUXADC
->>        iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC driver
->>
->>   .../bindings/iio/adc/mediatek,mt6359-auxadc.yaml   |   1 +
->>   MAINTAINERS                                        |   7 +
->>   drivers/iio/adc/Kconfig                            |  11 +
->>   drivers/iio/adc/Makefile                           |   1 +
->>   drivers/iio/adc/mt6397-auxadc.c                    | 394 +++++++++++++++++++++
->>   .../dt-bindings/iio/adc/mediatek,mt6397-auxadc.h   |   9 +
->>   6 files changed, 423 insertions(+)
->> ---
->> base-commit: c9dbe2a47f635465c9985b7af74d2ae310e98125
->> change-id: 20260914-rbrue-suez-upstreaming-mt6397-auxadc-5e1228025c50
->>
->> Best regards,
+v1: https://lore.kernel.org/all/20261116194214.45174-1-kapoorarnav43@gmail.com/
+
+Compile-tested only (W=1, checkpatch --strict clean); I don't have
+BH1745 hardware.
+
+ drivers/iio/light/bh1745.c | 31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/light/bh1745.c b/drivers/iio/light/bh1745.c
+index 2b8ff36071b8..e2c03cd0d1e3 100644
+--- a/drivers/iio/light/bh1745.c
++++ b/drivers/iio/light/bh1745.c
+@@ -17,6 +17,8 @@
+ #include <linux/bits.h>
+ #include <linux/bitfield.h>
+ 
++#include <asm/byteorder.h>
++
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/trigger.h>
+@@ -421,19 +423,20 @@ static int bh1745_read_raw(struct iio_dev *indio_dev,
+ 			   int *val, int *val2, long mask)
+ {
+ 	struct bh1745_data *data = iio_priv(indio_dev);
++	__le16 value;
+ 	int ret;
+-	int value;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		if (!iio_device_claim_direct(indio_dev))
+ 			return -EBUSY;
+ 
+-		ret = regmap_bulk_read(data->regmap, chan->address, &value, 2);
++		ret = regmap_bulk_read(data->regmap, chan->address, &value,
++				       sizeof(value));
+ 		iio_device_release_direct(indio_dev);
+ 		if (ret)
+ 			return ret;
+-		*val = value;
++		*val = le16_to_cpu(value);
+ 
+ 		return IIO_VAL_INT;
+ 
+@@ -503,6 +506,7 @@ static int bh1745_read_thresh(struct iio_dev *indio_dev,
+ 			      enum iio_event_info info, int *val, int *val2)
+ {
+ 	struct bh1745_data *data = iio_priv(indio_dev);
++	__le16 value;
+ 	int ret;
+ 
+ 	switch (info) {
+@@ -510,18 +514,22 @@ static int bh1745_read_thresh(struct iio_dev *indio_dev,
+ 		switch (dir) {
+ 		case IIO_EV_DIR_RISING:
+ 			ret = regmap_bulk_read(data->regmap, BH1745_TH_LSB,
+-					       val, 2);
++					       &value, sizeof(value));
+ 			if (ret)
+ 				return ret;
+ 
++			*val = le16_to_cpu(value);
++
+ 			return IIO_VAL_INT;
+ 
+ 		case IIO_EV_DIR_FALLING:
+ 			ret = regmap_bulk_read(data->regmap, BH1745_TL_LSB,
+-					       val, 2);
++					       &value, sizeof(value));
+ 			if (ret)
+ 				return ret;
+ 
++			*val = le16_to_cpu(value);
++
+ 			return IIO_VAL_INT;
+ 
+ 		default:
+@@ -547,6 +555,7 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
+ 			       enum iio_event_info info, int val, int val2)
+ {
+ 	struct bh1745_data *data = iio_priv(indio_dev);
++	__le16 value;
+ 	int ret;
+ 
+ 	switch (info) {
+@@ -554,10 +563,12 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
+ 		if (val < 0x0 || val > 0xFFFF)
+ 			return -EINVAL;
+ 
++		value = cpu_to_le16(val);
++
+ 		switch (dir) {
+ 		case IIO_EV_DIR_RISING:
+ 			ret = regmap_bulk_write(data->regmap, BH1745_TH_LSB,
+-						&val, 2);
++						&value, sizeof(value));
+ 			if (ret)
+ 				return ret;
+ 
+@@ -565,7 +576,7 @@ static int bh1745_write_thresh(struct iio_dev *indio_dev,
+ 
+ 		case IIO_EV_DIR_FALLING:
+ 			ret = regmap_bulk_write(data->regmap, BH1745_TL_LSB,
+-						&val, 2);
++						&value, sizeof(value));
+ 			if (ret)
+ 				return ret;
+ 
+@@ -741,18 +752,18 @@ static irqreturn_t bh1745_trigger_handler(int interrupt, void *p)
+ 		u16 chans[4];
+ 		aligned_s64 timestamp;
+ 	} scan = { };
+-	u16 value;
++	__le16 value;
+ 	int ret;
+ 	int i;
+ 	int j = 0;
+ 
+ 	iio_for_each_active_channel(indio_dev, i) {
+ 		ret = regmap_bulk_read(data->regmap, BH1745_RED_LSB + 2 * i,
+-				       &value, 2);
++				       &value, sizeof(value));
+ 		if (ret)
+ 			goto err;
+ 
+-		scan.chans[j++] = value;
++		scan.chans[j++] = le16_to_cpu(value);
+ 	}
+ 
+ 	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
+
+base-commit: a6d9114f68c4b5507b2d945bd6d1e37415f913c5
+-- 
+2.53.0
+
