@@ -1,47 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794910107;
-	b=2RFbxlzNNB8JXGa+ep+FSqGtcleSeqdIbWmEcp1jXdigigSwFczJIl9cFlfoxZCH35pZ
-	 nNyy96LNcNcinC/M6383kOX3cdsic1sGsvl8Zt8y1aPjxg7iT/d2dV2rN2LhQCtSCbTlr
-	 0R862b0ckiun+fRPcDhlWGljt1+tPL40Ix2g2t8Xv0nErDSwaPzhq0rtyGDmTp0GScI3Y
-	 JYRA/QA/zxloDjMOyH9argE2UYy4EuZOitOiajWm0QdrKCZiXzW24I3/gBEVn3XDn2yWd
-	 NR1+JY0x/Mndx07bcm0aQqmAyVkUjuZBwP+YwGMd51f9fc7HBEZe8kxK1ZaN9Pk/Efg==
+	t=1794910341;
+	b=CRqzRyVmv4JmhIaZRsStPj1DZOm0uZL9gwI+l60Z9yD5Jc1n7fuEdm01VbJVnM93+llf
+	 lbUtv24EN4IRu2VoTddEEKjSfRtmpbv3Ul2SKlGtra3Senph1U+1UyKcWLOf4YKqyB0S1
+	 p/D0I7CQVWsYrsc+htDzojVDaDdYUBqUW6tyt/K12bPgYcVFqpweiR3o2IcKDuSNWAdu9
+	 4TRZEEcHArtwNqLgVQyd4N0gVGdpYq80SSmuqbmG+3OqHBiJWydkGZFj+vnI98MsqyQrZ
+	 lAWpVUT4kJ5r03gymkHnSdjLD2B6RzFbvcV7seWTu1gtZ3hOmVwvETwDPAeW7BbmOCg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794910107;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=2MOjzfVw9zEhxCXEWR+uQy702vVkV/S6dPUKnI5Smdo=;
-	b=1k3sOcRmBxIi5QKSzKwvIuoT14m60Kt6h+R2oHgMDwHvOSHexke46YBwgDvxSgOSrDeC
-	 7edzwrIol0xXqx0sdx3Bm9GwmOl+lvRm+Abi1rBzHKHkPxah5F2fGz/1qGvsvczHb95UD
-	 qCN3ISHrsf1Yi1+cavtNTuiDYx75YeVwEXAQ1MyEEUhsAC2kFaAR4HP+hVxV17MTHOppp
-	 hjSft6Jg8OYE6Wl/l6wwJ+TCA0p5laGtWikKmO7/DIeOWQ0crotnzPDlRfcsXiXOhYwnD
-	 BLTlFfAodAXEv+BUXyyNeU6awTKe7ZQIjzhfbWNIv6eK4D0cxkR4y8uyqvC3WofuDdg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794910341;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:From:To:Cc:
+	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=TPBqw6R12FU3nw8EgY2HDURUEtbzCSZfVal7HlkpVXU=;
+	b=llv3232wnrlafdufifHumEDEyXAOxfbTA4ML0ym99i/q5XGQjElWo9p7IHbSlESSkwpz
+	 EfFWsHerXztClf0bn+R+rz8ku0hUr5mwrDCgKYmYNqw6P4+ZxvZ3qmTWV4+qhUh2oO7z9
+	 34X9uSQSSktLSo6q64n10cw47SDLBbGBFYDil9UJmgxKGB8SGMyVjE1ikur4Q91J7Cj8B
+	 TAtXEaKHyTQwsoxg98vhPHy3IRy1TQIrBfcuisynToDbl/ygQOSzIMERxUuIUY0Gg+t7B
+	 99sdMZTP1xRq4Eg8L5HfbcwcRh20TDMTTUXEl8L/nr+fLrSfCG9hbkAnN2cGaacTGMA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wwvic1u4;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="L/x/k6KE";
+	arc=none smtp.remote-ip=198.175.65.14
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C2A8606A331;
-	Tue, 17 Nov 2026 10:08:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1AE606A889
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 10:12:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC1AE606A889
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wwvic1u4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D312B1F000C8;
-	Tue, 17 Nov 2026 10:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794910107;
-	bh=2MOjzfVw9zEhxCXEWR+uQy702vVkV/S6dPUKnI5Smdo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=Wwvic1u41TDIKvR6E/oovI6QoS0hC9OqG/ZHcH+P4UOTbltq5eHIPHmjikAY30xLQ
-	 7Fs325hTS8ysjQ7kevUNcJHwxlplixCjP4gsgiuJ7f81L1qtm85xUC+rK0Y3VyBqsx
-	 WZLUby+5viwTnHIG2uWV4xt5cR+0vv6U9eOALoqVAYUmztHfmbSIzl+I70yUyOUwwS
-	 3ZZ9ph9ZtPXi1+A2zwwzknpEot2aKSSc/Dj4sQ4Y3sSengSWcKnoMRQ4LkvrcBbQGq
-	 dJKOv8+CtwYA6+FwwAeMSMGuS0A5lG2F9GiuN0CWV7By2dSz8/IpFC8s1GNyCDKWW4
-	 LW1c0Fbyi1e1Q==
-Message-ID: <2c4b6d5e-2b4e-4f55-aa8c-cde2760f37a6@kernel.org>
-Date: Tue, 17 Nov 2026 11:08:20 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=L/x/k6KE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794910341; x=1826446341;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IRJ4vkIfN0VOBbV2J2t72U46gMPi4o1z/qnn9iXiXd4=;
+  b=L/x/k6KEpJ4Z/sPiCYmuyj6ly2oTCBnZ0L0mMDDBgZA7tvF7moXbXLCR
+   g3E3bb4bAGv6WYDvHKEClwm5iW0QbFb5dFb91RQabY3MwHcu2anNJpgFx
+   lKIU6Z0V4uEyrQlFe8bQidBOycGtgrDWONrDLfddE4XM+VIZ5SPMZm8Mk
+   kg2gEHaq/GL6fhTcwCd3qyu8WwgYO3xnyIBgPs4eEfu+KhZs2PSGBFF1e
+   tO6K6FHz11noYKrvea0Lg27b+hHBe2AyTiE0itC7djlqxLDuogMOSZCke
+   +QuFE6sx4459knMVadu2KoQzfGVDlrKQopVPLADWxMooh95OSlLIMDqPi
+   A==;
+X-CSE-ConnectionGUID: nfWTQmjNTMmT5MrBAYQmwA==
+X-CSE-MsgGUID: zzpMaEkQT1Oe0RF0QWBeYQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3570036"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3570036"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:12:21 -0800
+X-CSE-ConnectionGUID: vcGPzK3+SD2VjtflPP+3Hw==
+X-CSE-MsgGUID: YEO9uxwmS7epEac4XUN7MQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="9734937"
+Received: from black.igk.intel.com ([10.91.253.5])
+  by orviesa007.jf.intel.com with ESMTP; 17 Nov 2026 02:12:19 -0800
+Received: by black.igk.intel.com (Postfix, from userid 1003)
+	id D286B99; Tue, 17 Nov 2026 11:12:17 +0100 (CET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-iio@vger.kernel.org
+Cc: Peter Rosin <peda@lysator.liu.se>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 1/1] iio: afe: rescale: Don't use ULL(1) << x instead of BIT(x)
+Date: Tue, 17 Nov 2026 11:12:16 +0100
+Message-ID: <20261117101216.1486231-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.50.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,84 +84,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] dt-bindings: iio: pressure: infineon,dps310: Add
- Goermicro SPL07-003
-To: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>,
- Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Eddie James <eajames@linux.ibm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Paulius Zaleckas <paulius.zaleckas@gmail.com>,
- Rupesh Majhi <zoone.rupert@gmail.com>, Joshua Crofts <crofts@kernel.org>,
- Luca Weiss <luca.weiss@fairphone.com>
-References: <20261117083954.335814-1-jorijnvdgraaf@catcrafts.net>
- <20261117083954.335814-3-jorijnvdgraaf@catcrafts.net>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20261117083954.335814-3-jorijnvdgraaf@catcrafts.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 17/11/2026 09:39, Jorijn van der Graaf wrote:
-> The Goermicro SPL07-003 is register compatible with the DPS310, but has
-> two more pressure calibration coefficients, and bit 7 of TMP_CFG is a
-> rate bit where the DPS310 selects its temperature sensor.
-> 
-> So the DPS310 compatible cannot be a fallback. The ZTS8032 compatible
-> cannot be one either: the ZTS8032 has the two coefficients as 16 bit
-> values in four bytes, the SPL07-003 as 12 bit values in three.
-> 
-> Signed-off-by: Jorijn van der Graaf <jorijnvdgraaf@catcrafts.net>
-> ---
+ULL(1) << x is just an open-coded implementation of BIT_ULL().
+Replace the former by the latter.
 
+Note, the rest of the code properly uses BIT()/BIT_ULL() already.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/afe/iio-rescale.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index b3cc610b48b8..25e179a3706b 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -67,7 +67,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 		if (scale_type == IIO_VAL_FRACTIONAL)
+ 			tmp = *val2;
+ 		else
+-			tmp = ULL(1) << *val2;
++			tmp = BIT_ULL(*val2);
+ 
+ 		rem2 = *val % (int)tmp;
+ 		*val = *val / (int)tmp;
+-- 
+2.50.1
+
