@@ -1,153 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.125.9
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794923387;
-	b=CkbzKlDfjFb30FdySMdS+6o1FdQlkF2vdcB8L69tGEHpQ2ILcUGbM54H0rozfHSn4Yds
-	 XGb+se/ydiSIKSdefF6XmJBSDEGJpRU3YV4qTHa1/VKSe4+aSl7ZV7LNfO3dQsROom7WG
-	 yAzcdJF+xACzGeErFYRGbV14f0mJoy4txQeEuJKSc4igVcZoae/CTR4Wj0736upTcem9Y
-	 pJmvUO1MWidInKA1hZUiimOV5lB3vJu4LvWs0ZhS0nNlNLktGL0wMVwBnbfHAYefw0uOg
-	 DMHOYTjfCayQyGZnHdhQ14kQ2CbhCCVvQaKAlioK6RQc+EuQDG0pEQkqhpCL45Ba/1w==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794923387;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
-	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
-	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
-	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
-	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
-	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
-	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
-	 x-ms-exchange-antispam-messagedata-chunkcount:
-	 x-ms-exchange-antispam-messagedata-0:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-originalarrivaltime:
-	 X-MS-Exchange-CrossTenant-fromentityheader:
-	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-	 X-MS-Exchange-CrossTenant-userprincipalname:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=+f2OKnsYkIbvdaitoLLPkEY57CKo+1RTvBk8gyxpwlY=;
-	b=OrWdOM/OBU1eTUycuuAr3c+YoIi/85odTwYTq6PJ8yD1AGXNr985vNgG2Nw62obvaafb
-	 +y1NAueadO5C0iekBgFO7aezKmxpT+9eLewGwpYZxHmMLxQqevIJMl/nLYqq00Fg2+m3n
-	 fFxNZkBvGL302nWAJIJTG/BJAnpW8nNO40kNJVSxKT+zpHw5ktUr3CAgOYX/nHepfAb9x
-	 p1VLiDY+c+flbmPXWkC/k+2MXc5/saEbPOTG7h80mvDcxCNjyFEy5IZWLTYZCIXZ59DFd
-	 RixTCVMfApCqOZTL8ajBBVtmfrNpGJRMf2CS2jSU/xzk9zezi9FEGWIIabetLlspXQQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=bp.renesas.com;
-	spf=pass smtp.mailfrom=bp.renesas.com;
-	dkim=pass header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=pqis4Z7E;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.125.9
-Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011009.outbound.protection.outlook.com [52.101.125.9])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794923803;
+	b=0WT/6GMnZ87WRlw9MAfcZI72/higPGK6JeGz6YC+zGIP6fNgTFE10Z95Z7+HPyCR27LD
+	 O4+X+jr2R8BH5+wyohnbWOhajpTpAcjGWmQwTQRcqE2NX5XP0cDTlMp9NgPzAE9gwjYb2
+	 GmwbFAXvycH5RawWM7roSsa4bCmoKmlJJ5yWGwEbeR3Ha7GgqpCoKsLA5GuIwftqDM7XM
+	 EZQvJ1JqNyyNFoQvadoNvjmmC9c6g/94bZnWbUZpODZ2EtNtR11LQVdyticTD6oSOhOua
+	 k2nCjN6Hf0tUiYvZpFbyOLxAtr+umjC7RJrs39YCx/31cPxGQB0KpRnIxfqW4sNqQig==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794923803;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=JdoNxbvOdGdn5zkdEm9b8MntiuQ8OfXeFa1AJ3RThLM=;
+	b=dUquGFiJkEi+E2C10Y/Xo0Q323gItA1LhiTysXsFy20nndKf1sHLi3ADd7LLFblmS4et
+	 aNAtuN/Jdo0caGOgZUrcLEtDidBlwm5xU7+QET5w0rZSnj2c5GJHEysG4ZZvWio7aH4Go
+	 xS4B42GVt0uiOLqQ0Ne/5wIlVwxyT+a05ijwwMV8//3ZQhNiqnaN3Qy83uv0oDTdRIsqh
+	 t9umhQWqDGHyRIJI1JQwssLmAPt5K6KQmMFotuUoyRzPj+r3deLr4oor4wjRHlBGbLvUw
+	 8J6gqr8BFYWqQmn52rMAYSh4tdr/0v2dt74eGPqDfyp6e8kg2BORNxILrgCPTQpMvyA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kqyD75yD;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EE60606A31C;
-	Tue, 17 Nov 2026 13:49:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2EE60606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754C6606A323;
+	Tue, 17 Nov 2026 13:56:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 754C6606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=bp.renesas.com header.i=@bp.renesas.com header.a=rsa-sha256 header.s=selector1 header.b=pqis4Z7E
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Q1aS2UODq8TudwWQ/i7DC5LZzfIPrs2M4pu6jQp5VbymVzFn7zHHstNLAA/oWVr2kgTh/m5kixp4BTImlHcvcxzW+hLC54njPeIisf8Nt3uf2jgZSahTYhxnNO1Zd0Any/1aNr8JbDM7CoYSvtGhWOzUCBubkY624faNLBlC+cOMCTrHpApSSysExIaMtui1SXSyjSltlbv20MtZXKnVOcc09n+grtiSf943SAqzQd0zklPEvfTz7TiRxF8zsho7lX3dvOcO15ux+6xcufYOOhoWMzAcQ0ANT03vgdoyLT5vbxHx+Y3FZs8TEjV8K0QITVopq+klJ50HCpj355RqsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+f2OKnsYkIbvdaitoLLPkEY57CKo+1RTvBk8gyxpwlY=;
- b=hD7YKolAnFxWWBvE73YgCVCKfBAUDrrtYThCkLNoFysrc70/yz6fnkAFQK4OXUwEuMy+NbOKfZ2wn3On8vVY0MMVoXWJYf4FnM2G3ybYica0NW8iKWQyPk65HRX4+NGHZyLko6aoeJnT4ddWFHmRGPItbRP+pQwoTN89JED0jAuOAucfeFWL6/jGLBko/9Bcoanzh5BQzvVY8V0bc1+0gt01oIZgyQfeMTLFZXCsEoYdqdonoa263H47f6Jxa3D8ZvLHmXJ5CDmoOqSCJYNCpEOo2AsV9AX7b6f1mKB4K2yOCWVIqaD82MdVJzEoo1uvlffzWkoEVojH6cELo6vjWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+f2OKnsYkIbvdaitoLLPkEY57CKo+1RTvBk8gyxpwlY=;
- b=pqis4Z7EwGh2PqlHmYKJgvTdjZgsNYkwUxwmsR9xxxt8BbXbbTB5SdSPot7mHYP5SeEipuPV3ynjVp5niQ8HV4fR1ZVwirNZvzr149gA/82ZKL4eRNLH8DQ2/Rbr9tjdp70y1PK/sgodwZpy4JR4smK/8EUGUNjQEScJUHLH2p4=
-Received: from TYYPR01MB6603.jpnprd01.prod.outlook.com (2603:1096:400:e0::9)
- by OS7PR01MB11777.jpnprd01.prod.outlook.com (2603:1096:604:248::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 17 Nov
- 2026 13:49:41 +0000
-Received: from TYYPR01MB6603.jpnprd01.prod.outlook.com
- ([fe80::145b:b854:162:2e7f]) by TYYPR01MB6603.jpnprd01.prod.outlook.com
- ([fe80::145b:b854:162:2e7f%5]) with mapi id 15.21.0615.013; Tue, 17 Nov 2026
- 13:49:41 +0000
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, William
- Breathitt Gray <wbg@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Cosmin-Gabriel
- Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Subject: RE: [PATCH v3 11/14] counter: rz-mtu3-cnt: cache direction values
-Thread-Topic: [PATCH v3 11/14] counter: rz-mtu3-cnt: cache direction values
-Thread-Index: AQHddn5Lvbe+rBUhEEONEqrQfgNBn7cyRnsA
-Date: Tue, 17 Nov 2026 13:49:40 +0000
-Message-ID:
- <TYYPR01MB66036EDFF90414052C73ACF3867B2@TYYPR01MB6603.jpnprd01.prod.outlook.com>
-References: <20261117102607.2504551-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20261117102607.2504551-12-cosmin-gabriel.tanislav.xa@renesas.com>
-In-Reply-To:
- <20261117102607.2504551-12-cosmin-gabriel.tanislav.xa@renesas.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYYPR01MB6603:EE_|OS7PR01MB11777:EE_
-x-ms-office365-filtering-correlation-id: 89975df8-3b5a-464b-dd42-08df44b1a0f1
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|376014|23010399003|261009223027099003|18002099003|22082099003|261026121527099003|261021123027099003|261021121427099003|261102123227099003|56012099006|4143699003|10067099003|11063799006|38070700021;
-x-microsoft-antispam-message-info:
- eFuc/ddj04uzdB5Xr2nHNOjDbyqQeMjyXQEgEn3ZMuDylw0NjtItTFkU2hgqqPjReLhjKjrMDKasxLos6l0WFiX3t9TSGhmkm4fP/46Je+hEZyISQDmjFfRgieB+6AoRoQLD3q8h97H/qeza689dBnYLbryDgBvVYJu3RDwKI+UjmsmB7WJgXUKrWxmnLp29vtI0C913IDD5C4axfJWvq7wzbO4cVyE7AaK62CkorvrKjFMgzOzTusA3HP1raFbGzay/w8l2k9mXsKusaBD75M+JNLH+2/xDNeMzlQJl6xXL+TNLPJNw6WS0y5VoxGv87MVcpCxJBCvXqWnx1E7lyXlN5QQDvXjzn9v6qqDLxR3f+SvOnnZOgf72bzeHXcI8M5hHFGCYEYvB+i//qESvG/5cMryTGQAT7T80t/MYjtIEhHroZw4FrCt28cj+y0euZApjK/Ze/5J66AHc23wOP2G7svYVbEf6EsRBXvRqMkWVVT9hM6BWOFZ1Ro4gZpvzGZ/Wl4dYTv2bV8m6/D38ntMVqayq8Z6OWaveaUk/LAAYLgIWxxvS3KFVYMRg05GO6OFoUeOHYlIzxOwx4Y4bHS41HYyJiT0kpbw3G3ao+oVhwOTNrGAXyGPxiL/gNSkHkBJtBIKi0bYiwuw++gUsaGhi+qajiopYzzRbM61mAhpkoEeH96yHnFXeE24KoLYVomWDx8djLvjPQw6Mi+joQoNk9b0zhFNAsfvSLhANd6w=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB6603.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(23010399003)(261009223027099003)(18002099003)(22082099003)(261026121527099003)(261021123027099003)(261021121427099003)(261102123227099003)(56012099006)(4143699003)(10067099003)(11063799006)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?UXBaYUs0cDAvSEIwT1g2WDdWd3NtNnJTQWhFWGRoVHFId05vSXlkcTNvcVRk?=
- =?utf-8?B?NlV2MU11YnZpb1pCTnBIM0R3L0NiV25oZ0FHNGJocitpQi9MdjhNMFMrZVpy?=
- =?utf-8?B?TTNDNEdEOTVtTldwTUtQR28zd2VGYzNOOGp6QXZUZ0RMdnRZZDhJMkxkYWFC?=
- =?utf-8?B?aFVWT3M1REk5VUVBN05DeHV1N0pQRytvakRhdC9TMFdGUGZISzhLUTdKRVpt?=
- =?utf-8?B?TnNGMkVkZHBGZzJWY3MxNWd4SDVheFltL3FRR2EySHdIVWtEUW54S01zQWZO?=
- =?utf-8?B?eThhUzFSd1FENjZEZENCNG9IUS9GYnd4SmpKeWMxeG9jUVB4QmNNSCtiWHpX?=
- =?utf-8?B?ZGNjcVRlZjNmb0J2NHBsVWJ2VmRCQ24weHpTcU5ramJaa2F1OUxHaVNiNWxo?=
- =?utf-8?B?akVwYjJlaS90WTN0dXQ4ekJ0QkVJMWdYa2hTL3M5bUs4Y1hqcHNUaXBPWmln?=
- =?utf-8?B?V24yOUhjV1grdEd1MW5wRVFibkZVUHNCdzkwd2RuMkhpeGF0MmlJZ1pOTnZr?=
- =?utf-8?B?emRYR0J5NzJPekR5ZmFjclVocWVXdkt0ZmF5cEdkTWVtWGdDcXl6Y1FTNmFN?=
- =?utf-8?B?Njk1bkI2bTREd0tyY1Vpb1ozMDJNSU9XcHJTbTB1Q2hBQndzZnplbTlRV1FV?=
- =?utf-8?B?aHhzdEQ2NnZZTytrR21NcUxvWHRqM0FkVk9XOHo2NU0vcDdsbWQrWm9KNjFn?=
- =?utf-8?B?TFRlYnFmOTVqMHE0UERFTHVoaElhTXZwb0tmYk1Edy9qZ2E0ZWx5RGJta0M3?=
- =?utf-8?B?UEdaN0ZIaWxUSG4vdm93eUw3V1dGaHVPQTJsd25QcW14QmNHc1ozbGpmbXlC?=
- =?utf-8?B?R0N1VTcxU0xIc1AxTHRsMUhlM0kwUzduQVA2V0UrU1FHTk9RWDFobUwyN0tP?=
- =?utf-8?B?bCtOVXJHZlRvbi9ybzJ1ajRXamN2ajdoVm5TWXlkODd6cm1XZjRUdE00czl0?=
- =?utf-8?B?MWF4U0I2a2I5Z25yUVVSYmM3dDNTb3d4dWRoTEhiK0Z4UXVlbVRHQnBpUjRn?=
- =?utf-8?B?MDl2QWpkUldJNTk5NkhPYTNnRGozUnVSK2RIUWNJRlZueGpPOTkzUDM0c1h3?=
- =?utf-8?B?M2wyaFd1djVLT3hGalV4WmFYYmN0Q0kvV3BYRWM1UUVFMFFCanBZbXRLdmdP?=
- =?utf-8?B?MHg3YjJ5KzZBQ0lra3RCNXdFNzZybkhkUVUvOWd5Z3dsV1N3dllMbGRRN2JH?=
- =?utf-8?B?SndJaVNMdFRhQzNKRTRNSnF5L1F1VThhSjBjRDcyd3h1bEN3OE9qRmc1VURN?=
- =?utf-8?B?OGE3SEpRNVJNT0h3VkE3bmJRUjRBSUY0aFkzMVNYR1NWQVNMeXlEbEJwSjlD?=
- =?utf-8?B?ZTR5WGdrcHNKTmdhWG1YbERtYm1BT083eDhEam1SYmV4cC8wVU5jYy9ibWZL?=
- =?utf-8?B?bjBYSVV1L2djdXdISVBKQTVkVk04NDVlZEJ1dTdzWDVpRzlmYzg2VkVvODYv?=
- =?utf-8?B?ZTMxYU5UNTVMaFR5UFdIZEJpdk9WYjdXbW43VEY4SmdMVStZR3oxTngyaGNG?=
- =?utf-8?B?NEdocTlqMFJSc01KbWROM3lqQ3ZObWN0N1ByczEyNVlkZ1UxQzl0T1BqL2NC?=
- =?utf-8?B?aFNEenZsbTlpMGJzVnRtQWJwQjV0TlVydmd5OGtMdTZwQWl5SXNYT0VkMlBF?=
- =?utf-8?B?ZWd5TGlDQWptT29icmwxcDVlTUJ3cTFUZ0gzUnFwL0Jpc2tyR2tzQ2Z1RVJ5?=
- =?utf-8?B?bVlCVStRNGJzcEV4THZrd3Badm1OT3BZS1piMFZnWjNGZzFYRkxIM0IwdzVu?=
- =?utf-8?B?WmxRbWZuQW40Vnl1V3A4SjRPV3MwMUF0RnJGTUtpMERzcTIxUEFTYTEwYjVO?=
- =?utf-8?B?a0I2bXNkWE90K205dHd1SFMvdGp5SHo2T3BWcS9PdWwzc2hTa0UwQWRZVUNj?=
- =?utf-8?B?anpIYTRLSk8xMUgyVFY3UXR6WHk1bHRTRDdMSFhweDFWN2E5NkR3dHU3dUQx?=
- =?utf-8?B?STVwVFBKSFFUN2hqVU0zQjdNVHV1VlhoSmlFenh4M0lRVUh5VDNpQkd5UTVw?=
- =?utf-8?B?aEdSNGg2OUZnbFM4aEdaRVMwemZ1L2JvSUtqblhaN3BYRXRrK3g3dDhld3Bt?=
- =?utf-8?B?RFM1eVI5dFNqUVp5bytxdjI3RHBhL1BzUkZNelg0UnRxSitqbDA5TzF6VG1W?=
- =?utf-8?B?NDhjRjFnbHpiK3FkcHJEeUdRbDZGVVdCZTJ1THg3Z1hEZ280T3lXdk1qNnJw?=
- =?utf-8?B?bnkzOVlmUzJiWlBCNVpJRTRGOENoVlNBa0pGREZjbzFGWFZBOCtMMG9mZUFt?=
- =?utf-8?B?UllST0I2UXRxWUhNYkF4a3lud3QzcDhpOGkxVHhsaldLQTNmdk1OZWV6bnEw?=
- =?utf-8?B?TlRpL0t1Q0xoOWIraGxWRVpMU1Z3WElTc1kvQnFFK1Vac2c0Nk5OQT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kqyD75yD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794923803; x=1826459803;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Ea3tlvsxN6sCO4EObLOHeR1Qlhl1afKZETW82drmShU=;
+  b=kqyD75yDOMISXV11f2Q6hOWGumU/XTDsEz1MYpsMigncg8Z3pgTWwoMk
+   NgoJiTL03mWJQQ0JY6YxkuRSAttVs5SPl19Z4fnPc/sBL2A/pyHVyyIRh
+   TnunsUWBJ2Np3ykdxnz4CPPJcoTKZSAcxVFienv3LfouugtWDpWrUhIkd
+   C49hcr9l5+d1ukwn3ORcypX38UPzIi22hkjoTeAIkB5je0WhU22X5ziPq
+   FUVuvnJyCMfnvhdB58b7LL/odZRy8ihQg9QrXHdfxmVYFELjYT/v038ZX
+   l6GH4b7S61XkNiv+FeAbwlmKgHhv75ijlcf/byCp0Mn5u4mMcb/bmnetU
+   g==;
+X-CSE-ConnectionGUID: GnohH8m/R2OtU+BEWR2KTw==
+X-CSE-MsgGUID: UTmMVJS1QZOnS8WO0azxcA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3576235"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3576235"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 05:56:41 -0800
+X-CSE-ConnectionGUID: 3EEqGSKdRvuTkNRBbInPHw==
+X-CSE-MsgGUID: fvSVtpXaSMuS3eike8RdfA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="9701080"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 05:56:36 -0800
+Date: Tue, 17 Nov 2026 15:56:34 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Adil =?iso-8859-1?Q?H=FCsrev?= Tepe <tadilhusrev@gmail.com>
+Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: proximity: add Imagis ISG5320A SAR sensor
+ driver
+Message-ID: <avxdEl-IB2yf3pdi@ashevche-desk.local>
+References: <20261116074013.355363-1-tadilhusrev@gmail.com>
+ <20261117104414.1182364-1-tadilhusrev@gmail.com>
+ <20261117104414.1182364-2-tadilhusrev@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -157,78 +84,432 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB6603.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 89975df8-3b5a-464b-dd42-08df44b1a0f1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Nov 2026 13:49:40.9798
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3MVVx1no0Ou7hq5OjvOeBCLgSMwCMBN291IVyBW0yXpaeQZTDCs8t0lCWmiwwXYMqPShMzaTYChbg2iE10wAw7lHe8U+lOtTU4wIQlsISks=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS7PR01MB11777
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261117104414.1182364-2-tadilhusrev@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-SGkgQ29zbWluLA0KDQpUaGFua3MgZm9yIHRoZSBwYXRjaC4NCg0KPiAtLS0tLU9yaWdpbmFsIE1l
-c3NhZ2UtLS0tLQ0KPiBGcm9tOiBDb3NtaW4gVGFuaXNsYXYgPGNvc21pbi1nYWJyaWVsLnRhbmlz
-bGF2LnhhQHJlbmVzYXMuY29tPg0KPiBTZW50OiAxNyBOb3ZlbWJlciAyMDI2IDEwOjI2DQo+IFN1
-YmplY3Q6IFtQQVRDSCB2MyAxMS8xNF0gY291bnRlcjogcnotbXR1My1jbnQ6IGNhY2hlIGRpcmVj
-dGlvbiB2YWx1ZXMNCj4gDQo+IFJlYWRpbmcgcmVnaXN0ZXJzIHdpdGhvdXQgdGhlIGNvdW50IGJl
-aW5nIGVuYWJsZWQgaXMgYW4gaXNzdWUgYXMgdGhlDQo+IGNoLT5pc19idXN5IGNoZWNrIGluc2lk
-ZSByel9tdHUzX2xvY2tfaWZfY291bnRfaXNfZW5hYmxlZCgpIGNhbiByYWNlDQo+IHdpdGggUFdN
-IG9wZXJhdGlvbnMuDQo+IA0KPiBDYWNoZSB0aGUgZGlyZWN0aW9uIHZhbHVlIG9uIGV2ZXJ5IHJl
-YWQgYW5kIG9uIGRpc2FibGUsIGFuZCByZXR1cm4gdGhlIGNhY2hlZCB2YWx1ZSBpZiB0aGUgY291
-bnQgaXMNCj4gZGlzYWJsZWQuDQo+IA0KPiBTaW5jZSBydW50aW1lIFBNIGlzIGVuc3VyZWQgdG8g
-YmUgcmVzdW1lZCBpZiB0aGUgY291bnQgaXMgZW5hYmxlZCwgZHJvcCB0aGUgcG1fcnVudGltZV9n
-ZXRfc3luYygpIGFuZA0KPiBwbV9ydW50aW1lX3B1dCgpIGNhbGxzLg0KPiANCj4gU2lnbmVkLW9m
-Zi1ieTogQ29zbWluIFRhbmlzbGF2IDxjb3NtaW4tZ2FicmllbC50YW5pc2xhdi54YUByZW5lc2Fz
-LmNvbT4NCj4gLS0tDQo+IA0KPiBWMzoNCj4gICogbm8gY2hhbmdlcw0KPiANCj4gVjI6DQo+ICAq
-IGFkZCBzdHJ1Y3QgcnpfbXR1M19jbnQ6OmRpcmVjdGlvbiBkb2N1bWVudGF0aW9uDQo+IA0KPiAg
-ZHJpdmVycy9jb3VudGVyL3J6LW10dTMtY250LmMgfCAxOSArKysrKysrKysrKysrKy0tLS0tDQo+
-ICAxIGZpbGUgY2hhbmdlZCwgMTQgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkNCj4gDQo+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL2NvdW50ZXIvcnotbXR1My1jbnQuYyBiL2RyaXZlcnMvY291
-bnRlci9yei1tdHUzLWNudC5jIGluZGV4DQo+IDRiMTM3MTZkNmNiNy4uZTM1Nzg4NTBmMDI0IDEw
-MDY0NA0KPiAtLS0gYS9kcml2ZXJzL2NvdW50ZXIvcnotbXR1My1jbnQuYw0KPiArKysgYi9kcml2
-ZXJzL2NvdW50ZXIvcnotbXR1My1jbnQuYw0KPiBAQCAtNzAsNiArNzAsNyBAQA0KPiAgICogQGNv
-dW50OiBDYWNoZSBmb3IgY291bnQgdmFsdWVzDQo+ICAgKiBAdGltZXJfbW9kZTogQ2FjaGUgZm9y
-IHRpbWVyIG1vZGUgdmFsdWVzDQo+ICAgKiBAbXRjbGtjX210Y2xrZDogQ2FjaGUgZm9yIGV4dGVy
-bmFsIGlucHV0IHBoYXNlIGNsb2NrIHNlbGVjdCB2YWx1ZQ0KPiArICogQGRpcmVjdGlvbjogQ2Fj
-aGUgZm9yIGRpcmVjdGlvbiB2YWx1ZXMNCj4gICAqLw0KPiAgc3RydWN0IHJ6X210dTNfY250IHsN
-Cj4gIAlzdHJ1Y3QgbXV0ZXggbG9jazsNCj4gQEAgLTc4LDYgKzc5LDcgQEAgc3RydWN0IHJ6X210
-dTNfY250IHsNCj4gIAl1MzIgY291bnRbUlpfTVRVM19NQVhfTE9HSUNBTF9DTlRSX0NIQU5ORUxT
-XTsNCj4gIAl1OCB0aW1lcl9tb2RlW1JaX01UVTNfTUFYX0xPR0lDQUxfQ05UUl9DSEFOTkVMU107
-DQo+ICAJYm9vbCBjb3VudF9pc19lbmFibGVkW1JaX01UVTNfTUFYX0xPR0lDQUxfQ05UUl9DSEFO
-TkVMU107DQo+ICsJYm9vbCBkaXJlY3Rpb25bUlpfTVRVM19NQVhfTE9HSUNBTF9DTlRSX0NIQU5O
-RUxTXTsNCj4gIAlib29sIG10Y2xrY19tdGNsa2Q7DQo+ICB9Ow0KPiANCj4gQEAgLTE4Niw2ICsx
-ODgsMTMgQEAgc3RhdGljIHZvaWQgcnpfbXR1M19zZXRfcGhja3NlbChzdHJ1Y3QgcnpfbXR1M19j
-aGFubmVsICpjb25zdCBjaCwgYm9vbCBlbmFibGUpDQo+ICAJCQkJICAgICAgZW5hYmxlKTsNCj4g
-IH0NCj4gDQo+ICtzdGF0aWMgYm9vbCByel9tdHUzX2dldF9kaXJlY3Rpb24oc3RydWN0IHJ6X210
-dTNfY2hhbm5lbCAqY29uc3QgY2gpIHsNCj4gKwl1OCB0c3IgPSByel9tdHUzXzhiaXRfY2hfcmVh
-ZChjaCwgUlpfTVRVM19UU1IpOw0KPiArDQo+ICsJcmV0dXJuICEhKHRzciAmIFJaX01UVTNfVFNS
-X1RDRkQpOw0KPiArfQ0KPiArDQo+ICBzdGF0aWMgaW50IHJ6X210dTNfY291bnRfcmVhZChzdHJ1
-Y3QgY291bnRlcl9kZXZpY2UgKmNvdW50ZXIsDQo+ICAJCQkgICAgICBzdHJ1Y3QgY291bnRlcl9j
-b3VudCAqY291bnQsIHU2NCAqdmFsKSAgeyBAQCAtMzE4LDE4ICszMjcsMTcgQEAgc3RhdGljIGlu
-dA0KPiByel9tdHUzX2NvdW50X2RpcmVjdGlvbl9yZWFkKHN0cnVjdCBjb3VudGVyX2RldmljZSAq
-Y291bnRlciwNCj4gIAlzdHJ1Y3QgcnpfbXR1M19jaGFubmVsICpjb25zdCBjaCA9IHJ6X210dTNf
-Z2V0X2NoKGNvdW50ZXIsIGNvdW50LT5pZCk7DQo+ICAJc3RydWN0IHJ6X210dTNfY250ICpjb25z
-dCBwcml2ID0gY291bnRlcl9wcml2KGNvdW50ZXIpOw0KPiAgCWludCByZXQ7DQo+IC0JdTggdHNy
-Ow0KPiANCj4gIAlyZXQgPSByel9tdHUzX2xvY2tfaWZfY291bnRfaXNfZW5hYmxlZChjaCwgcHJp
-diwgY291bnQtPmlkKTsNCj4gIAlpZiAocmV0KQ0KPiAgCQlyZXR1cm4gcmV0Ow0KPiANCj4gLQlw
-bV9ydW50aW1lX2dldF9zeW5jKGNvdW50ZXItPnBhcmVudCk7DQo+IC0JdHNyID0gcnpfbXR1M184
-Yml0X2NoX3JlYWQoY2gsIFJaX01UVTNfVFNSKTsNCj4gLQlwbV9ydW50aW1lX3B1dChjb3VudGVy
-LT5wYXJlbnQpOw0KPiArCWlmIChwcml2LT5jb3VudF9pc19lbmFibGVkW2NvdW50LT5pZF0pDQo+
-ICsJCXByaXYtPmRpcmVjdGlvbltjb3VudC0+aWRdID0gcnpfbXR1M19nZXRfZGlyZWN0aW9uKGNo
-KTsNCg0KTm93IHByaXYtPmRpcmVjdGlvbltjb3VudC0+aWRdIGlzIHplcm8taW5pdGlhbGlzZWQs
-IHByZXZpb3VzbHkgaXQgd2FzIFNvQyByZWdpc3RlcidzIHJlc2V0DQp2YWx1ZS4gU2hvdWxkIHdl
-IGluaXRpYWxpemUgdGhlc2UgdmFsdWVzIGluIHByb2JlIHNvIHRoYXQgdGhlcmUgaXMgbm8gY2hh
-bmdlIGluIGJlaGF2aW91cj8NCg0KQ2hlZXJzLA0KQmlqdQ0KDQo+IA0KPiAtCSpkaXJlY3Rpb24g
-PSAodHNyICYgUlpfTVRVM19UU1JfVENGRCkgPw0KPiArCSpkaXJlY3Rpb24gPSBwcml2LT5kaXJl
-Y3Rpb25bY291bnQtPmlkXSA/DQo+ICAJCUNPVU5URVJfQ09VTlRfRElSRUNUSU9OX0ZPUldBUkQg
-OiBDT1VOVEVSX0NPVU5UX0RJUkVDVElPTl9CQUNLV0FSRDsNCj4gKw0KPiAgCW11dGV4X3VubG9j
-aygmcHJpdi0+bG9jayk7DQo+IA0KPiAgCXJldHVybiAwOw0KPiBAQCAtNDcyLDYgKzQ4MCw3IEBA
-IHN0YXRpYyB2b2lkIHJ6X210dTNfdGVybWluYXRlX2NvdW50ZXIoc3RydWN0IGNvdW50ZXJfZGV2
-aWNlICpjb3VudGVyLCBpbnQgaWQpDQo+ICAJc3RydWN0IHJ6X210dTNfY250ICpjb25zdCBwcml2
-ID0gY291bnRlcl9wcml2KGNvdW50ZXIpOw0KPiANCj4gIAlwcml2LT5jb3VudFtpZF0gPSByel9t
-dHUzX2dldF9jb3VudChjaCwgaWQpOw0KPiArCXByaXYtPmRpcmVjdGlvbltpZF0gPSByel9tdHUz
-X2dldF9kaXJlY3Rpb24oY2gpOw0KPiANCj4gIAlpZiAoaWQgPT0gUlpfTVRVM18zMl9CSVRfQ0gp
-IHsNCj4gIAkJcnpfbXR1M19kaXNhYmxlKGNoMik7DQo+IC0tDQo+IDIuNTYuMA0K
+On Tue, Nov 17, 2026 at 01:44:14PM +0300, Adil Hüsrev Tepe wrote:
+> Add an IIO driver for the Imagis ISG5320A capacitive SAR/grip sensor
+> (I2C), as fitted on the Samsung Galaxy XCover5. It exposes one
+> IIO_PROXIMITY channel (the B-channel signal minus its baseline) and a
+> rising/falling threshold proximity event.
+
+> v1 -> v2 (addressing Andy Shevchenko's and Sashiko AI's review of v1,
+> https://sashiko.dev/#/patchset/20261116074013.355363-1-tadilhusrev@gmail.com?part=2):
+> - Drop the unused #include <linux/kernel.h>; audit includes for the
+>   IWYU principle (array_size.h, cleanup.h, errno.h, types.h for
+>   symbols actually used).
+> - Use ACQUIRE(pm_runtime_active_auto_try_enabled)/ACQUIRE_ERR() in
+>   isg5320a_get_sample() instead of open-coded
+>   pm_runtime_resume_and_get()/pm_runtime_put_autosuspend().
+> - Make the Kconfig prompt, this file's top comment, and
+>   MODULE_DESCRIPTION() use the same wording.
+> - Propagate the PROTECT-unlock write failure in isg5320a_reset()
+>   instead of only warning (matches the existing SOFTRESET handling).
+> - isg5320a_wait_int() now reads the INT gpio with
+>   gpiod_get_value_cansleep() (logical, polarity-aware) instead of
+>   _raw_, and returns a real error instead of looping to -ETIMEDOUT on
+>   a failed read.
+> - Cache device_may_wakeup() at isg5320a_events_on() time
+>   (irq_wake_enabled) and use that cached value in
+>   isg5320a_events_off(), instead of re-checking device_may_wakeup() at
+>   disable time: toggling /sys/.../power/wakeup between enable and
+>   disable no longer produces an unbalanced
+>   enable_irq_wake()/disable_irq_wake() pair.
+> - isg5320a_shutdown() now calls isg5320a_events_off() (disables the
+>   IRQ and takes data->lock around the IRQFUNC write) instead of
+>   writing IRQFUNC unlocked with the IRQ still enabled, and only calls
+>   isg5320a_mode_sleep() when the device isn't already
+>   runtime-suspended.
+> - Register the isg5320a_teardown() devres action right after
+>   isg5320a_mode_normal() succeeds instead of after the IRQ request, so
+>   a later probe failure (e.g. devm_request_threaded_irq()) still puts
+>   the chip back to sleep instead of leaving it scanning unbound.
+> - Use a named initializer in isg5320a_id[].
+
+Changelog should be in the comment block, after the '---' line below.
+
+> The driver was derived from the Samsung vendor driver during XCover5
+> mainline bring-up with the help of an AI coding assistant (Claude Code,
+> Anthropic), which drafted the mainline IIO driver; I reviewed every
+> line, built it (arm64, 0 warnings), ran checkpatch --strict (clean),
+> and tested it live on a Samsung Galaxy XCover5 (2026-11-17): the driver
+> binds and registers as iio:device4 "isg5320a", with a live
+> in_proximity0_raw read-back.
+
+This paragraph has to be in the cover letter and not here.
+
+...
+
+> +#include <linux/array_size.h>
+> +#include <linux/bits.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/errno.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+
+> +#include <linux/mod_devicetable.h>
+
+Nope. This should not be included in a new code.
+
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/pm_runtime.h>
+
+> +#include <linux/pm_wakeup.h>
+
+Have you read what's written in the top of that file?
+Please, drop it here.
+
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+
+...
+
+> +#define ISG5320A_RESET_CONDITION	5000	/* reg.h :99, for cfcal_th */
+
+This is a cryptic comment. Either drop it, or better to explain on top of the
+definition.
+
+...
+
+> +#define ISG5320A_AUTOSUSPEND_MS		5000
+
+(5 * MSEC_PER_SEC)
+
+will require time.h to be included.
+
+...
+
+> +struct isg5320a_reg_data {
+> +	u8 addr;
+> +	u8 val;
+> +};
+
+> +/*
+> + * Vendor setup_reg[] for "XCOVER5 ALL" (isg5320a_reg.h :283-435). The other
+> + * table (:130-282) is under CONFIG_SENSORS_ISG5320A_XCOVER5_KOR, which the
+> + * stock exynos850-xcover5xx_defconfig leaves unset; it differs only in
+> + * 0x9C (threshold low byte), 0xA0 (far hysteresis low byte) and 0xBA.
+> + */
+> +static const struct isg5320a_reg_data isg5320a_setup_reg[] = {
+> +	{ 0x05, 0xFC }, { 0x06, 0xF1 }, { 0x07, 0x13 }, { 0x08, 0x01 },
+> +	{ 0x09, 0x80 }, { 0x0A, 0x20 }, { 0x0B, 0x00 }, { 0x0C, 0x00 },
+> +	{ 0x12, 0x89 }, { 0x19, 0x8A }, { 0x1B, 0x28 }, { 0x1D, 0x20 },
+> +	{ 0x1E, 0x00 }, { 0x1F, 0x18 }, { 0x20, 0x05 }, { 0x21, 0x10 },
+> +	{ 0x22, 0x10 }, { 0x23, 0x00 }, { 0x24, 0x00 }, { 0x25, 0x05 },
+> +	{ 0x26, 0x05 }, { 0x27, 0x10 }, { 0x28, 0x20 }, { 0x29, 0x00 },
+> +	{ 0x2A, 0x20 }, { 0x2B, 0x00 }, { 0x2C, 0x00 }, { 0x2D, 0x20 },
+> +	{ 0x2F, 0x18 }, { 0x30, 0xC0 }, { 0x41, 0x11 }, { 0x60, 0xF0 },
+> +	{ 0x61, 0x8F }, { 0x62, 0x0C }, { 0x63, 0x00 }, { 0x64, 0x00 },
+> +	{ 0x65, 0x44 }, { 0x66, 0x3C }, { 0x67, 0x01 }, { 0x68, 0x00 },
+> +	{ 0x69, 0x00 }, { 0x6A, 0x10 }, { 0x6B, 0x00 }, { 0x6C, 0x10 },
+> +	{ 0x6D, 0x40 }, { 0x6E, 0x22 }, { 0x6F, 0x00 }, { 0x70, 0x01 },
+> +	{ 0x71, 0x60 }, { 0x72, 0xFF }, { 0x73, 0xFF }, { 0x74, 0xFF },
+> +	{ 0x7B, 0x08 }, { 0x7C, 0x00 }, { 0x7D, 0x0C }, { 0x7E, 0x00 },
+> +	{ 0x7F, 0xF8 }, { 0x80, 0xF8 }, { 0x81, 0x00 }, { 0x82, 0xF0 },
+> +	{ 0x83, 0xF0 }, { 0x84, 0xF0 }, { 0x85, 0xF0 }, { 0x86, 0xF0 },
+> +	{ 0x87, 0xF0 }, { 0x88, 0x00 }, { 0x89, 0x00 }, { 0x8A, 0x08 },
+> +	{ 0x8B, 0x00 }, { 0x8C, 0x02 }, { 0x8D, 0x00 }, { 0x99, 0x21 },
+> +	{ 0x9A, 0x3C }, { 0x9B, 0x01 }, { 0x9C, 0x2C }, { 0x9D, 0x00 },
+> +	{ 0x9E, 0x00 }, { 0x9F, 0x00 }, { 0xA0, 0x96 }, { 0xA1, 0xC0 },
+> +	{ 0xA2, 0x22 }, { 0xA3, 0x00 }, { 0xA4, 0x08 }, { 0xA5, 0x60 },
+> +	{ 0xA6, 0xFF }, { 0xA7, 0xFF }, { 0xA8, 0xFF }, { 0xA9, 0x00 },
+> +	{ 0xAF, 0x40 }, { 0xB0, 0x00 }, { 0xB1, 0x60 }, { 0xB2, 0x00 },
+> +	{ 0xB3, 0xD0 }, { 0xB4, 0x10 }, { 0xB5, 0x28 }, { 0xB6, 0xF0 },
+> +	{ 0xB7, 0xF6 }, { 0xB8, 0xFD }, { 0xB9, 0xDE }, { 0xBA, 0xFD },
+> +	{ 0xBB, 0xF0 }, { 0xBC, 0x00 }, { 0xBD, 0xFF }, { 0xBE, 0x01 },
+> +	{ 0xBF, 0x5E }, { 0xC0, 0x00 }, { 0xC1, 0x69 }, { 0xC2, 0xF0 },
+> +	{ 0xC3, 0x00 }, { 0xC4, 0x00 }, { 0xC5, 0x00 }, { 0x13, 0x3A },
+> +	{ 0x18, 0xF1 }, /* A ch : CS0, B ch : CS1 */
+> +	{ 0x1C, 0x18 }, { 0x35, 0x00 }, { 0x36, 0x00 }, { 0x3A, 0x0A },
+> +	{ 0x3B, 0x50 }, { 0x3C, 0x0A }, { 0x3D, 0x50 }, { 0x3E, 0x60 },
+> +	{ 0x94, 0x10 }, { 0x95, 0xA9 }, { 0x96, 0x11 }, { 0x2E, 0x14 },
+> +	{ 0x0E, 0xE0 }, { 0x0F, 0x1E }, { 0x10, 0xC0 }, { 0x11, 0xC1 },
+> +	{ 0xD0, 0xE0 }, { 0xD1, 0x08 }, { 0xD2, 0x00 }, { 0xD3, 0xFF },
+> +	{ 0xD4, 0xFF }, { 0xD5, 0x1E }, { 0xD6, 0x32 }, { 0xD7, 0xFF },
+> +	{ 0xD8, 0x20 }, { 0xD9, 0x70 }, { 0xDA, 0x7F }, { 0xDB, 0xE0 },
+> +	{ 0xDC, 0x00 }, { 0x76, 0x08 }, { 0x77, 0x00 }, { 0x79, 0x02 },
+> +	{ 0x7A, 0x00 }, { 0xAA, 0x36 }, { 0xAB, 0xB0 }, { 0xAD, 0x04 },
+> +	{ 0xAE, 0x00 },
+> +};
+
+...
+
+> +struct isg5320a_data {
+> +	struct device *dev;
+> +	struct regmap *regmap;
+
+One of the above is redundant.
+
+> +	struct gpio_desc *int_gpio;
+> +	int irq;
+> +	/* Serialises multi-register chip sequences and the cached sample. */
+> +	struct mutex lock;
+> +	/* Serialises event enable/disable (sleeps in disable_irq()). */
+> +	struct mutex ev_lock;
+
+> +	bool ev_enabled;
+> +	bool irq_wake_enabled;
+> +	bool close;
+
+If they are protected by the same lock or have no clashes, use
+
+	bool XXX:1;
+
+to pack all of them into a single boolean. Move them to the end, so
+there will be a chance to reduce a gap. Check with `pahole`.
+
+> +	u16 cdc;
+> +	u16 base;
+> +	u16 thresh;
+> +	u16 close_hyst;
+> +	u16 far_hyst;
+> +	u32 cfcal_th;
+
+Move it upper, before u16 ones.
+
+> +};
+
+...
+
+> +static const struct regmap_config isg5320a_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = ISG5320A_MAX_REG,
+> +	.writeable_reg = isg5320a_writeable_reg,
+> +	.precious_reg = isg5320a_precious_reg,
+
+> +	.cache_type = REGCACHE_NONE,
+
+Why?! This has to be justified in the comment above.
+
+> +};
+
+...
+
+> +/* Wait for the INT line to reach @level: up to 10 x 5 ms (vendor :262, :281). */
+> +static int isg5320a_wait_int(struct isg5320a_data *data, int level)
+> +{
+> +	int cnt, val;
+> +
+> +	if (!data->int_gpio) {
+
+> +		msleep(50);
+
+All sleeps has to be explained.
+
+> +		return 0;
+> +	}
+> +
+> +	for (cnt = 0; cnt < 10; cnt++) {
+> +		/* Logical, not raw: honours the GPIO's DT polarity. */
+> +		val = gpiod_get_value_cansleep(data->int_gpio);
+> +		if (val < 0)
+> +			return val;
+> +		if (val == level)
+> +			return cnt;
+> +		usleep_range(5000, 5100);
+> +	}
+
+In iopoll.h you may find readx_poll_timeout().
+
+> +	return -ETIMEDOUT;
+> +}
+
+...
+
+> +static int isg5320a_reset(struct isg5320a_data *data)
+> +{
+> +	struct device *dev = data->dev;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	usleep_range(5000, 5100);				/* :255-256 */
+
+Why?! Also use fsleep(5 * USEC_PER_MSEC).
+
+> +	ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &val);	/* :258 */
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "no response at IRQSRC\n");
+> +
+> +	ret = regmap_read(data->regmap, ISG5320A_REG_CHIPID, &val);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "CHIPID read failed\n");
+
+> +	if (val == ISG5320A_VENDOR_CHIP_ID)
+> +		dev_info(dev, "CHIPID 0x%02x\n", val);
+
+Useless.
+
+> +	else
+> +		dev_warn(dev, "CHIPID 0x%02x (vendor header says 0x%02x; not enforced)\n",
+> +			 val, ISG5320A_VENDOR_CHIP_ID);
+> +
+> +	if (isg5320a_wait_int(data, 1) < 0)			/* :262-266 */
+> +		dev_warn(dev, "INT did not go high before reset\n");
+> +
+> +	ret = regmap_write(data->regmap, ISG5320A_REG_PROTECT,	/* :268-271 */
+> +			   ISG5320A_PROTECT_UNLOCK);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "unlock protect failed\n");
+> +
+> +	ret = regmap_write(data->regmap, ISG5320A_REG_SOFTRESET,	/* :273-276 */
+> +			   ISG5320A_SOFTRESET_VAL);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "soft reset write failed\n");
+
+> +	usleep_range(1000, 1100);				/* :278 */
+
+fsleep (1 * USEC_PER_MSEC) and why?
+
+
+> +	ret = isg5320a_wait_int(data, 0);			/* :280-289 */
+> +	if (ret < 0)
+> +		return dev_err_probe(dev, -EIO, "INT not asserted after soft reset\n");
+> +	dev_dbg(dev, "reset done, wait cnt %d\n", ret);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +/* vendor isg5320a_initialize(), :614-660, without the /sdcard override */
+> +static int isg5320a_initialize(struct isg5320a_data *data)
+> +{
+> +	struct device *dev = data->dev;
+> +	unsigned int i, val, mismatch = 0;
+> +	u8 buf[6];
+> +	int ret;
+> +
+> +	guard(mutex)(&data->lock);
+> +
+> +	ret = regmap_read(data->regmap, ISG5320A_REG_IRQSRC, &val);	/* :625 */
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_write(data->regmap, ISG5320A_REG_SCANCTRL1,	/* :626 */
+> +			   ISG5320A_SCAN_STOP);
+> +	if (ret)
+> +		return ret;
+
+> +	msleep(30);						/* :627 */
+
+Do all this needs to be under the mutex?
+
+> +	for (i = 0; i < ARRAY_SIZE(isg5320a_setup_reg); i++) {	/* :631-637 */
+> +		const struct isg5320a_reg_data *r = &isg5320a_setup_reg[i];
+> +
+> +		ret = regmap_write(data->regmap, r->addr, r->val);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "init write 0x%02x failed\n",
+> +					     r->addr);
+
+Don't we have something like reg_defaults_raw field and the respective
+struct reg_default?
+
+> +		ret = regmap_read(data->regmap, r->addr, &val);
+> +		if (ret)
+> +			return ret;
+> +		if (val != r->val) {
+> +			mismatch++;
+> +			dev_dbg(dev, "reg 0x%02x wrote 0x%02x read 0x%02x\n",
+> +				r->addr, r->val, val);
+> +		}
+> +	}
+> +	dev_info(dev, "init table: %zu writes, %u read back different\n",
+> +		 ARRAY_SIZE(isg5320a_setup_reg), mismatch);
+> +
+> +	/* :646-650 reads the threshold; :890-897 reads all six bytes */
+> +	ret = regmap_bulk_read(data->regmap, ISG5320A_REG_B_PROXCTL3, buf,
+> +			       sizeof(buf));
+> +	if (ret)
+> +		return ret;
+
+> +	data->thresh = (buf[0] << 8) | buf[1];
+> +	data->close_hyst = (buf[2] << 8) | buf[3];
+> +	data->far_hyst = (buf[4] << 8) | buf[5];
+
+We have get_unaligned_?eXX(), we have ?eXX_to_cpu() and cpu_to_?eXX(), use them.
+
+> +	ret = regmap_read(data->regmap, ISG5320A_REG_DIGITAL_ACC, &val);	/* :653-657 */
+> +	if (ret)
+> +		return ret;
+> +	data->cfcal_th = ISG5320A_RESET_CONDITION * val / 8;
+> +
+> +	dev_info(dev, "threshold %u, close hyst %u, far hyst %u, cfcal_th %u\n",
+> +		 data->thresh, data->close_hyst, data->far_hyst, data->cfcal_th);
+> +
+> +	return 0;
+> +}
+
+...
+
+> +	/*
+> +	 * Registered now, with the chip already active, so that a later
+> +	 * failure (e.g. the IRQ request below) still puts it back to sleep
+> +	 * instead of leaving it scanning with nothing bound to it.
+> +	 */
+> +	pm_runtime_set_autosuspend_delay(dev, ISG5320A_AUTOSUSPEND_MS);
+> +	pm_runtime_use_autosuspend(dev);
+> +	pm_runtime_set_active(dev);
+> +	pm_runtime_get_noresume(dev);
+> +	pm_runtime_enable(dev);
+> +	pm_runtime_put_autosuspend(dev);
+> +
+> +	ret = devm_add_action_or_reset(dev, isg5320a_teardown, data);
+> +	if (ret)
+> +		return ret;
+
+Do you understand how it works? Why don't you use devn_pm_runtime*() calls?
+
+...
+
+> +	if (data->irq > 0) {
+> +		irqflags = irq_get_trigger_type(data->irq);
+> +		if (!irqflags)
+> +			irqflags = IRQF_TRIGGER_FALLING;	/* :1932 */
+
+Why?! It's a new driver, let the firmware to describe thing properly (and you
+never know if there is a NOT gate in the middle which make the default working
+in a wrong way (and on top, but I haven't checked this, the shared interrupt
+case if supported by HW).
+
+> +		ret = devm_request_threaded_irq(dev, data->irq, NULL,
+> +						isg5320a_irq_thread,
+> +						irqflags | IRQF_ONESHOT |
+> +						IRQF_NO_AUTOEN,
+> +						"isg5320a", indio_dev);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "irq request failed\n");
+
+Read mailing list and IIO Git history to understand what's wrong here.
+
+> +
+> +		if (device_property_read_bool(dev, "wakeup-source"))
+> +			device_init_wakeup(dev, true);
+> +	}
+
+...
+
+Overall impression, that this driver was written without enough understanding
+on what's going on. Take your time, check datasheet and corner cases, test them
+on real HW, et cetera.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
