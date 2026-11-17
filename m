@@ -1,79 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794908597;
-	b=3DkSOI3bj8tJMfOlQx/L3IJzdAvX8XklepdZC9B6DEksAGV28TELYTafeMB24O31WCui
-	 FTBsHzHu9K0WGqeaFnCQpoyGkvqJ80TQUyLTbqrLfHYzWrpIW8f/cfJb1yo1Yre4F+p+X
-	 sjSLn16O1nylaLVtXG55Jth4Rr7rUYxksSWfBQikifAoNofPbCMtBuJT9ApA1mvsW5eEz
-	 BcJ1hBbG36drxUibuZP9Nbs/y6vb1fKq1WCud8S8g1U1q5pk3SFZdbmVYYRP+iz0WHhZA
-	 7RZp8FZYCt4atEECYhqrtAWECfFLAz63B7iiWJm9C0IIi8wQyyz0IbofULMV6Xhj/wg==
+	t=1794908867;
+	b=1jaKrtmLKLIs9PKjpbt1D4k0MFzXP6+vDXfoRq5NjacstMXHq+JCgFl298+FJMgPtyYG
+	 tOtOxOTxJMCD/wMoBx58Tdv7C6r92qxP09m1BYBvWsxsMbu6TVRuwYzTUeP/++drsDbXz
+	 uRVBZ0CxKk79g2G3ddHQBLw8z2WiJyH54tsJgB9YJRMtkA0WvvhwX3Z3yoiTMpZll4I5a
+	 On/JXxlwube8gBG8RWZfoeT09GkKPajwhcGTRmCI7reOZpbk80P0s38yJ0LyRCWizVBE+
+	 GabY0ePrJckvY5H60nLKaCMhJTleG/SEIguCJt2o5mUrKO8+y1E/SAxxP6zt1P9m0zQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794908597;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=1JFZCHrxuZbSUWndPTw9K3y86Gq6Tb/RKCBBhoAAS0M=;
-	b=b055v1DoXR1ToFZ/XIcmWHREVAZXw5OXZdMtbR8hYBkcHDUG1TnNZvMQ9RbScjQ0XQ97
-	 RAaV4Lsa3d1+LHqxVXb1z76OEgWs5n5Uh15vbJrR1R+GYA5gZ7AQfSr76NgKWRxJGMjLU
-	 QSfOky53qa3vg9blocgivO6cc6BYLy3eK0P93LrgIu6he4waF8ZRbAYllFo/UG6vKs6LG
-	 tsHzbecG3EKrrvqt25WUjxF+e8pZdTFVRaeJnPOrfe1NIyGEvjpzdwro87W4Hn9aAJvGd
-	 3vYaZY1lX4nK/U2Plo5K/a5rSFfjaZB/sGoRzwhjfd7eb2MfOG2YL4+a9tJAW+ehAWQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794908867;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=RaHMnEwLyGtFm3duWMYl9s2TO4AG17GQCBnv9kTRqT8=;
+	b=J1c6PGsqljh7akdh4y2+0/wKQwZOg4gr25wJaJSUy+ei/b1Y2tOo0p5Fv16h0QOVKZG5
+	 N7SGYkjYFaYAKGn6NLWtxRm5iA4YZoNW4rrkm/U/5/Tl8ALe4PkhWlGM+MX/u0O+u2mxM
+	 IgxpV6Ljupi1L7Cy9iHc6I8Xum7maBVlfxUBpWcE2JW3rXuw0+hoVoVqnkoJJvj+zxpBm
+	 SDaKoadTFx8/Ty/AYfaFgHcn61dHUBxK3ckrQuXxVassApai03v3SreCCc8f8qpU3tRIw
+	 FOZHTpUeKTdNXU8rWLEtihNBKa0V5FeKysWbVwtQUBxGr0uPW8W5uWLLS3nrGQJ7v7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PUg8uSDm;
-	arc=none smtp.remote-ip=192.198.163.16
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pk0ck0Wl;
+	arc=none smtp.remote-ip=74.125.82.173
+Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com [74.125.82.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09991606A31C;
-	Tue, 17 Nov 2026 09:43:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09991606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3667C606A33B
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 09:47:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3667C606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PUg8uSDm
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794908598; x=1826444598;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/GI53b4sXCSiU9qDVUDU1ic+ORGhD0l/yLB4uV7dWQk=;
-  b=PUg8uSDmb4ajJ6QsnmmnkrbAJsv5FfSFxkHDpfwhAO+pm2XkgFA6hBrN
-   e037FAI/ETNLZ73TpnuX708UuzEb25KhRM3Sfh1LyZ3/dpuUL2Y24RTTW
-   9uwLkD/zXGWoNKG2qcXy4dynKytIrjkMebupz3IV6/689RoL5GZZzo4sl
-   tn9nP0f/5grugP1vAIw/02f6ywEAmBAW+/S69IqY4YjbhCTx2wtdZl2iZ
-   PMO0wOp0ynD3g4oF1BIxMeMwpO6eAS5nO0kKx7hkXBL4gS9/3YZM0x5gb
-   FIxTmekX75wjHWZQ8Fvi5Tp+Hgsf4nMtnK3WWMlbAF6UtC+eCYgl9Cnyh
-   w==;
-X-CSE-ConnectionGUID: c9kawMAzTeOXsvQh1yvEyg==
-X-CSE-MsgGUID: Stg4fDpWSBmYPQrxSrIMeg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3709672"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3709672"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:43:17 -0800
-X-CSE-ConnectionGUID: YkQDCuzQSRy3DqkoiJVpUA==
-X-CSE-MsgGUID: +4chQQiAQuG/Z452xZTgMg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="10013561"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 01:43:13 -0800
-Date: Tue, 17 Nov 2026 11:43:10 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chi-Wen Weng <cwweng.linux@gmail.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, chernyakin.victor.j@outlook.com,
-	cwweng@nuvoton.com
-Subject: Re: [PATCH v5 3/3] iio: adc: Add Nuvoton MA35D1 EADC driver
-Message-ID: <avwhriewntd6_F8u@ashevche-desk.local>
-References: <20261117082832.1551574-1-cwweng.linux@gmail.com>
- <20261117082832.1551574-4-cwweng.linux@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pk0ck0Wl
+Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-36dbde64409so6519822eec.0
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 01:47:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794908865; x=1795513665; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=RaHMnEwLyGtFm3duWMYl9s2TO4AG17GQCBnv9kTRqT8=;
+        b=pk0ck0WlBblluLIuxABA4I5X1xp+ISFNRpptKwSMRbz7Jia2pAhFrQfdxYrtHug79M
+         lQuF1Js2VMcuLyn4X7D2fjZOMvXhw+zyOJIfZvn5X4YZY87aZfjMM2RlNjXK1rMd0wX4
+         itRVLtu3xco6gwwJqKxGUflSPQA2gihwgFeO9y4Ugb7eQMeYujTem5sgyIEWBCmGuaRg
+         XnwMR/5U5RvTXDEz4/Wrsnc09H/gyJorl22Cjnod77PtQ+TmAqx+swWRV9SE36/z4azg
+         GmeeIWxRlLUyLa4/9D/rl7Zg6eQX5g7iq3CP8MrmhVn/LQRI2nurRWTT/1ELZpkzZLcV
+         xBSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794908865; x=1795513665;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=RaHMnEwLyGtFm3duWMYl9s2TO4AG17GQCBnv9kTRqT8=;
+        b=DhILKCyTgdPxmonGAAPnO8xu4XYo0AcsXJNYdhnEwjMQmYY5lg6BuAcLycsfGR8jB5
+         TjJeb1jTmat6yJFB20spHJULdZ7Tiy7UigwZochLGqIJY1EjpLT4GflP5d+e1FkRPsY1
+         MVIlUI9Bn7lXgQtL/kdrRaKFXZdCkOf67nsj8igMGTUjuRNnyeNEHJutokGLBDKhm13Z
+         KpiHXNzd6/bCmqoXad/E8ZGREqJ3VjZDDOB6+9ILuscSQ0zc5cvwHOZ1NGfvPvIK7NTc
+         1Am1Ay9GwqrDo8KKBmehQqk6ZtG3BfTQC8c3m65M/uAegJViEMoNuuc8AR8WEjuYEECq
+         HRWg==
+X-Forwarded-Encrypted: i=1; AL+hErEDumLbHvfYMTzWO/IDSCTEcPyXLloOYx98v3XHUvZ3dLep1O3P2rtk0zH5AIug30zVgyt96jcUUlg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9gppHuoLl2eji7aWf1FM8+zYUcNKDWnckGhiz5q4grxp/e4wHI
+	crS5N8gtq247qG/5h168I6RWPqpPWz2udumr6OImbuIjpBahPZynbZDU
+X-Gm-Gg: AYBFou1DcaLcPzH2WivpJQe65DZt2CMVKRUl89H6Y0z5MqcvNcO8UwEYW/m8lllfJyi
+	Ik1wImECRQyVhs3mB7dqL8KH9EwjWPKdGCUHIxUeNko0f0Vhho8kYhJV8+lJLaSP4vhIDwgSwBi
+	/TfB45Kj4smzngE0Vvghdz2v3GR1WSnQhxSPllMQvfAeyBAgn8ZmZG27XjdnDsjDTnevAvMWU8G
+	pG0fAG0ksnShuVkL6pDWU2fC8vpuEYiQk8aVq/ImWlULLVrrKjpQPOep788hec+s0MSi/uBH/5E
+	bcs0c4P1KjQggn2BU6Wb1Flqmj09R7tAyoDM944GiyjHLuqKPoTu7eaWNvHXYvJY2pMbsQqZaB1
+	BWpX5smdRRutTdzSfKPglVc+EgwIzWG3la04lYaOhGwMSM5wVbahrnAJlp0rZqQr3BIxLt7ysbZ
+	ph8ElKwN+ECdfikssWVxvponZ84yq3/ntQTBXKOK3/15AjLacoTMvtom4OYmGSfBzqtkD6/eYro
+	/t81eVh3ytA/4BY6PyfoTRUM/0bGmFVPLRI2ixGali0gTkZ8Gt4HoKVTeTlhsueUWIELZ+esnsA
+	JjrKcV/xcazcpBucesijjOSmsVqBhl3tJFPmXKN76hQy/ZzYy8XHIkNs3qrs5gLQxluGIfHe5+P
+	QA5Hxu5pgaOoZFupfpECSW4OtJ5DgMzYEnwqknhn0sd8r5pjOeM4XU7JvmjQLMO8fdivnMokCnr
+	LA9BZZFgRbrSA4VWrd5QZU4dEWsw8vH2VrYO3GQob0og==
+X-Received: by 2002:a05:693c:6383:20b0:37a:c882:994f with SMTP id 5a478bee46e88-37ac891df02mr10019522eec.9.1794908865256;
+        Tue, 17 Nov 2026 01:47:45 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-37955a1c5c2sm42259413eec.14.2026.11.17.01.47.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 01:47:44 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Gwendal Grignou <gwendal@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH] MAINTAINERS: add a reviewer entry for the Semtech SX9xxx proximity drivers
+Date: Tue, 17 Nov 2026 15:17:35 +0530
+Message-ID: <20261117094737.15253-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,228 +102,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261117082832.1551574-4-cwweng.linux@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 17, 2026 at 04:28:32PM +0800, Chi-Wen Weng wrote:
-> 
-> Add an IIO driver for the Enhanced Analog-to-Digital Converter found on
-> Nuvoton MA35D1 SoCs.
-> 
-> Support single-ended and fixed differential inputs, direct conversion,
-> and triggered buffered capture. This initial implementation uses sample
-> module 0 and therefore supports one active voltage channel per buffered
-> scan.
+The Semtech SX9310, SX9324, SX9360 and SX9500 proximity sensor drivers
+and the shared sx_common code have no MAINTAINERS entry, so
+get_maintainer.pl only lists the IIO maintainers and reviewers for them.
 
-...
+Add an entry with me as reviewer. There is no M: line, so maintenance
+falls back to the IIO subsystem entry, as Jonathan suggested.
 
-> +static int ma35d1_adc_read_raw(struct iio_dev *indio_dev,
-> +			       const struct iio_chan_spec *chan,
-> +			       int *val, int *val2, long mask)
-> +{
-> +	struct ma35d1_adc *adc = iio_priv(indio_dev);
-> +	u16 raw;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW: {
-> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
-> +			return -EBUSY;
-> +
-> +		guard(mutex)(&adc->lock);
-> +
-> +		if (adc->suspended)
-> +			return -EBUSY;
-> +
-> +		ret = ma35d1_adc_read_conversion(adc, chan, &raw);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (chan->differential)
-> +			*val = sign_extend32(raw, MA35D1_EADC_RESOLUTION - 1);
-> +		else
-> +			*val = raw;
-> +
-> +		return IIO_VAL_INT;
-> +	}
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = adc->vref_mV;
-> +		/* Differential mode has a VREF / 2048 LSB; single-ended uses /4096. */
-> +		*val2 = chan->differential ? MA35D1_EADC_DIFF_SCALE_BITS : MA35D1_EADC_RESOLUTION;
+Link: https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
+Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+---
+As discussed on the SX9310/SX9360 gain series:
+https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
+Gwendal, if you'd like to be listed too, I'm happy to add you in a v2.
 
-+ blank line as it's done elsewhere.
+ MAINTAINERS | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0017755f593b..fdc5004df348 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -25448,6 +25448,20 @@ F:	include/uapi/linux/selinux_netlink.h
+ F:	scripts/selinux/
+ F:	security/selinux/
+ 
++SEMTECH SX9XXX PROXIMITY SENSOR DRIVERS
++R:	Arnav Kapoor <kapoorarnav43@gmail.com>
++L:	linux-iio@vger.kernel.org
++F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
++F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
++F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
++F:	Documentation/devicetree/bindings/iio/proximity/semtech,sx9500.yaml
++F:	drivers/iio/proximity/sx9310.c
++F:	drivers/iio/proximity/sx9324.c
++F:	drivers/iio/proximity/sx9360.c
++F:	drivers/iio/proximity/sx9500.c
++F:	drivers/iio/proximity/sx_common.c
++F:	drivers/iio/proximity/sx_common.h
++
+ SENSABLE PHANTOM
+ M:	Jiri Slaby <jirislaby@kernel.org>
+ S:	Maintained
 
-...
-
-> +static int ma35d1_adc_update_scan_mode(struct iio_dev *indio_dev,
-> +				       const unsigned long *scan_mask)
-> +{
-> +	struct ma35d1_adc *adc = iio_priv(indio_dev);
-> +	const struct iio_chan_spec *scan_chan = NULL;
-> +	int bit;
-> +
-> +	if (!iio_validate_scan_mask_onehot(indio_dev, scan_mask))
-> +		return -EINVAL;
-> +
-> +	iio_for_each_active_channel(indio_dev, bit) {
-> +		const struct iio_chan_spec *chan = &indio_dev->channels[bit];
-> +
-> +		if (chan->type != IIO_VOLTAGE)
-> +			return -EINVAL;
-> +
-> +		scan_chan = chan;
-> +		break;
-> +	}
-> +
-> +	if (!scan_chan)
-> +		return -EINVAL;
-
-> +	adc->scan_chan = scan_chan;
-
-So, this is only valid when scan_chan is not NULL, and this is the only case
-inside the loop, hence temporary 'scan_chan' variable is not required at all.
-
-	iio_for_each_active_channel(indio_dev, bit) {
-		const struct iio_chan_spec *chan = &indio_dev->channels[bit];
-
-		if (chan->type != IIO_VOLTAGE)
-			return -EINVAL;
-
-		adc->scan_chan = chan;
-
-		return 0;
-	}
-
-	return -EINVAL;
-
-> +	return 0;
-> +}
-
-...
-
-> +static void ma35d1_adc_trigger_capture(struct iio_poll_func *pf)
-> +{
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ma35d1_adc *adc = iio_priv(indio_dev);
-> +	struct {
-> +		u16 channel;
-> +		aligned_s64 timestamp;
-> +	} scan = { };
-> +	int ret;
-> +
-> +	guard(mutex)(&adc->lock);
-> +
-> +	if (adc->suspended || !adc->scan_chan)
-> +		return;
-> +
-> +	ret = ma35d1_adc_read_conversion(adc, adc->scan_chan,
-> +					 &scan.channel);
-
-This fits a single line.
-
-> +	if (ret)
-> +		return;
-> +
-> +	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan), pf->timestamp);
-> +}
-
-...
-
-> +static int ma35d1_adc_parse_single_channel(struct device *dev,
-> +					   struct fwnode_handle *child,
-> +					   struct iio_chan_spec *chan,
-> +					   unsigned long *used_single_inputs,
-> +					   bool has_single, u32 reg,
-> +					   unsigned int scan_index)
-> +{
-
-	const char *propname = "single-channel";
-
-> +	u32 input = reg;
-> +	int ret;
-> +
-> +	if (has_single) {
-> +		ret = fwnode_property_read_u32(child, "single-channel", &input);
-
-		ret = fwnode_property_read_u32(child, propname, &input);
-
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +					     "invalid single-channel for index %u\n",
-> +					     reg);
-
-			return dev_err_probe(dev, ret, "invalid %s for index %u\n",
-					     propname, reg);
-
-Similar approach can be used for differential channel parser.
-
-Or even supply that as a parameter, so you will have defined that only once
-in _parse_channels().
-
-> +	}
-> +
-> +	if (input >= MA35D1_EADC_MAX_EXT_CHANNELS)
-> +		return dev_err_probe(dev, -ECHRNG, "invalid ADC input %u\n", input);
-> +
-> +	if (test_and_set_bit(input, used_single_inputs))
-> +		return dev_err_probe(dev, -EEXIST, "duplicate ADC input %u\n", input);
-> +
-> +	*chan = (struct iio_chan_spec) {
-> +		.type = IIO_VOLTAGE,
-> +		.indexed = 1,
-> +		.channel = input,
-> +		.address = reg,
-> +		.scan_index = scan_index,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_type = {
-> +			.format = IIO_SCAN_FORMAT_UNSIGNED_INT,
-> +			.realbits = MA35D1_EADC_RESOLUTION,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	};
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int ma35d1_adc_init_vref(struct ma35d1_adc *adc, struct device *dev)
-> +{
-> +	int ret;
-> +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-> +	if (ret == -ENODEV) {
-> +		adc->vref_mV = MA35D1_EADC_INTERNAL_VREF_mV;
-> +	} else if (ret < 0) {
-> +		return dev_err_probe(dev, ret, "failed to get VREF supply\n");
-> +	} else if (ret > 0) {
-> +		adc->external_vref = true;
-> +		adc->vref_mV = ret / (MICRO / MILLI);
-> +	} else {
-> +		return dev_err_probe(dev, -EINVAL, "invalid VREF voltage\n");
-
-What to do, if ret is < 1000 and > 0 and the above will simply make vref_mV == 0?
-Wouldn't the same constraint be applied and respective error message issued?
-
-> +	}
-> +
-> +	return 0;
-> +}
-
+base-commit: 20ce8ef9c9e04cd6c5ae0422e251a9b5936c6b7c
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
