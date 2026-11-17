@@ -1,88 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.170
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794895205;
-	b=TGG88opTTTv7o4wXKSmsCZic/WBkHXea0TcqzsWmRtDBmR8hv4y9hgk1wZ6E7pCpavtj
-	 6SnT6tBDcmv8qZi1W6gea2Tc3Uzz/gFfn1fCUWkJSGYavN7HlC0/JLDlHTKiJCOcstMTv
-	 AuWd04cikG1fmwZRqqf6e5SwYbgCSkWdRY1Jk3PGyhlvda9QR0UCLHMS/o52N4ok85hTw
-	 vkJtWxilJutvsRL6jFedbJnqxeAP+0ic9GuRn6ndbMPb60i07EbL3bZTFGboDxL8gefZO
-	 9CakPoXZD7u71AIYSOY7VoAqhCdIFLTo7b0VkTTJn0dzYQmX6QRyeAq/NI5huSE36mw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794895205;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key;
-	bh=lkS32XPAkky3Y3UuvpRMfImoXnZGvPVVobvUu9A3i6o=;
-	b=lCP3R56+o0Is/VwQEVQLPpbEZn3T6amtCrGR5RqgY1kI26YD+vdKYP2vGRcsmN7PtmWO
-	 HbXI3Z2Rv4tSSiqYIISOseoV0jP2+eZLu3ceNgo3qwZ8rZIVGg0++PYYqMWb4lD9Jq3Yq
-	 q3SsjTs4hyUXy/qgT66MYXsy2oE5qshO2MPq40bdox6XLelKSM/43w4mEaF5JDsS+DRIL
-	 INhglWOG6793GpYZMC2RcaaXdln3V6bBZwUEMjmBZh5zC5i+HM+UZH2FY2zn0Mfh2BYGV
-	 6Pv47WGMCwrITm1FGq+gb/ziNQQoxh+zJd68oWbp0smkEt1OVEiSA2eMCoGzOX/0WJQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=gSW6fmSK;
-	arc=none smtp.remote-ip=209.85.214.170
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794899465;
+	b=AynHTGiqfiDCNYXXzqUbIv6OQATBRZcv5WKSulEV+/Dtr+sm0Tub/icohiIr8TWpdxKy
+	 IlrgLgJ1tIu6/EUUc+Rxd2ElvWDB6YrpavGYjHxe3aF2YxySMjYgrSnO1yDqUPFXpWGVn
+	 iOc0b2fF+AgtD03she+YwHwGdWvgjnZjmJSdNaIavdJwyEm0OSVqjqP3+xH1TBQgwr0GP
+	 93rxZ02LYiAqeGAy+cK99n72isvSBIoZn9aJu63um8SxxyHT2G3BDPxiB735VlON7z/dW
+	 sRKkHFboCCj2TImnryNd2LsQ+GrzwtPWIP0XoYaEUEtLyGA5ZqYfL1YTxmfNZomwMJA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794899465;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=fYeKCFr17a4V/OB8ghJ5oXVnr7NbQWC0hZeUiNcoBuo=;
+	b=KKfF0EjJRMBbFOonIjNWhQyNVGucK0w28IMGuYXSIsAdSmH4oX4Ys13fqXG8vr+wmdXS
+	 SyRjBf3BR+KxuRB9LGMu7Kt0TQqVlBhiiu2PAkol7/E1+pge0AKyqKciHPO6esaNYhDaw
+	 2fh1fKDE5tJEa/WK7Q/SI4I6LurKy4JDsnInPpwgcVPLZEEnE1DpbLBJAtp/yDBcm/fkZ
+	 V7E6XA5ZakSaTDTAYZ+yelhATWBepJqSlZF/PVByXw0o2m9qRfPaWX3S9I4SJsTTFGKk6
+	 NuIqJeF5m6uQqcLsVGdM4DgUDqOLGfw6TOs34ULQ41yJjbmASILchFpTs8SGUlHOzWQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IkeQpZWj;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F3E606A331;
+	Tue, 17 Nov 2026 07:11:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IkeQpZWj
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794899465;
+	b=o0hgQYerr4XC8xfKaBdOUxXMEZFVlGLimshs4WNqhOdZwZVWICPpKqQys/gpVTATDaYu
+	 KySdBm7MIDmfAcy34eoPuuPTC0lJcMmvdeSPu7Eavt96T7/XFRdv6EO3xEzAT6D7HacwM
+	 A+1tf5XdF7+S44nEVi33tl+HN3KGjdGAyrJTxQOLMLgDKElwX+ZgmkP7w7i9l2saklxeo
+	 GryBzQzO0kCcu3apD2rDova/JuitU4dYEF96EITyBrGJHZTUQ8xJ0eyvLs1FDLUr6Hni9
+	 AUsnwrdCCsRnZEE6TqtECt+f39FJf4Ei8YxrhM2LuAktQiTcT8AJB55b+rX/kHLTB+g==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794899465;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=fYeKCFr17a4V/OB8ghJ5oXVnr7NbQWC0hZeUiNcoBuo=;
+	b=1PzIpgxjX+ynhPSVC4mr8S/GtDSfwk03H2xdRIY1ByMD9mBAEbRMhhrZpVY0JyHIABy9
+	 3+AoSYwY+QPghuAjG1hoVyBH5GpDeAm+zZib7W91W5nnTnqA8XfFzDKqh0WifDyn+K5Pi
+	 MLfdnIQhzoxbSn47qDPxKojJkLfHxPjAqu1GTtrwOqJYPX3O1GVby/bqdW3xSDLsuZ1lr
+	 Sl8wwajkUlFNuE7iZ/g0SQXFnSFEHs6yoiJHxg82cY4UVYMjkmAsZeH3ZRgM+CBDMxmZL
+	 ZypwcQzhJ59wQBdwnLK1EO8T8cTSKJHvSVVg1EPZRpUgIBNjNUphtnkMKjOF8Dslu5Q==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE4D2606A32A
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 06:00:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EE4D2606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=gSW6fmSK
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2e9995ce866so40514295ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 16 Nov 2026 22:00:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794895204; x=1795500004; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=lkS32XPAkky3Y3UuvpRMfImoXnZGvPVVobvUu9A3i6o=;
-        b=gSW6fmSKs8az8HHSrcImPPlh8twk0+ePtltPv5E9/XKh6yQ60ea+87EWBeYgXYakDp
-         cl4pL0mAZ4S2Mw3OXFkqXlGJLzUamT3IaMxRfUGZB3IpAfIBF8B9LjRuhbp2bGLIV/P5
-         tJlGG6gKf02e95BnNtwnWabddrCmPJ1gEUNSBjaJpTKo4KKd1TsWge1CU7DdCmrOU6WP
-         fs257DMVTNXpHyWjQABQaMwvEK80XDuSLtwKdtl9IDYJfWkMzB6YmLWv3WZf0+sFeGii
-         J8OR3b0nJY8CVpaVT/VcqhU8kYjYG9XkG7F0p26X/SmQwehaMnIrlqzIndR3GPu3xqJU
-         pSdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794895204; x=1795500004;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=lkS32XPAkky3Y3UuvpRMfImoXnZGvPVVobvUu9A3i6o=;
-        b=Tl9oKtvzTxzXY+med80l9giCduFRRi4dvt7bvl2t55M3nOj1RqTPwtQz48CAb0eKCU
-         w6pLWlzcHVDBW+iDC/nlblBYv6lb07y6WQQ0zPv3xPb6JmoAJcMj2+XzFhMPvjrxkWs/
-         wV1YEIcl3ZwA7F4OinuEEs7P4bra+Y4TvExSUW4rTTN3VeI+1wC7Rc6G6/r4ebXbuMlM
-         IyIjtIipmOT0MIdymAuJBEuQj42MQk1altedANLK6BDofXOqEbVk40RCTjuuMVHnMubt
-         Zuy8d8F4ylnGN/Z/acNIK06+1wyyXoHoOyo1M8Yw/LTgUEpQZWWvAoj4Py39q6qBRL92
-         cVPg==
-X-Forwarded-Encrypted: i=1; AL+hErEFvqqEDs3yZn6GhTDtbEQrO4+Zu3jf3U7Z/s7AaG7NWXvjQMcCNY+LWixFsNYJgE6jYwJM7Di18t0=@vger.kernel.org
-X-Gm-Message-State: APuU4Z96EaX3d0uNhU1bbOeMpcAXFhUMTPQJRMtYlBpmjTzcGPSTxowL
-	pKXk+/rIprK+rNSMLYmmuotO8mmbvTZRzmQQQcAK4O9zcA3oqZ/oEINNeW4FDA==
-X-Gm-Gg: AZFdTZfwFZ2btHtyJVo1Ecb9B6GrdjY5its+kjkYkBdpt7mhxEVBcsKUCWw6Cvi/2LN
-	NN+Q+fr4qlcAyFyN5E17ydL2ooEFBg2FVI0m2kwJIeMw74cL9tsLJe9I0PqwSool2A3gsBWsuCX
-	97leB1llCRIKbp/uAAfLICUzJRTolKFH0xCUwwxW5b9wYT5P53xoT52n9MpLHBb9kXlXdmEVGaJ
-	h5gyC9Cl8WE7i5UrhThYIfKy3/6hPPKfwxQL/6o33xr2/gnlE6X+lYLvx1zUcLHOt/z66JHx0TF
-	v1vq5scPfG2w42u7oU48t6d9QQaMKYZ4v2E/nreAmu9qWQhy8GHmYcQVSdHcf4FXTu2V+l7Vtt+
-	Sa/ibi64lZE8iOr0uBRP5ZNhHz4S67x80gjAsXgS9mLYctLv7mEzs3U9wYhbhlhHFWLat1leAYC
-	f3Jfr6bBgkAadCCFk/S/C2jtPcEXqVKSIPcj3imzKrdu8wqV/nNA1jpVbiCgRtd0G9nYWlvhLuJ
-	maMHPo0Os9DGr7dizlX2XGAcRUwoOvRqzjTv06+AG6bg4hPZmtWerAyrNuNUPTdHtsu2/akqlZD
-	bG4LFb/ch41KyfrS3jdRaajBxrCqQFNKoujICFINNrYNIAtMcq4Z+0VxMdrSr4rrt/qh
-X-Received: by 2002:a17:903:1846:b0:2d9:599e:df95 with SMTP id d9443c01a7336-2ee0d6600acmr126536685ad.3.1794895204164;
-        Mon, 16 Nov 2026 22:00:04 -0800 (PST)
-Received: from [127.0.1.1] (61-220-246-151.hinet-ip.hinet.net. [61.220.246.151])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2efd7a173fasm8264435ad.14.2026.11.16.22.00.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 22:00:03 -0800 (PST)
-From: Kyle Hsieh <kylehsieh1995@gmail.com>
-Date: Tue, 17 Nov 2026 14:04:38 +0800
-Subject: [PATCH v2] dt-bindings: iio: adc: lltc,ltc2497: Make vref-supply
- optional for LTC2305/LTC2309
+	by smtp.kernel.org (Postfix) with ESMTPS id 3BD7F1F000C7;
+	Tue, 17 Nov 2026 07:11:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794899464;
+	bh=fYeKCFr17a4V/OB8ghJ5oXVnr7NbQWC0hZeUiNcoBuo=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=IkeQpZWjFi4LA8K+w7tZ4KUwhGcpj4v6711Z5mG/o+tZ+XcbcHOOOj1ANS+FVtELz
+	 Fotkl4cjuc8uod4LC+pplCIJeAvL9kENee8/jre/j1ekcg06/naMhCL/N/FF5N43lK
+	 +lkes2ZUMPUN++7+YcreL2qMLy4UkiFHx0TvGP2tqw/3H9fs9Wlh22s1Gc3aZRT3ge
+	 jlsBMK7jxNI5DQ6xcRoZsfnU7M425jwifqc2xgL/gbkHuWWDsr/cvaSHwvaqMK1//9
+	 TMB9EivZcKu9Xe+/nV8Fb5RAdma0o+DkSJ3zkOiqee6skvbx4udafZ1PtYG6RhjlsI
+	 YlHMC4i14zkXA==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id B7FDB4A712;
+	Tue, 17 Nov 2026 07:11:03 +0000 (UTC)
+From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Date: Tue, 17 Nov 2026 07:11:01 +0000
+Subject: [PATCH v2 1/2] iio: light: adux1020: use guard() to simplify lock
+ handling
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,106 +84,279 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261117-ltc2497-vref-optional-v2-1-62e9d1ac7400@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAHXu+2oC/4WNSw6DIBCGr2Jm3Wl4ibGr3qNxoQg6CYoBQ9oY7
- 17qBbr8/ucByUayCR7VAdFmShTWAuJWgZn7dbJIY2EQTGjOOUO/G6HaBnO0DsO2l3zvUQ1OqlE
- PUjIFpbsVl97X7qsrPFPaQ/xcN5n/1H+LmSNHWZtW142ThrnntPTk7yYs0J3n+QVtfMUyugAAA
- A==
-X-Change-ID: 20261110-ltc2497-vref-optional-4bf34d6b3304
+Message-Id: <20261117-adux1020-guard-v2-1-89707fa070c9@gmail.com>
+References: <20261117-adux1020-guard-v2-0-89707fa070c9@gmail.com>
+In-Reply-To: <20261117-adux1020-guard-v2-0-89707fa070c9@gmail.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>, linux@analog.com, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- Kyle Hsieh <kylehsieh1995@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2317;
- i=kylehsieh1995@gmail.com; h=from:subject:message-id;
- bh=Wrcor3O6J2UjW7XHhJfIbkXTOnZk7CENzM1MR5U2g1M=;
- b=owEBbQGS/pANAwAKAaWDQrcJVsSBAcsmYgBq++54Vs8iILbLbQM6li8beTDhF8wDz/11oiHts
- 1xfJ8LNU+mJATMEAAEKAB0WIQTJHsaNZOdY+THGqJelg0K3CVbEgQUCavvueAAKCRClg0K3CVbE
- gSrAB/99AyqPTsJgRsc3MtdvJ16FxWGikkgo8KkE4A7okDvCiAnQd2QYvvw4J7TVVqHtbJLqRPq
- oTkV0QXJ45MYQ+CzjmvDORGPvbuKg9D1xLnft35neBjUgMFR3cl9u2snKFocW3vAOsKADfKugYW
- to625O7j7Sz+Ppyobz7JMo9iTSkZRUeV3hQqoehJIDAiitr70x9HcwL1eerU5sFPoWdQ60JH2Z6
- hxKY1+TtSDb2m0Mks9yaNn50puIfVloc+0FE3k+2IRTiDOwYfeq0wkezQbDFYHjywQSUKt0y3yF
- nYv/aZP5LiYhgI984COjA0ZHdb06CmJG+quqdG01VKvdanMt
-X-Developer-Key: i=kylehsieh1995@gmail.com; a=openpgp;
- fpr=C91EC68D64E758F931C6A897A58342B70956C481
+ Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>, 
+ Joshua Crofts <crofts@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794899463; l=6315;
+ i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
+ bh=DMtHrOaeoSbk69l93gv+SBOwCJ/sq3BfFEE9UbzKpVM=;
+ b=H8G2eQgqXeJh0DzOySO8+SPstBO/OaWHnTSAFK9hK3Rjp8nP9Axo8xs94rbPOFsaTkd/n92l0
+ ICU36QoCfZ2AqvnvsKbcFG1kN8zi8pZ0oXKUlitRVAFfqL7OxobQ8pX
+X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
+ pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
+X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
+ with auth_id=1160
+X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-The LTC2305 and LTC2309 have an internal 4.096V reference, so their REF
-pin does not need to be driven by an external supply. The LTC2493,
-LTC2497 and LTC2499 have no internal reference and require one.
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-Only require vref-supply for the LTC2493, LTC2497 and LTC2499, so boards
-using the internal reference can be described without a dummy regulator.
+Use guard(mutex) in adux1020_read_raw(), adux1020_write_raw() and
+adux1020_write_event_config() so the lock is released automatically on
+return. This allows returning directly instead of jumping to a common
+unlock label, and lets adux1020_write_raw() drop its ret variable.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+No functional change intended.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 ---
-The ltc2309 driver already uses the internal reference when vref-supply
-is absent. This is needed by the Meta Ventura2 BMC devicetree, which
-describes LTC2305 ADCs that use their internal reference:
-https://lore.kernel.org/all/20261106-ventura2-dts-update-v1-0-b085ece9bf57@gmail.com/
----
-Changes in v2:
-- Also require vref-supply for the LTC2493, which has no internal
-  reference.
-- Add blank lines around vref-supply.
-- Link to v1: https://lore.kernel.org/r/20261110-ltc2497-vref-optional-v1-1-35c9657f3c0f@gmail.com
----
- .../devicetree/bindings/iio/adc/lltc,ltc2497.yaml   | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/iio/light/adux1020.c | 104 ++++++++++++++++---------------------------
+ 1 file changed, 39 insertions(+), 65 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-index 4df5aadd1e1d..93cc163b73c2 100644
---- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
-@@ -47,14 +47,31 @@ properties:
-       - lltc,ltc2499
+diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
+index 6b32c5be4753..b595faf4abc5 100644
+--- a/drivers/iio/light/adux1020.c
++++ b/drivers/iio/light/adux1020.c
+@@ -9,6 +9,7 @@
+  */
  
-   reg: true
--  vref-supply: true
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+@@ -362,10 +363,10 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct adux1020_data *data = iio_priv(indio_dev);
+ 	u16 buf[3];
+-	int ret = -EINVAL;
+ 	unsigned int regval;
++	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -373,69 +374,56 @@ static int adux1020_read_raw(struct iio_dev *indio_dev,
+ 		case IIO_PROXIMITY:
+ 			ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			ret = adux1020_measure(data, ADUX1020_MODE_PROX_I, buf);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			*val = buf[0];
+-			ret = IIO_VAL_INT;
+-			break;
++			return IIO_VAL_INT;
+ 		default:
+-			break;
++			return -EINVAL;
+ 		}
+-		break;
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+ 		case IIO_CURRENT:
+ 			ret = regmap_read(data->regmap,
+ 					  ADUX1020_REG_LED_CURRENT, &regval);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			regval = regval & ADUX1020_LED_CURRENT_MASK;
+ 
+ 			*val = adux1020_led_currents[regval][0];
+ 			*val2 = adux1020_led_currents[regval][1];
+ 
+-			ret = IIO_VAL_INT_PLUS_MICRO;
+-			break;
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+-			break;
++			return -EINVAL;
+ 		}
+-		break;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		switch (chan->type) {
+ 		case IIO_PROXIMITY:
+ 			ret = regmap_read(data->regmap, ADUX1020_REG_FREQUENCY,
+ 					  &regval);
+ 			if (ret < 0)
+-				goto fail;
++				return ret;
+ 
+ 			regval = FIELD_GET(ADUX1020_PROX_FREQ_MASK, regval);
+-			if (regval >= ARRAY_SIZE(adux1020_rates)) {
+-				ret = -EINVAL;
+-				goto fail;
+-			}
++			if (regval >= ARRAY_SIZE(adux1020_rates))
++				return -EINVAL;
+ 
+ 			*val = adux1020_rates[regval][0];
+ 			*val2 = adux1020_rates[regval][1];
+ 
+-			ret = IIO_VAL_INT_PLUS_MICRO;
+-			break;
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+-			break;
++			return -EINVAL;
+ 		}
+-		break;
+ 	default:
+-		break;
++		return -EINVAL;
+ 	}
+-
+-fail:
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
+ };
+ 
+ static inline int adux1020_find_index(const int array[][2], int count, int val,
+@@ -455,9 +443,9 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
+ 			      int val, int val2, long mask)
+ {
+ 	struct adux1020_data *data = iio_priv(indio_dev);
+-	int i, ret = -EINVAL;
++	int i;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+@@ -465,15 +453,13 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
+ 			i = adux1020_find_index(adux1020_rates,
+ 						ARRAY_SIZE(adux1020_rates),
+ 						val, val2);
+-			if (i < 0) {
+-				ret = i;
+-				goto fail;
+-			}
+-
+-			ret = regmap_update_bits(data->regmap,
+-						 ADUX1020_REG_FREQUENCY,
+-						 ADUX1020_PROX_FREQ_MASK,
+-						 ADUX1020_PROX_FREQ(i));
++			if (i < 0)
++				return i;
 +
-+  vref-supply:
-+    description:
-+      Reference voltage supply. The LTC2305 and LTC2309 have an internal
-+      4.096V reference which is used when this property is absent.
++			return regmap_update_bits(data->regmap,
++						  ADUX1020_REG_FREQUENCY,
++						  ADUX1020_PROX_FREQ_MASK,
++						  ADUX1020_PROX_FREQ(i));
+ 		}
+ 		break;
+ 	case IIO_CHAN_INFO_PROCESSED:
+@@ -481,24 +467,19 @@ static int adux1020_write_raw(struct iio_dev *indio_dev,
+ 			i = adux1020_find_index(adux1020_led_currents,
+ 					ARRAY_SIZE(adux1020_led_currents),
+ 					val, val2);
+-			if (i < 0) {
+-				ret = i;
+-				goto fail;
+-			}
+-
+-			ret = regmap_update_bits(data->regmap,
+-						 ADUX1020_REG_LED_CURRENT,
+-						 ADUX1020_LED_CURRENT_MASK, i);
++			if (i < 0)
++				return i;
 +
-   "#io-channel-cells":
-     const: 1
++			return regmap_update_bits(data->regmap,
++						  ADUX1020_REG_LED_CURRENT,
++						  ADUX1020_LED_CURRENT_MASK, i);
+ 		}
+ 		break;
+ 	default:
+ 		break;
+ 	}
  
- required:
-   - compatible
-   - reg
--  - vref-supply
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - lltc,ltc2493
-+              - lltc,ltc2497
-+              - lltc,ltc2499
-+    then:
-+      required:
-+        - vref-supply
+-fail:
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
++	return -EINVAL;
+ }
  
- additionalProperties: false
+ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+@@ -510,16 +491,16 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+ 	struct adux1020_data *data = iio_priv(indio_dev);
+ 	int ret, mask;
  
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_ENABLE,
+ 			   ADUX1020_INT_ENABLE);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
+ 
+ 	ret = regmap_write(data->regmap, ADUX1020_REG_INT_POLARITY, 0);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
+ 
+ 	switch (chan->type) {
+ 	case IIO_PROXIMITY:
+@@ -535,7 +516,7 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+ 			ret = regmap_set_bits(data->regmap,
+ 					      ADUX1020_REG_INT_MASK, mask);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 
+ 		/*
+ 		 * Trigger proximity interrupt when the intensity is above
+@@ -544,20 +525,13 @@ static int adux1020_write_event_config(struct iio_dev *indio_dev,
+ 		ret = regmap_set_bits(data->regmap, ADUX1020_REG_PROX_TYPE,
+ 				      ADUX1020_PROX_TYPE);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 
+ 		/* Set proximity mode */
+-		ret = adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+-		break;
++		return adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+ 	default:
+-		ret = -EINVAL;
+-		break;
++		return -EINVAL;
+ 	}
+-
+-fail:
+-	mutex_unlock(&data->lock);
+-
+-	return ret;
+ }
+ 
+ static int adux1020_read_event_config(struct iio_dev *indio_dev,
 
----
-base-commit: 1390ca4953a7400ca932cb49635f02c727f885a6
-change-id: 20261110-ltc2497-vref-optional-4bf34d6b3304
-
-Best regards,
 -- 
-Kyle Hsieh <kylehsieh1995@gmail.com>
+2.56.0
+
 
