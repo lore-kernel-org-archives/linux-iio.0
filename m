@@ -1,101 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794900053;
-	b=W0Gu+1BouAo9yI8mslpBwi3laOg7rKi/htSkcTWlnNAgFj+eSqt8zgwRZ379/ZlluzXd
-	 3qym7jnjkJPHKCAWW06mtCNReDLMoWolnld9ynB9AFs9cGFS+vtxfZ2Gfi4p/qepGezoB
-	 UxF2ytblNHjm5vDeNZBMTwXLGsWDs2s8Qk/UJJqZnHTqCQz38AlO4SSzc9kUH4MvSdvgv
-	 sn3vu/BvDuPINocZup/qiOiPHF7khynvTCLN90L1a6XeHf2WKbFHr972Pylr5ZuKHNEii
-	 ql3+VF8+RtitYPwP1ZqnPMja6KRjcK4kRhN5KrTUhiV55ENIt7fSjno4LY+JmRvWQMg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794900053;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=r78d25eq31clnnMyTRJuEPeA5cn2PAIMfFhC3qOaX7Q=;
-	b=QABH8RdpeBt3geRrXpyJAlNc0D5IRLKiFsa+/sKy4a9FkShmKzo2qKbiMl5re5/H3W3T
-	 c34B4mhBFjyEwpi8ru6A157j3M+9fOzOsRUm9r+DYTVbZpgKO3tErQcUnhv0fh6WstLwX
-	 NpFa3/Q3bi4WVRlOm8IHr4slq0Ynhc3N5+s7z7zueuCdsHyLa7AFF4i63xCoEMJKCMvV1
-	 zypLn/l7jLPQKLoagWYrODjdHAqeWP/PufztQBgT6l+l4UKZHAhyCpA01eiFnzPESfFxH
-	 k53f52Dw/lwGxwmhkCI6g1g1py8aRK7O/Jjzd6QGZSsoTx0wetLzG/HVXQf3g1RlEGA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lWL0RSuG;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794902119;
+	b=oigHZQXTty97IaO2gsWsUhZseygwh4MQi7wOIDvycnv2cjBhOC7NmPiCB6iP4RSAWr2T
+	 c4K2t0n69Pc9oWE3TSfXTfm0PNprXl7eu7U57sf8JBbGD2Wolj+TdOrqFnME80G3VOPuL
+	 TzMMdAPiX2D7hdoic1A3lyZ8rObfAALZyPTysjJmWFwDMY84KAIkPNwKGNMjJsOrbckIm
+	 qox5N/0m+qCwiZXijvHgNbW6o5zdnapMNqKGWIo37+AVt1Rx6a04gR/3DxjfA3X7dQ4Ix
+	 X/D2yKANo9Pxc/KJdtL2oL1seIbVpRgMaI8z0h3YQePJd0uFhbtmn9JqHEYQqKivyAQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794902119;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=gQ5jNNaD4mkGwzcMPPwN2+p4gr50KSGDaJm/fNLGsrg=;
+	b=qAcs1b5k2JoRJDzmyG2lJzw0ZLHReJ28Z3UK2U7h/snIil9f0hMgJe+tuQfTi3zbgW6+
+	 qLHqQxfa+9D8vs/oPI/GTQ14OKOPBOw3NzD5RFRTGlY3q5gCgRfgs6EzrGF/DQMvbQv+4
+	 yCtHHutBvQwlImUTUdKL74tGEU6H5tvVUcKp8nqWZ/BlWDziNhQi9wLgcC+k9g501+/jE
+	 cNsCqIMtSx/ilPBmr3ehGH8yuOewOJ/W+okA4Y+z62S/mlxnJG01IDGQBa+sndlZM4ej+
+	 lg3XhzWmYmRCdUz2c7SUUul2bJDwibDH1d8Lelw424iaq8KHvjShX2SGpCEenFEaJMA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IQoQ2pY2;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CC0606A323;
-	Tue, 17 Nov 2026 07:20:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C4CC0606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4144606A31C;
+	Tue, 17 Nov 2026 07:55:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lWL0RSuG
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794900053; x=1826436053;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RzqdnLYtnO8s7wQRK1Si3iRKel1Lg63Gwzwt8mNGBSk=;
-  b=lWL0RSuGcI1hLaIxaMQ2CF/mR7ky93Hy/uOejQysOpDqgIcm/IeYG261
-   /UQee29vIo0jwVoauWDwtE8lg5sOo8LOblfxizcUHMbonixjfPog5gwdx
-   7cNosxN7ffzN155zfUJnJ8rMmiSBneY9kv6RLyF+HACgOvOEl0qXXqM0f
-   FMi2KlJi6hUsJyjYkpNa+WsxjQjUWyaR+khomPWVEqxcyhw0uey5oJ72M
-   /FBqJwtil/NqJ2C/noIVfWtwLRGOA9KGp8/mivPXW9nqnQfJvbxXRVjKo
-   fFRvlD95aaEcz6PSFXviX40oc1umUo4hIeWNID/TRU8LDMVg7Ys9F+q7L
-   w==;
-X-CSE-ConnectionGUID: JdIpb/JqRwKoX46lGzsSog==
-X-CSE-MsgGUID: SRHAJAvaSSC8Inia7OrffA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3768780"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3768780"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 23:20:52 -0800
-X-CSE-ConnectionGUID: /FKFSvW7Rw2cAs0gbWxCkw==
-X-CSE-MsgGUID: og9Hz5kZREeueRJOXccMhQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="10159146"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 23:20:45 -0800
-Date: Tue, 17 Nov 2026 09:20:42 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
-	Martin Tuma <martin.tuma@digiteqautomotive.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	linux-media@vger.kernel.org, Gustavo Silva <gustavograzs@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Ramona Alexandra Nechita <ramona.nechita@analog.com>,
-	Tomislav Denis <tomislav.denis@avl.com>,
-	Jorge Marques <jorge.marques@analog.com>,
-	Petre Rodan <petre.rodan@subdimension.ro>,
-	Dan Robertson <dan@dlrobertson.com>,
-	Jianping Shen <Jianping.Shen@de.bosch.com>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Maxwell Doose <maxwell@maxwelld.cc>,
-	Tomasz Duszynski <tduszyns@gmail.com>,
-	Esben Haabendal <esben@geanix.com>,
-	Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Vasileios Amoiridis <vassilisamir@gmail.com>,
-	Abhash Jha <abhashkumarjha123@gmail.com>,
-	Puranjay Mohan <puranjay@kernel.org>,
-	Nishant Malpani <nish.malpani25@gmail.com>,
-	Oleksij Rempel <o.rempel@pengutronix.de>,
-	Linus Walleij <linusw@kernel.org>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Subject: Re: [PATCH 00/35] iio: closing default trigger handling leaks
-Message-ID: <avwASv6SGjvLG0jr@ashevche-desk.local>
-References: <20261116014823.3132576-1-jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IQoQ2pY2
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794902118;
+	b=27NwjAcNMzKTE5ZvApF7ATZANpaFQbch29bjI6rwRXxjJbyO+gjyf/bgFMFmSLZ9tCkW
+	 V7IPxGfgtI9zqd9rmjGIGFG3ur49Etzt/JQXxlpNJl4/k+Ts4EyqWLQwCkg9ogh2ybpId
+	 7rYgVy2aVgwX5AHXIieBD8PAq7fXunU6dyq3yHUq+6DlSTXk8EIOg//zcNpOpJ13ZAlJ7
+	 qsqjIM4bYwtrzwsFbNV+udESSsSaG6l9pPtBABlxuZfs0WDhu9pNxsfYbvH7/VyEda+w/
+	 IimHzV1EMvTWJD3jm4wFTHON4pz12sqcnso9yojK/p4NpspCtN40kTVTucTgGFjcLzA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794902118;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=gQ5jNNaD4mkGwzcMPPwN2+p4gr50KSGDaJm/fNLGsrg=;
+	b=de/rVjRKJRl3AfwEDk4l+XOjObA1t3o4wWfSifKC9pr5N6D7/iLEPOrrOE9xhswgwZyz
+	 AxL3OEmIrYD5sLiUecQwpgnDieFWS2bTftkvZ6J7+mufxN/yokyui/mNWA31yIOKzNkCL
+	 pKZM648rasrEgvjXx3z6ZJz5NVWAIOvkHjisj/Z6NMJKy1TtvTfl/pYZONTZvfBEJbwGc
+	 c2baqTLKNhRzxQdHocybLbqDQouM+HFRY1TfMl9E0jTebkly1DCrLByXxim+dJJJ6HXne
+	 RqKqf6L++pU7gSGgHXcR84ihd2UKMb1KJkD4brpE/WDV0/D7tYgGMyX6ycnDBawLR+Q==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id DF7411F000C4;
+	Tue, 17 Nov 2026 07:55:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794902118;
+	bh=gQ5jNNaD4mkGwzcMPPwN2+p4gr50KSGDaJm/fNLGsrg=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=IQoQ2pY2jZ5bHClm4/P5zec+NiE+klPoklZKAQaAS7x1Q+HTZFarMMqq9b1JlzsVa
+	 9BCNXEY5cmEaHGNG5bHBra6ELmZLtU8fl4i7TxwNgpmHK7YrDz2IB+nEVYa7FbFVx6
+	 B9yE0gJMyJ0mqKr09u5JjqMjDnmImt+zvAPsIllE5r5wZJmqUgQ43HFrPQJ5SM0kjw
+	 C2y2WC91xxVlNIi7MKiA29aId7jkeJsyC42WR2C/j7t3ZPS24F8O1NfOs9ial2m9lP
+	 plm3myngDbQ3ilai+NzNWH2DUYHNTto7EmXJi55ajFAnu4OoGYske8e02WOXED+gFH
+	 zpcu/833v9H/Q==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 3FCB94A72D;
+	Tue, 17 Nov 2026 07:55:17 +0000 (UTC)
+From: Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Date: Tue, 17 Nov 2026 07:55:14 +0000
+Subject: [PATCH RFC] regmap: kunit: add tests for values wider than
+ val_bits
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,94 +83,186 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261117-regmap-kunit-val-bits-v1-1-a1cd02063217@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yWMQQ6CMBAAv0L27CYtRTBeTXiAV8OhxQVXpZBuI
+ SaEv1vlOJPMrCAUmATO2QqBFhYefQJ9yKB9WN8T8j0x5CovtdYVBuoHO+Fr9hxxsW90HAXLojJ
+ GHUmdjIPUToE6/vy/N7jWF2h2KbN7Uht/R9i2L9Ah5bl+AAAA
+X-Change-ID: 20261117-regmap-kunit-val-bits-6473305e083b
+To: Mark Brown <broonie@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, 
+ Johan Hovold <johan@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, 
+ Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, driver-core@lists.linux.dev, 
+ Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794902116; l=5896;
+ i=raffaele.tranfaglia@gmail.com; s=20261011; h=from:subject:message-id;
+ bh=sa63Aup+aU28axygQ8eJYjxlMYwC6XzaZSpCzUHWHO8=;
+ b=K6oYsRALgdvBPyAAmXvIrsv6TEUhkPOLaUS1pYxsmI2JTDFmXQcH+tBpdSPYps4XXFNnwp7zC
+ 6oyXoSXtRRQBNeVRJR/dVqelTiahE1fkbHr5cNPcAnhkpadJUO3VgV1
+X-Developer-Key: i=raffaele.tranfaglia@gmail.com; a=ed25519;
+ pk=mweuSGNM6vguCTdqa+aiHwMXdgk70suj2wolzCp6XGM=
+X-Endpoint-Received: by B4 Relay for raffaele.tranfaglia@gmail.com/20261011
+ with auth_id=1160
+X-Original-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Reply-To: raffaele.tranfaglia@gmail.com
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 16, 2026 at 01:47:48AM +0000, Jonathan Cameron wrote:
-> 
-> Note this is compile tested only!  I definitely want a few people
-> to test that I didn't break everything.
-> 
-> This is the first part of what I think is a long term solution to the
-> currently really fragile ordering constraints around setting default
-> triggers. Today these are set by iio_dev->trig = iio_trigger_get(trig).
-> The reference is only released on the iio_dev.release callback and
-> only if we have set the mode to include one that means there might be
-> a trigger set. That mode set only occurs when a buffer is registered.
-> Thus trigger release only works if we have already registered a buffer.
-> 
-> One solution would be to reorder so that the default trigger is always
-> set after the buffer registration (we have had various recent proposed
-> patches to do that for individual drivers) but that is non obvious and
-> fragile.
-> 
-> The solution here is easier to reason about. Decouple the setting
-> of the default trigger from the acquisition of a reference. Thus
-> we can acquire the reference in iio_device_register() when we know
-> all the conditions for it's release have been achieved.
-> So that's all we do in this part 1 series.
-> 
-> Part 2 will address immutable triggers and those that are effectively
-> immutable but predate that logic. That is those that set a one to one
-> relationship between device and trigger.  That change is rather less
-> mechanical than this one and 35 patches is really a bit big anyway
-> even if most of them are small!
-> 
-> Part 3 and beyond will move to a situation where the iio_dev->trig
-> will become opaque. That should stop anyone manipulating that directly.
-> I have a few related cunning plans to test out before we get to that,
-> not because the particular challenge is hard, but because they will
-> trample on the same code.
+From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
-> Jonathan Cameron (35):
->   iio: core: add default_trigger and take reference in
->     iio_device_register()
+Add two test cases writing 0xffffff0f with regmap_write() to a regmap
+with val_bits = 16:
 
-I have reviewed the first patch and briefly looked at the rest which seems
-like a semi-automatic translation in most cases.
+- write_wider_than_val_bits uses the RAM regmap, a bus that only
+  provides reg_write()/reg_read();
+- raw_write_wider_than_val_bits uses the raw RAM regmap, which goes
+  through the value formatters.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Both expect that only the low 16 bits reach the bus and can be read
+back. The raw test passes, since regmap_format_16_*() only store 16
+bits. The RAM test currently fails: _regmap_bus_reg_write() hands the
+value to bus->reg_write() unmodified, so the bus sees 0xffffff0f. With
+the rbtree cache the value is in addition truncated in the cache only,
+so the cache and the bus disagree.
 
->   media: pci: mgb4: use IIO default_trigger
->   iio: chemical: ens160: use default_trigger
->   iio: adc: ad4130: use default_trigger
->   iio: adc: ad4170-4: use default_trigger
->   iio: adc: ad7768-1: use default_trigger
->   iio: adc: ad7779: use default_trigger
->   iio: adc: ti-ads131e08: use default_trigger
->   iio: addac: ad74115: use default_trigger
->   iio: addac: ad74413r: use default_trigger
->   iio: temperature: tmp006: use default_trigger
->   iio: adc: ad4062: use default_trigger
->   iio: accel: bma220: use default_trigger
->   iio: accel: bma400: use default_trigger
->   iio: imu: smi330: use default_trigger
->   iio: light: acpi-als: use default_trigger
->   iio: chemical: scd30: use default_trigger
->   iio: accel: bma180: use default_trigger
->   iio: accel: kxcjk-1013: use default_trigger
->   iio: accel: mma8452: use default_trigger
->   iio: chemical: ccs811: use default_trigger
->   iio: pressure: mpl3115: use default_trigger
->   iio: common: st_sensors: use default_trigger
->   iio: common: hid-sensors: use default_trigger
->   iio: pressure: bmp280: use default_trigger
->   iio: light: vl6180: use default_trigger
->   iio: gyro: itg3200: use default_trigger
->   iio: imu: bmi160: use default_trigger
->   iio: accel: adxl355: use default_trigger
->   iio: gyro: adxrs290: use default_trigger
->   iio: accel: adxl372: use default_trigger
->   iio: light: si1145: use default_trigger
->   iio: adc: ti-tsc2046: use default_trigger
->   iio: accel: mxc4005: use default_trigger
->   iio: gyro: mpu3050: use default_trigger
+Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+---
+regmap_write() takes an unsigned int, also for regmaps with
+val_bits < 32. What happens to the bits above val_bits currently
+depends on the bus and on the cache type:
 
--- 
-With Best Regards,
-Andy Shevchenko
+- buses with raw write() go through the value formatters, which
+  silently drop the upper bits;
+- buses with only reg_write() get the value unmodified. regmap-i2c's
+  SMBus backends and regmap-fsi then return -EINVAL, others (like
+  regmap-ram here) take the full value;
+- with a reg_write() bus and the rbtree cache, the cache stores the
+  truncated value while the bus got the full one.
+
+This was found in the adux1020 IIO driver, which writes ~u16 (promoted
+to int) to a 16-bit register. It works on I2C adapters and fails with
+-EINVAL on SMBus-only ones [1]. I am raising it here as other drivers
+can hit the same thing.
+
+The tests in this patch expect masking to val_bits on both kinds of
+buses, so the reg_write one fails today. This is only to show the
+difference: should regmap_write() mask the value to val_bits for
+reg_write() buses, or should it reject such values consistently for all
+buses? I can send a patch for whichever is preferred and adjust the
+tests accordingly.
+
+I prepared this patch with the help of an AI coding assistant, and
+reviewed and tested it myself.
+
+[1] https://lore.kernel.org/linux-iio/20261109-adux1020-measure-fixes-v1-1-fe1ba63f28bc@gmail.com/
+---
+ drivers/base/regmap/regmap-kunit.c | 62 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+
+diff --git a/drivers/base/regmap/regmap-kunit.c b/drivers/base/regmap/regmap-kunit.c
+index c78772b660d6..ed51a98efeb0 100644
+--- a/drivers/base/regmap/regmap-kunit.c
++++ b/drivers/base/regmap/regmap-kunit.c
+@@ -319,6 +319,33 @@ static void basic_read_write(struct kunit *test)
+ 	KUNIT_EXPECT_EQ(test, config.cache_type == REGCACHE_NONE, data->read[0]);
+ }
+ 
++static void write_wider_than_val_bits(struct kunit *test)
++{
++	const struct regmap_test_param *param = test->param_value;
++	struct regmap *map;
++	struct regmap_config config;
++	struct regmap_ram_data *data;
++	unsigned int rval;
++
++	config = test_regmap_config;
++	config.val_bits = 16;
++
++	map = gen_regmap(test, &config, &data);
++	KUNIT_ASSERT_FALSE(test, IS_ERR(map));
++	if (IS_ERR(map))
++		return;
++
++	/* Write a value with bits set above val_bits */
++	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, param->from_reg, 0xffffff0f));
++
++	/* The bus should only have seen the low val_bits bits */
++	KUNIT_EXPECT_EQ(test, 0xff0f, data->vals[param->from_reg]);
++
++	/* And that is what we should read back */
++	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, param->from_reg, &rval));
++	KUNIT_EXPECT_EQ(test, 0xff0f, rval);
++}
++
+ static void bulk_write(struct kunit *test)
+ {
+ 	struct regmap *map;
+@@ -1984,6 +2011,39 @@ static void raw_write_read_single(struct kunit *test)
+ 	KUNIT_EXPECT_EQ(test, val, rval);
+ }
+ 
++static void raw_write_wider_than_val_bits(struct kunit *test)
++{
++	struct regmap *map;
++	struct regmap_config config;
++	struct regmap_ram_data *data;
++	u16 *hw_buf;
++	unsigned int rval;
++
++	config = raw_regmap_config;
++
++	map = gen_raw_regmap(test, &config, &data);
++	KUNIT_ASSERT_FALSE(test, IS_ERR(map));
++	if (IS_ERR(map))
++		return;
++
++	hw_buf = (u16 *)data->vals;
++
++	/* Write a value with bits set above val_bits */
++	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 0, 0xffffff0f));
++
++	/* The "hardware" should only have seen the low val_bits bits */
++	if (config.val_format_endian == REGMAP_ENDIAN_BIG)
++		KUNIT_EXPECT_EQ(test, 0xff0f,
++				be16_to_cpu((__force __be16)hw_buf[0]));
++	else
++		KUNIT_EXPECT_EQ(test, 0xff0f,
++				le16_to_cpu((__force __le16)hw_buf[0]));
++
++	/* And that is what we should read back */
++	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, 0, &rval));
++	KUNIT_EXPECT_EQ(test, 0xff0f, rval);
++}
++
+ static void raw_write(struct kunit *test)
+ {
+ 	struct regmap *map;
+@@ -2229,6 +2289,7 @@ static void raw_ranges(struct kunit *test)
+ 
+ static struct kunit_case regmap_test_cases[] = {
+ 	KUNIT_CASE_PARAM(basic_read_write, regcache_types_gen_params),
++	KUNIT_CASE_PARAM(write_wider_than_val_bits, regcache_types_gen_params),
+ 	KUNIT_CASE_PARAM(read_bypassed, real_cache_types_gen_params),
+ 	KUNIT_CASE_PARAM(read_bypassed_volatile, real_cache_types_gen_params),
+ 	KUNIT_CASE_PARAM(bulk_write, regcache_types_gen_params),
+@@ -2265,6 +2326,7 @@ static struct kunit_case regmap_test_cases[] = {
+ 	KUNIT_CASE_PARAM(raw_read_defaults_single, raw_test_types_gen_params),
+ 	KUNIT_CASE_PARAM(raw_read_defaults, raw_test_types_gen_params),
+ 	KUNIT_CASE_PARAM(raw_write_read_single, raw_test_types_gen_params),
++	KUNIT_CASE_PARAM(raw_write_wider_than_val_bits, raw_test_types_gen_params),
+ 	KUNIT_CASE_PARAM(raw_write, raw_test_types_gen_params),
+ 	KUNIT_CASE_PARAM(raw_noinc_write, raw_test_types_gen_params),
+ 	KUNIT_CASE_PARAM(raw_sync, raw_test_cache_types_gen_params),
+
+---
+base-commit: 666539eecdf4db623f5e3c3e55cf9f2dfad24aa4
+change-id: 20261117-regmap-kunit-val-bits-6473305e083b
+
+Best regards,
+--  
+Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
 
 
