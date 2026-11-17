@@ -1,77 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794903945;
-	b=h6eH9M3nFoswgdgZrpTSz4JoeEIWMIC9PcfGABh1xgUH/vp15I3r4UE3LTp2gZf/4l5j
-	 fXGyjkJJ8O9qs8De4rVpkInbRUSG9skMvgSGVOWADSUR5O5nypE8n/ZiMLmV2el9R4wmq
-	 qX7Kh36oJ9W8WN2QpC/6KUrWxXgI8F5dIa9u6KArNgvk7E3CW/heIxdxnd1TVGluXIdAR
-	 HcETI8rcZ8zaHw46YjhjfEIE0wwQyBmuNlz/PsVYiat3nly7uPeH5qQ8iXrcrtubtr043
-	 Bkz3tqdq2iEHhmkNyRxarQWlz2JryuJYAUHpXclHYSr0Ch9vHaOBc8t2GwnjOrwvybA==
+	t=1794904033;
+	b=oUtinbFmwjC/xKM4p88InPvxMbLRfiBs98AZ7AOb3VTYFhDgfTWcz1oVTawDbTKkx9jP
+	 o0rngSowoDMCwxGcO1oXOp/ML3JGTf3y6GKEecUvIJlSe5GnL5lrz4UGVTc/uGzfYcxXE
+	 AcC+lhD+E87nUVrT0ag1huL7oB9qHItUhfmvwEuOja/YToH6FdAXq8DERoyjD0FPSAwj9
+	 7G8NNuyftIiDYuudcAcRPbhzsX551Ac5jxWFRw0i7Rsrkp7PIHT+gnf0dbj03pt24YsVh
+	 tOAcGH3ZzGY/DLjvw/PB1ZQSsWx8Ub1LX29E6CgQU/XQb2O6mS5UaMQ8xcGytLhLOsQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794903945;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
-	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type;
-	bh=XGcxmoYfjlX92YHiOef8ZcG7B1FJUqi9YCrtia++R2Q=;
-	b=n/B/x2w14vE1k/VRBWTIOi+3/RHYwdwfP4zMV92C8BE8DHgvkBj4PeUeeh8uzM/mmpVd
-	 WcV3QpasXT7J90k7DsPTIKyusPB+gxVEKLYjP5STeZtBQ/dtz8oM0KXv/+ttGkBsnj/Ag
-	 jTfO/pH5+sjQiqKgO28ygdXJsKdAv2A9y7vhjS3dAbhg79GWvWxwFPB3MP3VOcEXbisqV
-	 UuZ69MKulxs0f6Hg4vqr4NX9tnMG63jvVOcUpeS6DH09rDhZG86day6Bypj2MswGK5xqR
-	 fi+4570EYdH3nEKW8nxkKZJVz7SOEoilu1kbhiklJ0iPa6VoCWgbvS9aaDyEY1ICvBA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794904033;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=Ed7iUS0U5CnvPsuOYpamrbAR5C5+fE6nd2B780j81oU=;
+	b=Bqniaa3CwGSGU0u7RNkoFaWMtZccdJyeUsf8BziCw9q7tsa+viYQ2pbZpxHIvNQorL52
+	 I8uF54meSMhiBo9ippPMygBFP5qfo495U1KZZWBDyJv1a0JxzeROPsPOHWNyBtWaKDKaB
+	 hs186NzD2hbRFSA+oQlcNsnR60kUfV5rHK60nDCBCL6ZdRqD+e7pcNhkpUL2e51tKfzjU
+	 IAVjWeq2GmnU4mbJv/v404icajFRf0aICJpeOIOKM52fPfsE/BWa5JcDdq0f2vqse+eMd
+	 n7GlqLVgesrmbrajIEt1vPuHDu33pp7XvUigFvTWRxpkLzoqPbapyPglJuj1/wcxPnA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=telaak.dev;
-	spf=pass smtp.mailfrom=gmail.com;
-	arc=none smtp.remote-ip=209.85.216.54
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=h+zXrz95;
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52E1C606A88B
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 08:25:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 52E1C606A88B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=telaak.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3b1535be329so3204043a91.3
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 00:25:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794903945; x=1795508745;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=XGcxmoYfjlX92YHiOef8ZcG7B1FJUqi9YCrtia++R2Q=;
-        b=nUAmHaPGKg9hzrtE/XF6Q9OBL+tqNeV+rGjzlHszrRP9GMe2/QO4L2wVIfNHzn8O0q
-         WEI/kWAqFKMidk4mEt3x6lBU6gdiS3NnLD8BczxdXJte0ZTsYe7dRI0maU8K38J4Jl9O
-         Stv/TLTVklRUGFKbc4jU9ENOvU8B59FakYF8aVAjMNrLMb+DFOee9cRYSd5eAQFx/+Hc
-         TqucbhLmnqC0v6VjdMDh6Q9ZlLW3YKCAAnOaZKQr4Ad67IbqafkUksYGJ3N2v/DIETmx
-         Iv9kCZlow4Nz4wrRFChv0Lf3QQ4coQEH+Zik3cyLRPxlD5bvZyz5rvpLJCcUeQ4MCwcm
-         sD0w==
-X-Forwarded-Encrypted: i=1; AL+hErGL24vqQ+L6vtleKI5m0/U5UHqOQynFMuXaDjnMucQYIZ4rY+CuV+ldSc/mNXBs2gOK9+7GSKqQktI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/mRZXMgTAJQuwgtgJZPD4zKtcVNyS6QBkJEKin6KAXzMh5MyS7
-	qk44OWApGvjkCTTuivKKfKHWgtzHvXT+Xd1XTPxGGoO24OZn4HBVEk4AOBRxUpQS
-X-Gm-Gg: AZFdTZdQTnDLD83G2ohdQir7Fxj4mEWP27RL5TLy11UJgHW6WTQKsBZ9nxcenttF+ca
-	kKmopNwotIDdR4p6o4exJ7onYwFLLMOW0MdZDhqYA031FiFTyR1P1Y+6Y7cRnjgGNh1GaupyE/C
-	UiBsCzaj+dRxUylUDskB9684N9DXRU6E7uvhuAr+m7QLhohEu48hvMX0Ljvrw+iC2uNy5DQ9mQB
-	Eendc47f6caqwQglNcuFoEJZ35LkzevGCgm3BOPCgUv1nHWsOcOkepQ94DrQRvyeypCgzR8FFBA
-	pSPjqm4LYcWZVW74rliwMnUnyf1XEPavwUWcnLErwbKyyEvtLrs1a1I0lz19UWBbiNDlXT0XO9l
-	MViGJ+6AF7PGgdA3FhCtpRB2xLGYoA/4Oqv8FFs3CXtArOlTbZHHz2VVhObInHUMZ9Joiy12eyJ
-	qjmuyesZ9ou99efEXN1nZpCVrB5YzfpiE6iQS0vPtQ31XqEZ+0L5rz5voAY9cYB/EPEgNcxIqcH
-	hwd9O64Zou4oeflcKAfyPL5/4uhZlJy9VY1jhfM7nu5ykTTWpz6OGfYOlyL7SNA3pX3/8hHuM2G
-	bAAfv/vyR121gsZwxR8qehp6ZsOrmFxkc3zNHv/f/1crXfBKrmfsNYYqKmBEISQzrN5AJl9xYKY
-	Dwdk7GZhHxnit2UQjzOYf/eglYuAD00njoNWj8nCSHZAd
-X-Received: by 2002:a17:90a:5d0e:b0:3b3:ab75:c94f with SMTP id 98e67ed59e1d1-3b3ab75cb5fmr1344207a91.31.1794903944637;
-        Tue, 17 Nov 2026 00:25:44 -0800 (PST)
-Received: from mail-dy1-f173.google.com (mail-dy1-f173.google.com. [74.125.82.173])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b3ac292c53sm2964358a91.7.2026.11.17.00.25.44
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Nov 2026 00:25:44 -0800 (PST)
-Received: by mail-dy1-f173.google.com with SMTP id 5a478bee46e88-380b40312e2so3045737eec.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 00:25:44 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErGDkijCvbxZdDML4/CI13/J9tN1snwQUkmhtwPWmGqMO0FGJLWANMENx6T2gp7mGkGjJgHLBtrMqe0=@vger.kernel.org
-X-Received: by 2002:a05:693c:811a:b0:36e:9763:9268 with SMTP id
- 5a478bee46e88-3796695b721mr12921261eec.26.1794903943562; Tue, 17 Nov 2026
- 00:25:43 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57830606A31C;
+	Tue, 17 Nov 2026 08:27:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 57830606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=h+zXrz95
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794904032; x=1826440032;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dMXD8ZD8ryDSCMyt3FwGmokXKv5XQH3eCmXH6aPFcug=;
+  b=h+zXrz95/JDaFfvlTL7OWpMdQoxG1nt0xmRHXWSnOmWtuUGn08aPCotl
+   l05Wi/XBf4zMYu8yYH9G0IE7dEO5akVbkk3CZps1VAx4u/M1cDilKvjpZ
+   m3aziIXNi2G/1gdHi2tm/+tzy+v86i6I0rmiuGvEejwx7MEb7UwQfBynd
+   HQLQR3sLq+/4YcIS2e05C6HqWkeGjw2mER/v5U56LW58xS1iKD4xpleAI
+   iuY4g0SU8FfvrA8y3Wm087QAXay9Df7UowHQ7CZVrX51M8CbputzWllRK
+   fXTAgzuFYHsjnEuh8X6bsFniR9pRlLdnoK0Yv1B/ZKecRGIObNcuhenIc
+   g==;
+X-CSE-ConnectionGUID: G9Eka+AAQeudJIrRTAz3yw==
+X-CSE-MsgGUID: cKmJJYiASriiFHovMqCxyg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3774903"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3774903"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 00:27:11 -0800
+X-CSE-ConnectionGUID: Jk00HV35TASG//wsHNBoJA==
+X-CSE-MsgGUID: xt88/7hFRkKbVtmnzqxi7A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="9853008"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 00:27:07 -0800
+Date: Tue, 17 Nov 2026 10:27:04 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joseph Telaak <joseph@telaak.dev>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Peter Rosin <peda@lysator.liu.se>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux@analog.com,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 5/5] iio: potentiometer: mcp4018: Add Analog Devices
+ AD5246
+Message-ID: <avwP2P1zTgFteODM@ashevche-desk.local>
+References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
+ <20261116-iio-ad5246-v1-5-ef6b7c06d4b0@telaak.dev>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -81,25 +89,141 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
- <20261116-iio-ad5246-v1-4-ef6b7c06d4b0@telaak.dev> <avwNWJnsOQaZSWi8@ashevche-desk.local>
-In-Reply-To: <avwNWJnsOQaZSWi8@ashevche-desk.local>
-From: Joseph Telaak <joseph@telaak.dev>
-Date: Tue, 17 Nov 2026 03:25:32 -0500
-X-Gmail-Original-Message-ID: <CAPY4CJ6jC4S6ktOBGZ5us4FgJEep7QeFOP3zs6NgZyV=kTJzrw@mail.gmail.com>
-X-Gm-Features: Aa3M54pGquVNkJTL3e8HLCz0b2WyudTbs-YMALBBjS-DCyuiUkBpa6nnBIohZys
-Message-ID: <CAPY4CJ6jC4S6ktOBGZ5us4FgJEep7QeFOP3zs6NgZyV=kTJzrw@mail.gmail.com>
-Subject: Re: [PATCH 4/5] iio: potentiometer: mcp4018: Turn on the vdd supply
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Peter Rosin <peda@lysator.liu.se>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261116-iio-ad5246-v1-5-ef6b7c06d4b0@telaak.dev>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 17, 2026 at 03:20, Andy Shevchenko wrote:
-> + dev_printk.h // dev_err*()
+On Mon, Nov 16, 2026 at 05:59:54PM -0500, Joseph Telaak wrote:
+> The AD5246 is a 128-position digital rheostat with the same I2C
+> interface as the MCP4017/18/19: a single data byte writes the 7-bit
+> wiper and a single-byte read returns it, with no command byte. Add its
+> four resistance options.
+> 
+> Its resistance is D/128 of the end-to-end value, where the MCP401x's is
+> D/127, so the scale divisor moves into the per-part config.
+> 
+> The misc ad525x_dpot driver also knows the AD5246, by I2C id only and
+> through its own sysfs files. It can't provide an IIO channel, which a
+> consumer such as dpot-dac needs. The AD5272 is likewise in both drivers.
+> 
+> Tested on an AD5246 at 0x2e that sets a fan's speed, described as
+> adi,ad5246-010 with a vdd-supply. It probes, out_resistance0_raw_available
+> reads [0 1 127] and out_resistance_scale reads 78.125000000. Raw writes
+> of 0, 64, 100 and 127 read back the same value, and 128 is rejected.
+> Writes through iio_write_channel_raw() from an in-kernel consumer of the
+> channel read back as well (127, 38, 0 and 76).
 
-Will add in v2.
+...
+
+>  config MCP4018
+> -	tristate "Microchip MCP4017/18/19 Digital Potentiometer driver"
+> +	tristate "Microchip MCP4017/18/19 and Analog Devices AD5246 Digital Potentiometer driver"
+
+Make it shorter and more generic, in this way you spread the same text to the
+top comment in the file
+
+- * Industrial I/O driver for Microchip digital potentiometers
++ * Industrial I/O driver for $SAME_TEXT_AS_PER_ABOVE
+
+and to MODULE_DESCRIPTION().
+
+For example,
+
+	tristate "Microchip MCP4018 and compatible Digital Potentiometer driver"
+
+ * Industrial I/O driver for Microchip MCP4018 and compatible Digital Potentiometer
+
+MODULE_DESCRIPTION("Microchip MCP4018 and compatible Digital Potentiometer driver").
+
+>  	depends on I2C
+>  	help
+>  	  Say yes here to build support for the Microchip
+> -	  MCP4017, MCP4018, MCP4019
+> -	  digital potentiometer chips.
+> +	  MCP4017, MCP4018, MCP4019 digital potentiometer chips
+> +	  and the Analog Devices AD5246 digital rheostat.
+
+And here make it list that is scalable to expand
+
+	  Say yes here to build support for the Microchip
+	  digital potentiometer chips:
+
+	  - MCP4017, MCP4018, MCP4019
+
+	  and Analog Devices digital rheostats:
+
+	  - AD5246
+
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called mcp4018.
+
+...
+
+>   * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)
+>   * mcp4017	1	128		5, 10, 50, 100
+>   * mcp4018	1	128		5, 10, 50, 100
+>   * mcp4019	1	128		5, 10, 50, 100
+> + * ad5246	1	128		5, 10, 50, 100
+
+Keep it sorted.
+
+...
+
+>  struct mcp4018_cfg {
+>  	int kohms;
+> +	/* Wiper position divisor: R = raw * kohms / div. */
+> +	int div;
+
+Why signed? Can the HW return something negative?
+
+>  };
+
+...
+
+>  enum mcp4018_type {
+
+>  	MCP4018_103,
+>  	MCP4018_503,
+>  	MCP4018_104,
+> +	AD5246_005,
+> +	AD5246_010,
+> +	AD5246_050,
+> +	AD5246_100,
+
+Keep it sorted.
+
+>  };
+
+...
+
+>  static const struct mcp4018_cfg mcp4018_cfg[] = {
+> -	[MCP4018_502] = { .kohms =   5, },
+> -	[MCP4018_103] = { .kohms =  10, },
+> -	[MCP4018_503] = { .kohms =  50, },
+> -	[MCP4018_104] = { .kohms = 100, },
+> +	[MCP4018_502] = { .kohms =   5, .div = MCP4018_WIPER_MAX, },
+> +	[MCP4018_103] = { .kohms =  10, .div = MCP4018_WIPER_MAX, },
+> +	[MCP4018_503] = { .kohms =  50, .div = MCP4018_WIPER_MAX, },
+> +	[MCP4018_104] = { .kohms = 100, .div = MCP4018_WIPER_MAX, },
+
+Strictly speaking this patch can be split to two:
+- adding 'div' member and providing it for the existing chips
+- adding new chip support
+
+> +	/* The AD5246's resistance is D / 128 of the end-to-end value. */
+> +	[AD5246_005] = { .kohms =   5, .div = 128, },
+> +	[AD5246_010] = { .kohms =  10, .div = 128, },
+> +	[AD5246_050] = { .kohms =  50, .div = 128, },
+> +	[AD5246_100] = { .kohms = 100, .div = 128, },
+
+Keep it sorted.
+
+>  };
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
