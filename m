@@ -1,57 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794912658;
-	b=O2DT9W9ylmiExHHZw7IgEWFCGBkG6pXAAf+58S67V7qaeqZ5Dtdx8lDTsb2pBXr5IhoH
-	 D2477nSxQdfmrtj959ovv749ArmjTYqp5m1KYVdt0dchKKI32ctFEmoWWc/rboS19DhGi
-	 FmMHrGin/9YENkM7LcpYD3cJts7/KzXbADG5b+Kp6KcyVC3gA8lyGzRX/7EQp3BYeMdwK
-	 WDNHKO2jyjYiuBG5JKxTchiyXCVKIDNQcxk8xUPgdSL0AJ32wbfX0lpuBgvVspabbEVsp
-	 ziUbrWkg/llm2mdtE3kLWidmKiO2s9rRDlBi3MVfGOXhlEFFYVskfz7xOrnmbbBD6UA==
+	t=1794912714;
+	b=dKDlhePZE044Fi+wRuXqYQjkL8a5FsfAz2roRAgV/fD+uw64DFkph5a0rLEN1eaQl4YW
+	 w0GrQWLz9S1+sbM43ZKsoRCyF58e6gzmoMtviAV10X8P1Ncrz6MO4GNKUW2o2PnZPIaGc
+	 +/XBMLN5yCmZ6Syq+pcDhaikHRjaJHIwEePX2KUXDcBzPBrkoYondinKRc1eVmye1zbRj
+	 NgpfwX7LhDmFr4Slod4QO0EZv38U1u/BOiJSDeMIEqAaw5X5Az+2T/f+M1BXxvwPG2qLP
+	 2lJasRLG7HB3qHjDVuvKCS3I5e8T2mgYvPOSCLaKf45YlAHgG2pAJv3hHcnRDRbVYPA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794912658;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:From:Content-Language:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=dQe8cmA4nsyOb9bGE5lcRIBNwi+AFNzjopJUX/lBJMU=;
-	b=iaNro0pamZ8wHMDHWnf/qJNXB2TGIsB05NuhWgkqjgAh+IPzRbx7IRz+lzOP3V33A+R/
-	 QEijlNgnqda0ByK20TWx0EmPROnw1jBUWiIfPchevbcGfms4JXAh1HuFDH/jGrBq0Ttxu
-	 aHf+sADz5uwOUt3ilyt2je0UN2QCBJhS5jUTDROZTujDuRKnQ3gOr3aUXArNaU/yYrYBt
-	 90YQL2hfSg64XhgssqNVRqIuVOPQTqdhfxlkLsOIOrKEZQXNY4Lobc4Bqd0sPqaJi2iYS
-	 D9WQIZDMMkbzU/idtG/BzTvBTex/R8JV50jkSTIY3S0StSk2bWhZ/BOQB49RvVv6XQQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794912714;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=1kU0oUKFP8qs3a/uIzyFa5iGsKNkg9VEancdWHE3XQM=;
+	b=flw9fwlj/xnfYtHMVh3CJ6M7v6mUhdY497BjrHSTA7Hp20NVc+e2xrDqLIsUSfAXCb38
+	 Lp/6RT1CtrLvEWN6GIk09kkTGg89gP4zT7Or7lDaDeeGr1+npQNxM9agdIAHivqB6xaMC
+	 I5cRqQLdOYvJb0RHr9mmta1bU9NIGicqILHL1GUbl2wTpyKU4TISwjfuSkZfjjiIDV6Hp
+	 +VKFylbQdnMYC9Gd+BVSNeZDH8DuI3eFvsK2uMXo3HYljikh9K6ck60RWpQXtFp55IEy3
+	 esjpezi8eDvLq87W7Rgwc3le4sRH4C7jwbqH9Faubo5YVWJ+sRqYne0yhsIrL3P0bCg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=okI7KpRd;
-	arc=none smtp.remote-ip=148.251.105.195
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WjSweDpC;
+	arc=none smtp.remote-ip=192.198.163.10
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA6D606A31C;
-	Tue, 17 Nov 2026 10:50:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6EA6D606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD77606A334;
+	Tue, 17 Nov 2026 10:51:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FD77606A334
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=okI7KpRd
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1794912655;
-	bh=BJ7G2PRuc7uvUsxw8X+YUPtt6Tmdw+QHSmLN8I9bpK8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=okI7KpRd2hnHUCZ6KFPvVdk06X3NDoOg1vcpLGIV5POlhc3Hl63myTKOGqEmNZLQF
-	 bAr6z5nKfVxLK68MDnrUL7CH16nB7WCCXFLmIWYYomRM1WRSMm7QS29DQhn7cedeBm
-	 HnE7b+NTsL6FKWJRYKLjKbVMOyiNDSq+LowgjrVHIAbukJmNA38UYs97MPAvrXbVf/
-	 AsXFX79K499lmar9Pox5XQSaH6rAM28oFhWTodehVuFSIlP9IZ6/DHPKuIEPH/h8Ec
-	 cdDofK6xQmLtdYbmyVF8QMWJ4jThGtQ/yqHVqt2K0QPkgSNmtBe7lXNcqWuapbs/9G
-	 rHac4mVK5ljPA==
-Received: from [100.64.1.21] (unknown [100.64.1.21])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id E565A17E04B4;
-	Tue, 17 Nov 2026 11:50:54 +0100 (CET)
-Message-ID: <b1b4c984-14d5-41b3-84af-10df541790dd@collabora.com>
-Date: Tue, 17 Nov 2026 11:50:54 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WjSweDpC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794912715; x=1826448715;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1UlDPg4H4GiOwBIiBQ4CE7u0ZPEqreZmQXDPKyudEx4=;
+  b=WjSweDpCrx6Om1ysJGuC1XvBWWGeOPLYtGpuHQfEDIoTTTSm6ghnIJYM
+   DQFE+ZC3wkCaZ7VVCx6QxjyGQIyRVz3L3d1aHcF5QJDerjK9cQ1DT9vcB
+   iE0wa/yv5QSqTemWFxTmUnxBg3/DDwIjokzHtxJ98pyYWk3qxl5twhYvL
+   iizlYmx7AWGHPj+M+w7K3oQFuXWgLorTQg2oQ+IRH/mtOWkgdsmeTr/ky
+   +mfvvMNhVhXgYaGT81Y72CbRKzdxs84dQnp25LfJ1+txezXw8qZ16PoEj
+   jHBtWsxZqQdd93B2E82BJMH7lPT4zd8olxKcJ3MCWs34YH6jmBb27qK6F
+   A==;
+X-CSE-ConnectionGUID: RNh6FDNMQh+ZYKQIzx76uA==
+X-CSE-MsgGUID: OlQnGND1TDupR/muAQrHgA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3577931"
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="3577931"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:51:54 -0800
+X-CSE-ConnectionGUID: 0nLnxp+xRA6LUYWI5bwi4g==
+X-CSE-MsgGUID: 9PSUDEkUS6mBMFNKGWUBRg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
+   d="scan'208";a="10033258"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 02:51:52 -0800
+Date: Tue, 17 Nov 2026 12:51:49 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Mudit Sharma <muditsharma.info@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: bh1745: fix 16-bit register accesses
+Message-ID: <avwxxbyzHP8tCgkV@ashevche-desk.local>
+References: <20261116194214.45174-1-kapoorarnav43@gmail.com>
+ <avwqtvhrxmgLe8np@ashevche-desk.local>
+ <20261117104152.137597-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -61,50 +84,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 2/2] iio: adc: mt6397-auxadc: add mt6397 PMIC AUXADC
- driver
-To: Ryan Brue <ryanbrue.dev@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Roman Vivchar <rva333@protonmail.com>,
- Luca Leonardo Scorcia <l.scorcia@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-References: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
- <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-2-5c3c7a5a1851@gmail.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-2-5c3c7a5a1851@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261117104152.137597-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 10/25/26 06:18, Ryan Brue wrote:
-> The mt6397 AUXADC is a 10-bit ADC behind the SoC's PMIC wrapper. On boards
-> built around this PMIC it is the only way to read the battery: the SoC's
-> AUXADC is wired to board thermistors and the charger ICs these boards use
-> have no ADC of their own.
-> 
-> Add a driver exposing the battery voltage and battery temperature
-> channels. Only those two are described, so a channel ID in the device tree
-> indexes the driver's channel array rather than the PMIC's channel number,
-> as mt6323-auxadc does. The ready bit lives in a channel's raw result
-> register, but the value comes from the chip's factory-calibrated copy.
-> 
-> The battery voltage is measured through ISENSE, because a board with a
-> switching charger in the power path leaves BATSNS on the charger's system
-> rail instead of on the pack. The thermistor only reads correctly with the
-> PMIC's battery-detect bias and input buffer enabled, which take 20 ms to
-> settle. Both are switched back off afterwards.
-> 
-> Reads average sixteen conversions in software; the chip's sample
-> accumulator makes no measurable difference at any setting, so it is left
-> at one sample per conversion.
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Ryan Brue <ryanbrue.dev@gmail.com>
+On Tue, Nov 17, 2026 at 04:11:52PM +0530, Arnav Kapoor wrote:
+> On Tue, Nov 17, 2026 at 12:21:42PM +0200, Andy Shevchenko wrote:
+> > On Tue, Nov 17, 2026 at 01:12:10AM +0530, Arnav Kapoor wrote:
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+...
+
+> > > - bh1745_trigger_handler() stores the raw bytes in a u16 although the
+> > >   scan type is IIO_CPU.
+> >
+> > I didn't get this, what's the problem here?
+
+> The handler does regmap_bulk_read(..., &value, 2) into a u16 and puts
+
+> that straight into scan.chans[], so the buffer gets the register bytes
+> as they come off the bus, LSB first. The channels declare
+> .endianness = IIO_CPU, so user space reads each sample as a native u16.
+> That is right on little-endian, but on big-endian every sample comes
+> out byte-swapped. The patch reads into an __le16 and stores
+> le16_to_cpu(value), so the data matches IIO_CPU on both.
+> 
+> I'll reword that bullet in v2 to say this directly.
+
+Yes, please do.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
