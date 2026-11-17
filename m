@@ -1,65 +1,70 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794885064;
-	b=z3dMCQ/MdxLpBlCIbTMqz9rQ12jwSlU+uN6kx+UtJXcKXzMMIXppQ6lepJYD4pjkQdxQ
-	 jl/GthcyiIzZb5cKchsCScll43BGlarTxeY18m8rqrsaWv/8Wr6x9+pOwNa3Z9AsYwwk5
-	 Fk8lMdoNIn92Cz8Kyit3LgphSjI3uP0sWq3u59dhHAl1T8bhWCMnv7NrKkKoKDKGfPa6h
-	 ZnUDpSxIDGx2CbOMdMp8ng7LUZ1LVcwaV81uWL73vZMrj6BhqDdqEtdLe/JiYVs7lforq
-	 uS/7sphGTE3byPG07MWMCZc8HJKH3fGBSdeJnIaMB3O6HCLy1W6V2BenYNJJruHnoNw==
+	t=1794885115;
+	b=F10sQG+/Q3GJDb8lQNkj39x/p6mmLFcm57neeMhObKq7mmW3n8JXTOLjo8oZaln3cZ53
+	 T3rqzVF7Ok+k60zlpbPQZjSXWP/+Bt43PKA1E88KPffxjBjuWHtIcWpwlM6lfeCE40ldI
+	 6mk8MmEdBIiyMAFVdJQoMHys1kcArMNL+oUMdlwYEBJV7FIRa9rgYlK+SUSWK9ySp3WoH
+	 vJOqEGZK+WxO9HMbkSrfxAlbWlOzA0KqoTq/FQ7jRJv4+BPTQO/ExmXgG9yVUXy/f6NFA
+	 WsV8IDQioStprjEE13G0ZMoU/FMSC12c6TiROZo2AcU7ozzOgsyxzQ4p+Pwb1U/+M+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794885064;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794885115;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=dSfXqLyo1DSgUCjb2gDQy+lRJPX2i3GEqXsEkxQ7JxM=;
-	b=p8dlzkU/k0tAqQNd1H+W7HX4lV/sEroDFWpujd/Bu1vs/Hr4vYqwGEzjownR82F1br0L
-	 3NcatngQysdOZOgURY63frTqT23Slu16VyPIEpGGWSgIgeGTSycOoNgGOTXolYB8gTsLZ
-	 GhHJXek2CEx9bnYDludaJ2FHDbB9odJFCSPN2k4SAtBTjA0KKlT06QQbGL9YHUZvks4QY
-	 9iuiENLDAFTZXStJB0L26jqINrMhzuG59nMEfkkF+2X2eouACU6Mw1hS7MAft7130Nlan
-	 u4oRqK9rG3KvyEvplo1we55wI2QPZkkvK9i2CwACL2TS4G/FvGRRUQTfZljVWcVeb8Q==
+	bh=rAo21lH5YkrWf1H9lGvy6n3laU/lKZk+uFIHu6Dox1g=;
+	b=YbgvJlgPjzUGPUwvvy64452dW3fGBDtrhHah7JwEjBjzv+dULg2C9wiE7/uelOP1baJr
+	 CQHOhD/ETCjljHOnrVD0TTd81/HIWF7XbwvfjRYJiEx3QErOmhCZ5Ul1kDkID8m91vC/g
+	 aSgWk16jPmKF0YYlGdhJz8uo4lMQsuY9/IiP4dCc3FCTG3mpokJKDTvyoDUZXyF/4IY/H
+	 lEc7e8omDGxQ7dMfJvpaglENVWuU/5vwXre/uCD8+gg84JrpnC7Ypll7tg2SfVzOWQYvt
+	 gdYmOx/sYnjziOmSQxf2LI2FjmRlGQvxCNvgOxxdXNfEfhjeqNzi7bUwz4fFswhOTSQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lHIhEXoT;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GMI16+oo;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63FC4606A31C;
-	Tue, 17 Nov 2026 03:11:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1B88606A31C;
+	Tue, 17 Nov 2026 03:11:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lHIhEXoT
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D1D21F000C4;
-	Tue, 17 Nov 2026 03:11:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GMI16+oo
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 250CE1F000C5;
+	Tue, 17 Nov 2026 03:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794885064;
-	bh=dSfXqLyo1DSgUCjb2gDQy+lRJPX2i3GEqXsEkxQ7JxM=;
+	s=k20260515; t=1794885115;
+	bh=rAo21lH5YkrWf1H9lGvy6n3laU/lKZk+uFIHu6Dox1g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=lHIhEXoTXimq2mntEZ8HmrSDDjnodkHPryB6SWInk6OUSwzyX2kI0mDvaKIsH3P33
-	 noZIUv6Z+HRkp7ynMEcIjFu530tLeuEt+Hlqk1kB5Ukjm2EzpHSSFFeOEq0UQcq015
-	 19GO8nsQQ1ZddSa4kzWhmElX7gqx3ufkLIoWo4Zlxe++8Kr1POyMF28eeQ5WY+fsRX
-	 Ako7KvZG8cNOahLRWcCS+4WGpxn03H4RRkP8lcS22fXyJOG0bF3leds3nKVytsLvCI
-	 lxP+XBqD/kdG7mXwDMgysBMvB3LlsXSfbnU9ThxSbltsNpm1GM01+qX+yUb0C1Rjsd
-	 oFY8AjiZyQiCA==
-Date: Tue, 17 Nov 2026 03:10:57 +0000
+	b=GMI16+oojz8C1YIHwc9EClS7kM1duCpaGdLZaKC5ItQpRUHUo98IPmOFJU4E9Zh1D
+	 9hCNvx4OGYYNFAohF5P7+GAicUluZlkOX4rKx72hFy1lYNS1BD3UkvCueZaDvN+844
+	 SPgUaGATijP3J0IqOBQpC4JxDb52hP3cTVQFkPN9KsgQAEo4eh/i7C7PIuDaMNYtuX
+	 ytJf7lb4FPQhw+mDBT4y5pAUwzilzPBM0XkUN/q4PtmDFwGV+uTBHf5x9GVG3lrOpP
+	 X7O7b6STFwaRk4uwdtqWyq56Td9IBCxCObdRDuUvjNiDMGiBe/y7oHnLLImP4HPVtz
+	 Vbl0S0PXiiNEA==
+Date: Tue, 17 Nov 2026 03:11:47 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Patrick Fischer via B4 Relay
- <devnull+admin.tsv-stahl-riesa.de@kernel.org>, admin@tsv-stahl-riesa.de,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>, Svyatoslav Ryhel
- <clamor95@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: light: Add Capella CM3217 ambient light
- sensor driver
-Message-ID: <20261117031057.58cb5e7e@jic23-hlaptop>
-In-Reply-To: <avrLkP1IR449AwLy@ashevche-desk.local>
-References: <20261113-upstream-iio-cm3217-v3-0-c4d5b2485dff@tsv-stahl-riesa.de>
-	<20261113-upstream-iio-cm3217-v3-2-c4d5b2485dff@tsv-stahl-riesa.de>
-	<20261114012906.6f66edce@jic23-hlaptop>
-	<avrLkP1IR449AwLy@ashevche-desk.local>
+To: "Luca Weiss" <luca.weiss@fairphone.com>
+Cc: "David Lechner" <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, "Rafael J.
+ Wysocki" <rafael@kernel.org>, "Zhang Rui" <rui.zhang@intel.com>, "Lukasz
+ Luba" <lukasz.luba@arm.com>, "Rob Herring" <robh@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
+ "Laxman Dewangan" <ldewangan@nvidia.com>, "Bjorn Andersson"
+ <andersson@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Hans de
+ Goede" <hansg@kernel.org>, "Jens Reidel" <adrian@mainlining.org>, "Casey
+ Connolly" <casey.connolly@linaro.org>, "Val Packett" <val@packett.cool>,
+ "Daniel Lezcano" <daniel.lezcano@kernel.org>,
+ <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
+ <linux-arm-msm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+ <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 3/5] thermal/drivers/generic-adc: Allow probe without
+ TZ registration
+Message-ID: <20261117031147.40f2ef65@jic23-hlaptop>
+In-Reply-To: <DMWH7VNNWDQG.1BM1P88WUJZT9@fairphone.com>
+References: <20261113-bat-temp-adc-v3-0-743979a8fd90@fairphone.com>
+	<20261113-bat-temp-adc-v3-3-743979a8fd90@fairphone.com>
+	<20261114001552.3ae8f05e@jic23-hlaptop>
+	<DMWH7VNNWDQG.1BM1P88WUJZT9@fairphone.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,78 +78,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 16 Nov 2026 11:23:28 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 16 Nov 2026 09:02:10 +0100
+"Luca Weiss" <luca.weiss@fairphone.com> wrote:
 
-> On Sat, Nov 14, 2026 at 01:29:06AM +0000, Jonathan Cameron wrote:
-> > On Fri, 13 Nov 2026 20:59:00 +0100
-> > Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org> wrote:  
+> Hi Jonathan,
 > 
-> ...
+> On Sat Nov 14, 2026 at 1:15 AM CET, Jonathan Cameron wrote:
+> > On Fri, 13 Nov 2026 16:56:44 +0100
+> > Luca Weiss <luca.weiss@fairphone.com> wrote:
+> >  
+> >> If the devicetree node is not referenced in a zone under /thermal-zones,
+> >> devm_thermal_of_zone_register() will fail with -ENODEV.
+> >> 
+> >> Since the driver is now also registering as an IIO device[0], allow the
+> >> probe to continue without the thermal zone.  
+> >
+> > Papering over problems, or expected path for some devices?  If it's
+> > expected path we probably don't want to print a message with the
+> > word failed in it.  
 > 
-> > > +static int cm3217_probe(struct i2c_client *client)
-> > > +{
-> > > +	struct device *dev = &client->dev;
-> > > +	struct cm3217_data *data;
-> > > +	struct iio_dev *indio_dev;
-> > > +	u16 addr_lsb = CM3217_ADDR_CMD2_LSB;
-> > > +	u32 reg[2];
-> > > +	u8 cmd1, cmd2;  
+> Expected path for some devices. Should I make this into dev_dbg then or
+> remove the print completely?
 > 
-> Keep reversed xmas tree order.
-> 
-> > > +	int ret;
-> > > +
-> > > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> > > +	if (!indio_dev)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	data = iio_priv(indio_dev);
-> > > +	data->client = client;
-> > > +	i2c_set_clientdata(client, indio_dev);
-> > > +
-> > > +	ret = devm_mutex_init(dev, &data->lock);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	ret = devm_regulator_get_enable(dev, "vdd");
-> > > +	if (ret)
-> > > +		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
-> > > +
-> > > +	/* Without a firmware node (e.g. sysfs new_device) use the fixed one */  
-> > 
-> > I'd rather we handled that explicitly.
-> > 
-> > 	if (dev_fwmode(dev))
-> > 
-> > That way we can return an error if there is firmware but it's broken.  
-> 
-> I think here we want
-> 
-> 	if (device_property_present()) {
-> 		...
-> 	} else {
-> 		addr_lsb = CM3217_ADDR_CMD2_LSB;
-> 	}
-> 
-> I really discourage people to check for FW node presence with dev_fwnode(dev).
-> This is a corner case which is in most cases needs better granularity (like
-> distinguishing the fwnode by type). But in general ideally it has not to be
-> used at all.
-I agree though in this particular case a property presence check doesn't
-solve the same gap.  The intent was to pick up on the driver having been
-force loaded without firmware.  Normally we'd just fail that given it
-looks like it needs firmware. In practice it doesn't as the address this
-give is always one greater than the device address.
 
-Thinking more on that, just don't read it from firmware at all.  It's
-fine that the binding wants to describe it, but we don't have to ask
-the firmware when we know the answer.
+Either is fine.
 
-Jonathan
-
-> 
-> > > +	if (!device_property_read_u32_array(dev, "reg", reg, ARRAY_SIZE(reg)))
-> > > +		addr_lsb = reg[1];  
 > 
 
