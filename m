@@ -1,83 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794899706;
-	b=ELeMj0pZxA8CDPWx9L7MhO+PFzYX45Dr+VfVl1NJGq/y+em3cOdTGPf6wZIj2uPHd57O
-	 UCPJI6zv+d+hoj66VSpE1PTHDZG65LQ7i4nKWhuu2ha3w3Ae1U3BFf6wrJa8n3VPYTe6w
-	 723fyttYm95nkcpSfG9VkhJ88VqF73F0dI2LpMVOgnJVKjmkreHG27qcGTqqdEO++icvI
-	 ZmkPo98SBmqrj4mKCyfMz2h1AXCAZwvbFiadkj9Wz2lFEBSX0IYT5jZ/Z/5IdHFLb9yAS
-	 FswN33Sy0XGNS63ljZF+UZBKJqbAL6EpQF0zOSrs0ncS/UXUjJynZmpoNUK7scMEcvQ==
+	t=1794900053;
+	b=W0Gu+1BouAo9yI8mslpBwi3laOg7rKi/htSkcTWlnNAgFj+eSqt8zgwRZ379/ZlluzXd
+	 3qym7jnjkJPHKCAWW06mtCNReDLMoWolnld9ynB9AFs9cGFS+vtxfZ2Gfi4p/qepGezoB
+	 UxF2ytblNHjm5vDeNZBMTwXLGsWDs2s8Qk/UJJqZnHTqCQz38AlO4SSzc9kUH4MvSdvgv
+	 sn3vu/BvDuPINocZup/qiOiPHF7khynvTCLN90L1a6XeHf2WKbFHr972Pylr5ZuKHNEii
+	 ql3+VF8+RtitYPwP1ZqnPMja6KRjcK4kRhN5KrTUhiV55ENIt7fSjno4LY+JmRvWQMg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794899706;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794900053;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=FTbJEAhqZIW4NLhm9jKEdLqW9ExXzaFWa84qqGKJy7c=;
-	b=Fr+GoHNPZ25bkKxuAZn4lcHP8Jz9WyOdd4H3eyqtwv48ewzlCLjQ/vCmSoHRDhGnQwww
-	 9eTv850OgCCPxiOy9qzEE8f++0f4XMHCHdOIUtTXAKBH5lmZksjqzpiJ8zpyoQ5EeCfP5
-	 BB7dtBmRsQZE5EPfIM/JYX9X99lSEG7TgQQ3M1ALgDf7RPMQS0ZpIZlVEEVS4u3jWLInT
-	 sG9rO9+tlGzC7xsx7uo4IDI1Ag24wi9JuErwe224NdsfFdqzv9JlVIVZHgsVC08H5Xk5H
-	 Hvv0qwx8ubq6uKJ8PX2S2ULMdDfEuwQIzNHEATPInIF7w0WbFKDisKwEaJrtuUsqf6w==
+	bh=r78d25eq31clnnMyTRJuEPeA5cn2PAIMfFhC3qOaX7Q=;
+	b=QABH8RdpeBt3geRrXpyJAlNc0D5IRLKiFsa+/sKy4a9FkShmKzo2qKbiMl5re5/H3W3T
+	 c34B4mhBFjyEwpi8ru6A157j3M+9fOzOsRUm9r+DYTVbZpgKO3tErQcUnhv0fh6WstLwX
+	 NpFa3/Q3bi4WVRlOm8IHr4slq0Ynhc3N5+s7z7zueuCdsHyLa7AFF4i63xCoEMJKCMvV1
+	 zypLn/l7jLPQKLoagWYrODjdHAqeWP/PufztQBgT6l+l4UKZHAhyCpA01eiFnzPESfFxH
+	 k53f52Dw/lwGxwmhkCI6g1g1py8aRK7O/Jjzd6QGZSsoTx0wetLzG/HVXQf3g1RlEGA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=APx97lIS;
-	arc=none smtp.remote-ip=198.175.65.19
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lWL0RSuG;
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E507606A336;
-	Tue, 17 Nov 2026 07:15:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1E507606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CC0606A323;
+	Tue, 17 Nov 2026 07:20:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C4CC0606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=APx97lIS
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lWL0RSuG
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794899705; x=1826435705;
+  t=1794900053; x=1826436053;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=fZqhVkjqwdNlur7QBA2RZUDCkBynb9PS3UgexHcsD0s=;
-  b=APx97lIS/2i7RVYV77HyxH3aaQOQ5NTammwBy2NE3x0gUA67RGxtW2R1
-   l3DtJDt2hqyLpX6mqif8g+Rxo/TylUTD1Rhn3UtxLqaUvBQKpAs2lx5Ke
-   EALyy2T5I2F2EgEhMaqAlDBZ9DoRlvKSoBqnjWZ+994H85SIjZbGJ4GnS
-   mC/qZdMIzEp1Dtpgmmqx04RNaF/Pn1NjnK0v1QbknNhFo0cWAB5qVWZya
-   b/GfQe7okPkeNHYqUqD/ACXwSOMMmwH9G9m/wyjWDXt1dy+Rjmjl2se2+
-   yK1M5iZGqEaZiO6k8n6NvQi2x9hQs+aEPSDxnpGh9lGR6odfBLUol1WNj
-   A==;
-X-CSE-ConnectionGUID: cd69gsmASIiDGjrhEFS9bQ==
-X-CSE-MsgGUID: k4nfjh5NQa2+8tyyBKeiiw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3699546"
+  bh=RzqdnLYtnO8s7wQRK1Si3iRKel1Lg63Gwzwt8mNGBSk=;
+  b=lWL0RSuGcI1hLaIxaMQ2CF/mR7ky93Hy/uOejQysOpDqgIcm/IeYG261
+   /UQee29vIo0jwVoauWDwtE8lg5sOo8LOblfxizcUHMbonixjfPog5gwdx
+   7cNosxN7ffzN155zfUJnJ8rMmiSBneY9kv6RLyF+HACgOvOEl0qXXqM0f
+   FMi2KlJi6hUsJyjYkpNa+WsxjQjUWyaR+khomPWVEqxcyhw0uey5oJ72M
+   /FBqJwtil/NqJ2C/noIVfWtwLRGOA9KGp8/mivPXW9nqnQfJvbxXRVjKo
+   fFRvlD95aaEcz6PSFXviX40oc1umUo4hIeWNID/TRU8LDMVg7Ys9F+q7L
+   w==;
+X-CSE-ConnectionGUID: JdIpb/JqRwKoX46lGzsSog==
+X-CSE-MsgGUID: SRHAJAvaSSC8Inia7OrffA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3768780"
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3699546"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 23:15:04 -0800
-X-CSE-ConnectionGUID: TMQ8AhdWQNibrVZIKm7Mng==
-X-CSE-MsgGUID: 9HT4e7rSTR+dUf2/DaWitQ==
+   d="scan'208";a="3768780"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 23:20:52 -0800
+X-CSE-ConnectionGUID: /FKFSvW7Rw2cAs0gbWxCkw==
+X-CSE-MsgGUID: og9Hz5kZREeueRJOXccMhQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="9809880"
+   d="scan'208";a="10159146"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 23:15:00 -0800
-Date: Tue, 17 Nov 2026 09:14:57 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 23:20:45 -0800
+Date: Tue, 17 Nov 2026 09:20:42 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Lee Jones <lee@kernel.org>,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, mfd@lists.linux.dev
-Subject: Re: [PATCH v2 3/4] iio: adc: Add support for MAX8907 ADC cell
-Message-ID: <avv-8RT_btJ6dTzi@ashevche-desk.local>
-References: <20261115091120.108684-1-clamor95@gmail.com>
- <20261115091120.108684-4-clamor95@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
+	Martin Tuma <martin.tuma@digiteqautomotive.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	linux-media@vger.kernel.org, Gustavo Silva <gustavograzs@gmail.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Ramona Alexandra Nechita <ramona.nechita@analog.com>,
+	Tomislav Denis <tomislav.denis@avl.com>,
+	Jorge Marques <jorge.marques@analog.com>,
+	Petre Rodan <petre.rodan@subdimension.ro>,
+	Dan Robertson <dan@dlrobertson.com>,
+	Jianping Shen <Jianping.Shen@de.bosch.com>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Maxwell Doose <maxwell@maxwelld.cc>,
+	Tomasz Duszynski <tduszyns@gmail.com>,
+	Esben Haabendal <esben@geanix.com>,
+	Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
+	Jiri Kosina <jikos@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Vasileios Amoiridis <vassilisamir@gmail.com>,
+	Abhash Jha <abhashkumarjha123@gmail.com>,
+	Puranjay Mohan <puranjay@kernel.org>,
+	Nishant Malpani <nish.malpani25@gmail.com>,
+	Oleksij Rempel <o.rempel@pengutronix.de>,
+	Linus Walleij <linusw@kernel.org>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Subject: Re: [PATCH 00/35] iio: closing default trigger handling leaks
+Message-ID: <avwASv6SGjvLG0jr@ashevche-desk.local>
+References: <20261116014823.3132576-1-jic23@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -89,106 +107,89 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261115091120.108684-4-clamor95@gmail.com>
+In-Reply-To: <20261116014823.3132576-1-jic23@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 15, 2026 at 11:11:19AM +0200, Svyatoslav Ryhel wrote:
-> The MAX8907 PMIC has a dedicated ADC cell, which provides 8 ADC channels
-> with information about different parts of the power system, including the
-> battery, charger/plug, jack and thermal readings.
+On Mon, Nov 16, 2026 at 01:47:48AM +0000, Jonathan Cameron wrote:
+> 
+> Note this is compile tested only!  I definitely want a few people
+> to test that I didn't break everything.
+> 
+> This is the first part of what I think is a long term solution to the
+> currently really fragile ordering constraints around setting default
+> triggers. Today these are set by iio_dev->trig = iio_trigger_get(trig).
+> The reference is only released on the iio_dev.release callback and
+> only if we have set the mode to include one that means there might be
+> a trigger set. That mode set only occurs when a buffer is registered.
+> Thus trigger release only works if we have already registered a buffer.
+> 
+> One solution would be to reorder so that the default trigger is always
+> set after the buffer registration (we have had various recent proposed
+> patches to do that for individual drivers) but that is non obvious and
+> fragile.
+> 
+> The solution here is easier to reason about. Decouple the setting
+> of the default trigger from the acquisition of a reference. Thus
+> we can acquire the reference in iio_device_register() when we know
+> all the conditions for it's release have been achieved.
+> So that's all we do in this part 1 series.
+> 
+> Part 2 will address immutable triggers and those that are effectively
+> immutable but predate that logic. That is those that set a one to one
+> relationship between device and trigger.  That change is rather less
+> mechanical than this one and 35 patches is really a bit big anyway
+> even if most of them are small!
+> 
+> Part 3 and beyond will move to a situation where the iio_dev->trig
+> will become opaque. That should stop anyone manipulating that directly.
+> I have a few related cunning plans to test out before we get to that,
+> not because the particular challenge is hard, but because they will
+> trample on the same code.
 
-...
+> Jonathan Cameron (35):
+>   iio: core: add default_trigger and take reference in
+>     iio_device_register()
 
-> +config MAX8907_ADC
-> +	tristate "Maxim MAX8907 ADC driver"
+I have reviewed the first patch and briefly looked at the rest which seems
+like a semi-automatic translation in most cases.
 
-Make MODULE_DESCRIPTION() to use the same text.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-> +	depends on MFD_MAX8907
-> +	help
-> +	  Say yes here to build support for 8 channel 12-bit ADC
-> +	  interface found in the Maxim MAX8907 PMIC.
-> +
-> +	  To compile this driver as a module, choose M here:
-> +	  the module will be called max8907-adc.
-
-...
-
-IWYU, please. + bits.h, types.h, et cetera.
-
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-
-> +#include <linux/mfd/max8907.h>
-
-It's better to move to a separate group, as this is related to the certain HW.
-But since it's a single header I'm not too picky about it.
-
-> +#include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +#include <linux/regmap.h>
-
-Should be also a group for asm/byteorder.h.
-
-> +#define MAX8907_TO_REG(n)			((n) & 0xff)
-> +#define MAX8907_TO_MEASURE(n)			(((n) >> 8) & 0xff)
-
-...
-
-> +enum {
-> +	TDIE, THM, ISNS, VMBATT, VBBATT, VCHG, AUX2, AUX1
-
-Leave trailing comma, but what is this? Is it HW related or pure Linux
-abstraction? In other words, is the order strict? Looking at the code
-below I think you have to initialise all of them to make the order strict.
-
-> +};
-
-...
-
-> +static const u32 max8907_default_ref[] = {
-> +	[TDIE] = 4096,
-> +	[THM] = 4096,
-> +	[ISNS] = 4096,
-> +	[VMBATT] = 8192,
-> +	[VBBATT] = 8192,
-> +	[VCHG] = 8192,
-> +	[AUX2] = 2500,
-> +	[AUX1] 4096,
-
-Funny thing, actually we used to have an interesting case in the kernel,
-id est 113ec87b0f26 ("pinctrl: npcm8xx: Fix incorrect struct npcm8xx_pincfg
-assignment").
-
-> +};
-
-...
-
-> +static int max8907_adc_init(struct regmap *regmap)
-> +{
-> +	u32 value;
-> +	int ret;
-> +
-> +	/* Enable internal voltage reference. Exact purpose of bits is not known. */
-> +	ret = regmap_update_bits(regmap, MAX8907_REG_TSC_CNFG1, GENMASK(1, 0), BIT(1));
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Check for internal reference IRQ */
-> +	ret = regmap_read_poll_timeout(regmap, MAX8907_REG_TSC_STA_INT, value,
-> +				       !(value & MAX8907_MASK_NREF_OK), 0, 1000);
-
-0? This makes it a tough loop. Needs a comment why.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_update_bits(regmap, MAX8907_REG_ADC_SCHED,
-> +				  MAX8907_ADC_SCHED_AUTOSCH_ENABLE |
-> +				  MAX8907_ADC_SCHED_AUTOSCH_TIME,
-> +				  MAX8907_ADC_SCHED_AUTOSCH_ENABLE);
-> +}
+>   media: pci: mgb4: use IIO default_trigger
+>   iio: chemical: ens160: use default_trigger
+>   iio: adc: ad4130: use default_trigger
+>   iio: adc: ad4170-4: use default_trigger
+>   iio: adc: ad7768-1: use default_trigger
+>   iio: adc: ad7779: use default_trigger
+>   iio: adc: ti-ads131e08: use default_trigger
+>   iio: addac: ad74115: use default_trigger
+>   iio: addac: ad74413r: use default_trigger
+>   iio: temperature: tmp006: use default_trigger
+>   iio: adc: ad4062: use default_trigger
+>   iio: accel: bma220: use default_trigger
+>   iio: accel: bma400: use default_trigger
+>   iio: imu: smi330: use default_trigger
+>   iio: light: acpi-als: use default_trigger
+>   iio: chemical: scd30: use default_trigger
+>   iio: accel: bma180: use default_trigger
+>   iio: accel: kxcjk-1013: use default_trigger
+>   iio: accel: mma8452: use default_trigger
+>   iio: chemical: ccs811: use default_trigger
+>   iio: pressure: mpl3115: use default_trigger
+>   iio: common: st_sensors: use default_trigger
+>   iio: common: hid-sensors: use default_trigger
+>   iio: pressure: bmp280: use default_trigger
+>   iio: light: vl6180: use default_trigger
+>   iio: gyro: itg3200: use default_trigger
+>   iio: imu: bmi160: use default_trigger
+>   iio: accel: adxl355: use default_trigger
+>   iio: gyro: adxrs290: use default_trigger
+>   iio: accel: adxl372: use default_trigger
+>   iio: light: si1145: use default_trigger
+>   iio: adc: ti-tsc2046: use default_trigger
+>   iio: accel: mxc4005: use default_trigger
+>   iio: gyro: mpu3050: use default_trigger
 
 -- 
 With Best Regards,
