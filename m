@@ -1,101 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.181
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794912119;
-	b=1Dy7zUaz/W7zjDw4WdtR70EYctnR5V5dZsU22yKJYgcUd3Ih4my8m+tvO7bDxn3y6Kno
-	 xv/t/AAgtFE82riyx7rc2Z0T8Pk0yPf/+X5SpeOF8xIwnk8hHNnRwVFvbyhvh+LTwbOLX
-	 xq3IxIiz2AW8goSWxd9dcnW/vaMEWGs/jtmd+/bBhWo024kca6ryjk0GcqsFRdzWLuqDj
-	 UrrodFHYaQfq4Pfmm4kS7efQ/GimuOAC6N7JmWrU2+kSknKPCl+gVz5Jj2bsTh8nmY+Vm
-	 i4/nfnAhMKY+0aJLAECFC300Rdrjce/TAddoUZupnmScat140LylMBxT6yMrYv4YhYw==
+	t=1794912259;
+	b=08laLv7V7Ta24dNRw21BoHkCu32Olx1oyTbNPFAEeYGDZqZy2Zlpnin7wabre/ImS9ar
+	 OodLXyb97scp1/0FYewRXcVcQE9ioDRjd0KdWeUBaO2fKgckJfEWFIzjy2D73mzGEaFJT
+	 P2Fyp21xLzwMIinxxmP/UfuOgUuHLOuf4Lusv3xCn+u2t9cmtZ9i+FyO4wT/xj1KLwUR6
+	 zP194Q7Jf08rAcbYWzkhdBEXD2EUA2ppxL7RhzlSZZ8QnZMLdEyyPnsBUkjuIEilcFGeW
+	 jsiAZzlqdjJzYpI8DT/2JSkNjVlVPRTK+078k8PoHJvff+pq55pXeIoTZtrgy8LIRGA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794912119;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794912259;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=L4KOYqWx580iSeGrUMZkCkNhUGinBxxLvt7tMIPLBDc=;
-	b=F+CddJ3fpHZc7nLZZhrdzi6VU4FQtKNnEtdbBPGqxSbvO+nYVs8xvYDFo02/Gw5kJeiK
-	 0TUzss2MOxmrHNL0tc7S8man89XXfgPufLm8MjVOnJ6F8yV/4Sgc0FOPwU6oKMr9jsK0N
-	 iAjVjIImGiAfwLKxZGkSoyJGTbzbwkJrCSAhz6aMC5A4eFX8NED77QqlpEkSJdv5sXmBQ
-	 SGlH50jaxNOCXN6WAgU24ylSit04z1bPJ7lMqLTR47zoLr/Y+DEPDJSS1EYcOaQEd4FwG
-	 DVK3fEVHC2rPT5fMro6EjRoLzTtTdLYjxjNIkf/gA9uEeK46Lyi0swaWKNp2t3YnYpg==
+	bh=4P0NB3VMBLnpdAs1DFprR1jE/RwnP4MqbaYmn8aT4e4=;
+	b=lLp4CK8MbSJqXctRDGEeTiSRtIJ9qxNzx7mL7gtuJOZVm/Jm+8T1U+tyAItZKVb2dRdv
+	 kJZGtwWeN+yTiuu0J0uhPzSAHuhVTW6/zDbie1ylmm3hAO/BY+0G07/1GckDpAAKq2OMF
+	 nY8RBJtJBTHc5NHXMMGjENE7LTUv4J7yzgaC3z4yUdZC0FzyF9lAqFzqqkiFNI9/WcBc3
+	 ugABBzV7ZTsw1qfQ91Zq5+JfemBp8dLaXuUlsazbxJSW59rpDMykx2K+PAeSwDagOsh4j
+	 sZDTXbYcGzQF/v7y+kfPWaYAUzfU6VXZmYVTp1kSJKZvWEulqOm26B/Dm9oaqdONrgw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VacCkSJW;
-	arc=none smtp.remote-ip=74.125.82.181
-Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OHZMc88f;
+	arc=none smtp.remote-ip=209.85.221.52
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31157606A323
-	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 10:41:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 31157606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D7A606A329
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 10:44:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6D7A606A329
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VacCkSJW
-Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-37071c0f42aso6660331eec.0
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 02:41:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=OHZMc88f
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-49a92144733so1820483f8f.0
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 02:44:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794912118; x=1795516918; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794912257; x=1795517057; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=L4KOYqWx580iSeGrUMZkCkNhUGinBxxLvt7tMIPLBDc=;
-        b=VacCkSJWfgrSjFRQ+4vuPBmDOU1Braf46fyBOsDxjiqANqIEAQcmoi12iwoXoyvHKj
-         xK86sMaUlmdzAoQj9RTiqOyDd7VAWF0jm66tjujttFaYUxvCnEPZMGLn2uIWUvpmVmEd
-         8VkwjKmu2mraZFFVLgr+IQoqbILhH1z0ll+AGzSKT4tGydnom18ohVNMuJCc6EtGxMoE
-         juo3LCNGOOeohOkobAXhgyppA1yYENPvfhNNUaT5BfyHAb8/KjINurW+b6jZ31IeQA2h
-         LpIR4fKOBHDWup4Bkc8p/AW6yWYGprbY1QGxpshslQ/iTkyP8BFrW4ejgmxjIj1fok4m
-         UOZg==
+        bh=4P0NB3VMBLnpdAs1DFprR1jE/RwnP4MqbaYmn8aT4e4=;
+        b=OHZMc88fL0Y3ZOM7HvBq6PnkbDMfe2WWSDzt9S6xySiq1ZMexL5Cki0nMDoLFTh7+/
+         zkaoirwpf1n/fh/f+V8+B/g+QOInR5uI/ueS/emwC5xFWWbO+syNYp9A0CetBSXEdiWy
+         qbwuLzPUTNZn9AOD+gUavFgKhlMm5YPJS2Yq7DKsGAuclBE8Y2ydtoZCmPsG+iuLpCUk
+         fzs3fe4utARTlNuWFnXLZQ1+G0S4j4y37nsva/FwpRke5mvaD+Vjl4mk5Q5MWG+jQUXU
+         rc6HtIN5fASzP2LGxFSdj7s4bir6sRq0E5AK+NulruDhYw77Za9sZ2d982Ibt+vCkdg5
+         H/jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794912118; x=1795516918;
+        d=1e100.net; s=20260707; t=1794912257; x=1795517057;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=L4KOYqWx580iSeGrUMZkCkNhUGinBxxLvt7tMIPLBDc=;
-        b=qyDTpoP++/aySGLQlQtrSr0dwV82otvwP2rEAfA37qatUuaBPF93QqFy6neY6XvZeX
-         Kt0DwnRiq0PPp6A0fiaseFSH9LhSeXse7zH5OLXcFe6Ct7W/2hq0nfIMG9DvCbyBYE62
-         xNVTMTwJ3I0uEwkJRT24QjPvQ5kX8dLm18giIwYoBJiEd1IR9vnuCuW+kpllF9jKRfVG
-         sLgL+RhbGAIQk+08Aypf7FhYSFygZdDIXUya0UZ+5z7Cm1XlXsdESZcLUbXmn82pizcz
-         klazqnzaQbqaKw8TbSHwFoM4m9sFXt4REwQlthXE47lOkc1joHTS+eHAPigLYUfeZJ66
-         cwIw==
-X-Forwarded-Encrypted: i=1; AL+hErF+PfiYwVSXR1tzSoo6X4pBuK3Ku1WXXB8m+YVwsYGEezPoAo8AOyYW1D4E3voY7Ha1S/OtF21jDJM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+eFDLo1gH/K01e/V5GebxF/UKcXTXK0ThjdkTYdOX49vecNT3q
-	OiGUe5Yhug8fuj9/uvJNk4LL/2HxWGqFm+KcSQtY1uIYqYh3Z52K8UWf
-X-Gm-Gg: AZFdTZcnEZFGXmlUVN6/il/gUdr6U7xx+Y91YFZlWk6sq4lSCvISHv7D4uDSvnnXjOh
-	U0iOoQweIL/EulI6MgURnt8RIhT6KQ7/bM/OW8KDolcxcKBB3hKO+YtLIww/eSavkxl61LDTtzi
-	FGzcADYecNJrdePLkunBZqMAbRi4oMVUgsQZ/+bEgDovgQ8s7SRWjgVi86+ValPX3buZnKPXbqZ
-	tsF9W72m8wqLunLS25AxBTSUCpFbgS/czAW5/ID3XEGtxkfrWnCXL5ZeD3yeyMhPc28BctehUVj
-	FDyAh7h//wWXKTsvOqQ32l4gMFQNiYSje64oZvCSdiFvvOL+n+DrF8pPyevnTnrxeOaFKepooK5
-	VZZ3btHXTVNbLC8NWEBy1k+tRQzrvFQ9p/ExgFU7apjRYjIPV7JS1/JHN4qxdPaLNPzk+8o8GnF
-	melDgK5t0izwgQIHUYqZMlbJoScU+GVFbgcmoUGC93Cv0+Bt31jjESJosDj/V7pB3M7hms4yUMT
-	FmEItHYR2q7MKdjTRjMhZbqeIpDJu5C1nuWuDbYalQ+QnFJCh6WJM+EuLq587rVmXvBu1VZTyY1
-	NAq5kSZPj5NHazCZbkNX2pWsK/v2ImRMbZP94yUcG9s6wBj6wTbgdc4Hh7c0erXOzYwgks/2MOk
-	diKo3xwjzIbl/XYzxaapdRHthW3UrT2wdHGvPFL7Q0A9FA9u9Sx/t9cAnvP7Qo+guiJ8maShSln
-	qbpLdGyJog+jK+waGXSirA8GpQLqsd6hWFQmq6mCLD5g==
-X-Received: by 2002:a05:7301:1810:b0:381:610e:4045 with SMTP id 5a478bee46e88-381610e40ebmr1507561eec.8.1794912118275;
-        Tue, 17 Nov 2026 02:41:58 -0800 (PST)
-Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-37955332a77sm37871973eec.4.2026.11.17.02.41.55
+        bh=4P0NB3VMBLnpdAs1DFprR1jE/RwnP4MqbaYmn8aT4e4=;
+        b=1uYZv2jpC0mKTjqpYyasVzRsYzOyAmB5mVyw1A8HmNBI1LOsToL9QB0pLnOrklgJxv
+         jCcuqPd3h7GYst+X7YbVJD2roeXYWYVscGXJDIPr0O+0LtlaLyKguaThSrEK02pEGbRl
+         whYErN+TfLDl9rTRRWpzITXjlXf3C/ZlNIhiWKx05vt8ryetRuLIW4raj4j6p7qLgmwQ
+         NVnh4PlxoZeOJZLELy4kFfSoDRju0rMlm42FhhumYkKt5s6EuzHwBGQsc5qXXihIVpCr
+         UecDJ+j/ynQTbM5/r11K69rR1EFhgUQTV3ooEo7pg7FAmWNWYC6MRRMrSxBh+gt51t/Z
+         4Eow==
+X-Forwarded-Encrypted: i=1; AL+hErHXVM+b/NDnLuuz8nPKgMMfbUluc78/U5zHA0K0EF6zNqDOAhIFieOJeCEkM1A1lTrZN5TDwZjF5rU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+xjl1zKYLKEx+i8HllG/FIaVeaUWpOC532Q1bufuTI5TeZpU82
+	RrLoBRm9ki/1hzkby63DI/sK7UbqFEuTQTomHM1aYJN3mH3oUZO1o0uP
+X-Gm-Gg: AZFdTZePnA0GMuZ/jT8wg6Y6qE2qEyaUMXs+SeaerF1iaLsXaCt/TliHRO4eeKXVZUy
+	vhfuPxdUb6E8cuqpeQEzPjCfDuCMDa2sficoBkXmVbf2NYw/eMKgNh3kH4LyI21rZR4BzClcAFV
+	Oj5qPbyGeLLsliUT5/zEL3vbU1DdTW4VLEm6PecVoBBfzLmsQLUjyVaFEQBPkc37p2bS+HMyqe5
+	0GFLeTLO1LmyqZojbtv/DxGLJusZAygW989flZrLFaPfXchbAnFkamWmtkLbCvVpMPLeCn12IYw
+	8JpSnAbVJx9WxYuTWF655RLUZ/O+6zrrDljA2H9TY0KOGBBLIvl46A/LNzEoGJVD9JAQf5WFEsg
+	CkuyuHJ49MJDirNVfJZ8j5JwjT3SQZR+XLY9CKXr/3ystPzk4WkvdLkStloIX+9+awzTEUNNBuT
+	rwDWDWfEeqVSVO/pRIS/NpK9LtfN7yxig6zhSC/K7FrOuMDhAV5zPhewM/M2pKmakAIqekMnOL8
+	OaMs48Fc36ErY5qLre4kvFYy7Mj0Pk1ukjVwbAJLbZSAph7cdOCMbY9jTi3Weu97geIdpXW9eqR
+	u2HDZlt1NhI=
+X-Received: by 2002:a05:6000:310a:b0:48d:ef7a:e59f with SMTP id ffacd0b85a97d-49c712ac8d6mr29895302f8f.17.1794912256903;
+        Tue, 17 Nov 2026 02:44:16 -0800 (PST)
+Received: from dl360p ([130.61.107.245])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a2e6c765dfsm6167711f8f.33.2026.11.17.02.44.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 02:41:57 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Mudit Sharma <muditsharma.info@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
+        Tue, 17 Nov 2026 02:44:16 -0800 (PST)
+From: =?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
+To: jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: bh1745: fix 16-bit register accesses
-Date: Tue, 17 Nov 2026 16:11:52 +0530
-Message-ID: <20261117104152.137597-1-kapoorarnav43@gmail.com>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
+Subject: [PATCH v2 1/2] dt-bindings: iio: proximity: add Imagis ISG5320A
+Date: Tue, 17 Nov 2026 13:44:13 +0300
+Message-ID: <20261117104414.1182364-1-tadilhusrev@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <avwqtvhrxmgLe8np@ashevche-desk.local>
-References: <20261116194214.45174-1-kapoorarnav43@gmail.com> <avwqtvhrxmgLe8np@ashevche-desk.local>
+In-Reply-To: <20261116074013.355363-1-tadilhusrev@gmail.com>
+References: <20261116074013.355363-1-tadilhusrev@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,33 +109,101 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 17, 2026 at 12:21:42PM +0200, Andy Shevchenko wrote:
-> On Tue, Nov 17, 2026 at 01:12:10AM +0530, Arnav Kapoor wrote:
-> > - bh1745_trigger_handler() stores the raw bytes in a u16 although the
-> >   scan type is IIO_CPU.
->
-> I didn't get this, what's the problem here?
+Add a binding for the Imagis ISG5320A capacitive SAR/grip proximity
+sensor (I2C), as fitted on the Samsung Galaxy XCover5.
 
-The handler does regmap_bulk_read(..., &value, 2) into a u16 and puts
-that straight into scan.chans[], so the buffer gets the register bytes
-as they come off the bus, LSB first. The channels declare
-.endianness = IIO_CPU, so user space reads each sample as a native u16.
-That is right on little-endian, but on big-endian every sample comes
-out byte-swapped. The patch reads into an __le16 and stores
-le16_to_cpu(value), so the data matches IIO_CPU on both.
+v1 -> v2 (addressing Sashiko AI's review of v1,
+https://sashiko.dev/#/patchset/20261116074013.355363-1-tadilhusrev@gmail.com?part=1):
+- Document int-gpios: the driver optionally reads it during the reset
+  sequence; it was undocumented in v1.
+- Reword the description to the chip's own characteristics instead of
+  how the Linux IIO channel is exposed.
+- Simplify vdd-supply to "vdd-supply: true" (left optional: the
+  XCover5's own grip sensor has no vdd-supply node at all, an
+  always-on LDO not modeled in DT, which the driver's
+  devm_regulator_get_enable_optional() already tolerates).
+- Rename the example node to "proximity@28", drop the unused gpio.h
+  include, and add the blank line dt-check-style wants before the
+  child node.
 
-I'll reword that bullet in v2 to say this directly.
+The binding was drafted during XCover5 mainline bring-up with the help
+of an AI coding assistant (Claude Code, Anthropic) and reviewed and
+validated (dt_binding_check, yamllint) by me.
 
-> Otherwise seems legit to me.
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Adil Hüsrev Tepe <tadilhusrev@gmail.com>
+---
+ .../iio/proximity/imagis,isg5320a.yaml        | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/imagis,isg5320a.yaml
 
-Thanks!
+diff --git a/Documentation/devicetree/bindings/iio/proximity/imagis,isg5320a.yaml b/Documentation/devicetree/bindings/iio/proximity/imagis,isg5320a.yaml
+new file mode 100644
+index 000000000..ccb84b29f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/imagis,isg5320a.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/proximity/imagis,isg5320a.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Imagis ISG5320A SAR proximity (grip) sensor
++
++maintainers:
++  - Adil Hüsrev Tepe <tadilhusrev@gmail.com>
++
++description:
++  Imagis ISG5320A capacitive SAR/grip proximity sensor, connected over I2C.
++  As fitted on the Samsung Galaxy XCover5.
++
++properties:
++  compatible:
++    const: imagis,isg5320a
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++    description: active-low data-ready / proximity interrupt
++
++  int-gpios:
++    maxItems: 1
++    description:
++      GPIO connected to the same INT line as the "interrupts" property. When
++      present it is polled during the reset sequence to observe the INT level,
++      as the vendor driver does; otherwise the reset falls back to fixed delays.
++
++  vdd-supply: true
++
++  wakeup-source: true
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        proximity@28 {
++            compatible = "imagis,isg5320a";
++            reg = <0x28>;
++            interrupt-parent = <&gpa2>;
++            interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++            vdd-supply = <&grip_vdd>;
++            wakeup-source;
++        };
++    };
++...
+-- 
+2.53.0
 
-> And you also need to add
->
-> asm/byteorder.h.
-
-Will do in v2.
-
-Thanks,
-Arnav
