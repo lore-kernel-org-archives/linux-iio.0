@@ -1,84 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794903598;
-	b=nYL0veqh22bvGVuheyRi89TO9eiisUMNHoU6sG3mgNkvoLSQtAz3RDYxwuj+1iPabCfl
-	 7kEmBHL+DEM42JnY1wXfhCZtI6THqOmRHpa7l+SIGCwZ9HPjgR7V7J9JfKEB83oY/w4QD
-	 wifZ5r60/kk5QkTjApzzkBTwAMovK4qbrOrmBiV8bcf4efd7Q89GByLEnffcLjhCeBiD3
-	 t2+xypccu/jIbecA3ozGGHiNh4/GQn7Sq8qDUeCnZLlaX/xXkvncN52+wZzAIJpVjZc6y
-	 JzeEm9wEik1nOwbB8dxTz33hCyaSyMdbow1XkYsQLdmVNcagpu2liKMUgulUujRczdA==
+	t=1794903670;
+	b=16q4dkOg483hluWjgf4T+l+EcWeVeKWAI+5kBvk+5UFdUfYNM4Z5OcGZFzhLmPAFjWNz
+	 JFImxp2NBXz8ujnZRysqinEdRlj7EIc3MxYgZSuoAL+nejdlhzIYSx7BGLNZ1ot6dw7Or
+	 dguOIo/LhiEma04iL6acG0N4nHVxEn6VP1I2sB5/kB73cyUpp0dknTwYSIfjJ2Tg2JnNX
+	 ngpbff43mDC3JQFb/lHEgGAzEU2NJEoI7ymBA6y8MBUVuq2+xdOvnQa7VvmOsqwuXFoVj
+	 NFTIuX/4hR6itkQtPFW4OgSt9XF9US2TbGAgQzR4RisHwtWswteyZ+CqfeEzLk0ZPsQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794903598;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=I3Fkl9XyeBJ93i7we3bJ3zegOituPdovXvhT1Oiv6l4=;
-	b=qpHvn4W8sIPs7qFRjG2GyIzRiAshio7Udnj1j3prksal+zstYQxAEZatbK09rP8Okgji
-	 fdWujzwx6n7a6ZCbY/C8PBrnS8V+5YfejRRGhNinm2v2y/Ag8jo90M2skB8L1kYWXKiUl
-	 FhNRK6Vc5lcFLnmzZb1VOeKJ1QAQBCKlhzHZA6iKHPeddKbwhhiSBBJM1HifRBc5RdsvE
-	 sUaVbdJ6MOGA1+9+do1QBerjk1llF/CoSgYUHzs/eQCsVLR7PsBW9Cv7Ybai8HYYiSGlv
-	 AleAx5dGFwgK480OASzHq54a3HnW4cZUqDLqCFuE39lr5aNB58dFAqxR05tb+fwncYQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794903670;
+	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:
+	 X-Forwarded-Encrypted:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type;
+	bh=kgD+tUTOk9garvkXT1JZE8IpV0ytjaEat0WUrpK1KAE=;
+	b=pRb+RDTceDhCMl1xdoLonFijd0TcRLREhaMienYJCpxVuBQBEYZrYX1TKhs5gfJzolYc
+	 SjhGzGC0BrXeK4Xk6q9wbngC4mrDgON5njaKM2GJyCICmcAi51T2zKeeACLdqzrgMoNtG
+	 Htx9q14ul1CkOl8SSLM2MVtoBjdaH9tegpFC0RBqQ3yTXXYNzbKwxn57GyTIjeS+1JDWl
+	 6NfVI2x7sdVkefX8L/vOA6PcbEifs15H9/+NksXlgRoVlKREgN4kYiewovfiThzEuiWNW
+	 kmSq3C7OIWM5sK2CD3g6l9kDu/sxG5GnOoavw4d24ONlZeP8VuiEu5IKfZf/VHIdw1w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i7y+9rDn;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=telaak.dev;
+	spf=pass smtp.mailfrom=gmail.com;
+	arc=none smtp.remote-ip=209.85.214.173
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85F20606A31C;
-	Tue, 17 Nov 2026 08:19:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 85F20606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=i7y+9rDn
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794903597; x=1826439597;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DOlTHnyUnnAelhHtUudZM11kzmmgyaQhPXcXCXIAF+k=;
-  b=i7y+9rDnK6VPLXqYgCoARYac67/tchHd3BmVjZe9TAsTM1cgUi495iYN
-   nqsOnJRWBw9M2WqEY25j/qm+BrqGEBk5qWhbJVi9g2pSC3j/ApkFpd82c
-   1i3s1MGxvBKrIwDZukSrnndkpaNCzG9MNUpXXIj3mh3gdGq6UXbSR+kwF
-   f5JRCjqGdanbfDJB5quyQQdL0BOq/b4B9LCuZZNbBpnOxCHw5BjFeilW4
-   Y+eXnqshQcHA9pwkVNPlU+bOKIizb7bg2zDCwN4FawHCFPudp7hOL0kNh
-   Q/W3KSCrIEIeFNMCbirisPW/Kxih5aWj7OBX22eZWR25pjC4O7o47OoCY
-   Q==;
-X-CSE-ConnectionGUID: 7g/bQgUyQqmsUkoX+VqdHw==
-X-CSE-MsgGUID: WC2ch5NFQLuGdAgg4WJ3Rw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3675968"
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="3675968"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 00:16:29 -0800
-X-CSE-ConnectionGUID: b9k/il8sRMGH0E3V6Vysag==
-X-CSE-MsgGUID: j9iOPpV3RBSvNCi32ETp4Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,218,1787036400"; 
-   d="scan'208";a="10125478"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.254])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2026 00:16:26 -0800
-Date: Tue, 17 Nov 2026 10:16:24 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joseph Telaak <joseph@telaak.dev>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Peter Rosin <peda@lysator.liu.se>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux@analog.com,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 4/5] iio: potentiometer: mcp4018: Turn on the vdd supply
-Message-ID: <avwNWJnsOQaZSWi8@ashevche-desk.local>
-References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
- <20261116-iio-ad5246-v1-4-ef6b7c06d4b0@telaak.dev>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B85C7606A329
+	for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 08:21:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B85C7606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=telaak.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2ed06b725fdso5649615ad.0
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 00:21:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794903669; x=1795508469;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=kgD+tUTOk9garvkXT1JZE8IpV0ytjaEat0WUrpK1KAE=;
+        b=Tbj+4nces5svJSzrh4Dvd+1pKEbLBdWRxixqxa0ZI9aK7WwV6GXfOiAvnVWG4cYV0+
+         68uYyjYuHwTeXa8PNgMzKVhYmbcNm0k2UyRLve0ygSVrZGfC+x2L4YluWI826YNBGUpk
+         1oXZzQ+9fxp1ilQquPUtoqPpwFRIeeUKEOLYjtg1n92SI3vjFAS4hKpULUVVZimEXYJ8
+         wKZNwuw08YgOUwNkf313qTNjwnqJUh4IY3Zoar5FOgl2Tdbjr+gvqggagxaRcpAa8O7v
+         +sPb/FaV4djcsutDPt2xFrRGooJUmm977eV5DbhY2JSiWz+G2xyP1/O6iRLAO9bE0Ut6
+         X18A==
+X-Forwarded-Encrypted: i=1; AL+hErFE0xArtg1qUxHnCBfIcm3k2Nu89VXk4FIlhi0YHMxGVevL3rm2cKa8zB8mf+YO98knW44oAa523dc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8xu9fi1a3/3nmkbYWOvCxKc+c8/YZY/bD4zQH/VFbqbk1LuvWQ
+	AXKXzrMiBBdpbrsb79liJpt6V7ifM3MYhxIBPJIzDTCByevT2TwdHm1zF8JyKuxV
+X-Gm-Gg: AZFdTZeKjYxupjog6WYLxr66vcYaPwlAxNkKYocKAIHQtDM4EcuM54K0T/DJtevhRfb
+	kP0FNFnLjopz5C/wpRFWRCt7dR5M4C8K5O4Ii6m3c74bu3hXUqXuHN4HD2/L8vhVRqrefBe6tek
+	iCXtndoKdUJKQEorLA5fXq+h/DD6Le3Y/qhecra8GizS++ic9Ed3ngVgRUvXOEymSMxh8zgf/l3
+	a7/mhqRv8OYJBVtW/M/k/fsOTeM/9FdB+qeq213592MSoR3iNvGJjeubyegXvGlsoq0e2puQmgI
+	zZQiGGaxK65vZUiOINcL3Ggm9/2umbQ9Dl3pFBUYkevgWS8KpIcuMlKrs21KQx9QMtUfx8pMN70
+	lET2cDDi0PJV9Po/vbRvm3bQ5m7ohOxJebBmau1999DrRC0JUcDB2f4en+FE/5l2IXKhZ3nmz98
+	Vyala6DZFPHUpH2BxNaJo81zwdtpYACiFXjJ/7f2EcKIno1GQwOd7yQ3Gjtsi+EUb8mbKsq1s+J
+	TxI93h8WLJbYgZFKi1ZawVqE+oMpEW5jWug1QAgtxjmf14TIwgUwqJ5P2GX0YopvoAnt3urknUJ
+	JPKAw2q99NLFLAeodPMGypUOE0/nOWDiEKmduQ+triaBKvZ/TEtv/2PCE8DtJi9FJuMNnj9hob3
+	6YgNLj7NKNa44rF38/nAH4NVv7HtIwBhXatzFJUO1CwpY
+X-Received: by 2002:a17:903:4b07:b0:2ee:81:1714 with SMTP id d9443c01a7336-2efd9bcd814mr12075705ad.32.1794903669008;
+        Tue, 17 Nov 2026 00:21:09 -0800 (PST)
+Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com. [74.125.82.171])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2efd76d8f08sm10953375ad.4.2026.11.17.00.21.07
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Nov 2026 00:21:08 -0800 (PST)
+Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-380c28f9e35so701447eec.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 00:21:07 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AL+hErGBKyj9wJWl/X+IBN4Glpr1M54fFlKjMA5AOlxZegfbdgGbHLpdZDE4Hh7EgGaCXcRlCHP7ocE1wAY=@vger.kernel.org
+X-Received: by 2002:a05:7301:2ab1:b0:36a:79cd:12df with SMTP id
+ 5a478bee46e88-3810c843192mr1761148eec.9.1794903667144; Tue, 17 Nov 2026
+ 00:21:07 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,27 +81,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261116-iio-ad5246-v1-4-ef6b7c06d4b0@telaak.dev>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
+ <20261116-iio-ad5246-v1-1-ef6b7c06d4b0@telaak.dev> <avwL_iuTyEjaj0hs@ashevche-desk.local>
+In-Reply-To: <avwL_iuTyEjaj0hs@ashevche-desk.local>
+From: Joseph Telaak <joseph@telaak.dev>
+Date: Tue, 17 Nov 2026 03:20:55 -0500
+X-Gmail-Original-Message-ID: <CAPY4CJ53YA3AbkFNCw=OXDSXnPM=CF1_WV+TatUjx0Rbwff0KA@mail.gmail.com>
+X-Gm-Features: Aa3M54pifUmPegO6YEwH8eX-E140QvER9X4qv2NjEXyp1YoVc6uiJAyqJ3gFezQ
+Message-ID: <CAPY4CJ53YA3AbkFNCw=OXDSXnPM=CF1_WV+TatUjx0Rbwff0KA@mail.gmail.com>
+Subject: Re: [PATCH 1/5] iio: ABI: Move out_resistance_raw_available to sysfs-bus-iio
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Peter Rosin <peda@lysator.liu.se>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Nov 16, 2026 at 05:59:53PM -0500, Joseph Telaak wrote:
-> Get and enable the vdd supply at probe, so a board that switches the
-> potentiometer's supply gets it powered before the wiper is used. On
-> boards that describe no supply, this gets the dummy regulator.
+On Tue, Nov 17, 2026 at 03:10, Andy Shevchenko wrote:
+> > -Date:                October 2016
+>
+> This is missing in the copied case.
 
+Right, v2 will keep it.
 
-+ dev_printk.h // dev_err*()
+> > -Contact:     Peter Rosin <peda@axentia.se>
+>
+> This is also, but I think Contact for generic is the IIO as a whole
+> (maintainer level).
 
->  #include <linux/iio/iio.h>
->  #include <linux/module.h>
->  #include <linux/property.h>
-> +#include <linux/regulator/consumer.h>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Agreed, so I'll leave the IIO list as the contact.
