@@ -1,50 +1,89 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795009573;
-	b=GV/skucAsCV7yqLX45W3ijfntzQNKh37B/FXSJpCOryTjuIUQ+nKjhZSFWKmW4SE5HEu
-	 OvO4qLsWM4s22mGcsXEOrUsTfCbUdNYv7mun/d1W3HO3m8nsmxJZ3dMBhru/WXkLeqqsq
-	 9Ax/0PT2Jy7zA1LG3DOC2hajCBydyc+xqUGdJJzliJfbqLKBr1ZNH+iyRUHk3xQWXvgEv
-	 lfKcqpAGt6s3sVR9HFoLsxOo29XzXAiGtrYHeCPDh19LsSBRoSSpyWHN2wNrN0nUZzlaK
-	 Mk+4tyaXevrkUfXF/efLCEx4r9jJaDrT81ePXPfihEbOkt5dse1kicZfHYg0MKTY64w==
+	t=1795009572;
+	b=jRLFYMD6JNy0lrHMzyIguReKXyzJlWfhL8B2qHwXUppXnIQIaB5u/6aPWuIRVfSrKCfY
+	 RxSGOlLazPFkzFX1cXeZzvhPBdD3LK9ZR3j2hCXtNB0qzN6JLgn038U+KWjImA2jQDIEK
+	 KoJsOxudH8tt/1E1cNzV40GQGEOCHHb57UBVhb99jL1CrJa/rzaNGfu+sEoqg4YMW7DOL
+	 z3wBhBn9cI1sXrWj7V92uxOR3nbp+IAxSYolNko8k3KWkBvZHD/y+0obOzxBo6IyfUCVa
+	 WNvqK8FbXwTdMjMyRfNyYnkzO/IZrF8uq6M2noG4I6pXBtGUKY51P94c6Vn8ZipicFw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795009573;
-	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer;
-	bh=ME2c98cFZmrsIFhi9t1O9MP3b4XqKwYbmgLCsFp/Kbc=;
-	b=YgUrx6TvgVlM1GdLhSHFPfxnu+g/0pLLNsV+Iibho6eLY38RrN3fcxmlER3jZ9AUS983
-	 PkZ9epnLtUrF/mmhhq3Bq5BTVY80v9XbNmuRd69T3b9/4lqb2cURxkU1BUNf4YzCs7D6E
-	 Kd53NoBm/H4qobgazcJCdM8mBY9GJ2xY+DM0KsuRlWNUm/ayL0CcE4h/KBeQ6eCIV57Ca
-	 cc1OZHvh7w1Wz07RcoW5nkCnMNHP1HAUtqBKPIPzba/C8Z8KaeT0Vkzu/+aUvlEnyYo9Z
-	 c8DVMZx3Jq13Rkf6Lhf5E8n9bCIFvlHF4NABzT8tJJhutgneEEu0LMSHKDj8J0fpzjw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795009572;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=sDJGspNFkUyu8KxOLu1jE5eutQREHyym7I9CvkghZBo=;
+	b=M2Dq5BDs2wuNX8/VsNpk+cXh2BszpWiRWzwf+hnBspkVBIergCPjJ5+kAL3TAanAlZ9K
+	 GDkVCIpSnY5Agat/njtMOa1t319Vpf7eNCCSDQDEWE75oIe7+kxTAS1Y0Ft776z3CKdRF
+	 KuvFsWs8ldkmNHH3H+VJODB9glCFjlwZMgAt+sYKFOA0B8WGOwGNB7wvuLAAIRSZmnBGE
+	 Edz/MatVsqgdjZ4JgNN1Rve1qFSTjjybrUnPdDJLYuDDdR+TNsnCkSjSFsGdaiHTjKEcI
+	 kG54jvmXZ5INvtcAN5LgkDnU2jDNo4lQDxSX0WptT34DXQLRnsJKdjkOxuGWZXud++w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c2PvRVVl;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Et88hbJB;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5922860A2604;
-	Wed, 18 Nov 2026 13:46:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75EE3606A331;
+	Wed, 18 Nov 2026 13:46:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c2PvRVVl
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B717A1F000C4;
-	Wed, 18 Nov 2026 13:46:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Et88hbJB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A8611F000CB;
+	Wed, 18 Nov 2026 13:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795009573;
-	bh=ME2c98cFZmrsIFhi9t1O9MP3b4XqKwYbmgLCsFp/Kbc=;
-	h=From:Subject:Date:To:Cc;
-	b=c2PvRVVlZbHVxiKNPdEW5e9H9e3zgPmmfiFySKodj48z0AxpxU14WpapWtsMfrnF9
-	 lOt6EIXhl4Lf5HXGDZFgYP+c6c5yQ9j60oAxPUSuUzRa+buXRZhZ5VPbK7V0uKqbtE
-	 Ga+JhVpxNsImDjPFThqOz5UmAj0fpjN0mz4KHOvzx6HTs9xvHDyXJ5Dn2Oq1KZ1PeR
-	 xnCCKpMHmeO0V//yz0ULOgGD00RTx0K28zURwZdrBje1X96Qy1dc6B04EIQI6CBKR1
-	 0SVd491/zTkjaubW1L1iTNJQvdzHjWEb4+R6Gn3shx6yJmmmUiuLGtg2XPcA5nalOF
-	 NXWt3mjITchkQ==
-From: Linus Walleij <linusw@kernel.org>
-Subject: [PATCH v3 0/5] iio: light: gp2ap020a00f: Add VCC supply and
- GP2AP030A00F support
-Date: Wed, 18 Nov 2026 14:46:07 +0100
-Message-Id: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
+	s=k20260515; t=1795009572;
+	bh=sDJGspNFkUyu8KxOLu1jE5eutQREHyym7I9CvkghZBo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=Et88hbJBRGxCGoNpGGEEpOInHeVF2PPHct24eJZfCN58VJ/QUk+bBjz3PPlnEHEvv
+	 M/k+Fv5cuwhXXOdab4BEWxpbTB2zijxONxjiWc2NSqpr7OTQNPjsZsJkQGrr98tOlN
+	 5TJOosp3QtfF8xTFqjhlYrFmpjf1n40YXxV3QNy8PVqvcf2SOWWbNA7+roaW7ADmBZ
+	 8jmwTNoTugKWl4srTRmwRr7XJjCN3IsPtBZ4Vsl+aKdEirLZV14I7EDGTXNJXGzwFG
+	 4FvZTeDqbELFlCPM9+s3QaDV3x1yATofQTzCdGz6u6TkbTKA6SPE8UWti/RbKP5JQG
+	 Jz6zt5eJMdsVw==
+From: Philipp Stanner <phasta@kernel.org>
+To: Sumit Semwal <sumit.semwal@linaro.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	Philipp Stanner <phasta@kernel.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Sunil Khatri <sunil.khatri@amd.com>,
+	Vitaly Prosyak <vitaly.prosyak@amd.com>,
+	Prike Liang <Prike.Liang@amd.com>,
+	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Tvrtko Ursulin <tvrtko.ursulin@igalia.com>,
+	David Rosca <david.rosca@amd.com>,
+	=?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Dave Stevenson <dave.stevenson@raspberrypi.com>,
+	=?UTF-8?q?Ma=C3=ADra=20Canal?= <mcanal@igalia.com>,
+	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Cc: dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org,
+	etnaviv@lists.freedesktop.org,
+	intel-gfx@lists.freedesktop.org,
+	imagination@lists.freedesktop.org,
+	lima@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	nouveau@lists.freedesktop.org,
+	virtualization@lists.linux.dev,
+	spice-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	rust-for-linux@vger.kernel.or
+Subject: [PATCH v2 3/3] dma-buf: dma-fence: Remove dma_fence_init64()
+Date: Wed, 18 Nov 2026 14:45:23 +0100
+Message-ID: <20261118134522.1646892-5-phasta@kernel.org>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261118134522.1646892-2-phasta@kernel.org>
+References: <20261118134522.1646892-2-phasta@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -54,78 +93,73 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAA/3XMQQqDMBBA0auEWTtlkphqXHmP0kXUUUOLSlJCi
- 3j3olBKF91++G+FyMFzhEqsEDj56OcJKqEzAe3opoHRd1AJUKTOUlKBw6LcQprQWkN5q7qWdAm
- ZgCVw758HdblmAkYfH3N4HXKSe/0g5RdJEgmN0TLnpiBjmvrGYeL7aQ4D7EpS/06FhCpn52Rje
- zb259y27Q3utgxv2wAAAA==
-X-Change-ID: 20261107-gp2ap030-99504c2dc038
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Kyungmin Park <kyungmin.park@samsung.com>
-Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- Joshua Crofts <crofts@kernel.org>
-X-Mailer: b4 0.16.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Describe and enable the optional VCC supply for the GP2AP020A00F and
-GP2AP030A00F. Preserve compatibility with existing device trees that only
-describe the LED supply.
+All users of dma_fence_init64() have been removed. They now use the
+respective initialization flag in dma_fence_init().
 
-Extend the existing binding and driver to support the GP2AP030A00F. It
-shares the register layout, but has different proximity resolution
-encodings and no automatic lux calculation. Select model-specific
-initialization, keep reserved bits clear and expose fixed-range raw
-clear and infrared counts. Keep generic supply handling in separate
-patches from the model-specific binding and driver additions.
+Remove dma_fence_init64().
 
-Assisted by LLM.
-
-Signed-off-by: Linus Walleij <linusw@kernel.org>
+Signed-off-by: Philipp Stanner <phasta@kernel.org>
+Reviewed-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
 ---
-Changes in v3:
-- Return -ENODATA when chip match data is missing.
-- Use four-line initializers for I2C device IDs.
-- Document the 1 ms power-on delay and use USEC_PER_MSEC.
-- Align family descriptions and list supported parts in Kconfig help.
-- Pack GP2AP030A00F samples as 16-bit values and omit zero shifts.
-- Link to v2: https://patch.msgid.link/20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org
+ drivers/dma-buf/dma-fence.c | 27 ---------------------------
+ include/linux/dma-fence.h   |  2 --
+ 2 files changed, 29 deletions(-)
 
-Changes in v2:
-- Replace vdd/vio with one optional vcc supply, matching the VCC pin.
-- Use devm_regulator_get_enable() for VCC, allowing dummy regulators.
-- Move the VLED description into the generic supply binding patch.
-- Split variant infrastructure from GP2AP030A00F support.
-- Use "GP2AP020A00F and similar" in family descriptions.
-- Use reverse Christmas tree ordering for local declarations.
-- Explicitly select MANUAL_CALC when automatic ALS calculation is absent.
-- Reject missing chip match data before accessing the device.
-- Use fsleep() for the GP2AP030A00F startup delay.
-- Select static channel arrays and counts through chip_info.
-- Link to v1: https://patch.msgid.link/20261108-gp2ap030-v1-0-55314eb7055b@kernel.org
-
----
-Linus Walleij (5):
-      dt-bindings: iio: light: sharp,gp2ap020a00f: Add VCC supply
-      dt-bindings: iio: light: sharp,gp2ap020a00f: Add GP2AP030A00F
-      iio: light: gp2ap020a00f: Enable the VCC supply
-      iio: light: gp2ap020a00f: Prepare for chip variants
-      iio: light: gp2ap020a00f: Add GP2AP030A00F support
-
- .../bindings/iio/light/sharp,gp2ap020a00f.yaml     |  17 ++-
- drivers/iio/light/Kconfig                          |   6 +-
- drivers/iio/light/gp2ap020a00f.c                   | 147 +++++++++++++++++++--
- 3 files changed, 151 insertions(+), 19 deletions(-)
----
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-change-id: 20261107-gp2ap030-99504c2dc038
-
-Best regards,
---  
-Linus Walleij <linusw@kernel.org>
+diff --git a/drivers/dma-buf/dma-fence.c b/drivers/dma-buf/dma-fence.c
+index 7bc925793e24..0776ca7c795e 100644
+--- a/drivers/dma-buf/dma-fence.c
++++ b/drivers/dma-buf/dma-fence.c
+@@ -1139,33 +1139,6 @@ dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+ }
+ EXPORT_SYMBOL(dma_fence_init);
+ 
+-/**
+- * dma_fence_init64 - Initialize a custom fence with 64-bit seqno support.
+- * @fence: the fence to initialize
+- * @ops: the dma_fence_ops for operations on this fence
+- * @lock: optional irqsafe spinlock to use for locking this fence
+- * @context: the execution context this fence is run on
+- * @seqno: a linear increasing sequence number for this context
+- *
+- * Initializes an allocated fence, the caller doesn't have to keep its
+- * refcount after committing with this fence, but it will need to hold a
+- * refcount again if &dma_fence_ops.enable_signaling gets called.
+- *
+- * Context and seqno are used for easy comparison between fences, allowing
+- * to check which fence is later by simply using dma_fence_later().
+- *
+- * New users MUST NOT use external locks. Check the documentation in
+- * dma_fence_init() to understand the motives behind the legacy use cases.
+- */
+-void
+-dma_fence_init64(struct dma_fence *fence, const struct dma_fence_ops *ops,
+-		 spinlock_t *lock, u64 context, u64 seqno)
+-{
+-	__dma_fence_init(fence, ops, lock, context, seqno,
+-			 BIT(DMA_FENCE_FLAG_SEQNO64_BIT));
+-}
+-EXPORT_SYMBOL(dma_fence_init64);
+-
+ /**
+  * dma_fence_driver_name - Access the driver name
+  * @fence: the fence to query
+diff --git a/include/linux/dma-fence.h b/include/linux/dma-fence.h
+index 6f5c245d89ec..56c4e5beaafe 100644
+--- a/include/linux/dma-fence.h
++++ b/include/linux/dma-fence.h
+@@ -288,8 +288,6 @@ struct dma_fence_ops {
+ void dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+ 		    spinlock_t *lock, u64 context, u64 seqno,
+ 		    unsigned long flags);
+-void dma_fence_init64(struct dma_fence *fence, const struct dma_fence_ops *ops,
+-		      spinlock_t *lock, u64 context, u64 seqno);
+ void dma_fence_release(struct kref *kref);
+ void dma_fence_free(struct dma_fence *fence);
+ void dma_fence_describe(struct dma_fence *fence, struct seq_file *seq);
+-- 
+2.56.0
 
