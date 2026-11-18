@@ -1,79 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794960365;
-	b=ZEIINs7bGS43p24RcSTaIYgaRwM5Ss0wk3kryiNgN5kunym4Cjgu7iqfBnHLTVVgOrs4
-	 sfpRKAzqhfAfr/MnkPJeZ12r1l2unkFqiMcFV7Mk8lBbrBW444zP09g2dmfeM7Uqrt5kP
-	 yfvxfFXCn6hFSffx1tN4HMIm8m3zWQwry4vEGyMrJDRoYcsiObUADKUPn4nSEzZnDtYo6
-	 MXK+3oFVi3JUBUKOM4HabLq4wNx4kuyOEVAME1xqsEpOWEPQ1OHrn6Ts7lYiMRyPPzil2
-	 EwtGREGmia3exwkIq8/HaJT0GsG572UG/Ne+C5yYHDgYhA8H/Ar327WAIzNQaJ2rA8A==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794960365;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=unrS287i9FwKkDsWayC0w5UfBJ3WFgvs3n9HcLvX0gc=;
-	b=UmrnlRBVoVDIE/pnZjmXoQkIA+O+0tO2Y54qHSfYN0QwouVryTHJAV7CE3mmeH8w5ba+
-	 rp1YjbNe35ue37aLahyM45KGwmPfG29uOeGEmI5BXSThdaCXr5tx78W7D7wOrn0Vg9tBs
-	 KqmOgEv/bScrR6dDm2G+7vpPsDoy2GWe9y/nUaH+Q+mr+Qy2bfv+R+6/RrDOWK4PTVoc2
-	 6w6SRyxVGCUejV7J393C3P5wmdGEIsmmwcmI/X9j+xqloPWCBhX0PdnDTTRenEtfvWad+
-	 MnS8noF9AXopwOI5UxJr+H+ztzoLOp1PUw+I8bvJwnktXnepohrnpGAI7oCrqUr5V/g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=abvdB7Gn;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A852606A31C;
-	Wed, 18 Nov 2026 00:06:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=abvdB7Gn
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794960365;
-	b=dX3epUhSbn4Jp3m74+IFKMmqMYPyL9ddjoLdZSnifXDAp+HUfGgfqShnFDM1ddMUjhso
-	 3EAbQXHcwLWg1rTLhioX6UiCBBOxzf0aaTh2Sx2YdWmByNXqpT3HYs3l1vZLXwcOgNQ8W
-	 Wb0RkylgOqtt4icq5uqWg9X0EbA5JvmKS6FU0PZPmee4eztb/eUvQiQfm/T4qDUP6zzyZ
-	 wK8ssvDjTC344U+9n4USbI1hFMj1Dh+RntqLe8JIcC08ufc7JMa94Fo157vm4wb8ei67E
-	 QfJGaz1puowm285q6qodLpqMZzvCvCGc/FPGZQmCLZBk3mZqOry6oORvsUbZ36CQ8AA==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794960365;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=unrS287i9FwKkDsWayC0w5UfBJ3WFgvs3n9HcLvX0gc=;
-	b=uVYlDb+RFypOeeejfGlrG5TsZcVCxOOWqKhYHBxqwxUKF43Gy74/ieq6SawuO3en2ZF3
-	 U7ElifLycAhSeMQg17ZuY44rOvkJGw8O+gdS+YAUbv1otbece3fy3nBE/RUYW26vduVV2
-	 FVKAY7Snxq1mTDQWGT/A7+nJjm9RkvuHgDciYJ9XV748jcyZY5Rfk6RbRqXCHoLt334mx
-	 dK28fvtADYIOMC9HCCPhAKegmdU8tsq1xCaf3gA42d8AWYFc2Q8wy2CeEu9Mjrx7CO+XG
-	 HI9e5GtC13OS3/Bu0YlAT5b41Cyhmg7jUhU5r8Hbcql0jYAaKDkI6zUk0ovxkZh8Hxw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.54
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794968203;
+	b=mQJ77czBHULakKFTCHNThlXieDNZIwic5c1G5Or2qKhkgGZsKuvCMLXFm7r8mE31xWvW
+	 jFsia+03MvOZXIc5aSA1pqWqrQ4h+8Xu1ZiCfs+t0J1DH6XaovdYOp/3+a2YTJQkACMwm
+	 amFkfhto0yG67bHP8u293aIpekXV62pEzw4TcF15Nazr8GnG+SqEDnFCccEUHcpvcTVV4
+	 XJAuUAXFtmbzg74hK47g9hQ418w/u2kivHP0SvfpVpgOYNa54kMcu/CKU7xzM9GnOqpkY
+	 Ql+d/D0g9qmBoHsXTlD8xVfFBCE8DjAIYbdx43wKEkN45VUD1buMeBHL7VUpurrv9lw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794968203;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=RUN4/XekwGukBeANDHZYj2pG8A+8Y1wLE0QDevY31GI=;
+	b=nj8KBtaou3CJVOZKNeZYNvpUf7EzRohTNZqkG1NB0TBfBegTdjVpyYzsRyNs7ZL1ZJIe
+	 XDuIpxSQzdT+qkUvZZU6V7l/NgmDhTGCM91slqYgJUF0c1JAndc6/CqqC+PSY1f4a+KsR
+	 uNR7ocavaJNgvjy5knaA27L9OBv8B52i9+3ZjeAZEtlJyIqQ4+Mbz2yHw/B+MQhI/1QfH
+	 8psVUXAdSewbDU6I0lKLuWE82j87EP93AAqZPmoSF0xrWR6F86jf62t8MQzKs/VlRgaA4
+	 GtfmMap8UKFO3Z9HV1tuUti+waWpc1fZeMB8jlOrF1Z5BH9eHgrhFZTfQre+kzH8oEA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=aLvzh7Tm;
+	arc=none smtp.remote-ip=74.125.82.54
+Received: from mail-dl1-f54.google.com (mail-dl1-f54.google.com [74.125.82.54])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 2C5911F000C4;
-	Wed, 18 Nov 2026 00:06:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794960365;
-	bh=unrS287i9FwKkDsWayC0w5UfBJ3WFgvs3n9HcLvX0gc=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=abvdB7GnEEJEfaNSa3T8TxLLBlROi7b+SQz4cV84FPx+M82JFKdHnUwc/1EDHp7go
-	 xSmbrWL6BoW0rgkkv2kEmfRdOieJ+rKbRZolL2pB0vJlQXR9HBWxWNFV0DyTsHJcAN
-	 5kAQ6IrfBwd+/Zhcuv/Ue0SocO5hb/L1vWQnlCqqNLEzmYkg9UA0FpJ0soBxrfyaBr
-	 N40eNK3QxELb6kcnZp2AVbSFc45sgZaBCxycS10LDHt7wc3PfdsYtklzaCsI5CG4GV
-	 QLhLC4DpUDOlCK45SRWHwzsiLOKaHCqSm+WTEABC3eC4JaIAw0U4kRKELoyUkKCHDs
-	 QXmtb1OCGayTw==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 70FFC4790C;
-	Wed, 18 Nov 2026 00:06:03 +0000 (UTC)
-From: Maximo Manriquez Lizarraga via B4 Relay <devnull+DelaySystem.tubot.lat@kernel.org>
-Date: Tue, 17 Nov 2026 16:06:03 -0800
-Subject: [PATCH v2] staging: iio: adc: ad7816: use dev_err_probe() for GPIO
- lookups
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3243606A325
+	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 02:16:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E3243606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=aLvzh7Tm
+Received: by mail-dl1-f54.google.com with SMTP id a92af1059eb24-1aefd1bf74aso291923c88.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2026 18:16:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794968202; x=1795573002; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=RUN4/XekwGukBeANDHZYj2pG8A+8Y1wLE0QDevY31GI=;
+        b=aLvzh7TmrJQmsKxZ3p4l00JnOMwV1+eSfabMwypUjc1VmM5qgDfZ2mE8VxdcKQaIlX
+         E57k195r2iINV4t2BN+AR9LNERcwahvmpROMB8PJfCYXAXwmgNCSXVFqk73XW6feEiuC
+         zGSYDUC0qi3vCoHGF5mI8WLPRqvyajol0jG+b8+n/rLnCf0QVp6X1uOHAz4gqQpubwaW
+         Ts0YABGgelzj4tlv2eGuXrj5LlOlbzh4+K/Uk1VI9p1XwTwtIrpoq98bFzblWBVcHRTi
+         xM+vRB3JF4lPDLcPUGivxMXmi3TJyVdqAbvhkLW2cV/EsMzksEcZZ6W0r4n7FciiM0c3
+         AoWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794968202; x=1795573002;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RUN4/XekwGukBeANDHZYj2pG8A+8Y1wLE0QDevY31GI=;
+        b=N9n+Pron+Z/IqQggDOfBvoCC0Uq6t+tKVAFagG+xKjOvxyNkOVp4Nte3gsdFAguqyv
+         /chtuX8MPQuhXzmZ5fzSgDFKz/VHSwmv/PFgxadgMdAeJYc0TKOh+i+LkAyvrdC9Xs9c
+         IxPrbBuuBkzfKtYXouK6pAJ7pEQ8U6TX6MZbglDOIlrrabZtKsEH50jU7KOnDn1PthdJ
+         wA7A250OfNsfYu/Q6vBIYuT7EyfWji8rG8eJONU+OcHlhQp1LScjup6EN0xskRGIIl/7
+         MAJgNm4QwcnJL26shZjqZvmo+kL0mjKbefJdtcdM2UjrisqKx1SsQv2UYSuw5kautreR
+         /0fw==
+X-Forwarded-Encrypted: i=1; AL+hErF4AwI0yzarLcF4FaMFR6C/LljcIjXZFGQmPXZkQ8/t4fz7TuPVtTLcHlLukGelrlLh5TR8kfYTS1s=@vger.kernel.org
+X-Gm-Message-State: APuU4Z841cxrLcV9f4luLQrDp+9fsERcnRh6GRwqAuB32CYKoKhsKHsf
+	SRhzsJ+E/Ujk2OP+Vtd1PitVbtnqVhPehuSiW6oHen7M+Zu4SvH0EIA9
+X-Gm-Gg: AYBFou1R0nmsTX2C7c8rcnyuETYCN80PLKSULQXYOrG1BytoUGkj9FNe3pH8yOX+Zyl
+	6Y2XyWgsRLbqLfcdOZ0RM2qUYqGVnxv2n/vWzyL5SuKOgYVNaR18uphIL+41fSYtQadmhk8N3VS
+	e3V6kXh284MdSk5PQqVhaQveDtsbBJgDcchckoMvpKd4LsTl1nB70Ru1TtrPcyWjN8RkfO0kQ4y
+	6w3dP+AELjDJqz0ZqbV16tzs2hf4QQ/I9BIZVbm2bz4XV9tGlSui13OhwFE9rfI7JAnTY67423D
+	vYxdjKi6/6FWedYBeP328j5T7ea8sPHVLBB6Kquc9dz3SFutGxjtKDklbpfZDHkpyKreRSdLptB
+	fIHHz3upTUEFynW2b/ZX2VOHLX7YgD9HV69Brau3/XPh+bSJ+GiesLv+Hb4A1PnZJ7BO2sR1i31
+	0x2G5t5roJIUPVK7BbGLM+c9kDTx3EGpzmcW3e+JEooNfg20DM2Ntt/P0P3cO378PgKevdy/bYo
+	qHzu1PnzjsSqIH455VnbN0xe6j0GNc06TfETBeRWVxrohHJz26199N/bq4GsQlKOck42rnVIC/T
+	m+6iovH0j4+rwcRAiaHYhVdR/bAWaZUSyc9t
+X-Received: by 2002:a05:7022:b052:10b0:1ae:d447:6c84 with SMTP id a92af1059eb24-1b53a469eb6mr3927988c88.19.1794968201793;
+        Tue, 17 Nov 2026 18:16:41 -0800 (PST)
+Received: from localhost ([2804:30c:914:4500:cd15:65cc:e2cc:7363])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5446f954dsm2207436c88.2.2026.11.17.18.16.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 18:16:41 -0800 (PST)
+Date: Tue, 17 Nov 2026 23:18:04 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+	linux@analog.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Esteban Blanc <eblanc@baylibre.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 0/3] iio: adc: Provide mult_fract() and make use of it
+Message-ID: <av0K3OIrxq5Bkjpw@debian-BULLSEYE-live-builder-AMD64>
+References: <20261117091638.1463621-1-andriy.shevchenko@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,92 +105,23 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261117-batch1-s3-warn-v2-1-17f4e541123b@tubot.lat>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WNQQ6CMBBFr0Jm7RimJVJceQ/Doh2L1Bggbakaw
- t2luHb5kvffXyBY72yAc7GAt8kFNw4biEMB3OvhbtHdNgZRihNRWaPRkXvCIPGl/YBCNdworg2
- Rgm00edu59x68tj8Os3lYjrmSjd6FOPrP/pgoe3/jiZCw6lgqWRFrqS5xNmM8PnWEdl3XL2mLE
- V6+AAAA
-X-Change-ID: 20261107-batch1-s3-warn-289c98c7b118
-To: jic23@kernel.org, Michael.Hennerich@analog.com, dlechner@baylibre.com, 
- gregkh@linuxfoundation.org, andy@kernel.org, nuno.sa@analog.com
-Cc: linux-iio@vger.kernel.org, krzk@kernel.org, linux@analog.com, 
- linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev, 
- Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2256;
- i=DelaySystem@tubot.lat; h=from:subject:message-id;
- bh=zUcBktwXmCE4oXfyfd9Np1m8huOS/SaVtNAIrPt4qJg=;
- b=owGbwMvMwCH2SNl4+SzWXm/G02pJDFl/Xr/+PSPHu2fBstdXOq22WfBt+3NoU++6/09nl4v4d
- S09bnQ3oaOUhUGMg0FWTJFFTIbnff19nThrqzknYOawMoEMYeDiFICJLJFn+J8gJz5hQ/OaRV06
- pvf/von+XL5yxk3R+Ik9FTeCtVfE/zJk+Ge8TWObqUHYEq4Wvnt8BaeVOdrOyL2cv/OvF9c8Ye3
- eXawA
-X-Developer-Key: i=DelaySystem@tubot.lat; a=openpgp;
- fpr=161C0CEF7FDF2C5E3B3A9CC8E22333A79A058D4B
-X-Endpoint-Received: by B4 Relay for DelaySystem@tubot.lat/default with
- auth_id=1447
-X-Original-From: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
-Reply-To: DelaySystem@tubot.lat
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261117091638.1463621-1-andriy.shevchenko@linux.intel.com>
 
-From: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
+On 11/17, Andy Shevchenko wrote:
+> In a couple of IIO ADC driver the suggested new helper mult_fract()
+> may be used. So, provide it and update the straightforward users.
+> 
+> The helper has potential treewide, hence it's provided directly in math.h.
+> 
+> Andy Shevchenko (3):
+>   math.h: Add mult_fract() that takes struct __Txx_fract as argument
+>   iio: adc: ad4030: Switch to use mult_fract() helper
+>   iio: adc: ltc2378: Switch to use mult_fract() helper
 
-GPIO lookups can return -EPROBE_DEFER.  Convert the rdwr and convert
-GPIO lookup failures in ad7816_probe() to dev_err_probe(), which
-suppresses the error message on deferral and records the deferral
-reason.  The busy-GPIO path is left untouched: its optionality is the
-subject of a separate proposed change.
+For the whole series
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 
-No functional change other than defer handling.
-
-Signed-off-by: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
----
-Changes in v2:
-- Resend under my real name (From/Signed-off-by: Maximo Manriquez Lizarraga).
-- Apologies for the improper sign-off on v1; no code change.
-- Link to v1: https://patch.msgid.link/20261107-batch1-s3-warn-v1-1-4fc38341ca38@tubot.lat
----
- drivers/staging/iio/adc/ad7816.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 2a15d7598abb..11292216dfb5 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -381,20 +381,14 @@ static int ad7816_probe(struct spi_device *spi_dev)
- 
- 	chip->id = spi_get_device_id(spi_dev)->driver_data;
- 	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_OUT_HIGH);
--	if (IS_ERR(chip->rdwr_pin)) {
--		ret = PTR_ERR(chip->rdwr_pin);
--		dev_err(&spi_dev->dev, "Failed to request rdwr GPIO: %d\n",
--			ret);
--		return ret;
--	}
-+	if (IS_ERR(chip->rdwr_pin))
-+		return dev_err_probe(&spi_dev->dev, PTR_ERR(chip->rdwr_pin),
-+				     "Failed to request rdwr GPIO\n");
- 	chip->convert_pin = devm_gpiod_get(&spi_dev->dev, "convert",
- 					   GPIOD_OUT_HIGH);
--	if (IS_ERR(chip->convert_pin)) {
--		ret = PTR_ERR(chip->convert_pin);
--		dev_err(&spi_dev->dev, "Failed to request convert GPIO: %d\n",
--			ret);
--		return ret;
--	}
-+	if (IS_ERR(chip->convert_pin))
-+		return dev_err_probe(&spi_dev->dev, PTR_ERR(chip->convert_pin),
-+				     "Failed to request convert GPIO\n");
- 	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
- 		chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy",
- 						GPIOD_IN);
-
----
-base-commit: fa4ad798f6f681031775266044ba1b0cf3c670bd
-change-id: 20261107-batch1-s3-warn-289c98c7b118
-
-Best regards,
---  
-Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
-
-
+Thanks,
+Marcelo
