@@ -1,18 +1,18 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.9
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.23
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795015087;
-	b=gRs7vcOAJnwKh6DFLdmVFYFXL0BzwCihIN5oagcNphazFXFOqxErGPKvtVvEA5wsFaFZ
-	 qqamphjwv8mswjEBS40LdImQMuD6qr/bP/+kRpkNJzuBjaNDzrE7MxY9olIfDmlGweA2p
-	 fECIm0ZQAopvNUjEl7LU6Z2WBnq9RbtiR9/IBuL0Ew6FUtOlmuVHjPxSVbNL9P3crtIYy
-	 ROPjY7SDJY5lDy85mXwrdDbtTlcBcIPt031m0ARAxeKD0wPUh/4VW9LVX9ba9SF72NTxi
-	 1crInb5oBMBXgyoPFTvxAn06Ld5E4c/tCf2Qy4SRKCx7/vC6+5qZp8bEe9GRf7nyhtw==
+	t=1795015090;
+	b=Mv3qN1uJ/JuWS9YArah3u/JgAtq+gsvyQxPYesslKfDxZC798BiFIPSDUdCGV4ucI4qt
+	 yFbQOfmuKRbsLzyRzJWJW8uyHudbRc+h6gi/jT5ZwVpbnBhMDlzTF6EkEQ4Plu7Eh2rZ8
+	 /nIWZI+ltCp3HO8Q/YywMzSYI3/pRUrpSNDFS5InQzy+qZq+N9eXcmBlc/QOfm14T6v3x
+	 8btjJ/mf+eS2+GaUAu0PBX9guqKQiqyHN7RzFo03qwbcmT2zwNo5eRBoTAGVTWtSHjgfJ
+	 Qlo9Q4HpvXUgxsRSA11aivtVNx1hpxEEJUrtSwzs8JThdN/qve/bJ8QWJYHsA9oF+Fg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795015087;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795015090;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:From:Subject:Date:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:CC:X-Mailer:
-	 X-Originating-IP:X-ClientProxiedBy:X-EOPAttributedMessage:
+	 Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-ID:References:In-Reply-To:To:CC:
+	 X-Mailer:X-Originating-IP:X-ClientProxiedBy:X-EOPAttributedMessage:
 	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
@@ -26,35 +26,35 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=e3Tbz3OqGoB1JDSg00/T9UbvXiLM4AtiVRmzqYryQQA=;
-	b=PyWu4ZeS8DV7p8b6Ns5Xt9Zg0uZKydLYJGEulUkeldldIK1ReucddlhbCVRkaSdVhYfJ
-	 1KStQMbucfrq7tGPTyRrLdPPPw9JdFIggOlubv6m2AR1t4Td/FXsg5GYTjt4jYKdpEUaq
-	 vgOstXViSvoL+5HOth8ibmxxE2Ll4zYg1jPlePiVTSHWGrusV7F+wgjRiBCOkxePyuWnM
-	 TBZBsF7MpSswmI0ZraMe2vN69Qq96tOrF8BtKJTJaiJe/vOI88gEtLmF1+BLX2fWiPMoB
-	 fGJ8W7kYn/XkHbEiEhRAsba76yTW/Y048DLK3isMSNjsEKmxRKYzbfQ3Hl7GjeF3e4w==
+	bh=mkgMm3c5VRdfuHAGVkeGQXA2jbL9LAe8vP6tn2p4n94=;
+	b=fkiEu3VZkRD0MXuK/EkW1sUObDg71NnxdCnoXBnaXvfJN3Aswh0We+XXcsRVg/7dqv/9
+	 7ngypjiQx/Im68QEd7Iq8F/bawgZtzXtb2ZBFA7WQEYGy6/eZB2D40m5635/1ElzRAl3O
+	 LrjUgfEJXFHSZdn42hS24fOhhXJU/bXOQddM6NHZkLUzeIv/ViEpFxuNqUfTdbRCNgc0V
+	 P/WMeUb41m6leBnoK8YOpVOC49C3cRCX5GGwsyuaNPH8uOC5Nx0I5gSwt2cAM+TpnzRPM
+	 X3OB/WuHxlLAE7gZYP3rHWW6d7+FLqiaGAGJcVijrQw6wDogKaX1ECgIG+Dv4IpZigw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=foss.st.com;
 	spf=pass smtp.mailfrom=foss.st.com;
-	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b="E+W595a/";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.9
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010009.outbound.protection.outlook.com [52.101.84.9])
+	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=IXpnsWGm;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.23
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013023.outbound.protection.outlook.com [52.101.72.23])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE172606A320;
-	Wed, 18 Nov 2026 15:18:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BE172606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB31606A331;
+	Wed, 18 Nov 2026 15:18:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CCB31606A331
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=E+W595a/
+	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=IXpnsWGm
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=y+87gKyhkZku4qUemYTMziW7zc2GGJwRHTP2UpKe9QgsPKNersvnozgIQI+MaMOv2HTNXFYaYR06AdzfmBFHdTfvGUFe52YZZzHk/AImO7RkGHE7h4KZG7r2Wd++Y+w1YFI6TwD8RL6kCdRjsSM2eanBct95IMmaoDxFVWy8Eu7fRp2BtBoyGOmae/A0TxLJeY6Xy2LL76KuVR7YQPJs6evPtTowmWNUNByyMTA2sM4bqnk/WqrOPsWFvJluTi12zVXlBBPfm0CEVRn6wgU1dFwQrWkOnyYFylEaN5+DUSA5n0U+IA6HatzkW51qkHdUW25hRtUMkLDJ0OmBeKRedA==
+ b=aacZSaiND62g6npUXPd8pzR96UHTUZV7cZyAeR82IyqrQwQIq5qYjx1+xzNqHXdxaAQ87ODL22O2uJFUWl059/vmObTaVEj1McTAJebmyb8ku6WfDxrZUku0DznIBbRnDxhKY8uouCnMbzyF2WaERKR2jYekh42kWdJdr14oeTLAJLsozalITv5Vp9VVrsUcGBm8qSAHPEZZhcmwIVFyEKCdk6umwMFEGXMcTwtjtSDaswuJ+iqB5KMGZnuCXLaoc0yW0/XRqvuTfOorj5dGBsH7tMLUNLofDN4yUSOqm8/UYiwR1snUK78JwKynggxciWGXdy9+8zh45r2HuABsKA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e3Tbz3OqGoB1JDSg00/T9UbvXiLM4AtiVRmzqYryQQA=;
- b=hzyX8zJ6V+qSQh4n1HbQduwfBVz11g0LNQDspham8IipsZOntLwPDyi9fVpoRfjWfiQooH73vXoDYOPx3DZ32rF/mOj1/uO0+RK4Sk8lFrwUBNWjS32K0KnMHV9GxpZGpjAUqvQfO+PSYTtOP55DBO5hCt1zK3v1ECRVWZbOtpTHe1yB/lpfJQfhT1jrcO1bVGHnGaspvTLizq49mfbd1Zw1kZHuiXojKYsDxhpi+/QyHH9ipQeSi4B3+kT8aIHubf1zwlsc8Oiivxp7OVj+ZJgKB0wwYbCRkWAUCW4/EuXYd6uqaHijhjc4d5Ag5zp3lASKnQV+0EtAq4dCj7YnAA==
+ bh=mkgMm3c5VRdfuHAGVkeGQXA2jbL9LAe8vP6tn2p4n94=;
+ b=uEZg1GN7143WuI7iwoTkAhasIV8ltHtdVO5CZtPNN25HRMBvmv8aBRsJL8e/KVKXAx0Aw6qj24FozdO1a1z07dnBPPkS7RD/HBfRXRpJ4DlWIv5IeL8kNrJHWki4LMdXbFGpAi+mV5AjGNKFdnXUZhJ6idjrq2j5j022WZYYlhxVUUbc+7YWWAoymNCSpvlpckJjWORIfQrd7hGxUkJj1dZs/jHOYJyGjGoU76W9LOHl31kJM+ozXzbqhJ3HTZm+G3i97seC8e+IrRjN7ohinILdNL5O+2z+8V9aURdoDLpOgtLl/0fHXIc6RNtVHK+1HWYA1CdiWXDr04qEj03mmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
  164.130.1.60) smtp.rcpttodomain=amd.com smtp.mailfrom=foss.st.com; dmarc=fail
  (p=none sp=none pct=100) action=none header.from=foss.st.com; dkim=none
@@ -62,18 +62,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e3Tbz3OqGoB1JDSg00/T9UbvXiLM4AtiVRmzqYryQQA=;
- b=E+W595a/7FLGHpfiWqqMMSDAgMMQXSLsHw4Cz0Zj2P1FEU8MPqaEDqsuOf8O09RQcIw/Wvswpxjx5q4erpwnSZat8uv7In7BXk5y5L8Cl5Qey7q5/HxwHiMis4w79EI8gR1Xxy3kx6PYarPyGYEFgF+vewgAajqpGQXk7dl5tC25prZzE7MHmf2ICH2BdapZFmi7G5+WmC88n8NFo1BkADSrUuOJaNMjBAvWVXwWF9OegodztRO6N9KMTBIFVrm34tjr4oGlXjaVHbZufOIV5TyAsZ09jMQQv6gvaWAwlsNUcwUgzLoFwMG4L9GxjNVEp7NV1EnMxgUsUUgaBXpNQA==
-Received: from DUZPR01CA0025.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:46b::13) by PA4PR10MB5587.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:102:261::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.8; Wed, 18 Nov
- 2026 15:18:01 +0000
+ bh=mkgMm3c5VRdfuHAGVkeGQXA2jbL9LAe8vP6tn2p4n94=;
+ b=IXpnsWGmJtuWg6dAzSmCtDEJSbkW8gD9r+b1tQRFC4mHouLvkuV466hkupaCBSjdj/Hs334tRFMUPm15VdgOSAoERSZUao4oWq7zAAuRyUftA0GNA1dmiibqXBAg/wr8CQOZarCp21vyV5L8WSZBDNorpNM89Ods8TjVALVfRBAj87H+g4pJI7m/ykA0xhfC9ezRWZjLGyW2e1w4Lc/Ql3fFVSFBUzTJClXzqK0w5Mf4hO+YE4HwSBu34tcyGHjdQ0Fhggsdruq1+oeBuF2QWTMgGNMl2zxGWE8yAnkqzwIGT6ei+VA5E379NvOUwbnMUlxTWHuisHozFJaAO5RGFg==
+Received: from DUZPR01CA0024.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:46b::11) by BR2PR10MB992311.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:2c8:9::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.7; Wed, 18 Nov
+ 2026 15:18:06 +0000
 Received: from MA3PEPF00000408.eurprd04.prod.outlook.com
- (2603:10a6:10:46b:cafe::7f) by DUZPR01CA0025.outlook.office365.com
- (2603:10a6:10:46b::13) with Microsoft SMTP Server (version=TLS1_3,
+ (2603:10a6:10:46b:cafe::90) by DUZPR01CA0024.outlook.office365.com
+ (2603:10a6:10:46b::11) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.14 via Frontend Transport; Wed,
- 18 Nov 2026 15:18:01 +0000
+ 18 Nov 2026 15:18:05 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
  is 164.130.1.60) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=foss.st.com;
@@ -83,19 +83,19 @@ Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
 Received: from smtpO365.st.com (164.130.1.60) by
  MA3PEPF00000408.mail.protection.outlook.com (10.167.241.153) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Wed, 18 Nov 2026 15:18:00 +0000
+ 15.21.615.4 via Frontend Transport; Wed, 18 Nov 2026 15:18:05 +0000
 Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpO365.st.com
  (10.250.44.72) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Wed, 18 Nov
- 2026 16:19:00 +0100
+ 2026 16:19:06 +0100
 Received: from localhost (10.252.16.78) by STKDAG1NODE2.st.com (10.75.128.133)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Wed, 18 Nov
- 2026 16:17:58 +0100
+ 2026 16:18:04 +0100
 From: Olivier Moysan <olivier.moysan@foss.st.com>
-Subject: [PATCH v2 00/11] iio: adc: stm32: add mdf support for stm32mp2
-Date: Wed, 18 Nov 2026 16:17:45 +0100
-Message-ID: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
+Date: Wed, 18 Nov 2026 16:17:51 +0100
+Subject: [PATCH v2 06/11] iio: adc: stm32-mdf: configure cic filters and
+ sample rates
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,10 +107,9 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAJnB/WoC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyjHQUlJIzE
- vPSU3UzU4B8JSMDIzNDQ0Mj3dKC4pKi1MTc+NyUtPgyI11zMwMTgxRLS0Nji1QloK6CotS0zAq
- widGxtbUADFPvYWEAAAA=
-X-Change-ID: 20261112-upstream_mdf_v2-76040d99138e
+Message-ID: <20261118-upstream_mdf_v2-v2-6-7939d3c3720a@foss.st.com>
+References: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
+In-Reply-To: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
  Shevchenko" <andy@kernel.org>, Rob Herring <robh@kernel.org>, "Krzysztof
@@ -134,179 +133,469 @@ X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
  (10.75.128.133)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MA3PEPF00000408:EE_|PA4PR10MB5587:EE_
-X-MS-Office365-Filtering-Correlation-Id: e50d67df-9264-41e8-5d8c-08df45872233
+X-MS-TrafficTypeDiagnostic: MA3PEPF00000408:EE_|BR2PR10MB992311:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3846e3ab-79c6-4b2a-5238-08df4587253c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|1800799024|376014|7416014|261028144727099003|261102123227099003|261102130727099003|261021135927099003|261021123027099003|261021121427099003|261021130227099003|261026140227099003|261026121527099003|261022115727099003|261022075727099003|921020|11063799006|261026130827099003|261022113327099003|56012099006|10067099003|261022105027099003|18002099003|6133799003|261009221227099003|261009223027099003|13003099007|3023799007;
+	BCL:0;ARA:13230040|23010399003|82310400026|36860700016|1800799024|376014|7416014|22082099003|18002099003|6133799003|3023799007|921020|11063799006|56012099006|261026140227099003|261022075727099003|261009223027099003|261028144727099003|10067099003|261102123227099003|261021123027099003|261021121427099003|261022105027099003;
 X-Microsoft-Antispam-Message-Info:
-	0VNCwyNBkK8hflG+yFL/FXEl06eQdRzwUYClVn0XCkfaGsweLbuuDsEvnyhyBMjk7TlLkN4aaaC+1ImvPXbp1uCXc4jzwuoIV+EhBbdzJ2z9sXfB4jmle6EI9NXZvHbn66kjh6ipDHKma4e1BFjqKBoDR1P0hmzdImrvfiDKH14COoM6laOysjjQeLoRgkdzSZLVZbuwvD9+qKOoRFhzlJMrD+r6OGBAMFZDbzlCvRSeSIuTvxqb0w0+eGsRjiow6dZ60RMcUFOU61kpbt/4dWiQhUSjjpjuIozPed9bES6rHTBH2VNjABW7oRYo6geimXwxNG1T3ZkhHTNSClN0zVe4LEql8GSGnykuOc32K4Cwaaih4KRAN+2TyTi2CvTofo+tatOSAv4+0syODhtq9PS3AM28MuK3tRNA+JenFldlME1ryz4zNISwWZCZIvLADe3C9020WUVDxLS2kuyd7bPgSpDs0WAvgcKBfwmV/x+9NxVGOjEwWl/UYTTwfPIoq/aVuIvt6WoevZGfttzk90skBCw0GuOkhwUY3FkDk/X76DV9gjApFeAhvaNhqIk3um2RtxG92pjeIyw6Rw8I99oBi6n3cepZDIUyoYxSR83KbMNEwGj3wt135Gjx7Qs1EVhChrVuqkfgF49Wqr7SDabNASnH9AUpu+uoZLBYnbDpPuedLp9FdEhY0+Im1CLPUQQujtDcyVAtfF/244l3sw==
+	dqP/zqrOYrz0UhLwub2N43otWSFRO1qRiBCio1h+VU9uD+fYKVSd9AHSmrTTwkgmPHuMvj2VueFMY2AA9kAlOmya1hRlxWgb/3vRTCOX+3j1VLChOvzfOPURNPAsaBqd5HX/Ul8BuH8gC9LASAMy3vdUPBhybWvUYqXJnshFwa7lXSxfRqtKCpXmwUfnqkAlrQNhll/0Zd3GBCSen9lzyuLW9sCdjhGOYvd4En2yjAdxagx4eC/l4HZiQ9yIgHHshC7W/wU6l4+Srqcx2kmLTw4OiCQeoYBADETKPQiOiZvOjfMBpIqMVwbgcS/diw4fzl0KhcQyigymP9c0Q2jeaqAYdPMMMoQQo5QWp6b0xdolFJ0kJcQAp00PXbiowTKkF0/OEicB9gzTTb2qzXgmHpxXTPa1W5t/urxk9ExNWtSR0USK+II7upFgZUXNWYjNi84drV30pDPCT0iG3SOQ+UOLDbecshFL+JqEzlelhGxIE2sTFocMFY2S48uCWiW5i2ue8UIT8bq1lSNQ1IFkleHPrqio7c15kFM/YOHKqIqSbq79dv3b8bRGhc/LuUrsRUz99390xS1FBDH5JFhnVab1IIZyu5AjiPXyAOfNu/ZzPkTZZeIlvmrOFRDr9Ng9Ny8T64gVeC4hXAM07x18Co6/grpsPBg0RF9Qz8EsN3++oUCs+w0udo9HOseloOVcRa+gq6bFlKKkI6UUxjkf2wqY82tyfplRW9VCjN2xCnHwW39QTe71RKqACkMtCTN4
 X-Forefront-Antispam-Report:
-	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(1800799024)(376014)(7416014)(261028144727099003)(261102123227099003)(261102130727099003)(261021135927099003)(261021123027099003)(261021121427099003)(261021130227099003)(261026140227099003)(261026121527099003)(261022115727099003)(261022075727099003)(921020)(11063799006)(261026130827099003)(261022113327099003)(56012099006)(10067099003)(261022105027099003)(18002099003)(6133799003)(261009221227099003)(261009223027099003)(13003099007)(3023799007);DIR:OUT;SFP:1101;
+	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(36860700016)(1800799024)(376014)(7416014)(22082099003)(18002099003)(6133799003)(3023799007)(921020)(11063799006)(56012099006)(261026140227099003)(261022075727099003)(261009223027099003)(261028144727099003)(10067099003)(261102123227099003)(261021123027099003)(261021121427099003)(261022105027099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	WAOWp0D/K0DrHpsfg/3tc+yCCvrXJ71zz3+OK8Cg/Aukt8vmTj3G2DP7VD93vA7vcB2V9klO5XFKz6gwYU3LmSNWwJFn7xeWGcoPTFT19OtH+D/FhZg/gMJOkMQJpcykMpZrEN/ho/i7pm3PbIEhRSKvE0ObExDLO17lbxVdnxFE1W9CKV252vz/H5IExa1+LrATGI+cVYQwFgHeZZO1Y5GUltgtZBzV2SX6odvZZD3l0x3fkZUEb/IB1K6/+6pc0MOksZSTGVbemdrIbktsWgxFLYUZE/lTxn35KzfN8q/cMqs+DMC8I6Sb3EWAXmJXuNvNjG66tV9Aahsf7O8G36u1ENFlxFMHRfCep0N5hiv1U9TZsf1dvFM5e2cfETEclmRweIMktljmJOp9WsqBzkCNZs7/0x2viWFx7dH4A+vWHt37hG4cvXzCbQe54Zkm
+	uNXgwoUbX2Vk3qYEEpuDUWhVXETV7+eEFiK+WqzTwHNG5j6I0tN58Rfsxro7qP939nIw37eDnLAl/3nnIN3KjWCSp9EzTIj1cWdeTDMsWcmrenV4nLJRuE0nYcYimV3nkj6MltvX3KimCva+34PzZRXzJHE3hsNiW8lfJfRTeOfy3q+gjeAPUFEcotCkXywuc4/MSpHEsBJPktfovPewBIBReJGAYa1p1nluvUZy7yw9PuQ/Wg+bT1e7o5jctfiAxzgRZlB4Fhs3V6AJWLS5EJtn3Ynf3CEqQfUWUBQKwvZ2cZSI7GrcbiXwEHaUSV4vh7RbURNq6sR/ycWOGqUc5ReHP0r2jTmuCjWZ/vjmujZ4wSIQ8aBH59++YehwY5+rVbpekN4x282kmvOiYTg9Pnq3yO/bTuu2Urp+Z1r/cAcLnC/DSMOMrpMCnFiHmo/s
 X-OriginatorOrg: foss.st.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 15:18:00.5456
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 15:18:05.6443
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e50d67df-9264-41e8-5d8c-08df45872233
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3846e3ab-79c6-4b2a-5238-08df4587253c
 X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.60];Helo=[smtpO365.st.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	MA3PEPF00000408.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR10MB5587
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BR2PR10MB992311
 
-This series adds support for the STM32 Multi-function Digital Filter
-(MDF) found on STM32MP2 SoCs. MDF converts bitstreams from external
-sigma-delta modulators and PDM microphones into samples for IIO and
-ASoC consumers.
+MDF output sample rates depend on the serial clock and the decimation
+applied by the CIC and reshape filters. Add the calculations needed to
+derive these settings from a requested sampling frequency.
 
-The drivers support direct IIO conversions, cyclic DMA acquisition,
-CIC configuration and scaling, synchronized and interleaved filters,
-and external timer triggers. An ASoC DAI provides PDM microphone capture.
+Compute CIC gain and data scaling for the selected filter order and
+decimation to maximize output signal dynamic.
 
-This revision addresses the v1 review comments listed below and splits
-the driver patch into smaller functional patches for readability.
-It retains the existing IIO backend interface for external sigma-delta
-modulators, pending agreement on the preferred abstraction.
-
-These changes do not resolve all v1 review comments. In particular, the
-frontend/backend architecture, DT child-node model and complete clock
-topology remain open discussion points.
-
-* Open questions: MDF topology (backend/frontend)
-
-In Analog Devices use of the IIO backend framework, the AXI ADC is a
-hardware backend, while the AD9467 is a hardware frontend. The external
-sigma-delta modulator is actually a hardware frontend in the MDF signal
-chain. The difference from the AD9467 use case is which driver owns the
-aggregate IIO device.
-
-Option 1:
-One option would be to generalize the existing backend abstraction to
-represent components contributing to an aggregate IIO device,
-independently of their position in the signal chain.
-
-The existing framework appears to provide the required mechanisms. None
-of these mechanisms inherently requires the provider to be a hardware backend.
-A generic component/provider model would support both topologies without
-duplicating interfaces or requiring reciprocal dependencies. The key
-point here is to preserve the compatibility of APIs and DT bindings.
-
-Option 2:
-Alternatively, if the backend abstraction should retain its hardware
-meaning, we could introduce an explicit frontend-provider abstraction
-sharing the existing infrastructure. Frontend operations would cover
-analog-side control and conversion parameters.
-
-Would generalizing the existing abstraction be acceptable, or would a
-separate frontend interface built on shared infrastructure be preferred?
-
-Option 3:
-An aggregate IIO device based on the component framework, as discussed
-in previous threads, could also be considered. I currently regard this
-as a fallback solution:
-https://lore.kernel.org/all/ec411432-4b77-4410-b0aa-b29f73b82c84@foss.st.com/
-
-* Driver implementation
-
-Serial interfaces (SITF) are shared resources managed directly by the
-MDF core and no longer have separate platform devices. This revision
-retains their DT nodes to describe configuration and clock connections,
-and to allow filters to reference their input bitstreams without
-duplicating shared settings.
-
-This revision also retains a platform device for each MDF filter, as
-each filter manages its own registers, interrupt, DMA channel and IIO
-acquisition state, with a separate suspend/resume lifecycle.
-
-* Clock management
-
-Several clock-management review comments are addressed in this revision:
-- The provider-side clock-frequency property has been removed. Consumers
-  request CCK rates through assigned-clocks and assigned-clock-rates.
-- The clock-names property has been removed. The core acquires its single
-  input clock by index, and CCK gating uses regmap-based clock operations.
-- Remove the unused clock-ranges property, as the core now explicitly
-  shares the kernel clock with the serial interfaces and filters instead
-  of relying on parent clock lookup.
-
-Clock topology point remains open, awaiting clarification of the MDF topology.
-
-Changes since v1:
-- Split the large IIO driver patch into smaller functional patches.
-- Replace provider-side clock-frequency with consumer-assigned CCK rates
-  through the common clock framework.
-- Remove the platform devices for serial interfaces.
-- Replace the interleave phandle list with a filter count, covering
-  consecutive filters starting at filter 0.
-- Simplify clock-output-names, remove clock-names, reset-names and
-  filter-level clock properties, and move mdf-dai into an explicit
-  property outside the conditional schema.
-- Rename the binding to match the STM32MP25 compatible, sort compatible
-  entries, and simplify the binding patch subject.
-- Use unsigned long for match data, improve probe error reporting and
-  wrapping, remove a probe-success debug message, and add kernel-doc for
-  exported core functions.
-- Use scoped spinlock guards.
-- Remove empty serial-interface runtime-PM callbacks.
-- Remove the redundant ASoC platform module alias.
-
-Additional fixes since v1 (following Sashiko review):
-- Compute the settling-time discard count with 64-bit arithmetic.
-- Size cyclic DMA periods in complete scans and validate buffer and
-  period alignment before starting DMA.
-- Fix backend-enable rollback so backend zero is disabled as well.
-- Use managed allocation for the conversion buffer and managed IIO
-  triggered-buffer setup.
-- Release temporary synchronization and serial-interface firmware-node
-  references. Replacing interleave phandles also removes the associated
-  stored node references.
-- Avoid unregistering secondary interleaved filters that were never
-  registered as IIO devices.
-- Use managed acquisition of the optional serial clock.
-- Replace the GCD-based CCK divider selection with a search for the
-  largest valid divisor, allowing non-power-of-two divider values.
-- Remove the selection of the undefined COMMON_CLK_REGMAP symbol.
-
-Previous discussion:
-https://lore.kernel.org/all/20261001145702.2628429-1-olivier.moysan@foss.st.com/
+Check serial and processing clock constraints, and configure the CCK
+rate when needed.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
-Olivier Moysan (11):
-      dt-bindings: iio: adc: add stm32mp2 mdf filter
-      iio: adc: stm32-mdf: add core registration
-      iio: adc: stm32-mdf: add cck clocks provider
-      iio: adc: stm32-mdf: add serial interfaces support
-      iio: adc: stm32-mdf: add digital filter device support
-      iio: adc: stm32-mdf: configure cic filters and sample rates
-      iio: adc: stm32-mdf: add direct iio conversion support
-      iio: adc: stm32-mdf: add dma buffered acquisition support
-      iio: adc: stm32-mdf: add external timer trigger support
-      iio: adc: stm32-mdf: add dmic audio filter support
-      ASoC: stm32: add mdf dai support
+ drivers/iio/adc/stm32-mdf-adc.c | 404 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 404 insertions(+)
 
- .../bindings/iio/adc/st,stm32mp25-mdf.yaml         |  341 ++++
- drivers/iio/adc/Kconfig                            |   29 +
- drivers/iio/adc/Makefile                           |    3 +
- drivers/iio/adc/stm32-mdf-adc.c                    | 2080 ++++++++++++++++++++
- drivers/iio/adc/stm32-mdf-core.c                   |  899 +++++++++
- drivers/iio/adc/stm32-mdf-serial.c                 |  223 +++
- drivers/iio/adc/stm32-mdf.h                        |  275 +++
- include/linux/iio/adc/stm32-mdf-adc.h              |   19 +
- sound/soc/stm/Kconfig                              |   15 +
- sound/soc/stm/Makefile                             |    3 +
- sound/soc/stm/stm32_amdf.c                         |  375 ++++
- 11 files changed, 4262 insertions(+)
----
-base-commit: d922ed738439e1d5b4701df7f4cdd49a09925624
-change-id: 20261112-upstream_mdf_v2-76040d99138e
+diff --git a/drivers/iio/adc/stm32-mdf-adc.c b/drivers/iio/adc/stm32-mdf-adc.c
+index 411af78911c9..eae7a4fa1485 100644
+--- a/drivers/iio/adc/stm32-mdf-adc.c
++++ b/drivers/iio/adc/stm32-mdf-adc.c
+@@ -182,6 +182,64 @@ static const unsigned int stm32_mdf_hpf_cutoff_ratio[] = {
+  * where N is filter order and D the CIC decimation factor.
+  * Following table gives the maximum decimation ratio for filter order [0..5].
+  */
++static const unsigned int stm32_mdf_cic_max_decim_sitf[] = {
++512, 512, 512, 322, 76, 32
++};
++
++/* Gain (dB) x 10 according to scale value in hex */
++static const struct stm32_mdf_scales stm32_mdf_scale_table[] = {
++	{0x20, -482, -2558},
++	{0x21, -446, -1706},
++	{0x22, -421, -1280},
++	{0x23, -386, -853},
++	{0x24, -361, -640},
++	{0x25, -326, -427},
++	{0x26, -301, -320},
++	{0x27, -266, -213},
++	{0x28, -241, -160},
++	{0x29, -206, -107},
++	{0x2A, -181, -80},
++	{0x2B, -145, -53},
++	{0x2C, -120, -40},
++	{0x2D, -85,  -27},
++	{0x2E, -60,  -20},
++	{0x2F, -25,  -13},
++	{0x00, 0,    10},
++	{0x01, 35,   15},
++	{0x02, 60,   20},
++	{0x03, 95,   30},
++	{0x04, 120,  40},
++	{0x05, 156,  60},
++	{0x06, 181,  80},
++	{0x07, 216,  120},
++	{0x08, 241,  160},
++	{0x09, 276,  240},
++	{0x0A, 301,  320},
++	{0x0B, 336,  480},
++	{0x0C, 361,  640},
++	{0x0D, 396,  960},
++	{0x0E, 421,  1280},
++	{0x0F, 457,  1920},
++	{0x10, 482,  2560},
++	{0x11, 517,  3840},
++	{0x12, 542,  5120},
++	{0x13, 577,  7680},
++	{0x14, 602,  10240},
++	{0x15, 637,  15360},
++	{0x16, 662,  20480},
++	{0x17, 697,  30720},
++	{0x18, 722,  40960},
++};
++
++/* Prime number 1000 x log10 table */
++static const struct stm32_mdf_log10 stm32_mdf_log_table[] = {
++	{2, 301}, {3, 477}, {5, 699}, {7, 845}, {11, 1041}, {13, 1114}, {17, 1230}, {19, 1279},
++	{23, 1362}, {29, 1462}, {31, 1491}, {37, 1568}, {41, 1613}, {43, 1633}, {47, 1672},
++	{53, 1724}, {59, 1771}, {61, 1785}, {67, 1826}, {71, 1851}, {73, 1863}, {79, 1898},
++	{83, 1919}, {89, 1949}, {97, 1987}, {101, 2004}, {103, 2013}, {107, 2029}, {109, 2037},
++	{113, 2053}, {127, 2104}
++};
++
+ static bool stm32_mdf_adc_readable_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+@@ -271,6 +329,352 @@ static struct stm32_mdf_adc *stm32_mdf_get_filter_by_handle(struct stm32_mdf *md
+ 	return NULL;
+ }
+ 
++static int stm32_mdf_adc_compute_scale(struct device *dev, unsigned int decim,
++				       unsigned int order, unsigned int data_size)
++{
++	unsigned long max = ARRAY_SIZE(stm32_mdf_log_table);
++	unsigned int prime_factors[16];
++	unsigned int num, div, logd = 0;
++	int i, j, scale;
++
++	/* Decompose decimation ratio D, as prime number factors, to compute log10(D) */
++	j = 0;
++	num = decim;
++	while (num > 1) {
++		i = 0;
++		while (i < max) {
++			div = stm32_mdf_log_table[i].raw;
++			if (!(num % div)) {
++				prime_factors[j] = stm32_mdf_log_table[i].log;
++				num = num / div;
++				j++;
++				break;
++			}
++			i++;
++		}
++		if (i == max) {
++			dev_warn(dev, "Failed to set scale. Output signal may saturate.\n");
++			return 0;
++		}
++	}
++
++	for (i = 0; i < j; i++)
++		logd += prime_factors[i];
++
++	/* scale = 20 * ((DS - 1) * log10(2) - NF * log10(D)) */
++	scale = 20 * ((data_size - 1) * stm32_mdf_log_table[0].log - order * logd);
++
++	return scale;
++}
++
++static int stm32_mdf_adc_apply_filters_config(struct stm32_mdf_adc *adc, unsigned int scale)
++{
++	struct stm32_mdf_adc *adc_inter;
++	u32 msk, val;
++	int ret, cnt = 0;
++
++	/* Apply conf from filter0 to interleaved filters if any */
++	if (MDF_IS_FILTER0(adc) && adc->mdf->nb_interleave) {
++		list_for_each_entry(adc_inter, &adc->mdf->filter_list, entry) {
++			if (MDF_IS_INTERLEAVED_FILT_NOT_0(adc_inter)) {
++				adc_inter->datsrc = adc->datsrc;
++				adc_inter->cicmode = adc->cicmode;
++				adc_inter->decim_cic = adc->decim_cic;
++				adc_inter->nbdis = adc->nbdis;
++				adc_inter->hpf_cutoff = adc->hpf_cutoff;
++
++				stm32_mdf_adc_apply_filters_config(adc_inter, scale);
++				cnt++;
++			}
++		}
++		if (cnt != adc->mdf->nb_interleave - 1) {
++			dev_err(adc->dev, "Interleaved filter number [%d] / expected [%d]\n",
++				cnt, adc->mdf->nb_interleave - 1);
++			return -EINVAL;
++		}
++	}
++
++	/* Configure delay */
++	ret = regmap_update_bits(adc->regmap, MDF_DLYCR_REG, MDF_DLYCR_SKPDLY_MASK, adc->delay);
++	if (ret)
++		return ret;
++
++	/* Configure NBDIS */
++	if (adc->nbdis) {
++		ret = regmap_update_bits(adc->regmap, MDF_DFLTCR_REG, MDF_DFLTCR_NBDIS_MASK,
++					 FIELD_PREP(MDF_DFLTCR_NBDIS_MASK, adc->nbdis));
++		if (ret)
++			return ret;
++	}
++
++	/* Configure CICR */
++	msk = MDF_SITFCR_SCKSRC_MASK | MDF_DFLTCICR_CICMOD_MASK |
++	      MDF_DFLTCICR_MCICD_MASK | MDF_DFLTCICR_SCALE_MASK;
++	val = FIELD_PREP(MDF_SITFCR_SCKSRC_MASK, adc->datsrc) |
++	      FIELD_PREP(MDF_DFLTCICR_CICMOD_MASK, adc->cicmode) |
++	      FIELD_PREP(MDF_DFLTCICR_MCICD_MASK, adc->decim_cic - 1) |
++	      FIELD_PREP(MDF_DFLTCICR_SCALE_MASK, scale);
++
++	ret = regmap_update_bits(adc->regmap, MDF_DFLTCICR_REG, msk, val);
++	if (ret)
++		return ret;
++
++	/* Configure RSFR & HPF */
++	if (adc->hpf_cutoff == STM32_MDF_HPF_BYPASS)
++		val = MDF_DFLTRSFR_HPFBYP;
++	else
++		val = FIELD_PREP(MDF_DFLTRSFR_HPFC_MASK, adc->hpf_cutoff);
++	val |= adc->rsflt_bypass ? MDF_DFLTRSFR_RSFLTBYP : 0;
++	msk = MDF_DFLTRSFR_RSFLTBYP | MDF_DFLTRSFR_HPFBYP | MDF_DFLTRSFR_HPFC_MASK;
++
++	return regmap_update_bits(adc->regmap, MDF_DFLTRSFR_REG, msk, val);
++}
++
++static int stm32_mdf_adc_set_filters_config(struct iio_dev *indio_dev, unsigned int decim)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	struct device *dev = &indio_dev->dev;
++	unsigned int decim_cic, decim_rsflt = 1;
++	unsigned int data_size = STM32_MDF_DATA_RES, order = adc->cicmode;
++	u64 max;
++	int i, d, log, scale, max_scale, gain_lin;
++
++	if (!adc->rsflt_bypass) {
++		decim_rsflt = 4;
++		data_size -= 2;
++
++		/* Check if total decimation factor is a multiple of reshape filter decimation */
++		if (decim % decim_rsflt) {
++			dev_err(dev, "Total decimation factor [%d] not multiple of [%d]\n",
++				decim, decim_rsflt);
++			return -EINVAL;
++		}
++	}
++
++	decim_cic = DIV_ROUND_CLOSEST(decim, decim_rsflt);
++	if (decim_cic < MDF_DFLTCICR_MCICD_MIN ||
++	    decim_cic > stm32_mdf_cic_max_decim_sitf[order]) {
++		dev_err(dev, "Decimation factor [%d] out of range for CIC filter order [%d]\n",
++			decim_cic, adc->cicmode);
++		return -EINVAL;
++	}
++
++	/*
++	 * Compute scaling:
++	 * max scale = 20 * log10( 2 exp DS / D exp NF )
++	 * - DS = max data size at scale output (RSFLT on: DS = 22 / RSFLT off: DS = 24)
++	 * - NF = Main CIC filter order
++	 */
++	if (is_power_of_2(decim_cic)) {
++		/*
++		 * Decimation ratio is a power of 2: D = 2 exp n
++		 * max scale = 20 * (DS - n * NF) * log10(2)
++		 */
++		log = stm32_mdf_log_table[0].log;
++
++		/* Compute max scale (dB) * 1000 */
++		max_scale = (20 * (data_size - 1 - (order * (fls(decim_cic) - 1))) * log);
++	} else {
++		/*
++		 * Decimation ratio is not a power of 2
++		 * max scale = 20 * ((DS - 1) * log10(2) - NF * log10(D))
++		 */
++		max_scale = stm32_mdf_adc_compute_scale(dev, decim_cic, order, data_size);
++	}
++
++	dev_dbg(dev, "Filter order [%d], decimation [%d], data size [%d], max scale [%d]\n",
++		order, decim_cic, data_size, max_scale / 1000);
++
++	/*
++	 * Find scale register setting.
++	 * Limit max_scale accuracy to first decimal for comparison with scale table values.
++	 */
++	max_scale = DIV_ROUND_CLOSEST(max_scale, 100);
++	i = ARRAY_SIZE(stm32_mdf_scale_table) - 1;
++	while (i > 0) {
++		if (stm32_mdf_scale_table[i].gain_db < max_scale)
++			break;
++		i--;
++	};
++	scale = stm32_mdf_scale_table[i].scale;
++	gain_lin = stm32_mdf_scale_table[i].gain_lin;
++
++	dev_dbg(dev, "Set scale to [%d]dB: [0x%x]\n", stm32_mdf_scale_table[i].gain_db / 10, scale);
++
++	adc->decim_cic = decim_cic;
++
++	/*
++	 * Calculate maximum DFLT output filter
++	 * max = K * G
++	 * - Fastsinc (order 0):	G = 2 * d^2 * gain_lin
++	 * - Sinc order 1 to 5:		G = d^N * gain_lin
++	 * - RSFLT off:			K = 1, d = decim
++	 * - RSFLT on:			K = 2.98, d = decim_cic
++	 * N = CIC filter order, decim = total decimation ratio, decim_cic = CIC decimation ratio
++	 * gain_lin is multiplied by a 10 factor in stm32_mdf_scale_table, and K with a 100 factor.
++	 */
++	if (adc->rsflt_bypass) {
++		d = decim;
++		max = 100;
++	} else {
++		d = decim_cic;
++		max = 298;
++	}
++
++	if (order) {
++		i = 0;
++		while (i < order) {
++			max *= d;
++			i++;
++		}
++	} else {
++		max *= 2 * d * d;
++	}
++
++	if (gain_lin > 0) {
++		max *= gain_lin;
++		max = DIV_ROUND_CLOSEST_ULL(max, 1000);
++	}
++	if (gain_lin < 0) {
++		max = DIV_ROUND_CLOSEST_ULL(max, -gain_lin);
++		max = DIV_ROUND_CLOSEST_ULL(max,  10);
++	}
++
++	adc->dflt_max = max;
++
++	dev_dbg(dev, "DFLT maximum output [%d]\n", adc->dflt_max);
++
++	return stm32_mdf_adc_apply_filters_config(adc, scale);
++}
++
++static int stm32_mdf_adc_check_clock_config(struct stm32_mdf_adc *adc, unsigned long *sck_freq)
++{
++	unsigned long cck_expected_freq;
++	unsigned int ratio, cic_ratio;
++	int ret, error = 0;
++
++	/*
++	 * The CCK rate is requested by its consumer through the clock framework.
++	 * The serial interface clock sck (aka cck) is derived from MDF kernel clock frequency.
++	 * The kernel clock rate may have been changed by another consumer, or MDF dividers
++	 * may have been updated through clk_get_rate() call.
++	 * Ensure that kernel clock rate and MDF dividers, still provide the right sck/cck rate
++	 */
++	cck_expected_freq = stm32_mdf_core_get_cck(adc->mdf);
++	if (*sck_freq != cck_expected_freq) {
++		dev_dbg(adc->dev, "Wrong sck_freq [%lu]Hz. Expected [%lu]Hz.\n",
++			*sck_freq, cck_expected_freq);
++		error |= STM32_MDF_ERR_SCK_FREQ;
++	}
++
++	/*
++	 * Mode SPI:    check Fproc >= 4 * Fsck
++	 * Mode LF SPI: check Fproc >= 2 * Fsck
++	 */
++	ratio = DIV_ROUND_CLOSEST(adc->mdf->fproc, *sck_freq);
++	if ((adc->sitf->mode == STM32_MDF_MODE_SPI && ratio <= 4) ||
++	    (adc->sitf->mode == STM32_MDF_MODE_LF_SPI && ratio <= 2)) {
++		dev_dbg(adc->dev, "Wrong Fproc/Fsck ratio [%d]. sitf mode [%d], RSFLT [%s]\n",
++			ratio, adc->sitf->mode, adc->rsflt_bypass ? "off" : "on");
++		error |= STM32_MDF_ERR_MODE_RATIO;
++	}
++
++	/* RSFLT enabled: check Fproc > 24 * Fsck / (MCICD+1) */
++	cic_ratio = DIV_ROUND_CLOSEST(24, adc->decim_cic);
++	if (!adc->rsflt_bypass && ratio <= cic_ratio)
++		error |= STM32_MDF_ERR_DECIM_RATIO;
++
++	/* If we found an error, try to restore clocks initial settings */
++	if (error) {
++		ret = stm32_mdf_core_restore_cck(adc->mdf);
++		if (ret < 0)
++			goto err;
++
++		*sck_freq = clk_get_rate(adc->sitf->sck);
++		if (!*sck_freq) {
++			ret = -EINVAL;
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	dev_err(adc->dev, "Wrong clock configuration [0x%x]. Clock recovering returned [%d]\n",
++		error, ret);
++
++	return ret;
++}
++
++static int __maybe_unused mdf_adc_set_samp_freq(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	struct device *dev = &indio_dev->dev;
++	unsigned int decim_ratio;
++	unsigned long delta, delta_ppm, sck_freq, sample_freq = adc->requested_sample_freq;
++	u64 nbdis;
++	int ret;
++
++	sck_freq = clk_get_rate(adc->sitf->sck);
++	if (!sck_freq) {
++		dev_err(dev, "Unexpected serial clock frequency: 0Hz\n");
++		ret = -EINVAL;
++		goto err;
++	}
++
++	/*
++	 * In analog use cases, the sampling frequency may not be already set in IIO sysfs.
++	 * (In audio use cases, the sampling frequency is always provided on stream startup)
++	 * If requested sampling frequency is 0, set a default frequency.
++	 * The default frequency is computed from the default decimation ratio.
++	 * This ensures that a filter configuration can be found whatever the selected filter
++	 * order. (Most constrained case is order 5)
++	 */
++	if (!sample_freq)
++		sample_freq = sck_freq / MDF_DEFAULT_DECIM_RATIO;
++
++	ret = stm32_mdf_adc_check_clock_config(adc, &sck_freq);
++	if (ret)
++		goto err;
++
++	decim_ratio = DIV_ROUND_CLOSEST(sck_freq, sample_freq);
++
++	delta = abs(sck_freq - (decim_ratio * sample_freq));
++	delta_ppm = (1000000 * delta) / sck_freq;
++	if (delta_ppm > 1000)
++		dev_warn(dev, "Sample rate deviation [%lu] ppm: [%lu] vs [%lu] Hz\n",
++			 delta_ppm, sck_freq / decim_ratio, sample_freq);
++	else if (delta)
++		dev_dbg(dev, "Sample rate deviation [%lu] ppm: [%lu] vs [%lu] Hz\n",
++			delta_ppm, sck_freq / decim_ratio, sample_freq);
++
++	/*
++	 * Convert settling time into a minimum number of output sample to discard before releasing
++	 * the data. This allows to drop the samples affected by the impulse response of the
++	 * filter and wait for stable data.
++	 */
++	nbdis = DIV_ROUND_UP_ULL((u64)adc->stu * sample_freq, 1000000);
++	if (nbdis > MDF_DFLTCR_NBDIS_MAX) {
++		dev_warn(dev, "NBDIS [%llu] too large. Force to [%lu]\n",
++			 nbdis, MDF_DFLTCR_NBDIS_MAX);
++		adc->nbdis = MDF_DFLTCR_NBDIS_MAX;
++	} else {
++		adc->nbdis = nbdis;
++		dev_dbg(dev, "Settling time [%u] us. NBDIS set to [%u] samples\n",
++			adc->stu, adc->nbdis);
++	}
++
++	ret = stm32_mdf_adc_set_filters_config(indio_dev, decim_ratio);
++	if (ret < 0)
++		goto err;
++
++	adc->sample_freq = DIV_ROUND_CLOSEST(sck_freq, decim_ratio);
++	adc->decim_ratio = decim_ratio;
++
++err:
++	return ret;
++}
++
+ static int stm32_mdf_get_sitf(struct device *dev, struct stm32_mdf_adc *adc,
+ 			      struct fwnode_handle *sitf_node)
+ {
 
-Best regards,
---  
-Olivier Moysan <olivier.moysan@foss.st.com>
+-- 
+2.43.0
 
