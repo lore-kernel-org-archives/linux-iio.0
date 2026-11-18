@@ -1,89 +1,50 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795009564;
-	b=AnVzQgMR32JKSHMD5QrtmoLEan+/JnmnghPxdUZVkBXVildTzBdXWW5ZXcpY0ur/o0Mo
-	 maBMhNbdpXKvyM9SlFbyL8a3AdE4X0v7rxDM+RA8gvoCQgr2voipiFoLcs62HqY49/MTG
-	 utNLinpxGK6UXeDxMyojFKbHOAwXQVIfDKl/Dk+nZOBtYYQLlzyHUbVyfceFm0pVEVCdG
-	 RqsIMYejoHKxD75JtHLtZbiJuN+Q+gg1JXdi/eWN69iaZYazOURaeMzTkhbQONK6E96Px
-	 JW7k7uWmNoxdNdU7pBkZj9T6iKh0NCjvg/d6uiTvSzy4YZzEuhv5xAuihUCf2L3xQ6Q==
+	t=1795009573;
+	b=GV/skucAsCV7yqLX45W3ijfntzQNKh37B/FXSJpCOryTjuIUQ+nKjhZSFWKmW4SE5HEu
+	 OvO4qLsWM4s22mGcsXEOrUsTfCbUdNYv7mun/d1W3HO3m8nsmxJZ3dMBhru/WXkLeqqsq
+	 9Ax/0PT2Jy7zA1LG3DOC2hajCBydyc+xqUGdJJzliJfbqLKBr1ZNH+iyRUHk3xQWXvgEv
+	 lfKcqpAGt6s3sVR9HFoLsxOo29XzXAiGtrYHeCPDh19LsSBRoSSpyWHN2wNrN0nUZzlaK
+	 Mk+4tyaXevrkUfXF/efLCEx4r9jJaDrT81ePXPfihEbOkt5dse1kicZfHYg0MKTY64w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795009564;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=pPXr6ZCubONThIoJKyV+i68TlUC5jfmFsiJb4vkRMA4=;
-	b=0vrtW7FrWfl88eIHuFk/AzvX0qNyUcv+x+hGHpO5M5QcQfXZChFIRZUhtq952OPP/FLi
-	 /2Jpq1hIWtKgVvKsn03DAtnYaV0K3K5ZSwP1B0vWgc3vrYu5tJ1WBPwxKLL07wwitzhwr
-	 4RQTatUcK7WfYsF2ffPKddQBDzO7TBFDmP2y+95LnD1fuv1KNFKUDaB+6BqyvrYEYloYh
-	 p8kg1EqsHVBIDplFSKw8WjuVoOnTjU/wZ/wfObNtnN4VDiHrPc9oHevsSNQUpVhQUt3Cy
-	 jWdI2ZX98W4MsAR6uKv9jbNf4fp4A598vYuJzHoere1f1JYmFL1T0hHZmPR744H5Dng==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795009573;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer;
+	bh=ME2c98cFZmrsIFhi9t1O9MP3b4XqKwYbmgLCsFp/Kbc=;
+	b=YgUrx6TvgVlM1GdLhSHFPfxnu+g/0pLLNsV+Iibho6eLY38RrN3fcxmlER3jZ9AUS983
+	 PkZ9epnLtUrF/mmhhq3Bq5BTVY80v9XbNmuRd69T3b9/4lqb2cURxkU1BUNf4YzCs7D6E
+	 Kd53NoBm/H4qobgazcJCdM8mBY9GJ2xY+DM0KsuRlWNUm/ayL0CcE4h/KBeQ6eCIV57Ca
+	 cc1OZHvh7w1Wz07RcoW5nkCnMNHP1HAUtqBKPIPzba/C8Z8KaeT0Vkzu/+aUvlEnyYo9Z
+	 c8DVMZx3Jq13Rkf6Lhf5E8n9bCIFvlHF4NABzT8tJJhutgneEEu0LMSHKDj8J0fpzjw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BF630q41;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c2PvRVVl;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79CCA606A31C;
-	Wed, 18 Nov 2026 13:46:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5922860A2604;
+	Wed, 18 Nov 2026 13:46:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BF630q41
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32CE41F000C4;
-	Wed, 18 Nov 2026 13:45:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=c2PvRVVl
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B717A1F000C4;
+	Wed, 18 Nov 2026 13:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795009564;
-	bh=pPXr6ZCubONThIoJKyV+i68TlUC5jfmFsiJb4vkRMA4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=BF630q41fDa0YTryLkmikWFt8M8IFNVoUeiLZYloRM6NAJ3Pn5aNB+eNloqvaSTSD
-	 LQEdO8aC8IUEJ/VmNAArMxv688r95lZa0iRbq3jwpwnvovy3vM7Jc7eAlXtRIlJCFq
-	 rkpYDcTPCzc2hUQL33mpsZx5kmYtKzWUuuu8ODyqQJ2MuUspad+nr94OAb8ZGk5ivp
-	 GaV3+Hp/MxM1E4Vj+W7nLqapxJ0/69KoAXXq+93yVeoqBmIuaWTbLGZCo0JcB7HE+a
-	 /K0s3iM91e/rMBeJJ86bgZUDHMWI7j/UA0wkRT01IYBZyoTKnNsJLfK5FLv5ci2jG4
-	 BMqkf3rqFznVQ==
-From: Philipp Stanner <phasta@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Philipp Stanner <phasta@kernel.org>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Sunil Khatri <sunil.khatri@amd.com>,
-	Vitaly Prosyak <vitaly.prosyak@amd.com>,
-	Prike Liang <Prike.Liang@amd.com>,
-	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@igalia.com>,
-	David Rosca <david.rosca@amd.com>,
-	=?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Dave Stevenson <dave.stevenson@raspberrypi.com>,
-	=?UTF-8?q?Ma=C3=ADra=20Canal?= <mcanal@igalia.com>,
-	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>
-Cc: dri-devel@lists.freedesktop.org,
-	linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org,
-	etnaviv@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org,
-	imagination@lists.freedesktop.org,
-	lima@lists.freedesktop.org,
-	linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	nouveau@lists.freedesktop.org,
-	virtualization@lists.linux.dev,
-	spice-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org,
-	linux-tegra@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	rust-for-linux@vger.kernel.or
-Subject: [PATCH v2 2/3] dma-buf: Port users of dma_fence_init64()
-Date: Wed, 18 Nov 2026 14:45:22 +0100
-Message-ID: <20261118134522.1646892-4-phasta@kernel.org>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261118134522.1646892-2-phasta@kernel.org>
-References: <20261118134522.1646892-2-phasta@kernel.org>
+	s=k20260515; t=1795009573;
+	bh=ME2c98cFZmrsIFhi9t1O9MP3b4XqKwYbmgLCsFp/Kbc=;
+	h=From:Subject:Date:To:Cc;
+	b=c2PvRVVlZbHVxiKNPdEW5e9H9e3zgPmmfiFySKodj48z0AxpxU14WpapWtsMfrnF9
+	 lOt6EIXhl4Lf5HXGDZFgYP+c6c5yQ9j60oAxPUSuUzRa+buXRZhZ5VPbK7V0uKqbtE
+	 Ga+JhVpxNsImDjPFThqOz5UmAj0fpjN0mz4KHOvzx6HTs9xvHDyXJ5Dn2Oq1KZ1PeR
+	 xnCCKpMHmeO0V//yz0ULOgGD00RTx0K28zURwZdrBje1X96Qy1dc6B04EIQI6CBKR1
+	 0SVd491/zTkjaubW1L1iTNJQvdzHjWEb4+R6Gn3shx6yJmmmUiuLGtg2XPcA5nalOF
+	 NXWt3mjITchkQ==
+From: Linus Walleij <linusw@kernel.org>
+Subject: [PATCH v3 0/5] iio: light: gp2ap020a00f: Add VCC supply and
+ GP2AP030A00F support
+Date: Wed, 18 Nov 2026 14:46:07 +0100
+Message-Id: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,87 +54,78 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAA/3XMQQqDMBBA0auEWTtlkphqXHmP0kXUUUOLSlJCi
+ 3j3olBKF91++G+FyMFzhEqsEDj56OcJKqEzAe3opoHRd1AJUKTOUlKBw6LcQprQWkN5q7qWdAm
+ ZgCVw758HdblmAkYfH3N4HXKSe/0g5RdJEgmN0TLnpiBjmvrGYeL7aQ4D7EpS/06FhCpn52Rje
+ zb259y27Q3utgxv2wAAAA==
+X-Change-ID: 20261107-gp2ap030-99504c2dc038
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Kyungmin Park <kyungmin.park@samsung.com>
+Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
+ Joshua Crofts <crofts@kernel.org>
+X-Mailer: b4 0.16.0
 
-dma_fence_init() now natively allows for selecting 64-bit seqno support.
-Port all users of dma_fence_init64() to this unified method.
+Describe and enable the optional VCC supply for the GP2AP020A00F and
+GP2AP030A00F. Preserve compatibility with existing device trees that only
+describe the LED supply.
 
-Signed-off-by: Philipp Stanner <phasta@kernel.org>
-Reviewed-by: Timur Kristóf <timur.kristof@gmail.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
+Extend the existing binding and driver to support the GP2AP030A00F. It
+shares the register layout, but has different proximity resolution
+encodings and no automatic lux calculation. Select model-specific
+initialization, keep reserved bits clear and expose fixed-range raw
+clear and infrared counts. Keep generic supply handling in separate
+patches from the model-specific binding and driver additions.
+
+Assisted by LLM.
+
+Signed-off-by: Linus Walleij <linusw@kernel.org>
 ---
- drivers/dma-buf/dma-fence-chain.c                  | 4 ++--
- drivers/gpu/drm/amd/amdgpu/amdgpu_eviction_fence.c | 7 ++++---
- drivers/gpu/drm/amd/amdgpu/amdgpu_userq_fence.c    | 5 +++--
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm_tlb_fence.c   | 5 +++--
- 4 files changed, 12 insertions(+), 9 deletions(-)
+Changes in v3:
+- Return -ENODATA when chip match data is missing.
+- Use four-line initializers for I2C device IDs.
+- Document the 1 ms power-on delay and use USEC_PER_MSEC.
+- Align family descriptions and list supported parts in Kconfig help.
+- Pack GP2AP030A00F samples as 16-bit values and omit zero shifts.
+- Link to v2: https://patch.msgid.link/20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org
 
-diff --git a/drivers/dma-buf/dma-fence-chain.c b/drivers/dma-buf/dma-fence-chain.c
-index a588f55ea4d3..7d1495235577 100644
---- a/drivers/dma-buf/dma-fence-chain.c
-+++ b/drivers/dma-buf/dma-fence-chain.c
-@@ -261,8 +261,8 @@ void dma_fence_chain_init(struct dma_fence_chain *chain,
- 			seqno = max(prev->seqno, seqno);
- 	}
- 
--	dma_fence_init64(&chain->base, &dma_fence_chain_ops, NULL,
--			 context, seqno);
-+	dma_fence_init(&chain->base, &dma_fence_chain_ops, NULL,
-+		       context, seqno, BIT(DMA_FENCE_FLAG_SEQNO64_BIT));
- 
- 	/*
- 	 * dma_fence_chain_enable_signaling() is invoked while holding
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_eviction_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_eviction_fence.c
-index f8652fd0525d..2924f34da316 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_eviction_fence.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_eviction_fence.c
-@@ -133,9 +133,10 @@ int amdgpu_evf_mgr_rearm(struct amdgpu_eviction_fence_mgr *evf_mgr,
- 	ev_fence->evf_mgr = evf_mgr;
- 	get_task_comm(ev_fence->timeline_name, current);
- 	spin_lock_init(&ev_fence->lock);
--	dma_fence_init64(&ev_fence->base, &amdgpu_eviction_fence_ops,
--			 &ev_fence->lock, evf_mgr->ev_fence_ctx,
--			 atomic_inc_return(&evf_mgr->ev_fence_seq));
-+	dma_fence_init(&ev_fence->base, &amdgpu_eviction_fence_ops,
-+		       &ev_fence->lock, evf_mgr->ev_fence_ctx,
-+		       atomic_inc_return(&evf_mgr->ev_fence_seq),
-+		       BIT(DMA_FENCE_FLAG_SEQNO64_BIT));
- 
- 	/* Remember it for newly added BOs */
- 	dma_fence_put(evf_mgr->ev_fence);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_userq_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_userq_fence.c
-index b7cebe392108..ac66b831daf7 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_userq_fence.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_userq_fence.c
-@@ -274,8 +274,9 @@ static void amdgpu_userq_fence_init(struct amdgpu_usermode_queue *userq,
- 	bool signaled = false;
- 
- 	spin_lock_init(&fence->lock);
--	dma_fence_init64(&fence->base, &amdgpu_userq_fence_ops, &fence->lock,
--			 fence_drv->context, seq);
-+	dma_fence_init(&fence->base, &amdgpu_userq_fence_ops, &fence->lock,
-+		       fence_drv->context, seq,
-+		       BIT(DMA_FENCE_FLAG_SEQNO64_BIT));
- 
- 	/* Make sure the fence is visible to the hang detect worker */
- 	dma_fence_put(userq->last_fence);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_tlb_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_tlb_fence.c
-index b0002c898386..f8cc258dcdef 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_tlb_fence.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm_tlb_fence.c
-@@ -100,8 +100,9 @@ void amdgpu_vm_tlb_fence_create(struct amdgpu_device *adev, struct amdgpu_vm *vm
- 	INIT_WORK(&f->work, amdgpu_tlb_fence_work);
- 	spin_lock_init(&f->lock);
- 
--	dma_fence_init64(&f->base, &amdgpu_tlb_fence_ops, &f->lock,
--			 vm->tlb_fence_context, atomic64_read(&vm->tlb_seq));
-+	dma_fence_init(&f->base, &amdgpu_tlb_fence_ops, &f->lock,
-+		       vm->tlb_fence_context, atomic64_read(&vm->tlb_seq),
-+		       BIT(DMA_FENCE_FLAG_SEQNO64_BIT));
- 
- 	/* TODO: We probably need a separate wq here */
- 	dma_fence_get(&f->base);
--- 
-2.56.0
+Changes in v2:
+- Replace vdd/vio with one optional vcc supply, matching the VCC pin.
+- Use devm_regulator_get_enable() for VCC, allowing dummy regulators.
+- Move the VLED description into the generic supply binding patch.
+- Split variant infrastructure from GP2AP030A00F support.
+- Use "GP2AP020A00F and similar" in family descriptions.
+- Use reverse Christmas tree ordering for local declarations.
+- Explicitly select MANUAL_CALC when automatic ALS calculation is absent.
+- Reject missing chip match data before accessing the device.
+- Use fsleep() for the GP2AP030A00F startup delay.
+- Select static channel arrays and counts through chip_info.
+- Link to v1: https://patch.msgid.link/20261108-gp2ap030-v1-0-55314eb7055b@kernel.org
+
+---
+Linus Walleij (5):
+      dt-bindings: iio: light: sharp,gp2ap020a00f: Add VCC supply
+      dt-bindings: iio: light: sharp,gp2ap020a00f: Add GP2AP030A00F
+      iio: light: gp2ap020a00f: Enable the VCC supply
+      iio: light: gp2ap020a00f: Prepare for chip variants
+      iio: light: gp2ap020a00f: Add GP2AP030A00F support
+
+ .../bindings/iio/light/sharp,gp2ap020a00f.yaml     |  17 ++-
+ drivers/iio/light/Kconfig                          |   6 +-
+ drivers/iio/light/gp2ap020a00f.c                   | 147 +++++++++++++++++++--
+ 3 files changed, 151 insertions(+), 19 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261107-gp2ap030-99504c2dc038
+
+Best regards,
+--  
+Linus Walleij <linusw@kernel.org>
 
