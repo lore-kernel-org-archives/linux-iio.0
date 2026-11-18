@@ -1,89 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795009572;
-	b=jRLFYMD6JNy0lrHMzyIguReKXyzJlWfhL8B2qHwXUppXnIQIaB5u/6aPWuIRVfSrKCfY
-	 RxSGOlLazPFkzFX1cXeZzvhPBdD3LK9ZR3j2hCXtNB0qzN6JLgn038U+KWjImA2jQDIEK
-	 KoJsOxudH8tt/1E1cNzV40GQGEOCHHb57UBVhb99jL1CrJa/rzaNGfu+sEoqg4YMW7DOL
-	 z3wBhBn9cI1sXrWj7V92uxOR3nbp+IAxSYolNko8k3KWkBvZHD/y+0obOzxBo6IyfUCVa
-	 WNvqK8FbXwTdMjMyRfNyYnkzO/IZrF8uq6M2noG4I6pXBtGUKY51P94c6Vn8ZipicFw==
+	t=1795009576;
+	b=PUOgvhuoqoll6S8yjYPMgYiPtdllCT4Ikqh6SeWudlbcmjDlzCcIWIRpfGbCxYYQQQlV
+	 w9e2FNzk02HTa/h0wM5bT1iPXWfiVO2wLfPftwAch/fCUCB6GqT3HWo5uH4QszpkXPHSF
+	 NqqhdVIXyK29f7XqxVPbe3SpUN6Ujn/uJIBODYhfRSqWMV9kZ6fLJnDRQHohlm5b9pW3M
+	 c6yuUa5a3a0KCyGoqZcYLfRzC436Aqe+o/px8aPynBkzA4+2HHQVSm0ZJSZAzlZGXzYsq
+	 oh47r4nnf4cBmY7Mb0B+9bxoIVikFpeQFWnkQqETfWaQqoSd5UF7/H8tmdZjjYldJuQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795009572;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=sDJGspNFkUyu8KxOLu1jE5eutQREHyym7I9CvkghZBo=;
-	b=M2Dq5BDs2wuNX8/VsNpk+cXh2BszpWiRWzwf+hnBspkVBIergCPjJ5+kAL3TAanAlZ9K
-	 GDkVCIpSnY5Agat/njtMOa1t319Vpf7eNCCSDQDEWE75oIe7+kxTAS1Y0Ft776z3CKdRF
-	 KuvFsWs8ldkmNHH3H+VJODB9glCFjlwZMgAt+sYKFOA0B8WGOwGNB7wvuLAAIRSZmnBGE
-	 Edz/MatVsqgdjZ4JgNN1Rve1qFSTjjybrUnPdDJLYuDDdR+TNsnCkSjSFsGdaiHTjKEcI
-	 kG54jvmXZ5INvtcAN5LgkDnU2jDNo4lQDxSX0WptT34DXQLRnsJKdjkOxuGWZXud++w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795009576;
+	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
+	 X-Mailer;
+	bh=S8a1BR6UAsrgTzm7zCSgfRGRxFF1nwQpZ0t+v8HR34U=;
+	b=2xKYKjB296JN0SyfpmepR+a7Jw6NLz3n6T30S0oZbPyIeEWu9i4DOsS6MhKFFTYh0iFU
+	 K+Qwouz9g52107uZRii9+Ct1NXfrqWO24M/kIace2+TfVfxjs7VutbWl4pAqqokEnTDm4
+	 OqxW7S976BYKEu76WNcv34i4aNqHNWsEwYz9JCqfprT9H9Jo5IIE4bv8sEmsmGTye4XmR
+	 pRiLEG80laByuy90z5C6BYzo7POq33s2xu3ZNfykS/OmEo2LYVfT+44HheY+HTDkxmIjE
+	 6J6wq8lifOoXHh3VFZ5w7OKyC9Ds0TlSd4wx36CS3KzJYp4GhS/T0oUxhjoRcfFPUzw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Et88hbJB;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WzM4ngD0;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75EE3606A331;
-	Wed, 18 Nov 2026 13:46:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57DB7606A325;
+	Wed, 18 Nov 2026 13:46:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Et88hbJB
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A8611F000CB;
-	Wed, 18 Nov 2026 13:46:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WzM4ngD0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A465B1F000C6;
+	Wed, 18 Nov 2026 13:46:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795009572;
-	bh=sDJGspNFkUyu8KxOLu1jE5eutQREHyym7I9CvkghZBo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Et88hbJBRGxCGoNpGGEEpOInHeVF2PPHct24eJZfCN58VJ/QUk+bBjz3PPlnEHEvv
-	 M/k+Fv5cuwhXXOdab4BEWxpbTB2zijxONxjiWc2NSqpr7OTQNPjsZsJkQGrr98tOlN
-	 5TJOosp3QtfF8xTFqjhlYrFmpjf1n40YXxV3QNy8PVqvcf2SOWWbNA7+roaW7ADmBZ
-	 8jmwTNoTugKWl4srTRmwRr7XJjCN3IsPtBZ4Vsl+aKdEirLZV14I7EDGTXNJXGzwFG
-	 4FvZTeDqbELFlCPM9+s3QaDV3x1yATofQTzCdGz6u6TkbTKA6SPE8UWti/RbKP5JQG
-	 Jz6zt5eJMdsVw==
-From: Philipp Stanner <phasta@kernel.org>
-To: Sumit Semwal <sumit.semwal@linaro.org>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Philipp Stanner <phasta@kernel.org>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Sunil Khatri <sunil.khatri@amd.com>,
-	Vitaly Prosyak <vitaly.prosyak@amd.com>,
-	Prike Liang <Prike.Liang@amd.com>,
-	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@igalia.com>,
-	David Rosca <david.rosca@amd.com>,
-	=?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Dave Stevenson <dave.stevenson@raspberrypi.com>,
-	=?UTF-8?q?Ma=C3=ADra=20Canal?= <mcanal@igalia.com>,
-	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>
-Cc: dri-devel@lists.freedesktop.org,
-	linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	amd-gfx@lists.freedesktop.org,
-	etnaviv@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org,
-	imagination@lists.freedesktop.org,
-	lima@lists.freedesktop.org,
-	linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	nouveau@lists.freedesktop.org,
-	virtualization@lists.linux.dev,
-	spice-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org,
-	linux-tegra@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	rust-for-linux@vger.kernel.or
-Subject: [PATCH v2 3/3] dma-buf: dma-fence: Remove dma_fence_init64()
-Date: Wed, 18 Nov 2026 14:45:23 +0100
-Message-ID: <20261118134522.1646892-5-phasta@kernel.org>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261118134522.1646892-2-phasta@kernel.org>
-References: <20261118134522.1646892-2-phasta@kernel.org>
+	s=k20260515; t=1795009575;
+	bh=S8a1BR6UAsrgTzm7zCSgfRGRxFF1nwQpZ0t+v8HR34U=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc;
+	b=WzM4ngD0JDWswpM4qaWkc3QcRY/vkvmRnbDYtuwZKj1ZiBU77mjPwIpm8xFbqaow7
+	 Wn3pHA+CeKMqLUA1l0NLfm+8NvliAb91slrFJ3uNYekoskBdfSPKOgPc/PZx6cgGie
+	 qWydPPigdNtdCEJ8Cxe+aeOHHjjCO5ahQUjn162da1RSbM8v901X8HC9jNau8SbgoV
+	 6CLmSV8R15HJ+h1CdPq7vJkDOtC6MO+vzfaR1DLZurdb1SJhgP2y2Iq4vMtVizjxcR
+	 KRpAAk/0ZJdgTn6cZYCekpATNDIndIzVBh9/0y8nBhmcSnxZ/Jdg7MLiaXhC0/h5BM
+	 0zLycYTWfB/yQ==
+From: Linus Walleij <linusw@kernel.org>
+Date: Wed, 18 Nov 2026 14:46:08 +0100
+Subject: [PATCH v3 1/5] dt-bindings: iio: light: sharp,gp2ap020a00f: Add
+ VCC supply
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,73 +53,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261118-gp2ap030-v3-1-c8df93460110@kernel.org>
+References: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
+In-Reply-To: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Kyungmin Park <kyungmin.park@samsung.com>
+Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.16.0
 
-All users of dma_fence_init64() have been removed. They now use the
-respective initialization flag in dma_fence_init().
+Describe the sensor core supply as vcc-supply, following the VCC pin
+name in the GP2AP030A00F datasheet. VI2C denotes the I2C and interrupt
+pull-up voltage, not a separate sensor supply pin.
 
-Remove dma_fence_init64().
+Keep the property optional to preserve compatibility with existing
+device trees that only describe vled-supply.
 
-Signed-off-by: Philipp Stanner <phasta@kernel.org>
-Reviewed-by: Timur Kristóf <timur.kristof@gmail.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
+Document the existing LED supply as the infrared LED anode supply
+(LEDA).
+
+Datasheet: https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2ap030a00f_e.pdf
+Link: https://global.sharp/corporate/news/110721.html
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Signed-off-by: Linus Walleij <linusw@kernel.org>
 ---
- drivers/dma-buf/dma-fence.c | 27 ---------------------------
- include/linux/dma-fence.h   |  2 --
- 2 files changed, 29 deletions(-)
+ Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma-buf/dma-fence.c b/drivers/dma-buf/dma-fence.c
-index 7bc925793e24..0776ca7c795e 100644
---- a/drivers/dma-buf/dma-fence.c
-+++ b/drivers/dma-buf/dma-fence.c
-@@ -1139,33 +1139,6 @@ dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
- }
- EXPORT_SYMBOL(dma_fence_init);
+diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
+index 3fabf1f576cf..afba0b005b34 100644
+--- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
++++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
+@@ -22,7 +22,11 @@ properties:
+   interrupts:
+     maxItems: 1
  
--/**
-- * dma_fence_init64 - Initialize a custom fence with 64-bit seqno support.
-- * @fence: the fence to initialize
-- * @ops: the dma_fence_ops for operations on this fence
-- * @lock: optional irqsafe spinlock to use for locking this fence
-- * @context: the execution context this fence is run on
-- * @seqno: a linear increasing sequence number for this context
-- *
-- * Initializes an allocated fence, the caller doesn't have to keep its
-- * refcount after committing with this fence, but it will need to hold a
-- * refcount again if &dma_fence_ops.enable_signaling gets called.
-- *
-- * Context and seqno are used for easy comparison between fences, allowing
-- * to check which fence is later by simply using dma_fence_later().
-- *
-- * New users MUST NOT use external locks. Check the documentation in
-- * dma_fence_init() to understand the motives behind the legacy use cases.
-- */
--void
--dma_fence_init64(struct dma_fence *fence, const struct dma_fence_ops *ops,
--		 spinlock_t *lock, u64 context, u64 seqno)
--{
--	__dma_fence_init(fence, ops, lock, context, seqno,
--			 BIT(DMA_FENCE_FLAG_SEQNO64_BIT));
--}
--EXPORT_SYMBOL(dma_fence_init64);
--
- /**
-  * dma_fence_driver_name - Access the driver name
-  * @fence: the fence to query
-diff --git a/include/linux/dma-fence.h b/include/linux/dma-fence.h
-index 6f5c245d89ec..56c4e5beaafe 100644
---- a/include/linux/dma-fence.h
-+++ b/include/linux/dma-fence.h
-@@ -288,8 +288,6 @@ struct dma_fence_ops {
- void dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
- 		    spinlock_t *lock, u64 context, u64 seqno,
- 		    unsigned long flags);
--void dma_fence_init64(struct dma_fence *fence, const struct dma_fence_ops *ops,
--		      spinlock_t *lock, u64 context, u64 seqno);
- void dma_fence_release(struct kref *kref);
- void dma_fence_free(struct dma_fence *fence);
- void dma_fence_describe(struct dma_fence *fence, struct seq_file *seq);
+-  vled-supply: true
++  vcc-supply:
++    description: Sensor core power supply (VCC).
++
++  vled-supply:
++    description: Infrared LED anode power supply (LEDA).
+ 
+ additionalProperties: false
+ 
+
 -- 
 2.56.0
 
