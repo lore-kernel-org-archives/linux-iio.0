@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795005277;
-	b=2st+FOLjUUyCB4LPW91srX0lpE58/lJuRdjCl1Jks8vlR/m660VBbwfaM++SU7lbZKD8
-	 bwkHgtIAfwCm6bNs7dMSxdYfUIRPliyGFDBQezS8qZWOg2c4hn0MFFKrSodZTjpniLRPr
-	 98mIMV9G4M/x3iQlHGcCWdyjhzNbz0q8LQJV+gjpR0TaxWztB8OnC1a7OROyjsgk5xu6s
-	 HLibNBUhi1C3obENTQnV/GLPW4TbSLJZOTYEH5FC4jGBPWlCdFh2U/W7QqOo8xb/8XI8w
-	 H0lA0qQ3BBY8r1VSxdvvzq56dq5dNhY9iDeNElaohdgbirinFjpUl7z491+Npd0O+MQ==
+	t=1795005467;
+	b=rttkXgQcDawnfodp9uQcdrybkHejMM7pholsEOUWqD8SmW4ooI5uP0WvrSGz8o03QNJT
+	 AcvU93nPsSEdK+Uglz513PZOe8u140wy5p1bfDH+n032cvAWYQVGeC8K6Nl6T5iIgumHp
+	 7gz55wSWf0PaEwwIM+JXvSJydw6v8LML9SNA4MUfAUDQyVr9jySrNQzcjxTrZ58l1acHd
+	 phDhGICoaSNBk99IlL1XWwmrmD5pycuSrKxxDizhnXqojKhDdkmWH8EkKlhZLFwN9MAeE
+	 DDLXu0bUQqHIWcv3g4Wu9pmV1cWXLflC7HoqVzGD6kCM1knbPX5W2JnEBynaknTiklw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795005277;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795005467;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=lktbLBklJwQf8hwjdm6Yk4jM0MyEUN1O1EqIfdIn/2A=;
-	b=Em6UkL38hTlWbTCVqAs8XjukQpgMemVhoNWM3Kjym52Uyx1WR8Sg5ohnUXZ7QEEXduFY
-	 R5FQ2wTilkXT1Cm4TUd7fE59L+8vmDLJ2MdOLotNQn+dhsaTji4cZbGnZaJD+MdFUmLIv
-	 5xvgUPydgdx/osPgZvAIuU5UxL2LTzkftQsuugfYVuRFvU76SMQTmOhJpLh/i5Wm87tu9
-	 iFbk5y4fF0Cbarn1DoX/8pAf5vxYsfgbt6RG+R7drcOWavZuXcl9nyfcDy+oDwu5aBYx4
-	 j7kefqQWVIX+l3p10aZ5gZPAzFmfSkb/eLBaUBKbIM2jEcVGzQIila8eo22Ol4XsScA==
+	bh=N5CGwXkDYC7ZHZF12AdVjIxEK6seoaUVe8eVp3p/csI=;
+	b=j7fVlcpVl2rsLrupQaqlOiHCtpOu3eQu7SXmEqQxkLEns6EKf41dEGd5zFxRnd7rTA9j
+	 Cq8X473EuqP4RQTKlIafDPCz8Avco6N95xJbwEYeWQUBWZ1kAzcWrf7u4G3z/5t+dXdbB
+	 w+zjF+nnuvcvbHmFLMheJ5d13R9x2Qk9Ysxa37MW0CgJxemzZVxwx0R52I6n7AeGWOgsP
+	 Jjy3DKMWb/mu9yHEmfRnkiPcRmtkyYZMe2R2Pc6WlqakeY6EUdTK+CrAF9RoWXLRpw02j
+	 9kDbYF7N/R5QCDfM92OIGxRTUlZDDY+LEHGm9XFkGjmsDrCnMRHqxXt5doLbrEaHijw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mbyqgNP4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YzqS5r0S;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BF1606A31C;
-	Wed, 18 Nov 2026 12:34:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6626606A320;
+	Wed, 18 Nov 2026 12:37:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mbyqgNP4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C2511F000C4;
-	Wed, 18 Nov 2026 12:34:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YzqS5r0S
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD621F000C4;
+	Wed, 18 Nov 2026 12:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795005276;
-	bh=lktbLBklJwQf8hwjdm6Yk4jM0MyEUN1O1EqIfdIn/2A=;
+	s=k20260515; t=1795005467;
+	bh=N5CGwXkDYC7ZHZF12AdVjIxEK6seoaUVe8eVp3p/csI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=mbyqgNP4SMYfP6QfUxJ4gd1LP3/kNvHDZLNFfPYnu3nqHQMobuoVtOdYjCXOOspRq
-	 fPHm92vLWFyPju0KHlh3o+zN8aW5jt2ZMpZjUA8YwD4lHEaqi4gWIdcxXHCCJVkuWi
-	 X2R4Rpjimy3N2SHwexOfBZUauVowyolVDTh+fxX1kyamkIpUTaQSeql73Mv9UhKCE3
-	 9Ou1enU0LPjXFz0c+qAeXDbIFuN7h7J0t5YlUKCRJypPABZ3/EX0GX8dlepwkf3Im4
-	 +nkpgwN1Di3z4cYEphSFqX5puokj/fZdcOQ6Lh1P3SdcZmvMjKsyucPgtqoaetCRS6
-	 /em9Ift1ph/jw==
-Message-ID: <bbdef966-c5dc-4101-9246-b668e00f62b7@kernel.org>
-Date: Wed, 18 Nov 2026 13:34:31 +0100
+	b=YzqS5r0SUs/wsxWZsq5PkMXx1btPUd6pNUmdAZRrxFjDvPs4/67ZtV+EplWQsoJQh
+	 Y0ekpMB//ArEyiOCEoFEBRDQIi6vqSsYSqiJab6aKIRxu+k25YlrSCUkSy5drmC2c9
+	 0EU44tZPQFYmLg7aq3PKtDmO6t8K7Cq4Lfvg8STljzUYNtaAUGpVBzpy/bMv6sW2eO
+	 zgUIftfyqoSCSZo1z+ooOwmg+eDs5+zbl6Kowxcata+cfPfXGOW+s96GBlvRHkU2OW
+	 yWT5PlPwY5uOd1KDJ3D97celi7EyezXs8A7KNu/mtHliFixfv5BwqVEUpsJcHxt8Vv
+	 l6IQUNu7DVkzQ==
+Message-ID: <f3d38cc6-112a-4d48-b0e6-f26d7819aa1b@kernel.org>
+Date: Wed, 18 Nov 2026 13:37:40 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,8 +52,8 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] Semtech SX9xxx: add a reviewer entry and binding
- maintainer
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: proximity: semtech: add myself
+ as maintainer
 To: Arnav Kapoor <kapoorarnav43@gmail.com>,
  Jonathan Cameron <jic23@kernel.org>
 Cc: Gwendal Grignou <gwendal@chromium.org>,
@@ -65,6 +65,7 @@ Cc: Gwendal Grignou <gwendal@chromium.org>,
  Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
+ <20261117172612.25535-2-kapoorarnav43@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -110,38 +111,33 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20261117172612.25535-1-kapoorarnav43@gmail.com>
+In-Reply-To: <20261117172612.25535-2-kapoorarnav43@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 17/11/2026 18:26, Arnav Kapoor wrote:
-> Add a MAINTAINERS reviewer entry for the Semtech SX9310, SX9324, SX9360
-> and SX9500 proximity drivers, and add myself to the maintainers of their
-> DT bindings.
+> I'm adding a reviewer entry for the Semtech SX9xxx proximity drivers to
+> MAINTAINERS. Add myself to the maintainers of their bindings as well,
+> so changes to them reach me.
 > 
-> Jonathan agreed to a reviewer-only entry here:
-> https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
-> 
-> Changes in v3:
-> - Patch 2: replace the Link: tag and the reference to it with a
->   Suggested-by: tag (Andy)
-> - Patch 2: drop the L: line, the IIO subsystem entry already provides
->   linux-iio for these files (Andy)
-> - Patch 2: drop the DT binding F: lines, patch 1 already lists me in
->   the maintainers: field of the bindings (Andy)
-> 
-> v2: https://lore.kernel.org/all/20261117110939.214932-1-kapoorarnav43@gmail.com/
-> v1: https://lore.kernel.org/all/20261117094737.15253-1-kapoorarnav43@gmail.com/
 
-I think it is premature. You just started contributing and your early
-submissions were clearly showing that you did not read kernel docs
-before posting.
+Why? Same comments as for cover letter. Looks premature, you were just a
+few months ago sending multiple same patches, clearly not even checking
+what you are about to send:
 
-https://lore.kernel.org/all/20260621044410.57823-1-kapoorarnav43@gmail.com/
+https://lore.kernel.org/all/20260624044610.69708-1-kapoorarnav43@gmail.com/
 
-Also many postings were LLM products with poor supervision. Reviews are
-welcomed, but first please gain experience before you add yourself as
-maintainer after 5 months of LLM postings.
+https://lore.kernel.org/all/20260624042543.38925-1-kapoorarnav43@gmail.com/
+
+Your patches were never even built by you:
+
+https://lore.kernel.org/all/20260621045340.65872-1-kapoorarnav43@gmail.com/
+
+Building code is... well, we do not have to even discuss that. You were
+simply sending LLM slop.
+
+LLM slop senders are not maintainers. It's doing everything opposite to
+maintainers.
 
 Best regards,
 Krzysztof
