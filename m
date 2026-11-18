@@ -1,59 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795001431;
-	b=M9ywMygersEZQB+QNwxyBIhDE3XsLw1/qo1N8j4XS+B+gXPqhyyCXLmhDS5+A576CgTs
-	 MTuE/HD76kEbGKNLp+TA5gt37ys+HHaTfC6iR2Om/G5MwhstN3PhSFhYG9GH47XN3VTzb
-	 E07MzbywzJLfv/9lBHrMW1DGVShxypRdSQWjH899tJVEIecbBpIdB3ycmgB/zR9tnNN9h
-	 uTvsDwzO0PE8GS+A4rzzfP5rt1aRg+W7jFgCWxm/MIkerHyVJ/abNGUeXjBpZrxwxC7Gr
-	 Wxy4vgCPM4M4HW4ZRG/Wr+0iSx+t9/LaAUiiwDWp2rKv21tGabaSGoKdK7Q8v6JsKEQ==
+	t=1795001494;
+	b=5fbEwC8aDGrvszctdg780fQCBPq0nhzWTcvgB2wT1ENEnJbsp2Po6JojUZC4cf3G05rw
+	 8q9wCyLSeQi8cOYHI3B7TGtDWSGf9/wsvpPcErki5q+jQq8F6FXZ91NLKfqO4CuoiJD3N
+	 zimgMg7PsEUxRo2/Nfoj4ZEawf5Z/d6fT6ewvMtIxQNFBzEu9ei6a5eGZ36LsSnorTgic
+	 1j6SQ0Vv6TEFA2WaAYKV6rS16ZT8oQLVfUDR3Zfen0CaJFykvnj9qb7VQRJi/7PUztrgA
+	 SGHhm35VBZ2tSZJ1WZoimF3j/LLJgGkt6l83LC+Rz7zQcpytykcE9N5PNPQfYmgJTSA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795001431;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-Cookie;
-	bh=Z75hr6SmLYWvtnOelqxQFVBcQ5cH6DsL8tdhf209THk=;
-	b=ypysiUyj8ZYgQrvqehCIdwLQ7FB9/dUgPUKEY0n55KIgiQmsQRVT2QyhMZzscdRHPhS0
-	 VL7oC6K+vkjn+l8isfpcAfM3C00jRds+4j7EY24DwRgLYEeoe4mlyZwG3X9ZodN0wkNv4
-	 tevCjhWGLo8BqeUiRdKnYIk/bEIzi0aOlEUINCz3sJFh0biGSahZOapB49BNQMX8eQchP
-	 AWJ2em/eW3HhEF+jGeVPe8GOEOPQD9pxljOAey0UjgdhuGWYoRmdvrlJWpFjGe4vVqC3n
-	 uSf8RA7Dg5hdYBDFe5TNLGYcPsqCv7SJW7XZ7He/4pj5CZAZVcTrYH9hftriPc+Xm3Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795001494;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=+AJdmr09+iBj/Z5WLYyc48Zagz6XLfHcN+HSHTDIS0c=;
+	b=KmNsttHGjD7YkQu3BPT1R+qkbscFZrrsjPkgN+hSdrMTL0yZUnmBjG7tNDdtWjfFYdrR
+	 zUXQWVFujgKVSw4pd5OCjEhRSbkHL7u6SVyB1zByOXEz5LRhy8kZglosyAqVrUFsZkV0N
+	 u7SpHDOkVOLegOxs8IkB+UzCQufkTUqyra5TT8dlV9+XDGQdWWW5cK4qTZzEN46ECyJ5K
+	 TPS7la7jDbKTZ7StwLVt/A2Vb0OsBvo6PzlhQ9u4MBFPb/zBOyz0fzqNMNS76bm2U1IbA
+	 t0m0YB9jwVrr9BkMau00V5w5a/SAEJL/xGuPMFzgVUUvv66dYvGNKSy5pIG/lncIAtg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PpPYl0jx;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lWqcoD9b;
+	arc=none smtp.remote-ip=192.198.163.16
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97713606A320;
-	Wed, 18 Nov 2026 11:30:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB9FF606A31C;
+	Wed, 18 Nov 2026 11:31:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB9FF606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PpPYl0jx
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9401F000C4;
-	Wed, 18 Nov 2026 11:30:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795001431;
-	bh=Z75hr6SmLYWvtnOelqxQFVBcQ5cH6DsL8tdhf209THk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=PpPYl0jxRytdIpYJVgujuokjsH3uezcSkC88kmkC7/h62CXproAcU9M2GdiJDawQv
-	 5+ogBfvjaLfbKfhhqODJjrPQADU7rRPy6qRIq1gTO198xRiY/Q1SQnBrZfcT6RzJR8
-	 XSvDBN/KRhnw2VhnPEf1zLhxtqI8RH1ArL5N2aALvbHg/cebnXYy///VPjFSGRjJpu
-	 hxgg555qXVsFzNKKspl6nKnQBuTzlB006mFminqcgU+v33/AyFdn/MhhV6n26MM4XG
-	 29rKoAYP0mxd9rLAoQvoGP/owvb21FAfSgpHlaRBsz2hCcojKLvjmYGNVSRSN5jDIe
-	 QOB/+T0INllAQ==
-Date: Wed, 18 Nov 2026 11:30:26 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: raffaele.tranfaglia@gmail.com,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>, Johan Hovold <johan@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev
-Subject: Re: [PATCH RFC] regmap: kunit: add tests for values wider than
- val_bits
-Message-ID: <a93f6d11-22a2-42db-81d8-297240c9bd2d@sirena.org.uk>
-References: <20261117-regmap-kunit-val-bits-v1-1-a1cd02063217@gmail.com>
- <av1qOFxolvDhQTKs@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=lWqcoD9b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795001494; x=1826537494;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZplAlreEN+1G2HGdfsT/GfZ9NWcBNLei6WdM38+/mfM=;
+  b=lWqcoD9bFlpvcLjRdPe4ZGakqda2ZjVskOmL/CCQzFw03nWXURiu1IQp
+   wmR2userQcIWj0/Evl2qV19M/UwqaIXyGFEFcfmaLI9F/Hg8jQ+JYzYMw
+   qOs8TYm9BnqamkgxoSSN6QMq1u/FyN+fxXvqCoFUff9y3eoUcgJJ49a4S
+   /TvMDPLTbKM0eMF+BG2YeeA7IGo8rWP5rnup6RP28tuDlNOx5jzYBf6Fq
+   OCxa0NnQRY4IXn2QNHlll30hQLsJRZ+CesEhxVJc/ilTK4MFhV024jjvQ
+   3Ra4kJP3RASu6FZgfKijakS8Sp4/RjN+y776dfFS3e2M04TFUbb8nMvZw
+   g==;
+X-CSE-ConnectionGUID: XjHNxGGnTOOpaV12vzkmrQ==
+X-CSE-MsgGUID: hWN2IehiRzOlA6jfAcONfg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3832639"
+X-IronPort-AV: E=Sophos;i="6.27,219,1787036400"; 
+   d="scan'208";a="3832639"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2026 03:31:33 -0800
+X-CSE-ConnectionGUID: pU98kTazQZ6gsyiNdtAAmg==
+X-CSE-MsgGUID: /oIa8dH9SiSshSF91r2EUA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,219,1787036400"; 
+   d="scan'208";a="10205773"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.157])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2026 03:31:29 -0800
+Date: Wed, 18 Nov 2026 13:31:27 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Joshua Crofts <crofts@kernel.org>
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Daniel Campello <campello@chromium.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] Semtech SX9xxx: add a reviewer entry and binding
+ maintainer
+Message-ID: <av2Mj3meE15gT7e3@ashevche-desk.local>
+References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
+ <avyoLGkkCkxu11TA@ashevche-desk.local>
+ <20261118083606.00005f7e@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -63,57 +89,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="IwlD1OsplhXpBGsL"
-Content-Disposition: inline
-In-Reply-To: <av1qOFxolvDhQTKs@ashevche-desk.local>
-X-Cookie: When in doubt, follow your heart.
-
-
---IwlD1OsplhXpBGsL
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20261118083606.00005f7e@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Nov 18, 2026 at 11:04:56AM +0200, Andy Shevchenko wrote:
-> On Tue, Nov 17, 2026 at 07:55:14AM +0000, Raffaele Tranfaglia via B4 Relay wrote:
+On Wed, Nov 18, 2026 at 08:36:06AM +0100, Joshua Crofts wrote:
+> On Tue, 17 Nov 2026 21:17:00 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Tue, Nov 17, 2026 at 10:56:07PM +0530, Arnav Kapoor wrote:
 
-> > +static void raw_write_wider_than_val_bits(struct kunit *test)
-> > +{
-> > +	struct regmap *map;
-> > +	struct regmap_config config;
-> > +	struct regmap_ram_data *data;
-> > +	u16 *hw_buf;
-> > +	unsigned int rval;
+...
 
-> Reversed xmas tree order?
+> > > - Patch 2: drop the DT binding F: lines, patch 1 already lists me in
+> > >   the maintainers: field of the bindings (Andy)  
+> > 
+> > I was expressing my opinion, it was not an AR, it was rather the start for
+> > the discussion. I'm not DT maintainer, I don't know what the rules for the
+> > maintainer records there, OTOH I don't know if DT parts belong to the
+> > MAINTAINERS records that have only R: lines (and no M:).
+> 
+> Not sure if R: makes a difference, nevertheless better to have the
+> dt-binding files under the MAINTAINERS entry as well (i.e. grep -b5a5 SX9*
 
-I simply do not care about this.
+`grep -C5 ...` (C is a combination of A and B).
+But small letters 'b' and 'a' for `grep` seems misleading above.
 
-> > +
-> > +	/* The "hardware" should only have seen the low val_bits bits */
-> > +	if (config.val_format_endian == REGMAP_ENDIAN_BIG)
-> > +		KUNIT_EXPECT_EQ(test, 0xff0f,
-> > +				be16_to_cpu((__force __be16)hw_buf[0]));
+> MAINTAINERS if I'm looking for a specific sx9xxx binding file).
 
-> Do we really need those explicit castings? I think they are already inside
-> the byteorder macros. Also we have be16_to_cpup() and le16_to_cpup() which
-> might help.
+Okay, fine with me.
 
-If we do need the casts that probably indicates a problem.
+-- 
+With Best Regards,
+Andy Shevchenko
 
---IwlD1OsplhXpBGsL
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmr9jFEACgkQJNaLcl1U
-h9CndQf/SewsAZTR6YVIafssLoLMkykhXhPc0/UkWKTWCpQU9/KU8piCxKw5PN/i
-XKSPGLjx2qu1axH+SXGdmQLRxSiWJHSUT3BJpZbtDvpfoiEV1QmBYScztNhLBS2a
-BbnJC0G6+Q67Lzphi7bx+DjRTnlhiMyXAEFbUTHwFnb+4PQFhpn7ycuf1LqQe/Ub
-IR3sz7V+74rEKeyC5H525UXdd0uLx0r4wKwTmuloMBkoxThJKcSIeSxipg7djNVh
-9uMC2HYaJyMyNt2m83PQWoZkJU7H1K6SN5PJFeCdixEF79pQCuYJSdFDSWmZO6Kx
-HCR/LY6sXtvwwelZCsQfPXjyxyyhig==
-=FLe7
------END PGP SIGNATURE-----
-
---IwlD1OsplhXpBGsL--
