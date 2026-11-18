@@ -1,89 +1,84 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794995801;
-	b=vHKk1qZMTQn5cAdLZtgYdrIKULYtGguAywniV2ZZlgF7R7ieNLyWHtrUFJ0CBsLRVDP4
-	 SO9+OZcAEOx0i360oqBkebHDf/CEVmM7lNOepWXmg7sRydY4c7aLWsRIvugH2I1LlkI3S
-	 1SBFyQ4Z4MLiOAiM3bsp6JC6za/ECuc7FulrwlG6CLPn09iVDwLncT8/FzGBpXkgIYbuz
-	 b3Pt51FlduVsHvkaLcKiojZ+azPR5vtJoPmWqja0BZ2a5aJK58aLBSUklDSDeHv5bQgHh
-	 bGajwbDH3JAbj+t7Y+pOiuYobA4YKlvqxAyvkmp/gQRcK7ACtQtiCAwr1S1f995VJCg==
+	t=1794996125;
+	b=lhxW2LENyeIK529ltAIasmvc5t1rg84p/Vm3gaV2rXdLiXyLO4oXwc9Oa/0f6A/toVED
+	 0RoQGOk+zHLDmsyrEugKz81MEBOuicip3mXGlUcPxG+C7G3aBbUwgwv8q/DQqZm1DQIe9
+	 N66SmE6dHUTm2e2rNbx7hxOdLlBNXLZss5Yg2iswaEMkcWU3cZ+PldHqxjj3i74R5fIaR
+	 5pyzEjuX7ep874wH1b5PQfUILc6FpNhaBLI2gazBOnXYyj6Q0pr3FJVHeihLoV/hfucse
+	 S0SMgidgT+DMkXIXekmiJdBkXUahV3SBn3CuHNRm615TDYlTX3R/eUAiXMtIhAJDFYw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794995801;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794996125;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=rEM78S/8/8XKwgKKOokwwTk8Yg7/gNMRUZ72Gt6ak98=;
-	b=T7STpnKVTZ+ekuIg4fFPDf+ok17Ttl3WXWqmwNY2J9Unzi52jL84b61Ab1FxeC/VFCDQ
-	 0eNfQGRWxu3fvYgz3wFx3beJHu7OYFSvwEQ11n/R3ytxbjJ1oxOrMnfFcjRWPGftk8xvw
-	 SvnEwegzckTZipx3WyWoNriwuQVuIEpdompWVgf0AVD2/lt0GrBsXdb0wgsci/JnKSN0Q
-	 EjKdbn2dTTtCXFTRgAAU94mhuifcbHaH2K7zeMiqAAqVTccsrURoYDjcOGeCq88U/YE4D
-	 tC+/JfCkunbtqPgvP72BRxxkLI7+nETpuOSI42RWvF2pXdgdTmgccDYqdVVdVdBFhMw==
+	bh=x0yTvrJ+UMNYKHXzMx/+j7xgjyNDhX1uNO9zmb0AOjE=;
+	b=EEAAr2CNwanFEOTKXFat93j371Rh6CpYsFj2c3/SjD4Dyp3ZW6TBf+E+Vl4YASU3/g3r
+	 zFe+2B6dB0ir6lBqGiykWo+8I3G85ONrLOUBH9bti6um1w5wBRy/Ore3KPaEv4XETex8s
+	 6eGhLAEjudFFnFaWpBCZGKOur3VJkYRqgQVnG2rJJywtCPR2hOTpHuoTMH3QW9OI2T9CD
+	 1YdK7wXG9gtBe6rt+misRf2GGhiBuwgxVBAG2+V1pXnAfNgtuPdfYOfoL+3Rsshif3ZRu
+	 9HS7/j3wMvUsdcReXIBuSKKVoY6NvsipKBeKh+KkPI0Wetbzs1Uv8JMbL+wJ82UPkGw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BwAjaLHu;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mD+WRFof;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7215B606A31C;
-	Wed, 18 Nov 2026 09:56:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 928EB606A31C;
+	Wed, 18 Nov 2026 10:02:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BwAjaLHu
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mD+WRFof
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794995801;
-	b=BAVwnEbKpT7FJ35TOGoHAaL5QueumzdvJDjigWtSQfmR8yUzpLVHU/tw1cy+HiG/rnT9
-	 jsy0hIowE6gIZdbN4Afn1V+TPl4oGdcFDo+DCyDcDhFqB5CJO5ZiPuqFb8BDBvxUIqcXb
-	 jEQIOsvyfnmKwaXTrNnXsUx6yPnG6HJic7+a4NQT+MCUIl/6pfXPB2vk32NXuR3W4jAiH
-	 1km+OWZAon/QPgvhn6J28xDmFYjw6JxJ2bnXl9JQNAj5sSq2fTR1nhbsfS6racaaa7J7E
-	 LDtwFMIuJOIXEGWJKeIVODHk0v0yuTNQvbV06kglsM1uYH97N3bEvghB2KjsYbafHDQ==
+	t=1794996125;
+	b=XaZjXDtWET0HyfwkJkO9o5xfwOTYdvTs+ewziMGOhKkpZWnJelzS6UE8MaZ8BnlUx+GV
+	 jj1+gOawA188xeNGd7sjHBsTctRLJslIpXWGgaVgZKfR/N2MrnG3Aj686nVN3uQBLcKd/
+	 mUyNSuyYK65PWLNaF15NM1veYjweuWtHxgsYyHHGsCHtHpg+R3WwFXaGlAd1EtJDJlASe
+	 wYpt8QzClat+lYxbt+59EIiZ8D7uL1gTgtVouhs3mkPBJ27SO9rX7Psim/e92iODhzALq
+	 ET+iTW7cIkqT2bBUOy5GJIDDRpA/JbFFBU89j+fC4nTiUuPRCwNUqYPK2InJ+MbGDGA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794995801;
+	c=relaxed/relaxed; t=1794996125;
 	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
 	 References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=rEM78S/8/8XKwgKKOokwwTk8Yg7/gNMRUZ72Gt6ak98=;
-	b=1hLsBQzKiwEo87/4rlSVLk5I0P4gBRblbMS92mquRWGXgVRfD7XYDV4/PS74WAZzPWaQ
-	 O95JsFoHa0vkyJJJAKEW8gcGtpbizhO7bronMlyCB8+3jZzKL8bSIwJu6tfhXwxed7Ptd
-	 1n5AFVV9HdQgdZvBlJTxx+4PL5JDYWp/HbOrQaDY7tQmyFiH/+PRDH0CZ07lzn7QeUQ7n
-	 k8FHZPHP7eBZPx0gV1bkAaqJVZQwZi1xHPJNiokG/9zPYJ7Dit7Mdupfo+Ji3kL4ExUvP
-	 wMHFbqX+O7Djv6YWi7bJWCOHlofjuXL5kOcIYAHnj/Rl4r4bOAzjbgBJIcSF2W/MnzA==
+	bh=x0yTvrJ+UMNYKHXzMx/+j7xgjyNDhX1uNO9zmb0AOjE=;
+	b=xC72gAkOJNYw9PV4A6MmOiBpn2aYm7rQbhfVTu2m0Fl26YPhlOssKDx4FyTKXX/JDXPQ
+	 d2GKwG/UDsUpcOzA4pKCDPbjyv4bYZsur95u9dCaL1Fkv/BUkKODtFKCUsWXmmg2Ayu5z
+	 UBpLtnGCnH6Q4zb6Tkkp7Oewtv7iKi7ft1Eca8ATnQEUkX5GnS0/4HFZ1uJUonVZ3QXQf
+	 qJ27yQzpaQXpLQmdrMPGFT1UBen0ZkKzvFVfwo0OpW9r4Pwhd8/dov3Xo9ACyO5f5Nqss
+	 4r7fgSMPNWd2ERyxOCrXAvaRDyIAxrqABjvF9WiyNBYGVwzvJnJLRkYIWIhECeP0LoQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=90.182.112.124
 Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id 11CDE1F000C4;
-	Wed, 18 Nov 2026 09:56:37 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPSA id 133D11F000C4;
+	Wed, 18 Nov 2026 10:02:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794995801;
-	bh=rEM78S/8/8XKwgKKOokwwTk8Yg7/gNMRUZ72Gt6ak98=;
+	s=k20260515; t=1794996125;
+	bh=x0yTvrJ+UMNYKHXzMx/+j7xgjyNDhX1uNO9zmb0AOjE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=BwAjaLHuz8xDeeiOT1gnBpLKKE1iamwQPW5WLrnhOUGPGmMQFp/6mMkbmMNyBf2rB
-	 dcw2SeCaXbUqCUmnT75/WkEFT0iuss9Jyx7radlcPkIttGdqoXUdkGsqQS9v5r4AGV
-	 4KC/Q9ztEsSUXZNLpIPTI1oOP9NJ3tSs0ZPL52YH/vVVRhE80cau5NFD3yGAsbMqYL
-	 Z0JtyUqvFk9BPv3426wkU/fGirSeZ0BrFAthpzhpeYoIcBDPQJwv7hwJ21D5UMTjyb
-	 yE3EPiG5DvVwaH9yTwaYieNwNTLrtpgnUmoTFgXsbzQbGOBoj1Hpx6inxrdizvem8E
-	 63xD53kb8j7Yw==
-Date: Wed, 18 Nov 2026 10:56:26 +0100
+	b=mD+WRFofFxhz5e6+i3DTzy0MJTtbB9uf0ZRmaP4hauRPr7DQ7zClHuIpLIdkMa4lU
+	 o7NTfVdZd6eJ6lv79GOQQXLbdRMVw8pfzvufsa1P3qQ6YfTxDTVP6tzjau4XlIUvL2
+	 6IGoy/F4YYzzOhzkyJQEx9oMfK1baUpXOes4lqyzD06DLp1IBC1mY6Eg0bOMnrL/qK
+	 nmhurHIDCISzBoywVsFOr/RQGzduS7nDzesXzRf2bfF9E4uhCHiKQ3maMY+eToAM9u
+	 xtSWQDAj+cyYzUwq4lr+pqPLIDHwF8muDl1FpN+OColqosHEThAWcjKNEzdhVzZdjx
+	 rZNGHNHlRlMqg==
+Date: Wed, 18 Nov 2026 11:01:38 +0100
 From: Joshua Crofts <crofts@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, Marcelo Schmitt
- <marcelo.schmitt@analog.com>, Cristian Ciocaltea
- <cristian.ciocaltea@collabora.com>, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Michael Hennerich
- <michael.hennerich@analog.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Esteban Blanc <eblanc@baylibre.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Andy Shevchenko
- <andy@kernel.org>
-Subject: Re: [PATCH v1 1/3] math.h: Add mult_fract() that takes struct
- __Txx_fract as argument
-Message-ID: <20261118105626.000074e8@kernel.org>
-In-Reply-To: <av1zrjobIT3KRfiP@ashevche-desk.local>
-References: <20261117091638.1463621-1-andriy.shevchenko@linux.intel.com>
-	<20261117091638.1463621-2-andriy.shevchenko@linux.intel.com>
-	<20261118092229.000025fb@kernel.org>
-	<av1zrjobIT3KRfiP@ashevche-desk.local>
+To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Cc: rva333@protonmail.com, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] iio: light: stk3310: add vdd regulator support
+Message-ID: <20261118110138.000003ab@kernel.org>
+In-Reply-To: <20261117-6768-stk3337-v2-3-92f4c7be3bc6@protonmail.com>
+References: <20261117-6768-stk3337-v2-0-92f4c7be3bc6@protonmail.com>
+	<20261117-6768-stk3337-v2-3-92f4c7be3bc6@protonmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -97,41 +92,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 11:45:18 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, 17 Nov 2026 20:08:37 +0200
+Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
 
-> On Wed, Nov 18, 2026 at 09:22:29AM +0100, Joshua Crofts wrote:
-> > On Tue, 17 Nov 2026 10:14:40 +0100
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >   
-> > > Add mult_fract() that takes struct __Txx_fract as argument and
-> > > calls do_div() instead of plain divisions.
-> > > 
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > ---
-> > >  include/linux/math.h | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/include/linux/math.h b/include/linux/math.h
-> > > index 1e8fb3efbc8c..ded258df50df 100644
-> > > --- a/include/linux/math.h
-> > > +++ b/include/linux/math.h
-> > > @@ -128,6 +128,10 @@ __STRUCT_FRACT(u32)
-> > >  	q * n_ + r * n_ / d_;	\
-> > >  })
-> > >  
-> > > +/* Same as above but for a struct __Txx_fract fraction */
-> > > +#define mult_fract(x, f) 				\
-> > > +	mult_frac(x, (f)->numerator, (f)->denominator)
-> > > +
-> > >  #define sector_div(a, b) do_div(a, b)  
-> > 
-> > Sashiko has some remarks.  
-> 
-> Strange that I have got no email on that...
+> @@ -745,6 +746,10 @@ static int stk3310_probe(struct i2c_client *client)
+>  	device_property_read_u32(&client->dev, "proximity-near-level",
+>  				 &data->ps_near_level);
+>  
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to get vdd supply\n");
+> +
 
-Yeah, for IIO Sashiko doesn't send emails, only if a patch series touches
-any dt-bindings stuff (new drivers etc.).
+IMO this should work, but I don't like the mixing of devm_* and non-devm_*
+functions, this may cause issues down the road. Consider moving the driver
+to all devm_* functions?
 
 -- 
 Kind regards,
