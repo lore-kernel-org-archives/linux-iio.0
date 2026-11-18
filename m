@@ -1,84 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794992451;
-	b=ZfA8NZd96RfCcEMlALo02XleNeOwHn1kiBAGhQuGQJgDj26GmV8MHRHK8Q3i6PrCuT6E
-	 6Zgh5EGqCBCdW2eKf0U+wTDJSy/41befdqXqnXCZJKbkpWUboC1HaLmeyRiZzC9omlSts
-	 2iI0NiRWgLS+2baVospKlvpTacZdbRLv3UIgToRv4+ogwXecYS/OpviFdRnCwWaWJ+a6n
-	 VHpFJsssu4m6q7+fwabL7ShewFq4wfkZMtIkjreUlgCOHC5zKnj3PPr/OdqPyf3DPtPpw
-	 IDX+HQSeqOKVQbi74Palyu9kooJE7DdifsiPslMdu30POOs3p+NuaBZMPjGSkrjlASg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794992451;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=sr9doCvp9PjzykzAEoSbutZrtMIBi4xONV35RKYKw/A=;
-	b=vLGiWcDeiYurT3v/mhkd0+Vd/32d7WpGA5KZQMBKV6rVyItmmvdhiuOvRBDfhf8NonT3
-	 tGA5hI2BIahgj+3gDIRpJAdQQax+veOk60DGxcHsU43HdZql1qJL9ubUWGXGVRwVMPbq0
-	 Z96tBep4zQBqMtERXfndnipe8iwC3CGNLkEZq7jX2+Vub9bImUfQLjdPIvREJSjHgDnP3
-	 7lTk/YbFrwLRTCzYfstBiAwBtdYQ7cup8tKRB2K0gkBHWLdxAowqG+/uGAy964LIYFg6Y
-	 Dy3lGih9ujSA5oWsHqgCutgGvAb7abfybg77b5qa2AY2JmNh+KVHVz1mIJSPsQ0N2lw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UQe0DAOh;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794992717;
+	b=wmGfNmnyX+gTw9+SM6dBHcEIGCIDe6LWXBWed21UZDfQfOwkC+RalhJ5YObS7fv3QU5o
+	 gUIUWcG8BnQ4gPZN7CLq1VqfrG9sFMHiJs7J1ylwhq/bgqmV8jCa3WiLXQ8iHH64Z/v+b
+	 yCThlB1xbjq0XeZQgYwsjGbWZMstEM34o18seEgm0BEOGGzVQ8IZ3X5eA+9eKVP+2B7GZ
+	 zCxFBpFAHQ8DjPhKNVjzOEPofLJSlRy8uiWBf3JSNejSbcbf0JpWh1N2pyS9SZw1+62K6
+	 UYHRF/g/YRnHYqizzbFeqkzqdNMEusHgBT1Hi4kuxt8tpvH4xUC96UpIzPed8KfRyNA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794992717;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=374ri7+4MeVZtf5um2Y1DNiMy9roud5hxc7+KcS4KyA=;
+	b=gpQa+oYujkUVo9hKiEcPOLRtNujj8XEpJxkPq0/pJBskcVZ76ssQ5rLX0LZLSY01Dza3
+	 lbSln4ZWnltfGPbIs0RH65V5cfFm6LlCbEwm5zAtAqjO2BiiDpxhswjhgY9q43438WhMQ
+	 sbgAR/NV8Pd3xdzrdDo1J+mUo0lQhV+A5Qy+vinAwfIxb4NSW/WZ/V3aOApyPq5kucIBx
+	 ym0OlBnDHMFLfVGbfdDcNM2i2I6prLFyGVTB0iK32r3kvYVauxzE+uQLrmX3EUBAKdOHy
+	 Gb1pYVV27VsCVfI07w5/+OL0JTLRa+/f1grZfTZasLVPZqGi9kqV7jg1plg4kgczx3w==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MtmMx8sj;
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32338606A31C;
-	Wed, 18 Nov 2026 09:00:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F317606A320;
+	Wed, 18 Nov 2026 09:05:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F317606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UQe0DAOh
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=90.182.112.124
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794992450;
-	b=g6ZsUdTG0RwZY3MKlBEQ2SYq8bqLFnVqvBhplmW5Q8AxG9gIx2+5+0TiAjzALuVY97jm
-	 /SKgLR2VbDZi3CQUgqjiz+TyeqZT+rnwXBBvL+GcYfXtuswbpAuGSdSYKmaku82p5belF
-	 q1rSrLJjYxiYTMPVhq5rGAMhW9polbg9E+5qQ3TF1axjKEVG3210Nzt2XEf/R7R+gFD5k
-	 e8HL0fxUuhyqNkriXAAozxaAWKhvTgkkVzmL6bl1d7yKzF917rV6OgHH/X8QLROIU8J2H
-	 oz5ihTJ8nOv5fyvdju9DreMH47HECwoM0U2nYUkumhrP26ndDplqnzfZyFhqn7p0Rdw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794992450;
-	h=DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=sr9doCvp9PjzykzAEoSbutZrtMIBi4xONV35RKYKw/A=;
-	b=0l4n9vCLzZ0k19sGNWEbzAJQPPxAWbNuhUlDY2EsdpjNxA9fD1EL/GBHJshCYjDlxGld
-	 IrcTaI98kWLyukTg0ouRi0pORCYLIG56zCaT6qDUb9NdqDwiV55qu7n1pOa7JNbuJHfpp
-	 reVo2EJuuXy2EGIr1KOOCVmdCBo3YK8lYq26EW0osz/H7gkjyAM9CJKQzDoIOJ6hjN452
-	 x0TTMoa6VbPEsNXODDl2Hp/Wag8w4tia7f04at0lUrkyR+yl8rDgiQig2e/pnNdblRiDN
-	 IAJtrUMMCkBHEy2hRVJompprQVGTmRVNR6dqYX1utalVcRVY7j+338BTJJXeOvmc/cA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=90.182.112.124
-Received: from localhost (90-182-112-124.rcp.o2.cz [90.182.112.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPSA id CC6721F000C4;
-	Wed, 18 Nov 2026 09:00:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794992450;
-	bh=sr9doCvp9PjzykzAEoSbutZrtMIBi4xONV35RKYKw/A=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=UQe0DAOhTKneIIS9iuJOy0QPxWfQEFrkPNKamL4s7nfvzXQLFqW9+5QHATMnMCjIc
-	 nToO92PiIyuv1O52OMdHOnqAefkexhJiFi29AvRl3VrTNCy7gc+4rG1z8tM7DwJolq
-	 CHyRoiBuuGLpaTOUhdlpAtSM3FXme8X2bfBFs5OyHZwoq1YRzIavmqmN+ZfM5/qTQ0
-	 gMNaL8mzyXgglu1VeF1Q8L7n1OsgCEzKnNBd5HVSB1Oi/ka/bEHkcC1hH7jAEfer32
-	 0u5M4E5cu4gtaCPeLl9xp24Xcx0cFVIUBZhd2wOFxz/QNt2RCv4BOm5n9n+F6cUAcx
-	 sLyc+PPZbC9vQ==
-Date: Wed, 18 Nov 2026 10:00:40 +0100
-From: Joshua Crofts <crofts@kernel.org>
-To: Adil =?ISO-8859-1?Q?H=FCsrev?= Tepe <tadilhusrev@gmail.com>
-Cc: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] iio: proximity: add Imagis ISG5320A (Samsung
- Galaxy XCover5)
-Message-ID: <20261118100040.0000744a@kernel.org>
-In-Reply-To: <20261117173333.1853986-1-tadilhusrev@gmail.com>
-References: <20261116074013.355363-1-tadilhusrev@gmail.com>
-	<20261117173333.1853986-1-tadilhusrev@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MtmMx8sj
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794992716; x=1826528716;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JRYvHjc2XzoEsxyTnYYkNUZ2Ub40RofbKnyppuYWcVE=;
+  b=MtmMx8sjCr5vR+qjxpRhT2uNF/AhwpmpnYaQB8iYuwddgwW1eHRpf46g
+   3e9L02Hoy2kNWR8sQXviPEI4D14YgBRHKkDWvp0weTXSdbJvbq8ZvQFHK
+   hHLP0FCbp66isUf6r15T62wjaQMSFVNv0JbRazYb2WZCzVLFO1q7EiAMP
+   Ihx6d4l3R4NHPI0G+L6txUO2TuJqABPynBSXJ8k4mwsBmbAdvmmxQ7rzV
+   OQ5pRDF2MHj3d98/issjEuwX9g833B9Bjk5YPrAopSP698FMHMMrNrg7K
+   w8MuxjqixGHADcE6nB9dgkpRHsa5xs+NpRQBT6NGSHotohuaVBRFON8a3
+   A==;
+X-CSE-ConnectionGUID: a+1EVYp8R06QWilypDlDKg==
+X-CSE-MsgGUID: hAiYoEO7RPWg9VqHpJEg6w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11969"; a="3818818"
+X-IronPort-AV: E=Sophos;i="6.27,219,1787036400"; 
+   d="scan'208";a="3818818"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2026 01:05:02 -0800
+X-CSE-ConnectionGUID: +yvOVnxlTj+CX2zSo4rUIA==
+X-CSE-MsgGUID: nKNRUAYyRJqpgofT/76kLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,219,1787036400"; 
+   d="scan'208";a="10424378"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.157])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2026 01:04:59 -0800
+Date: Wed, 18 Nov 2026 11:04:56 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: raffaele.tranfaglia@gmail.com
+Cc: Mark Brown <broonie@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Johan Hovold <johan@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev
+Subject: Re: [PATCH RFC] regmap: kunit: add tests for values wider than
+ val_bits
+Message-ID: <av1qOFxolvDhQTKs@ashevche-desk.local>
+References: <20261117-regmap-kunit-val-bits-v1-1-a1cd02063217@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,77 +83,114 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261117-regmap-kunit-val-bits-v1-1-a1cd02063217@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 17 Nov 2026 20:33:31 +0300
-Adil H=FCsrev Tepe <tadilhusrev@gmail.com> wrote:
+On Tue, Nov 17, 2026 at 07:55:14AM +0000, Raffaele Tranfaglia via B4 Relay wrote:
 
-> This series adds an IIO driver and its DT binding for the Imagis
-> ISG5320A capacitive SAR/grip proximity sensor (I2C), as fitted on the
-> Samsung Galaxy XCover5 (SM-G525F, Exynos850).
->=20
->   Patch 1  dt-bindings
->   Patch 2  the IIO driver
->=20
-> v3 fixes the real review findings on v2: Sashiko AI caught a High-
-> severity INT-polarity bug in the reset sequence (eliminated by
-> dropping int-gpios from the driver and binding entirely, since the
-> pin is already described by the required "interrupts" property) plus
-> a Medium-severity devm unwind-order bug and a Low-severity unchecked
-> enable_irq_wake(). Both are now live-tested, not just built. Per-patch
-> details are below each patch's "---" line, as Andy Shevchenko asked.
->=20
-> Tested on a Samsung Galaxy XCover5 running 7.4-rc1 plus this series
-> (2026-11-17, kernel 7.4.0-rc1-00023-gdcb8b91fb779+ #30): the driver
-> binds, registers as iio:device4 "isg5320a", and in_proximity0_raw
-> tracked a live hand-proximity test (baseline ~0, swinging to
-> -12817/9748/10759 as a hand approached/withdrew the sensor).
-> checkpatch.pl --strict and dt_binding_check are clean.
->=20
-> Based on v7.4-rc1.
->=20
-> Tool usage
-> ----------
-> This series was developed during XCover5 mainline bring-up with the
-> help of an AI coding assistant (Claude Code, Anthropic), which drafted
-> the IIO driver from the Samsung vendor driver's register map and
-> drafted these changelogs. I reviewed every line, built it (arm64, 0
-> warnings), ran checkpatch --strict (clean), and tested it on hardware
-> as described above, and take full responsibility for the contribution.
-> Review comments are welcome and I will answer them myself.
->=20
-> Adil H=FCsrev Tepe (2):
->   dt-bindings: iio: proximity: add Imagis ISG5320A
->   iio: proximity: add Imagis ISG5320A SAR sensor driver
->=20
->  .../bindings/iio/proximity/imagis,isg5320a.yaml   |  55 ++
->  drivers/iio/proximity/Kconfig                     |  11 +
->  drivers/iio/proximity/Makefile                    |   1 +
->  drivers/iio/proximity/isg5320a.c                  | 848 ++++++++++++++++=
-+++
->  4 files changed, 915 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/imagi=
-s,isg5320a.yaml
->  create mode 100644 drivers/iio/proximity/isg5320a.c
->=20
-> --
-> 2.53.0
->=20
+Thanks for starting this discussion! My comments below.
 
-Not only you sent this as a reply to v1 (which obscured this new version
-in my inbox), you also sent a v3 the same day you sent a v2. This is a (rel=
-atively)
-big addition, please don't do this. For trivial patches it should be at lea=
-st 24 hours
-between revisions, for new drivers ~1 week.
+> Add two test cases writing 0xffffff0f with regmap_write() to a regmap
+> with val_bits = 16:
+> 
+> - write_wider_than_val_bits uses the RAM regmap, a bus that only
+>   provides reg_write()/reg_read();
+> - raw_write_wider_than_val_bits uses the raw RAM regmap, which goes
+>   through the value formatters.
+> 
+> Both expect that only the low 16 bits reach the bus and can be read
+> back. The raw test passes, since regmap_format_16_*() only store 16
+> bits. The RAM test currently fails: _regmap_bus_reg_write() hands the
+> value to bus->reg_write() unmodified, so the bus sees 0xffffff0f. With
+> the rbtree cache the value is in addition truncated in the cache only,
+> so the cache and the bus disagree.
 
-I know it's tempting to send a new version after a Sashiko review/trivial i=
-ssue you
-found, but you'll save the reviewers' and maintainer's sanity by waiting :)
+It means we can't enable this test cases without addressing the underneath
+implementation(s) of the regmap. I think the proper solution is to cut upper
+bits on the regmap level, so the cache and HW will see it as expected.
 
-Thanks!
+> Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+> ---
+> regmap_write() takes an unsigned int, also for regmaps with
+> val_bits < 32. What happens to the bits above val_bits currently
+> depends on the bus and on the cache type:
+> 
+> - buses with raw write() go through the value formatters, which
+>   silently drop the upper bits;
+> - buses with only reg_write() get the value unmodified. regmap-i2c's
+>   SMBus backends and regmap-fsi then return -EINVAL, others (like
+>   regmap-ram here) take the full value;
 
---=20
-Kind regards,
-Joshua Crofts
+To make the users' lives easier we should not move the burden on their
+shoulders to carefully cut the upper bits all the time it might be required.
+I see the only solution is to fix either globally in regmap core or in each
+bus and document that somewhere that developers for the new regmap busses
+won't repeat the same mistakes.
+
+> - with a reg_write() bus and the rbtree cache, the cache stores the
+>   truncated value while the bus got the full one.
+> 
+> This was found in the adux1020 IIO driver, which writes ~u16 (promoted
+> to int) to a 16-bit register. It works on I2C adapters and fails with
+> -EINVAL on SMBus-only ones [1]. I am raising it here as other drivers
+> can hit the same thing.
+> 
+> The tests in this patch expect masking to val_bits on both kinds of
+> buses, so the reg_write one fails today. This is only to show the
+> difference: should regmap_write() mask the value to val_bits for
+> reg_write() buses, or should it reject such values consistently for all
+> buses? I can send a patch for whichever is preferred and adjust the
+> tests accordingly.
+
+...
+
+> +static void raw_write_wider_than_val_bits(struct kunit *test)
+> +{
+> +	struct regmap *map;
+> +	struct regmap_config config;
+> +	struct regmap_ram_data *data;
+> +	u16 *hw_buf;
+> +	unsigned int rval;
+
+Reversed xmas tree order?
+
+> +	config = raw_regmap_config;
+> +
+> +	map = gen_raw_regmap(test, &config, &data);
+> +	KUNIT_ASSERT_FALSE(test, IS_ERR(map));
+> +	if (IS_ERR(map))
+> +		return;
+> +
+> +	hw_buf = (u16 *)data->vals;
+> +
+> +	/* Write a value with bits set above val_bits */
+> +	KUNIT_EXPECT_EQ(test, 0, regmap_write(map, 0, 0xffffff0f));
+> +
+> +	/* The "hardware" should only have seen the low val_bits bits */
+> +	if (config.val_format_endian == REGMAP_ENDIAN_BIG)
+> +		KUNIT_EXPECT_EQ(test, 0xff0f,
+> +				be16_to_cpu((__force __be16)hw_buf[0]));
+
+Do we really need those explicit castings? I think they are already inside
+the byteorder macros. Also we have be16_to_cpup() and le16_to_cpup() which
+might help.
+
+> +	else
+> +		KUNIT_EXPECT_EQ(test, 0xff0f,
+> +				le16_to_cpu((__force __le16)hw_buf[0]));
+
+Ditto.
+
+> +	/* And that is what we should read back */
+> +	KUNIT_EXPECT_EQ(test, 0, regmap_read(map, 0, &rval));
+> +	KUNIT_EXPECT_EQ(test, 0xff0f, rval);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
