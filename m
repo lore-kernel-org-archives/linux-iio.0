@@ -1,89 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794997878;
-	b=nTXQaXIOItXVSauxZxhlCRYoXl3nNpHyx3Bxt6y0gcNN0Ny81Ln7rZp5+S0xAFf8Agee
-	 ytkL/U2v4QfghzOt6Noerhw0Kf1NFvKYzyaHQmn9VMVIXDR13VDdb2Z0t8At/RPjRXvRe
-	 dkEkx0cdXQFuMMXxKp3OkzsO8UfNpW48TNJfVQdF9PhQ4XumCWcaIeSX+8grB4g/TQytz
-	 hMMAu3R9v3lMvkHjQD4c2ssM3MgG/KLvnIhG7uwQ+MyYm8gstJmSdQ8Kx6/G5G9afAmSB
-	 hWwKuGe/dU5I1Mug+ND8l9omEiVDpkB+azjdLMw/ndq/cMh/xLYxVynBWpeBXt+/ZIQ==
+	t=1794997923;
+	b=Pp1x9fO+FZDlHE775feHPfxuue+2/IDPsjavQHCyGEKl/Poj1i8fQjsoifiyT4AwNYK2
+	 l/L9lP7w6BzzqHYyvxjKuf256pYuARQ0f911NAriTI5U4IrUixDPaiRgjgMRtU9B7bBKI
+	 JJ9S+nGeMycK+twJsm8SC5C0bXpBMoYOduPj1763RXFWvgiG3o+pQsv82ZAv7/AJIu3S5
+	 eDaKGcRPQWIEerdfU9SjOJStfoTRd02cTf7QMzyC5z3F9NDVyfhDqX6322HGjTs03vFAn
+	 s2/jTLwit0rijum+zsZnpfOwKj8Qtc3yrmDV6UiQzja0nx0e3s73rPJa2NandOfwQBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794997878;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794997923;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
 	 Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=RNaYfzqeD2INqtazwHcQmd57GXTu5xCWhu4vIapt7gM=;
-	b=GHduyN+OBqs/tErm8amttLskAcHJtlzUMBgqITcBuR9zSsY6JXXnxOru/OGYWgX92YNU
-	 uJXt4Y000OFnH0dmrvXWTqPbXDTD5m0BZdw2DAq1VHmaZK6XmzSgEi6mR2nOx4D1ymN43
-	 pS7zv0VeSIvKvj+nVVwC67zZEGFLAppxOWCXavNLCZ9lEwUjIwWOBTwl5d7zc8cccbhev
-	 G0xQk7VrqrOQbMeBhKjz9JLEzOWv+mo4Rl1kq9NuzWolTCh82P0A/rQbuzt9u8zUhT0eh
-	 ZgpkrM20rq8EWYuNArH6mqb1rl1lhAg0F3wuiGSsWrX4TmYkmhCgOmHJKe2nqRcg7/g==
+	bh=zp8KDvfQnedhc5dWWrFnI8zt16YP/phqo55Fqv1pHj8=;
+	b=xAAMDnoH2XdaYzqNiZQKF8MnBInMUNxv7iPIDUf1AXw+fTM0mBBCs5P5tHx9v7eSmx8f
+	 8z0pIEOD8S83LIFQ27uIMefGnHPVCQy3aPc8HtxiVlCZtmc/P42G61/w52ww/7dg63u7A
+	 ZXT94t3jxN5rFe1t5V/hwPdK+KEbSAvukp0+jiSmM1qoPS0wbcqQi9jix5/Ix8Xa4eaec
+	 CgYX+6WCrRdBXkcHpHQKhAsl8LuFPLYdNnppF4Vih3aGx0KiOAChR3whrgraZOyDriU5Z
+	 rc2yViR5YqPHQK10UApB62gkn3mXPZTu1JKcGtL+3koCHGHwiDggQkgEYraDcCE60Ag==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=owm1zLg0;
-	arc=none smtp.remote-ip=209.85.167.46
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=sIAmVEWX;
+	arc=none smtp.remote-ip=209.85.167.52
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2024F606A320
-	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 10:31:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2024F606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F0A60A261B
+	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 10:32:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 55F0A60A261B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=owm1zLg0
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5c126f80426so638046e87.1
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 02:31:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=sIAmVEWX
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5bcdae234ecso913652e87.3
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 02:32:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794997876; x=1795602676; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794997921; x=1795602721; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=RNaYfzqeD2INqtazwHcQmd57GXTu5xCWhu4vIapt7gM=;
-        b=owm1zLg0VzYFmDdfm336JH/9bvcMfVg5N5R7J3bsi4HiUKpzL+6sCLOkWIwkPYCbMV
-         UdAaZ9AVS1itm0VjYjLte2phA1r0VNW0wsggScBPXp2mNVaygoFzxOLr25NmEnebyMJt
-         xp+ORVMt+ygOaD2zyIkYCYGqQ+ziH8XY9DswtnW4t9ZRd2jSkvNG407ofM1sHtyTn7al
-         22JdLD6YyqYmnc9HY+zwPURAl1GUA2FbyBM8SAMRBr9bVD9yEcWwAQp2z/3yE24ad5+r
-         nsSYBfq6iSWuqj5MtOXPNGP4HJqP8RKXhP4f7l/3251v3mr+6rObHBAAT34hCKtf5lDj
-         fvUg==
+        bh=zp8KDvfQnedhc5dWWrFnI8zt16YP/phqo55Fqv1pHj8=;
+        b=sIAmVEWXig+xreMoQRKV26QS1AdelvXoSpodOL8/hIhZw3yXevIgOofeE82qc45x9V
+         gb0+TeVEbMp5qUfLvsRH91VnVe9lmEnEWia8Jf5bE+3Sicn4ymkTybOBHPsS5EMOMRLB
+         yYvDBfz0+ZOe4f0xgAshhx/RIsOCf2LidpM66yiq+ONm8N6l2BgvceOGmmv4WvWH1OJq
+         GT0lPQbSZ1Np6B9gCKXgpSpJgaOpDK1I8+iNQrRDCPW/3K73CJ5MVjOV7EWRsVFpMfIZ
+         yfRCk4Z4fGUmjx6pVG6/HPRnikQxXMLX6Wd2Z95ArP+LbXVOeIIq5bzA147dEKw/ZlK0
+         numA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794997876; x=1795602676;
+        d=1e100.net; s=20260707; t=1794997921; x=1795602721;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=RNaYfzqeD2INqtazwHcQmd57GXTu5xCWhu4vIapt7gM=;
-        b=LfsYgQXq/QCyDgqUKmyKTCkD7UlYyJry0wW5uyZ0CYwSyoCZdbGde6SFMqeFO8LCUB
-         NGRZb6CLHSB+MC3KDJDyYlOHlWaOo6a27WAGzVZ6pruj9FkuOjVhaOVgbMD3KLpg0gNT
-         DahkS91onW/FrC/IbdFwYh3fjUyWhYqPwNEYO6n7j8tWmXaZbTMKoJh+esOCgJZ3Gfmc
-         OfqnQuKxHYGbIA1ItJWjmD1olx9NClCRdNP4M6MKGI61YVxY4LMTwYMWRjzz8tAgayPz
-         jQNzXlWMax1IBlXFInA8ZQ8vTUg6+TX1H0TlzsszuAXRATF5khVsOiAFDUyJYcggOqEZ
-         hAiA==
-X-Forwarded-Encrypted: i=1; AL+hErHAtPU06n834zzRI3p9fPGVy3TmGQJ23jWXhuCRL/Gk8nK1hObc76ogAkIa03RPzlpWM3nO6zTmTbQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9nun+GdqQSAtFzoTya+P5UFoO2/Um157TaCfkUunfW96WRbTzQ
-	dnqkNkQhd2P2X70vJKRHA0VNz1l8rS1RawcJ0LtpeEdlRWhp2kjQmTLG
-X-Gm-Gg: AYBFou3qt7V4x+XdkT8JR0dVBG3X9vtpwS3jUWPXhUonMv4zMa2S5Oyo5exHTWFeVEy
-	2YjC/EgE5h4ccGJ6U2pTD4xEKmiNQmPntuULm73uKbT2zNi7gRBDTOOZeLOfBf3hAEhZ5VZTusj
-	WniM+MUdeN2xW9VpdXsaAvP6eXc++XLP0vFt+3yyC62lLSMxJE1dY3cbd3J5sPlJwt4MkIR3QoL
-	xM1INnczXZiHZtphLf4kpHG5ak6te+ZeVQkjMro5OoHRava12fqiImNtEyqabu+zi0QJL+/85+6
-	ZgXEIzJICqZBpbgqpnWaDszbdJLmKJGfqYDIE97zyAKq/I/s8sJ70Qwz7ENX+PGjNsyFVF0vs7k
-	V2Z1PnNqMrl02ojYYpkOJpZVEf0kzllbT4MKDAeojOCkT03urgnLei3Sdz4CGc3a1Ml5QEsMnv3
-	+I9UxFwp61UQ5TyDJMtcdNXx60M58umLo8/a8IRp106m+zCoMEAvTYoJYBFgOsjlZ6aMR+tWK2v
-	r/PpHznUG1z0ICQYYamXd7ypm7gnEfgMoBo/MyOxU4RGFRmqDceD8vvg2sA86GADr7frjxZP8oS
-	BEHjWuvS3QgfUGAqMNrk2NZSpaThOHApK/lmdr/8saUfO+1UKTiSg1dBTKS9V2rVEnbDgNME2BV
-	fMG4xXSPt4A==
-X-Received: by 2002:a05:6512:31ce:b0:5bf:b999:91ad with SMTP id 2adb3069b0e04-5c1a9c17fa9mr645391e87.20.1794997875982;
-        Wed, 18 Nov 2026 02:31:15 -0800 (PST)
+        bh=zp8KDvfQnedhc5dWWrFnI8zt16YP/phqo55Fqv1pHj8=;
+        b=FQV5BLr+w3GX7+Qa/0tAZ+RRN3C2fQkJCP0XZMaCqc6R9bXj5tH2cvPckrTbOEXzeW
+         Rl2ulWQ+5ps2N6pqZzskZFRjrTI2G/XngWIOOw9MXbe+rwdcWu80ahLMuwGSkGHs/EGS
+         KRXJkwKmGRKgrj33Cy03q1WsHhw4tl/XP2xN2b3mpJODyPSSloNtAscQ8zpABcZjwtNP
+         +PvHwly4dgFfeq+UhoazR5OpSi2Neqm5xcWYiK6DnfqqYd4nbodn+aI+0Qlngnscmvu5
+         9ICnuqJPrB+oJhIEO/Mzpy/S2WCEagAYXvi2dlTDLbWc9PnFlFRNMeKvNHsVC33Y4nmk
+         leQA==
+X-Forwarded-Encrypted: i=1; AL+hErGnde/nlyPHs3FETcohkWjklLLnrDknavTMa+X3A+5gocltHECStUQdW5/AsbjGiDeJS1IneJlOPJk=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9Vt04T1q+abc+Ek/FIESzNlHlnJBToW6VwHpej/+UcksvDjgX1
+	CaaAdQ+wHBVKOTTqTmUiXnlD1/GsJm140uGvbHYm1tNv1iTF/kYnqM3g
+X-Gm-Gg: AYBFou07fofsja2GzTxwHlsGLhpL8xSP6sObkFjXobjG1yxgNI9138pchPD2Tfhx149
+	QmYNTFKiirQKGlHGu9gdMa8twMDvcdgfjJ7dhIGWPOGZeB74w8QmyvLiHr0QoONluGEHTE1NIEB
+	1PiZUSWkU/Bg6apB2Cjc45gskG8tzKnYaYFiOxC8m6KjLVBhSuRMoeJpmj/o6/av5/1iipRqyZO
+	xzjOXsXj7O9m1sUxZ60BdO8ogODZo74mj5wUkSnXzvh4XcR/yMcmUzmoLlwcYWUgz1cIjaSDCxs
+	sCkv7qIruf+8SV0whgaP1cHFQHT7i9PNJZTOlItNOJLTsAYHeIPDqVymucHApeIft8DzwtRCggP
+	oBJE357+UB2VZBmfh6/5HEncQ1qqLMkteQRisY3NRjautE+yKxK7d/1Uy2t7MVL5sX5E4edymcw
+	BGWC1Cn9D1qSiyRYnC6SfSUXXIMq9iVO5nmOUJ5L3maWnb2P19otE8qWTLzZQ80RdBeCuw8j7YV
+	OJX3w1Dp0V/yA8k6xzp9dcd9Y1V6eQCV72t5fQBn4ianWsnKDjDm87zTGOXjzqQTbHHIAWy5qaY
+	URQOyq1achr3V4g1WSIGxidZdl1IGuYGzETQIoqlHd9+iueJfHRekLNMZNCBhDeR283EQLZ+Tk3
+	uNpPcYX9gvg==
+X-Received: by 2002:a05:6512:1596:b0:5bf:b144:fcbb with SMTP id 2adb3069b0e04-5c1aa067108mr678419e87.28.1794997921160;
+        Wed, 18 Nov 2026 02:32:01 -0800 (PST)
 Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae67b0cac2sm5223771fa.22.2026.11.18.02.31.14
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1aa77e5ebsm420005e87.46.2026.11.18.02.32.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Nov 2026 02:31:15 -0800 (PST)
-Message-ID: <c2e9261c-2906-457c-a6c5-8a81d87e3375@gmail.com>
-Date: Wed, 18 Nov 2026 12:31:14 +0200
+        Wed, 18 Nov 2026 02:32:00 -0800 (PST)
+Message-ID: <820865f9-2ef5-4316-abbe-5c44c7df55ce@gmail.com>
+Date: Wed, 18 Nov 2026 12:31:59 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -95,47 +95,39 @@ Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] iio: light: bh1745: fix 16-bit register accesses
-To: Arnav Kapoor <kapoorarnav43@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: Mudit Sharma <muditsharma.info@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>,
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Mudit Sharma <muditsharma.info@gmail.com>,
  David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20261117110327.198084-1-kapoorarnav43@gmail.com>
+ <avxi4BBJ_Ztg-aN7@ashevche-desk.local>
 Content-Language: en-US, en-AU, en-GB, en-BW
 From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <20261117110327.198084-1-kapoorarnav43@gmail.com>
+In-Reply-To: <avxi4BBJ_Ztg-aN7@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 17/11/2026 13:03, Arnav Kapoor wrote:
-> The 16-bit colour data and threshold registers are little-endian
-> LSB/MSB pairs, but the driver accesses them through regmap_bulk_read()
-> and regmap_bulk_write() with an int or u16 buffer and no byte-order
-> conversion:
-> 
-> - bh1745_read_raw() reads 2 bytes into an uninitialised int, so the
->    upper 16 bits returned to user space are stack contents.
-> - bh1745_read_thresh() reads 2 bytes straight into *val, which the IIO
->    core leaves uninitialised, with the same result for the event
->    threshold attributes.
-> - bh1745_write_thresh() writes the first 2 bytes of an int, which are
->    the upper (zero) bytes on big-endian.
-> - bh1745_trigger_handler() pushes the raw register bytes, which are
->    little-endian, in a u16 to a buffer whose scan type is IIO_CPU, so
->    user space gets the samples byte-swapped on big-endian.
-> 
-> Use an __le16 buffer for all of them and convert with le16_to_cpu() /
-> cpu_to_le16().
-> 
-> Fixes: eab35358aae7 ("iio: light: ROHM BH1745 colour sensor")
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+On 17/11/2026 16:21, Andy Shevchenko wrote:
+> + Cc: Matti (even he is not listed as maintainer) for possible another pair of
+> eyes and/or having an answer why this was missed at the time of the driver
+> submission (from my perspective this patch is correct).
 
-Reviewed-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Thanks for the heads-up Andy. Unfortunately, I have never worked with 
+this IC, and I don't think we have it in the ROHM Finland office (but 
+I'll check this just in case. It'd be nice to have this covered in my 
+test setup).
 
-Thanks a lot for hunting down and fixing this Arnav!
+What comes to missing this in reviews... Well, I suppose the reviewers 
+are just humans, or if they're not, then they might have concentrated on 
+other important things, like styling, instead of the real functionality.
+
+On my own behalf, I was away for 1.5 months when the series was applied, 
+and I only looked at the GTS-helpers usage when I did my shallow and 
+badly belated review. (Furthermore, I am 100% human, so I might have 
+just missed this even if I had all the time in the world to do the review).
 
 Yours,
      -- Matti
