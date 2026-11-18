@@ -1,60 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.231.138
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795039239;
-	b=da3k9lCUUDKyCeuT3FcXT8gvw2eGrUoasUpB+NnsdJd81qCZp/qusl8g2NS0h8FLxHiw
-	 XAyRW5FMUibMcZsdNTIqO1SuIIIKMprmx5gUzMhAYe/ZfX4R3qreknFXRQRyb1VKDvv01
-	 0kOrqViEVw4y1MXODIJOTVa2ghosVXvhwc3+1CILauGcn0u6X9njiJ1BmEFt1IedjzLBa
-	 dYyaUGOuR/Qpone/dMkTWM4wVLECebFurV/SbXqDlAq508dRnOl624dx3Ti4W/kcH83AD
-	 /nguU2jePtg9aZZJmBBaw0SevY3W5XN08iPVth21zbJmfRo2FwZju1Wyzg2Heo336dQ==
+	t=1795039669;
+	b=fX6FaarH+1FX7b2lRo6Mp7gOXB7MjI2QjR4qaZh8uWbS3gFt0g+P8HjpmKQsKEum0pKy
+	 UGsr/oEUDCwsAZ12do22Xb3i/3xW/ecBVCGkq8JlA8eshIX/Q729Ia7rft1MtXtpxCjut
+	 cQ4tVt1M4tRxLRL/YEi4fGz5yEZEqFjOAgK6jVcilb0tPOGr0O+osRYHhmpzfaX1NS+av
+	 cjoTFFjiYpCH+J5BFpem0OI9TKhzto3WVQZ4/LNz2IHicgIqQpF+8BI4H0m795BViNjs2
+	 YPIJFf+KYPt3CKo/IuSPDQNTMgeJSVLtmthGllalcBnSLlD5A26fGyrpHmYDLmc+39Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795039239;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795039669;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=EW/j4AHQToanR4iAnbKrwXf5ZMy3lNHSEzakLY3OOkE=;
-	b=0yMh6Z9Xm9YU9NRcnemlkQkcf6qlwUiLeR+oN9Fj5uaJ3pqCBhb2PMu+96Vu/NWsAb0U
-	 7CEYeR8tOUBw99MHDDi3gFhvKCdP5GHzucUS1D+aS9G4C0uM8ZjUickcM44fIj6FstgWo
-	 nofgS4R31reOBgTC0l7uf9ggvRB1x6j+h8eUYi7MHLdSbe3ndZJVMfHsgaRTFUBGZvYLe
-	 DTqL2oxw2rbzzb1/BDaGIzEPeDPmuWGluyJHW3NjXSE+kRIgQ1znJskz18LJwaoVKN4IC
-	 YV+51pq5gLHzz78/4MF5vlMQJa0YJTwww3DkfRhBsxz9EqyAJTLB8wbwQx6nnhpeSeQ==
+	bh=eGiTz5a4RWzDfrU+6uE44Y9DQD7JN0lrvIFzNORDJ0I=;
+	b=UWPbyDAPiWe7pR4ZnmWHIl0RlXyj+2rCkPzMEtYgXFzgI7b0t9QkRTDdbsTcRIgBbR9E
+	 2WSB7MrCCX5BeUxaDKqmXrYUbyVjjJOivbiE4al/kM5NgALpjsUkaxO5ZyhuiMyyC/g5O
+	 xpKv++KsABlnhTaRRxAGj944RY63U8m/X4t5iucO90D/K+mFic33ta/UPh7YYVqzGGq+4
+	 MAi0sq9MUpz1UnSTiPg5Q3BywGmLkHvlVHbvmBMHqZfiNvSbcsurgB+95ioZ2EECb6XOT
+	 v1JuSjH6GPMvb/mEKl03xILeYQ0QeJlC14m+txf9fZxyg77JJ3qVC7la5jPcIkR2OyQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="EHUn/RC5";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=v8L9PHOr;
+	arc=none smtp.remote-ip=74.125.231.138
+Received: from mail-oo2-f10.google.com (mail-oo2-f10.google.com [74.125.231.138])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F562606A330;
-	Wed, 18 Nov 2026 22:00:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4915F606A338
+	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 22:07:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4915F606A338
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EHUn/RC5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 045061F000C6;
-	Wed, 18 Nov 2026 22:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795039239;
-	bh=EW/j4AHQToanR4iAnbKrwXf5ZMy3lNHSEzakLY3OOkE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=EHUn/RC5tq2E/sDD9KuZBuc3WUNlBitDQRQ+XXA1pPaXDyVDr72v8dR3Brnq6I1xl
-	 mNBEKAeHSOwM0jXRISwmZOmN4sJ+XwdJBqkRvpknbqHFAuqmUqOygSxJ9uoPeIQuCC
-	 akBNA4P5pGfE3qK8Ifv3d5xCPfpqnRQaAo6AOAf6s/UVAYVxezDqOr5ikwifG7GoyP
-	 bMmpEatW+uw7d3bAdqC8cop/FIjYHIQ9sIda0QL8qnIdo6db/aDqvAbav1GMeMEGJt
-	 yY70g+ClHORIh8mv5OS8JLNxaMVGMu3JfkazYlhhwg9CcGGjCN3moPgI6WSXngWzql
-	 Nw+BAauBDDRUQ==
-Date: Wed, 18 Nov 2026 22:00:33 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Daniel Balint <dbalint@google.com>
-Cc: Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org, Benson
- Leung <bleung@chromium.org>, Lee Jones <lee@kernel.org>, Tzung-Bi Shih
- <tzungbi@kernel.org>, linux-iio@vger.kernel.org,
- chrome-platform@lists.linux.dev, mfd@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 0/3] Introduce cros_ec power monitoring
-Message-ID: <20261118220033.70425495@jic23-hlaptop>
-In-Reply-To: <20261118204532.257423-1-dbalint@google.com>
-References: <20261106193129.43493-1-dbalint@google.com>
-	<20261107010356.39d9eddf@jic23-hlaptop>
-	<20261118204532.257423-1-dbalint@google.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=v8L9PHOr
+Received: by mail-oo2-f10.google.com with SMTP id 46e09a7af769-862ac6a951dso548816a34.1
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 14:07:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795039668; x=1795644468; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=eGiTz5a4RWzDfrU+6uE44Y9DQD7JN0lrvIFzNORDJ0I=;
+        b=v8L9PHOrcf6EifRvOUzF1B/yU+AHRT/pt16rArYrVplOhD1uNp54Hi2sayarkYNx4y
+         SGKwZwsGeY3hymNTokhMwV0Is8nFmSWK/C/srm39x4AXDlVBGrEtzfqhphZpiqG4cyNh
+         OPhlfAsx3SNGvrgsWDjYaXdgOd1mdB/TkK5PrT6ZktQ446jnF/xC/82kilWjejCQ5emf
+         LzJa/Exf7jivcmHArr7VqwzQdV1ODOubkngAVZlJCsPV29HLCt0BcCH7Hj97N6+6YhWx
+         vx6vhtZhkipbMCTd9j0Bu/Kr6GW85nw+GLNcCm2oxh/y8+g+KEfcdwvHewCfCCfkTQ+G
+         uB7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795039668; x=1795644468;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=eGiTz5a4RWzDfrU+6uE44Y9DQD7JN0lrvIFzNORDJ0I=;
+        b=fCjMLCxZ1nVQnKvetxW/FvwL7NEsxu6zEBoREX+SkLLwfWuNdyV3ewWM3Qv046fxPq
+         ohVbMVZLw8ZzJKBZkVz5ic47F5fO4kqaV9ZhPb7YwMY/xQejLY61Zv4hjZM/tt6Ry6+s
+         yrlQhn35p3vhPD8NG4G9sEAJsdSHzmHnZd9ny24RDbDWKu1FNRBv0PUJeZNrDL8f0NSt
+         K01t9/tmtV4W2bhTlt6kcI6LlTPWJoyQ7S9ig6NZ9G3rg9HvRncy4mLUiCixicz5rc8J
+         qsm/Q93P3GE1Dq0896N+HFuTJ+nhzNK4YkCg5WETomj/NUpK1mB/XmabPoILdmZqGX2r
+         jMlA==
+X-Forwarded-Encrypted: i=1; AL+hErFdhqCDqVQAoR8dVKbPw9jhHYq3hRXykLEUTEEnJ04aMujcVkyGxgn7ULLZCcnVhTjvp/A/wbABfz8=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9wkSm/pUuXLPmCYX+UyWic0dIAvfRP9XxFGfKF+oNPzeSUQ8wE
+	IYVvLp/RIGi9xYdPmj7/knEEApdafI+F4SeKxbPUOrmPQyZ78Uj1HNRv
+X-Gm-Gg: AYBFou0zfpXvohvclHDhMFMW8JdWHqLq6mw0NCNbV8OOZ4fAZoBmDvJmTW5mY4rLmTL
+	ERplm5/o4YMyHkb68QZpDoFUoRH543aRCKJ7wjk1YO4QMY6j1aP7dwlKG28UGbgIMDM2Ydprwok
+	m05z290WlupX6yOeWIJxV4ijOHHzq2Yez25kRx43otnCEwqe4JP+YLiUBJ1oz4Ru7nwWatv+/e5
+	DM0VO1+7lfqbA1Xk5DwDL90nZMCCk3nWpcqOP3DOY5OPGvNqsAiOaaUvZLE4JLHCNmXjXxVQZYt
+	FBcUGlqACOA68b5O58l0pHz1840IU1jZGPFgvpQO8NLTlncbATmTZd7womln2INMzhY//duV/v0
+	la9VHIWO2LtoYuo/KR3uyK3HVUwmPtiCLrD+lAvKBIsDAO3fPiTIBaxC7ssrHbPyurSER4153pf
+	aKoz53dZZyqs3d7xlQsMXb1Mi8tKWsnZRFve4wsjB1DwvsvoPwe9fiVoEmY1C/New+AL8pr4Hyo
+	8YCSQQoY4SIZzTJMGSV5bJDs8Hdmhz+DxmhgT6T4gY293do04o9tBub3glvYRB8bKrqzGSYGsn0
+	QRNMxhovpz8DOeBx6OPS/zdPucGsQAkVixH45D15HTMjz9YIQKj0eB0rNsRx88ohhyRmvIprFIm
+	sedfsx7qCYPsqsX0PiT1VZlLkPZSLuScaVBb0+ol7MA==
+X-Received: by 2002:a05:6830:3495:b0:829:9992:20f0 with SMTP id 46e09a7af769-862f08c9ce4mr4131980a34.28.1795039667975;
+        Wed, 18 Nov 2026 14:07:47 -0800 (PST)
+Received: from [10.10.18.223] (wsip-64-207-253-118.tu.ok.cox.net. [64.207.253.118])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-862f021aae9sm3024029a34.18.2026.11.18.14.07.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Nov 2026 14:07:47 -0800 (PST)
+Message-ID: <2fb4e011-8ee8-408b-8684-f3bb8e1ac624@gmail.com>
+Date: Wed, 18 Nov 2026 16:07:45 -0600
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,71 +93,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 0/2] iio: adc: add mt6397 PMIC AUXADC support
+To: Jonathan Cameron <jic23@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, Roman Vivchar <rva333@protonmail.com>,
+ Luca Leonardo Scorcia <l.scorcia@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+References: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
+ <89c8cadb-0ccb-4aac-9b95-89f355beb24a@collabora.com>
+ <60eeaaf9-57db-4ca7-b4f5-bdec111dcdbb@collabora.com>
+ <4c64aa52-2b75-427e-8f26-c2ef7fc5b822@gmail.com>
+ <20261118215144.301c2467@jic23-hlaptop>
+Content-Language: en-US
+From: Ryan Brue <ryanbrue.dev@gmail.com>
+In-Reply-To: <20261118215144.301c2467@jic23-hlaptop>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 20:45:32 +0000
-Daniel Balint <dbalint@google.com> wrote:
+On 11/18/26 3:51 PM, Jonathan Cameron wrote:
+> That's indeed a common solution to cases where a binding header
+> is involved. So I'd do this - then chase with a patch next cycle
+> to use the define.
+>
+> J
 
-> On Sat, 7 Nov 2026 01:03:56 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > Hi Daniel
-> > 
-> > I'm not necessarily against this but when adding monitoring components
-> > to IIO the usual question is why not hwmon?  What features are not
-> > well supported by that framework?
-> > 
-> > Note historically I suspect we accepted one or two drives into IIO that
-> > would have fitted better there so precedence isn't a strong argument.
-> > 
-> > Convention for these somewhat borderline case is +CC hmwon maintainer
-> > and list as well as IIO with that explanation in the cover letter.
-> > That avoids any last minute surprises!  
-> 
-> Hi Jonathan,
-> 
-> Thanks for taking a look!
-> The main reason for choosing IIO over hwmon is that for On-Device Power
-> Monitoring, userspace needs an atomic, untorn snapshot across all rails
-> (up to 64) over the same integration window, triggered on demand from
-> userspace and read out in a single buffer read rather than repeated
-> per-channel sysfs reads.
-> 
-> Reflecting that requirement, EC_PWRMON_LATCH on the EC is a global,
-> stateful command: a single latch simultaneously snapshots all onboard
-> power accumulators and resets their accumulation window on the EC, so
-> individual channels cannot be latched independently. As far as I know,
-> hwmon only exposes independent per-channel sysfs attributes with no
-> multi-channel buffer or on-demand trigger ABI, whereas IIO's triggered
-> buffer interface is well suited for this kind of pattern.
+I jumped the gun a bit and sent out v3 of the suez dts earlier today 
+with the proposed change [1]. Should be all ready for AngeloGioacchino.
 
-Ok, but that's not in the driver yet. I see you refer to that below
-as a v2 thing, so not a problem.
+[1] 
+https://lore.kernel.org/all/20261118-rbrue-suez-upstreaming-amazon-suez-dts-v3-1-c1a8b0febf35@gmail.com/
 
-Do you need that coherent snapshot to get to userspace in one go? 
-
-For accumulator channels the way they are normally done to sysfs
-style reads is to snapshot on each read, update an internal store
-of accumulation since enable then provide whichever one was requested.
-That way no data is lost - but you don't get an aligned snapshot.
-So it depends on what maths you are going to do with them, whether
-it can be done in kernel and if not how much interchannel skid
-matters.
-
-So tell us more on why you need that coherent snapshot to userspace.
-
-I agree that if you do, then hwmon wouldn't currently be a good fit
-(unless I'm also missing a way to do it).
-
-> 
-> CC'ing hwmon maintainer and list to keep me honest.
-> 
-> If there is no objection to adding the driver to IIO, I will clean up the
-> custom energy_value attribute and replace it with the standard IIO
-> triggered buffer interface in v2, along with addressing other review
-> comments and including the above explanation in the v2 cover letter.
-> 
-> Thanks,
-> Daniel
-
+Thanks,
+Ryan Brue
