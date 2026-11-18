@@ -1,53 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=101.71.155.101
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.62.57.64
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795012031;
-	b=oUcgLhbift4VXmov7Q3WqCCGURganwP3SoYFx1IvQ5ZSB3/EAUy1b7jfhqL3p6cB5GWP
-	 ZavtytreEvn96R4C3bso6+vV0sIx5mar4eTeWau2M8TPWh0ac1hDIMAcaNCyqPV3LTXU/
-	 VJ36bWLOx2y+4ZWzwpYh5VzYuT03XIyxeH3chCOsyAgg1unQbUy4UPOKqtNXEI0n+/oXg
-	 rLkyp+x4N9+6N2XOuNycTk5riUv/6IBQh9SIkSplxLgFCuk/ck1cskL7zUfyTySarGdIC
-	 h9uBBeDFz1p1OMFrBWI5kNMEFbyZ1mv+K2h62Xk1uUEF2BcIc03s9G6JvfsWGRfdvvA==
+	t=1795014686;
+	b=DRBwen1zD89U+J3q7aAeq4TmoPpdnruy2ZLr2MmdBhMzBG4/uMbkyPLT3hT/bua88zmL
+	 iW8UkpdPpSA92xyWPjx38ML94CDf2XoS5YfaE92TM2JuREivWGQLuArW4U1fQ7OzOqMSa
+	 51xWjGIGbmMVupbkgwPG+pFsN35wICxtko+xJsDO5n6lAfSchWFulCPZUXKn4rJDWGdV0
+	 6P8AVuof5qMXdIagRMb1HTONnyl56dmpGmI/D/SmRhwrlKm/4y9yW3C0WAy5ld3uhDT7d
+	 oLT4A1ZViLqDbrShcUPIy+UhkGMQPGXBBJrLxF4otTguXSsz2RrkhvisrTkkj6k3J8Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795012031;
-	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-HM-Tid:
-	 X-HM-MType:X-HM-Spam-Status:DKIM-Signature;
-	bh=UpWwI3eHc+vu2HtOq57i96kXlseffnJLeJr41+InTQE=;
-	b=jnZ2Ra9gpy9DMfoUIZUVrF199CabKHF2BDspBrWyaZyJMCB5lan3pI4e1SCd8reARdoC
-	 /Pm5iTRBKaXogGjN8ZRi+DO1mCowzlp1WFj6qkCsl3Xi5utOLlKsJqBqjs+uBYxRg9xBh
-	 38MNSYB3ynkH2Ka9zfscjpih0TEhq0QkE2p9nB43WHVQCxzsXsKWKDBoZywgJcd9T7U1m
-	 6+hyKneTy5yd827Os0nFRv11SPAbj0NaJ3ldfSLpca6HeO1qxngSJ5pIUVzR8S/vWJahD
-	 EJDKdfLhftMIHKYn7/VDtj93/7Cocb1gkLvRkw9zX7r9Sk49YeX/N9Y+Icw4zTmERig==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795014686;
+	h=DMARC-Filter:DKIM-Signature:Received:X-QQ-mid:Message-ID:
+	 X-QQ-XMAILINFO:X-QQ-XMRINFO:From:To:Cc:Subject:Date:X-OQ-MSGID:
+	 Content-Type:Content-Transfer-Encoding:MIME-Version;
+	bh=uU/K3PQdZHjbnA0Io+RhEO0npMpqfrYeS+PS8CbfWPc=;
+	b=Cgj8npkc6Al4c8qvKiWUVa0ASkG/keeyhbExLkIx1akAuZxyxYHc5tNOCX2DyX4LUyiF
+	 igaTvXIf4gj1bPSpD27l8osu7DbUzufbcjyDPWallaE+SY/uA7/T+k7uXORgE38GCHJGg
+	 p0GShEBsZNO3Qjg9DG7NCiDGCPqBytKCCwTMoRiqlAzPcJOc4S32HyQEfg5qVpxoNlLi1
+	 XylP8oTVpgzmE4GTIDwkwTYIlt9cwOrymBRIX9atK5nYW8TpqcRdTJ7modDbSkQNBXsNE
+	 ViH0xDTqyys/jekV+a5O9TPfRKp7r2iYX+O3PRcYLwwXXpKe9IjUWyi9T9n0lnFx18w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=mail.sdu.edu.cn;
-	spf=pass smtp.mailfrom=mail.sdu.edu.cn;
-	dkim=pass header.d=mail.sdu.edu.cn header.i=@mail.sdu.edu.cn header.a=rsa-sha256 header.s=default header.b=ClUOm9jX;
-	arc=none smtp.remote-ip=101.71.155.101
-Received: from mail-m155101.qiye.163.com (mail-m155101.qiye.163.com [101.71.155.101])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=none header.from=yosoro.hk;
+	spf=none smtp.mailfrom=yosoro.hk;
+	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=mR+rFAqE;
+	arc=none smtp.remote-ip=162.62.57.64
+Received: from out162-62-57-64.mail.qq.com (out162-62-57-64.mail.qq.com [162.62.57.64])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FE96606A33A;
-	Wed, 18 Nov 2026 14:27:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0FE96606A33A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mail.sdu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mail.sdu.edu.cn
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BC16606A31C;
+	Wed, 18 Nov 2026 15:11:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2BC16606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yosoro.hk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=yosoro.hk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mail.sdu.edu.cn header.i=@mail.sdu.edu.cn header.a=rsa-sha256 header.s=default header.b=ClUOm9jX
-Received: from lgs.. (unknown [101.76.249.61])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 5526d79ea;
-	Wed, 18 Nov 2026 22:27:03 +0800 (GMT+08:00)
-From: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: adc: ti_am335x_adc: Fix potential use-after-free on DMA unbind
-Date: Wed, 18 Nov 2026 22:27:02 +0800
-Message-ID: <20261118-324f82bd41-iio-adc-0@mail.sdu.edu.cn>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=mR+rFAqE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1795014680; bh=uU/K3PQdZHjbnA0Io+RhEO0npMpqfrYeS+PS8CbfWPc=;
+	h=From:To:Cc:Subject:Date;
+	b=mR+rFAqEyQfWhDYRbah/noVK/8ZDDFqOMjnc3JdDkKrryHY2bkYugWC1/zuUcgtDD
+	 EQOYo2i5ET6MaeworPUMbY950MjZolmeDQWRJqZevzu+ppMouoqFX7IOs3wqKksK9M
+	 l+fIIeZxSdCr/gfExjOCrHHnv6TUNHZe+kPlQXEk=
+Received: from [192.168.123.32] ([122.191.232.200])
+	by newxmesmtplogicsvrsza73-0.qq.com (NewEsmtp) with SMTP
+	id 2D1AB89E; Wed, 18 Nov 2026 23:11:17 +0800
+X-QQ-mid: xmsmtpt1795014677t41psb5ip
+Message-ID: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com>
+X-QQ-XMAILINFO: M1rD3f8svNznT7OENJT9mJHfwgV0miw9IXUfpRm2kJzFaCZLdrc8pUU5HoST3r
+	 FwUWA8bq1iCc9BxI5OuH9gzoXFVJ39oulfgD3me9f6/0pTlCXD3mPrI8CviNxjSYnr02EHueMPWy
+	 JmB2vyearJXsH5BUrcZqeb1jM9hZ7iJvIMjeap3WW9YdN8+L1P7hzKFmXAm/MvB08Y6Mty25lhY/
+	 W1ZsPLbxk+vwC0NWPE5Ifw4eZQqht9u7+wB69If88CSKK305o9SJr3m8wzgWQ5eITnCq84e2EufY
+	 y8iFPKWihfM2q1YO02sAChSUxJKotGXT+6FzaQJnhLfrPh1YqJLefxmJrTgMr7lo9HF7dF48D0SU
+	 /Yen5vz4NudfIw5VAKfIN1ftW1MForkHkjjfmhg9VKpgBqCGITK5gYEcT9s1i1DfuweF6dpBpGKm
+	 +gKbQpTQfOEJEvQMxOZVp4UPYKwtp7Od20FtG1jdXZsAK8R66zbFHyNvBOee4uhDumhHlhuhLqwd
+	 kxKu3c12Su1GnRBPL+cW6EF3OAK4pvVvNxgUPcDFRg45UiI246kRErTanCUfXFebK1WF9eyvKz43
+	 kMqu4jsCHXK7b3WKW6uQAGM+G3aHPo1IqN7VYRaBxmdepW8Zzx1i53CfEG3YIqMQCbjehtrq/USc
+	 qePyPyHcKbdMk8G03NqCgdKZytHGgTBm2v9I5DCryad2lDGZP+7OnB3S35HRjZRxFPg6Rv5Org4Z
+	 ZrMY5j8AYWDMS9BfNoNDSBnpvbwX+4r+Z8dkGobASIlA1h+by0zTW78+2YPXIgthvWUBsSUQziKT
+	 eaxKKxPAdEATt//E20Lev8Tmb79fi6wJ0SeOlKW09CVzNj7stTvGZ0iHEyVxzM0Hqx3qeDvwwqcm
+	 vv6+YRjVuW3Ae4eP2614kxKrwGTEGaL3fqR2rVZoKO0sjgn9KJ4xaHNExaHfhAiTYX4dPpHmLTB0
+	 00y8xXP7ApIXnsGx2nX8TEjgc7neVbZXNUXDY85zCCMx/xIieBkwFN+QEuJ5BZGEoHVTujcpdjZN
+	 X9Y1mpmLlYbg5w0KAWCkz1ydNbXWVfEPYts8Cu2w==
+X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
+From: NanamiKite <nanami@yosoro.hk>
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?q?S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Cc: Hans de Goede <hansg@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: cm32181: Add support for CM32183
+Date: Wed, 18 Nov 2026 23:11:00 +0800
+X-OQ-MSGID: <179501466033.5141.3504103739686378292@yosoro.hk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -57,53 +76,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa1ef0dd56403a1kunm3beb00b51a15ec
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaTRhLVkMYT0kZH08YQ0tKQlYeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlKS0pVTE1VSU9CVU1KWVdZFhoPEhUdFFlBWU9LSFVKS0lCQ0
-	NMVUpLS1VLWQY+
-DKIM-Signature: a=rsa-sha256;
-	b=ClUOm9jXxBA2klnT08cuTgFe9Le6AIFdMGc1gR5tYhEUif7BV4hUOCyRXCke5Za/xTZlJSfn8TTO3zJFbJaesU15WErBErp9/sg2FCxrcjAM6cuUx38P+t5BRC68eS1Ft9Kw/W10r/pqQ61TEim6AjvlSebFmYflUgCJdIob/BY=; c=relaxed/relaxed; s=default; d=mail.sdu.edu.cn; v=1;
-	bh=UpWwI3eHc+vu2HtOq57i96kXlseffnJLeJr41+InTQE=;
-	h=date:mime-version:subject:message-id:from;
 
-A channel reference does not keep the DMA provider bound. If the EDMA
-provider is unbound first, ADC removal accesses the freed channel when
-freeing its DMA buffer and releasing the channel.
+On the H3C MegaBook 14, the ACPI CPLM3218:00 node declares a Capella
+CM32183 ambient light sensor (CPM0 device ID 0x7db7 / 32183) at I2C
+address 0x29. Reading CM32181_REG_ADDR_ID (0x07) returns 0xc383, with
+chip ID 0x83 in the lower byte, causing cm32181_reg_init() to fail with
+-ENODEV.
 
-Link the ADC platform device to the provider so the ADC is removed first,
-including when firmware device links are disabled. The driver core drops
-the link on probe failure or ADC removal.
+The CM32183 uses the same register layout and ACPI CPM0/CPM1 tables as
+the CM32181 and CM32182. Add chip ID 0x83 to cm32181_reg_init().
 
-This issue was found by our static analysis tool under development.
-
-Fixes: f438b9da75eb ("drivers: iio: ti_am335x_adc: add dma support")
 Cc: stable@vger.kernel.org
-Signed-off-by: Guangshuo Li <liguangshuo@mail.sdu.edu.cn>
+Signed-off-by: NanamiKite <nanami@yosoro.hk>
 ---
- drivers/iio/adc/ti_am335x_adc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/light/cm32181.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index e53c839e87ef..07d6dc7f0355 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -547,6 +547,10 @@ static int tiadc_request_dma(struct platform_device *pdev,
- 		return ret;
- 	}
- 
-+	if (!device_link_add(&pdev->dev, dma->chan->device->dev,
-+			     DL_FLAG_AUTOREMOVE_CONSUMER))
-+		goto err;
-+
- 	/* RX buffer */
- 	dma->buf = dma_alloc_coherent(dmaengine_get_dma_device(dma->chan), DMA_BUFFER_SIZE,
- 				      &dma->addr, GFP_KERNEL);
-
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index b32a940..aaf1af3 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -200,6 +200,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
+ 		break;
+ 	case 0x81: /* CM32181 */
+ 	case 0x82: /* CM32182, fully compat. with CM32181 */
++	case 0x83: /* CM32183, fully compat. with CM32181 */
+ 		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
+ 		cm32181->als_it_bits = cm32181_als_it_bits;
+ 		cm32181->als_it_values = cm32181_als_it_values;
 -- 
-2.43.0
+2.56.1
 
