@@ -1,47 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.180
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795005551;
-	b=ejLUkV2KkmbQaaLWTij4fs5KjY5CK7SdCYI0daRcVe9YQINX/GjjGg2VL3S7HmNSCj/+
-	 c3Q+vi3GIyM4c9OViNBXN1+FakE6q3VRz+AmP2b7/qjKd4BWJ239ZwAM//TanLups4m+v
-	 N1Y7mV3Z+N5a/W8cQelevfPbURCsCKj/UadJcrRo/yOHd+ggCF6F8a6hzHGDGMhuC6sxi
-	 zae+M2K4NY1KS28LtCsE2WeBMJdXmawm+jDXElTVAt7AqksPQoxcKd6vUBH8gNumGTKtt
-	 FeVtRmw/e0v7KwWB/0Oo/D82Z0uxUpP/vMy+PaUscLH9fakSIY/0H6bp3MeQZppD09g==
+	t=1795006502;
+	b=Yf3q8YOI9Q+yaEr63fXzfXh2BgoxmLQx+b5zP0BjnKkJQLpdj0j1EjQCXfzCzJz/q0g2
+	 Y/lmDrz5Y1mrvrjldhAcJgyhPCsgY3ZFeQ2fdKHCvxgw4zCYSNzcJjLqH1gq54cCNJbfR
+	 MWTlkBJU2HavHydL5yUdBc6jrWED/hT6jrZ83dChQv2FAduXv4XOJIM4IK9uvE/5OnaFj
+	 qicCetvac6bfNUKYoYb0zy2hSQpBCx/I1VSp2K3p+5QPU+AegcIZl9if2U8UH6pkod8I8
+	 hJgsCXFrqKbijWEnQtGARKYVArf7Qifw3NlPlze1xGhtDq3feNzvVj3mUEpJEDh6Ulw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795005551;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=ZXvTmuM3YioKhPg4Ha++LLuY2ZPOAIzfl+7+aHQczPg=;
-	b=t5nJKLD9QOz7J5UolZXmMAOsifQxSTgQTtRgLJAXfZYvk+LRiwB6OxivMKVqfaldcl90
-	 xhxAl2n5s1FJiIUczLzQc0X5xVLLdj/kRt0MxzwS+bucLKw4oHMtvEplJBXjn1H1Xpvaz
-	 tynhcnzMCnDMWvIr1Q/8h+pn3t1WNLdP74VdoSvJx/UrW9HpFf+RQf4p7GkfdVq1z+HWj
-	 vBMYDhgcQ/rfzU36C2LzpK6nnkBRvir4zoOCJR9rENS51dINIRlrIOhpdcI2UZnk3Rc9T
-	 OcOkLX7B9InlxUQvWyKBzVXR50m80MrHWQM6hRmcAeP7opJL+2bwl6+HPqapWK2nkhg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795006502;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=IfM0L8l0KO0jyxCjtdYXdfOsa3a+oLhBOi1/EZWw89g=;
+	b=FGRI1k7LgjN7h6Dfqyzh7s/V7lx1p5NK13k4ba0lwqjfqzVhp/ok4KVBxJ/mtak9FZR2
+	 aJvD+m7wRAKcHKgl8YOEvH6hjLU1beublD46of4zplRS02KJBxlgdgJTYssDV6l8eiuSx
+	 +hVOuxKIgxzgmmBAHcAm70ZUjDfiL+hVlcpefH+bfCUSU9J7xhT6GaqKoQ6srJhH2qfyW
+	 P8JFQjxCj6EQYKGOmKa0whD1aNGNuUQs/w15EBzwUluxjp/Czye4BhEJWGL3Bm0wrYPWW
+	 v81BtayfML9MMyWKKrBNJ+ouL/lm3d/sJRKayFtme5XZbiCwXRRLkA14BVk4Sn7xJvg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gG4kCLUw;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EphXuosv;
+	arc=none smtp.remote-ip=209.85.210.180
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E853F606A31C;
-	Wed, 18 Nov 2026 12:39:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74072606A31C
+	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 12:55:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 74072606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gG4kCLUw
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D80F1F000C4;
-	Wed, 18 Nov 2026 12:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795005550;
-	bh=ZXvTmuM3YioKhPg4Ha++LLuY2ZPOAIzfl+7+aHQczPg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=gG4kCLUwF1nF+UgpM5HtFVJ/6QzD8lBYzRrCfgLt6Bqrq4QJ2g50WYHPz4F+lwvHg
-	 zCRmrq6EHfNMGHn9ja6EnknBxA8+/TqSUraJ6+He6ep/3/L7Xc4b2PzaMtXlbASVrl
-	 BFutM5NQNuAoLrBcaJc8xhF98Wfuqqlj014J+r/aXLwTJkpGtxb09JIZPdRt5qMKv5
-	 D7g7W5eHRf/wgPqzmlxhBr7zq40pONta0doreq1MOtTLbxMfKuQBGcejIhBndshxBk
-	 9DSnsAmoYIf4jLBx02MAWIiKhEsrqmNqsf7fhRE3TNtj+F5kbu7NnVKqL43h0Q+Z26
-	 8+GuU2nHo4rCw==
-Message-ID: <dd162a09-9183-4888-bcd8-96214549f62b@kernel.org>
-Date: Wed, 18 Nov 2026 13:39:05 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EphXuosv
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-8b67f25e6e1so570150b3a.0
+        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 04:55:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795006502; x=1795611302; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=IfM0L8l0KO0jyxCjtdYXdfOsa3a+oLhBOi1/EZWw89g=;
+        b=EphXuosvpZhHwI6IoqC6D3LFGaENEM7sy1ZRdj1dyjNvm/QjfgRYFiVIyZDyoJbans
+         FRFPiwS3AhE0rk+194XgBKD9NkHDmBdHYWEgsBdjvga8q8Ct+cNz82NXuvLyOtxPSNIJ
+         ubK48OlxNXIPGW5oMX34QX+tkLFND0cFhvJcGTyGf+NfaiaNNghgtmGjEEIvZ9RKWSm9
+         b6PraheLd02vraVWfG0AeqgW6NJfgBaXvNWTsTEghEHLUIRi3mLXlBE3H8dltr4f7FXT
+         ZMoUyJFl2W1TZ38XlUiXSZLai/CUSZMWGOyZfgmWRpp5Hny09i+czp77OG+jp2/0xJhS
+         /MLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795006502; x=1795611302;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=IfM0L8l0KO0jyxCjtdYXdfOsa3a+oLhBOi1/EZWw89g=;
+        b=nPy7C+1UJQvHjKYt3y6ZW5eG8nlDBo5tDrG/wbXymO1kckg20NM5lgGHZ0NKw+CmZG
+         Np1Jewl0XagNYvoAHSci10l/Nf9UMh2RC2X98CSUJcbO3UO8o5oTLhoqcLx4SRvSa6FI
+         pjkcP+ORoM1cHgsF8h6zf1DYrJ9nu05tNLfqeNLkPsroG/cBbrOkMGkauU3Krf0DqMLP
+         SnPZ9eqnzv39IhhoN4YC0na/0WMJUCh7Ddg0YNqdl8+XqhuyGxuw5W8DCwk4AL9/y9NK
+         dtMj/IQRyWfk4Olf8cQrgjHomCeGLQLBpoU5fMVnBN3baIgnP/ZQgOHgBc7riW4Heq4j
+         W5sA==
+X-Forwarded-Encrypted: i=1; AL+hErFGGsgLWWgo2K5KAcQEaoT0biYhFsZWPszwD0dzpza2Mid08FvzyAEyTQZ5WPuIqtj3pdZFuqAvN9g=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+Zb//bDXtfYu/U+VNyMtkyP4djcG8Ccn7uIPGCPWUBDdcys39l
+	FVzHrLuEWzsVhNjRniDHYge1F8v/mnoZBkayNegvyO339fvDU0NA59Ph
+X-Gm-Gg: AYBFou2zqYUCdOVHshA+krC85q6hOAZQnJ7ayNdBdb/QUtH6rvd2d59X9aHZBK8As+6
+	jB6ZeZPl4MfiBNrWIlBRudRaA4yZ7De/QGRGNvC8PZ4SKkKcxKdvYL/QSQ5IGjt/EjRDjzIC1m/
+	ndzNA/DTicVcMEhCFv3KKUU1eDzvB13mcN1j2ihphx/XEg1xZ9Xv5ZHVdXFTriGCmZ8xWS/ksRI
+	jWjWUPMCSSp6cu+C24vE+d9p7yp5BcIZzHrCbpb0ltTaqNwHmWUjeRRoMBt829MZSli9i6ENl2I
+	0H3qzx60Aeo4NTRdJa0tpWDfdKZ36G8ZtIPBkd6I4oifGU7omKYQjGmadgKln0kePpsP33vW60D
+	TSEE8qKIKSNkL+G7YIVgZ3iX9xUki7IL/3r2SKlChNacYXHkXHoOtk5xuehqt58PaeBi5qDjK6d
+	sPMakVvqDUsl36c/n5f8OTjfEd/fzcQnqsL/OHLKTdJ+lQTC8nSbn/z4/jaFFeEmtjSD/9oAEPa
+	/7gsj0F9jAJnFL0v/4DkyvC1IKHtDc+XhJdxPqpsnXOuHdo77pPszYPmdrr+MGtlJTxbfaF1KVI
+	8D0Tro09sOEqBKiQ/PE+bxCydg+VuTW7yJSA166xR3YzZzyP0cA6QCjvJS4qCAzN4NHIEzegXfx
+	tMXvEup6p4daOZsZfAQKPCIZ32Iei4IU9o4GJCM87PLwbUgumE+SCf4qL8uahkY4qp6fjmD+UvV
+	6KdDDgh4958npoYhfhikDlzAm/vzV2wuhsbKbxPFuH+KzLTp1Bz58=
+X-Received: by 2002:a05:6a00:1d86:b0:8c0:7517:b9de with SMTP id d2e1a72fcca58-8c5d3e116f1mr2084551b3a.32.1795006501788;
+        Wed, 18 Nov 2026 04:55:01 -0800 (PST)
+Received: from kapoor ([2401:4900:e034:2676:5ea6:3ff3:ed45:7b44])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c5c7f99a7fsm1199883b3a.1.2026.11.18.04.54.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2026 04:55:01 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Daniel Campello <campello@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] Semtech SX9xxx: add a reviewer entry and binding maintainer
+Date: Wed, 18 Nov 2026 18:24:49 +0530
+Message-ID: <20261118125450.12512-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <bbdef966-c5dc-4101-9246-b668e00f62b7@kernel.org>
+References: <20261117172612.25535-1-kapoorarnav43@gmail.com> <bbdef966-c5dc-4101-9246-b668e00f62b7@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,93 +111,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] MAINTAINERS: add a reviewer entry for the Semtech SX9xxx
- proximity drivers
-To: Arnav Kapoor <kapoorarnav43@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: Gwendal Grignou <gwendal@chromium.org>,
- Andy Shevchenko <andriy.shevchenko@intel.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261117094737.15253-1-kapoorarnav43@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <20261117094737.15253-1-kapoorarnav43@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 17/11/2026 10:47, Arnav Kapoor wrote:
-> The Semtech SX9310, SX9324, SX9360 and SX9500 proximity sensor drivers
-> and the shared sx_common code have no MAINTAINERS entry, so
-> get_maintainer.pl only lists the IIO maintainers and reviewers for them.
-> 
-> Add an entry with me as reviewer. There is no M: line, so maintenance
-> falls back to the IIO subsystem entry, as Jonathan suggested.
-> 
-> Link: https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
-> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-> ---
-> As discussed on the SX9310/SX9360 gain series:
-> https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
-> Gwendal, if you'd like to be listed too, I'm happy to add you in a v2.
-> 
->  MAINTAINERS | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
+On Wed, Nov 18, 2026 at 01:34:31PM +0100, Krzysztof Kozlowski wrote:
+> I think it is premature. You just started contributing and your early
+> submissions were clearly showing that you did not read kernel docs
+> before posting.
 
-How many postings with this are going to send without giving us even
-chance to reply?
+Hi Krzysztof,
 
-That's another proof that this is heavily rushed. Sending LLM slop which
-was not even built (not counting basic review!!!) is disqualifying as
-well, IMO.
+In June I was still figuring out git send-email, and a problem with my
+setup caused those repeated postings. It is also why I was not able to
+reply to you at the time. I have since worked through the process
+documentation and my setup.
 
-https://lore.kernel.org/all/20260621045340.65872-1-kapoorarnav43@gmail.com/
+Since then I have been working steadily on this subsystem, and 23 of
+my commits are now in maintainer trees. I still make mistakes as I
+learn: not grouping patches into a series, writing commit messages that
+are too long, and sending new versions too early, as Andy pointed out
+here. Changing MAINTAINERS is new to me as well, so there are mistakes
+in this series too. I take those as part of the learning process.
 
-Best regards,
-Krzysztof
+I asked for this entry because I have become interested in these
+drivers and want to keep working on them, and Jonathan agreed to an R:
+entry. I understand your concern. If there is something specific you
+would like to see before this entry is acceptable, please tell me and
+I will work on it.
+
+I will not send another version until you and Jonathan have had time
+to comment.
+
+Thanks,
+Arnav
