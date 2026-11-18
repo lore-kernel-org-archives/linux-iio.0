@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795005467;
-	b=rttkXgQcDawnfodp9uQcdrybkHejMM7pholsEOUWqD8SmW4ooI5uP0WvrSGz8o03QNJT
-	 AcvU93nPsSEdK+Uglz513PZOe8u140wy5p1bfDH+n032cvAWYQVGeC8K6Nl6T5iIgumHp
-	 7gz55wSWf0PaEwwIM+JXvSJydw6v8LML9SNA4MUfAUDQyVr9jySrNQzcjxTrZ58l1acHd
-	 phDhGICoaSNBk99IlL1XWwmrmD5pycuSrKxxDizhnXqojKhDdkmWH8EkKlhZLFwN9MAeE
-	 DDLXu0bUQqHIWcv3g4Wu9pmV1cWXLflC7HoqVzGD6kCM1knbPX5W2JnEBynaknTiklw==
+	t=1795005551;
+	b=ejLUkV2KkmbQaaLWTij4fs5KjY5CK7SdCYI0daRcVe9YQINX/GjjGg2VL3S7HmNSCj/+
+	 c3Q+vi3GIyM4c9OViNBXN1+FakE6q3VRz+AmP2b7/qjKd4BWJ239ZwAM//TanLups4m+v
+	 N1Y7mV3Z+N5a/W8cQelevfPbURCsCKj/UadJcrRo/yOHd+ggCF6F8a6hzHGDGMhuC6sxi
+	 zae+M2K4NY1KS28LtCsE2WeBMJdXmawm+jDXElTVAt7AqksPQoxcKd6vUBH8gNumGTKtt
+	 FeVtRmw/e0v7KwWB/0Oo/D82Z0uxUpP/vMy+PaUscLH9fakSIY/0H6bp3MeQZppD09g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795005467;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795005551;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=N5CGwXkDYC7ZHZF12AdVjIxEK6seoaUVe8eVp3p/csI=;
-	b=j7fVlcpVl2rsLrupQaqlOiHCtpOu3eQu7SXmEqQxkLEns6EKf41dEGd5zFxRnd7rTA9j
-	 Cq8X473EuqP4RQTKlIafDPCz8Avco6N95xJbwEYeWQUBWZ1kAzcWrf7u4G3z/5t+dXdbB
-	 w+zjF+nnuvcvbHmFLMheJ5d13R9x2Qk9Ysxa37MW0CgJxemzZVxwx0R52I6n7AeGWOgsP
-	 Jjy3DKMWb/mu9yHEmfRnkiPcRmtkyYZMe2R2Pc6WlqakeY6EUdTK+CrAF9RoWXLRpw02j
-	 9kDbYF7N/R5QCDfM92OIGxRTUlZDDY+LEHGm9XFkGjmsDrCnMRHqxXt5doLbrEaHijw==
+	bh=ZXvTmuM3YioKhPg4Ha++LLuY2ZPOAIzfl+7+aHQczPg=;
+	b=t5nJKLD9QOz7J5UolZXmMAOsifQxSTgQTtRgLJAXfZYvk+LRiwB6OxivMKVqfaldcl90
+	 xhxAl2n5s1FJiIUczLzQc0X5xVLLdj/kRt0MxzwS+bucLKw4oHMtvEplJBXjn1H1Xpvaz
+	 tynhcnzMCnDMWvIr1Q/8h+pn3t1WNLdP74VdoSvJx/UrW9HpFf+RQf4p7GkfdVq1z+HWj
+	 vBMYDhgcQ/rfzU36C2LzpK6nnkBRvir4zoOCJR9rENS51dINIRlrIOhpdcI2UZnk3Rc9T
+	 OcOkLX7B9InlxUQvWyKBzVXR50m80MrHWQM6hRmcAeP7opJL+2bwl6+HPqapWK2nkhg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YzqS5r0S;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gG4kCLUw;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6626606A320;
-	Wed, 18 Nov 2026 12:37:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E853F606A31C;
+	Wed, 18 Nov 2026 12:39:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YzqS5r0S
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD621F000C4;
-	Wed, 18 Nov 2026 12:37:42 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gG4kCLUw
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D80F1F000C4;
+	Wed, 18 Nov 2026 12:39:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795005467;
-	bh=N5CGwXkDYC7ZHZF12AdVjIxEK6seoaUVe8eVp3p/csI=;
+	s=k20260515; t=1795005550;
+	bh=ZXvTmuM3YioKhPg4Ha++LLuY2ZPOAIzfl+7+aHQczPg=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=YzqS5r0SUs/wsxWZsq5PkMXx1btPUd6pNUmdAZRrxFjDvPs4/67ZtV+EplWQsoJQh
-	 Y0ekpMB//ArEyiOCEoFEBRDQIi6vqSsYSqiJab6aKIRxu+k25YlrSCUkSy5drmC2c9
-	 0EU44tZPQFYmLg7aq3PKtDmO6t8K7Cq4Lfvg8STljzUYNtaAUGpVBzpy/bMv6sW2eO
-	 zgUIftfyqoSCSZo1z+ooOwmg+eDs5+zbl6Kowxcata+cfPfXGOW+s96GBlvRHkU2OW
-	 yWT5PlPwY5uOd1KDJ3D97celi7EyezXs8A7KNu/mtHliFixfv5BwqVEUpsJcHxt8Vv
-	 l6IQUNu7DVkzQ==
-Message-ID: <f3d38cc6-112a-4d48-b0e6-f26d7819aa1b@kernel.org>
-Date: Wed, 18 Nov 2026 13:37:40 +0100
+	b=gG4kCLUwF1nF+UgpM5HtFVJ/6QzD8lBYzRrCfgLt6Bqrq4QJ2g50WYHPz4F+lwvHg
+	 zCRmrq6EHfNMGHn9ja6EnknBxA8+/TqSUraJ6+He6ep/3/L7Xc4b2PzaMtXlbASVrl
+	 BFutM5NQNuAoLrBcaJc8xhF98Wfuqqlj014J+r/aXLwTJkpGtxb09JIZPdRt5qMKv5
+	 D7g7W5eHRf/wgPqzmlxhBr7zq40pONta0doreq1MOtTLbxMfKuQBGcejIhBndshxBk
+	 9DSnsAmoYIf4jLBx02MAWIiKhEsrqmNqsf7fhRE3TNtj+F5kbu7NnVKqL43h0Q+Z26
+	 8+GuU2nHo4rCw==
+Message-ID: <dd162a09-9183-4888-bcd8-96214549f62b@kernel.org>
+Date: Wed, 18 Nov 2026 13:39:05 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,20 +52,16 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: proximity: semtech: add myself
- as maintainer
+Subject: Re: [PATCH] MAINTAINERS: add a reviewer entry for the Semtech SX9xxx
+ proximity drivers
 To: Arnav Kapoor <kapoorarnav43@gmail.com>,
  Jonathan Cameron <jic23@kernel.org>
 Cc: Gwendal Grignou <gwendal@chromium.org>,
- Daniel Campello <campello@chromium.org>,
  Andy Shevchenko <andriy.shevchenko@intel.com>,
  David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
- <20261117172612.25535-2-kapoorarnav43@gmail.com>
+References: <20261117094737.15253-1-kapoorarnav43@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -111,33 +107,37 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20261117172612.25535-2-kapoorarnav43@gmail.com>
+In-Reply-To: <20261117094737.15253-1-kapoorarnav43@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 17/11/2026 18:26, Arnav Kapoor wrote:
-> I'm adding a reviewer entry for the Semtech SX9xxx proximity drivers to
-> MAINTAINERS. Add myself to the maintainers of their bindings as well,
-> so changes to them reach me.
+On 17/11/2026 10:47, Arnav Kapoor wrote:
+> The Semtech SX9310, SX9324, SX9360 and SX9500 proximity sensor drivers
+> and the shared sx_common code have no MAINTAINERS entry, so
+> get_maintainer.pl only lists the IIO maintainers and reviewers for them.
+> 
+> Add an entry with me as reviewer. There is no M: line, so maintenance
+> falls back to the IIO subsystem entry, as Jonathan suggested.
+> 
+> Link: https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
+> Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> ---
+> As discussed on the SX9310/SX9360 gain series:
+> https://lore.kernel.org/all/20261117031830.69ac22f5@jic23-hlaptop/
+> Gwendal, if you'd like to be listed too, I'm happy to add you in a v2.
+> 
+>  MAINTAINERS | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 > 
 
-Why? Same comments as for cover letter. Looks premature, you were just a
-few months ago sending multiple same patches, clearly not even checking
-what you are about to send:
+How many postings with this are going to send without giving us even
+chance to reply?
 
-https://lore.kernel.org/all/20260624044610.69708-1-kapoorarnav43@gmail.com/
-
-https://lore.kernel.org/all/20260624042543.38925-1-kapoorarnav43@gmail.com/
-
-Your patches were never even built by you:
+That's another proof that this is heavily rushed. Sending LLM slop which
+was not even built (not counting basic review!!!) is disqualifying as
+well, IMO.
 
 https://lore.kernel.org/all/20260621045340.65872-1-kapoorarnav43@gmail.com/
-
-Building code is... well, we do not have to even discuss that. You were
-simply sending LLM slop.
-
-LLM slop senders are not maintainers. It's doing everything opposite to
-maintainers.
 
 Best regards,
 Krzysztof
