@@ -1,48 +1,49 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795009581;
-	b=c3EeYZg78C+APCN03UmMTtIed3XeSM4rgfk1YZzCS2MvxozB7g2TAMLNsAPy+F/QkvQy
-	 MvDO6Q3jKPfz+qCXOrvbMa8Bq4TMCs/9U2wkLvwi3faQUwzaKgWb7X2TqPCiWHjCLohyb
-	 LV8EJ9ideuWlxD6eWNCRCrePwmxd/3MWxshiZb1ubnaBXLidLbF3iivJWJ140faPk1gX5
-	 /gofeaniXU1X7838rRWKGgSMAlYziniihP/xnycWucP73Ny8Bn7tSMj6VYX/Q/KshGvzR
-	 lU01QjbOF2Sy7UCX1dO0Xnu11BnC1xrIL68yr97rGbM9AhR51ohmh8hYBSWbQAmtU3A==
+	t=1795009579;
+	b=ppfuMe3SQ0fLCGltEG7pq61MjS8ewtxBHCmgkXbt8LsYamEqEremqKZkNxSyU+3Da2oZ
+	 BeRIyIr8ieb3ApA45p5QBZrbhd6IwVBAebxMNYHF3GNvyBake8p2SFCQ5BM/2gan4W44W
+	 DdfwbW3pYQH0iCEYvUyU/kYtmzEqft/gC09lbbIhyg71QxGXVlxHFRQRW2G+UJLBL22II
+	 adCo2ABqnznWLSXhrAU/sFKH8G73Y92azT4xwkNGl25ejQRybcmZKBsLQswUqK6qflPk4
+	 yaer6Za9KgaOHdD6CAsuWym0HLZtzviOk6ry8F1ECBzWPahQGQDh/Zktb4f/JygzrDQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795009581;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795009579;
 	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer;
-	bh=qnA86+AejLsPocv0BU0oru43/e+eqL5Csebwx1QALf0=;
-	b=TlCbSB+g7EwKo0dWdKEjLUVfQIWTTZjV/l9oAS8x52573+LuPAU7XSIPiL3ZzkfAJ/vS
-	 7w2qjXkPeiATN8Alb4+8AtpjXOKwN3xXp1w7MQ9CYGSNxARKyRs4KY38nPUYL+/4aYPGG
-	 sdpu3H5C8UuYImHa2VyOVF6SlZkUGRai9rpNS61b5vUxMupOPQVJZ1xvE4Ebu6Bh4bUA4
-	 mKkBgGax3DUOmGBOwsK43O/QICcLdYC/cRZtHuSfFotbZj4NDu70/smkeZDPnErAnvx2x
-	 0YzHANU6g9TXYeei+9opQ0bi+KLD9zuBipcAoPH7pOdvjCWx7Zn+gjK8K+qnV75ItZw==
+	bh=LCXykxBzrI7ON2fhMNoORcDkQfUzgCK++6lvveh+ycw=;
+	b=JJGFBxdP0SW3XSyk1aFMq+T1jJ3tL9QzVvSThSLZQCEb/gbFEuZd/aMdDnYvbEgfbupi
+	 ga/5ApkgGIWvM050yrD79icBtvszt+VTUpb8CQGqJ+cURBPGPJhmiJ/PiiClpw4GrTA48
+	 1CclYGAZkeAsmGqXJZbtxLmnhTXHm1hbhTRgVe240RL5ao4O3Gq9+30G5fLhb9gRiMRut
+	 DwzHPznZEuOArhmtfWZBFK+2TF/mS+pELcYW4agcZCQBmEjhs7ZJpbIQxFJlus7h9hrz0
+	 hMTN54FG38ZT5O/0osgFY3urCRAIk33uPk3BuSxcGQz661KcPNfCmdTeUaqT6EqwRKQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HfWmbYkq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UcwOjPI0;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5BAD606A330;
-	Wed, 18 Nov 2026 13:46:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HfWmbYkq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20C821F000C6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1389E60A2604;
 	Wed, 18 Nov 2026 13:46:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UcwOjPI0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 617861F000C4;
+	Wed, 18 Nov 2026 13:46:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795009581;
-	bh=qnA86+AejLsPocv0BU0oru43/e+eqL5Csebwx1QALf0=;
+	s=k20260515; t=1795009578;
+	bh=LCXykxBzrI7ON2fhMNoORcDkQfUzgCK++6lvveh+ycw=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=HfWmbYkqmfZeAjjqnyGpiwAcftoXNaVmPbzrdlD/NoLZHkkehs0tL3HWrwNtBqZdU
-	 wyUOqiC/dWh5gB0aE+5twy3Gv0MDLA+6OuTtoCO0t8NjI+CRsxO2/FcagYd+EZT7wA
-	 wNLK93YFkYXRmWiYyEnMBhtteperv5ykp0rG0kMs11S+jYPl3pXMCs8Oxkkb+XENsn
-	 vkmrkZD2i+FKl9XMCf0fIfYUdzifkjetJVZFAAAsApVX4RJbFIas9NqRfGXZf28Wfz
-	 aVFFWlyY4l2lzbWv8rhBwJ5J1aT8ggdeBrQAo3mWlnUnQwpvYnA7somCdU5hc5BSm+
-	 HCUddYHR61YhQ==
+	b=UcwOjPI0q21RBuGN50g6M9P/qK01kStrCW30C3OhBn5Xc7/KTTxrUImmVmQSLSS64
+	 1QQ3usD2r6PdBoUmCC6V02RFioWKWqSFsfrreW10PInsbrZdFcWc5Eh2QuXm40DvUr
+	 7OzzgMmADWKeVuLmwhW1FODp6djb9gjqJExnHCvjFFEPNK+PPMeqvc2MEcvds0l2VO
+	 Z3Qz9mq98itZKp/rG7NRWrmc7feRF5ikfN7nL/DWbLBkItwkyUPne5YawuVZwrUYBo
+	 FeqsT8UmsFU2V6tJ6Z0I8mwj3r7QRWTqi/B4aV2JgjX3nOdqYmPi05fBr/1gBUaDDM
+	 yDPlPVKQSFXAA==
 From: Linus Walleij <linusw@kernel.org>
-Date: Wed, 18 Nov 2026 14:46:10 +0100
-Subject: [PATCH v3 3/5] iio: light: gp2ap020a00f: Enable the VCC supply
+Date: Wed, 18 Nov 2026 14:46:09 +0100
+Subject: [PATCH v3 2/5] dt-bindings: iio: light: sharp,gp2ap020a00f: Add
+ GP2AP030A00F
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -54,7 +55,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261118-gp2ap030-v3-3-c8df93460110@kernel.org>
+Message-Id: <20261118-gp2ap030-v3-2-c8df93460110@kernel.org>
 References: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
 In-Reply-To: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
 To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
@@ -65,35 +66,52 @@ To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, 
  Kyungmin Park <kyungmin.park@samsung.com>
 Cc: devicetree@vger.kernel.org, Linus Walleij <linusw@kernel.org>, 
- Joshua Crofts <crofts@kernel.org>
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.16.0
 
-Enable the VCC supply before accessing the device. Use the managed
-helper so it is disabled on probe failure and removal. Let the regulator
-framework provide a dummy regulator for an unspecified supply, and
-propagate errors, including deferred probe.
+The GP2AP030A00F uses the same register address layout and interrupt
+interface as the GP2AP020A00F, but returns raw clear and infrared counts
+instead of providing automatic illuminance calculation. Describe it in
+the existing binding with its own compatible.
 
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
+Datasheet: https://global.sharp/products/device/lineup/data/pdf/datasheet/gp2ap030a00f_e.pdf
+Datasheet: https://jp.sharp/products/device/doc/opto/gp2ap030a00f_appl_e.pdf
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Linus Walleij <linusw@kernel.org>
 ---
- drivers/iio/light/gp2ap020a00f.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml     | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index b435dc5e8706..dc07d137f084 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1414,6 +1414,10 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
+diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
+index afba0b005b34..f4a262dbc956 100644
+--- a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
++++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap020a00f.yaml
+@@ -4,17 +4,22 @@
+ $id: http://devicetree.org/schemas/iio/light/sharp,gp2ap020a00f.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- 	data = iio_priv(indio_dev);
+-title: Sharp GP2AP020A00F I2C Proximity/ALS sensor
++title: Sharp GP2AP020A00F and similar proximity and ambient light sensors
  
-+	err = devm_regulator_get_enable(dev, "vcc");
-+	if (err)
-+		return dev_err_probe(dev, err, "Failed to enable VCC supply\n");
-+
- 	data->vled_reg = devm_regulator_get(dev, "vled");
- 	if (IS_ERR(data->vled_reg))
- 		return PTR_ERR(data->vled_reg);
+ maintainers:
+   - Kyungmin Park <kyungmin.park@samsung.com>
+ 
+ description: |
+-  The proximity detector sensor requires power supply for its built-in led.
++  The sensors provide digital clear, infrared and proximity measurements.
++  The GP2AP020A00F can also calculate illuminance internally, while the
++  GP2AP030A00F exposes raw clear and infrared photodiode counts.
++  The proximity detector requires a power supply for its built-in LED.
+ 
+ properties:
+   compatible:
+-    const: sharp,gp2ap020a00f
++    enum:
++      - sharp,gp2ap020a00f
++      - sharp,gp2ap030a00f
+ 
+   reg:
+     maxItems: 1
 
 -- 
 2.56.0
