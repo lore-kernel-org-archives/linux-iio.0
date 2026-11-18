@@ -1,78 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795007869;
-	b=KkpDhxWl74tI1be0T8ee9csHoSoHoqxhyS4qXXjp5IYKWrv0i5l9tnUTtOFI2jQglciC
-	 UDQc43aPWtdF8Wa3DDn6t1bFXUCspUI0SBYdnPE+du46Lecrgde6U+MThfSppEayOuUMM
-	 nOe128ig+vXCha2MSJ+PWWWWpRsLSr4tS3gDwp+NJgmlPScZBm3DaeRj0qzz3pdCAt4kw
-	 9+8TxkdyYza8hnP01r6tvij3gIDxOmcolv57XjpDqhs6dMTrB4SGfh7qiPwRtrw9aEkTh
-	 Xvr0bvecghClGeSzTD2UadtZpYTAHsXraM2DIQqByhs1x8lpoj4zmpUzE5cwUdIQmMw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795007869;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=YRtR8jWSIC0iIQ/FAmVoHtSXBrG6DbrySPcBU6DnWDQ=;
-	b=Z3H26LOHN8TQ84aVPwrgJUl0ImE1GVExB368uxpZuj55CCmSOfmqiZymIkNzKUzdhuEG
-	 KjZcMoaHZfJL8z70ZCPtkEBc/KDDHzpd20Gdwa1O9xoj1HM2KmnuMy4j8svbtnnNmQ56l
-	 kPcgijFy4m0PUs8VaUOz9TLaDfkTzfHP33iGxmCvCzvn43+MX2iDk8pb7sUhRay1N7Uh0
-	 6/MxVN3gzMTTpiLXGKOLK6j7hDjF34Sa29rfIA59dtF7YVJCcUuPiAjjnwki+tyNJ74pW
-	 y+YDq6p8p2tBUM6WshsCTQWG1kU13OqkB64HU7E/bOAG4qOEvxX0vukA9k+4GlxRcgw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=akFRa2Q9;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795009555;
+	b=xxhllkT40BRI7gIsuRAHiJHbMiURnajHxM3E/XhRf38ae2hLW5NRxpycIaJFP8GmzTTp
+	 pdXWC6gelghepjg/qpfiCrz7IpVLgzuMf3hdCFC+0uzc7LqCmN6gH9WBACmbW5soicubC
+	 Z5GnZjKZSMZqV3TaceAtLdqyMXAXv+4j8rSMpitKleuPs4rwJJtR34f3ESyNOT0uJwxYK
+	 Sen8P95lk9w4HFyWgrBnWU2Ttdq+xpT7rqxAiybLe/7uuyBM5K7aiDLRhzSYh+pnnjNfM
+	 +Nr9sTgZvnZ2QzWA+XXw8lZIn3JRuocF3ywjfKnI/kujP0vG2iUEgjl3nn5BSPXut4A==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795009555;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=UB5F4IP6H4qevBDK8lX0NxAN/8m5140YeoBxH1AXtuo=;
+	b=4WlVHmFKO0FnEuj5T3dpZzhC/1zMWgzFS1Nzgaq3cH/zNfp9uXeenkGvDSv2e25i87xh
+	 WCSplCU8OSXBH4riUC1oxx6S4jK++/Orx6jXK/zvgbclaoL7UlvrZAIxhTqKwE3PisQSf
+	 v/i34lTBpe1IS3IIsqkT5tGJ5GV4JcUkMVC5/icCUTRUcv+iqzz18b9M4MHi4b10QuZBY
+	 euiD7N+LzbBdTit1ENOEeB6WUZA6sfacRUoVguCVlQIGhTn7amY0dOCewfNptrWlfK1li
+	 kAV54CLqagabjKWW8icF5QXZvgGvCACqrwrgahIxJIF75iAA7wAeU4/R/AItn2SfoTw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UzDiO03W;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7017D60A3802;
-	Wed, 18 Nov 2026 13:17:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC344606A325;
+	Wed, 18 Nov 2026 13:45:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=akFRa2Q9
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795007869;
-	b=ndXC4MCz1QFTmFOsxn++ojoqNBokLYSqB4pgmd5eENccQREY+O+MJ3c3pvGvubkSTN6y
-	 I/usMrEFHlcMlJrrxLID6SYz8Qt7thz5Cy0kGbEaKsVu8s3eT6Xyn+ROptDQke3q4I7MY
-	 55JMwfJ4UgRDGQe7EkTr0ovlg5ADt+IHA8WOr2iy/NINyAdqn1GjqJTLikjmReJtZxbCa
-	 10/KN2A7vAr6Uk94r/9AVWTCSscJ1zAOCgmgyBsFiP0mp8CESnlQFnG8UQprJkjsjX75u
-	 Mh7bX0CyC7VB5dyVx0BrfEgTvJu7jGM4SR1IOQxB6Uf6qpuvmfwr5oqk4BpYY2yIBmg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795007869;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=YRtR8jWSIC0iIQ/FAmVoHtSXBrG6DbrySPcBU6DnWDQ=;
-	b=rqRAOkL6nAkfCMJBYxqGsAe76e0pl15TTu0FuDILYpXtupCEmuVxrxcjlIA8JSdSjR6Q
-	 UTuVyU9pc3c0NPE5mxWKK3jKheHt+bIq2UutEu/j0rxfRrRH/PCePtFLYW3TaLbcrlxbl
-	 kicwFQwLcf6pPmmg3mcYk5l8pmPaz8G2yZqmPkDU49sSoprPc1f9gUXQr4LCHUHanAIIj
-	 UoPS/N+WySRpUgZbp5M8T8+6+SN6pDyb5LWk8p6dzKjG1fJJvoZJNPkHbPFz5gcb4UKsW
-	 q6HJVidgfg93X4BL5uoUBtPCLLbC2O0TDguCK762s2vHtGGbk/HXrLOtLVtFwO9PK9Q==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 10F7F1F000CC;
-	Wed, 18 Nov 2026 13:17:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UzDiO03W
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93CDF1F000C4;
+	Wed, 18 Nov 2026 13:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795007869;
-	bh=YRtR8jWSIC0iIQ/FAmVoHtSXBrG6DbrySPcBU6DnWDQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=akFRa2Q9cwM32ZsCsnXlG+xQ3joZHCqVw1mNuEEdmKkb/Rjz9LHyx8rTlUCkxWRv6
-	 Tvy2mqNIlWhH9pLVXTtOlXunkexXjK2Sdc5UdrFMyR0zav8y3SVOUGSHdzzmqQrpA4
-	 MADUCd3y4LnElw4xqzLCIEzMVqtUunMz1nVryvTRZGJbYq0w5oXEMqbT6DkHEsZLGA
-	 i+DbVaXcLNTmQAoAfYxBhWpTe5AmYlcyx+TeHiN4NG7DBNDQ2cxiJVNww7HwHWZ8Vf
-	 +QSgBueL8lK8Mj604jaarH1578785IGE3Q7gL1D4O0ICnJK5nAbaQPoGCdcH9IFL+y
-	 H99l8S0kK2nRQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id A977F4ADA8;
-	Wed, 18 Nov 2026 13:17:45 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Wed, 18 Nov 2026 15:17:47 +0200
-Subject: [PATCH v7 5/7] iio: imu: Add driver for the ADI ADIS16607
+	s=k20260515; t=1795009555;
+	bh=UB5F4IP6H4qevBDK8lX0NxAN/8m5140YeoBxH1AXtuo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=UzDiO03WiyMVtIIeE4A9NvXywGlNK59xvZtpo7e4wrSb9+CEN2J3N3i2h2CemchBl
+	 gXTBpd1T1utq/bLpuTMjzg64UdcQd6381UytUxfKN6kDbSIFUBDAEUqQFovf+H/sxB
+	 RZLhbsKDrV1zOwytkhvm+zhIxzLVApB6+TS7faR+RgTLi3PabBUqeswj80+cqUg77u
+	 Z/vq3Odtp2FATFQ4/HxXINMp765ySBPe3Ason9bk8xh/piJiN+3fWn17KrWpTJzz4L
+	 a2Oom4IJhuI+eEb6PgbeS2uhrqry7Y8Y/TQA7JKZpkqBiMkJxZn7W8dbxuMwqXdODk
+	 nFyZv/fXSHorw==
+From: Philipp Stanner <phasta@kernel.org>
+To: Sumit Semwal <sumit.semwal@linaro.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	Philipp Stanner <phasta@kernel.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Sunil Khatri <sunil.khatri@amd.com>,
+	Vitaly Prosyak <vitaly.prosyak@amd.com>,
+	Prike Liang <Prike.Liang@amd.com>,
+	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Tvrtko Ursulin <tvrtko.ursulin@igalia.com>,
+	David Rosca <david.rosca@amd.com>,
+	=?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Dave Stevenson <dave.stevenson@raspberrypi.com>,
+	=?UTF-8?q?Ma=C3=ADra=20Canal?= <mcanal@igalia.com>,
+	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>
+Cc: dri-devel@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	amd-gfx@lists.freedesktop.org,
+	etnaviv@lists.freedesktop.org,
+	intel-gfx@lists.freedesktop.org,
+	imagination@lists.freedesktop.org,
+	lima@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	nouveau@lists.freedesktop.org,
+	virtualization@lists.linux.dev,
+	spice-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	linux-tegra@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	rust-for-linux@vger.kernel.or
+Subject: [PATCH v2 1/3] dma-buf: dma-fence: Add flags parameter to dma_fence_init()
+Date: Wed, 18 Nov 2026 14:45:21 +0100
+Message-ID: <20261118134522.1646892-3-phasta@kernel.org>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261118134522.1646892-2-phasta@kernel.org>
+References: <20261118134522.1646892-2-phasta@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,965 +93,791 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261118-adis16607-v7-5-707609737691@analog.com>
-References: <20261118-adis16607-v7-0-707609737691@analog.com>
-In-Reply-To: <20261118-adis16607-v7-0-707609737691@analog.com>
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- Antoniu Miclaus <antoniu.miclaus@analog.com>, 
- Robert Budai <robert.budai@analog.com>, 
- Ramona Gradinariu <ramona.gradinariu@analog.com>, 
- Radu Sabau <radu.sabau@analog.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux@analog.com, 
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
- Jonathan Cameron <jic23@kernel.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795007863; l=27488;
- i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=X09oSiVoq0W3jfqpEJv3EdVBjWWPEEbJkyVHlZDV/z0=;
- b=VzRlLWQvR3c9stoxn8G61u8KRLfoWSmyecdre9iWNwitYHP5bSrB2wN51hgWs4JPhaxaMZpaz
- pITu6HGOQiXCXq5BpzeiJOlaOyK0P4Lq9LfFPU50d4Ga4FQHW54jzID
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
- auth_id=1094
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Radu Sabau <radu.sabau@analog.com>
+Currently, there are two init functions for dma_fence, dma_fence_init()
+and dma_fence_init64().
 
-The ADIS16607 is a Precision MEMS IMU from Analog Devices with
-triaxial gyroscope and accelerometer, delta angle/velocity, and
-temperature channels, communicating over a custom SPI Half-Duplex
-protocol. ADIS16607-2 has a ±450°/s gyroscope range, ADIS16607-3
-±2000°/s; both share a ±40g accelerometer range and an 8 kHz internal
-clock.
+Since more future user options for dma_fence initialization would
+require distinct init functions, too, it is better to do this in a
+unified way.
 
-This is the base driver: probe, raw channel reads, sampling-frequency
-control, startup/self-test via adislib, and debugfs identity entries.
+Add a flags field to dma_fence_init(). Adjust all affected drivers,
+preserving the old behavior.
 
-Self-test leaves the device's SELF_TEST register cleared on every exit
-path, not just on success, so a read failure or a failed delta check
-doesn't leave the sensor stuck in its self-test/force state until the
-next reset.
+Support the SEQNO64 flag, and add a check-function so that the user only
+sets valid bits.
 
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+Signed-off-by: Philipp Stanner <phasta@kernel.org>
+Reviewed-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
 ---
- MAINTAINERS                 |   1 +
- drivers/iio/imu/Kconfig     |  12 +
- drivers/iio/imu/Makefile    |   1 +
- drivers/iio/imu/adis16607.c | 848 ++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 862 insertions(+)
+ drivers/accel/amdxdna/amdxdna_ctx.c           |  2 +-
+ drivers/accel/ethosu/ethosu_job.c             |  2 +-
+ drivers/accel/ivpu/ivpu_job.c                 |  2 +-
+ drivers/accel/rocket/rocket_job.c             |  2 +-
+ drivers/dma-buf/dma-fence-array.c             |  2 +-
+ drivers/dma-buf/dma-fence.c                   | 30 ++++++++++++++++---
+ drivers/dma-buf/st-dma-fence-chain.c          |  2 +-
+ drivers/dma-buf/st-dma-fence-unwrap.c         |  2 +-
+ drivers/dma-buf/st-dma-fence.c                |  2 +-
+ drivers/dma-buf/st-dma-resv.c                 |  2 +-
+ drivers/dma-buf/sw_sync.c                     |  2 +-
+ .../gpu/drm/amd/amdgpu/amdgpu_amdkfd_fence.c  |  2 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c     |  2 +-
+ drivers/gpu/drm/drm_crtc.c                    |  2 +-
+ drivers/gpu/drm/drm_writeback.c               |  2 +-
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.c         |  2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c  |  2 +-
+ drivers/gpu/drm/i915/i915_request.c           |  2 +-
+ drivers/gpu/drm/i915/i915_sw_fence_work.c     |  2 +-
+ drivers/gpu/drm/i915/i915_vma_resource.c      |  2 +-
+ .../gpu/drm/i915/selftests/i915_sw_fence.c    |  2 +-
+ drivers/gpu/drm/imagination/pvr_ccb.c         |  2 +-
+ drivers/gpu/drm/imagination/pvr_queue.c       |  2 +-
+ drivers/gpu/drm/lima/lima_sched.c             |  2 +-
+ drivers/gpu/drm/msm/msm_fence.c               |  2 +-
+ drivers/gpu/drm/nouveau/nouveau_fence.c       |  4 +--
+ drivers/gpu/drm/panfrost/panfrost_job.c       |  2 +-
+ drivers/gpu/drm/panthor/panthor_sched.c       |  2 +-
+ drivers/gpu/drm/qxl/qxl_release.c             |  2 +-
+ drivers/gpu/drm/radeon/radeon_fence.c         |  2 +-
+ drivers/gpu/drm/scheduler/sched_fence.c       |  4 +--
+ .../gpu/drm/scheduler/tests/mock_scheduler.c  |  2 +-
+ drivers/gpu/drm/ttm/tests/ttm_bo_test.c       |  2 +-
+ .../gpu/drm/ttm/tests/ttm_bo_validate_test.c  |  2 +-
+ drivers/gpu/drm/v3d/v3d_fence.c               |  2 +-
+ drivers/gpu/drm/vc4/vc4_gem.c                 |  2 +-
+ drivers/gpu/drm/vgem/vgem_fence.c             |  2 +-
+ drivers/gpu/drm/virtio/virtgpu_fence.c        |  2 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_fence.c         |  2 +-
+ drivers/gpu/drm/xe/xe_hw_fence.c              |  2 +-
+ drivers/gpu/drm/xe/xe_oa.c                    |  2 +-
+ drivers/gpu/drm/xe/xe_preempt_fence.c         |  2 +-
+ drivers/gpu/drm/xe/xe_tlb_inval.c             |  2 +-
+ drivers/gpu/host1x/fence.c                    |  2 +-
+ drivers/iio/industrialio-buffer.c             |  2 +-
+ drivers/usb/gadget/function/f_fs.c            |  2 +-
+ include/linux/dma-fence.h                     | 12 ++++++--
+ rust/kernel/dma_buf/dma_fence.rs              |  2 +-
+ 48 files changed, 83 insertions(+), 55 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d5679e8d0ffd..268a82adeb1d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1798,6 +1798,7 @@ L:	linux-iio@vger.kernel.org
- S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/imu/adi,adis16607.yaml
-+F:	drivers/iio/imu/adis16607.c
+diff --git a/drivers/accel/amdxdna/amdxdna_ctx.c b/drivers/accel/amdxdna/amdxdna_ctx.c
+index ea02965f5ae3..8601655cecdb 100644
+--- a/drivers/accel/amdxdna/amdxdna_ctx.c
++++ b/drivers/accel/amdxdna/amdxdna_ctx.c
+@@ -53,7 +53,7 @@ static struct dma_fence *amdxdna_fence_create(struct amdxdna_hwctx *hwctx)
  
- ANALOG DEVICES INC ADL8113 DRIVER
- M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-index 8bab4616be20..8b91426f60d0 100644
---- a/drivers/iio/imu/Kconfig
-+++ b/drivers/iio/imu/Kconfig
-@@ -65,6 +65,18 @@ config ADIS16550
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called adis16550.
+ 	spin_lock_init(&fence->lock);
+ 	/* Unique timeline context prevents eviction from shared BO reservation. */
+-	dma_fence_init(&fence->base, &fence_ops, &fence->lock, dma_fence_context_alloc(1), 0);
++	dma_fence_init(&fence->base, &fence_ops, &fence->lock, dma_fence_context_alloc(1), 0, 0);
+ 	return &fence->base;
+ }
  
-+config ADIS16607
-+	tristate "Analog Devices ADIS16607 and similar IMU driver"
-+	depends on SPI
-+	select IIO_ADIS_LIB
-+	help
-+	  Say yes here to build support for Analog Devices ADIS16607-2
-+	  and ADIS16607-3 inertial sensors containing triaxis
-+	  gyroscope and triaxis accelerometer.
+diff --git a/drivers/accel/ethosu/ethosu_job.c b/drivers/accel/ethosu/ethosu_job.c
+index d656b3ec670e..d4fc71436cae 100644
+--- a/drivers/accel/ethosu/ethosu_job.c
++++ b/drivers/accel/ethosu/ethosu_job.c
+@@ -219,7 +219,7 @@ static struct dma_fence *ethosu_job_run(struct drm_sched_job *sched_job)
+ 		return NULL;
+ 
+ 	dma_fence_init(fence, &ethosu_fence_ops, &dev->fence_lock,
+-		       dev->fence_context, ++dev->emit_seqno);
++		       dev->fence_context, ++dev->emit_seqno, 0);
+ 	dma_fence_get(fence);
+ 
+ 	ethosu_switch_perfmon(dev, job);
+diff --git a/drivers/accel/ivpu/ivpu_job.c b/drivers/accel/ivpu/ivpu_job.c
+index 181946a85cca..4624d7c754fc 100644
+--- a/drivers/accel/ivpu/ivpu_job.c
++++ b/drivers/accel/ivpu/ivpu_job.c
+@@ -519,7 +519,7 @@ static struct dma_fence *ivpu_fence_create(struct ivpu_device *vdev)
+ 
+ 	fence->vdev = vdev;
+ 	spin_lock_init(&fence->lock);
+-	dma_fence_init(&fence->base, &ivpu_fence_ops, &fence->lock, dma_fence_context_alloc(1), 1);
++	dma_fence_init(&fence->base, &ivpu_fence_ops, &fence->lock, dma_fence_context_alloc(1), 1, 0);
+ 
+ 	return &fence->base;
+ }
+diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/rocket_job.c
+index b2a00992c889..574c9ea802c9 100644
+--- a/drivers/accel/rocket/rocket_job.c
++++ b/drivers/accel/rocket/rocket_job.c
+@@ -61,7 +61,7 @@ static struct dma_fence *rocket_fence_create(struct rocket_core *core)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	dma_fence_init(fence, &rocket_fence_ops, &core->fence_lock,
+-		       core->fence_context, ++core->emit_seqno);
++		       core->fence_context, ++core->emit_seqno, 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/dma-buf/dma-fence-array.c b/drivers/dma-buf/dma-fence-array.c
+index 5e10e8df372f..e2dddbfddea2 100644
+--- a/drivers/dma-buf/dma-fence-array.c
++++ b/drivers/dma-buf/dma-fence-array.c
+@@ -205,7 +205,7 @@ void dma_fence_array_init(struct dma_fence_array *array,
+ 	array->num_fences = num_fences;
+ 
+ 	dma_fence_init(&array->base, &dma_fence_array_ops, NULL, context,
+-		       seqno);
++		       seqno, 0);
+ 	init_irq_work(&array->work, irq_dma_fence_array_work);
+ 
+ 	/*
+diff --git a/drivers/dma-buf/dma-fence.c b/drivers/dma-buf/dma-fence.c
+index bd58688b81a7..7bc925793e24 100644
+--- a/drivers/dma-buf/dma-fence.c
++++ b/drivers/dma-buf/dma-fence.c
+@@ -122,7 +122,7 @@ static const struct dma_fence_ops dma_fence_stub_ops = {
+ 
+ static int __init dma_fence_init_stub(void)
+ {
+-	dma_fence_init(&dma_fence_stub, &dma_fence_stub_ops, NULL, 0, 0);
++	dma_fence_init(&dma_fence_stub, &dma_fence_stub_ops, NULL, 0, 0, 0);
+ 	set_bit(DMA_FENCE_FLAG_ENABLE_SIGNAL_BIT,
+ 		&dma_fence_stub.flags);
+ 	dma_fence_signal(&dma_fence_stub);
+@@ -156,7 +156,7 @@ struct dma_fence *dma_fence_allocate_private_stub(ktime_t timestamp)
+ 	if (fence == NULL)
+ 		return NULL;
+ 
+-	dma_fence_init(fence, &dma_fence_stub_ops, NULL, 0, 0);
++	dma_fence_init(fence, &dma_fence_stub_ops, NULL, 0, 0, 0);
+ 	set_bit(DMA_FENCE_FLAG_ENABLE_SIGNAL_BIT,
+ 		&fence->flags);
+ 
+@@ -1087,6 +1087,21 @@ __dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+ 	trace_dma_fence_init(fence);
+ }
+ 
++static bool dma_fence_flags_valid(unsigned long flags)
++{
++	const unsigned long valid_fence_bits =
++		BIT(DMA_FENCE_FLAG_SEQNO64_BIT);
++	const unsigned long valid_user_bits =
++		GENMASK(
++			BITS_PER_TYPE(unsigned long) - 1,
++			DMA_FENCE_FLAG_USER_BITS
++		       );
++	const unsigned long invalid_bits =
++		~(valid_fence_bits | valid_user_bits);
 +
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called adis16607.
++	return !(flags & invalid_bits);
++}
 +
- source "drivers/iio/imu/bmi160/Kconfig"
- source "drivers/iio/imu/bmi270/Kconfig"
- source "drivers/iio/imu/bmi323/Kconfig"
-diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-index 3268dc2371ae..6eeec1ee387f 100644
---- a/drivers/iio/imu/Makefile
-+++ b/drivers/iio/imu/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_ADIS16460) += adis16460.o
- obj-$(CONFIG_ADIS16475) += adis16475.o
- obj-$(CONFIG_ADIS16480) += adis16480.o
- obj-$(CONFIG_ADIS16550) += adis16550.o
-+obj-$(CONFIG_ADIS16607) += adis16607.o
- 
- adis_lib-y += adis.o
- adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o
-diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
-new file mode 100644
-index 000000000000..c53f3e62d3fc
---- /dev/null
-+++ b/drivers/iio/imu/adis16607.c
-@@ -0,0 +1,848 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ADIS16607 IMU driver
+ /**
+  * dma_fence_init - Initialize a custom fence.
+  * @fence: the fence to initialize
+@@ -1094,6 +1109,7 @@ __dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+  * @lock: optional irqsafe spinlock to use for locking this fence
+  * @context: the execution context this fence is run on
+  * @seqno: a linear increasing sequence number for this context
++ * @flags: flags modifying a fence's behavior
+  *
+  * Initializes an allocated fence, the caller doesn't have to keep its
+  * refcount after committing with this fence, but it will need to hold a
+@@ -1108,12 +1124,18 @@ __dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+  * introduction of the callback, but the external lock is still around. New
+  * users MUST NOT use external locks, as they force the issuer to outlive all
+  * fences that reference the lock.
 + *
-+ * Copyright 2026 Analog Devices Inc.
++ * The @flags you can specify here are either DMA_FENCE_FLAG_SEQNO64_BIT or
++ * user-specified bits >= DMA_FENCE_FLAG_USER_BITS.
+  */
+ void
+ dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+-	       spinlock_t *lock, u64 context, u64 seqno)
++	       spinlock_t *lock, u64 context, u64 seqno,
++	       unsigned long flags)
+ {
+-	__dma_fence_init(fence, ops, lock, context, seqno, 0UL);
++	WARN_ON(!dma_fence_flags_valid(flags));
++
++	__dma_fence_init(fence, ops, lock, context, seqno, flags);
+ }
+ EXPORT_SYMBOL(dma_fence_init);
+ 
+diff --git a/drivers/dma-buf/st-dma-fence-chain.c b/drivers/dma-buf/st-dma-fence-chain.c
+index e0d9b69bfa76..b9610df3ff19 100644
+--- a/drivers/dma-buf/st-dma-fence-chain.c
++++ b/drivers/dma-buf/st-dma-fence-chain.c
+@@ -52,7 +52,7 @@ static struct dma_fence *mock_fence(void)
+ 		return NULL;
+ 
+ 	spin_lock_init(&f->lock);
+-	dma_fence_init(&f->base, &mock_ops, &f->lock, 0, 0);
++	dma_fence_init(&f->base, &mock_ops, &f->lock, 0, 0, 0);
+ 
+ 	return &f->base;
+ }
+diff --git a/drivers/dma-buf/st-dma-fence-unwrap.c b/drivers/dma-buf/st-dma-fence-unwrap.c
+index c5353b36f0e4..dbebc3046d42 100644
+--- a/drivers/dma-buf/st-dma-fence-unwrap.c
++++ b/drivers/dma-buf/st-dma-fence-unwrap.c
+@@ -36,7 +36,7 @@ static struct dma_fence *__mock_fence(u64 context, u64 seqno)
+ 		return NULL;
+ 
+ 	spin_lock_init(&f->lock);
+-	dma_fence_init(&f->base, &mock_ops, &f->lock, context, seqno);
++	dma_fence_init(&f->base, &mock_ops, &f->lock, context, seqno, 0);
+ 
+ 	return &f->base;
+ }
+diff --git a/drivers/dma-buf/st-dma-fence.c b/drivers/dma-buf/st-dma-fence.c
+index cb62e606d0a2..b3f88e89cc44 100644
+--- a/drivers/dma-buf/st-dma-fence.c
++++ b/drivers/dma-buf/st-dma-fence.c
+@@ -31,7 +31,7 @@ static struct dma_fence *mock_fence(void)
+ 	if (!f)
+ 		return NULL;
+ 
+-	dma_fence_init(f, &mock_ops, NULL, 0, 0);
++	dma_fence_init(f, &mock_ops, NULL, 0, 0, 0);
+ 	return f;
+ }
+ 
+diff --git a/drivers/dma-buf/st-dma-resv.c b/drivers/dma-buf/st-dma-resv.c
+index 0b96136bbd54..c3a920ab3fcf 100644
+--- a/drivers/dma-buf/st-dma-resv.c
++++ b/drivers/dma-buf/st-dma-resv.c
+@@ -35,7 +35,7 @@ static struct dma_fence *alloc_fence(void)
+ 	if (!f)
+ 		return NULL;
+ 
+-	dma_fence_init(f, &fence_ops, &fence_lock, 0, 0);
++	dma_fence_init(f, &fence_ops, &fence_lock, 0, 0, 0);
+ 	return f;
+ }
+ 
+diff --git a/drivers/dma-buf/sw_sync.c b/drivers/dma-buf/sw_sync.c
+index 8df20b0218a9..ce43af7e735e 100644
+--- a/drivers/dma-buf/sw_sync.c
++++ b/drivers/dma-buf/sw_sync.c
+@@ -258,7 +258,7 @@ static struct sync_pt *sync_pt_create(struct sync_timeline *obj,
+ 
+ 	sync_timeline_get(obj);
+ 	dma_fence_init(&pt->base, &timeline_fence_ops, &obj->lock,
+-		       obj->context, value);
++		       obj->context, value, 0);
+ 	INIT_LIST_HEAD(&pt->link);
+ 
+ 	spin_lock_irq(&obj->lock);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_fence.c
+index 9b10d015671c..30ccdb3e0b47 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_fence.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_fence.c
+@@ -77,7 +77,7 @@ struct amdgpu_amdkfd_fence *amdgpu_amdkfd_fence_create(u64 context,
+ 	spin_lock_init(&fence->lock);
+ 	fence->context_id = context_id;
+ 	dma_fence_init(&fence->base, &amdkfd_fence_ops, &fence->lock,
+-		   context, atomic_inc_return(&fence_seq));
++		   context, atomic_inc_return(&fence_seq), 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
+index bff2d38f3571..03e1974f8dda 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
+@@ -112,7 +112,7 @@ void amdgpu_fence_emit(struct amdgpu_ring *ring, struct amdgpu_fence *af,
+ 	seq = ++ring->fence_drv.sync_seq;
+ 	dma_fence_init(fence, &amdgpu_fence_ops,
+ 		       &ring->fence_drv.lock,
+-		       adev->fence_context + ring->idx, seq);
++		       adev->fence_context + ring->idx, seq, 0);
+ 
+ 	amdgpu_ring_emit_fence(ring, ring->fence_drv.gpu_addr,
+ 			       seq, flags | AMDGPU_FENCE_FLAG_INT);
+diff --git a/drivers/gpu/drm/drm_crtc.c b/drivers/gpu/drm/drm_crtc.c
+index 5295ec122e0d..1899b63c730f 100644
+--- a/drivers/gpu/drm/drm_crtc.c
++++ b/drivers/gpu/drm/drm_crtc.c
+@@ -187,7 +187,7 @@ struct dma_fence *drm_crtc_create_fence(struct drm_crtc *crtc)
+ 		return NULL;
+ 
+ 	dma_fence_init(fence, &drm_crtc_fence_ops, &crtc->fence_lock,
+-		       crtc->fence_context, ++crtc->fence_seqno);
++		       crtc->fence_context, ++crtc->fence_seqno, 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/gpu/drm/drm_writeback.c b/drivers/gpu/drm/drm_writeback.c
+index b4a002e6d043..64b06b890f19 100644
+--- a/drivers/gpu/drm/drm_writeback.c
++++ b/drivers/gpu/drm/drm_writeback.c
+@@ -592,7 +592,7 @@ drm_writeback_get_out_fence(struct drm_writeback_connector *wb_connector)
+ 
+ 	dma_fence_init(fence, &drm_writeback_fence_ops,
+ 		       &wb_connector->fence_lock, wb_connector->fence_context,
+-		       ++wb_connector->fence_seqno);
++		       ++wb_connector->fence_seqno, 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+index b5d84c8fe9fc..2744a2b6e74e 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
+@@ -1199,7 +1199,7 @@ static struct dma_fence *etnaviv_gpu_fence_alloc(struct etnaviv_gpu *gpu)
+ 	f->gpu = gpu;
+ 
+ 	dma_fence_init(&f->base, &etnaviv_fence_ops, &gpu->fence_spinlock,
+-		       gpu->fence_context, ++gpu->next_fence);
++		       gpu->fence_context, ++gpu->next_fence, 0);
+ 
+ 	return &f->base;
+ }
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index 56489cc127d6..ffaa70191f27 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -437,7 +437,7 @@ i915_ttm_memcpy_work_arm(struct i915_ttm_memcpy_work *work,
+ 	int ret;
+ 
+ 	spin_lock_init(&work->lock);
+-	dma_fence_init(&work->fence, &dma_fence_memcpy_ops, &work->lock, 0, 0);
++	dma_fence_init(&work->fence, &dma_fence_memcpy_ops, &work->lock, 0, 0, 0);
+ 	dma_fence_get(&work->fence);
+ 	ret = dma_fence_add_callback(dep, &work->cb, __memcpy_cb);
+ 	if (ret) {
+diff --git a/drivers/gpu/drm/i915/i915_request.c b/drivers/gpu/drm/i915/i915_request.c
+index f66f8efc7062..0f4fc9cc0033 100644
+--- a/drivers/gpu/drm/i915/i915_request.c
++++ b/drivers/gpu/drm/i915/i915_request.c
+@@ -953,7 +953,7 @@ __i915_request_create(struct intel_context *ce, gfp_t gfp)
+ 		goto err_free;
+ 
+ 	dma_fence_init(&rq->fence, &i915_fence_ops, &rq->lock,
+-		       tl->fence_context, seqno);
++		       tl->fence_context, seqno, 0);
+ 
+ 	RCU_INIT_POINTER(rq->timeline, tl);
+ 	rq->hwsp_seqno = tl->hwsp_seqno;
+diff --git a/drivers/gpu/drm/i915/i915_sw_fence_work.c b/drivers/gpu/drm/i915/i915_sw_fence_work.c
+index 366418108f78..4cd44dd26e35 100644
+--- a/drivers/gpu/drm/i915/i915_sw_fence_work.c
++++ b/drivers/gpu/drm/i915/i915_sw_fence_work.c
+@@ -85,7 +85,7 @@ void dma_fence_work_init(struct dma_fence_work *f,
+ {
+ 	f->ops = ops;
+ 	spin_lock_init(&f->lock);
+-	dma_fence_init(&f->dma, &fence_ops, &f->lock, 0, 0);
++	dma_fence_init(&f->dma, &fence_ops, &f->lock, 0, 0, 0);
+ 	i915_sw_fence_init(&f->chain, fence_notify);
+ 	INIT_WORK(&f->work, fence_work);
+ }
+diff --git a/drivers/gpu/drm/i915/i915_vma_resource.c b/drivers/gpu/drm/i915/i915_vma_resource.c
+index a8f2112ce81f..19596410e32f 100644
+--- a/drivers/gpu/drm/i915/i915_vma_resource.c
++++ b/drivers/gpu/drm/i915/i915_vma_resource.c
+@@ -263,7 +263,7 @@ void __i915_vma_resource_init(struct i915_vma_resource *vma_res)
+ {
+ 	spin_lock_init(&vma_res->lock);
+ 	dma_fence_init(&vma_res->unbind_fence, &unbind_fence_ops,
+-		       &vma_res->lock, 0, 0);
++		       &vma_res->lock, 0, 0, 0);
+ 	refcount_set(&vma_res->hold_count, 1);
+ 	i915_sw_fence_init(&vma_res->chain, i915_vma_resource_fence_notify);
+ }
+diff --git a/drivers/gpu/drm/i915/selftests/i915_sw_fence.c b/drivers/gpu/drm/i915/selftests/i915_sw_fence.c
+index ecb2d718f6a6..d8d4f7057031 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_sw_fence.c
++++ b/drivers/gpu/drm/i915/selftests/i915_sw_fence.c
+@@ -641,7 +641,7 @@ static struct dma_fence *alloc_dma_fence(void)
+ 
+ 	dma = kmalloc_obj(*dma);
+ 	if (dma)
+-		dma_fence_init(dma, &mock_fence_ops, &mock_fence_lock, 0, 0);
++		dma_fence_init(dma, &mock_fence_ops, &mock_fence_lock, 0, 0, 0);
+ 
+ 	return dma;
+ }
+diff --git a/drivers/gpu/drm/imagination/pvr_ccb.c b/drivers/gpu/drm/imagination/pvr_ccb.c
+index e408df74853d..7043b491fe54 100644
+--- a/drivers/gpu/drm/imagination/pvr_ccb.c
++++ b/drivers/gpu/drm/imagination/pvr_ccb.c
+@@ -645,7 +645,7 @@ pvr_kccb_reserve_slot(struct pvr_device *pvr_dev, struct dma_fence *f)
+ 		dma_fence_init(&fence->base, &pvr_kccb_fence_ops,
+ 			       &pvr_dev->kccb.fence_ctx.lock,
+ 			       pvr_dev->kccb.fence_ctx.id,
+-			       atomic_inc_return(&pvr_dev->kccb.fence_ctx.seqno));
++			       atomic_inc_return(&pvr_dev->kccb.fence_ctx.seqno), 0);
+ 		out_fence = dma_fence_get(&fence->base);
+ 		list_add_tail(&fence->node, &pvr_dev->kccb.waiters);
+ 	} else {
+diff --git a/drivers/gpu/drm/imagination/pvr_queue.c b/drivers/gpu/drm/imagination/pvr_queue.c
+index 24a8645aa913..34b826381aa2 100644
+--- a/drivers/gpu/drm/imagination/pvr_queue.c
++++ b/drivers/gpu/drm/imagination/pvr_queue.c
+@@ -305,7 +305,7 @@ pvr_queue_fence_init(struct dma_fence *f,
+ 	INIT_WORK(&fence->release_work, pvr_queue_fence_release_work);
+ 	dma_fence_init(&fence->base, fence_ops,
+ 		       &fence_ctx->lock, fence_ctx->id,
+-		       atomic_inc_return(&fence_ctx->seqno));
++		       atomic_inc_return(&fence_ctx->seqno), 0);
+ }
+ 
+ /**
+diff --git a/drivers/gpu/drm/lima/lima_sched.c b/drivers/gpu/drm/lima/lima_sched.c
+index 9a1e6b9ecbe5..fee595b9629a 100644
+--- a/drivers/gpu/drm/lima/lima_sched.c
++++ b/drivers/gpu/drm/lima/lima_sched.c
+@@ -97,7 +97,7 @@ static struct lima_fence *lima_fence_create(struct lima_sched_pipe *pipe)
+ 
+ 	fence->pipe = pipe;
+ 	dma_fence_init(&fence->base, &lima_fence_ops, &pipe->fence_lock,
+-		       pipe->fence_context, ++pipe->fence_seqno);
++		       pipe->fence_context, ++pipe->fence_seqno, 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/gpu/drm/msm/msm_fence.c b/drivers/gpu/drm/msm/msm_fence.c
+index 3dca8e09c192..1ec59919c32e 100644
+--- a/drivers/gpu/drm/msm/msm_fence.c
++++ b/drivers/gpu/drm/msm/msm_fence.c
+@@ -197,5 +197,5 @@ msm_fence_init(struct dma_fence *fence, struct msm_fence_context *fctx)
+ 	WARN_ON(kref_read(&fence->refcount));
+ 
+ 	dma_fence_init(&f->base, &msm_fence_ops, &fctx->spinlock,
+-		       fctx->context, ++fctx->last_fence);
++		       fctx->context, ++fctx->last_fence, 0);
+ }
+diff --git a/drivers/gpu/drm/nouveau/nouveau_fence.c b/drivers/gpu/drm/nouveau/nouveau_fence.c
+index 11e95c37ce50..97e20954c71b 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_fence.c
++++ b/drivers/gpu/drm/nouveau/nouveau_fence.c
+@@ -216,10 +216,10 @@ nouveau_fence_emit(struct nouveau_fence *fence)
+ 
+ 	if (priv->uevent)
+ 		dma_fence_init(&fence->base, &nouveau_fence_ops_uevent,
+-			       &fctx->lock, fctx->context, ++fctx->sequence);
++			       &fctx->lock, fctx->context, ++fctx->sequence, 0);
+ 	else
+ 		dma_fence_init(&fence->base, &nouveau_fence_ops_legacy,
+-			       &fctx->lock, fctx->context, ++fctx->sequence);
++			       &fctx->lock, fctx->context, ++fctx->sequence, 0);
+ 	kref_get(&fctx->fence_ref);
+ 
+ 	ret = fctx->emit(fence);
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
+index 3a46dd61cf87..6a604b5dafaa 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.c
++++ b/drivers/gpu/drm/panfrost/panfrost_job.c
+@@ -105,7 +105,7 @@ static struct dma_fence *panfrost_fence_create(struct panfrost_device *pfdev, in
+ 	fence->queue = js_num;
+ 	fence->seqno = ++js->queue[js_num].emit_seqno;
+ 	dma_fence_init(&fence->base, &panfrost_fence_ops, &js->job_lock,
+-		       js->queue[js_num].fence_context, fence->seqno);
++		       js->queue[js_num].fence_context, fence->seqno, 0);
+ 
+ 	return &fence->base;
+ }
+diff --git a/drivers/gpu/drm/panthor/panthor_sched.c b/drivers/gpu/drm/panthor/panthor_sched.c
+index a343c5180e01..c46f69ade7a0 100644
+--- a/drivers/gpu/drm/panthor/panthor_sched.c
++++ b/drivers/gpu/drm/panthor/panthor_sched.c
+@@ -3322,7 +3322,7 @@ queue_run_job(struct drm_sched_job *sched_job)
+ 		       &panthor_queue_fence_ops,
+ 		       &queue->fence_ctx.lock,
+ 		       queue->fence_ctx.id,
+-		       atomic64_inc_return(&queue->fence_ctx.seqno));
++		       atomic64_inc_return(&queue->fence_ctx.seqno), 0);
+ 
+ 	job->profiling.slot = queue->profiling.seqno++;
+ 	if (queue->profiling.seqno == queue->profiling.slot_count)
+diff --git a/drivers/gpu/drm/qxl/qxl_release.c b/drivers/gpu/drm/qxl/qxl_release.c
+index 06979d0e8a9f..2608d82f7370 100644
+--- a/drivers/gpu/drm/qxl/qxl_release.c
++++ b/drivers/gpu/drm/qxl/qxl_release.c
+@@ -430,7 +430,7 @@ void qxl_release_fence_buffer_objects(struct qxl_release *release)
+ 	 * set the highest bits. This will break if we really allow exporting of dma-bufs.
+ 	 */
+ 	dma_fence_init(&release->base, &qxl_fence_ops, &qdev->release_lock,
+-		       release->id | 0xf0000000, release->base.seqno);
++		       release->id | 0xf0000000, release->base.seqno, 0);
+ 	trace_dma_fence_emit(&release->base);
+ 
+ 	list_for_each_entry(entry, &release->bos, list) {
+diff --git a/drivers/gpu/drm/radeon/radeon_fence.c b/drivers/gpu/drm/radeon/radeon_fence.c
+index 8e9402b8811b..1360b5215f5e 100644
+--- a/drivers/gpu/drm/radeon/radeon_fence.c
++++ b/drivers/gpu/drm/radeon/radeon_fence.c
+@@ -148,7 +148,7 @@ int radeon_fence_emit(struct radeon_device *rdev,
+ 	dma_fence_init(&(*fence)->base, &radeon_fence_ops,
+ 		       &rdev->fence_queue.lock,
+ 		       rdev->fence_context + ring,
+-		       seq);
++		       seq, 0);
+ 	radeon_fence_ring_emit(rdev, ring, *fence);
+ 	trace_radeon_fence_emit(rdev_to_drm(rdev), ring, (*fence)->seq);
+ 	radeon_fence_schedule_check(rdev, ring);
+diff --git a/drivers/gpu/drm/scheduler/sched_fence.c b/drivers/gpu/drm/scheduler/sched_fence.c
+index b7a4cb921234..94ba0cf4fe02 100644
+--- a/drivers/gpu/drm/scheduler/sched_fence.c
++++ b/drivers/gpu/drm/scheduler/sched_fence.c
+@@ -229,9 +229,9 @@ void drm_sched_fence_init(struct drm_sched_fence *fence,
+ 	fence->sched = entity->rq->sched;
+ 	seq = atomic_inc_return(&entity->fence_seq);
+ 	dma_fence_init(&fence->scheduled, &drm_sched_fence_ops_scheduled,
+-		       &fence->lock, entity->fence_context, seq);
++		       &fence->lock, entity->fence_context, seq, 0);
+ 	dma_fence_init(&fence->finished, &drm_sched_fence_ops_finished,
+-		       &fence->lock, entity->fence_context + 1, seq);
++		       &fence->lock, entity->fence_context + 1, seq, 0);
+ }
+ 
+ module_init(drm_sched_fence_slab_init);
+diff --git a/drivers/gpu/drm/scheduler/tests/mock_scheduler.c b/drivers/gpu/drm/scheduler/tests/mock_scheduler.c
+index 2dfa3efef210..169792a4b329 100644
+--- a/drivers/gpu/drm/scheduler/tests/mock_scheduler.c
++++ b/drivers/gpu/drm/scheduler/tests/mock_scheduler.c
+@@ -173,7 +173,7 @@ static struct dma_fence *mock_sched_run_job(struct drm_sched_job *sched_job)
+ 		       &drm_mock_sched_hw_fence_ops,
+ 		       &sched->lock,
+ 		       sched->hw_timeline.context,
+-		       atomic_inc_return(&sched->hw_timeline.next_seqno));
++		       atomic_inc_return(&sched->hw_timeline.next_seqno), 0);
+ 
+ 	dma_fence_get(&job->hw_fence); /* Reference for the job_list */
+ 
+diff --git a/drivers/gpu/drm/ttm/tests/ttm_bo_test.c b/drivers/gpu/drm/ttm/tests/ttm_bo_test.c
+index f3103307b5df..633cc7458505 100644
+--- a/drivers/gpu/drm/ttm/tests/ttm_bo_test.c
++++ b/drivers/gpu/drm/ttm/tests/ttm_bo_test.c
+@@ -450,7 +450,7 @@ static void ttm_bo_fini_shared_resv(struct kunit *test)
+ 	KUNIT_ASSERT_NOT_NULL(test, fence);
+ 
+ 	spin_lock_init(&fence_lock);
+-	dma_fence_init(fence, &mock_fence_ops, &fence_lock, 0, 0);
++	dma_fence_init(fence, &mock_fence_ops, &fence_lock, 0, 0, 0);
+ 
+ 	dma_resv_lock(external_resv, NULL);
+ 	dma_resv_reserve_fences(external_resv, 1);
+diff --git a/drivers/gpu/drm/ttm/tests/ttm_bo_validate_test.c b/drivers/gpu/drm/ttm/tests/ttm_bo_validate_test.c
+index 56ad8ef32584..e22a1335f166 100644
+--- a/drivers/gpu/drm/ttm/tests/ttm_bo_validate_test.c
++++ b/drivers/gpu/drm/ttm/tests/ttm_bo_validate_test.c
+@@ -57,7 +57,7 @@ static struct dma_fence *alloc_mock_fence(struct kunit *test)
+ 	fence = kunit_kzalloc(test, sizeof(*fence), GFP_KERNEL);
+ 	KUNIT_ASSERT_NOT_NULL(test, fence);
+ 
+-	dma_fence_init(fence, &fence_ops, &fence_lock, 0, 0);
++	dma_fence_init(fence, &fence_ops, &fence_lock, 0, 0, 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/gpu/drm/v3d/v3d_fence.c b/drivers/gpu/drm/v3d/v3d_fence.c
+index c500136d0455..1fdba5a21580 100644
+--- a/drivers/gpu/drm/v3d/v3d_fence.c
++++ b/drivers/gpu/drm/v3d/v3d_fence.c
+@@ -16,7 +16,7 @@ struct dma_fence *v3d_fence_create(struct v3d_dev *v3d, enum v3d_queue q)
+ 	fence->queue = q;
+ 	fence->seqno = ++queue->emit_seqno;
+ 	dma_fence_init(&fence->base, &v3d_fence_ops, &queue->queue_lock,
+-		       queue->fence_context, fence->seqno);
++		       queue->fence_context, fence->seqno, 0);
+ 
+ 	return &fence->base;
+ }
+diff --git a/drivers/gpu/drm/vc4/vc4_gem.c b/drivers/gpu/drm/vc4/vc4_gem.c
+index bfc1390305ba..2bc2c87cd182 100644
+--- a/drivers/gpu/drm/vc4/vc4_gem.c
++++ b/drivers/gpu/drm/vc4/vc4_gem.c
+@@ -641,7 +641,7 @@ vc4_queue_submit(struct drm_device *dev, struct vc4_exec_info *exec,
+ 	exec->seqno = ++vc4->emit_seqno;
+ 
+ 	dma_fence_init(&fence->base, &vc4_fence_ops, NULL,
+-		       vc4->dma_fence_context, exec->seqno);
++		       vc4->dma_fence_context, exec->seqno, 0);
+ 	fence->seqno = exec->seqno;
+ 	exec->fence = &fence->base;
+ 
+diff --git a/drivers/gpu/drm/vgem/vgem_fence.c b/drivers/gpu/drm/vgem/vgem_fence.c
+index 0e53ba7db629..18700e5f9167 100644
+--- a/drivers/gpu/drm/vgem/vgem_fence.c
++++ b/drivers/gpu/drm/vgem/vgem_fence.c
+@@ -77,7 +77,7 @@ static struct dma_fence *vgem_fence_create(struct vgem_file *vfile,
+ 
+ 	spin_lock_init(&fence->lock);
+ 	dma_fence_init(&fence->base, &vgem_fence_ops, &fence->lock,
+-		       dma_fence_context_alloc(1), 1);
++		       dma_fence_context_alloc(1), 1, 0);
+ 
+ 	timer_setup(&fence->timer, vgem_fence_timeout, TIMER_IRQSAFE);
+ 
+diff --git a/drivers/gpu/drm/virtio/virtgpu_fence.c b/drivers/gpu/drm/virtio/virtgpu_fence.c
+index c3e66ef2133a..8e469391d2e4 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_fence.c
++++ b/drivers/gpu/drm/virtio/virtgpu_fence.c
+@@ -76,7 +76,7 @@ struct virtio_gpu_fence *virtio_gpu_fence_alloc(struct virtio_gpu_device *vgdev,
+ 	 */
+ 
+ 	dma_fence_init(&fence->f, &virtio_gpu_fence_ops, &drv->lock,
+-		       fence_context, 0);
++		       fence_context, 0, 0);
+ 
+ 	return fence;
+ }
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
+index 384c6736cf6b..15f355dc6881 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_fence.c
+@@ -163,7 +163,7 @@ static int vmw_fence_obj_init(struct vmw_fence_manager *fman,
+ 	int ret = 0;
+ 
+ 	dma_fence_init(&fence->base, &vmw_fence_ops, &fman->lock,
+-		       fman->ctx, seqno);
++		       fman->ctx, seqno, 0);
+ 	fence->destroy = destroy;
+ 
+ 	spin_lock(&fman->lock);
+diff --git a/drivers/gpu/drm/xe/xe_hw_fence.c b/drivers/gpu/drm/xe/xe_hw_fence.c
+index 14720623ad00..30bfc42972e0 100644
+--- a/drivers/gpu/drm/xe/xe_hw_fence.c
++++ b/drivers/gpu/drm/xe/xe_hw_fence.c
+@@ -243,7 +243,7 @@ void xe_hw_fence_init(struct dma_fence *fence, struct xe_hw_fence_ctx *ctx,
+ 	INIT_LIST_HEAD(&hw_fence->irq_link);
+ 
+ 	dma_fence_init(fence, &xe_hw_fence_ops, &ctx->irq->lock,
+-		       ctx->dma_fence_ctx, ctx->next_seqno++);
++		       ctx->dma_fence_ctx, ctx->next_seqno++, 0);
+ 
+ 	trace_xe_hw_fence_create(hw_fence);
+ }
+diff --git a/drivers/gpu/drm/xe/xe_oa.c b/drivers/gpu/drm/xe/xe_oa.c
+index c9320feeafba..912840eeec50 100644
+--- a/drivers/gpu/drm/xe/xe_oa.c
++++ b/drivers/gpu/drm/xe/xe_oa.c
+@@ -1053,7 +1053,7 @@ static int xe_oa_emit_oa_config(struct xe_oa_stream *stream, struct xe_oa_config
+ 
+ 	/* Point of no return: initialize and set fence to signal */
+ 	spin_lock_init(&ofence->lock);
+-	dma_fence_init(&ofence->base, &xe_oa_fence_ops, &ofence->lock, 0, 0);
++	dma_fence_init(&ofence->base, &xe_oa_fence_ops, &ofence->lock, 0, 0, 0);
+ 
+ 	for (i = 0; i < stream->num_syncs; i++) {
+ 		if (stream->syncs[i].flags & DRM_XE_SYNC_FLAG_SIGNAL)
+diff --git a/drivers/gpu/drm/xe/xe_preempt_fence.c b/drivers/gpu/drm/xe/xe_preempt_fence.c
+index 4aa570fe745d..343f1ba1e1cd 100644
+--- a/drivers/gpu/drm/xe/xe_preempt_fence.c
++++ b/drivers/gpu/drm/xe/xe_preempt_fence.c
+@@ -154,7 +154,7 @@ xe_preempt_fence_arm(struct xe_preempt_fence *pfence, struct xe_exec_queue *q,
+ 	pfence->q = xe_exec_queue_get(q);
+ 	spin_lock_init(&pfence->lock);
+ 	dma_fence_init(&pfence->base, &preempt_fence_ops,
+-		      &pfence->lock, context, seqno);
++		      &pfence->lock, context, seqno, 0);
+ 
+ 	return &pfence->base;
+ }
+diff --git a/drivers/gpu/drm/xe/xe_tlb_inval.c b/drivers/gpu/drm/xe/xe_tlb_inval.c
+index c9cc5842d65b..1fd39434dc0e 100644
+--- a/drivers/gpu/drm/xe/xe_tlb_inval.c
++++ b/drivers/gpu/drm/xe/xe_tlb_inval.c
+@@ -544,7 +544,7 @@ void xe_tlb_inval_fence_init(struct xe_tlb_inval *tlb_inval,
+ 
+ 	spin_lock_irq(&tlb_inval->lock);
+ 	dma_fence_init(&fence->base, &inval_fence_ops, &tlb_inval->lock,
+-		       dma_fence_context_alloc(1), 1);
++		       dma_fence_context_alloc(1), 1, 0);
+ 	spin_unlock_irq(&tlb_inval->lock);
+ 	INIT_LIST_HEAD(&fence->link);
+ 	if (stack)
+diff --git a/drivers/gpu/host1x/fence.c b/drivers/gpu/host1x/fence.c
+index 1acf579c562b..7e074e72a055 100644
+--- a/drivers/gpu/host1x/fence.c
++++ b/drivers/gpu/host1x/fence.c
+@@ -136,7 +136,7 @@ struct dma_fence *host1x_fence_create(struct host1x_syncpt *sp, u32 threshold,
+ 	fence->timeout = timeout;
+ 
+ 	dma_fence_init(&fence->base, &host1x_syncpt_fence_ops, &sp->fences.lock,
+-		       dma_fence_context_alloc(1), 0);
++		       dma_fence_context_alloc(1), 0, 0);
+ 
+ 	INIT_DELAYED_WORK(&fence->timeout_work, do_fence_timeout);
+ 
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 4294101810fd..f7d6b294b63c 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1904,7 +1904,7 @@ static int iio_buffer_enqueue_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	 * the dma_fence.
+ 	 */
+ 	dma_fence_init(&fence->base, &iio_buffer_dma_fence_ops,
+-		       &fence->lock, priv->context, seqno);
++		       &fence->lock, priv->context, seqno, 0);
+ 
+ 	ret = iio_dma_resv_lock(dmabuf, nonblock);
+ 	if (ret)
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index c64a268e98a4..eb367a1666c2 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -1733,7 +1733,7 @@ static int ffs_dmabuf_transfer(struct file *file,
+ 	seqno = atomic_add_return(1, &epfile->seqno);
+ 
+ 	dma_fence_init(&fence->base, &ffs_dmabuf_fence_ops,
+-		       &priv->lock, priv->context, seqno);
++		       &priv->lock, priv->context, seqno, 0);
+ 
+ 	resv_dir = epfile->in ? DMA_RESV_USAGE_READ : DMA_RESV_USAGE_WRITE;
+ 
+diff --git a/include/linux/dma-fence.h b/include/linux/dma-fence.h
+index dd07d128adc3..6f5c245d89ec 100644
+--- a/include/linux/dma-fence.h
++++ b/include/linux/dma-fence.h
+@@ -103,6 +103,12 @@ struct dma_fence {
+ 	int error;
+ };
+ 
++/** enum dma_fence_flag_bits - internal dma_fence flags
++ *
++ * These flags are all only for internal usage, except for
++ * @DMA_FENCE_FLAG_SEQNO64_BIT and the user bits beginning at
++ * @DMA_FENCE_FLAG_USER_BITS.
 + */
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/build_bug.h>
-+#include <linux/debugfs.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/imu/adis.h>
-+#include <linux/math.h>
-+#include <linux/minmax.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/seq_file.h>
-+#include <linux/spi/spi.h>
-+#include <linux/unaligned.h>
-+#include <linux/units.h>
-+
-+/* Register addresses */
-+#define ADIS16607_REG_DEV_ID		0x00
-+#define ADIS16607_REG_REV_ID		0x01
-+#define ADIS16607_REG_SERIAL_NUM0	0x02
-+#define ADIS16607_REG_SERIAL_NUM1	0x03
-+#define ADIS16607_REG_SERIAL_NUM2	0x04
-+#define ADIS16607_REG_DIAG_STAT		0x05
-+#define ADIS16607_REG_X_ACCEL		0x06
-+#define ADIS16607_REG_Y_ACCEL		0x08
-+#define ADIS16607_REG_Z_ACCEL		0x0A
-+#define ADIS16607_REG_X_GYRO		0x0C
-+#define ADIS16607_REG_Y_GYRO		0x0E
-+#define ADIS16607_REG_Z_GYRO		0x10
-+#define ADIS16607_REG_X_DELTVEL		0x12
-+#define ADIS16607_REG_Y_DELTVEL		0x14
-+#define ADIS16607_REG_Z_DELTVEL		0x16
-+#define ADIS16607_REG_X_DELTANG		0x18
-+#define ADIS16607_REG_Y_DELTANG		0x1A
-+#define ADIS16607_REG_Z_DELTANG		0x1C
-+#define ADIS16607_REG_TEMP		0x20
-+#define ADIS16607_REG_USER_GPIO_CFG	0x2F
-+#define ADIS16607_REG_SPI_HALFDUPLEX	0x32
-+#define ADIS16607_REG_SOFT_RESET	0x36
-+#define ADIS16607_REG_SELF_TEST		0x39
-+#define ADIS16607_REG_DEC_RATE		0x3A
-+#define ADIS16607_REG_DIGITAL_STATUS	0x4E
-+
-+/* SPI Half-Duplex lock value */
-+#define ADIS16607_LOCK_SPI_HALFDUPLEX	0xB4B4
-+
-+/* Masks */
-+#define ADIS16607_RESET_GPIO_MASK	GENMASK(2, 0)
-+#define ADIS16607_BOOTLOADER_BUSY_MASK	BIT(0)
-+
-+/* Self-test registers and masks */
-+#define ADIS16607_REG_SELF_TEST_DATA(x)	((x) + 0x23)
-+#define ADIS16607_SNSR_SELF_TEST_MASK	BIT(6)
-+#define ADIS16607_ST_FORCE_MASK		BIT(7)
-+
-+/* Self-test delta check limits */
-+#define ADIS16607_ACCEL_XY_DELTA_MAX	260
-+#define ADIS16607_ACCEL_Z_DELTA_MAX	4000
-+#define ADIS16607_GYRO_DELTA_MAX	2600
-+
-+struct adis16607_chip_info {
-+	const struct iio_chan_spec *channels;
-+	const char *name;
-+	u32 num_channels;
-+	u32 gyro_max_val;
-+	u32 gyro_max_scale;
-+	u32 accel_max_val;
-+	u32 accel_max_scale;
-+	u32 temp_scale;
-+	u32 deltang_max_val;
-+	u32 deltvel_max_val;
-+	u32 int_clk_Hz;
-+	u16 max_dec;
-+};
-+
-+struct adis16607 {
-+	struct adis adis;
-+	const struct adis16607_chip_info *info;
-+	unsigned long clk_freq_mHz;
-+	u16 dec;
-+};
-+
-+enum {
-+	ADIS16607_SCAN_ACCEL_X,
-+	ADIS16607_SCAN_ACCEL_Y,
-+	ADIS16607_SCAN_ACCEL_Z,
-+	ADIS16607_SCAN_GYRO_X,
-+	ADIS16607_SCAN_GYRO_Y,
-+	ADIS16607_SCAN_GYRO_Z,
-+	ADIS16607_SCAN_DELTVEL_X,
-+	ADIS16607_SCAN_DELTVEL_Y,
-+	ADIS16607_SCAN_DELTVEL_Z,
-+	ADIS16607_SCAN_DELTANG_X,
-+	ADIS16607_SCAN_DELTANG_Y,
-+	ADIS16607_SCAN_DELTANG_Z,
-+	ADIS16607_SCAN_TEMP,
-+	ADIS16607_SCAN_MAX
-+};
-+
-+struct adis16607_chan_regs {
-+	u16 raw_reg;
-+};
-+
-+static const struct adis16607_chan_regs adis16607_chan_regs[] = {
-+	[ADIS16607_SCAN_ACCEL_X]   = { ADIS16607_REG_X_ACCEL },
-+	[ADIS16607_SCAN_ACCEL_Y]   = { ADIS16607_REG_Y_ACCEL },
-+	[ADIS16607_SCAN_ACCEL_Z]   = { ADIS16607_REG_Z_ACCEL },
-+	[ADIS16607_SCAN_GYRO_X]    = { ADIS16607_REG_X_GYRO },
-+	[ADIS16607_SCAN_GYRO_Y]    = { ADIS16607_REG_Y_GYRO },
-+	[ADIS16607_SCAN_GYRO_Z]    = { ADIS16607_REG_Z_GYRO },
-+	[ADIS16607_SCAN_DELTVEL_X] = { ADIS16607_REG_X_DELTVEL },
-+	[ADIS16607_SCAN_DELTVEL_Y] = { ADIS16607_REG_Y_DELTVEL },
-+	[ADIS16607_SCAN_DELTVEL_Z] = { ADIS16607_REG_Z_DELTVEL },
-+	[ADIS16607_SCAN_DELTANG_X] = { ADIS16607_REG_X_DELTANG },
-+	[ADIS16607_SCAN_DELTANG_Y] = { ADIS16607_REG_Y_DELTANG },
-+	[ADIS16607_SCAN_DELTANG_Z] = { ADIS16607_REG_Z_DELTANG },
-+	[ADIS16607_SCAN_TEMP]      = { ADIS16607_REG_TEMP },
-+};
-+
-+static_assert(ARRAY_SIZE(adis16607_chan_regs) == ADIS16607_SCAN_MAX);
-+
-+static int adis16607_spi_read(struct adis *adis, unsigned int reg,
-+			      unsigned int *val, unsigned int size)
-+{
-+	struct spi_message msg;
-+	struct spi_transfer xfers[2] = {
-+		{
-+			.tx_buf = adis->tx,
-+			.len = 4,
-+			.cs_change = 1,
-+		},
-+		{
-+			.tx_buf = adis->tx,
-+			.rx_buf = adis->rx,
-+			.len = 4,
-+		},
-+	};
-+	u16 val_msw, val_lsw;
-+	int ret;
-+
-+	/*
-+	 * Half-Duplex read: two 4-byte transfers with CS toggling in between.
-+	 * The first one latches the command, the second sends it again and
-+	 * the device answers in bytes 2-3.
-+	 */
-+	switch (size) {
-+	case 2:
-+		adis->tx[0] = reg | BIT(7);
-+
-+		spi_message_init_with_transfers(&msg, xfers, ARRAY_SIZE(xfers));
-+
-+		ret = spi_sync(adis->spi, &msg);
-+		if (ret)
-+			return ret;
-+
-+		*val = get_unaligned_be16(&adis->rx[2]);
-+		return 0;
-+
-+	case 4:
-+		/* Read MSW from reg */
-+		adis->tx[0] = reg | BIT(7);
-+
-+		spi_message_init_with_transfers(&msg, xfers, ARRAY_SIZE(xfers));
-+
-+		ret = spi_sync(adis->spi, &msg);
-+		if (ret)
-+			return ret;
-+
-+		val_msw = get_unaligned_be16(&adis->rx[2]);
-+
-+		/* Read LSW from reg+1 */
-+		adis->tx[0] = (reg + 1) | BIT(7);
-+
-+		spi_message_init_with_transfers(&msg, xfers, ARRAY_SIZE(xfers));
-+
-+		ret = spi_sync(adis->spi, &msg);
-+		if (ret)
-+			return ret;
-+
-+		val_lsw = adis->rx[2];
-+
-+		/*
-+		 * Combine: 24-bit value with MSW in upper 16 bits,
-+		 * LSW in lower 8 bits.
-+		 */
-+		*val = FIELD_PREP(GENMASK(23, 8), val_msw) | val_lsw;
-+		return 0;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+/*
-+ * SPI Half-Duplex write operation for ADIS16607.
-+ * Protocol:
-+ *   - Send 3 bytes: [reg, val_high, val_low]
-+ *   - Only 16-bit writes are supported
-+ */
-+static int adis16607_spi_write(struct adis *adis, unsigned int reg,
-+			       unsigned int val, unsigned int size)
-+{
-+	if (size != 2)
-+		return -EINVAL;
-+
-+	adis->tx[0] = reg;
-+	put_unaligned_be16(val, &adis->tx[1]);
-+
-+	return spi_write(adis->spi, adis->tx, 3);
-+}
-+
-+static int adis16607_reset(struct adis *adis)
-+{
-+	return adis16607_spi_write(adis, ADIS16607_REG_SOFT_RESET, BIT(0), 2);
-+}
-+
-+static const struct adis_ops adis16607_ops = {
-+	.read = adis16607_spi_read,
-+	.write = adis16607_spi_write,
-+	.reset = adis16607_reset,
-+};
-+
-+/*
-+ * Check if the delta between two values is within specified range.
-+ */
-+static bool adis16607_delta_check(s16 val1, s16 val2, s16 delta_max)
-+{
-+	return abs(val1 - val2) <= delta_max;
-+}
-+
-+/*
-+ * Perform sensor self-test for ADIS16607.
-+ * Reads self-test data before and after forcing self-test,
-+ * then verifies delta values are within acceptable ranges.
-+ */
-+static int adis16607_sensor_self_test(struct adis16607 *st)
-+{
-+	struct adis *adis = &st->adis;
-+	u16 st1_val[6], st2_val[6];
-+	s16 delta_max[6] = {
-+		ADIS16607_ACCEL_XY_DELTA_MAX,
-+		ADIS16607_ACCEL_XY_DELTA_MAX,
-+		ADIS16607_ACCEL_Z_DELTA_MAX,
-+		ADIS16607_GYRO_DELTA_MAX,
-+		ADIS16607_GYRO_DELTA_MAX,
-+		ADIS16607_GYRO_DELTA_MAX,
-+	};
-+	int ret;
-+
-+	/* Enable sensor self-test */
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_SELF_TEST,
-+				  ADIS16607_SNSR_SELF_TEST_MASK);
-+	if (ret)
-+		return ret;
-+
-+	/* Wait for self-test to settle before reading results */
-+	msleep(adis->data->timeouts->self_test_ms);
-+
-+	/* Read first set of self-test data */
-+	for (unsigned int i = 0; i < ARRAY_SIZE(st1_val); i++) {
-+		ret = __adis_read_reg_16(adis, ADIS16607_REG_SELF_TEST_DATA(i),
-+					 &st1_val[i]);
-+		if (ret)
-+			goto clear_self_test;
-+	}
-+
-+	/* Force self-test */
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_SELF_TEST,
-+				  ADIS16607_SNSR_SELF_TEST_MASK | ADIS16607_ST_FORCE_MASK);
-+	if (ret)
-+		goto clear_self_test;
-+
-+	/* Wait for forced self-test to settle before reading results */
-+	msleep(adis->data->timeouts->self_test_ms);
-+
-+	/* Read second set of self-test data */
-+	for (unsigned int i = 0; i < ARRAY_SIZE(st2_val); i++) {
-+		ret = __adis_read_reg_16(adis, ADIS16607_REG_SELF_TEST_DATA(i),
-+					 &st2_val[i]);
-+		if (ret)
-+			goto clear_self_test;
-+
-+		if (!adis16607_delta_check((s16)st1_val[i], (s16)st2_val[i],
-+					   delta_max[i])) {
-+			ret = dev_err_probe(&adis->spi->dev, -EINVAL,
-+					    "Self-test failed for axis %u: delta out of range\n",
-+					    i);
-+			goto clear_self_test;
-+		}
-+	}
-+
-+	/* Clear self-test register */
-+	return __adis_write_reg_16(adis, ADIS16607_REG_SELF_TEST, 0);
-+
-+clear_self_test:
-+	/*
-+	 * Best-effort cleanup after a failure above - leave the device out
-+	 * of its self-test/force state rather than stuck in it until the
-+	 * next reset. Warn rather than returning this write's own result,
-+	 * so a cleanup failure doesn't mask the real error that got us here.
-+	 */
-+	if (__adis_write_reg_16(adis, ADIS16607_REG_SELF_TEST, 0))
-+		dev_warn(&adis->spi->dev, "failed to clear self-test register\n");
-+
-+	return ret;
-+}
-+
-+/*
-+ * Called by __adis_initial_startup() right after reset, before self-test:
-+ * SPI Half-Duplex locking, dev_id verification and the bootloader check.
-+ */
-+static int adis16607_init(struct adis *adis)
-+{
-+	struct device *dev = &adis->spi->dev;
-+	u16 diag_stat, digital_status, dev_id;
-+	int ret;
-+
-+	/* Lock the device into SPI Half-Duplex mode */
-+	ret = __adis_write_reg_16(adis, ADIS16607_REG_SPI_HALFDUPLEX,
-+				  ADIS16607_LOCK_SPI_HALFDUPLEX);
-+	if (ret)
-+		return ret;
-+
-+	/* Verify the correct device is attached */
-+	ret = __adis_read_reg_16(adis, ADIS16607_REG_DEV_ID, &dev_id);
-+	if (ret)
-+		return ret;
-+
-+	if (dev_id != adis->data->prod_id)
-+		return dev_err_probe(dev, -ENODEV,
-+				     "device ID mismatch: expected 0x%04x, got 0x%04x\n",
-+				     adis->data->prod_id, dev_id);
-+
-+	/* Read diag_stat to clear any latched faults */
-+	ret = __adis_read_reg_16(adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
-+	if (ret)
-+		return ret;
-+
-+	ret = __adis_check_status(adis);
-+	if (ret)
-+		return ret;
-+
-+	/* Check that bootloader is not busy */
-+	ret = __adis_read_reg_16(adis, ADIS16607_REG_DIGITAL_STATUS, &digital_status);
-+	if (ret)
-+		return ret;
-+
-+	if (digital_status & ADIS16607_BOOTLOADER_BUSY_MASK)
-+		return dev_err_probe(dev, -EBUSY, "bootloader is busy\n");
-+
-+	return 0;
-+}
-+
-+/*
-+ * Self-test callback for struct adis_data (see adis16607_data below).
-+ * Called by __adis_initial_startup() right after adis16607_init().
-+ */
-+static int adis16607_self_test(struct adis *adis)
-+{
-+	struct adis16607 *st = container_of(adis, struct adis16607, adis);
-+	u16 diag_stat;
-+	int ret;
-+
-+	/*
-+	 * Inertial Settling Time (Table 1), needed before self-test
-+	 * reads sensor data.
-+	 */
-+	msleep(40);
-+
-+	ret = adis16607_sensor_self_test(st);
-+	if (ret)
-+		return ret;
-+
-+	/* Read diag_stat again to clear any faults latched during self-test */
-+	ret = __adis_read_reg_16(adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
-+	if (ret)
-+		return ret;
-+
-+	return __adis_check_status(adis);
-+}
-+
-+static int adis16607_firmware_revision_show(struct seq_file *s, void *arg)
-+{
-+	struct adis16607 *st = s->private;
-+	struct {
-+		u8 minor;
-+		u8 major;
-+	} rev;
-+	u16 tmp;
-+	int ret;
-+
-+	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_REV_ID, &tmp);
-+	if (ret)
-+		return ret;
-+
-+	rev.major = FIELD_GET(GENMASK(15, 8), tmp);
-+	rev.minor = FIELD_GET(GENMASK(7, 0), tmp);
-+
-+	seq_printf(s, "%u.%u\n", rev.major, rev.minor);
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(adis16607_firmware_revision);
-+
-+static int adis16607_show_serial_number(void *arg, u64 *val)
-+{
-+	struct adis16607 *st = arg;
-+	u64 serial;
-+	u16 tmp;
-+	int ret;
-+
-+	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_SERIAL_NUM2, &tmp);
-+	if (ret)
-+		return ret;
-+
-+	serial = tmp;
-+
-+	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_SERIAL_NUM1, &tmp);
-+	if (ret)
-+		return ret;
-+
-+	serial <<= 16;
-+	serial |= tmp;
-+
-+	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_SERIAL_NUM0, &tmp);
-+	if (ret)
-+		return ret;
-+
-+	serial <<= 16;
-+	serial |= tmp;
-+
-+	*val = serial;
-+	return 0;
-+}
-+DEFINE_DEBUGFS_ATTRIBUTE(adis16607_serial_number_fops,
-+			 adis16607_show_serial_number, NULL, "0x%.8llx\n");
-+
-+static int adis16607_show_dev_id(void *arg, u64 *val)
-+{
-+	struct adis16607 *st = arg;
-+	u16 dev_id;
-+	int ret;
-+
-+	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_DEV_ID, &dev_id);
-+	if (ret)
-+		return ret;
-+
-+	*val = dev_id;
-+	return 0;
-+}
-+DEFINE_DEBUGFS_ATTRIBUTE(adis16607_dev_id_fops,
-+			 adis16607_show_dev_id, NULL, "%llu\n");
-+
-+static void adis16607_debugfs_init(struct iio_dev *indio_dev)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	struct dentry *d = iio_get_debugfs_dentry(indio_dev);
-+
-+	debugfs_create_file_unsafe("serial_number", 0400, d, st,
-+				   &adis16607_serial_number_fops);
-+	debugfs_create_file_unsafe("dev_id", 0400, d, st,
-+				   &adis16607_dev_id_fops);
-+	debugfs_create_file("firmware_revision", 0400, d, st,
-+			    &adis16607_firmware_revision_fops);
-+}
-+
-+static int adis16607_get_freq(struct adis16607 *st, u32 *freq)
-+{
-+	adis_dev_auto_lock(&st->adis);
-+
-+	*freq = DIV_ROUND_CLOSEST(st->clk_freq_mHz, st->dec + 1);
-+
-+	return 0;
-+}
-+
-+static int adis16607_set_freq(struct adis16607 *st, u32 freq)
-+{
-+	u32 dec;
-+	int ret;
-+
-+	if (!freq)
-+		return -EINVAL;
-+
-+	dec = DIV_ROUND_CLOSEST(st->clk_freq_mHz, freq);
-+	if (dec)
-+		dec--;
-+
-+	dec = min(dec, st->info->max_dec);
-+
-+	adis_dev_auto_scoped_lock(&st->adis) {
-+		/* Reset the decimation accumulator before the new value */
-+		ret = __adis_write_reg_16(&st->adis, ADIS16607_REG_DEC_RATE, 0);
-+		if (ret)
-+			return ret;
-+
-+		st->dec = 0;
-+
-+		if (dec) {
-+			ret = __adis_write_reg_16(&st->adis,
-+						  ADIS16607_REG_DEC_RATE, dec);
-+			if (ret)
-+				return ret;
-+
-+			st->dec = dec;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/*
-+ * .address is an index into adis16607_chan_regs[] for this driver, not a
-+ * literal register like adis_single_conversion() expects, and the channel
-+ * spec carries no scan_type for it to take the register width and sign
-+ * extension from. Resolve both on a local copy rather than reimplementing
-+ * the helper's locking logic ourselves.
-+ */
-+static int adis16607_raw_read(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan, int *val)
-+{
-+	struct iio_chan_spec raw_chan = *chan;
-+	bool is_temp = chan->type == IIO_TEMP;
-+
-+	raw_chan.address = adis16607_chan_regs[chan->address].raw_reg;
-+	raw_chan.scan_type.sign = 's';
-+	raw_chan.scan_type.realbits = is_temp ? 16 : 24;
-+	raw_chan.scan_type.storagebits = is_temp ? 16 : 32;
-+
-+	return adis_single_conversion(indio_dev, &raw_chan, 0, val);
-+}
-+
-+static int adis16607_read_raw(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan,
-+			      int *val, int *val2, long info)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	int ret;
-+	u32 tmp;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_RAW:
-+		return adis16607_raw_read(indio_dev, chan, val);
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_ANGL_VEL:
-+			*val = st->info->gyro_max_val;
-+			*val2 = st->info->gyro_max_scale;
-+			return IIO_VAL_FRACTIONAL;
-+		case IIO_ACCEL:
-+			*val = st->info->accel_max_val;
-+			*val2 = st->info->accel_max_scale;
-+			return IIO_VAL_FRACTIONAL;
-+		case IIO_TEMP:
-+			*val = st->info->temp_scale;
-+			return IIO_VAL_INT;
-+		case IIO_DELTA_ANGL:
-+			*val = st->info->deltang_max_val;
-+			*val2 = 23;
-+			return IIO_VAL_FRACTIONAL_LOG2;
-+		case IIO_DELTA_VELOCITY:
-+			*val = st->info->deltvel_max_val;
-+			*val2 = 23;
-+			return IIO_VAL_FRACTIONAL_LOG2;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_CHAN_INFO_OFFSET:
-+		/* Temperature: 0 raw counts = 25°C; offset = 25000 mdeg / 5 mdeg per LSB = 5000 */
-+		*val = 5000;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = adis16607_get_freq(st, &tmp);
-+		if (ret)
-+			return ret;
-+		/* tmp is in mHz: split into Hz and the remainder in uHz */
-+		*val = tmp / MILLIHZ_PER_HZ;
-+		*val2 = (tmp % MILLIHZ_PER_HZ) *
-+			(MICROHZ_PER_HZ / MILLIHZ_PER_HZ);
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int adis16607_write_raw(struct iio_dev *indio_dev,
-+			       const struct iio_chan_spec *chan,
-+			       int val, int val2, long info)
-+{
-+	struct adis16607 *st = iio_priv(indio_dev);
-+	u32 tmp;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (val < 0 || val2 < 0)
-+			return -EINVAL;
-+
-+		/* val is in Hz and val2 in uHz: convert both to mHz */
-+		tmp = val * MILLIHZ_PER_HZ +
-+		      val2 / (MICROHZ_PER_HZ / MILLIHZ_PER_HZ);
-+		return adis16607_set_freq(st, tmp);
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+#define ADIS16607_MOD_CHAN(_type, _mod, _idx)				       \
-+	{								       \
-+		.type = (_type),					       \
-+		.modified = 1,						       \
-+		.channel2 = (_mod),					       \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		       \
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	       \
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),       \
-+		.address = (_idx),					       \
-+	}
-+
-+#define ADIS16607_ACCEL_CHANNEL(_mod)					       \
-+	ADIS16607_MOD_CHAN(IIO_ACCEL, IIO_MOD_ ## _mod,			       \
-+			   ADIS16607_SCAN_ACCEL_ ## _mod)
-+
-+#define ADIS16607_GYRO_CHANNEL(_mod)					       \
-+	ADIS16607_MOD_CHAN(IIO_ANGL_VEL, IIO_MOD_ ## _mod,		       \
-+			   ADIS16607_SCAN_GYRO_ ## _mod)
-+
-+#define ADIS16607_MOD_CHAN_DELTA(_type, _mod, _idx)			       \
-+	{								       \
-+		.type = (_type),					       \
-+		.modified = 1,						       \
-+		.channel2 = (_mod),					       \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		       \
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	       \
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),       \
-+		.address = (_idx),					       \
-+	}
-+
-+#define ADIS16607_DELTANG_CHAN(_mod)					       \
-+	ADIS16607_MOD_CHAN_DELTA(IIO_DELTA_ANGL, IIO_MOD_ ## _mod,	       \
-+				 ADIS16607_SCAN_DELTANG_ ## _mod)
-+
-+#define ADIS16607_DELTVEL_CHAN(_mod)					       \
-+	ADIS16607_MOD_CHAN_DELTA(IIO_DELTA_VELOCITY, IIO_MOD_ ## _mod,	       \
-+				 ADIS16607_SCAN_DELTVEL_ ## _mod)
-+
-+static const struct iio_chan_spec adis16607_channels[] = {
-+	ADIS16607_ACCEL_CHANNEL(X),
-+	ADIS16607_ACCEL_CHANNEL(Y),
-+	ADIS16607_ACCEL_CHANNEL(Z),
-+	ADIS16607_GYRO_CHANNEL(X),
-+	ADIS16607_GYRO_CHANNEL(Y),
-+	ADIS16607_GYRO_CHANNEL(Z),
-+	ADIS16607_DELTVEL_CHAN(X),
-+	ADIS16607_DELTVEL_CHAN(Y),
-+	ADIS16607_DELTVEL_CHAN(Z),
-+	ADIS16607_DELTANG_CHAN(X),
-+	ADIS16607_DELTANG_CHAN(Y),
-+	ADIS16607_DELTANG_CHAN(Z),
-+	{
-+		.type = IIO_TEMP,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE) |
-+				      BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = ADIS16607_SCAN_TEMP,
-+	},
-+};
-+
-+static const struct iio_info adis16607_info = {
-+	.read_raw = adis16607_read_raw,
-+	.write_raw = adis16607_write_raw,
-+	.debugfs_reg_access = adis_debugfs_reg_access,
-+};
-+
-+static const char * const adis16607_status_error_msgs[] = {
-+	[9] = "Boot Memory Failure",
-+	[11] = "Power Supply Failure",
-+	[12] = "Accelerometer Failure",
-+	[13] = "Gyroscope Failure",
-+};
-+
-+static const struct adis_timeout adis16607_timeouts = {
-+	.reset_ms = 130,
-+	.sw_reset_ms = 50,
-+	.self_test_ms = 15,
-+};
-+
-+static const struct adis_data adis16607_data = {
-+	.diag_stat_reg = ADIS16607_REG_DIAG_STAT,
-+	.diag_stat_size = 2,
-+	.prod_id_reg = ADIS16607_REG_DEV_ID,
-+	.prod_id = 0x6000,
-+	.unmasked_drdy = true,
-+	.init = adis16607_init,
-+	.self_test = adis16607_self_test,
-+	.status_error_msgs = adis16607_status_error_msgs,
-+	.status_error_mask = BIT(9) | BIT(11) | BIT(12) | BIT(13),
-+	.timeouts = &adis16607_timeouts,
-+};
-+
-+/*
-+ * ADIS16607-2: 450 deg/s gyro, 40g accel
-+ * ADIS16607-3: 2000 deg/s gyro, 40g accel
-+ */
-+static const struct adis16607_chip_info adis16607_2_chip_info = {
-+	.channels	= adis16607_channels,
-+	.num_channels	= ARRAY_SIZE(adis16607_channels),
-+	.name		= "adis16607-2",
-+	.gyro_max_val	= IIO_DEGREE_TO_RAD(450),
-+	.gyro_max_scale	= 30000 << 8,
-+	.accel_max_val	= IIO_G_TO_M_S_2(40),
-+	.accel_max_scale = 31250 << 8,
-+	.temp_scale	= 5,
-+	.deltang_max_val = IIO_DEGREE_TO_RAD(450),
-+	.deltvel_max_val = IIO_G_TO_M_S_2(40),
-+	.int_clk_Hz	= 8000,
-+	.max_dec	= 65535,
-+};
-+
-+static const struct adis16607_chip_info adis16607_3_chip_info = {
-+	.channels	= adis16607_channels,
-+	.num_channels	= ARRAY_SIZE(adis16607_channels),
-+	.name		= "adis16607-3",
-+	.gyro_max_val	= IIO_DEGREE_TO_RAD(2000),
-+	.gyro_max_scale	= 31250 << 8,
-+	.accel_max_val	= IIO_G_TO_M_S_2(40),
-+	.accel_max_scale = 31250 << 8,
-+	.temp_scale	= 5,
-+	.deltang_max_val = IIO_DEGREE_TO_RAD(2000),
-+	.deltvel_max_val = IIO_G_TO_M_S_2(40),
-+	.int_clk_Hz	= 8000,
-+	.max_dec	= 65535,
-+};
-+
-+/* No external clock sync support yet: always run on the internal clock */
-+static int adis16607_config_clk(struct adis16607 *st)
-+{
-+	st->clk_freq_mHz = st->info->int_clk_Hz * MILLIHZ_PER_HZ;
-+
-+	return adis_read_reg_16(&st->adis, ADIS16607_REG_DEC_RATE, &st->dec);
-+}
-+
-+static int adis16607_probe(struct spi_device *spi)
-+{
-+	struct device *dev = &spi->dev;
-+	struct iio_dev *indio_dev;
-+	struct adis16607 *st;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	st->info = spi_get_device_match_data(spi);
-+	if (!st->info)
-+		return -ENODATA;
-+
-+	indio_dev->name = st->info->name;
-+	indio_dev->channels = st->info->channels;
-+	indio_dev->num_channels = st->info->num_channels;
-+	indio_dev->info = &adis16607_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	st->adis.ops = &adis16607_ops;
-+
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to get vdd regulator\n");
-+
-+	ret = adis_init(&st->adis, indio_dev, spi, &adis16607_data);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Force GPIO0 back to its RESET function before relying on toggling
-+	 * it below - RESET_GPIO_MASK is runtime-writable on this part, so a
-+	 * prior write (buggy driver, direct reg access, etc.) could have
-+	 * left it de-routed, which would make the GPIO toggle in
-+	 * __adis_initial_startup() silently do nothing. This write goes out
-+	 * over SPI, which stays live regardless of this mask's state, so it
-+	 * can re-arm the mux as long as the device is merely
-+	 * reset-pin-defeated and not fully unresponsive. Only warn on
-+	 * failure instead of erroring out - bailing here would throw away
-+	 * whatever chance the GPIO toggle below still has of working.
-+	 */
-+	if (device_property_present(dev, "reset-gpios")) {
-+		ret = __adis_update_bits_base(&st->adis, ADIS16607_REG_USER_GPIO_CFG,
-+					      ADIS16607_RESET_GPIO_MASK,
-+					      FIELD_PREP(ADIS16607_RESET_GPIO_MASK, 1), 2);
-+		if (ret)
-+			dev_warn(dev, "failed to force reset-pin routing: %d\n", ret);
-+	}
-+
-+	ret = __adis_initial_startup(&st->adis);
-+	if (ret)
-+		return ret;
-+
-+	ret = adis16607_config_clk(st);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_iio_device_register(dev, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	adis16607_debugfs_init(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id adis16607_id[] = {
-+	{ .name = "adis16607-2", .driver_data = (kernel_ulong_t)&adis16607_2_chip_info },
-+	{ .name = "adis16607-3", .driver_data = (kernel_ulong_t)&adis16607_3_chip_info },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, adis16607_id);
-+
-+static const struct of_device_id adis16607_of_match[] = {
-+	{ .compatible = "adi,adis16607-2", .data = &adis16607_2_chip_info },
-+	{ .compatible = "adi,adis16607-3", .data = &adis16607_3_chip_info },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, adis16607_of_match);
-+
-+static struct spi_driver adis16607_driver = {
-+	.driver = {
-+		.name = "adis16607",
-+		.of_match_table = adis16607_of_match,
-+	},
-+	.probe = adis16607_probe,
-+	.id_table = adis16607_id,
-+};
-+module_spi_driver(adis16607_driver);
-+
-+MODULE_AUTHOR("Radu Sabau <radu.sabau@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices ADIS16607 and similar IMU driver");
-+MODULE_IMPORT_NS("IIO_ADISLIB");
-+MODULE_LICENSE("GPL");
-
+ enum dma_fence_flag_bits {
+ 	DMA_FENCE_FLAG_INITIALIZED_BIT,
+ 	DMA_FENCE_FLAG_INLINE_LOCK_BIT,
+@@ -110,6 +116,7 @@ enum dma_fence_flag_bits {
+ 	DMA_FENCE_FLAG_SIGNALED_BIT,
+ 	DMA_FENCE_FLAG_TIMESTAMP_BIT,
+ 	DMA_FENCE_FLAG_ENABLE_SIGNAL_BIT,
++
+ 	DMA_FENCE_FLAG_USER_BITS, /* must always be last member */
+ };
+ 
+@@ -279,11 +286,10 @@ struct dma_fence_ops {
+ };
+ 
+ void dma_fence_init(struct dma_fence *fence, const struct dma_fence_ops *ops,
+-		    spinlock_t *lock, u64 context, u64 seqno);
+-
++		    spinlock_t *lock, u64 context, u64 seqno,
++		    unsigned long flags);
+ void dma_fence_init64(struct dma_fence *fence, const struct dma_fence_ops *ops,
+ 		      spinlock_t *lock, u64 context, u64 seqno);
+-
+ void dma_fence_release(struct kref *kref);
+ void dma_fence_free(struct dma_fence *fence);
+ void dma_fence_describe(struct dma_fence *fence, struct seq_file *seq);
+diff --git a/rust/kernel/dma_buf/dma_fence.rs b/rust/kernel/dma_buf/dma_fence.rs
+index 18a43e1bb442..ee8fa4ecd6c1 100644
+--- a/rust/kernel/dma_buf/dma_fence.rs
++++ b/rust/kernel/dma_buf/dma_fence.rs
+@@ -736,7 +736,7 @@ pub fn new_fence(self) -> DriverFence<'a, T> {
+         // SAFETY: `fence_ptr` has been created directly above. It will live
+         // at least as long as `Self`. The same applies to `&Self::OPS`.
+         unsafe {
+-            bindings::dma_fence_init(fence_ptr, self.ops, null_ptr, self.data.fctx.nr, seqno)
++            bindings::dma_fence_init(fence_ptr, self.ops, null_ptr, self.data.fctx.nr, seqno, 0)
+         };
+ 
+         self.data.fctx.nr_of_unsignaled_fences.fetch_add(1, Relaxed);
 -- 
-2.43.0
-
+2.56.0
 
