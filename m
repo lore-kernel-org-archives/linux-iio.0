@@ -1,11 +1,11 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.49
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1795015097;
-	b=NOvfRePmvtLiIn24UIgkpFrVdeKx6FWMxCrGcFwzlSCygn8bQSbBk0OEwSKVqfvJpJfM
-	 jX0yk64UL8BQMKuwK5Rjt6e+cT5lIUOBnTfgbCUv8hPPWbZ8zYE8rQr2ftz5TgAg267C1
-	 ee5bkfNtQdPENgOsvIeNc56U8K0KINChgBpdQtOCIeT+KaWQfqyE3yUDyylCoOnUx/5CA
-	 kcHb9kHbvm5pgpKsNa1jhJUm3rNwaZXNDgAFhk9vY2RTSJvINOzQDzG8zhrFZuaotxk7a
-	 SegjwYxD9rrkBh/bqNX4ZvSdB5fklFm5axCHbe+q5s4YjPjgyWyWIFNlppSoM4qrWQA==
+	b=uZMVi992vJSB2t9N2jnfWyDxQASF7om9bwbA6fucmuqcdkfDcrTzodJz2VJIoaIOyBZM
+	 UySOYC4w8UZU0Eg87BpCrb7BFR5WgnGQ465pqYUZ1SOWYmLA3b1qXhb//PSz/whxezWF4
+	 xXGy7g5Xy0SoH2N7iIAd3et9Hsvu8j4jWttBZPtnoAsJJ8zcud0Sl6B3QhBUtAtpoQc6J
+	 zpxoD6Rs3OW2rKUigRH7CRxNNK4lSvdhBAmfBmMA00WgJUDuB6d72eCZkQdPnTluiEIBm
+	 xajLC4vJph8bnKjgL4k7E/nXbm5wGD++vBQFZLNBuMWeQxsbdUTONDJYyeLWXHFW62A==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795015097;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
@@ -26,75 +26,75 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=1FcxbgvYLfQV0y+oN9uytRNXBXddDBOGdoIc3f1iHhw=;
-	b=l3CX4ELyzfWB9geSTWN+9E6H+NysLaLPmPQO1pzzZfNZbOJzUkN4IiKbQ/gVs4ZAvleK
-	 nOOP3RV/LtUaPAW2bnH8pvRWMdtzj+OL2vAERUyqDla1cLF/Oj2faAoVKnthpgPD89L6Y
-	 v/L30msQpsGUXrkOCUn5O4OJL/fkCEs21NI3PH7eUtRtLNscmOQNeHZxijVwdPXJLRHsv
-	 KCjr65EnP8JsbXdzil54IVCLSgjQAuBQ0ILpTducNLeQ1ammLgEkSBN1frR7vr8m3TtwO
-	 BujSJMxLjxAfZsPajHawIt2ACZvn3Gd/FHzeTDapGUc0V6iHUKxtJ6qGheapCIcqQmA==
+	bh=zAzYynMonwBOsqIyhLjLtvIhO4T9CvCDL8dJqdlXtdc=;
+	b=QZVmHLFP9UWiBaOcLWA4KeQ8vXpyTIsMc8vktb4MhnLgwliXyA7KAvvP4JXxZYGgEKYg
+	 dyOeGwgxjOArg1lxZdGTJCNkyeEV4pBbqbGKARdWBPKOakYSjln+kJHStW8Wn7qjAmBJ5
+	 9ltdv8G1uk7/N3Wa7Z2CW6hAEbo8Q+fGt7j5uF20ruvAz4/bB3t2Z0Cr3v0rFrY3OjRqQ
+	 J8JeFtRchZ/vKKEu6rlsxxeUmxE+XWh2FC+lPLPPSH9tNxp42Q2a9nrYSV5LZO1YMcPyM
+	 2gN4xJP3pRopHRzChBP+u6exOJG0zR4yy1knnkwUmvWHot9Xltti32n20jduQw8OaBg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=foss.st.com;
 	spf=pass smtp.mailfrom=foss.st.com;
-	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b="dU/uF5uQ";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.14
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011014.outbound.protection.outlook.com [52.101.65.14])
+	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=EqOWrSaK;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.49
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010049.outbound.protection.outlook.com [52.101.69.49])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B6360A260D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ABF260A2623;
 	Wed, 18 Nov 2026 15:18:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02B6360A260D
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0ABF260A2623
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=dU/uF5uQ
+	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=EqOWrSaK
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JUNI0hH48v+ymIGMg0BmOQS0uxwoB6qbTqR1M9K4cZpJ2+Obp+PJBwds3IHqL8A0BGcK5bhjabuWCIk7n1+1wFwPw9/8pzGK3jZ4voLa8tCHAmgSaV6+AOW+iNthJHxnK34inctAX0uV6IC8Vy2g0jNIZfTWH7QLwe9Yjxvlkef21Z0s8Au7veSf9SKmfA4pZ1lb5x7PkXjZmd9MnAm2Alu/31h0WoMjtnklk/d6kQ9R4V31dmygwVwB7hm5gGLYZZzsP66IiIJvTdLHx2BUBaWRG0H5csuM3r43+FlXRwYhqOKuNdGxK6ClazlMQcsTyzfEnCSqk2x2NkwNEujOSQ==
+ b=NEXavrknczT4vOsf/qUZqa6V26PX4K5Yb0nUQLyDxj4YbhiyC/rOooKIE8AS7bxGGIcM6sx2AzbDOzGxDItg7cWwkSiL8GbHaeX8VI+JfM05f9WgZrCelntKfzo10G0eLXOJG3+QeAXNQNBy+9ZVlZSS4jV6aarpM+NHH/cps+xheZZ8AjRVrtNbq90EVjXh58DVmMyU7l9hSbh48UUZbEnGBwxUx9cWjaZu4x9GIcrQdRmZbJYKhJmthwwUEn529CZwaiGBmko9u9SaSYSEiEDezCjM6kOSaaIx8XeyEDH5pZ8eMbKpXrfx1B8NLg46J8ZCSCJgn6b7z3Gz4T/QCw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1FcxbgvYLfQV0y+oN9uytRNXBXddDBOGdoIc3f1iHhw=;
- b=K6wKXQY6MGfd7Ct/foq79gSrQJ6tHG0zclJG8ANVIa6+5XIGOS7r7EtQPS3lBMDNxrDnifh0vP5c38bWZa8hjcXPMaV06e5AsM4Ed8L4jBxzX6FQ+JqUcmv2wa9fmjBM0PzNE4n4vbaacxwN4DeJzWzGuIFZ9gHbUf6MAZoEmmwAATqnbQ7LVTU8euM/AfCGvE3MYwKnOU9bM5oDdvzl3rmdToT3/RQs8H5oC8wVGEqSnsAoRCi2cFfKXOutRy82I8o2sBIa/dngeWFT/hwhnafQ8gqkYwQJhM1CJaUGPmwdBQXps5MjU1lE1Agrbf2NTM/ZX7SlArjQQcXR/rfpIQ==
+ bh=zAzYynMonwBOsqIyhLjLtvIhO4T9CvCDL8dJqdlXtdc=;
+ b=Hj8jDiZprr2ERtpOnza7fEP17f9rm+ZY0ZbKbdZvi5DKkUxFSzSRDMZ1X00xsqq0aXFnePuGn/zUkbbUar/wEJx+heAM3w0CMnwWrLqma3k/WlMhmwtS+Go+Une36SXdyy7T4+hnZAiIuehj3VnH6huCpUzqaBBfS9VMsMZAp71qpTwJmnhrYESfeH+viLBuo7OA7i+ZPd4t7Lw9rXyxKwmnwFrZ1a0C6y9bMSLFoUJq9vuGYX+4az2g+z9gUzXgS+DmSKotLcuDRF9FEesVuBS3RHmjb9RjaqnzBZRlVTKwswVuzVd5VhXYVLJu+53EeZIi29EwPz+uN3DwVtqSbw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 164.130.1.59) smtp.rcpttodomain=amd.com smtp.mailfrom=foss.st.com; dmarc=fail
+ 164.130.1.60) smtp.rcpttodomain=amd.com smtp.mailfrom=foss.st.com; dmarc=fail
  (p=none sp=none pct=100) action=none header.from=foss.st.com; dkim=none
  (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1FcxbgvYLfQV0y+oN9uytRNXBXddDBOGdoIc3f1iHhw=;
- b=dU/uF5uQWPZQYHecXv7cWDuLegSYddlcVpuHEmH3nnnjsWDxqT/eHhCiqvazbcl7NyxQbSGKQFZHVHCGfHw5lPpblQzR3N0WBuUe7freHVgIqfRuLuhgrOJNyBnQUUY/g/swPuRA5nTg1yWJME4vDiv2Lt0ScYc+nMt0KmEpJNutMnEEk0ZWpYRH8IOe3tskozyCmPqtRFA8EazfBY+9zPg+sEp8h2UYWpYBhskKQiI8ITyj7dH89lhKm7ORJxD7ynlI9Ovxp2nxSSR3kpsQWTKvufUuXHDgAP89Rt+6gFTR7YCN8bfUTRlb+TFnIePxm30dM7Z5+nquWdson1oP8w==
-Received: from DU6P191CA0016.EURP191.PROD.OUTLOOK.COM (2603:10a6:10:540::10)
- by AMBPR10MB148947.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:7b3::16) with
+ bh=zAzYynMonwBOsqIyhLjLtvIhO4T9CvCDL8dJqdlXtdc=;
+ b=EqOWrSaKusxoJVlAe+ZNlTctkpNvOfAr+6vhQ93d66aGjM/f+yvdYoTGvvuv25d8lOLgWQ5E+vypiX6NSBapw5ZTs2XZeN/nywwGenLEEzdmxfVdKHAllBdCsz40a6tohfvQWv9R6wBMJvDlzYsL9Y4uxcJlmUkn0xaXf/L56LqR72vri0dgnVhCCCGO0c0l101VujPCjs1U6jZyH9Pba4GJy/M1Ywopns1UwUaAaBRNHQRMFMZMVmC2tX5LEHLomRXyfV2q6kyJ9PNECFdGM+LfdGw9Z5iTfWFUY3Ati5LaU4OWRIMnvW0/coFNW3fZXGu9Kum2ou8OYcoBHatm3Q==
+Received: from MA4P292CA0012.ESPP292.PROD.OUTLOOK.COM (2603:10a6:250:2d::9) by
+ AS4PR10MB5942.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:51a::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.1; Wed, 18 Nov
- 2026 15:18:14 +0000
-Received: from DB1PEPF000509FD.eurprd03.prod.outlook.com
- (2603:10a6:10:540:cafe::34) by DU6P191CA0016.outlook.office365.com
- (2603:10a6:10:540::10) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.8; Wed, 18 Nov
+ 2026 15:18:09 +0000
+Received: from MA3PEPF00000403.eurprd04.prod.outlook.com
+ (2603:10a6:250:2d:cafe::27) by MA4P292CA0012.outlook.office365.com
+ (2603:10a6:250:2d::9) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.14 via Frontend Transport; Wed,
- 18 Nov 2026 15:18:14 +0000
+ 18 Nov 2026 15:18:09 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
- is 164.130.1.59) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
+ is 164.130.1.60) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=foss.st.com;
 Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
- designate 164.130.1.59 as permitted sender) receiver=protection.outlook.com;
- client-ip=164.130.1.59; helo=smtpO365.st.com;
-Received: from smtpO365.st.com (164.130.1.59) by
- DB1PEPF000509FD.mail.protection.outlook.com (10.167.242.39) with Microsoft
+ designate 164.130.1.60 as permitted sender) receiver=protection.outlook.com;
+ client-ip=164.130.1.60; helo=smtpO365.st.com;
+Received: from smtpO365.st.com (164.130.1.60) by
+ MA3PEPF00000403.mail.protection.outlook.com (10.167.241.148) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Wed, 18 Nov 2026 15:18:14 +0000
-Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpo365.st.com
- (10.250.44.71) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.615.4 via Frontend Transport; Wed, 18 Nov 2026 15:18:08 +0000
+Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpO365.st.com
+ (10.250.44.72) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Wed, 18 Nov
- 2026 16:18:52 +0100
+ 2026 16:19:09 +0100
 Received: from localhost (10.252.16.78) by STKDAG1NODE2.st.com (10.75.128.133)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Wed, 18 Nov
  2026 16:18:07 +0100
 From: Olivier Moysan <olivier.moysan@foss.st.com>
-Date: Wed, 18 Nov 2026 16:17:54 +0100
-Subject: [PATCH v2 09/11] iio: adc: stm32-mdf: add external timer trigger
+Date: Wed, 18 Nov 2026 16:17:55 +0100
+Subject: [PATCH v2 10/11] iio: adc: stm32-mdf: add dmic audio filter
  support
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -107,7 +107,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20261118-upstream_mdf_v2-v2-9-7939d3c3720a@foss.st.com>
+Message-ID: <20261118-upstream_mdf_v2-v2-10-7939d3c3720a@foss.st.com>
 References: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
 In-Reply-To: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -133,218 +133,310 @@ X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
  (10.75.128.133)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB1PEPF000509FD:EE_|AMBPR10MB148947:EE_
-X-MS-Office365-Filtering-Correlation-Id: ba62b098-b187-4648-439f-08df45872a44
+X-MS-TrafficTypeDiagnostic: MA3PEPF00000403:EE_|AS4PR10MB5942:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ef4df17-6098-49a0-016d-08df45872731
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|82310400026|36860700016|1800799024|376014|7416014|18002099003|22082099003|6133799003|261009223027099003|921020|11063799006|56012099006|10067099003|261102123227099003|261028144727099003|261026140227099003|261021121427099003|261021123027099003|261022075727099003|261022105027099003;
+	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|7416014|376014|23010399003|18002099003|22082099003|6133799003|261009223027099003|921020|56012099006|11063799006|261102130727099003|261102123227099003|261028144727099003|261026121527099003|261026140227099003|261021121427099003|261021135927099003|261021123027099003|261022075727099003|261022105027099003|10067099003;
 X-Microsoft-Antispam-Message-Info:
-	kgVlENYs++H/2O9tkP7y38tOBU4xKFA2Wu/n56lMI+dqalPb/xdkeQZwaM0tnJeZeXYgWXULDiQ1Vt7qfWPzxG1SLC/dTg/UYdvC5EHp/8JdXw7sq9Ke08a/h57omK57Im+iSD6CZpPFE8dUT4+xeAiBHqe0Z5Wn5tduw/6CsGdCqpi72OgGm6p+jOCg/A6niU67LGVEBecd/kWD+QP7qH4UQVbnPO2B+LMMKNwD+QfkJnfYfYsRw/IldMU4TvBfIXtRX4Qs+yRkvggJVCY5HUZCHUNv9LVyXXVWyZoVMBzbYS5906UaqFbZzFW3wj2+2T530rhPRejeBqd51c2iR8R+4np8OLc+erFpiQBy1VZv40+gmp2TtWsu6QdJz0keDUmyRNpCH0KcyOqDK0mm+DhUjyb/bj52Xp3IunbbKc9hCRnQ016p9nBcJSWdUKYujSfSikRb6FAzgrs8FS4hoFcDb6Ev+PTXAGNkqSpqUlPPvMxgWfuYPJI63p5udZyiK4xGmsvFkwUN7ZroYUepGgdwvcnnoNRzLpD/ZpHJfLMpMqs9oQWShxGLwSKOWjfhhvX62cVP3s58Lje46/Vq1HxzfYhhme5Rq4pNbeOq8bila0RTH97F2Hb6zH7xQ1/E7A/s8v+wn05Kyu36J3IcCQ6GYwpVrcqHtHRmqojB6E9ERtU6MMP5zHU3JCUtLLk+8DxQmLAQeXkW/qfmDVgr4PRTHoq04RrV1aYo1EW5l7pd6UYVKhWXWUuJMDz6h4Vv
+	A/TDbJwdrDHz4r4IL4/qQ4y9riAAI8wbj3RseUKjV2+ySCXUiFmz3XwawtCMcBSsGZwne82adGtw39Zdwl+eE//rp92KjTig70dMg2bM+z54Il6JJFOQbiNF03m4yLuMR7Nb79XXVeYS9dA23H4W9JHoQA3CpS/DJwXt9pl+qemg7JbE9Doih+n3Kd1SoHfytYqY6bTQbMdVLSzehhGdT7laXRzWNeCRxku4yj310ag9MzE9l/TMeVS45uczAfx/XH95CnmeeaLyouBuo613NM0z2YoQgJssm2k/dO8MO3uFc6f7eXaRHyDnv+9u000CF058AD1LisWJpKtQDXHkCzGR5tSd8sMrpuyKVvs19aR+BooHE07RFwWBuZmjBYMLfsVqJ2V5R6mYGMf2ZZ0galnelE6QQjRWh8MAh0scYugZ3peJ7qEKg9nBWHHKHe1aQQrpNquxDYzxDJwkQ8wTpMOpxT01uu18hjB2fn84+wnhSZazuF6Ynlst6nJ2rcnoLGO4a9Xv5rv0IMHJ9PTqZ6MpTMm+lmUHOiiQeZRrZ4yNLg+cD1jkrNkQNr4t4DkUl9/MTldU8vLuY2oSXss97bEaY4MIZLUlIBVJDa/VesHKRlKC8r9JIC/6BmPoG94T+cmBmLrd9NkB5NQlPPCgadnEhH2rRcsyYxWt3mdWkSO/1Hs9UL/LOTe2f1BbpXXtbXbFSrzqg7gzysBJIq81kDhZZijLO3b74OTpTHoTj4LjV+15KnJAYFQ9yxHkDYxm
 X-Forefront-Antispam-Report:
-	CIP:164.130.1.59;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(36860700016)(1800799024)(376014)(7416014)(18002099003)(22082099003)(6133799003)(261009223027099003)(921020)(11063799006)(56012099006)(10067099003)(261102123227099003)(261028144727099003)(261026140227099003)(261021121427099003)(261021123027099003)(261022075727099003)(261022105027099003);DIR:OUT;SFP:1101;
+	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(7416014)(376014)(23010399003)(18002099003)(22082099003)(6133799003)(261009223027099003)(921020)(56012099006)(11063799006)(261102130727099003)(261102123227099003)(261028144727099003)(261026121527099003)(261026140227099003)(261021121427099003)(261021135927099003)(261021123027099003)(261022075727099003)(261022105027099003)(10067099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	Z5/3bkgLkCWpk1m8vBLTvJ9chlnnYlqAdTjPi6yhv4cb5EavlT9YftZH5BP3TFN/2M2bwjRO7KdktyCsWxVDjs1qEs0h5dTagDSkeOezEtXCjHZVn5ts31uZzsztFLsGagZCPuhdpGWHW1E3ix0fx3SRWORjRgb0nCJMetuLxuJNtslnlPY0frHVuzoNsjconpVr/7FM9+EAqWTSTmbNHMBYG16A4GFWp3yhMTryKFpIH4se7TMKH4HQbaOgoRp1cVsifNfWoptjQKKlh+XS0nZz+IaDbs2YvylOU2e2Mu0gFoMFMO56ja4c60A8oc+M/Due7TeXH8Iku7wBbcduJjtyHZ5eeoQITX+x9udyfTRRkqQgZKavHEhM1ByMvq0YSoXMjkPYDrT90lqF4rC+oCtDJwSC8UPpzxXwr412IeMByYlpvNdNPkeSPBhWE4Ps
+	MWSJA1glwVTadI/bh7nRpoqvJWEMkwlqrlf5bJV1RV8wCNcUQbJC0vIvK9HIlCkKA61XRQsMcEH+Dhx15V90ZkXrjpowJ/sqXfPk9WeR4CMiemoOJ3OLtG7blFqpworP328wdiFx2P7y/twTvAFCMCGKlOqXDcIqnE385BXRF30dNRb394pAw3YGdteWS+1m+jxl0qmF1ukFYx0BLB7vFg1uyCC7h3q5uUBQzh1ad9vC33cP9dc8BmYnZhO1ecReQv1v1nRTNbJ/8xIpRAHDz904iFSq+SZkPm6eGK5pB/G1SDNW8pAsDqKSD2FZmEoHPVGBpPucaf12/MCWs5m67bRI+PmB/1UQRGz2tuaF9MGK8n22qHNu0mX7Xa6fzsiOXXsewTIg+/6mUQgE1mq/YExa2gpu2kkRvuBaGuDKPfroj7VtQFsE/WlW3luIbQZp
 X-OriginatorOrg: foss.st.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 15:18:14.0781
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 15:18:08.9133
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba62b098-b187-4648-439f-08df45872a44
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ef4df17-6098-49a0-016d-08df45872731
 X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.59];Helo=[smtpO365.st.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.60];Helo=[smtpO365.st.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DB1PEPF000509FD.eurprd03.prod.outlook.com
+	MA3PEPF00000403.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AMBPR10MB148947
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB5942
 
-Introduce the STM32 timer and low-power timer trigger source definitions
-and lookup table. Add the IIO trigger validation hook and filter trigger
-source and polarity programming.
+Extend the MDF filter driver to support digital microphones and provide
+the interface required by an audio consumer.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- drivers/iio/adc/stm32-mdf-adc.c | 108 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 107 insertions(+), 1 deletion(-)
+ drivers/iio/adc/stm32-mdf-adc.c       | 164 +++++++++++++++++++++++++++++++++-
+ include/linux/iio/adc/stm32-mdf-adc.h |  19 ++++
+ 2 files changed, 182 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/stm32-mdf-adc.c b/drivers/iio/adc/stm32-mdf-adc.c
-index 046ca3943a39..97099b4adffc 100644
+index 97099b4adffc..27c47bef71a4 100644
 --- a/drivers/iio/adc/stm32-mdf-adc.c
 +++ b/drivers/iio/adc/stm32-mdf-adc.c
-@@ -13,6 +13,9 @@
+@@ -9,6 +9,7 @@
+ #include <linux/clk-provider.h>
+ #include <linux/dmaengine.h>
+ #include <linux/dma-mapping.h>
++#include <linux/iio/adc/stm32-mdf-adc.h>
+ #include <linux/iio/backend.h>
  #include <linux/iio/buffer.h>
  #include <linux/iio/hw-consumer.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/timer/stm32-lptim-trigger.h>
-+#include <linux/iio/timer/stm32-timer-trigger.h>
-+#include <linux/iio/trigger.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
- #include <linux/interrupt.h>
-@@ -172,6 +175,43 @@ enum stm32_trig_type {
- 	STM32_MDF_TRGSRC_NB,
+@@ -1128,6 +1129,42 @@ static const struct iio_buffer_setup_ops stm32_mdf_buffer_setup_ops = {
+ 	.predisable = &stm32_mdf_adc_predisable,
  };
  
-+enum stm32_trig_sens {
-+	STM32_MDF_TRGSENS_RISING_EDGE,
-+	STM32_MDF_TRGSENS_FALLING_EDGE,
-+};
++/**
++ * stm32_mdf_get_sub_channels_nb() - Get the number of MDF sub-channels
++ * @indio_dev: MDF IIO device
++ *
++ * Return: 0 on success, or a negative error code on failure.
++ */
++unsigned int stm32_mdf_get_sub_channels_nb(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
 +
-+enum stm32_trig_src {
-+	STM32_MDF_TRGSRC_TIM1_TRGO2 = 0x2,
-+	STM32_MDF_TRGSRC_TIM8_TRGO2,
-+	STM32_MDF_TRGSRC_TIM20_TRGO2,
-+	STM32_MDF_TRGSRC_TIM16_OC1,
-+	STM32_MDF_TRGSRC_TIM6_TRGO,
-+	STM32_MDF_TRGSRC_TIM7_TRGO,
-+	STM32_MDF_TRGSRC_EXTI11,
-+	STM32_MDF_TRGSRC_EXTI15,
-+	STM32_MDF_TRGSRC_LPTIM1_CH1,
-+	STM32_MDF_TRGSRC_LPTIM2_CH1,
-+	STM32_MDF_TRGSRC_LPTIM3_CH1,
-+};
++	if (MDF_IS_FILTER0(adc) && adc->mdf->nb_interleave)
++		return adc->mdf->nb_interleave;
 +
-+struct stm32_mdf_ext_trig_src {
-+	const char *name;
-+	unsigned int trgsrc;
-+};
++	return 1;
++}
++EXPORT_SYMBOL_GPL(stm32_mdf_get_sub_channels_nb);
 +
-+static const struct stm32_mdf_ext_trig_src stm32_mdf_trigs[] = {
-+	{ TIM1_TRGO2, STM32_MDF_TRGSRC_TIM1_TRGO2 },
-+	{ TIM8_TRGO2, STM32_MDF_TRGSRC_TIM8_TRGO2 },
-+	{ TIM20_TRGO2, STM32_MDF_TRGSRC_TIM20_TRGO2 },
-+	{ TIM16_OC1, STM32_MDF_TRGSRC_TIM16_OC1 },
-+	{ TIM6_TRGO, STM32_MDF_TRGSRC_TIM6_TRGO },
-+	{ TIM7_TRGO, STM32_MDF_TRGSRC_TIM7_TRGO },
-+	{ LPTIM1_CH1, STM32_MDF_TRGSRC_LPTIM1_CH1 },
-+	{ LPTIM2_CH1, STM32_MDF_TRGSRC_LPTIM2_CH1 },
-+	{ LPTIM3_CH1, STM32_MDF_TRGSRC_LPTIM3_CH1 },
++static ssize_t stm32_mdf_adc_audio_get_channels(struct iio_dev *indio_dev, uintptr_t priv,
++						const struct iio_chan_spec *chan, char *buf)
++{
++	return sysfs_emit(buf, "%u\n", stm32_mdf_get_sub_channels_nb(indio_dev));
++}
++
++/*
++ * IIO channel extended info used by the audio device IIO channel consumer.
++ * sub_channels_nb: provides the number of audio channels associated to the IIO channel.
++ */
++static const struct iio_chan_spec_ext_info stm32_mdf_adc_audio_ext_info[] = {
++	{
++		.name = "sub_channels_nb",
++		.shared = IIO_SHARED_BY_TYPE,
++		.read = stm32_mdf_adc_audio_get_channels,
++	},
 +	{},
 +};
 +
- static const unsigned int stm32_mdf_hpf_cutoff_ratio[] = {
- 	625, 1250, 2500, 9500
- };
-@@ -365,9 +405,63 @@ static void stm32_mdf_adc_stop_filter(struct stm32_mdf_adc *adc)
- 				stm32_mdf_adc_stop_filter(adc_inter);
+ static void stm32_mdf_dma_release(struct iio_dev *indio_dev)
+ {
+ 	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
+@@ -1240,6 +1277,9 @@ static int stm32_mdf_adc_chan_init_one(struct iio_dev *indio_dev, struct fwnode_
+ 		ch->scan_type.shift = 8;
+ 	}
+ 
++	if (adc->dev_data->type == STM32_MDF_AUDIO)
++		ch->ext_info = stm32_mdf_adc_audio_ext_info;
++
+ 	ch->info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ);
+ 	ch->scan_type.sign = 's';
+ 	ch->scan_type.realbits = STM32_MDF_DATA_RES;
+@@ -1474,6 +1514,13 @@ static int stm32_mdf_adc_read_label(struct iio_dev *indio_dev, const struct iio_
+ 	return sysfs_emit(label, "%s\n", name);
  }
  
-+static int stm32_mdf_adc_get_trig(struct iio_dev *indio_dev, struct iio_trigger *trig)
-+{
-+	int i;
++static const struct iio_info stm32_mdf_info_audio = {
++	.hwfifo_set_watermark = stm32_mdf_set_watermark,
++	.write_raw = stm32_mdf_adc_write_raw,
++	.read_raw = stm32_mdf_adc_read_raw,
++	.read_label = stm32_mdf_adc_read_label,
++};
 +
-+	/* lookup triggers registered by stm32 timer trigger driver */
-+	for (i = 0; stm32_mdf_trigs[i].name; i++) {
-+		/**
-+		 * Checking both stm32 timer trigger type and trig name
-+		 * should be safe against arbitrary trigger names.
-+		 */
-+		if ((is_stm32_timer_trigger(trig) ||
-+		     is_stm32_lptim_trigger(trig)) &&
-+		     !strcmp(stm32_mdf_trigs[i].name, trig->name)) {
-+			dev_dbg(&indio_dev->dev, "Trigger [%d] found\n", i);
-+			return stm32_mdf_trigs[i].trgsrc;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int stm32_mdf_adc_filter_set_trig(struct iio_dev *indio_dev)
+ static const struct iio_info stm32_mdf_info_adc = {
+ 	.hwfifo_set_watermark = stm32_mdf_set_watermark,
+ 	.write_raw = stm32_mdf_adc_write_raw,
+@@ -1530,6 +1577,38 @@ static irqreturn_t stm32_mdf_irq(int irq, void *arg)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int stm32_mdf_audio_init(struct device *dev, struct iio_dev *indio_dev)
 +{
 +	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
-+	struct iio_trigger *trig = indio_dev->trig;
-+	u32 trgsrc = 0;
-+	/* set trigger polarity to rising edge by default */
-+	u32 trgsens = STM32_MDF_TRGSENS_RISING_EDGE;
++	struct iio_chan_spec *ch;
 +	int ret;
 +
-+	if (trig) {
-+		ret = stm32_mdf_adc_get_trig(indio_dev, trig);
-+		if (ret < 0)
-+			return ret;
-+	}
++	ch = devm_kzalloc(&indio_dev->dev, sizeof(*ch), GFP_KERNEL);
++	if (!ch)
++		return -ENOMEM;
 +
-+	dev_dbg(adc->dev, "Set trigger source [%d] on filter [%d]\n", trgsrc, adc->fl_id);
++	adc->channels = devm_kzalloc(&indio_dev->dev, sizeof(*adc->channels), GFP_KERNEL);
++	if (!adc->channels)
++		return -ENOMEM;
 +
-+	return regmap_update_bits(adc->regmap, MDF_DFLTCR_REG,
-+				  MDF_DFLTCR_TRGSRC_MASK | MDF_DFLTCR_TRGSENS,
-+				 FIELD_PREP(MDF_DFLTCR_TRGSRC_MASK, trgsrc) |
-+				 FIELD_PREP(MDF_DFLTCR_TRGSENS, trgsens));
++	ret = stm32_mdf_adc_chan_init(indio_dev, ch);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Channels init failed\n");
++
++	indio_dev->num_channels = 1;
++	indio_dev->channels = ch;
++
++	ret = stm32_mdf_dma_request(dev, indio_dev);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to get DMA\n");
++
++	ret =  stm32_mdf_adc_filter_set_mode(adc, true);
++	if (ret)
++		stm32_mdf_dma_release(indio_dev);
++
++	return ret;
 +}
 +
-+static void stm32_mdf_adc_filter_clear_trig(struct iio_dev *indio_dev)
-+{
-+	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
-+
-+	regmap_update_bits(adc->regmap, MDF_DFLTCR_REG,
-+			   MDF_DFLTCR_TRGSRC_MASK | MDF_DFLTCR_TRGSENS, 0);
-+}
-+
- static int stm32_mdf_adc_filter_set_mode(struct stm32_mdf_adc *adc, bool cont)
+ static int stm32_mdf_adc_init(struct device *dev, struct iio_dev *indio_dev)
  {
- 	struct stm32_mdf_adc *adc_inter;
-+	struct iio_dev *indio_dev = dev_get_drvdata(adc->dev);
-+	struct iio_trigger *trig = indio_dev->trig;
- 	u32 mode;
+ 	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
+@@ -1599,11 +1678,77 @@ static const struct stm32_mdf_dev_data stm32h7_mdf_adc_data = {
+ 	.init = stm32_mdf_adc_init,
+ };
  
- 	if (MDF_IS_FILTER0(adc)) {
-@@ -377,7 +471,7 @@ static int stm32_mdf_adc_filter_set_mode(struct stm32_mdf_adc *adc, bool cont)
++static const struct stm32_mdf_dev_data stm32_mdf_audio_data = {
++	.type = STM32_MDF_AUDIO,
++	.init = stm32_mdf_audio_init,
++};
++
++/**
++ * stm32_mdf_get_buff_cb() - register a callback that will be called when
++ *                           DMA transfer period is achieved.
++ *
++ * @iio_dev: Handle to IIO device.
++ * @cb: Pointer to callback function:
++ *      - data: pointer to data buffer
++ *      - size: size in byte of the data buffer
++ *      - private: pointer to consumer private structure.
++ * @private: Pointer to consumer private structure.
++ *
++ * Return: 0 on success, or a negative error code on failure.
++ */
++int stm32_mdf_get_buff_cb(struct iio_dev *iio_dev,
++			  int (*cb)(const void *data, size_t size, void *private), void *private)
++{
++	struct stm32_mdf_adc *adc;
++
++	if (!iio_dev)
++		return -EINVAL;
++	adc = iio_priv(iio_dev);
++
++	if (!adc)
++		return -EINVAL;
++
++	adc->cb = cb;
++	adc->cb_priv = private;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(stm32_mdf_get_buff_cb);
++
++/**
++ * stm32_mdf_release_buff_cb() - Unregister the buffer callback
++ *
++ * @iio_dev: Handle to IIO device.
++ *
++ * Return: 0 on success, or a negative error code on failure.
++ */
++int stm32_mdf_release_buff_cb(struct iio_dev *iio_dev)
++{
++	struct stm32_mdf_adc *adc;
++
++	if (!iio_dev)
++		return -EINVAL;
++	adc = iio_priv(iio_dev);
++
++	if (!adc)
++		return -EINVAL;
++
++	adc->cb = NULL;
++	adc->cb_priv = NULL;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(stm32_mdf_release_buff_cb);
++
+ static const struct of_device_id stm32_mdf_adc_match[] = {
+ 	{
+ 		.compatible = "st,stm32mp25-mdf-adc",
+ 		.data = &stm32h7_mdf_adc_data,
+ 	},
++	{
++		.compatible = "st,stm32mp25-mdf-dmic",
++		.data = &stm32_mdf_audio_data,
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, stm32_mdf_adc_match);
+@@ -1788,6 +1933,7 @@ static int stm32_mdf_adc_parse_of(struct platform_device *pdev, struct stm32_mdf
+ 
+ static int stm32_mdf_adc_probe(struct platform_device *pdev)
+ {
++	struct device_node *node = pdev->dev.of_node;
+ 	struct device *dev = &pdev->dev;
+ 	struct stm32_mdf_adc *adc;
+ 	const struct stm32_mdf_dev_data *dev_data;
+@@ -1830,7 +1976,10 @@ static int stm32_mdf_adc_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	iio->info = &stm32_mdf_info_adc;
++	if (dev_data->type == STM32_MDF_AUDIO)
++		iio->info = &stm32_mdf_info_audio;
++	else
++		iio->info = &stm32_mdf_info_adc;
+ 	iio->name = dev_name(&pdev->dev);
+ 
+ 	adc->dev = dev;
+@@ -1847,8 +1996,19 @@ static int stm32_mdf_adc_probe(struct platform_device *pdev)
  		}
  	}
  
--	if (adc->synced || MDF_IS_INTERLEAVED_FILT(adc)) {
-+	if (adc->synced || MDF_IS_INTERLEAVED_FILT(adc) || trig) {
- 		if (cont)
- 			mode = STM32_MDF_ACQ_MODE_SYNC_CONT;
- 		else
-@@ -977,6 +1071,10 @@ static int stm32_mdf_adc_postenable(struct iio_dev *indio_dev)
- 		goto err_dma;
- 	}
- 
-+	ret = stm32_mdf_adc_filter_set_trig(indio_dev);
-+	if (ret < 0)
-+		goto err_trig;
-+
- 	ret = stm32_mdf_adc_start_conv(indio_dev);
- 	if (ret) {
- 		dev_err(&indio_dev->dev, "Can't start conversion\n");
-@@ -986,6 +1084,8 @@ static int stm32_mdf_adc_postenable(struct iio_dev *indio_dev)
- 	return 0;
- 
- err_conv:
-+	stm32_mdf_adc_filter_clear_trig(indio_dev);
-+err_trig:
- 	stm32_mdf_adc_dma_stop(indio_dev);
- err_dma:
- 	stm32_mdf_adc_stop_mdf(indio_dev);
-@@ -1006,6 +1106,8 @@ static int stm32_mdf_adc_predisable(struct iio_dev *indio_dev)
- 
- 	stm32_mdf_adc_stop_conv(indio_dev);
- 
-+	stm32_mdf_adc_filter_clear_trig(indio_dev);
-+
- 	stm32_mdf_adc_dma_stop(indio_dev);
- 
- 	regmap_clear_bits(adc->regmap, MDF_DFLTIER_REG,
-@@ -1377,6 +1479,7 @@ static const struct iio_info stm32_mdf_info_adc = {
- 	.write_raw = stm32_mdf_adc_write_raw,
- 	.read_raw = stm32_mdf_adc_read_raw,
- 	.read_label = stm32_mdf_adc_read_label,
-+	.validate_trigger = stm32_mdf_adc_get_trig,
- };
- 
- static irqreturn_t stm32_mdf_irq(int irq, void *arg)
-@@ -1485,6 +1588,9 @@ static int stm32_mdf_adc_init(struct device *dev, struct iio_dev *indio_dev)
- 		return dev_err_probe(dev, ret, "Buffer setup failed\n");
- 	}
- 
-+	/* lptimer/timer hardware triggers */
-+	indio_dev->modes |= INDIO_HARDWARE_TRIGGERED;
++	if (dev_data->type == STM32_MDF_AUDIO) {
++		ret = of_platform_populate(node, NULL, NULL, dev);
++		if (ret < 0) {
++			dev_err_probe(dev, ret, "Failed to find an audio DAI\n");
++			goto err_unregister;
++		}
++	}
 +
  	return 0;
- }
  
++err_unregister:
++	if (!MDF_IS_INTERLEAVED_FILT_NOT_0(adc))
++		iio_device_unregister(iio);
+ err_cleanup:
+ 	stm32_mdf_dma_release(iio);
+ err_clean_list:
+@@ -1862,6 +2022,8 @@ static void stm32_mdf_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
+ 
++	if (adc->dev_data->type == STM32_MDF_AUDIO)
++		of_platform_depopulate(&pdev->dev);
+ 	if (!MDF_IS_INTERLEAVED_FILT_NOT_0(adc))
+ 		iio_device_unregister(indio_dev);
+ 	stm32_mdf_dma_release(indio_dev);
+diff --git a/include/linux/iio/adc/stm32-mdf-adc.h b/include/linux/iio/adc/stm32-mdf-adc.h
+new file mode 100644
+index 000000000000..95e3f4afdb78
+--- /dev/null
++++ b/include/linux/iio/adc/stm32-mdf-adc.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * This file describe the STM32 MDF IIO driver API for audio part
++ *
++ * Copyright (C) 2023, STMicroelectronics.
++ * Author(s): Olivier Moysan <olivier.moysan@foss.st.com>.
++ */
++
++#ifndef STM32_MDF_ADC_H
++#define STM32_MDF_ADC_H
++
++#include <linux/iio/iio.h>
++
++int stm32_mdf_get_buff_cb(struct iio_dev *iio_dev,
++			  int (*cb)(const void *data, size_t size, void *private), void *private);
++int stm32_mdf_release_buff_cb(struct iio_dev *iio_dev);
++unsigned int stm32_mdf_get_sub_channels_nb(struct iio_dev *iio_dev);
++
++#endif
 
 -- 
 2.43.0
