@@ -1,107 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.180
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795006502;
-	b=Yf3q8YOI9Q+yaEr63fXzfXh2BgoxmLQx+b5zP0BjnKkJQLpdj0j1EjQCXfzCzJz/q0g2
-	 Y/lmDrz5Y1mrvrjldhAcJgyhPCsgY3ZFeQ2fdKHCvxgw4zCYSNzcJjLqH1gq54cCNJbfR
-	 MWTlkBJU2HavHydL5yUdBc6jrWED/hT6jrZ83dChQv2FAduXv4XOJIM4IK9uvE/5OnaFj
-	 qicCetvac6bfNUKYoYb0zy2hSQpBCx/I1VSp2K3p+5QPU+AegcIZl9if2U8UH6pkod8I8
-	 hJgsCXFrqKbijWEnQtGARKYVArf7Qifw3NlPlze1xGhtDq3feNzvVj3mUEpJEDh6Ulw==
+	t=1795007018;
+	b=siFm0A//D/TmQ2SAOOEFo7WeV5kEtEoGvxbd8zey8qTPcwqNl2qooHQX7RfWmkk4zPZ3
+	 czVvRLYe/LY91IX3eiMkwKipH/WcfhQI6DWJus8OcLVQIMTNOqfA116v7iE80KMPj5sC0
+	 0vc5ZPoB2kZRTD5e2m5Eq5RBBFAsou9fUhzD73H5LJi0r/ctt4fcjEY3lfqbhObUMwYBd
+	 FZSGXM4uwvEPuzubnm67Oy/luKQ+iMXC82XxLHaE4HR+jwTIhiHIvIu9sJhDCjzXtcjmr
+	 CovZlUdPiZ1WrBkTLr9PRcIe1NAqN8NWnGEoaTw5cKBjD7KYIjFztSwl3HqUVi5p6jw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795006502;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=IfM0L8l0KO0jyxCjtdYXdfOsa3a+oLhBOi1/EZWw89g=;
-	b=FGRI1k7LgjN7h6Dfqyzh7s/V7lx1p5NK13k4ba0lwqjfqzVhp/ok4KVBxJ/mtak9FZR2
-	 aJvD+m7wRAKcHKgl8YOEvH6hjLU1beublD46of4zplRS02KJBxlgdgJTYssDV6l8eiuSx
-	 +hVOuxKIgxzgmmBAHcAm70ZUjDfiL+hVlcpefH+bfCUSU9J7xhT6GaqKoQ6srJhH2qfyW
-	 P8JFQjxCj6EQYKGOmKa0whD1aNGNuUQs/w15EBzwUluxjp/Czye4BhEJWGL3Bm0wrYPWW
-	 v81BtayfML9MMyWKKrBNJ+ouL/lm3d/sJRKayFtme5XZbiCwXRRLkA14BVk4Sn7xJvg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795007018;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-ADIRuleOP-NewSCL:X-Proofpoint-GUID:
+	 X-Authority-Analysis:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=kgZQEASUBP3ntLbkT5Q29W5UYqyrJ8I1D62YoxotWP8=;
+	b=hiyyXvQA2xNL5o3OJkEA/z3mVZuzr/5wRG4kNEpol9+yv1xRU8q0n9J7KIuuYIHDdnay
+	 +y5SRoBlbgZ+wsaILxfBJrzfv25y9Dx64WMzr/ZlGdLX1nemx+jSIouXp5nGZU4xDL9Wk
+	 MjQwR1v5aJcyYx3lH2cN+OrwFVlZrNnDv23jeuHsWdyJa3SvyNFjBwojsog08q/Vzpi1B
+	 1A2vRkyLDPk7kyOThGQHAhZPqridf6bc1s9yFbDYWFRb3hB5UzALaXikt7HgnRUjZbVUN
+	 PHlCf2oq3xe3jWeWr1e4hLDtcl128GIAH0orc69hw6I71ZFOzdM/tAWb1tXbcFK3dJA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EphXuosv;
-	arc=none smtp.remote-ip=209.85.210.180
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=G3sDCcFA;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=Yf5mQL14;
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74072606A31C
-	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 12:55:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 74072606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAB8606A320;
+	Wed, 18 Nov 2026 13:03:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9FAB8606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EphXuosv
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-8b67f25e6e1so570150b3a.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 04:55:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795006502; x=1795611302; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=IfM0L8l0KO0jyxCjtdYXdfOsa3a+oLhBOi1/EZWw89g=;
-        b=EphXuosvpZhHwI6IoqC6D3LFGaENEM7sy1ZRdj1dyjNvm/QjfgRYFiVIyZDyoJbans
-         FRFPiwS3AhE0rk+194XgBKD9NkHDmBdHYWEgsBdjvga8q8Ct+cNz82NXuvLyOtxPSNIJ
-         ubK48OlxNXIPGW5oMX34QX+tkLFND0cFhvJcGTyGf+NfaiaNNghgtmGjEEIvZ9RKWSm9
-         b6PraheLd02vraVWfG0AeqgW6NJfgBaXvNWTsTEghEHLUIRi3mLXlBE3H8dltr4f7FXT
-         ZMoUyJFl2W1TZ38XlUiXSZLai/CUSZMWGOyZfgmWRpp5Hny09i+czp77OG+jp2/0xJhS
-         /MLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795006502; x=1795611302;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=IfM0L8l0KO0jyxCjtdYXdfOsa3a+oLhBOi1/EZWw89g=;
-        b=nPy7C+1UJQvHjKYt3y6ZW5eG8nlDBo5tDrG/wbXymO1kckg20NM5lgGHZ0NKw+CmZG
-         Np1Jewl0XagNYvoAHSci10l/Nf9UMh2RC2X98CSUJcbO3UO8o5oTLhoqcLx4SRvSa6FI
-         pjkcP+ORoM1cHgsF8h6zf1DYrJ9nu05tNLfqeNLkPsroG/cBbrOkMGkauU3Krf0DqMLP
-         SnPZ9eqnzv39IhhoN4YC0na/0WMJUCh7Ddg0YNqdl8+XqhuyGxuw5W8DCwk4AL9/y9NK
-         dtMj/IQRyWfk4Olf8cQrgjHomCeGLQLBpoU5fMVnBN3baIgnP/ZQgOHgBc7riW4Heq4j
-         W5sA==
-X-Forwarded-Encrypted: i=1; AL+hErFGGsgLWWgo2K5KAcQEaoT0biYhFsZWPszwD0dzpza2Mid08FvzyAEyTQZ5WPuIqtj3pdZFuqAvN9g=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+Zb//bDXtfYu/U+VNyMtkyP4djcG8Ccn7uIPGCPWUBDdcys39l
-	FVzHrLuEWzsVhNjRniDHYge1F8v/mnoZBkayNegvyO339fvDU0NA59Ph
-X-Gm-Gg: AYBFou2zqYUCdOVHshA+krC85q6hOAZQnJ7ayNdBdb/QUtH6rvd2d59X9aHZBK8As+6
-	jB6ZeZPl4MfiBNrWIlBRudRaA4yZ7De/QGRGNvC8PZ4SKkKcxKdvYL/QSQ5IGjt/EjRDjzIC1m/
-	ndzNA/DTicVcMEhCFv3KKUU1eDzvB13mcN1j2ihphx/XEg1xZ9Xv5ZHVdXFTriGCmZ8xWS/ksRI
-	jWjWUPMCSSp6cu+C24vE+d9p7yp5BcIZzHrCbpb0ltTaqNwHmWUjeRRoMBt829MZSli9i6ENl2I
-	0H3qzx60Aeo4NTRdJa0tpWDfdKZ36G8ZtIPBkd6I4oifGU7omKYQjGmadgKln0kePpsP33vW60D
-	TSEE8qKIKSNkL+G7YIVgZ3iX9xUki7IL/3r2SKlChNacYXHkXHoOtk5xuehqt58PaeBi5qDjK6d
-	sPMakVvqDUsl36c/n5f8OTjfEd/fzcQnqsL/OHLKTdJ+lQTC8nSbn/z4/jaFFeEmtjSD/9oAEPa
-	/7gsj0F9jAJnFL0v/4DkyvC1IKHtDc+XhJdxPqpsnXOuHdo77pPszYPmdrr+MGtlJTxbfaF1KVI
-	8D0Tro09sOEqBKiQ/PE+bxCydg+VuTW7yJSA166xR3YzZzyP0cA6QCjvJS4qCAzN4NHIEzegXfx
-	tMXvEup6p4daOZsZfAQKPCIZ32Iei4IU9o4GJCM87PLwbUgumE+SCf4qL8uahkY4qp6fjmD+UvV
-	6KdDDgh4958npoYhfhikDlzAm/vzV2wuhsbKbxPFuH+KzLTp1Bz58=
-X-Received: by 2002:a05:6a00:1d86:b0:8c0:7517:b9de with SMTP id d2e1a72fcca58-8c5d3e116f1mr2084551b3a.32.1795006501788;
-        Wed, 18 Nov 2026 04:55:01 -0800 (PST)
-Received: from kapoor ([2401:4900:e034:2676:5ea6:3ff3:ed45:7b44])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c5c7f99a7fsm1199883b3a.1.2026.11.18.04.54.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 04:55:01 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Daniel Campello <campello@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] Semtech SX9xxx: add a reviewer entry and binding maintainer
-Date: Wed, 18 Nov 2026 18:24:49 +0530
-Message-ID: <20261118125450.12512-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <bbdef966-c5dc-4101-9246-b668e00f62b7@kernel.org>
-References: <20261117172612.25535-1-kapoorarnav43@gmail.com> <bbdef966-c5dc-4101-9246-b668e00f62b7@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=G3sDCcFA;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=Yf5mQL14
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AIBKjci2662548;
+	Wed, 18 Nov 2026 08:03:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:message-id:mime-version:subject:to; s=DKIM; bh=kgZQEASUBP3ntLbk
+	T5Q29W5UYqyrJ8I1D62YoxotWP8=; b=G3sDCcFAzsTSmqQduOGBCo5PQ2eHbGiw
+	4/UMSqTJEmWumFuwMH+NWc4rUm0jtr85picjt+EFSxgCyYmm9NrolO2/ezhISazi
+	iSqui/VsNGJbpvXNV289W78NYq38r4tiAGJK0Rd2/hKUmlM3iJTYsxsWVXElaw7y
+	ycnBC9G5Wl31wwz19UdtcWLfiB7jj8bDKTXe8djyEAEAdU39UzVn1XBhYFp+Vr/h
+	jEUqggWxYm57O+AuQF+JRCqXsYB+DD3OiI7ZnXc+bEVLevWVX7zt3jak9SZyiDfH
+	zwrYrEbi2ykd4d6TZKeQWOtXPP7wxH2uwk4qmw/31SgepZ0haUpKJg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=kgZQEASUBP3ntLbkT5Q29W5UYqy
+	rJ8I1D62YoxotWP8=; b=Yf5mQL14U06eHk6cf0MA6BRNQ6iKpPcWY3jY/z1VHhI
+	w0Y15VI+jCbkrUmUTKPZN8OlXweXgAGcujNhvv4/3nTIbVpoGUcusqyxpUZnDosG
+	Y9cphz0kAc8YhDjiUgmRy2j7H7MyizZYHi/MPdEIEH6Ifq7nj2uTeND5ogdO4C6q
+	lXDWBkUkg40GSB2XZtoqcDcMtdAU9tjBVZGZQZvDlHEFktY9ij62uE+gUjJCOxaA
+	LewJSq6zm7AYTDowt2cfp3VgcC80w7Y2bWZSGK9iKhkm2ZubRtkZDBYK8RxTkM80
+	bJU34ej+M5Vzx48z/6kr4c9ykv8AEUyq46oEj7WoVbw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4j0yucm6wa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 18 Nov 2026 08:03:17 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6AID3GfQ057486
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 18 Nov 2026 08:03:16 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 18 Nov 2026 08:03:16 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 18 Nov 2026 08:03:15 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.2562.56 via Frontend
+ Transport; Wed, 18 Nov 2026 08:03:15 -0500
+Received: from work.maxim-ic.internal ([10.66.6.193])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6AID30NX007207;
+	Wed, 18 Nov 2026 08:03:03 -0500
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux@analog.com>
+CC: <jic23@kernel.org>, <Michael.Hennerich@analog.com>, <nuno.sa@analog.com>,
+        <eblanc@baylibre.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <olivier.moysan@foss.st.com>, <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v1 0/5] Add support for ADA4355
+Date: Wed, 18 Nov 2026 10:02:53 -0300
+Message-ID: <cover.1795003864.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -111,36 +102,133 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: U2wsWzrRILtkQ41ZMb-ohuinjELmTuvs
+X-Authority-Analysis: v=2.4 cv=TILQ2Fla c=1 sm=1 tr=0 ts=6afda215 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=qmOXhYLVU3f7kz68z08A:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTE4MDA1MSBTYWx0ZWRfX1aqHzrNNskBo
+ VRukDYnqAKqYlD/SvFKrLcnGWZ15dJGImzj/Xuy0kJ7Ksdp05CCSrSe1BiF80I8OHoBpNUzIbVf
+ XHRqEG/jWZwh14DtIaPTY7pMRWY6gy1HmQkO2x3MDZTb8KB5P6hCTT+wqeBYw4ySJsvMmO32x4y
+ lf+dGXpzkNXIpqth5Uj27lBQlYkU9bymKKUkFHe9Dz5D+X45GhLd46QsP8x5MXtq3lfZcwjoYF1
+ TVJrxrTwHFatUrisltHUjad5DUHTqbUGDgmAqQSmQdK11Cn0480lKNOS9jj5XtOQoPmsPG6n5N0
+ tHekmaA35OKnQnQwvB6p/3FjS8J3GTZmspJQxt9ZN6yLn0XcI0rFDLClwsgzDpe9nG3V0Hr1lDU
+ NNGTuc6S45i1S9AKq3794ihKI3f3n2itCET5sCXYb4M+quWhY865ppmMFBhB9FTuXJ6iCzqV4x2
+ yLy19rO+TLcJhVm40aQ==
+X-Proofpoint-ORIG-GUID: U2wsWzrRILtkQ41ZMb-ohuinjELmTuvs
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTE4MDA1MSBTYWx0ZWRfX2YHYTZJywCJY
+ We9MXVjQA/NGWdBcn6ERT72aucxvGxL2u4d45vMHKoLBSe4vFEjnqlPRg0jkRSTpLl7RQH6mGjg
+ ud0L1IR7Rk2DjlVXQYFFGytu3RaUpFDs+JpjUoYG0r6xpbZ/abGt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-18_03,2026-11-16_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 phishscore=0 impostorscore=0 spamscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
+ definitions=main-2611180051
 
-On Wed, Nov 18, 2026 at 01:34:31PM +0100, Krzysztof Kozlowski wrote:
-> I think it is premature. You just started contributing and your early
-> submissions were clearly showing that you did not read kernel docs
-> before posting.
+ADA4355 (and ADA4356) are programmable transimpedance, current to bits receivers.
+ADA4356 main difference from ADA4355 is the set of configurable transimpedance
+(Tz) options which result in different scaling to miliampere units.
 
-Hi Krzysztof,
+ADA4355 is partially similar to AD9467 in that both chips contain high
+performance ADCs and output data through pairs of LVDS data output pins. Though,
+ADA4355 is also different from AD9467 such that squeezing ADA4355 support into
+the same device driver would probably lead to a lot of rework.
 
-In June I was still figuring out git send-email, and a problem with my
-setup caused those repeated postings. It is also why I was not able to
-reply to you at the time. I have since worked through the process
-documentation and my setup.
+According to LLM, AD9467 vs ADA4355 main differences are:
 
-Since then I have been working steadily on this subsystem, and 23 of
-my commits are now in maintainer trees. I still make mistakes as I
-learn: not grouping patches into a series, writing commit messages that
-are too long, and sending new versions too early, as Andy pointed out
-here. Changing MAINTAINERS is new to me as well, so there are mistakes
-in this series too. I take those as part of the learning process.
+┌───────────────┬────────────────────────────────────┬────────────────────────────────────────────┐
+│               │               AD9467               │                  ADA4355                   │
+├───────────────┼────────────────────────────────────┼────────────────────────────────────────────┤
+│               │ A standalone 16-bit IF-sampling    │ A complete current-in to bits µModule:     │
+│ Type          │ ADC                                │ TIA, LPF, ADC driver (FDA), 14-bit ADC,    │
+│               │                                    │ LDO and all passives                       │
+├───────────────┼────────────────────────────────────┼────────────────────────────────────────────┤
+│               │ Differential voltage, 2.0–2.5 V    │ Single-ended current. Linear range is      │
+│ Input         │ p-p programmable, 530 Ω / 3.5 pF,  │ −80…+800 µA at TZ=2 kΩ (scales ÷10 per     │
+│               │ 900 MHz full-power BW              │ gain step), survives 40 mA, 2 pF           │
+├───────────────┼────────────────────────────────────┼────────────────────────────────────────────┤
+│               │ SPI: reg 0x18 full-scale (2.0–2.5  │ Pins only: GSEL1/GSEL0 pick TZ (01=2 k,    │
+│ Gain/range    │ V p-p), 0x0F external VREF, 0x2C   │ 10=20 k, 00=200 k, 11 reserved), FSEL      │
+│ control       │ AC/DC coupling, 0x36/0x107 buffer  │ picks the LPF (100 MHz / 1 MHz). They have │
+│               │ current                            │  no pull resistors and must be driven      │
+├───────────────┼────────────────────────────────────┼────────────────────────────────────────────┤
+│ Bandwidth     │ 900 MHz                            │ TIA 43 / 18 / 1.6 MHz (per TZ), then LPF   │
+│               │                                    │ 100 or 1 MHz                               │
+├───────────────┼────────────────────────────────────┼────────────────────────────────────────────┤
+│               │                                    │ Offset: 0 µA gives +0.825 V at the ADC,    │
+│ Transfer      │ Bipolar around mid-scale           │ and full scale is 1.65 V/TZ toward −0.825  │
+│ function      │                                    │ V. In practice the signal is unipolar and  │
+│               │                                    │ inverted                                   │
+├───────────────┼────────────────────────────────────┼────────────────────────────────────────────┤
+│ Applications  │ Radar, wireless, instrumentation   │ ToF/LiDAR, OTDR, mass spec, optical        │
+│               │                                    │ sensing (10 ns pulses)                     │
+└───────────────┴────────────────────────────────────┴────────────────────────────────────────────┘
 
-I asked for this entry because I have become interested in these
-drivers and want to keep working on them, and Jonathan agreed to an R:
-entry. I understand your concern. If there is something specific you
-would like to see before this entry is acceptable, please tell me and
-I will work on it.
+The most relevant differences at SPI and register map level are:
 
-I will not send another version until you and Jonathan have had time
-to comment.
+┌────────────────┬───────────────────────┬───────────────────────────────────────────────────────┐
+│                │        AD9467         │                        ADA4355                        │
+├────────────────┼───────────────────────┼───────────────────────────────────────────────────────┤
+│ Chip ID        │ 0x50, plus a speed    │ 0x8B                                                  │
+│                │ grade in 0x02         │                                                       │
+├────────────────┼───────────────────────┼───────────────────────────────────────────────────────┤
+│ Start-up       │ Nothing mandatory     │ Mandatory sequence: 0x00=0x00, 0x05=0x02, 0x22=0x03,  │
+│                │                       │ 0x05=0x31                                             │
+├────────────────┼───────────────────────┼───────────────────────────────────────────────────────┤
+│ Device index   │ —                     │ Selects data channel, DCO and FCO                     │
+│ (0x05)         │                       │                                                       │
+├────────────────┼───────────────────────┼───────────────────────────────────────────────────────┤
+│ Test modes     │ Modes 0000–0111 only, │ Adds 1000 user pattern (with PATT1/PATT2 regs         │
+│ (0x0D)         │  no user pattern      │ 0x19–0x1C), 1-/0-bit toggle, 1× sync, one-bit-high    │
+│                │                       │ and mixed-frequency modes                             │
+├────────────────┼───────────────────────┼───────────────────────────────────────────────────────┤
+│ Analog-side    │ VREF, coupling,       │ None. The datasheet says the registers "configure and │
+│ registers      │ buffer current,       │  control the ADC only"                                │
+│                │ offset (0x10)         │                                                       │
+├────────────────┼───────────────────────┼───────────────────────────────────────────────────────┤
+│                │                       │ DCS on/off in 0x09. Digital reset (0x08 = 0x03 then   │
+│ Other          │ —                     │ 0x00) is required if the clock was not stable at      │
+│                │                       │ power-up                                              │
+└────────────────┴───────────────────────┴───────────────────────────────────────────────────────┘
 
-Thanks,
-Arnav
+This patch series was assisted by LLM and introduces some code duplication from
+AD9467 into ADA4355. Though, my estimation is that this is going to keep things
+easier to maintain than adding ADA4355 support into ad9467.c.
+
+With best regards,
+Marcelo
+
+
+Marcelo Schmitt (5):
+  iio: backend: Add calibration source interface
+  dt-bindings: iio: adc: Add AXI ADA4355 IP CORE
+  iio: adc: adi-axi-adc: Support AXI ADA4355 IP core
+  dt-bindings: iio: adc: Add ADA4355
+  iio: adc: Add support for ADA4355 and similar ADCs
+
+ .../bindings/iio/adc/adi,ada4355.yaml         | 104 +++
+ .../bindings/iio/adc/adi,axi-adc.yaml         |   1 +
+ MAINTAINERS                                   |   8 +
+ drivers/iio/adc/Kconfig                       |  11 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/ada4355.c                     | 798 ++++++++++++++++++
+ drivers/iio/adc/adi-axi-adc.c                 |  66 ++
+ drivers/iio/industrialio-backend.c            |  23 +
+ include/linux/iio/backend.h                   |  22 +
+ 9 files changed, 1034 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
+ create mode 100644 drivers/iio/adc/ada4355.c
+
+
+base-commit: 94921bc9eb214f838481faa847cda5c42e486013
+-- 
+2.39.2
+
