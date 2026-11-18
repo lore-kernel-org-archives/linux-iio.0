@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.31
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.11
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795015093;
-	b=z51BBAb6jxf7JSDvmWoRiXYh/2C1/9+NzWCzplR4nT091ZzHIwAr4kWfROTu+m9jP0qO
-	 yKIqlcUFJIFG5oWTe62IW/6Q1NOs1LC1ftKjJXcB7p4uJMF8bGtRaaSlW0WUXLiCn3W+v
-	 h3xQe60Z6aPnF0+2vA3oHfeQ0cau/INc4MA2jkM6TLBdMMO8VO8OFvdoDnTewCth0jjAa
-	 YQjczIMqeZbMUgH8GEsbVaHn7/q092fWyV4uHRiSPe5TgNIlSWAgPkrY0BShgdHkpHqCo
-	 ow9vOUUzNtHXQWEnSyMMpdLPRYngLOunkJD+wtV0qV4xxdvgqagDNs/aBtIfTTzDE0w==
+	t=1795015095;
+	b=r0zsQEE8k7R8q6KZoXDAEnZFdTnzqttbk6I/qr7U08fOxFtLaKHl4EOIEK5rdoGQZKh1
+	 wjpa1aC9LDvlE4wuZQqvY0xqjVSeoUUAzwvpShEp9lJwYMUhfG7X4m2woegBC/6QRJMDn
+	 3uFqKSngpU4im7hPaq22B8pb+OKRPrqoCzpxzDdOo5j/eH6aG26vDJ0j+cPiacX8Yh8dv
+	 kbl62APtUhROkjfK/11IdMOlwnrmHd/z76hdhFz96WTDNmFFW8X80P7/zYquYa0KSOL0R
+	 2+crdk63Dc5Rk2IDYsb0FIS6XaoQjo56mnR/0fJ+UMfhx/HlIZzNb7Mny6Hhweli/3w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795015093;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795015095;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 Received:From:Date:Subject:MIME-Version:Content-Type:
@@ -26,35 +26,35 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=ue38d4wJQjL0sQHjAnJQYpbkHCQXhKI5nEkJUrB4zwA=;
-	b=aaNgnBhiFw71ne371ZxYsiKmshhYd/1sskL7t0IdfSZ5eieCxbbx6+pe4ULlFU9KlnTz
-	 WNbC38d4omCHK0Ittn9lpY1ZxptIFC8563fgXIScX2pyYz8aKHzc379gdSY48W9KX2g/n
-	 UHJDb5K6DyuLJiJpEfRaePDHCJVvnIWvCpAvpEw7iRQmqLXj3ewEYwCs4PTY2YmRzCuua
-	 4uW8Vl9K/rxFBtEXiVoCzqyomRWiDx6/CjYj5C5jgP/hOOh2sWjYrpchoJon5VjnPCQvt
-	 EWMkA4UPlo5h4OBJl79YEDCh+vcpfck1gD+676NjSOS3ug7W5/yPvHTbFIz7bE9Eh6w==
+	bh=7uVQ7qqfJ/7RyrM2bKIbbkMHCXj9eIKqWisz8mKJsyw=;
+	b=vZ7K2r+nmwE3l+slMTCpAm8sZTKGuOWsC6tY1cRrXIcBLMRdUqBBakSk042eHh4Gb5Q4
+	 sP2mxmtFgnaSSdFc+1Hs7UDE5pjEkLzhw9xwq1srplKD3IYKaki+ALtKRIs3+3Nc+9y6F
+	 1kBCMI0d1gAmMwB5MmoFLY3A+l3YjkdkyeR72w/tjhWTotZwk7B0kjCHf6zBN42BLew9R
+	 2//nhrS6WCco6ayT5M9N+aGpo6IfBC/vIUcagWZr95RrKquGDsQyjCpSQbeDnwGbJHTUg
+	 9eIlkgmg57y9bpCHjxpUhWG8Xi91LUBOysNs/Nxe7wv2YTyUg8GCXoNijBiVjOgR1gw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=foss.st.com;
 	spf=pass smtp.mailfrom=foss.st.com;
-	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=E6TvIfBF;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.31
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013031.outbound.protection.outlook.com [52.101.72.31])
+	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b="PQ/QDH99";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.11
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013011.outbound.protection.outlook.com [52.101.72.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A56660A2618;
-	Wed, 18 Nov 2026 15:18:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4A56660A2618
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63FBC60A2612;
+	Wed, 18 Nov 2026 15:18:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63FBC60A2612
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=E6TvIfBF
+	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=PQ/QDH99
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eBrmqPP7bTD+aQRZiBCmO2kiAO+Np2XuTiL65wf/YtntU4PbVJnWqJVGfMPRGkTOjNgWT/cQaa9AaEX0CuAXfN6+npeGd17fRAa4nAYR9KojSiOJxQ+0Rz2f6GFDDydHkX0z1X4+SLYeH2bWJPogMXWF+jkkdl20eefJcBlwZM/R2ZtbaVaQuflCuqEtnTe5RWJPL3BABJGXeKgcoheBM8voE80EBrD1bxz2DqD6sfHX7AT+qCROCf97zNdlbXOBU1ubcpfu2hOdyxSWQzJjH+Y8vBDbLKm1NhehnQHNOoLUpOzBTFDdMYjoZGUe+IMBA7M3OMJxj3p80rbajQC6kg==
+ b=J2EJ4kWRj8DMJikgyyaNDRaHLozRI7YObzOuYbbV7ITkLZIybweS2SSv6ll/VQm2wz1QIlOG+P+u3506TKLjvHnLfOlEaYWTdXJsqealKtiudw3gLKR++RY95P/btPJNnmwziNpueFSnDJxcmDPUEKNeOWK+OC07a7ZAm+TFUGE3wjDZURxo8eYSKEcF/o7M6jpjPyrVnjk14+iXRsyEJKHE45KZAWZwkrK03SqViP01DeCpHroTHdtATllqqa6dujqlVDhFYKOAtdUMOfoWIRP/c3SqxWmTfBnC/VGpXTpspYYiWUOojTxJgoqdkQpyaRmY2jYwjQR8pJuQj76fAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ue38d4wJQjL0sQHjAnJQYpbkHCQXhKI5nEkJUrB4zwA=;
- b=UvJLUcStbd/EQ1M39gbfXbdoOrMd8jQfADH3ZWoYrpmyiT2FyJMXSQlypwZ14Pj86jUDxToW58MDOOOP7KknkYWzoypW762W7qWAFdn1r0Hp0wHgHkFXpfNT+W8URr784lpzaWb2FV3ANjXemzxcvLXS3D42UpZorXm++NmOe5Wc4XyJICN3+Kis6DY2tYcyIo/JK04u/cBMoUbD5f3Mj/vdvxDOrtM2RKHOUlzLpQlBHRAOeBxSf8dutPI+ybB27YZvYKB6grezo2v9Fu4xbhghaBPzRuV5WKO0usvGdVqYMcz5vhL/GlxZd96oWeD6ktd4eTG5c0+ymKpolYL0Tw==
+ bh=7uVQ7qqfJ/7RyrM2bKIbbkMHCXj9eIKqWisz8mKJsyw=;
+ b=wLlLEfoEvtV4yogY/I+IsCd4dnwWPhHJFTp1ePcDZBnjtmWSmZe3IN7f3LAP4wXylijZeFVRc3etOP//14G5YsSX9MZdML9qP4lKAdP3m0Uh3MlbfovSYx7IXufd0jZ22yv26yCDx60T3J9c5yXXsLDj6T3MD0YYnR2Bnk3EFCl5P1PFIIiS0+luV8AAfKIiZnLp25IwRWbpEWM7lW4MisSfiNhLDNiUz5+9G/j8AZAGmR6bFsBqQySo5j75qd1dkMdcQeXz9UskQ50EcsJmuo96mVaTDmxFENVJrDUWRcuiSg9LQQLDFNiSTNicNH7gNO/R2521aX02Vn0vPx5POg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
  164.130.1.60) smtp.rcpttodomain=amd.com smtp.mailfrom=foss.st.com; dmarc=fail
  (p=none sp=none pct=100) action=none header.from=foss.st.com; dkim=none
@@ -62,18 +62,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ue38d4wJQjL0sQHjAnJQYpbkHCQXhKI5nEkJUrB4zwA=;
- b=E6TvIfBFRn44uoREAW270bIZTdEzlgzZlYrTGOPJKkPYBpfcMgsLZW1ICR5yEAQDQ/J6o7nC8qfm9t6W52RwGi/izoD3317NrJuKoIdiKG8OnY/0SBjaNiVyJuTIzC5xPq5RfyVcWb8pqwMBdn+610M22uur5jHjBHZG+3L6nvE6ozAIAuep5GkcYkypEmwJE08Q2EJyM3Gl3wGtWWmdE8FenG9yoLdZkOc6+/uAzBGaitON+HDhd8bZIorWc80Gs3yL4MCSbinOPYdpKQizQaBz2XxMPNXlUeNrgEyH7q3jkb8JwMOTm3PH6CAMxHiQimXZsAJbUwtCahFFdsawMw==
-Received: from DUZPR01CA0022.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:46b::12) by PAWPR10MB7174.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:102:2ed::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.6; Wed, 18 Nov
- 2026 15:18:05 +0000
-Received: from MA3PEPF00000408.eurprd04.prod.outlook.com
- (2603:10a6:10:46b:cafe::9c) by DUZPR01CA0022.outlook.office365.com
- (2603:10a6:10:46b::12) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.14 via Frontend Transport; Wed,
- 18 Nov 2026 15:18:05 +0000
+ bh=7uVQ7qqfJ/7RyrM2bKIbbkMHCXj9eIKqWisz8mKJsyw=;
+ b=PQ/QDH99jXBKehQCwkZ3yjFdnfXUBdP5T2aqsgg31Qrc4+4kjzer+w1W/kVSJSPG7z9yAGiQUnqoPLeWWy99wIcYgvJew9tQRwz0ytGLQEqb5sUvMj8biZp9a1pojaxMJgdCdCZ4RcVQBTlTaSkRwvG4VK+yfnZFuY1OVIe6duUu4jGnlkCSbKjKeogts+C74CQ3y11nCKiASglIUb6ukAaj3rzWee6HFF2tzI2dUF1Ne9Ba/lE0yS4jvXxSSxi9B22bpfJDGWeqO2IBjWmdf8wmTcO8MHIy2kasdeXEcey4n6xbcvvjepUkNtAHCRJJ+YaZTQURF9kvTnK/qAM8Zw==
+Received: from DB8PR06CA0062.eurprd06.prod.outlook.com (2603:10a6:10:120::36)
+ by DU0PR10MB6250.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3ed::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.8; Wed, 18 Nov
+ 2026 15:18:08 +0000
+Received: from MA3PEPF00000409.eurprd04.prod.outlook.com
+ (2603:10a6:10:120:cafe::6b) by DB8PR06CA0062.outlook.office365.com
+ (2603:10a6:10:120::36) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.8 via Frontend Transport; Wed, 18
+ Nov 2026 15:18:07 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
  is 164.130.1.60) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
  header.d=none;dmarc=fail action=none header.from=foss.st.com;
@@ -81,20 +81,20 @@ Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
  designate 164.130.1.60 as permitted sender) receiver=protection.outlook.com;
  client-ip=164.130.1.60; helo=smtpO365.st.com;
 Received: from smtpO365.st.com (164.130.1.60) by
- MA3PEPF00000408.mail.protection.outlook.com (10.167.241.153) with Microsoft
+ MA3PEPF00000409.mail.protection.outlook.com (10.167.241.154) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Wed, 18 Nov 2026 15:18:04 +0000
+ 15.21.615.4 via Frontend Transport; Wed, 18 Nov 2026 15:18:07 +0000
 Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpO365.st.com
  (10.250.44.72) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Wed, 18 Nov
- 2026 16:19:04 +0100
+ 2026 16:19:08 +0100
 Received: from localhost (10.252.16.78) by STKDAG1NODE2.st.com (10.75.128.133)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Wed, 18 Nov
- 2026 16:18:02 +0100
+ 2026 16:18:06 +0100
 From: Olivier Moysan <olivier.moysan@foss.st.com>
-Date: Wed, 18 Nov 2026 16:17:49 +0100
-Subject: [PATCH v2 04/11] iio: adc: stm32-mdf: add serial interfaces
+Date: Wed, 18 Nov 2026 16:17:53 +0100
+Subject: [PATCH v2 08/11] iio: adc: stm32-mdf: add dma buffered acquisition
  support
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -107,7 +107,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20261118-upstream_mdf_v2-v2-4-7939d3c3720a@foss.st.com>
+Message-ID: <20261118-upstream_mdf_v2-v2-8-7939d3c3720a@foss.st.com>
 References: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
 In-Reply-To: <20261118-upstream_mdf_v2-v2-0-7939d3c3720a@foss.st.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
@@ -133,448 +133,439 @@ X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
  (10.75.128.133)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MA3PEPF00000408:EE_|PAWPR10MB7174:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea831d3b-62bd-4836-94e8-08df458724bb
+X-MS-TrafficTypeDiagnostic: MA3PEPF00000409:EE_|DU0PR10MB6250:EE_
+X-MS-Office365-Filtering-Correlation-Id: ef9f05b1-7120-4080-0d64-08df45872639
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|23010399003|82310400026|36860700016|921020|261022075727099003|11063799006|261026140227099003|56012099006|261026121527099003|261028144727099003|261022105027099003|261021123027099003|261021135927099003|261021121427099003|10067099003|261102130727099003|261102123227099003|261009221227099003|261009223027099003|18002099003|22082099003|6133799003|3023799007;
+	BCL:0;ARA:13230040|23010399003|36860700016|7416014|376014|1800799024|82310400026|921020|10067099003|11063799006|56012099006|261022075727099003|261021123027099003|261102123227099003|261021121427099003|261009223027099003|261028144727099003|261026140227099003|261022105027099003|261026121527099003|22082099003|18002099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	HYDRnk5sdU2RlGnS3Se0Yf+k3LzAkIMoCGOOACj139dVUZinMo6XOxatWamQtxd0gNxMNUYBPKNGerheUs4DH4YCa4A6zColcCpFygKgFdObB6HIuPrSn+JJAnSg634Mjtlnc8rN93CuPttwUJWixQTtwe0gt2f7GrSESW8vXOjmhthTYn8zl38Ctf4IZA5DmuPi+mBv8UPOOI7lxvFmjBbU7NPCkSWqSAl6X6khiC5erM7gZmthSV1o+5kvO6/7wDbn2gAVXIg95avIQE9wProngTE0g8RMsYSLugAcRtz56L6fWwJLMEjAcPZ/+SFnCHyx7Mg+hlW35B+xyVvcXDnBGXlk3QQhRrurHUXis3P6i1mxCWTbfWCpSkubs+zRJWFKqUy1lj/54+kq3Y1bLfd+0j8M1loyWgQxYvGtDw71TIC/fRtjFiZc9f+9TcUYur0gSalZ2o3nxwbA/6I/hi4mcE27hHx/Sb0twlLzmNOE7e+WZjuTrtWZN299fYrC1HF+paRaJJN+qTD2ZZxLNNqScNYjTLNwupu7irxhOuO6xVwpTmco83IfNKnRd+ySSt0xW2YR8J1Nk52Ht47jtq6HZbBFNxn/cf3FnNH7u+cqsRMSJrz/R4liX9Fyw0BE+ZNwPPZ81Rogt2dW7dIrk7+/5ryVNJqzLV6sZEoWCQn+VYOO/HorwGwX6yG4bl9K2k4/PG5FwT2BExSB5qYq3nv3srWGPuHKAbQKRG+1zgr2T96R6W9xh3glR0WHuHOG
+	4Qxy09djiP/aj4wxfbqEWT4QSu0U8oSw0wZZuUqgmz+pEWp8sWqkuCIpAk6VUDhVK9hdtxFSPc4+CySDMyEVu4XhTRhzaVM4dIK98pgzMbZsV9+n+AzthjV92cCX3d6uKHcyaXvOqfgvFxu4Z+LYcuh0XqTopVxFgUseYNkfSk9FVXPrRKEnET1m9S+KtkSnBFWjZwvYpvg39XO5tNnQVWgXyuypOrz0fBzZVhCG9aw8NtZg7RiKDmVJ+YXYDEWmOeuiPQjeBpCzGmJG5hEXxQARh0/fG8Ndhx5xZR3aBZ1wtI3l4gVBUhPSVKyHsdvaaEbnc0ffrUBjIgKoVmPMXceHEYdR9KYDi2NQ+fkp4dJsNm4ulrwNiRjC1mAckx5HrNupKg5o27gF+xucBDaiWypHuPHpn4QPVpzwnUQ6TJ0U+wbQ0Zk3vKdhn/R2tbAQuo9Jl2x2iPZSGQu0R037FUGUULy/ugmYwtUuGcKathr5YovDu9MgLmV9e3tYAchmIohIeXcBc6sNvIJGvHo2UwjBIXZ6dtsyv0/CGuvbyi+3Pih+/rCIMJjwwsKFpUyHsVGysPQnR+nHeXO3y3N099N/6Q7qm3k+7Ws2mjRLlw+lSdjUHyk1T9cCfmK3ZcPgoIVuujpBgO2ITUb+iWJUbWrRc9pAtGbKl8HKU4EiUs2WWiOANBAtLmdZkWN/7/PBJzbhdEOcJj2lepOLsT0MFrb+FAdksZ6tHgERqAd488ed5FxedHH2gp5JedL6lB2Q
 X-Forefront-Antispam-Report:
-	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(23010399003)(82310400026)(36860700016)(921020)(261022075727099003)(11063799006)(261026140227099003)(56012099006)(261026121527099003)(261028144727099003)(261022105027099003)(261021123027099003)(261021135927099003)(261021121427099003)(10067099003)(261102130727099003)(261102123227099003)(261009221227099003)(261009223027099003)(18002099003)(22082099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
+	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(36860700016)(7416014)(376014)(1800799024)(82310400026)(921020)(10067099003)(11063799006)(56012099006)(261022075727099003)(261021123027099003)(261102123227099003)(261021121427099003)(261009223027099003)(261028144727099003)(261026140227099003)(261022105027099003)(261026121527099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	arerOmY2sq6kH4ftCMK1HSd5QUnzI8+4E0+jAl6CY4hDK/qh2xbAZnlA6wQHd3VXe/2rtcyMlIpR9csTQ6ZSsua5QEr0N0SeQZ2z/J4UtDNeqKlf6NV65vklaB3M976rOl5WgA2IhkRCaJn+g6cDed66oJ2JUqIuWC+48WCawIOcv5ecIt2SHL9s+pLDoKntRy/vSDKJ+G/P6lRCmF6VqX6a5fQj/ZFn0L4u8AYbwEyvMuGdl30cGsi4zi+U+Us9iTc6nMkyqRM/+BZda+icBD3bAFaDLA4DqENp8WAmNcr4lb+rPqwPy2+T1Fl1LA0gk8ceu8iz+Xkb9ucfqafScHNNto7Db7Q1OT/R9Lr1eXn7HtJNVVe1/EqETUck/j870LmspcqWKpbXx0j+C7H4kUyDq4a+T+KMuXNjppzSArMGBzVv0j09MJgrNzUwyY6K
+	Hq7nV/uX4vVVi6Eo/b/NQXeG972/hI0cv8RpNO2brRld9aIMa4MVxBxUjOjjUuwSnILnI3TlA0SRr6kodRPnhXYD93XXcN+ySNONBfITIHsH0KORhisQtJV1JhKxJOk6JbknQHrPz2mIczLHW2nAnUUCxtxFZwwsttI9QoqxYeFtndu9bqWzrl861Zc6VSbIu5WzKgIwiX5L0TWhtILEBe2LWMJEDT12yEewh1VU05uoVq0vHFaemXqhfdHQQkrQW9dgcIxj0evCVoNbRYQgugzOmqU+744FVusvsG48yt1Zoq9upLHe9z05QACrWBDoX/pPoq8wjID5twMjtBLmpfA3OcTNWGEcdoF9Qv/qhyJEHZHLfyAKyd/o3cmBt+uV3FyDBGHeH7wEdY8lr41nLaMUCOaiy8Ql6EGkTKUbIvb+m+Ecmzz/o71A3UWSCA+G
 X-OriginatorOrg: foss.st.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 15:18:04.7967
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 15:18:07.2976
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea831d3b-62bd-4836-94e8-08df458724bb
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef9f05b1-7120-4080-0d64-08df45872639
 X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.60];Helo=[smtpO365.st.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MA3PEPF00000408.eurprd04.prod.outlook.com
+	MA3PEPF00000409.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB7174
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6250
 
-The MDF serial interfaces receive the bitstreams from external sigma delta
-modulators supporting SPI and Manchester protocols.
+Add optional cyclic DMA acquisition with buffer enable and disable
+operations. Push completed DMA scans to the IIO buffer or deliver periods
+to a registered consumer callback.
 
-Select an external serial clock or an MDF CCK output, validate the clock
-requirements of each mode and program the serial interface.
-Expose reference-counted start and stop helpers so that multiple filters
-can share an interface.
+Add the buffer watermark callback to size a cyclic DMA buffer with two
+periods. Limit the requested watermark to the available buffer capacity
+and reject invalid scan sizes.
+
+Set up analog IIO buffers when DMA is available, retaining direct-only
+operation without DMA. Keep internal TRGO triggering for synchronized
+and interleaved acquisition.
+
+Stop active buffers during system suspend and restore their configuration
+and acquisition on resume. External timer trigger support follows in a
+separate commit.
 
 Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
 ---
- drivers/iio/adc/Makefile           |   2 +-
- drivers/iio/adc/stm32-mdf-core.c   |  34 +++++-
- drivers/iio/adc/stm32-mdf-serial.c | 223 +++++++++++++++++++++++++++++++++++++
- drivers/iio/adc/stm32-mdf.h        |  49 ++++++++
- 4 files changed, 306 insertions(+), 2 deletions(-)
+ drivers/iio/adc/Kconfig         |   1 +
+ drivers/iio/adc/stm32-mdf-adc.c | 315 +++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 315 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index d5fc809c33ca..811ef85a88fb 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -147,7 +147,7 @@ obj-$(CONFIG_STM32_ADC) += stm32-adc.o
- obj-$(CONFIG_STM32_DFSDM_ADC) += stm32-dfsdm-adc.o
- obj-$(CONFIG_STM32_DFSDM_CORE) += stm32-dfsdm-core.o
- obj-$(CONFIG_STM32_MDF_CORE) += stm32-mdf.o
--stm32-mdf-y := stm32-mdf-core.o
-+stm32-mdf-y := stm32-mdf-core.o stm32-mdf-serial.o
- obj-$(CONFIG_STMPE_ADC) += stmpe-adc.o
- obj-$(CONFIG_SUN20I_GPADC) += sun20i-gpadc-iio.o
- obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
-diff --git a/drivers/iio/adc/stm32-mdf-core.c b/drivers/iio/adc/stm32-mdf-core.c
-index 4e462c6c42bc..5b5d2d4cbb5c 100644
---- a/drivers/iio/adc/stm32-mdf-core.c
-+++ b/drivers/iio/adc/stm32-mdf-core.c
-@@ -748,8 +748,13 @@ static int stm32_mdf_core_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index c3e9885af22d..f9fce54f8627 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -1760,6 +1760,7 @@ config STM32_MDF_ADC
+ 	select STM32_MDF_CORE
+ 	select IIO_BUFFER
+ 	select IIO_BUFFER_HW_CONSUMER
++	select IIO_TRIGGERED_BUFFER
+ 	select IIO_BACKEND
+ 	help
+ 	  Select this option to support ADCSigma delta modulator for
+diff --git a/drivers/iio/adc/stm32-mdf-adc.c b/drivers/iio/adc/stm32-mdf-adc.c
+index 7361ce6182be..046ca3943a39 100644
+--- a/drivers/iio/adc/stm32-mdf-adc.c
++++ b/drivers/iio/adc/stm32-mdf-adc.c
+@@ -823,6 +823,243 @@ static void stm32_mdf_adc_stop_conv(struct iio_dev *indio_dev)
+ 	stm32_mdf_sitf_stop(adc->sitf);
+ }
  
-+	INIT_LIST_HEAD(&priv->mdf.sitf_list);
- 	INIT_LIST_HEAD(&priv->mdf.filter_list);
- 
-+	ret = stm32_mdf_sitf_init(&pdev->dev, &priv->mdf);
++static unsigned int stm32_mdf_adc_dma_residue(struct stm32_mdf_adc *adc)
++{
++	struct dma_tx_state state;
++	enum dma_status status;
++
++	status = dmaengine_tx_status(adc->dma_chan, adc->dma_chan->cookie, &state);
++	if (status == DMA_IN_PROGRESS) {
++		/* Residue is size in bytes from end of buffer */
++		unsigned int i = adc->buf_sz - state.residue;
++		unsigned int size;
++
++		/* Return available bytes */
++		if (i >= adc->bufi)
++			size = i - adc->bufi;
++		else
++			size = adc->buf_sz + i - adc->bufi;
++
++		return size;
++	}
++
++	return 0;
++}
++
++static void stm32_mdf_adc_dma_buffer_done(void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	int available = stm32_mdf_adc_dma_residue(adc);
++	size_t old_pos;
++
++	dev_dbg(&indio_dev->dev, "pos = %d, available = %d\n", adc->bufi, available);
++	old_pos = adc->bufi;
++
++	while (available >= indio_dev->scan_bytes) {
++		s32 *buffer = (s32 *)&adc->rx_buf[adc->bufi];
++
++		adc->bufi += indio_dev->scan_bytes;
++		if (adc->bufi >= adc->buf_sz) {
++			if (adc->cb)
++				adc->cb(&adc->rx_buf[old_pos], adc->buf_sz - old_pos, adc->cb_priv);
++			adc->bufi = 0;
++			old_pos = 0;
++		}
++		if (adc->dev_data->type == STM32_MDF_IIO)
++			iio_push_to_buffers(indio_dev, buffer);
++		available -= indio_dev->scan_bytes;
++	}
++	if (adc->cb)
++		adc->cb(&adc->rx_buf[old_pos], adc->bufi - old_pos, adc->cb_priv);
++}
++
++static int stm32_mdf_adc_dma_start(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	struct dma_slave_config config = {
++		.src_addr = (dma_addr_t)adc->phys_addr + MDF_DFLTDR_REG,
++		.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
++	};
++	struct dma_async_tx_descriptor *desc;
++	int ret;
++
++	if (!adc->dma_chan)
++		return -EINVAL;
++
++	if (!indio_dev->scan_bytes || !adc->buf_sz ||
++	    (adc->buf_sz / 2) % indio_dev->scan_bytes)
++		return -EINVAL;
++
++	dev_dbg(&indio_dev->dev, "size=%d watermark=%d\n", adc->buf_sz, adc->buf_sz / 2);
++
++	ret = dmaengine_slave_config(adc->dma_chan, &config);
 +	if (ret)
 +		return ret;
 +
- 	platform_set_drvdata(pdev, priv);
- 
- 	pm_runtime_get_noresume(&pdev->dev);
-@@ -785,8 +790,15 @@ static int stm32_mdf_core_suspend(struct device *dev)
- {
- 	struct stm32_mdf *mdf = dev_get_drvdata(dev);
- 	struct stm32_mdf_priv *priv = to_stm32_mdf_priv(mdf);
-+	struct stm32_mdf_sitf *sitf;
- 	int ret;
- 
-+	list_for_each_entry(sitf, &mdf->sitf_list, entry) {
-+		ret = regmap_read(sitf->regmap, MDF_SITFCR_REG, &sitf->sitfcr);
-+		if (ret)
++	/* Prepare a DMA cyclic transaction */
++	desc = dmaengine_prep_dma_cyclic(adc->dma_chan, adc->dma_buf,
++					 adc->buf_sz, adc->buf_sz / 2,
++					 DMA_DEV_TO_MEM, DMA_PREP_INTERRUPT);
++	if (!desc)
++		return -EBUSY;
++
++	desc->callback = stm32_mdf_adc_dma_buffer_done;
++	desc->callback_param = indio_dev;
++
++	ret = dma_submit_error(dmaengine_submit(desc));
++	if (ret)
++		goto err_stop_dma;
++
++	/* Issue pending DMA requests */
++	dma_async_issue_pending(adc->dma_chan);
++
++	/* Enable regular DMA transfer*/
++	ret = regmap_set_bits(adc->regmap, MDF_DFLTCR_REG, MDF_DFLTCR_DMAEN);
++	if (ret < 0)
++		goto err_stop_dma;
++
++	return 0;
++
++err_stop_dma:
++	dmaengine_terminate_sync(adc->dma_chan);
++
++	return ret;
++}
++
++static void stm32_mdf_adc_dma_stop(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++
++	if (!adc->dma_chan)
++		return;
++
++	regmap_clear_bits(adc->regmap, MDF_DFLTCR_REG, MDF_DFLTCR_DMAEN);
++
++	dmaengine_terminate_sync(adc->dma_chan);
++}
++
++static int stm32_mdf_adc_postenable(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	int i = 0;
++	int ret;
++
++	/* Reset adc buffer index */
++	adc->bufi = 0;
++
++	while (i < indio_dev->num_channels && adc->channels[i].backend) {
++		ret = iio_backend_enable(adc->channels[i].backend);
++		if (ret < 0) {
++			while (i > 0)
++				iio_backend_disable(adc->channels[--i].backend);
++
 +			return ret;
++		}
++		i++;
 +	}
 +
- 	ret = pm_runtime_force_suspend(dev);
- 	if (ret)
- 		return ret;
-@@ -794,7 +806,9 @@ static int stm32_mdf_core_suspend(struct device *dev)
- 	regcache_cache_only(priv->regmap, true);
- 	regcache_mark_dirty(priv->regmap);
- 
--	/* Balance regmap_mmio_attach_clk() clk_prepare() */
-+	/* Balance regmap_mmio_attach_clk() for the SITFs and the core. */
-+	list_for_each_entry(sitf, &mdf->sitf_list, entry)
-+		clk_unprepare(priv->kclk);
- 	clk_unprepare(priv->kclk);
- 
- 	return pinctrl_pm_select_sleep_state(dev);
-@@ -804,6 +818,8 @@ static int stm32_mdf_core_resume(struct device *dev)
++	ret = stm32_mdf_adc_start_mdf(indio_dev);
++	if (ret < 0)
++		goto err_start;
++
++	stm32_mdf_adc_filter_set_mode(adc, true);
++
++	regmap_clear_bits(adc->regmap, MDF_DFLTISR_REG,
++			  MDF_DFLTISR_DOVRF_MASK | MDF_DFLTISR_SATF_MASK);
++
++	regmap_set_bits(adc->regmap, MDF_DFLTIER_REG,
++			MDF_DFLTIER_DOVRIE_MASK | MDF_DFLTIER_SATIE_MASK);
++
++	ret = stm32_mdf_adc_dma_start(indio_dev);
++	if (ret) {
++		dev_err(&indio_dev->dev, "Can't start DMA\n");
++		goto err_dma;
++	}
++
++	ret = stm32_mdf_adc_start_conv(indio_dev);
++	if (ret) {
++		dev_err(&indio_dev->dev, "Can't start conversion\n");
++		goto err_conv;
++	}
++
++	return 0;
++
++err_conv:
++	stm32_mdf_adc_dma_stop(indio_dev);
++err_dma:
++	stm32_mdf_adc_stop_mdf(indio_dev);
++err_start:
++	i = 0;
++	while (i < indio_dev->num_channels && adc->channels[i].backend) {
++		iio_backend_disable(adc->channels[i].backend);
++		i++;
++	}
++
++	return ret;
++}
++
++static int stm32_mdf_adc_predisable(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	int i = 0;
++
++	stm32_mdf_adc_stop_conv(indio_dev);
++
++	stm32_mdf_adc_dma_stop(indio_dev);
++
++	regmap_clear_bits(adc->regmap, MDF_DFLTIER_REG,
++			  MDF_DFLTIER_DOVRIE_MASK | MDF_DFLTIER_SATIE_MASK);
++
++	stm32_mdf_adc_stop_mdf(indio_dev);
++
++	while (i < indio_dev->num_channels && adc->channels[i].backend) {
++		iio_backend_disable(adc->channels[i].backend);
++		i++;
++	}
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops stm32_mdf_buffer_setup_ops = {
++	.postenable = &stm32_mdf_adc_postenable,
++	.predisable = &stm32_mdf_adc_predisable,
++};
++
++static void stm32_mdf_dma_release(struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++
++	if (adc && adc->dma_chan) {
++		dma_free_coherent(adc->dma_chan->device->dev,
++				  MDF_DMA_BUFFER_SIZE, adc->rx_buf, adc->dma_buf);
++		dma_release_channel(adc->dma_chan);
++	}
++}
++
++static int stm32_mdf_dma_request(struct device *dev, struct iio_dev *indio_dev)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	struct dma_chan *dma_chan;
++
++	dma_chan = dma_request_chan(dev, "rx");
++	if (IS_ERR(dma_chan))
++		return PTR_ERR(dma_chan) ? PTR_ERR(dma_chan) : -ENODEV;
++	adc->dma_chan = dma_chan;
++
++	adc->rx_buf = dma_alloc_coherent(adc->dma_chan->device->dev,
++					 MDF_DMA_BUFFER_SIZE, &adc->dma_buf, GFP_KERNEL);
++	if (!adc->rx_buf) {
++		dma_release_channel(adc->dma_chan);
++		return -ENOMEM;
++	}
++
++	indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
++	indio_dev->setup_ops = &stm32_mdf_buffer_setup_ops;
++
++	return 0;
++}
++
+ static int stm32_mdf_channel_parse_of(struct iio_dev *indio_dev, struct fwnode_handle *node,
+ 				      struct iio_chan_spec *ch)
  {
- 	struct stm32_mdf *mdf = dev_get_drvdata(dev);
- 	struct stm32_mdf_priv *priv = to_stm32_mdf_priv(mdf);
-+	struct stm32_mdf_sitf *sitf;
-+	unsigned int prepared = 0;
- 	int ret;
+@@ -932,6 +1169,27 @@ static int stm32_mdf_adc_chan_init(struct iio_dev *indio_dev, struct iio_chan_sp
+ 	return chan_idx;
+ }
  
- 	ret = pinctrl_pm_select_default_state(dev);
-@@ -825,8 +841,24 @@ static int stm32_mdf_core_resume(struct device *dev)
- 		goto err_cache;
++static int stm32_mdf_set_watermark(struct iio_dev *indio_dev, unsigned int val)
++{
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
++	unsigned int scan_bytes = indio_dev->scan_bytes;
++	unsigned int watermark;
++
++	/*
++	 * DMA cyclic transfers are used, buffer is split into two periods.
++	 * There should be :
++	 * - always one buffer (period) DMA is working on
++	 * - one buffer (period) driver pushed to ASoC side.
++	 */
++	if (!val || !scan_bytes || scan_bytes > MDF_DMA_BUFFER_SIZE / 2)
++		return -EINVAL;
++
++	watermark = min(val, MDF_DMA_BUFFER_SIZE / (2 * scan_bytes));
++	adc->buf_sz = 2 * watermark * scan_bytes;
++
++	return 0;
++}
++
+ static int stm32_mdf_adc_single_conv(struct iio_dev *indio_dev,
+ 				     const struct iio_chan_spec *chan, int *res)
+ {
+@@ -1115,6 +1373,7 @@ static int stm32_mdf_adc_read_label(struct iio_dev *indio_dev, const struct iio_
+ }
+ 
+ static const struct iio_info stm32_mdf_info_adc = {
++	.hwfifo_set_watermark = stm32_mdf_set_watermark,
+ 	.write_raw = stm32_mdf_adc_write_raw,
+ 	.read_raw = stm32_mdf_adc_read_raw,
+ 	.read_label = stm32_mdf_adc_read_label,
+@@ -1208,6 +1467,24 @@ static int stm32_mdf_adc_init(struct device *dev, struct iio_dev *indio_dev)
+ 
+ 	init_completion(&adc->completion);
+ 
++	/* Optionally request DMA */
++	ret = stm32_mdf_dma_request(dev, indio_dev);
++	if (ret) {
++		if (ret != -ENODEV)
++			return dev_err_probe(dev, ret, "DMA channel request failed with\n");
++
++		dev_dbg(dev, "No DMA support\n");
++		return 0;
++	}
++
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      &iio_pollfunc_store_time, NULL,
++					      &stm32_mdf_buffer_setup_ops);
++	if (ret) {
++		stm32_mdf_dma_release(indio_dev);
++		return dev_err_probe(dev, ret, "Buffer setup failed\n");
++	}
++
+ 	return 0;
+ }
+ 
+@@ -1460,12 +1737,14 @@ static int stm32_mdf_adc_probe(struct platform_device *pdev)
+ 		ret = iio_device_register(iio);
+ 		if (ret < 0) {
+ 			dev_err_probe(dev, ret, "Failed to register IIO device: %d\n", ret);
+-			goto err_clean_list;
++			goto err_cleanup;
+ 		}
  	}
  
-+	list_for_each_entry(sitf, &mdf->sitf_list, entry) {
-+		ret = clk_prepare(priv->kclk);
-+		if (ret)
-+			goto err_sitf;
-+		prepared++;
-+
-+		ret = regmap_write(sitf->regmap, MDF_SITFCR_REG, sitf->sitfcr);
-+		if (ret)
-+			goto err_sitf;
-+	}
-+
- 	return pm_runtime_force_resume(dev);
+ 	return 0;
  
-+err_sitf:
-+	while (prepared) {
-+		clk_unprepare(priv->kclk);
-+		prepared--;
-+	}
- err_cache:
- 	clk_unprepare(priv->kclk);
- err_clk:
-diff --git a/drivers/iio/adc/stm32-mdf-serial.c b/drivers/iio/adc/stm32-mdf-serial.c
-new file mode 100644
-index 000000000000..6ba3be019847
---- /dev/null
-+++ b/drivers/iio/adc/stm32-mdf-serial.c
-@@ -0,0 +1,223 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * This file is part of STM32 MDF driver
-+ *
-+ * Copyright (C) 2023-2026, STMicroelectronics - All Rights Reserved
-+ */
-+
-+#include <linux/cleanup.h>
-+#include <linux/clk.h>
-+#include <linux/clk/clk-conf.h>
-+#include <linux/clk-provider.h>
-+#include <linux/device.h>
-+#include <linux/export.h>
-+#include <linux/list.h>
-+#include <linux/of.h>
-+#include <linux/regmap.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+#include <linux/string.h>
-+
-+#include "stm32-mdf.h"
-+
-+enum {
-+	STM32_MDF_SCKSRC_CCK0,
-+	STM32_MDF_SCKSRC_CCK1,
-+	STM32_MDF_SCKSRC_CLK,
-+	STM32_MDF_SCKSRC_NONE,
-+};
-+
-+static const char * const stm32_mdf_sitf_modes[] = {
-+	[STM32_MDF_MODE_SPI] = "spi",
-+	[STM32_MDF_MODE_LF_SPI] = "lf_spi",
-+	[STM32_MDF_MODE_MANCHESTER_R] = "manchester_r",
-+	[STM32_MDF_MODE_MANCHESTER_F] = "manchester_f",
-+};
-+
-+static const struct regmap_config stm32_sitf_regmap_cfg = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = sizeof(u32),
-+	.max_register = MDF_SITFCR_REG,
-+	.fast_io = true,
-+	/* Do not use regcache as it does not support single register map */
-+};
-+
-+/**
-+ * stm32_mdf_sitf_start() - Enable an MDF serial interface
-+ * @sitf: Serial interface to enable
-+ *
-+ * Enable the serial interface and increment its active-user count on success.
-+ * Each successful call must be balanced by stm32_mdf_sitf_stop().
-+ *
-+ * Return: 0 on success, or a negative error code on failure.
-+ */
-+int stm32_mdf_sitf_start(struct stm32_mdf_sitf *sitf)
++err_cleanup:
++	stm32_mdf_dma_release(iio);
+ err_clean_list:
+ 	list_del(&adc->entry);
+ 
+@@ -1479,14 +1758,48 @@ static void stm32_mdf_adc_remove(struct platform_device *pdev)
+ 
+ 	if (!MDF_IS_INTERLEAVED_FILT_NOT_0(adc))
+ 		iio_device_unregister(indio_dev);
++	stm32_mdf_dma_release(indio_dev);
+ 
+ 	list_del(&adc->entry);
+ }
+ 
++static int stm32_mdf_adc_suspend(struct device *dev)
 +{
-+	int ret;
-+
-+	guard(spinlock)(&sitf->lock);
-+
-+	ret = regmap_set_bits(sitf->regmap, MDF_SITFCR_REG, MDF_SITFCR_SITFEN);
-+	if (!ret)
-+		sitf->refcnt++;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(stm32_mdf_sitf_start);
-+
-+/**
-+ * stm32_mdf_sitf_stop() - Release an MDF serial interface user
-+ * @sitf: Serial interface to release
-+ *
-+ * Decrement the active-user count and disable the serial interface when the
-+ * last user releases it.
-+ *
-+ * Return: 0 on success, -EPERM if there are no active users, or a negative
-+ * error code if disabling the interface fails.
-+ */
-+int stm32_mdf_sitf_stop(struct stm32_mdf_sitf *sitf)
-+{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
 +	int ret = 0;
 +
-+	guard(spinlock)(&sitf->lock);
++	if (iio_buffer_enabled(indio_dev))
++		ret = stm32_mdf_adc_predisable(indio_dev);
 +
-+	if (!sitf->refcnt) {
-+		dev_err(sitf->dev, "Unbalanced serial interface stop ?\n");
-+		return -EPERM;
-+	}
-+
-+	sitf->refcnt--;
-+
-+	if (!sitf->refcnt)
-+		ret = regmap_clear_bits(sitf->regmap, MDF_SITFCR_REG, MDF_SITFCR_SITFEN);
++	regcache_cache_only(adc->regmap, true);
++	regcache_mark_dirty(adc->regmap);
 +
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(stm32_mdf_sitf_stop);
 +
-+static int stm32_mdf_sitf_get_clk(struct device *dev, struct device_node *np,
-+				  struct stm32_mdf_sitf *sitf)
++static int stm32_mdf_adc_resume(struct device *dev)
 +{
-+	struct clk *sck;
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct stm32_mdf_adc *adc = iio_priv(indio_dev);
 +	int ret;
 +
-+	/* SITF nodes have no device to apply their assigned clock configuration. */
-+	ret = of_clk_set_defaults(np, false);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Can't configure serial clock for %pOF\n", np);
++	regcache_cache_only(adc->regmap, false);
++	ret = regcache_sync(adc->regmap);
 +
-+	sitf->scksrc = STM32_MDF_SCKSRC_NONE;
-+	/* Optional clock. Clock not needed in Manchester mode. */
-+	if (!of_property_present(np, "clocks"))
-+		return 0;
++	if (!ret && iio_buffer_enabled(indio_dev))
++		ret = stm32_mdf_adc_postenable(indio_dev);
 +
-+	sck = devm_get_clk_from_child(dev, np, NULL);
-+	if (IS_ERR(sck))
-+		return dev_err_probe(dev, PTR_ERR(sck), "Can't get serial clock for %pOF\n", np);
-+
-+	sitf->sck = sck;
-+	if (!strncmp(__clk_get_name(sck), STM32_MDF_CCK0, sizeof(STM32_MDF_CCK0)))
-+		sitf->scksrc = STM32_MDF_SCKSRC_CCK0;
-+	else if (!strncmp(__clk_get_name(sck), STM32_MDF_CCK1, sizeof(STM32_MDF_CCK1)))
-+		sitf->scksrc = STM32_MDF_SCKSRC_CCK1;
-+	else
-+		sitf->scksrc = STM32_MDF_SCKSRC_CLK;
-+
-+	return 0;
++	return ret;
 +}
 +
-+static int stm32_mdf_sitf_parse(struct device *dev, struct device_node *np,
-+				struct stm32_mdf_sitf *sitf)
-+{
-+	const char *str;
-+	int ret, mode;
-+	u32 idx, sitfcr;
++static SIMPLE_DEV_PM_OPS(stm32_mdf_adc_pm_ops, stm32_mdf_adc_suspend, stm32_mdf_adc_resume);
 +
-+	ret = of_property_read_u32(np, "reg", &idx);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Could not get interface index for %pOF\n", np);
-+
-+	if (idx % 0x80) {
-+		dev_err(dev, "Unexpected reg property value [%x]\n", idx);
-+		return -EINVAL;
-+	}
-+
-+	idx = (idx >> 7) - 1;
-+	if (idx > sitf->mdf->nbf) {
-+		dev_err(dev, "Interface index [%d] exceeds maximum [%d]\n", idx, sitf->mdf->nbf);
-+		return -EINVAL;
-+	}
-+
-+	ret = of_property_read_string(np, "st,sitf-mode", &str);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Could not get interface mode for %pOF\n", np);
-+
-+	mode = match_string(stm32_mdf_sitf_modes, ARRAY_SIZE(stm32_mdf_sitf_modes), str);
-+	if (mode < 0) {
-+		dev_err(dev, "Unknown serial interface mode [%s]\n", str);
-+		return mode;
-+	}
-+
-+	sitf->mode = mode;
-+	sitfcr = FIELD_PREP(MDF_SITFCR_SITFMOD_MASK, mode);
-+
-+	ret = stm32_mdf_sitf_get_clk(dev, np, sitf);
-+	if (ret)
-+		return ret;
-+
-+	if (mode == STM32_MDF_MODE_SPI && sitf->scksrc == STM32_MDF_SCKSRC_NONE) {
-+		dev_err(dev, "Missing clock for serial interface [%d] in SPI mode\n", idx);
-+		return -EINVAL;
-+	}
-+
-+	if (mode == STM32_MDF_MODE_LF_SPI && (sitf->scksrc != STM32_MDF_SCKSRC_CCK0 &&
-+					      sitf->scksrc != STM32_MDF_SCKSRC_CCK1)) {
-+		dev_err(dev, "Missing CCKx clock for serial interface [%d] in LF_SPI mode\n", idx);
-+		return -EINVAL;
-+	}
-+
-+	sitf->id = idx;
-+	sitf->node = of_fwnode_handle(np);
-+	spin_lock_init(&sitf->lock);
-+
-+	sitfcr |= FIELD_PREP(MDF_SITFCR_SCKSRC_MASK, sitf->scksrc);
-+
-+	return regmap_set_bits(sitf->regmap, MDF_SITFCR_REG, sitfcr);
-+}
-+
-+int stm32_mdf_sitf_init(struct device *dev, struct stm32_mdf *mdf)
-+{
-+	struct stm32_mdf_sitf *sitf;
-+	void __iomem *base;
-+	int ret;
-+
-+	for_each_available_child_of_node_scoped(dev->of_node, child) {
-+		if (!of_node_name_eq(child, "sitf"))
-+			continue;
-+
-+		sitf = devm_kzalloc(dev, sizeof(*sitf), GFP_KERNEL);
-+		if (!sitf)
-+			return -ENOMEM;
-+		sitf->dev = dev;
-+		sitf->mdf = mdf;
-+
-+		base = devm_of_iomap(dev, child, 0, NULL);
-+		if (IS_ERR(base))
-+			return PTR_ERR(base);
-+
-+		sitf->regmap = stm32_mdf_regmap_init(dev, mdf->kclk, base,
-+						     &stm32_sitf_regmap_cfg);
-+		if (IS_ERR(sitf->regmap))
-+			return dev_err_probe(dev, PTR_ERR(sitf->regmap),
-+					     "Failed to init SITF regmap\n");
-+
-+		ret = stm32_mdf_sitf_parse(dev, child, sitf);
-+		if (ret)
-+			return ret;
-+
-+		list_add(&sitf->entry, &mdf->sitf_list);
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/iio/adc/stm32-mdf.h b/drivers/iio/adc/stm32-mdf.h
-index e3617b181e28..fa689954d7c1 100644
---- a/drivers/iio/adc/stm32-mdf.h
-+++ b/drivers/iio/adc/stm32-mdf.h
-@@ -19,6 +19,9 @@
- #define MDF_IPIDR_REG 0xff8
- #define MDF_SIDR_REG 0xffc
- 
-+/* Registers offsets relative to sitf base address */
-+#define MDF_SITFCR_REG 0x00 /* 0x80 * x + offset */
-+
- /* Registers offsets relative to filter base address */
- #define MDF_BSMXCR_REG 0x00 /* 0x84 * x + offset */
- #define MDF_DFLTCR_REG 0x04
-@@ -177,8 +180,49 @@
- #define STM32_MDF_CCK0 "clk_cck0"
- #define STM32_MDF_CCK1 "clk_cck1"
- 
-+enum stm32_sitf_mode {
-+	STM32_MDF_MODE_LF_SPI,
-+	STM32_MDF_MODE_SPI,
-+	STM32_MDF_MODE_MANCHESTER_R,
-+	STM32_MDF_MODE_MANCHESTER_F,
-+	STM32_MDF_MODE_NB,
-+};
-+
-+/*
-+ * struct stm32_mdf_sitf - STM32 MDF serial interface data
-+ * @entry: serial interface list head
-+ * @dev: pointer to parent device
-+ * @regmap: regmap for register read/write
-+ * @mdf: mdf common data pointer
-+ * @node: serial interface node handle
-+ * @sck: sitf clock handle
-+ * @base: sitf registers base cpu addr
-+ * @lock: sitf state manegement lock
-+ * @refcnt: sitf usage reference counter
-+ * @scksrc: sitf clock source
-+ * @id: serial interface index
-+ * @mode: sitf mode
-+ * @sitfcr: sitf configuration register backup
-+ */
-+struct stm32_mdf_sitf {
-+	struct list_head entry;
-+	struct device *dev;
-+	struct regmap *regmap;
-+	struct stm32_mdf *mdf;
-+	struct fwnode_handle *node;
-+	struct clk *sck;
-+	void __iomem *base;
-+	spinlock_t lock; /* Manage race conditions on sitf state */
-+	unsigned int refcnt;
-+	unsigned int scksrc;
-+	u32 id;
-+	u32 mode;
-+	u32 sitfcr;
-+};
-+
- /*
-  * struct stm32_mdf - STM32 MDF driver common data (for all instances)
-+ * @sitf_list: pointer to serial interfaces list
-  * @filter_list: pointer to filter interfaces list
-  * @kclk: kernel clock shared by the core and its children
-  * @fproc: processing clock frequency
-@@ -186,6 +230,7 @@
-  * @nb_interleave: number of interleaved filters
-  */
- struct stm32_mdf {
-+	struct list_head sitf_list;
- 	struct list_head filter_list;
- 	struct clk *kclk;
- 	unsigned long fproc;
-@@ -224,3 +269,7 @@ int stm32_mdf_core_lock_kclk_rate(struct stm32_mdf *mdf);
- void stm32_mdf_core_unlock_kclk_rate(struct stm32_mdf *mdf);
- unsigned long stm32_mdf_core_get_cck(struct stm32_mdf *mdf);
- 
-+int stm32_mdf_sitf_init(struct device *dev, struct stm32_mdf *mdf);
-+int stm32_mdf_sitf_start(struct stm32_mdf_sitf *sitf);
-+int stm32_mdf_sitf_stop(struct stm32_mdf_sitf *sitf);
-+
+ static struct platform_driver stm32_mdf_adc_driver = {
+ 	.driver = {
+ 		.name = "stm32-mdf-adc",
+ 		.of_match_table = stm32_mdf_adc_match,
++		.pm = &stm32_mdf_adc_pm_ops,
+ 	},
+ 	.probe = stm32_mdf_adc_probe,
+ 	.remove = stm32_mdf_adc_remove,
 
 -- 
 2.43.0
