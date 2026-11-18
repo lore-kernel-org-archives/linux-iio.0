@@ -1,66 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795038712;
-	b=lhEcyzGipyTcDnOnS8ZKsItUqBeyKEWiQO9HCqx6j6Vi0W4aWpmE24KfmaHAj1/7bt2y
-	 KB0JgR7wEu0ulqXelzW760svE7lcgEnRf98AFu1RR4WK/sTOLMpHjydyAJQLduNoniULH
-	 HkPbvp4gCmGOl4+1RQIHzxyLAGxkOIoiiGQ7hHhqXO5NibnL9X11cI5PBpaBS5TQOWSr9
-	 xkU4avpzas2AqsmdXwiliJ8+lMOYoanAzKH5oDkp1LL+wIX5xqNNLwtyIGt7mZrwkcVXj
-	 rxn8iA0jehwKWkcwv2ZnKOZQgefRtt/iJWKA/84iJxGLcZjkNzfbtMD4JWjP5hEENoA==
+	t=1795039239;
+	b=da3k9lCUUDKyCeuT3FcXT8gvw2eGrUoasUpB+NnsdJd81qCZp/qusl8g2NS0h8FLxHiw
+	 XAyRW5FMUibMcZsdNTIqO1SuIIIKMprmx5gUzMhAYe/ZfX4R3qreknFXRQRyb1VKDvv01
+	 0kOrqViEVw4y1MXODIJOTVa2ghosVXvhwc3+1CILauGcn0u6X9njiJ1BmEFt1IedjzLBa
+	 dYyaUGOuR/Qpone/dMkTWM4wVLECebFurV/SbXqDlAq508dRnOl624dx3Ti4W/kcH83AD
+	 /nguU2jePtg9aZZJmBBaw0SevY3W5XN08iPVth21zbJmfRo2FwZju1Wyzg2Heo336dQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795038712;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795039239;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=rvE6rq5sOnP8SXR/s3Rz5NZJQ0oCtKnvfp4hDVDsKYE=;
-	b=X8JuyMNM+newCvOcBQH8wFrxh862dor3fYwl7mp8Y4+Cn/PVOjPgMNU5XXjgrSJhKD1I
-	 sTbRG2vpd5VkIVvaJhkz74+3BM1oCvw89oGFlh4nP3tDpeDri2l9w1vbETsNYewidy9Jl
-	 gPOH47aKeW7EtR2PT7enpOfFUUh/zvGnwZNbXKXX7CpalFcMZbIFqSPtCMi/24Ot7A01F
-	 G6E/n1pwvG+XxccwixoXcu6X8Dr+wqdcv0M3gX8tasj46qvjTDaIB+oR29uHHLPWzWYB0
-	 a0mVUMoeWD5oBtu44IzqjcCOK2k2iW57tRYNYK40CESB4JGrKkZ/95RtD3jEBQqGFAw==
+	bh=EW/j4AHQToanR4iAnbKrwXf5ZMy3lNHSEzakLY3OOkE=;
+	b=0yMh6Z9Xm9YU9NRcnemlkQkcf6qlwUiLeR+oN9Fj5uaJ3pqCBhb2PMu+96Vu/NWsAb0U
+	 7CEYeR8tOUBw99MHDDi3gFhvKCdP5GHzucUS1D+aS9G4C0uM8ZjUickcM44fIj6FstgWo
+	 nofgS4R31reOBgTC0l7uf9ggvRB1x6j+h8eUYi7MHLdSbe3ndZJVMfHsgaRTFUBGZvYLe
+	 DTqL2oxw2rbzzb1/BDaGIzEPeDPmuWGluyJHW3NjXSE+kRIgQ1znJskz18LJwaoVKN4IC
+	 YV+51pq5gLHzz78/4MF5vlMQJa0YJTwww3DkfRhBsxz9EqyAJTLB8wbwQx6nnhpeSeQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ejm1WQUf;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="EHUn/RC5";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70C74606A31C;
-	Wed, 18 Nov 2026 21:51:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F562606A330;
+	Wed, 18 Nov 2026 22:00:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ejm1WQUf
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3F291F000C4;
-	Wed, 18 Nov 2026 21:51:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EHUn/RC5
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 045061F000C6;
+	Wed, 18 Nov 2026 22:00:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795038712;
-	bh=rvE6rq5sOnP8SXR/s3Rz5NZJQ0oCtKnvfp4hDVDsKYE=;
+	s=k20260515; t=1795039239;
+	bh=EW/j4AHQToanR4iAnbKrwXf5ZMy3lNHSEzakLY3OOkE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Ejm1WQUfifQ88eirtG6eRgm1/oeom0Xu4GnaKZOojLY7DlwCPXjr29Y0/9qdAc4Lw
-	 952wAsTzKJIRa8N9fnOQ024wy3lYPHLuRvf/zmJIXfCuxubCnXkG0dCc7Vh6u4+ifC
-	 4s8bGNeSUT5q1GCheWyUxW2Gmj2zQx1+SVKGvXCY07TT5tuVoh9VwrV/dEcRcnFt1+
-	 qOvjVQb1zEfusu7ZoSYlX9yMFK9uyJsVt8W5sB7NB8a9cANZW5Nivg9tpN2SNWgGx7
-	 DvaekMK6iUV0c3p2RkHxk2VG84k1ELw9ZUqisLsC56eP60J3UjbV/AIUijfIo5oN2a
-	 9vgF8rNP6/nsA==
-Date: Wed, 18 Nov 2026 21:51:44 +0000
+	b=EHUn/RC5tq2E/sDD9KuZBuc3WUNlBitDQRQ+XXA1pPaXDyVDr72v8dR3Brnq6I1xl
+	 mNBEKAeHSOwM0jXRISwmZOmN4sJ+XwdJBqkRvpknbqHFAuqmUqOygSxJ9uoPeIQuCC
+	 akBNA4P5pGfE3qK8Ifv3d5xCPfpqnRQaAo6AOAf6s/UVAYVxezDqOr5ikwifG7GoyP
+	 bMmpEatW+uw7d3bAdqC8cop/FIjYHIQ9sIda0QL8qnIdo6db/aDqvAbav1GMeMEGJt
+	 yY70g+ClHORIh8mv5OS8JLNxaMVGMu3JfkazYlhhwg9CcGGjCN3moPgI6WSXngWzql
+	 Nw+BAauBDDRUQ==
+Date: Wed, 18 Nov 2026 22:00:33 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Ryan Brue <ryanbrue.dev@gmail.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Roman
- Vivchar <rva333@protonmail.com>, Luca Leonardo Scorcia
- <l.scorcia@gmail.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v5 0/2] iio: adc: add mt6397 PMIC AUXADC support
-Message-ID: <20261118215144.301c2467@jic23-hlaptop>
-In-Reply-To: <4c64aa52-2b75-427e-8f26-c2ef7fc5b822@gmail.com>
-References: <20261025-rbrue-suez-upstreaming-mt6397-auxadc-v5-0-5c3c7a5a1851@gmail.com>
-	<89c8cadb-0ccb-4aac-9b95-89f355beb24a@collabora.com>
-	<60eeaaf9-57db-4ca7-b4f5-bdec111dcdbb@collabora.com>
-	<4c64aa52-2b75-427e-8f26-c2ef7fc5b822@gmail.com>
+To: Daniel Balint <dbalint@google.com>
+Cc: Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org, Benson
+ Leung <bleung@chromium.org>, Lee Jones <lee@kernel.org>, Tzung-Bi Shih
+ <tzungbi@kernel.org>, linux-iio@vger.kernel.org,
+ chrome-platform@lists.linux.dev, mfd@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/3] Introduce cros_ec power monitoring
+Message-ID: <20261118220033.70425495@jic23-hlaptop>
+In-Reply-To: <20261118204532.257423-1-dbalint@google.com>
+References: <20261106193129.43493-1-dbalint@google.com>
+	<20261107010356.39d9eddf@jic23-hlaptop>
+	<20261118204532.257423-1-dbalint@google.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,44 +67,68 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Nov 2026 11:35:20 -0600
-Ryan Brue <ryanbrue.dev@gmail.com> wrote:
+On Wed, 18 Nov 2026 20:45:32 +0000
+Daniel Balint <dbalint@google.com> wrote:
 
-> Hi Angelo,
+> On Sat, 7 Nov 2026 01:03:56 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> On 11/17/26 5:02 AM, AngeloGioacchino Del Regno wrote:
-> > I reiterate - I couldn't pick the series because, of course, that one 
-> > depends
-> > on the binding being merged, otherwise the header won't be there and 
-> > the build
-> > fails.
-> >
-> > So I can't pick the DTS until the next cycle (granted that this series 
-> > lands).
-> >
-> > Cheers,
-> > Angelo   
+> > Hi Daniel
+> > 
+> > I'm not necessarily against this but when adding monitoring components
+> > to IIO the usual question is why not hwmon?  What features are not
+> > well supported by that framework?
+> > 
+> > Note historically I suspect we accepted one or two drives into IIO that
+> > would have fitted better there so precedence isn't a strong argument.
+> > 
+> > Convention for these somewhat borderline case is +CC hmwon maintainer
+> > and list as well as IIO with that explanation in the cover letter.
+> > That avoids any last minute surprises!  
 > 
-> Thanks for the reviews, and for picking the binding and keypad patches.
+> Hi Jonathan,
 > 
-> The AUXADC series has already landed. Jonathan applied it to iio togreg 
-> on 11-02 (the binding with the header is 8f809aa84698), and it's in 
-> next-20261116, so it will be in 7.5-rc1 along with your tree.
+> Thanks for taking a look!
+> The main reason for choosing IIO over hwmon is that for On-Device Power
+> Monitoring, userspace needs an atomic, untorn snapshot across all rails
+> (up to 64) over the same integration window, triggered on demand from
+> userspace and read out in a single buffer read rather than repeated
+> per-channel sysfs reads.
 > 
-> The board only uses the header once, for MT6397_AUXADC_BAT_TEMP (1). If 
-> it helps, I can send a v3 of the board patch that uses the plain channel 
-> number and drops the include - it builds on your v7.4-next/dts64, with 
-> only the binding warnings you mentioned until the trees meet. I would 
-> then switch it to the macro after 7.5-rc1.
-> 
-> Just let me know if that sounds reasonable :)
-That's indeed a common solution to cases where a binding header
-is involved. So I'd do this - then chase with a patch next cycle
-to use the define.
+> Reflecting that requirement, EC_PWRMON_LATCH on the EC is a global,
+> stateful command: a single latch simultaneously snapshots all onboard
+> power accumulators and resets their accumulation window on the EC, so
+> individual channels cannot be latched independently. As far as I know,
+> hwmon only exposes independent per-channel sysfs attributes with no
+> multi-channel buffer or on-demand trigger ABI, whereas IIO's triggered
+> buffer interface is well suited for this kind of pattern.
 
-J
+Ok, but that's not in the driver yet. I see you refer to that below
+as a v2 thing, so not a problem.
+
+Do you need that coherent snapshot to get to userspace in one go? 
+
+For accumulator channels the way they are normally done to sysfs
+style reads is to snapshot on each read, update an internal store
+of accumulation since enable then provide whichever one was requested.
+That way no data is lost - but you don't get an aligned snapshot.
+So it depends on what maths you are going to do with them, whether
+it can be done in kernel and if not how much interchannel skid
+matters.
+
+So tell us more on why you need that coherent snapshot to userspace.
+
+I agree that if you do, then hwmon wouldn't currently be a good fit
+(unless I'm also missing a way to do it).
+
 > 
-> Best Regards,
-> Ryan Brue
+> CC'ing hwmon maintainer and list to keep me honest.
 > 
+> If there is no objection to adding the driver to IIO, I will clean up the
+> custom energy_value attribute and replace it with the standard IIO
+> triggered buffer interface in v2, along with addressing other review
+> comments and including the above explanation in the v2 cover letter.
+> 
+> Thanks,
+> Daniel
 
