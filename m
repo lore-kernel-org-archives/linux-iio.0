@@ -1,71 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.89.44.33
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795042829;
-	b=QtvqV0kt48/99pxrRaT/3nPE4Yng6BDLBQzFiRny6ru+2jdLdTID73IKKSYuanU3v4wz
-	 v32pkPANupdd9FvE5WsdCY3FBVPvIjxOZktUnUDyN9HJ9vazg8i7xDdMCouAvhGXQiaxJ
-	 xjOxCwVxrlHf0PkU28RE+NQ8A8LGnG0QHCsSZA9F6bVWuGwxha3gr58R2aWrjFFZ6zQIu
-	 WsWEoZbxtTe7XfdKTMbXeD62vKQYOy0QtQZWpQdNSF/zLds5gBQ7L62dGZi5G0YHfqk5c
-	 aG0Z8gxc+yp3RHw1cDkZ+HBWyFrWkD/7AGVBZsh4WiJBlL2hON47WoVk79w7DMwYw5g==
+	t=1795044263;
+	b=y/eIueXKTPZbGyYsfX/8MuR48C0SkG5VfiNPEeC9FkETlhw2XmyiwU021zZmEbagkovt
+	 8rbQU9WrqBDEpMU3JAFEi0h98qwHkYHUz9Z1mvtLANWlEf3ysrGsLtP87OA8mxBunJIqb
+	 bwcPkER2FWgX7LNkr6W4sVYfMZ4NfAa8Snov0xm1I8N7sm9EjXaExmlP6dUsfI/xj2uDv
+	 FGzwQspUC9hjtGCJmJAjmzMGcb7shZxuOBzjCk8pAnMOKeZ2odJ/11to38B+6BZlDBqmr
+	 qwfcyoOvE0K/9VV2OG2JSmkVZ9xRcZDqPAvNhURmHPIhe/S19fZB+Gj9Nk8iFBlm+JQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795042829;
-	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
-	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
-	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
-	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
-	bh=LcGUIxJ0hhWwJBANgRsmsDcWNEnQenUxD/N5yM1KEfM=;
-	b=ce+fykWXqCwqCYOLe883dXZNTsFsGotHXES0EI9qsFCJt9gkQYoRiP6vFka9c4xHzcuQ
-	 KCQmHSOa+9c0tVqr/vMimsrzpZCbgVV3FdFyKCLQEQr8DIcbQH8mWgI7zZ74HwhCrSRKi
-	 tWvCzMvjfa0LWu9pvxYycerHz4kBtUAP7MU/V51YEtYm2wWIcU7aKTmm3ghJz8uiQYmWF
-	 rykmInWJ9EaLrL6x5E7K/F5Pz1ZBgEqNNoKWT76UWTBV5RJ74QNuAjgx39IJ2WLLRTo5s
-	 cRVVFzOVDZrMMHkNHxshcfHotlA/ezXw9I4gr7QSHm4FoXp0iaZI1BsYujxqC1YyQcQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795044263;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=pIQ5Ix94t0jSQmA8pB2c+O3uEnE02Nox27idZsmudT4=;
+	b=xyxsPIoTA19a8/Ck2womEtTx+hmSqvCk7euu8rtlS34j6GZfdNyYkH0li+aBciRGW1/B
+	 DNr6D3/NVBpyISO5d/kFofnVQofmH/WCdcNqou+meo/YGcaLPv9P+DzG4spKmG3WBSnjF
+	 XXybDsoShaqX3Bj0Qjwoe4MhRvHBRlDUbTMPp70L4zf/qpA17wQAjyNlkDr2343jhmgiK
+	 YsSexIAIPV+jD+vyBLGdv4CUcCb/V5Q3fx8YbQovqt11OpA6qcF3UVmkwBN33Qxis6Tcc
+	 35n2TWNCnP8lO+w+6Zhmd58s3iShm3hPaF72gAmow9xo0OigRL3ott1XH4UvHrt9BDw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=roeck-us.net;
-	spf=fail smtp.mailfrom=roeck-us.net;
-	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=l6IhFjxb;
-	arc=none smtp.remote-ip=35.89.44.33
-Received: from omta34.uswest2.a.cloudfilter.net (omta34.uswest2.a.cloudfilter.net [35.89.44.33])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FxMkt25G;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 334D2606A320
-	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 23:00:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 334D2606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF6B2606A32A
+	for <linux-iio@vger.kernel.org>; Wed, 18 Nov 2026 23:24:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=l6IhFjxb
-Received: from eig-obgw-6002b.ext.cloudfilter.net ([10.0.30.203])
-	by cmsmtp with ESMTPS
-	id Tla6x98mjAR1iTodbxzkLz; Wed, 18 Nov 2026 23:00:23 +0000
-Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
-	by cmsmtp with ESMTPS
-	id TodaxPYsj8cn4TodaxiXM7; Wed, 18 Nov 2026 23:00:22 +0000
-X-Authority-Analysis: v=2.4 cv=Qrde3Uyd c=1 sm=1 tr=0 ts=6afe2e06
- a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M0FbrtG7MMAA:10 a=VwQbUJbxAAAA:8
- a=xtVSApEC_Af63HCmTx8A:9 a=QEXdDO2ut3YA:10 a=KPbNTLLc3YvdawN95zVk:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
-	List-Archive; bh=LcGUIxJ0hhWwJBANgRsmsDcWNEnQenUxD/N5yM1KEfM=; b=l6IhFjxbqkEW
-	usFNckm0PuJnx6D3jE0/a1aY5IAo3PpzAvw7KShZLOUfkRVno4Lni0blwvnt2OO7ftyK3HXUlZyuc
-	FCidRVfOk7o6kjfOjwiYcotvDdE429VCmEL1oVAgikzmoyIzmCvclGTecIERMcjwl8hC9ysLfZRQj
-	sY9kTAWaL/FqMHkQ/O9rx2pb6NL9MKudoaN+0dXrVXbtPEg4xQI09v2QkzTbTRcmJ0udV1FIkgkWf
-	C28L7rPX28FTx2KsmB91ZxZC0R47/YXJ1M81axuYYM3Sl40ZAIf3e/vwztlRWiP9XqcO2+x15dQDM
-	othLraxL6uzql8OB3/hqEQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:36386)
-	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <linux@roeck-us.net>)
-	id 1xToda-000000049Xm-00es;
-	Thu, 19 Nov 2026 04:30:22 +0530
-Message-ID: <11a821f4-aef6-425a-8626-1d8641e9f83d@roeck-us.net>
-Date: Wed, 18 Nov 2026 15:00:20 -0800
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FxMkt25G
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298071F000C4;
+	Wed, 18 Nov 2026 23:24:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795044263;
+	bh=pIQ5Ix94t0jSQmA8pB2c+O3uEnE02Nox27idZsmudT4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=FxMkt25GoMRtIXnUElfnkTBX5AEcqeKb5JkUK1ShpLdxRb/2GpRL13KAc88u9i9jz
+	 5AaQ/wYYO/1fpzWC933rziiKipWs4Jwz05mhGq/JboMeFcvB7aO6A4KIi2GGSTv9jU
+	 votIrVq4Xrw9Re1u9bbPNB1/KxpceuwX/mt+CNv25k8TqoI4HRukjZtlCz5eq7sXU2
+	 oqlqFJ+XtfGrtEV4Kp0z8SZXs/j9uzXXUb/m2Xp46lHhOAh9Bchx6S2IV4NR/KmyUR
+	 pUqlW7kIGaORH7ePhchbet/foogzpmzu1vWzIHqP1PNvt5vSbYQcGAp2LD/77uxIJT
+	 StU1Mju8Eocqw==
+Date: Wed, 18 Nov 2026 23:24:18 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Joe LeVeque <joe.l@reflexrobotics.com>
+Cc: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: iio: imu: inv_icm42600: large gyro offset with temperature
+ sensor disabled (ICM-42688-P)
+Message-ID: <20261118232418.7fc702a8@jic23-hlaptop>
+In-Reply-To: <CAJLMkXYYXjFwAZN9TwyD3vez1XCpCxuEtmye1vi=jdLSLt36xg@mail.gmail.com>
+References: <CAJLMkXY6wS7ErVT5YUyp=c0TJDPmGePJiDua4MPw47V83JQ0Fw@mail.gmail.com>
+	<FR2P281MB310391F1880DC67B2FC446DBCE722@FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM>
+	<CAJLMkXYB9NjwN1ZxfkGPE=y2NESRc=ir7B80cVpVk=d-tyPoVw@mail.gmail.com>
+	<CAJLMkXYNpRWWqNbUn72J8p7Fqi1jCy4FC2fdAtjkzJ4eW_9r2Q@mail.gmail.com>
+	<FR2P281MB31032ED88B4637350921FB4CCE7A2@FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM>
+	<CAJLMkXYYXjFwAZN9TwyD3vez1XCpCxuEtmye1vi=jdLSLt36xg@mail.gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -75,129 +65,326 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 0/3] Introduce cros_ec power monitoring
-To: Daniel Balint <dbalint@google.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-hwmon@vger.kernel.org, Benson Leung <bleung@chromium.org>,
- Lee Jones <lee@kernel.org>, Tzung-Bi Shih <tzungbi@kernel.org>,
- linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
- mfd@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20261106193129.43493-1-dbalint@google.com>
- <20261107010356.39d9eddf@jic23-hlaptop>
- <20261118204532.257423-1-dbalint@google.com>
-Content-Language: en-US
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
-In-Reply-To: <20261118204532.257423-1-dbalint@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1xToda-000000049Xm-00es
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:36386
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 4
-X-Org: HG=direseller_whb_net_legacy;ORG=directi;
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfFd5b718NSXzZ3tsLG9KyTr+Ku4iMf+QrnFkyWb9ejB+JplHZcs5TXdIKrke2EGRNKg9yDT3MMxkcRux0urU5ocxvusV/mw6Z4XH0SpWA0JsidbQfdqp
- A6GyYb5oLzXPL4DY6qKrgGZ90UQEXO7B8XnXiPTWUMoUxz/ATzhHjY1ylTduL96L1AjTPlBF9V503nrg5iKoLyXb0pSY/eXpWb/7w90YbWSRz4JYOAbE6uFK
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 11/18/26 12:45, Daniel Balint wrote:
-> On Sat, 7 Nov 2026 01:03:56 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
->> Hi Daniel
->>
->> I'm not necessarily against this but when adding monitoring components
->> to IIO the usual question is why not hwmon?  What features are not
->> well supported by that framework?
->>
->> Note historically I suspect we accepted one or two drives into IIO that
->> would have fitted better there so precedence isn't a strong argument.
->>
->> Convention for these somewhat borderline case is +CC hmwon maintainer
->> and list as well as IIO with that explanation in the cover letter.
->> That avoids any last minute surprises!
-> 
-> Hi Jonathan,
-> 
-> Thanks for taking a look!
-> The main reason for choosing IIO over hwmon is that for On-Device Power
-> Monitoring, userspace needs an atomic, untorn snapshot across all rails
-> (up to 64) over the same integration window, triggered on demand from
-> userspace and read out in a single buffer read rather than repeated
-> per-channel sysfs reads.
-> 
-> Reflecting that requirement, EC_PWRMON_LATCH on the EC is a global,
-> stateful command: a single latch simultaneously snapshots all onboard
-> power accumulators and resets their accumulation window on the EC, so
-> individual channels cannot be latched independently. As far as I know,
-> hwmon only exposes independent per-channel sysfs attributes with no
-> multi-channel buffer or on-demand trigger ABI, whereas IIO's triggered
-> buffer interface is well suited for this kind of pattern.
-> 
-> CC'ing hwmon maintainer and list to keep me honest.
-> 
+On Wed, 18 Nov 2026 11:33:17 -0800
+Joe LeVeque <joe.l@reflexrobotics.com> wrote:
 
-You could accomplish that the same way many hwmon drivers are doing it:
-Read all attributes in one go from the hardware, then cache it for a period
-of time.
+> Thank you both! Since the two of you lean different ways: Jean-Baptiste's=
+ point
+> fits the case Jonathan mentioned, where the temperature is dominated by t=
+he
+> sensor itself rather than the environment. Here it=E2=80=99s the die temp=
+erature, used
+> for gyro/accel compensation. So I=E2=80=99d propose option 1 (return -EBU=
+SY when both
+> gyro and accel are off), unless Jonathan prefers otherwise. I=E2=80=99ll =
+prepare it that
+> way and send it once you=E2=80=99ve both confirmed.
 
-Having said that, my experience is that people wanting to implement IIO
-drivers instead of hardware monitoring drivers keep finding reasons,
-so I won't object to an IIO implementation.
+That's fine.
 
-Guenter
+
+>=20
+> Thanks again,
+> Joe
+>=20
+> On Wed, Nov 18, 2026 at 10:00=E2=80=AFAM Jean-Baptiste Maneyrol
+> <Jean-Baptiste.Maneyrol@tdk.com> wrote:
+> > =20
+> > >Hi Jean-Baptiste,
+> > >
+> > >I've implemented the change as you suggested (temperature sensor always
+> > >on, temp_en, set_temp_conf() and the TEMP_DIS handling removed, FIFO
+> > >temperature reporting unchanged) and tested it on my ICM-42688-P (SPI,
+> > >i.MX8M Plus, 6.6 kernel with the driver backported).
+> > >
+> > >The gyro reads correctly from the first read after boot (about 3, -6, 0
+> > >LSB at rest at +-2000 dps), including after runtime suspend, and the
+> > >accel is unchanged.
+> > >
+> > >Regarding my question about temperature reads with both gyro and accel
+> > >off, testing shows the data is not marked invalid. The temperature
+> > >register retains the last measurement:
+> > >
+> > >  gyro and accel off (runtime suspended), 10 reads 1 s apart:
+> > >    3598 3598 3598 3598 3598 3598 3598 3598 3598 3598  (about 52.2 C)
+> > >
+> > >  gyro running (sysfs gyro read before each temp read), 10 reads:
+> > >    4934 4956 4950 4958 4956 4958 4956 4958 4962 4958  (about 62.4 C)
+> > >
+> > >  gyro started fresh each time (reads 3 s apart, autosuspend 2 s):
+> > >    4952 4960 4964 4960 4956
+> > >
+> > >So with both sensors off, a temperature read returns a stale value, he=
+re
+> > >about 10 C out of date, instead of INV_ICM42600_DATA_INVALID. The inva=
+lid
+> > >value only seems to appear before the very first measurement after
+> > >power-up. The fresh-start results show the first sample after a sensor
+> > >starts is current, so it appears the separate temperature startup dela=
+y is not
+> > >needed.
+> > >
+> > >With the patch as it stands, inv_icm42600_temp_read() would therefore
+> > >silently return stale data when both sensors are off. I see two option=
+s:
+> > >
+> > >1. Return -EBUSY based on the driver state: if both st->conf.gyro.mode
+> > >   and st->conf.accel.mode are INV_ICM42600_SENSOR_MODE_OFF, return
+> > >   -EBUSY without reading the register. Small, and maintains the docum=
+ented
+> > >   behavior.
+> > >
+> > >2. Have the temperature read turn on the accel (for example in low
+> > >   power mode), wait for its startup time, read the temperature, and l=
+et
+> > >   runtime PM turn it off again. A current value is then always
+> > >   returned, at the cost of a delay on that read.
+> > >
+> > >Which one would you prefer? I'm happy to implement either in the patch.
+> > >
+> > >Thanks,
+> > >Joe
+> > > =20
+> >
+> > Hello Joe,
+> >
+> > I prefer #1, since it is consistent with actual behavior and it makes s=
+ense.
+> > Returning temperature when all sensors are off doesn't have any sense, =
+since
+> > the only usage is temperature compensation of accel/gyro data.
+> >
+> > This is the reason why the implementation was done like this. And #2 is=
+ quite
+> > complex for something that is completely useless.
+> >
+> > Thanks,
+> > JB
+> >
+> > ________________________________________
+> > From: Joe LeVeque <joe.l@reflexrobotics.com>
+> > Sent: Friday, November 13, 2026 23:27
+> > To: Jean-Baptiste Maneyrol
+> > Cc: linux-iio@vger.kernel.org
+> > Subject: Re: iio: imu: inv_icm42600: large gyro offset with temperature=
+ sensor disabled (ICM-42688-P)
+> >
+> > Hi Jean-Baptiste, I've implemented the change as you suggested (tempera=
+ture sensor always on, temp_en, set_temp_conf() and the TEMP_DIS handling r=
+emoved, FIFO temperature reporting unchanged) and tested it on my ICM-42688=
+-P (SPI, i.=E2=80=8AMX8M Plus,
+> > ZjQcmQRYFpfptBannerStart
+> > This Message Is From an External Sender
+> > This message came from outside your organization.
+> >
+> > ZjQcmQRYFpfptBannerEnd
+> >
+> > Hi Jean-Baptiste,
+> >
+> > I've implemented the change as you suggested (temperature sensor always
+> > on, temp_en, set_temp_conf() and the TEMP_DIS handling removed, FIFO
+> > temperature reporting unchanged) and tested it on my ICM-42688-P (SPI,
+> > i.MX8M Plus, 6.6 kernel with the driver backported).
+> >
+> > The gyro reads correctly from the first read after boot (about 3, -6, 0
+> > LSB at rest at +-2000 dps), including after runtime suspend, and the
+> > accel is unchanged.
+> >
+> > Regarding my question about temperature reads with both gyro and accel
+> > off, testing shows the data is not marked invalid. The temperature
+> > register retains the last measurement:
+> >
+> >   gyro and accel off (runtime suspended), 10 reads 1 s apart:
+> >     3598 3598 3598 3598 3598 3598 3598 3598 3598 3598  (about 52.2 C)
+> >
+> >   gyro running (sysfs gyro read before each temp read), 10 reads:
+> >     4934 4956 4950 4958 4956 4958 4956 4958 4962 4958  (about 62.4 C)
+> >
+> >   gyro started fresh each time (reads 3 s apart, autosuspend 2 s):
+> >     4952 4960 4964 4960 4956
+> >
+> > So with both sensors off, a temperature read returns a stale value, here
+> > about 10 C out of date, instead of INV_ICM42600_DATA_INVALID. The inval=
+id
+> > value only seems to appear before the very first measurement after
+> > power-up. The fresh-start results show the first sample after a sensor
+> > starts is current, so it appears the separate temperature startup delay=
+ is not
+> > needed.
+> >
+> > With the patch as it stands, inv_icm42600_temp_read() would therefore
+> > silently return stale data when both sensors are off. I see two options:
+> >
+> > 1. Return -EBUSY based on the driver state: if both st->conf.gyro.mode
+> >    and st->conf.accel.mode are INV_ICM42600_SENSOR_MODE_OFF, return
+> >    -EBUSY without reading the register. Small, and maintains the docume=
+nted
+> >    behavior.
+> >
+> > 2. Have the temperature read turn on the accel (for example in low
+> >    power mode), wait for its startup time, read the temperature, and let
+> >    runtime PM turn it off again. A current value is then always
+> >    returned, at the cost of a delay on that read.
+> >
+> > Which one would you prefer? I'm happy to implement either in the patch.
+> >
+> > Thanks,
+> > Joe
+> >
+> >
+> > On Tue, Nov 10, 2026 at 2:28=E2=80=AFPM Joe LeVeque <joe.l@reflexroboti=
+cs.com> wrote: =20
+> > >
+> > > Hi Jean-Baptiste,
+> > >
+> > > Thank you for the quick reply and the explanation!
+> > > =20
+> > > > I think the best solution would be to completely delete the tempera=
+ture
+> > > > enable/disable feature. [...]
+> > > > Deleting all core temperature enable/disable and make temperature s=
+ensor
+> > > > always working. And we keep enabling/disabling of temperature repor=
+ting in
+> > > > the FIFO.
+> > > >
+> > > > Is that something you could work on? =20
+> > >
+> > > Yes, I'm happy to work on it. My plan is to remove `temp_en` from the=
+ sensor
+> > > configuration and the suspend state, drop the `temp` argument and the=
+ `TEMP_DIS`
+> > > handling from `inv_icm42600_set_pwr_mgmt0()`, remove
+> > > `inv_icm42600_set_temp_conf()` and its callers in the temperature rea=
+d and
+> > > buffer paths, and leave the FIFO temperature reporting as it is.
+> > >
+> > > Two questions before I begin:
+> > >
+> > > 1. Temperature read with both gyro and accel off: since the chip turn=
+s the
+> > >    temperature sensor off by itself in that case, I would keep the cu=
+rrent
+> > >    behavior (invalid data reported as -EBUSY). Or would you prefer a
+> > >    temperature read to turn on one of the sensors itself?
+> > >
+> > > 2. Should this go in as a fix, with a "Fixes:" tag for stable backpor=
+ts, or
+> > >    as a regular change? It is larger than a typical stable fix. I'm p=
+lanning
+> > >    to base it on the IIO "togreg" branch unless you or Jonathan prefer
+> > >    otherwise.
+> > >
+> > > I'll test it on my ICM-42688-P board (on a 6.6 kernel with the driver
+> > > backported) and mention that in the patch.
+> > >
+> > > Thanks again,
+> > > Joe
+> > >
+> > > On Tue, Nov 10, 2026 at 6:57=E2=80=AFAM Jean-Baptiste Maneyrol
+> > > <Jean-Baptiste.Maneyrol@tdk.com> wrote: =20
+> > > >
+> > > > Hello Joe,
+> > > >
+> > > > it seems to be a good catch. With temperature sensor disabled, gyro=
+ values
+> > > > are likely to not be temperature compensated internally.
+> > > >
+> > > > I think the best solution would be to completely delete the tempera=
+ture
+> > > > enable/disable feature. There is really no interest in disabling the
+> > > > temperature sensor since it is really bad for the gyro values. And =
+it
+> > > > would simplify the driver that is already quite complex.
+> > > >
+> > > > Deleting all core temperature enable/disable and make temperature s=
+ensor
+> > > > always working. And we keep enabling/disabling of temperature repor=
+ting in
+> > > > the FIFO.
+> > > >
+> > > > Is that something you could work on?
+> > > >
+> > > > Thanks for your reporting,
+> > > > JB
+> > > > =20
+> > > > >Hello Jean-Baptiste,
+> > > > >
+> > > > >I'm bringing up an ICM-42688-P (WHOAMI/ID 0x0007c1f2, on SPI) on a
+> > > > >custom i.MX8M-Plus carrier board, and I'm seeing a gyro behavior I=
+'d
+> > > > >like to check with you before sending a patch.
+> > > > >
+> > > > >Setup: kernel 6.6 (NXP/CompuLab BSP) with the inv_icm42600 driver =
+plus
+> > > > >the upstream "add support of ICM-42688-P" commit backported. I've
+> > > > >compared the relevant code paths with current mainline and they are
+> > > > >unchanged there, so I believe mainline behaves the same way.
+> > > > >
+> > > > >Observation: right after boot, reading the gyro through sysfs
+> > > > >(in_anglvel_*_raw, default +-2000 dps range) gives a large, very
+> > > > >stable offset at rest:
+> > > > >
+> > > > >- Temperature sensor off (after boot):   x =3D -139, y =3D 379, z =
+=3D -229
+> > > > >LSB  (about 8 to 23 dps)
+> > > > >- After one read of in_temp_raw:         x =3D    9, y =3D  -7, z =
+=3D   -3
+> > > > >LSB  (under 0.5 dps)
+> > > > >
+> > > > >The large offset does not decay with time or with spaced-out reads=
+. A
+> > > > >single in_temp_raw read removes it, and it stays away as long as t=
+he
+> > > > >temperature sensor remains enabled. Buffered capture with the
+> > > > >temperature channel enabled also gives the small values. The patte=
+rn
+> > > > >is reproducible across boots and power cycles.
+> > > > >
+> > > > >Looking at the driver, the default configuration has .temp_en =3D =
+false,
+> > > > >inv_icm42600_set_pwr_mgmt0() sets PWR_MGMT0.TEMP_DIS whenever temp=
+ is
+> > > > >false, and inv_icm42600_gyro_read_sensor() enables the gyro through
+> > > > >inv_icm42600_set_gyro_conf(), which passes the current
+> > > > >st->conf.temp_en through unchanged. So after boot (or runtime
+> > > > >suspend), the gyro runs with the temperature sensor disabled, which
+> > > > >matches what I see.
+> > > > >
+> > > > >As a fix, I'm currently keeping the temperature sensor on whenever=
+ the
+> > > > >gyro or accel is on, in inv_icm42600_set_pwr_mgmt0(), just before =
+the
+> > > > >"if nothing changed" check:
+> > > > >
+> > > > >if (gyro !=3D INV_ICM42600_SENSOR_MODE_OFF ||
+> > > > >   accel !=3D INV_ICM42600_SENSOR_MODE_OFF)
+> > > > >temp =3D true;
+> > > > >
+> > > > >With this, the gyro reads correctly from the first read after boot.
+> > > > >
+> > > > >My questions:
+> > > > >
+> > > > >1. Is this expected behavior for the ICM-42688-P (gyro offset
+> > > > >compensation depending on the temperature sensor), and does it also
+> > > > >apply to the other chips supported by this driver?
+> > > > >2. Would you accept a fix along these lines, or would you prefer it
+> > > > >handled differently, for example only for some chips, or in the gy=
+ro
+> > > > >read path instead of inv_icm42600_set_pwr_mgmt0()?
+> > > > >
+> > > > >If this approach is acceptable, I'm happy to send a proper patch
+> > > > >against the IIO tree. I can only test on 6.6 with the backported
+> > > > >driver, and I would state that in the patch.
+> > > > >
+> > > > >Thank you for your time.
+> > > > >
+> > > > >Best regards,
+> > > > >Joe LeVeque
+> > > > > =20
+> > =20
+>=20
 
