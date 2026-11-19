@@ -1,47 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795083354;
-	b=1J73ZmJaOGchG6MpiOwoWnJzKCrqHyKneRByiXpMYL/uCVnD58R/BKJ5V3+CitQKKPH1
-	 GUVS/xezos6xTpLLe1icuy48zHjnQfAmPbTQZLxHohvXkxofk7PZLujGcSJLTKZrlMuJ2
-	 G6cfpc0pUXPqRfmsD4I0019btggcsIznx3WizS+A+MAUJPIwZRoVP4KuhJP7lJZjaw3Aa
-	 CeDcODTWGuqnFFxmwA52e8YoDKJfUPizm2UtrpM6qFdKFEXfcG912PcmJ6L15LxpsRK+r
-	 sgh37HfUiebUrhkGEnO/YmA8cUXkK7hRGNjPPl9J+0eJ67FBhk+WcivWUM+lff0D1DQ==
+	t=1795083429;
+	b=NFp6KGbBsVyuNKyiqAvD3Z3EBAWP/Jp+GU2oEh9EXL2qwCggDzRKZORGWCi3Jtw5eaQK
+	 bVJGJ1SMaQomCeQQejK93hE9UE12QguZdImODSFnmenRkQ8vEx/ngdW1voxYsgPKB9X4R
+	 01p0FSClWlmb/ufPXSf9OMUktFtXzxqmymGbiQDq1HRZtjanpsxz0VN5/0Qzjvg2RWe5O
+	 J0GVJ3Iu42TZeKd1w0Jpp6SWZzU60hLYtN5iCQfF5R/4gZIUQC2lqDUjcCCZQ2YX6DocE
+	 hT/575bxgAaOOBv6xolwL8C7S5a/GWZbaz0rNuSgsKxvAncqS/Rue0kTjgC0ZHlYmyQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795083354;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=PEa+TiB4bDPS7/DsTFWBrrG3Cs+fHxHFieRwrFs+kFM=;
-	b=Qkn78HSF9TQKb3hZbDE68iTi0NhAoJBlAJDMaS6QPtUWseNBUeB6IfmCXk7TTalmwhb7
-	 /Xb88YbtbtlTESWFxnZpR7gP9WAT2qweEhPwCnXBckOplz1D0k2VZ1ybkc3et0qjP1Q53
-	 zAr00hjfTqi/Me/3rp7btZZdFC0uRG6ZG6T8T8HqTVhfouzKG27nPW1Ue48xDPMGGlVyD
-	 ywMBFie36htILOnCkgRi4LkcGdKNo1xiEoJh7WOhcMLeLWmW2OCPH0uDY2+c/mOi25OOA
-	 k0YvXLtQGdIXlz70rCfo4GapmHUK316dCll+DVshm0BM3FL9qy0H6B9Q66j3i8J1QHQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795083429;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=6CudCDFEzBuYkIYRn7R857Mxi/zBeCHzdGpY6yNojK0=;
+	b=fOWaCdPvOXaC9QMwX/RICsnDVWdEhWfhbf//DwG/W8YoCSnhv6VKrJfxaHw9PWJrpXwf
+	 ovZsm/QJxZc/jf8zTxe6fevJ3TjErszsU2ilQ+5Xnugitr8dPRJFQUjyNJke1enWtyVc/
+	 Qe3evwgIvkKke4CoydSB8xOkguYCTbrTisl7hwqr3pG0DGX3iJ+wnMsrNyaFO8qIuZAX7
+	 Of/zzo8H0uqO0vX3fkxF05BKPoLnCAKTYz4tj3/cyCyY99DnH8c7K852BLyY0nz5+x5V9
+	 OoFDi+qcKkYUpvOwItIMMyAzGL012wus0HEWlKDMYdxhYmaIcHwIHL8EepPAcSUlpwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IV2BTjvJ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fGC49KEP;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C51606A320;
-	Thu, 19 Nov 2026 10:15:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D0A7606A320;
+	Thu, 19 Nov 2026 10:17:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1D0A7606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IV2BTjvJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C13FE1F000C4;
-	Thu, 19 Nov 2026 10:15:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795083354;
-	bh=PEa+TiB4bDPS7/DsTFWBrrG3Cs+fHxHFieRwrFs+kFM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=IV2BTjvJOeDxHGjnzhdGNIYg4qOpe4Rgs/6H4dkFbvzZe5Jamw/gM42EZ3bUBewPL
-	 tKj/301fx3iLgCn4aerr7yn6YhYysGaPu22sw7ifGNnK/hnolZlv3Tp58QRfO5aiTr
-	 L4U/AkTT02uJsL2ylGFX5v9GFFhn9YFU6nlPalTNChKgs/JbrV9o8oNGY04KeE8XKO
-	 yh2BALF4Dx3P2rFsbuLWWEbU9GN5AKsPw21rScLwQd+NX7JyqEuf8pG91U77vCsr6W
-	 YeQLHJx0qt2/q9uM2VKIBNsyoE4VRubAcm8CdeBPJcoGqEg/2q2+aCH1Qdg/SaGcY4
-	 pxxlw5BU9jrPg==
-Message-ID: <f148128d-7921-4836-b9d4-72788293215b@kernel.org>
-Date: Thu, 19 Nov 2026 11:15:51 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fGC49KEP
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795083429; x=1826619429;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/rU3oyGGODDYoR4QkB/LEIV0Iw5QHvOg7E5r2WJaQwY=;
+  b=fGC49KEPMmwkNKIbgkN6hQa1vcDbDnoETDb7Vq66BxF7uAzGdKCfNMCi
+   Y8cmIJMI4KteKJAPpQOUc9YAIu7qLIh23KGbLT9LeCiefSC/qeVB+TEyi
+   2fHrFU+9wE5jZsMMYqv2tYDUf7YkosDkE1d5yUsRJI9NEQhOldVPE9l/I
+   cqhi/TGH4dC62+mXDaRYCFBsRpavxLfa1OsBIrEUbP2lI1WuJPeu9tvCQ
+   5ubGqiD3ivW1xKbBhzbIkbHeincy7oM+as0iEBoGk3d+7BuQyI4S95QgG
+   D7UJiG+S5eh0+493sdIM4R1YkeA58/Ukdy2zXMZUbGwnt4VIYZU7gDnqp
+   w==;
+X-CSE-ConnectionGUID: 9cnzEhXyR4mIpIYCTzKWPg==
+X-CSE-MsgGUID: ogbXtoaHSVeKHIcQ+2265A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11970"; a="3845759"
+X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
+   d="scan'208";a="3845759"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 02:17:08 -0800
+X-CSE-ConnectionGUID: QJmfJdBBT0+uRL20CzgI1g==
+X-CSE-MsgGUID: aQ11iNKHSleNCCrS/JwhcA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
+   d="scan'208";a="10774767"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.61])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 02:17:06 -0800
+Date: Thu, 19 Nov 2026 12:17:04 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] iio: proximity: sx9324: fix proximity threshold
+ writes
+Message-ID: <av7MoMqutd2-lftk@ashevche-desk.local>
+References: <20261116205320.26070-1-kapoorarnav43@gmail.com>
+ <20261116205320.26070-3-kapoorarnav43@gmail.com>
+ <avyj-lOGvj04A_Ak@ashevche-desk.local>
+ <20261117191029.83901-1-kapoorarnav43@gmail.com>
+ <av1NN8_Y_f3xtWRo@ashevche-desk.local>
+ <20261118100605.34002-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,88 +90,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH] iio: gyro: adxrs290: propagate chip ID read errors
-To: Siqi Chen <chensiqi@uniontech.com>, nish.malpani25@gmail.com,
- jic23@kernel.org
-Cc: nuno.sa@analog.com, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux@analog.com,
- linux-kernel@vger.kernel.org
-References: <20261119030709.3792433-1-chensiqi@uniontech.com>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261119030709.3792433-1-chensiqi@uniontech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261118100605.34002-1-kapoorarnav43@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 19-Nov-26 4:07, Siqi Chen wrote:
-> spi_w8r8() returns either an unsigned 8-bit value or a negative error.
-> The probe function stores its return value in a u8, truncating errors and
-> treating them as unexpected chip IDs. Consequently, an SPI transfer failure
-> is reported as -ENODEV instead of the actual error.
+On Wed, Nov 18, 2026 at 03:36:05PM +0530, Arnav Kapoor wrote:
+> On Wed, Nov 18, 2026 at 09:01:11AM +0200, Andy Shevchenko wrote:
+> > For the sake of the correctness the whole set of 64k has to be checked. And in
+> > most cases the + 1 there will be wrong. The only correction we need is on the
+> > edges of the full squares, id est when val == r² - 1.
 > 
-> Store each result in an int and return negative errors before validating
-> the chip IDs.
+> I ran the v2 logic (reject val < 0, int_sqrt(2 * val + 1) for val > 1,
+> reject results above 0xff) over every val from 0 to 65535. Values up to
+> 32767 are accepted, and for each of them, apart from val == 0:
 > 
-> OpenCode was used to identify the issue and draft the code and changelog.
+> 	code = largest r such that r * r / 2 <= val
 > 
-> Compile-tested with CONFIG_ADXRS290=m using:
+> val == 0 stays at code 0, which reads back as 0 like code 1 does.
 > 
->   make O=/tmp/opencode/linux-build-adxrs290 W=1 \
->        drivers/iio/gyro/adxrs290.o
+> The + 1 only changes the result where you say the correction is needed.
+> int_sqrt(2 * val + 1) differs from int_sqrt(2 * val) for 127 values of
+> val, and those are exactly the ones with 2 * val == r² - 1 for an odd r
+> (val = 4, 12, 24, ..., 32512). For every other val both give the same
+> code, so the + 1 has no effect there.
 > 
-> No hardware or SPI fault-injection testing was performed.
-
-Remove the testing info from the commit message and put it under the ---.
-Unless you tested the patch on specific hardware then no need to immortalize
-it in the git log.
-
-Side note: one would expect that patches sent to the mailing list are at
-least compile tested :)
-
+> The reason is that, in integer arithmetic:
 > 
-> Fixes: 2c8920fff145 ("iio: gyro: Add driver support for ADXRS290")
-> Signed-off-by: Siqi Chen <chensiqi@uniontech.com>
-> ---
->  drivers/iio/gyro/adxrs290.c | 26 ++++++++++++++++----------
->  1 file changed, 16 insertions(+), 10 deletions(-)
+> 	r * r / 2 <= val  <=>  r * r < 2 * val + 2  <=>  r * r <= 2 * val + 1
+
+Yes, for r > 1.
+
+> > At bare minimum the commit message needs to be corrected and explained
+> > these aspects that while the + 1 gives wrong result for most of the cases,
+> > it's still okay to use as we work only in integer arithmetics. Also the formula
+> > (r² - 1) / 2  has to be dropped as it's incorrect from mathematics point of
+> > view. The floor() happens on / 2 and has nothing to do with (- 1) correction.
 > 
-> diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-> index b61cc81122a6..eb3306215217 100644
-> --- a/drivers/iio/gyro/adxrs290.c
-> +++ b/drivers/iio/gyro/adxrs290.c
-> @@ -604,7 +604,7 @@ static int adxrs290_probe(struct spi_device *spi)
->  	struct iio_dev *indio_dev;
->  	struct adxrs290_state *st;
->  	u8 val, val2;
-> -	int ret;
-> +	int id, ret;
+> Agreed on dropping the formula. For v2 I plan to replace that part of
+> the commit message with:
+> 
+>     read_thresh() reports code r as r * r / 2, and the division rounds
+>     down for odd r. write_thresh() inverts that with int_sqrt(2 * val),
+>     which is one code too low when 2 * val == r * r - 1, so writing back
+>     the value read from an odd code lowers the code by one.
+> 
+>     Use int_sqrt(2 * val + 1), which gives the largest code whose
+>     threshold does not exceed val: in integer arithmetic,
+>     r * r / 2 <= val is the same as r * r <= 2 * val + 1. The result only
+>     differs from int_sqrt(2 * val) on those edges.
 
-Why a new variable? ret should be sufficient in this case.
+s/code/value/g ?
 
->  
->  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
->  	if (!indio_dev)
-> @@ -622,21 +622,27 @@ static int adxrs290_probe(struct spi_device *spi)
->  
->  	mutex_init(&st->lock);
->  
-> -	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
-> -	if (val != ADXRS290_ADI_ID) {
-> -		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", val);
-> +	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
-> +	if (id < 0)
-> +		return dev_err_probe(&spi->dev, id, "failed to read ADI ID\n");
-> +	if (id != ADXRS290_ADI_ID) {
-> +		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", id);
->  		return -ENODEV;
+> The same goes for 5/6. Does that cover what you had in mind?
 
-Not sure how this device works, but better to just call dev_info() to
-ensure that any potential compatible fallback can be matched.
-
-Also, why not just use dev_err_probe() if the previous if check uses
-it? Style unification is a good idea.
+Yes. This is much clearer, thanks!
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
 
