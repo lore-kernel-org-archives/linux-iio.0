@@ -1,61 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.243.244.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795057196;
-	b=INtz+TjgCYU5vmQm8WMUmr1x85T8QaAvezNYXUoNYQwCFdApWxSpnqaOgkHglPFJAlRc
-	 N6z39OHmXlL2EMsub0l9Dqs2U6DVKD5Ykn89tJQYhl9ZrSHcab17ixZYe/F+67YA9DL19
-	 1xX2GjYnWUtfDniUMvjKLrBIbjOZ4TPJ40lEYllvClGxnC3F73zvq49aRoLWPPRHcxWMd
-	 iKbOsyvEgNv1UvJ2VsEsljLXMNKalJkXUZtDaGBEvCuhfvviT3VirEKkjRAznTCPPTpkn
-	 QqATjF8tiLOXWtfjbAqGwIJH/qwNcBP8XcUhOYWhr1u/jIvpGQD9ozc6RHxvDoAle5w==
+	t=1795057706;
+	b=2N2fm7xB6eU4woTCv/hODpBIR5sT7toKPS0uN7bHl0ewxuQ/g/lgBvMCvRqfNmhQ6zvL
+	 9gKS8LqqrHfow7ndCx/PlGjQ17GmH/IYrrJtAwYklOnVSLn0raatiGa1iEnSc2Nii1Qvz
+	 u3E8t/Uv4JcrYhIWjYDqIyhHreLDqxBs9HZEPv+6O7aOjQiG2KM9uceRGDxKndeukz1nN
+	 V+SvfuEo+i9ND19K21seTgIyH5iatk9NnhYDn2hvahVK1OPcG6yqiKsnZQ9Wvf+UcD1Ry
+	 oCa2DDaWe1UpcAxijqrPfqE0DDrxFooBqsMAoEOzgDpHQ6g1NnvM920JsO6Ejb055Dg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795057196;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=GWjdwg97jtKYZUSdtxJMhSsjE1aTAuzLSMKha3trRwE=;
-	b=zngHMBdy2wiKR84CLDa9FgUYIYUv82uBNqwFkuf6/sqaFmQ1tEtbmbDj/zYJc6CJXGq5
-	 QVsCqoxEyCNQgV3ruazW4Ob/OFj6hp7riN91SO3HDz4LphahcoNBjLhh6DK4mCOadggzs
-	 yVKAXL5gvlgLPVAHrNwTtOSoznEwBtHjF8MqOAC0sz0vNtwjArlbasEFmcaqrTeaqF2Cq
-	 qVu/WDnCJ0IK5/Eq1GTvfHLPgO9aM0O/0otS/dfjhi/Ys2Z+jHPNUG1A0eUkWe6DjMPah
-	 P6tNDteHEfieRdDxbJ0eP7YwUfDDwuXr0y3HAtfBAkAUDHEOMhXZ9fGgaGArek8bQ7w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795057706;
+	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
+	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:EX-QQ-RecipientCnt:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:
+	 X-QQ-XMRINFO:X-QQ-RECHKSPAM;
+	bh=KIdzZrFkpaTDr7W3gsDfnaswYebzCSotARH4SUhtoak=;
+	b=X+YaVH4i+xogRfcPGxyVFC5jsi9IXQy5+cIQNQTtf2C25mUVKwO28pUSv3rZMY7OYYqF
+	 CeJNvvY9M6ZeHjVjkgv67sjQaloS7W1LFlYha2RjTkAC+xFd3T77JgWUs/Q3uItZzv2FH
+	 Voc6lbF8jVNK3D+SPjcsrWajtiYeWlh1fqOscR/E2CZlNCByIRjq5a7ff3mDLoutJd+Zg
+	 zCY1lWS/zFwn37Ytf3DEbUg17o4qvbziy1aWWst1klYKRMfDpcryGlQrzwsSps9T1gmmT
+	 IdzVTqB/qQLmStPu9lp+cNqWODYNwg1RxDM60IB+ICTPG7EmTfWbAOIGT9OQ0/+ggTg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FkwVPbfQ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=uniontech.com;
+	spf=pass smtp.mailfrom=uniontech.com;
+	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=czEh2g0K;
+	arc=none smtp.remote-ip=54.243.244.52
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FAAA606A331;
-	Thu, 19 Nov 2026 02:59:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91FEF606A325;
+	Thu, 19 Nov 2026 03:08:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91FEF606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FkwVPbfQ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117C71F000CB;
-	Thu, 19 Nov 2026 02:59:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795057195;
-	bh=GWjdwg97jtKYZUSdtxJMhSsjE1aTAuzLSMKha3trRwE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FkwVPbfQsC1oUR3dy3XVEUSqOZv+yA7uwi5cSr3A0f/IP6b84eUaXbFH7VkEb3mgZ
-	 14rqUvwpokWJRDF8pNwqQMeD2kkM41pq+Gj/JwonxzwMpcHxBpPwz4n9pKu9wJY+kE
-	 dZ3HSxv3aDZhGWw8GHtjLWAeCy8InXPxeahPC9aXGJqZCCljDY1RhT93xtCCo0Nb6E
-	 iN3eek/tR1L+VWDaQ5K+4OYgkeHURh0FBHBQgHLwt/di/TFa+bKitf5qFS/0zjC3kd
-	 qEHeTlPlG/LEYy84ZSNJda1G38tY20zVEyzZVaI8DxkP4MnHYjnqviTxwcxBHTiftA
-	 9ZI6kEeV/vVKw==
-Date: Thu, 19 Nov 2026 02:59:50 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com,
- Michael.Hennerich@analog.com, nuno.sa@analog.com, eblanc@baylibre.com,
- dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, olivier.moysan@foss.st.com,
- marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v1 4/5] dt-bindings: iio: adc: Add ADA4355
-Message-ID: <20261119025950.456dc645@jic23-hlaptop>
-In-Reply-To: <20261118-liver-decompose-434eedb257b8@spud>
-References: <cover.1795003864.git.marcelo.schmitt@analog.com>
-	<c7be62089d2b54dbf7fb57cdea189bdb1cade7c5.1795003864.git.marcelo.schmitt@analog.com>
-	<20261118-liver-decompose-434eedb257b8@spud>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=czEh2g0K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1795057663;
+	bh=KIdzZrFkpaTDr7W3gsDfnaswYebzCSotARH4SUhtoak=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=czEh2g0KxPPWhU1IONH0WebV/eeMkUBEfAPr4wjtRzyoXbHDQtRwChUyI/pXIVVXs
+	 yhYaU1hAJOz1T8PGqRxu471FKAAdNyaKonEMG5+mByekoObuDBGDzV4Ala+PliwteX
+	 8CDeXbsKM2vYRBK00+G5mcNrkFl7Xd730FlrniQ0=
+X-QQ-mid: esmtpgz14t1795057646ta7893f9b
+X-QQ-Originating-IP: 3DK/lMDE4yBtIJDJPi84ozyxWx0+You5dONeczytTXA=
+Received: from localhost.localdomain ( [113.57.152.160])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Thu, 19 Nov 2026 11:07:17 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 10885263091152778059
+EX-QQ-RecipientCnt: 10
+From: Siqi Chen <chensiqi@uniontech.com>
+To: nish.malpani25@gmail.com,
+	jic23@kernel.org
+Cc: nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux@analog.com,
+	linux-kernel@vger.kernel.org,
+	Siqi Chen <chensiqi@uniontech.com>
+Subject: [PATCH] iio: gyro: adxrs290: propagate chip ID read errors
+Date: Thu, 19 Nov 2026 11:07:09 +0800
+Message-Id: <20261119030709.3792433-1-chensiqi@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,165 +74,104 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: esmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
+X-QQ-XMAILINFO: N4v3rtNxGsNSrpeeacze20N1apNksIHqCNAeAnVm4ULWVRrizZZ82Ljf
+	OMMcZ1rvtHD6FjZlr4aFkrZWi9oLxu0cdHMX7JOyefYbAjtk3gC0FhYhoFVvYFUmpNGMWB+
+	rYoEDdd7Y8Z057HdiURoBU3ANFhyi7ru4OW50yEsT+uGi61mClexK2wkwG8am81wsr7yMO0
+	hsFwSYhWsQmMfyJQ4ui5jUP5d48hhJkD4KadIixl5MbdtZ1VdymCvI48Dd73Tt0NpYCrjRq
+	nV8czKtToIJ94/3TeXJt5K3Bpw5lj4lDNNA2jWeWV3wCVSCXsgGxmbql8SuPnmScUcwYTq2
+	WfpoqePdTaD0Mva19rI23gARL28tSn9kCVaVcfdVFKc7PZGx2W7qCtVJJuTnQCQdMDYGOjj
+	pZj7hvasVqvdT0oXFxuYCWKylHe0rnk5P+0XyDlsDKaRZhFLGqZ+s35faw6wcjAZ7MI7Q8N
+	fZNhMIvKBpeUoYF92y7MbIT3oxXRHzQ2vrAUK/kByp+FTaFoUySXKIbyAHOqsCZ7StY6UEO
+	DCUXQ5lHRUPyR9vemskXZySXDDuN8/TnAWKIRBrkarftjapEYRQB4v9OUww5hVpEYpnv+8m
+	DVgIliatWLPpzhtADRSiCWOPg7Ypg6O3B6TKUmiqDz02KSL2PcmaOGvrus9BeL0u+eT7WC4
+	+S+PiyvQfwuE/GHRHLPne8tcougtdEcfg/ycniNggFpupEMPF6HHMoRQMpx3I6pQRn4QzPE
+	2DnQTE89ClGYajOKd0NEuPav0YvckIeSjXldVxXj/YB3BZBZzNqUsEB8ECXjHJnfCkOF9x3
+	Nal9EVTVzYh0JGQVuy7YP6OmBYzcodaht98JMQY+paNGjdRjUKE2dt55N89/kF+Y3ywXBZ3
+	lXfh7q0625BLdK4o0VNuED/7Ny/4DFsMrd/DSIf6w/LWErCzs+c3eEWGBJF63RU0sjjBA2u
+	ZFbPQUAuYu/uOjklM/p/Bik6SCCAyyrKtzOEHBUFY6tYqJ1iZtHMHAa4eJv8GAO5dFTMR6S
+	adxaAXIS39PsKk/punprOIbkfOMugbXSeZLmkT3cPkkJv2kPnhGCTni4Lyox7B7qG2psFaL
+	RScV52M0yyMscLOZ8mG9+Ya9PRgTh/cNg==
+X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
+X-QQ-RECHKSPAM: 0
 
-On Wed, 18 Nov 2026 17:39:46 +0000
-Conor Dooley <conor@kernel.org> wrote:
+spi_w8r8() returns either an unsigned 8-bit value or a negative error.
+The probe function stores its return value in a u8, truncating errors and
+treating them as unexpected chip IDs. Consequently, an SPI transfer failure
+is reported as -ENODEV instead of the actual error.
 
-> On Wed, Nov 18, 2026 at 10:04:13AM -0300, Marcelo Schmitt wrote:
-> > The ADA4355 is an integrated analog front-end and 14-bit analog-to-digital
-> > converter with a serial LVDS data interface.
-> > 
-> > Document how to describe ADA4355 devices in device tree.  
-> 
-> Please explain why the 4356 differs rom the 4355 such that it cannot use
-> a fallback compatible.
+Store each result in an int and return negative errors before validating
+the chip IDs.
 
-Also mention it in the patch description!
-I was briefly very confused at Conor's comment :)
+OpenCode was used to identify the issue and draft the code and changelog.
 
-> 
-> Thanks,
-> Conor.
-> pw-bot: changes-requested
-> > 
-> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > ---
-> >  .../bindings/iio/adc/adi,ada4355.yaml         | 104 ++++++++++++++++++
-> >  MAINTAINERS                                   |   7 ++
-> >  2 files changed, 111 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
-> > new file mode 100644
-> > index 000000000000..d169619fef25
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
-> > @@ -0,0 +1,104 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/adc/adi,ada4355.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Analog Devices Transimpedance Current to Bits Receiver
-> > +
-> > +maintainers:
-> > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > +
-> > +description: |
-> > +  ADA4355 programmable transimpedance, current to bits receiver and similar data
-> > +  converters.
-> > +  Specifications can be found at:
-> > +    https://www.analog.com/media/en/technical-documentation/data-sheets/ada4355.pdf
-> > +    https://www.analog.com/media/en/technical-documentation/data-sheets/ada4356.pdf
-> > +
-> > +$ref: /schemas/spi/spi-peripheral-props.yaml#
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - adi,ada4355
-> > +      - adi,ada4356
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  spi-max-frequency:
-> > +    maximum: 50000000
-> > +
-> > +  spi-3wire: true
-> > +
-> > +  spi-cpha: true
-> > +
-> > +  vcc-supply:
-> > +    description: 3.3V power supply.
-> > +
-> > +  vea-supply:
-> > +    description: 1.8V analog power supply to ADC.
-> > +
-> > +  ved-supply:
-> > +    description: 1.8V digital power supply to ADC.
-> > +
-> > +  clocks:
-> > +    maxItems: 1
-> > +
-> > +  adi,vld-en-gpios:
-> > +    description: GPIO connected to the VLDEN pin for VLD output enable.
-> > +
-> > +  adi,gsel-gpios:
-> > +    description:
-> > +      GPIOs connected to the GSEL0 and GSEL1 pins, in that order, for
-> > +      transimpedance gain selection.
-> > +    minItems: 2
-> > +    maxItems: 2
-> > +
-> > +  adi,lfp-gpios:
-> > +    description:
-> > +      GPIO connected to FSEL for internal low pass filter bandwidth selection.
-> > +
-> > +  io-backends:
-> > +    description:
-> > +      The AXI ADC IP block connected to the D+/- and DCO+/- lines of the
-> > +      ADC. An example backend can be found at
-> > +      http://analogdevicesinc.github.io/hdl/projects/pulsar_lvds/index.html.
-> > +    maxItems: 1
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - vcc-supply
-> > +  - spi-3wire
-> > +  - spi-cpha
-> > +  - clocks
-> > +  - adi,vld-en-gpios
-> > +  - adi,gsel-gpios
-> > +  - adi,lfp-gpios
-> > +
-> > +unevaluatedProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/gpio/gpio.h>
-> > +    spi {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        adc@0 {
-> > +            compatible = "adi,ada4355";
-> > +            reg = <0>;
-> > +            spi-max-frequency = <100000>;
-> > +            spi-3wire;
-> > +            spi-cpha;
-> > +            vcc-supply = <&supply_3_3V>;
-> > +            clocks = <&ref_clk>;
-> > +            adi,vld-en-gpios = <&gpio0 89 GPIO_ACTIVE_HIGH>;
-> > +            adi,gsel-gpios = <&gpio0 86 GPIO_ACTIVE_HIGH>,
-> > +                             <&gpio0 87 GPIO_ACTIVE_HIGH>;
-> > +            adi,lfp-gpios = <&gpio0 88 GPIO_ACTIVE_HIGH>;
-> > +            io-backends = <&axi_adc>;
-> > +        };
-> > +    };
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 02015eaec312..692f1e6d56ec 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -1794,6 +1794,13 @@ W:	https://ez.analog.com/linux-software-drivers
-> >  F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-> >  F:	drivers/iio/amplifiers/ada4250.c
-> >  
-> > +ANALOG DEVICES INC ADA4355 DRIVER
-> > +M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > +L:	linux-iio@vger.kernel.org
-> > +S:	Supported
-> > +W:	https://ez.analog.com/linux-software-drivers
-> > +F:	Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
-> > +
-> >  ANALOG DEVICES INC ADE9000 DRIVER
-> >  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-> >  L:	linux-iio@vger.kernel.org
-> > -- 
-> > 2.39.2
-> >   
+Compile-tested with CONFIG_ADXRS290=m using:
+
+  make O=/tmp/opencode/linux-build-adxrs290 W=1 \
+       drivers/iio/gyro/adxrs290.o
+
+No hardware or SPI fault-injection testing was performed.
+
+Fixes: 2c8920fff145 ("iio: gyro: Add driver support for ADXRS290")
+Signed-off-by: Siqi Chen <chensiqi@uniontech.com>
+---
+ drivers/iio/gyro/adxrs290.c | 26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+index b61cc81122a6..eb3306215217 100644
+--- a/drivers/iio/gyro/adxrs290.c
++++ b/drivers/iio/gyro/adxrs290.c
+@@ -604,7 +604,7 @@ static int adxrs290_probe(struct spi_device *spi)
+ 	struct iio_dev *indio_dev;
+ 	struct adxrs290_state *st;
+ 	u8 val, val2;
+-	int ret;
++	int id, ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+ 	if (!indio_dev)
+@@ -622,21 +622,27 @@ static int adxrs290_probe(struct spi_device *spi)
+ 
+ 	mutex_init(&st->lock);
+ 
+-	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
+-	if (val != ADXRS290_ADI_ID) {
+-		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", val);
++	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
++	if (id < 0)
++		return dev_err_probe(&spi->dev, id, "failed to read ADI ID\n");
++	if (id != ADXRS290_ADI_ID) {
++		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", id);
+ 		return -ENODEV;
+ 	}
+ 
+-	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
+-	if (val != ADXRS290_MEMS_ID) {
+-		dev_err(&spi->dev, "Wrong MEMS ID 0x%02x\n", val);
++	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
++	if (id < 0)
++		return dev_err_probe(&spi->dev, id, "failed to read MEMS ID\n");
++	if (id != ADXRS290_MEMS_ID) {
++		dev_err(&spi->dev, "Wrong MEMS ID 0x%02x\n", id);
+ 		return -ENODEV;
+ 	}
+ 
+-	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
+-	if (val != ADXRS290_DEV_ID) {
+-		dev_err(&spi->dev, "Wrong DEV ID 0x%02x\n", val);
++	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
++	if (id < 0)
++		return dev_err_probe(&spi->dev, id, "failed to read DEV ID\n");
++	if (id != ADXRS290_DEV_ID) {
++		dev_err(&spi->dev, "Wrong DEV ID 0x%02x\n", id);
+ 		return -ENODEV;
+ 	}
+ 
+
+base-commit: 903941a9b06ae445c70646ab061b604c2dea17d3
+-- 
+2.20.1
 
