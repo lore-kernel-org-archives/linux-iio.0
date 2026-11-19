@@ -1,52 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.154
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795118833;
-	b=WFhaQ3brZ59kLfYtu4pMQfF/1JXUlctT+gsQSGno0x3M3tQZFPMVMEHiAiRDAur7Cki7
-	 1kW9ea3YuFDoexPmixxmTzgb3QD/dg8izBUst/MIVJyP1JsMnMICC9qOdhSp1PaXCrmSu
-	 bXD9WJj4oXgpjRhPia1brXLu9ZW1H6wIn8PttjLrTasKcNyKI41gUpNm/cto9h/LHdJaL
-	 MroxSlSq8Pu3adWlxybkhc/H0qxAvsRY8jUtRf9Ztc7Cz3KXNoJPigtUoLDrcUvQXzAsA
-	 e+Q4RSTgnFL+r/1F08V1KM0aIOppb2Py2dT5OiPNswDZlMrHK64MKJW9Zs0xHH1uLig==
+	t=1795119363;
+	b=L++b8ZeSfP3W4E2G2UiLHrK2BRZo6RbfJRgeTrgMxheYl/AFqMfORdpgBG4nQhK072Zr
+	 DbuVUFxo6nz+gGrI6QlBuBzsU9Co+d/0S/XHbjIkqlOzSbkIai66sntChkm3j9gGOWybG
+	 TWnpq4nlspXCVDrL+4afNDwHrHLhkOkumfoKdzoD+5z9Q6NEn+fJ2bVkCBmfHUWlFOSOM
+	 y+javujeeFCGNw/VA2uKcElKWG3dr7WIECDYhCFoooaI8WzsqKQKjqty91BcQ4WTeMkuY
+	 qbPI8tq+PQ0mXG7ohQGZArHTIVIeCAgG6hRIF/h0s6RL+Ytx4PLljyfqWhuTHt6JN3A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795118833;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:MIME-Version:Date:Content-Type:
-	 Content-Transfer-Encoding:From:Message-ID:TLS-Required:Subject:To:Cc:
-	 In-Reply-To:References;
-	bh=d+NMMeRc5VymOpLC4VvRBvdVqtzY/qDnezwtonjIhNw=;
-	b=DnNrd6yqqxP29X+80p4nuwvBLLQXOYodAITyh0bkdzO6DoZpRL8EcKq2HUPMMvKsQ4je
-	 JHNXc8jsqdRa9D54UViUUQh9bqYKr5BGvKVl91nrAPVOahjjAi73MdG0+2WFdexBK18vC
-	 iow5AfYmQTTIPf2rLzDVKQT41RkajvbmA3Y8xxdMbmWIp7EjMWqj6MJ2zZ1m0WJTUm+oN
-	 xk1/gBS5nD/Fczb9aJOhzFDxBEAk93Ano98G1/Gn/cSVAN6iAycjnNa5f8HfWnCpSC0mM
-	 oI3hngmVQREsFqdlwAR1xgLj0FWhaFF5Mt56Ump+1ZribilUza5ba1I4KOY2oUgXIVQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795119363;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=IioXAUgBLX6qGXmIL+lHfh6K/SMkoqjXHsXvXuXc4kw=;
+	b=OOM/5e42o4GKC1s3vLQjNZx/UxYEtVWc9q33/aLRF7mr9QmnmAAHSN/yJkANM5XgaxSt
+	 fvARPMhTYqj92mk0LcKc6o4rkKGoShUSKIe4QJue4lkUNAeiY3ZxvYYi6EAkaYb1SOndc
+	 +foscgYyJZBhu6qUB4ej9+8amrFc2puH+FjAz6fgwudjPxazeJohoNc2scuMHBL85yLZn
+	 RthA4NAJpLQFGxxdzBdtPdb1nAHVe9N/sTB4cJyRrF33LvI3dZ9ctNQlhAvYuwd/bSHgF
+	 J6QnX23DUjDua4oep3eOnR6OhDi+qJ/iYYp2nAQZvj6YUIh5t2U1k5CbHySEZUc8yeg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=Gyuglxij;
-	arc=none smtp.remote-ip=95.215.58.154
-Received: from mta1.migadu.com (out-154.mta1.migadu.com [95.215.58.154])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yinSp1IW;
+	arc=none smtp.remote-ip=74.125.82.182
+Received: from mail-dy1-f182.google.com (mail-dy1-f182.google.com [74.125.82.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F59606A320
-	for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 20:07:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 77F59606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50E05606A32A
+	for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 20:16:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50E05606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=Gyuglxij
-X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=A0NjPQlB3Q4vVg+2rsx+25MqNBWdek7Wdl5lBh8qzpg=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1795118829; v=1; x=1795723629;
- b=GyuglxijOgbutJFF9AIVaWNPHDOrgcxjr/W7sxlydCIkRHb8KfQjcNDSnaMZ+HST+8DDzh6e
- ZHuEM3/OrjIXgkZgDLrjg+CXil4I+pcsRvca1Ucb493n/6DuTK1mpr8eD2T7zmQ+9vWVODmJyxV
- Lc6w+x2OLN/PXBdFZJDn044s=
-X-Envelope-To: linux-iio@vger.kernel.org
-Received: by smtp.migadu.com with ESMTPS id a57961858fafb747;
-	Thu, 19 Nov 2026 20:07:09 +0000
-X-Mizu-Trace-ID: a57961858fafb747
-X-Migadu-Flow: FLOW_OUT
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yinSp1IW
+Received: by mail-dy1-f182.google.com with SMTP id 5a478bee46e88-38318d69173so222427eec.0
+        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 12:16:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795119362; x=1795724162; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=IioXAUgBLX6qGXmIL+lHfh6K/SMkoqjXHsXvXuXc4kw=;
+        b=yinSp1IWy19Mc0Uvru8QtwhV79tjjpVKWi1+9FHUQHTEdVmwh7FMqghXtoaFhil3Up
+         HuJyR8YsyRLwKs4GnH+Dq5WPejkKt36FY7awxnFTJB0xJB3kuj0hjJ8LjQHaNYiEaKLt
+         dcGwROZVLMg4UrfyMlUjcNs59EyPsnwAkV+ttTTNnaZMx0BOOaS3ovLp9O5ZAWLK6AeB
+         ZuAEHqj3ZflLDXxARL/LXnCzMb2gmeEJLIcSsZHXdUyfF+n/4zqZvZgZLFG+tmG0sNA2
+         GKL5jSf0lxUk7HNvWtwDf2IkOW5uKBbVI/ZS2ENqhhG0wSeCfavwncA1dCEpcxCDleB5
+         /rAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795119362; x=1795724162;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=IioXAUgBLX6qGXmIL+lHfh6K/SMkoqjXHsXvXuXc4kw=;
+        b=TbMz1apH9lWuhEskdGkJN7QnXBDNon1wsp0MKtCgau7YV2R/rPPr1EA2oKhu6Uw+em
+         3ikUpd9CWqoyefig4DCyyUY21751FCsO3B9BN07+I9bWUaILYlTmKWoruKGRijz8A1Kp
+         37HH7bMgtpsP2euJ42wmV54lTzZcH+o8RfOy9M1hcJRbq8E2i4kzyA97XL6DB2QHW46C
+         njrO4ui3i3ty+AK13o/MNFoZv5igLQM5kZ+h6Tmf+TVV8HWW27ipkn++qWO34alIqN0W
+         K51wvZ4MIEo8KE2Ih/jJeKE5XarPRHA5nhSoGVEWycnK6e7BIMy5sCatPeNM8SF4Qvby
+         /rhw==
+X-Forwarded-Encrypted: i=1; AL+hErG9TdoRUDe3tdfizflsK7UsMlXO4eDEA9/BD0N6rLuT9nwuXHsmaARlx+mbDSCQt/Nm4lowRPhyGxA=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8E6d19Y2gBPWj41lwXfMepPQ4elKZINIizzOpLX8esqdVtlN+u
+	PYBwuKQ5g/Dv1BQRciT/rIuDAog1NvajRrKOcXqZenzfc5YWoo4EGxrm
+X-Gm-Gg: AZFdTZcI7eQpA4j7lic7VTYNjPD+od1Kzk2s5ptcwTUgE6PJerxYPLMb1fyGufBT1LW
+	AktCVVk0n2YIgodNsl1kGbSYu1eW/EPAmM1YeJBguVInamFTUv2Ip4geYxHUXl5gzADjiPQuoRF
+	AuBBlw76K62tVvNOUPrHTwX8jt6m1HpEWQbiKLVabjsgt1Q2dYRgRggr7z/LX+RNncQ/qZfzxPL
+	MF6iJTO+Tg3h/YnyfN1G1ao+sAZHeVyMFNahHl3aDVKxR/gpNMAJm+mcdvLDb13OU8dhGSvmMbj
+	gl4+7xkyl8qXQyhpGk2ezg04NnCuEawbxTZ5aGqrWvWYE1tbl/u5FPn7e+eqNiexcj67m7Dxq9V
+	eVoKPr8znmM1ISxOKQfESEvUbBNnoa6Wc1HfEMenkclfM31gd9kV/fe8NKscRA9/8eLa2WF833L
+	HEkq42NxyAtytiX0Z8RjHuHLCt+xvfKwblx9sfOJ8IxpBFbGkEzV4hdH+yGYedrlnD98KpT/PFZ
+	u7v6q6exLs+W3zji5kJLXsj8qVtv+h3Up5TMlyWb8OhfqoZMQYiIc73yYaMUp63rL5Ph+mNzwC0
+	muLd15LEnfKH8nMvlGjdFVbuts3AcWJJo966+FRGwExnsT7v3s+Swma6rwjR1/iOpEJKw2ieaQ1
+	ci39HBLwTUGC/1yJFiWY2eT06WydQuPkRGQ5oz5V2VdiytmJ84cGM58KZz7MloQ3GsrQjYDC8W4
+	z+NjiWwz+D8mSB4s5Yl6zL5EaV+IYlAgHra1h3ZxmDPs4=
+X-Received: by 2002:a05:693c:87cc:20b0:358:3426:d601 with SMTP id 5a478bee46e88-3856c0d0961mr448850eec.2.1795119362463;
+        Thu, 19 Nov 2026 12:16:02 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-38567daaf70sm1097351eec.28.2026.11.19.12.15.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2026 12:16:01 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
+Cc: Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
+Subject: Re: [PATCH] HID: hid-sensor-hub: avoid lock inversion in sensor_hub_remove()
+Date: Fri, 20 Nov 2026 01:45:55 +0530
+Message-ID: <20261119201555.185270-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261119192046.1015750-1-ayaanmirzabaig85@gmail.com>
+References: <20261119192046.1015750-1-ayaanmirzabaig85@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -56,40 +108,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Date: Thu, 19 Nov 2026 20:07:07 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-From: "Siratul Islam" <siratul.islam@linux.dev>
-Message-ID: <bf25bbccedc468157202546d01734f38e201eaa4@linux.dev>
-TLS-Required: No
-Subject: Re: [PATCH v2 1/1] iio: dac: ad5766: Convert GENMASK() to use static
- parameters
-To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, "=?utf-8?B?TnVubyBTw6E=?="
- <nuno.sa@analog.com>, "Michael Hennerich" <Michael.Hennerich@analog.com>,
- "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, "Andy Shevchenko" <andy@kernel.org>
-In-Reply-To: <av9RtQDXoR7phgga@ashevche-desk.local>
-References: <20261117160857.1799863-1-andriy.shevchenko@linux.intel.com>
- <1a261f19fff18b074ed3e004c4896f2cf586b611.camel@linux.dev>
- <av9RtQDXoR7phgga@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-November 20, 2026 at 1:44 AM, "Andy Shevchenko" <andriy.shevchenko@linux.=
-intel.com> wrote:
+On Fri, Nov 20, 2026 at 12:50:46AM +0530, Ayaan Mirza Baig wrote:
+> Move spin_lock_irqsave()/spin_unlock_irqrestore() into
+> sensor_hub_finalize_pending_fn() and pass data through
+> device_for_each_child(), so &data->lock is only held while inspecting
+> and completing each child's pending state after klist_next() releases
+> &k->k_lock.
 
->
 ...
-> >  -#define AD5766_DITHER_SCALE_MASK(x) AD5766_DITHER_SOURCE_MASK(x)
-> >  +#define AD5766_DITHER_SCALE_MASK(ch) (GENMASK(1, 0) << ((ch) * 2))
-> >  This could have remained unchanged?
-> >=20
->=20Yes i could, but does it really show the tightness between two semant=
-ically?
-> I believe it's not, that's why I explicitly put the numbers instead of
-> indirection.
-Thats fair.
 
-Reviewed-by: Siratul Islam <siratul.islam@linux.dev>
+>  static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
+>  {
+>  	struct hid_sensor_hub_device *hsdev = dev->platform_data;
+> +	struct sensor_hub_data *sd = data;
+> +	unsigned long flags;
+>  
+> +	spin_lock_irqsave(&sd->lock, flags);
 
-Best regards,
-Sirat
+...
+
+>  	device_for_each_child(&hdev->dev, NULL,
+>  			      sensor_hub_finalize_pending_fn);
+
+The commit message says data is passed through device_for_each_child(),
+but the call still passes NULL, so sd is NULL in the callback and
+spin_lock_irqsave(&sd->lock, flags) dereferences it. That would oops on
+every removal of a hub with child devices, instead of the lockdep
+warning. Sashiko flags the same thing.
+
+I think it should be:
+
+	device_for_each_child(&hdev->dev, data,
+			      sensor_hub_finalize_pending_fn);
+
+With that, moving the lock into the callback looks right to me: k_lock
+is a plain spinlock, so it shouldn't nest inside data->lock, which
+sensor_hub_raw_event() takes from interrupt context.
+
+Could you send a v2 with that change, and say whether the syzbot
+reproducer runs clean with it?
+
+Thanks,
+Arnav
