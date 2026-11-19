@@ -1,59 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795057077;
-	b=ogpCP4AB8VGuftCIvtLiDv5Fa9nhN9LiKrVdDW7ws2U4wsBcWIzHYke4gFi3xS9yjFQq
-	 ILbL5WsAyVtTFnKJWHtmaxjZamCQisG10YbnEhSnEk8sgtTXbPVVlk0HBOsDqksR0pUtb
-	 CVnWkS4kyAha2kn7ppRzUwiL+GUlEyqwNcnUSgKYdQxtc4fG1BLWzOsKlnaMduc2nkHuV
-	 J6ggaeXvuI0myQvzvFuH+7kPaOP4qf5LjCDwEeK/y1NWTABifzfxbzUembR0QbFYy4msb
-	 Gcm1brld4ecGvRwnDscO81C8vJSMQsqRBd/V57KXHVHfT8mJQUn1ZG74EygtwuPYPTA==
+	t=1795057196;
+	b=INtz+TjgCYU5vmQm8WMUmr1x85T8QaAvezNYXUoNYQwCFdApWxSpnqaOgkHglPFJAlRc
+	 N6z39OHmXlL2EMsub0l9Dqs2U6DVKD5Ykn89tJQYhl9ZrSHcab17ixZYe/F+67YA9DL19
+	 1xX2GjYnWUtfDniUMvjKLrBIbjOZ4TPJ40lEYllvClGxnC3F73zvq49aRoLWPPRHcxWMd
+	 iKbOsyvEgNv1UvJ2VsEsljLXMNKalJkXUZtDaGBEvCuhfvviT3VirEKkjRAznTCPPTpkn
+	 QqATjF8tiLOXWtfjbAqGwIJH/qwNcBP8XcUhOYWhr1u/jIvpGQD9ozc6RHxvDoAle5w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795057077;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795057196;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=dU1UN6hq17AplRr197Yt2kF1Z8sztPL4e2+ENhGHKe4=;
-	b=lRNANrYv0XxDgXdN4Xa9/6GgSDD6ekSA6Cm2LgoTB0akEGhF4+9k1itf/sd+Ai+TgFDh
-	 eUtiLcuvq0rG75hJRZM7o2+A7kRZnICfpyI6MGDybOnyVyLu2xqxeR6tjGf3n0Cnb1TeT
-	 7+r8RKDBt6G4SZfo5AmVC9gzPkvzNXiGYxbtapTefinP1QLDMdr/hhJvsebnjbFPXPbNQ
-	 EMcxXtHqq6xNiOOKt3k73iRauocygdg7AI/3ilVCvfxWhyB2u/6/SvtQ5N0YW9HAAwpRb
-	 mGXGApow+AGa/kG9dYuMOqidr2tV81hFNEcYy8mt6JTLVr1FYtOsAoinUpIgyv7gLsQ==
+	bh=GWjdwg97jtKYZUSdtxJMhSsjE1aTAuzLSMKha3trRwE=;
+	b=zngHMBdy2wiKR84CLDa9FgUYIYUv82uBNqwFkuf6/sqaFmQ1tEtbmbDj/zYJc6CJXGq5
+	 QVsCqoxEyCNQgV3ruazW4Ob/OFj6hp7riN91SO3HDz4LphahcoNBjLhh6DK4mCOadggzs
+	 yVKAXL5gvlgLPVAHrNwTtOSoznEwBtHjF8MqOAC0sz0vNtwjArlbasEFmcaqrTeaqF2Cq
+	 qVu/WDnCJ0IK5/Eq1GTvfHLPgO9aM0O/0otS/dfjhi/Ys2Z+jHPNUG1A0eUkWe6DjMPah
+	 P6tNDteHEfieRdDxbJ0eP7YwUfDDwuXr0y3HAtfBAkAUDHEOMhXZ9fGgaGArek8bQ7w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kBrKJHMc;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FkwVPbfQ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50349606A320;
-	Thu, 19 Nov 2026 02:57:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FAAA606A331;
+	Thu, 19 Nov 2026 02:59:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kBrKJHMc
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533391F000C7;
-	Thu, 19 Nov 2026 02:57:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FkwVPbfQ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117C71F000CB;
+	Thu, 19 Nov 2026 02:59:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795057077;
-	bh=dU1UN6hq17AplRr197Yt2kF1Z8sztPL4e2+ENhGHKe4=;
+	s=k20260515; t=1795057195;
+	bh=GWjdwg97jtKYZUSdtxJMhSsjE1aTAuzLSMKha3trRwE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=kBrKJHMcIJhU3y1dW3uvJsZiwYgdKrb2D24uyRFVia+7xRt2FID5xaOi6kDvFkDWS
-	 FuFAmmhW0R8WvegpWDdlXIZiKY28UMoGCRUHMioFYbz/xI7h6fbtedKh5Pct4BQoI9
-	 Arkmbyx01pr62KJblpRdrk83P3Nvc3YAMGa9JMashnKabgEm3La5S7gsqZpKYAx5qY
-	 u0QSeFQqdHJdt9xZ43gHtx01uuWuxDnoFbcFyoYV923ttuAbFvUD6h/1E7yxnnOnZP
-	 YsohGbfxw0OlbSy09UEkTQ6UdnjRSsCAT5muxlev98VeU6QEH3HzP5ANOdiB3xs1Cd
-	 FtMXFH1caDAqA==
-Date: Thu, 19 Nov 2026 02:57:47 +0000
+	b=FkwVPbfQsC1oUR3dy3XVEUSqOZv+yA7uwi5cSr3A0f/IP6b84eUaXbFH7VkEb3mgZ
+	 14rqUvwpokWJRDF8pNwqQMeD2kkM41pq+Gj/JwonxzwMpcHxBpPwz4n9pKu9wJY+kE
+	 dZ3HSxv3aDZhGWw8GHtjLWAeCy8InXPxeahPC9aXGJqZCCljDY1RhT93xtCCo0Nb6E
+	 iN3eek/tR1L+VWDaQ5K+4OYgkeHURh0FBHBQgHLwt/di/TFa+bKitf5qFS/0zjC3kd
+	 qEHeTlPlG/LEYy84ZSNJda1G38tY20zVEyzZVaI8DxkP4MnHYjnqviTxwcxBHTiftA
+	 9ZI6kEeV/vVKw==
+Date: Thu, 19 Nov 2026 02:59:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux@analog.com>,
- <Michael.Hennerich@analog.com>, <nuno.sa@analog.com>,
- <eblanc@baylibre.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
- <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
- <olivier.moysan@foss.st.com>, <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v1 1/5] iio: backend: Add calibration source interface
-Message-ID: <20261119025747.53b30ba4@jic23-hlaptop>
-In-Reply-To: <67582938820d6f206006b16de71ad6bcdacfa863.1795003864.git.marcelo.schmitt@analog.com>
+To: Conor Dooley <conor@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux@analog.com,
+ Michael.Hennerich@analog.com, nuno.sa@analog.com, eblanc@baylibre.com,
+ dlechner@baylibre.com, andy@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, olivier.moysan@foss.st.com,
+ marcelo.schmitt1@gmail.com
+Subject: Re: [PATCH v1 4/5] dt-bindings: iio: adc: Add ADA4355
+Message-ID: <20261119025950.456dc645@jic23-hlaptop>
+In-Reply-To: <20261118-liver-decompose-434eedb257b8@spud>
 References: <cover.1795003864.git.marcelo.schmitt@analog.com>
-	<67582938820d6f206006b16de71ad6bcdacfa863.1795003864.git.marcelo.schmitt@analog.com>
+	<c7be62089d2b54dbf7fb57cdea189bdb1cade7c5.1795003864.git.marcelo.schmitt@analog.com>
+	<20261118-liver-decompose-434eedb257b8@spud>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,116 +68,162 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 10:03:17 -0300
-Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+On Wed, 18 Nov 2026 17:39:46 +0000
+Conor Dooley <conor@kernel.org> wrote:
 
-> Some ADC front-ends send data over a configurable number of LVDS serial
-> lanes and may also need to have the data frame calibrated before capture
-> can start.
+> On Wed, Nov 18, 2026 at 10:04:13AM -0300, Marcelo Schmitt wrote:
+> > The ADA4355 is an integrated analog front-end and 14-bit analog-to-digital
+> > converter with a serial LVDS data interface.
+> > 
+> > Document how to describe ADA4355 devices in device tree.  
 > 
-> Add a backend operation for selecting the calibration source (data lane or
-> data frame) so that device drivers can perform the calibration of both the
-> data frame and data lanes.
+> Please explain why the 4356 differs rom the 4355 such that it cannot use
+> a fallback compatible.
+
+Also mention it in the patch description!
+I was briefly very confused at Conor's comment :)
+
 > 
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> ---
->  drivers/iio/industrialio-backend.c | 23 +++++++++++++++++++++++
->  include/linux/iio/backend.h        | 22 ++++++++++++++++++++++
->  2 files changed, 45 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-> index fbf5c39d7655..682d5f735071 100644
-> --- a/drivers/iio/industrialio-backend.c
-> +++ b/drivers/iio/industrialio-backend.c
-> @@ -869,6 +869,29 @@ int iio_backend_interface_data_align(struct iio_backend *back, u32 timeout_us)
->  }
->  EXPORT_SYMBOL_NS_GPL(iio_backend_interface_data_align, "IIO_BACKEND");
->  
-> +/**
-> + * iio_backend_calibration_source_set - Select the monitored error source
-> + * @back: Backend device
-> + * @source: Error source to monitor.
-> + * @lane: Data lane to monitor. Only meaningful for
-> + *	  %IIO_BACKEND_CALIB_SOURCE_DATA_LANE.
-> + *
-> + * Restrict the error reported through iio_backend_chan_status() to a single
-> + * source of the digital interface so that each lane can be calibrated
-> + * independently. Backends are expected to report every error source again
-> + * once %IIO_BACKEND_CALIB_SOURCE_NONE is selected.
-
-I don't follow this description at all. If there is more than one how
-does it report 'every' error source? 
-
-Add some explanation, probably to the commit message on how the
-flow using this works.  We might need more info here as well.
-
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int iio_backend_calibration_source_set(struct iio_backend *back,
-> +				       enum iio_backend_calib_source source,
-> +				       unsigned int lane)
-> +{
-> +	return iio_backend_op_call(back, calibration_source_set, source, lane);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(iio_backend_calibration_source_set, "IIO_BACKEND");
-> +
->  /**
->   * iio_backend_num_lanes_set - Number of lanes enabled.
->   * @back: Backend device
-> diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-> index 9c16b695a602..6f28e2d016f7 100644
-> --- a/include/linux/iio/backend.h
-> +++ b/include/linux/iio/backend.h
-> @@ -76,6 +76,20 @@ enum iio_backend_interface_type {
->  	IIO_BACKEND_INTERFACE_MAX
->  };
->  
-> +/**
-> + * enum iio_backend_calib_source - Digital interface error source
-> + * @IIO_BACKEND_CALIB_SOURCE_NONE: Report every error source.
-> + * @IIO_BACKEND_CALIB_SOURCE_DATA_LANE: Report errors of a single data lane.
-> + * @IIO_BACKEND_CALIB_SOURCE_FRAME: Report errors of the frame signal.
-> + * @IIO_BACKEND_CALIB_SOURCE_MAX: Number of error sources.
-> + */
-> +enum iio_backend_calib_source {
-> +	IIO_BACKEND_CALIB_SOURCE_NONE,
-> +	IIO_BACKEND_CALIB_SOURCE_DATA_LANE,
-> +	IIO_BACKEND_CALIB_SOURCE_FRAME,
-> +	IIO_BACKEND_CALIB_SOURCE_MAX
-> +};
-> +
->  enum iio_backend_filter_type {
->  	IIO_BACKEND_FILTER_TYPE_DISABLED,
->  	IIO_BACKEND_FILTER_TYPE_SINC1,
-> @@ -132,6 +146,8 @@ enum iio_backend_capabilities {
->   * @debugfs_reg_access: Read or write register value of backend.
->   * @filter_type_set: Set filter type.
->   * @interface_data_align: Perform the data alignment process.
-> + * @calibration_source_set: Select the error source monitored during
-> + *			    interface calibration.
->   * @num_lanes_set: Set the number of lanes enabled.
->   * @crc_enable: Enable direction-specific CRC handling.
->   * @crc_disable: Disable direction-specific CRC handling.
-> @@ -190,6 +206,9 @@ struct iio_backend_ops {
->  	int (*filter_type_set)(struct iio_backend *back,
->  			       enum iio_backend_filter_type type);
->  	int (*interface_data_align)(struct iio_backend *back, u32 timeout_us);
-> +	int (*calibration_source_set)(struct iio_backend *back,
-> +				      enum iio_backend_calib_source source,
-> +				      unsigned int lane);
->  	int (*num_lanes_set)(struct iio_backend *back, unsigned int num_lanes);
->  	int (*crc_enable)(struct iio_backend *back);
->  	int (*crc_disable)(struct iio_backend *back);
-> @@ -240,6 +259,9 @@ int devm_iio_backend_request_buffer(struct device *dev,
->  int iio_backend_filter_type_set(struct iio_backend *back,
->  				enum iio_backend_filter_type type);
->  int iio_backend_interface_data_align(struct iio_backend *back, u32 timeout_us);
-> +int iio_backend_calibration_source_set(struct iio_backend *back,
-> +				       enum iio_backend_calib_source source,
-> +				       unsigned int lane);
->  int iio_backend_num_lanes_set(struct iio_backend *back, unsigned int num_lanes);
->  int iio_backend_crc_enable(struct iio_backend *back);
->  int iio_backend_crc_disable(struct iio_backend *back);
+> Thanks,
+> Conor.
+> pw-bot: changes-requested
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > ---
+> >  .../bindings/iio/adc/adi,ada4355.yaml         | 104 ++++++++++++++++++
+> >  MAINTAINERS                                   |   7 ++
+> >  2 files changed, 111 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
+> > new file mode 100644
+> > index 000000000000..d169619fef25
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
+> > @@ -0,0 +1,104 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/adc/adi,ada4355.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Analog Devices Transimpedance Current to Bits Receiver
+> > +
+> > +maintainers:
+> > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > +
+> > +description: |
+> > +  ADA4355 programmable transimpedance, current to bits receiver and similar data
+> > +  converters.
+> > +  Specifications can be found at:
+> > +    https://www.analog.com/media/en/technical-documentation/data-sheets/ada4355.pdf
+> > +    https://www.analog.com/media/en/technical-documentation/data-sheets/ada4356.pdf
+> > +
+> > +$ref: /schemas/spi/spi-peripheral-props.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - adi,ada4355
+> > +      - adi,ada4356
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  spi-max-frequency:
+> > +    maximum: 50000000
+> > +
+> > +  spi-3wire: true
+> > +
+> > +  spi-cpha: true
+> > +
+> > +  vcc-supply:
+> > +    description: 3.3V power supply.
+> > +
+> > +  vea-supply:
+> > +    description: 1.8V analog power supply to ADC.
+> > +
+> > +  ved-supply:
+> > +    description: 1.8V digital power supply to ADC.
+> > +
+> > +  clocks:
+> > +    maxItems: 1
+> > +
+> > +  adi,vld-en-gpios:
+> > +    description: GPIO connected to the VLDEN pin for VLD output enable.
+> > +
+> > +  adi,gsel-gpios:
+> > +    description:
+> > +      GPIOs connected to the GSEL0 and GSEL1 pins, in that order, for
+> > +      transimpedance gain selection.
+> > +    minItems: 2
+> > +    maxItems: 2
+> > +
+> > +  adi,lfp-gpios:
+> > +    description:
+> > +      GPIO connected to FSEL for internal low pass filter bandwidth selection.
+> > +
+> > +  io-backends:
+> > +    description:
+> > +      The AXI ADC IP block connected to the D+/- and DCO+/- lines of the
+> > +      ADC. An example backend can be found at
+> > +      http://analogdevicesinc.github.io/hdl/projects/pulsar_lvds/index.html.
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - vcc-supply
+> > +  - spi-3wire
+> > +  - spi-cpha
+> > +  - clocks
+> > +  - adi,vld-en-gpios
+> > +  - adi,gsel-gpios
+> > +  - adi,lfp-gpios
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +    spi {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        adc@0 {
+> > +            compatible = "adi,ada4355";
+> > +            reg = <0>;
+> > +            spi-max-frequency = <100000>;
+> > +            spi-3wire;
+> > +            spi-cpha;
+> > +            vcc-supply = <&supply_3_3V>;
+> > +            clocks = <&ref_clk>;
+> > +            adi,vld-en-gpios = <&gpio0 89 GPIO_ACTIVE_HIGH>;
+> > +            adi,gsel-gpios = <&gpio0 86 GPIO_ACTIVE_HIGH>,
+> > +                             <&gpio0 87 GPIO_ACTIVE_HIGH>;
+> > +            adi,lfp-gpios = <&gpio0 88 GPIO_ACTIVE_HIGH>;
+> > +            io-backends = <&axi_adc>;
+> > +        };
+> > +    };
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 02015eaec312..692f1e6d56ec 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -1794,6 +1794,13 @@ W:	https://ez.analog.com/linux-software-drivers
+> >  F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+> >  F:	drivers/iio/amplifiers/ada4250.c
+> >  
+> > +ANALOG DEVICES INC ADA4355 DRIVER
+> > +M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > +L:	linux-iio@vger.kernel.org
+> > +S:	Supported
+> > +W:	https://ez.analog.com/linux-software-drivers
+> > +F:	Documentation/devicetree/bindings/iio/adc/adi,ada4355.yaml
+> > +
+> >  ANALOG DEVICES INC ADE9000 DRIVER
+> >  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+> >  L:	linux-iio@vger.kernel.org
+> > -- 
+> > 2.39.2
+> >   
 
