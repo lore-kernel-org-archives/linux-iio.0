@@ -1,60 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795052174;
-	b=3NFE+5HCnKqs+Yd9Z2RxMEdDry/nmqTfYBhoy885ckA0xUsL0tzT4OSjI+oPFIcwJJRZ
-	 oFiOGwWbEcXkZICVdfbzipaqmqsUOel33k9ziqxrGQDpQOQ98omC2tRDpSVgQ9ESyHcSs
-	 ugxgVrZ6v6I86sY1gOgb/KJpWWURxXni2bpQKMHL0GfHjD+oEg4wAZ02S0KDi0ej+///w
-	 3VvnLt5SnKKNLgBktmUgdzsthNyfZZvu7dC/QEI7YpYfZC+xYdDTliSxEbsNi29o74ufA
-	 KustLKzWE2PPVFHTKUp+2I9wPXFfczHO0ZMGtYVOXS5JDOI6pxZhxrWpGSliYO4SYfQ==
+	t=1795052651;
+	b=ibDKlMT1eJN/pL465KqXtgoCM5OBCA/3I3DiEO/623EBqDtDZ2TQ5T8no/CCsdi17VxU
+	 ZeC1tr+wW+IB1ZLLO2DhUWzT8+wBS8Rgomq1E7zRZL/qGl09ZX+EncDMPwqOsVGnRVxLn
+	 S0RzT0547rYLBidQg22VBbpIIm6RcyHETY6lRNFfkx7FCfrzzNG3bEdJyHQQTI1LNF/Ht
+	 iJjugCJtmQdmemU+zWuAVdjCZR9aRluyYz6EMzPZ9Uj1iSpRZl3C1UN5+tPCQAlPakuxK
+	 nEZU42fMEeuRzfZ+GFH8j5d6nm6NhjOfHooXTODuG8mb4m+v6H3uGAXddKJKBg3JS2g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795052174;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795052651;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=6ppFMoyy0hMiK8zLmO0ZtgvhxnZ98SKRntiVkaykdQQ=;
-	b=eKCR9u/GMRS7YMgP8kLhmcWyswRG6HcYB/G315Ks7HCaRMSwK2zmXaCf5ZaSalvCjbd6
-	 Epwda9rriRHNQzbiUy2Kl+WkbdSVMgUteOQAHNXxtX9JbAIttgnyoSQf23JTGcGpp2rJg
-	 Z5Ra1jQA1DOwRLSBGEOIhBwoXhzKZUIEvHNOB/HR+SNZg4FUoyvmQNEDU8PdeXrvcYuQ9
-	 z4Y0shSw4sX/uhsgP/b6JLs/z8SchhVuQO6BdQ+ZR8nWHA+ksusiZHcr06VdYrLzMRey+
-	 YEwvwPHNuVGfLbR1zgrmzkjEEDyqVha2aZB5m8zvW6uKFRxhqMlRJNwVE9V2nc/nGkA==
+	bh=oR3zaB1RSgfSBALWqoflY3XEFZ9EicoDk2o6RRqqgQU=;
+	b=cwR1UVMQLAumVIYm/QhXYyTsM6E7YFFwU15oDxYs6OfZ072JLR3sKxOXEf5WzC4gFv3S
+	 usuuwBAv+vRziXnm3qL6uZEuZ38GxnCB6ckrKrXH4jBctQWVzuExmKNdHdg/Y2Aem1QPZ
+	 OHFujw90cPDLTfUm/BNtpEdoyS9BdcXiq4U06/aKjaODeWVTMlWdEFiUo5v9vYkxSTEzp
+	 aq42JtHGG9DRpE6vZUDjcNNBXvIJ8jFqj8RqKkuCjM8y/qcNBT0hBUaq3Gi1iLXuG8SPc
+	 hUudEKQryiytsl9qtcWcUivDstar3zbA4YapgSa5Kxx9gWnMKK4vKap+/9Qw6FXVxmg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="R8C7i2W/";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CcTVlPB4;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35532606A31C;
-	Thu, 19 Nov 2026 01:36:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37312606A335;
+	Thu, 19 Nov 2026 01:44:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R8C7i2W/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CE661F000C4;
-	Thu, 19 Nov 2026 01:36:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CcTVlPB4
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF0F71F000C8;
+	Thu, 19 Nov 2026 01:44:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795052174;
-	bh=6ppFMoyy0hMiK8zLmO0ZtgvhxnZ98SKRntiVkaykdQQ=;
+	s=k20260515; t=1795052651;
+	bh=oR3zaB1RSgfSBALWqoflY3XEFZ9EicoDk2o6RRqqgQU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=R8C7i2W/N1IkQypPHy70VnqdPx8BK/vtrlsEXldYkQiYntcNpzkB3O2oOWynjHW8X
-	 cUL58965McsNETAM+8z3k2p1vHYTqSOWNvAdH0uIL6wBQPOCTAFzJfCY4MhK7YtRi5
-	 uF1iJ6huwOnCSMtuZXomOHgu/2bH1nPHJBrX5tTaCSqVak37hphpKQmsanN6y88RgR
-	 U1xn1sEK1r/S44wdCgKJXeNYaG5/weKVhexEL3SrGI0oouzJExa4117ZuQHPFZRiuI
-	 lqtfrtdBQIa3o4O2rD90JlZePsbM72/CPuAeY8s+RZpBXWNo9me5RhmZtt53F+qqiX
-	 XtVRkHm/0L1ag==
-Date: Thu, 19 Nov 2026 01:36:07 +0000
+	b=CcTVlPB4U+q9gVnBm1Ll2kZJJswO7Jp5t1viC3TFRvC158JdFvxOP9NHkkfIwUwvt
+	 tNpg4T3+jywIPY/ZV3EJMEZa+1CGKHBHE0RP42FaKvvEitzOuHpeBJ8BP1OuNHRr7Y
+	 eRityK3lXK9OABtV2Uzd0+BMmAVa3lW4zQyI1usT4pi771fsoBWDkcgwKABh3Zol6x
+	 18fVJ60eViKAOAFb29gyIcGzpic+SBmwtd7ethiTG2J9bWLZvlxutdqdrtWCaC3CBy
+	 9hCbCEsOKo07sO6ot1cOS8jEUeqygwE1sOKP8liCWdrpXunsJHxTNf1N2LiTiu05hX
+	 2fVKRJobM/GDQ==
+Date: Thu, 19 Nov 2026 01:44:05 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Linus Walleij <linusw@kernel.org>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Kyungmin Park
- <kyungmin.park@samsung.com>, devicetree@vger.kernel.org, Krzysztof
- Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, Joshua Crofts
- <crofts@kernel.org>
-Subject: Re: [PATCH v3 0/5] iio: light: gp2ap020a00f: Add VCC supply and
- GP2AP030A00F support
-Message-ID: <20261119013607.2f763ff3@jic23-hlaptop>
-In-Reply-To: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
-References: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
+To: NanamiKite <nanami@yosoro.hk>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Hans de Goede
+ <hansg@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: cm32181: Add support for CM32183
+Message-ID: <20261119014405.2eee7298@jic23-hlaptop>
+In-Reply-To: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com>
+References: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,66 +63,41 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 14:46:07 +0100
-Linus Walleij <linusw@kernel.org> wrote:
+On Wed, 18 Nov 2026 23:11:00 +0800
+NanamiKite <nanami@yosoro.hk> wrote:
 
-> Describe and enable the optional VCC supply for the GP2AP020A00F and
-> GP2AP030A00F. Preserve compatibility with existing device trees that only
-> describe the LED supply.
+> On the H3C MegaBook 14, the ACPI CPLM3218:00 node declares a Capella
+> CM32183 ambient light sensor (CPM0 device ID 0x7db7 / 32183) at I2C
+> address 0x29. Reading CM32181_REG_ADDR_ID (0x07) returns 0xc383, with
+> chip ID 0x83 in the lower byte, causing cm32181_reg_init() to fail with
+> -ENODEV.
 > 
-> Extend the existing binding and driver to support the GP2AP030A00F. It
-> shares the register layout, but has different proximity resolution
-> encodings and no automatic lux calculation. Select model-specific
-> initialization, keep reserved bits clear and expose fixed-range raw
-> clear and infrared counts. Keep generic supply handling in separate
-> patches from the model-specific binding and driver additions.
+> The CM32183 uses the same register layout and ACPI CPM0/CPM1 tables as
+> the CM32181 and CM32182. Add chip ID 0x83 to cm32181_reg_init().
 > 
-> Assisted by LLM.
-> 
-> Signed-off-by: Linus Walleij <linusw@kernel.org>
-Applied. Thanks,
+> Cc: stable@vger.kernel.org
+> Signed-off-by: NanamiKite <nanami@yosoro.hk>
+Take a look at linux-next or the iio.git tree on kernel.org.
+Or indeed sanity check the list.
+https://lore.kernel.org/all/tencent_850445458D21608E9C8821E6728457F31C0A@qq.com/
 
-J
+Pretty unlucky to hit same thing that was added about 2 weeks ago.
+I guess that device is proving popular!
+
 > ---
-> Changes in v3:
-> - Return -ENODATA when chip match data is missing.
-> - Use four-line initializers for I2C device IDs.
-> - Document the 1 ms power-on delay and use USEC_PER_MSEC.
-> - Align family descriptions and list supported parts in Kconfig help.
-> - Pack GP2AP030A00F samples as 16-bit values and omit zero shifts.
-> - Link to v2: https://patch.msgid.link/20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org
+>  drivers/iio/light/cm32181.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Changes in v2:
-> - Replace vdd/vio with one optional vcc supply, matching the VCC pin.
-> - Use devm_regulator_get_enable() for VCC, allowing dummy regulators.
-> - Move the VLED description into the generic supply binding patch.
-> - Split variant infrastructure from GP2AP030A00F support.
-> - Use "GP2AP020A00F and similar" in family descriptions.
-> - Use reverse Christmas tree ordering for local declarations.
-> - Explicitly select MANUAL_CALC when automatic ALS calculation is absent.
-> - Reject missing chip match data before accessing the device.
-> - Use fsleep() for the GP2AP030A00F startup delay.
-> - Select static channel arrays and counts through chip_info.
-> - Link to v1: https://patch.msgid.link/20261108-gp2ap030-v1-0-55314eb7055b@kernel.org
-> 
-> ---
-> Linus Walleij (5):
->       dt-bindings: iio: light: sharp,gp2ap020a00f: Add VCC supply
->       dt-bindings: iio: light: sharp,gp2ap020a00f: Add GP2AP030A00F
->       iio: light: gp2ap020a00f: Enable the VCC supply
->       iio: light: gp2ap020a00f: Prepare for chip variants
->       iio: light: gp2ap020a00f: Add GP2AP030A00F support
-> 
->  .../bindings/iio/light/sharp,gp2ap020a00f.yaml     |  17 ++-
->  drivers/iio/light/Kconfig                          |   6 +-
->  drivers/iio/light/gp2ap020a00f.c                   | 147 +++++++++++++++++++--
->  3 files changed, 151 insertions(+), 19 deletions(-)
-> ---
-> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-> change-id: 20261107-gp2ap030-99504c2dc038
-> 
-> Best regards,
-> --  
-> Linus Walleij <linusw@kernel.org>
-> 
+> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+> index b32a940..aaf1af3 100644
+> --- a/drivers/iio/light/cm32181.c
+> +++ b/drivers/iio/light/cm32181.c
+> @@ -200,6 +200,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
+>  		break;
+>  	case 0x81: /* CM32181 */
+>  	case 0x82: /* CM32182, fully compat. with CM32181 */
+> +	case 0x83: /* CM32183, fully compat. with CM32181 */
+>  		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
+>  		cm32181->als_it_bits = cm32181_als_it_bits;
+>  		cm32181->als_it_values = cm32181_als_it_values;
 
