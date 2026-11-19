@@ -1,70 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.243.244.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795057706;
-	b=2N2fm7xB6eU4woTCv/hODpBIR5sT7toKPS0uN7bHl0ewxuQ/g/lgBvMCvRqfNmhQ6zvL
-	 9gKS8LqqrHfow7ndCx/PlGjQ17GmH/IYrrJtAwYklOnVSLn0raatiGa1iEnSc2Nii1Qvz
-	 u3E8t/Uv4JcrYhIWjYDqIyhHreLDqxBs9HZEPv+6O7aOjQiG2KM9uceRGDxKndeukz1nN
-	 V+SvfuEo+i9ND19K21seTgIyH5iatk9NnhYDn2hvahVK1OPcG6yqiKsnZQ9Wvf+UcD1Ry
-	 oCa2DDaWe1UpcAxijqrPfqE0DDrxFooBqsMAoEOzgDpHQ6g1NnvM920JsO6Ejb055Dg==
+	t=1795058228;
+	b=dKJZrliyPzXP0cDBPZrkTyHndXdtTDBsrEzeGZU5ATJPGr+kzjx8kaBpEjBVUpR0iKU4
+	 UfXk7hdUcAAdTEjUBemt7Jzbl74hfaZn9/1QowKS1VN9XBOUDSWedqWqm2TM3cJlqdeqr
+	 ixS2ycqlKCZYohDKU6kiJXvLwKaJJF7N2EUefe7UGNnlKtzc2ksuHx0xY/Y789L/8npdD
+	 3kWZU27v5I6sXaFX0i7ThCXodUqToE+1o9jTNuRRMeO86FoqxGWCdVs76tu/soQ5y6O3f
+	 HS2G5fi8cfobx1wIWMX9WIpiJwpiDq4K7zVX/jlPxTgavlU4+UkU65OXxfBF4mU3x/w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795057706;
-	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
-	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:EX-QQ-RecipientCnt:From:To:Cc:
-	 Subject:Date:Message-Id:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:
-	 X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=KIdzZrFkpaTDr7W3gsDfnaswYebzCSotARH4SUhtoak=;
-	b=X+YaVH4i+xogRfcPGxyVFC5jsi9IXQy5+cIQNQTtf2C25mUVKwO28pUSv3rZMY7OYYqF
-	 CeJNvvY9M6ZeHjVjkgv67sjQaloS7W1LFlYha2RjTkAC+xFd3T77JgWUs/Q3uItZzv2FH
-	 Voc6lbF8jVNK3D+SPjcsrWajtiYeWlh1fqOscR/E2CZlNCByIRjq5a7ff3mDLoutJd+Zg
-	 zCY1lWS/zFwn37Ytf3DEbUg17o4qvbziy1aWWst1klYKRMfDpcryGlQrzwsSps9T1gmmT
-	 IdzVTqB/qQLmStPu9lp+cNqWODYNwg1RxDM60IB+ICTPG7EmTfWbAOIGT9OQ0/+ggTg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795058228;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=r2uY6+NIgq+iesXLv4eqMI/o1G/fBRZ5sTurYgJmAv8=;
+	b=CbLYGA+9OhXoO4UI1kpqnnY700PCh7o9CZFb9e0OtabKjLshkknt7+1HFFQ9IGkz3h0Q
+	 iRx9UYB4w1ya+MVdWtCdiJoHXbWNcJSSIk1YdbTI7v2eHoPZaPU+fBNCrTb/TSwn7wi0W
+	 /2f09zrU7yTxrhvIhGkhsdwxhxpX3FQGhbONLGADc+Zr3moAgT9xhS9mExM1invBpVZrI
+	 HhQxS2+rjPaZTv7KwzCFeRnVUW9aJwo7btU0Xvk1GexualBaB/wjq1ZDx8ux+7SZD1CbI
+	 eD+ll4BByTGMZMVQMGTdn5U8rNvh3biw3yDeSQRS9VzLShnlug3SRYy/SppiXksTL8g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=uniontech.com;
-	spf=pass smtp.mailfrom=uniontech.com;
-	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=czEh2g0K;
-	arc=none smtp.remote-ip=54.243.244.52
-Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BegmDEyk;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91FEF606A325;
-	Thu, 19 Nov 2026 03:08:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 91FEF606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 902F9606A325;
+	Thu, 19 Nov 2026 03:17:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=czEh2g0K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1795057663;
-	bh=KIdzZrFkpaTDr7W3gsDfnaswYebzCSotARH4SUhtoak=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=czEh2g0KxPPWhU1IONH0WebV/eeMkUBEfAPr4wjtRzyoXbHDQtRwChUyI/pXIVVXs
-	 yhYaU1hAJOz1T8PGqRxu471FKAAdNyaKonEMG5+mByekoObuDBGDzV4Ala+PliwteX
-	 8CDeXbsKM2vYRBK00+G5mcNrkFl7Xd730FlrniQ0=
-X-QQ-mid: esmtpgz14t1795057646ta7893f9b
-X-QQ-Originating-IP: 3DK/lMDE4yBtIJDJPi84ozyxWx0+You5dONeczytTXA=
-Received: from localhost.localdomain ( [113.57.152.160])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Thu, 19 Nov 2026 11:07:17 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 10885263091152778059
-EX-QQ-RecipientCnt: 10
-From: Siqi Chen <chensiqi@uniontech.com>
-To: nish.malpani25@gmail.com,
-	jic23@kernel.org
-Cc: nuno.sa@analog.com,
-	Michael.Hennerich@analog.com,
-	dlechner@baylibre.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux@analog.com,
-	linux-kernel@vger.kernel.org,
-	Siqi Chen <chensiqi@uniontech.com>
-Subject: [PATCH] iio: gyro: adxrs290: propagate chip ID read errors
-Date: Thu, 19 Nov 2026 11:07:09 +0800
-Message-Id: <20261119030709.3792433-1-chensiqi@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BegmDEyk
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 065621F000C4;
+	Thu, 19 Nov 2026 03:17:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795058228;
+	bh=r2uY6+NIgq+iesXLv4eqMI/o1G/fBRZ5sTurYgJmAv8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=BegmDEykbxYqYqOZ6nEdV7JABs5osPkCSmuoS16IKoYq9EMUtq7+KTUQz5Y3dqYuF
+	 enP1Z+trbRyA9S1iJa02MSw8G5CHX8cWbJRnp7YIssNaY79y4FsU9zGs7u/rKLLVOv
+	 BOg5BcL5x1ywCqyN85ns80JQKcRIRDBsWB7czYXl1zuFnyjOLEXPWHprGo/5Xm5yTg
+	 rol6XlTGNg8t9opcE90y0FqK+QAMMNop1MxRV5M88+vBrem3UV3z2Uii1rBt44X0iA
+	 5m5Tmi5vhdz3I4Ib+geUP690Hn3icgUdSH4ely4piqvS041899SjY2cQicCbAaKWX0
+	 pgkTOEO8nYYjw==
+Date: Thu, 19 Nov 2026 03:16:59 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux@analog.com>,
+ <Michael.Hennerich@analog.com>, <nuno.sa@analog.com>,
+ <eblanc@baylibre.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+ <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+ <olivier.moysan@foss.st.com>, <marcelo.schmitt1@gmail.com>
+Subject: Re: [PATCH v1 5/5] iio: adc: Add support for ADA4355 and similar
+ ADCs
+Message-ID: <20261119031659.6a84e737@jic23-hlaptop>
+In-Reply-To: <2f5e83aa17aea08bbff69ca6ef7d32b11368f518.1795003864.git.marcelo.schmitt@analog.com>
+References: <cover.1795003864.git.marcelo.schmitt@analog.com>
+	<2f5e83aa17aea08bbff69ca6ef7d32b11368f518.1795003864.git.marcelo.schmitt@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -74,104 +65,353 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
-X-QQ-XMAILINFO: N4v3rtNxGsNSrpeeacze20N1apNksIHqCNAeAnVm4ULWVRrizZZ82Ljf
-	OMMcZ1rvtHD6FjZlr4aFkrZWi9oLxu0cdHMX7JOyefYbAjtk3gC0FhYhoFVvYFUmpNGMWB+
-	rYoEDdd7Y8Z057HdiURoBU3ANFhyi7ru4OW50yEsT+uGi61mClexK2wkwG8am81wsr7yMO0
-	hsFwSYhWsQmMfyJQ4ui5jUP5d48hhJkD4KadIixl5MbdtZ1VdymCvI48Dd73Tt0NpYCrjRq
-	nV8czKtToIJ94/3TeXJt5K3Bpw5lj4lDNNA2jWeWV3wCVSCXsgGxmbql8SuPnmScUcwYTq2
-	WfpoqePdTaD0Mva19rI23gARL28tSn9kCVaVcfdVFKc7PZGx2W7qCtVJJuTnQCQdMDYGOjj
-	pZj7hvasVqvdT0oXFxuYCWKylHe0rnk5P+0XyDlsDKaRZhFLGqZ+s35faw6wcjAZ7MI7Q8N
-	fZNhMIvKBpeUoYF92y7MbIT3oxXRHzQ2vrAUK/kByp+FTaFoUySXKIbyAHOqsCZ7StY6UEO
-	DCUXQ5lHRUPyR9vemskXZySXDDuN8/TnAWKIRBrkarftjapEYRQB4v9OUww5hVpEYpnv+8m
-	DVgIliatWLPpzhtADRSiCWOPg7Ypg6O3B6TKUmiqDz02KSL2PcmaOGvrus9BeL0u+eT7WC4
-	+S+PiyvQfwuE/GHRHLPne8tcougtdEcfg/ycniNggFpupEMPF6HHMoRQMpx3I6pQRn4QzPE
-	2DnQTE89ClGYajOKd0NEuPav0YvckIeSjXldVxXj/YB3BZBZzNqUsEB8ECXjHJnfCkOF9x3
-	Nal9EVTVzYh0JGQVuy7YP6OmBYzcodaht98JMQY+paNGjdRjUKE2dt55N89/kF+Y3ywXBZ3
-	lXfh7q0625BLdK4o0VNuED/7Ny/4DFsMrd/DSIf6w/LWErCzs+c3eEWGBJF63RU0sjjBA2u
-	ZFbPQUAuYu/uOjklM/p/Bik6SCCAyyrKtzOEHBUFY6tYqJ1iZtHMHAa4eJv8GAO5dFTMR6S
-	adxaAXIS39PsKk/punprOIbkfOMugbXSeZLmkT3cPkkJv2kPnhGCTni4Lyox7B7qG2psFaL
-	RScV52M0yyMscLOZ8mG9+Ya9PRgTh/cNg==
-X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-spi_w8r8() returns either an unsigned 8-bit value or a negative error.
-The probe function stores its return value in a u8, truncating errors and
-treating them as unexpected chip IDs. Consequently, an SPI transfer failure
-is reported as -ENODEV instead of the actual error.
+On Wed, 18 Nov 2026 10:04:33 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-Store each result in an int and return negative errors before validating
-the chip IDs.
+> The ADA4355 and AD4356 are 14-bit, 125 MSPS, analog-to-digital converters
+> with integrated analog front-end. These chips are configured over SPI while
+> conversion data is streamed over a serial LVDS interface handled by an IIO
+> backend.
+> 
+> Add an IIO device driver for ADA4355 and similar designs, providing device
+> configuration, debugfs register access and buffered captures through the
+> IIO backend framework.
+> 
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+I'm feeling lazy, and it's a v1 so I haven't actually looked
+at what sashiko found to see if it is right. But it found stuff..
+https://sashiko.dev/#/patchset/cover.1795003864.git.marcelo.schmitt%40analog.com
 
-OpenCode was used to identify the issue and draft the code and changelog.
+A few things I noticed inline.
 
-Compile-tested with CONFIG_ADXRS290=m using:
+> diff --git a/drivers/iio/adc/ada4355.c b/drivers/iio/adc/ada4355.c
+> new file mode 100644
+> index 000000000000..7f9f58a14385
+> --- /dev/null
+> +++ b/drivers/iio/adc/ada4355.c
+> @@ -0,0 +1,798 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Analog Devices ADA4355 device driver
+> + *
+> + * Copyright (C) 2026 Analog Devices, Inc.
+> + * Author: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> + *
+> + * Expanded and improved version made on top of preliminary code from:
+> + *	Antoniu Miclaus <antoniu.miclaus@analog.com>
+> + *	Pop Ioan Daniel <pop.ioan-daniel@analog.com>
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bitmap.h>
+> +#include <linux/bitops.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/clk.h>
+> +#include <linux/debugfs.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/kernel.h>
 
-  make O=/tmp/opencode/linux-build-adxrs290 W=1 \
-       drivers/iio/gyro/adxrs290.o
+No to including this in new code. Need to use more specific
+includes and not that catch all unless this really does use
+one of the things still defined in there.
 
-No hardware or SPI fault-injection testing was performed.
+> +#include <linux/minmax.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/seq_file.h>
+> +#include <linux/slab.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/units.h>
+> +
+> +#include <linux/iio/backend.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
 
-Fixes: 2c8920fff145 ("iio: gyro: Add driver support for ADXRS290")
-Signed-off-by: Siqi Chen <chensiqi@uniontech.com>
----
- drivers/iio/gyro/adxrs290.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+Is that used? I maybe missed something.
 
-diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-index b61cc81122a6..eb3306215217 100644
---- a/drivers/iio/gyro/adxrs290.c
-+++ b/drivers/iio/gyro/adxrs290.c
-@@ -604,7 +604,7 @@ static int adxrs290_probe(struct spi_device *spi)
- 	struct iio_dev *indio_dev;
- 	struct adxrs290_state *st;
- 	u8 val, val2;
--	int ret;
-+	int id, ret;
- 
- 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
- 	if (!indio_dev)
-@@ -622,21 +622,27 @@ static int adxrs290_probe(struct spi_device *spi)
- 
- 	mutex_init(&st->lock);
- 
--	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
--	if (val != ADXRS290_ADI_ID) {
--		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", val);
-+	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
-+	if (id < 0)
-+		return dev_err_probe(&spi->dev, id, "failed to read ADI ID\n");
-+	if (id != ADXRS290_ADI_ID) {
-+		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", id);
- 		return -ENODEV;
- 	}
- 
--	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
--	if (val != ADXRS290_MEMS_ID) {
--		dev_err(&spi->dev, "Wrong MEMS ID 0x%02x\n", val);
-+	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
-+	if (id < 0)
-+		return dev_err_probe(&spi->dev, id, "failed to read MEMS ID\n");
-+	if (id != ADXRS290_MEMS_ID) {
-+		dev_err(&spi->dev, "Wrong MEMS ID 0x%02x\n", id);
- 		return -ENODEV;
- 	}
- 
--	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
--	if (val != ADXRS290_DEV_ID) {
--		dev_err(&spi->dev, "Wrong DEV ID 0x%02x\n", val);
-+	id = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
-+	if (id < 0)
-+		return dev_err_probe(&spi->dev, id, "failed to read DEV ID\n");
-+	if (id != ADXRS290_DEV_ID) {
-+		dev_err(&spi->dev, "Wrong DEV ID 0x%02x\n", id);
- 		return -ENODEV;
- 	}
- 
 
-base-commit: 903941a9b06ae445c70646ab061b604c2dea17d3
--- 
-2.20.1
+
+
+
+> +/*
+> + * Sweep the I/O delay of one delay line while only the error source fed by
+> + * that line is reported, and apply the delay in the middle of the widest run
+> + * of valid test points. @offset is where this line's test points start in
+> + * @st->calib_map.
+> + */
+> +static int ada4355_calibrate_lane(struct ada4355_state *st,
+> +				  enum iio_backend_calib_source source,
+> +				  unsigned int lane, unsigned int offset)
+> +{
+> +	struct device *dev = &st->spi->dev;
+> +	unsigned int point, val, cnt;
+> +	bool stat;
+> +	int ret;
+> +
+> +	ret = iio_backend_calibration_source_set(st->back, source, lane);
+> +	if (ret)
+> +		return ret;
+> +
+> +	for (point = 0; point < ADA4355_MAX_TEST_POINTS; point++) {
+
+	for (unsigned int point = 0; 
+
+> +		ret = iio_backend_iodelay_set(st->back, lane, point);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = iio_backend_chan_status(st->back, 0, &stat);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (stat) {
+> +			dev_dbg(dev, "Invalid point(%u) for lane %u\n", point,
+> +				lane);
+> +			continue;
+> +		}
+> +
+> +		__clear_bit(offset + point, st->calib_map);
+> +	}
+> +
+> +	cnt = ada4355_find_optimal_point(st->calib_map, offset, ADA4355_MAX_TEST_POINTS,
+> +					 &val);
+> +	if (!cnt) {
+> +		dev_err(dev, "No valid delay found for lane %u\n", lane);
+> +		return -EIO;
+> +	}
+> +
+> +	/* "normalize" the selected value */
+> +	val -= offset;
+> +	dev_dbg(dev, "lane %u: selected delay: %u\n", lane, val);
+> +
+> +	return iio_backend_iodelay_set(st->back, lane, val);
+> +}
+> +
+> +static int ada4355_calibrate(struct ada4355_state *st)
+> +{
+> +	unsigned int lane;
+> +	int ret;
+> +
+> +	/* all points invalid */
+> +	bitmap_fill(st->calib_map, st->calib_map_size);
+> +
+> +	ret = ada4355_calibrate_prepare(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * The frame signal has to be aligned first: the pattern match block
+> +	 * only reports meaningful per-lane errors once the word boundary is
+> +	 * known.
+> +	 */
+> +	ret = ada4355_calibrate_lane(st, IIO_BACKEND_CALIB_SOURCE_FRAME,
+> +				     ADA4355_FRAME_LANE,
+> +				     ADA4355_MAX_DATA_LANES * ADA4355_MAX_TEST_POINTS);
+> +	if (ret)
+> +		return ret;
+> +
+> +	for (lane = 0; lane < ADA4355_MAX_DATA_LANES; lane++) {
+	for (unsigned int lane = 0; lane < ADA4355_MAX_DATA_LANES; lane++) {
+
+Going to take a while for us to all train ourselves to prefer this style
+but it is both acceptable and once or twice Linus has said he prefers
+keeping the scope tightly defined like this.
+
+> +		ret = ada4355_calibrate_lane(st,
+> +					     IIO_BACKEND_CALIB_SOURCE_DATA_LANE,
+> +					     lane,
+> +					     lane * ADA4355_MAX_TEST_POINTS);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return ada4355_calibrate_stop(st);
+> +}
+
+
+> +
+> +static int ada4355_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct ada4355_state *st = iio_priv(indio_dev);
+> +	long r_clk;
+> +
+> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +		return -EBUSY;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		r_clk = clk_round_rate(st->clk, val);
+> +		if (!in_range(r_clk, 1, ADA4355_MAX_SAMP_RATE_SPS))
+This is a little odd as in_range takes start + length.
+That happens to work here because the start is 1.   I'd
+just check <1 || > MAX_SAMP_RATE_SPS.
+
+> +			return -ERANGE;
+> +
+> +		return ada4355_update_clock(st, r_clk);
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return ada4355_set_scale(st, val, val2);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+> +
+> +static int ada4355_setup(struct ada4355_state *st,
+> +			 struct ada4355_chip_info const *chip_info)
+> +{
+> +	struct device *dev = &st->spi->dev;
+> +	struct gpio_desc *gpio_vld_en;
+> +	struct gpio_desc *gpio_lfp;
+> +	unsigned int id;
+> +	int ret;
+> +
+> +	gpio_vld_en = devm_gpiod_get(dev, "adi,vld-en", GPIOD_OUT_LOW);
+> +	if (IS_ERR(gpio_vld_en))
+> +		return dev_err_probe(dev, PTR_ERR(gpio_vld_en),
+> +				     "Failed to find adi,vld-en-gpios\n");
+> +
+> +	if (gpio_vld_en) {
+> +		gpiod_set_value_cansleep(gpio_vld_en, 1);
+> +		fsleep(1000);
+> +	}
+> +
+> +	gpio_lfp = devm_gpiod_get(dev, "adi,lfp", GPIOD_OUT_LOW);
+> +	if (IS_ERR(gpio_lfp))
+> +		return dev_err_probe(dev, PTR_ERR(gpio_lfp),
+> +				     "Failed to find adi,lfp-gpios\n");
+> +
+> +	ret = ada4355_digital_reset(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, ADA4355_CHIP_CONFIG_REG, 0x00);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, ADA4355_DEVICE_INDEX_REG, 0x02);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, ADA4355_SERIAL_CHANNEL_STATUS_REG, 0x03);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, ADA4355_DEVICE_INDEX_REG, 0x31);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(st->regmap, ADA4355_CHIP_ID_REG, &id);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (id != chip_info->id)
+> +		dev_warn(dev, "Mismatch CHIP_ID, got 0x%X, expected 0x%X\n",
+> +			 id, chip_info->id);
+
+Given we want fallback compatibles to work if appropriate, I'd relax
+that to dev_info.  And say something about unknown id. Mismatch sounds scary.
+
+
+> +
+> +	ret = regmap_update_bits(st->regmap, ADA4355_SERIAL_OUT_DATA_CNTRL_REG,
+> +				 ADA4355_SERIAL_OUT_LANE_MODE_MASK,
+> +				 FIELD_PREP(ADA4355_SERIAL_OUT_LANE_MODE_MASK,
+> +					    ADA4355_DDR_TWO_LANE_BITWISE));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(st->regmap, ADA4355_TRANSFER_REG,
+> +			      ADA4355_TRANSFER_OVERRIDE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, ADA4355_OUTPUT_MODE_REG,
+> +			   ADA4355_OUTPUT_MODE_TWOSCOMP);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, ADA4355_RESOLUTION_SAMPLE_RATE_REG,
+> +			   ADA4355_125_RATE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+
+	return regmap_write();
+
+> +}
+
+> +
+> +static int ada4355_probe(struct spi_device *spi)
+> +{
+> +	const struct ada4355_chip_info *chip_info;
+> +	struct device *dev = &spi->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct ada4355_state *st;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +	st->spi = spi;
+> +
+> +	chip_info = spi_get_device_match_data(spi);
+> +	if (!chip_info)
+> +		return -ENODATA;
+> +
+> +	st->regmap = devm_regmap_init_spi(spi, &ada4355_regmap_config);
+> +	if (IS_ERR(st->regmap))
+> +		return PTR_ERR(st->regmap);
+> +
+> +	ret = devm_mutex_init(dev, &st->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->calib_map_size = ADA4355_MAX_CALIB_MAP_SIZE;
+> +
+> +	st->clk = devm_clk_get_enabled(dev, NULL);
+> +	if (IS_ERR(st->clk))
+> +		return PTR_ERR(st->clk);
+> +
+> +	indio_dev->name = chip_info->name;
+> +	indio_dev->channels = &ada4355_channel;
+> +	indio_dev->num_channels = 1;
+> +	indio_dev->info = &ada4355_iio_info;
+> +	st->chan = &ada4355_channel;
+
+Why in two places?  If you just want it in the scale
+table calc, pass it in directly. Don't think it is used after that.
+
+
+> +	ret = ada4355_interface_setup(st);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "failed to setup the digital interface\n");
+
+Go a bit longer.  As long as it's not too far past 80 I don't mind. Particularly
+when the end bit is the tail end of an error message.
+
+> +
+> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
+> +		ret = ada4355_calibrate(st);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
 
