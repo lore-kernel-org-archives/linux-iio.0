@@ -1,76 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795051628;
-	b=dpOL32XfVf/EtmO4SNdO8yLQv3+6nGKL6PjiwsEa8lNWQyh1LCv/aYpgv+wdBGeF9FH2
-	 pqBfP9mf8Zwf+sMRd3m+0+8jFPF8FmukKe+Tn8KfRWvy0hEh0tT1JiEdGD75VLGi8HdBQ
-	 4FXojbigUNKR8dbk5BzsQRq/BJ2nwJoGBTNJ/tvkKRw5oLEwioioWQuz2odMRiavHZ5T2
-	 5vfDM4Fd8gm4coYYCiQ+nMk1QTW1zHK9XklGqPtLGVZytidbRdimFa4KGkYURMpF0GfMH
-	 sq7NYXLso1jLKuDjS2U/BgaJkD3YccnxlHcSfz7uS2A9tTuN4FumE+OMritUvbpsMXw==
+	t=1795052017;
+	b=I8lENSfIa65xRyMtM0E8F97oyuYYiWZIKML2tXabmzjCIlKUa+uLid2BJjdzMvJWbMHQ
+	 1c9vYuNsNrnvfdfK/TQJKpVGULPeZnVu67wHJjinhJFgt9vEshZmLCSLA07a4jOoK2EVW
+	 2dOK6nDHrFZ9saDoEFo7GIXIylnNXdH3rgrEDkbc83BLjb5Vv+r8DWWMdjaDOSiYIv/cr
+	 zTPudN/bKbwcJSNN6zDtng7g+DU7OD8lW5k4gxvQkR8Sr3GZVMq9HH2mVk76uHIJrZnr6
+	 KnJ7jb55jEIYPfDSTjUokOezWJaw2C1KiAzy9N0CxnSiXdnOqPAKPaKz6z92nQomdaQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795051628;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795052017;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=OprzOyo9+JassEd1TEvafiLmaglW2JAX08bz3qXzH+M=;
-	b=bPcM+Wq6+nK5atDs9dGVQjX4yfaN0vq8niEp2j8+ehNdev+lxf0PU2rxJvSiqKOIYG9L
-	 kOFw5RWEEMCH6qJfQpi6QXvNP5lZR0Y8KE3FnDjU+s1tbgdR3u7RUU9DIgnek9wHkEQm/
-	 HXnkYx2dIXX7ZhvtPIv82Xmg66XObjzRKXup6zXP7ZVGB7iTRHiWgCntYpovV3RpGsiJN
-	 LFBe+9e8lfY01uY4aqkhyLiQe468JbQL9GzN9PlE0ZGzxQ+1ffmEduitlxEfu7HB3h1KA
-	 QbugR0Ro/GWDcMp38O+j598QAdpV9Ho/bgVL9wIf7yuCNLtdvKVzUVYQqZi6s+JV+Mw==
+	bh=tP0juyknCZt8Oi7eygtZ2/jilIZpwxKA+5FAOW9aG1s=;
+	b=m3lS9qGRvO73VwlAx9Bzp5Vt2MvICvNaf4eNO8wg1M+6EDmPLg5Bk3vWk3K12OzmR+tJ
+	 BZOdrwpdBJwtUd1JTW+LvEbRMfUZcKcAztMP/i8YdNhZ11g3bhGWtrVOvyt+4+7X3XVuB
+	 i3/x0RuGw9ezZxnc3BtKzCtVVAYTqsdk5PUkARcPvYNJWWkRtsBD1/KO5Bz4n2D/yOt00
+	 DFtR0l6VG6sq546lMl5zp/e446G5zaBgdmDp1gmmhRBz9r20TTwq/CyMwaqqf188Kye8V
+	 qVpUNCA4vCh1pY5MiTlH2mJYWKiqYuZ+vn8K/LWZgRG34HuMWJmcvKbVjgBTQVMjtlQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n5rcT0Zl;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ls7L0Wsc;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90EAE606A320;
-	Thu, 19 Nov 2026 01:27:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC41A606A331;
+	Thu, 19 Nov 2026 01:33:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n5rcT0Zl
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F3471F000C5;
-	Thu, 19 Nov 2026 01:27:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ls7L0Wsc
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 689FB1F000C5;
+	Thu, 19 Nov 2026 01:33:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795051628;
-	bh=OprzOyo9+JassEd1TEvafiLmaglW2JAX08bz3qXzH+M=;
+	s=k20260515; t=1795052017;
+	bh=tP0juyknCZt8Oi7eygtZ2/jilIZpwxKA+5FAOW9aG1s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=n5rcT0Zl/SE9jHWi65HwpiTbSdysgFWjql0ekarf62v72raja8OOgMi+64tXtTKOa
-	 M5ygoG/bvHgzz8ZIeXIs2ivMgUwHgIEgn7GOBgW3ty0l2awMnvQY9owfOlmYKZD2uU
-	 2IaJgO1zVeoXLDsLzuDkE2VXP7vdpkj0WzaTyH9BUuFigeLVhYz3ZCFE4AeDGyxyAR
-	 U67BOybTOTaQp+T1SaHwEyeHtKvyxjFWydFbtpqNlmTQHU1xt3xlJ8+WoBg8WNChOH
-	 xTcGI0Ji3/zNwyOnhcai3ZPaEx93fKbvlJNQHZs67FMZkQmqfPD+REcBrIBi9qpXuS
-	 REEkUUwWsOnzw==
-Date: Thu, 19 Nov 2026 01:27:00 +0000
+	b=Ls7L0Wsc7iCYCzVnyZzARTwRePJk5UiPF6oirwJ7n6IU2Ri8OMuQB1/6hZI4bThbI
+	 U2ZGVmGi8DOMpLa0/hDGd6gpJ1cTH/VjFNMaP0/4JPFOrAahNJfeltazzUZ8StWlbw
+	 Uf91JLh7A89zfvtsp4X7HNemzsVOmbwAwODbxg9joam8WHoooJyX3joKDQZPOznY8C
+	 QebYqazHBwfoQnbQhK7phWmeQQAdLcjfVdBfGqoG1J4QSxhZj84tXoayrJyB3WBULf
+	 W2sP26/AYHvuBQw3QQyaqE6URuC0++a56ktCyFeX9Ga3vKdA9KGgUvkg7oZ8gkjs5S
+	 xvl9Q3dSaN0Ng==
+Date: Thu, 19 Nov 2026 01:33:33 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Philipp Stanner <phasta@kernel.org>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, Alex Deucher <alexander.deucher@amd.com>, David
- Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Sunil Khatri
- <sunil.khatri@amd.com>, Vitaly Prosyak <vitaly.prosyak@amd.com>, Prike
- Liang <Prike.Liang@amd.com>, Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?=
- <thomas.hellstrom@linux.intel.com>, Tvrtko Ursulin
- <tvrtko.ursulin@igalia.com>, David Rosca <david.rosca@amd.com>, Timur
- =?UTF-8?B?S3Jpc3TDs2Y=?= <timur.kristof@gmail.com>, Maxime Ripard
- <mripard@kernel.org>, Dave Stevenson <dave.stevenson@raspberrypi.com>,
- =?UTF-8?B?TWHDrXJh?= Canal <mcanal@igalia.com>, Raspberry Pi Kernel
- Maintenance <kernel-list@raspberrypi.com>, Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann
- <tzimmermann@suse.de>, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- amd-gfx@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
- intel-gfx@lists.freedesktop.org, imagination@lists.freedesktop.org,
- lima@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- freedreno@lists.freedesktop.org, nouveau@lists.freedesktop.org,
- virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, linux-tegra@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-usb@vger.kernel.org,
- rust-for-linux@vger.kernel.or
-Subject: Re: [PATCH v2 1/3] dma-buf: dma-fence: Add flags parameter to
- dma_fence_init()
-Message-ID: <20261119012700.2980cbe3@jic23-hlaptop>
-In-Reply-To: <20261118134522.1646892-3-phasta@kernel.org>
-References: <20261118134522.1646892-2-phasta@kernel.org>
-	<20261118134522.1646892-3-phasta@kernel.org>
+To: Raffaele Tranfaglia via B4 Relay
+ <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
+Cc: raffaele.tranfaglia@gmail.com, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Joshua Crofts <crofts@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v3 0/2] iio: light: adux1020: guard() conversion and
+ follow-up cleanup
+Message-ID: <20261119013333.333a1896@jic23-hlaptop>
+In-Reply-To: <20261118-adux1020-guard-v3-0-2c6a18954fc7@gmail.com>
+References: <20261118-adux1020-guard-v3-0-2c6a18954fc7@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,28 +65,61 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 14:45:21 +0100
-Philipp Stanner <phasta@kernel.org> wrote:
+On Wed, 18 Nov 2026 07:29:53 +0000
+Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org> wrote:
 
-> Currently, there are two init functions for dma_fence, dma_fence_init()
-> and dma_fence_init64().
->=20
-> Since more future user options for dma_fence initialization would
-> require distinct init functions, too, it is better to do this in a
-> unified way.
->=20
-> Add a flags field to dma_fence_init(). Adjust all affected drivers,
-> preserving the old behavior.
->=20
-> Support the SEQNO64 flag, and add a check-function so that the user only
-> sets valid bits.
->=20
-> Signed-off-by: Philipp Stanner <phasta@kernel.org>
-> Reviewed-by: Timur Krist=C3=B3f <timur.kristof@gmail.com>
-> Reviewed-by: Christian K=C3=B6nig <christian.koenig@amd.com>
-For IIO,
+> Patch 1 converts the driver to guard(mutex), as Jonathan suggested
+> when applying the sampling frequency hardening patch. Patch 2 uses the
+> direct returns this allows to flatten the channel type checks in
+> adux1020_read_raw() and adux1020_write_raw().
+> 
+> Tested on arm64 QEMU with i2c-stub and lockdep enabled: reading and
+> writing the sampling frequency (valid and invalid values), reading the
+> LED current, reading in_proximity_raw and enabling the threshold
+> event. No lockdep warnings and no hangs after the error paths.
+> 
+> I prepared these patches with the help of an AI coding assistant, and
+> reviewed and tested them myself.
+> 
+> Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Applied to the testing branch of iio.git
 
-Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Thanks,
+
+Jonathan
+
+> ---
+> Changes in v3:
+> - Patch 2: add a local regmap pointer in adux1020_read_raw() and
+>   adux1020_write_raw(), and use 'if (ret)' for regmap_read() errors
+>   (Andy)
+> - Patch 2: split the adux1020_find_index() arguments logically (Andy)
+> - Link to v2: https://patch.msgid.link/20261117-adux1020-guard-v2-0-89707fa070c9@gmail.com
+> 
+> Changes in v2:
+> - Drop the unreferenced Link tag (Andy)
+> - Move ret to the end of the declarations in adux1020_read_raw() (Andy)
+> - New patch 2: return early on unsupported channel types instead of
+>   nesting (Jonathan)
+> - Link to v1: https://patch.msgid.link/20261108-adux1020-guard-v1-1-db9c582f1eea@gmail.com
+> 
+> ---
+> Raffaele Tranfaglia (2):
+>       iio: light: adux1020: use guard() to simplify lock handling
+>       iio: light: adux1020: return early on unsupported channel types
+> 
+>  drivers/iio/light/adux1020.c | 189 ++++++++++++++++++-------------------------
+>  1 file changed, 77 insertions(+), 112 deletions(-)
+> ---
+> base-commit: d922ed738439e1d5b4701df7f4cdd49a09925624
+> change-id: 20261108-adux1020-guard-3820ce794843
+> 
+> Best regards,
+> --  
+> Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+> 
+> 
+
