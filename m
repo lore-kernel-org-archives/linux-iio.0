@@ -1,98 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.177
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795115315;
-	b=0UJTVytUTj2er26v5biBVbYwuZRzLtVK7T0I7H7/O9E9nrCQlR1G9QlfjF79eEQYtmZR
-	 WqFnVFbd+xVlqdQvRf/MQQHbQcIxegDcvWObxY4uE7LWnhYFcWzWpJ3jLNCkR1hrEepvE
-	 QbCCR8YC9B5uZ5bnwtY9K2rU+NkjyrX73xvUZMZBn3LaARCRCxUueE4dUsN2ebilLy81n
-	 K0cWXqEI49SgEhVuc2EIJwKRqbzK4/OcnYb4L7LT5w9l0fVl0ugyINAKMBMpZIl03/bng
-	 tLnXtghwk50RHQiyt+sW8Ww+vf+/olqFmHxxBMtkVtfuS6CY1L2uoZDThUV5DfBO7ig==
+	t=1795116059;
+	b=irccb7b8n7CZj15hSs5HySux4cZUugIzkGxwQVZRcD1AOH8NZ9SJQJ46+Se7L8Nmv+9P
+	 vhag3+JcGCLWVDuhSDZ75zt4P97/WVcgmuGKQqtJCISz72nodfK4jNKBnDe4KRKS5xaML
+	 qkgwxlbltSHYhavQoPqpLY/JSGDHXoATM6T1AD6rYDe64Q3qtVA9W8NIcl22vdxO38Sft
+	 u7LgjiLY6ut8lItidOuASceh1om5ebqB9R/6cW3kC2OTocB+QQX2Ft1PIz+GcNTJKouWz
+	 2dHCWb9OhmSVWa+UajyQ0pUIrBiQvpx5v1682n4U9Amt8QDUwWG+zCbtRVzF0UeF1dA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795115315;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795116059;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=UQGqXnVXE/6wF3pb82GfzovBiLKDNONE4MZwuQ7yLjQ=;
-	b=bGWXZaHH5oLV5VHTwP7Ft8bhRSIusJ+H0f0lvD6bQeaVKvXQ6cSIiFFP1esug7t7xp1v
-	 ZqFuFFuvNPxP2eRFdnlCPWjMeNvEISoLgIJArCKbgKRrrmZ8LrPXQiMU6K3JgfMYIe7ql
-	 c9mXW2NEmPqmfWii0F4N4DrHPqPVzDey9XWRGlyF1MyHU9HK4m+2K83CQSsGIABmlPVii
-	 LdBPDwkouoBDt+AbGlZ2acrKhi4zHJzzbXGhzhbpQwcYA42fsVHM5jKFKJwSsJxCe8MpV
-	 CuHd9VpzD/dT4jk1BqFN28XskVsC4A3lhVW/+9/W2SC9vC6UfD5F077uvpjNhl+z45A==
+	bh=b0c6CGAGUF6g8vtfSwTL1Y354j7cyJnIuNNGjuPfWNo=;
+	b=Vz7gaMEwOwAubhxPfIQwAsAeHoTZ0TDRGRMlGQFRN8nJKhnZYQJoNGCCofPsAKgaZhrB
+	 P2t+KtXkVwMcLoAslKRgWY7ASDwL1DFDvv7nPhlvoaOIOe9NA5B5qRSEcLpWvXLQ1PNda
+	 MhAs4kBTTeKTvZ4TfioKQszoQpBiY0ifmysqNujcSAl0boS97W/EU5WYc9Eth6Rn1sTt+
+	 vWyJR2PkpCWqewQDBYPKazPN+Dn5MabvJEvwrU5v16iG+xOZGISbR54fdyKSflTI0Ut+S
+	 9ZJA1dJrCZlWWwR8VYAWQMqIhHNiMd3kSSZQ+LSRUOGcVJ8UxV9S2sjKSBKENAXRbew==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iyRmx8n4;
-	arc=none smtp.remote-ip=209.85.208.177
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qNv+F2up;
+	arc=none smtp.remote-ip=209.85.214.181
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0BC606A32A
-	for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 19:08:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2B0BC606A32A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A39606A32A
+	for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 19:20:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62A39606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iyRmx8n4
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3adf9b1f5aeso12219581fa.0
-        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 11:08:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=qNv+F2up
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2e9e53d011eso718485ad.1
+        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 11:20:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795115312; x=1795720112; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795116059; x=1795720859; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=UQGqXnVXE/6wF3pb82GfzovBiLKDNONE4MZwuQ7yLjQ=;
-        b=iyRmx8n4vpQclEboNZ8lb459ncIbpraoDdR8PjKNSBooXOCREjqKiWqFeCp6Q7Ry/o
-         jJa0lR+QwANG/aevovDPW8/mNJx/FqcqNuMq7sdLpyURiLBpNftBNmZpcxMNlKsKTqNe
-         fKGz7670ccjwJUDfSFjrYojGpAMXDgzUtkfreZuGsICc7G3lIpt44Jf3TrN4Jd3Qbh7u
-         IRTEnvuwMtpnR14jH9PqKvRy78m6vKeF6doIW9EccpSjzHfPvYav7zrL7WD7DEBwqAtA
-         nKUQhz4laRB1F3UxJS0TZeEHyphSXLLqyyTCWZQQAE1BprGMK6aS7CZbCJeenNK3mqFi
-         HAyA==
+        bh=b0c6CGAGUF6g8vtfSwTL1Y354j7cyJnIuNNGjuPfWNo=;
+        b=qNv+F2upay5nHaiW1qXWUZPBc0wtvYrsbaPLKxcBjuBMxIfvcKIMBkAVP7tef86ztS
+         8GydGE8h32QinKjD+nR0s+whfjhhclwBKtHCTyVmwHWbRkFe6QlTTFCCyeYg4/7UejnS
+         jZc7fskxiat+VCWRrP/uU0oRaYek6TTznytdpZmd1/2ewt6YJCuXb+BYX4ipwMn1QUDo
+         DL5zFGqRH15Sm+c7lKYXtjYzcqYdtMMgB02Neiiwd71EVE3VEWqeDTRaKKsZ9UlOfvfs
+         3FIslBoUlo/U9bttxtetyDa5a8bJO5nRV2HVPahgSDVDyW72hFSeuPpxTNrTSh1Fxnmc
+         TaYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795115312; x=1795720112;
+        d=1e100.net; s=20260707; t=1795116059; x=1795720859;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=UQGqXnVXE/6wF3pb82GfzovBiLKDNONE4MZwuQ7yLjQ=;
-        b=OSUJwP17wFKQSREAY5HP6ufaOELypS5f3qHAGdcDMy1Qfnx5Y4kVIrlskejX8J5IEm
-         rmtM/ulvwHqcRSni9AMvrzrL4mZK6zhofCu+R/7AGeilBtddUO8mWM6JFpmjvrbkGuCI
-         YBZoJxVSVTx179gCaT/oK4FXjK/c/LgZFPuFQISX/L6v35DfugaGV8ahFU+VO5sNIIVl
-         pSlXPMt6xZLN6xdRKCmy8ubfs0anHyyQAl+IXM4xmoXuDR+0uup6cYjMWvJ10J5olYFW
-         MkPuY6NLjeZ8y6AtWHqoH9gjQZZ30OyMAYXuWEX5pWjtwMATE9stVuXKDAxazRFa5Lpz
-         fQEg==
-X-Forwarded-Encrypted: i=1; AL+hErFUjyGR315VDzCl4MDDFZDuduoOr2R7imL8a366hPLywXymTtB71LLq+QNxVItFPuKavQmtTi4sKPM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8OuCSeEoSdMahz7qm4GWZ8NzaL8iMrGIt/frkn+xYtI6eq9Noj
-	agVJnEthrQ+mGqdq+c7NHRFoz7PQit8VLCXDAq+lpNAFW5rDl7SKyilW
-X-Gm-Gg: AYBFou2ijMWAjYjzQfL9miiQCjJkEvNIcA32+llCTVUTIdcIhvnO2gDOnjHi3WmduYT
-	QbKbAY3k8s/lLL5JGuvy88My8Y+VPL8XdNBlB3UaaXvMIO5h+goIqoS5BT6UJfBVdRRzS8NWdQR
-	0HFQsrTGWLk7/El758QByO5tknOE40gymJwALJVyrJznOoBqNlG/GrGrCkSVNWz3NsOU04BWsdM
-	7txDhbCt1WmaDI6Tn+Up+1F6JtqbSM8yCU4DcbjITwiKbep+P8SqUV2FNuKfN4VzXhmHRPLo2Ra
-	+CbUoMxa6pctVP6reeYihhfg3K/oqTliMot57h6X3ccCDjymPGvSDZrE8NuB2XjtNEC+NNZS8XQ
-	PePkeTw5ETPKtmj6lCdsV4cPUUMNSr81H1iUOiC5TwsBgsVzpdHXX5CPtF2DaOW2nB1HOJ6abnv
-	znxo9juOoQ1dR8qz0TFgYao2xJlAEpMFBZT8ipjwsdwUyCdxTdLwmHGuiHpXLXDmHpxkrcItiXn
-	cTJimqRwtDdN5rh5UYhwBymD/rl8cQZaimlwbVweNzy5M2DykbH5ph9TKtN5I8V5pQ5GKB2K3eO
-	k5jf+VbLQOb+nujDIpLLNXvt5qjefxmLZl+VHz9xG8LUwNBlhydQ3SFajfoJtGX9gLZ5eRBnfoO
-	QX340Kn3yqV5++kVlzGGew19k6ByWOn0KGEZFVyARH/q1t3XGkVtOiahm4a4=
-X-Received: by 2002:a05:6512:39c8:b0:5c1:57ce:d4b2 with SMTP id 2adb3069b0e04-5c1b7c78c9bmr718744e87.33.1795115312011;
-        Thu, 19 Nov 2026 11:08:32 -0800 (PST)
-Received: from yantra.. (nekmmqt5p04tda8ausa-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:491d:95cd:6e94:3a5a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1bd018b45sm63965e87.41.2026.11.19.11.08.31
+        bh=b0c6CGAGUF6g8vtfSwTL1Y354j7cyJnIuNNGjuPfWNo=;
+        b=MLjO6QDki7Cz/U5m4vf3fbVVlZua1ScXObs0oDd0vuvRIMXwknMDNRVr9Q3causFJA
+         QCeQEHVhrntWatnIqmU9RSXyt4xqVstrxsGtopB2Xsay89ad1ErEq+6WC0ivE98C+c6J
+         ws86pexyhQfDctaBa57nTherUCyyb/fNpqyAN9Dlv4yUQIrj+vCKAjY6DLbqa5Oke7v0
+         RHP4vb+DSdljgA5jjVbmsPT2L3KSJSl1VSesOjZtryEyulhlXysUbJgof4jLV+kRVdAW
+         qa1QXSF/8FuKeu3zLGSI28Pz9SCEWR4cBzuCdgy+j6bHkMfnssU0xsR5T6rZSQ7kWYlZ
+         LsiA==
+X-Forwarded-Encrypted: i=1; AL+hErE9VLAyz8UyqzsXP1thrnEsJJwaRAc/jFWX1phxXP9Dyut39Au4gqR2dL9GHXc2a2pLZsf5oK65VME=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8sCXIZIOFqoxQIh/0Ds1GADdzS10HVQ8VfeUQbBj0Tr25Ei1md
+	Yb02qn3AA8hbkhrPeh7IS16dGW+3bdQVRz9jABfYFyS7vFzEf0+GQ9zw
+X-Gm-Gg: AZFdTZcQOZkBmIrz091QTqoawiw1JO6yQSqoxQe9ebiqxCqZ77H5rww9moalzzukVyH
+	BpnOpQHXuI6GCk0rOCBWePV45hq7TKGCl+8X2CsnrDpDd//YSqgJSPYC7dniluxIec/nmrPJjHQ
+	N/cllmtyV+QiUgKmQN/+1HGi/ePlT7d09CBzGIj/AMF1kadozhxXeR4e6mMU6HTp0TMfMW/Qk7a
+	5LiadrZC8nv8J1hQ0yI4xfIcJyK5U5xS1Ag3r1N+ErvNerjLpak1Cc1Qp0/SS0kTlmtQihmwh24
+	cTWZzXfaB1uCwu1tw7Hg8uMAhlap1kKOgodOJTPYRIAWJWy0/E4gYLZtWzLbboONuu7sYr7Tr+i
+	Mfge3QtWhhQldEBGoaBIM4wvhU6l0Mv+7eCrRbIplWkmkkN3mfkzfOgd9Ej7m/y1EP6UJSMScHE
+	4o04UJBa+md8qegABZ8/l9bL9r5rStnKtR/AtcWFAqaezJVXlFWzNvjhRs/qZyqxUvwrCJ3RZnH
+	TV8x81aO2/1C0dhaTImULYZZT7wQvKKwYfRt7Qe3PbV0LJIsh7uBZPuxNKh/xIq67EBkxpPrZro
+	ulTmFP5SCbteAuFLW05dcXNXw1n6yscIPtbw4s7YgXgbR/j1u8Z+mtwMDOniV5N5plwVs2iC
+X-Received: by 2002:a17:902:ec8b:b0:2e9:66f6:7894 with SMTP id d9443c01a7336-2f03f15c27amr7776685ad.40.1795116058661;
+        Thu, 19 Nov 2026 11:20:58 -0800 (PST)
+Received: from gb05.tail50fddd.ts.net ([139.5.199.74])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03f0c1935sm3948805ad.26.2026.11.19.11.20.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2026 11:08:31 -0800 (PST)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+        Thu, 19 Nov 2026 11:20:58 -0800 (PST)
+From: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
+To: Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	linux-input@vger.kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH] iio: pressure: dps310: read the first temperature in probe
-Date: Thu, 19 Nov 2026 21:08:27 +0200
-Message-ID: <20261119190827.36947-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>,
+	syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
+Subject: [PATCH] HID: hid-sensor-hub: avoid lock inversion in sensor_hub_remove()
+Date: Fri, 20 Nov 2026 00:50:46 +0530
+Message-ID: <20261119192046.1015750-1-ayaanmirzabaig85@gmail.com>
+X-Mailer: git-send-email 2.56.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,68 +104,66 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The first temperature read is in dps310_fifo_interval() instead of
-probe. That function is called with data->lock held and takes it
-again, so enabling the buffer without a trigger deadlocks.
+In sensor_hub_remove(), spin_lock_irqsave(&data->lock, flags) is held
+while calling device_for_each_child(), which iterates child devices via
+klist_next() and acquires the driver core's &k->k_lock.
 
-Move the read to probe.
+Because &data->lock is acquired in softirq context by
+sensor_hub_raw_event() while &k->k_lock is acquired elsewhere with
+softirqs enabled, nesting &k->k_lock under &data->lock triggers a
+SOFTIRQ-safe -> SOFTIRQ-unsafe lockdep warning and risks an ABBA
+deadlock between process context and softirq context.
 
-Fixes: 903941a9b06a ("iio: pressure: dps310: don't wait for new temperature in trigger handler")
-Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+Move spin_lock_irqsave()/spin_unlock_irqrestore() into
+sensor_hub_finalize_pending_fn() and pass data through
+device_for_each_child(), so &data->lock is only held while inspecting
+and completing each child's pending state after klist_next() releases
+&k->k_lock.
+
+Reported-by: syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
+Closes: https://lore.kernel.org/all/6afddf21.a11fe2ad.1b4426.0003.GAE@google.com/T/
+Fixes: 8a5b38c3fd70 ("HID: hid-sensor-hub: don't use stale platform-data on remove")
+
+Signed-off-by: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
 ---
-My v2 was on fixes-togreg and its probe hunk does not match testing,
-sorry for the trouble.
+ drivers/hid/hid-sensor-hub.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Based on iio togreg. Same change as the diff in [1], fine to squash
-into 903941a9b06a instead.
-
-Tested on a DPS310 on a BeagleBone Black: enabling the buffer without
-a trigger works.
-
-[1] https://lore.kernel.org/linux-iio/20261117110735.46400-1-zoone.rupert@gmail.com/
-
-Cc: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-
- drivers/iio/pressure/dps310.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 9b52cbc2372a..ebfaa67a6b91 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -1058,16 +1058,9 @@ static unsigned int dps310_fifo_interval(struct dps310_data *data,
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 028e70ec7bac..4ade5b5ece56 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -836,9 +836,13 @@ static int sensor_hub_probe(struct hid_device *hdev,
+ static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
  {
- 	unsigned int drain_interval_ms, fill_ms, want_ms;
- 	int scan_rate;
--	int rc;
+ 	struct hid_sensor_hub_device *hsdev = dev->platform_data;
++	struct sensor_hub_data *sd = data;
++	unsigned long flags;
  
- 	fill_ms = MSEC_PER_SEC * DPS310_FIFO_DEPTH / (prs_rate + tmp_rate);
++	spin_lock_irqsave(&sd->lock, flags);
+ 	if (hsdev->pending.status)
+ 		complete(&hsdev->pending.ready);
++	spin_unlock_irqrestore(&sd->lock, flags);
  
--	/* Pressure compensation needs a temperature from the start */
--	scoped_guard(mutex, &data->lock)
--		rc = dps310_read_temp_raw_locked(data);
--	if (rc)
--		return rc;
--
- 	/*
- 	 * There is no hardware watermark, so take it as the number of scans
- 	 * the user will wait for and drain at that rate. Scans come from
-@@ -1478,6 +1471,12 @@ static int dps310_probe(struct i2c_client *client)
- 	if (rc)
- 		return rc;
+ 	return 0;
+ }
+@@ -846,16 +850,13 @@ static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
+ static void sensor_hub_remove(struct hid_device *hdev)
+ {
+ 	struct sensor_hub_data *data = hid_get_drvdata(hdev);
+-	unsigned long flags;
  
-+	/* Pressure compensation needs a temperature from the start */
-+	scoped_guard(mutex, &data->lock)
-+		rc = dps310_read_temp_raw_locked(data);
-+	if (rc)
-+		return rc;
-+
- 	/*
- 	 * The device measures continuously in background mode, so a triggered
- 	 * capture is just a read of the latest results. The setup ops run the
-
-base-commit: 903941a9b06ae445c70646ab061b604c2dea17d3
+ 	hid_dbg(hdev, " hardware removed\n");
+ 	hid_hw_close(hdev);
+ 	hid_hw_stop(hdev);
+ 
+-	spin_lock_irqsave(&data->lock, flags);
+ 	device_for_each_child(&hdev->dev, NULL,
+ 			      sensor_hub_finalize_pending_fn);
+-	spin_unlock_irqrestore(&data->lock, flags);
+ 
+ 	mfd_remove_devices(&hdev->dev);
+ 	mutex_destroy(&data->mutex);
 -- 
-2.43.0
+2.56.1
 
