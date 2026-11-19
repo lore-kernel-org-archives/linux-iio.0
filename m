@@ -1,74 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=43.163.128.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795055603;
-	b=Q+1UGXt6U4qBn2GQJ542HacLUgJUqqCCYCpwby8NjeZRy2oWAIQHhIU9wgR0Ul87fPLL
-	 JJIGWcEAiNu1FGINGzqafHxLkYIFlm5zYN/sadMGUSdlo2u77XTrD4yezkRHv1XOOc7EZ
-	 kAlY5JAO2fWkLIFIWJfXmmXjktEYc99YOT+hF+Y0Fn3yMptapuFpr1AL8j1VW3fYwJXkx
-	 jn4GPs1DjMTgKrcgITgorpMeTu72gvcTmGzYsP05ycLJLsn1pst/nB8MOtkhu/1jX+71Q
-	 ZKIYj9QR0Y9qnsIFgKt1e6AgzT10QzLuzhePPPG7cZHinVit4kUXhdUCn/BG8nMnzhg==
+	t=1795056714;
+	b=kmQU24qSup66dw63napBUerCw765Dcy8nt/zDE/anMA20q64M/QDBUVSAaJYnXNn9pBL
+	 M/A+W812O6UUX/CnCa5j20mMJsLaRtvVagbKsJjpfo6VkWPMne1VUe6qU5edXL9N35azy
+	 60ABJ+0T8Vz5hBFHNbg27lbGZDugwMxukD3sYTXXGBj/FeWOMI06RIfVc7S5s/Eulh2f/
+	 oFJwbRy7CJUBQP4d+chfWTGfN3pbPYbME/6c0JfD5Rqpe5pxy2qGUYYMaiPpSmSM4vfpY
+	 kQaTbCtJEtthejanjyy9/t1/BhsQhgTazOUidTdbvbgscHAlRdbWS6Vi5ozmNaDn41Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795055603;
-	h=DMARC-Filter:DKIM-Signature:Received:X-QQ-mid:Message-ID:
-	 X-QQ-XMAILINFO:X-QQ-XMRINFO:From:To:Cc:Subject:In-Reply-To:References:
-	 Date:X-OQ-MSGID:Content-Type:Content-Transfer-Encoding:MIME-Version;
-	bh=I/jfGs/XzNLUiU7wAzM8DFyhVDcqDrY/sEe4nXwm45Y=;
-	b=uZUvl36ZXHZY32DA23UMS5nUzgWzDRrq40rjnpNvObLjXkNad6winIJAdUwHlAdKz2+P
-	 278vbsxPXh6PReINMcf7Fmj1gUNzK//qYjZADEME87zaluxYYsaNdrg1dUksFF1ffVHAD
-	 R40p0DeWi+V9AiTVyH69+RpJhZnFBLE+IF4cewjXA2c9pPmetvtC4mhzkdM7sKMnCSnoF
-	 gURf1FW72damjZZj5eObJrrvwUd33OJXmR7t/XHdbTD13gsheZk0dAKmBXsvYBTKNAXX6
-	 3iLglU9r65bw3TQI/dSkzjVH8Olj++fwq+dXAqyWgX2iDx/mR6jI6Cv9/Y96nurXaqQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795056714;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=bxJ1QsjcA84NtK8BZImOuMZQHPOD+tUwg5vhPEZiIYE=;
+	b=EVBvxkyoCamyhEYT0qlYRrTh+HhC0Er8dGk14GdhJ+BH49WSMSq2e0UWCPoRLjUYSCZy
+	 ncOluxgeoCa6SpHgyD+uPn3gLG1pHd638Ze3jpDVoJUzGr1EHxLLabcARcQmNr5QK/HAC
+	 XwExmp6xJQ3KQ1PF/1FVgs7TTkaq4rZxLi0CLcWNAhAoAivHHvcOZH4BkOT4+hZBvEziU
+	 W4rC3N5x1cIkLX8IVjp2WIgaPviCAq3h3vJHZBifLD9KeOa2r3oLW3t0kAJbWcJ7mD+TX
+	 nsEgnFKdqSw+33zR1owKjOYH7TP6we8nfw1VKslpMRNpZnqbR78z6au7FIw2sb6PUoA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=yosoro.hk;
-	spf=none smtp.mailfrom=yosoro.hk;
-	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=jBbCCKWV;
-	arc=none smtp.remote-ip=43.163.128.53
-Received: from xmbghk7.mail.qq.com (xmbghk7.mail.qq.com [43.163.128.53])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E1GOoGlL;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83B5E60A260B;
-	Thu, 19 Nov 2026 02:33:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 83B5E60A260B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yosoro.hk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=yosoro.hk
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86E55606A325;
+	Thu, 19 Nov 2026 02:51:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=jBbCCKWV
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1795055598; bh=I/jfGs/XzNLUiU7wAzM8DFyhVDcqDrY/sEe4nXwm45Y=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=jBbCCKWVg9htwZWHCKxRq2IQ8o/Bijrt4J6ISd2IA8Fkyj7qYHh5s0ZrINonRTBzB
-	 H2JX0G1eZW4ttWBi+wqMXUzyQ2XG7oY1KPkPbOJPhJ6o2Ssj3YM45b4Dd9oENphS6d
-	 EmK0O4Dj0Ufn1EQ6A6QQ8wQlqn4BfwCcK9xgGAqM=
-Received: from [192.168.123.32] ([122.191.232.200])
-	by newxmesmtplogicsvrsza63-0.qq.com (NewEsmtp) with SMTP
-	id 850160B1; Thu, 19 Nov 2026 10:33:16 +0800
-X-QQ-mid: xmsmtpt1795055596twex1ec57
-Message-ID: <tencent_84B150942865006BA546B43E5026951EA005@qq.com>
-X-QQ-XMAILINFO: MTEKjEyAppcsXl8tDSMkZcGoVK4TevSkLrgj5/JqliePpNj4ihc2AiUd9pbgDP
-	 rwHIj5yBAFhBGFl/6Acd0JBlHlGwl0clbS9pkii7BwZgs0C+aG7c0WU9DN6od15xZt0eJJ2+nTtI
-	 +pzosWoiRZ5ryLd0AM9Jfj3HP4pkSJSpVZ1XgA+9oBRFf3f1YDNzstgETGlQgXOYaXqiligWWSZz
-	 YOdZ6o2ywiy8sTFeGw8VyOof5jVCSMD/8tRV5oTHG30FxpOfEaeaXvsr60g5XE88zcUxNhQXHBTh
-	 No54TJSwrYbc05ypZSIzB7C6z7hBLWL0DK0D50Lhb9niihehmZZ7cw3/ZB0F78BoxfngfYWGm1mD
-	 PTHEoASITcazUzgDqk5e7ao2ipMilkhqWT7BAMYrIgkJLeKCGcvx0i735zGncuFi8I2//SIHgZGE
-	 70J5vrGi3k6HPb8B4SLReIik/6C/CnOTOIWKrcTdk1Fn4GyWWp9vSlOs41nVnU0BSqvhlSdW0s4f
-	 ZWqDdKf4IQx7XBppFyprPxyWGIlfU+FZad0b74oqpaDxugH2iuoJgv4uDcUzPHdZUs6L05/q2JUY
-	 tinWfUzGaLakYub9a+QrVTEpa+g1uXsXqQ/5iuB7a8BAoqgv4YigHgJfrOVoBAzjL6zcs9hFXB/U
-	 N1mDt7W0qa05gdjWSogE+1ff0Kke4K4n01fE4y5vCN3u01qNRoqe44uePfiJXBZKQ4X4U1/mE++/
-	 7S9UXdgj9m7F6sTyYIUQ46A5H0orhhXK/ciPSYNuR3oCsWyL9vDcOapqQthAc+x82AXvdJql4qMi
-	 T47tAN5Hz8/xVTpZkA+nujrYZV4aerwzMTSoh3slNrZn2TX4z+qLAmQEZUpTCkJ/bw/Qa/29cW5S
-	 V/ChnkNCD4CtTMbYzSPqcORFoekbt3jvW5Ydtw1cFU9iZvy5w53VijA1l+tqFscEI/4mOQhDr8aA
-	 G3BgR21AdHLMG1Ubm5xP7oBHc+DLW7R0kDvNGmxLvWntFWSCR6qQX/t6gu0y1bS1WHaUHMY4RaYn
-	 5K4ZU59kMnjlUnntkIS+ok84dvPFc6rHcQKwz9nFF1yeWXbfXWAjYBcNstEWpujv0g1XodoQ==
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
-From: NanamiKite <nanami@yosoro.hk>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?q?S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Hans de Goede <hansg@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: cm32181: Add support for CM32183
-In-Reply-To: <20261119014405.2eee7298@jic23-hlaptop>
-References: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com> <20261119014405.2eee7298@jic23-hlaptop>
-Date: Thu, 19 Nov 2026 10:33:00 +0800
-X-OQ-MSGID: <179505558099.21292.3487409760800914194@yosoro.hk>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=E1GOoGlL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A0CC1F000C7;
+	Thu, 19 Nov 2026 02:51:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795056714;
+	bh=bxJ1QsjcA84NtK8BZImOuMZQHPOD+tUwg5vhPEZiIYE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=E1GOoGlLvVaDMM03XLMPFF+kvutUikvXUnFnWLzq2yTd0LxjZEyiB2YXUed2GHUTK
+	 hkXj7Duwd2wLUm5PtD8U44ygnjANAnxXAA9mnu3P3azPAUhESJp/3/vCMtcF2vu1SW
+	 clhxG+crZKNXnAL/jJbhW/fC+nE/8N9M3jO6ztOLp1y5RFJ+zoqH2ibh2SZnkSFA52
+	 RzLSpbjIWU81IhspbK+mCFS39Y46/81nDxT6Ik1/AfWqyUY7H6vscksFrIEpu7k3H1
+	 eBTAC4Obu/Ayp/2RK/T/wJljrZPbGzkfRmQMIgN3xLHjUBXHVU0fPPG/tlKrr7QiIe
+	 UxkZcLCUDquaQ==
+Date: Thu, 19 Nov 2026 02:51:47 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Matti Vaittinen <matti.vaittinen@linux.dev>, Jakub Szczudlo
+ <jakubszczudlo40@gmail.com>
+Cc: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
+ <matti.vaittinen@fi.rohmeurope.com>, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Marcelo Schmitt
+ <marcelo.schmitt@analog.com>, Joshua Crofts <joshua.crofts1@gmail.com>,
+ Radu Sabau <radu.sabau@analog.com>, Janani Sunil <janani.sunil@analog.com>,
+ Salih Erim <salih.erim@amd.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: rohm-bd79112: Support ROHM BD79111
+Message-ID: <20261119025137.6bfc27c2@jic23-hlaptop>
+In-Reply-To: <ab74e547e892ccabb763a06e8231e8ed44f4fefb.1795009599.git.mazziesaccount@gmail.com>
+References: <cover.1795009599.git.mazziesaccount@gmail.com>
+	<ab74e547e892ccabb763a06e8231e8ed44f4fefb.1795009599.git.mazziesaccount@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -78,22 +69,189 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Nov 2026 01:44:05 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 18 Nov 2026 16:19:35 +0200
+Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
 
-> Take a look at linux-next or the iio.git tree on kernel.org. Or indeed sanity check the list.
-> https://lore.kernel.org/all/tencent_850445458D21608E9C8821E6728457F31C0A@qq.com/
-> Pretty unlucky to hit same thing that was added about 2 weeks ago. I guess that device is proving popular!
+> From: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
+> ROHM BD79111 is very similar to the BD79112. Both are ADC/GPIO devices,
+> where pins can be configured to be either used as GPIO or ADC inputs.
+> ADCs are 12-bit SAR ADCs and GPIOs support input/output but not being IRQ
+> sources.
+> 
+> The main difference is amount of channels/GPIOs. The BD79112 has 32 pins
+> for this use, the BD79111 has 16. Furthermore, the BD79111 data-sheet
+> promises 0.5 MSPS sample rate with maximum of 10 MHz SPI clock,  whereas
+> the BD79112 data-sheet mentioned 1MSPS rate with maximum of 20 MHz SPI
+> clock.
+> 
+> NOTE: In order to achieve those speeds one needs to use more optimized
+> protocol compared to the one implemented in this driver. This driver
+> retrieves samples using two 16-bit SPI transactions. The first
+> transaction writes the channel to be sampled, and ignores data on MISO.
+> Then the next 16-bit transaction carries the data.
+> 
+> Achieving maximum sample-rate would require the driver to interpret the
+> MISO data of each 16-bit transaction so, that when the
+> channel-to-be-sampled was sent in transaction N, the data is read at
+> transaction N+1 - which also already configures the channel to be
+> sampled for transaction N+2. Supporting this would require the
+> channel-to-be-read for the future read to be known when the current
+> channel data is retrieved. For raw-reads this is not possible and for
+> buffered reads it would make things a bit hairy.
 
-Thanks for the pointer, and sorry for the noise! I'll make sure to check
-iio.git / linux-next first next time.
+FWIW there are quite a few drivers implementing that scheme for
+buffered capture.  Look for drivers that preprepare an SPI transfer.
+Absolutely fine to not support that optimization!
 
-Haha, it's actually quite a niche device -- I just picked one up
-secondhand to replace my old Surface Go 2 for development work, so I
-definitely didn't expect someone else to have already sent the exact
-same patch two weeks ago!
+This seems like text that probably applies to both parts rather than
+being directly relevant to what is added here?  If you did add that
+support it would be in a different patch.  I'd cut most of that info
+to keep the commit message focused.
 
-Best regards,
-NanamiKite
+> 
+> So, here we aim for simplicity instead of the peak performance.
+> 
+> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> ---
+>  drivers/iio/adc/Kconfig        |   9 +--
+>  drivers/iio/adc/rohm-bd79112.c | 113 +++++++++++++++++++++++++++------
+>  2 files changed, 98 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index a802d8ee4dd9..db9e0a0713e1 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -1516,14 +1516,15 @@ config RN5T618_ADC
+>  	  will be called rn5t618-adc.
+>  
+>  config ROHM_BD79112
+> -	tristate "Rohm BD79112 ADC driver"
+> +	tristate "ROHM BD79112 and BD79111 ADC/GPIO driver"
+>  	depends on SPI && GPIOLIB
+>  	select REGMAP_SPI
+>  	select IIO_ADC_HELPER
+>  	help
+> -	  Say yes here to build support for the ROHM BD79112 ADC. The
+> -	  ROHM BD79112 is a 12-bit, 32-channel, SAR ADC. Analog inputs
+> -	  can also be used for GPIO.
+> +	  Say yes here to build support for the ROHM BD79112 and BD79111
+> +	  ADCs. Both of the ICs are 12-bit SAR ADCs. The ROHM BD79112 has
+> +	  32-channels, the BD79111 has 16. Analog inputs can also be used
+> +	  for GPIO.
+
+Given it now supports 2 parts and I'm guessing more may be along in the future
+you might want to jump directly to the style we have in some other kconfig
+entries of vague option text and then a bulleted list of stuff about
+specific devices.  That way a new part just requires a new bullet point,
+nothing else changes.
+
+>  
+>  config ROHM_BD79124
+>  	tristate "Rohm BD79124 ADC driver"
+> diff --git a/drivers/iio/adc/rohm-bd79112.c b/drivers/iio/adc/rohm-bd79112.c
+> index 2506fec7be84..604c6ccafb4f 100644
+> --- a/drivers/iio/adc/rohm-bd79112.c
+> +++ b/drivers/iio/adc/rohm-bd79112.c
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+>  /*
+> - * ROHM ADC driver for BD79112 signal monitoring hub.
+> + * ROHM ADC driver for BD79111 and BD79112 signal monitoring hubs.
+
+Similar on possibly going vague. The firmware tables make it clear
+on what is being supported.
+
+>   * Copyright (C) 2025, ROHM Semiconductor.
+>   *
+>   * SPI communication derived from ad7923.c and ti-ads7950.c
+> @@ -26,7 +26,17 @@
+>  
+>  #define BD79112_MAX_NUM_CHANNELS 32
+>  
+> +struct bd79112_data;
+> +
+> +struct bd7911x_chip_data {
+> +	const char *name;
+> +	const char * const *chan_names;
+> +	unsigned int num_channels;
+> +	int (*init_disable_gpios)(struct bd79112_data *data);
+> +};
+> +
+>  struct bd79112_data {
+> +	const struct bd7911x_chip_data *cd;
+>  	struct spi_device *spi;
+>  	struct regmap *map;
+>  	struct device *dev;
+> @@ -369,7 +379,6 @@ static int bd79112_gpio_output(struct gpio_chip *gc, unsigned int offset,
+>  }
+>  
+>  static const struct gpio_chip bd79112_gpio_chip = {
+> -	.label			= "bd79112-gpio",
+>  	.get_direction		= bd79112_gpio_dir_get,
+>  	.direction_input	= bd79112_gpio_input,
+>  	.direction_output	= bd79112_gpio_output,
+> @@ -378,20 +387,20 @@ static const struct gpio_chip bd79112_gpio_chip = {
+>  	.set_multiple		= bd79112_gpio_set_multiple,
+>  	.init_valid_mask	= bd79112_gpio_init_valid_mask,
+>  	.can_sleep		= true,
+> -	.ngpio			= 32,
+>  	.base			= -1,
+>  };
+
+There are only two parts, maybe it is simpler to have dual gpio_chip
+instances pointed to by your chip_data? Keep the full state of each in
+one place?  I don't mind much either way on this.
+
+> +static int bd79112_disable_gpios(struct bd79112_data *data)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < BD79112_NUM_GPIO_EN_REGS; i++) {
+
+These days the kernel style allows
+
+	for (unsigned int i = 0; i < BD79112_NUM_GPIO_EN_REGS; i++) {
+Same in various other places. Saves us a few lines of scrolling
+and keeps the scope tight.
+
+> +		ret = regmap_write(data->map, BD79112_FIRST_GPIO_EN_REG + i, 0);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+>
+
+...
+
+> +
+> +/* The BD79111 channel names as in the data-sheet */
+> +static const char * const bd79111_chan_names[] = {
+> +	"AGIO0", "AGIO1", "AGIO2", "AGIO3",		/* 0 - 3 */
+> +	"AGIO4", "AGIO5", "AGIO6", "AGIO7",		/* 4 - 7 */
+> +	"AGIO8", "AGIO9", "AGIO10", "AGIO11",		/* 8 - 11 */
+> +	"AGIO12", "AGIO13", "AGIO14", "AGIO15",		/* 12 - 15 */
+> +};
+> +
+> +static const struct bd7911x_chip_data bd79111_chip_data = {
+> +	.name = "bd79111",
+> +	.chan_names = bd79111_chan_names,
+> +	.num_channels = 16,
+> +	.init_disable_gpios = bd79111_disable_gpios,
+> +};
+Ordering seems a little strange with the bd79112_chan_names no
+where near the ones for the 1111
+> +
+> +static const struct bd7911x_chip_data bd79112_chip_data = {
+> +	.name = "bd79112",
+> +	.chan_names = bd79112_chan_names,
+> +	.num_channels = 32,
+> +	.init_disable_gpios = bd79112_disable_gpios,
+> +};
 
