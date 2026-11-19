@@ -1,60 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.122
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795108861;
-	b=HKxHJmsi5MjL2PoN7seeVc0wsR/EOj8LilI2xeNVMUASZUi/GODknkIadSSCaL7lPvkQ
-	 5mTp7vLntNwrFafYBOxYn4LfMZ5awFDL8lSc240dyQhxJKpUM3O5EK2Q9Gdwg6dCw8lkX
-	 vXW1QnnrqtlIeLIMeKfj77x8EoCzXJWlmMWagzCH3QDhSVkp0wzq6tKtGG4fDADi9pip3
-	 MmYMJ4UaByU3N4ZvXC2Rt1WSM+fVCLkM1mRVuo9oyoQDHPpkM4NptfkxWvWXW8DgEmFVf
-	 FLVcL/dekgjySS4wpbUcAfOpeEvwKBC5o83AvTQhRVyXqH9QnOTPjOl1QEDrqXGbwWw==
+	t=1795108943;
+	b=3oVjyRBSvcU2GWrbKdG8J5UKq/m0H9aJSHiAu2T4+ncBJKFexr0xRwrSJh4g+izYWGzK
+	 DuxbnEuntmGyw4Nmkt/ko9kSzuLTHO92VU4U741qHDgNYtFys43H2Ee+TQR02OBALQvwk
+	 JAGTphdkyiArRCx1kbDRdH363Ci9ta4WjOOViDTXV4vNGRdpr03Nc12iTjMaT5NxAoBC4
+	 VyOvDVOIaK8xW5Tfwk+mAzEpsHDlaWQYToCoc5uxM63Z6W7dP1uRRPN28e7b1yLnc5re7
+	 icg6bZ+pYPJEXDrknzkUHDCBmbBvxX9dOnpEsodE3IyjS56chJN6fDe2jqQvlBcdjKw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795108861;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=ar8eBp8diSquDEdCBz+I6QBgz2BOys/9q4xn81j1mAs=;
-	b=Vr+hqDinnK5Wh/EH6XE5023jkOLsQkeJv6KqHzpkeV4CoiKe1o5mPujdePVIMx9FP1pe
-	 URIwFAjffHYt+mvucL9++1DfkQEFue1cEeotA+F8S9ddeL7nAsdWyjECAOG/xsy8YdGZJ
-	 T9Wy/LDCK3DNiqznOUfBXi98SDBx4H93fSTJL+STVBlEhxe2GEg5GgxAGJvzkwM7nTpwS
-	 PFNiy6/lri3k7AsmEzcc3BnP99r26Yhx7xMic2WItUIUjuoq1vsQxIomv+jefXTriUGWP
-	 8mCeKUq2cmTYsFiVB0o8MLDQExlyrwXeXxfaP1QEiPsjm/itaV2Xp84UBaKJt/yNyDw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795108943;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=LFTcJDjmQNamNWl0i13a+B1pqLhYbuJ5BQzFwJtb1Ak=;
+	b=qPNc27ztT4Nbi8j56QwSNjwrsUumVBAtHjyyZ0TcOAcFnazUBvhCz4hwGYIcUUKXDe6V
+	 WNXtDFR+Y+hGyJphEwvh7ce6G3sH8rCRkqiabmjxe5BEl2/AO4DZ7Bz/2SjQu3sDvSR8E
+	 oT+1I+NSL3G2E8hvi+b+BYPZITkv7gXa/6buVKFht8+jF1AKRrLMccgLqCLZhrODRoUmE
+	 EoEMviYt18wR6XL4YwkUBpVJATVGNZzVLFCWmXJT0iCgCWESEDBfCUBGIYiutEzyVeacp
+	 pv2dVOmdJ9K0Cgea8EdC/qINMs9vxs/zoEUZTGlc0E/OnlbI4sDwztSkS9LbCOD9BRg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=NLKtsbqY;
-	arc=none smtp.remote-ip=109.224.244.122
-Received: from mail-244122.protonmail.ch (mail-244122.protonmail.ch [109.224.244.122])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WpPUdVSY;
+	arc=none smtp.remote-ip=198.175.65.14
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5715B606A324
-	for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 17:21:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5715B606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3480606A320;
+	Thu, 19 Nov 2026 17:22:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D3480606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=NLKtsbqY
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1795108857; x=1795368057;
-	bh=ar8eBp8diSquDEdCBz+I6QBgz2BOys/9q4xn81j1mAs=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=NLKtsbqYOR6LP2AV37dxHGWkMVoxawvG/tGlNXJh6xRzNzPq8UJWOXfUF+BzM+Xoa
-	 wILhq+fxgB5uFcrAU92CM7njNjUkIjr17KELH4PY8dvEAdw5X1Lhp9m/hGDXrze6O0
-	 4c9by1XZ7Te2TqMhgdIg/5B9Cg8lXPXnYBwqzjN1YrsQNlKbzNtKvKZssXiYu3z1EA
-	 QYPdc5AzX/rkm8e2Tqb0wtcnzkmtPm96w3V86t7CFLl+9lLKGPFx244dhXMxLwFphe
-	 5KYzKxUmew4ebEaDgHvD0GFo9H5iKwKap+utDbvAwvdUG0tW63yp3a+VG10/TmZ7oV
-	 XueNrfiPYtt1g==
-Date: Thu, 19 Nov 2026 17:20:53 +0000
-To: Conor Dooley <conor@kernel.org>
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] dt-bindings: iio: light: stk33xx: add power supply support
-Message-ID: <rCA4M9_Cq5I454sOmHgrTZ4vHFIBNgY-cfUz4wkZVVWJDhACNFHf6CPFRSJgGMwP-ntUxJ_osLG4heh6byvcqRtGwBuu1sOPnptsFXBWD8o=@protonmail.com>
-In-Reply-To: <20261119-giblet-epilogue-45f554c009ce@spud>
-References: <20261117-6768-stk3337-v2-0-92f4c7be3bc6@protonmail.com> <20261117-6768-stk3337-v2-1-92f4c7be3bc6@protonmail.com> <20261118-coyness-luminance-6d0c07e843b7@spud> <20261119032903.4a0d3bf6@jic23-hlaptop> <20261119-giblet-epilogue-45f554c009ce@spud>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: ec3344a3eb440fe842362b75fcc4153ea9a7b721
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WpPUdVSY
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795108943; x=1826644943;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WD1V4uwNJWIfTh4IzBkdti1BKZInvd5fb14FvohizjE=;
+  b=WpPUdVSYX17FDHtlj81s2AlI1godU7pePITjQYgE2w7WdsiZKP+vB4U9
+   XawUOxYfLinGz6uu/t+YspUWzutFAVrWH0pBzcq7EdN1fqic/mPx3uohn
+   TwOASDdtNAMZt4fmXwfJOFPjkXKv29urmS7YREO9Jac3tr0qN6bBBHw+Z
+   ub1rncfTswAYN9dZmXwK0MCHNqK1iY2BeddY3N4FsFO6hLqSVcC0tKV84
+   leYUH0eLkdSxWItlrrVHpxIboU3Mk//JDr3Rm4C+ea3VMza87dUf4BgLz
+   cYHnoCOMLWWqQVRptH8G9LAMenYfks2VO89tjm7WekClM8/JrHJuJsXlS
+   w==;
+X-CSE-ConnectionGUID: fGOac/1qQQm73uPabro01A==
+X-CSE-MsgGUID: LQcZDEGkQi6b7Y8OElWV/w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3855453"
+X-IronPort-AV: E=Sophos;i="6.27,221,1787036400"; 
+   d="scan'208";a="3855453"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 09:22:22 -0800
+X-CSE-ConnectionGUID: 1+mZrb/XQgyvlx5hwfvc8Q==
+X-CSE-MsgGUID: QrSmd2FPSQ24MxVfp8hH9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,221,1787036400"; 
+   d="scan'208";a="12326946"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.61])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 09:22:19 -0800
+Date: Thu, 19 Nov 2026 19:22:17 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Lee Jones <lee@kernel.org>
+Cc: Lucas Stankus <lucas.p.stankus@gmail.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lothar Rubusch <l.rubusch@gmail.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH 02/10] iio: accel: adxl313: Prevent FIFO buffer overflow
+ in adxl313_fifo_transfer()
+Message-ID: <av8wSW6-ukmvRDnp@ashevche-desk.local>
+References: <20261119153151.1397003-1-lee@kernel.org>
+ <20261119153151.1397003-3-lee@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,79 +87,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261119153151.1397003-3-lee@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Conor,
-
-On Thursday, November 19th, 2026 at 6:37 PM, Conor Dooley <conor@kernel.org=
-> wrote:
-
-> On Thu, Nov 19, 2026 at 03:29:03AM +0000, Jonathan Cameron wrote:
-> > On Wed, 18 Nov 2026 18:12:30 +0000
-> > Conor Dooley <conor@kernel.org> wrote:
-> >=20
-> > > On Tue, Nov 17, 2026 at 08:08:35PM +0200, Roman Vivchar via B4 Relay =
-wrote:
-> > > > From: Roman Vivchar <rva333@protonmail.com>
-> > > >=20
-> > > > On some boards, the chip shares a power rail with other components.=
- If
-> > > > that rail is turned off, the chip can't function. =20
-> > >=20
-> > > With these issues in mind, probably it should be made required, even
-> > > though new required properties are an ABI break.
-> >=20
-> > I raised the same on v1.  Seems it is used by various boards
-> > in tree where we don't know which supply it is.  So whilst nice
-> > to fix we might just be creating some painful build warnings.
->=20
-> Yeah I don't really want to cause more warnings, but if it is actually
-> the source of issues, warning may get them resolved.
->=20
-> Up to Roman really I guess.
-
-Sadly I don't have schematic for these boards in upstream, so I guess
-the safest approach is leaving it as optional, since most devices have
-power rail shared with almost always-on components (like eMMC or other
-sensors).
-
-Best regards,
-Roman
-
->=20
-> > Can go ahead and 'guess' I suppose or put a fixed supply on it
-> > in the upstream dts.
-> >=20
-> > Jonathan
-> >=20
-> > >=20
-> > > >=20
-> > > > Add vdd-supply property to document the chip power supply.
-> > > >=20
-> > > > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
-> > > > ---
-> > > >  Documentation/devicetree/bindings/iio/light/stk33xx.yaml | 2 ++
-> > > >  1 file changed, 2 insertions(+)
-> > > >=20
-> > > > diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.ya=
-ml b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
-> > > > index f655a570aac7..114cf87eb54d 100644
-> > > > --- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
-> > > > +++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
-> > > > @@ -37,6 +37,8 @@ properties:
-> > > > =20
-> > > >    proximity-near-level: true
-> > > > =20
-> > > > +  vdd-supply: true
-> > > > +
-> > > >  required:
-> > > >    - compatible
-> > > >    - reg
-> > > >=20
-> > > > --=20
-> > > > 2.56.1
-> > > >=20
-> > > >  =20
-> >=20
+On Thu, Nov 19, 2026 at 03:30:35PM +0000, Lee Jones wrote:
+> The ADXL313 32-entry FIFO plus one sample held in the output filter can
+> yield up to 33 3-axis samples (ADXL313_FIFO_SIZE + 1).  Because of
+> missing parentheses in ADXL313_NUM_AXIS * ADXL313_FIFO_SIZE + 1,
+> fifo_buf is sized at 97 16-bit elements instead of 99, overflowing the
+> buffer by four bytes whenever all 33 entries are read.
 > 
+> In addition, adxl313_get_samples() returns the 6-bit FIFO_STATUS entries
+> field (0..63) without bounds checking, allowing a malfunctioning or
+> spoofed bus device to overflow fifo_buf on the heap in
+> adxl313_fifo_transfer().
+> 
+> Parenthesise (ADXL313_FIFO_SIZE + 1) when sizing fifo_buf and reject
+> entry counts exceeding ADXL313_FIFO_SIZE + 1 in adxl313_get_samples().
+
+...
+
+> -	return FIELD_GET(ADXL313_REG_FIFO_STATUS_ENTRIES_MSK, regval);
+> +	/* 32 FIFO entries plus 1 entry at the output filter */
+> +	ret = FIELD_GET(ADXL313_REG_FIFO_STATUS_ENTRIES_MSK, regval);
+> +	if (ret > ADXL313_FIFO_SIZE + 1)
+> +		return -EINVAL;
+
+ERANGE? EIO? EPROTO? (I think from the listed the first suits better, but maybe
+in errno.h a better one is lurking.)
+
+> +	return ret;
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
