@@ -1,60 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795059167;
-	b=NBVkwHK7VheqhMzHg4iKguqgp8B0rAJOdxdqEXWQI+ZEVp7hOdCGR6ee7LVIKBz34oOE
-	 E6NGdGmCjC31slgwvIGYbLHaJjE6oCRXnUkn6YK4sm7CGPAj0N8wOYWeuV+Ot/HRTWgsF
-	 A1kk1jAnvc8yuDT8/STBupTbLMNJa1ILHl0WAJmVo17XPzXW5cxe7hkyt9UIQ/XxmblDl
-	 zQlmZWOSr33c1exvpqMVxjNmja1v+//QH2Fg7uy8Dg1htmBCAymGiokQdQKPl9A2Wu2Qn
-	 s89Si9xHyMHHAp5h4RZyYgZDpRhSFCYbE4e56BvmlmXmM/41bbAMI5BC5rPRj7sgLlQ==
+	t=1795059945;
+	b=dUDtDDpjme1rufEpL7qIsFOpYWlM8j1kDaltiB6xZXLV8DWmhu87TTDKVt37nwobt9x2
+	 oyMofbmIB7UCf08EpMCBvJhxPa14S5TCA27mKe72d+k0SaTSydWAhPcNMUDZ91Ym4kW0Z
+	 6Z6hzqJcg8qGreYMYbVTjRrsOHLmcAXhrbqoEQmh3e0v5o1+7WJhr91E981peBRvL8+ob
+	 guJ7gTdOArZk/YUtHnupvNwJWGGB8b+cNQaXM51Qok7zh/YPRX4BPMiybDe2n0UL7LKVO
+	 opXoFNjlaNMr2/hDKsYWFnwNyJCTQb7y8Am2Gm/JdOX20K3pt40LpUq8wp+ApcIb9HA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795059167;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795059945;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=ePtiKlI4ZDgj9mw/721LgK0nSBL2vAT6x8ZIVWrD8iE=;
-	b=CzOy3QYpteFQbjNCM+dvvxwdJGltXKrKTf4iwDtIYnSEY7/R5LTq6azRTQ9yPFdiNJwE
-	 ggMYaARR9J/bYqVHWz5pAV6/z/mELs09c5+XPu28DGM7m07cG2dwkRxwfZoCQFXw02vFH
-	 4rydU2CjHAp/PHsURP7nft65TEpsggIUMkm5HsKqmRlR6pAqwnS3Op/YYY14y6/BH4oW0
-	 PMMXiSt3dcpxorkWH9hUJgbMh4V4vLdCYN+G4MEnUtKE6H2pnTlNJTi2Wp4sY4ZJw3gnP
-	 60ky78FsoDe3Xftz9GknuN4ORqSylH648+B+kTCQuAZ+/2mf3wIrCrFF9Dslt+sfHVQ==
+	bh=QwLVkkJXCDMd73PO+77UQ/Yv23zkurxXTTr6JIgC8iU=;
+	b=S8I5PyKaPKOdRD7j7s13SBbZM/XMBz3ZV+UBbsGHlQJrH/b3pCS/p27fzyLH8Me3EqnM
+	 ofAhsuxGNzNVHgFMTJAyh5JASm4n2ITguPpLjT0/QqVyiqYGk2JFsxXg7DxWcBJDrP3pK
+	 l+5qIl63w4WAFY2vVNqg+T0QPqldCtR+1D2Beb3b9Jwx93iz4PWwMjmUVnpvz9eU8dkLr
+	 Wb2Fotw56U+EiX162LDZP70j1L6EwZUPdqtGWseTSV764ULGzKc96UuYmGJqBRyJdxi70
+	 XKKVNwFczMbBAGQildmhknlazaMzhZlllrrzrcFTInYoZEkkmYGFZy7Qi0UUsWHOMYQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gvg4v9pV;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hGoEoSb7;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EBDB606A320;
-	Thu, 19 Nov 2026 03:32:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9E8606A32A;
+	Thu, 19 Nov 2026 03:45:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gvg4v9pV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A236F1F000C4;
-	Thu, 19 Nov 2026 03:32:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hGoEoSb7
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB2601F000C5;
+	Thu, 19 Nov 2026 03:45:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795059167;
-	bh=ePtiKlI4ZDgj9mw/721LgK0nSBL2vAT6x8ZIVWrD8iE=;
+	s=k20260515; t=1795059945;
+	bh=QwLVkkJXCDMd73PO+77UQ/Yv23zkurxXTTr6JIgC8iU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=gvg4v9pVfic3NMx5pYYVG3Ayk/7HITe4sSOS1bwbpJnpnOjby2AR9doQ0JHx85p4o
-	 K8oIXENAahQ7UWZahlEsRypMfylgZQU+A141Ie0Le1lGJfgTaXmLxA3FdgJxCRZu8l
-	 xKz9WAd9m7X387uSyYdhGswTPm+A3P6GQTSo5FuJhdH25vv6raPM+Z7+pyhDQid+u5
-	 LVXNjHfR91CYwv+sqOo+MR7YdPAR+A2Mf2xFcf/+B+07phsMVShbxoAnnqJET/KZEn
-	 L/g32bq0b6pCGHmThrj21mqJ5X3I5NvpzJ9tqhQfBGyhAsDGs5Vsn7tMb8FtCOynEg
-	 lZaQq6grw4V4w==
-Date: Thu, 19 Nov 2026 03:32:38 +0000
+	b=hGoEoSb74yu5GqPhRT7MsVUUl+nLl3KYcO/InfU8F09dYm8aeaMesNZ9Aq5DoZRwo
+	 MbgnDm3osxPZm2HpSDAr8ez65bNyscuGR63lxFMmwGIKYNNu5N/q5w5L9kN7zx+GHq
+	 ZAYMD3gxGPsU2uUOGaxIpXX3WLa9kO2TDCV9LWvH5VNF/IRJQlORl2SrfMjzE3Fswg
+	 Bb02XR4Ib0DbLlBSQjdMhovDEA4l23YjLGi0lAcnuG3BBnbbFdjFE6n7/3h/UD2YIu
+	 Wry2CULXBql/HDqm2v92qmvyCZcB4Nr/nQFP8j1hIuAuViN7H04JsThlwCe5iuzrKf
+	 hpRQ/95XrTv3A==
+Date: Thu, 19 Nov 2026 03:45:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>,
- rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] iio: light: stk3310: add vdd regulator support
-Message-ID: <20261119033238.39bff7a7@jic23-hlaptop>
-In-Reply-To: <20261118110138.000003ab@kernel.org>
-References: <20261117-6768-stk3337-v2-0-92f4c7be3bc6@protonmail.com>
-	<20261117-6768-stk3337-v2-3-92f4c7be3bc6@protonmail.com>
-	<20261118110138.000003ab@kernel.org>
+To: Joseph Telaak <joseph@telaak.dev>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Peter Rosin <peda@lysator.liu.se>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH 5/5] iio: potentiometer: mcp4018: Add Analog Devices
+ AD5246
+Message-ID: <20261119034536.6e5a3b9a@jic23-hlaptop>
+In-Reply-To: <CAPY4CJ4zHV-wCszetvFnVNA=v5O_rhY1YAeMNhS8r3nWC5wJCw@mail.gmail.com>
+References: <20261116-iio-ad5246-v1-0-ef6b7c06d4b0@telaak.dev>
+	<20261116-iio-ad5246-v1-5-ef6b7c06d4b0@telaak.dev>
+	<avwP2P1zTgFteODM@ashevche-desk.local>
+	<CAPY4CJ4zHV-wCszetvFnVNA=v5O_rhY1YAeMNhS8r3nWC5wJCw@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,32 +71,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 11:01:38 +0100
-Joshua Crofts <crofts@kernel.org> wrote:
+On Tue, 17 Nov 2026 14:31:48 -0500
+Joseph Telaak <joseph@telaak.dev> wrote:
 
-> On Tue, 17 Nov 2026 20:08:37 +0200
-> Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+> On Tue, Nov 17, 2026, Andy Shevchenko wrote:
+> > Make it shorter and more generic, in this way you spread the same text to the
+> > top comment in the file
+> > ...
+> > and to MODULE_DESCRIPTION().  
 > 
-> > @@ -745,6 +746,10 @@ static int stk3310_probe(struct i2c_client *client)
-> >  	device_property_read_u32(&client->dev, "proximity-near-level",
-> >  				 &data->ps_near_level);
-> >  
-> > +	ret = devm_regulator_get_enable(dev, "vdd");
-> > +	if (ret)
-> > +		return dev_err_probe(dev, ret, "failed to get vdd supply\n");
-> > +  
+> Will do in v2, with your wording.
 > 
-> IMO this should work, but I don't like the mixing of devm_* and non-devm_*
-> functions, this may cause issues down the road. Consider moving the driver
-> to all devm_* functions?
+> > And here make it list that is scalable to expand  
+> 
+> Will do.
+> 
+> > Keep it sorted.  
+> 
+> Will do, for the DEVID comment, the enum and the cfg table.
+> 
+> > Why signed? Can the HW return something negative?  
+> 
+> No, I'll make it unsigned int in v2.
+> 
+> > Strictly speaking this patch can be split to two:
+> > - adding 'div' member and providing it for the existing chips
+> > - adding new chip support  
+> 
+> Will split it in v2.
 
-In this particular case I agree with you because the conversion is very
-simple.  Generally the rule of thumb is that devm from start of probe
-until you decide to stop, then no more devm.  In that case the unwind
-order should be correct.  This change doesn't break that, but the
-driver already breaks this wrt to the interrupt, so if Roman
-doesn't mind would be great to fix it whilst touching the driver.
+Small process thing.  Crop replies to where you want more
+discussion.  If you don't have anything that needs more
+discussion then don't reply.  What changed can wait for
+the changelog of the next version.
+
+Saves us all a bunch of email reading!
+
+I send this mail pretty often. It is kind of a request
+to be less polite in the interests of efficiency!
+
+Thanks,
 
 Jonathan
-
-
