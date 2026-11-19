@@ -1,60 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=79.135.106.31
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795106009;
-	b=Kyqb4C6N0Bl9g8+2BqOptjsDmUcYuuGDBy8tBLfoOj1wQaH88Nwpw2d5NT46wuS2yWE/
-	 nOuPqNSPKGUk37QM5y6I44l/4VfNS8EYyma1i/rK6QCMAzYcF6aCL8xvy295Y8hugF3jw
-	 hFkiTxELVarOV8QXGFpIghKnGp4AZIzksybnQD8/xtAEl5jYce+frRAIiYcbdwmW8y+6K
-	 V98AB58f6cRv9t9RXnIQsKZ526gmqLya1xSAV5NKgo+L5mBgtdM78A2pMs4ScQ+F6GDB2
-	 k7ZgvNWGs5HGkiUAOupQXDvtXUa7PgUi9qjTUaphwrxBKeDqzeXRmQixkhWM9aI3iJQ==
+	t=1795106253;
+	b=kTG8gD8mO5Z0FvRigCXaC6UA2SEy0pgN4Lr4T4K33AfeUUXbUkuiLSpKF3SiZ7F6l9gF
+	 HqJfK3EgXs+/atFEosjQha36msEuScBFa9Phg6srsf42IHF8T0vl4zXYDg8cgPQ/8cMR1
+	 7pj4vjtzYT58cLz0WyNZSeL7JyU8M/2QjouIQwqOxVeLH6AX0OXr5SgDYm5H9tRMxDA4S
+	 9MAJnN2td+SUwa3UsLTkpO4njB5g4GALbDXc74hJL1fiiWYokEyLjNlwpuCesFSoiFo52
+	 BJNL1PD7Vkjcvhy8zrpqrcQJM9Gk+w6r4VyLF49zf4SylL/zQr+lW/KVo+3gP3p5EIg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795106009;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=gUplJdEPkiupBXMg6jEbRKwJvmMRJIncRxN/ReK0ffc=;
-	b=2cNSYCGs1wrtdwM42d1bDC7yh26jSt1ht+Ah6CJXejp5HYXcI9x5EoK2FRKJjaDc0Air
-	 X9TKl/fXhFAhNR3U13IjsZQLoUhgCSvh3wrn2O6vyCV4aT+zDq7B0KFrXbfmXtWrjTig2
-	 Y6pfOOkrMMM7l5ichaGBR3Jas7K4YbFrzQ++5dxRECMVN4+xtpsamIPx+9KwZD/Q5RLpg
-	 mqrClh8OK9bb4I5Q5DnrsVV2uN2LYr2sVPCUh4XHmru8tqaEu17G0Ozytc6YpiSqdrjRb
-	 Td1RSeftjKToI2O6FapFDxqMtCyPexPMN49/T+7zhJnySwDmKIHKuTihKy4ePVha5wQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795106253;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=htU/F5AEUQsk5vxQUF1U8PnMJ5Hs4GCWD3+jrbz5OR4=;
+	b=Iq/zNUmkP/3k6nP41ODQC53yTi9g+iBEntbO+koJ2TbETlCnvq8zZki660qP6zvY15Qe
+	 G71AWJCAYZzzW2fRS83mbRiFDaHHJwTUhkwowqbISBvkpmudqrHJteMHxjkypXpm1mszD
+	 VayNFYL/gy4cLiiy7wJjIHLP/2KwgCESyLY1ira+J0wN2Gw99tci8HYub3ZDv9z6k/OQb
+	 tWmeMYcSCT/C4H7AUSuE79uaF+iBOo+4aSk9E3aASbsBlKQAbj6g+dsWL6jFgyln/yS0K
+	 RzFpduC0OjELw9uVW8iSCgNjD5s4iRoq5HJ9IRIYCmBqQhmLcmowo+SnlDIvyN7Rw+w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=i7UYjapW;
-	arc=none smtp.remote-ip=79.135.106.31
-Received: from mail-10631.protonmail.ch (mail-10631.protonmail.ch [79.135.106.31])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GR+uTe6K;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDA7D606A320
-	for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 16:33:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CDA7D606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63BFA606A324;
+	Thu, 19 Nov 2026 16:37:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=i7UYjapW
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1795106006; x=1795365206;
-	bh=gUplJdEPkiupBXMg6jEbRKwJvmMRJIncRxN/ReK0ffc=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=i7UYjapWOsZ+uFsMxKBYOh4CI3jdU1rGx3qXth2588c8yyd6Q6XV8M/kU6CkpDiql
-	 uXdSXloNZPHGhngJ2537hNNV2Y75yvoObAkyFCNUodpQNY/FkUklVBzBaKBPdvpMMb
-	 W5X4pXVlhquKEPm1M+5dAuEryHJZmBvtNLp0U0kCM2HSGc1Qy5EEMCTFvVz4qcNYbP
-	 Ky73+22RTulBNrGbr2NgbNEXiPvHJ7JcTtD6qNix9+8BoWd9UpZQcaXTuzfxxsQLv+
-	 8Oz0BrZ6hMhDswzquS+BDiA4fCiu8nsL80vb4o2ao+gt2TRPaPWodt0NTZVFiuMJz+
-	 0q9iv1OZL1Jmg==
-Date: Thu, 19 Nov 2026 16:33:21 +0000
-To: Jonathan Cameron <jic23@kernel.org>, Joshua Crofts <crofts@kernel.org>
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] iio: light: stk3310: add vdd regulator support
-Message-ID: <e-R4fXmiyMiZY43j027FJGyFhtgfke6qdOAsLOTr7VMAfx8pL5sjDimH44WdZ0tIvoxgb3-ZPWWbZb5DE8gMloPynRLs2ztiBLezfyijQg0=@protonmail.com>
-In-Reply-To: <20261119033238.39bff7a7@jic23-hlaptop>
-References: <20261117-6768-stk3337-v2-0-92f4c7be3bc6@protonmail.com> <20261117-6768-stk3337-v2-3-92f4c7be3bc6@protonmail.com> <20261118110138.000003ab@kernel.org> <20261119033238.39bff7a7@jic23-hlaptop>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: c70958a9528293deffd0e4f3ee6d0f53d931a13e
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GR+uTe6K
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBE781F000C7;
+	Thu, 19 Nov 2026 16:37:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795106252;
+	bh=htU/F5AEUQsk5vxQUF1U8PnMJ5Hs4GCWD3+jrbz5OR4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=GR+uTe6KH4SGq10UcCgo6kKVa9S4aRu3KfoF/zuYhh76wu1Z0KS8ywZN8K4gOaVx/
+	 PQraR5hvnKuDv8s3oBD7MSvipFe8stWNzb2xcgD8rMqv5JPDrGifZEy4MtgrAu8lpl
+	 JzyAbIh62x+C1WRYy82DJKdcOUzOSE+vtOPNxYfjDU7f5hsT+cPEsnc879Hr+nUfki
+	 kh2QKQy13S/QX4/KvWyEzz72iWviq383CUcbn1gIC38sZFmyYOEIQ/0Uag/jnrZ71v
+	 kA59cq7v0LMjl5e5QzWsWHW62+fD0rZrnzNahjrfldnbAJZ/Af1XwC8poedgaw9OCQ
+	 6u+o2MU56/XdQ==
+Date: Thu, 19 Nov 2026 16:37:28 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] dt-bindings: iio: light: stk33xx: add power
+ supply support
+Message-ID: <20261119-giblet-epilogue-45f554c009ce@spud>
+References: <20261117-6768-stk3337-v2-0-92f4c7be3bc6@protonmail.com>
+ <20261117-6768-stk3337-v2-1-92f4c7be3bc6@protonmail.com>
+ <20261118-coyness-luminance-6d0c07e843b7@spud>
+ <20261119032903.4a0d3bf6@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,52 +64,83 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="tnBqYVFrnwBFWXJo"
+Content-Disposition: inline
+In-Reply-To: <20261119032903.4a0d3bf6@jic23-hlaptop>
+
+--tnBqYVFrnwBFWXJo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jonathan, Joshua,
-
-On Thursday, November 19th, 2026 at 5:32 AM, Jonathan Cameron <jic23@kernel=
-.org> wrote:
-
-> On Wed, 18 Nov 2026 11:01:38 +0100
-> Joshua Crofts <crofts@kernel.org> wrote:
+On Thu, Nov 19, 2026 at 03:29:03AM +0000, Jonathan Cameron wrote:
+> On Wed, 18 Nov 2026 18:12:30 +0000
+> Conor Dooley <conor@kernel.org> wrote:
 >=20
-> > On Tue, 17 Nov 2026 20:08:37 +0200
-> > Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> w=
-rote:
-> >
-> > > @@ -745,6 +746,10 @@ static int stk3310_probe(struct i2c_client *clie=
-nt)
-> > >  =09device_property_read_u32(&client->dev, "proximity-near-level",
-> > >  =09=09=09=09 &data->ps_near_level);
-> > >
-> > > +=09ret =3D devm_regulator_get_enable(dev, "vdd");
-> > > +=09if (ret)
-> > > +=09=09return dev_err_probe(dev, ret, "failed to get vdd supply\n");
+> > On Tue, Nov 17, 2026 at 08:08:35PM +0200, Roman Vivchar via B4 Relay wr=
+ote:
+> > > From: Roman Vivchar <rva333@protonmail.com>
+> > >=20
+> > > On some boards, the chip shares a power rail with other components. If
+> > > that rail is turned off, the chip can't function. =20
+> >=20
+> > With these issues in mind, probably it should be made required, even
+> > though new required properties are an ABI break.
+>=20
+> I raised the same on v1.  Seems it is used by various boards
+> in tree where we don't know which supply it is.  So whilst nice
+> to fix we might just be creating some painful build warnings.
+
+Yeah I don't really want to cause more warnings, but if it is actually
+the source of issues, warning may get them resolved.
+
+Up to Roman really I guess.
+
+> Can go ahead and 'guess' I suppose or put a fixed supply on it
+> in the upstream dts.
+>=20
+> Jonathan
+>=20
+> >=20
+> > >=20
+> > > Add vdd-supply property to document the chip power supply.
+> > >=20
+> > > Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/iio/light/stk33xx.yaml | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml=
+ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+> > > index f655a570aac7..114cf87eb54d 100644
+> > > --- a/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/light/stk33xx.yaml
+> > > @@ -37,6 +37,8 @@ properties:
+> > > =20
+> > >    proximity-near-level: true
+> > > =20
+> > > +  vdd-supply: true
 > > > +
-> >
-> > IMO this should work, but I don't like the mixing of devm_* and non-dev=
-m_*
-> > functions, this may cause issues down the road. Consider moving the dri=
-ver
-> > to all devm_* functions?
->=20
-> In this particular case I agree with you because the conversion is very
-> simple.  Generally the rule of thumb is that devm from start of probe
-> until you decide to stop, then no more devm.  In that case the unwind
-> order should be correct.  This change doesn't break that, but the
-> driver already breaks this wrt to the interrupt, so if Roman
-> doesn't mind would be great to fix it whilst touching the driver.
+> > >  required:
+> > >    - compatible
+> > >    - reg
+> > >=20
+> > > --=20
+> > > 2.56.1
+> > >=20
+> > >  =20
 >=20
 
-Sure, I will include one more patch for devm_* API migration before
-adding regulator and new chip support.
+--tnBqYVFrnwBFWXJo
+Content-Type: application/pgp-signature; name=signature.asc
 
-I recently found another STK3337 variant on yet another development device,
-called STK3331. It seems to be exactly the same, except for the chip ID.
-Should I include it in the next revision, or send it as a separate series
-later?
+-----BEGIN PGP SIGNATURE-----
 
-Best regards,
-Roman
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCav8lyAAKCRB4tDGHoIJi
+0vSLAPwMj/1u8S4FlhyKo8aV3NWP1unAub+1ycMIQtKA5Y6WWgD/UPoyizUtYC+z
+yrQ4ZdtKb51d2wfXRlBkQoc0fU/x0AU=
+=9FjN
+-----END PGP SIGNATURE-----
+
+--tnBqYVFrnwBFWXJo--
