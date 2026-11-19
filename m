@@ -1,74 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795102317;
-	b=D4TeoaRer1SP6TTm5EMSTfnrPHuAZpeUDs5HnRkHLmIVkUPNJxCsCksRuYL5rqwJJ610
-	 2NoxIwSXxsMRKD0kjcljPh2x8vhTLXwNPKlMrAKjcSW4rfzyh3X9Pwod/oL/ZARFxHI5W
-	 7FUEGIr7xAqOcwBIZrG7S4e122S886e8GZ9DN5Qsgv5JR6Nhaw+oNZeyCGaUmuRxu72m9
-	 OL/Kq/n7e6H/Z/mgmo7oxSwEM1E8jLSszrLDCCgZTwhB6ebcvtqkLDscWEGTcmhGcm7UN
-	 KZGG5zoInsG8UdkrpoNgFqX8JvXRDB/QiH/XRDb1XQ0YyOfi2nPy6ule7oa1OpaSvzQ==
+	t=1795102325;
+	b=S3+QuGNuoN22gOIJSy0/hWEd8SsWBzeJ0uIYF/4Eis5fxMJPkgRahDiMyR9qfsx5UcYQ
+	 VUQrRdVd/3T+QIFpSaykII6hVIhglGCxSPNNhF6lhw/8jHzuYP6y+t3yePt9JeZvJ3ACM
+	 /6QJDesr49qRQ591yO+EihfQ6UB20VQyrCmMTJR8400llm717H+0otpSiWPehq/tjZ2/i
+	 7IZMn3+1nVTjJBCUTp910bRjhQuDxW3eu/DdZxIc1aC1My+zR7VElDcHCLibWCLt4YJbC
+	 8Ixord90hwfA+l/oo5XCu4S0x26KCTpf2dcMfEwa7tyVBdUxFYzpDJToYlBQUFf8GcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795102317;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795102325;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=X/7FVMEXiHBL4WSOz0Pysl4wEd+SmpS1KQgCfjBgAZI=;
-	b=LE97mIA0pHxFWuWlPp1bwzeLIIhW7e+g06GXjcXLZ2z5aXpnwkos+DYQyBu7ZubVBx6N
-	 VFVODKx32PXdQx7FT0Sxd9WQ0oUlGOLUJ3PvPPX0CkRpblsGcbeUT3UcQsJaepiYEJpDk
-	 kaTYr0As1rE8yxEB1mOxqSl8WfbtLzaqp1OST+h3cWOBSYV0/oevh6JVfPBLhGGGwx3e9
-	 2s6GnX2oebDBBG4M9SIuyeyaREK6iHlqDCSo2cAlWGi1pWbFqm+LxAjfucSTvxyZwGTrA
-	 sP3jH/N+KnMa9PW1B+y85BiFeuhHVmHY72uGyKAXl2hDIMISAP8yFeuc9gZwbkMt4LA==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=bspJPCzBXjOSr0lbKiju+1jvDaWAkbU673HeUfrBbfI=;
+	b=2MnKGeAt/dgtbe3yiDQo61EdS3D9NVu9raNalm8VYvRepgcb5KOKrgdVhKw1pa4p80RT
+	 abBySco62QwzmDrgyfUIWHtutOrSsyi8f5LkPFr+x9jZNHHPsSAdiI8O7YcKtKH+aFCeX
+	 w57dLrtDrasqG5I/Y+7nDVSd5dkAoLvCllpUlE87NshSvGrveMo59ytu65wQH/sdCH6c/
+	 7K6tgR86KN7hczY/AbkUPQAsZYs4LUpz3QI4wudtBi+a1sD0QOte2WFIRJyHukvZOjkER
+	 3Aj9hSTo89bJKnfj4llLdPjc5IL/AE3anC3Z8DIs+whxdBxyfGsiFjqeH+VYBEWSQJg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Iyr9/xW7";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PfhWcqde;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2474606A320;
-	Thu, 19 Nov 2026 15:31:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17ABE606A32F;
+	Thu, 19 Nov 2026 15:32:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Iyr9/xW7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A29E21F000C4;
-	Thu, 19 Nov 2026 15:31:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=PfhWcqde
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D298B1F000D3;
+	Thu, 19 Nov 2026 15:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795102317;
-	bh=X/7FVMEXiHBL4WSOz0Pysl4wEd+SmpS1KQgCfjBgAZI=;
-	h=From:To:Cc:Subject:Date;
-	b=Iyr9/xW7xxwLpx19/6opDpoSmJ2s/MGFRTUq8pKHHWyvtgqt/6NY81BiQyhPzLFpF
-	 bxbG/rzEdIDvdk8tCaVzGBJoG3LuPdOxatvz49fC+WFtm2jzGsIVMrk5GYSYYGZii8
-	 TdPgGAEzYjCOdBMmzC2vkEgrqZoS9bWvfpUhRtjoPPJ36IN4kp4g0+eVjNr3wJFJ5Y
-	 VAwpM2PeTgakhzKIrg8KrOkekTlO88z/NspyQPtBWsNrcf0U0ijriZivmz6lM7in31
-	 fj0TuK4mEswc3lLYMzBRIBW0fAClOZRuT0tb2OIRHqYdzmeQctqLEEhzB7mGRl6n3b
-	 a6tiHvkhqbB/Q==
+	s=k20260515; t=1795102324;
+	bh=bspJPCzBXjOSr0lbKiju+1jvDaWAkbU673HeUfrBbfI=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=PfhWcqdeZFGHfC/e50VXK0ocs4AItUUVP7hGgh2aX1kZu03Wk/6YKk2Y1+ozl4zJn
+	 S7VtCYLDPrT40MJExaamsUsXtSUo4ZT7DmWRcKW5+iDCqSf3kf5+Hz1gdITrnaqK/D
+	 g6h2LWje4YdxbA75v8lNvqbi25YaeYxIVSHkB4LyhbRzk9f3g2bwldPh/XAgz3sftq
+	 Um8qHCGwsJsvw5Ft6l0ndt72Dq3iDFHxDjHvrF6XEQg20XSR7JhngGP9TslnudXoX5
+	 QMnCMn6CfWA0k1q5kUXnRc5dFKTICq7QeFzj2cALNN490JYpmds2sK2SN50txJQ70P
+	 xjvt4e+hAuEMA==
 From: Lee Jones <lee@kernel.org>
-To: lee@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Alexandru Ardelean <ardeleanalex@gmail.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Bogdan Bolocan <bogdan.bolocan@microchip.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
-	Joe Sandom <joe.g.sandom@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	linux@analog.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	Lothar Rubusch <l.rubusch@gmail.com>,
-	Lucas Stankus <lucas.p.stankus@gmail.com>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Mathieu Othacehe <othacehe@gnu.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+To: lee@kernel.org,
+	Nuno Sa <nuno.sa@analog.com>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Olivier Moysan <olivier.moysan@foss.st.com>
-Subject: [PATCH 00/10] iio: Fix memory corruption, teardown races and bounds checks
-Date: Thu, 19 Nov 2026 15:30:33 +0000
-Message-ID: <20261119153151.1397003-1-lee@kernel.org>
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	linux-iio@vger.kernel.org,
+	linux@analog.com
+Cc: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH 01/10] iio: imu: adis: Clear pointers after freeing in adis_update_scan_mode()
+Date: Thu, 19 Nov 2026 15:30:34 +0000
+Message-ID: <20261119153151.1397003-2-lee@kernel.org>
 X-Mailer: git-send-email 2.56.1.708.g77570a6a1d-goog
+In-Reply-To: <20261119153151.1397003-1-lee@kernel.org>
+References: <20261119153151.1397003-1-lee@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -78,63 +66,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-These issues were reported by Sashiko.
+adis_update_scan_mode() frees both adis->xfer and adis->buffer at the
+start of a scan mode update without clearing either pointer to NULL.
 
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Bogdan Bolocan <bogdan.bolocan@microchip.com>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: Joe Sandom <joe.g.sandom@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux@analog.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-arm-msm@vger.kernel.org
-Cc: linux-iio@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: Lothar Rubusch <l.rubusch@gmail.com>
-Cc: Lucas Stankus <lucas.p.stankus@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>
-Cc: Mathieu Othacehe <othacehe@gnu.org>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: "Nuno Sá" <nuno.sa@analog.com>
-Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+In both adis_update_scan_mode_burst() and the non-burst path, adis->xfer
+is allocated before adis->buffer.  If the adis->xfer allocation fails,
+the function returns -ENOMEM while adis->buffer still holds the freed
+pointer from the previous scan configuration, causing a double-free on
+the next scan mode update or during device teardown in
+adis_buffer_cleanup().
 
-Lee Jones (10):
-  iio: imu: adis: Clear pointers after freeing in
-    adis_update_scan_mode()
-  iio: accel: adxl313: Prevent FIFO buffer overflow in
-    adxl313_fifo_transfer()
-  iio: accel: adxl313: Reject sub-base ODR codes in adxl313_read_raw()
-  iio: adc: stm32-adc: Validate channel index before writing chan_name
-  iio: adc: stm32-adc: Detach chained IRQ handler before removing domain
-  iio: adc: pac1934: Fix custom attribute allocation and channel bounds
-  iio: adc: qcom-spmi-adc5-gen3: Free TM auxiliary device wrapper in
-    release callback
-  iio: adc: qcom-spmi-adc5-gen3: Reject empty reg property in probe
-  iio: proximity: isl29501: Fix division by zero and overflow in
-    isl29501_set_freq()
-  iio: light: tsl2591: Prevent infinite recursion on threshold
-    boundaries
+Clear both pointers immediately after freeing them.
 
- drivers/iio/accel/adxl313.h           |  2 +-
- drivers/iio/accel/adxl313_core.c      | 13 +++++++++--
- drivers/iio/adc/pac1934.c             | 33 ++++++++++++---------------
- drivers/iio/adc/qcom-spmi-adc5-gen3.c | 32 +++++++++++++++++++++-----
- drivers/iio/adc/stm32-adc-core.c      |  6 ++---
- drivers/iio/adc/stm32-adc.c           | 12 +++++-----
- drivers/iio/imu/adis_buffer.c         |  2 ++
- drivers/iio/light/tsl2591.c           | 25 ++++++++++++--------
- drivers/iio/proximity/isl29501.c      | 10 ++++++--
- 9 files changed, 87 insertions(+), 48 deletions(-)
+Fixes: aacff892cbd5 ("staging:iio:adis: Preallocate transfer message")
+Closes: https://sashiko.dev/#/bug/linux-966f0cd4-488a-4d69-b8a5-449c751365d2
+Cc: stable@vger.kernel.org
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ drivers/iio/imu/adis_buffer.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+index 501da4eaef69..9d317b627eba 100644
+--- a/drivers/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -74,7 +74,9 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 	__be16 *tx, *rx;
+ 
+ 	kfree(adis->xfer);
++	adis->xfer = NULL;
+ 	kfree(adis->buffer);
++	adis->buffer = NULL;
+ 
+ 	if (adis->data->burst_len)
+ 		return adis_update_scan_mode_burst(indio_dev, scan_mask);
 -- 
 2.56.1.708.g77570a6a1d-goog
 
