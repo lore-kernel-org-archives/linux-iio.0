@@ -1,56 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=43.163.128.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795052651;
-	b=ibDKlMT1eJN/pL465KqXtgoCM5OBCA/3I3DiEO/623EBqDtDZ2TQ5T8no/CCsdi17VxU
-	 ZeC1tr+wW+IB1ZLLO2DhUWzT8+wBS8Rgomq1E7zRZL/qGl09ZX+EncDMPwqOsVGnRVxLn
-	 S0RzT0547rYLBidQg22VBbpIIm6RcyHETY6lRNFfkx7FCfrzzNG3bEdJyHQQTI1LNF/Ht
-	 iJjugCJtmQdmemU+zWuAVdjCZR9aRluyYz6EMzPZ9Uj1iSpRZl3C1UN5+tPCQAlPakuxK
-	 nEZU42fMEeuRzfZ+GFH8j5d6nm6NhjOfHooXTODuG8mb4m+v6H3uGAXddKJKBg3JS2g==
+	t=1795055603;
+	b=Q+1UGXt6U4qBn2GQJ542HacLUgJUqqCCYCpwby8NjeZRy2oWAIQHhIU9wgR0Ul87fPLL
+	 JJIGWcEAiNu1FGINGzqafHxLkYIFlm5zYN/sadMGUSdlo2u77XTrD4yezkRHv1XOOc7EZ
+	 kAlY5JAO2fWkLIFIWJfXmmXjktEYc99YOT+hF+Y0Fn3yMptapuFpr1AL8j1VW3fYwJXkx
+	 jn4GPs1DjMTgKrcgITgorpMeTu72gvcTmGzYsP05ycLJLsn1pst/nB8MOtkhu/1jX+71Q
+	 ZKIYj9QR0Y9qnsIFgKt1e6AgzT10QzLuzhePPPG7cZHinVit4kUXhdUCn/BG8nMnzhg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795052651;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=oR3zaB1RSgfSBALWqoflY3XEFZ9EicoDk2o6RRqqgQU=;
-	b=cwR1UVMQLAumVIYm/QhXYyTsM6E7YFFwU15oDxYs6OfZ072JLR3sKxOXEf5WzC4gFv3S
-	 usuuwBAv+vRziXnm3qL6uZEuZ38GxnCB6ckrKrXH4jBctQWVzuExmKNdHdg/Y2Aem1QPZ
-	 OHFujw90cPDLTfUm/BNtpEdoyS9BdcXiq4U06/aKjaODeWVTMlWdEFiUo5v9vYkxSTEzp
-	 aq42JtHGG9DRpE6vZUDjcNNBXvIJ8jFqj8RqKkuCjM8y/qcNBT0hBUaq3Gi1iLXuG8SPc
-	 hUudEKQryiytsl9qtcWcUivDstar3zbA4YapgSa5Kxx9gWnMKK4vKap+/9Qw6FXVxmg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795055603;
+	h=DMARC-Filter:DKIM-Signature:Received:X-QQ-mid:Message-ID:
+	 X-QQ-XMAILINFO:X-QQ-XMRINFO:From:To:Cc:Subject:In-Reply-To:References:
+	 Date:X-OQ-MSGID:Content-Type:Content-Transfer-Encoding:MIME-Version;
+	bh=I/jfGs/XzNLUiU7wAzM8DFyhVDcqDrY/sEe4nXwm45Y=;
+	b=uZUvl36ZXHZY32DA23UMS5nUzgWzDRrq40rjnpNvObLjXkNad6winIJAdUwHlAdKz2+P
+	 278vbsxPXh6PReINMcf7Fmj1gUNzK//qYjZADEME87zaluxYYsaNdrg1dUksFF1ffVHAD
+	 R40p0DeWi+V9AiTVyH69+RpJhZnFBLE+IF4cewjXA2c9pPmetvtC4mhzkdM7sKMnCSnoF
+	 gURf1FW72damjZZj5eObJrrvwUd33OJXmR7t/XHdbTD13gsheZk0dAKmBXsvYBTKNAXX6
+	 3iLglU9r65bw3TQI/dSkzjVH8Olj++fwq+dXAqyWgX2iDx/mR6jI6Cv9/Y96nurXaqQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CcTVlPB4;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=yosoro.hk;
+	spf=none smtp.mailfrom=yosoro.hk;
+	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=jBbCCKWV;
+	arc=none smtp.remote-ip=43.163.128.53
+Received: from xmbghk7.mail.qq.com (xmbghk7.mail.qq.com [43.163.128.53])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37312606A335;
-	Thu, 19 Nov 2026 01:44:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83B5E60A260B;
+	Thu, 19 Nov 2026 02:33:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 83B5E60A260B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yosoro.hk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=yosoro.hk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CcTVlPB4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF0F71F000C8;
-	Thu, 19 Nov 2026 01:44:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795052651;
-	bh=oR3zaB1RSgfSBALWqoflY3XEFZ9EicoDk2o6RRqqgQU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=CcTVlPB4U+q9gVnBm1Ll2kZJJswO7Jp5t1viC3TFRvC158JdFvxOP9NHkkfIwUwvt
-	 tNpg4T3+jywIPY/ZV3EJMEZa+1CGKHBHE0RP42FaKvvEitzOuHpeBJ8BP1OuNHRr7Y
-	 eRityK3lXK9OABtV2Uzd0+BMmAVa3lW4zQyI1usT4pi771fsoBWDkcgwKABh3Zol6x
-	 18fVJ60eViKAOAFb29gyIcGzpic+SBmwtd7ethiTG2J9bWLZvlxutdqdrtWCaC3CBy
-	 9hCbCEsOKo07sO6ot1cOS8jEUeqygwE1sOKP8liCWdrpXunsJHxTNf1N2LiTiu05hX
-	 2fVKRJobM/GDQ==
-Date: Thu, 19 Nov 2026 01:44:05 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: NanamiKite <nanami@yosoro.hk>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Hans de Goede
- <hansg@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=jBbCCKWV
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1795055598; bh=I/jfGs/XzNLUiU7wAzM8DFyhVDcqDrY/sEe4nXwm45Y=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=jBbCCKWVg9htwZWHCKxRq2IQ8o/Bijrt4J6ISd2IA8Fkyj7qYHh5s0ZrINonRTBzB
+	 H2JX0G1eZW4ttWBi+wqMXUzyQ2XG7oY1KPkPbOJPhJ6o2Ssj3YM45b4Dd9oENphS6d
+	 EmK0O4Dj0Ufn1EQ6A6QQ8wQlqn4BfwCcK9xgGAqM=
+Received: from [192.168.123.32] ([122.191.232.200])
+	by newxmesmtplogicsvrsza63-0.qq.com (NewEsmtp) with SMTP
+	id 850160B1; Thu, 19 Nov 2026 10:33:16 +0800
+X-QQ-mid: xmsmtpt1795055596twex1ec57
+Message-ID: <tencent_84B150942865006BA546B43E5026951EA005@qq.com>
+X-QQ-XMAILINFO: MTEKjEyAppcsXl8tDSMkZcGoVK4TevSkLrgj5/JqliePpNj4ihc2AiUd9pbgDP
+	 rwHIj5yBAFhBGFl/6Acd0JBlHlGwl0clbS9pkii7BwZgs0C+aG7c0WU9DN6od15xZt0eJJ2+nTtI
+	 +pzosWoiRZ5ryLd0AM9Jfj3HP4pkSJSpVZ1XgA+9oBRFf3f1YDNzstgETGlQgXOYaXqiligWWSZz
+	 YOdZ6o2ywiy8sTFeGw8VyOof5jVCSMD/8tRV5oTHG30FxpOfEaeaXvsr60g5XE88zcUxNhQXHBTh
+	 No54TJSwrYbc05ypZSIzB7C6z7hBLWL0DK0D50Lhb9niihehmZZ7cw3/ZB0F78BoxfngfYWGm1mD
+	 PTHEoASITcazUzgDqk5e7ao2ipMilkhqWT7BAMYrIgkJLeKCGcvx0i735zGncuFi8I2//SIHgZGE
+	 70J5vrGi3k6HPb8B4SLReIik/6C/CnOTOIWKrcTdk1Fn4GyWWp9vSlOs41nVnU0BSqvhlSdW0s4f
+	 ZWqDdKf4IQx7XBppFyprPxyWGIlfU+FZad0b74oqpaDxugH2iuoJgv4uDcUzPHdZUs6L05/q2JUY
+	 tinWfUzGaLakYub9a+QrVTEpa+g1uXsXqQ/5iuB7a8BAoqgv4YigHgJfrOVoBAzjL6zcs9hFXB/U
+	 N1mDt7W0qa05gdjWSogE+1ff0Kke4K4n01fE4y5vCN3u01qNRoqe44uePfiJXBZKQ4X4U1/mE++/
+	 7S9UXdgj9m7F6sTyYIUQ46A5H0orhhXK/ciPSYNuR3oCsWyL9vDcOapqQthAc+x82AXvdJql4qMi
+	 T47tAN5Hz8/xVTpZkA+nujrYZV4aerwzMTSoh3slNrZn2TX4z+qLAmQEZUpTCkJ/bw/Qa/29cW5S
+	 V/ChnkNCD4CtTMbYzSPqcORFoekbt3jvW5Ydtw1cFU9iZvy5w53VijA1l+tqFscEI/4mOQhDr8aA
+	 G3BgR21AdHLMG1Ubm5xP7oBHc+DLW7R0kDvNGmxLvWntFWSCR6qQX/t6gu0y1bS1WHaUHMY4RaYn
+	 5K4ZU59kMnjlUnntkIS+ok84dvPFc6rHcQKwz9nFF1yeWXbfXWAjYBcNstEWpujv0g1XodoQ==
+X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
+From: NanamiKite <nanami@yosoro.hk>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?q?S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Hans de Goede <hansg@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] iio: light: cm32181: Add support for CM32183
-Message-ID: <20261119014405.2eee7298@jic23-hlaptop>
-In-Reply-To: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com>
-References: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+In-Reply-To: <20261119014405.2eee7298@jic23-hlaptop>
+References: <tencent_E90EB0AF3888FA057AA5F6008C16C610650A@qq.com> <20261119014405.2eee7298@jic23-hlaptop>
+Date: Thu, 19 Nov 2026 10:33:00 +0800
+X-OQ-MSGID: <179505558099.21292.3487409760800914194@yosoro.hk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -60,44 +78,22 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 23:11:00 +0800
-NanamiKite <nanami@yosoro.hk> wrote:
+On Thu, 19 Nov 2026 01:44:05 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On the H3C MegaBook 14, the ACPI CPLM3218:00 node declares a Capella
-> CM32183 ambient light sensor (CPM0 device ID 0x7db7 / 32183) at I2C
-> address 0x29. Reading CM32181_REG_ADDR_ID (0x07) returns 0xc383, with
-> chip ID 0x83 in the lower byte, causing cm32181_reg_init() to fail with
-> -ENODEV.
-> 
-> The CM32183 uses the same register layout and ACPI CPM0/CPM1 tables as
-> the CM32181 and CM32182. Add chip ID 0x83 to cm32181_reg_init().
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: NanamiKite <nanami@yosoro.hk>
-Take a look at linux-next or the iio.git tree on kernel.org.
-Or indeed sanity check the list.
-https://lore.kernel.org/all/tencent_850445458D21608E9C8821E6728457F31C0A@qq.com/
+> Take a look at linux-next or the iio.git tree on kernel.org. Or indeed sanity check the list.
+> https://lore.kernel.org/all/tencent_850445458D21608E9C8821E6728457F31C0A@qq.com/
+> Pretty unlucky to hit same thing that was added about 2 weeks ago. I guess that device is proving popular!
 
-Pretty unlucky to hit same thing that was added about 2 weeks ago.
-I guess that device is proving popular!
+Thanks for the pointer, and sorry for the noise! I'll make sure to check
+iio.git / linux-next first next time.
 
-> ---
->  drivers/iio/light/cm32181.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> index b32a940..aaf1af3 100644
-> --- a/drivers/iio/light/cm32181.c
-> +++ b/drivers/iio/light/cm32181.c
-> @@ -200,6 +200,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
->  		break;
->  	case 0x81: /* CM32181 */
->  	case 0x82: /* CM32182, fully compat. with CM32181 */
-> +	case 0x83: /* CM32183, fully compat. with CM32181 */
->  		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
->  		cm32181->als_it_bits = cm32181_als_it_bits;
->  		cm32181->als_it_values = cm32181_als_it_values;
+Haha, it's actually quite a niche device -- I just picked one up
+secondhand to replace my old Surface Go 2 for development work, so I
+definitely didn't expect someone else to have already sent the exact
+same patch two weeks ago!
+
+Best regards,
+NanamiKite
 
