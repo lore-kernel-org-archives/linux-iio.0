@@ -1,60 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795052017;
-	b=I8lENSfIa65xRyMtM0E8F97oyuYYiWZIKML2tXabmzjCIlKUa+uLid2BJjdzMvJWbMHQ
-	 1c9vYuNsNrnvfdfK/TQJKpVGULPeZnVu67wHJjinhJFgt9vEshZmLCSLA07a4jOoK2EVW
-	 2dOK6nDHrFZ9saDoEFo7GIXIylnNXdH3rgrEDkbc83BLjb5Vv+r8DWWMdjaDOSiYIv/cr
-	 zTPudN/bKbwcJSNN6zDtng7g+DU7OD8lW5k4gxvQkR8Sr3GZVMq9HH2mVk76uHIJrZnr6
-	 KnJ7jb55jEIYPfDSTjUokOezWJaw2C1KiAzy9N0CxnSiXdnOqPAKPaKz6z92nQomdaQ==
+	t=1795052174;
+	b=3NFE+5HCnKqs+Yd9Z2RxMEdDry/nmqTfYBhoy885ckA0xUsL0tzT4OSjI+oPFIcwJJRZ
+	 oFiOGwWbEcXkZICVdfbzipaqmqsUOel33k9ziqxrGQDpQOQ98omC2tRDpSVgQ9ESyHcSs
+	 ugxgVrZ6v6I86sY1gOgb/KJpWWURxXni2bpQKMHL0GfHjD+oEg4wAZ02S0KDi0ej+///w
+	 3VvnLt5SnKKNLgBktmUgdzsthNyfZZvu7dC/QEI7YpYfZC+xYdDTliSxEbsNi29o74ufA
+	 KustLKzWE2PPVFHTKUp+2I9wPXFfczHO0ZMGtYVOXS5JDOI6pxZhxrWpGSliYO4SYfQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795052017;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795052174;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=tP0juyknCZt8Oi7eygtZ2/jilIZpwxKA+5FAOW9aG1s=;
-	b=m3lS9qGRvO73VwlAx9Bzp5Vt2MvICvNaf4eNO8wg1M+6EDmPLg5Bk3vWk3K12OzmR+tJ
-	 BZOdrwpdBJwtUd1JTW+LvEbRMfUZcKcAztMP/i8YdNhZ11g3bhGWtrVOvyt+4+7X3XVuB
-	 i3/x0RuGw9ezZxnc3BtKzCtVVAYTqsdk5PUkARcPvYNJWWkRtsBD1/KO5Bz4n2D/yOt00
-	 DFtR0l6VG6sq546lMl5zp/e446G5zaBgdmDp1gmmhRBz9r20TTwq/CyMwaqqf188Kye8V
-	 qVpUNCA4vCh1pY5MiTlH2mJYWKiqYuZ+vn8K/LWZgRG34HuMWJmcvKbVjgBTQVMjtlQ==
+	bh=6ppFMoyy0hMiK8zLmO0ZtgvhxnZ98SKRntiVkaykdQQ=;
+	b=eKCR9u/GMRS7YMgP8kLhmcWyswRG6HcYB/G315Ks7HCaRMSwK2zmXaCf5ZaSalvCjbd6
+	 Epwda9rriRHNQzbiUy2Kl+WkbdSVMgUteOQAHNXxtX9JbAIttgnyoSQf23JTGcGpp2rJg
+	 Z5Ra1jQA1DOwRLSBGEOIhBwoXhzKZUIEvHNOB/HR+SNZg4FUoyvmQNEDU8PdeXrvcYuQ9
+	 z4Y0shSw4sX/uhsgP/b6JLs/z8SchhVuQO6BdQ+ZR8nWHA+ksusiZHcr06VdYrLzMRey+
+	 YEwvwPHNuVGfLbR1zgrmzkjEEDyqVha2aZB5m8zvW6uKFRxhqMlRJNwVE9V2nc/nGkA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ls7L0Wsc;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="R8C7i2W/";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC41A606A331;
-	Thu, 19 Nov 2026 01:33:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35532606A31C;
+	Thu, 19 Nov 2026 01:36:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ls7L0Wsc
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 689FB1F000C5;
-	Thu, 19 Nov 2026 01:33:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=R8C7i2W/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CE661F000C4;
+	Thu, 19 Nov 2026 01:36:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795052017;
-	bh=tP0juyknCZt8Oi7eygtZ2/jilIZpwxKA+5FAOW9aG1s=;
+	s=k20260515; t=1795052174;
+	bh=6ppFMoyy0hMiK8zLmO0ZtgvhxnZ98SKRntiVkaykdQQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Ls7L0Wsc7iCYCzVnyZzARTwRePJk5UiPF6oirwJ7n6IU2Ri8OMuQB1/6hZI4bThbI
-	 U2ZGVmGi8DOMpLa0/hDGd6gpJ1cTH/VjFNMaP0/4JPFOrAahNJfeltazzUZ8StWlbw
-	 Uf91JLh7A89zfvtsp4X7HNemzsVOmbwAwODbxg9joam8WHoooJyX3joKDQZPOznY8C
-	 QebYqazHBwfoQnbQhK7phWmeQQAdLcjfVdBfGqoG1J4QSxhZj84tXoayrJyB3WBULf
-	 W2sP26/AYHvuBQw3QQyaqE6URuC0++a56ktCyFeX9Ga3vKdA9KGgUvkg7oZ8gkjs5S
-	 xvl9Q3dSaN0Ng==
-Date: Thu, 19 Nov 2026 01:33:33 +0000
+	b=R8C7i2W/N1IkQypPHy70VnqdPx8BK/vtrlsEXldYkQiYntcNpzkB3O2oOWynjHW8X
+	 cUL58965McsNETAM+8z3k2p1vHYTqSOWNvAdH0uIL6wBQPOCTAFzJfCY4MhK7YtRi5
+	 uF1iJ6huwOnCSMtuZXomOHgu/2bH1nPHJBrX5tTaCSqVak37hphpKQmsanN6y88RgR
+	 U1xn1sEK1r/S44wdCgKJXeNYaG5/weKVhexEL3SrGI0oouzJExa4117ZuQHPFZRiuI
+	 lqtfrtdBQIa3o4O2rD90JlZePsbM72/CPuAeY8s+RZpBXWNo9me5RhmZtt53F+qqiX
+	 XtVRkHm/0L1ag==
+Date: Thu, 19 Nov 2026 01:36:07 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Raffaele Tranfaglia via B4 Relay
- <devnull+raffaele.tranfaglia.gmail.com@kernel.org>
-Cc: raffaele.tranfaglia@gmail.com, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Joshua Crofts <crofts@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v3 0/2] iio: light: adux1020: guard() conversion and
- follow-up cleanup
-Message-ID: <20261119013333.333a1896@jic23-hlaptop>
-In-Reply-To: <20261118-adux1020-guard-v3-0-2c6a18954fc7@gmail.com>
-References: <20261118-adux1020-guard-v3-0-2c6a18954fc7@gmail.com>
+To: Linus Walleij <linusw@kernel.org>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Kyungmin Park
+ <kyungmin.park@samsung.com>, devicetree@vger.kernel.org, Krzysztof
+ Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, Joshua Crofts
+ <crofts@kernel.org>
+Subject: Re: [PATCH v3 0/5] iio: light: gp2ap020a00f: Add VCC supply and
+ GP2AP030A00F support
+Message-ID: <20261119013607.2f763ff3@jic23-hlaptop>
+In-Reply-To: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
+References: <20261118-gp2ap030-v3-0-c8df93460110@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,58 +68,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 07:29:53 +0000
-Raffaele Tranfaglia via B4 Relay <devnull+raffaele.tranfaglia.gmail.com@kernel.org> wrote:
+On Wed, 18 Nov 2026 14:46:07 +0100
+Linus Walleij <linusw@kernel.org> wrote:
 
-> Patch 1 converts the driver to guard(mutex), as Jonathan suggested
-> when applying the sampling frequency hardening patch. Patch 2 uses the
-> direct returns this allows to flatten the channel type checks in
-> adux1020_read_raw() and adux1020_write_raw().
+> Describe and enable the optional VCC supply for the GP2AP020A00F and
+> GP2AP030A00F. Preserve compatibility with existing device trees that only
+> describe the LED supply.
 > 
-> Tested on arm64 QEMU with i2c-stub and lockdep enabled: reading and
-> writing the sampling frequency (valid and invalid values), reading the
-> LED current, reading in_proximity_raw and enabling the threshold
-> event. No lockdep warnings and no hangs after the error paths.
+> Extend the existing binding and driver to support the GP2AP030A00F. It
+> shares the register layout, but has different proximity resolution
+> encodings and no automatic lux calculation. Select model-specific
+> initialization, keep reserved bits clear and expose fixed-range raw
+> clear and infrared counts. Keep generic supply handling in separate
+> patches from the model-specific binding and driver additions.
 > 
-> I prepared these patches with the help of an AI coding assistant, and
-> reviewed and tested them myself.
+> Assisted by LLM.
 > 
-> Signed-off-by: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Applied to the testing branch of iio.git
+> Signed-off-by: Linus Walleij <linusw@kernel.org>
+Applied. Thanks,
 
-Thanks,
-
-Jonathan
-
+J
 > ---
 > Changes in v3:
-> - Patch 2: add a local regmap pointer in adux1020_read_raw() and
->   adux1020_write_raw(), and use 'if (ret)' for regmap_read() errors
->   (Andy)
-> - Patch 2: split the adux1020_find_index() arguments logically (Andy)
-> - Link to v2: https://patch.msgid.link/20261117-adux1020-guard-v2-0-89707fa070c9@gmail.com
+> - Return -ENODATA when chip match data is missing.
+> - Use four-line initializers for I2C device IDs.
+> - Document the 1 ms power-on delay and use USEC_PER_MSEC.
+> - Align family descriptions and list supported parts in Kconfig help.
+> - Pack GP2AP030A00F samples as 16-bit values and omit zero shifts.
+> - Link to v2: https://patch.msgid.link/20261108-gp2ap030-v2-0-24eaa1b9fe59@kernel.org
 > 
 > Changes in v2:
-> - Drop the unreferenced Link tag (Andy)
-> - Move ret to the end of the declarations in adux1020_read_raw() (Andy)
-> - New patch 2: return early on unsupported channel types instead of
->   nesting (Jonathan)
-> - Link to v1: https://patch.msgid.link/20261108-adux1020-guard-v1-1-db9c582f1eea@gmail.com
+> - Replace vdd/vio with one optional vcc supply, matching the VCC pin.
+> - Use devm_regulator_get_enable() for VCC, allowing dummy regulators.
+> - Move the VLED description into the generic supply binding patch.
+> - Split variant infrastructure from GP2AP030A00F support.
+> - Use "GP2AP020A00F and similar" in family descriptions.
+> - Use reverse Christmas tree ordering for local declarations.
+> - Explicitly select MANUAL_CALC when automatic ALS calculation is absent.
+> - Reject missing chip match data before accessing the device.
+> - Use fsleep() for the GP2AP030A00F startup delay.
+> - Select static channel arrays and counts through chip_info.
+> - Link to v1: https://patch.msgid.link/20261108-gp2ap030-v1-0-55314eb7055b@kernel.org
 > 
 > ---
-> Raffaele Tranfaglia (2):
->       iio: light: adux1020: use guard() to simplify lock handling
->       iio: light: adux1020: return early on unsupported channel types
+> Linus Walleij (5):
+>       dt-bindings: iio: light: sharp,gp2ap020a00f: Add VCC supply
+>       dt-bindings: iio: light: sharp,gp2ap020a00f: Add GP2AP030A00F
+>       iio: light: gp2ap020a00f: Enable the VCC supply
+>       iio: light: gp2ap020a00f: Prepare for chip variants
+>       iio: light: gp2ap020a00f: Add GP2AP030A00F support
 > 
->  drivers/iio/light/adux1020.c | 189 ++++++++++++++++++-------------------------
->  1 file changed, 77 insertions(+), 112 deletions(-)
+>  .../bindings/iio/light/sharp,gp2ap020a00f.yaml     |  17 ++-
+>  drivers/iio/light/Kconfig                          |   6 +-
+>  drivers/iio/light/gp2ap020a00f.c                   | 147 +++++++++++++++++++--
+>  3 files changed, 151 insertions(+), 19 deletions(-)
 > ---
-> base-commit: d922ed738439e1d5b4701df7f4cdd49a09925624
-> change-id: 20261108-adux1020-guard-3820ce794843
+> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+> change-id: 20261107-gp2ap030-99504c2dc038
 > 
 > Best regards,
 > --  
-> Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-> 
+> Linus Walleij <linusw@kernel.org>
 > 
 
