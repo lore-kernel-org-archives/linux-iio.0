@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795080474;
-	b=N89CtD6tRdydoyAd8DEGcGjC330Ojoht35c28hvh6/SEwGcGs/TqC9oTExHs+E8/ZsS8
-	 mn7B9VMSmFV9iLRpSFbu2TsK9z5cx12udmB16MoQariRO+OeIsjxDvddEjeqZsRT9vpVe
-	 OPD8VZ+4kTTPkCv/c9r4S8ITA9QNC+xtwTu90k0QqhKF7VcOn5qIpIXPt/Dr/mledo+Ud
-	 8o18by/QlgwIqxIPnPxEnZbfCcSKB9xUOpej9C22y655jUL+vuXcuiTdYf7HMF5VU/G4g
-	 0mDZaFVXQo2T8Hwhg6Yk1W9M7sOu9ZOcb2m7rgRXqbYHOeYYkZz+kIN4c3+NV1/QFFA==
+	t=1795080631;
+	b=tdokeE4b9iibOmNe7RFgHvgYgwr7Eq6QqKjry2ZzNvRt2mOhB+haS2vAwtV+1OUeA9Ze
+	 i+8NZIadBZHxaJbdB5HPRD/TqWc1MoygRM7hsHtv69n+uoCz5GArIj2QWLPHhdU6t9vIg
+	 gtozFYnlR3mF5DNNFNqdyiMMWej4k8ZSCwnL44hgLjL/9czJXk9pG4gJmcHBWFhUy/4Q7
+	 IkcisMvKnk5ptZyIezZMw16ldemCkqT2Mvq+lnoSoIgAJLcA3EbHqhucMRhjRK/U1+w9e
+	 wqxdxkpmP4b1fZwOJlLZKP65KvHi5d0+CX6vU3DAZW+oTwN3VZKastPW4oMjnDJBLbQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795080474;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795080631;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=L9TuTgBV46WPeIv/49f6jn6O879aub+pG2/2NN+M22U=;
-	b=sC0dXtdvBVyGJfWcjB/jyfPLmT/HRIHl+qdvusukhyzhV2dyzdeJR1bu/6e6A8ouirqK
-	 WtI3eVZlR53yrDi0lWLGeu/mOUQkGZUPf2dzIPMk3Hg968K7XW9PfGOp8Wu8Dyu28rDWj
-	 oUX/eO3DIomzBKo3Ep+NyikEnDlFGwpJWsczqox5s3dAqeJlIkXgQSkhvglFtzHLVCjLj
-	 p0uj/Nx/5SWjUo+fWKDjhu2xKUaI1ldKk+/Jyq65J7YU5jYr8eeqJVuYG6u2UjgFs5lpx
-	 Ua6g1K7WglOuEZqoSgA3z/xLuSM8ZQ1bCi13ZWdbS3Nwb9bMN5WxLC4gbI5jp/ZpIrg==
+	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=OZKL/sgPGSno1xBgS6lUfrtiTZf3oM3GGstyW6wEvp8=;
+	b=hOqqxXbpxepyeFq6Blq5Q/BmetM68hNui6UwJdii85hXhIhdMTuUAcMR2UVJLWp3H7bH
+	 AfIBjGjn2DNpNfVXi3fx/bC3TOU0XYX9/HeqPvy+MyD+y1u9EiZ6q/Y5K6MK4bU2fbhWn
+	 DrXJ/7MeEyX25oGbV9q415vubQXNK8KQ0Exa+lbNuvtkhTL2cvPA3yV50WdEOzDRPS/33
+	 vQhg6/o8uJYFMI8rA6HMOoisDYLdj/9mBaRdglYvjE8yDNhCMvrjxI4FlxCt8rXjs5YIF
+	 +kGcRLddT7E7Msw4d4zbZRGQ5ch+ZuI9LBhXGsq6+/HW1xHcGVMDlmrsutcmQtEyZOA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mzJ874e7;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GpGnvUfC;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33F79606A320;
-	Thu, 19 Nov 2026 09:27:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C711606A32C;
+	Thu, 19 Nov 2026 09:30:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mzJ874e7
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805C41F000C4;
-	Thu, 19 Nov 2026 09:27:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GpGnvUfC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38FC71F000C4;
+	Thu, 19 Nov 2026 09:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795080474;
-	bh=L9TuTgBV46WPeIv/49f6jn6O879aub+pG2/2NN+M22U=;
+	s=k20260515; t=1795080630;
+	bh=OZKL/sgPGSno1xBgS6lUfrtiTZf3oM3GGstyW6wEvp8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=mzJ874e7zZTdjbhwwU/Wjstjf7MatG5CDnNh0Dn/XvRhQI4LntSggthfGljP4TA3x
-	 r284FvXBjk4sOlkxxihA6sG3lT+2mQDUl+er8ml96q9inlrc1j8bJlntmPo5HX9yg9
-	 TWUxOAJ4N8LH0IPrki6RpOJ2bBVEOIp7OS10UrTHLDpNFYhmUXtpcCM/DNvWNXtrPC
-	 ChUFjVzAd6bvRSDNrnuv39mKDRMu7DbKh33HpabpXZzhqMJKd0vlKVMIsdrBhJV7pS
-	 QWKE2hx7wzks8E1PT5b9jvLsLIww9QISwcK/b55y0AemJxSJvIrf18yYBJfSbxt4xr
-	 2xUKhiP8wV6XA==
-Message-ID: <d4a3e229-ddb4-4c01-99b7-672b64cb71c8@kernel.org>
-Date: Thu, 19 Nov 2026 10:27:25 +0100
+	b=GpGnvUfC31nNCL2JQ4j9DepV7Ltts/PSsz0XWG6tP+/KcBGSWbyoyM3Wgapt10lDc
+	 QtXDYruyP9SeUaIGi8T5ddvFZry9b/xv9haNmk4IYHaFPiBTHsoWUbNFBwO7CEbXtQ
+	 kEXMyJjO1P78Qdb6WcUPn1Z5Qohy46Dw2kI5cchbIlYLseN2c0APdH6dAU1ePS/AVn
+	 tpQhpG9oFDqc60m/5fjOkmt7c9DLOE+VeVKn/9LHLVNsApHP9EY/jyygh2mpqMZwKW
+	 zZRmvXob6hYARlIvVF6Z4s3SLuYNdDJsuKFvisIyJt1uqq+aRW5v7J3jRNu18HjWgY
+	 OqvwDlu35tKIA==
+Message-ID: <cc270a65-985a-45ad-bfdf-b205cf9ff86b@kernel.org>
+Date: Thu, 19 Nov 2026 10:30:28 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,35 +58,34 @@ To: Siqi Chen <chensiqi@uniontech.com>, jagathjog1996@gmail.com,
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20261119070837.3844364-1-chensiqi@uniontech.com>
+Content-Language: en-US
 From: Joshua Crofts <crofts@kernel.org>
 In-Reply-To: <20261119070837.3844364-1-chensiqi@uniontech.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 19-Nov-26 8:08, Siqi Chen wrote:
->  drivers/iio/imu/bmi323/bmi323_i2c.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> i2c_transfer() returns the number of messages transferred or a negative
+> error code. The BMI323 I2C read path only checks for negative values and
+> maps all errors to -EIO.
 > 
-> diff --git a/drivers/iio/imu/bmi323/bmi323_i2c.c b/drivers/iio/imu/bmi323/bmi323_i2c.c
-> index e025c88c30b4..18f05f119961 100644
-> --- a/drivers/iio/imu/bmi323/bmi323_i2c.c
-> +++ b/drivers/iio/imu/bmi323/bmi323_i2c.c
-> @@ -40,8 +40,8 @@ static int bmi323_regmap_i2c_read(void *context, const void *reg_buf,
->  	msgs[1].flags = priv->i2c->flags | I2C_M_RD;
->  
->  	ret = i2c_transfer(priv->i2c->adapter, msgs, ARRAY_SIZE(msgs));
-> -	if (ret < 0)
-> -		return -EIO;
-> +	if (ret != ARRAY_SIZE(msgs))
-> +		return ret < 0 ? ret : -EIO;
-Better to do
+> If only the register-address message is transferred, the function copies
+> data from the receive buffer and reports success even though the read
+> message was not completed.
+> 
+> Require both messages to be transferred, preserve negative error codes,
+> and return -EIO for a short transfer.
+> 
+> OpenCode was used to identify the issue and draft the code and changelog.
+> 
+> Compile-tested with CONFIG_BMI323_I2C=m using:
+> 
+>   make O=/tmp/opencode/linux-build-bmi323 W=1 \
+>        drivers/iio/imu/bmi323/bmi323_i2c.o
+> 
+> No hardware or I2C fault-injection testing was performed.
 
-	if (ret < 0)
-		return ret;
-	if (ret != ARRAY_SIZE(msgs))
-		return -EIO;
-
-It improves readability.
+Also the testing info should go under the ---, as it's compile tested only.
 
 -- 
 Kind regards,
