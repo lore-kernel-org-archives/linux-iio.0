@@ -1,55 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795120445;
-	b=4jyx6w6tfCtWuw6B7UDx1gV+Vl7etaXJpUsGaCe7ZHW+1JyHytfwUJBsx8PCyHc4oh+t
-	 mxA/8Oe8IOEOTOJtyeE/B/VJRH5hzk3BxMRoTxXJzLOqLICyeUrS14xuX6eg8YETxt//D
-	 mUddMWvIfvmbedav5usnV6tzJ2UavjSIo4RoD8IXr8NOae5jYI6QuAaDspLfNEpbGo2RT
-	 SAB3/FFXOhO5CxdnwCjWgeM9aeTjNB+Q15NaF7dgefu3lgwigQQooKEqa4PM6R3jG8OyE
-	 B2R3Glv8H/2ACWCw26P/rfuUBur4LcfyWWBc/BmpRpPFFLpaP4jdPut1DVSgaMMA7kQ==
+	t=1795121633;
+	b=B+jO9Me7TZ1IprArvrpfMP+AoZ6kNdNE5mMSMqJQSp5hCz0A1AVkau4UqK0hvyw2IJ5M
+	 tS8BisxyB/Fdz380JeV8+dDnUOX2jHERGu3uGRtglqk0uAR1+447rvouG8/8+NEUxy75Q
+	 2M9KAgHMJ6axAZEdVOSy0I0qHCEJRr3LSD/IkAMwzWidN+ayGsNnc1L5fUgcyegFnrTZM
+	 N8xnP0YQ38Gr6K+gsm1pGqNXcXzosiWocHEqWISgIBVQgJuVIFZTatprWcer90ousxRVS
+	 BGz2vylrZTmqqJhYvmJOsHSVm6/JNqIEtBObYlgl6jbLB1N1mu7lbsVp7EkCnNFfh2Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795120445;
-	h=Received:DKIM-Signature:Date:From:To:cc:Subject:In-Reply-To:
-	 Message-ID:References:MIME-Version:Content-Type;
-	bh=Mzoq4npiXk3rD3rCKkfgNVYBODAsF8ohlXRBacGpMdo=;
-	b=EDY6/yhbHTIBRMeLSK4d4tdVdCq3w1dAh+QwhaeO2PZupxfamcdBvF8aWWydP7yNTWEu
-	 g4NfZtq/WZnlA3Q1Q98pnl8vqgiNsQlLleZrxaFMn8OHxAIS3gNtmjoFA6ZflB7DHtV6w
-	 +OfshiBngG/SWdbz+SYBdF7YkdeTGZGuqypJ4XQzDGfA9N6MWhzr4XKRtOW239gbJa+d0
-	 6Kxf+beuzqmqTdW3XO+v3jw5Kvr4CtdjaElv6ABHGv+avMWSLu0eEyg8EpARHVkKXpxQR
-	 /Ij7YjRLVfMZeRYFl5hq09wDUwpWKX4VN3fN6H/ogkBvx0mOsQXoEmkXgzHOBltQ8bQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795121633;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=/zyFtue2Pu27Krmvp0xJdBDSYvJgKl9E6IP3y2DGTns=;
+	b=x2/qHlY00K/gOuGbDzX0bBhypLcf9JB7Vc8JJrtJBS1oajosD3IhxT8rfjXuhYHldEBd
+	 B4JzltiLI4zMbruRu3p0cgJRAuiH/vLjSbvT7oY+imzFc3E9wln1tUcdjA9R/XF5/xbWG
+	 hWGV2hlJ9tM5SbGAg/d84EBXk88+NSkEKcY4xfQ1CJPvAlc5Z4Rw0UXeoAkbEudu+l6iq
+	 4SGxfxKqfsTweRhcs5uab31Zwf03etTOW+q/kXoJ+BvGb8lt981WJSf3hysqccSef9gih
+	 3zBQmhwKZCVUPppIA6aayNSx72Tx+qvfUNwqJuYVtVBTcu6gEKM9U4zBztnGZtJo1hQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jSypZVPJ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ICYjvFQN;
+	arc=none smtp.remote-ip=198.175.65.20
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89B8960A5BEA;
-	Thu, 19 Nov 2026 20:34:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 336FF606A337;
+	Thu, 19 Nov 2026 20:53:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 336FF606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jSypZVPJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3961F000C0;
-	Thu, 19 Nov 2026 20:34:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795120445;
-	bh=Mzoq4npiXk3rD3rCKkfgNVYBODAsF8ohlXRBacGpMdo=;
-	h=Date:From:To:cc:Subject:In-Reply-To:References;
-	b=jSypZVPJu+EbK3cjfM6+9/Z3SlL2mIsVOoxH4Jpjd/088Jt9LPtBT3O2TEGFv3gEC
-	 aQf3QQPILtRoXOFH9HLxxki23UWf44HJIX8gm4iQDpOM2Kqe9Hr7YORW2mBAyHNHou
-	 vo/jwJ+/22yN+2pQSmDpHxPOSCOS9Abh0gsInoJN8I8YvTT632OaIQJ5UGjM88Ix9I
-	 G8C6syo/niFas52Jd9XjXwda9j8pHUBPcdPJyJcoPULsYlO0AjSdTsnUi6QAqalIfs
-	 R6d+ka/gr9oEXFJQ8C6XKjtdJ0Pc0Iyw0RjLjfCyeV55b+NqA2XqSa0oyd0j8gQFN7
-	 ZPi2y5eC01WMg==
-Date: Thu, 19 Nov 2026 21:34:02 +0100 (CET)
-From: Jiri Kosina <jikos@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-cc: jic23@kernel.org, bentiss@kernel.org, linux-input@vger.kernel.org, 
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-    simeon@maryasin.name, lixu.zhang@intel.com, crofts@kernel.org
-Subject: Re: [PATCH v3 0/7] HID: sensor: custom: use-after-free after
- remove
-In-Reply-To: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
-Message-ID: <84031467-654s-q1nn-0sq7-rns4sq48962o@xreary.bet>
-References: <20261109195949.384888-1-srinivas.pandruvada@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ICYjvFQN
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795121633; x=1826657633;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hxtu6n6hjdoIS8OVHUKESNiwIThZujrt8bph7b+Fd9s=;
+  b=ICYjvFQNmGXLKT8lJzORh2ddjFYCo9FP4DQi6xU3/yJUAA/EVDMMwtnW
+   Z3/qGtN6wfv3hNHInCrrHBmZeBxwAtlvuf+8f6gz+X4HCtTiOKzpuVEfh
+   MmNVbUecTZS2dUj41oFJTL9H7XC2ItuUq1b5EAit17eO29kmAi4LQ/qz/
+   LyS82lTZ+XLfHSzYb6N387rBG8eHTySMRX3ZVI+l2mCOyDE8wvhpeLgJn
+   5+sKf+hr7thOFFFEYADMmchY7Vdqx2MX2K9KIabNiAhCp9lEJsB+zrwco
+   rkffzx4V4xW4Oy91L5VF2oDyJwuVsjH8LrZcxCp1q2ftOUFYujfRSSBbL
+   A==;
+X-CSE-ConnectionGUID: yH58P537RAK8fHpjDLf0tA==
+X-CSE-MsgGUID: oJqd7PZoRcezUIcnUG1/ag==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="4030860"
+X-IronPort-AV: E=Sophos;i="6.27,221,1787036400"; 
+   d="scan'208";a="4030860"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 12:53:53 -0800
+X-CSE-ConnectionGUID: hWs8F2miRDaxOkKoxt/sNQ==
+X-CSE-MsgGUID: XLcUR0atQcuadVeix+2yww==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,221,1787036400"; 
+   d="scan'208";a="12511975"
+Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.61])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2026 12:53:49 -0800
+Date: Thu, 19 Nov 2026 22:53:46 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Frank Li <Frank.li@oss.nxp.com>
+Cc: Fabio Estevam <festevam@gmail.com>, lee@kernel.org, maz@kernel.org,
+	andy@kernel.org, jic23@kernel.org, dmitry.torokhov@gmail.com,
+	linux-input@vger.kernel.org, mfd@lists.linux.dev,
+	linux-iio@vger.kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, crofts@kernel.org, devicetree@vger.kernel.org,
+	imx@lists.linux.dev,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+Subject: Re: [PATCH v5 4/4] mfd: mxs-lradc: Convert to devm_clk_get_enabled()
+Message-ID: <av9h2jvAwBPXdNmX@ashevche-desk.local>
+References: <20261119134041.16611-1-festevam@gmail.com>
+ <20261119134041.16611-4-festevam@gmail.com>
+ <av8gvfhOJ_2PdEMr@SMW015318>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -59,36 +85,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <av8gvfhOJ_2PdEMr@SMW015318>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 9 Nov 2026, Srinivas Pandruvada wrote:
+On Thu, Nov 19, 2026 at 10:15:57AM -0600, Frank Li wrote:
+> On Thu, Nov 19, 2026 at 10:40:41AM -0300, Fabio Estevam wrote:
 
-> This is v3 version with changes suggested by shashiko-bot and Jonathan.
-> Also rebased on top of 7.4-rc2 kernel release.
-> 
-> This patch series is essentially the same version that was sent to
-> Semyon for testing.
-> 
-> Following a feedback review conducted with various AI models, it was
-> suggested to break each change into individual, separate patches. This
-> makes perfect sense, which is why this series now contains more patches.
-> 
-> Additionally, these reviews identified issues in the adjacent probe and
-> removal code when active sensor instances are present. I have addressed
-> those issues in this version as well.
-> 
-> v3:
-> - Address comment on patch 6/7 by Shashiko on useless goto
-> and suggestion to remove sensor_hub_remove_callback() for
-> err_remove_dev_if.
-> - On patch 4/7 : HID: sensor: custom: Fix state lifetime during removal
-> Rename goto as suggested by Jonathan
-> 
-> For using guard(), need a follow up patch as that will be a cleanup.
+...
 
-Now in hid.git#for-7.4/upstream-fixes. Thanks,
+> >  			dev_err(&pdev->dev,
+> >  				"Unsupported number of touchscreen wires (%d)\n"
+> >  				, ts_wires);
+> > -			ret = -EINVAL;
+> > -			goto err_clk;
+> > +			return -EINVAL;
+
+^^^
+
+> >  	if (ret) {
+> >  		dev_err(dev, "Failed to add subdevices\n");
+> > -		goto err_clk;
+> > +		return ret;
+> 
+> If need respin, return dev_err_probe()
+
+And above and who knows how many more. That's why I haven't commented on this,
+if ever we do this, it most likely should be a separate change for the whole
+driver.
 
 -- 
-Jiri Kosina
-SUSE Labs
+With Best Regards,
+Andy Shevchenko
+
 
