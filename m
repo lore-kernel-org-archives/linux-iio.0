@@ -1,100 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.50
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795140658;
-	b=bSeax8Yhw1EJfwJtbudMbEaCeJlSrcYynVRfPebV8sHyVvQ1lePTqgcvvtpcscHTrSjO
-	 zjTAMwCkCg16+scxqMdlOwfMyhTl6tQDCycZeVN8BHIAPXFNLKfU5dVXA9JYdFvzDzkC8
-	 iwig0Jj9f0IYUdJhM1jhcpZBFFObJ3Y4+pSAKqM6nXEe3szvi6A9O/xiGRRP+58sSPhcu
-	 VsEdOriHDEKXcFfwpjga3LZkQ+Hx6BjBozB+kXxQhHqZY/+07USRtw04fr3zJ+DXu1yGo
-	 zQ7Cx4ThlUE8DXkkh/5y5ICjODupQdg1+CPyN9AxfyvuBlK1NvZYKMpBXZYE7LHj38w==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795140658;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795141057;
+	b=JHOwQHzXC67ourkhHt6j9Vejv1edr+dIdms2+Z6jwy7PpHk1D7WwJizvLYNUJJYPo1+B
+	 jS2m0Jl7ye8ZPgGuIj3e9lunLIjeMEx6RYMaIFbMx/ihbfOMXvVEdS/3mzDT5e7ydZMzi
+	 67+jLo1AOEUzMy66clb7m1U8y8hRhIas+H1uNWsMwKX/bdyt/TM4uqRWaL3ZjxpC14NUN
+	 i039o26/L0N6hPyjYdL6jIp944cED/JvcwBGARr/KY5u7QK4Ggom/GhSiJVlE2hU0Cikr
+	 2Bh9yNu1sOYDrJU41632YQfbl164QicoLCx4UubwazpMXgo8T8LqGEidDWsv7SVWtGQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795141057;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=BMxfy08tBRB54t7CG6GTXuPZbHw83JnbCHGykFB+1VA=;
-	b=GgeJAVUZXo7WBrlbrntqusbYi0e4/Qzb4cOGlplOJsCEciwnJL4a8tc2Tig0u9g1sgNa
-	 b3VBe6ZGgTBlkSqOdu/VOfkDZio6lZWANB5sz9Lo+7XkmgxMc1ak4zl3btX4wOknfjNZl
-	 C0sbZ69YzG343MzqmPS5Zi/JRlhNUQ6PIBMS5hFFqK88g1JclWWOEc2ZK7Dcy8DZmJrSp
-	 De988EXN4d/QGVoFcbtK4uofcM/cA4++WnzJtafa3zn81DfRX7kjrPyQUPtiJIErp0mxo
-	 7y+1u8Zaqnyd7bOq+gvXcmIx7BCQHJZYfH8q6Izo+OdO7DorPk8KT1uoSMFTUGsa8VA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=LsEFk0RgZI7tbU1ifZ0Ps2UawHHHZN4oS65HUeVABNI=;
+	b=YXLKgsE8JXVWa38GhcjxQuiwMAGEFtpXxVaYe++T3jzr9la3IhmZ0BYgBHPp8RQDVJee
+	 9Mx038DDLeWbYL1dobh552fUS3BYFjZm97XG1jPqrUKZdTwIw6yc2xeZvcYmf07vb2F1k
+	 L8wBWYLD3feCOqj18bjsp6qBRdrKtfluUCui6jGOS0iBL8ucn2ONHjMw1EJTV5cq2JdNe
+	 oEYkx36Sk/LKGzUEFq6V00LZaN4gwD5ibb9KRJ1S5EE/Cy8YoqQdk8MB+213n7qD8t/AX
+	 nHWhrjfzj+nqq2Wl7sKc1Zb2MMTFqR647I8/Yha72K/Ir2PZ4FsYxehsM0Tpol9uGZw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=none header.from=reflexrobotics.com;
 	spf=pass smtp.mailfrom=reflexrobotics.com;
-	dkim=pass header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=Wu94qisN;
-	arc=none smtp.remote-ip=74.125.82.50
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+	dkim=pass header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=pNipV384;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42E08606A334
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:10:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 42E08606A334
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9879606A332
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:17:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C9879606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reflexrobotics.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reflexrobotics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=Wu94qisN
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-14394530ec6so661747c88.1
-        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 18:10:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=pNipV384
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b8a52db5f9so441539a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 18:17:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795141055; cv=none;
+        d=google.com; s=arc-20260327;
+        b=bxjXNBwMEzpxG7+3YO7plXfMRdjsUIiwhaODNT/QmPqwiKfsDwKyZkHSPfjDeyXSrp
+         Gd/2J36yLWoC4olOR6TuOZ/XzilR4dK8kGf8Jb1tGTZH2hgxB9INNq3/iiqJRfY45JrR
+         DIIlEzAVCXQvcT/olfhqCpFumfMoMs6XZqCOWEAmplS0gLpq3M4Ux5BirhQFoFG+D9/u
+         vnXFVhZ0DN8UOcBuaIlSxpBxw8BZeEjkwmMjYMpvF5vy0v5rWWhTsVNIiPaoZCk0w2wX
+         Nk5aq1VvV6eR5c+HjA7ggWjLWTGMVmxA5FugvrmHF/FeRlKsk7xnO9V+mxeyuy8R7dsI
+         gIFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=LsEFk0RgZI7tbU1ifZ0Ps2UawHHHZN4oS65HUeVABNI=;
+        fh=yKpDLXwr5RJwADC4HfwqbVSsFvKxPaugRiZTQIL3JWg=;
+        b=hUQ59shWTuEdH5mELvHP/6diZgdGP6wWO7Z0OkCYKMdgAEfBOx0cWP6hTQcOURe9ri
+         qXnqIk1rUZgIUyC/TNpNvNdZEK8hUjrEVGwm0fQ8GHv0VXU209H+P3OD+ZcpB7rXfV7j
+         WqLg2g3tcdiczIe97GT7gQD1RZyT7X9oWHN6q0S5T82+KKPoq7zX8ML0qvjk4b1F0HIX
+         seU3MmNBa+AAeCp0Ygijp/ZAShGbpgwJeXdekv7fFxqO2vc7RtTTyOQlX1nEXX3Ovyd1
+         KE047s/LDWoH6BGwJHPdpTUtIqovjgmP4OJDAiuE0vOEVRPGF7BKb7p1Rsq0n6Cbw33/
+         bbNw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=reflexrobotics-com.20260707.gappssmtp.com; s=20260707; t=1795140657; x=1795745457; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+        d=reflexrobotics-com.20260707.gappssmtp.com; s=20260707; t=1795141055; x=1795745855; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=BMxfy08tBRB54t7CG6GTXuPZbHw83JnbCHGykFB+1VA=;
-        b=Wu94qisNlhaw02+tYIAnaGuz0WE/tnd05VOlJmPWp851mZWzfubxkusuExlwOOFYLk
-         Vwz1EnLY1iKOjrJIHs7cUfQc5Ce4RaBgRCFvQM9J1uNtC/Jumj1YNOg4HU9pHRBJ+Lk0
-         8rTp87CmKoYXfXHGebRyZthHKBZkwLWPKDG+zlNiW9GwYWna++HUi9fpYcU+WRgKdRE4
-         r+d1V2D9ng1YtB9/EhX0+v+JzORFvQiPLU3OmpaUFK0RLlDkJxB3orObaoHCSuSACe72
-         RQKeeaJTlhY/uuTOlXPf6fWWbo9THLtrf6YAbReoQupFFCaF3bMfDXeBZx6/C1PGky2W
-         rEbw==
+        bh=LsEFk0RgZI7tbU1ifZ0Ps2UawHHHZN4oS65HUeVABNI=;
+        b=pNipV384oD8IF+NFdRN2OVulhES77PY8nOPbxCEAtJQz8aTKNk+NW2jtiIqu3uRxm/
+         GL5vr2Bsd1QeN2Ee5+mJ1+tLQ/LEGa38auD2pEL5DCtnW91hFLy00yorEQfE4q7ntpcS
+         NSuMGAhpiKYkrjeQpFnZxqTTxI50lSKy9kM8kVWcrciqwHAqfkFBeoyAjh4ie8qOwO1a
+         5l1SYhubcA+fLUKExaZ02plnAxVk7afyxG20HtGP53xl8erBuEULaMBYKMf7x/yufhaT
+         U9ic+ngTSX0ucOLyTgjUbRZkyhRvm3Zmxk8Ytp1qGAaW3wsWDkHiKkAkMXo3Nf/1rpQE
+         1vdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795140657; x=1795745457;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1795141055; x=1795745855;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=BMxfy08tBRB54t7CG6GTXuPZbHw83JnbCHGykFB+1VA=;
-        b=FXcEe3JQxKE+q5JBC1AIGPtQ/GNSUuGEaVm6kWCKesY13WifTTCb2FsGrEM87sc6eI
-         gRQsH1IrDt5KDsmLDQF/QsOOYFHpSVYxuPb1XxscEbKcCJVXXKsw00gsQJ4cadt4yYMT
-         OrerjuojGGmvGJqIzdohiO7O67yCb3MC1YXYMqfepJpLcdrXS+31u35XB1Ki42e9gpqQ
-         cd+SxRMk5BxSKGd9Z4e6wLSWoaDYTdN/RNhWmU1Yl1my6aAxpDnZLajv8p5BgC797lYt
-         rq9CgBQV94BuSkuUVsqU6LLTFt4iOGsRWM4l+wc1sXBFjAGPWZcZtRK7IxS+Wv9L+qNg
-         vXvw==
-X-Forwarded-Encrypted: i=1; AL+hErGQc/w+fsGahAzCW9xNXXPQEh5uBbR34z4T+Dz0keknVYqfhGHtpp211Ag0wfIQUQ1N5DocG8r6vkw=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+Ui8YktxNxpL3DLSverNp1xjWL7011kAipjSPBfB1Me9dj7EjK
-	ZA57Rgvz05AzXl57HofHPiqQjn+Y0vgqHywjnwLGVMVSOz/5LegLmASYvnyTCxJdMKA=
-X-Gm-Gg: AYBFou0Mvyllf4e3aE6Dm1eRk5mU2J23mLmczKB6HfEU6nrAr17jE2MRbJl9oQ13ga0
-	rYRYKuXWDhL5gt/Og6d9maiHPeVAW+XfG0RD+3GVHzz9anT9W1RLMD4FFKEldxDBOG2EBb4UMAb
-	pr0NZbVWP8+JWUnOh7ECmjOC45OKKZCP+eZIuvlM6PpWFcXZlgJa2175kcgDDkp0P4ruoHTCXak
-	jN3pjGEbSxUPWmYd+qMR3QHaijbT96h1d9JomhP9j4wgA0s6yEHa37r/Cs2r/0Fh7dvWqEIzxfa
-	4pXtkY93kKogn8G8AUjdDJwjMkp6THFxRmimvxG/jATtumlHFNFkBNqDvWS6UmhZxjge2rnCWZD
-	+R475f+ZmlvaT8TJAAIiqXOC+fnzTp9XYw9JBLxfBebYkZtGzU31mWh8Hg25uK4lgs1VGoVrJ1w
-	dCGHZhLykT2Wr6oCrrIftyMfC2TIq6F8lpPwRMASdpIEUXxPxCnPzB76rR0cuTQ7Zb2ivsLbhFP
-	edWyuTzUeLeHSZ18d3Dkx0bOSu/oYOnhZQF3nvDGPtGJZ/yXV20GkFrN3JKIn6LtoHAktjsLqZY
-	dFQcb2XToVi8gAI/B9wmzOMkF/fftQh7RMqTMbqzxmdHwk457XatW+qfqpfT0ACFgjy6um8v55G
-	vNKQlD4LlXX1QoaZQzlKGmOI=
-X-Received: by 2002:a05:7022:f516:b0:143:26cf:8615 with SMTP id a92af1059eb24-1b5568ded03mr1243863c88.25.1795140657357;
-        Thu, 19 Nov 2026 18:10:57 -0800 (PST)
-Received: from localhost ([76.51.7.19])
-        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1b556831d45sm3572198c88.11.2026.11.19.18.10.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2026 18:10:56 -0800 (PST)
-From: Joe LeVeque <joe.l@reflexrobotics.com>
-To: jean-baptiste.maneyrol@tdk.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Joe LeVeque <joe.l@reflexrobotics.com>
-Subject: [PATCH 2/2] iio: imu: inv_icm42600: remove temperature sensor enable/disable
-Date: Thu, 19 Nov 2026 18:08:50 -0800
-Message-Id: <20261120020850.24318-3-joe.l@reflexrobotics.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261120020850.24318-1-joe.l@reflexrobotics.com>
-References: <20261120020850.24318-1-joe.l@reflexrobotics.com>
+        bh=LsEFk0RgZI7tbU1ifZ0Ps2UawHHHZN4oS65HUeVABNI=;
+        b=1UxIWlYz3s0edyLRpslqlTCVPzkh3uOfWbIOwMqcReQCDZAEHW5FpcjSYR41K8oWRP
+         TpaEJNJ4H9stNMMom+Bd69ZDYOMwFhZpkicTs6QSYvrSqw3w5GlPjTz6vHtZMzAjNm0a
+         o0sSmtiTMFHg59cnReworIWbt7DnHQpqOoEBFRAjCI7orNv00pRewuoBwgT3XcWr34aq
+         YKTUvSEJEVR/9UFwkANoYxrAjAf31CJvNUBv0h3HYCzGhNSqp1NQFQB4EOj9tuMrU6Gf
+         IXNq3nSqC+8DKgTmyoIlPbkefBKQNY2zRs6qnL2X9P5Z3M6vknkLmKUE922cyxd5D6p9
+         9cig==
+X-Forwarded-Encrypted: i=1; AL+hErFFao+t6dAIuOprbwNw2s8rfRPfLhbQJ3SFEAZPKS5wK/J72qMlvqRlmUNpKBnRye1QspwpQEQscgU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/vIjjYsjaTWjgOG55+e3xnRLvIWA5QpzQYfzNx8Gv60M28UJ/I
+	5uZWnb6204kVgPZcw/NOJnQFDnd8xwO8GMn4LutWTv+xOihi9q/Ezw5EI6LzD9eZhZri/DDmo+V
+	F8Y4rp7G2gm7plj9lzUyMWQJa7tuDaVT/WBquEAPaFQ==
+X-Gm-Gg: AZFdTZeedG1mUaCil0n0AmrNCfMmuwpAhHjJFro7/nOuzywxSo0ovM2CSwUn/oB7AXf
+	xvQLpILxQ80bwrOyXKCRbPrzbv/fO0w4HSxM6IkfhPtmxZCit9SRQf+1L74VFZBH49u21ehT4HD
+	wlDYgB/k5tFkHR9+ocxRYuzuBXr7mbQzEHJw/zq9xwXt4tS8/aYpmDgHVA9sNIB5xalDhCRTjiD
+	uI0PlS3SImqG9a2T62Kv/sNm/Odv7Z95ahBvJGoNOc4zk/zaCEiuv+zx2bbH7i/gSTsqD/HM38d
+	jV1914sqGr4RttPFOFfHTWRacSN/9qeInWRHdQoPQiwk0YvDgKrGKx0C62ARzgNU0sPxyVeEPvM
+	7PSFElsQETrn8NMx9d6wrTIPY6zMgWx6aXoFOEYFtCmm1i07nu0H6ZiZLu7jMcrmH+Djtduo9pM
+	oHTk+cdgl/U/jlI4JlvzYKyyBhbrUCuu1GuXo2MwhpVAt0YQZMow==
+X-Received: by 2002:a05:6402:134e:b0:6ba:1266:cd9c with SMTP id
+ 4fb4d7f45d1cf-6ba37d606d5mr697868a12.8.1795141054717; Thu, 19 Nov 2026
+ 18:17:34 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,357 +105,384 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CAJLMkXY6wS7ErVT5YUyp=c0TJDPmGePJiDua4MPw47V83JQ0Fw@mail.gmail.com>
+ <FR2P281MB310391F1880DC67B2FC446DBCE722@FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM>
+ <CAJLMkXYB9NjwN1ZxfkGPE=y2NESRc=ir7B80cVpVk=d-tyPoVw@mail.gmail.com>
+ <CAJLMkXYNpRWWqNbUn72J8p7Fqi1jCy4FC2fdAtjkzJ4eW_9r2Q@mail.gmail.com>
+ <FR2P281MB31032ED88B4637350921FB4CCE7A2@FR2P281MB3103.DEUP281.PROD.OUTLOOK.COM>
+ <CAJLMkXYYXjFwAZN9TwyD3vez1XCpCxuEtmye1vi=jdLSLt36xg@mail.gmail.com> <20261118232418.7fc702a8@jic23-hlaptop>
+In-Reply-To: <20261118232418.7fc702a8@jic23-hlaptop>
+From: Joe LeVeque <joe.l@reflexrobotics.com>
+Date: Thu, 19 Nov 2026 18:17:23 -0800
+X-Gm-Features: AclHuK_ZqDlOi_c2YfvFMwQwllJLwSI_aal4S2CIZh6wgAG6XpLXxgKaGezo6oA
+Message-ID: <CAJLMkXYfE25_Py4-JetnB6ZhhHowm8tps0WNm9pzY31Y_8duMA@mail.gmail.com>
+Subject: Re: iio: imu: inv_icm42600: large gyro offset with temperature sensor
+ disabled (ICM-42688-P)
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The driver turns the temperature sensor off (PWR_MGMT0.TEMP_DIS) whenever
-nothing has requested temperature data. With the temperature sensor
-disabled, gyro data is not temperature compensated internally. On an
-ICM-42688-P this shows up as a large, stable gyro offset at rest: about
--139, 379 and -229 LSB at +-2000 dps (8 to 23 dps), instead of under
-0.5 dps once the temperature sensor is enabled by a temperature read or
-a buffer with the temperature channel.
+I=E2=80=99ve sent the series implementing this (option 1, -EBUSY for idle
+temperature reads):
+https://lore.kernel.org/linux-iio/20261120020850.24318-1-joe.l@reflexroboti=
+cs.com/T/#t
 
-There is no benefit in disabling the temperature sensor, so remove the
-enable/disable handling and keep it always on: drop temp_en from the
-sensor configuration and the suspend state, the temp argument and
-TEMP_DIS handling from inv_icm42600_set_pwr_mgmt0(), the temperature
-startup delay, and inv_icm42600_set_temp_conf() with its callers. The
-temperature sensor now starts with the gyro or accel, whose startup
-delays are longer.
+Thanks for the guidance!
 
-Temperature reporting in the FIFO is still enabled and disabled with
-the buffer's temperature channel.
-
-Fixes: 31c24c1e93c3 ("iio: imu: inv_icm42600: add core of new inv_icm42600 driver")
-Suggested-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Signed-off-by: Joe LeVeque <joe.l@reflexrobotics.com>
----
- drivers/iio/imu/inv_icm42600/inv_icm42600.h   |  6 ---
- .../iio/imu/inv_icm42600/inv_icm42600_accel.c | 16 ++------
- .../imu/inv_icm42600/inv_icm42600_buffer.c    | 14 ++-----
- .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 37 ++++---------------
- .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 16 ++------
- .../iio/imu/inv_icm42600/inv_icm42600_temp.c  |  4 --
- 6 files changed, 18 insertions(+), 75 deletions(-)
-
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-index 3737e79dbcc1..e2b51f76198a 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -128,13 +128,11 @@ struct inv_icm42600_sensor_conf {
- struct inv_icm42600_conf {
- 	struct inv_icm42600_sensor_conf gyro;
- 	struct inv_icm42600_sensor_conf accel;
--	bool temp_en;
- };
- 
- struct inv_icm42600_suspended {
- 	enum inv_icm42600_sensor_mode gyro;
- 	enum inv_icm42600_sensor_mode accel;
--	bool temp;
- };
- 
- struct inv_icm42600_apex {
-@@ -441,7 +439,6 @@ struct inv_icm42600_sensor_state {
- #define INV_ICM42600_ACCEL_STARTUP_TIME_MS	20
- #define INV_ICM42600_GYRO_STARTUP_TIME_MS	60
- #define INV_ICM42600_GYRO_STOP_TIME_MS		150
--#define INV_ICM42600_TEMP_STARTUP_TIME_MS	14
- #define INV_ICM42600_SUSPEND_DELAY_MS		2000
- 
- typedef int (*inv_icm42600_bus_setup)(struct inv_icm42600_state *);
-@@ -464,9 +461,6 @@ int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
- 			       struct inv_icm42600_sensor_conf *conf,
- 			       unsigned int *sleep_ms);
- 
--int inv_icm42600_set_temp_conf(struct inv_icm42600_state *st, bool enable,
--			       unsigned int *sleep_ms);
--
- int inv_icm42600_enable_wom(struct inv_icm42600_state *st);
- int inv_icm42600_disable_wom(struct inv_icm42600_state *st);
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-index cc8c074777c9..71ec968ab8fe 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-@@ -229,37 +229,29 @@ static int inv_icm42600_accel_update_scan_mode(struct iio_dev *indio_dev,
- 	struct inv_icm42600_sensor_state *accel_st = iio_priv(indio_dev);
- 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
- 	unsigned int fifo_en = 0;
--	unsigned int sleep_temp = 0;
--	unsigned int sleep_accel = 0;
--	unsigned int sleep;
-+	unsigned int sleep = 0;
- 	int ret;
- 
- 	mutex_lock(&st->lock);
- 
--	if (*scan_mask & INV_ICM42600_SCAN_MASK_TEMP) {
--		/* enable temp sensor */
--		ret = inv_icm42600_set_temp_conf(st, true, &sleep_temp);
--		if (ret)
--			goto out_unlock;
-+	if (*scan_mask & INV_ICM42600_SCAN_MASK_TEMP)
- 		fifo_en |= INV_ICM42600_SENSOR_TEMP;
--	}
- 
- 	if (*scan_mask & INV_ICM42600_SCAN_MASK_ACCEL_3AXIS) {
- 		/* enable accel sensor */
- 		conf.mode = accel_st->power_mode;
- 		conf.filter = accel_st->filter;
--		ret = inv_icm42600_set_accel_conf(st, &conf, &sleep_accel);
-+		ret = inv_icm42600_set_accel_conf(st, &conf, &sleep);
- 		if (ret)
- 			goto out_unlock;
- 		fifo_en |= INV_ICM42600_SENSOR_ACCEL;
- 	}
- 
- 	/*
--	 * Sleep maximum stabilization time before enabling data in FIFO.
-+	 * Sleep stabilization time before enabling data in FIFO.
- 	 * We need to release the driver lock to not block gyro data processing.
- 	 * There is no possible race here since we are under IIO mutex locked.
- 	 */
--	sleep = max(sleep_accel, sleep_temp);
- 	if (sleep) {
- 		mutex_unlock(&st->lock);
- 		msleep(sleep);
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-index 7ecd7257921c..c946045c762f 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
-@@ -366,9 +366,7 @@ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
- 	unsigned int sensor;
- 	unsigned int *watermark;
- 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
--	unsigned int sleep_temp = 0;
--	unsigned int sleep_sensor = 0;
--	unsigned int sleep;
-+	unsigned int sleep = 0;
- 	int ret;
- 
- 	if (indio_dev == st->indio_gyro) {
-@@ -398,21 +396,15 @@ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
- 
- 	conf.mode = INV_ICM42600_SENSOR_MODE_OFF;
- 	if (sensor == INV_ICM42600_SENSOR_GYRO)
--		ret = inv_icm42600_set_gyro_conf(st, &conf, &sleep_sensor);
-+		ret = inv_icm42600_set_gyro_conf(st, &conf, &sleep);
- 	else if (!st->apex.on)
--		ret = inv_icm42600_set_accel_conf(st, &conf, &sleep_sensor);
-+		ret = inv_icm42600_set_accel_conf(st, &conf, &sleep);
- 	if (ret)
- 		goto out_unlock;
- 
--	/* if FIFO is off, turn temperature off */
--	if (!st->fifo.on)
--		ret = inv_icm42600_set_temp_conf(st, false, &sleep_temp);
--
- out_unlock:
- 	mutex_unlock(&st->lock);
- 
--	/* sleep maximum required time */
--	sleep = max(sleep_sensor, sleep_temp);
- 	if (sleep)
- 		msleep(sleep);
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index ccaf8ec468f9..5fa6bd2bcea6 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -123,7 +123,6 @@ static const struct inv_icm42600_conf inv_icm42600_default_conf = {
- 		.odr = INV_ICM42600_ODR_50HZ,
- 		.filter = INV_ICM42600_FILTER_BW_ODR_DIV_2,
- 	},
--	.temp_en = false,
- };
- 
- static const struct inv_icm42600_conf inv_icm42686_default_conf = {
-@@ -139,7 +138,6 @@ static const struct inv_icm42600_conf inv_icm42686_default_conf = {
- 		.odr = INV_ICM42600_ODR_50HZ,
- 		.filter = INV_ICM42600_FILTER_BW_ODR_DIV_2,
- 	},
--	.temp_en = false,
- };
- 
- static const struct inv_icm42600_hw inv_icm42600_hw[INV_CHIP_NB] = {
-@@ -228,38 +226,29 @@ u32 inv_icm42600_odr_to_period(enum inv_icm42600_odr odr)
- static int inv_icm42600_set_pwr_mgmt0(struct inv_icm42600_state *st,
- 				      enum inv_icm42600_sensor_mode gyro,
- 				      enum inv_icm42600_sensor_mode accel,
--				      bool temp, unsigned int *sleep_ms)
-+				      unsigned int *sleep_ms)
- {
- 	enum inv_icm42600_sensor_mode oldgyro = st->conf.gyro.mode;
- 	enum inv_icm42600_sensor_mode oldaccel = st->conf.accel.mode;
--	bool oldtemp = st->conf.temp_en;
- 	unsigned int sleepval;
- 	unsigned int val;
- 	int ret;
- 
- 	/* if nothing changed, exit */
--	if (gyro == oldgyro && accel == oldaccel && temp == oldtemp)
-+	if (gyro == oldgyro && accel == oldaccel)
- 		return 0;
- 
- 	val = INV_ICM42600_PWR_MGMT0_GYRO(gyro) |
- 	      INV_ICM42600_PWR_MGMT0_ACCEL(accel);
--	if (!temp)
--		val |= INV_ICM42600_PWR_MGMT0_TEMP_DIS;
- 	ret = regmap_write(st->map, INV_ICM42600_REG_PWR_MGMT0, val);
- 	if (ret)
- 		return ret;
- 
- 	st->conf.gyro.mode = gyro;
- 	st->conf.accel.mode = accel;
--	st->conf.temp_en = temp;
- 
- 	/* compute required wait time for sensors to stabilize */
- 	sleepval = 0;
--	/* temperature stabilization time */
--	if (temp && !oldtemp) {
--		if (sleepval < INV_ICM42600_TEMP_STARTUP_TIME_MS)
--			sleepval = INV_ICM42600_TEMP_STARTUP_TIME_MS;
--	}
- 	/* accel startup time */
- 	if (accel != oldaccel && oldaccel == INV_ICM42600_SENSOR_MODE_OFF) {
- 		/* block any register write for at least 200 µs */
-@@ -357,7 +346,7 @@ int inv_icm42600_set_accel_conf(struct inv_icm42600_state *st,
- 
- 	/* set PWR_MGMT0 register (accel sensor mode) */
- 	return inv_icm42600_set_pwr_mgmt0(st, st->conf.gyro.mode, conf->mode,
--					  st->conf.temp_en, sleep_ms);
-+					  sleep_ms);
- }
- 
- int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
-@@ -401,19 +390,11 @@ int inv_icm42600_set_gyro_conf(struct inv_icm42600_state *st,
- 
- 	/* set PWR_MGMT0 register (gyro sensor mode) */
- 	return inv_icm42600_set_pwr_mgmt0(st, conf->mode, st->conf.accel.mode,
--					  st->conf.temp_en, sleep_ms);
-+					  sleep_ms);
- 
- 	return 0;
- }
- 
--int inv_icm42600_set_temp_conf(struct inv_icm42600_state *st, bool enable,
--			       unsigned int *sleep_ms)
--{
--	return inv_icm42600_set_pwr_mgmt0(st, st->conf.gyro.mode,
--					  st->conf.accel.mode, enable,
--					  sleep_ms);
--}
--
- int inv_icm42600_enable_wom(struct inv_icm42600_state *st)
- {
- 	int ret;
-@@ -467,8 +448,6 @@ static int inv_icm42600_set_conf(struct inv_icm42600_state *st,
- 	/* set PWR_MGMT0 register (gyro & accel sensor mode, temp enabled) */
- 	val = INV_ICM42600_PWR_MGMT0_GYRO(conf->gyro.mode) |
- 	      INV_ICM42600_PWR_MGMT0_ACCEL(conf->accel.mode);
--	if (!conf->temp_en)
--		val |= INV_ICM42600_PWR_MGMT0_TEMP_DIS;
- 	ret = regmap_write(st->map, INV_ICM42600_REG_PWR_MGMT0, val);
- 	if (ret)
- 		return ret;
-@@ -841,7 +820,6 @@ static int inv_icm42600_suspend(struct device *dev)
- 
- 	st->suspended.gyro = st->conf.gyro.mode;
- 	st->suspended.accel = st->conf.accel.mode;
--	st->suspended.temp = st->conf.temp_en;
- 	if (pm_runtime_suspended(dev))
- 		return 0;
- 
-@@ -872,7 +850,7 @@ static int inv_icm42600_suspend(struct device *dev)
- 	}
- 
- 	ret = inv_icm42600_set_pwr_mgmt0(st, INV_ICM42600_SENSOR_MODE_OFF,
--					 accel_conf, false, NULL);
-+					 accel_conf, NULL);
- 	if (ret)
- 		return ret;
- 
-@@ -917,7 +895,7 @@ static int inv_icm42600_resume(struct device *dev)
- 	/* restore sensors state */
- 	ret = inv_icm42600_set_pwr_mgmt0(st, st->suspended.gyro,
- 					 st->suspended.accel,
--					 st->suspended.temp, NULL);
-+					 NULL);
- 	if (ret)
- 		return ret;
- 
-@@ -949,8 +927,7 @@ static int inv_icm42600_runtime_suspend(struct device *dev)
- 
- 	/* disable all sensors */
- 	ret = inv_icm42600_set_pwr_mgmt0(st, INV_ICM42600_SENSOR_MODE_OFF,
--					 INV_ICM42600_SENSOR_MODE_OFF, false,
--					 NULL);
-+					 INV_ICM42600_SENSOR_MODE_OFF, NULL);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-index 4e20d61d897b..eaa13013ba4b 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -102,36 +102,28 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
- 	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
- 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
- 	unsigned int fifo_en = 0;
--	unsigned int sleep_gyro = 0;
--	unsigned int sleep_temp = 0;
--	unsigned int sleep;
-+	unsigned int sleep = 0;
- 	int ret;
- 
- 	mutex_lock(&st->lock);
- 
--	if (*scan_mask & INV_ICM42600_SCAN_MASK_TEMP) {
--		/* enable temp sensor */
--		ret = inv_icm42600_set_temp_conf(st, true, &sleep_temp);
--		if (ret)
--			goto out_unlock;
-+	if (*scan_mask & INV_ICM42600_SCAN_MASK_TEMP)
- 		fifo_en |= INV_ICM42600_SENSOR_TEMP;
--	}
- 
- 	if (*scan_mask & INV_ICM42600_SCAN_MASK_GYRO_3AXIS) {
- 		/* enable gyro sensor */
- 		conf.mode = INV_ICM42600_SENSOR_MODE_LOW_NOISE;
--		ret = inv_icm42600_set_gyro_conf(st, &conf, &sleep_gyro);
-+		ret = inv_icm42600_set_gyro_conf(st, &conf, &sleep);
- 		if (ret)
- 			goto out_unlock;
- 		fifo_en |= INV_ICM42600_SENSOR_GYRO;
- 	}
- 
- 	/*
--	 * Sleep maximum stabilization time before enabling data in FIFO.
-+	 * Sleep stabilization time before enabling data in FIFO.
- 	 * We need to release the driver lock to not block accel data processing.
- 	 * There is no possible race here since we are under IIO mutex locked.
- 	 */
--	sleep = max(sleep_gyro, sleep_temp);
- 	if (sleep) {
- 		mutex_unlock(&st->lock);
- 		msleep(sleep);
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
-index b35706bb1c8f..d76459d048d7 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
-@@ -33,10 +33,6 @@ static int inv_icm42600_temp_read(struct inv_icm42600_state *st, s16 *temp)
- 		goto exit;
- 	}
- 
--	ret = inv_icm42600_set_temp_conf(st, true, NULL);
--	if (ret)
--		goto exit;
--
- 	raw = (__be16 *)&st->buffer[0];
- 	ret = regmap_bulk_read(st->map, INV_ICM42600_REG_TEMP_DATA, raw, sizeof(*raw));
- 	if (ret)
--- 
-2.34.1
-
+On Wed, Nov 18, 2026 at 3:24=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> On Wed, 18 Nov 2026 11:33:17 -0800
+> Joe LeVeque <joe.l@reflexrobotics.com> wrote:
+>
+> > Thank you both! Since the two of you lean different ways: Jean-Baptiste=
+'s point
+> > fits the case Jonathan mentioned, where the temperature is dominated by=
+ the
+> > sensor itself rather than the environment. Here it=E2=80=99s the die te=
+mperature, used
+> > for gyro/accel compensation. So I=E2=80=99d propose option 1 (return -E=
+BUSY when both
+> > gyro and accel are off), unless Jonathan prefers otherwise. I=E2=80=99l=
+l prepare it that
+> > way and send it once you=E2=80=99ve both confirmed.
+>
+> That's fine.
+>
+>
+> >
+> > Thanks again,
+> > Joe
+> >
+> > On Wed, Nov 18, 2026 at 10:00=E2=80=AFAM Jean-Baptiste Maneyrol
+> > <Jean-Baptiste.Maneyrol@tdk.com> wrote:
+> > >
+> > > >Hi Jean-Baptiste,
+> > > >
+> > > >I've implemented the change as you suggested (temperature sensor alw=
+ays
+> > > >on, temp_en, set_temp_conf() and the TEMP_DIS handling removed, FIFO
+> > > >temperature reporting unchanged) and tested it on my ICM-42688-P (SP=
+I,
+> > > >i.MX8M Plus, 6.6 kernel with the driver backported).
+> > > >
+> > > >The gyro reads correctly from the first read after boot (about 3, -6=
+, 0
+> > > >LSB at rest at +-2000 dps), including after runtime suspend, and the
+> > > >accel is unchanged.
+> > > >
+> > > >Regarding my question about temperature reads with both gyro and acc=
+el
+> > > >off, testing shows the data is not marked invalid. The temperature
+> > > >register retains the last measurement:
+> > > >
+> > > >  gyro and accel off (runtime suspended), 10 reads 1 s apart:
+> > > >    3598 3598 3598 3598 3598 3598 3598 3598 3598 3598  (about 52.2 C=
+)
+> > > >
+> > > >  gyro running (sysfs gyro read before each temp read), 10 reads:
+> > > >    4934 4956 4950 4958 4956 4958 4956 4958 4962 4958  (about 62.4 C=
+)
+> > > >
+> > > >  gyro started fresh each time (reads 3 s apart, autosuspend 2 s):
+> > > >    4952 4960 4964 4960 4956
+> > > >
+> > > >So with both sensors off, a temperature read returns a stale value, =
+here
+> > > >about 10 C out of date, instead of INV_ICM42600_DATA_INVALID. The in=
+valid
+> > > >value only seems to appear before the very first measurement after
+> > > >power-up. The fresh-start results show the first sample after a sens=
+or
+> > > >starts is current, so it appears the separate temperature startup de=
+lay is not
+> > > >needed.
+> > > >
+> > > >With the patch as it stands, inv_icm42600_temp_read() would therefor=
+e
+> > > >silently return stale data when both sensors are off. I see two opti=
+ons:
+> > > >
+> > > >1. Return -EBUSY based on the driver state: if both st->conf.gyro.mo=
+de
+> > > >   and st->conf.accel.mode are INV_ICM42600_SENSOR_MODE_OFF, return
+> > > >   -EBUSY without reading the register. Small, and maintains the doc=
+umented
+> > > >   behavior.
+> > > >
+> > > >2. Have the temperature read turn on the accel (for example in low
+> > > >   power mode), wait for its startup time, read the temperature, and=
+ let
+> > > >   runtime PM turn it off again. A current value is then always
+> > > >   returned, at the cost of a delay on that read.
+> > > >
+> > > >Which one would you prefer? I'm happy to implement either in the pat=
+ch.
+> > > >
+> > > >Thanks,
+> > > >Joe
+> > > >
+> > >
+> > > Hello Joe,
+> > >
+> > > I prefer #1, since it is consistent with actual behavior and it makes=
+ sense.
+> > > Returning temperature when all sensors are off doesn't have any sense=
+, since
+> > > the only usage is temperature compensation of accel/gyro data.
+> > >
+> > > This is the reason why the implementation was done like this. And #2 =
+is quite
+> > > complex for something that is completely useless.
+> > >
+> > > Thanks,
+> > > JB
+> > >
+> > > ________________________________________
+> > > From: Joe LeVeque <joe.l@reflexrobotics.com>
+> > > Sent: Friday, November 13, 2026 23:27
+> > > To: Jean-Baptiste Maneyrol
+> > > Cc: linux-iio@vger.kernel.org
+> > > Subject: Re: iio: imu: inv_icm42600: large gyro offset with temperatu=
+re sensor disabled (ICM-42688-P)
+> > >
+> > > Hi Jean-Baptiste, I've implemented the change as you suggested (tempe=
+rature sensor always on, temp_en, set_temp_conf() and the TEMP_DIS handling=
+ removed, FIFO temperature reporting unchanged) and tested it on my ICM-426=
+88-P (SPI, i.=E2=80=8AMX8M Plus,
+> > > ZjQcmQRYFpfptBannerStart
+> > > This Message Is From an External Sender
+> > > This message came from outside your organization.
+> > >
+> > > ZjQcmQRYFpfptBannerEnd
+> > >
+> > > Hi Jean-Baptiste,
+> > >
+> > > I've implemented the change as you suggested (temperature sensor alwa=
+ys
+> > > on, temp_en, set_temp_conf() and the TEMP_DIS handling removed, FIFO
+> > > temperature reporting unchanged) and tested it on my ICM-42688-P (SPI=
+,
+> > > i.MX8M Plus, 6.6 kernel with the driver backported).
+> > >
+> > > The gyro reads correctly from the first read after boot (about 3, -6,=
+ 0
+> > > LSB at rest at +-2000 dps), including after runtime suspend, and the
+> > > accel is unchanged.
+> > >
+> > > Regarding my question about temperature reads with both gyro and acce=
+l
+> > > off, testing shows the data is not marked invalid. The temperature
+> > > register retains the last measurement:
+> > >
+> > >   gyro and accel off (runtime suspended), 10 reads 1 s apart:
+> > >     3598 3598 3598 3598 3598 3598 3598 3598 3598 3598  (about 52.2 C)
+> > >
+> > >   gyro running (sysfs gyro read before each temp read), 10 reads:
+> > >     4934 4956 4950 4958 4956 4958 4956 4958 4962 4958  (about 62.4 C)
+> > >
+> > >   gyro started fresh each time (reads 3 s apart, autosuspend 2 s):
+> > >     4952 4960 4964 4960 4956
+> > >
+> > > So with both sensors off, a temperature read returns a stale value, h=
+ere
+> > > about 10 C out of date, instead of INV_ICM42600_DATA_INVALID. The inv=
+alid
+> > > value only seems to appear before the very first measurement after
+> > > power-up. The fresh-start results show the first sample after a senso=
+r
+> > > starts is current, so it appears the separate temperature startup del=
+ay is not
+> > > needed.
+> > >
+> > > With the patch as it stands, inv_icm42600_temp_read() would therefore
+> > > silently return stale data when both sensors are off. I see two optio=
+ns:
+> > >
+> > > 1. Return -EBUSY based on the driver state: if both st->conf.gyro.mod=
+e
+> > >    and st->conf.accel.mode are INV_ICM42600_SENSOR_MODE_OFF, return
+> > >    -EBUSY without reading the register. Small, and maintains the docu=
+mented
+> > >    behavior.
+> > >
+> > > 2. Have the temperature read turn on the accel (for example in low
+> > >    power mode), wait for its startup time, read the temperature, and =
+let
+> > >    runtime PM turn it off again. A current value is then always
+> > >    returned, at the cost of a delay on that read.
+> > >
+> > > Which one would you prefer? I'm happy to implement either in the patc=
+h.
+> > >
+> > > Thanks,
+> > > Joe
+> > >
+> > >
+> > > On Tue, Nov 10, 2026 at 2:28=E2=80=AFPM Joe LeVeque <joe.l@reflexrobo=
+tics.com> wrote:
+> > > >
+> > > > Hi Jean-Baptiste,
+> > > >
+> > > > Thank you for the quick reply and the explanation!
+> > > >
+> > > > > I think the best solution would be to completely delete the tempe=
+rature
+> > > > > enable/disable feature. [...]
+> > > > > Deleting all core temperature enable/disable and make temperature=
+ sensor
+> > > > > always working. And we keep enabling/disabling of temperature rep=
+orting in
+> > > > > the FIFO.
+> > > > >
+> > > > > Is that something you could work on?
+> > > >
+> > > > Yes, I'm happy to work on it. My plan is to remove `temp_en` from t=
+he sensor
+> > > > configuration and the suspend state, drop the `temp` argument and t=
+he `TEMP_DIS`
+> > > > handling from `inv_icm42600_set_pwr_mgmt0()`, remove
+> > > > `inv_icm42600_set_temp_conf()` and its callers in the temperature r=
+ead and
+> > > > buffer paths, and leave the FIFO temperature reporting as it is.
+> > > >
+> > > > Two questions before I begin:
+> > > >
+> > > > 1. Temperature read with both gyro and accel off: since the chip tu=
+rns the
+> > > >    temperature sensor off by itself in that case, I would keep the =
+current
+> > > >    behavior (invalid data reported as -EBUSY). Or would you prefer =
+a
+> > > >    temperature read to turn on one of the sensors itself?
+> > > >
+> > > > 2. Should this go in as a fix, with a "Fixes:" tag for stable backp=
+orts, or
+> > > >    as a regular change? It is larger than a typical stable fix. I'm=
+ planning
+> > > >    to base it on the IIO "togreg" branch unless you or Jonathan pre=
+fer
+> > > >    otherwise.
+> > > >
+> > > > I'll test it on my ICM-42688-P board (on a 6.6 kernel with the driv=
+er
+> > > > backported) and mention that in the patch.
+> > > >
+> > > > Thanks again,
+> > > > Joe
+> > > >
+> > > > On Tue, Nov 10, 2026 at 6:57=E2=80=AFAM Jean-Baptiste Maneyrol
+> > > > <Jean-Baptiste.Maneyrol@tdk.com> wrote:
+> > > > >
+> > > > > Hello Joe,
+> > > > >
+> > > > > it seems to be a good catch. With temperature sensor disabled, gy=
+ro values
+> > > > > are likely to not be temperature compensated internally.
+> > > > >
+> > > > > I think the best solution would be to completely delete the tempe=
+rature
+> > > > > enable/disable feature. There is really no interest in disabling =
+the
+> > > > > temperature sensor since it is really bad for the gyro values. An=
+d it
+> > > > > would simplify the driver that is already quite complex.
+> > > > >
+> > > > > Deleting all core temperature enable/disable and make temperature=
+ sensor
+> > > > > always working. And we keep enabling/disabling of temperature rep=
+orting in
+> > > > > the FIFO.
+> > > > >
+> > > > > Is that something you could work on?
+> > > > >
+> > > > > Thanks for your reporting,
+> > > > > JB
+> > > > >
+> > > > > >Hello Jean-Baptiste,
+> > > > > >
+> > > > > >I'm bringing up an ICM-42688-P (WHOAMI/ID 0x0007c1f2, on SPI) on=
+ a
+> > > > > >custom i.MX8M-Plus carrier board, and I'm seeing a gyro behavior=
+ I'd
+> > > > > >like to check with you before sending a patch.
+> > > > > >
+> > > > > >Setup: kernel 6.6 (NXP/CompuLab BSP) with the inv_icm42600 drive=
+r plus
+> > > > > >the upstream "add support of ICM-42688-P" commit backported. I'v=
+e
+> > > > > >compared the relevant code paths with current mainline and they =
+are
+> > > > > >unchanged there, so I believe mainline behaves the same way.
+> > > > > >
+> > > > > >Observation: right after boot, reading the gyro through sysfs
+> > > > > >(in_anglvel_*_raw, default +-2000 dps range) gives a large, very
+> > > > > >stable offset at rest:
+> > > > > >
+> > > > > >- Temperature sensor off (after boot):   x =3D -139, y =3D 379, =
+z =3D -229
+> > > > > >LSB  (about 8 to 23 dps)
+> > > > > >- After one read of in_temp_raw:         x =3D    9, y =3D  -7, =
+z =3D   -3
+> > > > > >LSB  (under 0.5 dps)
+> > > > > >
+> > > > > >The large offset does not decay with time or with spaced-out rea=
+ds. A
+> > > > > >single in_temp_raw read removes it, and it stays away as long as=
+ the
+> > > > > >temperature sensor remains enabled. Buffered capture with the
+> > > > > >temperature channel enabled also gives the small values. The pat=
+tern
+> > > > > >is reproducible across boots and power cycles.
+> > > > > >
+> > > > > >Looking at the driver, the default configuration has .temp_en =
+=3D false,
+> > > > > >inv_icm42600_set_pwr_mgmt0() sets PWR_MGMT0.TEMP_DIS whenever te=
+mp is
+> > > > > >false, and inv_icm42600_gyro_read_sensor() enables the gyro thro=
+ugh
+> > > > > >inv_icm42600_set_gyro_conf(), which passes the current
+> > > > > >st->conf.temp_en through unchanged. So after boot (or runtime
+> > > > > >suspend), the gyro runs with the temperature sensor disabled, wh=
+ich
+> > > > > >matches what I see.
+> > > > > >
+> > > > > >As a fix, I'm currently keeping the temperature sensor on whenev=
+er the
+> > > > > >gyro or accel is on, in inv_icm42600_set_pwr_mgmt0(), just befor=
+e the
+> > > > > >"if nothing changed" check:
+> > > > > >
+> > > > > >if (gyro !=3D INV_ICM42600_SENSOR_MODE_OFF ||
+> > > > > >   accel !=3D INV_ICM42600_SENSOR_MODE_OFF)
+> > > > > >temp =3D true;
+> > > > > >
+> > > > > >With this, the gyro reads correctly from the first read after bo=
+ot.
+> > > > > >
+> > > > > >My questions:
+> > > > > >
+> > > > > >1. Is this expected behavior for the ICM-42688-P (gyro offset
+> > > > > >compensation depending on the temperature sensor), and does it a=
+lso
+> > > > > >apply to the other chips supported by this driver?
+> > > > > >2. Would you accept a fix along these lines, or would you prefer=
+ it
+> > > > > >handled differently, for example only for some chips, or in the =
+gyro
+> > > > > >read path instead of inv_icm42600_set_pwr_mgmt0()?
+> > > > > >
+> > > > > >If this approach is acceptable, I'm happy to send a proper patch
+> > > > > >against the IIO tree. I can only test on 6.6 with the backported
+> > > > > >driver, and I would state that in the patch.
+> > > > > >
+> > > > > >Thank you for your time.
+> > > > > >
+> > > > > >Best regards,
+> > > > > >Joe LeVeque
+> > > > > >
+> > >
+> >
+>
