@@ -1,58 +1,103 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=162.243.164.118
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795193063;
-	b=FhjRAK5YmCgQkoeAvrcQFrcHkkIneTd+PuVsIHItjm/6wgpcEM0fm//ITpEfG9bW9A8b
-	 ExXRO2aRx9UzenUa0Ll/ZDAy9HvdX/M5z704Z3avkM0Qoabk8wFzhORNoFoLduX2L6/Qo
-	 QIE+I/a80t3FmhfQuornLzVNHdidbJeLB8I3uRBjV0WfX7dD16WgoOt8oUKDZ61xUyZ+A
-	 y1Y8h/+U3FoK2kC0a5kpUPtFacOFQ85a3yZZHERyjqbwMTmi0HeVfp3rtVDf4o7sonp6H
-	 PaSfFc6s1/RlI8j2Unwz8XOxlGIYG3dVYIdRjNcaNmLnR49fH4ksHWANxy4jtyD4fqg==
+	t=1795194899;
+	b=IqF56bjurr1cDOkYqRQxQjMOaAHN+AyN1aufRxQrnExFaGsWJpj6YyUQiQrvLRt1zroP
+	 2CeLYWlkbVa6PkoxZwqAFOC4zae/CrogE91n7UC/xZd5A4YDYdFgBqOsKtSqQUMM/+5FD
+	 G05F/jQP6s1yjau7RDKCFH6mBchoJk15YipB/OeaPHqbJgQLeBFEAqwq1ocbjIx1YQ4S9
+	 Sfv+K0lpSxAimHJtZa6Y37OBezwz8iM2y4SlEC48NQ9bYED8yzTFQZqH2o4sq0fEzq/kd
+	 zwshZhQ4CStA34QQ+jMY895N/q3am+JMp0j6McmPWvfn7XmSaT/y3zFE2oCeOr3OkkQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795193063;
-	h=DMARC-Filter:DKIM-Signature:Received:From:To:Cc:Subject:Date:
-	 Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:X-CM-TRANSID:X-Coremail-Antispam:
-	 X-CM-SenderInfo;
-	bh=FuLu2+fMG1j9rQrc9nXEfPdssX85+2pyJ3lybGhChTU=;
-	b=voycZw6DxVDGGHNaxemljm5XXCD5y9jxzS9DSIKUS4ADal3OoufA/uDQuSq+jzZUpdcx
-	 ouohVC39rgenKV6ZNYNtBkAMxuP0gP5EGcM0zG13Wyap/e7+Ns6HJUG1/RmXbV7/cs0Ha
-	 nrxnlpW3NvLHK5Xfn9Y1/WsMWQ82dw7/66iQTfc+MlYNv0MbO2JKqHEztNsg4TYiGmIYt
-	 k07dSMcth5NXX89DFLSLItK1iwnnVSb0n0Het/G8zvChIf86kfrpIVhToXV6hJPFRGs0w
-	 z84VpFzq9LViB9dwhVcgY1BVPZ9CwkPbjJYUadkPsOq0iaPmaunffCWPI064XA4tqYg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795194899;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:Content-Transfer-Encoding:MIME-Version;
+	bh=uSFncaokGA+ftB76Em9/lA6Qac26fTHzjO+Cdt7Pka0=;
+	b=Bvz+azOxjuGoGiYMrgsUfRSAUNIdHDSeBznCPvxR3/XsRsm9t+OTRjYl6kZH5C9oZsKl
+	 txW/ZRBmsF6FCeh0eiDj019MkDMrZowPLWf4bKNLczz8WVwiIAKK+EKCZabKWabMtbHC6
+	 kaMmV78/2eRQ1M7xYs7CIz/vmWUP6RE1K9ZUWplwRlihrOBk87zjIsetx24cTCT7qxvFg
+	 v3hSErWHNmmBFkOc2bEUlGc3IECu/00v+LPBr2PkV6NEQop0H9GM1lzXCMmiypgw3W+8t
+	 9e+ippYkxlOEh/xc6U8Yp8chrI4HOUMAI6i4xX1loBn6f5eH6gkTbTqsbIMbBdQNW/Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=stu.xidian.edu.cn;
-	spf=pass smtp.mailfrom=stu.xidian.edu.cn;
-	arc=none smtp.remote-ip=162.243.164.118
-Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD75C606A604;
-	Fri, 20 Nov 2026 16:44:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DD75C606A604
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=stu.xidian.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=stu.xidian.edu.cn
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YpICBR9+;
+	arc=none smtp.remote-ip=209.85.210.170
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DB3C60A2630
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 17:14:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0DB3C60A2630
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YpICBR9+
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-8b67f25e6e1so656988b3a.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 09:14:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=stu.xidian.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-	Message-Id:In-Reply-To:References:MIME-Version:
-	Content-Transfer-Encoding; bh=FuLu2+fMG1j9rQrc9nXEfPdssX85+2pyJ3
-	lybGhChTU=; b=D878DwE4R7woQcKC1tVUj9Lv4kx0Ker9GcGZ/0kgW9l96GvdwA
-	p05UB+lzVD/WqG1Tyqn+eEA+LqfSY78ANMR7lcueDsqQCUJ57Vk7AJV9mbk5Rtix
-	40AAYudisjlZGWnI37K6OY9pfwsMq9j+H0sRDEnviaTShXECf7nXgFjdA=
-Received: from user-virtual-machine.localdomain (unknown [113.200.174.41])
-	by hzbj-edu-front-2.icoremail.net (Coremail) with UTF8SMTPA id BLQMCkB2vwTUeABrJ6_0AQ--.6051S2;
-	Sat, 21 Nov 2026 00:44:05 +0800 (CST)
-From: YuanZhe Liu <25031212351@stu.xidian.edu.cn>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Bin Yu <byu@xidian.edu.cn>,
-	Cheng Wen <wencheng@xidian.edu.cn>
-Subject: [PATCH v2] iio: buffer: kfifo: reject lengths exceeding the kmalloc limit
-Date: Sat, 21 Nov 2026 00:44:03 +0800
-Message-Id: <20261120164403.5691-1-25031212351@stu.xidian.edu.cn>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <awBz8LVSYVBFOANe@ashevche-desk.local>
-References: <awBz8LVSYVBFOANe@ashevche-desk.local>
+        d=gmail.com; s=20260707; t=1795194898; x=1795799698; darn=vger.kernel.org;
+        h=mime-version:content-transfer-encoding:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=uSFncaokGA+ftB76Em9/lA6Qac26fTHzjO+Cdt7Pka0=;
+        b=YpICBR9+zI5srP1RRqUoioL9FL9gvT5zzQ5aQACKqfCv4O6iZUlGEOr1nSDtAf3aY6
+         g/clZMxNmMPyAqVEyi4vbyxH72c0j24U2r3ZQGd0guJCMAWbw7wuXZJYS5nrrLC4SKxy
+         caYboHGvEPQeXf0Kyw2LdrTEfeNt6/fEzayFhn0z8/unH7h/r8tUG1m00l9sb6lMlMC7
+         lsbLghi0ZqXOA25PNpgtBv8QlIidmzovt1PiE2vxDeueUsPYyDm/BEhDL3lryMZs3uth
+         5uYH9GW/AG7sNCPLzjCmXulneFV493Bz0nuLqisXyBtsJfZhaAb65ABQNBMdNbzQWVFF
+         LdYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795194898; x=1795799698;
+        h=mime-version:content-transfer-encoding:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=uSFncaokGA+ftB76Em9/lA6Qac26fTHzjO+Cdt7Pka0=;
+        b=eIX7SopabdjG62cXUuMAZUz4BLeLI31U2+wWnDtcpwquhgR5NSgzbifC0jr8PysIt+
+         kQ9MdRCH15Unj0hUFcQjjjcVfpEwagX7CGA8zOZVRMFD+ZjAZNH/iyk206BKWtHZvvDC
+         sPxYlYQ7hUeEZZ4L3rxdvoLmiervpczsrhrQ1VSTx4uTjuvZPHdIyhQ2Q4ZLnyWi1NxL
+         SJQ3ZGo0y1tXb/xRlPUpkT7RZ1yVqBEjOzOoKXkidoUV8A2HRdTOHXtbULs1KOB2E2aU
+         tcGRqNIaJhnRRiaVC1XWd3ByPJEzM3RjXUyLRcy/JIM0ebA2UsRP63i2xqV5g5xO87dZ
+         hDoQ==
+X-Forwarded-Encrypted: i=1; AL+hErE24YbsFirMzGCQh8UtwbvvDdlghQnagGEzPQLRvwoHTT3JBdpcCA7a7wosC3gjjLqDVvutbEjO2TY=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/cbqparFQv0ki7lp2lTh5qjkSdRTp8vAtpWUXviRVPs26p/mU1
+	C64Guipzm1FrSxNVL947shaWo6ObDMO4KpxGjNZ4FvSASbogQAwzGD+ceoJ4yQ22
+X-Gm-Gg: AYBFou1YP/CCyV1Us7OsLNCEwQcelp2IzOlZCavb0HdQh+WdZ/U7u+7RN7MgJxFFuTZ
+	9gDKG/viHff8/kVA06j3uW8TNNWXLg/jZUFbOh+DjqlO0TJ0/ypLSbSKEHBhtefWPgOJWZeAEq+
+	ZbwQU59/CgSUxptYAIfvkL3f6Jqk1474bpnGNH2Udn24TWOa41AGxGIb6bMRiLaGjn+qCldD2Un
+	arpR0dtZb0sENuBLdVo/XuN+5zF89lEAP6ZxDILlHw2ybi3LClfMJVN0GCj9SS+mJMjvOxGNNYr
+	aJnnG5gRWowuyvqDiVIWOVjt5esnkzavCS/5W8uBZpyrfCrrNFS9t5+xG5WQikthspcUtG1GE9M
+	+jiuh0Q+vm8gyDipOTxTmLRjTPH+4a5KD2SZZ0cq5tK/1Oo1Bblw4KZ/jiH4gGbMEvW1WXLqDqh
+	ea6ODtZOOqKPi2GTeawqxJWxtKswiRxm+PJoBo8BwP3pcabLKt2IyDyGJOb8LFLpZvsQfExIFSD
+	zqYhnlkEE5PvAmOVjTqeMlizVglM9cISey7FW0D11u3YoJptCh9DyvgcTm30QoafL4UIwbYchgO
+	MvR8gXod8NXRnOBn8hnMKIPdSnnpHjeUM0EkKuAWud3Ca0gQ79gHUw==
+X-Received: by 2002:a05:6a00:b48:b0:886:5f48:3fca with SMTP id d2e1a72fcca58-8c87cb4c02amr3644014b3a.37.1795194898216;
+        Fri, 20 Nov 2026 09:14:58 -0800 (PST)
+Received: from DESKTOP-UCPRL76.localdomain ([113.200.174.114])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c872e457d1sm1718377b3a.30.2026.11.20.09.14.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2026 09:14:57 -0800 (PST)
+From: Zheng Shuhao <viennaoffh@gmail.com>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ Benjamin Tissoires <bentiss@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>,
+ syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com,
+ Zhang Lixu <lixu.zhang@intel.com>
+Subject:
+ Re: [PATCH v2] HID: sensor-hub: Avoid holding spinlock across child iteration
+Date: Sat, 21 Nov 2026 01:05:54 +0800
+Message-ID: <179519435494.24396.10633733692339086433@viennaoffh.gmail.com>
+In-Reply-To: <0165ee623890e4d3778390e46ad955956c512812.camel@linux.intel.com>
+References: <1795161418.hid-sensor-hub@viennaoffh.gmail.com>
+ <20261120135005.566-1-viennaoffh@gmail.com>
+ <573f3eb75601c17d6e766fc47a7cce1bc2274998.camel@linux.intel.com>
+ <0165ee623890e4d3778390e46ad955956c512812.camel@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -62,82 +107,157 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:BLQMCkB2vwTUeABrJ6_0AQ--.6051S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxXFWfZF1DKrWxuFyDCFyrXrb_yoW5GFykpr
-	W3K3WjyrZrXFnrKw1UAw43ta4rXws3Xas8GayfX345Zr45Xan5ua4qkrWrZr18Ar1F93W7
-	tF9xKFWrWr1UAaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUU9Ib7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xII
-	jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWUJVW8JwA2z4x0Y4vEx4
-	A2jsIEc7CjxVAFwI0_Gr0_Gr1UM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x2
-	0xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15Mc
-	Ij6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41l
-	c7CjxVAaw2AFwI0_JF0_Jw1lc2xSY4AK67AK6r1l42xK82IYc2Ij64vIr41l4I8I3I0E4I
-	kC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWU
-	WwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr
-	0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWU
-	JVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJb
-	IYCTnIWIevJa73UjIFyTuYvjxUs1xRUUUUU
-X-CM-SenderInfo: ysvqjiysrsjkur6v33wo0lvxldqovvfxof0/1tbiAQUDD2sAYlgUOwABs3
 
-__iio_allocate_kfifo() only rejects lengths that would overflow an
-unsigned int after kfifo rounds them up to the next power of two, but
-the byte size handed to __kfifo_alloc() can still be beyond what
-kmalloc() can serve.
+ > In reality this can't happen as the hid_hw_close() and hid_hw_stop()
+> is called before, so there can't be any raw_event.
 
-The kfifo buffer is allocated with kmalloc(), which is limited to
-KMALLOC_MAX_SIZE.  A larger request has an allocation order above
-MAX_PAGE_ORDER, so the page allocator's order sanity check fires and
-enabling the buffer ends with a WARNING instead of a clean error.
+It might not be reachable after hid_hw_stop(). I may have misunderstood the
+lockdep report and overstated this as a possible deadlock. Sorry.
 
-The buffer length is set through buffer/length, which accepts any value
-up to UINT_MAX.  With the voltage and timestamp scan channels enabled,
-a length of 262349 makes the rounded up size exceed KMALLOC_MAX_SIZE
-and triggers the warning on buffer/enable.
+> How come this is possible? The HID sensor hub is only deleting its own
+> children. Can you give an example here?
 
-Reject lengths whose rounded up size does not fit into KMALLOC_MAX_SIZE
-so that enabling the buffer fails with -EINVAL.  This bound is stricter
-than the unsigned int overflow check it replaces, because
-KMALLOC_MAX_SIZE is far below UINT_MAX, so that check is removed.
+With CONFIG_HID_BATTERY_STRENGTH=y, this UHID device creates a Sensor Hub and
+a Joystick battery. The HID input layer registers the battery power supply as
+a child of the HID device, without platform_data.
 
-Co-developed-by: Bin Yu <byu@xidian.edu.cn>
-Signed-off-by: Bin Yu <byu@xidian.edu.cn>
-Co-developed-by: Cheng Wen <wencheng@xidian.edu.cn>
-Signed-off-by: Cheng Wen <wencheng@xidian.edu.cn>
-Signed-off-by: YuanZhe Liu <25031212351@stu.xidian.edu.cn>
----
-v2:
-- Drop the unsigned int overflow check.  It is subsumed by the new
-  KMALLOC_MAX_SIZE bound: a length that would overflow the kfifo
-  element counter exceeds KMALLOC_MAX_SIZE as well (Andy Shevchenko).
----
- drivers/iio/buffer/kfifo_buf.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+With the unpatched hid-sensor-hub module, UHID_DESTROY triggers a KASAN
+NULL-pointer dereference in sensor_hub_finalize_pending_fn():
 
-diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
-index b67ea6468226..65906dfffc04 100644
---- a/drivers/iio/buffer/kfifo_buf.c
-+++ b/drivers/iio/buffer/kfifo_buf.c
-@@ -29,10 +29,14 @@ static inline int __iio_allocate_kfifo(struct iio_kfifo *buf,
- 		return -EINVAL;
- 
- 	/*
--	 * Make sure we don't overflow an unsigned int after kfifo rounds up to
--	 * the next power of 2.
-+	 * The kfifo memory is allocated with kmalloc(), which cannot serve
-+	 * more than KMALLOC_MAX_SIZE.  A larger request needs an allocation
-+	 * order above MAX_PAGE_ORDER and is refused by the page allocator
-+	 * with a warning.  KMALLOC_MAX_SIZE is far below UINT_MAX, so this
-+	 * also keeps the element count rounded up by kfifo within an
-+	 * unsigned int.
- 	 */
--	if (roundup_pow_of_two(length) > UINT_MAX / bytes_per_datum)
-+	if (roundup_pow_of_two(length) > KMALLOC_MAX_SIZE / bytes_per_datum)
- 		return -EINVAL;
- 
- 	return __kfifo_alloc((struct __kfifo *)&buf->kf, length,
--- 
-2.34.1
+  KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+  RIP: sensor_hub_finalize_pending_fn+0x44/0x65 [hid_sensor_hub]
+  Call trace: device_for_each_child -> sensor_hub_remove -> hid_device_remove
+              -> hid_destroy_device -> uhid_dev_destroy -> uhid_char_write
 
+The reproducer is below:
+
+#define _GNU_SOURCE
+#include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <linux/input.h>
+#include <linux/uhid.h>
+#include <poll.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+static const unsigned char sensor_battery_rdesc[] = {
+	0x05, 0x20,       /* Usage Page (Sensors) */
+	0x09, 0x10,       /* Usage (Sensor Hub) */
+	0xa1, 0x01,       /* Collection (Application) */
+	0xc0,             /* End Collection */
+	0x05, 0x01,       /* Usage Page (Generic Desktop) */
+	0x09, 0x04,       /* Usage (Joystick) */
+	0xa1, 0x01,       /* Collection (Application) */
+	0x05, 0x06,       /* Usage Page (Generic Device Controls) */
+	0x09, 0x20,       /* Usage (Battery Strength) */
+	0x15, 0x00,       /* Logical Minimum (0) */
+	0x25, 0x64,       /* Logical Maximum (100) */
+	0x75, 0x08,       /* Report Size (8) */
+	0x95, 0x01,       /* Report Count (1) */
+	0x81, 0x02,       /* Input (Data, Variable, Absolute) */
+	0xc0,             /* End Collection */
+};
+
+static int send_event(int fd, struct uhid_event *event)
+{
+	ssize_t written = write(fd, event, sizeof(*event));
+
+	if (written == sizeof(*event))
+		return 0;
+	if (written < 0)
+		perror("write /dev/uhid");
+	else
+		fprintf(stderr, "short UHID write: %zd\n", written);
+	return -1;
+}
+
+static bool hid_battery_exists(void)
+{
+	static const char prefix[] = "hid-0003:1234:5678.";
+	DIR *dir = opendir("/sys/class/power_supply");
+	struct dirent *entry;
+	bool found = false;
+
+	if (!dir)
+		return false;
+	while ((entry = readdir(dir))) {
+		if (!strncmp(entry->d_name, prefix, sizeof(prefix) - 1)) {
+			found = true;
+			break;
+		}
+	}
+	closedir(dir);
+	return found;
+}
+
+int main(void)
+{
+	struct uhid_event event = { 0 };
+	struct pollfd pfd;
+	int fd, attempt;
+	bool started = false;
+	bool battery_found = false;
+
+	fd = open("/dev/uhid", O_RDWR | O_CLOEXEC);
+	if (fd < 0) {
+		perror("open /dev/uhid");
+		return 1;
+	}
+
+	event.type = UHID_CREATE2;
+	strcpy((char *)event.u.create2.name, "sensor-hub-battery-null-test");
+	strcpy((char *)event.u.create2.phys, "hid-null-test");
+	event.u.create2.rd_size = sizeof(sensor_battery_rdesc);
+	event.u.create2.bus = BUS_USB;
+	event.u.create2.vendor = 0x1234;
+	event.u.create2.product = 0x5678;
+	memcpy(event.u.create2.rd_data, sensor_battery_rdesc,
+	       sizeof(sensor_battery_rdesc));
+	if (send_event(fd, &event))
+		goto out_close;
+
+	pfd.fd = fd;
+	pfd.events = POLLIN;
+	if (poll(&pfd, 1, 5000) <= 0) {
+		fprintf(stderr, "timed out waiting for UHID_START\n");
+		goto out_destroy;
+	}
+	memset(&event, 0, sizeof(event));
+	if (read(fd, &event, sizeof(event)) != sizeof(event)) {
+		perror("read UHID event");
+		goto out_destroy;
+	}
+	started = event.type == UHID_START;
+	if (!started) {
+		fprintf(stderr, "unexpected UHID event: %u\n", event.type);
+		goto out_destroy;
+	}
+
+	for (attempt = 0; attempt < 50 && !hid_battery_exists(); attempt++)
+		usleep(100000);
+	if (!hid_battery_exists()) {
+		fprintf(stderr, "HID battery power-supply child was not created\n");
+		goto out_destroy;
+	}
+	battery_found = true;
+	puts("HID battery power-supply child created");
+
+out_destroy:
+	memset(&event, 0, sizeof(event));
+	event.type = UHID_DESTROY;
+	if (send_event(fd, &event))
+		goto out_close;
+	usleep(300000);
+	if (!started)
+		goto out_close;
+	puts("UHID device destroyed without userspace error");
+	close(fd);
+	return battery_found ? 0 : 1;
+
+out_close:
+	close(fd);
+	return 1;
+}
