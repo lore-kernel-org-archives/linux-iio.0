@@ -1,65 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=18.194.254.142
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.59.177.22
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795141371;
-	b=Uu8V3Rfsc51crDhkC8/iLt5Xjho6uYgAUMo4rgSLnQcOpL1K+E+/g83hAvvLj2LxkFCI
-	 UYte/XWrn/9RHuRDUGbyXpJOoIBdGYB28KPOxkVX/OOgUcUpMDRaeJTdRNKxzC3ZC73hl
-	 dUjpY6Xwf9b/xi3DrCF8mnMgjxgmE610ziOasOmrV9nMA4NOUjtrHlqS6D5qPAFIxA1Ym
-	 U6cDj0cgCBZ3O+s4lOo7zjQGaulEeNHcS8WAIGhVooJKZurJL6RQP/5lE0HSmXOjw4p42
-	 F2LrgZn4XV+A4nMo8cksAqoye5azU2WEUf8s1i0bs89jB/8hBYdOuvtMUQqfNNtIRzw==
+	t=1795143525;
+	b=4fSNARwxK6qVzXE78DboRdMiRDG9h9JRv7qDRrdgZ0krP9NNQ0tZQlU5U3OfMLJrSOAQ
+	 K9nnmMwuJU6HHtWzNes+3XRd0JtknWa4046jT2IwQZ1qH31/Nxm91qKeo8SEOBYxitk4F
+	 j8gS4A8ch1cx/hCYyCYz+fHWrQJO4JZpSrFWtD9igDh2YeY+aM6RSrEW60xIeEsnG++c+
+	 9heuZNwtGtne3y8i9ARyo6vCzRLcQlIatqnia7mB3mb2ioemeK90SNpdDZJSD7qH2C/me
+	 5tto82SLNLeNtLyoC/nR6xm0bwfCjLRMlCp58E1hx22uUrniZ0BrBw/KdFR4RDFbWIA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795141371;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795143525;
 	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
 	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-Id:
 	 X-Mailer:MIME-Version:Content-Transfer-Encoding:X-QQ-SENDSIZE:
 	 Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=P/zNpLrTOtmqClHIZAY0EmFG09sH9ouzQujH5k/amEU=;
-	b=SHlwrGM5Ac9Qz+kmehDD4oKC26ZDcmFyHWjpcZYQYEe2luGZkbaaBhXbbxmK/8GEQLK9
-	 XFVaNMw9sJUeexdcZKqpHmmdgA5viDa+gcF1k6GREdtyxBiD6VGkb+TVBE/qKTaqGq39p
-	 uPTeOAFUHHRoafWDFqZACeT2aKQbrV5GHGxo9yIq7kIQLV8oc946raCLRcW7e1WjFpmiw
-	 g6EhkyZbT4EcSwVKquDc+/KbxOWTZ5BjSkCvJAcvGrJHT8Kgt86UL59nZ9G/BRCHRLYRg
-	 9k/gIM6HAFhrEdJz9AtXBfAvoJ3W3meD/ytY/E6MAVu7QVE4L2r6TPQiRPxC+a7CzJw==
+	bh=PCoHANnt4ozFp4dVRkXapIGxL+OwB2BSxkhEs5tpDFA=;
+	b=KRnnsmVHLhBkL8nGw0ToPU6xEn2CiqDtmcrvkR2+gGwSI55V/EYs4sYT3ZY75PTFWJAd
+	 PsyGTDQacAqYF+wCxySlAZphvcgpKH4ryjSb0w2IYmlbzSZt/XjK4aHtApnktTe5MPF6x
+	 9c55YkZpOrfLKcNq6CKveTY7tAjKdrEqOuY0n6TK6P+1Z/n6G/GLcRiJsFsEtXhguQXuf
+	 bfhg5ZKrx0b6Ag8RFJvraync8u8ush/+dMId5jFxTT9hDbj3lTBXyScr0i/JZtvMclzSw
+	 xkTDgUMVeXBpjvzHNAIpwqTM4NJYUi8XG5hx8vsluOfShcj2pdhbZvaIHcON0QJLSNQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=uniontech.com;
 	spf=pass smtp.mailfrom=uniontech.com;
-	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=biun9u4T;
-	arc=none smtp.remote-ip=18.194.254.142
-Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
+	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=djCu+4Dk;
+	arc=none smtp.remote-ip=52.59.177.22
+Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC325606A320;
-	Fri, 20 Nov 2026 02:22:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC325606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B1F606A326;
+	Fri, 20 Nov 2026 02:58:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 79B1F606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=biun9u4T
+	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=djCu+4Dk
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1795141322;
-	bh=P/zNpLrTOtmqClHIZAY0EmFG09sH9ouzQujH5k/amEU=;
+	s=onoh2408; t=1795143493;
+	bh=PCoHANnt4ozFp4dVRkXapIGxL+OwB2BSxkhEs5tpDFA=;
 	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=biun9u4TpZBxqQaWDNaRirtsSw7ZCcB+aRJTHblGXgEs9P7furWCzAZXvOgkB7Enc
-	 dM0Cx/NVh4pPbZZ3jCXf/VfOLh8kUB38paTxpjWGtZ2neQCoINgRMF39qO+J16LJ56
-	 NW1dI00SjDNGNpLvnNFjHJBCfOtPmzbX20aqaIeg=
-X-QQ-mid: esmtpgz12t1795141319t66f213b8
-X-QQ-Originating-IP: S0xQKMI+sohAVTutLx6QGaJ+/8gwQwIR5AE13eyHWQM=
+	b=djCu+4DkM8d5FngHnYvYnMnewkrvi9+Yfpqpxiui0/FE1Zsf3SZ9ehxuxDZ+a8OGd
+	 Tka3jd4u/YwD4DnafQZ/M4SQSTuKpH7WCSK4pgCVDuo2vIytxTILs5GLIe2uJICooU
+	 1l6Y+d+s1f9/8jTCqI9JRWobW3Md3tqlJ2C0NkUk=
+X-QQ-mid: zesmtpgz4t1795143486te6ef8ac8
+X-QQ-Originating-IP: sGlIpOj26tPcbAOSTVx6aQ6mUiBk9EL+afXPC0Cz/y4=
 Received: from localhost.localdomain ( [113.57.152.160])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 20 Nov 2026 10:21:47 +0800 (CST)
+	id ; Fri, 20 Nov 2026 10:57:58 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 3208655575677083449
+X-BIZMAIL-ID: 10726218846586734631
 From: Siqi Chen <chensiqi@uniontech.com>
-To: jagathjog1996@gmail.com,
+To: nish.malpani25@gmail.com,
 	jic23@kernel.org
 Cc: crofts@kernel.org,
-	dlechner@baylibre.com,
 	nuno.sa@analog.com,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
+	linux@analog.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: imu: bmi323: check i2c_transfer() return value
-Date: Fri, 20 Nov 2026 10:21:43 +0800
-Message-Id: <20261120022143.4065982-1-chensiqi@uniontech.com>
+Subject: [PATCH v2] iio: gyro: adxrs290: propagate chip ID read errors
+Date: Fri, 20 Nov 2026 10:57:54 +0800
+Message-Id: <20261120025754.4075038-1-chensiqi@uniontech.com>
 X-Mailer: git-send-email 2.20.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,74 +74,101 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
-X-QQ-XMAILINFO: NLPsVJklzyEpHrDK7k56IKwNuWaN1KtsiMuiEmsFtXpcB74jwc35MtQk
-	Svo2a50Td01kFvjPK/QdxSR744bhFnU4cfdC5Lx4d1+2CzuGWDAzAolbbHqXQT56hq75WAW
-	224DcKGSxcj6wSpWvoD9jApQOUFi5Ldk9FyjGLaAbTqL3LeG1VJa9s/ZehxaMV7Jr4DcqQN
-	EKZ/TChk3T/7X1JlXalbP5ThCsdSZz/mneTvsPqOKps4+MNCFsy4Hob2VMuOXfyLsRaZWbv
-	pXiExc/b8jkmZ78rGpsSBZ0BBIAVl+fN+sAcKHeJribUcI6QgRzOlC50dvwLINdt7qS1VKK
-	kzP9LfDMM8WJuSOni6rtBCBI9Rrku5IZ7Y+24qH4VgcLX3n/eprUMl2P+7OXmen0Pc+ksgE
-	q8Jz+A+loknB70SNij+yDWzSxgA6ifuZF+vIQ6VLpwQG8+6/+VIyrMGTdBaeOtRiLW1oHye
-	oeUyvRumRe9MW8vhHY4GxXeJitRMoY9ddm6RNDsXNmm9gUKwqpDhHKhEyfYQv1brCYOWSOM
-	wJoe4HMRbovCourIzOAoydyJRYu0T/rxN4lB6OjVdx+H0CTUeoGc9IdsLaTet/uhNZHiEa4
-	KD6+Mci/JVaAjhbyRcMjesp/JETU0OvtFvHzzN3YBtH6tyLnMvC8ndQU5MduceX+l8l1m5C
-	zHmzfANcqgeW8coeacKnZNR1qBzp2rfIoWrRpdiuw48Ybir2JG4Xi1VtqNwbgOAgY7YtuL7
-	rpSg4Nr4TLLSjJxgF6TYd5GRSZ8/1gT9Yv8PS9qTbcNp6yD4O1dEHgQebShJEb8necfUylZ
-	dbVf/zimylgWjzsoaL8EPPU4PvMfV3faox3jAsK4lWAcqpSdu6dLQ2ZkKDR0j2ZGd+QOfUm
-	IrGopYQ/1WhTmMwXFMk70H7gmBe/0mzRPjG5PSX6ErzPYu4iY47IC6V4T7CBmXClX8HsFff
-	ktuf2BLhV9AzZ1b4JTR+gxJ/YjLEjXJCrqXbrUez5tRu9UDV4hJeX2OgQzFqLAjoTGhLcHd
-	IvalVmoczAqv4yzYTovJal0B+LZ221/URtQu+jWTAmDU7TuB4OfyHTMvqpgzpbyIcNkVTTq
-	A==
-X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
+Feedback-ID: zesmtpgz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
+X-QQ-XMAILINFO: MWuij3vnURa5A6zHho1zuflw7NRAP7c08zXc8HD3nUrJTAHS+RbotJei
+	/Dpt4U6tK9HbJ+y+ePeuOsaiQLsUDDtlhFZbeJMQ4XFFl3PbKL+MS8tyWt7l95s1t53+ptv
+	p7o2Uvh/4xaQTI/dQy+s0icIcm57YjyN0dZaGtV97M7vQ0XaowwkAVLLL1WBQY5Jr5tA7XU
+	aUnT1UKoQdOHol1iPUuBe+XI48NqnxJtmrReunfkZcX/E0S3Av2mpRkJmFhshR6insYH5Vv
+	GumbBFFNbF9kCBrMDm5QxNq0Cq0Bp0CFb7vSMCaUYeNX2SPYIDdbf/LkYoN/ENu27jpoHCM
+	nFZpWf6jFP+gXeIVZtrO1wXgF2I3wG7FpcGGXAdCw83xnWs/8ScAUJgOLKniYo44FaD1RPj
+	M/zbYeoCSe2+FofJvXvZyvBDnrJKx1+Ibv6NkjxOW148Yxlt8UWa2qZvCQ+KPCBNAJoH2On
+	HCpPVPZuwhpqrVFXftFvavR28gzH8Vw/mwpr6PVurLTHngvEqHJS2z5fXv6jvkKfjS8Hmvp
+	KqhHayzFtkMm9/nH4NXxkh7Jc2uVv5Eyk62ZXuCDHInAU4hQDHSe+mF89NSj7ZbjL1/JTIz
+	ivmmaoe/dUiqNDOzvEfluj3czqmbIuL4D5uGIdgVT5cVo2FTKhC+YelHwc62mweolVDHGY4
+	XGLjm7cCtbv3G8MiRnNUP1PKPVOmLH7F3IfSGPqXZGe+bjh5sgvw8P7nmgq+lPgpqpXDyWm
+	/H6e/PpGVNpUCgDqASsxIHCnajqKHBnKQXp7u8CQ/pbqihxo7LKOkLtD32SaYTPM4SWvJDm
+	1lmRtDrLssP2m2W9c+Frjv3CdwcYaUH43y1hmHt1L0Ur2LicBjIQj/VLmzp8QjLDVRPM9l2
+	t8wG8WjhpM4QUP2uAs6WzSbEYEg0kaIWR225EuiE9yLoBY2WSTyCQVnxffHxyCAtUEhHJEC
+	GczGpMoyulL22dab0u3wbZFiOUXnMCDKnjLhDXNfER5pKIsFH8tRMMeODX4q4w3+qlQy4lS
+	6ZkAncQS116XCVyAqGgsFht2KAKnxhy2M7I0Qn8ZJb/tdyasR33VrHqAKO7D1rPiXob4weG
+	w==
+X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
 X-QQ-RECHKSPAM: 0
 
-i2c_transfer() returns the number of messages transferred or a negative
-error code. The BMI323 I2C read path only checks for negative values and
-maps all errors to -EIO.
+spi_w8r8() returns either an unsigned 8-bit value or a negative error.
+The probe function stores its return value in a u8, truncating errors and
+treating them as unexpected chip IDs. Consequently, an SPI transfer failure
+is reported as -ENODEV instead of the actual error.
 
-If only the register-address message is transferred, the function copies
-data from the receive buffer and reports success even though the read
-message was not completed.
+Store each result in an int and return negative errors before validating
+the chip IDs.
 
-Require both messages to be transferred, preserve negative error codes,
-and return -EIO for a short transfer.
-
-OpenCode was used to identify the issue and draft the code and changelog.
-
-Fixes: 8a636db3aa57 ("iio: imu: Add driver for BMI323 IMU")
+Fixes: 2c8920fff145 ("iio: gyro: Add driver support for ADXRS290")
 Signed-off-by: Siqi Chen <chensiqi@uniontech.com>
 ---
 Changes in v2:
-- Split the transfer error and short-transfer checks for readability.
-- Move testing information below the separator.
+- Reuse ret for chip ID reads instead of adding a separate variable.
+- Log chip ID mismatches at info level.
+- Move the OpenCode disclosure and testing information below the
+  separator.
 
-Compile-tested with CONFIG_BMI323_I2C=m using:
+OpenCode was used to identify the issue and draft the code and changelog.
 
-  make O=/tmp/opencode/linux-build-bmi323 W=1 \
-       drivers/iio/imu/bmi323/bmi323_i2c.o
+Compile-tested with CONFIG_ADXRS290=m using:
 
-No hardware or I2C fault-injection testing was performed.
+  make O=/tmp/opencode/linux-build-adxrs290 W=1 \
+       drivers/iio/gyro/adxrs290.o
+
+No hardware or SPI fault-injection testing was performed.
 
 Link to v1:
-https://lore.kernel.org/r/20261119070837.3844364-1-chensiqi@uniontech.com
+https://lore.kernel.org/r/20261119030709.3792433-1-chensiqi@uniontech.com
 
- drivers/iio/imu/bmi323/bmi323_i2c.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/gyro/adxrs290.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/imu/bmi323/bmi323_i2c.c b/drivers/iio/imu/bmi323/bmi323_i2c.c
-index e025c88c30b4..27eddd1346d0 100644
---- a/drivers/iio/imu/bmi323/bmi323_i2c.c
-+++ b/drivers/iio/imu/bmi323/bmi323_i2c.c
-@@ -41,6 +41,8 @@ static int bmi323_regmap_i2c_read(void *context, const void *reg_buf,
+diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+index b61cc81122a6..2e0bebf2ed26 100644
+--- a/drivers/iio/gyro/adxrs290.c
++++ b/drivers/iio/gyro/adxrs290.c
+@@ -622,21 +622,27 @@ static int adxrs290_probe(struct spi_device *spi)
  
- 	ret = i2c_transfer(priv->i2c->adapter, msgs, ARRAY_SIZE(msgs));
- 	if (ret < 0)
-+		return ret;
-+	if (ret != ARRAY_SIZE(msgs))
- 		return -EIO;
+ 	mutex_init(&st->lock);
  
- 	memcpy(val_buf, priv->i2c_rx_buffer + BMI323_I2C_DUMMY, val_size);
+-	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
+-	if (val != ADXRS290_ADI_ID) {
+-		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", val);
++	ret = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
++	if (ret < 0)
++		return dev_err_probe(&spi->dev, ret, "failed to read ADI ID\n");
++	if (ret != ADXRS290_ADI_ID) {
++		dev_info(&spi->dev, "Wrong ADI ID 0x%02x\n", ret);
+ 		return -ENODEV;
+ 	}
+ 
+-	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
+-	if (val != ADXRS290_MEMS_ID) {
+-		dev_err(&spi->dev, "Wrong MEMS ID 0x%02x\n", val);
++	ret = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
++	if (ret < 0)
++		return dev_err_probe(&spi->dev, ret, "failed to read MEMS ID\n");
++	if (ret != ADXRS290_MEMS_ID) {
++		dev_info(&spi->dev, "Wrong MEMS ID 0x%02x\n", ret);
+ 		return -ENODEV;
+ 	}
+ 
+-	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
+-	if (val != ADXRS290_DEV_ID) {
+-		dev_err(&spi->dev, "Wrong DEV ID 0x%02x\n", val);
++	ret = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
++	if (ret < 0)
++		return dev_err_probe(&spi->dev, ret, "failed to read DEV ID\n");
++	if (ret != ADXRS290_DEV_ID) {
++		dev_info(&spi->dev, "Wrong DEV ID 0x%02x\n", ret);
+ 		return -ENODEV;
+ 	}
+ 
 
-base-commit: c1b99c6982dccade0199879966a2d97f27a0a110
+base-commit: 903941a9b06ae445c70646ab061b604c2dea17d3
 -- 
 2.20.1
