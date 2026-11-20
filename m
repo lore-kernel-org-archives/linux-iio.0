@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795170568;
-	b=pgT2qDjaduWAyzg6Ffg3Vj0AqZTF+9drfPA0OfVDIX343Ht1tOULR4KfFkPdpwC0+Qne
-	 6qy6bLi/hcuUiswHB3aRPE1NUf5Nlmet7FkHHNx+wg/16X8erVnKknX3MqaTk3dQjMhNr
-	 2G8Iubi079iXSfF2xDlIF1hM2oqS5MoiVxgsG1hS81HFUyXuiSWb+aMrY7U+5Ion6iq+A
-	 R2jlLwo77xdFcazCJ9EgDZlVUWp5fICUQkQDyz4W3eSTrJGRJk2Kfl1ruH0athchCmso1
-	 tvhw5hjo7SSIKWW1j/yc3BOHav7V0YMgjkCsPNT5TND5V4++hiFtR2fMPCj3/oEJ1Sw==
+	t=1795171241;
+	b=rD5+egpZKePcOkfdXqmCTAsbs2Ck8F3lta5joPmD1CK1GhemXA4uBipkvZHOBOGDGQnv
+	 iwZYCEp/3cFl3hqcPjzywBN4IsF58rqPSRLuQyVzQXfki1Gu9oMf9OQ/Oew+3y5ise4eZ
+	 m7W7tEPUwEf2EwvX1PzOPMeQHyygwmuv7a1VAhM1l03oKDdOLPBBv/sYZF5+9lhMLmQAW
+	 rsj2mEycDX7kATc9epB5cJR2SdNIHbPhM3I46No6lqZA4lVTZvPRGjDIjW2xLNW+01lWd
+	 CJ2fPWvVrmhf7ZbTf9ezW/Y5HrP7ufXDtURunVmz+DJETYdFtxrd0IV7sY/rhu92WEA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795170568;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795171241;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=jTAy/t9Qx0lrwmagh0OZEBBPhEuBNaw2YAMUVykvYNs=;
-	b=1muctbtAwdLVwbqJU3VifEH6mQynwE1kxsbXg8d/tqPq26qh6AXpkaeK1SEBb4LBUXX/
-	 rjO6a9E9jaRuqLyWrk/NOWUU40x/nwoXwoFyPPojoaNNOgMYMGnWRzfGzseLEGICd3CtY
-	 p3tESB95gA3ZmdXaicBf7ZyvsyofkgwtkERkPnZhGJzUx3ozjaF2H9aJE2nRldh+D0qs0
-	 PQ2XdZIG5hGA4IEH7KPCORqZPe9enEgjjOJwIm3kRX/8hTF+noK9WXdusmWWOCv2/Le7r
-	 vcS565qohJFaej7tlrNS/J8BoxLuLMbx7W2fbe8QQM9rOdRLgXZqQgOelZM1Y+6SOxw==
+	bh=DVRsJ9wq4tXbtq2igL6w/DBYxGcOEDyi4Dh9KPPuNiw=;
+	b=4lBNUq8KfhF7la04fid07ybPZuLnUN9B0mMxS+i3gOuHCnaeSWaKuNnyOSmw85qaj+Bw
+	 cWnAPwNXxIYGyV5XM10s3Y6+JDVzGIcqb2gi72QpjGOeY3ihHAIWw3pkI1bs1x3BVMQUx
+	 AjigaDtgPcltxOQbeIGpdxkDIfOUE1S7j0dcuSIaUrZ8jbcBWP+njn0/O3+sjuHtAGdGz
+	 5Kk8aVzpYytX1e3LsEVhYXpUe0Z0ohOCMqm+Rve9xfWnKNeil4GF9kAjACYJYAfYcGkUQ
+	 Ew0LUi73SaOHrncMJOZuWZR0bNu6wLumVVDBm8ui0Im3GklGUad71l1PYkod4dBYcEw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C+QotWaX;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d9YSdON2;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B4E7606A320;
-	Fri, 20 Nov 2026 10:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 887D360A2615
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:40:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C+QotWaX
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54FCB1F000C4;
-	Fri, 20 Nov 2026 10:29:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=d9YSdON2
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97761F000F2;
+	Fri, 20 Nov 2026 10:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795170568;
-	bh=jTAy/t9Qx0lrwmagh0OZEBBPhEuBNaw2YAMUVykvYNs=;
+	s=k20260515; t=1795171241;
+	bh=DVRsJ9wq4tXbtq2igL6w/DBYxGcOEDyi4Dh9KPPuNiw=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=C+QotWaX8sgXVpsrb0UKgyMgRuN0GsKE8AGPYQgO+MzXI5ZUYnaR4WdGffBZMSOPQ
-	 bG2Lr5vSHMPO5SQRTPg7+RNzuxuIBLT8SCujZuK58Rzpo2MHBQI7IxI1N/eB1j3Dgd
-	 quC/Dsclj2LbS4+cpUDgACxQigMoqapXxUraDj2nQy5ie/GtVD8D8hJoJDKzBIwKfp
-	 z3g7AMcIVrihLtinhtmkr6bwUMZQpMV6IKheeTBtYJwaa/hSPa3U/NfjnmGNRYrS28
-	 nOG8iR7e6uw38NxkIPQhQS88c0S1xQlLyQUer3Acq74lwh4Khvx2sgYTagnUOnzTbw
-	 wOJZvtJH2f24w==
-Message-ID: <7d50b14d-2df8-4616-ac66-d6dbb1d24061@kernel.org>
-Date: Fri, 20 Nov 2026 11:28:35 +0100
+	b=d9YSdON2oDvDuIuded5hL+4n59KBykiA6dWB0T0lvVzmwWB4i5ZU5AI/k1u5Pqgke
+	 HIH83tIPE7jjaS+XEk3djqbs/tns5vZIYA6UclOLSYkmELqU+WsE2KhDCJ6NgICceB
+	 zonBULQ/a38P0tr/2Okmn3IpYm5q0tmtDiLY2ZfpdjzlgbTIVvBotRAVz4JR/lAuD0
+	 5y0PknP8INftdkfKrag8QpyjGgErTovT0uire4mW3oINaBzJlx6pIwvs9327M8jise
+	 xKvzooYeoFsYb7TAniEYhvyXakYYkHLKccMiDsYU9b2M3ECcCJCoCNHZYOQXR+n/Fs
+	 Q8NHd+IokYabg==
+Message-ID: <93a78ecd-d6c5-40a6-8236-d7d380f8ae54@kernel.org>
+Date: Fri, 20 Nov 2026 11:40:35 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -52,50 +52,34 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/3] iio: adc: Provide mult_fract() and make use of it
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Cristian Ciocaltea <cristian.ciocaltea@collabora.com>, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Michael Hennerich <michael.hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Esteban Blanc <eblanc@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-References: <20261119192408.1724611-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] tools: iio: Close attribute streams on parse errors
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ =?UTF-8?Q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>
+Cc: zhujun2@cmss.chinamobile.com, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, knaack.h@gmx.de,
+ linux-iio@vger.kernel.org
+References: <20261120062125.98462-1-zhujun2@cmss.chinamobile.com>
+ <20261120074417.33563-1-aleszlucero@gmail.com>
+ <awAZnuq2XAGo5De-@ashevche-desk.local>
 Content-Language: en-US
 From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261119192408.1724611-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <awAZnuq2XAGo5De-@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 19/11/2026 20:19, Andy Shevchenko wrote:
-> In a couple of IIO ADC driver the suggested new helper mult_fract()
-> may be used. So, provide it and update the straightforward users.
+On 20/11/2026 10:57, Andy Shevchenko wrote:
+> On Fri, Nov 20, 2026 at 01:42:39AM -0600, Oscar Alejandro Sánchez Lucero wrote:
+>> 
+>> I checked both paths in build_channel_array() and find_type_by_name(),
+>> and confirmed that neither cleanup label owns or closes the open FILE
+>> stream on fscanf() failure. Closing them before jumping to cleanup while
+>> preserving the original error code looks right :)
 > 
-> The helper has potential treewide, hence it's provided directly in math.h.
-> 
-> In v2:
-> - updated commit message in patch 1 (Sashiko, c/o Joshua)
-> - used local variable to avoid double evaluation (Sashiko, c/o Joshua)
-> - collected tags (Marcelo)
-> 
-> v1: <20261117091638.1463621-1-andriy.shevchenko@linux.intel.com>
-> 
-> Andy Shevchenko (3):
->   math.h: Add mult_fract() that takes struct __Txx_fract as argument
->   iio: adc: ad4030: Switch to use mult_fract() helper
->   iio: adc: ltc2378: Switch to use mult_fract() helper
-> 
->  drivers/iio/adc/ad4030.c  | 13 ++++++-------
->  drivers/iio/adc/ltc2378.c |  4 +++-
->  include/linux/math.h      |  7 +++++++
->  3 files changed, 16 insertions(+), 8 deletions(-)
+> But the change has flows when errno == 0 after the system call.
 > 
 
-Fine now.
-
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
+Interesting how suddenly there are now two patches fixing IIO tools.
+tools/iio usually doesn't see much activity...
 
 -- 
 Kind regards,
