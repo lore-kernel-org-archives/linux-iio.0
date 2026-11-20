@@ -1,88 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795170514;
-	b=c1G144sYOpmRDVtN/UQLhhG/KyuyLf6kiezdRSTALRMfPwDyqHgvRKwovjBKHhVG6ypS
-	 djgnRsnHHxwkxEKpFeDPHYYFcRHW9IPP6wRVygaoCH4baCACX7MoVlxHgVE/dc1PJRdMJ
-	 x2SVtJwWSK06FAUP9xCeg9/q3R4cBRPUrvAjPvwwtG1uqPOKS+XVg2XKbkZ9mhFwmsC3i
-	 0ONmjtevygKkVNaC+I/3NRlBEefIWWDWbQd3xQgM9HicztmmIHnmVcDDVK3/0R074Tz3B
-	 ffb2xvj5WVgnrNz/yljZo6hNwCqG0qjjPfQ8X8d8qddV87VWxBmm0VAUPs7iTZAo7OQ==
+	t=1795170537;
+	b=FJoJlfAn8MIVy/bKY2UunuS1inwpyq90X2fNDAJXv6NoRxn3doj3Zb8iynfgnVJkHnp/
+	 mLWJkoACRwLeWTbOBj+dVsY72KXFes91J3A/9RZG6iT9c6B48V3aT4aKdjnit2DHPyNYj
+	 TkepdCSlf0JHb3WQuapyxLUj4rpD24F3PpwX3AGamc2BbhLBjEKB0stFfDZm6d2ImyG4q
+	 Wj93tswfglD6RjE4+T9cEQcLZrL8fEt6QyBtRH86VBYoFzsp+uCk0tCUiMPScFvAGI3vm
+	 jG3A6KpsROIdcjQt7aW2effcK3gz/ImQwJ9QmYMTx5Dy9y9KlyyVtpDSGMrxQSl+r5Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795170514;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795170537;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key;
-	bh=nD4idXOwW52laq8HEXuqvP0Drs2PNQ0ykSPS3rCO4yA=;
-	b=JAadNaNwPxp/NSU8hEJ5m1BGmqtytE9mluXxaEOHmM7td5Afj1Vg0UxksZyVxYpLxVH+
-	 zp0DaP1GiW8LFAfcKdfY7+ceJfV5t/UNA5nVFzN6y+XNMXNO4ch5BPyXR2kgpx0wV1yVa
-	 eJ1JRW+OOvzyEODct8ptZeAbVY0qkRX0cOWuxfiQEjFb/3ptr3U+qAnWns3We63B4IyZj
-	 YqwXKYUZ2eEbCDhDcyT0J1cVacHiZAdNx56heVy63C0Ah07fgR3t79PqB2AFkLS+lPm+B
-	 CNxU7zEQo/M/MfY5jOCHHe6LsaNTb4Oi1yLAuIUZPGviO7Bvlgy0gxT1p3SlVrswCQg==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=4gcjUg+kW4Rww4E1kdgtFMSot1r+hOLKOAxIyXgCC14=;
+	b=HTb4NhFTcw2C2k20oNyjE54YnhuMUrCmlnUjl2vcKwLpLlSkjQGQLNu0RGnYcnKxTcf3
+	 FPdL3cVNIeQhHDr7R6tnjhw6ZPvZYj//7t6qmbFi4gO8/1Z/XulBBOma9D2rMdliVfAbD
+	 kXglEJFgocDjhg4LtPOvJEeqzWXQF6BAVFKblXUYJHVWBFuat+sVUUKIX9cOBHOHxeLAY
+	 4bcAOCAAkudRPFt1T2EN1u32KsE1wKNACJugNDZ1Y+Lrebz4Nuq0Ljp4xyYWcCo8IltWc
+	 E2wjRhtNTuj5xAnEapNZYzop0PGXmBTiUVvyTueSZL7hyEiyGMk/iZzXousAWndwK5w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MmIoosC8;
-	arc=none smtp.remote-ip=209.85.222.53
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com [209.85.222.53])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dyDS7tmC;
+	arc=none smtp.remote-ip=209.85.216.42
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301C560A263E
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:28:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 301C560A263E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC21B60A262D
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:28:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CC21B60A262D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MmIoosC8
-Received: by mail-ua1-f53.google.com with SMTP id a1e0cc1a2514c-990703f817fso436323241.1
-        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:28:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dyDS7tmC
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-3b09a83d12aso602202a91.2
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:28:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795170513; x=1795775313; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=nD4idXOwW52laq8HEXuqvP0Drs2PNQ0ykSPS3rCO4yA=;
-        b=MmIoosC8skIkw2SZELJcd4XsNqV2f2JhN6hREWvAfOwVOfI2hkswPuQjYCx13i5IuJ
-         LZtCe6w3adeAFxyixcQOWiBQSRUdWC0aAYJSK6Df6+c/8OIvHJIGR1o7NYK30dH9xbfC
-         GtHhfPlToFpzHI94t6ScVD5djznrIQeJHqALs/F2+voOwoQZzG7V4Z/MeQx6La2Hq03V
-         Wp/0kHIZ8G3BqS9zjMc/Ui9pwx52qPVEC+Tw5Xmsl0k4Y0M9yzzRJ5q7pQUJ4oymLS7A
-         LOacnvuItSzn8f6hm2ieqRxkEh5unCtc70ap5OGbWAwqhCqtkxngvu7puelZpTGBkA09
-         VH4Q==
+        d=gmail.com; s=20260707; t=1795170536; x=1795775336; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=4gcjUg+kW4Rww4E1kdgtFMSot1r+hOLKOAxIyXgCC14=;
+        b=dyDS7tmCE7cjzZjDh4CWwWyCddKJ3rt4OobgL+Ro6jzSa7p6fP2JJ5C7zbL8e3UtOi
+         nPSDpA+n/UyBmN8VuSemd/K7n34UVSebXII44bzkqnooHJ0H0Jp0V1THl8gxfl79Sws4
+         fNY8Nhg02UU0ISIUxdu93ouCEGIh0+QEV15BmiA1UJCCSOwbIsNsLM4/8cAtC0uCRPHb
+         aeIhVTJzqgkIJqIcgTxPq69Np7+aW+Ph3HZsqdkhJrlAZfARXrCePJ3IzBmsJBu+K1xU
+         PI2gnwVJit1tc9k8kn4hiSC8jyo52c9hKw0DfwnK934gjeXN70JTNqJr23UU3XzB2uFC
+         Y6VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795170513; x=1795775313;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=nD4idXOwW52laq8HEXuqvP0Drs2PNQ0ykSPS3rCO4yA=;
-        b=SdW7BYy6eVQyIo4HpsjjJrBKlcOIMOHH4004pHLOU5g/Rz48Zaj394sZW/l460eAjD
-         Mx26QL3ki6gAXPSPcguhIYG+/XjcJAxF09r55mjAi62VHPJoeL9OPLqPfz4udfucrpzD
-         Yu+1oPjtTjYLBVC5p1auoek+chvc1I0e8xbPeAzWNgKE9qTKq2Kq3oTSXL2XazhKHMjx
-         Z2jB0tZ5chOIAAILjioaz1daTGj2qeNXh04WI+EhByWdwQvXVqx1VZS32kqaQQH4oB53
-         NPrzJH+EYblGSJSUUGvrAp1xZqmkGpUB5RhQ5aWm5/GUwmY6RL1j7txBQclpqmdLvKmU
-         ExwA==
-X-Gm-Message-State: APuU4Z9lFNr0Pgt8zfpgtD9lj/AiWOTMAqcq0rIyKU3fWtFqhynzaIGH
-	HGLL6bI6uI0WcuSC0In3wzf7tGeh4sjigb2sAodwo0xEeRa7c8lSS6Z2
-X-Gm-Gg: AZFdTZeRGalKKL9+lkeTaXiK1J4lxjQQxvyPtSZB3fKkcxNItcRDhP5z5l+GL3iq++8
-	4hh2MbuFNtJupM+ttWGDpFtZ999eRIUCCmggPXt/h5UU2PksPU/ByI/wAnKInfFM6Gfr0vFYqG1
-	aY8EGEcjTRi6zpG6Y/QCqMvtm9yOFazzMAxcQAwjTVQeCoem3Cm4/lGQ572lB8abIZ7r0iHpVQu
-	/2kfKGujx7ED9yzdTz/H026mZkxO9vUgrVQIxuhc1D2MqMAWbAw/m6+JuYdsX8yPDVLI0gP9STz
-	7iOYFoUjM0ikzNwVYqPPTtxLFafjAu/WO6j5POpqlJ/SBk2wGr+mjCucwi7SzvOQ7MxiCgHj5rD
-	AjUvAisjdxhPREORg5NhjrDpOhIE1Q9PkPUv8GLeoMixeYFWTxX7LBY8Cc/m1AbiqSTxOM+4wYq
-	F/puF74UlUWKztj71TOI3GK9tbISZDBt4cI+tsrXgESDiaSnoN/FsiVzYHp2buW9yjkc2Knhx4u
-	trjcxmq2nPDMR0coxh9jAGYOb6xqWk1abXYxdRrGM/Dgyyl7AiVPIKknGkphRHScYNs7V7eThM2
-	mzlAVFD0zo4ulCA2r5I2Z6lFNvKKUFy4eXmclP0=
-X-Received: by 2002:a05:6102:3f13:b0:7cc:7801:b317 with SMTP id ada2fe7eead31-7d73937cc2fmr1132907137.9.1795170513082;
-        Fri, 20 Nov 2026 02:28:33 -0800 (PST)
-Received: from [192.168.0.9] ([2a09:bac5:565c:aa::11:204])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-99e6e08a02asm2481753241.11.2026.11.20.02.28.31
+        d=1e100.net; s=20260707; t=1795170536; x=1795775336;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=4gcjUg+kW4Rww4E1kdgtFMSot1r+hOLKOAxIyXgCC14=;
+        b=q62lF9LiLDuh8+UMIKuk46jfStehdpFCbwZdPLlG8Jorc9LomuBj5zYLcOCfj5Gq72
+         /CF79WdfRSJXoeuteAjIteFILaC3jGw6o6spohyDOEADP8G5Swu7G7uq+2CU9Z0OSLNs
+         smCJIX8vfLdGeq+vqv/Dh8RvYk/bvgC8TACoi3ZfMQVlmNLRoHW1BUtJhmNBpjJ6f4rX
+         bv8T6ny4um1AHTi+nxNi5rgQo3rCOoTOyx0T5DVqjomuDPpGeZ2oJrh4cGAmk5G/okIj
+         jmMKFgawBXzEbPXj2u0oSw9CatBWPAfCjHZStDwj/6ARmDV+j6gAIATH3LLTfP8WOH9u
+         583w==
+X-Forwarded-Encrypted: i=1; AL+hErEDfgl4RyXgtRNcLN1K1aa/6orKtxkr17ka/HrkF4S+lFqIABpOA+cPhsworga9iuQVNTQH9vy96J8=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8fDeQ0bDYRiGiA0JTpbNEthiqDI6kNn7eywscGxkBqMiE7EGWL
+	eZOPqEfKjtqLm0S5TseGnM9X7OcWocyVDBk47FUj+DLEzXEVGFBUq8S5
+X-Gm-Gg: AZFdTZcFFouAu+QNyQ/pLWioXEP4kEizph2zCWVNgJO9v8wRqoIg3nrqVk3bLQyhZCy
+	tWNZ7lrSJPpcMMlQQApnJNo0RFg0aFtLyABA55iVMTkUswitUR7O0bsJc4OER0DBUCO+sjwbC9e
+	Esh6T/sugyFO/wolzR/2bDI68bQvAlXMnqiaX9d1Ej+NqFiqkjXJmhTQOEQqE6ybVIthKq2oDFW
+	oY6QYMU+TMlWoB6UVwedXoZLto+fG1CzpmapNwWAJkOVlvSCcejo82+amUpUZMloJS+aVVlQe8v
+	jzAGyEJ8w0rZrn34f6Hr3K02acmP/oR3mHaK//CUaC0Es3bqMoJrke9S3pU29KOkYeJPXx2AWhD
+	DHBu6kKDP053Jt0wVtYT62nAZxAHQl6zZQuMLJ6x5G444BJVCFYhBhd9TNj3h7DFmfQI45jJK65
+	nn5qlCWHcjTReS9Y8y1o9LjyV3szVjQVaz2BZ4lEBF2YJd5yDR13XB5KnXPziw3j9OV6fodf2AY
+	5/XY0oohGXArU4offaxXIdTkAD+Kt6SB60ZnBCz4bwC4l979kMU29EsLjH3xrRZEFvxl1KgEfYp
+	eAS2HaMGhNiEFmO1y++/KsgZNGvd1sa96/rJllB7GBSMMTfwiL8YRw==
+X-Received: by 2002:a17:90b:2d8a:b0:3ac:450b:164c with SMTP id 98e67ed59e1d1-3b41c96cde4mr2443318a91.47.1795170536110;
+        Fri, 20 Nov 2026 02:28:56 -0800 (PST)
+Received: from csl-conti-dell7858.ntu.edu.sg ([155.69.195.57])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b40578dca0sm7158810a91.2.2026.11.20.02.28.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2026 02:28:32 -0800 (PST)
-From: =?utf-8?q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>
-Date: Fri, 20 Nov 2026 04:28:27 -0600
-Subject: [PATCH v2 2/2] iio: pressure: abp060mg: Check for short I2C
- transfers
+        Fri, 20 Nov 2026 02:28:55 -0800 (PST)
+From: Maoyi Xie <maoyixie.tju@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Song Qiang <songqiang1304521@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Praveen Kakkolangara <praveen.kakkolangara@aumovio.com>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: magnetometer: rm3100: check TMRC in rm3100_get_samp_freq()
+Date: Fri, 20 Nov 2026 18:28:48 +0800
+Message-Id: <20261120102848.3198371-1-maoyixie.tju@gmail.com>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,64 +99,71 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261120-b4-abp060mg-fixes-v2-2-89a274d68a9a@gmail.com>
-References: <20261120-b4-abp060mg-fixes-v2-0-89a274d68a9a@gmail.com>
-In-Reply-To: <20261120-b4-abp060mg-fixes-v2-0-89a274d68a9a@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Marcin Malagowski <mrc@bourne.st>
-Cc: linux-iio@vger.kernel.org, 
- =?utf-8?q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795170508; l=1342;
- i=aleszlucero@gmail.com; s=20261104; h=from:subject:message-id;
- bh=I3SgfKE6UVSpQVJFdWA6ZvX87W+gO6g1Z3kgMgcO46Y=;
- b=rKD0S6/Of+jur1fXXYWJ97xvrjROK7DFSqSyicejniJex8wAMR4eRLK5SZ1iFAAjVaWPBqoTi
- 6VNEJHY0ZOqD13lqCTVaS4EZncGIs2qr66xiZj+gpDl1RvNf7eUqCcy
-X-Developer-Key: i=aleszlucero@gmail.com; a=ed25519;
- pk=zRzEBMID7l1FXqr2CjfnlIn++3m3N05FuNYb5zPA3cw=
 
-i2c_master_send() and i2c_master_recv() return the number of
-transferred bytes or a negative error code. If a short transfer occurs
-without a negative error, the driver currently proceeds to parse
-uninitialized stack data from buf.
+rm3100_get_samp_freq() reads TMRC from the sensor and uses the value
+minus RM3100_TMRC_OFFSET as an index into rm3100_samp_rates[] without a
+check. A value outside 0x92 to 0x9f reads outside the table. The driver
+only writes values in that range, so this needs a chip or bus that
+misbehaves after probe.
 
-Check that the returned byte count matches the requested length and
-return -EIO otherwise.
+Commit 792595bab492 ("iio: magnetometer: rm3100: add boundary check for
+the value read from RM3100_REG_TMRC") added the check to
+rm3100_common_probe() after a crash on failing hardware. Check the
+value here as well and return -ERANGE.
 
-Fixes: 9ecca12edde4 ("iio: pressure: Add driver for Honeywell ABP family")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Oscar Alejandro Sánchez Lucero <aleszlucero@gmail.com>
+Found with a CodeQL-based static analysis tool that we are developing.
+Reproduced in a userspace harness under ASan and UBSan, which report
+nothing with this patch. Not tested on hardware, only compile-tested
+with W=1 on next-20261116.
+
+Fixes: 121354b2eceb ("iio: magnetometer: Add driver support for PNI RM3100")
+Co-developed-by: Praveen Kakkolangara <praveen.kakkolangara@aumovio.com>
+Signed-off-by: Praveen Kakkolangara <praveen.kakkolangara@aumovio.com>
+Signed-off-by: Maoyi Xie <maoyixie.tju@gmail.com>
 ---
- drivers/iio/pressure/abp060mg.c | 4 ++++
- 1 file changed, 4 insertions(+)
+I used an LLM to help write the harness and this patch.
 
-diff --git a/drivers/iio/pressure/abp060mg.c b/drivers/iio/pressure/abp060mg.c
-index 9a9dc2bfdd40..895deaf24427 100644
---- a/drivers/iio/pressure/abp060mg.c
-+++ b/drivers/iio/pressure/abp060mg.c
-@@ -108,12 +108,16 @@ static int abp060mg_get_measurement(struct abp_state *state, int *val)
- 	ret = i2c_master_send(client, (u8 *)&buf, state->mreq_len);
+v2:
+- keep the declarations in reversed xmas tree order (Andy)
+- use ARRAY_SIZE() for the upper bound (Andy)
+- return -ERANGE instead of -EINVAL (Andy)
+
+v1: https://lore.kernel.org/linux-iio/20261118164106.4108794-1-maoyixie.tju@gmail.com/
+
+ drivers/iio/magnetometer/rm3100-core.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/magnetometer/rm3100-core.c b/drivers/iio/magnetometer/rm3100-core.c
+index 46fce2978d76705..8e80cf6790c728f 100644
+--- a/drivers/iio/magnetometer/rm3100-core.c
++++ b/drivers/iio/magnetometer/rm3100-core.c
+@@ -277,6 +277,7 @@ static const int rm3100_samp_rates[RM3100_SAMP_NUM][3] = {
+ 
+ static int rm3100_get_samp_freq(struct rm3100_data *data, int *val, int *val2)
+ {
++	int samp_rate_index;
+ 	unsigned int tmp;
+ 	int ret;
+ 
+@@ -286,8 +287,13 @@ static int rm3100_get_samp_freq(struct rm3100_data *data, int *val, int *val2)
  	if (ret < 0)
  		return ret;
-+	if (ret != state->mreq_len)
-+		return -EIO;
  
- 	msleep_interruptible(ABP060MG_RESP_TIME_MS);
+-	*val = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][0];
+-	*val2 = rm3100_samp_rates[tmp - RM3100_TMRC_OFFSET][1];
++	samp_rate_index = tmp - RM3100_TMRC_OFFSET;
++	if (samp_rate_index < 0 ||
++	    samp_rate_index >= ARRAY_SIZE(rm3100_samp_rates))
++		return -ERANGE;
++
++	*val = rm3100_samp_rates[samp_rate_index][0];
++	*val2 = rm3100_samp_rates[samp_rate_index][1];
  
- 	ret = i2c_master_recv(client, (u8 *)&buf, sizeof(buf));
- 	if (ret < 0)
- 		return ret;
-+	if (ret != sizeof(buf))
-+		return -EIO;
- 
- 	pressure = be16_to_cpu(buf[0]);
- 	if (pressure & ABP060MG_ERROR_MASK)
+ 	return IIO_VAL_INT_PLUS_MICRO;
+ }
 
+base-commit: 7e1392a42ea288d70a266f6553fe06f57f8647ea
 -- 
-2.56.1
+2.34.1
 
