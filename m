@@ -1,79 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795197905;
-	b=lgk/G8lDTl1GouzLrb6mzh16TuvmTmRvRyRN546LvCDHqHIdMzp5rk+sPJai4PUwbJRG
-	 oN0iW1ET3XZFAljGIZm6WDIh6wUHbHdfX8dNP7pcLnpymxC4RbmyvNihg9dsyu41AafRo
-	 p7diY3pHhuN37M8AAVAaa4NhKIXhKfGnm45bJ9c+sb1IhdcV7J9eoGuLFeMYj32fTYOEi
-	 tC3PK5JQONHfGYfeMQA8qE7rA3/5QAlbRZ4SRCZW7jCj72pvbfAcEYDhlC6XaspkNObvG
-	 MyJ0WwIBxuOvEvxBbxRlt92chqDIEwGUgoCHDxHli4sg705clf4BectcMQ5pVXgG1Mg==
+	t=1795199585;
+	b=kcRKN7bRZrLdf8D72YHJ0cg5a3E9Csns3K9uE4lZmTjCWrr2Yh+02Nr+12cYGvPUZztW
+	 yqHRg+gDcPbNaY4wYYZHKLrIs2utdNbS3zgprlSstwMbsii1646Clm4XezQD1XJOQvysV
+	 AkXY4fm7hpH9pLGLt8IpT3i61QbzSo+rqLAGirDepjFWVyUiPpwLH2Lj9ZIzlEfOnQXBs
+	 zOrVEFTSYjt5DLNpcEJmc7KoRGFinAYCWzh6DB+B76HujOcxUdrl6DHCw76j0+LMC4cl2
+	 Wi2hFNfsPrWTXQKWRVUwH9oWKjf3p/NnqX3YHtwgMAu21oc+k7ubgxErPEmQlH1w/qw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795197905;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Z0iC7O32uyMGduUf/rLmlqfyp3kiuwRd3E2PoPpaukw=;
-	b=YC+jHHnkei3LYXzLFy32QRe36Mf/oIKug9XcaCS1jUVKoqSzndO6jNi01ZpQ+zouFYgc
-	 OJzwCYvXCEWMH435HxCpFMhqrcejPCoxsb0Xme7/aDPJpE7RevyjyD4JCZytnKkEmqRdC
-	 483eiHzd7E6yF+g3z2M4RtjRAGvC7f7xn8PsAtsZv8Q5m7JelpctGg+kszcKsN06nBvrx
-	 mW60xcM7xVc5BtrqYr17WGYwuk0yoFtONYbdQR6V6xtdqlrpxnlY3GTyLPZ1SQZZPuLWY
-	 OYslRffeIv1ZXlHARDFjQiX2g1ou6Pcr7n3WFTHDZpZDOQSiiVN9711MjLMChEN/QlA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795199585;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
+	b=RnwnOTCcHzSzHCcApAPGnFjjEdrCWriOuJ3uR0lOdTVjuuwtU0OPlVXPJEouN8QMlhE3
+	 Ow9vPhSdorniQF3d3SF4bE6SjqJGNR6sr9t0jRmF8jds7jr0aGdDopeOZQgNMWrZovmZm
+	 lb4nqOK7KOtBOA6xaQpug85tM8ZFW85vrM64nCz+AB/G/5T8JmMsl1oDtaUYvo53db1hn
+	 mSzn5CDL6OH4FvrlZ9doyl4pvgaPXDcF7bxO96lyInX0I6BLF8i/aO8fvM93lu2khwoK/
+	 xklqEwnC0ESLw7QOMZ+EPhPponxklvISCUSn+fIUbGZWOetk3UD04xt9hwWiKXnxU+w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lF8jYa+H;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1724A60A3837;
-	Fri, 20 Nov 2026 18:05:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lF8jYa+H
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795197904;
-	b=WB5WOkSAIToJIw4clOVQYmFM7BKav2xLplnJihLBHSa28mhAvORmFkpQlLwxdydimk/B
-	 vl6t0rUu9LDu52nce74Ce/Z0IxcNoHXB16MaYAQLiozukB9Q/9BGOqdL78oRTssoF9df1
-	 21Hs/cSxZKWZ9bxOGi7CuKcpX0PvWf5YD0o0KXePeHNYJAOQRMrN/et4HjFVTX40vj+jL
-	 TxMmL0O4OE4VAcBf9hLNc82hTJtwWqm0jtG1W/0hN+0gaqb0TykujglQjAhQOcGkiY8Tw
-	 sVBc59JbK2cyyYJq0CP96yTl921YkF675bwLnyJQeDD/+G6w1TmFuebtAYNmPw12wKw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795197904;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Z0iC7O32uyMGduUf/rLmlqfyp3kiuwRd3E2PoPpaukw=;
-	b=YlvlGKTZk+xt2jFrbm1F2AvwUM653t65oFy3ykcsyBGmDcG6yzxjT+CSP1h3gd3NeUzN
-	 hVucmIA9T30bvjNE8IBopuf5Ioh3wIa3nZmj5/QTKoUo4UGCIkyV5+dtC6LmfTd/L6jsm
-	 LFb430eM125BPbJlH61EEyj9R5YE18eY1JQuzjChIXDZBR/bW/p1RrCGX1ET0DjOsvO4O
-	 hDcH/GP4+DqGgmD6doHITWFiVslc+lRr8V8Ot+Z5rrL2pW9GmiuuC+nJtJx4Az1CsQr7P
-	 myE6DYOnKk1dfdIsZRlI2me0gAYdVPkDQoMoxCGCobX4yEW1XFlTf7P64FuqMZoTiKA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=none header.from=reflexrobotics.com;
+	spf=pass smtp.mailfrom=reflexrobotics.com;
+	dkim=pass header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=F0cMgM5B;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 48D4D1F0089F;
-	Fri, 20 Nov 2026 18:04:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795197904;
-	bh=Z0iC7O32uyMGduUf/rLmlqfyp3kiuwRd3E2PoPpaukw=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=lF8jYa+HavExLK4/eMgOCETCmR6WSD3PpQM8YFIPrOsbM/wmvDqGMpjaDnW86fRgF
-	 X6IuNAjtdpm4DdkDzU5Fgw2hOwA2Y0f9SFhY/u9GwDRvr60HnA9nsexDwRC1f+hU8e
-	 NjqDUU6gvEIr8g7/7Yy+H3LlBezt4Oaay9CyVT3AtyLWBsdhxfTrZG7AG09S1Rvy36
-	 gXmT/if+UKClVMU+0nftXFj1xb1N2QxdYRlyf3YlCp/4edElCiX+YxEhqcYy1sAC4x
-	 X/QQjfls96YD9Fd8Z2kLvb4mlqGa+yG12vE5j/qH3bJpl1O2w2JwRlP34IXLIZUZmj
-	 BhwX040MaU6eQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id B5B484B8C1;
-	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 20 Nov 2026 18:04:01 +0000
-Subject: [PATCH RFC 5/5] iio: sysfs: drop core-only fields from struct
- iio_dev_attr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DAF160A2601
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 18:33:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2DAF160A2601
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reflexrobotics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reflexrobotics.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=F0cMgM5B
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6b85b58d303so771138a12.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:33:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795199583; cv=none;
+        d=google.com; s=arc-20260327;
+        b=qAzw+XtpZtwbv4Sne5OQF/DcL+PB9LG8BRO7Q4B+P9kcJN9E6gfUOSRwZcCf2t1r9r
+         dF+R+TxkmNviCnX9O5zHUl40/mbugFwUNyfIBoXzoBOR7uJaJ+EuJ2A4dM6HMsotVh6N
+         R0s3cF2GYOos1xBJDZzh1gpHysgkGnglMXPZYM61HAajOYPtTzCqB9a4dR7+G1W2LENg
+         TpgkZ/xm2GzeRYXRRc3oAf2smmMhn+aqpNj5T3v8y2WoQErpA19HecdHnCiEkUrb4FMQ
+         uT8aCwx2Dc78ex3bOYNhog9hxbHoj9BPaRsfe5i7/FsZoWA7Kz/8N4RTAAq7TPRwifyN
+         3xTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
+        fh=KuFSXwa5l0J+fmOq1rIq3iiyofAYL36MuohJXyuXkNY=;
+        b=IMOKiFZlkY07+nhCHza0Rq7Ss1jDv15uMxGU+bZh/HDb4NaFwoPAOd0DTZDThZ7rBe
+         4Gvxnw3ePete1sJw7E6VLwf3oaIhCyVm9lEbdxpwZYHHwsnjuVXiKdZuxhng6H6OIqW2
+         lSbKDZ3xY8C4DFgFclMLOyz8RZYl3znRdtZq4lPZFTgkHhFOXCJIX8exMdAQZ77h/6Oi
+         uIpQbc4A9gBsSm50NjMwCQvTuX5Y2llfXRs59Ndz8c4uyLq3BmA1oGeL+PuUVXOmftUy
+         gkEgv9ADtA2ro2sCIWgYj1P3hCWQQ2kU0vOKTnECsE8RHDKFFkvI799TOxiCCHWMeVdi
+         5W4w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=reflexrobotics-com.20260707.gappssmtp.com; s=20260707; t=1795199583; x=1795804383; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
+        b=F0cMgM5B/mftILx/4d2yWLhLfvI0yR4/pkUXQ+93jk5juo55xYmqJlJpxsW6MtWXPl
+         I2834IQNamlmFvPt/aAARRFZGLzdUtYs9vfbW0X7e/0qrXqlN0rPKY/q5Ddvlb757QUY
+         iCSOWRiM88EZr5fANrYkh9w05tphycwC+OZz3wlSYD+hY9774yI6vwMYUWT/jqy9qPBG
+         54dq7T4Qra4REIbZzV6iVJRSbheJhZCgXDzI9NF2dl9yGkWHRT8m9MOo19zTE1rB5UG9
+         dPKYxxJLcOlufEzSlCkv8dagYdAKqTvivKNPsV/CV7VGe/ba9dBel/Hfx2EuvufDJOZE
+         eWLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795199583; x=1795804383;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
+        b=dQYZiZJMcnYlbH9AAZIZ/GkdXh1/JTVGjC1RDlXX9av9neeL6onTHZT7ChBZ5ll6HM
+         8EU7vPzkQPXkXuD87sjWY7t05m5OQgGK+/koGcqRAaSseV25KdxHthVGTrudcDjNnCVF
+         RS7GduPwaDclp23Jo5roce0ZHcyACI9h1mCQ+gOytdf+bb2jepqZ2MGa8mnR97yPQfh9
+         Wd3kU/cd/P4FuYQpblcWFYClKSo8DvhZq6USDxysSkscFy59fJCTHUyrfEVKXzlACpZ8
+         svnJ18mEWFzU58U9xSB+AMjpNT+o/j9QIlyz8rlIHvVV9rTy/Lra1MLg00lbdep4RXJn
+         jpSw==
+X-Forwarded-Encrypted: i=1; AL+hErH822BrZRDiVfWrhyfzJIafmduw6fHireZ8fJgF1LtQ8hk83BPac+ThKAnd4y8XxgYYorghN5XAucA=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+Fk0mVv2VXhHCtdZCpWvAkOp7no2Mu58gffop9eR06ui761O4W
+	zFP8BVasLByrHzprsqw80iDBxZtx/aO7YJxgsEbKQQ5+liyf5g6bPa49LuWU+iRHtZw4Dc7m+zF
+	dNVYvqEWyYqz+eHOu7rThTUVyKuJe54b4VOV1z4LdHw==
+X-Gm-Gg: AZFdTZdYyvNpYTDH58LwXAvVQg33QjulKBIlcGMUWLq7WsrFcFw4ewUbzlg90/aZkVT
+	VHlz7bgheTMTAksI0D44l6FRH46HGXsmA9hw4VfFwRqtd6nxpLMifJSuVbJmYLDEMwxEg3tRwt6
+	7G9C9mW/ew/ZqE5H7CzYKhyo26blNT+NPUOAIoczlyBG0a4MoxAtbfGNMgT+97Fdl740IMSO/4s
+	UjGJGrpZM/0G20Ksxe6Ow2t4xCkIv5PFWfgl+o+RZYEXikAgJ/5nWK2ipjmjvL0bpVKHL+jbhN/
+	yR5kg0I7/DJG5Akimg4CYoWcYt6Yu76WO/szQ/NhACet9yMPMr/5QL80m9NY1gxd8+8aUnokW/E
+	ssrj4hPRpwYtFSdstcniaCg/yEUeM6QYX9anAUKFDdjnPXSceQ6FCeIb7YPslVxABqkZhZOJ+Rm
+	crYVNWv9nGtrILwZPWyzGYKHEJQ/BM8sxMZWeMPU4qt8rm3WUJpg==
+X-Received: by 2002:a05:6402:a594:10b0:6b8:a711:65f3 with SMTP id
+ 4fb4d7f45d1cf-6ba37e935e0mr2522060a12.14.1795199583392; Fri, 20 Nov 2026
+ 10:33:03 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,73 +105,88 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261120-iio-core-attr-review-v1-5-05b41f8133c2@analog.com>
-References: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
-In-Reply-To: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
-To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795197883; l=1385;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=65/z2WflfdlMHb7yQxMB5agemZHd6GgMQWFUiigsa0U=;
- b=r6Nvq+rxeQxCWzAcw8aDRZDugDzbMk8jQDXr5u8T7ss65LXsa1FemLTXqJI3/cUwpjb4aGbuM
- LROuVPUNLjfC3wMD5Fu0cTJ/E19QWTfNox/kh+kMSCdsY1DMGbP2F+S
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
-Content-Transfer-Encoding: 7bit
+References: <20261120020850.24318-1-joe.l@reflexrobotics.com>
+ <20261120020850.24318-2-joe.l@reflexrobotics.com> <awAT-ofy0p_uhvGN@ashevche-desk.local>
+In-Reply-To: <awAT-ofy0p_uhvGN@ashevche-desk.local>
+From: Joe LeVeque <joe.l@reflexrobotics.com>
+Date: Fri, 20 Nov 2026 10:32:52 -0800
+X-Gm-Features: Aa3M54ooMSbRCqeK2L0GWBOnVFZSWQ2EEWv_N9fWbx0PggVT0BMZwu4_tSVZ3Vo
+Message-ID: <CAJLMkXafYtUx7gXE8g-sJ0keGW8eSrVGPc2ao5EzjkxZ-nN2cA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: imu: inv_icm42600: return -EBUSY for temperature
+ reads when idle
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jean-baptiste.maneyrol@tdk.com, jic23@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Hi Andy,
 
-The list node, channel spec and buffer pointer of struct iio_dev_attr
-are now only used through struct iio_chan_attr and the types extending
-it. Remove them, so that attributes declared by drivers through
-IIO_DEVICE_ATTR*() and friends no longer carry them.
+The -EBUSY here is consistent with the existing invalid-data case in
+inv_icm42600_temp_read(), which commit dfdc31e7ccf3 (=E2=80=9Ciio: imu:
+inv_icm42600: change invalid data error to -EBUSY=E2=80=9D) changed from
+-EINVAL to -EBUSY for the same situation (both accel and gyro off).
+Patch 1 returns the same error for the stale-data case, so userspace
+sees one consistent response.
 
-On 64-bit, without lockdep, this shrinks struct iio_dev_attr from 72 to
-40 bytes.
+https://git.kernel.org/torvalds/c/dfdc31e7ccf3
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- include/linux/iio/sysfs.h | 9 ---------
- 1 file changed, 9 deletions(-)
+Thanks,
+Joe
 
-diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
-index de5bb125815c..1e4122b8c13a 100644
---- a/include/linux/iio/sysfs.h
-+++ b/include/linux/iio/sysfs.h
-@@ -9,23 +9,14 @@
- #ifndef _INDUSTRIAL_IO_SYSFS_H_
- #define _INDUSTRIAL_IO_SYSFS_H_
- 
--struct iio_buffer;
--struct iio_chan_spec;
--
- /**
-  * struct iio_dev_attr - iio specific device attribute
-  * @dev_attr:	underlying device attribute
-  * @address:	associated register address
-- * @l:		list head for maintaining list of dynamically created attrs
-- * @c:		specification for the underlying channel
-- * @buffer:	the IIO buffer to which this attribute belongs to (if any)
-  */
- struct iio_dev_attr {
- 	struct device_attribute dev_attr;
- 	u64 address;
--	struct list_head l;
--	struct iio_chan_spec const *c;
--	struct iio_buffer *buffer;
- };
- 
- #define to_iio_dev_attr(_dev_attr)				\
-
--- 
-2.43.0
-
-
+On Fri, Nov 20, 2026 at 1:33=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Thu, Nov 19, 2026 at 06:08:49PM -0800, Joe LeVeque wrote:
+> > The temperature sensor only measures while the accel or gyro is on.
+> > With both off, its data register keeps the last measurement, so a
+> > temperature read returns stale data. On an ICM-42688-P, a value held at
+> > about 52 C was returned while the chip was at about 62 C. The data only
+> > reads as invalid before the first measurement after power-up.
+> >
+> > The temperature is the die temperature, used for accel and gyro
+> > compensation, so return -EBUSY when both are off instead of stale data.
+>
+> Hmm... EBUSY means they are doing something and kinda hints user to come =
+again.
+> Would this condition change on its own if user comes again later with the=
+ same
+> request?
+>
+> ...
+>
+> > +     /*
+> > +      * The temperature sensor only measures while the accel or gyro i=
+s
+> > +      * on; with both off, its data register holds a stale value.
+> > +      */
+> > +     if (st->conf.gyro.mode =3D=3D INV_ICM42600_SENSOR_MODE_OFF &&
+> > +         st->conf.accel.mode =3D=3D INV_ICM42600_SENSOR_MODE_OFF) {
+> > +             ret =3D -EBUSY;
+> > +             goto exit;
+> > +     }
+>
+> I would choose one from the below (they all have their pros and cons)
+>
+> ESTALE
+> something like this, but error message is specific about file handle
+>
+> EL3HLT
+> what is level 3? But we have the only user, and it is outside network
+> and it sounds close to this case, but why not EL2HLT? (Also the users
+> are outside network.)
+>
+> ENODATA
+> also used a lot, so semantics not so clear, and data is there, but outdat=
+ed
+>
+> Depending on the answer to the question at the top of my reply, the error
+> codes may be EIO, ENXIO, EPROTO, EAGAIN (but if EAGAIN fits to the flow,
+> EBUSY also fits).
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
