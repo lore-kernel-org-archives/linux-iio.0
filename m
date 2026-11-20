@@ -1,100 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.45
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795175225;
-	b=FzQdMTdgjrkxRkRNWRhmVcDK0dAJkyUHuEMp32jj115pC4gPMLrZVPvncPQxLgRctKLR
-	 4/t7wAFaOWyac2HKXtNs9zonZwVKBgz6ePnQ/086N+rB/Ft27fArYA24bxG3+XsQSiqO+
-	 gczSI/HD7A1fbLbRRXp7BZGq8kODMfDicNegDM1X+PLTB01fuC8YTqMVKNNPtlPvlGl+P
-	 xQeF/0yggytMtTjAOKLVbLuPRM1o5RDbRqDH0/yLzc5AtcTlC/1qHZehy+h/Cp8rxc1wP
-	 kf6MSCC4JPPs2p6TsT1PIwveUPmSZjQ0HSmPIh31h06O0s6Y7dAPqBjcnC94oc/8nMQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795175225;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.170
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795176103;
+	b=RFaALHlv83QeAkKBJbYQelibHNaK+xqQGWhiavQxi+Y1Lspqv3JnVBaMS86lt1brNNFv
+	 4iO6ytmXK4EYuSA13Ql3ZuHrc1s5wnGqO8WR3pZYOd30SqksNB+0CuNkNTsbbMAInXiuY
+	 a58cF0hg1j6o/NtZorOZtuxjHiY3Tp2EAZw8PYKc/o7gYMBQztnTZ7Gb3VLgu61lyw2Rw
+	 5v9IZ+6bVAkpi4F6fkbeJ5sG0lZhBA7hd1hov2al0yEifr2Lsc5NNrUWtWlm09wp4/IKS
+	 C3frTnbHyiR2oZ+RrXFeL8oEqR01Tyh6X6wfZXOe4Ms/LTlG5z3ToQgLCzYwpZ/4vqA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795176103;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
-	b=i37p6IO4juCI130/meIF/6ar3n4N9jJ+wG70/W2740YipQdl49qmCNqiQsDgHFGMvjUh
-	 hntQlrMfHYRVu7dxde1PtONFdZvroFqb8G8ip3yzYvFbcqT3a6r2Y7NZgx3kAcgfVurO+
-	 zx8i3OmCNzg2mQF8QMas/l6mtTn2Svxp/stETQ+ejSqR9833xGJEREkN1BGCAVQkD/mWu
-	 2AeOSV0a9KaKpoal7pHbi/NtbREqYLDHPxz8Y67S423OFDiA2a2q0IJ+79UhWn5YXcEjE
-	 faBKhk6SFkArxwQ70dT1dpVE2DKlrlxN0y8js29smNL9FAoCATQvjeQvzUJH4nljTAw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=MAU1alsnTI2aWDlPsrvvBfpXKOIn933Znnm/A0R9ZLc=;
+	b=5D69jm/z9voQ+EZGSEfRA0RhWlrbMVWpBCwzn+enXQWQR4tvxXMqxV3q8JfSPI56nLu+
+	 igkYDSY96B5AKyApXdWxdv+TJbtYA75sZ4IGf0pIKneIAL/dVC1pDwzJh8uWoGO71pphx
+	 CnxZ41K8Io30qJvm9e/J4ACZvscKOeiRZMRsjcQVHTRrmco9LCckcfFlkQN2O7zhX8FA7
+	 +IATDHjgTq7otvTcaKbAk70g4xvABYP++g9hNQsB8JkuF/8WojIukPeLS9warLALq+aQw
+	 0pKgarsZwNPQ8+uhU70heaj0RT5ddcgtLcGznRQAaN5bxrvzGbmfpZRYaauwdHkAPmA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h8XHcKwO;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.45
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=BsVfFHBz;
+	arc=none smtp.remote-ip=209.85.208.170
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC15D606A33A
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 11:47:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AC15D606A33A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35930606A32C
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 12:01:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 35930606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h8XHcKwO
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-c4d5b2db4bbso185221766b.0
-        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 03:47:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795175223; cv=none;
-        d=google.com; s=arc-20260327;
-        b=PX/US8qBgXfGGLmSWzTk53bg/A5ZFqtTi12CQqHEbmGC158GR0F1SnMFr+4CEwGZcP
-         DNE6Kt9LIMAW15gbE03xqIk+eFy2qHxnyRZmj0yS8Emt4Jnwsl/r4cuM/vQRk1Kg3PS8
-         lO0nUmaBa0tBk2nEiL+quQz5u5OznImW2cdhaD7cwHdj+RLbgjDX0QKJwcWwml8Zigwx
-         SabD/IHhsXZoKhffPq2jiN+Gy+Y5HZuTC92bQzZ9JnFgrdgnVZds5vHbv5wDSLAm3mvh
-         JGnmOH6uNWz3gZV0At0vt5fkq5Y28hWUBvOhTcnklSJXwcQEZ86CKoW1RsGuUAMFYrSm
-         JFAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
-        fh=vt+Ly1J8Y+VIXRSV795pDU+4nRu7Q8IYDg+UfwP9JOs=;
-        b=oZqnAC26PY6/uF5wuSRFmDCQ1rBhzISYh6WK6d42Dsx+IBXmvQtS20wusoeAn8lGos
-         AQx0FAWY0Jvrqh09UHJL3IRbttREsG6/ei3Jjp09/CpRd8H23vB/SxA+I3bFrl92t0Jr
-         6kN1XApvSMl8CPWyzeoKDcy8W/ReEgs4QBaQmCwFue1WLEj+gOQLwy+hSRoirdW+l0U2
-         C5rTqzkCBmo6xJre/fq7x/GIVe/wp6QKqf3gPygk/yLRM6u7IPMSbgIWXlhvPOTqQpsp
-         oxSmchklAwBvmKxFq8hA2aBrkAnQqh3mlT5DisAxptlpmpRkCMJHvEGyez5TJ+xEt+CO
-         vFlQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=BsVfFHBz
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-3acd239776cso5995401fa.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 04:01:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795175223; x=1795780023; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
-        b=h8XHcKwO3F4PD3G/dNgWJoDK7w+p01JurVHWm6TsDO61jAell/PyYWi/Lkp4JK+q+d
-         oB7p5pMdy2OWl8rcS9TpNSq/Dbx/TySYfI25oOPYY54YssBRxOGtTzYn1v2PpNUs6V7m
-         D2aJgG5LdoF+ollwM6570vbjZ11O41a8ORPQXv2gbPHKg1CVRc6acVPLMjaozqazPzZ+
-         SPdxFgkhvENYOT0TNfDXXeNNzZ4RUjhlUiyljzvwkV3CFe+tvRaNW1XNdWD3oMg5i4or
-         2kvtcIQChUa6lRthcdY5xmXCMVibFDSg4uIHigtREW0FK/T6GRMB3pOUKOdQ0Cr9yV43
-         6WVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795175223; x=1795780023;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20260707; t=1795176101; x=1795780901; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
-        b=pqSNU6dvKnbee1Q4BPdItK0DmMVaPDqSCKyZ4P6hLz0bF1EvOwHgomZb7EG+zoueGN
-         b+eMALEtMwmrwI4onypGD8McngX1Nv9BFalmFKq0ifpTgf/UHZBXOd9aLzqFGhSkAiGl
-         ar4b08FdIqSGUqZyLiZWypiGmPXBRo1GwG5saQ6AEHwKy4jrT2PzOJNpIXEw9u+Ckc76
-         qXAAcR8gLy+dtLl/ty9c4oCnzKQVCsEmXG2VhnGL5odyTvj76ekIHVy4QYmy00t0ifK+
-         QxBg8KgcP+l8h2likShru9YgvSLjJFfI8dJt16CtAKicRYR6MLaVxnwTx9PBBpVKxfQB
-         W+OA==
-X-Forwarded-Encrypted: i=1; AL+hErENkmHSaqe7QtISHMTjFufn0isf5cyqbTgFXgXeWdUFjGX2jHvp8ujbRcx5xsctrKKoS9UFZk9nWAg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8CEraSq2otLfnRKW7mU0bpw5/+4fg87fWCzq3PhWKygNc7f07G
-	OkGXRSj3fHfypYSeFAF1Wg3uU6KZG3FZdgffRunnM4vULzcxbG8KDmihKlPgMe+OsNrtXMabvv1
-	D7lcPP8Bd+ZLnuHGhspf6iG4IgvNb+QI=
-X-Gm-Gg: AYBFou2e9gk8dYsn3xR9qczf1OPL4gvlsLfGxzq6eP5ZNFyctyceb7QB174nZImqIEV
-	tvGhOYemVmswd5PVOgVEv46g824mFw0OIqz4H3EVgX3GJwk10J6yRx7LWpyXmnt4reTjhuQ4M+6
-	7cdtk2Q/r9pk1cPJ5PquyT8cFwgOvehowMRi72sM4dTF9vmJTnHoryzXYvomEGCKsxPWEky0JAu
-	neL308HQ9Agg3kCsR3TommSrPpPXvkTYD6FWQcn3XsmXvc+1NIP5omQ7dx6wwaFMTkU4E7fYdh6
-	YYD8aC3i9iYIY1CZ9rj7IKHQP0iYJBKjgRUQSIucbZMN12yE3LjbPXeO5ErgTEGknEp4a57jjR9
-	ItYm2lT+zzd1vkCqBhf8NCU6tpo1R6TCPjblXe0qn1DboKUu6oi0A
-X-Received: by 2002:a17:907:6d26:b0:c51:50c9:741c with SMTP id
- a640c23a62f3a-c5150c98208mr51413566b.10.1795175222825; Fri, 20 Nov 2026
- 03:47:02 -0800 (PST)
+        bh=MAU1alsnTI2aWDlPsrvvBfpXKOIn933Znnm/A0R9ZLc=;
+        b=BsVfFHBzdir5k0WfQJg7M2TKjqOQlCznxkryG6RC+SXvakiGG3qoADnIipX3jLyW3k
+         wYG+y/NBBdMX7kMd57swLmjdawwqSMGbYRqAe+IGN/evNX/aTFynUaG+PB34OtUMFiGG
+         fI3PzFc8pGoQH+NgdxjfD1mkOKTPDCdddPvvdg9i3r6bTEs9TLK2BxJuEKY39pnYJn6C
+         hSefyInd50J2VDe7NfW9nHWMRncvyeKq6xhMHdCbQEmoAib+YaU2jRy0suhdEUKel2dr
+         h5GfuVwNBone6cywL7EKfYtsY62ftNf5C9ySC51aplwfsocKVSUaZKP3V7thbyINLeq9
+         P8UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795176101; x=1795780901;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=MAU1alsnTI2aWDlPsrvvBfpXKOIn933Znnm/A0R9ZLc=;
+        b=PDCFtwXWPhoWbuH+ffaUH4xg6dSs8YeLLDrmVKnWK+zTU2t5tD/PR01NLHOz7VHF4j
+         BjuZAy1EWdfQZVOHxRlAx7aLGDpCN5UdeCaixhIFaHNImJ+lLYV8q7v+SbK1HYhzEp7G
+         A+9iXO5UptTfAjgqL6qbecsE6sHv01ifqbNPanoC0K75b67+1CChbZxY4Je1q1ohU5fe
+         B5EsrCObxxj3fbY6RXz3G17Pkon/XydMQcuCIBFr9M8oHl8bp3md3RzQizjXHEV/vf35
+         rhnTIxZUq5SdJqyfIhmPPWg7A9C56+Xd9kGUWztaibwpa6oKI8CGM4R2KyOTv/1fhto9
+         HLfA==
+X-Forwarded-Encrypted: i=1; AL+hErE2FGg6ThcXnqlll15IBcqnkkqlk/82pQqf+X6whbM/wvq8AtleisFJdAa1ibM12anmBPlbkiXLXxg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+vgEIP9fIfE2cWqu/0HSe6fGtSs+1nGvyIezZUYOCTUw7WHR9R
+	5VP9+UTUDFfuv+qQ1cWSKhL+CFmvEloWDUSNL/Zei5T3reOR9R0Xb/H/
+X-Gm-Gg: AZFdTZc2CLc2NqGJhyZauDmJh1UOzIQbG8lNn9bdPMuagksWW93aifX3vG/8247EadJ
+	0B4lJfsaSXFCif8w/Fg8iV6A9WD5yyokM7trF2GDOEGSbZJlbmI3zUwWb97Fvk73wHVwD4X6vAL
+	S0zU7D2FW6ERmCXMxbhByNJndkcu39Xbo6CV8yyJbCKq4b7XWpV72O2FAnQ7z4oL++R6l6AQwP6
+	+d8x5h7MJs8CayCi1aykxKsacL1g2fGjq2Jlcn/oGgLlYFs0hop6bKpA4DCx6fMW5s+a8z6G1n0
+	Uey2/5D4RkAhcf5uhScqA4twwgy+p7juL7p6ayMNzQ9Cv9x4ApYR7FioRL/TPF6TVAROMRnvf0Z
+	IzDnab3NI7YoNfpjEu/8NAl+M18agGEtrXzXdip0kxjdcaAwpxR08vz8nCD8MDH6+Ltn3Bg57pn
+	6QdtQlihlpqWDDL/NoxCWnbC2mzbvjf3ZXBZbDFyuLEPGw0C+sd4r0j7WT0mD1LcFjYuynP8AZe
+	7TPc0Ew9GVpSy6ph8UhprTSAeTqf/D5f91rv/H1kNUDTPtDDnaamyfn7SwZmCeFk6nmRflxghhx
+	Gta37VhNxkOBauWQ8mZD7rAS6plyXZHgNLqg7db2BSamtSej6TThg1vudIuMPgWJ0Nr4ssEOpWo
+	nwtPnc87YdAAzylsYC570lkyTICBuGlE=
+X-Received: by 2002:a2e:be8d:0:b0:3a6:6f81:1027 with SMTP id 38308e7fff4ca-3ae7fa94f03mr8379171fa.24.1795176099614;
+        Fri, 20 Nov 2026 04:01:39 -0800 (PST)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae8055cf80sm6924401fa.36.2026.11.20.04.01.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Nov 2026 04:01:37 -0800 (PST)
+Message-ID: <bf0dd82b-e1a5-4ab9-9ab7-1641181d303f@gmail.com>
+Date: Fri, 20 Nov 2026 14:01:36 +0200
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,51 +93,102 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261120062125.98462-1-zhujun2@cmss.chinamobile.com>
- <20261120074417.33563-1-aleszlucero@gmail.com> <awAZnuq2XAGo5De-@ashevche-desk.local>
- <93a78ecd-d6c5-40a6-8236-d7d380f8ae54@kernel.org>
-In-Reply-To: <93a78ecd-d6c5-40a6-8236-d7d380f8ae54@kernel.org>
-From: Alejandro Lucero <aleszlucero@gmail.com>
-Date: Fri, 20 Nov 2026 05:46:50 -0600
-X-Gm-Features: Aa3M54ovYQUrLVPp60AyS3yYJr3Oqe0LpVmpu5wd0Lpr3r7__84Uamlq1W8wR8s
-Message-ID: <CAHDi9tpuEUpfFn8mETJi-_84Rg+GMdmLgYQnzg6JKTmy8yHbVA@mail.gmail.com>
-Subject: Re: [PATCH] tools: iio: Close attribute streams on parse errors
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, zhujun2@cmss.chinamobile.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	knaack.h@gmx.de, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: iio: Support ROHM BD79111
+To: Conor Dooley <conor@kernel.org>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+ Matti Vaittinen <matti.vaittinen@linux.dev>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Joshua Crofts <joshua.crofts1@gmail.com>, Radu Sabau
+ <radu.sabau@analog.com>, Janani Sunil <janani.sunil@analog.com>,
+ Salih Erim <salih.erim@amd.com>,
+ Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Jakub Szczudlo <jakubszczudlo40@gmail.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1795009599.git.mazziesaccount@gmail.com>
+ <f69b996cc07fad1712871fb8b0436c71abd435b9.1795009599.git.mazziesaccount@gmail.com>
+ <20261118-ancient-ominous-4f2a4a37369b@spud>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20261118-ancient-ominous-4f2a4a37369b@spud>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Andy,
+On 18/11/2026 19:37, Conor Dooley wrote:
+> On Wed, Nov 18, 2026 at 04:19:11PM +0200, Matti Vaittinen wrote:
+>> From: Matti Vaittinen <mazziesaccount@gmail.com>
+>>
+>> ROHM BD79111 is very similar to the BD79112. Both are ADC/GPIO devices,
+>> where pins can be configured to be either used as GPIO or ADC inputs.
+>> ADCs are 12-bit SAR ADCs and GPIOs support input/output but not being IRQ
+>> sources.
+>>
+>> The main difference is amount of channels/GPIOs. The BD79112 has 32 pins
+>> for this use, the BD79111 has 16. Furthermore, the BD79111 data-sheet
+>> promises 0.5 MSPS sample rate with maximum of 10 MHz SPI clock,  whereas
+>> the BD79112 data-sheet mentioned 1MSPS rate with maximum of 20 MHz SPI
+>> clock.
+>>
+>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+>>
+>> ---
+>>
+>> Note, I had to change the 'root-level' additionalProperties: false to
+>> unevaluatedProperties: false in order to allow the properties in the new
+>> allOf:
+>>    - if:
+>>       ...
+>>
+>> section. It seems to me this is what a few other bindings in IIO do, but
+>> I suppose it makes this "less strict". Well, since I am terrible with
+>> writing bindings, I'd better point this out and ask if it's ok, or if
+>> there are better way(s) to handle this?
+> 
+> I don't think you should have to do that though, since the children are
+> described in the same file.
+> If you instead retained the pattern properties section, and lowered the
+> restriction to channel@<any number> with reg with the max of 31 and in
+> the conditional section constrained reg to a max of 16 does it work
+> without the unevaluatedProperties change? We typically want properties
+> defined at the top level and constrained in conditional sections anyway.
 
-Good point, just calling fclose() without perror() (or using
-fprintf(stderr, ...)) is cleaner here, especially since filename is
-already freed at those points.
+Gah. Either I don't know how to do this properly (which is likely), or 
+there is a slight caveat. When I tried to do what you suggest, the 
+binding allowed channel@X, where the <X> was is out of the range. Sure 
+thing this was caught by 'reg' being out of the range, but it still 
+allowed odd combination of
 
-Regards,
-Alejandro
+channel@X, reg = <Y>, if Y was in accepted range.
 
-El vie, 20 nov 2026 a la(s) 4:40=E2=80=AFa.m., Joshua Crofts
-(crofts@kernel.org) escribi=C3=B3:
->
-> On 20/11/2026 10:57, Andy Shevchenko wrote:
-> > On Fri, Nov 20, 2026 at 01:42:39AM -0600, Oscar Alejandro S=C3=A1nchez =
-Lucero wrote:
-> >>
-> >> I checked both paths in build_channel_array() and find_type_by_name(),
-> >> and confirmed that neither cleanup label owns or closes the open FILE
-> >> stream on fscanf() failure. Closing them before jumping to cleanup whi=
-le
-> >> preserving the original error code looks right :)
-> >
-> > But the change has flows when errno =3D=3D 0 after the system call.
-> >
->
-> Interesting how suddenly there are now two patches fixing IIO tools.
-> tools/iio usually doesn't see much activity...
->
-> --
-> Kind regards,
-> Joshua Crofts
->
+I suppose the 'X' and 'Y' in previous example are expected to always be 
+the same, but I would still like to catch this type of an error.
+
+I am about to spin v2 where I use the BD79112 limits (channels 0 to 31 
+allowed) in the pattern properties, and then do:
+
+"^channel@(1[6-9]|2[0-9]|3[01])$": false
+to exclude 16 - 31 from the BD79111.
+
+I am not super happy with it, but it seems to work and is still decently 
+understandable even for someone yaml -illiterate like myself. :/ (At 
+least for as long as we only have ICs which don't increase the amount of 
+default channels. That might cause the exclusion regexp on other ICs to 
+become ridiculously long or hard to read. Well, I don't have such ICs on 
+sight for now.)
+
+Well, let's see what people think of it :)
+
+Yours,
+	-- Matti
+
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
+
+~~ When things go utterly wrong vim users can always type :help! ~~
