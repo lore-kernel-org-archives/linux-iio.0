@@ -1,79 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.45
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795174175;
-	b=tLgrNWnoiYnGKAyP+NIBlH4McCGs/9tMcisG6pVzDDfT3XKACR3A9e5Uhs6njer0fKSV
-	 bYWf/Q54mD9lqGZU0b+KERxaVtsssGdPNgZUYzjXZd+llMM9x0SZfQoMBanmckvBuqIxw
-	 i7NX83fmlLFjWA2qoNPf/t2idOwRB2Rw0obiFgto8qATl1TNteVmGQL7vVt1rwWI5mX+n
-	 Gyu1y/iucBc485gUOVOsvGM4W8H1IiOKTNRCeiY7T7VbCONsilrUVo9mUEv9J8xGSaHtZ
-	 G1CUo3LQtCFJXdTG7QfDBkYL0PyJ8IHBbWyWbtpTF3Q5MZb2mLRIjrCPnluB+qeAqKw==
+	t=1795175225;
+	b=FzQdMTdgjrkxRkRNWRhmVcDK0dAJkyUHuEMp32jj115pC4gPMLrZVPvncPQxLgRctKLR
+	 4/t7wAFaOWyac2HKXtNs9zonZwVKBgz6ePnQ/086N+rB/Ft27fArYA24bxG3+XsQSiqO+
+	 gczSI/HD7A1fbLbRRXp7BZGq8kODMfDicNegDM1X+PLTB01fuC8YTqMVKNNPtlPvlGl+P
+	 xQeF/0yggytMtTjAOKLVbLuPRM1o5RDbRqDH0/yLzc5AtcTlC/1qHZehy+h/Cp8rxc1wP
+	 kf6MSCC4JPPs2p6TsT1PIwveUPmSZjQ0HSmPIh31h06O0s6Y7dAPqBjcnC94oc/8nMQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795174175;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=rlJc4keRK6GaSsiQevuIQLXi+2Lt/suk1mQdTtafZTM=;
-	b=q+Oy6D28TxSlkr3WaUShvlqWKFWyt4zIMXpL1Zy2aQCHECog3lKhuMVveR3NmH8OzST3
-	 2WEEWgAjHJZN44E5dR4Jv5ESC33s5OZ7DmpKLBdENe+kuP8WovTg3qAPDS9I8T5V1IEPc
-	 lEx5GOokXOnfPQBi0cIzg0YNjtlagQGkUXBalkWeZPKsxw5nKygp6RNj5LtgvTXbJrOPt
-	 P5Z6nALq8Eoo7xg2yWg9cp7QwfgQLquvtYV90fRfVqdywvfZVElLg2aafzz1v8BoPnpUH
-	 sBDir0mB4/tK3O2oNRXvmuNDhDH6cmLTMoqesHqqOZXuoh/GzwTcgUwY7rGpXxR6ceg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795175225;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
+	b=i37p6IO4juCI130/meIF/6ar3n4N9jJ+wG70/W2740YipQdl49qmCNqiQsDgHFGMvjUh
+	 hntQlrMfHYRVu7dxde1PtONFdZvroFqb8G8ip3yzYvFbcqT3a6r2Y7NZgx3kAcgfVurO+
+	 zx8i3OmCNzg2mQF8QMas/l6mtTn2Svxp/stETQ+ejSqR9833xGJEREkN1BGCAVQkD/mWu
+	 2AeOSV0a9KaKpoal7pHbi/NtbREqYLDHPxz8Y67S423OFDiA2a2q0IJ+79UhWn5YXcEjE
+	 faBKhk6SFkArxwQ70dT1dpVE2DKlrlxN0y8js29smNL9FAoCATQvjeQvzUJH4nljTAw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g+qDtJPx;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08905606A331;
-	Fri, 20 Nov 2026 11:29:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g+qDtJPx
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795174174;
-	b=xi4LXMD9JNPiJBJgCm5nW7KWPzSbomuM0384c0Hn+4E2H6+DGLcbQWU+jyhJujBETRAR
-	 X26xVWvrzemo7SDmvbGIr+INDzVRfOTu/IYpLOw2WU9CLnMIIHRREInp7fY5rcnnZ2LC/
-	 gvF7N3FT3cF8pMCHLpPaIc49xIOIpUuY2kUmifvHPYp68RyorVg0M29o9g3gFGcSQEm5M
-	 YYF8mp8FVMefRbTcxTvX2RKavGaLL7APwyqoXoWJPJ6F1xC4Laww5Y+swtU2z6RnqaXE1
-	 AhRcLIiZ5UkwohpTZPz/UCcvYg3fLUm58SxLgMF+qQGNdt1hBcvB4wqecGSRvciDJBw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795174174;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=rlJc4keRK6GaSsiQevuIQLXi+2Lt/suk1mQdTtafZTM=;
-	b=rn0xJV7FcXEAOg5JDMp8P52f7j2ac5BPY+RFhRINz418+gio2zt2VYzXTXBnl4gjz4nu
-	 OvkXsPgJFV21SEry37m6f9Rj2AmTuGTJprG2CBaEYuJjRfyBNttfESGuUIP5OnJOfZf2s
-	 WN4MrwdBTamOUdskKggBI0XcPt8GXV7+iU2mHYN6ibF66Mt7OzmV6PRojJX/grj98PGsz
-	 zSv3ifaS3U76GFBJKVGrlr9lK1NDlyTuDxX4GpbNYMV1XEYeKmpgzL+SdtjigBv44O+fu
-	 N+uXE1yf0jjbt+Or20TdXhogLlSQ8yCMm+xE3pndclQndccchSXvC8de+u6ZBKxfP5A==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h8XHcKwO;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.45
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 85C321F000EF;
-	Fri, 20 Nov 2026 11:29:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795174174;
-	bh=rlJc4keRK6GaSsiQevuIQLXi+2Lt/suk1mQdTtafZTM=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=g+qDtJPxdC0ZXfU4aB4m1RLmeGPhux4kX39vWLgnyTFwE6rXZnosHsHMtdocA82UI
-	 gGl6h7A+CWt1Ku99Z3DR35ykzAXCKcsuyhdc1wgMoS70f/jCeM2/+XiaXpMlPaiGRP
-	 hZSVLu2/ZU3J6mAuMWc5HbeKhONpo5mRgWxnxRfsJh2SSmIFkGytn6OU7YC6Fesru8
-	 9fEG1pk6Ro4ZipOYcsORcjX/wt6fPo4fwxJqxEockw3BIujOkMwrO5cqW95s6qRk22
-	 rYBcgIqqI1eeU43u79vAhCdNeevVNKfNhiOcO2Ma4BcZSiuBmksXYEwiPrJsDVrvLC
-	 /RAKFvIbyrVrg==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 12C8049849;
-	Fri, 20 Nov 2026 11:29:24 +0000 (UTC)
-From: ILYAS NHASSE via B4 Relay <devnull+ilyas.nhasse.skf.com@kernel.org>
-Subject: [PATCH 0/2] iio: adc: ad7124: support boards without RDY interrupt
-Date: Fri, 20 Nov 2026 12:26:46 +0100
-Message-Id: <20261120-ad7124-no-irq-v1-0-7826c5c3fd25@skf.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC15D606A33A
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 11:47:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AC15D606A33A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h8XHcKwO
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-c4d5b2db4bbso185221766b.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 03:47:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795175223; cv=none;
+        d=google.com; s=arc-20260327;
+        b=PX/US8qBgXfGGLmSWzTk53bg/A5ZFqtTi12CQqHEbmGC158GR0F1SnMFr+4CEwGZcP
+         DNE6Kt9LIMAW15gbE03xqIk+eFy2qHxnyRZmj0yS8Emt4Jnwsl/r4cuM/vQRk1Kg3PS8
+         lO0nUmaBa0tBk2nEiL+quQz5u5OznImW2cdhaD7cwHdj+RLbgjDX0QKJwcWwml8Zigwx
+         SabD/IHhsXZoKhffPq2jiN+Gy+Y5HZuTC92bQzZ9JnFgrdgnVZds5vHbv5wDSLAm3mvh
+         JGnmOH6uNWz3gZV0At0vt5fkq5Y28hWUBvOhTcnklSJXwcQEZ86CKoW1RsGuUAMFYrSm
+         JFAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
+        fh=vt+Ly1J8Y+VIXRSV795pDU+4nRu7Q8IYDg+UfwP9JOs=;
+        b=oZqnAC26PY6/uF5wuSRFmDCQ1rBhzISYh6WK6d42Dsx+IBXmvQtS20wusoeAn8lGos
+         AQx0FAWY0Jvrqh09UHJL3IRbttREsG6/ei3Jjp09/CpRd8H23vB/SxA+I3bFrl92t0Jr
+         6kN1XApvSMl8CPWyzeoKDcy8W/ReEgs4QBaQmCwFue1WLEj+gOQLwy+hSRoirdW+l0U2
+         C5rTqzkCBmo6xJre/fq7x/GIVe/wp6QKqf3gPygk/yLRM6u7IPMSbgIWXlhvPOTqQpsp
+         oxSmchklAwBvmKxFq8hA2aBrkAnQqh3mlT5DisAxptlpmpRkCMJHvEGyez5TJ+xEt+CO
+         vFlQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795175223; x=1795780023; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
+        b=h8XHcKwO3F4PD3G/dNgWJoDK7w+p01JurVHWm6TsDO61jAell/PyYWi/Lkp4JK+q+d
+         oB7p5pMdy2OWl8rcS9TpNSq/Dbx/TySYfI25oOPYY54YssBRxOGtTzYn1v2PpNUs6V7m
+         D2aJgG5LdoF+ollwM6570vbjZ11O41a8ORPQXv2gbPHKg1CVRc6acVPLMjaozqazPzZ+
+         SPdxFgkhvENYOT0TNfDXXeNNzZ4RUjhlUiyljzvwkV3CFe+tvRaNW1XNdWD3oMg5i4or
+         2kvtcIQChUa6lRthcdY5xmXCMVibFDSg4uIHigtREW0FK/T6GRMB3pOUKOdQ0Cr9yV43
+         6WVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795175223; x=1795780023;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rboqm42kfeMlnWRH6brT6vQGjohJTnVO8gYOYrF0z6E=;
+        b=pqSNU6dvKnbee1Q4BPdItK0DmMVaPDqSCKyZ4P6hLz0bF1EvOwHgomZb7EG+zoueGN
+         b+eMALEtMwmrwI4onypGD8McngX1Nv9BFalmFKq0ifpTgf/UHZBXOd9aLzqFGhSkAiGl
+         ar4b08FdIqSGUqZyLiZWypiGmPXBRo1GwG5saQ6AEHwKy4jrT2PzOJNpIXEw9u+Ckc76
+         qXAAcR8gLy+dtLl/ty9c4oCnzKQVCsEmXG2VhnGL5odyTvj76ekIHVy4QYmy00t0ifK+
+         QxBg8KgcP+l8h2likShru9YgvSLjJFfI8dJt16CtAKicRYR6MLaVxnwTx9PBBpVKxfQB
+         W+OA==
+X-Forwarded-Encrypted: i=1; AL+hErENkmHSaqe7QtISHMTjFufn0isf5cyqbTgFXgXeWdUFjGX2jHvp8ujbRcx5xsctrKKoS9UFZk9nWAg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8CEraSq2otLfnRKW7mU0bpw5/+4fg87fWCzq3PhWKygNc7f07G
+	OkGXRSj3fHfypYSeFAF1Wg3uU6KZG3FZdgffRunnM4vULzcxbG8KDmihKlPgMe+OsNrtXMabvv1
+	D7lcPP8Bd+ZLnuHGhspf6iG4IgvNb+QI=
+X-Gm-Gg: AYBFou2e9gk8dYsn3xR9qczf1OPL4gvlsLfGxzq6eP5ZNFyctyceb7QB174nZImqIEV
+	tvGhOYemVmswd5PVOgVEv46g824mFw0OIqz4H3EVgX3GJwk10J6yRx7LWpyXmnt4reTjhuQ4M+6
+	7cdtk2Q/r9pk1cPJ5PquyT8cFwgOvehowMRi72sM4dTF9vmJTnHoryzXYvomEGCKsxPWEky0JAu
+	neL308HQ9Agg3kCsR3TommSrPpPXvkTYD6FWQcn3XsmXvc+1NIP5omQ7dx6wwaFMTkU4E7fYdh6
+	YYD8aC3i9iYIY1CZ9rj7IKHQP0iYJBKjgRUQSIucbZMN12yE3LjbPXeO5ErgTEGknEp4a57jjR9
+	ItYm2lT+zzd1vkCqBhf8NCU6tpo1R6TCPjblXe0qn1DboKUu6oi0A
+X-Received: by 2002:a17:907:6d26:b0:c51:50c9:741c with SMTP id
+ a640c23a62f3a-c5150c98208mr51413566b.10.1795175222825; Fri, 20 Nov 2026
+ 03:47:02 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,81 +104,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAHYuAGsC/yXMTQ6CMBBA4auQWTtJ/5DEqxgXpTPgsCjSqjFpe
- ncKLr/FewUyJ+EMt65A4q9kWWODvnQQnj7OjELNYJS5amUVehq0cRhXlLQhMVnTE3vnA7TmlXi
- S3/m7P/7On3Hh8D4mUOsO9FM0enEAAAA=
-X-Change-ID: 20261030-ad7124-no-irq-ded325dea4ac
-To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, ILYAS NHASSE <ilyas.nhasse@skf.com>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795174009; l=2214;
- i=ilyas.nhasse@skf.com; s=20261120; h=from:subject:message-id;
- bh=bCTZjYQqzky+qnBbt4zskphWPNqvvqYylRoFceegAkA=;
- b=XrY+1DgQTQzurTiTdSTmcm2xbCafCOp+fgphvI9Sdr68cWSlgcAzHQ0S0v3/6l961U9KUrQW9
- DiR4X2m1IMFBZIeDWzoRtypKA/63hisWMA2Bnf8KTVotSgINX18KNV4
-X-Developer-Key: i=ilyas.nhasse@skf.com; a=ed25519;
- pk=DeEyhWzUoP0HCAWFV/8oy5EFF+41tZxPpWZhfGyiMS4=
-X-Endpoint-Received: by B4 Relay for ilyas.nhasse@skf.com/20261120 with
- auth_id=1581
-X-Original-From: ILYAS NHASSE <ilyas.nhasse@skf.com>
-Reply-To: ilyas.nhasse@skf.com
+References: <20261120062125.98462-1-zhujun2@cmss.chinamobile.com>
+ <20261120074417.33563-1-aleszlucero@gmail.com> <awAZnuq2XAGo5De-@ashevche-desk.local>
+ <93a78ecd-d6c5-40a6-8236-d7d380f8ae54@kernel.org>
+In-Reply-To: <93a78ecd-d6c5-40a6-8236-d7d380f8ae54@kernel.org>
+From: Alejandro Lucero <aleszlucero@gmail.com>
+Date: Fri, 20 Nov 2026 05:46:50 -0600
+X-Gm-Features: Aa3M54ovYQUrLVPp60AyS3yYJr3Oqe0LpVmpu5wd0Lpr3r7__84Uamlq1W8wR8s
+Message-ID: <CAHDi9tpuEUpfFn8mETJi-_84Rg+GMdmLgYQnzg6JKTmy8yHbVA@mail.gmail.com>
+Subject: Re: [PATCH] tools: iio: Close attribute streams on parse errors
+To: Joshua Crofts <crofts@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, zhujun2@cmss.chinamobile.com, 
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	knaack.h@gmx.de, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Boards may wire the AD7124 DOUT/RDY pin to the SPI MISO line only, for
-instance when the ADC sits behind a digital isolator that carries just
-the SPI signals. Such boards can't use the driver today: the binding
-requires an interrupt, and the sigma-delta core can't probe without one.
+Hi Andy,
 
-The end of a conversion or calibration is also reported by the RDY bit
-of the status register. Analog Devices' no-OS driver waits for AD7124
-conversions and calibrations this way (ad7124_wait_for_conv_ready()).
+Good point, just calling fclose() without perror() (or using
+fprintf(stderr, ...)) is cleaner here, especially since filename is
+already freed at those points.
 
-Patch 1 makes the interrupt optional in the AD7124 binding.
-Patch 2 lets the sigma-delta core poll the RDY bit when there is no
-interrupt, for single conversions and calibrations. These devices then
-only support direct mode, as the RDY interrupt is the only trigger of
-the triggered buffer. No AD7124 driver change is needed.
+Regards,
+Alejandro
 
-The polling applies to every device with registers, but only the AD7124
-binding is relaxed: the other bindings still require the interrupt, so
-boards using them are not affected.
-
-Open questions:
-- Poll period: 20 ms, a fifth of a conversion at the AD7124 default
-  10 SPS. On our board the SPI clock runs at about 6 kHz through the
-  isolator and the controller uses PIO, so each status read costs about
-  2.7 ms of CPU time and the period directly sets the CPU load during a
-  conversion.
-- Should polling rather be opt-in per driver, with a flag in
-  struct ad_sigma_delta_info?
-
-Tested on a TI J721E based board with four AD7124-8 on one SPI bus
-behind an isolator, without RDY interrupt: direct reads of all channels
-with an equivalent implementation on a v6.12 based kernel. The polled
-calibration path is build-tested only.
-
----
-ILYAS NHASSE (2):
-      dt-bindings: iio: adc: adi,ad7124: make interrupts optional
-      iio: adc: ad_sigma_delta: support devices without RDY interrupt
-
- .../devicetree/bindings/iio/adc/adi,ad7124.yaml    |  1 -
- drivers/iio/adc/ad_sigma_delta.c                   | 47 +++++++++++++++++++---
- 2 files changed, 41 insertions(+), 7 deletions(-)
----
-base-commit: 7d80b4b383bc53b48abd3a30ca4a91cdab568bfa
-change-id: 20261030-ad7124-no-irq-ded325dea4ac
-
-Best regards,
---  
-ILYAS NHASSE <ilyas.nhasse@skf.com>
-
-
+El vie, 20 nov 2026 a la(s) 4:40=E2=80=AFa.m., Joshua Crofts
+(crofts@kernel.org) escribi=C3=B3:
+>
+> On 20/11/2026 10:57, Andy Shevchenko wrote:
+> > On Fri, Nov 20, 2026 at 01:42:39AM -0600, Oscar Alejandro S=C3=A1nchez =
+Lucero wrote:
+> >>
+> >> I checked both paths in build_channel_array() and find_type_by_name(),
+> >> and confirmed that neither cleanup label owns or closes the open FILE
+> >> stream on fscanf() failure. Closing them before jumping to cleanup whi=
+le
+> >> preserving the original error code looks right :)
+> >
+> > But the change has flows when errno =3D=3D 0 after the system call.
+> >
+>
+> Interesting how suddenly there are now two patches fixing IIO tools.
+> tools/iio usually doesn't see much activity...
+>
+> --
+> Kind regards,
+> Joshua Crofts
+>
