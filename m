@@ -1,80 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795168491;
-	b=Hevfq+/poAf1N1koE/FMnAgHyV68+2uhPkplv1xj+ekeAW8epuqTSS4jHRUvj8hTtJ00
-	 SHlx8yYFko7TbjFZysadmQEnhyTmjXiTcFQOKvPBGPOM+KCpxWASlIZbF8bzlbB752w/O
-	 j0v6gSIjra/gzV9ml9cc3fGR/3+sXScjIbMQMeu5mqLVRgNTsgiU2MeKQBONOPxDb5jqg
-	 Fn9wQylZrlpR5ctZ78pgoEZvECQIkaZsztMwGO9dPx+bFQz1lYpvVHuTt5K2Zk6uftAaz
-	 Onw9oqCSMviaWceli9+msDKuQipT2xDc1fKTHPpXKKfUd0hK/g3J4y7m6n1d+VsNleA==
+	t=1795168625;
+	b=1JdM2NXlVT5QCRlEvaA1LQCXC5OEx3X0g7cGvojyuLOsx6m2BvBz1G3FqbxN3vl01vQ8
+	 m6cjMg/BA683hKk139cmH+h1scJDUCLTliGcZjdssi0ApxSEsUwgrN70zvny2d5NH3Fc9
+	 lwazH2zV+WjrXBc0dLH6o1d0WbVg4XVpbIIYwjS0rqUH6Re7kZGv+PvwCXTEHf2sFj/Mn
+	 iPUaiJMITRPSBPkI/AU23xFcYLYlV7u9iTlSQT7mOKRl+HuI4SPWI8CXYKhhVwEL3fqCE
+	 gcZiCX3D2ZHsbdSVgPXq6KHsfIt7aLdWdiD4SAUigC2QtXXeCMeh1j2aDF/eqvRO9bA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795168491;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795168625;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-	 Organization;
-	bh=1yPKoraN/U69kT7YwQ42gCWawcavrR5NAFkT6eUnIXk=;
-	b=hP/5H5iIV3sBJySF1j20Jc1fMpOH7BfRiaDMQccU5Y5qcxrRF0VfhY6jkomgTNRJq5BR
-	 IXrL7+qrdg0sFsDrwcvN8dL1Q2vIu+BZ4DreAfxBBsCELUj7ATZn9XKTNCPN79aruikWd
-	 VPi0fbjdy0ZT4ScrOd29ge5JItkfV1YzsS/sMFcwrR9Sjs9AsLWzkKRX/IYoAJ0C7tKfN
-	 hXdsmJK7EgAXp4CpMGIw+qZiKzRzrbdxYJGkZbG4SN1K2wY9V7sCx7jBHGS5TZ8/uv7KB
-	 0b5yX1s3F70yzdiRN5qwjxl7urHxcZ8HO9Uugs+QawgAF31e+xAxp0UWs2BCEb1gVxg==
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=11E1vsiONRZIOK89LHLfEafRaKKb19aVtEQpwGrWsrE=;
+	b=jJheMFtRyzkqgp3hvBr4qC03xrTfF9dDvAOJ3/TqwTYCOzV6TOxgFEMSIMeuynrivizv
+	 FOS7FfgKayQMn9V45DHubzKHkN6dgnLXsF2czdrog0mslJPy+M9lwJoMqIb7Q+n41Mbrz
+	 GvMnVBr5ya23LW1T6+A7Yhna60fgr7wLDwKtHpsidLNTEDF0eo4zwApBTw/YdRDueM/O7
+	 PEMk2FUMGTpslj7NSU8q4/77yWjbUC7EkkNFfvW/m20j+RtmrE/OVCPQ0dD7AbvcYToiO
+	 M6kAoEc0i7NvBuQax2rXK39swzcPsAHHXCC01MPCkdjUdgijdoTuiQ7HdD9shAwBqow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=VP4UGr0q;
-	arc=none smtp.remote-ip=198.175.65.19
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=F58JwMvz;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9A4A606A32A
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 09:54:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B9A4A606A32A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E13D2606A330
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 09:57:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E13D2606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=VP4UGr0q
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=F58JwMvz
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795168491; x=1826704491;
+  t=1795168626; x=1826704626;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=xDCHAsK1g2UEK9JyJ+czP9lIEqCzeJEeV/YLI5nBwbM=;
-  b=VP4UGr0q+TJoxWRwFO97X5nfr2cKa3KazzjoV/wOIi3R9M8ALATsTIvN
-   kHvKhgc9etmpIMkUJkz830IP2ZMgK4Md9irzUnfRVxSva88CGfWtYfDZg
-   OZdqwgDNjOoAR4O+CStSZuisiqaFj3IW92VNULyzoMEQOc7y85eWRA260
-   +43uDVqZ26K2KcSbRh9dSL3x6eUhoxRwTnwAPhb6g8tqo8JtMTcEtqgLx
-   put3ReLkG85nGEsfuqD73mIxcj/Sox84Wakoj9pBP8TIkqbtIyo4xbNDH
-   Drg1DGVfyEdCt2qJX1u6JgE7BCEO0m3aloAFiHaqy5lTvi+4kHimg7Bkp
+   mime-version:in-reply-to;
+  bh=GVf3jkBbAgdsIaAOElJ92g3+D0cBMpcJVs6bHRq2gdY=;
+  b=F58JwMvzRdZHK1r+B9wP4tnSj2zo7Vnp472elyv6w4emdHE5/A6RHVKQ
+   PuuXDunLWYShhF9vwFhgOhc0Yt3zkOXAeDuIr0AE8vWRXrpfnnwCIGfn3
+   k0LpVlziO9/QEXBIN7bi/+HZVMqjapc7wr0l/jLg3K2PGvlT0H7V+WJha
+   wCaHEx/DPAGBrv58mTow+b19vAYjsu82QEHuCC7VUKSwu3Jm827ctv/JK
+   OnbhHxObVJFzgtEENoF7Zz++B3QISqmgxrr6dvyJ2v5jCgqYEH13tuSbM
+   zxuZpW2+AT4cQYQKnRszBPT6XjP5LSByl31hqlPNme7XZJQSSCTfQ3ls1
    g==;
-X-CSE-ConnectionGUID: EeK0vzHYQ8WdiG9JBNdsDA==
-X-CSE-MsgGUID: 4CkdQJhrQh6ou1QEvpj+3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="4088466"
+X-CSE-ConnectionGUID: mofTnllTQGKYBVKIANNH9w==
+X-CSE-MsgGUID: d0WB/HC0SWyJORxIyqreRw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3945691"
 X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="4088466"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:54:51 -0800
-X-CSE-ConnectionGUID: IS+s/TSGRzeDeQADPADawg==
-X-CSE-MsgGUID: owGFH1VbTx+8HC19GVHqkg==
+   d="scan'208";a="3945691"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:57:05 -0800
+X-CSE-ConnectionGUID: 77Pq4GPITuGeciWPMAVcPw==
+X-CSE-MsgGUID: W4p9eFsdTkGTkM0e3/5x1Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="11237300"
+   d="scan'208";a="10887647"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:54:48 -0800
-Date: Fri, 20 Nov 2026 11:54:46 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:57:02 -0800
+Date: Fri, 20 Nov 2026 11:57:00 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Oscar Alejandro =?iso-8859-1?Q?S=E1nchez?= Lucero <aleszlucero@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Marcin Malagowski <mrc@bourne.st>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: pressure: abp060mg: Use msleep() instead of
- msleep_interruptible()
-Message-ID: <awAY5umCN-RiP2Iy@ashevche-desk.local>
-References: <20261120-b4-abp060mg-fixes-v1-0-2baf026cde47@gmail.com>
- <20261120-b4-abp060mg-fixes-v1-3-2baf026cde47@gmail.com>
+To: Zhu Jun <zhujun2@cmss.chinamobile.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, knaack.h@gmx.de, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] tools: iio: Close attribute streams on parse errors
+Message-ID: <awAZbHa7FJNbAkob@ashevche-desk.local>
+References: <20261120062125.98462-1-zhujun2@cmss.chinamobile.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,28 +78,47 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261120-b4-abp060mg-fixes-v1-3-2baf026cde47@gmail.com>
+In-Reply-To: <20261120062125.98462-1-zhujun2@cmss.chinamobile.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Nov 20, 2026 at 01:11:39AM -0600, Oscar Alejandro Sánchez Lucero wrote:
-> The return value of msleep_interruptible() is ignored. If a signal
-> arrives while waiting for the sensor conversion, the thread wakes up
-> early and reads the sensor before the 40 ms response time has elapsed,
-> resulting in stale data or an -EIO error.
+On Fri, Nov 20, 2026 at 02:21:25PM +0800, Zhu Jun wrote:
+> The second enable-attribute pass in build_channel_array() and the name
+> read in find_type_by_name() jump to cleanup when fscanf() fails without
+> closing their open FILE streams. Neither cleanup path owns that stream,
+> so repeated failures leak file descriptors.
 > 
-> Use msleep() to ensure the full conversion delay is respected.
+> Close the attribute stream before leaving these paths and preserve the
+> original parsing error if closing the stream also fails.
 
-It should clarify better why uninterruptible call is better.
-Do you have any datasheet reference that states that this time has to
-be at least 40 ms?
+...
 
-Also we have tons of the IIO drivers doing the same. Have you studied
-the history to understand when it started and what the motivation was?
-Perhaps it may shed a light on this.
+>  			errno = 0;
+>  			if (fscanf(sysfsfp, "%i", &current_enabled) != 1) {
+>  				ret = errno ? -errno : -ENODATA;
+> +				if (fclose(sysfsfp))
+> +					perror("Failed to close enable attribute");
+
+If errno == 0 and ret == -ENODATA, this will print a confusing message. Try it.
+
+>  				count--;
+>  				goto error_cleanup_array;
+>  			}
+
+...
+
+>  				errno = 0;
+>  				if (fscanf(namefp, "%s", thisname) != 1) {
+>  					ret = errno ? -errno : -ENODATA;
+> +					if (fclose(namefp))
+> +						perror("Failed to close name attribute");
+
+Ditto.
+
+>  					goto error_close_dir;
+>  				}
 
 -- 
 With Best Regards,
