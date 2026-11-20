@@ -1,92 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795169674;
-	b=fAyjBh7kyJFh8uex8oJGM6uRQI65Q8ZbyIIS6DxmZW/dhftFklVZYSSJ/oFghvgSNWHx
-	 jgOFVnrZQk4KFvWkzLdeLr6Qr/UbcA1avcXq/B8VByrDSWKnzK0g88mDwcNxFr1Bp6G2D
-	 8pLoKpzmuYSfOXLV4EYMfWRH6YcBdOIvDIj94hiD6ZRyN+fl1841iVc0MAR5gX9SdFwyV
-	 h0gOeNDIpODFGiG4tS+hpdJ5iVOEumEyZE4uhMFxEyeFzDlxTU5n409KFVdiSFfmao8x8
-	 sfgZcBPvA4s5ykqRjydecWTlCuf/G8YaZeMFG/7/QLOOvqEfMFdR66xGOR3gB6NOymg==
+	t=1795170511;
+	b=V469aUVUjbgDb9Sc0dsBPTZSm+fdX/OmTjMoAgFj08R0P7hpy9NlpSQzxybkbD5oDQbJ
+	 TFj2pMfisKUSUVQhOkPt+8mSFV6fgI1AjLFwravTdWgQj/HjKdrGIIYLrvtWeIC25m+Er
+	 angy9mnYKwp9bQfNRP5UpKzNPBLHWDSmOmTfTHWrCztdcfkr0+Ua6bqNZ/7yl3ereY7w+
+	 T9RrjMlirRAZ2NV5WV/03k5GY4GrpCpBn4vGSz7JpZlRLvpCY6h15r4o6pQOG8Rb3KsXo
+	 GLnyx2XfkSf6V+GvDc/cv4aaG5KiVIXnUqxPKZZX1qRwa8oiIfg5DsKDlryL45UPC3g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795169674;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=2wpTZnwZrQmAs5yJo+iPoPh+BVh2rblZj2xJOy1LmjY=;
-	b=fSEMKOU8Uu69NY7J3n+PJO8khZFQSDwB+ER/g5+TdpMy80nYHtIMPMf6N79s74/vzBzA
-	 R3rKGdABLw724np2jcjpdeAVA592jEtJzu0K8A01/NWVJVwUCUsoLy44QABrGw55yV1UI
-	 6+amWpTt+jnFR3Jn9MEBJgr/AJksTcbR9VUqQCZ6VtjOWYN00y0pA7u/S5TJZbseo7eSe
-	 10KkmHcQen9TsQ263qtKiA+H1Q9VC4K5lgKVoiygJnRJlZ8uZQkf1EEVYo81+EqknTCQL
-	 JIjykyzt9LwktdMIXMH4KCNHarFF1OMPkUUE073IFNAXG+HV/WreP0GRF4wUKq00Khg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795170511;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Subject:Date:
+	 Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=OB2cqonua3QslxurG3tUah50j5fz64F47osIRxGjQ6w=;
+	b=zGEqsZvaRBIe320HHHv5JCPZp0yDqKChQc+6/E14v43k9zwKAg6cxxR5fj5dDdpP8JGQ
+	 BtSUa2SGCRPDX/+cESk8cqDS3SnJ7gZTb2HGlxldHz6A+IIyE9VWi/Co6Yz26haMkQq0p
+	 6CIXYYgbKxjg6AredelVw6y2vfcGMN705JlB5WWngmCi2lvleDMX02+MgY/e8JoX1ev1+
+	 JJCudBlnUV6jLcrgTeZJniQ/p2MYUlNmIVvdCcipYMqrKvjVBXuOethxt7WJ49Z5xzZvj
+	 N6lXngCRFJxg3zfv46ukn01FYypPVkYP+eLmqvFd4TJ+3oY5Uen2hNhbY3vERQmKlBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=g4x90yCK;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GnXV60lf;
+	arc=none smtp.remote-ip=209.85.221.169
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6BB6606A320;
-	Fri, 20 Nov 2026 10:14:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6BB6606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CCB3606A326
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:28:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5CCB3606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=g4x90yCK
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795169673; x=1826705673;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BtPSTbj/PV9cC6IAIY1CIdaxj+4MfBZB2XFfEOoQC+M=;
-  b=g4x90yCKe3ML0PQBUUWW2Y3N4Qr6qQmJHAR1PVdYeM97Ul3B14jgJQ2S
-   Zh8g/iBRfeDL2bbliFwZtyIIrg5akhsRLjnvFQ7o7USTvU5dqgqSQV8ab
-   dcpQevIsF9f/3wP4eFiX5Kmd5mma9sL5X58BdDFLXD/XougZMRVotMlOJ
-   AfU+du9Y1Xv7U1gUCzyF/6j4iM+sgqY6tcoS77vmi3A1DXM+6E4eHaiUb
-   uqHKC0VyJfK29g0bzfp66MC2x5QvzNYu2+ZaBP2tqA8CcFueI5TR5E8lF
-   Oy+cq/j/rMq8BuFosojjGUtG5FLmcnJyP5NgfGylWvJiCsn+S6ZmOvsok
-   w==;
-X-CSE-ConnectionGUID: oNwb4+HUT7WXkZ+25M5uAg==
-X-CSE-MsgGUID: CsaNoJO0RtWuMHNI269KpA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3947417"
-X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="3947417"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 02:14:32 -0800
-X-CSE-ConnectionGUID: yxyM0xK0TTC2TWFrLPHQfA==
-X-CSE-MsgGUID: 38UGPLKAQMqh8ylx32iCVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="10553858"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 02:14:27 -0800
-Date: Fri, 20 Nov 2026 12:14:24 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
-	Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
-	Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>,
-	Priyansh Jain <priyansh.jain@oss.qualcomm.com>
-Subject: Re: [PATCH v2 3/7] iio: adc: qcom-spmi-adc5-gen3: Add support for
- QCOM PMIC5 Gen4 ADC
-Message-ID: <awAdgHggEZtBnyYK@ashevche-desk.local>
-References: <20261120-pmic5_gen4_adc-v2-0-94d0e1fd6847@oss.qualcomm.com>
- <20261120-pmic5_gen4_adc-v2-3-94d0e1fd6847@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GnXV60lf
+Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-5eaa5e03c47so1594491e0c.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:28:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795170510; x=1795775310; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=OB2cqonua3QslxurG3tUah50j5fz64F47osIRxGjQ6w=;
+        b=GnXV60lfzDtJJFrcNWwAK2yBHlXPjFx23bGoPoWe5kW3vbud7rduIAppdWyUYshd2D
+         U0sNRrwHj/KpolHmVwSD7MdhS8kJLKj4Q5W8A1K8cv8JWhn3e1xpWqrIiQNYOKEMiDIZ
+         kcdSntcpf8NtROEPZh6Kini6rALbsMgAgIm0EKBRem9Zlb6QroHlxLiF8+dE5alOvY7u
+         mGRV+3aK6AlouBOzFLBsSG5jPopJW0i5HsNiv2ObA4MvjRq4T7OFn1lCLC/1xYC+rAX7
+         USn6rFRlVFD0nxOY0saYtTOtIbGVlQYVC5B32P3eZRlzqI+6FT0EhiIfj6lhxnM9JLVv
+         rDNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795170510; x=1795775310;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=OB2cqonua3QslxurG3tUah50j5fz64F47osIRxGjQ6w=;
+        b=JvcwSksDbNSLfPvMueO6ye+A5/ZeCNYlAJIOOyUnaXj+v3Z4mpFQrdLHZrVe5qGFZk
+         yrOvfj+Mdyg9xbilPVGiRVzKnzRpDvn7OM8ib34mVGWPgPIOhPd9PQrfUID+jtq1Nfdf
+         C1C5SLVKKpSoX0/nvJSirmjCZVKmDtIyp2UeD+MDBaD4poQGb0AjYE++BFQmeKqqzdJZ
+         ZCotxzeA8I+Jx7HZ2loe557QdXAaypT13s3jtqyq52Ila5W7m22jJbc3Y9tpBDYbpZ6+
+         Od/xhpcVFDV8QhIlw5Pt9fLdjYzawUL+HYNbpS4geK6kQGhSPicoorlmNjfkMgKl3QJk
+         vRCA==
+X-Gm-Message-State: APuU4Z+XXRWqrZinpBQrlouO0fR9D+wRNqYkVSuQsaOOSGVMDKH1WAgL
+	35Jsqj4zJ/YdV1fmiN0Z+vRYjcBLJ6KhH4a4/4HBoVK5MTKLq5sYvQqv
+X-Gm-Gg: AZFdTZfMzacCPcOBZBg53kmCbGcCZe6eW0eeCz65vnhhoQQPCMEb5i19RgxvIUkcErr
+	yO8O9BYIMOpV5BZSYpG6Pb/uhKLBg2+PUMb/2dVkLic3rf4nVAuY47Ub0HXfm8i0jC8gAdzKvNv
+	gh1s/3axXBW24onxtao23Te9z263I3ryi/+fSU4MYPRTndq2F1sIqf1pxSdSv7+RtN3EqHoNtFm
+	gWRH2VOv3FRWXAw+hvEG7wzbtjHQ6IvYccflOzvfJsRSAwlUOG/btfrUVatKHHEBn5vx1htfm9x
+	WnIq9x0M+8ZiuiExQ9a0yKByvKkNOhX6zLkJN1xkRzYdB+3lLcXydz98c5o+PsJBZi9wPpF0Qxr
+	UHobJv5ANp0DjsHdteLcr/tcRh95Ul5yj0LF65ANncQI5u8fzY2Vkv5IS6GGlybuvhftQZWVUSL
+	+I6/Ip6xE45FAlr3E3z8IG+pasRDTWciHDO3hYpRNh8c8s75OeUADfUT9td80F85a4shxe0KwR3
+	ESaREvz2Vdt/qZ9Yhdgys2wt0P/PG/8MwS+yB5zkczC7em8PtTVNad1HFAEktvOPjueQOVmyd0Y
+	wkjwHjeXBj5HodnAxg==
+X-Received: by 2002:a05:6102:6042:b0:7d2:ee9e:5373 with SMTP id ada2fe7eead31-7d6db9f7c78mr1041189137.26.1795170510211;
+        Fri, 20 Nov 2026 02:28:30 -0800 (PST)
+Received: from [192.168.0.9] ([2a09:bac5:565c:aa::11:204])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-99e6e08a02asm2481753241.11.2026.11.20.02.28.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2026 02:28:29 -0800 (PST)
+From: =?utf-8?q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>
+Subject: [PATCH v2 0/2] iio: pressure: abp060mg: Fix scale typo and I2C
+ read handling
+Date: Fri, 20 Nov 2026 04:28:25 -0600
+Message-Id: <20261120-b4-abp060mg-fixes-v2-0-89a274d68a9a@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -96,111 +92,63 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261120-pmic5_gen4_adc-v2-3-94d0e1fd6847@oss.qualcomm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/32NSw6CMBCGr0Jm7Zh2xBpdeQ/DYloGmEQeaQ3Rk
+ N7dygFcfv9zgyRRJcGt2iDKqknnqQAdKggDT72gtoWBDDlryaCvkf1inBl77PQtCTs+B7LmdCV
+ 2UHpLlN0otUdTeND0muNnv1jtT/23tlo0SJ67Egmt1Jd7P7I+j2Eeock5fwHlbTK4sgAAAA==
+X-Change-ID: 20261120-b4-abp060mg-fixes-fa5c210392a6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Marcin Malagowski <mrc@bourne.st>
+Cc: linux-iio@vger.kernel.org, 
+ =?utf-8?q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>, 
+ Andy Shevchenko <andriy.shevchenko@intel.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795170508; l=1734;
+ i=aleszlucero@gmail.com; s=20261104; h=from:subject:message-id;
+ bh=iegFCUe7WOVMJAWKW0+qXZ0VNugy3wOr8Mk3yq4Hj0w=;
+ b=Qh5LlBO23TNlTWUc/P9Lcb+L4o5YOP6Oz43vMCG/BU/jcVQmq5XWvLiendt5zKmPzmP+2nsda
+ vU13t6pmDvzA9WB924qKR5OuzJkkLLnU35XNBfvU8jpsSj3uT7JTbz8
+X-Developer-Key: i=aleszlucero@gmail.com; a=ed25519;
+ pk=zRzEBMID7l1FXqr2CjfnlIn++3m3N05FuNYb5zPA3cw=
 
-On Fri, Nov 20, 2026 at 02:49:43PM +0530, Jishnu Prakash wrote:
-> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made
-> for improved performance, mostly at the hardware level.
-> 
-> One significant software change is that ratiometric conversion resolution
-> has been increased from 14 bits to 16 bits, so the maximum value of
-> these measurements needs to be updated for Gen4. Add a new scaling
-> function for thermistor channels which use this type of conversion.
-> 
-> It is possible that the master PMIC has ADC of one generation and it needs
-> to communicate with another PMIC with ADC of a different generation. For
-> example, on SM8750, PMK8550 is the master PMIC with Gen3 ADC and it
-> communicates with PMIH0108, which has Gen4 ADC. Add a new DT property
-> "qcom,adc5-gen4" to distinguish Gen4 channels under a Gen3 master, to
-> ensure that their conversions are handled correctly.
-> 
-> In the latest PMIC arbiter version (v8), there can be up to 4 buses
-> under the PMIC arbiter and 32 PMICs under each bus. In order to
-> support communication between ADC on the master PMIC and ADCs on any
-> of the other PMICs, a field of width 2 bits is added for bus index
-> and the bits for SID are extended from 4 to 5 bits, in the SID
-> register. Add support for this.
+This series addresses two bugs in the Honeywell ABP pressure sensor
+driver (abp060mg):
 
-...
+- Fix a transposed-digit typo in the maximum pressure value for the
+  abp001pg variant (6985 Pa -> 6895 Pa) per the Honeywell ABP Series
+  datasheet.
+- Validate the byte counts returned by i2c_master_send() and
+  i2c_master_recv() to avoid parsing uninitialized stack data on short
+  transfers.
 
-> -	/* Write SID */
-> -	buf[0] = FIELD_PREP(ADC5_GEN3_SID_MASK, prop->sid);
-> +	/* Write SID and bus_id*/
+Signed-off-by: Oscar Alejandro Sánchez Lucero <aleszlucero@gmail.com>
+---
+Changes in v2:
+- Patch 1/2: Reference the Honeywell ABP Series datasheet (Document
+  32305128, Issue 2, Figure 3 and Table 7) instead of the driver comment.
+- Patch 2/2: Collect Reviewed-by tag from Andy Shevchenko.
+- Drop the msleep_interruptible() -> msleep() patch from v1, as the
+  40 ms delay in the driver is a conservative margin rather than a strict
+  datasheet minimum and cannot be validated without physical hardware.
+- Link to v1: https://lore.kernel.org/linux-iio/20261120-b4-abp060mg-fixes-v1-0-2baf026cde47@gmail.com/
 
-Missed space.
+Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/ko-kr/products/sensors/pressure-sensors/board-mount-pressure-sensors/basic-abp-series/documents/sps-siot-basic-board-mount-pressure-abp-series-datasheet-32305128-ciid-155789.pdf
 
-> +	buf[0] = FIELD_PREP(ADC5_GEN4_BUS_INDEX_MASK, prop->bus_index) |
-> +		 FIELD_PREP(ADC5_GEN4_SID_MASK, prop->sid);
+---
+Oscar Alejandro Sánchez Lucero (2):
+      iio: pressure: abp060mg: Fix max pressure value for abp001pg
+      iio: pressure: abp060mg: Check for short I2C transfers
 
-...
+ drivers/iio/pressure/abp060mg.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+---
+base-commit: adcad7f4e6332cff3d6d7165f41584899f598534
+change-id: 20261120-b4-abp060mg-fixes-fa5c210392a6
 
-> -static const struct adc5_data adc5_gen3_data_pmic = {
-> -	.full_scale_code_volt = 0x70e4,
-> -	.adc_chans = adc5_gen3_chans_pmic,
-> -	.info = &adc5_gen3_info,
-> -	.decimation = (unsigned int [ADC5_DECIMATION_SAMPLES_MAX])
-> -			   { 85, 340, 1360 },
-> -	.hw_settle_1 = (unsigned int [VADC_HW_SETTLE_SAMPLES_MAX])
-> -			   { 15, 100, 200, 300,
-> -			     400, 500, 600, 700,
-> -			     1000, 2000, 4000, 8000,
-> -			     16000, 32000, 64000, 128000 },
-> -};
-
-Seems like this is existing piece and you moved it up. Please, split that part
-to a separate prerequisite patch.
-
-...
-
-> +static int qcom_adc5_gen4_scale_hw_calib_therm(
-> +				const struct u32_fract *prescale,
-> +				const struct adc5_data *data,
-> +				u16 adc_code, int *result_mdec)
-
-Even if the rest of the file uses this ugly indentation, correct it for a new code.
-Not a problem if lines will be a bit longer.
-
-> +{
-> +	s64 resistance = adc_code;
-> +	int ret, result;
-> +
-> +	if (adc_code >= RATIO_MAX_ADC5_GEN4)
-> +		return -EINVAL;
-> +
-> +	/* (ADC code * R_PULLUP (100Kohm)) / (full_scale_code - ADC code)*/
-
-Again, missing space.
-
-> +	resistance *= R_PU_100K;
-> +	resistance = div64_s64(resistance, RATIO_MAX_ADC5_GEN4 - adc_code);
-
-I would put it like this
-
-	resistance = div64_s64(adc_code * R_PU_100K, RATIO_MAX_ADC5_GEN4 - adc_code);
-
-OR this
-
-	resistance =
-		div64_s64(adc_code * R_PU_100K, RATIO_MAX_ADC5_GEN4 - adc_code);
-
-(but it still uses two lines, so I find the previous one slightly better).
-
-> +	ret = qcom_vadc_map_voltage_temp(adcmap7_100k, ARRAY_SIZE(adcmap7_100k),
-> +					 resistance, &result);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*result_mdec = result;
-> +
-> +	return 0;
-> +}
-
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Oscar Alejandro Sánchez Lucero <aleszlucero@gmail.com>
 
