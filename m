@@ -1,103 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.170
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795194899;
-	b=IqF56bjurr1cDOkYqRQxQjMOaAHN+AyN1aufRxQrnExFaGsWJpj6YyUQiQrvLRt1zroP
-	 2CeLYWlkbVa6PkoxZwqAFOC4zae/CrogE91n7UC/xZd5A4YDYdFgBqOsKtSqQUMM/+5FD
-	 G05F/jQP6s1yjau7RDKCFH6mBchoJk15YipB/OeaPHqbJgQLeBFEAqwq1ocbjIx1YQ4S9
-	 Sfv+K0lpSxAimHJtZa6Y37OBezwz8iM2y4SlEC48NQ9bYED8yzTFQZqH2o4sq0fEzq/kd
-	 zwshZhQ4CStA34QQ+jMY895N/q3am+JMp0j6McmPWvfn7XmSaT/y3zFE2oCeOr3OkkQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795194899;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	bh=uSFncaokGA+ftB76Em9/lA6Qac26fTHzjO+Cdt7Pka0=;
-	b=Bvz+azOxjuGoGiYMrgsUfRSAUNIdHDSeBznCPvxR3/XsRsm9t+OTRjYl6kZH5C9oZsKl
-	 txW/ZRBmsF6FCeh0eiDj019MkDMrZowPLWf4bKNLczz8WVwiIAKK+EKCZabKWabMtbHC6
-	 kaMmV78/2eRQ1M7xYs7CIz/vmWUP6RE1K9ZUWplwRlihrOBk87zjIsetx24cTCT7qxvFg
-	 v3hSErWHNmmBFkOc2bEUlGc3IECu/00v+LPBr2PkV6NEQop0H9GM1lzXCMmiypgw3W+8t
-	 9e+ippYkxlOEh/xc6U8Yp8chrI4HOUMAI6i4xX1loBn6f5eH6gkTbTqsbIMbBdQNW/Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YpICBR9+;
-	arc=none smtp.remote-ip=209.85.210.170
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.47
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795195356;
+	b=GM5t//LYsHIdkg4yTdEv0yqGCIliOVELi+uGLYy03eomBXnNKfiAEdHFUjGZ6jv6y8hh
+	 3hB5NhIXVJUW+JAB0RacZWKG08n53VZ5T/4xIeDcdlcFfL6eE/3CtBNaxMHFPOZeLax52
+	 rsefdh9tjSNYyXDYclKuz5a2lZ2g3EMB34SGbB2QN1vu5crtOl4+kB6VT+AMEEZ+fso7m
+	 La9DkbVn7SlbGVLoFNfJ373j1YJzJ+VcXN0uKSNssvySsfQl4BkISFb8KSHpMkIHRs0Jl
+	 Aa3bNBI9W4PISWRL799Z8swY29lEB7xsbcmzTkBqrfx3oZSg1iZHwMBb2ezNKOElYQQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795195356;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:CC:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
+	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=t258KzXmDOE/aDuZ4ulmzyH3SBaKcKbKKylim9qbfIQ=;
+	b=fdHmsa7JQ17FaCWfF0mjmDaNKAjmY+geGIxKJVRCb+A1F84VstK7chfjpHemfCYngTxO
+	 9/GEX6SAaNd1FNO3RWuQfcaeU83W83WgmIrDiAfrm8KL8Y9QmtzXfmOwxJNEbawqKPXMU
+	 hJHR9PCg7jVHKMLrXoB6RPyLuwghxpiPSGBTjqF/CnyJHeonhrHi7VLysfip9GFEbnqOg
+	 WlZ3fd27hKKtInuE0K8/ZJat8esyTInrubG7J3Bl9JZGSnWUh5IswALvF7pXl0xmf68R5
+	 rC2Zq6ueg1CtgZgHx5X3PfHrQFp5A8tXIYgVk+UISN8hfuL+vfDsv3dT5tyQav1LQgg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=foss.st.com;
+	spf=pass smtp.mailfrom=foss.st.com;
+	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=UPjsOXYY;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.47
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011047.outbound.protection.outlook.com [52.101.65.47])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DB3C60A2630
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 17:14:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0DB3C60A2630
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93054606A767;
+	Fri, 20 Nov 2026 17:22:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 93054606A767
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YpICBR9+
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-8b67f25e6e1so656988b3a.0
-        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 09:14:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795194898; x=1795799698; darn=vger.kernel.org;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=uSFncaokGA+ftB76Em9/lA6Qac26fTHzjO+Cdt7Pka0=;
-        b=YpICBR9+zI5srP1RRqUoioL9FL9gvT5zzQ5aQACKqfCv4O6iZUlGEOr1nSDtAf3aY6
-         g/clZMxNmMPyAqVEyi4vbyxH72c0j24U2r3ZQGd0guJCMAWbw7wuXZJYS5nrrLC4SKxy
-         caYboHGvEPQeXf0Kyw2LdrTEfeNt6/fEzayFhn0z8/unH7h/r8tUG1m00l9sb6lMlMC7
-         lsbLghi0ZqXOA25PNpgtBv8QlIidmzovt1PiE2vxDeueUsPYyDm/BEhDL3lryMZs3uth
-         5uYH9GW/AG7sNCPLzjCmXulneFV493Bz0nuLqisXyBtsJfZhaAb65ABQNBMdNbzQWVFF
-         LdYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795194898; x=1795799698;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=uSFncaokGA+ftB76Em9/lA6Qac26fTHzjO+Cdt7Pka0=;
-        b=eIX7SopabdjG62cXUuMAZUz4BLeLI31U2+wWnDtcpwquhgR5NSgzbifC0jr8PysIt+
-         kQ9MdRCH15Unj0hUFcQjjjcVfpEwagX7CGA8zOZVRMFD+ZjAZNH/iyk206BKWtHZvvDC
-         sPxYlYQ7hUeEZZ4L3rxdvoLmiervpczsrhrQ1VSTx4uTjuvZPHdIyhQ2Q4ZLnyWi1NxL
-         SJQ3ZGo0y1tXb/xRlPUpkT7RZ1yVqBEjOzOoKXkidoUV8A2HRdTOHXtbULs1KOB2E2aU
-         tcGRqNIaJhnRRiaVC1XWd3ByPJEzM3RjXUyLRcy/JIM0ebA2UsRP63i2xqV5g5xO87dZ
-         hDoQ==
-X-Forwarded-Encrypted: i=1; AL+hErE24YbsFirMzGCQh8UtwbvvDdlghQnagGEzPQLRvwoHTT3JBdpcCA7a7wosC3gjjLqDVvutbEjO2TY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/cbqparFQv0ki7lp2lTh5qjkSdRTp8vAtpWUXviRVPs26p/mU1
-	C64Guipzm1FrSxNVL947shaWo6ObDMO4KpxGjNZ4FvSASbogQAwzGD+ceoJ4yQ22
-X-Gm-Gg: AYBFou1YP/CCyV1Us7OsLNCEwQcelp2IzOlZCavb0HdQh+WdZ/U7u+7RN7MgJxFFuTZ
-	9gDKG/viHff8/kVA06j3uW8TNNWXLg/jZUFbOh+DjqlO0TJ0/ypLSbSKEHBhtefWPgOJWZeAEq+
-	ZbwQU59/CgSUxptYAIfvkL3f6Jqk1474bpnGNH2Udn24TWOa41AGxGIb6bMRiLaGjn+qCldD2Un
-	arpR0dtZb0sENuBLdVo/XuN+5zF89lEAP6ZxDILlHw2ybi3LClfMJVN0GCj9SS+mJMjvOxGNNYr
-	aJnnG5gRWowuyvqDiVIWOVjt5esnkzavCS/5W8uBZpyrfCrrNFS9t5+xG5WQikthspcUtG1GE9M
-	+jiuh0Q+vm8gyDipOTxTmLRjTPH+4a5KD2SZZ0cq5tK/1Oo1Bblw4KZ/jiH4gGbMEvW1WXLqDqh
-	ea6ODtZOOqKPi2GTeawqxJWxtKswiRxm+PJoBo8BwP3pcabLKt2IyDyGJOb8LFLpZvsQfExIFSD
-	zqYhnlkEE5PvAmOVjTqeMlizVglM9cISey7FW0D11u3YoJptCh9DyvgcTm30QoafL4UIwbYchgO
-	MvR8gXod8NXRnOBn8hnMKIPdSnnpHjeUM0EkKuAWud3Ca0gQ79gHUw==
-X-Received: by 2002:a05:6a00:b48:b0:886:5f48:3fca with SMTP id d2e1a72fcca58-8c87cb4c02amr3644014b3a.37.1795194898216;
-        Fri, 20 Nov 2026 09:14:58 -0800 (PST)
-Received: from DESKTOP-UCPRL76.localdomain ([113.200.174.114])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c872e457d1sm1718377b3a.30.2026.11.20.09.14.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2026 09:14:57 -0800 (PST)
-From: Zheng Shuhao <viennaoffh@gmail.com>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- Benjamin Tissoires <bentiss@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>,
- syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com,
- Zhang Lixu <lixu.zhang@intel.com>
-Subject:
- Re: [PATCH v2] HID: sensor-hub: Avoid holding spinlock across child iteration
-Date: Sat, 21 Nov 2026 01:05:54 +0800
-Message-ID: <179519435494.24396.10633733692339086433@viennaoffh.gmail.com>
-In-Reply-To: <0165ee623890e4d3778390e46ad955956c512812.camel@linux.intel.com>
-References: <1795161418.hid-sensor-hub@viennaoffh.gmail.com>
- <20261120135005.566-1-viennaoffh@gmail.com>
- <573f3eb75601c17d6e766fc47a7cce1bc2274998.camel@linux.intel.com>
- <0165ee623890e4d3778390e46ad955956c512812.camel@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=UPjsOXYY
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=RnFPEWknPph7mFTJR8jNrn/j6PCEkZ67h4Zt7LBM499uR5wiWKJDonsrWM9QABdEoQCGPcKfFw7Z2BxyjHIIrh/Fuu+7Zdjr2iEhs0JXpbl84/BdtP/guc0XQefyMjNhG6qx2sdOsJW8HrMv6AkhIZaO2bZo/aGUwxT0+/T65vvsEDZ1z7GoVvkQbhXtPUQM/QkqItB6EC1gL+d/O5jsJ16OrBoasL3mwJZvoCVIvGigQkwR90M8cQgxNQE0AGeylAEX3YF3TnN7MF6B/yTsW52ru/f70k+70bUU9ME4+jtOC2cjKlQGsUkVA7oL5nGYVPlxkaHoZoYwnSgsem0y5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t258KzXmDOE/aDuZ4ulmzyH3SBaKcKbKKylim9qbfIQ=;
+ b=HNzOYJlA+kArRgvZEKJgCRHeIBi9NwnWQ/b6u4WOvDtsiFoxvJm1T4ywhdpU3Y/pj8Wxpfj0jfSbN/sOsRpEwwX9tyx7lAFP4tCFfC+OWzv6F0vBGWbAuF4MvA3bGbAsihczZPb7aTuCdWzlOddbLMAeUBvZedUJlA9IiIhA61Sdh+BPSejnxmZKxZIW2/LeqUeNpzVqUutcLp0S28gVuZTJ+gVDkOWWjubHXdrWIeRm5BwSERCV88Ry6W1/H+AKGwbNzeslG0zu/NcuwbQQ9iG/HxFWqcAP4djU7jlttmezD+RN9ZPTOJHOfog3wx0UyJSKaJQhJzH1BRcjQ/MR3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 164.130.1.60) smtp.rcpttodomain=intel.com smtp.mailfrom=foss.st.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=foss.st.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t258KzXmDOE/aDuZ4ulmzyH3SBaKcKbKKylim9qbfIQ=;
+ b=UPjsOXYYSisGrwDEoQc3NemtkP7JOf5mn14WARwiv6Qot3khlCiXQgQ38jzYMnU/29si4mvO08D/V722NuXVJ6W5hlRAPa9arTBEvSPYGa9BHhrn/DhOw6VbYF35IV4ZLeED/7klaAOvSAaXNu0cdtPbtrHR7T2M3ADTmjvt1FCdvEkJX58bnf+/ih21wY7juzfj2GeWTzb8q7kOkrQQZ3NDlskN8shl7vIBpk8up6u/9mO+kBR+2uvNI2vxWoMPHC5VpdAeE3wyjPb3xB74BDP4q7QpYWx39MBFFTw6aMWLc4k4RODT5hfYsFK5tDdbFNDOVwTe82jhEpPYpKfEWw==
+Received: from DUZP191CA0014.EURP191.PROD.OUTLOOK.COM (2603:10a6:10:4f9::18)
+ by GV1PR10MB9090.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1cc::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.2; Fri, 20 Nov
+ 2026 17:22:29 +0000
+Received: from DB1PEPF000509F5.eurprd02.prod.outlook.com
+ (2603:10a6:10:4f9:cafe::56) by DUZP191CA0014.outlook.office365.com
+ (2603:10a6:10:4f9::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.639.12 via Frontend Transport; Fri,
+ 20 Nov 2026 17:22:28 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
+ is 164.130.1.60) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=foss.st.com;
+Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
+ designate 164.130.1.60 as permitted sender) receiver=protection.outlook.com;
+ client-ip=164.130.1.60; helo=smtpO365.st.com;
+Received: from smtpO365.st.com (164.130.1.60) by
+ DB1PEPF000509F5.mail.protection.outlook.com (10.167.242.151) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.639.5 via Frontend Transport; Fri, 20 Nov 2026 17:22:28 +0000
+Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpO365.st.com
+ (10.250.44.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Fri, 20 Nov
+ 2026 18:23:30 +0100
+Received: from [10.48.86.251] (10.48.86.251) by STKDAG1NODE2.st.com
+ (10.75.128.133) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Fri, 20 Nov
+ 2026 18:22:26 +0100
+Message-ID: <11aa41f5-da69-40b0-9b8b-6c5abfbec5f9@foss.st.com>
+Date: Fri, 20 Nov 2026 18:22:26 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,157 +104,91 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 04/10] iio: adc: stm32-adc: Validate channel index before
+ writing chan_name
+To: Andy Shevchenko <andriy.shevchenko@intel.com>, Lee Jones <lee@kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>, Olivier Moysan
+	<olivier.moysan@foss.st.com>, <linux-iio@vger.kernel.org>,
+	<linux-stm32@st-md-mailman.stormreply.com>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<stable@vger.kernel.org>
+References: <20261119153151.1397003-1-lee@kernel.org>
+ <20261119153151.1397003-5-lee@kernel.org>
+ <av8wzmfrU7zLzGmU@ashevche-desk.local>
+Content-Language: en-US
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+In-Reply-To: <av8wzmfrU7zLzGmU@ashevche-desk.local>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ENXCAS1NODE2.st.com (10.75.128.138) To STKDAG1NODE2.st.com
+ (10.75.128.133)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB1PEPF000509F5:EE_|GV1PR10MB9090:EE_
+X-MS-Office365-Filtering-Correlation-Id: 41156dac-ae5f-4e95-0d38-08df472ada33
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|376014|7416014|23010399003|18002099003|22082099003|261009223027099003|56012099006|10067099003|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	MJHpMPQWOe026Mvyfxp+hwQXq1iM3NLrx/L3DXVFlKlu9FIfL1MC/nRcbVDeYgfVAcPRZ7Wx2tLqpTXUdiJiSZsoThi+u/zkk/+y/TgLDEYVgnTPy+eJihWGXWsWdmRGoT69Z/ldD18udGJ0BXgwy0aDgMnPDzl2Jlkyg5+LqWEkiNj6qXJ2WNSzadjTOlczc5ove7MRv1tPtmJ1Nsf7EiSCGlaOwsNQYEY6ZXquZ9bdJu/9A52Tje/PhyYY/5h3OUU1d1XvvDqq4tc/m6y0AJgHxX8tf0mA918tcbIM+miGFdVb8i38uLz8FAdPV9W7x5QsITYz6s5sioXeueBuG0WQci5eiP3H5ikeZ/0BT2xmxY5ESS6s+yGQHhphKPIamepfxKJ9DZQSS5M4sjWxLr+4k/ABV8imM6qwG1oIqJwVnMqNbp1SAXddE17nGE5YVYXijcGLGMl5lb2gLAWs03BPsuLCJ35rMhNqWhG9mhoC2OBT5mqFFkKcDtLvcBYjayISXDPxFTl1wdeoUGK/Oqh25uh2DNAB+TBcNmIEAZ4B4JMqj66nH9rWmGpSbJ9sJiMFyEFkk4L9gptLBViQ/FOtS0IgiCjKg1ZYvhqG9ZjNwQdxSb+jJpY9e0CsipXap9KM9XrnTljiYhA7T6ycwqkmNP7avD1fibntnIlgIBAPW8hRJwyjgu2QiOJVbp4c7v4jNsqZ/4oRfP25fh8iBQ==
+X-Forefront-Antispam-Report:
+	CIP:164.130.1.60;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(376014)(7416014)(23010399003)(18002099003)(22082099003)(261009223027099003)(56012099006)(10067099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	KsOWybU6NDr3mzId13qQ+BOxe3HH2kpe85Tz2W9r3c4sqHZu2yt58DPIV/1xZkcXvd0knJMtFY5JQafnV8NBSHov2oxe580evsFGhvh7Q+MO6uCAGat7s+H7DRRrsPTn5oubW9BjgNOaXk03a1RXuS6OzAZIlYCZ7kPjr4avkAS5sYAF4VgTfFoTKn2ga/6EJSkLR6fcEDD2HRKFy5UAhVmr9h1iTbC69MQnEc/c92Zr9fvGm1WYDuWamjSZDRNzEfcFxiQwBaeVjEjZBeM8x9XU++1T7nKJiv46DxF7AcsFfN0Kb6D+4/sbXeXOWB9zOSQrqfD4SIzfWaxgFLY9EMNujC71Dv5O+qqjvN3Q8o10hKYRTHvBarul8epVUtmPfYJU5xf5dKle8jp40/vbREbsPG3CL5IPVr4/T+3/Iht6G7DDz0vUmcA0h3kXqyXL
+X-OriginatorOrg: foss.st.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2026 17:22:28.2268
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41156dac-ae5f-4e95-0d38-08df472ada33
+X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.60];Helo=[smtpO365.st.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DB1PEPF000509F5.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB9090
 
- > In reality this can't happen as the hid_hw_close() and hid_hw_stop()
-> is called before, so there can't be any raw_event.
+On 11/19/26 18:24, Andy Shevchenko wrote:
+> On Thu, Nov 19, 2026 at 03:30:37PM +0000, Lee Jones wrote:
+>> stm32_adc_generic_chan_init() reads the child node's reg property into a
+>> signed int and, when the optional label property is present, writes into
+>> adc->chan_name[val] and calls stm32_adc_populate_int_ch() before
+>> checking whether val exceeds adc_info->max_channels.  Because val is
+>> signed, values with the top bit set also become negative and bypass the
+>> upper-bound check altogether.
+>>
+>> Store val as a u32, matching fwnode_property_read_u32(), and move the
+>> max_channels bounds check immediately after reading reg.
+> 
+> ...
+> 
+>> +		if (val >= adc_info->max_channels)
+>> +			return dev_err_probe(dev, -EINVAL,
+> 
+> -ECHRNG
+> 
+> However it seems in the original code like this.
 
-It might not be reachable after hid_hw_stop(). I may have misunderstood the
-lockdep report and overstated this as a possible deadlock. Sorry.
+Hi Lee, Andy
 
-> How come this is possible? The HID sensor hub is only deleting its own
-> children. Can you give an example here?
+I've no strong opinion on this remark, whether to change the error code here, and if it belongs to
+this fix ?
 
-With CONFIG_HID_BATTERY_STRENGTH=y, this UHID device creates a Sensor Hub and
-a Joystick battery. The HID input layer registers the battery power supply as
-a child of the HID device, without platform_data.
+In all case,
 
-With the unpatched hid-sensor-hub module, UHID_DESTROY triggers a KASAN
-NULL-pointer dereference in sensor_hub_finalize_pending_fn():
+Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-  KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
-  RIP: sensor_hub_finalize_pending_fn+0x44/0x65 [hid_sensor_hub]
-  Call trace: device_for_each_child -> sensor_hub_remove -> hid_device_remove
-              -> hid_destroy_device -> uhid_dev_destroy -> uhid_char_write
+Best Regards,
+Thanks,
+Fabrice
+> 
+>> +					     "Invalid channel %u\n", val);
+>> +
+>>  		ret = fwnode_property_read_string(child, "label", &name);
+> 
 
-The reproducer is below:
-
-#define _GNU_SOURCE
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <linux/input.h>
-#include <linux/uhid.h>
-#include <poll.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-
-static const unsigned char sensor_battery_rdesc[] = {
-	0x05, 0x20,       /* Usage Page (Sensors) */
-	0x09, 0x10,       /* Usage (Sensor Hub) */
-	0xa1, 0x01,       /* Collection (Application) */
-	0xc0,             /* End Collection */
-	0x05, 0x01,       /* Usage Page (Generic Desktop) */
-	0x09, 0x04,       /* Usage (Joystick) */
-	0xa1, 0x01,       /* Collection (Application) */
-	0x05, 0x06,       /* Usage Page (Generic Device Controls) */
-	0x09, 0x20,       /* Usage (Battery Strength) */
-	0x15, 0x00,       /* Logical Minimum (0) */
-	0x25, 0x64,       /* Logical Maximum (100) */
-	0x75, 0x08,       /* Report Size (8) */
-	0x95, 0x01,       /* Report Count (1) */
-	0x81, 0x02,       /* Input (Data, Variable, Absolute) */
-	0xc0,             /* End Collection */
-};
-
-static int send_event(int fd, struct uhid_event *event)
-{
-	ssize_t written = write(fd, event, sizeof(*event));
-
-	if (written == sizeof(*event))
-		return 0;
-	if (written < 0)
-		perror("write /dev/uhid");
-	else
-		fprintf(stderr, "short UHID write: %zd\n", written);
-	return -1;
-}
-
-static bool hid_battery_exists(void)
-{
-	static const char prefix[] = "hid-0003:1234:5678.";
-	DIR *dir = opendir("/sys/class/power_supply");
-	struct dirent *entry;
-	bool found = false;
-
-	if (!dir)
-		return false;
-	while ((entry = readdir(dir))) {
-		if (!strncmp(entry->d_name, prefix, sizeof(prefix) - 1)) {
-			found = true;
-			break;
-		}
-	}
-	closedir(dir);
-	return found;
-}
-
-int main(void)
-{
-	struct uhid_event event = { 0 };
-	struct pollfd pfd;
-	int fd, attempt;
-	bool started = false;
-	bool battery_found = false;
-
-	fd = open("/dev/uhid", O_RDWR | O_CLOEXEC);
-	if (fd < 0) {
-		perror("open /dev/uhid");
-		return 1;
-	}
-
-	event.type = UHID_CREATE2;
-	strcpy((char *)event.u.create2.name, "sensor-hub-battery-null-test");
-	strcpy((char *)event.u.create2.phys, "hid-null-test");
-	event.u.create2.rd_size = sizeof(sensor_battery_rdesc);
-	event.u.create2.bus = BUS_USB;
-	event.u.create2.vendor = 0x1234;
-	event.u.create2.product = 0x5678;
-	memcpy(event.u.create2.rd_data, sensor_battery_rdesc,
-	       sizeof(sensor_battery_rdesc));
-	if (send_event(fd, &event))
-		goto out_close;
-
-	pfd.fd = fd;
-	pfd.events = POLLIN;
-	if (poll(&pfd, 1, 5000) <= 0) {
-		fprintf(stderr, "timed out waiting for UHID_START\n");
-		goto out_destroy;
-	}
-	memset(&event, 0, sizeof(event));
-	if (read(fd, &event, sizeof(event)) != sizeof(event)) {
-		perror("read UHID event");
-		goto out_destroy;
-	}
-	started = event.type == UHID_START;
-	if (!started) {
-		fprintf(stderr, "unexpected UHID event: %u\n", event.type);
-		goto out_destroy;
-	}
-
-	for (attempt = 0; attempt < 50 && !hid_battery_exists(); attempt++)
-		usleep(100000);
-	if (!hid_battery_exists()) {
-		fprintf(stderr, "HID battery power-supply child was not created\n");
-		goto out_destroy;
-	}
-	battery_found = true;
-	puts("HID battery power-supply child created");
-
-out_destroy:
-	memset(&event, 0, sizeof(event));
-	event.type = UHID_DESTROY;
-	if (send_event(fd, &event))
-		goto out_close;
-	usleep(300000);
-	if (!started)
-		goto out_close;
-	puts("UHID device destroyed without userspace error");
-	close(fd);
-	return battery_found ? 0 : 1;
-
-out_close:
-	close(fd);
-	return 1;
-}
