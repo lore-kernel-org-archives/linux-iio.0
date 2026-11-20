@@ -1,88 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795197405;
-	b=EZ5eBbwoQK8bEEDHMtinV5iC0pY0VrF4uJ/p+GMNOt9i6kgtyS717k9/6oSIyKPk7YNu
-	 LLdqwAeVeMCB+VdAolLHrqjOReJHHqSj+Y9CQr5Gh4sQjwoV6xxHSAuwN90rQgJj9VyTG
-	 nEg6nQ5NQ4MMLitufN2pUJog6NOhveagzQvMLRWplRzfbm6u3+Ea44CbNXOrAxzujVRJV
-	 ZWWMD2NKIiL08i68h0/SsqRjQBPdGzgTrxKIEVz++KLPLvCoxAZw+0x81296YtrhmVOk7
-	 KMPQoeuJ4Ft5aqpjFIR5hP/inW4JWl41o9/vhIYB17gl6hipJQvqCCWZ/5TbTpco+aQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795197405;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=Pg9666G5Fepn0j6xEDe4AVqUWpZEKAdFiyuWsb8Kojw=;
-	b=rGe8lYQkPhYFHub0yHsX4jEjOTBbJlaV60KDMewj9BRkQAkPAu1xpBqvs++NwV7Saj9K
-	 p5AsRGh3ONvqdBaJ6BYUNVx1l48iKyg1EOH+JXAg/xV+SpUUCBNt6RbrdnujmL9EXGRwS
-	 LD0YlA2ablxmqiYVhzINUKe2WWzCSo4FuMHhm0uOFYJdsF9x8bVehFVVPkBkJOJlAVl9e
-	 lNinBvDJreFsrWFQ8E8PXC981Vcc0CAWxWjjbbPp2/Rc1pWcq1iQeCfdy4SqFpHCN/VUh
-	 XYxJzzOwI4LuAgIIWW56TGjV8g3lmMPWr18Pee6Dnlz6T8Q9N13zeyKuJaf4jN2m5dA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YbAuKfh4;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795197891;
+	b=tu5cV2Z6n6U6lBByCU1p3hhWSS+SrVA9+zFoAJKjUDLZP01o0BWOJH4s4z2ZJK/6DKNN
+	 lAPoqCwtC00JPuoqZd2m+NHu7+XICEcTeCFUMtCNjyHLY3yInouISWj01n60osLRPr1Dp
+	 lkkQX3EYQX+vCA722zPa9B4KqQ6IlStB2rBTQt54R7+6v4u1QoepI4T5+gY/s4/6bizLA
+	 g4JyHL22MXzm3k7+mHJWHPbTvaEiFISOpSErl8tELK8xIcZ1MSB/70VxGOnrbRS94sgvl
+	 McY6W/BxzLyGIRs1LVe43J+FVgyLGQfRlLQXQwQ/IWcAQPpvJ2gE8r03uvGSk4C5K/Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795197891;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=t3mPvJqSE7LXHOFUTmX0cyml/DTyX3mUI2pndg6S5bQ=;
+	b=fnwFOt9oKM1SYuAk9yuq2qawPqrJAnvQiBENh9Wa0ai9noLSq8/NWmYOQ9DP7FLPvsum
+	 HMjaF1xUsT20ZbJ+8JkthvNb8iK7pQalV2kgxb+neC4QK+Nzd1kmeNb7TFOod/V6Vi0wJ
+	 9mSeGJFz3lZUxcXeyqdYTVn6xZyxmkUyiNnfzL/+Avw6HM8dn1eYI14B8OHBmveFO6FhY
+	 hV75RHjf6+aL1CfrEnQA7XeXvr3OZMY2WK0RxK2nYWBwMYwfMokIdxPSc+9NiuHXf3qsc
+	 LIGpVLrS5+v8Gnv4fovrpUZIFlbVNIfNJBlZTARvMfBXwy/LQsTrVmsvCL+bF4JobVw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hZj2ZWKR;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3019606A325;
-	Fri, 20 Nov 2026 17:56:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A3019606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A32A60A262A;
+	Fri, 20 Nov 2026 18:04:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YbAuKfh4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795197405; x=1826733405;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=HT8MQLBizI6+BrsOYn2afQdMLw43mvUUopKTSq+YUas=;
-  b=YbAuKfh431ExMF0DNTnRGMzDmZAE9gE5j9iASO+G9csxqZJA/0/62P/f
-   qE0kZU9U/f35Yvjfi+f+C9tiU8eoInP2jolsoxg517MP3YHWRkDwT093H
-   uHKPkvwUDHwhG8trIO568xztRRErZpQltR9PRe3vDxEucWQnUqZe/a9Wy
-   56W3Aqn97e+W0ennpPERWP+w4sfqL4cQITRSN2W2rnT/Q1u0P2S67yASa
-   9aYQ77JmkRVyrY9UsxsphBoDTwc/Hf3gnvg7GcUgFPnbtA/1Hzbw+PiAb
-   WbF8bhhT4PaPs+21rhsjK9PzAU0TQ+gHcNbobtM1LlcHPtlnhmJwFYBwZ
-   w==;
-X-CSE-ConnectionGUID: 7CpRCeTvRZKpnyy570prSA==
-X-CSE-MsgGUID: r8At2w7wR0CPdbLa2kkY1g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11972"; a="4181601"
-X-IronPort-AV: E=Sophos;i="6.27,223,1787036400"; 
-   d="scan'208";a="4181601"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 09:56:45 -0800
-X-CSE-ConnectionGUID: b470BH+nQ4CLR1oDEGeJSQ==
-X-CSE-MsgGUID: SEOfRnjwSDKqu1oRRQiBvA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,223,1787036400"; 
-   d="scan'208";a="12751681"
-Received: from spandruv-mobl5.amr.corp.intel.com (HELO [10.124.220.9]) ([10.124.220.9])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 09:56:43 -0800
-Message-ID: <b5895e5e678eaef85eca3d4e050f6c22f0ce3e6c.camel@linux.intel.com>
-Subject: Re: [PATCH v2] HID: sensor-hub: Avoid holding spinlock across child
- iteration
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Zheng Shuhao <viennaoffh@gmail.com>
-Cc: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Benjamin Tissoires	 <bentiss@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Lee Jones <lee@kernel.org>, 	linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Ayaan Mirza Baig	
- <ayaanmirzabaig85@gmail.com>, 
-	syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com, Zhang Lixu	
- <lixu.zhang@intel.com>
-Date: Fri, 20 Nov 2026 09:56:41 -0800
-In-Reply-To: <179519435494.24396.10633733692339086433@viennaoffh.gmail.com>
-References: <1795161418.hid-sensor-hub@viennaoffh.gmail.com>
-	 <20261120135005.566-1-viennaoffh@gmail.com>
-	 <573f3eb75601c17d6e766fc47a7cce1bc2274998.camel@linux.intel.com>
-	 <0165ee623890e4d3778390e46ad955956c512812.camel@linux.intel.com>
-	 <179519435494.24396.10633733692339086433@viennaoffh.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hZj2ZWKR
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795197890;
+	b=ndmE2qCRCKwPSu3UttamI87tKFt345nZKS0AbKLAAgGaqLkfakyeqzM1bzCLHsGiSR3C
+	 DJlmj+MJGAe1+jOfJpgvCquy6NEKEkgVrfa1H3NC+nGpGrmvbFPaaBmY3zlPbJ+t5KT/d
+	 D3n71uG/hMSlfYIaMhaObeBlE+mIMgSlSDDpl2oob5szU8yodij5N49JuQQTyQV3ZyROk
+	 FE810aPQbBdOaA4Mh2xrixD+RY/2t3A4w4kOp3aqYJMNTsb4zbx3JNGjzLmoQgtDGcSGN
+	 gDvSs4hxfsVKO9B7NxHzxAuyOSbx8YykyYsUHJ4VxKP6wSoEYkeERJ/eAAWZ+mYi6aQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795197890;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=t3mPvJqSE7LXHOFUTmX0cyml/DTyX3mUI2pndg6S5bQ=;
+	b=ZvWZ/FPYwtCVuFtqSW41lY6kgK/OMGNZZj6/Xj8X3IMD9sTXFitKN1zmd1E6OX60HkMp
+	 6956vveI4mOcZiBnjZvnkAUVk9V0DvKr6E4EFU2eLfeWd79/jHgHhYysGYn1zbdINNb04
+	 I+UYHvtB2K8UvfalMifpQnBF0TzCM5VMnpdMcruZgjGL3TEo3Zkql9wTXcK4MyUPp3ERC
+	 tZ13yD/kSg8p4uVmp0PS96mf/BEH1zNnSf01fqKOvYwrQLDgrK4WMss8dXfH+GCw3YhS1
+	 HylBD0DRIrqVDBXOOojvfJaOiO1Lk5VP59iAVEI+A3CGLnp6UK7vpJcdKxtA+XMOeMQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id EC5661F000C4;
+	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795197890;
+	bh=t3mPvJqSE7LXHOFUTmX0cyml/DTyX3mUI2pndg6S5bQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=hZj2ZWKRnP+j3Pj5GsdnHTn0tqj26x2r/jPRnkAFzsOrB1b6TL82tvMhfwkyIl2cS
+	 yOPzbW6s4c5HFlSstW53tPo82GCdl4hH+aClD0q/PB7FjbsuW4HMJj+XKEScywtdwH
+	 87hVGXE54k1Nl8GjwxjcJuaQzIbXos4S0aj/HUOb6iGGNjfdmY9QdYY484WRfVQTUX
+	 n1XsjVOJFf0mAtSITmXuAPHLFyg/BTz//Ep10D5QHnqZHcrApmuIKfe1JzWDaIN07N
+	 gT4VyNof8k7XbSWXZj6dVadTR7C5lWdUYhVl0lbnidIbqpdtV0PpIb/Ntt45QYF2ac
+	 emFQlfiOnkY2g==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 7ED5B4B8B9;
+	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Fri, 20 Nov 2026 18:03:59 +0000
+Subject: [PATCH RFC 3/5] iio: event: add struct iio_event_attr
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,191 +82,225 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261120-iio-core-attr-review-v1-3-05b41f8133c2@analog.com>
+References: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
+In-Reply-To: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
+To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795197883; l=7028;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=NnM8uAIs95unllidYtNAMgDZ5VgVeGY7qa5DNOWWAJM=;
+ b=woHvty774OY6NZO+n5Xd0CJ9A00D8NWV6mHfhrXkdYBm/9aVzm7OHCioxK5NvC7yVC8/i69Ft
+ KFSZtObnsIxCWQTvFN0pdcQwSq0xl0sJ6tUTB85iGn7Z1HJeYUkHGMC
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
 
-On Sat, 2026-11-21 at 01:05 +0800, Zheng Shuhao wrote:
-> =C2=A0> In reality this can't happen as the hid_hw_close() and
-> hid_hw_stop()
-> > is called before, so there can't be any raw_event.
->=20
-> It might not be reachable after hid_hw_stop(). I may have
-> misunderstood the
-> lockdep report and overstated this as a possible deadlock. Sorry.
->=20
-> > How come this is possible? The HID sensor hub is only deleting its
-> > own
-> > children. Can you give an example here?
->=20
-> With CONFIG_HID_BATTERY_STRENGTH=3Dy, this UHID device creates a Sensor
-> Hub and
-> a Joystick battery. The HID input layer registers the battery power
-> supply as
-> a child of the HID device, without platform_data.
->=20
-> With the unpatched hid-sensor-hub module, UHID_DESTROY triggers a
-> KASAN
-> NULL-pointer dereference in sensor_hub_finalize_pending_fn():
->=20
-> =C2=A0 KASAN: null-ptr-deref in range [0x0000000000000028-
-> 0x000000000000002f]
-> =C2=A0 RIP: sensor_hub_finalize_pending_fn+0x44/0x65 [hid_sensor_hub]
-> =C2=A0 Call trace: device_for_each_child -> sensor_hub_remove ->
-> hid_device_remove
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 -> hid_destroy_device -> uhid_dev_destroy ->
-> uhid_char_write
->=20
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-OK, Adding to commit description will help for others.
+Event attributes encode both the index of their struct iio_event_spec
+and the event info into the attribute address, as
+(info << 16) | spec_index, and look the event spec up through the
+channel on every access.
 
-Thanks,
-Srinivas
+Add struct iio_event_attr, extending struct iio_chan_attr with a pointer
+to the event spec. The address now only holds the event info, and the
+event type and direction are read directly from the spec.
 
-> The reproducer is below:
->=20
-> #define _GNU_SOURCE
-> #include <dirent.h>
-> #include <errno.h>
-> #include <fcntl.h>
-> #include <linux/input.h>
-> #include <linux/uhid.h>
-> #include <poll.h>
-> #include <stdbool.h>
-> #include <stdio.h>
-> #include <string.h>
-> #include <unistd.h>
->=20
-> static const unsigned char sensor_battery_rdesc[] =3D {
-> 	0x05, 0x20,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Usage Page (Sensors) =
-*/
-> 	0x09, 0x10,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Usage (Sensor Hub) */
-> 	0xa1, 0x01,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Collection (Applicati=
-on) */
-> 	0xc0,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 /* End Collection */
-> 	0x05, 0x01,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Usage Page (Generic D=
-esktop) */
-> 	0x09, 0x04,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Usage (Joystick) */
-> 	0xa1, 0x01,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Collection (Applicati=
-on) */
-> 	0x05, 0x06,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Usage Page (Generic D=
-evice Controls) */
-> 	0x09, 0x20,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Usage (Battery Streng=
-th) */
-> 	0x15, 0x00,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Logical Minimum (0) *=
-/
-> 	0x25, 0x64,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Logical Maximum (100)=
- */
-> 	0x75, 0x08,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Report Size (8) */
-> 	0x95, 0x01,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Report Count (1) */
-> 	0x81, 0x02,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Input (Data, Variable=
-, Absolute) */
-> 	0xc0,=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 /* End Collection */
-> };
->=20
-> static int send_event(int fd, struct uhid_event *event)
-> {
-> 	ssize_t written =3D write(fd, event, sizeof(*event));
->=20
-> 	if (written =3D=3D sizeof(*event))
-> 		return 0;
-> 	if (written < 0)
-> 		perror("write /dev/uhid");
-> 	else
-> 		fprintf(stderr, "short UHID write: %zd\n", written);
-> 	return -1;
-> }
->=20
-> static bool hid_battery_exists(void)
-> {
-> 	static const char prefix[] =3D "hid-0003:1234:5678.";
-> 	DIR *dir =3D opendir("/sys/class/power_supply");
-> 	struct dirent *entry;
-> 	bool found =3D false;
->=20
-> 	if (!dir)
-> 		return false;
-> 	while ((entry =3D readdir(dir))) {
-> 		if (!strncmp(entry->d_name, prefix, sizeof(prefix) -
-> 1)) {
-> 			found =3D true;
-> 			break;
-> 		}
-> 	}
-> 	closedir(dir);
-> 	return found;
-> }
->=20
-> int main(void)
-> {
-> 	struct uhid_event event =3D { 0 };
-> 	struct pollfd pfd;
-> 	int fd, attempt;
-> 	bool started =3D false;
-> 	bool battery_found =3D false;
->=20
-> 	fd =3D open("/dev/uhid", O_RDWR | O_CLOEXEC);
-> 	if (fd < 0) {
-> 		perror("open /dev/uhid");
-> 		return 1;
-> 	}
->=20
-> 	event.type =3D UHID_CREATE2;
-> 	strcpy((char *)event.u.create2.name, "sensor-hub-battery-
-> null-test");
-> 	strcpy((char *)event.u.create2.phys, "hid-null-test");
-> 	event.u.create2.rd_size =3D sizeof(sensor_battery_rdesc);
-> 	event.u.create2.bus =3D BUS_USB;
-> 	event.u.create2.vendor =3D 0x1234;
-> 	event.u.create2.product =3D 0x5678;
-> 	memcpy(event.u.create2.rd_data, sensor_battery_rdesc,
-> 	=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sizeof(sensor_battery_rdesc));
-> 	if (send_event(fd, &event))
-> 		goto out_close;
->=20
-> 	pfd.fd =3D fd;
-> 	pfd.events =3D POLLIN;
-> 	if (poll(&pfd, 1, 5000) <=3D 0) {
-> 		fprintf(stderr, "timed out waiting for
-> UHID_START\n");
-> 		goto out_destroy;
-> 	}
-> 	memset(&event, 0, sizeof(event));
-> 	if (read(fd, &event, sizeof(event)) !=3D sizeof(event)) {
-> 		perror("read UHID event");
-> 		goto out_destroy;
-> 	}
-> 	started =3D event.type =3D=3D UHID_START;
-> 	if (!started) {
-> 		fprintf(stderr, "unexpected UHID event: %u\n",
-> event.type);
-> 		goto out_destroy;
-> 	}
->=20
-> 	for (attempt =3D 0; attempt < 50 && !hid_battery_exists();
-> attempt++)
-> 		usleep(100000);
-> 	if (!hid_battery_exists()) {
-> 		fprintf(stderr, "HID battery power-supply child was
-> not created\n");
-> 		goto out_destroy;
-> 	}
-> 	battery_found =3D true;
-> 	puts("HID battery power-supply child created");
->=20
-> out_destroy:
-> 	memset(&event, 0, sizeof(event));
-> 	event.type =3D UHID_DESTROY;
-> 	if (send_event(fd, &event))
-> 		goto out_close;
-> 	usleep(300000);
-> 	if (!started)
-> 		goto out_close;
-> 	puts("UHID device destroyed without userspace error");
-> 	close(fd);
-> 	return battery_found ? 0 : 1;
->=20
-> out_close:
-> 	close(fd);
-> 	return 1;
-> }
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ drivers/iio/industrialio-event.c | 63 +++++++++++++++++++++++++---------------
+ 1 file changed, 40 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index e72b665cc79b..e6a404642417 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -258,19 +258,35 @@ static const char * const iio_ev_info_text[] = {
+ 	[IIO_EV_INFO_SCALE] = "scale",
+ };
+ 
+-static enum iio_event_direction iio_ev_attr_dir(struct iio_chan_attr *attr)
++/**
++ * struct iio_event_attr - IIO event attribute
++ * @chan_attr:	underlying IIO channel attribute, its address holds the
++ *		event info
++ * @spec:	event specification the attribute belongs to
++ */
++struct iio_event_attr {
++	struct iio_chan_attr chan_attr;
++	const struct iio_event_spec *spec;
++};
++
++static_assert(offsetof(struct iio_event_attr, chan_attr) == 0);
++
++#define to_iio_event_attr(_dev_attr)					\
++	container_of(to_iio_chan_attr(_dev_attr), struct iio_event_attr, chan_attr)
++
++static enum iio_event_direction iio_ev_attr_dir(struct iio_event_attr *attr)
+ {
+-	return attr->c->event_spec[attr->iio_attr.address & 0xffff].dir;
++	return attr->spec->dir;
+ }
+ 
+-static enum iio_event_type iio_ev_attr_type(struct iio_chan_attr *attr)
++static enum iio_event_type iio_ev_attr_type(struct iio_event_attr *attr)
+ {
+-	return attr->c->event_spec[attr->iio_attr.address & 0xffff].type;
++	return attr->spec->type;
+ }
+ 
+-static enum iio_event_info iio_ev_attr_info(struct iio_chan_attr *attr)
++static enum iio_event_info iio_ev_attr_info(struct iio_event_attr *attr)
+ {
+-	return (attr->iio_attr.address >> 16) & 0xffff;
++	return attr->chan_attr.iio_attr.address;
+ }
+ 
+ static ssize_t iio_ev_state_store(struct device *dev,
+@@ -279,7 +295,7 @@ static ssize_t iio_ev_state_store(struct device *dev,
+ 				  size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
+ 	int ret;
+ 	bool val;
+ 
+@@ -291,7 +307,7 @@ static ssize_t iio_ev_state_store(struct device *dev,
+ 		return -EINVAL;
+ 
+ 	ret = indio_dev->info->write_event_config(indio_dev,
+-		this_attr->c, iio_ev_attr_type(this_attr),
++		this_attr->chan_attr.c, iio_ev_attr_type(this_attr),
+ 		iio_ev_attr_dir(this_attr), val);
+ 
+ 	return (ret < 0) ? ret : len;
+@@ -302,14 +318,14 @@ static ssize_t iio_ev_state_show(struct device *dev,
+ 				 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
+ 	int val;
+ 
+ 	if (!indio_dev->info->read_event_config)
+ 		return -EINVAL;
+ 
+ 	val = indio_dev->info->read_event_config(indio_dev,
+-		this_attr->c, iio_ev_attr_type(this_attr),
++		this_attr->chan_attr.c, iio_ev_attr_type(this_attr),
+ 		iio_ev_attr_dir(this_attr));
+ 	if (val < 0)
+ 		return val;
+@@ -322,7 +338,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+ 				 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
+ 	int val, val2, val_arr[2];
+ 	int ret;
+ 
+@@ -330,7 +346,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
+ 		return -EINVAL;
+ 
+ 	ret = indio_dev->info->read_event_value(indio_dev,
+-		this_attr->c, iio_ev_attr_type(this_attr),
++		this_attr->chan_attr.c, iio_ev_attr_type(this_attr),
+ 		iio_ev_attr_dir(this_attr), iio_ev_attr_info(this_attr),
+ 		&val, &val2);
+ 	if (ret < 0)
+@@ -346,7 +362,7 @@ static ssize_t iio_ev_value_store(struct device *dev,
+ 				  size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
+ 	int val, val2;
+ 	int ret;
+ 
+@@ -357,7 +373,7 @@ static ssize_t iio_ev_value_store(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 	ret = indio_dev->info->write_event_value(indio_dev,
+-		this_attr->c, iio_ev_attr_type(this_attr),
++		this_attr->chan_attr.c, iio_ev_attr_type(this_attr),
+ 		iio_ev_attr_dir(this_attr), iio_ev_attr_info(this_attr),
+ 		val, val2);
+ 	if (ret < 0)
+@@ -371,11 +387,11 @@ static ssize_t iio_ev_label_show(struct device *dev,
+ 				 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
++	struct iio_event_attr *this_attr = to_iio_event_attr(attr);
+ 
+ 	if (indio_dev->info->read_event_label)
+ 		return indio_dev->info->read_event_label(indio_dev,
+-				 this_attr->c, iio_ev_attr_type(this_attr),
++				 this_attr->chan_attr.c, iio_ev_attr_type(this_attr),
+ 				 iio_ev_attr_dir(this_attr), buf);
+ 
+ 	return -EINVAL;
+@@ -384,13 +400,14 @@ static ssize_t iio_ev_label_show(struct device *dev,
+ static int iio_device_add_event_attr(struct iio_dev *indio_dev,
+ 				     const char *postfix,
+ 				     const struct iio_chan_spec *chan,
++				     unsigned int spec_index,
+ 				     iio_attr_show_t show,
+ 				     iio_attr_store_t store,
+-				     u64 mask,
++				     enum iio_event_info info,
+ 				     enum iio_shared_by shared_by)
+ {
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	struct iio_chan_attr *ev_attr;
++	struct iio_event_attr *ev_attr;
+ 	struct iio_chan_attr_ctx ctx;
+ 	int ret;
+ 
+@@ -404,7 +421,8 @@ static int iio_device_add_event_attr(struct iio_dev *indio_dev,
+ 	if (!ev_attr)
+ 		return -ENOMEM;
+ 
+-	ret = iio_chan_attr_add(&ctx, ev_attr, show, store, mask);
++	ev_attr->spec = &chan->event_spec[spec_index];
++	ret = iio_chan_attr_add(&ctx, &ev_attr->chan_attr, show, store, info);
+ 	if (ret)
+ 		kfree(ev_attr);
+ 
+@@ -449,8 +467,7 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
+ 		}
+ 
+ 		ret = iio_device_add_event_attr(indio_dev, postfix, chan,
+-						show, store,
+-						(i << 16) | spec_index,
++						spec_index, show, store, i,
+ 						shared_by);
+ 		kfree(postfix);
+ 
+@@ -488,8 +505,8 @@ static int iio_device_add_event_label(struct iio_dev *indio_dev,
+ 	if (postfix == NULL)
+ 		return -ENOMEM;
+ 
+-	ret = iio_device_add_event_attr(indio_dev, postfix, chan,
+-					&iio_ev_label_show, NULL, spec_index,
++	ret = iio_device_add_event_attr(indio_dev, postfix, chan, spec_index,
++					&iio_ev_label_show, NULL, 0,
+ 					IIO_SEPARATE);
+ 
+ 	kfree(postfix);
+
+-- 
+2.43.0
+
+
