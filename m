@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795197897;
-	b=jG+8RxaaXadC8V7MNUS2ddC3v8/tr6upbXrb3pz7l3InvA6cT1GoM0gF2IDixzXZlVYx
-	 CU9qcx7syHiPCn/P/bXmdH/pTxT83wuJZsVV/DFWVA4n0An522q8SNhWOCadYZG50JIEz
-	 pdc676IsSXH8H7BzFau1jtrTNd95BEK6tK7qttt/3Udt54NuJ6wZpykdnLCWnzhy1la2W
-	 VVAM8WE6L/2RGL7w5ytwOCb/5grMyWnUfmAa0jMgv8l8f63aEREZKo4f31ATevPfR/XuI
-	 vIRE2KOaaBwPsoC+Uq1VWEt5lMozMPRO84x8XgLKDASuEkqeSsYjDE0podQfzj0iHYg==
+	t=1795197895;
+	b=lnmx1GHR1p6DGqksLprgbj5Jex1iBaW5FLbnuT86/i8Ujjy2TEF50rAQT+MoahnKO+Z/
+	 bFC8AkJuAgymrE2u1UBy++1PsUb9oIfOh1mW/xVExdLwYu+fuvTBde4R6Ov7p8z3sZ2IF
+	 hVjjNhAZ5GI3chBmLGi8qjAWfjR07ol89yGkZZNXZT1Wb5IKKIMTDvn+/W8teEJ0diyIL
+	 qNuylDeb2+InAFo0HkIr+E3PiDYSrv9Jjp9NtftSVO3/Hnqxuq3Li+SGlb2oyWaiwghSn
+	 aT7T8BerhY0CbtPN9Q3B4E+MO9CPQsmfiCqIUwdNOdZ4W6iARGCjoiDmwE1ZgOF526g==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795197897;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795197895;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=oA8IFxqoM16WlCTCvitnmn2r9XF2DnZpllmpjVqezbQ=;
-	b=pJCR8XY9Ul2cL8jUiOpqv7zfuf2/i/ntPkfcbeVNwiIh34j+uKce0BI0hhkIcxRB9zlc
-	 539L/6BRVSiN7P5EjBITj4dw1Vl1h9/q3FCyeMb72vakm+83Cqz5r8T6QDK7BZFAKa9H/
-	 D+OHmznCRvyPVtjdZ3vnpYHa0OvUkAEohh/mat8MTbHj+A80uV+5w6GvJtq0huL9bJmH0
-	 DlObUmwtURq/AjdzVLDail7+C928jDs/g/sKzzwbcHYU+rCKOAC/Skd/8AVT2EmUGglQ0
-	 TOtGbsNSSje0IRFvjf3F5LMa2MQUXyTivmdX5OjCJDzid8utNUfoWxSFJqFZGH+PaIg==
+	bh=PZM7oYzEYwdzU2au18qxONpg2XyJj1yftpo2bjWYQAs=;
+	b=CtpgXYtkccjnuRAZ4VGeCRhpOHMlMdhwAJw9Kuav2vh8yzVvP9X9Tx487F3dWgjGp+Nr
+	 Za279c1pZ0pWEw/2f0n1vln0cVyfPJeJJpWRwxnB2NyyBnFusJ7hEsRMXA84djCePrCfY
+	 SX2w0hOAI3/BzI+uZ+I+OoOXxUSzWSyk1UIDYRU5g34d8g6BJmpt5SKUr4rGKyy4ydDjD
+	 UzdTxFRMCeiQu4DwLb4pLUboUCqk1tQ0X3s2z/SXVRS6zMVYqnT1Jk411quMZuvjvvNA/
+	 bI/0zFsjD2vzwh+Wu+l+efAqTPS6UJH1A2cy4yrBVkxJK1tu8glbHD2frasFZRTztRw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LGd8nMr3;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B0ZOSSiF;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0588B60A263B;
-	Fri, 20 Nov 2026 18:04:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C3F160A6F7F;
+	Fri, 20 Nov 2026 18:04:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LGd8nMr3
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B0ZOSSiF
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795197896;
-	b=qkZ7T9GRcQ/Hu0yoGte2GZzEg6y1VhxTNqtIOefMFlhz08O7KdL6M7d9NeCVj569onJm
-	 k7E/wAfB66sOrMwFHQrAd2HTZDCBQnsuePkj3B+WTCwZBkZbA2UQ/3TGlbkLcyR4Z2mc9
-	 wSSTOIqn3ZZdYcI7Zx2JithHuRZ4qun4pjJTO22c08+ekxuEBO7hNiJXl23+ggVX5PSY2
-	 /ColxRBZS7tUtIDn0j/x09I1sfpQHUjkG0pxIwTwBiA5vxMCj4vpBPq7e57SsRAAMvaMw
-	 NPKFhVBcs/wbNW9fC6+7NOaUQ17lKpDRhYxKrGDiJq+rqwHX4jow8RrSKjAJES5OaXw==
+	t=1795197894;
+	b=Y+5D34uOlumZopG/dhsnWIAbv7ZlfP6uYcbkZSdyIi4DanvLacX8zVE5gbS3356waDgc
+	 gkJUt0ksddQRn8RIfsDmd7oKTD2i7K/pDdbK0dpnXIL+9cpqgejjMQ8UiVM8O3nJkPZNJ
+	 A14T33gwCLI8Ee2DFS8DXpPslEk6k/mc+iXswlgTiXWJSgyZMD52T5ZdpzvyfjFLVfaTl
+	 D5OG+u96BERytB2BTNldGmw+mwnmDFF0m2n9jZcQuWbsGNvzSgslen+GudszlF4yp/FsZ
+	 2EyJciCohROu/fGaVFPosSzRty0k5XWvj8HXDE5833p4W84vT6fnFWV+xK8YSBMgtrA==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795197896;
+	c=relaxed/relaxed; t=1795197894;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=oA8IFxqoM16WlCTCvitnmn2r9XF2DnZpllmpjVqezbQ=;
-	b=1CYxAnSR1Qa+hDmiMEijGlB7L7PajUDLgN6WZx9WR+L6neGmzuE0jpxS8nCi8SuJkjuD
-	 2+GwQRWwOHWroYTCFQjUMeu9T4H7o+LraQizc4pRNh8paqRbBHoz3kwxjJM2yv4ZNjpAS
-	 qJHDXeZZI1cB+rnNAOXqP5qTwu/0vLbxwlxSusiZFWPaLZL/hXlDCzNStjEIcShDQ7U3X
-	 EUN6kj2IXbUDvvIjc12OaGvispNKY60d+3G8rhxAVZeevQ7ld6H8Ka9YRjuV54cCT18U2
-	 J6HiMKcxVzXTcSILepBgDaswbC6KjBPO3diHiIJUfBkIsCjXPHFF7zck02ynjRhVLtA==
+	bh=PZM7oYzEYwdzU2au18qxONpg2XyJj1yftpo2bjWYQAs=;
+	b=07Swk6xK8AHIFr8WJsY6YdsqCq5uKtakQa2Vq7jJdJkumCjxwAi58pBV48EUBT7i6HHG
+	 U5GkDTcJvCCsrsqvV2Go4Q5zWVNH8t3C6mMip4umQXFZwvfN6JnHU8PcoN7wvsL7wxdYs
+	 viIOg7e+FdoIQvN/JLRjtbC6FW9donF4DQoB9vvSSeJiSDI2VfJNYDJxh02eGPJ3UQQ5r
+	 6t69L5ePuuGwK7cs1LfezX+vCKGI9w6nuNkTz3LpPy4Wsvx4XJceTVulSzGICxV82SJZc
+	 qMamYNlYT2o8kCi2XMnBjlS6+Igza/Qu3FzbLGPNyBLT6aU/lhFuY6Zf+9RqfU5V4MA==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C6F961F000D0;
+	by smtp.kernel.org (Postfix) with ESMTPS id AE5211F000C0;
 	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795197896;
-	bh=oA8IFxqoM16WlCTCvitnmn2r9XF2DnZpllmpjVqezbQ=;
+	s=k20260515; t=1795197894;
+	bh=PZM7oYzEYwdzU2au18qxONpg2XyJj1yftpo2bjWYQAs=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=LGd8nMr3wnHxe2xFwr0u8ThEyvRAxsr5Sc6IdEZBMVN7Fj9/9Dn/A//cmPYebeWW7
-	 bQDITuu7yuO65hyIhDdT+zjjn2k176X8Cmaeh0FOuO3iA/UDD9kb/7xOsobm5WsUCq
-	 jDOmPAbmcSa3hJra1MJa4TWm7FdItl7LHRLgsD9H0kJQlFtFRc51mBt7dbF3RJD0ny
-	 /c4D0jwHyrLHPgI3Yj1nyw+E8MsHFqJ1GSS/41DHcRkHh4/35+KifEREQUR8TfXABw
-	 GBxGw470k9bHG4czpzoCUKjFp1M5VLnCsWU5l8qLkEOvRzi5wG7mLKiJ2/jNBFKWWk
-	 6XIAyXEGANMQQ==
+	b=B0ZOSSiFzcuCNaXZlT8Ie1GHsY88C8llspR33bbSFM4Hm3j27da+XBHxP6m8wtxdR
+	 DdBK08lM+WtaFFwDwdkq2mY05ORrL+oxi+3HYLzuLxWfZcWU1w7k6D+UF8MrP+JgLj
+	 JGgSsklu6opgh23XpnW2teNvDUVJDjCVGk4/EESoVmro3NUMamHbalEdG150TXeO4Y
+	 H1xCVYEyKYBAcHXS+uvbCfBDHXw1OsCZwpGLpqIHBgF7N5eDnmcLjHlgxLpByv/GpG
+	 sXtBhoFThApOyUHe9/bHq5QRkbt9V1fi+VdKIv7f4BjB+7ujUDl4O93GDgmzszGwu/
+	 BoOGRWuSVZdyg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 5D3454B8B5;
+	by lkml.kernel.org (Postfix) with ESMTP id 447124B8B4;
 	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 20 Nov 2026 18:03:58 +0000
-Subject: [PATCH RFC 2/5] iio: core: add struct iio_chan_attr and split
- attribute creation
+Date: Fri, 20 Nov 2026 18:03:57 +0000
+Subject: [PATCH RFC 1/5] iio: buffer: add iio_attr_to_buffer() helper
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261120-iio-core-attr-review-v1-2-05b41f8133c2@analog.com>
+Message-Id: <20261120-iio-core-attr-review-v1-1-05b41f8133c2@analog.com>
 References: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
 In-Reply-To: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -92,11 +91,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795197883; l=32633;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795197883; l=3151;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=0j9q65GuscAcmV9gPpiBn4bJGptqlV9ZWhSshIFKJps=;
- b=p9Bo3OxXxXPyEFDQuziKimgoHrMyfPpo3cUaIL+/kNhwuY78+D4r4ByWKQ+tH3oODFZiz0VuB
- LtmNaIwcOCyCThinP9t2Qf5yK1SlZHgo9Y5xB+xcqYen8O42F0qz4LE
+ bh=z0/ZhH1JujFCeJIP+q1ZFyWSGE6ClMob85zW1bLHCIE=;
+ b=EqozodOK61CCRpUR7I5AmUZvkpvSMyIjLg+2qwcU/EgW2wLh3nGnJmIsL8I8Pc17hwjGiYuHv
+ jbZTsvYe9GcDRVXOH+9B14AYVHvWd5Z2Rg5UU4xQG832ImUgQZuYBVQ
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -107,940 +106,83 @@ Content-Transfer-Encoding: 7bit
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Channel, event and buffer attributes are all created through
-__iio_add_chan_devattr(), which allocates a struct iio_dev_attr and its
-name, and only then walks the attribute list looking for a duplicate.
-For shared attributes (info_mask_shared_by_*, shared ext_info and shared
-event info) every channel after the first one allocates the attribute
-and its name just to find the duplicate and free both again. The
-function also takes a buffer pointer that only buffer attributes use.
+Buffer implementations providing their own attributes through
+struct iio_buffer::attrs need to find the buffer an attribute belongs
+to. The DMAengine buffer does that with to_iio_dev_attr(attr)->buffer,
+which depends on the IIO buffer core wrapping those attributes into its
+own copies and on the layout of struct iio_dev_attr.
 
-Introduce struct iio_chan_attr for the attributes created by the IIO
-core. It embeds struct iio_dev_attr and adds the channel spec and the
-list node, so that the core-only state no longer needs to live in the
-structure drivers use for their own attributes. Other attribute types
-can extend it further.
-
-Replace __iio_add_chan_devattr() with two steps:
-
- - iio_chan_attr_prepare() builds the full attribute name on the stack
-   and checks it against the attribute list.
- - iio_chan_attr_add() initializes an attribute allocated by the caller
-   and adds it to the list.
-
-The caller allocates its own attribute type in between, so the core
-needs no size or context pointer, and duplicates are detected before
-anything is allocated.
-
-Also add iio_attr_show_t and iio_attr_store_t, so the show and store
-callback prototypes are not spelled out in every helper.
-
-Event and buffer attributes are converted to struct iio_chan_attr, but
-otherwise keep their current behavior.
+Add iio_attr_to_buffer(), so buffer implementations no longer depend on
+how the IIO core keeps track of the buffer, and use it in the DMAengine
+buffer.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/iio_core.h            |  58 ++++++--
- drivers/iio/industrialio-buffer.c |  95 +++++++------
- drivers/iio/industrialio-core.c   | 278 ++++++++++++++++++++------------------
- drivers/iio/industrialio-event.c  |  72 +++++++---
- 4 files changed, 290 insertions(+), 213 deletions(-)
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c |  2 +-
+ drivers/iio/industrialio-buffer.c                  | 15 +++++++++++++++
+ include/linux/iio/buffer_impl.h                    |  3 +++
+ 3 files changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
-index 59fa1bd9924b..6a391a604bf9 100644
---- a/drivers/iio/iio_core.h
-+++ b/drivers/iio/iio_core.h
-@@ -11,6 +11,9 @@
- #define _IIO_CORE_H_
- #include <linux/kernel.h>
- #include <linux/device.h>
-+#include <linux/limits.h>
-+#include <linux/list.h>
-+#include <linux/iio/sysfs.h>
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index 7ecb9d875b8e..2e04cd5e3411 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -226,7 +226,7 @@ static const struct iio_dma_buffer_ops iio_dmaengine_default_ops = {
+ static ssize_t iio_dmaengine_buffer_get_length_align(struct device *dev,
+ 						     struct device_attribute *attr, char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = iio_attr_to_buffer(attr);
+ 	struct dmaengine_buffer *dmaengine_buffer =
+ 		iio_buffer_to_dmaengine_buffer(buffer);
  
- struct iio_buffer;
- struct iio_chan_spec;
-@@ -38,20 +41,47 @@ ssize_t do_iio_read_channel_label(struct iio_dev *indio_dev,
- 				  const struct iio_chan_spec *c,
- 				  char *buf);
- 
--int __iio_add_chan_devattr(const char *postfix,
--			   struct iio_chan_spec const *chan,
--			   ssize_t (*func)(struct device *dev,
--					   struct device_attribute *attr,
--					   char *buf),
--			   ssize_t (*writefunc)(struct device *dev,
--						struct device_attribute *attr,
--						const char *buf,
--						size_t len),
--			   u64 mask,
--			   enum iio_shared_by shared_by,
--			   struct device *dev,
--			   struct iio_buffer *buffer,
--			   struct list_head *attr_list);
-+typedef typeof_member(struct device_attribute, show) iio_attr_show_t;
-+typedef typeof_member(struct device_attribute, store) iio_attr_store_t;
-+
-+/**
-+ * struct iio_chan_attr - IIO core managed channel attribute
-+ * @iio_attr:	underlying IIO device attribute
-+ * @c:		specification for the underlying channel (if any)
-+ * @l:		list head for maintaining list of dynamically created attrs
-+ *
-+ * Other IIO core attribute types extend this one and must embed it as their
-+ * first member, since attribute lists are freed through this type.
-+ */
-+struct iio_chan_attr {
-+	struct iio_dev_attr iio_attr;
-+	const struct iio_chan_spec *c;
-+	struct list_head l;
-+};
-+
-+#define to_iio_chan_attr(_dev_attr)					\
-+	container_of(to_iio_dev_attr(_dev_attr), struct iio_chan_attr, iio_attr)
-+
-+/**
-+ * struct iio_chan_attr_ctx - context for creating an IIO channel attribute
-+ * @chan:	specification for the underlying channel
-+ * @attr_list:	list the attribute is added to
-+ * @name:	full attribute name
-+ */
-+struct iio_chan_attr_ctx {
-+	const struct iio_chan_spec *chan;
-+	struct list_head *attr_list;
-+	char name[NAME_MAX + 1];
-+};
-+
-+int iio_chan_attr_prepare(struct iio_chan_attr_ctx *ctx, struct device *dev,
-+			  const struct iio_chan_spec *chan,
-+			  enum iio_shared_by shared_by, const char *postfix,
-+			  struct list_head *attr_list);
-+int iio_chan_attr_add(const struct iio_chan_attr_ctx *ctx,
-+		      struct iio_chan_attr *attr,
-+		      iio_attr_show_t readfunc, iio_attr_store_t writefunc,
-+		      u64 mask);
- void iio_free_chan_devattr_list(struct list_head *attr_list);
- 
- int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
 diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 2d7759325eb3..48fdaed6d703 100644
+index 4294101810fd..2d7759325eb3 100644
 --- a/drivers/iio/industrialio-buffer.c
 +++ b/drivers/iio/industrialio-buffer.c
-@@ -412,7 +412,7 @@ static ssize_t iio_show_scan_index(struct device *dev,
- 				   struct device_attribute *attr,
- 				   char *buf)
- {
--	return sysfs_emit(buf, "%u\n", to_iio_dev_attr(attr)->c->scan_index);
-+	return sysfs_emit(buf, "%u\n", to_iio_chan_attr(attr)->c->scan_index);
- }
- 
- static ssize_t iio_show_fixed_type(struct device *dev,
-@@ -420,7 +420,7 @@ static ssize_t iio_show_fixed_type(struct device *dev,
- 				   char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	const struct iio_scan_type *scan_type;
- 	u8 type;
- 
-@@ -651,56 +651,61 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
- 	return len;
- }
- 
-+static int iio_buffer_add_chan_devattr(struct iio_dev *indio_dev,
-+				       struct iio_buffer *buffer,
-+				       const char *postfix,
-+				       const struct iio_chan_spec *chan,
-+				       iio_attr_show_t readfunc,
-+				       iio_attr_store_t writefunc,
-+				       u64 mask)
-+{
-+	struct iio_chan_attr *buf_attr;
-+	struct iio_chan_attr_ctx ctx;
-+	int ret;
-+
-+	ret = iio_chan_attr_prepare(&ctx, &indio_dev->dev, chan, IIO_SEPARATE,
-+				    postfix, &buffer->buffer_attr_list);
-+	if (ret)
-+		return ret;
-+
-+	buf_attr = kzalloc_obj(*buf_attr);
-+	if (!buf_attr)
-+		return -ENOMEM;
-+
-+	buf_attr->iio_attr.buffer = buffer;
-+	ret = iio_chan_attr_add(&ctx, buf_attr, readfunc, writefunc, mask);
-+	if (ret)
-+		kfree(buf_attr);
-+
-+	return ret;
-+}
-+
- static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
- 					struct iio_buffer *buffer,
- 					const struct iio_chan_spec *chan)
- {
- 	int ret, attrcount = 0;
- 
--	ret = __iio_add_chan_devattr("index",
--				     chan,
--				     &iio_show_scan_index,
--				     NULL,
--				     0,
--				     IIO_SEPARATE,
--				     &indio_dev->dev,
--				     buffer,
--				     &buffer->buffer_attr_list);
-+	ret = iio_buffer_add_chan_devattr(indio_dev, buffer, "index", chan,
-+					  &iio_show_scan_index, NULL, 0);
- 	if (ret)
- 		return ret;
- 	attrcount++;
--	ret = __iio_add_chan_devattr("type",
--				     chan,
--				     &iio_show_fixed_type,
--				     NULL,
--				     0,
--				     IIO_SEPARATE,
--				     &indio_dev->dev,
--				     buffer,
--				     &buffer->buffer_attr_list);
-+	ret = iio_buffer_add_chan_devattr(indio_dev, buffer, "type", chan,
-+					  &iio_show_fixed_type, NULL, 0);
- 	if (ret)
- 		return ret;
- 	attrcount++;
- 	if (chan->type != IIO_TIMESTAMP)
--		ret = __iio_add_chan_devattr("en",
--					     chan,
--					     &iio_scan_el_show,
--					     &iio_scan_el_store,
--					     chan->scan_index,
--					     IIO_SEPARATE,
--					     &indio_dev->dev,
--					     buffer,
--					     &buffer->buffer_attr_list);
-+		ret = iio_buffer_add_chan_devattr(indio_dev, buffer, "en", chan,
-+						  &iio_scan_el_show,
-+						  &iio_scan_el_store,
-+						  chan->scan_index);
- 	else
--		ret = __iio_add_chan_devattr("en",
--					     chan,
--					     &iio_scan_el_ts_show,
--					     &iio_scan_el_ts_store,
--					     chan->scan_index,
--					     IIO_SEPARATE,
--					     &indio_dev->dev,
--					     buffer,
--					     &buffer->buffer_attr_list);
-+		ret = iio_buffer_add_chan_devattr(indio_dev, buffer, "en", chan,
-+						  &iio_scan_el_ts_show,
-+						  &iio_scan_el_ts_store,
-+						  chan->scan_index);
- 	if (ret)
- 		return ret;
- 	attrcount++;
-@@ -1521,23 +1526,25 @@ static struct attribute *iio_buffer_wrap_attr(struct iio_buffer *buffer,
- 					      struct attribute *attr)
- {
- 	struct device_attribute *dattr = to_dev_attr(attr);
-+	struct iio_chan_attr *chan_attr;
- 	struct iio_dev_attr *iio_attr;
- 
--	iio_attr = kzalloc_obj(*iio_attr);
--	if (!iio_attr)
-+	chan_attr = kzalloc_obj(*chan_attr);
-+	if (!chan_attr)
- 		return NULL;
- 
-+	iio_attr = &chan_attr->iio_attr;
- 	iio_attr->buffer = buffer;
- 	memcpy(&iio_attr->dev_attr, dattr, sizeof(iio_attr->dev_attr));
- 	iio_attr->dev_attr.attr.name = kstrdup_const(attr->name, GFP_KERNEL);
- 	if (!iio_attr->dev_attr.attr.name) {
--		kfree(iio_attr);
-+		kfree(chan_attr);
- 		return NULL;
- 	}
- 
- 	sysfs_attr_init(&iio_attr->dev_attr.attr);
- 
--	list_add(&iio_attr->l, &buffer->buffer_attr_list);
-+	list_add(&chan_attr->l, &buffer->buffer_attr_list);
- 
- 	return &iio_attr->dev_attr.attr;
- }
-@@ -2151,7 +2158,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	unsigned int masklength = iio_get_masklength(indio_dev);
--	struct iio_dev_attr *p;
-+	struct iio_chan_attr *p;
- 	const struct iio_dev_attr *id_attr;
- 	struct attribute **attr;
- 	int ret, i, attrn, scan_el_attrcount, buffer_attrcount;
-@@ -2258,7 +2265,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 
- 	attrn = 0;
- 	list_for_each_entry(p, &buffer->buffer_attr_list, l)
--		attr[attrn++] = &p->dev_attr.attr;
-+		attr[attrn++] = &p->iio_attr.dev_attr.attr;
- 
- 	buffer->buffer_group.name = kasprintf(GFP_KERNEL, "buffer%d", index);
- 	if (!buffer->buffer_group.name) {
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index ed7aa7fd9391..d1f56e7f1666 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -581,10 +581,10 @@ static ssize_t iio_read_channel_ext_info(struct device *dev,
- 				     char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	const struct iio_chan_spec_ext_info *ext_info;
- 
--	ext_info = &this_attr->c->ext_info[this_attr->address];
-+	ext_info = &this_attr->c->ext_info[this_attr->iio_attr.address];
- 
- 	return ext_info->read(indio_dev, ext_info->private, this_attr->c, buf);
- }
-@@ -594,10 +594,10 @@ static ssize_t iio_write_channel_ext_info(struct device *dev,
- 				     const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	const struct iio_chan_spec_ext_info *ext_info;
- 
--	ext_info = &this_attr->c->ext_info[this_attr->address];
-+	ext_info = &this_attr->c->ext_info[this_attr->iio_attr.address];
- 
- 	return ext_info->write(indio_dev, ext_info->private,
- 			       this_attr->c, buf, len);
-@@ -876,14 +876,14 @@ static ssize_t iio_read_channel_label(struct device *dev,
- 				      char *buf)
- {
- 	return do_iio_read_channel_label(dev_to_iio_dev(dev),
--					 to_iio_dev_attr(attr)->c, buf);
-+					 to_iio_chan_attr(attr)->c, buf);
- }
- 
- static ssize_t iio_read_channel_parent(struct device *dev,
- 				       struct device_attribute *attr,
- 				       char *buf)
- {
--	const struct iio_chan_spec *chan = to_iio_dev_attr(attr)->c->parent;
-+	const struct iio_chan_spec *chan = to_iio_chan_attr(attr)->c->parent;
- 	ssize_t len;
- 
- 	len = __iio_chan_prefix_emit(dev, chan, IIO_SEPARATE, buf, PAGE_SIZE - 1);
-@@ -898,7 +898,7 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 				     char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	int vals[INDIO_MAX_RAW_ELEMENTS];
- 	int ret;
- 	int val_len = 2;
-@@ -907,10 +907,10 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr->c,
- 							INDIO_MAX_RAW_ELEMENTS,
- 							vals, &val_len,
--							this_attr->address);
-+							this_attr->iio_attr.address);
- 	else if (indio_dev->info->read_raw)
- 		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
--				    &vals[0], &vals[1], this_attr->address);
-+				    &vals[0], &vals[1], this_attr->iio_attr.address);
- 	else
- 		return -EINVAL;
- 
-@@ -989,7 +989,7 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
- 					   char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	const int *vals;
- 	int ret;
- 	int length;
-@@ -1000,7 +1000,7 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
- 
- 	ret = indio_dev->info->read_avail(indio_dev, this_attr->c,
- 					  &vals, &type, &length,
--					  this_attr->address);
-+					  this_attr->iio_attr.address);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -1109,7 +1109,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 				      size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	int ret, fract_mult = 100000;
- 	int type, dec_scale = 0;
- 	int integer, fract = 0;
-@@ -1125,7 +1125,7 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 	if (indio_dev->info->write_raw_get_fmt) {
- 		type = indio_dev->info->write_raw_get_fmt(indio_dev,
- 							  this_attr->c,
--							  this_attr->address);
-+							  this_attr->iio_attr.address);
- 		switch (type) {
- 		case IIO_VAL_INT:
- 			fract_mult = 0;
-@@ -1183,43 +1183,100 @@ static ssize_t iio_write_channel_info(struct device *dev,
- 	}
- 
- 	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
--					 integer, fract, this_attr->address);
-+					 integer, fract, this_attr->iio_attr.address);
- 	if (ret)
- 		return ret;
- 
- 	return len;
- }
- 
--static
--int __iio_device_attr_init(struct device *dev,
--			   struct device_attribute *dev_attr,
--			   const char *postfix,
--			   struct iio_chan_spec const *chan,
--			   ssize_t (*readfunc)(struct device *dev,
--					       struct device_attribute *attr,
--					       char *buf),
--			   ssize_t (*writefunc)(struct device *dev,
--						struct device_attribute *attr,
--						const char *buf,
--						size_t len),
--			   enum iio_shared_by shared_by)
-+static ssize_t iio_chan_attr_name_emit(struct device *dev,
-+				       const struct iio_chan_spec *chan,
-+				       enum iio_shared_by shared_by,
-+				       const char *postfix,
-+				       char *buf, size_t len)
- {
--	char prefix[NAME_MAX + 1];
-+	struct seq_buf s;
- 	ssize_t ret;
- 
-+	ret = __iio_chan_prefix_emit(dev, chan, shared_by, buf, len);
-+	if (ret < 0)
-+		return ret;
-+
-+	seq_buf_init(&s, buf + ret, len - ret);
-+	seq_buf_printf(&s, ret ? "_%s" : "%s", postfix);
-+	if (seq_buf_has_overflowed(&s))
-+		return -EOVERFLOW;
-+
-+	return ret + s.len;
-+}
-+
-+/**
-+ * iio_chan_attr_prepare() - Prepare the creation of an IIO channel attribute
-+ * @ctx: Context to be filled in
-+ * @dev: Device used for error reporting
-+ * @chan: Specification for the underlying channel
-+ * @shared_by: Sharing scope of the attribute
-+ * @postfix: Attribute name postfix, appended to the channel prefix
-+ * @attr_list: List the attribute is going to be added to
-+ *
-+ * Builds the full attribute name and makes sure it is not on @attr_list yet,
-+ * so that the caller only allocates the attribute if it is going to be used.
-+ *
-+ * Returns: 0 on success, -EBUSY if the attribute already exists, or another
-+ * negative error code on failure.
-+ */
-+int iio_chan_attr_prepare(struct iio_chan_attr_ctx *ctx, struct device *dev,
-+			  const struct iio_chan_spec *chan,
-+			  enum iio_shared_by shared_by, const char *postfix,
-+			  struct list_head *attr_list)
-+{
-+	struct iio_chan_attr *t;
-+	ssize_t len;
-+
-+	len = iio_chan_attr_name_emit(dev, chan, shared_by, postfix,
-+				      ctx->name, sizeof(ctx->name));
-+	if (len < 0)
-+		return len;
-+
-+	list_for_each_entry(t, attr_list, l)
-+		if (strcmp(t->iio_attr.dev_attr.attr.name, ctx->name) == 0) {
-+			if (shared_by == IIO_SEPARATE)
-+				dev_err(dev, "tried to double register : %s\n",
-+					ctx->name);
-+			return -EBUSY;
-+		}
-+
-+	ctx->chan = chan;
-+	ctx->attr_list = attr_list;
-+
-+	return 0;
-+}
-+
-+/**
-+ * iio_chan_attr_add() - Initialize an IIO channel attribute and add it
-+ * @ctx: Context filled in by iio_chan_attr_prepare()
-+ * @attr: Zeroed attribute allocated by the caller
-+ * @readfunc: Show callback, if any
-+ * @writefunc: Store callback, if any
-+ * @mask: Value for the attribute address
-+ *
-+ * On success, the attribute is owned by the list it was added to and gets
-+ * freed by iio_free_chan_devattr_list(). On failure, the caller still owns it.
-+ *
-+ * Returns: 0 on success, negative error code on failure.
-+ */
-+int iio_chan_attr_add(const struct iio_chan_attr_ctx *ctx,
-+		      struct iio_chan_attr *attr,
-+		      iio_attr_show_t readfunc, iio_attr_store_t writefunc,
-+		      u64 mask)
-+{
-+	struct device_attribute *dev_attr = &attr->iio_attr.dev_attr;
-+
- 	sysfs_attr_init(&dev_attr->attr);
--
--	ret = __iio_chan_prefix_emit(dev, chan, shared_by, prefix, sizeof(prefix));
--	if (ret < 0)
--		return ret;
--
--	if (ret)
--		dev_attr->attr.name = kasprintf(GFP_KERNEL, "%s_%s", prefix, postfix);
--	else
--		dev_attr->attr.name = kstrdup(postfix, GFP_KERNEL);
-+	dev_attr->attr.name = kstrdup(ctx->name, GFP_KERNEL);
- 	if (!dev_attr->attr.name)
- 		return -ENOMEM;
--
- 	if (readfunc) {
- 		dev_attr->attr.mode |= 0444;
- 		dev_attr->show = readfunc;
-@@ -1230,81 +1287,53 @@ int __iio_device_attr_init(struct device *dev,
- 		dev_attr->store = writefunc;
- 	}
- 
-+	attr->c = ctx->chan;
-+	attr->iio_attr.address = mask;
-+	list_add(&attr->l, ctx->attr_list);
-+
- 	return 0;
- }
- 
--static void __iio_device_attr_deinit(struct device_attribute *dev_attr)
--{
--	kfree(dev_attr->attr.name);
--}
--
--int __iio_add_chan_devattr(const char *postfix,
--			   struct iio_chan_spec const *chan,
--			   ssize_t (*readfunc)(struct device *dev,
--					       struct device_attribute *attr,
--					       char *buf),
--			   ssize_t (*writefunc)(struct device *dev,
--						struct device_attribute *attr,
--						const char *buf,
--						size_t len),
--			   u64 mask,
--			   enum iio_shared_by shared_by,
--			   struct device *dev,
--			   struct iio_buffer *buffer,
--			   struct list_head *attr_list)
-+static int iio_device_add_chan_devattr(struct iio_dev *indio_dev,
-+				       const char *postfix,
-+				       struct iio_chan_spec const *chan,
-+				       iio_attr_show_t readfunc,
-+				       iio_attr_store_t writefunc,
-+				       u64 mask,
-+				       enum iio_shared_by shared_by)
- {
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+	struct iio_chan_attr *iio_attr;
-+	struct iio_chan_attr_ctx ctx;
- 	int ret;
--	struct iio_dev_attr *iio_attr, *t;
-+
-+	ret = iio_chan_attr_prepare(&ctx, &indio_dev->dev, chan, shared_by,
-+				    postfix, &iio_dev_opaque->channel_attr_list);
-+	if (ret)
-+		return ret;
- 
- 	iio_attr = kzalloc_obj(*iio_attr);
--	if (iio_attr == NULL)
-+	if (!iio_attr)
- 		return -ENOMEM;
--	ret = __iio_device_attr_init(dev, &iio_attr->dev_attr,
--				     postfix, chan,
--				     readfunc, writefunc, shared_by);
-+
-+	ret = iio_chan_attr_add(&ctx, iio_attr, readfunc, writefunc, mask);
- 	if (ret)
--		goto error_iio_dev_attr_free;
--	iio_attr->c = chan;
--	iio_attr->address = mask;
--	iio_attr->buffer = buffer;
--	list_for_each_entry(t, attr_list, l)
--		if (strcmp(t->dev_attr.attr.name,
--			   iio_attr->dev_attr.attr.name) == 0) {
--			if (shared_by == IIO_SEPARATE)
--				dev_err(dev, "tried to double register : %s\n",
--					t->dev_attr.attr.name);
--			ret = -EBUSY;
--			goto error_device_attr_deinit;
--		}
--	list_add(&iio_attr->l, attr_list);
-+		kfree(iio_attr);
- 
--	return 0;
--
--error_device_attr_deinit:
--	__iio_device_attr_deinit(&iio_attr->dev_attr);
--error_iio_dev_attr_free:
--	kfree(iio_attr);
- 	return ret;
- }
- 
- static int iio_device_add_channel_label(struct iio_dev *indio_dev,
- 					 struct iio_chan_spec const *chan)
- {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int ret;
- 
- 	if (!indio_dev->info->read_label && !chan->extend_name)
- 		return 0;
- 
--	ret = __iio_add_chan_devattr("label",
--				     chan,
--				     &iio_read_channel_label,
--				     NULL,
--				     0,
--				     IIO_SEPARATE,
--				     &indio_dev->dev,
--				     NULL,
--				     &iio_dev_opaque->channel_attr_list);
-+	ret = iio_device_add_chan_devattr(indio_dev, "label", chan,
-+					  &iio_read_channel_label, NULL,
-+					  0, IIO_SEPARATE);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1314,16 +1343,14 @@ static int iio_device_add_channel_label(struct iio_dev *indio_dev,
- static int iio_device_add_channel_parent_attr(struct iio_dev *indio_dev,
- 					      struct iio_chan_spec const *chan)
- {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int ret;
- 
- 	if (!chan->parent)
- 		return 0;
- 
--	ret = __iio_add_chan_devattr("parent", chan,
--				     &iio_read_channel_parent, NULL,
--				     0, IIO_SEPARATE, &indio_dev->dev, NULL,
--				     &iio_dev_opaque->channel_attr_list);
-+	ret = iio_device_add_chan_devattr(indio_dev, "parent", chan,
-+					  &iio_read_channel_parent, NULL,
-+					  0, IIO_SEPARATE);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1335,21 +1362,17 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
- 					 enum iio_shared_by shared_by,
- 					 const unsigned long *infomask)
- {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int i, ret, attrcount = 0;
- 
- 	for_each_set_bit(i, infomask, sizeof(*infomask)*8) {
- 		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
- 			return -EINVAL;
--		ret = __iio_add_chan_devattr(iio_chan_info_postfix[i],
--					     chan,
--					     &iio_read_channel_info,
--					     &iio_write_channel_info,
--					     i,
--					     shared_by,
--					     &indio_dev->dev,
--					     NULL,
--					     &iio_dev_opaque->channel_attr_list);
-+		ret = iio_device_add_chan_devattr(indio_dev,
-+						  iio_chan_info_postfix[i],
-+						  chan,
-+						  &iio_read_channel_info,
-+						  &iio_write_channel_info,
-+						  i, shared_by);
- 		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
- 			continue;
- 		if (ret < 0)
-@@ -1365,7 +1388,6 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
- 					       enum iio_shared_by shared_by,
- 					       const unsigned long *infomask)
- {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int i, ret, attrcount = 0;
- 	char *avail_postfix;
- 
-@@ -1378,15 +1400,10 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
- 		if (!avail_postfix)
- 			return -ENOMEM;
- 
--		ret = __iio_add_chan_devattr(avail_postfix,
--					     chan,
--					     &iio_read_channel_info_avail,
--					     NULL,
--					     i,
--					     shared_by,
--					     &indio_dev->dev,
--					     NULL,
--					     &iio_dev_opaque->channel_attr_list);
-+		ret = iio_device_add_chan_devattr(indio_dev, avail_postfix,
-+						  chan,
-+						  &iio_read_channel_info_avail,
-+						  NULL, i, shared_by);
- 		kfree(avail_postfix);
- 		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
- 			continue;
-@@ -1401,7 +1418,6 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
- static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 					struct iio_chan_spec const *chan)
- {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int ret, attrcount = 0;
- 	const struct iio_chan_spec_ext_info *ext_info;
- 
-@@ -1477,17 +1493,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 		unsigned int i = 0;
- 
- 		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
--			ret = __iio_add_chan_devattr(ext_info->name,
--					chan,
--					ext_info->read ?
--					    &iio_read_channel_ext_info : NULL,
--					ext_info->write ?
--					    &iio_write_channel_ext_info : NULL,
--					i,
--					ext_info->shared,
--					&indio_dev->dev,
--					NULL,
--					&iio_dev_opaque->channel_attr_list);
-+			ret = iio_device_add_chan_devattr(indio_dev,
-+							  ext_info->name, chan,
-+							  ext_info->read ?
-+							  &iio_read_channel_ext_info : NULL,
-+							  ext_info->write ?
-+							  &iio_write_channel_ext_info : NULL,
-+							  i, ext_info->shared);
- 			i++;
- 			if (ret == -EBUSY && ext_info->shared)
- 				continue;
-@@ -1511,10 +1523,10 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
-  */
- void iio_free_chan_devattr_list(struct list_head *attr_list)
- {
--	struct iio_dev_attr *p, *n;
-+	struct iio_chan_attr *p, *n;
- 
- 	list_for_each_entry_safe(p, n, attr_list, l) {
--		kfree_const(p->dev_attr.attr.name);
-+		kfree_const(p->iio_attr.dev_attr.attr.name);
- 		list_del(&p->l);
- 		kfree(p);
- 	}
-@@ -1636,7 +1648,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int i, ret = 0, attrcount, attrn, attrcount_orig = 0;
--	struct iio_dev_attr *p;
-+	struct iio_chan_attr *p;
- 	struct attribute **attr, *clk = NULL;
- 
- 	/* First count elements in any existing group */
-@@ -1695,7 +1707,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
- 	attrn = attrcount_orig;
- 	/* Add all elements from the list. */
- 	list_for_each_entry(p, &iio_dev_opaque->channel_attr_list, l)
--		iio_dev_opaque->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
-+		iio_dev_opaque->chan_attr_group.attrs[attrn++] = &p->iio_attr.dev_attr.attr;
- 	if (indio_dev->name)
- 		iio_dev_opaque->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
- 	if (indio_dev->label)
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index e6730f52262a..e72b665cc79b 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -258,19 +258,19 @@ static const char * const iio_ev_info_text[] = {
- 	[IIO_EV_INFO_SCALE] = "scale",
+@@ -69,6 +69,21 @@ static const char * const iio_endian_prefix[] = {
+ 	[IIO_LE] = "le",
  };
  
--static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
-+static enum iio_event_direction iio_ev_attr_dir(struct iio_chan_attr *attr)
- {
--	return attr->c->event_spec[attr->address & 0xffff].dir;
-+	return attr->c->event_spec[attr->iio_attr.address & 0xffff].dir;
- }
- 
--static enum iio_event_type iio_ev_attr_type(struct iio_dev_attr *attr)
-+static enum iio_event_type iio_ev_attr_type(struct iio_chan_attr *attr)
- {
--	return attr->c->event_spec[attr->address & 0xffff].type;
-+	return attr->c->event_spec[attr->iio_attr.address & 0xffff].type;
- }
- 
--static enum iio_event_info iio_ev_attr_info(struct iio_dev_attr *attr)
-+static enum iio_event_info iio_ev_attr_info(struct iio_chan_attr *attr)
- {
--	return (attr->address >> 16) & 0xffff;
-+	return (attr->iio_attr.address >> 16) & 0xffff;
- }
- 
- static ssize_t iio_ev_state_store(struct device *dev,
-@@ -279,7 +279,7 @@ static ssize_t iio_ev_state_store(struct device *dev,
- 				  size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	int ret;
- 	bool val;
- 
-@@ -302,7 +302,7 @@ static ssize_t iio_ev_state_show(struct device *dev,
- 				 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	int val;
- 
- 	if (!indio_dev->info->read_event_config)
-@@ -322,7 +322,7 @@ static ssize_t iio_ev_value_show(struct device *dev,
- 				 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	int val, val2, val_arr[2];
- 	int ret;
- 
-@@ -346,7 +346,7 @@ static ssize_t iio_ev_value_store(struct device *dev,
- 				  size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 	int val, val2;
- 	int ret;
- 
-@@ -371,7 +371,7 @@ static ssize_t iio_ev_label_show(struct device *dev,
- 				 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	struct iio_chan_attr *this_attr = to_iio_chan_attr(attr);
- 
- 	if (indio_dev->info->read_event_label)
- 		return indio_dev->info->read_event_label(indio_dev,
-@@ -381,12 +381,41 @@ static ssize_t iio_ev_label_show(struct device *dev,
- 	return -EINVAL;
- }
- 
-+static int iio_device_add_event_attr(struct iio_dev *indio_dev,
-+				     const char *postfix,
-+				     const struct iio_chan_spec *chan,
-+				     iio_attr_show_t show,
-+				     iio_attr_store_t store,
-+				     u64 mask,
-+				     enum iio_shared_by shared_by)
++/**
++ * iio_attr_to_buffer() - Get the IIO buffer a buffer attribute belongs to
++ * @attr: Device attribute of the buffer, as passed to its show/store callbacks
++ *
++ * Only valid for attributes registered through &struct iio_buffer.attrs or
++ * created by the IIO buffer core.
++ *
++ * Returns: Pointer to the IIO buffer.
++ */
++struct iio_buffer *iio_attr_to_buffer(struct device_attribute *attr)
 +{
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+	struct iio_chan_attr *ev_attr;
-+	struct iio_chan_attr_ctx ctx;
-+	int ret;
-+
-+	ret = iio_chan_attr_prepare(&ctx, &indio_dev->dev, chan, shared_by,
-+				    postfix,
-+				    &iio_dev_opaque->event_interface->dev_attr_list);
-+	if (ret)
-+		return ret;
-+
-+	ev_attr = kzalloc_obj(*ev_attr);
-+	if (!ev_attr)
-+		return -ENOMEM;
-+
-+	ret = iio_chan_attr_add(&ctx, ev_attr, show, store, mask);
-+	if (ret)
-+		kfree(ev_attr);
-+
-+	return ret;
++	return to_iio_dev_attr(attr)->buffer;
 +}
++EXPORT_SYMBOL_GPL(iio_attr_to_buffer);
 +
- static int iio_device_add_event(struct iio_dev *indio_dev,
- 	const struct iio_chan_spec *chan, unsigned int spec_index,
- 	enum iio_event_type type, enum iio_event_direction dir,
- 	enum iio_shared_by shared_by, const unsigned long *mask)
+ static bool iio_buffer_is_active(struct iio_buffer *buf)
  {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	ssize_t (*show)(struct device *dev, struct device_attribute *attr,
- 		char *buf);
- 	ssize_t (*store)(struct device *dev, struct device_attribute *attr,
-@@ -419,10 +448,10 @@ static int iio_device_add_event(struct iio_dev *indio_dev,
- 			store = iio_ev_value_store;
- 		}
+ 	return !list_empty(&buf->buffer_list);
+diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
+index 9442c165561a..c259dfdf46a2 100644
+--- a/include/linux/iio/buffer_impl.h
++++ b/include/linux/iio/buffer_impl.h
+@@ -9,6 +9,7 @@
+ #include <uapi/linux/iio/buffer.h>
+ #include <linux/iio/buffer.h>
  
--		ret = __iio_add_chan_devattr(postfix, chan, show, store,
--			 (i << 16) | spec_index, shared_by, &indio_dev->dev,
--			 NULL,
--			&iio_dev_opaque->event_interface->dev_attr_list);
-+		ret = iio_device_add_event_attr(indio_dev, postfix, chan,
-+						show, store,
-+						(i << 16) | spec_index,
-+						shared_by);
- 		kfree(postfix);
++struct device_attribute;
+ struct dma_buf_attachment;
+ struct dma_fence;
+ struct iio_dev;
+@@ -197,6 +198,8 @@ void iio_buffer_put(struct iio_buffer *buffer);
  
- 		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
-@@ -443,7 +472,6 @@ static int iio_device_add_event_label(struct iio_dev *indio_dev,
- 				      enum iio_event_type type,
- 				      enum iio_event_direction dir)
- {
--	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	char *postfix;
- 	int ret;
+ void iio_buffer_signal_dmabuf_done(struct dma_fence *fence, int ret);
  
-@@ -460,9 +488,9 @@ static int iio_device_add_event_label(struct iio_dev *indio_dev,
- 	if (postfix == NULL)
- 		return -ENOMEM;
++struct iio_buffer *iio_attr_to_buffer(struct device_attribute *attr);
++
+ #else /* CONFIG_IIO_BUFFER */
  
--	ret = __iio_add_chan_devattr(postfix, chan, &iio_ev_label_show, NULL,
--				spec_index, IIO_SEPARATE, &indio_dev->dev, NULL,
--				&iio_dev_opaque->event_interface->dev_attr_list);
-+	ret = iio_device_add_event_attr(indio_dev, postfix, chan,
-+					&iio_ev_label_show, NULL, spec_index,
-+					IIO_SEPARATE);
- 
- 	kfree(postfix);
- 
-@@ -575,7 +603,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	struct iio_event_interface *ev_int;
--	struct iio_dev_attr *p;
-+	struct iio_chan_attr *p;
- 	int ret = 0, attrcount_orig = 0, attrcount, attrn;
- 	struct attribute **attr;
- 
-@@ -619,7 +647,7 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
- 	attrn = attrcount_orig;
- 	/* Add all elements from the list. */
- 	list_for_each_entry(p, &ev_int->dev_attr_list, l)
--		ev_int->group.attrs[attrn++] = &p->dev_attr.attr;
-+		ev_int->group.attrs[attrn++] = &p->iio_attr.dev_attr.attr;
- 
- 	ret = iio_device_register_sysfs_group(indio_dev, &ev_int->group);
- 	if (ret)
+ static inline void iio_buffer_get(struct iio_buffer *buffer) {}
 
 -- 
 2.43.0
