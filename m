@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795174175;
-	b=d2NWhul7ZmrdDQZHHQ5kvz2y9ofMWgtfNq3T5a5E1K4/XKzjzwW/IcvJw8kAewog3FiL
-	 +08aSV7gYWss3NVKBlVWl/1AeptYT/1qCnAXkoj2nZsFPhFWgnZAnl1o9uLH/VD4SriZX
-	 I6te66rX4ZyxA5idkmO/y0FQ4YAi1cTwAerzIV8eNt34rlhrKYiXWMPMNB8OyH0pCkq7+
-	 /2Qx2vR+HzLYZXsdxKwYvxhpq7amvwsoMhLs7HQHbhAsEvUijlvUC/AjAeUkTwVIjBPg/
-	 1FeYA5s9v56r8IPe7OOGhkWUJgqIx4ovOyNXM9WTQ3fDBAzof24pVYjHd6GcmwdkzQQ==
+	t=1795174172;
+	b=nfnUyGlb1cwpP8uyMqEv0u6+9EuX4zBEOa3Z6iq32zZEDOZNbJ4CNz0/4XT0gjzfpRyy
+	 xGe3KrPKGaCkP6hYglBEvFa7VECVxi99RQv7rv7rkkDQ8fmXnXTmHUtv2NZcKs81j7rrU
+	 i5Dg3LaSePD2aC7TMHTZJJflf62Dmz4RuEVv5Sd6/D+fKyaLdibGVSFcgOS+dROcrbjMM
+	 DQb9zdWlTnxV9AQBcKxR1Xka2iC2WROd3RqclefdKVLJFDWVUkKANQh0VcpNLcCEcC+8a
+	 MQBee5iNN92hufZsO73Ik3Y1u9648x4h5GDlFUpvkX1v/+DB8QQlJFIVtTtLXEwuAjQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795174175;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795174172;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=zAaeGVyqVz3bkg6eZ61u/OG4LXpT7rtg0stES936Tjw=;
-	b=HM5R2RMyD3bJgCPHD1a61Q1sHKqxcE40fUhmxBTAncNUTB85TnBXiTE0wRlMciqlqnkV
-	 aUi2GETIoO8Qk5yS5wiHFNxvzZ9yO9zYydl+idlBL1V5gNezPs4TDq7H0Ep2W3BzaQH8b
-	 LOdzSTSl6IlfCL4jp2u0L4pZY3j5l6MF0rhWK+BYt7E7xZvLh/UfP36Fc3mQ/sQvAuKKz
-	 GZSye4cyML6+aM2GntCWQSCoL7ltntq2qj9io2Zthuwwg83oQUXOXwPTQrI5RxSw9zsFE
-	 GNiKQjhWEs9aVjBD8EObDoRLtZi97JbPla1ha3FRGQwH+uOvaOU/TshLqms6IpnYaTQ==
+	bh=Y37M6X53zj2OoiECpLvG7CtVOaRukAX0K98e9OU1yss=;
+	b=kOnGlhWBSdb6vFhcJn0cD/Mg8RBlBStyr5e/pqqrjQf3JD4QpUHk4XUbBP+09AI7BMrr
+	 43fJJ4mwlkFrQ1pVzEa86a/zFnwefdX5CtJN22qSR4kGHvLk9owr31HeZC9Iba56Kvxc4
+	 O3fVam/oSVHYTqeCo5Cdapz84aU6XR3Rag2fvRRZjikftnjRcUd1Qjxrc/lHxxaIHdYSQ
+	 5o0vgf6teJZHjTBrvY2jaIgykJOoz9YlY/oklnwiUFIehqxOLLvwHrjKwSBgFyxWL2F3D
+	 cuNdjwolceAaRXWqJw1OFK0VVoEak/4cLylc1d9Htgfv7s04Co5JxOu4sbIflvqDJcg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mBqwKvDH;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="GcpT/TV7";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8352160A2606;
-	Fri, 20 Nov 2026 11:29:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0302606A320;
+	Fri, 20 Nov 2026 11:29:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mBqwKvDH
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GcpT/TV7
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795174175;
-	b=Hfrw0J3h3GtvAPgvgOrbb38egiZoMJIxYqwbiqeuyBZ2V66QngO00C+uqMPZKjMTcz0p
-	 SJs+5m6S0+44GMQtmjP7GJqDAGlNQIzzpJei9F5lMK+gnZdz9fkF3IomZumFmUbuMZ1qm
-	 Lx3k46ZPzwxwQI+6JufX2D8I5qVc8bwGdx6OHxsdSx0G7A6l+XF4xTWXNUu4WIl9cYo3w
-	 7Ncf///Q8C/6LxIm0D8QVBN+DZBbSwEwI/13A4cDYeLpq/pOsJGkRQP3lRekTApXy0T4b
-	 RpQM9gq7aSko72EM6kVJorSfQdGp1/rJhEU1cZDGNvXi3ID6LLG60fwsaqFaiX/JSFg==
+	t=1795174171;
+	b=XC7ze7fBE7GrnuTgU49lbuYVX0WF9gqt5RXBaBWCBdkJLE0HXOnkXIYN8kW4oIrY87tc
+	 Taz0j+Sb+C5c0H5UOSXnlJgapq2EEEBStk5sy+qh57njp6b6ze3lSJRHUB50M7d4LSCgg
+	 3to9Vt7Q025Rxtmul2JvZnvL7KIXEhqouGW2sTNPQxCLDK5KZqX8tTbSr5+JpUNhyKBJ2
+	 44fkj8ZCeJp18F1QOttYXYXYgoENEONN7DykFpsvpU6+bgrkG9UzySWQIKk7/aEYqbgCV
+	 GtTy0soo7mNAPfwB9k+2VB4Qd+Z87vC1jdb7ScxN+BVAbkStZMaZt+Ykq9JR0UCjQwg==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795174175;
+	c=relaxed/relaxed; t=1795174171;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=zAaeGVyqVz3bkg6eZ61u/OG4LXpT7rtg0stES936Tjw=;
-	b=qrFilcybLRll4EB3tMddaE2aQtUH9gI0VziViZbOwGUL9gEfFbfaRpCBgV3zmD5awK5t
-	 0f7zaEX2wZCQQBaCZKirqNNPH1NOYfatszZg8+RTnbstebKJA1zND7BPxwxtZjao8cGx2
-	 tCCuZkXKJCMOVdFvvE/GAoHO/RW83aEoXFcw0vz3a+yAo20rgL0K04y2u5cTmXzoJKNOR
-	 pVMzDhBze0SUvkY81K0UwNj42YBdIwfnQZEMGeOLQXrg7L2Xf3Kb8QlJD7yB+gFtmS/PQ
-	 fR/y5D5hF+zTM0P6A+L6gYSn1n/fC9BLkjFLJ9tflM4y1dPSRvJqhuBPY+Cv82M5eEQ==
+	bh=Y37M6X53zj2OoiECpLvG7CtVOaRukAX0K98e9OU1yss=;
+	b=127l+DNtfhherY6xpgtSW4lomeFK0mIP+SJQ37t2NrFWv0xtdmJv4Iv8DFIldYYO9hCL
+	 Dk/wwUbnZZzJYv24/4euLvGRUINGoZlFy2lFGZQJILJHaTOLZ/ToFwevJH1Kwz4XvfH0U
+	 LTtdvJF16MW1PFiNsshnjMXPesMGxC2wPh5dL74RLhKN0PwQnZ7YFSC79MFQ+UUFwpJCe
+	 6JxpXD6cObSoD3dg4VkwE6xHkJaSevr0k1780B+z2gHp5TV+6sdUnXXoZKBje2HZ1NKY3
+	 ycpEMge67DrjB2uQjR75plzFJONh9z+U+WsnEhSdXb+ymfnrf/bBy+9GuJn9SzLWg6A==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id C356D1F00AD3;
+	by smtp.kernel.org (Postfix) with ESMTPS id A63EC1F000F0;
 	Fri, 20 Nov 2026 11:29:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795174175;
-	bh=zAaeGVyqVz3bkg6eZ61u/OG4LXpT7rtg0stES936Tjw=;
+	s=k20260515; t=1795174171;
+	bh=Y37M6X53zj2OoiECpLvG7CtVOaRukAX0K98e9OU1yss=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=mBqwKvDHEDvCmhr1NpijwUIj6E49vTV13k6ss45aHB++9ygqOJdTwTQTJSL0KeBFs
-	 Me44vnX94/eQ0JCDURZUp1W9t+lZ7mpoeGJb9QxEF444Ij1/v8o8GJPOysw20wmYah
-	 Zl2T4L0J4tzcViG3UoOipoWI9C4IRLIamnLV7ZVX+kcSd7kjbc6uPGKWpHJKZq0iDK
-	 ZpPyqinbatkro8uemue1K/JbEDy0sS85USld9m4JlWE9seKGu0KcGtheyH4BVhO2zh
-	 rgxioxlbxc+KI3vALRM13DNUXLLqWyVpaNsTd91U8NuTD8qqaRMaZ3vObChg4iCWuL
-	 +ulkmX580XvoA==
+	b=GcpT/TV7Aup1WLoE9b1+tuQrk53tSeVoA83GG20nnrIQVKouXuUUsJZuey0XbvXnZ
+	 LH6uC4jC826Jk9yN2fJIPGoxcUZV1f0guSBZf5QJ+H3bAcKvO0U7pfbbcl99ck+K94
+	 5ViKlNM6uBzKyTg6qwDhxxKH7+B7/qiwOEQlsGA7Yh2qk48SavbiFcloV9ZboP/brF
+	 HoP7BfGxyo3V9B96s05kfy0b1mbj5hgJEMlSCNO/a+8HK9md0nRIHsuxImPzxTyKUb
+	 lxcRemz3oiqfrPCzMQxrGii36xgtFgzJFoD04CSg1EAkET5uyVaTL9AtKhTorezT4f
+	 jzKpza8oIE57Q==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 5087F4984D;
+	by lkml.kernel.org (Postfix) with ESMTP id 3673249846;
 	Fri, 20 Nov 2026 11:29:24 +0000 (UTC)
 From: ILYAS NHASSE via B4 Relay <devnull+ilyas.nhasse.skf.com@kernel.org>
-Date: Fri, 20 Nov 2026 12:26:48 +0100
-Subject: [PATCH 2/2] iio: adc: ad_sigma_delta: support devices without RDY
- interrupt
+Date: Fri, 20 Nov 2026 12:26:47 +0100
+Subject: [PATCH 1/2] dt-bindings: iio: adc: adi,ad7124: make interrupts
+ optional
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261120-ad7124-no-irq-v1-2-7826c5c3fd25@skf.com>
+Message-Id: <20261120-ad7124-no-irq-v1-1-7826c5c3fd25@skf.com>
 References: <20261120-ad7124-no-irq-v1-0-7826c5c3fd25@skf.com>
 In-Reply-To: <20261120-ad7124-no-irq-v1-0-7826c5c3fd25@skf.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -97,158 +97,48 @@ To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
 Cc: linux@analog.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, ILYAS NHASSE <ilyas.nhasse@skf.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795174009; l=4847;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795174009; l=1125;
  i=ilyas.nhasse@skf.com; s=20261120; h=from:subject:message-id;
- bh=HkzT/yb82j6rKe0Wh5OPBoTT821E9QupBRs1skXiPo8=;
- b=1hP85xBznH4d7TuSarorWfpu5RkjyLmNxMEGy/wG2fGuVOF8OGKDMx2pJuvSvMecBgFRcDdHt
- l6yYl1GYOS3CNszA/vey0D5HX3jz7VB36TNdhCDfrkmzi2nGwN9Av7s
+ bh=OBY5HTgouzEhhyqdI03rWKM9m5ChuW0YKJiNCBaU4UY=;
+ b=Q2kK1uSKSzFCdszJZr5rQwVp9XvjHFUET83hOJYqdsVcB9Mc6fe3K2mRWxtgmi66591Kz6kkN
+ RJ0BarhykH3D72bN5LFAoUl+s/T01ZFYW/E9DIsr9Tpnhff5GJ9Hkm3
 X-Developer-Key: i=ilyas.nhasse@skf.com; a=ed25519;
  pk=DeEyhWzUoP0HCAWFV/8oy5EFF+41tZxPpWZhfGyiMS4=
 X-Endpoint-Received: by B4 Relay for ilyas.nhasse@skf.com/20261120 with
  auth_id=1581
 X-Original-From: ILYAS NHASSE <ilyas.nhasse@skf.com>
 Reply-To: ilyas.nhasse@skf.com
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 From: ILYAS NHASSE <ilyas.nhasse@skf.com>
 
-The end of a conversion or of a calibration is detected with the DOUT/RDY
-interrupt, so a device whose DOUT/RDY pin is only wired to the SPI MISO
-line can't be used, although its status register reports the same event
-in its RDY bit.
+The AD7124 signals the end of a conversion on its DOUT/RDY pin, which is
+also the SPI MISO line. Using it as an interrupt requires the board to
+route that pin to an interrupt-capable input as well, which is not always
+possible, e.g. when the ADC sits behind a digital isolator that only
+carries the SPI signals.
 
-For devices with registers but without interrupt, wait for RDY in
-ad_sigma_delta_single_conversion() and ad_sd_calibrate() by polling the
-status register, with the same timeouts as the interrupt-driven waits.
-As with the interrupt, the bus stays locked and CS asserted during the
-wait, and ad_sigma_delta_clear_pending_event() has drained any older
-result beforehand, so the RDY bit seen by the poll belongs to the
-operation just started. A timeout is reported as -ETIMEDOUT.
-
-The RDY interrupt is the only trigger source of the triggered buffer, so
-devm_ad_sd_setup_buffer_and_trigger() sets nothing up for these devices
-and they only support direct mode. Registerless devices still require
-the interrupt.
-
-Each poll is a SPI transfer, so poll every 20 ms: this delays the
-detection of the end of a conversion by at most one period, a fifth of
-a conversion at the AD7124 default output data rate of 10 SPS, while
-keeping the bus traffic, and the CPU time of PIO SPI transfers, low.
-
-Nothing changes for devices with an interrupt.
+The end of a conversion can also be read from the RDY bit of the status
+register, so the interrupt is not needed to operate the device. Drop it
+from the required properties.
 
 Signed-off-by: ILYAS NHASSE <ilyas.nhasse@skf.com>
 ---
- drivers/iio/adc/ad_sigma_delta.c | 47 +++++++++++++++++++++++++++++++++++-----
- 1 file changed, 41 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index 119ddc5a1..546135995 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -17,6 +17,7 @@
- #include <linux/find.h>
- #include <linux/gpio/consumer.h>
- #include <linux/interrupt.h>
-+#include <linux/iopoll.h>
- #include <linux/module.h>
- #include <linux/property.h>
- #include <linux/slab.h>
-@@ -43,6 +44,8 @@
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+index 2e3f84db6..875f46477 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+@@ -76,7 +76,6 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - interrupts
  
- #define AD_SD_REG_STATUS_RDY	0x80
- 
-+#define AD_SD_POLL_PERIOD_US	(20 * USEC_PER_MSEC)
-+
- /**
-  * ad_sd_set_comm() - Set communications register
-  *
-@@ -347,6 +350,22 @@ static int ad_sigma_delta_clear_pending_event(struct ad_sigma_delta *sigma_delta
- 	return ret;
- }
- 
-+static int ad_sd_poll_rdy(struct ad_sigma_delta *sigma_delta,
-+			  unsigned int timeout_us)
-+{
-+	unsigned int status;
-+	int ret, ret_read;
-+
-+	ret = read_poll_timeout(ad_sd_read_reg, ret_read,
-+				ret_read || !(status & AD_SD_REG_STATUS_RDY),
-+				AD_SD_POLL_PERIOD_US, timeout_us, false,
-+				sigma_delta, AD_SD_REG_STATUS, 1, &status);
-+	if (ret)
-+		return ret;
-+
-+	return ret_read;
-+}
-+
- int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
- 	unsigned int mode, unsigned int channel)
- {
-@@ -370,6 +389,11 @@ int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
- 	if (ret < 0)
- 		goto out;
- 
-+	if (!sigma_delta->irq_line) {
-+		ret = ad_sd_poll_rdy(sigma_delta, 2 * USEC_PER_SEC);
-+		goto out;
-+	}
-+
- 	ad_sd_enable_irq(sigma_delta);
- 	time_left = wait_for_completion_timeout(&sigma_delta->completion, 2 * HZ);
- 	if (time_left == 0) {
-@@ -447,12 +471,16 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
- 
- 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_SINGLE);
- 
--	ad_sd_enable_irq(sigma_delta);
--	ret = wait_for_completion_interruptible_timeout(
--			&sigma_delta->completion, HZ);
-+	if (sigma_delta->irq_line) {
-+		ad_sd_enable_irq(sigma_delta);
-+		ret = wait_for_completion_interruptible_timeout(&sigma_delta->completion,
-+								HZ);
- 
--	if (ret == 0)
--		ret = -EIO;
-+		if (ret == 0)
-+			ret = -EIO;
-+	} else {
-+		ret = ad_sd_poll_rdy(sigma_delta, USEC_PER_SEC);
-+	}
- 	if (ret < 0)
- 		goto out;
- 
-@@ -466,7 +494,8 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
- 		&raw_sample);
- 
- out:
--	ad_sd_disable_irq(sigma_delta);
-+	if (sigma_delta->irq_line)
-+		ad_sd_disable_irq(sigma_delta);
- 
- out_unlock:
- 	sigma_delta->keep_cs_asserted = false;
-@@ -816,12 +845,18 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
-  * devm_ad_sd_setup_buffer_and_trigger() - Device-managed buffer & trigger setup
-  * @dev: Device object to which to bind the life-time of the resources attached
-  * @indio_dev: The IIO device
-+ *
-+ * Nothing is set up for devices with registers but without R̅D̅Y̅ interrupt:
-+ * they only support direct mode, with polled conversions.
-  */
- int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev)
- {
- 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
- 	int ret;
- 
-+	if (!sigma_delta->irq_line && sigma_delta->info->has_registers)
-+		return 0;
-+
- 	sigma_delta->slots = devm_kcalloc(dev, sigma_delta->num_slots,
- 					  sizeof(*sigma_delta->slots), GFP_KERNEL);
- 	if (!sigma_delta->slots)
+ # Can't have both clock input and output at the same time.
+ not:
 
 -- 
 2.43.0
