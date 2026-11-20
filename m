@@ -1,100 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795208621;
-	b=k0zAvGmdEPlFh3Lz2wl2NfAAxqZ9d99gdxWMzcArHqzTQ6nrr2Ym767YOBjIouXGUmoe
-	 wAmXm/XB72dAff+WN0TkBFAyWL8Thbgy1dqkmDAh1LICCD3/i6CZYLkyr54971iHGKpNJ
-	 qIL5RXc4tmlyorrY3sZqzasWOIXXNL2P6i4haD/hNJCFQYoG6jT2W9Q+xepLRO7DAJIeb
-	 V8QN/uEnXW56xptzygn4JeB7KbZ8s6y2QvZwW8U4MGu9IrGMG6G66h9+NoSuf+aFK4CbQ
-	 jz0DYl0ldA2F5Q4H7BvUTGo/rD4x25WnhLhCzD4EnQy0IMBFdk8j0zDwpHkzPPEddnQ==
+	t=1795208969;
+	b=XZsYBCohakEVr+6Mw7fOYgvrSwVkTX7W3fk3Sh0pnvK7GWGf8vSkadexkiS0NSyp1J+L
+	 nOjEcI7yLwTmVuf2YD+YeO3yOsF7gbC48xt8yn8b7lKzUM39YxgPWKIAmUXLnaYO0Wc57
+	 JqsJ2zkPaNSMkQ8p5zm2HkgDCIHmGsq9kvR+OViPlvN2863kBlR1LCMq53ZlnG/7mb2s1
+	 4beiotLZYVdLfG1gt6enATVs89wP/rewIiSF0ronq+4URnHYuh93xFe7lwsXlDQzh43Lj
+	 aKnmL+Y+uLR/Za1sO9kRVAbC6bkVbkprR3rfFkvnG4CTqxMgP5rnR4bpWFaURgtyigg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795208621;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795208969;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=4hK94eNEEKjazlQ0HP7i05TipBfA/Zk6tSc1DEj8pPw=;
-	b=UEoVZwHn0p+akyeZNP6o6mOtQz1PV4OLsk8dAc0SeQl2CrE395dBGPe/oRB4IbLC0T4H
-	 bPCwO9e3waNHybu48R+gVsJCTLxWPAl3yNQ/Fs3SLHttOCYje0f13L8bFrAa03xBjdR0M
-	 TYIMo5PnLH+5dPdd+z9zFM7VTneJEARY3VIUTMEaejqU9HQiFnhcOUx94u+pMqCtRVFzv
-	 uwma5LzvBo1n7lCtTbFdRrKFn6rEXOtdYBUCEIBy7cOjdBS0ylOCHdJFdFIpBGjJG3LfZ
-	 Fd5g9MmcnjntY0w6dqeWjFELw87R6bl60zq4vCHgxD5y/a4+Xp3vNTFaN9FqItkcfWw==
+	bh=kF5gL+pAF0me5uE64gOZsyv6XMkas8uXTYMZ5GaQlLE=;
+	b=dRVaCyqcWfmHPKh4djXBqYvK59AZD00jta0CviyUmf9iR2P+zUnrxZqI9GHRKRG26dRc
+	 5UbZCe4I0xtB/1ShCy2EEfwB+KYhmiyAc11+TILHyMeDiP5QmJrjEvWFycDHmXbzajQWr
+	 QEvL3305DQAetJq3D1SidOsbK50nX2NY3C2hJlZeqqpuL48x/jmcfhuEckJbL0p8ou9DP
+	 ZdEbMMZP6U8GBNXpF/VLc76OaypsHWtr3zjwDIr59uE+ezatZOTSoloFEWJ6gqjUEFpm1
+	 EOEtdhetGzAocdH1XTsKtrahIXTszGphp0EVKDQmfW9SVoZf4RayHpJXhkkGoXG4Lyw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zyVDb0g9;
-	arc=none smtp.remote-ip=74.125.82.48
-Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=V8cuOjOn;
+	arc=none smtp.remote-ip=209.85.219.42
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C16A5606A699
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 21:03:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C16A5606A699
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E769606A6AA
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 21:09:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1E769606A6AA
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zyVDb0g9
-Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1a3c08d6928so1828443c88.0
-        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 13:03:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=V8cuOjOn
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-9214032a2fdso4530576d6.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 13:09:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795208620; x=1795813420; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795208968; x=1795813768; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=4hK94eNEEKjazlQ0HP7i05TipBfA/Zk6tSc1DEj8pPw=;
-        b=zyVDb0g9yNO4Zk/jlweqhoNreS+trSst0WrNaXSK85spzN1Hm+va9kymYhXTiIkrOZ
-         6FHA39FcBFpPKPtAwfQCnLic+8e7hytQSDcPHi+lURZxiDryHmnzvcIC8uiehjjTwh1b
-         4k41EJ9+7wMzHK649P3GmSd0sC0a7G1v8z9NJmor1m4v7XqLftIf9qCEtLw7TmwhjSNu
-         R8dfbLW8taucG3PW4x11LMxJU6690Q15qL8BvYjU/gbv4xl2SGmrnIu0ulk4la6tn5DA
-         UnjyfDoova+wX1aiSzQxv26uOcfDyqDe8ml6hru5SWzrrSPw/CmeJQjN2tyvwC8fupJI
-         VOng==
+        bh=kF5gL+pAF0me5uE64gOZsyv6XMkas8uXTYMZ5GaQlLE=;
+        b=V8cuOjOnrFKjTAd+YsHJNJfu+c6XpJRVVIzjHo0iOceh35i1Jfcn1jZDGvsKJvPGkZ
+         cazh8MDebVVBnywrYU1sMPm1eegOVJqJoX54LIRZn2tqtLee5fXQQMusbTKxz6WP6ldq
+         jlQ7zkWMfLZywrkZIg7T71OuOzUMzlQuFcMOMGzG7to7MSj2VgI4WxMcbi7WduPjbMbn
+         5BwU32gSCek1QGiEiynDuKiAoZ3Jp83PUj89qNDw3oOhKTrcjpzKQB+On7g3+Tf2r8K0
+         ZWySC1NjkCBaX5xKwr5yhg1Vy0KRm3OPj8Lfu2NlAWS8Ixm40hBsM3GKm1hHAk58L6pm
+         pO3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795208620; x=1795813420;
+        d=1e100.net; s=20260707; t=1795208968; x=1795813768;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=4hK94eNEEKjazlQ0HP7i05TipBfA/Zk6tSc1DEj8pPw=;
-        b=lHgrEX0nGHtUSmNSjr02qt4kbWaZVvW1TeC5G9B8OKj/ZrWIYTNGhFCxaBDZz5/Bja
-         guQ2Uv38LkTzwfT5j1kmLDfsy1ml2ZU71Tm/JGVoQFfdBzUks/hKby/y3wZ/Qj+QFdhA
-         Ax+D1fglnEGbB5vmHRwXrLox3TftKjxN40cJm0CtmvjqhFlD2MeZu2XtXXP4hGcR/FdY
-         9bS+qI/2b4gykesDOyPT/h7LIvOeC26mASgQ2wLGj87lZ7HbzJtwvTbPENnY7uz9fUze
-         D+8d+abi2JHoef1SpqZeClaSoQCwGNNq6n0NLgyIydFpw48PcYaqMUROnxioo64FDv3M
-         hCkQ==
-X-Forwarded-Encrypted: i=1; AL+hErEFwpRCkUYFFZstkAqI2wv5VLcwyZhYpvqjb4/Zg5W0zCWDOGhbCFuSyQjtch3B+oQ1uTj0jrsDEr0=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/NarqA07jUNBzMTO2tSMtS3xD+HE+93POfrnBT0MXEeXgxMMke
-	679z0WfXa+Agq3R6P9rPTgCZKgh5IJr8LOtbztf/Axo6Mj3nXZl0qQ/X
-X-Gm-Gg: AYBFou1XsyO15zyBEKFldAoTwVXlZKXDwcJIETO04N4NTKnWomPKtsf4IhCnsBQMd6M
-	Y3VrHIZPymzq2hsTOLc1KfXhu6hKrPURNaU7R26TFpeXFAy0MTB3Ve0Uksu3eO6DUbYEKH5Whj2
-	gY4GlMCOO05bTGhGZpiLiWY7veuMjJQxvad6L8KFrisBxCr26N5wDVkfSEVEG+0fXnXt9C6No5N
-	hnRZvCw0sOsLsgbrS5PmSmgy+u+qLgex2lrzOZSJApThX3s2po0N4DD17oWN9GPZgcK34nuvOMR
-	EF0JcbFOVLyUynqyIuxzZ7v5ffESFRhpC4EjqlIjpOihj/oAoz/amOP3dzxMhRV+x64UsQlPoiW
-	69RyaysyZdaLsX6xYWlk2YWX7TEGaD92TwCfZiJbVeG4CcJ89XCW+TuYiddTamgdv6OHp01Ct2a
-	y+hNkZzsL/aKIHAq0O2Cu9IQNlMINqqF4W+NvVx0geWZQVUdiK7cfdQk+t5EpnMHxbkd6J6/xo+
-	OoPMD7GLhSaG0QW/qLw3RTGrKEC8ECm9P3WvkgGf0A+gtegWndB6NLuNb5qbClvtMzwxOP+3HN7
-	d2HuU+B+xBelVa69r+MAAXrFpkdMIzeZXsnOm0nrT17anMQ/+8j1KV+7Zr0wDw4lsUm7WzOx8zq
-	6AuNLRxhiVmzshA7LCSvVYwR+TqOKKsDr7PZ2Kmb9qLP1Iq0i+H3URZXwLdKGdOPpgCkqTIDVyF
-	4su9YYiquxD7h3VGBwrHbLtL+60Hn/SazZz6umtFcHwg==
-X-Received: by 2002:a05:7022:3c0c:b0:149:1b5b:1f25 with SMTP id a92af1059eb24-1b55688bbeemr3318551c88.15.1795208609113;
-        Fri, 20 Nov 2026 13:03:29 -0800 (PST)
+        bh=kF5gL+pAF0me5uE64gOZsyv6XMkas8uXTYMZ5GaQlLE=;
+        b=dAImQtYJD/0Ru9VFI7xnDeOt8S74RCVDOFt9NWM+EtF0Cco+p9jLciHVQIWqwzlDzn
+         RSIL0O+Hcqy8F7aMX5Y07ktBssPd07oE95/OMAW90a82W6ppWOv0ZOl7SJOXFLDU4Kof
+         Nk9+/jEFb5x+DmkPHdOl5Ov7ox3YXB1hw5vUxacIhWBpfEWY8wpXZwSLA79IZZCKnw42
+         6zWdf17cAhgcHt8WAlCemueNuv4vNz1U1fkEiaFgIzlH81+WiXbOmjN+Cq90EmM4fwMh
+         vzYLVmM+TQFwmBLoSVExgEPGttY2yC2t2s+HrdTR0TgnY3KBLEwzkYj4OoOIdqbNAF8J
+         FGLg==
+X-Forwarded-Encrypted: i=1; AL+hErHmBnDFyFbN+VxVPtbZYXt2dsHlbZPKhxbH8cNDUwJbXAvLmLdsdZj3ESZWLl6pyLuggWgMkBdZaZc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z++Vd9sLVPyBAt2VaaCoDG8ysuNnPLpEcrfXfs5Hjux9bPu2REH
+	lmPMDRHsIpeRgx5b232WXTGGjXhi4/qtSBKtMJKgpwD8M6WeIQHIlSDXJxDmMlF+pfA=
+X-Gm-Gg: AYBFou2ZJgXxwXtE62ufdd81I4sZl8XZuSKqKYhG8Fl9IM52Fv1YT3keN2396KitJj6
+	0M4oDyZDde+pZY3tnDgbCz4zHJTOWX8D9tqdV9lEBOLWDI6nV6FwKSJ3n86QV1nRSDacjJ15Rac
+	Yw62vAOJEeyNFdjOIODnMAa6MhJVujSCSDaZSEuRAj/dUv8hfZw1TQTwdbYhIj/s/jjcH/+JXFe
+	jsT3XyF6whNulGbhLeZtfG1hTp7n2xvfvCjuNmb3/kGfZD1hKIibk6Zg7HKxxW7e351Th8c0D7f
+	Po/gf9OuUo7Q6pJHufBMPpMukJtxGqnm8cEmsjD/G0AJ07CIOKTFsjNZ6mcGh04W88u6W68vY48
+	QOdpkZ6tJgsa/Bo4al1lmYNpUEwlWGk+nDW1lHZocKZLw2xfmhtylsuTLdzx2OouPGHVjzmD9GE
+	8xEpi/DKP1aiNJUBlXnEPvr/oXNgS+Snpo9Wk2/oBqFccnCW1Eyjdcx0G9iuvRXtR2GZhAd4A27
+	RguW7pwni0fFYliB4zaKdXifbWzf2DX75Roam/a4EvTCZNanGldsy0Y9rL3yNBroaMue7T1p24h
+	l4YUvqo+XYLamlyNiSRfI2dHKbK3oYtk6rEqxSP9UZMxdr29/y/oiLToHCcY96pci1e6SjICFY+
+	enwv6t1mpW4ZI7VPCOAZIh06YqrRrAuFrwnAjbYrJxpdKLlaxf2NvzfysSRQu+EgJEP6daIUYEY
+	0TOtY++EFMKnrswQiTK0omVRZYmAkPxBm8ooRFCXi13g==
+X-Received: by 2002:a05:701b:2704:b0:1b5:4f6d:8277 with SMTP id a92af1059eb24-1b5568e78b1mr3904504c88.26.1795208605472;
+        Fri, 20 Nov 2026 13:03:25 -0800 (PST)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5566c1142sm8865172c88.2.2026.11.20.13.03.25
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5566c1142sm8865172c88.2.2026.11.20.13.03.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2026 13:03:28 -0800 (PST)
+        Fri, 20 Nov 2026 13:03:24 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Zhu Jun <zhujun2@cmss.chinamobile.com>
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
+To: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
+Cc: Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Zheng Shuhao <viennaoffh@gmail.com>,
+	linux-input@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tools: iio: Keep the buffer index separate from the acquired fd
-Date: Sat, 21 Nov 2026 02:33:17 +0530
-Message-ID: <20261120210317.184756-2-kapoorarnav43@gmail.com>
+	linux-kernel@vger.kernel.org,
+	syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] HID: hid-sensor-hub: avoid lock inversion in sensor_hub_remove()
+Date: Sat, 21 Nov 2026 02:33:16 +0530
+Message-ID: <20261120210317.184756-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261120061903.98141-1-zhujun2@cmss.chinamobile.com>
-References: <20261120061903.98141-1-zhujun2@cmss.chinamobile.com>
+In-Reply-To: <20261120121256.35339-1-ayaanmirzabaig85@gmail.com>
+References: <20261120121256.35339-1-ayaanmirzabaig85@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -107,17 +112,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 20, 2026 at 02:19:03PM +0800, Zhu Jun wrote:
-> IIO_BUFFER_GET_FD_IOCTL takes the buffer index as input and replaces
-> it with a file descriptor on success. On failure, cleanup can mistake
-> the unchanged index for an open fd and close a different file. Only
-> assign the returned descriptor to buf_fd after successful acquisition.
+On Fri, Nov 20, 2026 at 05:42:56PM +0530, Ayaan Mirza Baig wrote:
+> Changes in v2:
+>  - Pass 'data' instead of NUL to device_for_each_child() so
+>    sensor_hub_finalize_pending_fn() does not dereference a NULL sd pointer.
 
-Checked against iio_device_buffer_getfd(): on every error path it
-returns before copy_to_user(), so the argument keeps the index, and the
-error: label then closes it because buf_fd >= 0. With the default
-buffer index 0 that closes stdin, with -b 1 stdout. The patch fixes
-that, buffer_idx is already rejected when negative, and it applies to
-iio testing, builds without warnings and is checkpatch --strict clean.
+...
 
-Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+>  	device_for_each_child(&hdev->dev, NULL,
+>  			      sensor_hub_finalize_pending_fn);
+
+This line is still unchanged context in v2, so NULL is still passed and
+the callback still does spin_lock_irqsave(&sd->lock, flags) on a NULL
+sd. The diffstat (4 insertions, 3 deletions) matches that: the only
+removed lines are the lock/unlock pair and the flags variable. Perhaps
+the change didn't make it into the commit before git format-patch?
+
+Separately, Zheng Shuhao posted a fix for the same syzbot report:
+
+  https://lore.kernel.org/all/20261120135005.566-1-viennaoffh@gmail.com/
+
+It passes the hub data to the callback and also skips children without
+platform_data (e.g. the HID battery power_supply child with
+CONFIG_HID_BATTERY_STRENGTH=y), which would otherwise still be
+dereferenced in sensor_hub_finalize_pending_fn(). It might be worth
+agreeing between you which version goes forward.
+
+Thanks,
+Arnav
