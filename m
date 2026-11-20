@@ -1,69 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.207.19.206
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795139786;
-	b=Qw+Q7VeaWQS87wlI/TqkiNpAuvpYpNG+tPbNRnIQj/46pzephHJFiqCbP2DzPBi3TdHm
-	 vFmAMzmcZUUpAsKrrchQkiL/ufHeSaN+M/8wJOXdyc1Givbchne2f2z2CN9CourF+Zowc
-	 OSmUMKDnd7Xo3biOutJ+jOcV1yBc2ubaMP+bHbyN15UxG8X5tvz703oSjsLV8j2weYqHc
-	 5oD1gDb5yqXgfUC8LeTS03PBStB7G1pVhSRy726XOMx2cLKkymxQHN8AKrAebB+foCTWW
-	 H9BzqjjWVpU74uaUZxO6JakboSgEzA+/uR32+RPKuy82CxOFF9Pv8Tg/0epr8cPAu0A==
+	t=1795140649;
+	b=RZjye1aS0Pcc0544kd0MkjjfkdxBkUHh01stqGNQZyuHbKTZeObZ6R7Q/kyQP0iEhTpr
+	 +u+9ED7MMQ41Fq4R4MlpL00QREY5FOLtp3pQtyaJPBsD72uOD+//VOZRJ62uXnFmrtbOe
+	 eMWGbDkbLxylrjf5YPcQVa6aOyj8poqhPB1bBp54cwuhdDP05tJ5e5eJEcNGiXQCnKLNV
+	 IElHk8UHy9B0duXcMzsqmH0v3mTj3NkkK8IY5MHf7DWIc+wAyZiBYTan5rRpo4TqNodHc
+	 nW6lMdpI1vRktShZhLvbBKUCra4BDLw197B561w+TgQbKu+3UBkuivKBm1fO2C6PQoQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795139786;
-	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
-	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-Id:
-	 X-Mailer:In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:
-	 X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=urjf4AC9bsXTT1eVHNT4ykrZDVSTa7nIdMT+3Gi89aQ=;
-	b=Lpvq8krex2PR1CiiwNOOAKMK4Yz6GVZPbVlsejuu2hM6MMHhp3JaqBt3hdiuqMA+6Fnj
-	 NmUK/sZtlRytzjTM14HbEZbDYcazLjZuxsxtfdf8exfm8LAabnZGQST6cHTX7KbBUOsTk
-	 gU9hWCwwEFq1tX37KsOLUq66cehkZb/cb1d+VB2vAkDmwfySoeufh6h7f7rCjyJn7VtZy
-	 mZrdb8TBbnSkzxX6yVu1/obwdykYOZu8G3UtKMXzEkF8v3DBhnp8nb2uhBbFUkM67J/gl
-	 7fUw6mv8M+FSWHamlGcAQGXF7KwUWgblgTzCOqVYfg45dwEBXwp2oSJ4/UdlwjM06GQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795140649;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=qWTIQYd8LsBycV6tDNDo4yeWH8peAJc+BARwBoSeYIY=;
+	b=LftarFGQcws6tXlILz/9hjWk8LwkQ3h6A73QZN/9uXDpGWYVYv0v+B3QlDg1ZH1qHMoP
+	 k5m+qay85cJ7K0Eka+CQw6EsIoxCcOfmM5ykkvEfMZOAuCbEMnhhQAcbgEwqfoHvUnKlU
+	 9bpxMitpUM8Apg0atWdY6YEnhgi8ICCesRsrVGxu0O2G5THSPPtM9dYnVjq3R98crSzOq
+	 mhU6J5zUVCTIk4YF09mqQCYdnDRaVXIC5b/mQMuRnXaGUe1iaMrGtLoFUtQcftNssLDSA
+	 w65EQW15pRPFFCVFOlYNViFlWXxkqlTL2oxyu0XqcQho7/zbNXINix2CoC2YulJ0lQQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=uniontech.com;
-	spf=pass smtp.mailfrom=uniontech.com;
-	dkim=pass header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=BeNVnr0t;
-	arc=none smtp.remote-ip=54.207.19.206
-Received: from smtpbgbr1.qq.com (smtpbgbr1.qq.com [54.207.19.206])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=reflexrobotics.com;
+	spf=pass smtp.mailfrom=reflexrobotics.com;
+	dkim=pass header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=tx1Pauet;
+	arc=none smtp.remote-ip=74.125.82.48
+Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C94606A33E;
-	Fri, 20 Nov 2026 01:56:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8C94606A33E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4E5F606A325
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:10:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D4E5F606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reflexrobotics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reflexrobotics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=uniontech.com header.i=@uniontech.com header.a=rsa-sha256 header.s=onoh2408 header.b=BeNVnr0t
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1795139747;
-	bh=urjf4AC9bsXTT1eVHNT4ykrZDVSTa7nIdMT+3Gi89aQ=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=BeNVnr0tKaqzlH/n4RVds2yLjDE/mEkUFuzqWcbpw8UvrclVNbq8QSyBSqeIGRhrn
-	 YIXDD8va97B36uAQlxoYMiZ7bQgMjHSGYhTktIUF26KtAfzEnA5FNDpmy9PXVLUfeO
-	 efwFTv7bfbHaH4Xm4g5DnmM0zRx+ZoGHrHdnKEnA=
-X-QQ-mid: esmtpsz19t1795139744t04e5e70e
-X-QQ-Originating-IP: lueVd0uYLSUaRc0J61bYcEjliFKuQPK4iPGscDgXEgw=
-Received: from localhost.localdomain ( [113.57.152.160])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 20 Nov 2026 09:55:32 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 10927731245451487187
-From: Siqi Chen <chensiqi@uniontech.com>
-To: crofts@kernel.org
-Cc: jagathjog1996@gmail.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
+	dkim=pass (2048-bit key, unprotected) header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=tx1Pauet
+Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1a8cc11ac42so572495c88.0
+        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 18:10:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=reflexrobotics-com.20260707.gappssmtp.com; s=20260707; t=1795140648; x=1795745448; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=qWTIQYd8LsBycV6tDNDo4yeWH8peAJc+BARwBoSeYIY=;
+        b=tx1PauettnPxkIqAWaFtW1a/gBgrgqfvTRUMhZPLJj8uvVjvqyWKp+4uAdVPrXRNEI
+         kdCaM6vqeVqsLeHdE367fxTzVWZi+ffIDc9P2ItC0geE4yXx3P7FcmPurwiwjrGwV+HK
+         NmomjWTv6SSK7w/gHBlT8SEHBV2b+6AosuDpMucrHY3RAndIH70yCB51UjavH3Oe2CKb
+         ELl72f8YjhBklY8Vl/TALiYdAV3Y9ix1Z7o4+JwCnC160vDvreGuWtRPiK+akXBJPTxl
+         EPRsmT8iTIVJVEcDYnZXsYXloVe9zqoGOw6sj1cq26ExuxyFTazgDAqdqi4Da/diNvq5
+         j1pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795140648; x=1795745448;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=qWTIQYd8LsBycV6tDNDo4yeWH8peAJc+BARwBoSeYIY=;
+        b=PMK+PSsuITur83ZaJLUt+6WEOvZ4YoAn/XCbCA9vGJgeVuAr6ETBUZCzZjqyz84VXU
+         jr0UsMea6C2ruaWSWtxlt118WRebxdTDSH5QEWaQf7cVaA2kzIuZx4rHHYoYyqWZdjXJ
+         Yq81duLeIluJjSSXjD3o1/Nj8CrDi66ACgfigr4djYjuJ2q+qDuPiAqxCvPAkSdrMnGG
+         7f0GYu2qGeXq1aELZSM6K8e6YzH5qlBURO8Tn6mAgxfNIx/IojuQQydf+GjMDABUgixU
+         wdsXYGI+azPV+7t3iv7jIFQV2aXNVYuUBzjTvT9+SAAB3/UB6wnbhKAuF1vIqvtUevnj
+         Vqhg==
+X-Forwarded-Encrypted: i=1; AL+hErFvUE1M2rGWAg1Td0baaR8hZ9MHRoXzKOAmsOXDfVg3taYMC/bBrjuCoo5v8gGdEA20Ap/xn4zwx4Y=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9DEAOM2NpkpS/MKLsfaWosPnbzJlhqEGscDkNiPB6uowamIprY
+	hrXgtNxL3Dxu8hOgUlI39EQVH8C1uALq+wnvlrDf9M+frSHgf7euuhf0F0nrSMMn4NI=
+X-Gm-Gg: AYBFou0GxYzihiLkaYAw0Y3XbGx7aDCFfsefHqXjrnxCnIXr3KEHLaU/HM/Atu43K+r
+	KwlbCZ0OF5gDui6chFbBPfU53P/QWkpuugJ4QgoXUo5AOZwu90gq2ivREiKAGpXTTqvZ7Jg5Kma
+	pQj3KV3EhJzTNpKbKHh1Sp4z9+8dO2GLf9bmRdnnZl0t5bJ4q6c6l8BPI5Z46thtXJlgO1Q4QJd
+	qInU/Ak19ayFYSLjRq6SEjX+2wzf6wSr5w0JXVIWHKDMO82w0c2hf4RjTeBIdjWZvhfKtPXAIkR
+	C/A1bYG9OjQbOyjObk/0jNCbNpqlTNLRYUBEod7hfSJk3dhlQ2QiIFVrNlQp1HdDd/hMvyPhxK6
+	/JxL7kXh8rshbQm0V+zRHkyes52aer+OEIQnTrDfrMsImPxuwhggo3keEH22d6PdrKyAMq+0ny/
+	hycASltnKSyVIdFIk8piem1YW0RebmlJCfy4wXAhAXHcWcZqNwcQSERV4sHAoR34p4T6FuJbABj
+	GqKR9C7lIAanuCwNF9Z7snxxNEdvSvLoiaA2iE65dhMs4mP3dFDtk21G3F13Jo7K7J63yHCr8sX
+	Vb+zfqbZEzje3Sb71fn1GBnwJ5fwJ+ms9dLzurfcN8GpO/nwtE8L4UHxRMp5xq0HJiyFKzVejtZ
+	NXtch1u+tIYkhZlqxDZM+rvCZyqQr853/VYCT2S8NBnKS
+X-Received: by 2002:a05:7022:f10f:b0:1b3:abd2:2eb2 with SMTP id a92af1059eb24-1b55689ed61mr1647264c88.10.1795140647739;
+        Thu, 19 Nov 2026 18:10:47 -0800 (PST)
+Received: from localhost ([76.51.7.19])
+        by smtp.gmail.com with UTF8SMTPSA id a92af1059eb24-1b556840494sm2727974c88.12.2026.11.19.18.10.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Nov 2026 18:10:47 -0800 (PST)
+From: Joe LeVeque <joe.l@reflexrobotics.com>
+To: jean-baptiste.maneyrol@tdk.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: bmi323: check i2c_transfer() return value
-Date: Fri, 20 Nov 2026 09:55:02 +0800
-Message-Id: <20261120015502.4059368-1-chensiqi@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cc270a65-985a-45ad-bfdf-b205cf9ff86b@kernel.org>
-References: <20261119070837.3844364-1-chensiqi@uniontech.com> <cc270a65-985a-45ad-bfdf-b205cf9ff86b@kernel.org>
+	linux-kernel@vger.kernel.org,
+	Joe LeVeque <joe.l@reflexrobotics.com>
+Subject: [PATCH 0/2] iio: imu: inv_icm42600: keep the temperature sensor always on
+Date: Thu, 19 Nov 2026 18:08:48 -0800
+Message-Id: <20261120020850.24318-1-joe.l@reflexrobotics.com>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -73,34 +100,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpsz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz3a-0
-X-QQ-XMAILINFO: Mdc3TkmnJyI/nOkjmVVRQel8NzXws6X/V4G043ATJHv3j/YDFC8qHhLf
-	n44+z2kUsxLZToD3Wg2JXIK9jRuvQukua5d1CNCl3Vbh/PpvRlQE0bosWuWEaDBllW6vsOI
-	q0E1hVWvps3WIbLaMLW8FEP1yWCadIQjFJggP+ujncticxfEfd7X4KpSwJ6yI/owQRB6AhF
-	IU8CHV+/eHG9JR+gj2svFnPwgYZeihFEcvzISUTl32xVinVkUv5k31NSDqeQeGO7N0+lKCR
-	az6wkIyrZZhvv2arTEL/HOpcW0nLALA7ytnXHVFvtanUF+J83KS4uffXGQlO+5p0vX6u1J0
-	TPQrAjJfrSzntcNI8GRaES7d44eK/Fo/Vd5dXMZYzNch2G/oQ3YlO2O6iCgUdyVto+6aF6k
-	LVxT6FUZpB7vR4gWxLrj8TJAk0C8ipw2trID+WN8pHKENdLmlcl5yuwh2O2Mnl5l2nZ57gV
-	QivLtLet16UBZIOCVDaxZnLw17ZDqDLJe+kj/4KNOTkTVTRMV+Vco8qP/Ej2unG88+aaHS5
-	3bnu2kRmY8Jz2LpSo9B4tue+T8o2RsPvJ7cy1ic6ICnKWbQKUnkkq+Nx5wy4DEebYiJGKP9
-	JRZSmib/pJxKDGp4+JaDoGbhbIJ7SYmgV6TgEbQuebTxM3MorLg9Dceido5OhLTmE9jKT3J
-	p6UnLtSAP0qfeAaz4nmgySRpv/yHylLuHJbI2Y3/UfH+NNAbd8U1ou39/z9jGueUATi0yqI
-	qIxUy9FfwFqgUq9aOzLVd9Ru12iKTbbrHL2iP/kPNkjdBT9FfTNmsE1BZLO0ND8GXcHAwU0
-	b34PPbPBltk29U5/DoCIkWof18X5wB1jsv6phi1M7PvgIZ8ek8N6Kap946136ZbSwSBSor7
-	8XEVhB5y72l8KcaaUq3PZK1pei1zkiJhcjgN4o0H/lvYJ6n328ENaaUJaUZBxCghfjgmYtO
-	vkc84jBo301AWjxEHuQ0vKJuJgJeWE19vdFzp+3F3xm+6RMrFEJM9IDlWdVc/zn0edZZU/Y
-	kITgrikQeR+8RuDBGNj0lUNb8rTy/qPL81T5lDuTUfowhqGdN9
-X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
-X-QQ-RECHKSPAM: 0
 
-On 19-Nov-26 10:30, Joshua Crofts wrote:
-> Also the testing info should go under the ---, as it's compile tested only.
+On an ICM-42688-P, the gyro shows a large, stable offset at rest (about
+8 to 23 dps) whenever the driver has the temperature sensor disabled
+(PWR_MGMT0.TEMP_DIS): without it, gyro data is not temperature
+compensated internally. As discussed with Jean-Baptiste and Jonathan,
+this series keeps the temperature sensor always on and removes the
+driver's temperature enable/disable handling; temperature reporting in
+the FIFO stays switchable.
 
-Thanks for the review. I agree that separate checks are clearer. I will
-also move the testing information below the separator and send a v2.
+The chip only measures temperature while the accel or gyro is on; with
+both off, its data register keeps the last measurement. Patch 1 makes a
+temperature read return -EBUSY in that case instead of stale data, so
+that patch 2 can remove the enable/disable handling without changing
+what a direct temperature read reports.
 
-Best regards,
-Siqi
+Discussion:
+https://lore.kernel.org/linux-iio/20261118232418.7fc702a8@jic23-hlaptop/T/#t
+
+Tested on an ICM-42688-P (SPI) on an i.MX8M Plus board: on 6.18 with
+these patches backported to the 6.18 driver (minor context adjustments,
+built as an external module), and on 6.6 with the driver backported
+from mainline:
+- gyro correct from the first reads after boot and after runtime
+  suspend; accel unchanged
+- idle temperature read returns -EBUSY; current values whenever accel or
+  gyro is on
+- PWR_MGMT0.TEMP_DIS never set (regmap debugfs)
+- buffered capture of gyro and accel, separately and concurrently
+  (including stopping one while the other runs), with and without the
+  temperature channel, and temperature-only: correct data at 50 Hz
+- repeated buffer enable/disable; module reload
+Build-tested on the IIO togreg branch.
+
+I kept the INV_ICM42600_PWR_MGMT0_TEMP_DIS definition in inv_icm42600.h,
+now unused, to document the register bit; happy to drop it if you
+prefer.
+
+Joe LeVeque (2):
+  iio: imu: inv_icm42600: return -EBUSY for temperature reads when idle
+  iio: imu: inv_icm42600: remove temperature sensor enable/disable
+
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h   |  6 ---
+ .../iio/imu/inv_icm42600/inv_icm42600_accel.c | 16 ++------
+ .../imu/inv_icm42600/inv_icm42600_buffer.c    | 14 ++-----
+ .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 37 ++++---------------
+ .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 16 ++------
+ .../iio/imu/inv_icm42600/inv_icm42600_temp.c  | 10 ++++-
+ 6 files changed, 26 insertions(+), 73 deletions(-)
+
+-- 
+2.34.1
+
