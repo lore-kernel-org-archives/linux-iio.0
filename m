@@ -1,75 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795167506;
-	b=DJv5CZ6yT6Q1jCjwz87Q0SsFcmuMh4dH3jDzBC5vCI9DV+AMbKCokOKCmajIjaAQECUT
-	 goUEMixl+a+Gz4ZSqjeyENRFa2QihgXRh1Q0cLCiYO7rgMInJuViX2LoUxdeWidps4T4Y
-	 LwweZXTWtwrjquwQ93XCjB82wxFZtczEM/Or9xSe+VIP1BWd9lGN6bvHEpTLkPh7cxfKq
-	 seS5dTCHzdItyG35RNZ2s06M0EfhAeJ1nGTDh6/yxwiVgcP6wDp/Roa/ZhtG3MjSbz7iA
-	 X3lB5UPu498qk5AaFXUKurg8vH70+ozE35ubNzJu+NPapzEe+5yREFIM5z4Luoxv98A==
+	t=1795167624;
+	b=guvPvtvKJRm4NXBXWfkokQaluPUBrDQRCF+wFeoqx7VZAAcBViWqWCdzVlYejX4l0K98
+	 Bc2mN0uGXWz2FyR5pdVIbeeJeZj1+YWmahO0oKHWduTRBdnqVyHbhzTAMNaTcIxYgQNQx
+	 djSozkFNdU6Qirx7lw/ObFkyRCSCTB++fwe00TeRe4qUxU3btZMJtwrd9FpKTM0VmaGEf
+	 QVLubp/LaGQYrT0nndVxHBtjtWd/A71Ze1C0TpGw5lg4UyzlQCoi3d9M5buqZSm2pVsvw
+	 BGYqcqQz919bt8KAEcECYkzZtltnAia1NJcOkUSNB5XtnnBD1jXMU3gAUwTxSQ+1rsw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795167506;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795167624;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=kwC0xDuNplkRIWU2CJYnECjtyQYBFzQCnJXU6Th4qBI=;
-	b=Wljn7Jv1sa3Db9hoZhkvCrTlotSb3wND7KtB0ERCeoNlUXN2WMCckIMVcVSFbtulHi48
-	 VtgbtCcre1+DVq6IzX+wBUF1THs+4Xqk0w0IfdCXxCVF3bqvmRnH84+qrH2UWsDPBg9yy
-	 fQ1uNYB5mddbEkifBlV9x3vh8g3Qena4IOLv7ZyBE9TwIBhF1Q2YZGNdOan6akChXeO1Y
-	 aEA/l5Zn8EkobSKGnXcVIIDG1CV5P8MYBNXsXTtdksWGJS/y/2Jshjq9BtN2sUCDUhJMo
-	 VRyq5VldVC7JHU0Y6P2YKk3Ng0oUh/W3fsWv6bvEjKKjhSOGzd8M0Gk2qi7tDplsM1A==
+	bh=2sNa5BZGVXTN44VMJ050+mfo9qMeWt88TalXiuyE8OE=;
+	b=gxlZIyS3t3UpdYMlNu5K8mQ0vcfApDtUenadDSaJJyzxZfKNyNkniZobOMrPACizfEBR
+	 2r7cgH9NF3c98KVPQmyADagp/y/6UwO+PxTerGwLw9mfm5uowDtzN4s0wyI97dZnpk64S
+	 Tq2NGZKol5bXXhN1F2u3U+MjMBsW3xL0ipD0FhKLkYbhevPtpNHC3A8kgtgIr+K6AKN2D
+	 MSWD0o9sfehHSEFpZ6Q1nJSnvIpEBuHdIK+b27ELzDoQmwTJpXfiycXQxOMUOZV6eL7Vf
+	 5M6lizYGVb9BK3DF/jzRlZgc1Wz9WDKzM/inSYJWenPh1uXiFgyop93u0yFhC4iGA5w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DxIP2CdI;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="ADGFsH/d";
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8036D606A320;
-	Fri, 20 Nov 2026 09:38:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8036D606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A011606A326;
+	Fri, 20 Nov 2026 09:40:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3A011606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DxIP2CdI
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ADGFsH/d
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795167507; x=1826703507;
+  t=1795167625; x=1826703625;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=d4z22dbLFF5+izXeibGLiumsowuWVEBFUdQkzbj352Y=;
-  b=DxIP2CdIDg9gfosQQ9lli1K5rAy3KGm2Vb0TDKjpdgCudegej71aFDZ3
-   c528XshTqzEVj/TjZWw7Ufhzc3ukg8uploI5XM7Phr2QiqQiudtdgT0+G
-   zWCyWVx+zcDgR2MrR3sLY6d8QgZ/RrBXmW+uKeGf9yAOylqzVx5YZ8Rz2
-   ElK/WWwAyjAyL2S+oyBIYp+ZlvQkUCNU42IFPJ8uVoswvB/bledEjG3g5
-   vWVlPqwUzgMwyMmeDioAPs+jy9xE8NNjpcvHciHZZU4CYHiUL7/7vfEUj
-   IuNmhVf3N4FYghOVg3MrgNOCvSmThMgVinvw87K+mNdSzi9Glx21pITq+
-   w==;
-X-CSE-ConnectionGUID: EFB+aCMWSp+eccK0Ynsaeg==
-X-CSE-MsgGUID: Q1OhBmBJRVyeSiEmXN9HVw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="4046122"
+  bh=cwyenATNu+jTqryMD5/VO6GBmpbhEkjNvFMpSUYiGiM=;
+  b=ADGFsH/dNMS8NfR7D4FN7AabxNzoJFSivQElXHt+RGQiuLs1jBN079M6
+   /0fTjmUxFY5urJ0vYLGFnpOeOLUWYiWtSqZxZKrOF+yB+wC9nLnnN70kE
+   BtgtIcb6W8+bGkwGhowc7BRDSZuXZcsLbaj1PogveLCcsa99MxPWy1tMs
+   dT4YKpSleN4UdDxKowYe4GdWsMFs+YLP3w643UPYI+MAbdfJEG3g98CHS
+   nP6J7h1V/8vZRv6O5ypxe93enQ6x9zWQdGKJxeDFpsJfh4KseQEqfUquY
+   LIgP2Z+JMz+I4SFFPpEkKH9RNsynQoGavYX5lymNEReGnUvOrW+Mjehq8
+   Q==;
+X-CSE-ConnectionGUID: Oh+TE63HRcKL/RYhaN6DXQ==
+X-CSE-MsgGUID: xcg42iHMTjOSVxnEGCAdJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="4144077"
 X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="4046122"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:38:26 -0800
-X-CSE-ConnectionGUID: j/h1/qPIQF6kuVUf1Vq8xA==
-X-CSE-MsgGUID: 6CH7eEogRJym2DAYzY9E+w==
+   d="scan'208";a="4144077"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:40:24 -0800
+X-CSE-ConnectionGUID: NiO697zUSCSQpXmNTVLX7Q==
+X-CSE-MsgGUID: Uvfu0pT3SDGt6bzok1WTcg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
-   d="scan'208";a="10654992"
+   d="scan'208";a="10552600"
 Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:38:24 -0800
-Date: Fri, 20 Nov 2026 11:38:21 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:40:21 -0800
+Date: Fri, 20 Nov 2026 11:40:18 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Siqi Chen <chensiqi@uniontech.com>
-Cc: jagathjog1996@gmail.com, jic23@kernel.org, crofts@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: bmi323: check i2c_transfer() return value
-Message-ID: <awAVDTwKYxT7v8mL@ashevche-desk.local>
-References: <20261120022143.4065982-1-chensiqi@uniontech.com>
+Cc: nish.malpani25@gmail.com, jic23@kernel.org, crofts@kernel.org,
+	nuno.sa@analog.com, Michael.Hennerich@analog.com,
+	dlechner@baylibre.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux@analog.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: gyro: adxrs290: propagate chip ID read errors
+Message-ID: <awAVgtU29mPK_10d@ashevche-desk.local>
+References: <20261120025754.4075038-1-chensiqi@uniontech.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -81,43 +82,27 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261120022143.4065982-1-chensiqi@uniontech.com>
+In-Reply-To: <20261120025754.4075038-1-chensiqi@uniontech.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Nov 20, 2026 at 10:21:43AM +0800, Siqi Chen wrote:
-> i2c_transfer() returns the number of messages transferred or a negative
-> error code. The BMI323 I2C read path only checks for negative values and
-> maps all errors to -EIO.
+On Fri, Nov 20, 2026 at 10:57:54AM +0800, Siqi Chen wrote:
+> spi_w8r8() returns either an unsigned 8-bit value or a negative error.
+> The probe function stores its return value in a u8, truncating errors and
+> treating them as unexpected chip IDs. Consequently, an SPI transfer failure
+> is reported as -ENODEV instead of the actual error.
 > 
-> If only the register-address message is transferred, the function copies
-> data from the receive buffer and reports success even though the read
-> message was not completed.
-> 
-> Require both messages to be transferred, preserve negative error codes,
-> and return -EIO for a short transfer.
+> Store each result in an int and return negative errors before validating
+> the chip IDs.
 
-> OpenCode was used to identify the issue and draft the code and changelog.
+...
 
-This line should be in the comment block, behind the '---' line.
-No need to resend (just remember for the future submissions).
+> - Move the OpenCode disclosure and testing information below the
+>   separator.
 
-> Fixes: 8a636db3aa57 ("iio: imu: Add driver for BMI323 IMU")
-> Signed-off-by: Siqi Chen <chensiqi@uniontech.com>
-> ---
-> Changes in v2:
-> - Split the transfer error and short-transfer checks for readability.
-> - Move testing information below the separator.
-> 
-> Compile-tested with CONFIG_BMI323_I2C=m using:
-> 
->   make O=/tmp/opencode/linux-build-bmi323 W=1 \
->        drivers/iio/imu/bmi323/bmi323_i2c.o
-> 
-> No hardware or I2C fault-injection testing was performed.
-
-Code wise LGTM.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+It's interesting that the other patch without this amendment was sent just
+a half an hour before this one. If you get a comment against one, check all
+the rest (at least for the same subsystem). Always.
 
 -- 
 With Best Regards,
