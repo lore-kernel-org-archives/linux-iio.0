@@ -1,80 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795197894;
-	b=FAFuE+2NPl1M5rtYxrj3ryez7wMho15agfd2B57ThhBgAIg8+Phic38T99JhbAhEuRBr
-	 lq1G3YDE7Gx32Bx0StTdZs3boITLWJOlJQ98S/Kt3CAXk0Y+HN22FRhvm/bYC8CXCnJ6p
-	 V0tXRadW0aoN2rBN62lsOdT9uup2DbTWYbiTiG1Zok51DkHTBIjcvbsSCiGf5Onw5T/Pm
-	 yY9kRRpDUu6yNmjipz0msDyuzZIOd8XbrRfgY/B5FIZnrp/lRXvJDfXsFnx4rlVfCaE3W
-	 2j+wUs6BwdChEQjMrZh9WL5P44QDxEdQDR26AJgLhLEmhz/ZRs+mC/JzQq1wjuZvioQ==
+	t=1795197895;
+	b=AH1ez1Sn/UN6JiVERtMqsL6f88POSis3b7Z56gaKmPm2EQVzDYri0OEMgNsn9RAWwWjg
+	 4kmBJrGxmBsDo+0fRvAUJHFDSrkx6AhiLYNT7yX/WkOsnQX93QiTbdgLRZfYAwyxk8XYg
+	 O58ha4lI/vVUlgPuFbZ7VPMYVBg2I8FbwSQW+MDINtFhYz/sqM603yAxBHYuG+DRlNa1I
+	 FsT6rqFSMM69d+//r6yo23ZeFjQ+QVIKAMFmr0xtXhR7I59YBUzEayI4Rbe5cfzEjZ1Yj
+	 4KO7N6n6U7DBdz3pzYND/wp9p6PdDjebGvCrynMTqG6TDZlU8gJN2vi/e+TMao1/srw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795197894;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=QMLztqnULVc9ZlPFv8fZ777zhC27NMjUKNQ5wWG/h7o=;
-	b=YoaLi1e52SAePykEIctLzn7P6m2lSic+Y8gUV/RQsi1yIvPK6L7pmjPC4W+m92bTkhRg
-	 hfbU5hGQyP+XgBRgW0uk03OE/A6KVYOHMPvAlXsymLAbzUqJCOFw2oWMdayDhdq4h+UgP
-	 ilMl7c6aZVbysmNF7L8au28H59km8hI9pIXB5d7x07t5khSSwSDCwSa8Y3KQrlD92jGPz
-	 P0A3yimSM3BmFzOH2aK5wWuMSzSU/xpQXWOr3ZURvaE90PNUtcurStX9JDhxBueW6dQs7
-	 xaFE3T0FGaL7j3R1uc3gE6yO5r69QVyhSljTISv7TLJLvnYN8utJFnupgoe3sQ+YqwQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795197895;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=1W2pcxfnoracRWXlknxHHgdS3Y2NznHdZfViuP68nTA=;
+	b=GX5ryFYAo0cgIJhJBWcpzwONFvaS3awhFbqMnTbM9H9SDIAyMrWuX9Ab8q7bBAeoUZI7
+	 oRtWi73Z+d93gV9Fw/MrzrJ5+4LPwNNzP0FCZUNgleTP8HwwXLG+rL/bfTV1nEVlALUxO
+	 32TSsXxiVw6viNFLOqmaNoYKeL1cBeDvS0N/QjJy7p6ovxFiDpo9ImIHQZBJrVS0wBS8+
+	 YzBPZx+ImqOCUDS2Lv0gRFHhFCTTibmwtRdIFRgb0pbF43c9uwTSP8YitmbzsV0mbtX6J
+	 b6nmYwikif0nsg+LYE5bLY5bRvXpxJjHTiS0/6vFSf7HiYp/ULuFPbSgoM64XQ5BmJA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b+TsGpCD;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GZ74gdlB;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C8060A263E;
-	Fri, 20 Nov 2026 18:04:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF77606A335;
+	Fri, 20 Nov 2026 18:04:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b+TsGpCD
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GZ74gdlB
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795197894;
-	b=yHssccCSwkevWkpwNby3fJFvyPRzeRqtYqmjgHQD4b6HiryJXe0U0mK/3D+M4inqc2Fv
-	 UxY8Me+hP67WkS8u9qUlGR4MOySRNEBHeH20hZzrSQiZ1eXLrZ8x2oO3TbmnjjC7q0iay
-	 UICDaZxF/3yJErsM8ST/1XQ1dc1zDbny1yjeFg+t2lPEMUFcvVeDo4A7i0OVwphLTiceT
-	 Qj2K/zXu6i+eLJoqLCBMmvjBpZU+AB/X1lcyeHtxrpHW8Ev/dVONXae59ejF9hYEv+IJM
-	 XiDkMKTDxbG/uVDzl8t4s33OtjjjFrkyF49eKWgpD3T8tcB1Iudtuanxq2M+20TYYcg==
+	t=1795197895;
+	b=My9xRiluBq53LkVo5aicyTpcLeRrpNySki3nEqkhl2hz96tc2onM5qNyL/TBYu2+xtz2
+	 A2jyNf2EeicEB+I1bxWSVt/Ar7YkkUB4OK/ZaC8yb3Umr9ZIiay1BOBhZPA2/N0mpZBDw
+	 1p6KdPG7xfhQpS5+2ual0iAhZY2PFo5n5cldrwJw+paVSdn1mMMa7L5O2B2DkJwmmxIx5
+	 lMfULANUi6G7VxwdrTIrCXU91QaElZYI5kxMx0rBB5SwrgKL2Bmgua8Xfmh74VU0Xfta2
+	 4XivBiAapMDzRMQ/aVY4wns2YLYCaXlG9lh+eoyD+mWxRgGSG9n0jAdEX9C4xeyuizQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795197894;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=QMLztqnULVc9ZlPFv8fZ777zhC27NMjUKNQ5wWG/h7o=;
-	b=BhXgytBqu13kHGhrnAjNyIuFyFa1zete1OXQeMDCzmyJ+uqcgR8owiVNohuI/JO53FTi
-	 CcDZuLMvSr+J1jKZ7MD48FuR6PoRLEVk5adTbFieGTwQj8LiqdAWu3n0r1g5olK1vK/SC
-	 i581aT2Kv4/hqEhm0doIlSKCnoMk9Bf8cWO78VFDjYdlIHTN1zSTH7CD/GYzFNpXLy8aP
-	 OrNcTYo7edo9b2D9UJZJGtSCiHhip2acXse/BZjqZqiSgeqbwtrfijSFiOxZkZGW4Ho1s
-	 Huv2AkVBjvKEZpAyFam8DfxeOuSdtlvT+iuACYEIOgfxevkr/lQPbG0QPev2exZHuzg==
+	c=relaxed/relaxed; t=1795197895;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=1W2pcxfnoracRWXlknxHHgdS3Y2NznHdZfViuP68nTA=;
+	b=C1BQMxjYCMBNmmANQd5gjqeyvapQWnEni/JUDZ8oJ+RgasasAUuAIaRUryhJyP+4V/F5
+	 sJdTJrmj8xpaRqbUtbnDklTB2kGiicryfY5exRdixX7eLeDoHM/lekQI6bt9E4VkLPUtd
+	 a5V+fSkjD4bF1jaQL+1tdrKeAdx3O8VWCmIhiyIL0wsVmhgRV04l3j65eBHzErNy/BUOz
+	 W4axABQyEjtY9aCBpkoIPcyamw5bpDGGipgGpDEkoMPhErHG7vRKtp8Se070KsleN3Nt+
+	 zZDZNjpgSD6AB5DNq1tvgLyJGT81d0lblczUjWrOu6Z/YnbI3IQwZmv7Lnu1EDKR06w==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 955341F000D2;
-	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 124EA1F000E0;
+	Fri, 20 Nov 2026 18:04:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795197894;
-	bh=QMLztqnULVc9ZlPFv8fZ777zhC27NMjUKNQ5wWG/h7o=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=b+TsGpCD/y2C7URwFwk2nXti2dLFfROwaWd499vBXuJJ0S3GJm0YM7TYaLmPqVAjP
-	 mq/XGCKbh53oX/UAc/bIuQJCaLM0X0APFs032UG56XqEeGlgCvcujH6rXqYftJ0bRO
-	 nS36g5Qa6p7h4RQIdnE0AorsTcN2P7Ll/yM8TJRBMoMlrI4bcuczz5TnjCsPS+fdP6
-	 PYGdQUOega+zpJjrLbbPWd/rZDsp2ALGI/uSK3kZi0xt2FUVr7jt0/xCeFYZdO6a/J
-	 FxOnD7wP5pK3SIDIHO5OSR40x/RwKHIrq4Kwbry7wEoL5OJm/Hnd5aVtGFzAx/aVqJ
-	 jX/tG/vxO5Zqg==
+	s=k20260515; t=1795197895;
+	bh=1W2pcxfnoracRWXlknxHHgdS3Y2NznHdZfViuP68nTA=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=GZ74gdlBpp1z5OEF+sgtNhK7tNVfds6oRGVxPaJ3xsBhDKwB0k8uHwAJ2yxd42Wvj
+	 U6205a5RzLuqH7DR03yl3FQ9jsNp8rZQQgZoTNGCXHZPbN8V0cA22zZRAe4Y1tuUh9
+	 FGiOIPHLC357O1NLKnP36OPMbw9XPXFfGurrh5YFhfZ1QsMAyTiFnCZlLIisfftk1e
+	 nMJ6xn+JYq8RsSW6ErCKbx9G8IK22w6W8IIuw+N8kdERl0AU6t0IJWe5jl8ZmlHQR0
+	 tunJENasTR3B6yxawGb7yLc2FewGid4wof1J3Jl7hFY5syEzkBDz00N+Fm1PH3j0Qn
+	 rlbGK1sgIMahA==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 2AC8D4B8A2;
+	by lkml.kernel.org (Postfix) with ESMTP id 9837A4B8BD;
 	Fri, 20 Nov 2026 18:04:43 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH RFC 0/5] iio: split struct iio_dev_attr into typed core
- attributes
-Date: Fri, 20 Nov 2026 18:03:56 +0000
-Message-Id: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
+Date: Fri, 20 Nov 2026 18:04:00 +0000
+Subject: [PATCH RFC 4/5] iio: buffer: add struct iio_buffer_attr
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,115 +83,242 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAIyLAGsC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzNDQyMD3czMfN3k/KJU3cSSkiJdkJbUcl1DYyPjJGNLCxOzNEsloNaCotS
- 0zAqwsdFKQW7OSrEQweLSpKzU5BKQgUq1tQAGUDehfQAAAA==
-X-Change-ID: 20261120-iio-core-attr-review-1323b39846f9
+Message-Id: <20261120-iio-core-attr-review-v1-4-05b41f8133c2@analog.com>
+References: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
+In-Reply-To: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
 To: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795197883; l=4276;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795197883; l=8179;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=wA+ikYFGpnl6mFqtqCuP9Q8GUxVhzb7hcI8h1ZCXeoE=;
- b=m3p3oBDIFBQqsHYTDHGNExVkdXn1Et3BudskqbqPPbY1PfR0yh9Bh02KsiiYc4uyBY29o3T3G
- /vZby+C2tVIDTJ8EENlbEyv5nssVcsQHy8nAQqUxl1m386dcmPPk7Uk
+ bh=ImAfRQLQu+XcD0pXeETlVY+2toE6tfBAgy/mqJnxBFA=;
+ b=t8GOUBA9s+UVChnnXGlsHZmucGiKbSE+LGGHz22pixbDPA7sISovrPc1MSeddDKBVen2Hja7I
+ YBXwHdI89YhAroZePs/KJtSwqwO2LGzdN8sKIP0ijYTV9xGCBNR4YNc
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
  with auth_id=561
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
 
-struct iio_dev_attr does three unrelated jobs: it backs the static
-attributes declared by drivers through IIO_DEVICE_ATTR*(), the channel
-and event attributes generated by the IIO core, and the per-buffer
-attributes. Every user carries every field (l, c, buffer), whether it
-needs them or not, and the meaning of @address depends on the context:
-an info mask bit, an ext_info index, a scan index or, for events, the
-event_spec index and the event info packed together.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-This series keeps struct iio_dev_attr as what drivers use (dev_attr and
-address) and moves the core-only state into private types embedding it:
+Buffer attributes find their buffer through the buffer field of
+struct iio_dev_attr, which is unused by every other attribute.
 
-  struct iio_chan_attr   - core channel attributes (channel, list node)
-  struct iio_event_attr  - extends it with the event spec
-  struct iio_buffer_attr - extends it with the owning buffer
-
-Attribute creation is split into iio_chan_attr_prepare(), which builds
-the full name and runs the duplicate check, and iio_chan_attr_add(),
-which initializes an attribute allocated by the caller. Each context
-allocates its own type and sets its own fields, so the core needs no
-size, offset or context pointer.
-
-The intended benefits are:
-
-- Static driver attributes no longer carry the core-only fields: 32
-  bytes less per IIO_DEVICE_ATTR*() on 64-bit (72 -> 40, without
-  lockdep), for roughly 220 users in tree.
-
-- Core channel attributes fit a smaller slab class: struct iio_chan_attr
-  is 64 bytes on 64-bit, where struct iio_dev_attr was 72 (kmalloc-64
-  instead of kmalloc-96).
-
-- Shared attributes (info_mask_shared_by_*, shared ext_info and shared
-  event info) are deduplicated before anything is allocated. Today,
-  every channel after the first one allocates the attribute and its
-  name, finds the duplicate and frees both again.
-
-- Event attributes point to their struct iio_event_spec instead of
-  packing (info << 16) | spec_index into the address.
-
-- Buffer implementations no longer depend on the attribute layout to
-  find their buffer: iio_attr_to_buffer() replaces
-  to_iio_dev_attr(attr)->buffer.
-
-- Context-specific attributes become an extension point instead of yet
-  another field in a shared structure. The IIO backend framework is the
-  obvious next user: iio_backend_ext_info_{get,set}() recover the
-  backend from indio_dev->dev.parent, which, as noted there, breaks as
-  soon as a frontend has more than one backend, and
-  iio_backend_extend_chan_spec() refuses to combine backend ext_info with
-  the frontend's own. A struct iio_backend_attr carrying its struct
-  iio_backend, created through the same prepare/add steps (and so
-  deduplicated against the frontend attributes), could address both
-  without touching struct iio_dev_attr or struct iio_info. That is not
-  part of this series.
-
-No ABI change is intended: attribute names, modes and callbacks are
-unchanged.
-
-This series was developed with the help of an AI coding assistant
-(Claude Opus 5.5, through Claude Code). Over an interactive session, it
-reviewed the IIO core, discussed design alternatives, wrote the code
-under my direction and helped write the commit messages. I reviewed all
-of it, and the design choices are mine.
+Add struct iio_buffer_attr, extending struct iio_chan_attr with the
+buffer the attribute belongs to, and use it both for the scan element
+attributes and for the buffer attributes wrapped by the buffer core.
+iio_attr_to_buffer() now resolves the buffer through it.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Rodrigo Alencar (5):
-      iio: buffer: add iio_attr_to_buffer() helper
-      iio: core: add struct iio_chan_attr and split attribute creation
-      iio: event: add struct iio_event_attr
-      iio: buffer: add struct iio_buffer_attr
-      iio: sysfs: drop core-only fields from struct iio_dev_attr
+ drivers/iio/industrialio-buffer.c | 63 +++++++++++++++++++++++++--------------
+ 1 file changed, 40 insertions(+), 23 deletions(-)
 
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |   2 +-
- drivers/iio/iio_core.h                             |  58 +++--
- drivers/iio/industrialio-buffer.c                  | 153 +++++++-----
- drivers/iio/industrialio-core.c                    | 278 +++++++++++----------
- drivers/iio/industrialio-event.c                   |  99 ++++++--
- include/linux/iio/buffer_impl.h                    |   3 +
- include/linux/iio/sysfs.h                          |   9 -
- 7 files changed, 361 insertions(+), 241 deletions(-)
----
-base-commit: c1b99c6982dccade0199879966a2d97f27a0a110
-change-id: 20261120-iio-core-attr-review-1323b39846f9
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 48fdaed6d703..af5c9ecd1b3f 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -69,6 +69,22 @@ static const char * const iio_endian_prefix[] = {
+ 	[IIO_LE] = "le",
+ };
+ 
++/**
++ * struct iio_buffer_attr - IIO buffer attribute
++ * @chan_attr:	underlying IIO channel attribute (channel is NULL for buffer
++ *		wide attributes)
++ * @buffer:	the IIO buffer to which this attribute belongs to
++ */
++struct iio_buffer_attr {
++	struct iio_chan_attr chan_attr;
++	struct iio_buffer *buffer;
++};
++
++static_assert(offsetof(struct iio_buffer_attr, chan_attr) == 0);
++
++#define to_iio_buffer_attr(_dev_attr)					\
++	container_of(to_iio_chan_attr(_dev_attr), struct iio_buffer_attr, chan_attr)
++
+ /**
+  * iio_attr_to_buffer() - Get the IIO buffer a buffer attribute belongs to
+  * @attr: Device attribute of the buffer, as passed to its show/store callbacks
+@@ -80,7 +96,7 @@ static const char * const iio_endian_prefix[] = {
+  */
+ struct iio_buffer *iio_attr_to_buffer(struct device_attribute *attr)
+ {
+-	return to_iio_dev_attr(attr)->buffer;
++	return to_iio_buffer_attr(attr)->buffer;
+ }
+ EXPORT_SYMBOL_GPL(iio_attr_to_buffer);
+ 
+@@ -459,7 +475,7 @@ static ssize_t iio_scan_el_show(struct device *dev,
+ 				char *buf)
+ {
+ 	int ret;
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	/* Ensure ret is 0 or 1. */
+ 	ret = !!test_bit(to_iio_dev_attr(attr)->address,
+@@ -591,7 +607,7 @@ static ssize_t iio_scan_el_store(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	struct iio_buffer *buffer = this_attr->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	ret = kstrtobool(buf, &state);
+ 	if (ret < 0)
+@@ -622,7 +638,7 @@ static ssize_t iio_scan_el_ts_show(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	return sysfs_emit(buf, "%d\n", buffer->scan_timestamp);
+ }
+@@ -635,7 +651,7 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 	bool state;
+ 
+ 	ret = kstrtobool(buf, &state);
+@@ -659,7 +675,7 @@ static int iio_buffer_add_chan_devattr(struct iio_dev *indio_dev,
+ 				       iio_attr_store_t writefunc,
+ 				       u64 mask)
+ {
+-	struct iio_chan_attr *buf_attr;
++	struct iio_buffer_attr *buf_attr;
+ 	struct iio_chan_attr_ctx ctx;
+ 	int ret;
+ 
+@@ -672,8 +688,9 @@ static int iio_buffer_add_chan_devattr(struct iio_dev *indio_dev,
+ 	if (!buf_attr)
+ 		return -ENOMEM;
+ 
+-	buf_attr->iio_attr.buffer = buffer;
+-	ret = iio_chan_attr_add(&ctx, buf_attr, readfunc, writefunc, mask);
++	buf_attr->buffer = buffer;
++	ret = iio_chan_attr_add(&ctx, &buf_attr->chan_attr, readfunc, writefunc,
++				mask);
+ 	if (ret)
+ 		kfree(buf_attr);
+ 
+@@ -716,7 +733,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ static ssize_t length_show(struct device *dev, struct device_attribute *attr,
+ 			   char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	return sysfs_emit(buf, "%d\n", buffer->length);
+ }
+@@ -726,7 +743,7 @@ static ssize_t length_store(struct device *dev, struct device_attribute *attr,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 	unsigned int val;
+ 	int ret;
+ 
+@@ -752,7 +769,7 @@ static ssize_t length_store(struct device *dev, struct device_attribute *attr,
+ static ssize_t enable_show(struct device *dev, struct device_attribute *attr,
+ 			   char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	return sysfs_emit(buf, "%d\n", iio_buffer_is_active(buffer));
+ }
+@@ -1412,7 +1429,7 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
+ 	bool requested_state;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 	bool inlist;
+ 
+ 	ret = kstrtobool(buf, &requested_state);
+@@ -1440,7 +1457,7 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
+ static ssize_t watermark_show(struct device *dev, struct device_attribute *attr,
+ 			      char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	return sysfs_emit(buf, "%u\n", buffer->watermark);
+ }
+@@ -1451,7 +1468,7 @@ static ssize_t watermark_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 	unsigned int val;
+ 	int ret;
+ 
+@@ -1477,7 +1494,7 @@ static ssize_t watermark_store(struct device *dev,
+ static ssize_t data_available_show(struct device *dev,
+ 				   struct device_attribute *attr, char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	return sysfs_emit(buf, "%zu\n", iio_buffer_data_available(buffer));
+ }
+@@ -1486,7 +1503,7 @@ static ssize_t direction_show(struct device *dev,
+ 			      struct device_attribute *attr,
+ 			      char *buf)
+ {
+-	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
++	struct iio_buffer *buffer = to_iio_buffer_attr(attr)->buffer;
+ 
+ 	switch (buffer->direction) {
+ 	case IIO_BUFFER_DIRECTION_IN:
+@@ -1526,25 +1543,25 @@ static struct attribute *iio_buffer_wrap_attr(struct iio_buffer *buffer,
+ 					      struct attribute *attr)
+ {
+ 	struct device_attribute *dattr = to_dev_attr(attr);
+-	struct iio_chan_attr *chan_attr;
++	struct iio_buffer_attr *buf_attr;
+ 	struct iio_dev_attr *iio_attr;
+ 
+-	chan_attr = kzalloc_obj(*chan_attr);
+-	if (!chan_attr)
++	buf_attr = kzalloc_obj(*buf_attr);
++	if (!buf_attr)
+ 		return NULL;
+ 
+-	iio_attr = &chan_attr->iio_attr;
+-	iio_attr->buffer = buffer;
++	buf_attr->buffer = buffer;
++	iio_attr = &buf_attr->chan_attr.iio_attr;
+ 	memcpy(&iio_attr->dev_attr, dattr, sizeof(iio_attr->dev_attr));
+ 	iio_attr->dev_attr.attr.name = kstrdup_const(attr->name, GFP_KERNEL);
+ 	if (!iio_attr->dev_attr.attr.name) {
+-		kfree(chan_attr);
++		kfree(buf_attr);
+ 		return NULL;
+ 	}
+ 
+ 	sysfs_attr_init(&iio_attr->dev_attr.attr);
+ 
+-	list_add(&chan_attr->l, &buffer->buffer_attr_list);
++	list_add(&buf_attr->chan_attr.l, &buffer->buffer_attr_list);
+ 
+ 	return &iio_attr->dev_attr.attr;
+ }
 
-Best regards,
---  
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+-- 
+2.43.0
 
 
