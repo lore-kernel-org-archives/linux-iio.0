@@ -1,71 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795167652;
-	b=JZxxolDmtWL6oFKFNK8EFJo3/tt5VUwQ4oBJ8JlPAyX1+Juh2GlCngr5t3W0KgNSgbwO
-	 x/kqR5TuszROkfaquxlxrhcKN7s+b7JZhHxJhERp3gJBCjnrnFF4444WzgN/WSw/RAS7X
-	 b2lSmJ4tVcIj2kkv92ZirlJqNJa9yr2KbsH4+bl07QaCB6y1FphcmbXnLdPTxf07/i2//
-	 UTquOHbKLInFbGLZplVJx2f8da/WdWr3WN5msRtFjzaz2Bes77fqq6BADyVswPfllrPMm
-	 4tX0s82FLqt/pgtG6TS4TafXgk36mmX08aIelDzJYwXWY9CjhY0yXZd+NRhR5+DNjMA==
+	t=1795168154;
+	b=Unr2wDNP1SpsMG/OYznP/WPCXIfPqtFQIajmBRpawkEwBvwWaivpkRnorenQ0/lYJd2U
+	 Btjy1w4b61ULL1gAyeOqAi/+jlkRGISXBG9RLGIThc79UhAl8OqPm/sYjvT1UK4pLH7Bw
+	 Yu+a3/NiE5gyZZ/d+5PKbTf2MCGkgU97oidkb4xkGa6+HOJO+Rr0nvu1FwYYxdt3AYdSf
+	 yDVBe8BvE4L8LEp/ON0z7ghOVHWdmLm0hbHqyl7sdt05CLZkW1+9J/vCC3llTV3Mj7R5z
+	 xOUMFivOtnNxDs+O96COY9wdch8AcvACMPJGz81AuYpbjanUt5FqyZsYE2mh/NQEcqg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795167652;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To;
-	bh=R8cEUfchtfL1CMYDQSUQAyd5j+dKyqqQvy8JCKkeHTQ=;
-	b=PKQzza0A9hq76LjcYK56846FmgSc7Q2qGCzhLsOQRke2C3vBK3pVHa0klgwB6IggPxCo
-	 g/ZbGabETEaWiaFDl3qaQP6i0K3nK1K7UI/u4hf6eHCs3hXNarVc1PpgtEiRfZrxkaczI
-	 DgZ2zsPNXQiOmuqoJrTTkaYbJbYQ8phcVqQVkqn4SgTnaSzm1yEj0PoxHn0FiUlfgoc/E
-	 bJgkconX2bw/Z2J1IE9kBYAEWWFE05wlyQHZsh6nlC+3sIufHFvXpg4LNpacVlIH4GCQ9
-	 /6fqP1DrbeKHbFx+AcL94pkkSLRFZsJc5Yxmcw/EZinR9gvo0IymNZSvnUx9g2o1uPQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795168154;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 Organization;
+	bh=zkvLKIiosUV0d7XChOK0Fd8QeJ73tgsFN4rutaaKy3c=;
+	b=GId9RGSWtj0D9lrN3AbJlFgBRFR8ttKx/YQXTlK6ex6t/R88dgYcha0pWI3T7vMsHUfP
+	 heYi1qz/dAe7C9/Mp2DL7/tR6dan0pALq63Yrnjpu9odsr1A127ENpZdX5XnS+j4jkmWP
+	 +4EsdS/F3n8C6HDYTQCzgTL39L7953URF7/bNR0zd2D3fDYkI7cPRKQhDIOgMKPZPAiAf
+	 szsVMB3F2Km1sE/oRRTlpjGYAmYtcWje3duWTx12pSM2cHB1Y1F53jDjxwiLn5Y588y/Q
+	 5fPi2WuyBoSluJmGx9vsHFl/IzYiRxWnE9AwArAZMMlWwuJKrJSIkI601tJh9EseyqA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iJ+pA1vH;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UZFhqPT0;
+	arc=none smtp.remote-ip=192.198.163.10
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 682EE606A330;
-	Fri, 20 Nov 2026 09:40:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 423F7606A320
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 09:49:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 423F7606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iJ+pA1vH
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E4A51F000C4;
-	Fri, 20 Nov 2026 09:40:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795167652;
-	bh=R8cEUfchtfL1CMYDQSUQAyd5j+dKyqqQvy8JCKkeHTQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=iJ+pA1vHpaNYllnqQbqUJ7mgvSduDG3aAkO2Mj7oUyPqQEon+BW+dm59hcqXed7VL
-	 2xtu6/DPBtppJc/p36pz4lTHf73j60dqs4Y2iJl2+JUNEVzrwf+FUUjlExFJBgEsM9
-	 ommrbKid81+gyu2CItU+cACBgqGl/bCcydWGsQIDBLEK3IOBb4Vzm8VbFOayIw+eeA
-	 Mn3q7Er6t/56wzjh/vyVRsbCdtdCx8dB8knuV7KCI8zp0v+RyrBWk7Pbc1vfCKG/3v
-	 SOZeEMbStmNbMGude3EWA+Nd70n/JdRSXZJ82oSZmKz8JurO6jnMHZwf8IJ9rdVHEB
-	 rSXwSijGS2C3A==
-Date: Fri, 20 Nov 2026 15:10:48 +0530
-From: Vinod Koul <vkoul@kernel.org>
-To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
-	Frank Li <Frank.Li@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-	=?iso-8859-1?Q?Am=E9lie?= Delaunay <amelie.delaunay@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=UZFhqPT0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795168154; x=1826704154;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=UqF0VYK2YoPZz82eoO9FWeGbw+ye8dZ1r7B+PiHzobE=;
+  b=UZFhqPT050ZhDjpPDsJ5+gqdb/yP2zGd1DivKZutiNraULck2IP5etpC
+   OrrDBt8Gnj0fbhPt7uezMVw1IIklsaK1qWXz0MA/KssYm6dKJe47PerpG
+   8CMpEO5AzAZaIzOHA1WglgmKDwl6HUC8kWniMt+mj4kDlLymfvyPPeXXK
+   3A7uUNltEbEYs9V3EpuyPFk5g5pjwkdc9g4CEDACK1Vyg7MWotdLfL4aO
+   UA18kkVb2/vvnVVAgWlYhbOCnBHno4ySJioQAh1qOzYOkk/NMi6zjp1Xr
+   pCBWmdzeLckU5eElUVnIozyOcebGnLWvQTO+tjmbiITObPhS9Pd4XLdAa
+   w==;
+X-CSE-ConnectionGUID: 6yQ44zwTT+6xHmXNgEyCMw==
+X-CSE-MsgGUID: //ttRBLsQhq1zzaK8iFrnQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3927634"
+X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
+   d="scan'208";a="3927634"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:49:13 -0800
+X-CSE-ConnectionGUID: JIsHjqWUTMy/WeJGpB5jIQ==
+X-CSE-MsgGUID: 4eGZd81tRESgG0uY5m+/Wg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
+   d="scan'208";a="10739810"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 01:49:11 -0800
+Date: Fri, 20 Nov 2026 11:49:08 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Oscar Alejandro =?iso-8859-1?Q?S=E1nchez?= Lucero <aleszlucero@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
-	Frank Li <Frank.Li@nxp.com>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v6 0/9] dmaengine: Support bus widths of 32 bytes and
- above
-Message-ID: <awAVoMe1VphXwQIw@parshuram>
-References: <20261014-dmaengine-support-wider-dma-masks-v6-0-5b3ffdef8191@analog.com>
- <auiDhzNcif3LhPlq@nsa>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Marcin Malagowski <mrc@bourne.st>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: pressure: abp060mg: Fix max pressure value for
+ abp001pg
+Message-ID: <awAXlEUSlbFlNSYS@ashevche-desk.local>
+References: <20261120-b4-abp060mg-fixes-v1-0-2baf026cde47@gmail.com>
+ <20261120-b4-abp060mg-fixes-v1-1-2baf026cde47@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -78,83 +87,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <auiDhzNcif3LhPlq@nsa>
+In-Reply-To: <20261120-b4-abp060mg-fixes-v1-1-2baf026cde47@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 02-11-26, 12:36, Nuno Sá wrote:
-> On Wed, Oct 14, 2026 at 03:19:10PM +0100, Nuno Sá wrote:
-> > The DMA engine slave capabilities advertise the supported source and
-> > destination bus widths through src_addr_widths / dst_addr_widths. These
-> > are plain u32 bitmasks where a set bit's position equals the
-> > corresponding enum dma_slave_buswidth value, e.g.
-> > DMA_SLAVE_BUSWIDTH_4_BYTES sets bit 4.
-> > 
-> > The consequence is that widths of 32 bytes and above cannot be
-> > represented at all: DMA_SLAVE_BUSWIDTH_32/64/128_BYTES would need bits
-> > 32, 64 and 128, which do not fit in a u32. Hardware with wider data
-> > paths is becoming common, so add a representation that can express these
-> > widths while still using enum dma_slave_buswidth.
-> > 
-> > This series switches consumers and a small set of producers to the new
-> > bus width capabilities, represented by a dma_buswidth_mask_t modeled
-> > after dma_cap_mask_t. The legacy dma_device u32 fields are kept for now
-> > so the remaining DMA controller drivers can be converted incrementally:
-> > dma_async_device_register() folds a legacy-only producer's u32 into the
-> > mask, so consumers only ever have to look at the mask.
-> > 
-> > Once the remaining producers are converted, the legacy dma_device
-> > src/dst_addr_widths fields can be removed as a final cleanup.
-> > 
-> > This issue was discussed before here:
-> > 
-> > https://lore.kernel.org/dmaengine/abkoXXbaxaiqbBuX@vaman/
-> > 
-> > Changes in v6:
-> > - Patch 1:
-> >   - Prefix the bus width helpers with dmaengine_ (Frank).
-> >   - Drop the wrapper macros taking the address of their mask arguments.
-> >     The helpers are now static inline functions taking a
-> >     dma_buswidth_mask_t pointer (Frank).
-> >   - Drop a stray blank line in dma_get_slave_caps() (Frank).
-> > - Patch 2-8:
-> >   - Use the renamed helpers, passing the masks by pointer.
-> > - Link to v5: https://patch.msgid.link/20261009-dmaengine-support-wider-dma-masks-v5-0-4c4e63a7a1af@analog.com
-> > 
-> > ---
-> > Nuno Sá (9):
-> >       dmaengine: Support bus widths of 32 bytes and above
-> >       dmaengine: dma-axi-dmac: Use bus width capability helpers
-> >       dmaengine: dw-axi-dmac: Use bus width capability helpers
-> >       dmaengine: qcom: gpi: Use bus width capability helpers
-> >       dmaengine: stm32-dma3: Use bus width capability helpers
-> >       iio: buffer-dmaengine: Use dma_slave_caps bus width accessors
-> >       ALSA: pcm_dmaengine: Use dma_slave_caps bus width helpers
-> >       spi: dw: Use dma_slave_caps bus width helpers
-> >       dmaengine: Drop legacy bus width fields from dma_slave_caps
-> > 
-> >  drivers/dma/dma-axi-dmac.c                         |  13 +-
-> >  drivers/dma/dmaengine.c                            |  23 ++-
-> >  drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c     |  39 +++--
-> >  drivers/dma/qcom/gpi.c                             |  11 +-
-> >  drivers/dma/stm32/stm32-dma3.c                     |  37 ++--
-> >  drivers/iio/buffer/industrialio-buffer-dmaengine.c |  15 +-
-> >  drivers/spi/spi-dw-dma.c                           |   7 +-
-> >  drivers/spi/spi-dw.h                               |   3 +-
-> >  include/linux/dmaengine.h                          | 188 +++++++++++++++++++--
-> >  sound/core/pcm_dmaengine.c                         |  20 ++-
-> >  10 files changed, 289 insertions(+), 67 deletions(-)
-> > ---
-> > base-commit: 42c31fec1ca76b8b5f7759def122d418dff2cd4b
-> > change-id: 20260615-dmaengine-support-wider-dma-masks-5aac12497e27
-> > --
-> > 
-> > Thanks!
-> > - Nuno Sá
-> > 
-> 
-> Hi Vinod, pinging this one before resend. Already got the rb  tag from Frank on the
-> first patch. If anything left to do, let me know please.
+On Fri, Nov 20, 2026 at 01:11:37AM -0600, Oscar Alejandro Sánchez Lucero wrote:
+> 1 psi is approximately 6895 Pa, as stated in the comment and used in
+> the differential variant ABP001PD. Fix the transposed digits
+> (6985 -> 6895) in the ABP001PG configuration entry so its scale is
+> calculated properly.
 
-This fails to apply for me, can you rebase on next and send
+No. The comment is not a good source of information, the datasheet is.
+Please, make sure your commit message has a reference to datasheet that
+confirms that the comment is correct.
 
 -- 
-~Vinod
+With Best Regards,
+Andy Shevchenko
+
+
