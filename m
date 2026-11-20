@@ -1,67 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.151
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795155693;
-	b=pBDRatgKXsFYD+BzNQ9Vla5Usc9VCEvEJwSSJo4zrXALXUBuFhptYeanrnUShuSvQAYE
-	 2bFURzK60LoXQ1riDMJqq57pn7rYFhHD9CgkhMKO7Et13oETSYmIai37T5zZEyQcEXBri
-	 85ydTtrUb41TyQNFqejVzAGCHhq5BIst7C/bMu0FEazujX5+znXX3fl5yaFF5CgNWXk74
-	 X2t7B2jSEJTyr74PCLdYo3nb4bdO7T2GbXDLshfQ66MkYLxM/5JwUERththFXhxj9l2eE
-	 whZwqq9r391fv5rS9FDnxnY4EqwMQLGAKph8az77RsNs85BpaVeXeHvgZ12ZRL+JtRA==
+	t=1795158703;
+	b=4VR6KqHe9AuJnpW4isyPTub2Sd5+CFgT0LADuV/bjtwybXXEwOG2Rh+tdg0+D7w+GaLE
+	 po2507G+8+OU5gU6Bc7D/q5JwLhbBD2QfWHqyP7t3caiVcaSyZlqSuXOtbguvombA6b6C
+	 2bD9fILQGE4FW9xzHaugC/Fz6YmtxM6eE2t/84lYy24889N5E/0w2XIj2iueafMgmBYaV
+	 XTWeKtYRq7k46qJAayQAFX4kj9v61AsJoXGjqhsLNUpJr65VYjpgKDWo6H+FU96Zt9SAM
+	 KTjgofVob6joLws2z0gwZs3dkq+P2KRIN/9kcJj906stuy6Oi93mRO/p4zLxac9kyMQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795155693;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=CGkDigjb9oQlVkXWEL1v0HSz11EjRTz4QjomlLk9gTY=;
-	b=QdNGl/WEy0FkarG27upLlDO4uH/a9EhUSe12SNA9M6U7MOmw2lNCb7bTRWZXocgmBhDd
-	 ZhA0S4LGxhbz/I687YWDqwiwwYCdsgMFR1z1Y3XKw9zXVHH0cXcegcU8emacnKBDGVtgg
-	 mycCCmJyGmGeqkHXH6ifwf7mfGgG6rZX2e88BvZ9EuJ3kiefgLqKUrgrKbslH3zDAj8bu
-	 Oivd1XEHIovro5qgucGehVNLNUd/9p3LyzqmhWTITJPWQNTCgyuhukaA7jYTtHPgPXpgI
-	 0M5lXJQNtEo3boRcIUoxcIBdL8Sr8BoyHC4KZWX1ndV2T4C32U2Srsp97etyfdP+R7g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795158703;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Subject:Date:
+	 Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=pxfIT+9E4ZCilKRfonukjPaBBBGUKqoI7TJBGfZt990=;
+	b=F774f7FtqGEJW2j+cMXSmxTJmJoSZ8oTP8WTP/R/YFpjWFcTsyJR3kFmpKyzWcPeyaxq
+	 ytxoHQAL9OP7xFjyPSbjwhCQx9bDBOzrcEHEAH1ZbgyQiXCQ6rgfvr00yaC/OCHdLcmp3
+	 K6M4NYkHmHa2h+4EkvzZWoaATOTQcjxT8Azwr2woTEWPNye7hyVQGo4l80p4oLeiSDl+g
+	 PSg4Gt50WhziKC7No11/ykoa3csmVjn8YY6V34QmzkvCKKXyy2ksjlCS306Y3ooA4SyEO
+	 vTE/M7ply2mD8CGWpEbd1/lGYxx9o39Xdwu6s2DNreHio4UzZi4Mk58FBBj4+RESgAw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=jwjVja6U;
-	arc=none smtp.remote-ip=111.22.67.151
-Received: from cmccmta8.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7CA82606A334
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 06:21:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7CA82606A334
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="MM3ov/mF";
+	arc=none smtp.remote-ip=209.85.221.182
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5F3606A320
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 07:11:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8B5F3606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=jwjVja6U
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MM3ov/mF
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-5ee3a3d281fso355774e0c.3
+        for <linux-iio@vger.kernel.org>; Thu, 19 Nov 2026 23:11:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=jwjVja6UgcN0DiZuhYoZWcHYUeEY4vCwkZpLv8TkU38sK8+l5BnAleYox9efvAbXOnm2ST4D2Fu5Y
-	 NlsIKTBJuzmzfz1MeC82vNRC8ZbeLvcmaI/R499MnHojK1oMmI3KkdZucxFI6/FNXaAkvdc25CPUT1
-	 Kvw+lZvxQk+pIeCE=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app06-12006 (RichMail) with SMTP id 2ee66affe6e657a-f18ac;
-	Fri, 20 Nov 2026 14:21:26 +0800 (CST)
-X-RM-TRANSID:2ee66affe6e657a-f18ac
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from devin-VMware-Virtual-Platform.localdomain (unknown[10.55.1.71])
-	by rmsmtp-syy-appsvr04-12004 (RichMail) with SMTP id 2ee46affe6e4aea-188ee;
-	Fri, 20 Nov 2026 14:21:26 +0800 (CST)
-X-RM-TRANSID:2ee46affe6e4aea-188ee
-From: Zhu Jun <zhujun2@cmss.chinamobile.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	knaack.h@gmx.de,
-	linux-iio@vger.kernel.org,
-	Zhu Jun <zhujun2@cmss.chinamobile.com>
-Subject: [PATCH] tools: iio: Close attribute streams on parse errors
-Date: Fri, 20 Nov 2026 14:21:25 +0800
-Message-ID: <20261120062125.98462-1-zhujun2@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.51.0
+        d=gmail.com; s=20260707; t=1795158702; x=1795763502; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=pxfIT+9E4ZCilKRfonukjPaBBBGUKqoI7TJBGfZt990=;
+        b=MM3ov/mFcQg6BT3UDLOTS2BVcSn6G53WkOpmpiJKQzHo8AgUkPDuLDvWYITS5E2xXs
+         Ja/D3CfB0NoIqnUFu8WqQTxxTeI2eLeba+JBHrPzGN91/UWpb8hUe9mKq61S32kukw1r
+         QWyr7mXmxTomafa2ebuTwOI2HgyyvG0W0cQITius9Tnk9ViQurUcCOQT+n0nmpd9FyuX
+         JPTD6LWM6lsn+zHL50bRq5iZ9zx/RNzGB5PJ+UCiKSdxUZLmszrXFx/AKC9oiF6NETdu
+         74yt2lm5cTd0x5yzz6yJlhhdmnttW4Uz51dM04ieSAArk3nhBHcn0mwoEWVLx7UxDQAt
+         aYNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795158702; x=1795763502;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=pxfIT+9E4ZCilKRfonukjPaBBBGUKqoI7TJBGfZt990=;
+        b=BtIWBGjFnM3HMFem/cgJc9P5VqFLi5l3delIXmSHI+aJ4+xS6Zqp9puBPV1eQWP7V1
+         qNYuxM0cJpqQ7TKHu1xenQQFnjRXswK3w73VnH6r0laVee/5ACCr97b/Kg525VrFBZG6
+         qCXPp7bJJIlwZSMG9YKyMQPyN9NXtWeQCK5/ldYajvGwGPKJOFLEz6TrQGQCTvfocq/n
+         HQIet4P+YL8WRW38ku3j9xaKg6yK+YNwb/1x2/ZVW33jL325vN6HENd3CFaU+NrjeUwc
+         CEdukYrgiEWod7daEHZ5TL+U5ck9jzge+F7D3agMXanS3lLWEOanneWB88C96Z8Z4yvx
+         vOug==
+X-Gm-Message-State: APuU4Z9EAORprcOlaqhO/1NthL36jnskYV7oQZ37fXv90SH3477Ck47U
+	duJWQ8J5ZGKuh/QhG7MJ2EUv+giUmidSzA48q6VKELq6+CowU4R/Zs3K
+X-Gm-Gg: AZFdTZeX3YCJIxUnqhzDPqcSRshf1u1ODF6KDDbmGesof4ECOj9QcxtnU0GAXAEcUOR
+	Kq9JAMKxb+YHWrYKmnK1QikozUYQbOZ6JjpqTgnGhz8X8wa/DmGiLXrPGxGAucQLCqwz0MyxyMe
+	JQqmY6U7Y5r/tJt/StbyZ3DXUo531nwUP+QsEiyxrgnATqjpHpR+CeZEaTvnXvjOLpLpIcSUQWt
+	VskuMhQ+2OZByzz/x8tXDnts7VaJTYqbCwBBQHAMhDQobSrvtRpbVQDV+R7dSoBmP1Pj1nlN2IG
+	ZitFGRd444tVI71WGzD+92NH7xCQD2NikLGxoOH57r/lrhHt73Wj+tlErmqJu4CcBPM5FIzlJKK
+	3RAfZiQYhZbUufeog6EHKHGhc4O4gupiCHkGzURZEEt02dLf+39Coo8Wa5HTwejIU/LaliAqaB8
+	tdyq1s5kb3Fskt+KYSAFmORRHpTHPdW5Nv+zQqkSs4C7m2BBymd/LX0bjyiBMzkpFMrwcIZXp8+
+	6qsEhK4DlYOgXRf4bE3z+p55oLExgeZzFQFodMouSc289YV4d3RirrPgacqnb0ADnYY3S4tj1l2
+	iATUiR9qkt+fhDDtGQ==
+X-Received: by 2002:a05:6122:1994:b0:5ee:13ad:6c8e with SMTP id 71dfb90a1353d-5ee8af3d2c9mr1090746e0c.17.1795158702453;
+        Thu, 19 Nov 2026 23:11:42 -0800 (PST)
+Received: from [192.168.0.9] ([2a09:bac5:565c:aa::11:204])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ee8b653081sm1773611e0c.16.2026.11.19.23.11.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2026 23:11:42 -0800 (PST)
+From: =?utf-8?q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>
+Subject: [PATCH 0/3] iio: pressure: abp060mg: Fix scale typo and I2C read
+ handling
+Date: Fri, 20 Nov 2026 01:11:36 -0600
+Message-Id: <20261120-b4-abp060mg-fixes-v1-0-2baf026cde47@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -71,45 +92,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3LMQqAMAxA0atIZgNp1IJeRRxajZrBKi2IULy7x
+ fHx+RmSRJUEQ5Uhyq1Jz1Bg6grm3YVNUJdiYGJrDBP6Fp2/yNKx4aqPJFxdN7OhpmdnoXxXlD+
+ UbZze9wMZVhKrYwAAAA==
+X-Change-ID: 20261120-b4-abp060mg-fixes-fa5c210392a6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Marcin Malagowski <mrc@bourne.st>
+Cc: linux-iio@vger.kernel.org, 
+ =?utf-8?q?Oscar_Alejandro_S=C3=A1nchez_Lucero?= <aleszlucero@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795158700; l=1073;
+ i=aleszlucero@gmail.com; s=20261104; h=from:subject:message-id;
+ bh=Q9zqyQQ3gU9S9tgeuV3q7vBs4Ba38wV7776MeMqDxrk=;
+ b=wOp5L/+8Dkb0njNwPosMKItpLH1CvLytg+cXzpbrX95XQHtOfpwjxpytiCk0HdF1op8ZKBeV9
+ qV7Qj4y4GTBDQeoXCM/uWBS4afx3DGdFQhIlNWVTF/74aqkDvK9Uu8T
+X-Developer-Key: i=aleszlucero@gmail.com; a=ed25519;
+ pk=zRzEBMID7l1FXqr2CjfnlIn++3m3N05FuNYb5zPA3cw=
 
-The second enable-attribute pass in build_channel_array() and the name
-read in find_type_by_name() jump to cleanup when fscanf() fails without
-closing their open FILE streams. Neither cleanup path owns that stream,
-so repeated failures leak file descriptors.
+This series addresses three minor issues in the Honeywell ABP pressure
+sensor driver (abp060mg):
 
-Close the attribute stream before leaving these paths and preserve the
-original parsing error if closing the stream also fails.
+- Fix a typo in the maximum pressure value for the abp001pg variant
+  (6985 Pa -> 6895 Pa).
+- Validate the byte counts returned by i2c_master_send() and
+  i2c_master_recv() to avoid parsing uninitialized stack data on short
+  transfers.
+- Replace msleep_interruptible() with msleep() so signals do not cut
+  the 40 ms sensor conversion delay short.
 
-Fixes: 53118557b6a9 ("tools:iio:iio_utils: add error handling")
-Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
+Signed-off-by: Oscar Alejandro Sánchez Lucero <aleszlucero@gmail.com>
 ---
- tools/iio/iio_utils.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Oscar Alejandro Sánchez Lucero (3):
+      iio: pressure: abp060mg: Fix max pressure value for abp001pg
+      iio: pressure: abp060mg: Check for short I2C transfers
+      iio: pressure: abp060mg: Use msleep() instead of msleep_interruptible()
 
-diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-index e274a0d8376b..7e1ab6d752ae 100644
---- a/tools/iio/iio_utils.c
-+++ b/tools/iio/iio_utils.c
-@@ -403,6 +403,9 @@ int build_channel_array(const char *device_dir, int buffer_idx,
- 			errno = 0;
- 			if (fscanf(sysfsfp, "%i", &current_enabled) != 1) {
- 				ret = errno ? -errno : -ENODATA;
-+				if (fclose(sysfsfp))
-+					perror("Failed to close enable attribute");
-+
- 				count--;
- 				goto error_cleanup_array;
- 			}
-@@ -620,6 +623,9 @@ int find_type_by_name(const char *name, const char *type)
- 				errno = 0;
- 				if (fscanf(namefp, "%s", thisname) != 1) {
- 					ret = errno ? -errno : -ENODATA;
-+					if (fclose(namefp))
-+						perror("Failed to close name attribute");
-+
- 					goto error_close_dir;
- 				}
- 
+ drivers/iio/pressure/abp060mg.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+---
+base-commit: adcad7f4e6332cff3d6d7165f41584899f598534
+change-id: 20261120-b4-abp060mg-fixes-fa5c210392a6
 
+Best regards,
+-- 
+Oscar Alejandro Sánchez Lucero <aleszlucero@gmail.com>
 
