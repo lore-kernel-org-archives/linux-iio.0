@@ -1,101 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795199585;
-	b=kcRKN7bRZrLdf8D72YHJ0cg5a3E9Csns3K9uE4lZmTjCWrr2Yh+02Nr+12cYGvPUZztW
-	 yqHRg+gDcPbNaY4wYYZHKLrIs2utdNbS3zgprlSstwMbsii1646Clm4XezQD1XJOQvysV
-	 AkXY4fm7hpH9pLGLt8IpT3i61QbzSo+rqLAGirDepjFWVyUiPpwLH2Lj9ZIzlEfOnQXBs
-	 zOrVEFTSYjt5DLNpcEJmc7KoRGFinAYCWzh6DB+B76HujOcxUdrl6DHCw76j0+LMC4cl2
-	 Wi2hFNfsPrWTXQKWRVUwH9oWKjf3p/NnqX3YHtwgMAu21oc+k7ubgxErPEmQlH1w/qw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795199585;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.48
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795208621;
+	b=k0zAvGmdEPlFh3Lz2wl2NfAAxqZ9d99gdxWMzcArHqzTQ6nrr2Ym767YOBjIouXGUmoe
+	 wAmXm/XB72dAff+WN0TkBFAyWL8Thbgy1dqkmDAh1LICCD3/i6CZYLkyr54971iHGKpNJ
+	 qIL5RXc4tmlyorrY3sZqzasWOIXXNL2P6i4haD/hNJCFQYoG6jT2W9Q+xepLRO7DAJIeb
+	 V8QN/uEnXW56xptzygn4JeB7KbZ8s6y2QvZwW8U4MGu9IrGMG6G66h9+NoSuf+aFK4CbQ
+	 jz0DYl0ldA2F5Q4H7BvUTGo/rD4x25WnhLhCzD4EnQy0IMBFdk8j0zDwpHkzPPEddnQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795208621;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
-	b=RnwnOTCcHzSzHCcApAPGnFjjEdrCWriOuJ3uR0lOdTVjuuwtU0OPlVXPJEouN8QMlhE3
-	 Ow9vPhSdorniQF3d3SF4bE6SjqJGNR6sr9t0jRmF8jds7jr0aGdDopeOZQgNMWrZovmZm
-	 lb4nqOK7KOtBOA6xaQpug85tM8ZFW85vrM64nCz+AB/G/5T8JmMsl1oDtaUYvo53db1hn
-	 mSzn5CDL6OH4FvrlZ9doyl4pvgaPXDcF7bxO96lyInX0I6BLF8i/aO8fvM93lu2khwoK/
-	 xklqEwnC0ESLw7QOMZ+EPhPponxklvISCUSn+fIUbGZWOetk3UD04xt9hwWiKXnxU+w==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=none header.from=reflexrobotics.com;
-	spf=pass smtp.mailfrom=reflexrobotics.com;
-	dkim=pass header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=F0cMgM5B;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.41
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=4hK94eNEEKjazlQ0HP7i05TipBfA/Zk6tSc1DEj8pPw=;
+	b=UEoVZwHn0p+akyeZNP6o6mOtQz1PV4OLsk8dAc0SeQl2CrE395dBGPe/oRB4IbLC0T4H
+	 bPCwO9e3waNHybu48R+gVsJCTLxWPAl3yNQ/Fs3SLHttOCYje0f13L8bFrAa03xBjdR0M
+	 TYIMo5PnLH+5dPdd+z9zFM7VTneJEARY3VIUTMEaejqU9HQiFnhcOUx94u+pMqCtRVFzv
+	 uwma5LzvBo1n7lCtTbFdRrKFn6rEXOtdYBUCEIBy7cOjdBS0ylOCHdJFdFIpBGjJG3LfZ
+	 Fd5g9MmcnjntY0w6dqeWjFELw87R6bl60zq4vCHgxD5y/a4+Xp3vNTFaN9FqItkcfWw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zyVDb0g9;
+	arc=none smtp.remote-ip=74.125.82.48
+Received: from mail-dl1-f48.google.com (mail-dl1-f48.google.com [74.125.82.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DAF160A2601
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 18:33:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2DAF160A2601
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=reflexrobotics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reflexrobotics.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C16A5606A699
+	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 21:03:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C16A5606A699
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=reflexrobotics-com.20260707.gappssmtp.com header.i=@reflexrobotics-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=F0cMgM5B
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6b85b58d303so771138a12.0
-        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:33:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795199583; cv=none;
-        d=google.com; s=arc-20260327;
-        b=qAzw+XtpZtwbv4Sne5OQF/DcL+PB9LG8BRO7Q4B+P9kcJN9E6gfUOSRwZcCf2t1r9r
-         dF+R+TxkmNviCnX9O5zHUl40/mbugFwUNyfIBoXzoBOR7uJaJ+EuJ2A4dM6HMsotVh6N
-         R0s3cF2GYOos1xBJDZzh1gpHysgkGnglMXPZYM61HAajOYPtTzCqB9a4dR7+G1W2LENg
-         TpgkZ/xm2GzeRYXRRc3oAf2smmMhn+aqpNj5T3v8y2WoQErpA19HecdHnCiEkUrb4FMQ
-         uT8aCwx2Dc78ex3bOYNhog9hxbHoj9BPaRsfe5i7/FsZoWA7Kz/8N4RTAAq7TPRwifyN
-         3xTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
-        fh=KuFSXwa5l0J+fmOq1rIq3iiyofAYL36MuohJXyuXkNY=;
-        b=IMOKiFZlkY07+nhCHza0Rq7Ss1jDv15uMxGU+bZh/HDb4NaFwoPAOd0DTZDThZ7rBe
-         4Gvxnw3ePete1sJw7E6VLwf3oaIhCyVm9lEbdxpwZYHHwsnjuVXiKdZuxhng6H6OIqW2
-         lSbKDZ3xY8C4DFgFclMLOyz8RZYl3znRdtZq4lPZFTgkHhFOXCJIX8exMdAQZ77h/6Oi
-         uIpQbc4A9gBsSm50NjMwCQvTuX5Y2llfXRs59Ndz8c4uyLq3BmA1oGeL+PuUVXOmftUy
-         gkEgv9ADtA2ro2sCIWgYj1P3hCWQQ2kU0vOKTnECsE8RHDKFFkvI799TOxiCCHWMeVdi
-         5W4w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zyVDb0g9
+Received: by mail-dl1-f48.google.com with SMTP id a92af1059eb24-1a3c08d6928so1828443c88.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 13:03:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=reflexrobotics-com.20260707.gappssmtp.com; s=20260707; t=1795199583; x=1795804383; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=gmail.com; s=20260707; t=1795208620; x=1795813420; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
-        b=F0cMgM5B/mftILx/4d2yWLhLfvI0yR4/pkUXQ+93jk5juo55xYmqJlJpxsW6MtWXPl
-         I2834IQNamlmFvPt/aAARRFZGLzdUtYs9vfbW0X7e/0qrXqlN0rPKY/q5Ddvlb757QUY
-         iCSOWRiM88EZr5fANrYkh9w05tphycwC+OZz3wlSYD+hY9774yI6vwMYUWT/jqy9qPBG
-         54dq7T4Qra4REIbZzV6iVJRSbheJhZCgXDzI9NF2dl9yGkWHRT8m9MOo19zTE1rB5UG9
-         dPKYxxJLcOlufEzSlCkv8dagYdAKqTvivKNPsV/CV7VGe/ba9dBel/Hfx2EuvufDJOZE
-         eWLQ==
+        bh=4hK94eNEEKjazlQ0HP7i05TipBfA/Zk6tSc1DEj8pPw=;
+        b=zyVDb0g9yNO4Zk/jlweqhoNreS+trSst0WrNaXSK85spzN1Hm+va9kymYhXTiIkrOZ
+         6FHA39FcBFpPKPtAwfQCnLic+8e7hytQSDcPHi+lURZxiDryHmnzvcIC8uiehjjTwh1b
+         4k41EJ9+7wMzHK649P3GmSd0sC0a7G1v8z9NJmor1m4v7XqLftIf9qCEtLw7TmwhjSNu
+         R8dfbLW8taucG3PW4x11LMxJU6690Q15qL8BvYjU/gbv4xl2SGmrnIu0ulk4la6tn5DA
+         UnjyfDoova+wX1aiSzQxv26uOcfDyqDe8ml6hru5SWzrrSPw/CmeJQjN2tyvwC8fupJI
+         VOng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795199583; x=1795804383;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1795208620; x=1795813420;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=CAPneeylBz3YXn2VnybkvLnn9F0XjtSc9eSWIHGISq0=;
-        b=dQYZiZJMcnYlbH9AAZIZ/GkdXh1/JTVGjC1RDlXX9av9neeL6onTHZT7ChBZ5ll6HM
-         8EU7vPzkQPXkXuD87sjWY7t05m5OQgGK+/koGcqRAaSseV25KdxHthVGTrudcDjNnCVF
-         RS7GduPwaDclp23Jo5roce0ZHcyACI9h1mCQ+gOytdf+bb2jepqZ2MGa8mnR97yPQfh9
-         Wd3kU/cd/P4FuYQpblcWFYClKSo8DvhZq6USDxysSkscFy59fJCTHUyrfEVKXzlACpZ8
-         svnJ18mEWFzU58U9xSB+AMjpNT+o/j9QIlyz8rlIHvVV9rTy/Lra1MLg00lbdep4RXJn
-         jpSw==
-X-Forwarded-Encrypted: i=1; AL+hErH822BrZRDiVfWrhyfzJIafmduw6fHireZ8fJgF1LtQ8hk83BPac+ThKAnd4y8XxgYYorghN5XAucA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+Fk0mVv2VXhHCtdZCpWvAkOp7no2Mu58gffop9eR06ui761O4W
-	zFP8BVasLByrHzprsqw80iDBxZtx/aO7YJxgsEbKQQ5+liyf5g6bPa49LuWU+iRHtZw4Dc7m+zF
-	dNVYvqEWyYqz+eHOu7rThTUVyKuJe54b4VOV1z4LdHw==
-X-Gm-Gg: AZFdTZdYyvNpYTDH58LwXAvVQg33QjulKBIlcGMUWLq7WsrFcFw4ewUbzlg90/aZkVT
-	VHlz7bgheTMTAksI0D44l6FRH46HGXsmA9hw4VfFwRqtd6nxpLMifJSuVbJmYLDEMwxEg3tRwt6
-	7G9C9mW/ew/ZqE5H7CzYKhyo26blNT+NPUOAIoczlyBG0a4MoxAtbfGNMgT+97Fdl740IMSO/4s
-	UjGJGrpZM/0G20Ksxe6Ow2t4xCkIv5PFWfgl+o+RZYEXikAgJ/5nWK2ipjmjvL0bpVKHL+jbhN/
-	yR5kg0I7/DJG5Akimg4CYoWcYt6Yu76WO/szQ/NhACet9yMPMr/5QL80m9NY1gxd8+8aUnokW/E
-	ssrj4hPRpwYtFSdstcniaCg/yEUeM6QYX9anAUKFDdjnPXSceQ6FCeIb7YPslVxABqkZhZOJ+Rm
-	crYVNWv9nGtrILwZPWyzGYKHEJQ/BM8sxMZWeMPU4qt8rm3WUJpg==
-X-Received: by 2002:a05:6402:a594:10b0:6b8:a711:65f3 with SMTP id
- 4fb4d7f45d1cf-6ba37e935e0mr2522060a12.14.1795199583392; Fri, 20 Nov 2026
- 10:33:03 -0800 (PST)
+        bh=4hK94eNEEKjazlQ0HP7i05TipBfA/Zk6tSc1DEj8pPw=;
+        b=lHgrEX0nGHtUSmNSjr02qt4kbWaZVvW1TeC5G9B8OKj/ZrWIYTNGhFCxaBDZz5/Bja
+         guQ2Uv38LkTzwfT5j1kmLDfsy1ml2ZU71Tm/JGVoQFfdBzUks/hKby/y3wZ/Qj+QFdhA
+         Ax+D1fglnEGbB5vmHRwXrLox3TftKjxN40cJm0CtmvjqhFlD2MeZu2XtXXP4hGcR/FdY
+         9bS+qI/2b4gykesDOyPT/h7LIvOeC26mASgQ2wLGj87lZ7HbzJtwvTbPENnY7uz9fUze
+         D+8d+abi2JHoef1SpqZeClaSoQCwGNNq6n0NLgyIydFpw48PcYaqMUROnxioo64FDv3M
+         hCkQ==
+X-Forwarded-Encrypted: i=1; AL+hErEFwpRCkUYFFZstkAqI2wv5VLcwyZhYpvqjb4/Zg5W0zCWDOGhbCFuSyQjtch3B+oQ1uTj0jrsDEr0=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/NarqA07jUNBzMTO2tSMtS3xD+HE+93POfrnBT0MXEeXgxMMke
+	679z0WfXa+Agq3R6P9rPTgCZKgh5IJr8LOtbztf/Axo6Mj3nXZl0qQ/X
+X-Gm-Gg: AYBFou1XsyO15zyBEKFldAoTwVXlZKXDwcJIETO04N4NTKnWomPKtsf4IhCnsBQMd6M
+	Y3VrHIZPymzq2hsTOLc1KfXhu6hKrPURNaU7R26TFpeXFAy0MTB3Ve0Uksu3eO6DUbYEKH5Whj2
+	gY4GlMCOO05bTGhGZpiLiWY7veuMjJQxvad6L8KFrisBxCr26N5wDVkfSEVEG+0fXnXt9C6No5N
+	hnRZvCw0sOsLsgbrS5PmSmgy+u+qLgex2lrzOZSJApThX3s2po0N4DD17oWN9GPZgcK34nuvOMR
+	EF0JcbFOVLyUynqyIuxzZ7v5ffESFRhpC4EjqlIjpOihj/oAoz/amOP3dzxMhRV+x64UsQlPoiW
+	69RyaysyZdaLsX6xYWlk2YWX7TEGaD92TwCfZiJbVeG4CcJ89XCW+TuYiddTamgdv6OHp01Ct2a
+	y+hNkZzsL/aKIHAq0O2Cu9IQNlMINqqF4W+NvVx0geWZQVUdiK7cfdQk+t5EpnMHxbkd6J6/xo+
+	OoPMD7GLhSaG0QW/qLw3RTGrKEC8ECm9P3WvkgGf0A+gtegWndB6NLuNb5qbClvtMzwxOP+3HN7
+	d2HuU+B+xBelVa69r+MAAXrFpkdMIzeZXsnOm0nrT17anMQ/+8j1KV+7Zr0wDw4lsUm7WzOx8zq
+	6AuNLRxhiVmzshA7LCSvVYwR+TqOKKsDr7PZ2Kmb9qLP1Iq0i+H3URZXwLdKGdOPpgCkqTIDVyF
+	4su9YYiquxD7h3VGBwrHbLtL+60Hn/SazZz6umtFcHwg==
+X-Received: by 2002:a05:7022:3c0c:b0:149:1b5b:1f25 with SMTP id a92af1059eb24-1b55688bbeemr3318551c88.15.1795208609113;
+        Fri, 20 Nov 2026 13:03:29 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5566c1142sm8865172c88.2.2026.11.20.13.03.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2026 13:03:28 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Zhu Jun <zhujun2@cmss.chinamobile.com>
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tools: iio: Keep the buffer index separate from the acquired fd
+Date: Sat, 21 Nov 2026 02:33:17 +0530
+Message-ID: <20261120210317.184756-2-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261120061903.98141-1-zhujun2@cmss.chinamobile.com>
+References: <20261120061903.98141-1-zhujun2@cmss.chinamobile.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,88 +104,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261120020850.24318-1-joe.l@reflexrobotics.com>
- <20261120020850.24318-2-joe.l@reflexrobotics.com> <awAT-ofy0p_uhvGN@ashevche-desk.local>
-In-Reply-To: <awAT-ofy0p_uhvGN@ashevche-desk.local>
-From: Joe LeVeque <joe.l@reflexrobotics.com>
-Date: Fri, 20 Nov 2026 10:32:52 -0800
-X-Gm-Features: Aa3M54ooMSbRCqeK2L0GWBOnVFZSWQ2EEWv_N9fWbx0PggVT0BMZwu4_tSVZ3Vo
-Message-ID: <CAJLMkXafYtUx7gXE8g-sJ0keGW8eSrVGPc2ao5EzjkxZ-nN2cA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: imu: inv_icm42600: return -EBUSY for temperature
- reads when idle
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jean-baptiste.maneyrol@tdk.com, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Andy,
+On Fri, Nov 20, 2026 at 02:19:03PM +0800, Zhu Jun wrote:
+> IIO_BUFFER_GET_FD_IOCTL takes the buffer index as input and replaces
+> it with a file descriptor on success. On failure, cleanup can mistake
+> the unchanged index for an open fd and close a different file. Only
+> assign the returned descriptor to buf_fd after successful acquisition.
 
-The -EBUSY here is consistent with the existing invalid-data case in
-inv_icm42600_temp_read(), which commit dfdc31e7ccf3 (=E2=80=9Ciio: imu:
-inv_icm42600: change invalid data error to -EBUSY=E2=80=9D) changed from
--EINVAL to -EBUSY for the same situation (both accel and gyro off).
-Patch 1 returns the same error for the stale-data case, so userspace
-sees one consistent response.
+Checked against iio_device_buffer_getfd(): on every error path it
+returns before copy_to_user(), so the argument keeps the index, and the
+error: label then closes it because buf_fd >= 0. With the default
+buffer index 0 that closes stdin, with -b 1 stdout. The patch fixes
+that, buffer_idx is already rejected when negative, and it applies to
+iio testing, builds without warnings and is checkpatch --strict clean.
 
-https://git.kernel.org/torvalds/c/dfdc31e7ccf3
-
-Thanks,
-Joe
-
-On Fri, Nov 20, 2026 at 1:33=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Thu, Nov 19, 2026 at 06:08:49PM -0800, Joe LeVeque wrote:
-> > The temperature sensor only measures while the accel or gyro is on.
-> > With both off, its data register keeps the last measurement, so a
-> > temperature read returns stale data. On an ICM-42688-P, a value held at
-> > about 52 C was returned while the chip was at about 62 C. The data only
-> > reads as invalid before the first measurement after power-up.
-> >
-> > The temperature is the die temperature, used for accel and gyro
-> > compensation, so return -EBUSY when both are off instead of stale data.
->
-> Hmm... EBUSY means they are doing something and kinda hints user to come =
-again.
-> Would this condition change on its own if user comes again later with the=
- same
-> request?
->
-> ...
->
-> > +     /*
-> > +      * The temperature sensor only measures while the accel or gyro i=
-s
-> > +      * on; with both off, its data register holds a stale value.
-> > +      */
-> > +     if (st->conf.gyro.mode =3D=3D INV_ICM42600_SENSOR_MODE_OFF &&
-> > +         st->conf.accel.mode =3D=3D INV_ICM42600_SENSOR_MODE_OFF) {
-> > +             ret =3D -EBUSY;
-> > +             goto exit;
-> > +     }
->
-> I would choose one from the below (they all have their pros and cons)
->
-> ESTALE
-> something like this, but error message is specific about file handle
->
-> EL3HLT
-> what is level 3? But we have the only user, and it is outside network
-> and it sounds close to this case, but why not EL2HLT? (Also the users
-> are outside network.)
->
-> ENODATA
-> also used a lot, so semantics not so clear, and data is there, but outdat=
-ed
->
-> Depending on the answer to the question at the top of my reply, the error
-> codes may be EIO, ENXIO, EPROTO, EAGAIN (but if EAGAIN fits to the flow,
-> EBUSY also fits).
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
