@@ -1,100 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.52
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795169510;
-	b=Fnx5K4mv4USU2Z0umpCPsZpgFJmetYJ+nHHN0EbypLARriTLrhYsiHpot0/aueD1DM9j
-	 05KMNj9tvRwGeT4ACHlY8REpSktVokzyYwhsN825vq12HZ+RDTWoU/c6HztzVNIwLUXLD
-	 DoKjTxTF8p90B9UGf4Zc8/LkCbpVOT5SdwPaYx5KpmmHF9+2L8OAV+qDoEfsyvdLFzr1Y
-	 OZqYXuB7LxKBEkgsnWtzCnoj7j3P1GH3aBIbAeIwBAyOEQCwt5iePUZ/dYTnCw2DIzuP2
-	 2jQB4bHATTGznHmpHwMU2uICuQCLdjsON3/g5Mewhj5nSsUA+G7LFzyljCA15X/3trw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795169510;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=ix8YIlBo26S4kxfvPK6KnFVjqAYai4bV9psmx/ur3O4=;
-	b=T92ng3vT2JIvqr9hKABj2jbvqB7dQEqrXdRbcVtb1wV8ayJCVe+wHXU91k0gNXuncfvH
-	 vYOC81TWGx9iqp+HiT0Ac9TXZIGAWIOHdnmMj5J5FizpYlCWp5r5ZB/goO3AzpbYfnS2U
-	 EpjyVlvPaogaDLfVmpeUo1bKojSIBO3D3YQvPY7KNen9KnxNvT6LenaUojaSQDMh65hZs
-	 KC1d6UpqLroag9XyWIBp7XPkt64IQubBtrLoa+x43y46X9YrTjOtBG262C1elTDZEusWQ
-	 79hzbb0StOZJw8CQFhSjwiO3hhiU7NWd1O7opIa2h3pwC2YKKHq2QZtKllOGFtiHrUA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yxPvif+t;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.52
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795169674;
+	b=fAyjBh7kyJFh8uex8oJGM6uRQI65Q8ZbyIIS6DxmZW/dhftFklVZYSSJ/oFghvgSNWHx
+	 jgOFVnrZQk4KFvWkzLdeLr6Qr/UbcA1avcXq/B8VByrDSWKnzK0g88mDwcNxFr1Bp6G2D
+	 8pLoKpzmuYSfOXLV4EYMfWRH6YcBdOIvDIj94hiD6ZRyN+fl1841iVc0MAR5gX9SdFwyV
+	 h0gOeNDIpODFGiG4tS+hpdJ5iVOEumEyZE4uhMFxEyeFzDlxTU5n409KFVdiSFfmao8x8
+	 sfgZcBPvA4s5ykqRjydecWTlCuf/G8YaZeMFG/7/QLOOvqEfMFdR66xGOR3gB6NOymg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795169674;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=2wpTZnwZrQmAs5yJo+iPoPh+BVh2rblZj2xJOy1LmjY=;
+	b=fSEMKOU8Uu69NY7J3n+PJO8khZFQSDwB+ER/g5+TdpMy80nYHtIMPMf6N79s74/vzBzA
+	 R3rKGdABLw724np2jcjpdeAVA592jEtJzu0K8A01/NWVJVwUCUsoLy44QABrGw55yV1UI
+	 6+amWpTt+jnFR3Jn9MEBJgr/AJksTcbR9VUqQCZ6VtjOWYN00y0pA7u/S5TJZbseo7eSe
+	 10KkmHcQen9TsQ263qtKiA+H1Q9VC4K5lgKVoiygJnRJlZ8uZQkf1EEVYo81+EqknTCQL
+	 JIjykyzt9LwktdMIXMH4KCNHarFF1OMPkUUE073IFNAXG+HV/WreP0GRF4wUKq00Khg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=g4x90yCK;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D5E606A333
-	for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 10:11:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72D5E606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6BB6606A320;
+	Fri, 20 Nov 2026 10:14:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6BB6606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yxPvif+t
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c4d2b741ed9so128267666b.2
-        for <linux-iio@vger.kernel.org>; Fri, 20 Nov 2026 02:11:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795169509; cv=none;
-        d=google.com; s=arc-20260327;
-        b=VN60S6xfv7ugoG3SCk4/Z3bTeOBe23ABUEstvaHBcrELdR4iDNTFGByzEk1y8cjdgc
-         /3lsBLqN1hfRiMMfVKxnwBnmLsMJeHah4JScVkPC+DIu1tCQeoewSvJBR6/I16z1gL2/
-         bwzomKhS65TzOKt4dNwWt6Q1RdnNg7S2hVJr1cyb10hLDpTdmWq3al59JNYceNbOkCmW
-         MSkMA0Mi/VW/pmLnnYT0HwQqtnfEWeV2g4xcPYIz4IxVpeCIrrwsYcPYRE7HFvdZsHTv
-         sA3V0erIJPV6aS7NotiEdXrzlLF8zqZJa6HoQJbtXLrln9HgJ+92iFRSsxhkmzfz46Tq
-         N0aw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=ix8YIlBo26S4kxfvPK6KnFVjqAYai4bV9psmx/ur3O4=;
-        fh=1GZ3gJEUrq5aHqFz6peyVBWyVutYamvcuUdcpIoqOIw=;
-        b=Wbnf34eNUHX8p8GWJRyWDhdzt4PrPd+l76CW3Sr4g3tFuauRXxWML/XiJy1TscFcTK
-         sco8xwlkiOt02SW/lisRGnDQWPbhOBSct5GjPCv8XNW2GQVdC7V/5xQwkwkvism8vdSW
-         4Av5QuzoX+T/YOdI/5CUB/NxK1tLeitdIhFKwIoYf+sJaSmMQA5/0J1fV5OWHlZqfxpj
-         EnfgHKvpt30VeP17Y0q+XE5hJkuek/YJe5vk9bFSHFMaKNawS7T0XzadSSg6RPfBwKBM
-         2SvIfq5aLLUWgb0h1rwiw3TxrPvPZeyLvZyuis0fRCe+oJZfD0Vj0hbhYlVMhrwZQJJm
-         hcPw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795169509; x=1795774309; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ix8YIlBo26S4kxfvPK6KnFVjqAYai4bV9psmx/ur3O4=;
-        b=yxPvif+tZPAvRMgcMplx3IQmTtPu8rr6zukYavto1fOrs44pE2IQl6asTUIPhm/iUQ
-         piV0Cb2ASbmBsKDRXzBRa2V84q2jJWU7pHeqX47oGqDSpNZ0bIN9wRBpfHiBNufVbPh0
-         2AWbv1OYPvxBLlqFk/HWSP36uqg1eGQ41qVEMiKIV04hhp5I/ipYf210YSOJ1qtyEI0/
-         E1K9xyn63fkRqAH/rIOm3mArDhIRH6tDUVG8SEnmTJnrr/RJzwws85SHGXTe9vLq01rR
-         cDKMp5DMnF1P9+/lH/UZ24c5v147dSiUMPkLBlSUUUSjrd9BfKU4mQkDiH3LgU99547q
-         11+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795169509; x=1795774309;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ix8YIlBo26S4kxfvPK6KnFVjqAYai4bV9psmx/ur3O4=;
-        b=b1VuPWkkiT9StcwMWaF2/vARTsNzxf50DQ18l8yNJPhmMP+80WEhqPjInabDGaZYjV
-         YTOC6c5/Mbri1wEd7WIwSqyzyIdXv892VPvr+HXL1wCdbmtLZiSyS3Tg3dwV1U0D6iOt
-         sYrbXP5fq6QlzKJsPENGoM4Vm2CrrlnmHy2j8gzd1OK0Gzm8V2A6kyQr1RBsL5GnSs97
-         5PT1DmoRnHUQ8hrBAaQyQgiiX2FPdZ8R2sjv8uOqVbKljCpKoO61Hxf75X9AuefzTerl
-         nk6f1Kxy10dE9wY4TsyVtGC6oSq7hq3zPVCbyudpD5xlgxWDqXmLvizNX/up6TMsDGEO
-         HY4Q==
-X-Forwarded-Encrypted: i=1; AL+hErEYLXTJJ2+E1zzzNQxFM/QKbJCkBquQzK9u34gQEk5VOo/utIeUzC7sULgiyC1VaccR+mAGkk5V2ek=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9FlmJb4ZhZCnDcmNNRrj1K2CSD+5og/wcjVTLIzeKn3YRAegOK
-	pfYdJfajHdntyDTDQMbJ4OqxWEqMnHm0zMbKAg6zkw7qCvVX+MKP87oChkZQjzxkwG6vI5hP2bf
-	cKsZohIX8n9ju/IqC6ihyYrQTqGbCk3KdtkdyiTk=
-X-Gm-Gg: AYBFou0GosSgIyewM9nuwWBtE0+yzNBjZYplrOV2cCSm2oN2jMs5naaC0Z7LwihUTip
-	1xi3KZuXB4Wwqv13uaVQIvIUrHqhSiqk2Dnnq4xu4xR9EmFPfMl6mupB9xyAKHhZJe17vbtaz0e
-	j9gYQ5szvoa+PUlobi0lZxBArZs6IlQ+65ACMmk/zxmIbrNh4p/lemd7BIBfagM52SxJ4y97Zyf
-	f83pYvR2MBLyf0k4033T+tEOnHn326KFP0FRhsEGsVhRaSp3aBTdQWzLb4lfpwhO/EFkxMWdlpa
-	hspRNyyQ/FJKse/HJ5Db/H7ZvmHfaupsyxPiY867M8YoZqhbnNfMXWXcvYGR6I/+zq81Ur4ngf/
-	rTmIuCeL+BMGQbGcpcIlagnKRw1OLSkQbZSSjbpqsBHGgcV5oCvxa
-X-Received: by 2002:a17:907:6eab:b0:c29:f5d8:9c78 with SMTP id
- a640c23a62f3a-c513aab17ebmr257797166b.39.1795169508635; Fri, 20 Nov 2026
- 02:11:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=g4x90yCK
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795169673; x=1826705673;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BtPSTbj/PV9cC6IAIY1CIdaxj+4MfBZB2XFfEOoQC+M=;
+  b=g4x90yCKe3ML0PQBUUWW2Y3N4Qr6qQmJHAR1PVdYeM97Ul3B14jgJQ2S
+   Zh8g/iBRfeDL2bbliFwZtyIIrg5akhsRLjnvFQ7o7USTvU5dqgqSQV8ab
+   dcpQevIsF9f/3wP4eFiX5Kmd5mma9sL5X58BdDFLXD/XougZMRVotMlOJ
+   AfU+du9Y1Xv7U1gUCzyF/6j4iM+sgqY6tcoS77vmi3A1DXM+6E4eHaiUb
+   uqHKC0VyJfK29g0bzfp66MC2x5QvzNYu2+ZaBP2tqA8CcFueI5TR5E8lF
+   Oy+cq/j/rMq8BuFosojjGUtG5FLmcnJyP5NgfGylWvJiCsn+S6ZmOvsok
+   w==;
+X-CSE-ConnectionGUID: oNwb4+HUT7WXkZ+25M5uAg==
+X-CSE-MsgGUID: CsaNoJO0RtWuMHNI269KpA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11971"; a="3947417"
+X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
+   d="scan'208";a="3947417"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 02:14:32 -0800
+X-CSE-ConnectionGUID: yxyM0xK0TTC2TWFrLPHQfA==
+X-CSE-MsgGUID: 38UGPLKAQMqh8ylx32iCVQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,222,1787036400"; 
+   d="scan'208";a="10553858"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.218])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2026 02:14:27 -0800
+Date: Fri, 20 Nov 2026 12:14:24 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
+	Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>,
+	Manaf Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>,
+	Priyansh Jain <priyansh.jain@oss.qualcomm.com>
+Subject: Re: [PATCH v2 3/7] iio: adc: qcom-spmi-adc5-gen3: Add support for
+ QCOM PMIC5 Gen4 ADC
+Message-ID: <awAdgHggEZtBnyYK@ashevche-desk.local>
+References: <20261120-pmic5_gen4_adc-v2-0-94d0e1fd6847@oss.qualcomm.com>
+ <20261120-pmic5_gen4_adc-v2-3-94d0e1fd6847@oss.qualcomm.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,56 +96,111 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261120-b4-abp060mg-fixes-v1-0-2baf026cde47@gmail.com>
- <20261120-b4-abp060mg-fixes-v1-3-2baf026cde47@gmail.com> <awAY5umCN-RiP2Iy@ashevche-desk.local>
-In-Reply-To: <awAY5umCN-RiP2Iy@ashevche-desk.local>
-From: Alejandro Lucero <aleszlucero@gmail.com>
-Date: Fri, 20 Nov 2026 04:11:35 -0600
-X-Gm-Features: AclHuK_hK9Pb3fKXJf98nIHgs2WSxmybSSy0H6uomMHlQet0kFLOAGc-ZNoZhl4
-Message-ID: <CAHDi9tp-3g_HQT0jSqVxA5KBUuSe2tpJBhmdrrPW+Pz9iD8WSg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: pressure: abp060mg: Use msleep() instead of msleep_interruptible()
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Marcin Malagowski <mrc@bourne.st>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261120-pmic5_gen4_adc-v2-3-94d0e1fd6847@oss.qualcomm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Andy,
+On Fri, Nov 20, 2026 at 02:49:43PM +0530, Jishnu Prakash wrote:
+> PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made
+> for improved performance, mostly at the hardware level.
+> 
+> One significant software change is that ratiometric conversion resolution
+> has been increased from 14 bits to 16 bits, so the maximum value of
+> these measurements needs to be updated for Gen4. Add a new scaling
+> function for thermistor channels which use this type of conversion.
+> 
+> It is possible that the master PMIC has ADC of one generation and it needs
+> to communicate with another PMIC with ADC of a different generation. For
+> example, on SM8750, PMK8550 is the master PMIC with Gen3 ADC and it
+> communicates with PMIH0108, which has Gen4 ADC. Add a new DT property
+> "qcom,adc5-gen4" to distinguish Gen4 channels under a Gen3 master, to
+> ensure that their conversions are handled correctly.
+> 
+> In the latest PMIC arbiter version (v8), there can be up to 4 buses
+> under the PMIC arbiter and 32 PMICs under each bus. In order to
+> support communication between ADC on the master PMIC and ADCs on any
+> of the other PMICs, a field of width 2 bits is added for bus index
+> and the bits for SID are extended from 4 to 5 bits, in the SID
+> register. Add support for this.
 
-I checked the Honeywell ABP Series datasheet (Document 32305128,
-Issue 2) and the sensor response time is ~0.46-1.5 ms rather than
-40 ms, so the 40 ms value in the driver is just a conservative margin
-from the original author. Since I do not have the hardware to verify
-timing/signal behavior properly, I will drop patch 3/3 in v2 and keep
-only the other two fixes (updating patch 1/2 with the datasheet
-reference).
+...
 
-Thanks for the review!
+> -	/* Write SID */
+> -	buf[0] = FIELD_PREP(ADC5_GEN3_SID_MASK, prop->sid);
+> +	/* Write SID and bus_id*/
+
+Missed space.
+
+> +	buf[0] = FIELD_PREP(ADC5_GEN4_BUS_INDEX_MASK, prop->bus_index) |
+> +		 FIELD_PREP(ADC5_GEN4_SID_MASK, prop->sid);
+
+...
+
+> -static const struct adc5_data adc5_gen3_data_pmic = {
+> -	.full_scale_code_volt = 0x70e4,
+> -	.adc_chans = adc5_gen3_chans_pmic,
+> -	.info = &adc5_gen3_info,
+> -	.decimation = (unsigned int [ADC5_DECIMATION_SAMPLES_MAX])
+> -			   { 85, 340, 1360 },
+> -	.hw_settle_1 = (unsigned int [VADC_HW_SETTLE_SAMPLES_MAX])
+> -			   { 15, 100, 200, 300,
+> -			     400, 500, 600, 700,
+> -			     1000, 2000, 4000, 8000,
+> -			     16000, 32000, 64000, 128000 },
+> -};
+
+Seems like this is existing piece and you moved it up. Please, split that part
+to a separate prerequisite patch.
+
+...
+
+> +static int qcom_adc5_gen4_scale_hw_calib_therm(
+> +				const struct u32_fract *prescale,
+> +				const struct adc5_data *data,
+> +				u16 adc_code, int *result_mdec)
+
+Even if the rest of the file uses this ugly indentation, correct it for a new code.
+Not a problem if lines will be a bit longer.
+
+> +{
+> +	s64 resistance = adc_code;
+> +	int ret, result;
+> +
+> +	if (adc_code >= RATIO_MAX_ADC5_GEN4)
+> +		return -EINVAL;
+> +
+> +	/* (ADC code * R_PULLUP (100Kohm)) / (full_scale_code - ADC code)*/
+
+Again, missing space.
+
+> +	resistance *= R_PU_100K;
+> +	resistance = div64_s64(resistance, RATIO_MAX_ADC5_GEN4 - adc_code);
+
+I would put it like this
+
+	resistance = div64_s64(adc_code * R_PU_100K, RATIO_MAX_ADC5_GEN4 - adc_code);
+
+OR this
+
+	resistance =
+		div64_s64(adc_code * R_PU_100K, RATIO_MAX_ADC5_GEN4 - adc_code);
+
+(but it still uses two lines, so I find the previous one slightly better).
+
+> +	ret = qcom_vadc_map_voltage_temp(adcmap7_100k, ARRAY_SIZE(adcmap7_100k),
+> +					 resistance, &result);
+> +	if (ret)
+> +		return ret;
+> +
+> +	*result_mdec = result;
+> +
+> +	return 0;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-El vie, 20 nov 2026 a la(s) 3:54=E2=80=AFa.m., Andy Shevchenko
-(andriy.shevchenko@intel.com) escribi=C3=B3:
->
-> On Fri, Nov 20, 2026 at 01:11:39AM -0600, Oscar Alejandro S=C3=A1nchez Lu=
-cero wrote:
-> > The return value of msleep_interruptible() is ignored. If a signal
-> > arrives while waiting for the sensor conversion, the thread wakes up
-> > early and reads the sensor before the 40 ms response time has elapsed,
-> > resulting in stale data or an -EIO error.
-> >
-> > Use msleep() to ensure the full conversion delay is respected.
->
-> It should clarify better why uninterruptible call is better.
-> Do you have any datasheet reference that states that this time has to
-> be at least 40 ms?
->
-> Also we have tons of the IIO drivers doing the same. Have you studied
-> the history to understand when it started and what the motivation was?
-> Perhaps it may shed a light on this.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
