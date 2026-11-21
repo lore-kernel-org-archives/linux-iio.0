@@ -1,80 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795273109;
-	b=pTd92bzfWys4wJC0O/9SHuXa/XHRwEL0um0SEvfzg1b3hdhyH6lqHe/tRiVBeXZZDCVv
-	 A4ZP/IVkefcxUbMNPy632fSsWTxDMENzcSSyPxgpltjGSYUnLqLimIm9pmdWI5ktobd1n
-	 3RfsSbTfLRTklKBx9MXB9BYbLDNaFXX9VrguHEc3Yw32QFhomSegEzxchHvh4jnV845Ld
-	 /QdmIbLq1bHEOlY2gM588IR7fuNRvbJBcC75ysSoH6+jK8Fw5YuMM06EmWv+GWzcMwtQ8
-	 6ZKmB/X6Lg2vSU/rVm+K1KqnjbJr5uzz60LPqScIybNvOFmMk4dJ4OqH0KRe/0+To4g==
+	t=1795285535;
+	b=jIYw0NRCTCjx1EiotC0XeFcY6vsvPwmUt3ogxyuDokBEgmH5Mn1L3Ldebbz7vW+bhhwp
+	 to6VwhtxWodGxHRAuoyZ+48ZwNT8ti8lL9IVyH1y96Y1EfmrnZtR4wGKMr8XXrv1Svfgp
+	 NDKzaE8Ba0qKDFcaV5GVcisnkGKL/5Q5ruzkew2hv6yZcI+LWEGo05IvbhEf5VIJEMD2z
+	 4ltYL7FgfHw9q+0Fq0mWDD4U3THzB/GOx2L+naCuw6y8xKXt60tl45FjQJZBZOg5yLWff
+	 w58OIku9H8kP9l6VUl1R/bBpKbbuwHh3fK/mdR1bBuKHpcWMhbOHk6D76rqX/Taxb4w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795273109;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-	 Organization;
-	bh=i3b3cLtt8G5/INJz756VDaB4GfRsAFuhpYGDkJwdzxI=;
-	b=VkDlon/+mBDdzICmMUmIzQajMol0R1d1G3SykpqubUvr/mA3fm0rtyEI5N7Sl1CA3XwR
-	 PCXvxT94JEjgASquOkfqnebBPr9hZ6KwHL6NPP4F49LFGRHNYFa+tr+rmRVktCquP/kms
-	 Lo+Zr9twgpMvn3ssfS9oeMoYhM+6u+K029Qb3uRn1LRZyqvppydOLu1FkgjGnd1LClokv
-	 aDSPujTv3+Uf8G9rFt4dF8a8+A1MNS0xyS/01K25J7ws0L/MQ0WB8iN5/ieNZez/Km5aF
-	 kDHQiqy5q3WeDS+Pqi06hsoMXy4SvqUvjUxc71fwIFYGWsa5MaNUtbWHKejkqrtRdNw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795285535;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=XIR6Wx/jogMouYNfoTVVWotCZnwikfuag8XOShgmdeo=;
+	b=B2kU6TN/uvJJOWZKn4Qi3n9N5O9TdehHnIR66lNZopmp8cUPVeVeBMmlXPRMrJdyI3qq
+	 xuQkwesQ5GRP1vKaxLAR8qfrslMVBe1qYKAvDB/S06HOJ0YSah71ZlZbtnckp2GNjZbEM
+	 D1PITBBmC/lT2yPdAqYPqo2KCGcpZKwPWAu9yLEWseKdmBzG9qfQ0EA8lg1ZQdnWwNbaV
+	 EeAjvt7MKKct4ozwaINoPV2q/3jQGr3XnTEhFVJpBzX4Q1nC8UlpZEiF58qCtokKAz8Pb
+	 KKk0+ynKAMsilg2DuTaR0JSFcrnbqojL1aXA+8AUiIoKPQEFvX2Y+5xI+SmOQhEJa3Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=gsRsfpvD;
-	arc=none smtp.remote-ip=198.175.65.20
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ivJVa0li;
+	arc=none smtp.remote-ip=209.85.208.174
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8691A606A320;
-	Sat, 21 Nov 2026 14:58:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8691A606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3770606A330
+	for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 18:25:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D3770606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=gsRsfpvD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795273109; x=1826809109;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=+2TVOJ7oWyeYgmNbI/7CjJduZ8iKEhMSXWBN6IhabsA=;
-  b=gsRsfpvD944MrXJqZmhmuH4U6fR66u86B5T08p+N42Fp8DUpIKuQCyt4
-   kgA66q1inP5fUL8EfvSml0BJets6ejwsPBJCrMEJECB+agfA6lISCsfGT
-   8vy0gZZ/cyIUrAzSRp6LtytXoYPTSJMy+OVmRsU9kak6hvKnQ0AjcCaW0
-   7VXZPdhQh/uphOv8rEjSQRlCC27yi0370qHO+sNuBG4kFHQeM0f7Z1WBw
-   SCX4KBrto59z+sL+B5qaUKSG9656G0zePKOgn8DpNJJiuTMv1HMWGeB9x
-   UCFjljjuuKzLoFADo271ISXdNKEm06NgtZjhvbrX2JmBMqpZ8TWWvp1Bm
-   A==;
-X-CSE-ConnectionGUID: 7xIHk65nT3md4TJN+No91w==
-X-CSE-MsgGUID: fhRY29ixSUeguhgKGUvALw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11973"; a="4176173"
-X-IronPort-AV: E=Sophos;i="6.27,225,1787036400"; 
-   d="scan'208";a="4176173"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2026 06:58:28 -0800
-X-CSE-ConnectionGUID: 6GiRcTiFThySDZbJz8JxEQ==
-X-CSE-MsgGUID: WFRzvSSJQ8WHjwrfWzIsNQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,225,1787036400"; 
-   d="scan'208";a="11338686"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.129])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2026 06:58:25 -0800
-Date: Sat, 21 Nov 2026 16:58:23 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Joe LeVeque <joe.l@reflexrobotics.com>
-Cc: jean-baptiste.maneyrol@tdk.com, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: imu: inv_icm42600: return -EBUSY for
- temperature reads when idle
-Message-ID: <awGxj7xP6oTlkUt0@ashevche-desk.local>
-References: <20261120020850.24318-1-joe.l@reflexrobotics.com>
- <20261120020850.24318-2-joe.l@reflexrobotics.com>
- <awAT-ofy0p_uhvGN@ashevche-desk.local>
- <CAJLMkXafYtUx7gXE8g-sJ0keGW8eSrVGPc2ao5EzjkxZ-nN2cA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ivJVa0li
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-3adfc004920so18065631fa.3
+        for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 10:25:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795285533; x=1795890333; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=XIR6Wx/jogMouYNfoTVVWotCZnwikfuag8XOShgmdeo=;
+        b=ivJVa0liH8Wp0nV1SixjK4toqh6XCBigxUkZb9iYN+7ehEtuY/JMNjSVlQp0aVLKZr
+         5B3FJtA3rBiV+l/dp/9i92pOQ0IOgapx+KT+QFeYsNtrTZKU9/6zvEw1fBg1RAy1pHP4
+         3ytxvcj/yHihfsdB3pEO/wo3oTWCqmCVEKA5txENfPUI272ClFlQz5X5iWxLMssqa7hX
+         55y0UC5H3XyDVix5peRGc979ylryOxNAKBtrXH/IDVq7dy4gWssaVeN7DpgKgEvLMa18
+         iMDXWCF4BApFi2UDC0HRKvtt7l46OtnYGGT/Y2U9NU0/SBhnd7eXFPVQk8izq0BUGtPk
+         Aq1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795285533; x=1795890333;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=XIR6Wx/jogMouYNfoTVVWotCZnwikfuag8XOShgmdeo=;
+        b=jxDv5HmIdu40A1HvcMiNIiujA8bSo8oIElMa6QsVN38YhnnvYAtA03Xtm0kbK6s/SX
+         PPNwDJ1C+nMm0aVV1IgWOcRyL4a/YtdS3N/x71JZ6iouvgRgdsqZioCEGwW8TEFVCdZI
+         3L35dg4pERszRZy9qUZT39DsQt1JN9g9vqHlmUa/H1WtmPF9gT7RBdAxzFqN1ATYJHUW
+         jJAISP4k4fk7Xwki+1IxH5XsTa7IcVT3llBVmOq/Ynpo1JQx/wZDVAKl9c+ou6XY6DyJ
+         VbTDGPnR+hfAMPXiMZ0P8LApgSqsleBfoZucoXqJ7bXPTDnrb0QknG4VR/bBrzvEIcJu
+         J5dw==
+X-Forwarded-Encrypted: i=1; AL+hErHaid4RhPXXUx0aGe5pbTnWmgD19lIwtEpoMT+88xToCQSajvz0ETMTpeLtS9O64wWnJMdnpd2LlOY=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+BVMvijpeiwB5QGTzSOBmHEokh3R1DLcpdnYfiVt5kPe7bcW9x
+	0GD39h8+lcYCBkOcDTIiBi9gjp+M/824/iZm26clzy6kAMvgc8yzJtCWV1Qi7UJn
+X-Gm-Gg: AZFdTZf+BtpKRH3+yKz4L1G+VNQWZ8iCfqbJNZH5wDO8WF69TyHHibDZJX734HyXr8U
+	ClpYH/PpsXnazsn+6lcD3m7vcxSwbN3jTIKQy8rt69cReLJeTkjaXukNXzjdmrwSrfeOq2yICh8
+	kuZnIxJ29Wz3CtTJa66vDA6N/4ZqkrvffVtNIezHYJqwNE3LMJJ4AlztFusCClULBKny5SKcB2F
+	3dZxI9JAbaXWYyGXeHMuijyB82Vh+Oyf4tYEtzOvq1xDGD5iJ5mD1nexj66cPfvsXB80iCroRbg
+	OHb2KePinhkSSvKqUiRGR78XIsZkBtgPA/WEjyS88IGjEll0pLpJjzMp76gFNyY+fdve8PcouTK
+	W5Qwk8Tt/Wsz5CVXxBaN4iiPrfYYF444loHTEhUrxo0bVphvL2etWiXFJRdyu/ltulU73VHVj1S
+	Koso7nWWUjVILTpu2JKGO4iUnn75ke5MDPRHcRVaTesqdsclKf8Fqonwdia5SNp6WlxzESXCL1C
+	pbMgggbV6IRebRAPXQifXJ8kDazcd4Qy6FnSOVnsw39ac5awLj+uZSjGOJ2qaQjpAuFYKq0Rdvq
+	2ZIV4UupQoEfPMYSWuATiSlA6gHB2f3NHPkg+UtveburNTMMkfJP9o5y1hJ81fdSFaJS92KOFpm
+	BSI5DIP1xThIOnXvj/jFMFAiRboSwIhZDaLTXLw==
+X-Received: by 2002:a05:651c:19a9:b0:3ae:6273:a010 with SMTP id 38308e7fff4ca-3ae7f9a6933mr23888191fa.9.1795285532768;
+        Sat, 21 Nov 2026 10:25:32 -0800 (PST)
+Received: from yantra.. (nekmmqulvmgxaw4nwuk-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:a86f:851c:d740:ea0c])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae80538a4esm17472771fa.29.2026.11.21.10.25.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Nov 2026 10:25:32 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH v2] iio: pressure: dps310: read the first temperature in probe
+Date: Sat, 21 Nov 2026 20:25:27 +0200
+Message-ID: <20261121182527.34489-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,77 +102,68 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJLMkXafYtUx7gXE8g-sJ0keGW8eSrVGPc2ao5EzjkxZ-nN2cA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Nov 20, 2026 at 10:32:52AM -0800, Joe LeVeque wrote:
-> Hi Andy,
-> 
-> The -EBUSY here is consistent with the existing invalid-data case in
-> inv_icm42600_temp_read(), which commit dfdc31e7ccf3 (“iio: imu:
-> inv_icm42600: change invalid data error to -EBUSY”) changed from
-> -EINVAL to -EBUSY for the same situation (both accel and gyro off).
-> Patch 1 returns the same error for the stale-data case, so userspace
-> sees one consistent response.
-> 
-> https://git.kernel.org/torvalds/c/dfdc31e7ccf3
+The first temperature read is in dps310_fifo_interval() instead of
+probe. That function is called with data->lock held and takes it
+again, so enabling the buffer without a trigger deadlocks.
 
-I see, but even if it's used otherwise, perhaps we need to consider to replace
-in both places (or rather replace existing one first).
+Move the read to probe.
 
-What about using ESTALE?
+Fixes: 903941a9b06a ("iio: pressure: dps310: don't wait for new temperature in trigger handler")
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+---
+v2: return inside the guard scope (Andy)
+v1: https://lore.kernel.org/linux-iio/20261119190827.36947-1-zoone.rupert@gmail.com/
 
-> On Fri, Nov 20, 2026 at 1:33 AM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Thu, Nov 19, 2026 at 06:08:49PM -0800, Joe LeVeque wrote:
-> > > The temperature sensor only measures while the accel or gyro is on.
-> > > With both off, its data register keeps the last measurement, so a
-> > > temperature read returns stale data. On an ICM-42688-P, a value held at
-> > > about 52 C was returned while the chip was at about 62 C. The data only
-> > > reads as invalid before the first measurement after power-up.
-> > >
-> > > The temperature is the die temperature, used for accel and gyro
-> > > compensation, so return -EBUSY when both are off instead of stale data.
-> >
-> > Hmm... EBUSY means they are doing something and kinda hints user to come again.
-> > Would this condition change on its own if user comes again later with the same
-> > request?
+Based on iio togreg, fine to squash into 903941a9b06a instead.
 
-...
+Tested on a DPS310 on a BeagleBone Black: enabling the buffer without
+a trigger works.
 
-> > > +     /*
-> > > +      * The temperature sensor only measures while the accel or gyro is
-> > > +      * on; with both off, its data register holds a stale value.
-> > > +      */
-> > > +     if (st->conf.gyro.mode == INV_ICM42600_SENSOR_MODE_OFF &&
-> > > +         st->conf.accel.mode == INV_ICM42600_SENSOR_MODE_OFF) {
-> > > +             ret = -EBUSY;
-> > > +             goto exit;
-> > > +     }
-> >
-> > I would choose one from the below (they all have their pros and cons)
-> >
-> > ESTALE
-> > something like this, but error message is specific about file handle
-> >
-> > EL3HLT
-> > what is level 3? But we have the only user, and it is outside network
-> > and it sounds close to this case, but why not EL2HLT? (Also the users
-> > are outside network.)
-> >
-> > ENODATA
-> > also used a lot, so semantics not so clear, and data is there, but outdated
-> >
-> > Depending on the answer to the question at the top of my reply, the error
-> > codes may be EIO, ENXIO, EPROTO, EAGAIN (but if EAGAIN fits to the flow,
-> > EBUSY also fits).
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
 
+ drivers/iio/pressure/dps310.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 9b52cbc2372a..fc727e5fcd59 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -1058,16 +1058,9 @@ static unsigned int dps310_fifo_interval(struct dps310_data *data,
+ {
+ 	unsigned int drain_interval_ms, fill_ms, want_ms;
+ 	int scan_rate;
+-	int rc;
+ 
+ 	fill_ms = MSEC_PER_SEC * DPS310_FIFO_DEPTH / (prs_rate + tmp_rate);
+ 
+-	/* Pressure compensation needs a temperature from the start */
+-	scoped_guard(mutex, &data->lock)
+-		rc = dps310_read_temp_raw_locked(data);
+-	if (rc)
+-		return rc;
+-
+ 	/*
+ 	 * There is no hardware watermark, so take it as the number of scans
+ 	 * the user will wait for and drain at that rate. Scans come from
+@@ -1478,6 +1471,13 @@ static int dps310_probe(struct i2c_client *client)
+ 	if (rc)
+ 		return rc;
+ 
++	/* Pressure compensation needs a temperature from the start */
++	scoped_guard(mutex, &data->lock) {
++		rc = dps310_read_temp_raw_locked(data);
++		if (rc)
++			return rc;
++	}
++
+ 	/*
+ 	 * The device measures continuously in background mode, so a triggered
+ 	 * capture is just a read of the latest results. The setup ops run the
+
+base-commit: 903941a9b06ae445c70646ab061b604c2dea17d3
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
