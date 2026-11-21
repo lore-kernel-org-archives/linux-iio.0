@@ -1,61 +1,65 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795300328;
-	b=W7rqCZsv3cOxDkHFaUgF4LtIzHAOlufZ4j22RNA49m8bHOPKlfJKybUmjue5KTf1ZzRW
-	 TsHTcU1qdIsT8rmVYNUPsrz0XvguhLzoiloikuB0/VVRmuClK/JzkFMLXxI+wnO11QUZb
-	 LbtNyW9nucMWTbikhH5HDWlvWINrwac7Bfgt/4oxPEPvUtd4qYUS8eTuh2PRk7f4H9aF9
-	 uaPCy2K+mPN4CGFKxTTFVGrzRxs/XLnb1crZ/3vRiNM7vvzKFMITBBPVxUxqhXHGCCHoQ
-	 hTrc+nhdsnX0dUIVI3kfUUsPoGEhZ3ckKudNMMO/KkwVqlVxVm68YCRurWv8W+dh8ug==
+	t=1795301160;
+	b=vkr9yvvV/+silsSoWNY7u/srd4uhouSGPLs+jBwrZt0d7mol+NRZ3Yq0s2p2OxLL17th
+	 4Eqo1vJgsTezWDCjq09sGCt206/e/SMbBv29VjceFxWmGpClAMCmtWCdbg+WBCnX7M8Rb
+	 9OnCfgxcUbXBlMn62HsQSxkrYXqsbEL05PYBDUkahIaas8HawbB1r2hpy6fWY913mV+/Y
+	 AWKyjBYbZd+uifGUu5K9bcJBIZRqJlo3q+zIWKf+xqUjj2czBD+PXpzloeVs9IC0S1IO1
+	 CEspxzly9nnWHZxASlq+3XhjDFzpsS+GQ4xrEkkHzdjdKJHq/qzLxkySzzZuXsBbtig==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795300328;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795301160;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=m3bHg0Khc+Y2PaG9p3f/n+UpGEPji0VInlhNOxhqNcE=;
-	b=wOky+URlBVov0/8XwPn2dwMcNniuIqojbnfmaXbcO63KVaUgqLpBW3weSpUk28zcKouf
-	 CDGeMINAgSS1lv99O7EQm/nshVk2L+bztMrZTrgHKOSAVRScM3Sd8mHicUqeEEXZvIWxE
-	 n+BvhI3P8F5s1pH9JKpgwYu0rNXtJHmD7y6Gih06pwhC0nqB9dHqdwNQOsVEB61AdyadZ
-	 HHCQaocixwXKj/J638zy7y7uXtQy75DjfFzkHdoomkO/HZFAAd3iISB1OFc/MuW3LH6/w
-	 32ynsq1LzcJLNhkGRTLZL7c4Hv0BDDuY+uWgDAmaLi01YQZPHgPO5qAqHdwkMdAnHgg==
+	bh=Iet5KsxqR7lo4w20sxi2lRvcSW5Zv0fZrgqupc31uDI=;
+	b=cSUjefwq8hr6/h3RYmK1V7Tocu9Qv3z17Yy43sx/5+UUzR3dIMfLs97CLmDJEX3InZOF
+	 p5s77vVmMIYMnWXvP1Oj9ZE5rBbj+ByDiiZ4kzNwgMMkzJIyYoSbFjblqK9IjkqHG5yp5
+	 DSOgdRasxKDrPVaqlYDAbtbSuPimM7vc1KTMrL6KIrg4dyFg6eioLln1NuB5zpxZVXCaB
+	 j/C/S7rA+jjTuK05lIbHq/5EygyD70KK9SVHeq0DQtdiCsO1ZiIK1OWCc5T12kSZ0d+uj
+	 gRNU8M0U2YAQ3v3mqSD438AqlSsElHM3t9nfBqitMTL8Y3QnfjJ60+x4LUAxUQr16Qg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mtkLaZSC;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nFkd+fcH;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B8FC606A320;
-	Sat, 21 Nov 2026 22:32:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93963606A320;
+	Sat, 21 Nov 2026 22:46:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mtkLaZSC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE6741F000C0;
-	Sat, 21 Nov 2026 22:32:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nFkd+fcH
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3684F1F000C0;
+	Sat, 21 Nov 2026 22:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795300328;
-	bh=m3bHg0Khc+Y2PaG9p3f/n+UpGEPji0VInlhNOxhqNcE=;
+	s=k20260515; t=1795301160;
+	bh=Iet5KsxqR7lo4w20sxi2lRvcSW5Zv0fZrgqupc31uDI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=mtkLaZSC652+YO1ko95DhUWwhbnqVryzM7/pZmHBkYz+hX6mze30R+9EW3HjVYa6J
-	 d3As2+j+e3RCojwZ/UupasIwbxq5ZJ1RjC0IuxhQkZRni2burFtE6+gL1xER/GhEU0
-	 Qus/q6uz2WH1XKpIgIP2rbDzD9ihuPHUgHwkBhJ5cGmX5fjRbvhwJrt6tPAOKuZ22z
-	 Qeljte5qY4ja6DJV1PMvIqico/hYlfG5QK/cJCpi0YnjWDCBYc/wTdFc+5OAHZ5DwF
-	 FarBK1EecMmnIP4yG622eLNQY7BPTiwdF1owpzguTK30xvwcqvG9cXhlIjttH+ik2Q
-	 gOjsd6V1emepA==
-Date: Sat, 21 Nov 2026 22:32:02 +0000
+	b=nFkd+fcHoiPs/vTj9LZZk/HKIlT89NRbTDF2vB43ynoerQHzfelsXEC6TTN0PjVP9
+	 NDbexOsEK7IBXI3MnXRTVpgWPcd6popjEVzetrLl+7lOETlBQvbslDAdjoR0NsN+b2
+	 CeQ5Bu8jr/ua2g/cF/qEJXB/lf7t8HgnHaSkRoarRgV/g+1Pdgurd8zIrGV8FV1c0m
+	 4qvw9nYdQOVAHplDYPUcPhNmwcKrVIB5y6IMFEbCAw744aBH2H9EOJxXCH3foq8RPp
+	 ssDjm9gObumxd8LGkJVeZlgjrX21KEHXADNN1dU4S/Md8v+qIm7keqqzq06Z7wZwbz
+	 IqqOcnQfHwu3w==
+Date: Sat, 21 Nov 2026 22:45:55 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Lee Jones <lee@kernel.org>, Lucas Stankus <lucas.p.stankus@gmail.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Lothar Rubusch <l.rubusch@gmail.com>,
- linux@analog.com, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH 02/10] iio: accel: adxl313: Prevent FIFO buffer overflow
- in adxl313_fifo_transfer()
-Message-ID: <20261121223202.6b69d61e@jic23-hlaptop>
-In-Reply-To: <av8wSW6-ukmvRDnp@ashevche-desk.local>
+To: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Lee Jones
+ <lee@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, <linux-iio@vger.kernel.org>,
+ <linux-stm32@st-md-mailman.stormreply.com>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+ <stable@vger.kernel.org>
+Subject: Re: [PATCH 04/10] iio: adc: stm32-adc: Validate channel index
+ before writing chan_name
+Message-ID: <20261121224555.55cc8bba@jic23-hlaptop>
+In-Reply-To: <11aa41f5-da69-40b0-9b8b-6c5abfbec5f9@foss.st.com>
 References: <20261119153151.1397003-1-lee@kernel.org>
-	<20261119153151.1397003-3-lee@kernel.org>
-	<av8wSW6-ukmvRDnp@ashevche-desk.local>
+	<20261119153151.1397003-5-lee@kernel.org>
+	<av8wzmfrU7zLzGmU@ashevche-desk.local>
+	<11aa41f5-da69-40b0-9b8b-6c5abfbec5f9@foss.st.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,39 +73,57 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Nov 2026 19:22:17 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 20 Nov 2026 18:22:26 +0100
+Fabrice Gasnier <fabrice.gasnier@foss.st.com> wrote:
 
-> On Thu, Nov 19, 2026 at 03:30:35PM +0000, Lee Jones wrote:
-> > The ADXL313 32-entry FIFO plus one sample held in the output filter can
-> > yield up to 33 3-axis samples (ADXL313_FIFO_SIZE + 1).  Because of
-> > missing parentheses in ADXL313_NUM_AXIS * ADXL313_FIFO_SIZE + 1,
-> > fifo_buf is sized at 97 16-bit elements instead of 99, overflowing the
-> > buffer by four bytes whenever all 33 entries are read.
+> On 11/19/26 18:24, Andy Shevchenko wrote:
+> > On Thu, Nov 19, 2026 at 03:30:37PM +0000, Lee Jones wrote:  
+> >> stm32_adc_generic_chan_init() reads the child node's reg property into a
+> >> signed int and, when the optional label property is present, writes into
+> >> adc->chan_name[val] and calls stm32_adc_populate_int_ch() before
+> >> checking whether val exceeds adc_info->max_channels.  Because val is
+> >> signed, values with the top bit set also become negative and bypass the
+> >> upper-bound check altogether.
+> >>
+> >> Store val as a u32, matching fwnode_property_read_u32(), and move the
+> >> max_channels bounds check immediately after reading reg.  
 > > 
-> > In addition, adxl313_get_samples() returns the 6-bit FIFO_STATUS entries
-> > field (0..63) without bounds checking, allowing a malfunctioning or
-> > spoofed bus device to overflow fifo_buf on the heap in
-> > adxl313_fifo_transfer().
+> > ...
+> >   
+> >> +		if (val >= adc_info->max_channels)
+> >> +			return dev_err_probe(dev, -EINVAL,  
 > > 
-> > Parenthesise (ADXL313_FIFO_SIZE + 1) when sizing fifo_buf and reject
-> > entry counts exceeding ADXL313_FIFO_SIZE + 1 in adxl313_get_samples().  
+> > -ECHRNG
+> > 
+> > However it seems in the original code like this.  
 > 
-> ...
+> Hi Lee, Andy
 > 
-> > -	return FIELD_GET(ADXL313_REG_FIFO_STATUS_ENTRIES_MSK, regval);
-> > +	/* 32 FIFO entries plus 1 entry at the output filter */
-> > +	ret = FIELD_GET(ADXL313_REG_FIFO_STATUS_ENTRIES_MSK, regval);
-> > +	if (ret > ADXL313_FIFO_SIZE + 1)
-> > +		return -EINVAL;  
+> I've no strong opinion on this remark, whether to change the error code here, and if it belongs to
+> this fix ?
 > 
-> ERANGE? EIO? EPROTO? (I think from the listed the first suits better, but maybe
-> in errno.h a better one is lurking.)
+> In all case,
+> 
+> Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Let us not over think it.
 
-EIO would be my preference given it's a sign of corrupt message or broken
-hardware. I can tweak whilst applying if everyone is fine with that.
+Applied.  Given it's hardening against a bad DT, not rushing this one in.
+It can wait for the next merge window.
+
+
+Thanks,
+
+Jonathan
 
 > 
-> > +	return ret;  
+> Best Regards,
+> Thanks,
+> Fabrice
+> >   
+> >> +					     "Invalid channel %u\n", val);
+> >> +
+> >>  		ret = fwnode_property_read_string(child, "label", &name);  
+> >   
+> 
 > 
 
