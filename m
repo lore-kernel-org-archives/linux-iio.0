@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795289094;
-	b=U2dlBW6J2TLwGOBq+2WmLsvO69roSsyoVuTk9FsJD5zk108oaFMZ9JaXpBI/ol2uk5/G
-	 3827XoW54i7akm0jMANKX4OTgXalha54H3zNIdsRQsGPjj2tT/Q3eMWR0E0YNxcaZWdDS
-	 C3SaiC8K5M0QeZYf7XflYI1kRLVwOWkwhkHZsyAJ/jMEhOske4gU7FPC/ydoX5w4JDBV/
-	 5IfHT9v/fg4cjKHtmlEQfauQsIR2bfGhLWDzCDsNkXnOzEHOUd1HcVa03f+Gs/MubaWeS
-	 sMgcq+Jui+z9DRecY5fRMexokbOQvvO6Z5JKRR5ps3BezCOx4ExfDqmSaQ3cDXbZVwg==
+	t=1795289407;
+	b=d1sm4z2Jx0SLAEAhXBbp2WfOF+Hnynbms7STtIjIgh6zKke/fkYoQHqOehojpV4tcjA/
+	 dtWdIvc1NCo4mqcgDjUODe1nFsl0EOhq/HFQtCIPawJzYCzLkQB3T/XwmXcjiH7ohcyq/
+	 mEaUkZoup3KMny23ChnbTIVxCy5VO3lbg9A4z5YL8UrmAJoZsn9tE0gaP/c2o6RWV+ec1
+	 SCutgv9qF+a6hmqx+8rtqopG5KDTvzZGMBUtBgV4vNh+Xy8EvmWlr/JMnAy29MIkbGQZQ
+	 VVNvVL2bEhSRNGwpxLtSr6hEh3eB1FobrPjxHAPfL3XxkXpWFk0kZbk6gkflEgD2Dfg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795289094;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795289407;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=9Upa2rDL0IbqUOOoHVhvAzVcvXqcJkxpHOm0IGBGtQk=;
-	b=bleT0ZMeJCJlma7SrOQozpErMjCRphSnTdSiP+K6ZR6PUEbyqmyONEY5AcNdSj0h020d
-	 uC0+SiXCkycXU8MIWBCjj33jmmaVMpYEVhHNEUVR5bTboV5+sxf0dVdEMdW4Zr20GGmvp
-	 6xQTcF6lDBxeSgJvHVhNJEl2c+SUMumUybn3s9Q1kvoShSMejcYHLNRVCrRSOBVciLbsG
-	 d5PKCMDSaszKdH0BxqW5iRwu+gVZaqmB/L6NQwwN8VgrNgwRK5QwqcRMTLqzTKRf60rwn
-	 KDA2/OG8eqd4+UN4L3bH0BHxyqqBvFp/+OVwh7GJezjauXfIXiB1Cg7s246fugd3ZDQ==
+	bh=03K4baZo0+hChBw1mPe9JO6QtHiwPqHPetQawahxVho=;
+	b=WwL+cCxk6HCAP5e3cnq5+0vZ5+fKZEmO4QF51qQJ06rxpLOR/SK0P8RohcMRqDvdhgaN
+	 hi/w2/gI/UWuS09F+wLN8V5O/w+w+Z8cCvCS+eyUNkkxnyzrarnDay61B6HF5yHI/PP68
+	 y7HVTY4sSo2IGp6R/BzfG1Pau8dhjKFrcXBJ8NuGgHDAu+xuTmDmkk7kA5ZxAVjYHJFPL
+	 Lf0oPivZaLXtBbKplifJlz+2sKNoPzTi4juiYwXtQcEsMW5YtSpNk1sG8qVh73BOVuDEP
+	 xJnKr/MorKIZCHvTMEmvxuXfQP/qrrxdE/VtcUQskEOHxE0Lc7PSrw9lhs0jqVSBqfw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XDbz26tZ;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fakqwj6o;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AD8E606A320
-	for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 19:24:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D33C1606A33A;
+	Sat, 21 Nov 2026 19:30:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XDbz26tZ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA061F000C0;
-	Sat, 21 Nov 2026 19:24:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fakqwj6o
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEFAE1F000C0;
+	Sat, 21 Nov 2026 19:30:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795289094;
-	bh=9Upa2rDL0IbqUOOoHVhvAzVcvXqcJkxpHOm0IGBGtQk=;
+	s=k20260515; t=1795289407;
+	bh=03K4baZo0+hChBw1mPe9JO6QtHiwPqHPetQawahxVho=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=XDbz26tZ3VW1bGp60G49FO/R1UMD13gcyihsJ6RpcVgDJO84BaZDTkkNEf7Bky06s
-	 NXVJslCsnDPgdLU5Zy4hZRdxQr+LN8Lw/jKo0cQ5Ucz4hLD0C5i5ZcAiiZKGxS+vJA
-	 cPF7CKGTLS1U/u9L2eIG4xUmfpgYgjTuO0S4VL0GwmbK5htBDLKCvDWwwJaSlFTf3e
-	 bAZYLnW9Hgxe5NBfY8o+AiGOQiSiAzW8PhyUGOfkq7yRQwk8aw7ZIMmulQLxmf0EJE
-	 xuy+I98KLCi6Byw8SFTadoOAWKFiHO59xwWhsoFDopYnPEtUi+L1d2sGd8wYFzaxg7
-	 PXZOUDdJm3+8A==
-Date: Sat, 21 Nov 2026 19:24:48 +0000
+	b=fakqwj6oM/jGmcb+SRJARwnoJQCMLKDCzqNnyQW+Iu6HMimP+33FhSLbCV3ZugOwK
+	 LtosdVHnVSp3x5z9skhJz0f9zLI8dBOa2b8PxABRj2qos7IAbBT1C9CHUFqGuTf50Q
+	 6bCd1KsTqfHb2Hyy9dkQe3+cf6yOUW/Bcj6N+odJDag6hZNahmHT7ALzeW+boEYgYY
+	 Zj99kxukNdbsu6qCxPFzhiZFFcVUVSyLT+sPO4wRVXv1moYovEvLeZxWcsAAFum+zk
+	 62g7I3kYP9zLg5CpHUUm8ZGJHbxMxy5+bMpnfaQbyW/HrAcyoVnYwpmm4Yt5QzAPyq
+	 9M0OL1RBL8Nag==
+Date: Sat, 21 Nov 2026 19:29:59 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Wanhui Fu <fuwh1120@163.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- dakr@kernel.org, kees+treewide@kernel.org,
- giorgitchankvetadze1997@gmail.com, u.kleine-koenig@baylibre.com,
- linux-iio@vger.kernel.org, Andreas Kemnade <andreas@kemnade.info>
-Subject: Re: [PATCH] iio: twl6030-gpadc: Add error handling path in
- twl6030_gpadc_probe()
-Message-ID: <20261121192448.78041532@jic23-hlaptop>
-In-Reply-To: <20261121082419.376423-1-fuwh1120@163.com>
-References: <20261121082419.376423-1-fuwh1120@163.com>
+To: Viral Patel <viral8854@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Dixit Parmar <dixitparmar19@gmail.com>, Victor
+ Chernyakin <chernyakin.victor.j@outlook.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: magnetometer:
+ infineon,tlv493d-a1b6: add TLE493D-W2B6
+Message-ID: <20261121192959.1ea94de9@jic23-hlaptop>
+In-Reply-To: <20261121-tle493d-v2-1-92d7e57cec89@gmail.com>
+References: <20261121-tle493d-v2-0-92d7e57cec89@gmail.com>
+	<20261121-tle493d-v2-1-92d7e57cec89@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,99 +68,95 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Nov 2026 16:24:19 +0800
-Wanhui Fu <fuwh1120@163.com> wrote:
+On Sat, 21 Nov 2026 11:25:10 +0530
+Viral Patel <viral8854@gmail.com> wrote:
 
-> Add an error handling path to call twl6030_gpadc_disable_irq(),
-> as twl6030_gpadc_remove() does.
+> Add the Infineon TLE493D-W2B6, a 3D Hall effect magnetic sensor with
+> 12-bit resolution per axis and an integrated temperature sensor,
+> accessed over I2C. It is a second-generation sibling of the
+> TLV493D-A1B6 with a different register interface, so it gets its own
+> compatible, but it has the same supply range and the same /INT output
+> sharing the SCL pin, so it fits the existing binding.
 > 
-> Signed-off-by: Wanhui Fu <fuwh1120@163.com>
-Fix is fine, but I'd rather not make already ugly code uglier.
-There is an oddity in here though that makes a simple cleanup trickier.
+> The A0 to A3 variants of the part only differ in their default I2C
+> address, so a single compatible covers all of them.
+> 
+> Signed-off-by: Viral Patel <viral8854@gmail.com>
+Hi Viral
 
-Why is in remove is the interrupt disabled before the userspace interfaces
-are removed?  Looking back at the history (lore search for the
-disable function) it seems that the driver was way off on ordering,
-most of it got fixed up back 2013 but this one didn't.
-https://lore.kernel.org/all/1376910580-7545-1-git-send-email-oleksandr.kozaruk@ti.com/
-
-Given how old it was I doubt this ordering was intentional.
-
-So...  Lets do the more significant cleanup.
-
-First add a devm_add_action_or_reset() to remove the manual handling
-of the interrupt disable (which is equivalent of this fix) then convert
-the only remaining call to devm_iio_device_register() in a follow up
-patch.
-
-Long shot, but last real change to this driver was in 2022 by Andreas
-so if anyone is likely to have hardware to test probably Andreas.
-+CC.  Given it's remove path anyway and that would be rarely used
-for a soc ADC driver, I'm not that concerned if we can't test this
-change.
-
-Thanks,
+A few comments inline.  Nothing to stop me merging this if nothing
+else comes up though!
 
 Jonathan
 
-
 > ---
->  drivers/iio/adc/twl6030-gpadc.c | 20 +++++++++++++++-----
->  1 file changed, 15 insertions(+), 5 deletions(-)
+>  .../bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml   | 14 ++++++++++++--
+>  MAINTAINERS                                                |  6 ++++++
+>  2 files changed, 18 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-> index e7fd371b3404..8dae7561320f 100644
-> --- a/drivers/iio/adc/twl6030-gpadc.c
-> +++ b/drivers/iio/adc/twl6030-gpadc.c
-> @@ -931,19 +931,19 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
->  					TWL6030_REG_TOGGLE1);
->  	if (ret < 0) {
->  		dev_err(dev, "failed to enable GPADC module\n");
-> -		return ret;
-> +		goto err_disable;
->  	}
+> diff --git a/Documentation/devicetree/bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml b/Documentation/devicetree/bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml
+> index dd23a9370a71..3f0058cbf538 100644
+> --- a/Documentation/devicetree/bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml
+> +++ b/Documentation/devicetree/bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml
+> @@ -4,17 +4,27 @@
+>  $id: http://devicetree.org/schemas/iio/magnetometer/infineon,tlv493d-a1b6.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
 >  
->  	ret = twl_i2c_write_u8(TWL_MODULE_USB, VBUS_MEAS, USB_VBUS_CTRL_SET);
->  	if (ret < 0) {
->  		dev_err(dev, "failed to wire up inputs\n");
-> -		return ret;
-> +		goto err_disable;
->  	}
+> -title: Infineon Technologies TLV493D Low-Power 3D Magnetic Sensor
+> +title: Infineon Technologies TLV493D and TLE493D 3D Magnetic Sensors
 >  
->  	ret = twl_i2c_write_u8(TWL_MODULE_USB, ID_MEAS, USB_ID_CTRL_SET);
->  	if (ret < 0) {
->  		dev_err(dev, "failed to wire up inputs\n");
-> -		return ret;
-> +		goto err_disable;
->  	}
->  
->  	ret = twl_i2c_write_u8(TWL6030_MODULE_ID0,
-> @@ -951,7 +951,7 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
->  				TWL6030_MISC1);
->  	if (ret < 0) {
->  		dev_err(dev, "failed to wire up inputs\n");
-> -		return ret;
-> +		goto err_disable;
->  	}
->  
->  	indio_dev->name = DRIVER_NAME;
-> @@ -960,7 +960,17 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
->  	indio_dev->channels = pdata->iio_channels;
->  	indio_dev->num_channels = pdata->nchannels;
->  
-> -	return iio_device_register(indio_dev);
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "failed to register iio device\n");
-> +		goto err_disable;
-> +	}
+>  maintainers:
+>    - Dixit Parmar <dixitparmar19@gmail.com>
+> +  - Viral Patel <viral8854@gmail.com>
 > +
-> +	return 0;
+> +description: |
+
+Don't need to retain line wraps so IIRC > rather than | is appropriate.
+
+> +  3D Hall effect magnetic sensors with an I2C interface. The /INT output
+> +  shares a pin with SCL.
 > +
-> +err_disable:
-> +	twl6030_gpadc_disable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
-> +	return ret;
->  }
+> +  The A0 to A3 variants of the TLE493D-W2B6 only differ in their default
+> +  I2C address (0x35, 0x22, 0x78 and 0x44).
+
+For a binding I'm not sure we need this level of detail.  Perhaps
+just keep the first sentence.  I don't mind either way on this one.
+
 >  
->  static void twl6030_gpadc_remove(struct platform_device *pdev)
+>  properties:
+>    $nodename:
+>      pattern: '^magnetometer@[0-9a-f]+$'
+>  
+>    compatible:
+> -    const: infineon,tlv493d-a1b6
+> +    enum:
+> +      - infineon,tle493d-w2b6
+> +      - infineon,tlv493d-a1b6
+>  
+>    reg:
+>      maxItems: 1
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 02015eaec312..c3004f683e78 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13117,6 +13117,12 @@ S:	Maintained
+>  F:	Documentation/devicetree/bindings/sound/infineon,peb2466.yaml
+>  F:	sound/soc/codecs/peb2466.c
+>  
+> +INFINEON TLE493D-W2B6 DRIVER
+> +M:	Viral Patel <viral8854@gmail.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml
+I guess this is fine for most scripts, but I wonder if anything will drip up over
+a file being listed in two maintainers entries.  I wouldn't necessarily worry
+about adding the binding to here as you have that line in the actual file anyway
+to point people to include you on changes etc.
+
+
+> +
+>  INFINEON TLV493D Driver
+>  M:	Dixit Parmar <dixitparmar19@gmail.com>
+>  L:	linux-iio@vger.kernel.org
+> 
 
