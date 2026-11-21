@@ -1,59 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795305370;
-	b=j+58rH82l2lVoXsMOlQmvyUbJQNO9fJSpuxkE6N+BkTz2XAGR429LFRHwfyOTYMkeLe1
-	 FJlM4lVP3U/LcnenfK+ptBUo7I7u/By6EjQcaqDQUt28fius5pLZjff/rP/7U/Ch/GgCc
-	 n6SInOayZuSNPrtR5iKhQ0aM2a2GWv4yT00GI1iaDkDwbc8Y398i37L1eVMGXz0lZFGsy
-	 g7wTXF3mzvTsnH5Vhx512cX5A+0MmWvWpDeFyGcJbFiXRgGEEx9qMI72zls3gPRzWcU1W
-	 6HSHJYzEbePY7w5sUfBJHGBk4KZBYSoo0GT3OgynU92ABJ8rfx4MJJss5GhnjXLpEXQ==
+	t=1795305552;
+	b=04Gx4jxUZc9Qflut33YEvKFELB1QrJ6iG5Y3i1Yu+QYc9eJDYNXIvEZU1ltBIk6obFCd
+	 nD3I2YWpNivWmLqUe2ywo7lKYQO8DkLJJF1M1Nnfgi+3OPJb4L18pUoWdiRfXEhAtSbqd
+	 f8X8kI3cLUkEBFT2fRV/tpK64kswXOsKLYiSw+yeo+pIAZiywf4xsP0fdIzaTcCY6xU3e
+	 Li2Zc0CE88HRLubDlL4d256nEoBXctF1vyXQxfX4Q9kO+JITEuTRP9RqlsIWtX2QrtFV9
+	 jL9z6Q/7m/usSUg7qEXPJIHZXO30qN/K9ch+f3m4Wv3NO9IFleO1skcPchl/Mg3PbWA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795305370;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795305552;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=yugA/hpxPa9PPMqm+bYi6Gf+4noP3z0dciXI3mzgobQ=;
-	b=dsgjPUYhrFYnWx3nW8tFc+8nf60qA2ZPbtrp2m8jwu1JUvj0K673DRJKN2uAXfTeDAu5
-	 q1A5MIynqeN5/2Dk2P1fcAP+cst/qqJ7+DuTb5bdaBsVAwJ46wxUP8JAgxJyD3FDPGRdg
-	 81VGQR8M95y1ywlnkx24h30zv8GACaxkbGYk6feAKV1u8/4zlXCrtdRglBLC7ITdVKN4W
-	 JnYZ2WqIr/Mmd+83I3aXJ2pbmegU6lu/2asQtC9415GvSnc2FXFKR8rVszxZpO/ZNdOvR
-	 pUTVHezc4rE9Aj4OCkU7hzZ55rtaMjuCrVNTsGNez6jI4qv8DlibbPdp+LpYVP8Ryqg==
+	bh=GawK7uEp6ynP+1OXc7D7hnhH1v2mtIVCn3SoaQI56xY=;
+	b=NnBrIc+2UkOPod0vvq2+skxeO+44xwLORM45MqrVuHMgBawiFNvwGPucmr8WaS3JWHgw
+	 2Qvb1a6svm9RE7qr0zWA6fhK4PlgMIsK8NdDVbadljHl6lXBy+6bO8I+eU0eNRTn5HDe4
+	 Cf+hI9MMN2oSqktXEPSuRshsK7adqYQsZYlub8xDs7DQJVWCKjgIqNBhQ5Ew6uWh8S773
+	 3HdhrDPjQ7bbD8emyap1eeREybNDYG36ix0C0k6WlVgwl2OzeyW/j5YiKKRw9sEQ2SR4q
+	 d7eNlNxT08WNhPnQtdY7BJLCn8FEeJBJO/cyWk9Z7iQYqP1feWREfxqqsyN1ngxc+oQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a3eWUBT1;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QEf3Wbg1;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57947606A320;
-	Sat, 21 Nov 2026 23:56:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25A72606A320;
+	Sat, 21 Nov 2026 23:59:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=a3eWUBT1
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1CE81F000C0;
-	Sat, 21 Nov 2026 23:56:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QEf3Wbg1
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AFA81F000C0;
+	Sat, 21 Nov 2026 23:59:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795305370;
-	bh=yugA/hpxPa9PPMqm+bYi6Gf+4noP3z0dciXI3mzgobQ=;
+	s=k20260515; t=1795305552;
+	bh=GawK7uEp6ynP+1OXc7D7hnhH1v2mtIVCn3SoaQI56xY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=a3eWUBT1S4Rk/Vz1dKqOCH51xkD63zScM/huWV7vrW5dzG5FiIEcwXUnml4RWrSCn
-	 wVgC5iSF+e9cy+TvFSFSKp1MX3KUm1mKgVG5+4kAdN3Q1gWrZ3tjk5nTNxjt4V/SS1
-	 wZiwegcKtFB4e75D0SlwtEecTNbE0R4iPQmOU1DTbW10VTH+PmQdlAIDmwyKW7/3qg
-	 3jDPfMMPkzCrwaVCPayKREHZfZSkB6YGnPMXCRKeRoZ2ilNZh8/bPiUoSD4Jluk5nN
-	 ZSuee2XktArpyljXsXXihBY9yrGjZRmCVcoOleN3BDdlhDMxCJHdVq5mHMVgfAYTgX
-	 B5mGYInSpLArQ==
-Date: Sat, 21 Nov 2026 23:56:03 +0000
+	b=QEf3Wbg1J/IPtqQb9GkmAIOA9TUQzDHhKV1oLBYQGAOnqUkyLKiYJ746o2t+yWt0k
+	 QZn5p+kINkL4PA06JPBT5dB1UvOpJ5L41DPyZHxuWjV8/mX3Rx03JkluvM8pAGzOT9
+	 +wEY9FEJfltTxHAUmiT5R76+vqZpYjpXBZERAU+o4hsHIgmh9WGhSD89o+WBZ/GNff
+	 uslrpHEv6ffxkilMBJKFXb0VDIsANSzoBxWCAzO2xILQbk/Yd0uYZ8ZvDPN5XdeKbs
+	 mSpIAt+2Pg4unerETaUqvIXaFlAKNUsA3zNebLbMLLkLPnbRu3YaZLAjSJhvv+BfJU
+	 iHP2VvXjaYJ1g==
+Date: Sat, 21 Nov 2026 23:59:04 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
-Cc: rva333@protonmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>, "=?UTF-8?B?TsOtY29sYXM=?= F. R.
- A. Prado" <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 0/3] iio: adc: mt6359-auxadc: various fixes
-Message-ID: <20261121235603.41ce1ec4@jic23-hlaptop>
-In-Reply-To: <20261117-6768-6358-fixes-v2-0-1ffc3c2f3c80@protonmail.com>
-References: <20261117-6768-6358-fixes-v2-0-1ffc3c2f3c80@protonmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, Gwendal Grignou
+ <gwendal@chromium.org>, Daniel Campello <campello@chromium.org>, Andy
+ Shevchenko <andriy.shevchenko@intel.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: proximity: semtech: add myself
+ as maintainer
+Message-ID: <20261121235904.612f61e6@jic23-hlaptop>
+In-Reply-To: <f3d38cc6-112a-4d48-b0e6-f26d7819aa1b@kernel.org>
+References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
+	<20261117172612.25535-2-kapoorarnav43@gmail.com>
+	<f3d38cc6-112a-4d48-b0e6-f26d7819aa1b@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,49 +71,46 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Nov 2026 19:56:31 +0200
-Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org> wrote:
+On Wed, 18 Nov 2026 13:37:40 +0100
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-> This patch series fixes various bugs in the mt6359 auxadc driver. For
-> some reason, the driver had channel types for temperature or resistance,
-> while the ADC can report only voltage. There were also issues with
-> battery channel ready bit masking and scale calculation.
+> On 17/11/2026 18:26, Arnav Kapoor wrote:
+> > I'm adding a reviewer entry for the Semtech SX9xxx proximity drivers to
+> > MAINTAINERS. Add myself to the maintainers of their bindings as well,
+> > so changes to them reach me.
+> >   
 > 
-> Changes were verified on the mt6358 (mt6768 platform). Compile-tested
-> only for others.
+> Why? Same comments as for cover letter. Looks premature, you were just a
+> few months ago sending multiple same patches, clearly not even checking
+> what you are about to send:
 > 
-> Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+> https://lore.kernel.org/all/20260624044610.69708-1-kapoorarnav43@gmail.com/
+> 
+> https://lore.kernel.org/all/20260624042543.38925-1-kapoorarnav43@gmail.com/
+> 
+> Your patches were never even built by you:
+> 
+> https://lore.kernel.org/all/20260621045340.65872-1-kapoorarnav43@gmail.com/
+> 
+> Building code is... well, we do not have to even discuss that. You were
+> simply sending LLM slop.
+> 
+> LLM slop senders are not maintainers. It's doing everything opposite to
+> maintainers.
+> 
+> Best regards,
+> Krzysztof
+Hi Arnav,
 
-Hi Roman,
+I tend to be on the relaxed side for people offering to look after individual
+drivers, but given Krzysztof's feedback let us hold off for now.
 
-The series looks fine to me, but as we have fairly active folk
-who care about this driver (or at least did recently) I'm going
-to wait a while for reviews to come in.
+Give it some time and continue your active work reviewing code and we
+can revisit!  Don't let this put you off. Your recent contributions have
+been most welcome.
 
 Thanks,
 
 Jonathan
 
-> ---
-> Changes in v2:
-> - Clarify bit number in the patch 2 commit message (Jonathan)
-> - Link to v1: https://patch.msgid.link/20261103-6768-6358-fixes-v1-0-2a868a33152b@protonmail.com
-> 
-> ---
-> Roman Vivchar (3):
->       iio: adc: mt6359-auxadc: correct channel types to IIO_VOLTAGE
->       iio: adc: mt6359-auxadc: mask conversion ready bit in mt6358_read_imp
->       iio: adc: mt6359-auxadc: fix scale calculation
-> 
->  drivers/iio/adc/mt6359-auxadc.c | 88 ++++++++++++++++++++---------------------
->  1 file changed, 42 insertions(+), 46 deletions(-)
-> ---
-> base-commit: 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c
-> change-id: 20261103-6768-6358-fixes-fcdc79afae11
-> 
-> Best regards,
-> --  
-> rva3 <rva333@protonmail.com>
-> 
-> 
 
