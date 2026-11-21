@@ -1,67 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795294689;
-	b=zhASTHgi8jWCjMDBrZUyBYglhmMyCFYpvoN4QtQ6v2Mi0rr6N13ySiEYS8cdtyu26n2D
-	 tNQjGLww3tPH+41w+BxLU9uOrO9qoV7JAJxa0ZSrPZ1HFQuv5o+rcCkf2bTqqDNGCIGeA
-	 syBsMoBhAfnu6PrNvmuBZBhx4fWKV4mwuN/O1KVIXLN1zAIPA1xt0VU095HMafPKe7L2n
-	 wZuwv+kARxhGk/DlHIgSfNIEA5h6cDiIXr0EU4o6CwHWBVdT6F+cE0mnSOsfBL53dHJVr
-	 M4t9I1WzRLHw6msBRoqZFfwqyFN2vw5DilhqW4kBS40KwM+WNx8NFFA/Xqx/nl7/Yxg==
+	t=1795295274;
+	b=b/wXOGYuBPBJCuz2IB8RvVs3h2nD7kerRk2bxbpfnv0LjJCJemhwiqN77Nrbp0dMni4P
+	 Exgph8yCAqljYpoDzDBkrmCgqtEqfcxIr32Svoakmcp89W+1IR11yecvkE2e6/x88K/Es
+	 zZ6uVhsmqg+MfWPPIDj0uOIEbN/xlREPlU/zaGARkKJcuRluiZhu68rFP/lG6Y3J+ljVJ
+	 UbrNWDCouwqf7YRfsw77hLCzQuCLwLdnayWosQbWP6SUaVo17djNEuS1oxlDZI0oOkbCF
+	 Syh7Fi4Dhvr29zVezcEr19phChRPebY10XxSleOtXMTF6wxtIB6aGHDydxe1EXLh3gA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795294689;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795295274;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=KY0/LkKEKo3FUFd1efuIx6x2byXqY/xtc6DQ9I+e5QA=;
-	b=i9xmJNfKXxFyJlsZ76KLlAYILsyrx+fAFKHrJX2iZe59Nl7lXWihZ4d8rU2QQPdmT1oh
-	 0JvVrRz/5Dzyp0YlJib3SD5ofleCndj3JAufiU23ZqSWvu0JqkSciqU861F2k2A9N24ER
-	 NqfAuRqcdvlxSC/wvhUBCcESvHvIAEhCvA0vFFTwE2hXz/aZOnayZswYmvYYx0zW74beo
-	 Sgb3xVsqmzqZWcg23WmGy3EjuWkjgc0yvmsAuMGs9TrxTidglRmoYLpValc1iLaSnOQfk
-	 RaSY5fhKFz1mrY/RLkl4Tu0OaIoLsk6IggBD6Zenk7UOTxDDFfpS6tJiQrdMAUKf1Ug==
+	bh=Y9efMSfiICdKBHxaD4Qe7FBs3NUO/APCxh6CXXXWIkw=;
+	b=1msm8e7lVoq2WgYFqLSGC7W0h0+JZJsgU7uyMJYSuekp4LFUgEoNyPfk3Rw2MwXJN5bj
+	 87R74AcNDTbtBjEK0z6uO478wZN+WpNkBhRsMALiylnf17rdSGhY7BzIxmz6ss44w/aOF
+	 t62I9YXvn1R7ULR/BnPoOiRhlLsncNVbQe7UB9NMbCgEvegazViv8cin9p8bxRydDsVXb
+	 mHTVC//82zXyKPALDuXjn48aXAU0iNhpwvecM8PdRC/36fjuEmYhfBfRZRKSdX1wfhKMf
+	 bKSbu66c4+bM57OTjboXCViCvB70LDIEZCdcN8tPJNdx+3d7J/V9lvsIZUocU1Sq4og==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FJxGgIqy;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DLUVJz6i;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57862606A320;
-	Sat, 21 Nov 2026 20:58:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97B6F606A32A;
+	Sat, 21 Nov 2026 21:07:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FJxGgIqy
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C4861F000C4;
-	Sat, 21 Nov 2026 20:58:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DLUVJz6i
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF96A1F000C0;
+	Sat, 21 Nov 2026 21:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795294688;
-	bh=KY0/LkKEKo3FUFd1efuIx6x2byXqY/xtc6DQ9I+e5QA=;
+	s=k20260515; t=1795295274;
+	bh=Y9efMSfiICdKBHxaD4Qe7FBs3NUO/APCxh6CXXXWIkw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=FJxGgIqyW+hmwxc6Iot1xFrm2WKQAfCdBQ+Hky/AkXtAJBHI92E2sW0xp7cZV2762
-	 8TYcNWJA4NEbzK/OGlhM80KLOoZMbkhE/WQP/RmSUFONqeH2NKe0lVVdNeXf8LfnJk
-	 tqCSG1nT0E9RGC4tNdaQOBhHbRUNPy/EkkLFQldSDn+0NaJ9YbtFJCMwdwJW10mDZy
-	 uIf5or34aMtb4sGe8HBgibd1ICReRyMj0/jSuMOHvEjleJXhbPS/2zJPmhopUsetwW
-	 VYuR5cEkb4v15ltNjaDyRW49EfXYTKQeQu1JP/rD6XxMqZ6W5mJvrmtdkKwRA4jnQ8
-	 qOrKI7N+nM1bg==
-Date: Sat, 21 Nov 2026 20:58:04 +0000
+	b=DLUVJz6i1r2LUrOhXlLPx7bIyGBLHxgFewMYoIeRzNXeY3nYKCSRrX+8CO23Lpnqy
+	 WDKgOmjNX5myxIc/e4b+V+iiqcZzHtwYXe467YFnEek0qW6jeUCZ2obJ+7is6Z+xsS
+	 EZEVLFfNlYDPbk4edyzPfeZoNCwEqY+3GkNGKCnjNiueURchxzGzzUkWstNgdEjDim
+	 S8UX9A7AWRMTdBcTz+E8soP4mLPC57nRWP4zrLSIpflSUQK28Sn9RE9knn7+Jg0pSO
+	 To5eE0WBZbYR1qVkhTPZtrhEjvg9BFDMLoC5hYgsgwlG0dEZ9KiGvfoqSvrmaM4T4f
+	 qQshgmO+61QjA==
+Date: Sat, 21 Nov 2026 21:07:47 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>, Conor Dooley
- <conor+dt@kernel.org>
+To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Amit Kucheria
- <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, "Rafael J.
- Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>,
- Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-pm@vger.kernel.org, Kamal Wadhwa <kamal.wadhwa@oss.qualcomm.com>,
- Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>, Manaf
- Meethalavalappu Pallikunhi <manaf.pallikunhi@oss.qualcomm.com>, Priyansh
- Jain <priyansh.jain@oss.qualcomm.com>
-Subject: Re: [PATCH v2 3/7] iio: adc: qcom-spmi-adc5-gen3: Add support for
- QCOM PMIC5 Gen4 ADC
-Message-ID: <20261121205804.382bdb91@jic23-hlaptop>
-In-Reply-To: <20261120-pmic5_gen4_adc-v2-3-94d0e1fd6847@oss.qualcomm.com>
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Amit Kucheria <amitk@kernel.org>, Thara Gopinath
+ <thara.gopinath@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org, Kamal Wadhwa
+ <kamal.wadhwa@oss.qualcomm.com>, Anjelique Melendez
+ <anjelique.melendez@oss.qualcomm.com>, Manaf Meethalavalappu Pallikunhi
+ <manaf.pallikunhi@oss.qualcomm.com>, Priyansh Jain
+ <priyansh.jain@oss.qualcomm.com>
+Subject: Re: [PATCH v2 4/7] thermal: qcom: qcom-spmi-adc-tm5-gen3: Add
+ support for QCOM PMIC5 Gen4 ADC
+Message-ID: <20261121210747.0ab59a9f@jic23-hlaptop>
+In-Reply-To: <20261120-pmic5_gen4_adc-v2-4-94d0e1fd6847@oss.qualcomm.com>
 References: <20261120-pmic5_gen4_adc-v2-0-94d0e1fd6847@oss.qualcomm.com>
-	<20261120-pmic5_gen4_adc-v2-3-94d0e1fd6847@oss.qualcomm.com>
+	<20261120-pmic5_gen4_adc-v2-4-94d0e1fd6847@oss.qualcomm.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,23 +75,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 20 Nov 2026 14:49:43 +0530
+On Fri, 20 Nov 2026 14:49:44 +0530
 Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
 
 > PMIC5 Gen4 ADC is similar to PMIC5 Gen3 ADC, with several changes made
 > for improved performance, mostly at the hardware level.
 > 
 > One significant software change is that ratiometric conversion resolution
-> has been increased from 14 bits to 16 bits, so the maximum value of
-> these measurements needs to be updated for Gen4. Add a new scaling
-> function for thermistor channels which use this type of conversion.
-> 
-> It is possible that the master PMIC has ADC of one generation and it needs
-> to communicate with another PMIC with ADC of a different generation. For
-> example, on SM8750, PMK8550 is the master PMIC with Gen3 ADC and it
-> communicates with PMIH0108, which has Gen4 ADC. Add a new DT property
-> "qcom,adc5-gen4" to distinguish Gen4 channels under a Gen3 master, to
-> ensure that their conversions are handled correctly.
+> has been increased from 14 bits to 16 bits. Add a reverse scaling function
+> for Gen4 ADC thermistor channels.
 > 
 > In the latest PMIC arbiter version (v8), there can be up to 4 buses
 > under the PMIC arbiter and 32 PMICs under each bus. In order to
@@ -103,285 +95,134 @@ Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
 > Co-developed-by: Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>
 > Signed-off-by: Anjelique Melendez <anjelique.melendez@oss.qualcomm.com>
 > Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Hi Jishnu
-
-Various things inline to add to what Andy has raised.
-
-Thanks,
-
-Jonathan
-
 > ---
->  drivers/iio/adc/qcom-spmi-adc5-gen3.c         | 125 ++++++++++++++++++--------
->  drivers/iio/adc/qcom-vadc-common.c            |  30 +++++++
->  include/linux/iio/adc/qcom-adc5-gen3-common.h |  42 +++++++++
->  include/linux/iio/adc/qcom-vadc-common.h      |   4 +
->  4 files changed, 164 insertions(+), 37 deletions(-)
+>  drivers/iio/adc/qcom-vadc-common.c            | 11 +++++++++++
+>  drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c | 19 ++++++++++++++-----
+>  include/linux/iio/adc/qcom-vadc-common.h      |  2 ++
+>  3 files changed, 27 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> index be12bb6781cb..aa06d4d1083a 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> @@ -86,7 +86,9 @@ int adc5_gen3_write(struct adc5_device_data *adc, unsigned int sdam_index,
+> diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
+> index 5c4052f6f24f..779c2a66a858 100644
+> --- a/drivers/iio/adc/qcom-vadc-common.c
+> +++ b/drivers/iio/adc/qcom-vadc-common.c
+> @@ -718,6 +718,17 @@ u16 qcom_adc_tm5_gen2_temp_res_scale(int temp)
 >  }
->  EXPORT_SYMBOL_NS_GPL(adc5_gen3_write, "QCOM_SPMI_ADC5_GEN3");
+>  EXPORT_SYMBOL(qcom_adc_tm5_gen2_temp_res_scale);
 >  
-> -static int adc5_gen3_read_voltage_data(struct adc5_chip *adc, u16 *data)
-> +static int adc5_gen3_read_voltage_data(struct adc5_chip *adc,
-> +				       struct adc5_channel_common_prop *prop,
-> +				       u16 *data)
+> +u16 qcom_adc_tm5_gen4_temp_res_scale(int temp)
+> +{
+> +	s64 resistance;
+> +
+> +	resistance = qcom_vadc_map_temp_voltage(adcmap7_100k,
+> +						ARRAY_SIZE(adcmap7_100k), temp);
+> +
+> +	return div64_s64(resistance * RATIO_MAX_ADC5_GEN4, resistance + R_PU_100K);
+
+If you were keeping this (See below) I'd have a helper that does the maths
+called by both the gen2 and gen4 versions. I think it just has that multiplier
+different.
+
+> +}
+> +EXPORT_SYMBOL(qcom_adc_tm5_gen4_temp_res_scale);
+> +
+>  int qcom_adc5_hw_scale(enum vadc_scale_fn_type scaletype,
+>  		    unsigned int prescale_ratio,
+>  		    const struct adc5_data *data,
+> diff --git a/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c b/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
+> index 910b241fa94d..aeaf13f4fc66 100644
+> --- a/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
+> +++ b/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
+> @@ -207,15 +207,23 @@ static int adc_tm5_gen3_disable_channel(struct adc_tm5_gen3_channel_props *prop)
+>  			       ADC5_GEN3_CONV_REQ, &val, sizeof(val));
+>  }
+>  
+> +typedef u16 (*temp_res_scale)(int temp);
+> +
+>  static int adc_tm5_gen3_configure(struct adc_tm5_gen3_channel_props *prop,
+>  				  int low_temp, int high_temp)
 >  {
->  	u8 rslt[2];
+>  	struct adc_tm5_gen3_chip *adc_tm5 = prop->chip;
+>  	u8 buf[ADC_TM5_GEN3_CONFIG_REGS];
+> +	temp_res_scale tm_scal_fn;
+>  	u8 conv_req;
+>  	u16 adc_code;
 >  	int ret;
-> @@ -98,9 +100,11 @@ static int adc5_gen3_read_voltage_data(struct adc5_chip *adc, u16 *data)
 >  
->  	*data = get_unaligned_le16(rslt);
->  
-> -	if (*data == ADC5_USR_DATA_CHECK) {
-> -		dev_err(adc->dev, "Invalid data:%#x\n", *data);
-> -		return -EINVAL;
-> +	if (!(prop->generation == ADC5_GEN4 && prop->cal_method == ADC5_RATIOMETRIC_CAL)) {
+> +	if (prop->common_props.generation == ADC5_GEN4)
+> +		tm_scal_fn = qcom_adc_tm5_gen4_temp_res_scale;
+> +	else
+> +		tm_scal_fn = qcom_adc_tm5_gen2_temp_res_scale;
 
-See below.  I would not expect to see generation (so an enum ID type field(
-as well as a structure representing the differences in hardware.
+A little messy patch ordering wise, but I think those should
+be function pointers in common_props.data and set in the adc
+driver (where it currently sets generation).
 
-Add something to the prop->data structure to represent this difference.
-bool no_datacheck_with_ratcal
-or something like that.
+That will put all the information in one place rather
+than a mix of data and stuff patched in the code in various
+other places.
 
-Or can you derive this from other data already in there?
+For anyone not reading review of previous patch, I want that
+generation value to go away.
 
-> +		if (*data == ADC5_USR_DATA_CHECK) {
-> +			dev_err(adc->dev, "Invalid data:%#x\n", *data);
-> +			return -EINVAL;
-> +		}
->  	}
->  
->  	dev_dbg(adc->dev, "voltage raw code:%#x\n", *data);
-> @@ -131,8 +135,9 @@ static int adc5_gen3_configure(struct adc5_chip *adc,
->  	if (ret)
+However, the two callbacks differ (I think) in only one value.
+Just put that value in the data instead of having two callbacks
+and add a parameter to the function to pass it in.
+
+> +
+>  	ret = adc5_gen3_poll_wait_hs(adc_tm5->dev_data, prop->sdam_index);
+>  	if (ret < 0)
+>  		return ret;
+> @@ -225,8 +233,9 @@ static int adc_tm5_gen3_configure(struct adc_tm5_gen3_channel_props *prop,
+>  	if (ret < 0)
 >  		return ret;
 >  
 > -	/* Write SID */
-> -	buf[0] = FIELD_PREP(ADC5_GEN3_SID_MASK, prop->sid);
+> -	buf[0] = FIELD_PREP(ADC5_GEN3_SID_MASK, prop->common_props.sid);
 > +	/* Write SID and bus_id*/
-> +	buf[0] = FIELD_PREP(ADC5_GEN4_BUS_INDEX_MASK, prop->bus_index) |
-> +		 FIELD_PREP(ADC5_GEN4_SID_MASK, prop->sid);
-
-Similar to below.  You are using the fact the SID_MASKS are the same
-here but the defines don't enforce that.  Simple change to make
-one macro for the mask defined in terms of the other one and lock
-in that relationship.
-
+> +	buf[0] = FIELD_PREP(ADC5_GEN4_BUS_INDEX_MASK, prop->common_props.bus_index) |
+> +		 FIELD_PREP(ADC5_GEN4_SID_MASK, prop->common_props.sid);
 >  
->  	/*
->  	 * Use channel 0 by default for immediate conversion and to indicate
-> @@ -268,7 +273,7 @@ static int adc5_gen3_do_conversion(struct adc5_chip *adc,
->  		return -ETIMEDOUT;
+>  	/* Select TM channel and indicate there is an actual conversion request */
+>  	buf[1] = ADC5_GEN3_CHAN_CONV_REQ | prop->tm_chan_index;
+> @@ -252,7 +261,7 @@ static int adc_tm5_gen3_configure(struct adc_tm5_gen3_channel_props *prop,
+>  	/* High temperature corresponds to low voltage threshold */
+>  	prop->low_thr_en = (high_temp != INT_MAX);
+>  	if (prop->low_thr_en) {
+> -		adc_code = qcom_adc_tm5_gen2_temp_res_scale(high_temp);
+> +		adc_code = tm_scal_fn(high_temp);
+>  		put_unaligned_le16(adc_code, &buf[8]);
+>  		buf[7] |= ADC5_GEN3_LOW_THR_INT_EN;
 >  	}
->  
-> -	ret = adc5_gen3_read_voltage_data(adc, data_volt);
-> +	ret = adc5_gen3_read_voltage_data(adc, prop, data_volt);
->  	if (ret)
->  		return ret;
->  
-> @@ -325,7 +330,7 @@ static int adc5_gen3_fwnode_xlate(struct iio_dev *indio_dev,
->  	int i, v_channel;
->  
->  	for (i = 0; i < adc->nchannels; i++) {
-> -		v_channel = ADC5_GEN3_V_CHAN(adc->chan_props[i].common_props);
-> +		v_channel = ADC5_GEN4_V_CHAN(adc->chan_props[i].common_props);
-
-Maybe should include a change to the ADC5_GEN3_V_CHAN() macro to be
-defined in terms of the GEN4 one as might make it more obvious why
-this change is fine.  Also the masks that are the same and hence allow
-that lack of differentiation between the two.
-
->  		if (v_channel == iiospec->args[0])
->  			return i;
+> @@ -260,7 +269,7 @@ static int adc_tm5_gen3_configure(struct adc_tm5_gen3_channel_props *prop,
+>  	/* Low temperature corresponds to high voltage threshold */
+>  	prop->high_thr_en = (low_temp != -INT_MAX);
+>  	if (prop->high_thr_en) {
+> -		adc_code = qcom_adc_tm5_gen2_temp_res_scale(low_temp);
+> +		adc_code = tm_scal_fn(low_temp);
+>  		put_unaligned_le16(adc_code, &buf[10]);
+>  		buf[7] |= ADC5_GEN3_HIGH_THR_INT_EN;
 >  	}
-> @@ -351,7 +356,7 @@ static int adc5_gen3_read_raw(struct iio_dev *indio_dev,
->  			return ret;
->  
->  		ret = qcom_adc5_hw_scale(prop->scale_fn_type, prop->prescale,
-> -					 adc->data, adc_code_volt, val);
-> +					 prop->data, adc_code_volt, val);
->  		if (ret)
->  			return ret;
->  
-
-> +static const struct adc5_data adc5_gen3_data_pmic = {
-> +	.full_scale_code_volt = 0x70e4,
-> +	.adc_chans = adc5_gen3_chans_pmic,
-> +	.info = &adc5_gen3_info,
-> +	.decimation = (unsigned int [ADC5_DECIMATION_SAMPLES_MAX])
-> +			   { 85, 340, 1360 },
-
-See below. I'd expect the default decimation to be in here as well.
-
-> +	.hw_settle_1 = (unsigned int [VADC_HW_SETTLE_SAMPLES_MAX])
-> +			   { 15, 100, 200, 300,
-> +			     400, 500, 600, 700,
-> +			     1000, 2000, 4000, 8000,
-> +			     16000, 32000, 64000, 128000 },
-> +};
-> +
-> +static const struct adc5_data adc5_gen4_data_pmic = {
-> +	.full_scale_code_volt = 0x70e4,
-> +	.adc_chans = adc5_gen4_chans_pmic,
-> +	.info = &adc5_gen3_info,
-> +	.decimation = (unsigned int [ADC5_DECIMATION_SAMPLES_MAX])
-> +			   { 85, 340, 1360 },
-> +	.hw_settle_1 = (unsigned int [VADC_HW_SETTLE_SAMPLES_MAX])
-> +			   { 15, 100, 200, 300,
-> +			     400, 500, 600, 700,
-> +			     1000, 2000, 4000, 8000,
-> +			     16000, 32000, 64000, 128000 },
-> +};
-> +
->  static int adc5_gen3_get_fw_channel_data(struct adc5_chip *adc,
->  					 struct adc5_channel_prop *prop,
->  					 struct fwnode_handle *fwnode)
->  {
->  	const char *name = fwnode_get_name(fwnode);
-> -	const struct adc5_data *data = adc->data;
-> +	const struct adc5_data *data;
-> +	u32 chan, value, sid, bus_index;
->  	struct device *dev = adc->dev;
->  	const char *channel_name;
-> -	u32 chan, value, sid;
->  	u32 varr[2];
+> @@ -306,7 +315,7 @@ static int adc_tm5_register_tzd(struct adc_tm5_gen3_chip *adc_tm5)
 >  	int ret;
 >  
-> @@ -452,27 +502,42 @@ static int adc5_gen3_get_fw_channel_data(struct adc5_chip *adc,
+>  	for (int i = 0; i < adc_tm5->nchannels; i++) {
+> -		channel = ADC5_GEN3_V_CHAN(adc_tm5->chan_props[i].common_props);
+> +		channel = ADC5_GEN4_V_CHAN(adc_tm5->chan_props[i].common_props);
+>  		tzd = devm_thermal_of_zone_register(adc_tm5->dev, channel,
+>  						    &adc_tm5->chan_props[i],
+>  						    &adc_tm_ops);
+> diff --git a/include/linux/iio/adc/qcom-vadc-common.h b/include/linux/iio/adc/qcom-vadc-common.h
+> index 4be682083843..55efad27ed73 100644
+> --- a/include/linux/iio/adc/qcom-vadc-common.h
+> +++ b/include/linux/iio/adc/qcom-vadc-common.h
+> @@ -159,6 +159,8 @@ u16 qcom_adc_tm5_temp_volt_scale(unsigned int prescale_ratio,
 >  
->  	/*
->  	 * Value read from "reg" is virtual channel number
-> -	 * virtual channel number = sid << 8 | channel number
-> +	 * virtual channel number = bus index << 13 | sid << 8 | channel number
-> +	 * For ADC5 GEN3 channels, bus index = 0
->  	 */
-> -	sid = FIELD_GET(ADC5_GEN3_VIRTUAL_SID_MASK, chan);
-> -	chan = FIELD_GET(ADC5_GEN3_CHANNEL_MASK, chan);
-> +	bus_index = FIELD_GET(ADC5_GEN4_V_CHAN_BUS_INDEX_MASK, chan);
-> +	sid = FIELD_GET(ADC5_GEN4_V_CHAN_SID_MASK, chan);
-> +	chan = FIELD_GET(ADC5_GEN4_V_CHAN_CHANNEL_MASK, chan);
+>  u16 qcom_adc_tm5_gen2_temp_res_scale(int temp);
 >  
->  	if (chan >= ADC5_MAX_CHANNEL)
->  		return dev_err_probe(dev, -EINVAL,
->  				     "%s invalid channel number %d\n",
->  				     name, chan);
->  
-> +	prop->common_props.bus_index = bus_index;
->  	prop->common_props.channel = chan;
->  	prop->common_props.sid = sid;
->  
-> -	if (!adc->data->adc_chans[chan].info_mask)
-> +	if (fwnode_property_read_bool(fwnode, "qcom,adc5-gen4")) {
-> +		prop->common_props.generation = ADC5_GEN4;
-
-See below. That generation enum is a thing that makes me wonder
-if they generalization is being handled as it should be.
-
-> +		data = &adc5_gen4_data_pmic;
-> +	} else {
-> +		prop->common_props.generation = ADC5_GEN3;
-> +		data = &adc5_gen3_data_pmic;
-> +	}
-> +	prop->common_props.data = data;
+> +u16 qcom_adc_tm5_gen4_temp_res_scale(int temp);
 > +
-> +	if (!data->adc_chans[chan].info_mask)
->  		return dev_err_probe(dev, -EINVAL, "Channel %#x not supported\n", chan);
+>  int qcom_adc5_prescaling_from_dt(u32 num, u32 den);
 >  
->  	channel_name = name;
->  	fwnode_property_read_string(fwnode, "label", &channel_name);
->  	prop->common_props.label = channel_name;
->  
-> -	value = data->decimation[ADC5_DECIMATION_DEFAULT];
-> +	if (prop->common_props.generation == ADC5_GEN3)
-> +		value = data->decimation[ADC5_DECIMATION_DEFAULT];
-> +	else
-> +		value = data->decimation[ADC5_GEN4_DECIMATION_DEFAULT];
-
-I'm confused.  I thought data was a structure that differentiated
-between GEN4 and GEN5 PMIC supplied channels. If so why are both
-decimation values in there?  If both generations support same options
-but the default has changed, add a default value to the data and this
-becomes
-
-	value = data->decimation[data->default_decimation];
-
-That will mean updating the other adc5 drivers I think, but should be
-fairly trivial and puts the values where they should be rather than
-in defines at top of files.
-
-
->  	fwnode_property_read_u32(fwnode, "qcom,decimation", &value);
->  	ret = qcom_adc5_decimation_from_dt(value, data->decimation);
->  	if (ret < 0)
-> @@ -480,7 +545,7 @@ static int adc5_gen3_get_fw_channel_data(struct adc5_chip *adc,
->  				     chan, value);
->  	prop->common_props.decimation = ret;
->  
-> -	prop->common_props.prescale = adc->data->adc_chans[chan].prescale_index;
-> +	prop->common_props.prescale = data->adc_chans[chan].prescale_index;
-
-This could be a precursor change to use local data variable consistently in
-this function.  Perhaps it isn't wroth it though.
-
->  	ret = fwnode_property_read_u32_array(fwnode, "qcom,pre-scaling", varr, 2);
->  	if (!ret) {
->  		ret = qcom_adc5_prescaling_from_dt(varr[0], varr[1]);
-> @@ -526,19 +591,6 @@ static int adc5_gen3_get_fw_channel_data(struct adc5_chip *adc,
->  	return 0;
->  }
-
-> diff --git a/include/linux/iio/adc/qcom-adc5-gen3-common.h b/include/linux/iio/adc/qcom-adc5-gen3-common.h
-> index ec7238e93396..fa7e08d67f26 100644
-> --- a/include/linux/iio/adc/qcom-adc5-gen3-common.h
-> +++ b/include/linux/iio/adc/qcom-adc5-gen3-common.h
-
-> @@ -117,6 +148,11 @@ enum adc5_time_select {
->  	MEAS_INT_NONE,
->  };
->  
-> +enum adc_generation {
-> +	ADC5_GEN3,
-> +	ADC5_GEN4,
-> +};
-See below.  Seeing an enum for variants is often a sign something
-is less than ideal in how a driver had been made to deal with more
-than one variant.  It is too inflexible - much better to just
-have one place where you describe what the actual differences are.
-Then when GEN5-10 turn up you can avoid lots of inline code
-changes to match on particular generations.
-
-> +
->  /**
->   * struct adc5_sdam_data - data per SDAM allocated for adc usage
->   * @base_addr: base address for the ADC SDAM peripheral.
-> @@ -155,6 +191,9 @@ struct adc5_device_data {
->   *	that is an average of multiple measurements.
->   * @scale_fn_type: Represents the scaling function to convert voltage
->   *	physical units desired by the client for the channel.
-> + * @generation: Generation of the ADC HW of the channel.
-> + * @bus_index: SPMI bus index of PMIC owning the channel.
-> + * @data: top-level ADC data structure.
->   */
->  struct adc5_channel_common_prop {
->  	unsigned int channel;
-> @@ -166,6 +205,9 @@ struct adc5_channel_common_prop {
->  	unsigned int hw_settle_time_us;
->  	unsigned int avg_samples;
->  	enum vadc_scale_fn_type scale_fn_type;
-> +	enum adc_generation generation;
-> +	unsigned int bus_index;
-> +	const struct adc5_data *data;
-
-Having both generation and data in here suggests to me
-that we have multiple sources of data for generation specific stuff.
-See above.
-
->  };
-
+>  int qcom_adc5_hw_settle_time_from_dt(u32 value, const unsigned int *hw_settle);
+> 
 
