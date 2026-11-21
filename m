@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795304146;
-	b=pmpY3rd4Nb4yYUeKYH3u3vEBxPPT6wscBvwCAEfa7w8fIfBJrfQ4/Fdav03D0PUuF/VA
-	 gMkborM28q1RS3/7z4U+Vwd1vndeB1rhb9b91InNF4aSwLTIjMVDpsb3NU++htR9Lh+aa
-	 F2wKy0T6m93xk2ygadlsXLA//C/lhEhznewtxBhs5ZDKnkCUpMVLIV/RCwh10yoOey0Am
-	 3akfMC8VBMt9n8QvzScItpsB6xHtaYq86LBx02c5q0mvfnMDs/PEazTMPNke8m5QqNPeY
-	 wIc+MWcr3XHcqVpFamOZ24a8r1azqbtQj7sCZPCxdfmDOtNxjWiXY0t3AS3+Po+XurA==
+	t=1795304425;
+	b=bnQzMhuFXd1W32LjhEESRyv9ewtgKj52YOG12GNZmW7P0xCQjn8YfRzXvLFBtQZLK/Lm
+	 kYL/LBgstM6MC39zudImhzRpe/6lkfgmSnRXB4a4p/3t22ECNljxJDoz1qcDDKUWQ6WXw
+	 1iuP2EA981rNloblt7tqi7zKkswyO2xryaJkNTR0ZWW152ysUtAhsIS3SaudFR83oMtAx
+	 JGSCV9CvBFmVOYTzYa8PLeS492MbhnYXbHWllSVnPOPSo6D8SznCrKOOZ0brIaXpFqmGj
+	 2y1mmMDJJl9XtLh+o1/2Dxi+7Mc8LmsHADoDy9quA+rHNGPDuqEB/VCvbMRN6YPbIHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795304146;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795304425;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=Ygid2aXBVv/PMHiBZSaeXvMNpwKQR0Q1uS6msPaF4GI=;
-	b=KEC9Gj3eEKOX+juCULM4egHk+M06txEfGWCc9ujS/uq4R+ssAlks5Qc7bfPd1JSo9NQ9
-	 BvScs3157K/TGAm+QRYxncYQBTlfOvB8Ug0gdZObK+SBgTl+4EfjIAbarZcmDOW2EhwDE
-	 4HIEvZ9CuTHSUJ+gnRbeXQLP5odO/QV9Xnb43nls02PUJVu3F9/1y2ENPECtqwjgtN9qX
-	 Q1QViL1wQTAQ6qZ+ioVkuqX+q4FcPeHPjlGeo17vJnN4cICMJpvTywqJc30btF2geovP+
-	 6xL6ZGB6DLtudbVPCOp3eYrMNjLAnK77JoPryO65mrjUvd1kWuDRbn5OS01oSR/WBnQ==
+	bh=GEoDwZcnGou1UJOraxPLD5sh8h1JR7DdmjoKvJQgqrY=;
+	b=08wzrAwETEAzqJHjbHOvKdM7Y30zvJiF9kZQsw0tpDcBta3IC2UuxbCrTCJZLM3FpKxz
+	 SyZPEjji9bnl485mQQIhLpISNrWxr8kk894WFymVpKWFFnVvus4tE3QT9O+JxJXdks0YB
+	 Ypea6NQdp75j+R+RLNGlo/7xmVvwfb3OVWIfnovT5vC/yWkFb5WLPRgFH75++GDF1K66S
+	 EdThUVjhh6jSlDZoFGCWf9StuvaJBrf8oeAHDmJs/YUk82BN1DzmIcXam1eJCbKeZqi2p
+	 Bd53TbS3D2zDHFgwUd4Mt4DYhKjRQRZca1RZmNXAmcxFveibiqrqOWaRfifyHlJ7nJA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k3dJr6vW;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g7n94dUV;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7016606A32A;
-	Sat, 21 Nov 2026 23:35:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CCA5606A320;
+	Sat, 21 Nov 2026 23:40:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=k3dJr6vW
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 269951F000C4;
-	Sat, 21 Nov 2026 23:35:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g7n94dUV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E9C1F000D3;
+	Sat, 21 Nov 2026 23:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795304146;
-	bh=Ygid2aXBVv/PMHiBZSaeXvMNpwKQR0Q1uS6msPaF4GI=;
+	s=k20260515; t=1795304424;
+	bh=GEoDwZcnGou1UJOraxPLD5sh8h1JR7DdmjoKvJQgqrY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=k3dJr6vWy83ZksuGhx0k5kyiY5KWrWBqYvdZucHmojpaK+7ztYizKzqIpJ2SKU45u
-	 LsWt2v3OOFfYCZrce1+ZCaLPrBlaEJl/uopWQQvfYxeAfSElnS7mxBwEMCwbDQK0Ua
-	 e1OGa+kh4KBVkAWoj2jvydlDyowt2Oxcr51axNi3KAoNMnyI19cT+vcpsaBYKGZ72a
-	 7lMLXmdg1sr0hogCFo/fes0XYI9R5S8RGJJnvut14q9eT8oUIKB32mYWOensaXUuGu
-	 EH9oU1m2vveJatslqhs1fsb2Ae49RymjJsIuu8RntwwuH+MGqeutFpEsb+eNcYnQEk
-	 Ha0aj/CvxV0zA==
-Date: Sat, 21 Nov 2026 23:35:43 +0000
+	b=g7n94dUVtdkFYu9ExPfxfz8hdb1NubUDbNTvkiNEmw9Ziigm7deNjwMAeYiaarjtn
+	 bw00i6RI5TXE0igWtwFbiZJGEy2m6BGvdPBrzbZCW4+uBNFqPwTsZ/0uXLQbsuJCuI
+	 NWiVxLwWH9Cfmb2SFpoGgbuSA+5WtTAY3+cJrRqN9nD4I8gMfLAfWWAw2Fhr/ZdHtS
+	 JAp/6rWfpCzut0a3lWnW+6wuqpBENBSvwl4HbRwDbt0NQr4vojIG0oVBNv1p8EBIlC
+	 rV0fGxtAdWCZks4DvRWeooLWUZqYikF/T603fX99mjjCZ7T63GM/BUtLsHHDQXg8bt
+	 FEjH62v458hEQ==
+Date: Sat, 21 Nov 2026 23:40:15 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
 Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Conor Dooley
@@ -52,12 +52,11 @@ Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Conor Dooley
  Cuciurean <sergiu.cuciurean@analog.com>, <linux-iio@vger.kernel.org>,
  <devicetree@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
  <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/6] pwm: core: add
- pwm_get_waveform_step_might_sleep()
-Message-ID: <20261121233543.55426e1e@jic23-hlaptop>
-In-Reply-To: <20261119112437.197306-2-Nicolae-daniel.Deaconescu@analog.com>
+Subject: Re: [PATCH v4 4/6] iio: adc: ad7625: move initial mode setup
+Message-ID: <20261121234015.6cbb4bef@jic23-hlaptop>
+In-Reply-To: <20261119112437.197306-5-Nicolae-daniel.Deaconescu@analog.com>
 References: <20261119112437.197306-1-Nicolae-daniel.Deaconescu@analog.com>
-	<20261119112437.197306-2-Nicolae-daniel.Deaconescu@analog.com>
+	<20261119112437.197306-5-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,179 +70,98 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Nov 2026 13:24:15 +0200
+On Thu, 19 Nov 2026 13:24:18 +0200
 Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com> wrote:
 
-> A consumer that must meet minimum times, or place an edge relative to the
-> cycles of a clock a PWM gates, can't do that with the waveform API alone:
-> rounding goes down, and the margin a minimum needs is the PWM step, known
-> only to the provider.
-> 
-> Let the provider report the rate of the clock its timing derives from and
-> the clock cycles per step. A consumer then works in whole steps and rounds
-> up when converting to nanoseconds, instead of reading the rate from a clock
-> it gets on its own, which breaks if the PWM divides its clock.
+Rather than move, I'd say 'factor out' for the title and in this text.
+
+> Move the EN pin mode setup from ad7625_probe() into
+> ad7625_set_initial_mode(). Pick the mode first and check the result of
+> setting it once, returning its error instead of -EINVAL. A following patch
+
+It was only ever set once.  Anyhow the only bit of this paragraph I'd
+keep is.  "Return error if reported by ad7960_set_mode() rather than
+replacing it with -EINVAL"
+
+> adds parts without EN pins that skip it.
+This last bit is fine but I'd put it first as the 'why' answer for the
+whole patch.
+
+
 > 
 > Signed-off-by: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
 > ---
->  drivers/pwm/core.c  | 69 +++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/pwm.h | 34 ++++++++++++++++++++++
->  2 files changed, 103 insertions(+)
+>  drivers/iio/adc/ad7625.c | 52 ++++++++++++++++++++++------------------
+>  1 file changed, 29 insertions(+), 23 deletions(-)
 > 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 2a050ff4608b..a63b8f65a43d 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -14,6 +14,7 @@
->  #include <linux/of.h>
->  #include <linux/pwm.h>
->  #include <linux/list.h>
-> +#include <linux/math64.h>
->  #include <linux/mutex.h>
->  #include <linux/err.h>
->  #include <linux/slab.h>
-> @@ -325,6 +326,68 @@ int pwm_get_waveform_might_sleep(struct pwm_device *pwm, struct pwm_waveform *wf
+> diff --git a/drivers/iio/adc/ad7625.c b/drivers/iio/adc/ad7625.c
+> index ade2f2368bd8..127441050687 100644
+> --- a/drivers/iio/adc/ad7625.c
+> +++ b/drivers/iio/adc/ad7625.c
+> @@ -561,6 +561,32 @@ static int devm_ad7625_regulator_setup(struct device *dev,
+>  	return 0;
 >  }
->  EXPORT_SYMBOL_GPL(pwm_get_waveform_might_sleep);
 >  
-> +/**
-> + * pwm_get_waveform_step_might_sleep - Query the granularity of the waveforms
-> + * Cannot be used in atomic context.
-
-Odd to have that second bit here in the kernel-doc. Particularly as you have
-a Context entry below saying the same thing below and a name of _might_sleep.
-
-> + * @pwm: PWM device
-> + * @step: output parameter
-> + *
-> + * Stores in @step the clock rate the timing of @pwm is derived from and how
-> + * many cycles of that clock one step lasts. Period, duty length and duty
-
-Can this be a cross reference to the docs in for the structure?
-Nice to not duplicate stuff where possible.
-
-> + * offset are multiples of that step, so a waveform that is asked for in whole
-> + * steps, and is within the range of the hardware, is not changed by rounding.
-> + * Compute the length of n steps in nanoseconds as
-> + * n * @step->clk_cycles_per_step * NSEC_PER_SEC / @step->clk_rate_Hz and round
-
-I'd tweak the wrap to just have the formula on a line on its own.
-
-> + * it up, because pwm_round_waveform_might_sleep() and
-> + * pwm_set_waveform_might_sleep() round down. The product can exceed 64 bits, so
-> + * compute it with mul_u64_u64_div_u64_roundup().
-
-I don't understand this. I was thinking it was an implementation detail that
-should not be in these docs anyway, but I can't immediately spot it at all.
-So rewrite or drop.
-
-
-> + *
-> + * The values can change when a clock changes its rate, so they are only valid
-> + * as long as the provider's input clocks are not reconfigured.
-> + *
-> + * Context: May sleep.
-> + * Returns: 0 on success, -EOPNOTSUPP if the provider doesn't report it or a
-> + * negative errno.
-> + */
-> +int pwm_get_waveform_step_might_sleep(struct pwm_device *pwm,
-> +				      struct pwm_waveform_step *step)
+> +static int ad7625_set_initial_mode(struct device *dev, struct ad7625_state *st)
 > +{
-> +	struct pwm_chip *chip = pwm->chip;
-> +	const struct pwm_ops *ops = chip->ops;
+> +	enum ad7960_mode mode;
 > +	int ret;
 > +
-> +	might_sleep();
-> +
-> +	if (!pwmchip_supports_waveform(chip) || !ops->get_waveform_step)
-> +		return -EOPNOTSUPP;
-> +
-> +	guard(pwmchip)(chip);
-> +
-> +	if (!chip->operational)
-> +		return -ENODEV;
-> +
-> +	if (IS_ENABLED(CONFIG_PWM_DEBUG) && chip->atomic) {
-> +		/*
-> +		 * Catch any drivers that have been marked as atomic but
-> +		 * that will sleep anyway.
-
-Wrap comments to 80 chars unless it helps readability to not do so.
-
-> +		 */
-> +		non_block_start();
-> +		ret = ops->get_waveform_step(chip, pwm, step);
-> +		non_block_end();
-> +	} else {
-> +		ret = ops->get_waveform_step(chip, pwm, step);
+> +	/* Set the device mode based on detected EN configuration. */
+> +	if (!st->info->has_bandwidth_control) {
+> +		ad7625_set_en_gpios_for_vref(st, st->have_refin, st->vref_mv);
+> +		return 0;
 > +	}
-> +	if (ret)
-> +		return ret;
 > +
-> +	if (!step->clk_rate_Hz ||
-> +	    step->clk_rate_Hz > mul_u32_u32(step->clk_cycles_per_step, NSEC_PER_SEC))
-> +		return -EINVAL;
+> +	if (st->can_wide_bandwidth)
+> +		mode = AD7960_MODE_WIDE_BANDWIDTH;
+> +	else if (st->can_narrow_bandwidth)
+> +		mode = AD7960_MODE_NARROW_BANDWIDTH;
+> +	else
+> +		return dev_err_probe(dev, -EINVAL,
+> +			"couldn't set device to wide or narrow bandwidth modes\n");
+> +
+> +	ret = ad7960_set_mode(st, mode, st->have_refin, st->vref_mv);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "failed to set EN pins\n");
 > +
 > +	return 0;
 > +}
-> +EXPORT_SYMBOL_GPL(pwm_get_waveform_step_might_sleep);
 > +
->  /* Called with the pwmchip lock held */
->  static int __pwm_set_waveform(struct pwm_device *pwm,
->  			      const struct pwm_waveform *wf,
-> @@ -1710,6 +1773,12 @@ static bool pwm_ops_check(const struct pwm_chip *chip)
->  		if (!ops->apply)
->  			return false;
+>  static int ad7625_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -595,29 +621,9 @@ static int ad7625_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		return ret;
 >  
-> +		if (ops->get_waveform_step) {
-> +			dev_warn(pwmchip_parent(chip),
-> +				 ".get_waveform_step() needs .write_waveform()\n");
-> +			return false;
-> +		}
-> +
->  		if (IS_ENABLED(CONFIG_PWM_DEBUG) && !ops->get_state)
->  			dev_warn(pwmchip_parent(chip),
->  				 "Please implement the .get_state() callback\n");
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index b11ae91723f8..c52f4c9153c2 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -76,6 +76,34 @@ struct pwm_waveform {
->  	u64 duty_offset_ns;
->  };
+> -	/* Set the device mode based on detected EN configuration. */
+> -	if (!st->info->has_bandwidth_control) {
+> -		ad7625_set_en_gpios_for_vref(st, st->have_refin, st->vref_mv);
+> -	} else {
+> -		/*
+> -		 * If neither sampling mode is available, then report an error,
+> -		 * since the other modes are not useful defaults.
+> -		 */
+> -		if (st->can_wide_bandwidth) {
+> -			ret = ad7960_set_mode(st, AD7960_MODE_WIDE_BANDWIDTH,
+> -					      st->have_refin, st->vref_mv);
+> -		} else if (st->can_narrow_bandwidth) {
+> -			ret = ad7960_set_mode(st, AD7960_MODE_NARROW_BANDWIDTH,
+> -					      st->have_refin, st->vref_mv);
+> -		} else {
+> -			return dev_err_probe(dev, -EINVAL,
+> -				"couldn't set device to wide or narrow bandwidth modes\n");
+> -		}
+> -
+> -		if (ret)
+> -			return dev_err_probe(dev, -EINVAL,
+> -					     "failed to set EN pins\n");
+> -	}
+> +	ret = ad7625_set_initial_mode(dev, st);
+> +	if (ret)
+> +		return ret;
 >  
-> +/**
-> + * struct pwm_waveform_step - granularity of the waveforms a PWM can generate
-> + * @clk_rate_Hz: rate of the clock the PWM's timing is derived from
-> + * @clk_cycles_per_step: number of those clock cycles one step lasts
-> + *
-> + * The period, the duty length and the duty offset of a waveform are multiples
-> + * of one step, which lasts @clk_cycles_per_step / @clk_rate_Hz seconds. A PWM
-> + * that divides its input clock in hardware has @clk_cycles_per_step > 1. A
-> + * waveform that is asked for in whole steps, and is within the range of the
-> + * hardware, is not changed by rounding.
-> + *
-> + * The step is the same for every waveform and for the period, the duty length
-> + * and the duty offset, so a provider whose granularity depends on the
-> + * requested period (for example through a prescaler) can't describe itself
-> + * with it. One step also has to last at least 1 ns, otherwise rounding a
-> + * length in nanoseconds up can add a whole step.
-> + *
-> + * A consumer that needs a minimum time, or that has to place an edge relative
-> + * to the cycles of the clock a PWM channel gates, can use this to ask for
-> + * the next possible value instead of one that is rounded down, and to compute
-> + * the frequency a rounded period results in without the error of the
-> + * nanosecond resolution of struct pwm_waveform.
-> + */
-> +struct pwm_waveform_step {
-> +	unsigned long clk_rate_Hz;
-> +	unsigned int clk_cycles_per_step;
-> +};
-
-For this to go through IIO (or an immutable branch if needed) I'll obviously
-need PWM tags.
-
-Thanks,
-
-Jonathan
+>  	ret = devm_ad7625_pwm_get(dev, st);
+>  	if (ret)
 
