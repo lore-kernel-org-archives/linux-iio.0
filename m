@@ -1,55 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795288429;
-	b=ZVxtCLcTD1osJA+vfVsfjOgA0xvEuXA5R46PgTyQq8wZJq3N3rA2mSiJpxQEGMfI56vT
-	 NHCxa/KZded5t5WU75frTS6SQ87znb8tQfXyTxSbhaozIs4T0EvVfY8iLYrp4nhbU901N
-	 bxErGtktb4j8c4bIs+hR5Zk3o3RYg6SiBxs9OvZ1KzGQ6Xs/Ajoj25ngsrq33ZyWtskch
-	 tqPbePrkQ3voWghaAUagw/yUSmmzHmbYU5aGesZdwhP8dEjbXKob/lJ6+Xp26I9mcsnoE
-	 vYsYIV703ozc9XB9VEEkG3Sh3AQ9N2+T38H3zj49fkmgJWE3Rwi2WQGuYwNzJCC+9Qw==
+	t=1795289094;
+	b=U2dlBW6J2TLwGOBq+2WmLsvO69roSsyoVuTk9FsJD5zk108oaFMZ9JaXpBI/ol2uk5/G
+	 3827XoW54i7akm0jMANKX4OTgXalha54H3zNIdsRQsGPjj2tT/Q3eMWR0E0YNxcaZWdDS
+	 C3SaiC8K5M0QeZYf7XflYI1kRLVwOWkwhkHZsyAJ/jMEhOske4gU7FPC/ydoX5w4JDBV/
+	 5IfHT9v/fg4cjKHtmlEQfauQsIR2bfGhLWDzCDsNkXnOzEHOUd1HcVa03f+Gs/MubaWeS
+	 sMgcq+Jui+z9DRecY5fRMexokbOQvvO6Z5JKRR5ps3BezCOx4ExfDqmSaQ3cDXbZVwg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795288429;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795289094;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=8H6RdqY+TYjwos/2v0fo1/5eFR0WDL0iwmc+wYuW/Yg=;
-	b=hWFwIAB/UNvNutPFp+4T93QmqBtEU1+w+bLHGnRc5AVAIJwygvfwC6t8Jba77iWY9UDA
-	 wMsCVDcyrqRG29CjfTeoJCbPKjQLmZ5/jaReRp7DdJn2ok0S8T8V+DpuGSHLSWcp9IEBC
-	 k2vC1SBSLSWLok3Wd6idvpS7nxCyvTaHz00lHeQMLDY2+9sm6QZr6qynzWPWv9k4/WVHo
-	 zw2r0mxadD7OLf6qNks5OyMouZEjxfnegzwTB2VxUC+KZp4rUFGijMOll/0zXj//XaFUA
-	 Ok3n1aqdWzmWCrrx+VlHYSsA9EmV9CLVisxf+N+YoVDrux9uZmFMyoRbrhD4561YDaQ==
+	bh=9Upa2rDL0IbqUOOoHVhvAzVcvXqcJkxpHOm0IGBGtQk=;
+	b=bleT0ZMeJCJlma7SrOQozpErMjCRphSnTdSiP+K6ZR6PUEbyqmyONEY5AcNdSj0h020d
+	 uC0+SiXCkycXU8MIWBCjj33jmmaVMpYEVhHNEUVR5bTboV5+sxf0dVdEMdW4Zr20GGmvp
+	 6xQTcF6lDBxeSgJvHVhNJEl2c+SUMumUybn3s9Q1kvoShSMejcYHLNRVCrRSOBVciLbsG
+	 d5PKCMDSaszKdH0BxqW5iRwu+gVZaqmB/L6NQwwN8VgrNgwRK5QwqcRMTLqzTKRf60rwn
+	 KDA2/OG8eqd4+UN4L3bH0BHxyqqBvFp/+OVwh7GJezjauXfIXiB1Cg7s246fugd3ZDQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eh8f4a5J;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XDbz26tZ;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3896C606A337
-	for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 19:13:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AD8E606A320
+	for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 19:24:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eh8f4a5J
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 798891F000C4;
-	Sat, 21 Nov 2026 19:13:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XDbz26tZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEA061F000C0;
+	Sat, 21 Nov 2026 19:24:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795288429;
-	bh=8H6RdqY+TYjwos/2v0fo1/5eFR0WDL0iwmc+wYuW/Yg=;
+	s=k20260515; t=1795289094;
+	bh=9Upa2rDL0IbqUOOoHVhvAzVcvXqcJkxpHOm0IGBGtQk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=eh8f4a5Jrq5CPoOnUgHtQ61gle70ItXfN5TK965vuHnNlzClGLhuDx2N5hpHUbNUx
-	 VlZPcfYEeHJ0eEnlfV9ViVJMYXVlOCstvtZOWnfGZIN8+VzS1/yKww8LF9RifkRTcG
-	 cRYGxM9Bi8ynroGYt3sBVNg5deeiKKO8RGBRmkdmdgnEDCdKg6Y2xt/uJ1ntYX405A
-	 bReHXy7Vy/qn+UY08OMp30ex/ASovOij46l/nbN9x4cDt9aTPnnpVb1/7Ndza73Rt7
-	 ud5N9rRNHgA8cxz2ZpIO1W21bNWQLq+cbFhUjwBJWC7zbeosyHROZ9sZr067zvV129
-	 81Lf+PzPv2tJw==
-Date: Sat, 21 Nov 2026 19:13:43 +0000
+	b=XDbz26tZ3VW1bGp60G49FO/R1UMD13gcyihsJ6RpcVgDJO84BaZDTkkNEf7Bky06s
+	 NXVJslCsnDPgdLU5Zy4hZRdxQr+LN8Lw/jKo0cQ5Ucz4hLD0C5i5ZcAiiZKGxS+vJA
+	 cPF7CKGTLS1U/u9L2eIG4xUmfpgYgjTuO0S4VL0GwmbK5htBDLKCvDWwwJaSlFTf3e
+	 bAZYLnW9Hgxe5NBfY8o+AiGOQiSiAzW8PhyUGOfkq7yRQwk8aw7ZIMmulQLxmf0EJE
+	 xuy+I98KLCi6Byw8SFTadoOAWKFiHO59xwWhsoFDopYnPEtUi+L1d2sGd8wYFzaxg7
+	 PXZOUDdJm3+8A==
+Date: Sat, 21 Nov 2026 19:24:48 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Himanshu Bhardwaj <bhardwajhimanshu2515@gmail.com>
-Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, andriy.shevchenko@intel.com, kapoorarnav43@gmail.com
-Subject: Re: [PATCH v2] tools: iio: Prefer channel-specific scale and offset
- values
-Message-ID: <20261121191333.1ccbacc9@jic23-hlaptop>
-In-Reply-To: <20261121142417.1538-1-bhardwajhimanshu2515@gmail.com>
-References: <20261121142417.1538-1-bhardwajhimanshu2515@gmail.com>
+To: Wanhui Fu <fuwh1120@163.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ dakr@kernel.org, kees+treewide@kernel.org,
+ giorgitchankvetadze1997@gmail.com, u.kleine-koenig@baylibre.com,
+ linux-iio@vger.kernel.org, Andreas Kemnade <andreas@kemnade.info>
+Subject: Re: [PATCH] iio: twl6030-gpadc: Add error handling path in
+ twl6030_gpadc_probe()
+Message-ID: <20261121192448.78041532@jic23-hlaptop>
+In-Reply-To: <20261121082419.376423-1-fuwh1120@163.com>
+References: <20261121082419.376423-1-fuwh1120@163.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,78 +65,99 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Nov 2026 19:54:16 +0530
-Himanshu Bhardwaj <bhardwajhimanshu2515@gmail.com> wrote:
+On Sat, 21 Nov 2026 16:24:19 +0800
+Wanhui Fu <fuwh1120@163.com> wrote:
 
-> iioutils_get_param_float() stops at the first directory entry matching
-> either the channel-specific attribute or its generic counterpart. If
-> the generic attribute is returned first, a more specific value is ignored.
+> Add an error handling path to call twl6030_gpadc_disable_irq(),
+> as twl6030_gpadc_remove() does.
 > 
-> For example, the MAX31855 driver exposes in_temp_scale as 250 and
-> in_temp_ambient_scale as 62.5. Reading the ambient scale can therefore
-> return 250, making the converted ambient temperature four times too
-> large. The offset lookup uses the same helper.
+> Signed-off-by: Wanhui Fu <fuwh1120@163.com>
+Fix is fine, but I'd rather not make already ugly code uglier.
+There is an oddity in here though that makes a simple cleanup trickier.
 
-I can't remember what the history of that was.  Under the ABI drivers
-are not supposed to ever do this, but perhaps this is patching over
-an ABI bug where we had the option to keep the incorrect value in place.
+Why is in remove is the interrupt disabled before the userspace interfaces
+are removed?  Looking back at the history (lore search for the
+disable function) it seems that the driver was way off on ordering,
+most of it got fixed up back 2013 but this one didn't.
+https://lore.kernel.org/all/1376910580-7545-1-git-send-email-oleksandr.kozaruk@ti.com/
 
-Anyhow, if we allow that both can exist (and they clearly do in practice)
-this makes sense.
+Given how old it was I doubt this ordering was intentional.
 
-Given this is just a demo tool, I'll route this one the slow way.
+So...  Lets do the more significant cleanup.
 
-Applied to the testing branch of iio.git, so on course for next merge window.
+First add a devm_add_action_or_reset() to remove the manual handling
+of the interrupt disable (which is equivalent of this fix) then convert
+the only remaining call to devm_iio_device_register() in a follow up
+patch.
+
+Long shot, but last real change to this driver was in 2022 by Andreas
+so if anyone is likely to have hardware to test probably Andreas.
++CC.  Given it's remove path anyway and that would be rarely used
+for a soc ADC driver, I'm not that concerned if we can't test this
+change.
 
 Thanks,
 
 Jonathan
 
 
-> 
-> Continue searching after reading a generic attribute, and stop when the
-> channel-specific attribute is found. Free the temporary filename before
-> continuing to avoid leaking it when both attributes are present.
-> 
-> Reproduced with temporary attribute files containing the MAX31855 scale
-> values and both directory enumeration orders. The fixed helper passes
-> 14 parameter lookup tests, including generic fallback and malformed
-> values. All three IIO tools build with -Wall -Werror.
-> 
-> Fixes: e58537ccce73 ("staging: iio: update example application.")
-> Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Himanshu Bhardwaj <bhardwajhimanshu2515@gmail.com>
 > ---
-> v2:
-> - Move the tool-assistance note below the --- line (Andy)
-> - Collect Reviewed-by tags; no code change
+>  drivers/iio/adc/twl6030-gpadc.c | 20 +++++++++++++++-----
+>  1 file changed, 15 insertions(+), 5 deletions(-)
 > 
-> Found, implemented and tested with assistance from OpenAI Codex;
-> independently reviewed and re-tested with Anthropic Claude. No physical
-> sensor hardware was used.
-> 
->  tools/iio/iio_utils.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-> index e274a0d..5df2c76 100644
-> --- a/tools/iio/iio_utils.c
-> +++ b/tools/iio/iio_utils.c
-> @@ -265,7 +265,12 @@ int iioutils_get_param_float(float *output, const char *param_name,
->  				ret = errno ? -errno : -ENODATA;
+> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+> index e7fd371b3404..8dae7561320f 100644
+> --- a/drivers/iio/adc/twl6030-gpadc.c
+> +++ b/drivers/iio/adc/twl6030-gpadc.c
+> @@ -931,19 +931,19 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
+>  					TWL6030_REG_TOGGLE1);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to enable GPADC module\n");
+> -		return ret;
+> +		goto err_disable;
+>  	}
 >  
->  			fclose(sysfsfp);
-> -			break;
-> +			/* Prefer the channel-specific value over the generic one. */
-> +			if (strcmp(builtname, ent->d_name) == 0)
-> +				break;
+>  	ret = twl_i2c_write_u8(TWL_MODULE_USB, VBUS_MEAS, USB_VBUS_CTRL_SET);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to wire up inputs\n");
+> -		return ret;
+> +		goto err_disable;
+>  	}
+>  
+>  	ret = twl_i2c_write_u8(TWL_MODULE_USB, ID_MEAS, USB_ID_CTRL_SET);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to wire up inputs\n");
+> -		return ret;
+> +		goto err_disable;
+>  	}
+>  
+>  	ret = twl_i2c_write_u8(TWL6030_MODULE_ID0,
+> @@ -951,7 +951,7 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
+>  				TWL6030_MISC1);
+>  	if (ret < 0) {
+>  		dev_err(dev, "failed to wire up inputs\n");
+> -		return ret;
+> +		goto err_disable;
+>  	}
+>  
+>  	indio_dev->name = DRIVER_NAME;
+> @@ -960,7 +960,17 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
+>  	indio_dev->channels = pdata->iio_channels;
+>  	indio_dev->num_channels = pdata->nchannels;
+>  
+> -	return iio_device_register(indio_dev);
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to register iio device\n");
+> +		goto err_disable;
+> +	}
 > +
-> +			free(filename);
-> +			filename = NULL;
->  		}
->  error_free_filename:
->  	if (filename)
-> 
-> base-commit: 4405c18c95d2d0f99f6c581ef0ee8591a1aa6ccd
+> +	return 0;
+> +
+> +err_disable:
+> +	twl6030_gpadc_disable_irq(TWL6030_GPADC_RT_SW1_EOC_MASK);
+> +	return ret;
+>  }
+>  
+>  static void twl6030_gpadc_remove(struct platform_device *pdev)
 
