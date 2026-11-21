@@ -1,58 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795224348;
-	b=bJb8kj+C5jgSdO3jd5xqqAg6cVoV2SJ59/eQOWXgUKgmH5rsYuvBDmq3Ogh2OgOM9ynr
-	 b7359GmpC1rqfkAf7frOYScRs+tbeLIpKEwH3hryRK8WKGJKyLBVgm8cfmuhJjQAV3Hfe
-	 AzDo3kNq0NLZtpjc8HvmT4y9vF9ENBShQv1vjZ7NP/WdXNMfZ2+CXS8fJkcfs7NEZrygF
-	 1Cxg7wig+sVi3sgf0lQwkeY5mPiKMc+7PJs3XaWHcHZ4a/F6kIIe2IZ6qbkM6SRsVUnIP
-	 uxpfNazyevjBpVHeXATGFG9x5py5lsos6Md3g36pi20KRvV5cRLoXt1lmNWZFXBO13Q==
+	t=1795225004;
+	b=w0q1ssbVa5E/RKGl+2/mAks+a5ippM02yZGnEX+jb+7uVDrezB2FmUS8BaY1AKXhK6vA
+	 0r6INZ2UdBuO2MHW/dU13kPMfTISBKc4pQr9tRFVQ2tORDVgD4l0ycCPfR9Qp9A9Cw4+4
+	 D/cz5KNnamhisbdQGeVE6kd6DtEwYNDvcHnZ3B2GWCTqmc1NuRLcITY7H0rkEaNbkJL5m
+	 CMYhFp6XuobvVTxanayRGtjKYBy0s7abhdCdXZKfJVSB0t/2Rum2QjMSkFsRewpO6lT6s
+	 aXCTOL2JKdJyaEUtNwXa6hEa7YQ9k2impPJgDLOO/EnVPwn+Zjriy2v0MxGjIDrnjtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795224348;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795225004;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=52C0mGXDL8C+9F4YtYqG/JuH/nLnrJPatUebsyl9nIc=;
-	b=1JrP8+vhLMrEwuzU2yK4c1179Y1i8pxuIBUYC2VXbQB31dRSPsnUQ/GQTqlZk4soL3Eg
-	 tFISDO6UqxnywajGPeZo5476PnF0ZVFPc6dBJVFDMmmLQ0fgkcfBqF9oOuLI/D3V3zuUR
-	 5Y9YczabjTQWMII8xOObBTfJwWT5xjlacJIMnXg6pbYpSf4WMz9Ypg7JKgYavATpXlV8e
-	 XP9vx7GCxurxHpTPk9Ahcpk/uxZmGyKcIsy5SsGYqMF1iZR5AOntlmuN1NcVLCoPjOalC
-	 lWiy++yy5o+y7xtmnjgwFphHHlnY555MdQ8vs8o7JD2CZtgeEKnGsWSJqaoml36ONkQ==
+	bh=wC40EZv+3NfB+qDvxR8XDUi7Rq89tU/dFa7o4BUerMs=;
+	b=oPD0X0JFV0MhBykym7ehUB+DHAjXM5NJ1k8SZQVNnlTnxrFB7Z/fU+PGJpbITDxcur0n
+	 txOcQ1xKz2x7b+9efz+0h8o/nzbWimV03HkLY6ALgUtvSsZwlUxRhDQWdO2ALrsOur1HA
+	 fSxa46PStR33uMQrcb9o1l/whyTHwiyfnlv0ta4LkeEZFHAPnXOtjXtCbLsF8Uivb6R+y
+	 7WjPuqivR4Va3Dp2T5ss94R5ljc4BeV+Zt8IYBk+Di3X7IhlKUXkoWBo22hZni00lwZbo
+	 SxGMsG9X9rkH3kehBmDo34zWT9bk9vnFq1p38YhH9ukxA/yzauU/x3P24SfAdDQVkyg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lwOaaJih;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mI+rB8Ji;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E66606A6AE;
-	Sat, 21 Nov 2026 01:25:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 900B8606A68C;
+	Sat, 21 Nov 2026 01:36:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lwOaaJih
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC271F000C6;
-	Sat, 21 Nov 2026 01:25:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mI+rB8Ji
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E161F000C0;
+	Sat, 21 Nov 2026 01:36:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795224347;
-	bh=52C0mGXDL8C+9F4YtYqG/JuH/nLnrJPatUebsyl9nIc=;
+	s=k20260515; t=1795225003;
+	bh=wC40EZv+3NfB+qDvxR8XDUi7Rq89tU/dFa7o4BUerMs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=lwOaaJihsH2JvmVbfJObnUIlT0OQqitf1Xjq2pcO9GTFNsiNF1G83XCCOw5YdStNK
-	 QvbsK8XLV3EguNejPQ4QvpXZRj4uSKc3se1u0wZ1Mene9KE7CN7ejf6IYqR6FbOBWx
-	 hcwilFC0JhKh3xGY/i9cpySKrY9Zai/wVELaAl5X/5dx5Q2hbTS7dubqQnV6TTwSm9
-	 YSEiwUBrJHviByDvv4oIihqHAuVLThuMYQssdOPCq5IiaxvhXhdqGa4shCTEbBkyTs
-	 En2lkpYUEWloHljNOcfDZPMM0QSour93th+iVo/CCaaLSiAtY1ZD9xQDNnSsmIPZlG
-	 8gXEoeN43IECA==
-Date: Sat, 21 Nov 2026 01:25:42 +0000
+	b=mI+rB8JilOXg60z6lDO7sOF6fc0qOYaOezTEqBwUqpufQuTmYuGPUnaDhYnB6/Sv5
+	 jMAvkZkYfXvG54xrc+WZAKa0hvoJ2qLFV14WiIB2570z9GP3XYcR9EEmBxQMe7Wy/S
+	 8yhEXik21+PZtwhcQK8iHdlF86B0gywyO4kEPzevyWqD6hFf/X8Ds3tuaDCKiaq12n
+	 5fdvaamgB78nNV/vRXJs/o2Ou4A5g971KC2e7jI6XvzontIQCNz7qbi1g2gPjfdX2+
+	 qXMxBeDvFd7lLo33YRd+/a8m9mCQJhMKJj5ah9vdxqBX10KFKSwj615A+rUYpQ3jQk
+	 Y5RQb2aV0TnCQ==
+Date: Sat, 21 Nov 2026 01:36:39 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Rodrigo Alencar via B4 Relay
  <devnull+rodrigo.alencar.analog.com@kernel.org>
 Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
  Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH RFC 2/5] iio: core: add struct iio_chan_attr and split
- attribute creation
-Message-ID: <20261121012542.3beee3c9@jic23-hlaptop>
-In-Reply-To: <20261120-iio-core-attr-review-v1-2-05b41f8133c2@analog.com>
+Subject: Re: [PATCH RFC 5/5] iio: sysfs: drop core-only fields from struct
+ iio_dev_attr
+Message-ID: <20261121013639.14e8d5bb@jic23-hlaptop>
+In-Reply-To: <20261120-iio-core-attr-review-v1-5-05b41f8133c2@analog.com>
 References: <20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com>
-	<20261120-iio-core-attr-review-v1-2-05b41f8133c2@analog.com>
+	<20261120-iio-core-attr-review-v1-5-05b41f8133c2@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,142 +66,76 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 20 Nov 2026 18:03:58 +0000
+On Fri, 20 Nov 2026 18:04:01 +0000
 Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
 > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> Channel, event and buffer attributes are all created through
-> __iio_add_chan_devattr(), which allocates a struct iio_dev_attr and its
-> name, and only then walks the attribute list looking for a duplicate.
-> For shared attributes (info_mask_shared_by_*, shared ext_info and shared
-> event info) every channel after the first one allocates the attribute
-> and its name just to find the duplicate and free both again. The
-> function also takes a buffer pointer that only buffer attributes use.
+> The list node, channel spec and buffer pointer of struct iio_dev_attr
+> are now only used through struct iio_chan_attr and the types extending
+> it. Remove them, so that attributes declared by drivers through
+> IIO_DEVICE_ATTR*() and friends no longer carry them.
 > 
-> Introduce struct iio_chan_attr for the attributes created by the IIO
-> core. It embeds struct iio_dev_attr and adds the channel spec and the
-> list node, so that the core-only state no longer needs to live in the
-> structure drivers use for their own attributes. Other attribute types
-> can extend it further.
-> 
-> Replace __iio_add_chan_devattr() with two steps:
-> 
->  - iio_chan_attr_prepare() builds the full attribute name on the stack
->    and checks it against the attribute list.
->  - iio_chan_attr_add() initializes an attribute allocated by the caller
->    and adds it to the list.
-> 
-> The caller allocates its own attribute type in between, so the core
-> needs no size or context pointer, and duplicates are detected before
-> anything is allocated.
-> 
-> Also add iio_attr_show_t and iio_attr_store_t, so the show and store
-> callback prototypes are not spelled out in every helper.
-> 
-> Event and buffer attributes are converted to struct iio_chan_attr, but
-> otherwise keep their current behavior.
+> On 64-bit, without lockdep, this shrinks struct iio_dev_attr from 72 to
+> 40 bytes.
 > 
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-A couple of minor comments inline.
 
-Thanks,
+Trivial but I think it would be nicer to drop each element
+as it stops being used in earlier patches. That would make
+it obvious how things are migrating to each level of more specific
+structure.
 
-Jonathan
+
+Overall I like this set. Bringing my horrible hacky mess
+into the modern world :)
+
+Core code though so I'm not going to jump on picking it up
+until folk have had a good chance to look at it.
+
+I was tempted though as it's been a long day and nice
+to see something that reduces technical debt go in!
+
+Passing comment inline. No actual changes suggested!
 
 
->  int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 2d7759325eb3..48fdaed6d703 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
 
-> @@ -1521,23 +1526,25 @@ static struct attribute *iio_buffer_wrap_attr(struct iio_buffer *buffer,
->  					      struct attribute *attr)
->  {
->  	struct device_attribute *dattr = to_dev_attr(attr);
-> +	struct iio_chan_attr *chan_attr;
->  	struct iio_dev_attr *iio_attr;
+
+> ---
+>  include/linux/iio/sysfs.h | 9 ---------
+>  1 file changed, 9 deletions(-)
+> 
+> diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
+> index de5bb125815c..1e4122b8c13a 100644
+> --- a/include/linux/iio/sysfs.h
+> +++ b/include/linux/iio/sysfs.h
+> @@ -9,23 +9,14 @@
+>  #ifndef _INDUSTRIAL_IO_SYSFS_H_
+>  #define _INDUSTRIAL_IO_SYSFS_H_
 >  
-> -	iio_attr = kzalloc_obj(*iio_attr);
-> -	if (!iio_attr)
-> +	chan_attr = kzalloc_obj(*chan_attr);
+> -struct iio_buffer;
+> -struct iio_chan_spec;
+> -
+>  /**
+>   * struct iio_dev_attr - iio specific device attribute
+>   * @dev_attr:	underlying device attribute
+>   * @address:	associated register address
+> - * @l:		list head for maintaining list of dynamically created attrs
+> - * @c:		specification for the underlying channel
+> - * @buffer:	the IIO buffer to which this attribute belongs to (if any)
+>   */
+>  struct iio_dev_attr {
+>  	struct device_attribute dev_attr;
+>  	u64 address;
 
-Seems to be suited to
-	struct iio_chan_attr *chan_attr __free(kfree) = 
-		kzalloc_obj(*chan_attr);
+This is close to device_attribute_ext but I checked and there are few
+if any points pushed into that address. 
 
-> +	if (!chan_attr)
->  		return NULL;
+> -	struct list_head l;
+> -	struct iio_chan_spec const *c;
+> -	struct iio_buffer *buffer;
+>  };
 >  
-> +	iio_attr = &chan_attr->iio_attr;
->  	iio_attr->buffer = buffer;
->  	memcpy(&iio_attr->dev_attr, dattr, sizeof(iio_attr->dev_attr));
->  	iio_attr->dev_attr.attr.name = kstrdup_const(attr->name, GFP_KERNEL);
->  	if (!iio_attr->dev_attr.attr.name) {
-> -		kfree(iio_attr);
-> +		kfree(chan_attr);
-
-No need for this.
-
->  		return NULL;
->  	}
->  
->  	sysfs_attr_init(&iio_attr->dev_attr.attr);
->  
-> -	list_add(&iio_attr->l, &buffer->buffer_attr_list);
-> +	list_add(&chan_attr->l, &buffer->buffer_attr_list);
-
-then
-	list_add(&no_free_ptr(chan_attr)->l, &buffer->buffer_attr_list);
-
->  
->  	return &iio_attr->dev_attr.attr;
->  }
-
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index ed7aa7fd9391..d1f56e7f1666 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
->  
-> -static
-> -int __iio_device_attr_init(struct device *dev,
-> -			   struct device_attribute *dev_attr,
-> -			   const char *postfix,
-> -			   struct iio_chan_spec const *chan,
-> -			   ssize_t (*readfunc)(struct device *dev,
-> -					       struct device_attribute *attr,
-> -					       char *buf),
-> -			   ssize_t (*writefunc)(struct device *dev,
-> -						struct device_attribute *attr,
-> -						const char *buf,
-> -						size_t len),
-> -			   enum iio_shared_by shared_by)
-> +static ssize_t iio_chan_attr_name_emit(struct device *dev,
-> +				       const struct iio_chan_spec *chan,
-> +				       enum iio_shared_by shared_by,
-> +				       const char *postfix,
-> +				       char *buf, size_t len)
->  {
-> -	char prefix[NAME_MAX + 1];
-> +	struct seq_buf s;
->  	ssize_t ret;
->  
-> +	ret = __iio_chan_prefix_emit(dev, chan, shared_by, buf, len);
-
-Is it worth the pain of just passing the seq_buf in there?
-
-
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	seq_buf_init(&s, buf + ret, len - ret);
-> +	seq_buf_printf(&s, ret ? "_%s" : "%s", postfix);
-> +	if (seq_buf_has_overflowed(&s))
-> +		return -EOVERFLOW;
-> +
-> +	return ret + s.len;
-> +}
-
-
+>  #define to_iio_dev_attr(_dev_attr)				\
+> 
 
