@@ -1,58 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795302840;
-	b=nOtVitGlXS/xJJbs8Tv59S2KDFYL89x7ZmAyG07EFTSHdkREAI3WedmPVdzFNR2VOm5R
-	 WTmQZIL1PjQ/ZQ/piUw2V8LDzpr9rMe+6Pm2F80GHcKTQQOqZ1xS8JLTTKd3THRkVPNGJ
-	 SlcsWcPDfAQIaWUoWa85/MRhSLW6htzp/2j6RgiaiE092AkWc9Hy4dEVDJZlz+E7aqgJr
-	 QW35HiC332bnVDxcGhWC94cpNKLLZf2jwtVxdNPub0whuuT5F8N5e7lny7PAmKJVLeM1v
-	 w1u467XliwBKSRxSIPTZvS2LhIUX4tRH8TNJ2OaI4s/FLejDymnjy3JB4kAJ3xHEVYQ==
+	t=1795303052;
+	b=eHMdT+pr9oJu0LQCVgTKBOg4V7Lwud20+GtGpkLrTIQiUIOEOzu63/YikMtF7kutrsUK
+	 rMyGnZjkhseKQ435aYgVf/BcvVJRZJLnnRqpIaqseyOP1LeVLrVSFuvgqx4ghM/qYHEt8
+	 abbc29FbQtmabrKELkkJNAH5NxTaT+gmqYEW1K/bqIeXf+6gqubioOxroDM4nkq1LQcBx
+	 wiaBDAfOQzEB3EBOVixfJtbhmseliuz5uTvc9u13BaXvA5C+2Z7SdK5MBRnvQ7oJwsO95
+	 tp0L4Rf/efyGtiu1fFEGHVLTL06emDylYHsvnHrbNjjynZd1Th0Agwo+Bio+0S5YY9Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795302840;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795303052;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=usOW7zkOKd+CsW2sizPj373F9nTRk2BJ1UL0D9Za7Rg=;
-	b=xwpYN0xQAwH11UX+wn7NCEa6IVxS+8sfBUTqEuCZObmNSJL+gcOlSeIg2ZkajiE3cUmU
-	 Ol4q5/PCbJGqnGKIR7ZLQ6a9j/fw9REZWt/QffTQqUrDRDORwLxYosRW5A+EmrTpK4fQY
-	 7StRXpjfYQK8GDgv/I0YFwpFfhuwMLxF0w2ct9ZAGzLYdVWsfXMNlbgvQ/nRXp0wLVWub
-	 uARJu5yf3uA1cdjV1M7moZBWEeIU8gXcgXzUWyrf+9MDRGXpibVlYMiPezj/ArV5UJrDI
-	 B7Nv0t8v9MoBhKLIvNGxiQ5SkhycOF0TqYVtEScX/057tgBv8sEmGjo58JkyJ978Atw==
+	bh=+5Tizt96IR/8Tozykg3mHlCaTrQlzMtblaH2XuL71aY=;
+	b=pTj/ze0/mqf5gJknbJ6BoBX3ByOyYdwI1FFRMZTedrWfLXu3EOsYvsq3IVcOv0zgo9JH
+	 hwxZKPLV7BwHswphMaPv5savlwX7F824/Std1yoG2Ego3h2wUHd5PsGt3GyedDBVZFhQB
+	 Ejbh7HWY0kxoHZy9R+2o1K6aagS97q4p8ElqGb1hNgeqgeSFOf+H3DbYLuXestvIEAoOJ
+	 JV0A5pUmjWykTZ5Zy0NuLrnAq1HJMAUO3/6iNNSCTuqO4FNzg6T7mZzVZtPm8ipQJIOgm
+	 XYy/tMu/9D3tdZZNHWvl2HNgXoo1nxTlVh6g4iIMSO5S/oYhxB1dX4tZojGx/HFdMlA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="jRhz//rL";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wi1uH7Hr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDF17606A320;
-	Sat, 21 Nov 2026 23:13:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 150E5606A320;
+	Sat, 21 Nov 2026 23:17:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jRhz//rL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B14991F000CA;
-	Sat, 21 Nov 2026 23:13:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Wi1uH7Hr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A05031F000C0;
+	Sat, 21 Nov 2026 23:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795302839;
-	bh=usOW7zkOKd+CsW2sizPj373F9nTRk2BJ1UL0D9Za7Rg=;
+	s=k20260515; t=1795303051;
+	bh=+5Tizt96IR/8Tozykg3mHlCaTrQlzMtblaH2XuL71aY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=jRhz//rLE7ydUSPwJWr9CTfcCk3pqiYRoAubNhAezdfGfCz/SGwPZPjBeiuVkqZI0
-	 JhMMRtEuNUP1LUCfJlj01BQn2TBj2EOvp1cVaK+44RwT1V0KfMJMv6JFkER8y6/Pe2
-	 bnpo+B9cS+nx/T2Nd3Pm1VRqmGTZVVhHs4at0+68ch/fRXC+u92jzmHZMykd89s8LW
-	 efEn1oBzI+jPlEvfCnXkGg+E8HMw/BA+OCiRqXM5gcxgab3sNyBF9XgjHueg4IKc/r
-	 69IVsNGZ7JZguLfVD/bVTWMbYChhqruf4pwnEJvfWYrpuXDMhl2RuYsA//DZQEGcqR
-	 +Y3aHaQVyt8AQ==
-Date: Sat, 21 Nov 2026 23:13:54 +0000
+	b=Wi1uH7HrP45y9lsY5U1zcFnXwQKVfNojNr8DmXjiBNSrZGz6EbMMcM+ECTy5GSvIR
+	 Q4o4NGHhAAPLLKoi+rLTbGa8gBzNmTsL043Kya3D+uYeHIFVDK1gEUXrsVgYbTFnrq
+	 4ZZhLIwjcZwZOrT4vKzk0ke0mJgKzkrSNmd5DEcnuat0x+tDj2Om4Z85yEg8e+FXEn
+	 6tGRGsyqKTQ/Hjc6u8H1BksIy2HXuzwIb+jGaFHH32ZZKueZkZwu9Ozh0yfSgnPn6+
+	 xo63QH3eqGbTtnOk7Vj0FJ757HBfwN7vnAtER2dsnfkldW0Epr42HO+3ZaIMc+5SB9
+	 748sxzJKQyziA==
+Date: Sat, 21 Nov 2026 23:17:26 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Lee Jones <lee@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Joe Sandom
- <joe.g.sandom@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 10/10] iio: light: tsl2591: Prevent infinite recursion
- on threshold boundaries
-Message-ID: <20261121231354.4aba2068@jic23-hlaptop>
-In-Reply-To: <20261119153151.1397003-11-lee@kernel.org>
-References: <20261119153151.1397003-1-lee@kernel.org>
-	<20261119153151.1397003-11-lee@kernel.org>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: lee@kernel.org, maz@kernel.org, andy@kernel.org,
+ dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
+ mfd@lists.linux.dev, linux-iio@vger.kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, crofts@kernel.org,
+ devicetree@vger.kernel.org, imx@lists.linux.dev, Krzysztof Kozlowski
+ <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: Re: [PATCH v5 1/4] dt-bindings: mfd: mxs-lradc: Fix interrupt order
+Message-ID: <20261121231726.71aa1aba@jic23-hlaptop>
+In-Reply-To: <20261119134041.16611-1-festevam@gmail.com>
+References: <20261119134041.16611-1-festevam@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,35 +66,82 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Nov 2026 15:30:43 +0000
-Lee Jones <lee@kernel.org> wrote:
+On Thu, 19 Nov 2026 10:40:38 -0300
+Fabio Estevam <festevam@gmail.com> wrote:
 
-> tsl2591_set_als_lower_threshold() adjusts the upper threshold to
-> als_lower_threshold + 1 whenever the new lower threshold is greater than
-> or equal to the current upper threshold, and
-> tsl2591_set_als_upper_threshold() symmetrically adjusts the lower
-> threshold to als_upper_threshold - 1.
+> The interrupt descriptions added during the conversion to YAML do not
+> match the ICOLL source numbers used by the existing DTS files.
 > 
-> Writing 65535 (TSL2591_ALS_MAX_VALUE) to the falling threshold wraps the
-> 16-bit addition to 0 and calls tsl2591_set_als_upper_threshold(chip, 0),
-> which then wraps 0 - 1 back to 65535 and calls
-> tsl2591_set_als_lower_threshold(chip, 65535) in an infinite mutual
-> recursion until the kernel stack overflows.  Writing 0 to the rising
-> threshold triggers the same cycle whenever the lower threshold is
-> non-zero.
+> For i.MX23, Table 5-1 of the reference manual maps source 36 to touch
+> detection and sources 37 through 44 to channels 0 through 7. The DTS
+> lists these sources in that order.
 > 
-> Reject als_lower_threshold == TSL2591_ALS_MAX_VALUE and
-> als_upper_threshold == 0 with -EINVAL, propagate errors from the
-> cross-calls, and only update chip->als_settings once the I2C writes
-> succeed.
+> For i.MX28, Table 5-1 maps source 10 to touch detection, sources 14 and
+> 15 to the threshold interrupts, sources 16 through 23 to channels 0
+> through 7, and sources 24 and 25 to buttons 0 and 1. The DTS also lists
+> these sources in that order.
 > 
-> Fixes: 2335f0d7c790 ("iio: light: Added AMS tsl2591 driver implementation")
-> Closes: https://sashiko.dev/#/bug/linux-29f0f993-c799-4717-9daa-d0ad367f4e6d
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Lee Jones <lee@kernel.org>
-Ouch.
-Applied to the fixes-togreg branch of iio.git.
+> Reorder the schema descriptions to match the hardware documentation and
+> the existing DT ABI.
+> 
+> This change was prepared with assistance from OpenAI Codex, which was
+> used to compare the binding with the reference manuals, existing DTS,
+> and driver ordering.
 
-Thanks,
+This bit belongs below the --- with the change log.
+I'll fix up if you don't have to do a v6 for other reasons.
 
-Jonathan
+
+> 
+> Fixes: 009528b5aa13 ("dt-bindings: mfd: convert mxs-lradc bindings to json-schema")
+> Signed-off-by: Fabio Estevam <festevam@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> ---
+> Changes since v4:
+> - None.
+> 
+>  Documentation/devicetree/bindings/mfd/mxs-lradc.yaml | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/mxs-lradc.yaml b/Documentation/devicetree/bindings/mfd/mxs-lradc.yaml
+> index 782b2f4005a0..755029880677 100644
+> --- a/Documentation/devicetree/bindings/mfd/mxs-lradc.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/mxs-lradc.yaml
+> @@ -87,13 +87,13 @@ then:
+>    properties:
+>      interrupts:
+>        items:
+> +        - description: touchscreen
+>          - description: channel 0
+>          - description: channel 1
+>          - description: channel 2
+>          - description: channel 3
+>          - description: channel 4
+>          - description: channel 5
+> -        - description: touchscreen
+>          - description: channel 6
+>          - description: channel 7
+>      fsl,lradc-touchscreen-wires:
+> @@ -102,6 +102,7 @@ else:
+>    properties:
+>      interrupts:
+>        items:
+> +        - description: touchscreen
+>          - description: threshold 0
+>          - description: threshold 1
+>          - description: channel 0
+> @@ -110,11 +111,10 @@ else:
+>          - description: channel 3
+>          - description: channel 4
+>          - description: channel 5
+> -        - description: button 0
+> -        - description: button 1
+> -        - description: touchscreen
+>          - description: channel 6
+>          - description: channel 7
+> +        - description: button 0
+> +        - description: button 1
+>  
+>  additionalProperties: false
+>  
+
