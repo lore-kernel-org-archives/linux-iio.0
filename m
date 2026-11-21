@@ -1,61 +1,59 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795299799;
-	b=gmBAKG0iAf4e6upXj33LObAgIhDe73xDqQo2btzWBJD0FYdV0L57QATMM9u2jg9lc7Mr
-	 s3iasszhPbeiJQYry1Ls7JjZCZQaWfy0D1z53SdBpmTX4cp6bEvqHAQxWyw7XiX8aBcPv
-	 bkCmh3KprkSOrRkkGQaRwPEC6GhCjKJcXHCmPuA8Dh37frg3ZTr5whjDVQdZvbqDxNOHM
-	 oHsx1eOoJbu5IGeb32EQIr56VnxLdr99lCuwk1TTDf7SmSgnt8Wt1SuFmGA30e/wgLbrY
-	 hTeoiD2g8KLcZ1wUCy+9Mk74fM0Sh0b0Tr9e8nTeUUTWMoTUt7c1yhH1O74SqeSHCmQ==
+	t=1795300036;
+	b=aShs77/vBmN4hMPkwFA5Q2OfEh+Kp+tnJjFt6yddiYkYkrmFR8S52+iHUpclH9tVJHQS
+	 APnM6j1IyUIbbW5/6b2p1D22fDRvUpa0aUd+bQaSOt67Zdoi9q6QJIRVSZ94NEVn10I0y
+	 2HpfeDabFvQgqN4Db67pilnlIxEf8PhJ3ydfNyZWuxmAwbwSL52Tv8nH/pP7rsWwe0MIs
+	 t0e45EUthYPC/sArU91oCgZRC4aWKWW9cfJBWZJmsrJw9mjFWRdGUxgtB98gzb09qOqEW
+	 EXqNrchbmwMFkbumNAswoCpArJDGaID9aLqtp1A495snLL0PJKQOwhZroU0veDuz+jQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795299799;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795300036;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=69N/ochuiuw46uiyi/7z1V5zkgQx2u6He/iAWbfxXeg=;
-	b=bRjZgwCXmJk91XYKLy9bxDqiJtBnEN8lVmtQzRztkjcAF1HoRk5qK0UBwR7+C6munWgz
-	 nqk5KqKQNm7w7nqiVvpxrYD2EMuR/7BhQnDUBPr5LggRvRzVw5zS697twa6XhS10CJP6P
-	 szDMgI3mrL8ZUhll4uU8Woq0fsI+fXNJZpOv4lYrc4aKOobLov8KvFdbJdk4MVSi/xmDL
-	 o3az9yJIe0lpzC3IdJBiJYBlIYO+hlvOPOhO7+jwZAZ2VcJWbdQIE46ODQ5oNb18YODjd
-	 r8VHk2tMLcqJJ+tyb7mxA5psOnDrC8h//MZwt4SRJK8ADTH+jqomNacK+bR7sv+091A==
+	bh=RihvPniou5txOaDj4hAYiWUZ+Z2yb/g8oclv99Iy3FY=;
+	b=MH5XxJ5Rdko5Q6jKvpxAULlHdGNkcWrP2tIZ3E9YSm9k9CMDjROY/dUQ3hyilphV6hDc
+	 LhfKXPy8hdqVOI+of3Fi39vK6Xcu9ry9SghsHXKPhss+PBkvB7MOG8qrygJ3B18wlsVU+
+	 cEAjOeJyffaxRTy5PyORfCAAkq76z49OGp+IjI19Y91JfQf7hlivZRqubwGE1uHF8zHiA
+	 PX4W9YCODzSA+3lN+fI3P5Y70It3tSyB6/NYTYAk71SaeZNThzM/+3HmmK+hONPNNz4cZ
+	 YmvvS6CwyFRgSnDb66c0fOdvMl/ge5zgHD/MVn3eREhwFxLnLFHjl/N/VeF7MfyT9aA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KLXeY4UM;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g6OMninS;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CE43606A320;
-	Sat, 21 Nov 2026 22:23:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2B3E606A32C;
+	Sat, 21 Nov 2026 22:27:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KLXeY4UM
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36C51F000CA;
-	Sat, 21 Nov 2026 22:23:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g6OMninS
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B7911F000C0;
+	Sat, 21 Nov 2026 22:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795299798;
-	bh=69N/ochuiuw46uiyi/7z1V5zkgQx2u6He/iAWbfxXeg=;
+	s=k20260515; t=1795300036;
+	bh=RihvPniou5txOaDj4hAYiWUZ+Z2yb/g8oclv99Iy3FY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=KLXeY4UMc5Bgz+0NwsamP3si7OHrpzWPdzJ4bQ/TE3AeXNenLy4K/XqvQy3var/CS
-	 nTJSp1Bb2TnNHoTtnijx1niLei2I1WiWYSbrk5ye1ReojYdCYvVyxsRYdmeo3jtZGc
-	 8ZWPQiRizCJ0KmIiSgk6koJbmsvk1qlMaVijBMy+Wsjs988aQe1d3/p6S/B6UJ7Rvr
-	 ch/3gU8NYCzvQvaFFTIZLvT5zaHjpiw0jwlS2VW24kj+KPL/CwdcKW/xcu822ILCyB
-	 /1+fE6xFqrd7uL6p6m1JF5f18k9ro/XLXJHUCZwskztYOYoOMeg3QRaXYCrunUyO/K
-	 CE6RrMvsfjyjg==
-Date: Sat, 21 Nov 2026 22:23:13 +0000
+	b=g6OMninSwCoR6jkb1GkIRhlcgZVmxqKKUce4bho4GuuSWyck+4OI+7ftwIeR4kIUS
+	 DN3WGCNc21CGaKviBKv7Btxbu7COOaK8PAynqnpmRzJ7svJVV0ZsIdiG87NsG7j5q4
+	 G9C/SyO2KEgHuSAem11BRtd+WEB70dWliYTGfp/jJmMo0BvnbI7iy4U9RgQsAkFUJc
+	 lHZOa1F74zRLwzvz+fcCiNC621GmZNPxmdU514BvMF8cqP4uf5GYyEE7vkgPItmoTd
+	 yVkeFnG7RT9vRj5Vt9t9kD+y/mLLbpS9iof22BTNpM1WnsijzI65WGdmhh22HWjjE0
+	 LGRUS/q8Fwsfw==
+Date: Sat, 21 Nov 2026 22:27:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Marcelo Schmitt
- <marcelo.schmitt@analog.com>, Cristian Ciocaltea
- <cristian.ciocaltea@collabora.com>, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Michael Hennerich
- <michael.hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Esteban Blanc <eblanc@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 0/3] iio: adc: Provide mult_fract() and make use of
- it
-Message-ID: <20261121222313.6352e414@jic23-hlaptop>
-In-Reply-To: <7d50b14d-2df8-4616-ac66-d6dbb1d24061@kernel.org>
-References: <20261119192408.1724611-1-andriy.shevchenko@linux.intel.com>
-	<7d50b14d-2df8-4616-ac66-d6dbb1d24061@kernel.org>
+To: Lee Jones <lee@kernel.org>
+Cc: Nuno Sa <nuno.sa@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ linux-iio@vger.kernel.org, linux@analog.com, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, Radu Sabau <radu.sabau@analog.com>
+Subject: Re: [PATCH 01/10] iio: imu: adis: Clear pointers after freeing in
+ adis_update_scan_mode()
+Message-ID: <20261121222710.526017ac@jic23-hlaptop>
+In-Reply-To: <20261119153151.1397003-2-lee@kernel.org>
+References: <20261119153151.1397003-1-lee@kernel.org>
+	<20261119153151.1397003-2-lee@kernel.org>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,45 +67,45 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 20 Nov 2026 11:28:35 +0100
-Joshua Crofts <crofts@kernel.org> wrote:
+On Thu, 19 Nov 2026 15:30:34 +0000
+Lee Jones <lee@kernel.org> wrote:
 
-> On 19/11/2026 20:19, Andy Shevchenko wrote:
-> > In a couple of IIO ADC driver the suggested new helper mult_fract()
-> > may be used. So, provide it and update the straightforward users.
-> > 
-> > The helper has potential treewide, hence it's provided directly in math.h.
-> > 
-> > In v2:
-> > - updated commit message in patch 1 (Sashiko, c/o Joshua)
-> > - used local variable to avoid double evaluation (Sashiko, c/o Joshua)
-> > - collected tags (Marcelo)
-> > 
-> > v1: <20261117091638.1463621-1-andriy.shevchenko@linux.intel.com>
-> > 
-> > Andy Shevchenko (3):
-> >   math.h: Add mult_fract() that takes struct __Txx_fract as argument
-> >   iio: adc: ad4030: Switch to use mult_fract() helper
-> >   iio: adc: ltc2378: Switch to use mult_fract() helper
-> > 
-> >  drivers/iio/adc/ad4030.c  | 13 ++++++-------
-> >  drivers/iio/adc/ltc2378.c |  4 +++-
-> >  include/linux/math.h      |  7 +++++++
-> >  3 files changed, 16 insertions(+), 8 deletions(-)
-> >   
+> adis_update_scan_mode() frees both adis->xfer and adis->buffer at the
+> start of a scan mode update without clearing either pointer to NULL.
 > 
-> Fine now.
+> In both adis_update_scan_mode_burst() and the non-burst path, adis->xfer
+> is allocated before adis->buffer.  If the adis->xfer allocation fails,
+> the function returns -ENOMEM while adis->buffer still holds the freed
+> pointer from the previous scan configuration, causing a double-free on
+> the next scan mode update or during device teardown in
+> adis_buffer_cleanup().
 > 
-> Reviewed-by: Joshua Crofts <crofts@kernel.org>
+> Clear both pointers immediately after freeing them.
 > 
-I briefly wondered if we should wait for some tags related to math.h
-but then I couldn't figure out who would be paying attention to that other
-than Andy.  So I guess we are fine without. 
+> Fixes: aacff892cbd5 ("staging:iio:adis: Preallocate transfer message")
+> Closes: https://sashiko.dev/#/bug/linux-966f0cd4-488a-4d69-b8a5-449c751365d2
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lee Jones <lee@kernel.org>
 
-Applied to the testing branch of iio.git.
+Seems good to me. Given Radu has a bunch of work in flight on around
+the adis drivers and lib. +CC Radu to take a look before I pick this up.
 
-Thanks,
-
-Jonathan
-
+> ---
+>  drivers/iio/imu/adis_buffer.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+> index 501da4eaef69..9d317b627eba 100644
+> --- a/drivers/iio/imu/adis_buffer.c
+> +++ b/drivers/iio/imu/adis_buffer.c
+> @@ -74,7 +74,9 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+>  	__be16 *tx, *rx;
+>  
+>  	kfree(adis->xfer);
+> +	adis->xfer = NULL;
+>  	kfree(adis->buffer);
+> +	adis->buffer = NULL;
+>  
+>  	if (adis->data->burst_len)
+>  		return adis_update_scan_mode_burst(indio_dev, scan_mask);
 
