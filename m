@@ -1,58 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795226353;
-	b=UhAWXmT0TZlEGPIU1zd2c39cy2DbcPRww27DFnGer5XEgvUnMXkmwKyCcxshLxyholMl
-	 WOWUMdB9VP1W7xEUlyknnNtfFB/0+t1F0yOV1S7aD1qfWxpfS9GcrPIMsPOn5yowWkRxX
-	 mQFxQN8wLHgLyTlOsjVYm9WmrqSxrXPm9YQIUe+onD07Fb4te+CgqfkWZvTgGVtt22QNf
-	 zWUeG5o9pfTUl9mxBQgN1OpNGAujpyyJ0cgD/iecpdui067liBjz9kfTTlQdAVNW924EH
-	 izsHCrKD4x7oqRfkbJ+3EvUbzsQWZGkASxVWx1qvoBxD3W+LymktPqAauTQ0g168j9g==
+	t=1795226508;
+	b=dxXWQ29fqM5efuTiPclwJI0bsaM5r/L5BW20h9T3hw/h99a7V9fqpmCXIpwVL86hzkPr
+	 qrPS6VbGvR5dfjmP/JgwtmemWWNIZLi/VKOhT+iwP/ED3ZCSrOJYbpSgUWeaZMwkl6Os2
+	 4U9d5/RI2FIlnozNslUEyAu6F3SvHP1LzEPWofKPGdLIjjHrpLq824oF5wue8Sqe2tpQc
+	 xytJPzm5xiAqQTSD8GYz+v0jlFVjwFVb13BkXHm0xnnPBqkDJ46wex4nD7WVrjwREu7tK
+	 oIrkLPvdprcB3n7y8yB5y6Cja6uDbADFSXv4E+qFXqy52EN1xcbOcbNknF4+hyLzROg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795226353;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795226508;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=NYAbhIA7c7MZwjZMstl1hm1bcmlBpCrOMTte7E59bQI=;
-	b=NOI17mSWWHuqhQXzv7LlyGjk8ykzsYdMvlKyVwGm7K5v2Rv95hlCo30vrAVU6uPggqbc
-	 CernkJUbZUTMpa9OoZFAC8OmjGW2nOXJnggAvuiUT+WwOo6iJftGHOf7L3qFftfYwAKRC
-	 brKDmSwdCRk1kxfwyzO7T3Ap1TWdWISxDttt059VqwVpVE3SyP5T1zcLkoOPBLKFvLg62
-	 KySvRWExU8BodBYEJQJywDKklpW1LdpHugXPTJ8c7COwLa404cwLhl3E0l2YfMzUp6hGE
-	 M7Sodi4OdPBwrUTBTrFY0O6HMmnNpcNo+U5wTQBwphZ/XiqlCAEyR5yxb6fbS28iRLw==
+	bh=kmMOA/JqT3+zTDvjZdA8gReRHgHGh2MTpTCnYqFH+JE=;
+	b=BLAUtR6qrk6PU0PA6/OlLvjq5pHLOOmFnCY2lsHnyFP/JDWL3P/+IBZ1Uo8pWhs6zSDr
+	 6lfbyg4zaI3SPHq2jHCAr5hXVathy98JKAMTm6wOYvJg3QLbMvvO6JFW7t0vaKRVKbcN5
+	 ojKI1Ao48C6wIxUKCm5jU6QnFV+nEUSdDPNN+Tw3lEyUMHXChGdVtMKS+Bd+WKhvm7Eup
+	 HBXeQVRURW6GhLDRJCZ0Syld2ooiTEdCKXkyfdyfweNaMJFIzbUVNyBRIZ4XTh1zGD1Mx
+	 6BkI6Bg2Z5HuGhAEGc0u7v079YTiTVp40PJuj3nYSyBIi2z2v0BiGR+UdkgFfJvN/nQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cRbUlSM1;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A41pkW2b;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83069606A693;
-	Sat, 21 Nov 2026 01:59:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B069606A6A9;
+	Sat, 21 Nov 2026 02:01:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cRbUlSM1
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6DBF1F000C0;
-	Sat, 21 Nov 2026 01:59:09 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A41pkW2b
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D08F91F000C4;
+	Sat, 21 Nov 2026 02:01:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795226352;
-	bh=NYAbhIA7c7MZwjZMstl1hm1bcmlBpCrOMTte7E59bQI=;
+	s=k20260515; t=1795226507;
+	bh=kmMOA/JqT3+zTDvjZdA8gReRHgHGh2MTpTCnYqFH+JE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=cRbUlSM1wNWhAEQUGPge+TTmVviFUieJH/19sVIIZjOW+4OoQDLpxQvwX+mrB+ZQ6
-	 a92MPn4xFmjQAkdF+c4ot9xNxPtdxdaHRPQrsG/JlRbadA9k0xx9er+B1v7lLuMREE
-	 Ag3PzBovsoUOs3kgWBnmH8odMRQ/A7YCvLOFUHZtdcT4JmiywNiIgm/gEkiDeDbfem
-	 B0Vecui5mhckt2DgnsLvevT3wOEL6FTGfXOxoFZw1FhYhX+yhGulf+dVyqhFbDwWV1
-	 s9j/xPjJ9wgGztWAGfnnITan11HCF7F9EEt6Gw6XUjYQ3T3BZgo2icT+nQpea/SZsE
-	 2ZxXDwD+t4T6Q==
-Date: Sat, 21 Nov 2026 01:59:04 +0000
+	b=A41pkW2bWhSmi1hlpL2vzaJ0GGHTCNRR3mLQFcNGurTDhldf5Sh3Znnhatl2dlhPO
+	 rwL09/86rVqS3J9ScjQzbjoY7sU+CfNTbItL0zL5KzQVqkuIURLvQ34dPviNzW0h16
+	 SBxJ6jm3dvRf1+Qnt2trukxDSThDPWF7ECHtNC4erfXzh2dlxHQsVi/4FZmUWS6klB
+	 72adyelnlFJW3PXsyUfOrQ9z64W/6qeisT3GKMi7Th973AY7yDg7GrgHZ19jt9CA6C
+	 ehZ+c/AdEu4NkFRqAVOZseItsp8WAfeWRV4pPnrGMZDyK8q1J7KPRYHOuPejyW3Z8D
+	 Rpvg+GxXANJVw==
+Date: Sat, 21 Nov 2026 02:01:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Matti Vaittinen <matti.vaittinen@linux.dev>
-Cc: mazziesaccount@gmail.com, sashiko-reviews@lists.linux.dev,
- devicetree@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, open list
- <linux-iio@vger.kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Matti Vaittinen <mazziesaccount@gmail.com>, Matti Vaittinen
+ <matti.vaittinen@fi.rohmeurope.com>, Matti Vaittinen
+ <matti.vaittinen@linux.dev>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Marcelo Schmitt
+ <marcelo.schmitt@analog.com>, Joshua Crofts <joshua.crofts1@gmail.com>,
+ Radu Sabau <radu.sabau@analog.com>, Janani Sunil <janani.sunil@analog.com>,
+ Salih Erim <salih.erim@amd.com>, Jishnu Prakash
+ <jishnu.prakash@oss.qualcomm.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Jakub Szczudlo <jakubszczudlo40@gmail.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 3/3] iio: adc: rohm-bd79112: Support ROHM BD79111
-Message-ID: <20261121015904.15215ca8@jic23-hlaptop>
-In-Reply-To: <d2d8049d-7adc-4cfb-8e56-3af55c0abe8f@linux.dev>
+Message-ID: <20261121020136.16f48636@jic23-hlaptop>
+In-Reply-To: <awBc1qFMhydEXo69@ashevche-desk.local>
 References: <cover.1795176984.git.mazziesaccount@gmail.com>
 	<4be17e339f768da93db2f42abd3cc5a21fea01ad.1795176984.git.mazziesaccount@gmail.com>
-	<sashiko-outbox-225147@kernel.org>
-	<d2d8049d-7adc-4cfb-8e56-3af55c0abe8f@linux.dev>
+	<awBc1qFMhydEXo69@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,90 +75,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 20 Nov 2026 14:53:32 +0200
-Matti Vaittinen <matti.vaittinen@linux.dev> wrote:
+On Fri, 20 Nov 2026 16:44:38 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On 20/11/2026 14:34, sashiko-bot@kernel.org wrote:
-> > Thank you for your contribution! Sashiko AI review found 2 potential
-> > issues to consider:
-> > - [Low] iio: adc: rohm-bd79112: double semicolon in bd79112_probe()
-> > - [Low] iio: adc: rohm-bd79112: unused BD79112_MAX_NUM_CHANNELS macro
-> > --
+> On Fri, Nov 20, 2026 at 02:28:28PM +0200, Matti Vaittinen wrote:
 > > 
-> > commit d2b6757018d5ccee4c939ad0350d93a29d26239d
-> > Author: Matti Vaittinen <mazziesaccount@gmail.com>
+> > ROHM BD79111 is very similar to the BD79112. Both are ADC/GPIO devices,
+> > where pins can be configured to be either used as GPIO or ADC inputs.
+> > ADCs are 12-bit SAR ADCs and GPIOs support input/output but not being IRQ
+> > sources.
 > > 
-> > iio: adc: rohm-bd79112: Support ROHM BD79111
-> > 
-> > This commit adds support for the 16-channel ROHM BD79111 SAR ADC and GPIO
-> > device to the rohm-bd79112 driver.
-> >   
-> >> diff --git a/drivers/iio/adc/rohm-bd79112.c b/drivers/iio/adc/rohm-bd79112.c
-> >> index 04084e88984a5..8bbb86098ff5a 100644
-> >> --- a/drivers/iio/adc/rohm-bd79112.c
-> >> +++ b/drivers/iio/adc/rohm-bd79112.c  
-> > 
-> > [ ... ]
-> >   
-> >> @@ -431,8 +458,17 @@ static const char * const bd79112_chan_names[] = {
-> >>   	"AGIO12B", "AGIO13B", "AGIO14B", "AGIO15B",	/* 28 - 31 */
-> >>   };
-> >>   
-> >> +static const struct bd7911x_chip_data bd79111_chip_data = {
-> >> +	.name = "bd79111",
-> >> +	.chan_names = bd79111_chan_names,
-> >> +	.num_max_channels = 16,
-> >> +	.init_disable_gpios = bd79111_disable_gpios,
-> >> +};
-> >> +
-> >>   static const struct bd7911x_chip_data bd79112_chip_data = {
-> >> +	.name = "bd79112",
-> >>   	.chan_names = bd79112_chan_names,
-> >> +	.num_max_channels = 32,
-> >>   	.init_disable_gpios = bd79112_disable_gpios,
-> >>   };  
-> > 
-> > [Severity: Low]
-> > This isn't a bug, but replacing the remaining uses of
-> > BD79112_MAX_NUM_CHANNELS in bd79112_probe() with
-> > data->cd->num_max_channels leaves the BD79112_MAX_NUM_CHANNELS macro
-> > unused.
-> > 
-> > [ ... ]
-> >   
-> >> @@ -509,7 +545,7 @@ static int bd79112_probe(struct spi_device *spi)
-> >>   		cs[i].datasheet_name = data->cd->chan_names[cs[i].channel];
-> >>   
-> >>   	iio_dev->info = &bd79112_info;
-> >> -	iio_dev->name = "bd79112";
-> >> +	iio_dev->name = data->cd->name;;
-> >>   	iio_dev->modes = INDIO_DIRECT_MODE;  
-> > 
-> > [Severity: Low]
-> > This isn't a bug, but there is a double semicolon at the end of this
-> > assignment.
-> >   
+> > The main difference is amount of channels/GPIOs. The BD79112 has 32 pins
+> > for this use, the BD79111 has 16. Furthermore, the BD79111 data-sheet
+> > promises 0.5 MSPS sample rate with maximum of 10 MHz SPI clock,  whereas
+> > the BD79112 data-sheet mentioned 1MSPS rate with maximum of 20 MHz SPI
+> > clock.  
 > 
-> Both of the Sashiko's findings seem correct. However, I wonder why it 
-> picked the device-tree folks and dropped IIO people? This particular 
-> patch didn't have binding changes but driver changes. (Well I added 
-> Jonathan + IIO-list here)
+> ...
+> 
+> >  - Return -ENODATA instead of -ENODEV when SPI match data is not
+> >    available.  
+> 
+> I guess you were distracted by something, the error code is now introduced in
+> the very previous patch, fix it there.
+> 
+> ...
+> 
+> > -	tristate "Rohm BD79112 ADC driver"
+> > +	tristate "ADC/GPIO Driver for ROHM BD79112 et al."  
+> 
+> > - * ROHM ADC driver for BD79112 signal monitoring hub.
+> > + * ROHM ADC/GPIO driver for BD79112 and similar signal monitoring hubs.  
+> 
+> Can this text be modified to be closer to the other two?
+> Something like:
+> 
+>  * ADC/GPIO Driver for ROHM BD79112 and similar signal monitoring hubs.
 
-Currently we haven't opted in to received emails to linux-iio but
-device tree folk have. There was some debate at LPC on what sashiko
-should do when this happens but there isn't really a right answer.
+I had nothing to add and nearly picked it up with tweaks. Given
+this is something you may well want to feedback on (or adopt as
+is!) I decided to ask for a v3.
 
-If things ever quieten down I'll restart the discussion of whether
-we should opt IIO in.  I'm personally in favour but want to here
-if anyone has a strong counter argument.   I think we can manage
-the false positives for newbies issue as they are getting smaller
-all the time.
+Given this is small and in a clean state, send it whenever you are
+ready - no need to wait a week in this case.
 
+Thanks,
 
 Jonathan
 
 > 
-> Yours,
->    -- Matti
+> > -MODULE_DESCRIPTION("Driver for ROHM BD79112 ADC/GPIO");
+> > +MODULE_DESCRIPTION("ADC/GPIO Driver for ROHM BD79112 et al.");  
+> 
+> ...
+> 
+> Otherwise LGTM,
+> Reviewed-by; Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
 
