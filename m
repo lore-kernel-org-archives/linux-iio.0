@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795295948;
-	b=UZkyF93vDTDaMvDwfYIsOk/v1yFRyH0dXiqOpMJlr9gjE/Yltf1xU0Z65iBsuG2DvlhD
-	 Vq5KChkfMw3qaLYfXI+p2L4L4Dw+3WaGRz6Ndm6a2AtWNi5X9K3zU/nrygclNWMQEAVkP
-	 RxIKeaMySyahMRSQTZGGsajYMa71ulAdf2YC2FL+ndWjgTKg0pgzwr5aGbDL+KJoUb3ie
-	 4A/MicM0um6aQzUaRn71jC6J2dgVuA0Dq7Nx0p4+xfrh62n39KZmcsruW9NPhBGyRcsws
-	 EJKGuipheF0UAhdBxDPeYcPSofm7rfDEWihLGq8m3flrKmVGAgsmmvlkhGoWsuRDu/g==
+	t=1795298627;
+	b=B7GbB2w185pOp2lgXDhLP0U0Gx4IkEBBTqnlCSmpAstp4WwMDlpM+B2q6xIi8H1XM/L9
+	 b9B/tdHh1nAe2kZA3HXdNZXzyKS6QX+1H+J13/wG9WzEqYKYwAUmREwBdOu/uOoNlFsor
+	 bx5tdkqHtQXE+fPF+Z7xYLPKWcNFOOs9lLDosn45zj8tcAj2CksXKIiREmPfCJY3HjcCs
+	 aFfBhcQGfu/m/3+ht+Cw25po5H2l08bynaHkX4BgBaSJNiyWVqFEoWOD7HmEWYBqxQMVk
+	 rSi68U8FZN2G0FnxXs3BhLwKyGqiJH9Vfpbf3Wicupd770bkSZ/jnjB2mcL7uuT3gMQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795295948;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795298627;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=nn4NLcCLn4UsidM4X4VaPvfR/4D6nJNXCDJVByzVWOA=;
-	b=4eHb++mhKgcqEXm35tizRZTCFWFLp1UMKeEmN3SJ62TctkCtrEZ39Ucer8lWLlR5IiFp
-	 gLFsR1Xpb9R8hRiagIKBeoVw84WfVHN8senb8UENeKelIt3tUq4ymKuk1f8pj05eO9s7p
-	 gPKvoCiI09NtwycrFUATEe8Lw6obiguWiEW70Q/mBts1TxsVYJyuSsxaHBCr29NXoaI4K
-	 Aer5bdxFqGbMhpKMr2N8ibagadnAsO8X1UqsuaE8JFnVYmSU+YCZ9Mn7/9z2S55qnjP9p
-	 2ZE8T3OX2BXx9DrR6E9Lp3Cs9A0dilQvfM/mSY+IYP5dvXp2UKK+nhdsu84oYLJf/MQ==
+	bh=K54RN0g3ALCE6A23+y6+sSj/LArtjLvL+zgPgDjkwas=;
+	b=cSJJYiyhQ1B/c+eJdpc6mPwEIvWQBLRZxkbkqlSZGHkgbS/8/XmEMS8c5jXoZ1nlz/na
+	 02nVF45elfnpuarBTZmP6dtRpMGmV1qGCcrrV7DyGgz2nXLRBYNzugxL3W/Gradn8ZsjU
+	 SuccuvKSB6+ktcB+d1vzR00wpHWeAB4J+SuMoRps+Sex+1YHV0cCscecCmfcOb5LCUOb2
+	 WVTZMe0Hh1XSB+OfFG0hW4P//sUttyaGbtKcD4VXrKtXuL1dA7XNIjQNqfr6CI6JvAYye
+	 0wdd7+MPntRBKqLLPLFkOKPCoCH75tA20+WnA6TazRJLY0ZsCXkbfng1i6PcSNB7BgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IbFJeKHn;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LsE+nitq;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DAB7606A320;
-	Sat, 21 Nov 2026 21:19:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F39A9606A320;
+	Sat, 21 Nov 2026 22:03:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IbFJeKHn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16A861F000C6;
-	Sat, 21 Nov 2026 21:19:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LsE+nitq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C64CB1F000C4;
+	Sat, 21 Nov 2026 22:03:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795295948;
-	bh=nn4NLcCLn4UsidM4X4VaPvfR/4D6nJNXCDJVByzVWOA=;
+	s=k20260515; t=1795298626;
+	bh=K54RN0g3ALCE6A23+y6+sSj/LArtjLvL+zgPgDjkwas=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=IbFJeKHn+82+xBNewS+Rnj7D9lnu5h6zu042G5j/tT6AoFVixsjMERdu3lH2l5Uej
-	 QvKX+QZML9RR2UomvsxJAn+HlHeTeTDRjJ0A7EfzxginDH42hR6EITCgXzwnsye8zw
-	 NF9W/nnISJ/qpMgzE6Uc7ZvvxSf7z1EKbzCCpyq4afVKoSC5QtnbgI0xUyq2yxpm8Y
-	 YLf/T2wCrFFB9esQVS3NGdBhsI3H4yKdhkH0mC5WpOO0rzpHiM/TEz34VDepYvuQAS
-	 RD27YZ2fTsIFv0Q8Ia6lsJOOTz+ZfGM8vPMtPrTdvDD5NPzV0klbsNtnvegha2RLk8
-	 N5m+LWEO8H7cQ==
-Date: Sat, 21 Nov 2026 21:19:02 +0000
+	b=LsE+nitqdxu4cAxbovGUhYL+1gHa6wr2/i4KfG+wDItXAAqsFdIXhgk7Ckl+/BAdD
+	 lHDL/qb/DyOInFSECfH5fPIeFA3HD7JTzOJKbDYObl5ONfpVtHtV9c2Sd9J8u9K/ck
+	 VkrxHcpyQvJZWjKrjRZHeeR8Je8DZcKG4lz7lTmwRL6O4nhmLoUtyjEWnLCjOJv8Bm
+	 E+oSfSgwoXFtwjG0phVCN5wFafyfsryAoZE6xguMCTSOvD/5hCN/nzp3BnWDPAC0Kd
+	 qL3Mg0+74tOYfsNAsVQQqUP9U8bEu/mduGYNxcUQ42MYO3CABpB0lF4JKdSuE3R9XP
+	 RezsK+si/QJCg==
+Date: Sat, 21 Nov 2026 22:03:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Zhu Jun <zhujun2@cmss.chinamobile.com>, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tools: iio: Keep the buffer index separate from the
- acquired fd
-Message-ID: <20261121211902.13a9f3ed@jic23-hlaptop>
-In-Reply-To: <20261120210317.184756-2-kapoorarnav43@gmail.com>
-References: <20261120061903.98141-1-zhujun2@cmss.chinamobile.com>
-	<20261120210317.184756-2-kapoorarnav43@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Siqi Chen <chensiqi@uniontech.com>, nish.malpani25@gmail.com,
+ crofts@kernel.org, nuno.sa@analog.com, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux@analog.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: gyro: adxrs290: propagate chip ID read errors
+Message-ID: <20261121220340.28e27b3a@jic23-hlaptop>
+In-Reply-To: <awAVgtU29mPK_10d@ashevche-desk.local>
+References: <20261120025754.4075038-1-chensiqi@uniontech.com>
+	<awAVgtU29mPK_10d@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,26 +65,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Nov 2026 02:33:17 +0530
-Arnav Kapoor <kapoorarnav43@gmail.com> wrote:
+On Fri, 20 Nov 2026 11:40:18 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Fri, Nov 20, 2026 at 02:19:03PM +0800, Zhu Jun wrote:
-> > IIO_BUFFER_GET_FD_IOCTL takes the buffer index as input and replaces
-> > it with a file descriptor on success. On failure, cleanup can mistake
-> > the unchanged index for an open fd and close a different file. Only
-> > assign the returned descriptor to buf_fd after successful acquisition.  
+> On Fri, Nov 20, 2026 at 10:57:54AM +0800, Siqi Chen wrote:
+> > spi_w8r8() returns either an unsigned 8-bit value or a negative error.
+> > The probe function stores its return value in a u8, truncating errors and
+> > treating them as unexpected chip IDs. Consequently, an SPI transfer failure
+> > is reported as -ENODEV instead of the actual error.
+> > 
+> > Store each result in an int and return negative errors before validating
+> > the chip IDs.  
 > 
-> Checked against iio_device_buffer_getfd(): on every error path it
-> returns before copy_to_user(), so the argument keeps the index, and the
-> error: label then closes it because buf_fd >= 0. With the default
-> buffer index 0 that closes stdin, with -b 1 stdout. The patch fixes
-> that, buffer_idx is already rejected when negative, and it applies to
-> iio testing, builds without warnings and is checkpatch --strict clean.
+> ...
 > 
-> Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> > - Move the OpenCode disclosure and testing information below the
+> >   separator.  
+> 
+> It's interesting that the other patch without this amendment was sent just
+> a half an hour before this one. If you get a comment against one, check all
+> the rest (at least for the same subsystem). Always.
+> 
 
-Applied to the testing branch of iio.git. That means it is queued up
-for the next merge window.
+Applied to the testing branch of iio.git.
 
 Thanks,
 
