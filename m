@@ -1,102 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=178.238.236.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795333989;
-	b=YUnRwApAxCgKq5TX2tkLj1tKYbXYmm5NJGUHAmT2/szM6KINuQSz0W+L0CweiAcFWoKv
-	 jba0vYekG0mTnu3VMjfmP9C+dWTfJEzgU6Cc/cTU4omlXTDNNkeLTB/W63juko8v6zlIC
-	 6zDS6dCTQ64Dzl+Yu9MND/ZKW2AJObh9CR0ZrI+BjL9tS6rbiA+DUdKUWcgZ+A4vZq48H
-	 W/4QIwBiJY2FmIJbQxAyYol7yQGSI7ciznoTqImqGLGX9VIHYD+/lUvHPVn4X080cD9CZ
-	 OK3BbfHmDnCKkOWBZ8JGs70xc5xavQLt0P/rIAUOvjLQuhRWMpcKsMqTHWD5m8E6wQg==
+	t=1795334194;
+	b=YBZaXXTneMHkU9xx8tyTWpNZw+sHgEep8UXERsde6dDAnIjlx/3fjEYErgHjCijL5wUW
+	 Ft39gNPOqiwEs7/tL7pG+kQOUpiwT2p0b3MFuwv3KCuzpVMfLAWB5DdTC/TLOQzknPtVa
+	 VvM8CfrURXm//QeMtdYiw8YZBxuAg6NWjNS7h3z1IWC72DH5QwUyFR2EsjC9ZX2e63RSx
+	 tij/kqCvdkVEpTirxugtZQ7K24ldCcCTokAycVAbe1L9Ka1Z1rzIDEPkVnu4DMcjtJt2B
+	 hkEZqxR4OPUQns+UwAhajeHgbY4urmI/Udx8j1z8sJLNRWs4VA7Z8zkXLD0rE6FzeEw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795333989;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=vPRV2FQJxiL/e86GXbUg3Okhimclyly/VhU1zcnJTrA=;
-	b=HYMFRT2uNqOe2TUldsHm65ebbIg65yaPn+bM5tDK5K1PWvUfwccHY+OBXD2YLQz84vIQ
-	 kk+gDiYtqm6D8xPHdz7jO3YmJI/hTSCn2vJATfva5M7SWVjDyyYkO0uJyBGDnC7m/8bUO
-	 eSAkChb1cjSt39bouokXS2xdPT56gIbBHeNnR0Z+Hbx2qknIB6/zbYQYYNuHaHQbvP0CN
-	 DDEHyk4QCrg5zDHqk1u1pMZq3Aw/xUkLLcdgDKoCssA7Hhyb8BQV+4C4M7jZLJZ27mQIk
-	 i0xzS1Au6b9g9s4UHeFpSCxG9GUttSKPVy3XM30/c7OIZCoTLD3GwH3qDigOLLbMswg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795334194;
+	h=DMARC-Filter:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=qd3Iy0gK6elNVfdZMyUtCcq4GMv3WywAgl2WNQQdHhA=;
+	b=3RELYMl9ERuRTWGYocSBiqGmI2s8BsYy6LB9/BnUxAwDKU+EaKY3zgwahJhX2syNp2jj
+	 SYwEOaTI0NbBfHAtIWUgcSJOGzinChlownIiYlgaIh7pkgaTN5nHSq/e6MOSah/BcgwGt
+	 VxwCHO9HNK78mTE5LRRx7PzE9LOmN1k9ieqJHDxJKZtGNAoai4HXECjtr7igAVV/XTIfx
+	 39nJ6t5L3hvnDqjV2LXoDnJq4KBbsUFtOI017wHPwQw+nLsaBfNvqBDzN4GM3TGaPhUbu
+	 7gCAC1GL2gd/AKpCN8iiWUcT5zk5v0pKpxfeu7MEBBAs1ZfhldocBXB986GNKQaNvzQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=esvp1aEn;
-	arc=none smtp.remote-ip=209.85.218.42
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=kemnade.info;
+	spf=pass smtp.mailfrom=kemnade.info;
+	dkim=pass header.d=kemnade.info header.i=@kemnade.info header.a=rsa-sha256 header.s=20220719 header.b=CKtdFnTp;
+	arc=none smtp.remote-ip=178.238.236.174
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 515AD606A335
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 07:53:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 515AD606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91E3606A320;
+	Sun, 22 Nov 2026 07:56:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C91E3606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=esvp1aEn
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c4cb6834eaaso385157266b.2
-        for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 23:53:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795333988; x=1795938788; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=vPRV2FQJxiL/e86GXbUg3Okhimclyly/VhU1zcnJTrA=;
-        b=esvp1aEna3X6U+1FOHzsfniSJuTJNvN6s4Dxaf87ORiv+92ZE2V0D/OOHzQ6sflk4i
-         rwYSGYOA87brBKhH+pjNqo8gYEGh/bBHr/daEJvWpWFIQxCyUxmOkEvdtiwR2HV+SCVh
-         xDTA8wF+eSsge9zTy788/YKxuwvc+I6XyAx2BFcNQj88dk/xojGgbNOtmkVYZjwmxh/H
-         b0yahv9FVYJffK5f0pHOJbzR6YyvYQ3wmzb5DCCs4MHjlnRbdUiUO72ZXCFPK56ZeiiF
-         4tJMwwR0jl+xpg1T9HcYgNdvMpdns18UGHMwXx9UJ+Vgsx/2NVTe56AMtDX1qSLygGNf
-         KDqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795333988; x=1795938788;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vPRV2FQJxiL/e86GXbUg3Okhimclyly/VhU1zcnJTrA=;
-        b=k5uCkgjcsGcrDv8Tv3wDdPDAWuZJglaTBRhtid+yx5FXUheDmqlaSagYzHmTPyvawu
-         3Str+GelICxKIl/uSBmgT0H30WjBTNv+Pk8zkVb72t91lTPorZVUBbMw00heJEYpYEak
-         kXKWGWw1+ih2EW01M2oaR6WUfhO9zWXqrIWOq7gU5BjhLtl7XIw7WuQ1N5fEbLjn6L3u
-         Fg1vcD2j26ezo/03+HNg/kJK8ep4xWVQkjYyteZocphGJeVVeBniK6mZipXygQQriNKF
-         50RkjVP8vdExkCx0aeo25A0cq14enqrd50l+IKfZoATqPmok20SkCD6v4EJ+QodIhUv7
-         WN8w==
-X-Forwarded-Encrypted: i=1; AL+hErG4D5tfR0Pw9UmVa0PDsxhrKVuAxM8BTiGMw8t5/cu9vajgqFgD3JlM1lfm/wnKJE8V0y1IXqiPl6U=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8IjQNkDnL/i5QjmplNC7H/oYwU9LrTEjBiBO1XzE/7wLlwnoOr
-	Mo9HQi8KxjtSYt7FJiz+SGlVTpE3xnrUQTA/s/RIzlAnwOeuoIP0AlkS
-X-Gm-Gg: AZFdTZcPCAd3rIm+DDBOjbf/QB8tv7sY2WYaCX/l7GyhRaq9F1rFzEcGpeVn+Z7F5BE
-	xHj5lZyf0NLlgtk6CjN1j4lmgTaO30Bq+MQw2yi4H2Epfwllompo9yDxhzquIgVImlAW8Cy4phH
-	wyyhrP6I27alVsPMMGhQscnos3OOUweYVZJlmF4Y7usc184vgiiWP8+7apKiLHdofstJgzE2Q3S
-	nn+qFXM2MucQLv07++/oL9T+zERK0MZ5cHGu1oaCuavyZk7yXbiBKk7iLBqoIobngqBwplwPt/O
-	wI8fq4F+wmHDgF4u5BW7SBeDeFFz7aBOpOau+tFLnv8aYMgsmWO5qpi+9RcW5sVb3eFPaNf7RVX
-	Rw4NoowtkSrgEsYIHP4u7ZE0pw6oJPz9zbg/lMQefyRvwzirpYgDLgQ1ZOa62o9IgU9M65DA/Sw
-	HijSZD9+aWQxSJuUIDsEPeVqVSnSX7qeMNmPUanow4XbkFt2IOzPMRFYLq29rX8ksUIMgnkPhZv
-	tpVdk43+mVWl44Hx43ETm+BPRj0cPN8M/co+U19TxZCZdA0dQZKwuITVRN9Z4eXrp6eB6Ms6R/G
-	1LBwcLuEAUnMxs9C2+RR68SSM+w=
-X-Received: by 2002:a17:906:4550:b0:c4c:e713:d296 with SMTP id a640c23a62f3a-c513a893bebmr534161766b.31.1795333987760;
-        Sat, 21 Nov 2026 23:53:07 -0800 (PST)
-Received: from dl360p ([195.155.168.55])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513ae679e3sm285332966b.22.2026.11.21.23.53.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Nov 2026 23:53:07 -0800 (PST)
-From: =?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: proximity: add Imagis ISG5320A SAR sensor driver
-Date: Sun, 22 Nov 2026 10:53:04 +0300
-Message-ID: <20261122075305.2920359-1-tadilhusrev@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261118105339.00001bab@kernel.org>
-References: <20261116074013.355363-1-tadilhusrev@gmail.com> <20261117173333.1853986-1-tadilhusrev@gmail.com> <20261117173333.1853986-3-tadilhusrev@gmail.com> <20261118105339.00001bab@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=kemnade.info header.i=@kemnade.info header.a=rsa-sha256 header.s=20220719 header.b=CKtdFnTp
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=kemnade.info; s=20220719; h=References:In-Reply-To:Subject:Cc:To:From:
+	Reply-To:Content-ID:Content-Description;
+	bh=qd3Iy0gK6elNVfdZMyUtCcq4GMv3WywAgl2WNQQdHhA=; t=1795334193; x=1796543793; 
+	b=CKtdFnTpYXAEWsY/25CYRR6uKgOGdGIxzTMxnWQgRezJHMgXZEdVgDciodU9saJMIs0q2mxIWvr
+	/D6hxGu4oLWg6/AzSwXoE47UAp09jmUIt7NKpLXzYSnL66VIiaPPl/TnLp13LNgTfsfIZ5MlHjHMT
+	TbR2lMRtFMbfur3pktnYaCxDPd/MbrtTNpFGr0CjNa+nXDFxya8a+XRqv8Lz6YQwJFw6kzZj9tWsX
+	aTY4iRErzDP/YpuEWuk2x8xU8LeSv/x86RM06vG1j+G+d5jTOW3A88Uj7wPC7L60IPf185M9RvQ64
+	ZsDuHvXLuaeEK4udBz5VPu6i2s/LCK1l09rg==;
+Date: Sun, 22 Nov 2026 08:56:10 +0100
+From: Andreas Kemnade <andreas@kemnade.info>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Wanhui Fu <fuwh1120@163.com>, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, dakr@kernel.org, kees+treewide@kernel.org,
+ giorgitchankvetadze1997@gmail.com, u.kleine-koenig@baylibre.com,
+ linux-iio@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCH] iio: twl6030-gpadc: Add error handling path in
+ twl6030_gpadc_probe()
+Message-ID: <20261122085610.4a630af0@kemnade.info>
+In-Reply-To: <20261121192448.78041532@jic23-hlaptop>
+References: <20261121082419.376423-1-fuwh1120@163.com>
+	<20261121192448.78041532@jic23-hlaptop>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; aarch64-unknown-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,25 +65,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 10:53:39 +0100
-Joshua Crofts <crofts@kernel.org> wrote:
+On Sat, 21 Nov 2026 19:24:48 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Hi Adil, some comments inline.
+> On Sat, 21 Nov 2026 16:24:19 +0800
+> Wanhui Fu <fuwh1120@163.com> wrote:
+> 
+> > Add an error handling path to call twl6030_gpadc_disable_irq(),
+> > as twl6030_gpadc_remove() does.
+> > 
+> > Signed-off-by: Wanhui Fu <fuwh1120@163.com>  
+> Fix is fine, but I'd rather not make already ugly code uglier.
+> There is an oddity in here though that makes a simple cleanup trickier.
+> 
+> Why is in remove is the interrupt disabled before the userspace interfaces
+> are removed?  Looking back at the history (lore search for the
+> disable function) it seems that the driver was way off on ordering,
+> most of it got fixed up back 2013 but this one didn't.
+> https://lore.kernel.org/all/1376910580-7545-1-git-send-email-oleksandr.kozaruk@ti.com/
+> 
+> Given how old it was I doubt this ordering was intentional.
+> 
+> So...  Lets do the more significant cleanup.
+> 
+> First add a devm_add_action_or_reset() to remove the manual handling
+> of the interrupt disable (which is equivalent of this fix) then convert
+> the only remaining call to devm_iio_device_register() in a follow up
+> patch.
+> 
+> Long shot, but last real change to this driver was in 2022 by Andreas
+> so if anyone is likely to have hardware to test probably Andreas.
+> +CC.  Given it's remove path anyway and that would be rarely used
+> for a soc ADC driver, I'm not that concerned if we can't test this
+> change.
+> 
+Not only me. A new devicetree using this driver was just added this year.
+If we are about to clean up here, we could also remove the error messages,
+twl_i2c_write outputs enough.
+I see no reason to disable the interrupts before tearing down the
+userspace interfaces.
 
-Hi Joshua,
-
-Thanks for the review, and for the note on the cover letter about the
-threading and sending v3 the same day as v2. Both fair; v4 goes out as
-a new thread, not before the end of the week.
-
-I'll take all of these in v4: the include, the pahole layout,
-fsleep(), plain "return ret" instead of dev_err_probe() on each regmap
-call, the blank lines, PM_RUNTIME_ACQUIRE_AUTOSUSPEND(), dropping the
-pm_runtime_dont_use_autosuspend() call, and the duplicate error message
-after devm_request_threaded_irq().
-
-Thanks,
-Adil
+Regards,
+Andreas
