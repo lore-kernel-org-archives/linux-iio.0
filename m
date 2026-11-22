@@ -1,88 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795333969;
-	b=vHUZx3YciM8RhM2FshuZojfxcBnpCECO0haeahnJ0K5MbLpMalJKf/XMmX1sRWJkcUGK
-	 HDU23Fu0ez/Cmh6iF4xBLbtmajZ0EtZAxIgSysmcqK2y3Zo4nfIbL5SLTTHd9I1ms9wQ/
-	 vK6C9kvNSAnta2FJID7zvK1EkZHya30cEp+ocJo625UIBup9vXYRd1LqjQWcw0KxP4xcR
-	 NI5HV9ALblNo6OKPjcA6OvF22W6jRjKexLy+xBYRoTptUsgvqnkSQWWxmKdvtr8vDlrFW
-	 3sphrw2NDxcRb7FRifsIOAjJvaccIVrGkF1DbNz2tplpywsEb1hlPQk8kI9qI5rteXA==
+	t=1795333977;
+	b=FI6EMj0W0phw69UNNdStAUEieM9nA9bE/HDlLo8ZzokBhJY3kC8WmX4I55wUzUO3zTPD
+	 2tXLZ99XZW+Irpa6z8PC2oCO8bSfxBzKjOOpSXl2NGrdxrF/lshjTQGXYsI+mvMoNZZ7V
+	 KLLRljE++4uV66Asi0MTBel1MAi3bX/49xyuc6Evv+SBJoBk/hWcFdE+5/GmtBeojOym9
+	 73txCBZjRC6HCLwKg3Df2ZyuI63mfXZie7MBc7GWiRYvXgHOE1rnWyO4QO1saQhxQoHrw
+	 IzgQk9/m2dsPg+5RpEkZ7fFmabYO81Uuxr0CSiHqaw/ag+IWe5uLjm6EWpZmRXGgkFQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795333969;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795333977;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=ciNlBsmt/ihohJlZfy6Y/766ujih1RX020bU3zC+WcM=;
-	b=fZsn7v75DoiCzujMBgtOSNwNlzqtRvnn7co0ydFsCNM6npVTdivwY66rx/ZGXJ6ZScCz
-	 xSnZQ9FBjBNUy945MjgHjfXYuMUBDG8Ed+quCAPfa7b5RypPMOTh1vz0Me89vs74lHgJl
-	 FKIwUWMcJ2xZcLl4DpgfcIy7MoZ5UB9KM1PZoKWT89SQESxiWUL5E3in8wL8FRQSS5uFL
-	 GCZ3cf7xIQhNMc/2fR6MrsZGZcgwSY4nIsMZAt0r1qF4Fc4WgPCIhrNuRiwKYCR8wxXUA
-	 CVysGnfJTftoFW1fJrNYnL0mVqpeZpVBj1cWDvp3tqFbuenXRAlyzpoiodZ2/MEVLWw==
+	bh=14rx6L7AbATinETfU1F4W6Ph48Erak+Ha8RtpBp7c9I=;
+	b=oaNROEBGyzaXY0EsnDnUQRw99/U3xmT0Iw+N7pg4A1/DwBGP+3vJ7dJ21IEgTzB44AmK
+	 uYBlalk8Gi2FebG6rH9hhtU7L5CzNrznbu6UcYDTQIjTsuDdIZL0qKBE0SCA6Mb8fFWhO
+	 wNv2bvvxI65zLDDALmQDv/JGkeIaqNMpTjaSh4AjVitunmsp32vSiMSk0ZUqE3H45Kfkx
+	 1ztonMJRwEbZqoi5MxiQlSoPZxslwVpfWB+UjLwRlvBOo245yvusQzSvOyyO3PZuhxdWN
+	 wfRk6JUAcvIWqkbgkym+tZ8wLR8pbpCxS+awEfdxzWl4EBltmyAVcBAOprpa9pgXDsQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=P3EwjdAI;
-	arc=none smtp.remote-ip=209.85.218.46
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NbUiVnNV;
+	arc=none smtp.remote-ip=209.85.218.50
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83334606A320
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 07:52:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 83334606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69C2606A339
+	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 07:52:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B69C2606A339
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=P3EwjdAI
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c50933bdf4bso538955466b.1
-        for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 23:52:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NbUiVnNV
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c513a854320so389989066b.0
+        for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 23:52:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795333968; x=1795938768; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795333975; x=1795938775; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ciNlBsmt/ihohJlZfy6Y/766ujih1RX020bU3zC+WcM=;
-        b=P3EwjdAIWBuYLgL/Ltp4V9bQavyPv6UwTu/fxuJlsGnEVXJXYZ68AHtVcSfrG7mZeQ
-         N5ozErcN2MOUyzf8gAx6EGcm/5igi2bDzdvqdcOaWId5XZVMGamXC6JUrqy8utwYfKxX
-         sShDpsOzKDXDwvPgkFUrMBeRwZEk3TmZRBlGcf5u/4pHaZC32z8zWvZXmKkf+erQABWI
-         RVh5fvOk7Dbv0Tkk4vKSIu4HS1fiZuHrewfI1Qt5wi/5//dmFR8vtbmgug9JDpPtBHys
-         y1VrXy00Bb3YqcyZwV4wkSTcs0BPMnO9XVhcpMlGp1rc2LQXHUGizwE9snOgea3rFan6
-         5Meg==
+        bh=14rx6L7AbATinETfU1F4W6Ph48Erak+Ha8RtpBp7c9I=;
+        b=NbUiVnNVQrTuUtyE3ouGS/87WDA7PRN53f4qTS+yqR9rwInlVD9FkhBSjnwTY/qdCW
+         gLb7mOLNov3CUQEYUlu5I/lr9Pg8bumIdqEnM6d++njRcC+kwOUtTcX4cNEDYw+0FmaW
+         royCU1vda5BJLZNujRHpW5IUnInYBPnRMt7p3ERSTGE6YEmCxh2UtUzGP3LimmOpsIZL
+         eINJJgN6daSYL8E4bgW75XMSdtFDSIIIx3Du3WY0B7I8Xx11vczvDZcfTmGn6W1V7Rzm
+         ituF0TZIU+abXcWcsc4PFEegnGuzTsRnyWkofYopOemZmcbaBaM6meGyHiDTphDn1BFn
+         I+qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795333968; x=1795938768;
+        d=1e100.net; s=20260707; t=1795333975; x=1795938775;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ciNlBsmt/ihohJlZfy6Y/766ujih1RX020bU3zC+WcM=;
-        b=KEkPfxH1LSSIq52M4LKVVQJbkhOZlpfBKSPNR+jxIDU85RgKmdLwgC5v/F5LVzQZ3S
-         ooIXbV5PeY/8BiXD0lR5dctx5pP2HE4wbLADS8I5/3qpcoxyxjRdpCIGhO6cM1Yhy0Ra
-         M0Q9GcK6Dt0VIX3Hm2tKsDlF51tprtfjMNc8eJXZI/e9OBbtdugOn21MYD8vWEu1i4s7
-         oFIJUQ8H01D7ynS56LcVIl1m7hjlgDUMCOkluIkAfhEwZGL793/Cj27ZKRwLlwz6YeX3
-         Jwh18uS8f124YJt8oBKZJOSLivVk+lkl9RgxN4xY+/Y4E8psY/196bG7PBErtzQlvDj8
-         tKDw==
-X-Forwarded-Encrypted: i=1; AL+hErEA4ViWtZ79BHZAoZ7Upd7Hic/QiuzSD1xwrjfbqmU24InlE+bjQM+dRBfHteZebJf4rkpzIRRyVZA=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8YMfITEu7sLa3qWuY15aO8z77U8Db2PU0nM52AjhRFw482ERAI
-	nH7MrPkbg3eMfiE8rJ8yMbvfkqrVnwjJuYvO55flhmJsTX4DJCkeagvU
-X-Gm-Gg: AZFdTZeXIinELmtu5+5lurLGYLEGzeY0OHeLSuJf/9ANPw2aOb0p/V78Alze5Hpqwhc
-	Oq+4nXpwqarUBTAblcZhgzraGleAFptpHfM3BKjgIZeg+oUxiVu9EzKghnCJT6pSQsYITTXGbhn
-	/cA/mwHlCQWzWz2p2XG9Ow2gU2hYrH1owYbX++GkfTzaQl8VPazsWOVvt0RycIlpap+pDnYAXGi
-	sjRTHg3U4XZmM4qbZDXq5btYiSAocxSvL9PoUxkKJeAKs24TSt2X4GzFfTt7JzkVdIVxrxkaPVF
-	jG/0B/bQny4TBTZFYO88sz3AgkKDW7cD1CTR+GtQlsfAvFEu7WQxU8HFPsLU93pz2uFiRvTitEY
-	ioYgfI7SdW1DTdeW6ZlbjEqcaaN6qjmwhrRuvSvH4doTKWnCJpie3lSTLKmWqcuRD8z7OVw/J0R
-	wDwcexeUQQrQlbgQY/V4WMmS6IWnCErsx6KC8K6p9x27zuGqgomXLWYJwaxieVjiIf9eDYN/Fnu
-	daWSz9zAlYdS1xh6xNTSB39x18JB4l46uf7+JGFcjAh+9bF7Ivk0XJ6zjt2rTA8VYJX1UXGrwiQ
-	rwPS+mp0Nta5Xnh2/csFlL62kj1E+hWHosx9OZ0U7egoW5c=
-X-Received: by 2002:a17:907:7b8c:b0:c42:4557:4532 with SMTP id a640c23a62f3a-c51317e487bmr815867866b.5.1795333967909;
-        Sat, 21 Nov 2026 23:52:47 -0800 (PST)
+        bh=14rx6L7AbATinETfU1F4W6Ph48Erak+Ha8RtpBp7c9I=;
+        b=j7qTNiWfON+xRISUzyPZtQqTyB4kL1Ep//J7rdMTqWlStCGP/V0C0GQJSXSwbTqosb
+         IrL17GuqxwxV+jIICijjbbpgt3bUPB65XRfF6p8i5JD+UFqaEiNgivseXnte4eoEeVkO
+         TXZS+gA0TjDQ+iNWxf2q07u3o5yR8YIk0uL6ymwnMUMEJd5u0eTPkKNBGbN7gm8oxfqf
+         QAxECUKkz+54raMkkdFbMEfJYJEVkNUp8I7YqvLMvmTjGyU+EmTTYB+qVZl6odz9ZkIx
+         OETsVuw4vV9uoqr0apuYdZzBxfySfuvOzdio+XjSfMuyPUfSuzbIx1AjX8t5hMHka1UK
+         nfxQ==
+X-Forwarded-Encrypted: i=1; AL+hErH6bxkGF4FYc51dnDkIWo3d+9s//amIY8QPIu7TX4xZ1KX66h/+0MBxHt0Oz5QqRi6WS8BlAjLRU4c=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9jXhy7FYnKdFZgW1Gz+zWrMrr/Aq6qZlPdRdVZJxwnQanjDwA/
+	3eIjjV+JGnsw21m/Y456iip0u8MlelJ7FvScis7J0e1UOuDhmmRiDu+LiTo4Jwpr2B8=
+X-Gm-Gg: AZFdTZeGFGGnEJrdVqzuEnNJKvd6SqtPhDJ4QG749N9j8B4+tC7GL8bkYe6jVNr+Hvo
+	MTsVbj5zszs/k9NpS5XUJENHzAtrkto4Tlvf8t6FgSUpUjjHNAjDovQLHO5AfhVsMyxApQ4NUKu
+	51r1lyuXXIhZiEAUmnjD6HNVNbZx58BVWbr81HFJ3H0Yo3+qeOZE1AR8YzBMsEnShDlX4htXj+X
+	bFi4twZT0TazPSXwxrO3MLKJYS0iKDSU7h8zP6SXN/7FTbF1c+nsHxobZ4P66hw+6tugbcK1jZa
+	r9hX0aG5sxj78zoQLqjxuaJy3TNbJ5pZaEnjAVKqNXVFctpBjwhnIB440cCgKWumy96gK3iwNYN
+	UoEJJzhi+2i8FERgqcUX8skWPUS+e3b7BLmF7HzFe8A6cZ54CtK4N8+1/GuiKts+KvW1u0/nWsL
+	D0RlVF0nOcCel4h/zUKwLWLj0KQy3KkcXa1ZiJhTuN4QYc44hvMo1zpvAfYHJDHAk0Q4wdZs8i8
+	AzRAPcJqGBNlloeB/Md6YZGC+Rk+bobOSpLSOuZ32Cd4yQc1yu10nyHeD+wSfQZy6lmxwV5yB3Z
+	SXS1P3KYHiIANt2bdE1bl+bU6A==
+X-Received: by 2002:a17:906:d0cc:b0:c50:48b8:22bf with SMTP id a640c23a62f3a-c513aad45e3mr519084266b.36.1795333975118;
+        Sat, 21 Nov 2026 23:52:55 -0800 (PST)
 Received: from dl360p ([195.155.168.55])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513ae67cbfsm291308966b.14.2026.11.21.23.52.46
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513afc316bsm280666466b.56.2026.11.21.23.52.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Nov 2026 23:52:47 -0800 (PST)
+        Sat, 21 Nov 2026 23:52:54 -0800 (PST)
 From: =?UTF-8?q?Adil=20H=C3=BCsrev=20Tepe?= <tadilhusrev@gmail.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -92,12 +91,12 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: proximity: add Imagis ISG5320A
-Date: Sun, 22 Nov 2026 10:52:45 +0300
-Message-ID: <20261122075245.2916935-1-tadilhusrev@gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: proximity: add Imagis ISG5320A SAR sensor driver
+Date: Sun, 22 Nov 2026 10:52:51 +0300
+Message-ID: <20261122075251.2918277-1-tadilhusrev@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261121-arrogant-viridian-swift-fb8001@quoll>
-References: <20261116074013.355363-1-tadilhusrev@gmail.com> <20261117173333.1853986-1-tadilhusrev@gmail.com> <20261117173333.1853986-2-tadilhusrev@gmail.com> <20261121-arrogant-viridian-swift-fb8001@quoll>
+In-Reply-To: <20261122024459.2c30cf99@jic23-hlaptop>
+References: <20261116074013.355363-1-tadilhusrev@gmail.com> <20261117173333.1853986-1-tadilhusrev@gmail.com> <20261117173333.1853986-3-tadilhusrev@gmail.com> <20261122024459.2c30cf99@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -110,20 +109,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Sat, Nov 21, 2026 at 01:23:42PM +0100, Krzysztof Kozlowski wrote:
-> Do not attach (thread) your patchsets to some other threads (unrelated
-> or older versions). This buries them deep in the mailbox and might
-> interfere with applying entire sets.
+On Sun, 22 Nov 2026 02:44:59 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Understood, sorry. v4 will be sent with b4 as a new thread, not as a
-reply to v1.
+> Unfortunately this looks a bit too much like an aged vendor driver.
+> I've called out a few things but Andy's earlier comment about
+> making sure you read other recent drivers and threads will get you
+> a long way.
+>
+> + as others have mentioned, for a new driver at least 1 week is
+> appropriate between versions whether or sashiko is making noise.
 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Thanks for the thorough review, and point taken on the pacing. v4 won't
+go out before the end of the week, and it will be a new thread.
 
-Thank you. One thing up front: Jonathan's review of the driver makes
-the vdd supply required, so in v4 vdd-supply moves into "required"
-here. Since that changes the binding, I'll leave your tag off this
-patch and say why below the ---, unless you're happy for me to keep it.
+I'll take all the style and structure comments: no vendor line
+references, no dev_info()/dev_dbg() noise, fsleep(), dev from the
+regmap, regmap_multi_reg_write() for the constant sequences,
+get_unaligned_be16(), guard() held to the end of the function instead
+of scoped_guard(), consistent pm_runtime get/put,
+devm_pm_runtime_enable() without the manual dance, no
+IRQF_TRIGGER_FALLING fallback, and the teardown split up. I'll also
+check which init-table writes are reset defaults and drop those. A few
+answers inline:
+
+> > +	.cache_type = REGCACHE_NONE,
+> Why? I'd expect a brief note if caching can't be used for some reason.
+
+I don't have a reason beyond following the vendor driver. v4 will
+either use a cache with the status/data registers marked volatile, or
+say why it can't.
+
+> > +	ret = devm_regulator_get_enable_optional(dev, "vdd");
+> vdd isn't optional. Devices tend not to work great without power..
+
+Agreed. On the XCover5 the sensor is on an always-on rail that isn't
+in its DT yet. I'll describe that rail as a fixed regulator there and
+make vdd required, with the power-up delay applied unconditionally.
+
+> > +		*val = (int)data->thresh - (int)data->far_hyst;
+> Does negative make sense? Any idea what the device does if we
+> get to that?
+
+I don't know what the chip does there, and I have no datasheet to check
+it against. I'll clamp at 0 rather than report a value the hardware may
+not honour.
+
+> > +	disable_irq(data->irq);
+> You've just written a register that sounds like it is preventing them at source.
+> Why do you need to disable the irq?
+
+I don't think it's needed; the IRQFUNC write stops them at the chip.
+v4 drops it, keeping only a synchronize_irq() where resources go away.
+
+> > +static void isg5320a_shutdown(struct i2c_client *client)
+> Why do you care about shutdown?
+
+It mirrors the vendor driver; I don't have a hardware reason for it, so
+v4 drops it. That also removes the shutdown vs runtime-resume race
+Sashiko flagged on v3.
+
+> Ignore the vendor driver (which is doing it wrong) and research how
+> wakeup sources work. They need to be deliberately registered rather
+> than just relying on leaving stuff on and hoping right thing happens.
+> Until that is in place, I would at least use the DEFINE_RUNTIME_DEV_PM_OPS
+> so we get some power saving on suspend.
+
+Ok. v4 uses DEFINE_RUNTIME_DEV_PM_OPS and has no wakeup support; I'll
+add that later as a separate patch once it's done properly.
 
 Thanks,
 Adil
