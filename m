@@ -1,56 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795305709;
-	b=bmnOiAbR5ssf1BCQTdxZstBOFgqpJrN0V8qaB3tBknPf5FnJOzwabSRs2EbXVjIYh/Y0
-	 Ofb2E5h1Le9H+nPJEImc1qj7RNuKUyRPHWsYxX4S6+2G7l0MfY+fHlFnnp6lCv2nfXOgL
-	 g+/usX42G0WpJugBw/D2tQAjgYJ3sl2PX+or8r3K0EyC9jhtgJMZF4HUQb1sHdbRpQ+su
-	 X/E/7v3W43YaCD/gnM1PcjZMWbnkjrg1m8t2tH/a4Ug2/pVmxtHBI+Qi3Aau9cNepAxFF
-	 KQhBqrtJn/4zg/U9g2PP8a3DwFn2Wgpl4S+upT208IhWsOVufv8CrVv1uxCxcjllqIA==
+	t=1795306452;
+	b=kiR6QSxhkQrPsE0BMwMk+PKUPGM9sKQs3C6tV/C6T1757PK2Uk5BsfksOpJjdC3V+4U5
+	 yw9YsNARxwrrqDBPh988Q+q53ikvc0CZUYMChwbtIS9lzelYEnhxcxsr9DNOz2/3uEIUb
+	 FMlrBkHDv+QH7cja3VCf2oNHpBhCSecp3/ZGnJ8LDwzitCeH6sHUwK0IhjD9nanscEkUE
+	 /Ju5qDA6gLpHSoNSRz6Z/MtvuPgv8Zj5/oUvbrYkbgunRMYgsA8L31hxqkhPHKeqyURBc
+	 mrrY+q/FbE8N5q1I4TX+3AppUOAfZ7DXIzu+qOQ25Fz+sd9w4K+mOmW5d8UGlJodrUA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795305709;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795306452;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=cqXJytTphT/ByglZO+CrjGR/1OSHt8FffBD/o/tRqNU=;
-	b=z2RMl/GMDmZz3UZcayxfOH5/eAx52wSSUEmg60QwO6nB2N1U5b1JewiPMCwApKFqiGkr
-	 5spQpE956tsj6ejghYNK4d6HgliLI9p/D8FbdalytL0Oy/Lttyt2WRnrKQV9JRtkuuxeG
-	 Q5pOmyYZEdEfIPmym2eEWAoGFJlEI6qjI3Wv6TgpNbH9jojYkSpUU8+gxAfiWcXcBE3oh
-	 dtXa7BO12bu8HLPtCktxqvj4s9lam6ZPgFeMH7WZB+cPkKnig/2VxJo4RZZFksXj0Avil
-	 m7K3CjRNLlqxD8b9bxfoA6Q3W+MljH3R+IqywFTFleznnONKmliqeVkaqFt09FTp4kg==
+	bh=6sa9fpr/80cMKeC2gBrVVTJtk5Tx/0YTWpeSWh4DN2U=;
+	b=yFPsHf0k56Rqu1Kkv1i7+NG0GoKh6iEnoCHfDoYqwz6CUqQqmgSMuhkKVVJ7NszLgN5X
+	 ZUJqBzFqe0wT7SPVOm9mV+zBMXaZIbHPDqjkMkM6xRXrD5/qZNrxvKdb3bJIVb0G2fKcI
+	 Ev1oNLdJ87cSaxn3H5Sotk6Rot8F28UyH3Hm5PdWPdNCbNjsV12DueZ089kYUIEoJ4pnC
+	 2r+BGnBfcNBFwRjHQyctx9FDHkv4cO0A0mRCXCIsX2ubdloBVIjZuJav+EWcd7yx9TiE8
+	 pP8+MUr0Ax3OfhhFvvF6Z6HEt8XZTvm8eY7OsUi8ugsmgPpaupFvea8DU8o6I2LK/qA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=o0VE26cq;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TIpjJlOr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3DD606A320
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 00:01:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898B0606A320
+	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 00:14:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=o0VE26cq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352141F000C0;
-	Sun, 22 Nov 2026 00:01:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TIpjJlOr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E881F000C0;
+	Sun, 22 Nov 2026 00:14:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795305708;
-	bh=cqXJytTphT/ByglZO+CrjGR/1OSHt8FffBD/o/tRqNU=;
+	s=k20260515; t=1795306452;
+	bh=6sa9fpr/80cMKeC2gBrVVTJtk5Tx/0YTWpeSWh4DN2U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=o0VE26cqXwvQl7aeJnCx91F1NIOEAx7AnCxe14ck+x3FtyPeSwWtHYAJczJlQnTpp
-	 zddvmgv5sNLYjlZ6goQB83dU18pFEBX75d6M0Ff74/cYVQaD5mpD859eUorlq9J686
-	 5BbBXRqgIik7J3R+b3w0gf3jxkQeHSkEcH9SULUT+eyqQfYqd9jq3PbBoqSKO4FDV8
-	 jHe/9mn98qupPwO6pE6HF4OqiSU/QFbhxgn3gE5alC7zqGHHQOf9ruID2bfz3l+oEu
-	 cksZ33k4OWr9gaWkW+FpMbePsWoMEGuAnOMAxoEEQ8hjyLjBTsmPJbVC7Nbbg/xwOK
-	 0WmF4k/giNtuA==
-Date: Sun, 22 Nov 2026 00:01:43 +0000
+	b=TIpjJlOrX/KUThmCDwD5JiwcsQQ9GDtrT5xRX+S+Vi+CYMRD51IK9j4XOgPTfGxOa
+	 oOgeDtj246mc8nFHb6gsD0dkLQdnw0aMs8FG38SFUw0CPXdHQ98UsQEQmtEXJzp3BH
+	 vb+MrROiySweujB2k8+A42ypmGrzx4W25L19HuKKTSAmjEZv+I9aZegn4TKOE8QmKX
+	 MPDO96YQQ6M4j2OR47Jw5TD4Uz8UCRgDLo3X6RYiXyTUJ27QAdOp1pxg9dQACeSg5E
+	 XeEX3tb3QHKBKJXyc5tWmzZ+p7s42N33rvvbBvchsLevCiVYW/FkUVu0lHvDv52+St
+	 rEAPlIwWc4Mfw==
+Date: Sun, 22 Nov 2026 00:14:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux@analog.com, linux-iio@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 1/1] iio: dac: ad5766: Convert GENMASK() to use
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: proximity: sx9324: Convert GENMASK() to use
  static parameters
-Message-ID: <20261122000143.46d9fc2c@jic23-hlaptop>
-In-Reply-To: <20261117160857.1799863-1-andriy.shevchenko@linux.intel.com>
-References: <20261117160857.1799863-1-andriy.shevchenko@linux.intel.com>
+Message-ID: <20261122001406.42ce09dc@jic23-hlaptop>
+In-Reply-To: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
+References: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,7 +63,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Nov 2026 17:08:43 +0100
+On Tue, 17 Nov 2026 15:35:56 +0100
 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
 > There is no need to use run-time calculated masks in the code. Besides,
@@ -73,32 +72,58 @@ Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
+>  drivers/iio/proximity/sx9324.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
-I'm too lazy to find out what the compilers actually generate.
-Lots of options around code like this for what they might do.
-Anyhow, it is logically simpler so why not!
+> diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+> index 1c8ba28c030a..d3f56ec57531 100644
+> --- a/drivers/iio/proximity/sx9324.c
+> +++ b/drivers/iio/proximity/sx9324.c
+> @@ -72,8 +72,7 @@
+>  #define SX9324_REG_AFE_CTRL6		0x26
+>  #define SX9324_REG_AFE_CTRL7		0x27
+>  #define SX9324_REG_AFE_PH0		0x28
+> -#define SX9324_REG_AFE_PH0_PIN_MASK(_pin) \
+> -	GENMASK(2 * (_pin) + 1, 2 * (_pin))
+> +#define SX9324_REG_AFE_PH0_PIN_MASK	GENMASK(1, 0)
 
-Applied.
+I'm not keen on a mask being defined that doesn't correspond
+closely to anything on the data sheet and these are not hot
+paths.  The original code is nasty but if we are going
+to change it I think we needs something cleaner than this.
 
-> v2: fixed typo
-> 
->  drivers/iio/dac/ad5766.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/ad5766.c b/drivers/iio/dac/ad5766.c
-> index 061b43fc0345..ba6c54e2c9ac 100644
-> --- a/drivers/iio/dac/ad5766.c
-> +++ b/drivers/iio/dac/ad5766.c
-> @@ -18,9 +18,9 @@
+My first instinct is going for the thing that may well 
+give the worse code gen and use the dynamic field_get()
+field_prep() calls with the mask still being generated
+at runtime.  Or given it's only 3 entrees just define
+SX9324_REG_AFE_PHI_PIN0_MASK GENMASK(1, 0)
+SX9324_REG_AFE_PHI_PIN1_MASK GENMASK(3, 2)
+SX9324_REG_AFE_PHI_PIN2_MASK GENMASK(5, 4)
+
+and drop the loops that are making this messy.
+
+
+
 >  
->  #define AD5766_UPPER_WORD_SPI_MASK		GENMASK(31, 16)
->  #define AD5766_LOWER_WORD_SPI_MASK		GENMASK(15, 0)
-> -#define AD5766_DITHER_SOURCE_MASK(ch)		GENMASK(((2 * ch) + 1), (2 * ch))
-> +#define AD5766_DITHER_SOURCE_MASK(ch)		(GENMASK(1, 0) << ((ch) * 2))
->  #define AD5766_DITHER_SOURCE(ch, source)	BIT((ch * 2) + source)
-> -#define AD5766_DITHER_SCALE_MASK(x)		AD5766_DITHER_SOURCE_MASK(x)
-> +#define AD5766_DITHER_SCALE_MASK(ch)		(GENMASK(1, 0) << ((ch) * 2))
->  #define AD5766_DITHER_SCALE(ch, scale)		(scale << (ch * 2))
->  #define AD5766_DITHER_ENABLE_MASK(ch)		BIT(ch)
->  #define AD5766_DITHER_ENABLE(ch, state)		((!state) << ch)
+>  #define SX9324_REG_AFE_PH1		0x29
+>  #define SX9324_REG_AFE_PH2		0x2a
+> @@ -187,7 +186,7 @@ static ssize_t sx9324_phase_configuration_show(struct iio_dev *indio_dev,
+>  		return ret;
+>  
+>  	for (i = 0; i < SX9324_NUM_PINS; i++) {
+> -		pin_idx = (val & SX9324_REG_AFE_PH0_PIN_MASK(i)) >> (2 * i);
+> +		pin_idx = (val >> (2 * i)) & SX9324_REG_AFE_PH0_PIN_MASK;
+>  		len += sysfs_emit_at(buf, len, "%s,",
+>  				     sx9324_cs_pin_usage[pin_idx]);
+>  	}
+> @@ -877,8 +876,7 @@ static u8 sx9324_parse_phase_prop(struct device *dev,
+>  		return reg_def->def;
+>  
+>  	for (pin = 0; pin < SX9324_NUM_PINS; pin++)
+> -		raw |= (pin_defs[pin] << (2 * pin)) &
+> -		       SX9324_REG_AFE_PH0_PIN_MASK(pin);
+> +		raw |= (pin_defs[pin] & SX9324_REG_AFE_PH0_PIN_MASK) << (2 * pin);
+>  
+>  	return raw;
+>  }
 
