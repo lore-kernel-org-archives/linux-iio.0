@@ -1,59 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795376952;
-	b=4t/8ipRf0RUUdXeSmEpDw+KEvvOoaINl6BliHqzmK+71jQ6sA16uc2Qs9eDBneodsxhx
-	 6U3HKG8sR7R4xr8dq8N2wUHxO/TVnJyX26CKyQPHyIiw7LzYC+JAUSTndPQSWrf27d17D
-	 QITsyK/+x7HN9xT7yLAKrb9/K/p7oabXViVn9ovTzzjKkbbatA6Pz3EnojQvT9FVTnLWS
-	 xpfzRPGtP9/OjB7jy21Y59DobAymJbLLM5zitKkTzHs00gRWPG3QTQJFGVcZZt79H9wTc
-	 VhIjeHpro/apW/wTqDpu2JI/6R/tzAMliTtWvmq9MKl2jvtbgwPGrHdCoR8NCGoAT3g==
+	t=1795377176;
+	b=VVpqbbyKK+aj8075b1272dtJha7d/Nq0hstDCawwYiLMspvJZKq5ZSv7VPhkWbQ5/KEx
+	 Td0egKdKodPS2smvykM+TdqFO+VVuKPzxNX//POEVvq1qD3FVVy4fkLsY8XaFacaUh4qu
+	 WFjJU+tCX4VwoJ69h8gcXom4Y+nS1BmTO+o7UnyP2v+vLch+y74aqzu1f/EU5zw07ZgJN
+	 HgYM0gotGlYXFvR/Q/UXhxpjA1kIoRnekKhIEUqG0EhZMg4ICG2rD8islvWxRzGo9xegN
+	 OejG9lH2u0luxWoyPs//ZRSi8QmyRL9nNZaR4fsoQcfZDOIXAPBkZ1kZADUyvEraYlA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795376952;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795377176;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=7RlmqShaVLVCrFL26b8L6FpqT606cA+3tszi9Li1QLg=;
-	b=U34BZCNVoxCaxY//Hh7P5xUT8qHLy28cJngHsjsMsPwlr+8FSpglsqcnGEA3fEgua6Hf
-	 5EbtjKnfgmMuvdzXyjhXAe1gbWOyQKJsvqI5QDeXHzeVRxDPgi3Rp9AzEz8DFC3bqRjeb
-	 hRj+jUbIFB8m0AIgI5u0oByEm4JqxprSRaE6MlDxNgqh1DYMpUj7ZJ7BzHv9bnzWJbirW
-	 J8GTqIAq/V92AYLR/jMQlEMA+LeLsVdd+SSZA/tK8SKQEDHOoss86PJGoc92MOiLGptwR
-	 YsVdDXCDb96nWYL4tWDYTVn8qNQrVOlil3d0cnlh3hvq8ePK6CqMwYYi0k5fKQNJHnQ==
+	bh=jB9LrMbhX//Yo0RRt1iibdPYWNJz5AcR3xAbcM9m9Vs=;
+	b=dUZkNvYOWL9wjejO+7obIJUQolRB0L+GCmXDGJ7LHy0RXqaFz0d8BmeS3Gb4pdBBtyLd
+	 QDHliIubKHpJsHMmPyIn/yBGHs4zxSS7suT79gyhPaLm1xs3W4H26CCuYHNRvepA/EpRR
+	 /oqXwMhYTxbJo8YbIGnvR0eBiTfR7DU9efJmyya/51T5gbTmCfU90XwCdcc2Tg3eyOZFX
+	 FsIS3jToHyhKWNJPv1MR2NduQpTU+keiMi5q+BBTbl3PtBnkFVGC9wTJxr6zsaMDtGHUq
+	 maiNZo0gO2QSfc++Vi34TWk0ry/Ds4GDBexE5T+7zYiIb12haSQ1AuWFnCScPgmK7Pw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="JLL4Uf/8";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Yj1OpBgN;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DE3C606A31A;
-	Sun, 22 Nov 2026 19:49:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E929A606A31A;
+	Sun, 22 Nov 2026 19:52:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JLL4Uf/8
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A9851F000C0;
-	Sun, 22 Nov 2026 19:49:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Yj1OpBgN
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A921F1F000C4;
+	Sun, 22 Nov 2026 19:52:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795376951;
-	bh=7RlmqShaVLVCrFL26b8L6FpqT606cA+3tszi9Li1QLg=;
+	s=k20260515; t=1795377175;
+	bh=jB9LrMbhX//Yo0RRt1iibdPYWNJz5AcR3xAbcM9m9Vs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=JLL4Uf/8rXtH8SX8QjPumO+n+ApisX122z0M0THo+0cEYGMF9KJ8zo265WBMP7cWt
-	 mJBftw5sNQ6OzbC/ke8ogthWVuyQo6bboTfGLbY/PWdoWuvRBIoozJD2bAfGNR7pOQ
-	 OsdhFUDiq8D1M5LvGQOpQ4IuHzDyfqio4SmK/dVXQ3kmewCLz89A5Zij3IQulChDoT
-	 WE2G/ApNbYmyfBWj6G9oo5UB+HiQfW1voms9/oAH4j7Oi30+2eA2OSbGkbavELI/mB
-	 nzRB6sCuOo09c1qXVnPoQKLE/bjgM05R64jSyrdfyrtbR6Fk7dW8OowU+bpeVrPkgU
-	 nQV7GFEOWKvyw==
-Date: Sun, 22 Nov 2026 19:49:05 +0000
+	b=Yj1OpBgNsLEJbpywVeiPo15bArf2mleBqh8wvh9q2eIX7OHXj/XWcjHS4ZtqHX7HE
+	 ImuHID8gbd6v8TcCcbAIzUFp4bexxnAiruntt8+PgXrbLdzvRUIxY2ePa3D4Lg8jHG
+	 BSNb9O1Uk2NxUk8zMBOHzwmu/R84VzXosZZ69zyTguvTRKfKrV3CeSm2lGjDtQ/1kb
+	 eGZX0Ga6piktzbYyNJkAQ+6FjTki7I9fReVBKmsG6MzQdRrG4LsG1cmNG+c8hHbwVs
+	 UdsSghPPshOF+LQKp2MhyRK4i2fZr2+ffCPISQigOxMBpvgRLg1XJSPpCveaOg7c+H
+	 xWifZl8MdvKkw==
+Date: Sun, 22 Nov 2026 19:52:49 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Lorenzo Bianconi <lorenzo@kernel.org>
-Cc: phil.williams@advisoft.co.nz, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Mario Tesi <martepisa@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: fall back to 25 us/tick without a
- trim
-Message-ID: <20261122194905.562ab69a@jic23-hlaptop>
-In-Reply-To: <avrFD8e4UlKOB4NB@lore-desk>
-References: <20261116-st-lsm6dsx-ts-fallback-v1-1-8ace30afbfb5@advisoft.co.nz>
-	<avrFD8e4UlKOB4NB@lore-desk>
+To: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-kernel@vger.kernel.org, Jonathan Cameron
+ <jonathan.cameron@oss.qualcomm.com>
+Subject: Re: [PATCH] iio: adc: max1027: complete the EOC wait when using an
+ external trigger
+Message-ID: <20261122195249.13ee9686@jic23-hlaptop>
+In-Reply-To: <874idfn30h.fsf@bootlin.com>
+References: <20261115204551.2783884-1-jic23@kernel.org>
+	<874idfn30h.fsf@bootlin.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,91 +63,98 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 16 Nov 2026 09:55:43 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Tue, 17 Nov 2026 11:52:46 +0100
+Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 
-> On Nov 16, Phil Williams via B4 Relay wrote:
-> > From: Phil Williams <phil.williams@advisoft.co.nz>
-> > 
-> > Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
-> > calculation") takes the FIFO timestamp scale from ts_sensitivity.
-> > That field is only filled in for parts that have freq_fine. The
-> > untagged-FIFO parts are left at zero:
-> > 
-> >   LSM6DS3
-> >   LSM6DS3H
-> >   LSM6DSL, LSM6DSM, ISM330DLC and LSM6DS3TR-C
-> > 
-> > st_lsm6dsx_read_fifo() multiplies the raw counter by hw->ts_gain, so
-> > every sample is published with the timestamp taken when the buffer
-> > was enabled. The accelerometer and gyroscope values still update.
-> > Userspace that integrates attitude from the timestamp delta treats a
-> > stuck timestamp as dt = 0.
-> > 
-> > These parts have no freq_fine register, so there is no trim to apply.
-> > Use the previous fixed scale of 25000 ns/tick when ts_sensitivity is
-> > unset. Entries that already set it are left alone.
-> > 
-> > Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp calculation")
-> > Cc: stable@vger.kernel.org
-> > Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> > Signed-off-by: Phil Williams <phil.williams@advisoft.co.nz>
+> Hi Jonathan,
+>=20
+> On 15/11/2026 at 20:45:51 GMT, Jonathan Cameron <jic23@kernel.org> wrote:
+>=20
+> > From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> >
+> > When an external trigger is in use, max1027_trigger_handler() starts the
+> > conversion and then waits in max1027_wait_eoc() for the end of conversi=
+on
+> > interrupt to complete(&st->complete). However max1027_handler() only
+> > completes it when the buffer is disabled. With the buffer enabled it
+> > instead polls the current trigger, which is the external trigger
+> > that is still being handled, so the poll does nothing,
+> > the wait times out and every sample fails with -ETIMEDOUT.
+> >
+> > Complete the wait when the buffer is enabled but the device's own
+> > trigger is not in use, as the comment above the check already
+> > describes.
+> >
+> > Fixes: 075d3280b4a1 ("iio: adc: max1027: Allow all kind of triggers to =
+be used")
+> > Signed-off-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+> >
 > > ---
-> > Resending inline. The first copy went out as an attachment.
-> > No code changes.
+> >
+> > The comment clearly states that we should just complete for
+> > triggers other than the one provided by this device, but the
+> > code doesn't do this. Ideal would be if someone has the part and
+> > can test this. =20
+>=20
+> I no longer have an easy way to run that code, but looking at it 5 years
+> later, I agree with your description of the problem as well as your
+> solution.
+>=20
+> > LLM spotted the issue whilst doing some other cleanup and
+> > prepared the patch.
+> >
+> > I think the reason this got past testing was that the code was
+> > fixed to actually return an error on timeout whereas a bug
+> > previously meant it always dropped through and carried on. =20
+>=20
+> Ah, right, intersting, I guess you talk about
+> 2021ef060900 ("iio: adc: max1027: fix error code in max1027_wait_eoc()")
+>=20
 > > ---
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > index 823f8ac66..98db90a30 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > @@ -2525,8 +2525,14 @@ static int st_lsm6dsx_init_hw_timer(struct st_lsm6dsx_hw *hw)
-> >  			return err;
-> >  	}
-> >  
-> > -	/* calibrate timestamp sensitivity */
-> > +	/*
-> > +	 * Parts with no freq_fine register have no trim and leave
-> > +	 * ts_sensitivity unset. Those parts used a fixed 25 us/tick.
-> > +	 * A zero gain publishes every FIFO sample with one timestamp.
-> > +	 */
-> >  	hw->ts_gain = ts_settings->ts_sensitivity;
-> > +	if (!hw->ts_gain)
-> > +		hw->ts_gain = 25000;  
-> 
-> I guess the patch is fine but it seems a bit weird to set .ts_sensitivity to
-> 25000 for ST_LSM6DSR_* family in st_lsm6dsx_sensor_settings array and keep this
-> chek here. Is it better to just add the missing info in
-> st_lsm6dsx_sensor_settings? (I do not have a strong opinion about it).
+> >  drivers/iio/adc/max1027.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+> > index d475cc91108d..65a0e85faca9 100644
+> > --- a/drivers/iio/adc/max1027.c
+> > +++ b/drivers/iio/adc/max1027.c
+> > @@ -478,7 +478,7 @@ static irqreturn_t max1027_handler(int irq, void *p=
+rivate)
+> >  	 * with another device. The core will then call the relevant handler =
+to
+> >  	 * perform the data processing step.
+> >  	 */
+> > -	if (!iio_buffer_enabled(indio_dev))
+> > +	if (!iio_buffer_enabled(indio_dev) || !iio_trigger_using_own(indio_de=
+v))
+> >  		complete(&st->complete);
+> >  	else
+> >  		iio_trigger_poll(st->trig); =20
+>=20
+> In case you want to make it closer to what other drivers do, you may
+> invert the condition to simplify the reading:
+>=20
+> 	if (iio_buffer_enabled(indio_dev) && iio_trigger_using_own(indio_dev))
+>   		iio_trigger_poll(st->trig);
+>   	else
+>   		complete(&st->complete);
+That is indeed more natural so done what you suggest and applied.
+We are fairly late in the cycle so I'm not going to rush this in.
 
-Agreed. I'd rather we just added the data to all the hw entries so this
-special casing isn't needed here + we have the appropriate info in those
-structures.
+Applied to the testing branch of iio.git, so targeting next merge window.
 
 Thanks,
 
 Jonathan
 
-> 
-> Regards,
-> Lorenzo
-> 
-> >  	if (ts_settings->freq_fine) {
-> >  		err = regmap_read(hw->regmap, ts_settings->freq_fine, &val);
-> >  		if (err < 0)
-> > 
-> > ---
-> > base-commit: fa2933aac170dd19c6a7f0d7b81a8f537e40915c
-> > change-id: 20261116-st-lsm6dsx-ts-fallback-cd21f1d1e30e
-> > 
-> > Best regards,
-> > --  
-> > Phil Williams <phil.williams@advisoft.co.nz>
-> > 
-> >   
+>=20
+> Regardless of that change,
+>=20
+> Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+>=20
+> Thanks,
+> Miqu=C3=A8l
 
