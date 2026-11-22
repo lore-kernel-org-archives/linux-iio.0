@@ -1,55 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795306452;
-	b=kiR6QSxhkQrPsE0BMwMk+PKUPGM9sKQs3C6tV/C6T1757PK2Uk5BsfksOpJjdC3V+4U5
-	 yw9YsNARxwrrqDBPh988Q+q53ikvc0CZUYMChwbtIS9lzelYEnhxcxsr9DNOz2/3uEIUb
-	 FMlrBkHDv+QH7cja3VCf2oNHpBhCSecp3/ZGnJ8LDwzitCeH6sHUwK0IhjD9nanscEkUE
-	 /Ju5qDA6gLpHSoNSRz6Z/MtvuPgv8Zj5/oUvbrYkbgunRMYgsA8L31hxqkhPHKeqyURBc
-	 mrrY+q/FbE8N5q1I4TX+3AppUOAfZ7DXIzu+qOQ25Fz+sd9w4K+mOmW5d8UGlJodrUA==
+	t=1795306887;
+	b=fto0dgWy0YFfjXI0MVsKftUYc5gUogvH0E4ALMeIty/phV83XL2KoExrewhraIGPzfcT
+	 zdLS39nSKWUJu3ya/awRu4hwSPhD6KhrA3cwm/6v3jGzREonMXKWc0nuIelm0OBlYE1vQ
+	 JMYlwYWTClQ3+TlPf+yFYiK5u2SqMxKjIaPCi5PUiMtTahXLFCfFyYiI1qKh2zH7s0PP/
+	 eP9r5GrJe42qTMIJIK1O2qvhNRXysaUHBVrk72393/n3KaH1wjSvkvNdfLOEskmmWvOJL
+	 m3WvHyToJgqxi6+Ffq/i4wbMVj2449CIFh+pyDEdQWbRGv37iyF23GCDSzqLTkF0cRw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795306452;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795306887;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=6sa9fpr/80cMKeC2gBrVVTJtk5Tx/0YTWpeSWh4DN2U=;
-	b=yFPsHf0k56Rqu1Kkv1i7+NG0GoKh6iEnoCHfDoYqwz6CUqQqmgSMuhkKVVJ7NszLgN5X
-	 ZUJqBzFqe0wT7SPVOm9mV+zBMXaZIbHPDqjkMkM6xRXrD5/qZNrxvKdb3bJIVb0G2fKcI
-	 Ev1oNLdJ87cSaxn3H5Sotk6Rot8F28UyH3Hm5PdWPdNCbNjsV12DueZ089kYUIEoJ4pnC
-	 2r+BGnBfcNBFwRjHQyctx9FDHkv4cO0A0mRCXCIsX2ubdloBVIjZuJav+EWcd7yx9TiE8
-	 pP8+MUr0Ax3OfhhFvvF6Z6HEt8XZTvm8eY7OsUi8ugsmgPpaupFvea8DU8o6I2LK/qA==
+	bh=mdyQFBr0cd8KrOt79LiqhxwKESg2tS5qwCo7QjFMXeQ=;
+	b=W9QxVqNBQ3pHzft4QO13MMeaUU7QaNo+GsNWszF4SKFnTj8qDc0ldtl+vahn8DjNVprP
+	 NL2Teu+EjsDPtTzlOhtHymfsETw2/Kfon1DH0J5bcKLwzb1gV5DROE6Fgrkt5axICuSG4
+	 mSKc05ssBcZXy64Kd93BXzl+2lOZCm/58eGtXZSlxHL/yz07BcDFwFs9n+0knR3ZMmZuo
+	 cf080ro5fFliL8RDQoR1pkPpOIHMycT1+GkdZr5jXeKzWF58oDKU0qGWQWlxyKv0MezG4
+	 7T/Wb70xZbEZ9PDMCCUaquepULo00XDgvc3ZedulS4Vvz4giXm+F0g8fyfGBWOTzdtA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TIpjJlOr;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YuxB9wGC;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 898B0606A320
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 00:14:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C97606A320;
+	Sun, 22 Nov 2026 00:21:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TIpjJlOr
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E881F000C0;
-	Sun, 22 Nov 2026 00:14:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YuxB9wGC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9072F1F000C0;
+	Sun, 22 Nov 2026 00:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795306452;
-	bh=6sa9fpr/80cMKeC2gBrVVTJtk5Tx/0YTWpeSWh4DN2U=;
+	s=k20260515; t=1795306886;
+	bh=mdyQFBr0cd8KrOt79LiqhxwKESg2tS5qwCo7QjFMXeQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=TIpjJlOrX/KUThmCDwD5JiwcsQQ9GDtrT5xRX+S+Vi+CYMRD51IK9j4XOgPTfGxOa
-	 oOgeDtj246mc8nFHb6gsD0dkLQdnw0aMs8FG38SFUw0CPXdHQ98UsQEQmtEXJzp3BH
-	 vb+MrROiySweujB2k8+A42ypmGrzx4W25L19HuKKTSAmjEZv+I9aZegn4TKOE8QmKX
-	 MPDO96YQQ6M4j2OR47Jw5TD4Uz8UCRgDLo3X6RYiXyTUJ27QAdOp1pxg9dQACeSg5E
-	 XeEX3tb3QHKBKJXyc5tWmzZ+p7s42N33rvvbBvchsLevCiVYW/FkUVu0lHvDv52+St
-	 rEAPlIwWc4Mfw==
-Date: Sun, 22 Nov 2026 00:14:06 +0000
+	b=YuxB9wGCYlvNqFqXvYcai1G16+UyNN000DwiwUV1nFMyD+GwHsbx5MWtDSXqYgvdS
+	 1a5tvcuDRyQ1YaCWOpaWiCG6mt7/XchZocFKG+5yFFIcwNnyJFddghGeSrhOIsTlsY
+	 Y1/CyaPhtm+RHNMEJsBG5M3Dhb7Ts/F1fcifas++koidg6NCS9J9UUXQ21jK9hv3p7
+	 Dqa2R2MP4t9WeANcjq6K2joumBnmXJ72Ign2bzL3EjfxpHG2qaS3Z0IdS7huzuX0PR
+	 RuJg3nIxf0CzQ0TF5CqPuKVxosq21WGtZyYxvZXRfXSIpDw1cixbQjZNyBwrTuUBmH
+	 5bwZGNnPQOwcw==
+Date: Sun, 22 Nov 2026 00:21:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: proximity: sx9324: Convert GENMASK() to use
- static parameters
-Message-ID: <20261122001406.42ce09dc@jic23-hlaptop>
-In-Reply-To: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
-References: <20261117143556.1759717-1-andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>,
+ linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, nicolas.ferre@microchip.com,
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+ giorgitchankvetadze1997@gmail.com, amin.gattout@gmail.com,
+ antoniu.miclaus@analog.com, gregkh@linuxfoundation.org, mripard@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/3] iio: adc: at91_adc: fix NULL pointer dereference
+ on trigger remove
+Message-ID: <20261122002118.723b23b3@jic23-hlaptop>
+In-Reply-To: <avyEqQEL3A_YNcgg@ashevche-desk.local>
+References: <20261117140510.391907-1-abdelnasserhussein11@gmail.com>
+	<20261117140510.391907-2-abdelnasserhussein11@gmail.com>
+	<avyEb9La1tqS90Cp@ashevche-desk.local>
+	<avyEqQEL3A_YNcgg@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,67 +71,43 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Nov 2026 15:35:56 +0100
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, 17 Nov 2026 18:45:29 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> There is no need to use run-time calculated masks in the code. Besides,
-> GENMASK() over non-static parameters might lead compiler to generate
-> much worse code.
+> On Tue, Nov 17, 2026 at 06:44:37PM +0200, Andy Shevchenko wrote:
+> > On Tue, Nov 17, 2026 at 04:05:08PM +0200, Abdelnasser Hussein wrote:  
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/iio/proximity/sx9324.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
+> ...
 > 
-> diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
-> index 1c8ba28c030a..d3f56ec57531 100644
-> --- a/drivers/iio/proximity/sx9324.c
-> +++ b/drivers/iio/proximity/sx9324.c
-> @@ -72,8 +72,7 @@
->  #define SX9324_REG_AFE_CTRL6		0x26
->  #define SX9324_REG_AFE_CTRL7		0x27
->  #define SX9324_REG_AFE_PH0		0x28
-> -#define SX9324_REG_AFE_PH0_PIN_MASK(_pin) \
-> -	GENMASK(2 * (_pin) + 1, 2 * (_pin))
-> +#define SX9324_REG_AFE_PH0_PIN_MASK	GENMASK(1, 0)
+> > >  	for (i = 0; i < st->caps->trigger_number; i++) {
+> > > +		if (!st->trig[i])
+> > > +			continue;
+> > >  		iio_trigger_unregister(st->trig[i]);
+> > >  		iio_trigger_free(st->trig[i]);
+> > >  	}  
+> > 
+> > Yes, but no. Please, rather fix the above mentioned IIO trigger APIs to be
+> > NULL-aware.  
+> 
+> Actually the iio_trigger_free() is already NULL-aware, so make it only for
+> iio_trigger_unregister().
 
-I'm not keen on a mask being defined that doesn't correspond
-closely to anything on the data sheet and these are not hot
-paths.  The original code is nasty but if we are going
-to change it I think we needs something cleaner than this.
+I'd rather we didn't.  Any code that is unregistering a trigger
+that it didn't register is probably really very very buggy.
+I'd like them to crash or at least guarantee that sashiko
+flags it.  We could add a warn if it is called on NULL I suppose
+but that is ugly.
 
-My first instinct is going for the thing that may well 
-give the worse code gen and use the dynamic field_get()
-field_prep() calls with the mask still being generated
-at runtime.  Or given it's only 3 entrees just define
-SX9324_REG_AFE_PHI_PIN0_MASK GENMASK(1, 0)
-SX9324_REG_AFE_PHI_PIN1_MASK GENMASK(3, 2)
-SX9324_REG_AFE_PHI_PIN2_MASK GENMASK(5, 4)
+I'd rather deal with this by fixing at source. That doesn't mean
+papering over it except as a potential easy to backport change
+which is the intent of this one.  It think the description should
+call that out though. Something like
 
-and drop the loops that are making this messy.
+"Make a minimal fix to simplify backporting.  Moving over to
+ device managed cleanup will shortly remove this code."
 
+Jonathan
 
-
->  
->  #define SX9324_REG_AFE_PH1		0x29
->  #define SX9324_REG_AFE_PH2		0x2a
-> @@ -187,7 +186,7 @@ static ssize_t sx9324_phase_configuration_show(struct iio_dev *indio_dev,
->  		return ret;
->  
->  	for (i = 0; i < SX9324_NUM_PINS; i++) {
-> -		pin_idx = (val & SX9324_REG_AFE_PH0_PIN_MASK(i)) >> (2 * i);
-> +		pin_idx = (val >> (2 * i)) & SX9324_REG_AFE_PH0_PIN_MASK;
->  		len += sysfs_emit_at(buf, len, "%s,",
->  				     sx9324_cs_pin_usage[pin_idx]);
->  	}
-> @@ -877,8 +876,7 @@ static u8 sx9324_parse_phase_prop(struct device *dev,
->  		return reg_def->def;
->  
->  	for (pin = 0; pin < SX9324_NUM_PINS; pin++)
-> -		raw |= (pin_defs[pin] << (2 * pin)) &
-> -		       SX9324_REG_AFE_PH0_PIN_MASK(pin);
-> +		raw |= (pin_defs[pin] & SX9324_REG_AFE_PH0_PIN_MASK) << (2 * pin);
->  
->  	return raw;
->  }
+> 
+> 
 
