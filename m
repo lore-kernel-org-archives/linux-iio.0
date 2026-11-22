@@ -1,118 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.67.36.65
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795354461;
-	b=AYzkZDVG4DBnFd5WmjOdf9VoPN0fIVVBO+s6rAAlQ9OjWr8WdQ6Q6dB7wk63ADtnTxuK
-	 HYKbJQ635SdQp72JsCIqQlhpqcTr6yXXBo3oWNqgJQq1ZjIQ6eZNeGGPOO+kuLUsGldao
-	 j2nePHRecTZZsEwwLT9+qL6rO+gwxLh8fnlbZ8Z/0+VNTEkO8XW2usQJn47fky/HSXMAx
-	 bgK3AqUu9OrWw0M3zpneouNmG/So290MGw/5xuV80lvGLWeyoOzuHX5IT0wxZmXpA/Zqs
-	 KHf7+Fzfh+RV24LhHH7RfCBX9ee1CplPZZyGdM3QmqIrdHfHTxck2OvmVu5JA2ihivw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795354461;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP;
-	bh=B2YpqatDPSUl5On3Scqr15nRXXPYDlBJfIeTj6Aa2VI=;
-	b=gNWMX6GIeDHfKNHXCCCU9odRIxS7IPbUbP5+z63l+6amrlBD/hz9MZnOBm9XkJM+M5Zl
-	 JIQ/xAz9w1b2F56KhDFj13QRaf6aSu0nW1vdMeoUIIMrxOStuzaRmCvgDmzcS7iEfeCOb
-	 STS3WILQUkjGXe8Wz1raX6r0LECyhwd5XShSea4xKoHG6xx2NwbnxKS8MBzGrruGIi38h
-	 xJ+khGxB9sqMdJ1D78jPW17IpCkzBehSnFCTpEUhZ1EI1CIKz90X+mJKuxBcYx/7zGepg
-	 t4qNc1tsNvIVGSVziFRteIEtinAiZ+NmQJv24w0Crr7qy3yFWs8ROj2ADaEQbY8R4GQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=posteo.de;
-	spf=pass smtp.mailfrom=posteo.de;
-	dkim=pass header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=IY6ejkA5;
-	arc=none smtp.remote-ip=185.67.36.65
-Received: from mout01.posteo.de (mout01.posteo.de [185.67.36.65])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795367801;
+	b=pAoxs8nUho2Ount0Xh/AByqCd7xpGTq+2XbT5kd9Vh3U39s5bveGwfUkEngh+HHNsMT+
+	 cdny4XGZbHwZdndY/iQ7gCfdrTxu3RSs3ubCX8LvMRrGAUgTj8zqHaMoxKoR/3e3tVOn+
+	 d/fW8YScYOYC2Fz6iez1y/RY0HVmu1AUNBzZLiCNsMlv66WsNIguQYhx0bomnqwRqcFbK
+	 Vpu4sGAD00HfxU83cxRDql+RXZ4KjxWZJm3Il8vwt83PwGAd4F3cS/vmJdcmR07j5iq6m
+	 IOMmY1MS7DveEvRUDaWThPuldU7ibyk8HdcTcF9tQc85RevhzTzzPBXI2sQTnxEPlsQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795367801;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=8BX4qMtkXZZEEur5iCL9/lu6vNU0NV7vJc4oUC//V5I=;
+	b=VRlEauN3KGg5gZ+Ec0hEM2jSnRaQLk73fxZGraAMEjQCiqnLaCeJca7zH6WqGc0qe2PZ
+	 mTMBNIlXvsXgGff5kHhyzVrWZVCTUBX2JoSWQnAeWKKgvVt3hbpiKBVmHKo419HfrxbHy
+	 Ms2TUqttiKD1bXl2RtpvXbWKk5+ykD70i4TdCf3iAi37gt3jjCiHCBty3iMJJVfIJoZY4
+	 c72mnbGu6q0aA8x6bzsGkL0XQWgmIEs/y8hAqYZqJ/19UDPP1T7D2MCY1r6nD/EMs6i7a
+	 7zbUkm8g51fgbnr0Y/Ej44XIrFp6RC/g4zhSX++3kX9Jnoj+56vNPmuxL/LlMwSPYQg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="m71UZ2E/";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84329606A330;
+	Sun, 22 Nov 2026 17:16:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m71UZ2E/
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795367800;
+	b=bMrzJfyKnii93x2Pm8Qf1jHI7chrSzNe+Au9o6mV8m8dwuQJXFob/+auAn6YoV7lOqYz
+	 j9kjT0FaInwLp0Ut7nVXbU0j5sJ2aHrQaNmZvPKfE+NSRsZr0IYxUOJWVd6PxkD6LWHPc
+	 UPdyDb6NEX2kb+7FuItTaqgO1K/nqOzvIubaM0b3DoBqtHae4klQqxlQ9/Ffr2AWycStX
+	 dWjUH0gtIM7EE9KmeNNBemwqG0Spx6Iue6bISWzKDvqHT1gcy1uUsskIctpdTmMTAZoyj
+	 /635NehWCxyDMrds0BnkuxEcTvWpYCnHxZgdem8kwbwi18Q64Bd4aNICvZeVkEY1SoA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795367800;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=8BX4qMtkXZZEEur5iCL9/lu6vNU0NV7vJc4oUC//V5I=;
+	b=bb/x9UjPIQP/JS3RpC7odRVLXsqRW9QIcZm+aUOBmaJZEUctwWuNiV2nAU6VoG44Qqel
+	 aRyYCbOKPiOopeZhcZv2+dwSscaqDms0B29vn1pXrLshhYo7gFS2Gy9ik0U2ErXy7jjkA
+	 gq6FRguulqfw0UCl8m5zP0fgaQODgOUQD+47xDmROdY1OvsF5Yh25rEey/qnMg6cgqevf
+	 kbh6z+9Ok4BidiMTeKZ21KYN7lj+l2XbyhE58mMCYgcS8U39Rh3kO3w8sy5ngON8+vJ3N
+	 sdUdDbqgS4wj6LX00sntrNMEdEiXIWF3zOOKUhQDHnVfGBBsPNHpjvc5M0C7xfd6tYw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FC13606A68F
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 13:34:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9FC13606A68F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=posteo.de header.i=@posteo.de header.a=rsa-sha256 header.s=1984.8680eb header.b=IY6ejkA5
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout01.posteo.de (Postfix) with ESMTPS id DB746240033
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 14:34:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.de;
-	s=1984.8680eb; t=1795354452;
-	bh=B2YpqatDPSUl5On3Scqr15nRXXPYDlBJfIeTj6Aa2VI=;
-	h=Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 MIME-Version:OpenPGP:From;
-	b=IY6ejkA5/suChshwsOezv6OLtBzqsbA4luOXxAO2vmgPZGdauXSSQwBbnx/yDYg5N
-	 hcrfKUP35jZntLnF/v3SHN6Fn4zDss8E0SrSyrFFnZEiny9NZqd8al2DgfXuhgtk1T
-	 D3a8cHq48JlTfE5+IWep3JlRy5uD6m1AQ4m5wzFJv9m76cmYFzTKUrxzehbSD0gwlv
-	 mj3YPZHbIcsc5kaTKv+frHzEjjFTIkOpKYQO3PdKgxR2mkASQvfxu6XunRQEfkyWIm
-	 6C/OrOC64go6r73eqcVnTCexZKyG8+OCC2+AxMkysS8d2zssXOA5XdAfWvNf/wpUUz
-	 RDurpIJPGoe9w==
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4jXVR60WKDz6v0W;
-	Sun, 22 Nov 2026 14:34:10 +0100 (CET)
-Message-ID: <947615fd284c416891ac6de5d16cdd00ec5267ab.camel@posteo.de>
-Subject: Re: [RFC PATCH v7 2/4] i2c: rust: implement SMBus access via
- IoBackend
-From: Markus Probst <markus.probst@posteo.de>
-To: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>, Jonathan Cameron
-	 <jic23@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, Igor Korotin
-	 <igor.korotin@linux.dev>, Danilo Krummrich <dakr@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Alice Ryhl
- <aliceryhl@google.com>,  Daniel Almeida <daniel.almeida@collabora.com>,
- Mark Brown <broonie@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,  Shuai
- Liu <847807867@qq.com>, linux-iio@vger.kernel.org,
- linux-i2c@vger.kernel.org, 	rust-for-linux@vger.kernel.org,
- driver-core@lists.linux.dev, 	linux-kernel@vger.kernel.org
-Date: Sun, 22 Nov 2026 13:34:12 +0000
-In-Reply-To: <20261109155743.83740-3-muchamadcoirulanwar@gmail.com>
-References: <20261109155743.83740-1-muchamadcoirulanwar@gmail.com>
-	 <20261109155743.83740-3-muchamadcoirulanwar@gmail.com>
-Autocrypt: addr=markus.probst@posteo.de; prefer-encrypt=mutual;
- keydata=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
- jfGillcaQOqFZ3WwVqyzG1BUfTow==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-LlgQf4RobFMqc/n5pj36"
+	by smtp.kernel.org (Postfix) with ESMTPS id CF3E91F000C4;
+	Sun, 22 Nov 2026 17:16:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795367800;
+	bh=8BX4qMtkXZZEEur5iCL9/lu6vNU0NV7vJc4oUC//V5I=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=m71UZ2E/5aBaP+aV30ARKfpgHJS+o3xHumrXMyRakaNRLBCYjx1dXckTjVx/IIdNO
+	 3a/eNwaHNKgRQytGo7cfEfLiJReUB05tmRyKSmBnPuJndr1ge3aOKvSf89xXzWDGrq
+	 bMp+gUExg9NA5DY6XCnFvnxh623WXYkMHlkxtDD0Dkp9sL7P0U+n3PdnG62yoKzpWk
+	 8eOiRcp7rCZ2cOrewc9jnl9D+53HZatWEjP1Kf28glaqj6T4PLhM2KU1wXk+NLUlx/
+	 uSDnmKd46tn7vXINi6bx008CUPuk3isLSaNu4p0I+pme48RA3dpAdCg+DvXm8h3aAs
+	 vdYcYEFwlBl4w==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 509614C133;
+	Sun, 22 Nov 2026 17:16:36 +0000 (UTC)
+From: Roman Vivchar via B4 Relay <devnull+rva333.protonmail.com@kernel.org>
+Date: Sun, 22 Nov 2026 19:15:42 +0200
+Subject: [PATCH v3 1/7] iio: light: stk3310: migrate to devm_* API
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -122,73 +82,133 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-OpenPGP: url=https://posteo.de/keys/markus.probst@posteo.de.asc; preference=encrypt
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261122-6768-stk3337-v3-1-b0d0a924e843@protonmail.com>
+References: <20261122-6768-stk3337-v3-0-b0d0a924e843@protonmail.com>
+In-Reply-To: <20261122-6768-stk3337-v3-0-b0d0a924e843@protonmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Joshua Crofts <crofts@kernel.org>, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Roman Vivchar <rva333@protonmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795367795; l=2793;
+ i=rva333@protonmail.com; s=20260510; h=from:subject:message-id;
+ bh=0op2+wuVDhpkZWTj316+uOP3iudK90lB8euvzogwbR4=;
+ b=cvgOwMN/d6emckerpitU2MxglfwkIlCCY1/WLT0l6KbFxqr4uRSz2yYqdqKk6YRgXLmnnmqph
+ OIv64uYaL07BuLZMfjC15q3NWx5Q/3/mlLD2Gd+f6KTs0Zzosqbj+iS
+X-Developer-Key: i=rva333@protonmail.com; a=ed25519;
+ pk=zww/nWjBGoQ4POXCG0BV6fx2iuXK6jx77rsKPA5YK5Y=
+X-Endpoint-Received: by B4 Relay for rva333@protonmail.com/20260510 with
+ auth_id=777
+X-Original-From: Roman Vivchar <rva333@protonmail.com>
+Reply-To: rva333@protonmail.com
+Content-Transfer-Encoding: 7bit
+
+From: Roman Vivchar <rva333@protonmail.com>
+
+Replace manual .remove() and mutex_init() with devm_* helpers for
+consistency with existing devm_request_threaded_irq().
+
+Suggested-by: Joshua Crofts <crofts@kernel.org>
+Signed-off-by: Roman Vivchar <rva333@protonmail.com>
+---
+ drivers/iio/light/stk3310.c | 37 +++++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index e751e7c97bc1..708ac0503be0 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -10,6 +10,7 @@
+ #include <linux/array_size.h>
+ #include <linux/bits.h>
+ #include <linux/dev_printk.h>
++#include <linux/device/devres.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+@@ -594,6 +595,11 @@ static int stk3310_set_state(struct stk3310_data *data, u8 state)
+ 	return ret;
+ }
+ 
++static void stk3310_standby(void *data)
++{
++	stk3310_set_state(data, STK3310_STATE_STANDBY);
++}
++
+ static int stk3310_init(struct iio_dev *indio_dev)
+ {
+ 	int ret;
+@@ -617,6 +623,10 @@ static int stk3310_init(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 
++	ret = devm_add_action_or_reset(&client->dev, stk3310_standby, data);
++	if (ret)
++		return ret;
++
+ 	/* Enable PS interrupts */
+ 	ret = regmap_field_write(data->reg_int_ps, STK3310_PSINT_EN);
+ 	if (ret < 0) {
+@@ -745,7 +755,9 @@ static int stk3310_probe(struct i2c_client *client)
+ 	device_property_read_u32(&client->dev, "proximity-near-level",
+ 				 &data->ps_near_level);
+ 
+-	mutex_init(&data->lock);
++	ret = devm_mutex_init(dev, &data->lock);
++	if (ret)
++		return ret;
+ 
+ 	ret = stk3310_regmap_init(data);
+ 	if (ret < 0)
+@@ -769,28 +781,14 @@ static int stk3310_probe(struct i2c_client *client)
+ 						IRQF_ONESHOT,
+ 						"stk3310_event", indio_dev);
+ 		if (ret)
+-			goto err_standby;
++			return ret;
+ 	}
+ 
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "device_register failed\n");
+-		goto err_standby;
+-	}
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "device_register failed\n");
+ 
+ 	return 0;
+-
+-err_standby:
+-	stk3310_set_state(data, STK3310_STATE_STANDBY);
+-	return ret;
+-}
+-
+-static void stk3310_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-
+-	iio_device_unregister(indio_dev);
+-	stk3310_set_state(iio_priv(indio_dev), STK3310_STATE_STANDBY);
+ }
+ 
+ static int stk3310_suspend(struct device *dev)
+@@ -896,7 +894,6 @@ static struct i2c_driver stk3310_driver = {
+ 		.acpi_match_table = stk3310_acpi_id,
+ 	},
+ 	.probe =        stk3310_probe,
+-	.remove =           stk3310_remove,
+ 	.id_table =         stk3310_i2c_id,
+ };
+ 
+
+-- 
+2.56.1
 
 
---=-LlgQf4RobFMqc/n5pj36
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, 2026-11-09 at 22:57 +0700, Muchamad Coirul Anwar wrote:
-> Implement fallible SMBus byte and word access for bound I2C clients
-> using the generic I/O backend infrastructure.
->=20
-> I2C transactions may fail due to NACK, arbitration loss, or timeout, so
-> use FallibleIoCapable rather than the infallible IoCapable interface.
-> Propagate errors returned by the I2C core to callers.
->=20
-> Provide smbus_io() for byte-addressed register access and standalone
-> word helpers for layouts not represented by the Region-based view.
-> Also provide smbus_read_word_swapped() for devices that transmit the
-> high byte of a multi-byte value first.
->=20
-> Restrict these operations to I2cClient<Bound> so bus I/O is only availabl=
-e
-> while the client remains bound.
->=20
-> Keep the raw SMBus FFI calls and errno conversion in safe bound-client
-> methods. Include a generic no_run example for the word-read helper.
->=20
-> Suggested-by: Shuai Liu <847807867@qq.com>
-> Link: https://lore.kernel.org/all/tencent_173B7731E90B9624F9F82613DC3031B=
-70907@qq.com/
-> Signed-off-by: Muchamad Coirul Anwar <muchamadcoirulanwar@gmail.com>
-Hi,
-
-please add me to CC.
-
-Could you make `I2cClient<device::Bound>` Sync in this patch?
-
-`I2cClient<device::Normal>` already implements Sync. Functions exposed
-only for `I2cClient<device::Bound>` should be thread safe.
-
-I will need this patch (including the change mentioned above) for a
-future driver.
-
-Thanks
-- Markus Probst
-
-
---=-LlgQf4RobFMqc/n5pj36
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCAA5FiEEgnQYxPSsWOdyMMRzNHYf+OetQ9IFAmsC70wbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTIsMiwyAAoJEDR2H/jnrUPS2xMQAKDLB02pKK6mopiQyUo4
-Rw9Re4Hxwma6eGa1pfpDoTjkft+qnAjAoaZHb6hnGHojepz2FdRyVNxTARZnByFA
-VHnddeyhZxrK19kmKRSD/RF79bW9V6QEqouu90CXUE9glh9KlfnjsyLrk+heqxN4
-5p0n2lDo3DFczV1lhZPgkJnp+Wb8Xrys9SWX4aCC9vE5MMeQjRzJVxzlnpiQxY3z
-5SOCMbxu1mXnOnWGI1yWmBxbK1HRNhydPhwo/PkAz2KIeXFdaB1brMME+eck9fKl
-NxK40cAzmKgO6JWK2yG4qFMhWp+ZYcZiv/n4BR3aEeRuG+Akp8A+eUKWXV8aSqm6
-HPbBkU7yaugyyYqcq6wJw55dbde7Klbd7XKBWWK+7ol7ut7nAkTsi5HSh/zeX5b7
-I2OB5H+YKPCMy5vB6DCPhIN2gYO+V2N8qwfbbPcFkbLUNumfdk44ABk+Wds1Thu5
-vwagzVEu/aXOt0XT+aUmH5zzutzvwDXZKyHEuGt4wstKXHAlPyIjydM9St32l6QF
-L0H1XRxUAWHpr6GnlhxWAUAzu/UebGviaVAtAl1WDgrZQIWAwG1tevLVXkkju/J5
-euYBaeJ3yvKDBY+sm7TkbWH9iOCikShqAeA2ZNuAs/fE5H9TVMhyZd4pQSU0ifuw
-UZStFoSLiv1XrJYCjL/baqXI
-=u56D
------END PGP SIGNATURE-----
-
---=-LlgQf4RobFMqc/n5pj36--
