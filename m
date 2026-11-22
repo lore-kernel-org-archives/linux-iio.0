@@ -1,108 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795334914;
-	b=K/NJouVGkfDYaP7Mhf244I1f4XWGK5w6qCr18Bk6ImEFRG6nRvRQhnLiTiz0I7diUE9v
-	 e3kcxCCNIJakrwN5UZwzNPaA9EiE0lv3knzf1/rZkBbE3xh/gh9R0zIyCpZF12WDggcKJ
-	 czrbfkyNwdULT6p1mHiG9hGWteYMriHwA0IHgqhJKz0i5qUgxtPDHI93/GQj82CqOT+ml
-	 m/ySkM2UDF+Yjr4JhLWfC5WUcPl6Oy4zJyMzgurKDNDbAwU6/2BM4bq13qb/Y6UHGd4F8
-	 tAn2deRA55xGIZ+iibtnw/yApn+qU097SpkXXKj7RVn4oQHNTMPERcz1kXiBgC0Gicg==
+	t=1795340056;
+	b=kxrDM2OA+r42Vww6DbkaN6T6W1uf6+FZxgTctDE19LJZ/hShGXh9D8DGKEwk8YEV2AO2
+	 oEzbnTYHT1JzzBEu6Ob8/l8qyANNIcSd6Lf2XTlsxwuRLeDYls4WGoxNi7Ba9oubFAq3R
+	 lSp7XtBv9jpRSdM0ohTucx+oNgUW7RQkGTzhI6qjQLgvaqKp+cYzqvbeKFBOurUHBI5HQ
+	 znE1BR4HAzkOgbNN2uDsz0IiQAc6jHStnSrVN8/L44jEbeSZFKGPI8Qdpc4IR5+FQ7odF
+	 0simFfby7jVmV/cVgAG12t9fhzIQc80cwiVetZ/oMe3HNsaCl1vg9DN1BO+41yCvPzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795334914;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795340056;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=WxmR7ztyeDAM8l4U5mjs6dhsdQ8TeTXXL+OwtJ6NUO8=;
-	b=hxIaL6VhZEEDYmBfI2+ncHM9ec/abUf9yQyG1k/OH8n3GgGCSNUZqFGKhW1t/0e9VRgf
-	 lNRZibCEb+PgglgDeNlM7h0hn/WGNWtT+PM3J0O1Z875lUqjCqDgG3SGvloG97yCjeNay
-	 FegjtkOw6zmqrDtvCthS4V6t5LEDQYVNdSesnIyjBtjDFp1uUyNUZzNagdjdaYMRP+jk+
-	 QE44RI3pZM6aRQfqnVra0HSlJ+Omsqw/O7+yB0SxkUrFeuoEgUlrHDm8lPTHkPLwoZQPU
-	 9n98Z4NocP+Ir9Mry3qe5N20fzxik9h1L9Xwe/E6geillp3/KPAbYVOZzPzrZOeoI2A==
+	bh=+2xrspYuu+FL47jccjzdtxpgEf6qiE/xXRLpMfETdrM=;
+	b=LkKJeVXNPXSwz7R5g8IsUdCc52KkGbXW31d/PUFY0Ea2aGwr+SswhhcBqtXqfF2wiJTa
+	 Nquo6/EhesW3HQJRsMypRbkjvsuNRVe5WEoIWQNXqT826GW4UiZcGMC+UjBfGNcc3ZXio
+	 KBiTUloNJ7Zp5/LMZuypjU1mnkUYOseYE5sQ0yCdIE4o076ptEZcQM18FGw3n7cldtMCI
+	 4EUcNju7TKrbDfFQeEwF+ODtiB+5eiQFI/dIH9qLuzUKu4r/ckXbmVH/TSGK9dPlFDKxL
+	 gDw+1L2aRAu+OsnvCduRMibQl694RxTbC0IS5J7mEJGtnYUYNpyLcGoN0vAMBFTmLhw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CtdtwJ1P;
-	arc=none smtp.remote-ip=209.85.208.48
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	dmarc=none header.from=teslabs.com;
+	spf=fail smtp.mailfrom=teslabs.com;
+	dkim=pass header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=bmjpe7XS;
+	arc=none smtp.remote-ip=209.85.128.53
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 727E6606A680
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 08:08:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 727E6606A680
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E4AF606A330
+	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 09:34:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E4AF606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=teslabs.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=teslabs.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CtdtwJ1P
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6b547d6c07bso2796689a12.1
-        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 00:08:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=bmjpe7XS
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4bb6ba3b244so20887985e9.3
+        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 01:34:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795334913; x=1795939713; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=WxmR7ztyeDAM8l4U5mjs6dhsdQ8TeTXXL+OwtJ6NUO8=;
-        b=CtdtwJ1Pb+/xE47wHtFE7BGKSoTPX0717TTaBptkIDetzjeX1GFUXZyaq61Z7h04GS
-         SyUvknLFVGLAIVQ2pY9JX3EETkbObFND4Z9h2mtAa6Cu77auBPBuzBUWE9UmWPIy/E6C
-         U8ECdkhV9s7qN3lbARlKs3GwveahqbCh1ZFZh/t2vojhZ/oOK8qK2wr1/imyRwA/vAmk
-         Jr6nEDejOcyWi9H4/4+6r1zy5jlmNwva8y202M02F/T2RqUfsvvH2jc21zbFsoUdybq6
-         QwRe31VOZ3rGo1SYoh2qtZxaHl+IyArWJC9CU1TQME+FN1jGCB32+FHSl7BNIXqqLLdD
-         +Ulw==
+        d=teslabs-com.20260707.gappssmtp.com; s=20260707; t=1795340054; x=1795944854; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=+2xrspYuu+FL47jccjzdtxpgEf6qiE/xXRLpMfETdrM=;
+        b=bmjpe7XSigsNo/RmiY/EbMiiQNhopFLdUm/1jAJvD+kMQAWiRIwUHz+tmo3w/+zYHr
+         fMQDJYRSqoj1mI8kaASKDRaoyWIZboEO/enrNzaavHO4BbahVNAYjcWCsi0W3WCSDfcX
+         XYFmLk9tITHWlRWyb8N9hQ7IklRjgIn9NdQLI6Oykom4Z4uPKXNpvk1PQCDIheMkbO6k
+         3u8YwMJyYsZxnoR1h5HB+DeGrSW2cHlLfueuH+kWJ1VlbF59wMtBehHTL3tS8SUL9rPo
+         gylPAHC/ETCivXluHRfK6894vm6BwUy+sfxydJT6fGfoLnye3Ze42R6+UfXwtRJZ5zNf
+         beVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795334913; x=1795939713;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=WxmR7ztyeDAM8l4U5mjs6dhsdQ8TeTXXL+OwtJ6NUO8=;
-        b=oKBdd9GfEZYwVrbyVQUF89W7GWIRXoN8QTWiAfyOEpw7YEOSnnx1VitjZoPDmR9d3x
-         Zcqv2u2tDQVExh475CEip9nNr/JDua9iPfH/YADlRsNQG2lEoyimthWhkB1KMAFAiJwf
-         s/fxKeCE3qd7zSCulFHSfUowlLIXbWRZz7wft01/RguO9YKH8zB7LDwExNEu4EdWE2pu
-         IoId/4XwBHrBs+FPQ09Venc+j/oeSs2Ab58fpSm5uFvWktSrOk8xSU5pQbFAvtYdnmoD
-         JNYdnUuzEHU/90wIisZDv8e0XqM8LMHz6RptKkZwnNyJIDVdzxRAj8LkHaMbyQ5HDG+T
-         37OQ==
-X-Gm-Message-State: APuU4Z+SqTZAg6K2NEJssGLkTgI2y+YbI/jvn88VxHqbSJ0fKXk03Wo0
-	pUCrlXbtxXfstR0qwfpBmeyK22V2UAqwAmfEIhlKe7w3Zs/LKaow5ht5
-X-Gm-Gg: AZFdTZdD8CHeo3WFAuJpesjAGiJgUkqj09RfKNHFScMCteUmfhL7MRXD658Y2nrebDm
-	T1NjQ93U4gUSn9cbwoxc6j0tNQnnNuKTPrykLKeeRx72WdCKsoMTezK+V6NUryAt2ldlWYHso/s
-	DsodiU6ZVNLjYCdmGsKRazb0KZApYJUhJQbQvrNPlDjanaxCYokJrtVl6kKx2eC/MUeBCD+pKsi
-	Po83fE8kDF2FZCNgde0GqL3q1jSyoXtDK7aL+cvqcre/hH7hNaerEX/WcZ0vJDE/GT+LdwXzidr
-	g1Oo0ikXxCoU7XSuqgdwCt8KrxyfyI09KlRB30mPWyC4If0iqd3xi1ptuWGbLsMKlEWCO64b5qM
-	QzYsrV60ZmGseC375KXws+44h/JzVZlT+5ovgpGAQBR3qn01I98miALdMMIu7wpIOQam6o6XEnW
-	FCdUdY6L8p09H10C9pDQuMEfr3uSzVBallDjBwrES58MxT31liEK/5Xa2x4ecDodW6WRvg/LTE+
-	9tEyYq6ghxDCQWmXkkaavb5Yh6XkAqkDZ29XmDJHlhdOPbnKlCteNXu6BG8LimKMqvbrqql5sFy
-	KlXzlhmu7Nk2AkbGmLz59YZesKBrJZdwRUfGzSHTwGBMjcclzjZdvNt7+4KJYUlgNR6W+UdFw8+
-	nA0eSHsl3Pw==
-X-Received: by 2002:a05:6402:1e90:b0:6b5:7d7b:8e9b with SMTP id 4fb4d7f45d1cf-6ba37ebe4dbmr6234640a12.39.1795334912857;
-        Sun, 22 Nov 2026 00:08:32 -0800 (PST)
-Received: from xeon ([188.163.112.62])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6ba3710601esm3596014a12.27.2026.11.22.00.08.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2026 00:08:31 -0800 (PST)
-From: Svyatoslav Ryhel <clamor95@gmail.com>
+        d=1e100.net; s=20260707; t=1795340054; x=1795944854;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=+2xrspYuu+FL47jccjzdtxpgEf6qiE/xXRLpMfETdrM=;
+        b=DefD7rBmGEMMsGUSvtSQmTXm12aCCDCWy04P8i4d8Iv9tn8TBxNB+2z2+1JSeLIhNO
+         MfyTem/2zQjcls4aF3iBJymJsvT5SwXkMO22R7CmHaZafcEFrzxZ/Qnz048I7VS8Y70/
+         sgb/ohTosoqHf8j/9ymqDhLwBKrvmwWNrSHVcazNpU5l4oDkolVqYlIq6EqgdovQO5T1
+         ZfOQElM1LNhbfW/99J7eKCiHuEos0T7sLBhxZo0IiHCEHIH/ghOv7koYxWJs/UvZQpQM
+         SdA2thLqj3fbgMmJdkCc+TTsKTJ+EPJshgNl/YhGEsaVn/UL5Y5OidkrhgTXdG6WPK7N
+         zV1w==
+X-Forwarded-Encrypted: i=1; AL+hErEGCL4dcvvFv9A7c/t5MlHC3EdzHJRoW7EWcFfKAdEXkbv05AE5rCtt9s/m8DO+sKUfWhHdeO+aTNs=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8HkluFq47OLNU36JPLvA0GFOuRB8hWmuerR+Df+3F/xKybs6pl
+	VOopLQEvwAN/LaEN2Nixq3i9bfmM3jVcF7hYA0mcKE6ALb2Lt3nxrmudWnj4twObWaQmVfQKfKV
+	q7Km1IgjWsTG5
+X-Gm-Gg: AZFdTZc535d0KjGx1hHL0Ri3CxF+K0dLKhHwzP6GCXgVSi22NNqbh/6kkjtG7qPWjOz
+	PLJeva91L8ibA+o09Et7UjJ5DncBX4p88QOO2GYXFB4hRgi1MIukJNSO5+funaNT0KLScHJHXxD
+	NuTwiim1Fe7iHSbR/26lfCZNf+REC3ZdIimVHFJDEt0hNmkJxbqPvXkDXn5BSddxDBRKy7Hu8bn
+	5dxM3BapkOBFEfyoj90NA4LfZED42HwWMUrfrbTj8dyKCahB380MH3+2PvMcNctr/zCOM0viPs4
+	dXJu08XqTpK0zI+DggR/G4a3bCpgBd2H56OHTrhkUi0GWRdZzTllYp4SsoZZumhM7HAQxhaCLLR
+	UJpU6dFMcDPPmZRyoVMy4oGHgsAwce1Qb1+ckLf/3t89i0HwIKZok9Iyo983O97UlVB0W1S2d4a
+	kid3KF5fMxhZX/VJZFk1kGUyqUFWfe5dVYPdU6XQYX4GV5PDneBRCUegHxGqQPUtnXjQewLqzKj
+	62omNOuJInq3+wPWDiuqLgunFoBeuQFbYJin77qAL3Cb3d7mOUHT30zAI27tLfkjSaXfIJzwdo3
+	Bszh480MOKhzJVjLq1iAlz1QG23jY267JX/zxe+o64fMXSKX0pEtSw+8NTxMxIkOYew3D4CrgkL
+	5vsUXeHp+Ou4=
+X-Received: by 2002:a05:600c:530f:b0:4bb:68b9:f615 with SMTP id 5b1f17b1804b1-4bb88810b22mr173144325e9.17.1795340054581;
+        Sun, 22 Nov 2026 01:34:14 -0800 (PST)
+Received: from localhost.localdomain ([139.47.121.129])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb884911e3sm291475195e9.6.2026.11.22.01.34.13
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 22 Nov 2026 01:34:14 -0800 (PST)
+From: Gerard Marull-Paretas <gerard@teslabs.com>
 To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
 	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Esben Haabendal <esben@geanix.com>,
-	Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	Svyatoslav Ryhel <clamor95@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig=20=28The=20Capable=20Hub=29?= <u.kleine-koenig@baylibre.com>,
-	Pan Chuang <panchuang@vivo.com>,
-	Hemanth Selam <hemanth.selam@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Nikita Travkin <nikita@trvn.ru>
-Cc: linux-iio@vger.kernel.org,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 4/4] iio: light: ltr501: Add support for the LTR-659PS-01 proximity sensor
-Date: Sun, 22 Nov 2026 10:07:53 +0200
-Message-ID: <20261122080753.36349-5-clamor95@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261122080753.36349-1-clamor95@gmail.com>
-References: <20261122080753.36349-1-clamor95@gmail.com>
+Subject: [PATCH] dt-bindings: iio: magnetometer: Add MEMSIC MMC5603
+Date: Sun, 22 Nov 2026 10:34:12 +0100
+Message-ID: <20261122093412.71604-1-gerard@teslabs.com>
+X-Mailer: git-send-email 2.45.2
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -114,170 +105,91 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add support for the Lite-On LTR-659PS-01 proximity sensor. This device is
-nearly identical to the LTR-559ALS-01, but omits all elements related to
-ambient light sensing.
+The MMC5603NJ is listed in trivial-devices.yaml, which allows no
+properties besides the register address and interrupts. Boards need to
+describe how the sensor is oriented, and the supply it runs from, which
+is often switched on wearables.
 
-Add a no_als_support flag, similar to how no_irq_support is used, to
-isolate ALS register access for the LTR-659PS-01, since ALS registers are
-marked as reserved and interactions with them are discouraged.
+Give it a binding of its own with a mount-matrix and its single VDD
+supply, the package having no separate I/O supply pin.
 
-The ltr501_trigger_handler relied on the scan index to identify channels.
-This approach is fragile regarding channel status flags and can break if
-the index is not strictly set. Switch to checking the channel type
-instead.
-
-Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+Signed-off-by: Gerard Marull-Paretas <gerard@teslabs.com>
 ---
- drivers/iio/light/ltr501.c | 76 ++++++++++++++++++++++++++++++--------
- 1 file changed, 61 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index a471c90cf0a75..37682e7067b52 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -151,6 +151,7 @@ struct ltr501_chip_info {
- 	u8 als_gain_mask;
- 	u8 als_gain_shift;
- 	bool no_irq_support;
-+	bool no_als_support;
- 	struct iio_chan_spec const *channels;
- 	const int no_channels;
- };
-@@ -656,6 +657,29 @@ static const struct iio_chan_spec ltr301_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(2),
- };
- 
-+static const struct iio_chan_spec ltr659_channels[] = {
-+	{
-+		.type = IIO_PROXIMITY,
-+		.address = LTR501_PS_DATA,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 11,
-+			.storagebits = 16,
-+			.endianness = IIO_CPU,
-+		},
-+		.event_spec = ltr501_pxs_event_spec,
-+		.num_event_specs = ARRAY_SIZE(ltr501_pxs_event_spec),
-+		.ext_info = ltr501_ext_info,
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
-+};
+Notes:
+    Checked with dtschema 2026.9: the steps of dt_binding_check run by hand (host make too old), yamllint and dt-check-style --mode=strict.
+
+ .../iio/magnetometer/memsic,mmc5603.yaml      | 45 +++++++++++++++++++
+ .../devicetree/bindings/trivial-devices.yaml  |  2 -
+ 2 files changed, 45 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5603.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5603.yaml b/Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5603.yaml
+new file mode 100644
+index 000000000000..039f53a5f912
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5603.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/magnetometer/memsic,mmc5603.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static int ltr501_read_info_raw(struct ltr501_data *data,
- 				struct iio_chan_spec const *chan,
- 				int *val)
-@@ -1230,13 +1254,24 @@ static const struct ltr501_chip_info ltr559_chip_info_tbl = {
- 	.no_channels = ARRAY_SIZE(ltr501_channels),
- };
- 
-+static const struct ltr501_chip_info ltr659_chip_info_tbl = {
-+	.partid = 0x09,
-+	.ps_gain = ltr559_ps_gain_tbl,
-+	.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
-+	.no_als_support = true,
-+	.channels = ltr659_channels,
-+	.no_channels = ARRAY_SIZE(ltr659_channels),
-+};
++title: MEMSIC MMC5603NJ 3-axis magnetic sensor
 +
- static int ltr501_write_contr(struct ltr501_data *data, u8 als_val, u8 ps_val)
- {
- 	int ret;
- 
--	ret = regmap_write(data->regmap, LTR501_ALS_CONTR, als_val);
--	if (ret < 0)
--		return ret;
-+	if (!data->chip_info->no_als_support) {
-+		ret = regmap_write(data->regmap, LTR501_ALS_CONTR, als_val);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	return regmap_write(data->regmap, LTR501_PS_CONTR, ps_val);
- }
-@@ -1251,16 +1286,21 @@ static irqreturn_t ltr501_trigger_handler(int irq, void *p)
- 		aligned_s64 ts;
- 	} scan = { };
- 	__le16 als_buf[2];
-+	unsigned int si;
- 	u8 mask = 0;
- 	int j = 0;
- 	int ret, psdata;
- 
- 	/* figure out which data needs to be ready */
--	if (test_bit(0, indio_dev->active_scan_mask) ||
--	    test_bit(1, indio_dev->active_scan_mask))
--		mask |= LTR501_STATUS_ALS_RDY;
--	if (test_bit(2, indio_dev->active_scan_mask))
--		mask |= LTR501_STATUS_PS_RDY;
-+	iio_for_each_active_channel(indio_dev, si) {
-+		const struct iio_chan_spec *chan = iio_find_channel_from_si(indio_dev, si);
++maintainers:
++  - Gerard Marull-Paretas <gerard@teslabs.com>
 +
-+		if (chan->type == IIO_INTENSITY)
-+			mask |= LTR501_STATUS_ALS_RDY;
++properties:
++  compatible:
++    const: memsic,mmc5603
 +
-+		if (chan->type == IIO_PROXIMITY)
-+			mask |= LTR501_STATUS_PS_RDY;
-+	}
- 
- 	ret = ltr501_drdy(data, mask);
- 	if (ret < 0)
-@@ -1328,11 +1368,13 @@ static int ltr501_init(struct ltr501_data *data)
- {
- 	int ret, status;
- 
--	ret = regmap_read(data->regmap, LTR501_ALS_CONTR, &status);
--	if (ret < 0)
--		return ret;
-+	if (!data->chip_info->no_als_support) {
-+		ret = regmap_read(data->regmap, LTR501_ALS_CONTR, &status);
-+		if (ret < 0)
-+			return ret;
- 
--	data->als_contr = status | data->chip_info->als_mode_active;
-+		data->als_contr = status | data->chip_info->als_mode_active;
-+	}
- 
- 	ret = regmap_read(data->regmap, LTR501_PS_CONTR, &status);
- 	if (ret < 0)
-@@ -1341,9 +1383,11 @@ static int ltr501_init(struct ltr501_data *data)
- 	data->ps_contr = status | LTR501_CONTR_ACTIVE;
- 
- 	if (ltr501_has_irq_support(data->chip_info)) {
--		ret = ltr501_read_intr_prst(data, IIO_INTENSITY, &data->als_period);
--		if (ret < 0)
--			return ret;
-+		if (!data->chip_info->no_als_support) {
-+			ret = ltr501_read_intr_prst(data, IIO_INTENSITY, &data->als_period);
-+			if (ret < 0)
-+				return ret;
-+		}
- 
- 		ret = ltr501_read_intr_prst(data, IIO_PROXIMITY, &data->ps_period);
- 		if (ret < 0)
-@@ -1582,6 +1626,7 @@ static const struct i2c_device_id ltr501_id[] = {
- 	{ .name = "ltr329", .driver_data = (kernel_ulong_t)&ltr329_chip_info_tbl },
- 	{ .name = "ltr501", .driver_data = (kernel_ulong_t)&ltr501_chip_info_tbl },
- 	{ .name = "ltr559", .driver_data = (kernel_ulong_t)&ltr559_chip_info_tbl },
-+	{ .name = "ltr659", .driver_data = (kernel_ulong_t)&ltr659_chip_info_tbl },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ltr501_id);
-@@ -1592,6 +1637,7 @@ static const struct of_device_id ltr501_of_match[] = {
- 	{ .compatible = "liteon,ltr329", .data = &ltr329_chip_info_tbl },
- 	{ .compatible = "liteon,ltr501", .data = &ltr501_chip_info_tbl },
- 	{ .compatible = "liteon,ltr559", .data = &ltr559_chip_info_tbl },
-+	{ .compatible = "liteon,ltr659", .data = &ltr659_chip_info_tbl },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ltr501_of_match);
++  reg:
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor
++
++  mount-matrix:
++    description: an optional 3x3 mounting rotation matrix.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        magnetometer@30 {
++            compatible = "memsic,mmc5603";
++            reg = <0x30>;
++            vdd-supply = <&vdd_1v8_reg>;
++            mount-matrix = "-1", "0", "0",
++                           "0", "1", "0",
++                           "0", "0", "-1";
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index a8b2b9deade4..17a32dd8772e 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -261,8 +261,6 @@ properties:
+           - meas,tsys01
+             # MEMSIC magnetometer
+           - memsic,mmc35240
+-            # MEMSIC 3-axis magnetometer
+-          - memsic,mmc5603
+             # MEMSIC 3-axis magnetometer (Support I3C HDR)
+           - memsic,mmc5633
+             # MEMSIC 3-axis accelerometer
+
+base-commit: c44104f3642da720164042623e4832836aefdd8e
 -- 
-2.53.0
+2.45.2
 
