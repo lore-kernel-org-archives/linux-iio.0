@@ -1,59 +1,62 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795380737;
-	b=ewyGMV28zHeS33ywtdnmtS8OcrYqBBFF2l2r2x/cTUUTwf6D62crGVjAZ0s2pmL01Kgm
-	 ITy8ClZsvH/6lq1xPGS2jX6QXxzsuEZad01Lp2vabJonX5Y6/Q7MxeMUfjN8BbMzZgWSr
-	 A8UQqS1SiqM+8JFgqaAZerVIF3wH8u3EZO/iRfeeR4CWz7QTeHDeBMFbDN9zQde/pG7s5
-	 o5WK5dAVUcbga/yw7XvW8VZYE1R5HPMq+KDztLiuZGv+uID+fKOgZIqDZewDvT8X9yxAM
-	 TYfRezSIe8iwd0kxdLDhE3Xvyps5tq+VnFdUZc/1R38rVmJFyMved/XrYs4LnKaOb9w==
+	t=1795381015;
+	b=f9acBtNDPnEe7Ll/ClM2owxyi6d1cNGfG18dwmmPiGlV8Pas7aLTT/KIIEzrNoKQR+WN
+	 g9veIUtbDt6DC7mH8N75T9m31w/F4LHCaLdVnV5a8RjCajyZ2bIk3LYw/YtLJfTGcqSeM
+	 g0vvz1iQ+bX2YiAC58Ui3xZhICVFZItMmKTuWDzq69HFBr5vR4W8K7SinXgQ6awv+K3C9
+	 3f9cfkbsQsD4D1Iygh6l4Z7tg6fDUx58nLwSl3oektyv/KsAQvAM71sHwjcHbw+9WOdo9
+	 hptTxChSgNumcNNrBHmx2dNrKKjWpjnLfF7Cabe7DKaZWfyAADPZa8ORNV+2vaF10Rg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795380737;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795381015;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=tuig+EQ220c3fmZpeomydXlRxIvrkJI/xod76DCTEhw=;
-	b=1kJaV3+pRw3AOK7MiY2Fb/8WxZ15AKjwnpmW+lFRee30ayioe/N/jDgPUSQ5LUmE5iJZ
-	 8tgCJD6hfbwyhYSPYwdFF2pNq5a4tm9aNktmlg7XfFOiyZrohaGZnep9dvIf+UeOkFuzO
-	 CRBuIdzrYZO++FCUggurAqu+O7wQ2wCHmPlONDbWCqgAmAnAcBGCWLjA8iylPQx7PD7nq
-	 /RdW0O+ujkUVFcQ53G8SnasNnm9XTbIyJBMBRRAKsybciM6Edarfvwcmq/zsoz50iL3eX
-	 JAioBe+nMXoApZZDhdWMjcBgrTkVDBrDJEzU3crfeXJxyNUWxK92+XORHPQ4SmPoHFw==
+	bh=DMRTLh9QWHOBTrKkxFKvDAuRmtTkhznpxAQUhX+xPS0=;
+	b=Hb2/OfwLk4B8XKHjuaZybDXg+muwy175oo10LEwnRAuPfzhS28ineor8hMEcynO7a6Rz
+	 zvDUdRJLjbA6DxOIDcAsX5wvsKRDOBkL2H8PtFTd9taax+0Zx7Rp4v7r6qDmPXjUAVL6R
+	 9FcfQIdC7jFPKaY0vxM4tONlIRDW3n1bm5QvB0R2SJERkT2vinuA7gOo8ihhoyVQG1awB
+	 MvBpZnTF3n8QEvzc+uputp/4ko4OgE+Weqi9vBmotNJbwyLzla/YE2DWhGVC/a6Kn7VLJ
+	 TsERwwNEUYORskcet1Rb3ajrRmKOq+KN1xvwIbpQvAD6MmOs/RDrxkR+Zx81qDMnTlw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZUfsrUeS;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iRIkpwCS;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8FC5606A32C;
-	Sun, 22 Nov 2026 20:52:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B9E2606A31A;
+	Sun, 22 Nov 2026 20:56:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZUfsrUeS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30591F000C6;
-	Sun, 22 Nov 2026 20:52:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iRIkpwCS
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE8C1F000CA;
+	Sun, 22 Nov 2026 20:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795380737;
-	bh=tuig+EQ220c3fmZpeomydXlRxIvrkJI/xod76DCTEhw=;
+	s=k20260515; t=1795381014;
+	bh=DMRTLh9QWHOBTrKkxFKvDAuRmtTkhznpxAQUhX+xPS0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ZUfsrUeSrKt4g0u/yUZljTfb2NYx5jJqhnjwTXmJMSrCzitPNYeUim1UDJAyFrKB0
-	 +iZIm5zz+VjHFsf5NpDPM6123aiVw7DYpJSqnt7X3YUxHNCWVi7oT85L46GG2SMYYe
-	 Ij+j4ROEvvYEK2nw5x1Z2nf8vQcC1cZKcsu+9Dy8UdLqJ7pxfQZPtbJAgzt2EQbeMC
-	 udG9ZD4IHT4CTPcAPioEWDVZRVuyelBCxrooh0eeoG80YIhy5yixtJWj89QWn0Y0N1
-	 pjl1vqKlXXVp6zbLVwBv0Pbj0+VYOlwIDMTY3KfXNpwETrEnVHrWr8sGRSfHOwCuso
-	 3IAKrnQZGbGug==
-Date: Sun, 22 Nov 2026 20:52:11 +0000
+	b=iRIkpwCSESegoxpoYoH22GhlNBh6pu1HUkR3zRg3z/dpekm0FlsVCt+z1jrtM3pWf
+	 dX07ANSeCqaY2DbSB+ROulmH1tET2YGKmk/f43ZCP0Mz5Up6Er+CbPdMxquawk9lts
+	 yGLG5DIOQTiSX6+D11w7GzVzwAK7mNISSWJqYa9CqXlsVnqmt+XpDwd1YznMui2P6l
+	 JnuAj5+QG6wV1UOfGZLQMEOGd0HVx2TYO7XoDvegC8RiIxnioJEP4B0NgiQBeRSI9a
+	 yBjmjkmJgjv09o7nq9rJglVu+eKlFMrLBdAdDQoCma6JFSxkgQNFgFO+lrngft/Znf
+	 cmondaoHE69vg==
+Date: Sun, 22 Nov 2026 20:56:48 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Gerard Marull-Paretas <gerard@teslabs.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Frank Li <Frank.li@nxp.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: magnetometer: mmc5633: Enable the VDD
- supply
-Message-ID: <20261122205211.6c46f3cc@jic23-hlaptop>
-In-Reply-To: <20261122190836.66111-3-gerard@teslabs.com>
-References: <20261122190836.66111-1-gerard@teslabs.com>
-	<20261122190836.66111-3-gerard@teslabs.com>
+To: Daniel Balint <dbalint@google.com>
+Cc: Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org, Benson
+ Leung <bleung@chromium.org>, Lee Jones <lee@kernel.org>, Tzung-Bi Shih
+ <tzungbi@kernel.org>, linux-iio@vger.kernel.org,
+ chrome-platform@lists.linux.dev, mfd@lists.linux.dev,
+ linux-kernel@vger.kernel.org, mwojtas@google.com
+Subject: Re: [PATCH v1 0/3] Introduce cros_ec power monitoring
+Message-ID: <20261122205648.73f3cf17@jic23-hlaptop>
+In-Reply-To: <20261120091022.1459658-1-dbalint@google.com>
+References: <20261106193129.43493-1-dbalint@google.com>
+	<20261107010356.39d9eddf@jic23-hlaptop>
+	<20261118204532.257423-1-dbalint@google.com>
+	<11a821f4-aef6-425a-8626-1d8641e9f83d@roeck-us.net>
+	<20261118220033.70425495@jic23-hlaptop>
+	<20261120091022.1459658-1-dbalint@google.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,53 +70,89 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 22 Nov 2026 20:08:35 +0100
-Gerard Marull-Paretas <gerard@teslabs.com> wrote:
+On Fri, 20 Nov 2026 09:10:22 +0000
+Daniel Balint <dbalint@google.com> wrote:
 
-> Boards may switch the supply of the sensor, so get and enable it before
-> initialising the chip, and wait the 5 ms both parts need after VDD is
-> valid before they can be operated.
+> On Wed, 18 Nov 2026 22:00:33 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> Signed-off-by: Gerard Marull-Paretas <gerard@teslabs.com>
-> ---
->  drivers/iio/magnetometer/mmc5633.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> > Do you need that coherent snapshot to get to userspace in one go? 
+> > 
+> > For accumulator channels the way they are normally done to sysfs
+> > style reads is to snapshot on each read, update an internal store
+> > of accumulation since enable then provide whichever one was requested.
+> > That way no data is lost - but you don't get an aligned snapshot.
+> > So it depends on what maths you are going to do with them, whether
+> > it can be done in kernel and if not how much interchannel skid
+> > matters.
+> > 
+> > So tell us more on why you need that coherent snapshot to userspace.  
 > 
-> diff --git a/drivers/iio/magnetometer/mmc5633.c b/drivers/iio/magnetometer/mmc5633.c
-> index b651f01e1b5d..79015c7984de 100644
-> --- a/drivers/iio/magnetometer/mmc5633.c
-> +++ b/drivers/iio/magnetometer/mmc5633.c
-> @@ -27,6 +27,7 @@
->  #include <linux/mutex.h>
->  #include <linux/pm.h>
->  #include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
->  #include <linux/time.h>
->  #include <linux/types.h>
->  #include <linux/unaligned.h>
-> @@ -64,6 +65,7 @@
->  #define MMC5633_CTRL1_BW_MASK		GENMASK(1, 0)
->  
->  #define MMC5633_WAIT_SET_RESET_US	(1 * USEC_PER_MSEC)
-> +#define MMC5633_POWER_ON_US		(5 * USEC_PER_MSEC)
+> Sure, I can provide more context. Usecases are broad, but an example
+> would be that we calculate per-rail drain contributions over short 
+> time windows for comparative analysis between device states (device state 
+> transitions like screen on/off trigger snapshot), or for debugging and
+> power profiling purposes we correlate fine-grained ODPM data frames
+> (~1s intervals) with other timestamped system diagnostics in our tracing
+> tools (e.g. perform per-process-per-rail energy attribution), so math
+> happens server side, and the relative energy deltas between channels
+> within a frame are just as important to us as their absolute values.
+> In general, data from a single channel makes sense in the context of
+> other channels, there wouldn't be a client that requests only one
+> channel.
+> 
+> At higher userspace sampling frequencies, e.g. ~1s trigger intervals,
+> which can happen in both abovementioned cases, interchannel skid becomes
+> an issue if we read individually.
+> Because the latching and data delivery (up to 64 MKBP events)
+> roundtrip between EC and kernel takes non-trivial bus time that's in the
+> ~10 ms range, latching per sysfs read across 64 files spreads channels
+> across a hundreds of ms long interval, which would compromise coherency
+> and render the data minimally useful. It would also make the EC
+> unnecessarily busy with redundant work, so latching per channel read
+> isn't really an option.
+> But to Guenter's point, this could be solved by driver-side caching.
+> 
+> 
+> On Wed, 18 Nov 2026 15:00:20 -0800
+> Guenter Roeck <linux@roeck-us.net> wrote:
+> 
+> > You could accomplish that the same way many hwmon drivers are doing it:
+> > Read all attributes in one go from the hardware, then cache it for a period
+> > of time.  
+> 
+> I should have mentioned the importance of timekeeping earlier. As we're
+> correlating the snapshots with other diagnostic time-series data,
+> userspace needs to know when accumulators were latched as accurately as
+> possible.
+> In contrast to IIO, in hwmon:
+> (1) There is no timestamp ABI to propagate latch times, so userspace has
+>     to rely on its own timestamp when initiating a read.
+> (2) There is no trigger ABI to force a fresh latch on demand (e.g. on a
+>     device state transition), so a userspace timestamp only marks the
+>     start of a sysfs read sweep rather than the actual hardware latch.
+> 
+> So, unless I missed something, with a timeout-based cache in hwmon, a
+> reader has no visibility into whether it's hitting newly latched or
+> cached data or when the cache was actually latched (skewing time-series
+> alignment) or whether the cache has expired mid-sweep across 64 sysfs
+> reads.
+> 
+> We could probably tune a short enough cache timeout where time skew
+> would be negligible and mid-sweep expiries would still be infrequent,
+> then it's a trade-off between accuracy and more mid-sweep expirations
+> (more EC roundtrips). It could work, although we still would do 64
+> sysfs reads instead of 1 on each trigger.
+> So I guess it's not a must to send the coherent snapshot in one go, and
+> I cannot provide any data to claim that hwmon would be a suboptimal
+> solution to IIO, but our technical judgement is that IIO's explicit
+> trigger, latch timestamp and single buffer read is a cleaner fit for
+> power monitoring via the ChromeOS EC.
 
-Obviously the line above isn't great on this, but is there a spec reference
-we can make for this timing?
+This is all good information.  Capture a short version of it in cover
+letter for v2 and include a link back to here for anyone wanting
+the full gory details!
 
->  
->  #define MMC5633_HDR_CTRL0_MEAS_M	0x01
->  #define MMC5633_HDR_CTRL0_MEAS_T	0x03
-> @@ -472,6 +474,12 @@ static int mmc5633_common_probe(struct regmap *regmap, char *name,
->  	if (ret)
->  		return ret;
->  
-> +	ret = devm_regulator_get_enable(dev, "vdd");
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to enable VDD regulator\n");
-> +
-> +	fsleep(MMC5633_POWER_ON_US);
-> +
->  	indio_dev->info = &mmc5633_info;
->  	indio_dev->name = name;
->  	indio_dev->channels = mmc5633_channels;
+Jonathan
+
 
