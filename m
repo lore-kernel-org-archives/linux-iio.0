@@ -1,84 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795333620;
-	b=uceMCODn0biAfTKVqFSXgf+hrlTTwrAykV26pLBB6ol9N5IOq1Q9NM4H8xTYEr9gyvyB
-	 9YV4EjHEuquPSKgwqgnKizTkVyvX4OSuW7M1XDBqsDt+EkxgnGgctSs960y4kQVlYfkDP
-	 LfG55xnSLTO/ZxYwbMR40y+OpcsNSdWS2RguBpzaP5XlPztGw9jUeC3t0b/94YUzrC8O/
-	 ihVH2vYg98geIOnNfhWEj8ktdGcKLKvINOa+ZLC0kn++haAXDIsnamK2DHpTmwMG5IZZe
-	 isNB6OHcHMlYJbTT4qSejtUj2iHbq97OBu+eTU6CcqxlXGdLwq02lnxO5pLmEVwicMQ==
+	t=1795333625;
+	b=B77VSZ6vd8w6zv0DNOELlKYvVFNJVBXQoGe9sv+Uf5h3hufEMM9mWHZD5/rOmuxPlDoo
+	 AUYza7UxTKO8quUx+7b4hA92v/3AfEGynO+vuvwJRUcq9QosSuZpFJ8ary2vTRYz8Sbfk
+	 q+gQVkOd+aMnM7u/vn7ZN7oQBNFlNjH7tL41ZbEPVU+CJnf1JNI9IUSsdTAzYR8ydtddM
+	 l0ZFClEfwl/rlGMxRgjYKFSjeXnOCZ9k0HYEOYNulyNSsl9WgiZQz+rG4bdlMNsbfzLEd
+	 6caD39cwNO5OYhK/7UXR8uz8g7EnKoPhtjlBFjIr+VYFP/em/d5pltd59ZP5T0DMEZA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795333620;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795333625;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=TMhXNQvSk1ZT1vxyOMFjrXM7IipagBQQHRtItyPgUsI=;
-	b=PykpI19hvIgmGpJWuL6GpHG38TApenYia7P2pSfmhUBwjNhk1ePwQ1qSBAtlc4m2i5M5
-	 saCDGWaOfkFPb/0UQ54uczPwmUnYlLXUfiTMF3rrk8RP7KRcFVA/fXM7bv4fWroymzXFa
-	 5UVDMt7idAfyxV4Pmv9WmP1uv4lKccZ1hUq1rX0g4yz0vtY2PwQ1iuJ/h2VqAAQx5KEm9
-	 p5W8Z2Mr8cPbRhQNixUnqFATmydErpLQgEbILg/g94R9pGmp6/KdB6ItZJ9+OD3Uw3/i0
-	 JXcg9XKdaTaDykdVX658pfuTR353214dx5/6llXQ26A7ToFud4mJwNzUV4OiRe0+yvg==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=Kj+W82NANvfKgUyKf6IsWAM4Mpg0yQ4fSrxz7u58oqs=;
+	b=jzKHw3UHb5xx4PDcro0NTBY9XGC/xI4CLn5xgaD7RxKCXLUaymGh8QNVmCF+StxRu4/3
+	 iucgpUueaq0EHJzz0jAymhr8xrHdoNAaa9JvMYdcDwGGWMx+ub4nTWyFxjXuCXEEnfjyn
+	 47RcF+c+RgLQYzbcIWK9JlOJ1ymlz9gw0lg4plePRhCrikCJQzW72NhHznoEuyyfMDCI+
+	 MD2KtmOMzl54GqFEVYIHzbT/Lhdo4CGBoXeNaa7TAWNGxP/2/uVBGB4eRSJYBmZgaAX0Y
+	 TjgM3Tiz+yyrXaUnAv/tH6chTaCo14S63MvJ20SB0btvnmuujMkXjLcXPEjRze5vb9A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iFsohZYl;
-	arc=none smtp.remote-ip=74.125.82.175
-Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JNMQQkdc;
+	arc=none smtp.remote-ip=74.125.82.179
+Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 412DF606A320
-	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 07:47:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 412DF606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 565FE606A335
+	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 07:47:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 565FE606A335
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iFsohZYl
-Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-386ab9ab619so214513eec.1
-        for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 23:47:00 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JNMQQkdc
+Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-3712b6d9843so2003167eec.1
+        for <linux-iio@vger.kernel.org>; Sat, 21 Nov 2026 23:47:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795333619; x=1795938419; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=TMhXNQvSk1ZT1vxyOMFjrXM7IipagBQQHRtItyPgUsI=;
-        b=iFsohZYlRDBl+bsZdG33YJfLJmQLCNGocWJGiaA0HfuIUp/DT4/bbdmPStil+7F2yL
-         44hqNK/+BBWJBwGmwuIP93Re4btz43WbSOXxL4ZOrrISZYI3veZRb0NKzIGaOp7+bR8O
-         w8JZprLA0/6+nTi87P1d6704Emt8hv9o3+Xmfo1QsWeLIFVvt+kx94FuYU8pmZ0h2yot
-         uU9nO5mCANWGG2hSoIYJZJ0ckOe6M2o4D57pWKJtazF7BXbAiaO31AufgXWyVi0cqFVu
-         cof7RpfpB9P87bOfih8QU2cyMn8kDENJfgdcL1D849Rg+R0QjwSIlsX7cROCNfLSupL5
-         3zZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795333619; x=1795938419;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1795333624; x=1795938424; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=TMhXNQvSk1ZT1vxyOMFjrXM7IipagBQQHRtItyPgUsI=;
-        b=dmhMWeRSEoGR/SWZ2CYD+BMjn+cuhVIwV8U8IF91tyFpvw/IBj6dzh0weMDTlvyxHz
-         5vp3XVjZ0ijBQkkhgB5k9LEaMrFZSOslqlyOEdu+YF4EO8dNNS0Yjc6rGBuLe2SB6QRR
-         uBouY9q6fP/EGXlFhOIMxq5wIEWOqP6H/xhqieKOPoP34+II/1qFqflcFLqLiYx8V329
-         KVG0mqrGFeXnDTW7pWHe6sO2RDt4mduElxpX+IZ1REC5BfoV3Pxif7+xMu0tcEUD4T/s
-         hC4E2BNBjFlO1cgttFkhXvDxj8c6RMuJY4bRVcDQEFYRYfHac2L2OuFRwlkjZWa7Qt6t
-         9Acw==
-X-Forwarded-Encrypted: i=1; AL+hErF557k2qd1k4/CFwqApCnWFQeT6XtzBOG7HJpkXZa6OzwMXELQx3JKZJMPD87EVFTGk0BFjbNJyw8U=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8wM1H/AiUJGyjJyTLVRhcWgXOJyHqd+u1fcCUx3iWIGX9ZeQiW
-	Lp379zqR6Y4xA94ICfTrckNELWGsyT0M1Umke2bbwsKFsdh0bF5k51Po
-X-Gm-Gg: AZFdTZeY4kKkfeqih5+X0Gq8c5S/mucCtvzHx6/tkUTvA+mFH/fPUvCsc188BdiimIw
-	WC4FiWuUG3ub1wQ7MFPjwEsKX/hT4JAP9qzmWo0DI4WT01YTVCtEDbV1Dvx37134tqQkLx+T9CI
-	bhBZtSCD+xvG5hpB48MSM+MGV3xoKm15EZA7Ri28wuMaKuqXY1hHaK1gXPOCmfbxrrbp/Bf5iCp
-	fbLD/tHO3CXWCjWI1BY4TTQTQeEWp31UDx6aPOS53XFyl4yIeMS+xgWwWZoCrevw0LNo+poQBpI
-	uuNnfNzRAP+7dCtPi/NQqgyGQ/6u4ON595g5/Uzqr1BIypISE1a+j3wu3iF7Gp6DwZLzpq6PR6Q
-	/fIPrBa+ol7aAOeZuz/3i5DXJxvARSGGLQgYvM7NuJMHpEgnV+Ki1iUZcxbvwcBwKiU1ud1Fc+3
-	+6r58E3/5Bfp0F20b78mM2QpE1LpW6MkmPyuVdCljScmwoqo6kB7I2EzsAAV3Cmp2ltIUIPVoY0
-	b3FnFuDeZjGIfFRTF68IkP0PQwP4ychmUN8kJRJ4KATmvefs74+l4LQFTgcdTPX8uAhqGcFZmXT
-	75UIa4zNsGilczL/BmNttR0Pw9UcrNfktBdXlo5McIJmToqLv+7UM0m5IUAEldpVQDBRdt4fHlS
-	Jr/O+khEd5pLHsxAlVZ9zO2vD8LmZCsEXiSzA+HGucy//xO5UvlC9ILLrS0waXPfjjKtABzG0cO
-	JIQ1pxD68xKTwRxqsEKgQCZ7puR2+ar9A1Lr91AWW71A==
-X-Received: by 2002:a05:693c:6010:b0:385:849b:7899 with SMTP id 5a478bee46e88-385849b7adamr9485945eec.4.1795333619120;
-        Sat, 21 Nov 2026 23:46:59 -0800 (PST)
+        bh=Kj+W82NANvfKgUyKf6IsWAM4Mpg0yQ4fSrxz7u58oqs=;
+        b=JNMQQkdcmULr0DYvlgyP4WMcFM9gusTnKZyos7J2BRoW5/O7xoyz+Ng0CpLtX9E2nR
+         zBFu/tKNkrKsxvfhkomnA95E67ZJOi3npDO4Ziqmgf/mK42zgNWueBqNHduSckNKnydz
+         WiuhMjEIBWL4IMxCy2tEklRd94yH1DG3j7ZXnKnTi2yg8BJwl70W0IkHKdQFzGxQxsYF
+         lkgRT7dlHT/JNQEpqmRRyrqW5atC/kyLYjPCTbXjfMd3IkRr7csmSWM/k6tzwfqo6ofU
+         hi4fbmnpFUGbmOguDLg2EnwkrQHQ+WFoUQ7QTHMjIjrf5+W47/+mZovZCJ8ebrkxSGN9
+         zWTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795333624; x=1795938424;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Kj+W82NANvfKgUyKf6IsWAM4Mpg0yQ4fSrxz7u58oqs=;
+        b=GOlKKDAeewIKx5f97Z3vefLw+xzVvCcmKVorbTNdvSpCXGaguA61mAnOLI3H//C+tw
+         93SFGlXBWCpwZZCh9AAvGkxrwFHtnLMcJNnxHI2EG1cnQCPsr1xPwju3i3TmDPQYUKSM
+         ToGWly5tTgiqVjTrJrlbkQW6B11lDBLmborwp7LGK5A42Z4ch29YV41TKvkNkPG+5C1z
+         MIAvZlc/vLcr8BTp1a+mhfsAHE7QU4TDhUzmfpRQlq7aJnroEIln+/a5w2rXDFCje/aJ
+         6nAgG3VER1Yd+Jj9wtp6d7oJ9fFl9qZVCXBHZumXjPlr8nmUUhxZGvixW4Sgv3Xn6y4j
+         elGg==
+X-Forwarded-Encrypted: i=1; AL+hErFB2Lxvd30fayllo78SL0PfXila3jBxrxj0S8UFtOETsla2CtDntv4SwK460rftrsderLfzPKDjN5c=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9M02ljae/SKIp3zPwYB1rdCsBGvDHmQvi7iKj+EDdhdZduKRqZ
+	AAG9SfhCJ+M5Aw63LJY+IvCVhorA2ALNxZCvRSPM2OAIGnR43YqFc6h8
+X-Gm-Gg: AZFdTZfY+ze23TKnI4y54g5glTTvSCaLGI1E5IpflZp58AM6AKqxgbNuIc8WbfP1MUn
+	f0dAKSyAKoGScPrscl6VQ1/Pvxvn9+3+7WQF3ITZKQxXo7zyRLwz0C93+RhpGmfBodwoN6+FxSZ
+	IbrioYXMccfaEo2tCe0vp2KbUKGcWsc+1hirg3DRxZULNGCE/JKM4gcqyQFXJd6Zk0bx5cAUxmB
+	7/0D9h6gBwvd5svSTyDYIV/OmDNznbHet6agmbBNWNZqGdVDCNw+W2y30N087G83hNd2x/FeLsj
+	pSVSpy2/2Ntu2yOzW6j5lByHa/l6miHA668S5FnJY9TChFsqZ/RDvnrmW9fTrNWwmuSoHGpdRLj
+	zn/8E1YsxhQwpZWa5dn8sykZI0KMHE/ekB6s6LrQER1OXhQDn28pXYeM/48pSLDUXypu49qH5dk
+	f8Jtnv+aQF9Odqe27LJJ+3mSsgUgMujbbH07GQt24MbdYRVVJALujfhDIJgiQo4itcVAvIvX7IX
+	JrRl03kUuQCCDjAxLYSANhv/GAd13H0Irnf1BZ97jD45GBWIEprU6fcw7YEjCJRyKA7F0gzKwC6
+	cyyaxg7L74D/T309SPb1XlL9pOQIdt/cXsL/I5Qgz8arCNd+7Y2J7BmGv1U2vorZEgCN6HrhTbY
+	WwkN3s4z5k+mtGF7fPgvJkV5ir0rCXHgo6HQ2CMSPkaW/GWwGVrQGU2C3mSF+JOY6guPOE196pr
+	epgPX9T7UrT2AePSSGFsgDhSzVslFPkdFPyf+i8v74Mg==
+X-Received: by 2002:a05:7301:6408:b0:36a:270:ce76 with SMTP id 5a478bee46e88-38570f2b27dmr8893767eec.33.1795333624512;
+        Sat, 21 Nov 2026 23:47:04 -0800 (PST)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385667decc2sm24898071eec.9.2026.11.21.23.46.54
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385667decc2sm24898071eec.9.2026.11.21.23.47.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Nov 2026 23:46:58 -0800 (PST)
+        Sat, 21 Nov 2026 23:47:04 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -90,10 +91,12 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v2 0/6] iio: proximity: sx93xx: fix raw reads, thresholds, hysteresis and gain
-Date: Sun, 22 Nov 2026 13:16:40 +0530
-Message-ID: <20261122074649.239441-1-kapoorarnav43@gmail.com>
+Subject: [PATCH v2 1/6] iio: proximity: sx_common: fix raw reads while the trigger is in use
+Date: Sun, 22 Nov 2026 13:16:41 +0530
+Message-ID: <20261122074649.239441-2-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261122074649.239441-1-kapoorarnav43@gmail.com>
+References: <20261122074649.239441-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,56 +108,101 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The remaining sx93xx fixes, grouped by driver.
+sx_common_read_proximity() only reinitialises the completion after
+waiting on it, so a complete() that arrives when no read is waiting is
+consumed by the next read, which then returns old data without waiting
+for a conversion that includes the channel it just enabled. This
+happens in two ways:
 
-1: sx_common: a raw read can return on a stale completion (left by an
-   interrupted read, or by conversions while another device uses the
-   sensor's trigger), and it then turns off the CONVDONE interrupt the
-   trigger depends on.
-2, 5: sx9324/sx9360 write_thresh() lowers the threshold by one register
-   value when the value just read from an odd register value is
-   written back, and lets some negative values through.
-3, 6: sx9324/sx9360 write_hysteresis() turns negative values into the
-   largest hysteresis.
-4: sx9360 gain encoding, as in Semtech's own SX9360 driver and as
-   sx9324 got in 108e4d4de2b5.
+- The device trigger has no validate_device(), so another IIO device
+  can use it. While it does, set_trigger_state() keeps the CONVDONE
+  interrupt enabled and the IRQ thread calls complete() for every
+  conversion.
+- A read interrupted by a signal reinitialises the completion and
+  returns, but a CONVDONE interrupt already raised can still complete
+  it once the mutex is dropped.
 
-Changes in v2:
-- Rebase on the current iio testing, which now has all the patches v1
-  depended on
-- 2, 5: check _val before it is used, and before reg is assigned;
-  val > 1 instead of val >= 1 (Andy)
-- 2, 5: commit message rewritten as agreed with Andy: drop the
-  (r * r - 1) / 2 formula, explain why int_sqrt(2 * val + 1) is right
-  in integer arithmetic, and say that the negative value wrap happens
-  on both 32-bit and 64-bit
-- 3, 6: check _val before it is used (Andy); say in the commit message
-  that it happens on both 32-bit and 64-bit (Andy)
+Also, when it is done, the read disables the CONVDONE interrupt
+unconditionally, which stops the trigger for the other device.
 
-v1: https://lore.kernel.org/all/20261116205320.26070-1-kapoorarnav43@gmail.com/
+Reinitialise the completion before enabling the interrupt, and leave
+the interrupt enabled when the trigger is, as set_trigger_state()
+already does for pending raw reads.
 
-The threshold change was checked against a userspace copy of both
-conversions for every val from 0 to 65535: all 256 register values
-round-trip, and every write picks the largest register value whose
-reported threshold doesn't exceed the request.
-Compile-tested only (W=1, checkpatch --strict clean); I don't have
-SX93xx hardware.
+The interrupted-wait case was reported by the Sashiko AI reviewer on an
+unrelated sx9324 patch.
 
-Arnav Kapoor (6):
-  iio: proximity: sx_common: fix raw reads while the trigger is in use
-  iio: proximity: sx9324: fix proximity threshold writes
-  iio: proximity: sx9324: reject negative hysteresis values
-  iio: proximity: sx9360: fix hardware gain encoding
-  iio: proximity: sx9360: fix proximity threshold writes
-  iio: proximity: sx9360: reject negative hysteresis values
+Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
+Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+---
+ drivers/iio/proximity/sx_common.c | 25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
- drivers/iio/proximity/sx9324.c    | 18 ++++++++++----
- drivers/iio/proximity/sx9360.c    | 39 +++++++++++++++++++++++--------
- drivers/iio/proximity/sx_common.c | 25 +++++++++++++++-----
- 3 files changed, 62 insertions(+), 20 deletions(-)
-
-
-base-commit: 42d25ad999bd60b96b227c2e54391c82cb03d00d
+diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
+index 4d4937395d9a..66d06435da05 100644
+--- a/drivers/iio/proximity/sx_common.c
++++ b/drivers/iio/proximity/sx_common.c
+@@ -167,6 +167,15 @@ static int sx_common_put_event_channel(struct sx_common_data *data, int channel)
+ 				     data->chan_event & ~BIT(channel));
+ }
+ 
++/* The trigger needs the CONVDONE interrupt too, leave it on while in use. */
++static int sx_common_put_convdone_irq(struct sx_common_data *data)
++{
++	if (data->trigger_enabled)
++		return 0;
++
++	return sx_common_disable_irq(data, SX_COMMON_CONVDONE_IRQ);
++}
++
+ /**
+  * sx_common_read_proximity() - Read raw proximity value.
+  * @data:	Internal data
+@@ -188,18 +197,22 @@ int sx_common_read_proximity(struct sx_common_data *data,
+ 	if (ret)
+ 		goto out;
+ 
++	/*
++	 * Forget conversions that completed before this read, e.g. while the
++	 * trigger was in use, so that we wait for a fresh one.
++	 */
++	reinit_completion(&data->completion);
++
+ 	ret = sx_common_enable_irq(data, SX_COMMON_CONVDONE_IRQ);
+ 	if (ret)
+ 		goto out_put_channel;
+ 
+ 	mutex_unlock(&data->mutex);
+ 
+-	if (data->client->irq) {
++	if (data->client->irq)
+ 		ret = wait_for_completion_interruptible(&data->completion);
+-		reinit_completion(&data->completion);
+-	} else {
++	else
+ 		ret = data->chip_info->ops.wait_for_sample(data);
+-	}
+ 
+ 	mutex_lock(&data->mutex);
+ 
+@@ -212,7 +225,7 @@ int sx_common_read_proximity(struct sx_common_data *data,
+ 
+ 	*val = sign_extend32(be16_to_cpu(rawval), chan->scan_type.realbits - 1);
+ 
+-	ret = sx_common_disable_irq(data, SX_COMMON_CONVDONE_IRQ);
++	ret = sx_common_put_convdone_irq(data);
+ 	if (ret)
+ 		goto out_put_channel;
+ 
+@@ -225,7 +238,7 @@ int sx_common_read_proximity(struct sx_common_data *data,
+ 	return IIO_VAL_INT;
+ 
+ out_disable_irq:
+-	sx_common_disable_irq(data, SX_COMMON_CONVDONE_IRQ);
++	sx_common_put_convdone_irq(data);
+ out_put_channel:
+ 	sx_common_put_read_channel(data, chan->channel);
+ out:
 -- 
 2.53.0
 
