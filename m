@@ -1,63 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795305552;
-	b=04Gx4jxUZc9Qflut33YEvKFELB1QrJ6iG5Y3i1Yu+QYc9eJDYNXIvEZU1ltBIk6obFCd
-	 nD3I2YWpNivWmLqUe2ywo7lKYQO8DkLJJF1M1Nnfgi+3OPJb4L18pUoWdiRfXEhAtSbqd
-	 f8X8kI3cLUkEBFT2fRV/tpK64kswXOsKLYiSw+yeo+pIAZiywf4xsP0fdIzaTcCY6xU3e
-	 Li2Zc0CE88HRLubDlL4d256nEoBXctF1vyXQxfX4Q9kO+JITEuTRP9RqlsIWtX2QrtFV9
-	 jL9z6Q/7m/usSUg7qEXPJIHZXO30qN/K9ch+f3m4Wv3NO9IFleO1skcPchl/Mg3PbWA==
+	t=1795305709;
+	b=bmnOiAbR5ssf1BCQTdxZstBOFgqpJrN0V8qaB3tBknPf5FnJOzwabSRs2EbXVjIYh/Y0
+	 Ofb2E5h1Le9H+nPJEImc1qj7RNuKUyRPHWsYxX4S6+2G7l0MfY+fHlFnnp6lCv2nfXOgL
+	 g+/usX42G0WpJugBw/D2tQAjgYJ3sl2PX+or8r3K0EyC9jhtgJMZF4HUQb1sHdbRpQ+su
+	 X/E/7v3W43YaCD/gnM1PcjZMWbnkjrg1m8t2tH/a4Ug2/pVmxtHBI+Qi3Aau9cNepAxFF
+	 KQhBqrtJn/4zg/U9g2PP8a3DwFn2Wgpl4S+upT208IhWsOVufv8CrVv1uxCxcjllqIA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795305552;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795305709;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=GawK7uEp6ynP+1OXc7D7hnhH1v2mtIVCn3SoaQI56xY=;
-	b=NnBrIc+2UkOPod0vvq2+skxeO+44xwLORM45MqrVuHMgBawiFNvwGPucmr8WaS3JWHgw
-	 2Qvb1a6svm9RE7qr0zWA6fhK4PlgMIsK8NdDVbadljHl6lXBy+6bO8I+eU0eNRTn5HDe4
-	 Cf+hI9MMN2oSqktXEPSuRshsK7adqYQsZYlub8xDs7DQJVWCKjgIqNBhQ5Ew6uWh8S773
-	 3HdhrDPjQ7bbD8emyap1eeREybNDYG36ix0C0k6WlVgwl2OzeyW/j5YiKKRw9sEQ2SR4q
-	 d7eNlNxT08WNhPnQtdY7BJLCn8FEeJBJO/cyWk9Z7iQYqP1feWREfxqqsyN1ngxc+oQ==
+	bh=cqXJytTphT/ByglZO+CrjGR/1OSHt8FffBD/o/tRqNU=;
+	b=z2RMl/GMDmZz3UZcayxfOH5/eAx52wSSUEmg60QwO6nB2N1U5b1JewiPMCwApKFqiGkr
+	 5spQpE956tsj6ejghYNK4d6HgliLI9p/D8FbdalytL0Oy/Lttyt2WRnrKQV9JRtkuuxeG
+	 Q5pOmyYZEdEfIPmym2eEWAoGFJlEI6qjI3Wv6TgpNbH9jojYkSpUU8+gxAfiWcXcBE3oh
+	 dtXa7BO12bu8HLPtCktxqvj4s9lam6ZPgFeMH7WZB+cPkKnig/2VxJo4RZZFksXj0Avil
+	 m7K3CjRNLlqxD8b9bxfoA6Q3W+MljH3R+IqywFTFleznnONKmliqeVkaqFt09FTp4kg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QEf3Wbg1;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=o0VE26cq;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25A72606A320;
-	Sat, 21 Nov 2026 23:59:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF3DD606A320
+	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 00:01:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QEf3Wbg1
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AFA81F000C0;
-	Sat, 21 Nov 2026 23:59:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=o0VE26cq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352141F000C0;
+	Sun, 22 Nov 2026 00:01:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795305552;
-	bh=GawK7uEp6ynP+1OXc7D7hnhH1v2mtIVCn3SoaQI56xY=;
+	s=k20260515; t=1795305708;
+	bh=cqXJytTphT/ByglZO+CrjGR/1OSHt8FffBD/o/tRqNU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=QEf3Wbg1J/IPtqQb9GkmAIOA9TUQzDHhKV1oLBYQGAOnqUkyLKiYJ746o2t+yWt0k
-	 QZn5p+kINkL4PA06JPBT5dB1UvOpJ5L41DPyZHxuWjV8/mX3Rx03JkluvM8pAGzOT9
-	 +wEY9FEJfltTxHAUmiT5R76+vqZpYjpXBZERAU+o4hsHIgmh9WGhSD89o+WBZ/GNff
-	 uslrpHEv6ffxkilMBJKFXb0VDIsANSzoBxWCAzO2xILQbk/Yd0uYZ8ZvDPN5XdeKbs
-	 mSpIAt+2Pg4unerETaUqvIXaFlAKNUsA3zNebLbMLLkLPnbRu3YaZLAjSJhvv+BfJU
-	 iHP2VvXjaYJ1g==
-Date: Sat, 21 Nov 2026 23:59:04 +0000
+	b=o0VE26cqXwvQl7aeJnCx91F1NIOEAx7AnCxe14ck+x3FtyPeSwWtHYAJczJlQnTpp
+	 zddvmgv5sNLYjlZ6goQB83dU18pFEBX75d6M0Ff74/cYVQaD5mpD859eUorlq9J686
+	 5BbBXRqgIik7J3R+b3w0gf3jxkQeHSkEcH9SULUT+eyqQfYqd9jq3PbBoqSKO4FDV8
+	 jHe/9mn98qupPwO6pE6HF4OqiSU/QFbhxgn3gE5alC7zqGHHQOf9ruID2bfz3l+oEu
+	 cksZ33k4OWr9gaWkW+FpMbePsWoMEGuAnOMAxoEEQ8hjyLjBTsmPJbVC7Nbbg/xwOK
+	 0WmF4k/giNtuA==
+Date: Sun, 22 Nov 2026 00:01:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, Gwendal Grignou
- <gwendal@chromium.org>, Daniel Campello <campello@chromium.org>, Andy
- Shevchenko <andriy.shevchenko@intel.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: proximity: semtech: add myself
- as maintainer
-Message-ID: <20261121235904.612f61e6@jic23-hlaptop>
-In-Reply-To: <f3d38cc6-112a-4d48-b0e6-f26d7819aa1b@kernel.org>
-References: <20261117172612.25535-1-kapoorarnav43@gmail.com>
-	<20261117172612.25535-2-kapoorarnav43@gmail.com>
-	<f3d38cc6-112a-4d48-b0e6-f26d7819aa1b@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v2 1/1] iio: dac: ad5766: Convert GENMASK() to use
+ static parameters
+Message-ID: <20261122000143.46d9fc2c@jic23-hlaptop>
+In-Reply-To: <20261117160857.1799863-1-andriy.shevchenko@linux.intel.com>
+References: <20261117160857.1799863-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,46 +64,41 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Nov 2026 13:37:40 +0100
-Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On Tue, 17 Nov 2026 17:08:43 +0100
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On 17/11/2026 18:26, Arnav Kapoor wrote:
-> > I'm adding a reviewer entry for the Semtech SX9xxx proximity drivers to
-> > MAINTAINERS. Add myself to the maintainers of their bindings as well,
-> > so changes to them reach me.
-> >   
+> There is no need to use run-time calculated masks in the code. Besides,
+> GENMASK() over non-static parameters might lead compiler to generate
+> much worse code.
 > 
-> Why? Same comments as for cover letter. Looks premature, you were just a
-> few months ago sending multiple same patches, clearly not even checking
-> what you are about to send:
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
 > 
-> https://lore.kernel.org/all/20260624044610.69708-1-kapoorarnav43@gmail.com/
-> 
-> https://lore.kernel.org/all/20260624042543.38925-1-kapoorarnav43@gmail.com/
-> 
-> Your patches were never even built by you:
-> 
-> https://lore.kernel.org/all/20260621045340.65872-1-kapoorarnav43@gmail.com/
-> 
-> Building code is... well, we do not have to even discuss that. You were
-> simply sending LLM slop.
-> 
-> LLM slop senders are not maintainers. It's doing everything opposite to
-> maintainers.
-> 
-> Best regards,
-> Krzysztof
-Hi Arnav,
+I'm too lazy to find out what the compilers actually generate.
+Lots of options around code like this for what they might do.
+Anyhow, it is logically simpler so why not!
 
-I tend to be on the relaxed side for people offering to look after individual
-drivers, but given Krzysztof's feedback let us hold off for now.
+Applied.
 
-Give it some time and continue your active work reviewing code and we
-can revisit!  Don't let this put you off. Your recent contributions have
-been most welcome.
-
-Thanks,
-
-Jonathan
-
+> v2: fixed typo
+> 
+>  drivers/iio/dac/ad5766.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ad5766.c b/drivers/iio/dac/ad5766.c
+> index 061b43fc0345..ba6c54e2c9ac 100644
+> --- a/drivers/iio/dac/ad5766.c
+> +++ b/drivers/iio/dac/ad5766.c
+> @@ -18,9 +18,9 @@
+>  
+>  #define AD5766_UPPER_WORD_SPI_MASK		GENMASK(31, 16)
+>  #define AD5766_LOWER_WORD_SPI_MASK		GENMASK(15, 0)
+> -#define AD5766_DITHER_SOURCE_MASK(ch)		GENMASK(((2 * ch) + 1), (2 * ch))
+> +#define AD5766_DITHER_SOURCE_MASK(ch)		(GENMASK(1, 0) << ((ch) * 2))
+>  #define AD5766_DITHER_SOURCE(ch, source)	BIT((ch * 2) + source)
+> -#define AD5766_DITHER_SCALE_MASK(x)		AD5766_DITHER_SOURCE_MASK(x)
+> +#define AD5766_DITHER_SCALE_MASK(ch)		(GENMASK(1, 0) << ((ch) * 2))
+>  #define AD5766_DITHER_SCALE(ch, scale)		(scale << (ch * 2))
+>  #define AD5766_DITHER_ENABLE_MASK(ch)		BIT(ch)
+>  #define AD5766_DITHER_ENABLE(ch, state)		((!state) << ch)
 
