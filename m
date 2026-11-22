@@ -1,63 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795381015;
-	b=f9acBtNDPnEe7Ll/ClM2owxyi6d1cNGfG18dwmmPiGlV8Pas7aLTT/KIIEzrNoKQR+WN
-	 g9veIUtbDt6DC7mH8N75T9m31w/F4LHCaLdVnV5a8RjCajyZ2bIk3LYw/YtLJfTGcqSeM
-	 g0vvz1iQ+bX2YiAC58Ui3xZhICVFZItMmKTuWDzq69HFBr5vR4W8K7SinXgQ6awv+K3C9
-	 3f9cfkbsQsD4D1Iygh6l4Z7tg6fDUx58nLwSl3oektyv/KsAQvAM71sHwjcHbw+9WOdo9
-	 hptTxChSgNumcNNrBHmx2dNrKKjWpjnLfF7Cabe7DKaZWfyAADPZa8ORNV+2vaF10Rg==
+	t=1795381892;
+	b=yDe+wNBKMb58YHqDN8jx++rzc1b8mn4Sk2mqmmqQn6SY1bOWWPH1y7WGtnCCP/GKLZBK
+	 eHMcsgkqfbozn1Q4ihPvXv3nIkIEpioYwZ2TS5NC6Yhfp+qWtpLYaxbWD+5twmVtqiej9
+	 +Y+EILTQzhlIJvrtVIhyPIHwPHZclzuT91mTbAZg2mUKLx9+5isD48r12XhDqvSQiC7ud
+	 muaQA0XmAzdr48FeL9iJaPQ/vmGatBhNe8QHeuaX+6MYWwgHt8p/hHOw7az1qDBvp8AkV
+	 uIgGmok06fnLNSi0hivlILRi0ojn5VjzEAUAihjUxKLIyAlBMd3kTS4Qou8tv4HvgGA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795381015;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=DMRTLh9QWHOBTrKkxFKvDAuRmtTkhznpxAQUhX+xPS0=;
-	b=Hb2/OfwLk4B8XKHjuaZybDXg+muwy175oo10LEwnRAuPfzhS28ineor8hMEcynO7a6Rz
-	 zvDUdRJLjbA6DxOIDcAsX5wvsKRDOBkL2H8PtFTd9taax+0Zx7Rp4v7r6qDmPXjUAVL6R
-	 9FcfQIdC7jFPKaY0vxM4tONlIRDW3n1bm5QvB0R2SJERkT2vinuA7gOo8ihhoyVQG1awB
-	 MvBpZnTF3n8QEvzc+uputp/4ko4OgE+Weqi9vBmotNJbwyLzla/YE2DWhGVC/a6Kn7VLJ
-	 TsERwwNEUYORskcet1Rb3ajrRmKOq+KN1xvwIbpQvAD6MmOs/RDrxkR+Zx81qDMnTlw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795381892;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=ge4eiVUKj3nX4tuUYC5k9dPzCXTKzLAWVgrNn1CnYhg=;
+	b=CWt8YPTzUAkjkTLSl/wxdlF6nfNCB63Vc4ywzNh9GU9r84phZYHZnWxlBZnb3GjnZuuM
+	 k7AmgTh1DjU51X64mqk5kZ75FhsdCjAdQQQXW6U10WcBzoXWktf0aQy8/7yrud0pPUPKL
+	 VFcHEIQKv2vOY9ylpeEOyqkvglav/uHiPoE7SySvXmt6sV459zhpxj7XBSXUk9xqbhDN9
+	 4YtgnzbLc1rfDotPxYXnR+YeaMXj4oR/Ig9POvGhtAsXWw/wOUPA3dBuOyCHzCbYAtwgT
+	 oH5xp5uCfu7/nnCm1dJve8+Pbn3IbXXK/KKFLUHp+wqNPM2CgYLnImEGEjUU1+PKuww==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iRIkpwCS;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=teslabs.com;
+	spf=fail smtp.mailfrom=teslabs.com;
+	dkim=pass header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=jFz4jAsb;
+	arc=none smtp.remote-ip=209.85.128.53
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B9E2606A31A;
-	Sun, 22 Nov 2026 20:56:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BCD2606A32A
+	for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 21:11:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6BCD2606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=teslabs.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=teslabs.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=iRIkpwCS
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE8C1F000CA;
-	Sun, 22 Nov 2026 20:56:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795381014;
-	bh=DMRTLh9QWHOBTrKkxFKvDAuRmtTkhznpxAQUhX+xPS0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=iRIkpwCSESegoxpoYoH22GhlNBh6pu1HUkR3zRg3z/dpekm0FlsVCt+z1jrtM3pWf
-	 dX07ANSeCqaY2DbSB+ROulmH1tET2YGKmk/f43ZCP0Mz5Up6Er+CbPdMxquawk9lts
-	 yGLG5DIOQTiSX6+D11w7GzVzwAK7mNISSWJqYa9CqXlsVnqmt+XpDwd1YznMui2P6l
-	 JnuAj5+QG6wV1UOfGZLQMEOGd0HVx2TYO7XoDvegC8RiIxnioJEP4B0NgiQBeRSI9a
-	 yBjmjkmJgjv09o7nq9rJglVu+eKlFMrLBdAdDQoCma6JFSxkgQNFgFO+lrngft/Znf
-	 cmondaoHE69vg==
-Date: Sun, 22 Nov 2026 20:56:48 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Daniel Balint <dbalint@google.com>
-Cc: Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org, Benson
- Leung <bleung@chromium.org>, Lee Jones <lee@kernel.org>, Tzung-Bi Shih
- <tzungbi@kernel.org>, linux-iio@vger.kernel.org,
- chrome-platform@lists.linux.dev, mfd@lists.linux.dev,
- linux-kernel@vger.kernel.org, mwojtas@google.com
-Subject: Re: [PATCH v1 0/3] Introduce cros_ec power monitoring
-Message-ID: <20261122205648.73f3cf17@jic23-hlaptop>
-In-Reply-To: <20261120091022.1459658-1-dbalint@google.com>
-References: <20261106193129.43493-1-dbalint@google.com>
-	<20261107010356.39d9eddf@jic23-hlaptop>
-	<20261118204532.257423-1-dbalint@google.com>
-	<11a821f4-aef6-425a-8626-1d8641e9f83d@roeck-us.net>
-	<20261118220033.70425495@jic23-hlaptop>
-	<20261120091022.1459658-1-dbalint@google.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=jFz4jAsb
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4bb5b8ef642so21418415e9.1
+        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 13:11:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=teslabs-com.20260707.gappssmtp.com; s=20260707; t=1795381891; x=1795986691; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ge4eiVUKj3nX4tuUYC5k9dPzCXTKzLAWVgrNn1CnYhg=;
+        b=jFz4jAsb0UInSseLDcDVLtsdUjFuIb2lcwvCt85BZQgR1AT6Fx7rZhyuuaVcztw7DI
+         SHZ0U/ohb/0XMsoxbT3U+cWFyWwo5LwSY79yKpzQ9cGwZZ1rPtClIS8lccyn0YbSHO8Q
+         /MbnqSeiwU3pJZcK2XqSv8Prdfql/n3LX6gHlHRTEsaqIK/O8NKYvVQTS65FbrWrUakf
+         ohgh4YXvxQue+l+JfIzOS12pYHL4A5CVRM4zQZQhe1nsW3yo5Wd9BAdBZ/ebu6iITp1O
+         cQ5rRqpwGZsqMLYRn8EO25QkPYSN8e64BTQt8kV9VFMArAkZslZyHa2vOjnruEv7VdVw
+         yIkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795381891; x=1795986691;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ge4eiVUKj3nX4tuUYC5k9dPzCXTKzLAWVgrNn1CnYhg=;
+        b=NuYK8oF9qlt9scLqPl+8wna7PjoMrDb2Sh6M7/tHaDu5IgMtgv6JJ0ZTfFA2S75Svy
+         f5UsgXShoe8Kt80/buyQu3RCFBWhIyZaB9Afmc3YFPEmE6KgxTa1XuQSNC5FXdZyrMZj
+         hObCru/NuepzmJRB259vmjMhU2al6LbZFrLno3yLkON2gQSfLlKBnU8ARt9K0iSFluC2
+         ItwhRRpWqEQhbzui117HvAndZGfyGg404ghTXPzvotbYzX4H4I0Tw0tAtchvm7Ts3Ksr
+         kOHmCbLitMgffJgznDoAlM9WJS7iJrO7LaJPRG5r68YokjRrKQvGxePpw3rDaL7WYWp1
+         yWfg==
+X-Forwarded-Encrypted: i=1; AL+hErGI7o0fgbpXr6gVn0K9XNZSu8eMU/eLCalVHfXvEq2OuGzagbNMOAq54q80JZxwC3JgPTeE86qfPqs=@vger.kernel.org
+X-Gm-Message-State: APuU4Z84Q0By28ayR5+9ANe1k5RlopQ5C6EeYgNlnhmvgqCsbbG6XL4h
+	Y8gZXvgtf9OLGWMzFVUi4mnEAi80MnBamicGY+EAxlhjNMZPptp4Q78iJ9q7jSHmOR4=
+X-Gm-Gg: AZFdTZd++Zu2n4pSkuHHWHPP0uFt9nYzY5os4OcSQCLCsvW0t+IkoMgfeel2ysO6W/O
+	WP434tZ1DO99mY/yk309Hy2474fyhiuYMqfm7osKXZlv53sA0bJQMndxOLaMtZasmXw0Z7DwU6u
+	F4mihw6PSsJr/z1+9n/Vz0OULO8cl+lQDShjijer/Jd0bhTv4hcBLhD5i1wBYTNAMd4lETBcv0R
+	TCgHSkziOsAo3KB0mWhdUqTWGewZhpZusWa/JQZe3ldrzVdF8CXPFo8C5If223HW7fCNou7dwph
+	8+GB2dgVxAW7wK6tDs7elXnBxNzHWTitoMbikeGo216dg7sRr0glZsUareAwDhaQroEl7CzFweH
+	aZ742A7LCwd2/V2oybUCmoSDYpjkbv2KCNJUl/AI5ZcUTT2cm53LHyRhWXhIJLliUtIeeNQfe6J
+	MBIIjD/4wyPXnhnU6yyPl1O0EFuGWokM0MiQSnhEl5OgoE65ehcU/zvpGFx1ZymigMDHXIS2iHX
+	d3KK2qd+grUu7kuF/kjkKluU8uaH6r14M+3HJBGaTux2FVls+zPYrMrPTHmUbDs4xES6fbTuH5C
+	rnBTMvqT6VektPc6DVj3OuPtgncgCTZbLa49rQNALWQBID6cfNNKpk78JjaZ0vcHVw2jq+E4/DB
+	xv6I90U5M7Hc=
+X-Received: by 2002:a05:600c:3b88:b0:4a2:191f:7cbd with SMTP id 5b1f17b1804b1-4bb888078a8mr229132545e9.11.1795381890664;
+        Sun, 22 Nov 2026 13:11:30 -0800 (PST)
+Received: from localhost.localdomain ([139.47.121.129])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb906640a2sm123545075e9.0.2026.11.22.13.11.29
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sun, 22 Nov 2026 13:11:30 -0800 (PST)
+From: Gerard Marull-Paretas <gerard@teslabs.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Frank Li <Frank.li@nxp.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iio: magnetometer: mmc5633: Enable the VDD supply
+Date: Sun, 22 Nov 2026 22:11:28 +0100
+Message-ID: <20261122211128.14591-1-gerard@teslabs.com>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20261122205211.6c46f3cc@jic23-hlaptop>
+References: <20261122190836.66111-1-gerard@teslabs.com> <20261122190836.66111-3-gerard@teslabs.com> <20261122205211.6c46f3cc@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -67,92 +106,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Fri, 20 Nov 2026 09:10:22 +0000
-Daniel Balint <dbalint@google.com> wrote:
+On Sun, 22 Nov 2026 20:52:11 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Wed, 18 Nov 2026 22:00:33 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > Do you need that coherent snapshot to get to userspace in one go? 
-> > 
-> > For accumulator channels the way they are normally done to sysfs
-> > style reads is to snapshot on each read, update an internal store
-> > of accumulation since enable then provide whichever one was requested.
-> > That way no data is lost - but you don't get an aligned snapshot.
-> > So it depends on what maths you are going to do with them, whether
-> > it can be done in kernel and if not how much interchannel skid
-> > matters.
-> > 
-> > So tell us more on why you need that coherent snapshot to userspace.  
-> 
-> Sure, I can provide more context. Usecases are broad, but an example
-> would be that we calculate per-rail drain contributions over short 
-> time windows for comparative analysis between device states (device state 
-> transitions like screen on/off trigger snapshot), or for debugging and
-> power profiling purposes we correlate fine-grained ODPM data frames
-> (~1s intervals) with other timestamped system diagnostics in our tracing
-> tools (e.g. perform per-process-per-rail energy attribution), so math
-> happens server side, and the relative energy deltas between channels
-> within a frame are just as important to us as their absolute values.
-> In general, data from a single channel makes sense in the context of
-> other channels, there wouldn't be a client that requests only one
-> channel.
-> 
-> At higher userspace sampling frequencies, e.g. ~1s trigger intervals,
-> which can happen in both abovementioned cases, interchannel skid becomes
-> an issue if we read individually.
-> Because the latching and data delivery (up to 64 MKBP events)
-> roundtrip between EC and kernel takes non-trivial bus time that's in the
-> ~10 ms range, latching per sysfs read across 64 files spreads channels
-> across a hundreds of ms long interval, which would compromise coherency
-> and render the data minimally useful. It would also make the EC
-> unnecessarily busy with redundant work, so latching per channel read
-> isn't really an option.
-> But to Guenter's point, this could be solved by driver-side caching.
-> 
-> 
-> On Wed, 18 Nov 2026 15:00:20 -0800
-> Guenter Roeck <linux@roeck-us.net> wrote:
-> 
-> > You could accomplish that the same way many hwmon drivers are doing it:
-> > Read all attributes in one go from the hardware, then cache it for a period
-> > of time.  
-> 
-> I should have mentioned the importance of timekeeping earlier. As we're
-> correlating the snapshots with other diagnostic time-series data,
-> userspace needs to know when accumulators were latched as accurately as
-> possible.
-> In contrast to IIO, in hwmon:
-> (1) There is no timestamp ABI to propagate latch times, so userspace has
->     to rely on its own timestamp when initiating a read.
-> (2) There is no trigger ABI to force a fresh latch on demand (e.g. on a
->     device state transition), so a userspace timestamp only marks the
->     start of a sysfs read sweep rather than the actual hardware latch.
-> 
-> So, unless I missed something, with a timeout-based cache in hwmon, a
-> reader has no visibility into whether it's hitting newly latched or
-> cached data or when the cache was actually latched (skewing time-series
-> alignment) or whether the cache has expired mid-sweep across 64 sysfs
-> reads.
-> 
-> We could probably tune a short enough cache timeout where time skew
-> would be negligible and mid-sweep expiries would still be infrequent,
-> then it's a trade-off between accuracy and more mid-sweep expirations
-> (more EC roundtrips). It could work, although we still would do 64
-> sysfs reads instead of 1 on each trigger.
-> So I guess it's not a must to send the coherent snapshot in one go, and
-> I cannot provide any data to claim that hwmon would be a suboptimal
-> solution to IIO, but our technical judgement is that IIO's explicit
-> trigger, latch timestamp and single buffer read is a cleaner fit for
-> power monitoring via the ChromeOS EC.
+> >  #define MMC5633_WAIT_SET_RESET_US	(1 * USEC_PER_MSEC)
+> > +#define MMC5633_POWER_ON_US		(5 * USEC_PER_MSEC)
+>
+> Obviously the line above isn't great on this, but is there a spec reference
+> we can make for this timing?
 
-This is all good information.  Capture a short version of it in cover
-letter for v2 and include a link back to here for anyone wanting
-the full gory details!
+Both datasheets list it in the "Operating Timing Diagram" table as tOp,
+"Time to operate device after VDD valid", 5 ms minimum. I'll add a comment
+referencing it in v3, and annotate the set/reset wait with tSR (1 ms
+minimum, same table) while at it.
 
-Jonathan
-
-
+Thanks,
+Gerard
