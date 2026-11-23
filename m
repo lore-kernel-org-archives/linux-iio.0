@@ -1,84 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795462753;
-	b=PulNv+yoZ4Uw9nidSrYMGV3ICNKyn6nHXJ8TgwSxlcu9fGd/8B/jaN60WGoNmo/P4q5O
-	 qflafuHdVydOrtrcBVt9FurWU30i9svtl4kA8TvE7f2Q5AdeR6mksN59rQvvpcm+CSChY
-	 XDfY2E9GtnjCT8ZQBTrZC3vjnGC/cbQn0F4pJ504W5K3IS6ANxon9T5JDIEnH9YLnw0n/
-	 QHpXgTfj1lC8CdJ5dzcUgvONJmrlU5D9m7c5uBvpNaRAFrVp9pu2x1379G1+yEExaWQ+D
-	 4ryPG4Za5PIEopbDeoiJA5XrsW3c6bIQKBuA40HQYU9nAvxlfsI2g6Qsg8sru68TYbg==
+	t=1795463387;
+	b=y/Py8lLAXILWBkgmPSzoJfLc1HvMF30OOoAQGIGuiTtY6XkiBzl5nwz6HjkPH6zTjenU
+	 Lqti8SgWpIshKUl0oZSBqqirFUWnz2Mzqc7Y8iUokvJ/Q8JVYVCXxPJS5LO+F+VD8bX4j
+	 0URYSyLXCSGkMQEPjz34ORaV4Kig1rpMqab9y7QRp8gY50RkIuDJ3MIAG7KAUkS2oL7aB
+	 U6t4EXhRBnDzNt0GdvQYNpf+QaQgWLgvolMvYO+Lrm2ABE73JZ7zqSc1o5x7iyWmEUbik
+	 0cGSAXPCCy+ciIvgYQIyZMgszdAFBXKpk15pCFuajmMEhhq6jRVoaI4kMY5RdGeHW/Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795462753;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=34EGKTnLY/HPChbZIP1a/E1PkPQAWEmn990CfdJx9aY=;
-	b=cBhX4y4ZuQAlGQXXWI20KR4xeicmdycnZ8YiSPfT3PMISTFVmY474/6c7LqHyY9Ztgfo
-	 M86n2Usp5oR8xcudTPUJGHyymA6XrrSAIrzeRV14ZISY2g10GyOaViSunbaFju5m9xLIk
-	 H9wjvcm565GXW4Ghd14lSSjZ8nn5J2vKSDQ5SHripRkh7s6Xmprm/FR8CudAncuoiPG6o
-	 x2MpLP/BcchVpFn9FPPBOG2/U3luW+YqgOwyrrigsXP5UhHX3U1T2v0kFYFk0iGfWsz97
-	 j9/rRyKWv81H8HoR3LUOOUbz33SeNmtjtiueAGiiM/aQIgOy65MefHJHrYcZ5f+aJiA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795463387;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=hsLJ3XQTap9R7Gjdm3eQnj+kLtAheZctWZoqset7KZs=;
+	b=roOlJft5V4x/7+6TUV/GikD0yTdJV1UQQnwqXKcoBuGlk6uyRfbW4jDVDYaoz3xIWHoP
+	 k7EvOfGpjvMlVqx90EbIY1BmyUuilUgh4CpO7kiQ1ZSOv2PHhh2VTLIdvBbaLLS73jyCw
+	 VWzQiggF5zvPtXE3OW3Cg6OI5Wlt/KM+a5ttnwUzOEfN9kHx+OEjOTX2It+NoJ0sI+llF
+	 0h4Z8ylhrLrBh+hkRbaOQvEnm05BCk59bjymn294CG0ts3S8ppNnek3a2EI6sK8+lOTPa
+	 TjVs6qLcM7qYZo7xEqyGYI+6rlDZplPo2yZN/ZOG5qlwJi7KWT85bboBldTq6F2NExA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Oc0c7b7d;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=teslabs.com;
+	spf=fail smtp.mailfrom=teslabs.com;
+	dkim=pass header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=l8xQeIIz;
+	arc=none smtp.remote-ip=209.85.128.47
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E061606A31E;
-	Mon, 23 Nov 2026 19:39:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E061606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F592606A33F
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 19:49:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F592606A33F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=teslabs.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=teslabs.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Oc0c7b7d
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795462754; x=1826998754;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=A6ZVYci0gc9CY9yLPxh4/WLRqZrpG0U44J2uCbx7vF0=;
-  b=Oc0c7b7dVO/VGOt2j9dnhWcQ23PRX33QfgtGoyJvmQsnMhhNfGOGnpx2
-   6QkLjjYx3sNOvvOjViL8jfNiGwBz6vcTfF4Nbzs7npV/XcUFoIcd+Ds8+
-   iU1bvXCtowgWY2FiD3RjGXMWTZIoZDMN/NGxJIM6ENaepFUOVTcAOvnF+
-   zvvsMNxdptqm3eJ7kus+ckxe7HyMy0Lxkqb32JoLc2kgJahel5/D63D0x
-   29fC52rt6gAfhUoR/s3AbhmG8BVwNK7wFQrmVHKX8eQKU/o4cs5S0tffX
-   4wm/+cyOMlviSQEUqsvUZFtCCzp4cj4lijKD+G0+E2oUfP5yYsi+cl0ho
-   g==;
-X-CSE-ConnectionGUID: jVt91fXzTm+nxfW/Dyf+xg==
-X-CSE-MsgGUID: s4Ulm2pgQASkEjw31fhOuw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4177432"
-X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="4177432"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 11:39:12 -0800
-X-CSE-ConnectionGUID: J2UXgM7bSFCGRuiqiCNmbA==
-X-CSE-MsgGUID: 6SwAljXXQHWlUDab4x1lmA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="11545568"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 11:39:02 -0800
-Date: Mon, 23 Nov 2026 21:39:00 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key) header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=l8xQeIIz
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a35ac4475dso27815665e9.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 11:49:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=teslabs-com.20260707.gappssmtp.com; s=20260707; t=1795463385; x=1796068185; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=hsLJ3XQTap9R7Gjdm3eQnj+kLtAheZctWZoqset7KZs=;
+        b=l8xQeIIzFArZziZL+1bnVi2o7RS9MXn8eXCWEYC4mE8UL1BZ8z45IrMTvhXnCeq6nt
+         16zDktO2aX01T3gIMZKzyCez7IqB/NQ00ssGkXIR3EWqR5XZjlcOFWQCzD/cZCcw3qMG
+         Pynk8hoPH8X2eB5clmZcV8OIUmnpsXH+6QLgzYx5DnQpYEDIcBZIUCUBE2DWiGzzcypG
+         xM5lqVzbxdtqoYQupqAM3cpTSXouyn/pA9FtBohKx5/CQmCOboICji422c8jpcH935RE
+         PwUJ9W9S4Pg/NUwlJEkfYi1EAJ9XTLeSM5ZXXsLKfhXiiUVOeDUPC7FjYxFPxZCbJf/l
+         bxsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795463385; x=1796068185;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=hsLJ3XQTap9R7Gjdm3eQnj+kLtAheZctWZoqset7KZs=;
+        b=T/XWyAIbSfVx52t/75VslGUAOXNhh6/uTxxjg1DQlB+fdy7qfn2gJfVa7SbEpVOVxs
+         1jQn1iOqKNqChLoLSMUUBsp7+P34KCiQwVPuK4V/BEWdWM2VKBpRRBkXWF8lYe/jM37J
+         DJ98+ZP0B5nPsFxPosSoTMW0P6wbR9yzRbtk5wnyb3IVf4EsIUlc1/z9dQZFbSWSdvRD
+         V0OCqCJfGNYicf7aeSa/MnQm4OXbtRjXfL7TLxAUhAGhNqNmD1pwBH2LPlYNUtEmURf7
+         H4skdfXk+v7M1Zlv7WiRs9Lblt6k41MHWuOBSc13sgsWzyAw1MqRo/no2ZIOiQt2PD6y
+         zM0Q==
+X-Forwarded-Encrypted: i=1; AL+hErGuDGtu7peozsqTVjUxQNe67/lYX8KOuLy76T+HFHkC+mfz/440KxHYcOPg7/Q61Jh3FC6hPaa/Svs=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/Acu+9XIxgB1yjgygUxTSj+CNsnHptZO1a/mKF0CDLdwrWcM04
+	fQm9L/sxyEAbglaJj4vrrqBSN5AHt7T45ZG2RTbToRX5GZSxp9eMHVu2S50xVFdaqH8=
+X-Gm-Gg: AZFdTZdmoj+2G0GIaxzRTwsE9xfewxidt51YaFl+G3dmpfqT+jdNY5wHyGWgakNLBW6
+	cqKb5fygzYD8y6D2+qTUTyEe90jlRak5gqlV8vHc7aqSeAvS9aWnGeHTLWQaoYib4vd9rIniwNw
+	BXKaqmCr2Tz9OEh2EQwjdQTr2X2gQGcDmIuuCKuuWJpBHiGekepDBzH+FazVqVcUu4n/MuJELa9
+	1YhTEJy3D1O2Js5F9szu5H8RclBSND5zDNmL0ffa8PxFXcuyKvlvH22x0BeuzHhEMFMnrAC1cKt
+	6BvwDfpwmPMhZlft0eBOLM88nQVATSDpWLTEzKSqYc2FtMJ9k/kAKKLVp4iUGlMisG8g1GWWQwS
+	6NpIrjLypq4b8FTu2f4CuoWfCzMPUb+WFSP7uthsuzti0L7hIN7JsHFvLKGaAH6R4oscz7Xx6rk
+	dwobwn4ix3LMbCL80UT55IK4gM1lnqv0sy+VNEvNfgKyvH7jxnYmuZQD2BB+zQeLFCipBgqycKi
+	JsbA9MOWI7RDM8vdOz1xlNqhvPMyvzVEaO9o5w+JKrIXzzc9fke7IKBO8txa9itpzP49IErHs9s
+	bCme67CHPNvaOgksKcOoc1WF4QybjaXhxCoLw1dHN9RZ99hQsl/5174/4PkYgG+foCHSTBdT5VY
+	MfJMwXEvqAL+K
+X-Received: by 2002:a05:600c:1d86:b0:4a1:fa27:df7c with SMTP id 5b1f17b1804b1-4bb88922972mr263589535e9.34.1795463385304;
+        Mon, 23 Nov 2026 11:49:45 -0800 (PST)
+Received: from localhost.localdomain ([139.47.121.129])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb90660cb4sm300924125e9.2.2026.11.23.11.49.44
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 23 Nov 2026 11:49:45 -0800 (PST)
+From: Gerard Marull-Paretas <gerard@teslabs.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com
-Subject: Re: [PATCH v7 3/3] iio: adc: add driver for the MAX34417
- Four-Channel High Dynamic Range Power Accumulator
-Message-ID: <awSWVMMYN2xsDH7u@ashevche-desk.local>
-References: <20261123-topic-sm8x50-iio-max34417-adc-v7-0-d8f87edc5086@linaro.org>
- <20261123-topic-sm8x50-iio-max34417-adc-v7-3-d8f87edc5086@linaro.org>
+	Conor Dooley <conor+dt@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Frank Li <Frank.li@nxp.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/4] iio: magnetometer: mmc5633: Binding, supply and mount matrix
+Date: Mon, 23 Nov 2026 20:49:39 +0100
+Message-ID: <20261123194943.57601-1-gerard@teslabs.com>
+X-Mailer: git-send-email 2.45.2
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,120 +103,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261123-topic-sm8x50-iio-max34417-adc-v7-3-d8f87edc5086@linaro.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 23, 2026 at 06:47:46PM +0100, Neil Armstrong wrote:
-> The MAX34417 is a specialized current and voltage monitor used to
-> determine power consumption of portable systems. The driver support
-> getting the channels voltage, average power, accumulated average
-> power and energy over an I2C/SMBUS serial interface.
-> 
-> The MAX34417 datasheet only specified on how to calculate the
-> accumulated average power, but with the Sample Per Second rate
-> we can easily get accumulated Energy in Joules.
-> 
-> By default the IIO driver only supports single-shot Voltage
-> and Power sensing, but the accumulation can be enabled by
-> enabling the Energy IIO channel which then enables the
-> Continuous Accumulation Mode.
-> 
-> The counter is common to all channels, so when reading a single
-> channel we will copy all accumulators to registers, so in order
-> to permit reading individual channels we must accumulate the
-> other channels in the driver when Continuous Accumulation Mode
-> is enabled.
+The MMC5603 and MMC5633 are listed in trivial-devices.yaml, but boards
+need to describe their supply and orientation. Patch 1 gives them a
+binding of their own. These bindings are also used by PebbleOS, which
+is where the need came from.
 
-...
+Patches 2 to 4 add the matching support to the driver. I have no board
+running Linux with these sensors, so they are only compile tested (W=1);
+feel free to take only patch 1 if you prefer.
 
-> +#define MAX34417_MIN_RSENSE_UOHM		(1 * MILLI)
-> +#define MAX34417_MAX_RSENSE_UOHM		(100 * MILLI)
-> +#define MAX34417_DEFAULT_RSENSE_UOHM		(1 * MILLI)
+Changes in v3:
+- Reference the datasheet timings tOp and tSR in comments, with the
+  tSR one in a new patch 2 (Jonathan)
 
-Oh, it's micro, but you use MILLI. Also even in macros we nowadays want to see
-the unit as defined in SI.
+Changes in v2:
+- Cover the MMC5633 too, including its I3C connection (Jonathan)
+- Add supply and mount matrix support to the driver (Jonathan)
+- Drop the mention of the missing I/O supply (Jonathan)
 
-#define MAX34417_MIN_RSENSE_uOhm		(1 * (MICRO / MILLI))
-#define MAX34417_MAX_RSENSE_uOhm		(100 * (MICRO / MILLI))
-#define MAX34417_DEFAULT_RSENSE_uOhm		(1 * (MICRO / MILLI))
+v2: https://lore.kernel.org/all/20261122190836.66111-1-gerard@teslabs.com/
+v1: https://lore.kernel.org/all/20261122093412.71604-1-gerard@teslabs.com/
 
-Alternatively add another patch to start Ohm multipliers in units.h
+Gerard Marull-Paretas (4):
+  dt-bindings: iio: magnetometer: Add MEMSIC MMC5603 and MMC5633
+  iio: magnetometer: mmc5633: Reference the datasheet for the SET/RESET
+    wait
+  iio: magnetometer: mmc5633: Enable the VDD supply
+  iio: magnetometer: mmc5633: Add mount matrix support
 
-#define MICROOHM_PER_MILLIOHM		1000
+ .../iio/magnetometer/memsic,mmc5633.yaml      | 61 +++++++++++++++++++
+ .../devicetree/bindings/trivial-devices.yaml  |  4 --
+ drivers/iio/magnetometer/mmc5633.c            | 30 +++++++++
+ 3 files changed, 91 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5633.yaml
 
-I will Ack it.
 
-...
-
-> +struct max34417_data {
-> +	struct iio_dev *indio_dev;
-
-Useless. You have it already available when calling the function that uses it.
-
-> +	struct regmap *regmap;
-> +	struct mutex lock;
-> +	u32 input_correction[MAX34417_CHANNEL_COUNT];
-> +	const char *input_label[MAX34417_CHANNEL_COUNT];
-> +	s64 acc_power[MAX34417_CHANNEL_COUNT];
-> +	s64 acc_count;
-> +	bool overflow;
-> +	ktime_t last_update;
-> +	bool cam_mode;
-
-Are the booleans protected by the same lock? If not, just group them, it closes
-the gap, if yes, group and possibly make a bitfield, then they will occupy only
-a single byte.
-
-> +};
-
-...
-
-> +static int max34417_read_energy(struct max34417_data *max34417,
-> +			       const struct iio_chan_spec *chan,
-> +			       int *val, int *val2)
-> +{
-> +	struct regmap *map = max34417->regmap;
-> +	s64 acc_power;
-> +	s64 delta_us;
-> +	int rc;
-> +
-> +	if (max34417->cam_mode && max34417->overflow)
-> +		return -EOVERFLOW;
-> +
-> +	/* Sleep up to 1msec to make sure we have a measurement cycle done */
-
-ms or millisecond
-
-> +	delta_us = ktime_us_delta(ktime_get(), max34417->last_update);
-> +	if (delta_us >= 0 && delta_us < (1 * USEC_PER_MSEC))
-> +		fsleep((1 * USEC_PER_MSEC) - delta_us);
-> +
-> +	/* Move the data to the SMBus registers */
-> +	rc = regmap_write(map, MAX34417_UPDATE_REG, 1);
-> +	if (rc)
-> +		return rc;
-> +
-> +	/* Save the timestamp for the next read */
-> +	max34417->last_update = ktime_get();
-> +
-> +	/* Retrieve all channels to avoid missing data for other channels */
-> +	rc = max34417_save_accumulators(max34417);
-> +	if (rc)
-> +		return rc;
-> +
-> +	/* Get current channel power */
-> +	acc_power = max34417->acc_power[chan->channel];
-> +
-> +	iio_val_s64_decompose(acc_power, val, val2);
-> +
-> +	return IIO_VAL_INT_64;
-> +}
-
+base-commit: c44104f3642da720164042623e4832836aefdd8e
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.45.2
 
