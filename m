@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795417293;
-	b=UWinVxKTRnCGjZVBJvwDgETbgfJXizCrATq7Zj1Y9kcdd+XUjNv+2PRKznbhC9CgOfQa
-	 c71JVU66Ae+a5gUHN7iXbnRYRmPod1AiI1hsVrHA9H2sBfWYkeyyBXSgSLLC7oqSVnW+j
-	 hajnf7kFHJCt7bWdbgdUvtDTX6y6n3yDsr0peKWTlIB89C7MUeDaA5B7IWBG33FiXQgtv
-	 q0CPuANU6Q7M50JXdApw0ZW9PyRSUxu8neDwDi/4V5RD4rcP0Vnj0i05wlTkm7FbXOrLe
-	 hJ6+lTP9PawwfsGdoCPBgFd+3r8ylsp+9s8D7xvDiiPmyOAiWnwoOiIKOan8wX7p8WA==
+	t=1795417303;
+	b=ODKc48Y767e4NBcfa7BtVFzGiDlnhkO1Qs7zCPFgXRLdajtMnxRCw+OgTDhAmZ3a64oT
+	 ukXhqOW3if86kfvRB9ILJ+HWlmPlo+Ew+SlSMWhQdXnMGFmN0ysYcOMmXaZhmZrFVibgh
+	 GmNk+NX5+CWyOpjidBwu4LBko26SCWiNTLDFas11gk1uWT/DCSB9iOxzv7vugUGB89s+E
+	 wzjPcU+q+4NvQtbidvQMxamGZfQI8nlLZS45ZN53q+lelRtQdDMMRpha2lSCCBUoeC9aI
+	 5+iPakmdU5+YqX5Q+O8tWhDH4SCE/0Iit8oY6dbXRA0+7ONgbAo+OVy8AGoY1I6FGog==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795417293;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795417303;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=IEvJeXJOsH9S2fJ+fRG2KCQNfhieUtoOB+kM1PZCkvU=;
-	b=c0e78f3SzzEQNLIBqbPAnHBjzwaPLw/nx4XtHmu9HtEA+RWlu3iTXqGEChzwcIAgeOtt
-	 MQB8bAHWcoL+jMDR4r42YXU4W/N3xDcHZ6cRn3BfNcoqoyL0D0Ey3L3eTtET7xoGcEsLT
-	 hXGyPH28thG/kFf1QD0pae3QHe3lkeF3dsq1TYVVWGJ0/31HeAshjFTPeC5TrSiWF9Yay
-	 0yqpOhVHbahVGeDWlBdz011MhE2lNXpX5Df6w/7N8TWvZRY0Bp+8k7n6beOXttMtP6aev
-	 UZDNSfjChhJRFEvZYbvLlgwKOY+baM+VHQYCtXIVc8Apu2Elv+EIUKaG9Bcllf0I0nQ==
+	bh=7+UTTu55kRQmUMdXJ+fvljsspj1Aytx1XWkYCAQNT5E=;
+	b=SqP23mstrhURgrFr39OA0BGzf3QE/NbqUXrCeYOp+JJtrasjuFPzh4Vic+N7+5ueNd3p
+	 pqg15h7v3f8BFdfy3PbuedD1vUZjRtMcTD7gmPh8vBA73zpy02khR7t9QX2suPLUrpxAv
+	 +vbJUSuh/GQohCyxWN/7kHcjkGTvEClQxO31GUUPYURqOPnlry/23XXzmXtedQPzk5npq
+	 joz3B3mzjdbFa6UFSC1ZlOhD5FgDfdzHzWM+dHABE14n7zmbYSjIS//UCqbvQ2Uz3dkpc
+	 l/uoMrWsGh7qC9VYEBG7xaSrwB+jaiyeKHZiCZwhXovJUSZ2VZvQ2kxYwp+U/0waiyQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="C/U0hB04";
-	arc=none smtp.remote-ip=209.85.218.50
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EMuYwgcu;
+	arc=none smtp.remote-ip=209.85.221.48
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A813E606A31F
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 07:01:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A813E606A31F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E24606A331
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 07:01:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 25E24606A331
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=C/U0hB04
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-c4cac7a7d3cso408848166b.3
-        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 23:01:32 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EMuYwgcu
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-4aa5833c263so2744637f8f.2
+        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 23:01:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795417291; x=1796022091; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795417300; x=1796022100; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=IEvJeXJOsH9S2fJ+fRG2KCQNfhieUtoOB+kM1PZCkvU=;
-        b=C/U0hB04+pMFvd99SWH6Deft8IcvFt6LOZJuj4d/cxGdul8Lcbk65BFTXq0oe67VVa
-         FVWjoEz+TlD1PhYTyNXPNV4absQQ9Q52q5KU/yyOkkbhURBVfWB0wM0ugOMLgRgOZVE5
-         28rEfFhwVAhfcSwgWoEMaQobJtN4LSQ6dDSVm9V/mvSYKcoctFmGzmoGVeHhj8lDrAMp
-         abaG2jP2+QWljp4iwVSgafSzcvwBnVeCAdQKoIvJUHasG/JTqnp5PDeS0dPztLorlMYD
-         jQ07mkfyr159abwTtV8qQeu97/YPz40N68lGOO4hsTgSruVavGRd5SWDNLeOHFSvjgy7
-         4qCg==
+        bh=7+UTTu55kRQmUMdXJ+fvljsspj1Aytx1XWkYCAQNT5E=;
+        b=EMuYwgcu4aXZ1yW0w/zqheN21Qp2qjOnboDqh3MH9Zjnh+8HaFazGiz69xCzzHjkJ3
+         HZHacHIrj5VcQ1gR/5vQbQrVL4d1MbGcFpWK42ORVo5o3MR9aPmBBjJYdxySNFcwYpOs
+         RqAQGkwgtEl+4AG3jkUzVHjMBJjbgeonUICyUluhfVOlf/T5fkVKs/22di0ACYDZxf7G
+         5Ae12OupStszu/fNlTZItgLZ/8zHOoxMsEmB+Dx6nlv9O6doCXFFPVknpK1SE/Z/WRQj
+         QPMJQ/MBQpCRlddEKK1a6iHQSdNsoH3F77PGQ3yVYGN9IesRDTfa+q+tqYWzs50p6P6o
+         kepA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795417291; x=1796022091;
+        d=1e100.net; s=20260707; t=1795417300; x=1796022100;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=IEvJeXJOsH9S2fJ+fRG2KCQNfhieUtoOB+kM1PZCkvU=;
-        b=Fg4BglpBLYVdBgCi3CGq6/AztKhRD/fQsAS7p6Oy5mRjlEvUBsUtAE+Uf5LgonSgS9
-         fkORcNqr1Gftta7XyvrL4SybYXbzPtucsv/A3kKOfXV72ERHFqE8dbxmtlAllvLG2T3K
-         Uwh4E0aReCxZepf1QTzIfZhcRI1hqOf02eCQzgbG1i2JqwszZz3+zfdP7c5zF9pAL428
-         mKJ6yRqJ7Q/3uemTdDRQfUAcOBE9FkSEeP4WxBwWHnid/1cpLwv8viH3CPe7kOHP5cKN
-         JOI2oIzMhAXxRqU7OKAq9O1xrOYiu2gl/zFpkB6V2OQWTCLOuR0GB8DdMN0IFTK2gc5C
-         UYlg==
-X-Forwarded-Encrypted: i=1; AL+hErGu1JP+EnSc/NWCf7NPAV9mkTfFN0WnFmg8mar4BF6MBaaptZRXAqlOEp3zjNSPmy6VW2H5Y0am3Wc=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8M98swRmAHcEwrdx2TS536olZOh0zzO3YTBuumgm78/MXbe111
-	T6WiPgaAb8W/thO1SJumk5WJCIV6GmOg1RYsunaOyJ9wbCo5WMffSqns
-X-Gm-Gg: AZFdTZeVVo0SW6GSd8AC3DVepYzzdyd6y+6vK3oy6nElVoyBLZLtFXIHCpsvvxPWoNi
-	I9d/04RE5yTxQL1WwH/UxHd6l9s3bxYL/BHX6ecb3u7g7aespjL7JaMZ0Krew4xWwkza1QSojLz
-	uICHI7ipaa/dKZ8RUmFe4b951aHbfiiE3bCyZ13bU6F71raU6GzBxUJX8lkM56pjBvbd0hxZ4Vc
-	hD+N9hN1A5XX+SFd9LFZmEd1yi1B3bviHd8u8JdsgOfuRek1np3Peln9P61nI+fNw0FPUuVCOXa
-	74KVUND9Ts3d4bUGEfcDK3xmG/cuuGzS99EVe20D4XKxSnXYcjbCYc52xhgcQBW3MvavZqqcVN5
-	EGkr2lV+gUgf73ujZ/OzXTAVZxyH/ouxPJqKq9XD8ZVZVuKupwdXzjHCNxwQrMbvwdqMG1VJKNs
-	6q6AMkFFqeJ/wF5Fy+V4bUiPHDtnHqcHtqVbAFIY1j/zrXwZgGe5lnLfSB34kPt9Vl8G2d9A4fG
-	gUJVwUmHclHCE8xJczjkS6EGBk9EibJwaSn/xO6a0LcvaUkYO746YdKWQtN3iwEFbKbGIutuZ6T
-	osnfVedfW7d9ZpXnghlO5DlKmawl/jj82JG7
-X-Received: by 2002:a17:907:e00b:20b0:c4d:22e2:1a2b with SMTP id a640c23a62f3a-c513a47e2ffmr543211566b.1.1795417290844;
-        Sun, 22 Nov 2026 23:01:30 -0800 (PST)
+        bh=7+UTTu55kRQmUMdXJ+fvljsspj1Aytx1XWkYCAQNT5E=;
+        b=ihHCQxiAzdxl4MM5IAPsenibZlEiq/zeTa4ZZbTxQpJG2mjatIxnp2nawILogJ23gm
+         6q6Wc5Y4DsTEnG95kS+PDXWMND0SSseno2mlPiTcKA9q/I1ZigAnLiBQZXUf1jsHhoqU
+         Ek/HN6rZd4ORUI7t8EvZRJf/3QyqFzpfdw9CsUBEL4+0hp6t5zakIoA0Wln+p2Ed/8f5
+         WwjjxwDjyjToTzEGudYZTsJHn/tOfwe+ISZfdTE7dox/CJ4Tw0u6DRewSbEsvNVQeWHZ
+         ZJqSI8QamNrH0SdWI0tDMOnoU7xSFt8WMByl1PVODo5pU9HnNpnG7Y86xWruAHFFVckh
+         OdNA==
+X-Forwarded-Encrypted: i=1; AL+hErGF/oLYxoSnvrSJyi8TBIjHK6J5ZmLrrz8MktQW3BslLHRYEpCuZyF8YZh3QWkYyiN6ZSOnXeMhq0c=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/fomIRu3pSMkyljk6/8ix50TmEkXBWrsYRfg0GPkGM9cV3Ipbg
+	l7xP9cRnehO8a4VjE25t3TMtiWRzGdYZZiFwPIH/wKsBm7qngjvgT/uD
+X-Gm-Gg: AZFdTZdzfd7teijmQIs6QkDI9BcYQ3YUqdagbzL4J2Lcp51MGY2c/7m7DnBJsHRWskV
+	JYB7ibQr3wIF0+NPQaE1eDv48ZDqPfNYlLaf+Msq77L2DRAVNEsjB/TqMNIjJh1/6uoK27QKCVC
+	XKPRRYqxvTo7p2Re5iuMYFB1TrLUABo7v2XcqPZ0UsR0e1M2RT57FyChfNmzZULNFvecZYK48Of
+	N54jOqUvomDOEZQsKbvIYejtiD5w3mtjyhQQh71rms45FTo1J24gNvBaaUSmR/dEBZtMpR6/Eae
+	Hs399qlg9uIj6lyHwxXZaIjpbOZU1TT7vXSXvXCa9yi4ePXkm/kpbBtwa0wFZhBMq01ChXWMhQW
+	IrJH4kqXoZFzb/WVS+18Y2JAbj7kpG/jh7RJPHvGaMy0yFN1k2DCD6aiveAiwSAqkSd12/CU7sH
+	mymMs3ho7vyf/NIdu5chnLmVg/o4NFk+f4MlR8Pf5shEJqiU1rTwp8dcDQuuTGokoY1OKYv3U8Q
+	y1kEWiZGV8p6l1XOvTx7A9oWUG6alI9iQKmHSbYqyFA1wb6sSRwW+fgXbo1pG75ewv9tqfFAEsR
+	BQ3EjfwMHRchouHSdrWzHO3neQ3tmjpLTXco
+X-Received: by 2002:a05:6000:1a86:b0:4ad:d65:aaf9 with SMTP id ffacd0b85a97d-4ad0d65afa1mr19754515f8f.56.1795417300486;
+        Sun, 22 Nov 2026 23:01:40 -0800 (PST)
 Received: from fedora ([154.182.66.143])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2d60sm20779007f8f.3.2026.11.22.23.01.28
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2d60sm20779007f8f.3.2026.11.22.23.01.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2026 23:01:30 -0800 (PST)
+        Sun, 22 Nov 2026 23:01:40 -0800 (PST)
 From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
@@ -94,11 +94,10 @@ Cc: dlechner@baylibre.com,
 	mripard@kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v5 1/8] iio: adc: at91_adc: skip unpopulated triggers on teardown
-Date: Mon, 23 Nov 2026 09:00:54 +0200
-Message-ID: <20261123070101.53868-2-abdelnasserhussein11@gmail.com>
+	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
+Subject: [PATCH v5 2/8] iio: adc: at91_adc: drop duplicate IRQ allocation error message
+Date: Mon, 23 Nov 2026 09:00:55 +0200
+Message-ID: <20261123070101.53868-3-abdelnasserhussein11@gmail.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
 References: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
@@ -113,49 +112,29 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The driver keeps an array of triggers and leaves the slots for external
-triggers unpopulated (NULL) when the "atmel,adc-use-external-triggers"
-property is not set.  Both the error rollback path in
-at91_adc_trigger_init() and at91_adc_trigger_remove() walk the whole
-array and call iio_trigger_unregister() and iio_trigger_free() on every
-entry, including the empty ones, which dereferences NULL.
+devm_request_irq() already logs an error message when it fails.  Drop the
+additional dev_err_probe() wrapper and simply return the error code to
+avoid reporting the same failure twice.
 
-Skip unpopulated trigger slots in both loops.
-
-Make a minimal fix to simplify backporting. Moving over to device managed
-cleanup will shortly remove this code.
-
-Fixes: 0e589d5fb317 ("ARM: AT91: IIO: Add AT91 ADC driver.")
-Cc: stable@vger.kernel.org
 Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 ---
- drivers/iio/adc/at91_adc.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/adc/at91_adc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 0ac74ad92fca..9ecf8ca362f5 100644
+index 9ecf8ca362f5..76000486b17a 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
-@@ -660,6 +660,9 @@ static int at91_adc_trigger_init(struct iio_dev *idev)
+@@ -1074,8 +1074,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 				       at91_adc_rl_interrupt, 0,
+ 				       pdev->dev.driver->name, idev);
+ 	if (ret)
+-		return dev_err_probe(&pdev->dev, ret,
+-				     "Failed to allocate IRQ.\n");
++		return ret;
  
- error_trigger:
- 	for (i--; i >= 0; i--) {
-+		if (!st->trig[i])
-+			continue;
-+
- 		iio_trigger_unregister(st->trig[i]);
- 		iio_trigger_free(st->trig[i]);
- 	}
-@@ -673,6 +676,9 @@ static void at91_adc_trigger_remove(struct iio_dev *idev)
- 	int i;
- 
- 	for (i = 0; i < st->caps->trigger_number; i++) {
-+		if (!st->trig[i])
-+			continue;
-+
- 		iio_trigger_unregister(st->trig[i]);
- 		iio_trigger_free(st->trig[i]);
- 	}
+ 	st->clk = devm_clk_get_enabled(&pdev->dev, "adc_clk");
+ 	if (IS_ERR(st->clk))
 -- 
 2.56.0
 
