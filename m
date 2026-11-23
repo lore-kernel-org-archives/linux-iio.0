@@ -1,63 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795449135;
-	b=ZmTjVgNXU2J212sntPwC6hsnJP8Q7EQkj11nhg6zsmU2lHGaaFGbEnIoUQlfav9V0iTq
-	 8p4PeV0I7s+flWyAVyzEyeg1XkkCaXNWoQIyZ6ueh8cSFuN6k/OFseOsHgZsq9FUBaYkB
-	 mcZ5mM0DlkYu5GpP50UCrtL01+GFAZ6dXjts4pJ50JCOMTtw+0yO6IQUcK6TiUwyrAXz5
-	 1EaSaT2VxyVxsSJgAK2JlaonuBaoBv/KiO2XoL9vU/97ZKhY2mU33YCu2tmsEHRJG7NOu
-	 D8nVqV66ija8cirTyWa4LDhSF114iWqY/aP6aWjijODMYlZDXU+jp1tUxJjDvcjejJg==
+	t=1795452785;
+	b=euHYXfxRyY6YaVTTgSt7PqB2jKYo9eYjnwRHLeUcC3bhodprJGdT0oPrcE/CFgQoq9+j
+	 GoDbE9OQG+lwOT3cnrMG1zZ7xiqxc2Ev8qBaxNCiWtZOeW7uk3iabw0iJ3nlGNU8m129R
+	 XX0zuqfnC0DhDrz+nk4WSUN7nBLXlk+HUJtpN/oeNT4d+mRU5bz8mP4Bqt5yWRmZFhGzN
+	 Li2NUJuWb4yShQm935H1j3CwcGsSo/V2zmH2IeNHBsw8JyYl2HtcUnlIYpXLo4bVMrZe1
+	 L/uMvHTAIbtBylwYX7wlVb/bi/4jxEYP0EW9sNJzcD485oNHNDrkxANSKrJwXNjPHjQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795449135;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795452785;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=4tgswxlrs1di+FF5sNW9XyKqOxnTbKBlOCMpfMTZwAo=;
-	b=XRWtQIqlIwIjZlhpKkazSnUdbAe8QPmvjWfDnmzp8hHFaC8KgBEygULCrhxZub5sRs+p
-	 ye1TrJfKJoqO4dOrdtUTOHmqkdyB656W4+gniLMT0qmv7klGmMFVCjLPZMHH6YPPB8GJ8
-	 B9WSQ4SHW/vrzRuHtK+etc/7RkbOjQspNzA4LlttalyqddlDFyNrqoOxsOJDLUU2wMQGW
-	 m78bKOTSUe0Yc1PE/qJDxSURXJKNaKLcX/T4GoWkY47ncj8NAB+v/Vve2MUGIOkPeuzeJ
-	 dMgmEwzgWo5Joz5Dhvf85dh4zPnX5RUyphMmr9rKtl7NIR8LTQSxOfRohxPswboEWkg==
+	bh=ROav2NeqSbzB5BYixiJ/XiL62TG6L02nYYk25SHoeS0=;
+	b=p3yGO5o0wtHtzN/yXTO1UoAEdMGbRibK8fe41gPz0Zh3sT8+HW35tz3dShj/5y1cleyr
+	 O73cCk3MWGia/Fl9VcL/nBD7JbM3s3vfpnkYvtjh+ABQ9zH9FYPEpS7lP6MQR6y1+0X2M
+	 C93T8/CTJbkXqYLFokjNjudi57DHIOCGMqLRhXB/thmVVfen6qp23c9hLhQ+uQmWE/UQW
+	 FS7yw9akl9PgqIH5zv1SV81de/7N23tMAsQDAoeroOCtalxclj1Jy4zFW+E5JTQjshuf4
+	 Tw5cRz+ZeCjGgFJREojMhG/GQyYnWSl0U+Ha/6LePyhPFbnii6jMNyTzpNSJQcCtacA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h0HvXbWZ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hKmpdOlL;
+	arc=none smtp.remote-ip=74.125.82.174
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA9D606A31A;
-	Mon, 23 Nov 2026 15:52:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDB42606A327
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 16:53:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CDB42606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h0HvXbWZ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FC7D1F000C0;
-	Mon, 23 Nov 2026 15:52:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795449134;
-	bh=4tgswxlrs1di+FF5sNW9XyKqOxnTbKBlOCMpfMTZwAo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=h0HvXbWZV3oTqHKeF2IYa/qZP4nqjj0zy3SGhi1bIUOFQ2v7LjNRo9hU33YBnRQ2i
-	 YiGGYG2b4YTEAhWgEK/6Ev3TB3+yZjX/AwPrFjNeTFHgKYOLmbGIRzAkUtx/IRNOXI
-	 w4dcug75AidB5eWkLUMtz4jDlTtyyH9WWGuaoIHcCA8pzk+S311iVW9Lq/fGAThXvq
-	 b4KX8vi6jKnFt7E01KLvOpmB1bHRICdeW6clPBlIX8/JmvnzttSELDBfWBxyYKHg2l
-	 fK1R7gpKcvSUqTK1EbbE6WmiA8dukNUjHN58YQjdz1vlLlztbA8o5ciW9nMSqb+Hi/
-	 Kt6fJ4kxPz9ng==
-From: Lee Jones <lee@kernel.org>
-To: lee@kernel.org,
-	Jiri Kosina <jikos@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Zhang Lixu <lixu.zhang@intel.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hKmpdOlL
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-3282db206d3so10489757eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 08:53:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795452784; x=1796057584; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ROav2NeqSbzB5BYixiJ/XiL62TG6L02nYYk25SHoeS0=;
+        b=hKmpdOlLdUmdZb23Y8BQJiCwpaasGgN0pAC254aazMxKHwQFlQtXWbu7qC4zxbvh1z
+         2jV8b+rqhrl2XpTm3k+0eK3Pyz3cQ3ObP/Q4E+luVllIkxZeztg/DUEwWsJPs956Qnuq
+         RLVEXxX4Ec/BDu2gBV7V7mNQzg1dzT2/4Baf0xGCKMg5kf2m41k8L9+nVAhhQEFz8Wxk
+         jWwr+PS9Odn1EtMAv4obpHXAirDB1pKrGfI9l/rJfSKoPaVcdO18s3B9QaStPLO3Il9K
+         wrU12Sh9QNEu1I15iX2mtnHOWLfUH67YIR84/nKDk4ucaXWCfxqxSBZsL9DwRg+ymDgv
+         ds1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795452784; x=1796057584;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ROav2NeqSbzB5BYixiJ/XiL62TG6L02nYYk25SHoeS0=;
+        b=c0rTI9NJLPAfi2gvPNq88zWoerLFqkLip48kxnQ9ozyMbmIjcXFcASsxhZmfNFPebW
+         VHiBLahuue1Hw+eUO70ELYlKXFdzxAuukZ6HHmTrkAFgh2N32nhemDJL5oXyRo/bxkIZ
+         B4qHJ0qVK1P1T3766mrhCr6CwODqlBKzPlS1TeJajWwxRHX9DHANY6Lpowm05osJjrRb
+         U0DgjOeXw2ahoWb8RxiAAxgco03di9XHjkcq1HgTYHKDLAdLsrOKuHR5PRyv2XuE0NdP
+         /MOhQZso7VNaMk3qMCGql4rEAZc9TWMxIBkXb3JT1k6F4qWpKoMqbqvOAFr3sgNG8MeA
+         HEwg==
+X-Forwarded-Encrypted: i=1; AL+hErGtF8oywGo789LwbAID/aoCkBaVPiq5RRDm+GhFL09vHc0ARi8sQ+qVhVtRDklgCwUQYz2TkmO00YU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/3LASTmfN3QDaQSiusyikap/DSJzseYPMmayhEKoucRMsAN25m
+	MicUuiqJRofc+xzghE//UUbLkjyMVtCJQZG+SAcFqGLrrBU7V1ScrioE
+X-Gm-Gg: AZFdTZcFCqC0V2pKLumKa6x/X6+gF8ZohyL7EYrhma++GgWqwLoYn32jYzunJI5aVpN
+	ZdE96JlT4WvGXb5gJckzSj99W70hvcO6oi4guXVvgtJFLeMYH2mT96U4rJam8938JlD442cKPnY
+	VsCA/+5biiY5B9733VjXIfTI+Sk8m7a6c+as+S6sy1K04mZ7OwXpes1EYaPywrHrnTtzHxXv/2l
+	EssXKAXuHi6C5KtOSortOu54ouc/hbijwvFrnATStsF5y5wUTkvqemsmnoJI1vE/dIHyRLsw2r5
+	Rp/aiq/Zlj/Yb/gayGt4GIpruOqXMiLpbSszKE5NLPen6F+irB18oEQfkY2IvpYdhfQPI6GA9BC
+	Wp1/Za+pXJeUX9NevLzu36v1sy8WhjDT+L6DFQDNpMSFwqtxCP7TJBCTOxzepUIIRE69s3vnr27
+	UixezD9VcvVsivFDKHF9ocWH1dzI8AtFP2oLSvrZLS45RSxXky7dBe1fjPWMKJ0AUMS0zCgapKi
+	nTCTfnb4Fp4NvOyYoNg/B056R8Oba1uqI9rSHSQas8r40TwPlHINdHDKDHmKx1gkStwNMJCCHzL
+	K84VBaw0u/ZzIJWe4jDOJyM1qb9LlP//eknW3pYUw6C5S6g2Gu3xJhhjwGJyPuzN4H5Wi9VhhR+
+	VeNFYciEIG5eVGuqlsw0gbx4q4Vz3c+Bl1Mh5WJr2f6IdHbvoZT4qvFsoh2SzkJdnzHhmf5X3v3
+	xjkIwFRgDpLITGX0iJ+Rjw/EAha0RxzefjL/h+A08U5A==
+X-Received: by 2002:a05:7301:6582:b0:374:e25e:a533 with SMTP id 5a478bee46e88-38570154017mr23142542eec.35.1795452783837;
+        Mon, 23 Nov 2026 08:53:03 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385666e99fdsm47196668eec.5.2026.11.23.08.53.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2026 08:53:03 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	linux-input@vger.kernel.org,
+	Yasin Lee <yasin.lee.x@gmail.com>,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-Subject: [PATCH 04/10] HID: sensor-hub: Serialise synchronous read teardown under data->lock
-Date: Mon, 23 Nov 2026 15:50:48 +0000
-Message-ID: <20261123155138.2907049-5-lee@kernel.org>
-X-Mailer: git-send-email 2.56.1.750.gf70dc682cf-goog
-In-Reply-To: <20261123155138.2907049-1-lee@kernel.org>
-References: <20261123155138.2907049-1-lee@kernel.org>
+	linux-kernel@vger.kernel.org,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH 0/5] iio: proximity: hx9023s: fix sampling frequency, resume and event value handling
+Date: Mon, 23 Nov 2026 22:22:46 +0530
+Message-ID: <20261123165255.239490-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -67,110 +102,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-sensor_hub_input_attr_read_values() and
-sensor_hub_input_attr_get_raw_value() set hsdev->pending.status under
-data->lock, sleep in wait_for_completion_interruptible_timeout(), and
-then clear hsdev->pending.status and consume or free
-hsdev->pending.raw_data without acquiring data->lock.  When a wait is
-interrupted by a signal or times out while sensor_hub_raw_event() holds
-the same spinlock, sensor_hub_raw_event() can memcpy() into the
-caller's popped stack buffer in sensor_hub_input_attr_read_values() or
-race with kfree() and leak kmemdup() allocations in
-sensor_hub_input_attr_get_raw_value().
+Five fixes for the HX9023S capacitive proximity driver.
 
-Hold data->lock when clearing hsdev->pending.status and detaching
-hsdev->pending.raw_data in both helpers, and free any prior
-hsdev->pending.raw_data before kmemdup() in sensor_hub_raw_event().
+1: writing 67108864 (or any value for which val * 10^6 + val2 is a
+   multiple of 2^32) to sampling_frequency divides by zero: div_u64()
+   takes a u32 divisor. The check added in a318cfc08537 only catches 0.
+2: reading sampling_frequency indexes the 32-entry period table with
+   the PRF_CFG register value unchecked; the configuration file loaded
+   by hx9023s_bin_load() can put any 8-bit value there.
+3: resume re-enables the chip interrupts only when the trigger is
+   enabled, so threshold events stop after the first suspend.
+4: out-of-range threshold values are masked into the 10-bit field
+   instead of being rejected (-32 becomes the largest threshold).
+5: same for the 4-bit debounce fields (16 becomes 0).
 
-Fixes: 401ca24fb34a ("HID: sensors: introduce sensor framework")
-Fixes: f784fcea4506 ("HID: sensor-hub: Add sensor_hub_input_attr_read_values() for multi-byte reads")
-Closes: https://sashiko.dev/#/bug/linux-5bd5ea7c-72f9-4f22-ae1d-00915390f085
-Cc: stable@vger.kernel.org
-Signed-off-by: Lee Jones <lee@kernel.org>
----
- drivers/hid/hid-sensor-hub.c | 28 +++++++++++++++++++++-------
- 1 file changed, 21 insertions(+), 7 deletions(-)
+Patch 2 assumes the whole PRF_CFG register is the period index, as the
+driver already does; I don't have the datasheet to check whether it has
+other fields.
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 81c8e723f9ba..ea846e0bb301 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -306,6 +306,9 @@ int sensor_hub_input_attr_read_values(struct hid_sensor_hub_device *hsdev,
- 	long cycles;
- 	int ret;
- 
-+	if (flag == SENSOR_HUB_SYNC && (!buffer || !buffer_size))
-+		return -EINVAL;
-+
- 	report = sensor_hub_report(report_id, hsdev->hdev, HID_INPUT_REPORT);
- 	if (!report)
- 		return -EINVAL;
-@@ -335,7 +338,10 @@ int sensor_hub_input_attr_read_values(struct hid_sensor_hub_device *hsdev,
- 		else if (cycles < 0)
- 			ret = cycles;
- 
-+		spin_lock_irqsave(&data->lock, flags);
- 		hsdev->pending.status = false;
-+		hsdev->pending.raw_data = NULL;
-+		spin_unlock_irqrestore(&data->lock, flags);
- 	}
- 	mutex_unlock(hsdev->mutex_ptr);
- 
-@@ -375,29 +381,36 @@ int sensor_hub_input_attr_get_raw_value(struct hid_sensor_hub_device *hsdev,
- 	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
- 	mutex_unlock(&data->mutex);
- 	if (flag == SENSOR_HUB_SYNC) {
-+		u8 *raw_data;
-+
- 		wait_for_completion_interruptible_timeout(
- 						&hsdev->pending.ready, HZ*5);
--		switch (hsdev->pending.raw_size) {
-+		spin_lock_irqsave(&data->lock, flags);
-+		raw_data = hsdev->pending.raw_data;
-+		switch (raw_data ? hsdev->pending.raw_size : 0) {
- 		case 1:
- 			if (is_signed)
--				ret_val = *(s8 *)hsdev->pending.raw_data;
-+				ret_val = *(s8 *)raw_data;
- 			else
--				ret_val = *(u8 *)hsdev->pending.raw_data;
-+				ret_val = *(u8 *)raw_data;
- 			break;
- 		case 2:
- 			if (is_signed)
--				ret_val = *(s16 *)hsdev->pending.raw_data;
-+				ret_val = *(s16 *)raw_data;
- 			else
--				ret_val = *(u16 *)hsdev->pending.raw_data;
-+				ret_val = *(u16 *)raw_data;
- 			break;
- 		case 4:
--			ret_val = *(u32 *)hsdev->pending.raw_data;
-+			ret_val = *(u32 *)raw_data;
- 			break;
- 		default:
- 			ret_val = 0;
- 		}
--		kfree(hsdev->pending.raw_data);
-+		hsdev->pending.raw_data = NULL;
-+		hsdev->pending.raw_size = 0;
- 		hsdev->pending.status = false;
-+		spin_unlock_irqrestore(&data->lock, flags);
-+		kfree(raw_data);
- 	}
- 	mutex_unlock(hsdev->mutex_ptr);
- 
-@@ -590,6 +603,7 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
- 					}
- 				}
- 			} else {
-+				kfree(hsdev->pending.raw_data);
- 				hsdev->pending.raw_data = kmemdup(ptr, sz, GFP_ATOMIC);
- 				if (hsdev->pending.raw_data)
- 					hsdev->pending.raw_size = sz;
+Applies to both fixes-togreg and testing.
+Compile-tested only (W=1 for every patch, checkpatch --strict clean); I
+don't have HX9023S hardware. The divisor wrap in 1 was checked with a
+userspace copy of the expression.
+
+Arnav Kapoor (5):
+  iio: proximity: hx9023s: fix division by zero in set_samp_freq
+  iio: proximity: hx9023s: check the sampling frequency index
+  iio: proximity: hx9023s: re-enable interrupts on resume for events
+  iio: proximity: hx9023s: reject out-of-range threshold values
+  iio: proximity: hx9023s: reject out-of-range debounce values
+
+ drivers/iio/proximity/hx9023s.c | 35 ++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
+
+
+base-commit: 793d80b04b6c4f7f896c273567f94eccd0fac54d
 -- 
-2.56.1.750.gf70dc682cf-goog
+2.53.0
 
