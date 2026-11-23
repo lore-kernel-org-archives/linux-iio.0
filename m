@@ -1,84 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795442163;
-	b=C1zGUXtwvcNAHXxo69/LwirtSnJR73kR3ykzG1jmQib1PzNgWDnBvFcD5DcuiE/dtzYG
-	 zxcwG0TWgFw5BY7G+WTVSEoPex1Tczsbojhjn4gZt17oP08EIzJ7pi3vJNkcS2ZtqdLHF
-	 ymGV6dgWHWOnyYBr68EA9AMW53yRdloBUsvWZsS9IPbEWce04soi/PN6eweVdQvGmf9PS
-	 0MsXPOAJDxB18P9bJJf69nqd2Sgva/HIV6X8VM0Eiec4d4MutHObJJEc10JjmplWSWfwr
-	 ikRVoxqyAGjddOvSlF5XtRnPbwg7NgDOCOvfwrm+xV8x5LavZ2Hvb4bQcOsvdajOcKg==
+	t=1795442167;
+	b=PIs+oU3k6pxFilox+e5U/nBYlUWLKsjMHuuq2Wk5M7Xka6THOnRqmJdN3upXZFFoyQhK
+	 hq7eLvPqcDG2E6GCNcItCCXbMJTLnaEwAsLWzv7cLMG0efn7trmY5zewdoDZ9U/YtBFOB
+	 O9nAoU1TetY7S5mhYhmSuRJdiHSlhkqBB3rED6DTIhWZSiQJqc8pJ2pCuc/SoBAYwzMeY
+	 azzTwOPMW1S9nwLVPte5alaoOiyHKQkAA3rG+MOiD4veWoc9qqwav5SqEdQgHFW12lrO6
+	 vc1b6HLtUPOYJJn95Yevb96iynKA/V409nxqQrh+WKcogGcRHzCHQQXo6c5gpOfV73w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795442163;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795442167;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=rc/V0dJCb6+p+/Z0dODRaNY7UxcLqfzdO5HgyNDg49E=;
-	b=DTrjnXXS734mXerGyp3HzaFuRRQE12qdOUmLICXNHb1LbEDNrNyUQoLJPpM8VD6wWP0T
-	 cgu15UoqivkmUZIBm2PQ7/6jvGzGBYaQCjdgoJ/+7ZUiB58R0eS/FFcoU+J3zQQccfiTW
-	 ofzAiwot5EHU7YbybWc+1o38F/UQ9XqO+Ue68X0YK6t8IQI9dDCTidgsPFe8rBvc3bBql
-	 X4LS9mxzcF8bnxmxzEEVysHl1ALDYFD9IVZrm2KBPepUy2FNXjVKsvLaqqccX2d1Fn5m2
-	 39zl858SGkhchH0lYUdRezl4Sud5/vpgj7auJe+7PZDUvppLJLTf7cNCBfr0tFejUYg==
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=LSykIlbfutXIhoOr65gq9qD6MLKki1+tTFA0l8dejz4=;
+	b=VEFSGfhIBk659hkzeZH+rnkXbIdawLQ+Yugo68EPHS21ruWw1Ugm+MnxKD3YyF6iW93n
+	 lFvrO9tWTmw+CQk6elEXYSGJuaFtgNWOkgdYrygtIYwOuEyj4Cq2d+K5m7gq9KSzpEm7t
+	 m/7L9PXVOabMpqnPw54JWTS6Nau2C5ds2kj49vIDIUAPm2EjTK5RB0aJDN4Fom3QQ6xW1
+	 AZ8FwYp4DvOn93vWrKao49eI9rCp+mk3nD1XZ7yAc/NAGxwKrH/zNEULxIg6zPCPlDJz0
+	 N5Z2mMy+gzxd0kovCInzxr1kNoXjUH2RTWcyhTK7RDPefuK814v14z1xaLdbiaj1ubA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="hb/O6mcw";
-	arc=none smtp.remote-ip=74.125.82.47
-Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ZRV01e9+;
+	arc=none smtp.remote-ip=74.125.82.169
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 287DE606A31E
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 13:56:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 287DE606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A50BC606A32A
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 13:56:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A50BC606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=hb/O6mcw
-Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-1b5786e099cso679266c88.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 05:56:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ZRV01e9+
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-38564b4b017so3556901eec.0
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 05:56:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795442162; x=1796046962; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rc/V0dJCb6+p+/Z0dODRaNY7UxcLqfzdO5HgyNDg49E=;
-        b=hb/O6mcwi0lIK2EOuTHewZJw22l1B/RxbCNRSTLx+ujEASrHWjCi/2tNBWEdV3Ljh0
-         psXy0o/y2F4uRvq5BUNBgV9ZL9Rr8/LuiAGcJGFhiTZCcOdDm6PugNc8bfXtgGxSWRHn
-         11+imdc/Ve1A9/K9E65Sh4yp3sIFrNvxKkb64pawKADtreqQznFOkEFxMr/IDqkRZ509
-         K6EwgmnDExwmFyr/gTbHH0WR7Oz4GPA4oFxQ5Wms92DCE3JYaADITQrAaeeGqGjsu62G
-         PERpAwR/jHvBU6sPOuOo5yZxrW5QT8wvIvThQ1IR28rNCdeouIA8B/e2GlDjYgJ0Ja9b
-         bimA==
+        d=gmail.com; s=20260707; t=1795442166; x=1796046966; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=LSykIlbfutXIhoOr65gq9qD6MLKki1+tTFA0l8dejz4=;
+        b=ZRV01e9+Syq9Oce7NKh7SY49PHV1Mj7/tB1yd3TfhQ8aSin05O9/bBwaU+rCeYfDUC
+         yXKaqW+6zCxQgjR7jowhZgzsFIFsy41MX77y5n0HeNBF/6LNukAnLaHn3cDAl7uQgsci
+         AI5Hh+YPzWLYzTXHKmBxJjbSf87DbLdZBEOX9ZjPV8TO7K29qLsYDjmb+Fvd/57G+Y7Y
+         STVSW7AJ3Qrw7yUAnGHm4RlrYP0wDFuXrzmFy+echK+rJ48tA58JCh267TM+3/yFWAgl
+         Uel/ZrkZUY4hvCWPW0/x7TFgzPJ7tv1Q4wZ9Bme0+dYoKn/nq9wFZW7Urm7ZEFolgAgc
+         bbhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795442162; x=1796046962;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=rc/V0dJCb6+p+/Z0dODRaNY7UxcLqfzdO5HgyNDg49E=;
-        b=t8AJZTeZpJzuutJeQyxobxC3ASVHn1mVfeGD+uAN0nqc4BUyFa+W93HYDk7GAXdlNu
-         GKnZg5oGbSivl3nIdgf9oqKXDpdcdGJLTv1mkTC/ZYXWoCXoIYZKNz1HB/8qsM5yFRdO
-         t8iNzfGLZGp44ec/3WVHGi1dRD3Sk+JY+c10P6p3bHO9lBvCrPjqzZRdZm6lzySWtTEe
-         oTb8X5XKLlbYWUsKuTn/ebcnU2sBXSot6b91DD4Z9waa0cLSAzxI2jFw3DESv2D+9Cn8
-         aF7AE2IqiHybNnEoAGJHYzPxNlhRZXQKaT9aaCJssA0/w/+aE3VWoelYySDlExul0vTL
-         ir5w==
-X-Forwarded-Encrypted: i=1; AL+hErF1ZvJszsUDiZilOS25AirHKL3rCsyKIs1hF4POAeap8ngLGfbNJhrGXNQlMhpFeR4+WYILM9KV2qI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/BK5kO/Llo3yFXcKK1ncjdlLlS5BQouo+424DaZC93sExPxUXT
-	PmLl+HOjDiXmyZGlSNOIBaXVNxNLK7Eow5I2mfWHAhCWD0dSgGlbAJQu
-X-Gm-Gg: AZFdTZeA27gxyBtHMTVmtv9YS+Qj58llOHlzjtd+Ywasvp55HHF+vwZ155mSV1+7aEi
-	2rGSz7PiXfYMlAD4qbvzBZAm7aw1Gg8XGLyVRuxJrxAEOHIvCR3uW9TRV61hCSmXMZFDhgpi7tI
-	Xdy1W7t2we3SZ/USsz5EW6O/bEsaSxyeUerixZ3a9EDRTHHTBWJBC96jLGnBJI1QxaYuqh0TqTk
-	gY86m9eWFwOionTgCSBlBNaG710sEtW/xrda3lTysCPdiqmyANqbLHyUej577y12UydV0ZyNjxS
-	bK0q5PCucHEpc66CrWDw91HCnevOVz11wbgHw4YBO1QQgW9fLXiOQbc5pl+xh/FijyNdmO0OZVT
-	bRgWMPWVikHfOQUW2cuer3HrtblFb5whSAvaPyviCxKTh8ATpq0tLNNmOImF/XOVjb6ADDTtxgA
-	Js+UsMbqvDT6RaqtMMNRSpcervLob0S/0on2sURII7s1VLUhR09EH/rSmx6h39/lCzTe8v5WPoD
-	ZJGz/eRV+hawASbo4vecI2JPFWQ0i0HOtyxtvOwh92gB4+6NbjV0XAMevS1La5SKfcKQBPGMI6f
-	AGKnEY8qT7wwTp2PGBKJd7MueTfhkOoETu483ZiZrf/MqPtvluL8vA==
-X-Received: by 2002:a05:701a:cca2:20b0:1b5:3417:9bc9 with SMTP id a92af1059eb24-1b5568ffe5emr11099273c88.26.1795442162281;
-        Mon, 23 Nov 2026 05:56:02 -0800 (PST)
+        d=1e100.net; s=20260707; t=1795442166; x=1796046966;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=LSykIlbfutXIhoOr65gq9qD6MLKki1+tTFA0l8dejz4=;
+        b=UnEO46Iw4hjJuOJYe7SCTaVhKYG+GR6keedG2tCy5SMbqlEFZDny88rU1FIB+/zdmT
+         lfmyUrE2YW9VxvPYNdR2zdJy0OP9ZCpSf82L3+6CzthjXsbB3MqbUyO0tord14ULOXUk
+         HPztSgdDc/KYpdMcpFrL9o9qfrM+GWmZN1FO+GlFSUJYn2JIJnNa4s0rYorRC2vC4BsC
+         ZRVIgOKK60VGLX0gLxK/5pLxPQTReqVSS1l6TxpZuFDsnhdlTSGkIosIQuXoeDuzOD7M
+         kRCM1cxPQgeOYp33e+Wo7pkzhi0DDddpvZJZBNTVqSU9CkR2Hph0nQ3l2kc1JkNhcSwz
+         E3GA==
+X-Forwarded-Encrypted: i=1; AL+hErEuHm1/8Wuz7eqqHSkJ8pFrO4fTbUaVnABt4euw7dp577j81pSh2L1zvhlbnPSaJup82dGVSzImwVA=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/3HjhkJ9QrXCOELUSh6MVEblOGkAXPs9tuJlDBHcQrxp52CCA9
+	s5KEF9b+T5mtGgDczB9W7x/c7QP32k3rdggI6GypudfcjYiNIh3Tt+yC6qe+PA==
+X-Gm-Gg: AZFdTZdV7OmrAgzSMzQELOmgKMIXTeX3vuVEjuCL0ip81+43Z6zNPONmRsZc9RxOxkE
+	sTbV23H3glgfKKOjz7bs/b1YMRUTwr0dlrcps2Sj14kFK4Tj6pze6SSBEMLeeR55tWFwcNqS8Ia
+	NWSLzfUHAupTaS7vwuUua/tyxC1s6gDTttcxzUkPUKGCA609UL87Kq1SdUw30dphAAjqRz/lY9m
+	KYB2ci1HW8zF85Ld3Qc6oiFp7Wp4UOAUU4dr/2T4xktgHKGASpFul7GhmURej0xkG4Ao0CKp72A
+	HUMtsWtBb39TCNTFsNUr0LSFtS9L4XahBl8QhlbIe1SOH7awWpIOiswR0oZiQ0pVuDW5iRAYgLc
+	tDWxPVnzP2zRg4zipFWoGdnKs1q2euEI9mGD4pMa0iTqr4zwX72ChQGG3fKmg5nI/dqk1L876Sb
+	+Oz8f9qK/ogzSNe+NtzrP1PbPrn/xmglMVSlZvtOEBNlZ8ZP9no2fQxKpNsvCYrAWFqhHdRdT+1
+	CZFIWK7QvYH2hgRUt0e72C8GYLy1C9JVIBJ3kftH4TR3soBPH7hsoinW8VhwC/XLOkpyDxkoBr1
+	kT+Pv/Gpc3sFA4EYhfbVbxC6lt4aOy+wGKPq1RwSU5w9SUwBfRx6iA==
+X-Received: by 2002:a05:701b:2319:b0:1b3:a8fc:6306 with SMTP id a92af1059eb24-1b55247e725mr11431757c88.6.1795442165384;
+        Mon, 23 Nov 2026 05:56:05 -0800 (PST)
 Received: from csl-conti-dell7858.ntu.edu.sg ([155.69.195.57])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b562a82b3fsm29310267c88.5.2026.11.23.05.55.59
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b562a82b3fsm29310267c88.5.2026.11.23.05.56.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 05:56:01 -0800 (PST)
+        Mon, 23 Nov 2026 05:56:04 -0800 (PST)
 From: Maoyi Xie <maoyixie.tju@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -91,9 +90,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux@analog.com,
 	Jagath Jog J <jagathjog1996@gmail.com>,
 	Andrea Merello <andrea.merello@iit.it>
-Subject: [PATCH 1/3] iio: addac: ad74115: check the rate code in ad74115_get_adc_rate()
-Date: Mon, 23 Nov 2026 21:55:52 +0800
-Message-Id: <20261123135554.2983499-2-maoyixie.tju@gmail.com>
+Subject: [PATCH 2/3] iio: imu: bno055: check the hw_xlate lookup in bno055_get_regmask()
+Date: Mon, 23 Nov 2026 21:55:53 +0800
+Message-Id: <20261123135554.2983499-3-maoyixie.tju@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20261123135554.2983499-1-maoyixie.tju@gmail.com>
 References: <20261123135554.2983499-1-maoyixie.tju@gmail.com>
@@ -106,46 +105,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-ad74115_get_adc_rate() reads ADC_CONFIG from the chip and uses the 3-bit
-conversion rate code as an index into ad74115_adc_conv_rate_tbl[]
-without a check. The table has five entries, so the codes 5 to 7 read
-past its end. Without the adc_rdy interrupt, _ad74115_get_adc_code()
-divides by the value read there. The driver only writes the codes 0 to 4
-in ad74115_set_adc_rate(), so this needs a chip that returns a value it
+bno055_get_regmask() translates a register field through
+attr->hw_xlate[] into an index into attr->vals[]. When no entry matches,
+the raw field is used as the index. The gyroscope range field has three
+bits and bno055_gyr_scale_hw_xlate[] covers 0 to 4, so 5 to 7 read past
+bno055_gyr_scale_vals[]. The IIO core then divides by an int read past
+the table. In an x86-64 gcc build that int is zero. bno055_set_regmask()
+only writes 0 to 4, so this needs a chip or bus that returns a value it
 should not.
 
-Check the code against the table size and return -ERANGE.
+Commit 399b883ec828 ("iio: imu: bno055: fix OOB access of hw_xlate
+array") fixed the bound of the lookup loop. Return -ERANGE when no entry
+matches.
 
-Suggested-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Maoyi Xie <maoyixie.tju@gmail.com>
 ---
 Found with a CodeQL-based static analysis tool that we are developing.
 Reproduced in a userspace harness under ASan and UBSan, which report
-nothing with this patch. Not tested on hardware, only compile-tested with
-W=1 on next-20261116.
+nothing with this patch. Not tested on hardware, only compile-tested
+with W=1 on next-20261116.
 
 I used an LLM to help write the harness and this patch.
 
- drivers/iio/addac/ad74115.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/imu/bno055/bno055.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/addac/ad74115.c b/drivers/iio/addac/ad74115.c
-index e27c39b06e44312..289dfdff8f5396f 100644
---- a/drivers/iio/addac/ad74115.c
-+++ b/drivers/iio/addac/ad74115.c
-@@ -784,6 +784,9 @@ static int ad74115_get_adc_rate(struct ad74115_state *st,
- 	else
- 		i = FIELD_GET(AD74115_ADC_CONFIG_CONV2_RATE_MASK, i);
+diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+index d0101607a9b3ad0..ae7e219d36d1e46 100644
+--- a/drivers/iio/imu/bno055/bno055.c
++++ b/drivers/iio/imu/bno055/bno055.c
+@@ -587,12 +587,15 @@ static int bno055_get_regmask(struct bno055_priv *priv, int *val, int *val2,
+ 		return ret;
  
-+	if (i >= ARRAY_SIZE(ad74115_adc_conv_rate_tbl))
-+		return -ERANGE;
-+
- 	*val = ad74115_adc_conv_rate_tbl[i];
- 
- 	return IIO_VAL_INT;
+ 	idx = (hwval & mask) >> shift;
+-	if (attr->hw_xlate)
++	if (attr->hw_xlate) {
+ 		for (i = 0; i < attr->hw_xlate_len; i++)
+ 			if (attr->hw_xlate[i] == idx) {
+ 				idx = i;
+ 				break;
+ 			}
++		if (i == attr->hw_xlate_len)
++			return -ERANGE;
++	}
+ 	if (attr->type == IIO_VAL_INT) {
+ 		*val = attr->vals[idx];
+ 	} else { /* IIO_VAL_INT_PLUS_MICRO or IIO_VAL_FRACTIONAL */
 -- 
 2.34.1
 
