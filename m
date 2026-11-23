@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795417322;
-	b=U59ViLllSg+/R9/n8R4sWcLgwbgDhbogZf8Gtg7UmzJzy5i2RJqMGKetwRPK5p0wWgtx
-	 IFxtsbuuOSqyZmjZpdhMSExzQtnQ4/hbrtONzrYUoGpWjdv1NlwPqjmif9YuJ5aJ/zRZd
-	 ThVz4zfQrmB1tQL4DS2ftfG7zceBy0N65TXJYqnftxmtnmBLYCEiCWCXAZ0K9ed+MMD5T
-	 I0oKrKLuykac8m/knGHyUMQD5lESCB6yiut1h5QJ9O0gaEyKooRk7SL2dxG4uX1TJImVv
-	 nuOLi/dqAA6A+fwe8ui0PXb18LMbEFJlPbQ8CLCefqWOpNDNe88uwLi5HcErNQ76cVg==
+	t=1795417328;
+	b=I1aOGWxI9X3IL2xqosc2gSjdvL4IwudrfVpL+4ZeSMhDAc/ndXqXVnhW8zhAqCEh35qz
+	 emsGZLcXJYu0VEZSpNaMOKRAsGCcSJk5cM+FsaBqEV4OWfS6/g6N0ggI7Fi8hskSt7bRH
+	 zki2az1phsicUcTfVcvM48hapFhghVN/AdkuoiqTKqHjBAWuwLoOhG2qnyyb/aV4rMjwN
+	 2Y8mLgKrMCcGrBsYLZGF8w6g+rQE+oa/1Wlt8V1k1gCfgdRPvJCbqPG1YsLn9UR2khdTl
+	 P67WM4VPrQgvVe2KraTjreHDbMhCZHwCURv9HZBNVZTem9E85BZ2g3SFAIOp9/zNaIQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795417322;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795417328;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=itP1hoxcgyxT3Gqtak+dePMpVPLjPeNpaNu3XlNcqvw=;
-	b=G1K/qfprgUwMDIDb9ezoW4RO3QLQVpYvCPc+bf4UQrTqSaWHgq0gBsdpy8UdwbShDJC7
-	 jwSms0foXl0X+uU6I4jdcy+YzFKy6Nc1DIHBQo11NQdBXfPaUq/Eflxnh2lB9AP247idz
-	 zCbFnGwiGO80JCGoRrhfHm2nu1wtdLC7ghzsX9Yu6L5NvMj8tU2FS0SPFa3IRWmwJAJRF
-	 hd5Hp4cie9Fzwu0D+Afv2eE2Foxdik2haj4NqaSoaUxHRLeAYgHUkVD0dSPMhw56xUh1m
-	 9zahpkxbN3qKXLCHEZNBmQGwHj2x5di/Vm8rBw0/P/WtOO28WzFaDDZEm5FquUMTQlg==
+	bh=1MJvqtEQ7KzkrkQd7jNXZvcPx36rVpHnL5D10mePtG8=;
+	b=xxwDZmIxTSgLPDA1urg0Ey8yh7oD9B69/4QYm6BwgU9ur9KidXCYjlVlyxiBhRC6ehL+
+	 JmJvH/kPXbfO6Nhu9h23BNZ+aiIaJNLIG4KmfzCiK/6lHC0Yq3tm5b/Gu/KfKRZ9rSTdh
+	 r+u2DI3prO6hSne6CWosmnm9YrMmVEc8ieTLYIHEMHUHT6GiDHbl2KzOTu0cqhT6MjRUU
+	 UgXu8mDzLY2H55kUTzD+7pSbZXb91f2yRkUdOxQ3uIXtzS7Z3QHJZt+MIXjCMl6q6ZtpK
+	 TzSla9sd05DnBwjAM5T6B/divCqKXqReomYWsvEjZ+BJA0iZ/YMVrtXxzdEqznlW6xA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=bF2hp56X;
-	arc=none smtp.remote-ip=209.85.221.52
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FpW1R1DD;
+	arc=none smtp.remote-ip=209.85.221.46
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 873A6606A321
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 07:02:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 873A6606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2198E606A31A
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 07:02:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2198E606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=bF2hp56X
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-4acb44dcd7bso2288423f8f.0
-        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 23:02:02 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FpW1R1DD
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-491846221ffso2422321f8f.3
+        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 23:02:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795417321; x=1796022121; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795417326; x=1796022126; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=itP1hoxcgyxT3Gqtak+dePMpVPLjPeNpaNu3XlNcqvw=;
-        b=bF2hp56Xq2rIag6eJRwAOTnk3Gj0c4889uXhlex2fV9Qe0c9H/votPte01U+uQI9mE
-         DYSQ/o8TikWhaoBoravTlcSCJxMRilP6MLdJwlp+SCkQKyREAJZ2TzQiPo5P58Es4lME
-         Ss0i0zr2BotC1iJtLZXCOjQtIollvxAplH1Augpk/ILTOCtGrD4eTAHOSNMd5uqjhk3X
-         D4anTu0YF0f6gKMX3febTyXiuk6gtDOoDxMKyxHOQJrwt5KDrT3z9VuIdt4pyUzFGEw+
-         LSv3pN9Q6s/+U5RjrbM0H32kNxZ0sy2ATAmx/Gv4KqTYprP2YoZdNinYqO3AjOou8S1p
-         xQJA==
+        bh=1MJvqtEQ7KzkrkQd7jNXZvcPx36rVpHnL5D10mePtG8=;
+        b=FpW1R1DDTCilk6imzhNgeaMna/s08vWK96icEENFis6O2JY3T7yQhwo9qtSkB8TsNw
+         3vrXdBdIcmfjerV6Cm+GhnQtAiID5z4ngvKoGz3eKqFJSWpb4ML3nFVzgFUAA6WETOhH
+         siECVSDboNa8tDGu5i2CNmayyT+zp/jUjePWLx5sB2DuAmD+7e5+lwejcP2IGShCkSyh
+         8CJhTbhbu8lY6zm9raEyY93HzhFn6lwbnvQEvxhaMBOI1hFUIErDEZIZH8O25o0ilxL/
+         /17Q9KRp8AJ26PK3YRi+BvFLcjn3EvdBLEWR3R/vuAxRFRWM3a0cSajO+LMpErfu9uph
+         1RAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795417321; x=1796022121;
+        d=1e100.net; s=20260707; t=1795417326; x=1796022126;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=itP1hoxcgyxT3Gqtak+dePMpVPLjPeNpaNu3XlNcqvw=;
-        b=JbiFCUixDdGM62P+ulYGHPcZXfuFvYDmMSeMEe4iYrJ9JBcBjKWnfnQcZ7DCQFCQ0X
-         ahihhA63vJPgDNDSQyBO9Ift3qet5a8JswVtob/j/X9KUDRFuTZPrM4pOiudRPTX8TYD
-         4aCY7h0NH28PgFnleyn+khcKDJvrr2f3Bac2l/8/zMC11fjAT8glihKB4D8DfODvvbgC
-         5UHP8zTKUCNVpCxQyRM2EfPHRANZ6L+ZVVJBqe0lfkYHvd2UHY+0Nj45OJYFXyxoCn4Y
-         6nu3g4nXjJvogelvImNDuSkVKywlIby+bFk1yABK/hrz8Ulq1NK58ohNTY7ydfFX811l
-         jWcg==
-X-Forwarded-Encrypted: i=1; AL+hErEeljTnlQjJUo3LFl0kXOQjQVXlLOGR43tz13MNrU6vgrvUVoxZdL6ljbut+I1t6FRUsxyQeE+7bVs=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+Mx3U+LOvl5oTAvYlpx7BNM8uV3rvpcHsjvoognYv9CCTYQHEK
-	2Gn0Hg8chrM5VqLka2iwsbMaPZvAT4nt0dANm9Bm6NTkX1YIwg+4pKiw
-X-Gm-Gg: AZFdTZf8rrSIdDTqhxHDqZsytWytClT5cBUTg965WzeDOWhpgZPm2JMmB2e9S31hMyF
-	eiR1y7U6Muy5LbVYvGCrQeGX8yuGKiT9AirYNXHnsf6gxpSj3bBHrum3DsVljnmACa+kh/B1uHj
-	KN63w2y0Vqlkd1gagQ48IlibLe3ob184EmYdqbWcySfdeY4wA7+8CyKYcFjJ6QtujTQFn85mNHl
-	WuHfGB6z6ZDh72shtueBMatcW+hfSXPpI3OXaR8YQHzJFzqdHMBsypMwNDUaSfpPCQ6Ow6k/b71
-	M6Txu4+OkRYS3Ly5GARiit7XUidkLCZkAQ3tYuQkrxZ3DsS09jSiQ4uHNBYOIJ0BudG+OQ4BVPg
-	T7yl5Tx7YT45IGwi/+RLEdKW/3CIq31zHudHQTol6QIwYr/deQKlikg9uJEI6KXNpUDuuP5KQK4
-	g8EujE87wbga8p0frPS8RRaSX8/BTe3NP7LxhkSOh575rO2QLaHl6a/vOP49xbswGwz9GRJz9zA
-	ARtrCbnUZSKxWPcG0bcmjMxmj4JUObY6nXQqJgEOI7e8DnkS9pZi9rvKTJh8llsr92nLE4cOPp9
-	s+Ws25cJDEoAktIOlHwNu+635HkUs1jonO25wqwSPcLRuAFAenYyt8F45A==
-X-Received: by 2002:a05:6000:2312:b0:48e:b62:d133 with SMTP id ffacd0b85a97d-4abab6de675mr21620895f8f.5.1795417320763;
-        Sun, 22 Nov 2026 23:02:00 -0800 (PST)
+        bh=1MJvqtEQ7KzkrkQd7jNXZvcPx36rVpHnL5D10mePtG8=;
+        b=MYujGOfu5lXA6fq8Ys8/U6cMYAMIE2bKIjgyeM4ubkLFvHZZGUxUmGmdQ0fmVatu65
+         EDSAJjS4PJZBmV6k+wYwj2/JRS4ctmw0mYBxf9whxB6At4rCnOrPavDVBJBCGSPyjauj
+         /0WQQNdkOhFDxvWk48gKS0GO0SKVp2X39y9UzpxMoXQWkVmWxP3NZbjzNde3CC2iqAdw
+         3XwcdUsl28AMDAhyWZqUdr4D27FRDMh6faBmLafQHM3mIJHbfNlxffgpSo8MRtxu+I8i
+         +7lhsJ3SuBiPrf9pePrEb/TLNlx0jlbhTcQMBvtvMVxjkAcrGcyo+Pa4VH5FEFDfHmJg
+         yYgQ==
+X-Forwarded-Encrypted: i=1; AL+hErEi0CAQi5zftPFi5o4kr+Nb8tSwp+8nIw0tP5ir6+JkOxGsloBsppVVAVANkhnoDIM2B6xpdZLdEcM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9SN1CkETrOIdgBFUqCVo9YIZUgzrDltaWXRKj32aB66RzTA4x3
+	+xM/icT1vzOUcaYzZEK8vhTXLtfJNRGt1gHjcl1Lg+t/FbD8cOZThczLqe2c/g==
+X-Gm-Gg: AZFdTZdQZyYSgNk+YL0kjrN5lxyfj3p6erg0OJb+6Q9LILTtYyBiLQQtg+SmX6XEL24
+	S+RMtJwJ2cG5UogKW/FibZk8hj3L0FqP+LWgmrjsx8IPUVIituRL3B92dU34hXydvnAHjGU1HP0
+	hmU4ZF9BB+3cxw3Ci5h0hjyea5oHyCfoZnppa2qPVQSh7kVnwcGRXrs/vLJ8sROTouMB4SSoXJ3
+	21s4cIwtj1pvKgOUtN2+tYhRb2DzYrYEcxNeFG9QgpfYsh+RLMIt9kWjS5odM2+QnWxP0gzz+re
+	NLtobsY3/V0kiU5x6aBGgbebrFl6MWzQYymQWzZvt4keTukVmgq8PZzwGT8xKbejQVHbdV+QEJZ
+	efffSB2/HQIugkkImP/kNzTcRePk5OQHbbr3WMrj/VEqzW9rrQECxA0eWNiFSavP78f3UVxOoVD
+	sK5sW/QNg9xv9yVyn9RYmwO5F59wKjssuLuLmtAhw+w42W/U/LQrUNot2revTAdOzC6TwEiUdxU
+	yXJ9wOFUY1H0bpcSlRD/+In8pued2uqyPtj6enM8DcWYU57Te3VrKqOzHmlgJNokfDpXnxu+wuu
+	SY0RK4dvKl88cUvMc14oeybOypzItOaG/Rvw
+X-Received: by 2002:a5d:64c9:0:b0:491:92e5:b5c2 with SMTP id ffacd0b85a97d-4abb1baaaa5mr21008231f8f.15.1795417326388;
+        Sun, 22 Nov 2026 23:02:06 -0800 (PST)
 Received: from fedora ([154.182.66.143])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2d60sm20779007f8f.3.2026.11.22.23.01.57
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2d60sm20779007f8f.3.2026.11.22.23.02.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2026 23:02:00 -0800 (PST)
+        Sun, 22 Nov 2026 23:02:06 -0800 (PST)
 From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
@@ -95,9 +95,9 @@ Cc: dlechner@baylibre.com,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH v5 6/8] iio: adc: at91_adc: pass struct device to at91_ts_register()
-Date: Mon, 23 Nov 2026 09:00:59 +0200
-Message-ID: <20261123070101.53868-7-abdelnasserhussein11@gmail.com>
+Subject: [PATCH v5 7/8] iio: adc: at91_adc: use HZ_PER_KHZ instead of raw 1000
+Date: Mon, 23 Nov 2026 09:01:00 +0200
+Message-ID: <20261123070101.53868-8-abdelnasserhussein11@gmail.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
 References: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
@@ -112,56 +112,35 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The at91_ts_register() helper only uses its platform_device argument to
-obtain the parent struct device.  Pass that device directly and simplify
-the function signature and its call site.
+Use the HZ_PER_KHZ constant from <linux/units.h> when converting the ADC
+clock rate to kilohertz instead of open-coding the divisor.
 
 Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 ---
- drivers/iio/adc/at91_adc.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/iio/adc/at91_adc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 3d9ae99a2ce6..05e8b3deb043 100644
+index 05e8b3deb043..62f8db630640 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
-@@ -925,8 +925,7 @@ static int at91_ts_hw_init(struct iio_dev *idev, u32 adc_clk_khz)
- 	return 0;
- }
+@@ -21,6 +21,7 @@
+ #include <linux/property.h>
+ #include <linux/sched.h>
+ #include <linux/slab.h>
++#include <linux/units.h>
+ #include <linux/wait.h>
  
--static int at91_ts_register(struct iio_dev *idev,
--		struct platform_device *pdev)
-+static int at91_ts_register(struct iio_dev *idev, struct device *dev)
- {
- 	struct at91_adc_state *st = iio_priv(idev);
- 	struct input_dev *input;
-@@ -940,7 +939,7 @@ static int at91_ts_register(struct iio_dev *idev,
+ #include <linux/iio/iio.h>
+@@ -1094,7 +1095,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	 */
+ 	mstrclk = clk_get_rate(st->clk);
+ 	adc_clk = clk_get_rate(st->adc_clk);
+-	adc_clk_khz = adc_clk / 1000;
++	adc_clk_khz = adc_clk / HZ_PER_KHZ;
  
- 	input->name = DRIVER_NAME;
- 	input->id.bustype = BUS_HOST;
--	input->dev.parent = &pdev->dev;
-+	input->dev.parent = dev;
- 	input->open = atmel_ts_open;
- 	input->close = atmel_ts_close;
- 
-@@ -955,7 +954,7 @@ static int at91_ts_register(struct iio_dev *idev,
- 		input_set_abs_params(input, ABS_PRESSURE, 0, 0xffffff, 0, 0);
- 	} else {
- 		if (st->touchscreen_type != ATMEL_ADC_TOUCHSCREEN_4WIRE) {
--			dev_err(&pdev->dev,
-+			dev_err(dev,
- 				"This touchscreen controller only support 4 wires\n");
- 			ret = -EINVAL;
- 			goto err;
-@@ -1154,7 +1153,7 @@ static int at91_adc_probe(struct platform_device *pdev)
- 			return ret;
- 		}
- 	} else {
--		ret = at91_ts_register(idev, pdev);
-+		ret = at91_ts_register(idev, dev);
- 		if (ret)
- 			return ret;
- 
+ 	dev_dbg(dev, "Master clock is set as: %d Hz, adc_clk should set as: %d Hz\n",
+ 		mstrclk, adc_clk);
 -- 
 2.56.0
 
