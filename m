@@ -1,79 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795470539;
-	b=QDcj98VzvPFvRSNxUmy54aRCgxWUZwE4y5ILrQucZAaZCNsYS2yXpIMTf5CnCoe3s36K
-	 kouLOyvAiciXO3FzlKIy/G852kILuHdzWw4Bv3VMgGvMWFbZbdTP5JKSok7GDP7rMrUQr
-	 XMDDqJD9NyQsX7t5PEcBwVL7mKPrh91UgBPmtgXN/nJQRwerR76spKv/gtVrP95AqZj13
-	 +dPZFWy6pLS/RQuwFhLmFhMWu2owIcrJr9impT44hU92/bG0BauuoY7phXT3Dnq750j0h
-	 bUjURRP/2Kbd6FIG5ry6AD6bo1JOXRVPQUBo8YDJC3tWaWwxen/MAc1BQxfzcZwByhQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795470539;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=evVeVx/L5RLM4XiqIAzHNl2mgkIKWAlxJ35sqnSJqq0=;
-	b=bfRy981WMeOmrhiGhs/nKgqvuZQ48dv5ioM219z29MPsjDIrt7vqRxmaK0+kCZ24Ct/A
-	 EoyGj4rtRg0SnKWcTyyX9o8nvYIJYFyAD3BaejRUHsUupd2LsxN2fj6Jl4aDQlv5xnLIt
-	 rsgX9TRwnwLrjNap9LA50JCxRhMz/0/DAz87iCv0iMnooTDeJfrxRfGErOYs0Rf0SzszA
-	 kv5taPknIW8F1CC9lKZnDedxXZg4KX4V5WwTqxjMRqPZRqc9ElZUdge8CTFYvnaLwdSN+
-	 q1EuSFahpv6fVbMh+Zd4yWFZXDX5Ti0I6ie/AQVGK8huMXlJbTTLskmtKlYvN0z2dhw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UwdK5OLe;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD95606A31E;
-	Mon, 23 Nov 2026 21:48:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UwdK5OLe
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795470538;
-	b=wZxFXIetRCFELoaVDqBvv8cT/TNvC/Ycct0cR2e4Ro+XAUyy4aqmiQiP5PfsAK+Eyjfg
-	 gVX9ZvnofdhXCN25r73pCDlexEaSiolP5Z1X1zteoV66TiTrk53GQO67IH6VdrRZTRP8B
-	 U7gFy6TJRyGhUrDZejiGZQDKVXEVwGuO8+A0rMLBplhcsQ1EiJXviCLMrY4NmOoFBooYc
-	 bJbVCmqxowbs3ZawXh3jo/jJ7/40lgv5v7w9oidbC+Xg+Zw5ytPfzSyvOQg6nN8+8vzez
-	 XYO79Ssql/q/KndP38odk8f10atsBbSXKTV+SryWj9zC2b54shpEWQRNyka1SP7L7EQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795470538;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=evVeVx/L5RLM4XiqIAzHNl2mgkIKWAlxJ35sqnSJqq0=;
-	b=lWQ6qB6KhGKj3AAxD6Nrmm4GHnUBOA+OH5V2xpknbuEpbuTpxpgnLZiwsWh0beEeVoRq
-	 0L8JEaSfuT5u+iJUUecacj37gJG/343Z69d0ywkm8fJBaCq64bwGYN7FcEzcJXXWHnx4y
-	 9KzzYOhCjhFpkaIDiwkpjxylGpX+i8FOxhuJyxUH1p2tTmP9AsHs5m9ZSZkeeddilBKFe
-	 cUkneXczA+KZHGsGBCXIAttgnG1NRJUxjH6dv+tbAPhAvWaWUQqFVaGX7r5pJnDOuz9Bq
-	 7UhC0hG/q/O3rt0uz7DzDuYCXzJKmPmJdreRGD7G+y4u0CASJe9bsGBOtCI6TxOcYKQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.173
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795471619;
+	b=i/ZleoA6/bSnTEe+nJRgJursGcBv+0QkmmGlssnoInuufZcEEJ/mJ0EYFWF7wsoVfRQs
+	 H8LM0n9QSHJdPUAxZhvl/hk6IJxyyYF/9mnszKbIp+odk9v+KN5RF7G1cc07vQfy6nq5t
+	 865aB0lrEh+B9fDiBp6FN+1Y+j2ZIf0JjqxT5uDjHtJNZJKKPP7z+wG9PX+ZYDv5x30FT
+	 bNmAHa2qjNMqgC+dZhODFLAdJMaBetFtEATI9BELXgLSDSL/xD1fEhOOQJ/49OC4DYNy3
+	 uP7uII9xLzbOHY8Oy2jjmgovjCfq/gbrKVgAgxyr74RsJB9e0I6kfU6fsuT/WBbfGvQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795471619;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=o7w+XYrUuPM5OlZczhXAMuU75dtDBjR/bPRPu3dewXw=;
+	b=RkLNxzNdoFZ81bOXoxbsB6W7GkDHkJ7CkJu6qn/85WxIm1tWh5MLcPKuRR1nEKLwkkOX
+	 /WhO1UyTYb/Rel+eI3ZCaCk3BrL1PdwCPpX9ulOtEEaMagqf8FKVnb8tK6Ew/3lUddAGP
+	 WNkasAEHNBWFB4v9tmU4Wy4H7oUUJbARBF35UCbq2dihaGNUnH9WpdFHVol2KoIoWM8vj
+	 b6zUeQX2ADhDXJszX5OrKsK0ZC07fHw5y22Ve+8VmLopt5L6DpZR3gl8eqk79EcxuoAxb
+	 DpQNl0TrflogMi2OILij+Dh/9nuC76C7EDDZisJvZV8B45mp7eqkYXOwJhbJQ4xf4dg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Z9xdN1z2;
+	arc=none smtp.remote-ip=209.85.208.173
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 655831F000C0;
-	Mon, 23 Nov 2026 21:48:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795470538;
-	bh=evVeVx/L5RLM4XiqIAzHNl2mgkIKWAlxJ35sqnSJqq0=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=UwdK5OLe7i0wlytFoEJZvhf4z7NRy0IjdP+AzaxPx6lbuH6W014XJ4izEqaq0TEy2
-	 rnY/yZED5fFnyoSLmPCWx+RtjH4bos0lVnqkOCD1DLAhnZ5+RxZQ9755YpmsbBO/8b
-	 j2/NCjP5nZiHxYb7LhI7KxKKG7wZUVDPMRD94POx6nzETxQe1BgdkREs7n2MeZlJ4u
-	 wkRWFxUZfI1iTmk3F6nRZzJrN7sjnSnI7XAGIpkAPdvqnOJrTVeqy7cseEj2XwRO3K
-	 GZ8hvBVxHWX1rhfEZwRLh70z50lstTj8WB+dWyoE2doTnJA1F985a52eaFJXg5VFvx
-	 KODG4QNfCcKPA==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id BE5934C774;
-	Mon, 23 Nov 2026 21:48:48 +0000 (UTC)
-From: Maximo Manriquez Lizarraga via B4 Relay <devnull+DelaySystem.tubot.lat@kernel.org>
-Date: Mon, 23 Nov 2026 13:47:16 -0800
-Subject: [PATCH v4] staging: iio: adc: ad7816: use dev_err_probe() for GPIO
- lookups
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929F6606A332
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 22:06:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 929F6606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Z9xdN1z2
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-3ae85e3685cso24159821fa.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 14:06:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795471617; x=1796076417; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=o7w+XYrUuPM5OlZczhXAMuU75dtDBjR/bPRPu3dewXw=;
+        b=Z9xdN1z25XmSHzZ4s0E/IbSkGR0uFFE68m3F/9/VOGIbSzHYtF6gJP7jHCfQz91G+x
+         W8N+BiUDrttMBOzTFOyEVSmbDz4XVPLxCH8+tZkowj0FIeiLJfkmvhPHV0pH7NoAgYDz
+         59iMsTBO3wS5MBL6gf3FvXV3DlTpqeBP1yEDXeCMJxRLbcOdx5H7owFE5Pw/bOZFFgFB
+         QmuHbJhlkiN7XtPOw0LmaZWjl27SmWZruqaymDnZwpyvmKskmU7/YkeUr0fkvy+8dOYN
+         dKEjNVpVEoZv5VtZmvqQxlaVR+K6a46irUJHM+athRHOgHJ/HEmmoCX/U0OLx4KLErzM
+         gwlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795471617; x=1796076417;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=o7w+XYrUuPM5OlZczhXAMuU75dtDBjR/bPRPu3dewXw=;
+        b=nkWra1ZzAzASrCAi0GNVRJyi28lRghVa+9ymUGnagSnR8g5TcS4gjnnWBNnMKq0Gbb
+         Cq34m3nvSM2000K5CwRXBqV6JB+DMwhL5SXIvBj7hvat7uFFt7LoIzrXrmpbqMDgzD12
+         RNZpTva2F0KrwesHkf3ZVNZ7w8Az4+wPIDaH6ArbaFIqSLCtP4FSE+FqqzJGoqZKFKDY
+         Pboy5BYCfZYfNbtzrnnv4pRz01QfHRXpWwhst6Ltx8snQuuruU9lrsJSIVVh0bO5JAms
+         xYQzAzaNfqS9GvTABeH6oKsAjDMebjfRFM3Fw8eE/CSP8dj5f/FWKXN/0fLN/KXbUkUK
+         9DBg==
+X-Gm-Message-State: APuU4Z/hjRxJ8KUZhulOORadYxMKyLUZ1oxGGSL/4XPpbVEjFqVQ5jTC
+	YK+j01Okz+0hSgl7MWKE2PebLApRxvzAhYpu7H5V2GACHwahA2EQCRzS
+X-Gm-Gg: AZFdTZeYn7nkjV6ferDYxE6DCy1int59s7EbgFGtsSgjTB909877HXi6rqx6kEg4lq/
+	8DWiAIdgUx5h/Qffw7YfPjlX3gkYuNRTpRBx2KwxZTVWxHgEiLPSmS4yInUo1K/v3M+93a1MH/M
+	NV9CQYtFxpuyssPhl88U/HCDIQ+7OScvTok51XIH7/axW4OftRu3Ac/aZK7NVbxJavs/ZGwSiXm
+	yMf5wPtr+Ey5dxVwlG9r1hzv9pGKSBzIfWt6QVXB93sGXk6tB0y2ohmiLklTcYLY1hwTYGXdJC5
+	oP18umiHsrqdDlia6WycRW6nBrEovPDCbHOSmCTc4UjXjCsC2U9rtll7kKDjjnFySNaYxkyvxUB
+	BQycQd5GxAGzx1kSdXifsBV1FgrjxD/8jyGRUjbTuPB+DP/nk6hIIiNHSOXKEtefvu6FI8mVDgm
+	h6VT+ah00DHguLUemCdjmENG1QvW/Ayp/AOfMH90Im7F2dW5Nn8F8G4Rbu1Y5HefEzMWF7up9P9
+	ThN6Lrol25ohbr+9iUofjELDgJ6FlsDWEwthJ32VF1mOtJ/laMpnyhLXjsxZan43Ej10Sbtgs/J
+	1d/d//p59f9GRML48RFFQG8ezJkeMyo7p6TXo+CSK7ZKtTyfklGUP3sxdQzJut/8QKpsgIfxcXr
+	SSD+XbIulPBgRzakDTVauyP3XqpIQ3KrYcDlQwPXRvAevjj3W+aPyX2MMpzA=
+X-Received: by 2002:a05:6512:1313:b0:5c1:57e3:f5de with SMTP id 2adb3069b0e04-5c1bc81a0ddmr4006457e87.38.1795471616638;
+        Mon, 23 Nov 2026 14:06:56 -0800 (PST)
+Received: from yantra.. (nekmmqsyyquzw1lm5eb-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:3cd2:d52a:a1ef:5dd3])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae805215ccsm34272021fa.21.2026.11.23.14.06.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2026 14:06:55 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: [PATCH 1/7] iio: pressure: dps310: sort register field defines low to high
+Date: Tue, 24 Nov 2026 00:06:43 +0200
+Message-ID: <20261123220649.36887-2-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261123220649.36887-1-zoone.rupert@gmail.com>
+References: <20261123220649.36887-1-zoone.rupert@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,123 +102,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261123-batch1-s3-warn-v4-1-47cd8d7d4ce9@tubot.lat>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3XNQQ7CIBCF4asY1mKcAS268h7GBdCpxZjWAK2ap
- ncX6qZqXL5kvn8GFsg7Cmy/GJin3gXXNmnI5YLZWjdn4q5Mm+EatwDrghsdbQ08CH7XvuGodna
- nbGEAFEvo5qlyjyl4PL136MyFbMyVfFG7EFv/nD72kO/+xnvgwGVlhRISrBbqEDvTxtVVR5bjP
- c44/HJMHIpK0kYCoDDfXMy5+uEi8WqLWCJgSfTBx3F8ASco9EI8AQAA
-X-Change-ID: 20261107-batch1-s3-warn-289c98c7b118
-To: andy@kernel.org, nuno.sa@analog.com, gregkh@linuxfoundation.org, 
- dlechner@baylibre.com, jic23@kernel.org, Michael.Hennerich@analog.com
-Cc: linux-staging@lists.linux.dev, krzk@kernel.org, crofts@kernel.org, 
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux@analog.com, 
- Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3394;
- i=DelaySystem@tubot.lat; h=from:subject:message-id;
- bh=3qSIiHaUfGU0fUooR+d3SlhKg7lFwrjdgQuTuX1Jf34=;
- b=owGbwMvMwCH2SNl4+SzWXm/G02pJDNksWw7sVfFuZHFZvGGavsr2VZEFSbd2hwu+tSie9zlNf
- XHWl4zrHaUsDGIcDLJiiixiMjzv6+/rxFlbzTkBM4eVCWQIAxenAEzExZThn3HQ2peCYm/KOP52
- 9HD3zxdoj3D6rvnSJGvd+fry1T78+xgZ/lQoGsfKn2Bccz2z4Ujw8eIlf0T2GKw/u5XBR9008cQ
- 8TgA=
-X-Developer-Key: i=DelaySystem@tubot.lat; a=openpgp;
- fpr=161C0CEF7FDF2C5E3B3A9CC8E22333A79A058D4B
-X-Endpoint-Received: by B4 Relay for DelaySystem@tubot.lat/default with
- auth_id=1447
-X-Original-From: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
-Reply-To: DelaySystem@tubot.lat
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-From: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
+Some field defines run from the high bit down, others from the low bit
+up. Sort them all low to high.
 
-GPIO lookups can return -EPROBE_DEFER.  Convert the rdwr, convert,
-and busy GPIO lookup failures in ad7816_probe() to dev_err_probe(),
-which suppresses the error message on deferral and records the deferral
-reason.
-
-No functional change other than defer handling.
-
-Signed-off-by: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
+Suggested-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 ---
-Changes in v4:
-- Add struct device *dev at the top of probe and use it in the touched lines (Andy Shevchenko).
-- Link to v3: https://patch.msgid.link/20261118-batch1-s3-warn-v3-1-f622d212deeb@tubot.lat
+ drivers/iio/pressure/dps310.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-Changes in v3:
-- Convert the missed busy-GPIO failure path to dev_err_probe() as well (Joshua Crofts).
-- Link to v2: https://patch.msgid.link/20261117-batch1-s3-warn-v2-1-17f4e541123b@tubot.lat
-
-Changes in v2:
-- Resend under my real name (From/Signed-off-by: Maximo Manriquez Lizarraga).
-- Apologies for the improper sign-off on v1; no code change.
-- Link to v1: https://patch.msgid.link/20261107-batch1-s3-warn-v1-1-4fc38341ca38@tubot.lat
----
- drivers/staging/iio/adc/ad7816.c | 34 +++++++++++++---------------------
- 1 file changed, 13 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 2a15d7598abb..2fd0c4658918 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -364,6 +364,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
- {
- 	struct ad7816_chip_info *chip;
- 	struct iio_dev *indio_dev;
-+	struct device *dev = &spi_dev->dev;
- 	int i, ret;
- 
- 	indio_dev = devm_iio_device_alloc(&spi_dev->dev, sizeof(*chip));
-@@ -380,30 +381,21 @@ static int ad7816_probe(struct spi_device *spi_dev)
- 		chip->oti_data[i] = 203;
- 
- 	chip->id = spi_get_device_id(spi_dev)->driver_data;
--	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_OUT_HIGH);
--	if (IS_ERR(chip->rdwr_pin)) {
--		ret = PTR_ERR(chip->rdwr_pin);
--		dev_err(&spi_dev->dev, "Failed to request rdwr GPIO: %d\n",
--			ret);
--		return ret;
--	}
--	chip->convert_pin = devm_gpiod_get(&spi_dev->dev, "convert",
-+	chip->rdwr_pin = devm_gpiod_get(dev, "rdwr", GPIOD_OUT_HIGH);
-+	if (IS_ERR(chip->rdwr_pin))
-+		return dev_err_probe(dev, PTR_ERR(chip->rdwr_pin),
-+				     "Failed to request rdwr GPIO\n");
-+	chip->convert_pin = devm_gpiod_get(dev, "convert",
- 					   GPIOD_OUT_HIGH);
--	if (IS_ERR(chip->convert_pin)) {
--		ret = PTR_ERR(chip->convert_pin);
--		dev_err(&spi_dev->dev, "Failed to request convert GPIO: %d\n",
--			ret);
--		return ret;
--	}
-+	if (IS_ERR(chip->convert_pin))
-+		return dev_err_probe(dev, PTR_ERR(chip->convert_pin),
-+				     "Failed to request convert GPIO\n");
- 	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
--		chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy",
-+		chip->busy_pin = devm_gpiod_get(dev, "busy",
- 						GPIOD_IN);
--		if (IS_ERR(chip->busy_pin)) {
--			ret = PTR_ERR(chip->busy_pin);
--			dev_err(&spi_dev->dev, "Failed to request busy GPIO: %d\n",
--				ret);
--			return ret;
--		}
-+		if (IS_ERR(chip->busy_pin))
-+			return dev_err_probe(dev, PTR_ERR(chip->busy_pin),
-+					     "Failed to request busy GPIO\n");
- 	}
- 
- 	indio_dev->name = spi_get_device_id(spi_dev)->name;
-
----
-base-commit: fa4ad798f6f681031775266044ba1b0cf3c670bd
-change-id: 20261107-batch1-s3-warn-289c98c7b118
-
-Best regards,
---  
-Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
-
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 9ffef150cc4c..02dbc5a8ac37 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -51,13 +51,13 @@
+ #define DPS310_TMP_B1		0x04
+ #define DPS310_TMP_B2		0x05
+ #define DPS310_PRS_CFG		0x06
+-#define  DPS310_PRS_RATE_BITS	GENMASK(6, 4)
+ #define  DPS310_PRS_PRC_BITS	GENMASK(3, 0)
++#define  DPS310_PRS_RATE_BITS	GENMASK(6, 4)
+ #define DPS310_TMP_CFG		0x07
+-#define  DPS310_TMP_RATE_BITS	GENMASK(6, 4)
+-#define   DPS310_TMP_RATE_1SPS	0
+ #define  DPS310_TMP_PRC_BITS	GENMASK(3, 0)
+ #define   DPS310_TMP_PRC_1	0
++#define  DPS310_TMP_RATE_BITS	GENMASK(6, 4)
++#define   DPS310_TMP_RATE_1SPS	0
+ #define  DPS310_TMP_EXT		BIT(7)
+ #define DPS310_MEAS_CFG		0x08
+ #define  DPS310_MEAS_CTRL_BITS	GENMASK(2, 0)
+@@ -69,19 +69,19 @@
+ #define  DPS310_SENSOR_RDY	BIT(6)
+ #define  DPS310_COEF_RDY	BIT(7)
+ #define DPS310_CFG_REG		0x09
+-#define  DPS310_INT_HL		BIT(7)
+-#define  DPS310_INT_TMP		BIT(5)
+-#define  DPS310_INT_PRS		BIT(4)
+-#define  DPS310_TMP_SHIFT_EN	BIT(3)
+-#define  DPS310_PRS_SHIFT_EN	BIT(2)
+-#define  DPS310_FIFO_EN		BIT(1)
+ #define  DPS310_SPI_EN		BIT(0)
++#define  DPS310_FIFO_EN		BIT(1)
++#define  DPS310_PRS_SHIFT_EN	BIT(2)
++#define  DPS310_TMP_SHIFT_EN	BIT(3)
++#define  DPS310_INT_PRS		BIT(4)
++#define  DPS310_INT_TMP		BIT(5)
++#define  DPS310_INT_HL		BIT(7)
+ #define DPS310_INT_STS		0x0a
+-#define  DPS310_INT_STS_TMP	BIT(1)
+ #define  DPS310_INT_STS_PRS	BIT(0)
++#define  DPS310_INT_STS_TMP	BIT(1)
+ #define DPS310_RESET		0x0c
+-#define  DPS310_FIFO_FLUSH	BIT(7)
+ #define  DPS310_RESET_MAGIC	0x09
++#define  DPS310_FIFO_FLUSH	BIT(7)
+ #define DPS310_COEF_BASE	0x10
+ #define DPS310_COEF_LEN		18
+ #define SPL07_COEF_LEN		21
+-- 
+2.43.0
 
