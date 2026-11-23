@@ -1,79 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795440341;
-	b=MO/owrKXJq8tIn2xXBbBdrZbsZelRyXQBWWIqCRfamTYQiHxoPO0VfUOQ+KTycAMKs2r
-	 iV1MYlccwwwDp/kKMpNypITuSDnrrTczHlJO5AlQoBMGDDS0fO76UsW1nYZ8ZI8VikUTD
-	 CIhHrhPSgvnfFvdcfhNRPKKNuk4m9s0RaHR9TTMnU3RFIUdXhHzCYCZtB2wgjEI/j/M1C
-	 EtYiq6yQ3SvtzHNSlris+lsa18fkUnoIFqHip6emGTTFIXk7Ih7kEGidZC2Axxy3HNOQw
-	 xGy0lTjUAC2SZI+QLk/poltyooSf/N/jc4Kdok9k4WzPyAD3jYeqQsUaIBEAX664YHg==
+	t=1795440348;
+	b=NCFrBZT09LxBqFbjy/ALReO4UtvbKXHXnyoa7vhy44mSFb3XmB5/WzdyIn0QmWurmcvR
+	 wrgD8wuReHVR0dlLE0l+5B2qehYbepUk4QxGhEKTXZRqsoxo/fBF4Ldqq+If0GfaOBL8t
+	 mv4fv2ZN7iZdKJe/LqElvQCEh+TmxzP3qoJcTAWfBM6M+vA2Qib/KY7Ui68BwTJrHP9KA
+	 LwdxJzkdIUilMjgjVOIUkddOMD2PKv26MFDkcO1z0Kk6hFIZs/X2GbsIV9uYwFm9+ZFTe
+	 qiNl4Hg/p97vaN3dmX3UXZGRnZRwQhFXoPsrScziF5bqhUJ9G2xc8ZSw27V+vpWbMyA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795440341;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795440348;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=zztcXn05wIUkS3ZMZmgNy/x1mUVakpxeGhULnaIa73w=;
-	b=mdVbITUOlfnjxDIIDIlnuC6hNpRHa/ZPZvotxSMrngsVVeU3B/y2R+VixFAxw5PxNEwK
-	 +Omr3VHW88fZAxPs2k5VtYuYLzQobyc/vxejh8WHf367b68mbSW5nPmVKRTM0PPjXK82s
-	 kpdjDRKtbqlQ1tYfLoirRmrK5FfVoHFFJnga4QHFjfAzUlBEmkktr1mFeFOgStgtOGaTP
-	 oYf5zuCSJ5amhdL/+Hycv4FDRMrfN6hjKmgV7/9AeLDirey1HfqmKiZAxeyDJModctR6E
-	 Q4URGcYsNqDE3vrCAQhkN75v47zrxbEO9FulS+cPIi4AwcT9Om6m7ydahYtn6nA3/IA==
+	bh=8UWybcyLx8hOfvbe56ULNHCQLOyby377qnMTMyN2tH4=;
+	b=NIPfDDppB0Rvsbazzn7BegLGFb4R/vovt76hZin/+Fba+4rEcAwAIYynu0xkI7+epcwn
+	 n24mAW2B++KhCEznCUiri3JTOyIIg0ygHqrc2tzeNuG43sQnFICQuBYOyaCpeAeTr8Ww2
+	 pHvg+ZlxBs89qWM+/ErXL+DSr8upA0hVsyvjw1b6jxg/WEXpt+Gko9oZEKMKBx0Eg2M3s
+	 +0XqXANa8VBVCa8YgVpyPWI6z5DsTtoN5J4BYo6NjFWtqZrNToZBrcnldVLBlr4di/len
+	 oW8OZ/Jy0zhj8pjxDYzgKfTp99ak5xN1Z5HhQj16lalRBWnRUazS3vG94OXyhQ38HMQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fZnkie4m;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JJigrrkv;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 125A1606A32D;
-	Mon, 23 Nov 2026 13:25:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B89560A2622;
+	Mon, 23 Nov 2026 13:25:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fZnkie4m
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JJigrrkv
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795440340;
-	b=ssRJIGLDUYq+ZKQHybNKKaQmYrVrf50KxLscW7JX/zNVIwowgMM3CXh4c2nwwncHJtQ3
-	 DEADo91EVtlrDYEP5EBQcLhzPmqgt0Wtac/BNCyQyJSexI+l7syej5Xp3t+yEE+DYO406
-	 fj24mVa66cdx+vLaVpbiP4yydQTwvSyphs/08AnWkmbtgvDixq5gFG7reF4qNW5DSuiWh
-	 PpklDZ59M7ZOwFFt6s+43VjOaqCW+Xops0k0g74ilRiFKO+lJJXaEiLzfM8U+1TzfIDVo
-	 oob5MJRBCbT9azMNWCLsVnv04vAh3ssjG5YaSb7XBShntiMc7CauAOgcILhBlpIA27g==
+	t=1795440348;
+	b=UZ+AwPQ41pE+IMFYIdnSvPrtw79am0Owni4RewThBenVpOeim6NiGuBp/lzvFhcdJzen
+	 AshCFrYPVJ1mraP56ZOPJRYV6ugoyu0VJpqjdk+3PqowUDK/w3sFy20yIEx0O4jD1g9YE
+	 IlSi0fZEAjAgzU2hKDbM4wI/XSr78a3q/OXfWR/OaZQX02744NYdqqC5GWgC/Rnn8fzM1
+	 jJ6H5ULy1PE1vwJh7fuJLLsSkhNsOQ6mi/Bqm+YBWep7g2DN2Vj5pb6+XLI9YrEnxwogB
+	 A9458NJrnaAJS9V5xuNWLCMvuAHEtVjr5t1KAgYsB9zy3d13IuddtA0KNLM3/UREu3Q==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795440340;
+	c=relaxed/relaxed; t=1795440348;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=zztcXn05wIUkS3ZMZmgNy/x1mUVakpxeGhULnaIa73w=;
-	b=VWzHggXWDRe2HrD8mEmW4zKsB73lfRb4yr5ZZxWBuTDITGGfd1rH8kHrf3Uy/aU769fg
-	 a2IuMSb888LTXwjgz3krzRdARhEJGoC27l9JfeBSKLxod0MlQgSPBCVAkxEO2wJsLvnEx
-	 NeEKgJFk7h6wLxTLOO46Due6YYHTMRoifMeRgAx+SrQ2swZJSxw/ORiMnMbMp2qQH5BC8
-	 cEIal1EUkTpWcdxy+ETmAuypTBj4oJaZytjuysSDRQE0TbFHiJ5U7uJsI66k8vw5P5bJ7
-	 66qY6+sGC6tsZkI5UadI4kp4RZgQaht8G4x/NT6S0bnr8P2fNZjadzZQXL7qvQVOQ2A==
+	bh=8UWybcyLx8hOfvbe56ULNHCQLOyby377qnMTMyN2tH4=;
+	b=PKJK14vr9y8W+xMG5KrXx/tUiNHumAXceW1yI5JFPI8TbZB/Rol+Z/jsr33MxLkDnNmM
+	 Tofr7sE4iisvlhlMBIsNffSClmV989lcqSSepyvVz0dDzXnKWEFc3oyH4a6zG0C+dWHjd
+	 CG6L+61HASx+LOhhI0z2i+KhoEB9laJi/qhyLpr99r9trib7y7gS46KflLPfmeGj8xSDC
+	 55iDxRF+eJiodblLugGvJ9LRl/DQAYW2PWxNYe8wumLsLEMTdf0Tnsk3gNL4wvKCHfgCa
+	 +ye1EHW7Yh2wG/urtI6wq9ScLg4qSoDr3FnATvK4DEK0k7VeP16UNMkHhg2trWftskg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 254C01F000EE;
-	Mon, 23 Nov 2026 13:25:29 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 44BDE1F00A03;
+	Mon, 23 Nov 2026 13:25:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795440340;
-	bh=zztcXn05wIUkS3ZMZmgNy/x1mUVakpxeGhULnaIa73w=;
+	s=k20260515; t=1795440348;
+	bh=8UWybcyLx8hOfvbe56ULNHCQLOyby377qnMTMyN2tH4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=fZnkie4mTON040KIDvp6W9Ip+S2vX9ymzV50TAcK/DJCrSz2MCZcbkVOmvfoG3WmS
-	 UNJ1hiPgyWhuoX3JH6G1GAaVlpcsfEw8sBkF2fAEGLtwsphyDvJVzAilHhBUBTaYG4
-	 WJMB7PboMBAEoszs7ED8kpiyQVJOUu4VIYO1s/nE1VPOKFg72b8c0+wMON7YDWQ+GG
-	 IXG8f7RjpeOQ34+OrhcAAKG0eA52lohQs++ergaWty+k4qqcfdbrqQTyhPF28T6PKF
-	 sCL28bX1WiyojsKBiGrRxG3AxWIvR2DTYcv0orL2WKeiNDYB2G8qNcGbvnTYfGyJYC
-	 Hi6zJrKi8mGAA==
+	b=JJigrrkvDQUbKdfF9PVs2tuvxCy2AzjgjO3AuE5r8HfgaZh7mEdOaBmT1xzsdwhbs
+	 Abp977ivtqSBmzvsz/2qRzJWaiCCzjRMd2RDPl4mpTzUgilj9IQS1grkFVjJjkjVbQ
+	 QWBlmrJUS6grORfgmN3lquJcmgkzztOmpUKlI0cMY3EqFA1pC+Xx1WmFzBG0+UfpQg
+	 yd5d9IGJmY95CFttFuYFNOjD2aDW76RBg+bPuPa02j61k4SHFK5mjwoMD+/YEpnW8H
+	 w3t2cSAC9apM0KTSi0j5cRjl8nx3GLV+laLd4qbA/pvBpSUka9bNZ6czNmtYUPqs21
+	 9tocXmpZrSCFw==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id A387F4C499;
-	Mon, 23 Nov 2026 13:25:28 +0000 (UTC)
+	by lkml.kernel.org (Postfix) with ESMTP id 02D1F4C4A5;
+	Mon, 23 Nov 2026 13:25:29 +0000 (UTC)
 From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Mon, 23 Nov 2026 15:25:27 +0200
-Subject: [PATCH 3/7] iio: imu: adis16475: Pass the device and timestamp to
- the sample helpers
+Date: Mon, 23 Nov 2026 15:25:30 +0200
+Subject: [PATCH 6/7] iio: imu: adis16607: Add FIFO-based buffered capture
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,7 +83,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261123-adis-fifo-v1-3-f6ad9e493e19@analog.com>
+Message-Id: <20261123-adis-fifo-v1-6-f6ad9e493e19@analog.com>
 References: <20261123-adis-fifo-v1-0-f6ad9e493e19@analog.com>
 In-Reply-To: <20261123-adis-fifo-v1-0-f6ad9e493e19@analog.com>
 To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -96,11 +95,11 @@ To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
 Cc: linux-iio@vger.kernel.org, linux@analog.com, 
  linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795440327; l=3328;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795440327; l=20070;
  i=radu.sabau@analog.com; s=20261001; h=from:subject:message-id;
- bh=5BQh5nF/fg8PKi8MMyTgUuL98vgwuiTzBq54Q+UqpWE=;
- b=q2YFzwSQWfu2gHQwKBpHl5wuv4anAQhOy+JEIIRBzIuzaEN2C83xXwkjK/xthkSrgiid9zMyF
- PHzStZfAEqkAgwwpcHm1AnowuvJqGuYXbv+Ew+oJJCu28GShbFSiNSa
+ bh=0epzVaATHdlhZMznev2QxDmCJgaoqF206c0YC/Kdv18=;
+ b=BhwQaqXdvGbYo1uKjJyWxCqulwhgar9P7uY8dZjmX96YvMRWH3g8wXStjpwAVqZYy6k3oDls2
+ 4PPp/jcofTBCcbbDRKibJJLoO63nxTlcj6cJp16PB3VTWCQUWlFRfHl
 X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
  pk=XOZSO/Ut8qfYw7khL8lUF65Pgl+VLihISyS+Iy9jY8c=
 X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20261001 with
@@ -111,95 +110,580 @@ Content-Transfer-Encoding: 7bit
 
 From: Radu Sabau <radu.sabau@analog.com>
 
-adis16475_push_single_sample() and adis16575_custom_burst_read() take the
-struct iio_poll_func only to get the IIO device and the timestamp from it.
-Pass those two instead, so the helpers don't depend on being called from a
-trigger handler.
+Add buffered capture via the device's hardware FIFO, the only capture
+mode this driver supports. Popping the FIFO uses a dedicated command and
+payload format (FIFO_DATA_CMD, 52 bytes, no checksum). The channels are
+described as big endian words with the value in their upper bits, as the
+device sends them, so the samples are copied to the buffer unchanged.
 
-No functional change.
+The samples go to a kfifo buffer set up with the adislib kfifo helper,
+filled from a threaded interrupt: the device raises one interrupt per
+watermark, not per sample, so there is nothing to trigger on. The
+watermark-met condition is signaled via DEV_NOK on the device's one
+interrupt pin, which stays asserted until DIAG_STAT is read and cleared.
+The interrupt is therefore level-triggered and oneshot, and it is enabled
+only while the buffer is. DEV_NOK fires on any DIAG_STAT flag, not just
+FIFO_THRESH_MET, so the handler checks that specific bit before popping
+anything and leaves interrupts it did not raise to the core. DR_GPIO_MASK
+stays enabled unconditionally: DR pulses drive the FIFO controller's
+internal sample enqueue, independent of pin routing.
+
+Watermark is configurable via the standard hwfifo_set_watermark callback
+and the usual hwfifo_* sysfs attributes. Changing the sampling frequency
+while the buffer is enabled returns -EBUSY, as the decimation can't change
+during capture.
 
 Signed-off-by: Radu Sabau <radu.sabau@analog.com>
 ---
- drivers/iio/imu/adis16475.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ drivers/iio/imu/Kconfig     |   2 +
+ drivers/iio/imu/adis16607.c | 386 ++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 377 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16475.c b/drivers/iio/imu/adis16475.c
-index 44520d9216a2..6922ffb48516 100644
---- a/drivers/iio/imu/adis16475.c
-+++ b/drivers/iio/imu/adis16475.c
-@@ -1561,9 +1561,8 @@ static void adis16475_burst32_check(struct adis16475 *st)
- 	}
- }
+diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+index b00acccab061..b56af04e003d 100644
+--- a/drivers/iio/imu/Kconfig
++++ b/drivers/iio/imu/Kconfig
+@@ -69,6 +69,8 @@ config ADIS16607
+ 	tristate "Analog Devices ADIS16607 and similar IMU driver"
+ 	depends on SPI
+ 	select IIO_ADIS_LIB
++	select IIO_ADIS_LIB_BUFFER
++	select IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for Analog Devices ADIS16607-2
+ 	  and ADIS16607-3 inertial sensors containing triaxis
+diff --git a/drivers/iio/imu/adis16607.c b/drivers/iio/imu/adis16607.c
+index 749ed7445f73..60433c97a855 100644
+--- a/drivers/iio/imu/adis16607.c
++++ b/drivers/iio/imu/adis16607.c
+@@ -11,8 +11,11 @@
+ #include <linux/clk.h>
+ #include <linux/debugfs.h>
+ #include <linux/delay.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/imu/adis.h>
++#include <linux/iio/sysfs.h>
++#include <linux/interrupt.h>
+ #include <linux/math.h>
+ #include <linux/minmax.h>
+ #include <linux/module.h>
+@@ -20,6 +23,7 @@
+ #include <linux/regulator/consumer.h>
+ #include <linux/seq_file.h>
+ #include <linux/spi/spi.h>
++#include <linux/stringify.h>
+ #include <linux/unaligned.h>
+ #include <linux/units.h>
  
--static int adis16475_push_single_sample(struct iio_poll_func *pf)
-+static int adis16475_push_single_sample(struct iio_dev *indio_dev, s64 timestamp)
+@@ -43,9 +47,12 @@
+ #define ADIS16607_REG_Y_DELTANG		0x1A
+ #define ADIS16607_REG_Z_DELTANG		0x1C
+ #define ADIS16607_REG_TEMP		0x20
++#define ADIS16607_REG_FIFO_WORD_CNT	0x2B
+ #define ADIS16607_REG_USER_GPIO_CFG	0x2F
+ #define ADIS16607_REG_SPI_HALFDUPLEX	0x32
+ #define ADIS16607_REG_USER_SYNC		0x33
++#define ADIS16607_REG_USER_DATA_CFG	0x34
++#define ADIS16607_REG_USER_FIFO_CFG	0x35
+ #define ADIS16607_REG_SOFT_RESET	0x36
+ #define ADIS16607_REG_SELF_TEST		0x39
+ #define ADIS16607_REG_DEC_RATE		0x3A
+@@ -63,9 +70,30 @@
+ /* Masks */
+ #define ADIS16607_RESET_GPIO_MASK	GENMASK(2, 0)
+ #define ADIS16607_SYNC_GPIO_MASK	GENMASK(8, 6)
++#define ADIS16607_DR_GPIO_MASK		GENMASK(11, 9)
++#define ADIS16607_DEV_NOK_MASK		GENMASK(14, 12)
++#define ADIS16607_DATA_CNTR_EN_MASK	BIT(14)
++#define ADIS16607_BURST32_MASK		BIT(15)
+ #define ADIS16607_SYNC_MODE_MASK	BIT(15)
+ #define ADIS16607_BOOTLOADER_BUSY_MASK	BIT(0)
+ 
++/* FIFO masks */
++#define ADIS16607_FIFO_THR_MASK		GENMASK(10, 0)
++#define ADIS16607_FIFO_FLUSH_MASK	BIT(15)
++#define ADIS16607_FIFO_THR_MET_MASK	BIT(0)
++#define ADIS16607_FIFO_DATA_CMD		0xA9
++
++/* FIFO limits */
++#define ADIS16607_MAX_FIFO_WM		38
++#define ADIS16607_FIFO_WORDS_PER_SAMPLE	26
++#define ADIS16607_FIFO_DATA_LEN		52
++
++/* FIFO_DATA read - Half-Duplex: 2-byte command phase, then the FIFO data */
++#define ADIS16607_FIFO_DATA_CMD_SIZE	2
++
++/* Largest scan: 12 channels of 24 bits stored as 32, plus 16-bit temperature */
++#define ADIS16607_SCAN_DATA_SIZE	(12 * sizeof(s32) + sizeof(s16))
++
+ /* Self-test registers and masks */
+ #define ADIS16607_REG_SELF_TEST_DATA(x)	((x) + 0x23)
+ #define ADIS16607_SNSR_SELF_TEST_MASK	BIT(6)
+@@ -114,6 +142,12 @@ struct adis16607 {
+ 	u32 sync_mode;
+ 	u16 sync_scale;
+ 	u16 dec;
++	u16 fifo_watermark;
++	/* IIO buffer for reordered data - sized for max channels */
++	IIO_DECLARE_BUFFER_WITH_TS(u8, data, ADIS16607_SCAN_DATA_SIZE);
++	/* Scratch buffer used for FIFO pop operations, see adis16607_fifo_pop() */
++	u8 fifo_buf[ADIS16607_FIFO_DATA_CMD_SIZE + ADIS16607_FIFO_DATA_LEN]
++		__aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ enum {
+@@ -257,6 +291,267 @@ static const struct adis_ops adis16607_ops = {
+ 	.reset = adis16607_reset,
+ };
+ 
++/*
++ * FIFO_DATA layout (52 bytes after the 2-byte command phase, DATA_CNTR
++ * enabled, no DIAG_STAT and no checksum). Each inertial channel is a big
++ * endian 32-bit word holding the 24-bit value in its upper bits, TEMP is a
++ * big endian 16-bit word:
++ *   0-3 ACCEL_X, 4-7 ACCEL_Y, 8-11 ACCEL_Z, 12-15 GYRO_X, 16-19 GYRO_Y,
++ *   20-23 GYRO_Z, 24-27 DELTVEL_X, 28-31 DELTVEL_Y, 32-35 DELTVEL_Z,
++ *   36-39 DELTANG_X, 40-43 DELTANG_Y, 44-47 DELTANG_Z, 48-49 TEMP,
++ *   50-51 DATA_CNTR
++ */
++static const u8 adis16607_fifo_offsets[] = {
++	[ADIS16607_SCAN_ACCEL_X] = 0,
++	[ADIS16607_SCAN_ACCEL_Y] = 4,
++	[ADIS16607_SCAN_ACCEL_Z] = 8,
++	[ADIS16607_SCAN_GYRO_X] = 12,
++	[ADIS16607_SCAN_GYRO_Y] = 16,
++	[ADIS16607_SCAN_GYRO_Z] = 20,
++	[ADIS16607_SCAN_DELTVEL_X] = 24,
++	[ADIS16607_SCAN_DELTVEL_Y] = 28,
++	[ADIS16607_SCAN_DELTVEL_Z] = 32,
++	[ADIS16607_SCAN_DELTANG_X] = 36,
++	[ADIS16607_SCAN_DELTANG_Y] = 40,
++	[ADIS16607_SCAN_DELTANG_Z] = 44,
++	[ADIS16607_SCAN_TEMP] = 48,
++};
++
++/* Pop one sample from the FIFO into st->fifo_buf with the FIFO_DATA command */
++static int adis16607_fifo_pop(struct adis16607 *st)
++{
++	struct spi_message msg;
++	struct spi_transfer xfer = {
++		.tx_buf = st->fifo_buf,
++		.rx_buf = st->fifo_buf,
++		.len = ADIS16607_FIFO_DATA_CMD_SIZE + ADIS16607_FIFO_DATA_LEN,
++	};
++
++	st->fifo_buf[0] = ADIS16607_FIFO_DATA_CMD;
++
++	spi_message_init_with_transfers(&msg, &xfer, 1);
++
++	return spi_sync(st->adis.spi, &msg);
++}
++
++/*
++ * Push the scan just popped into st->fifo_buf. The channels are described as
++ * big endian with their value in the upper bits, so the bytes are copied as
++ * they come from the device.
++ */
++static void adis16607_fifo_push_scan(struct iio_dev *indio_dev, s64 timestamp)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++	const u8 *sample = st->fifo_buf + ADIS16607_FIFO_DATA_CMD_SIZE;
++	unsigned int offset = 0;
++	int bit;
++
++	memset(st->data, 0, sizeof(st->data));
++
++	iio_for_each_active_channel(indio_dev, bit) {
++		unsigned int size = bit == ADIS16607_SCAN_TEMP ? sizeof(s16) :
++								  sizeof(s32);
++
++		memcpy(&st->data[offset], &sample[adis16607_fifo_offsets[bit]],
++		       size);
++		offset += size;
++	}
++
++	iio_push_to_buffers_with_ts(indio_dev, st->data, sizeof(st->data),
++				    timestamp);
++}
++
++/* Called with the adis lock held, so dec and clk_freq_mHz match each other */
++static s64 adis16607_sample_period_ns(struct adis16607 *st)
++{
++	u64 period_ns;
++
++	/* clk_freq_mHz is in millihertz, hence the MILLIHZ_PER_HZ factor */
++	period_ns = NSEC_PER_SEC;
++	period_ns *= MILLIHZ_PER_HZ;
++	period_ns *= st->dec + 1;
++
++	return DIV_ROUND_CLOSEST_ULL(period_ns, st->clk_freq_mHz);
++}
++
++/*
++ * Drain the device FIFO. DEV_NOK raises the interrupt on any DIAG_STAT flag,
++ * not just FIFO_THRESH_MET - the DIAG_STAT read below both checks which flag
++ * raised it and clears the latched status, and must happen before any FIFO
++ * pop, or we would pop for nothing on an unrelated flag.
++ */
++static irqreturn_t adis16607_irq_thread(int irq, void *p)
++{
++	struct iio_dev *indio_dev = p;
++	struct adis16607 *st = iio_priv(indio_dev);
++	s64 irq_timestamp = iio_get_time_ns(indio_dev);
++	u16 diag_stat, word_cnt, sample_cnt;
++	s64 period_ns, timestamp;
++	int ret;
++
++	adis_dev_auto_lock(&st->adis);
++
++	/* A failed read says nothing about who raised the interrupt */
++	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
++	if (ret)
++		return IRQ_HANDLED;
++
++	if (!(diag_stat & ADIS16607_FIFO_THR_MET_MASK))
++		return IRQ_NONE;
++
++	ret = __adis_read_reg_16(&st->adis, ADIS16607_REG_FIFO_WORD_CNT, &word_cnt);
++	if (ret)
++		return IRQ_HANDLED;
++
++	sample_cnt = word_cnt / ADIS16607_FIFO_WORDS_PER_SAMPLE;
++	if (!sample_cnt)
++		return IRQ_HANDLED;
++
++	/*
++	 * irq_timestamp is when the newest sample tipped the FIFO over its
++	 * watermark. The FIFO pops oldest-first, so back-date the first
++	 * popped sample by the batch duration: the loop then counts up to
++	 * irq_timestamp for the newest sample, instead of projecting past it.
++	 */
++	period_ns = adis16607_sample_period_ns(st);
++	timestamp = irq_timestamp - (sample_cnt - 1) * period_ns;
++
++	for (unsigned int i = 0; i < sample_cnt; i++) {
++		ret = adis16607_fifo_pop(st);
++		if (ret)
++			return IRQ_HANDLED;
++
++		adis16607_fifo_push_scan(indio_dev, timestamp);
++		timestamp += period_ns;
++	}
++
++	return IRQ_HANDLED;
++}
++
++/* FIFO sysfs attributes */
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_min, "1");
++IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_max, __stringify(ADIS16607_MAX_FIFO_WM));
++
++static ssize_t hwfifo_watermark_show(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adis16607 *st = iio_priv(indio_dev);
++
++	return sysfs_emit(buf, "%u\n", st->fifo_watermark);
++}
++
++static ssize_t hwfifo_enabled_show(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adis16607 *st = iio_priv(indio_dev);
++	u16 val;
++	int ret;
++
++	ret = adis_read_reg_16(&st->adis, ADIS16607_REG_USER_FIFO_CFG, &val);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%d\n", (val & ADIS16607_FIFO_THR_MASK) ? 1 : 0);
++}
++
++static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
++static IIO_DEVICE_ATTR_RO(hwfifo_enabled, 0);
++
++static const struct iio_dev_attr *adis16607_fifo_attributes[] = {
++	&iio_dev_attr_hwfifo_watermark_min,
++	&iio_dev_attr_hwfifo_watermark_max,
++	&iio_dev_attr_hwfifo_watermark,
++	&iio_dev_attr_hwfifo_enabled,
++	NULL
++};
++
++static int adis16607_buffer_postenable(struct iio_dev *indio_dev)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++	struct adis *adis = &st->adis;
++	u16 threshold;
++	int ret;
++
++	adis_dev_auto_lock(adis);
++
++	/* Flush FIFO to start clean */
++	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
++				  ADIS16607_FIFO_FLUSH_MASK);
++	if (ret)
++		return ret;
++
++	/* Enable FIFO with watermark threshold (in word count) */
++	threshold = st->fifo_watermark * ADIS16607_FIFO_WORDS_PER_SAMPLE;
++	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
++				  threshold & ADIS16607_FIFO_THR_MASK);
++	if (ret)
++		return ret;
++
++	/*
++	 * The device cannot mask DEV_NOK for us: unrouting it leaves the pin
++	 * on its weak pull-up, which reads as asserted. Mask it on the host.
++	 */
++	enable_irq(adis->spi->irq);
++
++	return 0;
++}
++
++static int adis16607_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++
++	/* Waits for a running handler, so no drain races the FIFO disable */
++	disable_irq(st->adis.spi->irq);
++
++	return 0;
++}
++
++static int adis16607_buffer_postdisable(struct iio_dev *indio_dev)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++	struct adis *adis = &st->adis;
++	u16 diag_stat;
++	int ret;
++
++	adis_dev_auto_lock(adis);
++
++	/* Disable FIFO */
++	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG, 0);
++	if (ret)
++		return ret;
++
++	/*
++	 * Leave the device clean at the end of a session, so the next one
++	 * does not start on leftover samples and a still-latched
++	 * FIFO_THR_MET.
++	 */
++	ret = __adis_write_reg_16(adis, ADIS16607_REG_USER_FIFO_CFG,
++				  ADIS16607_FIFO_FLUSH_MASK);
++	if (ret)
++		return ret;
++
++	return __adis_read_reg_16(adis, ADIS16607_REG_DIAG_STAT, &diag_stat);
++}
++
++static const struct iio_buffer_setup_ops adis16607_buffer_ops = {
++	.postenable = adis16607_buffer_postenable,
++	.predisable = adis16607_buffer_predisable,
++	.postdisable = adis16607_buffer_postdisable,
++};
++
++static int adis16607_set_watermark(struct iio_dev *indio_dev, unsigned int val)
++{
++	struct adis16607 *st = iio_priv(indio_dev);
++
++	st->fifo_watermark = clamp(val, 1, ADIS16607_MAX_FIFO_WM);
++
++	return 0;
++}
++
+ /*
+  * Check if the delta between two values is within specified range.
+  */
+@@ -344,7 +639,8 @@ static int adis16607_sensor_self_test(struct adis16607 *st)
+ 
+ /*
+  * Called by __adis_initial_startup() right after reset, before self-test:
+- * SPI Half-Duplex locking, dev_id verification and the bootloader check.
++ * SPI Half-Duplex locking, dev_id verification, the bootloader check,
++ * enabling 32-bit burst mode + DATA_CNTR and the DR/DEV_NOK pin routing.
+  */
+ static int adis16607_init(struct adis *adis)
  {
--	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct adis16475 *st = iio_priv(indio_dev);
- 	struct adis *adis = &st->adis;
- 	int ret, bit, buff_offset = 0, i = 0;
-@@ -1652,7 +1651,7 @@ static int adis16475_push_single_sample(struct iio_poll_func *pf)
- 	}
+@@ -385,7 +681,29 @@ static int adis16607_init(struct adis *adis)
+ 	if (digital_status & ADIS16607_BOOTLOADER_BUSY_MASK)
+ 		return dev_err_probe(dev, -EBUSY, "bootloader is busy\n");
  
- 	/* There might not be a timestamp option for some devices. */
--	iio_push_to_buffers_with_timestamp(indio_dev, st->data, pf->timestamp);
-+	iio_push_to_buffers_with_timestamp(indio_dev, st->data, timestamp);
- 
- 	return 0;
- }
-@@ -1663,7 +1662,7 @@ static irqreturn_t adis16475_trigger_handler(int irq, void *p)
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct adis16475 *st = iio_priv(indio_dev);
- 
--	adis16475_push_single_sample(pf);
-+	adis16475_push_single_sample(indio_dev, pf->timestamp);
- 	/*
- 	 * We only check the burst mode at the end of the current capture since
- 	 * it takes a full data ready cycle for the device to update the burst
-@@ -1694,9 +1693,9 @@ static void adis16575_update_msg_for_burst(struct adis *adis, u8 burst_req)
- 	tx[0] = ADIS_READ_REG(burst_req);
- }
- 
--static int adis16575_custom_burst_read(struct iio_poll_func *pf, u8 burst_req)
-+static int adis16575_custom_burst_read(struct iio_dev *indio_dev, u8 burst_req,
-+				       s64 timestamp)
- {
--	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct adis16475 *st = iio_priv(indio_dev);
- 	struct adis *adis = &st->adis;
- 
-@@ -1705,7 +1704,7 @@ static int adis16575_custom_burst_read(struct iio_poll_func *pf, u8 burst_req)
- 	if (burst_req)
- 		return spi_sync(adis->spi, &adis->msg);
- 
--	return adis16475_push_single_sample(pf);
-+	return adis16475_push_single_sample(indio_dev, timestamp);
+-	return 0;
++	/* Enable 32-bit burst mode and DATA_CNTR - one-time, used by FIFO pops */
++	ret = __adis_update_bits_base(adis, ADIS16607_REG_USER_DATA_CFG,
++				      ADIS16607_BURST32_MASK | ADIS16607_DATA_CNTR_EN_MASK,
++				      ADIS16607_BURST32_MASK | ADIS16607_DATA_CNTR_EN_MASK, 2);
++	if (ret)
++		return ret;
++
++	/*
++	 * DR_GPIO_MASK and DEV_NOK_MASK are updated here rather than written
++	 * blind, so this doesn't clobber the RESET_GPIO_MASK bit already
++	 * configured earlier in probe(). Per datasheet, DR pulses are what
++	 * drive the FIFO controller's internal enqueue logic. DR and
++	 * DEV_NOK are separate physical pins, so enabling DR_GPIO_MASK here
++	 * does not put DR's full-sample-rate pulses onto the interrupt line
++	 * - DEV_NOK_MASK routes the aggregate "any DIAG_STAT flag asserted"
++	 * signal onto the one physically-wired interrupt pin, which is what
++	 * actually fires on FIFO_THRESH_MET, at the (much lower) watermark
++	 * rate, not the sample rate.
++	 */
++	return __adis_update_bits_base(adis, ADIS16607_REG_USER_GPIO_CFG,
++				       ADIS16607_DR_GPIO_MASK | ADIS16607_DEV_NOK_MASK,
++				       FIELD_PREP(ADIS16607_DR_GPIO_MASK, 1) |
++				       FIELD_PREP(ADIS16607_DEV_NOK_MASK, 1), 2);
  }
  
  /*
-@@ -1748,18 +1747,19 @@ static irqreturn_t adis16475_trigger_handler_with_fifo(int irq, void *p)
- 	 * First burst request - FIFO pop: popped data will be returned in the
- 	 * next burst request.
- 	 */
--	ret = adis16575_custom_burst_read(pf, adis->data->burst_reg_cmd);
-+	ret = adis16575_custom_burst_read(indio_dev, adis->data->burst_reg_cmd,
-+					  pf->timestamp);
- 	if (ret)
- 		goto unlock;
+@@ -602,21 +920,16 @@ static int adis16607_set_freq(struct adis16607 *st, u32 freq)
  
- 	for (i = 0; i < fifo_cnt - 1; i++) {
--		ret = adis16475_push_single_sample(pf);
-+		ret = adis16475_push_single_sample(indio_dev, pf->timestamp);
- 		if (ret)
- 			goto unlock;
+ /*
+  * .address is an index into adis16607_chan_regs[] for this driver, not a
+- * literal register like adis_single_conversion() expects, and the channel
+- * spec carries no scan_type for it to take the register width and sign
+- * extension from. Resolve both on a local copy rather than reimplementing
+- * the helper's locking logic ourselves.
++ * literal register like adis_single_conversion() expects - resolve it on a
++ * local copy rather than reimplementing the helper's locking and
++ * sign-extension logic ourselves.
+  */
+ static int adis16607_raw_read(struct iio_dev *indio_dev,
+ 			      const struct iio_chan_spec *chan, int *val)
+ {
+ 	struct iio_chan_spec raw_chan = *chan;
+-	bool is_temp = chan->type == IIO_TEMP;
+ 
+ 	raw_chan.address = adis16607_chan_regs[chan->address].raw_reg;
+-	raw_chan.scan_type.sign = 's';
+-	raw_chan.scan_type.realbits = is_temp ? 16 : 24;
+-	raw_chan.scan_type.storagebits = is_temp ? 16 : 32;
+ 
+ 	return adis_single_conversion(indio_dev, &raw_chan, 0, val);
+ }
+@@ -693,7 +1006,12 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+ 	u32 tmp;
+ 
+ 	switch (info) {
+-	case IIO_CHAN_INFO_SAMP_FREQ:
++	case IIO_CHAN_INFO_SAMP_FREQ: {
++		/* The decimation must not change while the buffer is running */
++		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
++		if (IIO_DEV_ACQUIRE_FAILED(claim))
++			return -EBUSY;
++
+ 		if (val < 0 || val2 < 0)
+ 			return -EINVAL;
+ 
+@@ -701,6 +1019,7 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+ 		tmp = val * MILLIHZ_PER_HZ +
+ 		      val2 / (MICROHZ_PER_HZ / MILLIHZ_PER_HZ);
+ 		return adis16607_set_freq(st, tmp);
++	}
+ 
+ 	case IIO_CHAN_INFO_CALIBBIAS: {
+ 		u16 reg = adis16607_chan_regs[chan->address].calib_bias_reg;
+@@ -725,6 +1044,14 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	       \
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),       \
+ 		.address = (_idx),					       \
++		.scan_index = (_idx),					       \
++		.scan_type = {						       \
++			.sign = 's',					       \
++			.realbits = 24,					       \
++			.storagebits = 32,				       \
++			.shift = 8,					       \
++			.endianness = IIO_BE,				       \
++		},							       \
  	}
  
- 	/* FIFO read without popping */
--	ret = adis16575_custom_burst_read(pf, 0);
-+	ret = adis16575_custom_burst_read(indio_dev, 0, pf->timestamp);
+ #define ADIS16607_ACCEL_CHANNEL(_mod)					       \
+@@ -744,6 +1071,14 @@ static int adis16607_write_raw(struct iio_dev *indio_dev,
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	       \
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),       \
+ 		.address = (_idx),					       \
++		.scan_index = (_idx),					       \
++		.scan_type = {						       \
++			.sign = 's',					       \
++			.realbits = 24,					       \
++			.storagebits = 32,				       \
++			.shift = 8,					       \
++			.endianness = IIO_BE,				       \
++		},							       \
+ 	}
  
- unlock:
- 	/*
+ #define ADIS16607_DELTANG_CHAN(_mod)					       \
+@@ -776,13 +1111,22 @@ static const struct iio_chan_spec adis16607_channels[] = {
+ 				      BIT(IIO_CHAN_INFO_OFFSET),
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.address = ADIS16607_SCAN_TEMP,
++		.scan_index = ADIS16607_SCAN_TEMP,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
+ 	},
++	IIO_CHAN_SOFT_TIMESTAMP(ADIS16607_SCAN_MAX),
+ };
+ 
+ static const struct iio_info adis16607_info = {
+ 	.read_raw = adis16607_read_raw,
+ 	.write_raw = adis16607_write_raw,
+ 	.debugfs_reg_access = adis_debugfs_reg_access,
++	.hwfifo_set_watermark = adis16607_set_watermark,
+ };
+ 
+ /*
+@@ -814,6 +1158,7 @@ static const struct adis_data adis16607_data = {
+ 	.diag_stat_size = 2,
+ 	.prod_id_reg = ADIS16607_REG_DEV_ID,
+ 	.prod_id = 0x6000,
++	.has_fifo = true,
+ 	.unmasked_drdy = true,
+ 	.init = adis16607_init,
+ 	.self_test = adis16607_self_test,
+@@ -972,7 +1317,19 @@ static int adis16607_probe(struct spi_device *spi)
+ 	indio_dev->info = &adis16607_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	if (!spi->irq)
++		return dev_err_probe(dev, -EINVAL, "interrupt is required\n");
++
++	/* The core's default; the device watermark follows buffer/watermark */
++	st->fifo_watermark = 1;
++
+ 	st->adis.ops = &adis16607_ops;
++	/*
++	 * DEV_NOK is the OR of the DIAG_STAT flags and stays high until
++	 * DIAG_STAT is read. Use a level interrupt so a flag raised while it
++	 * is already high is not lost.
++	 */
++	st->adis.irq_flag = IRQF_TRIGGER_HIGH;
+ 
+ 	ret = devm_regulator_get_enable(dev, "vdd");
+ 	if (ret)
+@@ -1010,6 +1367,13 @@ static int adis16607_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = devm_adis_setup_kfifo_buffer(&st->adis, indio_dev,
++					   adis16607_irq_thread,
++					   &adis16607_buffer_ops,
++					   adis16607_fifo_attributes);
++	if (ret)
++		return ret;
++
+ 	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret)
+ 		return ret;
 
 -- 
 2.43.0
