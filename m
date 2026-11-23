@@ -1,80 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795461972;
-	b=XWlSgqYRz8HlPvV0ZTaeQvR4ZJjysdbo1tYa1mNB7XzwsViBg7D1xiakMAzHDpZS27GX
-	 /Sm1WtVfGVeNlpvChWsWhzQeLo15gvesz5A+io0axzIoXTayb+rK6b3avnTMN1iMABEON
-	 SagBT4e5eXPWhrfeQVCT49f04bBm8yrS1srOywwFkFBxSlAMgIrtS16a2AI8iO60cz4yA
-	 3mu3HKObSRgt39lE9umKOe3Hvw9O90k4Z6rnyLF2hCw5V04NpNaw0XsH+jQEuBChKXWW9
-	 Z50yGui9A2ICZZ0ocHF+xIvG9eugMByELnW4bWFXxPq9+GnRqN4tlaVLKWCGr61/SVQ==
+	t=1795462753;
+	b=PulNv+yoZ4Uw9nidSrYMGV3ICNKyn6nHXJ8TgwSxlcu9fGd/8B/jaN60WGoNmo/P4q5O
+	 qflafuHdVydOrtrcBVt9FurWU30i9svtl4kA8TvE7f2Q5AdeR6mksN59rQvvpcm+CSChY
+	 XDfY2E9GtnjCT8ZQBTrZC3vjnGC/cbQn0F4pJ504W5K3IS6ANxon9T5JDIEnH9YLnw0n/
+	 QHpXgTfj1lC8CdJ5dzcUgvONJmrlU5D9m7c5uBvpNaRAFrVp9pu2x1379G1+yEExaWQ+D
+	 4ryPG4Za5PIEopbDeoiJA5XrsW3c6bIQKBuA40HQYU9nAvxlfsI2g6Qsg8sru68TYbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795461972;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795462753;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=YjcSZFIvzql0ExOJ3U+u5ipwsVhfiurClfd39n0Nb8M=;
-	b=v/UA+asoXdhuCwCLkEyNEXq251eNm2wA0Eywa+tHLrsbLuTbe0NvgnU/GekJBC9Mr8pd
-	 J5spJzz1pDdnBHRhImpHuBfjE9edqABHy84gx0AFuXGQ2EbbDUbIY8qZDUF2Rrq64APZz
-	 DoAIdEfKYnZszDkhKOQPlIlJwDAnNCsFDuKs+HV0rOmGBECUktRTDCfMv7ajtH3pejl18
-	 sa2fApwWoKUTsNITV6PcCpY7+4OwhQMyYNj7jjXr49VmTdJuvODq/FlUtezVBwBd0/fNl
-	 fR2i09V1VwnUxB+aIXpw9thVnuzgvo6LrOuDwgZUMW2hbUrYt+rHr8ZCS/NoAk+zkNg==
+	bh=34EGKTnLY/HPChbZIP1a/E1PkPQAWEmn990CfdJx9aY=;
+	b=cBhX4y4ZuQAlGQXXWI20KR4xeicmdycnZ8YiSPfT3PMISTFVmY474/6c7LqHyY9Ztgfo
+	 M86n2Usp5oR8xcudTPUJGHyymA6XrrSAIrzeRV14ZISY2g10GyOaViSunbaFju5m9xLIk
+	 H9wjvcm565GXW4Ghd14lSSjZ8nn5J2vKSDQ5SHripRkh7s6Xmprm/FR8CudAncuoiPG6o
+	 x2MpLP/BcchVpFn9FPPBOG2/U3luW+YqgOwyrrigsXP5UhHX3U1T2v0kFYFk0iGfWsz97
+	 j9/rRyKWv81H8HoR3LUOOUbz33SeNmtjtiueAGiiM/aQIgOy65MefHJHrYcZ5f+aJiA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aQPHE4wU;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Oc0c7b7d;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB6B5606A31A;
-	Mon, 23 Nov 2026 19:26:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB6B5606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E061606A31E;
+	Mon, 23 Nov 2026 19:39:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E061606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aQPHE4wU
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Oc0c7b7d
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795461972; x=1826997972;
+  t=1795462754; x=1826998754;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=GzVEhTcEXjPwZr+oSMlCoQIK3KEA/n7wbtndAQlshU8=;
-  b=aQPHE4wUk97G70NxMtCYGXnGIQSjHCrKhAznUudP4r82e2GZae+uz1A1
-   qb2OadFXGGnVVHZXVQmivQNcvxUTAd5LWmZeAeHpUUKJ3FYccEtBtwd1t
-   Smma4pumk9CJYL2taZGXGoVszYkfBH4otkHsoOtvhzIvr0SZy+gdy5zu6
-   ciMavNwilzEPif/FkLn0BFRZRpLVg+T30bUVsSEu+jUHhAaztZ0L9Gmrn
-   C1pDgQ3RgckaW3AP+yXKdELA7wDawxfBI7tA56LgiKnVY2jxkT4oY3cLu
-   8EDXxIZ5VqXhwPskYKJymA18LhNYPrzOn0S5opk/Yds2eK9BXtJXbdLpE
-   w==;
-X-CSE-ConnectionGUID: FMkw8fK9Qj+L8S3cF+bvzA==
-X-CSE-MsgGUID: GrfEgsBcSbahRdD6Btpouw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4296860"
+  bh=A6ZVYci0gc9CY9yLPxh4/WLRqZrpG0U44J2uCbx7vF0=;
+  b=Oc0c7b7dVO/VGOt2j9dnhWcQ23PRX33QfgtGoyJvmQsnMhhNfGOGnpx2
+   6QkLjjYx3sNOvvOjViL8jfNiGwBz6vcTfF4Nbzs7npV/XcUFoIcd+Ds8+
+   iU1bvXCtowgWY2FiD3RjGXMWTZIoZDMN/NGxJIM6ENaepFUOVTcAOvnF+
+   zvvsMNxdptqm3eJ7kus+ckxe7HyMy0Lxkqb32JoLc2kgJahel5/D63D0x
+   29fC52rt6gAfhUoR/s3AbhmG8BVwNK7wFQrmVHKX8eQKU/o4cs5S0tffX
+   4wm/+cyOMlviSQEUqsvUZFtCCzp4cj4lijKD+G0+E2oUfP5yYsi+cl0ho
+   g==;
+X-CSE-ConnectionGUID: jVt91fXzTm+nxfW/Dyf+xg==
+X-CSE-MsgGUID: s4Ulm2pgQASkEjw31fhOuw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4177432"
 X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="4296860"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 11:26:08 -0800
-X-CSE-ConnectionGUID: AAveIKlVQSu5PcfjKt2Dqw==
-X-CSE-MsgGUID: b/sca7xpS7yZYzpWAOgIFQ==
+   d="scan'208";a="4177432"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 11:39:12 -0800
+X-CSE-ConnectionGUID: J2UXgM7bSFCGRuiqiCNmbA==
+X-CSE-MsgGUID: 6SwAljXXQHWlUDab4x1lmA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="11400313"
+   d="scan'208";a="11545568"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 11:26:05 -0800
-Date: Mon, 23 Nov 2026 21:26:03 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 11:39:02 -0800
+Date: Mon, 23 Nov 2026 21:39:00 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Neil Armstrong <neil.armstrong@linaro.org>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Yasin Lee <yasin.lee.x@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] iio: proximity: hx9023s: reject out-of-range
- threshold values
-Message-ID: <awSTS5G6isG9jUQN@ashevche-desk.local>
-References: <20261123165255.239490-1-kapoorarnav43@gmail.com>
- <20261123165255.239490-5-kapoorarnav43@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux@analog.com
+Subject: Re: [PATCH v7 3/3] iio: adc: add driver for the MAX34417
+ Four-Channel High Dynamic Range Power Accumulator
+Message-ID: <awSWVMMYN2xsDH7u@ashevche-desk.local>
+References: <20261123-topic-sm8x50-iio-max34417-adc-v7-0-d8f87edc5086@linaro.org>
+ <20261123-topic-sm8x50-iio-max34417-adc-v7-3-d8f87edc5086@linaro.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,49 +90,115 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261123165255.239490-5-kapoorarnav43@gmail.com>
+In-Reply-To: <20261123-topic-sm8x50-iio-max34417-adc-v7-3-d8f87edc5086@linaro.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 23, 2026 at 10:22:50PM +0530, Arnav Kapoor wrote:
-> The proximity thresholds are 10-bit register fields in units of 32.
-> hx9023s_set_thres_near() and hx9023s_set_thres_far() mask val / 32 with
-> GENMASK(9, 0) instead of checking it, so a value out of range is
-> silently written as a different threshold: 32768 becomes 0, the most
-> sensitive threshold, and -32 becomes 1023 * 32 = 32736, the least
-> sensitive one.
-
-> Return -EINVAL for negative values and values above 32767, the largest
-> value that still maps to the field.
+On Mon, Nov 23, 2026 at 06:47:46PM +0100, Neil Armstrong wrote:
+> The MAX34417 is a specialized current and voltage monitor used to
+> determine power consumption of portable systems. The driver support
+> getting the channels voltage, average power, accumulated average
+> power and energy over an I2C/SMBUS serial interface.
+> 
+> The MAX34417 datasheet only specified on how to calculate the
+> accumulated average power, but with the Sample Per Second rate
+> we can easily get accumulated Energy in Joules.
+> 
+> By default the IIO driver only supports single-shot Voltage
+> and Power sensing, but the accumulation can be enabled by
+> enabling the Energy IIO channel which then enables the
+> Continuous Accumulation Mode.
+> 
+> The counter is common to all channels, so when reading a single
+> channel we will copy all accumulators to registers, so in order
+> to permit reading individual channels we must accumulate the
+> other channels in the driver when Continuous Accumulation Mode
+> is enabled.
 
 ...
 
->  static int hx9023s_set_thres_near(struct hx9023s_data *data, u8 ch, int val)
->  {
-> -	__le16 val_le16 = cpu_to_le16((val / 32) & GENMASK(9, 0));
-> +	__le16 val_le16;
->  	unsigned int reg;
->  
-> -	data->ch_data[ch].thres.near = ((val / 32) & GENMASK(9, 0)) * 32;
-> +	if (val < 0 || val / 32 > GENMASK(9, 0))
+> +#define MAX34417_MIN_RSENSE_UOHM		(1 * MILLI)
+> +#define MAX34417_MAX_RSENSE_UOHM		(100 * MILLI)
+> +#define MAX34417_DEFAULT_RSENSE_UOHM		(1 * MILLI)
 
-It's too complicated way of saying this
+Oh, it's micro, but you use MILLI. Also even in macros we nowadays want to see
+the unit as defined in SI.
 
-	val >= BIT(15)
+#define MAX34417_MIN_RSENSE_uOhm		(1 * (MICRO / MILLI))
+#define MAX34417_MAX_RSENSE_uOhm		(100 * (MICRO / MILLI))
+#define MAX34417_DEFAULT_RSENSE_uOhm		(1 * (MICRO / MILLI))
 
-> +		return -EINVAL;
+Alternatively add another patch to start Ohm multipliers in units.h
+
+#define MICROOHM_PER_MILLIOHM		1000
+
+I will Ack it.
+
+...
+
+> +struct max34417_data {
+> +	struct iio_dev *indio_dev;
+
+Useless. You have it already available when calling the function that uses it.
+
+> +	struct regmap *regmap;
+> +	struct mutex lock;
+> +	u32 input_correction[MAX34417_CHANNEL_COUNT];
+> +	const char *input_label[MAX34417_CHANNEL_COUNT];
+> +	s64 acc_power[MAX34417_CHANNEL_COUNT];
+> +	s64 acc_count;
+> +	bool overflow;
+> +	ktime_t last_update;
+> +	bool cam_mode;
+
+Are the booleans protected by the same lock? If not, just group them, it closes
+the gap, if yes, group and possibly make a bitfield, then they will occupy only
+a single byte.
+
+> +};
+
+...
+
+> +static int max34417_read_energy(struct max34417_data *max34417,
+> +			       const struct iio_chan_spec *chan,
+> +			       int *val, int *val2)
+> +{
+> +	struct regmap *map = max34417->regmap;
+> +	s64 acc_power;
+> +	s64 delta_us;
+> +	int rc;
 > +
-> +	val_le16 = cpu_to_le16(val / 32);
-> +	data->ch_data[ch].thres.near = val / 32 * 32;
+> +	if (max34417->cam_mode && max34417->overflow)
+> +		return -EOVERFLOW;
+> +
+> +	/* Sleep up to 1msec to make sure we have a measurement cycle done */
 
-& ~GENMASK(4, 0)
+ms or millisecond
 
-In any case it might need a short comment explaining why these bits are
-dropped.
-
->  	reg = (ch == 4) ? HX9023S_PROX_HIGH_DIFF_CFG_CH4_0 :
->  		HX9023S_PROX_HIGH_DIFF_CFG_CH0_0 + (ch * 2);
-
+> +	delta_us = ktime_us_delta(ktime_get(), max34417->last_update);
+> +	if (delta_us >= 0 && delta_us < (1 * USEC_PER_MSEC))
+> +		fsleep((1 * USEC_PER_MSEC) - delta_us);
+> +
+> +	/* Move the data to the SMBus registers */
+> +	rc = regmap_write(map, MAX34417_UPDATE_REG, 1);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/* Save the timestamp for the next read */
+> +	max34417->last_update = ktime_get();
+> +
+> +	/* Retrieve all channels to avoid missing data for other channels */
+> +	rc = max34417_save_accumulators(max34417);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/* Get current channel power */
+> +	acc_power = max34417->acc_power[chan->channel];
+> +
+> +	iio_val_s64_decompose(acc_power, val, val2);
+> +
+> +	return IIO_VAL_INT_64;
+> +}
 
 -- 
 With Best Regards,
