@@ -1,101 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.175
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795438046;
-	b=NLU7HppoxS6PDCLCBVcg0r0qTjD893zEk8dxgD0MxO4pAyPDnC+kRjCg65hOcK+yfKYA
-	 dLuPgxXt22z9uUdH77KeucIlwcU/i0iVaq+/f+Woy7W93hXMJOVK+BJcPU4/7i86qIpoM
-	 RHGEXh/6VpwBqC8FhP4+6lXc/rm3lJvwNxNIbfXOT7UO4EHtDgK/Hnc/5fUlRxmGurBts
-	 GkUCK1d98RyXjw5c2Mf7f28svvAiCKxl95R3Qc6CNhqKx0MqVz+WK0FQoCm8bEq5WD9JC
-	 ZT9VKSx9eM7GkB0e5o4zVTgqe7EproQO3BKxT0uY+SgMPYNPz2iRk2c203dhzWPWplQ==
+	t=1795439876;
+	b=jIK3CMKAeLRO3HXQOlyZ7OwnbA+AlJHJ6kWJXTDJAov8Mw8dSacZMBxToiqZvyyh6vqS
+	 BaKbufYpKb9EpJuFJGfHCN19mMStPufUccRNP/+maCiKKt7fsGb9hQJcno97wa2IRknu3
+	 9nFDhSdEmsv7cIRdD7uXb0Rno+VIQuA+b0fBUjw7/T+wqohuvCLvZuJVUtEB2q6NQOw5L
+	 AskRk7a13MBIB+wYp9OdJGuiORFV4VZ6arjsp2CkNxAphSgxq7MNrXtT9jBHLvAG9mAGs
+	 sefg9JuBvwn8h+1OdttVD7YDrrALd2XnaniWxcSeWPHvlTm54fE0AgJhVmTuifuQMRg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795438046;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795439876;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=JLWRIyW6L3H78bd/BFlmj2ybIy9WVHoAXMpJ3dEd5x4=;
-	b=JgpwHJCo+qr3mE6WdlLFqIldvkz2aS3fquT+tNndtak3SYC+NiEvOu7eTtmsNv/L3GwJ
-	 Dt1du4AjAiQQGQsI8RYzcxY64GUs84WiD8x2ir93c5btFqq5RVFI1J9T9avEPgPGwr0FM
-	 VcU0qIP2Ru0CjnmPzLid9MCrljRcQYdi5YCDmycQSoafXH+v5Emh4rLwLT3Om7T94xGWD
-	 SieXQ7Uwtj7kIOk0OKQGV8I3yGC9ovqaJ8LSQdvTRdmMAEfO6JOKZs/Yi2XU6uBErZuOI
-	 WsWh8pp6sgf2D2Dvqdb2yM/Ix66JZy57ED7WH3j6hSG9cNuX1hmu2g3sOk8Zj7gIjuw==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=aqM63nnQK7AZCxbMeML2f0tMbQ1WjiGdxoWJz5+hbwM=;
+	b=DEKUltVF1mjHU2m9Qik6CZ8p/E0adaABqr+tRWtYfAjDBaF3/ctF5siuMyRdSv9Ra/lh
+	 EHIuHej95tnSPbimvIcIvG5eHZbwLXNwV0bpNGQiGM96Mf9ptcKw7ZVKpYxIngAIp1+sD
+	 L2/bZBGw/gYh4LX0e+VHJzkdnEqYbl1heFnz7eAwSIINoTeKHYNxSD3bvTe5bd4voQNQN
+	 zswyTXkNEFOKTyMGzt5NYqoSkhkIjW9qK2EBlzq5udedlhvcFvC8fWMBEtPKTs2nhCzb/
+	 Ykrhy+JNiVHdNdZ8bWcwOdcw26sojWc2ZVqq/U2gu7R5ejSeklfH1UMq2evAGgJTLJA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="DbwGP/cw";
-	arc=none smtp.remote-ip=209.85.215.172
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tdMfgzpl;
+	arc=none smtp.remote-ip=209.85.210.175
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 923C4606A327
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 12:47:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 923C4606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70D8606A31E
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 13:17:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D70D8606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=DbwGP/cw
-Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-cde1479f76fso1960387a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 04:47:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tdMfgzpl
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-8b29b83fdf1so1607086b3a.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 05:17:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795438045; x=1796042845; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=JLWRIyW6L3H78bd/BFlmj2ybIy9WVHoAXMpJ3dEd5x4=;
-        b=DbwGP/cwdpTOtGUruhFiB4Bmbuh2pxwLCoG+NMc7KVnrn5W8cxeooMpUbVXi4UvOi6
-         hS5h6/P1Z59KqHBq7Ng0wA2hkJqtDssAYfcAkXL7UJycIZaImTndQpoyc+ZKGQbqJ9oz
-         7RXaj8VKPYVwUW+V3RM91bTPIkbNnN7NbjE6FnRfs2Vzp7vxxyyMLDth2in5ckFdfbbE
-         eC6Nuufo3B8NI9pxMF6q5PqWeCq/gWXUFCbq8MFeqFtXU+myIoCeWnRXitZKpiJTUbFN
-         zPjU1+BFBmn6sI3GuLspEKKoFSsj9eX2fCFuHQowYFDZTf5b2bispBLdHQC3nFW3uZ2e
-         apyw==
+        d=gmail.com; s=20260707; t=1795439875; x=1796044675; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=aqM63nnQK7AZCxbMeML2f0tMbQ1WjiGdxoWJz5+hbwM=;
+        b=tdMfgzplRXOZIIP0ZgnOxEtGeNma0sX7iehF+JL/oob0vU3FsnIrCTY32oNWGOFxoo
+         7JhNCAw3xB1ZixXe9RaeXGFri92mqDi8stV/OipvXCX68BKzNOwc5YozME409r1N9bq1
+         9Yffhx+YgipdxCGI2RkcMzpAnpBzx6GhpzafeIB7UKai3oYQW0f3m6cAXgMwobdEUU5O
+         RIDcserCjuLLJWtsl6YNiHydmyfJAaFEBD18JR/PTAv4maYFhELfRqqu60ct5lrPkMtv
+         +SbkYwq/RMicxCN89q7G3djtuTDp3IrPcy1KSwF3uxScaoPN0e43T/pcIRmjEMqdBL3/
+         /NFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795438045; x=1796042845;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=JLWRIyW6L3H78bd/BFlmj2ybIy9WVHoAXMpJ3dEd5x4=;
-        b=o0nNqR/NFfAg9rQqD5kSpg2jzELHqybX1zD5L3zIkeww1zeMGHcW9BatHAUbcPdKCl
-         4ziQZFwEearolYv2tuXUSWcqy4N8edgYyG783L0VMwJZyJEDvg8b4EhsM6ZapoF9f3U7
-         KgRNHd6NqeePlADTaPK0zgnPCFFR6+vJvm7DsSsvzAaeFAz5IzoBeSf2I1atTeuDol/M
-         C3ENF4PyZjyC6i2ACh3i/ZNwEoT63llRmmmrSaDBvpA5vfzW0EkZODsdK2Es6g4klqh+
-         YTmdiIWelMnM4IvOiLN3Mmd6/E5ty5HmyUAlL3UtTWswnAtZsB6OUC3LS+R7Nqx2w9q9
-         Pbbg==
-X-Forwarded-Encrypted: i=1; AL+hErGR+gRlTIOQqntih1JEUATXut9AHKffHEVtXiYrB4hHuHzlM2Zsj+nh5gjKlHh2jQvSjKVNnCI/qJM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+mRI0S39YBpK5DA6GuKb8HwiB/FTyfMohzuq0uA3VqhD0DrgXT
-	F+1NE6blvHvJb9BIIZ0YUl+317yISF15O/b08C2zfLt4vmRchdvL/6ug
-X-Gm-Gg: AZFdTZfdEidPFQS3oIwf7Km2XqCm1xtSE+c/j7DTUyoLZVbVQRzqWUbD30QLDnuXsol
-	6lRnB8ybc2vtShBfBL2nMcbUMzus7je+R3g8NeMnQYqscxZSrE2jCvLmnZRRY+ISXivIG/3OGeU
-	Mb7ASjdxrOEJR2hrRVqBtxtO9Zw95mPA2DK2rRsdMEkntHKlOSpn8EqnB6/oSHUQ3db6opC/2EG
-	0/tBecK+eYrMDCNPsXTosKgfep2dPiN7oYp7G3Ac+EZqccqyCiqKN/pYW2qmzQpieuHdPYSbyhX
-	IojOb+DQP0vYtdlqbKIDkAdIXs0rSz69j9oaHaGw4R9/dVZYZ322v2Dbof/TQ0VJZ3zLJAJPU53
-	NzyNUgw+X+br40NLiy9bujYYT/NCz0gXeO+cA0aWueDzdb3iKWtgwVkCnwmB3ZCqX2E/DQ+wL4U
-	BlTiG4T1ksyjLJXBuhQaFlinrgVDCarsX/Xogp+dAF4mwCmidUtapc5iA4ilHEtibcc95zzavyS
-	MLBpn0ujOMo/ooeQob9cCCznJ+l5mKj0Iw7tRjJIRD2zaVrUDhMxMkOPIU0GvgpE2HyTHi5/1T+
-	YniCTiUDHtATLI0O5Auzk1F7R5p2WuRNJi7h1DZNuVY+FB9dTNQ=
-X-Received: by 2002:a17:902:e803:b0:2ef:effd:4606 with SMTP id d9443c01a7336-2f03efb019emr116976325ad.2.1795438044765;
-        Mon, 23 Nov 2026 04:47:24 -0800 (PST)
-Received: from gb05.tail50fddd.ts.net ([139.5.199.74])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f03f0dc0f8sm51919435ad.27.2026.11.23.04.47.20
+        d=1e100.net; s=20260707; t=1795439875; x=1796044675;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aqM63nnQK7AZCxbMeML2f0tMbQ1WjiGdxoWJz5+hbwM=;
+        b=2WqJnds3I6xM8NUkch2TRCkoT23BeT3ggU2QdBhftUf2jCjDgZ3cpHbZ5Ud6jSdyQy
+         94WRiAfnrEsJxPNpis2rvpkvRJ5fn9E497lBmkkb023ofV3uuL0MPizNja3Z50O+D8Sw
+         ByPXQqc5yqhEObiY+tTLugNLeWuP7tZadJjMB5g+srFr2m4K4o1Ccyepn7vwYcWbvmSj
+         A0KRqjBngirKSakNLBJ3QhXlshxvdA3rmVyRub39otwgYaDVOzCpfDIHhc+SytN4UytF
+         VfLSodk7SE4ZbmR9nblJG1MRhT2TQ6/zeeuwuTFoMFEcFWY5Dx26bRVoaKZfWaJ2RtOK
+         ddsQ==
+X-Forwarded-Encrypted: i=1; AL+hErG94vJwbQ/isPQLIlHXtn/mGxA68EUsr0/FrrcBic99VADGl6YWxUucpkubupz5yXd3su1d5inhgxU=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9ChOjGsUM54T7Jy/SIERzgo5otMQp+dMS6RSYg3HyCroSjQwyv
+	g3kCj8mAI56kpoijKTjfpekkmcEC8gQf9rnq4X9ZnTkbPu5W171gAw9J
+X-Gm-Gg: AZFdTZfZFO3Yo7Zjhq6LA2TwCYi1gcIh0StPAArNblE7YULWb9vVbTHVSZgHUOaMtbc
+	etz5ivC+YnAmO8HumTPv+DPn+ssicUKN6RBFqcM0XUCMI9WQWhSa6nlLAB9Z3s89P7vWcfTYQ8e
+	JMRYoYw5VyrAM8OA3k580Zg3mIykqVYwtDrVSh27CVH6AnLQNlWroP9LfUuah51uEbfriQpbd98
+	BhmRjUXGc6OBjDlXgQgw00eEsCXQnFFKWUH+IwIRxJUbwt/3uMMUF5tCi43yWWWWKxOFCtrEGvp
+	fQK3cXWEjtuS0yvEHpZsLXANGjLtbbf8NW95LnrdJFd99gXfdjtZYf8OGn/sa1dJkv31W7UAF9J
+	mPeAwuZQoI8wuoIJWy6MYCsi4u7zmnKFpKHyTMiNhCEgNqZuBNrh9OHh7LnUi9AWpDDllMeSReX
+	Lms+++/F1cSCfkup0ygRHdXIh18sYbEVwHj4YZAw4g5cWnW7/prjhasVcbgIseUN+5L6Q3PcX3z
+	GJdccAzucCLeuykl0ZpRpRLzIKb5M7++Z0Ad1RxlmmSVOY0r0u4XlUdey9OrJUWg2rIxAl8GjcF
+	2Prr7CSYuzQs9MwiOMbUtMBD5YYNaBV+0h/5iObbr+KJut1jXe/n0mYhnJySERRH8tnq/F0h2Nf
+	w+hOgOHpp36uFJ88Y+kz4wAEVF0xVBC9XdVtDl88HMa9Otzz200MZpsuRvb46gLE6vJY/luGRCU
+	KAZVTutWVWg4wKKnHRkxVIyfK3BSQqqNfCuh42tvuWgg==
+X-Received: by 2002:a05:6a00:1d93:b0:89a:5:92c1 with SMTP id d2e1a72fcca58-8c87d51b324mr9447302b3a.56.1795439875096;
+        Mon, 23 Nov 2026 05:17:55 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c873b27900sm5605698b3a.47.2026.11.23.05.17.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 04:47:24 -0800 (PST)
-From: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
-To: Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Zhang Lixu <lixu.zhang@intel.com>,
-	Zheng Shuhao <viennaoffh@gmail.com>,
-	Arnav Kapoor <kapoorarnav43@gmail.com>,
-	Lee Jones <lee@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	linux-input@vger.kernel.org,
+        Mon, 23 Nov 2026 05:17:54 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	gwendal@chromium.org,
+	swboyd@chromium.org,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com,
-	Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
-Subject: [PATCH v3] HID: hid-sensor-hub: avoid lock inversion in sensor_hub_remove()
-Date: Mon, 23 Nov 2026 18:17:15 +0530
-Message-ID: <20261123124715.351511-1-ayaanmirzabaig85@gmail.com>
-X-Mailer: git-send-email 2.56.1
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] iio: proximity: sx9324: fix proximity threshold writes
+Date: Mon, 23 Nov 2026 18:47:47 +0530
+Message-ID: <20261123131748.16791-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <awQfT6jSKo9pjxjU@ashevche-desk.local>
+References: <20261122074649.239441-1-kapoorarnav43@gmail.com> <20261122074649.239441-3-kapoorarnav43@gmail.com> <awQfT6jSKo9pjxjU@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,81 +106,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-In sensor_hub_remove(), spin_lock_irqsave(&data->lock, flags) is held
-while calling device_for_each_child(), which iterates child devices via
-klist_next() and acquires the driver core's &k->k_lock.
+On Mon, Nov 23, 2026 at 01:11:11PM +0200, Andy Shevchenko wrote:
+> On Sun, Nov 22, 2026 at 01:16:42PM +0530, Arnav Kapoor wrote:
 
-Because &data->lock is acquired in softirq context by
-sensor_hub_raw_event() while &k->k_lock is acquired elsewhere with
-softirqs enabled, nesting &k->k_lock under &data->lock triggers a
-SOFTIRQ-safe -> SOFTIRQ-unsafe lockdep warning and risks an ABBA
-deadlock between process context and softirq context.
+...
 
-Move spin_lock_irqsave()/spin_unlock_irqrestore() into
-sensor_hub_finalize_pending_fn() and pass data through
-device_for_each_child(), so &data->lock is only held while inspecting
-and completing each child's pending state after klist_next() releases
-&k->k_lock.
+> Why not simply
+>
+> 	val = _val;
+> 	if (val < 0)
+> 		return -EINVAL;
 
-Fixes: 8a5b38c3fd70 ("HID: hid-sensor-hub: don't use stale platform-data on remove")
-Reported-by: syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
-Closes: https://lore.kernel.org/all/6afddf21.a11fe2ad.1b4426.0003.GAE@google.com/T/
-Suggested-by: Zheng Shuhao <viennaoffh@gmail.com>
-Signed-off-by: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
----
-Changes in v3:
- - Actually pass 'data' instead of NULL to device_for_each_child()
-   (missed in the v2 submission).
- - Drop the NULL platform_data guard since hid/for-next already checks
-   dev_is_platform() and !hsdev.
+val is unsigned int, so I think that check would never be true; it has 
+to test _val, or be the val > INT_MAX form from your comment on 3/6. 
+Whichever form Jonathan prefers there, I'll use the same one in all four.
 
-Changes in v2:
- - Attempted to pass 'data' instead of NULL to device_for_each_child().
+> 	...
+> 	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
+>
+> Note, reg might still be not used, we have more validations and with your
+> approach the reg assignment is in the middle, confusing...
 
- drivers/hid/hid-sensor-hub.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Agreed, reg belongs after the val > 0xff check, right before the
+guard(). I'll fix it in v3 as soon as I get the val verdict.
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index e9d6eb3b3831..090e5a232efa 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -808,6 +808,8 @@ static int sensor_hub_probe(struct hid_device *hdev,
- static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
- {
- 	struct hid_sensor_hub_device *hsdev;
-+	struct sensor_hub_data *sd = data;
-+	unsigned long flags;
- 
- 	if (!dev_is_platform(dev))
- 		return 0;
-@@ -816,8 +818,10 @@ static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
- 	if (!hsdev)
- 		return 0;
- 
-+	spin_lock_irqsave(&sd->lock, flags);
- 	if (hsdev->pending.status)
- 		complete(&hsdev->pending.ready);
-+	spin_unlock_irqrestore(&sd->lock, flags);
- 
- 	return 0;
- }
-@@ -825,14 +829,11 @@ static int sensor_hub_finalize_pending_fn(struct device *dev, void *data)
- static void sensor_hub_remove(struct hid_device *hdev)
- {
- 	struct sensor_hub_data *data = hid_get_drvdata(hdev);
--	unsigned long flags;
- 
- 	hid_dbg(hdev, " hardware removed\n");
- 
--	spin_lock_irqsave(&data->lock, flags);
- 	device_for_each_child(&hdev->dev, NULL,
- 			      sensor_hub_finalize_pending_fn);
--	spin_unlock_irqrestore(&data->lock, flags);
- 
- 	mfd_remove_devices(&hdev->dev);
- 	/* Clients share one HID open; release it if references remain. */
--- 
-2.56.1
 
+Thanks,
+Arnav
