@@ -1,85 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795426308;
-	b=zw7VmZ18g17Qh8MFWmDdnBydo3OISeiohhdSKrBsQPJ1M1CCRyjcsVOgozjmmygcm1Lk
-	 nPCFrNY3xhwBjrLpz1mBkmVr3UcKtvD/rHhjlbFM4vbopA5QChBRGHr3VclhxicRJYIYJ
-	 V67egu8BYkRwOagY3F+CJW4620h9Mh9+CmbomQZgeaNiljGW8Cd9bA95hv/aJqf/r9/jA
-	 JYl19+ZnyzeDMvigDuBVssbbiVe0p1PFymCbTHkQipLSZjr6wHGgun80sTOW4DscFnzhH
-	 ytj3NWutsTkhpbLJzIWfDCSemZd5tGvTR7OUontN0M0sExDVv0aBVET8BvUtqDsitdA==
+	t=1795427044;
+	b=UdH5V9JkeyVbVq1i4nos8GYVYwfBpIl9KC3uvMUQRVxTXiOSPzeGO8WzrZzzr9dGPxTX
+	 W0p9Td+qblqEwqnB7cw+/zFhEsacf69C+xa1oUcckAABkspdG2PcKW9LN8q89GcEBv1UV
+	 FFzLQYLMQ9kwHuy7EaeqQsTpDaQtQHskDTae3lLf8lCNVwj7ky8azu9Oa6qVtgMYeCM+D
+	 DYAENqFqBH5F+TjGUy/g4L73KHf/OIh0tzBtoXuuqsolQzXYsPnJoQse43y7h+IyRZbRG
+	 UH99zXnmt7BsscZsFFhTZecfcn2lCLISEZxvYl3D4PtoPt7tIHvzL6VaXpNY4cDbeJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795426308;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795427044;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=o4c3gw5ayTeVyj4tzoPmy8cMt5RLKRl7oVUcToc0K6g=;
-	b=PPbiNonhKc6szZSpXbAsqQhhtRM0Ms9XMXIKT9aq6E/3DzBoBJl3DDNryHlk+7mcL9Yy
-	 fQZAqWOOslHRb0u3Ga12DDVXL1fY35Fxq8NHFcasL3QGBCuKSOgXBj8AVGpGzsC2FFkmo
-	 MLuFuMHrMQZVEzV1fbWLY34ExTuaM3voXr3JrdWb6DZHJwLGs6xgROvBe+42jVqM0dUnE
-	 FE75VNYrarT8/x4glwO0ZGEuF0kkLLKKKKLXG2qMp0QvchsbmI0kR8b+cAVoiS1wT7fC9
-	 JW+u7eEVocvKWPdt3VM8hGwNjgrZStYp6+tY+PD1VYBolMb3Tg8LJbamvZa7fQ/HLaw==
+	bh=CRsoRA73h09xH07EwuFGwBbZU7fmt99uQgIftFEQwWM=;
+	b=yPU4i7Pg3JwYxjNt/6UqTKIeYWUv80bOW+YNL93WlwBcFPZWSmvdZnIDIVLpi3yVoYtU
+	 +5lhf5HXChuutaLmq90Ppg/5zVBAmqRs/+Z9xAiFmgKsAwlxIiSX9QH56FuCsXo/6yEcX
+	 4s8Sp82ckdasTgeHui0L1rUhphr1+YnPrcW7d5POj3BPLszA0LV6LP+xq5TZpal0eCClJ
+	 nvGcdVgcsz5Aj0BcJfF0NduCmqHAHI9TVCuZclMsUMzQlOPQvs4B74dL0u8HUWdmFga7g
+	 so1T1ir58NYjqQQ/VgaMKi+X8DJQbA2NSVhR6+X5k0ErwBb40Wd2t2uqxhA/QeFewRg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AJZSowtr;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NTA8Evyk;
+	arc=none smtp.remote-ip=192.198.163.15
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F0EF606A327;
-	Mon, 23 Nov 2026 09:31:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F0EF606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43A7D606A31A;
+	Mon, 23 Nov 2026 09:44:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43A7D606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AJZSowtr
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NTA8Evyk
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795426308; x=1826962308;
+  t=1795427044; x=1826963044;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=E2y5GFJ9BPlcQ4pbbpDmSkF+0dOWl7ZmiyJDcKj96mg=;
-  b=AJZSowtr/9VCS0aDc+pyEZGRGl4utw1R+tSFbhFKMc9jA6RNnq6IOq2Z
-   1CMyCriltoB/sVvlwSijPe9pjYQvIyVqF3U4q8HEd5OwqFZWrZGfKmMVe
-   YHWOL7fIwU+uSc+yeDkG1TnzE+XkvAYPAjGuT1CoeNDT1retzmU3mxiAk
-   mGLAEWhHciayfdannTW1vRXih3SqqQoUYJz4PLbnwuAuqGCXfKqOOiJco
-   9YFlslAeUok8aF8UXfkK6jdvdmEvnJmjqhh3wjwxIsuJiukssUDnJKUKb
-   rjxodsZdXovSCJ/s1npuXeXEw6BDLq9c3T4nMqR5TdKPDtrzOcCENcvno
-   g==;
-X-CSE-ConnectionGUID: GRk/r0QPTXSiLxc/BY4nBA==
-X-CSE-MsgGUID: 9LXH+dplSYihqewB592l+w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4236411"
+  bh=rWIylgWoANS9yFBBpe3eSsmmz39xGri44CKMPfGeCvg=;
+  b=NTA8EvykHa+lPDqNbNmGenrzJCjqdjen+RKRFDw2Fg9ZCf6et+hceJQU
+   Y+6OI9az0G6tGs125eP7+0qtn0vkMdVZVuCe8B2voXEyse9no6dCK7S62
+   rotxDOukGkNMJ43Q8PEub9I0btJR4++qGu/yFLumxZ9/C88Ttk09mU/XC
+   OnwbqkEphkDQYcBGhRoECkAlh6DYTSKeGcVCVNBoBddO9ITs00gyZLWEg
+   wnSei1aIZdD1T7+F9XeQDEW+b+X85JKXADZTwML2ELqvV0zWX5OYP9byz
+   rUAlGBxA20WghcKPAhg4IpLf+0ZP4uJIQuVO9iMuSbh7YopKBYj5VEXVU
+   Q==;
+X-CSE-ConnectionGUID: JaZId09yTaa3/EMmwVWhYg==
+X-CSE-MsgGUID: 4L+FBYXHSeeZvYcsyh4HRA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4208535"
 X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="4236411"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 01:31:48 -0800
-X-CSE-ConnectionGUID: RalA61qXRWWn9SmkXAgNwA==
-X-CSE-MsgGUID: O9rcS9HvTJGEA/JvnhVvbg==
+   d="scan'208";a="4208535"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 01:44:03 -0800
+X-CSE-ConnectionGUID: nk/sFRcHRqCbLPiliOzSkA==
+X-CSE-MsgGUID: hLD0Myl4QJi4GhxvGS5otA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="11133388"
+   d="scan'208";a="11562041"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 01:31:44 -0800
-Date: Mon, 23 Nov 2026 11:31:41 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 01:44:00 -0800
+Date: Mon, 23 Nov 2026 11:43:58 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>,
-	linux-iio@vger.kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, nicolas.ferre@microchip.com,
-	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
-	giorgitchankvetadze1997@gmail.com, amin.gattout@gmail.com,
-	antoniu.miclaus@analog.com, gregkh@linuxfoundation.org,
-	mripard@kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/3] iio: adc: at91_adc: fix NULL pointer dereference
- on trigger remove
-Message-ID: <awQH_Rr8b_Eu0Vew@ashevche-desk.local>
-References: <20261117140510.391907-1-abdelnasserhussein11@gmail.com>
- <20261117140510.391907-2-abdelnasserhussein11@gmail.com>
- <avyEb9La1tqS90Cp@ashevche-desk.local>
- <avyEqQEL3A_YNcgg@ashevche-desk.local>
- <20261122002118.723b23b3@jic23-hlaptop>
+Cc: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v6 0/7] Add E notation support to kstrtodec64() and IIO
+ sysfs writes
+Message-ID: <awQK3pOkzi8fHT3F@ashevche-desk.local>
+References: <20261114-e-notation-v6-0-205ca9a1438a@analog.com>
+ <20261122204447.56875aea@jic23-hlaptop>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -91,39 +86,27 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261122002118.723b23b3@jic23-hlaptop>
+In-Reply-To: <20261122204447.56875aea@jic23-hlaptop>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 22, 2026 at 12:21:18AM +0000, Jonathan Cameron wrote:
-> On Tue, 17 Nov 2026 18:45:29 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Tue, Nov 17, 2026 at 06:44:37PM +0200, Andy Shevchenko wrote:
-> > > On Tue, Nov 17, 2026 at 04:05:08PM +0200, Abdelnasser Hussein wrote:  
-
-...
-
-> > > >  	for (i = 0; i < st->caps->trigger_number; i++) {
-> > > > +		if (!st->trig[i])
-> > > > +			continue;
-> > > >  		iio_trigger_unregister(st->trig[i]);
-> > > >  		iio_trigger_free(st->trig[i]);
-> > > >  	}  
-> > > 
-> > > Yes, but no. Please, rather fix the above mentioned IIO trigger APIs to be
-> > > NULL-aware.  
-> > 
-> > Actually the iio_trigger_free() is already NULL-aware, so make it only for
-> > iio_trigger_unregister().
+On Sun, Nov 22, 2026 at 08:44:47PM +0000, Jonathan Cameron wrote:
+> On Sat, 14 Nov 2026 14:09:52 +0000
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 > 
-> I'd rather we didn't.  Any code that is unregistering a trigger
-> that it didn't register is probably really very very buggy.
-> I'd like them to crash or at least guarantee that sashiko
-> flags it.  We could add a warn if it is called on NULL I suppose
-> but that is ugly.
+> > This series lets kstrtoudec64() and kstrtodec64() accept numbers in E
+> > notation (scientific notation), such as "2.7e9", "1.5E-3" or "1e+16".
+> > It then moves the IIO core fixed-point parser over to kstrtodec64(), so
+> > every IIO channel attribute written through iio_write_channel_info()
+> > accepts that format as well.
+> 
+> Andy, no huge rush on this as we have a few weeks left in the cycle.
+> However I'm relying on you for review of this one.
+> 
+> FWIW looks fine to me and I like all the confidence the tests are bringing!
 
-Can we add a comment there to avoid making such a change explaining
-why we won't iio_trigger_unregister() be NULL-aware?
+I have nothing to add. Feel free to apply rather sooner, we will see any side
+effects sooner in Linux Next.
 
 -- 
 With Best Regards,
