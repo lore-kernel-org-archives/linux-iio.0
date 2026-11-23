@@ -1,52 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.64
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.91
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795421899;
-	b=2wDIhHcIQfmAZ85ci7cMVfs3XHXPkjgVscAdgZwAjgZOSfxeo3StUb8VBw9IPOg2OU9o
-	 EN/iUL554Tbnrpj4uavvruVbFfLwlZZQOtghJi5P0ZweXWGiMxaW+G/KlAZQ2iu4v9YYy
-	 VBrDq8rmH9qct4cMyA5GJ7lVGvGeLVp3qMnBE6ttw45jZ7+liKN6sF/nhva/8Q0Br61V7
-	 zHDy5q0BDwGPiH28q8kZpzY+5IPLWSTSzH6Rd0YQFkRMKNIqbqh2kNOFqyNlq8vXCL/7f
-	 tvo8TYp+NjAgkQRhlH53poacUNUK2v+qRiNEKins7nvM6buZ/xdxbyAx0xJyehJpoCw==
+	t=1795421959;
+	b=LB0xqvrxy49GXDD61eMWbeWXy3eKsnFp01ZMn7ncasXTBwNfvpgOlG/jxy0B+H5l/1Bc
+	 PZ9ezvA1AcTf8UzKWAYq1/MWSRYmjIUgmKW2oxlZngBJKvMMLs0nofRRaVzT4B2Gi4NpE
+	 lProtVEzO9GHtFzv6TqJx42Fk/N6fZihRzT7A0R8+V9z5sbvmRxnDGGJyqwYu5h0iIJ2v
+	 w5BoK1j6LiuKdgfWKXlL0tx723hQt9cWEXGGb/VwBYK8kuPecCP10smN9CXyHJMkIJ4Yt
+	 a8brUNdRudW46xkwaipSJIq+YL64XhNHgi6OaWLAr3YacemImiaERyg4JphNlY6j4NQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795421899;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795421959;
 	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
 	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
-	 Reply-To:MIME-Version:Content-Type:Content-Disposition;
-	bh=Z3QttmCelU4fh+RHdrJMM1o3nxRY1YISOypB/Kw5PIU=;
-	b=HnRnBJ3wWEim8ezVuS/8aNvjMChq0KjXfRWjSyMGlFXTzJhYBQgVN/2XEpFmi3n2xxPp
-	 x69k784rmQJDvq04XibCo5cXOOIWFBBsdIMbWd5Hv/ZK8PnxZsQ/fWNMAnnfVbcCm14YC
-	 CVQYxLdkT+2m5MlEMeRHlPyyLT2FhPwTOiezCD8EHJdOcivsulfReh/bOvxJ0EJ1zxxVN
-	 qWZ2gm+WD799kiQeeZeStDoBNwZHuqr8Aoty0WYuBJGyunGTOIJvnjVViJkaWFpOubibE
-	 1DU1IkBlKS5TWxO2OUCCJEwjbKg4SNSqf6GVgFBZUZYVFr2fQMAycOSmhtJkGFJtqcw==
+	 Reply-To:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To;
+	bh=kMwNhIuC2YlcL171wo+XyDF8jZlForwDkSr7ngqU/QA=;
+	b=JHvEvzXS5d+bX5nw1Gu1HwZPlYc2+i4TRDFCdr6TRVIVr0nYmCmrKCbhXRVAzhyRxt4R
+	 /n+ecvM0wcEpDOM8GbPt11Neub+H+0stQJG2NI+50XgRAwe/f+oZHwcdjg7yesRfSpOQI
+	 kBHxJCKLKnctiOWP7aVe6f/rDWlavgY6kywp2H5MsYMbynaMxOClBglAjvPqodsB4nPMp
+	 gRjcW/dVWkYGyk2/e8xa5J8/LAL3Scna8eGIro9B36hREcahN9HsWHDzDGOLX6uPGZWRQ
+	 1jEdoZdmu6MBDwf9u0ywDVnebvl1vIOGjSkhxMteYfAf+HA43Hdg+FjXHYJZzcBlpXw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.dev;
 	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=EiJxPAMP;
-	arc=none smtp.remote-ip=91.218.175.64
-Received: from mta0.migadu.com (out-64.mta0.migadu.com [91.218.175.64])
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=aDzL7KyF;
+	arc=none smtp.remote-ip=91.218.175.91
+Received: from mta0.migadu.com (out-91.mta0.migadu.com [91.218.175.91])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC64B606A31E
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 08:18:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BC64B606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE59B606A31F
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 08:19:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CE59B606A31F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=EiJxPAMP
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=aDzL7KyF
 X-Envelope-To: linux-iio@vger.kernel.org
-DKIM-Signature: a=rsa-sha256; bh=Kl7BLUrMrW5GdgYLUZN6g2j9PF1ge3efMGDYYuBtK3w=;
+DKIM-Signature: a=rsa-sha256; bh=OfOwvOHvkBpohcgTPdiVb5bdoAeeSI8pBm+R/aMqz6c=;
  c=simple/simple; d=linux.dev;
  h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1795421896; v=1; x=1796026696;
- b=EiJxPAMPmUTcXbCTVFF0TSr6RySGowbPhtRM8APPwzdo4MBmUS29hy9k0FSjZOUdjQGIHng+
- jdP7+3CrSuQaD6NmU4cnrOaaxnxuxjuwmDLbwyeC0kflYRA7zHv8eyID8nXvE+HcSwHX2K8EhHJ
- TPkzFoCUhaYDUeUDSorG3Jus=
+ t=1795421957; v=1; x=1796026757;
+ b=aDzL7KyFyq178jPq+6TrddHbQb3w0OaJCXawhLqEQH/AnvDK5ElJxDeDmfYzFA6MY/2oENMa
+ 7vwJ8LrZd5LOk3JsEvFBKEYW/c5LwWg+gTqmgWJ/AE6YpkLb3nP2gNTCIjDdZz5FD+FF8Wx1gJh
+ yNEwavO/Z2bNCYNSowPgTnjA=
 X-Envelope-To: linux-iio@vger.kernel.org
-Received: by mta10.migadu.com with ESMTPS id 94410b9f1b958063;
-	Mon, 23 Nov 2026 08:18:16 +0000
-X-Mizu-Trace-ID: 94410b9f1b958063
+Received: by mta11.migadu.com with ESMTPS id 794c4746cfecb259;
+	Mon, 23 Nov 2026 08:19:16 +0000
+X-Mizu-Trace-ID: 794c4746cfecb259
 X-Migadu-Flow: FLOW_OUT
-Date: Mon, 23 Nov 2026 10:17:58 +0200
+Date: Mon, 23 Nov 2026 10:19:08 +0200
 From: Matti Vaittinen <matti.vaittinen@linux.dev>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
@@ -62,15 +63,15 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Joshua Crofts <joshua.crofts1@gmail.com>,
 	Radu Sabau <radu.sabau@analog.com>,
 	Janani Sunil <janani.sunil@analog.com>,
-	Salih Erim <salih.erim@amd.com>,
 	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
 	Antoniu Miclaus <antoniu.miclaus@analog.com>,
 	Jakub Szczudlo <jakubszczudlo40@gmail.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] Support ROHM BD79111 ADC/GPIO
-Message-ID: <cover.1795421473.git.mazziesaccount@gmail.com>
+Subject: [PATCH v3 1/3] dt-bindings: iio: Support ROHM BD79111
+Message-ID: <6e76f5f0cc28d7e981a037e703435e1688409aa6.1795421473.git.mazziesaccount@gmail.com>
 Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
+References: <cover.1795421473.git.mazziesaccount@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -81,69 +82,119 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="a02bTfSpJ7pb+bT2"
+	protocol="application/pgp-signature"; boundary="tgEaR3Vp78LrHKNc"
 Content-Disposition: inline
+In-Reply-To: <cover.1795421473.git.mazziesaccount@gmail.com>
 
---a02bTfSpJ7pb+bT2
+--tgEaR3Vp78LrHKNc
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Support ROHM BD79111 ADC/GPIO
+=46rom: Matti Vaittinen <mazziesaccount@gmail.com>
 
-The ROHM BD79111 is a 12-bit, 16 channel SAR ADC / GPIO IC. Or, a "Signal
-Monitor Hub IC" as data-sheet describes it. The key difference compared
-to already supported BD79112 is the reduced number of channels (16,
-BD79112 had 32) and halved sampling rate (500 KSPS when BD79112
-data-sheet stated 1 MSPS).
+ROHM BD79111 is very similar to the BD79112. Both are ADC/GPIO devices,
+where pins can be configured to be either used as GPIO or ADC inputs.
+ADCs are 12-bit SAR ADCs and GPIOs support input/output but not being IRQ
+sources.
 
+The main difference is amount of channels/GPIOs. The BD79112 has 32 pins
+for this use, the BD79111 has 16. Furthermore, the BD79111 data-sheet
+promises 0.5 MSPS sample rate with maximum of 10 MHz SPI clock,  whereas
+the BD79112 data-sheet mentioned 1MSPS rate with maximum of 20 MHz SPI
+clock.
+
+Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+
+---
 Revision history:
- v2 =3D> v3:
-  dt-bindings:
-   - No changes
-  driver:
-   - move 'Return -ENODATA instead of -ENODEV when no SPI match data is
-   found' -fix to the patch 2/3, which introduces the SPI match data
-   usage.
-   - Fix double semicolon and drop the unused macro.
-   - Suffle comment wording as was requested by Andy.
- v1 =3D> v2:
-  dt-bindings:
-   - Don't drop the 'root-level' additionalProperties: false
-  driver + Kconfig:
-   - Styling as suggested by Andy / Jonathan
-   - Split to two patches as suggested by Andy
-   - Return -ENODATA instead of -ENODEV when no SPI match data is found
+v2 =3D>
+ - No changes
+---
+ .../bindings/iio/adc/rohm,bd79112.yaml        | 29 +++++++++++++++----
+ 1 file changed, 24 insertions(+), 5 deletions(-)
 
-Matti Vaittinen (3):
-  dt-bindings: iio: Support ROHM BD79111
-  iio: adc: rohm-bd79112: Add chip info structure
-  iio: adc: rohm-bd79112: Support ROHM BD79111
-
- .../bindings/iio/adc/rohm,bd79112.yaml        |  29 ++++-
- drivers/iio/adc/Kconfig                       |  10 +-
- drivers/iio/adc/rohm-bd79112.c                | 112 ++++++++++++++----
- 3 files changed, 120 insertions(+), 31 deletions(-)
-
-
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+diff --git a/Documentation/devicetree/bindings/iio/adc/rohm,bd79112.yaml b/=
+Documentation/devicetree/bindings/iio/adc/rohm,bd79112.yaml
+index aa8b07c3fac1..a0fd87716611 100644
+--- a/Documentation/devicetree/bindings/iio/adc/rohm,bd79112.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/rohm,bd79112.yaml
+@@ -4,18 +4,21 @@
+ $id: http://devicetree.org/schemas/iio/adc/rohm,bd79112.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+=20
+-title: ROHM BD79112 ADC/GPO
++title: ROHM BD79111 and BD79112 ADC/GPIO
+=20
+ maintainers:
+   - Matti Vaittinen <mazziesaccount@gmail.com>
+=20
+ description: |
+-  The ROHM BD79112 is a 12-bit, 32-channel, SAR ADC. ADC input pins can be
+-  also configured as general purpose inputs/outputs. SPI should use MODE 3.
++  The ROHM BD79112 is a 12-bit, 32-channel, SAR ADC. The ROHM BD79111 is
++  a 12-bit, 16-channel, SAR ADC. ADC input pins can be also configured as
++  general purpose inputs/outputs. SPI should use MODE 3.
+=20
+ properties:
+   compatible:
+-    const: rohm,bd79112
++    enum:
++      - rohm,bd79111
++      - rohm,bd79112
+=20
+   reg:
+     maxItems: 1
+@@ -45,7 +48,9 @@ patternProperties:
+=20
+     properties:
+       reg:
+-        description: AIN pin number
++        description:
++          AIN pin number. The BD79111 has pins 0 - 15, the BD79112 has pins
++          0 - 31.
+         minimum: 0
+         maximum: 31
+=20
+@@ -64,6 +69,20 @@ required:
+=20
+ additionalProperties: false
+=20
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: rohm,bd79111
++    then:
++      patternProperties:
++        "^channel@([0-9]|1[0-5])$":
++          properties:
++            reg:
++              maximum: 15
++        "^channel@(1[6-9]|2[0-9]|3[01])$": false
++
+ examples:
+   - |
+     spi {
 --=20
 2.56.1
 
 
---a02bTfSpJ7pb+bT2
+--tgEaR3Vp78LrHKNc
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmsD9rQACgkQeFA3/03a
-ocUowwgAgkfw2swuzUe9ERFyOXwKz5reM4OGlRzFGjsiuBs/B9jrvmq6ecN5NiCb
-oFL1sgNc+cFF9kA0ajmAV+Jvt73wE1sIb6oYqKxHMCeNyGxtUfnt1Dnl87EcvTCp
-m77PYVP8/B0o0JKXhtU+oSTCUihWYwmCZhohDzYyZKXxnvPT44knpJN6V4D1sy4C
-gD9bpdrrmhWkwXv/kZPOc1f2B4F91vfgaH7GJVNyEEUJtAQ5SxAHgpjuETezT7aC
-oIW8BEvk+HxDkik09apW6ueIdCbJR73yN7D7M5+MMUWdcppK2oNJTJzN++2plUPr
-7FmxC7vD76xr8pECVsSJPk35s7N7Vw==
-=bNMM
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmsD9vwACgkQeFA3/03a
+ocXBiggApdlslXHrBZkMCl6AvScV1KsvDURL6o6YTiCGNyBw1YMYckBRx9ga9lLP
+bTYuuXkeGcgwnZYO6z97HZi4wrF5L2TNjdaT/8mPvS55vphD3ph5onV1uxzPDkk5
+CPdwL9MSqHG25CipDbL3fYLIht2nxfENQSUirZdFDXtY4WD+KbllGkQ3AEcW7yPH
+YMxeolxNM/t4SYk575x1Dt1trBFlKDEOC6V7MDl9nrPRLd0gpeFkQBpo1erktpaq
+UP96Wd2//EMwlatShhmZSIe6cKgFJu0iB+o9E3xQgk8mO/15d0Gs0EXxsHNvfKex
+/SgGYK/GpyDkhM2PS/htQxshPswfBw==
+=o0Cq
 -----END PGP SIGNATURE-----
 
---a02bTfSpJ7pb+bT2--
+--tgEaR3Vp78LrHKNc--
