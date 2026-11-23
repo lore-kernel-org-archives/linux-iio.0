@@ -1,86 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795439876;
-	b=jIK3CMKAeLRO3HXQOlyZ7OwnbA+AlJHJ6kWJXTDJAov8Mw8dSacZMBxToiqZvyyh6vqS
-	 BaKbufYpKb9EpJuFJGfHCN19mMStPufUccRNP/+maCiKKt7fsGb9hQJcno97wa2IRknu3
-	 9nFDhSdEmsv7cIRdD7uXb0Rno+VIQuA+b0fBUjw7/T+wqohuvCLvZuJVUtEB2q6NQOw5L
-	 AskRk7a13MBIB+wYp9OdJGuiORFV4VZ6arjsp2CkNxAphSgxq7MNrXtT9jBHLvAG9mAGs
-	 sefg9JuBvwn8h+1OdttVD7YDrrALd2XnaniWxcSeWPHvlTm54fE0AgJhVmTuifuQMRg==
+	t=1795439880;
+	b=esXYK0N7iMF+KK+ZUyyB/y8rotQZF52MQ8034SDyzrQXLFN2rZOqvpru9lrEVN+fcfWL
+	 MoQYe6MS61+yvNNGDnFda8X94iaNi6HWOt2bytbvHF3FBvBzcVQyA9dCjXGnwswHN8fCJ
+	 1Ii1OpCFik0AkcjeivTWYs4P7E3jUVaVJiFREOs7jFnE6rx5V3rEQN9vnw+njRSpPEj8B
+	 htaj6fNL+2iCtuK9M8Di4RmFhhZvElqITMB9C33vVd8mwek5aP5dEjDIiRTbHZyKJ0Kys
+	 QoY95xupTClKSOIl4ldYe1LoMi0ct5ZwWKOWX3aZL93Wp9k/MCAdPkCktWxGwslbOzQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795439876;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795439880;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=aqM63nnQK7AZCxbMeML2f0tMbQ1WjiGdxoWJz5+hbwM=;
-	b=DEKUltVF1mjHU2m9Qik6CZ8p/E0adaABqr+tRWtYfAjDBaF3/ctF5siuMyRdSv9Ra/lh
-	 EHIuHej95tnSPbimvIcIvG5eHZbwLXNwV0bpNGQiGM96Mf9ptcKw7ZVKpYxIngAIp1+sD
-	 L2/bZBGw/gYh4LX0e+VHJzkdnEqYbl1heFnz7eAwSIINoTeKHYNxSD3bvTe5bd4voQNQN
-	 zswyTXkNEFOKTyMGzt5NYqoSkhkIjW9qK2EBlzq5udedlhvcFvC8fWMBEtPKTs2nhCzb/
-	 Ykrhy+JNiVHdNdZ8bWcwOdcw26sojWc2ZVqq/U2gu7R5ejSeklfH1UMq2evAGgJTLJA==
+	bh=3OjYQ6M/mHPxju3Ug4nqhzHldYVWjqYGeM/WmXgESP8=;
+	b=NAJk4LnDJvxx68l7RRINKDexS7wx0e0wA0eT0j/iGSKadye7ad9x7B3w4yV9EEs+ReWe
+	 9WtlghzUSN4EZco8vg69Lnw05DVNL8X5zZsYl86lOKKaNS8s7FtRGuTq1R5FFR3+/kt2c
+	 JSsrClCdDpNeo0ej3XpqFuhSHKkQEh8OTN5+GvYQAD7juWeDTAV+Y6iqmQITgz56cTqeW
+	 HXmvgizzVxXlh9kVmsRgPwV56N1U2eFbZiXr11Da5LTs3gkAARJDEKPasNymj/oM14PGl
+	 SyMWiVeUu3glxr8HTYNKg6T9C/VnP9ZVScC73XV3f4R3BFZ2BtdNxLhKjnmFJxCIC0Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tdMfgzpl;
-	arc=none smtp.remote-ip=209.85.210.175
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="GBCxiP/V";
+	arc=none smtp.remote-ip=209.85.210.182
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70D8606A31E
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 13:17:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D70D8606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0636606A31A
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 13:17:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C0636606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tdMfgzpl
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-8b29b83fdf1so1607086b3a.2
-        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 05:17:55 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GBCxiP/V
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-8a070781f63so1441210b3a.1
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 05:17:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795439875; x=1796044675; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795439879; x=1796044679; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=aqM63nnQK7AZCxbMeML2f0tMbQ1WjiGdxoWJz5+hbwM=;
-        b=tdMfgzplRXOZIIP0ZgnOxEtGeNma0sX7iehF+JL/oob0vU3FsnIrCTY32oNWGOFxoo
-         7JhNCAw3xB1ZixXe9RaeXGFri92mqDi8stV/OipvXCX68BKzNOwc5YozME409r1N9bq1
-         9Yffhx+YgipdxCGI2RkcMzpAnpBzx6GhpzafeIB7UKai3oYQW0f3m6cAXgMwobdEUU5O
-         RIDcserCjuLLJWtsl6YNiHydmyfJAaFEBD18JR/PTAv4maYFhELfRqqu60ct5lrPkMtv
-         +SbkYwq/RMicxCN89q7G3djtuTDp3IrPcy1KSwF3uxScaoPN0e43T/pcIRmjEMqdBL3/
-         /NFg==
+        bh=3OjYQ6M/mHPxju3Ug4nqhzHldYVWjqYGeM/WmXgESP8=;
+        b=GBCxiP/Vin7E39F9175BR+9FM1bK5oF8SIE751dacjqD5EZek72UDTqSMvDsXVg0C3
+         SVq12/gm9+LYq5JaHQ0qr1vsed9EXIbRcY61/q03UyoQIQZ2U2LANVC2L+nImryxPUWq
+         guokyhzQTvNvhk2YXAOWgGBQpeMm1bLqcMMylqFuNcWu4w74hYfoFxBbokZLxD1ectN1
+         cM/bOjuRmglmBQutREyGOyk0U8yA2TigX5BD+Pw/MWxMkSPN077GfOnJFxwtV+w7eY6m
+         w/nGCzB+kmT14BWolxiKQ4Yxn3uzXqzIvX0aInYFQMn9Y8BqlJgVFjBJop0qKWAWoXI+
+         6rmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795439875; x=1796044675;
+        d=1e100.net; s=20260707; t=1795439879; x=1796044679;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=aqM63nnQK7AZCxbMeML2f0tMbQ1WjiGdxoWJz5+hbwM=;
-        b=2WqJnds3I6xM8NUkch2TRCkoT23BeT3ggU2QdBhftUf2jCjDgZ3cpHbZ5Ud6jSdyQy
-         94WRiAfnrEsJxPNpis2rvpkvRJ5fn9E497lBmkkb023ofV3uuL0MPizNja3Z50O+D8Sw
-         ByPXQqc5yqhEObiY+tTLugNLeWuP7tZadJjMB5g+srFr2m4K4o1Ccyepn7vwYcWbvmSj
-         A0KRqjBngirKSakNLBJ3QhXlshxvdA3rmVyRub39otwgYaDVOzCpfDIHhc+SytN4UytF
-         VfLSodk7SE4ZbmR9nblJG1MRhT2TQ6/zeeuwuTFoMFEcFWY5Dx26bRVoaKZfWaJ2RtOK
-         ddsQ==
-X-Forwarded-Encrypted: i=1; AL+hErG94vJwbQ/isPQLIlHXtn/mGxA68EUsr0/FrrcBic99VADGl6YWxUucpkubupz5yXd3su1d5inhgxU=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9ChOjGsUM54T7Jy/SIERzgo5otMQp+dMS6RSYg3HyCroSjQwyv
-	g3kCj8mAI56kpoijKTjfpekkmcEC8gQf9rnq4X9ZnTkbPu5W171gAw9J
-X-Gm-Gg: AZFdTZfZFO3Yo7Zjhq6LA2TwCYi1gcIh0StPAArNblE7YULWb9vVbTHVSZgHUOaMtbc
-	etz5ivC+YnAmO8HumTPv+DPn+ssicUKN6RBFqcM0XUCMI9WQWhSa6nlLAB9Z3s89P7vWcfTYQ8e
-	JMRYoYw5VyrAM8OA3k580Zg3mIykqVYwtDrVSh27CVH6AnLQNlWroP9LfUuah51uEbfriQpbd98
-	BhmRjUXGc6OBjDlXgQgw00eEsCXQnFFKWUH+IwIRxJUbwt/3uMMUF5tCi43yWWWWKxOFCtrEGvp
-	fQK3cXWEjtuS0yvEHpZsLXANGjLtbbf8NW95LnrdJFd99gXfdjtZYf8OGn/sa1dJkv31W7UAF9J
-	mPeAwuZQoI8wuoIJWy6MYCsi4u7zmnKFpKHyTMiNhCEgNqZuBNrh9OHh7LnUi9AWpDDllMeSReX
-	Lms+++/F1cSCfkup0ygRHdXIh18sYbEVwHj4YZAw4g5cWnW7/prjhasVcbgIseUN+5L6Q3PcX3z
-	GJdccAzucCLeuykl0ZpRpRLzIKb5M7++Z0Ad1RxlmmSVOY0r0u4XlUdey9OrJUWg2rIxAl8GjcF
-	2Prr7CSYuzQs9MwiOMbUtMBD5YYNaBV+0h/5iObbr+KJut1jXe/n0mYhnJySERRH8tnq/F0h2Nf
-	w+hOgOHpp36uFJ88Y+kz4wAEVF0xVBC9XdVtDl88HMa9Otzz200MZpsuRvb46gLE6vJY/luGRCU
-	KAZVTutWVWg4wKKnHRkxVIyfK3BSQqqNfCuh42tvuWgg==
-X-Received: by 2002:a05:6a00:1d93:b0:89a:5:92c1 with SMTP id d2e1a72fcca58-8c87d51b324mr9447302b3a.56.1795439875096;
-        Mon, 23 Nov 2026 05:17:55 -0800 (PST)
+        bh=3OjYQ6M/mHPxju3Ug4nqhzHldYVWjqYGeM/WmXgESP8=;
+        b=DZjCq+UUUhA+51/mzFz6iOwQvJu5Fb5DrcZdnEaiJEP2AYok3VmlEI3Tf0cvaZ+Zd+
+         JKHs3MX6J3CCoWDrubdJJUGcCsEe7TSJxZoZwxi/oyYsC9xiWWfeiZ7MQA1CKJG+sBGT
+         /JZFNjQMPfDSNQrcArEL7DFaaQAvDmCadpHBolCy+hmJmxl2MwX42lwmr3NA+oJys4c0
+         ea3XtChsB+yfJEmQYTXAE+DCPYy6Y0DqfsEZ1fRRnzKpuJ6W/k6Qhy3GPZFTxrTCXyAO
+         20azPUNRMfBaVIwSNq23vUC2qhKNhmfuJXkKxJVCUvORzG7w4sBs4bVgfu9ViuNCqeYw
+         w+uw==
+X-Forwarded-Encrypted: i=1; AL+hErEXFmRHsVESTFHNueL9XChklnga1GwnJHmF9ST0pKO5hY2qjY2KKWWHKxVttz0p/e58qWqoE1fo+CI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/TbBdhFahl4uzFCddp6ba7u+r8pVBh+t7f+r0AKEa8Pz0k2zwS
+	mXmE2Jc6Z/8vEdzCbcDCaQf2UB/rpJ4CxdkUIa67Hi7vKXbOVSdvuoE4
+X-Gm-Gg: AZFdTZdUZDKTrEg/mO5mBiiwcUbZkj9TnqSJ+GYunox0pJBcU8ixH6SnxCNuOrz5q0p
+	gn1NcKh1ay6uzQf6RNSY95FYIcpcc2hRMj7NQjZkQGivj1SfB6VnZwck0Rv+QBiEo4A7SMsZiXR
+	9SXLFdM1RHa5GdyexxSgl/L4B0eJQz27Gv6iWAmCabs2DJIq+dth5MJ3v1MtBhQRm2HEep85ZLA
+	M1UzIKHomgXwB0skecfnWPyJQN3Nu+q2TgFVof/nf5rpZQ8YnfAOvXO5EsmVN7sHIuFYDSc2yYx
+	OfbI9arYKeX5sPMFaakJOzoTCbqLj9ctaZfGDfYoFsDtWaiv9kWlv70O9A8qEF1Tp1EoULdegXn
+	B+RzFXviwYt8IL8NI4I3Fd7p3ljLIJv9zZAlJQXSj2ABWLgvfwPO5b0/IB4C9EVL6rEYUuA0Ftu
+	eamO3UEPMYX+JDAcHUA3PjXkDTwPPEDNbMPmKQoUgruGrSZRyWOOPOrn7Fox2U7WtR4bU9kzs8G
+	iLrNOdNWceI6j00G+GTLb73Z/fMFod9ioysoRIn2Y3MyaDJpppFjM/cXb3RatYTbGw90XrO4HmH
+	reW9DCufI+Bq0ccS1aGkctclNDTRxX21sXQPl5SM6e2o9H50/cJXxc0nvHJlrV9JZszAos2GrTI
+	/Us8+6MCWpbNTwcmu1NG5Rg15n5AWF48qJeFTgbSPYxpy2LdcjraaRJPpFDGR0isbJ1hN8Tv2t2
+	1MySFY9GQRiyDXvSyYbSSPHv+PyoQgNI4Yei1Rt+tZxw==
+X-Received: by 2002:a05:6a20:7346:b0:3e2:86b6:9bf4 with SMTP id adf61e73a8af0-4014ae7ca84mr11666681637.14.1795439879025;
+        Mon, 23 Nov 2026 05:17:59 -0800 (PST)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c873b27900sm5605698b3a.47.2026.11.23.05.17.51
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c873b27900sm5605698b3a.47.2026.11.23.05.17.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 05:17:54 -0800 (PST)
+        Mon, 23 Nov 2026 05:17:58 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: jic23@kernel.org,
@@ -91,12 +91,12 @@ Cc: jic23@kernel.org,
 	swboyd@chromium.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/6] iio: proximity: sx9324: fix proximity threshold writes
-Date: Mon, 23 Nov 2026 18:47:47 +0530
-Message-ID: <20261123131748.16791-1-kapoorarnav43@gmail.com>
+Subject: Re: [PATCH v2 3/6] iio: proximity: sx9324: reject negative hysteresis values
+Date: Mon, 23 Nov 2026 18:47:48 +0530
+Message-ID: <20261123131748.16791-2-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <awQfT6jSKo9pjxjU@ashevche-desk.local>
-References: <20261122074649.239441-1-kapoorarnav43@gmail.com> <20261122074649.239441-3-kapoorarnav43@gmail.com> <awQfT6jSKo9pjxjU@ashevche-desk.local>
+In-Reply-To: <awQg6X1ay0zyyyaf@ashevche-desk.local>
+References: <20261122074649.239441-1-kapoorarnav43@gmail.com> <20261122074649.239441-4-kapoorarnav43@gmail.com> <awQgWmI3HmyqTcrS@ashevche-desk.local> <awQg6X1ay0zyyyaf@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -109,30 +109,22 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 23, 2026 at 01:11:11PM +0200, Andy Shevchenko wrote:
-> On Sun, Nov 22, 2026 at 01:16:42PM +0530, Arnav Kapoor wrote:
+On Mon, Nov 23, 2026 at 01:18:01PM +0200, Andy Shevchenko wrote:
+> On Mon, Nov 23, 2026 at 01:15:42PM +0200, Andy Shevchenko wrote:
 
 ...
 
-> Why not simply
+> > 	val = _val;
+> > 	if (val > INT_MAX)
+> > 		return -EINVAL;
 >
-> 	val = _val;
-> 	if (val < 0)
-> 		return -EINVAL;
+> On the second thought, the original < 0 check might be cleaner... Dunno.
+> Jonathan, what do you think?
 
-val is unsigned int, so I think that check would never be true; it has 
-to test _val, or be the val > INT_MAX form from your comment on 3/6. 
-Whichever form Jonathan prefers there, I'll use the same one in all four.
-
-> 	...
-> 	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
->
-> Note, reg might still be not used, we have more validations and with your
-> approach the reg assignment is in the middle, confusing...
-
-Agreed, reg belongs after the val > 0xff check, right before the
-guard(). I'll fix it in v3 as soon as I get the val verdict.
-
+I'd also keep the _val < 0 check. It tests the value as userspace
+wrote it, before the conversion, so it needs no comment explaining why
+INT_MAX is the limit. But I'm happy to switch to val > INT_MAX in all
+four patches if Jonathan prefers that.
 
 Thanks,
 Arnav
