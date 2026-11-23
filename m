@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795432543;
-	b=DY3zEfA4sjjQfNlkZgf/x9u1JXOMNnKsbOhhl9gv4rXVwvxz/X00amiN7GBmRHtg+SXE
-	 Ge7hnaepuXF4YnzAs1vbOYTG4rQYXkPPLao8t+b848js6hbK9RMQD7jkR2gCH2xxr/h99
-	 bTEc01KES6tJ2/3+3Sxd9/FOyAFi4O+N9UJa0LBz015lHjS8mZ0EFssJ7jRnvTa54r6nH
-	 FMaL+2FHkx1OQF3Hme49JSXB+Q3l9m4LvVyhU6k7pwW2aE+FlVuL7sv/jRXVbBrTNrl95
-	 1FHibORpCdfyOWeqV2WSTeZkYpuuRIpNhgTebmMtaHcvT4sUbXYdxEpL4aHX4Ow0WOw==
+	t=1795432582;
+	b=KKXfufrWFCCYwW0ELgtgsrYSsKvS0oZ3NH8T9g3ZpYQvO2z2msN1V389rrCbVyzLo2vb
+	 IHsIphIJSWkcJ5F5NSzRmplVEgyf/I5dsROZe9b8ya411gNgP2vjgHFw+u8jyfWcXi6Og
+	 9wjulRKt6emnNmoK1Kl5NWLTgGYpxD5F6pYRwU/mnYg7IrQvS1Hb6jsYSMQ6+ED0sEq3g
+	 dojwpe8d8escFhZnCKCe8X5saA1hMraHfhjUMX/iIa9HM0POJyB0VWzbRxKJWu4xBntdX
+	 WojnCwg0KERZGRok/y4odEDb07nz/9s85mjAs+vcN2xPsEj/7tb8ndCduNaydOD5sAQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795432543;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795432582;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=LX+A9a0lW1HiTrW/Uz2nviRvwPEaKkd8gMQoME4OxnI=;
-	b=P1WoyA43wbi70OAq5daMqn1DJj46OqJu4rmBoe/5HVMKYkmejKEg3frKlQXvNnBJKAI6
-	 GJwXVmfx0Eiaan/mjvvnOae8kNXfD2qoZPPujUMffcVx0//Mc5brcIPTTIr8WIOmGbWRS
-	 K5/FTne5wynlC/h8SKEvUn8M4dOwZzywbUPECO/RAs1KKeo7x/yuvoLfF7bvXCbqo539J
-	 1HW97Fq6K2CQ2wlholnYSbJGCU87vMZdr0m72vl4UfWM5hKVjIDc8IHuqaMEsU+66O9Y9
-	 LBt3VMt59srlt7RotaYuYPKFlHb81h3QFcSC1aa9MFCXz4GMoe90Ssa3XA1XswMJChQ==
+	bh=qMbhXwmp16IW/m6Dno0vydG5WKg0egDd7dQoH23pp9A=;
+	b=eiN2BbGFoMq1M1oUHE+DQbmW5dBvmZ5JHPZxZ7RH1v/SuSzExpuG5Oy3FnmHTUvfI8WH
+	 tc6NU3srmmmaXkmUo2zM9daR00lVwFyqiu9CRZVx+8AAqoupjIfaUmMYP9LTgdCxQLZpS
+	 IoUw7+s0GhK3b29bRyVK1RZVEYl1oPzB/LqMus1znjP3yjKsLqOnTnwKr378Dih8JigBt
+	 EUK2iePoPDvRmVT/1ynT4S08Q64UB/5wGVva7ZYsRhoYBO4tNStxHk4j74ZyerMOSYpF2
+	 K+d2a/4cmB/kX2ukavAiJVIhURMXLhEUjGToLt9Q3kV4HYi1WYIWDKwkt1Ra3fz+2BQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bnSLJtMq;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="DsCJf/R4";
+	arc=none smtp.remote-ip=198.175.65.20
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F24606A31A;
-	Mon, 23 Nov 2026 11:15:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 39F24606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C313B606A321;
+	Mon, 23 Nov 2026 11:16:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C313B606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=bnSLJtMq
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DsCJf/R4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795432543; x=1826968543;
+  t=1795432582; x=1826968582;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=0GpQepsmZFy1Eygu+W9dGi5Abg63IbCvsaFS9IHMmjQ=;
-  b=bnSLJtMqDA6pNaVItfceOxAH7pyqhBKq7iknleXNdfB3iG8HGRv/5gUQ
-   57ZQ8+43aumh1Q4F6CRp4mTHuIj218DAtm7aL6q0Zw7xB/20LOCxKJFCq
-   MgKq/t6/lz0krVXz6b/u+CbfXns0p00Db+07bU40MeFsk5qMDky8PDaR7
-   IBxvX95EBmnLCQrVCcFy/3GgkodnZubjVnztjxYIKxhylwWnhCTLHuCog
-   2zGXx4Kq/vA7m7BIkVTA5e5UIPzNdORwL0MQ8Oy1SswDNO6qlKwckTLIc
-   OFKL8jsc2X8YHDbuY1IXqUIQ6qpnnhyB6Iw+ZoRuco+QlF3w2A5zst7ia
+  bh=4k34Fr5FlxUz8r/biqU1Yem7YxcKuh3H79iZ7srFOYM=;
+  b=DsCJf/R4HI7nC7YzPa2GYksy0RE7+UHucUVOIERI6LKJmoPQeUNvbFQY
+   +c1JHFgaed+afpNO+WK6+OGA1SrcT2HH1I0KsvKJ1Ye22NiB/9sRsH3YK
+   aRun871D7yhs94n59pyhLZTh5+/BUSNKQ+qMRLqBB3kD4HQNKH6xNO4ZT
+   AdU+mUbxWDSX3bbThVXPl6/mcVWplJ0YclwNXMD33IIs0sCJcgwsUmB5k
+   4YbCn5f9nvMCToWJ3uVctkw5HBkYM1OW2jHnXHRYxGhdyA29JQWcFz6oc
+   MgzIMZqEMOESOGLx01xa0MrLs8YOdXfic/u1WB4r6zUjQyh3N+7f8dTpM
    g==;
-X-CSE-ConnectionGUID: ArTZG9VISDWOnn5go63wag==
-X-CSE-MsgGUID: K7CPaA2IRryOMbLUCQbiGA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4129649"
+X-CSE-ConnectionGUID: QAMjHKQlSamJcMIw2qqOFA==
+X-CSE-MsgGUID: rqxuwbZrSgSVL3E0iqHjoQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4287120"
 X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="4129649"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:15:42 -0800
-X-CSE-ConnectionGUID: VU4irReYScOvik0QYjPauQ==
-X-CSE-MsgGUID: 63R25IokTeuM+ZATFNAn5Q==
+   d="scan'208";a="4287120"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:16:21 -0800
+X-CSE-ConnectionGUID: Ee46gVDURNyKMbCdKm4FVQ==
+X-CSE-MsgGUID: cyxRiI6lQXuJYl05XeOFGw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="11693110"
+   d="scan'208";a="11172921"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:15:40 -0800
-Date: Mon, 23 Nov 2026 13:15:38 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:16:20 -0800
+Date: Mon, 23 Nov 2026 13:16:16 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Arnav Kapoor <kapoorarnav43@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -71,11 +71,12 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Gwendal Grignou <gwendal@chromium.org>,
 	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] iio: proximity: sx9324: reject negative
- hysteresis values
-Message-ID: <awQgWmI3HmyqTcrS@ashevche-desk.local>
+Subject: Re: [PATCH v2 2/6] iio: proximity: sx9324: fix proximity threshold
+ writes
+Message-ID: <awQggK7cKRKH3jUg@ashevche-desk.local>
 References: <20261122074649.239441-1-kapoorarnav43@gmail.com>
- <20261122074649.239441-4-kapoorarnav43@gmail.com>
+ <20261122074649.239441-3-kapoorarnav43@gmail.com>
+ <awQfT6jSKo9pjxjU@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,49 +88,39 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261122074649.239441-4-kapoorarnav43@gmail.com>
+In-Reply-To: <awQfT6jSKo9pjxjU@ashevche-desk.local>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Nov 22, 2026 at 01:16:43PM +0530, Arnav Kapoor wrote:
-> sx9324_write_hysteresis() copies the value into an unsigned int before
-> comparing it with the threshold, so a negative value becomes a large
-> one, passes the "val >= pthresh >> 2" check and sets the largest
-> hysteresis instead of being rejected. The comparison is done in
-> unsigned int, so this happens on both 32-bit and 64-bit architectures.
-> 
-> Return -EINVAL for negative values, before converting them.
+On Mon, Nov 23, 2026 at 01:11:11PM +0200, Andy Shevchenko wrote:
+> On Sun, Nov 22, 2026 at 01:16:42PM +0530, Arnav Kapoor wrote:
 
 ...
 
->  static int sx9324_write_hysteresis(struct sx_common_data *data,
->  				   const struct iio_chan_spec *chan, int _val)
->  {
-> -	unsigned int hyst, val = _val;
-> +	unsigned int hyst, val;
->  	int ret, pthresh;
->  
-> +	if (_val < 0)
-> +		return -EINVAL;
-> +
-> +	val = _val;
+> >  {
+> > -	unsigned int reg, val = _val;
+> > +	unsigned int reg, val;
+> > +
+> > +	if (_val < 0)
+> > +		return -EINVAL;
+> >  
+> >  	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
+> > +	val = _val;
+> 
+> 
+> Why not simply
+> 
+> 	val = _val;
+> 	if (val < 0)
+> 		return -EINVAL;
 
-You can validate assigned value instead as there are no side-effects.
-But while I wrote it, I have noticed that there is actually one, we
-modify the sign of the value. With that in mind maybe better to have
+Ah, see the comment I gave in the other patch.
 
-	/*
-	 * Assume only positive input, negative, after conversion to unsigned
-	 * is unsupported. // or something like this
-	 */
-	val = _val;
-	if (val > INT_MAX)
-		return -EINVAL;
-
-
->  	ret = sx9324_read_thresh(data, chan, &pthresh);
->  	if (ret < 0)
->  		return ret;
+> 	...
+> 	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
+> 
+> Note, reg might still be not used, we have more validations and with your
+> approach the reg assignment is in the middle, confusing...
 
 -- 
 With Best Regards,
