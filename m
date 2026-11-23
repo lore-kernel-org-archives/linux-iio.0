@@ -1,104 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.174
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795414711;
-	b=oszayDM7QsiZm/PPKcvZ6X+qHM36vb2FR3b28/eamIG+4/3e8nlPRKlpZDMS8hUCgKXg
-	 kyI+mGoVg2Eqi09j7Y0BJihNLwjfRktbnD2zavWdS++daTZogrxXTsZ0PurQZGy8Wikda
-	 ThgMMA5xaQjOk0I9asljT//KlNH4YaNW5ZBTz+OkHRyKcFFLa67dZWMvqc4yXOOLD3buj
-	 4BM9dEeWAH/CSW2vjdgCjxQ8UfMtwWwb64uY2QkpCECyg81UL6PMQ7/de7Y0QIYaZRdDT
-	 8w1osnWOokPbPJu1otYMhBrMyi/ymkf9Jj/1/oiiLU8YrrRTh48gQeYY5CFssqZoGZQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795414711;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.45
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795416038;
+	b=GtLjQXfKa6MqOfUFdPVRqgHvc8ROzuUzbJ+6Gkh3su5jVtPozo1VM1nFMWEsfbINEOrF
+	 dTbVa1r7nbl4CydX2PiCpvzvUmCh6iw72Jqru1sVZhup7JJw9U59n6CBz7+Yc26WCBsYx
+	 xmZP11faVr4K6ylztNlrm14SJ7Rmhb/7eI+/Yl2qHsV326F2ii6Z0z9/pong6UgPpabiU
+	 2n1mU8HpNyRCKt6wx1C8iIFpO3yvDwW4EDtlYV+ahHixSTb7xtHulPBAYrZX+yS8nXOjL
+	 DvNK1SA2GTa6cf4VPOmxtifCKyJrSq2Spo+AcuLEL4UgqYRsU1w3tj8MIagiZqlQ9mQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795416038;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:Content-Transfer-Encoding:MIME-Version;
-	bh=dLytYQ07FVJVySJIOlerRAcLdDVChLBLXXS4O66TYZs=;
-	b=OLYuCl+1j+s4klxmN028fm/aAR+RjmzO1MT38MK6nMfQq4whoEybUHIpT4bP+HsIx347
-	 MsE6BqW/kpolpj3vo/VKLJi1PFABxqFyKPFB2LpCuyNewn4Sx7FeQeKkR/i+ApfvuSR5/
-	 XOprOw+tgm7N6iHNo8Bvj0dbzX4sgX777wGy0MxuZwXU4f+sEX7jxJr08WycfinQX+9t1
-	 0Sgw4jH3ybEHKO40eNlE24DhxXGldeHfRgLtbNVYJ0hmCsvf10O43vwqv/e6X1jZTlcG2
-	 Ux8MDkap9EtQh4wJyCMZ7OObrYtyR9O/8uDsGR1C5rxJRyBL4a3mIEqYS1MC40AUoJA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=f4a8zFdSHZW0pYRFKYGvDhkp+r4/xiv4IAwtu7E955w=;
+	b=yQMfLsfsOyV/+RDwexo3whdDRRsrW6iDA17OXPSoBcbc2jGgWhKzZu3CChIGs1WjW2YW
+	 DIUBtaHAaKolH0zd5uoJdI4QdEScVl30CZvKGYrrqoESXnA1thV5uhxFw8W5HRHKlJy5g
+	 uKCRoOyPEjlYIiAHc2m5ln3DZXXDNSSrx4wJCFdpjUbqDQgbQ6AlEflPMCJwXrxkG05dz
+	 SzI55F8G4BlsxSL4mBcyP/VxoHYdBXM6LvbibYfjtUf1YQbri8gZfTOldVeeLgHa4X4IM
+	 J7ZAE0pjEDuzhn+rWGP/SqnxugxJBs8MeSZIiLW7ufscMvqPVrjG45Li29/NaJo08sQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FEAfsgvo;
-	arc=none smtp.remote-ip=209.85.210.174
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="tj7oNz/g";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.82.45
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1459606A31A
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 06:18:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B1459606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4306E606A31E
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 06:40:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4306E606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FEAfsgvo
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-8b3577deeb0so1249826b3a.3
-        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 22:18:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tj7oNz/g
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-18818daa3e7so1715077c88.0
+        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 22:40:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795416037; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Tw+dm5U0FXOPhPKop5NNIXm6aql2Yyy72oQ5VhtHx2sm/EbFKC1kQBpYoVlSaO/fEE
+         n6uYFf2XKEoGz9SLCYQ0a/wqL+/TYAD7onF20hqnJEejPSYILoAqfyDkdTLG03VXY2VQ
+         Olr/b3ecI30/yl+1YfJ8VFhWgWvVJ3f5jA58Xi4JC1vPVZV6IqTU/7EGVLdwOy7aVcSU
+         2DCOUTIh4l3PqYMmPK027wje+AQX2lxU6XVWCQsCLEscps3/Og2/keSe56ydyeUMRJAB
+         gnDYpSK6JQsfsgcPjXD8Oe8kR3eo1qaVlTNdAcveRgWXxN+UqijnUxHqv5GZRHPFliQD
+         HPtg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=f4a8zFdSHZW0pYRFKYGvDhkp+r4/xiv4IAwtu7E955w=;
+        fh=AQz6CBtEZkypf6u1KASDpkkGId2JCgXHIwSrEc8/PCk=;
+        b=qMjvZb6JMDvwu69ESpVBeSxp17CcoEYQtFZgALeuJQv/NhfjDJLlUlMaCK1IAwgtEJ
+         DszoPq1N2vm/pGIx5mgKwuBHTsZoYihYlirfjtfL5jaqoUBAwIS5VDalqW1BnBsYGQk3
+         lxuPWSN4MlOEQTMMl3Rd6qyN9xFNAohFwIR9q5Jp+BP633NBKHJpBMb1YRZBeV0ApIyi
+         L+agThL3Z88PtwPJxCG7PT1ig43CVXC5RW5g5g517krQbIBYV1Asej1PxD8KeA2haT4U
+         kW++ukpI6G6l7iC2LcCnVTlHwatRbTMOYChOEF23QKFJhZ93pzXGPeelLBLgC6Np/sM5
+         HY4A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795414710; x=1796019510; darn=vger.kernel.org;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+        d=gmail.com; s=20260707; t=1795416037; x=1796020837; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=dLytYQ07FVJVySJIOlerRAcLdDVChLBLXXS4O66TYZs=;
-        b=FEAfsgvodyRhzP/vHapBg4sJcaEX4S3niiiCMjiNzeMaG0wKjv6kKg+pOyWz8lDh6j
-         9A93s/4Mhg0e1nDlV3auIkYILrpcWTaluG8DGKZ3nrg7v4Ms/3uAt/pPTF4cTDQ5Z1u4
-         s79exU2c8GhZnd8pP92AmcZn2/rMSz2294/8LlYqkD2MYndip9Cw+UMpBDO5a2U9mspR
-         V3V1BmUT6ceAbBpLzd3SxPpgpBAKOtzKWT/vtUNno5MaGBdS33N/KFHq1b3n0MG/QQIi
-         r4RRMQ1F+oNPKVNUvT5Jqgr1BFFJBcdvamZd/7CxnuCnghSf9YEBxhROgB9LShA1HVo+
-         TerA==
+        bh=f4a8zFdSHZW0pYRFKYGvDhkp+r4/xiv4IAwtu7E955w=;
+        b=tj7oNz/geF/WMXYxTdQF8S73V971uV/32Yq0koMbSYdL/PioOpHn9SOBzqOlqUljxR
+         8ssbWO7m06sjuxD7HxI7bNAULBrMuiu9iy0BKjrA+YNVRlDDan1yRAoJUklSqaifEZ3w
+         deQAbjFhMSsBlsXexIFRTdNB/uArYZjbPGOd9N6v4ii37VMLx5LeKoIj7bvDeK+nNKfb
+         gzY77YNZTvfMsKYY61cw4NpGoa9OsSWbybgZqWzuys5/Zd7KevJLcfziwsFg8FRwMtf1
+         H5pDmahyoil88gCFeziexDgRA5VoG1aPlfqmpZXxx5tVSz4+f990JEqm/DVhaYQ5Xq46
+         i4sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795414710; x=1796019510;
-        h=mime-version:content-transfer-encoding:content-type:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1795416037; x=1796020837;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=dLytYQ07FVJVySJIOlerRAcLdDVChLBLXXS4O66TYZs=;
-        b=cV0StHYiLEFVN2RSXseOlnCEKsdNdM57Jqffzz3Lt/mvTgU1T6OWljHbNDmJcY75M/
-         87JExJcQxLOUwEcULbXlQODDRAaZT517WuW913GxIUdaDNDphT9TJ51xTWpbasW0AmdX
-         X2uCTjPJnkLQ845vus6A8GgNvhizYDlNdn+fkjM646l3YB93iAKQZCjX5ZFRL9TlN+3n
-         3wvfaJp3zVHF1upILPTC7/Ofv/RDAurc7O9Xswh83MFMXph3jxsSod1NfnIxDK7AGskE
-         3Ux9kcoWMn/dIBlnvevfCcw7qouEgntijHmjQ39Gi8SepcgLK/ffLQxFM1TWIRTZZTNR
-         paug==
-X-Forwarded-Encrypted: i=1; AL+hErFRucf3w+/OScAwp5sulX50aT+6SRrraaNoFWEPs4/W+ZA2B4ve6GAt72AdPXFSrqnVPxsx6ohLf2E=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8DO6YpvXft0/ApqfjJ2q6348ksF5E6vFfXEV/bS+jjlIi3iefY
-	0qAVUjw5NBVAiDrcHJXlxT24cfc+5xzGnihro7oCyj+ziStro4Uv0JZP
-X-Gm-Gg: AZFdTZffjZf+JkymZL+OTaLeUlCThdy+7e2PK6a+ISYirwmXujAq0yeZY8TRKzQ0GUX
-	I6U+5xOZvJYekUyblu1Nw5j4Jrsz6YEVgW7KVL2b2q+buk9RFMRYVLtoGvDSfZjxuhX4eKrsCat
-	4NIfeGdfpkqexo8zhFamWEa+/DK3Pptf1hWblzBKqc0Ux1Vpl+u9KKjicsw32ZdAK16yNJZODDK
-	J1BHLlTBbI6Qsf5ceE5sPgukgsr3sjyrL1grWbxMoTRWA1UcFB+zoSOwZISVJD532BAXPEO2ivG
-	3t5vAvLGlkVhJigkkN6aa/3d7grJ0BPcADtgoxUCRm3ZpICuX88CsJLksrerltwBZkyJxNsbrdP
-	5aq+iPYslz1Tg3WzkT8vna6ZXsDTbhfOvT5S52sxkLMkQ6f/UmLBlN3gTdJXUcB0Dbz4WLlIK1y
-	MGSq47tBRZIFL2DujnNkxO45fZ8OYcyEKRDVzBz/1cweZJkA3rBohtfIDIwOTUgN21W4vJ1RbFQ
-	YEjAkzYpLIPK+BKt/ooR3rNHDfqgV7ljk+EwJbPZ1pG1bBV+5Tt6EJ/o1JA9NhuvXJUDhpdNxyy
-	w0jUJWDrtkP/dsXQnzPdQ7T13TD67wmu5eGbc6EfoBkRz+Ud
-X-Received: by 2002:a17:90b:224e:b0:3b4:22d:e066 with SMTP id 98e67ed59e1d1-3b41c7d6061mr9586446a91.5.1795414709920;
-        Sun, 22 Nov 2026 22:18:29 -0800 (PST)
-Received: from [169.254.42.106] ([113.200.174.114])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b405d63728sm20555357a91.8.2026.11.22.22.18.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2026 22:18:29 -0800 (PST)
-From: Zheng Shuhao <viennaoffh@gmail.com>
-To: "Zhang, Lixu" <lixu.zhang@intel.com>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: jikos@kernel.org, jic23@kernel.org, bentiss@kernel.org, heiko@sntech.de,
- lee@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- ayaanmirzabaig85@gmail.com,
- syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
-Subject:
- Re: [PATCH v2] HID: sensor-hub: Avoid holding spinlock across child iteration
-Date: Mon, 23 Nov 2026 14:18:22 +0800
-Message-ID: <179541470215.18860.14575261868309740807@gmail.com>
-In-Reply-To: =?utf-8?q?=3CSJ0PR11MB561395B8C8BF1B839137926793452=40SJ0PR11MB?=
- =?utf-8?q?5613=2Enamprd11=2Eprod=2Eoutlook=2Ecom=3E?=
-References: <1795161418.hid-sensor-hub@viennaoffh.gmail.com>
- <20261120135005.566-1-viennaoffh@gmail.com>
- <573f3eb75601c17d6e766fc47a7cce1bc2274998.camel@linux.intel.com> 
- =?utf-8?q?=3CSJ0PR11MB561395B8C8BF1B839137926793452=40SJ0PR11MB5613=2Enampr?=
- =?utf-8?q?d11=2Eprod=2Eoutlook=2Ecom=3E?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+        bh=f4a8zFdSHZW0pYRFKYGvDhkp+r4/xiv4IAwtu7E955w=;
+        b=pgLsOF9jXEgiXnYFtedtgcKAmMoVYs+2OrGDPZ7pS2Ya/c8yLtOkr58/FXCMuivFXs
+         9JcmvsXWjj52Nu3gHhqzuiX5oCMMvSl7fiA1YkDtFhojZcVG2xKbBEbDd+wBukvsUvHk
+         bF3nfhNlMUC0SAWHnt4tLN6sFty6pPFCOjVcke+u544ABI95gSAoMJHeePBadBayEqf8
+         Q5xxh+pBiXe9VUmAI8MpRA9dnRcTmx2EX0cFR9vngueePHvyZ5tH0RpL77O9DmUcaebo
+         yk7JGJ/N6ANgbG/jwNp8ObFlrGZI3g3UvY8LtQHx9CU/D4oVN5ld5vgGTdb0rvMLSWMd
+         PWmw==
+X-Forwarded-Encrypted: i=1; AL+hErGPgdkE986oBlGdWEFoyxM94Q/fdCRWpZHBQhXdYRACNS4YDRI6TXi4UDanZiktFMptezfAfgPIBgc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8L3jNq1AlOAPT+stqQNJgCGSEtQlG+YujfR4TIk/TkunA7/FKp
+	QxAzKDD6FIs4kOBDGogt7cwAvvKICY+Bi4/DCDXFKZWH2uJfBJCzpd+GD10LuHicRPaO4/LOAEP
+	nSvzUP4+HvsJfC2D1N0wZCv6vqrY5EcA=
+X-Gm-Gg: AZFdTZcXcQGTVgQ9TE9ZzEmgx81SqBHFtcA/K73Z/WZ9dehDJXGpee43zec+8nWfRJ2
+	Bt0qhMzw0ES0A6JoKyzSUdAiKwnX171KkIy/6d7mlMDVhjWNLua4XWTqcIAk0DeRiElzQrxwtOR
+	KyPi6PFyGwGJxgaxs2Qg5sqKGv3pfpUCv7pme6sPDeqU4ZNqVrzdcmn8/c3lVMVUNZsFOG/M9un
+	vvIKS5xZdRIaS0rIy1zAZ8n6+OeyLZLCKnF6T1mOSEXdoWAdNxtWkKapk5BcwtOtuFG0aCx6g92
+	jFvraAD04tKGGnQerrf2bGF5FgT95wFoctq7ELydqM8w47ofEHKo3KZBAOj3BBqAOM6glSpqYQd
+	KVzg5vkGih+VyQDoE7Mbtx7kPsWenDriy3kQW
+X-Received: by 2002:a05:7023:a41:b0:1b2:67f9:43cb with SMTP id
+ a92af1059eb24-1b5525e786cmr12124036c88.17.1795416037296; Sun, 22 Nov 2026
+ 22:40:37 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,32 +104,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+References: <20261120210317.184756-1-kapoorarnav43@gmail.com> <179526830578.567.7445109567862298713@viennaoffh.gmail.com>
+In-Reply-To: <179526830578.567.7445109567862298713@viennaoffh.gmail.com>
+From: Ayaan Mirza Baig <ayaanmirzabaig85@gmail.com>
+Date: Mon, 23 Nov 2026 12:10:25 +0530
+X-Gm-Features: Aa3M54pKXHh6UQF7oq3WN8ub3J8erT3GSETIT8vxp_X3pViFXm3_QiDK3Y4XRHU
+Message-ID: <CAJi8Lv-orD3VA1NJ71L1Qcw6=AWuBZesVFOHe5Y+bwzWxT8KRg@mail.gmail.com>
+Subject: Re: [PATCH v2] HID: hid-sensor-hub: avoid lock inversion in sensor_hub_remove()
+To: Zheng Shuhao <viennaoffh@gmail.com>
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, Jiri Kosina <jikos@kernel.org>, 
+	Benjamin Tissoires <bentiss@kernel.org>, 
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Jonathan Cameron <jic23@kernel.org>, 
+	Lee Jones <lee@kernel.org>, Heiko Stuebner <heiko@sntech.de>, linux-input@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	syzbot+fb951970a334aaff00ba@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I'll do that. It was only after your reminder that I noticed Srinivas's patch=
- had landed in git history just a few minutes after I sent out v2.
+Hi Zheng,
 
-OK, there may have been some misunderstanding here. I developed my patch agai=
-nst the baseline kernel without following the discussion around patches that =
-hadn't yet been merged, so after sashiko reported the null pointer issue (htt=
-ps://sashiko.dev/#/bug/linux-23655093-642a-447c-b416-776e47c98d55), I submitt=
-ed the patch directly without giving it much thought. Only now do I see that =
-Srinivas's earlier patch had actually already included the NULL-dereference g=
-uard. It was all such a coincidence, and I got confused =E2=80=94 after all, =
-I assumed the issue sashiko had just reported wouldn't already have an earlie=
-r fix, and I also wonder why would that happened.
+I'm fine with merging the fixes into a single version. I've just now
+read the other mail thread.
+If you can, please send the v3; else let me know and i'll do it.
 
-Anyway, I'll send out v3 though it may not make much sense. I apologize for a=
-ll the trouble I've caused.
+Thanks,
+Ayaan
 
-On Mon, Nov 23, 2026 at 10:39 AM Zhang, Lixu <lixu.zhang@intel.com> wrote:
-> Hi Shuhao,
+
+
+On Sat, Nov 21, 2026 at 7:08=E2=80=AFPM Zheng Shuhao <viennaoffh@gmail.com>=
+ wrote:
 >
-> Thanks for the patch. This v2 does not apply cleanly on top of
-> hid/for-next due to commit 41cb3076a221 ("HID: sensor-hub: Remove
-> clients before stopping hardware").
+> Hi Ayaan,
 >
-> Could you please rebase it on top of hid/for-next and resend as v3?
-> I'd be happy to test v3 and provide a Tested-by tag.
+> Hmm, I overlooked the latest discussion, which caused some overlap betwee=
+n our patches. Sorry for the confusion.
+>
+> We can merge the fixes into a single version or find another compromise. =
+Either way works for me.
 >
 > Thanks,
-> Lixu
+> Zheng
