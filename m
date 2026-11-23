@@ -1,82 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795432687;
-	b=Nvm9yyiJzz3MuLY8NnBmOAcah83IJdhlH/4Z3f7mrxKHeVkLok7KP/XOJxRenwImz45k
-	 kmlV1qncAO+RJNUujQwAxXw/jrrh9hKMZDS4ilEi0rmyPe4Rb1MKY44tp6qK6hn2EfqBB
-	 +CMlP/R0yGImEtZxJHAM5c4ixcihH0CtL7xFR9a3jBA8D61/YkZXDVXaxHPsnKQO0V/v8
-	 m+4oGKBCbLCHHbQ9o1lOb1HDCken8uLzGWbBpnm1beZk9+9stHAyEumOeEg/3qfGcXvkT
-	 VzaQA53Z6vNPZvmIWHHVd8uC+qNoSKY5VD+2I3yptbft8gortLJYGHWj9gn7MCnEUpg==
+	t=1795433190;
+	b=zq2eJ/2jCJVRrpmYOliVYkPVX60C+PaD1OxagXF3rcIKzLg7EpzRQUhgp5n//VKnd6c/
+	 89u8v5QlrlZ30Ma0tNLq7nw+De97a9mzHUg1C+GEPQl1eocKSRl99UuvQ0J/FMKgj8H8l
+	 yN9Fg4D9GJF4beLFPU07bEHSjm37pKPUiA0aAYyurMKcAU9VFZwxaUkz+E6+QaLGUFUcz
+	 D3+HOmStm6MV3EfDk1enGsGXNpE5DxLOQ0rt8SpQBh9xl/VTysnFzKJcqQFTc45Il4dyu
+	 kxlHJbalDg956yetGXZiBgGJNTiUelEUTDRjpsyQLAZsGwD7d1CCfqJk+Eo1Dymosyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795432687;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795433190;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=ohtcBLlPglNaSWfxorY5RBquMUE4iyKajaz9tnVakOQ=;
-	b=ssTc97Z0VNO0RNlCKuQEB7l8+3XE2D4PpX/8MEHBtDWCTIvOWixmOucG7y3lJlb04vTO
-	 M95EIEvAKFvPJu6ZNEUdgWLuWMQ4F4E0EmCMTxnxtgHnJD8EQAytwRS12bIUAL6AmCJGc
-	 4BkHr/UtJt1k5+m5B8jnvDmW9C2A4IN8UORRR/2wlJWA+dk5TaLLAUgpbAsnDIVrq8kRK
-	 jiXkQ4y0iCAe+ty+3VOltLg//Yl2yKGcNX1ijbIBm8j0A3GDSvy23HppxBN1X6IDiAKR/
-	 fg1VlnllZ2zpFGULsPIQPzPuLasNdqibgNoA8vyBxoSZDBE2R47Cjy5pyavJhKe5Nsg==
+	bh=eRHJYff7xbuoGc4caiW1C1gZpXcbzwTAvEFSpmbyqfs=;
+	b=SX8D8bAO+e10vB70yCfDnS3vmU/sJlyPV2fl6G9icXQq6IS+DZ3KFA/t6SxShBiOusf9
+	 EJqzXg1g35/9mWYIr7nQq9DUir5LxaUn20LIEjIB48QxMCZEmZBNRGxQLkn86weHp+yMV
+	 fX/7kn8PDM+3ZoC25ekVuEMKli0/NjgSZoc/618900nprSW+v52NYUUj9EcVn/mOpbc3G
+	 pgJiWMyympYbbfc6f8RK6inGj1Ca+lyUIB6rI24QR2+FnbZggmBjefdZH7IIFZERV49Qo
+	 LC8xCQrr4Z74uM6NAYVMkA1YGV+MXbiAbtzSzv086jpHM4nCSazhTeoPjfxLPuxaq1Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EcH9GZqP;
-	arc=none smtp.remote-ip=198.175.65.20
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MgENCpS4;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 982B0606A31A;
-	Mon, 23 Nov 2026 11:18:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 982B0606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E38D606A31A;
+	Mon, 23 Nov 2026 11:26:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1E38D606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EcH9GZqP
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MgENCpS4
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795432686; x=1826968686;
+  t=1795433190; x=1826969190;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=lZ50IOVZhd0vYYFq5GokMpkOYdrVYZjYUfUkwEWKF/M=;
-  b=EcH9GZqPwDhRTLLPIR1YN44i83nBqQrqYJnLCcOWU+k8GYT4dOHlRudE
-   tsQlLEb7Etjj/XXqbDL1JGKyj2k3egMvb/vxQ76i0QqxNGkgtvSpJ00RO
-   ISjF9Jd5+ibEZ0te08QqBb/MTFymSrIYdAdIU2xVjoVdSWAdqlqm0iurc
-   aygAfCaI5jvX5/3cf2m7L2yj1DEQhoP4R1gJ+cFZRMWxrUOAALVJqJCrL
-   sB8gwFmlqBNs37fs9/vyUWaRBzwvOx5GYGAXeew4LT4qSR5XI4FHI0V0x
-   ajiYYHFXgDisehxVNhcXzdkyL9vfihHyASs70tpJZaaN5HK6rfrlxv2Sw
-   w==;
-X-CSE-ConnectionGUID: eja871JDQDiFOghLtJMy7A==
-X-CSE-MsgGUID: qfXd5ZvER5WY2cXjhVfUtA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4287360"
+  bh=scRuyMIVv2lSRt7Jqqyl2xDUabYgnyyzF+RNayr6wKA=;
+  b=MgENCpS4ION/zXFfXyRtERugp/JjLOb8jhVWPJF88eVlKyHUY0arZsjq
+   VH2aIpJKj289Mfh3COQOZzhZELvDJ6Y/h/cxTUlHLlrG4/cEO2Kgb2LrR
+   wjMv5APOiv+VMk+sAKNnXzl5Kzn5Pl8TISd6vw4XPi8v0/6Sys+FfDzLJ
+   ubxpRfRVyxoVY392CzL3e6zZCiDBatdnLewZcaWw7zO++FJ1w0s6qjeBX
+   0XwzXcZIGAOL6SpDGvNMIoHEkBTWDQa3f7hIEOehaWJlEoTtXDSI62loS
+   0Q8OmEnC0lE7srEOUc1hHJ5a3EY4CnetB5Gju6kr+Yvz+Yq4UuBzVFsFU
+   A==;
+X-CSE-ConnectionGUID: LKd5JXJwQ2CDmMarhiXT/Q==
+X-CSE-MsgGUID: U8uIx+IPRWW/KovgHkeJ/g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4145911"
 X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="4287360"
+   d="scan'208";a="4145911"
 Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:18:06 -0800
-X-CSE-ConnectionGUID: 47MqAyMpR/erWcCBw1YXWA==
-X-CSE-MsgGUID: kNqU2imxTmeaFcMHgIeNow==
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:26:30 -0800
+X-CSE-ConnectionGUID: cbCy/wYMRJyyTIi9MGLbzg==
+X-CSE-MsgGUID: yZuAygo+QousR0HtCJACrA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="11360226"
+   d="scan'208";a="11363503"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:18:03 -0800
-Date: Mon, 23 Nov 2026 13:18:01 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:26:27 -0800
+Date: Mon, 23 Nov 2026 13:26:24 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Arnav Kapoor <kapoorarnav43@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Lee Jones <lee@kernel.org>
+Cc: Marius Cristea <marius.cristea@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/6] iio: proximity: sx9324: reject negative
- hysteresis values
-Message-ID: <awQg6X1ay0zyyyaf@ashevche-desk.local>
-References: <20261122074649.239441-1-kapoorarnav43@gmail.com>
- <20261122074649.239441-4-kapoorarnav43@gmail.com>
- <awQgWmI3HmyqTcrS@ashevche-desk.local>
+	Bogdan Bolocan <bogdan.bolocan@microchip.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2 4/7] iio: adc: pac1934: Fix custom attribute
+ allocation and channel bounds
+Message-ID: <awQi4MTY4CMM0hsV@ashevche-desk.local>
+References: <20261123075122.373060-1-lee@kernel.org>
+ <20261123075122.373060-5-lee@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,41 +88,48 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <awQgWmI3HmyqTcrS@ashevche-desk.local>
+In-Reply-To: <20261123075122.373060-5-lee@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 23, 2026 at 01:15:42PM +0200, Andy Shevchenko wrote:
-> On Sun, Nov 22, 2026 at 01:16:43PM +0530, Arnav Kapoor wrote:
+On Mon, Nov 23, 2026 at 07:50:30AM +0000, Lee Jones wrote:
+> pac1934_prep_custom_attributes() sizes the pac1934_custom_attr pointer
+> array using sizeof(*pac1934_group) instead of
+> sizeof(*pac1934_custom_attr) and adds 1 byte rather than one pointer
+> element for the terminating NULL entry.  When active_channels_count is
+> zero, only a single byte is allocated and iio_device_register_sysfs()
+> reads past the allocation when scanning the attribute list.
+> 
+> In addition, active_channels_count is counted over info->phys_channels,
+> whereas the population steps unconditionally inspect all four entries of
+> info->active_channels[], which can write past the end of the array on
+> 1-, 2-, and 3-channel chip variants.
 
 ...
 
-> >  static int sx9324_write_hysteresis(struct sx_common_data *data,
-> >  				   const struct iio_chan_spec *chan, int _val)
-> >  {
-> > -	unsigned int hyst, val = _val;
-> > +	unsigned int hyst, val;
-> >  	int ret, pthresh;
-> >  
-> > +	if (_val < 0)
-> > +		return -EINVAL;
-> > +
-> > +	val = _val;
-> 
-> You can validate assigned value instead as there are no side-effects.
-> But while I wrote it, I have noticed that there is actually one, we
-> modify the sign of the value. With that in mind maybe better to have
-> 
-> 	/*
-> 	 * Assume only positive input, negative, after conversion to unsigned
-> 	 * is unsupported. // or something like this
-> 	 */
-> 	val = _val;
-> 	if (val > INT_MAX)
-> 		return -EINVAL;
+>  - Order local variables in reverse Christmas tree style (Andy,
+>    Jonathan)
 
-On the second thought, the original < 0 check might be cleaner... Dunno.
-Jonathan, what do you think?
+Oh, I meant only this for the case when we touch the content.
+Since now it's not changed there, no need to do it, probably?
+
+...
+
+>  static int pac1934_prep_custom_attributes(struct pac1934_chip_info *info,
+>  					  struct iio_dev *indio_dev)
+>  {
+> -	int i, active_channels_count = 0;
+> +	struct device *dev = &info->client->dev;
+>  	struct attribute **pac1934_custom_attr;
+>  	struct attribute_group *pac1934_group;
+> -	struct device *dev = &info->client->dev;
+> +	int i, active_channels_count = 0;
+
+It took me a while to understand why, but no need to resend, if Jonathan is not
+okay with that, this hunk may not be applied while the rest is fine.
+
+TL;DR:
+Up to Jonathan (but personally I would leave this as in the original code).
 
 -- 
 With Best Regards,
