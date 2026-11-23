@@ -1,68 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795420288;
-	b=fCPNnpPTdVVoCjNP7lEf8YkLKSqKH7RyXYYS3orhq0exmYra2imP28qPocYiz4q+Ycpr
-	 TSM4dQ82QfQn4u951YWJLh3vfGfyiKQFtASYNzSC+TFP6BhI4Zz19AStsm+v1qlwopMfl
-	 OXfyASvCdvPz7MgZZ/C/qqPJruYZopar/oKHln9c3e8EXLfAGL+c+tv2xM1i/yZYCPUdn
-	 0z3tQYQTJ4GGbuw7Zwv5HsSebECswiom7cee6MxIrgd3yaRwm0dpiTmjqMbo1klk//CqM
-	 xpfC6+BYV0+Q55mj5uPZuMsphpqFA62f3MSPMmyoNHw8SdP8ZUHx3N6UKyuILuVRijA==
+	t=1795420295;
+	b=LPyTCdkHyHOdaitFf+CLBib4y5gVMR7TioeebrPY4ae9l19XnCjv6b8zwm/fS5hTl11A
+	 4Rbj31PEH3Zu7YDpcnCWnGVRUQpyqinI6M7q2/1wRTfI5PkgD5dm8IVwH78/y5bGLK8Y9
+	 a2J9SNApE10G+5Ddn5z6KwiapqrPpNrnq4is+WnhB6qhWuyUpqGmEoqEGRWx8EyFoplG7
+	 WO2LNkMzwbNA7R2eQCNtY4/ZwvBussdPMPlIUfPseaDot519f2SyIdmYNyl41Yq5Hdmck
+	 i5ZgsMqw4gtiO3QZ2/2LMPPPRNZdhJA7/8jGMIcX5CjQ8vqZEWx8LnW55ylwNqexyew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795420288;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795420295;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=ZHQEKf1KqLu6uI/mLLyIWsaJG4xlK8Pi3bGb30llIjQ=;
-	b=crBUpNjwMTBqhrkZNk2TGPUNK9iCAUiPXp7kYLdNBshfRer2/Gj9MbjOi2kcLmYj5W08
-	 C1TMrLveiTB3K0V+XfvOGl+wqPyzYctXRicu60crJJ5whN3n5xME6DAfiM8sQIsO7mBEs
-	 09GFKNnSVN7693h3vVRWCKoYsjCCablTPsm+lPr03bFGM27uceyLY6E/Wr+KZ9+EL1nNI
-	 XSCgFrMnu86aliyWJjQAiSG3NfeGt4XcxnkHMYU9bKGkQMFDgEqums8eARtt/rR/viT1J
-	 0o+GbNzHzDIFDSNa1I2eJOuR0kktzPPGfTGB5hq9jOiiRnjw1fCnWnuDtEz5nzMPvYw==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
+	bh=oazF4+IESuembcd1tmGXA1W/tSrKsfNqYpwuKjqwHus=;
+	b=0NUQAe4j+NTdGBQzn0WqzbuWzFdMZQikUaPg695LVMMzf4055/pthPkDAycokAbT7G5A
+	 4l+8aaK1sD4ADd5iM5WWFFRhvBBZ+yiWb1HqzuGp3bnk2fwLP1N79XlcDyiV9yHSWpLyR
+	 gKXbtVkRfNiTQS7940DabNgzm/gbUP1pKM8abvNrukb/sRIuK5hzLzFobuLZaCplPho0T
+	 7uirpcwE8p7fBkEV1jTkyuma3BUsiN/v0pASF+cCz4ACjJw/M2c2fovDE+LC2rJE14XpS
+	 QesodGOb7YhBU6eET1RAku2/MVA7bt3MXsSPkfVn8FtGdsrDOD0NNE66H/0OnX1uIAg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="L7d8/uJE";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="oAw/MZxR";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446B8606A31A;
-	Mon, 23 Nov 2026 07:51:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32E14606A32D;
+	Mon, 23 Nov 2026 07:51:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L7d8/uJE
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9AF21F000D3;
-	Mon, 23 Nov 2026 07:51:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oAw/MZxR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 060D11F0089E;
+	Mon, 23 Nov 2026 07:51:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795420287;
-	bh=ZHQEKf1KqLu6uI/mLLyIWsaJG4xlK8Pi3bGb30llIjQ=;
-	h=From:To:Cc:Subject:Date;
-	b=L7d8/uJESRtD5e0mx+my2snjsiw9FiQ0asm4TcO0CWsAaY0u9RtTr8Zys7ojjvJ1+
-	 s3LfF0CLM+GrYZa13ilZFwQ7TcCXStCvKl13hDPdfbb3kbtsIiBhCQHeAfdNWpj+Ib
-	 dc4gANj0n5JDZuAOgXLvhFZdRMORKGCNMXn2Y3eKdoS4Omzf6A4U0TGHi9J1WIJF0j
-	 1PbsQCRaWx/j80OjZaxI8AIELdD0fbVH+DSKdbPAzGvG+SAVqcDVeFYdSU5HQ0CvAz
-	 Wy+ZeXkRoAD71+Gm6yIvOm6iTBAUcWlCp3ikXo4ldk7PHRPOd1iKD3dzhoJchjRiF7
-	 b+8SHkTHug1HA==
+	s=k20260515; t=1795420294;
+	bh=oazF4+IESuembcd1tmGXA1W/tSrKsfNqYpwuKjqwHus=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=oAw/MZxRKAaHI/0Jn+L7RisNTjper98Nn7krMKpqlG0xbESKfwvMYrPelp5ZJ6O0c
+	 WXWIWui4Xy2tPCQiWiRhV+8pSN9NNu0/XGtnLTlGJAKz9ElbAS1k6ZojdtPNAsHyZ6
+	 w9KHQI0tTtYos3m06HPxHBrVAwekGSRrzdjnAnvPQIRKY3GxwKhBihNxQGoM22xrny
+	 f6TGmzhJWctg69g5RnBml+SJh94967rJ4yMirKoFTMgSvCHJaEOnvyHxqO3lF7S+pg
+	 fJZehShZaXATK+ZjrIGXVnentbDNReUg7sOLX3yJ6ufOB2A6cMrHLDmswHtTiBapNN
+	 XLtm3mupnQYKw==
 From: Lee Jones <lee@kernel.org>
-To: lee@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Alexandru Ardelean <ardeleanalex@gmail.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Bogdan Bolocan <bogdan.bolocan@microchip.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+To: lee@kernel.org,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	linux@analog.com,
-	linux-arm-msm@vger.kernel.org,
 	linux-iio@vger.kernel.org,
-	Lothar Rubusch <l.rubusch@gmail.com>,
-	Lucas Stankus <lucas.p.stankus@gmail.com>,
-	Marius Cristea <marius.cristea@microchip.com>,
-	Mathieu Othacehe <othacehe@gnu.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org,
 	Radu Sabau <radu.sabau@analog.com>
-Subject: [PATCH v2 0/7] iio: Fix memory corruption, teardown races and bounds checks
-Date: Mon, 23 Nov 2026 07:50:26 +0000
-Message-ID: <20261123075122.373060-1-lee@kernel.org>
+Subject: [PATCH v2 1/7] iio: imu: adis: Clear pointers after freeing in adis_update_scan_mode()
+Date: Mon, 23 Nov 2026 07:50:27 +0000
+Message-ID: <20261123075122.373060-2-lee@kernel.org>
 X-Mailer: git-send-email 2.56.1.750.gf70dc682cf-goog
+In-Reply-To: <20261123075122.373060-1-lee@kernel.org>
+References: <20261123075122.373060-1-lee@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -72,69 +67,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-These issues were reported by Sashiko.
+adis_update_scan_mode() frees both adis->xfer and adis->buffer at the
+start of a scan mode update without clearing either pointer to NULL.
 
-None of these changes have been tested on physical hardware.
+In both adis_update_scan_mode_burst() and the non-burst path, adis->xfer
+is allocated before adis->buffer.  If the adis->xfer allocation fails,
+the function returns -ENOMEM while adis->buffer still holds the freed
+pointer from the previous scan configuration, causing a double-free on
+the next scan mode update or during device teardown in
+adis_buffer_cleanup().
 
-v1 => v2:
- - Drop the 3 patches already applied upstream (stm32-adc x2, tsl2591)
- - Rebase onto fixes-togreg
- - CC Radu Sabau on the adis patch (Jonathan)
- - adxl313: Return -EIO on excessive FIFO entry count and -ERANGE on
-   sub-base ODR codes (Andy, Jonathan)
- - pac1934: Order local variables in reverse Christmas tree style and
-   scope the loop index j to the for-loop (Andy, Jonathan)
- - qcom-spmi-adc5-gen3: Manage tm_props and the OF node reference via
-   adc5_gen3_aux_device_release(), register auxiliary_device_destroy()
-   with devm_add_action_or_reset(), and return -ENOENT on an empty reg
-   property (Andy, Jonathan)
- - isl29501: Use HZ_PER_MHZ, group range checks by variable, and order
-   local declarations in reverse Christmas tree style (Andy)
+Clear both pointers immediately after freeing them.
 
-v1: https://lore.kernel.org/all/20261119153151.1397003-1-lee@kernel.org/
+Fixes: aacff892cbd5 ("staging:iio:adis: Preallocate transfer message")
+Closes: https://sashiko.dev/#/bug/linux-966f0cd4-488a-4d69-b8a5-449c751365d2
+Cc: stable@vger.kernel.org
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
 
-Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: Bogdan Bolocan <bogdan.bolocan@microchip.com>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux@analog.com
-Cc: linux-arm-msm@vger.kernel.org
-Cc: linux-iio@vger.kernel.org
-Cc: Lothar Rubusch <l.rubusch@gmail.com>
-Cc: Lucas Stankus <lucas.p.stankus@gmail.com>
-Cc: Marius Cristea <marius.cristea@microchip.com>
-Cc: Mathieu Othacehe <othacehe@gnu.org>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: Nuno Sá <nuno.sa@analog.com>
 Cc: Radu Sabau <radu.sabau@analog.com>
 
-Lee Jones (7):
-  iio: imu: adis: Clear pointers after freeing in
-    adis_update_scan_mode()
-  iio: accel: adxl313: Prevent FIFO buffer overflow in
-    adxl313_fifo_transfer()
-  iio: accel: adxl313: Reject sub-base ODR codes in adxl313_read_raw()
-  iio: adc: pac1934: Fix custom attribute allocation and channel bounds
-  iio: adc: qcom-spmi-adc5-gen3: Free TM auxiliary device wrapper in
-    release callback
-  iio: adc: qcom-spmi-adc5-gen3: Reject empty reg property in probe
-  iio: proximity: isl29501: Fix division by zero and overflow in
-    isl29501_set_freq()
+v1 => v2:
+ - CC Radu Sabau (Jonathan)
 
- drivers/iio/accel/adxl313.h           |  2 +-
- drivers/iio/accel/adxl313_core.c      | 13 +++++-
- drivers/iio/adc/pac1934.c             | 33 +++++++--------
- drivers/iio/adc/qcom-spmi-adc5-gen3.c | 59 +++++++++++++--------------
- drivers/iio/imu/adis_buffer.c         |  2 +
- drivers/iio/proximity/isl29501.c      | 13 ++++--
- 6 files changed, 68 insertions(+), 54 deletions(-)
+ drivers/iio/imu/adis_buffer.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+index 501da4eaef69..9d317b627eba 100644
+--- a/drivers/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -74,7 +74,9 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 	__be16 *tx, *rx;
+ 
+ 	kfree(adis->xfer);
++	adis->xfer = NULL;
+ 	kfree(adis->buffer);
++	adis->buffer = NULL;
+ 
+ 	if (adis->data->burst_len)
+ 		return adis_update_scan_mode_burst(indio_dev, scan_mask);
 -- 
 2.56.1.750.gf70dc682cf-goog
 
