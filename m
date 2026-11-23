@@ -1,47 +1,89 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795447353;
-	b=c2EdTS/fg32LMVm8l5+xSla73GLX3JYhTEvZH47XiPb5X9fGFLDHmCyY2j52ZFhKMeRi
-	 970fctWMKFh3FF6fahncWm6nFnJGmmSEezLr6oa5BUw8R2CqjlQYR8htq5FMBpLPskpKz
-	 8wE5qEm8t3zdXZ7bDxpLT4nMPPolY3/Cff6DQ+9UJLgTG8XA903BOBoiyL8wLuR//9MH1
-	 Bzenw+yeCxG8fxixWTALrymoDNsc0n86VNlQVMVmjB2vRSarMl9b5olhmxF6a4fETXkj+
-	 +qfP+qAJIsRAuyjGBy8p+j/3LHtePqhB7UxW89hLG1EXhFL0atlfyNSaMuv2ar4QuBg==
+	t=1795449108;
+	b=tTieSIaZw+WrsP9oO0HHTdRvFjPguc9mnFlqv7dAi5FL02oZxbLedufcu39sfkfn+exx
+	 Dz5j4Mm8IUNA07iit/tgChtZdAVO7Mwqm93xDOOeP9SanJ4VF8gJC3fJzuZ1w+xamzFfr
+	 MgbtH4aQpQQoZlrEOK4U5ktGdQebCD2Xx2ay1eWzgTY+SpTVWxZZSPHhkq/fwOFZ0Mpsa
+	 hLO9b9ve8yDU3F7thwaIGTXY/2dNdZL1kbSUb5cp6CgAeHJpYmrRCMLZhBKoY+7TaaaYs
+	 goHAhabU8cJl8Ney1JYJdt3MLKcYAwzxCaHkIYNE4KMXQJV+krNxSJtuRVfE0uutJMQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795447353;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=bLuFhzPDMD82jx0FB6acUSp89OVedJqWalTPyxGSkpg=;
-	b=DMDa2AyhHnfwdk/6tcPfRnTQtaufDBLGgxxdhwZtrMGd0nCtm87QngpaEILzp1aCA7ak
-	 keesbA+dG8fna0QiclC6OQsYqVmt3ydNzqX0Z36n8xQKi/eB4xT6eYGarTOv4H8em29VQ
-	 nj5xaqVpVYy0f9RoxMHaCdo5WyWna9hUWi+WBz/xV7ItM4GYxBF7NEZ5DiKkSC5RT9+ZR
-	 mdN3eIM46+KwUnT+D+H21zavZdk5gnkBgTHKnp7jPDJi8X6MXHpaAOE8vL/f3cF85pD8D
-	 IAXCivrkSfIACkJ2YJquyZ8aqLakxlzG4YpqcKI1DF7wVbB9qZ2K8tXjcCxmn4Uyv5Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795449108;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=UwQ48wOTLkO0bDqXN9a1jl6i0o7vHJe4bfY0WMjHxA0=;
+	b=Bg2ePhDJsxksI4GAIoVlH14EPQBsJ55PdFW0M4mNhmo/OZpAp0W/rPpYwU7IwVv7Cn4F
+	 iiRk39qJuqc/my+I8ew89GWQjUoGudrJMQ3Ge18ahW3KwtmtX86L1YZlTd6vkeej0R8kg
+	 GmfPNgNYQ9QRJYMrnbYu1cLn4IGEMLijldZ3xYb30FOjwvDyfYdXyOn3L0MnH0/6kz6/I
+	 OQELYeBhE50TgIaDVkX258Vi/ohyJLPPQileovzIrbSWU/BcYyiGJPEMn1KLYagTmt8zk
+	 Ev9EgCzgiwtGHUT305TET3fB8Rrstvkz1IKzpyZRSauxdAnvJ5MAOgPBHaGdxSFsOvQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KwHiO91e;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ffEczR10;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416E0606A321;
-	Mon, 23 Nov 2026 15:22:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FCDB606A31A;
+	Mon, 23 Nov 2026 15:51:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KwHiO91e
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 524611F000C6;
-	Mon, 23 Nov 2026 15:22:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ffEczR10
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E3B1F000D0;
+	Mon, 23 Nov 2026 15:51:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795447352;
-	bh=bLuFhzPDMD82jx0FB6acUSp89OVedJqWalTPyxGSkpg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=KwHiO91e1Lo0aUZIvfTFNmO9FIESjNS834JSYFiVRF1yitRkLC7W46o7xZVYag3vS
-	 cliZ72+FDlm7G+EyqMUv9sk3xg25+d+To5MJ6N06iDOqXroFwP06b6smiytYEbUgcy
-	 wYfTabShJMAnGN7ZxG3JVE98xAzNfkED48ShJNbju/Rf5nA74DOskZ6g8hgNtcUAZk
-	 QAjUCM1n3Alv6dt6GU5k8MGAgvE1jbAWMuqquPyo1YzwFnb4PnFvsHdJDTfJsc1RO9
-	 BkcmxBrlvizI1OIAhYRAuS8MKWOEzYE7eCZWNYNCS7uJ4SJD7sznCfsgj4hpQclHGg
-	 BP6tlt9dHo1fg==
-Message-ID: <9e1b6e08-4cd9-4c0e-a009-16330843ce3c@kernel.org>
-Date: Mon, 23 Nov 2026 16:22:28 +0100
+	s=k20260515; t=1795449107;
+	bh=UwQ48wOTLkO0bDqXN9a1jl6i0o7vHJe4bfY0WMjHxA0=;
+	h=From:To:Cc:Subject:Date;
+	b=ffEczR10kkz6TwinqVlb2eqxN6YHZfPjHgTME+LIdeQFDnaJpfTfDbbKAxYyR8dkT
+	 C/KF29bpbofnjfmI+LyU5opbRTVKXHaYTqX3H9UJxU9XY/sL6OHFqYic1mAv5nZ7JD
+	 SSw02x/zrDSYJw7ootSjHsO4JJuZCWGv9ztWNARHSc5DHgJNO03wxWj69OxnbIl2+k
+	 2Pn5B1lFOaWmJi7OJgHHuB7f/a+1/NzWJyPKg67Kf4nNZhbYSHYCP9VydSTOFOf9pi
+	 dxGF0mA1uTGwyLyibjPY5K8qtP7wkDwFA2eEHvTn1TBcyXfEIlZvbJsmWUuFfT7IUX
+	 06xNE+qMx1lbw==
+From: Lee Jones <lee@kernel.org>
+To: lee@kernel.org,
+	bpf@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Barnab=C3=A1s=20P=C5=91cze?= <pobrn@protonmail.com>,
+	=?UTF-8?q?Beno=C3=AEt=20Sevens?= <bsevens@google.com>,
+	=?UTF-8?q?Filipe=20La=C3=ADns?= <lains@riseup.net>,
+	"He, Bo" <bo.he@intel.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	"Zhang, Jun" <jun.zhang@intel.com>,
+	Andreas Gal <gal@cs.uni-magdeburg.de>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Bastien Nocera <hadess@hadess.net>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Charles Wang <charles.goodix@gmail.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Jason Gerecke <jason.gerecke@wacom.com>,
+	Jiangshan Yi <yijiangshan@kylinos.cn>,
+	Jiri Kosina <jikos@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-hyperv@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Lopez Casado <nlopezcasad@logitech.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Vojtech Pavlik <vojtech@ucw.cz>,
+	Michael Bommarito <michael.bommarito@gmail.com>,
+	Michael Haboustak <mike-@cinci.rr.com>,
+	Pan Chuang <panchuang@vivo.com>,
+	Ping Cheng <ping.cheng@wacom.com>,
+	Rishi Gupta <gupt21@gmail.com>,
+	Roderick Colenbrander <roderick.colenbrander@sony.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Stefan Achatz <erazor_de@users.sourceforge.net>,
+	Tianchu Chen <flynnnchen@tencent.com>,
+	Vojtech Pavlik <vojtech@suse.cz>,
+	Wei Liu <wei.liu@kernel.org>,
+	Zhang Lixu <lixu.zhang@intel.com>
+Subject: [PATCH 00/10] HID: Assorted bug fixes across HID core and drivers
+Date: Mon, 23 Nov 2026 15:50:44 +0000
+Message-ID: <20261123155138.2907049-1-lee@kernel.org>
+X-Mailer: git-send-email 2.56.1.750.gf70dc682cf-goog
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,108 +93,77 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH] iio: adc: mcp3564: Use guard() and scoped_guard() to
- manage mutex
-To: Vaibhav Chahar <vaibhav.chahar26@gmail.com>,
- marius.cristea@microchip.com, jic23@kernel.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261123070802.14487-1-vaibhav.chahar26@gmail.com>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261123070802.14487-1-vaibhav.chahar26@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 23-Nov-26 8:08, Vaibhav Chahar wrote:
-> Adopting cleanup.h helper: Replaced mutex_lock() and mutex_unlock() calls with guard() and scoped_guard(). Ensures locks are automatically released, simplifying the code.
-> 
-> scoped_guard(){} was handled in mcp3564_read_raw switch statement (case: IIO_CHAN_INFO_SCALE)- giving it proper
-> scope.
+These issues were reported by Sashiko.
 
-I'd reword the commit message; something along the lines of "Use guard(mutex)
-instead of manual mutex_lock()/mutex_unlock() calls to modernize driver and improve
-mutex handling."
+None of these changes have been tested on physical hardware.
 
-> No goto statements were present inside older mutex blocks - so it was a
-> 1 to 1 substitution.
-> 
-> Tested:
-> - compiled with `make W=1` with zero warnings.
-> - Verified using Sparse (`make C=1`)
-> - Verified styling via 'scripts/checkpatch.pl --strict' (0 errors, 0 warnings)
+Cc: "Barnabás Pőcze" <pobrn@protonmail.com>
+Cc: "Benoît Sevens" <bsevens@google.com>
+Cc: "Filipe Laíns" <lains@riseup.net>
+Cc: "He, Bo" <bo.he@intel.com>
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+Cc: "Zhang, Jun" <jun.zhang@intel.com>
+Cc: Andreas Gal <gal@cs.uni-magdeburg.de>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Bastien Nocera <hadess@hadess.net>
+Cc: Benjamin Tissoires <bentiss@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: Charles Wang <charles.goodix@gmail.com>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Jason Gerecke <jason.gerecke@wacom.com>
+Cc: Jiangshan Yi <yijiangshan@kylinos.cn>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-hyperv@vger.kernel.org
+Cc: linux-i2c@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+Cc: Lopez Casado <nlopezcasad@logitech.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Vojtech Pavlik <vojtech@ucw.cz>
+Cc: Michael Bommarito <michael.bommarito@gmail.com>
+Cc: Michael Haboustak <mike-@cinci.rr.com>
+Cc: Pan Chuang <panchuang@vivo.com>
+Cc: Ping Cheng <ping.cheng@wacom.com>
+Cc: Rishi Gupta <gupt21@gmail.com>
+Cc: Roderick Colenbrander <roderick.colenbrander@sony.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Stefan Achatz <erazor_de@users.sourceforge.net>
+Cc: Tianchu Chen <flynnnchen@tencent.com>
+Cc: Vojtech Pavlik <vojtech@suse.cz>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: Zhang Lixu <lixu.zhang@intel.com>
 
-Move the above paragraphs under the ---, you should mention testing only if
-done on the affected hardware (one would expect a patch to be at least compile
-tested before being sent to the mailing list).
+Lee Jones (10):
+  HID: core: Protect hid->inputs traversal in hid_check_keys_pressed()
+  HID: mcp2221: Synchronise rxbuf access against raw_event callback
+  HID: logitech-hidpp: Synchronise send_receive_buf against raw events
+  HID: sensor-hub: Serialise synchronous read teardown under data->lock
+  HID: roccat: pyra: Resolve USB device from parent in actual_profile
+  HID: hyperv: Validate VMBus packet and payload bounds on receive
+  HID: hid-goodix-spi: Validate package sizes in goodix_hid_irq()
+  HID: wacom: Stop HID hardware before releasing resources on mode
+    change
+  HID: debug: Hold driver_input_lock while dumping raw report descriptor
+  HID: playstation: Cancel DualSense output worker on create failure
 
-> Signed-off-by: Vaibhav Chahar <vaibhav.chahar26@gmail.com>
-> ---
-> Q: If i have similar cleanups for other drivers/files in this directory. 
->  Should I combine them into a single patch or submit a patch series?
-
-I'd do a series. One patch can be harder to review.
-
->  drivers/iio/adc/mcp3564.c | 38 ++++++++++++++++----------------------
->  1 file changed, 16 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/mcp3564.c b/drivers/iio/adc/mcp3564.c
-> index 259ac4ebd..252c3886e 100644
-> --- a/drivers/iio/adc/mcp3564.c
-> +++ b/drivers/iio/adc/mcp3564.c
-> @@ -17,6 +17,7 @@
->   */
->  
->  #include <linux/bitfield.h>
-> +#include <linux/cleanup.h>
->  #include <linux/iopoll.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/spi/spi.h>
-> @@ -498,7 +499,7 @@ static int mcp3564_set_current_boost_mode(struct iio_dev *indio_dev,
->  
->  	dev_dbg(&indio_dev->dev, "%s: %d\n", __func__, mode);
->  
-> -	mutex_lock(&adc->lock);
-> +	guard(mutex)(&adc->lock);
-
-Blank lines around guard() please.
-
-...
-
-> @@ -840,10 +837,10 @@ static int mcp3564_read_raw(struct iio_dev *indio_dev,
->  			return -EINVAL;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
-> -		mutex_lock(&adc->lock);
-> -		*val = adc->scale_tbls[adc->hwgain][0];
-> -		*val2 = adc->scale_tbls[adc->hwgain][1];
-> -		mutex_unlock(&adc->lock);
-> +			scoped_guard(mutex, &adc->lock) {
-> +				*val = adc->scale_tbls[adc->hwgain][0];
-> +				*val2 = adc->scale_tbls[adc->hwgain][1];
-> +			}
->  		return IIO_VAL_INT_PLUS_NANO;
->  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->  		*val = mcp3564_oversampling_avail[adc->oversampling];
-> @@ -903,7 +900,7 @@ static int mcp3564_write_raw(struct iio_dev *indio_dev,
->  		if (burnout == adc->burnout_mode)
->  			return ret;
->  
-> -		mutex_lock(&adc->lock);
-> +		guard(mutex)(&adc->lock);
-
-If you're adding guard() in a switch case, make sure to wrap the case
-with brackets, i.e.
-
-	case IIO_CHAN_INFO_RAW: {
-		foo();
-	}
-	...
-
-The cleanup.h magic works thanks to local variables, which need some
-sort of scope.
+ drivers/hid/hid-core.c           | 16 ++++++---
+ drivers/hid/hid-debug.c          | 12 ++++---
+ drivers/hid/hid-goodix-spi.c     | 34 +++++++++++++------
+ drivers/hid/hid-hyperv.c         | 12 +++++++
+ drivers/hid/hid-logitech-hidpp.c | 58 +++++++++++++++++++++-----------
+ drivers/hid/hid-mcp2221.c        | 47 ++++++++++++++------------
+ drivers/hid/hid-playstation.c    |  1 +
+ drivers/hid/hid-roccat-pyra.c    |  9 +++--
+ drivers/hid/hid-sensor-hub.c     | 28 +++++++++++----
+ drivers/hid/wacom_sys.c          |  4 +--
+ 10 files changed, 149 insertions(+), 72 deletions(-)
 
 -- 
-Kind regards,
-Joshua Crofts
+2.56.1.750.gf70dc682cf-goog
 
