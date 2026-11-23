@@ -1,83 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795464530;
-	b=a+xg0RzPceVYuV5dGoXbQUTASyr/ySZAhkANuKI2R0tOCYQk1Mx2Be/TyzSpampdUFyd
-	 PBE58A/2k8JbgMXnCmi2y7UNLflEfciTZMQqRo5hkG+vEAEBU5cNlIeXcHnAVoc1S10nW
-	 tF85WkrqKGoCVyF3NAASo0PgSfwdVyt8wajRMzvH80oSkSjo3s0vPvrfce44NKzoHptwp
-	 Fe+fQAelvM0Oh9o3X0MEsgIo8OnpsXCliHoIqg89NVPs9AVpmFppnZ9GmMW7bFuYYtqeu
-	 1Q1R4/1jVFtlcyqQw22hBPwcyNCiilMsvjhUV2tFtE8SYQ6ZjglYpEbqzd4nDHbAG+g==
+	t=1795465581;
+	b=HqhIoOfu0DtJgNLSLFPyGiEIgdGtqJOm0uTm2kyes3ZXo44dg1YMTHzIn4C4iP4juJ1K
+	 y8izd+1c9d6T1GtrcEau8X2804Ppit6yxJd+dKreiv6g7yFq8r4DWKQpyOgZv1K470AyT
+	 Uenk8xoZDJdO7E8ZcND5CQFKOQ7cXQ5PZZPOgkak6ZwiBf/t98Q+PRrafT6hdtjIXH2JR
+	 rAhICSvCELiZlJOAstbvb++/NnLdyr+3zc5bzy7CSeo/BrUqLF3lp/QjjA8efMoSzzT9x
+	 LlKoP8fDgAqghl193p+9cXfonrzSvAMrWN+mZJsnio9Q7OiMGcLCx/acCzo3tr4BRyg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795464530;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=tpiAyS2NSTTYCcz+tAuV6mj0ApkVi4kroTS8S8VTkpU=;
-	b=iH4WG9tzk0Me4lgO/41pQ5F9Vom369ISpW9nbToRHrbH3vUJXJkz/h3SFPkZvl7CX1el
-	 N/YLaUREH6BMiUoIH2G38mGTmOhqqCDijoSTwVcTwPamfd/dxcw5ADhlFax26fJJtBAa0
-	 TMEOueUcIKmdkLHuTHdrDAttx8NfIarFSNpQtKeBFAV/hEoE3YoUUkbZHAO150/O1rvC5
-	 oCL/zoyULU15iEWNfr8+QbvflazP4hq3t1lAUhkPlaQAAscGMdYB4BoAA1WzaXMnMy5tO
-	 OIzbU8CGA/ibzIlnXA+nfNCY7TMocLoS06hF+Rietpuko+3fHLI5WzKnP3fhvzh8kJg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795465581;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=Qmc5lnHTHHHfRq/qfxs84Enao8q8XNbu3+of0yEPf4A=;
+	b=x+kQAAKZ9IzQqyMaZfHSoGVWLTAG/0l1Es0xQ+EUfncRWwILv32mpRXHcI72GoPlJOec
+	 pIidVfL2OpE7m7H4KPi0XlICerOeIeegSSO2o4i+2Z4jrJxDzDHxB73MsvSGgoVbcXzif
+	 06YVpCIBxUdNTF606EL9Cz8YtOxgnqrE+3E2juANrRY1Bj1fWqbifUuV90gde0N4qKfZ4
+	 uPri32xmXqF3yYgfi9ugILnj1Vum1DFuy+94L6dPMEarNOLbHdOiU89qg0gooUpoSjqvY
+	 AMPjtvuOsjOeBr8Liuf8uVhY0nQR/aoOdDeWeKNefceYaRHMD9w/d+D2OsJQiXyUyOQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="N72/HYHb";
-	arc=none smtp.remote-ip=192.198.163.18
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=teslabs.com;
+	spf=fail smtp.mailfrom=teslabs.com;
+	dkim=pass header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=dPYjC6L6;
+	arc=none smtp.remote-ip=209.85.221.43
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A07FA606A31E;
-	Mon, 23 Nov 2026 20:08:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A07FA606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3059606A327
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 20:26:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B3059606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=teslabs.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=teslabs.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=N72/HYHb
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795464529; x=1827000529;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=n/9Q7z9XOP+kvIJJRG45nmnHwoIg2/j3yx7h4OK2u30=;
-  b=N72/HYHbvL6VC3nNGr7fG8V/t5VeWIXhAqARCHb6nepJx+nufZrSLhPX
-   nPCArsQS6paB6HeieLgR4azeT5kXmqljS4lxB2zF6l8qpOwtTSy4RvYVt
-   6KfkX1zTPy3dyHh5vUnveRDl77uDkTLlaGlQXbESP0p6NzEobSmIE61ro
-   mNNbkP992QFTMdqj0LggURTa39SvOMQL/8PDMH83gJ+G4SAgpLw4cGTt0
-   xFtXqJwGmGOJGX1PHKCM99SATB5qaZSC6yaiy9AyVP5+3QR4lvPdHAJji
-   hkwyyD7WxYGJnbPNqhCH2Jz12wGYazNqRi2Q0jeEgJyr70HJOzIkSYZ+O
-   g==;
-X-CSE-ConnectionGUID: RShL3OY9T0qdoLhloVjUqA==
-X-CSE-MsgGUID: TIqVwWUdQmaiu6Yz87Qchg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4314174"
-X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="4314174"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 12:08:48 -0800
-X-CSE-ConnectionGUID: Y1lF6AiURPqWHbe1Hy/guA==
-X-CSE-MsgGUID: wD/0ghWTTFaSseXLZv5nMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,229,1787036400"; 
-   d="scan'208";a="11497572"
-Received: from spandruv-mobl5.amr.corp.intel.com (HELO [10.124.220.148]) ([10.124.220.148])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 12:08:47 -0800
-Message-ID: <e384a97e66159f10045ec6caf244b475e09c8337.camel@linux.intel.com>
-Subject: Re: [PATCH 04/10] HID: sensor-hub: Serialise synchronous read
- teardown under data->lock
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Lee Jones <lee@kernel.org>, Jiri Kosina <jikos@kernel.org>, Jonathan
- Cameron <jic23@kernel.org>, Benjamin Tissoires <bentiss@kernel.org>, Zhang
- Lixu	 <lixu.zhang@intel.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, 	linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Cc: stable@vger.kernel.org
-Date: Mon, 23 Nov 2026 12:08:44 -0800
-In-Reply-To: <20261123155138.2907049-5-lee@kernel.org>
-References: <20261123155138.2907049-1-lee@kernel.org>
-	 <20261123155138.2907049-5-lee@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 (3.60.2-3.fc44) 
+	dkim=pass (2048-bit key) header.d=teslabs-com.20260707.gappssmtp.com header.i=@teslabs-com.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=dPYjC6L6
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-4a357b1c649so2232278f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 12:26:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=teslabs-com.20260707.gappssmtp.com; s=20260707; t=1795465579; x=1796070379; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Qmc5lnHTHHHfRq/qfxs84Enao8q8XNbu3+of0yEPf4A=;
+        b=dPYjC6L63YHdLT0szS2CodZQfYWxLhIVXN0cMjEXKLWwlPsR+Y3mkIaQTYFBxZgQXH
+         3Sh0+2WGwFJZ47FfQE0qSj2LDVluDd95tGjR4wxfY+XeiYC/z5gCjFJvoZ+jiykmeyYZ
+         g2nYq/nlEeGoDlB7/D34UbitpIu2o0i4e7y2qjtCbZwXAWgJIY3PX8TQAPPtPNuyaxVh
+         5DI19f0Rhd9EvBEZzjRupMyKb4//SxxSuykmcNJTWxbPGIYhkdo2h0jgELUPVch37Re+
+         fReFv5gGr8e4c2DHih8NF83SVLMzjuc5iAffSO0sQvFf34YZsLEwbPo4FhROIuG+r4Nw
+         EfQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795465579; x=1796070379;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Qmc5lnHTHHHfRq/qfxs84Enao8q8XNbu3+of0yEPf4A=;
+        b=131b0CyzXHyty0g9tdUWquisSsbxshHz3rEocvRAs00ByhA8pXfbZimpqz6rxJr4fT
+         UOIfAl0whUPk5LvaXOHNYYqxuvsJto8kokmfFe7jthgBN3e0oP1vLuDQP0kOpOTAyOj3
+         ViGMjhJxiADILI9ycYi9NSJqwfCHa15DvTevLP6gD6EG/bsHzvz8NCBav7ZZsxtJg5KF
+         y4BFzzVeMQ+/txEAMb3wfKklwYecePvg8S4+kGIVkMCZrPIxUmoBNaxoLPrZUVIH9u/P
+         Ubtrj+txTEgpWTKVzd3M93GPiOzuhZRx8HIWhx6c10DhYAnBrT/isz3+2zAoBJGuTXxz
+         NyDg==
+X-Forwarded-Encrypted: i=1; AL+hErHzC/5sK6nG3isbbuIR4hfu/pldyDWE8wuABv7iG1D5O+b2dxUH1ueM9sBKJyhx7wQjHXXc3TBeJ1E=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8AouFHbMN3Pgidz2uZzpSMcJKkjuhidEHoLqDStFrA2Jh1iHo8
+	bs6bSN+vmKVcuDyzTxHaW6mjuSZ3bkJ6r/M43U0yh5tvxlObBh6v30rvOwuXfXrWxqo=
+X-Gm-Gg: AZFdTZfz0KuokFMQXS1A+2DWsQ+voZIf4Oo7FIjQ/nf1HtyvLJ4QsDhIaXgcFAAvIo6
+	oXmE2281Zqa1IaKJBJOiY78qu5kUGoawR4rBX5nbOmf2ki2Td3EZEsiyEyEwf2eRrOfhyBLkamq
+	WH5Ef/Vvba68ethZvRv1eackALgimroDBxVhXpo7N7HWb6+amSRVogA3/Q37EtTFuodVUnE7K0G
+	JbABw5eCQMp7YU1k8mHTkBB60MgpclvduNSE+L2AgMrDhyVk24u8vwbeJe1hZw17mPM3AShcWEP
+	7aJfqzAO5233L6Rql3sgyX7BNXPnZ4f6CknhxH85GQmZI6J1j5F7phxQzWImxwfyCjeKm2efXW3
+	txAFwKkYTiqmZcJoFr0vukPFH5sVLwSaagADBbplxKzoGps65evpzMvYoa+RJu0oNKwDo5LnYTK
+	ja+guZi9cvlnQsDWaQj2Hf/HP/HeBCPPG2DVw5GM4uIYOKcE7FcWCxohshPvM/gfBpHJ6yY0yZw
+	1Z5WMERkCoRg9h+FrIL6UJVzZiuNNmeJkUbSIX1coQi+snKTmsCYlTo7nzezBAdnPzv0LfACXIQ
+	FeoVREajlGeCleFefANI9dcjiKKtVoMiMwjgcdhLipfF8jhubMpThf8VI8tTDz+YVD4kWURBqUS
+	zsVK/TMD3hrHC
+X-Received: by 2002:a5d:5f51:0:b0:4a5:a777:b5d5 with SMTP id ffacd0b85a97d-4abb4c7aad1mr23466010f8f.55.1795465579053;
+        Mon, 23 Nov 2026 12:26:19 -0800 (PST)
+Received: from localhost.localdomain ([139.47.121.129])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6baa3c4dsm20108713f8f.46.2026.11.23.12.26.18
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 23 Nov 2026 12:26:18 -0800 (PST)
+From: Gerard Marull-Paretas <gerard@teslabs.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Frank Li <Frank.li@nxp.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/4] iio: magnetometer: mmc5633: Binding, supply and mount matrix
+Date: Mon, 23 Nov 2026 21:26:11 +0100
+Message-ID: <20261123202616.17334-1-gerard@teslabs.com>
+X-Mailer: git-send-email 2.45.2
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,157 +103,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2026-11-23 at 15:50 +0000, Lee Jones wrote:
-> sensor_hub_input_attr_read_values() and
-> sensor_hub_input_attr_get_raw_value() set hsdev->pending.status under
-> data->lock, sleep in wait_for_completion_interruptible_timeout(), and
-> then clear hsdev->pending.status and consume or free
-> hsdev->pending.raw_data without acquiring data->lock.=C2=A0 When a wait i=
-s
-> interrupted by a signal or times out while sensor_hub_raw_event()
-> holds
-> the same spinlock, sensor_hub_raw_event() can memcpy() into the
-> caller's popped stack buffer in sensor_hub_input_attr_read_values()
-> or
-> race with kfree() and leak kmemdup() allocations in
-> sensor_hub_input_attr_get_raw_value().
->=20
-> Hold data->lock when clearing hsdev->pending.status and detaching
-> hsdev->pending.raw_data in both helpers, and free any prior
-> hsdev->pending.raw_data before kmemdup() in sensor_hub_raw_event().
->=20
-> Fixes: 401ca24fb34a ("HID: sensors: introduce sensor framework")
-> Fixes: f784fcea4506 ("HID: sensor-hub: Add
-> sensor_hub_input_attr_read_values() for multi-byte reads")
-> Closes:
-> https://sashiko.dev/#/bug/linux-5bd5ea7c-72f9-4f22-ae1d-00915390f085
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Lee Jones <lee@kernel.org>
-> ---
-> =C2=A0drivers/hid/hid-sensor-hub.c | 28 +++++++++++++++++++++-------
-> =C2=A01 file changed, 21 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
-> hub.c
-> index 81c8e723f9ba..ea846e0bb301 100644
-> --- a/drivers/hid/hid-sensor-hub.c
-> +++ b/drivers/hid/hid-sensor-hub.c
-> @@ -306,6 +306,9 @@ int sensor_hub_input_attr_read_values(struct
-> hid_sensor_hub_device *hsdev,
-> =C2=A0	long cycles;
-> =C2=A0	int ret;
-> =C2=A0
-> +	if (flag =3D=3D SENSOR_HUB_SYNC && (!buffer || !buffer_size))
-> +		return -EINVAL;
-> +
-> =C2=A0	report =3D sensor_hub_report(report_id, hsdev->hdev,
-> HID_INPUT_REPORT);
-> =C2=A0	if (!report)
-> =C2=A0		return -EINVAL;
-> @@ -335,7 +338,10 @@ int sensor_hub_input_attr_read_values(struct
-> hid_sensor_hub_device *hsdev,
-> =C2=A0		else if (cycles < 0)
-> =C2=A0			ret =3D cycles;
-> =C2=A0
-> +		spin_lock_irqsave(&data->lock, flags);
-> =C2=A0		hsdev->pending.status =3D false;
-> +		hsdev->pending.raw_data =3D NULL;
-> +		spin_unlock_irqrestore(&data->lock, flags);
-> =C2=A0	}
-> =C2=A0	mutex_unlock(hsdev->mutex_ptr);
-> =C2=A0
-> @@ -375,29 +381,36 @@ int sensor_hub_input_attr_get_raw_value(struct
-> hid_sensor_hub_device *hsdev,
-> =C2=A0	hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT);
-> =C2=A0	mutex_unlock(&data->mutex);
-> =C2=A0	if (flag =3D=3D SENSOR_HUB_SYNC) {
-> +		u8 *raw_data;
-> +
-> =C2=A0		wait_for_completion_interruptible_timeout(
-> =C2=A0						&hsdev-
-> >pending.ready, HZ*5);
-> -		switch (hsdev->pending.raw_size) {
-> +		spin_lock_irqsave(&data->lock, flags);
-> +		raw_data =3D hsdev->pending.raw_data;
-> +		switch (raw_data ? hsdev->pending.raw_size : 0) {
-> =C2=A0		case 1:
-> =C2=A0			if (is_signed)
-> -				ret_val =3D *(s8 *)hsdev-
-> >pending.raw_data;
-> +				ret_val =3D *(s8 *)raw_data;
-> =C2=A0			else
-> -				ret_val =3D *(u8 *)hsdev-
-> >pending.raw_data;
-> +				ret_val =3D *(u8 *)raw_data;
-> =C2=A0			break;
-> =C2=A0		case 2:
-> =C2=A0			if (is_signed)
-> -				ret_val =3D *(s16 *)hsdev-
-> >pending.raw_data;
-> +				ret_val =3D *(s16 *)raw_data;
-> =C2=A0			else
-> -				ret_val =3D *(u16 *)hsdev-
-> >pending.raw_data;
-> +				ret_val =3D *(u16 *)raw_data;
-> =C2=A0			break;
-> =C2=A0		case 4:
-> -			ret_val =3D *(u32 *)hsdev->pending.raw_data;
-> +			ret_val =3D *(u32 *)raw_data;
-> =C2=A0			break;
-> =C2=A0		default:
-> =C2=A0			ret_val =3D 0;
-> =C2=A0		}
-> -		kfree(hsdev->pending.raw_data);
-> +		hsdev->pending.raw_data =3D NULL;
-> +		hsdev->pending.raw_size =3D 0;
-> =C2=A0		hsdev->pending.status =3D false;
-> +		spin_unlock_irqrestore(&data->lock, flags);
-> +		kfree(raw_data);
-> =C2=A0	}
-> =C2=A0	mutex_unlock(hsdev->mutex_ptr);
-> =C2=A0
-> @@ -590,6 +603,7 @@ static int sensor_hub_raw_event(struct hid_device
-> *hdev,
-> =C2=A0					}
-> =C2=A0				}
-> =C2=A0			} else {
-> +				kfree(hsdev->pending.raw_data);
+The MMC5603 and MMC5633 are listed in trivial-devices.yaml, but boards
+need to describe their supply and orientation. Patch 1 gives them a
+binding of their own. These bindings are also used by PebbleOS, which
+is where the need came from.
 
-With this patch the waiter clears pending.status under data->lock on
-timeout/signal, so sensor_hub_raw_event() can no longer kmemdup() after
-the waiter has given up. I don't think the kfree() in
-sensor_hub_raw_event() is needed for the race described in the commit
-message.
+Patches 2 to 4 add the matching support to the driver. I have no board
+running Linux with these sensors, so they are only compile tested (W=1);
+feel free to take only patch 1 if you prefer.
 
-The only case it covers is a spurious second matching report arriving
-after complete() but before the waiter takes the lock. That is a
-separate, pre-existing leak. Rather than freeing in the event path, I
-think  clearing pending.status in sensor_hub_raw_event() when
-completing the request, so only the first matching report is consumed
-and raw_data is allocated at most once:
+Changes in v4:
+- Describe tSR and tOp where they are defined, citing both datasheets
+  by revision, page and section, and drop the older tSR comment at its
+  use (Andy)
 
-			} else {
-				hsdev->pending.raw_data =3D kmemdup(ptr,
-sz, GFP_ATOMIC);
-				...
-			--->	hsdev->pending.status =3D false;=20
-				complete(&hsdev->pending.ready);
-			}
+Changes in v3:
+- Reference the datasheet timings tOp and tSR in comments, with the
+  tSR one in a new patch 2 (Jonathan)
+
+Changes in v2:
+- Cover the MMC5633 too, including its I3C connection (Jonathan)
+- Add supply and mount matrix support to the driver (Jonathan)
+- Drop the mention of the missing I/O supply (Jonathan)
+
+v3: https://lore.kernel.org/all/20261123194943.57601-1-gerard@teslabs.com/
+v2: https://lore.kernel.org/all/20261122190836.66111-1-gerard@teslabs.com/
+v1: https://lore.kernel.org/all/20261122093412.71604-1-gerard@teslabs.com/
+
+Gerard Marull-Paretas (4):
+  dt-bindings: iio: magnetometer: Add MEMSIC MMC5603 and MMC5633
+  iio: magnetometer: mmc5633: Reference the datasheet for the SET/RESET
+    wait
+  iio: magnetometer: mmc5633: Enable the VDD supply
+  iio: magnetometer: mmc5633: Add mount matrix support
+
+ .../iio/magnetometer/memsic,mmc5633.yaml      | 61 +++++++++++++++++++
+ .../devicetree/bindings/trivial-devices.yaml  |  4 --
+ drivers/iio/magnetometer/mmc5633.c            | 41 +++++++++++--
+ 3 files changed, 98 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/memsic,mmc5633.yaml
 
 
-BTW
+base-commit: c44104f3642da720164042623e4832836aefdd8e
+-- 
+2.45.2
 
-The pre-existing callback removal race reported by Sashiko is already
-addressed by commit abe10ad9c5fd ("HID: sensor-hub: Synchronize
-callback removal with raw events") in linux-next (hid tree).=20
-
-Thanks,
-Srinivas
-
-
-> =C2=A0				hsdev->pending.raw_data =3D
-> kmemdup(ptr, sz, GFP_ATOMIC);
-> =C2=A0				if (hsdev->pending.raw_data)
-> =C2=A0					hsdev->pending.raw_size =3D
-> sz;
