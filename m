@@ -1,47 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.64
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795421044;
-	b=jrP7qkm47AgKJORLHkQWOEA4Vm7ZfIAKCAkTym4Eu2uWTVKR8DkjIZY4dQ3TW9tCRI5e
-	 WFvnjJipwaPSBJ1kw8BGsCR01gKwi7eMfYJ4vy0YMmRFJxoQEPuQc1eKn2Y32eqZMDorI
-	 pM7SAk7S3TJ7vkhQVpE9XFVPIti8Eo0CMPZ7u2jpmYBWN15/qkA5plgWPNB0GD4D4p8NO
-	 wNtyVyod7NiNGSSQqtnHiMR2VoDV0oZUSxs/0HPVVdz2N6L5eUqVepto4u4ET71nQ30D5
-	 vKDgj8asGBEXyGvG/a/JuYXmZc8NLMOeOnnnOfsfggnA8JbWO43DXVyk7DDRrsus3HQ==
+	t=1795421899;
+	b=2wDIhHcIQfmAZ85ci7cMVfs3XHXPkjgVscAdgZwAjgZOSfxeo3StUb8VBw9IPOg2OU9o
+	 EN/iUL554Tbnrpj4uavvruVbFfLwlZZQOtghJi5P0ZweXWGiMxaW+G/KlAZQ2iu4v9YYy
+	 VBrDq8rmH9qct4cMyA5GJ7lVGvGeLVp3qMnBE6ttw45jZ7+liKN6sF/nhva/8Q0Br61V7
+	 zHDy5q0BDwGPiH28q8kZpzY+5IPLWSTSzH6Rd0YQFkRMKNIqbqh2kNOFqyNlq8vXCL/7f
+	 tvo8TYp+NjAgkQRhlH53poacUNUK2v+qRiNEKins7nvM6buZ/xdxbyAx0xJyehJpoCw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795421044;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=leRR6eNzADhVnKcUAKiblsCMLIUNRjwjArIIU12nGiE=;
-	b=a9y9vR4FU7gFIb/P6l7VlDt8hpGaLGIKUn+yPXQ4F/LgxfKRNMcufc/1My06dEwMTAtc
-	 8kpUG943PmpxvE66TCBANkkJeSeTwF8c/+LaMk6h+J+BkiMjhq6o4B3IOKeVzZu1o2sK5
-	 GMZMDFzN6aPq2CDhz4NA+91BSl9HARkjhGokpjoT6G1VRJSnaMT4DA5wCRymoxQAqB690
-	 fwExVUSPrQx8UjQaZQdyoQ30z+1E0jXkmfACPCfsL4zy6eT2YEOR/sce2lb8RqKefkhGB
-	 rTPVWtc7sTG8n+12eQn/imxfZ7B2rxqW4BtUtBvtS1D3Ney0vfR9zac6ui65dLkGmIg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795421899;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
+	 Reply-To:MIME-Version:Content-Type:Content-Disposition;
+	bh=Z3QttmCelU4fh+RHdrJMM1o3nxRY1YISOypB/Kw5PIU=;
+	b=HnRnBJ3wWEim8ezVuS/8aNvjMChq0KjXfRWjSyMGlFXTzJhYBQgVN/2XEpFmi3n2xxPp
+	 x69k784rmQJDvq04XibCo5cXOOIWFBBsdIMbWd5Hv/ZK8PnxZsQ/fWNMAnnfVbcCm14YC
+	 CVQYxLdkT+2m5MlEMeRHlPyyLT2FhPwTOiezCD8EHJdOcivsulfReh/bOvxJ0EJ1zxxVN
+	 qWZ2gm+WD799kiQeeZeStDoBNwZHuqr8Aoty0WYuBJGyunGTOIJvnjVViJkaWFpOubibE
+	 1DU1IkBlKS5TWxO2OUCCJEwjbKg4SNSqf6GVgFBZUZYVFr2fQMAycOSmhtJkGFJtqcw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kQZg+5F6;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=EiJxPAMP;
+	arc=none smtp.remote-ip=91.218.175.64
+Received: from mta0.migadu.com (out-64.mta0.migadu.com [91.218.175.64])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10337606E61E;
-	Mon, 23 Nov 2026 08:04:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC64B606A31E
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 08:18:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BC64B606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=kQZg+5F6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF5E1F000CF;
-	Mon, 23 Nov 2026 08:04:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795421043;
-	bh=leRR6eNzADhVnKcUAKiblsCMLIUNRjwjArIIU12nGiE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=kQZg+5F6Arowc8IX/pv/bvNDLZ+/tso26+mHlXpttbrrxleQO3nGx4ltqpDIoVWqZ
-	 OUi0TWLIZWFTW6lF2U+hmLX+cgUT/26AqFoPh1oicwi0S8y/aoxo033JQDfN4vpRAi
-	 I0hMpX8OuVWTX6XqVnhQ9lGqrWMCky1KchX2y41+U6ZXmpe2PYF5xzL23Uc3W9vX5R
-	 qW1u+0Jt2/e1zo+zGSp8HU/2ThsWrDO/O8A4pzsyatU1bbEiWqiO5NJcT0tH39gP8U
-	 1bhAz16hlUVQgxltp09in9gcdk5SvW12+lbVe/IKRiABRuJrSlN8Pwn958EuRHkQez
-	 /xNw+XGYmOZsA==
-Message-ID: <d854fae0-eb46-456d-a7d9-8a0691db40b1@kernel.org>
-Date: Mon, 23 Nov 2026 09:04:02 +0100
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=EiJxPAMP
+X-Envelope-To: linux-iio@vger.kernel.org
+DKIM-Signature: a=rsa-sha256; bh=Kl7BLUrMrW5GdgYLUZN6g2j9PF1ge3efMGDYYuBtK3w=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1795421896; v=1; x=1796026696;
+ b=EiJxPAMPmUTcXbCTVFF0TSr6RySGowbPhtRM8APPwzdo4MBmUS29hy9k0FSjZOUdjQGIHng+
+ jdP7+3CrSuQaD6NmU4cnrOaaxnxuxjuwmDLbwyeC0kflYRA7zHv8eyID8nXvE+HcSwHX2K8EhHJ
+ TPkzFoCUhaYDUeUDSorG3Jus=
+X-Envelope-To: linux-iio@vger.kernel.org
+Received: by mta10.migadu.com with ESMTPS id 94410b9f1b958063;
+	Mon, 23 Nov 2026 08:18:16 +0000
+X-Mizu-Trace-ID: 94410b9f1b958063
+X-Migadu-Flow: FLOW_OUT
+Date: Mon, 23 Nov 2026 10:17:58 +0200
+From: Matti Vaittinen <matti.vaittinen@linux.dev>
+To: Matti Vaittinen <mazziesaccount@gmail.com>,
+	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+	Matti Vaittinen <matti.vaittinen@linux.dev>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Joshua Crofts <joshua.crofts1@gmail.com>,
+	Radu Sabau <radu.sabau@analog.com>,
+	Janani Sunil <janani.sunil@analog.com>,
+	Salih Erim <salih.erim@amd.com>,
+	Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Jakub Szczudlo <jakubszczudlo40@gmail.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] Support ROHM BD79111 ADC/GPIO
+Message-ID: <cover.1795421473.git.mazziesaccount@gmail.com>
+Reply-To: Matti Vaittinen <mazziesaccount@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,34 +80,70 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH v5 7/8] iio: adc: at91_adc: use HZ_PER_KHZ instead of raw
- 1000
-To: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>, jic23@kernel.org,
- linux-iio@vger.kernel.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
- claudiu.beznea@tuxon.dev, giorgitchankvetadze1997@gmail.com,
- amin.gattout@gmail.com, antoniu.miclaus@analog.com,
- gregkh@linuxfoundation.org, mripard@kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
- <20261123070101.53868-8-abdelnasserhussein11@gmail.com>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261123070101.53868-8-abdelnasserhussein11@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="a02bTfSpJ7pb+bT2"
+Content-Disposition: inline
 
-On 23-Nov-26 8:01, Abdelnasser Hussein wrote:
-> Use the HZ_PER_KHZ constant from <linux/units.h> when converting the ADC
-> clock rate to kilohertz instead of open-coding the divisor.
-> 
-> Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-> ---
+--a02bTfSpJ7pb+bT2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
+Support ROHM BD79111 ADC/GPIO
 
--- 
-Kind regards,
-Joshua Crofts
+The ROHM BD79111 is a 12-bit, 16 channel SAR ADC / GPIO IC. Or, a "Signal
+Monitor Hub IC" as data-sheet describes it. The key difference compared
+to already supported BD79112 is the reduced number of channels (16,
+BD79112 had 32) and halved sampling rate (500 KSPS when BD79112
+data-sheet stated 1 MSPS).
 
+Revision history:
+ v2 =3D> v3:
+  dt-bindings:
+   - No changes
+  driver:
+   - move 'Return -ENODATA instead of -ENODEV when no SPI match data is
+   found' -fix to the patch 2/3, which introduces the SPI match data
+   usage.
+   - Fix double semicolon and drop the unused macro.
+   - Suffle comment wording as was requested by Andy.
+ v1 =3D> v2:
+  dt-bindings:
+   - Don't drop the 'root-level' additionalProperties: false
+  driver + Kconfig:
+   - Styling as suggested by Andy / Jonathan
+   - Split to two patches as suggested by Andy
+   - Return -ENODATA instead of -ENODEV when no SPI match data is found
+
+Matti Vaittinen (3):
+  dt-bindings: iio: Support ROHM BD79111
+  iio: adc: rohm-bd79112: Add chip info structure
+  iio: adc: rohm-bd79112: Support ROHM BD79111
+
+ .../bindings/iio/adc/rohm,bd79112.yaml        |  29 ++++-
+ drivers/iio/adc/Kconfig                       |  10 +-
+ drivers/iio/adc/rohm-bd79112.c                | 112 ++++++++++++++----
+ 3 files changed, 120 insertions(+), 31 deletions(-)
+
+
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+--=20
+2.56.1
+
+
+--a02bTfSpJ7pb+bT2
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmsD9rQACgkQeFA3/03a
+ocUowwgAgkfw2swuzUe9ERFyOXwKz5reM4OGlRzFGjsiuBs/B9jrvmq6ecN5NiCb
+oFL1sgNc+cFF9kA0ajmAV+Jvt73wE1sIb6oYqKxHMCeNyGxtUfnt1Dnl87EcvTCp
+m77PYVP8/B0o0JKXhtU+oSTCUihWYwmCZhohDzYyZKXxnvPT44knpJN6V4D1sy4C
+gD9bpdrrmhWkwXv/kZPOc1f2B4F91vfgaH7GJVNyEEUJtAQ5SxAHgpjuETezT7aC
+oIW8BEvk+HxDkik09apW6ueIdCbJR73yN7D7M5+MMUWdcppK2oNJTJzN++2plUPr
+7FmxC7vD76xr8pECVsSJPk35s7N7Vw==
+=bNMM
+-----END PGP SIGNATURE-----
+
+--a02bTfSpJ7pb+bT2--
