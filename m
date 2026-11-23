@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795417328;
-	b=I1aOGWxI9X3IL2xqosc2gSjdvL4IwudrfVpL+4ZeSMhDAc/ndXqXVnhW8zhAqCEh35qz
-	 emsGZLcXJYu0VEZSpNaMOKRAsGCcSJk5cM+FsaBqEV4OWfS6/g6N0ggI7Fi8hskSt7bRH
-	 zki2az1phsicUcTfVcvM48hapFhghVN/AdkuoiqTKqHjBAWuwLoOhG2qnyyb/aV4rMjwN
-	 2Y8mLgKrMCcGrBsYLZGF8w6g+rQE+oa/1Wlt8V1k1gCfgdRPvJCbqPG1YsLn9UR2khdTl
-	 P67WM4VPrQgvVe2KraTjreHDbMhCZHwCURv9HZBNVZTem9E85BZ2g3SFAIOp9/zNaIQ==
+	t=1795417333;
+	b=ba4b5hN04qtvT+R6lkYsWSyvJmfI5JQvkw042qZsbcmrBhX8DiCmiIcYsUCJtmnbeMrr
+	 u5RKq5yMFufry+5pdYdE3nipHMKHY0LLh2mrHZgf3D8+l/srVXQjAm4orEoaewCBZ1FpO
+	 A92rwEebkaJtK+1+q6GKlnu3I4yYZnhWwaKlFTe4WLZo0jEIDUkV2RgfOQNpvNNdrBzyU
+	 m8yh/wrPvLoDG9hRT5U+fIlN3bcKueLJr0/3vQnh+PG2BW4Rk1LzdNXc5LWQfbZH49/RZ
+	 YKMfS6RWVdtQ/2cftV63o0xOb40cGJP1xxhGbeqOUkRCTafM2QWlnnybWJoTd9mhblQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795417328;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795417333;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=1MJvqtEQ7KzkrkQd7jNXZvcPx36rVpHnL5D10mePtG8=;
-	b=xxwDZmIxTSgLPDA1urg0Ey8yh7oD9B69/4QYm6BwgU9ur9KidXCYjlVlyxiBhRC6ehL+
-	 JmJvH/kPXbfO6Nhu9h23BNZ+aiIaJNLIG4KmfzCiK/6lHC0Yq3tm5b/Gu/KfKRZ9rSTdh
-	 r+u2DI3prO6hSne6CWosmnm9YrMmVEc8ieTLYIHEMHUHT6GiDHbl2KzOTu0cqhT6MjRUU
-	 UgXu8mDzLY2H55kUTzD+7pSbZXb91f2yRkUdOxQ3uIXtzS7Z3QHJZt+MIXjCMl6q6ZtpK
-	 TzSla9sd05DnBwjAM5T6B/divCqKXqReomYWsvEjZ+BJA0iZ/YMVrtXxzdEqznlW6xA==
+	bh=MS6DmB/ULBdfOhhhYecAUBRl9PiNKo3+G/EHjFt3o2U=;
+	b=JySg90uRagQCDabouLUsE/OVlFVCuFwTwS0opJ1UtA73HxDxQiKGssjtzP3FemHIEgDr
+	 3AmZJlSovz5X8kdkXa3xQ8zTFFprAC/kx48RhzOa5HwCpXjjw7QZoy4U71pJa9R1TCle2
+	 slI9cnoxYgT2/oYBWQN3csnWVA6I0LspJ8DQvJNa/X2sjj01oC0PJvdJ6+x6SlJbkmc93
+	 FWpJPJvDXQw4O3ps6IRe3q/yiv5fK5HCE0sP1Lllr/tlsBOPkX8cbqzLvRcLjLNoEn7YY
+	 ONYsNrHMPZNaKtDw8aRrnWpwr7gbNxIP2joz2AemLaTzpQdIdYz2B6maO+VOcZrYC/g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FpW1R1DD;
-	arc=none smtp.remote-ip=209.85.221.46
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pJgNShhB;
+	arc=none smtp.remote-ip=209.85.221.44
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2198E606A31A
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 07:02:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2198E606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A46F606A32E
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 07:02:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1A46F606A32E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FpW1R1DD
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-491846221ffso2422321f8f.3
-        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 23:02:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=pJgNShhB
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-49465892f7bso2129885f8f.1
+        for <linux-iio@vger.kernel.org>; Sun, 22 Nov 2026 23:02:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795417326; x=1796022126; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795417331; x=1796022131; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=1MJvqtEQ7KzkrkQd7jNXZvcPx36rVpHnL5D10mePtG8=;
-        b=FpW1R1DDTCilk6imzhNgeaMna/s08vWK96icEENFis6O2JY3T7yQhwo9qtSkB8TsNw
-         3vrXdBdIcmfjerV6Cm+GhnQtAiID5z4ngvKoGz3eKqFJSWpb4ML3nFVzgFUAA6WETOhH
-         siECVSDboNa8tDGu5i2CNmayyT+zp/jUjePWLx5sB2DuAmD+7e5+lwejcP2IGShCkSyh
-         8CJhTbhbu8lY6zm9raEyY93HzhFn6lwbnvQEvxhaMBOI1hFUIErDEZIZH8O25o0ilxL/
-         /17Q9KRp8AJ26PK3YRi+BvFLcjn3EvdBLEWR3R/vuAxRFRWM3a0cSajO+LMpErfu9uph
-         1RAg==
+        bh=MS6DmB/ULBdfOhhhYecAUBRl9PiNKo3+G/EHjFt3o2U=;
+        b=pJgNShhBPrgLBlaRCOzqSoRSYkU66yOc/HGDwRAVvK2DCrmGb20XChLl1QLoK8H0iN
+         rZnXDHj7T4W8G02NAf8W0LWz6Pb0DoKyVgf16ZhJ9uVjL7hUd/GkRCWd8+if+DiqA1Jn
+         Kihym0fPctgn90S1mp0gkiEL3ii3/3YmowXVL/NuTuEQryIXy3LoJL6qK+WivzXkoP2S
+         ZWSeAfT7U39RAJmCwzX5cIyrc7hMowhZuz0zSv23piFJ9WMG3QPuI0tCCdRlyKQKAZSW
+         JAKh4x2N6j0j+35pRBAqspqAGtg3+Yng/yta2jktso38QI6Xeuu+kdulfJw7jwJ62Vr6
+         F9xQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795417326; x=1796022126;
+        d=1e100.net; s=20260707; t=1795417331; x=1796022131;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=1MJvqtEQ7KzkrkQd7jNXZvcPx36rVpHnL5D10mePtG8=;
-        b=MYujGOfu5lXA6fq8Ys8/U6cMYAMIE2bKIjgyeM4ubkLFvHZZGUxUmGmdQ0fmVatu65
-         EDSAJjS4PJZBmV6k+wYwj2/JRS4ctmw0mYBxf9whxB6At4rCnOrPavDVBJBCGSPyjauj
-         /0WQQNdkOhFDxvWk48gKS0GO0SKVp2X39y9UzpxMoXQWkVmWxP3NZbjzNde3CC2iqAdw
-         3XwcdUsl28AMDAhyWZqUdr4D27FRDMh6faBmLafQHM3mIJHbfNlxffgpSo8MRtxu+I8i
-         +7lhsJ3SuBiPrf9pePrEb/TLNlx0jlbhTcQMBvtvMVxjkAcrGcyo+Pa4VH5FEFDfHmJg
-         yYgQ==
-X-Forwarded-Encrypted: i=1; AL+hErEi0CAQi5zftPFi5o4kr+Nb8tSwp+8nIw0tP5ir6+JkOxGsloBsppVVAVANkhnoDIM2B6xpdZLdEcM=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9SN1CkETrOIdgBFUqCVo9YIZUgzrDltaWXRKj32aB66RzTA4x3
-	+xM/icT1vzOUcaYzZEK8vhTXLtfJNRGt1gHjcl1Lg+t/FbD8cOZThczLqe2c/g==
-X-Gm-Gg: AZFdTZdQZyYSgNk+YL0kjrN5lxyfj3p6erg0OJb+6Q9LILTtYyBiLQQtg+SmX6XEL24
-	S+RMtJwJ2cG5UogKW/FibZk8hj3L0FqP+LWgmrjsx8IPUVIituRL3B92dU34hXydvnAHjGU1HP0
-	hmU4ZF9BB+3cxw3Ci5h0hjyea5oHyCfoZnppa2qPVQSh7kVnwcGRXrs/vLJ8sROTouMB4SSoXJ3
-	21s4cIwtj1pvKgOUtN2+tYhRb2DzYrYEcxNeFG9QgpfYsh+RLMIt9kWjS5odM2+QnWxP0gzz+re
-	NLtobsY3/V0kiU5x6aBGgbebrFl6MWzQYymQWzZvt4keTukVmgq8PZzwGT8xKbejQVHbdV+QEJZ
-	efffSB2/HQIugkkImP/kNzTcRePk5OQHbbr3WMrj/VEqzW9rrQECxA0eWNiFSavP78f3UVxOoVD
-	sK5sW/QNg9xv9yVyn9RYmwO5F59wKjssuLuLmtAhw+w42W/U/LQrUNot2revTAdOzC6TwEiUdxU
-	yXJ9wOFUY1H0bpcSlRD/+In8pued2uqyPtj6enM8DcWYU57Te3VrKqOzHmlgJNokfDpXnxu+wuu
-	SY0RK4dvKl88cUvMc14oeybOypzItOaG/Rvw
-X-Received: by 2002:a5d:64c9:0:b0:491:92e5:b5c2 with SMTP id ffacd0b85a97d-4abb1baaaa5mr21008231f8f.15.1795417326388;
-        Sun, 22 Nov 2026 23:02:06 -0800 (PST)
+        bh=MS6DmB/ULBdfOhhhYecAUBRl9PiNKo3+G/EHjFt3o2U=;
+        b=HQCqO/2bWbuHTkorA9ajXpkSHBq8j3ru8bq7CieUpqnkfpSVCmxC3EZxhW5ZYmo+xT
+         3BBYCjkrsT1ED6beuyuAaSbshhKqITM287R0hn53LWz6hkel7kmDTAkBn88fU9fVGOBS
+         KV+DT6dKzPjsgaqZ83rYrvG7dWTV5j8qQnFIqLftOZ7VZ0CjrQ3vndS5WAITdzeQ75Vc
+         N3/LU6iUnaUlPijo0MJ0wrvL1mqnHEZWuid8oODZBctWX5K55tmUPHOw4ILufR3+LgmG
+         dyRoH2Whyh9beujhFDaW7Bp2B3PuTyDjx9qWBJicS3K0g3AN7dLnnt3wL66s77NKYcvH
+         YQDw==
+X-Forwarded-Encrypted: i=1; AL+hErHNzmLOk79XokzehTtOaCCDYZJ5Vwelb/23nXphYCVcxxLrzxThnmZx3Nq2hnuQlH4yH3V8WXzaWKM=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+OSjo+rBNGjRWBIQ8WQF3T7wyqwXuue4cbEbsNuJqUQp8kPrHi
+	XYOEbODM+XEIBvWY5p1zc41S0NK8TuWzl8sP+hL3KTmx6T/Tx6SlF9O5
+X-Gm-Gg: AZFdTZckU1WxLKVXFL8LvGYVBqX74iD4lTMhW8727tfPZoxddiW9actOrukt4K/UanX
+	l2jS+7UM8O/57uaSZfiXhmOc0qgrMGJghMOg36xEavdnjwNfBviSLAHcI1zEcm+ZMVdVJww3AhF
+	Ihosz9ypJHe0zlERrRQakbxE00HJ88Z4jpScr/PhGP79W4nKoI2FIM4G7OXR2WAaYA+tELitQ3b
+	L7aSommFwg5+n/eUZMA40u58p8VUzb24bZsDftNtNHVILm9zznpRJQ1RBBIJYaSH6DAMl59UV4s
+	8Sc8pNCzof7NMmO8QPQqCM4pj9RyKCUCSWhwoeRlRnITJCYo4ECfTUBwE7NiBRWpQ2nTA7DPjab
+	lnFobD0d9pTj2ILQ3fuj4XnXp7FY68eyJKw3TMTLQsgkbc1Zot0Y4I8gNQwvqNu3LBq+ckKCh9+
+	lpFtalQo0KQv6yB+UU6g1lC5JcOvcvvSz3tyyquWoVv8qIy2RiFUfBK0MN8lwaqadhJR0IVXLrz
+	5ZKhvSmqtXfp5L9J10co206pnWJ5TCSgGPELc7ldTIA9Zugu8d9eazrxj5rrxUZh0e2YTk+mZab
+	tURrBriF/2etRKZZIWBuGDIwaMMvua/YpHAa
+X-Received: by 2002:adf:e014:0:10b0:48f:bcdf:6f7d with SMTP id ffacd0b85a97d-4abb3c37b20mr15296742f8f.34.1795417331345;
+        Sun, 22 Nov 2026 23:02:11 -0800 (PST)
 Received: from fedora ([154.182.66.143])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2d60sm20779007f8f.3.2026.11.22.23.02.03
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab658e2d60sm20779007f8f.3.2026.11.22.23.02.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2026 23:02:06 -0800 (PST)
+        Sun, 22 Nov 2026 23:02:10 -0800 (PST)
 From: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 To: jic23@kernel.org,
 	linux-iio@vger.kernel.org
@@ -95,9 +95,9 @@ Cc: dlechner@baylibre.com,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
-Subject: [PATCH v5 7/8] iio: adc: at91_adc: use HZ_PER_KHZ instead of raw 1000
-Date: Mon, 23 Nov 2026 09:01:00 +0200
-Message-ID: <20261123070101.53868-8-abdelnasserhussein11@gmail.com>
+Subject: [PATCH v5 8/8] iio: adc: at91_adc: convert to device-managed resources
+Date: Mon, 23 Nov 2026 09:01:01 +0200
+Message-ID: <20261123070101.53868-9-abdelnasserhussein11@gmail.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
 References: <20261123070101.53868-1-abdelnasserhussein11@gmail.com>
@@ -112,35 +112,294 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use the HZ_PER_KHZ constant from <linux/units.h> when converting the ADC
-clock rate to kilohertz instead of open-coding the divisor.
+Convert the driver to device-managed APIs so that all resources are
+freed automatically on probe failure and on driver detach:
+  - allocate and register the IIO triggers directly in at91_adc_probe()
+  with devm_iio_trigger_alloc() and devm_iio_trigger_register(),
+  dropping at91_adc_allocate_trigger(), at91_adc_trigger_init() and
+  at91_adc_trigger_remove() along with their manual rollback paths.
+  The st->trig array is no longer needed and is removed as well, since
+  the triggers are now owned by devres
+  - set up the triggered buffer with devm_iio_triggered_buffer_setup()
+  directly in at91_adc_probe(), dropping at91_adc_buffer_init() and
+  at91_adc_buffer_remove()
+  - allocate the touchscreen input device with
+  devm_input_allocate_device(), dropping at91_ts_unregister() and the
+  manual input_free_device() error path in at91_ts_register()
+  - register the IIO device with devm_iio_device_register()
 
+Redundant allocation error messages ("Failed to allocate TS device!" and
+"Couldn't setup the triggers.") are dropped, and at91_ts_register() now
+uses dev_err_probe() to report its remaining error.  Errors from
+devm_iio_trigger_register() are reported with dev_err_probe() as well.
+
+at91_adc_probe() no longer needs any error unwinding labels and
+at91_adc_remove() is removed together with the platform driver's
+.remove callback.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Abdelnasser Hussein <abdelnasserhussein11@gmail.com>
 ---
- drivers/iio/adc/at91_adc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/at91_adc.c | 187 +++++++------------------------------
+ 1 file changed, 34 insertions(+), 153 deletions(-)
 
 diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 05e8b3deb043..62f8db630640 100644
+index 62f8db630640..5163583aa4f8 100644
 --- a/drivers/iio/adc/at91_adc.c
 +++ b/drivers/iio/adc/at91_adc.c
-@@ -21,6 +21,7 @@
- #include <linux/property.h>
- #include <linux/sched.h>
- #include <linux/slab.h>
-+#include <linux/units.h>
- #include <linux/wait.h>
+@@ -230,7 +230,6 @@ struct at91_adc_state {
+ 	u32			startup_time;
+ 	u8			sample_hold_time;
+ 	bool			sleep_mode;
+-	struct iio_trigger	**trig;
+ 	bool			use_external;
+ 	u32			vref_mv;
+ 	u32			res;		/* resolution used for conversions */
+@@ -607,96 +606,6 @@ static const struct iio_trigger_ops at91_adc_trigger_ops = {
+ 	.set_trigger_state = &at91_adc_configure_trigger,
+ };
  
- #include <linux/iio/iio.h>
-@@ -1094,7 +1095,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+-static struct iio_trigger *at91_adc_allocate_trigger(struct iio_dev *idev,
+-						     const struct at91_adc_trigger *trigger)
+-{
+-	struct iio_trigger *trig;
+-	int ret;
+-
+-	trig = iio_trigger_alloc(idev->dev.parent, "%s-dev%d-%s", idev->name,
+-				 iio_device_id(idev), trigger->name);
+-	if (trig == NULL)
+-		return NULL;
+-
+-	iio_trigger_set_drvdata(trig, idev);
+-	trig->ops = &at91_adc_trigger_ops;
+-
+-	ret = iio_trigger_register(trig);
+-	if (ret) {
+-		iio_trigger_free(trig);
+-		return NULL;
+-	}
+-
+-	return trig;
+-}
+-
+-static int at91_adc_trigger_init(struct iio_dev *idev)
+-{
+-	struct at91_adc_state *st = iio_priv(idev);
+-	int i, ret;
+-
+-	st->trig = devm_kcalloc(&idev->dev,
+-				st->caps->trigger_number, sizeof(*st->trig),
+-				GFP_KERNEL);
+-
+-	if (st->trig == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-
+-	for (i = 0; i < st->caps->trigger_number; i++) {
+-		if (st->caps->triggers[i].is_external && !(st->use_external))
+-			continue;
+-
+-		st->trig[i] = at91_adc_allocate_trigger(idev,
+-							st->caps->triggers + i);
+-		if (st->trig[i] == NULL) {
+-			dev_err(&idev->dev,
+-				"Could not allocate trigger %d\n", i);
+-			ret = -ENOMEM;
+-			goto error_trigger;
+-		}
+-	}
+-
+-	return 0;
+-
+-error_trigger:
+-	for (i--; i >= 0; i--) {
+-		if (!st->trig[i])
+-			continue;
+-
+-		iio_trigger_unregister(st->trig[i]);
+-		iio_trigger_free(st->trig[i]);
+-	}
+-error_ret:
+-	return ret;
+-}
+-
+-static void at91_adc_trigger_remove(struct iio_dev *idev)
+-{
+-	struct at91_adc_state *st = iio_priv(idev);
+-	int i;
+-
+-	for (i = 0; i < st->caps->trigger_number; i++) {
+-		if (!st->trig[i])
+-			continue;
+-
+-		iio_trigger_unregister(st->trig[i]);
+-		iio_trigger_free(st->trig[i]);
+-	}
+-}
+-
+-static int at91_adc_buffer_init(struct iio_dev *idev)
+-{
+-	return iio_triggered_buffer_setup(idev, &iio_pollfunc_store_time,
+-		&at91_adc_trigger_handler, NULL);
+-}
+-
+-static void at91_adc_buffer_remove(struct iio_dev *idev)
+-{
+-	iio_triggered_buffer_cleanup(idev);
+-}
+-
+ static int at91_adc_read_raw(struct iio_dev *idev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int *val, int *val2, long mask)
+@@ -930,17 +839,13 @@ static int at91_ts_register(struct iio_dev *idev, struct device *dev)
+ {
+ 	struct at91_adc_state *st = iio_priv(idev);
+ 	struct input_dev *input;
+-	int ret;
+ 
+-	input = input_allocate_device();
+-	if (!input) {
+-		dev_err(&idev->dev, "Failed to allocate TS device!\n");
++	input = devm_input_allocate_device(dev);
++	if (!input)
+ 		return -ENOMEM;
+-	}
+ 
+ 	input->name = DRIVER_NAME;
+ 	input->id.bustype = BUS_HOST;
+-	input->dev.parent = dev;
+ 	input->open = atmel_ts_open;
+ 	input->close = atmel_ts_close;
+ 
+@@ -954,12 +859,9 @@ static int at91_ts_register(struct iio_dev *idev, struct device *dev)
+ 				     0, 0);
+ 		input_set_abs_params(input, ABS_PRESSURE, 0, 0xffffff, 0, 0);
+ 	} else {
+-		if (st->touchscreen_type != ATMEL_ADC_TOUCHSCREEN_4WIRE) {
+-			dev_err(dev,
+-				"This touchscreen controller only support 4 wires\n");
+-			ret = -EINVAL;
+-			goto err;
+-		}
++		if (st->touchscreen_type != ATMEL_ADC_TOUCHSCREEN_4WIRE)
++			return dev_err_probe(dev, -EINVAL,
++					     "This touchscreen controller only support 4 wires\n");
+ 
+ 		input_set_abs_params(input, ABS_X, 0, (1 << MAX_RLPOS_BITS) - 1,
+ 				     0, 0);
+@@ -970,20 +872,7 @@ static int at91_ts_register(struct iio_dev *idev, struct device *dev)
+ 	st->ts_input = input;
+ 	input_set_drvdata(input, st);
+ 
+-	ret = input_register_device(input);
+-	if (ret)
+-		goto err;
+-
+-	return ret;
+-
+-err:
+-	input_free_device(input);
+-	return ret;
+-}
+-
+-static void at91_ts_unregister(struct at91_adc_state *st)
+-{
+-	input_unregister_device(st->ts_input);
++	return input_register_device(input);
+ }
+ 
+ static int at91_adc_probe(struct platform_device *pdev)
+@@ -1142,16 +1031,34 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	 * trigger for classic adc.
  	 */
- 	mstrclk = clk_get_rate(st->clk);
- 	adc_clk = clk_get_rate(st->adc_clk);
--	adc_clk_khz = adc_clk / 1000;
-+	adc_clk_khz = adc_clk / HZ_PER_KHZ;
+ 	if (!st->touchscreen_type) {
+-		ret = at91_adc_buffer_init(idev);
+-		if (ret < 0)
++		ret = devm_iio_triggered_buffer_setup(dev, idev,
++						      &iio_pollfunc_store_time,
++						      &at91_adc_trigger_handler,
++						      NULL);
++		if (ret)
+ 			return dev_err_probe(dev, ret,
+ 					     "Couldn't initialize the buffer.\n");
  
- 	dev_dbg(dev, "Master clock is set as: %d Hz, adc_clk should set as: %d Hz\n",
- 		mstrclk, adc_clk);
+-		ret = at91_adc_trigger_init(idev);
+-		if (ret < 0) {
+-			dev_err(dev, "Couldn't setup the triggers.\n");
+-			at91_adc_buffer_remove(idev);
+-			return ret;
++		for (unsigned int i = 0; i < st->caps->trigger_number; i++) {
++			struct iio_trigger *trig;
++
++			if (st->caps->triggers[i].is_external && !st->use_external)
++				continue;
++
++			trig = devm_iio_trigger_alloc(dev, "%s-dev%d-%s",
++						      idev->name,
++						      iio_device_id(idev),
++						      st->caps->triggers[i].name);
++			if (!trig)
++				return -ENOMEM;
++
++			iio_trigger_set_drvdata(trig, idev);
++			trig->ops = &at91_adc_trigger_ops;
++
++			ret = devm_iio_trigger_register(dev, trig);
++			if (ret)
++				return dev_err_probe(dev, ret,
++						     "Couldn't register trigger %u.\n", i);
+ 		}
+ 	} else {
+ 		ret = at91_ts_register(idev, dev);
+@@ -1161,36 +1068,11 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 		at91_ts_hw_init(idev, adc_clk_khz);
+ 	}
+ 
+-	ret = iio_device_register(idev);
+-	if (ret < 0) {
+-		dev_err(dev, "Couldn't register the device.\n");
+-		goto error_iio_device_register;
+-	}
++	ret = devm_iio_device_register(dev, idev);
++	if (ret)
++		return dev_err_probe(dev, ret, "Couldn't register the device.\n");
+ 
+ 	return 0;
+-
+-error_iio_device_register:
+-	if (!st->touchscreen_type) {
+-		at91_adc_trigger_remove(idev);
+-		at91_adc_buffer_remove(idev);
+-	} else {
+-		at91_ts_unregister(st);
+-	}
+-	return ret;
+-}
+-
+-static void at91_adc_remove(struct platform_device *pdev)
+-{
+-	struct iio_dev *idev = platform_get_drvdata(pdev);
+-	struct at91_adc_state *st = iio_priv(idev);
+-
+-	iio_device_unregister(idev);
+-	if (!st->touchscreen_type) {
+-		at91_adc_trigger_remove(idev);
+-		at91_adc_buffer_remove(idev);
+-	} else {
+-		at91_ts_unregister(st);
+-	}
+ }
+ 
+ static int at91_adc_suspend(struct device *dev)
+@@ -1340,7 +1222,6 @@ MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
+ 
+ static struct platform_driver at91_adc_driver = {
+ 	.probe = at91_adc_probe,
+-	.remove = at91_adc_remove,
+ 	.driver = {
+ 		   .name = DRIVER_NAME,
+ 		   .of_match_table = at91_adc_dt_ids,
 -- 
 2.56.0
 
