@@ -1,80 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795433482;
-	b=Q9PFGWlSH43AHdIElp5zfZVarCb6Iwf9405wEjJtv3FUprbh7Ni1M57Dd42hGRvDhV/s
-	 UU6jW/oNHydKtgUFRqi4PIypF52Yi4xraVZGKVNg/sBx/DzJa1ieL0fJrXBZnGFXK5U0t
-	 wop3wG0BihRJDGjb4ZmiWyb+U3ac5wWjuC0kNW0xoCjZnik1wsLkpUL42/3O90f92DKM3
-	 c5D/nwgQ+hZOlRi4skqioFKmzmACpevu1OQwEtm7+gKe6+BPfep6sSBxCzSyeayYQ2p3q
-	 LfxeO0DkwmrAY55F7mSeEXH9Ys0vdMidFO8SZXLuRal5pI3GzYOg3nQDNnNZo/lAXwA==
+	t=1795433888;
+	b=XfxHwlQH1VLWXg1oJ5hP7lmtlplv34WTeCzWBQ8hagMK/t7lmP+mMEp409wDikWx5L45
+	 R8pmgH5VhccocEiz8hK1if18VG8K6zuNx5qDxMqZZnLA36tdymwl53IyzDMRJX1k5RFr7
+	 twxUKuyVRGfPA+VbCn5swHAe5THD7O9jjd2QXqo4nTAp1XVVu5DRt2XgKI7SjCKpS3S6G
+	 E4c/ILP22QrfLk+AVGBctg24RwymfmSKl3GD87Z2NmVUVDVSMKg9Y5tUP4hjom5VdHwXh
+	 DirHnU8me4z6F7i5Pg024aznEbbin6sv0Gy7E2973JW2IaIvpCzJPDpJkxjaUl1Zgag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795433482;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=yfrlej6qyd4zr3J56wD+mtwsn9dmfEHw/O0sbFEMubM=;
-	b=0x0G+Mych96kO4YuQvwiTudJ0JSlWHXVPCg/N1VHCrSuYKnAb1gUWSCeHf+3I2RIQShS
-	 Ful4/gZ9vyRh/Q7mqr6P82AQVV3uAX6SpGfYE4BThgvsL1M26pXSM+76l+YwMJAJ+1ZHE
-	 92zd+d6e4YlGF9YOOcTrD6xsOqEv838vDCx1DrqwS5owJgJXnbrkwPjYEOYGMUNTs67BC
-	 yJ07s5NR6YFo9zoaXKLpTy8dg1XKn4eg2eJ7BO98qBP+nZH+cPDTzleazhJDUNG9U41Aa
-	 0283tEubAvw3HgeBz0be+60iNpA5Z2njKMbr/PsUsw6FcrSGk5+sGucp3hix+3diiGg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795433888;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=Khejrep24yyzWEzO9hkzlnH2dbaJOCBXw2GKcHL6sSY=;
+	b=i+Nw3yfK0jihL9BVpCgzw6FYauzwEgLLS5Ito7oL+dZ/uYazToJgH3QZk31YrAcrBIjq
+	 UKd1vNidiLjEuMZh1Zf3nYjS9Bo7QyzXxHAiGP7Yb870p/U6AdcbWoy86LImDGhHRlC5J
+	 461Xy8/2WuY9bIwoMfd+E+oQ3Bu2AQIE/yMSks0DCzA/hcU3j9lJxhs++skA+V2ZZgZA1
+	 TuOPenW5Q28u6Ad0Qq04kJ9aLlUiT/IjOC2d00q6ASYqOfv4YVXXE9ApK9gKL3ZwGknng
+	 o2AiDhmSIYRD8OHELDSCF1433+Ftd5068hXBA+7avGLdmBKlwDAqo5lTfBXvYhwM81A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mBzJ9ssv;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=jbwLwmRe;
+	arc=none smtp.remote-ip=209.85.216.47
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 073A6606A31A;
-	Mon, 23 Nov 2026 11:31:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 073A6606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D106B606A31A
+	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 11:38:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D106B606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mBzJ9ssv
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795433483; x=1826969483;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=buSJuJMS4qx78LvNp3wcNBjX6N049hlAhRKf7lhMUi0=;
-  b=mBzJ9ssvBzpDhoqszFCNS5sCrhq1rmkFUWdeWXIV0Imi+kEYWMWb8RWs
-   867FfEkYAnP+KCUcZ06tNG29ncjFZBm5V+LuT4UdLX6mTNcpdxkdcHkKU
-   1OtbQyrYEOBq4XaraZ9DXbW3mXBapw9YMNBrjNBy/LEu7WFd0OC/wrqDt
-   PEf6UADjdRMtER85Q0YJebd/nn9I3PilrslW6bt7pK/qkUcxnpWQu7QPg
-   /6oa3VPDzgLfb2geNxLQ3dMaTlWWirKCWnS2R3LRTV4JOyNXftphU+g32
-   RA3ImHYDuJaEM5RIPXN6ptc2z7fTbBJafJfQWcb46yYyMqHjFq/gqV07U
-   w==;
-X-CSE-ConnectionGUID: MN8xuuXsRZOv9PkqbQtikg==
-X-CSE-MsgGUID: D6AIdkSCQta8wF9I889DqA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11974"; a="4324865"
-X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="4324865"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:31:22 -0800
-X-CSE-ConnectionGUID: NQ79MQVYQL+tyEKxworH9g==
-X-CSE-MsgGUID: acwzS4tyRFWTrLBXkeTjTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,227,1787036400"; 
-   d="scan'208";a="11612293"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.204])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2026 03:31:19 -0800
-Date: Mon, 23 Nov 2026 13:31:16 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Lee Jones <lee@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (1024-bit key, unprotected) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=jbwLwmRe
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-3b09a83d12aso2237000a91.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 03:38:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1795433887; x=1796038687; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Khejrep24yyzWEzO9hkzlnH2dbaJOCBXw2GKcHL6sSY=;
+        b=jbwLwmReAKQaVzUeDss8ILk/irYQPtopTRHAEKOe0NAE1MqbTcPOn5e3Oumo6x/hs2
+         Xg6czQO/GvobpeNaiQhKfpfd2fdafZIofzRqva571GhAf1MctcvfdDrAmDmsY+//qlui
+         rlFPW3Q4x/V/wd2l3OApWrJ864LrtLJaL9wOc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795433887; x=1796038687;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Khejrep24yyzWEzO9hkzlnH2dbaJOCBXw2GKcHL6sSY=;
+        b=mvabh0oceW12nj0eF+T4fqlao9HkkY0zmbBnfpyW3MuB8XwYylJeej1FCprvlFpLM3
+         Z5g/u0VnmE4/nnyNlT0wABZQASshyvQugvp9SpgWSfISeRz2ujZRwa237PX7qyn2c0hF
+         9T6vlL8GmKmG+WWc9oVy1Z1TkVEDu7Vn9ARlg0stbMtXD3JgRmd+LsJr9720mJmOAx/d
+         LNaiRiRc5B31Cl/1GwBYYPNTTdPC4W8WU0tCh0srHNRherdJUYeMtD9oHXr7stoApn7A
+         8TH0x40Rivj9OIrYCJsfpJPAbyF1gpPpJ6rZ4ye/7Ur2cOp7kt1GhWkS6gwIErgmM0y5
+         f1sw==
+X-Forwarded-Encrypted: i=1; AL+hErG7JLUrxkIUDYggsetMjpIHHVJSvpeg8eeUmOPKtOPJI8sqDfhdJtRN8UIXjoqAqzXviOi2m05N57M=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9Nfigj26Or5u3ZiWYBp7KwxZR7u76hYKL9xT60/HPEpFlss8Ja
+	whf8FmgOSJZXN6Pmo+hzQf5AnbKw5gFF8bGbaTD6/E+DXDuq1Fv96HYPnFOf+tiCrw==
+X-Gm-Gg: AZFdTZfqnI9l3sqA+2TRG4tkhojJEZj+2Rtiaqwh3tjHKQ7m/oDBLjEXMn7pmlBgRZE
+	jtWzWh++kuZUMSfP3OYR/dxtYPcbHl4LB4JJnzkoCSFsg/hN1PmWsPAcf4KCFcBlqJ8h9Mr6bmW
+	K81euRfk5gb6CE7nbuIzj3p4ImJiumDbF+Gj6yltLQZ2jucHIkzO2S6fgnOTV0euGgSxUjhZyWo
+	Le3F07YIKJMfusGOK1/dYKsnwCD9ldXvliahptyu0Yc5w1FMode/fnd0zYbqiL9P60voZhF1TX0
+	Ydo5cVKUiR7X5RiEEM6mttpUHEzao7AZieKzPVw7m+urQshkc3W2N2mKPSAJB3f/Sq5PLEalMMY
+	gHp/ZG8NYilOMh5UfbEr0As9EF8sxEBvtslt2tnRv6ME/boUArVQM4vjnvjBbBWxxQxdEo18hwm
+	xNb4q0j23yAX3RmR/tTBwmn2DZ+f0L5aKRbnkba9wZnLv2kg3H00J2U0KmytFrx90Fk6Ygh5vW5
+	gtPLGi9LnkmxMvnZuFu/wVqHm1wtwy8ysRqpFOi/478PHNyhwBsFod18MyyXvgJnVJvJepSJwpV
+	EuEgvIpWCmAtEZn/MugMq3nTwQNZ5A7yZG7qDcWR148fiXfUQ2zEGPgtZ1fa
+X-Received: by 2002:a17:90b:3a45:b0:3ad:ce24:acfa with SMTP id 98e67ed59e1d1-3b41c8fed61mr10151391a91.20.1795433887289;
+        Mon, 23 Nov 2026 03:38:07 -0800 (PST)
+Received: from localhost ([2a00:79e0:203d:7:ceb5:5e59:832f:d16b])
+        by smtp.gmail.com with UTF8SMTPSA id 98e67ed59e1d1-3b405ffa98esm20358101a91.17.2026.11.23.03.38.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2026 03:38:06 -0800 (PST)
+From: Chen-Yu Tsai <wenst@chromium.org>
+To: Bartosz Golaszewski <brgl@kernel.org>,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Mathieu Othacehe <othacehe@gnu.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 7/7] iio: proximity: isl29501: Fix division by zero
- and overflow in isl29501_set_freq()
-Message-ID: <awQkBAEaRuPqR3vb@ashevche-desk.local>
-References: <20261123075122.373060-1-lee@kernel.org>
- <20261123075122.373060-8-lee@kernel.org>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: Chen-Yu Tsai <wenst@chromium.org>,
+	linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH 0/2] iio: adc: rzt2h: Make POWER_SEQUENCING dependency optional
+Date: Mon, 23 Nov 2026 19:37:52 +0800
+Message-ID: <20261123113755.3033436-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.56.1.831.g720f3f5937-goog
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,54 +100,60 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261123075122.373060-8-lee@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 23, 2026 at 07:50:33AM +0000, Lee Jones wrote:
-> isl29501_set_freq() computes freq = val * 1000000 + val2 % 1000000 in a
-> signed 32-bit int and passes it directly to do_div() without checking
-> for zero or negative inputs.  Writing 0 to the sampling_frequency
-> attribute triggers a division by zero in the kernel, while valid
-> frequencies above 2147 Hz up to the sensor's 2222 Hz limit overflow
-> signed int.
-> 
-> Validate that val and val2 are non-negative, compute freq using
-> HZ_PER_MHZ as an unsigned int within [1, 2222 * HZ_PER_MHZ], and return
-> -ERANGE otherwise.
+Hi folks,
 
-...
+Commit bdfc454e8567 ("iio: adc: rzt2h: Add support for RZ/V2H(P) SoC")
+in the IIO tree added power sequencing support to the rzt2h_adc driver
+and made rzt2h_adc select POWER_SEQUENCING. When combined with the
+in-flight USB core power sequencing integration [1], this introduces a
+recursive Kconfig dependency:
 
-> -	int freq;
->  	unsigned long long sample_time;
-> +	unsigned int freq;
-> +
-> +	if (val < 0 || val > 2222 || val2 < 0)
-> +		return -ERANGE;
->  
->  	/* sample_freq = 1 / (0.000450 * (sample_time + 1) * 10^-6) */
-> -	freq = val * 1000000 + val2 % 1000000;
-> -	sample_time = 2222ULL * 1000000ULL;
-> +	freq = val * HZ_PER_MHZ + val2 % HZ_PER_MHZ;
-> +	if (!freq || freq > 2222U * HZ_PER_MHZ)
+	error: recursive dependency detected!
+		symbol USB depends on POWER_SEQUENCING
+		symbol POWER_SEQUENCING is selected by RZT2H_ADC
+		symbol RZT2H_ADC depends on IIO
+		symbol IIO is implied by HID_MCP2221
+		symbol HID_MCP2221 depends on USB_HID
+		symbol USB_HID depends on USB
 
-But the second one is implied already by the val validation above, no?
+Since RZ/T2H and RZ/N2H do not use a power sequencer, rzt2h_adc does not
+strictly require POWER_SEQUENCING at build time and can use an optional
+dependency instead. However, rzt2h_adc calls pwrseq_{enable,disable}()
+unconditionally in its runtime PM callbacks with adc->pwrseq == NULL on
+RZ/T2H and RZ/N2H, whereas the !CONFIG_POWER_SEQUENCING stubs currently
+return -ENOSYS even for a NULL descriptor.
 
-> +		return -ERANGE;
-> +
-> +	sample_time = 2222ULL * HZ_PER_MHZ;
+Patch 1 aligns the pwrseq_{enable,disable}() stubs with the core
+implementation so they act as no-ops (returning 0) when desc is NULL.
 
-Taking this into consideration, perhaps not to touch these lines at all?
-Just add a check for 0 above?
+Patch 2 switches rzt2h_adc from selecting POWER_SEQUENCING to an
+optional dependency on it.
 
-	if (val < 0 || val > 2222 || val2 < 0 || (val == 0 && val2 == 0))
+Patch 2 relies on patch 1 at runtime when POWER_SEQUENCING=n on RZ/T2H
+and RZ/N2H, so both patches should ideally go in together via the IIO
+tree with Bartosz's Acked-by, or via an immutable branch from the
+pwrseq tree.
 
-?
+
+Thanks
+ChenYu
+
+P.S. This cover letter was drafted by LLM. I think it did an OK job.
+The patches I wrote myself.
+
+[1] https://lore.kernel.org/all/20260916075745.3549953-1-wenst@chromium.org/
+
+
+Chen-Yu Tsai (2):
+  power: sequencing: Allow desc=NULL in enable/disable stub functions
+  iio: adc: rzt2h: depend on POWER_SEQUENCING instead of selecting it
+
+ drivers/iio/adc/Kconfig         | 2 +-
+ include/linux/pwrseq/consumer.h | 4 ++++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.56.1.831.g720f3f5937-goog
 
