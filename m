@@ -1,22 +1,21 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.139.77
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795519300;
-	b=NF8RWtj7UdaVkOHN5DJo6HPH51KKlj/PmXkHnQeQZZKfSfmHtYwjx/hN03juEXSGkLUb
-	 wrSRBCi1FaPpJH8YshE3Ich1TYza9xgT/D3E7hFWnPEQ3neHURgZvH0KfgBBnuqWMJ/Hb
-	 uN/VsVJOXoDptpEhrSaGfLxuyiPOUQdlgLXGn5tll644+ONodye3TeGV6BL5XAVFt0mTp
-	 nFViEv33oQcv4s+t9uXFMbTPlRLz4bgCbrW2GU9dWb/NkUiGjMqRU8f0QdLvYezPaI/XS
-	 9HMBUrgQihrbg5gyl2DzwPCvINv6GRHpbao6d8f4ht4TmuB5iqkYsLSD/IrXnoYQ2lA==
+	t=1795519591;
+	b=eoYenTz+D3Dj7hN+Q0Lvv43xAKEuQWovlqzBQKoyntYLniVOoqMdr1aLtUBmnArcWltF
+	 wuALu9rDEMTCw6FYNq+SrRfiTWbnx6dky5/tjwVzNjahLsIhqRaAPEXcWc0Nit6/9nMdv
+	 BidkEYtI8eZvw8Dep6uFjyG+4vx0H1lKbCCPnKroR3BGzNIUmec5yIEfn+DO9/p5C1ngu
+	 P6CoAHqrPjhYoYRdnMYSkODZ2YL+kxmkYTRp/uP9uXc+yPW/l+Oitas41wINchxbi5/Tv
+	 J+kBer+UduhFQMtZmtu36entz0LPHP11m5+8by+uHcFNgf18sQX9a/sLODS1LrGf45w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795519300;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795519591;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:From:Date:Subject:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
-	 X-Mailer:X-Developer-Signature:X-Developer-Key:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-LD-Processed:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
+	 Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-LD-Processed:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
 	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
 	 X-MS-Exchange-AntiSpam-MessageData-0:X-Exchange-RoutingPolicyChecked:
 	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-Network-Message-Id:
@@ -26,118 +25,99 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
-	 X-Proofpoint-Spam-Details-Enc:X-Authority-Analysis:X-Proofpoint-GUID:
 	 X-Proofpoint-Spam-Info:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:X-Authority-Analysis:
 	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=dg3qqf+h1cBQDVYdvragtbfQ7SuUMowdCidj5Hv8h5Y=;
-	b=FKDiOldOejiMA5w9SFHdOEqnoYwEdJ1vSeK7dBA64F1vqxdWlgW0qIkUC5oO5Ug6uDoH
-	 YrSeoZfTz6eYvs39AVLtA+5GriiOwAXkAroLid2B2IvrtANQ81zb6QDDVnC1nJLwPKPBx
-	 iMX8mwP+/2tsxSQA6g/S3BPh1RvAoxrkrqw9ssY+fcD0JNndj8PqvVRRaS1bIwwDFVzmE
-	 Lj0UiSNcTMVHIVDvHE5QHRwONUfS6D5xlw7OwHOJLtz2+Sh14EOkGiU0NfgPWgZbNSbcZ
-	 jhyZYWhrZEQbublHfjRODxJtksKj4ZDYZakHSR9ZWE3eHE66iZxHV0yN+xzGm3cZvTw==
+	bh=dGVSUhAKABda7G8ygqy/SjraxGh07QmCWGUMWMWh4fw=;
+	b=bopqmjG5Q1pu7nY6J1VZxIXuevnvNbfuzCKRJeKctgyvwpljJMFFuqUf/oGVeUcjXcFu
+	 zqNNXLnVPjauROStOsoBWiRtH1KE2Npf1N/9il/gwyzxtgH7xedin1qa6UEJqTjANT3z5
+	 MMyBzHq5QHs677sbGHNlWUPqzR7/L9k2WwAgfMZI8DU4vTJaYbxcWa1d8wOUBbKWqE3oM
+	 vwP20bS66JNIbzBZslYVx87C7xzPvTPm19K0sR4qrm+6hPQn4lwIPIv1uTYlHqQAE+vYy
+	 7qJLVm1L0cHTgS0TzNz1NmCfOUcPBuJ7qjIaBIF7lwK/tUU51nDLASOYKvRqpqpJOnw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=analog.com;
 	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=bQUXEOQR;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=ckxDmnUr;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.77
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=lvVzLDfa;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=x8U6Vuth;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.139.77
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F169606A68C;
-	Tue, 24 Nov 2026 11:21:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F169606A68C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7EBC606A31E;
+	Tue, 24 Nov 2026 11:26:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7EBC606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=bQUXEOQR;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=ckxDmnUr
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AOAvRGD592387;
-	Tue, 24 Nov 2026 06:20:33 -0500
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=lvVzLDfa;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=x8U6Vuth
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AOAuKXe3504129;
+	Tue, 24 Nov 2026 06:26:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
 	 h=cc:content-transfer-encoding:content-type:date:from
 	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=dg3qqf+h1cBQDVYdvragtbfQ7SuUMowdCidj5Hv8h5Y=; b=bQUXEOQ
-	R7UBU+SdI9qtJt76qZu31oM762Y9I+rZSo/AwZiQex3kiAStN9KeUCb5PNfjLjTS
-	rGI2VesdAIatLXoQPW4Qzg4iIuuUcW4De4oGtJ4E8fwY/1innPiqf1bL687i4Bcj
-	1zm+Qse4dNt9Cm1PudCTO0I+GlWwGOTWTu59qrNWSsYzGjh3ukho6iT+epIwlF4V
-	Yw+Xn9vwA46T/XmyS+K0Vrjd3p8g5tRVM29J4GPLhMbqqnQkQUJGbQ8GRV0J7AvZ
-	1PQQKqkBz7BRpvgh2UBzfXAuiwacMJh9fw8EqPbagPPZyMKKSKl8e2cQRd/SRxsT
-	+KghsIO+L0cs8jQ==
+	DKIM; bh=dGVSUhAKABda7G8ygqy/SjraxGh07QmCWGUMWMWh4fw=; b=lvVzLDf
+	aZt2gBMZb53wtvrqCve219frsQBFp/D3NoxmvLL0uMg5Pb4n1ZxKxBSxARZZg2OG
+	ClZF6dSKhIJ7rUdMAfZgwx6iZH++F/r3xC4YpcCi6DDTV/V5OOu0uCR3N4zFsu0t
+	uSyeKAome9bZf9o7JGMRTGMV659FYmzkIDWOqMFxmb8Za5hLygN4H0CeHbO/XKDr
+	XisLeApFztIWyGB1lkFPn6QFe0eYrNBecXnKms3BaKBFUMd3+p0pvSJ0xDwx+BTx
+	OCizhya2rgs9B5EtGYpJiSlPDmj5QO8cLz/BPeNcUJXHzU6m7gEd2jILiRgGpLfJ
+	k5ioQjvyBN4x4rw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=dg3qq
-	f+h1cBQDVYdvragtbfQ7SuUMowdCidj5Hv8h5Y=; b=ckxDmnUrZ+L+psfXmIgcz
-	XypytIT1eOyTYuC4a2aeS92JLTXhBMzhafgK7bgN2UUev5Yw/O/w2DJYwQ4k4blC
-	9r2hbkdzYmC5iFp4hc7lD/E7WNIFKLdir3IRo3s0zS7AHU5LxNHXvDeyRk0yID2m
-	B4/h+K49WM/Rt9XY4rusI/Lhp5UCoB8maEqYmkVF3R25qF+PvZhe9lkMo5IL5z9S
-	UBtEYT9P11keW8ny/X4PZQfaqPQs+qkq0Mv2e3Y/RTYUbtBqB9Q5XGVa25mv4lKP
-	eU4ViaipRTY4uGUVjk19kzKPEKJqq33Nj1tNe9Hb+Ai1BXoCKMivhWnEl+4E3+lN
-	A==
-Received: from bn8pr05cu002.outbound.protection.outlook.com (mail-eastus2azon11011046.outbound.protection.outlook.com [52.101.57.46])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4j574h0raj-10
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=dGVSU
+	hAKABda7G8ygqy/SjraxGh07QmCWGUMWMWh4fw=; b=x8U6VuthDeebIgcZe0Z0X
+	VwgcmAF42qGE702KR2s5W6944Aeqn7s7spM9/1MEvFp+lGjkopXqokrQQIWPZrsW
+	15h3Qae2JjrmgZP5PRD3CR+xerM6EsRlXmo9t+3eSaNwHMcekHPcS9y7jL9BWVj0
+	IDK9XbUGa/VXtC9lsHD2/SeSU/JXJ7RwYf6wxOpklx4CyvXgW/cEkSWoaduyFX+E
+	lvZadr+EUb7xubdPurSYSaNZ+D6FsJV1nTpLlczKPH9eghVI91WL5chn8ZGwLk6O
+	SVrkEWvw7TxVWA32h+4xR89XIlPQ/FNYcOPQ+tGSXanmaCGTHzLXm+s4guOnQnvn
+	g==
+Received: from ph7pr06cu001.outbound.protection.outlook.com (mail-westus3azon11010038.outbound.protection.outlook.com [52.101.201.38])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4j4df4yffs-2
 	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Tue, 24 Nov 2026 06:20:33 -0500 (EST)
+	Tue, 24 Nov 2026 06:26:18 -0500 (EST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JqVPJRlkSE9MPCDUwr1v8Q1Edoqoq3iSh864aPsmWOOZbtDb1EdseU1qFWCLZyH1wkD6TAyiXp1UKYdZFK3ebyvDIlfGl9XDJnJoz/FrfguWdnydDm8EAgje5BPymLF6eUETDTasSkNnJNsoZ6Fj8YRxO5Rfhe9vaimRtsFGi+DjOfbPZjjdJAB3nC5mNySnpDP5+O3DMXxIWodr8CC0EqODHt3VDdCMNiPPglbpHf1x3g0SSAtDLgF5Oks1XMoPktS10d183PmdxG/6junQD+gx5H2Lr6y6Eg35O7cYJ8NdR1qLaHkJ0u2v88Y0yv/wu9ubZwCRrLsCaEOm9lWWMw==
+ b=LaSA8KPgRiWtfyDQ4QlVgEmo35ObC1+HU98qSqWrZicBE90VH0ogYxl3M74tq4kgITgUWlNjVM6TkH5jzoE/zlAJ1j6CBSMPUOJGDofTY09w+IyG21yVFzosHz/74D2rdHTaYrl+vts2j987I4WOZHAe9fRp6X58ev3KCGWRZmHeBliy760pMPqKttOAgfF+qLBaF9Sf34us5Ffc+pD9ewy2A9YXXcGHYim17N0/28u4tkDMCxAUBfVatyTwgpLWulqyQEfHe6cmZ94163SkIU5BlCGDk9KdUYYTrBaKwPjm5LIRkQbAjgELZZ/3n53GGTdtr50XN1oraqBQrjz//g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dg3qqf+h1cBQDVYdvragtbfQ7SuUMowdCidj5Hv8h5Y=;
- b=S2m39i9K3Xd1c0VEU3/aiCgovhtyP3lA1+XWdIWpYRKuwrRi639onoffL96Uzh/GNbdMC+E1oeWVEfKq1uAbcrASC37aW49rb5IRpfg0vUY7OyqMA9lMKd9QxycF/zBCAoLZpt+fEQMAfb/1+NobCeSsqL1+eWQZ5mUy4bBKlOim4CfspwFCwi0e2jJ7ZVTQAkt4sf61QnmM6p4Uo2nn8vF0XC7PABzcnCAgDIuFcQy9tm33d1tHqkO4yOYCcqzNtL1coPtNg4ERrXllbMPHq09qpjHPlGe4LwD89H8RgNmWrzqTEql2nXKQ6rYv3RO859UTom60y5quM0xqVDgChQ==
+ bh=dGVSUhAKABda7G8ygqy/SjraxGh07QmCWGUMWMWh4fw=;
+ b=SVaQleI1PPdHfYq8kLZ/u3IyNsuX0qy+TbQYFKqTD1KIh9B1jxD2JifdGBXuT0T3uvxrsFciCKLgEZ9+0NaeeepqkJVeln/cHsXrc1b0uSfFUKcmyigktSvWVKEz6cmiVUxyEJ/UAZO67/6Z3bqrwMcIhpDC+LP3MZP1UiRghUlnLXdSfNa1iB10r7QwfDdQwDtCbE3wfP6DmIW1lq1f13A/ZeJfLKsddPcNAQosNmdsHxMFvIlFZY0mELj3/7sRNZNJpRbZMdJiKxO7nOxM4JIHnBQuq1m0+rDM19Q+X/04g1IIKIJHJvuzDyKOTT9jeN7aKpg2ACYuFM2ziVTleQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
  dkim=pass header.d=analog.com; arc=none
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=analog.com;
 Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
- by SA0PR03MB5545.namprd03.prod.outlook.com (2603:10b6:806:c0::8) with
+ by SA6PR03MB7949.namprd03.prod.outlook.com (2603:10b6:806:430::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.12; Tue, 24 Nov
- 2026 11:20:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.13; Tue, 24 Nov
+ 2026 11:26:15 +0000
 Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
  ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
  ([fe80::2a19:76b2:e731:8c5a%5]) with mapi id 15.21.0639.011; Tue, 24 Nov 2026
- 11:20:30 +0000
-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Date: Tue, 24 Nov 2026 11:19:46 +0000
-Subject: [PATCH v7 6/9] iio: buffer-dmaengine: Use dma_slave_caps bus width
- accessors
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20261124-dmaengine-support-wider-dma-masks-v7-6-5d57df2c3ebd@analog.com>
-References: <20261124-dmaengine-support-wider-dma-masks-v7-0-5d57df2c3ebd@analog.com>
-In-Reply-To: <20261124-dmaengine-support-wider-dma-masks-v7-0-5d57df2c3ebd@analog.com>
-To: linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-sound@vger.kernel.org, linux-spi@vger.kernel.org
-Cc: Vinod Koul <vkoul@kernel.org>, Frank Li <Frank.Li@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        =?utf-8?q?Am=C3=A9lie_Delaunay?= <amelie.delaunay@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ 11:26:14 +0000
+Date: Tue, 24 Nov 2026 11:26:10 +0000
+From: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Jonathan Cameron <jic23@kernel.org>,
         David Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
-        Frank Li <Frank.Li@nxp.com>,
-        Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795519198; l=1714;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=qlss1fAjnOaPeQhNVcmVOyU5tBOwYMCdkKLn977fczo=;
- b=AM5P47qQvcmQXNoZgCiaButEHfOAnLHIOqrSx1XUpK5kw0OX8+Ogxg/P7gHDLdRE07+jxIl6x
- RskAkjSmK12DSlmn0yGuqkPfE8lyyVskVj/LTWA/V/+1316LvF7QAZI
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-ClientProxiedBy: MA4P292CA0011.ESPP292.PROD.OUTLOOK.COM
- (2603:10a6:250:2d::17) To SJ0PR03MB5469.namprd03.prod.outlook.com
+        Andy Shevchenko <andy@kernel.org>,
+        Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
+Message-ID: <awVz_NIDb01OZL3y@nsa>
+References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+X-ClientProxiedBy: MR1P264CA0180.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:58::13) To SJ0PR03MB5469.namprd03.prod.outlook.com
  (2603:10b6:a03:28a::17)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -149,141 +129,524 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|SA0PR03MB5545:EE_
-X-MS-Office365-Filtering-Correlation-Id: bd82c30d-18ff-48c5-b238-08df4a1cf29f
+X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|SA6PR03MB7949:EE_
+X-MS-Office365-Filtering-Correlation-Id: c55e5ad5-b9cc-4d7e-6f98-08df4a1dbff6
 X-LD-Processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
- BCL:0;ARA:13230040|376014|23010399003|7416014|366016|1800799024|11063799006|261022075727099003|10067099003|261009223027099003|56012099006|261021121427099003|261021123027099003|261102123227099003|261009223327099003|261009221227099003|261009220027099003|261009221727099003|18002099003|22082099003;
+ BCL:0;ARA:13230040|366016|1800799024|376014|23010399003|10067099003|261102130727099003|261028144727099003|261021123027099003|11063799006|261021121427099003|261022075727099003|261026140227099003|261009223027099003|261022105027099003|261026121527099003|56012099006|261102123227099003|22082099003|18002099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
- f+MvgNod0R3H3xsSfpDisYy+ubv2U/QHN/tIhP1UlBVQBOm/xDGE2VLC4AL9LRNbjRBli9mKU1kb3Fqpey4lvNpNhOowOkIU/k5aJuIkyGp7aBG3ODG/iYvAhnQiIgHDXjSEnVbYxOFrPJvG0jIY86NObPbzvR5szA1M7d2CRkbqmHBHw1vJ0xSY94LwRVSEbzJoayXiT6liKMg0zjxI3nRYPkR1VMk6IRj+LsJQRLZW1SCkeO8O1RA6zX/m+RQEM3TnsD375Ef+IT5uhkyDcDc16d0neOxGXR5j4YWr1Lrlg+a6callJcXbGu0vGHPcsEXJWp/ogZg7LPAsjo0Ohcg1Kpl4JYAgk+ylKPY+ewaKP70RdGghgM06lrrpsQMVhd5gicMATqnLv13Fgi4snooudmVbbijI71rfRPt/OwYWO02ge3j51SyR7v3jDeXnA2uLPeYyrk8pH2w2gXTP28HHSmur3RueAkijlOcC87iVmR3UziCmw6SQda4K8YM8p88kPZrPCA9jxEYr4KysKnRxl82INu+uaDCdnlFhaWKYDDb3btsa3kFYnUI8GuRQYU8vMjd3LYb5eNu1OXvYADcUEZu8DlumvknUy1EQxJL3ZuyCru/cNFWIZWRVQja2Ggx8pU4jpvbc3n4KG/m9rQeZH0h0Z9XSQb2Vvz0OwCs=
+ RWDC57NB9tqw9mXqxOco6LswhvVjhEvNCKgWM+eFbgqmbHWzW1FKED1tdf/C/Drh8dfHfKaBlUp/BkCLEpqk8ZR1bdzQzVuu2I8N/nzK4lN7zO0fYvPyv7TWa4FZGi4Dghf+PP/EU9gm5uohtXzt9oCzj00zOCFFZXtlbhkmQohhWsPg/cP3SNVeak4YxNYBmTPO+qUFlcvH/+29WYSM9fySI2ykJB9r1MXrB3iRgR9EwEhc+l8tjMq2Tg4a/dQRq7FLp8bynxpDLNuJ6m4btaNDCdbDsUuEhP514fWgovC2+/Ta1LjMPsK/RFDdDz+k6AKF4v+TOSjIvg9v181CJYovzCosDyfz7n0bp0fFqbS8greoRfRP+2LuvwKI6LjO1/KFenetKLjNg98Hx2d1dVUhGe5VjyUHRc15//Bjco/rPuXNkmEDhNtHif9zASp7pdU4Z0Ydn62PaWQjPq1cvjnkXZMQuz+7RIRzgbo+b1qiGBDTm0BiEIbC1+rw2OrSINQchMw+4wEyDqAIPtzA9t8Mhu+dm/Fi2cyX8p/ZiP95MC6m+S2RlZyNg5b2AddUROBcmxNueg+efKuLpK9LNgnTRx5POoVyw7G1qxFdZn6QIGr0o1QjKIkjV/NQTiIkLaVUWBtJyr3Gwb6wDymJ0omei/HgqtoPsWifvAzCg+Y=
 X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(7416014)(366016)(1800799024)(11063799006)(261022075727099003)(10067099003)(261009223027099003)(56012099006)(261021121427099003)(261021123027099003)(261102123227099003)(261009223327099003)(261009221227099003)(261009220027099003)(261009221727099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(23010399003)(10067099003)(261102130727099003)(261028144727099003)(261021123027099003)(11063799006)(261021121427099003)(261022075727099003)(261026140227099003)(261009223027099003)(261022105027099003)(261026121527099003)(56012099006)(261102123227099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
- =?utf-8?B?cXQ2NGZnWmlDMmY1NWxQZ3huZTFWSkZuWktORnJiVVZsbjdBNEhQTDNFY0F3?=
- =?utf-8?B?ZFR2NWFwV3B1VUROUWZqb1ZxamtlZzgvQ2wrRkNBanNBcTZ2REJJbWh5cC9r?=
- =?utf-8?B?cFh5bndPSDFVK2N5d0cxc2c3T1psN2tzOG52cDN0YTRQbkUyRUdybjVYWUdV?=
- =?utf-8?B?bFpYbXczMlJBVGVmWTlzUHlwa1NVWi9DZ05oU1RoS2pTTmhYMXRWN3dIUmRm?=
- =?utf-8?B?Mm92MnlLOHR6czdoa2dzcitpYVBoanU5Tlpwc0t6WTVvK2hzdHVwZnhCMUlp?=
- =?utf-8?B?V0IvcXlLTUJaNk5CRzg4cjBId0RQMXdRM050VHorWnBSTE5aT1J3aU1MN0dR?=
- =?utf-8?B?cGFNWUJ0SWdYYjhnczA3d29lbXdaSS9lbjJNMW1BNFlBV1FkdWNMb3J2TVJ1?=
- =?utf-8?B?UFFYUGxHakhNaldCQ1RnbWhNS1lBTTgxVnBmNFIxeUFUdUpQNTBZTjlGNjYr?=
- =?utf-8?B?VzA4REtaRVdBYzhweGRyV3RBd0FKMldSTDlEemxpSVdiK1ZuRzlldERXZDc1?=
- =?utf-8?B?UU9BODBCR2orVDhLZDhFZHVFazVPRzRGQytJRlh0VjJmL0V3S1Z6MEhDWTc4?=
- =?utf-8?B?OGlLZjM3TXI4ak9keWxNa3ZVZzRRaHJHOXZTNDBsdHB6WXJXeVFGcjBVU3lB?=
- =?utf-8?B?cEE5eWJNNUdFRW1Rbk9Qd3FtWWhXNytUL0VvcUR1UWFsY1kxeDJxVDlCSDlT?=
- =?utf-8?B?N2FoT1BVNUJPbit1L3VDSFVmYk4wckEwdDlZSmxXTDdMZHM4bGZmZzRWRDc2?=
- =?utf-8?B?WTJheDhKcEljZWVWU3dUWCtCdDRmcnBUbXk3MVc5ckswMklGakFPUkFrZGNN?=
- =?utf-8?B?SVhhTTNNdWVPSGw5ZFg5SU1hczYxRkZhQ25BVTlUTkpLTldyeFFwT1o4Y3dB?=
- =?utf-8?B?eUpvRGx5ME1hRWdCQUZxSzhWQWJCUlJlN3lsWGhNNy9sQkYrQm5EVXd0Ynpl?=
- =?utf-8?B?aHdmUGVLdDlvd1lrQUhQZzFESVJMdDBUMEg3cldIVGYzY00vemxTci9xYVRM?=
- =?utf-8?B?cFovSEpoaWNEZkxRWUorcFVxekFXNFB2cDJMNUsrQVBraDQ2MXk5aTB1RWc3?=
- =?utf-8?B?djZhNGVnTlNEN1pOZjdmVXhhTHNjL2FuWUYwZWk3dUErSlJzV25CRmpkWVZU?=
- =?utf-8?B?NEhYdGxFZXA2eHYvNmE2NzZ3L1ltWDJEZ08wOWNMOG9HTzNuSmMwOW9sQlE2?=
- =?utf-8?B?cnBhQVlIdHJDRHJZb0NtSmRqRWVYclBkRGg1UUhTbDlHWmdLQjZrK3hOQ05W?=
- =?utf-8?B?RmN5S1JLUWxEbkJuN3JBNkllSllzOUNQOHR1MFVHdEt2eG43Y2pwWUVHYUhx?=
- =?utf-8?B?ck1rZ2xla21tVlRhOFMvazJIVEJISjljUDVzKzBjQWlLaWtnem9vSkVMVnJk?=
- =?utf-8?B?bG5OMEplNENTWm9CdzQ1QUlUaWo4VDlEdDRPNEtyWDg1V3hoQVJQYUZNelc4?=
- =?utf-8?B?V2NCcEVORHBjTWc3S01IUUhxNzMxdksrSGxxYnBoeVJLQWNZeDNvaGxHdS9V?=
- =?utf-8?B?eG5raThIQ0VzbGlXYnR0SGtuVHdwZ1pGZmE1TGx3d3NNZHhTVWxYVi9lbE1s?=
- =?utf-8?B?WFBIcUxONGRVSlJjWFBsVjdLMWNMU1FHZUJVM1ZBQ2tTbXdPb3NDMGhkaGJv?=
- =?utf-8?B?UW95WnJmUWlRd28xUDEwSURoZ2dQdWFKdmU2UWl2ZVl5YkFwdHZjcElRZSs5?=
- =?utf-8?B?WmY1ZExSZXhIRW9zVHNDMCt3a3BUNGh2MTdoR3FnWFJoUWNYaEI4SURCQ3hG?=
- =?utf-8?B?eGFjTFpmY3JlT2hncDZTV0dCb0d5bnBwWHd0T3VZSm9OWm5YNTBocy91dFBI?=
- =?utf-8?B?TVE3bHNiOFlJUkN1KzNmaWlSRzJlU1lTa2ZEUHI3akdNK2dsZXN4dVFXU1pG?=
- =?utf-8?B?NnJaZ2wwc0R1OVc3RUt3ZUVqWDNWYys3QnZaQ295Unl0RXJHNG8wT3piT2xX?=
- =?utf-8?B?MitSWTNQTmZjVzZtNHhCajM2T3FnanJHVzJZU3AzU2ozbkRaT0pvRnJFYVFk?=
- =?utf-8?B?d3RrakdXd3J1czRIM1p0RmJyYjhRdDZiREs0TXdESkZGa3gvdENyZEhYTU1R?=
- =?utf-8?B?MHBPODB1MjdTamZhRXUzb0phNkdmc2d0aGFOdUhveldsaS9nTjZFd3RSakww?=
- =?utf-8?B?ZHRxRld5YitxRzZuTW9LU1FYT0tDMEpZMnplV3JGK2MvNGxlVks5dmJOb1Bx?=
- =?utf-8?B?ZTd4S1hCU2Uxc0tPY1lmcm5rbnc4RmpZVEFZYnE0M0haZ05Ob2p5ck9DVlB4?=
- =?utf-8?B?MVhsUUxqUGtxUVhHQ3ZUSEhHbHhSQzVyMVRZcjVpV1F4ampUclVzZ3lSOGVE?=
- =?utf-8?B?RW1hS3htQk5iV0VGM1lrN3p5NmdINjNkVEUzRUExcXMxOVJlaDk3Zz09?=
+ =?utf-8?B?RWVLQWUyaktjUUt5REo4d2NSbVRDekV1S1gzL1pXbjMzTEY0M0Q4cDluS1Vl?=
+ =?utf-8?B?RG5mNWRjZ1ptM291bEcwR3QrSHFVaUFIR0NLQU1GdjFZdkFHdXh1QVhNNEgv?=
+ =?utf-8?B?OFI2cEN0QkZZaCtQQ3pwYWxNZ1J4d2ZndlpxSGlwU3hGTzRVMnNiRURHaFJs?=
+ =?utf-8?B?RkJkZ1M5eFNOMjVqQ2VzUzdSYmVpSHk4a0ExaWF5WnpYUTdvOXQzMkYrVlQr?=
+ =?utf-8?B?ZHRvZGMzb21zeFZBYURkN2ZGdHRKc255R2hPTXg2YzA2ZWMwaHBmS0JGeURW?=
+ =?utf-8?B?d3BNbGlGeDJmOTkxaHlPRmoxc0pFY3BTcUQvQW1XSFBqaFU0QXFVSVVtWnll?=
+ =?utf-8?B?c1VOV0xhT21KSm1Ydjd1cm4xLzFTZVJNSW9GaVFhaG5NQ2NPOGVhMmxTb1Jl?=
+ =?utf-8?B?N2lweWJQUTZsK0QyUCt0QzVNbnVoUWIvYitXV25EUHI1RFZWbXFGcWcrejY3?=
+ =?utf-8?B?N2pEVGpYZ01Zb0NkTHV0YjhuaXBRS3BnRSt5amxvd0hsb0NmUzZVNjVURW8x?=
+ =?utf-8?B?K0dIUUF2UFIvcVJKQ2x4aUVqaTVQNFVZYWt0N0FvNTJWQnZWMW1EUWNrNjdp?=
+ =?utf-8?B?b0ZZMUc2OG1QTUltTnFDcTdNeEZralo5MkpQV0dZdEoyQjJrSWRGUHJWTmZq?=
+ =?utf-8?B?UXNUeXZ2QWxyek93dnJ2THNROWdzb3NJWlgvcGd3N2FxWTRCcDJobzNZTGNZ?=
+ =?utf-8?B?OEZFcXhIMzJIOUo2cHVLU0FEMmhLYUE3ZXUydENSWlZOdlcyS01XK2puc21s?=
+ =?utf-8?B?aXZDRE5VMUtRbHBZaDhScXF5MTZML2ZkbFdsV0p3dVFJSjZUV1ZpalN1V0pG?=
+ =?utf-8?B?OTJ2K2RQSzJJTXZGYiszT0wzak91YUhHb1p3a3VvQzA5WFJ3WEo4MERVSTE5?=
+ =?utf-8?B?QUkwMWhQMkNERTUzK0U1SFZzbk1TamFIbWNRUzlJdEUzNGNTd21BeTIyNTlp?=
+ =?utf-8?B?YzI4ZnZRa1BPODczYzZrSHQyNDd6TEt0bHNMOHFaVkpxWnVaNkt6dm9nTENR?=
+ =?utf-8?B?MDJTVjlWVnkvUi9uWDNYMlpLb2Uva09PcUV2dEVhaFM1Rmd5cTE4MWJRVFVs?=
+ =?utf-8?B?S0cwd0t3bHlPRmpqYmJWbFc2eTNXMHVrc0tKcjVOVTFxWC9wTVNYZ2U2Y08r?=
+ =?utf-8?B?VkhyZ2hQTjZCbVk1dm9hMlZVdk1UdXJUMVdDYTQzSklUZ0g4WFd0VG5meFl5?=
+ =?utf-8?B?WVJVeHQvTFhQWndWS2JEMjVkR0dURXpRVHU1VFhkekcwRjh2R3JaS2NTWVNU?=
+ =?utf-8?B?QmkrUjRIbkZia3VzMTg5ZVF1ZWh2OXp1anMvQ2xRTWhrTUI5M2pSNVF6eFZX?=
+ =?utf-8?B?QnRpN0Z3OWpTK1ZJb29Bdk9yODJWZTk1ZEw4K0ZOZERsSFdKZ21CVGdwNG9u?=
+ =?utf-8?B?NzJ5MVl1dHJSeEVCMVFyVXZ1Q3dvWTE3S00za0pQWUF2a2dvdTBSRXpFc3dy?=
+ =?utf-8?B?azN6TmFCbjFOY2dyU2I5eDBOTXBOV3doK1VzOFhtRVN6N1c2WWRoOTkzVDNO?=
+ =?utf-8?B?UmpCMm5hZEJQb2xjVkhzbTdwRjhadk1rUlNQMXR2cFdhQnZGZXprYy81NGJH?=
+ =?utf-8?B?ZHlMR2lrNnJGekhQWVl4TGdQTURNNFE2Kzd1blZLS3ZrczkxcGdLNytDcnlo?=
+ =?utf-8?B?V3QzV1Y1dUJXd0I0STh3UHo3eEFaYmZyNXNEeGhyVWdnMTdFejlRcXhaeUFy?=
+ =?utf-8?B?YktrY3FCVERaVmdaYWtyYUs2NWVsUnZjSkdOaWltYU16amlQYXplZVpuU0VQ?=
+ =?utf-8?B?dGNQTHBrN0FPcjdwaE1SZXRUU2J6QmJ3RXFrcXpzS2RwbnZwN3JNQlBTTGda?=
+ =?utf-8?B?aWRqcU5DaE9WaFZvSzlldVY0NUJRYkFWMkQ1a0lIWExmZ2NXZjRQRzJxbU5v?=
+ =?utf-8?B?YlozZHZpK0FJdE83b3U1ZUJpMEtYaEE5bnVKQm9kLzVSVVZSdjVDTHBZMjVi?=
+ =?utf-8?B?ZktRR29tM0NBczJKV0JlRlZHb2p5VG9CbUM0bzE1VEVKRVA5VjJCMStQS2gw?=
+ =?utf-8?B?OXBEL015UWlHQ2pOOFdCcUp4eDB4MG41cHR5d1FKMG85UTRBeWN1M3RqREhO?=
+ =?utf-8?B?Q09LaHFPZWMxY3RSYlllNlE0TGZPYWxoSmQ1ZjR0YUc2a0ZVSy9ZeEQvM0Q3?=
+ =?utf-8?B?eUtPUmltUFZSQ1BVNzF6TERhVDlyVG8xRVR0dnM2N2lqMDZVY1d1VndoaUJs?=
+ =?utf-8?B?SXFYcnlQNXpKQ0h3YmRMTUQ0R1p6eWIwUGpRYXhjUEE5NXh0TlpPRmFiVXhl?=
+ =?utf-8?B?bnRpQnMwSllsVWFuRk5WbWNYTFltN1o5bVBuQ1hZKzFXRTVQTmllUGhrbU5N?=
+ =?utf-8?B?UXhDOWE1V1NDZEI3Y29RQTFFNkthWjhkSEtqNW5iZXBoWXpQa2J0dz09?=
 X-Exchange-RoutingPolicyChecked:
-	ePRuOwqAwAidPTz3EUxDDt8MgXs5d0v/y+0nBfPXxzAWrvTUR50TJGm6Rna2gIdvKqhpRZ0sJT/HblPn5GD6ZxhhXeu9cbnmA/dhaYLLxNNsqNqQFntSPmxDl1G8i9CegYmx3590X/yCkrBCwcPoZjxrf3avCMixvCzZw344gOKFa3rvK7vAAU/urfcfvLAxDCCE6w/1MKBcbpSKUkU+s1tU6jmF/52MHE27xm2gWz5QGAwCrHFGWMKunlEi3ezed1N3yy6S/uusAJ9TzDDkrED9RTtwLpLawT3UpMuTGytlJfpp9QbHlJq8MTxrGpqKgm95q0o+9Ah8qPADygfPsg==
+	FfkKisl5Pb3N2THYFBWD4rfPXCnIGtsCWhzmPcJWnH8bTRrMoSJ7tfMPjHiETw3xe2vzV90hBwDwcphoebiT7zRzf70Na+2pOHccvP9G+xc/9rP8Bn9DREXCZDF0oVc4j7yIfDs8QkQY7lExS3XlJ/PMjMwEiGQcFZVmRUgNtosmdANFj0JEgwcAkmtS3e/ZlO8LF2qRNovohGWHLnef1/ubZdVKG4ZArcr7Qo3jDj033RwWccjm403iPEZZaaa4mY8Yx4PNUxjD3nP7GEleZfeJyxKUqxjLksqxApvXe1rqjZQwtatmnNFW4jQW9smqOcS1UEbiUXBvg5C3Gbm2Pg==
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd82c30d-18ff-48c5-b238-08df4a1cf29f
+X-MS-Exchange-CrossTenant-Network-Message-Id: c55e5ad5-b9cc-4d7e-6f98-08df4a1dbff6
 X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 11:20:30.0781
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 11:26:14.6184
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: O8Ih+sKUUl7/7BWtvB4oaSEXdViXkcInIWjGisJZWvdd5ufAVbqs7GD4u/xe2426hGDhnxPs+kCzCAuUJltClg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR03MB5545
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI0MDA0NCBTYWx0ZWRfX+5tmEP1HmSDW
- 2A0Q4U5PZcV0psfxvN6wfXoqMqYqm67t84moFzhGZAS1cXmf2/UJyLk0YssBuQmJ/ZyddRKmuzV
- GQOHQu/hwAyx506FoIxsV1Pv+zV6N79kEPMRaAa8GhRSGkGR7978eDIJCZ61ycqnQmTOmP78X/6
- +1iRoxvRN+6i12RE1/Kz3GoCmeH9Vrymf/XUXuZp/8X8FCdVGawtltczExqk8VWZchJeHj2Arit
- U4fz42jBvJmJ0oy6YNme+TCbgHgc87pEThtMR+ukbIgG1AWgTFWq5x3JZQEKlLIVnJfuG7FjxJa
- G1J5mEmHC87dO0oZrRFkRDH0HYaL3sFZFxtY9cB/Kajmb9g87/XPrMw7Dgm+Y+e2J9cjgEMd3b6
- /6p/SkD7Rs9n7qMLAUKbidvzqy9OIhtm2RtKh/ZqG9v5IZawGvUW5rjsl4lL2hMAGf0IZyYjkLl
- QIPcDB/gG4JW6vEMrrw==
-X-Authority-Analysis: v=2.4 cv=Yt+a1IYX c=1 sm=1 tr=0 ts=6b057301 cx=c_pps
- a=foOfPl9YvWvIvXDtd8Rkbw==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
+X-MS-Exchange-CrossTenant-UserPrincipalName: cyn0NEjkrXvLJ3tXNZ4D9bM+lsIuqCarPfF8D3s9wfqaWcVPfcnpeKyIOcbsarKfIqglmpdgp5kx+jjrvdsLrA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA6PR03MB7949
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI0MDA0NCBTYWx0ZWRfX8+rbLvfllUxZ
+ YCTCXoDeZrSxlNSQDUbCWpXertkdrYSZxsGL+nsqeXJHvVgfB8kTuf8AGMiWG+FQcGgvkehYypj
+ Hr8ofofheRcEugZX+GXh+05wJ1PTDInTVH8j+KfTWuenCggZX7xM
+X-Proofpoint-ORIG-GUID: EUqnDzmUdXbiRqvloXu_Tkoz5QN_mCXI
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI0MDA0NCBTYWx0ZWRfX1uZlWgJ2P04w
+ NuA23DK8AutizCiPfumACwcoEJM8EMekbRSwJcM90tqBjhbXmJlk2JiGdASFSzf0eklSpZVAWbJ
+ FbqfSMre2ex7FNp3oAy43GG7ctG+dtbcW5E/9KmNSuqPg9nMw1f3FuA9wuByjM5WalYgcumvSXl
+ yLlt3NkyJTQ8t88Xac2ghePEwd5LQ6S7kmxHXMxVSnushHu9I3cJBMS5TuItNfakaHBUFCAgQGQ
+ nqoZd73eRVll4kdSCC5F9RoP+gt/sRR283Jl1NvtezXLmrXFLOAPdoehp5FfDAXP5y35S8qE4qu
+ D89wD5YY1a6+GVNokQmll1azMpX+E771Cqd5Gu2zEy/Tmw8Wzvk4z7k/VswKwG8vK35gw2tJco7
+ jQ5a1ZUNe9yLufCCf+5oxpu/yyEcH/JBRnRLUgjM6cMXpjcqMxasDXJYhsWKls3VpqlDgyZNhtq
+ XniqVkKRLIhHyVqQlaA==
+X-Proofpoint-GUID: EUqnDzmUdXbiRqvloXu_Tkoz5QN_mCXI
+X-Authority-Analysis: v=2.4 cv=YJIKWhGx c=1 sm=1 tr=0 ts=6b05745a cx=c_pps
+ a=iUWcX4Zb67NrYBHNvjZ/UQ==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
  a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
  a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M51BFTxLslgA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22
- a=8AirrxEcAAAA:8 a=EUspDBNiAAAA:8 a=QyXUC8HyAAAA:8 a=gAnH3GRIAAAA:8
- a=PlQVE8PmvpCE9iZECF8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=ST-jHhOKWsTCqRlWije3:22
-X-Proofpoint-GUID: CTdc0vmI9Lcs9gm0nPRAtortGaz7BEpx
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI0MDA0NCBTYWx0ZWRfX+rvnXG6bBZSV
- X7F2gds8YgWra1lolgv4r1SrLVSloa15SYrCXTy/I5DaKf5mtbF61PzfaCh0FB1q/vYu9j4krHB
- VCtlI66WSkb4kWjjcF/9IPifRg6EVg26MHAj1pIaCvT4oxLJtJsH
-X-Proofpoint-ORIG-GUID: CTdc0vmI9Lcs9gm0nPRAtortGaz7BEpx
+ a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=_jAD5XSDOtq9-5Nde2OG:22
+ a=QyXUC8HyAAAA:8 a=gAnH3GRIAAAA:8 a=FvSWL99rPpPUQIIn-FsA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-11-24_02,2026-11-23_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 adultscore=0 clxscore=1015 spamscore=0 lowpriorityscore=0
- impostorscore=0 phishscore=0 bulkscore=0 malwarescore=0 suspectscore=0
+ clxscore=1011 phishscore=0 bulkscore=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611240044
 
-Query the minimum supported source and destination bus widths through
-the new dmaengine_bus_width_min() helper rather than decoding the raw
-legacy u32 width masks. This keeps the buffer working with DMA
-controllers that advertise bus widths via the new bitmap representation.
+On Tue, Nov 24, 2026 at 10:44:10AM +0100, Andy Shevchenko wrote:
+> Split debugfs routines into a separate file for easier maintenance.
+> No functional changes intended.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
 
-Reviewed-by: Frank Li <Frank.Li@nxp.com>
-Acked-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
----
- drivers/iio/buffer/industrialio-buffer-dmaengine.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+Looks good! With the compilation fix in v2:
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index b9f8b5b3aa6b..25e75cada4dc 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -269,14 +269,13 @@ static struct iio_buffer *iio_dmaengine_buffer_alloc(struct dma_chan *chan)
- 		return ERR_PTR(-ENOMEM);
- 
- 	/* Needs to be aligned to the maximum of the minimums */
--	if (caps.src_addr_widths)
--		src_width = __ffs(caps.src_addr_widths);
--	else
--		src_width = 1;
--	if (caps.dst_addr_widths)
--		dest_width = __ffs(caps.dst_addr_widths);
--	else
--		dest_width = 1;
-+	src_width = dmaengine_bus_width_min(&caps.src_bus_widths);
-+	if (src_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
-+		src_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+	dest_width = dmaengine_bus_width_min(&caps.dst_bus_widths);
-+	if (dest_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
-+		dest_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+
- 	width = max(src_width, dest_width);
- 
- 	INIT_LIST_HEAD(&dmaengine_buffer->active);
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 
--- 
-2.56.0
-
+> 
+> Rupesh, feel free to include this patch into your series as the first one.
+> 
+> Fun fact: This patch was written with zero AI assistance.
+> 
+>  drivers/iio/Makefile               |   1 +
+>  drivers/iio/iio_core.h             |  14 +++
+>  drivers/iio/industrialio-core.c    | 152 +-------------------------
+>  drivers/iio/industrialio-debugfs.c | 165 +++++++++++++++++++++++++++++
+>  4 files changed, 182 insertions(+), 150 deletions(-)
+>  create mode 100644 drivers/iio/industrialio-debugfs.c
+> 
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 8a897b6729d2..5fd81b20da22 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -8,6 +8,7 @@ industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+>  industrialio-$(CONFIG_ACPI) += industrialio-acpi.o
+> +industrialio-$(CONFIG_DEBUG_FS) += industrialio-debugfs.o
+>  
+>  obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
+>  obj-$(CONFIG_IIO_GTS_HELPER) += industrialio-gts-helper.o
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index 59fa1bd9924b..985ac82a37f9 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -16,6 +16,20 @@ struct iio_buffer;
+>  struct iio_chan_spec;
+>  struct iio_dev;
+>  
+> +#if defined(CONFIG_DEBUG_FS)
+> +void iio_debugfs_create(void);
+> +void iio_debugfs_remove(void);
+> +
+> +void iio_device_unregister_debugfs(struct iio_dev *indio_dev);
+> +void iio_device_register_debugfs(struct iio_dev *indio_dev);
+> +#else
+> +static inline void iio_debugfs_create(void) {}
+> +static inline void iio_debugfs_remove(void) {}
+> +
+> +static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
+> +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
+> +#endif /* CONFIG_DEBUG_FS */
+> +
+>  extern const struct device_type iio_device_type;
+>  
+>  struct iio_dev_buffer_pair {
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 792c2d28835b..3b66d7b765d5 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -14,7 +14,6 @@
+>  #include <linux/anon_inodes.h>
+>  #include <linux/cdev.h>
+>  #include <linux/cleanup.h>
+> -#include <linux/debugfs.h>
+>  #include <linux/device.h>
+>  #include <linux/err.h>
+>  #include <linux/export.h>
+> @@ -54,8 +53,6 @@ const struct bus_type iio_bus_type = {
+>  };
+>  EXPORT_SYMBOL(iio_bus_type);
+>  
+> -static struct dentry *iio_debugfs_dentry;
+> -
+>  static const char * const iio_direction[] = {
+>  	[0] = "in",
+>  	[1] = "out",
+> @@ -293,20 +290,6 @@ bool iio_buffer_enabled(struct iio_dev *indio_dev)
+>  }
+>  EXPORT_SYMBOL_GPL(iio_buffer_enabled);
+>  
+> -#if defined(CONFIG_DEBUG_FS)
+> -/*
+> - * There's also a CONFIG_DEBUG_FS guard in include/linux/iio/iio.h for
+> - * iio_get_debugfs_dentry() to make it inline if CONFIG_DEBUG_FS is undefined
+> - */
+> -struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+> -{
+> -	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -
+> -	return iio_dev_opaque->debugfs_dentry;
+> -}
+> -EXPORT_SYMBOL_GPL(iio_get_debugfs_dentry);
+> -#endif
+> -
+>  /**
+>   * iio_find_channel_from_si() - get channel from its scan index
+>   * @indio_dev:		device
+> @@ -427,7 +410,7 @@ static int __init iio_init(void)
+>  		goto error_unregister_bus_type;
+>  	}
+>  
+> -	iio_debugfs_dentry = debugfs_create_dir("iio", NULL);
+> +	iio_debugfs_create();
+>  
+>  	return 0;
+>  
+> @@ -442,140 +425,9 @@ static void __exit iio_exit(void)
+>  	if (iio_devt)
+>  		unregister_chrdev_region(iio_devt, IIO_DEV_MAX);
+>  	bus_unregister(&iio_bus_type);
+> -	debugfs_remove(iio_debugfs_dentry);
+> +	iio_debugfs_remove();
+>  }
+>  
+> -#if defined(CONFIG_DEBUG_FS)
+> -static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+> -			      size_t count, loff_t *ppos)
+> -{
+> -	struct iio_dev *indio_dev = file->private_data;
+> -	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -	unsigned int val = 0;
+> -	u64 val64 = 0;
+> -	int ret;
+> -
+> -	if (*ppos > 0)
+> -		return simple_read_from_buffer(userbuf, count, ppos,
+> -					       iio_dev_opaque->read_buf,
+> -					       iio_dev_opaque->read_buf_len);
+> -
+> -	if (indio_dev->info->debugfs_reg64_access) {
+> -		ret = indio_dev->info->debugfs_reg64_access(indio_dev,
+> -							    iio_dev_opaque->cached_reg_addr,
+> -							    0, &val64);
+> -	} else {
+> -		ret = indio_dev->info->debugfs_reg_access(indio_dev,
+> -							  iio_dev_opaque->cached_reg_addr,
+> -							  0, &val);
+> -		val64 = val;
+> -	}
+> -
+> -	if (ret) {
+> -		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
+> -		return ret;
+> -	}
+> -
+> -	iio_dev_opaque->read_buf_len = snprintf(iio_dev_opaque->read_buf,
+> -						sizeof(iio_dev_opaque->read_buf),
+> -						"0x%llX\n", val64);
+> -
+> -	return simple_read_from_buffer(userbuf, count, ppos,
+> -				       iio_dev_opaque->read_buf,
+> -				       iio_dev_opaque->read_buf_len);
+> -}
+> -
+> -static ssize_t iio_debugfs_write_reg(struct file *file,
+> -		     const char __user *userbuf, size_t count, loff_t *ppos)
+> -{
+> -	struct iio_dev *indio_dev = file->private_data;
+> -	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -	unsigned int reg;
+> -	char buf[80];
+> -	u64 val64;
+> -	int ret;
+> -
+> -	if (*ppos != 0 || count >= sizeof(buf))
+> -		return -EINVAL;
+> -
+> -	ret = simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf,
+> -				     count);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	buf[ret] = '\0';
+> -
+> -	ret = sscanf(buf, "%i %lli", &reg, &val64);
+> -
+> -	switch (ret) {
+> -	case 1:
+> -		iio_dev_opaque->cached_reg_addr = reg;
+> -		break;
+> -	case 2:
+> -		iio_dev_opaque->cached_reg_addr = reg;
+> -		if (indio_dev->info->debugfs_reg64_access)
+> -			ret = indio_dev->info->debugfs_reg64_access(indio_dev, reg,
+> -								    val64, NULL);
+> -		else
+> -			ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
+> -								  val64, NULL);
+> -		if (ret) {
+> -			dev_err(indio_dev->dev.parent, "%s: write failed\n",
+> -				__func__);
+> -			return ret;
+> -		}
+> -		break;
+> -	default:
+> -		return -EINVAL;
+> -	}
+> -
+> -	return count;
+> -}
+> -
+> -static const struct file_operations iio_debugfs_reg_fops = {
+> -	.open = simple_open,
+> -	.read = iio_debugfs_read_reg,
+> -	.write = iio_debugfs_write_reg,
+> -};
+> -
+> -static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+> -{
+> -	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -
+> -	debugfs_remove_recursive(iio_dev_opaque->debugfs_dentry);
+> -}
+> -
+> -static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+> -{
+> -	struct iio_dev_opaque *iio_dev_opaque;
+> -
+> -	if (!indio_dev->info->debugfs_reg_access &&
+> -	    !indio_dev->info->debugfs_reg64_access)
+> -		return;
+> -
+> -	if (!iio_debugfs_dentry)
+> -		return;
+> -
+> -	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> -
+> -	iio_dev_opaque->debugfs_dentry =
+> -		debugfs_create_dir(dev_name(&indio_dev->dev),
+> -				   iio_debugfs_dentry);
+> -
+> -	debugfs_create_file("direct_reg_access", 0644,
+> -			    iio_dev_opaque->debugfs_dentry, indio_dev,
+> -			    &iio_debugfs_reg_fops);
+> -}
+> -#else
+> -static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+> -{
+> -}
+> -
+> -static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+> -{
+> -}
+> -#endif /* CONFIG_DEBUG_FS */
+> -
+>  static ssize_t iio_read_channel_ext_info(struct device *dev,
+>  				     struct device_attribute *attr,
+>  				     char *buf)
+> diff --git a/drivers/iio/industrialio-debugfs.c b/drivers/iio/industrialio-debugfs.c
+> new file mode 100644
+> index 000000000000..7ceeb88f9276
+> --- /dev/null
+> +++ b/drivers/iio/industrialio-debugfs.c
+> @@ -0,0 +1,165 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Industrial I/O debugfs bits
+> + */
+> +
+> +#include <linux/cdev.h>
+> +#include <linux/debugfs.h>
+> +#include <linux/dev_printk.h>
+> +#include <linux/errno.h>
+> +#include <linux/export.h>
+> +#include <linux/fs.h>
+> +#include <linux/init.h>
+> +#include <linux/sprintf.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/types.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/iio-opaque.h>
+> +
+> +#include "iio_core.h"
+> +
+> +static struct dentry *iio_debugfs_dentry;
+> +
+> +/*
+> + * There's also a CONFIG_DEBUG_FS guard in include/linux/iio/iio.h for
+> + * iio_get_debugfs_dentry() to make it inline if CONFIG_DEBUG_FS is undefined
+> + */
+> +struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +
+> +	return iio_dev_opaque->debugfs_dentry;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_get_debugfs_dentry);
+> +
+> +void __init iio_debugfs_create(void)
+> +{
+> +	iio_debugfs_dentry = debugfs_create_dir("iio", NULL);
+> +}
+> +
+> +void __exit iio_debugfs_remove(void)
+> +{
+> +	debugfs_remove(iio_debugfs_dentry);
+> +}
+> +
+> +static ssize_t iio_debugfs_read_reg(struct file *file, char __user *userbuf,
+> +			      size_t count, loff_t *ppos)
+> +{
+> +	struct iio_dev *indio_dev = file->private_data;
+> +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +	unsigned int val = 0;
+> +	u64 val64 = 0;
+> +	int ret;
+> +
+> +	if (*ppos > 0)
+> +		return simple_read_from_buffer(userbuf, count, ppos,
+> +					       iio_dev_opaque->read_buf,
+> +					       iio_dev_opaque->read_buf_len);
+> +
+> +	if (indio_dev->info->debugfs_reg64_access) {
+> +		ret = indio_dev->info->debugfs_reg64_access(indio_dev,
+> +							    iio_dev_opaque->cached_reg_addr,
+> +							    0, &val64);
+> +	} else {
+> +		ret = indio_dev->info->debugfs_reg_access(indio_dev,
+> +							  iio_dev_opaque->cached_reg_addr,
+> +							  0, &val);
+> +		val64 = val;
+> +	}
+> +
+> +	if (ret) {
+> +		dev_err(indio_dev->dev.parent, "%s: read failed\n", __func__);
+> +		return ret;
+> +	}
+> +
+> +	iio_dev_opaque->read_buf_len = snprintf(iio_dev_opaque->read_buf,
+> +						sizeof(iio_dev_opaque->read_buf),
+> +						"0x%llX\n", val64);
+> +
+> +	return simple_read_from_buffer(userbuf, count, ppos,
+> +				       iio_dev_opaque->read_buf,
+> +				       iio_dev_opaque->read_buf_len);
+> +}
+> +
+> +static ssize_t iio_debugfs_write_reg(struct file *file,
+> +		     const char __user *userbuf, size_t count, loff_t *ppos)
+> +{
+> +	struct iio_dev *indio_dev = file->private_data;
+> +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +	unsigned int reg;
+> +	char buf[80];
+> +	u64 val64;
+> +	int ret;
+> +
+> +	if (*ppos != 0 || count >= sizeof(buf))
+> +		return -EINVAL;
+> +
+> +	ret = simple_write_to_buffer(buf, sizeof(buf) - 1, ppos, userbuf,
+> +				     count);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	buf[ret] = '\0';
+> +
+> +	ret = sscanf(buf, "%i %lli", &reg, &val64);
+> +
+> +	switch (ret) {
+> +	case 1:
+> +		iio_dev_opaque->cached_reg_addr = reg;
+> +		break;
+> +	case 2:
+> +		iio_dev_opaque->cached_reg_addr = reg;
+> +		if (indio_dev->info->debugfs_reg64_access)
+> +			ret = indio_dev->info->debugfs_reg64_access(indio_dev, reg,
+> +								    val64, NULL);
+> +		else
+> +			ret = indio_dev->info->debugfs_reg_access(indio_dev, reg,
+> +								  val64, NULL);
+> +		if (ret) {
+> +			dev_err(indio_dev->dev.parent, "%s: write failed\n",
+> +				__func__);
+> +			return ret;
+> +		}
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return count;
+> +}
+> +
+> +static const struct file_operations iio_debugfs_reg_fops = {
+> +	.open = simple_open,
+> +	.read = iio_debugfs_read_reg,
+> +	.write = iio_debugfs_write_reg,
+> +};
+> +
+> +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +
+> +	debugfs_remove_recursive(iio_dev_opaque->debugfs_dentry);
+> +}
+> +
+> +static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+> +{
+> +	struct iio_dev_opaque *iio_dev_opaque;
+> +
+> +	if (!indio_dev->info->debugfs_reg_access &&
+> +	    !indio_dev->info->debugfs_reg64_access)
+> +		return;
+> +
+> +	if (!iio_debugfs_dentry)
+> +		return;
+> +
+> +	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +
+> +	iio_dev_opaque->debugfs_dentry =
+> +		debugfs_create_dir(dev_name(&indio_dev->dev),
+> +				   iio_debugfs_dentry);
+> +
+> +	debugfs_create_file("direct_reg_access", 0644,
+> +			    iio_dev_opaque->debugfs_dentry, indio_dev,
+> +			    &iio_debugfs_reg_fops);
+> +}
+> -- 
+> 2.50.1
+> 
