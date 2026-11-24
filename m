@@ -1,100 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.26
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795518253;
-	b=w30WN2iTy8W20ZHdXh1Cf37giR6ZwtZDw7hz3MVsbNsN7n73BVyhiewbWEBT7Umn7ubR
-	 V9KSduHamI4EF3GHKJBgWOzfoO8Hrq/He3zXkPM270vmXN1x4H0+ibkMDMKq2hHVvShFa
-	 f8cKq86NmXhA1KOh7AJe/JQNwFjaDMLAFaYvSh0v+6Rbb9ijQ9TY2juRxag8ZdjKGHPpD
-	 lYpMVHPzQ18HmqW4l6LH90je9T6p5nw/QLramL2gExkqhbpnLeBLZDSIkg2giTjKUxfPH
-	 t0ztSoW+AeKissp1w5scrZhu4/H8ifrXwJSKbde4gbDGTmuzvHSTOoMvjFs8K9JJ8ww==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795518253;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-LD-Processed:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=KvJFu8m8aDGTqEnUAA7yuvFMMj/rjLlhcr7uNiD2V7s=;
-	b=1jwJ201Hu3BArlIgwAIKwnhrzlvKkXhlbzhMVDwInibfWrCRBc57EW9caMzadWbXiv78
-	 Vj9CxWfPhy2BtI2Syj5ZSjaEO922w+8UW2xv7NRuPF7kqjhv4QhzNUT+Ws+lkKM//C80R
-	 XhWFypKV29AddQ8pSKBqQB9OathBB4TjZVt166OmcOW3evrpdvHcn1iVNDfvlwdM58UxA
-	 w4aOXDVdqOflRNWNtT2i2Q4WqLU5xLknw93ExhTxL/WNCl70n3R3h5GrGIj0b7jStpgjX
-	 QoglBgnB0Nn1zotoJq1UhYcD1RZv0ZO1TUJLbtM0478aF9oFvk4rdLaj0C2UPFLln1g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=Asf5qw0h;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.26
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013026.outbound.protection.outlook.com [40.93.196.26])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795518261;
+	b=RKCLc53kb0pwbZvupPYQlxJQzJMpBeKvyHdPVCbjQs87hL2mqsntltpMrRXsU/+961cO
+	 UmvGAXOdp5K1nx9aT5BIRPDFAAu7lTH2Trk8JyyFpYMJT3wnrF3D2DCXQ/DRApUKityyZ
+	 0fcGkxEXSwB7c0r/vcDnSfVKdZmcWBrq3wpmR4v6dIzMzzjHfC8UpPHPAfbnTUfaRUiAS
+	 BSZGcr2FXBs0orULeKdX4aDf+HNy6GZFr7xJ2Qg7FRW8RQy1luFM8figB9P00yNSpe4/D
+	 VQK52ZwJbue3FdXA6PNOjWKlmVanl3L4D81xyBndKVke4Wj6kDzMWAgYd5DinoKSJjA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795518261;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=HwbRyNe0cxCMoQ/0iMUVZy8uE0wBvumaj+tzDGFjfc0=;
+	b=nWw8lzgZG+lWQlDNliL6/JJlxu/LRcMNexyVBlokulLIUlbYyJv32ud/tXyXNKghobNp
+	 5UuFtniTBV50NrYTWWH9zJXntJtKbGVmLlq95HPEd90h+mge0FukNv6R/0IOiJkuMI/pT
+	 dcfPOFVSeEpqPcsWnY+Q1cMYnx8NYQmxf/mlSku7Mdjf+e2atuNdLTzkbRZRayCgXnEaz
+	 eR4F5910kAzHqyUbEeAC+iTHApXr08RRwhoib8dcG4Vj7OTsUJi974evfJ/sbPlj8draH
+	 0/SF5lw+RKHiSKuQlB+077TgxMLoVmOMV+lol/myDs19jHUQeedC3eZLEGhfWVu2xgQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=a3cGPQ5i;
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E05606A31E;
-	Tue, 24 Nov 2026 11:04:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 30E05606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39219606A339;
+	Tue, 24 Nov 2026 11:04:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 39219606A339
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=Asf5qw0h
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BBCsyPJFwrpfhScnK712o1n/co5ijmkP8vSDC7Vl5OU839YOq+lz1IZlEZF5OPtITW4hhu15pBbEZUkKvu0zKDRVyqy2Sy3jPAPnYNYSkk6LGWECnFiY/myk4n7ioP7rwKh9r4viovbz4a74Ui62IeK8sucDNEpJykr9D/WjvTA8Xs1Ndo+/z8G4mCMTe0q7oIB0ubOE9meWi8yu3nbEFGzBFF3B/EbLd9op8qBDmN3c4AU9ourQKNX69Lz6xYbqmonYpk+NHC3dSTHUbecqWs2EODn2XL+cj2+ka0JaPw8U8Mfnqsb+wm8nKyGXpgrXgmZc4er+O+RSNEIx+wVnUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KvJFu8m8aDGTqEnUAA7yuvFMMj/rjLlhcr7uNiD2V7s=;
- b=HeZYd+uTuPWjP0y386HQZfYsfsC2AlXfyl+1pfddfZ34K45RQ9OP8WA1EuZVO3gfSFdyDWxAN/eW8Xlt3mrgENuCEBzsfrfPUWcA1Z/c7GRlVdhuvrOhCQsrcx12ctDSJD/UVI8y5vIo2Heb/sgk4HrAU/RYJbyBkpBeyjM8T1ucuVddFk2R1xqN/7q/0t/6GJCGh6+J7T/WZ/IyQFq4jckl2A7nWvGQRtD0zGN3A9isvxaCIHk3B1Doc6Bo1prRy7l0g/70F/eToPjO+GTv8bB2e6XnK/mspStboMHwlxs19UHPMIk2BnYZ8PfhJgOmxC5+YFQWW+jd0jqvz23npQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KvJFu8m8aDGTqEnUAA7yuvFMMj/rjLlhcr7uNiD2V7s=;
- b=Asf5qw0h/c/C0DnyHOIzbnjNiPrer3H3OdP+XkAifpGF5SnLJ9UtaEfRHyOqrQlZCwPgpCyr+ylXwtXPpuZw6tkDuSW6BiHu4aojEXPSXWvRWmfagulo/Bp76Icoh/ajOoEtzl3Jln8xm8Gw4k0ijOZCLLXNvxrcVcKnWj4iZNI=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CY1PR12MB9559.namprd12.prod.outlook.com (2603:10b6:930:fd::14)
- by BY5PR12MB4258.namprd12.prod.outlook.com (2603:10b6:a03:20d::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 24 Nov
- 2026 11:04:08 +0000
-Received: from CY1PR12MB9559.namprd12.prod.outlook.com
- ([fe80::1761:23a3:6ab5:fbb8]) by CY1PR12MB9559.namprd12.prod.outlook.com
- ([fe80::1761:23a3:6ab5:fbb8%7]) with mapi id 15.21.0639.010; Tue, 24 Nov 2026
- 11:04:08 +0000
-Message-ID: <42949fe9-b336-40e7-8a8e-43f6d24da9bc@amd.com>
-Date: Tue, 24 Nov 2026 16:33:59 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 14/16] iio: adc: xilinx-xadc: Split driver into core
- and platform files
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Michal Simek <michal.simek@amd.com>,
- Conall O'Griofa <conall.ogriofa@amd.com>, linux-iio@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
- <20261110050201.1850399-15-dileepkumar.nagavarapu@amd.com>
- <avNGcpcemoeE3J7O@ashevche-desk.local>
-Content-Language: en-US
-From: "Nagavarapu, Dileep Kumar" <dnagavar@amd.com>
-In-Reply-To: <avNGcpcemoeE3J7O@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA5P287CA0118.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:1d0::11) To CY1PR12MB9559.namprd12.prod.outlook.com
- (2603:10b6:930:fd::14)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=a3cGPQ5i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795518261; x=1827054261;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=866/B+a0CRGgpxrNrCVpsidaot1giUE/gHeiKkuAJSI=;
+  b=a3cGPQ5i3onw06JaTdmZZYnxsuuA5txcT4mp4cKvQpMuKAK4Wl18toYm
+   4HVxTL+UrHa2StqszFh+9kxkn4jQj63jwe/MTRfaU3Ds92HkP4ycCFUUG
+   czU7OKtzV4E7E2FpLcTXnCC80pZC3uHc2D2DJ+3TIeOJSwhDtKuM7ZJOr
+   ebi1KK0qiT+kDcAERVTzn4S/gbGJQ2aclfzdTRn6qdHiB9byAY4hr7CtE
+   oDVZn5QHLoa9qelJKyHijocOImoYze5R8CZfV8YwIKnG41ciSnlGEiL1s
+   q3gCyOgjOnm0nvBFha5hQmzRdH01WBRCFL2tBCH/tKJnpwNytFKpi4FU9
+   Q==;
+X-CSE-ConnectionGUID: fvJ4oTjmTROTsnzrkw9bxw==
+X-CSE-MsgGUID: X5E8IuVEQbm28UGLinW4WQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4258637"
+X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
+   d="scan'208";a="4258637"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 03:04:21 -0800
+X-CSE-ConnectionGUID: AZn5hDfvSp6PrK/cf2LEpA==
+X-CSE-MsgGUID: yzLD3Fq+TzSMa2IVs10jYQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
+   d="scan'208";a="11559712"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 03:04:19 -0800
+Date: Tue, 24 Nov 2026 13:04:16 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joshua Crofts <crofts@kernel.org>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
+Message-ID: <awVvMPBx8lTs-Oid@ashevche-desk.local>
+References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+ <09328c36-a32f-488b-a2c9-76fab784d259@kernel.org>
+ <awVq-mE1H2g01yS4@ashevche-desk.local>
+ <4012fef5-2d69-41e4-81ef-52f06d9313f7@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -104,138 +86,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY1PR12MB9559:EE_|BY5PR12MB4258:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9bc6a67-5b0f-4fbc-d673-08df4a1aa90e
-X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|261022075727099003|261021123027099003|56012099006|4143699003|11063799006|261026140227099003|261021121427099003|10067099003|261028144727099003|261102123227099003|261022105027099003|261009223027099003|22082099003|18002099003|6133799003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	xKxsgAu4DglU5UZu7qZSBKzw38Q5hY9haPegJOHkTQwVeiBDch3k/ntv6H/Ybt5PJuIDnQnF/h6gEun31ySPXurz4J3N7TBtnVeAE7puSs2xjIsfNYMXzI4eOPhPpaHNt2S1j3TTr6wl4BO38GJsWX13Z6WeCg6XPdVlDNzKObBtwAhkyARD6X9WwJdooOvU+gBDUczMd5Aw5lBPK2AGvR2D13HdNSt5ajSd3r7x/UGG09s+j/ZUSBML27auJ9pTf4CNC4tzt/IA3Ut+ACjUtLhB5M34eVTmnhlvbOz7Lul5yLTswXtu3QDwF41edrxyV6BN593DFd4ctNitciQxPQ97dtWxSHURmlKgxnJGTewY6+8QA/eFFEKCX/tfUV2F+c/PEa0L8EXBRJvz42/u8dFRCm7ArnU1j4hy8If56J4qVbNXxQhMMTPaEMSFcmkY6NnytTOXtkju12ATMJY6tmvQeVd4HJ62TNN1/HenCppuym0r1Ikiap0sSEPKwMixeEIExmgHHILimWrrVsitaQ1ORzTMQSKFb2ucgUZdYr/6GY1HUO5wRY3Jx3S+vbKwNwRGYCj0SvbNmNEOEwaLCFViKlJ5ZSirOtdr6HH4vxpH3l7hFYpG6JCjltMmYfRyOt1djf+kbnap0pULpZwFDjxK/0lNxzwP6pVxavOY9tY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9559.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(261022075727099003)(261021123027099003)(56012099006)(4143699003)(11063799006)(261026140227099003)(261021121427099003)(10067099003)(261028144727099003)(261102123227099003)(261022105027099003)(261009223027099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?K0ppN2ZpeW1zUjFtWWhHck1EM1VFc21aamxhM2lrU0cyNEwwQVcrVmxtTjdM?=
- =?utf-8?B?KzlDSm5JRlhPL1gxL01ERnppYityeXNVYnZScGk4NEcwRmRra01MaW50bytW?=
- =?utf-8?B?Z1ZUbk5sU1pzNFRtclkzMmc4ZDJ5MEZXZTNpMUhSNWZoZXJWV3JDZllKZGZk?=
- =?utf-8?B?akVtaWY3cnkzVUFJaW9IK2dHbEhTUVZ3aXVEc2tOSnJ5MnZveEViWHJCTmZB?=
- =?utf-8?B?c3FWdDU4SVhxd2lBZzlTZDByVUFTRHcrdVprQjNkdFd5NHk2ZnNVLzhkeWZh?=
- =?utf-8?B?RDByUk5lTVpoeFkwUzUzV3QrdHhzK290TkVTL2YwajVXOXhMOWNMVWw1bW1a?=
- =?utf-8?B?N3k4Rldldzl3cTNKbU81UDZSWnp6U0pvR0VOTU14T1Bac0RROWJqWDB4YVZF?=
- =?utf-8?B?UlJ5dUN5dk1LY1QraUk4UitFQnlxWEY5NnRiamNWUFFOWUFrbXFvWDk4QkFD?=
- =?utf-8?B?a0VIbmFmNWFoc3VjdmhITENxdlROckFwQmRBK1h5dXhjM2JySkx4M2hFK0VX?=
- =?utf-8?B?OE54NitYUlU2Q2dIYUVNMzVibTl3QWVyQlBQN0JYbjlpZWdSVHdHOWJ1VUg3?=
- =?utf-8?B?emgvTno2aGpzekdMSVhBbjlseWdaaDIvVXByalpZdm90SWZNTzFSQ0hVTURC?=
- =?utf-8?B?ejVSWkUrVHlwZ2dVcFJVU2VQcENkTXMzeHIyRjB1anZrT1Y3TTlNVHlBR05N?=
- =?utf-8?B?a2N2ZTFtOVdaYW5yTHlVTzgwVEVkaVY4QVZTb0VKVHluN1prVzJlTSs5U2cy?=
- =?utf-8?B?cXV4dDJILzJ1aW8rOW01R1BYS0lNczkxaWNOdG50K3NnWjlsQmQwbVFEdTBa?=
- =?utf-8?B?emNqekpoZUJhYzBPa3V4Y1RhWEhiQjBXMnllbHJEV3FCWWR0S2FFNHpVZHBO?=
- =?utf-8?B?Qy9JbHpXWlZQUmt6SFBTVFhUdmFMMzd2WFpoS1huTkdLRnRLc0ZReFZQM1Z4?=
- =?utf-8?B?T01nTGJuVWdETFFnRjdNVGRLTXNuenQ3RGMyY0U2RHhqZWtMaDd3Tm1SMGpv?=
- =?utf-8?B?MEtHcTFKM2NjUk9SRU1ObmVXaEROV1dKTGxtQ3piSHA1alFMZGIxd3pZRzU5?=
- =?utf-8?B?VzVHbGNobXl0cHNDN0phYU5Jd255MU8rMUxHbU5mQXRDcGFQVUZabmVidXln?=
- =?utf-8?B?TjFYeC9jaVFSeVFnc1Z4QThCdXhmRmo3VUR1MHVZRG5YWG1SMGp5M3QxTHM4?=
- =?utf-8?B?azZ5RHU3THBxYzZkQXpVL3djN0FoN2MxRys2eXBVcFdnSmQ3TkRYMExNaUov?=
- =?utf-8?B?OEQwQjZtMlRsYVJuR1JiTkxGUVNYVEFUczlTKzdRK3VkZG1pMzd3aS80N1JN?=
- =?utf-8?B?L0w5b3IzbGRvR0RtNmo5VVozcnd3RS9CSk5GK0NOT25DbFczMDlqNktjNFRa?=
- =?utf-8?B?RnJhZE1Wd1owYUVqbjlMK1NHRHVjTTVycGczZmRraDRMUDhKUjNneW1Wdjlx?=
- =?utf-8?B?R2xmS0NBQ2grNzF5UnRWd3hSN2VmQk4vRE5SRGsyYzR4QjRvWktRSTVqUzk1?=
- =?utf-8?B?cHpBTlkwaEZaQTFqMlg0dVl4SURONkc4TEZiZCszQUVKRUh0amc4d0NKV3Ni?=
- =?utf-8?B?NkpQY2hucHAyZDdTOVd4SHJyL2N4TVpaMklITmRGQUMxcVBJY203aU9IbTlm?=
- =?utf-8?B?Mjlud29sZVJxWWttb1N1UDVTZDBxQTVHM1dJU2lyb0J3OThvM21LRWhROHpR?=
- =?utf-8?B?aFptbzRxVTZ6M0FPTjhXdDROYjhJZ3hIR3hpWHdTYXBhVHZrUThyeWVvQXJw?=
- =?utf-8?B?L0JYK2FPb2c1YTNoc2hGQitWYVU0SDh3V2VGdDlHbU1Pa2I1bG00anFmRnZ0?=
- =?utf-8?B?SVludU40TkdUeTRYUGZXNk1DZmZic3I4aUtmRjhnOHBXQTh1dzFHdk1PdWVZ?=
- =?utf-8?B?V1NQVW9NZ25wY2hsYTIxekJwSjA2bTR5ZUVzSEErdkRKT2JRcE1qZGdIeHo4?=
- =?utf-8?B?dGdCcmd0cWt3UGJuL0Y0cFZuamtFWUoxNzJkV3BkODEzNTV2RXNhUnVvcmE4?=
- =?utf-8?B?Z2JjQlR1QUI0aGE1L3Z4VldNNVQrcythWjllQkxTTGhkcWRoaXh6S2RtVmxL?=
- =?utf-8?B?VHNTaTcwcm9rVXpxaGFUNzk5NmtRSDBUR2JRL1hpWEx2aFJ5Ti9qOEFSd1h3?=
- =?utf-8?B?U3pyWk16dDhoaGc3UUREdFFLSCtWWWRGeEd2S1R5TjZXR2E3cnVqUXJJQjVU?=
- =?utf-8?B?NjBNMWZtcUltT3JCZzQrTEE3Q05RMHJ2SWxwT1hSa3VqeTBIV2QraFBBQ0k4?=
- =?utf-8?B?Nkh5Nk15QUVPUnh6WUFraUp6MkdEVUF3cDRlcktiZms5bVhiY0pRNXJMdktL?=
- =?utf-8?B?dFdHOWsyQUhvUkxiRGtVWUw0TGg1djU0NlRyVm5QTkRsUFNldmNGUT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9bc6a67-5b0f-4fbc-d673-08df4a1aa90e
-X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9559.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 11:04:07.9168
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h1ggpwRXkWINtrIwXoYISPIbKu9fOSdGO4hJxPRTg7A0IJ3RZnyPsu3YaU4UFJTWIbnJvUnEL30NppUsffVTFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4258
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4012fef5-2d69-41e4-81ef-52f06d9313f7@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Andy,
+On Tue, Nov 24, 2026 at 11:51:11AM +0100, Joshua Crofts wrote:
+> On 24-Nov-26 11:46, Andy Shevchenko wrote:
+> >> > +static const struct file_operations iio_debugfs_reg_fops = {
+> >> > +	.open = simple_open,
+> >> > +	.read = iio_debugfs_read_reg,
+> >> > +	.write = iio_debugfs_write_reg,
+> >> > +};
+> >> > +
+> >> > +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+> >> 
+> >> Static here but not in the header file. Same goes for register_debugfs().
+> > 
+> > Oh, how does it compile?
+> Unfortunately it doesn't :(
 
-On 11/10/2026 9:59 PM, Andy Shevchenko wrote:
-> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
-> 
-> 
-> On Tue, Nov 10, 2026 at 10:31:59AM +0530, Dileep Kumar Nagavarapu wrote:
->> Split the xilinx-xadc-core.c into separate core and platform specific
->> files to prepare for I2C interface support.
->>
->> xilinx-xadc-core.c is reorganized as follows:
->> xilinx-xadc-core.c:
->>    - Platform-independent IIO/ADC operations
->>    - Channel definitions and management
->>    - Buffer and trigger management
->>    - Device tree parsing
->>
->> xilinx-xadc-platform.c:
->>    - ZYNQ platform (FIFO-based) register access and interrupt handling
->>    - AXI platform (memory-mapped) register access and interrupt handling
->>    - Platform-specific setup and configuration
->>    - Platform device probe function
->>
->> Update Kconfig to introduce XILINX_XADC_CORE as a helper module selected
->> by XILINX_XADC and update Makefile to build the split modules:
->>    - xilinx-xadc-common.o (core + events)
->>    - xilinx-xadc-platform.o (platform-specific)
->>
->> Reorganize the code with no behavioral changes.
->>
->> Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
->> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
->> Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
->> ---
->>   drivers/iio/adc/Kconfig                       |   8 +-
->>   drivers/iio/adc/Makefile                      |   5 +-
->>   drivers/iio/adc/xilinx-xadc-core.c            | 690 +--------------
->>   drivers/iio/adc/xilinx-xadc-events.c          |   1 +
->>   ...inx-xadc-core.c => xilinx-xadc-platform.c} | 818 +-----------------
->>   drivers/iio/adc/xilinx-xadc.h                 |  27 +
->>   6 files changed, 72 insertions(+), 1477 deletions(-)
-> 
-> This is weird statistics... I think it's a bug in Git. What it did, it copies
-> -core.c twice and uses statistics on each file after that without duplicating
-> the *original* amount of lines.
-> 
+It means I have DEBUG_FS disabled (in the configuration I used for compile-test)!
 
-I generated the patches using the following command: "git format-patch \
-    -M \
-    -C10% \
-    --histogram \
-    --base=origin/togreg \
-    --cover-letter \
-    --subject-prefix="PATCH v5" \
-    origin/togreg..HEAD"
+-- 
+With Best Regards,
+Andy Shevchenko
 
-If I remove the 10% similarity threshold from the command, 
-xilinx-xadc-platform.c is no longer detected as a copy of the original 
-xilinx-xadc-core.c, which is not the expected output.
-Is there a better command or approach that would allow Git to recognize 
-xilinx-xadc-platform.c as being split from the original file while also 
-producing meaningful diff statistics?
-
-> --
-> With Best Regards,
-> Andy Shevchenko
-
-Thanks,
-Dileep
 
