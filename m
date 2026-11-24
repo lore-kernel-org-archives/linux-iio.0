@@ -1,81 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795543035;
-	b=0yH/zE6vyC7YCVin5bY8BzpnXLOZCT7Xe/wzlr8IS8h62PBquhP/Ns/1arTzeuwk5Y0+
-	 TzfrwoQDelgR2yzhVG5YQkn19rRGL9BCvjZPPiPdhyphICUq/m+wXnFTPA9M8Vwpc12NV
-	 H8kwb4q5jei1Lca+BSYeo6QqYhrtTe/wSx+sxIBAK2BMRiQs7NCrs4XBNI8kcEVWZfb3P
-	 8dIYi1sMHDyN3GaEAPGB+b7ZwNKuTY6rs9H2tl1ETiC4vkqUxD8TPq/jhK455nDnWLrp3
-	 +v3BR9l0Zl7lUI8XeMSvf9oSa+LrgtmD9mAB19DVvZEsJOzMCAcURJiCzbw3t9khOTA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795543035;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=ky87/VzxeJD3u5b7HXmhhGXbXeQgQ90cTEy5fmEumK8=;
-	b=nQh/CrW2V24cdX9R4AvdK45cl+zbS/kMbGEewTnUzFwD0Y2Mrsn7olmI52KFnSSpBPDN
-	 nKBuyYISuxM30CJFFVqOKKHZ5Y+mYsES12oGKVgwdqx1BbmoGfK2bxrZFoYHpsVQpaSvM
-	 g01FmlXRI0DQXuGBjDMpinXy9CzOavpiZm8Avr1kwdQgVi2kLVk06al52Qcoc4WjKqJ13
-	 LOetLDGgyulNnUFPX+KLxNhbfauqnVG4+Rjptr0d0iQjfYfXLX2YMwb4z3KfN+FUY1KT4
-	 mx3DLu+0b/uAQ0zRPAdur1zMVek75Qnt/1biFUKUq+BZD2kCxnzFqLlDNnZqaO6olSw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cn5fJwrI;
-	arc=none smtp.remote-ip=192.198.163.14
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795544908;
+	b=sVhe63FGynlxIgD2p+jGqCoIkePTlr6lDQEyj1ST0CH54K/ErA1t9ZCuMqO5eGkmalKU
+	 FCi4BGfuMCYJrEDynH1ry5c6R+Or42kDHQMaHQlBQoV1hwlm7NfBx1DKa+swlk9YrMtk8
+	 fnJ4om7PtlaIKKbtUAYrKkOwqAbVCiXbnGXgEeInGxEtcYyQs6hkjEl+/1miQW/69zOWL
+	 tLkzIbKXwPhKWFtqJ7AtBK25BFN+I/pvxj0LD/jLOquTO8PA2KoQZum4vdMSfEt2uj7jR
+	 PU7mdTWNyey8W3c13kCYrwDQTRUdqZhDpRXaQ2bVhnbKv5cOzghFWag9cyJNBOcVE1A==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795544908;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=s0RWsaaYDhicCKUJ5pRxB0kYGFvyOIl7Ez0ptkVZUzI=;
+	b=rniueKnb8DDpekEQ46HEk9Q2PXYMTzoVHIykMJNWM2zvUABTRz7eq0rr4cFXLPLD76fz
+	 UJD9gtuPEeoOhvg1cIZlddz0cht6899YbLzOT+2Md0NmWRrjQSwAPcvYAO2BVyq84b7Qa
+	 5CHkGJEKqhGkNyjT648yODQqV2h7z+Ub01abwYpZw3twY30dyZKsfRE8diZqlN1o0jzvA
+	 qY0ffGXWFItvTrc3iYC9R/AaG1ad5qkNdU2gT6n1Sc0UQA+7ograApNOpgovbMZ4G1VSJ
+	 Foog2G2bTbkYC9DggLwPLRd6ohK1UMA5rT1/5uNGyUdiaWVoNsavqqsk6Ls1UGOUHwg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gLPuW0pm;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BC3F606A321;
-	Tue, 24 Nov 2026 17:57:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4BC3F606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAC73606A31E;
+	Tue, 24 Nov 2026 18:28:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cn5fJwrI
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795543034; x=1827079034;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fI/PW8KDoRbbs33Sd+n/w18PwQb+8meBD/AQ8hT5A9E=;
-  b=cn5fJwrIpSsILDQTnHFmFi2K65jaNmO2t/i3mKwJ5aD50YVv8o0Myxtg
-   ypZq4/Qt+DpfGfIT6QJ2KziqfJkn6mFeStuQk3/XVe1GAseSGxJecO5Lv
-   mnefoIuOmMjMN4+0VPgUoC3d7n0Yv4ZtQNxgXe38SnEgFKFPzGfg9ybgy
-   Ia2YkiFu5Wi4FMrXQlUUzJRIMbA6zKJf83UqasQXUNfjdB65zZ1MTnijD
-   4u52gstIDmgECT7jU8NPWY68gi8n5QscHxRAIJkzlCgd/GirH4WqDIAe6
-   /Ya1ptNNT0it9OVtIJMaJtd50l55c/P81z3FKKpZNoR7SHF6B6v88NtdU
-   w==;
-X-CSE-ConnectionGUID: nqGS0U9cTHO37l502Zsizw==
-X-CSE-MsgGUID: l4d5avgCR3Gpd+ZPNHojLQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="4310961"
-X-IronPort-AV: E=Sophos;i="6.27,231,1787036400"; 
-   d="scan'208";a="4310961"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 09:57:13 -0800
-X-CSE-ConnectionGUID: ifIlFqeLQZGrt2iro3b+5w==
-X-CSE-MsgGUID: kduAZoqcThKNa2ZYkqumNg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,231,1787036400"; 
-   d="scan'208";a="11619158"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by orviesa007.jf.intel.com with ESMTP; 24 Nov 2026 09:57:12 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xVulR-00000001Pu6-0VpX;
-	Tue, 24 Nov 2026 17:57:09 +0000
-Date: Wed, 25 Nov 2026 01:56:39 +0800
-From: kernel test robot <lkp@intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
-Message-ID: <20261125014709.jzc52smr-lkp@intel.com>
-References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gLPuW0pm
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795544908;
+	b=i0xsdvhCAvtVWphBE+E90uJXnk7kxrZpC4uzoQaaUQGIQQ0uXKUbYskBSxKIzzBwN/Tp
+	 mNl2jZWkB/3kmY4SYQoVUvixKGRhbdH7AE2OAnGhkTR3tCVvQkWQGoWkEWnPNs0A0UwIk
+	 HuxveSeD/HKnrIc1Dhycv4qHC5ZklucYQnVYROVbFNQzw1WvMNPSkast0z7ixrhNmYpy0
+	 VhqhLBm3r1duZDrbvFa7ok9KZVU8sDIpVaTU9q42vgaN1EV3QJJtPMFsmK0KKcuT5qpcr
+	 TrBkauARIjWNZpdbZVtCEB4uNTpPmVqRt2bX4xkRNcqUorRCtamt/TmJ7u4lQf88F5Q==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795544908;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=s0RWsaaYDhicCKUJ5pRxB0kYGFvyOIl7Ez0ptkVZUzI=;
+	b=O25xzHkSjV6RBSlelnMZS9zPdktDGbd8S8vKYCCgt+d53HiWb5dJr3sGyGqVM7HUbnak
+	 HkE9cOdFKeZ5ugUa3c9nG4Y9j+cY3N8qeXt6dAzRNL37rlzjvkJrvhT17T7ajqLuv/DoH
+	 ceXFEq+2fJyol3BBZ1H4f7a/R50hQjAs1Vbc2FoPGlB3Ef+4V2GGAIHakL5sduw+gplB3
+	 L4X1TxNdsS9Y5L+qniXOhVQ8I5j3V8DZr6Opd7D13OYWpde972ptF4fOmlFIYg8y8vX5i
+	 h+htl6BLljCMloLiBLXPGvKfcb37AJLjCiozfq526oVQ058GEg6ncbsZ3GKPRJ0FNSw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id A5F111F000C0;
+	Tue, 24 Nov 2026 18:28:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795544908;
+	bh=s0RWsaaYDhicCKUJ5pRxB0kYGFvyOIl7Ez0ptkVZUzI=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=gLPuW0pm4dyNsB+rRUbe3OsMsx6aVcmGFv/CEokq4Hpt40nc2XD2itxP7kj1p7OCv
+	 Ox9hVCgPfJfGpvRqXIAutFtzx0B0ZcoQ9LBvdI1whD8AmLoQUbLZUD5IkeByNgwTzo
+	 V5adgHala97IneJp5TsJIpGzR/1DIKrYiz4M1okGG4vKJGOj57CJCCkRO4gu6hllD+
+	 b58vOXSewdmY2I1MTHROyBEF9z4JThRzu+h1I8C5ZYGXzF4V4Zvvuqv45gku/4Mz91
+	 y6p25N9k8JAx8zOZtJEJ0lfcogn7G+TbYFk499njLwI2bILqnygU4TovwBnz1KlLv4
+	 iGkch/mqb7JDw==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 07D274CB3C;
+	Tue, 24 Nov 2026 18:28:25 +0000 (UTC)
+From: Maximo Manriquez Lizarraga via B4 Relay <devnull+DelaySystem.tubot.lat@kernel.org>
+Date: Tue, 24 Nov 2026 10:28:24 -0800
+Subject: [PATCH v5] staging: iio: adc: ad7816: use dev_err_probe() for GPIO
+ lookups
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,52 +83,126 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261124-batch1-s3-warn-v5-1-badf90d5defe@tubot.lat>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3XOQW7DIBAF0KtErEuVGUjAWeUeVRcwjGOiyo6Au
+ K0i372QbqxaXX7pvz/zEJlT5CxOu4dIPMccp7GGw8tO0ODGC8sYaha4xyPA3kjvCg0gs5KfLo0
+ SbUedJeMBrKjolriPX8/Bt/ffnO/+ylTaSmsMMZcpfT8vztB6/47PIEHqnpRVGsgpey53P5XXD
+ 1dEG59xxWHLsXIwveaDBkDl/3K15nbDVeX9ETEgYGDecL3iqDZct+cNBRtM0MTdmi/L8gM2jOW
+ QewEAAA==
+X-Change-ID: 20261107-batch1-s3-warn-289c98c7b118
+To: Michael.Hennerich@analog.com, gregkh@linuxfoundation.org, 
+ andy@kernel.org, nuno.sa@analog.com, jic23@kernel.org, 
+ dlechner@baylibre.com
+Cc: linux@analog.com, linux-staging@lists.linux.dev, 
+ linux-iio@vger.kernel.org, crofts@kernel.org, linux-kernel@vger.kernel.org, 
+ krzk@kernel.org, Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3468;
+ i=DelaySystem@tubot.lat; h=from:subject:message-id;
+ bh=pIPxq0yfo0Ggng/63NlKt3XQGOq6qAvMytmuG849dko=;
+ b=owGbwMvMwCH2SNl4+SzWXm/G02pJDNms191l9PJLrwXc8Xj1oVd/Ve3O84efJkWURKRarGevf
+ NX5/ObRjlIWBjEOBlkxRRYxGZ739fd14qyt5pyAmcPKBDKEgYtTACbSNZ+Rof9D6bMtElH3Wex5
+ OZb1lxozzplrnqK1S2NRZOQeifXTzzMyHKh4Zn8gwSg04XMc74ljPvYGDTNt1xuxPi1IflpmPfE
+ bCwA=
+X-Developer-Key: i=DelaySystem@tubot.lat; a=openpgp;
+ fpr=161C0CEF7FDF2C5E3B3A9CC8E22333A79A058D4B
+X-Endpoint-Received: by B4 Relay for DelaySystem@tubot.lat/default with
+ auth_id=1447
+X-Original-From: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
+Reply-To: DelaySystem@tubot.lat
+Content-Transfer-Encoding: 7bit
 
-Hi Andy,
+From: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
 
-kernel test robot noticed the following build warnings:
+GPIO lookups can return -EPROBE_DEFER.  Convert the rdwr, convert,
+and busy GPIO lookup failures in ad7816_probe() to dev_err_probe(),
+which suppresses the error message on deferral and records the deferral
+reason.
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v7.4-rc4 next-20261123]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+No functional change other than defer handling.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-core-Split-debugfs-routines/20261124-104410
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20261124094502.557175-1-andriy.shevchenko%40linux.intel.com
-patch subject: [PATCH v1 1/1] iio: core: Split debugfs routines
-config: arm-s5pv210_defconfig (https://download.01.org/0day-ci/archive/20261125/20261125014709.jzc52smr-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 16.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261125/20261125014709.jzc52smr-lkp@intel.com/reproduce)
+Signed-off-by: Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
+---
+Changes in v5:
+- Move struct device *dev to the top of probe to keep the declaration order (Andy Shevchenko).
+- Leave the devm_gpiod_get() calls unchanged; only the error lines become dev_err_probe().
+- Link to v4: https://patch.msgid.link/20261123-batch1-s3-warn-v4-1-47cd8d7d4ce9@tubot.lat
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/20261125014709.jzc52smr-lkp@intel.com/
+Changes in v4:
+- Add struct device *dev at the top of probe and use it in the touched lines (Andy Shevchenko).
+- Link to v3: https://patch.msgid.link/20261118-batch1-s3-warn-v3-1-f622d212deeb@tubot.lat
 
-All warnings (new ones prefixed by >>):
+Changes in v3:
+- Convert the missed busy-GPIO failure path to dev_err_probe() as well (Joshua Crofts).
+- Link to v2: https://patch.msgid.link/20261117-batch1-s3-warn-v2-1-17f4e541123b@tubot.lat
 
-   In file included from drivers/iio/industrialio-event.c:22:
->> drivers/iio/iio_core.h:30:13: warning: 'iio_device_unregister_debugfs' defined but not used [-Wunused-function]
-      30 | static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iio/iio_core.h:29:13: warning: 'iio_device_register_debugfs' defined but not used [-Wunused-function]
-      29 | static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Changes in v2:
+- Resend under my real name (From/Signed-off-by: Maximo Manriquez Lizarraga).
+- Apologies for the improper sign-off on v1; no code change.
+- Link to v1: https://patch.msgid.link/20261107-batch1-s3-warn-v1-1-4fc38341ca38@tubot.lat
+---
+ drivers/staging/iio/adc/ad7816.c | 28 ++++++++++------------------
+ 1 file changed, 10 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 2a15d7598abb..7d9a5f324466 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -362,6 +362,7 @@ static const struct iio_info ad7816_info = {
+ 
+ static int ad7816_probe(struct spi_device *spi_dev)
+ {
++	struct device *dev = &spi_dev->dev;
+ 	struct ad7816_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+ 	int i, ret;
+@@ -381,29 +382,20 @@ static int ad7816_probe(struct spi_device *spi_dev)
+ 
+ 	chip->id = spi_get_device_id(spi_dev)->driver_data;
+ 	chip->rdwr_pin = devm_gpiod_get(&spi_dev->dev, "rdwr", GPIOD_OUT_HIGH);
+-	if (IS_ERR(chip->rdwr_pin)) {
+-		ret = PTR_ERR(chip->rdwr_pin);
+-		dev_err(&spi_dev->dev, "Failed to request rdwr GPIO: %d\n",
+-			ret);
+-		return ret;
+-	}
++	if (IS_ERR(chip->rdwr_pin))
++		return dev_err_probe(dev, PTR_ERR(chip->rdwr_pin),
++				     "Failed to request rdwr GPIO\n");
+ 	chip->convert_pin = devm_gpiod_get(&spi_dev->dev, "convert",
+ 					   GPIOD_OUT_HIGH);
+-	if (IS_ERR(chip->convert_pin)) {
+-		ret = PTR_ERR(chip->convert_pin);
+-		dev_err(&spi_dev->dev, "Failed to request convert GPIO: %d\n",
+-			ret);
+-		return ret;
+-	}
++	if (IS_ERR(chip->convert_pin))
++		return dev_err_probe(dev, PTR_ERR(chip->convert_pin),
++				     "Failed to request convert GPIO\n");
+ 	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
+ 		chip->busy_pin = devm_gpiod_get(&spi_dev->dev, "busy",
+ 						GPIOD_IN);
+-		if (IS_ERR(chip->busy_pin)) {
+-			ret = PTR_ERR(chip->busy_pin);
+-			dev_err(&spi_dev->dev, "Failed to request busy GPIO: %d\n",
+-				ret);
+-			return ret;
+-		}
++		if (IS_ERR(chip->busy_pin))
++			return dev_err_probe(dev, PTR_ERR(chip->busy_pin),
++					     "Failed to request busy GPIO\n");
+ 	}
+ 
+ 	indio_dev->name = spi_get_device_id(spi_dev)->name;
+
+---
+base-commit: fa4ad798f6f681031775266044ba1b0cf3c670bd
+change-id: 20261107-batch1-s3-warn-289c98c7b118
+
+Best regards,
+--  
+Maximo Manriquez Lizarraga <DelaySystem@tubot.lat>
 
 
-vim +/iio_device_unregister_debugfs +30 drivers/iio/iio_core.h
-
-    28	
-  > 29	static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
-  > 30	static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
-    31	#endif /* CONFIG_DEBUG_FS */
-    32	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
