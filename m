@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795516042;
-	b=aS+nddnN2Hav3PxGEGpnFuDACfJBvlebUiHfUX0pakdAHThl1ydeHJjrmSx2fe3dH6XI
-	 O6GPHehkt1marmB4OoANXfNjFtlUKUrN5080NlmhrJTlU/bnWitOUjcC3hmm25mM7XQAX
-	 7j2XD1WS+moPssDlhxVtzcpUzhD0V/kzCVIGBVJIKF345US8RDvSacK/7pRFssqvUEe0a
-	 LwKTQmKew2nXrzLPs/+oQ8vL0eYtHenny94CboqniVj7zxioMAjj5ooS2V9j29WbsxSI/
-	 ZbJmJsoeEhTNxRrKlN9t161o8uLltp7RpcLt8GZKU5qJavYiHkvr2bw1i+Z45X4p8Rg==
+	t=1795516791;
+	b=A/9vYibyAT1GTJ5MZnlxlUPuTX/3MmWmqZhbuAOTV9LfgVwMj3p1+hRoWEF223gneUjU
+	 rN+SmEw/mU41jKdzcAqSKlSCPkd4GhYZA1D8x0HzBsolnTDh/70Ta2iPCW2Jh7Vr8T2+F
+	 pJPFSSBwhchZMfKU+qubIzlYXxqyONPA2U1hJzDNp7N+D0eAEFIJL+sl7+vbHR8DH9ner
+	 2mRuO1bSPQpYIsJhQYDHj/dxepFJUzbRePuS3bxrjiN3dqloOiq8gloSFuE2hqu0pbDE5
+	 VzjyiQG9/0XXwu3Wm5kgt8qDCAx8XIescVirdlj0I/lPJYZSMD5+0mSRlDVXrvdRqGA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795516042;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795516791;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=bv3MYp50cO6JG3wyY7QdIPoIXH9KstB0wwFIT4JfjgA=;
-	b=KoOLgeid/V2V/xA9K3KpeDkp/6ez6d17ZxZayy8C8pBh76qFr6iEIpqCiGKvHjiH4sn5
-	 i3YhPj0MREHz0OVS1F8ma15vVuDcCNJfidcLsND3Ws5JMFpXoRZC+56hxAsDf8VAjpN35
-	 m9kj+KN/vb1bUcw809zxe8HqC+fGfYZ12XKzegWizyB5ht6ykliBl13zcEHVz+uBObFkd
-	 KKFH4h2f6tTmNzA+B0E2MIrqUy40wZZOu59q3L/Tqbw8vj9c0/biB+bhhHQ0m6zq3wydh
-	 tfHebHy0mqy2Zh+dhpH5qL+7exn/Ic4o9ofcP3sNvvpjgnn6wF2I5I4Vu6gMFDbb2hQ==
+	bh=fIKoTRf/vZe8A3Fh8OBkntjyjp2VDQe0y1sGoawVCe4=;
+	b=cTiHz0FqfR1wUWlDHjHjt1mbqbqaW9ALX6tXv2/xa7sR3quoX/mcZka+j3Wl4dbpUdHR
+	 oNdN1BIK2bk3eyMiH2MCP+tAmZAJmiZigUGRA88ONh548BAW2JfUlaWJxW69GgxdfwWJf
+	 mbMBylwOpcd82KtkoKh//SGIlyB3GInUXyQ45/AFgFyPOpt9f1yABbdHPQuRPmC2+S1YW
+	 XjKw83O5kKbqkZHdqny02OVbHrJ+cY5UFAKEIHfrl3Vb2imyGmd1idIAvJANd3TUzlKGv
+	 lFO6QBQhosWSOvwtHfbAsGR92y86Pk7m7aMEmLGWm/KbCF7e+28+ZaUGhYwv+SXcrLw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=b9ixxqam;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EbGdKYTO;
+	arc=none smtp.remote-ip=192.198.163.16
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F164606A31E;
-	Tue, 24 Nov 2026 10:27:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8F164606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E2A1606A31E;
+	Tue, 24 Nov 2026 10:39:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9E2A1606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=b9ixxqam
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EbGdKYTO
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795516042; x=1827052042;
+  t=1795516791; x=1827052791;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=TnAVW8znwYMhZ6U0JVzDhzcJhGdWbZqAFm6lyt6LM5I=;
-  b=b9ixxqamrN7xhW/FyBIrUAjL/bWFTeuBBAHaYtJQjZRGWDrlOORICYd+
-   F3tj+DMi/FTCCxrhotdjRY8p/3u7d4+8ZsdZPpesRB/RbNQng22wYyL9c
-   28HfJcBqjSdwv5Rc85en7ubm2wb4YHI2ETk2j3rE3ohdZaC0adDjjR2xL
-   Bh6YyIB385bbkAfAVb3c8Qq8vGTBATGSzHXlyRmFXqXIvR0iSKCCABcZl
-   yE/yPblRDWPl1Uyyqs6R1xoCp6LDpLQ6LOa1L/QegKi5mnulyUFeelwWy
-   jumZAb/A5f4GNV9nLgQIbhAktF68p9x9jzmsv67CiPurOqtlCaazveYTM
+  bh=w+aoWyRMc6ObgqHfcHZhGgWjzhku534lrOT58Tlay5o=;
+  b=EbGdKYTOUSFQ4enzMReLeBmn6sYMW2QKNwt/J+1m9vqJtzAJYJDltOh6
+   xaEf6YbF6BWhtCqS1wCTITlWL1ylIiuB2BcviiTaMbJeRLJJX8v0mphNU
+   vUo9gFmmzyfsTCSMbE0H2VUjp9JUU+5vwsI9QVIVew4Cy+5y67hUk3ThH
+   dsjn51EtWdwCURq6gjcz53BT5brKjtLIUHBme496yx5FvDZCYz+kJic8M
+   xEJUpDVjyNDQ2HB5+oy8ySVRq3iXqNUnAyg5tjx/Ph4Fpkn3tWb+pKpjk
+   YhhC3QKYnHu3Xp+Bz0dKBgTjthNpgmt6nvIwIS1kuY4ZoB6N0XP8rlwsC
    g==;
-X-CSE-ConnectionGUID: ynme8IBOR1ye5GknncrsHQ==
-X-CSE-MsgGUID: 4MQiwO2CRayvHOqkgWe0Yw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4364343"
+X-CSE-ConnectionGUID: gz5QZL+qQimmZMJWArQd8A==
+X-CSE-MsgGUID: Fo6x3RM/QZmT7G+cQ5X9lA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4390207"
 X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="4364343"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:22:57 -0800
-X-CSE-ConnectionGUID: YxJJb1eYTLaL61vC8MchUA==
-X-CSE-MsgGUID: Gz0SA2SJTM2R4qiA71kRAw==
+   d="scan'208";a="4390207"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:39:50 -0800
+X-CSE-ConnectionGUID: M7/I2tkmT9OkLcQGBPBeSw==
+X-CSE-MsgGUID: 3ipBm3BGQ1S7drwyPK6HiQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="11442732"
+   d="scan'208";a="11924951"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:22:53 -0800
-Date: Tue, 24 Nov 2026 12:22:51 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:39:48 -0800
+Date: Tue, 24 Nov 2026 12:39:45 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Gerard Marull-Paretas <gerard@teslabs.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -72,10 +72,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
 	Andy Shevchenko <andy@kernel.org>, Frank Li <Frank.li@nxp.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/4] iio: magnetometer: mmc5633: Enable the VDD supply
-Message-ID: <awVle8CFVrYHkih1@ashevche-desk.local>
+Subject: Re: [PATCH v5 4/4] iio: magnetometer: mmc5633: Add mount matrix
+ support
+Message-ID: <awVpcYkY-qXwn6bi@ashevche-desk.local>
 References: <20261124094632.8879-1-gerard@teslabs.com>
- <20261124094632.8879-4-gerard@teslabs.com>
+ <20261124094632.8879-5-gerard@teslabs.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,16 +88,25 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261124094632.8879-4-gerard@teslabs.com>
+In-Reply-To: <20261124094632.8879-5-gerard@teslabs.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 24, 2026 at 10:46:31AM +0100, Gerard Marull-Paretas wrote:
-> Boards may switch the supply of the sensor, so get and enable it before
-> initialising the chip, and wait the 5 ms both parts need after VDD is
-> valid before they can be operated.
+On Tue, Nov 24, 2026 at 10:46:32AM +0100, Gerard Marull-Paretas wrote:
+> Read the mount matrix from the firmware and expose it, so that user
+> space can account for how the sensor is oriented on the board.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+...
+
+>  	fsleep(MMC5633_POWER_ON_US);
+>  
+> +	ret = iio_read_mount_matrix(dev, &data->orientation);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to read mount matrix\n");
+
+Thinking about this more, maybe slightly better to check it before touching
+the regulators? No need to resend until specifically asked, let's wait what
+Jonathan says about this.
 
 -- 
 With Best Regards,
