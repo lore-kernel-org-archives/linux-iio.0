@@ -1,72 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=43.163.128.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795523223;
-	b=aG/8XddLFia97XMKRfACyLwdPjPq6TkOu29Mvp9YFzPCxf997gpXVkYJubuyUZLNY0Dr
-	 yyAdn/ZXEei+Xsp6wR1zQcZPg3zi61EPBsIOkesfr6UTaG9X49d8yHBTsUMSn717Vny0o
-	 IW+xgcnNnBXKLDyvoLWz0wD6JBHjwImJ/noQqNrS/8SDMl/l/HmUra0EcNQZ2InmGp3bL
-	 hGtE6X0U9Ezj8X8cwuan4cc4xkATlw19dxYerDlenSmsBwZ67gUo2n9edeAwjo+IKqRpx
-	 /OjE19F6VUl2FszlaYNdheXrKmFuIeGMrcOgvD+62z6ge2fK9VvwLco34kiJc2mdsVA==
+	t=1795525103;
+	b=B8V1Rgg60mzr0b1uCbFwYsGeiuygsusar7PaliTNWe0Tryam85ydpelK1eNZdyN0tXdm
+	 jdnRS/dG3aB8yNz/kt+6SnY+VFJ4a5spp2WN9fyrhWraDZlmAHQ3fm1dNBKSiiQwfHiHd
+	 GXNEArIsZ83ue8WxvMEHKZ+Z9lF+laYjOiJGhx/iCwVmJXaMYtcTy7vhIWKcpXXglo2di
+	 G986/mZyBIJ9yRttTmtSNDT9D0Cvo0BWx0sopcO7WO66x03QMBFpyb3ezhbGGJ42WdsrM
+	 J+yCdrMSfQ5AiTE/YZOjWw2EZGR2GJoswrK8SHYjYFobh8Cxv5KuvW0N5ZMUIYkYx0g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795523223;
-	h=DMARC-Filter:DKIM-Signature:Received:X-QQ-mid:Message-ID:
-	 X-QQ-XMAILINFO:X-QQ-XMRINFO:From:To:Cc:Subject:Date:X-OQ-MSGID:
-	 X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=7iBsynOA997MaNK+FvhIcnEpmHFM1YPoFPEf5EtVI8Y=;
-	b=1vk9XxHTENpk9htZq0H3MBXyf7YqbyWKBVJYd5GbncskOOP+eNPKmxqb44IYSxBPt954
-	 ZcmO0C+NbbVoqLcwz0v6efs5bInFKQg7JCxROfi8aT01EBoIZTRj5ikRBAm7jD+NIW9Uc
-	 iD/xE6uqFl4sLFkCcCmKna8navMirrXcahfx9rhZDMkDPDi77vm9nJUUcs22zwyZfxQwz
-	 3ZSlgnfDQpO4eAkyHcWwh9uPPQRuUU5LKix1c4WetGahMMPh+X8JlM4cpeN6Gwljt3+kP
-	 yZOkCQvd2YudsW/5kKbvvPAHXc+ceIJ8+dVNTNQY8NEbtlioZlUYx4R7VAFYW7Ngdaw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795525103;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=+zdR7Z1qxc7S+DYK/X9qo38BjQifDmARK182HdLd/og=;
+	b=REdvWeAnPyfI18JMH+RnnC65pJ7gTDWXLP1J1e4PwZzJ/adWyfxiQKO3hO3vrGGIJzcD
+	 5WuVPpDxgQXbCsT7U+dfLUslBE+GdZVMX+fRYOpWUQpczHy6HCiaiygcDpqTZBoDgoHYX
+	 QNs56Q5F8uKmQKhpyuSnY6Lr2sXureWc3KY/xmeGTm3Jg5ZeBAJRjY9aOhlwftGnJyJeG
+	 BbpOkFL+QCnT8CT0asyt82ADn8oqtYO60fN7ONoMUCCZG1/NZdNLxZZLwLL7A3hlzfTwK
+	 31i9DgqwgNdyPD7nF0aZbwzRtQ8zcNe741+hQoLkeQr75k1tgr6HSx5qL0e+I/p2hlA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=qq.com;
-	spf=pass smtp.mailfrom=qq.com;
-	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=JnU8RBab;
-	arc=none smtp.remote-ip=43.163.128.50
-Received: from xmbghk7.mail.qq.com (xmbghk7.mail.qq.com [43.163.128.50])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I9gtbmWZ;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2069E606A31E
-	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 12:27:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2069E606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AAA1606A339
+	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 12:58:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=JnU8RBab
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1795523212; bh=7iBsynOA997MaNK+FvhIcnEpmHFM1YPoFPEf5EtVI8Y=;
-	h=From:To:Cc:Subject:Date;
-	b=JnU8RBabbkYR6dtZfIfLWewuStzL/5t7yyFDr/hR7HWCeoY/9cHK3N3VtTnRR4ZYc
-	 DKhju0Bc0pxjSXUMeLpHgB0QnDrSVHYJwRV9zqWSYSzfzWzFfKddWErNpp1T1zCElz
-	 3tHB/d03pz/x8AikPZEUatR7AbfK5Szp/J8fl8jE=
-Received: from runtugo-virtual-machine.localdomain ([220.200.110.148])
-	by newxmesmtplogicsvrsza73-0.qq.com (NewEsmtp) with SMTP
-	id 6A40E444; Tue, 24 Nov 2026 20:26:36 +0800
-X-QQ-mid: xmsmtpt1795523196t2ibrleao
-Message-ID: <tencent_1EE4F65B31B1B056C2A8FD618D533F141407@qq.com>
-X-QQ-XMAILINFO: OATpkVjS499uy0nnMNyXTNpZTu7QEWMciOVnZAxLlJJWKpTXHrYl6LE+DN5Ugw
-	 l1tPvRbD7ZNkApa9C2H4WntFJAKDxSXjUXk2EqL8pxwvW2qkWBb8ScEuDclxNA7jJK3BiaseU8v6
-	 PHpLEFNESXBVTKhVcRlLf7zEjhjrZ8jOOX9EtKtybL8oCOvMtO3UNc5NIklCeoyhTemigsUd81Ih
-	 Ag9xdaJmylbxbvDf5WEuz5KflEGwSqdI5EzRgMoJ3GOlFrN+XoYi3u5UWYjr4Oi6E+5CXoBbmW3i
-	 uO5moQ8Y8Jo4Af7fAlb9UGHBjPOIc39fWnYzWCBp50Oo5OX8k9mX6uiPtXKfkUx8MregOqZYP8ex
-	 5QLuh5flEVQT2frQQy1zON6uO9QF4zWBslQudS+1jvn1WffmRhHfWSFgeqB3WlA7dFJuH0lQMkMR
-	 i0IbDxbv2Mcl1yoIgQl6HOyTWynBmDT46nfVIqKqwQqM33YhMME+NcSBwmPkQdZZqybY9Jbo6k0e
-	 IuRfRd6GNmkptAN8roktcXlxsFiQK7o+3viV31Ie2eDFew9Q8iL2p7gWmdf3BByEqX7B1VbRKQse
-	 7XV79jWTU5Zg/481O6oaA3h3jsO6iFeCOd+NQNdLvQJxz30ZcdfdastzfqRr83Lv+BEI6qbcbm6J
-	 3gJ4i5EO5R25D8vMT8R5JXykW4HN6zHpJTwDnmsZfEprZEILElVR5FC+7mcRmBlTxhP/8ASMzuSq
-	 86cCEVqJoh3LhkHR/BAt8DdckjkKY4QEPzHh46bRduHKvJ2+OQXmKidN2e0ZQTQYBKu5VThIJ72E
-	 anr843+7UxLv6wq+xv/vY2nqTYfJ4dsCBKxMmtda1RpYKwEMbgeCKYmTjpUyblE3vhTBq+0xBMjr
-	 CUsyFNg0Mf92O+4S95v1MkI0TiUO3EEZm/TdOqgAlS0ys77i707l6EljWPFJg/WWjypVXhTp3yXB
-	 nJNqq+BchhsD3B/e5Uq9MITBfoMqrOZvkz6E5XiVm3ZPfY7V5g6BKT5nYeDS8xsObEwqkdqqwP4C
-	 XWwhaSoiI6iRDacH3h
-X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
-From: liu haojie <2669793217@qq.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	liu haojie <2669793217@qq.com>
-Subject: [PATCH] iio: buffer: take the source timestamp offset from all active channels
-Date: Tue, 24 Nov 2026 20:26:29 +0800
-X-OQ-MSGID: <20261124122629.6239-1-2669793217@qq.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I9gtbmWZ
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF0381F000C6;
+	Tue, 24 Nov 2026 12:58:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795525103;
+	bh=+zdR7Z1qxc7S+DYK/X9qo38BjQifDmARK182HdLd/og=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=I9gtbmWZfq7KtZvsaXfW1DODf1qabTQbfL3qcOir6eqQdiV26Ke5WLtUwfsJbM+eH
+	 BOmbJM6WBEdeUnsT/C9Bh3oqHknEu0Ff3QxdV48ctv4oL6P1MDVVsT68oPqYvE+OYj
+	 kuakyunHhhneOn3xR2oCqSlOC5Mf32XFs2HRTyZBXHPJ4W33M4qe6DJMuQ6L0e1w6c
+	 Tev2tj5dvj8OQX9cYAW1jsJSkBRTEkjQSknai6EwIDzuqL2O4+0Gc7I4xDORkwp11A
+	 froTuDytyJAD/JWX2xJnC8Irbxd+/fS4EXUuwwS/6UL+DGhB+nKbdYIVm9LQnFERRa
+	 O3tX4kWDVxonw==
+Message-ID: <8ec5b8de-aaaf-4d99-99e9-d565b77fccf0@kernel.org>
+Date: Tue, 24 Nov 2026 13:58:19 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -76,60 +51,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v1 1/1] iio: core: Use an API instead of relying on a
+ specific error code
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+ linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>
+References: <20261124103842.600399-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Joshua Crofts <crofts@kernel.org>
+In-Reply-To: <20261124103842.600399-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-When scan_timestamp is set, iio_buffer_update_demux() computes the source
-offset of the timestamp from the end of the last channel that was copied.
-If that channel is not the last active channel, the trailing unselected
-channels are skipped by the demux but not by this calculation, so the
-timestamp is read from the wrong place.
+On 24-Nov-26 11:38, Andy Shevchenko wrote:
+> Use device_property_present() instead of relying on a specific error code
+> when parsing mount matrix to reliably detect absence of a property.
+> 
+> No functional changes intended.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
 
-iio_compute_scan_bytes() lays out the raw scan as all active channels
-followed by an aligned timestamp. Compute the timestamp source offset the
-same way, by walking every active channel, so the demux matches the
-layout the driver pushes.
-
-Reproduced on an STM32MP157 board with an SPI IIO accelerometer/gyro
-driver: with only the X acceleration channel and the timestamp enabled,
-the timestamp read back from the buffer was padding and a repeated or
-decreasing value. With the fix the timestamp is monotonic.
-
-Signed-off-by: liu haojie <2669793217@qq.com>
----
- drivers/iio/industrialio-buffer.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 4294101..a8a40d4 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1109,13 +1109,25 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
- 	}
- 	/* Relies on scan_timestamp being last */
- 	if (buffer->scan_timestamp) {
-+		unsigned int src_loc = 0;
-+		unsigned int si;
-+
-+		/* Skip unselected channels before the source timestamp. */
-+		for_each_set_bit(si, indio_dev->active_scan_mask,
-+				 iio_get_masklength(indio_dev)) {
-+			ret = iio_storage_bytes_for_si(indio_dev, si);
-+			if (ret < 0)
-+				goto error_clear_mux_table;
-+			src_loc = ALIGN(src_loc, ret) + ret;
-+		}
-+
- 		ret = iio_storage_bytes_for_timestamp(indio_dev);
- 		if (ret < 0)
- 			goto error_clear_mux_table;
- 
- 		length = ret;
-+		in_loc = ALIGN(src_loc, length);
- 		out_loc = roundup(out_loc, length);
--		in_loc = roundup(in_loc, length);
- 		ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
- 		if (ret)
- 			goto error_clear_mux_table;
 -- 
-2.34.1
-
+Kind regards,
+Joshua Crofts
