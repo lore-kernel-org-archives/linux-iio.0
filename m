@@ -1,58 +1,63 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795545257;
-	b=xqW1yH8PTtrPr2qbYGvKpvJuKKm5sEUhzYOz3pimzGKRiS1eujTcHNM9ZILR6w0KTqIl
-	 7ScUAb79rl5rJKry4F50OFb7PTw3elCFPMcklDIbuNjO+GslFT/b40b7yfQel9QBICszd
-	 5qcngS6i8/beAC4k7+DF6ZsBey4DoLauRXPfXu4M1mex052CIKsAW/erndsIKNMz0Ntfy
-	 ik7WgLaw9+DcYaqdqxsTXXV9AZTmelIDA1RwUSGgkksX7+E9GoxTmLSg2Kh4sx6v+M8xP
-	 5sPiVNFCuKDyhKSa1pfwtPW/PsU8+awbnd0WJh6E5pIwMorQb2VLYGJ+jpuAIeUMbsg==
+	t=1795547096;
+	b=PqCLU4ub7Sadu/CEUG5i6UA33GK4O/B3IVOANP80C8ZSwbXgQc5k4ojYPejA563nahMn
+	 X8wY+WUXS+1F76hq1zk31Qw+Rjn/BCj2OijKkvdM+xz8BxdMu0sMjolz+JqwFUwWCy5EM
+	 sP7jAbHvJmFzsF6ruQLKSmMha3TSOKvKsSLVYdKSDzwKRsaOTu25FWnTl/hxqNteJf9Mt
+	 bfPYTP1NpAAAqWSzsKQt3KmM/TldfdXX8BBYxyfSMiDEuXC7mZzld49Q3eM0fmwxMJmlu
+	 e0AHmjsbdQXKrVogklN+AT5wS3bmhD3oI80exLBQTk1wb6GHY9h187Cax1ZciVBAJ1A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795545257;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=acZycD1lQv56qwrusDLB08XyZ4Og2aZ5TDtWj5mWP+c=;
-	b=421K5Bu3CWor9ZUQMZ19T2BsMllQVDMjsch+ygojwby6gny2gTXyFfrE+OnaEhXG5x9K
-	 NAUGs/BGIu0oBOuBPEVk8MeYBnFhMZIyam49vmAa7u3r3bIigcnCn9BwBuf5heZ944IYh
-	 Gvsz6b2XlGN21QvqTpPq7bg6r1SGncGEHjdAkqE0aZ5qMTGqgbQF+B4lQzegFt08ukh/7
-	 WuAYcOBogS0+ZEadj1F1h3W7dbY0v1KjuyZeYqzOIyeTXZUvvxYMxwCi2Kdsfb6QjLLKH
-	 NHz2Km14YDWRII/V1cxw5FziK4HNZ1WWB+ULwYqwlwGhHVucZwO8+mFfIO0mR0BFStg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795547096;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
+	bh=Xc3mmrLjrHZi16TZiMxQ4MqsKvdShh/6Zel7neJrcco=;
+	b=GbQIqRZ96ZLbTZ755fpF3wn4Z5Y3Qf6rgrO3mTYD9hXys5d7ws8ciTsRINgPtG5VTpSB
+	 BTGBagdKHeswM10J+4ZtFkxLvVke+OVg+Dh8bVqkDkqBr0zF4Jt9e1Pw/ZjXlyzEYuJtI
+	 dUQyny+zXdyHhJt9A1Cgwei/SqiM/mMu5gCPITB0AWC1DfbeNO7wzRPaGYuq5Bg/PE88G
+	 enBOM9lHbT9z8fH5P92+PTc+7u9Ht7HXuQcQA9YF6WZ8A1a+8QNJpd3Ioe1ksJbzt+BvG
+	 2nROL8OvfhD8rGJoKNGCPLw3nFo2Q0hlSmFxVMq0TKWWkIj60e0nYkYmWivIA5r7x7g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nHC7JFsx;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KheLyZUc;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D089606A31E;
-	Tue, 24 Nov 2026 18:34:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD27606A321;
+	Tue, 24 Nov 2026 19:04:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nHC7JFsx
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539DD1F000C4;
-	Tue, 24 Nov 2026 18:34:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KheLyZUc
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787C81F000C4;
+	Tue, 24 Nov 2026 19:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795545257;
-	bh=acZycD1lQv56qwrusDLB08XyZ4Og2aZ5TDtWj5mWP+c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=nHC7JFsxX39tcr2Q1+y5Fda1d1WTW8BOf44q37v8vE7f+HCnUQtNd4gxwu8YaC0q8
-	 tO4fapH5cAFwU5Rzs+bpi2DNuhZuM+MhaFfKE9wjXv948TuRYuh2lwYuPxReqE1561
-	 ugMpXahAcMtaUuzBbPkVimq4sydICIsSLj9cLN7EozGW+RXtaeCDzaKVUIG8gx7Cup
-	 qA/L4io7E6ii4Twy1aoNrlmi9zcwv9PnUUzG/Fh91xUEe4aDYJfSazLI1a5cyOox38
-	 NPFHnMaV5w9BE3ZuUK5iyBlQLtZCds0mFqz1vxn1qVQC8stIavDSx4zzp4gJCOekTJ
-	 EI/dDvLKPNwqQ==
-Date: Tue, 24 Nov 2026 18:34:13 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
-Message-ID: <20261124-bath-runaround-dccb788f14e3@spud>
-References: <awVki6lC3SxGfqSl@monoceros>
- <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+	s=k20260515; t=1795547095;
+	bh=Xc3mmrLjrHZi16TZiMxQ4MqsKvdShh/6Zel7neJrcco=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=KheLyZUcMAm6n3dp+OY41OJ7qCsdiujlyqVVZMQSJ4J/4IyLLoNoIOaiKflFIkzka
+	 J4UabCBNGjK0XywJh8UfBbovFubYUHLB9/5+yO06g0I04lkt/cqteyueKwgXXzcZRQ
+	 567aK15BVHoDuc7slk+AD/BuEXiV5FGsUxMa88deuCVlBT5L80x2JrX+UNZGr3nhcC
+	 jxi/RLPTcq1A4kKJRkVmrirbUYsOcNmwx77OonuV+289PCaH2mD6p+MFZICwVCGjQT
+	 xvdmBOjTLqaJCF2yBPNxhCWGx/6pGB/HpEbhWAf/Gk8FjcsRxIZErmQB9o3WR6KMDw
+	 H4jnfR6paXT/w==
+From: William Breathitt Gray <wbg@kernel.org>
+To: andriy.shevchenko@intel.com,
+	David Lechner <david@lechnology.com>,
+	phucduc.bui@gmail.com
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	andy@kernel.org,
+	dlechner@baylibre.com,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com,
+	sozdayvek@gmail.com,
+	Maxwell Doose <maxwell@maxwelld.cc>
+Subject: Re: (subset) [PATCH v4 0/2] counter: ti-eqep: Fix runtime PM leak and use devm_counter_add()
+Date: Tue, 24 Nov 2026 14:04:42 -0500
+Message-ID: <179554702689.2328455.2491613757922405436.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.56.1
+In-Reply-To: <20261109084342.51865-1-phucduc.bui@gmail.com>
+References: <20261109084342.51865-1-phucduc.bui@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -62,47 +67,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="c6BBEsVoccdwpXSY"
-Content-Disposition: inline
-In-Reply-To: <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+Content-Type: text/plain; charset="utf-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=451; i=wbg@kernel.org; h=from:subject:message-id; bh=r1gp2XKrrjxbhJ3S/6G94RPRtaEvUUZZxWKvWrRfA7o=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDNms93cULqsx+TqHYwFzltaxE6HS8sLPwt8Ex/6dUxjn2 rA+VepvRykLgxgXg6yYIkuv+dm7Dy6pavx4MX8bzBxWJpAhDFycAjCRjmZGhjMqud9/WW6osoyt 532n535x2pPVEy0l6oTLfrd+/btn2UtGhvkvrLe90lpsNnnpvQU/bv476x4fpbPh0f4zbhHuU/j +p3ADAA==
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+Content-Transfer-Encoding: 8bit
 
---c6BBEsVoccdwpXSY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wrote:
-> Hi Uwe,
->=20
-> Yes, that works. It is how the gate duty was set before, in ad7625.c, with
-> DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 pulses
-> at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same for t=
-he
-> new parts, but i don't have the clock rate, and without a clocks property
-> I don't know how I should get it. The PWM core has no way to report it.
->=20
-> Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
-> If not, how should the driver get the rate?
+On Mon, 09 Nov 2026 15:43:40 +0700, phucduc.bui@gmail.com wrote:
+> From: bui duc phuc <phucduc.bui@gmail.com>
+> 
+> Hi,
+> 
+> This series picks up Stepan's v3 [1], which had no follow-up since
+> May, with William's agreement [2].
+> 
+> [...]
 
-My opinion here has not changed. The clock is an input to the pwm
-generator, not the iio device.
+Applied, thanks!
 
-Using the pwm generator input clock in this way is also inherently tied
-to one implementation, since assumes a particular relationship between
-input clock and output waveforms. Were a different pwm generator to be
-used that had a /2 divider between input and output to be used, the
-logic here would break?
+[1/2] counter: ti-eqep: Fix runtime PM leak on probe failure
+      commit: 3978b72c1570b0bf60968a06b16659b3847b7793
 
---c6BBEsVoccdwpXSY
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCawXYpQAKCRB4tDGHoIJi
-0lRRAQCIoKJv2Wmk0cmmDwKqfXrHgKUa5XKzWALicDBX8KoUKQD/UkM7ygos5j1K
-Ot/QmgjKEsFwU2NJFvwcSxcUJtZ5xA0=
-=wr0Q
------END PGP SIGNATURE-----
-
---c6BBEsVoccdwpXSY--
+Best regards,
+-- 
+William Breathitt Gray <wbg@kernel.org>
