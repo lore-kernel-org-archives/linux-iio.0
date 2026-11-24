@@ -1,47 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795517753;
-	b=bzFkvU6f1R5WfSwnHSinN+qBuG8Zg1Kg0pHNPLwl269PeRYpRcVyCJgtTr0syiyLPL/l
-	 zPKSc6xcrZeaME3DmsMd9M0/W2sz0/RNxwwoQ4RsqYMlUVagzmCpssghtHhZfv25FrfAm
-	 6Ep0Ik+EtZu+a0HYNeD38puAQQka5nmlfg3QObulb+nfi2Pi2TWvWbzrZmo/VxBvL7GE3
-	 bqakDztZy0RS5O6EVrueI/B308t1eLFLVHFzFEQ6/R2AhL5rCl0Z9xPkLNQXAv0A49Kco
-	 YKWj5PK3r0PwXg+JCEn9CNRF6zkW69IPKtx9+uZmwxqm5EDxINqobns/6fsb7gk9RjQ==
+	t=1795517842;
+	b=3WvuJIEzeeM0t5WzCU9P0dzuAsZBru1sbmkchJtLl3fvUDIssEcOiH/6fGVLcuz6+yAv
+	 wNaZoIvKK6hTN537BpaCicrMitt5vV1qACMBJqF3PhVFbxT9RZE/YkhAE5dbKSWho/N/w
+	 oABCwFc9em17+3tHEy80rISTNFBX+F0jskLvVBoObwy6l1gpJWStU4ZAbiSa5dg8o1bVA
+	 MOqw0xRMQzv/xNG78ZgG0gcvF0p2BBaLZvWPqnHpnGBVG8wxgyVzjhWizmRyvhR2NeoWT
+	 DxH2xHSQvQaxjhuhBVPmzdYTJkxHW/s3Eg6yyhYqRWE71zJuJGCvIJGMQEiScrFoq0Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795517753;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=F9m33HuBvYVdhQqa5lYR9CQe3oyxXgSAYLzRzQYmGJs=;
-	b=ej0nQDXehASSQGUaWyJRTPSR9OoJMttmqxAWHX+fakYb1yzYtJBuxc4w8NXglj/Zg0oN
-	 Thqbtr/Hh2dqoBcoWnThBWfo25wEgf9pOfcAlWQlvNJqm9aCsr5PyM3a1AFCvXtHWrmw8
-	 5/cTxletnXN8DtNxZ+Zip4YK8EhkCt56OzTJ+DlARMZJzeEkuwcv99LQ8xae3GZ14ZSyO
-	 FTa7W/qTerEkX1lao8/ZJgQAWak+rhyBjds8Ud9BpBvSLZp+SdmEfUvaBTr6T3G7ONyX7
-	 4Q1nBvEgQFaKY+FwUMDzNilR9S+Xh0EzArZoHC0EL/IWG8teo/+XA95aDV/3RNsOG1A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795517842;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=P+PcCsm4vdxJHSzNKZZLeBWvXuD+SwiVLNGAujPZtS8=;
+	b=ze+EhDQIsWxL4QL9LCKVkW6ExnCovGmY9YJLXRFUWYZZ+PY7AVAKN8SDRLaUmAh7QbDY
+	 HbzkSgsvDF4LJObkNmJH8FG4U8UcXQupjFPHy8oj7++Z0hL+crx2NFSIZdqfe0iYt1GD3
+	 GNBGIclfbfWL8CGlbxJxo/hGPWhOuELzZYCCbvUVH6u/lh4uagjOgMKHNhWbqVy6zKcDe
+	 p+7Ed/vPuV71sZIkNJVHSRJV9i86PNYOHsZc9Nh/JydDuWsVWjuSOGdvaHq7+5W4U+piU
+	 HjJ7CKv4QdnGa85xUdhxU9Db9XWo0vTbJkFWrWEpnqJggYFcfJMRiXaLMaks3qshHvA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="KX+MFRC/";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CNElQOQg;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4981F606A327;
-	Tue, 24 Nov 2026 10:55:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA4BD606A331;
+	Tue, 24 Nov 2026 10:57:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DA4BD606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KX+MFRC/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A44631F000D8;
-	Tue, 24 Nov 2026 10:55:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795517752;
-	bh=F9m33HuBvYVdhQqa5lYR9CQe3oyxXgSAYLzRzQYmGJs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=KX+MFRC/0+65PpE31zgBan2zyXYDmomjuiKFnD9zK5wndDpok4rE6EARXBWGDuFkc
-	 k9/JQkSRBfzv1mWko/oSQ0URacrL93VYnamBCCRDBKpBfMdmbOPsgWCazRYcn1Mj3K
-	 F8LGcuqRXe759tz+FjQ+qGl0+wgKeVTCuTHuWMfejdGx0LA1hPN8mk73otldTL7Puw
-	 fus9dS/rWKLS8UCs9G6YakTTQcRyHhGpRCiIOLs/nKpk7AIg46UEoZwmVfnsEUG6TN
-	 VLSvPA+mZD07eQdWJfMu0tDJdY8pg8gXXkFMXEXjiizWAvoScitAnpJ22gha1P+uBu
-	 asAreJKKD+eSw==
-Message-ID: <508193e9-0157-4ff6-8276-760463ec5e60@kernel.org>
-Date: Tue, 24 Nov 2026 11:55:49 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CNElQOQg
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795517841; x=1827053841;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IWUdh6wlCG1cIm2uLZBl4Op6usA9RcU9a8mRfnfZlxc=;
+  b=CNElQOQg1S5JKpgqozx6LR1SgoXBrcrUvBnmcwUEu8kFjUtuI3w9paHY
+   RLYCF6KjGQhyAb8+pCsdZOkRZiBy/CexacomLtW3erjqE3Ogl3n2HWUPd
+   Fp5Oem2dB1Wmy2oBKrVum2LeVJ9GiHfl7Gyxrkn5ONLcXkU/HGeb5WjuZ
+   DdqzgP/3MrQYLNU/BXiNtxUKPsBfWXyYDUMguNS3xg6Rb+Xgn8csUiEKy
+   Eyb0qnyD4L1oS2J8ejynVxkiv3sR4zecDiA0EaU3E+mbnGN0ZEWBpG5Ho
+   cWcHpMWEzFdjwAAPlr27PcfUUt2j9Hlq7JJJQWTFFCQFLrNdEtjXQe91x
+   g==;
+X-CSE-ConnectionGUID: /B51pEUVSZOVx0VUiNhq/w==
+X-CSE-MsgGUID: ekzgqh8uQSWW/Av+Tt2Aaw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4243746"
+X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
+   d="scan'208";a="4243746"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 01:45:41 -0800
+X-CSE-ConnectionGUID: L3TgT/dfRTOWYVaaU1eO1A==
+X-CSE-MsgGUID: fZTIEnI4R86sg3+P4xOS2w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
+   d="scan'208";a="13525408"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 01:45:38 -0800
+Date: Tue, 24 Nov 2026 11:45:35 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lucas Stankus <lucas.p.stankus@gmail.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Petre Rodan <petre.rodan@subdimension.ro>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] iio: debugfs register access through regmap in the
+ core
+Message-ID: <awVcvw3gtg3jNEgY@ashevche-desk.local>
+References: <20261124065016.185124-1-zoone.rupert@gmail.com>
+ <awVPu-reXnQHbr9y@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,52 +89,36 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rupesh Majhi <zoone.rupert@gmail.com>
-References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
- <09328c36-a32f-488b-a2c9-76fab784d259@kernel.org>
- <awVq-mE1H2g01yS4@ashevche-desk.local> <awVsI5KfsvEruJYG@ashevche-desk.local>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <awVsI5KfsvEruJYG@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <awVPu-reXnQHbr9y@ashevche-desk.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 24-Nov-26 11:51, Andy Shevchenko wrote:
-> On Tue, Nov 24, 2026 at 12:46:22PM +0200, Andy Shevchenko wrote:
->> On Tue, Nov 24, 2026 at 11:17:01AM +0100, Joshua Crofts wrote:
->> > On 24-Nov-26 10:44, Andy Shevchenko wrote:
+On Tue, Nov 24, 2026 at 10:50:03AM +0200, Andy Shevchenko wrote:
+> On Tue, Nov 24, 2026 at 08:50:10AM +0200, Rupesh Majhi wrote:
+> > More than 25 IIO drivers have a debugfs_reg_access callback that is
+> > only a regmap_read() or regmap_write() on the regmap of the parent
+> > device. Patch 1 adds a core helper for that, patches 2 to 5 use it in
+> > four drivers and patch 6 adds register access to dps310 with it. The
+> > other drivers can follow in batches if the helper is wanted.
+> > 
+> > The helper finds the regmap with dev_get_regmap() on the parent, so it
+> > only fits drivers with one regmap there. Existing callbacks that take a
+> > lock or claim direct mode around the access are left alone.
 > 
-> ...
+> Nice! But I think we want a bit more to do to prepare for this change.
+> I was triggered by regmap.h include in IIO core.
 > 
->> > > +#if defined(CONFIG_DEBUG_FS)
->> > 
->> > Veeery small nit, but why not #ifdef CONFIG_DEBUG_FS? It's not
->> > as if you're checking for multiple defines.
->> 
->> Or even IS_ENABLED()?  Let me check if we have a precedent in IIO, I will use
->> then the same or most used style.
-> 
-> FWIW, iio core uses exactly this form for DEBUG_FS test, so for the consistency
-> I leave it as it, and if required we can fix this later.
-> 
-> $ git grep -n '^#if.*DEBUG' -- drivers/iio/ include/linux/iio/
-> drivers/iio/gyro/adis16136.c:66:#ifdef CONFIG_DEBUG_FS
-> drivers/iio/humidity/dht11.c:87:#ifdef CONFIG_DYNAMIC_DEBUG
-> drivers/iio/humidity/dht11.c:235:#ifdef CONFIG_DYNAMIC_DEBUG
-> drivers/iio/iio_core.h:19:#if defined(CONFIG_DEBUG_FS)
-> drivers/iio/imu/adis.c:227:#ifdef CONFIG_DEBUG_FS
-> include/linux/iio/iio-opaque.h:73:#if defined(CONFIG_DEBUG_FS)
-> include/linux/iio/iio.h:1010:#if defined(CONFIG_DEBUG_FS)
-> include/linux/iio/imu/adis.h:573:#ifdef CONFIG_DEBUG_FS
+> I can see the first patch in the series to split debugfs bits into
+> industrialio-debugfs.c first, and then your first patch builds on
+> top of that.
 
-Fair enough. It's just a style preference I guess, hence the very small nit.
+I just sent one separately, feel free to include into your v2.
+20261124094502.557175-1-andriy.shevchenko@linux.intel.com
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
