@@ -1,99 +1,69 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.51
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795505388;
-	b=ugs1MzfslD4M1T5MFCCxjHW1QDdN3gRFYXNWLSjxhkigvuysUQ5YhpQ55VIU01R56Oqa
-	 naHLKziBXtMGKIMKfbYTyCQU7cdKJZw3I6gUh8Fk+5QHOgMRjHSHZ5EWqMC88bN9FSS7O
-	 fP+KOXotziGBZCE3hbbAMvCsd19TauMUgUmsaN8jghDlXdY9KAuL7/EhFxu/K+JfYMQxn
-	 chJDQngyGkV3DoJgiu1Ot/fEXcYM6E6yOLrr07hNWs2KiPsCpJpuS1kHJP5V6B9LmNadF
-	 5dYrBmP54OkD10IaGnvNegZLV/4NYKsZbRYW7XolUtiDQ1d1xwJufMJdzZbSexmQf+A==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795505388;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=HHoAin8im1fnI2MFH3oWDJgzqw5jsSnp9Q8nmC/cZc0=;
-	b=B+LKMKECorN25NEEqJFVRGIbRn8n8vWiQfbGQeqm6wjJ4reNj+HmUHlOEy+FD/FsEBld
-	 Ng1QtWvJWnCx1EOhgPkvr1MVekRKyq+JEiLsOQ0rBrAako84ouegsakCp77tZPjWm/4iR
-	 rNjLASkdaKHIDdr3ULO+WWgWTpTSTFvCC+dR+iWiTLtanNtqKk9ixj1NMBoEFzM5hJQGo
-	 an4qWbM2Mm5B++ARmOs/528tHMpDmMhq9N9hsKrzj19jx1cYV2yuS1nRQWMuRP8ckyHiW
-	 5fFZX8bkUJOhBA9bwsjfcHIly7QJfXPF8WuZ9tqTpATIaJNG7Pmlo58SE2VY78G8vhA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=jAixZFu3;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.51
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.239
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795506183;
+	b=yEGilwj74XK0+zz9/XGasKqloNXBvKjlwtthtYx37l1Fpkao/HCpksABFM2b5l7lSPLo
+	 vImjGGzkt9MyBb61bfiK1rVd93B8VkHkf76nXtF+39bgo84tI4GzFRBndd3hFO0a+KDCG
+	 qx8bImz0woxCiEo2Lxt5laBtupI8YuzlBxlVFnsp6KQLX8pXBZpmQ7y98zLuDwHQRqyNr
+	 6LRqTuCvL09gki15HmkrK1TFPb7bA+ImwRFdkWa9CJukX12L7UVejf58aWgZ8kcRUT/Tt
+	 JStu9CHQ2ODvh08lShv0/kyfBbSe3QtVh07MnktVe5Z0rQGkVn5spd4/WpEr4iYC73g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795506183;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=ofMeRTUK/d++vd0VVb6NYwvSqG1R2k68vtR0bdVpuMU=;
+	b=XtwgDvGvN8mOcv7s3DrEDXfDKWsS/XiKW+4qyldSgFtwPF6AnBoBHSBdtRI9UgNHRId8
+	 RhS/ikGCkfLihtdg3hisDTHLbAFRkq/qTZgetnyjfWIKm7bt8ZxR1KhX4RF+PHOpGSvP4
+	 4NfRGYqdyJgnhKtvQ0iDgwngNHQoteX0DgGu9lX9s0sSlOMyy/WKsDtvmupI+/IiizEaW
+	 ebf3wYgQENomCjeFCMEnjAOEXH054sAfIOml11/6pUBz/H4QejRjBgw4mU4DSoNVoJ3LS
+	 840nOykmhtThB+7/CdtiF7nsvW7DAu/+JXE3uYjGuvxBBpUYTrsE0GxuL26Jg5DCW6A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=llM368uR;
+	arc=none smtp.remote-ip=91.218.175.239
+Received: from mta0.migadu.com (out-239.mta0.migadu.com [91.218.175.239])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE635606A321
-	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 07:29:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CE635606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D003B606A31E
+	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 07:43:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D003B606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=jAixZFu3
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5c1479be604so3105782e87.1
-        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 23:29:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1795505386; cv=none;
-        d=google.com; s=arc-20260327;
-        b=GCEioCIJL3mOlV9nTQAODDyCY//9P3ojvXLlIO3YQDcwMl2cSbaWUQT7sy7wuRs76V
-         5toEUaU8tgcCYe81KSybFJUNTtr0IaME60RrSlzwRc0sbxPfC37TJOAtIZ3/SrBkSo5k
-         S6S05g/FlUDD7UOpR/N2kAUybtj7HXOXWzxi7gHEm+yuaKKRf36tPHRwP+T8tiU51CbC
-         pKDzXd1CBKhElym++/IvZWun5i9kF+pMiFDsfWXNMePp83yW8wYJInwWMbY++SC27StF
-         ibvyHAxg2yQQH1+7tl2yUmjs7jnu5TdQ2JFL2wRFsXzXl9ajy51nu9tWfiYYjl/zVvUW
-         MV0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=HHoAin8im1fnI2MFH3oWDJgzqw5jsSnp9Q8nmC/cZc0=;
-        fh=5nImarzK4Tod+hDRe8ihZgLsmwiGDYS03GL5GENvf4E=;
-        b=JquACz9luYDfnjT5q4c0I0Nk0acojJApJ8kjbLzce1LrrhNm8VfhhBDFUbC56GN3Je
-         nSNx5FEZeeYjyj6kVYZrkwhi40KaQTxrXfjdAC2fPvisUJg26MIdPqiLuHi8LJ0loidB
-         6E5q2+pwPqoxNfeCfWN57XhywA6guC1gYv5TfUFgruV98N1dA8gGkhd+Bf5JQ/iYbY00
-         hQvYUKZlv2+NSLzEldhW62q2qXaniaX5u/2PbjZI0zI6DiuQQdYB2pUwTzjypv5BfSYc
-         c+Pj54P314YeqleLWmhgnAd1qnbWizeVC0duF3A7BThW2qHRSvHwE/OAzd7jvbX+v9D9
-         nvRw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795505386; x=1796110186; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HHoAin8im1fnI2MFH3oWDJgzqw5jsSnp9Q8nmC/cZc0=;
-        b=jAixZFu3VW6Q8y8h8D057mrQVPM+4cfJDCrf2C7P5dF2CiCwvXa/9S73S8BIyfE+w6
-         nMm3UIXGY/ki8oLCM9C7VtiExP2TlTwc2IqxtH8JA12fJ+5xoZq6fOmNYct4M3xDDnWS
-         WmSwRuCzMTiVnVmK3/oaTSV9kFnSDqJIDKKNwulJL7/NjycKbtgB+PIhHexyVbzauNKU
-         iv5+2iaDYE30aqXcMe5h8pgUQ6nb4cHD1wBf37onkVkCFCYsiGSxdyYr0C357D4yU+E1
-         BlSsT0VLLI/aZ9pGw1OzkSpV2P6r1I7pF33O6VmLt549WoNiM/JHhBAD5oii3QinZRUE
-         zC3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795505386; x=1796110186;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=HHoAin8im1fnI2MFH3oWDJgzqw5jsSnp9Q8nmC/cZc0=;
-        b=RGnXpdW4DB0kxsLlWjcaqOrR1j1ozHCprhYys2W3nSrL3ukO0fHl3s73PobTEovPgd
-         M27MonGqTSUKFp72CX9l/+wUmviMEcn++ORzN0/6NsCCFP1TSd215jjJFBSTycQaUGSH
-         hLf1iKKuu+NZ9Cyta9UWsJNoeT+rIBCIi+c2uSygfZvcJ780DUapzhLKKsxUrsdsWsna
-         qlicsyhVTPiYIvQvjHfrQUyS+eWEpxS8f7ozahDMVJ2eT5U3mxEJE1S9qCLEHwlYcsRx
-         pLVoubzZeDFl26JlEz1OG7eozbyCBv2S9yKuZbTKnTEO0vzsSWwv3yyvbZbrmExCyIns
-         EKVg==
-X-Forwarded-Encrypted: i=1; AL+hErGytrFXZnBJ+9Zcd6s9uZ+57z22nM9PIAvAt0pgmWAVjlChFcEVhDEjQal1ADKdN+2TNQhL6LVqcZQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/nPVSmq/XKdNJc4yKnujCUfhS0urZdkcD9xNMIBJfaIttq8/u8
-	iMk3Wa4Gn03qitZReeaOGq5tgAZ6m9+t9IeI8Oz+W7H81eeJIcr9UxuKuWDziaKjBv91Borf72y
-	Y2XWF+Y8fd0n8Txx+IYs0IAcm5dCeHiM=
-X-Gm-Gg: AZFdTZf50X66C+qa/RUY65S+itKrMyycvnwLWg0CssG6zye5LawLfGOse47ZVWRuwG5
-	YDG3SIcTitXnzRnJbHzR/+KgH+Omtb6Fhn8Zlna+iIS5xRNxwKLXZmLuJpC5ZPDa1k75w3jx8Va
-	kyfe++zisfmhZx1D6WNvJ3BarB2Mo7QQ6hqShb8lTc4wRGE5KcoxE+EnjsrFOCoSdyBUOlWkozf
-	fNFSLgRAcXmZOnGI3+1/v2y6WRUyDpSiDZusvBuKcUXQ77ihB4iiKGwq7hrkGjDWLVob5VjeBar
-	7RlmYdWdTkgIeydKUF9AqRYXe2Ox17zaFPNTQVXIItgwwC67tchbRlc6GWXiNg6Di7STykZbWQH
-	Rx8q0b4RVl0qqpPBJ6bidGut8YUqr3mk2e+8=
-X-Received: by 2002:a05:6512:3087:b0:5bf:e540:8606 with SMTP id
- 2adb3069b0e04-5c1bc898e67mr4261475e87.59.1795505385842; Mon, 23 Nov 2026
- 23:29:45 -0800 (PST)
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=llM368uR
+X-Envelope-To: linux-iio@vger.kernel.org
+DKIM-Signature: a=rsa-sha256; bh=nUm9h5NzIsHA719PM5aMKgjtiDgEeXdY3gm36qPN1JU=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1795506180; v=1; x=1796110980;
+ b=llM368uRlmFVfBP2Dh+llK1cRQmLQkZJeCtK//yrYnm4NIdrbVZ66yOBt/Hoy9sNl30/F6wv
+ 4KKWh6pcTyjIMDzkW0IVaiwSffcCGBmNB18DbWC4pRHgeO0iYpd6+fMxy3PX76BlssAlEGjsumk
+ dmF1/44D0JsdPKfiTNuh3lN0=
+X-Envelope-To: linux-iio@vger.kernel.org
+Received: by smtp.migadu.com with ESMTPS id 48930a964aa0b930;
+	Tue, 24 Nov 2026 07:43:00 +0000
+X-Mizu-Trace-ID: 48930a964aa0b930
+X-Migadu-Flow: FLOW_OUT
+Date: Tue, 24 Nov 2026 09:42:56 +0200
+From: Petre Rodan <petre.rodan@linux.dev>
+To: Rupesh Majhi <zoone.rupert@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lucas Stankus <lucas.p.stankus@gmail.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Nuno S?? <nuno.sa@analog.com>, linux@analog.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/6] iio: accel: bma220: use
+ iio_debugfs_reg_access_regmap()
+Message-ID: <awU_3xHeImTF_N7n@sunspire.home.arpa>
+References: <20261124065016.185124-1-zoone.rupert@gmail.com>
+ <20261124065016.185124-5-zoone.rupert@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -103,56 +73,61 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261117-regmap-kunit-val-bits-v1-1-a1cd02063217@gmail.com>
- <av1qOFxolvDhQTKs@ashevche-desk.local> <a93f6d11-22a2-42db-81d8-297240c9bd2d@sirena.org.uk>
-In-Reply-To: <a93f6d11-22a2-42db-81d8-297240c9bd2d@sirena.org.uk>
-From: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
-Date: Tue, 24 Nov 2026 07:29:34 +0000
-X-Gm-Features: Aa3M54ph22eAMFVDyRykrIGrEABI6AhQfgi6d7a7zVpyiMmcsmVRWIA2hsRMJvI
-Message-ID: <CAJsKa+4KEU8ejsDvj0=qCh3=XC5dZZNv_X+Saco4Ln3Y9q9dOg@mail.gmail.com>
-Subject: Re: [PATCH RFC] regmap: kunit: add tests for values wider than val_bits
-To: Mark Brown <broonie@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Johan Hovold <johan@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	driver-core@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="dgE9aJuT6iuBwFGc"
+Content-Disposition: inline
+In-Reply-To: <20261124065016.185124-5-zoone.rupert@gmail.com>
 
-On Wed, 18 Nov 2026 at 11:30, Mark Brown <broonie@kernel.org> wrote:
-> On Wed, Nov 18, 2026 at 11:04:56AM +0200, Andy Shevchenko wrote:
 
-> > Do we really need those explicit castings? I think they are already inside
-> > the byteorder macros. Also we have be16_to_cpup() and le16_to_cpup() which
-> > might help.
+--dgE9aJuT6iuBwFGc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> If we do need the casts that probably indicates a problem.
 
-Yes, the buffer was declared as u16 * while it holds __be16/__le16
-data. I will use be16_to_cpup()/le16_to_cpup() on a void pointer in v2,
-which needs no casts.
+Hello!
 
-On the main question, Andy wrote:
+On Tue, Nov 24, 2026 at 08:50:14AM +0200, Rupesh Majhi wrote:
+> The debugfs callback only reads or writes the regmap of the parent
+> device, which is what the core helper does.
+>=20
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+> ---
+>  drivers/iio/accel/bma220_core.c | 12 +-----------
+>  1 file changed, 1 insertion(+), 11 deletions(-)
+>=20
+> diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_c=
+ore.c
+> index 23eff578158c..d2f21c0ab491 100644
 
-> It means we can't enable this test cases without addressing the underneath
-> implementation(s) of the regmap. I think the proper solution is to cut upper
-> bits on the regmap level, so the cache and HW will see it as expected.
+passes all my unit tests (which do use debugfs regmap access) on both i2c a=
+nd
+spi sensors, thanks for the patch.
 
-Mark, would you be ok with masking in the core? I would mask val at the
-start of _regmap_write(), before the cache is updated, so that the cache
-and the bus see the same value, and document it for regmap_write().
+Tested-by: Petre Rodan <petre.rodan@subdimension.ro>
 
-Some regmaps leave val_bits at 0 (e.g. ad4130, ad4170-4 and
-phy-cadence-sierra), so masking has to be skipped for those. The
-reg_update_bits() and reg_noinc_write() callbacks do not go through
-_regmap_write(), so I would check them separately.
+best regards,
+peter
 
-The alternative is to reject such values with -EINVAL for all buses, but
-that could break drivers that currently rely on the formatters dropping
-the upper bits.
+--dgE9aJuT6iuBwFGc
+Content-Type: application/pgp-signature; name=signature.asc
 
-If masking is fine, v2 will be a series with the regmap change first and
-the tests after it, so that they pass.
+-----BEGIN PGP SIGNATURE-----
 
-Best regards,
-Raffaele
+iQJPBAABCgA5FiEEGiKYHD4NvFCkTqJ3dCsnp2M6SWMFAmsFP/4bFIAAAAAABAAO
+bWFudTIsMi41KzEuMTIsMiwyAAoJEHQrJ6djOkljvhoP/35lNBdRKJKcMl0l08Gj
+J0TxKq+1Ky7NjIocC9ND2KYZBadBWOn7gQWXyExKq9X7Afwoa/W7wVUjrdsM8RhE
+JAZcWLyf67x/2vg01Vmvqmy2PfBdKu53H/oTKu9er3exwcLRRn02gAjHk06PGpv3
+3q58yo+nbHpiW6RoAD3LH7/4W79xAdMIAUUj/KAepEswL6C6M3XYzIazKI+AdUeJ
+CD0pAKL5ftTTW05lJZpA1NLU1g9Y8ldH8vRjpRKKqw4qNNfSNSQGO2X33fOoUx8O
+/uYLd/kxmf7gZe6uX8rxdyNJE0bTK5aDofcTjj4GBw5vgsGPXwubmpTij2V27Lf3
+qs1jMHb7te/X2eSzIPxojitu73q6Gwk4lJcIr83PpJQIV4fr+akho5V4nffD+SKO
+zk6ao1Uki8YUARVNx3k2KIiUgoClz10EPpYNWTD6G5ShcOYIw86oi2FSnrKNY75A
+JaatuLTYbmFkcJ+qrC/KGhaJMsca0gIp+0wcfATIko0sd4oHEa1fejlh+hvjAnFP
+MVX6ljDu+DcqVPgPbwkywAzGhg9nB4/en7ir5QhJCFZgtmEsOXm6ixE5NCkZ7lgF
+BzpsC7r1XXUVEnL3eICeAMPDBxvB9wANPy14VE+oZukmRM7IirgnjN5o6bbGcMoW
+qWQrXppWcGjzNJ1INevcCFec
+=+nKt
+-----END PGP SIGNATURE-----
+
+--dgE9aJuT6iuBwFGc--
