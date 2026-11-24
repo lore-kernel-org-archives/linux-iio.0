@@ -1,84 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795503024;
-	b=p5U3Qb+hfEjIXoEN6jOgV6X/yTBXdpDjCXopM0dsVTmsAGwB8kxhgvrisGRAxB7yhsKV
-	 Ycd47DrDhhZ7TTj5A9D6m7BPwkPcz7qU1WUjm4Gjm/XLirh3139p395FVvLRRG+9nUayY
-	 /abAtG9emDAXJZjVzOnAXbl3GHG1qfRybbtFOHLpyw2BPC8WiKliuRJ6fSOCNqZ4nwmVT
-	 rbRErdPyHTDzqDLpUTX8+aDaWV2MemAoRShlVSSxEJfjOGGCrx76zBqxzGKskSMCbY0hY
-	 FcmUaLsYD4oGIS8GtY3d0Yt9Cvu9yvlihQdRBMD0dG70P67kxARBV2BZNOwyVj40EQg==
+	t=1795503026;
+	b=g1VQwq2Cm5wWjfpidZGUMuz4kN5CAx86NeC0q9Jp/widdEPwFKDFRCSweDpIkH2j8JLo
+	 qcuppBGt9fbMWN6Ec0dwGcgl8lf9pz9lxCfdQH94FjIaXUbb59KCMWIFmEoPt6dIVj+kD
+	 1qTBzFwW5RpkL3/BvDh8slVG+elu9vkpjmTsbm8u/f8BwUjf1aAQHncpwMS7Sg4b7SlxZ
+	 QxU/C9AoMWY0N1qmCYJLTCisv5lZ8iJLoRudWjFNcJZsqlydRSq/lvAgT+HrW9MKeuBbP
+	 NZ85MztviDLIXEq7SAYB77ULaWVgjocdlLw3ukh84FNJ9T3SgROZxmOb0w+Tv76319w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795503024;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795503026;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=ojqsbiWlKNfr1mrx1SXA3SitSn0FIQVstV4SumJAAn4=;
-	b=z/ue1/y5eO0r7t2H5JElgoOFxhkAxj2+Js9glga3lGJSAPjZ/mQ9KnKp9Jn0XceEpa8B
-	 bUqjCdnu2+s533I3qCj+v7LVxqmYM/MyuclRSZXmT7onBYO3aDtDjnSSRxZXcG0aS44oB
-	 fTvewylOywo+54HQA2qlzL6ZDGGU2Ep7kndazAL4AdqU0D2MrlydLNlqJMn07FTZ7vWEU
-	 dvtRDPolPAmI2YzKW1wKwEFgucayOrbSAsiPALABjR01R1QwiIuIAfgjjB1TtS+hr0agk
-	 SC5V15FfoQ6RjmlgYFRMf97eXE+D4suXgIM74/ONMnhmN42fr4TvdHqTYok5j8lykDA==
+	bh=nWMZNkQRC5jUVx3esiXyQgwopDn0rW/+vZ2bONYX6sM=;
+	b=sRWaFGSbwBCNIk1jrra/GLPrB5Y4PZrk2nPzSBJcEqTVGaqMvVJVNwM5mxBZfTCyAYCj
+	 +6tqT14g0GU3tS/IMnHvqRe9QYSs2sUGqCp8EpW+InDAyhmXF4nLfNwlW8cwBOLCr57jO
+	 9RDt+/g0xyH06RaWVhds9rFrgxQUgXv5XvhxWbz+FYiY9/5gXZpPwN+elVMPtR7WIKLks
+	 J5D60WObTnMlZ4T844+4tOAw3t+88K9ceeRCdqGa3ZUQikXg/AY5EbtiPAXqcAIeBQ+rE
+	 HzCJmlXG/aUIMpQhTOLdrATmcw8L7DsK7TcUTkpQXBBttbBvHshXc5I/93SNLx5k3OA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nVX5ITCv;
-	arc=none smtp.remote-ip=209.85.167.52
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iisovWYC;
+	arc=none smtp.remote-ip=209.85.208.174
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97232606A683
-	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 06:50:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 97232606A683
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023E7606A6AA
+	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 06:50:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 023E7606A6AA
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=nVX5ITCv
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5c14f3dab66so3376537e87.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 22:50:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iisovWYC
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-3adfc004920so38692001fa.3
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 22:50:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795503022; x=1796107822; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795503024; x=1796107824; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=ojqsbiWlKNfr1mrx1SXA3SitSn0FIQVstV4SumJAAn4=;
-        b=nVX5ITCvP6SU1Ep+7c2AwUzdtcXBeX/d35hdNdlsaK/r4miqXTV2L6+9wgR0m5mK+8
-         /phdqqYxCZDjpkHFu0KL6rpvEzPF5CNWuRtOBcgDXZ5q9J2/CiguzYsz28FUD9zM8AkO
-         1+e/U+f9/xKBxSdh5d58dnHjQ5BZh345u/wiid37ZXYDNfElb3GzYcwTI4yQrXB770Am
-         OFSZftGqSgzcbQzYqAudOAtm62nriJpDM4wYkcnlTris6njYsVyVOyFJz2y7HIjT3F7q
-         Ng4gobJONiFXe+HpBgvqV1/pmoUY1f2v+fS6mDCo5s+DCAEh5GhHlMQn108xCX6aoAeN
-         skBg==
+        bh=nWMZNkQRC5jUVx3esiXyQgwopDn0rW/+vZ2bONYX6sM=;
+        b=iisovWYCGb8jYZuLMhelnOxG2FxoVTuoo3fPFkhnN+wnLKZ9CJVF/9oiQrWrKjIuxi
+         joFuM5G6z3vi1NLYNXLf3ZwQVQu4cwrHPbZbDIYAysNNzKfl/31wLQLsrkMauJTQFZ+m
+         gaAm+LDIStJY7gGLWhtyp7qnlEQdmbm2OlhmXUAQNu+W0+odg7MMl4mS/HV5UKZUsx3I
+         1XOtGHdx9YbimrBUaZn9hcarQqWuZXOMt/eGZwtyMmm1ZHRC8r5v44UV6E+zkpOYfanW
+         gbnfxpK9FKx6h1YTr0m8G14TkWnCPiD++XaWH8cC8a+Xinsix8984ufgal9+DNMFVBCC
+         AvFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795503022; x=1796107822;
+        d=1e100.net; s=20260707; t=1795503024; x=1796107824;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=ojqsbiWlKNfr1mrx1SXA3SitSn0FIQVstV4SumJAAn4=;
-        b=wT9X+hAMGHMpmTJNY8oJNw3red0TKK8LQD9XHeXbPh/+VqyXBPrgi+rOuVWpKnToBM
-         GhU2lmdzSdy5G8tuarmtGEmK+MZP88RNUwXu/1DgYmJ560BMblL4WO2v0EjGa7RAYmkf
-         rnayRKbbvWutwyP8yBEhsKv9IrZyNFL7mdQcPVAq3+NOlI+JLSXXbL1kBv+SZjMKQUOd
-         JyZ5uuJX+A4EAvJYL/gGJYPCXhSrYkZ4EkbdoVD5oSbLRneljNSu3+k9a3cKSW6Kd+yt
-         Z/Q2LV2lx8bZwbnndoBjKeQW/uSOFPT1XXf741JbG+jjhFBNvHsihZi5rehTJAGCIYpX
-         lU3A==
-X-Forwarded-Encrypted: i=1; AL+hErFPiS1c957AaFcmYJ/kaJmzCStWJ9DLo0VoZ6YnVNR3BYgoAZGxTA1HdGnrbSPKbO14lXPxadzOVeQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/R7wS4el51LHx4tENmwOCXs4N3AonSyfiqPS5ZkoThOpOMUMhP
-	W+WuQq59iVKnzS/NR7+7+FMRvXmOjEhjtb6ZcoY6EqWz66C1E+IIaJPR
-X-Gm-Gg: AZFdTZdP7CEdUnW6satkTHDscmQxXylawWPmKt2WRSy08EgrIBftwwGv6of/UlqSlEu
-	7qqB/5LnKlHlFhLm3KU4g3OR7W9QDNuDnjobUBv9NVS/5ppZ2BEz2mDX78nnYH9v7ChACPTXv4K
-	3uvtNMTp6xUD7kvlP0pDqcTKPql0zBXcpNBhM0zxtyZ91mfwsqEaBIQIjU11gdETgVC4UgwwMQw
-	WBts58vEO7sVoSmLX1YwH1u/PUO4GywJHyPXYVBbu0A5eE5d+Z51/DbHwmaZhS28EiVclw4XMCy
-	ATCm4Qjsbsw5ZXE4GJzdLrOJjIMmDWZ7z23jYc8yld8JOBl+2gs5+YbeLMOetQtqMBWzj4PYSB8
-	LkfqlHYkm1b5o+0OZQ+lv+VKb/t4WB1liPBXMBfJSFxZbPlGZWX7cuRPSUGFxdhHpMiPx1rkZUI
-	ny+VJltaBrvyTgskhjUX6Sj+XEoByNZ1FOXW95VVWwa+CEnrxiW5SHAUrpaniQcAd4lTXfSL2CN
-	rrizt1K8Dn9gOnO9ULWwS+rAmUBnOlzccQ93Zd9l+Xs0nJT7+uY0d1+J1YDIRhmeWhoU0Ska2yQ
-	eDp4A2BjQ2XzjF8b/ThVuszPGtJiNsFUHDkwIdHZc9U4okI6Q2/NDsZ5M6hoGSo2rss/mg05M29
-	IJhFWl5kAUxeAXiTpBJ0MBTvD/q+Bp+oci8L7KA==
-X-Received: by 2002:ac2:4f11:0:b0:5c1:4e10:20b2 with SMTP id 2adb3069b0e04-5c1b7cd5ed0mr3313092e87.45.1795503021696;
-        Mon, 23 Nov 2026 22:50:21 -0800 (PST)
+        bh=nWMZNkQRC5jUVx3esiXyQgwopDn0rW/+vZ2bONYX6sM=;
+        b=JNsTIX2x9rsS7JbL9mYuUS8AIWS1ZBIpBt6OZSOozI/lP8ZJ+5KPiO84GLGjPaJFW3
+         yZkIaTiNNBL7gdNLVZ+58BFYJidJpwb+eHDd5TmJRqmx3fimXMvfOn3XqQT/4GHIyw0m
+         etu27K9ZE0cHcq12nJLaKnaNlIU/gnE49ZvTzj5dKd84stNikgPSEM8dXmlz4DfDSFpn
+         Ngfn7uWmR//Pw41w44WAaIBQfMhtFcYcPWpRGDu5vpls7w0kdxA6YMUUA/jB5HeykT36
+         /DP9nul8VsDv3fOR0rBLauUCx9bzBxGVReiwSWkj3rNqce3ctZY+zyTMxCA785of2lXe
+         AnXQ==
+X-Forwarded-Encrypted: i=1; AL+hErFrp/ZdLEH7G2CgxcZQQ7TGDRVBGiH/If8y8cEdbBc6zGaGYg1wV9HtKBfi7pz/cDIu9q23G/LzCqI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9/0oGCwbmEuCwaS4FiiHNTEjgfTOFFx4M9fzGQ/aFyf4yfNQnh
+	LI8EUDjhUUzdVzTt2DzGBDgcVhwVHpJ1kiDgMvPGf88KXNt3RELjPFe0
+X-Gm-Gg: AZFdTZddTLIUFNWpw4qDfv2s57gQ0DM4tcSZdO+wVwQPyLd5Qq4j77hkR3ZZ4AGNnuq
+	HpIMM3L7JgK8Hs4bOeCKyjVIU16w5dLnGm4fKYGlb98WulGvlm6+v5Oh9aWOZnlq9B8D5hW1+61
+	ALUbj3k2HD6u7sazsiOVPq2calst4MNrThw1jRgm4UFpb1/5rtAr53u0aYkhlgs7lyySj1Ta8uV
+	rhLUoNiwapCCL3HyN6DvKjnB6Xi7ETdIVq97t4RbY3BMMWjrd6wPLdpvuuTjmC5h6LtDPNnBcNV
+	J3UIXeLx/R3LGV8ZP1nG3cNxZjbP7p0eS1iviwTZibSSajMumNvNIsWjX0IqKgcZwWrDSy9xMzx
+	efOs0saeQyu9L0tXJ05ZWOUohLdUsxfkb1+7kLAUH80PhfrexjeOAZfrIVAwUU7m3AgXgytOiPO
+	CgZ3v/DmIgMu48i0ArOBRrQEt+Fnt3eDKMnWztJHK4XA8H0MixqUmbwuQ407mURYeEGYitnGkG5
+	B2x4GTmflE+UWm3gJzuydxBU2CablVYjSLhyU6I+OY135VZyB8lAXRWLdrhaElxGCrv2kiVopwU
+	KshrRgzelYh3tsd1x8COkh0/dMerwGHXSkqhGTfTBFWcF3L+I+EKKDO5G7mpKlwnijKU+Y9+UzF
+	Z9hjC20553NOiz9atccVEgdUNhhxMTWvAaWUsp+0=
+X-Received: by 2002:a05:6512:32c9:b0:5c1:5775:d1ea with SMTP id 2adb3069b0e04-5c1bc7c3c50mr4798419e87.11.1795503023960;
+        Mon, 23 Nov 2026 22:50:23 -0800 (PST)
 Received: from yantra.. (nekmmqsyyquzw1lm5eb-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:3cd2:d52a:a1ef:5dd3])
         by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1bd018b45sm3538556e87.41.2026.11.23.22.50.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 22:50:21 -0800 (PST)
+        Mon, 23 Nov 2026 22:50:22 -0800 (PST)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
 To: Andy Shevchenko <andy@kernel.org>,
 	Antoniu Miclaus <antoniu.miclaus@analog.com>,
@@ -94,9 +94,9 @@ Cc: linux@analog.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: [PATCH 3/6] iio: accel: adxl372: use iio_debugfs_reg_access_regmap()
-Date: Tue, 24 Nov 2026 08:50:13 +0200
-Message-ID: <20261124065016.185124-4-zoone.rupert@gmail.com>
+Subject: [PATCH 4/6] iio: accel: bma220: use iio_debugfs_reg_access_regmap()
+Date: Tue, 24 Nov 2026 08:50:14 +0200
+Message-ID: <20261124065016.185124-5-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261124065016.185124-1-zoone.rupert@gmail.com>
 References: <20261124065016.185124-1-zoone.rupert@gmail.com>
@@ -116,42 +116,36 @@ device, which is what the core helper does.
 
 Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 ---
- drivers/iio/accel/adxl372.c | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ drivers/iio/accel/bma220_core.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index a880ff4bfce1..994c5cd58bed 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -806,19 +806,6 @@ static int adxl372_setup(struct adxl372_state *st)
- 	return adxl372_set_op_mode(st, ADXL372_FULL_BW_MEASUREMENT);
+diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
+index 23eff578158c..d2f21c0ab491 100644
+--- a/drivers/iio/accel/bma220_core.c
++++ b/drivers/iio/accel/bma220_core.c
+@@ -369,21 +369,11 @@ static int bma220_read_avail(struct iio_dev *indio_dev,
+ 	}
  }
  
--static int adxl372_reg_access(struct iio_dev *indio_dev,
--			      unsigned int reg,
--			      unsigned int writeval,
--			      unsigned int *readval)
+-static int bma220_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+-			     unsigned int writeval, unsigned int *readval)
 -{
--	struct adxl372_state *st = iio_priv(indio_dev);
+-	struct bma220_data *data = iio_priv(indio_dev);
 -
 -	if (readval)
--		return regmap_read(st->regmap, reg, readval);
--	else
--		return regmap_write(st->regmap, reg, writeval);
+-		return regmap_read(data->regmap, reg, readval);
+-	return regmap_write(data->regmap, reg, writeval);
 -}
 -
- static int adxl372_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long info)
-@@ -1221,7 +1208,7 @@ static const struct iio_info adxl372_info = {
- 	.write_event_config = adxl372_write_event_config,
- 	.read_event_value = adxl372_read_event_value,
- 	.write_event_value = adxl372_write_event_value,
--	.debugfs_reg_access = &adxl372_reg_access,
-+	.debugfs_reg_access = iio_debugfs_reg_access_regmap,
- 	.hwfifo_set_watermark = adxl372_set_watermark,
+ static const struct iio_info bma220_info = {
+ 	.read_raw		= bma220_read_raw,
+ 	.write_raw		= bma220_write_raw,
+ 	.read_avail		= bma220_read_avail,
+-	.debugfs_reg_access	= &bma220_reg_access,
++	.debugfs_reg_access	= iio_debugfs_reg_access_regmap,
  };
  
+ static int bma220_reset(struct bma220_data *data, bool up)
 -- 
 2.43.0
 
