@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795508647;
-	b=2phG0bgr/Qi/K/CCZggSa7b5lMEwE2pbdBcEnPAhSziYUQv9CdpzDaURzFvVV20b+9sD
-	 8qVCpSWbaj65VQmccrQ03za/EJl+tXh0ZoHDfJ9p435zOwv61VbpT33UftW9ttyW/Cd/O
-	 aJhhXZ6Tc/XgqsLBvEJ0JMr6exT8X3Z9NWGTy3d9Sjn8sdRdB5WkYZIqd1j4ij2Lv+1nh
-	 5hKkHfOkYgQBkPKxsP8wMq65C6fi9GDoDtccHJzXRJIg436XTk5g5+eiE+7i429N0gXHd
-	 0+n0s2uEpDj6LDvwAFZTuxKWMKHoAJQc8EDIS5tFt7zLjVEUkYyEIfS7wZnjdgpKSSA==
+	t=1795508683;
+	b=jlGvKG0jLVnT4KHQRBJ6URYgpGp8D2O9GjOM3SSPqdYwFn56Witu9i+CPGk92xWbOgVS
+	 24DS54YgKxGY5C9nwFwqQFDSlDHHYgtDUH1Hf/0EKGCsZDiJjYQOGLn9+T8YiJGu6lhmB
+	 0EBLI0lMojKXAsPai6tT/xO0hR8xkxpBG7emS5ZHskehcG7mcq3MNUYWGX+l7HEzlS0CK
+	 QR8Gq9zrWVvIptRmFUl0SaILstdRb1Pwglrb3CySEshCzKqd7+1G+yRVk6JPQXXpV35Oo
+	 bUTT8oPKd5wYNsSdnXR6HYJiMhUnfymjXCkDbd9PPPFO6bYl+ORTnasOxuoGtEjKmTQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795508647;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795508683;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=Q9IUUokyhhxcwwnd3VmjtZDnKb3B/VZSMg/NmJ1WC78=;
-	b=SL1RiL1FZ7ueCiKdJj5PMloR2/a+BKU66P25PBqvrNoDpBTASJ0YrHD995z0KHgJA2WO
-	 KCmazLwt9C+3G3loxNAkewYcfiL03chRbWPPrKP8W7KFeGclnno1jW3PpUMJkudn/XIiz
-	 yUHicbhrRdWOk2mAy+tzydAEZWgmYySlstz3SKe+D82e+pzWyjEAze+yvNf2Os1P/DVmo
-	 0STxMpygOXklM7f9PX8JcFl3ysW6r34koVEWCCxKoYn33cygnlZFw8nsMj7uX7iLmgCtZ
-	 00eBLdarMHBoADsVVEdyRAIZBEHG0or0ei7iuvXlqDEE2ZYK4qKE20BmRsAXtYKRhyQ==
+	bh=ktOgwAOwraZXdSGGmxZU7N961zTx7X8/XnU772S4DbI=;
+	b=izy/AmmpZkZsJotEcjbhNSfjIzk6i/XEfrN4VZTahiqc9DkwC32tD9P5BpaLK4F/SEYG
+	 OELO3R4jNJVoy6iZqx8p9rOaCo2vU3iy/HSWKRWVwtgkY3Sux06A88EVpqBvmnrrtb9QW
+	 06Q0dBTm0/N+/U0x4ZpJzq3+ke9zM3tl9AXWOh+OBbZkpyoFyxlXC984MadTYgcIHGIqH
+	 OG4r/gJ3F0ZvvAPvdIcjgdx+Qn9+ckz8Afz5sc+DXP5LdtpYO7dejuPHY9JYo6PViZc8p
+	 xvFKSOR+P8kis+miq76vCcjGCTipT1bRipICVD1hQIIGR4ZU0jpmYzMrDNAv6jHKTKw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SedL0ETW;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="Mm/G4KYV";
+	arc=none smtp.remote-ip=192.198.163.19
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0DE4606A31E;
-	Tue, 24 Nov 2026 08:24:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E0DE4606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3EF6606A31E;
+	Tue, 24 Nov 2026 08:24:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F3EF6606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SedL0ETW
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Mm/G4KYV
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795508647; x=1827044647;
+  t=1795508683; x=1827044683;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=bz/D0Du0W8QrobDHzxFQOqw7RTEOA+BPUbV5XJQADkA=;
-  b=SedL0ETWOu3f6m4dldUkurSi+/XjeV835ZuQPfdWfFQzchRpktk61xGN
-   4kDT3LKHqEYKuN1h5wcvd+MRDACgA6y6puSmp2hIwngZamgkqKrrO9/7Y
-   MDF+lRz8KodckM84RG5Kfn3b7zazs1JY9kLf7jJwErhbD7O0LWMGgm7FY
-   Ybcoe9Toc0RJi1q12SrMTHrTyFJa6JmK+XffFykaNr5Evf05sxxdzohlJ
-   ap78QfDEZIWNyhrgsQj4/Y+fyqB8xEkaRQoWwFznn3gZLrp18ekhtsV9c
-   SZ4HVGfvQ6D8FCk0hpFpMU8y1HocJ4pMX9v1cTutJIG7B1ljxjO91SlEC
-   Q==;
-X-CSE-ConnectionGUID: FomsdZDtQGSV26hRVzZgxg==
-X-CSE-MsgGUID: /9fOy7/ET/GIQNC2+fpFsg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4249590"
+  bh=/HI6vt5Le6CJlsERF+xfPnIykjrxGbGfzT/4rhuNbZo=;
+  b=Mm/G4KYVzKY+z2BupmKr8ciL+/axD3REC68e4XQhJ4ulWPTHWgrfp4QA
+   dT56vvKAHhlHGTYksmlPCQ/kCk+6ufJVKlENNIPBWimY62jvG30sXr5M6
+   7NfJyY49XnPCpUl4/O6QUYOnEBWWh0txkfVKlYQJdcKyRfHYNYNEFsOy6
+   SSqgofjuVKGvt62fOUNRSYlNP7RqS/dRmrjCDABbCEpzcR5olX0ulzMEe
+   KlcOcc33KNtIWx1U6h/5eySOB2V4rN+q+qUNTwMtdIncQF5/lrexdU+Sm
+   DgEzx/S4mx0A5udfd+/SA/U+mzioarQV0vT8PSkcNImuNozI9KZvkaVhx
+   g==;
+X-CSE-ConnectionGUID: TwwuITSFSzKFyow2kMEeDw==
+X-CSE-MsgGUID: 3GeqzSc0R+OuMVxIAEJ3Fw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4441054"
 X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="4249590"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 00:24:06 -0800
-X-CSE-ConnectionGUID: D9dgaZXiRMalxMxhb3U6Qg==
-X-CSE-MsgGUID: 1QdCORzCQL2ckV0m65mkvg==
+   d="scan'208";a="4441054"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 00:13:14 -0800
+X-CSE-ConnectionGUID: nMrFpLm4S9Wu/8/TQPDPNA==
+X-CSE-MsgGUID: F7ghSV7rRjylVtskDX8lgQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="11290601"
+   d="scan'208";a="11836178"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 00:24:05 -0800
-Date: Tue, 24 Nov 2026 10:24:02 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 00:13:12 -0800
+Date: Tue, 24 Nov 2026 10:13:09 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Rupesh Majhi <zoone.rupert@gmail.com>
 Cc: Andy Shevchenko <andy@kernel.org>,
@@ -70,10 +70,11 @@ Cc: Andy Shevchenko <andy@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 7/7] iio: pressure: dps310: include what the driver uses
-Message-ID: <awVJohyKR-zxykbG@ashevche-desk.local>
+Subject: Re: [PATCH 1/7] iio: pressure: dps310: sort register field defines
+ low to high
+Message-ID: <awVHFUVYPE6W4izB@ashevche-desk.local>
 References: <20261123220649.36887-1-zoone.rupert@gmail.com>
- <20261123220649.36887-8-zoone.rupert@gmail.com>
+ <20261123220649.36887-2-zoone.rupert@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,62 +86,22 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261123220649.36887-8-zoone.rupert@gmail.com>
+In-Reply-To: <20261123220649.36887-2-zoone.rupert@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 24, 2026 at 12:06:49AM +0200, Rupesh Majhi wrote:
-> Include the headers for what the driver uses directly and drop
-> linux/iio/sysfs.h, which it does not use.
+On Tue, Nov 24, 2026 at 12:06:43AM +0200, Rupesh Majhi wrote:
+> Some field defines run from the high bit down, others from the low bit
+> up. Sort them all low to high.
 
-Thanks, a few amendments may be made, see below.
+Have you checked which change is less invasive? Can you do it locally and
+provide diffstat
 
-...
+> ---
+>  drivers/iio/pressure/dps310.c | 22 +++++++++++-----------
+>  1 file changed, 11 insertions(+), 11 deletions(-)
 
-> +#include <linux/array_size.h>
->  #include <linux/bitfield.h>
-
-> +#include <linux/bitops.h>
-> +#include <linux/bits.h>
-
-The former guarantees the latter, so drop bits.h.
-
->  #include <linux/cleanup.h>
-> +#include <linux/container_of.h>
->  #include <linux/delay.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/device/devres.h>
->  #include <linux/devm-helpers.h>
-
-> +#include <linux/err.h>
-> +#include <linux/errno.h>
-
-Same here as long as the driver doesn't use special Linux error codes
-( >= 512). And for now it doesn't.
-
->  #include <linux/i2c.h>
->  #include <linux/interrupt.h>
->  #include <linux/irq.h>
-> +#include <linux/jiffies.h>
->  #include <linux/limits.h>
-> +#include <linux/log2.h>
->  #include <linux/math64.h>
-> +#include <linux/minmax.h>
-
-> +#include <linux/mod_devicetable.h>
-
-Uwe already pointed out on this.
-
->  #include <linux/module.h>
->  #include <linux/mutex.h>
->  #include <linux/overflow.h>
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
->  #include <linux/time.h>
-> +#include <linux/types.h>
->  #include <linux/unaligned.h>
->  #include <linux/units.h>
->  #include <linux/workqueue.h>
+^^^ like this to see the impact?
 
 -- 
 With Best Regards,
