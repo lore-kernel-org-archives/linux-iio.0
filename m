@@ -1,63 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795547096;
-	b=PqCLU4ub7Sadu/CEUG5i6UA33GK4O/B3IVOANP80C8ZSwbXgQc5k4ojYPejA563nahMn
-	 X8wY+WUXS+1F76hq1zk31Qw+Rjn/BCj2OijKkvdM+xz8BxdMu0sMjolz+JqwFUwWCy5EM
-	 sP7jAbHvJmFzsF6ruQLKSmMha3TSOKvKsSLVYdKSDzwKRsaOTu25FWnTl/hxqNteJf9Mt
-	 bfPYTP1NpAAAqWSzsKQt3KmM/TldfdXX8BBYxyfSMiDEuXC7mZzld49Q3eM0fmwxMJmlu
-	 e0AHmjsbdQXKrVogklN+AT5wS3bmhD3oI80exLBQTk1wb6GHY9h187Cax1ZciVBAJ1A==
+	t=1795547876;
+	b=mMWmAFk+N1eyLp1pVvhvPAoM3ojNDlmt/RMiX/n4+77gWBIekt16c8D04r3WT/+axiu8
+	 +PvNg7n40KlV9yENbkKYjWCju+y65pBf0utSvtMZxJoVOQW9aRVOD4FBQ9U6wxqDvb8ux
+	 UhBODk3JyOgXguZTpVvezcyJSj43L1pi41cvBwtzR/TWTZ//6RuXpCkPZUIBBXDpb/Ox8
+	 +hVizAAwBIfzNhv1mGjcYQOLBXXTXcUUPbdmjUkZkIJtNVH6YTcbdEAyWS13hHFXsRNec
+	 cldGv+6VPLE5lg3fm9GZVzcZslYspmaI9Hb4dGbruY+RDzbShxVNrdzlf312kUpbwUg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795547096;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795547876;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Type:
 	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
-	bh=Xc3mmrLjrHZi16TZiMxQ4MqsKvdShh/6Zel7neJrcco=;
-	b=GbQIqRZ96ZLbTZ755fpF3wn4Z5Y3Qf6rgrO3mTYD9hXys5d7ws8ciTsRINgPtG5VTpSB
-	 BTGBagdKHeswM10J+4ZtFkxLvVke+OVg+Dh8bVqkDkqBr0zF4Jt9e1Pw/ZjXlyzEYuJtI
-	 dUQyny+zXdyHhJt9A1Cgwei/SqiM/mMu5gCPITB0AWC1DfbeNO7wzRPaGYuq5Bg/PE88G
-	 enBOM9lHbT9z8fH5P92+PTc+7u9Ht7HXuQcQA9YF6WZ8A1a+8QNJpd3Ioe1ksJbzt+BvG
-	 2nROL8OvfhD8rGJoKNGCPLw3nFo2Q0hlSmFxVMq0TKWWkIj60e0nYkYmWivIA5r7x7g==
+	bh=gcl52OyN1m2WWYUZ+pSWvNBJXOOulD3DS6ddleVJd3Q=;
+	b=zwz0G4PAfP8FVT/t6iRRo6/wzkwag7t6ahHtnb1fCAyDq5vNxPftvedbMhKvuapqTltU
+	 wH+fGpho3I3p1yL4SHiu6N4NXA7RWDSPZJ8hN08bI/BwfIGetUYoPD9hAgDhtGpuk/8yI
+	 S1aQJvqRmPNxYN5ync2ICXqKmuN774Y4hxeT3olzK9XOi8l5Rbvb3dhUnQMhbAb6aF8CX
+	 YOnH+WfwgcocHPTlEFQOSULbCoRMImAJ5B6Wqq9nfrtt8DUY0jdgsdsVwMU8PCOdXpJCl
+	 5/Dmxxqd8QIHl52HVj8h9nH+JIMs5++tStZVMejef4INonsfe1TIDLGHI+XpBp0jAWA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KheLyZUc;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XmCcMoR3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD27606A321;
-	Tue, 24 Nov 2026 19:04:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23E2F606A31E;
+	Tue, 24 Nov 2026 19:17:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KheLyZUc
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 787C81F000C4;
-	Tue, 24 Nov 2026 19:04:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XmCcMoR3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F7971F000C4;
+	Tue, 24 Nov 2026 19:17:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795547095;
-	bh=Xc3mmrLjrHZi16TZiMxQ4MqsKvdShh/6Zel7neJrcco=;
+	s=k20260515; t=1795547875;
+	bh=gcl52OyN1m2WWYUZ+pSWvNBJXOOulD3DS6ddleVJd3Q=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=KheLyZUcMAm6n3dp+OY41OJ7qCsdiujlyqVVZMQSJ4J/4IyLLoNoIOaiKflFIkzka
-	 J4UabCBNGjK0XywJh8UfBbovFubYUHLB9/5+yO06g0I04lkt/cqteyueKwgXXzcZRQ
-	 567aK15BVHoDuc7slk+AD/BuEXiV5FGsUxMa88deuCVlBT5L80x2JrX+UNZGr3nhcC
-	 jxi/RLPTcq1A4kKJRkVmrirbUYsOcNmwx77OonuV+289PCaH2mD6p+MFZICwVCGjQT
-	 xvdmBOjTLqaJCF2yBPNxhCWGx/6pGB/HpEbhWAf/Gk8FjcsRxIZErmQB9o3WR6KMDw
-	 H4jnfR6paXT/w==
+	b=XmCcMoR3ZwZmap7V7dM7j8NjVj+8aGo8FlxbuZLOrQstX9BsUa+IJpFtNLK4kaqob
+	 Rd9m+g7Pfkq/xA1/r6C2gl3K3Ynp/7e0J4+YzscGEb++HSPjdM8niUUn86Kjme3znZ
+	 PvYQ77lWl9uH8Z8/4svrBdoSIlLX6FX6ye0nDsYx9ibWDL6ybWyZKX0XtcEpnNDPWj
+	 GrzepTzPFMnl1HZ4NVZdPJVHbdd4rbVQeZxoYMqHbxAGaZYBPyXhYgcjcHc1ubB5dH
+	 DvvmZ3NpPc2ddtPAX1v39sAWN2/hyUEWe7t5xnkIBAjWZzGvHGfN4V6bg7lnr3KxAT
+	 nHtV8E7NCd0NA==
 From: William Breathitt Gray <wbg@kernel.org>
-To: andriy.shevchenko@intel.com,
-	David Lechner <david@lechnology.com>,
-	phucduc.bui@gmail.com
+To: fabrice.gasnier@foss.st.com,
+	Zhu Jun <zhujun2@cmss.chinamobile.com>
 Cc: William Breathitt Gray <wbg@kernel.org>,
-	andy@kernel.org,
-	dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	nuno.sa@analog.com,
-	sozdayvek@gmail.com,
-	Maxwell Doose <maxwell@maxwelld.cc>
-Subject: Re: (subset) [PATCH v4 0/2] counter: ti-eqep: Fix runtime PM leak and use devm_counter_add()
-Date: Tue, 24 Nov 2026 14:04:42 -0500
-Message-ID: <179554702689.2328455.2491613757922405436.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tools/counter: Reject invalid watch fields before narrowing
+Date: Tue, 24 Nov 2026 14:17:50 -0500
+Message-ID: <179554784897.2331239.17103713083473647730.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.56.1
-In-Reply-To: <20261109084342.51865-1-phucduc.bui@gmail.com>
-References: <20261109084342.51865-1-phucduc.bui@gmail.com>
+In-Reply-To: <20261120061932.98210-1-zhujun2@cmss.chinamobile.com>
+References: <20261120061932.98210-1-zhujun2@cmss.chinamobile.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -68,25 +62,23 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-X-Developer-Signature: v=1; a=openpgp-sha256; l=451; i=wbg@kernel.org; h=from:subject:message-id; bh=r1gp2XKrrjxbhJ3S/6G94RPRtaEvUUZZxWKvWrRfA7o=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDNms93cULqsx+TqHYwFzltaxE6HS8sLPwt8Ex/6dUxjn2 rA+VepvRykLgxgXg6yYIkuv+dm7Dy6pavx4MX8bzBxWJpAhDFycAjCRjmZGhjMqud9/WW6osoyt 532n535x2pPVEy0l6oTLfrd+/btn2UtGhvkvrLe90lpsNnnpvQU/bv476x4fpbPh0f4zbhHuU/j +p3ADAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=548; i=wbg@kernel.org; h=from:subject:message-id; bh=MlP3KAFXB3D6AAi5PMLISvGWnS/pWnv4aOG1kGYqMzA=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDNmsj841lyd9Xrg2oyCzl+18wHKOIwbyDFUvz1g0HJ6uP z85we17RykLgxgXg6yYIkuv+dm7Dy6pavx4MX8bzBxWJpAhDFycAjCRn+qMDM+ClSsrD770yvAT cBPkmfH7ncuU5w6XLRze3V9iuUuI05WRYRrfX9tDZSlKS+vDT3Rmy+7wczdx9ji+4xCnzr1UKw5 xdgA=
 X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
 Content-Transfer-Encoding: 8bit
 
 
-On Mon, 09 Nov 2026 15:43:40 +0700, phucduc.bui@gmail.com wrote:
-> From: bui duc phuc <phucduc.bui@gmail.com>
+On Fri, 20 Nov 2026 14:19:32 +0800, Zhu Jun wrote:
+> The channel, component ID and parent fields are all eight bits wide.
+> The current parser accepts trailing characters and silently narrows
+> values above 255, which can select the wrong counter watch. Parse
+> these fields before assignment and only accept a value in range.
 > 
-> Hi,
 > 
-> This series picks up Stepan's v3 [1], which had no follow-up since
-> May, with William's agreement [2].
-> 
-> [...]
 
 Applied, thanks!
 
-[1/2] counter: ti-eqep: Fix runtime PM leak on probe failure
-      commit: 3978b72c1570b0bf60968a06b16659b3847b7793
+[1/1] tools/counter: Reject invalid watch fields before narrowing
+      commit: 0fdd4e1bdaa9084785280ce233fd3ddab04ff9cc
 
 Best regards,
 -- 
