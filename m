@@ -1,82 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795516791;
-	b=A/9vYibyAT1GTJ5MZnlxlUPuTX/3MmWmqZhbuAOTV9LfgVwMj3p1+hRoWEF223gneUjU
-	 rN+SmEw/mU41jKdzcAqSKlSCPkd4GhYZA1D8x0HzBsolnTDh/70Ta2iPCW2Jh7Vr8T2+F
-	 pJPFSSBwhchZMfKU+qubIzlYXxqyONPA2U1hJzDNp7N+D0eAEFIJL+sl7+vbHR8DH9ner
-	 2mRuO1bSPQpYIsJhQYDHj/dxepFJUzbRePuS3bxrjiN3dqloOiq8gloSFuE2hqu0pbDE5
-	 VzjyiQG9/0XXwu3Wm5kgt8qDCAx8XIescVirdlj0I/lPJYZSMD5+0mSRlDVXrvdRqGA==
+	t=1795517188;
+	b=Y9nilsm6/k3Nvys9KMvi6c+9EBMeVNwL+Uc4jfS4WNtb2E6O5YHNDzfd8c1JshixjDE3
+	 nG/Z6P1FolSS0X/g9dlwo4MVALq8yjZfrGUqBxHMxdmA7aHd8qP8peBYIOsbUq5e6UF//
+	 qtzwCDFzfkeeRUDc8wOPe8x5RFx/MaP9Hnw7NWBWlSvcKA55DCw1DwkRONXxZ87PWfnMW
+	 NH/T4MYYEL9JQ8AWsabPzag7lZh8sNhlCkhyUcMXpbUdqjr49W3QtqjBQknfbUgGdMlj2
+	 31NxmZFRvyV3QoLgUkD2c0hzsztbQQTDQl+Q7H/gXsDDeGfGuM5XooGmUsM5LR+US6g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795516791;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795517188;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=fIKoTRf/vZe8A3Fh8OBkntjyjp2VDQe0y1sGoawVCe4=;
-	b=cTiHz0FqfR1wUWlDHjHjt1mbqbqaW9ALX6tXv2/xa7sR3quoX/mcZka+j3Wl4dbpUdHR
-	 oNdN1BIK2bk3eyMiH2MCP+tAmZAJmiZigUGRA88ONh548BAW2JfUlaWJxW69GgxdfwWJf
-	 mbMBylwOpcd82KtkoKh//SGIlyB3GInUXyQ45/AFgFyPOpt9f1yABbdHPQuRPmC2+S1YW
-	 XjKw83O5kKbqkZHdqny02OVbHrJ+cY5UFAKEIHfrl3Vb2imyGmd1idIAvJANd3TUzlKGv
-	 lFO6QBQhosWSOvwtHfbAsGR92y86Pk7m7aMEmLGWm/KbCF7e+28+ZaUGhYwv+SXcrLw==
+	bh=xXYEZ0sUAZ/QC18pSBqdsltwfapXYJDIzMGeRopQDtk=;
+	b=B/DR/GD32bzGlX8QkBcqynf1GgcoqeEsO/bqO4IdFPyPbSsz/I1ih3pDqF2HnVPgQ5ls
+	 Pwq2YQ5E1MOBvDofh3rt0sVioYzMKBHtEowiKMBoFKDoHz10fAMPmMWs9Bi31HBkqR1cK
+	 Y6y8CAc4/DeZECruPzCOxmlK9gzzj9bXx2nlkBO+kWz3TIdzMsdIZA9N/8r/AfB+iccWS
+	 U74YUE7OH1BRPKj6io6IQ8dtB4rWEAhBzfMdlokYrai0KT9A2IvReTK+Hz36IgS+HOXpf
+	 q+zB7JEVAiH79zj7w6MBpffVgOQ0ux1tbUbpZxkUvyj1ef/tyhMCoLQWquyk7kbPB/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EbGdKYTO;
-	arc=none smtp.remote-ip=192.198.163.16
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=b7RKU6dq;
+	arc=none smtp.remote-ip=198.175.65.13
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E2A1606A31E;
-	Tue, 24 Nov 2026 10:39:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9E2A1606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9DE4606A322;
+	Tue, 24 Nov 2026 10:46:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C9DE4606A322
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=EbGdKYTO
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=b7RKU6dq
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795516791; x=1827052791;
+  t=1795517187; x=1827053187;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=w+aoWyRMc6ObgqHfcHZhGgWjzhku534lrOT58Tlay5o=;
-  b=EbGdKYTOUSFQ4enzMReLeBmn6sYMW2QKNwt/J+1m9vqJtzAJYJDltOh6
-   xaEf6YbF6BWhtCqS1wCTITlWL1ylIiuB2BcviiTaMbJeRLJJX8v0mphNU
-   vUo9gFmmzyfsTCSMbE0H2VUjp9JUU+5vwsI9QVIVew4Cy+5y67hUk3ThH
-   dsjn51EtWdwCURq6gjcz53BT5brKjtLIUHBme496yx5FvDZCYz+kJic8M
-   xEJUpDVjyNDQ2HB5+oy8ySVRq3iXqNUnAyg5tjx/Ph4Fpkn3tWb+pKpjk
-   YhhC3QKYnHu3Xp+Bz0dKBgTjthNpgmt6nvIwIS1kuY4ZoB6N0XP8rlwsC
-   g==;
-X-CSE-ConnectionGUID: gz5QZL+qQimmZMJWArQd8A==
-X-CSE-MsgGUID: Fo6x3RM/QZmT7G+cQ5X9lA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4390207"
+  bh=5UV7iUpUDjQT++va3q+P1i0mB6v46aVDGAtTeSUuD/I=;
+  b=b7RKU6dqN/NUN64SIMCJqR3hnQCru+Duj6gIjCPrsnyCft7ErXtPqxkh
+   CSiHgMorO/MPgXO8YnecAfhIgE9GfSWcQTbLAMddpzGU6D+FULEuzbhf8
+   lvbNo9/NgZXPoEOxwB/2duypeai2sA1nA91xTnifXsL0xBeLkRPximrY5
+   B1bGknR+3b+DY7DVW1rxy0rV1nKuolZC/Ish39CLP/w/4Jg7MHQ4ps4np
+   tjWNe/ZylXxRJbESgzrk6/GM50j6emz6D94IlbAaOZZRCCeUT9rB91D3B
+   xJQJ4XwhfwUTNKYu/GisgbBQc921KNcXeYIa+UOiGnNqtIYWkW4An9RsW
+   w==;
+X-CSE-ConnectionGUID: SoYSJv5bQuKPvLZd/lFLdw==
+X-CSE-MsgGUID: qBtmxxtpQmGOUE+7IZ/dTg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4249376"
 X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="4390207"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:39:50 -0800
-X-CSE-ConnectionGUID: M7/I2tkmT9OkLcQGBPBeSw==
-X-CSE-MsgGUID: 3ipBm3BGQ1S7drwyPK6HiQ==
+   d="scan'208";a="4249376"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:46:22 -0800
+X-CSE-ConnectionGUID: ptKsT4wYQdSm8H9Vu0Kr9Q==
+X-CSE-MsgGUID: t/etMvuWRAO/hjszCb3/Bg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="11924951"
+   d="scan'208";a="11652135"
 Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:39:48 -0800
-Date: Tue, 24 Nov 2026 12:39:45 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Gerard Marull-Paretas <gerard@teslabs.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 02:46:21 -0800
+Date: Tue, 24 Nov 2026 12:46:18 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joshua Crofts <crofts@kernel.org>
+Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Frank Li <Frank.li@nxp.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/4] iio: magnetometer: mmc5633: Add mount matrix
- support
-Message-ID: <awVpcYkY-qXwn6bi@ashevche-desk.local>
-References: <20261124094632.8879-1-gerard@teslabs.com>
- <20261124094632.8879-5-gerard@teslabs.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
+Message-ID: <awVq-mE1H2g01yS4@ashevche-desk.local>
+References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+ <09328c36-a32f-488b-a2c9-76fab784d259@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,25 +86,53 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261124094632.8879-5-gerard@teslabs.com>
+In-Reply-To: <09328c36-a32f-488b-a2c9-76fab784d259@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Nov 24, 2026 at 10:46:32AM +0100, Gerard Marull-Paretas wrote:
-> Read the mount matrix from the firmware and expose it, so that user
-> space can account for how the sensor is oriented on the board.
+On Tue, Nov 24, 2026 at 11:17:01AM +0100, Joshua Crofts wrote:
+> On 24-Nov-26 10:44, Andy Shevchenko wrote:
+
+Thanks for the review, my replies below.
 
 ...
 
->  	fsleep(MMC5633_POWER_ON_US);
->  
-> +	ret = iio_read_mount_matrix(dev, &data->orientation);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to read mount matrix\n");
+> > +#if defined(CONFIG_DEBUG_FS)
+> 
+> Veeery small nit, but why not #ifdef CONFIG_DEBUG_FS? It's not
+> as if you're checking for multiple defines.
 
-Thinking about this more, maybe slightly better to check it before touching
-the regulators? No need to resend until specifically asked, let's wait what
-Jonathan says about this.
+Or even IS_ENABLED()?  Let me check if we have a precedent in IIO, I will use
+then the same or most used style.
+
+> > +void iio_debugfs_create(void);
+> > +void iio_debugfs_remove(void);
+> > +
+> > +void iio_device_unregister_debugfs(struct iio_dev *indio_dev);
+> > +void iio_device_register_debugfs(struct iio_dev *indio_dev);
+> > +#else
+> > +static inline void iio_debugfs_create(void) {}
+> > +static inline void iio_debugfs_remove(void) {}
+> > +
+> > +static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
+> > +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
+> > +#endif /* CONFIG_DEBUG_FS */
+> > +
+> >  extern const struct device_type iio_device_type;
+
+...
+
+> > +static const struct file_operations iio_debugfs_reg_fops = {
+> > +	.open = simple_open,
+> > +	.read = iio_debugfs_read_reg,
+> > +	.write = iio_debugfs_write_reg,
+> > +};
+> > +
+> > +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+> 
+> Static here but not in the header file. Same goes for register_debugfs().
+
+Oh, how does it compile?
 
 -- 
 With Best Regards,
