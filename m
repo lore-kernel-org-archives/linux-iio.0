@@ -1,86 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795515251;
-	b=HNPQU6gL8zZImLMcvbbYPEqriQNTWG/pV/hrL9401h7YdMvcQq/BrMfcXhkrm7SdUqlQ
-	 CR19n4OXHgj27A7AEUUVFPoiYZFu9yWXcXCz78hA/sxXtpgbjX1l6GoYMIllb/2oXi0Sz
-	 XI6Hi/wdn5xgUi07kEQ8hgt/KH2U5HnI2iGb+EhGYC6kS4XdtX8wFzB4N5eR7Lo5RJCJw
-	 62PEfByRaJuld+yVTM1R9ULi20VrMhi1RxAJQ4EBI3y+Kp/TVUSknGW/utls5Q9c7vJdG
-	 Oa8Wnd/iIgJGt++5qbYFO2uIoop4MTEs+1r7K6OQ4Y0vD+1Yv1AwdwTMjxoMauy9ZyA==
+	t=1795515426;
+	b=wb8qLyocpMId8kYwyRm9Id6O+Z1LnSBt1fEm7sHfbm43LKlY0H7CoEJrnxNaCXe+t79m
+	 cJTJbo/+Etr1I3xJg5g/s3v+BWOudENIeoqPEtnj15foVnqqD+J55V8OS4O1Dqml0WTVZ
+	 eB4I4pc8Ze6cvID8xMwUm2qqpylpuH6jkfYEQ549bQq6QIRKJS8XTgQ6B20UpSZ3mWt2u
+	 qdC2CoMHkcWFl+3IAM5Rxo9prm+hhAf2bjBwlqdDQ6ALDhzsLCyCBwY4KP/H7UzbDshTr
+	 iS3+ZhkK7tNjuaE+3ySuzI3c2hxoL8NGEj/xnJhPNnBAJshzarRT/CErz76B8n56/ng==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795515251;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=5n9UHdO2SBef0HNJ35aNuZvDO6VdtplwD/Dp/Y5vP2E=;
-	b=48/UJspwBB1X2h98b8t5Pna7BnRr/EGR3hyP78mHxdFZR358x936P0yUullGD9Yo/2it
-	 s2qFXbDvuZw+2L9MI+y+nt0jUgWE/35A28f+E7uR6drLdK4fQkAybgeoTwcCDVmd4NDzr
-	 TyFvdgykN28xf/v6zS1/ZCD472LI+DsUDu6AZ4sbrqgXP05fI+NDxle2kGoBrIcER/MiP
-	 Fi1mav6G76sFp3CiqenbLGbML+fCZrDXtC91QXRPMBW1L6a6PenoBqq/fdyc/XRFQIWAX
-	 YRdybjTqnn8rjjhtBJxBo3r5yMqIXRCjvkdedufcqC/jeqIOWUFk+x9hXguCaUToJ6A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795515426;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=6o7whnWBHT6EEdD8MwgLN42DHzrsSNosf9fO0rBds7c=;
+	b=cpeNQ7/Mx4VwLLOgMYmrVPeky3XpTcJ38uBoqpq810JbvoF2j5O/sOs5GO5GUOqQTS5G
+	 lAlwb7esm1jbuz+LDhqzmC8ELvE+JEnPitIrgsGclSqItQxdKYBrbrB0D4vzGJd0NlJWF
+	 SPIsWTTXxE5iRhH/AKCDSKTZ9CURbQA2wevKGhpCrKs7LzMkjZ3m5Wh7kIAXJniFBp2Sj
+	 wF0dTMZ/k04EEMLqA54Ujuh9yM9AHng8wAZTura2/ngenk1KqaPf90mkaN87c0iNdayFB
+	 wUBsoDY1udhKCUs5DyehZCU5QOhfBn5eIlu/j+AgT0X/L58poeFND40sFGsiIQGp9Tw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=GyGIJZVv;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GMXC5CMu;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 838E6606A692;
-	Tue, 24 Nov 2026 10:14:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 838E6606A692
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02AD4606A339;
+	Tue, 24 Nov 2026 10:17:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=GyGIJZVv
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795515249; x=1827051249;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5jkm3ngcj7xdNHx9OZUIZL2NkQ34Ja9eEvX69Wq2VKE=;
-  b=GyGIJZVvSPKsxX3k67u9KKWtacrscC0DSMVCMpBXqR/PG06iLmslnF7M
-   RxBQCPGKjzrKKC82ptwFJKBc5tOJLwihCurHAyclqQAMWdsa4G80gEBSP
-   2XYByz2y2FoM5HGJkvD0n/sac5p1dLyXyIUY7qza9BvkBe5YyjrYp1cEC
-   SLTRMkg6PgKg5BMAruK6j6JDSR0YJYWOGXlnQ6ZKi3MTiTxTWfjihybm5
-   vSyNjGU6JVJ+i0wHxiP9oJsgYMxdcR7WjQa9vUcT2gJyAn1XqLEoTsd8e
-   21eY5zHfDY9PmUNIPjBbyJiff9TOr0NRus6LpePRi7FvCfWXjQgcZ/rGk
-   A==;
-X-CSE-ConnectionGUID: oBmOH4m9QAmv+GS+v6si7w==
-X-CSE-MsgGUID: /uDf02+hRAq6UL38/1sfKw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4434027"
-X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="4434027"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 01:47:42 -0800
-X-CSE-ConnectionGUID: v0qbLzzJQmSYhG8etaXX/A==
-X-CSE-MsgGUID: p3qLvHCDSym8v1JYijC2sA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="11621467"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 01:47:39 -0800
-Date: Tue, 24 Nov 2026 11:47:36 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Neil Armstrong <neil.armstrong@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux@analog.com
-Subject: Re: [PATCH v7 3/3] iio: adc: add driver for the MAX34417
- Four-Channel High Dynamic Range Power Accumulator
-Message-ID: <awVdOHLZJqnY2NIB@ashevche-desk.local>
-References: <20261123-topic-sm8x50-iio-max34417-adc-v7-0-d8f87edc5086@linaro.org>
- <20261123-topic-sm8x50-iio-max34417-adc-v7-3-d8f87edc5086@linaro.org>
- <awSWVMMYN2xsDH7u@ashevche-desk.local>
- <3f0bf2dc-02c4-45e8-ae06-feb669b6b234@linaro.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GMXC5CMu
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B47C61F000C6;
+	Tue, 24 Nov 2026 10:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795515425;
+	bh=6o7whnWBHT6EEdD8MwgLN42DHzrsSNosf9fO0rBds7c=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=GMXC5CMu0D2TQUbdSZ1+bEcnFSwPTvU2qxkBcEd2oVqiVWTKMRsNsOGFLwzhzchkg
+	 ooQ5yVCxzN/QE6oMY+trSjxRORCssuqyKVN3dtGOwYSvPCOe2OQ9w37s+QUr2nuWpV
+	 X4fufIyDqP3nrtiU2cUscKBGTlLNZ9HGUCR7WKzBmQrPwEKD30s+EcAOVTe6dK/CUE
+	 qWYb4CVl9mKI7WeYZPCH8lO6uLIZlQ8HXSDpogurKxgN+iKyb3JsPJhco+o6W5JVPk
+	 AE2+/rkouWtW2bXV711ie94TVdgmydNMV14SmJCu364YFlLlKAjnnqI0Z1ELmPImBB
+	 w6Vu0j4MV4yjQ==
+Message-ID: <09328c36-a32f-488b-a2c9-76fab784d259@kernel.org>
+Date: Tue, 24 Nov 2026 11:17:01 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,53 +51,95 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3f0bf2dc-02c4-45e8-ae06-feb669b6b234@linaro.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rupesh Majhi <zoone.rupert@gmail.com>
+References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Joshua Crofts <crofts@kernel.org>
+In-Reply-To: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 24, 2026 at 10:30:52AM +0100, Neil Armstrong wrote:
-> On 11/23/26 20:39, Andy Shevchenko wrote:
-> > On Mon, Nov 23, 2026 at 06:47:46PM +0100, Neil Armstrong wrote:
+On 24-Nov-26 10:44, Andy Shevchenko wrote:
+> Split debugfs routines into a separate file for easier maintenance.
+> No functional changes intended.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> 
+> Rupesh, feel free to include this patch into your series as the first one.
+> 
+> Fun fact: This patch was written with zero AI assistance.
+
+:)
+
+> 
+>  drivers/iio/Makefile               |   1 +
+>  drivers/iio/iio_core.h             |  14 +++
+>  drivers/iio/industrialio-core.c    | 152 +-------------------------
+>  drivers/iio/industrialio-debugfs.c | 165 +++++++++++++++++++++++++++++
+>  4 files changed, 182 insertions(+), 150 deletions(-)
+>  create mode 100644 drivers/iio/industrialio-debugfs.c
+> 
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 8a897b6729d2..5fd81b20da22 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -8,6 +8,7 @@ industrialio-y := industrialio-core.o industrialio-event.o inkern.o
+>  industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
+>  industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
+>  industrialio-$(CONFIG_ACPI) += industrialio-acpi.o
+> +industrialio-$(CONFIG_DEBUG_FS) += industrialio-debugfs.o
+>  
+>  obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
+>  obj-$(CONFIG_IIO_GTS_HELPER) += industrialio-gts-helper.o
+> diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> index 59fa1bd9924b..985ac82a37f9 100644
+> --- a/drivers/iio/iio_core.h
+> +++ b/drivers/iio/iio_core.h
+> @@ -16,6 +16,20 @@ struct iio_buffer;
+>  struct iio_chan_spec;
+>  struct iio_dev;
+>  
+> +#if defined(CONFIG_DEBUG_FS)
+
+Veeery small nit, but why not #ifdef CONFIG_DEBUG_FS? It's not
+as if you're checking for multiple defines.
+
+> +void iio_debugfs_create(void);
+> +void iio_debugfs_remove(void);
+> +
+> +void iio_device_unregister_debugfs(struct iio_dev *indio_dev);
+> +void iio_device_register_debugfs(struct iio_dev *indio_dev);
+> +#else
+> +static inline void iio_debugfs_create(void) {}
+> +static inline void iio_debugfs_remove(void) {}
+> +
+> +static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
+> +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
+> +#endif /* CONFIG_DEBUG_FS */
+> +
+>  extern const struct device_type iio_device_type;
+>  
 
 ...
 
-> > > +#define MAX34417_MIN_RSENSE_UOHM		(1 * MILLI)
-> > > +#define MAX34417_MAX_RSENSE_UOHM		(100 * MILLI)
-> > > +#define MAX34417_DEFAULT_RSENSE_UOHM		(1 * MILLI)
-> > 
-> > Oh, it's micro, but you use MILLI. Also even in macros we nowadays want to see
-> > the unit as defined in SI.
-> > 
-> > #define MAX34417_MIN_RSENSE_uOhm		(1 * (MICRO / MILLI))
-> > #define MAX34417_MAX_RSENSE_uOhm		(100 * (MICRO / MILLI))
-> > #define MAX34417_DEFAULT_RSENSE_uOhm		(1 * (MICRO / MILLI))
-> > 
-> > Alternatively add another patch to start Ohm multipliers in units.h
-> > 
-> > #define MICROOHM_PER_MILLIOHM		1000
-> > 
-> > I will Ack it.
-> 
-> Hmm, I want to express the min/max/default rsense in uOhm, minimum is 1000 uOhm,
-> max is 100000 uOhm, so initially they were:
-> #define MAX34417_MIN_RSENSE	(1000)
-> #define MAX34417_MAX_RSENSE	(100000)
-> 
-> and the unit is uOhm, so how should I define them ?
-> 
-> with #define MICROOHM_PER_MILLIOHM		1000
-> 
-> #define MAX34417_MIN_RSENSE_uOhm	(1 * MICROOHM_PER_MILLIOHM)
-> #define MAX34417_MAX_RSENSE_uOhm	(100 * MICROOHM_PER_MILLIOHM)
-> 
-> ?
+> +static const struct file_operations iio_debugfs_reg_fops = {
+> +	.open = simple_open,
+> +	.read = iio_debugfs_read_reg,
+> +	.write = iio_debugfs_write_reg,
+> +};
+> +
+> +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
 
-Yes, precisely!
+Static here but not in the header file. Same goes for register_debugfs().
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Kind regards,
+Joshua Crofts
 
