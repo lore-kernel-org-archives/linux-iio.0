@@ -1,84 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795541173;
-	b=OTevO35PhraOei9mr6PYaP0S6tKB0FiVXjqZqUMiXhVqbddbP45lsc7krm8v8P1tZWf8
-	 f2/N6I9Iz7ZQFEV1qWefJe89K2b1bLRXrPScIySrXOBXswN/JxiUBwcg5b+C8xAhBBedG
-	 3PkvKQluJn3dprXmAJNqx1By1FW6fQOkrGmK9skA6XhshK2KInhFJ1bU4u1SoyfRntvtH
-	 OFO/eDJjpFXn6LlU59Z1tRZfo13l+xX7FDMtcAy4IZP8YL7etC/hOxa/MLSSolskVg6+G
-	 3FfH1YbIbXP20HvLpPuEQ1vTVOhAAM8Wc+XyTZ/oyMeHzL0+we1Z5DBu8RIlB1njnuA==
+	t=1795543035;
+	b=0yH/zE6vyC7YCVin5bY8BzpnXLOZCT7Xe/wzlr8IS8h62PBquhP/Ns/1arTzeuwk5Y0+
+	 TzfrwoQDelgR2yzhVG5YQkn19rRGL9BCvjZPPiPdhyphICUq/m+wXnFTPA9M8Vwpc12NV
+	 H8kwb4q5jei1Lca+BSYeo6QqYhrtTe/wSx+sxIBAK2BMRiQs7NCrs4XBNI8kcEVWZfb3P
+	 8dIYi1sMHDyN3GaEAPGB+b7ZwNKuTY6rs9H2tl1ETiC4vkqUxD8TPq/jhK455nDnWLrp3
+	 +v3BR9l0Zl7lUI8XeMSvf9oSa+LrgtmD9mAB19DVvZEsJOzMCAcURJiCzbw3t9khOTA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795541173;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795543035;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=6VZrzcsQi8k3zpdbfofVMybmQDhK3GqBlZKfamS3780=;
-	b=UG7Vu4sIF8iNE9KtjZNiwOdNNGqgQFtYHHcxqSDqUz0qshojpXazr7AOU71Rr583pYuM
-	 Gkdku135Nok83BrKaizpETqQX1m9FJGP06jK9RLYW3ZCrGaQT79Q63qVpT0Ss1vciKBvI
-	 ZE08nozqGHqlFqzKNvWSMS3nJFltT4CdN6ylKIh8qhwRc0mdmjsena+CFUFlof8bEzQ08
-	 c/qnIXmJcBGB0dgzstTDuTHfOEhYUXKp9kBSzeoX//jTJSFh1MZnRZwKYIyDShBYsie81
-	 3zmk3kHGQ7SkJk2601x95c18P+GePBxLU8WdD8LCEeVQ3p5W4N14pmbIRLOHP6ZxkVw==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=ky87/VzxeJD3u5b7HXmhhGXbXeQgQ90cTEy5fmEumK8=;
+	b=nQh/CrW2V24cdX9R4AvdK45cl+zbS/kMbGEewTnUzFwD0Y2Mrsn7olmI52KFnSSpBPDN
+	 nKBuyYISuxM30CJFFVqOKKHZ5Y+mYsES12oGKVgwdqx1BbmoGfK2bxrZFoYHpsVQpaSvM
+	 g01FmlXRI0DQXuGBjDMpinXy9CzOavpiZm8Avr1kwdQgVi2kLVk06al52Qcoc4WjKqJ13
+	 LOetLDGgyulNnUFPX+KLxNhbfauqnVG4+Rjptr0d0iQjfYfXLX2YMwb4z3KfN+FUY1KT4
+	 mx3DLu+0b/uAQ0zRPAdur1zMVek75Qnt/1biFUKUq+BZD2kCxnzFqLlDNnZqaO6olSw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jiekmIRP;
-	arc=none smtp.remote-ip=198.175.65.13
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cn5fJwrI;
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27FA2606A332;
-	Tue, 24 Nov 2026 17:26:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 27FA2606A332
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BC3F606A321;
+	Tue, 24 Nov 2026 17:57:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4BC3F606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jiekmIRP
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cn5fJwrI
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795541173; x=1827077173;
+  t=1795543034; x=1827079034;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=SzT0csSgnqvDnoV3RleMeqvxldVFfB4PdCbmLd/qpxc=;
-  b=jiekmIRPvdaD0DuN7/76CVDFb3UBCqyn47WV+bTHiN8o/ceUGe/r0H8l
-   GyX5l1c39sZ/zr4OY7+RqmmanVSlSiWEBVDZW0bEGZ9bxzzeoSUvMbcW3
-   xzpm/ML0s8SZDijLilERgCJLe+Elf6GmopP6XFymNtKeFqtsgoU9kyaTg
-   uFZF8obo4S+liWFG2guPxu0HCtoL47/rIqJEWS7a8HUUeW1O4IHUdE8hj
-   uMqp62/UY3Wd7C/QW47sSlhPsK/phSCBcQyjkmsqWvUYjRMthwsuFBez9
-   Lq62aKQTEw+zMLfNmXoo10ALc87nttbi2lc3t5K0Rx5NIxtAgP1Fyyq+1
-   Q==;
-X-CSE-ConnectionGUID: GI5PixiRSl+5nYAm9AeoGQ==
-X-CSE-MsgGUID: qi+2SmJISraCRkeOx6VQXw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="4289538"
+  bh=fI/PW8KDoRbbs33Sd+n/w18PwQb+8meBD/AQ8hT5A9E=;
+  b=cn5fJwrIpSsILDQTnHFmFi2K65jaNmO2t/i3mKwJ5aD50YVv8o0Myxtg
+   ypZq4/Qt+DpfGfIT6QJ2KziqfJkn6mFeStuQk3/XVe1GAseSGxJecO5Lv
+   mnefoIuOmMjMN4+0VPgUoC3d7n0Yv4ZtQNxgXe38SnEgFKFPzGfg9ybgy
+   Ia2YkiFu5Wi4FMrXQlUUzJRIMbA6zKJf83UqasQXUNfjdB65zZ1MTnijD
+   4u52gstIDmgECT7jU8NPWY68gi8n5QscHxRAIJkzlCgd/GirH4WqDIAe6
+   /Ya1ptNNT0it9OVtIJMaJtd50l55c/P81z3FKKpZNoR7SHF6B6v88NtdU
+   w==;
+X-CSE-ConnectionGUID: nqGS0U9cTHO37l502Zsizw==
+X-CSE-MsgGUID: l4d5avgCR3Gpd+ZPNHojLQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="4310961"
 X-IronPort-AV: E=Sophos;i="6.27,231,1787036400"; 
-   d="scan'208";a="4289538"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 09:24:11 -0800
-X-CSE-ConnectionGUID: UfVXggqrSuWpspkfSqBQIw==
-X-CSE-MsgGUID: rIT4lxKyQdyAT/3W9GUPrA==
+   d="scan'208";a="4310961"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 09:57:13 -0800
+X-CSE-ConnectionGUID: ifIlFqeLQZGrt2iro3b+5w==
+X-CSE-MsgGUID: kduAZoqcThKNa2ZYkqumNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,231,1787036400"; 
-   d="scan'208";a="12034050"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 09:24:07 -0800
-Date: Tue, 24 Nov 2026 19:24:05 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Nagavarapu, Dileep Kumar" <dnagavar@amd.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+   d="scan'208";a="11619158"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by orviesa007.jf.intel.com with ESMTP; 24 Nov 2026 09:57:12 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xVulR-00000001Pu6-0VpX;
+	Tue, 24 Nov 2026 17:57:09 +0000
+Date: Wed, 25 Nov 2026 01:56:39 +0800
+From: kernel test robot <lkp@intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Michal Simek <michal.simek@amd.com>,
-	Conall O'Griofa <conall.ogriofa@amd.com>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Subject: Re: [PATCH v5 12/16] iio: adc: xilinx-xadc: Refine Zynq read/write
- error handling on timeout/interrupt
-Message-ID: <awXINQWDns96Ngwi@ashevche-desk.local>
-References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
- <20261110050201.1850399-13-dileepkumar.nagavarapu@amd.com>
- <avNEpH6KGJkeI7dX@ashevche-desk.local>
- <c3a7df9c-e337-47ac-9a6d-6bb81177affa@amd.com>
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
+Message-ID: <20261125014709.jzc52smr-lkp@intel.com>
+References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,61 +87,50 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c3a7df9c-e337-47ac-9a6d-6bb81177affa@amd.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
 
-On Tue, Nov 24, 2026 at 10:24:59PM +0530, Nagavarapu, Dileep Kumar wrote:
-> On 11/10/2026 9:51 PM, Andy Shevchenko wrote:
-> > On Tue, Nov 10, 2026 at 10:31:57AM +0530, Dileep Kumar Nagavarapu wrote:
+Hi Andy,
 
-...
+kernel test robot noticed the following build warnings:
 
-> > >        ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
-> > > -     if (ret == 0)
-> > > -             ret = -EIO;
-> > > -     else
-> > > -             ret = 0;
-> > > 
-> > >        xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
-> > > 
-> > > -     return ret;
-> > > +     if (ret == 0)
-> > > +             return -ETIMEDOUT;
-> > > +
-> > > +     if (ret < 0)
-> > > +             return ret;
-> > 
-> > First check for generic errors, then for exclusive conditions ( == 0).
-> > 
-> > > +     return 0;
+[auto build test WARNING on jic23-iio/togreg]
+[also build test WARNING on linus/master v7.4-rc4 next-20261123]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-...
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-core-Split-debugfs-routines/20261124-104410
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20261124094502.557175-1-andriy.shevchenko%40linux.intel.com
+patch subject: [PATCH v1 1/1] iio: core: Split debugfs routines
+config: arm-s5pv210_defconfig (https://download.01.org/0day-ci/archive/20261125/20261125014709.jzc52smr-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 16.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261125/20261125014709.jzc52smr-lkp@intel.com/reproduce)
 
-> > >        ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
-> > >        if (ret == 0)
-> > > -             ret = -EIO;
-> > > +             return -ETIMEDOUT;
-> > > +
-> > >        if (ret < 0)
-> > >                return ret;
-> > 
-> > Ditto.
-> 
-> This patch does not fix any behavioural issue; it only changes the
-> error codes.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/20261125014709.jzc52smr-lkp@intel.com/
 
-Yes, it changes potential behaviour of the callers (which probably none) but my
-comment is tighten to the code that is being changed.
+All warnings (new ones prefixed by >>):
 
-> Sashiko suggested adding a Fixes tag. Is it OK to ignore this comment, or do
-> you have any other suggestions?
+   In file included from drivers/iio/industrialio-event.c:22:
+>> drivers/iio/iio_core.h:30:13: warning: 'iio_device_unregister_debugfs' defined but not used [-Wunused-function]
+      30 | static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/iio_core.h:29:13: warning: 'iio_device_register_debugfs' defined but not used [-Wunused-function]
+      29 | static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If comment is okay to ignore it would mean the comment has no value. I don't
-think so. Otherwise, please justify that.
+
+vim +/iio_device_unregister_debugfs +30 drivers/iio/iio_core.h
+
+    28	
+  > 29	static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
+  > 30	static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
+    31	#endif /* CONFIG_DEBUG_FS */
+    32	
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
