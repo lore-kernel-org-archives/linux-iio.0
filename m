@@ -1,98 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.181
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795471627;
-	b=4PaAfEBc8n275ogGt/ZVnVU0AA3zz1TJ6oAOORLEoux4RjVgMISQ4Q64ey3fYkMD2kOv
-	 5NSaBwgD7Ks5FZ59XzYB2nPToSymSuNrIROgxx/KENJWft3c4Zf5PPfkicP5sUJyrGncQ
-	 aq+rB5ZFzdx7PrHJEwsH3H/HlI1wJSDVorx8s9jpNBgWLiUpzAzHXe7BeCapebBsX6V5y
-	 H0MRx2jiTYZWzdKWUOAo84+IGddR2453UYWxjpbTydhkNADIfoiiNtMH5i/Ux3zeSA3fl
-	 n+SK2fNCXmSfB6sLf0u4kKv8MDa/9fL3/+mrzfrv3kJheDQst4RgMNyN2PjKVJ8d9LA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795471627;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.172
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795501204;
+	b=XjEzWKt5VcE64DgY8QAY2b/KhsrjZKDkQ2F3dDsFnwH1jRrej5JnNJPiN8yFtofWgvx7
+	 G5pFKVU2gUgy7tpZZ7DvkY7ndAuZ7nEoFOUteI+WJkbcRcf+reQeglSAU/H1A/ODlyCEB
+	 ysr6AvAtVKaLxi3N9+kmOqcQBtCGwM4dpZhqwVUPN1NbLKCbl9nfVyZhxiD3bUENqWOVr
+	 Pdh2GhUPGvg/3ndZvqjRWbY1YWq0EAQzoAjOlAeYbjiopUwx3yFEsmeT3+8LYneSVPX9d
+	 98GmyTs07ELz0Pz1fuW1SYHPwg8iGsr74RFBhH12RY6oHXuzEXG9l9/D7nU40Kssr3w==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795501204;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=2Wn4ycrprsEYpxFTIDDs955RXGY/aWC7MHO3eiRlG/o=;
-	b=JIBwaAhgRpJIzyE1pVfuzMZL9fsAdkZ35tM6hs1Z6SeSdMXAVriBtDzxcTYDjrZPlI5c
-	 OMzJQWbGArONvk35k9JKDhvtg5I8JoA/JTdcCF5HKceLzdkXyG4f0H0s1g8KlhhHESaxP
-	 4LdJxYG6V/kGaj0OyIc82GqnMrq1020PVgoAE4FlDrv9gWMFe7NEkSbEdWLdgndN+N+MZ
-	 YEhcgZWpcApxS0rnFt6mnC+MR9iFRM2MAN8321qi1Jno9VP51Ptd4hPy6zrb5KPSgIXvb
-	 KT0jmqq/AWgCOmKaA1t4PQQs3vhBSMy/h1b2ii8LmeH/FrYM0FAJIDmo9mEgwimnU5w==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vALU0pa3;
-	arc=none smtp.remote-ip=209.85.208.181
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=pI4cY4bgznXKJ4A1hmZr6uhBddx8lY/IEe8WYtmh65I=;
+	b=uJCPc0WtrcX44ECw0Rn5JNoQLbGFPUR/shgFy/2Y9JvaaXNm25AjcE88LkFNF8grR4ZU
+	 28Vx6f31pIxIU7A8kj+YbExqzvLopQK/TF1BFzWQmVRg3yWUVl7RyDQxJJmnNrB9K2+mu
+	 KWjJBA+Zu2JooBmuNiJu7ATUdOHtLNXuQhtb5Fa46clph2kz/S+quGdPSjMhDP/YE2bAl
+	 iBWyqDfqTEP17gaLms4m56fzSXNgVz3GHOdV4mVP83lH8Q7lJWID0OMhSBVSGStwNdFfO
+	 Pp5xE4UItGw3KY+pVOO1S/G9hvel6SlmXhv4sP6tayadfQCPgozSolsw3Wc1abEbQXQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=gLQh06ZX;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.172
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64414606A333
-	for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 22:07:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64414606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F6A606A31E
+	for <linux-iio@vger.kernel.org>; Tue, 24 Nov 2026 06:20:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 77F6A606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vALU0pa3
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-3adfc004920so35734731fa.3
-        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 14:07:07 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=gLQh06ZX
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-8b4f4095a7aso34479547b3.0
+        for <linux-iio@vger.kernel.org>; Mon, 23 Nov 2026 22:20:03 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795501202; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Q6/Cfmtgd1DvTIIaz1i0AWAzbnmpeyA6mMP33cykUEk8yMEYCaQX2/iGlIYXZCcpTX
+         xL8VvJKwjYl3IKXxHG2MgoyaXn4AYeP84ExhMXe+tHR3i4vrmozuWlr7csfLGjB0N1N0
+         mZO+eYYUzRNbOWlWYvg/ylzWUShqrydG4lAhQjQcHAJoe+3PKHaP7QcmFyCJwTqtt4te
+         4S9oKaahlNPVuRWBijgrug9+Ov4VbOklyGeYxAVFaxeThWgdpDC9/zMHh9x4FrcSOMZ2
+         Os3WnPyeVVBP3J4UrRnqEQ1dPBIwip5zDXQwHyjto5yx5g6XOL6Lbjn+L5m0cWQ0kN0y
+         IWrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=pI4cY4bgznXKJ4A1hmZr6uhBddx8lY/IEe8WYtmh65I=;
+        fh=T83rzD/QwJFdAzPigUx5da1Sqjz4QT7nBwHy/Rb0diQ=;
+        b=n65rTnZgsfr1Itx4Lqqjx1mszOOWczvU8ikDdlu/HdQFqOYApoVB/mZu3iRSyP0qUq
+         f0wCgRNK5+CRXTm71hZw9n3+iO1+kX+0g6+SxRy6k9Z0nlGnumy+81o0vvFdx1SL2/ze
+         7kPyITn33DXjtb+fl0LFURnEPKkL/1sQDPySO4GArLZ90/XfS6uf6kYBzwvjk+bJyHfr
+         ubunCYJNZ3tRWkgnTCpVBZ1QUgOcwkPOVs9QKDSnChzAJuJaZGUWXUAEtz/jEqRulXzf
+         lwUlos9lpu/u+Fwq2QYsPrAW5bobpDHxiTn6bkTlmgBM6n1/CRIg1JaaJr1qdu5Fc/p2
+         ERRw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795471625; x=1796076425; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=2Wn4ycrprsEYpxFTIDDs955RXGY/aWC7MHO3eiRlG/o=;
-        b=vALU0pa3OkQ3O0/W6aBnzPoek0F7d4qs+6AW+aZxGHgGYfGS/alpvHfAC5xqC4gm/n
-         1/LcjFnf+GGRL1aV0Ksi6uYTku6OJQrHBClxjdLoOiGSfgkU+J5RttnWC5vXCM5IALb+
-         B2J59J+UTE0DRo7pl8aIrTdQY4lis8p8B/nwKPEqUux2Qcwz8F4kowX7adylH6Kgsfaq
-         tfy2IBnc00opNDTyXaxXzeJgQ9gjc70WKN1/BST0EPNXzsi4vxU2INikAAF5xgG+lkLR
-         Uwbn3ibpfhlLxPlWlQFdH3/gybG2CWwKgo6GRaRKdXTU0annEPkizPhUloyCou9HsPJi
-         t1dA==
+        d=chromium.org; s=google; t=1795501202; x=1796106002; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pI4cY4bgznXKJ4A1hmZr6uhBddx8lY/IEe8WYtmh65I=;
+        b=gLQh06ZXN+nXp1eeOgp/W/m9EQcb4H6xxbAtyBqkY2Re512Zn0YieDfPUaKgVNKnaf
+         wsyJvbnWySDCo2sf8C5Mg56I+TKOuiVvALTqyjKc1h3eZrL+J8OIfnMcfXINEb/5SB4g
+         jYSFvQACzQeoK7mOXSeU5JhFzNnUPbcoC20xQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795471626; x=1796076426;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=2Wn4ycrprsEYpxFTIDDs955RXGY/aWC7MHO3eiRlG/o=;
-        b=A3AZnd9R9RLRJIZI1k97wrt2vEpYslKGdXijJjLk+iYFATeWSdhreDsHLkB0LUbsOU
-         Wm+u8xkIVZ0QN7tRgSRKSp6pr0bb9Zb1v2U5hswiYMCzyRQxB3/zqCgAY90e4XEQqBPm
-         1sMlEIclH1+h3pGCyOzFs/D2yWBrBsNc2TUAqaWEKtOVEQdg8KDJNco3+FZGpYCNp/e1
-         sbO1patJDLFxWbs64ws/dKWH1kkxoOWM0gv+NInpfNyr9Tca2C0PR1x7ZiuBCOJ1Z41j
-         jD+cZiN+XmK435Mn3EJwkJZx+p3PQVqdIieXaRDh6AqD4nST9gq66A8DaaP0Vdk13EpH
-         N9+g==
-X-Gm-Message-State: APuU4Z+PxfJ+AgBBoGRzHrIDc+EIBkbdZcHrUnkmI/2/cw+zdEJQ+LAX
-	WV50B3uBS2HLna6p2zcLfh/yJeul7I116m9nzU46JnN648g5J3nyORE+
-X-Gm-Gg: AZFdTZdr+r85NUV4hEfQsZzkz11EKRvIlFTNNy3fvgHQR1uBo0lEWK6LhCnUARQWibV
-	HYRUzzGMkm629Pt/HQJsQ2b//xvl3Z8qUWcaCDC7Cac8laTKaPMYV/wRYGiqWA+6k9yDRvMrJR8
-	7wasKe+2NeIRXoyFlUSJXGlXgq+kaDcu7ZRHCbf1nhIDUoagcuYlQTr4QPJYhoLdzhQhfMgaoEu
-	y/nziOxnY3X6WgiQfHNlVnFScqvLbmRoXDCLzziWbIo50XeZu/fqExTpSPx7J4jv5OWyxhigr61
-	y1ll23T23At0DMCpbIkWjtKZc0yAzV3yFVYJtjsXJQUeIF/DYFbJl3+6rpiHZ/fjF4Ykfwb3iUZ
-	Avlbu89e0Vt9SaLwg10s1iTixVePwsUyXzxNC5K1HgiZJxE2BtZnKQd3aehnm1jhKZRoco2ireU
-	7Py5uo4QsHJ0agOlfwDEXPMy9KkecO+6/mnDlEAVNoF+Lu9w+CsX1Yns1btiHbH/FsFSF50zZc6
-	grGA2OPClIfkUTuXdI4oXh3MzQWJEDhlLCdkl0JgzGz8V0pxXLlZZqM+qAYD0yGZM2EDa/1i1N5
-	dUWLvVt3Tzj3eDBhGySU2c+zJY674v/aNyReIoMwgHB1myfUKPNVfixHv4OUxdy6pCCStn56Te0
-	QsndZ1TNIhfoNfXP4Nclfkxpx1cMBGilmsMPfuQ==
-X-Received: by 2002:a2e:a9a5:0:b0:3ae:25c8:dc3a with SMTP id 38308e7fff4ca-3ae7f9a6918mr42861991fa.8.1795471625467;
-        Mon, 23 Nov 2026 14:07:05 -0800 (PST)
-Received: from yantra.. (nekmmqsyyquzw1lm5eb-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:3cd2:d52a:a1ef:5dd3])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae805215ccsm34272021fa.21.2026.11.23.14.07.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2026 14:07:05 -0800 (PST)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: [PATCH 6/7] iio: pressure: dps310: drop the unused i2c_set_clientdata()
-Date: Tue, 24 Nov 2026 00:06:48 +0200
-Message-ID: <20261123220649.36887-7-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261123220649.36887-1-zoone.rupert@gmail.com>
-References: <20261123220649.36887-1-zoone.rupert@gmail.com>
+        d=1e100.net; s=20260707; t=1795501202; x=1796106002;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pI4cY4bgznXKJ4A1hmZr6uhBddx8lY/IEe8WYtmh65I=;
+        b=K3cvbR8M0k/PeSf5UnzEErQ1GxV9pR0l9Ersx5djWRtxOKeNQvi6tCGGwI/+gaRjvk
+         +trcQMSZia0XSUGvERr69RbRbJVd4UpFCYv7HfTOMdgZVE1uQUEKYbGbGlsFl5JPF35W
+         O9AeLuGj4p1vkkrU4l2I+6Q7NK5WCn19sZtwgeo1noLJ4mDoHz4jkHd9REoPC2GLAqYq
+         N1KxXEpM9Dv09/knF2A3J2hM2N1LI9f4L12JklcvEB3DCNB6bkOnAmXFkFAt+wi3e4cR
+         rWoCd4EI0q7ijgzyJgKA4X4I/vwQVd7IZDCeRsnBUMYWwWsTOMJcbIejWYQcs8ieUZWY
+         dOSA==
+X-Forwarded-Encrypted: i=1; AL+hErErvN3ZaSAPHniWdQtppOTP7HrUVgSP4X0uxd5wYvjXhH3crPuzq6b6EmDBxdI3g4TNM9+emooVO4g=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8H978x7SKy5sVi4RNUiKQwIOODgIx/aYkrFmTeQZI3CzB5yOEB
+	oy/opXTwYkmmBKDrO++5Q/bLjFOQlde24V5E8lfA6u+iifgKIpoEcecQ1FTUqjG4FtnTzLdNV2e
+	tj/SKW0WO368mmMjmu4QjpVJ2w6xTjLg9xeojSdpH
+X-Gm-Gg: AZFdTZeUFY3aW5WaF55p6he7J9HkaBIXzJY9i1AlcbETNHDKMB/e3P8V3JJwvDaLWMN
+	xV6ohMYBpSJUg4h8coPoQ9t6jDpshJ/EGBty3Yl5iSeIPWIPXSvVXKFuyGqRXih5pDBahgYq8Rr
+	6uuRR6gNeQDZ5FzVGvkzmjIFk/dBoyckdhWK4icGMCCldT0gfIdFei/aXI41NMd3n1KeZVGSvIE
+	IL8Ym5uRwK5Qnlp3vNShpaUFfgMBsW5/826yKjKepvXULBsGBgW6YgOTAL75198gMWZRVfT2Rqq
+	vCSQd/MepzQXBL/4gaMVKscsZaW7urhDpKVEcxy9KQ0BoXCdiN9VpjGxYZr9Hy9ed45SpuZOMKE
+	HU+Ro/Kqpr8F7cSQNejSLY8k1BHth8xnUcNWGr8iin/k4Tg7fZAoY9lxpvcNvtS+H2oc=
+X-Received: by 2002:a05:690c:2a87:b0:8b3:3fe5:f6b3 with SMTP id
+ 00721157ae682-8b520537719mr57934737b3.50.1795501202456; Mon, 23 Nov 2026
+ 22:20:02 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -102,34 +101,104 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20261123113755.3033436-1-wenst@chromium.org> <20261123113755.3033436-2-wenst@chromium.org>
+ <TYYPR01MB6603FFE6D156C9E84C9891DA86452@TYYPR01MB6603.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYYPR01MB6603FFE6D156C9E84C9891DA86452@TYYPR01MB6603.jpnprd01.prod.outlook.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
+Date: Tue, 24 Nov 2026 14:19:51 +0800
+X-Gm-Features: Aa3M54ojNfKajFSsYfJiknRIvLbdnHGoigTuXBmWZPLKOqIabbjntbCzug34xtM
+Message-ID: <CAGXv+5E5fSyU6gEPk7BLQdz6wXpgSxaXShM_zTtjuim5W_pxdA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] power: sequencing: Allow desc=NULL in enable/disable
+ stub functions
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: Bartosz Golaszewski <brgl@kernel.org>, 
+	Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Nothing reads the client data back.
+On Mon, Nov 23, 2026 at 8:36=E2=80=AFPM Biju Das <biju.das.jz@bp.renesas.co=
+m> wrote:
+>
+> Hi Chen-Yu Tsai,
+>
+> > -----Original Message-----
+> > From: Chen-Yu Tsai <wenst@chromium.org>
+> > Sent: 23 November 2026 11:38
+> > Subject: [PATCH 1/2] power: sequencing: Allow desc=3DNULL in enable/dis=
+able stub functions
+> >
+> > The non-stub versions of pwrseq_{enable,disable}() are no-ops when the =
+descriptor is NULL; however the
+> > stub versions always return -ENOSYS.
+> >
+> > This would require more code to deal with on the consumer side if the p=
+ower sequencer is only needed
+> > for a subset of the supported devices.
+> > One such example is the rzt2h_adc driver. Only one of its two supported=
+ hardware blocks requires a
+> > power sequencer. The driver could be built without power sequencing sup=
+port and the other supported
+> > hardware block would still work (provided the Kconfig dependencies are =
+changed).
+> >
+> > Align the pwrseq_{enable,disable}() stub functions so that they also re=
+turn success on NULL
+> > descriptors, acting as no-ops like their non-stub counterparts.
+>
+> Could this make debugging harder? If someone disables the pwrseq Kconfig =
+option,
+> the stub returns success, so the power sequence is silently skipped.
+> The resulting failure (e.g. card not detected) would then look like a pro=
+blem elsewhere.
+>  Should the stub return an error such as -ENOSYS instead?
 
-Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
----
- drivers/iio/pressure/dps310.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+I think it depends on your code? The (devm_)pwrseq_get() stub still returns
+ERR_PTR(-ENOSYS), and if you pass that to any of the other stub functions,
+they also return -ENOSYS.
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index eb5715f75e9e..7581ea4c99ba 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -1633,13 +1633,7 @@ static int dps310_probe(struct i2c_client *client)
- 			return rc;
- 	}
- 
--	rc = devm_iio_device_register(dev, iio);
--	if (rc)
--		return rc;
--
--	i2c_set_clientdata(client, iio);
--
--	return 0;
-+	return devm_iio_device_register(dev, iio);
- }
- 
- static const struct i2c_device_id dps310_id[] = {
--- 
-2.43.0
+This change specifically targets code that expects pwrseq_enable(NULL) to
+succeed.
 
+
+ChenYu
+
+> Cheers,
+> Biju
+>
+> >
+> > Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+> > ---
+> >  include/linux/pwrseq/consumer.h | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/include/linux/pwrseq/consumer.h b/include/linux/pwrseq/con=
+sumer.h index
+> > d24b5af3e49b..5b3c61e963eb 100644
+> > --- a/include/linux/pwrseq/consumer.h
+> > +++ b/include/linux/pwrseq/consumer.h
+> > @@ -54,11 +54,15 @@ devm_pwrseq_get(struct device *dev, const char *tar=
+get)
+> >
+> >  static inline int pwrseq_enable(struct pwrseq_desc *desc)  {
+> > +     if (!desc)
+> > +             return 0;
+> >       return -ENOSYS;
+> >  }
+> >
+> >  static inline int pwrseq_disable(struct pwrseq_desc *desc)  {
+> > +     if (!desc)
+> > +             return 0;
+> >       return -ENOSYS;
+> >  }
+> >
+> > --
+> > 2.56.1.831.g720f3f5937-goog
+> >
+>
