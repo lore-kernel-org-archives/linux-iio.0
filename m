@@ -1,83 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795518477;
-	b=VlGcaMOkUNt02gXwSsUYkkJuzRWliX0d6Hp3mOwGtMfrkW0cqNQMP4EjaFp8/igLtK4y
-	 f/35VNTfmVnUcGy35KerwDr9HZ1CU6lybbixvhKOPB/rZ9DC9UOKniP0IJQ3gYHyevnDk
-	 8zbmRFg3DrwsHBvl86A6RdSDXV5eMoTNfZuGJmmUwnbhB4OflbJBWGcPYbezscNXchAeQ
-	 zgXl9dhgZJ/3LabhJzWmBACx9nmN6nutyatZm2nLt1WiNnZbe8nxrpvqCz4K41WftYpiA
-	 f3MkxoJRoDrmQcFfQ72DrPYG+9htxT4CQu+2J4AerGcjdjISYrpFyDwwhwMAxer4ItA==
+	t=1795518529;
+	b=TjyfbxiPDYpO1c5wK0/Wzu9+DYi44wJ627ztvQ/29kHHmNz+I6vD2D2DjGFrTb5zkZO5
+	 GtbkqANjMX31sN1PFcyfNHVCmtz1mb2bIVFYCXkDGGRtoSYDQf/aFoqvL3oQ2qBD2rReS
+	 R4EPS3gEv3NSR30ncpz+se1bp0xQ5JZLPLKRgFvVIO4l/hg2xuHsJ/1Hb8IOUIR9UbRjV
+	 vD873MUdVRUpbO5ShB3GThh1k0U5yAVVgi7hWHEefQPNuSqOW4AlIEVDDRLHpYtcyrmY2
+	 mHOv/W9MybGowExBLgQHLo7tMAgowBxVk0mWII8ZjYBfMLNxf/7DwAkvGY7C+2kYk3w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795518477;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=5NpROjfn9S19F+PP+SU4tu7Dh10hYCyLji15RDL3+e8=;
-	b=W9GdzdRl4KLslUu1b8mS8fX70Fmpv5jib4mf9Xqi9NcPVhqXRL+Eic62f8HmDC9nMOMn
-	 P0ohtiMHco42mqO1UbuODIn5Gz1yAhg+llEZ9kYUkbLAvlVXyQMBnx4XS9wF/vm0gGcaz
-	 TyMsSqaFSk1pIisXXNkPkQky3tBsfgEBB3O1DIUC6BOosos5WHw7rWn1essK9HjFNuQIp
-	 DXGJCLMzInH6FBLP668BT3LJZjovt4KQ6UzP64kqwfZgx6ZfvsO+diwAaZ0cA3A32iphu
-	 qhJ3BnwOWmwwffBPrpTI0ri8bmtISZoRiHeaZBcee8DfBb1oD9DLouelga/tumbGzPw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795518529;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=CetQmFtOguzNQpi7pceO/bzzVwbiUxajNwWkf66b/V0=;
+	b=DFBJJHVRiOp8vYEn9xEvHA8tdXvIjHNfhg3IFZeticnT4jBKRtHbsjfhzznTBMLfpJPB
+	 l9ylvNJQ+PsTlyocnlZMxxh5by2HpqK1f0nmJ8vOTlVsQcTkYu0GHcpPJT6bwYe/sql8J
+	 fZs/J3OzZBSPo3KDtHQeQDl8tBS6Fo3d2Y8R+GX+lRafJ0yxWhA5htlqDbAG0LdaAJNNX
+	 IeCXzusNsNzsUTE3HYebJF4YPd+HyuvCgkx0sXrnZW+CFgHna2LqBHRicw+SV0t96n1g5
+	 8VZDyNNbDacTNJKaqx+zT/wElP0E/ny9DCa6xp2VlgPVxT4x9/YQx7FRB4BgSSi7/TA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cFxOp516;
-	arc=none smtp.remote-ip=192.198.163.11
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M1rb+TSw;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 815D6606A31E;
-	Tue, 24 Nov 2026 11:07:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 815D6606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 9BF23606A31E;
+	Tue, 24 Nov 2026 11:08:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cFxOp516
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795518478; x=1827054478;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=uXO0MdgcqEofUAk5uNBXc+ZK1bEtIEm0MeHVCxyP08c=;
-  b=cFxOp516v7CLgcfyTuA6UnEOPwiMbYrleTykjGfvuT5vB0j74hv2/ObP
-   8UbQNYFbnfIml+wZv4gqJAWdjj0omVdYQqwsSWC8KSpvPZ7eNMgaLh8Nd
-   NtJnEN+u0k6ZYUnF3IUBhc5BjlGcaHaVkJfA3DYzNfl7a+7fgr12HA/Xi
-   8ok79a5fEXjEHmUdt3fdR+bhqelyvXsCWfqsLY+YCEYXrPZp2d7NIYFVI
-   5Q+K8F/1cx+HJZuKXpLMXWZaEi+Cg+TcBYFciOMvC3GJNb6G/sa+rJOmV
-   guaqKxWhwlR86x0lugUX/EUiyNGagwwCHGy0FBmVjEVOc5zwC7SG4bc3I
-   w==;
-X-CSE-ConnectionGUID: AnRpyvijQEymZZiz+L+VAA==
-X-CSE-MsgGUID: hMZB8FoxRpmrq3EGn5lDlg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11975"; a="4263552"
-X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="4263552"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 03:07:57 -0800
-X-CSE-ConnectionGUID: UQ11Q+3oRjmI4ajNLNUSAg==
-X-CSE-MsgGUID: Jf3P03WtTz2lDztrGH6FHg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,230,1787036400"; 
-   d="scan'208";a="11870354"
-Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.245.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2026 03:07:54 -0800
-Date: Tue, 24 Nov 2026 13:07:52 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: core: Split debugfs routines
-Message-ID: <awVwCFJjjrMoiWCB@ashevche-desk.local>
-References: <20261124094502.557175-1-andriy.shevchenko@linux.intel.com>
- <09328c36-a32f-488b-a2c9-76fab784d259@kernel.org>
- <awVq-mE1H2g01yS4@ashevche-desk.local>
- <awVsI5KfsvEruJYG@ashevche-desk.local>
- <508193e9-0157-4ff6-8276-760463ec5e60@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=M1rb+TSw
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 458D91F000C4;
+	Tue, 24 Nov 2026 11:08:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795518528;
+	bh=CetQmFtOguzNQpi7pceO/bzzVwbiUxajNwWkf66b/V0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=M1rb+TSwVXhD0FcaK2WuQjvpoRwDYVTIZeJ7lOekP+N7uFNNYvcEbobbMX7Hgi+hw
+	 nydEjihjcg8p2WLIz+z38Zsvlm3Nq+IyH2i0RbxFNynK0DdMN+OTTn4Ue0n4LSGTzh
+	 xikwWBrLZEZZTnD0ZrJ9qgvzNYTlV3YJLN+eTeFV65cudfCTufYGzn3ToxygexqYbB
+	 vW9jC1LVfEWcPgMdgZ0B9FxcKmScB4NyVZlrww9bEyt4gS0zkw3CUD7hFcc6JBu6mF
+	 3B5zw2SipetxTx2IL+MhyCmi20e+IPrkr7iURXX0lne+0aQTHtxu8lSy0gUtberGBV
+	 nJq5FPOFvb/Vg==
+Date: Tue, 24 Nov 2026 12:08:46 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+Cc: Conor Dooley <conor@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich <michael.hennerich@analog.com>, 
+	Trevor Gamblin <tgamblin@baylibre.com>, David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+Message-ID: <awVki6lC3SxGfqSl@monoceros>
+References: <awQ9oGse6orrsCDj@monoceros>
+ <20261123165522.336249-1-Nicolae-daniel.Deaconescu@analog.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -87,48 +59,92 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="sbfv4le22k4govfd"
 Content-Disposition: inline
-In-Reply-To: <508193e9-0157-4ff6-8276-760463ec5e60@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Tue, Nov 24, 2026 at 11:55:49AM +0100, Joshua Crofts wrote:
-> On 24-Nov-26 11:51, Andy Shevchenko wrote:
-> > On Tue, Nov 24, 2026 at 12:46:22PM +0200, Andy Shevchenko wrote:
-> >> On Tue, Nov 24, 2026 at 11:17:01AM +0100, Joshua Crofts wrote:
-> >> > On 24-Nov-26 10:44, Andy Shevchenko wrote:
-
-...
-
-> >> > > +#if defined(CONFIG_DEBUG_FS)
-> >> > 
-> >> > Veeery small nit, but why not #ifdef CONFIG_DEBUG_FS? It's not
-> >> > as if you're checking for multiple defines.
-> >> 
-> >> Or even IS_ENABLED()?  Let me check if we have a precedent in IIO, I will use
-> >> then the same or most used style.
-> > 
-> > FWIW, iio core uses exactly this form for DEBUG_FS test, so for the consistency
-> > I leave it as it, and if required we can fix this later.
-> > 
-> > $ git grep -n '^#if.*DEBUG' -- drivers/iio/ include/linux/iio/
-> > drivers/iio/gyro/adis16136.c:66:#ifdef CONFIG_DEBUG_FS
-> > drivers/iio/humidity/dht11.c:87:#ifdef CONFIG_DYNAMIC_DEBUG
-> > drivers/iio/humidity/dht11.c:235:#ifdef CONFIG_DYNAMIC_DEBUG
-> > drivers/iio/iio_core.h:19:#if defined(CONFIG_DEBUG_FS)
-> > drivers/iio/imu/adis.c:227:#ifdef CONFIG_DEBUG_FS
-> > include/linux/iio/iio-opaque.h:73:#if defined(CONFIG_DEBUG_FS)
-> > include/linux/iio/iio.h:1010:#if defined(CONFIG_DEBUG_FS)
-> > include/linux/iio/imu/adis.h:573:#ifdef CONFIG_DEBUG_FS
-> 
-> Fair enough. It's just a style preference I guess, hence the very small nit.
-
-Yep, and even if I also think about plain #ifdef the consistency would prevail
-over the style.
-
--- 
-With Best Regards,
-Andy Shevchenko
+In-Reply-To: <20261123165522.336249-1-Nicolae-daniel.Deaconescu@analog.com>
 
 
+--sbfv4le22k4govfd
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+MIME-Version: 1.0
+
+Hello Daniel,
+
+On Mon, Nov 23, 2026 at 06:55:22PM +0200, Nicolae-Daniel Deaconescu wrote:
+> The driver has to know the clock rate the PWMs run from. CNV and the CLK
+> gate are one burst of whole clock cycles after each conversion, and I have
+> to place the end of the burst relative to the next CNV. The gate has to pass
+> exactly the number of clock pulses the ADC shifts out, so I need the exact
+> number of clock pulses in the window to place its edges.
+
+I don't understand that, but it sounds a bit like
+https://en.wikipedia.org/wiki/XY_problem. I suspect you need a pattern
+like this (just one period depicted; 12 is just an example):
+
+                   _   _   _       _
+___________...____/ \_/ \_/ \_..._/ \__
+                  ---- 12 pulses ----
+
+and the idea is to create that from two signals, a clk and a PWM:
+
+ _   _   _     _   _   _   _       _
+/ \_/ \_/ \.../ \_/ \_/ \_/ \_..._/ \__
+                  ---- 12 pulses ----
+                   __________________
+___________...____/                  \_
+
+and OR them together to make the PWM mask the unwanted clk pulses.
+
+And then with a 2nd PWM that does:
+
+     _
+____/ \____..._________________________
+
+to trigger a conversion.
+
+> The existing rounding functions give me the rounded nanoseconds, but not how
+> many clock cycles that is. For example, 4 pulses of a 120 MHz clock last
+> 33.3 ns, so 33 ns is rounded down to 3 cycles and only 34 to 41 ns give
+> exactly 4. At 100 MHz the range for 4 cycles is 40 to 49 ns. If the driver
+> doesn't know the rate, it can't pick a number in the right window, and would
+> either run into the next conversion or corrupt the data with a shift.
+
+Unless the clk is very fast, the nanosecond resolution should be
+finegrained enough!? With the clk running at 120 MHz[1] and 4 desired
+pulses the masking PWM needs a duty cycle between 29.16667 ns and
+33.33333 ns, i.e. between 3.5 and 4 ticks (and a common rising edge with
+the clk signal).
+
+Assuming a sane hardware composition and seeing that requesting
+.duty_length_ns = 33 yields 25 ns, .duty_length_ns = 34 is the right
+choice.
+
+The same calculation with clk rate = 100 MHz yields: duty_length in
+[3.5; 4] clk ticks = [35; 40] ns and 40 ns gives an exact match.
+
+Does that fit your problem and make sense?
+
+Best regards
+Uwe
+
+[1] assuming a 50% clk duty
+
+--sbfv4le22k4govfd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsFcDMACgkQj4D7WH0S
+/k7fiAgAgDDYAMOZwxyp+5zUgbzyWNhnQ7SVPQKkIkFo/bzASTZq4++ykCE9Awh4
+AiYUNIt2NuduNav7sHVRCvvhoiIbTyIuIbsnT+ESSw7sbWoL/FiJDCaDPYJ92ufO
+b4FW9BNJ6FdQR124b5WZt4fbnMitAJrFerWpZPdqVS24F9+hsOS9zR8Eg/0VIPtp
+vc8bq0CUAuIBNP+kfOGRd9hEM+2G1rxHso86YL6odMfeOMNiXZWzLrO/gUe5eQ7Y
+FdCiXQjlRTO/mKNX7mKKzKPLN9J4cVhNBicFAodyFdln2efG9+xEV+gF613zyYpZ
+5tJPjKpG1g36WWjhhnOuOMuqDsm85g==
+=c5bw
+-----END PGP SIGNATURE-----
+
+--sbfv4le22k4govfd--
