@@ -1,55 +1,61 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795526416;
-	b=F42y19ijDOE+5GCREgyuPyfg2a5XNRn1wtrNzfKka0urAxIFv3I20AXJgkGzW/HPMmI5
-	 3LlnikJaWV+AMODZBF+q+gc/EBe9WyGMfk+VH9R/Z25GovBxoVb7KRhm6hh08A2W2w7m8
-	 XR9v8bYqKkRWUP91iFrmYGhgkq0fo4My6tUQIKSONqZw4RPFO93mKVzxuf8Oe1+yC2+Co
-	 e2+MxnUdDd9PThA1vo6AZd4XArRizYUS+sa21EDfMgYB7zUhTu0vGaNmtRhDB7axMY9Zd
-	 veNWR9Cf2k6hgZrrJrbaNOWL8XKaQaR2VZAQBGW337jEcvtUuZL3PQkLOA+SewbPb6w==
+	t=1795527956;
+	b=UJy2ATXS8TTuWuaVo5yt/vqQaZHg20328Bn9bZBF+sRFA0eIq7K6MzmdEvyonSe5nHmg
+	 dEsymFrwa9LmZIJ1MqLzuQd3hNcvTyRvnAa8bNGgixx8O6ADaIXbUr0e97M0mSF8EdqOX
+	 CobIJ49aUsRhqMQmzSkycCJmaIIQZ7CHpvnzOyFGu0c6lxbekY/JwV2dh1OAk/OsfYlIg
+	 81x6J/MPxB4CXlD4uJjIzC0K4jISQcLr9NTSq2s5NGDKvHa+29MUBmIyzmqtBaUcLLk1g
+	 ioMtVA5i46dSmwOvxNHEuPipIpwy+YkVlzS0YqPi2YmJl8h5/AjHeNwK9AsXf90f44w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795526416;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795527956;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=cZJ8DL1d7qjgUTKMH6thK/4qY2ynwBsw0u6il0VZqYc=;
-	b=TvKWAcNwDAv4I19rrwYXMGIliyztt0pN1QgEqp/1MQt2zGMic59g0Qz6V/egjOcSFazi
-	 tBEL3LaG4NkgDCFb5Q+3ivzKfap0uEOYO+VIOU0iyLGcIVFUH/4SCUHDWKaZQRHspKnFk
-	 Lv7z/2FczpEar7P9Oiv0ysTGdMbWdrr/12S0cEguEx8Vf5XBQjv8l/zRGpTkH4HI1AQrq
-	 XaxzqOxP1/bE3E5do+sRLcLwwR1VztydS6qGQLYzWGdxU9YgnGetrrAqQmyqRotJtpUTk
-	 7umSi1fhNi1y/Ee0zzKNjYyWigrPUIHvIt2Z2W7RzbJHV7cpWzW+btoF+IzTPqePyOA==
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Cookie;
+	bh=klse+WkM5nsp7cQ6XpAeI80imLNq4UgVB6hd9cWjqJ0=;
+	b=rXore6cw0RDd89QI1utPQoqxlXyZapzaUphM+EwDkGkh1mqm7l63si4EZTK52NN6cAtK
+	 HNpQVgPIcaAGb2jv4RRHtR0Pz/IjyRay1K9rwqDH+EJDGk75je3v7QIMfj3ou+VQdOm62
+	 lzkVJ85wxkeXJKnSJBABZWRyGD05aE/AGZM3oxX7cXTu98hkW3OdlPZ6+Zrqf+vHYYdsp
+	 TdD+cg0cYHosR3M1Plo0eZKMbys2Qt7k27jAPMx1effnndxjSKYqY1eAjnw8nIqrtl7oQ
+	 WbTK2TZeeHlrxG7vEKRhh4v0A0z/4BofSDBO+TbvCFqjJekBb4THC/SfRB0xvvYA/JA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MjN36CHb;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UNgmgpNH;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id C4CBB606A330;
-	Tue, 24 Nov 2026 13:20:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4759D606A31E;
+	Tue, 24 Nov 2026 13:45:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MjN36CHb
-Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id 0907C1F000EB;
-	Tue, 24 Nov 2026 13:20:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UNgmgpNH
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B3E1F000CA;
+	Tue, 24 Nov 2026 13:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795526416;
-	bh=cZJ8DL1d7qjgUTKMH6thK/4qY2ynwBsw0u6il0VZqYc=;
+	s=k20260515; t=1795527955;
+	bh=klse+WkM5nsp7cQ6XpAeI80imLNq4UgVB6hd9cWjqJ0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=MjN36CHb5CPashNExo/4MfOyLwR4/aGKPRCPFPAuS9sIdJ9iwrQlx4u41QhpTql4i
-	 n4Di4J2M1dxOuXq7cjWVTPxl26QEmBwqsTsGkKwRU5VJrkXaGQ1ieVWnqS64zG4/+S
-	 70bsDrOU6/8VdkdTfcx942sw09bodxLlUC2UNAgJZ0ZN5a+qMwb77Psq7nw3QhIqI4
-	 dydLaP+wNo8sakib17sqWZU/v4No17z22soA8zUrElhHsNB4DZ1WjO9C9aV/ouYISd
-	 v6HjTNEWEoEg2u+076HtCYy2F+3SJ/2chvi4KdUGT22Goml5qAoDZEpfCwSlonMfw0
-	 4Sj27iiiVBDXg==
-Date: Tue, 24 Nov 2026 14:20:14 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
-Cc: Conor Dooley <conor@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Michael Hennerich <michael.hennerich@analog.com>, 
-	Trevor Gamblin <tgamblin@baylibre.com>, David Lechner <dlechner@baylibre.com>, linux-pwm@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
-Message-ID: <awWOlgD86XQ_1Vgs@monoceros>
-References: <awVki6lC3SxGfqSl@monoceros>
- <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+	b=UNgmgpNHrbdULPvjKIavxxzZRxy4Xjer0TkEjH3zHYzAE6re4X+AWlr8/5Xeo4iOS
+	 qk9d+EGekW5+Q+UjrVTe5GrJjV0s9sBEIdjGw62hVKabx1hrt4CVDgErzl/tRvxGXx
+	 5de8akPt0sRem+qH8swqBWrG0fX46E9pEic1EYzJDFY2MmxWqNcM+MPdtqMt9BYFIg
+	 D41KgXkAEnfg086kymdrgSCVXeheERzRHF6Kcv0aOicNqG8cviYyq+InADWzmBm8WU
+	 ifckWuON0WFW6OTZkpxgD1CXhkm7YUdr5N6+Li/Oxn6UakAXz2lwIZfWGcobYZCSjf
+	 Ey1cOp9mcx2Kg==
+Date: Tue, 24 Nov 2026 13:45:50 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Raffaele Tranfaglia <raffaele.tranfaglia@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Johan Hovold <johan@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev
+Subject: Re: [PATCH RFC] regmap: kunit: add tests for values wider than
+ val_bits
+Message-ID: <a78a0db4-041d-42e7-aba3-f8f737bbf6a1@sirena.org.uk>
+References: <20261117-regmap-kunit-val-bits-v1-1-a1cd02063217@gmail.com>
+ <av1qOFxolvDhQTKs@ashevche-desk.local>
+ <a93f6d11-22a2-42db-81d8-297240c9bd2d@sirena.org.uk>
+ <CAJsKa+4KEU8ejsDvj0=qCh3=XC5dZZNv_X+Saco4Ln3Y9q9dOg@mail.gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -60,50 +66,41 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="nh52dyjfpekntz2n"
+	protocol="application/pgp-signature"; boundary="fZ3qR/wdXIXW2/8j"
 Content-Disposition: inline
-In-Reply-To: <20261124114714.611570-1-Nicolae-daniel.Deaconescu@analog.com>
+In-Reply-To: <CAJsKa+4KEU8ejsDvj0=qCh3=XC5dZZNv_X+Saco4Ln3Y9q9dOg@mail.gmail.com>
+X-Cookie: Real Users never use the Help key.
 
 
---nh52dyjfpekntz2n
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+--fZ3qR/wdXIXW2/8j
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
-MIME-Version: 1.0
 
-Hello Daniel,
+On Tue, Nov 24, 2026 at 07:29:34AM +0000, Raffaele Tranfaglia wrote:
 
-On Tue, Nov 24, 2026 at 01:47:13PM +0200, Nicolae-Daniel Deaconescu wrote:
-> Yes, that works. It is how the gate duty was set before, in ad7625.c, with
-> DIV_ROUND_UP(NSEC_PER_SEC * pulses, rate), which gives 34 ns for 4 pulses
-> at 120 MHz. I'd drop the step API (patches 1 and 2) and do the same for t=
-he
-> new parts, but i don't have the clock rate, and without a clocks property
-> I don't know how I should get it. The PWM core has no way to report it.
->=20
-> Conor, Uwe: is a clocks property on adi,ltc2387 acceptable,?
-> If not, how should the driver get the rate?
+> > It means we can't enable this test cases without addressing the underneath
+> > implementation(s) of the regmap. I think the proper solution is to cut upper
+> > bits on the regmap level, so the cache and HW will see it as expected.
 
-I'd say yes, the clock is a relevant information in the hardware
-description.
+> Mark, would you be ok with masking in the core? I would mask val at the
+> start of _regmap_write(), before the cache is updated, so that the cache
+> and the bus see the same value, and document it for regmap_write().
 
-Best regards
-Uwe
+Yes.
 
---nh52dyjfpekntz2n
+--fZ3qR/wdXIXW2/8j
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsFjwoACgkQj4D7WH0S
-/k652gf/REvKgLBulTTz5q2QpmszqJRFowxppKIG+DzxbxLrHf559toya10tLlEZ
-Ft34T1j0U8WfOKXm0Z71P80VXXXc9Zt11KJDnbezai36FA6LJplQqjAUmhPGR6E8
-/RKeoOaeyFcE+VkHnjWlHNq8e4MGC2LKUq44vS6tXFOvdrpxhkA+sT0VlLJjABI2
-bxP7grkBZoGN96s3ILGMdeZVFuWos465Asy8batD1o0c9P8v0ImlPMMeGsoDqcuK
-mAns9q4wI5fW70UuZGV27Pfg296bn29JvBfY9IpCFVOQu5vD+EYZr8Wwnt0bRY1J
-3b+PHqVEPUNc7NAZhXbTghjaSZQu+A==
-=BKMi
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmsFlQ4ACgkQJNaLcl1U
+h9BqAgf+NN8K8XBHfrCWcWFWZZkgpjw/m2yiERZtFwStD9K/017B7ex8fgl9eq1y
+NgQ6Yxb/qape0IW9/Xrk2GGbJIPSrtJnT9fvTa+H8oxgHPmudbhXkM8Pr4s55TKi
+Yyah0aXWeEXzmUPXPdd9p1o8f7PmC39q9Qi5zD8P5NHzumjSJpkNpgyP45raFDtA
+1ndwnCBKdDx7GasjFsg4iLzja2RS8spe8hz0SHtXLZZrhM849mt+mhtMEJmRwgcB
+zVFFpsDasVG56ppaOEm/mAsg7ffpTzfUoZRoNVH7W9fo7bo44B2C7ilEUpAiWQy1
+NHkEVlmW0ETwNeqABwmMUjip0beYMQ==
+=2Wln
 -----END PGP SIGNATURE-----
 
---nh52dyjfpekntz2n--
+--fZ3qR/wdXIXW2/8j--
