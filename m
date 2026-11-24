@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.5
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.85.19
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795539229;
-	b=piAvaiCL42Gwgs9w/u9gZlYWHUqydUbB67kGQI66TO9ONYOvA1yK/npMR74w4Z6AFFtF
-	 rfYF0fWpTZlQUYowojjP3I89TMmJPHLMOayXf9pdrwkVauLqnEnKT9+ynL1Yfe9E0iNx/
-	 BBO7OyOaDYIG4oL6fVIUawTuuNaPrkAg2Vhp/wg64VhviDHy3JcqcoCGM5yFAjIbYLJIC
-	 bAcefSFTH0uvzviyOyqkqhAJOaIb2EskNtUh1LJ6wGDeFv4FAo1AEMNuy+dBMrV6SU07D
-	 JIS9w3eFGljFELfKMwSwr/UjdP3n7Kyn5hHzK//uVFWfbbHorlfX51bJXNfC22cx8Vg==
+	t=1795539313;
+	b=KE9oIpDWyO8AB9qphFk2M48EFkpl166WDrmDXBT3Pg/7W36SgcEtGU0+PKI0lr16BwSB
+	 3k4dRWj/ImcvcxKCWD6epbHRcP456hAEjREoOq+K2jN1iDjRqVtwqgM0dbC2+EDfWVM9n
+	 9Zig7RhNBYF1c/Od51vy6Wmkt0ianrhkJQD4T2mZp/p3M1Wx564GrN05RbF5CwX/PPXqu
+	 0BjZfVC8lRx39MnGBN9aPQYiiY+Cd5V3qOPT2M4dQuEEfJu/IJr3X8Qm6YPLo9SzqO6jy
+	 wesFv6vqchyWQf5tTHdm+KW0tqLVBY7C9lHz9gEQDX6EDVrVR42GshY9GZWPHjx/Znw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795539229;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795539313;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
 	 User-Agent:From:Subject:To:Cc:References:Content-Language:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
@@ -25,59 +25,59 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=iOk5q+z3t+gH5BFuZnM8gF4oMYS6RiydYksgAOOMLSM=;
-	b=vluAhZ4u7Y8w2C1GUGvetbXeKBMKlrawWgvoQrcEfEZzwU9f/Oc1ApS8XLmbguaftfBH
-	 6aSnnMdiRu3JeP28xYkD95dEa8Vx8wGTQpT4jvqO2mSADNwifP6hZYgRwbBAqkdrPoKMB
-	 AhHfYy5uOgiZ9NoE/60T2l1MdgpFXptDDSkUeslU6RhoCpqbCq2Q2IrflFecPsGXwh9tS
-	 yZ8vsoazsbZdGqjY5n0SY3Yczfp3p04RySwDkumJ3GIBbIP5dQz6TjL762YvZZthAhMBH
-	 IJkEcab/buptRqAAgNzCJGhlAUiQOHFaUSZsoxDj61W/iRlQ13dtpMKekoVWnvaUecQ==
+	bh=lWcttLjKGdCCJ6xgq0ctD1iWvbtlIYhf1zx+oCS2Q9w=;
+	b=hc/Kgl5CvJg86ts1XdXPgB7g4a0UpDconVzcY6zcHCOn93MkFTFvLfoQwsLzjRJjYPGC
+	 z9TG7+5Qjk+b3Z1nAuhntL3y1B+BWqoP7Bt/kQKe97L0ZpZktKOMnsEABF8+MdsG/IB+8
+	 kxzt5LyJNKb4WlOTAaou+cr03iYBRb7ewnNoc3DLKLxmBqm49L/cV7i+3Sj+eTbaUpjQR
+	 HDnoN4SCKTLHuRRrUXYh9JvvmxpQ4nnsG/oOr8jdmgzUVfvKlZa2XRU4AmwSqAYRW9X/t
+	 urnGGjomrz8/WDSFbYt5TSobhiJeXxXqCOu0O0QlRXvt3fe+kD8PzTpLCfvkhMPfscg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=cP+QMTBv;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.5
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012005.outbound.protection.outlook.com [52.101.53.5])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=PYiMLYh+;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.85.19
+Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010019.outbound.protection.outlook.com [52.101.85.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6AB4606A333;
-	Tue, 24 Nov 2026 16:53:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D6AB4606A333
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BE1606A32C;
+	Tue, 24 Nov 2026 16:55:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B4BE1606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=cP+QMTBv
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=PYiMLYh+
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HCPrdgomcWqxp8zNYiEjdxruq8zdWpRPUmjKxl5IN5wasnfgYkAOwNj1VsTuJY9fLvN4kTfcrqfXZE5hHMY5fVfnolfQUAM336Ii/DuIRbB1gUoTQPVQcHGVmiN6uqV+ciV88dHtQ4m/Uv1xR1Ro35KaJuL83FHQ9+YlEEeG7oDd6BfSDefJCM+GHXITvW/V7k7ji7LQo3aaH2/yqBkODKuVH5FYepzbmw7C9U/RBf5CqysfT6o+l2o0WjHFa8kknPkvvsSo5Hk93A2wG6eg6rnnc0EHyNYZ2M9NkCq/MZ/aZANDh3RZSk3VroLvzwixVFQVJQHD379ZrT3t4JRZ6w==
+ b=KKkTvyYkNMV0ST8WpG+ObezxW6CnDdsZGg6odytCY42Dnrs1iNTtamWJGc84ofLx6VQAA1cIuJ+kqoIFK9GDr5MZCOHudATVKgYGzZcE0qE4ud1YrEb+9avhxtJIMjBaHKs/lj3bleG2TH8ufTdKDszdYy6tE2v+Xj/FlGO0kDSgeen1e4Xotf7c3kPbRW01739lSiVrwWx1RJuhjMqgLD+R4gvZZbX9nAObJRbC0mLBq3zu1Kl0heDuDg086jBhe1rTAU61/MA08fHA+iHdWdtPbF06uvpw2IsiEwMvuj2IcHLJrNyNLp/DxvjoVy1oUgUhhahUmVqkN3SxJbHsOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iOk5q+z3t+gH5BFuZnM8gF4oMYS6RiydYksgAOOMLSM=;
- b=ZLjIUnDUBRb07wcRvBW2JAkozh3L+yZkpfVRVJmOq1onMBJV+K4bm2/LHDAfmoep98piS7+oVUDM3nA02F3sQjdf8iNG+OH+tV/bZybRO7CTIWR6lSY2LszC9ZbPvyyMjpqkcx4YVbCbh6pyslY4On4aWlhrX5M9+HxXZtiC9hZAO4SnlEQVpocdWf7X2mpxd+nPcQ2ZiLOyLAOPG9YbGb1ueajYkw1QwPPl9g0anw1iD4cU76DO2J+L9mqvkKwI42PyUYiTV9W4WP3soR7+WzvCM8pO8XCCjhHFSLXY3kG5FlfAsr9eiQQ0ERYXF2jrtTQrnl7nP8LzBcXgA6K1TQ==
+ bh=lWcttLjKGdCCJ6xgq0ctD1iWvbtlIYhf1zx+oCS2Q9w=;
+ b=vpkdlmO/nZmOk4KXkBWlkL2sSI5Q5PP+g5gqe7NQxSkEMeEScj9GEvRFpsMbZb0PBbN643Rco54Ew6rxOfvjr01EZpHGWc4izr142NPNr04JIymFAEwNywv5H9/tRtvgf+nF8cLWV83V0aTvO/ooaRj9ItOOxP0k3AkuIR4w2bYhP0TMJdk5WG7uK+lswhDYCTEfJPg4Yizmm+EI+0Uqw3wkE9z6vWrloBIiNwhs5E5mdRG/wRVyRywa289O09Y/B0iO/GWoE1STvfDu3YGsSpldDIHacsP65km/uvEZ0PO5bzPrGmdknlQ9sxnAXhRFUCOqWwdv7M3JM2ZPXlKmyA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iOk5q+z3t+gH5BFuZnM8gF4oMYS6RiydYksgAOOMLSM=;
- b=cP+QMTBv/6mNI2Aq/ykLJZmyJROj2ejn8uN8H+s8J0PTtoNydnIFxthQ1FoNTZId4gxMrNRsiHPM0IHsjWKfUwHeSv7HOjZXdYrhyu5dpBEEJMcH/210aXepmBAJqHQTdmjhK7NXU1D6v7vJCJveRc8CV0lN8QbpaaTgvPUl380=
+ bh=lWcttLjKGdCCJ6xgq0ctD1iWvbtlIYhf1zx+oCS2Q9w=;
+ b=PYiMLYh+3r/caSunYiwjx15A+iKI017yAPdfjf/M0CH+TcTbRqWi6LNtYWPspIZtJPCO3SUuLmgR9P/A2+mW4gJj94rMocKOWjKV8a9B1WDVkU9IfMwSlUhOjE55Ok2FOm4IH52AGmYRYApi0oNGbv9xFZbAhIByaIIcUvc+FvY=
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from CY1PR12MB9559.namprd12.prod.outlook.com (2603:10b6:930:fd::14)
  by CY1PR12MB9626.namprd12.prod.outlook.com (2603:10b6:930:106::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.12; Tue, 24 Nov
- 2026 16:53:36 +0000
+ 2026 16:55:07 +0000
 Received: from CY1PR12MB9559.namprd12.prod.outlook.com
  ([fe80::1761:23a3:6ab5:fbb8]) by CY1PR12MB9559.namprd12.prod.outlook.com
  ([fe80::1761:23a3:6ab5:fbb8%7]) with mapi id 15.21.0639.010; Tue, 24 Nov 2026
- 16:53:36 +0000
-Message-ID: <f7273b47-0835-4afb-9e45-ddf729f05b8e@amd.com>
-Date: Tue, 24 Nov 2026 22:23:29 +0530
+ 16:55:07 +0000
+Message-ID: <c3a7df9c-e337-47ac-9a6d-6bb81177affa@amd.com>
+Date: Tue, 24 Nov 2026 22:24:59 +0530
 User-Agent: Mozilla Thunderbird
 From: "Nagavarapu, Dileep Kumar" <dnagavar@amd.com>
-Subject: Re: [PATCH v5 14/16] iio: adc: xilinx-xadc: Split driver into core
- and platform files
+Subject: Re: [PATCH v5 12/16] iio: adc: xilinx-xadc: Refine Zynq read/write
+ error handling on timeout/interrupt
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
@@ -86,16 +86,14 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  git@amd.com, Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
 References: <20261110050201.1850399-1-dileepkumar.nagavarapu@amd.com>
- <20261110050201.1850399-15-dileepkumar.nagavarapu@amd.com>
- <avNGcpcemoeE3J7O@ashevche-desk.local>
- <42949fe9-b336-40e7-8a8e-43f6d24da9bc@amd.com>
- <awVzDqxuwsOjoFCi@ashevche-desk.local>
+ <20261110050201.1850399-13-dileepkumar.nagavarapu@amd.com>
+ <avNEpH6KGJkeI7dX@ashevche-desk.local>
 Content-Language: en-US
-In-Reply-To: <awVzDqxuwsOjoFCi@ashevche-desk.local>
+In-Reply-To: <avNEpH6KGJkeI7dX@ashevche-desk.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA0PR01CA0029.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:b8::11) To CY1PR12MB9559.namprd12.prod.outlook.com
+X-ClientProxiedBy: MA0PR01CA0024.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:b8::10) To CY1PR12MB9559.namprd12.prod.outlook.com
  (2603:10b6:930:fd::14)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -108,143 +106,126 @@ Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CY1PR12MB9559:EE_|CY1PR12MB9626:EE_
-X-MS-Office365-Filtering-Correlation-Id: d67845e5-539d-489f-55ac-08df4a4b7b4b
+X-MS-Office365-Filtering-Correlation-Id: 8941f3d0-2501-42b7-c484-08df4a4bb16c
 X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|4143699003|261022105027099003|261026140227099003|261022075727099003|11063799006|56012099006|261021121427099003|10067099003|261102123227099003|261021123027099003|261009223027099003|261028144727099003|18002099003|22082099003|3023799007;
+	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|4143699003|261022105027099003|261026140227099003|11063799006|56012099006|261021121427099003|10067099003|261102123227099003|261009223027099003|261028144727099003|261026121527099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	VSsrgWtflf+Ad38mKbi6mJBGaDef7nL6JdxfB6TCijLKjaAPCBOmglDuXi77+z4b7AKLMZe51kWYxi/fCDehi49CVgUgquU696IBpCma+HSZ89bnEcDMSpVovi9ZNRvQSK+90Zqkduzx1xFoWxzZ/sKZ0IwWu+BxBAxlR688f5/DseEQayGY8emHina7trTSknPedhlFVoN/fQofmLhM8rO89zwWEZl4gecrWJIy4AjWzFwlqnDSw6x8DdNXAZJIly3eWEtxN5YIoGbrpGSCGUPHxioLA6vsCEriqZ/sxi6CNEJ9QsQLBgiLbfpRuYZwM2eUdFo9ddnTMRKI9ayp2wR9slS0kPipsHrhPfTn2QliF7etgMZBjH73veXXXfGglmW6vIIODJjWsGMUIuQqGm5N7hlGYnF6wjnKIpseU4UsDcvRe+FsMiF0h1tEuT7oIFUdwwrez4LFz2UH8ukDSUzuW2col1YysPiqI3fcxGJIdWM/pRHYuCna+PdcUY0cafknY5t8BkyoNs6aXptH9wlOH276vA+XUEmBGBMu9RZ6i6ywNzTrJhV0ggK2QlUO17ThJnfuPypAb72sAQY5vbuwVElDe3/d++UW6noe5XXip7I9DXA7QYZ4UpKZAUnNzA+ckFHUVysW7xav+ze/nQcsP5BCbKaUES7+KLHTW1o=
+	QqKNfV/4pMYe56537dtogGhirx9ci+EEQKxJUmPXnrJu2rdu3aHWNGMe1vOkVJ+0YA6qLfW23Zq4hTiprW0Syapdf+c7S59auUzB/qVai6KYdSRIftqORXPKOxm06kF37LavKVl6oeMm8F0YX7s/Ae8s5+i5ljHfchWPdbxhnnwBf92FqJaHOmdyqeqJwl7umX6HWnUZ8WfkuOPI5GtWZ6yWOxhK/l2cj9Eg1teFbPTFZfhebdzk1TiDVBhohf27l1+fLqTTO35vLveeUO7fWwF3uYYbMrchIx3CqUiPSE553yaDoEswLw9/qIaM2VJo/HVOnctwQ1gYo6MwOL2zSc3PDwicKjNFG/4WPkYhk0IkkltclK9I6q6n6q52FFG7aUzZAfyazh21CgEEcl6McrQqgBNk0yKy6mz5ohsb3bXIZitOmQpPdebb0j+BINAk/pbCdky2Ovyxs3EUtjIk3wX5be8GtzrBfCjZzE+8YJM0EXIM3IG9I3Zm+UOQjwjPwJVcIXiaptNFje1JcmGligpfRyMhgRMOxAUjrus7eohnJ4F7Lb+kIktBwFgI4U2WP8RKgPzFqO4eM9kypXY0ahrCU044J8ACMrYkIyvdLMshwOTJRBxnYbWqm1uevjciPWSQqIaRrmISrXgwuqebk3v4h5rQWZD2y/agyleu4nY=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9559.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(4143699003)(261022105027099003)(261026140227099003)(261022075727099003)(11063799006)(56012099006)(261021121427099003)(10067099003)(261102123227099003)(261021123027099003)(261009223027099003)(261028144727099003)(18002099003)(22082099003)(3023799007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9559.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(4143699003)(261022105027099003)(261026140227099003)(11063799006)(56012099006)(261021121427099003)(10067099003)(261102123227099003)(261009223027099003)(261028144727099003)(261026121527099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?N1UyaWRQUDhVaTBXMTdubE9nYkI2RlNRWDNETFptdDVUZzdSTE5vZnBDb0xy?=
- =?utf-8?B?bVI2UkQwUHkrUDhWWHcyaHJ3aERDMFpUWjFGQ21MdE9Rbkx4c0MrcDFhTThQ?=
- =?utf-8?B?Z283RW14cG44NFk2L3pYLzFKWkYxMjROM00zRExxS1FDcFpxK216RTdJakIv?=
- =?utf-8?B?SEtvTFBhcXNtYnJ5aXR5SzlBK0cwQ2hXTjc1STVlcFN5ODNoOU5DQkNSVmNq?=
- =?utf-8?B?QnpFWEZsbDYvY21ESXJReDVQam83QndCZWpON3YrTTVFRitJbjNPVVRUdWNm?=
- =?utf-8?B?Q3IxbTczWTRNdVk4eUN5MFFOY1J6cEVIRmt0d2pTaUNSSDhieC8xNlpRQTZI?=
- =?utf-8?B?THQyL1h2UE5jMHJ1bmxLd1cweDBWTHV0NllvWDZ3dkh4bHRnOW5DN2l4M1hl?=
- =?utf-8?B?YmdZRVVrUy9Sb1c0eHVIQUt0QUs2THBOWUgyR3lMNVBuYWtLMHZqV1htOG92?=
- =?utf-8?B?Zy9BbmV2R3BvdTNlKzVwbm5yOThrU21NcCtLcXd0ODl5RGQxa0V3YUVFb3B6?=
- =?utf-8?B?VmdYS2l3NW8zdDRhUnV2Y1M4U2xIeGpjMDVOa1VtZXRFMGRBNkgvT3owNXNK?=
- =?utf-8?B?ODczNTVaZUczWWY2WFpQSGVmaWs5UW5FMWczdEp2OXZBeWRLd01KcG1XZ3oy?=
- =?utf-8?B?SU12dmo5WXMxTHRHUThpTnZ6RmRpcnVSaXMzbXdrSXlqcUp4dWNzSlVpY0hr?=
- =?utf-8?B?Rk1ENDF1QXAyUGJSK0dwdUJlSVVDUXhKdGlvZVJDeG85bEliNCtlQlhaQUwr?=
- =?utf-8?B?ZFZpRlpMaThOQ2Y1VVRGMHdhNkZQTWJxbWtLSzI4OU5kSTBvbkVrRkNxcmkz?=
- =?utf-8?B?VXdOKy8zM01oWTlROUlFc0luejFtVXMxTCtPSVI4V0NreTZ0TVA1WnpCUHd6?=
- =?utf-8?B?dUZocHA1Y2xzOHRkTEd2ZjRpN3gxVS9NaGozSGV3aThUY01mRWZ0b25mZTNl?=
- =?utf-8?B?ZU9qUXp6NzFpQmkzNStsOUlnTWJvNjFUYVdwWGI4VmRzUmZpVHhOZEVoU21T?=
- =?utf-8?B?N1JabWx6MUcvZ0prU2pmeWprSkFWZlNSZXZxbEtiK200amNaaHJMekNlNkRN?=
- =?utf-8?B?MVh4b0tPTDBRT1BsWnM3M3lzcFd3cVdhMG95dFNic1hNaWRCVnpsWmtnZkJx?=
- =?utf-8?B?eUd6c2NaS2pzZVRPY1cyQzQwL3dmVll4T3h6UkpOQ3dIaHB1b2pLbnVXMWFS?=
- =?utf-8?B?Z1hRRnpvTU1ySEc0V3M1Y1k2ckZaNFVtaytKVTAxUUdBcXFzZUxkeGdWSElM?=
- =?utf-8?B?aWJEVUlLRGo4bUl2eGxadGRGVkUzRENWYlZJMnZ4T1ZEVG9IOXBYampBeUFw?=
- =?utf-8?B?VE1DZ2tOUTZsRTZaUGNSTlZoVTBNc01GVTUzK1NnbDdZZTAzSThPckg3Nnlu?=
- =?utf-8?B?WGsrMHVzSHVWbnNjOUpwNXFsdGdhOHVqNEtCOE5ZejJpb01DWWMxcSs2eS83?=
- =?utf-8?B?a3hNRjhycjJFTVhOQWdVd1AraGJZazlIVS9iVXBGckkzNFNuQVFJWkFHRm5t?=
- =?utf-8?B?YWZ6QnJrUndTNExla25BL3lxU09Vak5HakVQeXF4WG5tWnlyZTdhOVVYeGtR?=
- =?utf-8?B?SHZUVjVVaDNXUjNhYnlleEx4MnRyaHE1UnpwQlJxZnhQWUc1NjBkY2JNcktP?=
- =?utf-8?B?V1lnckhRVHovR2t4YUQ4NDVKS1FKRWRWRVlvMDBoRTRmWlgvVTRUYXg4RFpM?=
- =?utf-8?B?WFhNNTNWdGRISTBnQkpRWVppcjkydDc0Z3VsNDUzdWRTTFFGeWptMFQ4OFZi?=
- =?utf-8?B?d1pKSXU4Q1pXZXJUQVZacWNOaXBlbUJMZk02V3E0SFpOeUY4RGY0ZjhYZ3pU?=
- =?utf-8?B?dVJydk5uV05TSEloV1NRd1VWM3FqUC9GUXpuR2Vnc0phZy90QjYxZ2lVYStW?=
- =?utf-8?B?R2xGNGxyMDl3KytOQ2gxQys5cUpvQTNTbjd4amwzR3NqM3NSOWo2UU9DaUV2?=
- =?utf-8?B?R3haMVR4WVVJRFhyc3dtSUZQSERLL1o0dk56MC9RL0dMSno2b1lzUXViTFZz?=
- =?utf-8?B?c0ZIOUQxdjVmQVdzVnM0cTJGVks0RkhTSmY1T1RyTzhrRU9JQzdvek5WL2hG?=
- =?utf-8?B?M2lSKzJMZnFSTDNCOFllU1FYWU5hbnN6T2pOMytUZjZoMnp2aUx1VWI4YUpM?=
- =?utf-8?B?WkVsb2RCZmQ4YXlDd2twMi9rcDY4UkhzSEJJSUFLTGZBU1RsbG5wZUhJMENS?=
- =?utf-8?B?TXQ0anlnS2NIOFA3dTFGUjI3K3VxVTdHWFc0UnZYNnhxMkdQOW5UamVLRytm?=
- =?utf-8?B?ZkpTdkRRbmRWNDdpRFVLSWRiemRLZ0wyL0NBcnkzZDBPUG1yU2dUZW41Smxx?=
- =?utf-8?Q?2RgAmZLltlf2EdSiTB?=
+	=?utf-8?B?amx5TUY0UmpwdUR6dHE2YWxlYzlqbFlYTDdIeVVNL21xKzNpajVUSXFLOFdl?=
+ =?utf-8?B?bUVsejQzSWMwUkYzb09vU3BGdzJ6MTVoUHZtVEJtRVVFT09ydFoyWkNuMlVs?=
+ =?utf-8?B?NnVQL000UmVURVozc3ZocUljbG5kOHNjYlFmeUoxQVVndkdrSzhxTGh1T1A4?=
+ =?utf-8?B?UUh5VXByalkrbVBUS2ZybHliKzcyVGlaMWkrZysxOVc4UUpHSGdzZlNMYlVI?=
+ =?utf-8?B?NDlhQ0RvQ3lhSnFUOWprSGxPZDRreitmc1ZmSzNTdWJja0FLbUQvL1kyT21I?=
+ =?utf-8?B?RUpjNXdBbHZOSWFxRVhZUWdNM1hHZko1QVlTWTlvZlBVMXgyUjZYempJcXNw?=
+ =?utf-8?B?dWpNdytBa0VscHJSakxVUzlqaGJWT0Z3MDJuaTQvWkdqZDRnOTFuR2Y3eGFO?=
+ =?utf-8?B?VjY5UENYdGlidmtIWkJoWEV5ZkdoSDVaUmpZRmN2cTNXcjBWQmhjRkw4bFhU?=
+ =?utf-8?B?YkpKZGNmQzNuWlowWFpiOUhLakFheTJyMHBOTXo3M0ZlY0tnOFQ0UEZqM0Vn?=
+ =?utf-8?B?MGdPVnVZOU4zcXQ4TW5hVHN2c2pkMStwUVZ2b210d3RvT1FzcVRiRCtzVU5I?=
+ =?utf-8?B?RXl1MmdkMmxkd1lQVFY5SnpnRVV0Y09Ib2gyZWZTZTVHc3NIWDNtQXJuT056?=
+ =?utf-8?B?aFQ5NXIyWU5GOUVnU3hwSDhFempOYXMwajZOYk9ZeFF6Rnk3aVYyR0N0WkhE?=
+ =?utf-8?B?T0hhWTVNSm0rUFVzM3F1c0dqS1JRK3JVVjhyWFB0dlFETU9NcG84SkpmdXFU?=
+ =?utf-8?B?VW12MmoyKzFJSW5MVVhEcXdPSEtZVm9PRUF1RHdnY2RhUkZyWWhyQlRpWEhC?=
+ =?utf-8?B?YjF2Z1RoU01ueENHNlUyMVhKbmJGYjNrRGp1VUV6WXkwS1hZQm4rQ0ZoMURJ?=
+ =?utf-8?B?UU5LOFRHSUltQnB4QjRhSG93UXg0VnN6VUJhUVV5Y1lQajVUSFNjajJHNlFW?=
+ =?utf-8?B?Y2hlaWl3dkV5b1cwZnNYbFJzaWsxYUlPaHdSM01qWTRGVVBLQnNRZ2RaaTVq?=
+ =?utf-8?B?NDZpZFhGNEFPMS9XcFJ1L0dPZk9XczVDazJaWEV0ZGxmQ0pZajZLVVE3Z2Rv?=
+ =?utf-8?B?NnlZUkxUQUM0bnY5YTFnbkRFQVZ3cVlhWjltL3JQdzJTaEQ2UXBjd3Rwd2tx?=
+ =?utf-8?B?NEZIWjNFRHV0TjFNdytRRXU2dS93Sk9sRVVCSGFjQVJBS0dCK2Z5bHp2OVNa?=
+ =?utf-8?B?aVJUaVR0SUZCQ2xHM2ttN2Y1Qm9hd0ZYbmk3VU1tWTNGSUpLVHI2Z3BjcExw?=
+ =?utf-8?B?Y2p2TW9XcWsxS2YxdnlkZXdxdnJBeW5XZjVRUXB6cUdFZXJNeEwrR0N3b0hq?=
+ =?utf-8?B?Z0dDVk0rVWtnMzBLUG5iT2V0VnBlNXpuRWdZcDVLM0VPbGlZUm1RQjFERmhv?=
+ =?utf-8?B?cDUraUFvQXk4Z2t2ekorcWRlM3M5aXlWV2JpUGtHSnBaU2xNODNkQW9HWHNT?=
+ =?utf-8?B?TFIyMndjSWxhNzU0azFWbUZESDcvSFhnWnROY1hESjFLZTVhU3VhbEhGa241?=
+ =?utf-8?B?M3l4WWZiaHhYcElpUlRTQ1JIcWJqN3pQd1lpejJMTVNLeHk3K1BCN2gzYnBG?=
+ =?utf-8?B?RmovVnhFRUpTZ09adXdqVTIyTlV0d1ZwdndDTUFVZGtiaW94bGFZQjN6SUtH?=
+ =?utf-8?B?ZFdLZXRQclM1TVFRMmszLzhaRXB6eUJYYS9kdWhlN1duVnFPODBVbitENS9p?=
+ =?utf-8?B?dDVGeG9ROWJTR09VUkRCUzZFWi9FUzRzR2gwZ2prbXFZNno2ZWxWa1lqQ0dD?=
+ =?utf-8?B?aTJScm9PdUYvb1hMT05OY2tTS20xdUYwM3pORGZuVUpnRlBjcEJXMHN6bm4v?=
+ =?utf-8?B?RlZNaUFmck1lVXpNZGczQk1GbFlhZFNLZ3A4RXVrb2Q3eTdPTjJqZ0RmUzFQ?=
+ =?utf-8?B?ZWRvaEt4WVBGaFB5K1lmRUF2cmhLaE9GN0k1SlEzTDNvWGFMZndzL3hwVDY5?=
+ =?utf-8?B?bEhkeTNNOTZBQzd2ek9hekwwRE1Cd3hJS0wyem53RW93NStrNXptY0NqUzdu?=
+ =?utf-8?B?U2Nha0V1YlRQN1VUdDlsUUR1MkJlSi9ibXBYZ2pER0RsRHhGaW8rRWJoS1VW?=
+ =?utf-8?B?QUc4S0FCdnVwTUY1b0RwcFZ3cjFOV1NCdGpkRHBjRHhvbVhwU0pTdXI1d0lK?=
+ =?utf-8?B?Zk8zUnY0cDNuMDF5a2FXZnZPanZBcXBmcDhBQU41UWo1ME0zdFZkUjRHTzdh?=
+ =?utf-8?B?Rm5jNnlCWk5ESmFDL1RvMW5vL2MvNmNkQWppMFRVTnlPa2F4OFdtTjVqQThE?=
+ =?utf-8?B?Q2ZxNUZ2RVU1N0U5YXkwbXA0Y2ZXRmtHOEtmWmJyZTNLWW5qWDBEUjRlNXJQ?=
+ =?utf-8?Q?UqUHXxZFJIETxD9fFY?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d67845e5-539d-489f-55ac-08df4a4b7b4b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8941f3d0-2501-42b7-c484-08df4a4bb16c
 X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9559.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 16:53:36.6912
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 16:55:07.3310
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h364Rl0b8toisIpNwFpDRCkjrsSLroorKjdjCsFpjNR37SqXyYCMqwGwSlvGol2Ak3MP/XWwRM6TJTHTi3GvyQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pxtYZwKhx53v3Uo4JUqaczhJC82EbZFIOF+ZkMQm0qiLU8nKRNCzu4SjLttZUKGSVj7UU+YhT1zPgodmbkK/fA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY1PR12MB9626
 
 
 
-On 11/24/2026 4:50 PM, Andy Shevchenko wrote:
+On 11/10/2026 9:51 PM, Andy Shevchenko wrote:
 > Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
 > 
 > 
-> On Tue, Nov 24, 2026 at 04:33:59PM +0530, Nagavarapu, Dileep Kumar wrote:
->> On 11/10/2026 9:59 PM, Andy Shevchenko wrote:
->>> On Tue, Nov 10, 2026 at 10:31:59AM +0530, Dileep Kumar Nagavarapu wrote:
+> On Tue, Nov 10, 2026 at 10:31:57AM +0530, Dileep Kumar Nagavarapu wrote:
+>> Refine the error codes returned from the wait, the same way in both
+>> xadc_zynq_write_adc_reg() and xadc_zynq_read_adc_reg(): a timeout
+>> (ret == 0) now returns -ETIMEDOUT instead of the previous -EIO,
+>> giving a more precise errno for this condition. An interrupted wait
+>> (ret < 0) now propagates that error to the caller instead of being
+>> silently treated as success.
+>>
+>> xadc_zynq_write_adc_reg() waits on xadc->completion after issuing the
+>> Zynq DRP write command, then drains the response word from
+>> XADC_ZYNQ_REG_DFIFO. The DFIFO read already ran unconditionally after
+>> the wait, regardless of outcome.
 > 
 > ...
 > 
->>>> ---
->>>>    drivers/iio/adc/Kconfig                       |   8 +-
->>>>    drivers/iio/adc/Makefile                      |   5 +-
->>>>    drivers/iio/adc/xilinx-xadc-core.c            | 690 +--------------
->>>>    drivers/iio/adc/xilinx-xadc-events.c          |   1 +
->>>>    ...inx-xadc-core.c => xilinx-xadc-platform.c} | 818 +-----------------
->>>>    drivers/iio/adc/xilinx-xadc.h                 |  27 +
->>>>    6 files changed, 72 insertions(+), 1477 deletions(-)
->>>
->>> This is weird statistics... I think it's a bug in Git. What it did, it copies
->>> -core.c twice and uses statistics on each file after that without duplicating
->>> the *original* amount of lines.
+>>        ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+>> -     if (ret == 0)
+>> -             ret = -EIO;
+>> -     else
+>> -             ret = 0;
 >>
->> I generated the patches using the following command: "git format-patch \
->>     -M \
->>     -C10% \
->>     --histogram \
->>     --base=origin/togreg \
->>     --cover-letter \
-> 
->>     --subject-prefix="PATCH v5" \
-> 
-> Hint: You can use -v5 instead of the above long parameter.
-> 
->>     origin/togreg..HEAD"
+>>        xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
 >>
-
->> If I remove the 10% similarity threshold from the command,
+>> -     return ret;
+>> +     if (ret == 0)
+>> +             return -ETIMEDOUT;
+>> +
+>> +     if (ret < 0)
+>> +             return ret;
 > 
-> 10% is way too low threshold!
+> First check for generic errors, then for exclusive conditions ( == 0).
 > 
-
-Is it OK to use `-M -C --histogram` (default thresholds) instead? With
-it, xilinx-xadc-platform.c is shown as a new file with all lines as
-additions rather than as a copy of xilinx-xadc-core.c. The statistics
-then look like this:
-
-  drivers/iio/adc/Kconfig                |   8 +-
-  drivers/iio/adc/Makefile               |   5 +-
-  drivers/iio/adc/xilinx-xadc-core.c     | 688 +------------------------
-  drivers/iio/adc/xilinx-xadc-events.c   |   1 +
-  drivers/iio/adc/xilinx-xadc-platform.c | 677 ++++++++++++++++++++++++
-  drivers/iio/adc/xilinx-xadc.h          |  28 +
-  6 files changed, 733 insertions(+), 674 deletions(-)
-
-Are these statistics OK?
-
-
->> xilinx-xadc-platform.c is no longer detected as a copy of the original
->> xilinx-xadc-core.c, which is not the expected output.
->> Is there a better command or approach that would allow Git to recognize
->> xilinx-xadc-platform.c as being split from the original file while also
->> producing meaningful diff statistics?
+>> +     return 0;
 > 
-> But it's not a full copy. Have you tried to apply the patch from the mailing
-> list and see if `git am` correctly recognises the split?
+> ...
+> 
+>>        ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
+>>        if (ret == 0)
+>> -             ret = -EIO;
+>> +             return -ETIMEDOUT;
+>> +
+>>        if (ret < 0)
+>>                return ret;
+> 
+> Ditto.
 > 
 
-Yes. I applied the v5 series from the mailing list with `git am`
-and all patches applied without errors
+This patch does not fix any behavioural issue; it only changes the
+error codes. Sashiko suggested adding a Fixes tag. Is it OK to ignore
+this comment, or do you have any other suggestions?
 
-> 
 > --
 > With Best Regards,
 > Andy Shevchenko
