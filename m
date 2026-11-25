@@ -1,80 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.19
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795606505;
-	b=PZKRzMvGoSjEikliv/MEc/B34belU3e6Onn770raJX8+LLAiy6uoxOcZV+uxsMAYDsPo
-	 nJH0+rLG3LpIr1Kxq+87wg5RMc3cdg78kH+O+u5DKfQkklpnAWLcf8brOwPNgwr5bkGpa
-	 XVwLsIMInGCaOgRstZ8KlNI1/yeHTvGwOF02wLhdSy8pls57lSd6DGRmhY7jBKoy444tJ
-	 IrF7dnQNRKalFSZDWl1hz8ASokw5hdd+nOO+qvLW1offoIEN9o5RvNqkXEauOJ1w1FjnQ
-	 99IJiJ0k+deZ3tJxYj9zkqEyK5u6EOz40Z2mrFECBjZQD42si6pqMyAzJ6oWDh1l7jw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795606505;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=Ff3Cl/JJeExr6kILvGX+SicD9xIWfjDB/TEpsnvKFqw=;
-	b=03WGXaPMf9A+F4vQJHWUkh4vtvBuCWZ6mKDXpkxe/5oZnUjLfXKqlvJkS3VQoUBFDIDY
-	 o7OFlNYHNYIKg1tF3O53CrBqlNe0lTvrpSuM3TymKG9sYcOqXlloChYWWcajyiQLRoLp2
-	 k2I0upgo2SAp9onRYNePYpHFBGyV6mKMVFkMO8aQDA/YHYpdnXbnGcjdjUJAAG+Cbfu+P
-	 zqvolKYSjjO5erRJf+dQsG1c6hrGIkuGg0jHNNblj7lmizUoxc/l2R+ZeBC1o+KRESdMe
-	 ncSzWYqJT35DxULyv98fySHPppEeow78LjvJHdpP9P2KoHfsdeC2kTZyxCn18wlg1Pw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WiIGSsCz;
-	arc=none smtp.remote-ip=198.175.65.19
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.60
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795611403;
+	b=pzirMLv6xYIU+cy18RyhBcknbyMz3MOHlKCwnbkEeca1pN2oTFeLmFXvtAPD1AxWr3S2
+	 V4DESh4l0UbE4/U/E16XK9INJR/qarb97/NEV/HDQNu8KXRw0bS+7eE+6TvCOm4bBvQak
+	 yut0RF9LUMQMKEfiXMgzApa09cb+VgiZlDCmxr14MS2M8a93K14foUNQu+sc1DQwOZ88X
+	 y3H7gof//gPPzTBeqOeMeuz+lyzRJe814GrHoeOTXc/+leehP+/hkNLKQrqO60UfNboxX
+	 rXvok+jfNcJzfmskRg0BZLekZMefv/+rKueR47zjm85byNRzJqGr+jXSEDIPv8DGYhQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795611403;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:CC:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
+	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=j4MdXjnFm1Zmbu4F9y1VJvvPrSN2D+YB0/Vrb8u8iuc=;
+	b=W8PdEHnsCOm226YYttEjVxl6qievBC1vDDkBfOyMKzttTV2ptNiig4QpMwxHho6YrYjO
+	 7XufjAcisAUlImEIbty3oDyFfwGUDcQw2/2IFgP/vCNerliB5fhm32ajp6HSGLyipa2rO
+	 ERn8bQh5GokaDDjZfsG6Gxsw1f+knAXzizyH2hZ5t4/MeOtVwFQHrBuU+tQeRBxplpUCF
+	 pzj6eTcQCV1Y+/jXZlEnHRpKizail8CdUHmnF3DZKQ/nCB6nskBzXSPfJMiyK1EkW/PGK
+	 I++E1AneNH+T7pFX5YcA0y4y/hXqeCDpzlHN3IRwG59whpJRrMFM70szqm7x8U5YLBw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=foss.st.com;
+	spf=pass smtp.mailfrom=foss.st.com;
+	dkim=pass header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=WiuA3gb9;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.60
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013060.outbound.protection.outlook.com [40.107.159.60])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9743606A31E;
-	Wed, 25 Nov 2026 11:35:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D9743606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51FDD606A690;
+	Wed, 25 Nov 2026 12:56:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 51FDD606A690
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WiIGSsCz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795606504; x=1827142504;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=usu8wnf/tEyRqO30pySI/6w3usELj7hOp6imvwraHfY=;
-  b=WiIGSsCz8SGBBlVEOTP95pyqGF4jCdvUuGn+VjwGtIQvvw/5iGz+ew4p
-   1fMBVwqKjQQA3GnfhPjQuGha3VPKQL2AEgAqGLVyf7CbWrJENA+nCnbQl
-   6N+KxLJE8WmoWeaCerW8aCah3puRlMq8d3nn6KpBoUy5aVmZq60Gs8cN3
-   oU/qD18I1GXt3ChfvgDk5C0FEwunTfkTATb0vyzHoxBAL3mqdPoW/YYPK
-   3UdK8cNKWGWswFZFYuu1i6BteitGstwlhq/P+6/lujmEfQHQ6S7QdYMVh
-   0q2Dw33JT8EEIDBiPDMp8YlRWA/YeeSGXqKJc7e0z0Mg17EybGZN32MRX
-   w==;
-X-CSE-ConnectionGUID: t4LvFQMtT3S+LPxoJVzldA==
-X-CSE-MsgGUID: AfKFm6XgQ9uyUn6dTxPzTQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11976"; a="4542271"
-X-IronPort-AV: E=Sophos;i="6.27,232,1787036400"; 
-   d="scan'208";a="4542271"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 03:34:59 -0800
-X-CSE-ConnectionGUID: ikAqfyFPQiGYikroglB74Q==
-X-CSE-MsgGUID: JjwpYNxbRdmEZ55IQHauYA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,232,1787036400"; 
-   d="scan'208";a="11709000"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.73])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 03:32:27 -0800
-Date: Wed, 25 Nov 2026 13:32:24 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Vaibhav Chahar <vaibhav.chahar26@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	Marius Cristea <marius.cristea@microchip.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Joshua Crofts <crofts@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: adc: palmas_gpadc: Use guard(mutex) to
- manage locks
-Message-ID: <awbHSDdEyW6FS07l@ashevche-desk.local>
-References: <20261124204054.85634-1-vaibhav.chahar26@gmail.com>
- <20261124204054.85634-3-vaibhav.chahar26@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=foss.st.com header.i=@foss.st.com header.a=rsa-sha256 header.s=selector2 header.b=WiuA3gb9
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=jgEFVBRF9JhQDX4j377sMMkVPwrRIem5LdCfDpp1QM6xZi11arvUw47Pt41E/rtrgHnve13+kQg9J7vSy1A6WQbHxRWRgS03OQJo9xTXhVS6gU5m+AbyUSkrbbgEtiwdE1w0SRet3NvuvDmy3Cwk1AyHuHEaNB8DML6c+3R75lJej0YCAsdg7P6qSp57ud9iEvHobfYG3v1GMDPdeF3ufgFRwwKsXS6Ky0QEwLV5nRr1V3Dl8h/t6fXQ9bmPVx7KAg7llW70FVD8UzXsluMsiPjwcETjrYVhgIzQ7pKlniqxaY0u/MGEgWnbv00Yj+qkS0eVLshbsMhOeOTnITrOWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j4MdXjnFm1Zmbu4F9y1VJvvPrSN2D+YB0/Vrb8u8iuc=;
+ b=OYycFVrn1R5iiSgCXSuusjHVHs76BEi7lrt20UA1WlSCXD91dWMBhuhLCIFlmnQngFxNhdgMMyntHl8p3GodUpMrONrkrtmPUus81hUQgPcYhIT9GDBzRoJXgxIKk1JOyNvO19OtREFq059yOf42NQfKjtisoyydfJmk1+geMzXqiDFRS6VqwIddxzt8vExpSbuW4HP3eXVAA4iVdn72iZDknmlUgO+k/Fpwl+wNHJ2DwsBUeI+6icuinZf1Rz/+oa89a/j6cIxDlNECZ+0VJNPCxlNyFXqup/iMjexqzNH16tKdF9CT1n1GlHIC/53b18o/t6/MjDE2yJG54kYpbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 164.130.1.59) smtp.rcpttodomain=teslabs.com smtp.mailfrom=foss.st.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=foss.st.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=j4MdXjnFm1Zmbu4F9y1VJvvPrSN2D+YB0/Vrb8u8iuc=;
+ b=WiuA3gb9UByT9BDhPNBmQJPPiUwFGmoiDs3nqthxuc1WeyiiKubWgMzMrH9fzmSsOwf5iScnkiJwjwDot04lvcqDIuXodZcYY3V5bsPD9+9WYsY6ePxHcEH0O8cmNHQa8UokqVxmzZlkPnJzdoTM1Vb9RbMicA3J1kXpuR3Ep9xm2B3veKPBD5g6EUXhj+1wdq+4IDnRa+AFXGvuF7BLGkuh6B9fbSdc/bePGA0WnP0UoLMnz3lzwTEnW9vCOrL72cjR4V0F8/T2zQV4Mtfr9Gg8viODZxcwf0xlPS1FTtq4fyUg+M0BG5CoFslwL7yf/QGyFZ1FevIeEQx3oE/IKg==
+Received: from OS6P279CA0079.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:3e::7) by
+ CPJPR10MB309500.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:380:20d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Wed, 25 Nov
+ 2026 12:56:38 +0000
+Received: from CPH1EPF0000052E.eurprd05.prod.outlook.com
+ (2603:10a6:e10:3e:cafe::7c) by OS6P279CA0079.outlook.office365.com
+ (2603:10a6:e10:3e::7) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.7 via Frontend Transport; Wed, 25
+ Nov 2026 12:56:37 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=fail (sender IP
+ is 164.130.1.59) smtp.mailfrom=foss.st.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=foss.st.com;
+Received-SPF: Fail (protection.outlook.com: domain of foss.st.com does not
+ designate 164.130.1.59 as permitted sender) receiver=protection.outlook.com;
+ client-ip=164.130.1.59; helo=smtpO365.st.com;
+Received: from smtpO365.st.com (164.130.1.59) by
+ CPH1EPF0000052E.mail.protection.outlook.com (10.167.241.169) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.662.3 via Frontend Transport; Wed, 25 Nov 2026 12:56:37 +0000
+Received: from STKDAG1NODE2.st.com (10.75.128.133) by smtpo365.st.com
+ (10.250.44.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Wed, 25 Nov
+ 2026 13:57:26 +0100
+Received: from [10.48.86.251] (10.48.86.251) by STKDAG1NODE2.st.com
+ (10.75.128.133) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.46; Wed, 25 Nov
+ 2026 13:56:36 +0100
+Message-ID: <89f43760-01c7-43e8-9682-b7363ffc931f@foss.st.com>
+Date: Wed, 25 Nov 2026 13:56:35 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,129 +104,87 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261124204054.85634-3-vaibhav.chahar26@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] iio: adc: stm32: describe the STM32H7 temperature
+ sensor calibration
+To: Gerard Marull-Paretas <gerard@teslabs.com>
+CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-stm32@st-md-mailman.stormreply.com>,
+	<linux-arm-kernel@lists.infradead.org>, <jic23@kernel.org>,
+	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>
+References: <20261124202220.23721-1-gerard@teslabs.com>
+Content-Language: en-US
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+In-Reply-To: <20261124202220.23721-1-gerard@teslabs.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: STKCAS1NODE1.st.com (10.75.128.134) To STKDAG1NODE2.st.com
+ (10.75.128.133)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CPH1EPF0000052E:EE_|CPJPR10MB309500:EE_
+X-MS-Office365-Filtering-Correlation-Id: 799ac60a-f4a3-4b1e-3004-08df4af38aea
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|1800799024|36860700016|23010399003|82310400026|10067099003|56012099006|11063799006|261022105027099003|261026140227099003|261028144727099003|261021121427099003|261102123227099003|261009223027099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	qCsfkUrjwIcderXYt2nsrQVK9zddUbpkzRYQ4lOAtS0CO2zaPq7TsHPvn7i1S6VqNTWfE39WcpAFrtti+dw89wqzb4qbMsrrFBy14gvG8IxgBYs6qaspi5Buaw+80rZHoB4Hou8mnPQ5lf2SfJH7st9uO1e4NJeyPg9IfZIorSUYkog6d0r6GCYfELdCNPtAvhqqGst0XVEt2cTua5sQhR4JPURT3Jw29UGtBIknkA+QbgNtloE0ejcqoshpUsEdwoKOj6hzxFbgNhWqb7fBRglMADn+ByUE8V2aFKUHWnt/x/uYTsJqAPk/qgt5brUTRHWZk6iJF8LEIi5XCn9g7GNenDTG+kOhiaD1e2LeQMxATcJm4Q7hQeFjOAuUjUgLyJxV0jNJHxKasWgU/8Z/u3Pc4tT2pKI2LDjcigU998jCjiMX62oYOXE+K4C6MrPpfx7LEIqW2AvOefhoWZ1Dh11MRY024o91eHGbIi6z8bhaj6NHdw+PA+VNlEPOAdDlc1HTpO4EdPR9R6PULfDx3xYxnj8qgzEgD3m7IrgjAgBiZDAdESd/9E2pC2dRuzAZtj3C9Poq05zGC2rZ88W2zLy9V5mrPP1Gv0f9lpAkyQ6lP01imkjzB3AuVoBXVHzTHf1SfDg8oJo4rzjXfLWyLTpKqwzIPmjs5tSRQO17wFs=
+X-Forefront-Antispam-Report:
+	CIP:164.130.1.59;CTRY:IT;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:smtpO365.st.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(36860700016)(23010399003)(82310400026)(10067099003)(56012099006)(11063799006)(261022105027099003)(261026140227099003)(261028144727099003)(261021121427099003)(261102123227099003)(261009223027099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Qy4tJB5sdMDH49zwRaAGOdfubNXAQpo0Ve0bOZCYU88d+jU6S2KHjyuuxRkZWJGBeixOKR5rRN6iYZrKkTFW9g/5pJ9UGpMlzEnvUMCK2Cmx7oFZSInBOa1WGCl9fo1wKOqqDatQl4jiimr/3xhF2mSzPZxinXhsktuTT+ZZfuBnt+jLX+iCKJLOpsLc2HVkqBl1E6lijWwW4WneA1cWMUC2T3gIqPusC5oC6Z9qyyvBgSrivCXUydgC3N2GC2hbvpRaBZkKofutL13a1hZz3TNfE+Q4KoywZTulYfdDJRVz3qO127mP7d0x6QyyoAew7IFgmANn6Xi+VOuv0g7dWe/9eijt29J7ECJ3UNEQDhsM6rQplvaP/6wBsHBlfEG/7G5dTTnkvCOsqpnAq06bwvslc/cPyqg8YiL/KQYNiAXWFt0AziJx88yX3iGCESLD
+X-OriginatorOrg: foss.st.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 12:56:37.7033
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 799ac60a-f4a3-4b1e-3004-08df4af38aea
+X-MS-Exchange-CrossTenant-Id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=75e027c9-20d5-47d5-b82f-77d7cd041e8f;Ip=[164.130.1.59];Helo=[smtpO365.st.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CPH1EPF0000052E.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CPJPR10MB309500
 
-On Wed, Nov 25, 2026 at 02:10:54AM +0530, Vaibhav Chahar wrote:
-> Use guard(mutex) instead of manual mutex_lock() and mutex_unlock()
-> calls to modernize the driver and simplify error handling paths.
+On 11/24/26 21:22, Gerard Marull-Paretas wrote:
+> The STM32 ADC binding lets an ADC take the factory calibration of its
+> internal voltage reference (VREFINT_CAL) as an nvmem cell, but not the
+> two calibration points of the internal temperature sensor (TS_CAL1 and
+> TS_CAL2), although the STM32F4 and STM32MP1 device trees already
+> describe those cells.
 > 
-> Made a new helper function palmas_gpadc_read_raw_locked() and called
-> palmas_gpadc_read_done() after it so it can still run before the mutex
-> is unlocked, allowing the goto and labels to be removed safely.
+> This series adds the two temperature sensor calibration cells to the
+> binding, and describes the factory calibration area of the STM32H7 in
+> system memory, passing its cells to ADC3, which the temperature sensor
+> and VREFINT are connected to.
+> 
+> PebbleOS uses these bindings, including the new cells, to describe the
+> STM32H747 and read its temperature sensor.
+> 
+> Gerard Marull-Paretas (2):
+>   dt-bindings: iio: adc: st,stm32-adc: add temperature sensor
+>     calibration cells
+>   ARM: dts: stm32: add the factory calibration data to stm32h743
+> 
+>  .../bindings/iio/adc/st,stm32-adc.yaml        | 10 +++++++++
+>  arch/arm/boot/dts/st/stm32h743.dtsi           | 21 +++++++++++++++++++
 
-...
+Hi Gerald,
 
-> -	mutex_lock(&adc->lock);
-> +	guard(mutex)(&adc->lock);
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  	case IIO_CHAN_INFO_PROCESSED:
-> -		ret = palmas_gpadc_read_prepare(adc, adc_chan);
-> -		if (ret < 0)
-> -			goto out;
-> -
-> -		ret = palmas_gpadc_start_conversion(adc, adc_chan);
-> -		if (ret < 0) {
-> -			dev_err(adc->dev,
-> -			"ADC start conversion failed\n");
-> -			goto out;
-> -		}
-> -
-> -		if (mask == IIO_CHAN_INFO_PROCESSED)
-> -			ret = palmas_gpadc_get_calibrated_code(
-> -							adc, adc_chan, ret);
-> -
-> -		*val = ret;
-> -
-> -		ret = IIO_VAL_INT;
-> -		goto out;
-> +		ret = palmas_gpadc_read_raw_locked(adc, adc_chan, val, mask);
-> +		palmas_gpadc_read_done(adc, adc_chan);
-> +		return ret;
+The DT is deprecated and are going to be removed [1].
 
-Hmm... But now this _read_done call makes sense inside the helper.
+[1] https://lore.kernel.org/linux-arm-kernel/2afd5f78-0174-4955-8c1b-be18aea3800b@app.fastmail.com/
 
-		return palmas_gpadc_read_raw_locked(adc, adc_chan, val, mask);
+So I'm not sure the dt-bindings update is useful.
 
->  	}
->  
-> -	mutex_unlock(&adc->lock);
-> -	return ret;
-> -
-> -out:
-> -	palmas_gpadc_read_done(adc, adc_chan);
-> -	mutex_unlock(&adc->lock);
-> -
->  	return ret;
+Best Regards,
+Fabrice
 
-Are you expect anything than 0 here?
-
-...
-
-> -	mutex_lock(&adc->lock);
-> +	guard(mutex)(&adc->lock);
->  
->  	if (palmas_gpadc_get_event(adc, adc_chan, dir))
-> -		ret = 1;
-> +		return 1;
->  
-> -	mutex_unlock(&adc->lock);
-> -
-> -	return ret;
-> +	return 0;
->  }
-
-So, what is the returning value of palmas_gpadc_get_event()? It might be
-possible to simplify more, but current approach is good enough.
-
-...
-
-> -	mutex_lock(&adc->lock);
-> +	guard(mutex)(&adc->lock);
-> +
->  	switch (info) {
->  	case IIO_EV_INFO_VALUE:
-> -		if (val < 0 || val > 0xFFF) {
-> -			ret = -EINVAL;
-> -			goto out_unlock;
-> -		}
-> +		if (val < 0 || val > 0xFFF)
-> +			return -EINVAL;
->  		if (dir == IIO_EV_DIR_RISING) {
->  			old = adc->thresholds[adc_chan].high;
->  			adc->thresholds[adc_chan].high = val;
-> @@ -759,20 +743,14 @@ static int palmas_gpadc_write_event_value(struct iio_dev *indio_dev,
->  			old = adc->thresholds[adc_chan].low;
->  			adc->thresholds[adc_chan].low = val;
->  		}
-> -		ret = 0;
->  		break;
->  	default:
-> -		ret = -EINVAL;
-> -		goto out_unlock;
-> +		return -EINVAL;
->  	}
->  
->  	if (val != old && palmas_gpadc_get_event(adc, adc_chan, dir))
-> -		ret = palmas_gpadc_reconfigure_event_channels(adc);
-> -
-> -out_unlock:
-> -	mutex_unlock(&adc->lock);
-> -
-> -	return ret;
-> +		return palmas_gpadc_reconfigure_event_channels(adc);
-
-I don't see the full context, but can this be moved inside the switch-case now?
-
-> +	return 0;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>  2 files changed, 31 insertions(+)
+> 
+> 
+> base-commit: 8d7fe9885c62fc9a95bf55d9db244d9672a8aadc
 
