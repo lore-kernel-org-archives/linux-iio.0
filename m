@@ -1,61 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795650429;
-	b=Ht30ASxTMiHNflvqJ3Ub4qG9Gql29f94qy9T5FI3hSD6OJ8BYc6FkTG9Mhwr+V3e1KcX
-	 Fhf0Px1egm3Z7cF4uHskTOsuWMipp6SM5KXCVuBmmT0iC3QN6jz4VeI+GMYB/N2qRwY0j
-	 ms6I34LmnRv/Bf75gp8xJZsUhZdyJR4Mq66bW4XyhQ7YoEn+pAA1PAd7E4r0N3WwzNx37
-	 AxFyXf97drPi7ToTxtaGOVhraD6Dq01N7l5gMRXYGnnAz6KpGO68XWM8njYKTgfLeXCXy
-	 1RKYs7LLPMKRSqUQXVQQ98a3yaqoN0+8F16oY/Ou25jq1RnZdx4xkDnZjzzdBoGh+hA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795650429;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795650517;
+	b=JzHf4OLkoOZPrJ80BsBd13UzFvZyv/ayjXtbqBxW5vUQHnN8c0ldfgEMerM5t/Yv2II5
+	 jGjd5Qg+E1MSx6CKvJ8gXEr6UnznLSBnHcyQCR0Z0ZQei4n3QcauW+uk4cNpH/pebi5T8
+	 TRFVJzstM0Jp/Fs/hBWIucxktbawCQIk1xhesFo+jZ6BoswCyhdIXYdztpg/9NpcUUhoy
+	 VVWUxbO56d5SREZk2eJUac3e0wjAqt2e+CqJkE8VqnptgjL9Myzb3UYOV9AkfSzcXqYZE
+	 NtuBpcvH44XzISjo0Qngx5yHWAm8UAU+4XZYuYRC5LdAWJkbNXgfa/8YJGl5mQKwFxA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795650517;
+	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
 	 Content-Transfer-Encoding;
-	bh=BxJQ9RTde9zhtYKI8cDL1uBMhNAR5lSVHRue2TFjuBY=;
-	b=BBG7WUxe/KmMU2fI7LHD6W9Dr6T9odxUhgzsFoyHX1KYzHibo5VRiKRWij/a58RS5LIx
-	 KsQEzKlvXVh3FJ3deESuDcajPizxXfH8kAB/HAUU1vbkDHnVGRCItjhLGkYkYXhdbwsb6
-	 +FugtCgMO5/xP9uXSbNqCUVECDTkcAlKzTovomJf0FxmjjRgpmWIcBxIlH6lKXbaw22az
-	 2PBapaW8y0jEdAZf0FHNKLcmeBdD4TxDAhIziZlAF0SgLFE0G2qnAeseDgOZciiEY6q6Z
-	 QwLRP00Bi4t5RdnY4f6V61KBeG8d3EbcR1SV13e/iSoFWycRZAJTkskYKTRW0veMypg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fyu3kSUD;
-	arc=none smtp.remote-ip=100.103.45.18
+	bh=OroYPfHBrbMzKm95ex6TJjzNUQKP+3yVQZmJ/q8vZIc=;
+	b=o37pZOad+aCxRvatJK8xXwQx2n6ibZhVxEzNJwW/uvvx/H7r3RLPYlNMhtE4MnlHR4cB
+	 XIN08ofL1u15bQRUqdwxbQAfdZbH2zpS9mZKlAestFoFz1K4BwoY6mZohpwWR7pa6XGBS
+	 wlm3n0ceEGkRGt6SlbHJgso0K0OARYCgEBTFy8+hKY6QV/M6KCZcxw1qB19ylG3WYxvcv
+	 ILJBnoiTTPpDul5uiuUmywOb++e0Ji6vSzcn0oLF5BXZm1SgWvnD27RhDdaWxQx2FLsUP
+	 K8YNUhCZyCDOjGafNImSXpvJSBv/W3L06TY9tnzU4AiydO+TNkG5N0UllwP3ScEvpyA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=buOJvzXx;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11984606A31E;
-	Wed, 25 Nov 2026 23:47:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1AB5606A32C;
+	Wed, 25 Nov 2026 23:48:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fyu3kSUD
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6A8D1F000C4;
-	Wed, 25 Nov 2026 23:47:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=buOJvzXx
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795650517;
+	b=gMdawWBB5K14vDCECtwSIxqB7LqwejqlVgRM92L6ST3+PPrIZvkksXTZVcoXYyFonIve
+	 ukhw8/jbn96HahwodNc1nK91pVFYXKDuyKua2biPN/kGNsL6Eercx6Bup6fzxwkF9glzw
+	 2AqA6fXGQ8WzOhDB9serjI94vxcaay74Q1L5rbVtsMYeMVObS2kxoKyAOA2UGSeP3TkEH
+	 p5EJV05JG5Ibv5434jLzfdpSqvEQ9vZaX80nQqdJFXQd/Wa0Lwhgr5aNRxWM6JSL6wd8p
+	 slRTHz/LDXYJ6s/QWsCo9WBNGeIAA9mFb32DGMGUcx/tR11a7HkRbhcJEmErgJ3dG7A==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795650517;
+	h=DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
+	 Content-Transfer-Encoding;
+	bh=OroYPfHBrbMzKm95ex6TJjzNUQKP+3yVQZmJ/q8vZIc=;
+	b=j7gY8QzyMp77cV4vtxHpIxraePHRvOcIjM5jn1wYlWncJtrJ6HhMm5jnh0JkVf+Zqnzj
+	 j7VJNZN4HhNcQZQlo3N7V7gtPcajSrny1zDhrHqBeeADO6B9CjTsjTD+9viArhvlB4Fku
+	 f7AR8kmH2ln+Kxub7fneTkaJTN59jBhrZcY1wbFQcD5FCl+OVnOqy9JNh2HYKkDbhveF1
+	 BCMxaOz+M+o1eTv16+YuHfx+rOtvQn4NrNruu7TgKOpmYQKg6Vfn5amzWLa7SzdUqmdLa
+	 pQE5wOyIUkTL1wwYCeORGLErODzJblppj1Gd8sdloctC18+/MM5vQcNbHk7+D7qZPDQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id B4B601F0089F;
+	Wed, 25 Nov 2026 23:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795650428;
-	bh=BxJQ9RTde9zhtYKI8cDL1uBMhNAR5lSVHRue2TFjuBY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=Fyu3kSUDWUlSJ2StkcFRKL7LK1Bh3C01Gc/V/vjkA1XtDsD8OzFmZtMCdsSfLD+Fo
-	 yB/TRSFqHcSiJm0GvuRZJGvWbSGCq5sDI4ajjrl85BulFinRouDkc75cho8Wu7xY6Q
-	 3xqV2CbyI340hCAmYyynoHOKwiGfpI3sm1LdlJQpVIojmUfu6+7y9UhdcJMX4WVsIV
-	 NfuQFTp+ZzV3vBXeT2iSc+dTXeGcYImZmpaHpov18re/j0MirPqhglohTyf0nTeHSg
-	 2MD2619bWQMV1zxzCBUpDp8Stf/OJDk4M7FD11UH1a5P4MMgUqySsDXiGpIyMO9gSW
-	 LwOKRUylHgw6A==
-Date: Wed, 25 Nov 2026 23:46:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Joseph Telaak <joseph@telaak.dev>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Peter Rosin
- <peda@lysator.liu.se>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux@analog.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] iio: potentiometer: mcp4018: Add Analog Devices
- AD5246
-Message-ID: <20261125234658.30fc80b4@jic23-hlaptop>
-In-Reply-To: <20261125-iio-ad5246-v2-6-8feeb630f0b6@telaak.dev>
-References: <20261125-iio-ad5246-v2-0-8feeb630f0b6@telaak.dev>
-	<20261125-iio-ad5246-v2-6-8feeb630f0b6@telaak.dev>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
+	s=k20260515; t=1795650517;
+	bh=OroYPfHBrbMzKm95ex6TJjzNUQKP+3yVQZmJ/q8vZIc=;
+	h=From:To:Cc:Subject:Date:Reply-To;
+	b=buOJvzXxC0XX/Ocn/E3oV1UfMx/vPTIEsMKM/aqriKT3Nc5raFj4pqqnYkGlob9v0
+	 lmadV6D8Wf9I9Eh4RGEmCswje7ALl9CE3En+UC0oNQ4MqBIkWkjzFc3tNZOAXYBcmg
+	 9Lt7yOxRI8NymuVSKCB8Qx1ZDa8q52YIBcjeW8e4NSJIfC62PVlS4lyT1bltbQ1Y/Y
+	 4fy6Vquip9kvuxMvdFbfnWAh8ht+FdUz+FNIipq1OwJ5Ql1bsUupD1yHVlYCjktEbN
+	 0XXP+NzId/CvFi54M3999z0cybe6cXi/0VKypEuRXhM/XwrRyVoYF+2BH3JAFpdmTd
+	 2mcuXCr9nZywQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 9CD064D0C8;
+	Wed, 25 Nov 2026 23:48:28 +0000 (UTC)
+From: Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org>
+To: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+ andy@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: inkern: guard fwnode_xlate with info_exist_lock
+Date: Wed, 25 Nov 2026 23:48:27 +0000
+Message-Id: <20261125234827.94791-1-iasnezhkov@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,141 +86,85 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795650508; l=2248;
+ i=iasnezhkov@gmail.com; s=mindone2026; h=from:subject:message-id;
+ bh=UwI8MEOFQMNXYrZCfHn2V0m8wxZqqR1RYDKf/G0SIio=;
+ b=rTYVmb1iDg1w9r+pQu3nCr/1QL3iCZWFQzBPwBrnjrGm/KhD0BTxuqrwN9TuMeW/I+OPjWKoW
+ Ex0DWM6YHhmBC2RYJ9mZ047mkZG6667zSfQlo5HmEBy7xs1xZArOQRF
+X-Developer-Key: i=iasnezhkov@gmail.com; a=ed25519;
+ pk=hQgXfiWi4ukk2jh4BHu1vRVhg9BUivo//AFp50AKMag=
+X-Endpoint-Received: by B4 Relay for iasnezhkov@gmail.com/mindone2026 with
+ auth_id=1643
+X-Original-From: Ilia Snezhkov <iasnezhkov@gmail.com>
+Reply-To: iasnezhkov@gmail.com
 Content-Transfer-Encoding: 7bit
 
-On Wed, 25 Nov 2026 15:22:33 -0500
-Joseph Telaak <joseph@telaak.dev> wrote:
+From: Ilia Snezhkov <iasnezhkov@gmail.com>
 
-> The AD5246 is a 128-position digital rheostat with the same I2C
-> interface as the MCP4017/18/19: a single data byte writes the 7-bit
-> wiper and a single-byte read returns it, with no command byte. Add its
-> four resistance options.
-> 
-> Its resistance is D/128 of the end-to-end value, where the MCP401x's is
-> D/127. Name the driver for the MCP4018 and compatible parts.
-> 
-> The misc ad525x_dpot driver also knows the AD5246, by I2C id only and
-> through its own sysfs files. It can't provide an IIO channel, which a
-> consumer such as dpot-dac needs. The AD5272 is likewise in both drivers.
+__fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
+and invokes it without holding info_exist_lock. Concurrent
+iio_device_unregister() clears indio_dev->info under info_exist_lock,
+allowing a NULL dereference or callback execution during provider
+teardown.
 
-For this I want a view from the analog devices folk. What's the plan for
-that misc driver?
+Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
+matching the rest of inkern.c, return -ENODEV if indio_dev->info is
+NULL, and bounds-check the translated index against
+indio_dev->num_channels before indexing indio_dev->channels.
 
-However I'm not going to let a custom misc driver block this in the
-meantime so that is mostly a long term question / satisfying my curiosity
-thing.
+Found and drafted with an AI coding assistant.
 
-> 
-> Tested on an AD5246 at 0x2e, described as adi,ad5246-010 with a
-> vdd-supply. It probes, out_resistance0_raw_available reads [0 1 127] and
-> out_resistance_scale reads 78.125000000. Raw writes of 0, 64, 100 and
-> 127 read back the same value, and 128 is rejected. Writes through
-> iio_write_channel_raw() from an in-kernel consumer of the channel read
-> back as well (127, 38, 0 and 76).
-> 
-> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/AD5246.pdf
-> Signed-off-by: Joseph Telaak <joseph@telaak.dev>
-> ---
->  drivers/iio/potentiometer/Kconfig   | 10 ++++++----
->  drivers/iio/potentiometer/mcp4018.c | 24 ++++++++++++++++++++++--
->  2 files changed, 28 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-> index e6a9a3c67845..05833455e82a 100644
-> --- a/drivers/iio/potentiometer/Kconfig
-> +++ b/drivers/iio/potentiometer/Kconfig
-> @@ -70,12 +70,14 @@ config MAX5487
->  	  module will be called max5487.
->  
->  config MCP4018
-> -	tristate "Microchip MCP4017/18/19 Digital Potentiometer driver"
-> +	tristate "Microchip MCP4018 and compatible Digital Potentiometer driver"
->  	depends on I2C
->  	help
-> -	  Say yes here to build support for the Microchip
-> -	  MCP4017, MCP4018, MCP4019
-> -	  digital potentiometer chips.
-> +	  Say yes here to build support for the following digital
-> +	  potentiometers and rheostats:
-> +
-> +	  - Analog Devices AD5246
-> +	  - Microchip MCP4017, MCP4018, MCP4019
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called mcp4018.
-> diff --git a/drivers/iio/potentiometer/mcp4018.c b/drivers/iio/potentiometer/mcp4018.c
-> index 75a63a01acef..b593082db4bb 100644
-> --- a/drivers/iio/potentiometer/mcp4018.c
-> +++ b/drivers/iio/potentiometer/mcp4018.c
-> @@ -1,12 +1,15 @@
->  // SPDX-License-Identifier: GPL-2.0
->  /*
-> - * Industrial I/O driver for Microchip digital potentiometers
-> + * Industrial I/O driver for Microchip MCP4018 and compatible digital
-> + * potentiometers
->   * Copyright (c) 2018  Axentia Technologies AB
->   * Author: Peter Rosin <peda@axentia.se>
->   *
->   * Datasheet: http://www.microchip.com/downloads/en/DeviceDoc/22147a.pdf
-> + * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/AD5246.pdf
->   *
->   * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)
-> + * ad5246	1	128		5, 10, 50, 100
->   * mcp4017	1	128		5, 10, 50, 100
->   * mcp4018	1	128		5, 10, 50, 100
->   * mcp4019	1	128		5, 10, 50, 100
-> @@ -31,6 +34,10 @@ struct mcp4018_cfg {
->  };
->  
->  enum mcp4018_type {
-> +	AD5246_005,
-> +	AD5246_010,
-> +	AD5246_050,
-> +	AD5246_100,
->  	MCP4018_502,
->  	MCP4018_103,
->  	MCP4018_503,
-> @@ -38,6 +45,11 @@ enum mcp4018_type {
->  };
->  
->  static const struct mcp4018_cfg mcp4018_cfg[] = {
-> +	/* The AD5246's resistance is D / 128 of the end-to-end value */
-> +	[AD5246_005] = { .kohms =   5, .div = 128, },
-> +	[AD5246_010] = { .kohms =  10, .div = 128, },
-> +	[AD5246_050] = { .kohms =  50, .div = 128, },
-> +	[AD5246_100] = { .kohms = 100, .div = 128, },
->  	[MCP4018_502] = { .kohms =   5, .div = MCP4018_WIPER_MAX, },
->  	[MCP4018_103] = { .kohms =  10, .div = MCP4018_WIPER_MAX, },
->  	[MCP4018_503] = { .kohms =  50, .div = MCP4018_WIPER_MAX, },
-> @@ -130,6 +142,10 @@ static const struct iio_info mcp4018_info = {
->  }
->  
->  static const struct i2c_device_id mcp4018_id[] = {
-> +	MCP4018_ID_TABLE("ad5246-005", AD5246_005),
-> +	MCP4018_ID_TABLE("ad5246-010", AD5246_010),
-> +	MCP4018_ID_TABLE("ad5246-050", AD5246_050),
-> +	MCP4018_ID_TABLE("ad5246-100", AD5246_100),
->  	MCP4018_ID_TABLE("mcp4017-502", MCP4018_502),
->  	MCP4018_ID_TABLE("mcp4017-103", MCP4018_103),
->  	MCP4018_ID_TABLE("mcp4017-503", MCP4018_503),
-> @@ -152,6 +168,10 @@ MODULE_DEVICE_TABLE(i2c, mcp4018_id);
->  }
->  
->  static const struct of_device_id mcp4018_of_match[] = {
-> +	MCP4018_COMPATIBLE("adi,ad5246-005", AD5246_005),
-> +	MCP4018_COMPATIBLE("adi,ad5246-010", AD5246_010),
-> +	MCP4018_COMPATIBLE("adi,ad5246-050", AD5246_050),
-> +	MCP4018_COMPATIBLE("adi,ad5246-100", AD5246_100),
->  	MCP4018_COMPATIBLE("microchip,mcp4017-502", MCP4018_502),
->  	MCP4018_COMPATIBLE("microchip,mcp4017-103", MCP4018_103),
->  	MCP4018_COMPATIBLE("microchip,mcp4017-503", MCP4018_503),
-> @@ -214,5 +234,5 @@ static struct i2c_driver mcp4018_driver = {
->  module_i2c_driver(mcp4018_driver);
->  
->  MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
-> -MODULE_DESCRIPTION("MCP4018 digital potentiometer");
-> +MODULE_DESCRIPTION("Microchip MCP4018 and compatible Digital Potentiometer driver");
->  MODULE_LICENSE("GPL v2");
-> 
+Fixes: acd8256723f2 ("iio: inkern: Add of_xlate function to struct iio_info")
+Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
+---
+ drivers/iio/inkern.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 1f22275..1a64b71 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -145,6 +145,7 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+ 				    struct fwnode_handle *fwnode, int index)
+ {
+ 	struct fwnode_reference_args iiospec;
++	struct iio_dev_opaque *iio_dev_opaque;
+ 	struct device *idev;
+ 	struct iio_dev *indio_dev;
+ 	int err;
+@@ -162,15 +163,23 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+ 	}
+ 
+ 	indio_dev = dev_to_iio_dev(idev);
++	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	channel->indio_dev = indio_dev;
+-	if (indio_dev->info->fwnode_xlate)
+-		index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+-	else
+-		index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
++	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
++		if (!indio_dev->info)
++			index = -ENODEV;
++		else if (indio_dev->info->fwnode_xlate)
++			index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
++		else
++			index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
++		if (index >= indio_dev->num_channels)
++			index = -EINVAL;
++		if (index >= 0)
++			channel->channel = &indio_dev->channels[index];
++	}
+ 	fwnode_handle_put(iiospec.fwnode);
+ 	if (index < 0)
+ 		goto err_put;
+-	channel->channel = &indio_dev->channels[index];
+ 
+ 	return 0;
+ 
+-- 
+2.54.0 (Apple Git-157)
+
+
 
