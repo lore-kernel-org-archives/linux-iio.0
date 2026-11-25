@@ -1,18 +1,18 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.28
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.36
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795626705;
-	b=e1cwZilYPcjD0rmQpsldb+5ie3/wFsV4n0Rg8MLzAOBflMsbBsIZisLGYVBJ418zf4C+
-	 ky3rNzw3WYMKnPEAHPMa9snY2xX7hYRMT9bgFvm0Q/JiJrgMfJnu4JBcZd9TnB6GOK55N
-	 McpSNhuLYt1nMNtry0E0CNNg89oprbLjcPbFAOK0N3S4RkJ+ZOdi7iq4C8SSKIpvID5iU
-	 aZ4JBrJSMAhO0QB7iYweogsN25ULb4p5ZB74WdP2CApCdrmcQfajBn0M69qPZAmmGW563
-	 rLRQG1kmtzMXxsia7h/dsUvZhXkddV12VFHM6SXbSRJk0Z7O9qVhnrTj1IkY5XBDIvA==
+	t=1795626710;
+	b=cTJH03AMV/7F4LqWwl5R9Fr8Mm2DXqb26pat89Hz1C2JwWlefaYf+5HPorCHGAinnCRp
+	 dDiSk3tfHwC+zPuiMODx/GzvjYtP7X5JeeFzWO0vcjpBlWV7Jgn0zcR9rEPa4yhCOdaGc
+	 2Ryj/O2zjFcYaFu3TxecHvprgJa4qwtmxyNj5Kxqc9c1D/PyUMoGM+bwCs+D99zayIA7D
+	 FtsbSOyrPSCxxNNYQNnPzg211UMQuiJ3wybzDep/qwK0QypJuT688h5NaaorgFEmAaVzt
+	 hwPrIkoCOUYcwuyOeTWaMPVDOkc+9ygpdbR6chont5f/9xvB5UBgARfyVfnAEn6cpZg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795626705;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795626710;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 Content-Type:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
 	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
@@ -26,74 +26,70 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=yJ2j5NdDqJAiNNA8dEfseYaSacA3lkAqSPeDNuVrIho=;
-	b=0URa4szki+f4evcguwIuwTacCHnYtAdLIt9lvYS5E+kyf7M0J1bKFpOYEEGN8dY9Ri0o
-	 ftG5QYKevM/UVeEFd6VOFJ+Y4xz1Hghism+CBSCW3p2Q4qouu0LumLneRS33StN7dUkmD
-	 r4GU26ofdR2MQSEpv+8Ly+LelGEbgEXXP54PfyvH1cLM2WN93GemTvJxH2819iJ+eyXf/
-	 ax2bBiCZOKgnUuHeboThODSOoI28jdkCqNRMg4uzjAw5sEIbAQze9Y6mV0EjR0ez/hpH4
-	 I5GfHvRlqEWQkVhQN6UboNzILoyYQVSXw6jRrwXVCBeOxXwzbw8LEbJ8IooJx3eQBKA==
+	bh=/9Fqr2P/cgXeKdMrM9LMEJKTwG1wvsdiKCHFNbxUxBc=;
+	b=TwsO7hY1lsbpkoLntlL6k4+mrke8hfCWsq4mm/zn2vc8JfPAmUualDf1ceiYBp56eYx2
+	 tu8ocQpcSAxGO9iYQuYo87oz4T7RCQtC4NWPVT99jUN0T27/BnUjZ/iH+SEETyF4LV4XU
+	 8M08PFJnqWV9Uds9D7N1ApZxvZIenrHS8x3eY643n+OXRF42HAXpo2zAsCvJrROUtl2O7
+	 ukkQKZ4ttQn4tNe+owSeWaI+b/hZ5IU72QWIvxz89h9HDx/eg6p/OSxyP8wUxslXIgvQP
+	 YvLkEIRVz0Rd111L/ijms1RlYPV4v1nt4gXVHsrFWQukxoxLpznV4ijQXPrCLhqBGIQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=3UC599To;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.28
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010028.outbound.protection.outlook.com [52.101.61.28])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=BaAnavEu;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.36
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012036.outbound.protection.outlook.com [52.101.53.36])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B484606A326;
-	Wed, 25 Nov 2026 17:11:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B484606A326
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50798606A327;
+	Wed, 25 Nov 2026 17:11:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50798606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=3UC599To
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=BaAnavEu
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=yxbqLyYqwDh7AQV0k4LeS7qu4JMUyGPo/reBf/Qlq2qg6TMptfj+1xAlWskeRbbikrfQAL4gUUEzg1QHOIVqDGew4h+GllF4aisFVcUEe3ZOq3PHNh32T9xuOydrt2goJ3iqTrLzbOIW3cYUijzfemesCi2KYFJoRfnKwWy6n27H32zxFNkeZynrkaVY345fdSRUQ6zRMAtWsKw5iu7rUgFt5yaR3NJ3j50WmHnPmhA6WQwpGX/5sHfQ4fIl0PmV3I+OQMdPJ4j8zr9mw1HfzJX5ql3sZWzEiz9x1djzCBZmuDWiLuAdlvHQu9LFPIwURBHQKlPtTFpbrc2c35cuPA==
+ b=LF+KVa7yHFDHp68j8HYD1vGhOYN6aFjg1gSdOzs8DVb1nucIkUasurcqwNaaqfz935q1KDdkEmMlMm8af3PFgmp8J5u/zhAH31DPbNsnaFw5k74f1bZVVFAkZw5w/w6/76YeR5BgmC6zZiQNXZhwN4eEd6Q57lQkjkBBkFO3/mbPw+wyRYtof/KEQ70cSTN+kx8xWX+TxM1oYmPaKp6g/p8s1NYvbY+s2yfJWxxSHCWRyUQ/rNYfcdNq9LySlAo/HDg+xEg0fgFtt5vHmi+SQ8pkOAkap7VpyuMQJkp5CVN3XaArhu957yaU2S4pN7fEDdkFG/JFr0xXWE2v8NjxMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yJ2j5NdDqJAiNNA8dEfseYaSacA3lkAqSPeDNuVrIho=;
- b=vi/wn0aXAoylsaLyhIJPpBu8z9W9ljWaDL7J0pCxyixy2K2hPyaUAxzj+tHmoqee+hsXllxq/lJGFXjkjClem6mDPaOt0fCOxNd34nzm7JrEF4M2Y9TwKuxC//JvTtqJMQyyp6qM9fhb68bvpLyIZ2wmB9BNaLrW+PmgysPeRuQY7C93MYf7SWwzgSst7UgqnrQ2XrEDf/jo6pqs1KDMKPNjpL4ifFEPWSKKohRJhwi2cHTA6ACLvT0BRGRzlt58lCC+reQqvQFc1xXEgQScb7wRTpVtEng6Dqck7baSP1Lj5Aq9o1Np9Du2zu429ecu5/2Oau/+CShMs91T3W4RBw==
+ bh=/9Fqr2P/cgXeKdMrM9LMEJKTwG1wvsdiKCHFNbxUxBc=;
+ b=uz7UTA7o7J4o1eZHaiKMw76d4r185Mv/g+RjsjRhCPAsV+ICyNoL2MHP8DSWMj4rw1wErH40jzkrG1hFL0ajqxQo0RES7Gfxi+8IRn0vSpA9QzeqX3TrS6BGLKb1a189UUk5JxvXLn2USPy5AeJBFRulWrvCL7TjMhniuFLHuXS8/zKbV+jrAAiN/Quu7b3EGdUKQv30LavrkJpXpDwF3qppH48o7JTtGFmZ5k3G1qU4U5vNHQhJxYd3iUUNsXtvdSAy5Zbyk6h+oDzONOKRsUiEaOQN9POzFNVHRAe/2DHahIE+UN1NKmSAAMWtVkNXRm1/Wx6InW+ysjkDla9LHw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yJ2j5NdDqJAiNNA8dEfseYaSacA3lkAqSPeDNuVrIho=;
- b=3UC599To+hasWMoSGOn+0xvZ8XsEfsYVGme/4GT+xsh+cDa6liDdmLGwKBWhtflCZ3WyUzFhE5te/msw5MjjQRONMFyumWLAddASQevHO0b1SvhS22bc2/w9xzFo/HspMb0JtEzUPrpbOJNy4TIdU/MG8Poz0hhXfiL+suTjRRs=
-Received: from MW4P222CA0022.NAMP222.PROD.OUTLOOK.COM (2603:10b6:303:114::27)
- by DM4PR12MB6591.namprd12.prod.outlook.com (2603:10b6:8:8e::13) with
+ bh=/9Fqr2P/cgXeKdMrM9LMEJKTwG1wvsdiKCHFNbxUxBc=;
+ b=BaAnavEuPZmlq4V+Ycs5UREJLQFksUljrPtLWjWRBwPa6aEFVOnWoMlYfoasZnt/UG2PoX9CsutNq8p04BpTOIaeHecj2BOxfL6NNI32/aQRBeJ8DjmtYdKXcLavNI6p/FDiUmLdWFCUL6u/uJ3GWFzKoxp9Rk1yVrLMTfUNw0o=
+Received: from BL1PR13CA0242.namprd13.prod.outlook.com (2603:10b6:208:2ba::7)
+ by PH7PR12MB9222.namprd12.prod.outlook.com (2603:10b6:510:2ef::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.7; Wed, 25 Nov
- 2026 17:11:13 +0000
-Received: from BY1PEPF00026964.namprd05.prod.outlook.com
- (2603:10b6:303:114:cafe::94) by MW4P222CA0022.outlook.office365.com
- (2603:10b6:303:114::27) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.7 via Frontend Transport; Wed, 25
- Nov 2026 17:11:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Wed, 25 Nov
+ 2026 17:11:41 +0000
+Received: from BN3PEPF0000B36E.namprd21.prod.outlook.com
+ (2603:10b6:208:2ba:cafe::6e) by BL1PR13CA0242.outlook.office365.com
+ (2603:10b6:208:2ba::7) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.662.6 via Frontend Transport; Wed, 25
+ Nov 2026 17:11:39 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
 Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BY1PEPF00026964.mail.protection.outlook.com (10.167.244.148) with Microsoft
+ client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
+Received: from satlexmb08.amd.com (165.204.84.17) by
+ BN3PEPF0000B36E.mail.protection.outlook.com (10.167.243.165) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.662.3 via Frontend Transport; Wed, 25 Nov 2026 17:11:12 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ 15.21.662.0 via Frontend Transport; Wed, 25 Nov 2026 17:11:39 +0000
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb08.amd.com
+ (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Wed, 25 Nov
- 2026 11:11:06 -0600
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
- (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Wed, 25 Nov
- 2026 11:11:05 -0600
+ 2026 11:11:38 -0600
 Received: from xhdappanad40.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.57 via Frontend
- Transport; Wed, 25 Nov 2026 11:11:01 -0600
+ Transport; Wed, 25 Nov 2026 11:11:35 -0600
 From: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 	<dlechner@baylibre.com>, =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -102,10 +98,10 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner
 CC: <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>, <git@amd.com>, Dileep Kumar Nagavarapu
 	<dileepkumar.nagavarapu@amd.com>, Sai Krishna Potthuri
-	<sai.krishna.potthuri@amd.com>, <stable@vger.kernel.org>
-Subject: [PATCH v6 02/16] iio: adc: xilinx-xadc: Refine Zynq read/write error handling on timeout/interrupt
-Date: Wed, 25 Nov 2026 22:40:16 +0530
-Message-ID: <20261125171045.1246381-3-dileepkumar.nagavarapu@amd.com>
+	<sai.krishna.potthuri@amd.com>
+Subject: [PATCH v6 11/16] iio: adc: xilinx-xadc: Include appropriate header files
+Date: Wed, 25 Nov 2026 22:40:25 +0530
+Message-ID: <20261125171045.1246381-12-dileepkumar.nagavarapu@amd.com>
 X-Mailer: git-send-email 2.44.4
 In-Reply-To: <20261125171045.1246381-1-dileepkumar.nagavarapu@amd.com>
 References: <20261125171045.1246381-1-dileepkumar.nagavarapu@amd.com>
@@ -122,93 +118,98 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY1PEPF00026964:EE_|DM4PR12MB6591:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3795d3e7-9809-467d-086a-08df4b171bae
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B36E:EE_|PH7PR12MB9222:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8cb66805-cee7-4e2a-cd36-08df4b172b6a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700016|376014|23010399003|261009223027099003|18002099003|22082099003|11063799006|56012099006|10067099003|261102123227099003|261021121427099003|261026121527099003|261022105027099003|261028144727099003|261026140227099003|261021123027099003;
+	BCL:0;ARA:13230040|82310400026|1800799024|36860700016|23010399003|376014|6133799003|261009223027099003|22082099003|18002099003|56012099006|11063799006|10067099003|261102123227099003|261022075727099003|261021123027099003|261026140227099003|261021121427099003|261022105027099003|261028144727099003;
 X-Microsoft-Antispam-Message-Info:
-	igUMFqIGNjNRgHqzTO9q2r1VDVa2DJrJFna10eZd9kIIvLF4EdZUu9kr5mpV9Y1vNV2ohSaVdG7BSTMpcmKMzpw3NO4ZwLVavvj2d35K0OZ/whHjuABV270Qyia6Xt+piCpMaIksSIAq3a+sg6Aad9fDWmEGo6kQNE/7o3G8StJflJsUQZNjmUU5TuZNUrFan54pyVx6ERCKCuIROsyfIyiCggPlqrka+PT9CW3H1gQFcUvV7oexZM/3sb5ffPp5P979LypgX5LdCUPmQDoD2B2Z3yjNZwDg08w0Ek8E3miCGdh6nourpcMBHmoroeFCpPADSfEN49cuzODyF4TtA0jU/QwG/n4M0ajY5JMO0cziUlgc0dHc7hNyXzE4HyEbjcS0KMcX9TI+RCxOOxHmyoUy/c9iBJ/bMP2Ek9afgT6eCWCqdn6BsU3zZUfTtpeQVFWmb1QOSQRQOf2YbCe5Rj2eLrvoS6P57PCjSoWNqCA5emUXxkutPzx6XpuHNBZNzler2wPXqccKWcGJtk8Q2U0Q7tgTK2ENeFMRP3xQ7xW3fLIe1juQeG1CbuRm3BERb2q63nWcZ85kAEGyXXru4LND12YMdk/MPOe6iaUfUzNoNbzfumhpfarFCvkRq6Wjtcz8pqcTToSZrDQXCBD4ALnDEec2YcCsdPiSmTJ1f83YeRC9N4TlkiAMyyL/VIFjmQQIwMJ8B7l6AJT+6f5O/w==
+	Np9GGMLMRIPN0ycqERAxwiBIRJPpf1jlYNLpVVSsWe9ZmDR0bqyQ8EEyImdTx/N99jOPJPG9Bu/J53nZiJf5aZHnlldRn2bbV2mYs6EEDIg4ssKFPGrQ8jURQPxWtc92rJBFlFwfZTVIvhBBo+EjDSzynTdOKCa9V7M0JBiiQuHnNvPIiagxWeRsEB+miDeSxjjz9uz6kb93O0sMy1TuUrDUGbkNC8fyxlqUEhl2GTQqcp4n2QXZa59n5Cz3D11u7V2La+WNQu5xDE+NApWrveOPcF6QMUI4/kOtfk2hSAKtXKk6Y2CbnygkT1JXiaF6ZLnmaHBjJV31I7PN/DIiEP1c4T61FW5YRFYaVRSw7W2gaEk/NS76dDwJW39ihGYolWptjTSZVJCYPR5oE3VMG47JKHk8Kp0UbKWjjCHrtZP1p1txmqE/XcqEaSayQdHmsxYspKJDJzzeYMUSNthsFwHUdyQou1YmQs+FOkKGFSCAYuOfPMGzCNooOag7YU0lPcWcpXnT5IQIG3LBqqh6KuqKswWd3N7q22STdtRoCOlFIdSCUe48voZEtkJqJTC5ar5COSKj17z8QsgoBdJyw57HW2xjmcvE+LfqQmfD/vK4Sl/50IzXuNQK0HQzLNTUjPdkxfPiz8fnK0nPAODHKEoxvDppWHH+JD9cRkTCH8EmnlPT2U2FeKtjKp3bkXEEXdTAberbOTC9NV0xDWjPgA==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700016)(376014)(23010399003)(261009223027099003)(18002099003)(22082099003)(11063799006)(56012099006)(10067099003)(261102123227099003)(261021121427099003)(261026121527099003)(261022105027099003)(261028144727099003)(261026140227099003)(261021123027099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700016)(23010399003)(376014)(6133799003)(261009223027099003)(22082099003)(18002099003)(56012099006)(11063799006)(10067099003)(261102123227099003)(261022075727099003)(261021123027099003)(261026140227099003)(261021121427099003)(261022105027099003)(261028144727099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	iC6LPS1tfKI7mcSHoU2gq+dIbm/LskKT7krrFd/dQWGkVy9qH94vAgwA6RCST1lQ+MpgFFdzHU/Etrlxjeex3IKlFPIDlphOjO/v0zwt4QNyFdcQm6Zc9h/DBQsK/FFTnoR5F/E1NQdqaEXZa5Y84Wy80oPrxX1lRZSjTwNodknOrrP+MZQ2NjSh+03IDZL1SUYEnb/OHtoiY+8f30bZ/HD1BmxE5B/GWSrg1yTm4SElClSRs5YUjpqJcW5mYrBwPTENbrllQU4g9HjmAInjqhL5rU8GHQGI5mN0ifo+MG9hjgW9QsLpCc3yz5iOjb7ZJUWJd3J2oVd0w8dZX4GHtckedj4a1dOYa2TZRQtaPYyMJW7l4PWcInNpj2b/UBU5bt6duIazxkhuJUj/eoFqWUBm28KMqQd7ry2ZQUz7LkzSyYmfzB4lieuk1fDZX+tf
+	+ezsKSZ3SG67LAKt8xWIScFZHox1bKdr85lA3e+uD0alBDohf4aUUXnWMCPxC7CaaL21GG8JBa8n8mcA3hkWJlLqqVCDbG29KLUI0Poh2MIt4bKCDXFNCErCbqYQK30R102cYT5X5CfBvSMIWm1uluByyUiY1AeVYAvZGH2e7Z8wzTtwl12QzVA1buHunFUwVCJdAGZgXc1w9wqfhfEHwTf5i7AGYniOErpOI6xLZOLuzNBtqXhbcZ9SSeA8u3oOvLm+6NkzZv9nM2SPuHFOFbX6UhnY83emHliWlShEi2RfDg6zILlIfSVPiLyecXxRwtxOR8jHipF5mNIWTV8amGETdgMjAr56gLY9DYtKsslsd6AG7/zqtNK3AcS+p7bPzi9HsbGnxu+e1G7yQpL0sTbOZ1PpOQt2ULbaQ6XIB7paw+h1cemP4u39uIO+87Af
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 17:11:12.9513
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2026 17:11:39.4212
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3795d3e7-9809-467d-086a-08df4b171bae
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8cb66805-cee7-4e2a-cd36-08df4b172b6a
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BY1PEPF00026964.namprd05.prod.outlook.com
+	BN3PEPF0000B36E.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6591
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9222
 
-Refine the error codes returned from the wait, the same way in both
-xadc_zynq_write_adc_reg() and xadc_zynq_read_adc_reg(): a timeout
-(ret == 0) now returns -ETIMEDOUT instead of the previous -EIO,
-giving a more precise errno for this condition. An interrupted wait
-(ret < 0) now propagates that error to the caller instead of being
-silently treated as success.
+Include the headers for the symbols the code uses directly
+(linux/array_size.h, linux/bitmap.h, linux/bitops.h and
+linux/container_of.h) and drop the ones that are no longer
+needed after the recent cleanups (linux/kernel.h, linux/overflow.h,
+linux/sysfs.h and linux/iio/sysfs.h).
 
-xadc_zynq_write_adc_reg() waits on xadc->completion after issuing the
-Zynq DRP write command, then drains the response word from
-XADC_ZYNQ_REG_DFIFO. The DFIFO read already ran unconditionally after
-the wait, regardless of outcome.
+No functional change intended.
 
-Fixes: bdc8cda1d010 ("iio:adc: Add Xilinx XADC driver")
 Co-developed-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
 Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
 Signed-off-by: Dileep Kumar Nagavarapu <dileepkumar.nagavarapu@amd.com>
-Cc: stable@vger.kernel.org
 ---
- drivers/iio/adc/xilinx-xadc-core.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/iio/adc/xilinx-xadc-core.c   | 7 +++----
+ drivers/iio/adc/xilinx-xadc-events.c | 2 +-
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 222571e75cb3..55cb75d4239b 100644
+index 813caf66b11a..7a92ea75cbdf 100644
 --- a/drivers/iio/adc/xilinx-xadc-core.c
 +++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -196,14 +196,16 @@ static int xadc_zynq_write_adc_reg(struct xadc *xadc, unsigned int reg,
- 	spin_unlock_irq(&xadc->lock);
+@@ -11,28 +11,27 @@
+  *  - AXI XADC interface: Xilinx PG019
+  */
  
- 	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
--	if (ret == 0)
--		ret = -EIO;
--	else
--		ret = 0;
++#include <linux/array_size.h>
+ #include <linux/bitfield.h>
+ #include <linux/bits.h>
++#include <linux/bitops.h>
+ #include <linux/cleanup.h>
+ #include <linux/clk.h>
++#include <linux/container_of.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+-#include <linux/kernel.h>
+ #include <linux/module.h>
+-#include <linux/overflow.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/types.h>
+ #include <linux/units.h>
  
- 	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &tmp);
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+diff --git a/drivers/iio/adc/xilinx-xadc-events.c b/drivers/iio/adc/xilinx-xadc-events.c
+index f20614edd153..a63ea766b712 100644
+--- a/drivers/iio/adc/xilinx-xadc-events.c
++++ b/drivers/iio/adc/xilinx-xadc-events.c
+@@ -6,9 +6,9 @@
+  *  Author: Lars-Peter Clausen <lars@metafoo.de>
+  */
  
--	return ret;
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret == 0)
-+		return -ETIMEDOUT;
-+
-+	return 0;
- }
++#include <linux/bitmap.h>
+ #include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+-#include <linux/kernel.h>
+ #include <linux/types.h>
  
- static int xadc_zynq_read_adc_reg(struct xadc *xadc, unsigned int reg,
-@@ -231,11 +233,12 @@ static int xadc_zynq_read_adc_reg(struct xadc *xadc, unsigned int reg,
- 	xadc_zynq_update_intmsk(xadc, XADC_ZYNQ_INT_DFIFO_GTH, 0);
- 	spin_unlock_irq(&xadc->lock);
- 	ret = wait_for_completion_interruptible_timeout(&xadc->completion, HZ);
--	if (ret == 0)
--		ret = -EIO;
- 	if (ret < 0)
- 		return ret;
- 
-+	if (ret == 0)
-+		return -ETIMEDOUT;
-+
- 	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &resp);
- 	xadc_read_reg(xadc, XADC_ZYNQ_REG_DFIFO, &resp);
- 
+ #include "xilinx-xadc.h"
 -- 
 2.34.1
 
