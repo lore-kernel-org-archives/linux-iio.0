@@ -1,88 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795616622;
-	b=gAv1DnA2jcHmgoNvBOr3uCqYIc4nXV/EWIw06Cswm26JFpHg2ZEyoAx/DXwAMyBMDhy7
-	 SfWEZA9yV98YUWs4S6Vy3J7PPwdmxJAPR/kYIeTtlpejCKwNrqDbDXapOi7enVwdYvFxK
-	 AwluInz+9ai/5i41CzR0qC+7SGvb6NotG/IwrWtZCUAzChGC3931WPjgtG01++oTFezDI
-	 bojiDE8UMpPSt61QClMPjq3x78CYrTAvVzJXpOD8XeP8eV0Z0yz6pdqLzfxFG3cgnQiDc
-	 juL9oxettT+ojSsqCcznr9YSljmmth13fBbGvVnB9Tj2DT8ilpN7SuvdXOVHvdg+pCA==
+	t=1795616623;
+	b=GQuGM2bymXnXMeQC9x/rq8yDq1DrHrarFegkhib3X9TTu5ob5jXYv4W7fa/DnHByxZNM
+	 zOOMBDVuASd2nBRTyrWBW5/vBgNWo9VJbMeRjr8Oy/HBArYtEmCRqISoBX7EPLyScI9sh
+	 nM1W9jlkI0SZIGG5aoAxjhRELV5KOghhB72HDqwEImyASAn1Z0TnM96kdZw0uFGGoqi0F
+	 Tm1y/52vc2I+d8YjqCgk+c74aVeLtVL4yycsTebKVlDQJTgckpFFI8hv+xcgiI4CwMOHc
+	 juLmZHYlo3zlWUv4oG/z/+XbEJwEF49Icvg5sE1Txovis/IXEfvZUucTqGFdXXtApFg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795616622;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795616623;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer;
-	bh=50gSt9hp6GSAIpuWnVDuHjwFxVGn5eyqx3CRupQkIy8=;
-	b=y0i2joHvvT/B4T4g1LK60oxEIPYl8Jx7XgS0vFgxEU7jlGppolctjqm71tMmGQURruQQ
-	 NwslNKuW0L4f/fjXv6yNKqXlod+b6oAYdfDyVOzMh40huGBMGFhBbGsxo+Z0cCp2rYqau
-	 J65pN9LNO0K9Z9Lwh9Cs1DcRlqtfmkohRXJs6hrg4c55dDiTxKPVbZv35BVPLKmmm+Doc
-	 6HtLHQcy6NVn8wKn04l9UnfunQboohNhhSxwVogbtUrK15ok80x9DBAtHO3t57tSetiHk
-	 cS8zOBv//1eqpJH/mPruS1F+2YzUU50AxgqLI0WIbi6/yBsYIifffKT6vRWotm050zA==
+	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
+	bh=KKiLkuiHStesk5TE8OyB7f604YZ0z47hf89flcQlAyI=;
+	b=5WbC2YUq6YPFQdvqIKII+lwFpHrO0WSxVaCN5TVl48WWE5zWOTs5adZOQxtPcXgB8moz
+	 st6xZs98t9ZUTotLAOcCPHc2QrZdpjYLnA16CcdzwqK/YK/s/z6sCgGzx22bEDk5Hp5z/
+	 4gKBgQp7nV180/QSZoPgjX/r+EKqWcRnfCKX7cbOW8D2VdxsBrHxfbR/7fveU5jwoYlxy
+	 GnSc/Ks41L1CBLsSfjuJSRTkIPL+Rhfr8F7AmxZBkdblGUeuoK734d3KJeVSISL07ON3H
+	 RKsPeK2UtNcEh0IJ9dhJnCUUmmS5quhdGuhyF2DqMaT5mzX+/LolRgyZjBRmucAbZQw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linaro.org;
 	spf=pass smtp.mailfrom=linaro.org;
-	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=L1FwDLp3;
-	arc=none smtp.remote-ip=209.85.128.41
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b="gg/btqQS";
+	arc=none smtp.remote-ip=209.85.221.45
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E2D3606A331
-	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 14:23:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7E2D3606A331
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6315606A335
+	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 14:23:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6315606A335
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=L1FwDLp3
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4bb6c7b6dbdso54235375e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 06:23:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=gg/btqQS
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-498f5fa4f70so4769163f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 06:23:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1795616620; x=1796221420; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=50gSt9hp6GSAIpuWnVDuHjwFxVGn5eyqx3CRupQkIy8=;
-        b=L1FwDLp3wHHSO7OHNJzAMqbMI3UzxX+e84R2IhF7FhA+JeTZBxBjUpwtiC4W1qd0jQ
-         6/P62yQTbdXtRzJ/Chi1+ZzOPqKzPLTswybBmQtyQWMvqZrkX6njoV4qLwo/KuXFaPMV
-         YP9bxcFGse8GqHNYMQfFAH8iONsqJ72HnCi9lmW8FWUD+rvAf/X4Kc3irkcnSyY+VfmW
-         PCee0ToykhFaayyMrnwgg0VGw/RYfzR0BeM/9aHsX9CpVscUFq3rPcwoMAEjNhOFW8E6
-         q793a99AUX52CWkhfNi2ZOiooz4UqjtVZHsdmGkJa72PfIVtOOYl20UWfx1uKGOzOjDL
-         XKHA==
+        d=linaro.org; s=google; t=1795616621; x=1796221421; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=KKiLkuiHStesk5TE8OyB7f604YZ0z47hf89flcQlAyI=;
+        b=gg/btqQS5JggZWL3TBR5DJZDXCrqBrKtiCDjEW3U1VgUBoIKe/l0584+imxrJZ3Qml
+         GW+Z9qFJDUSQolFMA4ISs3sWUKXpeKX4V44CMTWwUCKE7KcjCoDktCxaEDL4ZXV3wjA5
+         kLOVWN2tWPwrtu2uMg6xL7whDmSwfN9W1sOYybgw2bDqmm3K8EbEgaVPdn1jSJJ2NVkX
+         ajq+L0ei0ME3Pf99yPOR31DhDDyp6wweFXm/hvGih1zNycY0kNpgKzhOVzHIrEsGyjIM
+         YPJ8gzEZ83xabgHMKdMnKX3d6JDh5Bp6MF8ktuthl0nK+liF8D5D9xyjGKqmkHDqaWGu
+         UMlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795616620; x=1796221420;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=50gSt9hp6GSAIpuWnVDuHjwFxVGn5eyqx3CRupQkIy8=;
-        b=ycWrS9sAnDJw11c6hpho/R650CyUsFLv7ci8DroQlUMx7T1UyUhagAsrJ1P3ZBPii/
-         5l32WlFv8bHY9iDd+ihdczp1sNETCeffadhwMnj886EeulwL4W91xxPzTa9dnyettxl0
-         Fo5SoOJ51JbnIeYMJHDgqwAgAA0o3ZF6CuWXUhMQym1KkIJPU0VtbZloOB/21wtg/Hu4
-         sG+QmRme5/gX1RhgGnsYZ7lfruuzCr661fvPJxFWxK3t65RhHiKTcBcNbkOocIbW/x99
-         stfwnVIieOuaOFJ7lTv7MZejkKFlWbwqyigpcaIfxaKA773PwkWKac+dg4vJMg9cCg02
-         vwrA==
-X-Forwarded-Encrypted: i=1; AL+hErHjEHLp1RcxGrJZefYbs8cpLR4BXrQRydbUx6ivWMCfTXDO17vmf0MXReV6dBEV8KeUcgsGyX+5zmQ=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9DE3mF1H3AHcOt3vQ2U+OcF56CXpWrfFw7T3+5XT/28NnF2yLp
-	KrzZisdUKg9UKaB5dD33zF0pvXslmmQiFS3LmOFZd4BskMQEHYsjymnOEvx3mz4ilro=
-X-Gm-Gg: AZFdTZdkTitymxb8miDxCQhGYopskCWRp7xdP8Uidn8fHhFxwT6D6QH1eKKL2lE4UZh
-	kXVs+uA2giFLS6TAJOQjhd3g12cx9sWpo636G2s2ja2jvFIfyUQ0GktI9fqma8l43cvnzsx/c7T
-	g/ezitKkW4aXcRx947+yD1KlWolrsaN9kIaR6/7eK/zXPbSNcEnm4H/upI52uRScRTj+K0/VkVk
-	bXM1k+UEFkyO01i4SQwFtStwcavfsSVOugU2zLtA+rGR3rxmtrdl5DjRDOxzEhnMCuq7t8axcrI
-	PDGkc4SbHJAzGOQpU9rKLHuvZU894sknpx61ycPrXLSiQh/wZLTZfYDcNeEhTYeVZfeMr2SyvO5
-	ofdO5PVuABr+2g5eYiLzWeaxmvAooK1MxR5Pt/bXfnA2h5auvXlT7zii8zXSd/qzsL/hOcDxN1P
-	/YlzG/PRA5v2AXfPVESqz5RTb3vlgVZzGBY0teMPXuAwwmsXVptVhi1uv/lUMI+a3s6JqRI86II
-	Chk8yepvopAA4H+TYUOgrBjXqIogJqd4gyETu7yOCHx1CaOEOuK0pmYQuVmfED2A2zPl8b9GS0O
-	06XZak9Ke6ksnnT86ZaRacWPFfV7jEWnx6EM+evn4Hk+Bv0wiP8ZC3asGv6IgpQAPHcpntT1/eQ
-	4sUz9jhY0xB2o6+fDgxR9unCaSrNQehNGKApN4DiynY4=
-X-Received: by 2002:a05:600c:848a:b0:4bb:6626:5a25 with SMTP id 5b1f17b1804b1-4bb88813462mr315204935e9.20.1795616619785;
-        Wed, 25 Nov 2026 06:23:39 -0800 (PST)
+        d=1e100.net; s=20260707; t=1795616621; x=1796221421;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KKiLkuiHStesk5TE8OyB7f604YZ0z47hf89flcQlAyI=;
+        b=2W7BSDUNogZUaVj0fWMSk9z3sWc1ny5H0bCoT+LseekTuzf1gJxCDv6m7OMLgEoJ/g
+         OhkutI74YvJS/0iTHkcAEnejTv23EahadYsPLbO1rREDqk3sfbfE8qfDyrb2mKeKdrXZ
+         9DLql+L4JOwJgLXd+zSgTQOSi4uCdxJN566JATYGJfkiKIwaxRvEFr4lEUs5O9/EZck/
+         4ACv6Ei+xgNOsfRmIkYBeocMCT7Zuq9b+tTlSjQFHNAqTj9EBnl7e0RyiOJ1qtseA60+
+         83rJymm4VxegeubuxzG1HGCHhTxUY72O4i5ABz0vEMyr7qNRG1tjO6TUaMhM24jz+EAL
+         jVOw==
+X-Forwarded-Encrypted: i=1; AL+hErF7B0pLifwZd2FNHF7wpWlsFz8eqhLZjdS9iV4k0FK07658XO+VPe60JxKgtrjcUX54XVHp+fnAx/U=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9vJkrfdWW1Aa/C/G09XuuBC/jQf2nnxrSV1tIfgVbDlXF7F8AP
+	mPV6Yg6fEbCFgIOEesmv+Z9ktjQTNOwjVehWZomogFCmfb5/gjHgW15MUP0VNoL9bcQ=
+X-Gm-Gg: AZFdTZfNXB8pQ0Cn4Rv2MP3HcbbJkWYyOHsiyewmgy724mTfQZqbxsma8XASQ9d8PQf
+	cbvTThzQImdHjdeF41Gpdd2PgLwoeh+INY3GQeHxxLcCQgdCiOLT/BHqcGALG4cCPaW/wEUGJzP
+	BhPIJiOYhP7qhwL8hnoQ8/UX9Ijyt6FVxdIRjC8RKhWFFm0qmfke1LODtKaApCpofqfKjB3MH0x
+	VZ0QsI0I4BVWIJ/ZNDxPmIOg8NXOPz3IkyvKECPhiA8mYlg9K88I+kBMcvx88izDwhSxLBbFXDx
+	qVfVrhQW3r1TPXWY4j7NWjRy2pmbYUy8HGNM0Nw8K0Tm9qFVn6yv/gXmhs9FTMCY2/aDPPbunX/
+	K+bbzrVl4ZysTzhNtvVsVo1NdR4ZgBeuIjpPgXjc1b258Anw/u8CTuhbXerk6UMvISMwoGJR4o/
+	DXK1CeGZP4iClUW8U8ZEf0IF9+jwIlOGAzn+wAB3Cb51zAekuTymX/bd5HNUWqyo5x7/YEGOEnH
+	+vhYuLbC9CdsUBkC9BQCcVMGeLCgsex6kIXqpKsJzq4SzTP9g5CDBD7pr8WJu/T0MIK/W0XqL94
+	eCz/f0FJQ2UbpBqiSWC92yb/onN1MY+bHVoNnjt2R0NDbWoEDJzj/EfEPEgLvQO0yRTQGftoj1K
+	CKz0eKgyjuPQTqs6EYydEyQ==
+X-Received: by 2002:a05:6000:41d2:b0:48b:1296:52ec with SMTP id ffacd0b85a97d-4abb0c5d65amr34428066f8f.18.1795616620901;
+        Wed, 25 Nov 2026 06:23:40 -0800 (PST)
 Received: from [127.0.1.1] ([2a02:c7c:5e34:8000:720:5dc9:500c:65bb])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6bc8ce06sm33638667f8f.47.2026.11.25.06.23.38
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6bc8ce06sm33638667f8f.47.2026.11.25.06.23.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 06:23:39 -0800 (PST)
+        Wed, 25 Nov 2026 06:23:40 -0800 (PST)
 From: Alexey Klimov <alexey.klimov@linaro.org>
-Subject: [PATCH v2 0/5] Exynos850 ADC support and soc thermistor
-Date: Wed, 25 Nov 2026 14:23:32 +0000
-Message-Id: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
+Date: Wed, 25 Nov 2026 14:23:33 +0000
+Subject: [PATCH v2 1/5] dt-bindings: iio: adc: samsung,exynos: Add
+ Exynos850 compatible
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -94,11 +95,9 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/13MQQqDMBCF4avIrJuSscSarnqPIiUmow6URJIii
- uTuTe2uy//B+3ZIFJkS3KodIi2cOPgS9akCOxk/kmBXGmpZN4jYClo3H1Kr5NM4K7QdSDXaWNc
- aKJ850sDr4T260hOnd4jbwS/4XX+SlPgnLSikuGrsLwqbvtfu/mJvYjiHOEKXc/4AEKyE9qsAA
- AA=
-X-Change-ID: 20261118-exynos850_adc-9cfe569acd8a
+Message-Id: <20261125-exynos850_adc-v2-1-26de1c6f1717@linaro.org>
+References: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
+In-Reply-To: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -114,53 +113,32 @@ Cc: Sam Protsenko <semen.protsenko@linaro.org>,
  Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.14.3
 
-Hi all,
+The Exynos850 SoC contains an ADC block within the CMGP block.
+While similar to existing Exynos ADC v2 blocks, its data register is
+located at a different base offset (0x08) hence a new compatible.
 
-This small series adds support for the ADC block found in the Samsung
-Exynos850 SoC and enables the Murata NTC thermistor on the WinLink E850-96
-development board.
+Add "samsung,exynos850-adc" to the devicetree bindings to differentiate
+it from existing Exynos ADC variants.
 
-Exynos850 ADC is also called ADC v3 in downstream but my understanding is
-that SoC names are more prefered.
-It also relies on PMIC 1.8v regulator which currently represented as a
-dummy one.
-
-First commit adds compatible for device tree bindings, the next two add
-the ->read_value() callback and Exynos850 support in the driver, and the
-last two place things in device tree files for WinLink E850-96 board.
-
-This was tested on mentioned above devboard by reading reported
-temperatures from thermistor.
-
-If dts patches should be split out as a separate series and should go
-separately please let me know.
-
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
 ---
-Changes in v2:
-- split the Exynos850 support patch into two patches: the first one adds
-  the ->read_value() callback and the second one adds Exynos850 support;
-- added an empty line in adc node before status = "disabled";
-- Link to v1: https://lore.kernel.org/r/20261001-exynos850_adc-v1-0-791b3516bb9d@linaro.org
+ Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
----
-Alexey Klimov (5):
-      dt-bindings: iio: adc: samsung,exynos: Add Exynos850 compatible
-      iio: adc: exynos_adc: add ->read_value() callback
-      iio: adc: exynos_adc: add Exynos850 support
-      arm64: dts: exynos850: add ADC node
-      arm64: dts: exynos850-e850-96: add soc thermistor node
+diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml
+index def879f6ed20..90a220e3b78d 100644
+--- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml
+@@ -18,6 +18,7 @@ properties:
+           - samsung,exynos3250-adc
+           - samsung,exynos4212-adc                # Exynos4212 and Exynos4412
+           - samsung,exynos7-adc
++          - samsung,exynos850-adc
+           - samsung,s3c6410-adc
+           - samsung,s5pv210-adc
+       - items:
 
- .../bindings/iio/adc/samsung,exynos-adc.yaml       |  1 +
- arch/arm64/boot/dts/exynos/exynos850-e850-96.dts   | 22 ++++++++
- arch/arm64/boot/dts/exynos/exynos850.dtsi          | 11 ++++
- drivers/iio/adc/exynos_adc.c                       | 66 +++++++++++++++++++++-
- 4 files changed, 98 insertions(+), 2 deletions(-)
----
-base-commit: 7cfbf79c66c63e807ea452abf0546e6f6d6833a6
-change-id: 20261118-exynos850_adc-9cfe569acd8a
-
-Best regards,
 -- 
-Alexey Klimov <alexey.klimov@linaro.org>
+2.53.0
 
