@@ -1,88 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795616625;
-	b=tOG3+/r4MV2WXwEQ2fS1ATO5ne777gd8/pd2WmYJguv9oSrKdsIKgdhtt0RKJYVEgmmd
-	 3Rmi63M1IBt/gPHbFltkXYdfz+ErvsIozxiPgShF9im0DS8OyBAEQ1ddC5xXoi7sGH6PH
-	 oM1AptwDaLEhUncs1LAVgsWH4FxfAug7u9bF6jb3Jze1/BNodPNF43c/A5hDlyHKlB9T0
-	 YF7H5fr2j5Ddcy3nQ13lIif3Prne4zyD4LLnLqN30q7nzMBwE0kwu9FYMN+QuCNRPCzQr
-	 I15sKhWk8ehgooIkHD8oKw15l1ft3fY9q4qgN9cNdCX9Mf5+7jTy3nXMvQGx7BoWQQg==
+	t=1795616626;
+	b=yMJC7bqFuTr1jOaHSZxKsqB2qF59tUiNNsjCgQSXA1tPY709Vq8WzHSPVFhlemXhmITo
+	 NYk8PZi6O5NVqLQhciZFINAogoFvvYhzd5k7z0i/mjXYO3nWJRa/SbBMy5IeXqkCnaftN
+	 lO+1zIroCkyIMhtpYk+woQIbRa7EojjzkbTzqa5mHloE7SLtXaWQNqXlV+N0OqggTb1WD
+	 4Ny58zS+pkZ/0IhNM4IWSg8CntYDnjiXtWXUixiThKNDxOQVAxIt2/SRvjLh47ApgWhu2
+	 Utn3yyFOFbbODde1HCDzX0NHYNNOpzmDCws275M7LZ3W1uy2knHd7aho6YNn6DGZ1mQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795616625;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795616626;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=0/aFPQt49ikbeQUDeEJ95DjEIDG8hIXLsnOyjwQr970=;
-	b=p8QXZa4CPeYovUqIKsUunASmeLkkh8UeO54FLZpJWLLw6Y5CtVqfsEGvn5P58HdqERMp
-	 qsmiN9vrDQ38lfxoqNocsOiAPN1AoXSFtLKFdr6ilaDBGwN6SsdAaAChHuxC8rEGSNyMR
-	 cdSbd+sUn7UEP6BmdSbN8TUhX8WBrxFZb5MS9Jot9OL5dTlRtrlsYyzc0f8GupyT2k7sV
-	 JMngFesBjkvNKlns8xcjHEsmCzXud4rinPdgHnLG7rqL44OjCZZ2uQ406Cv4OIHnaDpRK
-	 1mjMQ/ulOuWpJoUZYsfdhi5oKfK3iXW6GVOw1WNuVt4blMme6rk3L2hypJU3i2m5rmQ==
+	bh=W/tWqCt9Fy+4s0v2ubcz5FyoYjRxKRthZCQi1c9cxS4=;
+	b=lsQcSvhrMxD3bHxln0EKRDmUprIC9fINWKgkvlY7bwl1Di3qmoVjkHj1SfO2FOAGz3Md
+	 mfiQY69xYASBrefZaA42P5QI7H72kIsnMzfEwOALinn1cML4KYHbaVw4XCkhC60zkZ/ok
+	 fB48rXluSJ9kfdhw27B/yJ1Qv+17fIuBf/ybL4d3OWc24U5TJ9ZvmhRXrWoF34gAW9w3v
+	 QiTS8bhURI4BoJ5ERUzyvTIDVh4HmDCDU85uMxHakOdJHyAyDSDgG0QTVBbry1SrmA5Uh
+	 5d8AdRl5RYNPTPvKw83y1c4kXV9tXhvz0eCXQWRUFXiR3VHqNBqaQzX13qXaqWEuiZA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linaro.org;
 	spf=pass smtp.mailfrom=linaro.org;
-	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=hiJcPhUU;
-	arc=none smtp.remote-ip=209.85.128.52
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=A0sRnbpd;
+	arc=none smtp.remote-ip=209.85.221.52
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F00EB606A336
-	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 14:23:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F00EB606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B472606A337
+	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 14:23:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0B472606A337
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=hiJcPhUU
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4bb85e07aadso72561445e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 06:23:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=A0sRnbpd
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-4a7b8abe209so4517845f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 06:23:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1795616623; x=1796221423; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1795616624; x=1796221424; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=0/aFPQt49ikbeQUDeEJ95DjEIDG8hIXLsnOyjwQr970=;
-        b=hiJcPhUULAmPztjzWi/HrHtJ9NlPw0ZsmybzonAHMZG3H7hf5ktLxpZKK2WpGaRmCU
-         7465xBkTFmS1/bfrtmtkafpgUPmTwg9+lIqBpUf45FbO1SEZopixDcjb0s4LeseVkc+u
-         zIUeYKMAs9yZrb3vj39jbA69KUpl6jBt2qFybYiwATe4KlBLkIHVkPk8syLbLoqNrKh0
-         A0GPjX/O+QsT7CZObIuq+21p3gG1LPVVg/uJbWJzRmcWG3vgSVa5Ie45HsJb2ekOXVnv
-         TjBdCErxqS2XwEchv/ECFoTCqp6NeZ3Z+z1+EVFyKb+CYzHra63jzqNWVmpgv8kyhARW
-         bP+w==
+        bh=W/tWqCt9Fy+4s0v2ubcz5FyoYjRxKRthZCQi1c9cxS4=;
+        b=A0sRnbpdEp9bRwWm7n1SKo07iYgVbG4yS+gCF3Kw3P53kdbbL10p7APEcPps4zUEkL
+         AegJrjCRe+13LmBOZt1u2XpQFfogVQkHH6rnhfADXugUhZf3577Ny72g8tjqqOHMhBV1
+         KymRC2cRCY6oHj/MrUXx/Oc3/+mKr0bindxjTz0TRFl9QBYJGjzJMTnaYBAAUVnuuKrq
+         oHeYZKe0DG7bfX/5wfnFRLDpiyQQITqXoHWixZ1Dwj4K0LxUekBinW6xBWpa55kbVOux
+         kkYhQ55BvBU9Q7nT8GzjvxhFPE5FsBsRBSJTmHrIwelPvNjWjsOo0pTE4LNDxKegTbY4
+         q1OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795616623; x=1796221423;
+        d=1e100.net; s=20260707; t=1795616624; x=1796221424;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=0/aFPQt49ikbeQUDeEJ95DjEIDG8hIXLsnOyjwQr970=;
-        b=MZvYQjO91YAwJo7EhaVYQN92qM0I4HTTkQdSYOlu/iwBRZT0b047RmkmbzPqLl+IVu
-         zOjEnRYrkgntVwZiUwzFhKTQ11SWi0oWZbTu02nTHMmuu/up++5Z2Ytp96uRCdopIjtL
-         QrTtFzYh0gCcbYHdZrek22Rh/yDqtPZVVnj7CvDqwe1pbe2NEwaGujI07DZ7umzLx8ZG
-         VRZwR0epJ+jr6B2jwFJQM7ljUmgl9IggZYmPMgHy0KMUa0QSa125FCA59MkPMS0Tri1v
-         eeij9pp9hQSMTYczZGfqJH8lrfbsomwLjHqK53bgONWvGCS7lRmYbG1x1C9BdlFDmAkr
-         lIEw==
-X-Forwarded-Encrypted: i=1; AL+hErFqTV8BjCQymLpl3fSvczpv6dJrs2m7XpzU3GxcUA/XioR4jp0HGog9e9ZYrGRDebcu5P9/Rxl5pmI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/klYVzvEpLTxl1Js/02z+a2uqdxxPk6LfBB0p03KE2GoeIKkmX
-	QLarHbrHk32OwNHaL+WNOqPXjA4Wm21gfZ8aSBZJCoRrXdgKRrHSqvTl0gjX+KTlf3U=
-X-Gm-Gg: AZFdTZfbE00l7Jg2qxBz8vXI4VbpHzzv5FW9poBMp4XtQVrpC9Rpoj/Syah+Kv8Ewje
-	zrDMCWGIXNyjhCY1Y0nPYYr8AczPtw3AcONs80R7RNeFOs3Q1WNy7Gl1sRJkGThLVBSWQMdjLtv
-	c4OhckhioESLd+Jkf1HWJsvKnX2KvuAmIr0sbW9MbaSbIIlvIAL2DV6HSQpnZNG3uUESveBoX5g
-	Nh+WmBdRPvtvmQP7Ew25RUghZ8xskXt1Lm+VKkv9IAjCPCZKqcmwvEy2haYEllcvXbKnmKmTz5w
-	94wprHB9IFLb0l5XbP/dN7ECJe2NooVGd0ZhMVCmw4AbPs9BNDG5931eUppd6XuApR7igZZE/lA
-	gPzqx5QDzLBgBMarLl2GigsngPdlk3cXBw7muLmoCM80cQAefOOwoOOz7DcGrt7Dh6/vbLKwQk+
-	TBMv36IysHLIQzUHUX4Sl6uOtxZGt+/b3O47AVAc99dioFBORB3b5n+r2iivQub2e5c6U9EWZHG
-	GeO9Zv3oLRY7gxstlSkvxXLCoPtcrsxByLpEj+VJUzeSNdHgGHqhvLKxzGmqgGeqD2R1Zrje+An
-	kCTZP2MY6RcQj7mgSYG6CtI/dzd2ASHiuKfXvn+2knCDUHdFir9fpjftCfbp0soxfsG6uSZkNhs
-	5UMm7RZEktsQVBZ+7V1HtWXU=
-X-Received: by 2002:a05:600c:3ba3:b0:4bb:6118:4c9a with SMTP id 5b1f17b1804b1-4bb88819940mr421222855e9.30.1795616623233;
-        Wed, 25 Nov 2026 06:23:43 -0800 (PST)
+        bh=W/tWqCt9Fy+4s0v2ubcz5FyoYjRxKRthZCQi1c9cxS4=;
+        b=n8f5MfahcHtv3YdbBaZBM8WosA7ycZtMxLdKd3gRy6u8VRXIPJCyC+R98JVpNjZ+zf
+         L8i1JWfZtvxFbExiO4vM0WF20ixQTvHCj1MrgshoeTCg+oCap7PnrEgIhWkFq4G2hg5i
+         Hi9eo691tSFzS9CqrK1YNiwC72wiHTiUW/NWZ7H5eoWB0nljnNyx5pJhBHLDi2urTI3I
+         +fb/uvGTBIWRlQbcpt1SjleIqxNP11QpTtJphiliSrRBnZz/QQxJGeq/C9gGwPeZuNYv
+         wowT/3lAToDZMV6UAOzB5h0MOFcIxR/AgVX6OiXvJd9Ceko1b+OwnPkKqpIK4iU7KLay
+         MFcQ==
+X-Forwarded-Encrypted: i=1; AL+hErFqA1qVxm6QYXvH+qF3JaJbZ01uprdbNJoGOpZFyP3kLKXXa5PkjvjvE+uoue/LB3AnWjwHMIz/trc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+yPap0thZ1disuUc+/Y1YENlJDS+vDpaJV0i0yCFJ4CehMQPEI
+	vvPGFWYpr851bn22to96pyNGZg6tUl/+EhhNK7URVzurnsb6xVm8o8EXL/AWBK35S0xDanlyETM
+	zK8/KX8s=
+X-Gm-Gg: AZFdTZcaDYlIVX5K1BOf6Y5F5iLzVyw6wK/b9ZAtvAD3adJs0a8kLm9ioaAV81CvmcD
+	5HeKOHbZponatS+zzBDNucfKak2ZvbEzgrP8OtutZrEA3PlifbhSgLkfGx+eTMkdoPaVJgnD8sQ
+	CG9gXFmLHAEewsB6+ihH+HbBvIXCOA4/nQqVxKV2WVIaOojcohYATQQM72g+9xZkiBUEBLdxd4q
+	QpaKTxYx5/z+i2Q/1/+TVmAKyxIomhsP5Ya4mmS3MO6Rxg7WfXH7JNE7QPvHZpbO0qNco/BI8Eu
+	JdCJJR2NTdbbsa10eDDwiku/JaFwsSt5Cd3s7U6V8LSQVwMlfiIpzdrhQj6EAhubqG4TaWjUYJt
+	p2XxHuH9RQwBB8Q9mh8+5I0CBRLw9eU6oTlhqrw0XUO09VdSGAlmDgpFz0ysLoxS7Qi+M2kNbQS
+	7q/FsHN16QU9sFijmqq0tCcIvD4HSFT3IChjzyN8hFcpDrvL206qN/EUDWw74m8YjCY3J5Ai2C0
+	tot4R4X9XS7v/Ak6iv6eLE+G6af1jfhInOjD9gQvQSnNjixFMCZGhsOlolng16VWf0jpI9p/N10
+	+cE9v+xe2Iyi1YsbHmuKROzCutAS4xGilJZopoJul6ojXGxmwdnMaeqfTa7daI6i9g0UFbxkqWG
+	96lsfNoEEjtq2tyCe1DhLtbiEI1vfBNFBAm8zPyoLeV8=
+X-Received: by 2002:a05:6000:2401:b0:4b4:2ce4:6dc4 with SMTP id ffacd0b85a97d-4b42ce46e8amr17140435f8f.48.1795616624336;
+        Wed, 25 Nov 2026 06:23:44 -0800 (PST)
 Received: from [127.0.1.1] ([2a02:c7c:5e34:8000:720:5dc9:500c:65bb])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6bc8ce06sm33638667f8f.47.2026.11.25.06.23.42
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6bc8ce06sm33638667f8f.47.2026.11.25.06.23.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 06:23:42 -0800 (PST)
+        Wed, 25 Nov 2026 06:23:43 -0800 (PST)
 From: Alexey Klimov <alexey.klimov@linaro.org>
-Date: Wed, 25 Nov 2026 14:23:35 +0000
-Subject: [PATCH v2 3/5] iio: adc: exynos_adc: add Exynos850 support
+Date: Wed, 25 Nov 2026 14:23:36 +0000
+Subject: [PATCH v2 4/5] arm64: dts: exynos850: add ADC node
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -94,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261125-exynos850_adc-v2-3-26de1c6f1717@linaro.org>
+Message-Id: <20261125-exynos850_adc-v2-4-26de1c6f1717@linaro.org>
 References: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
 In-Reply-To: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -111,94 +112,37 @@ Cc: Sam Protsenko <semen.protsenko@linaro.org>,
  linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
 X-Mailer: b4 0.14.3
 
-The Exynos850 ADC controller located inside the CMGP block differs from
-other Exynos ADC controllers, mainly in its register layout.
-Specifically, the data register sits at offset 0x08.
+Exynos850 SoC has the ADC controller within CMGP (common GPIO) block.
+Add DT node that describes it.
 
-Add the exynos850_adc_data struct that describes Exynos850 ADC ops.
-It also requires its own hardware initialization and exit routines.
-Add them as well.
-
+Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
 Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
 ---
- drivers/iio/adc/exynos_adc.c | 50 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ arch/arm64/boot/dts/exynos/exynos850.dtsi | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index a1124a418f29..3e9b5d28b922 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -46,6 +46,8 @@
- #define ADC_V2_INT_ST(x)	((x) + 0x14)
- #define ADC_V2_VER(x)		((x) + 0x20)
+diff --git a/arch/arm64/boot/dts/exynos/exynos850.dtsi b/arch/arm64/boot/dts/exynos/exynos850.dtsi
+index ace747fa80c4..feac3ebc4de9 100644
+--- a/arch/arm64/boot/dts/exynos/exynos850.dtsi
++++ b/arch/arm64/boot/dts/exynos/exynos850.dtsi
+@@ -354,6 +354,17 @@ cmu_cmgp: clock-controller@11c00000 {
+ 			clock-names = "oscclk", "gout_clkcmu_cmgp_bus";
+ 		};
  
-+#define ADC_EXYNOS850_DAT(x)	((x) + 0x08)
++		exynos_adc: adc@11c40000 {
++			compatible = "samsung,exynos850-adc";
++			reg = <0x11c40000 0x100>;
++			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
++			#io-channel-cells = <1>;
++			clocks = <&cmu_cmgp CLK_GOUT_CMGP_ADC_S0_PCLK>;
++			clock-names = "adc";
 +
- /* Bit definitions for ADC_V1 */
- #define ADC_V1_CON_RES		(1u << 16)
- #define ADC_V1_CON_PRSCEN	(1u << 14)
-@@ -410,6 +412,51 @@ static const struct exynos_adc_data exynos7_adc_data = {
- 	.read_value	= exynos_adc_v1_read_value,
- };
- 
-+static void exynos850_adc_init_hw(struct exynos_adc *info)
-+{
-+	u32 con1, con2;
++			status = "disabled";
++		};
 +
-+	con1 = ADC_V2_CON1_SOFT_RESET;
-+	writel(con1, ADC_V2_CON1(info->regs));
-+
-+	/* Bring out of reset */
-+	writel(0, ADC_V2_CON1(info->regs));
-+
-+	/* 64 times conversion */
-+	con2 = ADC_V2_CON2_C_TIME(6);
-+	writel(con2, ADC_V2_CON2(info->regs));
-+
-+	writel(1, ADC_V2_INT_EN(info->regs));
-+}
-+
-+static void exynos850_adc_exit_hw(struct exynos_adc *info)
-+{
-+	u32 con2;
-+
-+	con2 = readl(ADC_V2_CON2(info->regs));
-+	con2 &= ~ADC_V2_CON2_C_TIME(7);
-+	writel(con2, ADC_V2_CON2(info->regs));
-+
-+	writel(0, ADC_V2_INT_EN(info->regs));
-+}
-+
-+static u32 exynos850_adc_read_value(struct exynos_adc *info)
-+{
-+	return readl(ADC_EXYNOS850_DAT(info->regs)) & info->data->mask;
-+}
-+
-+static const struct exynos_adc_data exynos850_adc_data = {
-+	.num_channels	= MAX_ADC_V2_CHANNELS,
-+	.mask		= ADC_DATX_MASK, /* 12 bit ADC resolution */
-+	.needs_adc_phy	= false,
-+
-+	.init_hw	= exynos850_adc_init_hw,
-+	.exit_hw	= exynos850_adc_exit_hw,
-+	.clear_irq	= exynos_adc_v2_clear_irq,
-+	.start_conv	= exynos_adc_v2_start_conv,
-+	.read_value	= exynos850_adc_read_value,
-+};
-+
- static const struct of_device_id exynos_adc_match[] = {
- 	{
- 		.compatible = "samsung,s3c6410-adc",
-@@ -432,6 +479,9 @@ static const struct of_device_id exynos_adc_match[] = {
- 	}, {
- 		.compatible = "samsung,exynos7-adc",
- 		.data = &exynos7_adc_data,
-+	}, {
-+		.compatible = "samsung,exynos850-adc",
-+		.data = &exynos850_adc_data,
- 	},
- 	{ }
- };
+ 		cmu_core: clock-controller@12000000 {
+ 			compatible = "samsung,exynos850-cmu-core";
+ 			reg = <0x12000000 0x8000>;
 
 -- 
 2.53.0
