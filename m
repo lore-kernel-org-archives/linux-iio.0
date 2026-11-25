@@ -1,100 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=203.205.221.153
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795598192;
-	b=BfAMj4jOj1dVPU23w9tA7qjCJAFgDh8VpN9X4mbZwt4MsmVzXQvhwhFC1bnY0Y1Vj9GT
-	 LHmrF7fiiAPhDFyKhJdWTkabr9IXAgxciw25rCBMq6Ldkw/r4opnS0BbVIPepML+zPcUa
-	 50imIj/kqedr+eSYEFMra0N9wjhwAHfu9N4qmbXVXtPD3EpH305JfWs54Ku6u8aaP2Cmi
-	 q8QDwnv3IlWzyGyT6RLFFinIMGxOIp3jQOO3BkKuCog3lI/sGqWY4F3yb+StSLoJpTOuS
-	 GsUJsdvU7qF8549UXO4dDiVR0UumtY1UADtoKmPriM1HJ5W7YEVDBO45b+koFfrsfZg==
+	t=1795598252;
+	b=Txni/uX+9ct9y7P05XW4J6zHPOTY5r8NDX9rVYYV7iucHmGOxUsDgpYGM6Tx0itG+q4L
+	 9yRSjurtQprvW/UnvGvkNNlqpbH70WuAb8okLYKN+aZFZ6kUBdnvRGSnk1okSOutrKBSs
+	 j/M9wdtr4kzuSte+Ux0TWWcuzi9LfewDxqE2CDrjv6khphLXjI8QFPPEZQ+klhjBdq31E
+	 0/kEw5FSFHG4+Is6srl3C7BHwdpsDRTSfYokmR1mklnu5aWo/ZCq0h3ymsW+ChASZGZ57
+	 URn06NnClVzHe9WmRCyGICfA6mMY1ew7Jjv8iecyilt+9iPJt8K/fyFkwKKinndw4EA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795598192;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=dtSXApRzNRZOAIEEk0PFvzNQj92bqLpekrXOKMNLB6U=;
-	b=LnQB12NX8Z8gWNdd+AZJGpUagJWe0jl6qlWIxseddpYZZ/vIQOOsT9mtgL/dMuk6CZLK
-	 mpay8wyHl/rBEa6DvFmKiJE80gGcaI8EarpAfVBKh/J2j/tJAzobVh7+Qj6IEO/vzKHAk
-	 /E8mJ199HqyVf61vrVcJzC0PaessR1aTpGuoW73hRoK9i+Tm8+Qk2DrmmkAJd6E24pRcY
-	 OEqkvYkB2eWbzNRhHcjVP0VQgeA+GZjMtNICMghgS+oemf/qr1hK4UIV6g5zhxhbk6mmr
-	 uqi5Kw6NVsQYRasgIUfIlooExt1WrMYONPq4216UT+N8lzI9dg1NWYZDxV5tHVofKkQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795598252;
+	h=DMARC-Filter:DKIM-Signature:Received:X-QQ-mid:Message-ID:
+	 X-QQ-XMAILINFO:X-QQ-XMRINFO:From:To:Cc:Subject:Date:X-OQ-MSGID:
+	 X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=TU3Ws57Tqh5M78uTPPJCWLPsrANZW6bevozQ5y9B8m0=;
+	b=b6zPIraGf5khg4hkBnVYCNcFODYawkQ8UU8zwuatG0AreqT09Bi0Oyt9cioot3rV9uOi
+	 6uM3VbWtOGCWD1iv819vqB1jAwz+X7dPfLhxgSxO+MptcpTm5sTuivcxqrJF+TFFPHpnW
+	 YM8ZRnqi5T7Pdd4XFPL5s3uTOuzo6qj7XP+k3nJVo+m6OJDj0GKDeIQAuFuqwauR0x8+U
+	 s5qWVpL3gcWZSF56jr95dpEoE7cxYYQCQA9AnrwyKw4yjOkzDXpb+Lkab6+2/exO3Y/Kv
+	 v8EZ+hSFBF+zEE/QCp/jrRUNAIlVUdd5G9UrHsmMBLUd5H7dLAmaXD8eE741A8NlIzA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=O7mdlKEc;
-	arc=none smtp.remote-ip=209.85.208.174
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=qq.com;
+	spf=pass smtp.mailfrom=qq.com;
+	dkim=pass header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=GH0lCYaM;
+	arc=none smtp.remote-ip=203.205.221.153
+Received: from out203-205-221-153.mail.qq.com (out203-205-221-153.mail.qq.com [203.205.221.153])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B98E606A686
-	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 09:16:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B98E606A686
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82DF7606A683
+	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 09:17:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 82DF7606A683
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=O7mdlKEc
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-3adf87fc0c6so47976901fa.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 01:16:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795598190; x=1796202990; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dtSXApRzNRZOAIEEk0PFvzNQj92bqLpekrXOKMNLB6U=;
-        b=O7mdlKEcxUoSuWx0Bx0zYAuwKq1/6Dba4zzP6J1Q4OrO22h/vNkmSvCbcByMeR3eG2
-         vHcYl1rPNSIe9Hzz+/xaLEUj++SPl5TWt/8vQrT5JEendwFMwU0uktOF4pDUM0s/033W
-         b9Hlyu1xivQnbS967W1aBbar7zJ5O1gfP+XCtd3ulTkYuYhXXqklzyVl+7DOGcHdIu2a
-         WQO8K7ihUlkHTYZzJ/QlF+3HZFLOqEPk7qVUalT0NWcS+XXm2yDV/IVN9WfXNtnD45iC
-         6nI4lZbwLe04O8oy7K25Y7bkpO813hKh5axeBSCUxVO//5bp/Vglf5Z9AjpbpIll7k36
-         qk+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795598190; x=1796202990;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=dtSXApRzNRZOAIEEk0PFvzNQj92bqLpekrXOKMNLB6U=;
-        b=WB1odHmkwjxwj/bUacKly3SqtnIULbWVmQQ9RRmlK2sf11i4H4A5eiRww9oQZwk+lD
-         pMUv7hXqB6j/umJw3Iauqy2VycDRo4pKnAz6O+HvjXdRhPn463ciuN9rh5f07CRO0S81
-         AdYlujveq1sMJ0gIC+gx8VlbqEcOm2yKKCrhQoXpp27ZTunrmXvxA8B4hRfpVU3pcrAr
-         NAB+h/68XbFyJ2M0bEJFs44yfXGGBWrZbndUvbsQ+9xjAnJPK9665wIZeKcigHbqaN38
-         RrKAIWv0azKZs6oq/JN0dI3r7Whh7sPUVcy/oILBjcPfoUXZTKhbEik54VgS4C3fnG2p
-         bvTQ==
-X-Forwarded-Encrypted: i=1; AL+hErG84BNZ3V/VuasQ7yScvXFHLBHGsnSMPQzdtN10vj2p9p066tRdNXBiVjsVWF6w20/sAaOa/oH2dbI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+Vh3qTDJfIVsc4MM7Q76jAyHit7ygbndZQ3oF/G2TtedOoYHLU
-	Qtv6tf6cVS5OKg0kYtxWmmoJIx3gzvhq32ztFGchwfUSxITpzgwR7Dwq
-X-Gm-Gg: AZFdTZfdJHjggLWIyP4Ul+lbFjoU3Q71bukmScXmm+EFXxWVdq4pwR1AN7eldwt+/Ei
-	YWQvIGQofpF7vkW7nFCp8///nXtK/CYDJetIE7RUNtsYMhOwD2urNDvrxoTNoF3QB5g4HVgx5At
-	RJFKAa5n5EPhpgnD6YK9+1mNPaoVOV+8ENV/+XZPe5Y00riqWd0wXKfG1lVlL9nIDccUaXzqJ9o
-	t8clRo53oqPik1bjHmJSuQE5wtyEV/nWU16ReQfLNKRiyAMFrAmsz9+hu7LOnYCi4zdge1z9iML
-	R2pP/x9mu8JDt0Ravq7CEjRe8vl6wkJaN/oTrGbR/PF/kGxoQdA4uAwRXTSTmBqtjXcIugkItRW
-	WHmCE9n3d4AnJpRv3VQaWpZYQBjMgQw3fAQXkxyO7U9IQqJBgla94gM24MfEQAjxOezjFgfm9/P
-	YG43rtAXEsRmcvyQvRK1OM+GKk62mWaoMtpiSExMs3djJADLHK0nEthYdJiXR23wpWO5NMu4p7+
-	VUErxnyWKE8E6AJALpphuP6yjOJ0BH8plGXBWwgbYyj76asEzfvkPG+Qkshwmb5naKRd5snzZx4
-	/7Q+KdqNVlE6w78GZ5wYgO/allat5QKOvLAahFAu4JRRai2yrV+MdbvH6Klqd7JWcefFZB1NRGC
-	VWCXbdHebeGqOXc5gk6k367f/HxLeJ/H5042/rVpp2T5y06bLI9Z3IBsYvrs=
-X-Received: by 2002:ac2:4c4d:0:b0:5c1:4cb1:f5b with SMTP id 2adb3069b0e04-5c1bc66329emr5991855e87.1.1795598190134;
-        Wed, 25 Nov 2026 01:16:30 -0800 (PST)
-Received: from yantra.. (nekmmqvppk9cj8danf8-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:f131:5b16:1fac:1214])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1bd0195a6sm4528963e87.40.2026.11.25.01.16.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 01:16:29 -0800 (PST)
-From: Rupesh Majhi <zoone.rupert@gmail.com>
-To: crofts@kernel.org
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Eddie James <eajames@linux.ibm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 7/7] iio: pressure: dps310: include what the driver uses
-Date: Wed, 25 Nov 2026 11:16:26 +0200
-Message-ID: <20261125091626.55286-1-zoone.rupert@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <f71cfc2e-9e74-482c-a56b-8b0507eb9a69@kernel.org>
-References: <20261123220649.36887-1-zoone.rupert@gmail.com> <20261123220649.36887-8-zoone.rupert@gmail.com> <awU0bh5ChdbAsArK@monoceros> <20261125075043.37440-1-zoone.rupert@gmail.com> <f71cfc2e-9e74-482c-a56b-8b0507eb9a69@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=qq.com header.i=@qq.com header.a=rsa-sha256 header.s=s201512 header.b=GH0lCYaM
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1795598226; bh=TU3Ws57Tqh5M78uTPPJCWLPsrANZW6bevozQ5y9B8m0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=GH0lCYaMMzOWlmXxqsZEEnyoIcKVcko87uU7CtPMy3tJU/hTBINDYlds2MyV5nZyX
+	 PbQTJmC8L7p0SVL1MHAgkoRm7gzFMzAR0MoFo9WSMseVLhX3MXErDcNXOSlaF7Ytr5
+	 VcdNdqjsMSGxyqFe4Mg/edddGnOp8oEIMSOh8Od4=
+Received: from runtugo-virtual-machine.localdomain ([220.200.111.239])
+	by newxmesmtplogicsvrszb43-0.qq.com (NewEsmtp) with SMTP
+	id 43510ECE; Wed, 25 Nov 2026 17:16:53 +0800
+X-QQ-mid: xmsmtpt1795598213txpkzf1ie
+Message-ID: <tencent_945BB9A3F886BF4E33511C90AD6F89C40809@qq.com>
+X-QQ-XMAILINFO: NbgegmlEc3JuquLCMXRl+ToEvgkYb/TsQlk/GnWWcoI3nkJZ0zxym62ioojM0h
+	 tg5bjR6u64kluQR4mG5YkiCWj9WMKGSDW2DyO9zJgBnilxfxnjg4hTVn/mqO0JHk1QaLOVT1P1aD
+	 9C9foD3mrB5e055dktd6/YXWBtmTt7cI1g1zejsse8G5Tf5crmy3TnDqKJdAKtoSoJRs5ZplDIQi
+	 tMIcF1KF1uG88yH45FNjW5PQEyzbX/TEGHAoLxDm+LdOOPmUUOVHEQ+itxcPmbTfGQ9M+aogfNl0
+	 wOvt930mNjZHGjKBbhegpTbTP8a1L6iSVT7COGCgL2xasZCtSo5CodQJVzmd76jYr7aE/poauGYJ
+	 31Mum8yTbGeeBOrCVqfeXX3ExYpoPxHCmJTIfGLO8tPqJHq+wCIF5Moo2R/zKFvDv/x2PhfW6oSv
+	 kE2JpGo+/Wo0LOqfZylf3pNHWdBRpz8CVXmJmQ/VnPMUeVU3lxueT08WFXEKaE+W2ALuOOt9Oqll
+	 Omrh3RrjIu1diFF34Yjal2y3Gwtgzs4E7DthRQCdZUSk+BTn3uW3oNAS4SerZqxpv5gG5YKgrA/s
+	 7JjeWY+uCrhlXgBIvRHgM/RD3H67j46uUM0DXvA1a5O64gcH4TI2a2DAauiJTm8dtyyB9me0/z+e
+	 yuUsKLzYIhm8w4AMDVSvJtkY27eqdl/Q3jJBcN7qfEspb76ga6PMD30VuCrR72xqtMavAeGfCBAq
+	 zalSkXDL0b74lcskLCBeaQUXe+d/AJMd3R3YCgJxyLnsn5+P9t5SAjCCknhIGa/kQrAMrgF5X7Ev
+	 n4s6paAVdHqskQP7yIDF2vrLIuO8rIQRvgJsVRv/HcEw1HRo+Ti7CSYmp2+YGzQgXVFZzBa0a2e5
+	 XvEe3zysshkm+ebla//djeRWShCuKL8AlSXKbpNaN3I39NBQso01X7gFEsh8YmzJz11WJ7GrSfVP
+	 h94WFo/cA5mfdE1clmVHEBLvctoMYgi4SQ6pGR3Bqr9tRzZ16R1q0xbOXceZ4e8mK8qacEpLJePE
+	 yNRIi/GtdG8aMekmuDsWeSs2Keffo=
+X-QQ-XMRINFO: NS+P29fieYNwqS3WCnRCOn9D1NpZuCnCRA==
+From: liu haojie <2669793217@qq.com>
+To: jic23@kernel.org
+Cc: liu haojie <2669793217@qq.com>,
+	kapoorarnav43@gmail.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: buffer: use cached timestamp offset in demux
+Date: Wed, 25 Nov 2026 17:16:52 +0800
+X-OQ-MSGID: <20261125091652.13575-1-2669793217@qq.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261124163456.76469-1-kapoorarnav43@gmail.com>
+References: <20261124163456.76469-1-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -106,14 +85,40 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On Wed, Nov 25, 2026 at 09:01:14AM +0100, Joshua Crofts wrote:
-> > It was for the of_device_id and acpi_device_id tables. v2 will include
-> > linux/device-id/of.h and linux/device-id/acpi.h for those instead.
-> You don't need to include these (unless you're going for full IWYU).
-> They will be pulled by the respective bus headers.
+When a buffer requests a timestamp, the demux source cursor only
+accounts for channels copied to that buffer. It can therefore point at
+trailing active channel data instead of the source timestamp.
 
-ok, will drop both in v2, so no mod_devicetable.h and nothing in its
-place.
+The IIO core already computes the timestamp offset for the active scan
+mask and caches it in scan_timestamp_offset. Use that offset for the demux
+source location, while keeping the destination offset aligned to the
+selected buffer layout.
 
-Thanks,
-Rupesh
+Reproduced on STM32MP157 with the icm20608_iio SPI IIO
+accelerometer/gyro driver. With only X acceleration and the timestamp
+selected, the source timestamp belongs at offset 16, while the old demux
+read from offset 8. An equivalent downstream 5.4.31 fix was tested across
+126 channel and timestamp configurations on hardware.
+
+Fixes: 5ada4ea9be16 ("staging:iio: add demux optionally to path from device to buffer")
+Signed-off-by: liu haojie <2669793217@qq.com>
+---
+ drivers/iio/industrialio-buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 42941018..6727f43b 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1115,7 +1115,7 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
+ 
+ 		length = ret;
+ 		out_loc = roundup(out_loc, length);
+-		in_loc = roundup(in_loc, length);
++		in_loc = ACCESS_PRIVATE(indio_dev, scan_timestamp_offset);
+ 		ret = iio_buffer_add_demux(buffer, &p, in_loc, out_loc, length);
+ 		if (ret)
+ 			goto error_clear_mux_table;
+-- 
+2.34.1
+
