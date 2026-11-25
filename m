@@ -1,57 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795594320;
-	b=u4126Ch5N/2P8AzjyrBa2jeZLEUumw0bOIsOpBScEWJ2putl+hd3IizL+iODmOs4UMh7
-	 3lftynA8wqDePp0Y+fwMPwBYcMYEnqO6XHB8ryG5tZhUrqihGLdIr9DsPWE61tWQfblsZ
-	 OVtTr9N630db85jpd+nLsGyrJ93uRLn/iwzCqC8LSG4zMJsa/kRl2kd6UzHKeB+ojQnmD
-	 SJUyeVlEUnokfJhpN15RCJQiUqYIvEuaOhNDDach7R0k07UlhM0+VtYlW3H8lPB7JBTn5
-	 QQDlkOvWKdaJpon1CcG0O9l281EVIBatOEGpBbiUcD9sGSJDGYITNWJrf68N6O7h7Rw==
+	t=1795595327;
+	b=Mv7sR+zgAIUYFnB7ZlhkvqPxAKFReHW+t1tYtjsgxhqzJzGJ/+cfV+t0uaWGLFi41noc
+	 f7k0yaVhn4R4h/Aw07fgAC6UOGX0ig6HkH9Me2cA8+m0WoPMf805d2CAJYyRwo2/wK5MQ
+	 tmWwb6TcUYY8Q+2hMzbdWD8z5jO0m5S5Sxq+yImmTRSvtJGBA6T8tlCmgboncecO5G0Ky
+	 nSFMHtqsgV9fexrlbNpN8ProHBJR+DeUI9Q6JW4zEemBdbKypTePyWSBWLEirXIodLFy1
+	 dhiFdaHpeGMG165nqyhZz1PcZaWp6cu0aTOyKeWv3Z1VjwXhtOq7hhmZb6SCuLjErFA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795594320;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=60qPSuL02yf4E8cV0OFKfMQ2IwLGtFiY03C+ToXioh4=;
-	b=GK1Dr3TmgfUEcJ+vg+kzDC1wV7q0LaO+Tho1BaN9IKGEbPzVNRtzd9mptNa2OcvyFOFC
-	 zt8o8qu7t7sgo1tG0WSgEgc0xaWtiWOw4uz5y+7TzaXjEKKhB+4Xbs+8aNZ0JeOIWAbbt
-	 pPflYeN4VZrWSDitnm0j0BZXLmwQSk6FebWLkWoX6lQDRuMEyz0E7BSHt0vzFeBE79Pbw
-	 PoJ5wBmjeMQcFG5pOjh+spz6cQX6J+gwYpb90305xBq1i5oCeMRBZd/XGiO2Y9PL7yBR+
-	 /4P8OuXJqOTwhbUnHjMkyqjurJ1jsLdYx5ehRXrPEs/vijTiMTpzi2eCdSN7Fh9v3JA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795595327;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=dttfp/B7lZ7wNOriYIGKd8nyC9bGgBVDFvE22VqbIYk=;
+	b=BAdS2ZISEsw3y4BPXsGIVN1pNHpFMIr8obg1F/HcfGiEcb9GJ4AteSm151AkGYgucF92
+	 9QpFGXp/ND7MJOHJjcZbfpO06rOSmvZBiI/ZMyyMEEsfgTbzgWjXAJTjXernf0JXE6wjI
+	 bihdw3p6/UP4NMDgAlgL57FdjLsswz8lwtZgp/KdU4bWIrYcBtq3A8Hs0bLPjbFeX3hp3
+	 ZFRqSJTIn3GyA0SZue4IOI01l9O7kr/5Ud2xOit666bM6v2UZVniNcxsOhuNfwUMZ/24z
+	 7HRlvAYbV2EPGYUvjU12z/2/cZQnCNAX69/EPWuieBhk+JhRWRzUqRK8OlT/T1bnOQg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DHHMqsvV;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=P0ThPuBz;
+	arc=none smtp.remote-ip=74.125.82.43
+Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D777E606A323;
-	Wed, 25 Nov 2026 08:12:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11E66606A332
+	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 08:28:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 11E66606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DHHMqsvV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC5E1F000D1;
-	Wed, 25 Nov 2026 08:11:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795594320;
-	bh=60qPSuL02yf4E8cV0OFKfMQ2IwLGtFiY03C+ToXioh4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=DHHMqsvVzThMCz+StJjIJHdtI1IthlXZywrIf+n/gm1K+FQVthJamxxVxkkG01UU0
-	 r2LvKrj0cxj729fHoKBqif5Ai6zRuF6Rnku6m/kIjTHBVjfj5oMk0txiDHga9wpsPi
-	 Z0IiIvtZAdSrWvE9ptIN5ElABw0gVuAn+nNdjeqXXT5IPxR3BTkmAQJxF9oMovdSFo
-	 qHHnaxbzqrAnROpJK2JSAKvDYhn1IfDKCnWhdjdX5bgWvnolCvw/C707dsl5KDjkTg
-	 ahHthuJoG+ToChVe5FQhz/CjLnNkK2NEh0ae2S5TZkiU/mSsiPwPlm6h+KgNrVfrIU
-	 uJNHzMsXfY2Yw==
-Date: Wed, 25 Nov 2026 09:11:57 +0100
-From: Lorenzo Bianconi <lorenzo@kernel.org>
-To: phil.williams@advisoft.co.nz
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Mario Tesi <martepisa@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=P0ThPuBz
+Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-1b546061d58so12410080c88.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 00:28:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795595326; x=1796200126; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=dttfp/B7lZ7wNOriYIGKd8nyC9bGgBVDFvE22VqbIYk=;
+        b=P0ThPuBzy8A+SceJKFTZCU5j5QqK8FO9NPu7KDw8M2BgUEoLTMxkxOoVJA7f1mJLDi
+         ewuPK8y5cEdtO8SsFdncNnjmKeLoBZX/0/GztLuOMUdJb+hQYFYvFMY8ZWJK80Vemw39
+         SgqbHIz9i6FcjQy0LpWsF7yd1cin1x+Tn3bMXtW0sikpN1GQNoThGIFR8JFfJ4sNrcJQ
+         s1rIS+SRADhlv54ibcUx5Rlv6SjOdhuhn9pK83SzdpliNxv5WX1QiVpdRbP1n5LDJVEK
+         p+51LXljwzvjOM610lAv+v33SxKFkAa/GEm83dQkqtQM8uCil98uQvqw/fPfpqAm0D3u
+         eB5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795595326; x=1796200126;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dttfp/B7lZ7wNOriYIGKd8nyC9bGgBVDFvE22VqbIYk=;
+        b=vTB4CYV4g/rOkFqOV1qdylhEUcj4fI3O4JkV3QEpD17yywrqqqlQM9LhU2dLRfUmd2
+         CDB1r1R091ItcRMNeKc114J+oB34Mm9kwU7EI3NgcezIBJg2WXWB3jBKbVwH6yKr3WIw
+         WATS2qPA35aPPqnLmlHkxjiUyOLq0nvL27AssNkEIy5/W1sSdwEfe0Ancv3CyaqScsDN
+         Y9lGdU+q/lIVmY4L3n+vkADZrQa0OB3xFTYzjezUl2W30s6ZbgFElRjkaxRy6s7euSpj
+         ojUJG07DiFNDzyGWkgrY75bmdS1/kPgQZaEaJqtH5MMl21HErgN04ak/s7wY+avqpAoT
+         F0FQ==
+X-Forwarded-Encrypted: i=1; AL+hErHuOy5SK5U5ZKGtmMddd9L2p64F7Mthd3sUZmk0gPt0d7dOhPep1WQvSwGoYyOdL8gSfaoCPEFdWvg=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9EF0yZ3VbKvHZnASVU2Am6L0W3OqenrPGh8SSQrYv4AWs3ZUyn
+	OcMZpT+AzvaBxiBCs1RrkWeOJll7ZA8bC9tlnx2ZWzP+YuQHKPDUTbgNOR2B1g==
+X-Gm-Gg: AZFdTZeOr9jY7rj/vLnAFmWmzRs/m8C2G1F9+DvU9524Evge68XMNcWiWYJYy1P54XC
+	teipV63S1cMLI3OmFBPyL1jv4cp75TT6rj9QDVBztupBFzJThKePIoQivvLcEIUyzqow5ifksu4
+	H+lSUgEqemG/KyUuBHGGAL7Xq0z7vMeGmAE14jpH9a6Nup5YXHfSiZyFcX0HgwEEM2EmY3krVyF
+	XZwkqip0u1z0qkhUfdxlgDdw//IlAhTAPknm5aC5jOnRuOAmEoyqtDGkYnb07QLsbT9eVE4rSbA
+	Tmxuu7LAJZmBslZ92FOdK/ZgbnXdDZXoqGJw0p0z8YZEsJEBZozqBJ27R8vy72hFlynaxMwL7BW
+	L3CtaWLnm5dImzmPmkM7BKnyC6O3bE5jmyQ+WX82qxaHXxvGS31YElbvuHYPbH0LxNkMLyYCdKc
+	Tt3Bk6C+Gj8LdXh7IihukqDSov86pFHf9dmwWNAfBnJkYOc2hyJpWJkPYjRYW/TPhTKSJgtV10m
+	UTsZazmPA19/N+BdfR8XmqOQQBBEU9zMG5VOrnASOviaXLcVkqJV9WiMInxQjERyWm3vTyiENxc
+	yeLVGr28inM7rO8c6GcUpc9KzLQgQnpd19DEeKouweK9sUnrSL9xtQ==
+X-Received: by 2002:a05:701b:2704:b0:1b5:4f6d:8277 with SMTP id a92af1059eb24-1b5568e78b1mr16606421c88.26.1795595326056;
+        Wed, 25 Nov 2026 00:28:46 -0800 (PST)
+Received: from csl-conti-dell7858.ntu.edu.sg ([155.69.195.57])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b55681301asm40511409c88.8.2026.11.25.00.28.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Nov 2026 00:28:45 -0800 (PST)
+From: Maoyi Xie <maoyixie.tju@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Andrea Merello <andrea.merello@iit.it>,
 	stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: st_lsm6dsx: set ts_sensitivity on parts
- without freq_fine
-Message-ID: <awaYTa63V-LnP-T-@lore-desk>
-References: <20261125-st-lsm6dsx-ts-fallback-v2-1-ea0ea2512070@advisoft.co.nz>
+Subject: [PATCH] iio: imu: bno055: restore the order of the gyroscope range codes
+Date: Wed, 25 Nov 2026 16:28:40 +0800
+Message-Id: <20261125082840.1340359-1-maoyixie.tju@gmail.com>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -61,114 +98,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="GTDYvITx/AJlzXec"
-Content-Disposition: inline
-In-Reply-To: <20261125-st-lsm6dsx-ts-fallback-v2-1-ea0ea2512070@advisoft.co.nz>
+Content-Transfer-Encoding: 8bit
 
---GTDYvITx/AJlzXec
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Commit 399b883ec828 ("iio: imu: bno055: fix OOB access of hw_xlate
+array") also reversed the hw_xlate table of the gyroscope scale.
+bno055_gyr_scale_vals[] runs from 125 to 2000 dps, which the chip
+encodes as 4 to 0 (datasheet, Table 3-9 "Gyroscope configurations").
 
-> From: Phil Williams <phil.williams@advisoft.co.nz>
->=20
-> Commit 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp
-> calculation") takes the FIFO timestamp scale from ts_sensitivity.
-> That field is only filled in for parts that have freq_fine. The
-> untagged-FIFO parts are left at zero:
->=20
->   LSM6DS3
->   LSM6DS3H
->   LSM6DSL, LSM6DSM, ISM330DLC and LSM6DS3TR-C
->=20
-> st_lsm6dsx_read_fifo() multiplies the raw counter by hw->ts_gain, so
-> every sample is published with the timestamp taken when the buffer
-> was enabled. The accelerometer and gyroscope values still update.
-> Userspace that integrates attitude from the timestamp delta treats a
-> stuck timestamp as dt =3D 0.
->=20
-> Set ts_sensitivity to the previous fixed scale of 25000 ns/tick on
-> those entries. They have no freq_fine register, so ts_trim_coeff is
-> left unset and no trim is applied.
->=20
-> Fixes: 8abbf45fcda0 ("iio: st_lsm6dsx: Fixed calibrated timestamp calcula=
-tion")
-> Cc: stable@vger.kernel.org
+With fusion off, in_anglvel_scale now reports and selects the ranges in
+reverse order. Restore the order.
 
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Fixes: 399b883ec828 ("iio: imu: bno055: fix OOB access of hw_xlate array")
+Cc: stable@vger.kernel.org
+Signed-off-by: Maoyi Xie <maoyixie.tju@gmail.com>
+---
+Noticed during an LLM-assisted review of the hw_xlate lookup check [1].
+Reproduced in a userspace harness. Not tested on hardware.
 
-> Suggested-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Phil Williams <phil.williams@advisoft.co.nz>
-> ---
-> Resending inline. The first copy went out as an attachment.
-> No code changes.
-> ---
-> Changes in v2:
-> - Drop the ts_gain fallback in st_lsm6dsx_init_hw_timer() and set
->   .ts_sensitivity =3D 25000 in the LSM6DS3, LSM6DS3H and LSM6DSL settings
->   entries instead (Lorenzo, Jonathan).
-> - Leave .ts_trim_coeff unset on those entries since they have no
->   freq_fine register (Francesco).
-> - Link to v1: https://lore.kernel.org/r/20261116-st-lsm6dsx-ts-fallback-v=
-1-1-8ace30afbfb5@advisoft.co.nz
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 3 +++
->  1 file changed, 3 insertions(+)
->=20
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/i=
-mu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 823f8ac66..dffaf76b5 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -434,6 +434,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_se=
-nsor_settings[] =3D {
->  				.addr =3D 0x09,
->  				.mask =3D GENMASK(5, 3),
->  			},
-> +			.ts_sensitivity =3D 25000,
->  		},
->  		.event_settings =3D {
->  			.sources =3D {
-> @@ -601,6 +602,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_se=
-nsor_settings[] =3D {
->  				.addr =3D 0x09,
->  				.mask =3D GENMASK(5, 3),
->  			},
-> +			.ts_sensitivity =3D 25000,
->  		},
->  		.event_settings =3D {
->  			.sources =3D {
-> @@ -802,6 +804,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_se=
-nsor_settings[] =3D {
->  				.addr =3D 0x09,
->  				.mask =3D GENMASK(5, 3),
->  			},
-> +			.ts_sensitivity =3D 25000,
->  		},
->  		.shub_settings =3D {
->  			.page_mux =3D {
->=20
-> ---
-> base-commit: fa2933aac170dd19c6a7f0d7b81a8f537e40915c
-> change-id: 20261116-st-lsm6dsx-ts-fallback-cd21f1d1e30e
->=20
-> Best regards,
-> -- =20
-> Phil Williams <phil.williams@advisoft.co.nz>
->=20
->=20
+I used an LLM to help write the harness and this patch.
 
---GTDYvITx/AJlzXec
-Content-Type: application/pgp-signature; name=signature.asc
+[1] https://lore.kernel.org/linux-iio/20261123135554.2983499-3-maoyixie.tju@gmail.com/
 
------BEGIN PGP SIGNATURE-----
+ drivers/iio/imu/bno055/bno055.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCawaYTQAKCRA6cBh0uS2t
-rNj6AP0ZLLu+r9WFBN6TAHJvfaI+XaWS6Iox74yGJGLRxbjbkgEA0MVKYd/uZCGS
-T6tY+qZXRIX+NwszYmhuddioXSuVNAI=
-=EB38
------END PGP SIGNATURE-----
+diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+index b1c7b4f88bf10e7e0477a1d424bbb4815f59c6a9..50543ac35f044c18b6734224dba94286e6292c76 100644
+--- a/drivers/iio/imu/bno055/bno055.c
++++ b/drivers/iio/imu/bno055/bno055.c
+@@ -171,7 +171,7 @@ static const int bno055_gyr_scale_vals[] = {
+ 	1000, 1877467, 2000, 1877467,
+ };
+ 
+-static const int bno055_gyr_scale_hw_xlate[] = {0, 1, 2, 3, 4};
++static const int bno055_gyr_scale_hw_xlate[] = {4, 3, 2, 1, 0};
+ static const struct bno055_sysfs_attr bno055_gyr_scale = {
+ 	.vals = bno055_gyr_scale_vals,
+ 	.len = ARRAY_SIZE(bno055_gyr_scale_vals),
+-- 
+2.34.1
 
---GTDYvITx/AJlzXec--
