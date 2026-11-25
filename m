@@ -1,94 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795595327;
-	b=Mv7sR+zgAIUYFnB7ZlhkvqPxAKFReHW+t1tYtjsgxhqzJzGJ/+cfV+t0uaWGLFi41noc
-	 f7k0yaVhn4R4h/Aw07fgAC6UOGX0ig6HkH9Me2cA8+m0WoPMf805d2CAJYyRwo2/wK5MQ
-	 tmWwb6TcUYY8Q+2hMzbdWD8z5jO0m5S5Sxq+yImmTRSvtJGBA6T8tlCmgboncecO5G0Ky
-	 nSFMHtqsgV9fexrlbNpN8ProHBJR+DeUI9Q6JW4zEemBdbKypTePyWSBWLEirXIodLFy1
-	 dhiFdaHpeGMG165nqyhZz1PcZaWp6cu0aTOyKeWv3Z1VjwXhtOq7hhmZb6SCuLjErFA==
+	t=1795595495;
+	b=OZ7hcMz9PyGo3odmvez0CfigZyeUQgKlzuswZawqBb5Lgiqlaj4Oufmak4NteCudkrfE
+	 6WoJsFryZZNFrLQb5cd4Cjh860S7wwRay78M31J/pWsmdFNRrKo8RvIbXsurPsY4Oz9Rt
+	 m7CB4ndftDTVrzWHQc1dMjdugVV8T1oy40RCYzttkntelNjMtpoyhNDXGJmuwEDefUr4A
+	 tE17vzXdpkBcnc9byyJFsb4ndW4C504t+BDoweBpSwuzXuzH/1p4Ur7IxB5+fRe7soCRn
+	 arrYFGM9ha1wYPSpA6FlRxWxYxBcylkqURbBQclTPP/Erhw2ITmMYFZicHHSyHr2g1Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795595327;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795595495;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=dttfp/B7lZ7wNOriYIGKd8nyC9bGgBVDFvE22VqbIYk=;
-	b=BAdS2ZISEsw3y4BPXsGIVN1pNHpFMIr8obg1F/HcfGiEcb9GJ4AteSm151AkGYgucF92
-	 9QpFGXp/ND7MJOHJjcZbfpO06rOSmvZBiI/ZMyyMEEsfgTbzgWjXAJTjXernf0JXE6wjI
-	 bihdw3p6/UP4NMDgAlgL57FdjLsswz8lwtZgp/KdU4bWIrYcBtq3A8Hs0bLPjbFeX3hp3
-	 ZFRqSJTIn3GyA0SZue4IOI01l9O7kr/5Ud2xOit666bM6v2UZVniNcxsOhuNfwUMZ/24z
-	 7HRlvAYbV2EPGYUvjU12z/2/cZQnCNAX69/EPWuieBhk+JhRWRzUqRK8OlT/T1bnOQg==
+	bh=orkqkN9k0NvO+k3q6u67IvXNksIJl6E1WSlIId6lXvg=;
+	b=CE/hlRc11NPK/Bn50EH6qSSs562cNQn3bcSbTgJq3tG6tbrcC5Qiz5HiECyxup0+BtyP
+	 qvwZ53kDE/sZMobVwu8Nxi1MD00VSIWi4a6Y2AZhuAZjW5uPeRD7kfbBW1OaAw/KpjVLZ
+	 nIN9fM3m7IHlHrMXl0iECZR/tMWxebp4nWpH58X7hNBtANUVAX6mEOC6G6ihI6Epe68Em
+	 FauoP9i4nqrbfcxdC/yT5qieUs1PFIgu5QAmPb1dMiDd5GD7esQEkzihX1tow00/TaHrA
+	 aHcj1W2DRhrD8GeNiTnIHd75NAe3awBDiwJYH3hbkJMyKIly1ZbTokC3NmVm4BlOBQw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=P0ThPuBz;
-	arc=none smtp.remote-ip=74.125.82.43
-Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="O/fjzGlN";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11E66606A332
-	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 08:28:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 11E66606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106C0606A31E;
+	Wed, 25 Nov 2026 08:31:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=P0ThPuBz
-Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-1b546061d58so12410080c88.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 00:28:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795595326; x=1796200126; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=dttfp/B7lZ7wNOriYIGKd8nyC9bGgBVDFvE22VqbIYk=;
-        b=P0ThPuBzy8A+SceJKFTZCU5j5QqK8FO9NPu7KDw8M2BgUEoLTMxkxOoVJA7f1mJLDi
-         ewuPK8y5cEdtO8SsFdncNnjmKeLoBZX/0/GztLuOMUdJb+hQYFYvFMY8ZWJK80Vemw39
-         SgqbHIz9i6FcjQy0LpWsF7yd1cin1x+Tn3bMXtW0sikpN1GQNoThGIFR8JFfJ4sNrcJQ
-         s1rIS+SRADhlv54ibcUx5Rlv6SjOdhuhn9pK83SzdpliNxv5WX1QiVpdRbP1n5LDJVEK
-         p+51LXljwzvjOM610lAv+v33SxKFkAa/GEm83dQkqtQM8uCil98uQvqw/fPfpqAm0D3u
-         eB5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795595326; x=1796200126;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dttfp/B7lZ7wNOriYIGKd8nyC9bGgBVDFvE22VqbIYk=;
-        b=vTB4CYV4g/rOkFqOV1qdylhEUcj4fI3O4JkV3QEpD17yywrqqqlQM9LhU2dLRfUmd2
-         CDB1r1R091ItcRMNeKc114J+oB34Mm9kwU7EI3NgcezIBJg2WXWB3jBKbVwH6yKr3WIw
-         WATS2qPA35aPPqnLmlHkxjiUyOLq0nvL27AssNkEIy5/W1sSdwEfe0Ancv3CyaqScsDN
-         Y9lGdU+q/lIVmY4L3n+vkADZrQa0OB3xFTYzjezUl2W30s6ZbgFElRjkaxRy6s7euSpj
-         ojUJG07DiFNDzyGWkgrY75bmdS1/kPgQZaEaJqtH5MMl21HErgN04ak/s7wY+avqpAoT
-         F0FQ==
-X-Forwarded-Encrypted: i=1; AL+hErHuOy5SK5U5ZKGtmMddd9L2p64F7Mthd3sUZmk0gPt0d7dOhPep1WQvSwGoYyOdL8gSfaoCPEFdWvg=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9EF0yZ3VbKvHZnASVU2Am6L0W3OqenrPGh8SSQrYv4AWs3ZUyn
-	OcMZpT+AzvaBxiBCs1RrkWeOJll7ZA8bC9tlnx2ZWzP+YuQHKPDUTbgNOR2B1g==
-X-Gm-Gg: AZFdTZeOr9jY7rj/vLnAFmWmzRs/m8C2G1F9+DvU9524Evge68XMNcWiWYJYy1P54XC
-	teipV63S1cMLI3OmFBPyL1jv4cp75TT6rj9QDVBztupBFzJThKePIoQivvLcEIUyzqow5ifksu4
-	H+lSUgEqemG/KyUuBHGGAL7Xq0z7vMeGmAE14jpH9a6Nup5YXHfSiZyFcX0HgwEEM2EmY3krVyF
-	XZwkqip0u1z0qkhUfdxlgDdw//IlAhTAPknm5aC5jOnRuOAmEoyqtDGkYnb07QLsbT9eVE4rSbA
-	Tmxuu7LAJZmBslZ92FOdK/ZgbnXdDZXoqGJw0p0z8YZEsJEBZozqBJ27R8vy72hFlynaxMwL7BW
-	L3CtaWLnm5dImzmPmkM7BKnyC6O3bE5jmyQ+WX82qxaHXxvGS31YElbvuHYPbH0LxNkMLyYCdKc
-	Tt3Bk6C+Gj8LdXh7IihukqDSov86pFHf9dmwWNAfBnJkYOc2hyJpWJkPYjRYW/TPhTKSJgtV10m
-	UTsZazmPA19/N+BdfR8XmqOQQBBEU9zMG5VOrnASOviaXLcVkqJV9WiMInxQjERyWm3vTyiENxc
-	yeLVGr28inM7rO8c6GcUpc9KzLQgQnpd19DEeKouweK9sUnrSL9xtQ==
-X-Received: by 2002:a05:701b:2704:b0:1b5:4f6d:8277 with SMTP id a92af1059eb24-1b5568e78b1mr16606421c88.26.1795595326056;
-        Wed, 25 Nov 2026 00:28:46 -0800 (PST)
-Received: from csl-conti-dell7858.ntu.edu.sg ([155.69.195.57])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b55681301asm40511409c88.8.2026.11.25.00.28.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 00:28:45 -0800 (PST)
-From: Maoyi Xie <maoyixie.tju@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Andrea Merello <andrea.merello@iit.it>,
-	stable@vger.kernel.org
-Subject: [PATCH] iio: imu: bno055: restore the order of the gyroscope range codes
-Date: Wed, 25 Nov 2026 16:28:40 +0800
-Message-Id: <20261125082840.1340359-1-maoyixie.tju@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=O/fjzGlN
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C04A1F000CF;
+	Wed, 25 Nov 2026 08:31:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795595494;
+	bh=orkqkN9k0NvO+k3q6u67IvXNksIJl6E1WSlIId6lXvg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=O/fjzGlN6oVvhVvoBqjCKbVNEmy452qiZxK82fL/SIkZ+lx52h8kWBKa6zRgpOSzS
+	 tusHyXoHdckAwHtLoh+p3GjZUskzZqimw0CY7Cd0PS9pOdg4dHaeTeUHJg5Z/fuxlv
+	 nANs5ll3OY5hDUypEmejv/3hZ+RmcGuI98CQPUPeMwEOshNbk3Fm7ipYDg6blMO0lY
+	 yVYhbBp2NjznoH6ciXoid7kcU6Mzf4ehqApTNNhdIxBsbVdIXP2mNzfHc+nWKtDa8e
+	 ZKQ8jf4HkgBGptdtJzZRNNan8iX5+sSLcEivBPbqJ/MSE3pyzyZp/UrDR3S9u95799
+	 imJDBy40J+NPQ==
+Message-ID: <14111935-b991-457f-88d4-f5c06ae68df8@kernel.org>
+Date: Wed, 25 Nov 2026 09:31:31 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -98,43 +51,209 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient
+ light sensor driver
+To: robertijtsma@gmail.com, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20261124-iio-tcs3430-v1-0-0f2a38a6a4c1@gmail.com>
+ <20261124-iio-tcs3430-v1-2-0f2a38a6a4c1@gmail.com>
+Content-Language: en-US
+From: Joshua Crofts <crofts@kernel.org>
+In-Reply-To: <20261124-iio-tcs3430-v1-2-0f2a38a6a4c1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Commit 399b883ec828 ("iio: imu: bno055: fix OOB access of hw_xlate
-array") also reversed the hw_xlate table of the gyroscope scale.
-bno055_gyr_scale_vals[] runs from 125 to 2000 dps, which the chip
-encodes as 4 to 0 (datasheet, Table 3-9 "Gyroscope configurations").
+On 24-Nov-26 23:46, Robert Ijtsma via B4 Relay wrote:
 
-With fusion off, in_anglvel_scale now reports and selects the ranges in
-reverse order. Restore the order.
+...
 
-Fixes: 399b883ec828 ("iio: imu: bno055: fix OOB access of hw_xlate array")
-Cc: stable@vger.kernel.org
-Signed-off-by: Maoyi Xie <maoyixie.tju@gmail.com>
----
-Noticed during an LLM-assisted review of the hw_xlate lookup check [1].
-Reproduced in a userspace harness. Not tested on hardware.
+> diff --git a/drivers/iio/light/tcs3430.c b/drivers/iio/light/tcs3430.c
+> new file mode 100644
+> index 0000000..138c8ab
+> --- /dev/null
+> +++ b/drivers/iio/light/tcs3430.c
+> @@ -0,0 +1,345 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * IIO driver for ams OSRAM TCS3430 Ambient Light and CIE 1931 XYZ Sensor
+> + *
+> + * Copyright (C) 2026 Robert Ijtsma <robertijtsma@gmail.com>
+> + *
+> + * Datasheet:
+> + *   https://look.ams-osram.com/m/43d518b4cd81e3f2/original/TCS3430-DS000539.pdf
+> + */
+> +
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/math64.h>
+> +#include <linux/mod_devicetable.h>
 
-I used an LLM to help write the harness and this patch.
+No need for this, the device tables required will be pulled in
+via the respective bus headers.
 
-[1] https://lore.kernel.org/linux-iio/20261123135554.2983499-3-maoyixie.tju@gmail.com/
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
+> +
+> +#include <linux/iio/iio.h>
+> +
 
- drivers/iio/imu/bno055/bno055.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+..
 
-diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
-index b1c7b4f88bf10e7e0477a1d424bbb4815f59c6a9..50543ac35f044c18b6734224dba94286e6292c76 100644
---- a/drivers/iio/imu/bno055/bno055.c
-+++ b/drivers/iio/imu/bno055/bno055.c
-@@ -171,7 +171,7 @@ static const int bno055_gyr_scale_vals[] = {
- 	1000, 1877467, 2000, 1877467,
- };
- 
--static const int bno055_gyr_scale_hw_xlate[] = {0, 1, 2, 3, 4};
-+static const int bno055_gyr_scale_hw_xlate[] = {4, 3, 2, 1, 0};
- static const struct bno055_sysfs_attr bno055_gyr_scale = {
- 	.vals = bno055_gyr_scale_vals,
- 	.len = ARRAY_SIZE(bno055_gyr_scale_vals),
+> +static int tcs3430_apply_gain(struct tcs3430_data *data, u8 gain_idx)
+> +{
+> +	u8 cfg1, cfg2;
+> +	int ret;
+> +
+> +	if (gain_idx == 4) {
+> +		cfg1 = FIELD_PREP(TCS3430_CFG1_AGAIN_MASK, 3);
+> +		cfg2 = TCS3430_CFG2_DEFAULT | TCS3430_CFG2_HGAIN;
+> +	} else {
+> +		cfg1 = FIELD_PREP(TCS3430_CFG1_AGAIN_MASK, gain_idx);
+> +		cfg2 = TCS3430_CFG2_DEFAULT;
+> +	}
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3430_REG_CFG1, cfg1);
+
+Why not use regmap for read/write operations?
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client, TCS3430_REG_CFG2, cfg2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->gain_idx = gain_idx;
+> +	return 0;
+> +}
+> +
+> +static int tcs3430_init_hw(struct tcs3430_data *data)
+> +{
+> +	struct i2c_client *client = data->client;
+> +	int ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_ENABLE, 0x00);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_ATIME,
+> +					TCS3430_DEFAULT_ATIME_CYCLES - 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = tcs3430_apply_gain(data, data->gain_idx);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_CFG3,
+> +					TCS3430_CFG3_DEFAULT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_INTENAB, 0x00);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return i2c_smbus_write_byte_data(client, TCS3430_REG_ENABLE,
+> +					 TCS3430_ENABLE_PON |
+> +					 TCS3430_ENABLE_AEN);
+> +}
+> +
+> +static void tcs3430_power_off(void *priv)
+> +{
+> +	struct tcs3430_data *data = priv;
+> +
+> +	i2c_smbus_write_byte_data(data->client, TCS3430_REG_ENABLE, 0x00);
+> +}
+> +
+> +static int tcs3430_read_raw(struct iio_dev *indio_dev,
+> +			    const struct iio_chan_spec *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct tcs3430_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		guard(mutex)(&data->lock);
+
+cleanup.h magic works thanks to local variables and a scope. When using
+guard() in a switch case it has to be surrounded by brackets to define
+the scope (this is what the email from lkp is warning about).
+
+> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
+> +		if (ret < 0)
+> +			return ret;
+> +		*val = ret;
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE: {
+> +		u32 itime_us = TCS3430_DEFAULT_ATIME_CYCLES * TCS3430_ATIME_STEP_US;
+> +		u64 scale_nano;
+> +		u32 rem;
+> +		int gain;
+> +
+> +		scoped_guard(mutex, &data->lock)
+> +			gain = tcs3430_gains[data->gain_idx];
+> +
+> +		scale_nano = div_u64(TCS3430_LUX_FACTOR * NSEC_PER_SEC * USEC_PER_MSEC,
+> +				     (u32)gain * itime_us);
+> +		*val = div_u64_rem(scale_nano, NSEC_PER_SEC, &rem);
+> +		*val2 = rem;
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	}
+> +
+> +	case IIO_CHAN_INFO_HARDWAREGAIN:
+> +		guard(mutex)(&data->lock);
+
+Same here.
+
+> +		*val = tcs3430_gains[data->gain_idx];
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*val = 0;
+> +		*val2 = TCS3430_DEFAULT_ATIME_CYCLES * TCS3430_ATIME_STEP_US;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+...
+
+> +static int tcs3430_read_avail(struct iio_dev *indio_dev,
+> +			      const struct iio_chan_spec *chan,
+> +			      const int **vals, int *type, int *length,
+> +			      long mask)
+> +{
+> +	if (mask != IIO_CHAN_INFO_HARDWAREGAIN)
+> +		return -EINVAL;
+> +
+> +	*vals = tcs3430_gains;
+> +	*type = IIO_VAL_INT;
+> +	*length = ARRAY_SIZE(tcs3430_gains);
+> +	return IIO_AVAIL_LIST;
+
+For IIO macros we usually use a switch, even if we're only checking
+for one case.
+
 -- 
-2.34.1
+Kind regards,
+Joshua Crofts
 
