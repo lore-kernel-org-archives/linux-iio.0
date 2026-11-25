@@ -1,89 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.77
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795616627;
-	b=jJ1zElWyRvf1lIiZzV5dNS8csc7Zy3UTz/pDDz0wI2Yb0sp3E9l2CDvErT1cCazaZ7mL
-	 DcFNwBhvsuf9aJOJ0kZwSxOa5x8Mfjhe0U7F2MYSjaOOpmQ0tnugLIJJbAoxf7xsApYcB
-	 L6YdgJjcd9oE5nTv6pZso7RoIgEXKn8Ycw3KpJesh1wK36XSEryvS5CU9s/jrSkutLohd
-	 0idYjzBVdeQ4UaK+5cLLAxbecPn6tAx1XUUJaVhGL8T3jZdxJTozjjiDg1Mf+vAd0BjeH
-	 LeW5DjbPZMrElgZJwBX8L9HHwL2P02CITPrM47BlW7USLA95jIjX1RyY1sbz57cnRIQ==
+	t=1795617755;
+	b=fg7B+Wj6Xfu89cT4UwaP6v8vOBOziXlAd0BYjTthRYxw/vDrK6D/hxss+oF0p6JOp7mJ
+	 EXt2Sd9SaAwPeV5FhpzX7Y7CHCMI1tvGuolwCo9C9cFybwhekZ6uGOWeAQ80WKgaEg4lB
+	 RqRYdHwO0cnNlhFjdDI8gmvLkbUsWkp/mSmFEN58Xx7Ni0OUOsb03JTVamoVMU1HI0dvJ
+	 VidWMvcQcckUb0cTjHeKWcmZ5tbl1eVfPMJwsnxkqTSMY5sac5CI5y7zjPoGNWXGVAWvH
+	 JMMtQPUIs73slDyj0z9LRQrSqCDJCFS0rEvdkAO0q+03mGCRWBKOjFNIo2AEkKTQYSg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795616627;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer;
-	bh=Ny39IB2+v/C8PeHVkJtEArwIrXSQ2C53NR3LzL5C2wQ=;
-	b=Qjqh9XhCl/gd2wQUAKBVYa2q8nDW+T7QuFSfPdWpW9E6mqh+/5h5MJNmT7XkXtZ6lEku
-	 yiefTmoPodXDM0zAeQB/Gsifa26xGMMI81nGrv3gMMjal/r36e/DO7XfD7nYiwwdMG+N2
-	 flWaEYAuDOU5i7eBKC96moUUGuVrS3g2y55aOB8iSctJscbItSJzpTNzIW/ZgH1MBO4UD
-	 jCcFmKlv5xVYGg347mRgAPDhyCMIGaeP3+FG8gJI9doVpnk1w1FEyus5h1JZLMJHr3R/K
-	 cReoXkFtDHq7vqrM5lI5g9lEgH6CguWMVFwc7KRcwtja51n+8GnGsYStGPwxx1voWqw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795617755;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
+	 Received:Received:Received:Received:Received:From:To:CC:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-ADIRuleOP-NewSCL:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
+	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=M8apm6+/Anpcv1K/Z8JQmpNWT75T1KYBT9tWUntqgNM=;
+	b=rC1qkKDQxkCZSOolIENHsMFw7n+aDHZ1D8DsyStR01u89q5EWeOjruFhjxGi59VTyjNI
+	 7YsPMFkAESRz2NX5APsZ5Vv/ik2lrGDhuWj3ocQeG8Z3LNlB4ZJx6+XF3G30D1h7DfUH8
+	 leenP4SaM/adretqJCMVDec3La6NEAwWyLIu2kg93UdzDF092SSuxtiPNiHUH2310+X0x
+	 IWUWI7zSl7M0V4n4uU+N7GJfdlpHkgF3NCJD2G/I/9FEXAs0LyLM2egsw6cyTdEK3Srnx
+	 12wN96Ubi1xY6wPpQVE83t7hpABSkYhojWcufJueYW+jFNkvOc/DBoVp+h5BH0gpSIQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linaro.org;
-	spf=pass smtp.mailfrom=linaro.org;
-	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=izlRGHSP;
-	arc=none smtp.remote-ip=209.85.221.47
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=analog.com;
+	spf=pass smtp.mailfrom=analog.com;
+	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=GXq3d4LR;
+	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b="I0b/4nGk";
+	arc=none smtp.remote-ip=148.163.135.77
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5FF606A332
-	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 14:23:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1C5FF606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11267606A31E;
+	Wed, 25 Nov 2026 14:42:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 11267606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=izlRGHSP
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-48e47347279so3530659f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 06:23:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1795616625; x=1796221425; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Ny39IB2+v/C8PeHVkJtEArwIrXSQ2C53NR3LzL5C2wQ=;
-        b=izlRGHSPk22Pur8KnK80kIAy9Me7FWkb05DdT2sFdYCSPlI+/bTGF27iUjHjw+Nipc
-         X3MKhms6E4YCZM/I2CdXMBy83WPurlDASiPn1RsO/1SKm6EWYtxJU3VY0Rj2/3ygjY3i
-         FL4gzAG9koSN3qQF8HhR71CAz15ItOYTmdqwUUe7x0d112vku2Whlbnm33QUK5oIQVjM
-         9pcCFBCvZkfdTj7yUOcLOjwWvevosMHHPyFThtM2vkA8ZQ815jFJGM8LHyoGJwZiB/fh
-         eTrv1LCuV37cVTlZKdIvzsBd4W3tTw1AwjMF721yFpJuQqn+HNoVREFfR+Qtc4j242/c
-         SF2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795616625; x=1796221425;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ny39IB2+v/C8PeHVkJtEArwIrXSQ2C53NR3LzL5C2wQ=;
-        b=s+nAur8yi4MeJMgmbcssmDjKbQzKfNlLCuWb0S3Pd4O94euYkTcbZ9jH2fnkgnEpvZ
-         XBKRi9yoHrOMlP6OLmcuhC6/3+DiS/FzXOIlI3vNAlteWFtr03cZAJ5k9cR3rYu6VzKl
-         icFdewD3q0v3xHahIHWBMq+h/AEsrz4agmikaOJHvNw268ajY+PTTBYkZDkTuZBxWJEE
-         jd8JZQzt35cxrRJNVadU7ihlT1nL4fugEnCB4A770ybaeMBFb5gu3KMkZz9/OhG9fm4K
-         7dq0vD1g07R5WQTMwp6JgMx4H/OBc7zVZp7Lz95zv6kNEoiige5OpqExWFtO5Zu4qjKY
-         PORw==
-X-Forwarded-Encrypted: i=1; AL+hErH5kPjmNMKVBAHznas1udjWRwRx/IDDvfPik8LCJC1KR+bGyXRbDL6h+Ux9mW6PO0+gRYFfgUfPecI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8mlvbH26HmH1mlLibsuUvi2SuX+cnjl7+K/noqqIIDx4KNLmeT
-	V0YIguuqSNIRVVnFTTUDeFhP8GgjYdDZHfy5/8rSGImBudstAQ7Q9HaOBAqQAm5Q0o4=
-X-Gm-Gg: AZFdTZfF2SRPr4mojmNa2v1rF36C2c/qGRiqY3vwT1zv8NsP7ot/JDT5STrCzKexhIU
-	EmF9Wje2XeRirzc/e2+UFwKmh566ymL9BT/T7+dVX0pFL+bhTht5Czorb0cgD4ilGOuZKO332Iv
-	+m3ZH3pd47KFZPMvQ8ngvomxKEavZfm2pw6njy707Va7P4lKDFiPOck6QcuvWiMXGkagSoVpU4y
-	+La8oO0y0fhMyzmpBrez6BTs1dNLLXSyHNUo1hgb3MdyKy0xyeMJrUu/SRjYXG1BIzEkk0k7AuD
-	LI5BIwmW3z8tFcrcXx0hZttgTU3sI3oVSRUKw2ZjPR0RQy4MsRuZSXvVwvA/VFFzuEsJ3vPDjJV
-	cFWfKFHSC0kDGtbhUWR9CR5HiiEWo2njS/7DuEYJQb+wEOOsoKloe/tCDyYZfHDSRDmG3iQx85N
-	JiVU+5hGcHZP5BZz6Yv8lZIyrW0Inpek11RIU/FWQ0QHUlQLlPVWneLj0vZC96Paa4d3QRkS1yE
-	fhaHBjvL2f8dhIoHLGKnQlkTalMtZaGDZjfFwizJVipgb1/eygGRzx9iXNMCt0DzvxtLWzrs4gJ
-	SxgTuFRqx3KF1xypV9GMldHfhhsYYLm23vj2M00pjCNGSI4V5HarP1/fDFFvw6qRR3pFqVHJ0RZ
-	ulNHV/Yu7FK7jEqgQj3CBJA==
-X-Received: by 2002:a05:6000:2883:b0:4a7:a52f:a2be with SMTP id ffacd0b85a97d-4abb3678d88mr30767537f8f.13.1795616625424;
-        Wed, 25 Nov 2026 06:23:45 -0800 (PST)
-Received: from [127.0.1.1] ([2a02:c7c:5e34:8000:720:5dc9:500c:65bb])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab6bc8ce06sm33638667f8f.47.2026.11.25.06.23.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 06:23:45 -0800 (PST)
-From: Alexey Klimov <alexey.klimov@linaro.org>
-Date: Wed, 25 Nov 2026 14:23:37 +0000
-Subject: [PATCH v2 5/5] arm64: dts: exynos850-e850-96: add soc thermistor
- node
+	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=GXq3d4LR;
+	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=I0b/4nGk
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6APEKKNW473283;
+	Wed, 25 Nov 2026 09:42:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
+	 h=cc:content-transfer-encoding:content-type:date:from
+	:in-reply-to:message-id:mime-version:references:subject:to; s=
+	DKIM; bh=M8apm6+/Anpcv1K/Z8JQmpNWT75T1KYBT9tWUntqgNM=; b=GXq3d4L
+	RU2ls2DNi8OUlefODnfdNzjWmfV3BjR7BOk/yuufxqFOQ95FXUd1bw89f48qTLSa
+	yEScg3M06vEav9N0A5pZbrj7pcqBUABYgyi7dO1EkHUomRRgHk3OqphBark/8C6c
+	6NjZyZ0DVuxKPet1qy3yuJi/A3h9jTJqNIjwJcxh9FWcs+yQ+/dB+S+ZO66ESI8N
+	MeKP2uJVIzcg4ZpLUfnE1JY0Jy/GfYgr8kqadPIeXmjWRYS7Y5ke+z5rjvwBaiH2
+	IacVgeUL0Q57Ej0lBpebkeoe3Bbssrk79Jl/LrKGhVD7LigLtuC9Jw/+z206ecvx
+	NS7bNb/HtlNgGjw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=M8apm
+	6+/Anpcv1K/Z8JQmpNWT75T1KYBT9tWUntqgNM=; b=I0b/4nGkAYaq8qxZVhkTl
+	zG2bsKafZnTBkTBToHPbM655AdwJj9t8VW8vF7X1X5ccDJEN+vNRaSPQoC7OgPHo
+	cWgUSm2CwXYegnINWmZ9ap64bYy0IeUxG8/T9yJnNZO+LZXgNSqzC5Kt34UsuWgu
+	13An0zJ7p5sfa+HTYJ8q6arpPBO57DfhaXJnHkJ2/fOokpgug43H0B1NLdTFrkwM
+	KBotKhlBAPLDG6evCejyYY4Ho9K0QgWUbdtv9KMWnARcw7t20rZ6VgPb8Tt1mN27
+	Za9vGFVIgSHLC8db0PI72Cw34Tl3UNv8wCXOMlSwiErAd+wLSdekLIhLErhTbX4x
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4j56d6rrg6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 25 Nov 2026 09:42:23 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 6APEgMew055415
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 25 Nov 2026 09:42:22 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 25 Nov 2026 09:42:22 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 25 Nov 2026 09:42:22 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.2562.56 via Frontend
+ Transport; Wed, 25 Nov 2026 09:42:22 -0500
+Received: from arch.ad.analog.com ([10.135.2.95])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 6APEgBDa006155;
+	Wed, 25 Nov 2026 09:42:14 -0500
+From: Nicolae-Daniel Deaconescu <Nicolae-daniel.Deaconescu@analog.com>
+To: Conor Dooley <conor@kernel.org>
+CC: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+        "Jonathan
+ Cameron" <jic23@kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Trevor Gamblin
+	<tgamblin@baylibre.com>,
+        David Lechner <dlechner@baylibre.com>, <linux-pwm@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 1/6] pwm: core: add pwm_get_waveform_step_might_sleep()
+Date: Wed, 25 Nov 2026 16:42:11 +0200
+Message-ID: <20261125144211.78018-1-Nicolae-daniel.Deaconescu@analog.com>
+X-Mailer: git-send-email 2.56.1
+In-Reply-To: <20261124-bath-runaround-dccb788f14e3@spud>
+References:
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,80 +110,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261125-exynos850_adc-v2-5-26de1c6f1717@linaro.org>
-References: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
-In-Reply-To: <20261125-exynos850_adc-v2-0-26de1c6f1717@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Peter Griffin <peter.griffin@linaro.org>, 
- Alim Akhtar <alim.akhtar@samsung.com>
-Cc: Sam Protsenko <semen.protsenko@linaro.org>, 
- Sam Protsenko <joe.skb7@gmail.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
-X-Mailer: b4 0.14.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI1MDA1OCBTYWx0ZWRfX3i1Z3bVKtcU5
+ CnU7Nclodif1utEt10Mn9JYE4hp9LTLZS2sLqK/bkw3oxEfQpnuxTqySyKrAynmSdd7YkGVnATA
+ RC3dy3S5GFWlAoG1KNKu7NtZlCzdgJYUAupTkQZnWRSeba79hZYEIQKfAZxkQwEbuAdM+o26StX
+ RPuXraiYKMzdldq+lewqAMcpm2L0s8lthrZuAvR7gN9rDPBYf+oktqrHi2loA5LGr8QwIam81gD
+ f0HwJRE7VRxSKyaRXI4fHOjGNCrqcSg+kId4VEMZ9GlFcqCOe5Bj0xeH6XIbtyKBGgmK3Tm9fy0
+ hWl/TvMjVTyqtppW6gj00I4GPlG5HTlgFka4Tcod/akcnTN2DCxd7r/KybvAW4zhXOofFVfUhW7
+ nPl09lezEDn5zEaV2evJUnhyMbozmK0MwxtTuB5MuHz8EuV6mCWSQR6BI/hqyEzZhABUmCl720X
+ ttfzE9+23eBo1UtPEwg==
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI1MDA1OCBTYWx0ZWRfXwxV7eO3pH5BV
+ XGG66esWolKB7dXINt5CfVrGlEiVOCH71Pd8cCrKpgpZjJlSn1j6UQc6aT1JudWvKcSYlQ2hOjj
+ jElDyl8+oxGITWzn9D7fxGAvfbR5ZaaLapxieDx3gghJia3DmXWF
+X-Authority-Analysis: v=2.4 cv=bv3Zl0ai c=1 sm=1 tr=0 ts=6b06f3d0 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=VqRfdDP1wFJwDKpUaI8A:9
+X-Proofpoint-ORIG-GUID: Rok7vR_z2ZMCIFsgvFZGwmLQkCpl7igC
+X-Proofpoint-GUID: Rok7vR_z2ZMCIFsgvFZGwmLQkCpl7igC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-25_04,2026-11-23_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 adultscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
+ bulkscore=0 malwarescore=0 impostorscore=0 spamscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611250058
 
-The WinLink E850-96 board has a Murata NCP03WF104 NTC thermistor placed
-near the SoC package die and connected to channel 0 of the CMGP ADC.
+Hi Conor,
 
-Enable the ADC node, define a dummy 1.8V regulator supply for ADC, and
-add the board-level thermistor node linked to channel 0 of exynos_adc.
-Regulator is represented as a dummy one because we lack PMIC support and
-should be replaced with a real one when PMIC support will be implemented.
+On Tue, Nov 24, 2026 at 06:34:13PM +0000, Conor Dooley wrote:
+> Using the pwm generator input clock in this way is also inherently tied
+> to one implementation, since assumes a particular relationship between
+> input clock and output waveforms. Were a different pwm generator to be
+> used that had a /2 divider between input and output to be used, the
+> logic here would break?
 
-Reviewed-by: Peter Griffin <peter.griffin@linaro.org>
-Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
----
- arch/arm64/boot/dts/exynos/exynos850-e850-96.dts | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+Yes it would, I'll look into whether that burst can be generated
+in the FPGA from the CNV signal instead. If it can, Linux would only
+program CNV, the ADC node would not need a clock or a second PWM, so we
+can drop the step API while avoiding the clocks property.
 
-diff --git a/arch/arm64/boot/dts/exynos/exynos850-e850-96.dts b/arch/arm64/boot/dts/exynos/exynos850-e850-96.dts
-index afef32ad4ee2..1abae8b9fa49 100644
---- a/arch/arm64/boot/dts/exynos/exynos850-e850-96.dts
-+++ b/arch/arm64/boot/dts/exynos/exynos850-e850-96.dts
-@@ -126,6 +126,14 @@ reg_dummy: regulator-0 {
- 		regulator-name = "dummy_reg";
- 	};
- 
-+	/* TODO: Remove this once PMIC is implemented  */
-+	vdd_1v8_dummy: regulator-1v8 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "vdd_1v8_dummy";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+	};
-+
- 	reg_usb_host_vbus: regulator-1 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "usb_host_vbus";
-@@ -166,6 +174,20 @@ rtcclk: clock-rtcclk {
- 		#clock-cells = <0>;
- 		clock-frequency = <32768>;
- 	};
-+
-+	thermistor-soc {
-+		compatible = "murata,ncp03wf104";
-+		pullup-uv = <1800000>;
-+		pullup-ohm = <100000>;
-+		pulldown-ohm = <0>;
-+		io-channels = <&exynos_adc 0>;
-+		#thermal-sensor-cells = <0>;
-+	};
-+};
-+
-+&exynos_adc {
-+	status = "okay";
-+	vdd-supply = <&vdd_1v8_dummy>;
- };
- 
- &cmu_hsi {
-
--- 
-2.53.0
-
+Thanks,
+Daniel
