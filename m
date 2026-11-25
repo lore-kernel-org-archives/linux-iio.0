@@ -1,47 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795595495;
-	b=OZ7hcMz9PyGo3odmvez0CfigZyeUQgKlzuswZawqBb5Lgiqlaj4Oufmak4NteCudkrfE
-	 6WoJsFryZZNFrLQb5cd4Cjh860S7wwRay78M31J/pWsmdFNRrKo8RvIbXsurPsY4Oz9Rt
-	 m7CB4ndftDTVrzWHQc1dMjdugVV8T1oy40RCYzttkntelNjMtpoyhNDXGJmuwEDefUr4A
-	 tE17vzXdpkBcnc9byyJFsb4ndW4C504t+BDoweBpSwuzXuzH/1p4Ur7IxB5+fRe7soCRn
-	 arrYFGM9ha1wYPSpA6FlRxWxYxBcylkqURbBQclTPP/Erhw2ITmMYFZicHHSyHr2g1Q==
+	t=1795598192;
+	b=BfAMj4jOj1dVPU23w9tA7qjCJAFgDh8VpN9X4mbZwt4MsmVzXQvhwhFC1bnY0Y1Vj9GT
+	 LHmrF7fiiAPhDFyKhJdWTkabr9IXAgxciw25rCBMq6Ldkw/r4opnS0BbVIPepML+zPcUa
+	 50imIj/kqedr+eSYEFMra0N9wjhwAHfu9N4qmbXVXtPD3EpH305JfWs54Ku6u8aaP2Cmi
+	 q8QDwnv3IlWzyGyT6RLFFinIMGxOIp3jQOO3BkKuCog3lI/sGqWY4F3yb+StSLoJpTOuS
+	 GsUJsdvU7qF8549UXO4dDiVR0UumtY1UADtoKmPriM1HJ5W7YEVDBO45b+koFfrsfZg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795595495;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=orkqkN9k0NvO+k3q6u67IvXNksIJl6E1WSlIId6lXvg=;
-	b=CE/hlRc11NPK/Bn50EH6qSSs562cNQn3bcSbTgJq3tG6tbrcC5Qiz5HiECyxup0+BtyP
-	 qvwZ53kDE/sZMobVwu8Nxi1MD00VSIWi4a6Y2AZhuAZjW5uPeRD7kfbBW1OaAw/KpjVLZ
-	 nIN9fM3m7IHlHrMXl0iECZR/tMWxebp4nWpH58X7hNBtANUVAX6mEOC6G6ihI6Epe68Em
-	 FauoP9i4nqrbfcxdC/yT5qieUs1PFIgu5QAmPb1dMiDd5GD7esQEkzihX1tow00/TaHrA
-	 aHcj1W2DRhrD8GeNiTnIHd75NAe3awBDiwJYH3hbkJMyKIly1ZbTokC3NmVm4BlOBQw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795598192;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=dtSXApRzNRZOAIEEk0PFvzNQj92bqLpekrXOKMNLB6U=;
+	b=LnQB12NX8Z8gWNdd+AZJGpUagJWe0jl6qlWIxseddpYZZ/vIQOOsT9mtgL/dMuk6CZLK
+	 mpay8wyHl/rBEa6DvFmKiJE80gGcaI8EarpAfVBKh/J2j/tJAzobVh7+Qj6IEO/vzKHAk
+	 /E8mJ199HqyVf61vrVcJzC0PaessR1aTpGuoW73hRoK9i+Tm8+Qk2DrmmkAJd6E24pRcY
+	 OEqkvYkB2eWbzNRhHcjVP0VQgeA+GZjMtNICMghgS+oemf/qr1hK4UIV6g5zhxhbk6mmr
+	 uqi5Kw6NVsQYRasgIUfIlooExt1WrMYONPq4216UT+N8lzI9dg1NWYZDxV5tHVofKkQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="O/fjzGlN";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=O7mdlKEc;
+	arc=none smtp.remote-ip=209.85.208.174
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106C0606A31E;
-	Wed, 25 Nov 2026 08:31:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B98E606A686
+	for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 09:16:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B98E606A686
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=O/fjzGlN
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C04A1F000CF;
-	Wed, 25 Nov 2026 08:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795595494;
-	bh=orkqkN9k0NvO+k3q6u67IvXNksIJl6E1WSlIId6lXvg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=O/fjzGlN6oVvhVvoBqjCKbVNEmy452qiZxK82fL/SIkZ+lx52h8kWBKa6zRgpOSzS
-	 tusHyXoHdckAwHtLoh+p3GjZUskzZqimw0CY7Cd0PS9pOdg4dHaeTeUHJg5Z/fuxlv
-	 nANs5ll3OY5hDUypEmejv/3hZ+RmcGuI98CQPUPeMwEOshNbk3Fm7ipYDg6blMO0lY
-	 yVYhbBp2NjznoH6ciXoid7kcU6Mzf4ehqApTNNhdIxBsbVdIXP2mNzfHc+nWKtDa8e
-	 ZKQ8jf4HkgBGptdtJzZRNNan8iX5+sSLcEivBPbqJ/MSE3pyzyZp/UrDR3S9u95799
-	 imJDBy40J+NPQ==
-Message-ID: <14111935-b991-457f-88d4-f5c06ae68df8@kernel.org>
-Date: Wed, 25 Nov 2026 09:31:31 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=O7mdlKEc
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-3adf87fc0c6so47976901fa.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 01:16:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795598190; x=1796202990; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dtSXApRzNRZOAIEEk0PFvzNQj92bqLpekrXOKMNLB6U=;
+        b=O7mdlKEcxUoSuWx0Bx0zYAuwKq1/6Dba4zzP6J1Q4OrO22h/vNkmSvCbcByMeR3eG2
+         vHcYl1rPNSIe9Hzz+/xaLEUj++SPl5TWt/8vQrT5JEendwFMwU0uktOF4pDUM0s/033W
+         b9Hlyu1xivQnbS967W1aBbar7zJ5O1gfP+XCtd3ulTkYuYhXXqklzyVl+7DOGcHdIu2a
+         WQO8K7ihUlkHTYZzJ/QlF+3HZFLOqEPk7qVUalT0NWcS+XXm2yDV/IVN9WfXNtnD45iC
+         6nI4lZbwLe04O8oy7K25Y7bkpO813hKh5axeBSCUxVO//5bp/Vglf5Z9AjpbpIll7k36
+         qk+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795598190; x=1796202990;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=dtSXApRzNRZOAIEEk0PFvzNQj92bqLpekrXOKMNLB6U=;
+        b=WB1odHmkwjxwj/bUacKly3SqtnIULbWVmQQ9RRmlK2sf11i4H4A5eiRww9oQZwk+lD
+         pMUv7hXqB6j/umJw3Iauqy2VycDRo4pKnAz6O+HvjXdRhPn463ciuN9rh5f07CRO0S81
+         AdYlujveq1sMJ0gIC+gx8VlbqEcOm2yKKCrhQoXpp27ZTunrmXvxA8B4hRfpVU3pcrAr
+         NAB+h/68XbFyJ2M0bEJFs44yfXGGBWrZbndUvbsQ+9xjAnJPK9665wIZeKcigHbqaN38
+         RrKAIWv0azKZs6oq/JN0dI3r7Whh7sPUVcy/oILBjcPfoUXZTKhbEik54VgS4C3fnG2p
+         bvTQ==
+X-Forwarded-Encrypted: i=1; AL+hErG84BNZ3V/VuasQ7yScvXFHLBHGsnSMPQzdtN10vj2p9p066tRdNXBiVjsVWF6w20/sAaOa/oH2dbI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+Vh3qTDJfIVsc4MM7Q76jAyHit7ygbndZQ3oF/G2TtedOoYHLU
+	Qtv6tf6cVS5OKg0kYtxWmmoJIx3gzvhq32ztFGchwfUSxITpzgwR7Dwq
+X-Gm-Gg: AZFdTZfdJHjggLWIyP4Ul+lbFjoU3Q71bukmScXmm+EFXxWVdq4pwR1AN7eldwt+/Ei
+	YWQvIGQofpF7vkW7nFCp8///nXtK/CYDJetIE7RUNtsYMhOwD2urNDvrxoTNoF3QB5g4HVgx5At
+	RJFKAa5n5EPhpgnD6YK9+1mNPaoVOV+8ENV/+XZPe5Y00riqWd0wXKfG1lVlL9nIDccUaXzqJ9o
+	t8clRo53oqPik1bjHmJSuQE5wtyEV/nWU16ReQfLNKRiyAMFrAmsz9+hu7LOnYCi4zdge1z9iML
+	R2pP/x9mu8JDt0Ravq7CEjRe8vl6wkJaN/oTrGbR/PF/kGxoQdA4uAwRXTSTmBqtjXcIugkItRW
+	WHmCE9n3d4AnJpRv3VQaWpZYQBjMgQw3fAQXkxyO7U9IQqJBgla94gM24MfEQAjxOezjFgfm9/P
+	YG43rtAXEsRmcvyQvRK1OM+GKk62mWaoMtpiSExMs3djJADLHK0nEthYdJiXR23wpWO5NMu4p7+
+	VUErxnyWKE8E6AJALpphuP6yjOJ0BH8plGXBWwgbYyj76asEzfvkPG+Qkshwmb5naKRd5snzZx4
+	/7Q+KdqNVlE6w78GZ5wYgO/allat5QKOvLAahFAu4JRRai2yrV+MdbvH6Klqd7JWcefFZB1NRGC
+	VWCXbdHebeGqOXc5gk6k367f/HxLeJ/H5042/rVpp2T5y06bLI9Z3IBsYvrs=
+X-Received: by 2002:ac2:4c4d:0:b0:5c1:4cb1:f5b with SMTP id 2adb3069b0e04-5c1bc66329emr5991855e87.1.1795598190134;
+        Wed, 25 Nov 2026 01:16:30 -0800 (PST)
+Received: from yantra.. (nekmmqvppk9cj8danf8-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:f131:5b16:1fac:1214])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1bd0195a6sm4528963e87.40.2026.11.25.01.16.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Nov 2026 01:16:29 -0800 (PST)
+From: Rupesh Majhi <zoone.rupert@gmail.com>
+To: crofts@kernel.org
+Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Eddie James <eajames@linux.ibm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] iio: pressure: dps310: include what the driver uses
+Date: Wed, 25 Nov 2026 11:16:26 +0200
+Message-ID: <20261125091626.55286-1-zoone.rupert@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <f71cfc2e-9e74-482c-a56b-8b0507eb9a69@kernel.org>
+References: <20261123220649.36887-1-zoone.rupert@gmail.com> <20261123220649.36887-8-zoone.rupert@gmail.com> <awU0bh5ChdbAsArK@monoceros> <20261125075043.37440-1-zoone.rupert@gmail.com> <f71cfc2e-9e74-482c-a56b-8b0507eb9a69@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,209 +104,16 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient
- light sensor driver
-To: robertijtsma@gmail.com, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20261124-iio-tcs3430-v1-0-0f2a38a6a4c1@gmail.com>
- <20261124-iio-tcs3430-v1-2-0f2a38a6a4c1@gmail.com>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261124-iio-tcs3430-v1-2-0f2a38a6a4c1@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 24-Nov-26 23:46, Robert Ijtsma via B4 Relay wrote:
+On Wed, Nov 25, 2026 at 09:01:14AM +0100, Joshua Crofts wrote:
+> > It was for the of_device_id and acpi_device_id tables. v2 will include
+> > linux/device-id/of.h and linux/device-id/acpi.h for those instead.
+> You don't need to include these (unless you're going for full IWYU).
+> They will be pulled by the respective bus headers.
 
-...
+ok, will drop both in v2, so no mod_devicetable.h and nothing in its
+place.
 
-> diff --git a/drivers/iio/light/tcs3430.c b/drivers/iio/light/tcs3430.c
-> new file mode 100644
-> index 0000000..138c8ab
-> --- /dev/null
-> +++ b/drivers/iio/light/tcs3430.c
-> @@ -0,0 +1,345 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * IIO driver for ams OSRAM TCS3430 Ambient Light and CIE 1931 XYZ Sensor
-> + *
-> + * Copyright (C) 2026 Robert Ijtsma <robertijtsma@gmail.com>
-> + *
-> + * Datasheet:
-> + *   https://look.ams-osram.com/m/43d518b4cd81e3f2/original/TCS3430-DS000539.pdf
-> + */
-> +
-> +#include <linux/array_size.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/math64.h>
-> +#include <linux/mod_devicetable.h>
-
-No need for this, the device tables required will be pulled in
-via the respective bus headers.
-
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/pm.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/types.h>
-> +#include <linux/units.h>
-> +
-> +#include <linux/iio/iio.h>
-> +
-
-..
-
-> +static int tcs3430_apply_gain(struct tcs3430_data *data, u8 gain_idx)
-> +{
-> +	u8 cfg1, cfg2;
-> +	int ret;
-> +
-> +	if (gain_idx == 4) {
-> +		cfg1 = FIELD_PREP(TCS3430_CFG1_AGAIN_MASK, 3);
-> +		cfg2 = TCS3430_CFG2_DEFAULT | TCS3430_CFG2_HGAIN;
-> +	} else {
-> +		cfg1 = FIELD_PREP(TCS3430_CFG1_AGAIN_MASK, gain_idx);
-> +		cfg2 = TCS3430_CFG2_DEFAULT;
-> +	}
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, TCS3430_REG_CFG1, cfg1);
-
-Why not use regmap for read/write operations?
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(data->client, TCS3430_REG_CFG2, cfg2);
-> +	if (ret)
-> +		return ret;
-> +
-> +	data->gain_idx = gain_idx;
-> +	return 0;
-> +}
-> +
-> +static int tcs3430_init_hw(struct tcs3430_data *data)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	int ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_ENABLE, 0x00);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_ATIME,
-> +					TCS3430_DEFAULT_ATIME_CYCLES - 1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = tcs3430_apply_gain(data, data->gain_idx);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_CFG3,
-> +					TCS3430_CFG3_DEFAULT);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, TCS3430_REG_INTENAB, 0x00);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return i2c_smbus_write_byte_data(client, TCS3430_REG_ENABLE,
-> +					 TCS3430_ENABLE_PON |
-> +					 TCS3430_ENABLE_AEN);
-> +}
-> +
-> +static void tcs3430_power_off(void *priv)
-> +{
-> +	struct tcs3430_data *data = priv;
-> +
-> +	i2c_smbus_write_byte_data(data->client, TCS3430_REG_ENABLE, 0x00);
-> +}
-> +
-> +static int tcs3430_read_raw(struct iio_dev *indio_dev,
-> +			    const struct iio_chan_spec *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct tcs3430_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		guard(mutex)(&data->lock);
-
-cleanup.h magic works thanks to local variables and a scope. When using
-guard() in a switch case it has to be surrounded by brackets to define
-the scope (this is what the email from lkp is warning about).
-
-> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE: {
-> +		u32 itime_us = TCS3430_DEFAULT_ATIME_CYCLES * TCS3430_ATIME_STEP_US;
-> +		u64 scale_nano;
-> +		u32 rem;
-> +		int gain;
-> +
-> +		scoped_guard(mutex, &data->lock)
-> +			gain = tcs3430_gains[data->gain_idx];
-> +
-> +		scale_nano = div_u64(TCS3430_LUX_FACTOR * NSEC_PER_SEC * USEC_PER_MSEC,
-> +				     (u32)gain * itime_us);
-> +		*val = div_u64_rem(scale_nano, NSEC_PER_SEC, &rem);
-> +		*val2 = rem;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	}
-> +
-> +	case IIO_CHAN_INFO_HARDWAREGAIN:
-> +		guard(mutex)(&data->lock);
-
-Same here.
-
-> +		*val = tcs3430_gains[data->gain_idx];
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		*val = 0;
-> +		*val2 = TCS3430_DEFAULT_ATIME_CYCLES * TCS3430_ATIME_STEP_US;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-...
-
-> +static int tcs3430_read_avail(struct iio_dev *indio_dev,
-> +			      const struct iio_chan_spec *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	if (mask != IIO_CHAN_INFO_HARDWAREGAIN)
-> +		return -EINVAL;
-> +
-> +	*vals = tcs3430_gains;
-> +	*type = IIO_VAL_INT;
-> +	*length = ARRAY_SIZE(tcs3430_gains);
-> +	return IIO_AVAIL_LIST;
-
-For IIO macros we usually use a switch, even if we're only checking
-for one case.
-
--- 
-Kind regards,
-Joshua Crofts
-
+Thanks,
+Rupesh
