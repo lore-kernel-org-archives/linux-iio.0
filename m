@@ -1,80 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795629473;
-	b=MrWj03/nFSVPa+Oi7PP2bwDM52y04rZVc0HKhQZIVnd7FBiSLDlaxk/JZd6aPu++6ocC
-	 /rAHJhC4GE9nHq2GHlzqXLBdaojhwl9oPSoJrMmxLEXHUtpkLHFweDdtj478JTKKQSS3F
-	 cgXHkRdstrNkYpg8G9WwNHoHRTqh/ko4iImvuP6/2pbFVRxf6v5fqVG28T9GXZpwUJFcc
-	 oQOli5iJ/uAlhTNMMsnidCsi6Bz+uiEoekDzL6tRllnGS1ERiuia5M66goLJAIybz9mdN
-	 qkQNTQ3AXpARlt+DnGGDE15tcLDp8ik/ztVYWsmC434A4oSPetyIwwBkRj3eKeDh4pw==
+	t=1795634655;
+	b=2spOFlwbdzbkpQ+1M2M5Ty1HB3cP3jJ4XWFEN68a/dbafHWLPX0/bFmxKaSUy55JEd7S
+	 szQRHgPjbrlN2d5PeSF4OAOwV02j5fP9M8m8C9NC+CGWFdULLTiF7zn0pVMPplWgIwhQs
+	 BhTVuawy5AyfXfcN75mBZmba028f76TiGe79xgbkWpTEi88YFBnWac7mGU4zQHdYl+fKd
+	 P3nfoQDWWLv3cJg4NpNoYsM4uHRtfX1pnoqtAwKn2jc2Bj5ThoB1IxzH1u32KtpDTR2AI
+	 0JWJemFj0mC+zq/Ua74vEteTzBFQsRV2CsKR3/ZfvJvWNBuHu+HPbq0iOYgXVwbr4pQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795629473;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=J5veT5Urp7LS4mPes9RJNYLBYsRtx0DgXSJ6z3ISQTw=;
-	b=lyVPpMABv9HxNU6bfZbcctDADp6UOOO8S5Mjwk3sIGrtfcXaEzY9OuYDEOt3hHQdRNar
-	 IrbhNqa9/17UjJhQ7ZaszCq5IPvjK/0wK9YfsldKBbiw3rL1xmpr1LxyVUlO58TkV89jm
-	 Jdc4562cVa1HWUlq//3TQLMOQP5MsbV7WqH66jOck+PkEFO7E7SkXlAmykKYFpI9v7aD7
-	 BQmEO6loYi1GjV/O7yMWVz1iaJ9YbdsVkC1RlO65NE35RsLO6HRlQEzy/gmxDJiA3cX0L
-	 q8c+PrtBtVjXrVHmtDVSSvyGxPp2KYq0pA6P2zIgH7uA2xX2yp65FQisGRsdSsT1j7g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795634655;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=uCLa1k/IfrbBunHCI4MgKXkjcTb7zjCaMIvO5SODz7I=;
+	b=roMtEueQF67zv5yXS8MXS8kC5MUVH4YiZ81QUCHomBA1MsU9BEQO0qE+gouVel1U51DL
+	 yLniEDOI2ajZVRHjs/Rt3VWLgWTTkHL5BbZP284M2jD2oM+nCdh9eFTXAa4ZqmaiGBNk3
+	 t2o2V6NrHCYVV8cVYSFPpD8Y5rXf1Dklek9jScXB3jx0Dx0W537dNIe/bXNU+p7jY8rjT
+	 jv7TSNMraKJeUpLduYu+dnHLDGZTO6I2X1vua+lFT59Ga5sfdatdXN9/eFfqqZQ8Bjd+X
+	 51pUfVu/+eS+TvjCxW8OM13z93vhw/elWg6k07VXK9N79VI7nbcOFZSsYym0KK4GK1A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WlX0oxJL;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A5kzqELo;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64EB7606A327;
-	Wed, 25 Nov 2026 17:57:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64EB7606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87411606A323;
+	Wed, 25 Nov 2026 19:24:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WlX0oxJL
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795629473; x=1827165473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6C7sh1ZYPfUztVvl/yxEe++JQm8hzCvJb8GdlZXhPXk=;
-  b=WlX0oxJLQ3ejtzEXvHMRrPg8BUzP78zgEczhQwrsLHxw+F1AkXphHrp5
-   KXByf070XrNMfMu33Bb8m8ea994CKjgYgo+OI3SPdx8RytAGTh2mLQ2EP
-   Cid/7h8fa7+XMTtevs5TwwKtpaJaLnVgKXZqozPvwCNIua9UR4KToKss+
-   G/V4siP6BVMSgHvAJsheRGK4mYMFmaSmyzUsn3Sy28s58bnOXZPdKsv9l
-   MFur/AwXGn/irxRjJIR9S/0RIvnI4UszBvMQNbnN8+hPXqX9ziry2q3SK
-   AQtAcRVerqkngVydDXbRfPn2zgINqGZWGRS4SCT6GTtxKNObT9Cwzk/mS
-   g==;
-X-CSE-ConnectionGUID: Ry3fooHsSIitvsycNukVEg==
-X-CSE-MsgGUID: BWA+vYlXRj2NJX7SfnvOqg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11977"; a="4422535"
-X-IronPort-AV: E=Sophos;i="6.27,233,1787036400"; 
-   d="scan'208";a="4422535"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 09:26:53 -0800
-X-CSE-ConnectionGUID: 5J3yiETdQyaGWFSROQsHiA==
-X-CSE-MsgGUID: qRZVRo18QaasqFzpxFIm/Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,233,1787036400"; 
-   d="scan'208";a="12131608"
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.73])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 09:26:50 -0800
-Date: Wed, 25 Nov 2026 19:26:48 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: Re: [PATCH v2 1/1] iio: core: Split debugfs routines
-Message-ID: <awcaWIBZbS4Iq4uj@ashevche-desk.local>
-References: <20261125140251.384361-1-andriy.shevchenko@linux.intel.com>
- <6d517c95-82e1-4713-bc1f-9922a975e26d@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A5kzqELo
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10CE81F00AE3;
+	Wed, 25 Nov 2026 19:24:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795634655;
+	bh=uCLa1k/IfrbBunHCI4MgKXkjcTb7zjCaMIvO5SODz7I=;
+	h=From:Subject:Date:To:Cc;
+	b=A5kzqELoJMfIoygMjb1n2HEv8qtzD8dOcUw+uhQu1FEI6clFpVzl7phJhMHrAVw+p
+	 c6JS94H3VN8f8eV4PoY80DVbZgNJpk/dB6c0w5vnYA1sBiY4pSZJtYt/ADyHFuSS23
+	 lHMfgsh+HxJTfyICHGehGRlbYsUAVDju+zynldlxAR0pXHgoCr/8miLPR229HN5wm0
+	 xBeDBifNj54t/Cc6K3tFooaP0UzfSTJex0Q+/grogFl3uLiR/krrPqC9+iMozzrVG2
+	 O5niZXNLqCXyTdV9EM3U9Dx17m6mgpeSjiC0zQN58uiPOltBgsKW0BA85XQjumISU/
+	 AR0PbPU8bLoeg==
+From: Joshua Crofts <crofts@kernel.org>
+Subject: [PATCH 0/9] iio: gyro: header cleanups
+Date: Wed, 25 Nov 2026 20:24:01 +0100
+Message-Id: <20261125-gyro-kernel-header-removal-v1-0-969b3e668d35@kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -84,35 +53,60 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6d517c95-82e1-4713-bc1f-9922a975e26d@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MQQqDMBAF0KvIrDuQBIziVUoXafzVQU3KBMQi3
+ t3Q5du8kwpUUGhoTlLsUiSnCvtoKM4hTWAZq8kZ5611hqefZl6gCSvPCCOUFVvew8oduoj+7Y1
+ vPdXgq/jI8c+fr+u6AbTlJ59sAAAA
+X-Change-ID: 20261120-gyro-kernel-header-removal-7e7ce8b60656
+To: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Nishant Malpani <nish.malpani25@gmail.com>
+Cc: linux@analog.com, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Joshua Crofts <crofts@kernel.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795634652; l=1336;
+ i=crofts@kernel.org; s=20261015; h=from:subject:message-id;
+ bh=y/a1CS9ZmCqxiLPkJ+iG0Fp4J47lKCIMscsVCSN3/2M=;
+ b=2qs+TFMRjx88DL2QxXO5id59v40F6HO/f/T2pLJybLpUPM9/3N6VWm27ZG+Xrt/Bj4N9122r8
+ w1EOCws5+uFASXFpLvvcW2f5lxAEMVl8on1zppUxLjWyfAaX9fYiaEk
+X-Developer-Key: i=crofts@kernel.org; a=ed25519;
+ pk=RTDOoVwgeL4oFdASj9U+cxJuIjXuXk73zkjnGOJKbEo=
 
-On Wed, Nov 25, 2026 at 03:22:59PM +0100, Joshua Crofts wrote:
-> On 25-Nov-26 14:59, Andy Shevchenko wrote:
+Remove any kernel.h occurences in gyro/ and update the headers in
+accordance with IWYU (at least loosely).
 
-...
+Signed-off-by: Joshua Crofts <crofts@kernel.org>
+---
+Joshua Crofts (9):
+      iio: gyro: adis16080: reorder headers
+      iio: gyro: adis16080: apply iwyu principle
+      iio: gyro: adis16136: apply iwyu principle
+      iio: gyro: adis16130: apply iwyu principle
+      iio: gyro: adis16260: apply iwyu principle
+      iio: gyro: adxrs290: apply iwyu principle
+      iio: gyro: adxrs450: sort headers
+      iio: gyro: adxrs450: apply iwyu principle
+      iio: gyro: st_gyro: apply iwyu principle
 
-> > +static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
-> > +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}
-> I checked Sashiko and it points out that building with debugfs disabled
-> causes compiler warnings:
+ drivers/iio/gyro/adis16080.c      | 15 +++++++++++----
+ drivers/iio/gyro/adis16130.c      | 10 ++++++----
+ drivers/iio/gyro/adis16136.c      | 10 +++++++---
+ drivers/iio/gyro/adis16260.c      |  9 ++++++---
+ drivers/iio/gyro/adxrs290.c       |  5 ++++-
+ drivers/iio/gyro/adxrs450.c       | 17 +++++++++++------
+ drivers/iio/gyro/st_gyro_buffer.c |  1 -
+ drivers/iio/gyro/st_gyro_core.c   |  7 +++++--
+ drivers/iio/gyro/st_gyro_i2c.c    |  6 ++++--
+ drivers/iio/gyro/st_gyro_spi.c    |  4 +++-
+ 10 files changed, 57 insertions(+), 27 deletions(-)
+---
+base-commit: 903941a9b06ae445c70646ab061b604c2dea17d3
+change-id: 20261120-gyro-kernel-header-removal-7e7ce8b60656
 
-Right, you were a bit late after my reply to myself :-),
-but thanks for double check!
-
-I think this warrants a v3.
-
-> After adding inline,
-> 
-> Reviewed-by: Joshua Crofts <crofts@kernel.org>
-
-Sure, thanks!
-
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Joshua Crofts
 
