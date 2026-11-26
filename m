@@ -1,82 +1,75 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795702918;
-	b=TfKtpihjMNycQ15AdkaR0Fof40zp8+7JBoMrE9xGstSEpiFo0pPSG2g/yO/vW3iAWu3z
-	 UNwxBrQIl5rDQkO5veiem98KujPwr2r14VDax495TgnLbwK7heoVqXm0nsM7CV7Yo8D43
-	 7opKh4rJjcBPEv2hX1xM/WgeA0jLDsHHOvBPP4/3/LUdnzzYLvH7S3j6LRt/RE80Ts3K2
-	 RnZD1BKGgC+COLtyvcDs1tBqR9yCMynUjNErMIaIfwY4EfryuMM+xC0YAiGoHhNSXNENW
-	 BDGuB334CBL7UsYUzWtA6KpT2Yo8RcxvOXM2T42jYCNjRQ8EdkaVmNggl1Ty/GND+Kw==
+	t=1795703062;
+	b=Z5ZIeHNbmfwbD1eNzkyx+h0DrJv+TI5ilbpfVRV73cEYZabVPr+CQAUQYj70Va4yGK+Q
+	 uyKlTaa7S7GjO2iWfUPQyLBsAHH9bJs5Zp2fGAfR3LNSTr1MtVmwTDlfRMIgrEnj2I+k1
+	 0Sr2Nx61ZQF6P78xpIrpVgvX+HXRgooABqWXsrTxCeRcQMqgdJfenEsZCgphdhKREBWd2
+	 YpmoA6PYa3roImFzXpUIkFX+SlhSH0BI2yo3HelrFo716HTMqSdPhnY1Gu7tt5Nb+cADN
+	 9Ejwe1WxifowJfHnsyx7wMdzg9Dc+LbXqQ0eqzaiMuyycP6MtxZVqOG7IkNCdrk+c0Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795702918;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795703062;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=U+4pL6qLvvaN/MhyEDL7roP9YywTVS8pAuir7owH1T4=;
-	b=X12zxpIUbGZ8vQYRj71CR04bjLEbwJhnmeQzTuZyaov5NScjtLMYWJnYO186tegOAjuV
-	 Mc3BlwKr+2ogsEy0voVnswtdZOVqc4S8wKJQqocVgj2HPMu48ZVtfdyGb1WwFW/fw/oZF
-	 qFyevHKeiHmI9qHBbJcjM3iWVbJb//cwBuiln+kVZ/OeLItw34v9g3pQKcZvyDelhonY6
-	 3ljguGv2gmzceAT5WGNVEvXbPX9WBAaDsqENIicF+voc5e6DL4J6DiGXnpVIw6yECiOtO
-	 dMbzx6KoFjMgHnPW2ejr+kSxjihbxiZ+wqdrBSsKplSiKXH05AjgQKaL2SlBQ/b/T5Q==
+	bh=YoQJi0E2u6KNMOZLeqYhtROWmRCICFOTpd4u2TPiQ0g=;
+	b=qy4eW/hWUJx2jnpvTelrNFLe0RBFFwZqSuumCyy4BMThIQQvrEjTMKN1DfKd3a4DzYkD
+	 WOqiq8GpirJZF691AKWuraysgof/7DM4zRIVv6MLvBa8pxr74u+b05EtJn4j7JhMVyxx+
+	 niWGXjmqCzYJDb3Thgpw6yNDtoYCrxfOykMZ7UTrWsZbfIC1YZkCQkELDbJKiiUObCJPc
+	 SpVJIQYDeaEmEO7XyvGDrWCf4TwEiLBgNbIMzhf+YasRsGLAMLG9fZ5tuYvu6yVdF2jM+
+	 6/DLkrZWk6/1iQpUwKyLsNZsFr6qTfvyezFHDS56pcnRrG3J8GlXnrLuKgsFqhFjNKQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HuUMdNUl;
-	arc=none smtp.remote-ip=192.198.163.8
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZrLoLnLD;
+	arc=none smtp.remote-ip=198.175.65.18
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23E09606A31E;
-	Thu, 26 Nov 2026 14:21:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 23E09606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BB7606A31E;
+	Thu, 26 Nov 2026 14:24:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 14BB7606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HuUMdNUl
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZrLoLnLD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795702919; x=1827238919;
+  t=1795703062; x=1827239062;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=8E/3GjBkO3qFHAhQ6seGTlGhA2dd1h8qEzfPoxUikwM=;
-  b=HuUMdNUlOxy5GB5vz16dFT3HyDfnZqbg5lhZ8R5wG9czd+osOpLDyOXM
-   mz7JOMaQqD+9tlwxVMzTqk+/cUrwvvoOTmRiIeXNs6C9QE/aLZvufri1h
-   ayy2oLRJgOsvoL+MvtbhMbdhSlFoAOCdwrbvmO5mqWl+bWEvYORE3qJJM
-   JjTN2Mp1RuP8UIKtPqJp5HiGOQl2dIqprpdgXIqITZuKoEmeKSyxqsdYs
-   XaGlE2CSBdcfmn0OEwjrjbuoXrx6LvM4CUYg0jXe1H+4vR8plDEqWh2cG
-   AbSEwL9UbP1fm+YfEXX8xv+8mJ4/EGnQWwmmI6Zx01p7zrIuzFkCetp2a
-   A==;
-X-CSE-ConnectionGUID: DZRbWyfqTiWzdd2pJE4CZQ==
-X-CSE-MsgGUID: 8eAk0uQJR2iFLQOTwN6jcQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4498002"
+  bh=ZvzEs1Hev41dOJbtnB6dy5Rb+UIgVmY7ywomSy9YJeQ=;
+  b=ZrLoLnLDIae2txjRvi0gI3I50KYxXMCcbxsWbPS1RPE1TKoVdm/lHpwg
+   gyFVlJLPt1LKEamYsB3HMECmUbpnjaWCWMMcz0jrvzK6rT2SZDQ3NZCjJ
+   Lzw/ycoybQn8IzGwlrdhOK6FfQvNaD5JFMWLj1o6nBRV9VgOV4pMuJW3T
+   gqiXah3n3Y+nWsXFIymz8gsIX6DlZL7VQ+E8MzwGq5xIXuAXhPwQ7b5yp
+   penaSwE/juhBNyNvVczCVMRMebKQCL54DbQFdf1xX9j4z/unb9v0qbhGz
+   ncjE7U2ZEHvvuwqLzcQZVADIjn1sQw8Orl0l/tSQE1hQ98Gldlh0KML34
+   w==;
+X-CSE-ConnectionGUID: GPgrVvKyQ+OCis2yKstzfg==
+X-CSE-MsgGUID: kuStUjgoTbqJEHG/Ix14NA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4622774"
 X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="4498002"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:21:58 -0800
-X-CSE-ConnectionGUID: BAPLiANfQDyy66/S57hlZg==
-X-CSE-MsgGUID: shslAUAQQJqkv8Gj5IR+vw==
+   d="scan'208";a="4622774"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:24:21 -0800
+X-CSE-ConnectionGUID: DYzGS5FnQ3WlEYVF3BIuGg==
+X-CSE-MsgGUID: jYDRh+8CSbu+a/9a1IB+mw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="11964080"
+   d="scan'208";a="12334045"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.208])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:21:55 -0800
-Date: Thu, 26 Nov 2026 16:21:52 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:24:19 -0800
+Date: Thu, 26 Nov 2026 16:24:17 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Robert Ijtsma <robertijtsma@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH v2 0/2] iio: light: add support for ams OSRAM TCS3430
-Message-ID: <awhAgM77M7I8chR3@ashevche-desk.local>
-References: <20261126-iio-tcs3430-v2-0-6c5329d20919@gmail.com>
- <awg91DruXE0fZ8l-@ashevche-desk.local>
- <20261126141415.116a2eb352e6@gmail.com>
+To: iasnezhkov@gmail.com
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, Arnav Kapoor <kapoorarnav43@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: inkern: guard fwnode_xlate with info_exist_lock
+Message-ID: <awhBEfD6I5nakCKJ@ashevche-desk.local>
+References: <20261126060615.63790-1-iasnezhkov@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,45 +81,51 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261126141415.116a2eb352e6@gmail.com>
+In-Reply-To: <20261126060615.63790-1-iasnezhkov@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Nov 26, 2026 at 03:14:15PM +0100, Robert Ijtsma wrote:
-> On Thu, Nov 26, 2026 at 04:10:28PM +0200, Andy Shevchenko wrote:
-> > On Thu, Nov 26, 2026 at 09:11:46AM +0100, Robert Ijtsma via B4 Relay wrote:
-> > > Add Devicetree binding documentation and an IIO driver for the ams OSRAM
-> > > TCS3430 ambient light and CIE 1931 XYZ tristimulus color sensor.
-> > > 
-> > > Tested on Microsoft Surface Pro X SQ2 (SC8180X), where the sensor is
-> > > connected on I2C at 0x39 and used for ambient light sensing.
-> > 
-> > It's still unclear why a branch new driver. Can you elaborate on this?
+On Thu, Nov 26, 2026 at 06:06:15AM +0000, Ilia Snezhkov via B4 Relay wrote:
 > 
-> Sure. Compared to the existing ams/TAOS color and ALS drivers in
-> drivers/iio/light/, the TCS3430 differs in both register interface and
-> sensing architecture:
+> __fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
+> and invokes it without holding info_exist_lock. Concurrent
+> iio_device_unregister() clears indio_dev->info under info_exist_lock,
+> allowing a NULL dereference or callback execution during provider
+> teardown.
 > 
-> - tcs3414 and tcs3472 are older TAOS RGBC (Red/Green/Blue/Clear) devices
->   using the legacy 0x80 COMMAND-bit SMBus protocol (register offsets
->   0x00..0x1b), different ATIME/gain encodings (e.g. tcs3414 fixed
->   12/100/400 ms steps; tcs3472 countdown (256 - ATIME) * 2.4 ms, max 64x
->   gain), and RGBC channels.
-> - as73211 is an unrelated MAZeT/JENCOLOR XYZ/UV sensor family (I2C
->   0x74..0x77) with banked config/output register spaces (0x00..0x08), a
->   1.024 MHz clock divider, temperature channel, and 1x..2048x gain.
-> - TCS3430 uses ams's direct-addressed 0x80..0xdd register map (no COMMAND
->   bit in register addresses: ENABLE at 0x80, ATIME at 0x81 as
->   (ATIME + 1) * 2.78 ms, CFG1 at 0x90, ID at 0x92, 16-bit Z/Y/IR1/X data
->   registers at 0x94..0x9b, CFG2 HGAIN bit at 0x9f for 128x gain, CFG3 at
->   0xab, INTENAB at 0xdd) and outputs CIE 1931 tristimulus Z/Y/IR1/X
->   channels plus photopic Y illuminance.
-> 
-> I will also note this distinction in the commit message / Kconfig help
-> when preparing v3 (alongside adding MODULE_IMPORT_NS("IIO_GTS_HELPER")
-> for CONFIG_TCS3430=m builds).
+> Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
+> matching the rest of inkern.c, and return -EPROBE_DEFER if
+> indio_dev->info is NULL. Since iio_device_unregister() calls
+> cdev_device_del() before clearing indio_dev->info, seeing a NULL info
+> pointer corresponds to racing right before device removal from
+> iio_bus_type, where !idev already returns -EPROBE_DEFER. Using
+> -EPROBE_DEFER also avoids colliding with the -ENODEV sentinel used by
+> callers to continue parent or map-list lookups and avoids the named
+> lookup -EINVAL fallback in __fwnode_iio_channel_get_by_name().
 
-Kconfig help probably don't need this info.
+...
+
+> static int __fwnode_iio_channel_get(struct iio_channel *channel,
+>  				    struct fwnode_handle *fwnode, int index)
+
+>  {
+>  	struct fwnode_reference_args iiospec;
+> +	struct iio_dev_opaque *iio_dev_opaque;
+
+I see that this block is not so ordered, but even though, try to follow
+the reversed xmas tree order.
+
+>  	struct device *idev;
+>  	struct iio_dev *indio_dev;
+>  	int err;
+
+...
+
+>  	indio_dev = dev_to_iio_dev(idev);
+> +	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+>  	channel->indio_dev = indio_dev;
+
+You ignored my previous comment. Why?
 
 -- 
 With Best Regards,
