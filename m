@@ -1,75 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795703062;
-	b=Z5ZIeHNbmfwbD1eNzkyx+h0DrJv+TI5ilbpfVRV73cEYZabVPr+CQAUQYj70Va4yGK+Q
-	 uyKlTaa7S7GjO2iWfUPQyLBsAHH9bJs5Zp2fGAfR3LNSTr1MtVmwTDlfRMIgrEnj2I+k1
-	 0Sr2Nx61ZQF6P78xpIrpVgvX+HXRgooABqWXsrTxCeRcQMqgdJfenEsZCgphdhKREBWd2
-	 YpmoA6PYa3roImFzXpUIkFX+SlhSH0BI2yo3HelrFo716HTMqSdPhnY1Gu7tt5Nb+cADN
-	 9Ejwe1WxifowJfHnsyx7wMdzg9Dc+LbXqQ0eqzaiMuyycP6MtxZVqOG7IkNCdrk+c0Q==
+	t=1795703364;
+	b=4VLYPudb5q1EwFKiTkogtfXs8KnJEQy86cUn6RrqXgwPEoekCGOR9xsjhB7ShKC4ukIU
+	 bpwRB6DkCpGHLGMmMPeAWqKe890uCPS0uPIQB4ojtzrjLN+C/wE8Pwme4xBxga4CQEtnn
+	 lcOuB9fOGjJo7kDKZ68f5P3zkNJRjuuF5STNn6BL3Pk0E7iHQGC7HIZmictGW+dbdjpiY
+	 65MfP4FmcGaCUUw+2MeTTyY7nQCq4ymB+9FVGdojKpuXt2PLP7WQug94pdbQ3djc02hf9
+	 kU/G3v8Ygf+ZRX1gF4CmoOnHzVmlJMfOn9lxLdCAqsofXUFZPfJ3YoJrp/dD0jfLQsQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795703062;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795703364;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=YoQJi0E2u6KNMOZLeqYhtROWmRCICFOTpd4u2TPiQ0g=;
-	b=qy4eW/hWUJx2jnpvTelrNFLe0RBFFwZqSuumCyy4BMThIQQvrEjTMKN1DfKd3a4DzYkD
-	 WOqiq8GpirJZF691AKWuraysgof/7DM4zRIVv6MLvBa8pxr74u+b05EtJn4j7JhMVyxx+
-	 niWGXjmqCzYJDb3Thgpw6yNDtoYCrxfOykMZ7UTrWsZbfIC1YZkCQkELDbJKiiUObCJPc
-	 SpVJIQYDeaEmEO7XyvGDrWCf4TwEiLBgNbIMzhf+YasRsGLAMLG9fZ5tuYvu6yVdF2jM+
-	 6/DLkrZWk6/1iQpUwKyLsNZsFr6qTfvyezFHDS56pcnRrG3J8GlXnrLuKgsFqhFjNKQ==
+	bh=c8ypPy4IKCS5Exc1KP4Dj8WUmKLSL1iaZVC0m9BJn1o=;
+	b=k5FJgtFa7qUByoKeshuME1fc73rNWgFYHjJx0XMhZQCL39903z1ISUrSoE2vHz+n4Wq+
+	 1BR/60TJRSVIr1ZyWqXvU/zqVQPpEkEMCFIZV0MNSYaJJGaaq/PwEwj+ZHUYz0QesEF+A
+	 LhWWkn4G/Jq4jm/HR5Mlz4DLdZUFXXdmfwjDi5yDsFZCi77Z4yrM7rhvG+FG44nlDqcaG
+	 0w8wE9CrqMEvY09LGBBZNxrEFzgg/cV4+T2zSR2CXaz+thQvnYDyOlubhGcS1zSw5fUqX
+	 wbRPvhTWaCZC+noYjfoVcjb7X0wxckU5DL2PHlYzNw44K3OQjIkCvM1Y8gNufwwkdCw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZrLoLnLD;
-	arc=none smtp.remote-ip=198.175.65.18
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IHRvKyhP;
+	arc=none smtp.remote-ip=198.175.65.13
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BB7606A31E;
-	Thu, 26 Nov 2026 14:24:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 14BB7606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFFCF606A31C;
+	Thu, 26 Nov 2026 14:29:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AFFCF606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZrLoLnLD
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IHRvKyhP
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795703062; x=1827239062;
+  t=1795703364; x=1827239364;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ZvzEs1Hev41dOJbtnB6dy5Rb+UIgVmY7ywomSy9YJeQ=;
-  b=ZrLoLnLDIae2txjRvi0gI3I50KYxXMCcbxsWbPS1RPE1TKoVdm/lHpwg
-   gyFVlJLPt1LKEamYsB3HMECmUbpnjaWCWMMcz0jrvzK6rT2SZDQ3NZCjJ
-   Lzw/ycoybQn8IzGwlrdhOK6FfQvNaD5JFMWLj1o6nBRV9VgOV4pMuJW3T
-   gqiXah3n3Y+nWsXFIymz8gsIX6DlZL7VQ+E8MzwGq5xIXuAXhPwQ7b5yp
-   penaSwE/juhBNyNvVczCVMRMebKQCL54DbQFdf1xX9j4z/unb9v0qbhGz
-   ncjE7U2ZEHvvuwqLzcQZVADIjn1sQw8Orl0l/tSQE1hQ98Gldlh0KML34
-   w==;
-X-CSE-ConnectionGUID: GPgrVvKyQ+OCis2yKstzfg==
-X-CSE-MsgGUID: kuStUjgoTbqJEHG/Ix14NA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4622774"
+  bh=LgFh9SZr6VHq9k/9mUzAWZHJXqYsP3jfd0eBkAxbe7o=;
+  b=IHRvKyhPVyHKU0tnC2PylrE2wBvurvgmdUmX+1uedcsMvhEXi006d8tI
+   eTAm0wGjx3DDI7TDWIwyT7VA2uRV0CWaYo65kpdIy6i4+2ogRKXavEj/c
+   IzGT13Fnq7X+pIOB6ipBmWXuyisPJ1IBfpYdaZR4njMqL3sjDiCU7o1/6
+   Og2hU7SutXUiFM50Z5tp5OWyW7tb7gluBkrbR01OxhREK5/zozY0tNL5A
+   uX3mbDq5/aF5lDzwgWMsdezoHw/XGqqUUf/DTc+lmWLxZAcMcOF5vZNJD
+   T1pZpRH2SjDjbcpWvUrxG3t8sOr0vFa3X9NxwewRdg1ZZhVG65frAKATc
+   A==;
+X-CSE-ConnectionGUID: F6waalXXQu6Ncidtkhgwog==
+X-CSE-MsgGUID: Y+Jio3oLS7SJ+6xyf6DzKA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4523916"
 X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="4622774"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:24:21 -0800
-X-CSE-ConnectionGUID: DYzGS5FnQ3WlEYVF3BIuGg==
-X-CSE-MsgGUID: jYDRh+8CSbu+a/9a1IB+mw==
+   d="scan'208";a="4523916"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:29:23 -0800
+X-CSE-ConnectionGUID: eJp3by4pQ5CXiEffueeoJA==
+X-CSE-MsgGUID: i/E7VtbaRlSJdaCrjbuv/A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="12334045"
+   d="scan'208";a="12512708"
 Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.208])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:24:19 -0800
-Date: Thu, 26 Nov 2026 16:24:17 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 06:29:21 -0800
+Date: Thu, 26 Nov 2026 16:29:19 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: iasnezhkov@gmail.com
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, Arnav Kapoor <kapoorarnav43@gmail.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: inkern: guard fwnode_xlate with info_exist_lock
-Message-ID: <awhBEfD6I5nakCKJ@ashevche-desk.local>
-References: <20261126060615.63790-1-iasnezhkov@gmail.com>
+To: Arnav Kapoor <kapoorarnav43@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Wang Shuaijie <wangshuaijie@awinic.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] iio: proximity: aw96103: report negative proximity
+ diff values
+Message-ID: <awhCP9c9O2QtZwIw@ashevche-desk.local>
+References: <20261126053033.603086-1-kapoorarnav43@gmail.com>
+ <20261126053033.603086-2-kapoorarnav43@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -81,51 +86,29 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261126060615.63790-1-iasnezhkov@gmail.com>
+In-Reply-To: <20261126053033.603086-2-kapoorarnav43@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Nov 26, 2026 at 06:06:15AM +0000, Ilia Snezhkov via B4 Relay wrote:
+On Thu, Nov 26, 2026 at 11:00:25AM +0530, Arnav Kapoor wrote:
+> The DIFF registers hold a signed S21.10 fixed-point value (Awinic's own
+> aw_sar driver documents the diff data format as S21.10), which goes
+> negative when the measured capacitance drops below the baseline.
+> aw96103_get_diff_raw() divides it as a u32, so a diff of -1 (0xfffffc00)
+> is reported as 4194303 instead of -1.
 > 
-> __fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
-> and invokes it without holding info_exist_lock. Concurrent
-> iio_device_unregister() clears indio_dev->info under info_exist_lock,
-> allowing a NULL dereference or callback execution during provider
-> teardown.
-> 
-> Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
-> matching the rest of inkern.c, and return -EPROBE_DEFER if
-> indio_dev->info is NULL. Since iio_device_unregister() calls
-> cdev_device_del() before clearing indio_dev->info, seeing a NULL info
-> pointer corresponds to racing right before device removal from
-> iio_bus_type, where !idev already returns -EPROBE_DEFER. Using
-> -EPROBE_DEFER also avoids colliding with the -ENODEV sentinel used by
-> callers to continue parent or map-list lookups and avoids the named
-> lookup -EINVAL fallback in __fwnode_iio_channel_get_by_name().
+> Do the division on the value as an s32.
 
 ...
 
-> static int __fwnode_iio_channel_get(struct iio_channel *channel,
->  				    struct fwnode_handle *fwnode, int index)
+>  	if (ret)
+>  		return ret;
+> -	*buf = (int)(data / AW_DATA_PROCESS_FACTOR);
+> +	*buf = (s32)data / AW_DATA_PROCESS_FACTOR;
 
->  {
->  	struct fwnode_reference_args iiospec;
-> +	struct iio_dev_opaque *iio_dev_opaque;
-
-I see that this block is not so ordered, but even though, try to follow
-the reversed xmas tree order.
-
->  	struct device *idev;
->  	struct iio_dev *indio_dev;
->  	int err;
-
-...
-
->  	indio_dev = dev_to_iio_dev(idev);
-> +	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
->  	channel->indio_dev = indio_dev;
-
-You ignored my previous comment. Why?
+The type of data is u32, however regmap expects unsigned int.
+I would change the type and leave (int) casting (yes, the change
+is required still, I noticed it).
 
 -- 
 With Best Regards,
