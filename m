@@ -1,85 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795671076;
-	b=IJ1+yEkkVO9jkwopn7qxgVm4V3yLyrxU5vYPEq1o9nRaGhGYygKYmzUTvB7YBgYJYta7
-	 sXEn/jEUq5O2CxfiNNrbyS3I7AQdcgifQxHn9nWf+B0UD0zXyW5cTy9IUoOpP1tqrzn1y
-	 tSnMlbPSUoSOaVGzjv6HP05zmNp741aIsDUVycabrNfq3CrtLmH1BZquxlNtY1XlueT1X
-	 EGy5DvtTY8MqhhRIfcYVknlU/DT1IYZ151NDRvOHWl2luADMM2eYdDr2CN0tx+BK2rbhv
-	 hdph8g9IbBYL+ypTV08FJvFhvQADTB3oUoC4IupRCRHzTM3Gs+N+KZaVmhPz0vk5apA==
+	t=1795671085;
+	b=UWrsIZQfDyA/yLF4BP3JWsr8qGCquKELOTz3yF4aLbn1dMlSx6cNYtsJy0VnG2oQIRl/
+	 vqaTSsFYAOp3jE6ML48BvrlMUegna2HmTLSiRKDt1NH44rStgsXPnYwVB/wM9+AczYOx1
+	 JoKvHBh+N5TU7uXvwlRCxqGzZs9vZH/nHz38C/iOyFPuqTBhs/auxt/tIuWRGmrRT6sGc
+	 eYf7JECziEqUVeXwZS3ERZTYyCXCkhbX+7filFN47wtHDKY9k43EPVosarTqqLMnDS/X1
+	 XmcL0EN1eSplvGmp6wGBcqKuz2PkctzToPpqhY7Rcyi8tKj+ZPTQkb/rTF1gTyRizcQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795671076;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795671085;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=5mSI3ygXKsW/OwLZiR2YvgT/uFmunlZkjWCA05tV8u8=;
-	b=BHiaqXkMes2HzADLYYqTiGHiDOuE8GjZ3Mhlm429GEqLBMwiySwhXNokJPVDB3vtMyy+
-	 TUucaa3AAHHndGILAszh0aTal4fCTp0LwQpk+SmU5fgPGyw3QEC/X0OXK8Rt9Lcwr0Ao1
-	 el9IXapU0pF74x6bm2P1EPCxtzlsg5DC4BBv4IVD9kKU/UQELV3YPLHYKZhCLNeMuHQdk
-	 lgZzNJaeh09XJnaUFOAZZwm0ukWuq9juk6SiTU+OanfiCLX6PDRuWQO0iwQoE/UlKsaE0
-	 lonC7ZzxLhgxdOSBRxhyH2pDfcvZmwksMkK1bW2o8I/BM2HgzCDEQXCE3SToG0FEtnw==
+	bh=SaQxUBzvPDkUX6JJATROn1MzfwU+l51Jz8uEr7sIMqE=;
+	b=xnrCHDrazg0hpJ6jKfjztjXwrGWGQUY7SLRmKj1GQyAQXcQEcA9xEvVJ3A8+Zm/Gt/lq
+	 8coaB/LO3hxAhv4DpIM/4BfYNfpdgUCrqaYowueLBMTWJYhvG7MAW2+WlxGqpCjxoId18
+	 RzCc2Z8NogJUjtpC2xuo4BQ6LEUzV/SbFkyLOu7ppUrQkGkSuJIheHsIz8lfvJByG0AKK
+	 UM6Dl+tbwOZspaY1oixSRkv1WQid60SDFpNqKq6CqWMXI9i2EowFNOWZTK8kYnk+eM3Lb
+	 0msYCZroth/l+WW0k4cceLVEnzTUQU7/eiteNnXfCommTQLbxpvg/Q0f04WVO2T/67g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EXF31PvS;
-	arc=none smtp.remote-ip=209.85.215.178
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Shh1rc8V;
+	arc=none smtp.remote-ip=209.85.216.50
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 542C8606A321
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 05:31:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 542C8606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A65A606A31C
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 05:31:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A65A606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=EXF31PvS
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-cd6028ff33fso3402266a12.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 21:31:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Shh1rc8V
+Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-3ae691283ecso3215294a91.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 21:31:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795671076; x=1796275876; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795671084; x=1796275884; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=5mSI3ygXKsW/OwLZiR2YvgT/uFmunlZkjWCA05tV8u8=;
-        b=EXF31PvS6uhy7QwK9PgvUsmqkvUS87utw2nnzx6T7zdhWTDe4GwkemuudlAF4Du6iu
-         PIIzCAsOxvPhdKuBxmQm9hjeTzoQyM/KfHWRkgV1vVIzGdfZmi/BCL/WxRXvo47+axl3
-         0qbgkMe2T3FQuLV15qXjyJFQujFQx3Fv6aNFsczegue623/8V3fI7lkhjaqhg87elVLg
-         6F/kxDPVhmcXYowkk8Ef6qr/d/ji8fpqI5m6NAdkHHkbLbUxyOIsU1rO8jC6EIBB2V6Z
-         BlpVYFtuFFYbuarbJeJybM7mljj92LBkgoaGpFYVVQU+uLGs73u7/uhkTRuOFiLXFqL8
-         YOBQ==
+        bh=SaQxUBzvPDkUX6JJATROn1MzfwU+l51Jz8uEr7sIMqE=;
+        b=Shh1rc8VN19gQuDTe1+BTKbXrtc8OhJ5ZXeGQWSgzwBhjEn7GmivVeYQ9KCcfuNnKi
+         c8K7UQPF5zvqhYVkEuLic2K79uX7sqy+Gfbf6X3fZoF9GWL1HHhuBv5xMfp7/12xT1pH
+         tpmlwF4/ON4RRW8TYFzpwYfSC/O4WleOXznlBHP1lCQOnNFo3glhn9iIiYKcHaZ74b6j
+         2FopkxR4J/wZsofnHBYesp5eMB6Jd6itOJ/xX/NQ93mc6HN/JxQ49R9oFRTWWQfEIPHt
+         QntBZaRo5YI0lkfZa97LP9oCnd91gb3e7nFonNfVYigGewkq2ueJX6sEJcAw9PfK3z96
+         LHmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795671076; x=1796275876;
+        d=1e100.net; s=20260707; t=1795671084; x=1796275884;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=5mSI3ygXKsW/OwLZiR2YvgT/uFmunlZkjWCA05tV8u8=;
-        b=1uGaYcPwoF5Nv4WBDkIJAOHyNj3761XiJm9I/5XhB+4myU1+X2PJoduWaXv5OHVaos
-         H8VkUBSsuhqtfY7YgfAIlwR8BUUJUDmNsD+rQwoQg97qqkxwrGuXstgIbJss8FVIgjo6
-         l5LwG/FoNRoXyiYUanfo1ByO6tlzA81bD7XzaEhSXkMcW+3hf5+Efl5Yi0sRBpw+zR2r
-         qg1QWalYeImfbkzmyax2g4xs8xczHU4FxPkjB25KhrmEHLtIsTthmNSli8OmV2cnZB2F
-         KqB8d5h+Rs8Zg9Hb+YYhaw2PV8x7aSshOr60G622g1SL9zB2RnvfN+hXsVb6RoazyIja
-         GMWw==
-X-Forwarded-Encrypted: i=1; AL+hErGKNIlRqE3PClTj7g7nNnURpYqqLCvI5iWj2m/M6kObVd18VVBnWw9PHcXIZycxgkn03iRrTWJ/j0I=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+wGQuu+Col6Tv6gDJXR5AoViPeZT8w8fEHsaDunL21Z3HbIiq7
-	xrYxYaQDT3Do7hRqnpWe7wCekppGTm/6pXwyL4kYd0GKr3WxiCDy5/5R5Y2aY5C9AZtQxg==
-X-Gm-Gg: AZFdTZfqAELeNzpXxeb6BjqbH9nEDfGHePi662VuDL9KbD+LlfjhQKIs8u6enuMX1BD
-	Wlwj52cO+O5aZ3hXWbUsKdBe9dobTP40sCqvlP752WZmENRT8pqw6O3L+qCHJWO8gOH/UENnBIJ
-	o5boPGaauWsfiEjgk+vi6Z/J3HiguMlNDZNhyutCEoDwtrxEyccnYRgG4LwGhp97d7RX148u752
-	o9n7i+/1R9KsGQ+JygzbAfpjMCYjwEpEeNzTjKtJ9qMvhi6EPzR11X95KifbsvXcFFg7jZObyHM
-	TmoEfaNsDErxpZxW2ghZaT7rYSzIbGnSMg4ekY0kb+MMwdg/HkhhWqqwy1Pk9bqKIwTw4vVUTIm
-	iGi3ETZn8JZKaoDLPKerloYXEINKzdfgpE80m0pDaCXfdlp8gA87uRjyxYu1oPyfZt42XN7eXxb
-	uphbsSeA59OrO0egXZPSJHqK/z/sG2w2DV4PEDZrZMSbtdfhrwNFk/Ql1n/iX5Uwa+E2x3OVNVN
-	R3g4YuM1+0gnQUsYXV6A01CclPlmuPruQz1ZKU5NwO0gNlx4+p26If6Pen5Ky+Ydu2G4yh0tBt8
-	mr0YdPrNV7LiO5cbnXb8Hz3GgkVk2cnnyHGIN4qIYUOup+m4XDyR0FRt/nAXnnlprDzGzWbdw8f
-	5HPiH+BkvuMu3S021DhA9zO6y2Nx0sARWSV4xlzOk4LqDMGe3pGaM4ZCse8ORObetMLCKOVgNYV
-	wpWZLyb6LwszQW34nX1n2xh5M=
-X-Received: by 2002:a17:90b:3810:b0:3b3:cb3b:1965 with SMTP id 98e67ed59e1d1-3b41c8fe1f8mr19194774a91.16.1795671075704;
-        Wed, 25 Nov 2026 21:31:15 -0800 (PST)
+        bh=SaQxUBzvPDkUX6JJATROn1MzfwU+l51Jz8uEr7sIMqE=;
+        b=WwS/prGdKeRYK3aLpbC2CFN6yxjpEOjf6Wkq/pDN6pGn+Gk9qiWLhR3fYCdCMWPO/8
+         aQ0w92dCjpdBQIT9yfUiBp3vgv1YvsUikwXuUswLsvQV60Bgh69kTwhU6YD2TfEVN5T5
+         jTAIIqvyx4RQwUkEvfiTupRxLlbCSqssz6ts/oDIMs9O6LO3M5HqIXNgsmdrAt9t2ZAu
+         8TCOB64OVjZDuOlCLdmVeREetU4//pjfKlv4h8josNBw0Lv2sUOsehCNesWnVYphxmN3
+         XADAhCzcz57kFBBriLU11Uti3dTgaVR/9EnL+zg/3qwf38BUmYdKNPEACAqeGL/fv+Nq
+         Ezfw==
+X-Forwarded-Encrypted: i=1; AL+hErGk10Stpbc4jCytVS1ju06vhxmr6d8WZjvrpAr6bZyLDlPf0udIa/5NAOS0DWpbNYgSVNrC1n7aidw=@vger.kernel.org
+X-Gm-Message-State: APuU4Z80F0pvHl9OgSEweTxj6srEH0B2rmifKIosXYN5eKpNiyBRgnp2
+	u4kbv0XHGTJPMeLj452DPwW3XDPDI2HDSOk3JiCANCMOIL49oRqifusHaS1ME+zElOxSzA==
+X-Gm-Gg: AZFdTZduRI2D3YfwIkskAK0loBSQPYPBH8GhQoNPZ4ZHkvXO9oDqdBJtCbdZgtJl48Y
+	00M2xMIT4pngzBxP6lSD0OQMD5RSbnfRkiweT3s1yxsN7pf+6RG+K+op3iMLirBx38k4oqXez+k
+	o2DaUC3arFTk0kzYiACaiZJuoXBdvQDmGUgO3fz9c27nvDdKKfI76qek/08Zz0UCDR6KnVAo4Yw
+	VAKlsSw+jATwSjTlKhvumRrgVBDq3ZG9owQUOriaQnxgfUP+u7TwOL1PLQyqjYV/JV+Q81Z4J3Z
+	KV+MJZu6Fn+HI09ImLFwyhXcMQGcLK3Hy74M3dR6EFuhIV1uudsYFaeEEcHX1b5Pg2/xUC8XqNg
+	is65jXQiUVYFOoxw4RCWZMMg02sMzogRCf5OrYl8A083hvgcMAM72B0ZRMgRWJalewHzgGHtCjm
+	R6I5CYhTQ2pyRC/shTbI1p3YBXgHLGdjUizJxZy1vz8tfsoNygr15G/9UNGsuaqkOPyH0gEMypj
+	naaV1Ub8dI4li8V98QaYIiKpti62B6Nj7aRGrSh+cG0LWJclT860N3UxnUnhag3nBEyYwwtDTEK
+	9RpyANFy39G72vJ0taCJag06WysX9sKt56V5u6dlFX6r0wIWKyBEZMQraxYxfRzeY6w5nBjKpjv
+	27nt0tlVaFFHUZJBWYQOn95YYDXSCSv9jTQRlKoOeuAlV8GIMTJ6qXuY3nNTlOIYxOSRCmb9TGn
+	lrr6VXbBp6g9w9jLdUKJgl208=
+X-Received: by 2002:a17:90b:5546:b0:3b0:a1c6:95ae with SMTP id 98e67ed59e1d1-3b41c941f9amr11689057a91.31.1795671084563;
+        Wed, 25 Nov 2026 21:31:24 -0800 (PST)
 Received: from kapoor ([149.40.62.11])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b409330ae8sm33700520a91.7.2026.11.25.21.31.08
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b409330ae8sm33700520a91.7.2026.11.25.21.31.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 21:31:15 -0800 (PST)
+        Wed, 25 Nov 2026 21:31:24 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -90,9 +90,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH 3/4] iio: proximity: aw96103: wait for the configuration load before freeing
-Date: Thu, 26 Nov 2026 11:00:27 +0530
-Message-ID: <20261126053033.603086-4-kapoorarnav43@gmail.com>
+Subject: [PATCH 4/4] iio: proximity: aw96103: reject out-of-range debounce and hysteresis values
+Date: Thu, 26 Nov 2026 11:00:28 +0530
+Message-ID: <20261126053033.603086-5-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261126053033.603086-1-kapoorarnav43@gmail.com>
 References: <20261126053033.603086-1-kapoorarnav43@gmail.com>
@@ -107,92 +107,45 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-aw96103_i2c_probe() loads the register configuration with
-request_firmware_nowait(), and aw96103_cfg_update() runs later and
-writes to the driver data and the chip. Nothing waits for it: if probe
-fails after the request (e.g. aw96103_interrupt_init() fails because the
-device has no interrupt), or the driver is unbound before the callback
-has run, the devm-allocated iio_dev that holds that data is freed first,
-and the callback then uses freed memory. The regmap and the vcc supply
-it uses are devm-managed as well.
+The debounce (OUTDEB, INDEB) and hysteresis (THHYST) settings are 2-bit
+fields of PROXCTRL. aw96103_write_event_val() passes the value through
+FIELD_PREP() without checking it, which masks it to the field, so an
+out-of-range value is silently written as a different one: 4 becomes 0
+and -1 becomes 3.
 
-Signal a completion at the end of aw96103_cfg_update() and wait for it
-in a devm action added right after the request, so it runs before any
-of those resources are released.
+Return -EINVAL for values outside 0..3. Both debounce fields have the
+same width, so one check covers the two directions.
 
 Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
- drivers/iio/proximity/aw96103.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/iio/proximity/aw96103.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
-index 504e92ab9b07..b4aa31a65369 100644
+index b4aa31a65369..24557a8f764d 100644
 --- a/drivers/iio/proximity/aw96103.c
 +++ b/drivers/iio/proximity/aw96103.c
-@@ -8,6 +8,7 @@
-  */
- #include <linux/bits.h>
- #include <linux/bitfield.h>
-+#include <linux/completion.h>
- #include <linux/delay.h>
- #include <linux/firmware.h>
- #include <linux/i2c.h>
-@@ -118,6 +119,8 @@ struct aw96103 {
- 	struct aw_channels_info channels_arr[6];
- 	unsigned int max_channels;
- 	unsigned int chan_en;
-+	/* Signalled when the asynchronous configuration load has finished */
-+	struct completion cfg_done;
- };
- 
- static const unsigned int aw96103_reg_default[] = {
-@@ -605,7 +608,7 @@ static void aw96103_cfg_update(const struct firmware *fw, void *data)
- 		ret = aw96103_para_loaded(aw96103);
- 		if (ret) {
- 			dev_err(aw96103->dev, "load param error.\n");
--			return;
-+			goto out;
+@@ -401,6 +401,9 @@ static int aw96103_write_event_val(struct iio_dev *indio_dev,
+ 		return regmap_write(aw96103->regmap,
+ 				    AW96103_REG_PROXTH0_CH(chan->channel), val);
+ 	case IIO_EV_INFO_PERIOD:
++		if (val < 0 || val > FIELD_MAX(AW96103_OUTDEB_MASK))
++			return -EINVAL;
++
+ 		switch (dir) {
+ 		case IIO_EV_DIR_RISING:
+ 			return regmap_update_bits(aw96103->regmap,
+@@ -417,6 +420,9 @@ static int aw96103_write_event_val(struct iio_dev *indio_dev,
+ 			return -EINVAL;
  		}
- 	}
- 
-@@ -615,6 +618,16 @@ static void aw96103_cfg_update(const struct firmware *fw, void *data)
- 		else
- 			aw96103->channels_arr[i].used = false;
- 	}
+ 	case IIO_EV_INFO_HYSTERESIS:
++		if (val < 0 || val > FIELD_MAX(AW96103_THHYST_MASK))
++			return -EINVAL;
 +
-+out:
-+	complete(&aw96103->cfg_done);
-+}
-+
-+static void aw96103_wait_cfg_update(void *data)
-+{
-+	struct aw96103 *aw96103 = data;
-+
-+	wait_for_completion(&aw96103->cfg_done);
- }
- 
- static int aw96103_sw_reset(struct aw96103 *aw96103)
-@@ -811,12 +824,19 @@ static int aw96103_i2c_probe(struct i2c_client *i2c)
- 	if (ret)
- 		return ret;
- 
-+	init_completion(&aw96103->cfg_done);
- 	ret = request_firmware_nowait(THIS_MODULE, true, "aw96103_0.bin",
- 				      aw96103->dev, GFP_KERNEL, aw96103,
- 				      aw96103_cfg_update);
- 	if (ret)
- 		return ret;
- 
-+	/* The callback uses aw96103, so it must finish before that is freed */
-+	ret = devm_add_action_or_reset(aw96103->dev, aw96103_wait_cfg_update,
-+				       aw96103);
-+	if (ret)
-+		return ret;
-+
- 	ret = aw96103_interrupt_init(indio_dev, i2c);
- 	if (ret)
- 		return ret;
+ 		return regmap_update_bits(aw96103->regmap,
+ 					AW96103_REG_PROXCTRL_CH(chan->channel),
+ 					AW96103_THHYST_MASK,
 -- 
 2.53.0
 
