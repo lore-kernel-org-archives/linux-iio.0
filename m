@@ -1,78 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795680721;
-	b=L0SXw+cDBJRlrc5hkMTMsQp4wGvSVzixsHVWzXHKeee+sorEaWF6+doqWJoiPHjQjZy0
-	 /t+zci7ttZbzDihA8p2J7IE2QBJrcrjrGds5ItnMRc956IwIklJxuoUno62hzoJkfU9NA
-	 FipMwhDACvNiTVh/Nnl303pQ43EWsX8uABAwUkgbKCjpJWknVw/nIAqPCkMhjgtAdNbRm
-	 n+0DrA3TzmK6LcCZ2W17O5Uj+OvqRfs9NirodTXGzSGqJPP3nnMPwbsmvTt8OvphqcIfp
-	 R8+wqQkmt7NPsuOjvC/Y/fHNmJjtkq3pnu4xHZyi1bw8mV+9AxX77ke6OuJFX6u7R3g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795680721;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=9/G1Vu6zc8fcopapjdqUOr2ovRpO+znKcwj1cdx0q48=;
-	b=hhB8TQnqV6byCba+hw1dTRI6Mb0aFzpG717a3NfQAqkjJ8f7wgCrkRKo+nr1kNU9wwMu
-	 b+NFMDOpzXTDwHd8TbGbCXOboo+/aoPBOkNveGsVmPcKUBnu4+sy3jW0YGwmxJMyrAQxP
-	 x0fymu4j1i1KloW3iv0dcMbS8cbnjsdvhPSvGUfPHmOKoc71dCbAsMFcjvRzb7ZmA5pQl
-	 DqG6BJ7wxbtCl9iN1RQJcwFD2l8e/7l65TZazel8wLS+dqzXvenh6TJdT4ivrPhpkIzlv
-	 FCMyjs/ZnNPGRZe1MsmfEzJ9bkgR1Np9UcbMtFUWzdvIkAAFyZXAb99dhBqZjz4/dtw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ozkxIMx0;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D3F2606A31E;
-	Thu, 26 Nov 2026 08:12:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ozkxIMx0
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795680721;
-	b=vIhl/0He4ca3LBkZlGuSznNQbXuyIiw+AwXWK09vr2YmuzG6vuVYFUA7uYORqHJgDr7K
-	 gMWI/uhFYXA0MPhX+pk1Z01yzi56StPDjLcPqo9WDwEU9nNNTLeC5R4kbGPo9adBMc7pz
-	 jiUl8W2KiCAusomSXmrIFxD4NiIAN7QgdGia7YQDcb3C62HlmH5RA/eXXq9AT5qiSgbkz
-	 RWLBLxH1NRRmn5Y3//ySzjoCJJI/LmE61glRue5+LVE13mwb/O2+BgBaTEqRsX/uOUqfQ
-	 5zJMXIPbbCKf+HQczOFNuRnmfV/zW2WyDPnV+l+akUIjMnTXePjO/+MrH9eR/6bvcPg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795680721;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=9/G1Vu6zc8fcopapjdqUOr2ovRpO+znKcwj1cdx0q48=;
-	b=OH9KPwq3PfZY1ZOIagOWehwJ1ZhFYvOUPvvVfCeHefV1emn488e1mrN4OjiEX6608cE9
-	 EjzarycU5aZZwT/M5NQ1zYRHPVXwC+F2cCsi+VPpIafotLd9C2PNfW+2gAWohOGYrShOm
-	 bVhJm6isQQDRyaNpqbRNrbZbymoO8Rpa/EDKZ9/VWdVUsw4ICw3YLUlgsaAqOn7GfJIIS
-	 GL/cswo0929ZRTmiMDj+y0KjGFvVrH3bacKSsHm2w/RztsVrBFhvrgohl0OvF2XPzeYcp
-	 Yi47pfSsHknpgU+05JgyVZzQxKuil6gmG506F7l73xqmNAuzapDqCa8MBCHS+sNZj1Q==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.179
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795680730;
+	b=wjJyVn71/8jUJXotvg5KFI1jt/EvztYqcp4FIp8L7NNRMfJt2L3x7RlyOK+2I7B2BnlG
+	 FatXf0xt7zSffeockOi0H2Juf7tAm7bBUobxgygs42lgiSgi/cky2q/hwnjAVevWgCqi9
+	 KTeDPtewq1JI2hI9eABFDn/2XGtgUDUywAyLwOz4+wiYsjOdcF2RuaR21wWjgQcS24vRx
+	 dZSOZEBxi6rQ2VLnypa11dR8SN02LPPcwYdX84oGKg9dXBEtv8uVV2PG8Q2Rlm7NPx/A1
+	 Vi/oUhnUtMsy/Y8VYq0ANkOCkWyQMYDHOv+Ecyu5RxYOdV5s+5JGBhgQgcHVEYV1zPQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795680730;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=kdVRaDN/T7vzdcCEg4HnPSMiNJ7B8TDs5/yJohuuJeU=;
+	b=vFd+V8ijOmj3WiDCpRsykD7fE0FvTaIxSskMJOuDk5NQ5K303QHKB4ZFeS5TMJsuEPfN
+	 5TNDcp4eR/6Zxmzhe3eILSchtWGK33omzNYd0hNxVDu6GIAw1UBpjNvDAl36BZDBZUN57
+	 X5RRy0oou2w8Mu0k4SX7xXXE4e13S9MisR+KkllMcwmCDiqHB13lYbS/ZprABa+R6QjJx
+	 LLJhU+SXfS69mGkNqDRM+YioGx45ucnHXSnnAF1L1ygVLi7tFWJMXV85oHOL5Mj4dNThP
+	 9460lHl0UDuFLIkwrCbtTR8AzNe8m4uPv3mn1TejpfDvNMYXnyLWfM4dy41BWeOqWzA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=chromium.org;
+	spf=pass smtp.mailfrom=chromium.org;
+	dkim=pass header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=dERc6wBt;
+	arc=none smtp.remote-ip=209.85.215.179
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 13BC51F000C0;
-	Thu, 26 Nov 2026 08:11:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795680721;
-	bh=9/G1Vu6zc8fcopapjdqUOr2ovRpO+znKcwj1cdx0q48=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=ozkxIMx0Ch/jCd5eR7I5sdvTSd27fvmDm5lwVWFiX7cjg8Dpqhf4+K3RtBwiNnkqy
-	 MQzzDmWp/uIwz7HqEAw7miM3AuBwkO+RZbckJrwtLw7mLsqsKARLqdqlvmMv5ZCDtF
-	 IIBgybsLm6nGT6oEFbPydZs9Pz2+cLEe65TrB446BbZwkEkNmkBugA0IYJAGwZ6/qK
-	 rMBAeuFblKVvUUkim3tHRGgkzO2AQ8denDPXeVH06uRVugUv47RToVtER/JE+9dmLt
-	 QK5PZI654uVsgp91zcAAlf8Lb5So3utgG2cHhTB9NaQ93YVk7RryWdwabfQnQQOHkP
-	 vL57n1q+I0iuQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 83BB44D2E5;
-	Thu, 26 Nov 2026 08:11:47 +0000 (UTC)
-From: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>
-Date: Thu, 26 Nov 2026 09:11:47 +0100
-Subject: [PATCH v2 1/2] dt-bindings: iio: light: add ams OSRAM TCS3430
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCB7606A31E
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 08:12:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7BCB7606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.a=rsa-sha256 header.s=google header.b=dERc6wBt
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-cde1479f76fso3732068a12.0
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 00:12:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1795680730; x=1796285530; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=kdVRaDN/T7vzdcCEg4HnPSMiNJ7B8TDs5/yJohuuJeU=;
+        b=dERc6wBtCSnHzaDqt96zRmZ2vdHqF9+v0cSfmz5negKeazrLKeu+xbEzVSkLChR8Kb
+         WhL9JcSes56BAz7atdGPm8u6ROTAAp6puz1OyS/d4Kj0uTtEjxvpumqeXcV1S9d7gi+t
+         39pM5d2r3TB9TsjItygBA3Xj9jRtafYy08wdI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795680730; x=1796285530;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=kdVRaDN/T7vzdcCEg4HnPSMiNJ7B8TDs5/yJohuuJeU=;
+        b=E+kx3gdtnt5T2f1A7HBIM59H9AAb/W6SFCGrW/FIWP4JzstIML850juAwM3Oai9sVr
+         oRMvoxHwGGXAUJ955uTFPIybd3RColIeksQQYB2KEYSAfs9RQjItav9jUZxLQtMfh88V
+         X3UKaVekQgaeJ8GkVcWcsW8iHdi8P9EraDBAgZ+y5HxpRFT8/Sjb7rXi5gbwFQORVhBW
+         XEWmxYHlyU3Fcx4npIwdH9FSY8mlkyd5mstLa/eGltBD0Vvudfc0D4DBob3Qy4wNRFLL
+         d6S4t0uxWGXv3LCH8bfADQDvyxJOWLkX/8VyGJ3h82nsg/7yWMDQJ3xWMknpCs9T2i2F
+         P3DQ==
+X-Forwarded-Encrypted: i=1; AL+hErEz/7efFW2xE0lr4SfKalVAalcLGgMytvp8BAaBuwVRWrJbhOPKpjrD+yiiQ+DfGZH9AaWuKye47N4=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/riglqK/prd2sdhS4fW1qUE87p2N7AqYUpLzTsdI9tCLcpY/Ha
+	iIgptgLqcotaT3tKI9zpukyb3/CVi4a9NDOP9waRhSrCACml5F8qNXRkLyJGNDb9gw==
+X-Gm-Gg: AZFdTZfd2oXNhkHtT6avKWKq64VA0MXbbHN1DTt7XgoVh9oyVnYfWvFNnS3KCvBk7GZ
+	xCCFzK6BTIf3cbxcJN1HSOzu3nN2SJesP9WLyPSTilyFNHWf9xCZtfTOAwCP+6rImtzPMdu3Icp
+	w+zgDe0Wcyp3ZDKUo4ul62WN+Sc60gVXMceD8fQB07H5i3+khBza2apOtKvT2MngPLy8YY5emv3
+	jdIBiRMjAu5ezkoQaYaganqoausI4ppMRjPzOrzUEJ0OqTEKw77yMXGAhghQ2h7yy0eB3E9LWfl
+	P9yYwHtk+mEIekLXFTYNFmQZ3b1iJoiAkrkrAvP1SyQiCL3ma9ad5x7n9FmxEPgIPPPwh4YPYRg
+	ARTrDXI2Hn+ddpJ4t5OyEZ4q4xIARgEqi9jXUDFxRIRDDtSJxPxa6/e8mGwqJn50HQZ9Tgf0blI
+	f3TLK3xrXezvEls5KEnntEv12vvfnNfg2Ue6uFjFWJwhrXnbuer65b+rGp19giLgEmxs4Mmkng8
+	KjlQH5FHHRKxObPpxfSplX/x+puUHOAajuvPdWa+xXbyFLDf1kn+cJbLdLCj13iFY2yCPkQGP8G
+	xKAV3/SKeAL5Inb8p2jDTXasNS3Ducg3WUOUzj3cue2wDThyKLJIXD0A9yWE
+X-Received: by 2002:a17:90b:498c:b0:3ab:be66:ddbe with SMTP id 98e67ed59e1d1-3b41c902f3emr18704680a91.28.1795680729913;
+        Thu, 26 Nov 2026 00:12:09 -0800 (PST)
+Received: from localhost ([2a00:79e0:203d:7:418f:e7d0:882d:ceec])
+        by smtp.gmail.com with UTF8SMTPSA id 98e67ed59e1d1-3b44b7a8c64sm14084752a91.3.2026.11.26.00.12.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Nov 2026 00:12:09 -0800 (PST)
+From: Chen-Yu Tsai <wenst@chromium.org>
+To: Bartosz Golaszewski <brgl@kernel.org>,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: Chen-Yu Tsai <wenst@chromium.org>,
+	linux-pm@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2 2/2] iio: adc: rzt2h: depend on POWER_SEQUENCING instead of selecting it
+Date: Thu, 26 Nov 2026 16:11:54 +0800
+Message-ID: <20261126081155.501493-3-wenst@chromium.org>
+X-Mailer: git-send-email 2.56.1.839.g22a8290db9-goog
+In-Reply-To: <20261126081155.501493-1-wenst@chromium.org>
+References: <20261126081155.501493-1-wenst@chromium.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -82,121 +103,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261126-iio-tcs3430-v2-1-6c5329d20919@gmail.com>
-References: <20261126-iio-tcs3430-v2-0-6c5329d20919@gmail.com>
-In-Reply-To: <20261126-iio-tcs3430-v2-0-6c5329d20919@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Robert Ijtsma <robertijtsma@gmail.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795680706; l=2571;
- i=robertijtsma@gmail.com; s=20261122; h=from:subject:message-id;
- bh=oT2YcBwRHJlAGiUMywD1VuA9hLwSIhrT+EC9d5oP2Lw=;
- b=PFA3h61Ctb/pGXgYJNcTfov11ejFZoLGU7QDLD8L596VnE+/BD5+tES4c0Rhdiu1c+FqRTIOU
- GKrAK5M7GsSBTe4sDHL+eWZO/F5WEPaIW9rxpdvCxgdXbUwbVjv8IbH
-X-Developer-Key: i=robertijtsma@gmail.com; a=ed25519;
- pk=qiDyKVqFicxFIR5sB5m+p9SWPKL2/+mMoiQnUx0C9P0=
-X-Endpoint-Received: by B4 Relay for robertijtsma@gmail.com/20261122 with
- auth_id=1604
-X-Original-From: Robert Ijtsma <robertijtsma@gmail.com>
-Reply-To: robertijtsma@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-From: Robert Ijtsma <robertijtsma@gmail.com>
+Commit bdfc454e8567 ("iio: adc: rzt2h: Add support for RZ/V2H(P) SoC")
+recently added usage of the power sequencing API to the rzt2h_adc
+driver, and directly selects POWER_SEQUENCING.
 
-Add Devicetree binding schema for the ams OSRAM TCS3430 ambient light
-and CIE 1931 XYZ tristimulus color sensor.
+This new Kconfig select causes a recursive dependency when combined with
+the in-flight power sequencing integration into the USB core:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Signed-off-by: Robert Ijtsma <robertijtsma@gmail.com>
+	error: recursive dependency detected!
+		symbol USB depends on POWER_SEQUENCING
+		symbol POWER_SEQUENCING is selected by RZT2H_ADC
+		symbol RZT2H_ADC depends on IIO
+		symbol IIO is implied by HID_MCP2221
+		symbol HID_MCP2221 depends on USB_HID
+		symbol USB_HID depends on USB
+
+Power sequencing is not needed for RZ/T2H and RZ/N2H, whereas RZ/V2H(P)
+and RZ/V2N do need it. But it is not a strict build time requirement
+for the driver. Change it to an optional depends on.
+
+This also requires a change to the pwrseq stub functions so that the
+pwrseq_{enable,disable}() calls in the driver still work without a
+power sequencing descriptor with POWER_SEQUENCING=n.
+
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
 ---
- .../devicetree/bindings/iio/light/ams,tcs3430.yaml | 52 ++++++++++++++++++++++
- MAINTAINERS                                        |  5 +++
- 2 files changed, 57 insertions(+)
+ drivers/iio/adc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/ams,tcs3430.yaml b/Documentation/devicetree/bindings/iio/light/ams,tcs3430.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..085a70e5557b1b5201bdd11e00736af065e002de
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/ams,tcs3430.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/ams,tcs3430.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ams OSRAM TCS3430 XYZ Tristimulus Color and Ambient Light Sensor
-+
-+maintainers:
-+  - Robert Ijtsma <robertijtsma@gmail.com>
-+
-+description: |
-+  The ams OSRAM TCS3430 is an I2C ambient light and CIE 1931 XYZ tristimulus
-+  color sensor with photopic Y, Z, X, and IR channels.
-+
-+  Datasheet: https://look.ams-osram.com/m/43d518b4cd81e3f2/original/TCS3430-DS000539.pdf
-+
-+properties:
-+  compatible:
-+    const: ams,tcs3430
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        light-sensor@39 {
-+            compatible = "ams,tcs3430";
-+            reg = <0x39>;
-+            vdd-supply = <&vdd_reg>;
-+            interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 44540a1eb2b8088f9da95a9b6f83b4bf05188ee1..ea8ebd8ccd849702e82bf6aaeb4d8d60c2255628 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1489,6 +1489,11 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/light/ams,as73211.yaml
- F:	drivers/iio/light/as73211.c
- 
-+AMS TCS3430 DRIVER
-+M:	Robert Ijtsma <robertijtsma@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/light/ams,tcs3430.yaml
-+
- AMT (Automatic Multicast Tunneling)
- M:	Taehee Yoo <ap420073@gmail.com>
- L:	netdev@vger.kernel.org
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 1d6ed49041ab..7874d0e78e9e 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -1631,7 +1631,7 @@ config RZT2H_ADC
+ 	select IIO_ADC_HELPER
+ 	select IIO_BUFFER
+ 	select IIO_KFIFO_BUF
+-	select POWER_SEQUENCING
++	depends on POWER_SEQUENCING if POWER_SEQUENCING
+ 	help
+ 	  Say yes here to build support for the ADC found in Renesas SoCs:
+ 	  - RZ/N2H
 -- 
-2.47.3
-
+2.56.1.839.g22a8290db9-goog
 
