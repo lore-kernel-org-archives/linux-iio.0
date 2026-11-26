@@ -1,59 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795657496;
-	b=4oavtOQv8waEFOpsmnFhlrlmgbCIWBgdl+8oAaalz/TLqp+bYXdRMdTDv0wq7sZxztmG
-	 C0yQl5PKuMGMOI4lWKH2WP3PnGzAGil5JP+7BlvRzM2ARoI3MJTKuc9q2zTsemX5vlyrL
-	 vGBiNl9SXztUDlk79r6OFJvBQo/AlLSwz3KjiP7TfhNR6pOrd8ttY2c4GL9WKybNxXpdj
-	 2lxF+BhZQqouHu6cIX+m31HnB+sFxQ+V4Ck/mWFZx84qpeYKRTDbsdgvdYYvp9Ksvh7st
-	 GcyltWhYy2vgCc1G9ORHSAt5H8tyJgZFRd5q4ITO1J2xUkDjHUVjtw68kVT5tAaa6qw==
+	t=1795658434;
+	b=cHGArUmZUWjvRQbU16d9IPszAFF6/uyMhcoyXeuu70EbWeTTnI8qBMlAwwaDHyN54MUr
+	 Hbn/LZ+/DEMoaLInXWzc5o5qfQwzvJe2/D58FBIlSd8ILCLAZ7SmY+dfba14jddg4u5My
+	 IC+Wgm8ykW1yYP2zoQoYUZ34yGij9xxiz6Vzbwh6fWzBeSyHjtqyxBhjVxQ2/mwGjvuCM
+	 5f+pQiTA+cYLsbxvGRTAAtljfuWxYf5YLD6vtM1UEOFJcENGOip6V1PMe7L3uYM4m4wXk
+	 tcNJryr1bCkPAvFggFRhIHV33wkEMl/CmX/QjaPdfOeGSxFzCxPOY+GJWZXbvVK24sw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795657496;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795658434;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=mHw3fF9VwxtqgAqIm1+76NLfsCQVvS+qok5BB7sKrHo=;
-	b=BjLBbkZpBjyuTyrdH2sONT2fAkx/m5tFfdKLC+LhF3nuMcKC+9rUoaImYW8fRPye4wwo
-	 i0fZip4VBMUJPaPrBDS2w+Am24d8RG5Pv0T+FeEBLNXB2hFTkVTXFEfx15JuxjQry+G1L
-	 4qHyJY/H7RjHgq3E7F4/V6WRUV3qvFJf8ooI7GOIe2+bYD4knCyrm7I55hA3r/V1ZY8Xx
-	 yUyLCqU7W9HmBGxy4K2utCXZa8U4WkLlhcHpR2UZqX7GEnlr1sdlV1r8I4BKvSHHJ6rjf
-	 kll/bWiL5sydSORMuujB1q0uLYdBmCz7Iz20kSw9H1LOp+5MTfzy45YIYRu9/86gTUw==
+	bh=rclIhKxKVrA3v/EDPy0FH8lxHjo9Lwc467SMjq6lroE=;
+	b=ksOijRv6f0OfqG4u2VOYtw6/1C5pRTrDRZ3yhktXo/uxnFB2Ca10nKT+nwoOUdakjFZc
+	 M+NcYdq/MFrNh1Sa70Q4M+j8ecmoeSnPq8V3MPvM+zwLXOTrl2orFkRoFBPfJXPPg7Ipw
+	 dFL++x2vSNP6etUEfVYNDwv/FolU8UAoSf0ziXNr15rEZvzF93FqywX8jar0Jiof6Nl+z
+	 KuMwloOeIeyqdwZiFjeHzyrQiQAQr2mdPJj+acMDldV3gz5dSmAEK2fwwwqFWZT401Slp
+	 3UY6aqC2Rq88dcK8rvgUkFANhQi6Nk6btuUKxCNoHEkUjXTIob3nQYR0mBDzlIaQd8Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RBhVMI+r;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OBbfAcrF;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D40D1606A31E;
-	Thu, 26 Nov 2026 01:44:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C681C606A31E;
+	Thu, 26 Nov 2026 02:00:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RBhVMI+r
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB4EC1F000C4;
-	Thu, 26 Nov 2026 01:44:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OBbfAcrF
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D47DE1F000C0;
+	Thu, 26 Nov 2026 02:00:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795657496;
-	bh=mHw3fF9VwxtqgAqIm1+76NLfsCQVvS+qok5BB7sKrHo=;
+	s=k20260515; t=1795658434;
+	bh=rclIhKxKVrA3v/EDPy0FH8lxHjo9Lwc467SMjq6lroE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=RBhVMI+rKIFrOS1JTVAAqt5cNeiv/1UmGQKoOL8RegRUvo7NJYKzO5wvw2LGsMeYY
-	 0BOfgcjeSnXfTGI1bI5T7kK/WwAzCDC74OT+ENoEJD099+l5sDvERZ+E8Pq3Z1Af06
-	 Ir3NJy0eJlLj1xRPD/OsIREGqOKKcvNQK9/Ph20lTO1CR18ICnXMxVmZV643FaJfyO
-	 KRJzP1l3oGqTXzOcqcEkJBPro8CcfmNDDeXR0LJ/zph4qS8febH5SgdlnnNYs2vS7/
-	 Xknf5I71zJdtT2eWvY39WB264PkkLS5vbo14pTfmii4AneM/R92F6Bil6wEyle7w3O
-	 oZHEh1T5QRtxA==
-Date: Thu, 26 Nov 2026 01:44:49 +0000
+	b=OBbfAcrFN10TQVbAIzfEXXA41ULoT16vWthMwAfD/WtHnQ1DbxbTTjjacX3qDBVwI
+	 ey/YxI82YDQkkgEp9f0+1xNeXyXYexMZZwJBhrbuHE+f5DM4u6lYp3zj31iR6tvZQP
+	 0Kox2Cpk4p9gVyamH66XJl+mYMjv14FjZorgdq5OI3iZNZlWYLNcYZCOf3VfEhVHd0
+	 W20gZRSOPL+h+DjYWY0XK4zbjhkHJ8dG48NESaUZKwjctTYhJ0A2QUbEbLJnEPqoY0
+	 sJryXb2WuxB84YyR+ilpjto9p3b8n5iWMhtLDE357NsG9y5XIn02Kfe9hRKNbXsnkz
+	 kifqr0/31AAYg==
+Date: Thu, 26 Nov 2026 02:00:28 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Joshua Crofts <crofts@kernel.org>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rupesh
- Majhi <zoone.rupert@gmail.com>
-Subject: Re: [PATCH v2 1/1] iio: core: Split debugfs routines
-Message-ID: <20261126014418.6eb2a97a@jic23-hlaptop>
-In-Reply-To: <awcaWIBZbS4Iq4uj@ashevche-desk.local>
-References: <20261125140251.384361-1-andriy.shevchenko@linux.intel.com>
-	<6d517c95-82e1-4713-bc1f-9922a975e26d@kernel.org>
-	<awcaWIBZbS4Iq4uj@ashevche-desk.local>
+To: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux@analog.com, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Arnd
+ Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 6/6] iio: adc: ad7793: add firmware support and drop
+ platform data
+Message-ID: <20261126020028.62a67891@jic23-hlaptop>
+In-Reply-To: <20261125-iio-adi-legacy-platdata-v1-6-54e4c8830b57@analog.com>
+References: <20261125-iio-adi-legacy-platdata-v1-0-54e4c8830b57@analog.com>
+	<20261125-iio-adi-legacy-platdata-v1-6-54e4c8830b57@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,37 +65,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 25 Nov 2026 19:26:48 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Wed, 25 Nov 2026 10:19:22 +0000
+Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-> On Wed, Nov 25, 2026 at 03:22:59PM +0100, Joshua Crofts wrote:
-> > On 25-Nov-26 14:59, Andy Shevchenko wrote:  
-> 
-> ...
-> 
-> > > +static void iio_device_register_debugfs(struct iio_dev *indio_dev) {}
-> > > +static void iio_device_unregister_debugfs(struct iio_dev *indio_dev) {}  
-> > I checked Sashiko and it points out that building with debugfs disabled
-> > causes compiler warnings:  
-> 
-> Right, you were a bit late after my reply to myself :-),
-> but thanks for double check!
-> 
-> I think this warrants a v3.
-Sensible change. I'll wait for v3. 
+> The driver refuses to probe without struct ad7793_platform_data, and
+> there are no in-tree users of it. That means the driver can not be used
+> at all on a modern system.
+>=20
+> Get the configuration from firmware properties instead, following the
+> new binding, and drop the platform data header:
+>=20
+> - The reference is REFIN (REFIN1) if refin-supply is present, REFIN2 if
+>   refin2-supply is present, and the internal 1.17 V reference otherwise.
+>   Parts without an internal reference need refin-supply.
+> - An external clock on the CLK pin is used if given. A 128 kHz clock
+>   is divided by 2 internally.
+> - The input buffer stays enabled (as it is at power-up) unless
+>   adi,buffer-disable is set, and unipolar coding is used unless bipolar
+>   is set.
+> - The bias voltage generator, the burnout currents and the excitation
+>   current sources get their own properties.
+>=20
+> While at it, also enable the AVDD and DVDD supplies, add an OF match
+> table and fold the platform data checks into the property parsing.
+>=20
+> Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Looks fine in general but could as Andy suggested be package
+a tiny bit differently to be nicer to reviewers!
 
-Thanks,
 
-Jonathan
+> diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+> index b0f44c144f20..f3e3ca724ec2 100644
+> --- a/drivers/iio/adc/ad7793.c
+> +++ b/drivers/iio/adc/ad7793.c
 
-> 
-> > After adding inline,
-> > 
-> > Reviewed-by: Joshua Crofts <crofts@kernel.org>  
-> 
-> Sure, thanks!
-> 
+> =20
+> +static int ad7793_parse_excitation(struct device *dev,
+> +				   struct ad7793_config *cfg)
+> +{
+> +	static const char * const iout_pins[] =3D { "iout1", "iout2" };
+> +	u32 pins[] =3D { 1, 2 };
+> +	const char *names[2];
+> +	u32 val;
+> +	int ret;
+> +
+> +	ret =3D device_property_read_u32(dev, "adi,excitation-current-microamp",
+> +				       &val);
+
+Feel free to go a bit long on things like this.
+
+
+
 
