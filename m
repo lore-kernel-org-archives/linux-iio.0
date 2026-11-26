@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795699623;
-	b=hkWk8S+jMjk3Jc5rIgNo7EnZwgsWmqsGK3argK5ZOukEdz3WpnqSUHSNIkT/gekcW9Cr
-	 oWgzrfjk6B2hMwviueLNPnKGgPVmeotYbaF4s6QsyP5myFX38UZTh+dShbdU8+iWtxGqe
-	 1adbF1RmGCj70PbQjz/Ce7MSXi4KY5nExk8zVn24Aj2tlQYld+s416GDxs014gKPcvEoy
-	 9vMRcuN1cpUN7PVj6fJOFyF8dFdwlFEt6Oo88ZadVD4pjpI2pMvglC/MjPLimvARWdeWw
-	 nD7yiBHhDzfi9m17trme9nz8Mru+BTZn8xGQisayLEKS4mlgK0F7NFhCoV1a3P1hf9Q==
+	t=1795699916;
+	b=hrtLXWuu2WOUkzsnOw2Hf9Cgzw1X+K3hnVlNC1XftSzpHcecInoJMCzvCob3ueXueETa
+	 wB4yFUvJR7j6vtdUlCXPdFOD8mQd7ErDfV8IzMIfj3qIbWjW8wafmv0p0NsCiftcvBHGj
+	 WEXLs/qooQvKskaKBGKVL1UTsAsCg/itmI3wFOMu11nzKRP0Dh3ymf68lK99JHdQLay7G
+	 ewLrnOdMOhevSQqTEVdxrhTIELE8QVkyzvluqZHWP++Bcyi8ysUsyVs6HsUCbsgid1oAC
+	 Gm3Je4jtmSDGZxmhYTq8Ch23FziYyva50qCN63aIGCpEQdBK/XUN59oi6g6hA0KWgcg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795699623;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795699916;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
 	 References:Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=wfcUpDzSwXKoKbTCOnqjWSSgIEhmUc2ooEiRsbctfSU=;
-	b=m3OyeonH84Ogr2NbdeSJB4fZzoJ18hjPz3A8i1z2fdWKIRIRviRvR9bVkjxbgV7KodEL
-	 jh6E6dnYG+ILuZYOOeiFE+yTb7gCsmD5C67BLnkzrvbKINV7jgpgXPvsIABQuqSrq3xrH
-	 D+qp7Kh0LV756Uz1dkoXF397GXt2fkeIwlNhg/YA9qnuyAwQvtMXZndXssCclARUOndcQ
-	 BrL1MVFocvQ0oazMlalrOSvY+00q/Agd0kM5ZAPRwyT/hR5Lr9K5XXetgWzdUxshl2bmG
-	 fP/infr09eqhwmmYQCOLkYf1jDGzXz+mKLP7RYVRMR7XI6FNuC+kuOK53QQnv/OIbJQ==
+	bh=KujlzOPpP0vIKDupyNtfjG8Z21pegzW93H5I5f/gK5Y=;
+	b=XenvhYmXS1A6DZblyob/lPTrSieBSpdnCL2YI+LCKURj+fjEdYL5vzxZWTHoim3O1s2e
+	 zxF8ps+Wwy2ZGTUx2GP4lTRdKxAdk5YEd0d08hCIyZdayvMJ4ViWOnYye+B0hHqfJHw9l
+	 A1GJ/QQxpQBdapDjzmJ4z8E4bFJNmbnGBu4Bl1z0UZkIF25gX8yRjv0k7PAW7hZcrCa+t
+	 D/fON6xvwNJkXwxEAPPlPUb3klB1PVemuWKUY55DrRuf3KV1JTJEH0OqxJmv4I+R1Ib7N
+	 gp+Hs6Y6WLiDWDBkaOan4tOezl6tZmx8/SgSNBloV53kkDlcdDlq8NCclj/BMGoL/Qw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=foLFqy4H;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gVdWMyiB;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65429606A321;
-	Thu, 26 Nov 2026 13:27:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FB4A606A326;
+	Thu, 26 Nov 2026 13:31:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=foLFqy4H
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 891201F000D4;
-	Thu, 26 Nov 2026 13:27:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gVdWMyiB
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5706C1F000D0;
+	Thu, 26 Nov 2026 13:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795699623;
-	bh=wfcUpDzSwXKoKbTCOnqjWSSgIEhmUc2ooEiRsbctfSU=;
+	s=k20260515; t=1795699915;
+	bh=KujlzOPpP0vIKDupyNtfjG8Z21pegzW93H5I5f/gK5Y=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=foLFqy4H2sNEPbvoYvXfhsH7iCXdzJORIlY6VAoUFv+v6EIFo/XFbOEcTK0rylaK2
-	 NFfLpRcPXSE5zFbjGSmrWr40coHMZgrmVT6Q5K5arfa3pXzZrkDKsnZ1HfLdtcwhyZ
-	 ZCP0ZupcJrT7i635/M0BmOopYJvs8xKfnxHd6njhskCglpqZn4VHAjcHEOV283+V1A
-	 UJ6UkTSBRyRSXHHq5k2Wx/y+sKZuViwyJqZz/4G9+yS3hnfmvMyDDJstlIAjk1jWqB
-	 SzaeFx7dx1cmBtkFAo0KkJSh5ZycsY9kKHYHb6yH/BotbpfT1uyEQu4H77wsikTrPP
-	 3nab/DLlvzHcQ==
-Message-ID: <511d9a1e-253c-4006-8a2e-3078c4aa9b64@kernel.org>
-Date: Thu, 26 Nov 2026 14:26:59 +0100
+	b=gVdWMyiB96e8BavOcj4hPKuLJ4M+sqwDzRUBUqlWznqfIexDjAN2n+LixiIVmue5+
+	 RSz2Etfo8J3saKobUc8B3TN0j/xzc2JGHUrdsI4QPHYEnCtIFsasZAW4tKl+/xC0Ek
+	 XAIbTXd+kpHYmb6s4OiyaaHVzXYQryKt74x8Vjqs+LOBuPn/foIffvVZcX/l0ATVwN
+	 xrPv6DW/FQY/gHF1Gv07IB1DJBmTKK1Qg35qipindFrG+yVsdimTZZwipEAnybklGG
+	 O7kmpw+Vh1W8hZ28Ki2Hl5nYUgpbCuyYMxx2oeLxvoog+2VdCby9aM0ldpUI6gyg56
+	 xXXqtoDgD+u9Q==
+Message-ID: <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
+Date: Thu, 26 Nov 2026 14:31:51 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,53 +51,99 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH v4 0/2] iio: adc: Use guard(mutex) to manage locks
-To: Vaibhav Chahar <vaibhav.chahar26@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-Cc: Marius Cristea <marius.cristea@microchip.com>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261126114433.20674-1-vaibhav.chahar26@gmail.com>
+Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
 Content-Language: en-US
 From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261126114433.20674-1-vaibhav.chahar26@gmail.com>
+In-Reply-To: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 26-Nov-26 12:44, Vaibhav Chahar wrote:
-> Convert mcp3564 and palmas_gpadc to use guard(mutex) instead of manual
-> mutex_lock() and mutex_unlock() calls to simplify error handling paths.
-> 
-> Changes in v4:
-> - mcp3564: Drop blank lines before `if (ret)` checks and add blank lines
->   after `guard(mutex)` in `mcp3564_read_raw()` to improve readibility.
-> - palmas_gpadc: Move `palmas_gpadc_read_done()` inside
->   `palmas_gpadc_read_raw_locked()` and drop unused `ret` from
->   `palmas_gpadc_read_raw()`, moved conditional check inside
->   `case IIO_EV_INFO_VALUE:`.
-> 
-> Changes in v3:
-> - mcp3564: Use of guard(mutex) across all paths. (Dropping __func__
->   from dev_dbg() calls will follow in a separate patch.)
-> - palmas_gpadc: Make helper function palmas_gpadc_read_raw_locked() so
->   palmas_gpadc_read_done() always runs before unlocking safely.
-> 
-> Changes in v2:
-> - Patch 1 (mcp3564): Wrap switch cases containing guard() in braces,
->   add blank lines around guard() calls, and clean up the commit message.
-> - Patch 2 (palmas_gpadc): New patch converting palmas_gpadc calls to
->   guard(mutex).
-> 
-> Vaibhav Chahar (2):
->   iio: adc: mcp3564: Use guard() to manage mutex
->   iio: adc: palmas_gpadc: Use guard(mutex) to manage locks
-> 
+On 26-Nov-26 14:23, Matti Vaittinen wrote:
 
-For the series,
+...
 
-Reviewed-by: Joshua Crofts <crofts@kernel.org>
+> diff --git a/drivers/iio/dac/rohm-bd79703.c b/drivers/iio/dac/rohm-bd79703.c
+> index 127ccc2c4a22..1d58bc1544a1 100644
+> --- a/drivers/iio/dac/rohm-bd79703.c
+> +++ b/drivers/iio/dac/rohm-bd79703.c
+> @@ -41,7 +41,9 @@ static const struct regmap_config bd79703_regmap_config = {
+>  /* Dynamic driver private data */
+>  struct bd79703_data {
+>  	struct regmap *regmap;
+> -	int vfs;
+> +	int vcc_mv;
+
+_mV is the preferred style to denote SI unit variables.
+
+> +	int vfs_mv;
+> +	unsigned int num_vfs_chan;
+>  };
+>  
+>  /* Static, IC type specific data for different variants */
+> @@ -49,7 +51,11 @@ struct bd7970x_chip_data {
+>  	const char *name;
+>  	const struct iio_chan_spec *channels;
+>  	int num_channels;
+> -	bool has_vfs;
+> +	/*
+> +	 * Some ICs use VFS-pin for full-scale voltage for first N channels.
+> +	 * We need to know these channels to get correct scale
+
+Small nit, but missing period at the end.
+
+> +	 */
+> +	unsigned int num_vfs_chan;
+>  };
+>  
+
+...
+
+>  static int bd79703_probe(struct spi_device *spi)
+> @@ -184,23 +206,26 @@ static int bd79703_probe(struct spi_device *spi)
+>  				     "Failed to initialize Regmap\n");
+>  
+>  	/*
+> -	 * BD79703 has a separate VFS pin, whereas the BD79700 and BD79701 use
+> -	 * VCC for their full-scale output voltage.
+> +	 * BD79702 and BD79703 have a separate VFS pin. On these ICs, the VFS
+> +	 * pin provides the full-scale output voltage for half of the channels,
+> +	 * and use VCC for the rest.
+> +	 * The BD79700 and BD79701 use VCC for their full-scale output voltage
+> +	 * for all of the channels.
+>  	 */
+> -	if (cd->has_vfs) {
+> -		ret = devm_regulator_get_enable(dev, "vcc");
+> -		if (ret)
+> -			return dev_err_probe(dev, ret, "Failed to enable VCC\n");
+> +	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+> +	if (ret < 0)
+> +		return dev_err_probe(dev, ret, "Failed to enable VCC\n");
+> +
+> +	data->vcc_mv = ret / 1000;
+
+Better to do ret / (MICRO / MILLI).
+
+>  
+> +	if (cd->num_vfs_chan > 0) {
+>  		ret = devm_regulator_get_enable_read_voltage(dev, "vfs");
+>  		if (ret < 0)
+>  			return dev_err_probe(dev, ret, "Failed to get Vfs\n");
+> -	} else {
+> -		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+> -		if (ret < 0)
+> -			return dev_err_probe(dev, ret, "Failed to get VCC\n");
+> +
+> +		data->vfs_mv = ret / 1000;
+
+Same here.
 
 -- 
 Kind regards,
 Joshua Crofts
+
