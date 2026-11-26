@@ -1,81 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.179
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795695227;
-	b=ed5LsWd66kzTL9+R4z7wgb2YNDTN9GvzwmF4li7301sBQZF4MG/5I5Rr9wFKldbEjuKn
-	 aG+xHjxa3Hhsjlm7kyDkBmXSq9YApNWBAtb/TKGP7n6DW/WIBQ1WwqbMqv7qigbsgZ6yV
-	 NrLARILuVrMr9a+cCLmJyb3ddQhPETJ1n3NkYiBHf5hd8wSVEUrd1YLXnA0/z8bNSA9Oh
-	 im6EcmILNvU0G2TKpL0sIkw6Oo9NJUGM/ot0zsOq1uO0sLjQE2cCEmUUpgZYO3krSRsHk
-	 gKneLOCwDoAkCKWb/cYRHM2iKtRenq7bPNeiYhazjEgNDYQCEr8ug1FWlTmzpDZGwSw==
+	t=1795695228;
+	b=pPHbNbqD7HrIpF+3mqwDTnLfWwhzc7soIO1OSSTyB1sb0Vj0RU/bORmGaXOTiR9iC84E
+	 wqfDUOuaLLUFQqimNgck/0vcEO7158a0NkSxg0LstgExaymr5zgScehDMV4enz3AmS3gl
+	 HZH0sBXbbpYuqZ2R3ifPo17YfE9MbQhbSJRjkAasZ5PbLiZm9V4ATXt60OSGU0fg1bQeX
+	 YtukDUJYZyBWO+Ij/ratmNMpXz6UUhP2Y8rEqiAN+SRZpf4diaHQvxpn5EemdQtVDUJJU
+	 d+XA3lpCjHBEL8TwrHN0P9Jo3UqNXdpsn56xWPjLbVjRR/+H3rjnjQAwIk/yaiNBaKQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795695227;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795695228;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=D8Hl+ZArBMHl5ZMBuXt18rLKsISWNonXQJoD4xB5WWk=;
-	b=4YzUh5/1fp4Ak7tPGL23PNgpd1BdjKgrLnfwWGTGrDgT5vW10/8eC3EdeizstPrwpXOR
-	 PDyUq6vahbFWBOzvS8tvqMRHobQoAmlyj72pDQoVTdlertfkc1N30VIY6lyAyF1qOg3HB
-	 a9CsL2ZHN1ZliZR+uOCQIQgjQFLxuHllxzKJFw03uKLQUe7vZVXu/pabCEMPY4KSGwuxt
-	 7i3K1Pne4uDfzMgVL6aYTP83BJkUFYfJ5FnkKQdI1W4+8RH9mPnbkMIjUdsha6bx/3gvQ
-	 zSPRmEXGVoSlrQEcrwiVujdTej8pKZ1JDxYweZCP1ZuFo2hGsk4dwkgH/uq3prxMaCg==
+	bh=Q2xu2GjGe1J1BVkHf8m/d5zr35D1LtrCMJmYA+Hhslo=;
+	b=1Z++G7i5rem39dGoekcrXB0ycidU8IHop4NErCM4PTE4kjlBnnSNe56iiUwvcXN7NNL1
+	 ilzU5WbY6pCuWOJsQHEh4st/2tomjyk3qEkEdAJ8lncck34uV/DPq+ugisumdKrl9B/Mg
+	 yauGuxK7NDkWCnDYxVrJngtafy71R80OW2NvfBeIOqy3KqSWHZgh/2KFXeRI5mF5/X08A
+	 1H7XEzpwJnt3pInWnYLwJKrLSCsya68qBQdq2jx/FJF6lAWPfGLycnGA4QfbIVc3uaeBC
+	 AWShuflgvPVzHqfWuA9e1kEE4tbWKS5Wri2rndwkbaM9AArOtF4DUCizirdXE3XrwvQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0dbZRonn;
-	arc=none smtp.remote-ip=209.85.208.179
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=exj7Y8kb;
+	arc=none smtp.remote-ip=209.85.208.173
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DD5606A33D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF73B606A687
 	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 12:13:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63DD5606A33D
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DF73B606A687
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0dbZRonn
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3ab4354db11so68444711fa.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=exj7Y8kb
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-3ace304021eso66324231fa.2
         for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 04:13:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795695225; x=1796300025; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795695226; x=1796300026; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=D8Hl+ZArBMHl5ZMBuXt18rLKsISWNonXQJoD4xB5WWk=;
-        b=0dbZRonn2vtZEp8dpn687vWKKWl/p9+l/gLUQQ6AI8/C/06FwxEo+x2JxOOWDLeCSD
-         eKq0mVr5bYdSdjVRjx2PRzn0k9/PuTOLspjr9m0cLO86Q+/0FY8IKy6b4EQ2JzkCTvSV
-         wLhGpuqsIVrAlgQVsXZwM0z407UfyeaAeOlNIs6oqIJ4GGIWlEXsI+qX2IpM33bs8Syf
-         j1pJcebOrGuuFsblz/84xrzI473CobGuD8tXsw6w485ASJ3mzl1fLz9pnKnDXnmbvr8+
-         o8CnUth/KemgSZkRrXzLcFlv+d20jdpO3H5Nuwtj4+IHRVFkDf1i2OdqrvvvQyGZpWWL
-         RO/Q==
+        bh=Q2xu2GjGe1J1BVkHf8m/d5zr35D1LtrCMJmYA+Hhslo=;
+        b=exj7Y8kb/3GEhGKzFXejN/pz3nNn3LERdMbiF9sMk8ow5cDrpKQTA9A8Xa7+FtJGqJ
+         yLBB752LWI9j6lcOla9BY7VQnbXI2D0CcghQoDbZHZ0PR0uP62bMjJszvTXu+oIdL7pP
+         fK/cueSVikZJrdalj0rnjZNJGjdH9shxTMZ4G8xvM/iYovbaEjsENUohCsk8AvLXWrIH
+         5mhLVyr+actMeLvlB5vYsW2/RhEi44g+wDrgg4yELJh7M5IAE7QHRGiBElZX7BxgV7OO
+         +/4+91rGGR1GoJ8hB/UdOa+H79f5nV9W5brMrlAN3MpfozaEzvlIX59v5SniTy/GFmjK
+         QiSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795695225; x=1796300025;
+        d=1e100.net; s=20260707; t=1795695226; x=1796300026;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=D8Hl+ZArBMHl5ZMBuXt18rLKsISWNonXQJoD4xB5WWk=;
-        b=p1NpcOsXlYBd3ptK/QAcmS221jm85jpJeit7s08DGDLZ7xL9wmDVKDXVfZflt4XWH3
-         xhcE65gHbYpZ4djXZXSOyyPnoWfIgV/EcajIIhJcWxpQFqKIIHIhNPg3esSPmEkMFQU3
-         1bfWAXVBLYokVbV7vKKiu4154MSKhroG5OV5zMa0q0s+3bFp9a4HUg6Y99TF3EBbOSIZ
-         k/TtNC4zzHVbwnzHEAA8p17+wGsZ+OJ7cUCqYCaT5U6xSXDP0hbzOSvGhJ0DdbPnn63e
-         L1LdR2la9bMyQOMQQldaADG9VH0QUMrMHFJcqRrL7Ivj0dZVV6j2dCsLGdHSfKVp+Yp6
-         Kfqg==
-X-Gm-Message-State: APuU4Z/nbxra0o3drNz15KqYRSt2eXiZ1JOJ3/24wYySxHlFK5XjS0YU
-	Att247h/Y8h/pw3DynuOu3OoZoAXsUAvvdsty3j8aaGPlrIjZ9De+1uf
-X-Gm-Gg: AZFdTZf2AFikbmHCP0IDWBpG1UzWAH82gh5mDhdYlJmAD3vcGr5T1xg62DAvb2G2YVn
-	XULM+VZT7NRNmZ8ph5ZjXmL0fHYYBbNcufqTMQhQe5JXOvbVXxx026I9D3P3K5rCh07qmNWMV/J
-	SqxO0yuNiXh9vTbAgmaJgdSMqArATHKgeKrshTYFdaLGgtkFDvt+C7gwf2FXdrI5pndhnJdCPdx
-	GA5/WCE/uy6my+dpWJrZq1qw0Vh+2AyDedRQiqdSImCa4X4xWUyMF2lrFRt9l57RJECbubI7pNo
-	8fkiksfQyJajhjZ0kYhV6Iqr1assBcjN+8trMWRIO//yTs1v64umxkw63CKmr9jS9Q3yqIYOL+P
-	5q4tHzNrrszwT7DSIUbkPDXzFPj0MdNhvHe6jpjZ2J93pktsnQ/p/sFPJSAMowSp3erwkXaNhfr
-	pIzcebs2TkpX1pM//FsuUh6AksljGSjZmmKO2NJe7FlU4foNyd6d6187wsrwHpEul9O+zfhdlJU
-	fCthFgioBCMYgGDb4iCZtuyDL/NVP6goQif5yXpcICFF6ML+ADudGkHx2y+mqigit/kKg3jhK2g
-	lVtnnWIrV5+hF4AM4n15Eg0KDFeqolRJdS+vk3ruMqYf/W1451KnIL1NLrDxs15bjZ9xkfa6CWH
-	OCVoPlgdZ7fjdHq3Pai0L+tWDT4P+vhREN8u7
-X-Received: by 2002:a2e:8a94:0:b0:3a9:d9db:61b0 with SMTP id 38308e7fff4ca-3ae7fa718c7mr56022941fa.24.1795695225369;
+        bh=Q2xu2GjGe1J1BVkHf8m/d5zr35D1LtrCMJmYA+Hhslo=;
+        b=PtMSapX1dJIJ/SUuq3cuGYyxo8gzHgtA5K6bla6ldJ8UT45/woeH8NERKijmgXzsF+
+         YjZrI/jN50xwO+77SETRVjNFegb/IjO6OCZK0Fn3w23EjOetg7QSL7TsekufPBkKm49B
+         L1wu6JEMTj4SkTgxbY+ZA+Wsnxj7IbadRnucKyZp9HnEf+f+C45TFGWFaXrmrzTShHDf
+         YuqM59n0M1A/NtQDrDFalZ8wgQv3RD5Zrd5Zu2nR8vidNRsfI5tP4fJQbSIXL0s3oj1H
+         rQxb8GRU99FTGueFqABYEDBVOt/exyLCWxYrrTrAQ4Z3YHy80NGSkz+JOr/3SdpcxTmw
+         ahVQ==
+X-Gm-Message-State: APuU4Z83bM1By1atHbw/3kldKJJ1bWNlT2jITEskLrLUEy/RugWsYjhE
+	q4oruKONelUmi7t9K634/68ujw6o8F5OwySgFcMpUTQpbzX5jFQfTxj+lO+9pw==
+X-Gm-Gg: AZFdTZcGMU9dxGKYYi4kB0X6g87+d2iYADIzE1D8JRjmlRrP0Se3iVTfcOYaZkhk+WO
+	6TyR8PetcfH7NN5OJoIYH3vkIS3vCwjRQLkOs6HuKdaceGziPQDUvpI+9/8XVB1oRQMSr1XgA/O
+	wdhS8MoCNFQhGRm6SHktQsR61rlS4DHR44dphqJJNWrcCP9prQWxtnSKUUmL1IYyRA1m7DBiuCa
+	/DqP/dYeeYVUacwOTzQpgCedIHGSa4bxq+5nHs58lh8ye4ccx1zGpKzlOnpi1BBUUERWXbrncsb
+	JMieGgD6yxCctKa5wJ5oMewPwNmDeIChI9oRzvmrmJ4R3H94uyeVcroLPdlUvBcAa6xvYRirlCA
+	61jBSDh38fAn1CO5fOcwZrwlaLO3aOj9dwNuxAP1HwqYgPkUAaxYw2MRKtvA9kU9FFG/2HaCjdw
+	ezwww16DYuv2AI0e1v8oPdEXBFC8QS5Z662aCAFpjnzJhNzQJ0zyfSqips9ghoPnTx/PzZ6c5mX
+	ZnYxqXt44HYUPXEC9PphpnUBbhpcyOXv9CePGEaSu+OQcgA5g+48cejOMX+shQGftWlyUHntt2F
+	ccLu0+OLxS51D+CoOXPquKt6DH3Uy/A9QTuzQBIxO5gNge/I5sjH0WHJrKIaGyI9NFG3Cj1oeuQ
+	3YfW0TVSlYLu7d4edQlOAH8+iDTorL6ZeV6cb
+X-Received: by 2002:a05:6512:b88:b0:5be:3444:57f1 with SMTP id 2adb3069b0e04-5c1bc85f23amr6082541e87.63.1795695225993;
         Thu, 26 Nov 2026 04:13:45 -0800 (PST)
 Received: from yantra.. (nekmmqtmzjx8yvukhae-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:68b4:f70:61d8:6e86])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae8044e8e0sm56541791fa.5.2026.11.26.04.13.44
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae8044e8e0sm56541791fa.5.2026.11.26.04.13.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 26 Nov 2026 04:13:45 -0800 (PST)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
@@ -86,11 +86,10 @@ To: Andy Shevchenko <andy@kernel.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Rupesh Majhi <zoone.rupert@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v2 4/7] iio: pressure: dps310: use KILO for the Pa to kPa conversion
-Date: Thu, 26 Nov 2026 14:13:27 +0200
-Message-ID: <20261126121331.10438-5-zoone.rupert@gmail.com>
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: [PATCH v2 5/7] iio: pressure: dps310: use time unit macros for sleeps and timeouts
+Date: Thu, 26 Nov 2026 14:13:28 +0200
+Message-ID: <20261126121331.10438-6-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261126121331.10438-1-zoone.rupert@gmail.com>
 References: <20261126121331.10438-1-zoone.rupert@gmail.com>
@@ -105,42 +104,63 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Spell the Pa to kPa divisor as KILO from units.h, in both places.
+Write the microsecond values as multiples of USEC_PER_MSEC, like the
+poll timeout next to them already uses USEC_PER_SEC.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+After a reset wait 20 ms with msleep() instead of 15 to 55 ms. The
+specification says 15 ms, so this keeps some margin.
+
 Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 ---
- drivers/iio/pressure/dps310.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+v2:
+- wrap the poll call on logical boundaries (Andy)
+- msleep(20) after a reset (Andy)
+
+ drivers/iio/pressure/dps310.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 493eb56bde98..f802c2c59072 100644
+index f802c2c59072..1d46817ad04a 100644
 --- a/drivers/iio/pressure/dps310.c
 +++ b/drivers/iio/pressure/dps310.c
-@@ -33,6 +33,7 @@
- #include <linux/slab.h>
- #include <linux/time.h>
- #include <linux/unaligned.h>
-+#include <linux/units.h>
- #include <linux/workqueue.h>
+@@ -20,6 +20,7 @@
  
- #include <linux/iio/buffer.h>
-@@ -895,13 +896,13 @@ static int dps310_read_pressure(struct dps310_data *data, int *val, int *val2,
- 		if (rc)
- 			return rc;
+ #include <linux/bitfield.h>
+ #include <linux/cleanup.h>
++#include <linux/delay.h>
+ #include <linux/devm-helpers.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+@@ -103,7 +104,7 @@
+ #define DPS310_DRAIN_MAX_MS	(2 * MSEC_PER_SEC)
  
--		*val2 = 1000; /* Convert Pa to KPa per IIO ABI */
-+		*val2 = KILO; /* Convert Pa to KPa per IIO ABI */
- 		return IIO_VAL_FRACTIONAL;
+ /* Make sure sleep time is <= 30ms for usleep_range */
+-#define DPS310_POLL_SLEEP_US(t)		min(30000, (t) / 8)
++#define DPS310_POLL_SLEEP_US(t)		min(30 * USEC_PER_MSEC, (t) / 8)
+ /* A period plus a measurement time; silently handle error in rate value */
+ #define DPS310_POLL_TIMEOUT_US(rc)	(2 * USEC_PER_SEC / max(rc, 1))
  
- 	case IIO_CHAN_INFO_SCALE:
- 		/* The raw value is in Pa, the ABI wants kPa */
- 		*val = 1;
--		*val2 = 1000;
-+		*val2 = KILO;
- 		return IIO_VAL_FRACTIONAL;
+@@ -369,8 +370,9 @@ static int dps310_startup(struct dps310_data *data)
+ 	 * Calibration coefficients required for reporting temperature.
+ 	 * They are available 40ms after the device has started
+ 	 */
+-	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+-				      ready & DPS310_COEF_RDY, 10000, 40000);
++	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
++				      ready, ready & DPS310_COEF_RDY,
++				      10 * USEC_PER_MSEC, 40 * USEC_PER_MSEC);
+ 	if (rc)
+ 		return rc;
  
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+@@ -558,7 +560,7 @@ static int dps310_reset_wait(struct dps310_data *data)
+ 		return rc;
+ 
+ 	/* Wait for device chip access: 15ms in specification */
+-	usleep_range(15000, 55000);
++	msleep(20);
+ 	return 0;
+ }
+ 
 -- 
 2.43.0
 
