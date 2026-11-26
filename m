@@ -1,101 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795671085;
-	b=UWrsIZQfDyA/yLF4BP3JWsr8qGCquKELOTz3yF4aLbn1dMlSx6cNYtsJy0VnG2oQIRl/
-	 vqaTSsFYAOp3jE6ML48BvrlMUegna2HmTLSiRKDt1NH44rStgsXPnYwVB/wM9+AczYOx1
-	 JoKvHBh+N5TU7uXvwlRCxqGzZs9vZH/nHz38C/iOyFPuqTBhs/auxt/tIuWRGmrRT6sGc
-	 eYf7JECziEqUVeXwZS3ERZTYyCXCkhbX+7filFN47wtHDKY9k43EPVosarTqqLMnDS/X1
-	 XmcL0EN1eSplvGmp6wGBcqKuz2PkctzToPpqhY7Rcyi8tKj+ZPTQkb/rTF1gTyRizcQ==
+	t=1795671341;
+	b=A/bfkPepOGvi6tNmJDZdXN+SK2ycOQVEXGLsem0W80hgTHEsm/Ea52y31xbAjWeDIRC+
+	 pHI4VitAbuOCjM3Pfu1TVFLOo2aka/gfYDISV3JAcW+Ui6PHWnIlWvSbohVcFQZs/Nu0t
+	 FIH+QNP5KpAkSY/nv5MINaa9bOewZgwLcK4NbC5YepU9PjmyT5aTDw8FkkwYUWjuWUrCT
+	 k4PCkOgKv0H5oC51L4t5qAbgOR9kxb9iRKfO3qbVoB69j09mIiVbug79P87zWT9gIB35w
+	 CBDID53bwvQYb+lxv6+bYeyeFMhWQoE96dGx9VetlMc1ivdHTyAI99Qk/vlm22qAVfw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795671085;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795671341;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=SaQxUBzvPDkUX6JJATROn1MzfwU+l51Jz8uEr7sIMqE=;
-	b=xnrCHDrazg0hpJ6jKfjztjXwrGWGQUY7SLRmKj1GQyAQXcQEcA9xEvVJ3A8+Zm/Gt/lq
-	 8coaB/LO3hxAhv4DpIM/4BfYNfpdgUCrqaYowueLBMTWJYhvG7MAW2+WlxGqpCjxoId18
-	 RzCc2Z8NogJUjtpC2xuo4BQ6LEUzV/SbFkyLOu7ppUrQkGkSuJIheHsIz8lfvJByG0AKK
-	 UM6Dl+tbwOZspaY1oixSRkv1WQid60SDFpNqKq6CqWMXI9i2EowFNOWZTK8kYnk+eM3Lb
-	 0msYCZroth/l+WW0k4cceLVEnzTUQU7/eiteNnXfCommTQLbxpvg/Q0f04WVO2T/67g==
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=t5d/xSmVguWHOOwwL11eA+wRkCdGaUqbRUc5A9MsbPw=;
+	b=tyilqevdc1ghgLAOc6Aqm3WVo5n2hZCFuUuKmi+dpN5KPHmXip+FrDT/u31TuP+iYxiV
+	 sZ39cc6Rc3SOGPu3v6SB0cbZfqf1qOXMymR949ja0M2ywMm7lVQ95k9YsjvuifYBEwLeH
+	 LMXYFroNKAuDMnPWdoBiGaQcbvpdoHuUSv9PWnkTNzsM9WB07YNHcMUzTEE243kHT1RN/
+	 /6tyC7himb2EUX+Pgzn9mtOXXly4006r58MKvuCaKVvCP7KdwJwwaLkRt5itRG3fSt+FW
+	 HCI3oGLIj+RKi0ZZNtzXzVwCyWT17Qs01e0Evw11DwxWBcFjCQ2YxJrTy7H+iVRJpDQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Shh1rc8V;
-	arc=none smtp.remote-ip=209.85.216.50
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GVGnL+7U;
+	arc=none smtp.remote-ip=209.85.216.52
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A65A606A31C
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 05:31:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A65A606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18F0E606A31E
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 05:35:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 18F0E606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Shh1rc8V
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-3ae691283ecso3215294a91.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 21:31:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GVGnL+7U
+Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-3ae6b4c669fso6122736a91.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 21:35:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795671084; x=1796275884; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=SaQxUBzvPDkUX6JJATROn1MzfwU+l51Jz8uEr7sIMqE=;
-        b=Shh1rc8VN19gQuDTe1+BTKbXrtc8OhJ5ZXeGQWSgzwBhjEn7GmivVeYQ9KCcfuNnKi
-         c8K7UQPF5zvqhYVkEuLic2K79uX7sqy+Gfbf6X3fZoF9GWL1HHhuBv5xMfp7/12xT1pH
-         tpmlwF4/ON4RRW8TYFzpwYfSC/O4WleOXznlBHP1lCQOnNFo3glhn9iIiYKcHaZ74b6j
-         2FopkxR4J/wZsofnHBYesp5eMB6Jd6itOJ/xX/NQ93mc6HN/JxQ49R9oFRTWWQfEIPHt
-         QntBZaRo5YI0lkfZa97LP9oCnd91gb3e7nFonNfVYigGewkq2ueJX6sEJcAw9PfK3z96
-         LHmw==
+        d=gmail.com; s=20260707; t=1795671340; x=1796276140; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=t5d/xSmVguWHOOwwL11eA+wRkCdGaUqbRUc5A9MsbPw=;
+        b=GVGnL+7UJT9jY2dL6VzbSLPqIBLb9sIj5YhMD/CLlDDA3i7geHCkqRYpuJLj09kXit
+         B6f9nDRwQXa7YIOFgWO9q0BgH471cmq8gAY+EbjbXHEC9N8AtQ0MRNNdLEBA3uJqc2Bs
+         fxdMq0UihvnkkQgKG9sjQ2j+i6SeMbHV9Tcv0YbPa3XyxRS9oPhnJcLkejiC3qMtKpdo
+         thvOx6iBsraSSzjFtqMDh4iaLEpPjXYXyfNIxASts+8iJhpr1TbVQbqN+lBCkI0UjlHg
+         98ulby1he/Mx45/k2l6rhztLYZopPx4vRcLixghfPp6cJU/WgilYSDPy3Yo62MY8zBUv
+         FxPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795671084; x=1796275884;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=SaQxUBzvPDkUX6JJATROn1MzfwU+l51Jz8uEr7sIMqE=;
-        b=WwS/prGdKeRYK3aLpbC2CFN6yxjpEOjf6Wkq/pDN6pGn+Gk9qiWLhR3fYCdCMWPO/8
-         aQ0w92dCjpdBQIT9yfUiBp3vgv1YvsUikwXuUswLsvQV60Bgh69kTwhU6YD2TfEVN5T5
-         jTAIIqvyx4RQwUkEvfiTupRxLlbCSqssz6ts/oDIMs9O6LO3M5HqIXNgsmdrAt9t2ZAu
-         8TCOB64OVjZDuOlCLdmVeREetU4//pjfKlv4h8josNBw0Lv2sUOsehCNesWnVYphxmN3
-         XADAhCzcz57kFBBriLU11Uti3dTgaVR/9EnL+zg/3qwf38BUmYdKNPEACAqeGL/fv+Nq
-         Ezfw==
-X-Forwarded-Encrypted: i=1; AL+hErGk10Stpbc4jCytVS1ju06vhxmr6d8WZjvrpAr6bZyLDlPf0udIa/5NAOS0DWpbNYgSVNrC1n7aidw=@vger.kernel.org
-X-Gm-Message-State: APuU4Z80F0pvHl9OgSEweTxj6srEH0B2rmifKIosXYN5eKpNiyBRgnp2
-	u4kbv0XHGTJPMeLj452DPwW3XDPDI2HDSOk3JiCANCMOIL49oRqifusHaS1ME+zElOxSzA==
-X-Gm-Gg: AZFdTZduRI2D3YfwIkskAK0loBSQPYPBH8GhQoNPZ4ZHkvXO9oDqdBJtCbdZgtJl48Y
-	00M2xMIT4pngzBxP6lSD0OQMD5RSbnfRkiweT3s1yxsN7pf+6RG+K+op3iMLirBx38k4oqXez+k
-	o2DaUC3arFTk0kzYiACaiZJuoXBdvQDmGUgO3fz9c27nvDdKKfI76qek/08Zz0UCDR6KnVAo4Yw
-	VAKlsSw+jATwSjTlKhvumRrgVBDq3ZG9owQUOriaQnxgfUP+u7TwOL1PLQyqjYV/JV+Q81Z4J3Z
-	KV+MJZu6Fn+HI09ImLFwyhXcMQGcLK3Hy74M3dR6EFuhIV1uudsYFaeEEcHX1b5Pg2/xUC8XqNg
-	is65jXQiUVYFOoxw4RCWZMMg02sMzogRCf5OrYl8A083hvgcMAM72B0ZRMgRWJalewHzgGHtCjm
-	R6I5CYhTQ2pyRC/shTbI1p3YBXgHLGdjUizJxZy1vz8tfsoNygr15G/9UNGsuaqkOPyH0gEMypj
-	naaV1Ub8dI4li8V98QaYIiKpti62B6Nj7aRGrSh+cG0LWJclT860N3UxnUnhag3nBEyYwwtDTEK
-	9RpyANFy39G72vJ0taCJag06WysX9sKt56V5u6dlFX6r0wIWKyBEZMQraxYxfRzeY6w5nBjKpjv
-	27nt0tlVaFFHUZJBWYQOn95YYDXSCSv9jTQRlKoOeuAlV8GIMTJ6qXuY3nNTlOIYxOSRCmb9TGn
-	lrr6VXbBp6g9w9jLdUKJgl208=
-X-Received: by 2002:a17:90b:5546:b0:3b0:a1c6:95ae with SMTP id 98e67ed59e1d1-3b41c941f9amr11689057a91.31.1795671084563;
-        Wed, 25 Nov 2026 21:31:24 -0800 (PST)
+        d=1e100.net; s=20260707; t=1795671340; x=1796276140;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=t5d/xSmVguWHOOwwL11eA+wRkCdGaUqbRUc5A9MsbPw=;
+        b=LpFrW3J4YIp2XIQ9tenWsqG0nP+y6tQ5hCl/Zwt46aqImoKn7SdLNCX2BqUWveEe0h
+         z/moTZT72ve6vNeLgvDZqxjjppDbwhY0FPG0TvV5FiiNiLGV1zWEShyUDX5c5tlE5hUR
+         KNVyIHoJaBV4DKK2KcUkqZyrIYK+CW8INi4UbXOs0rCVm2+fLCDbRQkBVEwCNRbQbl8O
+         0+owBvmgNAI/5Gs2a2tMvr+omPi2OWSBnmUaLUpEGLaHJnGD2YCjsV7c2Gnk2G/Em8Ex
+         vDzHeKywwrOLlGyAZcaeE5XQcZIt3WfR8faQnRmQzKce+ray3y43hjXAFjSy3cSFkmQJ
+         5IDA==
+X-Forwarded-Encrypted: i=1; AL+hErFv5dZj9bXFtSEiS94FqRm/TzmBLCeUCJt+V3ssE1TPccybHS65EirYr0YmhifF0NeaAjcydLcLYdk=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/J2Orwn86o+Y8w/2hraEltA1zro8GlUghMYi8lQeTobLHyUGMG
+	G+UmipNnvKUU6tXZddl728AXIYh4X+Y7Rgshy41SMB9rpgASSLA8a0Oe
+X-Gm-Gg: AZFdTZfXeDAZqlBc0hvRgHSdB5UXLbCfmbbu4B8ak3awZSRe7KHNdVqhWpmodshPH1X
+	YO3IgWv4zFt0OjVB7KEFPwlJSVvKy2WQ4FUHzpTciQFutaj1ePlQnuiGqWgShU0wM+Gm+MMI20b
+	CxcckSasrCttlelpl8zilrRm8N0zCEuytsbH00W3XEKNeMKVL/2+LQ4bLfBT7A7iv5cT94qhDav
+	oI0izQc+slLY9lLfOiVgh0Ygd3CaDdeOYJ6UGw8M+QIKa4sJOcmBpaU3Hqu2Umndbvs7jtI3Bmh
+	KVPuNORdoXd3gQvxrzZHfHVzWXVlhxreX6A7GyAvXEKhVdY0F2+k9hYK2hDsJ0Y9d9z8TMHuu8i
+	2shD6shqqXhSSYbEYzGo2Y7+GkiF804y0luSJ4y9R5dGHTstY+0Vfi3fJI98kSH0+1oT6tbfphl
+	wHM8484HUr/7rlCuE+Mx2mdbdKVQGc2v5IjxkYr7uDZJg8EmUSfpeKTevdIV2RefhBHZEG1RHLe
+	9vW/6sV87J5sUvB5LsyLIWaX5D1Cj8UcG/d1bG+YyvQZn3hnn+CqxVfL5QXTt9C/vgkDv3eu1o6
+	fNEj/3rlouo9oPS7EbpQi17qd6JwvQ5xxdskXvxLoX79a178s1AFh6a1Ksn0q6pDB1C/B0UJ5tp
+	kT4SwnnPyyJXR80LogiZCjmBvSiZWs0/FrvFjdQGqGf3QYX0SzZ7mb4XABtH0beqdPahot3WF74
+	c7fFP5iLKf1320pgvDKKxGbug=
+X-Received: by 2002:a17:90a:e54a:b0:3b0:9310:b255 with SMTP id 98e67ed59e1d1-3b41c961506mr8969271a91.36.1795671340410;
+        Wed, 25 Nov 2026 21:35:40 -0800 (PST)
 Received: from kapoor ([149.40.62.11])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b409330ae8sm33700520a91.7.2026.11.25.21.31.16
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b405d639fdsm34005822a91.10.2026.11.25.21.35.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 21:31:24 -0800 (PST)
+        Wed, 25 Nov 2026 21:35:39 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
+To: Zhiqi Zhang <zhiqizhangg@gmail.com>
+Cc: Tomasz Duszynski <tduszyns@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Wang Shuaijie <wangshuaijie@awinic.com>,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH 4/4] iio: proximity: aw96103: reject out-of-range debounce and hysteresis values
-Date: Thu, 26 Nov 2026 11:00:28 +0530
-Message-ID: <20261126053033.603086-5-kapoorarnav43@gmail.com>
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: chemical: pms7003: Reject frames with invalid length
+Date: Thu, 26 Nov 2026 11:05:26 +0530
+Message-ID: <20261126053526.623714-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261126053033.603086-1-kapoorarnav43@gmail.com>
-References: <20261126053033.603086-1-kapoorarnav43@gmail.com>
+In-Reply-To: <20261126052717.69095-1-zhiqizhangg@gmail.com>
+References: <20261126052717.69095-1-zhiqizhangg@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,47 +105,19 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The debounce (OUTDEB, INDEB) and hysteresis (THHYST) settings are 2-bit
-fields of PROXCTRL. aw96103_write_event_val() passes the value through
-FIELD_PREP() without checking it, which masks it to the field, so an
-out-of-range value is silently written as a different one: 4 becomes 0
-and -1 becomes 3.
+On Thu, Nov 26, 2026 at 01:27:17PM +0800, Zhiqi Zhang wrote:
+> Reject data lengths shorter than the checksum before storing the expected
+> frame length. Keep other lengths up to the frame buffer size accepted so
+> short command replies and compatible Plantower measurement frames can
+> still complete.
 
-Return -EINVAL for values outside 0..3. Both debounce fields have the
-same width, so one check covers the two directions.
+Thanks for the quick respin. With num >= PMS7003_CHECKSUM_LENGTH the
+checksum offset in pms7003_frame_is_okay() can no longer go negative,
+and the 4-byte command replies and the 20-byte PMS3003 frames still
+complete. Applies to iio testing, builds without warnings (W=1) and is
+checkpatch --strict clean.
 
-Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
-Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
----
- drivers/iio/proximity/aw96103.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
-index b4aa31a65369..24557a8f764d 100644
---- a/drivers/iio/proximity/aw96103.c
-+++ b/drivers/iio/proximity/aw96103.c
-@@ -401,6 +401,9 @@ static int aw96103_write_event_val(struct iio_dev *indio_dev,
- 		return regmap_write(aw96103->regmap,
- 				    AW96103_REG_PROXTH0_CH(chan->channel), val);
- 	case IIO_EV_INFO_PERIOD:
-+		if (val < 0 || val > FIELD_MAX(AW96103_OUTDEB_MASK))
-+			return -EINVAL;
-+
- 		switch (dir) {
- 		case IIO_EV_DIR_RISING:
- 			return regmap_update_bits(aw96103->regmap,
-@@ -417,6 +420,9 @@ static int aw96103_write_event_val(struct iio_dev *indio_dev,
- 			return -EINVAL;
- 		}
- 	case IIO_EV_INFO_HYSTERESIS:
-+		if (val < 0 || val > FIELD_MAX(AW96103_THHYST_MASK))
-+			return -EINVAL;
-+
- 		return regmap_update_bits(aw96103->regmap,
- 					AW96103_REG_PROXCTRL_CH(chan->channel),
- 					AW96103_THHYST_MASK,
--- 
-2.53.0
-
+Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
