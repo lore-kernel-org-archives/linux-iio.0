@@ -1,101 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795669181;
-	b=cDJ8c6zQjPP4Z3ivzds9G+rE21JGNbzq6DvQ/k/X1xLYPPOYm8hQfEDWoyemSdxGg/fe
-	 kxnUES1DOPmbxvBVmT7XGwFWm+mrVjktqT1lE4Fn1aQsltanQr0oLKi4lYzdXiBFqYRgL
-	 j5htJC/9Q+C9q0iUqOuUUM0yqwGL6m6DO9vm7liJaZ7lK2e5muM5GSBldQq2xbFqwc4c3
-	 5C6YbwpQX8LYIBuUnUq9iR6F+Q+Vxav2Qr5o5hoI1l3to2ntFBhPzNy6oeUDS6oczyjp1
-	 NATVePU8bOR3BOEoL1UNjIoFPATC3mzFA/Uk20Xp6i8adm0sBt0cRvpX7aBrlXNFtHQ==
+	t=1795669193;
+	b=CFhWoWtnyDhOQRK7UlPky1J5kW1JRcBAbq3t7QIHeRmcFxu0QybZ58ZUKFtFjE4TDBYq
+	 ZvfVb56XddWRpuVTZ/EY1ZPVu/fcb/00GDq52EkBs3r/CgpmJFm29MQ2RB3one0DlHCCB
+	 BAFSUUKINYUGR1bPBV3r2GVzxOOwQKHcVF99P290WArZHUqax0FK3M/f8Acd18t7wPOZY
+	 E/0mXKSp7Tp3gq7hOh54f9tt04nM+uak7BO0pgud9yrpzeHu4NGFTE8+/i5e1RK88JTwg
+	 xIfXAxyXYW7PR6d8RG1mb9V0oL8MYzDA1TflcHEBCNc4Zpg9IJ7J6WROrgdq9HZXURA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795669181;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795669193;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=X+nJHVRosiUPbQF5ndFjmNHYck9oE5omsocbkDSOO/o=;
-	b=VyuTnjizEdfL49oE5Z3xIcwbSmx295STja/+bS+EyRkCJkZkpWWI2xlBId6tgAqT77dw
-	 4H0XZm5D6IEAVQRN/lTVBaG6e9R/UpGTjDK+/fx7vj4P92LgN+YeK46atRNoHg3NLYklA
-	 jbule88p4yo5Kf4Xf34I0HyPi9YFSoaTgyrD/B38x40Rf7anqJfGAb5G/Jy4wYoKO2/ed
-	 A+clGgZ+hVvnYxOVQcqMFu9AiaTOo+oGw4UGWHKj7k6h96fWJ+HeQkonQhTL7mv7t9oo4
-	 L91rLCVwewakYvuUKg8DBs3JQJIXf3HjlDfDddaK9LOUaaNKWFLfz3sq6dW35T02BkA==
+	bh=xeiikBLPBm412p+eEKjwJKkmvAegh7AP9H8VXVhgxBw=;
+	b=GOPSAoUjN8hK5jnrTulI95OY2cDuaURyi0JY+ybeBgCIAEDsyjnaGX171+qAZ+RMpdZC
+	 F7aYToESsGbNqVu9szhPvhrjFC3I72ZhtMVNsit3N/jU46l5RpDxL8VIs/r3ZDzgZjCpC
+	 OmtjP2m5RMuWyzdU/TutRCJCmHvJc/M+NVoo9MDEpfTxkwHYJEG3jOL+fv8bCI6mQpTt9
+	 DARpJJ697+hVHIegfvbXC2wmdNnqbibcD4T4G2GIsVaujrsSC8jXzJGd/6fXsVxEtVWiH
+	 ckRr82e4PGTVlZ4YTOnE/ImcTz5IMydnFZP+Llu5OSs+TzwShiDzU+xsjXOCHLZ06fg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=L1z09xs+;
-	arc=none smtp.remote-ip=209.85.216.42
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FWM0jOiw;
+	arc=none smtp.remote-ip=209.85.214.169
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C160606A321
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 04:59:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6C160606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A03BA606A321
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 04:59:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A03BA606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=L1z09xs+
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-3ae6b4c669fso6108867a91.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 20:59:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FWM0jOiw
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2f04ad2c46dso41451725ad.2
+        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 20:59:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795669181; x=1796273981; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795669192; x=1796273992; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=X+nJHVRosiUPbQF5ndFjmNHYck9oE5omsocbkDSOO/o=;
-        b=L1z09xs+l6yotNjMoqY+4OnbwTKue1rlBTJL74KHEvHu5gxCUa6rWoKN0TBHkzjItk
-         pkdeWwdmpchcAbPf2UTu/oC/H+4uEyRl4HFmiTJ+U43xXkPQxAeP0gWkps9bBK6s3E7U
-         GIw0jMeC74HEoJp2d4QjVj/caCEtIoOecjfJZEVtslVz+p/HXKQSgCFIAZ4blsUluy6R
-         kIRZHUuUWVXJg01pCxzpMWgcAokcsroMjmSrpGTiyKjwxPOOufwNDCRJxe1Rx6YZ5tPt
-         ZYTEX1wWvsR6/ossvz8czGlw/I4VRCtGc/p/BoviCxTDB/hzdy6J8b3XtS2pPza9I6za
-         XG4A==
+        bh=xeiikBLPBm412p+eEKjwJKkmvAegh7AP9H8VXVhgxBw=;
+        b=FWM0jOiwEBSB+lT/KzPX7bzbz5pRuQ16gBwwSR7uQCd6sJB2/D7BAzE8SvJtOe1FYm
+         +AXC1AlMNprtTA4x0Ddk52naLr9G+CAsExW4bBBscLOl91V1zSyf4/BFsQ7X8TQd2AJn
+         lj7qKJLFrUOumZE4m+kFWJhTpjEco2/V+PuTywkRg11qWiPL+733MHMun9Hx+hUY36pv
+         Ye3iI963P4iZPeeDypm2xBw8wTetSYBiBv4zj3zonn0HxBCWr3iLyiP8ugm9FAofUHFD
+         /SzD20pH4xvg+j0i6fhF3xD//+1EKx+TRNdJiCtzlUbhdwHOTuvA9YYwvcR//ViK3Sao
+         YvOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795669181; x=1796273981;
+        d=1e100.net; s=20260707; t=1795669192; x=1796273992;
         h=content-transfer-encoding:content-type:mime-version:references
          :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=X+nJHVRosiUPbQF5ndFjmNHYck9oE5omsocbkDSOO/o=;
-        b=0ZR0cyOhNL9gI6G3las68MuSLTqPjJUe4l35VopP/YrgrO7qCXPhT/Amp0ulmK7xk+
-         mmIuusT+L+pRm58tB0BMeTCx8GbvI2tkoaUJfGcF5ceuwP0kv8h63nW/xGnIVEhPO5Ks
-         34waU3fAVDlF54OyQ9kfRbGNUmTRrBqVcrSg/B4fA+hjfwME2PSFQJ/jcm9a3o8YzkCB
-         mHCeEEVioe+753HcU9DYnZ8F0mSMqrWEbNvw+19e2ZsAiUHEBDXhQxlxC6b86KHBHhmQ
-         uKrj8S3MpZe8Cd0lKdChehcY87hqUcjBjsRv0bCqM7LgVwcF9dsxabttJk2CNWH8WIz3
-         DDQg==
-X-Forwarded-Encrypted: i=1; AL+hErHIB7ZTuW0Gax/pfFRS0i2BqyiYVVb7dCPM2gIu5rSUtwC4j9uBeqpdCRblFH0ADoshB3vKQoiY0GI=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+H6CBtjz8LO+nL577lJC0Fda4jrPEduOH9dhwR9NQujBc33Qe6
-	LMU85+p4yTTgSU/bsMWXUzD4nXOvlzXgmEaVeVqMM4QV1M8v+HO5E0Jj
-X-Gm-Gg: AZFdTZfde2dszaRjTgsEe/R8wYvIoIWbkK0IOLu96oupwRuUSLRXF4CiJGqzItRbjfa
-	zMeiuRlM/RMHcxTUhJgdaHXmjG/TpEk6DWhs/9KGOb0A4+E+gE2Xy2Qkz8KA6lELiJSR7Ny2xnR
-	aA6clQnLvim1CCVe5bS85kSwHU0wE6l7yqfU6hqYlwpIKMzwLlhBnveAYoyasfn8i9ZQJWfuUuO
-	NvMFQXRj5L8xXb+0vCLubeq7JVQVJFe62139P03r7AHdSUkTc5bl2T4VhOlhEsGiS5R6w3ODNEI
-	dPB5nWBTEZl0etE5Fvzr0f3KjgZf9kdtA+sn3jfIsDD4WBqSQwIEL+2uhxfLh2HYjG4E2S0VUpk
-	0/yttMF09HPQiYvNAOIVv4D7iz1NrqmwvtdWdOzTe783sKP6ZET8HwqQwf/wCobm/vL7G/q9aM3
-	T/xAUEypHYq+2JlOZThsF1pvgOZcfuk8n16i3T6AR2OO7L9v/4ovxglu3kxw2G6zcPcSDAFIXM7
-	t5CvQsOekiZFSl9QraM+0eelmsdVa425+9MLclDK7f1XrhxL/hQ19J5Ierg1Lv/2XZDj/bbSIaM
-	eJJtOaea2awG7ZRXjd3dWpdsyKzcVHSJo6kami5kmM1rBNNB/JS+7vIT5ZwoYyocLwr3m7Wi+TK
-	cD29EYuu+kNO3XJYZs/yuuSaleD65gdyL+Pe1w7gcVWVS//lhQEsHu7S/O9wP5guKStfaxHUjS+
-	F3cJI3Xwdp1NJKnGd5vYYgMNg=
-X-Received: by 2002:a17:90a:e710:b0:39e:6c68:fd91 with SMTP id 98e67ed59e1d1-3b41c96151cmr12803039a91.38.1795669180620;
-        Wed, 25 Nov 2026 20:59:40 -0800 (PST)
+        bh=xeiikBLPBm412p+eEKjwJKkmvAegh7AP9H8VXVhgxBw=;
+        b=qIJZGdBPCeHqoAbhBXPWtQ/SPXVgAw8OaKVG6qOQuR9uwHX8eng7KfoUeGL25gHAXk
+         QlphtEzvjpapKlwNu23M0eRAD69C+CxTPkGL30rhykfm0F2kberf1IjROs5jHezvgvOg
+         oVlKZ+UXM28Al3UKAxtWVU7ewW37Kvj5oOgrl8f3n7ua7p77Oi7x/Az3NRhUleDP3xSj
+         7ed12llFAJw13qAOaODIiGyCspQ1UPAabjRUHf/BP8jiyjroIOvxL9emH7j2ffcqFeuJ
+         8E1/SbFzaH7uNKh48kXkENXZ1nCyz+1fJEMCevDHlsbPG3IGpVZ9VJoHOC/wVtV0AIp7
+         09SQ==
+X-Forwarded-Encrypted: i=1; AL+hErFxAG79ClQBrwCeTO8hxAcnzz1LFnHun4yZS86TinsrHMykEmM0VZUo+ToTUe+wjz/TelxpGZbOmq4=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9CIaa4nrPR9jQpHl1jMuGbv7y1xXwCoCssXQJSowqRjrzZWVTL
+	xMa6aUEv9WxutV8W1PyPKoOBhY/0y09hSGyhYiFR+lfNEsZtQI+CSR8s
+X-Gm-Gg: AZFdTZfzKEcfe0ABQyz6Hmbfvq6sIljYxE2Ct2XP4n0QgGVveus1hQtK3iDUWVgY+VR
+	4vsEbyBg8k4P7N6jirSQmwS8l4AJLLivJLoavrmEYS2iZbPP1/+bAjw/x0oqRr9tJl9fU/o3NxM
+	mc0n5wKCygb91ELPM4IjnOPjfaiA6UJOsx1Ilj+6wJIKJ7L0k9wGDqvLZbHnfmu177LlRtqKTOK
+	plZHlfWiKgqX9gZ0/PmPG1c8xTXX2N0QBBGNjvmCPZ1PobufBr2eOZK0JfRI7/Nk9g9i24OdDJ2
+	s1ugSqH9vmS291zPgNy0KBf7IaLdhWO5gLX2hy+lcj+/GwX93h2mT6B1u08kKTxIxkcefdXQSBW
+	A8+YWAIyZEk/6H3ltFMzJIhX5vbq0kkL6h22+rrpq3nww+SYiD15fwgrKitB08amphmGMvA6QYs
+	Dyipq8vzBeBHWpX8wZ6G29JcYLeWlU6Ilchw8oDaRiZ11kGABaEUUNjQffgwQGe3yzxC64PwnMG
+	xopkb7vl27tqkLqM5hE+W3S+SnlpLbcUOOEl+/HHUQaDweFBOUonMJOVZuQEf/4drOLpBoZ7QUU
+	zcx4lCaouHC/iGBkCsOC0kY2zLmJNfplAGfNM+ezsfrOBIH6hS7xL/ErVu+3TOfGy1E6NrejO6E
+	RgHkE6v8ZzawHwzPOVjA9mDGngtQl4IX+1Ok4LFcDLeJqu1l2wyKrbQ1phWoiKYI+yeZ8ZyXFQP
+	rVFvQJHA3HmZUqCZAem5jdkpDNE2yY/P9JxP83GkWhEN00
+X-Received: by 2002:a17:903:b0e:b0:2ef:ced4:35e8 with SMTP id d9443c01a7336-2f03f1e0d60mr192992555ad.52.1795669191962;
+        Wed, 25 Nov 2026 20:59:51 -0800 (PST)
 Received: from kapoor ([149.40.62.17])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b41ad46ef5sm30661677a91.8.2026.11.25.20.59.35
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2f07d6d4bddsm68507395ad.62.2026.11.25.20.59.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 20:59:40 -0800 (PST)
+        Wed, 25 Nov 2026 20:59:51 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Zhiqi Zhang <zhiqizhangg@gmail.com>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
+To: iasnezhkov@gmail.com
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: pms7003: Reject frames with invalid length
-Date: Thu, 26 Nov 2026 10:29:28 +0530
-Message-ID: <20261126045928.518052-1-kapoorarnav43@gmail.com>
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: inkern: guard fwnode_xlate with info_exist_lock
+Date: Thu, 26 Nov 2026 10:29:42 +0530
+Message-ID: <20261126045942.518691-1-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261126041911.55827-1-zhiqizhangg@gmail.com>
-References: <20261126041911.55827-1-zhiqizhangg@gmail.com>
+In-Reply-To: <20261125234827.94791-1-iasnezhkov@gmail.com>
+References: <20261125234827.94791-1-iasnezhkov@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -108,38 +107,28 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 26, 2026 at 12:19:11PM +0800, Zhiqi Zhang wrote:
-> Accept only the fixed 28-byte PMS7003 data payload and make the checksum
-> helper reject any other length before deriving the checksum offset.
+On Wed, Nov 25, 2026 at 11:48:27PM +0000, Ilia Snezhkov wrote:
+> +	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
+> +		if (!indio_dev->info)
+> +			index = -ENODEV;
 
-The out-of-bounds read for lengths below PMS7003_CHECKSUM_LENGTH is
-real, but 28 is not the only valid length here.
+Taking info_exist_lock here matches the rest of inkern.c, but -ENODEV
+already means "no channel on this node, keep looking" in the callers.
+Without a name, __fwnode_iio_channel_get_by_name() passes it back up,
+fwnode_iio_channel_get_by_name() then walks the parents and
+iio_channel_get() falls back to iio_channel_get_sys(), and
+iio_channel_get_all() falls back to the map list on -ENODEV from
+fwnode_iio_channel_get_all(). So if the race is hit, the lookup carries
+on instead of failing. A code that isn't used as that sentinel would
+avoid it.
 
-pms7003_do_cmd() waits on frame_ready after every command, not only
-CMD_READ_PASSIVE. The replies to CMD_WAKEUP, CMD_ENTER_PASSIVE_MODE and
-CMD_SLEEP are short frames with a data length of 4, so with this patch
-they are dropped and probe waits the full PMS7003_TIMEOUT and fails
-with -ETIMEDOUT. The driver also binds to "plantower,pms3003", whose
-measurement frames have a data length of 20, so reads on that part
-would never complete either.
+> +		if (index >= indio_dev->num_channels)
+> +			index = -EINVAL;
 
->  		num = get_unaligned_be16(buf + 2);
-> -		if (num <= PMS7003_MAX_DATA_LENGTH) {
-> +		if (num == PMS7003_MAX_DATA_LENGTH) {
-
-Keeping the upper bound and adding a lower one should be enough to
-close the bug without dropping valid frames:
-
-		if (num >= PMS7003_CHECKSUM_LENGTH &&
-		    num <= PMS7003_MAX_DATA_LENGTH) {
-
-With that, the extra check in pms7003_frame_is_okay() is no longer
-needed, since a completed frame can't be shorter than the checksum.
-
-The commit message point about shorter frames passing the checksum and
-leaving stale PM values would then need a different fix, e.g. checking
-the length in pms7003_read_raw() / the trigger handler where the PM
-fields are read, so it is probably better as a separate patch.
+__fwnode_iio_simple_xlate() already checks args[0] against
+num_channels, so this only matters for drivers with their own
+fwnode_xlate. Could the commit message say that, or could it be a
+separate patch? It is unrelated to the locking.
 
 Thanks,
 Arnav
