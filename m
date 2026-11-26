@@ -1,47 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795704033;
-	b=ozhdG96qohoNuBFMbCW0GbKCnWqecGV1vVEi3bAuHmS8rnEzpUoRupGklN13Jsc059JH
-	 CzegbQX3x6jZfGGuQzSI7aooPYUES2iwdqDso3ON1bqO6QgzyPTWjM3Jwp3vMonrrIn3X
-	 KNK+AZqDOYU1xabwIEGq+T/EJYImErrYA2AUemo3pB9pasZ/XkwTafnSLUh4rXwNl2pZ5
-	 YKCRy4gjP8dIidSI3JzLX5vgNf0DPKJA/8PTB6KflkD7XQuDEvbh1M6W2s1bncKJ12hnZ
-	 KPc3Du05JWmKLeCsk7Kmb/w+uavfmEgk+HcxVTaQ8zqpLIH9GlPBIQKDNKMqe083TSA==
+	t=1795706047;
+	b=R0SYDMnMc5/2K/xuSMc+Hbcwu2NnKGVXIn0VIkee+q0pwjlDbUbAgRm0jqflsI17JXMq
+	 n2Oo4VWAz1FEr2cUfXMt4WFZ2nXxPBzXEMPmD8w5Ch3ikF3Oc4SlOmM6et2RT6dL8sI7t
+	 nf23QOJBp2Y4JMvqvOSHec3fJIWYLfLKwqkl+f2I5O3LE8ra9j8NFF6buaTReYBs+ZVCk
+	 TnZ5XZMyOmNgj3N4pcIj59p8fM4e8FkA7VH7cVTKc3RIzQUVLB7b8P+bWOBDpWgY9qyBy
+	 WrBoYtZQBQlS5pfBG3czBx14bQ+nQmwwEIjOu6nsStiM6YP86W0cYYCQJ6cCAfkh1wQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795704033;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=lscJSZYibXtaHkly1WX2zI5TxDx/Ues6iHpcftAsrZI=;
-	b=MycavgVm+Xfn7Oapze3v2OkjCUtxDL04aF09e9VJZJ7UVRyHHqs+dn3ILgI0EOLO5Hko
-	 UO7QC3H2jkCeJPMYn4THDBdaCRWp+x9cnh6p5afXmXKyrVppClHqu4iLYxmrZFB84V0D1
-	 UxoXrs+Kmjb+z+AdftX0dEmiH8x0JjexV23H34UGrmOqH3wWUcziIkyTv6zr16D2SD1sV
-	 58OUxrqnxw5zRdMP4SuOQ/lJ16SFHkLZrtkV+3rbEMABIMpdIjQPpk97MIPlKJ5O4360e
-	 FhueRuCYvHEU/ALX0TDxGHVYGTx2JfmNW+2qn3GzNp3GOCuJyvE87i3PSh5ez1no1VA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795706047;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=hEkRAUfnKvs3rHRfiWh3eAIsGaDREmkAPVhmY+7gVqU=;
+	b=EVhDefMXVY+SWePcJBkzOY126R8kvr8D0xH8x/oUMzoRVsTC3dsp77/dNQZ7wUYCDmOY
+	 k4XbWGbJCvGnGkQYPX8B3Ky0Q+ZHRZPygkQMkDL/vL5VZe7cH9CWj2h1b9ezAhcfy7iXw
+	 sFw1D75LgEIqOYSr1zPr5zbG7mlJyxYSlo43zKZ64sxCzavhnRl3e8lRhgMqwhR8Gu9wo
+	 DSiaPQ6wH2Ufvrr5TVnLEVCVWfYUZ1BAlkxqMegVt8ZrBCq5WpO7b2eopB1BmR62gmHOW
+	 yremDmWuJu9nbHCoy1a40jB4TRtme8t1Ks2h429/owcMljCeSC3ycJ0U+0V5D0Lppvg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LCCg1PWJ;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=f7c10ISg;
+	arc=none smtp.remote-ip=192.198.163.12
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4074606A31E;
-	Thu, 26 Nov 2026 14:40:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19BB8606A321
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 15:14:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 19BB8606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=LCCg1PWJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BD41F000C6;
-	Thu, 26 Nov 2026 14:40:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795704033;
-	bh=lscJSZYibXtaHkly1WX2zI5TxDx/Ues6iHpcftAsrZI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=LCCg1PWJPOCOTlOo6LcSvdZMHotdUnnJwLuAdNDK3dg7TJOz/1yqZcsJ8xY45zG0B
-	 KlU8MyyjGJhVR+nN2x4RnhECwsNrBboonSPhXCmiJzQK7v27TKiyYjyP7ue5bbebM3
-	 F2UZt3zQVfq+h/gdYpWoMJFGhcdrc+dGhDp3doLJiQghaTmO2ZkRp0QKnFYvhYODfr
-	 tdHgKb6zL1BVUtkqfi+xjWs+XHsNwBpXzAdyLgvZX/4QktjLts2nNKBVeEWPNs4acZ
-	 UfF4K0YDG0HnQUpjo2ABzpvraDw1W5QLmtvbleoPT44whBPy+nByJJ6SJ0CDL2il+k
-	 RIxpd482ny6iw==
-Message-ID: <c6ad3ad2-fd56-4164-bf50-0ac0bd9b84af@kernel.org>
-Date: Thu, 26 Nov 2026 15:40:28 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=f7c10ISg
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795706047; x=1827242047;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=llZyzvpE2Yg+J6yUesIgrGL1ELY5gbqOF6V6pcKUMKs=;
+  b=f7c10ISgFdsymTatKIfblpRt7rKNHJA+pU+5L6KHDCVXea5R7a+CZhqw
+   TbKCm1VMDOPGJa/oYqbGrwXzeqvZPE7pfDmnHvjTMAMqFXq990EX4hltr
+   yfHzktqhSaIQ+yw0oJOfCkTdr4VLeRjtXZADT+i+bLC5tRR8iJvn/hZWN
+   f80wXa+tm2cLgGdrs6ehoxhi18Mw9RKUuD9WDKH89zIkZWFWeZtC8y2tO
+   3Zby3BGEtNiuRtcSYEGJQ0OK7CrArfPl05JSYfixLzx8+7beHWfX0ZXyq
+   ihUDDc1/a/ublojDbaRB8eRTyjEnrATk/zqQgo+1ZN29J6SEp6UqXpBPy
+   w==;
+X-CSE-ConnectionGUID: /Pw9rdRHQZ2NK7idAngvYQ==
+X-CSE-MsgGUID: IqIyfU8lQ0OeBRbVr42zAw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4524560"
+X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
+   d="scan'208";a="4524560"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 07:14:04 -0800
+X-CSE-ConnectionGUID: 4iQMvioLSxOqnSSlllrIwQ==
+X-CSE-MsgGUID: Ta4lIdlzSEi8qvG2jl/mxA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
+   d="scan'208";a="12793238"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.208])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 07:14:02 -0800
+Date: Thu, 26 Nov 2026 17:13:59 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Zhiqi Zhang <zhiqizhangg@gmail.com>
+Cc: Tomasz Duszynski <tduszyns@gmail.com>,
+	Arnav Kapoor <kapoorarnav43@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: chemical: pms7003: Reject frames with invalid
+ length
+Message-ID: <awhMt4r8CDJ0fjMm@ashevche-desk.local>
+References: <20261126052717.69095-1-zhiqizhangg@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,38 +83,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH v2] iio: chemical: pms7003: Reject frames with invalid
- length
-To: Arnav Kapoor <kapoorarnav43@gmail.com>,
- Zhiqi Zhang <zhiqizhangg@gmail.com>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- stable@vger.kernel.org
-References: <20261126052717.69095-1-zhiqizhangg@gmail.com>
- <20261126053526.623714-1-kapoorarnav43@gmail.com>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261126053526.623714-1-kapoorarnav43@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261126052717.69095-1-zhiqizhangg@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 26-Nov-26 6:35, Arnav Kapoor wrote:
-> On Thu, Nov 26, 2026 at 01:27:17PM +0800, Zhiqi Zhang wrote:
->> Reject data lengths shorter than the checksum before storing the expected
->> frame length. Keep other lengths up to the frame buffer size accepted so
->> short command replies and compatible Plantower measurement frames can
->> still complete.
+On Thu, Nov 26, 2026 at 01:27:17PM +0800, Zhiqi Zhang wrote:
+> The PMS7003 driver accepts any frame data length up to the size of its
+> frame buffer. This lets a device send a frame with a length shorter than
+> the two checksum bytes. When that frame is completed,
+> pms7003_frame_is_okay() subtracts PMS7003_CHECKSUM_LENGTH and reads the
+> checksum from before frame->data.
 > 
-> Thanks for the quick respin.
-No, please wait at least 24 hours between revisions in order to get more
-feedback. You may waste reviewers' time by them reviewing an older patch
-only for them to find out a newer one has been sent, making the feedback
-irrelevant. For larger series (i.e. new drivers etc.), you should wait at
-least 1 week between revisions.
+> Reject data lengths shorter than the checksum before storing the expected
+> frame length. Keep other lengths up to the frame buffer size accepted so
+> short command replies and compatible Plantower measurement frames can
+> still complete.
+
+> Tooling disclosure: I found this bug. OpenAI Codex helped prepare the
+> fix, and I reviewed the changes.
+
+Move this paragraph to be after the '---' line below.
+
+> Fixes: a1d642266c14 ("iio: chemical: add support for Plantower PMS7003 sensor")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Zhiqi Zhang <zhiqizhangg@gmail.com>
+> ---
+> Changes in v2:
+> - Accept frame data lengths from PMS7003_CHECKSUM_LENGTH through
+>   PMS7003_MAX_DATA_LENGTH instead of only PMS7003_MAX_DATA_LENGTH.
+> - Drop the extra length check in pms7003_frame_is_okay().
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
 
