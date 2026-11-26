@@ -1,85 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.177
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795729089;
-	b=EFUbSJBRVI9w5UGF6D2BxCpt/G50I4TMtoWYyS+Mvooox+jHIPF0BUCKguYlhBUJXvCN
-	 V7BsWAqyTFa0ap29FgZO0QscTN/cdubdHO9ps6CsRQDkNeFZVyefRhzK/8g4Cu/EGbmzq
-	 PFrUuzSLHJl+oyWyUXohDOEc2ObDO3hDb0yJI6pdmszaMddeP5nC/2FigtfPsikYP14HY
-	 tOLXns/HiMknr2K81x5vGP/ubWClre9AyQqx72Ds6pI2ADYdQ70BRvuBjfVADagGhq1Pw
-	 6SxgrIP6AcfzTZu7DCmS+JXVFUbLMnsZCfV6rgG4bLxXVyVrPJ0IJFDMmu7IolJM9Mg==
+	t=1795729097;
+	b=geRJ6N07CGTnVLnPoZwHAraTB9Gkl5aOBWumGvFAks5YnuSN3PjHfu55BQxIZLG6TZAO
+	 HZeyIry/vq+OlpzsGUxxstHeA50qS7uD1E7P1Uj1/01DGqF/zRSriIBI2h1Xh41ifUie5
+	 yudsLcvcQoCjYosQtD4o1hed2BoehgaohIdexm/KuJwKzwMMedxoni/2tjse/jc/3RQ1F
+	 glA6mqVUxVh901+9LwpavxtK/rqwNlZyycRbff+kZhDnUhaG/f/pnyrtKHOkC2AaECkcD
+	 D/YxnIp9NlaJYBnbVGLVJF6/JeAmzfot+gCwMTJj41L5CXGMVZm58raeFeRGbyKm84Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795729089;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795729097;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=YRpXQrHWpFwrOpMV8MW5AI9XJefGuUFCrzL+sHdF41M=;
-	b=vGDxJxaTw/SwlG5ekbItfmt/63glEh6NrBh8Gn0zLiN8RZ+CrYc7ihimv5Bq43wj/9P4
-	 MI6tU/j2/6B+uhIFwm54qSqPX7OCBdDsGOmgdcd+jBXUSnoBLNSN20tI6vUZmR02rFL4J
-	 0X5GY8L2/qwHrhY8lwBWTTnh6CVPvIeV0f7vxHC0HkzAGla+FDiJqYj9AsaukI9EbTWVp
-	 Lx2eNFCNNr+wTGrBu6bQU5Ff/L66kBwtu1z0O8mUNlKuzk56TQv5vTT5sO0kL9Avo+M6h
-	 c7fZyViY3qSv3r21W+hhrUIe1kZMuwDhytpFMMahUZB2n1haxiQ7ZyzgciRixVbqVRw==
+	bh=F1pncYdCQPYqKl02KctTzcxHlBl0h69nvP+CZBv6X9M=;
+	b=TC+/yTAnXvIrmRZ+W3Bb6MN14PiyUcBxaT5zTNyL1/ADaLbcYRRGRVTmzd8hNTAStL9x
+	 xsRvVYfmDEEsd0Ft0SyWuKKH9uW33YfTToMqQl+3nJgSEqG7tbV//EnXjOH5q/MIz7fJX
+	 tjfryrfB5KT9yR7C0VJq2X5EwYcJZwV2r5DU71r3RWH3BbnJGVBcreTuf3+7TYmzvb1jW
+	 6Q2XdgTBnq0YlD7Pqjz9PtweJIA+2EUHA3jf76VqN0uqQpXals8z31vF9Mbugt6Gd7EWG
+	 znDsDmrcwswMx0IOUqdTAUnYMMiDemvQxFEfNld/P1kLwzsf0sesEDttiCgEzWq8daA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UPH5WV37;
-	arc=none smtp.remote-ip=209.85.210.178
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LCd+6YUJ;
+	arc=none smtp.remote-ip=209.85.210.177
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DEE606A323
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 21:38:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D4DEE606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85257606A323
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 21:38:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 85257606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UPH5WV37
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-8a9f9473029so5585802b3a.2
-        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 13:38:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LCd+6YUJ
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-8c70c2ab5a2so2925009b3a.3
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 13:38:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795729088; x=1796333888; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795729097; x=1796333897; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=YRpXQrHWpFwrOpMV8MW5AI9XJefGuUFCrzL+sHdF41M=;
-        b=UPH5WV37lSVsSIP0gw1HSz46gqWtdd/gaSgcGVnsHCi3yvyHJtcogiKy2W0NuBJMs5
-         SQxZMgtibaVfb4HWJlXQiljw2JSaMLbW+jDjBGzm53iv6T8IOccUu3BnJqenbD+IGta4
-         jJVdanFXAoupcK3qYYKXaNo+K0TIq4ANUycAcMw+gZkdcSoU9GmkC6bgodODUEiKuS1n
-         +vn1O2feaiUeZTUZ1YZgsp2NLvULXMbyIV0VhMeKHvZMV6eT6DYqAOimcucWSXy1JzNp
-         aJ7aYks1C02eyM4aBbFX8R5xInvKSZN+LXN8owREq+nPgXprhn1xgsjzauYIQetvq55n
-         ah/A==
+        bh=F1pncYdCQPYqKl02KctTzcxHlBl0h69nvP+CZBv6X9M=;
+        b=LCd+6YUJ62QRUVvAFAIUT7r7G3Uk9Ecc4qbUzB7gZSXWlXa6KVDFoP3jLX23Iuvf4q
+         nxjKHwzsH4R+f5REozi+DNgz0a/Sz6O295rSeH3Ya66cqa+lYqdiPDeQN4q6+sHfXMGH
+         p0n3i3vrATHWlxgF8MNGVfZS0/juyYTy6QDYRJzhfta8h8crAE+4R3Eyn6CDlQK1sYdY
+         ldi2Er1CzC7ldyDez+UnckmxPQd39OsArBzCklf0UiSvdNEbFZXqSRqM3otmc9jO0WGX
+         xvKjo4jiFoNnJT875sKyFkixiD9E+bgsncGWLpccjllwjuBRgP9m71MwSWthGtZjMJRO
+         zZHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795729088; x=1796333888;
+        d=1e100.net; s=20260707; t=1795729097; x=1796333897;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=YRpXQrHWpFwrOpMV8MW5AI9XJefGuUFCrzL+sHdF41M=;
-        b=WYRzYIqAND/iGDTVzFh9O2VdxBdWUF4TqdUwlzsexFgKFGQYGlDYyzhJbAZxmw9Jfc
-         3C6ZB90i66zM8Sr+9DANo4r0LfGsz8KNuU14jTdqBbYJV/GoMvYX5f3k4N3l501WYJVN
-         TuS5J2MBtGd77+Ubw7OPpMIshGaDGSw4aKYP9QzEzaxYs5Nu6QUJxtaBAncvOxhCOoDB
-         oEYaiOkeo1lXs+4swvli2HrURJi/rGlt37+rovrkR0MxVMTfktJnirZMeqkdrdGKYba2
-         qj/1ay5nDu/t6JlW4eBEE5awvikpnDyepTkz8VTcgguym3/Bdn9XjtUPm8PseyZsv2q+
-         YMeg==
-X-Forwarded-Encrypted: i=1; AL+hErGrbDMr4JRDP43iC3tYmmV62kd5v0XzStu7xwfTyA8nLMHlM1+T1UmGHDidVnNfwvQPDSwA+U0yWUY=@vger.kernel.org
-X-Gm-Message-State: APuU4Z9GkxBuYzZMli51wigF7eF1/jeJWusFEjxUIk0R93QF30ZBiA4y
-	vfKyAXX3YdszCqNQ6TmF3xn5gEa1hzZixoFf1Bk5J5ilztuBW2gUAu3+
-X-Gm-Gg: AZFdTZfcPpQC/SivhMKRTkchaJ804sRCtKXeU6vje6C7F8zOrys6DQX/f4u1jyMRZE/
-	0i4QumI4v0UM5EbWRdzdP3zzg9GdB20bBOtliHQjZVH4mxdBmrjqcC7HLN0tHxjAMJ8fvXCKd4M
-	ejJ1LoEH4FRk0s5p4UaZffBwuXwxJDHpA6wZPlTm+II3909ODVOZRTjZ4QG7sczv/Pw13WXkw+l
-	B6E5v+K+H7Ns/rznTzEA4FogX02Apnx2uzQnIaK1uKAQs1hX8p9/GK67qXrv2ggpZb7xFcx6g4c
-	/zFMxoKS/7djcMYZXhzbKnUPnas7f9dN8tVzNBKMHbrG9l2o+cYDCTK+UBaGVHGnOgfuh/i3hWJ
-	ClXcZpy/MuHOBE8wUIS3WPK2IPcX9dfZH8d1/IFeagM9HrbX57Ttl9HpKRwZW5DwHH0Sgmzsu+b
-	Ix9DxBeu8redL5UoWSlvoSeJFyN8+Gikb22xFSwagK6AtKAjaojrf81OKnQPhxSGXlnSxDV7Amh
-	9TeEio6hkXnoADLCwrh4ilV1M5N4Da8C8rylBJsjppo2eB/H0ywIt6Jrc1oqv9ihLxh+dAyc8qE
-	MhjsSxkxMA2GwTm5T93nS+2NdkvkvAoL7h13jLBaUC8wOzb/gazSubYy4yiTxyj7kralb2snZEd
-	tEYJGA1DEZpIiipR/h+Kt9TROHza179rM5keRma46v2NECwU2/vZlxtTzm3GpNAPVuOrH8KwZyX
-	Bljavjcik6SfBPeRgNXg9RLA==
-X-Received: by 2002:a05:6300:8095:b0:3de:8ee8:8323 with SMTP id adf61e73a8af0-4014c946a9emr20399641637.29.1795729088320;
-        Thu, 26 Nov 2026 13:38:08 -0800 (PST)
+        bh=F1pncYdCQPYqKl02KctTzcxHlBl0h69nvP+CZBv6X9M=;
+        b=ZdyOrdrwG7KNuOKCnt67XQ7i0SgIBBj7ti7ZUaDZVavbZUVx5qBiOtvOyAL9LEczh7
+         SLjUUaWivNZMMeNbilcBprFLsyxJhlR35avCJNhYNyNlvqnU9ACbcth//s4KUBv/TRtC
+         6BsA+AswcJui09bW+4zLMZzo6/rCHQ96UdvkjAB7sF3VCxfBNKmoDe1umbD6QTVT5zoW
+         RCXBO5t1uoRUlU0Of6nH77JqZOJmekdyrWVcU3EXBBSwyWMVxpEgEGjAIO6v2+0I1E20
+         HAOuZ6HUtNAXU6/CtyUPXNSAlt4Ga/CBdu80ItCA9VcUgCrMBsqo0Shdqf5hFk09qonO
+         +qZg==
+X-Forwarded-Encrypted: i=1; AL+hErHDlWXxBL28b5YrJYiyXEoirxa+4vFe6Va5kB5Kpyv3g8ZZYIc4HehRQjB5q5QFhrhQWeXe6wswrCc=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8svtWVT2O/DU5QHaOlantWST8haOVjKMVF9GMlvoky4WNkBvWk
+	2h9hYOhjARUaf9Ov0QNVxJ3ehQuzIGFzqhYOo71SacFKLCdpgYrbDpRm
+X-Gm-Gg: AZFdTZfpqSoPoCCp0V4b36whPRS3a9MEnGC3UwCzKnUvQ4SCBClLhtU6Ap0iL9/8P89
+	7VClOheyrlM+HEXMykEyDPWD7mTrkcFBJnu/fUQE3e71eq1vr1QJaYsjsByMaEOJMsyX5z8208l
+	QL3683iW66blOF7x0bCFiUQo1RpOjdUEmmXO3M0WDxLY0yTUtoc3YRiU9r67xpN2MYbQYAgPKEg
+	Bo3OVpHwzexWRWcSgoOWmYB78tTF74aKjav2YWeSu441YPHlHlUIMO14039fCJtFbOeFZ0GH264
+	wJHANdXTbk7GjHY+rkzQ6Z8CnVwBCbE/NWPENGGzUTEwxAXopUcN0dcq9JjBh3x2TxwBC9/XJj/
+	P+ckZaEhg9bGfa02QRWyIr0rKA91L2eNPKmV7aOGSKTp6RdpBTVnUZVC4xdLMmWC6A+85EnNJZD
+	pKWQ3hSLO5i5jg8UhoAxQ8wRXbTPGFu0pL15BrubkTW9sX31W5MGjAdCb4Q4YvcDwMlwwsJntk/
+	mXDqNMmjMIcpRS1+8Wvl+6eBJ8v2ElKZOqHO/eBX9otiee8ZzndSrsBwQDKaKsDJGr3yT4zln7h
+	ohJnjSWpeM8Xz+u/abkOz0qiDqWK2/b2C7DLNh7Nvw6aQqlrW7bglsRyDY2a11jb/Jn2RfIqBhS
+	K4Orx+Eij/G/JlHwG9f+Wg7P3Ue3/rPyggm8ZcH8TSp8MsU645aEOAQCtRnis8a5eDBSUMMPVnw
+	hhzTi0Lu2oeeRKkHQjYEe0lQ==
+X-Received: by 2002:a05:6300:408a:b0:3f9:a6b6:e184 with SMTP id adf61e73a8af0-4014dd5f981mr20640395637.74.1795729096794;
+        Thu, 26 Nov 2026 13:38:16 -0800 (PST)
 Received: from kapoor ([149.40.62.9])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cde6cea7c38sm11703905a12.2.2026.11.26.13.38.02
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cde6cea7c38sm11703905a12.2.2026.11.26.13.38.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2026 13:38:07 -0800 (PST)
+        Thu, 26 Nov 2026 13:38:15 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -90,9 +90,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v2 5/6] iio: proximity: hx9023s: reject out-of-range debounce values
-Date: Fri, 27 Nov 2026 03:06:50 +0530
-Message-ID: <20261126213710.1047676-6-kapoorarnav43@gmail.com>
+Subject: [PATCH v2 6/6] iio: proximity: hx9023s: use plain division in get_samp_freq
+Date: Fri, 27 Nov 2026 03:06:51 +0530
+Message-ID: <20261126213710.1047676-7-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261126213710.1047676-1-kapoorarnav43@gmail.com>
 References: <20261126213710.1047676-1-kapoorarnav43@gmail.com>
@@ -107,52 +107,42 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The near and far debounce counts are 4-bit fields.
-hx9023s_write_far_debounce() and hx9023s_write_near_debounce() pass the
-value through FIELD_GET(), which only masks it here because the field
-starts at bit 0, so an out-of-range value is silently written as a
-different one: 16 becomes 0 (no debounce) and -1 becomes 15.
+hx9023s_get_samp_freq() computes the fractional part of the sampling
+frequency with div_u64(), but nothing here needs 64 bits: KILO % odr
+is at most 1000, so the dividend is at most 10^9 and fits in an
+unsigned long on 32-bit as well. Use a plain division, and drop the
+linux/math64.h include, which has no other user left after the
+previous patches.
 
-Return -EINVAL for values outside 0..15, and use FIELD_PREP(), which is
-the right helper for building a register value.
+No functional change.
 
-Fixes: 60df548277b7 ("iio: proximity: Add driver support for TYHX's HX9023S capacitive proximity sensor")
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
- drivers/iio/proximity/hx9023s.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/iio/proximity/hx9023s.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-index 2d2774398259..c2718723db27 100644
+index c2718723db27..98b65a3e69e1 100644
 --- a/drivers/iio/proximity/hx9023s.c
 +++ b/drivers/iio/proximity/hx9023s.c
-@@ -359,18 +359,24 @@ static int hx9023s_ch_cfg(struct hx9023s_data *data)
+@@ -18,7 +18,6 @@
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+ #include <linux/irqreturn.h>
+-#include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/pm.h>
+@@ -702,7 +701,7 @@ static int hx9023s_get_samp_freq(struct hx9023s_data *data, int *val, int *val2)
  
- static int hx9023s_write_far_debounce(struct hx9023s_data *data, int val)
- {
-+	if (val < 0 || val > FIELD_MAX(HX9023S_PROX_DEBOUNCE_MASK))
-+		return -EINVAL;
-+
- 	guard(mutex)(&data->mutex);
- 	return regmap_update_bits(data->regmap, HX9023S_PROX_INT_LOW_CFG,
- 				HX9023S_PROX_DEBOUNCE_MASK,
--				FIELD_GET(HX9023S_PROX_DEBOUNCE_MASK, val));
-+				FIELD_PREP(HX9023S_PROX_DEBOUNCE_MASK, val));
+ 	odr = hx9023s_samp_freq_table[index];
+ 	*val = KILO / odr;
+-	*val2 = div_u64((KILO % odr) * MICRO, odr);
++	*val2 = (KILO % odr) * MICRO / odr;
+ 
+ 	return IIO_VAL_INT_PLUS_MICRO;
  }
- 
- static int hx9023s_write_near_debounce(struct hx9023s_data *data, int val)
- {
-+	if (val < 0 || val > FIELD_MAX(HX9023S_PROX_DEBOUNCE_MASK))
-+		return -EINVAL;
-+
- 	guard(mutex)(&data->mutex);
- 	return regmap_update_bits(data->regmap, HX9023S_PROX_INT_HIGH_CFG,
- 				HX9023S_PROX_DEBOUNCE_MASK,
--				FIELD_GET(HX9023S_PROX_DEBOUNCE_MASK, val));
-+				FIELD_PREP(HX9023S_PROX_DEBOUNCE_MASK, val));
- }
- 
- static int hx9023s_read_far_debounce(struct hx9023s_data *data, int *val)
 -- 
 2.53.0
 
