@@ -1,71 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795696762;
-	b=MwTbF1En4LvPeHMoK2zW/oYoyuHu156/2FKV/QuEmgSe975vOkK2QhaFJm1/FXGAEqTS
-	 q1gfMlF7LT33lEtUkycQOTMCODg8mOn9Z6eBD2Fackuxd/ZcJUNQ7EoMX62oDHB+wPHnY
-	 hd4xUg+40kPhQJ5X2s+yKSo9zBCeR9/HU8GK5upMfVClNGj8633SKLiWMOESE7mMZLuTJ
-	 6SF8YgnTez1NRyURNpxgUNgOeCTcuKckNw9YNITsZV4JV2AKk+dVTlPT2hB55cXC4d7TQ
-	 2LNURkCBMeDaq7qO3K8g80MViQPBO0I3YbuTsd0chl40EfAAZIVqPKi5WGSKoPLrkqw==
+	t=1795698738;
+	b=K8EU4XTv7s2HSFpGi4q1ISpEO5orWr8V23a+m4BjontwUN6OUZvMpPtd22Jt/qvbiVbw
+	 puuRmnrP0d7vUN9xbj2G0QcKvaRmCl6XsqGTiJIqnov60zue8LTS4yE2D0or4b7njv6At
+	 M9z+fwBqpdt5sqtQlXtihdp/NRtkR2rnyvGeCZ/8EUGNL3lQude37eXrdHjyZbfKm7ld4
+	 P2V/rT4VZUgfuU6OruhVrmhiEBiyxfxt2IzOYyloDmH4oGprtcTHk+vwdR2zVmgd0cXaM
+	 jAk3nCeGOnWXkLIvFolEdoIfZhXgxGxm/epVTsgHqc+SnTfAvNExVOCQZLh55SQoe9w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795696762;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:X-UD-Smtp-Session:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=cgQv+swg3j1uTk1KouV9vzt0anaUlnwwFnwk+cQL8t4=;
-	b=e5OPfA1Q/sgm8fXjzwhnKPI44nfAB6darhU989ZusirtpSD4p2hhw5o2xVuWwo6J2ShX
-	 8HbynZq0jdynfNS7y3W2tawJrVp80eB1IjD4rb4Z0n29BdNwMm+Eq5baFF+8l5933BWXd
-	 jOT0N7MbBo5MjXOY+89zMvbD7fkaY8e3UWwVNrwr+ycAgGlrnxeQ2MrPhA3IV+sMwuiF/
-	 IHF7K1pGV8UJbB+xz4+AFAHGmlH1ouenGlPt6JrtdBQVyspOr1IsCbyLQFHOLPmVhNlsB
-	 xJR4FUVPKEUeZvd2cv6eI0h9OXIf6NG1l/Imi3eVcqoSZCWwyatUZj9MsqavCBpx4Dg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795698738;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=wTPypmvN1HQLM2ZLJ7U0N+rZEcdrlQm/72RHrZPNWlQ=;
+	b=mJCAhpccchaJvfPHjKsJemJLT/oF9D04HtR/5fNuSTOzhRD8l3Z3bg4Qa+WOW8bqTOas
+	 o6FVRWw7iWhcPJUNmAREpSGpniMs9gKcROgowu48DE2BO515YU9XHjYLNfOaLzFaEscsr
+	 9JWi0BHiODClpHlDdD15m8Ns+r9DBzyF/eamFT88pg9CJ9bVWfxqyDi+3JpDh92Oz6eVY
+	 Fb3sz/SbLzOB6VHXVrjr+Ara/EbdAK70kzEWoYmFrxgJ7ItsnaaXmOAagTtu606CTDZsa
+	 K6smt+Vc5Ra+NYypD2hJXjFt7ZraGJYZqV3rcPenz2dGvLmjSdS6j+1uCbGoQXRUNNg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=sang-engineering.com;
-	spf=pass smtp.mailfrom=sang-engineering.com;
-	dkim=pass header.d=sang-engineering.com header.i=@sang-engineering.com header.a=rsa-sha256 header.s=k1 header.b=AXoVmUHI;
-	arc=none smtp.remote-ip=194.117.254.33
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g17i+9Ir;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8CA606A31C
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 12:39:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B8CA606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5B90606A31C;
+	Thu, 26 Nov 2026 13:12:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=sang-engineering.com header.i=@sang-engineering.com header.a=rsa-sha256 header.s=k1 header.b=AXoVmUHI
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=cgQv
-	+swg3j1uTk1KouV9vzt0anaUlnwwFnwk+cQL8t4=; b=AXoVmUHIOoosd5aN0bYg
-	fy8ng/QdA3ekgOn+01xc5re9UHdc+6Y9rWNdHrKmNvcAcp5N2l7QhHzpUEVo8efK
-	zNT8+NkHcq3l5KDQr2uDb8G9HIHRM+5LKZcEC+Ew9gb7NaaBDX5W6Hupr2SdHCTj
-	dQHea3tM0fRvMeORDsWkMBiyEnt4nARK6tYeHuA3txKETmI2K9cnF3quDTumz2u0
-	QcIG3x//njfdkmSRGkv0pL44vaA/eCkkX8nupPyY8FAMRMrOiraHOMbXYVjSEGSQ
-	bPY+HFWtp7tl9x5Fv5luqXGfSfDWAk/uynHoDkwXti3cYZuxe7SQAwswjPlJMyyF
-	7g==
-Received: (qmail 1524107 invoked from network); 26 Nov 2026 13:39:09 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 26 Nov 2026 13:39:09 +0100
-X-UD-Smtp-Session: l3s3148p1@fq7gOi1htL8ujnv5
-Date: Thu, 26 Nov 2026 13:39:09 +0100
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc: Chen-Yu Tsai <wenst@chromium.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-pm@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH v2 1/2] power: sequencing: Allow desc=NULL in
- enable/disable stub functions
-Message-ID: <awgoaQTep07E_w6i@shikoro>
-References: <20261126081155.501493-1-wenst@chromium.org>
- <20261126081155.501493-2-wenst@chromium.org>
- <CA+V-a8tqzDTbMu5375vub=DBHmpJWW2TvUGKfsuPf_gjpSuC=w@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=g17i+9Ir
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B841F000C0;
+	Thu, 26 Nov 2026 13:12:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795698737;
+	bh=wTPypmvN1HQLM2ZLJ7U0N+rZEcdrlQm/72RHrZPNWlQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=g17i+9IrQ7GyuvWT/l3DaZIAUvOB86wDi/Pxkk2eQb4/A3QxD9PHgfZMrpXuzIGzh
+	 8ooRxwlcX/XoHBu6rMIqy9mpbFidcUS1//ya/WfJDQ74rMB+1MQj8Dwz1ysxHxzA8w
+	 NweYGOkawD83SJ+YtMP0mEEccKXmA/iUAntJvBFHE0RbXEUVme6M/5oVIw0spxC/SC
+	 M3d8CPReFzmpWwlXa3k1lJU0m3edZf1C1YJMXFOkAVmVw1pYqHKSjLskEn2d/HZ3QF
+	 BOF9cDGegovxbfqdLePqbpvdY5P8kZ/r7cj2cmBky24QuBwgfQc5EkcpL+r0z9Lm5a
+	 FA6rFkd9sNp+A==
+Message-ID: <396b6780-52ca-41ca-bcb3-4cc583979e55@kernel.org>
+Date: Thu, 26 Nov 2026 14:12:12 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -75,51 +51,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Tlm8BQ2eIaHuWJKs"
-Content-Disposition: inline
-In-Reply-To: <CA+V-a8tqzDTbMu5375vub=DBHmpJWW2TvUGKfsuPf_gjpSuC=w@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] iio: pressure: dps310: include what the driver
+ uses
+To: Rupesh Majhi <zoone.rupert@gmail.com>, Andy Shevchenko <andy@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Eddie James <eajames@linux.ibm.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ u.kleine-koenig@baylibre.com
+References: <20261126121331.10438-1-zoone.rupert@gmail.com>
+ <20261126121331.10438-8-zoone.rupert@gmail.com>
+Content-Language: en-US
+From: Joshua Crofts <crofts@kernel.org>
+In-Reply-To: <20261126121331.10438-8-zoone.rupert@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
---Tlm8BQ2eIaHuWJKs
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On 26-Nov-26 13:13, Rupesh Majhi wrote:
+> Include the headers for what the driver uses directly and drop
+> linux/iio/sysfs.h, which it does not use.
+> 
+> Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
+> ---
+Reviewed-by: Joshua Crofts <crofts@kernel.org>
 
-
-> >  static inline int pwrseq_enable(struct pwrseq_desc *desc)
-> >  {
-> > +       if (!desc)
-> > +               return 0;
-> > +
-> >         return -ENOSYS;
-
-Bike-shedding alert: What about the ternary operator? It is nicely
-concise here:
-
-	return desc ? -ENOSYS : 0;
-
-Other than that:
-
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-
---Tlm8BQ2eIaHuWJKs
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmsIKGkACgkQFA3kzBSg
-KbYcWA//WM8ET+BJb0rD7IFfgFxuTQ77OW8upJZQCeBKKFekSEX2TKLXOsRLNrVa
-EyPSZuGnzfXKmDmtt565idfSZnlwYSZskSapjzzAY2rhcjomKbhRpG5tFEbbp51g
-T2/sS2IEPHfUJoh2EwO2LkQJ8e1AFdI0gt7hbeYeUOQpM1QUpO1uc9LQ5Satg4rl
-kQej/QoHDcG0rqo3A2lPbhX96c8w+HOxuLF1pyjhfhqleEPZI52BrbuIpiK1HmGi
-ptLVQ+eWHHVk7QKJ7Ed0kqHblTfrbR5Sg8mET81moKpLhxFqBFOUB2ZDq30Vv7qm
-TieTWXnYYYAt65rJhfBxLVoCzPs5tFqFdb8OhC1oMKK6mu2gihaF3HumXUchryTi
-2aKMVtdhw1xg4fS3+rZdIC844IAUQQ/XY1No2W77d77FMoUr7steW6P6TNn4nmZR
-Xl5GA6sQo/uPfv2hXUYNXLfBBDUBoWi6bdGQNJVbTWFun7LHRCRNTbNBTFwa5/2x
-h+kt4+/lxHqAv+l6DjLCep+PdkOSu6XavNTQhqFDK3kZ5oE0QiRBjQ2z/TKPsGLW
-3nqpgoJ1r2LvI3fhaSeg3lzmUI1s2VfVB9F6vMiVDBTH7eRKZZQYv4lJul0bdwyd
-9SE+fzmmOY/GCMpEJkTdPXUWoQf9r72kJpAtLO7Qe2FgrLbrTT8=
-=giy1
------END PGP SIGNATURE-----
-
---Tlm8BQ2eIaHuWJKs--
+-- 
+Kind regards,
+Joshua Crofts
