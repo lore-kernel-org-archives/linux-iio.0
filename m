@@ -1,88 +1,62 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795706296;
-	b=WIYXDra5E93BIzwA+qvRE6ZkNEMfsmYCtwJjfNjSfp56m6TjKclbRT1kaO8wbPMKyP/X
-	 wwZQGfTSgDxLd/ioulGmuvlqdBzg3Jpx/7bYBygT9iGbXeh84RTHBUhSonGUfRPKWEPaP
-	 jcDkxTXVeVbiNT5vjHcCtcsqGUPrpXKakmgTrA3HzmXD93dIVIDIvFpUfYFbo1tgqAelB
-	 tpUs2wrFHYnBcPUm+dSe/cA8WRSbcDi/MRlTnTzFO3mCIKBE+OZ5g+pcPAPSVoy5Muixe
-	 SetJRYvyOm9mSPY1s3kthV3Cxdssvq9eBIS5AfNj2ZLLcDoYUFBj8Zk01V+BL3YeY3A==
+	t=1795707236;
+	b=R/O/4FrZ2YIhI29YEZKdGAViOMwG2FxGHjiwFHKfWF2ACC4M8UiSGgzfV6SfuAZShqKy
+	 MT2mqWgNJasDASiMqbydFjO/YXbVhOqXoLGBIcVKXjPWS3Rjmb/5t8WTRRtZgMoDLxdQY
+	 ODUfuTHnUHlr61QMc7gZ5URKOH/6wqVTYfEZemN4mZAN6NOcjXmLANdfo1bG4gqR+ZCbu
+	 wLPqmHISsjiz5Y0eR5atF1Qbzn5som+Wn+4LbSlR0nNG6O9jZXtc2QIqYzV7oPJQWmDKz
+	 5Ur3fONEeyc931OSOJwAmC5EaQV4auu3vsGmD9daBdxTFQeoTeOgM9igVn53uBHqGmw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795706296;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=cUxJ5+vz3HqpESBBQ5P9MCq5YUn5ysg932DIfopikmI=;
-	b=3zoymrKAR0uaMkGxS4dxkY0NAyit76+/M3ZNP7CytkDuMAHm8c6VQMRGLW9fs1OE5+5s
-	 48PwHe3kxv9pR4FDur8jv7sOP+t1rpZ4tV/UpedOz3i2HcaLRCcs3wzTK85rEGQxfDAFN
-	 73/OKqCYDpQn7TUhnek4uwEHXTHgqwjrSZoDpkiwvG2+Lay8CRjpqIRE/Cj/fbT+8bmNa
-	 smKct/lf2ztK5WbTbheeiFhGNKsefAw4dyWmyn0Wh/Ox/VmaHWiGaSAvKi/hKddXZIOQE
-	 +Tm89u1hkFa0H54H4YR8z+UkHndxlLHN1gbn/lDH4meOKqyIYj6F9sOWzWe6+8H4Snw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795707236;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=R0nV4W+3k4nIH1noIyZb7CKek5JKvQVvEcpgjr5MFIA=;
+	b=4OvtQEb1TK8N/eFhCEsdcW+3iLKpAQ6LU5hQvKfLpPAdLcjxFZU/ZpnUWAys/poBnnt2
+	 qYgX040PuAwN6PeFaNGdclj4lk9by4NyA1J8Mvyn5HQdLhIsQMbODRtR36CPwsicf4i08
+	 4mJUFZNW0/YICV4f6QMlGoPHzb4s4yWQWcahnxB5fiO7hyT0aJQRqCtEaVHXbo2XcAJ79
+	 miwZ9dmb3wRQ4NA0FvAciFfAgPURHU9TRJOI3ASlPfOULBXSGLZtqomKmBcVxs5FWkYRj
+	 6mVVvTo+EEjFTwAeRHWJrGTg+A5uA+ATNRUNkAfMqE4ApsaztnOu4YtAIseowV3hvvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=b5N4YJFa;
-	arc=none smtp.remote-ip=198.175.65.9
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XApmaMX+;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31769606A31E;
-	Thu, 26 Nov 2026 15:18:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 31769606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with UTF8SMTPS id 7045F606A31E;
+	Thu, 26 Nov 2026 15:33:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=b5N4YJFa
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795706296; x=1827242296;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+3bHNrCLHeyCRwxnq9xjmETbfGAoigECLJgAOSy7mgs=;
-  b=b5N4YJFalrVw57wIlsgUtDyOSByzP159Biqg/yQ9s7jn63kfpRZmXv4V
-   KXI7kjzozHLYhXhFStfow8S7vJovwhQcCA6FBehAndk6BZD+E2FEBWbhN
-   QH7VZvcRdF8fSrcClzVMEBaP/Ts1zQIsuQzN/yaMPwN+ihjd0UKM8eeYm
-   sv1ufgreZx+9iSbcYR5BHd0GVpPYzC4r1XqSZc7ViuQYwpR3CStlE62s+
-   z+11eWwrX351UmzzfFycI936sUsOOGME4HIEpgLgWKDBLal4QHdGRSOAS
-   Mv8xQOjrSA/6+RAWZg0+xLrqZwl2nm2KdNAV+Jw/4Ei+pPyf+3HMKsz4y
-   w==;
-X-CSE-ConnectionGUID: xMC7X1p6RpOyLdupS6Lixw==
-X-CSE-MsgGUID: 6eSEv3c8Ra210L6BYy3kdg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4526874"
-X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="4526874"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 07:18:08 -0800
-X-CSE-ConnectionGUID: B9IPGhkDTWeJvrCl7nJGSw==
-X-CSE-MsgGUID: Oq2Vp0HoStmqsNX/mQe2TA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="12354822"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.208])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 07:18:04 -0800
-Date: Thu, 26 Nov 2026 17:18:02 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-	Chen-Yu Tsai <wenst@chromium.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-pm@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Biju Das <biju.das.jz@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XApmaMX+
+Received: by smtp.kernel.org (Postfix) with UTF8SMTPSA id A89951F000C6;
+	Thu, 26 Nov 2026 15:33:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795707235;
+	bh=R0nV4W+3k4nIH1noIyZb7CKek5JKvQVvEcpgjr5MFIA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=XApmaMX+MLKqq77XGKkuI/KX71CQ8SFdpJLS3LC5xrUuGZ+TgIwpikvJZGcqlIkWd
+	 FVn6JPmSWlop9KeScEfDc0Dlo7JrBolIJORs+aF5fE9n3sfyx22ciOOLzIBGy/QLhU
+	 JLmQguqGsu1BiRh9GR7F1uMKUhtzorTsLPwEZCVQPwj73y2Aln5ms9NFFwXSuxjD5J
+	 HS8zVqfVvqJr3Y98VAZQ85bv1vGEjN72wgBIb8exHdQS52lmYzxrU35Ho1HevrVaQf
+	 0I5Z8h8f/Q7KzPp5aNAoNhXyGrKauzEQ1voRpxbETgevJEheTNs4CSJtJBjem/XkiM
+	 QlK6HUuk95YTQ==
+Date: Thu, 26 Nov 2026 16:33:51 +0100
+From: Bartosz Golaszewski <brgl@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, 
+	"Lad, Prabhakar" <prabhakar.csengg@gmail.com>, Chen-Yu Tsai <wenst@chromium.org>, 
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-pm@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Biju Das <biju.das.jz@bp.renesas.com>
 Subject: Re: [PATCH v2 1/2] power: sequencing: Allow desc=NULL in
  enable/disable stub functions
-Message-ID: <awhNqrbdy_pJ9r0T@ashevche-desk.local>
+Message-ID: <ujnzfnj666gkvu6zdpsqt7qovc65fnthxirlykeinjcgy6islj@ya35vuxrl4cp>
 References: <20261126081155.501493-1-wenst@chromium.org>
  <20261126081155.501493-2-wenst@chromium.org>
  <CA+V-a8tqzDTbMu5375vub=DBHmpJWW2TvUGKfsuPf_gjpSuC=w@mail.gmail.com>
  <awgoaQTep07E_w6i@shikoro>
+ <awhNqrbdy_pJ9r0T@ashevche-desk.local>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -94,31 +68,29 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <awgoaQTep07E_w6i@shikoro>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <awhNqrbdy_pJ9r0T@ashevche-desk.local>
 
-On Thu, Nov 26, 2026 at 01:39:09PM +0100, Wolfram Sang wrote:
-
-...
-
-> > >  static inline int pwrseq_enable(struct pwrseq_desc *desc)
-> > >  {
-> > > +       if (!desc)
-> > > +               return 0;
-> > > +
-> > >         return -ENOSYS;
+On Thu, Nov 26, 2026 at 05:18:02PM +0200, Andy Shevchenko wrote:
+> On Thu, Nov 26, 2026 at 01:39:09PM +0100, Wolfram Sang wrote:
 > 
-> Bike-shedding alert: What about the ternary operator? It is nicely
-> concise here:
+> ...
 > 
-> 	return desc ? -ENOSYS : 0;
+> > > >  static inline int pwrseq_enable(struct pwrseq_desc *desc)
+> > > >  {
+> > > > +       if (!desc)
+> > > > +               return 0;
+> > > > +
+> > > >         return -ENOSYS;
+> > 
+> > Bike-shedding alert: What about the ternary operator? It is nicely
+> > concise here:
+> > 
+> > 	return desc ? -ENOSYS : 0;
+> 
+> In long term this may grow to something else and ternary would be harder
+> to read. (Gave a comment with my true love to ternary and Elvis in particular.)
+>
 
-In long term this may grow to something else and ternary would be harder
-to read. (Gave a comment with my true love to ternary and Elvis in particular.)
+I prefer an explicit early return.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Bart
