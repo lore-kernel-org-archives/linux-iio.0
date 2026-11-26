@@ -1,85 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.178
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795729081;
-	b=gwhQxg8IRYr54PLmywGCq2dvxSgGMX/tcqNKUNDkdOpdchh9ig1a2Laz3f70IpQe7fQF
-	 ygWu3Ty+D0CkH1oNIIJTl5+fhvJkI3jYcXnyWWTnMHctRIiNfpaC11o650FUkuK2d/ZDG
-	 Il+sSqSWpBFLgXMMqDAUxq3xF7QszQq3tYhFfVG9tevSQkgWRyXYnKDLUmDLuX6s9wvp3
-	 NIbE/JHh3m2xaOm//XsW1W1EcxhFiN8r+dIFGIqgM/MaD6wRX+H3sFQJaY6S+llVAOzb3
-	 YNXG8jAIxw3ceMlMtG0GGTLPA3aPo+qUrAiggoTprCAbPjqw9RLtR+45JcuCO5W1Qkg==
+	t=1795729089;
+	b=EFUbSJBRVI9w5UGF6D2BxCpt/G50I4TMtoWYyS+Mvooox+jHIPF0BUCKguYlhBUJXvCN
+	 V7BsWAqyTFa0ap29FgZO0QscTN/cdubdHO9ps6CsRQDkNeFZVyefRhzK/8g4Cu/EGbmzq
+	 PFrUuzSLHJl+oyWyUXohDOEc2ObDO3hDb0yJI6pdmszaMddeP5nC/2FigtfPsikYP14HY
+	 tOLXns/HiMknr2K81x5vGP/ubWClre9AyQqx72Ds6pI2ADYdQ70BRvuBjfVADagGhq1Pw
+	 6SxgrIP6AcfzTZu7DCmS+JXVFUbLMnsZCfV6rgG4bLxXVyVrPJ0IJFDMmu7IolJM9Mg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795729081;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795729089;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=K2W/5iiumMXjFlLM/N2hQ9MSD6+kLpBpFnv1u4EVM04=;
-	b=WykRgyLE5li59UxIraOfpQo/4kLwMiqMQxNpH+fn1KlT/XwHwYmKPkgABGDKRjwd9Q8y
-	 Sct4ILgMFPlTm6CS+kP2yizOZmmTrRwQI/7aXw35XTr+KtBLgrVIuBac5g8YfWEU8UURM
-	 XEZoFCPvKM0cVm6g8l1kHmIsesep2exirKeii0gVSs0p8UaJh2wmsfuV/iowdkWrOOA3a
-	 c5Ne1td+GbVs3PWbMc4DfSzIW/iS6O2p3cZoERhKhXI+6DHsnAZH+fNXOEL3iTE3c3gdi
-	 MmTbC9dAH+rlyECta0HxG/Znt8D/tbjajUjpuLPTQMzvUM0is9ZnEaqM18u0USuZrxw==
+	bh=YRpXQrHWpFwrOpMV8MW5AI9XJefGuUFCrzL+sHdF41M=;
+	b=vGDxJxaTw/SwlG5ekbItfmt/63glEh6NrBh8Gn0zLiN8RZ+CrYc7ihimv5Bq43wj/9P4
+	 MI6tU/j2/6B+uhIFwm54qSqPX7OCBdDsGOmgdcd+jBXUSnoBLNSN20tI6vUZmR02rFL4J
+	 0X5GY8L2/qwHrhY8lwBWTTnh6CVPvIeV0f7vxHC0HkzAGla+FDiJqYj9AsaukI9EbTWVp
+	 Lx2eNFCNNr+wTGrBu6bQU5Ff/L66kBwtu1z0O8mUNlKuzk56TQv5vTT5sO0kL9Avo+M6h
+	 c7fZyViY3qSv3r21W+hhrUIe1kZMuwDhytpFMMahUZB2n1haxiQ7ZyzgciRixVbqVRw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=x2qfrdTt;
-	arc=none smtp.remote-ip=209.85.216.52
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UPH5WV37;
+	arc=none smtp.remote-ip=209.85.210.178
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AB8C606A327
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 21:38:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5AB8C606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DEE606A323
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 21:38:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D4DEE606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=x2qfrdTt
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-3b41188c8b9so5117208a91.0
-        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 13:38:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UPH5WV37
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-8a9f9473029so5585802b3a.2
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 13:38:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795729081; x=1796333881; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795729088; x=1796333888; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=K2W/5iiumMXjFlLM/N2hQ9MSD6+kLpBpFnv1u4EVM04=;
-        b=x2qfrdTtuJCmuejOHvH0AxDiiVjqdEwuktypRPW7t+mgckGGKNLL8IATqHxBuJcfjf
-         DkwfJ2+4L9HACwcElhpSovlmkU2Ojmrb0c2r2jIOSQheYBubcriyRtk63cVZ7jN+liSs
-         kjJCuLVje5STPDt0Tg3lALACLglRps8wuc+/XeHL/BVXingbu1K8mClwJPIM1+O1S1cz
-         h2+AzHt83eW3XudoB23oyeDRH9syx8+jSoQ12mPrB1lcDATeVAYNS0kdqin5oGnwRu2r
-         jDv/nESIE7DaOPH/6H56Jj9F9OE3541Id2REvPmgZNcU0sUXptwHptMRP3lBzo47sGpA
-         b4wA==
+        bh=YRpXQrHWpFwrOpMV8MW5AI9XJefGuUFCrzL+sHdF41M=;
+        b=UPH5WV37lSVsSIP0gw1HSz46gqWtdd/gaSgcGVnsHCi3yvyHJtcogiKy2W0NuBJMs5
+         SQxZMgtibaVfb4HWJlXQiljw2JSaMLbW+jDjBGzm53iv6T8IOccUu3BnJqenbD+IGta4
+         jJVdanFXAoupcK3qYYKXaNo+K0TIq4ANUycAcMw+gZkdcSoU9GmkC6bgodODUEiKuS1n
+         +vn1O2feaiUeZTUZ1YZgsp2NLvULXMbyIV0VhMeKHvZMV6eT6DYqAOimcucWSXy1JzNp
+         aJ7aYks1C02eyM4aBbFX8R5xInvKSZN+LXN8owREq+nPgXprhn1xgsjzauYIQetvq55n
+         ah/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795729081; x=1796333881;
+        d=1e100.net; s=20260707; t=1795729088; x=1796333888;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=K2W/5iiumMXjFlLM/N2hQ9MSD6+kLpBpFnv1u4EVM04=;
-        b=KZpdAIkJ5tjmN56xcG/my3kMZKHx1tDldz9yNWElr4G901I/Tu5gO8mHgonIlLUEZF
-         9Oi8ON7SKprlsj78HTWKvWGnQBTDdShKSkbX6h2CKkzr0KqdUKcUB6B0JKosL7rxARVP
-         o8t3LET3hy9u4MODviESatVrUtZx99fTZvJm9R20XNaPzVZkA6CPi36EVu5B3ti5N5cZ
-         tekFw/wSWz7CPQBu2uX64eaQyU3t2ZsghoWt9Zdqtj3jUVLFm+28gUVyqXK+sheCmWiQ
-         sNgksFz3hR1OTyGyKDdgjqq0W9exEo3JBWX0fN9nYKtXCwLPb9UR+Pdd2WARcgcAU4c9
-         4mQg==
-X-Forwarded-Encrypted: i=1; AL+hErECW6FRwG2UI1ZXzZL/eX/mxoZu2BkTNNvBZ3Wrx0kuaOrJ6aDEHnYW4IGdhSbfLme2W9j8NH674ws=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/Xa1ci8+imwkEeM/DGqdenk5cJiZSuaujWhoYzVo8nEypFWvqI
-	vjOS8hz85pl4fyWKsG+e/N83qlg5vFxajt56gjhvYytSsImMNC657jpV
-X-Gm-Gg: AZFdTZcCELbF/yocZKKtfVSq8epD5UkSjKBhUWdwwz3M7LQGa7b2acfGzIIrI/cx1hT
-	R8gk/YQh4YgAf8OzTYHl0RijIpYpWO3/Tbb/bytUrc6b7KzcQTd4bCnuZVsUFDPIKwQUe7wkHDf
-	iWIqKhT0PikXwAQdQWzQ4QV4X8CgVgGaDJz/SPut20vKLtToUhQ7NplCKOM6LJYG7z984T3Gq0g
-	ZKu574IeeJm+RwnlRK92S8YNUp2ezJzLVnZ3TV9W5FqB8wklVdYI4KkFvBH38BJmembENYkC5wG
-	LXzEK13rXbV5EQql4K02v2hiWAkmPnzMQHZG0JJ0r9G2qcBTi691q9TyHJcReyE2O0NcW20yTjj
-	atvGeaOWgLuHwgbYP4qYTuFYfvoRX7Fz5ni6ts+9kayeoBYCcWquxoPVzzdI5TseZfuXboXSkYF
-	4moPfHYh4LmXPzhvqY17FZnIS45dwlL/HpUyCdiJxx+7m0mUBsCGAeT8X/1d7KYAPXMBSwF62Fc
-	OYo23FqH11jtyYNs5kEN5F3xrdqsxLHiBi2TR/UxF1wFmMb6C9fKOqgtCGOLRg+TjNeDR35nnB7
-	C+L3cAwSG8/SluIT9qW2IKU3wp83r8323PqJD4Fieb9kXrpjOIIr5Snco3xqPci/E7/DMdB9wVS
-	SRe5zY3/1tHgED1lAHchGxCqDJWQfeQPPJS1G9MXKrQfhqSATiPHLXZXbT3PE0UcCAMumTxNFDV
-	8PZ/t1X3vkXxVqbiQ1WMNGXQ==
-X-Received: by 2002:a17:90b:3891:b0:3b4:127a:2bc2 with SMTP id 98e67ed59e1d1-3b41c8d9bfamr20845589a91.14.1795729080668;
-        Thu, 26 Nov 2026 13:38:00 -0800 (PST)
+        bh=YRpXQrHWpFwrOpMV8MW5AI9XJefGuUFCrzL+sHdF41M=;
+        b=WYRzYIqAND/iGDTVzFh9O2VdxBdWUF4TqdUwlzsexFgKFGQYGlDYyzhJbAZxmw9Jfc
+         3C6ZB90i66zM8Sr+9DANo4r0LfGsz8KNuU14jTdqBbYJV/GoMvYX5f3k4N3l501WYJVN
+         TuS5J2MBtGd77+Ubw7OPpMIshGaDGSw4aKYP9QzEzaxYs5Nu6QUJxtaBAncvOxhCOoDB
+         oEYaiOkeo1lXs+4swvli2HrURJi/rGlt37+rovrkR0MxVMTfktJnirZMeqkdrdGKYba2
+         qj/1ay5nDu/t6JlW4eBEE5awvikpnDyepTkz8VTcgguym3/Bdn9XjtUPm8PseyZsv2q+
+         YMeg==
+X-Forwarded-Encrypted: i=1; AL+hErGrbDMr4JRDP43iC3tYmmV62kd5v0XzStu7xwfTyA8nLMHlM1+T1UmGHDidVnNfwvQPDSwA+U0yWUY=@vger.kernel.org
+X-Gm-Message-State: APuU4Z9GkxBuYzZMli51wigF7eF1/jeJWusFEjxUIk0R93QF30ZBiA4y
+	vfKyAXX3YdszCqNQ6TmF3xn5gEa1hzZixoFf1Bk5J5ilztuBW2gUAu3+
+X-Gm-Gg: AZFdTZfcPpQC/SivhMKRTkchaJ804sRCtKXeU6vje6C7F8zOrys6DQX/f4u1jyMRZE/
+	0i4QumI4v0UM5EbWRdzdP3zzg9GdB20bBOtliHQjZVH4mxdBmrjqcC7HLN0tHxjAMJ8fvXCKd4M
+	ejJ1LoEH4FRk0s5p4UaZffBwuXwxJDHpA6wZPlTm+II3909ODVOZRTjZ4QG7sczv/Pw13WXkw+l
+	B6E5v+K+H7Ns/rznTzEA4FogX02Apnx2uzQnIaK1uKAQs1hX8p9/GK67qXrv2ggpZb7xFcx6g4c
+	/zFMxoKS/7djcMYZXhzbKnUPnas7f9dN8tVzNBKMHbrG9l2o+cYDCTK+UBaGVHGnOgfuh/i3hWJ
+	ClXcZpy/MuHOBE8wUIS3WPK2IPcX9dfZH8d1/IFeagM9HrbX57Ttl9HpKRwZW5DwHH0Sgmzsu+b
+	Ix9DxBeu8redL5UoWSlvoSeJFyN8+Gikb22xFSwagK6AtKAjaojrf81OKnQPhxSGXlnSxDV7Amh
+	9TeEio6hkXnoADLCwrh4ilV1M5N4Da8C8rylBJsjppo2eB/H0ywIt6Jrc1oqv9ihLxh+dAyc8qE
+	MhjsSxkxMA2GwTm5T93nS+2NdkvkvAoL7h13jLBaUC8wOzb/gazSubYy4yiTxyj7kralb2snZEd
+	tEYJGA1DEZpIiipR/h+Kt9TROHza179rM5keRma46v2NECwU2/vZlxtTzm3GpNAPVuOrH8KwZyX
+	Bljavjcik6SfBPeRgNXg9RLA==
+X-Received: by 2002:a05:6300:8095:b0:3de:8ee8:8323 with SMTP id adf61e73a8af0-4014c946a9emr20399641637.29.1795729088320;
+        Thu, 26 Nov 2026 13:38:08 -0800 (PST)
 Received: from kapoor ([149.40.62.9])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cde6cea7c38sm11703905a12.2.2026.11.26.13.37.53
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cde6cea7c38sm11703905a12.2.2026.11.26.13.38.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2026 13:38:00 -0800 (PST)
+        Thu, 26 Nov 2026 13:38:07 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -90,9 +90,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v2 4/6] iio: proximity: hx9023s: reject out-of-range threshold values
-Date: Fri, 27 Nov 2026 03:06:49 +0530
-Message-ID: <20261126213710.1047676-5-kapoorarnav43@gmail.com>
+Subject: [PATCH v2 5/6] iio: proximity: hx9023s: reject out-of-range debounce values
+Date: Fri, 27 Nov 2026 03:06:50 +0530
+Message-ID: <20261126213710.1047676-6-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261126213710.1047676-1-kapoorarnav43@gmail.com>
 References: <20261126213710.1047676-1-kapoorarnav43@gmail.com>
@@ -107,64 +107,52 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The proximity thresholds are 10-bit register fields in units of 32.
-hx9023s_set_thres_near() and hx9023s_set_thres_far() mask val / 32 with
-GENMASK(9, 0) instead of checking it, so a value out of range is
-silently written as a different threshold: 32768 becomes 0, the most
-sensitive threshold, and -32 becomes 1023 * 32 = 32736, the least
-sensitive one.
+The near and far debounce counts are 4-bit fields.
+hx9023s_write_far_debounce() and hx9023s_write_near_debounce() pass the
+value through FIELD_GET(), which only masks it here because the field
+starts at bit 0, so an out-of-range value is silently written as a
+different one: 16 becomes 0 (no debounce) and -1 becomes 15.
 
-Return -EINVAL for negative values and values above 32767, the largest
-value that still maps to the field. val >= BIT(15) catches both, as
-BIT() is an unsigned long. The low 5 bits are still dropped, since the
-field is in units of 32; add a comment saying so.
+Return -EINVAL for values outside 0..15, and use FIELD_PREP(), which is
+the right helper for building a register value.
 
 Fixes: 60df548277b7 ("iio: proximity: Add driver support for TYHX's HX9023S capacitive proximity sensor")
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
- drivers/iio/proximity/hx9023s.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/iio/proximity/hx9023s.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-index d509de6e265b..2d2774398259 100644
+index 2d2774398259..c2718723db27 100644
 --- a/drivers/iio/proximity/hx9023s.c
 +++ b/drivers/iio/proximity/hx9023s.c
-@@ -441,10 +441,15 @@ static int hx9023s_get_thres_far(struct hx9023s_data *data, u8 ch, int *val)
+@@ -359,18 +359,24 @@ static int hx9023s_ch_cfg(struct hx9023s_data *data)
  
- static int hx9023s_set_thres_near(struct hx9023s_data *data, u8 ch, int val)
+ static int hx9023s_write_far_debounce(struct hx9023s_data *data, int val)
  {
--	__le16 val_le16 = cpu_to_le16((val / 32) & GENMASK(9, 0));
-+	__le16 val_le16;
- 	unsigned int reg;
- 
--	data->ch_data[ch].thres.near = ((val / 32) & GENMASK(9, 0)) * 32;
-+	if (val >= BIT(15))
++	if (val < 0 || val > FIELD_MAX(HX9023S_PROX_DEBOUNCE_MASK))
 +		return -EINVAL;
 +
-+	/* The field is in units of 32, so the low 5 bits are dropped */
-+	val_le16 = cpu_to_le16(val / 32);
-+	data->ch_data[ch].thres.near = val & ~GENMASK(4, 0);
- 	reg = (ch == 4) ? HX9023S_PROX_HIGH_DIFF_CFG_CH4_0 :
- 		HX9023S_PROX_HIGH_DIFF_CFG_CH0_0 + (ch * 2);
+ 	guard(mutex)(&data->mutex);
+ 	return regmap_update_bits(data->regmap, HX9023S_PROX_INT_LOW_CFG,
+ 				HX9023S_PROX_DEBOUNCE_MASK,
+-				FIELD_GET(HX9023S_PROX_DEBOUNCE_MASK, val));
++				FIELD_PREP(HX9023S_PROX_DEBOUNCE_MASK, val));
+ }
  
-@@ -453,10 +458,15 @@ static int hx9023s_set_thres_near(struct hx9023s_data *data, u8 ch, int val)
- 
- static int hx9023s_set_thres_far(struct hx9023s_data *data, u8 ch, int val)
+ static int hx9023s_write_near_debounce(struct hx9023s_data *data, int val)
  {
--	__le16 val_le16 = cpu_to_le16((val / 32) & GENMASK(9, 0));
-+	__le16 val_le16;
- 	unsigned int reg;
- 
--	data->ch_data[ch].thres.far = ((val / 32) & GENMASK(9, 0)) * 32;
-+	if (val >= BIT(15))
++	if (val < 0 || val > FIELD_MAX(HX9023S_PROX_DEBOUNCE_MASK))
 +		return -EINVAL;
 +
-+	/* The field is in units of 32, so the low 5 bits are dropped */
-+	val_le16 = cpu_to_le16(val / 32);
-+	data->ch_data[ch].thres.far = val & ~GENMASK(4, 0);
- 	reg = (ch == 4) ? HX9023S_PROX_LOW_DIFF_CFG_CH4_0 :
- 		HX9023S_PROX_LOW_DIFF_CFG_CH0_0 + (ch * 2);
+ 	guard(mutex)(&data->mutex);
+ 	return regmap_update_bits(data->regmap, HX9023S_PROX_INT_HIGH_CFG,
+ 				HX9023S_PROX_DEBOUNCE_MASK,
+-				FIELD_GET(HX9023S_PROX_DEBOUNCE_MASK, val));
++				FIELD_PREP(HX9023S_PROX_DEBOUNCE_MASK, val));
+ }
  
+ static int hx9023s_read_far_debounce(struct hx9023s_data *data, int *val)
 -- 
 2.53.0
 
