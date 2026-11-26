@@ -1,60 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.70.43.16
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.122
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795678382;
-	b=RXVWVD/ivh+D71B2laJhD3wN+bXvGTiAgnyDPyGOY6BMYElAn9e5P2AU5PAndjiDSR5h
-	 bAKgB3vfs8sGmkSgxd9G4q/mN/WYeOMZxAaa3yaZH2BPdgd1PKH3XswgGrB6mkknoeS/q
-	 nEraZVryHJLWv3HRiBypIr6FeLiRKujS5tP4mlx3hPiSsoDMI7ZwnqLzslSBv+UgX9YyM
-	 QLh4y8PdkcMmO5UD3madl+Eg9evmCjkeAjZnnQGdKmUazAoucJHAFGP9aIF589S1OjAeb
-	 wf9A4lUh2UEC5WOGUMF2Zjr53KVnWfRDjEaCJvJM2Te2axo3gmjrj6hEMKijjCX0urA==
+	t=1795678523;
+	b=BU68/S0YKqJHxD5HDEm8zjmG8388u0XjDSevpYOVXaY5ldddRydmsO+w16CWII8nP7Ci
+	 p839L90YdO1QHuckvqpr41n3kZ5BLN0ewDVQU0E5uUGc903KQxG5xrxswfkqf/1dfy7x6
+	 AfNNRc9eSNqlp99gyo2ZefmpRXHF3tEmJEthJ9BDLckcUHcgeRoECvJTeBayaFcMWCnms
+	 3WNecdxpuYo2Hip4XqWe5/JGvc/d7Kh6nqrKLsTcdzzjVuKxkoFDsL12h/SfEY9xhaMWm
+	 ChAECo3NlXqXmJZiKdW8fSqDgyfrAeCGMjWep9eabliYjQ1fWT4shPP8lYG0kE8xOLg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795678382;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795678523;
 	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
 	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=Gd5OPWaMkDUUnMjrqTNlvKgo/YuPUSfOI1ie5YD+3dQ=;
-	b=R6Mz0hlUdx4pQOWJ5ygor/xmLhsUeUB/xwV15BF6/moNCS0jrh/tnstFzkxZdMoOj8pF
-	 5gOPdKG8af1oLxy8J3BM1HW73x+rBw6dzAiN6SMjyBZkyHGzNBxqGHpn5opn9wFOVRj+W
-	 riuw9ZEusqjo6oeAj9XNkOf78j7ehCULMM8nLtg7QM5S7lgHtICJO5IhHPuXj216/NW8O
-	 +8OzlwfUbrRbxjVxcfWvgJVOn2nDmU4t2S7dNqo4Qs+iACRtBnSJBRZbhXLuUdKUwGqpq
-	 fktLHxK43U3HSxhX3CqQR7b3p2w62Wl4pNVkI8Q1Nt2btUSpNRA3myb0IT6g4qvxgyg==
+	bh=XUSJGTide+xDGpIYleL0SwfRegZX5gU/UVkOK9ZOXc0=;
+	b=vay9enI3KJxIxvljKsGVAAbVPZ02P8jHV5RwIOJ+i2YBsLkh+sNS9laxe+1tDboSFy8V
+	 o+Gtw+r8JZg3sjy8EcTuNY4/ZdethQeQAnTlgc31cbP9sEIY7yB8baw8Km9Du9BMzlldB
+	 aMR/Ekcq+0Tst/Tegyvdt9AzxGk4V+BwLwaW78c384K0vkpQ6ZXV4akQ7m8/MuAKGe0rc
+	 zu/aW4TLW1kVhBZu2uOnmf6q7LXg/tlQrdLshQxFhV7VaMdpgt0m7ccT1PHyZZv8DFXPH
+	 pXb/RrQxGKEu2h94UEe4hm5mU5EYHX4qHWwLE3d6MGkP2p+0wZxIxSD7Gc1r0OXvJ9Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=protonmail.com;
 	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=xcIIn+Dy;
-	arc=none smtp.remote-ip=185.70.43.16
-Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=mtM9STWX;
+	arc=none smtp.remote-ip=109.224.244.122
+Received: from mail-244122.protonmail.ch (mail-244122.protonmail.ch [109.224.244.122])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3775606A31C
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 07:33:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D3775606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B86606A321
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 07:35:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D0B86606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=xcIIn+Dy
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=mtM9STWX
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1795678379; x=1795937579;
-	bh=Gd5OPWaMkDUUnMjrqTNlvKgo/YuPUSfOI1ie5YD+3dQ=;
+	s=protonmail3; t=1795678520; x=1795937720;
+	bh=XUSJGTide+xDGpIYleL0SwfRegZX5gU/UVkOK9ZOXc0=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
 	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
 	 Message-ID:BIMI-Selector;
-	b=xcIIn+DyvpSiZrHpjcVsm1jQa8TLIEkIzdcQM/f7sy2L/G60qLOmQkzeFVHArEJ8y
-	 9ymoX72VDcKjzEPH8eDIpaw+BP+64G4t5/FWeXfZaj+UMsKQ88TPuSEi90M0dPlpTz
-	 90H+2Em+rkreoNMXAHLGtJ6ZXTuC75LcPTwG6u1F2eb5d7p/e2+jwU9MayItjzswWJ
-	 WlLyq6hBgQ2zrTd4XMdI0nMQc8JuelqbfV8hZ5WFHr11H7NVEXl7PB9hEUeYJisMfc
-	 SA+8rh5O3Z0Z1D0Ez2TioIcd9yBOf3cv2f3nnevbgjQdEghECrEP5XOLMT274mX/Pl
-	 1EuD/tMuxhD7w==
-Date: Thu, 26 Nov 2026 07:32:53 +0000
+	b=mtM9STWXKAqD9WGspzMlHKmC6U4qA0TSAq53ucmxbzOIASs2A7rXAYkYTqoiAm35v
+	 xTKZPc76zxQPDHAA6sbS0mkDMDwY8XHGl5OimhViNuEwG5c7UkVDDtLaj9oGjW6L6G
+	 r5N/m7aUP/LY2kMjM4VjtMiBVlzWjCYuLvDG2U9spFA3d6796bSicAk/l4b3R2wVuD
+	 tcc9h3bK+rHaZ/YzJWhiEzHzNh2y0t46Mcw5rk4LiRa/fncrRFEdH98kkxY2ia7LB4
+	 RWDr4t9g/9LjPcxHaMOs94wo1+FxqiLl5IbGi4s/wqhRCRNgeO0ooxx/daMPvnm6Gc
+	 d75jHqlB1vdCg==
+Date: Thu, 26 Nov 2026 07:35:14 +0000
 To: iasnezhkov@gmail.com
 From: Roman Vivchar <rva333@protonmail.com>
 Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com, linux-iio@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: adc: mt6359: fix MT6357 ISENSE/VCDT and MT6358 VCDT request bits
-Message-ID: <r7Vh1EmPu-wr1NpHp23HZp7Fa0qmIAj6FTo_g8upWCKPJmnTk4kpjHxcDEjYankGVSc7WkkdWEklsFFUDQBF_XRB3GMM2XauzSsdw39czF0=@protonmail.com>
-In-Reply-To: <20261126031013.27701-3-iasnezhkov@gmail.com>
-References: <20261126031013.27701-1-iasnezhkov@gmail.com> <20261126031013.27701-3-iasnezhkov@gmail.com>
+Subject: Re: [PATCH v2 3/3] iio: adc: mt6359: fix MT6358 VBAT impedance resistance ratio
+Message-ID: <RyeVHYGoYxuKtlQ0QPskoF7emL4yakkPeBUW--rPVYqvaAM4Q5Pm1GACcF4t-1DjyxPPOMNyfAiMnTxVqugYC2MBKxUBhRiDDjtcPNK4Z7Q=@protonmail.com>
+In-Reply-To: <20261126031013.27701-4-iasnezhkov@gmail.com>
+References: <20261126031013.27701-1-iasnezhkov@gmail.com> <20261126031013.27701-4-iasnezhkov@gmail.com>
 Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: f2f976825cf3640273303d75940ba7bcaadb679f
+X-Pm-Message-ID: d24a110af2aa28dfc2cca5959e1a53a29ffd220d
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -72,25 +72,28 @@ vnull+iasnezhkov.gmail.com@kernel.org> wrote:
 
 > From: Ilia Snezhkov <iasnezhkov@gmail.com>
 >=20
-> mt6357_auxadc_ch_desc[] sets req_bit to 0 for both ISENSE and VCDT, and
-> mt6358_auxadc_ch_desc[] sets req_bit to 0 for VCDT. Bit 0 of
-> PMIC_AUXADC_RQST0 triggers BATADC (ADC0) rather than ISENSE (ADC1) or
-> VCDT (ADC2), so polling the ready bit of ADC1/ADC2 times out unless the
-> channel was triggered externally.
+> On MT6358 (and MT6366), both BATADC and the battery impedance VBAT
+> channel use a 3/1 voltage divider (5400 mV full scale with 1800 mV
+> VREF). mt6358_auxadc_ch_desc[PMIC_AUXADC_CHAN_VBAT] erroneously uses
+> 7/2 (copied from MT6359), over-reporting VBAT impedance readings by
+> 16.7%.
 >=20
-> Use the actual hardware request bits in PMIC_AUXADC_RQST0: bit 1 for
-> MT6357 ISENSE and bit 2 for MT6357/MT6358 VCDT (matching MT6363 VCDT
-> and the MediaTek PMIC AUXADC hardware registers).
+> Change MT6358 VBAT r_ratio from 7/2 to 3/1 to match MT6358 BATADC and
+> hardware.
 >=20
 > Fixes: 3587914bf61d ("iio: adc: Add support for MediaTek MT6357/8/9 Auxil=
 iary ADC")
 > Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
 > ---
 
-VCDT timeout is gone.
+Although this change looks correct to me, it's a no-op given that it's
+not possible to read the channel.
 
-Tested-by: Roman Vivchar <rva333@protonmail.com> # mt6358
-Reviewed-by: Roman Vivchar <rva333@protonmail.com>
+~ # cat /sys/bus/iio/devices/iio:device0/in_voltage13_raw
+cat: read error: Operation timed out
+~ # [  243.402155] mt6359-auxadc mt6359-auxadc: Resetting stuck ADC!
+
+You might want to fix it in the previous patch.
 
 Best regards,
 Roman
