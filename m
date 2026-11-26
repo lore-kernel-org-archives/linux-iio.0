@@ -1,47 +1,75 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795684500;
-	b=euhVQc5OJpCg95X9jpTGUxU9OD/Zz5JbwFGL588YCd+4CS67lAqwZj0SRpFnBunnsA+Z
-	 2Lkp2RJCbzT2P9Jgb9fKfA6zd5ktbBM4Zvb1avYLTvr3tWy5+ckdOZWjeT41ZOVCMB7NT
-	 T88ECcIepy592l9LnIGRm71mmGcoTYXkeVvANL/ipmOqAgz9KZ4pDsjDT2LDoHm00Cdiy
-	 gAIJYWjzDk5qGqoQfi4Ml4SMFKSON9WlYFutn5/59O9ovTaixSC5arrbd+d/YQchI7zMd
-	 4yZKLRpr/aJT8l/isMWkHGx3x0uYXQBHxLn51U6XOGWoy3oZCaelb/ZTjwuGWKJRJHQ==
+	t=1795685142;
+	b=i/WfMLNDB0xyLwHh/n8q+Z6Nm//KmE4sHdUHbKivEOt2VYQBYS/ts1zFFI7X2FbbeWKg
+	 0LLsjjw+rscgVQi853p/FEI+RYwB7E/5U1gK3fD4WcZJQ57iKJf12egJViV0Is3lUnGBw
+	 ld9cZFR1JjkCOHwLfxwrJEn/pTmot4eA8g7iMBsLOwWMMe08ssM1CCi2xQGa9x4EzovJQ
+	 GSLGpIRGluJGoIT1mrIKcucmzrJlfkBF047R56o/WkfEJoY0PJfI/C+qFEVJ1CAfMg+7o
+	 99Xu+t5GDKDCbbvRErim2zDoHyL1JkQR93LYTaLGuCMXo0xXdriF5x45EqAUVSmsGXQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795684500;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=zdxkVKL9JdQvZ0j3hJp9JYWpC9BWal2BzS1RegsGTQU=;
-	b=KAMfRfiPwrWwOxKId44CwiD9OFqz9BGfF0QVLLQh9b0MYU8lCi5S0UVmkgiuGANdEJUP
-	 L+vjtefzQ6p1uy5/DkhorVd5PZsdkcWsUnazcY8F2fsoBq058Ad7M+BkpnoPtEjlg+rY5
-	 KVEqOO5yHJrmfHeS7J7RfGfxJfQqLTKQUPeRIC42w4NRbOruKpf9PAg60N3GFzR6mwmfj
-	 k3xLUPugZjAmAL71rdwuaI58mx2mZK8Z/+47cgjRj4XjBI6evllG2vDNVTkFPYOhR0sjq
-	 Ojm87dRu5/+wJHvY/kCkpy/nlWPZU5F156p/2JwcTJ82hqKGBLMR8BaW2Kpn6/M4ezA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795685142;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=7kHgHxT5Ek5JU2p4PufIw+wkxobKZgF3oxjmlTkBiYg=;
+	b=bT+5btE3beiyAEEvBTtjCOmUzbZHkRDZlitZcvmmuhTKop7vjU0mZqLs59j9dD9Ye3hY
+	 +U726TEMRUWyqeYzzwM7qUtlbD7URYsTNQUfpicWT1rpbk76R5+awdcrBIS1zE6Bu1GdV
+	 T6+e5DN10rnKBS5q8GUCVW5L3GGxy3BI5QQR9v5xri+hGRTMhvYdcTjz0l9h+iHCcz2M0
+	 +khEMY5at5t8FK0axkgcGjKS42WNMsTCM4hvGYrvGLgQLme2YrX8fEyzzz7w2jeYpruoq
+	 Dn2zQ99aWW8wIo1h20EtbiyG9fUzPeNdPQ/mGs7MKFCGumTpLthtDJ4an5XfFF+wLOQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cmftPjnC;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LpDBL6+g;
+	arc=none smtp.remote-ip=198.175.65.13
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8AD1606A323;
-	Thu, 26 Nov 2026 09:15:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E19B8606A31C;
+	Thu, 26 Nov 2026 09:25:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E19B8606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=cmftPjnC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59DB1F000C0;
-	Thu, 26 Nov 2026 09:14:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795684500;
-	bh=zdxkVKL9JdQvZ0j3hJp9JYWpC9BWal2BzS1RegsGTQU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=cmftPjnCCRrkACKCS4O2CKDuXU1xv4XUW5EOo12qUuo+8zINlDMtopO9qZT1QZWAf
-	 Y9bIIvwIqaPtAF7xNne+XFZIIsZLTmq9wIEqcyGtgOvRlQbNelFRYARZlZvFiaSg9S
-	 7wWWQzFkdOX7SWXyS0lOKX4TWb4ISfXCdKceRGvCEjN3fWgZQKR8EyKKCnn6Ha2Mpx
-	 R5lS4fqpLjoqAy5W8Ao+XuDi8HrzjIEN4kx5hoFWTMBo1jMPra/qJKvUfrLYR/Ekk0
-	 vFOggNddKRWfF9wxzGDU9xpzbCPF/KzxYYEDYVCPFECpuN7V0pPXWwhK6Msg/f0JL0
-	 +esMcerRUAHZw==
-Message-ID: <9ab635a3-a786-4bb2-8ac3-131ad62b5426@kernel.org>
-Date: Thu, 26 Nov 2026 10:14:54 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LpDBL6+g
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795685142; x=1827221142;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ybeAPc6iqgpJgd3cizVcIIkQO1XvmRAvYnQ9+k9Udpg=;
+  b=LpDBL6+gbaQM4Bnknj4K6FHUtsdwZoUJF9sMwJAodzcCAlZOr7za7PoM
+   +zf6xgmcimf7cO9SfZjvJqUftRVvWfpOXNAHPGABbGOpqGKGtaKoe8erp
+   dBW1mNcNGbzl8rxaikjFSQ3LuFV97VCHcv58ADFJxcszMSrmk5yiafkMY
+   oTY0TCWf18hu/l86WeNXHjn7d7Qf9zyMS8gTcT/ZNeJsUKInp5x31Mx36
+   tG1DiOS3XFlxM341AaRUmXnZ2xa49qzYQW1YPMAMAkdMVPG/J7qn4MtyL
+   Yr0pwJt+p8LhHz11uku4hpW1sFXkwklavDEHIwIlM9oIbrKX+IFvh1xEW
+   w==;
+X-CSE-ConnectionGUID: 1iZrSU94SsmTTqyqVMueBQ==
+X-CSE-MsgGUID: 9ZHHJgYtQ6GLTOKcxyvLqQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11977"; a="4495442"
+X-IronPort-AV: E=Sophos;i="6.27,234,1787036400"; 
+   d="scan'208";a="4495442"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 01:19:59 -0800
+X-CSE-ConnectionGUID: 44vbINN+RtGDU9xp6IlDfg==
+X-CSE-MsgGUID: 1VYzEzlGRwOeRjYwiYz21g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,234,1787036400"; 
+   d="scan'208";a="11995726"
+Received: from ettammin-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.208])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 01:19:57 -0800
+Date: Thu, 26 Nov 2026 11:19:54 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: iasnezhkov@gmail.com
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: inkern: guard fwnode_xlate with info_exist_lock
+Message-ID: <awf5uvVpYC72orT_@ashevche-desk.local>
+References: <20261125234827.94791-1-iasnezhkov@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -51,35 +79,62 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH 0/9] iio: gyro: header cleanups
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Nishant Malpani <nish.malpani25@gmail.com>, linux@analog.com,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20261125-gyro-kernel-header-removal-v1-0-969b3e668d35@kernel.org>
- <20261126013331.0e6bb05e@jic23-hlaptop>
-Content-Language: en-US
-From: Joshua Crofts <crofts@kernel.org>
-In-Reply-To: <20261126013331.0e6bb05e@jic23-hlaptop>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261125234827.94791-1-iasnezhkov@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 26-Nov-26 2:33, Jonathan Cameron wrote:
-> On Wed, 25 Nov 2026 20:24:01 +0100
-> Joshua Crofts <crofts@kernel.org> wrote:
+On Wed, Nov 25, 2026 at 11:48:27PM +0000, Ilia Snezhkov via B4 Relay wrote:
 > 
->> Remove any kernel.h occurences in gyro/ and update the headers in
->> accordance with IWYU (at least loosely).
->> 
->> Signed-off-by: Joshua Crofts <crofts@kernel.org>
-> I suspect we won't get much additional review on this lot
-> and seeing as Andy already took a look, I'll pick them up now.
+> __fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
+> and invokes it without holding info_exist_lock. Concurrent
+> iio_device_unregister() clears indio_dev->info under info_exist_lock,
+> allowing a NULL dereference or callback execution during provider
+> teardown.
+> 
+> Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
+> matching the rest of inkern.c, return -ENODEV if indio_dev->info is
+> NULL, and bounds-check the translated index against
+> indio_dev->num_channels before indexing indio_dev->channels.
 
-Ah, well Sashiko had some remarks to patches 2 and 3. Alright if I
-send patches for you to fixup the applied ones?
+Sounds legit.
+
+> Found and drafted with an AI coding assistant.
+
+Move this to the comment block after the '---' line below.
+
+> Fixes: acd8256723f2 ("iio: inkern: Add of_xlate function to struct iio_info")
+> Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
+> ---
+
+...
+
+>  	indio_dev = dev_to_iio_dev(idev);
+> +	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+>  	channel->indio_dev = indio_dev;
+
+More naturally the new code line looks better when placed here.
+
+> -	if (indio_dev->info->fwnode_xlate)
+> -		index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+> -	else
+> -		index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
+> +	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
+> +		if (!indio_dev->info)
+> +			index = -ENODEV;
+> +		else if (indio_dev->info->fwnode_xlate)
+> +			index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+> +		else
+> +			index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
+> +		if (index >= indio_dev->num_channels)
+> +			index = -EINVAL;
+> +		if (index >= 0)
+> +			channel->channel = &indio_dev->channels[index];
+> +	}
 
 -- 
-Kind regards,
-Joshua Crofts
+With Best Regards,
+Andy Shevchenko
+
+
