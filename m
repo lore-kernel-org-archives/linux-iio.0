@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795695226;
-	b=jtLsjk2QaHN6AAv2N6iPSLzO+mDq/fFlE4cgSfCG8JtDG5SvEmw9lzCf1VvfdJ1T7mOa
-	 mO2JLbWZinvza674ppvQWMMUycDURcuztni2SSg4PocGoOjYrg6IHv1Fr2EcMZMhTpVSJ
-	 yXxzYUxHi2PCgLr2nZe4StgqyuPtuN8Xv29sb8tbAI+XuQjq2hbxBVTFtUiLvvE+WjkR2
-	 eoepr6wTdV6me0QtWbLwo2NUray96dH8wPF+OH3K6SQrqfLxmgexDRSSZq1Q+U2BMAHcM
-	 yVToR03vda0aHOvia8q3ZahqGwFVfDhxCPYxxuKOcxyHIpkPyvZ2nrCaD+UQugUYYyw==
+	t=1795695227;
+	b=ed5LsWd66kzTL9+R4z7wgb2YNDTN9GvzwmF4li7301sBQZF4MG/5I5Rr9wFKldbEjuKn
+	 aG+xHjxa3Hhsjlm7kyDkBmXSq9YApNWBAtb/TKGP7n6DW/WIBQ1WwqbMqv7qigbsgZ6yV
+	 NrLARILuVrMr9a+cCLmJyb3ddQhPETJ1n3NkYiBHf5hd8wSVEUrd1YLXnA0/z8bNSA9Oh
+	 im6EcmILNvU0G2TKpL0sIkw6Oo9NJUGM/ot0zsOq1uO0sLjQE2cCEmUUpgZYO3krSRsHk
+	 gKneLOCwDoAkCKWb/cYRHM2iKtRenq7bPNeiYhazjEgNDYQCEr8ug1FWlTmzpDZGwSw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795695226;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795695227;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=tcANGGo5MkDIwyhgXmQGaJsdJHZsNNGXY83sETzkkmo=;
-	b=FtrJkDeIL2Knvw6vEXXxsHgYUbgO3jK0i1w56sNvxu9BhJ/sx2fRuHMrmRslmr1mPA1Z
-	 jVb/74xnZ0oOB1M4wXc3r5w9oezpLNsT2R9/g9kwDfTONQISFOnxn4SE2l+PrEkzyEKXW
-	 iUaVqKNwDwEfQ1tBecRr1yK9b1Iw0IKEiJK5syjAxJhLQM2aD7Ql/Kn3r151VvVayV4vA
-	 YCUYBpaIAZwqKl7IPwRvV5XpqxybiNRYdHD4m5hECiFSxNFihzyODtAmKe9kLzHG7A5JD
-	 UUfgee+Nc6tCL80n4gLH6lOY7fIApFdQppKEC0jth4pElw1Z/HO6hCOe2VWZDE3NptQ==
+	bh=D8Hl+ZArBMHl5ZMBuXt18rLKsISWNonXQJoD4xB5WWk=;
+	b=4YzUh5/1fp4Ak7tPGL23PNgpd1BdjKgrLnfwWGTGrDgT5vW10/8eC3EdeizstPrwpXOR
+	 PDyUq6vahbFWBOzvS8tvqMRHobQoAmlyj72pDQoVTdlertfkc1N30VIY6lyAyF1qOg3HB
+	 a9CsL2ZHN1ZliZR+uOCQIQgjQFLxuHllxzKJFw03uKLQUe7vZVXu/pabCEMPY4KSGwuxt
+	 7i3K1Pne4uDfzMgVL6aYTP83BJkUFYfJ5FnkKQdI1W4+8RH9mPnbkMIjUdsha6bx/3gvQ
+	 zSPRmEXGVoSlrQEcrwiVujdTej8pKZ1JDxYweZCP1ZuFo2hGsk4dwkgH/uq3prxMaCg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Q2IUb0vz;
-	arc=none smtp.remote-ip=209.85.208.182
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0dbZRonn;
+	arc=none smtp.remote-ip=209.85.208.179
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7887606A323
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 12:13:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C7887606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DD5606A33D
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 12:13:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63DD5606A33D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Q2IUb0vz
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3ae1fd4252fso67501771fa.0
-        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 04:13:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0dbZRonn
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3ab4354db11so68444711fa.1
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 04:13:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795695224; x=1796300024; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795695225; x=1796300025; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=tcANGGo5MkDIwyhgXmQGaJsdJHZsNNGXY83sETzkkmo=;
-        b=Q2IUb0vzzkjcBHWyx3EtI9HxLkJdeCdgJll0PJCmbxclaXehtBoAXJ0PAQ+9B7WIlz
-         +zPZ9qRHGZpL9k8+WqJ9ZPPTbcCxgq1neJvUcJqMu+NnPu5zIOwtv+poaop4ReOLWRWB
-         FfumIHkeOqPgvROkY+4NzVerGHur1jkHhonog2wv0kDeHMl9Ven+tUMyKejax2izf/1w
-         Li4z3N39BNlX78yd2MR9L78lk2z6FHgRH41jpzxCXY7M1CRbql+9WwXs4v+IcJS8RgOW
-         AAJnXnCkcCvsFuAYhFWA0gKTXoE5ZI/RgiBKljbmGjlWE7ooQO/UC7CmiiPv2P94qwYz
-         HJ1w==
+        bh=D8Hl+ZArBMHl5ZMBuXt18rLKsISWNonXQJoD4xB5WWk=;
+        b=0dbZRonn2vtZEp8dpn687vWKKWl/p9+l/gLUQQ6AI8/C/06FwxEo+x2JxOOWDLeCSD
+         eKq0mVr5bYdSdjVRjx2PRzn0k9/PuTOLspjr9m0cLO86Q+/0FY8IKy6b4EQ2JzkCTvSV
+         wLhGpuqsIVrAlgQVsXZwM0z407UfyeaAeOlNIs6oqIJ4GGIWlEXsI+qX2IpM33bs8Syf
+         j1pJcebOrGuuFsblz/84xrzI473CobGuD8tXsw6w485ASJ3mzl1fLz9pnKnDXnmbvr8+
+         o8CnUth/KemgSZkRrXzLcFlv+d20jdpO3H5Nuwtj4+IHRVFkDf1i2OdqrvvvQyGZpWWL
+         RO/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795695224; x=1796300024;
+        d=1e100.net; s=20260707; t=1795695225; x=1796300025;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=tcANGGo5MkDIwyhgXmQGaJsdJHZsNNGXY83sETzkkmo=;
-        b=ZnSj+8pmC2MRI69bzNoHzYQBj9BI1vxLVz/o2+ESZFWr7/RP6jlqkDZnULrnDW8QSA
-         rzPeGlCnX7qK0Ic5GmdMhTRJFeRSebLLHeIyfzAk9EefGh6a137vZTyrKVJ4svQ87Sk8
-         HdpGggB398k1SzMrU398ZhXFF8NEs+WiHpCQXcwb4wwMI7+t64thmmNePozl04wUr55L
-         xBCVvNhXIqiSykcv/Kt0Q7mHvLUWc8pRY2ic92HC+Cs01wQbC56Y6d3h8eGQa9VtAKOD
-         01fIedkn7s9+xUs4i3nBvRkMutHjWIx8sPubZYV/lB/EDLAHwpaYu4fAcchQBp6OakvZ
-         bXVw==
-X-Gm-Message-State: APuU4Z+ACgJYXY92gwmuOsl8T1riPg16iz03tV+AiWS/yjtxIJDEA8TH
-	KW5qNNjtBwq8bJSSLSzz4CFBFf6ubv8mYqLmgZJgj7mOnNDB0ZxmzXBb
-X-Gm-Gg: AZFdTZfgf21oCToaDoQ+ISc8h+HwhDiTHMwJ3I9HfTMvgroDV5qMnQfEQsdqwstZYBv
-	BkA/eHX1PlTNiRHF7DkQm0OWPrbDj4lvWzvOAzrXZK67/vPBGbvHnznhAinSxc7sp9q68+/7+3Z
-	gT8fw7rzvlDt28qiF96x5n2TKO7Ap8LUuNX5MXHEjx6NzQn6SzXUV3XmCbErBQcsZsLyh6XvlzE
-	syXxLuMJ6t3LQ5m7RrxqoWEEMmSjEvAn/NHZ/zTMzI3ZN4EfnU+sb4bYYXtoOHVOH4SxPIB8bbr
-	yXB5hslyjshU/OJCSzQhD0LsWAMFS9PNLBEeQItHJPzeWc3sZgppAyYHjIrfzGYcVczbxKVhfrb
-	OfmBP7AgDGr1LFtaLGMxgxcz6dP03knSuTppg3i0NIuMDDUTxnwl2kxNQc93cdMG5giGboP1DuQ
-	jo1moyZpWyzX40WqUDmzCzdRAI98+pfKXkYQ++OW2LvxR6su8DA2LfKK/nFO2tM6aBsg4OcT9Ch
-	J5gNoDsfrBl2GadyluHcpF+JRkDS2fqNwJqKqNJ3QZmW2UvfU1r6L+rEhOU4G+el63WyvbAbCbP
-	zTZ1hsTsPVhlaq0ko2aiisgc/+K5r2X1QVgkFMFd0rjG/HRX7srmz/pPpruGsAS9dD7VbqAljPZ
-	5noYw74sT5cx/SgQbe1RmIpbsfrn9rSd/DS+I
-X-Received: by 2002:a05:651c:31c5:b0:3ae:25db:8a10 with SMTP id 38308e7fff4ca-3ae7f9f4fc4mr54946551fa.18.1795695223962;
-        Thu, 26 Nov 2026 04:13:43 -0800 (PST)
+        bh=D8Hl+ZArBMHl5ZMBuXt18rLKsISWNonXQJoD4xB5WWk=;
+        b=p1NpcOsXlYBd3ptK/QAcmS221jm85jpJeit7s08DGDLZ7xL9wmDVKDXVfZflt4XWH3
+         xhcE65gHbYpZ4djXZXSOyyPnoWfIgV/EcajIIhJcWxpQFqKIIHIhNPg3esSPmEkMFQU3
+         1bfWAXVBLYokVbV7vKKiu4154MSKhroG5OV5zMa0q0s+3bFp9a4HUg6Y99TF3EBbOSIZ
+         k/TtNC4zzHVbwnzHEAA8p17+wGsZ+OJ7cUCqYCaT5U6xSXDP0hbzOSvGhJ0DdbPnn63e
+         L1LdR2la9bMyQOMQQldaADG9VH0QUMrMHFJcqRrL7Ivj0dZVV6j2dCsLGdHSfKVp+Yp6
+         Kfqg==
+X-Gm-Message-State: APuU4Z/nbxra0o3drNz15KqYRSt2eXiZ1JOJ3/24wYySxHlFK5XjS0YU
+	Att247h/Y8h/pw3DynuOu3OoZoAXsUAvvdsty3j8aaGPlrIjZ9De+1uf
+X-Gm-Gg: AZFdTZf2AFikbmHCP0IDWBpG1UzWAH82gh5mDhdYlJmAD3vcGr5T1xg62DAvb2G2YVn
+	XULM+VZT7NRNmZ8ph5ZjXmL0fHYYBbNcufqTMQhQe5JXOvbVXxx026I9D3P3K5rCh07qmNWMV/J
+	SqxO0yuNiXh9vTbAgmaJgdSMqArATHKgeKrshTYFdaLGgtkFDvt+C7gwf2FXdrI5pndhnJdCPdx
+	GA5/WCE/uy6my+dpWJrZq1qw0Vh+2AyDedRQiqdSImCa4X4xWUyMF2lrFRt9l57RJECbubI7pNo
+	8fkiksfQyJajhjZ0kYhV6Iqr1assBcjN+8trMWRIO//yTs1v64umxkw63CKmr9jS9Q3yqIYOL+P
+	5q4tHzNrrszwT7DSIUbkPDXzFPj0MdNhvHe6jpjZ2J93pktsnQ/p/sFPJSAMowSp3erwkXaNhfr
+	pIzcebs2TkpX1pM//FsuUh6AksljGSjZmmKO2NJe7FlU4foNyd6d6187wsrwHpEul9O+zfhdlJU
+	fCthFgioBCMYgGDb4iCZtuyDL/NVP6goQif5yXpcICFF6ML+ADudGkHx2y+mqigit/kKg3jhK2g
+	lVtnnWIrV5+hF4AM4n15Eg0KDFeqolRJdS+vk3ruMqYf/W1451KnIL1NLrDxs15bjZ9xkfa6CWH
+	OCVoPlgdZ7fjdHq3Pai0L+tWDT4P+vhREN8u7
+X-Received: by 2002:a2e:8a94:0:b0:3a9:d9db:61b0 with SMTP id 38308e7fff4ca-3ae7fa718c7mr56022941fa.24.1795695225369;
+        Thu, 26 Nov 2026 04:13:45 -0800 (PST)
 Received: from yantra.. (nekmmqtmzjx8yvukhae-1.v6.elisa-laajakaista.fi. [2001:99a:d7d:c300:68b4:f70:61d8:6e86])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae8044e8e0sm56541791fa.5.2026.11.26.04.13.43
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae8044e8e0sm56541791fa.5.2026.11.26.04.13.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2026 04:13:43 -0800 (PST)
+        Thu, 26 Nov 2026 04:13:45 -0800 (PST)
 From: Rupesh Majhi <zoone.rupert@gmail.com>
 To: Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -86,10 +86,11 @@ To: Andy Shevchenko <andy@kernel.org>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Rupesh Majhi <zoone.rupert@gmail.com>
-Subject: [PATCH v2 3/7] iio: pressure: dps310: use min() instead of min_t()
-Date: Thu, 26 Nov 2026 14:13:26 +0200
-Message-ID: <20261126121331.10438-4-zoone.rupert@gmail.com>
+	Rupesh Majhi <zoone.rupert@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v2 4/7] iio: pressure: dps310: use KILO for the Pa to kPa conversion
+Date: Thu, 26 Nov 2026 14:13:27 +0200
+Message-ID: <20261126121331.10438-5-zoone.rupert@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261126121331.10438-1-zoone.rupert@gmail.com>
 References: <20261126121331.10438-1-zoone.rupert@gmail.com>
@@ -104,27 +105,42 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-min() accepts s64 and int, both signed, so min_t() and the cast are
-not needed.
+Spell the Pa to kPa divisor as KILO from units.h, in both places.
 
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Rupesh Majhi <zoone.rupert@gmail.com>
 ---
- drivers/iio/pressure/dps310.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/pressure/dps310.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index abf1652980ea..493eb56bde98 100644
+index 493eb56bde98..f802c2c59072 100644
 --- a/drivers/iio/pressure/dps310.c
 +++ b/drivers/iio/pressure/dps310.c
-@@ -848,7 +848,7 @@ static int dps310_calculate_pressure(struct dps310_data *data, int *val)
- 	if (pressure < 0)
- 		return -ERANGE;
+@@ -33,6 +33,7 @@
+ #include <linux/slab.h>
+ #include <linux/time.h>
+ #include <linux/unaligned.h>
++#include <linux/units.h>
+ #include <linux/workqueue.h>
  
--	*val = (int)min_t(s64, pressure, INT_MAX);
-+	*val = min(pressure, INT_MAX);
+ #include <linux/iio/buffer.h>
+@@ -895,13 +896,13 @@ static int dps310_read_pressure(struct dps310_data *data, int *val, int *val2,
+ 		if (rc)
+ 			return rc;
  
- 	return 0;
- }
+-		*val2 = 1000; /* Convert Pa to KPa per IIO ABI */
++		*val2 = KILO; /* Convert Pa to KPa per IIO ABI */
+ 		return IIO_VAL_FRACTIONAL;
+ 
+ 	case IIO_CHAN_INFO_SCALE:
+ 		/* The raw value is in Pa, the ABI wants kPa */
+ 		*val = 1;
+-		*val2 = 1000;
++		*val2 = KILO;
+ 		return IIO_VAL_FRACTIONAL;
+ 
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
 -- 
 2.43.0
 
