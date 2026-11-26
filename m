@@ -1,101 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.52
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795671341;
-	b=A/bfkPepOGvi6tNmJDZdXN+SK2ycOQVEXGLsem0W80hgTHEsm/Ea52y31xbAjWeDIRC+
-	 pHI4VitAbuOCjM3Pfu1TVFLOo2aka/gfYDISV3JAcW+Ui6PHWnIlWvSbohVcFQZs/Nu0t
-	 FIH+QNP5KpAkSY/nv5MINaa9bOewZgwLcK4NbC5YepU9PjmyT5aTDw8FkkwYUWjuWUrCT
-	 k4PCkOgKv0H5oC51L4t5qAbgOR9kxb9iRKfO3qbVoB69j09mIiVbug79P87zWT9gIB35w
-	 CBDID53bwvQYb+lxv6+bYeyeFMhWQoE96dGx9VetlMc1ivdHTyAI99Qk/vlm22qAVfw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795671341;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding;
-	bh=t5d/xSmVguWHOOwwL11eA+wRkCdGaUqbRUc5A9MsbPw=;
-	b=tyilqevdc1ghgLAOc6Aqm3WVo5n2hZCFuUuKmi+dpN5KPHmXip+FrDT/u31TuP+iYxiV
-	 sZ39cc6Rc3SOGPu3v6SB0cbZfqf1qOXMymR949ja0M2ywMm7lVQ95k9YsjvuifYBEwLeH
-	 LMXYFroNKAuDMnPWdoBiGaQcbvpdoHuUSv9PWnkTNzsM9WB07YNHcMUzTEE243kHT1RN/
-	 /6tyC7himb2EUX+Pgzn9mtOXXly4006r58MKvuCaKVvCP7KdwJwwaLkRt5itRG3fSt+FW
-	 HCI3oGLIj+RKi0ZZNtzXzVwCyWT17Qs01e0Evw11DwxWBcFjCQ2YxJrTy7H+iVRJpDQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GVGnL+7U;
-	arc=none smtp.remote-ip=209.85.216.52
-Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795673180;
+	b=WJE5z+eZ8FdwfsM+rS0+VsXpASdM9n0u3J1tj7M5SE6a9J4FLduC1L/muDKYIBuJv86k
+	 HR3FBS789nPCxD1FqT7LGYoaI9nu8UkiXpgkpvjCYANP6GBhTYVFBmSjcGUvTMg14zJx7
+	 ipBvsmBzY0kM0iuDZBv/pIdC0B7NeWRlnO6Kj0Ebt6suNdinELFfDH9yoM5XLa8c9e4Xr
+	 y5vXT3gLbwe7AhD7LQ+5mSC69eGLCC2xFKqOSy6phOKSPl9vl0wcAPWHlwuUBdsJ/fObp
+	 GirkbzJXD+qo9ESJKOPvfnebol5bIqwoAE+AS7gWzoXnynY7uhIZ1opCT1+PvzwkBVQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795673180;
+	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
+	 Content-Transfer-Encoding;
+	bh=s+7In1a1Fz/gHDMpzOQvOTFTNFwXf4skP7F53s28sRY=;
+	b=h4RCzUKTcvBEb8yEBPz3Ccb5A8/0VPs9e+wwTamVM5mAsuXRc+pJrv1ag3rxhR883qBQ
+	 lgA0rYCdU8qOTOwySzNaoc9aYuKhCcH5Fref31gfpXZCbbmiB3zVTY+RqLFQflE26SEsJ
+	 3wQqfOXQiKvUkVxfnH77fJSKIl9xDK0CBXaxsJ0F+jJUOhWEf912TsY++fhf7hgb+9hFM
+	 LO08AcGgfvfdksbrMMaVHrblS00CKTpdb2v0nmEXqrBmqTGpGz9deyF5153PDRdipNTWu
+	 csUNrJOKXpMcln5jkehby/0pEWl02sB7enEPf0gdpPu7foCtOMQzVAunigTZmTx6fqg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IMrMxL62;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7470A606A31C;
+	Thu, 26 Nov 2026 06:06:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IMrMxL62
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795673180;
+	b=Luj/DxIAkMMJZqFW4u9AT+nRUvkzrpg9GFjJczgjJBsTYzttqj0olvPQkdTX72tD7B0J
+	 K77fqyIDbC4XcLDqagW9ZP2rAzXNzXIJNXipEFnXM3YbdvsUYcVixfHAzPexojWpav2xZ
+	 hVWgoD4A9zndEZZFGubReT2xJ4ncYm7damQBfVCpZ0Qv/SvdMVxFXeMUHhDZKxvZTRI4u
+	 QTjbFvkhl3qRNErP1SmqbC2Qp75JbIfXmDwDRWF6mnuLx0GQpXSdLUaJGYynkn5jIeW+s
+	 jvVfrRFmIyQVJR9KOYtnbj559p7G6D68YebEVb0cRYen8Nu6a0zlrkz6Gzw/nbx7Kzw==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795673180;
+	h=DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
+	 Content-Transfer-Encoding;
+	bh=s+7In1a1Fz/gHDMpzOQvOTFTNFwXf4skP7F53s28sRY=;
+	b=z2HyUfwQwPXN9ki9N3D3uTu8CmzdpN3N05JO+OHSOpYCCIiS1E77TJrNVjdU4gc8Kgs2
+	 pDYnCh4teD+43KiQvIivAB9sde0lqeY16qFrVTCmLtIyG1cUku163VYOXcBjKra0tqKjo
+	 dhrH7F421Wd/VJ6ytEha0HV+ZwNyCjI6lvD76Vs7xtEH4bttufNXf3UIKEKbwcM2vmhVP
+	 p0xBU0HXbR1u70BdJTZRHqzQ+ZexvdPUeFxo8wzFONl09wBy7xIuJJQ62TiCPsNl2absu
+	 ZHbdHHs6aY2rplFLDMWjmOUUZs/O6ffegY5RXCS2g1qDb38uhc/cerU5Xpd9UNLn1cQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18F0E606A31E
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 05:35:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 18F0E606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GVGnL+7U
-Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-3ae6b4c669fso6122736a91.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Nov 2026 21:35:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795671340; x=1796276140; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=t5d/xSmVguWHOOwwL11eA+wRkCdGaUqbRUc5A9MsbPw=;
-        b=GVGnL+7UJT9jY2dL6VzbSLPqIBLb9sIj5YhMD/CLlDDA3i7geHCkqRYpuJLj09kXit
-         B6f9nDRwQXa7YIOFgWO9q0BgH471cmq8gAY+EbjbXHEC9N8AtQ0MRNNdLEBA3uJqc2Bs
-         fxdMq0UihvnkkQgKG9sjQ2j+i6SeMbHV9Tcv0YbPa3XyxRS9oPhnJcLkejiC3qMtKpdo
-         thvOx6iBsraSSzjFtqMDh4iaLEpPjXYXyfNIxASts+8iJhpr1TbVQbqN+lBCkI0UjlHg
-         98ulby1he/Mx45/k2l6rhztLYZopPx4vRcLixghfPp6cJU/WgilYSDPy3Yo62MY8zBUv
-         FxPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795671340; x=1796276140;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=t5d/xSmVguWHOOwwL11eA+wRkCdGaUqbRUc5A9MsbPw=;
-        b=LpFrW3J4YIp2XIQ9tenWsqG0nP+y6tQ5hCl/Zwt46aqImoKn7SdLNCX2BqUWveEe0h
-         z/moTZT72ve6vNeLgvDZqxjjppDbwhY0FPG0TvV5FiiNiLGV1zWEShyUDX5c5tlE5hUR
-         KNVyIHoJaBV4DKK2KcUkqZyrIYK+CW8INi4UbXOs0rCVm2+fLCDbRQkBVEwCNRbQbl8O
-         0+owBvmgNAI/5Gs2a2tMvr+omPi2OWSBnmUaLUpEGLaHJnGD2YCjsV7c2Gnk2G/Em8Ex
-         vDzHeKywwrOLlGyAZcaeE5XQcZIt3WfR8faQnRmQzKce+ray3y43hjXAFjSy3cSFkmQJ
-         5IDA==
-X-Forwarded-Encrypted: i=1; AL+hErFv5dZj9bXFtSEiS94FqRm/TzmBLCeUCJt+V3ssE1TPccybHS65EirYr0YmhifF0NeaAjcydLcLYdk=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/J2Orwn86o+Y8w/2hraEltA1zro8GlUghMYi8lQeTobLHyUGMG
-	G+UmipNnvKUU6tXZddl728AXIYh4X+Y7Rgshy41SMB9rpgASSLA8a0Oe
-X-Gm-Gg: AZFdTZfXeDAZqlBc0hvRgHSdB5UXLbCfmbbu4B8ak3awZSRe7KHNdVqhWpmodshPH1X
-	YO3IgWv4zFt0OjVB7KEFPwlJSVvKy2WQ4FUHzpTciQFutaj1ePlQnuiGqWgShU0wM+Gm+MMI20b
-	CxcckSasrCttlelpl8zilrRm8N0zCEuytsbH00W3XEKNeMKVL/2+LQ4bLfBT7A7iv5cT94qhDav
-	oI0izQc+slLY9lLfOiVgh0Ygd3CaDdeOYJ6UGw8M+QIKa4sJOcmBpaU3Hqu2Umndbvs7jtI3Bmh
-	KVPuNORdoXd3gQvxrzZHfHVzWXVlhxreX6A7GyAvXEKhVdY0F2+k9hYK2hDsJ0Y9d9z8TMHuu8i
-	2shD6shqqXhSSYbEYzGo2Y7+GkiF804y0luSJ4y9R5dGHTstY+0Vfi3fJI98kSH0+1oT6tbfphl
-	wHM8484HUr/7rlCuE+Mx2mdbdKVQGc2v5IjxkYr7uDZJg8EmUSfpeKTevdIV2RefhBHZEG1RHLe
-	9vW/6sV87J5sUvB5LsyLIWaX5D1Cj8UcG/d1bG+YyvQZn3hnn+CqxVfL5QXTt9C/vgkDv3eu1o6
-	fNEj/3rlouo9oPS7EbpQi17qd6JwvQ5xxdskXvxLoX79a178s1AFh6a1Ksn0q6pDB1C/B0UJ5tp
-	kT4SwnnPyyJXR80LogiZCjmBvSiZWs0/FrvFjdQGqGf3QYX0SzZ7mb4XABtH0beqdPahot3WF74
-	c7fFP5iLKf1320pgvDKKxGbug=
-X-Received: by 2002:a17:90a:e54a:b0:3b0:9310:b255 with SMTP id 98e67ed59e1d1-3b41c961506mr8969271a91.36.1795671340410;
-        Wed, 25 Nov 2026 21:35:40 -0800 (PST)
-Received: from kapoor ([149.40.62.11])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b405d639fdsm34005822a91.10.2026.11.25.21.35.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 21:35:39 -0800 (PST)
-From: Arnav Kapoor <kapoorarnav43@gmail.com>
-To: Zhiqi Zhang <zhiqizhangg@gmail.com>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: chemical: pms7003: Reject frames with invalid length
-Date: Thu, 26 Nov 2026 11:05:26 +0530
-Message-ID: <20261126053526.623714-1-kapoorarnav43@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261126052717.69095-1-zhiqizhangg@gmail.com>
-References: <20261126052717.69095-1-zhiqizhangg@gmail.com>
+	by smtp.kernel.org (Postfix) with ESMTPS id 3CDA01F000C0;
+	Thu, 26 Nov 2026 06:06:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795673180;
+	bh=s+7In1a1Fz/gHDMpzOQvOTFTNFwXf4skP7F53s28sRY=;
+	h=From:To:Cc:Subject:Date:Reply-To;
+	b=IMrMxL62WDcuNsCGulT+8GLxaM4m91YWGz3n3VqnqMZnxOzNEm0uSh5uP/64/e9OM
+	 19w2pef/aT1XHXcGnZoBFyKGuqbCz0Fx8quLT1zxDyoSDCPIh1SGaYRMxmKpG6Fjxl
+	 buRwuvKLOWDfv0GKjbEkjqTElBh0B/4ZDNUDfo+oiHxu7LuhznDkBYcgkblYoPsCiY
+	 DIsr9SjXv5KiXaIvkCMukw5wnbUnW489HtBxxObNcKoHKhKPaj6ilUgGbfSiHTwd8o
+	 hRjc3E83s1LRtzCkowt+AkRCl16sfs+aT46a7a9i/YMwsK5q6NcnfFViHuTsZ4DPIX
+	 VBd1E2rJqNwhg==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 8E7304D24B;
+	Thu, 26 Nov 2026 06:06:16 +0000 (UTC)
+From: Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org>
+To: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+ andy@kernel.org
+Cc: Arnav Kapoor <kapoorarnav43@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: inkern: guard fwnode_xlate with info_exist_lock
+Date: Thu, 26 Nov 2026 06:06:15 +0000
+Message-Id: <20261126060615.63790-1-iasnezhkov@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -105,19 +87,91 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795673175; l=2870;
+ i=iasnezhkov@gmail.com; s=mindone2026; h=from:subject:message-id;
+ bh=LZxT2J+30sK/RMg/s6ys55XZRZuLrJ3zmuWig2KBQD8=;
+ b=zBrKnF6eF+8xtdTuXbda98riCLhYhDmBuYAII0irbpbLvslAgG9uvIj7McgP202pcRhp7NZeZ
+ OT8YDaXEpIjCIY4qVZmTUj1gzuqVB1lgpJcxAWMIypyTi4Dw5qZehTF
+X-Developer-Key: i=iasnezhkov@gmail.com; a=ed25519;
+ pk=hQgXfiWi4ukk2jh4BHu1vRVhg9BUivo//AFp50AKMag=
+X-Endpoint-Received: by B4 Relay for iasnezhkov@gmail.com/mindone2026 with
+ auth_id=1643
+X-Original-From: Ilia Snezhkov <iasnezhkov@gmail.com>
+Reply-To: iasnezhkov@gmail.com
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 26, 2026 at 01:27:17PM +0800, Zhiqi Zhang wrote:
-> Reject data lengths shorter than the checksum before storing the expected
-> frame length. Keep other lengths up to the frame buffer size accepted so
-> short command replies and compatible Plantower measurement frames can
-> still complete.
+From: Ilia Snezhkov <iasnezhkov@gmail.com>
 
-Thanks for the quick respin. With num >= PMS7003_CHECKSUM_LENGTH the
-checksum offset in pms7003_frame_is_okay() can no longer go negative,
-and the 4-byte command replies and the 20-byte PMS3003 frames still
-complete. Applies to iio testing, builds without warnings (W=1) and is
-checkpatch --strict clean.
+__fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
+and invokes it without holding info_exist_lock. Concurrent
+iio_device_unregister() clears indio_dev->info under info_exist_lock,
+allowing a NULL dereference or callback execution during provider
+teardown.
 
-Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
+matching the rest of inkern.c, and return -EPROBE_DEFER if
+indio_dev->info is NULL. Since iio_device_unregister() calls
+cdev_device_del() before clearing indio_dev->info, seeing a NULL info
+pointer corresponds to racing right before device removal from
+iio_bus_type, where !idev already returns -EPROBE_DEFER. Using
+-EPROBE_DEFER also avoids colliding with the -ENODEV sentinel used by
+callers to continue parent or map-list lookups and avoids the named
+lookup -EINVAL fallback in __fwnode_iio_channel_get_by_name().
+
+Fixes: acd8256723f2 ("iio: inkern: Add of_xlate function to struct iio_info")
+Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
+---
+Changes in v2:
+- Return -EPROBE_DEFER instead of -ENODEV when indio_dev->info is NULL
+  so callers do not treat it as the "no channel on this node, keep
+  looking" sentinel and named lookups do not overwrite it to -EINVAL
+  (Arnav Kapoor).
+- Drop the unrelated indio_dev->num_channels bounds check from this
+  locking fix (Arnav Kapoor).
+- Move the AI coding assistant note below the --- separator.
+
+Link: https://lore.kernel.org/r/20261125234827.94791-1-iasnezhkov@gmail.com
+Found and drafted with an AI coding assistant.
+
+ drivers/iio/inkern.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 1f22275..5d3c6ab 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -145,6 +145,7 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+ 				    struct fwnode_handle *fwnode, int index)
+ {
+ 	struct fwnode_reference_args iiospec;
++	struct iio_dev_opaque *iio_dev_opaque;
+ 	struct device *idev;
+ 	struct iio_dev *indio_dev;
+ 	int err;
+@@ -162,10 +163,15 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+ 	}
+ 
+ 	indio_dev = dev_to_iio_dev(idev);
++	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	channel->indio_dev = indio_dev;
+-	if (indio_dev->info->fwnode_xlate)
+-		index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+-	else
+-		index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
++	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
++		if (!indio_dev->info)
++			index = -EPROBE_DEFER;
++		else if (indio_dev->info->fwnode_xlate)
++			index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
++		else
++			index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
++	}
+ 	fwnode_handle_put(iiospec.fwnode);
+ 	if (index < 0)
+ 		goto err_put;
+-- 
+2.54.0 (Apple Git-157)
+
+
