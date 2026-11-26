@@ -1,128 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.139.77
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795695897;
-	b=pVHKd87P531l1hBEVMYvnA+wq0RN2IncDQEpw6rMwGoiPdMsBO4yFOEX19YbabJJTgOv
-	 wUwHiuJnZTdn2e4FqTvuhr1uwK/9Kv5sj3hXzAM5w2IBfSJHxIbTt9bNvCBbSz6aYaUES
-	 WkDl8EoDJgRYrGp69FPObakzJKQlZml+PqcxNb4HEIYxFWngC0MJplcFOwAJd1QIFxlF2
-	 RcStFs2PE/SpWS+P0q6VFwtgq6k3WywoRIeWeFwcVT+FtMy/IPqbdZtEjLxV+6QVSZrwZ
-	 mzcrt8JSO8PyjTtqDWnZYStQM8/V5H28yV21awjtxQFRQetr9PJzz42/41DVaC5P67Q==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795695897;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:Received:
-	 Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-LD-Processed:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-Exchange-RoutingPolicyChecked:
-	 X-OriginatorOrg:X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-Proofpoint-GUID:
-	 X-Authority-Analysis:X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=DQIHEbE9ItlyHVg5fezp32wK4Z7EUc+dJ4oko6If9zU=;
-	b=b0CwCM9g3PiD3q8pZ/ygE5SHpBR3G7J5jOL3Ip2mzkk7G3wxyLavZCUclOslQpJ8jcJo
-	 NF46kvTacT2ri79PUrhE91sluLnm9Cp/KQF/vUEs/dPiz/IZgeKTqjxkGOCOaHSnIArq+
-	 ObayE/0k2PEcSsdVAY+VcWrFYk0mHqQ89TAZlMVjWHcAX2+RJZRf/enLpj4Pf5TxZ5bND
-	 9IgjBmfxTUTg4MPzUKtOixjkCSYprg0flKdvQyyruwsjPucV3T4i8jJ+Ejib3k2rJirPX
-	 bEC+4JIc4kTuQoM5iqkXTK0mo+Qtk49FsnK3GSmO1dxSilZulmIhm47eN46a1dupFwA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=analog.com;
-	spf=pass smtp.mailfrom=analog.com;
-	dkim=pass header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=JOyKp83l;
-	dkim=pass header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b="W/EiocAj";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.139.77
-Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.137
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795696108;
+	b=tMHPbi62cnT5ljXg5zxQccakpqXTXYzos6EbIR4lBGRtOVmUuYOUPUfxi2pMXb0NR+Wo
+	 lND8v4Dx5yLw/3ycti3+YZBIf7LxNb3omxK/WesmEPTgrjpf4lNtKaiL8Y+3AwM/MhcSi
+	 gKfQkjS4IQHImRX6X674AUzAMPREy4vxsDxX7TVdXnMALDLcXldi94Y0Rd9PHdcWSyMfP
+	 p6wH5mdyH18r1q7t0+nsGKpV0BQF/3mNCxj1SvjGyyxDGcLApqNcpIGrIpHJ5LUlilh5k
+	 B238orUI3GQcrSWiSdKXwhazdwlk5Cs68g96ltNU2b9VxmW4HxbCaIdFyspTdDIioeQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795696108;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:X-Mailer:
+	 MIME-Version:X-ThreadId:Date:From:To:Cc:Message-Id:In-Reply-To:
+	 References:Subject:Content-Type:Content-Transfer-Encoding;
+	bh=xu4Hob4T/c2RBRj9oSFW3u62G/KKa3D4oPKEkYrOGh0=;
+	b=STc34x28KERxoNMYw/cPvNTdQaUbvoAv54YpnuG1DDV5LVgB3sQ2XgN6RT8RqTqbhNGK
+	 6STchDJM0RXngAzXbI04if9P1e2HHNk2l2lkGpEO1hzwzINhuUqUdXDrpmf7Sq1MTIf58
+	 6GDgLzhqmfGFg13mIfhGri/R/wAMUlbSm9cQNaeULcF+NI2St7VJ3u6650KUW/Uq0xdkA
+	 HWAJdw0F0w130sJL1yIHFhKFXQMMae0pTK86ZBd+uZojqH+RWpsPtPBjOHr6gEDxFki5O
+	 VMQbiOw+B2g9LJHgWzZ6kzJMsmFMvyRBkUug5P+05qnYdjD2K0GPC6Bi1JzB07Af4oQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=glider.be;
+	spf=pass smtp.mailfrom=glider.be;
+	dkim=pass header.d=glider.be header.i=@glider.be header.a=rsa-sha256 header.s=fm1 header.b=e6OCY5HE;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=gPHaXeVY;
+	arc=none smtp.remote-ip=103.168.172.137
+Received: from flow-a2-smtp.messagingengine.com (flow-a2-smtp.messagingengine.com [103.168.172.137])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4298F606A31C;
-	Thu, 26 Nov 2026 12:24:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4298F606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6072606A321
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 12:28:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A6072606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=glider.be
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=glider.be
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=vtelectron.com header.i=@vtelectron.com header.a=rsa-sha256 header.s=DKIM header.b=JOyKp83l;
-	dkim=pass (2048-bit key, unprotected) header.d=analog.com header.i=@analog.com header.a=rsa-sha256 header.s=DKIM header.b=W/EiocAj
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AQBY0Wg745240;
-	Thu, 26 Nov 2026 07:24:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vtelectron.com;
-	 h=cc:content-transfer-encoding:content-type:date:from
-	:in-reply-to:message-id:mime-version:references:subject:to; s=
-	DKIM; bh=DQIHEbE9ItlyHVg5fezp32wK4Z7EUc+dJ4oko6If9zU=; b=JOyKp83
-	lOE8iNaNQd9vBfyf8rKBmD2/SkA4eYvnB8VNlLzYA+iC5YYySFGfsY++SWRB6rfE
-	Q+NGMxCb6jSNo8op70PgC0yEXJUT6RoTsP5bun0ewzanIWD21jqwGzQPKZrQLDZX
-	82oGSWB1oUx3wTwxf/jXlh5pZBO9n0pwE3MO8pO1JpACibQerw4fITCmTaefSSxi
-	Oz21dLIHm1g+rhlz+oriO6WJCLwdyQnLGSEwxoT1s3vgVEeSn7qH2EQGNdwwM7Fj
-	KBnOINdd+WAF/WvBAFj0R1iMLh//NPJb7/3eak2o09Iqu3iRXz2wcOSHNN9ErQqL
-	ixKgqVoW+h0gIHA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=DQIHE
-	bE9ItlyHVg5fezp32wK4Z7EUc+dJ4oko6If9zU=; b=W/EiocAjFhqC3ARI8t5/N
-	Y6kCgv0doty3Zma8X04gLO+ratWBl0+wIm7XQNsjuvDg81lA2UQ8pQNhz6vGuC8Q
-	eCkHNIJ/Nz5SydYsvs70mGgaPBWitpncTACAfbmRofr1zvboNJI1IwpiVZ4blxwF
-	qdxyjAskGL2ZgyWp+nYe8d0x9SOdAphbtNr305++xKbNoJWZdDulOjB4wDqo4lnT
-	AexDTW5J3468vY8hrh1X1btX1EWX5TLlxcsx735rNOcR65nSmeGnGxF+dv+JP3gM
-	XnPamOwP6JjHB2hk5gw71SWIjXICQ6eH3zQyZ4SLWQsCM5zfUZk87fRPw0pOlmO9
-	w==
-Received: from sn4pr0501cu005.outbound.protection.outlook.com (mail-southcentralusazon11011067.outbound.protection.outlook.com [40.93.194.67])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4j59pyv1u5-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 26 Nov 2026 07:24:37 -0500 (EST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oUT10yO4UjZlYPGStOQNq8+OmIT4ALQJcAJM1/QpUXdeBA6khDaNPZVZlf/C1GS8tBZWfSozH+VE4KzpMttaydDB7fAZwsRxDh2IsQe/ybosYFmCLOBxK3v0G6gXfnO5gX8hV8N3f3gEjpAWCmUwkaoXO/jx0iQ5/DQE/taPVMabeFD1h5A5HI6nxWWw4CDVLVgSqgVDKDwWiSMfAKDS/Wr18b62JHP7uJI2OPA2NTFTglm8df0MV+0I8SYnXKuXWfJkXLmX+ExunYMCvhsu5OADLKCNBjKsioeA1bhAcxoKuDyryyH1qPK+X655TARWt7wUD7j6ksnYdxcdX3tOvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DQIHEbE9ItlyHVg5fezp32wK4Z7EUc+dJ4oko6If9zU=;
- b=gP4qWg4KaiDWc+TB2Ihn8SH4Oi8HO3YtkBJUboDouzrohJczEatySlP+DM6ZhhsozHmjS2n+gX8bYmCSqT7yeF9dUgXG8+be6TAdMyZ0wXzNGIKaCNmK6zgaIjWlyrnlDjAy9k3eO8Oy3cIcIjc2NnqXTOgXomtDKTiWJmVhqmr/2xSZULnL/WevMidlsKrsaJtZZFlLXSYC6sY0xTO2OzROrMr+TFdPnLMpctKwqWC3uK6R6HQ8/+lfm4fVTmFJySxcS27dIiCp1nT6JuRcUR2gh0UmDb0XymI5B+g7syfOkBop0saQFyEkgfn6xQ0v9qXolVPrSiFu9S5heHzrsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analog.com;
-Received: from SJ0PR03MB5469.namprd03.prod.outlook.com (2603:10b6:a03:28a::17)
- by CH2PR03MB5366.namprd03.prod.outlook.com (2603:10b6:610:96::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.12; Thu, 26 Nov
- 2026 12:24:33 +0000
-Received: from SJ0PR03MB5469.namprd03.prod.outlook.com
- ([fe80::2a19:76b2:e731:8c5a]) by SJ0PR03MB5469.namprd03.prod.outlook.com
- ([fe80::2a19:76b2:e731:8c5a%5]) with mapi id 15.21.0662.004; Thu, 26 Nov 2026
- 12:24:33 +0000
-Date: Thu, 26 Nov 2026 12:24:28 +0000
-From: Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>
-To: Conor Dooley <conor@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux@analog.com,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 5/6] dt-bindings: iio: adc: add AD7793 and similar ADCs
-Message-ID: <awgLBWt6MWIRK-cM@nsa>
-References: <20261125-iio-adi-legacy-platdata-v1-0-54e4c8830b57@analog.com>
- <20261125-iio-adi-legacy-platdata-v1-5-54e4c8830b57@analog.com>
- <20261125-whenever-spinning-36a6dc477a00@spud>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261125-whenever-spinning-36a6dc477a00@spud>
-X-ClientProxiedBy: MA2P292CA0002.ESPP292.PROD.OUTLOOK.COM
- (2603:10a6:250:1::18) To SJ0PR03MB5469.namprd03.prod.outlook.com
- (2603:10b6:a03:28a::17)
+	dkim=pass (2048-bit key, unprotected) header.d=glider.be header.i=@glider.be header.a=rsa-sha256 header.s=fm1 header.b=e6OCY5HE;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=gPHaXeVY
+Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
+	by mailflow.phl.internal (Postfix) with ESMTP id BD99413803EE
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 07:28:26 -0500 (EST)
+Received: from ams-imap-13 ([10.64.2.33])
+  by ams-compute-02.internal (MEProxy); Thu, 26 Nov 2026 07:28:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=glider.be; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1795696101;
+	 x=1795699701; bh=xu4Hob4T/c2RBRj9oSFW3u62G/KKa3D4oPKEkYrOGh0=; b=
+	e6OCY5HEsHMWHDpNXuor4iPuoUZRz06OnWHRGx/Ba40dgAc6p6p/mYAxy+wY5LRR
+	JeUV2w/vhulJh1cNFQtCqxlRQBwJ8z1ZAwb44G6SxLAE7TK8dxzFTkB8/MNdEYDN
+	Cgsw70JHXhX8zRa3qRQONfffGFLQMBiLEd5LKhTTrDEM7vyWwmsETbX8SfUludqI
+	FpN1Iw8sAUxQpUCc997EFsnnWP2ComIns+MtIhUmClaGfp3r6UnAbqyjgn8s5ibZ
+	7K2ehZuRBPU0C6fP2IeaHaDF9hO+ixpnLJ4qDm+FIIfQk3YLGOiiF07R3sr2IWtR
+	yROge4h1CIePk9TBBlnveQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1795696101; x=
+	1795699701; bh=xu4Hob4T/c2RBRj9oSFW3u62G/KKa3D4oPKEkYrOGh0=; b=g
+	PHaXeVYZ/awO7BEIXECg9Z9mXPu5macsqgjq5m/8KsyzM0r0GinSKa+LDTmPypPU
+	wUem9iJ9ynhVjSv/fB4OXr361SQWYQUvUD8a9y6kna9fZ6vyRh7g88eICT4ekHlY
+	WRDg/Z4Q/4UnGYlGYve8WM3H7Zy5dijr4wd8mxY5LLTNwh54jVFrakYnNK/5BvKO
+	xkNT6huE2oQWBzXSVMDX4iF8znKYV8kpaUVYGWVXFmudhWIutNo4UqHZ5wTUOr1M
+	t+dhRNMd+jhM/DsWxXQM8g0ISBhZCIqYIBq7upvYUP+oM/Li0ACHaTs50JyCHHZG
+	4kkepmtkG+b93LOCTHmbw==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=glider.be a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1795696101; d=glider.be;
+	mf=PGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg==;
+	rt=PGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc+;
+	s=fm1:rsa-sha256:j+4Ft+oosK9Oydl+Z3zF7YOA1MvwyQ2nIh0bUriP9+nFvXy
+	CiJtMz810TCOAbH4KyB+J+1F11KuThvK48AkNX0KwkLzoeGlSz4RQoVwqJZbAnFx
+	BCYGd8njaeD6CHOCx8XhwPqeC0VyWWDXR1tHMZlb18o9tE6JtENlHJXEUeQQ9GdT
+	Kj27601yxGf/VdcCbfdxiO/jCp4vRGue+3WK5VASNCz5ijHoSxsDfMug1tUbrz88
+	xdWjFW7+9A9qQf6ZGZejCH7yp8YJcUNZwwT+qdzfkg2j+Y63e1AqijRTM1agWHty
+	k30l+EwFjch64Zub5ce8zFFAwE47lpz//+15d1Q==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=12;
+	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
+	from,in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:jkOwiisYvaimaD7aEFu0qippkfrPA824FSsblOr4xpw=:OiNd1Uft4081bt2SCEBPZKHGE7rtaoQoTYPz7jv/7Oc=;
+X-ME-Sender: <xms:4SUIa7cGedfw092ux_ZCeI0sjCj4irwMpx6uQj2nyUJ7zoL7W46U7A>
+    <xme:4SUIa8AZ0zhhDP4t7IeiSnEWG_U9fP4k94KqN5sln3DvzAAp1v0MooMx9tGDnuEwe
+    fW49hCOWagmPy-mm5Np3dDIVYuhux8DAPTLu6_p5djkX_eAR9i4ZTl1>
+X-ME-Proxy-Cause: dmFkZTGVm0NwrNPzjnsePArY1oNZC8jCvyBd1JNrwF5KI+JZaZ2MpkN+KcCFQFw0MoHSUX
+    6vEsjBKhDtCDDqGJbDtk1/F8fxeAfSIqmXJJQMjVt6vG6UD2h5npdRupHgDcaDs268kS4l
+    aZ98Ye4pgHukWz2ktCJ0OHs4JQ2IUYRnOOLksu3TJpR7N4vaotEtoQEADjvZI6MXUCZHzF
+    VAvrj433NYrLM/wLUnJ/LVskJORGCahkPXm+7f4QAh9iSHp669vTPxdmEZ2z+VAeYELGL1
+    RcKNCume5IIJJeDcG1PvBkfNTUcPYCkJUbv98fvlv8SzX59Z6/+VPhvMKmCDt2SoRM0yVc
+    8MZtBZw3up6rtTYZd1sTXDOv/asORVwHreP2NYDYFk81oGYxOMRTXrb3Cj/DzeM1WoNtmY
+    uSCltdT5SYTv4veZj0XHJf0ymdCEZSKcNFBz14Im6WttQhvzKeNZZomlMxcZ8Ho8alJ4nc
+    2g7RwBV4BrMLLCAvzuueIrah78IKPmpgere9RGE276BLeL0znRut4UPdhta1CeuyOm1t6q
+    +2ioy79p/duh7zcJOmW6IlwbiU4Ri760w2jBixK9uX2947W1tHr4iVB9dxn9ez7EzJ3/bJ
+    +8tMvM+rLhcKFSkiS3UjQxjz3Eb4rzFWJsC9aTCPOA4gYI94jLpioivHgWKw
+X-ME-Proxy: <xmx:4yUIa72EDJ56HSB41dkGWe1HGZD3vTaywXNDV2SiEGgfmlWJPkGhOg>
+    <xmx:4yUIayMk0fmBKWyeCGEm2tCvHK_slq2nP5Ww6yZtSju0Rj1lbc0sEA>
+    <xmx:4yUIa7biYLjmHB3Uw83X0njxb5EP6YGHSGpqlIAUxLMHwlG6KrE0mg>
+    <xmx:4yUIawyKIrND_LjniQUbp1BuIfxbsxzz71Vmd74EiS7XpfuUJi5iYA>
+    <xmx:5CUIa7mYZAIs0an1vbImXT_aQ14qy83LK5YxBf01KlK3UyXqeIydKqUY>
+Feedback-ID: ia0f84a9e:Fastmail
+Received: by mailuser.ams.internal (Postfix, from userid 501)
+	id 65656F800A1; Thu, 26 Nov 2026 07:28:17 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -132,444 +115,137 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ0PR03MB5469:EE_|CH2PR03MB5366:EE_
-X-MS-Office365-Filtering-Correlation-Id: 21584545-646a-40cd-a944-08df4bb839e9
-X-LD-Processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
- BCL:0;ARA:13230040|1800799024|366016|7416014|376014|23010399003|6133799003|22082099003|18002099003|13003099007|3023799007|11063799006|5023799004|56012099006|261028144727099003|261026121527099003|261022105027099003|4143699003|261102123227099003|261026140227099003|261022075727099003|261021123027099003|261009223027099003|261021121427099003|261021135927099003|10067099003;
-X-Microsoft-Antispam-Message-Info:
- F+Gr2r4j/5QzSALb+WjB7UBhgyE/LcUc+CtZNmmpDYucb0MRcndmvGXHwgzQLXcXySVkfARR1mVFaVjEIUgJpbPH5pm8a+fjZvVsE+5KpEYiF+pomnH6E59Ic+fVTcCXRwbZWcymLhmu8/WNo6heuaWkyEliusVdySGSnLZNJDtcYVd7LyiimqsbAS1CZWbrTw3L9KdEwSn644P9aGmR6oYJRXkpPobJPuSrUNi3ED25QtS0GNEi5ZTABaUty0m/aPN4a0AyN5AuZT9cGATnNvoR/bw2KD8pu4peo65kMKoogCFXNgefLk+O2hBYGsKPxHkHTRepJgDWJTnXV5LjYzyKIrT7Sr3TvooSAntZQDvvqLeaZJNftcX8ux2rvd43IIzsAAzKS5Abh3FB5bsfyqfwnu3fzjAAFOpUrA9SFtlmqCX1UEDAYsEzcwle7y3pIz4joKuypSEy+x09renyje3z7z9L2c/diR6iGrwpWkJ+58w/Nz6wOQLY2D2PS0dC2ODTCCm0wMLGKhiF9jzLXbH2hF3GAlX4ho+c3dVdUIvJWJMkbHUSHBYZsI2Q47FMpD9wST4ZjL2j0dOtC8ryB7WOMYzWnugzzt6vwukzj5Y=
-X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB5469.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(23010399003)(6133799003)(22082099003)(18002099003)(13003099007)(3023799007)(11063799006)(5023799004)(56012099006)(261028144727099003)(261026121527099003)(261022105027099003)(4143699003)(261102123227099003)(261026140227099003)(261022075727099003)(261021123027099003)(261009223027099003)(261021121427099003)(261021135927099003)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
- =?utf-8?B?MytuenVVak85eUhyQlBCQ1g5ZkxmYzN4UHBDRGtWcXFFV0d6aGtreE9qY254?=
- =?utf-8?B?M1hUa1V6NjlFQ3lETEs2MzZ6RExaNVJZV3FVc1JsdTRUdlRud2g4U042a05t?=
- =?utf-8?B?a3lRb1ovNmhqUjRZMHdxbzlKeVJXbFg0d0d3dEpUREcvNnIxSjlaWnhxejBW?=
- =?utf-8?B?bTBFR2MwUHYwOVk1RTd4K2gxUTJGQVVaMXcwb0JNODJmcHhBdWx0TGtZcU5n?=
- =?utf-8?B?M0pnR01hL00wVHZxU2pCMTQ1SEtLWTlYQS9waVlXODhpZldXclhNWDFQMXBY?=
- =?utf-8?B?amRCNzY3SXEyamFkRkNVVG4ySE5OVzI5b0tSSlhKd2o4OVVzNXhqMGl5Nnlj?=
- =?utf-8?B?YmF3TzVLTWxzMWUvUEllbHhHY01hcGF5TC96akdERy8ycHZKNnlmc1RyVjBS?=
- =?utf-8?B?M2RWKzA5RngzTTg5bVpoa0hQclozdzloVVZBR2J4eHJ3SlhnSXZXbzNjNFRO?=
- =?utf-8?B?TjFrYmlmaUZGTzJKOWZ4TE00TVNUOUtOeFc3ZHBuSnA4alJUdXlkeE0zYjlB?=
- =?utf-8?B?VEJRZll4Sloza2N0bExta3dzaWpWRFZBUzZ1SWthaGNPTG1CaXlzMlg3eFg1?=
- =?utf-8?B?N3N1YXlIYnRxcElNbHBmSGc4aUpvZzhqUm1lbHNSdW5PYjVCWVBGU1M2MjNR?=
- =?utf-8?B?ZWs0L0hjVlZWQ1lHRkJrN0dENG80eGNxVG1YZXU0MUw0bDRSN3VDZzVuVzB3?=
- =?utf-8?B?RmVjbjBaMFFrMTE1WXBqdkZiVy9ibHNmSFpETmR3dUttMlRwbDZ0UDNod09z?=
- =?utf-8?B?OEx4LzJjQUdGbURFRlRTbWtUVkcrSEZva2pNeWxxcVZxc3A3dkNGMDNOVzFp?=
- =?utf-8?B?ZXVoLzFIczlHSnVjUndOK3pIZkdGN3J3ZlNjV3A0Vm44aXRvSDIwYmJzYzlW?=
- =?utf-8?B?SUVoOU9NeS8wRW1jcmF4OFNzU0tVeUNxbXhlY0xLTko4eWhmbnlVamdTS0t5?=
- =?utf-8?B?bGFNTmFZRkFuSjFxRVpjQVFibVE2LzJzQ1NNR1hlcURIcmFQZ2Z4VXR1aTFV?=
- =?utf-8?B?bjh1R2xLa3QxbEdLcFB3ejRkS2ViVE1hU01oQ21xVVpoZFpWM3V5engvdkFK?=
- =?utf-8?B?aHNtSmRES3dTNjlxTkxaRG9iRXliTWdId0RwZG12by9laFd1OUk1NVFWS3J6?=
- =?utf-8?B?anhwMXV2YzIvVFZ5VnNabnBWeGQyZGJUNnhIWEZ0VEp5M2hiZ2ZZaUVXQThX?=
- =?utf-8?B?NWZnWUlMcms2SWdoZXhsUDMzalpzMG1JK2dTbnQ1ZnFUVW5SaE5zc2k4bGIr?=
- =?utf-8?B?WlJBWGFtQkxEUU5iK2NxRlp6MGJCVGxYa3hEZllXNkg5TXlDMFJtWGF4SjJr?=
- =?utf-8?B?ZmpRbExlcDhSVjVLenIxRkkzRThEUEl2RjNzSkhhcVpPQlRDaFRMMTVEWXpX?=
- =?utf-8?B?bjM5VzFWQ0RxQ1VMeWZoODE1S1ZOV2lUeS9GQmtOMDFEcUx2REhyUGhUQ043?=
- =?utf-8?B?WEFaZTQ2NitJK3hPaWluQVRhNEdmWlpldkk2N2xNQjJtOFJ2QU1RcjFmNU8r?=
- =?utf-8?B?a0duTHl1SXNlUGx4dXpkQ3R6V200QkFySUNqcEpJcGh1WmdOLzF0UGpHODFi?=
- =?utf-8?B?TEphMkg2aGgxaTFVK1hlMEtmcE1BdnJHMzR0Z0N0THJWOWZ6KytpU21welZP?=
- =?utf-8?B?RWQ2VWlDYmFhdEdEdW9nZXBLM055V0RQd3UyeUI5Nm12UW5SVm1DVWI4UnZ6?=
- =?utf-8?B?WExCZ2xwQStsb01XQnJMN0tMbHRnM0lrYUN4MEV4TmR6d2xCVzVlUzI2TXYz?=
- =?utf-8?B?T1ppRHFSVFVNemNjOUFGVGpFNENvc09iVnkrR21DWlNESFpTbktaT2NrK0Fm?=
- =?utf-8?B?b0syR3JrMG1BMHJQdXRWSExhM3ozdUpUQWpMK0crbEJVSGdkOXFnRVBQejdh?=
- =?utf-8?B?R1phaWxUalRpM011V2RyYTZNOWRRZE9NT1lWYlo5QlhQYlZ2bmJqaGpWa2NR?=
- =?utf-8?B?WDBmc1lKRGsxU0ZubHhYVFozbnBrVVpOMC9HNnZ5T1BuSXBmOENxaUtDTi9a?=
- =?utf-8?B?SDFlNXN6WDllQzJudHZkaXNuLzFOMVV6UGpnN0RJTUhyV3Q5NEFYUmVTZ2hN?=
- =?utf-8?B?VURiQ3FMZFM0YUIvcG9HUEQzL1JheUs3eFJ1Z0hmakUzejBOdUthUHZ0cThU?=
- =?utf-8?B?aEs3dS9hVUZBVlVwbDRhc2FMcURZT3U5UndSa2hFQ0tCRHBxcGVqR2tDQ3RJ?=
- =?utf-8?B?bTJzRDUyNkQxZUozQXZkS2huK0UwOXJFU3RLNHZlTHE3NDV2T2Q4N2I0VXRJ?=
- =?utf-8?B?bjdtQkZzdTNVYXJlWGs2NytXRmIvd3BKSEpIZG9QVENMUS81Y05pY3BzRS9L?=
- =?utf-8?B?Ym9iMkF0MGNYTGNaQ3MwMmJ1SWx2N3pKaGtPUjZIdWdVVEtwWTFKQT09?=
-X-Exchange-RoutingPolicyChecked:
-	dZ+J47ux1eZCwhn3AgYveQeAmp0/Z8K2J0lT8k/4I6Iz0H4wM13RfP9vFKtW/rgXlarMXuiRdI2EwMbAkBfITELXaL/rhbTE4hM9QfeTiMMeRfEl5nJloxQWFabJN1rJRPEXbf/Th2W45Vng6Ha+f22U5tAw63BSDJfidimZJ2qwYqK8oIVta+ISOrsR4d13hnFdqTML+GBCUKS9tzzbBVnVE5m21tg1ZIgt/YaVxEXUR1EzOHSPb4MT+1ItS6InUXimajktde2hX1OjaF3LuRVNnEOdb+j6ykE/d2tWomoTb0oQ26bW/zW/pOD7+xauNib3mkEIaeScCYpDRvAvVw==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21584545-646a-40cd-a944-08df4bb839e9
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB5469.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2026 12:24:33.0640
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Zv48ksZBBFueiGZ3P7CRnWMlzW3IgZtBZ4FvDJ8XuGCR03d9beOA44iwfcMm+duckeeBrwz7eJdzNC7IvmkPwQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5366
-X-Proofpoint-GUID: z2eIqJENCjYOEEcLYsW2jf5ltgXG9O6q
-X-Authority-Analysis: v=2.4 cv=HbOB3SE8 c=1 sm=1 tr=0 ts=6b082505 cx=c_pps
- a=m7Xu73pz8xWBtfo2USfVfA==:117 a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19
- a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
- a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M51BFTxLslgA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=ugNRTJOwpmtT476g4l8T:22
- a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=P-IC7800AAAA:8 a=VwQbUJbxAAAA:8
- a=i5KNX0KUyoFHE_QSxm4A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=sptkURWiP4Gy88Gu7hUp:22 a=d3PnA9EDa4IxuAV0gXij:22
-X-Proofpoint-ORIG-GUID: z2eIqJENCjYOEEcLYsW2jf5ltgXG9O6q
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTI2MDA0OCBTYWx0ZWRfX9jRo15uFU2+f
- 0aTXiglHcBmZsb/3VXKMY0zKHDN6WnPBKWKBYqtn6pTX2DiULjpRr885ymqzTa6QBZF16Dibu87
- DqebJCVnAjgwtfbaDMazI2HtXWb9gUR5+6SthNImhxY5BDl6llH2
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTI2MDA0OCBTYWx0ZWRfX/g9CT0sBfgfN
- ocoXyYwm8SgtxSDW67tsggyNIuQCPfX5wto6taXWGFVWx8NwA8uR2G8jGyGzugt/nqBe82CMsYT
- +g3lfD2ROhhXRJbG0mZoo9SjqUr7soMQt2mwZSgVdwkOJ0Wwlq7QVuSb5QepB17BSdp9GSd+M3O
- M8Rs5Wojf2tiGiYf3YhvWyUYYHswTXaRuH55YkbVoB3Fa+D+y6kiBZyTH/RXfjK98y2Jg0hu74f
- JFhJ0qN38rXTvbRbQsqm9kSZMHAQ3dRYfLO1zRAjszr0mqhQCLhJA2AoYUWMAneYDeoam7Iv1U1
- X7fgBah2kJYJSx8NQI+VdsQZNHPvn7vWArzTqq6mw0uMPaVvs1uGzUz2XVAeqlQKOSaD12fokjP
- 4HhsSvWW4fOu9XNtE7uQcy5VDXfcgI+8P4CJrgLtRJkIWG75J9kV7lrhdYjBgoZsL7YI0eYQrTM
- fWLJ5sMWHRwG2DRcvAg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-26_03,2026-11-26_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 spamscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
- priorityscore=1501 adultscore=0 phishscore=0 suspectscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611260048
+X-ThreadId: AJ3dJRnBKuuc
+Date: Thu, 26 Nov 2026 13:27:57 +0100
+From: "Geert Uytterhoeven" <geert+renesas@glider.be>
+To: "Biju Das" <biju.das.jz@bp.renesas.com>,
+ "Biju Das" <biju.das.au@gmail.com>
+Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "Magnus Damm" <magnus.damm@gmail.com>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>, "Jonathan Cameron" <jic23@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-Id: <3b689e6a-98ad-422c-8b67-45d4a44377f2@app.fastmail.com>
+In-Reply-To: 
+ <TYYPR01MB66036BB057404C15BB64E57B86422@TYYPR01MB6603.jpnprd01.prod.outlook.com>
+References: <20261125-usb_rzg3l-v9-0-ea14d3ab8a53@bp.renesas.com>
+ <20261125-usb_rzg3l-v9-1-ea14d3ab8a53@bp.renesas.com>
+ <a152df0a-0b0b-4193-b3ac-ee0df0350802@app.fastmail.com>
+ <TYYPR01MB66036BB057404C15BB64E57B86422@TYYPR01MB6603.jpnprd01.prod.outlook.com>
+Subject: Re: [PATCH v9 1/4] arm64: dts: renesas: r9a08g046: Enable TSU
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 25, 2026 at 05:41:08PM +0000, Conor Dooley wrote:
-> On Wed, Nov 25, 2026 at 10:19:21AM +0000, Nuno Sá wrote:
-> > Add a binding for the AD7785, AD7792, AD7793, AD7794, AD7795, AD7796,
-> > AD7797, AD7798 and AD7799 low power sigma-delta ADCs. The driver has
-> > supported these parts for a long time, but only through platform data.
-> > 
-> > The ADC reference is described by which supplies are present: REFIN
-> > (REFIN1 on the AD7794/AD7795), then REFIN2, and otherwise the internal
-> > 1.17 V reference. In the same way, an external clock on the CLK pin is
-> > used if one is given, and the internal 64 kHz clock otherwise.
-> > 
-> > The remaining properties describe how the analog front end is wired:
-> > the input buffer (enabled by default, as it is at power-up), unipolar
-> > or bipolar coding, the burnout current sources, the bias voltage
-> > generator and the excitation current sources.
-> > 
-> > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> > ---
-> >  .../devicetree/bindings/iio/adc/adi,ad7793.yaml    | 236 +++++++++++++++++++++
-> >  MAINTAINERS                                        |  10 +
-> >  2 files changed, 246 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
-> > new file mode 100644
-> > index 000000000000..c4a0be06e5c0
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
-> > @@ -0,0 +1,236 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/adc/adi,ad7793.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Analog Devices AD7793 and similar sigma-delta ADCs
-> > +
-> > +maintainers:
-> > +  - Michael Hennerich <michael.hennerich@analog.com>
-> > +  - Nuno Sá <nuno.sa@analog.com>
-> > +
-> > +description:
-> > +  Low power, low noise sigma-delta ADCs with an SPI interface.
-> > +
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7785.pdf
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7792_7793.pdf
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7794_7795.pdf
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7796_7797.pdf
-> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7798_7799.pdf
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - adi,ad7785
-> > +      - adi,ad7792
-> > +      - adi,ad7793
-> > +      - adi,ad7794
-> > +      - adi,ad7795
-> > +      - adi,ad7796
-> > +      - adi,ad7797
-> > +      - adi,ad7798
-> > +      - adi,ad7799
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  spi-cpol: true
-> > +
-> > +  spi-cpha: true
-> > +
-> > +  interrupts:
-> > +    description: Interrupt connected to the DOUT/RDY pin.
-> > +    maxItems: 1
-> > +
-> > +  rdy-gpios:
-> > +    description:
-> > +      GPIO reading the DOUT/RDY line. DOUT/RDY also toggles during SPI
-> > +      transfers, which usually triggers spurious interrupts. Reading this GPIO
-> > +      allows to tell those apart from real conversion done events.
-> > +    maxItems: 1
-> > +
-> > +  avdd-supply: true
-> > +
-> > +  dvdd-supply: true
-> > +
-> > +  refin-supply:
-> > +    description:
-> > +      External reference applied between REFIN(+) and REFIN(-), or between
-> > +      REFIN1(+) and REFIN1(-) on the AD7794 and AD7795. If present, it is used
-> > +      as the ADC reference. If neither refin-supply nor refin2-supply are
-> > +      present, the internal 1.17 V reference is used.
-> > +
-> > +  refin2-supply:
-> > +    description:
-> > +      External reference applied between REFIN2(+) and REFIN2(-). Used as the
-> > +      ADC reference if refin-supply is not present.
-> > +
-> > +  clocks:
-> > +    description:
-> > +      External clock connected to the CLK pin. Either 64 kHz, or 128 kHz in
-> > +      which case it gets divided by 2 internally. If not present, the internal
-> > +      64 kHz clock is used.
-> > +    maxItems: 1
-> > +
-> > +  bipolar:
-> > +    description: see Documentation/devicetree/bindings/iio/adc/adc.yaml
-> > +    type: boolean
-> 
-> This is odd, why not ref the file normally?
+Hi Biju,
 
-Yes, was not sure on this one but saw precedence in:
+On Thu, Nov 26, 2026, at 12:53, Biju Das wrote:
+>> From: Geert Uytterhoeven <geert+renesas@glider.be>
+>> On Wed, Nov 25, 2026, at 12:05, Biju Das wrote:
+>> > From: Biju Das <biju.das.jz@bp.renesas.com>
+>> >
+>> > Add #cooling-cells to the CPU nodes, and describe the ADC1 (used
+>> > exclusively by the TSU) and TSU nodes along with a CPU thermal zone
+>> > using passive and critical trip points, with CPU frequency cooling
+>> > maps for thermal mitigation.
+>> >
+>> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+>> 
+>> Thanks for your patch!
+>> 
+>> > --- a/arch/arm64/boot/dts/renesas/r9a08g046.dtsi
+>> > +++ b/arch/arm64/boot/dts/renesas/r9a08g046.dtsi
+>> 
+>> > @@ -381,6 +385,37 @@ scif5: serial@1004e000 {
+>> >  			status = "disabled";
+>> >  		};
+>> >
+>> > +		adc1: adc@108c0000 {
+>> > +			compatible = "renesas,r9a08g046-adc1";
+>> > +			reg = <0 0x108c0000 0 0x10000>;
+>> > +			interrupts = <GIC_SPI 378 IRQ_TYPE_EDGE_RISING>;
+>> > +			clocks = <&cpg CPG_MOD R9A08G046_ADC1_ADCLK>,
+>> > +				 <&cpg CPG_MOD R9A08G046_ADC1_PCLK>;
+>> > +			clock-names = "adclk", "pclk";
+>> > +			resets = <&cpg R9A08G046_ADC1_PRESETN>,
+>> > +				 <&cpg R9A08G046_ADC1_ADRST_N>;
+>> > +			reset-names = "presetn", "adrst-n";
+>> > +			power-domains = <&cpg>;
+>> > +			#address-cells = <1>;
+>> > +			#size-cells = <0>;
+>> > +			#io-channel-cells = <1>;
+>> > +
+>> > +			channel@8 {
+>> > +				reg = <8>;
+>> > +			};
+>> > +		};
+>> > +
+>> > +		tsu: thermal@108d0000 {
+>> > +			compatible = "renesas,r9a08g046-tsu";
+>> > +			reg = <0 0x108d0000 0 0x10000>;
+>> > +			clocks = <&cpg CPG_MOD R9A08G046_TSU_PCLK>;
+>> > +			resets = <&cpg R9A08G046_TSU_PRESETN>;
+>> > +			power-domains = <&cpg>;
+>> > +			#thermal-sensor-cells = <0>;
+>> > +			io-channels = <&adc1 0>;
+>> 
+>> <&adc1 8>
+>
+> With the above entries, I get below error as adc1 has a single channel
+>
+> https://elixir.bootlin.com/linux/v7.4-rc1/source/drivers/iio/inkern.c#L135
+>
+> [   15.067383] iio iio:device0: invalid channel index 8
 
-https://elixir.bootlin.com/linux/v7.4-rc1/source/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml#L106
+I am not surprised ;-)
 
-Which might obviously be wrong! And I just noticed that in that one we
-do have it again referenced in the channel properties. So it might be
-just some legacy thing.
+>> You cannot have "channel@8" in the ADC node and magically assume consumers should refer to this using
+>> "<&adc1 0>".
+>
+> ADC1 has single channel and HW manual says it is ADCR8(A/D conversion 
+> result register 8)
+> That is the reason for channel@8.
+>
+> You mean I should use channel@0 instead to avoid the above error as a 
+> single channel
+> registered by iio??
+> 	channel@0 {
+> 			reg = <8>;
+> 	}
 
-But in here the case is really this is a device wide (not per channel)
-property. But I realize that can just do:
+No, DT describes hardware, and the hardware manual says it is channel 8
+(and FWIW, the "reg" property must match the unit address).  If you
+want to deviate from this (I think you don't), you would need a DT
+bindings header file.
 
-$ref: /schemas/iio/adc/adc.yaml#/properties/bipolar
+>> I don't buy your rationale in [1]:
+>> 
+>>    "There is a mapping between internal Linux array index (0) and the actual hardware channel ID (8).
+>> 
+>>     See the code
+>>     https://elixir.bootlin.com/linux/v7.3-rc3/source/drivers/iio/adc/rzg2l_adc.c#L354"
+>> 
+>> This mapping is in the driver, and there is no mention of it in the DT bindings.
+>> This means the driver must be fixed first, too.
+>
+> OK. You mean I should add custom of_xlate in driver?
+>
+> Please let me know if you prefer adding .of_xlate to the ADC driver
+> so we can use <&adc1 8> in the DTS, or keeping <&adc1 0> with the default
+> simple xlate.
 
-right?
+Please add an .of_xlate() function, so (possibly sparse) hardware
+channel numbers are mapped properly to software channels.
+Thanks!
 
-> 
-> > +
-> > +  adi,buffer-disable:
-> > +    description:
-> > +      Operate the analog inputs in unbuffered mode. Unbuffered mode allows the
-> > +      inputs to go from 30 mV below GND to 30 mV above AVDD, while buffered
-> > +      mode needs 100 mV of headroom to the supply rails but tolerates source
-> > +      impedances in front of the inputs. Buffered mode is always used for gains
-> > +      higher than 2.
-> > +    type: boolean
-> 
-> What determines if the gain is higher than 2?
+Gr{oetje,eeting}s,
 
-Userspace does, through the scale attribute. So this property only has an effect when the gain is 1 or 2.
-For higher gains the buffer is always on
+                                                Geert
 
-> 
-> > +
-> > +  adi,burnout-currents-enable:
-> > +    description:
-> > +      Enable the 100 nA burnout current sources in the signal path, which allow
-> > +      to detect an open circuit on the selected analog input. They can only be
-> > +      enabled when either the buffer or the in-amp is active.
-> 
-> The former should be somewhat enforceable with the binding, what
-> determins this in-amp's setting?
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Same deal. For gains >= 4, the in-amp becomes active in the path (and the buffer is forced on),
-so there's no way we can enforce this at the binding level:
-
-For gains 1 or 2, with adi,buffer-disable, adi,burnout-currents-enable is irrelevant, as the
-datasheet onl allows the burnout currents with the buffer or in-amp active.
-
-For gains >= 4 it's the other way around: adi,buffer-disable is irrelevant.
-
-So it should be the driver to make sure all of it remains sane.
-
-But I did take a look on the datasheet and this actually seems wrong to
-be honest (the burnout stuff). Datasheet:
-
-"These currents can be used to verify that an external transducer is still operational before
-attempting to take measurements on that channel."
-"For normal operation, these burnout currents are turned off by writing a 0 to the BO bit
-in the configuration register."
-
-So I'll just drop the burnout property and maybe have it as a debugfs
-thing.
-
-- Nuno Sá
-
-> 
-> > +    type: boolean
-> > +
-> > +  adi,vbias-pin:
-> > +    description:
-> > +      Negative analog input (AINx(-)) to bias to AVDD / 2 with the bias voltage
-> > +      generator.
-> > +    $ref: /schemas/types.yaml#/definitions/string
-> > +    enum: [ain1, ain2, ain3]
-> > +
-> > +  adi,vbias-boost-enable:
-> > +    description:
-> > +      Increase the current of the bias voltage generator, reducing its power-up
-> > +      time.
-> > +    type: boolean
-> > +
-> > +  adi,excitation-current-microamp:
-> > +    description:
-> > +      Enables the excitation current sources IEXC1 and IEXC2. Both are always
-> > +      enabled together and set to this same value. Where each one is connected
-> > +      is given by adi,excitation-pins.
-> > +    enum: [10, 210, 1000]
-> > +
-> > +  adi,excitation-pins:
-> > +    description:
-> > +      Output pins the excitation current sources IEXC1 and IEXC2 are routed
-> > +      to, in that order. The default routes IEXC1 to IOUT1 and IEXC2 to IOUT2.
-> > +      Both sources can be routed to the same pin, which then outputs twice the
-> > +      configured current. This is not allowed when
-> > +      adi,excitation-current-microamp is 1000.
-> > +    $ref: /schemas/types.yaml#/definitions/non-unique-string-array
-> > +    minItems: 2
-> > +    maxItems: 2
-> > +    items:
-> > +      enum: [iout1, iout2]
-> > +    default: [iout1, iout2]
-> > +
-> > +dependencies:
-> > +  adi,vbias-boost-enable: [ 'adi,vbias-pin' ]
-> > +  adi,excitation-pins: [ 'adi,excitation-current-microamp' ]
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +  - avdd-supply
-> > +  - dvdd-supply
-> > +
-> > +allOf:
-> > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> > +  - if:
-> > +      properties:
-> > +        adi,excitation-current-microamp:
-> > +          const: 1000
-> > +      required:
-> > +        - adi,excitation-current-microamp
-> > +    then:
-> > +      properties:
-> > +        adi,excitation-pins:
-> > +          oneOf:
-> > +            - items:
-> > +                - const: iout1
-> > +                - const: iout2
-> > +            - items:
-> > +                - const: iout2
-> > +                - const: iout1
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - adi,ad7785
-> > +              - adi,ad7792
-> > +              - adi,ad7793
-> > +    then:
-> > +      properties:
-> > +        refin2-supply: false
-> > +        adi,vbias-pin:
-> > +          enum: [ain1, ain2]
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - adi,ad7796
-> > +              - adi,ad7797
-> > +              - adi,ad7798
-> > +              - adi,ad7799
-> > +    then:
-> > +      properties:
-> > +        refin2-supply: false
-> > +        adi,vbias-pin: false
-> > +        adi,vbias-boost-enable: false
-> > +        adi,excitation-current-microamp: false
-> > +        adi,excitation-pins: false
-> > +      required:
-> > +        - refin-supply
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - adi,ad7796
-> > +              - adi,ad7797
-> > +    then:
-> > +      properties:
-> > +        adi,buffer-disable: false
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - adi,ad7798
-> > +              - adi,ad7799
-> > +    then:
-> > +      properties:
-> > +        clocks: false
-> > +
-> > +unevaluatedProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +
-> > +    spi {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        adc@0 {
-> > +            compatible = "adi,ad7793";
-> > +            reg = <0>;
-> > +            spi-max-frequency = <5000000>;
-> > +            spi-cpol;
-> > +            spi-cpha;
-> > +            interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
-> > +            interrupt-parent = <&gpio>;
-> > +            avdd-supply = <&avdd>;
-> > +            dvdd-supply = <&dvdd>;
-> > +            refin-supply = <&vref>;
-> > +            adi,vbias-pin = "ain2";
-> > +            adi,excitation-current-microamp = <210>;
-> > +        };
-> > +    };
-> > +...
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 658895c3b0fa..e55236f4accb 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -1731,6 +1731,16 @@ W:	https://ez.analog.com/linux-software-drivers
-> >  F:	Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
-> >  F:	drivers/iio/adc/ad7780.c
-> >  
-> > +ANALOG DEVICES INC AD7793 DRIVER
-> > +M:	Michael Hennerich <Michael.Hennerich@analog.com>
-> > +M:	Nuno Sá <nuno.sa@analog.com>
-> > +L:	linux-iio@vger.kernel.org
-> > +S:	Supported
-> > +W:	https://ez.analog.com/linux-software-drivers
-> > +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
-> > +F:	drivers/iio/adc/ad7793.c
-> > +F:	include/linux/platform_data/ad7793.h
-> > +
-> >  ANALOG DEVICES INC AD8366 DRIVER
-> >  M:	Michael Hennerich <Michael.Hennerich@analog.com>
-> >  M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > 
-> > -- 
-> > 2.56.0
-> > 
-
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                                            -- Linus Torvalds
