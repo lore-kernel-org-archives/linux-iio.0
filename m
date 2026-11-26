@@ -1,61 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795717518;
-	b=l9V38+CNeV46ogiakD17U2O/c+llPUAujsBrdlFuIpW+Ob+pBM7EOE5FoyMUiJ2ExbJp
-	 Q4sAThNjvBOui3oB5Qu/EIj8KYRrZ9Y91JIYS3FfekxSUxNevlDrwVh24ENB84fiVbAKn
-	 N1Jkth2JaqSV7hUdwGlqDdS9rSOr/uNs+LqrATMYbTTGj2+0ECFpfokoHB7QCiOebRdRR
-	 Sxhv0yETYQRmU9VOFaasrOJ0KVvLwmnOqtTRgsxAGAacQd9zcXJt5TWu2ePFsJhyl/Sh0
-	 zcn1s1aV/SeAS+GGGBu4sjyMDISqvoYw40Mitc1mNOb8aKwktJjREaPoOBKxrfuomzQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795717518;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=H31adSOeCFpDpgmWUWnmLQhWQC/GR1dbRO0uHdk9MQE=;
-	b=ZnbhcfOAub9KlAbYdYZXehlvhN9jiiIxn6mI2vnSd9E1lPxh+vOUrAOf4CVYAIU4u6mG
-	 4MW3Cqvv/tII4c6YONse8QKQrgQ1a3eHl8cjUhZEPvGiAsOo34Vsb9MW5vp4vMfkDsgOn
-	 4Jq7+YNU3RxKhE5aDbG51Zcvl6eIzm6dT/CIwzPuiKUh/EiTRxh31mJDt7S2BFB04afDR
-	 bkffgOIjJLQX5i851kRYpSZj6V9kMr0WyUrHLmb4OMN5INibwxW/nOnLLpjI0Ru7aKQqC
-	 Dd0hAGwtdPw5c8Ut4Q0jwNiVSh6r+63xfx/jAvvK4yDMGDDoOyszeOdI9UK0bfMcREA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BxosGxu5;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.54
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795719245;
+	b=mSTFy0GxrOs7uJHGVhgr6Aoa1KLh68gq242OQ+PKgCP63AkBr6mYUR7dXWlzREOnONO1
+	 qlmUTVAyeKrq9DZ3Q+0fFuI5spfWCJDoEt6bRyQ9RaWjnyjpZbt3vy9I7xoYluIsnKiPu
+	 P7M0kaynqe1xxuTzbb83Wfna0Q71owWaOFaxQu0LG0I8ddo5iiJdoek8QY7wafJLZ4R2L
+	 7tZUK2YgdlzfdYKuUvyN/IDWslP5Mk6rjxOYP5jTIxjyIsInfIzURW5p3I9MrhoJELDhh
+	 KK/nIgcygRgNcsECLYVmjJK2MmVMDYRDU9Wbij4fhFH8KhwHUXG4UuVALSXPlTyA50w==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795719245;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:From:Date:
+	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type;
+	bh=0LyIfXrFbfgc1KX44tNJALWhMB7M6d1jCLDWVtkGDBo=;
+	b=0EYrRcD7x0NM/CL2pirL15AFJmvZIRNqJIVNfpsEjsxfR/W79HWfhh2JeohS7xWhCgKw
+	 uU6691uiOdyjoDEoZwG6kI7+ue+E+U3v7lxanlbNsFwEYt4cegce+7hpGqSQrorLHyFeQ
+	 GmseL/dGDyUvQoblmelw+W0GhLwIBd31yvtGf0vXtd5gnP6KnyDzYAyct6D5dAxeQYi3X
+	 /ca35oyOkoU5mVJ7e5SuRvtMzyzvkS7viFWw8bcOiopEW05bLJWCy95K1rLhm9VJvZwTJ
+	 wJuomUfCL/12lrI8+x5eoPsTgj8EKI6gg0ayUQZpSVhzE4ptxRffTRL4LsBTrYJYd6A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dxa5bThR;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.54
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03DD5606A323;
-	Thu, 26 Nov 2026 18:25:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33272606A321
+	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 18:54:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 33272606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BxosGxu5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D73B1F000C0;
-	Thu, 26 Nov 2026 18:25:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795717517;
-	bh=H31adSOeCFpDpgmWUWnmLQhWQC/GR1dbRO0uHdk9MQE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=BxosGxu5TRmDf5xGDNM3cYsPzm07hDlZ2q8/CD0K1nr7HrQJ+d/Eq4zes5XAA0iuQ
-	 COHt50cX4ihy82et25zBVVVhgTWAXLlSXsEc0qjsXaHvcXngBUD9b0Byca+rfXsBS9
-	 LoIxj3xqasGuDSOXimVpkLY5qXUOiwp6dAwo4B2jDd0ioCSmTj8oRu7FDvQlt3OE1Q
-	 quro2U96mP6Nz2KDlGNQWvZ5FeREYPyS+JGpOj6TggcVAww7eaon41zrJMU9JYXP33
-	 hv1TDSeHwQ2qz9sntL+jwQpDOnPscUbiTJerrIkC032aSXgXJLJBNQUgSHyUk+5LVj
-	 bekzxL3GEfSgA==
-Date: Thu, 26 Nov 2026 18:25:13 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux@analog.com,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 5/6] dt-bindings: iio: adc: add AD7793 and similar ADCs
-Message-ID: <20261126-hunter-catatonic-12f9c835f94e@spud>
-References: <20261125-iio-adi-legacy-platdata-v1-0-54e4c8830b57@analog.com>
- <20261125-iio-adi-legacy-platdata-v1-5-54e4c8830b57@analog.com>
- <20261125-whenever-spinning-36a6dc477a00@spud>
- <awgLBWt6MWIRK-cM@nsa>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dxa5bThR
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6b8b20b2538so8502274a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 10:54:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795719243; cv=none;
+        d=google.com; s=arc-20260327;
+        b=WVxviRsv5knNMukCnL71SrGRVxuLupKFYU7/VCFemdlzUT7NtToSJuEI/PCYNlxju2
+         uqOnOmDwHY+m9U3/Umy8mxGKHuS4o1M5m7Byw5lD8ScK//LEMO063C+az+5QIDcYGgPO
+         DmW6kW6IgZZRLPWFkMtxuA9RtE+XltRlYeGOJ7UIlwukZVhpeSNkcc14AovaBTxd9zrB
+         CRnBPWavkBx+iAbWefn4C+INzWOdZJawBENZD2uGrzsDweV+9mgj3NRkTUnKENXlzFGj
+         xYawBkYQ4BFHBAGLG5oAxWBp3nE18Fc4P9bLJvK3sUaapBqDfNc9e4qTQve3Ys9BwMKF
+         9r2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=0LyIfXrFbfgc1KX44tNJALWhMB7M6d1jCLDWVtkGDBo=;
+        fh=vNsFN02XwCK2OMxpDJmDu8ubfY3gQQqSyxGHbgMrm64=;
+        b=DR+8Vac7UkHzIk+PoHYoY4Nnm65Dgo4g5+yvC/SbjRpoDGcUkSgerpxvjUGzomMIpP
+         azN6yE3JD7vvkgUSV335OB91LwQr/xdJo7+PCa6/EieZs7UlbLVXWOa32x0QLPLeuP89
+         o/a2H5LvXt+kMZfc7/cmmZV4hJst1y76JmDIRXoyttpyKDMzTVle6aQzlTlXvoxkZp48
+         pSMgIVgAs3f1ZEOb2PjuvOT+PZLw8mFxqwDfAwDjxU8KntX/CSQcp72wNqKcQJ/TZKMI
+         6cYElSEsK0RLYZgFJ/pG1/NRF10OfJSUZj1lwx5euP2mnlcg/0cvDzOin1kuNaolg5lh
+         TPQA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795719243; x=1796324043; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0LyIfXrFbfgc1KX44tNJALWhMB7M6d1jCLDWVtkGDBo=;
+        b=dxa5bThRnGpnsPVshFVVQTnYsg+LGBpwdqFJWu/R15g0S7DNkZbTmDl1Fk5cGQpNWu
+         2Egv23Th2dLkf6b3GQmrwpBPSUzBufqUKCIMoJG+3lUa6T7kJg4ltJ046VeTS33JM17K
+         tPL9WzkuLMrE6JEfWLkNN0FB3mRwKNPpYaNfIWJDmR5/H8JSVcvL8UlIstztRiF4s+BE
+         zC7TDyUjXT4xrLGkRdOG+4blLljIirDEmzEB6wOsRVw9zmsoFURnJXFncjWW7+IMtaql
+         tfygs0LNF4LtNdH5ICwWrBfPuR0tKAnnp/v2rg7RoqvM7lRuVgyeWRU0kjSewf24glsH
+         lYZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795719243; x=1796324043;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=0LyIfXrFbfgc1KX44tNJALWhMB7M6d1jCLDWVtkGDBo=;
+        b=N66dc2kBnPAVZUCZFzwyZk9ox2Wb58k5XRyzxqRmewMaZX64CyDjJC/hsKdnR+rbZi
+         PwkQ0PFu3iX+Q2J5VlAWLNqIVn9gYVx6BM9dEe64tV+J2N1zhcLu6yVgbfQNFaQn4IF4
+         Xcdj3wQbCX4yVQYLXkbAdzhhPrKC9xQCAUO3WmsnxnMoDXlhtENLuSJH91A55mjJZCJF
+         vgk8iaZYXy1mAnYkcXIrJpCl9z0jIgEEx2T9y5wJTRtAcOp7Y4PSQkQ0jAWkcuXUBZBL
+         DguWRplgPZTllDGvFf7cG2xI8AaGkjU3OTAJEVTBzNfrjGYE5G6TqwsZxy4fR+tmL9pW
+         MNEw==
+X-Gm-Message-State: APuU4Z8Dmy4M1xPuZGrswQLWO7IO+/bDBo9mM9RbHMmybO3ajEc/BEEe
+	oX73pIn1Lnvd67mZwvg17FFS1s5It/5TZTzWDbYe3mZNBKGXxme+Q+c2wvQJS69C+EeUg1LjmBu
+	5+6hnEcxG2miM+iTZ0uFcoev8FM0/IKIKx2+pt9pv
+X-Gm-Gg: AZFdTZf/WHXryA9A1KSCVCiOXqcwaXPLudkD9EMb0kzUwp3Mw9Z8gArEEtf9TQWXFY2
+	LcD9Jc4DCB+MJ0bpX/wjtxQ0KcyIqoDiF2r/g9IhXyZ0F2aTdhYpmG0NwOOnib6iKxC92KKB0cc
+	C4YqSF/YYHcgenCDBAnpUWI++ZnDHsFyHAvHBM6VxLZvLfYCcs8mkGdJvPepfUw8YPgYvgSH5Fy
+	4+SZyvMmDMHYjFnUWPhUrUtjH3emi+Evu/FpNWuO2AWGXUP2bJ20Y0tOiA0GRgNtmYAcYThAmv4
+	iFxg0q1KUb61vS3aXdTJSP/g++1ZcqqdtcWrqAkg33IGVQ+sHVKTkA0m04zX8+z0N0/Wp9qVYZ1
+	NdC8YYznlaA7zV7UvkYp3k/1G1b/FG2so3DMABlHKLvqZWXK2CbuJ3c3sCdPxMmxokZhS/NQYZ9
+	e2CMoCLVWuNlVmh4OHvZb+L73OcA==
+X-Received: by 2002:a05:6402:a592:10b0:6b1:da03:d01d with SMTP id
+ 4fb4d7f45d1cf-6ba37ebfc70mr11887540a12.34.1795719243392; Thu, 26 Nov 2026
+ 10:54:03 -0800 (PST)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -65,426 +100,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="oFj9t82+62QbHXlO"
-Content-Disposition: inline
-In-Reply-To: <awgLBWt6MWIRK-cM@nsa>
+From: Mohammed Rayan <mohammedrah1289@gmail.com>
+Date: Fri, 27 Nov 2026 00:23:51 +0530
+X-Gm-Features: Aa3M54oOKtpbnoTWOrT6rJCDBvjQw2Vd6BHHz_fdWpfLMiBKXmuPVUQWYnSCsS8
+Message-ID: <CAECerH2yi45XUYex7f+ReVqO5X04uZXADDf-g5QDKi5DggiQHA@mail.gmail.com>
+Subject: [RFC] iio: magnetometer: rm3100: compatibility for the TMRC 0x9e rate
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, Song Qiang <songqiang1304521@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
---oFj9t82+62QbHXlO
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On Thu, Nov 26, 2026 at 12:24:28PM +0000, Nuno S=E1 wrote:
-> On Wed, Nov 25, 2026 at 05:41:08PM +0000, Conor Dooley wrote:
-> > On Wed, Nov 25, 2026 at 10:19:21AM +0000, Nuno S=E1 wrote:
-> > > Add a binding for the AD7785, AD7792, AD7793, AD7794, AD7795, AD7796,
-> > > AD7797, AD7798 and AD7799 low power sigma-delta ADCs. The driver has
-> > > supported these parts for a long time, but only through platform data.
-> > >=20
-> > > The ADC reference is described by which supplies are present: REFIN
-> > > (REFIN1 on the AD7794/AD7795), then REFIN2, and otherwise the internal
-> > > 1.17 V reference. In the same way, an external clock on the CLK pin is
-> > > used if one is given, and the internal 64 kHz clock otherwise.
-> > >=20
-> > > The remaining properties describe how the analog front end is wired:
-> > > the input buffer (enabled by default, as it is at power-up), unipolar
-> > > or bipolar coding, the burnout current sources, the bias voltage
-> > > generator and the excitation current sources.
-> > >=20
-> > > Signed-off-by: Nuno S=E1 <nuno.sa@analog.com>
-> > > ---
-> > >  .../devicetree/bindings/iio/adc/adi,ad7793.yaml    | 236 +++++++++++=
-++++++++++
-> > >  MAINTAINERS                                        |  10 +
-> > >  2 files changed, 246 insertions(+)
-> > >=20
-> > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yam=
-l b/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
-> > > new file mode 100644
-> > > index 000000000000..c4a0be06e5c0
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
-> > > @@ -0,0 +1,236 @@
-> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/iio/adc/adi,ad7793.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: Analog Devices AD7793 and similar sigma-delta ADCs
-> > > +
-> > > +maintainers:
-> > > +  - Michael Hennerich <michael.hennerich@analog.com>
-> > > +  - Nuno S=E1 <nuno.sa@analog.com>
-> > > +
-> > > +description:
-> > > +  Low power, low noise sigma-delta ADCs with an SPI interface.
-> > > +
-> > > +  https://www.analog.com/media/en/technical-documentation/data-sheet=
-s/AD7785.pdf
-> > > +  https://www.analog.com/media/en/technical-documentation/data-sheet=
-s/AD7792_7793.pdf
-> > > +  https://www.analog.com/media/en/technical-documentation/data-sheet=
-s/AD7794_7795.pdf
-> > > +  https://www.analog.com/media/en/technical-documentation/data-sheet=
-s/AD7796_7797.pdf
-> > > +  https://www.analog.com/media/en/technical-documentation/data-sheet=
-s/AD7798_7799.pdf
-> > > +
-> > > +properties:
-> > > +  compatible:
-> > > +    enum:
-> > > +      - adi,ad7785
-> > > +      - adi,ad7792
-> > > +      - adi,ad7793
-> > > +      - adi,ad7794
-> > > +      - adi,ad7795
-> > > +      - adi,ad7796
-> > > +      - adi,ad7797
-> > > +      - adi,ad7798
-> > > +      - adi,ad7799
-> > > +
-> > > +  reg:
-> > > +    maxItems: 1
-> > > +
-> > > +  spi-cpol: true
-> > > +
-> > > +  spi-cpha: true
-> > > +
-> > > +  interrupts:
-> > > +    description: Interrupt connected to the DOUT/RDY pin.
-> > > +    maxItems: 1
-> > > +
-> > > +  rdy-gpios:
-> > > +    description:
-> > > +      GPIO reading the DOUT/RDY line. DOUT/RDY also toggles during S=
-PI
-> > > +      transfers, which usually triggers spurious interrupts. Reading=
- this GPIO
-> > > +      allows to tell those apart from real conversion done events.
-> > > +    maxItems: 1
-> > > +
-> > > +  avdd-supply: true
-> > > +
-> > > +  dvdd-supply: true
-> > > +
-> > > +  refin-supply:
-> > > +    description:
-> > > +      External reference applied between REFIN(+) and REFIN(-), or b=
-etween
-> > > +      REFIN1(+) and REFIN1(-) on the AD7794 and AD7795. If present, =
-it is used
-> > > +      as the ADC reference. If neither refin-supply nor refin2-suppl=
-y are
-> > > +      present, the internal 1.17 V reference is used.
-> > > +
-> > > +  refin2-supply:
-> > > +    description:
-> > > +      External reference applied between REFIN2(+) and REFIN2(-). Us=
-ed as the
-> > > +      ADC reference if refin-supply is not present.
-> > > +
-> > > +  clocks:
-> > > +    description:
-> > > +      External clock connected to the CLK pin. Either 64 kHz, or 128=
- kHz in
-> > > +      which case it gets divided by 2 internally. If not present, th=
-e internal
-> > > +      64 kHz clock is used.
-> > > +    maxItems: 1
-> > > +
-> > > +  bipolar:
-> > > +    description: see Documentation/devicetree/bindings/iio/adc/adc.y=
-aml
-> > > +    type: boolean
-> >=20
-> > This is odd, why not ref the file normally?
->=20
-> Yes, was not sure on this one but saw precedence in:
->=20
-> https://elixir.bootlin.com/linux/v7.4-rc1/source/Documentation/devicetree=
-/bindings/iio/adc/adi,ad7192.yaml#L106
->=20
-> Which might obviously be wrong! And I just noticed that in that one we
-> do have it again referenced in the channel properties. So it might be
-> just some legacy thing.
+The RM3100 driver advertises 0.015 Hz for TMRC 0x9e, while
+Table 5-4 of PNI's breakout-board manual lists approximately
+0.15 Hz with a 6.7-second interval. The driver already stores
+6700 ms for this setting.
 
-Ah right of course, adc.yaml is for channels...
+https://www.pnicorp.com/wp-content/uploads/RM3100-Breakout-Board-User-Manual-r07.pdf
 
->=20
-> But in here the case is really this is a device wide (not per channel)
-> property. But I realize that can just do:
->=20
-> $ref: /schemas/iio/adc/adc.yaml#/properties/bipolar
->=20
-> right?
+I would like to correct the advertised rate and readback to 0.15 Hz.
+The register value and timing would stay the same. A direct table
+correction would also cause existing writes of 0.015 to fail,
+because the setter matches the requested rate exactly.
 
-Happens a good bit for ports, I don't see why not here either.
+Would you prefer to keep 0.015 as a write-only compatibility alias
+for the same TMRC setting, or have the old value return -EINVAL?
 
->=20
-> >=20
-> > > +
-> > > +  adi,buffer-disable:
-> > > +    description:
-> > > +      Operate the analog inputs in unbuffered mode. Unbuffered mode =
-allows the
-> > > +      inputs to go from 30 mV below GND to 30 mV above AVDD, while b=
-uffered
-> > > +      mode needs 100 mV of headroom to the supply rails but tolerate=
-s source
-> > > +      impedances in front of the inputs. Buffered mode is always use=
-d for gains
-> > > +      higher than 2.
-> > > +    type: boolean
-> >=20
-> > What determines if the gain is higher than 2?
->=20
-> Userspace does, through the scale attribute. So this property only has an=
- effect when the gain is 1 or 2.
-> For higher gains the buffer is always on
->=20
-> >=20
-> > > +
-> > > +  adi,burnout-currents-enable:
-> > > +    description:
-> > > +      Enable the 100 nA burnout current sources in the signal path, =
-which allow
-> > > +      to detect an open circuit on the selected analog input. They c=
-an only be
-> > > +      enabled when either the buffer or the in-amp is active.
-> >=20
-> > The former should be somewhat enforceable with the binding, what
-> > determins this in-amp's setting?
->=20
-> Same deal. For gains >=3D 4, the in-amp becomes active in the path (and t=
-he buffer is forced on),
-> so there's no way we can enforce this at the binding level:
->=20
-> For gains 1 or 2, with adi,buffer-disable, adi,burnout-currents-enable is=
- irrelevant, as the
-> datasheet onl allows the burnout currents with the buffer or in-amp activ=
-e.
->=20
-> For gains >=3D 4 it's the other way around: adi,buffer-disable is irrelev=
-ant.
->=20
-> So it should be the driver to make sure all of it remains sane.
->=20
-> But I did take a look on the datasheet and this actually seems wrong to
-> be honest (the burnout stuff). Datasheet:
->=20
-> "These currents can be used to verify that an external transducer is stil=
-l operational before
-> attempting to take measurements on that channel."
-> "For normal operation, these burnout currents are turned off by writing a=
- 0 to the BO bit
-> in the configuration register."
->=20
-> So I'll just drop the burnout property and maybe have it as a debugfs
-> thing.
+I checked the current IIO branch tips and found the separate TMRC
+bounds fix, but no rate correction. I have verified the mapping
+from source and have not measured the sensor cadence on hardware.
 
-For both of these properties, I think meaning assigned to them should
-change (if kept). e.g. buffer-disable should not be a property that
-disables the buffer, but instead tells software that the conditions for
-disabling the buffer have been met by the hardware, and it is up to the
-software to disable it if the gain is suitable. I assume that the buffer
-doesn't auto turn off when the gain drops below 2 and the driver has to
-intentionally deactivate it?
-
-Conor.
-
->=20
-> - Nuno S=E1
->=20
-> >=20
-> > > +    type: boolean
-> > > +
-> > > +  adi,vbias-pin:
-> > > +    description:
-> > > +      Negative analog input (AINx(-)) to bias to AVDD / 2 with the b=
-ias voltage
-> > > +      generator.
-> > > +    $ref: /schemas/types.yaml#/definitions/string
-> > > +    enum: [ain1, ain2, ain3]
-> > > +
-> > > +  adi,vbias-boost-enable:
-> > > +    description:
-> > > +      Increase the current of the bias voltage generator, reducing i=
-ts power-up
-> > > +      time.
-> > > +    type: boolean
-> > > +
-> > > +  adi,excitation-current-microamp:
-> > > +    description:
-> > > +      Enables the excitation current sources IEXC1 and IEXC2. Both a=
-re always
-> > > +      enabled together and set to this same value. Where each one is=
- connected
-> > > +      is given by adi,excitation-pins.
-> > > +    enum: [10, 210, 1000]
-> > > +
-> > > +  adi,excitation-pins:
-> > > +    description:
-> > > +      Output pins the excitation current sources IEXC1 and IEXC2 are=
- routed
-> > > +      to, in that order. The default routes IEXC1 to IOUT1 and IEXC2=
- to IOUT2.
-> > > +      Both sources can be routed to the same pin, which then outputs=
- twice the
-> > > +      configured current. This is not allowed when
-> > > +      adi,excitation-current-microamp is 1000.
-> > > +    $ref: /schemas/types.yaml#/definitions/non-unique-string-array
-> > > +    minItems: 2
-> > > +    maxItems: 2
-> > > +    items:
-> > > +      enum: [iout1, iout2]
-> > > +    default: [iout1, iout2]
-> > > +
-> > > +dependencies:
-> > > +  adi,vbias-boost-enable: [ 'adi,vbias-pin' ]
-> > > +  adi,excitation-pins: [ 'adi,excitation-current-microamp' ]
-> > > +
-> > > +required:
-> > > +  - compatible
-> > > +  - reg
-> > > +  - interrupts
-> > > +  - avdd-supply
-> > > +  - dvdd-supply
-> > > +
-> > > +allOf:
-> > > +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> > > +  - if:
-> > > +      properties:
-> > > +        adi,excitation-current-microamp:
-> > > +          const: 1000
-> > > +      required:
-> > > +        - adi,excitation-current-microamp
-> > > +    then:
-> > > +      properties:
-> > > +        adi,excitation-pins:
-> > > +          oneOf:
-> > > +            - items:
-> > > +                - const: iout1
-> > > +                - const: iout2
-> > > +            - items:
-> > > +                - const: iout2
-> > > +                - const: iout1
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - adi,ad7785
-> > > +              - adi,ad7792
-> > > +              - adi,ad7793
-> > > +    then:
-> > > +      properties:
-> > > +        refin2-supply: false
-> > > +        adi,vbias-pin:
-> > > +          enum: [ain1, ain2]
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - adi,ad7796
-> > > +              - adi,ad7797
-> > > +              - adi,ad7798
-> > > +              - adi,ad7799
-> > > +    then:
-> > > +      properties:
-> > > +        refin2-supply: false
-> > > +        adi,vbias-pin: false
-> > > +        adi,vbias-boost-enable: false
-> > > +        adi,excitation-current-microamp: false
-> > > +        adi,excitation-pins: false
-> > > +      required:
-> > > +        - refin-supply
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - adi,ad7796
-> > > +              - adi,ad7797
-> > > +    then:
-> > > +      properties:
-> > > +        adi,buffer-disable: false
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - adi,ad7798
-> > > +              - adi,ad7799
-> > > +    then:
-> > > +      properties:
-> > > +        clocks: false
-> > > +
-> > > +unevaluatedProperties: false
-> > > +
-> > > +examples:
-> > > +  - |
-> > > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > > +
-> > > +    spi {
-> > > +        #address-cells =3D <1>;
-> > > +        #size-cells =3D <0>;
-> > > +
-> > > +        adc@0 {
-> > > +            compatible =3D "adi,ad7793";
-> > > +            reg =3D <0>;
-> > > +            spi-max-frequency =3D <5000000>;
-> > > +            spi-cpol;
-> > > +            spi-cpha;
-> > > +            interrupts =3D <25 IRQ_TYPE_EDGE_FALLING>;
-> > > +            interrupt-parent =3D <&gpio>;
-> > > +            avdd-supply =3D <&avdd>;
-> > > +            dvdd-supply =3D <&dvdd>;
-> > > +            refin-supply =3D <&vref>;
-> > > +            adi,vbias-pin =3D "ain2";
-> > > +            adi,excitation-current-microamp =3D <210>;
-> > > +        };
-> > > +    };
-> > > +...
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index 658895c3b0fa..e55236f4accb 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -1731,6 +1731,16 @@ W:	https://ez.analog.com/linux-software-drivers
-> > >  F:	Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
-> > >  F:	drivers/iio/adc/ad7780.c
-> > > =20
-> > > +ANALOG DEVICES INC AD7793 DRIVER
-> > > +M:	Michael Hennerich <Michael.Hennerich@analog.com>
-> > > +M:	Nuno S=E1 <nuno.sa@analog.com>
-> > > +L:	linux-iio@vger.kernel.org
-> > > +S:	Supported
-> > > +W:	https://ez.analog.com/linux-software-drivers
-> > > +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
-> > > +F:	drivers/iio/adc/ad7793.c
-> > > +F:	include/linux/platform_data/ad7793.h
-> > > +
-> > >  ANALOG DEVICES INC AD8366 DRIVER
-> > >  M:	Michael Hennerich <Michael.Hennerich@analog.com>
-> > >  M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > >=20
-> > > --=20
-> > > 2.56.0
-> > >=20
->=20
->=20
-
---oFj9t82+62QbHXlO
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCawh5iAAKCRB4tDGHoIJi
-0pHkAQDAmJq5sxmrznUrxSZ46t+DebxK/67x3NcvILoWOigYOwEA/8Gk8x0ShH3s
-fwu0VuzVcWvoFpooBh6Jl3sySkHuWg8=
-=6VgK
------END PGP SIGNATURE-----
-
---oFj9t82+62QbHXlO--
+Thanks,
+Rayan
