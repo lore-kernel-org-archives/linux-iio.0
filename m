@@ -1,60 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=109.224.244.122
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795678523;
-	b=BU68/S0YKqJHxD5HDEm8zjmG8388u0XjDSevpYOVXaY5ldddRydmsO+w16CWII8nP7Ci
-	 p839L90YdO1QHuckvqpr41n3kZ5BLN0ewDVQU0E5uUGc903KQxG5xrxswfkqf/1dfy7x6
-	 AfNNRc9eSNqlp99gyo2ZefmpRXHF3tEmJEthJ9BDLckcUHcgeRoECvJTeBayaFcMWCnms
-	 3WNecdxpuYo2Hip4XqWe5/JGvc/d7Kh6nqrKLsTcdzzjVuKxkoFDsL12h/SfEY9xhaMWm
-	 ChAECo3NlXqXmJZiKdW8fSqDgyfrAeCGMjWep9eabliYjQ1fWT4shPP8lYG0kE8xOLg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795678523;
-	h=DMARC-Filter:DKIM-Signature:Date:To:From:Cc:Subject:Message-ID:
-	 In-Reply-To:References:Feedback-ID:X-Pm-Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=XUSJGTide+xDGpIYleL0SwfRegZX5gU/UVkOK9ZOXc0=;
-	b=vay9enI3KJxIxvljKsGVAAbVPZ02P8jHV5RwIOJ+i2YBsLkh+sNS9laxe+1tDboSFy8V
-	 o+Gtw+r8JZg3sjy8EcTuNY4/ZdethQeQAnTlgc31cbP9sEIY7yB8baw8Km9Du9BMzlldB
-	 aMR/Ekcq+0Tst/Tegyvdt9AzxGk4V+BwLwaW78c384K0vkpQ6ZXV4akQ7m8/MuAKGe0rc
-	 zu/aW4TLW1kVhBZu2uOnmf6q7LXg/tlQrdLshQxFhV7VaMdpgt0m7ccT1PHyZZv8DFXPH
-	 pXb/RrQxGKEu2h94UEe4hm5mU5EYHX4qHWwLE3d6MGkP2p+0wZxIxSD7Gc1r0OXvJ9Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=protonmail.com;
-	spf=pass smtp.mailfrom=protonmail.com;
-	dkim=pass header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=mtM9STWX;
-	arc=none smtp.remote-ip=109.224.244.122
-Received: from mail-244122.protonmail.ch (mail-244122.protonmail.ch [109.224.244.122])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795680713;
+	b=WWMjUEMnV1rPCZIpNOPjqyHi1E2HpMGIRkkcKqxBxvEFnrVEKcSj442K+UsvWqMNTMr1
+	 GLHkK7wR6zSRPsFOaCt+Eo9WVrHua99slXFoGtPyVzD2fw7fRHCWIF3kANEEjGh/As8MK
+	 ESpXlRmGeEqXBevdRfxLMqrQ10sq7CXvCMpTFteHRT5gnq66uhaaEWMS8vNDVklsJpPEV
+	 Z5dxawlSWSvQGsid0+Xu2WQQAjE+LCXbt1YyBD93MoxrAko6LhplB12ZNkIr1LoaDMUkK
+	 vAlQCnTfro/4QUVzPN0mtypoUfqKsC63csA4iiFqppbaUWQ5uTvaOdeyAQPjnr03XWA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795680713;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=qS0qQWCBaGoqQJ4yzdVeAx2982yYGUh5X7QjAiHCBVQ=;
+	b=0+y1fLFbPlxwBmIgj/JB2Xs2Cp+DvOAeIlLo87E3StFf0Xnub/Sv1Qr6IKt250Z6Wy3w
+	 I0VCyPrNa8vqE8gcHZc3Ad7NtPoCArof4ROobNQoWM0eRtXGmnnavjMYJYB7Eg0gAgKJ3
+	 tBLIi6CB93H7dcTyVDl9x4FthYoQCWgB1vAR/tivI74SDN4EIKrZ/2W+MlW2zb81qCNHt
+	 lzZUXR7cmKkOqlMZC/dIjgDlgg1s40ZuMUVNBXs+WHyrdnswI3w5yBbv54/mcrYKXvl1Q
+	 Mh8rhsRbAy6kOnkOy5/MtDDCmleGQcP3P1MhpXVYSOEbSITPCjyq6E0G2Ct+Qr51wLg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GrEhG3zx;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91DFE606A31E;
+	Thu, 26 Nov 2026 08:11:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GrEhG3zx
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795680713;
+	b=ECrnpiM+oScB1mam0GXib9Fk7/O6iPSrjH5rpM2Gv56EckGfIAqXlewvYw5RD2vrMYRx
+	 80JNSh3TQlCGBXLY/lukiYr2K20IWCWfrMrSqogKf6RBOF3NBOIwWHiWH1oARmOkbbyQE
+	 5k5iGqnQfdw9K9aTr6qAkOoL2PTmVd8e6LfCrPrzNqToNeMa1toLjYLGArWRKMBzfYRGR
+	 gmwmb0C6t8jof9r5gPq9mQR9pkzRSGP870hGT1Ckaj+YGq26mQkY0AZhRSuB/C+a9XDvs
+	 gnV4ZfMIF59sznhKda0FVH/lk3CYZcxCF43AHcllOojCMM43FN0jgXKUrSlcMRUQSLA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795680713;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=qS0qQWCBaGoqQJ4yzdVeAx2982yYGUh5X7QjAiHCBVQ=;
+	b=fZWntgLAOMABObaR+B3FEZu0BGkPPLKqKu8mzzwzPV8ELPvy+tf56i8m2dDKx/gNEavG
+	 03STEeyJbk8UIkNH1C/xq9ueaGE+LMqYyeWo223MkED4Qo6Q0uwjytjI3ef1qpXnnV+ZR
+	 TZyqUA76+DOp3mO/oTEeKEHJ+2+Fyl5cOKT2COtW4GXspu8bapLFALSdouho/LF2X+2Wc
+	 nLlV/xM7gQaBal+F35Ph0edASNmyt+qpXMrdVyi44a+GU4HGTtymiT2F3nVEeOaPBjPjC
+	 bCtS0bSJAAsf8Ojc5dYdxeTRfsFSpULk2/mc9JBgoEuG1tADWiCogjTRKbu4kYzAEPw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B86606A321
-	for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 07:35:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D0B86606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.a=rsa-sha256 header.s=protonmail3 header.b=mtM9STWX
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-	s=protonmail3; t=1795678520; x=1795937720;
-	bh=XUSJGTide+xDGpIYleL0SwfRegZX5gU/UVkOK9ZOXc0=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=mtM9STWXKAqD9WGspzMlHKmC6U4qA0TSAq53ucmxbzOIASs2A7rXAYkYTqoiAm35v
-	 xTKZPc76zxQPDHAA6sbS0mkDMDwY8XHGl5OimhViNuEwG5c7UkVDDtLaj9oGjW6L6G
-	 r5N/m7aUP/LY2kMjM4VjtMiBVlzWjCYuLvDG2U9spFA3d6796bSicAk/l4b3R2wVuD
-	 tcc9h3bK+rHaZ/YzJWhiEzHzNh2y0t46Mcw5rk4LiRa/fncrRFEdH98kkxY2ia7LB4
-	 RWDr4t9g/9LjPcxHaMOs94wo1+FxqiLl5IbGi4s/wqhRCRNgeO0ooxx/daMPvnm6Gc
-	 d75jHqlB1vdCg==
-Date: Thu, 26 Nov 2026 07:35:14 +0000
-To: iasnezhkov@gmail.com
-From: Roman Vivchar <rva333@protonmail.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com, linux-iio@vger.kernel.org, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] iio: adc: mt6359: fix MT6358 VBAT impedance resistance ratio
-Message-ID: <RyeVHYGoYxuKtlQ0QPskoF7emL4yakkPeBUW--rPVYqvaAM4Q5Pm1GACcF4t-1DjyxPPOMNyfAiMnTxVqugYC2MBKxUBhRiDDjtcPNK4Z7Q=@protonmail.com>
-In-Reply-To: <20261126031013.27701-4-iasnezhkov@gmail.com>
-References: <20261126031013.27701-1-iasnezhkov@gmail.com> <20261126031013.27701-4-iasnezhkov@gmail.com>
-Feedback-ID: 173184497:user:proton
-X-Pm-Message-ID: d24a110af2aa28dfc2cca5959e1a53a29ffd220d
+	by smtp.kernel.org (Postfix) with ESMTPS id 13C801F000C4;
+	Thu, 26 Nov 2026 08:11:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795680713;
+	bh=qS0qQWCBaGoqQJ4yzdVeAx2982yYGUh5X7QjAiHCBVQ=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=GrEhG3zx98S9qFRiAEb8WHPiBVgQbjO+bAft5mf6X5bcURrVry/3V3i9xCge0WqDs
+	 bm9AcSyBrR29YqkK6h+gHP9TPnU1YFZB7LwJzF3w12CR5xGNeJspJcSq63v8Tabz+j
+	 YYhiGW1b9xzIRr/r2LG5+ZpCgWQaWZi7Agy24/Tjauhu/4Wxm26LFcRFn8LyQjBGar
+	 WQNmw08C8LLpeEo5+4HGx7z49fCHrmKt4miZlWtR6r4WEWEW06tuxwFKgiATCQF1JU
+	 /Q4xLjj1nrowGxTduVsVv51ki3W7SSN84RFaMNHZNaTgMzbhHgiSyLq+gdBEaDYfea
+	 5bzmDqs0DeLhQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 5428C4D2D9;
+	Thu, 26 Nov 2026 08:11:47 +0000 (UTC)
+From: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>
+Subject: [PATCH v2 0/2] iio: light: add support for ams OSRAM TCS3430
+Date: Thu, 26 Nov 2026 09:11:46 +0100
+Message-Id: <20261126-iio-tcs3430-v2-0-6c5329d20919@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -64,36 +83,75 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMLpB2sC/22Nyw6CMBBFf4XM2pp2Wh668j8Mi1oGGCPUtEg0h
+ H+34NblSc49d4FIgSnCOVsg0MyR/ZgADxm43o4dCW4SA0oslEIjmL2YXNRGS4FtrqvylGNJDaT
+ FM1DL7712rX8cX7c7uWlLbEbPcfLhs9/NavP+l2clpJAtWl3ZwhqnLt1g+XF0foB6Xdcvl5vYH
+ bgAAAA=
+X-Change-ID: 20261124-iio-tcs3430-2f53879527ed
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Robert Ijtsma <robertijtsma@gmail.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795680706; l=1886;
+ i=robertijtsma@gmail.com; s=20261122; h=from:subject:message-id;
+ bh=0+sMFzcSS5li54XaXhcSaRKdwk6n5ZYNxtJoIRuT8+w=;
+ b=IQt15XFVbKpTHfAvNrLLYxYqKjbJVOjn7rOzdu8KdFeKTFNicWObXDqbUXEz4JMM+WB1qTQuf
+ WdOgC+K3Rx6AMAUoYJd3B7g+J0Gg7rORW36s9QLYfxhPWT0zTjCuPjZ
+X-Developer-Key: i=robertijtsma@gmail.com; a=ed25519;
+ pk=qiDyKVqFicxFIR5sB5m+p9SWPKL2/+mMoiQnUx0C9P0=
+X-Endpoint-Received: by B4 Relay for robertijtsma@gmail.com/20261122 with
+ auth_id=1604
+X-Original-From: Robert Ijtsma <robertijtsma@gmail.com>
+Reply-To: robertijtsma@gmail.com
 
-On Thursday, November 26th, 2026 at 5:11 AM, Ilia Snezhkov via B4 Relay <de=
-vnull+iasnezhkov.gmail.com@kernel.org> wrote:
+Add Devicetree binding documentation and an IIO driver for the ams OSRAM
+TCS3430 ambient light and CIE 1931 XYZ tristimulus color sensor.
 
-> From: Ilia Snezhkov <iasnezhkov@gmail.com>
->=20
-> On MT6358 (and MT6366), both BATADC and the battery impedance VBAT
-> channel use a 3/1 voltage divider (5400 mV full scale with 1800 mV
-> VREF). mt6358_auxadc_ch_desc[PMIC_AUXADC_CHAN_VBAT] erroneously uses
-> 7/2 (copied from MT6359), over-reporting VBAT impedance readings by
-> 16.7%.
->=20
-> Change MT6358 VBAT r_ratio from 7/2 to 3/1 to match MT6358 BATADC and
-> hardware.
->=20
-> Fixes: 3587914bf61d ("iio: adc: Add support for MediaTek MT6357/8/9 Auxil=
-iary ADC")
-> Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
-> ---
+Tested on Microsoft Surface Pro X SQ2 (SC8180X), where the sensor is
+connected on I2C at 0x39 and used for ambient light sensing.
 
-Although this change looks correct to me, it's a no-op given that it's
-not possible to read the channel.
+Signed-off-by: Robert Ijtsma <robertijtsma@gmail.com>
+---
+Changes in v2:
+- Replace hardwaregain control with standard IIO _scale and configurable
+  integration time using the IIO GTS helper (Jonathan Cameron).
+- Hold data->lock across the entire IIO_CHAN_INFO_SCALE path in
+  tcs3430_read_raw() (Jonathan Cameron).
+- Convert register I/O to regmap_i2c (Joshua Crofts).
+- Wrap guard(mutex) declarations in tcs3430_read_raw() switch cases in
+  enclosing blocks to fix Clang -Wjump-misses-init / cleanup scoping
+  (kernel test robot, Joshua Crofts).
+- Use switch(mask) in tcs3430_read_avail() and tcs3430_write_raw(), and
+  drop unused linux/mod_devicetable.h include (Joshua Crofts).
+- Drop redundant L: mailing-list line from MAINTAINERS (Joshua Crofts).
+- Pick up Krzysztof Kozlowski's Reviewed-by on dt-bindings.
+- Link to v1: https://patch.msgid.link/20261124-iio-tcs3430-v1-0-0f2a38a6a4c1@gmail.com
 
-~ # cat /sys/bus/iio/devices/iio:device0/in_voltage13_raw
-cat: read error: Operation timed out
-~ # [  243.402155] mt6359-auxadc mt6359-auxadc: Resetting stuck ADC!
+---
+Robert Ijtsma (2):
+      dt-bindings: iio: light: add ams OSRAM TCS3430
+      iio: light: add ams OSRAM TCS3430 XYZ and ambient light sensor driver
 
-You might want to fix it in the previous patch.
+ .../devicetree/bindings/iio/light/ams,tcs3430.yaml |  52 +++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/light/Kconfig                          |  12 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/tcs3430.c                        | 489 +++++++++++++++++++++
+ 5 files changed, 560 insertions(+)
+---
+base-commit: 4843f6873f7c4835e62f2c73ba0fd538e57a2f22
+change-id: 20261124-iio-tcs3430-2f53879527ed
 
 Best regards,
-Roman
+-- 
+Robert Ijtsma <robertijtsma@gmail.com>
+
+
