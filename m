@@ -1,80 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795772883;
-	b=GK4+HSkv1+agxsHLiP8mpAcG5lGD72+tj0mwG9pyjUqUX3MUiuhrgY/fHzYuEXj9JjfD
-	 XQveJRUWZtWt5KEkaC2ec2yq6yXMMBTXB7ve/++TI1vi+MJv4LE5SnJJCPTF6AWWkakAD
-	 RwDgPWKWMx3AWXBmiRHF1LJBSwo2vimt3qC3M/uoSRyVRptKw6VieQNrk2Q6Hu9qQFmhH
-	 pgkYCwSr1taWjn4zsX3pQV+AcK994BBmnttzHJhtjFgeoxo/vDE09V/bQIIwCZq0vssu0
-	 SnvPiOJSA+8UFUyYpawPzWMn4QDUNRiY8cW5G5PPjlmAMGDjhTrXcMvMKVICszrnmnw==
+	t=1795772886;
+	b=1msnlqGeKzNt9mMa72tEMmn2FaocVlNExu8WednDbMorbpx5FUECBlL4JOgLiTXrMJCu
+	 5eu781gCqQS8OQBe+2djpMbNZiYj2v6Np+nPVGwaDss+lUFR+E+tZED1JcE88VFH4s3+3
+	 S1PG8kQP9y7Q6vYN5p42ukYuy2Z+Zfi/qKBmuT2KoksSmZ9MgS5wtHIyrvjZVHvuPPOsc
+	 /HfMmBkVeG6SZ1UHfDAyV/g6Foflu2ngv9q9VOl2qNBhW5kj7b7yzHpG3oV9cIMJt3C4a
+	 WDoRS/l744GVL/CWZ7FCaoB379LtXeU3jZiINTgFozkswDSePyqWms9xUe6hFPMU7Hg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795772883;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=Tc742TYfJhDQmrqXP6y4CVcIqWZqN3Pcpffs/yYZ5HQ=;
-	b=tNGwIwYv1uiYgmE4KQfRcAobx/Uc/wS2Sfmad8mA+T0qtpCjqWPo4Vz/aYv399PeEIp5
-	 aUQLviZuNIGsJB5Ac1IE85U9nM7C0WRE1Rki0phjRn+ucHY9uMqw+yHZud7yFLjYd1Vyx
-	 EZ/ApK76CLDwmmA8M/aNL+aL9tSAJ4CtQtQXpVDLMjjIGLM2jk5VdX38ZpS6b0x/BYJyG
-	 JNqWeqJo8qf4qPF7K97jZp/JVpYHW/Zcb8j5NMHxyV6lOcFuQI5OddlSGO2uakVf9IeK3
-	 SJP6Of4K6IJg8OUKoTBNZgms454QmqYJsQLPQY+eyagRSQnXorNHXO/Ixm9xucQQLbA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795772886;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=VM7QE4Ethu8V3wZnaWbBoSzvQC/QKL4mYayAF97w8so=;
+	b=CyH78PVTAVqVkX20s6jgF/ftSVVeOnW5QlBV0KtwJEWfUdIRqcx044IT4qapmDRdg0wL
+	 MGH6zsKQ4vJa3p4FUOaupAqSIFZAniVuOIcAujvSODhqmtz3D35NWiTM+m20rDD790CiI
+	 ihvYr1zPryzISbiX9A6FKjPnhBYwfxcUqRAgufJ8MFN12kAmERbFfEHdCwT1oNyXg5a5U
+	 7OTowUXK2qgCTTcamjhOk2wlgtgDhD5a/LGiHCHJep3IGw8LPm5yGYA/OFEIR1tGfyO8F
+	 j5e6F3ojcf3V+JYcFJBVtQsBs4HKJwVlxipBI+jdnu+cOr0XyLKNVbnBW1SbBWsqnCg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C2AvpS2+;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TQFt1o+A;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBC54606A337;
-	Fri, 27 Nov 2026 09:48:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7391A606A32F;
+	Fri, 27 Nov 2026 09:48:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=C2AvpS2+
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TQFt1o+A
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795772883;
-	b=XOAYL9XaiiB5LR6sAVF7g/bG1tGFT+vaMQZVGmICKkWICK8b34YUW+SrSaMIYACnGE36
-	 dPy3SxI7YOS5VdBVP1FjZH8xl1KY3/kuWpzkIRe+R/ZB9FaAzX05y54Lo5HCex9jprrmH
-	 bn5cyMMqTt+cd0eKpV014Q0akfMTqplKhPEwgokfGQVxED2131Dh06WWSvkcGgdmZvOMv
-	 k4nSfR76Vr7YuLhqzNghYm3Ds7wkc/Ha/R7RSWvPWlXrIVaTnhU4R1CvFGCliBQ1EAsuc
-	 tmuLVx5dOGpkRhnX07F19qtSOigM6oDWuM5DT4iI/ITk/mrA7O/gy932MkFoOvFv3AQ==
+	t=1795772886;
+	b=aSPyOQQdNADU2N4IWWCB3oLqkfKzNUe8MNDjPm6h/owlgm+TokHghdtuQjowCc0wRbHd
+	 4OFZfpPLUt06ksOliNKiY5yb1xuXkIRsq8KyS7nWXPxSbSI6KIrR4sM2G9rAJvKdApoCq
+	 Wo1I6zhGqTmbwWxnl5jQV2gQkJ0BD0GwNz0kI7uu1E6/PuqHHAmImD9LPnrLDa4CXcppg
+	 sD4aU4NiafBPeddYu4sZx3qzL43jEjrtEcGY4x7IeV05AFmK7fDAZ/qmVZ5R3UcKFpM6P
+	 IRBwT4B5yiJuU13HGenVvEDe5uBo7E4wUiynn0HrupfHhkUZeLHkClG8pJ0N+4IIC5w==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795772883;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=Tc742TYfJhDQmrqXP6y4CVcIqWZqN3Pcpffs/yYZ5HQ=;
-	b=vXTQebujZ1GCZsF/mr5S/FAhtehBxTuQqQftOEpAV0QWX2NCYD5fzK4xPSVIz6rRqv6B
-	 FpnejRFTe7laTavIJvfpA5bF/LqtVNucgoaAhfjbk+9+Lqn3TCfhUlE5R0ug+CnJK1lfd
-	 Vdsb/jPKt7lyuLftwUxs1rYgeAtNGl63pUc0eyR9K+wTF1Y8m5rtqtx/+Wwyij3wrn7dO
-	 VwrlqbrbciE/4j/xLw24/TB68O7FjbNULPxfvXekKjskBCedZA5i+zhGYv784RyueTdPQ
-	 98iQEAU+ddQmSipRBdbA5nYMqSlmYkz4rKw23AfH2LlNsTqGl+hL495cxsKhocXWBsA==
+	c=relaxed/relaxed; t=1795772886;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=VM7QE4Ethu8V3wZnaWbBoSzvQC/QKL4mYayAF97w8so=;
+	b=LwYfIcG5wSNKYr6e3J46oJX5vBLs0sWWur6yRqLJ//747KjzjvOz6z7II0XaddfWB4FQ
+	 kNIzSCmJZwgP892jvZdEsBbCONgeVC5q892m7OSsJ5pCSfiKM1uwpC3H81MjSPGYS0d/R
+	 1+jAT4AOZ3IpP3w0Z9ykwyoKme6X/2cKJfSD3m6qtMKLeq+GOu1CjD5J7Kwo9zmtPrKYd
+	 xzIJGGjRxBelS4t7YFFH6hnxt7UMeCsYvEc4IzqRVMF0/CojKa1ShKREHZeg0gb5SSTv1
+	 0io99iGKiQNTT6fshVHqiLV5VT4CtMrC5ruJnLWAeGypAnDA/kcKki/H8ch4PPo5Ssw==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id B5D461F00897;
+	by smtp.kernel.org (Postfix) with ESMTPS id CC82A1F00898;
 	Fri, 27 Nov 2026 09:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795772883;
-	bh=Tc742TYfJhDQmrqXP6y4CVcIqWZqN3Pcpffs/yYZ5HQ=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=C2AvpS2+GEnGWed7z1AzSjhWZsXCYEA2Ar/63GiuGLhweFYKK6+klUZLDFS7hUWGv
-	 MCkVenLaxuYrqHPteNGFhckvvpKlPcV9/hH1oohEzCuuYM/hOprGu/UUHAPtdd8iaV
-	 kOM/rxhjroDExICEhMjsSMY8CPHIfrIKQEUYmUSuplGaKYZGktX0Da/ryAYgF/Af0A
-	 FOtjnz78xytvGdSafHfAzDexAJo3ZipMq4h7sMzv/e7OmAt85oKMF8XJuwOAEYh9c1
-	 Xd3QaHdn3X1MblkFCiCcUGFlR5tzlhJQTEOmqEE66GdIyWhqAr+Op3gXSt0lLT9/NP
-	 Q0xAVAK3XW/Og==
+	s=k20260515; t=1795772886;
+	bh=VM7QE4Ethu8V3wZnaWbBoSzvQC/QKL4mYayAF97w8so=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=TQFt1o+AZIGmk2Hltdtzi80OzNllhw5DGMQ4W0Yn2Jwqs6Cs3sBsLptDI7LtZEOjQ
+	 /hTNf+9g7oIBEuF4dkvt3TRzQyl9E/btW58AkcpUyCgA6tN+riiscWF5GWQrnZvtjM
+	 A1N5UxA1pA0zy/7+bqOAkYpfTNebm63KI5AISvEVnyzC26XxKf/n7m2bBUQk95h2VV
+	 vkmaMHWoJpZff3OVts8bwFXGNJosF+ETc+fEd9fyXtTBEG+IElD0DfIwKw2T15ZNcZ
+	 lI7vs3e97UF3KRsIEJyjur+6o7U0jKtxoGZRXmYvRAwEhyPYCp7nYAP3elBgQ8MzKB
+	 krVnU9/cFsogw==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 33EFE4B6C5;
+	by lkml.kernel.org (Postfix) with ESMTP id 576CF4B6C4;
 	Fri, 27 Nov 2026 09:47:56 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v2 0/5] iio: split struct iio_dev_attr into typed core
- attributes
-Date: Fri, 27 Nov 2026 09:47:43 +0000
-Message-Id: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
+Date: Fri, 27 Nov 2026 09:47:44 +0000
+Subject: [PATCH v2 1/5] iio: core: emit channel prefixes into a struct
+ seq_buf
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,132 +84,132 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAL9RCWsC/4WNQQ6CMBBFr0K6dkynRQKuvIdhUeoAY5SatqKG9
- O5SPIDLl/z33yICeaYgjsUiPM0c2E0rqF0h7GimgYAvKwslVYWoJDA7sM4TmBg9ZIVegFrpTjd
- 1WfWNWNWHp57f2+25/XF4dleyMX/lxcghOv/ZujPm3Z/EjCBBHroS+xq1tupkJnNzw966u2hTS
- l91TOmJywAAAA==
-X-Change-ID: 20261120-iio-core-attr-review-1323b39846f9
+Message-Id: <20261127-iio-core-attr-review-v2-1-e0aed1e8a81c@analog.com>
+References: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
+In-Reply-To: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795772875; l=4845;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795772875; l=3352;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=y9MU7THAz/8VJ3YOGLDHHKTJxiT7uNrBF8+pDARjifk=;
- b=QVHkvGdCnd7UXJFsZ9kvrlPtf6CLg9+OCT2JVBs7HRUO/myeHJBjDln/RnV8izp4LGyVdrX/b
- EcIgSnZSrj5CcuWeC+7Y65Jwj9jNGUW5fd35z1s9ctKwdqVgjDIKaKd
+ bh=dMRekQ/faBreODE2xVwTa3Gmbpv2kNnDqBlJ6+rvKGA=;
+ b=uPgcgI1EKqF3hLPjrSBFZipofI3leTzGnDx6RE9iKl0DN1CeWRhr0UuDC4mOFIFPJa0heSDBi
+ gBhRLvdt+KRD9VzpEm0vmEyZp7BQtXDTnBZ954ywOsR/2b3wyu8tlQu
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
  with auth_id=561
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 7bit
 
-struct iio_dev_attr does three unrelated jobs: it backs the static
-attributes declared by drivers through IIO_DEVICE_ATTR*(), the channel
-and event attributes generated by the IIO core, and the per-buffer
-attributes. Every user carries every field (l, c, buffer), whether it
-needs them or not, and the meaning of @address depends on the context:
-an info mask bit, an ext_info index, a scan index or, for events, the
-event_spec index and the event info packed together.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-This series keeps struct iio_dev_attr as what drivers use (dev_attr and
-address) and moves the core-only state into private types embedding it:
+__iio_chan_prefix_emit() builds the channel prefix of an attribute name
+through a struct seq_buf that is local to the function, so a caller that
+wants to append to the prefix has to deal with the buffer offset itself.
 
-  struct iio_chan_attr   - core channel attributes (channel, list node)
-  struct iio_event_attr  - extends it with the event spec
-  struct iio_buffer_attr - extends it with the owning buffer
-
-Attribute creation is split into iio_chan_attr_prepare(), which builds
-the full name and runs the duplicate check, and iio_chan_attr_add(),
-which initializes an attribute allocated by the caller. Each context
-allocates its own type and sets its own fields, so the core needs no
-size, offset or context pointer.
-
-The intended benefits are:
-
-- Static driver attributes no longer carry the core-only fields: 32
-  bytes less per IIO_DEVICE_ATTR*() on 64-bit (72 -> 40, without
-  lockdep), for roughly 220 users in tree.
-
-- Core channel attributes fit a smaller slab class: struct iio_chan_attr
-  is 64 bytes on 64-bit, where struct iio_dev_attr was 72 (kmalloc-64
-  instead of kmalloc-96).
-
-- Shared attributes (info_mask_shared_by_*, shared ext_info and shared
-  event info) are deduplicated before anything is allocated. Today,
-  every channel after the first one allocates the attribute and its
-  name, finds the duplicate and frees both again.
-
-- Event attributes point to their struct iio_event_spec instead of
-  packing (info << 16) | spec_index into the address.
-
-- Buffer implementations no longer depend on the attribute layout to
-  find their buffer: iio_attr_to_buffer() replaces
-  to_iio_dev_attr(attr)->buffer.
-
-- Context-specific attributes become an extension point instead of yet
-  another field in a shared structure. The IIO backend framework is the
-  obvious next user: iio_backend_ext_info_{get,set}() recover the
-  backend from indio_dev->dev.parent, which, as noted there, breaks as
-  soon as a frontend has more than one backend, and
-  iio_backend_extend_chan_spec() refuses to combine backend ext_info with
-  the frontend's own. A struct iio_backend_attr carrying its struct
-  iio_backend, created through the same prepare/add steps (and so
-  deduplicated against the frontend attributes), could address both
-  without touching struct iio_dev_attr or struct iio_info. That is not
-  part of this series.
-
-No ABI change is intended: attribute names, modes and callbacks are
-unchanged.
-
-This series was developed with the help of an AI coding assistant
-(Claude Opus 5.5, through Claude Code). Over an interactive session, it
-reviewed the IIO core, discussed design alternatives, wrote the code
-under my direction and helped write the commit messages. I reviewed all
-of it, and the design choices are mine.
+Move the prefix logic into iio_chan_prefix_seq_buf(), which takes the
+struct seq_buf directly and returns the length of the prefix, and keep
+__iio_chan_prefix_emit() as a wrapper for its current users. This lets
+the IIO core build a full attribute name in a single struct seq_buf.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v2:
-- Drop the RFC prefix.
-- New patch 1: emit channel prefixes into a struct seq_buf.
-- Remove each struct iio_dev_attr field in the patch where it stops being used.
-- iio_buffer_wrap_attr(): use __free(kfree) and no_free_ptr().
-- Link to v1: https://patch.msgid.link/20261120-iio-core-attr-review-v1-0-05b41f8133c2@analog.com
+ drivers/iio/industrialio-core.c | 46 ++++++++++++++++++++++++++---------------
+ 1 file changed, 29 insertions(+), 17 deletions(-)
 
-To: linux-kernel@vger.kernel.org
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Nuno Sá <nuno.sa@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index dabd57a0994e..5267a9c5908c 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -206,28 +206,24 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_POWERFACTOR] = "powerfactor",
+ };
+ 
+-VISIBLE_IF_KUNIT
+-ssize_t __iio_chan_prefix_emit(struct device *dev,
+-			       const struct iio_chan_spec *chan,
+-			       enum iio_shared_by shared_by,
+-			       char *buf, size_t len)
++static ssize_t iio_chan_prefix_seq_buf(struct device *dev,
++				       const struct iio_chan_spec *chan,
++				       enum iio_shared_by shared_by,
++				       struct seq_buf *s)
+ {
+ 	const char *type = iio_chan_type_name_spec[chan->type];
+ 	const char *dir = iio_direction[chan->output];
+-	struct seq_buf s;
+-
+-	seq_buf_init(&s, buf, len);
+ 
+ 	switch (shared_by) {
+ 	case IIO_SHARED_BY_ALL:
+ 		break;
+ 	case IIO_SHARED_BY_DIR:
+-		seq_buf_printf(&s, "%s", dir);
++		seq_buf_printf(s, "%s", dir);
+ 		break;
+ 	case IIO_SHARED_BY_TYPE:
+-		seq_buf_printf(&s, "%s_%s", dir, type);
++		seq_buf_printf(s, "%s_%s", dir, type);
+ 		if (chan->differential)
+-			seq_buf_printf(&s, "-%s", type);
++			seq_buf_printf(s, "-%s", type);
+ 		break;
+ 	case IIO_SEPARATE:
+ 		/* Validate differential channel settings */
+@@ -242,23 +238,39 @@ ssize_t __iio_chan_prefix_emit(struct device *dev,
+ 			}
+ 		}
+ 
+-		seq_buf_printf(&s, "%s_%s", dir, type);
++		seq_buf_printf(s, "%s_%s", dir, type);
+ 
+ 		if (chan->indexed)
+-			seq_buf_printf(&s, "%d", chan->channel);
++			seq_buf_printf(s, "%d", chan->channel);
+ 
+ 		if (chan->differential)
+-			seq_buf_printf(&s, "-%s%d", type, chan->channel2);
++			seq_buf_printf(s, "-%s%d", type, chan->channel2);
+ 
+ 		if (chan->modified)
+-			seq_buf_printf(&s, "_%s", iio_modifier_names[chan->channel2]);
++			seq_buf_printf(s, "_%s", iio_modifier_names[chan->channel2]);
+ 
+ 		if (chan->extend_name)
+-			seq_buf_printf(&s, "_%s", chan->extend_name);
++			seq_buf_printf(s, "_%s", chan->extend_name);
+ 		break;
+ 	}
+ 
+-	return seq_buf_has_overflowed(&s) ? -EOVERFLOW : s.len;
++	if (seq_buf_has_overflowed(s))
++		return -EOVERFLOW;
++
++	return seq_buf_used(s);
++}
++
++VISIBLE_IF_KUNIT
++ssize_t __iio_chan_prefix_emit(struct device *dev,
++			       const struct iio_chan_spec *chan,
++			       enum iio_shared_by shared_by,
++			       char *buf, size_t len)
++{
++	struct seq_buf s;
++
++	seq_buf_init(&s, buf, len);
++
++	return iio_chan_prefix_seq_buf(dev, chan, shared_by, &s);
+ }
+ EXPORT_SYMBOL_IF_KUNIT(__iio_chan_prefix_emit);
+ 
 
----
-Rodrigo Alencar (5):
-      iio: core: emit channel prefixes into a struct seq_buf
-      iio: buffer: add iio_attr_to_buffer() helper
-      iio: core: add struct iio_chan_attr and split attribute creation
-      iio: event: add struct iio_event_attr
-      iio: buffer: add struct iio_buffer_attr
-
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |   2 +-
- drivers/iio/iio_core.h                             |  58 +++-
- drivers/iio/industrialio-buffer.c                  | 154 ++++++----
- drivers/iio/industrialio-core.c                    | 321 +++++++++++----------
- drivers/iio/industrialio-event.c                   |  99 +++++--
- include/linux/iio/buffer_impl.h                    |   3 +
- include/linux/iio/sysfs.h                          |   9 -
- 7 files changed, 387 insertions(+), 259 deletions(-)
----
-base-commit: 39508411b82d4dc29dd245bb471ec9ecc1111c9d
-change-id: 20261120-iio-core-attr-review-1323b39846f9
-
-Best regards,
---  
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+-- 
+2.43.0
 
 
