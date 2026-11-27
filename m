@@ -1,67 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795793383;
-	b=ZwQx9vhyB3mmFVFlUuqNKvE2wuqbvtVWMtGoYIXEUZCp5diie2WH0fUf0XAPFLNIozHc
-	 5z2DMQ/ssWNKPieOW5clOnn/y2rWw9niUfFqpyASBD9Nc7gNDCoBFLbkoi1FPVYPYaNlJ
-	 clbT0/Jok78QqHN33loiz3CtrMKrMm7z6kJWV1WpG1oVOrx5k2AOZlBJF7i3BWgcmFdwT
-	 ytztjVM6Kb2d0lyYhtqCfcEgDSY7X1GSni4RaIoguQzjNP8hV0JefKB9Q1H7fl0RaMwvK
-	 6PLWO11aJXbyMtJRUvKJ+ajz99CE+ubSRp1tGon+qR5bkD2gKkl8wVAgiW4GeQpTLqQ==
+	t=1795793528;
+	b=qc4GWXh9nQfV0OjjM0oh5QV/SQjkqPrGyJyS1oRUKZtYHl1jAa+mqiib6gGRqcbfOfYW
+	 sXcB9HmOxI4YpORxRCla9hgSk3rdfyGbwMePhin6RbX8APnoJyFk/wbRl1Owtn4jMUDWV
+	 wA3/YFOpg/srILihxCiCmYYUoIybDQpZdBLtsiBy0ADKaGZUr03IJCCbK9st1yLHSonfF
+	 fTIMSKH3BmrlBGIl/A7gMMY4/lJEuKekHO1Hn9vgmChaHALPs1y5ge7MVSXs22cxfZrU3
+	 Lj2ImZEuj8iwJaGpNRb1EEzXlXQNR5zbM9QZV7S8U95PkaS2aCnAWT4vh0H2dVG/SiA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795793383;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795793528;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
 	 Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To:Organization;
-	bh=PDBWxjarfS3sHkGbgUJmciEx3Ksk85bYAgtEXJXoTGg=;
-	b=H914iC/gCeYx/19Zgrebb+BkhVym01t7gs3hBVUWRkv2xmBqroo7dxr/ySV75zK+0VqE
-	 DpWgzQOssOFudla/JetsfmzbP+z3auQ11dEi2zMQG4nC5c03nzqhSE+Z18zISiBrYsOc9
-	 3txqzsrC8qCguXcY8DSqx0xbNIhb3B4Pml4NDNLr1UhL73Dj+VKJQiwhfnYh+7pz2ykLU
-	 +OIs7vyOz8Ohnl6LYnePEbJJN4Fjvm2O6scQ6lqbBYvDGdeatQSusQyqnSb074gTz+fdp
-	 /FO0VYWycjpX8cs38iGkdP96mc/zqct8Bxg8z8SIgzcYduNcPSlriIadKvLS80li21w==
+	bh=S8SIjn5jhpWrO4H0i18sVftbBxRoyw9+zah7CQ51v2M=;
+	b=UL8cEu+pSh50JG4lx/vNDDnR0d6jRu/CMh2P9SE7OGpUvFHF354UOhtMWIFC5R2pPOMu
+	 VVhk85f+DS0kMd5rPIyTOo1bt6Z1lpvfH7waPwxBslOD+Exw0PeFkNQOh4ARbx2jj6UFp
+	 liwxAz6FAHLLHveHcwQrPWV1AX+5JxFAOIQetFZvnB3pI3BM256vCvPpItojscE6Zeyl/
+	 UHGaGqIeWs4eJYRYIjVW6lf7Zg4Zjs0tPo8WmBJToZW47OG9F+VqoHkBK7fZg/Y0fDLin
+	 5rf8aSqzVcEvrV7cPAQa3byFL6i6XDAVtS/9fFrjw8OEP8JWYWBfnG8wCwsx34hM+hQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=intel.com;
 	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QSgzCDRy;
-	arc=none smtp.remote-ip=192.198.163.14
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="fdh/WF5S";
+	arc=none smtp.remote-ip=198.175.65.9
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75C8C606A326
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 15:29:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 75C8C606A326
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C79606A326
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 15:32:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1C79606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QSgzCDRy
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fdh/WF5S
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795793384; x=1827329384;
+  t=1795793528; x=1827329528;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=VfQtAHh4pH+Leu88YwMvxLzyj1Y/DCFEB3kdDcJV++c=;
-  b=QSgzCDRyuoRceuGPIdETpqML7ddzokMt9ytCR1U34cwEeilk52pCYOeI
-   I75Kd4Yyd4ExIUUZgry9fOiPR5QXM5Y6KznR1F60e5jDjpLUhG8ZThNXs
-   gdqOqAaOQkNVB5glLpTmg7+HpKp6ZUrX0MTmOIOUHmwMN+ef1P7Ica0IS
-   vna/8SJhJ8pBPwXSST9TTE/CG+wKt7P7wbhXNDpnsmkzUs2P2Fy4ebalR
-   05197bzUT5/rdzB+HBGdY6jrhxzlr6j8qAnF9eUTLmJ57tGz2tmWG1/o+
-   RUQYnmS3KSRDau3MiJRUbgB5MG9rVnITMBmFv+U5HZ/k8TnutR6jiwVga
+  bh=lClgaioM6X/vpnkOdTOvJo7RDPggy8ZlNTMehLTbj0c=;
+  b=fdh/WF5SfwaFQU61YfKGmXfYCjQpMi9ASaO3r0Re7YXFQ62EJjV3o9ky
+   42waxS8l696mJQfOhlxeIRjTDTkFmcB1e3usmu9UNlqCJJ6lPdAFD18+r
+   7LMmf7fBxmUh0DcHS/qqztN2+PjtqLZcEIuqBm7oNJgud8G3hQoNnREAR
+   ZxjgB7PcpyUMghvyJ+LebE7Y/FyiagfZerYxzOi8pxCyinZsyozT5Dtu5
+   BMrNpDTlCtWBd3kUyY9zy5RYpvkMPqMPCKuSSXivB/yRG9heia2VKF3dp
+   bK9/8HWp1BkTBoBlv84evTLhrMRb/yMD5OtiRURc80GbWihgvVaChy0yf
    w==;
-X-CSE-ConnectionGUID: j1eua/tNR9mi4J+DLeFZCg==
-X-CSE-MsgGUID: Y3xU/AzpSTWZLTzCw00O6w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4667701"
+X-CSE-ConnectionGUID: dpv+ukbITy+3GW7HBkUlKA==
+X-CSE-MsgGUID: iarix6p7QeK2vKBLBG/ySA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4618616"
 X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="4667701"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:29:43 -0800
-X-CSE-ConnectionGUID: zG9Yg1CWQlS6Hr/IbY8Y4w==
-X-CSE-MsgGUID: ym9YhbxpTteli+mo0uoJNA==
+   d="scan'208";a="4618616"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:32:07 -0800
+X-CSE-ConnectionGUID: b+8pwmFSTjSKCG8MEl237w==
+X-CSE-MsgGUID: fcpE+hmFRUqX2pZ5MJ1f7A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="12653398"
+   d="scan'208";a="12744811"
 Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:29:40 -0800
-Date: Fri, 27 Nov 2026 17:29:38 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:32:01 -0800
+Date: Fri, 27 Nov 2026 17:31:59 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Punnay Sharma <punnaysharma805@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -72,11 +72,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
 	linux@analog.com
-Subject: Re: [PATCH 4/4] staging: iio: impedance-analyzer: ad5933: keep old
- values on failed writes
-Message-ID: <awmh4sckaG95emAc@ashevche-desk.local>
+Subject: Re: [PATCH 2/4] staging: iio: impedance-analyzer: ad5933: reject
+ frequency code overflow
+Message-ID: <awmibz0Q3bVMMq0M@ashevche-desk.local>
 References: <20261127123303.144052-1-punnaysharma805@gmail.com>
- <20261127123303.144052-5-punnaysharma805@gmail.com>
+ <20261127123303.144052-3-punnaysharma805@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,63 +88,40 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261127123303.144052-5-punnaysharma805@gmail.com>
+In-Reply-To: <20261127123303.144052-3-punnaysharma805@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Nov 27, 2026 at 06:03:03PM +0530, Punnay Sharma wrote:
-> ad5933_store() updates the driver's copy of a setting before it writes
-> the setting to the chip. If the I2C write fails, userspace gets the
-> error, but the driver keeps the new value.
+On Fri, Nov 27, 2026 at 06:03:01PM +0530, Punnay Sharma wrote:
+> With a 500 kHz external MCLK, writing 30000 to
+> out_altvoltage0_frequency_start succeeds, but the chip starts at
+> 14374 Hz. The attribute then reads back 14374.
+> out_altvoltage0_frequency_increment has the same problem.
 > 
-> For out_altvoltage0_raw (output range) and in_voltage0_scale (PGA
-> gain), the new bits stay in st->ctrl_hb. ad5933_cmd() sends ctrl_hb
-> with every command, so the next buffer enable programs the failed
-> setting anyway. For example, if echo 198 > out_altvoltage0_raw fails,
-> the next sweep still runs with the 198 mV range. For
-> out_altvoltage0_settling_cycles and out_altvoltage0_frequency_points,
-> the attribute reads back a value that never reached the chip.
+> The start and increment registers hold 24 bits. ad5933_set_freq()
+> turns the frequency into a code, freq * 2^27 / (MCLK / 4), and writes
+> only the low 24 bits. A bigger code silently loses its top bits.
+> ad5933_store_frequency() only checks the fixed 100 kHz limit. With an
+> MCLK of 3.2 MHz or less, 100 kHz already overflows. The datasheet
+> suggests a 500 kHz MCLK for measurements between 100 Hz and 1 kHz.
 > 
-> Save the old values before the switch and put them back when the
-> write fails.
+> Move the conversion into a helper, ad5933_freq_to_code(), and call it
+> from both ad5933_set_freq() and ad5933_store_frequency(). Make
+> ad5933_store_frequency() return -EINVAL when the code does not fit in
+> 24 bits. With one helper, the check and the value sent to the chip use
+> the same math.
+> 
+> Keep the 10 kHz probe default, because a probe failure breaks boards
+> with a very low MCLK that work today.
 
 ...
 
-> static ssize_t ad5933_store(struct device *dev,
+> +	if (ad5933_freq_to_code(st, val) > GENMASK(23, 0))
 
->  	u16 val;
->  	int i, ret = 0;
->  	__be16 dat;
-> +	unsigned char old_ctrl_hb;
-> +	unsigned short old_settling_cycles;
-> +	unsigned short old_freq_points;
+Perhaps >= BIT_ULL(24) ?
 
-Even if the original code doesn't follow reversed xmas tree order, still please
-try to follow with touched lines.
-
->  	if (this_attr->address != AD5933_IN_PGA_GAIN) {
->  		ret = kstrtou16(buf, 10, &val);
-
->  	mutex_lock(&st->lock);
-> +	old_ctrl_hb = st->ctrl_hb;
-> +	old_settling_cycles = st->settling_cycles;
-> +	old_freq_points = st->freq_points;
-
->  	switch ((u32)this_attr->address) {
->  	case AD5933_OUT_RANGE:
-
->  	}
->  
-> +	if (ret) {
-> +		st->ctrl_hb = old_ctrl_hb;
-> +		st->settling_cycles = old_settling_cycles;
-> +		st->freq_points = old_freq_points;
-> +	}
-> +
->  	mutex_unlock(&st->lock);
-
-It's better to split the three members to a separate data structure and
-copy it as a whole.
+Then it will be in align with the commit message and BIT_ULL(27) already used
+in the code.
 
 -- 
 With Best Regards,
