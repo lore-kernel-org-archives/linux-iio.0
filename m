@@ -1,78 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=fail;
-	t=1795775677;
-	b=W3p7aS/wHtnRA2JYyM5MnSq+VBM1tua7t6f+PFkHe52ZZ0jHgWuNJ4ZtpmHzy9wmav2w
-	 cZUvgSemvvYV6GQ66cC+f+GKxxVszAFp7XybeJRBt847GZgRUQqNw2bN9VA7yFRbcM37y
-	 zB+S15i6Yp7ZtXKqXAYBTI86o4wxO8C4b1fgDFwgva2z4TXkHJZg5MfBdOrb2MKVCjy8z
-	 XRaIw6RcxKNLm97v24yCOL92M5f/nSymfuu2yfh/qJdQHrXOvUGMs5nCcXVr4+lxWl+Ds
-	 QS2SbVx+5VP1A5KEpqolijzO8/FSh1wgSvpC+gYmcOtD7a+Gn185HG17YEzXz3Vc6CQ==
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795775674;
+	b=QEHTp60rOubjalqQmwlWDm9j8L/cdYVW/dbr44whdvdWS64S2bEhM3xr28JbLOizHNG7
+	 JuP892VkfmAtpO+9PLNJQrpjMhQrJTJjgZMZ/pobPKDDXEnyNEocipW6mnqY2rYNx2Xwv
+	 ke133ebTvzFkTRZNWvI4R+Rr5PYVbNVbEB3lY5iV1o7jjr3LPcABwSEsPkptCaLYfhchh
+	 ANe3VMdqQW+XMcSl9u9mJqXLT5VIRUQAZOsW43D4IogtVT1Y98TiAlOL/0r4USVY+08EZ
+	 kdp5K1IqMqJdAhfU2rBj0gM3J1kQMnGs+IqDJhk6T1VRK9h8PgJ1vrPGD1EibwLU7qg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795775677;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795775674;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=eLLMNywQ9EBe+pJtj99GVcSllXP5YQ0J+bgKpqOqpmM=;
-	b=Y4Nx2uXCnes3kf6ndRXUlTCKR6ToCARlU9znmc8QY96y/HKFS0Y9P+yxeWtAoCvGYqps
-	 rDqyfLg97uh7FhMvfJzq5ZxF73AQkpEg4pKDPwBam2EJpZ6E5Bg7c+4OojuRktic3sEyW
-	 0L+kyepnL5GltGKkJm7WvnpIyV9/pHdJAUesSY8S+HmzEM/QpaCS2nltXiKMdtVmYJm88
-	 IwV35VK20Y44ecMOmBv+TMvSzCl+XXAbmAV1EdCqMj4K/DfAtROKD41B+RHBiFQXbfd7j
-	 GJ/L0BgorMW5Rmd0anfj+ewJTnBVHgUDhj6HVcfTmsTBbc3RueNHYosBPAtOk2wMRKg==
+	bh=Ij3mQ3ClSVA8TNXH+CBSqBM6B2MFef1TZGCDXnJ2u+0=;
+	b=Io7RB6V4m7eImXABC4lqwsMZbENdOp7VnvFXu70nBzSFocHbE9OxZ88k9SYgLrKcPZTb
+	 RYgOTKlAgQxBFNlVD/PnG2K3rh2KSZHFF+L/mQMQRc51r43KgAykMx3IOT+PjRLEzcQjf
+	 ydAoRAoI7uqXP9npghBNEMi2d7wpbP9pkZjfqLi0Qn+C5wGUwPVo/numjB426GoeLNOlw
+	 cVTD7O/dtd/2GAHEUnGBOwIhyykkIgV8MYHBC9y3rJl5lVD4hPcaAOzZv2FK9T9pUGMIb
+	 2MvT3cCWC2vK0iscZ+d+q4PEr4ilpmoOSE05ZlticDEBsAcMuuNjQolo1a4NbD/2JgQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mqYVFjDk;
-	arc=fail smtp.remote-ip=100.103.45.18
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A9w33v2T;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B767606A333;
-	Fri, 27 Nov 2026 10:34:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 338DD606A326;
+	Fri, 27 Nov 2026 10:34:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mqYVFjDk
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A9w33v2T
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795775676;
-	b=ToVORhjJO4EtKcpJZahNQD6/Oq8q2BjuNzmQ5Tlje1LqAUUikps9evnelDJ3e6R5Dyze
-	 FKXyM+ylGkiPwR8cWhfUrjQzrWPO1tKqdagZnlZY0EMSq7szmcL9zPsE/qZmwhRHdluSe
-	 r1Ug7aBMFHri5rgGK+X379XH+zZKiJnKFRFun3c2e471yGJ0QyX7abpSLmW7MEjYVBy0u
-	 kge54Svd6kje3R1EvVQoGHHH0zs8ERMgKChIZ5jI3nLoXtfwv73T4NQGQya0qFZLSUttr
-	 piQeMs7F6H/D9PCk6uXpVsQiZibrtnDfuV+EOMiFOjsYJx/F25GazYVa3puA+tk5QrA==
+	t=1795775673;
+	b=KgnO4/u3d5hua0f30Osc0NASDtlu+ZKhrKfCpewNwc6ohF5ZNV74mD6HqD+JZpKiQSLU
+	 rucegUD20Xplh/D6unwHjBFhj/LJCbDkxofUBW9SYHO/+O+VMu2lOvxxqqwRnAmmVTzLD
+	 NW51TpKAOH1WNKQXTquRX/2dLK+3boUbjTJy5B5D1B6lvQYNYwpyNf5KsYFWT8pry0F7y
+	 Ds+6XMqksX0uZEDOIIobA6mKv4w4X0JmLD430vVTxAkFRu5v849OXV1PwB7py5oI+6tph
+	 da8d9hFE3AyMeP+Xwpt0K7sB4pXXQpwq1iu3GSsSVUm7CL/UoSp9FTxXT7UO+w2qpHQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795775676;
+	c=relaxed/relaxed; t=1795775673;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=eLLMNywQ9EBe+pJtj99GVcSllXP5YQ0J+bgKpqOqpmM=;
-	b=q4i3WnzrEDqVYqmUb+mH7xk6JT5dvTuCfmQ6SEYVm4pWUsUGjFwX2MeP4//BPmik1/1o
-	 A1FtsvrJI7L5NmCIv94FSbe+NgX9xlDsJWVOJAUYDXNJgOFESK1iR1eTx0rl6qJlB1fin
-	 A309Ej+hbQdfHgEmgmuOfsvG4llu4EWq3WPCjtxh+PaKBl5cp5/1cZtJlGgZ5/0s8BYNB
-	 m3P1RP19bZTcXP8F5W8R79SMhYL064lV16uutuKuYVmPAUm2Bg1vj7GT4b2uSr5bz2ku0
-	 wKS+0bbs8oM5FCovxFPdvkp+YIY19k6ww8UrfxaT12FkqM0wIBUlQ2P8S0vYrNWf/bQ==
+	bh=Ij3mQ3ClSVA8TNXH+CBSqBM6B2MFef1TZGCDXnJ2u+0=;
+	b=gPyFjqOu0bCqsGb9grBcrk1xFCnvBYS2IcU7bdU7gKyUtxxuERd4+W1YAYkIj1Q3rSWp
+	 ISqfZquAQYP4ZVCgXsFb62JmwPE+kr6G+lOqn+GVZf62aA2+mldMJ5EQY86qvGkvaFJAV
+	 Q+X/JjY2zAGqjNlvxDFfij9jIS2QIDvxXjMnoGOYOpv23A8pek+K8vh/34GPIIZwtT8hU
+	 mC9Fa8U9sTGtBJWROkIwLTHyKOWTBcDtrZC0XSt7icHoFs8gysoJNmnZLbIJTTBi/xtRr
+	 TvOTjWU0HjvKL7KxPvbpPx6IY4QBy1Yf3zoBVKcRlBHWgKXzkkorn78qdXFe3OYthXQ==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id DB6331F0089A;
-	Fri, 27 Nov 2026 10:34:23 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id AFF3F1F0089F;
+	Fri, 27 Nov 2026 10:34:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795775676;
-	bh=eLLMNywQ9EBe+pJtj99GVcSllXP5YQ0J+bgKpqOqpmM=;
+	s=k20260515; t=1795775673;
+	bh=Ij3mQ3ClSVA8TNXH+CBSqBM6B2MFef1TZGCDXnJ2u+0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=mqYVFjDkQ83KhoNIlTSH0IF98u798EscKc7hYikGTHoyJj8xKcIXub1LwXYV5bqtT
-	 LxGDB/GP+9URYCTaSVy7tljN9j4ZAJqLpMW2QI7SC+oN4w+/oN3bQOB359Jxs45GHp
-	 PGxlDSWcbdMijkYuep85+X6iDxibfC70sbG7CrgcHIiVVnVjdxphExMWHBhbcSUm0G
-	 73Udd4qBb5ysvsXCXDY9PgaKSZk4TzGMjhQrEO/cMakGqe+/428x2F2VI0myS3vjoA
-	 4XHfsjL5cxLF+IoELaYzXhs1NADa3BqhsbYbf1+CJi0mKNnpoHWc0wA7/0a2PfYY95
-	 0RiF/KdqhquEw==
+	b=A9w33v2THgiUvEaSxKiR1XkaKj6NuYpaVE9cPjrmdaqtAoiEqwHKqqIGGXTd05RIT
+	 APzZ3XW4Lk/y9e25QPRW3hHOQo8FGtO6SXuIRIUxNf62haKpakzvl5wTmB1zqFWc6p
+	 665YKceNKGHBKuWjXLVfT3GoSto0pniJfe2XZMlJvpv/8GvD0YzcCJcfgV6qCKgoPo
+	 D4mlO43lkIaS0s5Ix0FDejFRSlyOakrFgRb3M2vtLOlWDwxz1YXdi2gD8oMGYbMnaK
+	 TAtf/G1CBBP9N6iDYC7viOFeRJ0gmvfmFvt8CiKDvrYdmfT6gupDr/FK7Ds77shCkq
+	 gNbGpp/Dhw5rw==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id BE2E14B743;
+	by lkml.kernel.org (Postfix) with ESMTP id 7E01F4B73B;
 	Fri, 27 Nov 2026 10:34:17 +0000 (UTC)
 From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Fri, 27 Nov 2026 16:04:02 +0530
-Subject: [PATCH v2 7/7] iio: Simplify callback registration error checks
+Date: Fri, 27 Nov 2026 16:04:00 +0530
+Subject: [PATCH v2 5/7] iio: add probe error messages to hid humidity and
+ temperature drivers
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,7 +84,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261127-19-oct-hid-iio-unified-print-framework-v2-7-3f476fe1a940@gmail.com>
+Message-Id: <20261127-19-oct-hid-iio-unified-print-framework-v2-5-3f476fe1a940@gmail.com>
 References: <20261127-19-oct-hid-iio-unified-print-framework-v2-0-3f476fe1a940@gmail.com>
 In-Reply-To: <20261127-19-oct-hid-iio-unified-print-framework-v2-0-3f476fe1a940@gmail.com>
 To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
@@ -94,11 +95,11 @@ To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795775655; l=4750;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795775655; l=2747;
  i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=mGLaKUDpq2xrxFyO4D1gwOJXhOtVXrnf8YKu9o1By3I=;
- b=JGK1JRUAMSKl0bz8dFdCKS6CwY6mNPNXmb74SMesd85P+fEuWcfvj3IYiSOyNOqfjC5HxJXMC
- 4JVCEj+0rzZB1Y8ixrUjx+VrAUBnY1WNz2MnTSfGzulUyra3BQtsGsF
+ bh=ZN+WHoqE9qU2ewu4pc1p2V/3TtyK73/jGZBLtNQtK8w=;
+ b=dB/qKhcUNlC1QUpZbrpr9ulUu09qcXXAYyfTb90k97kqd0YbfgkOJP+ogvbZZRQt2lkj9XH9p
+ wTmE7pJTrTyDnuozWdykqgjHc8QCFL7SuES4GqDSaW/FEkmK7y0+0pQ
 X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
  pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
 X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
@@ -109,119 +110,65 @@ Content-Transfer-Encoding: 7bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-devm_sensor_hub_register_callback() returns 0 on success and a
-negative error code on failure. Replace open-coded error checks
-using:
-	if (ret < 0)
-with:
-	if (ret)
-across HID sensor drivers using the helper.
+hid_sensor_parse_common_attributes() and the driver-specific
+*_parse_report() helpers may fail during probe without emitting any
+diagnostic information. Add error messages for these failure paths so
+that probe failures can be more easily identified from kernel logs,
+while preserving the original error codes.
 
-This simplifies the code and aligns it with common kernel
-error-handling style without changing behavior.
+This also improves consistency with other HID IIO drivers that provide
+probe-time diagnostics.
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- drivers/iio/accel/hid-sensor-accel-3d.c              | 2 +-
- drivers/iio/gyro/hid-sensor-gyro-3d.c                | 2 +-
- drivers/iio/light/hid-sensor-als.c                   | 2 +-
- drivers/iio/light/hid-sensor-prox.c                  | 2 +-
- drivers/iio/magnetometer/hid-sensor-magn-3d.c        | 2 +-
- drivers/iio/position/hid-sensor-custom-intel-hinge.c | 2 +-
- drivers/iio/pressure/hid-sensor-press.c              | 2 +-
- 7 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/iio/humidity/hid-sensor-humidity.c       | 4 ++--
+ drivers/iio/temperature/hid-sensor-temperature.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index d75ee16b8f45..386dbbda57d4 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -380,7 +380,7 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 	accel_state->callbacks.pdev = pdev;
- 	ret = devm_sensor_hub_register_callback(dev, hsdev, hsdev->usage,
- 						&accel_state->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
+diff --git a/drivers/iio/humidity/hid-sensor-humidity.c b/drivers/iio/humidity/hid-sensor-humidity.c
+index 95dc4c4726f2..388a7b02fa1d 100644
+--- a/drivers/iio/humidity/hid-sensor-humidity.c
++++ b/drivers/iio/humidity/hid-sensor-humidity.c
+@@ -210,7 +210,7 @@ static int hid_humidity_probe(struct platform_device *pdev)
+ 					humidity_sensitivity_addresses,
+ 					ARRAY_SIZE(humidity_sensitivity_addresses));
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(dev, ret, "failed to setup common attributes\n");
  
- 	return devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-index d5acb38268af..c89e5a7a3222 100644
---- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
-+++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
-@@ -317,7 +317,7 @@ static int hid_gyro_3d_probe(struct platform_device *pdev)
- 	ret = devm_sensor_hub_register_callback(dev, hsdev,
- 						HID_USAGE_SENSOR_GYRO_3D,
- 						&gyro_state->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
+ 	humid_chans = devm_kmemdup(&pdev->dev, humidity_channels,
+ 				   sizeof(humidity_channels), GFP_KERNEL);
+@@ -220,7 +220,7 @@ static int hid_humidity_probe(struct platform_device *pdev)
+ 	ret = humidity_parse_report(pdev, hsdev, humid_chans,
+ 				    HID_USAGE_SENSOR_HUMIDITY, humid_st);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(dev, ret, "failed to setup attributes\n");
  
- 	return devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 9b3c8d8345b9..a7783b947564 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -417,7 +417,7 @@ static int hid_als_probe(struct platform_device *pdev)
- 	als_state->callbacks.pdev = pdev;
- 	ret = devm_sensor_hub_register_callback(dev, hsdev, hsdev->usage,
- 						&als_state->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
+ 	indio_dev->channels = humid_chans;
+ 	indio_dev->num_channels = ARRAY_SIZE(humidity_channels);
+diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
+index 6c112b444627..ef657c1cb043 100644
+--- a/drivers/iio/temperature/hid-sensor-temperature.c
++++ b/drivers/iio/temperature/hid-sensor-temperature.c
+@@ -207,7 +207,7 @@ static int hid_temperature_probe(struct platform_device *pdev)
+ 					temperature_sensitivity_addresses,
+ 					ARRAY_SIZE(temperature_sensitivity_addresses));
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(dev, ret, "failed to setup common attributes\n");
  
- 	return devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index 4d0c7dffc252..b793d7abc0f5 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -306,7 +306,7 @@ static int hid_prox_probe(struct platform_device *pdev)
- 	prox_state->callbacks.pdev = pdev;
- 	ret = devm_sensor_hub_register_callback(dev, hsdev, hsdev->usage,
- 						&prox_state->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
+ 	temp_chans = devm_kmemdup(&pdev->dev, temperature_channels,
+ 				  sizeof(temperature_channels), GFP_KERNEL);
+@@ -217,7 +217,7 @@ static int hid_temperature_probe(struct platform_device *pdev)
+ 	ret = temperature_parse_report(pdev, hsdev, temp_chans,
+ 				       HID_USAGE_SENSOR_TEMPERATURE, temp_st);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(dev, ret, "failed to setup attributes\n");
  
- 	return devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index c179fcd364b9..742dc4130e66 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -493,7 +493,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
- 	ret = devm_sensor_hub_register_callback(dev, hsdev,
- 						HID_USAGE_SENSOR_COMPASS_3D,
- 						&magn_state->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	return devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/position/hid-sensor-custom-intel-hinge.c b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-index 9bc0262b27c4..4773577dcd57 100644
---- a/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-+++ b/drivers/iio/position/hid-sensor-custom-intel-hinge.c
-@@ -316,7 +316,7 @@ static int hid_hinge_probe(struct platform_device *pdev)
- 	st->callbacks.capture_sample = hinge_capture_sample;
- 	st->callbacks.pdev = pdev;
- 	ret = devm_sensor_hub_register_callback(dev, hsdev, hsdev->usage, &st->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	return devm_iio_device_register(dev, indio_dev);
-diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-index 2d098ed35ff6..8b41e1461993 100644
---- a/drivers/iio/pressure/hid-sensor-press.c
-+++ b/drivers/iio/pressure/hid-sensor-press.c
-@@ -284,7 +284,7 @@ static int hid_press_probe(struct platform_device *pdev)
- 	ret = devm_sensor_hub_register_callback(dev, hsdev,
- 						HID_USAGE_SENSOR_PRESSURE,
- 						&press_state->callbacks);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	return devm_iio_device_register(dev, indio_dev);
+ 	indio_dev->channels = temp_chans;
+ 	indio_dev->num_channels = ARRAY_SIZE(temperature_channels);
 
 -- 
 2.34.1
