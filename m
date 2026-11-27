@@ -1,82 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795795045;
-	b=f3/5ktHDTQq89b22AOdC/yylzQ9PCE21eP1WBfwxayLsuupquB66Q3VKORuj+8tPvBbw
-	 Gx0yrNkt0FRBXPZprDXFRQdysXjQOfO9qvq8ek17s+DfyXC82RpKzEjHPuiTmvtiUAYWQ
-	 U2Gny5DLnmKyF5hinXh7RU8SRVvHlx/YI/uvz9GSUwucmSBVseQoscvw/Trd+m47XmRKg
-	 ZbLj/+vV1o27ThzPM86xoj28UI4EOawS/x5Hrvn7kzUeTPtDD/OqlpN/wSSdrvfsnXGqB
-	 fhXp/idZj8k2xngqV21Wgn7zl7NKYYstuzPhaaILPR131GRwvTyTsh9i4F89RjhruKg==
+	t=1795799240;
+	b=p8dEukI1Nia8WHDTVZedPAmJ2HIDJoNbuKjp8bCr2p8WSii5hU5jPioX0TuIbNdD9RuH
+	 N+XNzSQezHMeR2nc9P62HcCV5ZbJiqnSWd1kYQrH+JfAt2OkFD4n2GOVIljGaq5RU0Vbl
+	 aAbaaElBFmS3sdtJg1o8UqZAIUi4NCJmG0y+CdxK2kCTCifpQ/ZEJ4PmH8QiC9B7F2S0y
+	 hWvkUzpzOG+VSv638VNvJfEdv7kT/PRJphjV8Mt1v0wTsH/OFiFlNF/h6MyqgWvkYFHoe
+	 TVKabnyd/B0LhjS30yi95hUsErYEGLog+XLKHDCl7WmNvltpq+1q2WftyoRv51Fl/iQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795795045;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=/p+JFPSCLoZqNqzY8Xr6x+8qcMRi6OZN2NUOCbmiccY=;
-	b=rdO+HpmPFaD+az1QTgFQ+Br0KrM6i1ea9VLdB3ALF3+JgYpfPfxOSWVZUAIUIEAf37QB
-	 oyhBCNGxokU/tHnEKDk/m7qfMNyMzR1A6ZMuz9/ey+djt48R6sF1u6zG+ZJyzgd1Rvd0d
-	 jw6qpKT3+bKG12VNqSh5o1ZwSHjC+7b99ZpLgZEszchSG4BJjUrHofwuOeyyxKud3R1mM
-	 DstPr86grzfgvOMhyhcdKX/aPiPQodUFHQOoZ/FG48ThR6s/ByStWZzb+7WLo0a1l76BG
-	 AoE+y1Z0Ymr/7pM6hsPGwreJ9/S7ONCGcWJ+abzIBB27uK5CapMBhNRlJtqbKyQ9/ug==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795799240;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=PdndVKJFo7cHXqOQ9mGDRu01U/lAdsSMeeFhNTaFFmY=;
+	b=s0NkcfWNMElWAHcWxFMT8ThA9+UblCaU730hecSk0REyGqYnO0Re0FWbTrFkXemO6BmA
+	 RDry1TGqMwadZg0Ih4cIBnofemSRl4ipY8Mt2N8wHh7KzPu/YkUiuYevLfZwPV1qt6LJt
+	 8szVLv8Eab2Dm+phswUGoHEgmRQRkqq/8T13VQa8DibUjNj59MfBIv15m6fbrY+fzqZZ/
+	 Dd48F6QCL4IrTE8zAjbGTo/XoZAVK9ruM0/tT9ifFVv+AWxmDFHJkSnjVVxsDEJMSbf4V
+	 fZC2KkR7GhAAr4Vo7VsJ/ba3rwhacmZWVQamyi78xonj7LBOUv8l8hQNsOtEDq1jtkg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JbpS0VvJ;
-	arc=none smtp.remote-ip=192.198.163.19
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L4qceq45;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0186606A31C;
-	Fri, 27 Nov 2026 15:57:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E0186606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6202606A31C;
+	Fri, 27 Nov 2026 17:07:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JbpS0VvJ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795795045; x=1827331045;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=V+01+EG9ZvJ1k9CcSpXuvtDcOK4UV1iH4HuybqANQEE=;
-  b=JbpS0VvJi/oTe/4YVefpl7BRuA2BgfN5UJt7a28s42xwO7UBiBVM5vvv
-   3uSJwtZibQ8eFyQoFJIvQdQupYGpdn52Vy2NIT7/tPBsIlGLQGBpzV8Hy
-   xyLINiYCTjoXAhsZQxVK9lXFSJpn6tVsHYeEdRwQoeTXYfd2BB8UTbkX7
-   PmDWsj+IIEozyk7gWWvpuuoAweo8/LQEE51d2slOuYWNR+vh/QMNl8gRH
-   txUZBuB0vqtVxGns5rFfcTQ14sNsuANl4o5qmSCtpEWHUhh+pc923VUF7
-   8lTppr7ffQCnAv6WwVD5T0dqoxDeRg4S1WuWZOK8X02EpM8x4gA/6c89G
-   A==;
-X-CSE-ConnectionGUID: F6QDf29JS7aiQyFXawCDAA==
-X-CSE-MsgGUID: IRdKWV45Rs2grdr4//l8Vg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4728774"
-X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="4728774"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:57:24 -0800
-X-CSE-ConnectionGUID: aHNZatWGQHWfQmmeyyrSQA==
-X-CSE-MsgGUID: e6gJiaGOStW5EkBtqI3K+Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="14187888"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:57:22 -0800
-Date: Fri, 27 Nov 2026 17:57:19 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Joshua Crofts <crofts@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
-Message-ID: <awmoX6cXt140LTDk@ashevche-desk.local>
-References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
- <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
- <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
- <awljZLpARRVUFqbI@ashevche-desk.local>
- <9291049f-987e-4402-b32c-12c33c7aaa33@gmail.com>
- <awly0_hYZ07aeRYV@ashevche-desk.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=L4qceq45
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2F9A1F00893;
+	Fri, 27 Nov 2026 17:07:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795799240;
+	bh=PdndVKJFo7cHXqOQ9mGDRu01U/lAdsSMeeFhNTaFFmY=;
+	h=From:To:Cc:Subject:Date;
+	b=L4qceq45GDx6JcEele2BvYYX9U0rdgQfBfplZblCu5YdWd1L6v0kFvirUtFImlxpu
+	 OCcTKFys0pwxgL1sn+G+7Bw5EpCL1V+Zv+Lymqf/BHy2i1VAzYUDkX/oUM7VNXnwq+
+	 SchJWtXKEPIV/m++1/M/DweKe6hStcnw/X6KXl+K76uIZ1LD6GYsZt7ZBYh+mOmfa+
+	 tyuzhIo8iavebwVcD4dZ1i6Jl9hJq4yh1TYExb/bF4G9lTn0UOyVrNIcQz0uEDowP/
+	 HsP7lypu9lZwTi2R1zBBJRnTTEdkUgx3UQgYv990WfcWBeuGf1lFRgGt5LJgvqzMKL
+	 vsOcdf50dtv0A==
+From: Lee Jones <lee@kernel.org>
+To: lee@kernel.org,
+	bpf@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	=?UTF-8?q?Barnab=C3=A1s=20P=C5=91cze?= <pobrn@protonmail.com>,
+	=?UTF-8?q?Beno=C3=AEt=20Sevens?= <bsevens@google.com>,
+	=?UTF-8?q?Filipe=20La=C3=ADns?= <lains@riseup.net>,
+	"He, Bo" <bo.he@intel.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	"Zhang, Jun" <jun.zhang@intel.com>,
+	Andreas Gal <gal@cs.uni-magdeburg.de>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Bastien Nocera <hadess@hadess.net>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Charles Wang <charles.goodix@gmail.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Jason Gerecke <jason.gerecke@wacom.com>,
+	Jiangshan Yi <yijiangshan@kylinos.cn>,
+	Jiri Kosina <jikos@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	linux-hyperv@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	Lopez Casado <nlopezcasad@logitech.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	message to <vojtech@ucw.cz>,
+	Michael Bommarito <michael.bommarito@gmail.com>,
+	Michael Haboustak <mike-@cinci.rr.com>,
+	Pan Chuang <panchuang@vivo.com>,
+	Ping Cheng <ping.cheng@wacom.com>,
+	Rishi Gupta <gupt21@gmail.com>,
+	Roderick Colenbrander <roderick.colenbrander@sony.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Stefan Achatz <erazor_de@users.sourceforge.net>,
+	Tianchu Chen <flynnnchen@tencent.com>,
+	Vojtech Pavlik <vojtech@suse.cz>,
+	Wei Liu <wei.liu@kernel.org>,
+	Zhang Lixu <lixu.zhang@intel.com>
+Subject: [PATCH v2 00/10] HID: Fix race conditions, UAFs, and bounds bugs
+Date: Fri, 27 Nov 2026 17:06:18 +0000
+Message-ID: <20261127170712.3163443-1-lee@kernel.org>
+X-Mailer: git-send-email 2.56.1.839.g22a8290db9-goog
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,32 +93,83 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <awly0_hYZ07aeRYV@ashevche-desk.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 27, 2026 at 02:08:51PM +0200, Andy Shevchenko wrote:
-> On Fri, Nov 27, 2026 at 01:46:12PM +0200, Matti Vaittinen wrote:
-> > On 27/11/2026 13:03, Andy Shevchenko wrote:
+These issues were reported by Sashiko.
 
-...
+This v2 series addresses Srinivas Pandruvada's review feedback on
+hid-sensor-hub and collects Reviewed-by and Tested-by tags from v1.
 
-> > No. There is zero reason to use capitals in variable/member names when
-> > intent is clear. It only hurts reading with zero real benefits.
-> 
-> It's clear for *you* or somebody else who is not the first day in IIO
-> development, always put yourself into the position of unprepared reader.
-> SI is known for much longer than computer even exist.
+v1 => v2:
+ - Drop kfree() from sensor_hub_raw_event() and clear hsdev->pending.status before complete() under data->lock in patch 04, per Srinivas Pandruvada's review.
+ - Add Hamza Mahfooz's Reviewed-by tag on patch 06.
+ - Add Ping Cheng's Reviewed-by and Tested-by tags on patch 08.
 
-Correction: SI as a modern system is known from 1960 (updated in 2019),
-but the early prototype was published in 1901 and extended in 1921. The
-whole idea began in 1875 on conference in Paris for the standard metre
-and kilogram.
+Cc: "Barnabás Pőcze" <pobrn@protonmail.com>
+Cc: "Benoît Sevens" <bsevens@google.com>
+Cc: "Filipe Laíns" <lains@riseup.net>
+Cc: "He, Bo" <bo.he@intel.com>
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+Cc: "Zhang, Jun" <jun.zhang@intel.com>
+Cc: Andreas Gal <gal@cs.uni-magdeburg.de>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Bastien Nocera <hadess@hadess.net>
+Cc: Benjamin Tissoires <bentiss@kernel.org>
+Cc: bpf@vger.kernel.org
+Cc: Charles Wang <charles.goodix@gmail.com>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Jason Gerecke <jason.gerecke@wacom.com>
+Cc: Jiangshan Yi <yijiangshan@kylinos.cn>
+Cc: Jiri Kosina <jikos@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-hyperv@vger.kernel.org
+Cc: linux-i2c@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+Cc: Lopez Casado <nlopezcasad@logitech.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: message to <vojtech@ucw.cz>
+Cc: Michael Bommarito <michael.bommarito@gmail.com>
+Cc: Michael Haboustak <mike-@cinci.rr.com>
+Cc: Pan Chuang <panchuang@vivo.com>
+Cc: Ping Cheng <ping.cheng@wacom.com>
+Cc: Rishi Gupta <gupt21@gmail.com>
+Cc: Roderick Colenbrander <roderick.colenbrander@sony.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Stefan Achatz <erazor_de@users.sourceforge.net>
+Cc: Tianchu Chen <flynnnchen@tencent.com>
+Cc: Vojtech Pavlik <vojtech@suse.cz>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: Zhang Lixu <lixu.zhang@intel.com>
+
+Lee Jones (10):
+  HID: core: Protect hid->inputs traversal in hid_check_keys_pressed()
+  HID: mcp2221: Synchronise rxbuf access against raw_event callback
+  HID: logitech-hidpp: Synchronise send_receive_buf against raw events
+  HID: sensor-hub: Serialise synchronous read teardown under data->lock
+  HID: roccat: pyra: Resolve USB device from parent in actual_profile
+  HID: hyperv: Validate VMBus packet and payload bounds on receive
+  HID: hid-goodix-spi: Validate package sizes in goodix_hid_irq()
+  HID: wacom: Stop HID hardware before releasing resources on mode
+    change
+  HID: debug: Hold driver_input_lock while dumping raw report descriptor
+  HID: playstation: Cancel DualSense output worker on create failure
+
+ drivers/hid/hid-core.c           | 16 ++++++---
+ drivers/hid/hid-debug.c          | 12 ++++---
+ drivers/hid/hid-goodix-spi.c     | 34 +++++++++++++------
+ drivers/hid/hid-hyperv.c         | 12 +++++++
+ drivers/hid/hid-logitech-hidpp.c | 58 +++++++++++++++++++++-----------
+ drivers/hid/hid-mcp2221.c        | 47 ++++++++++++++------------
+ drivers/hid/hid-playstation.c    |  1 +
+ drivers/hid/hid-roccat-pyra.c    |  9 +++--
+ drivers/hid/hid-sensor-hub.c     | 29 ++++++++++++----
+ drivers/hid/wacom_sys.c          |  4 +--
+ 10 files changed, 150 insertions(+), 72 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.56.1.839.g22a8290db9-goog
 
