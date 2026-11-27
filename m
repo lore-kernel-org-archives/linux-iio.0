@@ -1,79 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795781003;
-	b=cbxRXD8kg0p+SxEYNJQckhvbTK65bDD/6KHqIMfXBI+rRBtOEwt7oaXY7uyKTwkAcqHy
-	 nOwbCttfZECmwCphVV4Rf5MIjsA81RyEYCzxopf34Uq9b5AmIJsDI4iADPO2ijOkFmoH5
-	 pxYsLZjaiPNO8niZezrSSlON+NJgjhCsIbJ9WX91ZYJYRDRDidtyPmZI5WQQdeopa494l
-	 otNF+c/lL9L63gq7IlauVE9sXdQxcc9HAeJMCgFqDmgjfSKeXlyexawZWMZd3gAMukkx4
-	 d6Efrr7fCt25k5lic/rQhVXlEXtQaNbc3PzV3Su1WKEGxG4ue7HiPIB4kP2aVgygPQA==
+	t=1795781337;
+	b=iCyi/u0JvNj7WsNtzCUSeKqsvCxmicNqIXOLk44adx82/LLX88CiPtpwWJXcW2dWM9NT
+	 1SicnzQBeZeevbO9+FtWXxIntB8/c0aalZAKxIznFgRYu4XlbB3iLaWza3mfqG8u7Aqkp
+	 pDI6aFOtKfUABDLfAG/IbPkoAziZcg4BRXyR649hbUCD0RbwD7ic+xX+ENbRYJ56CMbaL
+	 WIpV0G+wUlby5zk58Anl3Nex9oqu+Q7/qFRsOIGXT4UQ6wwnz4M6eO4nhT04THnq3NRTJ
+	 B10in/gjTUDFez3X7Hsex3eZTWSA+wCQBUl0rMtiarBMD3oCySIJI6udF6YB+rh1RBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795781003;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795781337;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=9/nDijksJw6KALaGGlf/a5/JRLLpSspkdN/yseFIqKg=;
-	b=Pv6vczhYnsM7xPSrzTBToNfpNaXpzQZjNMk3NSc6x0YBAKvKUdG0GA8suWieTIVqhHd0
-	 ETBvGF51sMwlBx28b9l6fNnl6CMD8PYTeF11Z7N4FhkjdN9l05e5gcY2cU57ZVqMCUOm3
-	 7FATwM+I1zA0nao0BBEBLb/VEoVT8Fi9WpgZpzc4RvqNSkB4Q/bqB9Krj8pub2NOrnwgB
-	 E1Dr2ACm9nrYkOkdbaaQ2+OeLD5QxIkG4Rg1qvfEng7XPVG6fsFC+27/Qs1lJOFgFGj3S
-	 1Z3eQyc9VDjBin+KRy0MTTJjW3tOzN/AvXMLA+YO+gpYEjC5CgrPQAFBt87ImuuT/6Q==
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=0dg6Yz7eoXk4e6gGpKGxtbW5NLVD5HlBpLZDUQ2uV1w=;
+	b=B3hJFZ+gIfV3T69ypuyJBR70lcZmc79Wx7rGYkVnj/F7N8eRJ9W1WnAx+0r4fa8RcFf+
+	 TQJz9jeRWhN5s8ur1PEC7snYMd10KzaqkTQgBw2n6dfOa2F4ZrGJ8M62aqOnzAysZ10G0
+	 tEqZ/Q/8hokBB6KM7EqQ57ckQUY4PoL2hKOmCrTjNCs8cfV7WrVBA6YTQfyphlo8XQ2hB
+	 wIb5fouwwjsmmvRiSgKkDbuehwxfP3GZ2mAzNg2k+ImWEk2ljM9dKqxu3/c1ZCNJF8Cgn
+	 nGpMryN0CYYIEGrOwkMBg6D2VLcrFthys7HyBXgEi0sFejlTUo+IKFPHhyAAdbino9A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OeF3d7iV;
-	arc=none smtp.remote-ip=198.175.65.12
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y0HYy9s6;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F963606A31C
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 12:03:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F963606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62912606A321;
+	Fri, 27 Nov 2026 12:08:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62912606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=OeF3d7iV
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y0HYy9s6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795781004; x=1827317004;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+lgXlY3RlJxL8P245yDUCcSF5YzarXBnZ11VcrutGPQ=;
-  b=OeF3d7iV3uqaa0zI/NqiOM2+Zj58MMH+z55R68Fi5wFjq5Vs5CiRsav7
-   1leMgzXufWSbqfxtsQ6fu5YAE3ABe924Ydaal8LHaOc/zQJtbYfnzA6kp
-   bViAnT5Q9l72C2NDP2uXY59E3iBAmAdOSF4TjupsAuYM0fZmZZpCZv7a7
-   uwiQvrvV4WqoW11Cbu5c2bFO78ksyUm0lBtbwAocqZtM5uQILfxXxrLxi
-   bGTMsGjQorZoD906bwtFxun8m2aHXUWBFF28UkL2rhoLsqxJqaKrKiVeC
-   7nrvT+MsWgcLckKhND78V/J6HuRPE44CvzLifUojUDLNJq0vLbaEHc+KL
+  t=1795781337; x=1827317337;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TQw/+E/JpjQyKTAKSKFYoGT1k3KALWhtx+FIqBfVhpQ=;
+  b=Y0HYy9s6j0tDQMlJYBFDCV4cXBu0RfeU0Ay9+PGNzF4NBHvRLc+1tkY8
+   DzsyHGsd/iaAmHqzewfYvuoO4ynIl4eDNPO5EXFc4LRf8oUR7qngfXtrm
+   4FGSaeHFeKK+9JiDAisYM9iyZIT4anp5+/9F+buO2fnqHFZVHzpIHFFew
+   YovI58rugvXZ6RWdhvRes3wXVxzxWAHvTPeDLry90HBegsbv+TB6CwGTW
+   Lw7VBiNYzS3Frg+VCY8QatQAGFOGWF2WXWiFn/WskYD1Eo8CM2Vohx2kE
+   YFP2fAROgnIt83DXzsksQLWNfw3ej0cRIS2VmLwl1ghLHy0vDtZvwhEo9
    Q==;
-X-CSE-ConnectionGUID: NG2TVuJgTg+/67xcL+OJoA==
-X-CSE-MsgGUID: Oyv1A+kYRpmoz4dSr4D+Cg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4598759"
+X-CSE-ConnectionGUID: HYcpx4QZSnuf9iEzQ2V00w==
+X-CSE-MsgGUID: AFdClzaRQsiPBngb8gAZtQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4683654"
 X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
-   d="scan'208";a="4598759"
-Received: from fmviesa013.fm.intel.com ([10.60.135.153])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 04:03:23 -0800
-X-CSE-ConnectionGUID: Tpsr4Tv9Rse195y3JkXaeQ==
-X-CSE-MsgGUID: 1sds60n3SjCPZBFzDkT3KA==
+   d="scan'208";a="4683654"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 04:08:56 -0800
+X-CSE-ConnectionGUID: Oxfi6+/DRN2HWYtNsfMfvw==
+X-CSE-MsgGUID: m42yh6kzQfahVo5n9rNoOg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
-   d="scan'208";a="14403746"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa013.fm.intel.com with ESMTP; 27 Nov 2026 04:03:20 -0800
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 47B1798; Fri, 27 Nov 2026 13:03:19 +0100 (CET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
+   d="scan'208";a="12423905"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 04:08:54 -0800
+Date: Fri, 27 Nov 2026 14:08:51 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Joshua Crofts <crofts@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iio: common: ssp_sensors: Use __packed instead of __packed__
-Date: Fri, 27 Nov 2026 12:58:52 +0100
-Message-ID: <20261127115852.1720736-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
+Message-ID: <awly0_hYZ07aeRYV@ashevche-desk.local>
+References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
+ <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
+ <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
+ <awljZLpARRVUFqbI@ashevche-desk.local>
+ <9291049f-987e-4402-b32c-12c33c7aaa33@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,32 +85,100 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9291049f-987e-4402-b32c-12c33c7aaa33@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Sparse can't recognise __packed__ attribute:
+On Fri, Nov 27, 2026 at 01:46:12PM +0200, Matti Vaittinen wrote:
+> On 27/11/2026 13:03, Andy Shevchenko wrote:
+> > On Fri, Nov 27, 2026 at 08:34:22AM +0200, Matti Vaittinen wrote:
+> > > On 26/11/2026 15:31, Joshua Crofts wrote:
+> > > > On 26-Nov-26 14:23, Matti Vaittinen wrote:
 
-  .../ssp_sensors/ssp_dev.c:30:3: warning: symbol '__packed__' was not declared. Should it be static?
+...
 
-Use __packed instead of __packed__ to make sparse happy
+> > > > > +	int vcc_mv;
+> > > > 
+> > > > _mV is the preferred style to denote SI unit variables.
+> > > 
+> > > I have discussed this before, and I disagree. Regular variables have been
+> > > lower case since forever. Capitals have been used to scream "Note me, here
+> > > is something unusal you need to pay attention for" (like macros). In my,
+> > > admittably not always humble enough, opinion, the whole "denote SI units" is
+> > > stupid. I haven't yet seen an engineer who wouldn't understand the meaning
+> > > of vcc_mv in this context. And, to be very blunt, if I saw such an engineer,
+> > > I would rather him stay away from the driver code. On the other hand, I have
+> > > seen engineers who have spent long time with kernel code, stop reading to
+> > > wonder "Hey, we have capitals here, what's special with this
+> > > variable/member". So for me a change from vcc_mv to vcc_mV makes this worse.
+> > 
+> > And I disagree with your argumentation because the scope of discussion here is
+> > more than just millivolts. We have (in practice!) already a problem with mHz
+> > versus MHz. Yes, in real life.
+> 
+> I see no mHz or MHz here.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/common/ssp_sensors/ssp_dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That's why I pointed that the issue is broader than just millivolts _here_.
+FWIW, mHz is in drivers/iio/imu/st_lsm6dsx/.
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index 40b658d39294..456d59dc53dd 100644
---- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -27,7 +27,7 @@ struct ssp_instruction {
- 	__le32 a;
- 	__le32 b;
- 	u8 c;
--} __packed__;
-+} __packed;
- 
- static const u8 ssp_magnitude_table[] = {110, 85, 171, 71, 203, 195, 0, 67,
- 	208, 56, 175, 244, 206, 213, 0, 92, 250, 0, 55, 48, 189, 252, 171,
+> > So, that's why it's better to follow SI for all
+> > SI registered units and stop messing with the multipliers.
+> 
+> No. There is zero reason to use capitals in variable/member names when
+> intent is clear. It only hurts reading with zero real benefits.
+
+It's clear for *you* or somebody else who is not the first day in IIO
+development, always put yourself into the position of unprepared reader.
+SI is known for much longer than computer even exist.
+
+> > > > > +	int vfs_mv;
+
+...
+
+> > > > > +	data->vcc_mv = ret / 1000;
+> > > > 
+> > > > Better to do ret / (MICRO / MILLI).
+> > > 
+> > > This is another thing I've discussed also in the past. If you genuinely stop
+> > > to think this, why would MICRO / MILLI be better than 1000? Which one brings
+> > > smaller cognitional load, huh? And assigning the result to variable vcc_mv
+> > > makes units explicit in any case. And speaking of SI units and scientific
+> > > accuracy, what actually is MICRO? What is MILLI?
+> > 
+> > Then what prevents you from adding a new multiplier to units.h?
+
+No answer?
+
+...
+
+> > > Micro is 10^-6! Milli is 10^-3. So, this becomes "ret / (10^-6 / 10^-3)",
+> > > which is plain incorrect. So, instead of making things better, this
+> > > obfuscates stuff even further. So please, let's not spread this madness any
+> > > further.
+> > 
+> > Because kernel does not work in float, it works in integer space.
+> 
+> This does not mean Milli is same as Kilo. You were the one who ask for
+> accuracy above (even though it really just breaks the known convention), and
+> here you demand obfuscation.
+
+Yeah, it would be nice to have the stricter rules about this, but I see the
+problems it may lead to. For the given case we transform the value in MICRO
+volts to a MILLI volts using a ratio MICRO / MILLI. I consider that much easier
+to read in the code and _understand_ what's going on.
+
+> > We don't have fractions without keeping a multiplier in mind. I do not
+> > consider this a madness.
+> 
+> swapping 1000 to (MICRO / MILLI) - where micro and milli arent what they are
+> supposed to be - is madeness to me.
+
+And opposite to me as we may admit.
+
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
