@@ -1,82 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795793528;
-	b=qc4GWXh9nQfV0OjjM0oh5QV/SQjkqPrGyJyS1oRUKZtYHl1jAa+mqiib6gGRqcbfOfYW
-	 sXcB9HmOxI4YpORxRCla9hgSk3rdfyGbwMePhin6RbX8APnoJyFk/wbRl1Owtn4jMUDWV
-	 wA3/YFOpg/srILihxCiCmYYUoIybDQpZdBLtsiBy0ADKaGZUr03IJCCbK9st1yLHSonfF
-	 fTIMSKH3BmrlBGIl/A7gMMY4/lJEuKekHO1Hn9vgmChaHALPs1y5ge7MVSXs22cxfZrU3
-	 Lj2ImZEuj8iwJaGpNRb1EEzXlXQNR5zbM9QZV7S8U95PkaS2aCnAWT4vh0H2dVG/SiA==
+	t=1795794995;
+	b=dI+384LzhYKzaTq/Y6pLj2k2RwrJKr/Gq7APPIfTMGOdOBgJYS72fq3w/m8fDmucR1n/
+	 IXzVPDcrhnJbLDzQamN3IVwVkFGQA/RiAE/0rVfa1SRm7EDck9gqbv1TjlJ0PfZzFHgYb
+	 EvbAfrWk9IEClEimMbFyq7+xr2JFzZ4enyl6qgVthq9IG3bAASFxK3V92ek2AuxsfpoQA
+	 eAX+xR9LrskLoQMssAMIsQHw5GRdH0gkIBuK3XgWwa4P6KcBqlcwk5EJEacAhUDU90MzW
+	 0XKGZsUvFXyscUdXCpKBdgoiM5Y2Rn71ALKR/1X5l9dhtWP4119n1UqXRSwGPtrEACQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795793528;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=S8SIjn5jhpWrO4H0i18sVftbBxRoyw9+zah7CQ51v2M=;
-	b=UL8cEu+pSh50JG4lx/vNDDnR0d6jRu/CMh2P9SE7OGpUvFHF354UOhtMWIFC5R2pPOMu
-	 VVhk85f+DS0kMd5rPIyTOo1bt6Z1lpvfH7waPwxBslOD+Exw0PeFkNQOh4ARbx2jj6UFp
-	 liwxAz6FAHLLHveHcwQrPWV1AX+5JxFAOIQetFZvnB3pI3BM256vCvPpItojscE6Zeyl/
-	 UHGaGqIeWs4eJYRYIjVW6lf7Zg4Zjs0tPo8WmBJToZW47OG9F+VqoHkBK7fZg/Y0fDLin
-	 5rf8aSqzVcEvrV7cPAQa3byFL6i6XDAVtS/9fFrjw8OEP8JWYWBfnG8wCwsx34hM+hQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795794995;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:X-Developer-Signature:X-Developer-Key:
+	 Content-Transfer-Encoding;
+	bh=bgPYvQwX30aBETA8Szv2QHx8XAxhK+odkaJHnQIHjY0=;
+	b=aMgbA5lgmVLeFS77IhNKudEWv/Ypm9yUdc0O63CDg+w8MAhmPKjeNDU6ZJ8XBDe0nXOS
+	 aG76xFIF6S2qZsXdm7zwA/BeHt9wJkJsxxSHijXtXTL28ZtJm2Gvi/45R4s1pEqpsI3+S
+	 mSYAshCfYJUNySXLU87oVM1rGTAFeBKp5t3YhbXtxQorf5waxXlVtMgIDrALSuZEppBgV
+	 Oo0tdjbEya01ooR8uJ0MIOmhlkooeM2Kt32f79l0VILoR+R0fqaY81+f0SrA4OL8d1stR
+	 MYFh7cq+SC3RBnf1294/sff4+sML8JDe6iCNqx7+B/vV9FePIATwOx26LxXTKmjJ6ZQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="fdh/WF5S";
-	arc=none smtp.remote-ip=198.175.65.9
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i8x6lK82;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C79606A326
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 15:32:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1C79606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8EAF606A31C
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 15:56:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fdh/WF5S
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795793528; x=1827329528;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lClgaioM6X/vpnkOdTOvJo7RDPggy8ZlNTMehLTbj0c=;
-  b=fdh/WF5SfwaFQU61YfKGmXfYCjQpMi9ASaO3r0Re7YXFQ62EJjV3o9ky
-   42waxS8l696mJQfOhlxeIRjTDTkFmcB1e3usmu9UNlqCJJ6lPdAFD18+r
-   7LMmf7fBxmUh0DcHS/qqztN2+PjtqLZcEIuqBm7oNJgud8G3hQoNnREAR
-   ZxjgB7PcpyUMghvyJ+LebE7Y/FyiagfZerYxzOi8pxCyinZsyozT5Dtu5
-   BMrNpDTlCtWBd3kUyY9zy5RYpvkMPqMPCKuSSXivB/yRG9heia2VKF3dp
-   bK9/8HWp1BkTBoBlv84evTLhrMRb/yMD5OtiRURc80GbWihgvVaChy0yf
-   w==;
-X-CSE-ConnectionGUID: dpv+ukbITy+3GW7HBkUlKA==
-X-CSE-MsgGUID: iarix6p7QeK2vKBLBG/ySA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4618616"
-X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="4618616"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:32:07 -0800
-X-CSE-ConnectionGUID: b+8pwmFSTjSKCG8MEl237w==
-X-CSE-MsgGUID: fcpE+hmFRUqX2pZ5MJ1f7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="12744811"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 07:32:01 -0800
-Date: Fri, 27 Nov 2026 17:31:59 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Punnay Sharma <punnaysharma805@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux@analog.com
-Subject: Re: [PATCH 2/4] staging: iio: impedance-analyzer: ad5933: reject
- frequency code overflow
-Message-ID: <awmibz0Q3bVMMq0M@ashevche-desk.local>
-References: <20261127123303.144052-1-punnaysharma805@gmail.com>
- <20261127123303.144052-3-punnaysharma805@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i8x6lK82
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEDD01F00919;
+	Fri, 27 Nov 2026 15:56:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795794994;
+	bh=bgPYvQwX30aBETA8Szv2QHx8XAxhK+odkaJHnQIHjY0=;
+	h=From:To:Cc:Subject:Date;
+	b=i8x6lK826kDcD5OXea4DX5PKnAkM2jyayAgY9U32xjdIxVgMB+60CvILYu/p8pSVq
+	 pkEuSJ9loBYJnr8iM+Lp3XKSu5YM2WPiak2kaxW1N4hXRV8bg1sBW6b2D0gWrjYqp+
+	 YIx3y8qc7pJrAnRiPVMhSfgH91/pQX3yBPag21fLJHK/VPgOVoQ5h2x/iVFjBwuqn6
+	 5rgdNerxvWj9SLGqUAZn1VhfhxfLyNJAmhcN3WGlqJ7jMD/fQXJvIwtr1ZQjuvpm60
+	 dHqQFexj99E/FvHG5YClwQ1J7qcICoa8BpyxrxD5z8JI2zRy83om/qlsgaexyiFNdD
+	 /gQh9iZDM/q/w==
+From: William Breathitt Gray <wbg@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	linux-iio@vger.kernel.org
+Subject: [GIT PULL] Counter fixes for 7.4
+Date: Fri, 27 Nov 2026 10:56:21 -0500
+Message-ID: <20261127155623.298693-1-wbg@kernel.org>
+X-Mailer: git-send-email 2.56.1
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -86,45 +57,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261127123303.144052-3-punnaysharma805@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1715; i=wbg@kernel.org; h=from:subject; bh=/ol+f8/1OOH28QD4nTOYykStnRPpGewGoOwnT0t6LMc=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDNmcyx+dDJx26uKMTcn5E1Y+kg7c+Mpt/abZZ+71XN3n6 vXy0er/ch2lLAxiXAyyYoosveZn7z64pKrx48X8bTBzWJlAhjBwcQrARNaeY2Q496be88V+j6bs VO7mz+8yfnt21UgJKjj9XWVTqzz1y2UJhv9ZCnp8IhcZj5qvd7ty5yt33juH9FcVDk6dT7PSJLm 6/nIDAA==
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 27, 2026 at 06:03:01PM +0530, Punnay Sharma wrote:
-> With a 500 kHz external MCLK, writing 30000 to
-> out_altvoltage0_frequency_start succeeds, but the chip starts at
-> 14374 Hz. The attribute then reads back 14374.
-> out_altvoltage0_frequency_increment has the same problem.
-> 
-> The start and increment registers hold 24 bits. ad5933_set_freq()
-> turns the frequency into a code, freq * 2^27 / (MCLK / 4), and writes
-> only the low 24 bits. A bigger code silently loses its top bits.
-> ad5933_store_frequency() only checks the fixed 100 kHz limit. With an
-> MCLK of 3.2 MHz or less, 100 kHz already overflows. The datasheet
-> suggests a 500 kHz MCLK for measurements between 100 Hz and 1 kHz.
-> 
-> Move the conversion into a helper, ad5933_freq_to_code(), and call it
-> from both ad5933_set_freq() and ad5933_store_frequency(). Make
-> ad5933_store_frequency() return -EINVAL when the code does not fit in
-> 24 bits. With one helper, the check and the value sent to the chip use
-> the same math.
-> 
-> Keep the 10 kHz probe default, because a probe failure breaks boards
-> with a very low MCLK that work today.
+  Linux 7.4-rc1 (2026-11-01 13:26:31 -0800)
 
-...
+are available in the Git repository at:
 
-> +	if (ad5933_freq_to_code(st, val) > GENMASK(23, 0))
+  git://git.kernel.org/pub/scm/linux/kernel/git/wbg/counter.git tags/counter-fixes-for-7.4
 
-Perhaps >= BIT_ULL(24) ?
+for you to fetch changes up to 0fdd4e1bdaa9084785280ce233fd3ddab04ff9cc:
 
-Then it will be in align with the commit message and BIT_ULL(27) already used
-in the code.
+  tools/counter: Reject invalid watch fields before narrowing (2026-11-24 14:16:57 -0500)
 
--- 
-With Best Regards,
-Andy Shevchenko
+----------------------------------------------------------------
+Counter fixes for 7.4
 
+counter:
+  - add compat_ioctl callback to compat_ptr_ioctl to prevent failure for
+    Counter watches set by 32-bit tasks on a 64-bit kernel
+rz-mtu3-cnt:
+  - cleanup runtime PM reference if device initialization fails during
+    Count enable write operation
+ti-eqep:
+  - fix runtime PM reference leak on probe failure by leveraging devm_*
+    for proper path unwinds
+tools/counter:
+  - report back invalid Counter watch fields rather than silently
+    truncating values
 
+----------------------------------------------------------------
+Danish Khateeb (1):
+      counter: Allow 32-bit tasks to use the character device
+
+Li Youhong (1):
+      counter: rz-mtu3-cnt: put runtime PM ref if counter init fails
+
+Stepan Ionichev (1):
+      counter: ti-eqep: Fix runtime PM leak on probe failure
+
+Zhu Jun (1):
+      tools/counter: Reject invalid watch fields before narrowing
+
+ drivers/counter/counter-chrdev.c     |  1 +
+ drivers/counter/rz-mtu3-cnt.c        |  9 ++++---
+ drivers/counter/ti-eqep.c            | 28 +++++++++++++-------
+ tools/counter/counter_watch_events.c | 51 +++++++++++++-----------------------
+ 4 files changed, 43 insertions(+), 46 deletions(-)
