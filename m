@@ -1,84 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795749050;
-	b=SvJCUVoJjHcwqnsEpLB7c5Noirsd+Xw+5cqS7Pj81enAohKbhNvUEsdZOL6/BtixLx7d
-	 QTz3+JS1R5SOF1pZRGCwQeEWFPeFogVBfmBWiUPZjpXExXc+5xSlCdLx4sZN3UE6hQRDb
-	 tE09E9k2K2hRaTkFSs5BhGSgzVcVXBYKi2oLZE3WlAuvhJ9VOchl5xhG8xIS7qdL6CyEj
-	 WnPufX1N3GZaiOrW7z+Vlpi73hNm03swnAAt3JKNEXGv2CKqI9J43nK83UhFWksq7f1DM
-	 Hpfibpa4PbiyvAfkX2920KssjLHFwUMXcS5OtbufxDOqDVpodDW19nOE8ZR+NhnXi8g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795749050;
-	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
-	 Content-Transfer-Encoding;
-	bh=/ktUTtzQmYBrtZo1pYnB1CT3xfoL1+9t2GulvHSsGek=;
-	b=xqleLZbz0cNaDKBR44ScITCROaxWx6WWbmvIh82nXtL9RIAWpYecySVLmhXc9sdw+ncR
-	 eQ55xOWPvoq9mxEkrnm2zKSQ7ZlvZDEeytPfir6pPmPdXztzTcQJTHDIweE7GirnEclfZ
-	 V+CsB7tLIvj/MKydhoWW/xqDiG7/nrZxpQ6wGW9fFOd+u8xgwoPWznA+QULXHv6WtvosY
-	 y6Pmja4mw+Z96TWWTMhH64sKYFwRFhUeumrrhjglR86lVgmb2GMrW3csaD4Hj466S5SEN
-	 e0Jt/mjzcQApi4K+922Kw9FX90HiuCfiKDBXqQCWV7E7CjshTeUDkf2L+bvlQE3CNZQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JxSG3dCv;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795758556;
+	b=PbztfF02UhZnUVz8pexzipy4GgUwVKI4Cr6OfLrSCUmRNOeRy2v9WKhQi8/5L/nMQ3rv
+	 Sl8PVoG7q51tBYnN5hzMOwJJEvL/hAcKwUFmf0B+xhuViv8bXG6e3p0y5JPd0cpb5kRhO
+	 X9tqtrEtn9GDf288L2Sdg6ul5NE4pBo/4yk/R22O4XedCaCkhdJDI65YhtKI887JwWEeV
+	 0kPqbMLf/a27E9TExyxaSQsHpsGz+kcg+wcsMi10EtjoV4hl/ewuXuc0X9VaEByAVdzdy
+	 mGM+jmBau+cpKDeAAkOJ38glDsInYeeyoSG+8lNvTBQnqk9MtTxMNIk36p1OkHxrZfQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795758556;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=adgFSfDuufHuxaHo+dm2lLcqZwDVD8C/pUFO+r8bArY=;
+	b=IIaJD2AePDlfs+c3BI9Re75lOrNRMtrePcm7u2c9tik/c+q8zJ9YeJ43rSM76jmY+J6j
+	 52foNDWIvgvLNjMef+Z/AjWkarwF5hKJlaS6kLgS0Q4Hpa7qhTCUyV95L7BUkzrhO8o2z
+	 N4Smm1tje/qzN0eQxAyIIUNOvwnTgaytIHroyIcI2FakNeSDQAgZN7+LdFgR+LAgN7Nj/
+	 nDZL1maK9lWYlfTawgXX0ff4JO6J7QA/Uve96PqsREE0/qFHDDQjTwIa0HlXfO1ugrfGK
+	 kWVYZa1N8frFl1/Ap8jW2p7xC8qo8iBIVFeAIn/L8ym+xiX/TIf9svLAbsQAhiXcy8Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PvgEXXkY;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A59B606A32F;
-	Fri, 27 Nov 2026 03:10:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C631606A31C;
+	Fri, 27 Nov 2026 05:49:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C631606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JxSG3dCv
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795749050;
-	b=uGuw0o5KQanNYrltlKScOxm0zJSYvMeUJWra0Zb05Q0GbxIIA1Ob44ArfT4WnBN6sa6C
-	 IHqSbhoPZummrFohUVweToc96bnLDDKbGyPMHMMmEradgh56urpSnDWXAppXcaExvNIA3
-	 xi/VR9uJLRB+Ru4iLa7Pr4LNrcvWWtuIGQVFmiKFX8CPLwEbto/wZ+4apSAJfuweef711
-	 8U3vqrDrDBQfx8I2vs3Eof/jVJ/zeYamn9OKkwSVvskAoyh/EbZMyTx5jxzrYY/uT6sIk
-	 z9dDCdl6cCIdZfHDAncW7P7z9J5w666Yuba+YIAsMWzY+8Nww913YoplSAhJZoeJ1/Q==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795749050;
-	h=DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
-	 Content-Transfer-Encoding;
-	bh=/ktUTtzQmYBrtZo1pYnB1CT3xfoL1+9t2GulvHSsGek=;
-	b=jmoHjNfvP1zhm4JuaXf2VEJF8kYXzH6eS6xkYzo1ahf1njPc6xf5YUBEZ8OOlepnksvS
-	 A/OGbR53lCTQGNFNhX0d7DxMkjvF/qCHuFKo6Lx4nbNYsxeEqRKyz59+hSsWhugKkY+gm
-	 YmEAHchASOHxSHJ+aQfMNlLqEaEwPnaGt6P4aoFMAUu83gHsq3mh83N4hrI0cf4w8/MUP
-	 JhyN4+cl1qbvwntpkTbncArNVMOrksBdt94aoICxIKy6DuZO6KCwAMLBrh7G0vZtDM/5G
-	 ZhpSpJfkxkR6k/xqFNcVnYJE720OxBbaZWIM0WVlnf3UCSvP7nSbzGVctlJiJW3lhKg==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 22D7A1F00A16;
-	Fri, 27 Nov 2026 03:10:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795749050;
-	bh=/ktUTtzQmYBrtZo1pYnB1CT3xfoL1+9t2GulvHSsGek=;
-	h=From:To:Cc:Subject:Date:Reply-To;
-	b=JxSG3dCvSg+wrB1AZTKIdwufOJYGV7mbf3FLu535nwy7klkXlpKoL4L5YWrGwSpgJ
-	 ZO7FP/q7kHrWRRMmsmPmsUuFVgVZMSLijhHKFl/k+CBFSS+L0s4KSxr5fh+gvuBT1t
-	 n23CP8Z30hpMUBUxmHQp/6EYH/KxS8845e8rHQacQvVY0xj8gixfTlxGqzW4xQBiDc
-	 iEMd4R1Bl+7se+QodDGDANt61w6+VDkBfJOrYNAi9EiT/WwXXysXmBEW9x3UQSeZLA
-	 /hpJJ1cMA+817AiU0EGJz6qGwfPcrV/HwMKnbDfTYe1K9hgJFCwvVe587bFSg0UFQy
-	 3t5Xie9e4Ik9g==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 968EA4B514;
-	Fri, 27 Nov 2026 03:10:39 +0000 (UTC)
-From: Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org>
-To: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
- andy@kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, 
- Arnav Kapoor <kapoorarnav43@gmail.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: inkern: guard fwnode_xlate with info_exist_lock
-Date: Fri, 27 Nov 2026 03:10:38 +0000
-Message-Id: <20261127031038.12685-1-iasnezhkov@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PvgEXXkY
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795758555; x=1827294555;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Ajpt4zyRc5JSG+G+1jKrWNHQepdVzILCm+KQA4/m2Jk=;
+  b=PvgEXXkYSETJdd1U+iF8IERUA87dHa4N/6P1Pq/rU132aZBQ0Jjc1+kD
+   Hp1Ze/0wwCXtQFHGuED7dB+HCvJor3kSskpgY+ph0iMAN252bGsnIiEDY
+   WhQUzzFMEDhnra1Tpo/SqftPeyrrFdmWd9o9KlsSAwO7EJaBYdZqceXXE
+   Fyaz4UZnKaDX50EJ0pVzykGE4IdKLOyidkT7oqNl08/8AUDz+945OZMou
+   MK+D/N9nTmsrcZXmtfEiE2Dor8vuVR/TsUHqblrdniV5lIMVk/BslDWRs
+   vFd9u7kPfZjczg5c+AR9u4c+IaoRAw3Zl7WqPWRPwQO3+dDMZXJDDXSRM
+   w==;
+X-CSE-ConnectionGUID: n2JLybNBQ0Co8XhM4rVMjg==
+X-CSE-MsgGUID: WPcywR4QRxWdG2eEAWas8g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4656182"
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="4656182"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 21:49:15 -0800
+X-CSE-ConnectionGUID: 8sFd97oLSumaK8JQ5bcxzw==
+X-CSE-MsgGUID: RMzXsnOPSGyULDtmW3RAjA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="12205794"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by orviesa005.jf.intel.com with ESMTP; 26 Nov 2026 21:49:12 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xWopZ-00000001VPO-1AKJ;
+	Fri, 27 Nov 2026 05:49:09 +0000
+Date: Fri, 27 Nov 2026 13:49:00 +0800
+From: kernel test robot <lkp@intel.com>
+To: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Robert Ijtsma <robertijtsma@gmail.com>
+Subject: Re: [PATCH v2 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient
+ light sensor driver
+Message-ID: <20261127134342.AXwSjSmQ-lkp@intel.com>
+References: <20261126-iio-tcs3430-v2-2-6c5329d20919@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -88,100 +90,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795749038; l=3242;
- i=iasnezhkov@gmail.com; s=mindone2026; h=from:subject:message-id;
- bh=3eR7QjvwrqKPzzmBewRCZmPt+qJp/3aj6a2z0YLz8uc=;
- b=1HWWq8KlVlZ1BykCJj/4xM1SJQYVdLIt4MNmvvuSMq6O9dSdgGZM1KFsDfsPGEPFNWmwfMi3L
- 7lylh1tHT4uC+kXXuUEdYYb2zWDUKX3eZ7ZdclH91OFp3nlRf0jldzb
-X-Developer-Key: i=iasnezhkov@gmail.com; a=ed25519;
- pk=hQgXfiWi4ukk2jh4BHu1vRVhg9BUivo//AFp50AKMag=
-X-Endpoint-Received: by B4 Relay for iasnezhkov@gmail.com/mindone2026 with
- auth_id=1643
-X-Original-From: Ilia Snezhkov <iasnezhkov@gmail.com>
-Reply-To: iasnezhkov@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261126-iio-tcs3430-v2-2-6c5329d20919@gmail.com>
 
-From: Ilia Snezhkov <iasnezhkov@gmail.com>
+Hi Robert,
 
-__fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
-and invokes it without holding info_exist_lock. Concurrent
-iio_device_unregister() clears indio_dev->info under info_exist_lock,
-allowing a NULL dereference or callback execution during provider
-teardown.
+kernel test robot noticed the following build warnings:
 
-Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
-matching the rest of inkern.c, and return -EPROBE_DEFER if
-indio_dev->info is NULL. Since iio_device_unregister() calls
-cdev_device_del() before clearing indio_dev->info, seeing a NULL info
-pointer corresponds to racing right before device removal from
-iio_bus_type, where !idev already returns -EPROBE_DEFER. Using
--EPROBE_DEFER also avoids colliding with the -ENODEV sentinel used by
-callers to continue parent or map-list lookups and avoids the named
-lookup -EINVAL fallback in __fwnode_iio_channel_get_by_name().
+[auto build test WARNING on 4843f6873f7c4835e62f2c73ba0fd538e57a2f22]
 
-Fixes: acd8256723f2 ("iio: inkern: Add of_xlate function to struct iio_info")
-Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
-Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
----
-Changes in v3:
-- Place `struct iio_dev_opaque *iio_dev_opaque;` in reverse xmas tree
-  order (Andy Shevchenko).
-- Move `iio_dev_opaque = to_iio_dev_opaque(indio_dev);` right after
-  `channel->indio_dev = indio_dev;` immediately before scoped_guard()
-  (Andy Shevchenko).
-- Carry Reviewed-by from Arnav Kapoor.
+url:    https://github.com/intel-lab-lkp/linux/commits/Robert-Ijtsma-via-B4-Relay/dt-bindings-iio-light-add-ams-OSRAM-TCS3430/20261126-091147
+base:   4843f6873f7c4835e62f2c73ba0fd538e57a2f22
+patch link:    https://lore.kernel.org/r/20261126-iio-tcs3430-v2-2-6c5329d20919%40gmail.com
+patch subject: [PATCH v2 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient light sensor driver
+config: loongarch-randconfig-1000-20261127 (https://download.01.org/0day-ci/archive/20261127/20261127134342.AXwSjSmQ-lkp@intel.com/config)
+compiler: loongarch64-linux-gcc (GCC) 16.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261127/20261127134342.AXwSjSmQ-lkp@intel.com/reproduce)
 
-Changes in v2:
-- Return -EPROBE_DEFER instead of -ENODEV when indio_dev->info is NULL
-  so callers do not treat it as the "no channel on this node, keep
-  looking" sentinel and named lookups do not overwrite it to -EINVAL
-  (Arnav Kapoor).
-- Drop the unrelated indio_dev->num_channels bounds check from this
-  locking fix (Arnav Kapoor).
-- Move the AI coding assistant note below the --- separator.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/20261127134342.AXwSjSmQ-lkp@intel.com/
 
-Link: https://lore.kernel.org/r/20261126060615.63790-1-iasnezhkov@gmail.com
-Found and drafted with an AI coding assistant.
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
 
- drivers/iio/inkern.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_all_avail_scales' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_avail_times' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_gain_by_sel' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_get_scale' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_new_gain_by_gain_time_min' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_sel_by_gain' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_gain_sel_for_scale_using_time' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_gain_time_sel_for_scale' from namespace 'IIO_GTS_HELPER', but does not import it.
+>> WARNING: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'devm_iio_init_iio_gts' from namespace 'IIO_GTS_HELPER', but does not import it.
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 1f22275..92b6679 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -145,6 +145,7 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
- 				    struct fwnode_handle *fwnode, int index)
- {
-+	struct iio_dev_opaque *iio_dev_opaque;
- 	struct fwnode_reference_args iiospec;
- 	struct device *idev;
- 	struct iio_dev *indio_dev;
- 	int err;
-@@ -162,10 +163,15 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
- 	}
- 
- 	indio_dev = dev_to_iio_dev(idev);
- 	channel->indio_dev = indio_dev;
--	if (indio_dev->info->fwnode_xlate)
--		index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
--	else
--		index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
-+	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
-+		if (!indio_dev->info)
-+			index = -EPROBE_DEFER;
-+		else if (indio_dev->info->fwnode_xlate)
-+			index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
-+		else
-+			index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
-+	}
- 	fwnode_handle_put(iiospec.fwnode);
- 	if (index < 0)
- 		goto err_put;
 -- 
-2.54.0 (Apple Git-157)
-
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
