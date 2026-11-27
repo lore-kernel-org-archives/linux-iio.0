@@ -1,50 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.207.19.206
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.204.34.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795748998;
-	b=PTyRAcjGAQKWgRr8JTzhlhTUeziuwOeR3sK1MipRdVGSF8Ob+3xWtI4vnL7WNj22/22o
-	 p8z1IXBvB/P4OwsUv+905VhcaR0ZQdhxeOYlq5Oi9nGC4EsX5C1lJn2dOnOdxxq+uRdOI
-	 gHwCu7W8YKJ1ObnN83tFYZbnvNENzyQUJ3mzMm4tbPQtd/xo583qPdkC/MBbBH/JoC8J7
-	 Vul4MSeJsR7h8LNpyw1kls1k+52TJqS0+pimfytnvfwus0C0YLirKOm0WTIMyQVvSnzrI
-	 quvV20bLA1v7WDxXcC1a4cXNvWIj097/g6Yxu6RPzYmotIBmTa8g8BGyx5S7DumJubA==
+	t=1795748999;
+	b=ZRgncibKoZKVm4+Ievi5HNUM9C+O2kEfGXFSUn7q6awe7gYR5NChWAGC5pDp4rdzqtjx
+	 CpwH9LSPMmH8p7YNXmWprILIID8xSBiB0CdyhNhovQuIZfpPawy//bg+b9yS5Js6qC1RA
+	 OaEXRVCqBghlWJtFjtP5DLeJKg0fNmfgz36i+AUhg5LcUUJLThL6sCJ7Jj6fsA7q2+V97
+	 DDBiBJ2kcp4TjDOnGJTPo5MQthR9xAnEwSyh6F2YvEeM7sS/5Iy+QXfyXilgUAv+3OTPz
+	 OrtGA9MA2jT0EVqab9WsOQgaDVo7/mnPtZ5VBkp3jy5DtSeEhRnYnvS3Ayx10SHQ6/A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795748998;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795748999;
 	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
 	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=dzbNSIhByZurj0v24XUeAIbeJl39iDz8rDFwiAIyuiw=;
-	b=BRNOLUAMkv6kd9Y6E8zS8wYn4YslHub9HWWGvCyFSGn5cdd/xJqOqJwMxiLsvHA/4ISu
-	 ZZRSQXh+i04L86jfLkSQ0mdFfOHFZomAC6eoePAlxRm3JIRsGhzo/kbFMNeX+SeKR4F8m
-	 80LDGRkDTfCJ2tH9aOT/w2yQS+1GjPV+SFs+i1h9h2w/at7Srr+Nt5aMAWNPuPHq8abX1
-	 JgWnNQCHPK8brRXnhWnSw1NOnlq7Hk16xn08Y7Q+9aNVryzMx2OTr4nUPevW8xQ/9Gx7X
-	 18i4FFfS8QqtKZbgmPuViohC4tUhc9rm908hLaVrLrr1+Cnqd3FgvNA7DU3lq9VKMkQ==
+	bh=Br0NJuM+iwNMTK7hNpxdv91hTY39j368XoGBYY9tSRg=;
+	b=PjyeXoOap9LSOffr1BigJ8fMfA6k1xD8mx9/JvXQBfAVvDT9dGQgga+5VwyBpFZxJAaR
+	 7yoIKklBl8+wggwC+4HD636MTwGPc9igyIN4QJwRemV+FRSNs9LfPuQjMsiBk/fjmUiQ/
+	 XdtB+M996chRy4S7qE4N6haU9bO5ym+eONkumyZ6d4xPIS5AtiPwawgElxmBERHs2Zxf2
+	 T8y6XmGHfGTtJ4yo+XupWZ/w6sRGpizjL5WQdrsYESvyTi2RzX6E+eHMF+Prqqn7iKCQL
+	 ZJM/dBnT46AvdCz9UMZlPC0x3irxcXHaGjbV7dPWDWmpzN9mM24N5GE3OWqhkkqYpXw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=hexin.host;
 	spf=pass smtp.mailfrom=hexin.host;
-	arc=none smtp.remote-ip=54.207.19.206
-Received: from smtpbgbr1.qq.com (smtpbgbr1.qq.com [54.207.19.206])
+	arc=none smtp.remote-ip=54.204.34.130
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F867606A31C
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F867606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A9D606A32A
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 60A9D606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748913t22da6c77
-X-QQ-Originating-IP: OCa/Vv4SbBy9F9LzT1kDdLFCybaM6sM2dmk4hYMNd0w=
+X-QQ-mid: zesmtpip4t1795748923t98557a26
+X-QQ-Originating-IP: GnbZab8Fq8qPR4s+h0dm4bwK6gKhqBTNaP6PHgvwaRc=
 Received: from hx-KLVG-XX ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:32 +0800 (CST)
+	id ; Fri, 27 Nov 2026 11:08:42 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 14122866134665162352
+X-BIZMAIL-ID: 3724851885726245133
 From: He Xin <hexin@hexin.host>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 10/18] iio: accel: dmard06: support mount matrix
-Date: Fri, 27 Nov 2026 11:08:02 +0800
-Message-ID: <2472E5A128DADB63+20261127030810.3150676-11-hexin@hexin.host>
+Subject: [PATCH 15/18] iio: accel: mxc6255: support mount matrix
+Date: Fri, 27 Nov 2026 11:08:07 +0800
+Message-ID: <9B3F5050E5D3ADCC+20261127030810.3150676-16-hexin@hexin.host>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
 References: <20261127030810.3150676-1-hexin@hexin.host>
@@ -60,23 +60,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: MVocNrGTvdgh2zD/I0lKSA3Fr/hn4trINlC78F/AF4Ge0A/ncRA46Jxo
-	yJTTck9ApOP3ftWbi3FaSHOlcEhS7g9qpIRw2Icsaj/6412tlJPDd66PA8txLv1+GxohCkU
-	d3tcoHNnzPvAXmN70NXtzAzlYHt8F9sBiDPInxjUwYod2W8KRBoLqthPAjKUsBHlKmPdemH
-	i8svwk7s1SpxWqMxKipBLtqJCPNmy7ozSIPQ5PbVwixxyMl7VEFRXXGXyka99dVj9y96GOp
-	FTu4mPwcx9Boxt3UA0DOGK+dKmpqgNZxgCvRqGML1lp82ZTh6eE0hh6DSSszin7CZXUWJBE
-	kfuK+8pm7ycFyDW/Hhq+Zs5sdPguUvVgJq9+twPSOHMSs1Efsg+pd8UMFMumU4+wgbK6y++
-	eVQza53HLsyaqYEX5ln7zmfSxvQfm3KqEAFlZ8MukmjUg5G7iGrfJzmAP380WiavtkiWOL6
-	5lGEi+rskKxGva0efIY3aemy6MF2G/2pOrUda9TzVuVxNFtheIEGlbMm0hOecw+28RUdV1N
-	/ECbv+XL+/6A6PGAe4Wjj4XcDwwHT8fSPRhFHQZ3Xpval/tZdhxWZsqthbnM2aOMPgC8OQ1
-	yp0n26UG6z7bxBBhW/Z/hlr07XdkasFbyt3eq+Dtpoqn4pcJR5Uk5W9NilRu/mhbTZeQ7E1
-	DAwA78zuFGzOZCKTI1qoXLArMDq+/wOwVBJEToFokxIBZAEkB3UNgP466VvA+hqnGMhvSEr
-	6GSTzLIrK76n5Sf23ITZwbO7uQhhtnwn2Sh6PDsA5SVyRSUkVm2EH3GmbPKpoEsRw0XSabJ
-	l8Az2IjFAiXpD+XH1bdUQWyxrOn1xHCAwo0rnQqfgkiQZvvJvfW5kUZQMBmRvNLWg2Y0AlY
-	KG/XIgZFpDmNWCKblZlzOTyzloGOQZWJKujElp2jLaScwfGo18ZvQmm4KdpuYW/Dks4J895
-	WWWV5d97khjG4MkbRTd6k1xyD0J91wE44dInXkdOAVQ0LFBRUaifjf3ijXe5L0AOPsMzy4V
-	gDGTCz5UyfZGG8TfAQgbxDGPfkk1Aige2mABys/tPjfFtXne9eMoWrzqs2wQM=
-X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
+X-QQ-XMAILINFO: NcmC868q55ANvn7x0X962sS5b558ZUeJk0uNkzEAVSHDbJXAm26NV38f
+	U6sSF5ZC3pRZ4Q6BTrGkcj/4bJ3HPt0OoQLUT9ywlpKadp9U3fyCtSeG6c+MAY9a/130f+w
+	SMYGorJydmi50rUWPPgGIP8hpzXvyFPTXuTY7TnWPzcoK/MmNQ9orixQ+A6D86BMcQ2viJ9
+	u6hK+A44MtDggzmK2bwUGezMmJt352YDvP2in6yvYZkDKZsLZ7DJ+ahFioWg7a21BVHOr6q
+	jnGx0KCW31JGdvYOcJxfR2YIM/I+GlJ0EPVe/YOlA7PuTE3FPDll4en0PUyxhm5skrIfvFi
+	knBMlsZBFspbGwjIvIBb5ZbgX/IWBxJmimUkJ6lBWLGaUEZPJ2vS8MKPXHREmi6L7Gznlz8
+	HbiEUPB6S8wtPFlRQoN7WsCkr1ZdTbu/MSDjm93xBzRqnJj8b0Q6jz5As5yLFYX8ADEqaXf
+	hnss586fchyX9fo+ZKxzIFpA2UPSLVAq9ouy5sHFG38lcyoljISmOHL169uNunRk/RXqpLO
+	zH6btqRyU/KT+OyAoMF35peQXzc1jmzrcvqNHy/hG9xBUzcMTeE9NtksewCs4EgwyvF+OFx
+	T0qkMqmtq9xBtAJr+lD+xuUNPNy2ewWuS7xWrJOau0Z7cl3Ias2GYriArhaC8gJsNp9QS4p
+	hh/Ugf+WrvMcllYk+hD40S42k+x7OjinSxFKxdkWY84xopcwQREzzZtT/4FYpRnf/bmBNsA
+	ZEqfh/2YOy9ObvCrnlX53uXY/73IBAUI7aw7uWnCZa7GYUh8jKuqomNtbNdD4023IEWWAwT
+	hMyZs3KAYd51ML71CPnXNDD5bx2GFQ3xKT8UCIdpUSAoRqTmCfWCWCvY50WW7DjJNLoDZkU
+	SVSouus4kKf5nVp0OD+AWnFgRBySI9bNDo6BwtgftEYfdLqawmp4HeTUpq53C3z1cnKEvSU
+	sVzs4UWQFzwpq4Qz+ji0wIRiIw80DZnlZnZFoUOlpDyQ7UxYNGfj2PWiRAu469RK9QvmqDh
+	Mv3O753GIVrVLqzKyfK19PZDkZtodhFA/NLhOdwqTd6hq94VxhqAzduWOtJXE=
+X-QQ-XMRINFO: Nq+8W0+stu50tPAe92KXseR0ZZmBTk3gLg==
 X-QQ-RECHKSPAM: 0
 
 The driver ignores the mount matrix described by the firmware (ACPI
@@ -89,62 +89,56 @@ IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
 
 Signed-off-by: He Xin <hexin@hexin.host>
 ---
- drivers/iio/accel/dmard06.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/iio/accel/mxc6255.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iio/accel/dmard06.c b/drivers/iio/accel/dmard06.c
-index 82816fa..24dbf51 100644
---- a/drivers/iio/accel/dmard06.c
-+++ b/drivers/iio/accel/dmard06.c
-@@ -35,8 +35,18 @@
- #define DMARD06_MODE_POWERDOWN		0x00
- 
- /* Device channels */
-+static const struct iio_mount_matrix *
-+dmard06_get_mount_matrix(const struct iio_dev *indio_dev,
-+			 const struct iio_chan_spec *chan);
-+
-+static const struct iio_chan_spec_ext_info dmard06_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, dmard06_get_mount_matrix),
-+	{ }
-+};
-+
- #define DMARD06_ACCEL_CHANNEL(_axis, _reg) {			\
- 	.type = IIO_ACCEL,					\
-+	.ext_info = dmard06_ext_info,				\
- 	.address = _reg,					\
- 	.channel2 = IIO_MOD_##_axis,				\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-@@ -54,8 +64,18 @@
- struct dmard06_data {
+diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+index a9f41cf..4d5a229 100644
+--- a/drivers/iio/accel/mxc6255.c
++++ b/drivers/iio/accel/mxc6255.c
+@@ -42,6 +42,7 @@ enum mxc6255_axis {
+ struct mxc6255_data {
  	struct i2c_client *client;
- 	u8 chip_id;
+ 	struct regmap *regmap;
 +	struct iio_mount_matrix orientation;
  };
  
+ static int mxc6255_read_raw(struct iio_dev *indio_dev,
+@@ -76,8 +77,23 @@ static const struct iio_info mxc6255_info = {
+ 	.read_raw	= mxc6255_read_raw,
+ };
+ 
 +static const struct iio_mount_matrix *
-+dmard06_get_mount_matrix(const struct iio_dev *indio_dev,
++mxc6255_get_mount_matrix(const struct iio_dev *indio_dev,
 +			 const struct iio_chan_spec *chan)
 +{
-+	struct dmard06_data *dmard06 = iio_priv(indio_dev);
++	struct mxc6255_data *data = iio_priv(indio_dev);
 +
-+	return &dmard06->orientation;
++	return &data->orientation;
 +}
 +
- static const struct iio_chan_spec dmard06_channels[] = {
- 	DMARD06_ACCEL_CHANNEL(X, DMARD06_XOUT_REG),
- 	DMARD06_ACCEL_CHANNEL(Y, DMARD06_YOUT_REG),
-@@ -140,6 +160,10 @@ static int dmard06_probe(struct i2c_client *client)
- 		return -ENOMEM;
- 
- 	dmard06 = iio_priv(indio_dev);
++static const struct iio_chan_spec_ext_info mxc6255_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, mxc6255_get_mount_matrix),
++	{ }
++};
 +
-+	ret = iio_read_mount_matrix(&client->dev, &dmard06->orientation);
+ #define MXC6255_CHANNEL(_axis, reg) {				\
+ 	.type = IIO_ACCEL,					\
++	.ext_info = mxc6255_ext_info,				\
+ 	.modified = 1,						\
+ 	.channel2 = IIO_MOD_##_axis,				\
+ 	.address = reg,						\
+@@ -130,6 +146,10 @@ static int mxc6255_probe(struct i2c_client *client)
+ 	}
+ 
+ 	data = iio_priv(indio_dev);
++
++	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
 +	if (ret)
 +		return ret;
- 	dmard06->client = client;
- 
- 	ret = i2c_smbus_read_byte_data(dmard06->client, DMARD06_CHIP_ID_REG);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	data->regmap = regmap;
 -- 
 2.53.0
 
