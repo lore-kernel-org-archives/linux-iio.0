@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.181
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795782805;
-	b=2E/CDofsyCi+Pa7f8gNXTxgNlXK6EF5CEzBwDg4msXquZWHL3tRTUHUQZz5dpeQEvq4I
-	 cVQd5wmYtk2toK2QH3Y2CqNyHkM79L1tOYfNv7JCiVTtJfMDSUdEsQgxo5uhkuLzNOgNL
-	 O5uukHk8iKqTYJQrlFaBgpHFTMp70AY6GZMktEUWLFvhxXVhqZGrh409svpwM5FFBs8Nj
-	 ckw+phbJcFJxokS0FGBuBhr5KhmXSm+xCPfUPNMJIOVW44l47JQNpBIhv6MpnLnbsH3Zh
-	 K6kqg5SbdE58zMO4+1W1/HOQVNqypgQAtgntdCobGBrrjbUvP5NZCNHPfwLJz4DrkcA==
+	t=1795782809;
+	b=j8qZs3ePKjme6HDKZPkQX95o0cfyrCE/xM8+x/E6BAtnWHUSnsdAUQke9HZdeb6dmlhH
+	 dRcOPn/aFN6sHKnbPkV/IQmNShisOi0qbBlwJpNVqtlppdt/0N/DzV+BdZyEIQkFDDj+Q
+	 2o0D2fAzOmeRHxHR7MHmCi4Cuouko1a6Gzo5IOQgCKvgqCca6hMJaCXJCKZOif1/+PBvq
+	 +6x2S7858/kcU6OxvlM0lvmE/pE2rUMs7OcYSe1xGfhahnsWbnUFSgRez1FEH/67Mg2hd
+	 +CcjQdJIMpP2pWS6Rp0aGZ9cMlc8oVAeXr/6kuzbH45fn/N8JV6Yio0mXjilqhehT8A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795782805;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795782809;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=kZPMEzPJEBmK9RydLOqHgkqh2L3rwP0H3qPdw9k3biE=;
-	b=CaTTbZ8lX8MgDhS4QoLcVWG0fVKDAv+qKx+ExCyBYMUY9rgvV8MFJSdNdMvPEjgRNu8p
-	 kPVsy7yD/NtBdziJM4CS0wtw9mOJmWdt+sLDMJPEbUqcJSqczPw+Vy92WRVErcja5BGej
-	 3R2fyXybU/cb2w2o+2x4awKj+dartXpp+XPaY22q63issQwXypYUQI2xZ2D7DOQnxhYmg
-	 TZOrat/pmw8k6r0Sa51wHxVbbuIN8v0ADgaI8nWa8h4dWDRQ3W93nIdAhMiNnUpx6npTr
-	 3ZW0NPtv1CDIcA7H9SLj+ks7QD+9aoj3329ZGFWRiryZv9Xd4GJiwjtw17sWIJbGqxw==
+	bh=Uvh4AWWzO4kiSVlySE0GOXT3P3aE1dpUQ/DuKk1yuDs=;
+	b=i8hNDuIaWO92TsF2sg7/3TVS2FfURIom4lDLxwmY2N44f3Ly/rGvvsdMqoEHwhyRehgc
+	 gjJa/l7EU06O80rbCy0DK9geyNI4eW7Xi3qVce8Gta3tB2iAB+KhHtkEf34P8G08fyILR
+	 lwvz3N2YcTjFC0/Po+MhWeEcF6h0gxqCHXZ1uIhaoRNAg0D4x1w806rwI7BeQjiBnNSU5
+	 smHd1ZW5K3aPUa0lq6EcYAvFGDFeTsQz4jcuqoFj1xV7qoYAzWMgf5KkN5hrsAN/444M4
+	 Rd9OwFCymdmNzAecESLp0SJIJLBoNgdnYv+urFH5C1sfBVzLtHuwUd60yhxGfMAQERQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="k/yFTWby";
-	arc=none smtp.remote-ip=209.85.210.179
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="Y6IM/sZ9";
+	arc=none smtp.remote-ip=209.85.210.181
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7615606A31E
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 12:33:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7615606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BBF3606A31E
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 12:33:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3BBF3606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=k/yFTWby
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-8b904d10882so3358305b3a.0
-        for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 04:33:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Y6IM/sZ9
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-8a594d313a3so5263195b3a.1
+        for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 04:33:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795782804; x=1796387604; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795782808; x=1796387608; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=kZPMEzPJEBmK9RydLOqHgkqh2L3rwP0H3qPdw9k3biE=;
-        b=k/yFTWbyE+aL3rT9iWGD1X8+wyV86R1MyMo7ib984Zlrj5GsPgzKDthZ5pYf3jeoM3
-         NWhF2S3qjS9lZ8HPlwQCscpr1S3an9ONx816Tnhv7a0inql79SmvnFkQN7A2oyliVIwE
-         MI6VcJndloQuryHbQU6QInvXrvc0zm/IrMy0dgTZxr0Y6H5rdiGMj/0SL25sayOORDVi
-         3ydz6iVM7VyebaWHk//8V8yMEAf0Z6q2vDW1fL+iqMoZLeOENNke1DjxzFYQBhaWoGZV
-         948NJGBf16dI+pbySm/oCE5Wq600E22TY9FPtvvP29AJ0MERjetUCPg2z9YlkAnDfxSK
-         m3QA==
+        bh=Uvh4AWWzO4kiSVlySE0GOXT3P3aE1dpUQ/DuKk1yuDs=;
+        b=Y6IM/sZ9sta4L8BFf6R7U/XIGH0EFgwibL9R6elR+C5W4/ERbvWR4qF3i/8SkN64xN
+         iYRIAASVp3ZO9+enaObL4ay0NTMQRNrP/ePhc70oBcoicfaSap4V6bo+rrUWOQpdcK4v
+         U+BjOXp4PViNkdS+a0FVMXcbnpeTZlceTtQDAhhZenmrmJChlvFev2sVMRWrmJ97FTqI
+         8qiE+PT6ZUuWmkurIih6tx3S6bURDBGlt21r3IAvNHC/0ChSzYnoRkVs1B/sku5/Q1yF
+         IkK9atqdG+bvBPhEYZqTpY1GumvQ98ICoC1tcNn+Ruq2mK7NeQAhwLlrkGhmzccMxtLS
+         utQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795782804; x=1796387604;
+        d=1e100.net; s=20260707; t=1795782808; x=1796387608;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kZPMEzPJEBmK9RydLOqHgkqh2L3rwP0H3qPdw9k3biE=;
-        b=ZPyHmuNionz003pd4Vh97S/RieKVbiuI0gdu6blXAZ8yUyAoFyp3yJFxX5dWytJ07s
-         QQ39vi56fEtZDFeSKxGbwBoQgFSD4stVcMJ6tZPQgTrqp3szQynrUt4sDm0ckCrY4GsC
-         pB+YEMWWdsjpX+qkkgJ7pF4c6LyHWBIcuQyjtBPQUkqeVBJ1065yS46DCeejO33bANxQ
-         7LZ/PK92mmawYCWWUpypJU8F8YS9wXmsNXWwXwWJkptdawswDCdPm/Q4upEXi37otrAk
-         7JFks/ux3Ng57zsj7yVETN+vidk5LHOMfbrWpGAjIWGPY/epomr/gCtll+JmITlypL3i
-         VR7g==
-X-Forwarded-Encrypted: i=1; AL+hErEKaiSfKG0okXpKBuwwkivJCps9qtN9edeavoiTfmhiHMxBxT4OMXqOZBPkirE4wfN4qd1IBOm28cE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/B8YWipWHkR4MeQRfbAJoLqCt9OLB+r9t/+KDIj83egMULvFjq
-	ESXDBeuB07LNAGWqoo6Vcar/snCpxAbgdARm2b45m33F+Ij2iDjQnWyu
-X-Gm-Gg: AZFdTZfGsCDtgkkVFaCsiWYNz4GR/iMfx+BWA+j4UqOxRDfaLGN/GVm66QkKjeFLPWP
-	qMm3rCL9eFv8c3jZcWMhng4NFZ/UVRNC/StdrmASo/3d19DGYK/6eO/q5YTLVCs1RTVQ0MoSHcM
-	Z41KqCbK7/W65zmH9yz3KDkewKjxnlTvXeUb1PcmAeYvJSpkbrjrfKdXgw2Y3BijfXbOC8FLmb0
-	2gxfaoeYvTzWpqOXYoih2cWKEJ6TmtbpD9oUuPVZvL83Ahu/q8j1eqYvbIJtCDv7edKpo3gHFxT
-	XhWd4WpexzTpw+g8i7ZY1LzUMBU5nq3qybofPr/yZh6I3sZWISs8QkZq/lNmFFdCmV+YXYQFhNH
-	5xdVPAdPBlwx94inIAX63wlGS23so5ua5cW+sV2gLFrsez/epsBRWQfOT/AaUbKVrjWrfwqMrEQ
-	pqbuWWjnKS9s/1DH77XMLZcwJwAwtS1iEShf7iGCvKLxXxio2Is163WjcEfYx0wme4LFxF0dxpz
-	49Ga7Mhv06RLrWanBbaFWJBOX8EGaR3TkvI1SjgEZg+5fO6U9R7HtrsZeiF7u8v08smTywdUqXf
-	8/KnWTvVPvx66Sycz05tvjXf9j08KaI+bdqsVE706R5cpwKYsfjHSP/dcHqyqqi3222FagM=
-X-Received: by 2002:a05:6a00:2d06:b0:886:cae0:fb64 with SMTP id d2e1a72fcca58-8c87c85fbbfmr22361125b3a.31.1795782803987;
-        Fri, 27 Nov 2026 04:33:23 -0800 (PST)
+        bh=Uvh4AWWzO4kiSVlySE0GOXT3P3aE1dpUQ/DuKk1yuDs=;
+        b=K4FTA+rDEZYvTyueGd647sTCyIny9QiFu32Je6S4aTZB1KrRBzvQfHphrztpb6sJeD
+         yLTrEFgsJTKInjS3qXx3U1gU8sMtYj4qgXN28FdjTiAjHmANvR+jGbIhCDs68PgYWQvg
+         dTNU4FBZbcKHdrnQ9wAv7p00gZDNTdiFgHRwHmjl9QswwpZjZh+VsYZYved8NHFj8I1h
+         /9jkZHSC0kNSTw6jE2qHoPihcDa93QgVxT5v8mGdhi/gJdfVmX7wgtMkKAXncluJFhGc
+         C5I0mYhGfA6VZIbZ+3IfQlxxcoqRl+ZqS28FY73AcsYf1AFJd3reTSLUfGrK60I6nUQu
+         hEFw==
+X-Forwarded-Encrypted: i=1; AL+hErF4Gs3Bz+PFg1R28Bl21NqqrsdbF3+r260Isems64mwsqZZt3ZvXv6fkngZZHkUCsdPISrBBbbZcKk=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+d4LLwECRJVaEkU8chtahsRkOP/YgviZV2cpff3TfET19ySCzk
+	mRSfF/zhBJp0MFKCHG/EGqAZBYmXl90J9baLhhlBaA2PpeXkSwBGBeI2
+X-Gm-Gg: AZFdTZcPHfdRoZk0GL5p9KdPMAbY0RoLIjAO7aLxlKz82lM8XU3IN2Eh6/00tbKUQjm
+	dB2ZOoKDZLBZHVIOnO6KT2oTSN3JR/8lrswD24Obp4Yrv73EHkjXqIbnDIMhcgIJ/RFvUd/HpvQ
+	1/s/9Tpptt2tnOk30nuEZKiO74oIpZZ3nXt21HUlsBym7NoODyB0IBueLtYrtxg0ZFt09LrRgxh
+	Tthx5RLS40zrLcpLNkZD7p+SlqOwj25wU9BN5RQH7lG9ByTNIOcazgw2bU5FLkeLAnXv0BAEwRX
+	HIPYvDkV+leAEu3STqC0/tV4tzkR3iHNMB0Wh3kuOToFOluBB5HNp7ROpis+js2ZnlL2F1vMELj
+	2AxlgqD0+L9PiVCM1zHpoZn0Ck9vRoXwvXWn8x2pU0j+FcGas4sLx9tzI+n8qK7IsvkXm8oiR6J
+	7k+dgOn/44YqjlUStIy6/f6slbq5WqzD165fVWh5mxmdZMaoFri6OD6L7EEI5Gv8EZjKhnyyTq/
+	GRNjmAZai1Gzu5dlEE0qVskVqlT9/UAB0Ly79SdjnngVGUSFo14o7EgDlQEC8i3PXGcMFgHb5VP
+	g04zmssa6r+dNL+5MYTRX+0EMf3xqARblaX8tmAWckyBM/hEaXM+ajKgbBEqg6xMSNgABAI=
+X-Received: by 2002:a05:6a21:7e84:b0:3fa:1dbd:7f75 with SMTP id adf61e73a8af0-4014cd4a8dfmr23334113637.36.1795782808548;
+        Fri, 27 Nov 2026 04:33:28 -0800 (PST)
 Received: from localhost ([2401:4900:1c2a:12da:3176:e694:92eb:c932])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c87077944bsm12568899b3a.2.2026.11.27.04.33.19
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c87077944bsm12568899b3a.2.2026.11.27.04.33.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2026 04:33:23 -0800 (PST)
+        Fri, 27 Nov 2026 04:33:28 -0800 (PST)
 From: Punnay Sharma <punnaysharma805@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -89,9 +89,9 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
 	linux-staging@lists.linux.dev,
 	linux@analog.com,
 	Punnay Sharma <punnaysharma805@gmail.com>
-Subject: [PATCH 1/4] staging: iio: impedance-analyzer: ad5933: fix swapped real and imag data
-Date: Fri, 27 Nov 2026 18:03:00 +0530
-Message-ID: <20261127123303.144052-2-punnaysharma805@gmail.com>
+Subject: [PATCH 2/4] staging: iio: impedance-analyzer: ad5933: reject frequency code overflow
+Date: Fri, 27 Nov 2026 18:03:01 +0530
+Message-ID: <20261127123303.144052-3-punnaysharma805@gmail.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261127123303.144052-1-punnaysharma805@gmail.com>
 References: <20261127123303.144052-1-punnaysharma805@gmail.com>
@@ -106,54 +106,82 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-With only in_voltage_real enabled, every buffer sample is the imag
-value. With only in_voltage_imag enabled, every sample is the real
-value. Nothing reports an error.
+With a 500 kHz external MCLK, writing 30000 to
+out_altvoltage0_frequency_start succeeds, but the chip starts at
+14374 Hz. The attribute then reads back 14374.
+out_altvoltage0_frequency_increment has the same problem.
 
-ad5933_work() picks the register to read with
-test_bit(1, indio_dev->active_scan_mask). But real is scan index 0 and
-imag is scan index 1. With only real enabled, bit 1 is clear, so the
-driver reads AD5933_REG_IMAG_DATA (0x96). With only imag enabled, bit 1
-is set, so it reads AD5933_REG_REAL_DATA (0x94). With both enabled, the
-read starts at 0x94 and covers both registers, so that case works.
+The start and increment registers hold 24 bits. ad5933_set_freq()
+turns the frequency into a code, freq * 2^27 / (MCLK / 4), and writes
+only the low 24 bits. A bigger code silently loses its top bits.
+ad5933_store_frequency() only checks the fixed 100 kHz limit. With an
+MCLK of 3.2 MHz or less, 100 kHz already overflows. The datasheet
+suggests a 500 kHz MCLK for measurements between 100 Hz and 1 kHz.
 
-The driver tested bit 0 until the bitmap conversion in the commit
-below changed it to bit 1.
+Move the conversion into a helper, ad5933_freq_to_code(), and call it
+from both ad5933_set_freq() and ad5933_store_frequency(). Make
+ad5933_store_frequency() return -EINVAL when the code does not fit in
+24 bits. With one helper, the check and the value sent to the chip use
+the same math.
 
-Test bit 0 instead.
+Keep the 10 kHz probe default, because a probe failure breaks boards
+with a very low MCLK that work today.
 
-Fixes: 32b5eecab0f2 ("staging:iio: Switch the channel masks to bitmaps so as to allow for more channels.")
-Cc: stable@vger.kernel.org
+Fixes: f94aa354d676 ("iio: impedance-analyzer: New driver for AD5933/4 Impedance Converter, Network Analyzer")
 Signed-off-by: Punnay Sharma <punnaysharma805@gmail.com>
 ---
 
 Notes:
-    Tested in a virtme-ng VM with i2c-stub. I have no AD5933 hardware, so
-    there is no real sweep and no real ADC data here. The stub holds 0x1234
-    in REAL_DATA and 0x5678 in IMAG_DATA.
+    Tested in a virtme-ng VM with i2c-stub and a fake 500 kHz "mclk" clock.
+    I have no AD5933 hardware, so this does not check the real output
+    frequency.
     
-    Before: with only real enabled, the sample is 0x5678. With only imag
-    enabled, it is 0x1234.
+    Before: a write of 30000 to frequency_start returns 0 and reads back
+    14374. A write of 15625 returns 0 and reads back 0.
     
-    After: only real gives 0x1234, and only imag gives 0x5678. Both enabled
-    gives 0x1234 0x5678, before and after.
+    After: both writes fail with -EINVAL, and the register keeps its old
+    value. 15624 still works and reads back 15623. frequency_increment
+    behaves the same. With the internal clock, 100000 works and 100001
+    fails, before and after.
 
- drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 51d73c5ab9a1..bd85cb37ca4b 100644
+index bd85cb37ca4b..da07a75ad3a9 100644
 --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
 +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -624,7 +624,7 @@ static void ad5933_work(struct work_struct *work)
- 		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
- 					       iio_get_masklength(indio_dev));
- 		ret = ad5933_i2c_read(st->client,
--				      test_bit(1, indio_dev->active_scan_mask) ?
-+				      test_bit(0, indio_dev->active_scan_mask) ?
- 				      AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
- 				      scan_count * 2, (u8 *)buf);
- 		if (ret)
+@@ -187,6 +187,11 @@ static int ad5933_wait_busy(struct ad5933_state *st, unsigned char event)
+ 	return -EAGAIN;
+ }
+ 
++static u64 ad5933_freq_to_code(struct ad5933_state *st, unsigned long freq)
++{
++	return div64_ul(BIT_ULL(27) * freq, st->mclk_hz / 4);
++}
++
+ static int ad5933_set_freq(struct ad5933_state *st,
+ 			   unsigned int reg, unsigned long freq)
+ {
+@@ -196,7 +201,7 @@ static int ad5933_set_freq(struct ad5933_state *st,
+ 		u8 d8[4];
+ 	} dat;
+ 
+-	freqreg = div64_ul(BIT_ULL(27) * freq, st->mclk_hz / 4);
++	freqreg = ad5933_freq_to_code(st, freq);
+ 
+ 	switch (reg) {
+ 	case AD5933_REG_FREQ_START:
+@@ -307,6 +312,9 @@ static ssize_t ad5933_store_frequency(struct device *dev,
+ 	if (val > AD5933_MAX_OUTPUT_FREQ_Hz)
+ 		return -EINVAL;
+ 
++	if (ad5933_freq_to_code(st, val) > GENMASK(23, 0))
++		return -EINVAL;
++
+ 	if (!iio_device_claim_direct(indio_dev))
+ 		return -EBUSY;
+ 
 -- 
 2.56.0
 
