@@ -1,87 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795730984;
-	b=kdbzxGip1PiWHuUzmDjviWQumgYA8sqHbTKLTsvVEhNeQo0cYhy7pMzoMZzdm5jHcdpz
-	 riYhOdBPuLhAawmqfL46l6uYjkncvyeBNOntoo6RZr6V8Fexia4loi6BleSLK0f6QPuHq
-	 s4CzNmHIS0BSTVfmQH974UmSRoyX5/DRFr2LgZ50AWA93g20T6bjbYA562M/532tAN02p
-	 JUrm0APd9c82CqJfDWx7ha1qtxHJpRkb/XjhJHQagnJ87liNiJc+gZ8Hb072nJfYk7DyD
-	 44Af2it5uiiK1J9y0ZARSj9usvHV6Yzolmrz/e0uP3pOhOItGJapr1QgjGOtIhRSTWg==
+	t=1795742359;
+	b=lks7gg9PnAny8907aO5KBV04rwnfgSaFLr0laPUFRDndV+c2/F4rCDeoLNAVF1/djasX
+	 Ac2OhgRhyFLwbWpWP7NCUmKRm71HZCHlFX2JH53+wsUAoIlGCN4d/8uVO1RJVxnsRzvAg
+	 m2doR/xZmKtEkVLdQpEGcXPY31V0Q3IxN1OKejoqWHFsWWznDszr0xamanbYLIJp3QuVs
+	 lkkcHnW0UrUzoITdeWlaLaFu34taveqLIHpzvKNU/sE/+DC4r+xpQGV+DWlaxRS+ovAtw
+	 Hvfkz7bvE+b2fbCVGSxUs3JhLPE51+hWxVZWIO+4ElsgQg5hcFLV2YmuXAtJBuf4UIQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795730984;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=I5v0JsGqp24CAKR03vUd6KOc5z/kIg6y/48uz5hFCgs=;
-	b=anRsTgKIQKNTQulmrj3Oy5BqB2klejc3T9u8UxPX03TRevfPBkYls3/R7as5DJP/78BR
-	 /qkowazPzrTomk+KU+0R9UvZ6uoi3vFYe3uia0X1zfNiywz3XNtyBtX2/o3xvKMQ7ow0W
-	 CE+Nxf6h4N4S6Oz58jhxp+Q/EGNRki4VDMSrtSfgIEI5CTeLYzgr0iitmYkwn6dkGB4w8
-	 v87P4VNFVHDN1kWGqu23bwyND8qa6bbAg7zJN9KWkOSHZbjv6gaevcXnaNd7cKtO1WJGV
-	 pSUaRlD37yd11sQB+15uAmlaR6RTxV7MoETQpBrqsgzuEAeK7SgKizGOWJTd2Ef187A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795742359;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:In-Reply-To:References:Content-Type:Date:
+	 Message-ID;
+	bh=Q3yk6JuBVYGaDg8/tP3a+chRzUs23UDHyDZreRS7jcE=;
+	b=psxE7+vuAdg0Dq29q2xrqfPah+SfLz0rNmVp9zpZb7GpjtfA87QCY3DyIJzilcSukXC9
+	 E01Ox/yupkKkthABpuciMYsR+qGPmDQwqVXz2Y0yJS7+JOWfQlZOQnfMmiWz2bH0SPbVz
+	 I4zc8Bk3GJ5Ml3wqP6WJH6oP5gAPrv2u63Gqp4wAgR2R4RGQ4CsQM9ev/BgmCL82kvKxx
+	 f6ajreoIO2kW8SVFuZd32WB+458zqkxj2n620qtrygUbDp2uLfgcc0N/g18q240cF3Ecx
+	 uixXYvlFZnxsXAnGmwwViovT3fS2PAcYkhjiN3GtblwZXbuJPThwNXJpNslN0Fs7PFQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mDBf9rXU;
-	arc=none smtp.remote-ip=198.175.65.17
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xXuq0+wr;
+	arc=none smtp.remote-ip=74.125.82.172
+Received: from mail-dy1-f172.google.com (mail-dy1-f172.google.com [74.125.82.172])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B2E7606A330;
-	Thu, 26 Nov 2026 22:09:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0B2E7606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6E0606A321
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 01:19:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AB6E0606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mDBf9rXU
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795730984; x=1827266984;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jQl5SVALAIeS7jawC6ZuFNJD8KZfNc2rVFnNHxmKSqw=;
-  b=mDBf9rXUz669IUFOC11lIzF+yfczNujhem5S3ebe/I9HSFs+/leEE2Ep
-   dOdfGtm5CQS5d02d0jbE2qyJMIzqV8xL+AJZgeh4GNYnOxDF6RwVhdNEj
-   lRdkE/6P6A+MMkHTPVzITwC1Ml1MvWTojPErI0XoKdsT9o5CeSoz1gGOt
-   iKqZOgx8pafZXcXC6WGC6DRbuItMOUM5ZVa070BBfqu5vqXIy3VBE05J0
-   I90sh3YaBCvkKyIPhnmdAcLMWpA1ra/nlBf9gpVtCkY1jMKxFsTueZgqe
-   ItxSd4XuBofI5JBeHCUHK6P5YYt8C1vI7kiy2NGIXureLRHpigGE+fGLw
-   w==;
-X-CSE-ConnectionGUID: 4vKqu+/wRc2cjqCYwXK8/g==
-X-CSE-MsgGUID: TKf5b03BTPW4tstKxmwAdA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4643536"
-X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="4643536"
-Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Nov 2026 14:09:41 -0800
-X-CSE-ConnectionGUID: JHDpbERWRmOf+i8ETjP+FA==
-X-CSE-MsgGUID: HgcEE5u1RNiFVWBKYbeDxA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,235,1787036400"; 
-   d="scan'208";a="13939775"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa012.fm.intel.com with ESMTP; 26 Nov 2026 14:09:36 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xWheo-00000001Uxa-109p;
-	Thu, 26 Nov 2026 22:09:34 +0000
-Date: Fri, 27 Nov 2026 06:09:17 +0800
-From: kernel test robot <lkp@intel.com>
-To: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Robert Ijtsma <robertijtsma@gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient
- light sensor driver
-Message-ID: <20261127060159.FSKHGwvz-lkp@intel.com>
-References: <20261126-iio-tcs3430-v2-2-6c5329d20919@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xXuq0+wr
+Received: by mail-dy1-f172.google.com with SMTP id 5a478bee46e88-386ab9ab619so10177468eec.1
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 17:19:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795742358; x=1796347158; darn=vger.kernel.org;
+        h=message-id:date:content-type:references:in-reply-to:subject:cc:to
+         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Q3yk6JuBVYGaDg8/tP3a+chRzUs23UDHyDZreRS7jcE=;
+        b=xXuq0+wrnpAH7UpE9haZ/+L7MutpZIBEKagw0QMKq72w2hxnPNM7ey4qz2ykvgnKh3
+         OSY2eJOIeJNEdomKUvdn6IvJUIUXnrkNlS1b/x8QfMNTTtUTCu5eV58LfwCL0eEOJkDn
+         VPfUGiNs+WAeh8Po1PPe3c3Rc3XT7d0JucL2/13QODYT0LpPt2i9nwwQi/FwI+DIVavk
+         1EcA+MDPvU4ktjbmbG52LkbDzWt+LaluPJZw5W9UjZx0+gazIevKPLoteO7e5ZlPWRkv
+         7zGCrPzOpqaq4CFsqgZt6AXJQD4NzHmzLH74s8FTl2sBrY/JUD933NYfRl9gXzt0fM/e
+         WPjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795742358; x=1796347158;
+        h=message-id:date:content-type:references:in-reply-to:subject:cc:to
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=Q3yk6JuBVYGaDg8/tP3a+chRzUs23UDHyDZreRS7jcE=;
+        b=vyFY5I1ti/75zBxncVEdkciGPvO7cJMpTJuw9T9eHltSSs9z8FTiHT6chhly5+0j99
+         VVvN+LR4bYNnjsm/8THnUkbwDhL6PlymHn1i9xhzpTLAcBcOt4vVk1sflQEOi2dA0YvY
+         KSJkvU5NsTEq9vvT4gIrkAyTmks3+qN+cmq7CAs+gpFr7pZKzG8IQ86Jd4Fm6hICI4Ky
+         utGASwrFAMRNYOC5oRw17e/X5uXUpKX34rAf6nl/73eCexkbZb6qQh6oK+zvceG0Z9Hl
+         2DCVfCWt7eg6Wmpu1JhxE8EAbUc0MugF5pnXH9soZJd+KMF7S4jbmAn0BVLPO18PAtZb
+         ED8g==
+X-Forwarded-Encrypted: i=1; AL+hErGO6YbgElY42vWcA7VNhHYmrV0JmMavGljueAqSMdjkkanZiYDN48Wleb9hNe70nlmHLWTmg8N2vlE=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8chiPmku5sh+39vaIkaXFMJ3hJAVwiG8d8KlHmQa2BMFClLY+D
+	VHPLvKplZDtObVQzsntYxfUoakbBkj8DPYyS8j5d9HvLNkYYBVyJwMV2
+X-Gm-Gg: AZFdTZey9OyxmP10eBOS7MP5mYbGZHmYphV4wy6bvIhkWDJ1cWUJcYqC6MK6Uq7u9Dg
+	A1IH3TQcA0tI+4IyGFE9IqT0G3Sp/vDKDk8NZvmcQVM9bPlBlQfC1Sp0vWUjpVAd/DQXmG1dv+O
+	Mi3WagqpaFH6iFGLyVUUicY9jxHhqjnB6J7hmGgKxsVX5hfISg3r3R4ArFRA6CzobLTGckjBTpz
+	087gulUZAa0kYulWUaxoEFehrzJxYZIFLzPzhxQIqtDEg8QXqkBd+QQLNCu583GwOR/Gu+MKHrO
+	7BFWviKmbUU+D3z3b8R7z9oVp4++o2K9sbZ71GV+LYvn9FRIimc78TlZxDMsAJsqvnpuNT1s7Mb
+	0G6wdxmUsIcatGbxo9rX7WyowBFE35hbSozpHbgvxvqcBUPy9QR98UC76JIWPC/L7kSenzkIbU8
+	zqYlxoZFBNH/p0bEG4/ZBpHS38pMIFT12pb6Wt1QN4HatjbktoFMqCOrQLa6bJ6Acxeg9x+KxxQ
+	2CtU4WZDNIovgdBPmQvox1YyO72WhLLDhLZTVf+p5HRmf6KXOyyiEE2j8vmABSI5LauA1MfCYst
+	cq38SmeBuEcMRZqR9/Eji55pRHEu28VuaaokvdH5TArzG5hCqtlFMIDF/HNGbZN9nXqLsMUPRL8
+	=
+X-Received: by 2002:a05:7301:5093:b0:36a:31b2:8643 with SMTP id 5a478bee46e88-386992b3f3bmr19402083eec.38.1795742357644;
+        Thu, 26 Nov 2026 17:19:17 -0800 (PST)
+Received: from mac.lan (114-45-165-38.dynamic-ip.hinet.net. [114.45.165.38])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385666e7fc3sm59524851eec.8.2026.11.26.17.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2026 17:19:17 -0800 (PST)
+From: Ilia Snezhkov <iasnezhkov@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: inkern: guard fwnode_xlate with info_exist_lock
+In-Reply-To: <awf5uvVpYC72orT_@ashevche-desk.local>
+References: <20261125234827.94791-1-iasnezhkov@gmail.com>
+ <awf5uvVpYC72orT_@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 27 Nov 2026 09:19:13 +0800
+Message-ID: <179574235369.59467.3738891359915793741@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,42 +97,20 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261126-iio-tcs3430-v2-2-6c5329d20919@gmail.com>
 
-Hi Robert,
+Hi Andy,
 
-kernel test robot noticed the following build errors:
+Thank you for the review.
 
-[auto build test ERROR on 4843f6873f7c4835e62f2c73ba0fd538e57a2f22]
+I sent v2 at 06:06 UTC [1] addressing Arnav's feedback (-EPROBE_DEFER
+instead of -ENODEV, dropping the num_channels check, and moving the AI
+note below ---), which picked up his Reviewed-by.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Robert-Ijtsma-via-B4-Relay/dt-bindings-iio-light-add-ams-OSRAM-TCS3430/20261126-091147
-base:   4843f6873f7c4835e62f2c73ba0fd538e57a2f22
-patch link:    https://lore.kernel.org/r/20261126-iio-tcs3430-v2-2-6c5329d20919%40gmail.com
-patch subject: [PATCH v2 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient light sensor driver
-config: riscv-randconfig-1000-20261127 (https://download.01.org/0day-ci/archive/20261127/20261127060159.FSKHGwvz-lkp@intel.com/config)
-compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261127/20261127060159.FSKHGwvz-lkp@intel.com/reproduce)
+Good point on placing `iio_dev_opaque = to_iio_dev_opaque(indio_dev);`
+right after `channel->indio_dev = indio_dev;` before the scoped_guard()
+block — I will include that in v3.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/20261127060159.FSKHGwvz-lkp@intel.com/
+[1] https://lore.kernel.org/r/20261126060615.63790-1-iasnezhkov@gmail.com
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'devm_iio_init_iio_gts' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_gain_by_sel' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_get_scale' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_all_avail_scales' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_avail_times' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_gain_sel_for_scale_using_time' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_gain_time_sel_for_scale' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_new_gain_by_gain_time_min' from namespace 'IIO_GTS_HELPER', but does not import it.
->> ERROR: modpost: drivers/iio/light/tcs3430.ko: module uses symbol 'iio_gts_find_sel_by_gain' from namespace 'IIO_GTS_HELPER', but does not import it.
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Best regards,
+Ilia
