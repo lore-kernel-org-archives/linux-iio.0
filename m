@@ -1,50 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.254.200.92
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.204.34.129
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1795749006;
-	b=MA8oKxs1IkeRphp5MXlJVnoOsIwHQvL/gVWny/FwwgLbmiGfbiuXGwQJJi+4MPdlnvCo
-	 PlKMkGH8LCIWfHhgK3zwRJI2ml2yHCyUgZu5VRw5O9ZG6q466SyZx1vTOeB/RH5rWYLUr
-	 fpInovcg8yaW7Eo66EbfAGI/8Iq8G51dK/SZ2gd4UPQKaAZDm9ivwobG3byogLOuVXvNx
-	 D3uLNP+yQOsWcDCpJpq1CbL2CNI0LyC6QEGJZ1gOqeMbz5GqKBcWdEllMzncwjSNTiyth
-	 hAcX6NfKvJwamK0zNmqnJsGmysPe2s63l+yg8IynLsq4xAT9Zws++NTT2SADVI8cQKg==
+	b=G11k8+dvKQ5SFbw9D26mZeHW67Q6byZkvsr/g2WYV1MvrdWrKrS16Ob6Au9oOET83NsM
+	 Dyv4ilB2mZsygfk9UfbqK0DMSERFGn89pifdVyh6lZCIcqhzzoIRhGlqLWxKGTxoqusDO
+	 EiKGvCZpam3jpptdnlN64+HpdpNS0T1Ro9rmez/rkeYjwfeNj0VZaPQS+Pl0vyv9vCvu9
+	 0l8QHtF7EbNTE/D22OTw1HH3xckRoOGtaylHmOw/DeHw8WrrdZe1Ly+bj+7h/V8NvNmYN
+	 vrDh+wb9mP1YMCXzeeX1KczRW6Cyo73Seb4o69mUd+hBFAdm5RqB4L/EuuPgNjOPVyQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795749006;
 	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
 	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=9mrS2ti8npgNyajCZJEfab5MIEhm5+cdF9VmQbnuskA=;
-	b=IwLkYQQdz91XjYo6ahhe/M1KDBqzhHUcWh3CTxwX+p6wQ7THZjSkpJa6H1wL6EUapdOy
-	 bNfZ9VOQXNTkPhRxdBgubwhZijZi9dTKwISYdxQqf2nesKRuI522ch5JkrWTC21/6ahD6
-	 DHdPH+zdoDBZ2u0dJwnCcI3oQsn8Gb1aKAAFoeas/LGjc+tRP9hGmUOl3jVJC0VKFtCq6
-	 k1yJuXJ+Q8B0ZTvAJc4UvVy7VnRLmMHW0eRE4ldtGRxGADFaFUip1ehAUkYGAFuOcC02+
-	 7zB3liI+6MXFRW8ce9Fl88j3q+D4CC04eczK8aQVnPkt9V8zanbkqi5/cnMaVOO7xig==
+	bh=1hWozP/pTONtcbBiQHcR8yOpuqpQXTp7bn79+Qctjzk=;
+	b=vEn/Es2B4lFayOSPUnFxC290gW6acTvJZh/MyhOmHRpi19eD3cLGSFgWuiMeXK9T20UD
+	 QiaZULcDd+uQgkbNxkVh9qtAxisAR2spsjYWAph1wZMBS+/Lo1593Z3fQJL8n265Pywm4
+	 eogqU/O07VJ/MejzDJGqDZHHBcl6ZC8YWSexWwsXDz77wz1iWgUl00Xj1dUJ/AYIFdGQi
+	 eyVxXuJyYpUXeI5PyH7ScmnKn1HIE0P9jlTdeBuyIpD5QyJeiCLDDoVXOjz52/7MNngHy
+	 ZBy9ss31l2rgnApJLa+5AXfWshSnwUmRYI5fKJZVu1rpA4pBez7EuxCMWD5peWkgB1A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=hexin.host;
 	spf=pass smtp.mailfrom=hexin.host;
-	arc=none smtp.remote-ip=54.254.200.92
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+	arc=none smtp.remote-ip=54.204.34.129
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5BD4606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F46606A321
 	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:10:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5BD4606A31C
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43F46606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748929t4e5a9dc4
-X-QQ-Originating-IP: QpS2wDsF/Xfw2at+ZUjWWwODuh3wM90zofa+MKpqLMc=
+X-QQ-mid: zesmtpip4t1795748921t31a6ed97
+X-QQ-Originating-IP: uE5KC4cRuIzEnITWLrzZqK2tsz8N/UqPg88TD06i7WU=
 Received: from hx-KLVG-XX ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:48 +0800 (CST)
+	id ; Fri, 27 Nov 2026 11:08:40 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 7309087312923373659
+X-BIZMAIL-ID: 2871138312109599710
 From: He Xin <hexin@hexin.host>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 18/18] iio: accel: stk8ba50: support mount matrix
-Date: Fri, 27 Nov 2026 11:08:10 +0800
-Message-ID: <29709CB0F177D550+20261127030810.3150676-19-hexin@hexin.host>
+Subject: [PATCH 14/18] iio: accel: msa311: support mount matrix
+Date: Fri, 27 Nov 2026 11:08:06 +0800
+Message-ID: <DD606A2410296BAD+20261127030810.3150676-15-hexin@hexin.host>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
 References: <20261127030810.3150676-1-hexin@hexin.host>
@@ -60,24 +60,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: OQMFDz+zIsdeOPv2pDm+gZB/MY9mqbYgVyMdFslwQOzjTWkOv7vy55ji
-	jp7apm0nzdccZDNt8Ek/PrSoSqz1t8APCIuRY8QPy57lvyf740xpL7ZZ+xmRPiuqgBEhF/c
-	2JepzhsOp4T/pskMc+5dp8nyF28HnzE+YWk8RvLJb2HSw/QK3XXEZhydoq248DjIUqKmPX/
-	qWpLzzYZ/D94JjQINH8sMrjNNtFEnqybbNKA++7BF/gXfozQmhOWIJCQQzB31sDKr+bMlOt
-	L/JyfvRvokJf+14MoYsFZ38UHzVSQ+khNRp9nsJGEpMelEGsn2LTVmMebcCSYNJxn/c8wKt
-	7KIUjMnMoim5V87Ki0VYtfPaAM/wvIf4+R5beoCMf79RZffXUBEd1LNainaNt5Ag8vS03MT
-	lWqkYAq9bIxTZefBZ+Pr0lcM2O2l6ib/ILt9OkVgVarJAjWm319Q10SuN96UaecLJF1cUE8
-	AwAsmEpSGe8EBkQ3CjdH55uDvE1NdSta/c9IWZdPxeZ+niKPzLsHT3EnD4iLVfhaDjVGtVC
-	OZhcFyazl1Fpgdxl0QrSmHxUigitfk9wkXIs7MoUIRJu1qQGcjcc+IN8V1sTTozNt9QNidP
-	obivLd11aOiTgBTybXFyroY6ncipGEQwMmH1ZFNusoyjZO7x0KHjxFGhjrlcQfQZKRSL+0I
-	SgB3gn3BptlIuTEqjYWQ7YLm8ryGFMeO5LpAf6gbIjorI8Cfgbjk2PlaQTkc8xNG5b7hJbj
-	HLFb+BErqI2ty8+my48Y61t9jte9E61rr14IImmqoikj5LYdq8I3+3JAF6NlKuCWA4SlSOs
-	LcOJnSdHkxmm3lYd7Eiu5eRmn/7iWxuDXNyxv8CA23PxVygd5arbuVr7+mL8JBY+3HVcSH4
-	p8HyHyJROBa6P1XFX3FHkEgSoS9WFXo7qaXZKjMl9BFKmRvmHENfDMESiCOYPyWA7sJDQi6
-	eGzz+/S8k68UkFTYzzk15kyRX0go8tCQvsdQUl0wkcpvdSSDLTmXVIOFivZBcCbP/n26QIe
-	e6nK7ZS0Hyz1JyKLGvSGaSeed+Jb+gP6k3aG9wsaEHw7flJCa1g+FXkuJe4cYKQ2tJfqYPK
-	Q==
-X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
+X-QQ-XMAILINFO: NlVgJxuVJf8So7O47JOFYtiYKQBSCxC7pzWw667fZisZ6oxkcKdhbi7u
+	bjJEuagVKZEkLZ5tSuYKRVG4A0/qT/vFAF9ityE7Ro5xTSpqS5EwYgcVypliiq5LRUDiIRd
+	eOIGhk8s7yFTwZ8dAG0lhtIECa9O4DgU4R21Bw4uGGfzenSBFGbmCybTKqIhoEygfpSaYUC
+	Dc48zJxCVDla8DIu8u3dbghBwUCOwLmUGJLa9dDQ6vbyuqtc/1lgxLU0EsVmG3mAcsdfOVv
+	UPLn/qFJzq2zlzoNIKpF+46BGFW+5BiRdl3XtOv7St8z5qWtqbdfo2++n7uXFyfdmSn1hCM
+	vyyjxGGBAlWjHvoodPBjTB1emWB0h/WaEsijsUGNf7Vv6dXBVB0r2ymW1rSXddF+/JCfexl
+	piRpw8Bu4CQjWcTg9BRLk80BQUM06Ho1LvNREIUJXEwAz22T9xFgKpLE7Zpj7tE3XK8Fn18
+	YcqFRGBe3iajg7oFoPPsrQ6nqiXCSW2PzsuZ17UOXHWGEuzUIvefcpFINTQRIKcEtXkxxag
+	57/zZD1hMlC/QFd+AafF7uaJ5NC/986u9ZdrXe6WT3XWta+7LeXDP+x2NvIt3SxRjLJPeLk
+	hNGb3me8jQDp+EZsATsIBr09pOzGoARB622/QcZZa+C7MD3pcjOcrdh9qreDh97SAPQYk0u
+	daB2bqec8haCbLCgz6rf1q1WgObZ+WblV76y/wtzgeSDUfYK8EoB8MeuQkh8d52bbAhKNqp
+	qx11/bnsNMIQf7s4IUgy/Jpm1BKhYZZT4sNtIwdMLStusliz8IkaUIHIIiySX6yFCS0+3QJ
+	48CIwfAhTJElwmruvVRBEVI9Zi+Setj1D4RyQOMeppOUN0rbSBQ1OBL4dSvzoJVI4N6flvd
+	1Redu/M0sHzZKv1bxkn7RL6bFzQjRg6rg6jY8AypAuHKX6lxnECxzni96NsrU2fgkDP/kAo
+	38TIEUaucs6OO4+qtXy8W3Zkn2SCT0+PkC/pWn0PTXUFqW4hfoXcW7QZVagmTgeFEd84Bpb
+	LBqFhxe3NSMYhbofd51kLN2MQo5Q1dpqkai02YXIHVXZpPTIwek3PA5L3Be4U=
+X-QQ-XMRINFO: OWPUhxQsoeAVwkVaQIEGSKwwgKCxK/fD5g==
 X-QQ-RECHKSPAM: 0
 
 The driver ignores the mount matrix described by the firmware (ACPI
@@ -88,59 +87,58 @@ axis-aligned with the display.
 Read the mount matrix at probe time and expose it through
 IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
 
-Tested on a Phytium D3000M tablet (ACPI HID STK8BA50) where the
-sensor is mounted rotated 180 degrees about the X axis: without the
-patch in_accel_mount_matrix is absent, so iio-sensor-proxy has to
-fall back to a udev/hwdb override; with it the matrix from _DSD is
-reported and the orientation comes out correct.
-
 Signed-off-by: He Xin <hexin@hexin.host>
 ---
- drivers/iio/accel/stk8ba50.c | 20 ++++++++++++++++++++
+ drivers/iio/accel/msa311.c | 20 ++++++++++++++++++++
  1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
-index 6c1e286..c0fc5c5 100644
---- a/drivers/iio/accel/stk8ba50.c
-+++ b/drivers/iio/accel/stk8ba50.c
-@@ -102,10 +102,26 @@ struct stk8ba50_data {
- 		s16 chans[3];
- 		aligned_s64 timetamp;
- 	} scan;
+diff --git a/drivers/iio/accel/msa311.c b/drivers/iio/accel/msa311.c
+index caf9b1b..78b009f 100644
+--- a/drivers/iio/accel/msa311.c
++++ b/drivers/iio/accel/msa311.c
+@@ -361,6 +361,7 @@ struct msa311_priv {
+ 	char *chip_name;
+ 
+ 	struct iio_trigger *new_data_trig;
 +	struct iio_mount_matrix orientation;
-+};
-+
-+static const struct iio_mount_matrix *
-+stk8ba50_get_mount_matrix(const struct iio_dev *indio_dev,
-+			  const struct iio_chan_spec *chan)
-+{
-+	struct stk8ba50_data *data = iio_priv(indio_dev);
-+
-+	return &data->orientation;
-+}
-+
-+static const struct iio_chan_spec_ext_info stk8ba50_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, stk8ba50_get_mount_matrix),
-+	{ }
  };
  
- #define STK8BA50_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
-+	.ext_info = stk8ba50_ext_info,					\
- 	.address = reg,							\
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
-@@ -395,6 +411,10 @@ static int stk8ba50_probe(struct i2c_client *client)
+ enum msa311_si {
+@@ -370,8 +371,23 @@ enum msa311_si {
+ 	MSA311_SI_TIMESTAMP,
+ };
+ 
++static const struct iio_mount_matrix *
++msa311_get_mount_matrix(const struct iio_dev *indio_dev,
++			const struct iio_chan_spec *chan)
++{
++	struct msa311_priv *msa311 = iio_priv(indio_dev);
++
++	return &msa311->orientation;
++}
++
++static const struct iio_chan_spec_ext_info msa311_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, msa311_get_mount_matrix),
++	{ }
++};
++
+ #define MSA311_ACCEL_CHANNEL(axis) {                                        \
+ 	.type = IIO_ACCEL,                                                  \
++	.ext_info = msa311_ext_info,					    \
+ 	.modified = 1,                                                      \
+ 	.channel2 = IIO_MOD_##axis,                                         \
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),                       \
+@@ -1149,6 +1165,10 @@ static int msa311_probe(struct i2c_client *i2c)
  		return -ENOMEM;
  
- 	data = iio_priv(indio_dev);
+ 	msa311 = iio_priv(indio_dev);
 +
-+	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	if (ret)
-+		return ret;
- 	data->client = client;
- 	i2c_set_clientdata(client, indio_dev);
- 	mutex_init(&data->lock);
++	err = iio_read_mount_matrix(dev, &msa311->orientation);
++	if (err)
++		return err;
+ 	msa311->dev = dev;
+ 	i2c_set_clientdata(i2c, indio_dev);
+ 
 -- 
 2.53.0
 
