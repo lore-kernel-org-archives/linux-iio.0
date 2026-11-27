@@ -1,53 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.59.177.22
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795749008;
-	b=fT9fKfefEAOvGHuUe0MjWBkt4Uerr4IbgjuiYP1LFSE47b27dE2q11JbZWfklFLtcqy4
-	 7eX3ery8XWBtur5FZ0xk0BkHJ7rPyMD8MibnpOdeh+WWwbfjtnTOCPYyFAV3eUEJWvyxk
-	 lVrYgm4VfaBzIADs1w5N4PusjXHSFh2BC6x09V6Goy+ctx/38SGGL6G7LM98l648GrnLS
-	 UiVwxAtXjJIsivrKSh1Y5xhN+uws+u5wf5siwUNScRHi6jP6xsFuyeaPCxPCKZpBEX64v
-	 YnyPpwr862hq7p0EfH2xjJ0zfcZ5vIZOPOSut/kts241AEml8XKVq0oAEUmvee30gNQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795749008;
-	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
-	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=T21bMXOP/XqF4G3WPNDDne4CgKBFOUYQMgSHoXvUKCE=;
-	b=5Ng0d3Yc6GL4iX9NUR/xScHCjecFL0h5HZExZqjHJxzUaG2ORcQFw+4febiR4Lb0Pg9g
-	 zyh5tAuG0giEhYpxIFsBcyVCxc2r2YgsPyq8AhvBscIvgr/3SuN0+JuebuX8asBRi/sio
-	 wPaujHCl8Eizc7NhaJpbEwta15htMyrL7t5G6CxXHcV4nq4nT9zcJ+wAltI5kV+Oed2f1
-	 tK+h2ddCet4k+IF5l11W38Aej2tJvHEIcPmrU6zSw0ElZ3275tLSkWRzIlOMi2J+5hqL8
-	 AQBKULZFNhDm6lqrw66rH3BG2V8pt2J13VshZt8a/yZFWeANwMB/Xy3BvYPXkQ+nRtQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=hexin.host;
-	spf=pass smtp.mailfrom=hexin.host;
-	arc=none smtp.remote-ip=52.59.177.22
-Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795749050;
+	b=SvJCUVoJjHcwqnsEpLB7c5Noirsd+Xw+5cqS7Pj81enAohKbhNvUEsdZOL6/BtixLx7d
+	 QTz3+JS1R5SOF1pZRGCwQeEWFPeFogVBfmBWiUPZjpXExXc+5xSlCdLx4sZN3UE6hQRDb
+	 tE09E9k2K2hRaTkFSs5BhGSgzVcVXBYKi2oLZE3WlAuvhJ9VOchl5xhG8xIS7qdL6CyEj
+	 WnPufX1N3GZaiOrW7z+Vlpi73hNm03swnAAt3JKNEXGv2CKqI9J43nK83UhFWksq7f1DM
+	 Hpfibpa4PbiyvAfkX2920KssjLHFwUMXcS5OtbufxDOqDVpodDW19nOE8ZR+NhnXi8g==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795749050;
+	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
+	 Content-Transfer-Encoding;
+	bh=/ktUTtzQmYBrtZo1pYnB1CT3xfoL1+9t2GulvHSsGek=;
+	b=xqleLZbz0cNaDKBR44ScITCROaxWx6WWbmvIh82nXtL9RIAWpYecySVLmhXc9sdw+ncR
+	 eQ55xOWPvoq9mxEkrnm2zKSQ7ZlvZDEeytPfir6pPmPdXztzTcQJTHDIweE7GirnEclfZ
+	 V+CsB7tLIvj/MKydhoWW/xqDiG7/nrZxpQ6wGW9fFOd+u8xgwoPWznA+QULXHv6WtvosY
+	 y6Pmja4mw+Z96TWWTMhH64sKYFwRFhUeumrrhjglR86lVgmb2GMrW3csaD4Hj466S5SEN
+	 e0Jt/mjzcQApi4K+922Kw9FX90HiuCfiKDBXqQCWV7E7CjshTeUDkf2L+bvlQE3CNZQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JxSG3dCv;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A9C7606A327
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:10:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9A9C7606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748927tae6097e6
-X-QQ-Originating-IP: UVJYpaOV4S4aAKmGimtq/XJIuVHDIF2YDb0tonl+PVc=
-Received: from hx-KLVG-XX ( [localhost])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:46 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 12814583725387680564
-From: He Xin <hexin@hexin.host>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 17/18] iio: accel: stk8312: support mount matrix
-Date: Fri, 27 Nov 2026 11:08:09 +0800
-Message-ID: <23A6FEB6B49C0D2D+20261127030810.3150676-18-hexin@hexin.host>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
-References: <20261127030810.3150676-1-hexin@hexin.host>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A59B606A32F;
+	Fri, 27 Nov 2026 03:10:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JxSG3dCv
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795749050;
+	b=uGuw0o5KQanNYrltlKScOxm0zJSYvMeUJWra0Zb05Q0GbxIIA1Ob44ArfT4WnBN6sa6C
+	 IHqSbhoPZummrFohUVweToc96bnLDDKbGyPMHMMmEradgh56urpSnDWXAppXcaExvNIA3
+	 xi/VR9uJLRB+Ru4iLa7Pr4LNrcvWWtuIGQVFmiKFX8CPLwEbto/wZ+4apSAJfuweef711
+	 8U3vqrDrDBQfx8I2vs3Eof/jVJ/zeYamn9OKkwSVvskAoyh/EbZMyTx5jxzrYY/uT6sIk
+	 z9dDCdl6cCIdZfHDAncW7P7z9J5w666Yuba+YIAsMWzY+8Nww913YoplSAhJZoeJ1/Q==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795749050;
+	h=DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
+	 Content-Transfer-Encoding;
+	bh=/ktUTtzQmYBrtZo1pYnB1CT3xfoL1+9t2GulvHSsGek=;
+	b=jmoHjNfvP1zhm4JuaXf2VEJF8kYXzH6eS6xkYzo1ahf1njPc6xf5YUBEZ8OOlepnksvS
+	 A/OGbR53lCTQGNFNhX0d7DxMkjvF/qCHuFKo6Lx4nbNYsxeEqRKyz59+hSsWhugKkY+gm
+	 YmEAHchASOHxSHJ+aQfMNlLqEaEwPnaGt6P4aoFMAUu83gHsq3mh83N4hrI0cf4w8/MUP
+	 JhyN4+cl1qbvwntpkTbncArNVMOrksBdt94aoICxIKy6DuZO6KCwAMLBrh7G0vZtDM/5G
+	 ZhpSpJfkxkR6k/xqFNcVnYJE720OxBbaZWIM0WVlnf3UCSvP7nSbzGVctlJiJW3lhKg==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id 22D7A1F00A16;
+	Fri, 27 Nov 2026 03:10:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795749050;
+	bh=/ktUTtzQmYBrtZo1pYnB1CT3xfoL1+9t2GulvHSsGek=;
+	h=From:To:Cc:Subject:Date:Reply-To;
+	b=JxSG3dCvSg+wrB1AZTKIdwufOJYGV7mbf3FLu535nwy7klkXlpKoL4L5YWrGwSpgJ
+	 ZO7FP/q7kHrWRRMmsmPmsUuFVgVZMSLijhHKFl/k+CBFSS+L0s4KSxr5fh+gvuBT1t
+	 n23CP8Z30hpMUBUxmHQp/6EYH/KxS8845e8rHQacQvVY0xj8gixfTlxGqzW4xQBiDc
+	 iEMd4R1Bl+7se+QodDGDANt61w6+VDkBfJOrYNAi9EiT/WwXXysXmBEW9x3UQSeZLA
+	 /hpJJ1cMA+817AiU0EGJz6qGwfPcrV/HwMKnbDfTYe1K9hgJFCwvVe587bFSg0UFQy
+	 3t5Xie9e4Ik9g==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 968EA4B514;
+	Fri, 27 Nov 2026 03:10:39 +0000 (UTC)
+From: Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org>
+To: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+ andy@kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, 
+ Arnav Kapoor <kapoorarnav43@gmail.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org
+Subject: [PATCH v3] iio: inkern: guard fwnode_xlate with info_exist_lock
+Date: Fri, 27 Nov 2026 03:10:38 +0000
+Message-Id: <20261127031038.12685-1-iasnezhkov@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -57,95 +88,100 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: My+ZGhrsVkq33Jrk6FWnkKFpoP7JdppLWomMCJrsPYGLN40QU2iUBf4e
-	vHIQ6MuAnuXh3NPdNmBaDFEANnr18Q0WgdPxjWGZWTlOFeelZt/BbP/UjOlShINYQGqodBw
-	aj192K5IDfLWv3PnXp+j9XaI1Mbeq9CNxqj3t7o51gLeWJlop5qIh6A0bSRoybwG6mVkiWR
-	GYRT99PkouK0bJnjiL4ZINplAYXXRIb5O3br4pJv6N7I28HsLnYSY7V3ikXA/BpIRFqmvPk
-	r2YMCqZ5E2zCANeq3aODr24Onu21h5vHKC81P0MTlrTuIf2+xR6PQl20xFjyNfF0d/zDTkk
-	9JWJoFqsvsQf2h/NAitwzE96QMQCIQMClIj7Yoe5nbVJI20zUv3cNJH/GRne0UkLkJmxYtI
-	Zb4brsiUTOvtPUjIjmMfw0oCdAjvx4Bz079uS7v0PkL8g4ydhyLl+HQUTTP3DPVM6taXGcB
-	P2gWiQ4Z5edXzZqes7PwzBIpHQFfdnMKXchgui0XtehYMJ7IPNEqaJqMfmvfVXZg4um5NPA
-	n9YhzDknAFiVPFVToSHXGvpRZqgKo+YHLl9btgQmxNV2DXHXwH2OTZMPzPCWotI6aMx/RTo
-	HBS59wDQ6cGn9EnMkCR5EEiZQfMSl6J++ktkB/Y1i9AI76gcUG7r4UEQp91/OpzBbrXT9nH
-	lwyXeHew1JphGp3XfHZTHVis4XKYK9UsLZ0EzfmlPdgOiOMRkN7yVEWHtLmh66yU0IsK1jK
-	DlcrHicrQsJltA5Flu+urwbwsSzVNAEd/Ge0QVU3N7BG/20XfmvkidEWVya58h4SLaaRzK3
-	jdeON8KIJtOkoiJmHP5Z8RoZ3wj9zW8MC7EdP/LvCwH1M4QvqiPqfLpNMzIjMu65RnGf6Wd
-	A1Z2t5bkVD8SXFUwC3BlOE/unad4D2dfBUw2LNsOHIs5ZKi5CIiCZ8WaMTItaxvkmF1ZiDd
-	P4pvm5vVrMk0y1HFpwDvcqCJVTPTNg9NustjN+P1B80q0mEny8R0RW0rruvKFR5QBso2FIX
-	SHf+UrXekR29+zOi3WvtZc/iJCmB6rwPXFkv3MsxrQALxL9h+P2rCwGUoR2hWZUlQLYHrpo
-	A==
-X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795749038; l=3242;
+ i=iasnezhkov@gmail.com; s=mindone2026; h=from:subject:message-id;
+ bh=3eR7QjvwrqKPzzmBewRCZmPt+qJp/3aj6a2z0YLz8uc=;
+ b=1HWWq8KlVlZ1BykCJj/4xM1SJQYVdLIt4MNmvvuSMq6O9dSdgGZM1KFsDfsPGEPFNWmwfMi3L
+ 7lylh1tHT4uC+kXXuUEdYYb2zWDUKX3eZ7ZdclH91OFp3nlRf0jldzb
+X-Developer-Key: i=iasnezhkov@gmail.com; a=ed25519;
+ pk=hQgXfiWi4ukk2jh4BHu1vRVhg9BUivo//AFp50AKMag=
+X-Endpoint-Received: by B4 Relay for iasnezhkov@gmail.com/mindone2026 with
+ auth_id=1643
+X-Original-From: Ilia Snezhkov <iasnezhkov@gmail.com>
+Reply-To: iasnezhkov@gmail.com
+Content-Transfer-Encoding: 7bit
 
-The driver ignores the mount matrix described by the firmware (ACPI
-_DSD "mount-matrix" or the devicetree property), so the orientation
-reported to userspace is wrong whenever the sensor is not mounted
-axis-aligned with the display.
+From: Ilia Snezhkov <iasnezhkov@gmail.com>
 
-Read the mount matrix at probe time and expose it through
-IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
+__fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
+and invokes it without holding info_exist_lock. Concurrent
+iio_device_unregister() clears indio_dev->info under info_exist_lock,
+allowing a NULL dereference or callback execution during provider
+teardown.
 
-Signed-off-by: He Xin <hexin@hexin.host>
+Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
+matching the rest of inkern.c, and return -EPROBE_DEFER if
+indio_dev->info is NULL. Since iio_device_unregister() calls
+cdev_device_del() before clearing indio_dev->info, seeing a NULL info
+pointer corresponds to racing right before device removal from
+iio_bus_type, where !idev already returns -EPROBE_DEFER. Using
+-EPROBE_DEFER also avoids colliding with the -ENODEV sentinel used by
+callers to continue parent or map-list lookups and avoids the named
+lookup -EINVAL fallback in __fwnode_iio_channel_get_by_name().
+
+Fixes: acd8256723f2 ("iio: inkern: Add of_xlate function to struct iio_info")
+Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
 ---
- drivers/iio/accel/stk8312.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+Changes in v3:
+- Place `struct iio_dev_opaque *iio_dev_opaque;` in reverse xmas tree
+  order (Andy Shevchenko).
+- Move `iio_dev_opaque = to_iio_dev_opaque(indio_dev);` right after
+  `channel->indio_dev = indio_dev;` immediately before scoped_guard()
+  (Andy Shevchenko).
+- Carry Reviewed-by from Arnav Kapoor.
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index 50840c3..02ca605 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -78,8 +78,18 @@ static const struct {
- 	{12, 500000}, {6, 250000}, {3, 125000}
- };
+Changes in v2:
+- Return -EPROBE_DEFER instead of -ENODEV when indio_dev->info is NULL
+  so callers do not treat it as the "no channel on this node, keep
+  looking" sentinel and named lookups do not overwrite it to -EINVAL
+  (Arnav Kapoor).
+- Drop the unrelated indio_dev->num_channels bounds check from this
+  locking fix (Arnav Kapoor).
+- Move the AI coding assistant note below the --- separator.
+
+Link: https://lore.kernel.org/r/20261126060615.63790-1-iasnezhkov@gmail.com
+Found and drafted with an AI coding assistant.
+
+ drivers/iio/inkern.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 1f22275..92b6679 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -145,6 +145,7 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+ 				    struct fwnode_handle *fwnode, int index)
+ {
++	struct iio_dev_opaque *iio_dev_opaque;
+ 	struct fwnode_reference_args iiospec;
+ 	struct device *idev;
+ 	struct iio_dev *indio_dev;
+ 	int err;
+@@ -162,10 +163,15 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+ 	}
  
-+static const struct iio_mount_matrix *
-+stk8312_get_mount_matrix(const struct iio_dev *indio_dev,
-+			 const struct iio_chan_spec *chan);
-+
-+static const struct iio_chan_spec_ext_info stk8312_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, stk8312_get_mount_matrix),
-+	{ }
-+};
-+
- #define STK8312_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
-+	.ext_info = stk8312_ext_info,					\
- 	.address = reg,							\
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
-@@ -115,8 +125,18 @@ struct stk8312_data {
- 		s8 chans[3];
- 		aligned_s64 timestamp;
- 	} scan;
-+	struct iio_mount_matrix orientation;
- };
- 
-+static const struct iio_mount_matrix *
-+stk8312_get_mount_matrix(const struct iio_dev *indio_dev,
-+			 const struct iio_chan_spec *chan)
-+{
-+	struct stk8312_data *data = iio_priv(indio_dev);
-+
-+	return &data->orientation;
-+}
-+
- static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
- 
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("3.125 6.25 12.5 25 50 100 200 400");
-@@ -516,6 +536,10 @@ static int stk8312_probe(struct i2c_client *client)
- 		return -ENOMEM;
- 
- 	data = iio_priv(indio_dev);
-+
-+	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-+	if (ret)
-+		return ret;
- 	data->client = client;
- 	i2c_set_clientdata(client, indio_dev);
- 	mutex_init(&data->lock);
+ 	indio_dev = dev_to_iio_dev(idev);
+ 	channel->indio_dev = indio_dev;
+-	if (indio_dev->info->fwnode_xlate)
+-		index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+-	else
+-		index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
++	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
++		if (!indio_dev->info)
++			index = -EPROBE_DEFER;
++		else if (indio_dev->info->fwnode_xlate)
++			index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
++		else
++			index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
++	}
+ 	fwnode_handle_put(iiospec.fwnode);
+ 	if (index < 0)
+ 		goto err_put;
 -- 
-2.53.0
+2.54.0 (Apple Git-157)
+
 
