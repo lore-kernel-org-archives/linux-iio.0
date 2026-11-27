@@ -1,86 +1,51 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795748123;
-	b=EPwEr3+/v9Xvn5swVPaOKcyS8R/8WuI3Qop5bLCxHGhpc/0IRuhKMuYGahnHqfmmX+if
-	 VbeFqCkjzHGIpyrKxb9B2l1KOCjjcDi2SPz1ljUSKGhA5+Lg6qwb45+DDokJWE+btmgsU
-	 torlTaNFzxA7I31QRP3uXhHYGg1Inb/wSK16EvNwxvsyrmfiOYbzdjYEJvOaOsyes9MBP
-	 c5w+Nrbqc2CigEeijHXImN7Bn6wk49akx2fmw7Sx7BsaOaAGwSDt3q8XWopLzKyGS/guH
-	 EhPUJ5PsTiIXA8C+SfkJiLBG3FJ9rMo3ffAopBYbPF9JdEOEXqqLh6PWWg9t/QtzVow==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795748123;
-	h=Received:DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
-	 Content-Transfer-Encoding;
-	bh=iuAZy1Xqdh6yRTzJc6FLUzIwcR1MgTN4XofneJJ+eTc=;
-	b=IdLSpNsk5LA+VsBAm0eUmt1SOLVq6M6NVqVh2AQOA57RBwWqPVe2pRSQCFl7E3IGMBDj
-	 IG0aMZ0jVlUlP28Fk1VNfrvoIPuOHrtg4Klt8bjE0m3yX9PPiknsuhpp0BWAGjJR6Wpnn
-	 E5as1QrWzv7k2Xg7jWwBQxI71i9rEbIOMwAmxxC9omQKoa1YSBZ+YQPdhUDhAekfA41QO
-	 XAGbMw3xKd/ew5iFOSsJ/RNKHG3dUGCvbsNAmHaWp9gbhZZo1Lj0DVoCbIpbSsLVJysfr
-	 5RWjxC3UwgDB9KoJebj1HCs3If4GMHM3vYye0W2DJpMhoo+N2MH+x4AKinCleKOUttQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FlzZrQMS;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.204.34.129
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795748937;
+	b=YVxbeABOjDmcv8RcpiTqoGXE7Jvs1NoXVCltveOJkOsTz9JwpsU5s5TJG1PPcoxVifz7
+	 mm1widVAMPK8iYBoqLDqmyhP2PkSeyaNy+swdegKM2oR1TTmZvOakgCbElOYBRsji2PxY
+	 xeECWHKnkoYtBAzt/0/IiAnUVvuz3veNParkoE9YpgnIlItN7gb6kfG4S9UiuFhjgQkJ2
+	 cgjQpzXeUim+VyyZBYaffs8eSxKN6qGD22KyY4cVMW2QwRi4VatprPDKrlqLLcbrtrmg7
+	 WBWoGnzq+uSaW5JUPzMP7NOe2W0zdxWC3OERw7JgZeAOx0g3xZtL7ixF8n/h3TubgOQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795748937;
+	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
+	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:
+	 X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
+	bh=mQMpD+fLV5CJKkZFiecRNC3PX+aEdx8cDJ8NvbBnsr0=;
+	b=nvdtx3UiYos7kP/d02ieB+95YaYQecM5RUsJynE+EHsSXAXDbfSWRHcgCunNUI8L8CJQ
+	 m/FNR7UXRYs7vAXsQ1tBqmt+qcJtZPhCwcySpPPDCTpq3QjLSY9J2vjSJ7g30zHQQQrrn
+	 wfNmJ/ALrLoQZRw/HFm8t95pvdlVKOZuMw2kHxNRUNOT60EnhKYgXF0ELsu0uuy2s2Q0w
+	 AbYIu2shaMQlw7kIIBkdgSYzUMi/TAr9HTuU2UaEP4GVJ8DHFunOseOohYFVl1XhMOl9E
+	 Q/Fh3/uAaMMHyntJ/78+CKqDxIs/mEl91ieyIhEfAgwB/Kfd8Tn0h+FmRvLth/7uMFg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=hexin.host;
+	spf=pass smtp.mailfrom=hexin.host;
+	arc=none smtp.remote-ip=54.204.34.129
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8827606A31E;
-	Fri, 27 Nov 2026 02:55:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FlzZrQMS
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795748122;
-	b=wnuMqB6vezTLGQXhbZZK5xd/b9z29BhJFTN0YJf1IhrjK0ESOrme+MORZTumWScqG1g/
-	 tKtUWoJVWyAoO+Og5Z5Xb6CIu1KbWlBuQvGy0J7CT5gYXvgGq+U2R0f2jq+4tlToTQBd6
-	 xcgwIKnEYn/3TUliWNZ4HX3rRstxGY38xCArDHxV4HYBGik2M+ZUdwHwS7Xmnw0DTjOmX
-	 dVGDrvEbgF1nSM2LozR5GXDdSQqLz00SY67mMsyaxp/E8CiRK6K6Kmv3+ELnRl3ZPRzsr
-	 Trl+TUB+IqefVC7FoFujEv9yMvHXOwrCQ+PGrWjoB6rTHsPP6J1CnN8682cnQdd4DLQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795748122;
-	h=DKIM-Signature:Received:From:To:Cc:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key:X-Endpoint-Received:X-Original-From:Reply-To:
-	 Content-Transfer-Encoding;
-	bh=iuAZy1Xqdh6yRTzJc6FLUzIwcR1MgTN4XofneJJ+eTc=;
-	b=zDSrVkdi7z0t0G5ioYP7UgryPaLyLGCI1N+E5uk/e1lE63l0ctpXXSyfgxkRJ3SRWxCp
-	 Zg5ScBWGnyUTIASVxbEay7F2FBwwPleMEEDgIBNG3jmFK5tOc7u/M46tpMKnXs/wy8p8P
-	 dCz4LgktPmeIWnkX5VOdJtkIC23Z8BPojDKP+Niq5E1GutSYP51Aw2dac2mDmkJuBfr32
-	 Ai+qZe+d3phMh2HI+eZ5E1BwzRN5XuuZZ+NMV+KBbhfzuqpqZNmqvJkJMlFPFbHMAXkr8
-	 ZMLsluYn7Bt4Y2JxJHYjEtzakJ1HwQ71kJi4/jwBtSE6ezx3ynAoQqqYhHgvOb8stlA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 7EBEA1F000C1;
-	Fri, 27 Nov 2026 02:55:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795748122;
-	bh=iuAZy1Xqdh6yRTzJc6FLUzIwcR1MgTN4XofneJJ+eTc=;
-	h=From:To:Cc:Subject:Date:Reply-To;
-	b=FlzZrQMSP4GEYnaRkphNzlGd2PrGhIF1hxM6ZaZMoHMMiV+XLA0oCyf7QZTOgSXgG
-	 UzsRNLOVcD/2zGbyW5p9EMyPg78OJKJk0j0Ut90jme/0OvmJRqRXBhrCwBia5E2kiX
-	 dWKXyEwouvzE7vMmQW6Aai7t9a5kJSxMqo8JawmoLINoAIVivNEqwD2WGP/CizxWcG
-	 6QL14PH8dnopeWzrapRKGAxk9T07Clmy76b94Cw+05EscgVYzyVOkLSIz/uTSVijoL
-	 bJHankXIg7gF14YJ8V/xj4JrsYss4n8DO1SMOt72hl7F9mbgsz6ZWESPcqA2C9abU/
-	 ANs3Q2pnd1zvA==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 119354B506;
-	Fri, 27 Nov 2026 02:55:18 +0000 (UTC)
-From: Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org>
-To: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
- andy@kernel.org
-Cc: matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com, 
- Roman Vivchar <rva333@protonmail.com>, linux-iio@vger.kernel.org, 
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
- linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: adc: mt6359: fix MT6357 ISENSE/VCDT and MT6358
- VCDT request bits
-Date: Fri, 27 Nov 2026 02:55:17 +0000
-Message-Id: <20261127025517.9548-1-iasnezhkov@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3F5A606A31C
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:08:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E3F5A606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
+X-QQ-mid: zesmtpip4t1795748892ted829d02
+X-QQ-Originating-IP: 1aGssj4OG+Q/r4t8pToZNFoVIHLJt54aOGg5vH5Rlbo=
+Received: from hx-KLVG-XX ( [localhost])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Fri, 27 Nov 2026 11:08:10 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 7169322066803192688
+From: He Xin <hexin@hexin.host>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 00/18] iio: accel: add mount-matrix support to the remaining accelerometer drivers
+Date: Fri, 27 Nov 2026 11:07:52 +0800
+Message-ID: <5F08289E852625FC+20261127030810.3150676-1-hexin@hexin.host>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -90,80 +55,101 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795748117; l=3085;
- i=iasnezhkov@gmail.com; s=mindone2026; h=from:subject:message-id;
- bh=sgnrCZ+8Z//7Mp3+Z+qP8xX1lnU0T/jKoMNWsjR4WBQ=;
- b=rflaVb0IGQS4gPK+YmA2daDAOB0IbN1vK/rxQnjDU93P5Zxtf2yfEfCf4dbL6oL3xV40eow2U
- /7NHIzV4Oe8Di4zKE1Dv3iY9iHJ1F9altNO/+FoS4aC6hUrl7DBh2QJ
-X-Developer-Key: i=iasnezhkov@gmail.com; a=ed25519;
- pk=hQgXfiWi4ukk2jh4BHu1vRVhg9BUivo//AFp50AKMag=
-X-Endpoint-Received: by B4 Relay for iasnezhkov@gmail.com/mindone2026 with
- auth_id=1643
-X-Original-From: Ilia Snezhkov <iasnezhkov@gmail.com>
-Reply-To: iasnezhkov@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
+X-QQ-XMAILINFO: Mp6z4bZjgTSTy3PrPgbrk6y/CCEfJgvfGum70GfmyxnniYPNcjys/e39
+	docouH3WMgEj+squ6UBZv1HUqgtkVf+DW259Obu3dq33fKbGps2ncIJ/CnMtPjWCXb+aGAe
+	zSum8ae053XrZHkGw8madAO3UEDjO9HF/qaBuLxPgavqNFQGpMvlw2qCakrT5n8liZ1nJse
+	9eA8C1zGYNDWhJ6/v4nt0kgFbOsfRmMIJ7y+FQkSgoTMaxn0/kXKz6J+RdakeQB1XwvfEoo
+	B7+HhEGz3OHyVi3GU1Uhx7M1y5V4TScg661im28s2n9Wb3tcdGy+xwinHi6MXLk3YiK3qtR
+	RBzXxaQ2lPlDQBVafep9yyxDgfgU+NTEdI7Crtp4ueQDgD9w+u2BHb9yA2pNpIrtsLMB9P/
+	kP29WTdrLf+txwzSf0tbTYsW8asfYiPtCtHpgcllC9V2quvVsFXLfMod0BfluLAy4mcY0WE
+	SZbmOq36hMAceXcIuQsTxEiOKzy/x7Gwi+irdZsB2tnv+NbHMFuG/ebRGkaXcDHUmnDRSo6
+	XwewKmyNZxhq6RWrqhGLgNVP+xTz3a4G6Zh2Asdh+W+ILaUEEn7FpOd4zi49+ua5RgBh/Bz
+	5WVOBMJBekbAjkm8+Gpr2GrmCd/ELbxAnslu5mqPLZ05WRFUEou0YKpRKcGfkaULhAij5dL
+	H2gaI4b/I7Esa++Tuwyvrpc7H6Ja840FYiKDKql3RlKSFzDcYTUcyLEN3NlyMSNNqfK7ism
+	h19CViGH5q6e0eOHmeO242o5r/Mbr6oWEhw0+5Q4KMllezAakZ17WzK91Z7T3xCASE9tM5Y
+	i9nWQ+fmLeVKYVMzQH3METbKu4qp0W9G+tpafHQnRNtmAhC7bkfY3sHJ7510aU9Aeym7qz3
+	+RGAOihLQOFz3a/YfUO60VvkoQ5Y/wYPVDnwvyHfnkWE+8uB66W/9sWfXfuURXjsjFF+kZe
+	xkxBxM6hJVcesR9yGEoPNafa32+jbAoRgF3YX64WTOxFuI6N81j5uP35zYTaLRFPOFS0diF
+	ZP75H94cEc3gQb4GDzSnbevjzClpA=
+X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+X-QQ-RECHKSPAM: 0
 
-From: Ilia Snezhkov <iasnezhkov@gmail.com>
+The accelerometer drivers in the tree are inconsistent about honouring the
+installation orientation described by the firmware.  Drivers such as kxcjk-1013,
+mma8452, bmc150 or st_lis3dh read the "mount-matrix" property (ACPI _DSD on
+x86/ACPI platforms, devicetree otherwise) and expose it as
+in_accel_mount_matrix, while the drivers patched here silently ignore it.
 
-mt6357_auxadc_ch_desc[] sets req_bit to 0 for both ISENSE and VCDT, and
-mt6358_auxadc_ch_desc[] sets req_bit to 0 for VCDT. Bit 0 of
-PMIC_AUXADC_RQST0 triggers BATADC (ADC0) rather than ISENSE (ADC1) or
-VCDT (ADC2), so polling the ready bit of ADC1/ADC2 times out unless the
-channel was triggered externally.
+That is not a cosmetic problem.  Without the property the kernel reports raw
+sensor axes, so iio-sensor-proxy and the desktop see the wrong orientation for
+any board whose sensor is not mounted axis-aligned with the display.  The
+fallback used in that case, a udev/hwdb override, keys off the sensor modalias
+plus DMI; it cannot work on platforms where every board reports the same DMI
+strings (all of our D3000M boards report "PHYTIUM LTD / PHYTIUM D3000M"), so the
+board's own firmware is the only place that can describe the orientation.
 
-Use the actual hardware request bits in PMIC_AUXADC_RQST0: bit 1 for
-MT6357 ISENSE and bit 2 for MT6357/MT6358 VCDT (matching MT6363 VCDT
-and the MediaTek PMIC AUXADC hardware registers).
+Each patch is mechanical and independent: store the matrix in the driver's
+private data, add an IIO_MOUNT_MATRIX() ext_info entry to the accelerometer
+channels, and read the property once in probe.  No behaviour changes for boards
+that do not describe a matrix (iio_read_mount_matrix() falls back to the
+identity matrix).
 
-Fixes: 3587914bf61d ("iio: adc: Add support for MediaTek MT6357/8/9 Auxiliary ADC")
-Reviewed-by: Roman Vivchar <rva333@protonmail.com>
-Tested-by: Roman Vivchar <rva333@protonmail.com> # mt6358
-Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
----
-Changes in v3:
-- Drop patch 1/3 (scale divisor), which duplicated Roman Vivchar's
-  earlier series (20261117-6768-6358-fixes-v2-3).
-- Drop patch 3/3 (MT6358 VBAT impedance ratio) for now until
-  mt6358_read_imp() timeout on mainline MT6358 is investigated.
-- Carry Reviewed-by and Tested-by from Roman Vivchar.
-- Link to v2: https://lore.kernel.org/r/20261126031013.27701-1-iasnezhkov@gmail.com
+Base: v7.3.6.  Verified by compiling drivers/iio/accel (allmodconfig,
+make M=drivers/iio/accel): 71 objects, no errors or warnings, and checkpatch.pl
+is silent on all 18 patches (including --strict).  The stk8ba50 change was
+additionally tested on hardware, a Phytium D3000M tablet whose STK8BA53 is
+mounted rotated 180 degrees about X.
 
-Changes in v2:
-- Move AI coding assistant note below ---. No code changes.
+Deliberately not included, because the change does not fit the same pattern:
+adis16201/adis16209 (channels come from adis.h macros), adxl313 (private data
+in adxl313.h), sca3000 (channel macros in a header, two channel arrays),
+mma9551/mma9553 (channel macros shared through mma9551.h), and the
+hid-sensor/cros_ec/ssp drivers, which are not firmware-node devices.
 
-Found and drafted with an AI coding assistant.
 
- drivers/iio/adc/mt6359-auxadc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+He Xin (18):
+  iio: accel: adxl345_core: support mount matrix
+  iio: accel: adxl355_core: support mount matrix
+  iio: accel: adxl367: support mount matrix
+  iio: accel: adxl372: support mount matrix
+  iio: accel: adxl380: support mount matrix
+  iio: accel: bma220_core: support mount matrix
+  iio: accel: bmi088-accel-core: support mount matrix
+  iio: accel: da280: support mount matrix
+  iio: accel: da311: support mount matrix
+  iio: accel: dmard06: support mount matrix
+  iio: accel: dmard09: support mount matrix
+  iio: accel: dmard10: support mount matrix
+  iio: accel: mma7455_core: support mount matrix
+  iio: accel: msa311: support mount matrix
+  iio: accel: mxc6255: support mount matrix
+  iio: accel: sca3300: support mount matrix
+  iio: accel: stk8312: support mount matrix
+  iio: accel: stk8ba50: support mount matrix
 
-diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
-index 88b0e26..0e7f9b8 100644
---- a/drivers/iio/adc/mt6359-auxadc.c
-+++ b/drivers/iio/adc/mt6359-auxadc.c
-@@ -224,8 +224,8 @@ static const struct iio_chan_spec mt6357_auxadc_channels[] = {
- 
- static const struct mtk_pmic_auxadc_chan mt6357_auxadc_ch_desc[] = {
- 	MTK_PMIC_ADC_CHAN(BATADC, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP0, 8, 128, 3, 1),
--	MTK_PMIC_ADC_CHAN(ISENSE, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP0, 8, 128, 3, 1),
--	MTK_PMIC_ADC_CHAN(VCDT, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
-+	MTK_PMIC_ADC_CHAN(ISENSE, PMIC_AUXADC_RQST0, 1, PMIC_AUXADC_IMP0, 8, 128, 3, 1),
-+	MTK_PMIC_ADC_CHAN(VCDT, PMIC_AUXADC_RQST0, 2, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
- 	MTK_PMIC_ADC_CHAN(BAT_TEMP, PMIC_AUXADC_RQST0, 3, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
- 	MTK_PMIC_ADC_CHAN(CHIP_TEMP, PMIC_AUXADC_RQST0, 4, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
- 	MTK_PMIC_ADC_CHAN(ACCDET, PMIC_AUXADC_RQST0, 5, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
-@@ -271,7 +271,7 @@ static const struct iio_chan_spec mt6358_auxadc_channels[] = {
- 
- static const struct mtk_pmic_auxadc_chan mt6358_auxadc_ch_desc[] = {
- 	MTK_PMIC_ADC_CHAN(BATADC, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP0, 8, 128, 3, 1),
--	MTK_PMIC_ADC_CHAN(VCDT, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
-+	MTK_PMIC_ADC_CHAN(VCDT, PMIC_AUXADC_RQST0, 2, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
- 	MTK_PMIC_ADC_CHAN(BAT_TEMP, PMIC_AUXADC_RQST0, 3, PMIC_AUXADC_IMP0, 8, 8, 2, 1),
- 	MTK_PMIC_ADC_CHAN(CHIP_TEMP, PMIC_AUXADC_RQST0, 4, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
- 	MTK_PMIC_ADC_CHAN(ACCDET, PMIC_AUXADC_RQST0, 5, PMIC_AUXADC_IMP0, 8, 8, 1, 1),
+ drivers/iio/accel/adxl345_core.c      | 20 ++++++++++++++++++++
+ drivers/iio/accel/adxl355_core.c      | 20 ++++++++++++++++++++
+ drivers/iio/accel/adxl367.c           | 20 ++++++++++++++++++++
+ drivers/iio/accel/adxl372.c           | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/adxl380.c           | 20 ++++++++++++++++++++
+ drivers/iio/accel/bma220_core.c       | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/bmi088-accel-core.c | 20 ++++++++++++++++++++
+ drivers/iio/accel/da280.c             | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/da311.c             | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/dmard06.c           | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/dmard09.c           | 20 ++++++++++++++++++++
+ drivers/iio/accel/dmard10.c           | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/mma7455_core.c      | 20 ++++++++++++++++++++
+ drivers/iio/accel/msa311.c            | 20 ++++++++++++++++++++
+ drivers/iio/accel/mxc6255.c           | 20 ++++++++++++++++++++
+ drivers/iio/accel/sca3300.c           | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/stk8312.c           | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/stk8ba50.c          | 20 ++++++++++++++++++++
+ 18 files changed, 392 insertions(+)
+
 -- 
-2.54.0 (Apple Git-157)
-
-
+2.53.0
 
