@@ -1,50 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.206.16.166
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.254.200.128
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795748953;
-	b=TSkLScLYDgRld5hV6015F1xjxrrr3MGUB7dDaJxebWkL/nJCehZQDWIKsKq4V1jxua47
-	 rCVa7JisLV4Q2QVcklxT41+Ne4ecAUHH7FLL3qTtIOK+9sxdI2wPPRZVd97nER/qJEsOH
-	 vggWEjTF07KPGN7wJ/9Y5gHyzOHDWiU5+6szXBSiwnFyyOwD+zfVVJREPBRdSWdWre65J
-	 g6QxKpTpsOCF//oeACx67d1I5xwxad7iUnBHHgXxJ0At2RntDjJ1Vu/aJAp8dBjZk3d/4
-	 VMPpiUh8iHaKU1MmqxrX5bBmzssHAblM2/TdOcS7PUM+w/40snoYu0IJ57XsmUMSX7Q==
+	t=1795748954;
+	b=GjpTMyaRsrgh7VexRlhL0s0Ay4E0/TdeT5l3CwCpu7l3eh34oJYo9hzvYODdSOvdedWl
+	 NTOpZs7esv6Z8E5DEJwd4LPHv7HzLMY9O9cNtsR+jVt9I5ng3oTAD3lM5WV+FQ7xHoEie
+	 LAmNQJMtv9I8r5MvSrHDGha+9thAut6cwaoZ/dO5w4ln95sl1R+5iq066ZOfq3SQEO5Ij
+	 P5H64+9SCQx+VHPwnZJsxDmUDBWftOGaFwdiT4zRLL0ochhuq018A1cT6CmXKmDXMhtUI
+	 l0PK1Zd+jjS6/NjahVDfLIUSJXa0CdIzwQ4vcexp3fsHrYNZWFd01yEDPazEglR3JRw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795748953;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795748954;
 	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
 	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=DB/5Dd9vHFJV8ko/ZyJt+NRYLbO5OR7cYMsv4soqGbc=;
-	b=jWniPpH4StduLzd6zAGju9FJbUvuy2n+Xib0TS62uCyj67zly7+DYeUf+cqkqAckdQvp
-	 240oPlFuvs4Amovn+qSaEyEwwAAmHmPEoaBibRdawhq9rbERcw6jJ1tDK6eMxIEkJG5Vf
-	 MSjb+Aa+MKV08L6LKhWPR8RXLOVUEI8kHAE2n+uJX1EQ+GwoUbQuIYygYTmUbRTWWB86t
-	 vI+5eMq3jQfIw/EMinx66F6lRnBfvT1pI3b05yw79BW9Qgr2+eMx1DD/wJCr6Xc8n2Fft
-	 qLwHdKVAW0WiU88xH/3E2/zaq4BJJIGA4ZgNocst9EUE2UJSv8eLGYyydYKW3oeXKMQ==
+	bh=1vDY2JqeAvvpBoaAARYk6XlzjD2e3mSuqlC/xAS9Ygk=;
+	b=AGpdC5kikaFq7z6vqG3qw2OVugs1IZdxe7n+ao0QjONwCldHQThHZjArVOG8os6rmSid
+	 u4vUhd15TqvX+Ty2fB5V2o+/IhTIOU0q31z33gxaeQ6gtStQG5n3WwYjuMMf9KlSbN8dt
+	 pdLYL9SInKMp2SUV3XUBHwbzUq0PiXDlJUjZWBe6JxY+8ZpbruMauvNpRoX/2XhfnYO0E
+	 +aHoZ8xx0R4VsvnE3mgvxtmgH6N7zOpwQ19GvGx3WsN5/YWOSWFI1hgdynkLpoECaxUZG
+	 JyU2c06G0iOTI/CT+Yjv6GWMsqgJJWrCxsIrByyj/KH6e+ibMCGaKm1Yz03ONOGMzEQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=hexin.host;
 	spf=pass smtp.mailfrom=hexin.host;
-	arc=none smtp.remote-ip=54.206.16.166
-Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
+	arc=none smtp.remote-ip=54.254.200.128
+Received: from smtpbgsg2.qq.com (smtpbgsg2.qq.com [54.254.200.128])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09A2D606A321
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09A2D606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EE8606A32A
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B6EE8606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748909t159079bc
-X-QQ-Originating-IP: 3s0D8wJx25iDrOiPfxzlbMYe3ZURS7PpRQO1GsWOmfc=
+X-QQ-mid: zesmtpip4t1795748896t99396766
+X-QQ-Originating-IP: kmx/QsBgAE3PHKRc0YnezNDFgpJ9aloyT5rH/NCxMJg=
 Received: from hx-KLVG-XX ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:28 +0800 (CST)
+	id ; Fri, 27 Nov 2026 11:08:15 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 1431452205348039948
+X-BIZMAIL-ID: 7660707397409459350
 From: He Xin <hexin@hexin.host>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 08/18] iio: accel: da280: support mount matrix
-Date: Fri, 27 Nov 2026 11:08:00 +0800
-Message-ID: <966FFAD406C5B03B+20261127030810.3150676-9-hexin@hexin.host>
+Subject: [PATCH 02/18] iio: accel: adxl355_core: support mount matrix
+Date: Fri, 27 Nov 2026 11:07:54 +0800
+Message-ID: <22D5F4C14A749294+20261127030810.3150676-3-hexin@hexin.host>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
 References: <20261127030810.3150676-1-hexin@hexin.host>
@@ -60,24 +60,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: ND1mcvCvQRzZtva9fj0yUcOEDyVR87v5yD5yenvs7nTXFq4dWm0A93Zx
-	9TBT1C2OlB6uHfr3HAg6ES2rm01VYJ+6o2YlWwGECDW9Mau5Fv7HShLdIveKjWm2o4hgSdq
-	DVkG7/eGG2PjhU7QTa82n+YrZLdav+OYRvkjWvfmKlYHh0SuPOe7ON7d9DBjlwYWWtOuQax
-	ugUgoYmWhCfmMcEh0USrBrApfP5K5UZdT3zO/fqS5sLT/mo8XAe/ckjsO8dAQSux2KDm6nx
-	Dv3DUY3jMNqh/w9TjklBXXVjTTuf8lwjWUXsjmU+yxesO5vplbhP4BGyI/WHBG3CveX4XZr
-	WspSPPus6nGJKJg1KdfcOXtyYCb3ljolwuKOYmE6ZwqDBW+K6Gf4BoMJR3VGRn+rrWJvt2D
-	rCtnAl3rmfhMKsapNv6ULzfT4lr2e/jhemAW2kLM7litgyJNbs97495nYrSJGoqhmx+mS17
-	9IHIQvzhK15dN/J8UodluUzVyQHFz6R0dt1kUEbEUyfgO/O5ykjIvKznqR83XRIn6Skafeg
-	7Gg73U2tfb4ZOq0fqUFkNDGj5uvpJrjZKrYfYmkFBJ5ZCzj4jjYzXljycDwu8xm8W27JqEi
-	+uM1JwihirTpI/71YpvKrn1oAdAfc0jG+O5hjdJfxGILTnc7xZPci0havfnC6H3YsA2fdgC
-	Vc0G/vTcWALFmsnvj9QD4Oi15DkQV5BEFnzmYgvy8+NmlPYQurtvhQh7fYXObbkKLXMk84F
-	jUUufrMWlkN5ylLwzQkDyrmgImxmmTQPvwEazQc5VXiCaM+3kMfc1RV/JjX0YJf6VxHL8wA
-	eEemfmVG8hlg+KOiiYaFpUjx7t9TWbyG8imQnjCa/kDzNyHKBpCtFVApXn+IpJ1Ft7XCHTv
-	w3Mf2wNU6Xu0/3Xo1WylQY6UMOBmTfySrfHaD588r9qa0NKqvI1mbuDuZuOW/KkHR0eGdYW
-	CR/w4ARuSNr5jCmuj04d+Mu+Z9h6+8UkdP0e4+4Zl6u8V9WxEZtx86+T6738qYGocVNn4QX
-	QZNhUsSuoRjPUXJXxizYny54zMWDicS4xGbte2ZrxiAAyTeK/MIedgJwlz+KLS/YucJgJ6A
-	YA15Jc8WO3x
-X-QQ-XMRINFO: NyFYKkN4Ny6FuXrnB5Ye7Aabb3ujjtK+gg==
+X-QQ-XMAILINFO: Muaq8BBEIoEkgTQ20m109QDKarp4JVUc/Y60CicfqG7Afb0A/a41Ke79
+	QjoqHZVpdHjg7vw7NT/JicUqA3nlLLQEoJ5C0p5d5u9jSeB3SyJsoL1ZAEwnIPLVWZ24OyF
+	q/l9RV1uSCnqTVuyUfkJ6IcXrguW388jJRdMrjBL169nDLwSbIGjs88kSgL5qEKpMpJUFvd
+	v0DO68pHKa87qOeJRy7PEnkE6bYFPxDsyltN+gsFy/A/ogMwrsq/+/iiFsyToFu+1wF8h9h
+	zHgyY57KpoSmkp9tdFDcB5KMCy3J5d0eX3Yw8F8OflHCEeM4bjQNg+lH5UVcHzc09FHrm2p
+	NAqnbqMUgxEZJxgGZc3AbFE1ultpp1AuTCxBVB5inD3eDzJWLu8K9TkmZnF/Aa5SgWyYpG+
+	A2S6NEeCp6o1P15Mg4VOUoMC85IoonIZlUbEMW/YmCCRj7KUD8GGT/0CayjAp0CrZcwFpCk
+	OghHahREwuPdY4eJkCn2/vIIqveYbhtgjqd3QaatVkcUoUGXPt/2Y5embR9uM//IQmC1j4a
+	vnf9e/zokLDP2429dF8f1kfXfEK3WZPEeedx7lz5vtjc4HNJB+IBRjBeThZAUwL0x2nQcvA
+	jlBLLWQ/ZhlwdmRYJDX07W782LvA+C8ILTma60hIUZiu7ZEsPdUZ+3GHri11GW/34eXlZM1
+	ci6D9Ore/7yQRf8obRj+2PxT8ZGpmF6QA6fUOS8VzBpoIlEpLbWxYxnkzs75gNyfW0FQ6im
+	PrSB/VKdx0kK9k/uhsFuRjYKf2OAm8LMa/3Oy63j48ae6ookR7dVhWWAY7ZKYXu+6fOnI74
+	v7vjAOXCV15ACijQUT/Yk4Eq4uSG/gDmEndhyD8JuIiFveQY5H+b8/izNftH12FPvkWFYUJ
+	u3tEtleAPLOkzMoUiP0iOm3TIBEIQoBxuVz4/3iih86oJKvTXqV9ZzIlyMXOrAtIOJtB6UR
+	UkRp7Znsalnj7dKG+FCZZKoQMJnS+76WMtwulUKgCkMEe21bXb654mhywfY9c9ZkqcyBiuv
+	z03NerEwn8Ia1aMiuVHdPqkSJryQg=
+X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
 X-QQ-RECHKSPAM: 0
 
 The driver ignores the mount matrix described by the firmware (ACPI
@@ -90,62 +89,56 @@ IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
 
 Signed-off-by: He Xin <hexin@hexin.host>
 ---
- drivers/iio/accel/da280.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ drivers/iio/accel/adxl355_core.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/iio/accel/da280.c b/drivers/iio/accel/da280.c
-index 15acbe1..e093eb2 100644
---- a/drivers/iio/accel/da280.c
-+++ b/drivers/iio/accel/da280.c
-@@ -30,8 +30,18 @@
- 
- static const int da280_nscale = 2395019;
- 
-+static const struct iio_mount_matrix *
-+da280_get_mount_matrix(const struct iio_dev *indio_dev,
-+		       const struct iio_chan_spec *chan);
-+
-+static const struct iio_chan_spec_ext_info da280_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, da280_get_mount_matrix),
-+	{ }
-+};
-+
- #define DA280_CHANNEL(reg, axis) {	\
- 	.type = IIO_ACCEL,	\
-+	.ext_info = da280_ext_info,\
- 	.address = reg,	\
- 	.modified = 1,	\
- 	.channel2 = IIO_MOD_##axis,	\
-@@ -52,8 +62,18 @@ struct da280_match_data {
- 
- struct da280_data {
- 	struct i2c_client *client;
+diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+index 080c9f6..00c24c2 100644
+--- a/drivers/iio/accel/adxl355_core.c
++++ b/drivers/iio/accel/adxl355_core.c
+@@ -235,6 +235,7 @@ struct adxl355_data {
+ 			aligned_s64 ts;
+ 		} buffer;
+ 	} __aligned(IIO_DMA_MINALIGN);
 +	struct iio_mount_matrix orientation;
  };
  
+ static int adxl355_set_op_mode(struct adxl355_data *data,
+@@ -707,8 +708,23 @@ static irqreturn_t adxl355_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
+ 
 +static const struct iio_mount_matrix *
-+da280_get_mount_matrix(const struct iio_dev *indio_dev,
-+		       const struct iio_chan_spec *chan)
++adxl355_core_get_mount_matrix(const struct iio_dev *indio_dev,
++			      const struct iio_chan_spec *chan)
 +{
-+	struct da280_data *data = iio_priv(indio_dev);
++	struct adxl355_data *data = iio_priv(indio_dev);
 +
 +	return &data->orientation;
 +}
 +
- static int da280_enable(struct i2c_client *client, bool enable)
- {
- 	u8 data = enable ? DA280_MODE_ENABLE : DA280_MODE_DISABLE;
-@@ -119,6 +139,10 @@ static int da280_probe(struct i2c_client *client)
++static const struct iio_chan_spec_ext_info adxl355_core_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, adxl355_core_get_mount_matrix),
++	{ }
++};
++
+ #define ADXL355_ACCEL_CHANNEL(index, reg, axis) {			\
+ 	.type = IIO_ACCEL,						\
++	.ext_info = adxl355_core_ext_info,				\
+ 	.address = reg,							\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##axis,					\
+@@ -792,6 +808,10 @@ int adxl355_core_probe(struct device *dev, struct regmap *regmap,
  		return -ENOMEM;
  
  	data = iio_priv(indio_dev);
 +
-+	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
++	ret = iio_read_mount_matrix(dev, &data->orientation);
 +	if (ret)
 +		return ret;
- 	data->client = client;
- 
- 	indio_dev->info = &da280_info;
+ 	data->regmap = regmap;
+ 	data->dev = dev;
+ 	data->op_mode = ADXL355_STANDBY;
 -- 
 2.53.0
 
