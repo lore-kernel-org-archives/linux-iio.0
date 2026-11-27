@@ -1,79 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795767184;
-	b=2JCe3ZGc0yqxezZ1LO2lQTtW9Cew13wJisJGrOjkDtnH0Re8Oa3MCsVUwMzY9Es4vdji
-	 MnbQI2vcTKExQisB0/OCO+SGYBhWZJVDs5ooUJUo2WbcTcbJrStcbUA5aCOcDCLocIOG+
-	 POOtEUWEiHnSYHYPYkiSN/ZtZFzxcKtPc3gLFtI2GJ+MwAB/IpEIdApKG8B2BxpcUd4ZU
-	 bJ+ITrASwM9bmUs+nMwKjyZZj7ZczPyIt451MZkItCXJs2DId/RbAus+ewct9Z1Q/QM74
-	 y2TvwOlOlDD1SjDj5WktakjQlqkQAIi7AXwtRg4qe1j1UtQWofNpPAj3rfArfV9CWtA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795767184;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=tYrqHdpQfc6mYuwFOqz6jYtZ3/Y2j5VyG9hw9pzsreA=;
-	b=tOjG58xsmlJP5DEkFPhsoPA4l6AQekdk+e+HepN0jLQlKFvcIf8aoh9NEmwXUQcNrtMn
-	 pFppGK3/6jP3wr925PjuAWb9Gf7QCABeR23XOIZGlXjllLrbubt98hFN80mXhuPOXPUQa
-	 xhppNlK+cCcfu/s9J7dN5GY1nYTPYncCt0K2MCZ8S9o5WuuExrtxuImtYoeq+nFXtrUAQ
-	 lIdKZLZ1ae+uiLiT3Ef1XdkE+p/38c0vWZgEPaLg19RB5Er0DneaDDhA4ZRq2/UFfSXnb
-	 SBGOrTkno/uP51f0DKkYOnTzRfbhuhUVMPVoCc6JeS/Of5+MwsOpDLbP+dceIOpw2kw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oC+fb8VR;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795768411;
+	b=SSAM3tRbjHd+/sml5MCdc1WYrqL9EEw2rZH0E5zpUIkwD0t3JJYTwBe2Pn4MwMXkskey
+	 XtTPvJtCUqPXbzwHmPNU3VwFXkj1icXZJDkZqi0gwUX+MMkWFp658dDeyfidCcn1UIDDF
+	 csuwNsqWOFXHWUL38LpSuTmqcze/83yESqdve3jxKycKxL38hA2Z4tXroGFkSvgnOi9D2
+	 nETqrIyrU/S0P/qG4sUU98PGKz/H/UDUNiDxmarOoDaQN1D+6YsgVww2mhWkQSoEb8nU5
+	 k7Pu5vja7GLNFFptfbfsaM+3hryXSiGCKRWL8pEzQXIAcjM1mdzMsbTzgdmkETQxY4g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795768411;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=/h6ivogR65iO+inwU9QCiWi1gvByiI97sc5h6yHKLMM=;
+	b=5Jt1tQ0EuyhuRYsuXh6X3qQ5yPe0C3OQjCpKwiU+A5kU4vsw1l08U81UA/g07Qb75AfP
+	 wnMedUl2aIDnwA7qMEVcrIeZ3qiHyrKS+ONXEAPBy1IcVXH5jxvNmgNNU3LTAvNQHeSUn
+	 EIjz5Tl4W8Z/dUblY4EWP+XBOzn4JCoJXl8DELg86D50rDs1NNei0gqIufnV3V946NhzA
+	 03xZqgCcNio1aPTEP2ZUqJhYoFBEoS9GvoTZEuhjc0o9r03QbqlMcb8G/kr9eNlUfJIUm
+	 1791/NAZ2q9nHW7Fwsq9PH6kr4ioS+ysYNCw90oKqhjBU4LvyOcr1/dPKKrDT/PcIJg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fzx9f9eS;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C276606A330;
-	Fri, 27 Nov 2026 08:13:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE98606A31C;
+	Fri, 27 Nov 2026 08:33:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9AE98606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oC+fb8VR
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795767184;
-	b=cpS51jPvPyoC1pk4nmf4XjZbm8l4C4zjqnFnlHmBbsdYdAh/PPqQsBfDEmy14f0/CkNB
-	 SZZyB2NQGH/SOj5iX84sPgz3xPU3/uH3t7NrN9ZXPU1HDvXQmtU5h6lyzA3tbNMjFx0fj
-	 FeFFffP5vSQyOeYAiFlJBLfIjgVOAGjw38JTxtkD8Rtg3OkuNSLj7G2/7cVnlOyNS/IjG
-	 HQaPA7bH1BwwtY3On2RkL3BsPoLOevIP3JQhi3l12nqICZT5UlwtQ/7yYeGJw/RA2TtBW
-	 oZqUJh5OTf0KinF6TLEGkNuRznHZa92FHUWs3MX7h+wxZAj/r1lqAfjmdRVwIMqgV+Q==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795767184;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=tYrqHdpQfc6mYuwFOqz6jYtZ3/Y2j5VyG9hw9pzsreA=;
-	b=g4fHyfkO6iQWsZ6KYTYe/GLG9Ne+wotAfpVFbqNOj98EJc5DA0SPJztpNt4ggtPGwEQe
-	 2d1eElk1/RGxNnwk1AKQpnfUdZmppBXDhg9W18BheieTx3A2tKX3Fpb9Tf9AE9spOox/9
-	 NlQNkB0lUgyDKC56a/dPmOzZnRc93qCb2sVG9wtaSybkHLFFeuig5bcbXWFuTquo+ktF2
-	 cTx6wKjUYEVk5huPdpon5vSQgoiVsRfF1UHcyIRR0c3fr/f3FvkBloJHdlB/B+xZyHT6h
-	 SzCtqT7ezjQYMgltd+TxyRmi3KGatnKlmlB52XG2cHfPHHJTJwKISRxYTKw2mBSzgmA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 282A11F00926;
-	Fri, 27 Nov 2026 08:12:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795767184;
-	bh=tYrqHdpQfc6mYuwFOqz6jYtZ3/Y2j5VyG9hw9pzsreA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=oC+fb8VRvObNUOPsv9s/HNbXr4LF9Qn9gKyw3ODa0ze6nFGK32KjzLBcPv21DeKe1
-	 HS3AQqrf61XGEY1g2JLRUgtLVCpz7TqyNzqovMUFw6QJJeTLp2c0S/ciWEHGS5NV2w
-	 8A7ZY2nzFAkqishNPamKPTaVNTqSPe2W/IK6+3unasiM4W0wJn4SumnPeib8LrT1rL
-	 RnZeufkESAe5cprnoJnW5JPD1MI7Np9E+PBRCHGJHgS5ilRHptyYZx6hCbeMOAdTG9
-	 TjlFPhq5BxTKgvcp9AsAF7SzphLiL0a69B7W3I4RPK/DVYibOW/4Bt8NYTYsZm73dU
-	 1W42Tc1gQizNw==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id AF6C44B631;
-	Fri, 27 Nov 2026 08:12:49 +0000 (UTC)
-From: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>
-Date: Fri, 27 Nov 2026 09:12:50 +0100
-Subject: [PATCH v3 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient
- light sensor driver
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fzx9f9eS
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795768411; x=1827304411;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3GpE+F+q7kE86t8MgkNfa5zzEw9Mo11gooWpH2jqaUU=;
+  b=fzx9f9eSmry8mnRAeFsIHVGDw0UC1U54sXgQ4ePV8ULPs5x+a/bGElx2
+   6/uEl06oZC1y60r3dOorTh0eP+n5TFIJm7yDv64gaxH8jZVExs2xF5zV3
+   E5O4dFATjACb4hktiZ+6es3k1bvhy5J5rIqZQYd0YCjpiD+Bm0Y8GotR3
+   KKhczQsH6Xka0a18x+P1FaS5KemT04gcfYVWr9ZLzciiQMcmrU+mFFOCH
+   eF4oYIUsu3LjT6IdU8Z2tmUHRv8pA9zcjDsrXehre+0TeyUwltKcbEmgc
+   +HyKysqdmC72pS0ROUzViItCmOG2ZGHe4eVnWAYFCnksE0kDo8eJlt+db
+   A==;
+X-CSE-ConnectionGUID: POdSmR41Rom5ykHIRZ2cww==
+X-CSE-MsgGUID: FMIH1xLqQsat2FiJ+UEnzA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4583061"
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="4583061"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 00:33:30 -0800
+X-CSE-ConnectionGUID: ubG+/dVMQfmbcUC6lqY/Eg==
+X-CSE-MsgGUID: oqVoqhsbQCiER1kAgiDQvQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="12237506"
+Received: from igk-lkp-server01.igk.intel.com (HELO e79648c3b81b) ([10.211.93.152])
+  by orviesa005.jf.intel.com with ESMTP; 27 Nov 2026 00:33:18 -0800
+Received: from kbuild by e79648c3b81b with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xWrO4-0000000000p-1PQJ;
+	Fri, 27 Nov 2026 08:33:00 +0000
+Date: Fri, 27 Nov 2026 09:32:14 +0100
+From: kernel test robot <lkp@intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
+	Rupesh Majhi <zoone.rupert@gmail.com>
+Subject: Re: [PATCH v2 1/1] iio: core: Split debugfs routines
+Message-ID: <20261127090758.cpRe3Nuo-lkp@intel.com>
+References: <20261125140251.384361-1-andriy.shevchenko@linux.intel.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,637 +85,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261127-iio-tcs3430-v3-2-e191a40a4ae9@gmail.com>
-References: <20261127-iio-tcs3430-v3-0-e191a40a4ae9@gmail.com>
-In-Reply-To: <20261127-iio-tcs3430-v3-0-e191a40a4ae9@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Robert Ijtsma <robertijtsma@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795767168; l=17526;
- i=robertijtsma@gmail.com; s=20261122; h=from:subject:message-id;
- bh=8CkU8VPOsxvjxFqaT7oAmRecI2p/GnKHViPV4JeyCD8=;
- b=ZYiiGsZUdaQ4HVZ10/ZJcEM5tO1Mvz7DjKa3sltTcjS8CzI5mQZMoy/+UDBeJ18wHop0hq8S2
- lo2kqzYtIz9DC2MrXmM8svpwBb5jCQnr9vGzmcEUInhxwqXO/6cFAQR
-X-Developer-Key: i=robertijtsma@gmail.com; a=ed25519;
- pk=qiDyKVqFicxFIR5sB5m+p9SWPKL2/+mMoiQnUx0C9P0=
-X-Endpoint-Received: by B4 Relay for robertijtsma@gmail.com/20261122 with
- auth_id=1604
-X-Original-From: Robert Ijtsma <robertijtsma@gmail.com>
-Reply-To: robertijtsma@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261125140251.384361-1-andriy.shevchenko@linux.intel.com>
 
-From: Robert Ijtsma <robertijtsma@gmail.com>
+Hi Andy,
 
-Add an IIO driver for the ams OSRAM TCS3430 ambient light and CIE 1931
-XYZ tristimulus color sensor (found at I2C address 0x39 on devices such
-as the Microsoft Surface Pro X).
+kernel test robot noticed the following build errors:
 
-Unlike the older TAOS RGBC drivers (tcs3414, tcs3472) that use the 0x80
-COMMAND-bit SMBus protocol and RGBC channels, and unlike the banked
-MAZeT/JENCOLOR as73211 driver, the TCS3430 uses ams's direct-addressed
-0x80..0xdd register map and exposes Z, Y, IR1, and X tristimulus channels.
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on linus/master v7.4-rc4 next-20261126]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-The driver exposes:
-- Illuminance (photopic Y channel) with raw counts and lux scale
-- Modified intensity channels for X, Y, Z, and IR1
-- Selectable scale and integration time via the IIO GTS helper across
-  1x/4x/16x/64x/128x gain and 50.04/100.08/200.16/400.32 ms integration
-  time settings
-- Regulator management and system sleep suspend/resume support
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-core-Split-debugfs-routines/20261125-145940
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20261125140251.384361-1-andriy.shevchenko%40linux.intel.com
+patch subject: [PATCH v2 1/1] iio: core: Split debugfs routines
+config: powerpc-randconfig-r2309-20261127 (https://download.01.org/0day-ci/archive/20261127/20261127090758.cpRe3Nuo-lkp@intel.com/config)
+compiler: clang version 24.0.0git (https://github.com/llvm/llvm-project 3a9f981aab0cc32f74ffac36a87891cda8889c37)
+sparse: v0.6.5-rc1-21-g84ec0658
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261127/20261127090758.cpRe3Nuo-lkp@intel.com/reproduce)
 
-Tested on Microsoft Surface Pro X SQ2 (SC8180X).
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/20261127090758.cpRe3Nuo-lkp@intel.com/
 
-Signed-off-by: Robert Ijtsma <robertijtsma@gmail.com>
----
- MAINTAINERS                 |   1 +
- drivers/iio/light/Kconfig   |  12 +
- drivers/iio/light/Makefile  |   1 +
- drivers/iio/light/tcs3430.c | 521 ++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 535 insertions(+)
+All errors (new ones prefixed by >>):
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ea8ebd8ccd849702e82bf6aaeb4d8d60c2255628..0534464e1d5df51a5ddbc77798143fa1eb03f9cc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1493,6 +1493,7 @@ AMS TCS3430 DRIVER
- M:	Robert Ijtsma <robertijtsma@gmail.com>
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/light/ams,tcs3430.yaml
-+F:	drivers/iio/light/tcs3430.c
- 
- AMT (Automatic Multicast Tunneling)
- M:	Taehee Yoo <ap420073@gmail.com>
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 462fff1ddef20700aedf20743c3e8a36017a9151..10723c9fc1fca60c663073f4c69ffebd8b89e135 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -609,6 +609,18 @@ config TCS3414
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called tcs3414.
- 
-+config TCS3430
-+	tristate "ams OSRAM TCS3430 ambient light and CIE 1931 XYZ sensor"
-+	depends on I2C
-+	select IIO_GTS_HELPER
-+	select REGMAP_I2C
-+	help
-+	  If you say yes here you get support for the ams OSRAM TCS3430
-+	  ambient light and CIE 1931 XYZ tristimulus color sensor.
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called tcs3430.
-+
- config TCS3472
- 	tristate "TAOS TCS3472 color light-to-digital converter"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 6672ed01a8193b9e96a9c84ba5d069f37b307a08..cd7b42e5524678c112e0ffa1b4dc07222077262d 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -56,6 +56,7 @@ obj-$(CONFIG_ST_UVIS25)		+= st_uvis25_core.o
- obj-$(CONFIG_ST_UVIS25_I2C)	+= st_uvis25_i2c.o
- obj-$(CONFIG_ST_UVIS25_SPI)	+= st_uvis25_spi.o
- obj-$(CONFIG_TCS3414)		+= tcs3414.o
-+obj-$(CONFIG_TCS3430)		+= tcs3430.o
- obj-$(CONFIG_TCS3472)		+= tcs3472.o
- obj-$(CONFIG_SENSORS_TSL2563)	+= tsl2563.o
- obj-$(CONFIG_TSL2583)		+= tsl2583.o
-diff --git a/drivers/iio/light/tcs3430.c b/drivers/iio/light/tcs3430.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..06e5ecd91f6502a1d8c99de4707e590dac4f5beb
---- /dev/null
-+++ b/drivers/iio/light/tcs3430.c
-@@ -0,0 +1,521 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ams OSRAM TCS3430 ambient light and CIE 1931 XYZ sensor driver
-+ *
-+ * Copyright (C) 2026 Robert Ijtsma <robertijtsma@gmail.com>
-+ *
-+ * Datasheet:
-+ *   https://look.ams-osram.com/m/43d518b4cd81e3f2/original/TCS3430-DS000539.pdf
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/cleanup.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/pm.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/types.h>
-+
-+#include <asm/byteorder.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/iio-gts-helper.h>
-+
-+#define TCS3430_REG_ENABLE		0x80
-+#define   TCS3430_ENABLE_PON		BIT(0)
-+#define   TCS3430_ENABLE_AEN		BIT(1)
-+#define TCS3430_REG_ATIME		0x81
-+#define TCS3430_REG_CFG1		0x90
-+#define   TCS3430_CFG1_AGAIN_MASK	GENMASK(1, 0)
-+#define TCS3430_REG_ID			0x92
-+#define   TCS3430_ID_MASK		GENMASK(7, 2)
-+#define   TCS3430_ID_VAL		0xdc
-+#define TCS3430_REG_CH0DATAL		0x94
-+#define TCS3430_REG_CH1DATAL		0x96
-+#define TCS3430_REG_CH2DATAL		0x98
-+#define TCS3430_REG_CH3DATAL		0x9a
-+#define TCS3430_REG_CH3DATAH		0x9b
-+#define TCS3430_REG_CFG2		0x9f
-+#define   TCS3430_CFG2_DEFAULT		0x04
-+#define   TCS3430_CFG2_HGAIN		BIT(4)
-+#define TCS3430_REG_CFG3		0xab
-+#define   TCS3430_CFG3_DEFAULT		0x0c
-+#define TCS3430_REG_INTENAB		0xdd
-+
-+#define TCS3430_DEFAULT_GAIN_SEL	3	/* 64x */
-+#define TCS3430_DEFAULT_ATIME_SEL	71	/* 72 * 2.78 ms = 200.16 ms */
-+
-+/*
-+ * Photopic Y channel typical sensitivity from datasheet optical characteristics:
-+ * ~0.537 counts/lux at AGAIN = 16x and ATIME = 100 ms (36 cycles), giving:
-+ *   lux/count = 2980 / (gain * integration_time_ms)
-+ *
-+ * At minimum gain (1x) and shortest integration time (50.04 ms, 18 cycles):
-+ *   max_scale = 2980 / 50.04 = 59.552358113 lux/count
-+ */
-+#define TCS3430_MAX_SCALE_INT		59
-+#define TCS3430_MAX_SCALE_NANO		552358113
-+
-+static const struct iio_gain_sel_pair tcs3430_gain_sel[] = {
-+	GAIN_SCALE_GAIN(1, 0),
-+	GAIN_SCALE_GAIN(4, 1),
-+	GAIN_SCALE_GAIN(16, 2),
-+	GAIN_SCALE_GAIN(64, 3),
-+	GAIN_SCALE_GAIN(128, 4),
-+};
-+
-+/*
-+ * Integration time = (ATIME + 1) * 2.78 ms.
-+ * Default 200.16 ms (72 cycles, ATIME = 71) is placed first so
-+ * iio_gts_find_gain_time_sel_for_scale() prefers it when possible.
-+ */
-+static const struct iio_itime_sel_mul tcs3430_itime_sel[] = {
-+	GAIN_SCALE_ITIME_US(200160, 71, 4),
-+	GAIN_SCALE_ITIME_US(100080, 35, 2),
-+	GAIN_SCALE_ITIME_US(50040, 17, 1),
-+	GAIN_SCALE_ITIME_US(400320, 143, 8),
-+};
-+
-+struct tcs3430_data {
-+	struct regmap *regmap;
-+	struct iio_gts gts;
-+	/* Protects device configuration across multi-register updates */
-+	struct mutex lock;
-+	u8 gain_sel;
-+	u8 atime;
-+};
-+
-+static const struct regmap_range tcs3430_volatile_ranges[] = {
-+	regmap_reg_range(TCS3430_REG_ID, TCS3430_REG_CH3DATAH),
-+};
-+
-+static const struct regmap_access_table tcs3430_volatile_table = {
-+	.yes_ranges = tcs3430_volatile_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(tcs3430_volatile_ranges),
-+};
-+
-+static const struct regmap_config tcs3430_regmap_config = {
-+	.name = "tcs3430",
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = TCS3430_REG_INTENAB,
-+	.volatile_table = &tcs3430_volatile_table,
-+	.cache_type = REGCACHE_MAPLE,
-+};
-+
-+static int tcs3430_apply_gain(struct tcs3430_data *data, u8 gain_sel)
-+{
-+	struct regmap *map = data->regmap;
-+	u8 cfg1, cfg2;
-+	int ret;
-+
-+	if (gain_sel == 4) {
-+		cfg1 = FIELD_PREP(TCS3430_CFG1_AGAIN_MASK, 3);
-+		cfg2 = TCS3430_CFG2_DEFAULT | TCS3430_CFG2_HGAIN;
-+	} else {
-+		cfg1 = FIELD_PREP(TCS3430_CFG1_AGAIN_MASK, gain_sel);
-+		cfg2 = TCS3430_CFG2_DEFAULT;
-+	}
-+
-+	ret = regmap_write(map, TCS3430_REG_CFG1, cfg1);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(map, TCS3430_REG_CFG2, cfg2);
-+	if (ret)
-+		return ret;
-+
-+	data->gain_sel = gain_sel;
-+	return 0;
-+}
-+
-+static int tcs3430_apply_itime(struct tcs3430_data *data, u8 atime)
-+{
-+	int ret;
-+
-+	ret = regmap_write(data->regmap, TCS3430_REG_ATIME, atime);
-+	if (ret)
-+		return ret;
-+
-+	data->atime = atime;
-+	return 0;
-+}
-+
-+static int tcs3430_init_hw(struct tcs3430_data *data)
-+{
-+	struct regmap *map = data->regmap;
-+	int ret;
-+
-+	ret = regmap_write(map, TCS3430_REG_ENABLE, 0x00);
-+	if (ret)
-+		return ret;
-+
-+	ret = tcs3430_apply_itime(data, data->atime);
-+	if (ret)
-+		return ret;
-+
-+	ret = tcs3430_apply_gain(data, data->gain_sel);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(map, TCS3430_REG_CFG3, TCS3430_CFG3_DEFAULT);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(map, TCS3430_REG_INTENAB, 0x00);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(map, TCS3430_REG_ENABLE,
-+			    TCS3430_ENABLE_PON | TCS3430_ENABLE_AEN);
-+}
-+
-+static void tcs3430_power_off(void *priv)
-+{
-+	struct tcs3430_data *data = priv;
-+
-+	regmap_write(data->regmap, TCS3430_REG_ENABLE, 0x00);
-+}
-+
-+static int tcs3430_read_raw(struct iio_dev *indio_dev,
-+			    const struct iio_chan_spec *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct tcs3430_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW: {
-+		struct regmap *map = data->regmap;
-+		__le16 raw;
-+
-+		guard(mutex)(&data->lock);
-+
-+		ret = regmap_bulk_read(map, chan->address, &raw, sizeof(raw));
-+		if (ret)
-+			return ret;
-+
-+		*val = le16_to_cpu(raw);
-+		return IIO_VAL_INT;
-+	}
-+
-+	case IIO_CHAN_INFO_SCALE: {
-+		int gain, itime;
-+
-+		guard(mutex)(&data->lock);
-+
-+		gain = iio_gts_find_gain_by_sel(&data->gts, data->gain_sel);
-+		if (gain < 0)
-+			return gain;
-+
-+		itime = iio_gts_find_int_time_by_sel(&data->gts, data->atime);
-+		if (itime < 0)
-+			return itime;
-+
-+		ret = iio_gts_get_scale(&data->gts, gain, itime, val, val2);
-+		if (ret)
-+			return ret;
-+
-+		return IIO_VAL_INT_PLUS_NANO;
-+	}
-+
-+	case IIO_CHAN_INFO_INT_TIME: {
-+		int itime;
-+
-+		guard(mutex)(&data->lock);
-+
-+		itime = iio_gts_find_int_time_by_sel(&data->gts, data->atime);
-+		if (itime < 0)
-+			return itime;
-+
-+		*val = 0;
-+		*val2 = itime;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int tcs3430_set_scale(struct tcs3430_data *data, int val, int val2)
-+{
-+	int gain_sel, time_sel, ret;
-+
-+	ret = iio_gts_find_gain_sel_for_scale_using_time(&data->gts, data->atime,
-+							 val, val2, &gain_sel);
-+	if (ret) {
-+		ret = iio_gts_find_gain_time_sel_for_scale(&data->gts, val, val2,
-+							   &gain_sel, &time_sel);
-+		if (ret)
-+			return ret;
-+
-+		ret = tcs3430_apply_itime(data, time_sel);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return tcs3430_apply_gain(data, gain_sel);
-+}
-+
-+static int tcs3430_set_itime(struct tcs3430_data *data, int val, int val2)
-+{
-+	struct device *dev = regmap_get_device(data->regmap);
-+	int prev_gain, prev_time, new_gain, gain_sel, time_sel, ret;
-+	bool gain_in_range;
-+
-+	if (val || !iio_gts_valid_time(&data->gts, val2))
-+		return -EINVAL;
-+
-+	prev_time = iio_gts_find_int_time_by_sel(&data->gts, data->atime);
-+	if (prev_time < 0)
-+		return prev_time;
-+	if (prev_time == val2)
-+		return 0;
-+
-+	prev_gain = iio_gts_find_gain_by_sel(&data->gts, data->gain_sel);
-+	if (prev_gain < 0)
-+		return prev_gain;
-+
-+	ret = iio_gts_find_new_gain_by_gain_time_min(&data->gts, prev_gain,
-+						     prev_time, val2,
-+						     &new_gain, &gain_in_range);
-+	if (ret)
-+		return ret;
-+	if (!gain_in_range)
-+		dev_dbg(dev, "optimal gain out of range for integration time %d\n", val2);
-+
-+	time_sel = iio_gts_find_sel_by_int_time(&data->gts, val2);
-+	if (time_sel < 0)
-+		return time_sel;
-+
-+	gain_sel = iio_gts_find_sel_by_gain(&data->gts, new_gain);
-+	if (gain_sel < 0)
-+		return gain_sel;
-+
-+	ret = tcs3430_apply_itime(data, time_sel);
-+	if (ret)
-+		return ret;
-+
-+	return tcs3430_apply_gain(data, gain_sel);
-+}
-+
-+static int tcs3430_write_raw(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     int val, int val2, long mask)
-+{
-+	struct tcs3430_data *data = iio_priv(indio_dev);
-+
-+	guard(mutex)(&data->lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return tcs3430_set_scale(data, val, val2);
-+	case IIO_CHAN_INFO_INT_TIME:
-+		return tcs3430_set_itime(data, val, val2);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int tcs3430_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_INT_TIME:
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int tcs3430_read_avail(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct tcs3430_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return iio_gts_all_avail_scales(&data->gts, vals, type, length);
-+	case IIO_CHAN_INFO_INT_TIME:
-+		return iio_gts_avail_times(&data->gts, vals, type, length);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+#define TCS3430_INTENSITY_CHANNEL(_mod, _addr) {			\
-+	.type = IIO_INTENSITY,						\
-+	.modified = 1,							\
-+	.channel2 = (_mod),						\
-+	.address = (_addr),						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),		\
-+	.info_mask_shared_by_all_available =				\
-+		BIT(IIO_CHAN_INFO_INT_TIME),				\
-+}
-+
-+static const struct iio_chan_spec tcs3430_channels[] = {
-+	{
-+		.type = IIO_LIGHT,
-+		.address = TCS3430_REG_CH1DATAL,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
-+		.info_mask_shared_by_all_available =
-+			BIT(IIO_CHAN_INFO_INT_TIME),
-+	},
-+	TCS3430_INTENSITY_CHANNEL(IIO_MOD_Z, TCS3430_REG_CH0DATAL),
-+	TCS3430_INTENSITY_CHANNEL(IIO_MOD_Y, TCS3430_REG_CH1DATAL),
-+	TCS3430_INTENSITY_CHANNEL(IIO_MOD_LIGHT_IR, TCS3430_REG_CH2DATAL),
-+	TCS3430_INTENSITY_CHANNEL(IIO_MOD_X, TCS3430_REG_CH3DATAL),
-+};
-+
-+static const struct iio_info tcs3430_info = {
-+	.read_raw = tcs3430_read_raw,
-+	.write_raw = tcs3430_write_raw,
-+	.write_raw_get_fmt = tcs3430_write_raw_get_fmt,
-+	.read_avail = tcs3430_read_avail,
-+};
-+
-+static int tcs3430_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct tcs3430_data *data;
-+	struct iio_dev *indio_dev;
-+	unsigned int dev_id;
-+	int ret;
-+
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	data->regmap = devm_regmap_init_i2c(client, &tcs3430_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+				     "failed to initialize regmap\n");
-+
-+	ret = devm_iio_init_iio_gts(dev, TCS3430_MAX_SCALE_INT,
-+				    TCS3430_MAX_SCALE_NANO,
-+				    tcs3430_gain_sel,
-+				    ARRAY_SIZE(tcs3430_gain_sel),
-+				    tcs3430_itime_sel,
-+				    ARRAY_SIZE(tcs3430_itime_sel),
-+				    &data->gts);
-+	if (ret)
-+		return ret;
-+
-+	data->gain_sel = TCS3430_DEFAULT_GAIN_SEL;
-+	data->atime = TCS3430_DEFAULT_ATIME_SEL;
-+	dev_set_drvdata(dev, data);
-+
-+	ret = devm_mutex_init(dev, &data->lock);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(data->regmap, TCS3430_REG_ID, &dev_id);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to read device ID\n");
-+	if ((dev_id & TCS3430_ID_MASK) != TCS3430_ID_VAL)
-+		dev_info(dev, "unexpected part ID 0x%02x\n", dev_id);
-+
-+	ret = tcs3430_init_hw(data);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to initialize device\n");
-+
-+	ret = devm_add_action_or_reset(dev, tcs3430_power_off, data);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "tcs3430";
-+	indio_dev->info = &tcs3430_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = tcs3430_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(tcs3430_channels);
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static int tcs3430_suspend(struct device *dev)
-+{
-+	struct tcs3430_data *data = dev_get_drvdata(dev);
-+	struct regmap *map = data->regmap;
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	ret = regmap_write(map, TCS3430_REG_ENABLE, 0x00);
-+	if (ret)
-+		return ret;
-+
-+	regcache_cache_only(map, true);
-+	return 0;
-+}
-+
-+static int tcs3430_resume(struct device *dev)
-+{
-+	struct tcs3430_data *data = dev_get_drvdata(dev);
-+	struct regmap *map = data->regmap;
-+	int ret;
-+
-+	guard(mutex)(&data->lock);
-+
-+	regcache_cache_only(map, false);
-+	regcache_mark_dirty(map);
-+
-+	ret = regcache_sync(map);
-+	if (ret) {
-+		regcache_cache_only(map, true);
-+		return ret;
-+	}
-+
-+	return regmap_write(map, TCS3430_REG_ENABLE,
-+			    TCS3430_ENABLE_PON | TCS3430_ENABLE_AEN);
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(tcs3430_pm_ops, tcs3430_suspend, tcs3430_resume);
-+
-+static const struct of_device_id tcs3430_of_match[] = {
-+	{ .compatible = "ams,tcs3430" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, tcs3430_of_match);
-+
-+static const struct i2c_device_id tcs3430_id[] = {
-+	{ .name = "tcs3430" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, tcs3430_id);
-+
-+static struct i2c_driver tcs3430_driver = {
-+	.driver = {
-+		.name = "tcs3430",
-+		.of_match_table = tcs3430_of_match,
-+		.pm = pm_sleep_ptr(&tcs3430_pm_ops),
-+	},
-+	.probe = tcs3430_probe,
-+	.id_table = tcs3430_id,
-+};
-+module_i2c_driver(tcs3430_driver);
-+
-+MODULE_AUTHOR("Robert Ijtsma <robertijtsma@gmail.com>");
-+MODULE_DESCRIPTION("ams OSRAM TCS3430 ambient light and CIE 1931 XYZ sensor driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("IIO_GTS_HELPER");
+>> ld.lld: error: relocation R_PPC_ADDR16_HI cannot be used against local symbol; recompile with -fPIC
+   >>> defined in vmlinux.a(arch/powerpc/kernel/head_85xx.o)
+   >>> referenced by arch/powerpc/kernel/head_85xx.o:(.head.text+0x3ca) in archive vmlinux.a
+--
+>> ld.lld: error: relocation R_PPC_ADDR16_HI cannot be used against symbol 'init_task'; recompile with -fPIC
+   >>> defined in vmlinux.a(init/init_task.o)
+   >>> referenced by arch/powerpc/kernel/head_85xx.o:(.head.text+0x3ee) in archive vmlinux.a
+--
+>> ld.lld: error: relocation R_PPC_ADDR16_LO cannot be used against symbol 'init_task'; recompile with -fPIC
+   >>> defined in vmlinux.a(init/init_task.o)
+   >>> referenced by arch/powerpc/kernel/head_85xx.o:(.head.text+0x3f2) in archive vmlinux.a
+--
+>> ld.lld: error: relocation R_PPC_ADDR16_HI cannot be used against symbol 'init_thread_union'; recompile with -fPIC
+   >>> defined in ./arch/powerpc/kernel/vmlinux.lds:145
+   >>> referenced by arch/powerpc/kernel/head_85xx.o:(.head.text+0x3fe) in archive vmlinux.a
 
 -- 
-2.47.3
-
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
