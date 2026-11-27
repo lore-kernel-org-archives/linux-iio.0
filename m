@@ -1,81 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795801562;
-	b=pk57GCkcHUAqxB8UrhJfL4aNLusJzV0IO+8i4n9StGenLEZHrjIM3Y5lYykl/adVz9rj
-	 Qne294DQzCjNRvsNJWEpEzaXJGlhYUz+Na9qgu3SMTy7vrx8YGou/heQCx2x+HjV3c7vB
-	 YiBi2ULzdHewX2KFmM289TRPVUlCpw5NN/JWHb3V+Vjne/CfaFzF7m/EVtSuuKjILV3bz
-	 UfIiltHRb3pwm3iebUAppmNqxg+T8FKn5S87q1GY81e/ezFRamXo4B9vV/ZXGp7BRRiCk
-	 GYIKPnm57owkwEee9GO4w2qVZXCSS1HghTEU/nYsEkS0LOyU3cpbZKC1CpBl+W7sRRw==
+	t=1795803411;
+	b=Vb5EXk5aI4UCoBCCkLCmBRHAw1NaS59tx9tABI6XbQN0a3UQn+ZZCLavPMshtCIqkOnG
+	 g33+1Bzats/Hwj9ym2VwBlLRNVxAARMVP1WDo71Skhm0snrIK3Cg8MpmjzcHRXGgVWXY9
+	 hjOUgB3gUjJaGAU4IxTdKzE3G0U9MJeKIMOSQ5jAFmjAHX8bO0x4cvOl1wpO8fxciw3Hd
+	 WbKsfaGo7LcETAOMx/H3I+Dcv9jIsrDXeDEUxJ6Ov/+TmTo5aLD6RoILVAIFjDZ3ze7Uu
+	 5ArodUprNuNAEOGZEQLU9+NvNz9plF8ET4bf1xUPRg4mpQzDFLh9YYSpyspTV67ksbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795801562;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=d/GgeOdCbcrNVlzorAk5pxyI7Ij7/TVcaBTiw8cnyKM=;
-	b=OVGBH8Mt8z46cmvLpZ4s/wJWAPlht7q5KFpCRD5Trs3g4P/1CkNJ7VG6PLdOIjzw/oqi
-	 nJk6E8lCVbYi0bjTQoCnqvL86+V4VY3KeQdm0fMGxjli1d2M2JIGbyu4edHvy69g3eQEy
-	 zqXO9y8rn7M8pOQtgGFgRhjsZWyQhJMKwBZMulxDxmf900xcVQdtvSzAB6rRI+/x0+Szb
-	 3I1BP3XilSnlkVhGa8NHVuopwwm/QbKJeEWgioNKws/2CSp62ycITerV3lZ5v9QfTAKW9
-	 rvThPZXYL4yBo1jOZUE3pjVxgWGZsJp3xqnjDpu7qNcNvjTb6pbElTBweF1ynHV9iMw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795803411;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=TwQ5+poHQt70GNjq0hNt+O/ZyTbGgJobuW6RMudpiyY=;
+	b=WxuxMQ0uMmk+HSu6aDry9jVwGoB+EZk0U8rPDP3k0HY5HPGRMofxeziZmSUyOoEki8NY
+	 J7+3tvLYSUIg+Uk3BuoRpA2AfUS5IsgnlrKkHAY7LzG8fA03Dm6Jt47U7IRFyc5mYCzF8
+	 WIWHlvCIIgoLFquWKQ/6YJrOOPOXiY/vN0Sggi6FIJEEGEyZAUK6D1kuo4PanjQkhuLsn
+	 6Atfkoo3q+F8qFqfXt3tn+dRu1fG86aT5x2j/5hw+shbUoBZ4P2gqksWc01FkTJ1hJtIH
+	 zpN0SYEaVQVGbddjb9EVB75GUdDW+w/5+hUBLYfMy4i78bjiGHHGxI+epOrGMy791RQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="mGvT1tj/";
-	arc=none smtp.remote-ip=192.198.163.13
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aYzeKJM0;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5745606A31C;
-	Fri, 27 Nov 2026 17:46:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C5745606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6588606A31C;
+	Fri, 27 Nov 2026 18:16:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mGvT1tj/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795801562; x=1827337562;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jUEhHrxBMdLiKaJMKA34DLvan8tVLz2P6jEs36FCaFQ=;
-  b=mGvT1tj/Mb3s5WQxtYw6lRPc08irK1tFiwojCWDwZApN/VkhSdmqjTGm
-   eaBiusCBlYkHEgwvp6t7YYkfr0kohxIgjv6SMVWk921k+kM6SSOUJgg5M
-   VPXuutBr1J75fC59pZRnwspJ0KvZc66sJbpCA9EAxRqTvzqqbrCbZqMPK
-   wmX0JzKNTakCl2npJNJX3zUpu3o4/IZuqU2g1ovtdNLPb0vkfyD4QMAg+
-   vsc+JnG0HqTxiYDJunuQLZVR4WV1y5kG0Cd2ZE+Sle2eKaJKuL7mCn7Th
-   WPJjjvuYDtAxnhQ16CYX0IgBiEK8Pcq7+8kVbQxN9jkrvj1tlIRsNWw/h
-   Q==;
-X-CSE-ConnectionGUID: cty7vD93Tv2VMtu+wE8FNw==
-X-CSE-MsgGUID: vNsyj7c7ToyAWn+d+0brOQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4683241"
-X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="4683241"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 09:46:01 -0800
-X-CSE-ConnectionGUID: d7PIIf74SC6nfbHXoWmgcA==
-X-CSE-MsgGUID: TQShYT8qQEaUewshswitkg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,237,1787036400"; 
-   d="scan'208";a="12354314"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 09:45:58 -0800
-Date: Fri, 27 Nov 2026 19:45:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: robertijtsma@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aYzeKJM0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C4E1F00893;
+	Fri, 27 Nov 2026 18:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795803411;
+	bh=TwQ5+poHQt70GNjq0hNt+O/ZyTbGgJobuW6RMudpiyY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=aYzeKJM0oXzjZjlJU8hTHJKS5IOUPyxNoEt3ohmnIiZ7cKKOmfx3LbdkdUX84Oyce
+	 WDxr8z3DHA8iu/4+ZTy27ZNqRMoL8IqqZtXl8ZFEwQ4H6eDmnh8G6e6oaIu4jyX0JY
+	 GAk10xQ22ZBnpG7PAAkA8/tIgHdjk29T7OqCpwTqWWJAAvBumGaSTs1t4Ef2BhOBgL
+	 eytpouMWQYYcU+JpR8xqd2sNrwfxtdNYkIyPzpd+gQgh1XdnjSQs+mhT1rLZBcUKaZ
+	 YbMoEHTPZ5izrDNgXiWPR6FXgpG4HCcIRZRGd/8LKAKEu7o9sHvIHLkI1JLchRwPRF
+	 nP/ry1v1XzVkQ==
+Date: Fri, 27 Nov 2026 18:16:46 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, linux@analog.com,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iio: light: add ams OSRAM TCS3430 XYZ and ambient
- light sensor driver
-Message-ID: <awnB1KT-oJQoPjOM@ashevche-desk.local>
-References: <20261127-iio-tcs3430-v3-0-e191a40a4ae9@gmail.com>
- <20261127-iio-tcs3430-v3-2-e191a40a4ae9@gmail.com>
+	Conor Dooley <conor+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 5/6] dt-bindings: iio: adc: add AD7793 and similar ADCs
+Message-ID: <20261127-vertigo-smoking-fe2f90e28c88@spud>
+References: <20261125-iio-adi-legacy-platdata-v1-0-54e4c8830b57@analog.com>
+ <20261125-iio-adi-legacy-platdata-v1-5-54e4c8830b57@analog.com>
+ <20261125-whenever-spinning-36a6dc477a00@spud>
+ <awgLBWt6MWIRK-cM@nsa>
+ <20261126-hunter-catatonic-12f9c835f94e@spud>
+ <awlg_vzuEmw95dQM@nsa>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,145 +67,263 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="JNEX2uBHo/cCsBlR"
 Content-Disposition: inline
-In-Reply-To: <20261127-iio-tcs3430-v3-2-e191a40a4ae9@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <awlg_vzuEmw95dQM@nsa>
 
-On Fri, Nov 27, 2026 at 09:12:50AM +0100, Robert Ijtsma via B4 Relay wrote:
-> 
-> Add an IIO driver for the ams OSRAM TCS3430 ambient light and CIE 1931
-> XYZ tristimulus color sensor (found at I2C address 0x39 on devices such
-> as the Microsoft Surface Pro X).
-> 
-> Unlike the older TAOS RGBC drivers (tcs3414, tcs3472) that use the 0x80
-> COMMAND-bit SMBus protocol and RGBC channels, and unlike the banked
-> MAZeT/JENCOLOR as73211 driver, the TCS3430 uses ams's direct-addressed
-> 0x80..0xdd register map and exposes Z, Y, IR1, and X tristimulus channels.
-> 
-> The driver exposes:
-> - Illuminance (photopic Y channel) with raw counts and lux scale
-> - Modified intensity channels for X, Y, Z, and IR1
-> - Selectable scale and integration time via the IIO GTS helper across
->   1x/4x/16x/64x/128x gain and 50.04/100.08/200.16/400.32 ms integration
->   time settings
-> - Regulator management and system sleep suspend/resume support
-> 
-> Tested on Microsoft Surface Pro X SQ2 (SC8180X).
+--JNEX2uBHo/cCsBlR
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Nov 27, 2026 at 11:04:36AM +0000, Nuno S=E1 wrote:
+> On Thu, Nov 26, 2026 at 06:25:13PM +0000, Conor Dooley wrote:
+> > On Thu, Nov 26, 2026 at 12:24:28PM +0000, Nuno S=E1 wrote:
+> > > On Wed, Nov 25, 2026 at 05:41:08PM +0000, Conor Dooley wrote:
+> > > > On Wed, Nov 25, 2026 at 10:19:21AM +0000, Nuno S=E1 wrote:
+> > > > > Add a binding for the AD7785, AD7792, AD7793, AD7794, AD7795, AD7=
+796,
+> > > > > AD7797, AD7798 and AD7799 low power sigma-delta ADCs. The driver =
+has
+> > > > > supported these parts for a long time, but only through platform =
+data.
+> > > > >=20
+> > > > > The ADC reference is described by which supplies are present: REF=
+IN
+> > > > > (REFIN1 on the AD7794/AD7795), then REFIN2, and otherwise the int=
+ernal
+> > > > > 1.17 V reference. In the same way, an external clock on the CLK p=
+in is
+> > > > > used if one is given, and the internal 64 kHz clock otherwise.
+> > > > >=20
+> > > > > The remaining properties describe how the analog front end is wir=
+ed:
+> > > > > the input buffer (enabled by default, as it is at power-up), unip=
+olar
+> > > > > or bipolar coding, the burnout current sources, the bias voltage
+> > > > > generator and the excitation current sources.
+> > > > >=20
+> > > > > Signed-off-by: Nuno S=E1 <nuno.sa@analog.com>
+> > > > > ---
+> > > > >  .../devicetree/bindings/iio/adc/adi,ad7793.yaml    | 236 +++++++=
+++++++++++++++
+> > > > >  MAINTAINERS                                        |  10 +
+> > > > >  2 files changed, 246 insertions(+)
+> > > > >=20
+> > > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7793=
+=2Eyaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
+> > > > > new file mode 100644
+> > > > > index 000000000000..c4a0be06e5c0
+> > > > > --- /dev/null
+> > > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7793.yaml
+> > > > > @@ -0,0 +1,236 @@
+> > > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > > > +%YAML 1.2
+> > > > > +---
+> > > > > +$id: http://devicetree.org/schemas/iio/adc/adi,ad7793.yaml#
+> > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > > +
+> > > > > +title: Analog Devices AD7793 and similar sigma-delta ADCs
+> > > > > +
+> > > > > +maintainers:
+> > > > > +  - Michael Hennerich <michael.hennerich@analog.com>
+> > > > > +  - Nuno S=E1 <nuno.sa@analog.com>
+> > > > > +
+> > > > > +description:
+> > > > > +  Low power, low noise sigma-delta ADCs with an SPI interface.
+> > > > > +
+> > > > > +  https://www.analog.com/media/en/technical-documentation/data-s=
+heets/AD7785.pdf
+> > > > > +  https://www.analog.com/media/en/technical-documentation/data-s=
+heets/AD7792_7793.pdf
+> > > > > +  https://www.analog.com/media/en/technical-documentation/data-s=
+heets/AD7794_7795.pdf
+> > > > > +  https://www.analog.com/media/en/technical-documentation/data-s=
+heets/AD7796_7797.pdf
+> > > > > +  https://www.analog.com/media/en/technical-documentation/data-s=
+heets/AD7798_7799.pdf
+> > > > > +
+> > > > > +properties:
+> > > > > +  compatible:
+> > > > > +    enum:
+> > > > > +      - adi,ad7785
+> > > > > +      - adi,ad7792
+> > > > > +      - adi,ad7793
+> > > > > +      - adi,ad7794
+> > > > > +      - adi,ad7795
+> > > > > +      - adi,ad7796
+> > > > > +      - adi,ad7797
+> > > > > +      - adi,ad7798
+> > > > > +      - adi,ad7799
+> > > > > +
+> > > > > +  reg:
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  spi-cpol: true
+> > > > > +
+> > > > > +  spi-cpha: true
+> > > > > +
+> > > > > +  interrupts:
+> > > > > +    description: Interrupt connected to the DOUT/RDY pin.
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  rdy-gpios:
+> > > > > +    description:
+> > > > > +      GPIO reading the DOUT/RDY line. DOUT/RDY also toggles duri=
+ng SPI
+> > > > > +      transfers, which usually triggers spurious interrupts. Rea=
+ding this GPIO
+> > > > > +      allows to tell those apart from real conversion done event=
+s.
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  avdd-supply: true
+> > > > > +
+> > > > > +  dvdd-supply: true
+> > > > > +
+> > > > > +  refin-supply:
+> > > > > +    description:
+> > > > > +      External reference applied between REFIN(+) and REFIN(-), =
+or between
+> > > > > +      REFIN1(+) and REFIN1(-) on the AD7794 and AD7795. If prese=
+nt, it is used
+> > > > > +      as the ADC reference. If neither refin-supply nor refin2-s=
+upply are
+> > > > > +      present, the internal 1.17 V reference is used.
+> > > > > +
+> > > > > +  refin2-supply:
+> > > > > +    description:
+> > > > > +      External reference applied between REFIN2(+) and REFIN2(-)=
+=2E Used as the
+> > > > > +      ADC reference if refin-supply is not present.
+> > > > > +
+> > > > > +  clocks:
+> > > > > +    description:
+> > > > > +      External clock connected to the CLK pin. Either 64 kHz, or=
+ 128 kHz in
+> > > > > +      which case it gets divided by 2 internally. If not present=
+, the internal
+> > > > > +      64 kHz clock is used.
+> > > > > +    maxItems: 1
+> > > > > +
+> > > > > +  bipolar:
+> > > > > +    description: see Documentation/devicetree/bindings/iio/adc/a=
+dc.yaml
+> > > > > +    type: boolean
+> > > >=20
+> > > > This is odd, why not ref the file normally?
+> > >=20
+> > > Yes, was not sure on this one but saw precedence in:
+> > >=20
+> > > https://elixir.bootlin.com/linux/v7.4-rc1/source/Documentation/device=
+tree/bindings/iio/adc/adi,ad7192.yaml#L106
+> > >=20
+> > > Which might obviously be wrong! And I just noticed that in that one we
+> > > do have it again referenced in the channel properties. So it might be
+> > > just some legacy thing.
+> >=20
+> > Ah right of course, adc.yaml is for channels...
+> >=20
+> > >=20
+> > > But in here the case is really this is a device wide (not per channel)
+> > > property. But I realize that can just do:
+> > >=20
+> > > $ref: /schemas/iio/adc/adc.yaml#/properties/bipolar
+> > >=20
+> > > right?
+> >=20
+> > Happens a good bit for ports, I don't see why not here either.
+>=20
+> Will do.
+>=20
+> >=20
+> > >=20
+> > > >=20
+> > > > > +
+> > > > > +  adi,buffer-disable:
+> > > > > +    description:
+> > > > > +      Operate the analog inputs in unbuffered mode. Unbuffered m=
+ode allows the
+> > > > > +      inputs to go from 30 mV below GND to 30 mV above AVDD, whi=
+le buffered
+> > > > > +      mode needs 100 mV of headroom to the supply rails but tole=
+rates source
+> > > > > +      impedances in front of the inputs. Buffered mode is always=
+ used for gains
+> > > > > +      higher than 2.
+> > > > > +    type: boolean
+> > > >=20
+> > > > What determines if the gain is higher than 2?
+> > >=20
+> > > Userspace does, through the scale attribute. So this property only ha=
+s an effect when the gain is 1 or 2.
+> > > For higher gains the buffer is always on
+> > >=20
+> > > >=20
+> > > > > +
+> > > > > +  adi,burnout-currents-enable:
+> > > > > +    description:
+> > > > > +      Enable the 100 nA burnout current sources in the signal pa=
+th, which allow
+> > > > > +      to detect an open circuit on the selected analog input. Th=
+ey can only be
+> > > > > +      enabled when either the buffer or the in-amp is active.
+> > > >=20
+> > > > The former should be somewhat enforceable with the binding, what
+> > > > determins this in-amp's setting?
+> > >=20
+> > > Same deal. For gains >=3D 4, the in-amp becomes active in the path (a=
+nd the buffer is forced on),
+> > > so there's no way we can enforce this at the binding level:
+> > >=20
+> > > For gains 1 or 2, with adi,buffer-disable, adi,burnout-currents-enabl=
+e is irrelevant, as the
+> > > datasheet onl allows the burnout currents with the buffer or in-amp a=
+ctive.
+> > >=20
+> > > For gains >=3D 4 it's the other way around: adi,buffer-disable is irr=
+elevant.
+> > >=20
+> > > So it should be the driver to make sure all of it remains sane.
+> > >=20
+> > > But I did take a look on the datasheet and this actually seems wrong =
+to
+> > > be honest (the burnout stuff). Datasheet:
+> > >=20
+> > > "These currents can be used to verify that an external transducer is =
+still operational before
+> > > attempting to take measurements on that channel."
+> > > "For normal operation, these burnout currents are turned off by writi=
+ng a 0 to the BO bit
+> > > in the configuration register."
+> > >=20
+> > > So I'll just drop the burnout property and maybe have it as a debugfs
+> > > thing.
+> >=20
+> > For both of these properties, I think meaning assigned to them should
+> > change (if kept). e.g. buffer-disable should not be a property that
+> > disables the buffer, but instead tells software that the conditions for
+> > disabling the buffer have been met by the hardware, and it is up to the
+> > software to disable it if the gain is suitable. I assume that the buffer
+>=20
+> Maybe adi,low-source-impedance then? Disabling the input buffer is
 
-There are a couple of nit-picks below, but overall LGTM, after addressing them
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Sure.
 
-...
+> basically handy when the source impedance is low enough so that we can
+> disable the buffer and have no gain errors which allows for less power
+> consumption and extend the input range by 30mV.
 
-> +config TCS3430
-> +	tristate "ams OSRAM TCS3430 ambient light and CIE 1931 XYZ sensor"
+--JNEX2uBHo/cCsBlR
+Content-Type: application/pgp-signature; name=signature.asc
 
-This doesn't scale, but okay, I don't expect this kind of compatible devices
-appear in a volume, we may rephrase this later on.
+-----BEGIN PGP SIGNATURE-----
 
-> +	depends on I2C
-> +	select IIO_GTS_HELPER
-> +	select REGMAP_I2C
-> +	help
-> +	  If you say yes here you get support for the ams OSRAM TCS3430
-> +	  ambient light and CIE 1931 XYZ tristimulus color sensor.
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCawnJDgAKCRB4tDGHoIJi
+0m9EAQDxr4TDLdKaX6/x8BHDDe0v5RlyDDXeq12cGT9cLsQQ5QD9HYWMjpz5+FQd
+j8FUt3TUML17mx1fZzJ5Gf49mbeA+g8=
+=vrND
+-----END PGP SIGNATURE-----
 
-Usually when it starts with more that a single vendor line of the devices
-the list of them is better as it's easier to tweak later on:
-
-	  If you say yes here you get support for the following sensors:
-	  - ams OSRAM TCS3430 ambient light
-	  - CIE 1931 XYZ tristimulus color
-
-(feel free to amend this example). But if you go to do that, change the
-above text to something like
-
-	tristate "ams OSRAM TCS3430 ambient light and compatible sensors"
-
-(and sync with other places),
-
-TL;DR: Change if you wish, but I'm okay with the proposed texts for now.
-
-> +	  This driver can also be built as a module.  If so, the module
-> +	  will be called tcs3430.
-
-...
-
-> +static int tcs3430_probe(struct i2c_client *client)
-> +{
-> +	struct device *dev = &client->dev;
-> +	struct tcs3430_data *data;
-> +	struct iio_dev *indio_dev;
-> +	unsigned int dev_id;
-> +	int ret;
-
-> +	ret = devm_regulator_get_enable(dev, "vdd");
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to enable vdd supply\n");
-
-Why so early? It's better to avoid touching HW as long as we can, then all
-other possible errors will not provoke any glitches and unneeded power
-consumption and delays.
-
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-
-So, somewhere here (to be robust against the cases when regmap wants to fill
-the cache from HW or somebody reads debugfs at the time of initialisation.
-
-> +	data = iio_priv(indio_dev);
-> +	data->regmap = devm_regmap_init_i2c(client, &tcs3430_regmap_config);
-> +	if (IS_ERR(data->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
-> +				     "failed to initialize regmap\n");
-> +
-> +	ret = devm_iio_init_iio_gts(dev, TCS3430_MAX_SCALE_INT,
-> +				    TCS3430_MAX_SCALE_NANO,
-> +				    tcs3430_gain_sel,
-> +				    ARRAY_SIZE(tcs3430_gain_sel),
-> +				    tcs3430_itime_sel,
-> +				    ARRAY_SIZE(tcs3430_itime_sel),
-> +				    &data->gts);
-> +	if (ret)
-> +		return ret;
-> +
-> +	data->gain_sel = TCS3430_DEFAULT_GAIN_SEL;
-> +	data->atime = TCS3430_DEFAULT_ATIME_SEL;
-> +	dev_set_drvdata(dev, data);
-
-> +	ret = devm_mutex_init(dev, &data->lock);
-> +	if (ret)
-> +		return ret;
-
-> +	ret = regmap_read(data->regmap, TCS3430_REG_ID, &dev_id);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to read device ID\n");
-> +	if ((dev_id & TCS3430_ID_MASK) != TCS3430_ID_VAL)
-> +		dev_info(dev, "unexpected part ID 0x%02x\n", dev_id);
-> +
-> +	ret = tcs3430_init_hw(data);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "failed to initialize device\n");
-> +
-> +	ret = devm_add_action_or_reset(dev, tcs3430_power_off, data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->name = "tcs3430";
-> +	indio_dev->info = &tcs3430_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = tcs3430_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(tcs3430_channels);
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--JNEX2uBHo/cCsBlR--
