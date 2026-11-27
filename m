@@ -1,89 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.50
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795761266;
-	b=NVxVHvcydwkokXa3xfAxkhtqmKxxXc/tyeFc69VKMvXwNVfFDrlsM9PymPGvkLEMPJbX
-	 9BiT6ntXCLoIOh/nEjsPuZu4yoPNqBbUU761mZxPBa2NN9hENkF9y4MFdDnth2xZ57LoH
-	 MT3SAJTWu9iH0WIwJZ4ZnT/anmQrV7bKwMSfv7F0RRwzWM+eDTr59eY/lFDb7sUCPK9ue
-	 TR5yHPFEP2dwpd5N+blMPsbGnJVP0nTE9TCrYMRXfh+UFdZ3X1kHQfezawa7nwKMKw4IZ
-	 3ZPJa+McoCOkoTqPcpJhhkBv3RuUWJGfhCdwV3Bc/nBUs1Vu136STMp7TPte6JsDehw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795761266;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=gUzNN5Vkw+FWG6ldm/CpYslMZUG/iWEMjDh+KHc0a9s=;
-	b=wunn0CpbCvPz0zyMkatfX3u3BKadNyKmI5V1OpGXDnLvHzXPK8TDMWKi5jAeDbCiNTej
-	 gg3aL7vXAw+vlh76sahOTIqpqgjTHAkJygaAcUdY9pOACP/v6Dkm9HdJpl6VybbSrJC9p
-	 oj/oC+CHf7+ys3hp2zY8CSiKuFoGjoiQPgpeBHMvkRgRei371U6nPI+JbICVNdtTGRQO3
-	 FUTAVacyV1qO/ed+UUVlD5UW8Fzv5QqbuGJR9u8DEM0br/G2H1fr5Jy7qvgYDDv0XeTPK
-	 G62ZEMp32amCo230ZdJRoX+mvWS5RUkOm7NBHWLbAwvSK7OvE3Cd7OP/AwTaEkakkQw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HP53Pcxz;
-	arc=none smtp.remote-ip=209.85.167.50
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795767175;
+	b=XcICiOrosgORew8ui8oGKEZ4F4jqOh9y3z2i1w9w8BAtE2PhLAqlwOur1tve6O5DwtqJ
+	 5rZwaorcFx2abIsiY9uIxNvPUtw2IhZ9uEd8Mtaq0nkz01SsZ+wkK1VA53CXqntWjSWxw
+	 u02F4lV08Zk7ZzLPyTRmFZnDlNl3P3PfRBxlfFRbq5hZ5fljoWwYnecGmhfOBlC6KBAEA
+	 bpMeqAMPwL3lnxQrwda7s1PLWEYzjyVyOeM1luzLfZgbXQ6k5qBz/9v2GOpRXNHWCOJHP
+	 E25U+0nI0L1fG8ggZO7GxHK33MhzeuqgCyQIcYq/Wx/GyKcBXpSvVbzT/+ktzXMHV1Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795767175;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=/hVyNF3xLIIhkwlAx/u+gUeg5nNF10nSIgNUvJ0Z3oA=;
+	b=NhtMI/pbe83Qf/21UlP4VyBgfjABZGAjgCIu0yaKOhVn+25bMPk+5h/eXiHsRyh0bk12
+	 kjDHCCflCDnj3UJWyHs/s6yO/6DSj/prsmNs/nFFPI0qBf2lwXhPGjRUlVXy9L15SkjIn
+	 zyhWYZpoVkF+WpGYMqx5fQxnFZdFEmbq9oEWgTwVvFrVgStjZhaujbSNxUKSCAAZJyM2g
+	 waaLaNDlKsBRQRQVWBvSYsGtS0/ncOEzyNuSIJYCU0kBh4b/SREetC4Hp0oVpizT9zyyu
+	 pzXsxMxfVIWmhSoxmWsk21mctNNqYVOJZt/HgBmG7jCSXJh2UJBl8GVgTiOLEPjRvpA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IuC9uPTn;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60340606A31C;
+	Fri, 27 Nov 2026 08:12:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IuC9uPTn
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1795767174;
+	b=OaMNjBifdEECmDhO714F3Xk9ptX8hsdSNbVKcqikH/1mrszTpvSZtodpGbTQt6dlwGMK
+	 L1h+kM1r/lI9FP268+FBaKDIpt0VH/R1/qe+a8Lnx7Nn3JFTMyip/h2mnN9lbdA1UprJN
+	 0yus7jCOdfPLVbgRo5BLOj0D4OfY1P+O75ktPJ5Nz5xVxvBWz8LdKd3XiWe5LsiZywiMJ
+	 4r9zmCKdxLIlUMLV2HgBEvcvT777NnbUkEJ4/DJ98M139qZIhcjaJrA48B9GTDkmcLXii
+	 1L0PfzG1+S/h9pwAiVqVzs4LWLhkNJLN+3/iVWSeO8nPuY2K8Q3uIxr3hlYETEdulYA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1795767174;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=/hVyNF3xLIIhkwlAx/u+gUeg5nNF10nSIgNUvJ0Z3oA=;
+	b=eq287kVqA/cyoU9OM1k6Cw7G6NHGtqsxNKY0IvqIFJ1aLPzXvHuL3wK6+GHYwQElwpvl
+	 UZxOML5ro9y9wKH8RhlP+nn8Ppqdw9xDXmJ9c5FeziS2G3nuowF5Jthg1wX4hQhQGmsz1
+	 Bfx06WDNTN6z5woLodRtCvOhhusujxluklAf3FoJJipjU2br5O1iLmGmO0pHD8kuEh50q
+	 5JxtEoN9Np2/vEbbSHu63S29T/0bhslZB+y5ANUaR+eb93UydAv/hbgR3UY13xV/vOV9D
+	 tFVfkvAK32IrOIJKlyP7b2vVw69j8743KzFw2IB687V/aMXN1u+SM62al/wq4D21ZYQ==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7E3C606A321
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 06:34:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E7E3C606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HP53Pcxz
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5c126fa1e3aso5733100e87.2
-        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 22:34:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795761264; x=1796366064; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=gUzNN5Vkw+FWG6ldm/CpYslMZUG/iWEMjDh+KHc0a9s=;
-        b=HP53Pcxz6VK/d6Ax3MTyVnSdtArB+vXwV3IZ8ubtFb78o88Zb1uKFP/GOgE2eC3VUz
-         zZ+PT6v2ILrKcaJaqFVU1QDdbdTVWxvfrevuYbQkj/BiufpDAchFNczsvGPEcgXYpqF9
-         Quoc1a68aOcasr9mZ9qICWsu+RLRoPzyiFkally9q3S0sFHEvEcLwSUDRczNAsTV4xtx
-         QzHJRjiyoUNFHnwFzxaok2gagjHNmMaxoOU58dR3HRe4jfJy3tqsRdxQVgU25j3ikOYj
-         TyRi7NVI5VHDmKH4+Zcn6VQfo/pyjQNQJjMHNkHw/PcvhPxxvskDg0J4szE4F0H45FKK
-         3uxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795761264; x=1796366064;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=gUzNN5Vkw+FWG6ldm/CpYslMZUG/iWEMjDh+KHc0a9s=;
-        b=KcUpdc6hyXyJpj5a1tD59uQcG/XzHXdhhSgT1+aTIKZxpAOAJbGP9QGN6MTFSawUWI
-         QMnJBjB21urRViIVU9DtGhpBFv68YbyV7fTzNmdykJZ2AJ7WUMqas+pN0v+MJZUWeo+w
-         DBre1edXmpUqK/uwnumkPLJkqrD0U+RUALQNMeFrRxl1x4GSFdKfwrzgSQa083o2Uc5D
-         4GCajtEkaoLRiOoEXs0fnJ+pi6CoeffstIQg1MyoKiuoR3dN4OIUvwB4gOpnjcbG0a3H
-         pbb55Sv5PY8ryychz4ROKTGcWq005/k9VswzqspTbgqczaOEs4co9jxY0yqX/WFtnGWA
-         6MUg==
-X-Forwarded-Encrypted: i=1; AL+hErFo/Ggb+x0K0auSxh53Ul8SjPuti+DJp3lMmVVzZIeShNX1Yk7DL3aCPesYWCIse1VWgcE0wP/WihE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z+jWh9wmsmKF87BwIMufXiAiESS0RNKkMeqwFGlA6K8w7Apbk6a
-	YrM4HuqIwTt8gdcOt9dZXdGzGIGkM7TlF1WcLUbejpp/D+POgEJ35QUQ
-X-Gm-Gg: AZFdTZcekpZ4RJvUruEg8dUEPm/5CBdmPFZM1LBQNxcWVIUe+Zw2eH5F22pOJpvIN5a
-	kKKxjN0bmfWgrdNHH2P+/yJuZ5cmXTX3OWZHwhN3QKlW8ru9toQkPs6q8j4dlDe/lxdnGFZTjCy
-	RENXyAaKub7MyoKmH68p61xRzL/FBjYuJz6/8SXpFxqnKITwJP7Bdxhqi6NHxBGEk6rxvN566Wp
-	CVSyJG0pTKF7kCK1blRsFhgSvAVbxK/PVACF8mBVOXxo5HnbM7juekL3LXzyjTHufK0GV1GPE/1
-	40R/vxA5FxQsBrdfBXU42xHi/IP2W/PkleSZp0vhPYtLPskOKoQw/yH4eXTxYeG1p0nWeHwD13w
-	CXyCTMIc1+ORB4oHsGZVul9gQLIbzGQHVhKAGUH8/ltbV2pmAlShFNnw0MKRDfEG2LTgRCeAsHA
-	yXGG6wC/KZFYMwrSGeIkTkAnHKA7p3RWZo5w9Tfrafnk6FUEP4VHkqlJs1sTyzTqppemkhTDx1b
-	jIgpcO39RoVHsPE5GuVNRYhL7TdmItnaCM69tdUOJVZ6GJ/PrkwbRxE5yeAgkGsoQdTmbW7TpOY
-	zX4bA4ngHpA6byLXcCySLslxSH4sgmlXKCx+ZJ/B/p+y0dPvriWAowNKNn6uymTFzTegvr0tzpl
-	6WWo4KcBXkg==
-X-Received: by 2002:a05:6512:108a:b0:5bf:b93e:8854 with SMTP id 2adb3069b0e04-5c1bc88c6f5mr6895499e87.57.1795761263755;
-        Thu, 26 Nov 2026 22:34:23 -0800 (PST)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1bd07a2a5sm5678566e87.78.2026.11.26.22.34.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Nov 2026 22:34:23 -0800 (PST)
-Message-ID: <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
-Date: Fri, 27 Nov 2026 08:34:22 +0200
+	by smtp.kernel.org (Postfix) with ESMTPS id DA8011F00923;
+	Fri, 27 Nov 2026 08:12:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795767174;
+	bh=/hVyNF3xLIIhkwlAx/u+gUeg5nNF10nSIgNUvJ0Z3oA=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=IuC9uPTng70jHGYDvFkT4ZKfbIrlPgKkD7IMSYhX4ohvPNEo0UTmcsPfpcM8VkZ/Y
+	 gEVFVkkNUT/49jM4ZDw7Zh4G7uCIJFsSpvqdxRHu/eDrRPnYYj7IL8VZbGGC/FhJUf
+	 tpT+9tW0KrCExHPDsbme0Zs7fPjxpQ+YYBgIxm+74rXBoDFa+XojNvVmAusH2TIswt
+	 1KidzJWCKNICUwyzvpQy0AQmKkpGq+g2pYQ4U8RUdRrx4gOHr5EYRtCxhPcbi7rDfy
+	 O+4TbweCnARJjt7nbFt8xJ7pxywfNQNVhK+ja5wp1yHHnsnwDZgLKc+Goi4oEsVcK5
+	 chxzkkiDiwneQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 5EEB84B62D;
+	Fri, 27 Nov 2026 08:12:49 +0000 (UTC)
+From: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>
+Subject: [PATCH v3 0/2] iio: light: add support for ams OSRAM TCS3430
+Date: Fri, 27 Nov 2026 09:12:48 +0100
+Message-Id: <20261127-iio-tcs3430-v3-0-e191a40a4ae9@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -93,142 +83,90 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
-To: Joshua Crofts <crofts@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
- <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAIA7CWsC/22NQQ7CIBQFr9KwFgOflhZX3sO4QErbb7QYqETT9
+ O5C3dTE5SRv5s0kWI82kEMxE28jBnRjArEriBn02FuKbWICDCTnUFJERycTRCkYha4STa0qqG1
+ LkvHwtsPXWjudvxyel6s1U07kxYBhcv693kWed//LkVNGWQdaNFrq0vBjf9d42xt3J7kcYevKX
+ xeSK00lQLXAFFdbd1mWD7qXnzL0AAAA
+X-Change-ID: 20261124-iio-tcs3430-2f53879527ed
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Robert Ijtsma <robertijtsma@gmail.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795767168; l=2793;
+ i=robertijtsma@gmail.com; s=20261122; h=from:subject:message-id;
+ bh=Et/l27YtcKEISI6lN7W3Gjj8ZZUwqHD71s8HMID2vHk=;
+ b=k0FMvHMwng07hSnPZ1075uN9j3w4uxD9DygJjEgMRacDTfnwx/k2DmD4AOV7oe8IeXAws6pSb
+ 1bCylw3FQRKCrDxB3JR+6Us0Q1qm1QFVd2AVC8R3kYTmHsvrCnE6Mao
+X-Developer-Key: i=robertijtsma@gmail.com; a=ed25519;
+ pk=qiDyKVqFicxFIR5sB5m+p9SWPKL2/+mMoiQnUx0C9P0=
+X-Endpoint-Received: by B4 Relay for robertijtsma@gmail.com/20261122 with
+ auth_id=1604
+X-Original-From: Robert Ijtsma <robertijtsma@gmail.com>
+Reply-To: robertijtsma@gmail.com
 
-Thanks for the review Joshua. (I appreciate reviewing effort even though 
-it may not sound like it.)
+Add Devicetree binding documentation and an IIO driver for the ams OSRAM
+TCS3430 ambient light and CIE 1931 XYZ tristimulus color sensor.
 
-On 26/11/2026 15:31, Joshua Crofts wrote:
-> On 26-Nov-26 14:23, Matti Vaittinen wrote:
-> 
-> ...
-> 
->> diff --git a/drivers/iio/dac/rohm-bd79703.c b/drivers/iio/dac/rohm-bd79703.c
->> index 127ccc2c4a22..1d58bc1544a1 100644
->> --- a/drivers/iio/dac/rohm-bd79703.c
->> +++ b/drivers/iio/dac/rohm-bd79703.c
->> @@ -41,7 +41,9 @@ static const struct regmap_config bd79703_regmap_config = {
->>   /* Dynamic driver private data */
->>   struct bd79703_data {
->>   	struct regmap *regmap;
->> -	int vfs;
->> +	int vcc_mv;
-> 
-> _mV is the preferred style to denote SI unit variables.
+Tested on Microsoft Surface Pro X SQ2 (SC8180X), where the sensor is
+connected on I2C at 0x39 and used for ambient light sensing.
 
-I have discussed this before, and I disagree. Regular variables have 
-been lower case since forever. Capitals have been used to scream "Note 
-me, here is something unusal you need to pay attention for" (like 
-macros). In my, admittably not always humble enough, opinion, the whole 
-"denote SI units" is stupid. I haven't yet seen an engineer who wouldn't 
-understand the meaning of vcc_mv in this context. And, to be very blunt, 
-if I saw such an engineer, I would rather him stay away from the driver 
-code. On the other hand, I have seen engineers who have spent long time 
-with kernel code, stop reading to wonder "Hey, we have capitals here, 
-what's special with this variable/member". So for me a change from 
-vcc_mv to vcc_mV makes this worse.
+Signed-off-by: Robert Ijtsma <robertijtsma@gmail.com>
+---
+Changes in v3:
+- Import the IIO_GTS_HELPER module namespace via MODULE_IMPORT_NS("IIO_GTS_HELPER")
+  so modular builds (CONFIG_TCS3430=m) pass modpost.
+- Enable REGCACHE_MAPLE with a volatile register table (0x92..0x9b) and
+  regcache_cache_only()/regcache_mark_dirty()/regcache_sync() across
+  suspend/resume (Andy Shevchenko).
+- Align Kconfig tristate prompt, top driver comment, and MODULE_DESCRIPTION(),
+  and keep driver-separation rationale in the commit message rather than
+  Kconfig help (Andy Shevchenko).
+- Simplify tcs3430_set_scale() to drop the keep_time boolean, rename
+  in_range to gain_in_range in tcs3430_set_itime(), use local regmap
+  variables for readability, add blank lines after guard(mutex)(), and
+  keep dev_dbg()/DEFINE_SIMPLE_DEV_PM_OPS() on single lines (Andy Shevchenko).
+- Link to v2: https://lore.kernel.org/r/20261126-iio-tcs3430-v2-0-6c5329d20919@gmail.com
 
->> +	int vfs_mv;
->> +	unsigned int num_vfs_chan;
->>   };
->>   
->>   /* Static, IC type specific data for different variants */
->> @@ -49,7 +51,11 @@ struct bd7970x_chip_data {
->>   	const char *name;
->>   	const struct iio_chan_spec *channels;
->>   	int num_channels;
->> -	bool has_vfs;
->> +	/*
->> +	 * Some ICs use VFS-pin for full-scale voltage for first N channels.
->> +	 * We need to know these channels to get correct scale
-> 
-> Small nit, but missing period at the end.
+Changes in v2:
+- Replace hardwaregain control with standard IIO _scale and configurable
+  integration time using the IIO GTS helper (Jonathan Cameron).
+- Hold data->lock across the entire IIO_CHAN_INFO_SCALE path in
+  tcs3430_read_raw() (Jonathan Cameron).
+- Convert register I/O to regmap_i2c (Joshua Crofts).
+- Wrap guard(mutex) declarations in tcs3430_read_raw() switch cases in
+  enclosing blocks to fix Clang -Wjump-misses-init / cleanup scoping
+  (kernel test robot, Joshua Crofts).
+- Use switch(mask) in tcs3430_read_avail() and tcs3430_write_raw(), and
+  drop unused linux/mod_devicetable.h include (Joshua Crofts).
+- Drop redundant L: mailing-list line from MAINTAINERS (Joshua Crofts).
+- Pick up Krzysztof Kozlowski's Reviewed-by on dt-bindings.
+- Link to v1: https://patch.msgid.link/20261124-iio-tcs3430-v1-0-0f2a38a6a4c1@gmail.com
 
-Thanks.
+---
+Robert Ijtsma (2):
+      dt-bindings: iio: light: add ams OSRAM TCS3430
+      iio: light: add ams OSRAM TCS3430 XYZ and ambient light sensor driver
 
-> 
->> +	 */
->> +	unsigned int num_vfs_chan;
->>   };
->>   
-> 
-> ...
-> 
->>   static int bd79703_probe(struct spi_device *spi)
->> @@ -184,23 +206,26 @@ static int bd79703_probe(struct spi_device *spi)
->>   				     "Failed to initialize Regmap\n");
->>   
->>   	/*
->> -	 * BD79703 has a separate VFS pin, whereas the BD79700 and BD79701 use
->> -	 * VCC for their full-scale output voltage.
->> +	 * BD79702 and BD79703 have a separate VFS pin. On these ICs, the VFS
->> +	 * pin provides the full-scale output voltage for half of the channels,
->> +	 * and use VCC for the rest.
->> +	 * The BD79700 and BD79701 use VCC for their full-scale output voltage
->> +	 * for all of the channels.
->>   	 */
->> -	if (cd->has_vfs) {
->> -		ret = devm_regulator_get_enable(dev, "vcc");
->> -		if (ret)
->> -			return dev_err_probe(dev, ret, "Failed to enable VCC\n");
->> +	ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
->> +	if (ret < 0)
->> +		return dev_err_probe(dev, ret, "Failed to enable VCC\n");
->> +
->> +	data->vcc_mv = ret / 1000;
-> 
-> Better to do ret / (MICRO / MILLI).
+ .../devicetree/bindings/iio/light/ams,tcs3430.yaml |  52 ++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/light/Kconfig                          |  12 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/tcs3430.c                        | 521 +++++++++++++++++++++
+ 5 files changed, 592 insertions(+)
+---
+base-commit: 4843f6873f7c4835e62f2c73ba0fd538e57a2f22
+change-id: 20261124-iio-tcs3430-2f53879527ed
 
-This is another thing I've discussed also in the past. If you genuinely 
-stop to think this, why would MICRO / MILLI be better than 1000? Which 
-one brings smaller cognitional load, huh? And assigning the result to 
-variable vcc_mv makes units explicit in any case. And speaking of SI 
-units and scientific accuracy, what actually is MICRO? What is MILLI?
-
-...
-
-Micro is 10^-6! Milli is 10^-3. So, this becomes "ret / (10^-6 / 
-10^-3)", which is plain incorrect. So, instead of making things better, 
-this obfuscates stuff even further. So please, let's not spread this 
-madness any further. (So actually, this should be 1_PER_MICRO / 
-1_PER_MILLI - and that'd be even more cognitive load. When did our goal 
-changed from making easy-to-understand -code back to making 
-fancy-looking code, which is harder to understand, while claiming it to 
-be an improvement? That's what these discussions really look to me.)
-
-I agree on using MEGA for 1000000 and even 10 * KILO. This makes sense 
-as when the amount of zeroes increases, counting them becomes harder - 
-especially with old eyes like mine. But using (MICRO / MILLI) instead of 
-1000, that's, in my opinion, just plain stupid. Intentional obfuscation 
-of a perfectly clear thing.
-
-I am ready to discuss these points when I submit new features, and I've 
-done this quite a lot in the past with Andy ;) But with a fix for a 
-pretty severe bug potentially causing unexpected voltages being driven 
-out of a device - which may cause a havoc to hardware. I'd rather get 
-this fixed ASAP. Maybe you can send an improvement patch with suggested 
-styling "fixes" if you feel really strongly about them, and we can 
-continue discussion there? I am sure Andy will also join us ;)
-
-Yours,
-   -- Matti
-
+Best regards,
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductor
-Oulu Finland
+Robert Ijtsma <robertijtsma@gmail.com>
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+
