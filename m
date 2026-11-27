@@ -1,88 +1,81 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795779976;
-	b=hWYgBj1KNi0uYI02ofgBHCLYCiD51l5T2YPDXQ8CyKoDP7lDyWiNcfjLveKng6HyrEqj
-	 HrNMfOL6GbGwIrcVMmmP2ss6ynH0BNC42JmY0+9s3cxLV+GnEy17be6tW3GhIO3r9ALmY
-	 ohwbmFXpJeBon0K8O1MUa+Nko7uyrQXn/FIcXubjIrdPpfGaQE0DqcJz5VnDNyJOThHug
-	 fipoQQLxFykTeTkAp4NORzuzGowWPHhinlI60LQQHuXThaDl/7VEYpjXhX33WjlDHSi1U
-	 h5GsU0FSidwzVpQS5tbaHTAkB93Irwe7BlDfRX+T7iw7t+SGiEMD1XymtxmddHx8evw==
+	t=1795780149;
+	b=G+W/Kmhp3wDC1zF2Crlx3EArCebUvGR6GAexoErQB135Be92AIh7h/uRucCPD8e8u5LU
+	 GjqnXP7MPtlNTI1Z4r2YXT/lVjX017mrtSKZB4NCnwaURN3QMB28MVDqJEdUva10SqzYj
+	 Oa+0MClrZmW/RYXtWXF0gqJLBfWkzfoKruabyvCGZsbqE0SdMkvywDYdoFxCoglfTXsJz
+	 AEqjvFoNkF5pXv1Lr/OlliJng9R71+CMURZo43IVY+Ee/Rs16cgDXBSBNMukvCVph4liX
+	 E/kUUxUwxYpw66JiBZ09dkaqAyt45kE/I9htUB/yxFEP846XvBF61h30+uNUiAICC6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795779976;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=ZxMoV0clQ2armNCSyoPGDqOYSNYRsISnPiQcB5JAR4w=;
-	b=0zVqX+zOOPKbn8pY8/4xSvF8O+iAc8ATcfEbTxlUr7mKPcWCPEGJ0fB1KVcrTaj2hl+Z
-	 6PqCey981zwjQo6k8nyeIa2K0cSRYFBrRdSvHPJmVqE3c0yqgN96u8j74ZBYvncM4bbXl
-	 LYQ911dbUUkBLuzLYwUEMs0Ec0rqupyntuXqdcYp48AcrkiFVEZke9/Bs8lP0pSpwEzFX
-	 Gn2dpvVhoP/L90UpdloZVtN2Wpi8tKmmDWzJVKcDcvr+qE2YxU0xWV2OPBKORkPzBmQux
-	 HF/eZ0n6RD+62O+IAB1njjeXE7ULdt1WP1hujO0N/cn4gFw9gejTPwk00lLRD8bMmAA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795780149;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=LHjds6ciTHOu6s5j7BpqtZ+KJ92VAdObR2G5YzE16cg=;
+	b=YczUd1esk2vi6oW1a6/bscC6yJT3DoNv9s7gP4O6v4gyi07goWHtCG68pxEbac0ZCt0H
+	 8q0/O0mDd+q2YHVFbhNr1esXygcxail7yWpfWY284DjyKy+54lhpeh6dvj+Tat/PKDeEV
+	 eOBfdkpIJsqpUJ5PFmGcvLLe07gQNNx9ZeFmgfYjKr4HE2dWN1IAp0Px0L5Kgo7Xtrspg
+	 0vG+hE82TLLoMBEfibuQje0tTJu4Nj6UpiuJQxMNRL4g7vNoXf0gFOT+QF4rVC/gG18ED
+	 nEvcNzE66L9c6TxwoV8Jktfw7tubcQORQDx2/+A54A6jJWs2OIyPJyBM7z71TE14DTg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ACqF6EUx;
-	arc=none smtp.remote-ip=209.85.218.45
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PvWbOBlM;
+	arc=none smtp.remote-ip=198.175.65.17
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613F7606A31F
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 11:46:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 613F7606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F143606A32D;
+	Fri, 27 Nov 2026 11:49:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1F143606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ACqF6EUx
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-c51d158acc6so144670966b.0
-        for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:46:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795779975; x=1796384775; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ZxMoV0clQ2armNCSyoPGDqOYSNYRsISnPiQcB5JAR4w=;
-        b=ACqF6EUxfxi3LaXvh9zqneVKZk2Rih+JpedAEasVpOEE3gBMdr4W7QydtKAMmOJm8r
-         mdu8nBvnrrHyaR4HD+STVYTr3Cj3aXeCkVpQkiSUMNu5ouEK+XtbQY57qhUe9Z66/+uk
-         KSS+uSwk+R/RP2UHgXJVpIIKHM622ieBJvIK6xa2iP054qav13WqwyH1sM2R31tD2i2x
-         fRDKLmzMm2yPyFabnmQl7j/hjIxxdfO8DAKm3fJSNqtzh6e1g36D+e5J5j9iFjLdxNED
-         ZJx7KjQ7XYV2n388hNMuKaTdIrOKkalpsPlO6Zu8F1samoq3bcziYGfPyVbrRvFoYk4r
-         bs+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795779975; x=1796384775;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=ZxMoV0clQ2armNCSyoPGDqOYSNYRsISnPiQcB5JAR4w=;
-        b=ViZPAtTQwfDUhT0rea1r+wkucJ0OZg9cyZatJkzNlEiLoR5lGAAwiSt0De3lN/B8el
-         bVN8ENHZ0cH25qLaNDXlsULuMOoJVZ3mKEtztpRD5snjIeu6ti83hL9kYddqCW9NhJpJ
-         jc/YE2BBAHjhHCANPIW6w9/beRc3euPKxs173o/rF+bqbz5nMILRkB/io8PCHS5KRWGE
-         MhovxgmXamtMHidWzLlhCgdcUjh84MLP6LUucxQ+zFKke2tUitTt/vQOXMTeHFlvJ8um
-         nKinWejrd6Xzm26pJMzHQQTLTbw2ZdEaJse8KuIsGZgVwvIK/iVtp0MxcEmwGo+jzhMt
-         CKqQ==
-X-Forwarded-Encrypted: i=1; AL+hErFjDNTDkPKgDeMFES7aRVSpbG32ps1NH6msTZZtHglXxokO+W3thmTNAXgIeMJ1hvs89zJlHY8w0v8=@vger.kernel.org
-X-Gm-Message-State: APuU4Z8wmBVISiRjJs4SKZjalo+/VnKvIjYnpwUzpTKSXoaaeINpmKwi
-	rEdujbJx30rmqL1siI1oYSRgdxLWbrjlLDp1Nl2vdRQknqsO21CiwcFZ
-X-Gm-Gg: AZFdTZfaZw3BRqnrToc5YO4TuJdBx/CoX71DBesx/T5fGCe/FLDosjBdd+/qc5WA26K
-	rU0odtYuzZ38TLcJzKz3qZVNo/BoEhk5x4odl59H68uA68e+0/ShjIfsSB1KLTpQjU/trVUtsKC
-	wTfVXu3ZFqc6FWrFLv7uAkP6QJUPCAFApT2bqR58gdFbJQn1uexpCO6jN8HsPhisAqSWV2oc6M3
-	PoHFr+ZTHuCKLXmsSnNDW93/OqluyhT/4j3qCIVA+UHuzqLUt1qDXn9iMvQVy5ab31wpYAGc0q9
-	0ZEKSnFiSrff2/A3WwrkYlQN48K/BGTucjzk9obP/S9a9uky9HUKJnrnTrjkSsm70UCVeYaDNmh
-	oWEJAtfAWfI7sov1bK4ksMcASMw+aYwGxCpx2RcVvKlDs9vpvn1BUujjf9NIkb2tMHFFyivXdp+
-	2XpBHTOeSnu4zA1r5PKjQ9NLEPtxEJi8XfhabIhcSVuen4kh0PwPpMXkVvlbCh27fnUSVmhIUcI
-	D4Cx+vwEO8P5eAM0AGb52j2rKBmjoFgeSwdCGLcidXFuXJhGLmpt4HWhzsS/EimSA/i4BNiV7g0
-	l07aNvWwfvK+yWG1ijd5XOTnUOLPfid1cnrmeg==
-X-Received: by 2002:a17:907:a88f:b0:c46:d493:501a with SMTP id a640c23a62f3a-c513a8410d9mr2141087566b.22.1795779974463;
-        Fri, 27 Nov 2026 03:46:14 -0800 (PST)
-Received: from [10.38.18.54] ([213.255.186.37])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513ae6872asm836997766b.13.2026.11.27.03.46.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Nov 2026 03:46:13 -0800 (PST)
-Message-ID: <9291049f-987e-4402-b32c-12c33c7aaa33@gmail.com>
-Date: Fri, 27 Nov 2026 13:46:12 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PvWbOBlM
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795780148; x=1827316148;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XzHVhYO5Bak9DTZPT1IGDE74DbrcFKazihZbhV2Hdag=;
+  b=PvWbOBlMAtdbir9JQui5Ffqc3wg7js0d46d3JoU/FZzOqG/QRHXj+vTo
+   5b0u+cNoGnwxZeJrvw1WTgQnmStjniVBZG+17E1BmoNi3AsyQFuAMmchO
+   jzTeUEsjhwtAXO0U4348OEwYuhPFZcln8xyt9xqNZAdp4sE4mfY/WzzaA
+   QhvNzHdsZ+aP4XuiOYONkyMT+cQ61RGR10SGd/JiEFnbqVyM84MJvcY+l
+   C3vCSvLmqZyKJSTG/lgC41Ja2XpaXWNqY+2GIWFXptbsWbYFSZnZ5tCBN
+   dufo9cY8rMfgxHQhydX+WmKL9ToS9XjZNZUDpKC+TJsnD9UC5lkrgbUjA
+   A==;
+X-CSE-ConnectionGUID: CGeDpdKySC6zKh+ZUnEhyA==
+X-CSE-MsgGUID: i3CAUZzTStCReuita6VBGQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4689337"
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="4689337"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 03:49:08 -0800
+X-CSE-ConnectionGUID: JYW6xWC5QziaeZB7uvjkeA==
+X-CSE-MsgGUID: XbTyXrfQSQWOGM+FJxjZKg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="12292067"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 03:49:05 -0800
+Date: Fri, 27 Nov 2026 13:49:02 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Romain TISSERAND <romain.tisserand@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-kernel@vger.kernel.org, sashiko-reviews@lists.linux.dev
+Subject: Re: [PATCH 0/4] iio: adc: Add the Miyoo A30 and PocketGo S30 analog
+ stick MCUs
+Message-ID: <awluLgvMt9BN1Aj8@ashevche-desk.local>
+References: <20261127012612.1589039-1-romain.tisserand@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -92,98 +85,65 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Joshua Crofts <crofts@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
- <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
- <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
- <awljZLpARRVUFqbI@ashevche-desk.local>
-Content-Language: en-US, en-AU, en-GB, en-BW
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-In-Reply-To: <awljZLpARRVUFqbI@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261127012612.1589039-1-romain.tisserand@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 27/11/2026 13:03, Andy Shevchenko wrote:
-> On Fri, Nov 27, 2026 at 08:34:22AM +0200, Matti Vaittinen wrote:
->> On 26/11/2026 15:31, Joshua Crofts wrote:
->>> On 26-Nov-26 14:23, Matti Vaittinen wrote:
-> 
-> ...
-> 
->>>> +	int vcc_mv;
->>>
->>> _mV is the preferred style to denote SI unit variables.
->>
->> I have discussed this before, and I disagree. Regular variables have been
->> lower case since forever. Capitals have been used to scream "Note me, here
->> is something unusal you need to pay attention for" (like macros). In my,
->> admittably not always humble enough, opinion, the whole "denote SI units" is
->> stupid. I haven't yet seen an engineer who wouldn't understand the meaning
->> of vcc_mv in this context. And, to be very blunt, if I saw such an engineer,
->> I would rather him stay away from the driver code. On the other hand, I have
->> seen engineers who have spent long time with kernel code, stop reading to
->> wonder "Hey, we have capitals here, what's special with this
->> variable/member". So for me a change from vcc_mv to vcc_mV makes this worse.
-> 
-> And I disagree with your argumentation because the scope of discussion here is
-> more than just millivolts. We have (in practice!) already a problem with mHz
-> versus MHz. Yes, in real life.
+On Fri, Nov 27, 2026 at 02:26:08AM +0100, Romain TISSERAND wrote:
+> The Miyoo A30 and the PocketGo S30 are two Allwinner A33 handhelds
+> whose analog stick is read by a small microcontroller: the MCU samples
+> the stick potentiometers and hands the raw 8-bit readings to the SoC,
+> on a UART (A30, a stream of frames at 9600 baud) or over I2C (S30, a
+> four-byte read with complements). Neither MCU takes commands.
 
-I see no mHz or MHz here.
+Why a brand new driver for each of the cases?
 
-> So, that's why it's better to follow SI for all
-> SI registered units and stop messing with the multipliers.
+> Both drivers expose the readings as raw IIO channels for the existing
+> adc-joystick driver. The A30 MCU pushes its frames on its own, so its
+> driver also feeds a software IIO buffer and adc-joystick takes the stick
+> from it without polling. The S30 MCU only answers when read and has no
+> data-ready line, so adc-joystick polls it, as on the Anbernic RGxx3
+> boards where the stick is behind a SARADC. There is no scale: the
+> readings are raw ADC codes of the MCU.
 
-No. There is zero reason to use capitals in variable/member names when 
-intent is clear. It only hurts reading with zero real benefits.
->>>> +	int vfs_mv;
+> Patches 1 and 2 add the A30 binding and driver, patches 3 and 4 the S30
+> ones. Both use the existing "miyoo" vendor prefix (the PocketGo S30 is
+> a Miyoo/Bittboy product). The board devicetrees will be sent to the
+> sunxi tree.
 > 
-> ...
+> Testing: each patch built with W=1 for arm (multi_v7_defconfig, both
+> drivers =y and =m) and arm64 (defconfig, =m), no warnings;
+> dt_binding_check clean for both bindings; the board devicetrees pass
+> dtbs_check with these bindings.
 > 
->>>> +	data->vcc_mv = ret / 1000;
->>>
->>> Better to do ret / (MICRO / MILLI).
->>
->> This is another thing I've discussed also in the past. If you genuinely stop
->> to think this, why would MICRO / MILLI be better than 1000? Which one brings
->> smaller cognitional load, huh? And assigning the result to variable vcc_mv
->> makes units explicit in any case. And speaking of SI units and scientific
->> accuracy, what actually is MICRO? What is MILLI?
+> On a PocketGo S30 on 7.3.1: about one single read in four fails an exact
+> complement check (the value and its complement differ by a count or two
+> at rest, up to about thirty while the stick moves fast); with the +-2
+> tolerance and up to three tries, polling as adc-joystick does (two reads
+> every 10 ms), no read failed over 2 x 6000 reads at rest and moving, and
+> under 2% needed a second try (exact check: about 4% failed). The in-tree
+> adc-joystick driver on the S30 channels reported 365 and 374 events over
+> 15 s of full circles, 42..231 and 24..246.
 > 
-> Then what prevents you from adding a new multiplier to units.h?
+> On a Miyoo A30 on 7.3.1: rest 136/123; reading the channels from sysfs,
+> full circles 22..248 (X) and 11..221 (Y). The in-tree adc-joystick
+> driver, without poll-interval, takes the stick from the IIO buffer: 826
+> and 852 events over 15 s of full circles (the MCU sends about 67 frames
+> a second), 37..246 and 11..220.
 > 
-> ...
-> 
->> Micro is 10^-6! Milli is 10^-3. So, this becomes "ret / (10^-6 / 10^-3)",
->> which is plain incorrect. So, instead of making things better, this
->> obfuscates stuff even further. So please, let's not spread this madness any
->> further.
-> 
-> Because kernel does not work in float, it works in integer space.
-
-This does not mean Milli is same as Kilo. You were the one who ask for 
-accuracy above (even though it really just breaks the known convention), 
-and here you demand obfuscation.
-
-> We don't
-> have fractions without keeping a multiplier in mind. I do not consider this
-> a madness.
-
-swapping 1000 to (MICRO / MILLI) - where micro and milli arent what they 
-are supposed to be - is madeness to me.
-
-Yours,
-	-- Matti
+> Retested with this version on the A30 (7.3.1): with only one channel
+> enabled in the buffer, each channel gives its own axis (stick held
+> right: ch0 alone 141..242, ch1 alone 116..119); three unbind/bind rounds
+> with adc-joystick bound: no warning, the readings and the adc-joystick
+> device come back; at rest 139/118, +-1 over 50 sysfs reads.
+> On the S30 (7.3.1): at rest 152/126, no failed read; adc-joystick 1213
+> events over 15 s of full circles; three unbind/bind rounds: no warning,
+> readings and adc-joystick back.
 
 -- 
-Matti Vaittinen
-Linux kernel developer at ROHM Semiconductor
-Oulu Finland
+With Best Regards,
+Andy Shevchenko
 
-~~ When things go utterly wrong vim users can always type :help! ~~
+
