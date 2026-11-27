@@ -1,81 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795781337;
-	b=iCyi/u0JvNj7WsNtzCUSeKqsvCxmicNqIXOLk44adx82/LLX88CiPtpwWJXcW2dWM9NT
-	 1SicnzQBeZeevbO9+FtWXxIntB8/c0aalZAKxIznFgRYu4XlbB3iLaWza3mfqG8u7Aqkp
-	 pDI6aFOtKfUABDLfAG/IbPkoAziZcg4BRXyR649hbUCD0RbwD7ic+xX+ENbRYJ56CMbaL
-	 WIpV0G+wUlby5zk58Anl3Nex9oqu+Q7/qFRsOIGXT4UQ6wwnz4M6eO4nhT04THnq3NRTJ
-	 B10in/gjTUDFez3X7Hsex3eZTWSA+wCQBUl0rMtiarBMD3oCySIJI6udF6YB+rh1RBw==
+	t=1795782800;
+	b=a5EyaezPN4R0dCwueM2ndO4aeD7PXnJkXaSy6p6TfVJk1tn+rI3x0r1TZ8f/lBozCnVd
+	 ctxXT0B5eq7yAPxS4wz42JIdENBryokSSyLqYz6Y/zVxiiO01dAMTN/Q0xJ+fC5hyPlJV
+	 XM25rf+7Sju8lDHxGYhdX8JwwyJ4jsI38qLSexbX/SJTPJaJzt9SXBikamJgvNPbbxkxV
+	 Lw/tBBHrmuwSeeadzw09S/Bw1O10kyGHICrvZWw0hDzZ8mKPKIZOld7l6GlFY7cFSFX+7
+	 i0X+n6/ulZBTHv2cMqmjXkvR8fTtcp6xb+F7ROqBdRcyixvBVV+PbbIvQEZ4soMLHDw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795781337;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:Organization;
-	bh=0dg6Yz7eoXk4e6gGpKGxtbW5NLVD5HlBpLZDUQ2uV1w=;
-	b=B3hJFZ+gIfV3T69ypuyJBR70lcZmc79Wx7rGYkVnj/F7N8eRJ9W1WnAx+0r4fa8RcFf+
-	 TQJz9jeRWhN5s8ur1PEC7snYMd10KzaqkTQgBw2n6dfOa2F4ZrGJ8M62aqOnzAysZ10G0
-	 tEqZ/Q/8hokBB6KM7EqQ57ckQUY4PoL2hKOmCrTjNCs8cfV7WrVBA6YTQfyphlo8XQ2hB
-	 wIb5fouwwjsmmvRiSgKkDbuehwxfP3GZ2mAzNg2k+ImWEk2ljM9dKqxu3/c1ZCNJF8Cgn
-	 nGpMryN0CYYIEGrOwkMBg6D2VLcrFthys7HyBXgEi0sFejlTUo+IKFPHhyAAdbino9A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795782800;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=PMxsfU1o3NhAxu7Ye8pNPHcg1ClzXw9Cf5wvYHFfgpw=;
+	b=HBDyG3QSrY8J+dCj9nOwfZduBlJXdDPd2Q+j7zgHB8zoNjfGttcQ7xRogoDAnZ9zCN+/
+	 nFrFol10XskRhK+CzGHyCBFu9udN+WFY6YxBy2yRK4cbJrTX7r3sNaDbDNTJxJrZirWmt
+	 9uZrehisL8GpsFGbZ0mcVF3KBZkNumiM2Q7yDjLCDfLUuvYrvb6ZmPrrOPF/wJ08saj4D
+	 ef5+n80AKCEwplIsj5+C7l/rBwetO+GaSS8SgXvEOV1QkGZSiUVzArNagxJy7ENmRL2+d
+	 rYUrGaxRaFsKOZA7EASmWM6QX/v/BBiJCVjEyaQW+xz/DIjoCfdfkMy+nfTV8SMqpYg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y0HYy9s6;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CiI8vkqb;
+	arc=none smtp.remote-ip=209.85.210.179
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62912606A321;
-	Fri, 27 Nov 2026 12:08:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62912606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36CBD606A31E
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 12:33:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36CBD606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Y0HYy9s6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795781337; x=1827317337;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TQw/+E/JpjQyKTAKSKFYoGT1k3KALWhtx+FIqBfVhpQ=;
-  b=Y0HYy9s6j0tDQMlJYBFDCV4cXBu0RfeU0Ay9+PGNzF4NBHvRLc+1tkY8
-   DzsyHGsd/iaAmHqzewfYvuoO4ynIl4eDNPO5EXFc4LRf8oUR7qngfXtrm
-   4FGSaeHFeKK+9JiDAisYM9iyZIT4anp5+/9F+buO2fnqHFZVHzpIHFFew
-   YovI58rugvXZ6RWdhvRes3wXVxzxWAHvTPeDLry90HBegsbv+TB6CwGTW
-   Lw7VBiNYzS3Frg+VCY8QatQAGFOGWF2WXWiFn/WskYD1Eo8CM2Vohx2kE
-   YFP2fAROgnIt83DXzsksQLWNfw3ej0cRIS2VmLwl1ghLHy0vDtZvwhEo9
-   Q==;
-X-CSE-ConnectionGUID: HYcpx4QZSnuf9iEzQ2V00w==
-X-CSE-MsgGUID: AFdClzaRQsiPBngb8gAZtQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11979"; a="4683654"
-X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
-   d="scan'208";a="4683654"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 04:08:56 -0800
-X-CSE-ConnectionGUID: Oxfi6+/DRN2HWYtNsfMfvw==
-X-CSE-MsgGUID: m42yh6kzQfahVo5n9rNoOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
-   d="scan'208";a="12423905"
-Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 04:08:54 -0800
-Date: Fri, 27 Nov 2026 14:08:51 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Joshua Crofts <crofts@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=CiI8vkqb
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-8d2d4cdb478so271468b3a.1
+        for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 04:33:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795782799; x=1796387599; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PMxsfU1o3NhAxu7Ye8pNPHcg1ClzXw9Cf5wvYHFfgpw=;
+        b=CiI8vkqboT3TMonY5QV2ElBF34ePhX16qL59l3wBDkVX6fIIdSuBdDKaM7YejNAq5D
+         f9gFRIKN6doMjnP+oCyJAbJCNQ3i8fCgxPAXq7CK8FTR3mPmAg8CScTg6f7ZdrVuxgF8
+         +3He1YDl/kEcfTLXEpmruajIH0NUuJcfq1v0ODsMMEhBIu7nO4S+/yi2gr5qOeY/2bhL
+         eRM+oCk1hwYAxP3AotWhUG7fozgK4bIpiNixXMgypu9k45Y3mPR4DeO4jYdbUQQm4YFd
+         C9g9E+1HHeR/42axB1ZbJ+RpH+BB3XE6sT3e9kd9aORXg0N8CO5Lm2sr7QzDLvxza3R3
+         Phgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795782799; x=1796387599;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=PMxsfU1o3NhAxu7Ye8pNPHcg1ClzXw9Cf5wvYHFfgpw=;
+        b=tUUCd/MfF/FmU0Rsj9oNAYN7Bf2KTztgQpTSdBNp2d3rb61V5RYIyOMRi8yCW2zr1+
+         sUFWS4sSWdIAcldanVizNFr86DgzeO0b0CLcYdZXJROIhqjRBkW5FVa2SJZgBVCuolo7
+         15t25MTCLCVR8TrkvIu/Kn5H21KUEwG9bRapvLkButTediPGzuMbK//EB7ZiqSm4Z2mj
+         fv0U51CI5oqfGL1RfE73fB858POFaVb8RXV87q7il/hz3ZXI2o1+99ITI68nl1lTosoR
+         pfWgry+YJ6ks/bDAu2xyKy0uu8D9vL5szkzBYS/YFB+RtVMDSZxadFrsfHJ0yD9rjgc/
+         bHpA==
+X-Forwarded-Encrypted: i=1; AL+hErFbBvBBOmjO6tMg+4OfltbvL3mC2wEX1tlQ6qYtQmPSWzpywLrpK/6LjizA4/WjEPvJUkNvUVG12pI=@vger.kernel.org
+X-Gm-Message-State: APuU4Z8+tbvWMfgkJZaMCPlvzMVlQa7Jpq2DPZ0ytsS2KHVv7QYAB4c9
+	HwtkFlGeHfP1kQfFv1nhmSeJOlNE+HvMU9Wbqtbp7G2qT93bkpEqVEsk
+X-Gm-Gg: AZFdTZeKFZicYYhoBfM79mu81/AT2tXAiYP8+34Gpiqs1snNM6G8+0FPPXqfvPeYudG
+	BAjTGt3gm35adB78e+OfLTBYoNHL1PMOKxfWeJ8/+IdRredIRH3k13SbR+O2JeUS3Z5kirZXukk
+	8DEeWyYTGrirCDX3OXy3IQsm30TIJj94Z6g/tIBarF7vTaGdflJ0ATnLfJwYPraRHtNYPeUeJpx
+	dieGrjpJq8qLuPphv65orNTHD2A511X740loxh+FRBwbLV3kx7Y0Jq7jgQqfBdoTz//XsqFneJk
+	A80HGoOOXfFh54SmAKTZUrUXGkBoncCcto6MszVAJrd4Xop2ldC21o8kz5rt1cFb9gSr+liH5Il
+	ctNMJ7WvQBjXOn27zrMmwnT5ufNrSdBVx0nsqRZYPtbJ+UvAJkssGLl2eiKx9VVWvcO5UlQOJet
+	DlZ4SskSye597y3Vc3dVu4sFcutXL/l+8/B+m1u/NMUY7XZGBs9WrYHUGf7XDD2datwdPp0Bo5m
+	h/PRNKWE5LqH3Cr8WvxVzIUW41QaOIzfJu2gtHCJklCpmNMlqrmQuoFEzLax2zLJNTo/8rDRG9y
+	QljDN5CmIuuzdVyfr85tFNGEu4phQiMpugP946cDzGz0+MiIM82vUnt+DgN0e+Ca948NMJdO
+X-Received: by 2002:a05:6a00:4fcf:b0:8a0:5d6f:8a5b with SMTP id d2e1a72fcca58-8c87d70b055mr23096959b3a.50.1795782799462;
+        Fri, 27 Nov 2026 04:33:19 -0800 (PST)
+Received: from localhost ([2401:4900:1c2a:12da:3176:e694:92eb:c932])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8c87077944bsm12568899b3a.2.2026.11.27.04.33.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2026 04:33:19 -0800 (PST)
+From: Punnay Sharma <punnaysharma805@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
-Message-ID: <awly0_hYZ07aeRYV@ashevche-desk.local>
-References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
- <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
- <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
- <awljZLpARRVUFqbI@ashevche-desk.local>
- <9291049f-987e-4402-b32c-12c33c7aaa33@gmail.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux@analog.com,
+	Punnay Sharma <punnaysharma805@gmail.com>
+Subject: [PATCH 0/4] staging: iio: impedance-analyzer: ad5933: buffer and sysfs fixes
+Date: Fri, 27 Nov 2026 18:02:59 +0530
+Message-ID: <20261127123303.144052-1-punnaysharma805@gmail.com>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -85,100 +101,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9291049f-987e-4402-b32c-12c33c7aaa33@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Nov 27, 2026 at 01:46:12PM +0200, Matti Vaittinen wrote:
-> On 27/11/2026 13:03, Andy Shevchenko wrote:
-> > On Fri, Nov 27, 2026 at 08:34:22AM +0200, Matti Vaittinen wrote:
-> > > On 26/11/2026 15:31, Joshua Crofts wrote:
-> > > > On 26-Nov-26 14:23, Matti Vaittinen wrote:
+Four bug fixes for ad5933.
 
-...
+Patch 1 fixes buffer data when only one of the real and imag channels
+is enabled. The driver reads the wrong register, so you get the other
+value and no error. This has been broken since 2011, so patch 1 is
+tagged for stable.
 
-> > > > > +	int vcc_mv;
-> > > > 
-> > > > _mV is the preferred style to denote SI unit variables.
-> > > 
-> > > I have discussed this before, and I disagree. Regular variables have been
-> > > lower case since forever. Capitals have been used to scream "Note me, here
-> > > is something unusal you need to pay attention for" (like macros). In my,
-> > > admittably not always humble enough, opinion, the whole "denote SI units" is
-> > > stupid. I haven't yet seen an engineer who wouldn't understand the meaning
-> > > of vcc_mv in this context. And, to be very blunt, if I saw such an engineer,
-> > > I would rather him stay away from the driver code. On the other hand, I have
-> > > seen engineers who have spent long time with kernel code, stop reading to
-> > > wonder "Hey, we have capitals here, what's special with this
-> > > variable/member". So for me a change from vcc_mv to vcc_mV makes this worse.
-> > 
-> > And I disagree with your argumentation because the scope of discussion here is
-> > more than just millivolts. We have (in practice!) already a problem with mHz
-> > versus MHz. Yes, in real life.
-> 
-> I see no mHz or MHz here.
+Patches 2 to 4 fix sysfs attributes that don't match the chip. Patch 2
+rejects frequencies that overflow the 24-bit frequency registers. That
+only happens with an external MCLK of 3.2 MHz or less. Patch 3 makes
+out_altvoltage0_settling_cycles report the count the chip uses. Patch 4
+keeps the old value when a write to the chip fails. These change what
+userspace sees, so they are not tagged for stable.
 
-That's why I pointed that the issue is broader than just millivolts _here_.
-FWIW, mHz is in drivers/iio/imu/st_lsm6dsx/.
+I don't have AD5933 hardware. I tested in a virtme-ng VM with i2c-stub,
+KASAN and lockdep. The stub can't run a real sweep or give real ADC
+data, so the tests cover register values and the sysfs and buffer
+paths. Each patch shows its test results after the --- line.
 
-> > So, that's why it's better to follow SI for all
-> > SI registered units and stop messing with the multipliers.
-> 
-> No. There is zero reason to use capitals in variable/member names when
-> intent is clear. It only hurts reading with zero real benefits.
+Every patch builds with W=1 and no new warnings on x86_64 (gcc and
+clang) and on i386. sparse, smatch, coccicheck and checkpatch --strict
+are clean.
 
-It's clear for *you* or somebody else who is not the first day in IIO
-development, always put yourself into the position of unprepared reader.
-SI is known for much longer than computer even exist.
+I used Opus 5.5 assistant to help find these bugs and write the
+fixes, and I reviewed every patch before sending.
 
-> > > > > +	int vfs_mv;
+Punnay Sharma (4):
+  staging: iio: impedance-analyzer: ad5933: fix swapped real and imag
+    data
+  staging: iio: impedance-analyzer: ad5933: reject frequency code
+    overflow
+  staging: iio: impedance-analyzer: ad5933: fix settling cycles readback
+  staging: iio: impedance-analyzer: ad5933: keep old values on failed
+    writes
 
-...
+ .../staging/iio/impedance-analyzer/ad5933.c   | 35 ++++++++++++++++---
+ 1 file changed, 30 insertions(+), 5 deletions(-)
 
-> > > > > +	data->vcc_mv = ret / 1000;
-> > > > 
-> > > > Better to do ret / (MICRO / MILLI).
-> > > 
-> > > This is another thing I've discussed also in the past. If you genuinely stop
-> > > to think this, why would MICRO / MILLI be better than 1000? Which one brings
-> > > smaller cognitional load, huh? And assigning the result to variable vcc_mv
-> > > makes units explicit in any case. And speaking of SI units and scientific
-> > > accuracy, what actually is MICRO? What is MILLI?
-> > 
-> > Then what prevents you from adding a new multiplier to units.h?
 
-No answer?
-
-...
-
-> > > Micro is 10^-6! Milli is 10^-3. So, this becomes "ret / (10^-6 / 10^-3)",
-> > > which is plain incorrect. So, instead of making things better, this
-> > > obfuscates stuff even further. So please, let's not spread this madness any
-> > > further.
-> > 
-> > Because kernel does not work in float, it works in integer space.
-> 
-> This does not mean Milli is same as Kilo. You were the one who ask for
-> accuracy above (even though it really just breaks the known convention), and
-> here you demand obfuscation.
-
-Yeah, it would be nice to have the stricter rules about this, but I see the
-problems it may lead to. For the given case we transform the value in MICRO
-volts to a MILLI volts using a ratio MICRO / MILLI. I consider that much easier
-to read in the code and _understand_ what's going on.
-
-> > We don't have fractions without keeping a multiplier in mind. I do not
-> > consider this a madness.
-> 
-> swapping 1000 to (MICRO / MILLI) - where micro and milli arent what they are
-> supposed to be - is madeness to me.
-
-And opposite to me as we may admit.
-
+base-commit: 39508411b82d4dc29dd245bb471ec9ecc1111c9d
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.56.0
 
