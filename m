@@ -1,51 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.204.34.129
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=18.194.254.142
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1795748937;
-	b=YVxbeABOjDmcv8RcpiTqoGXE7Jvs1NoXVCltveOJkOsTz9JwpsU5s5TJG1PPcoxVifz7
-	 mm1widVAMPK8iYBoqLDqmyhP2PkSeyaNy+swdegKM2oR1TTmZvOakgCbElOYBRsji2PxY
-	 xeECWHKnkoYtBAzt/0/IiAnUVvuz3veNParkoE9YpgnIlItN7gb6kfG4S9UiuFhjgQkJ2
-	 cgjQpzXeUim+VyyZBYaffs8eSxKN6qGD22KyY4cVMW2QwRi4VatprPDKrlqLLcbrtrmg7
-	 WBWoGnzq+uSaW5JUPzMP7NOe2W0zdxWC3OERw7JgZeAOx0g3xZtL7ixF8n/h3TubgOQ==
+	b=z6liOYCYIil0tzmFDZon64qnoQTVeETDBzM29m0VtsaTOMx90/JBXwSSWkaZnuVvgCtI
+	 aYoHIKrVk3ffKeYHiyJmSDGssgbySmGSdOMSp1wsjigVh3dOuR+45YUpY+KzxSSZ65FAf
+	 RV0uqJCU9EFdEsEWvBmQG9s6i1AyuFEd+m0whbzUqP2tZGAV5zQxRgwpoi++ni3cKd/cb
+	 USssJWmxtlMzRGzbf3mK1u+WxkVau5/KSs32CB2iINkf1tXPbGbsJX7JSr6qkaZrqKaDk
+	 pIAH152Ilf2VTlft022M5HRR6Kc6NrHSMr08lEq/HeVNLGyF+l2Wgqw4uqR6E90ZmRg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795748937;
 	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
 	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:
-	 X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=mQMpD+fLV5CJKkZFiecRNC3PX+aEdx8cDJ8NvbBnsr0=;
-	b=nvdtx3UiYos7kP/d02ieB+95YaYQecM5RUsJynE+EHsSXAXDbfSWRHcgCunNUI8L8CJQ
-	 m/FNR7UXRYs7vAXsQ1tBqmt+qcJtZPhCwcySpPPDCTpq3QjLSY9J2vjSJ7g30zHQQQrrn
-	 wfNmJ/ALrLoQZRw/HFm8t95pvdlVKOZuMw2kHxNRUNOT60EnhKYgXF0ELsu0uuy2s2Q0w
-	 AbYIu2shaMQlw7kIIBkdgSYzUMi/TAr9HTuU2UaEP4GVJ8DHFunOseOohYFVl1XhMOl9E
-	 Q/Fh3/uAaMMHyntJ/78+CKqDxIs/mEl91ieyIhEfAgwB/Kfd8Tn0h+FmRvLth/7uMFg==
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
+	bh=10eyJpAQvW/a4wHUh/uD1mg6vd7M0dREkanXAJqArw8=;
+	b=hL08zoJ31qkZzeLlkChwxcKwcaSZcC2+pap0oXv+QXwSfRuXhcu3QQsnSO6f6JKemVg0
+	 GAI9t8XhNW+IwDEYeKQJHP709LCaLwGxxNcbDKdYIoWWOkQA35OsPDjN4FtBm2yvdPtYj
+	 EmV0HUiKQlRGYBcHXmlH7WpXtZdIHLMYNZe/QecAXV9LgXgNO6K55dwRAuceI9rDJrL15
+	 9zpH+1JvknAAa8Z+hWYAv9cA3dmVq6L5FCmfYvGPwC0O0566At9biWqxAM8poWJpYxps3
+	 p5kc98QMs2kOVM5afGx7udOy5VrBSYttrUs0efBlNFOdGT9JCtUvrft46m4zJzR5KYg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=hexin.host;
 	spf=pass smtp.mailfrom=hexin.host;
-	arc=none smtp.remote-ip=54.204.34.129
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+	arc=none smtp.remote-ip=18.194.254.142
+Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3F5A606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72A5A606A31E
 	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:08:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E3F5A606A31C
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72A5A606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748892ted829d02
-X-QQ-Originating-IP: 1aGssj4OG+Q/r4t8pToZNFoVIHLJt54aOGg5vH5Rlbo=
+X-QQ-mid: zesmtpip4t1795748894te7612fbe
+X-QQ-Originating-IP: xjQ5CKCwVH4HkKKwwwUMmM+3KMaPFPvTzetNc9iQUWI=
 Received: from hx-KLVG-XX ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:10 +0800 (CST)
+	id ; Fri, 27 Nov 2026 11:08:13 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 7169322066803192688
+X-BIZMAIL-ID: 9436805003848365847
 From: He Xin <hexin@hexin.host>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 00/18] iio: accel: add mount-matrix support to the remaining accelerometer drivers
-Date: Fri, 27 Nov 2026 11:07:52 +0800
-Message-ID: <5F08289E852625FC+20261127030810.3150676-1-hexin@hexin.host>
+Subject: [PATCH 01/18] iio: accel: adxl345_core: support mount matrix
+Date: Fri, 27 Nov 2026 11:07:53 +0800
+Message-ID: <AB3626537FF1BFE3+20261127030810.3150676-2-hexin@hexin.host>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
+References: <20261127030810.3150676-1-hexin@hexin.host>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,98 +60,84 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: Mp6z4bZjgTSTy3PrPgbrk6y/CCEfJgvfGum70GfmyxnniYPNcjys/e39
-	docouH3WMgEj+squ6UBZv1HUqgtkVf+DW259Obu3dq33fKbGps2ncIJ/CnMtPjWCXb+aGAe
-	zSum8ae053XrZHkGw8madAO3UEDjO9HF/qaBuLxPgavqNFQGpMvlw2qCakrT5n8liZ1nJse
-	9eA8C1zGYNDWhJ6/v4nt0kgFbOsfRmMIJ7y+FQkSgoTMaxn0/kXKz6J+RdakeQB1XwvfEoo
-	B7+HhEGz3OHyVi3GU1Uhx7M1y5V4TScg661im28s2n9Wb3tcdGy+xwinHi6MXLk3YiK3qtR
-	RBzXxaQ2lPlDQBVafep9yyxDgfgU+NTEdI7Crtp4ueQDgD9w+u2BHb9yA2pNpIrtsLMB9P/
-	kP29WTdrLf+txwzSf0tbTYsW8asfYiPtCtHpgcllC9V2quvVsFXLfMod0BfluLAy4mcY0WE
-	SZbmOq36hMAceXcIuQsTxEiOKzy/x7Gwi+irdZsB2tnv+NbHMFuG/ebRGkaXcDHUmnDRSo6
-	XwewKmyNZxhq6RWrqhGLgNVP+xTz3a4G6Zh2Asdh+W+ILaUEEn7FpOd4zi49+ua5RgBh/Bz
-	5WVOBMJBekbAjkm8+Gpr2GrmCd/ELbxAnslu5mqPLZ05WRFUEou0YKpRKcGfkaULhAij5dL
-	H2gaI4b/I7Esa++Tuwyvrpc7H6Ja840FYiKDKql3RlKSFzDcYTUcyLEN3NlyMSNNqfK7ism
-	h19CViGH5q6e0eOHmeO242o5r/Mbr6oWEhw0+5Q4KMllezAakZ17WzK91Z7T3xCASE9tM5Y
-	i9nWQ+fmLeVKYVMzQH3METbKu4qp0W9G+tpafHQnRNtmAhC7bkfY3sHJ7510aU9Aeym7qz3
-	+RGAOihLQOFz3a/YfUO60VvkoQ5Y/wYPVDnwvyHfnkWE+8uB66W/9sWfXfuURXjsjFF+kZe
-	xkxBxM6hJVcesR9yGEoPNafa32+jbAoRgF3YX64WTOxFuI6N81j5uP35zYTaLRFPOFS0diF
-	ZP75H94cEc3gQb4GDzSnbevjzClpA=
-X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+X-QQ-XMAILINFO: NU60Kbs86PFjfu7Tnubq/RP253XQ8p43A3vRLyXLvsmeGqBvN2+iG6zr
+	TW/7ViF7mmWVHYTP4xtYfThDeDpWs2cv83k0CsThAh39GO/oGVmdlss/rArjsH1XoYBP9y0
+	O70TfRJtw/IGzvbhQ+lfyl6f5s8o5pTz1KcL6kvpUCQSDvsVbeebsSfSZIDLZoItAxTmCW4
+	Q7yKLFvtk/NUuDXSRXH+GPWpEK6FbDwOsKNwrVqTByOrlpfQeT7dW8btAblhsGIJy62o+bw
+	1VoTtA/S0w9TV2fElRFML5fvgsiFePK3bKdSJa7B0jQi5YNreOP18vwKRghr7YE4W7a0wVQ
+	gFMKQM0IoDcgsB4mvicMgZs2CHW/covsPS2Em5kziw2810qqxgjIKMKBB5EzGJ+PLrQHIW7
+	yWrJVxy9myOFX5LGdPSYwn3rXR4HcxGa2DMsIDLSSrM9uPBjVMHz7sI90Ff37KVzgav+EQB
+	wt88kGEGCRNLrEf+ZRmX9HXhZunW6oFifvh26kK0pqFQjYntsj5ZrQ46X5KIoQ3WSobmu1A
+	6EFlUW4ip5VZh6sb96axX+1fHp6Fe65YeDEyFP8bs2RXxDx8TVxTlE+aD2166U9SKYvyHdQ
+	bewGAzKPMhoiyMWxXyyURFIUXBAGetGMKfsnXqLurLOuUubrznH73ANjuqky6uxIv3t6Qrh
+	Rnj95xF3IeTPGkHMs2GgsG0bkor9LyJg6lLbhn0f/l6f56eAUigriFCBMbjOop5D/GIRAo+
+	M3kOQLjq1K5EK1BPaqDZGDfsNXWHO3V3O2IKrw+Ze8yhTfc+dSgyknkGRbpDDqHurDR11o0
+	3nSfha6jRCcu5OWeIsmgItzw+sWo8UquaJuyHzlygYdpuvneF1Xen26MkNF4Y+61QE1AU5F
+	N4fQ8dbeZtLtBj6LNf4x+Z4KYqzNqEd8d4YddIsyEvWtl+cQiF8RtH0yb+9x9Hz+cDaPGs5
+	+PrpGhZ15goBI26wjr/a7s5nZ7fhQqSXZKbMq6bN4TbVogJnKfieEFn16HjVP9mu8ptw=
+X-QQ-XMRINFO: MSVp+SPm3vtSI1QTLgDHQqIV1w2oNKDqfg==
 X-QQ-RECHKSPAM: 0
 
-The accelerometer drivers in the tree are inconsistent about honouring the
-installation orientation described by the firmware.  Drivers such as kxcjk-1013,
-mma8452, bmc150 or st_lis3dh read the "mount-matrix" property (ACPI _DSD on
-x86/ACPI platforms, devicetree otherwise) and expose it as
-in_accel_mount_matrix, while the drivers patched here silently ignore it.
+The driver ignores the mount matrix described by the firmware (ACPI
+_DSD "mount-matrix" or the devicetree property), so the orientation
+reported to userspace is wrong whenever the sensor is not mounted
+axis-aligned with the display.
 
-That is not a cosmetic problem.  Without the property the kernel reports raw
-sensor axes, so iio-sensor-proxy and the desktop see the wrong orientation for
-any board whose sensor is not mounted axis-aligned with the display.  The
-fallback used in that case, a udev/hwdb override, keys off the sensor modalias
-plus DMI; it cannot work on platforms where every board reports the same DMI
-strings (all of our D3000M boards report "PHYTIUM LTD / PHYTIUM D3000M"), so the
-board's own firmware is the only place that can describe the orientation.
+Read the mount matrix at probe time and expose it through
+IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
 
-Each patch is mechanical and independent: store the matrix in the driver's
-private data, add an IIO_MOUNT_MATRIX() ext_info entry to the accelerometer
-channels, and read the property once in probe.  No behaviour changes for boards
-that do not describe a matrix (iio_read_mount_matrix() falls back to the
-identity matrix).
+Signed-off-by: He Xin <hexin@hexin.host>
+---
+ drivers/iio/accel/adxl345_core.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-Base: v7.3.6.  Verified by compiling drivers/iio/accel (allmodconfig,
-make M=drivers/iio/accel): 71 objects, no errors or warnings, and checkpatch.pl
-is silent on all 18 patches (including --strict).  The stk8ba50 change was
-additionally tested on hardware, a Phytium D3000M tablet whose STK8BA53 is
-mounted rotated 180 degrees about X.
-
-Deliberately not included, because the change does not fit the same pattern:
-adis16201/adis16209 (channels come from adis.h macros), adxl313 (private data
-in adxl313.h), sca3000 (channel macros in a header, two channel arrays),
-mma9551/mma9553 (channel macros shared through mma9551.h), and the
-hid-sensor/cros_ec/ssp drivers, which are not firmware-node devices.
-
-
-He Xin (18):
-  iio: accel: adxl345_core: support mount matrix
-  iio: accel: adxl355_core: support mount matrix
-  iio: accel: adxl367: support mount matrix
-  iio: accel: adxl372: support mount matrix
-  iio: accel: adxl380: support mount matrix
-  iio: accel: bma220_core: support mount matrix
-  iio: accel: bmi088-accel-core: support mount matrix
-  iio: accel: da280: support mount matrix
-  iio: accel: da311: support mount matrix
-  iio: accel: dmard06: support mount matrix
-  iio: accel: dmard09: support mount matrix
-  iio: accel: dmard10: support mount matrix
-  iio: accel: mma7455_core: support mount matrix
-  iio: accel: msa311: support mount matrix
-  iio: accel: mxc6255: support mount matrix
-  iio: accel: sca3300: support mount matrix
-  iio: accel: stk8312: support mount matrix
-  iio: accel: stk8ba50: support mount matrix
-
- drivers/iio/accel/adxl345_core.c      | 20 ++++++++++++++++++++
- drivers/iio/accel/adxl355_core.c      | 20 ++++++++++++++++++++
- drivers/iio/accel/adxl367.c           | 20 ++++++++++++++++++++
- drivers/iio/accel/adxl372.c           | 24 ++++++++++++++++++++++++
- drivers/iio/accel/adxl380.c           | 20 ++++++++++++++++++++
- drivers/iio/accel/bma220_core.c       | 24 ++++++++++++++++++++++++
- drivers/iio/accel/bmi088-accel-core.c | 20 ++++++++++++++++++++
- drivers/iio/accel/da280.c             | 24 ++++++++++++++++++++++++
- drivers/iio/accel/da311.c             | 24 ++++++++++++++++++++++++
- drivers/iio/accel/dmard06.c           | 24 ++++++++++++++++++++++++
- drivers/iio/accel/dmard09.c           | 20 ++++++++++++++++++++
- drivers/iio/accel/dmard10.c           | 24 ++++++++++++++++++++++++
- drivers/iio/accel/mma7455_core.c      | 20 ++++++++++++++++++++
- drivers/iio/accel/msa311.c            | 20 ++++++++++++++++++++
- drivers/iio/accel/mxc6255.c           | 20 ++++++++++++++++++++
- drivers/iio/accel/sca3300.c           | 24 ++++++++++++++++++++++++
- drivers/iio/accel/stk8312.c           | 24 ++++++++++++++++++++++++
- drivers/iio/accel/stk8ba50.c          | 20 ++++++++++++++++++++
- 18 files changed, 392 insertions(+)
-
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 6c9080d..2a77b55 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -204,6 +204,7 @@ struct adxl345_state {
+ 	u32 tap_window_us;
+ 
+ 	__le16 fifo_buf[ADXL345_DIRS * ADXL345_FIFO_SIZE + 1] __aligned(IIO_DMA_MINALIGN);
++	struct iio_mount_matrix orientation;
+ };
+ 
+ static const struct iio_event_spec adxl345_events[] = {
+@@ -248,8 +249,23 @@ static const struct iio_event_spec adxl345_events[] = {
+ 	},
+ };
+ 
++static const struct iio_mount_matrix *
++adxl345_core_get_mount_matrix(const struct iio_dev *indio_dev,
++			      const struct iio_chan_spec *chan)
++{
++	struct adxl345_state *st = iio_priv(indio_dev);
++
++	return &st->orientation;
++}
++
++static const struct iio_chan_spec_ext_info adxl345_core_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, adxl345_core_get_mount_matrix),
++	{ }
++};
++
+ #define ADXL345_CHANNEL(index, reg, axis) {					\
+ 	.type = IIO_ACCEL,						\
++	.ext_info = adxl345_core_ext_info,				\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##axis,					\
+ 	.address = (reg),						\
+@@ -1902,6 +1918,10 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 		return -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
++
++	ret = iio_read_mount_matrix(dev, &st->orientation);
++	if (ret)
++		return ret;
+ 	st->regmap = regmap;
+ 	st->info = device_get_match_data(dev);
+ 	if (!st->info)
 -- 
 2.53.0
 
