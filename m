@@ -1,95 +1,100 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.176
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795742614;
-	b=glfexaH4U6g4c8gHVAGa5WH6Q5xYOQaVV+nitOJ53nPHGZ22kyHaDhDtLgesfBfd4Msu
-	 9+Y6C7b+GRUDzJqp3rNmtBVaefydQOizr7gBM08dGiRtCGD6QT52Wl7aAbpwbTOt83giT
-	 57T70WmIc3vrHqXmW6g8sSpmDdiG4C5ZAMOu2ehpkOF4r+UKwp7o0HBSbRH8RFo3lUp+M
-	 KOh5W0OrDhD2pwyyxd4kZpcFIOOSzXJglXM35r0tRCKZUSiXS5+h4deLc4bNFGpL19jph
-	 aPqXoXv/vl6ctQrd7Nau0fMawgQtjtbd5DrJAY1RaPIrNL8mQ52rvi0DUNsSOL+OZgw==
+	t=1795742786;
+	b=aeK6Xkdf5L4LWLNVx4QOX4PRB+TDexjsDccBSGIHcIZTILxOFnVBz1XMWKuSMQsxcJQn
+	 Fb6XypOvlYfoYcUBKlCsX4m8jliL+9IzzS4t6f3lAapg0MlB2EOidRiQRydycaKrQeQ1E
+	 OEvwPnPPzBqFu9IDikU/+TKs3Z94TTW24muPI2TVehv0xqbS2spZqbKHVZmiU1sLvDhz2
+	 JwKnwcbr++vtL72ep4SnkfCGJupaLVx99Eb3Qm9+4DkbODQihKsfhz36yZaezHvpWZDtP
+	 Z/ZTLbT7h2dMnKJaNphWUN8uLgLc0hskXlYcviphkVhZUMFbr4kLoFo6vNcv6b5oxHg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795742614;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795742786;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:In-Reply-To:References:Content-Type:Date:
-	 Message-ID;
-	bh=m0D3Y8mkojMn8kpD0m2n9BecyssVqApB7/PKctN5U4c=;
-	b=a3cK3wpocBCeEtsQ8NSLb7MEk99OAVH6qwLd+GeqAnltr3wk2ckKNeOgQDpUMC2AY/zm
-	 M02z/2EV5Hl9YdhiLrCJKycGHAPvHXCkksLfYNmJgAZ7Ei18zm8R+0pX2sTVcGBYF0qWR
-	 02GtT926DjwSZz8jdeEIRB7GiZGSnZyOTljjN9JKBXwTUIe461bxtgkvAsQeN2MhR/B8x
-	 3hbeOrsfDlDE7Jq8m0UCu2j7Gb/LtAPVm3PanwYnhvEN7ArVW48VPmY2yb1XSyJVs8HhJ
-	 wQ0qTctb1GB527SDOqr1KjZd3tAIZls79p9w6qgeu3WzXrYCqvq5zohGGKOydNtJYsQ==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=ZT5vY911PY+oPZWxUSYR9KkzLhjAtMnoOlULn7xIyWk=;
+	b=ue5Sr4gscLbkcL/S6RGt/Z9mZWnCyXrJ8wT15G/x7dtqsftHFh0B3OtTrUrEu4/8k5z2
+	 sSJNK6C/mpqZOSJsrvDJPzU6ijOl/GcwzL/eyihzupDG4C+enPuHRCaiRalJBdJiAGpzS
+	 QYoH/w9PgXrUsVgE438UkjksU+/B6C2OD0pAlB7i8J2P4qnXEcKlR8oBeDtC4fkzq4147
+	 njSCy1u9g4dJhJerZVEP5aLiUC9aktlS/ZSMCXizoJQ2xKZAmDS7Pv6TKU9FRo1cLdWTn
+	 6WtCMNUNI9kb0fvOMz+DkssQjjqWIebRIbnASJ1LQOwyozYoOqushSqtimtPNt5LFFA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=S3+k98PE;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=b5nhRQgO;
 	arc=none smtp.remote-ip=209.85.215.176
 Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7C77606A31C
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 01:23:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7C77606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B715C606A31C
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 01:26:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B715C606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=S3+k98PE
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-cde4b4e936fso3644195a12.1
-        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 17:23:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=b5nhRQgO
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-cd6acc50b8dso3839245a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 26 Nov 2026 17:26:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795742613; x=1796347413; darn=vger.kernel.org;
-        h=message-id:date:content-type:references:in-reply-to:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=m0D3Y8mkojMn8kpD0m2n9BecyssVqApB7/PKctN5U4c=;
-        b=S3+k98PEmDcReVHhonVbTr7m1AGY5hbcvkj/ef133v9FRCmT/uq5AVtj1C4iCXMI3S
-         c3FrM6h1jA8knldRkHlb7KeZVX78ZsXrEDFKDhGnqTxAhNojHs/pb2GmzwFHqIjr0bny
-         IesnzHAo5lN3pzQkOw9nMPTsdPwr6tdKYBm3ynW/WVj//MTNLoyHcyvmUO1lfTmEMPqY
-         Exnvi8aC882m8A1LQin8y1VVBWVLrYQdREJ1Z1A+zoRjxskFGKAGdqlkZbjM0wO1xRN5
-         XJmwLNz01qWUQ/vpA9xuSGziMFvCWzjk7of8Di63xXzri6J6oQN7DnHeeqfZmpEEs4ma
-         rKbA==
+        d=gmail.com; s=20260707; t=1795742785; x=1796347585; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=ZT5vY911PY+oPZWxUSYR9KkzLhjAtMnoOlULn7xIyWk=;
+        b=b5nhRQgOvmU8zK254e7mxA0oUMCGzC+TNauGOd43QL/xLLkKG7nIylaXX9O9i1tsv/
+         96gUbLIZ7bhY0W8vUpULQ2AiGgunxlQpfRMJhBcy1XLnFiGC+btnC32SzzqCNOBERWjX
+         U+Ra9kZyRHKAJ6xECJlLcC1pBRwDMUrRMaV2YZ+qtYYBzfpa5RW4PljuRbNUm5jOVMis
+         yTtYeN5OieTLksWFMQe73+NyCS88Wvg7IFgTcrw5OpPzNW3fZihiWCgAeXWvIDwUjaTm
+         xdr+0cuqZTY+sdC3TogGdjDpEo+1PxTwG8bF91pDZjCZ+OxFuOa7Sj3yR0ry1bpY6J5H
+         Dxbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795742613; x=1796347413;
-        h=message-id:date:content-type:references:in-reply-to:subject:cc:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=m0D3Y8mkojMn8kpD0m2n9BecyssVqApB7/PKctN5U4c=;
-        b=1WINEzjE/r5JN4j1h4fycrJFrSWg1j5OVmYT1fCNqKqdOqh11MZNR55tKQDS1J8nHs
-         PjXZRuYcak2IS8mk88oLlc9rl+PVtA31M9DK2QrYOiKB6115ajjsay4DAthM6YF0Gblv
-         8xrWtMXzrxHPEx4a0AjqD0t7qfVeC3BpdQU3UgqYIl3soa047midJ7cAd+l4G9JRqW2g
-         N1u6N2XUu318prVnQegScuqOrdHVniq8fEhmQVvTk8vYXdbD105M56WU4qfT3y71vKDz
-         Wr+KmTLhVmwl4vOpc3f1zABN2fnLcvRrVwHQ9is9IgyzQd5ZDMNg30ZC2gPK/SRPuLwZ
-         wYDA==
-X-Forwarded-Encrypted: i=1; AL+hErEb+fXudg5LT8V7gebN50xlLCiDtRTN/sRWKUKkcNAOQ+pvLt9GPJoJyoXgfaZSwQ2q1NUYQWwui/M=@vger.kernel.org
-X-Gm-Message-State: APuU4Z90MwHyoybrXo7Tw1HVfMS+fwRNNaXIdnf4BJkA9ieXimlBpzsB
-	DT6MMS3z86vwKkCNSf9PWki+H34Jdhc5ARtxPD2kJKwiuTT3pwaR8rxM
-X-Gm-Gg: AZFdTZfokd5jNEbg8glrk3XUPtAsecDkcF7mI2A4G5nJaxhbwyihH4mz5QYChFinv/o
-	7D+OD4yfZY2efb/HPa/zXrt1ESkmxngM20RPnWVN49nIMpAyyfwKMJrwLzUgfGO00WZGcPCKSic
-	VK+R+PjA8HvqQDs4KKQ0n1aW8EDCGva+b0Z8jdDcF3SEQoyUwB7Py26QyzLuKpSI6cTLV8bkqJH
-	Dpfrvp4gs7RHo3Tv4Oae57aDnTTwtW99H6sP4qINT+hQ60X8uGdqYl9OGnP8N3TsymVtTZmSbMN
-	zatmjuu8TZPsLNo9UQkupGznXVK0nY+3XAuTvaEjLywvlKg8LWuUW1z+jf/jnzJfRT517lTSuVp
-	F3m5/F4Od8jZvMXT82HfzRCzD7yowLmlqiUNomQU0rXGWWHPp0Z3+Q5RM35CAp17JXk7Q0ie//M
-	6igPiQDYFgngZPOcgvIMt/2KxqEo7rM6brjK2c7oSgl9pkbZ4reLXuJt2W66xGtHQLbcjVP4dN/
-	DkEGDGbzMOXARv7Q0D4z1KHLP5s7Q3Yb11sEMPXskaDK58DraujDo/stG+8gHv0J8VTsYJLq6US
-	Br5xEWnQJHgVsM1pwxCHsvrWwJD2Aosx38XHa2sTRP4kILfapD5u0SjdlNq2+h/+YUMv09A3GQA
-	=
-X-Received: by 2002:a17:90b:2e4b:b0:3ab:330d:6e47 with SMTP id 98e67ed59e1d1-3b41c8e0ce5mr14432697a91.10.1795742613003;
-        Thu, 26 Nov 2026 17:23:33 -0800 (PST)
-Received: from mac.lan (114-45-165-38.dynamic-ip.hinet.net. [114.45.165.38])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b40578dca0sm38459035a91.2.2026.11.26.17.23.30
+        d=1e100.net; s=20260707; t=1795742785; x=1796347585;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ZT5vY911PY+oPZWxUSYR9KkzLhjAtMnoOlULn7xIyWk=;
+        b=rQlDpeWdfEVgd5ulKcpbZSbADlr2XDtxROr2EhTCGCakE1IYqBhQ7s/ZTXRcObiliN
+         VUb9rD8diHSWaI5NwCBReX/uuDsE8SZR6u9MUBBmEPBxha5guJEw1J9lejcwFIIjnav8
+         YVM2dCgrIhcuZ2u6yehIhegSD2lZbTZVlUk/OKtYD8ZwoYFxsRLfDHIJhQSN8dDaAjaY
+         FeNtxEaGSm4x9bYUcmzif0InA6lf4FAJvbYxPlesiTAS75gXUbEGOw7mvWPQFVkk6BIj
+         Td6e8i9Bt56qlUhsZDk0c5dqTtVSN4/8B3a38uRIkWVa0ax+p1J2BErXfVezW/hP+pmp
+         yjrw==
+X-Forwarded-Encrypted: i=1; AL+hErGagQH0ZDxDjXEjBI4Ld0m1zJAJfQ7bAfDs3P3YuKY9gMlf/6amVaGu8IjWI0MRWiIZrRwyZTbRXVY=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+gFQdCER9kuwyvu/Ni64jcgLrSqlPW3KCoQ3NRm5hCik5ofAQB
+	wKnQF5Tq5SQepGJaALclHNTxygkcmzJh9igSAneAsIg9Dx7UVMV2oenE
+X-Gm-Gg: AZFdTZc4fsjLinP7JJ13n2rKlxjD/Cea6b7B+oLKOoAeTzdJ2tr0Je91MS/3dIZ9ESk
+	wKG0u5ya4kuIT00pSylPZnMANGRCd/tbL950NJ+oaflY9sp1JyWt6BqLFOdUDSfnJTN38I0bFdH
+	k1fPeO7vwzIGyVctmSVtl8eEDqcpsznHLrwriSlxCanVIsoe2P4o9Wp0ZBhj2ZwwWfFSOBw+DGN
+	zFSJpQ+EX0y05HFgJfI+Tkw5a4PugysO+w5WotFXTYzw6W4M/0WjfdJkwxtfDn08m9isDsIZYFj
+	fZjBow7vfid5r31dBBU0DVskfbDlea/l+7EEmhCclN/O/w4T7L+PKE68r6e4Sx2uw7lRGYrF+7X
+	tdcUd2mFJjiV/qBvcfV5MmGScUcyUz7Ra1hxEZkNZ58JGvriucy5GdAu6sBrRhxyY7chPUORxDi
+	Y07i28l63O2e4KbMLca65NSAsrQCsSdLYEVCizVoodTv2okDGy1zUD38IDj5hEVmEoIeYK9Ij9h
+	QDl/VCxD/9Px4jzBF4nEqHNBmjJnQqa/GCIh8Ticssdv9v3diBy0xj+ebmcFMgTpXn0ZnzJPYIS
+	h6EuiCMxyrNSovd5VECtKrHY3XDNoxEO2J3QiJX3aWT/YbAtdH0gU12T/mJfM+bbHJJd7FGc41e
+	Efhx0Bu32phIfmWB/p8XmkXe8iLp/x3kobF4HkiyDdYa/OA==
+X-Received: by 2002:a17:90b:4a47:b0:3b3:fc1f:a5c4 with SMTP id 98e67ed59e1d1-3b41c8dc821mr22091582a91.20.1795742785083;
+        Thu, 26 Nov 2026 17:26:25 -0800 (PST)
+Received: from romain-ThinkPad-P14s-Gen-5-AMD.tail433d9c.ts.net ([2001:861:39c2:e340:1432:1241:93b7:7b4b])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3b41ad0b2c4sm35042866a91.4.2026.11.26.17.26.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2026 17:23:32 -0800 (PST)
-From: Ilia Snezhkov <iasnezhkov@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, Arnav Kapoor <kapoorarnav43@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: inkern: guard fwnode_xlate with info_exist_lock
-In-Reply-To: <awhBEfD6I5nakCKJ@ashevche-desk.local>
-References: <20261126060615.63790-1-iasnezhkov@gmail.com>
- <awhBEfD6I5nakCKJ@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 27 Nov 2026 09:23:28 +0800
-Message-ID: <179574260890.61388.10862990171445957182@gmail.com>
+        Thu, 26 Nov 2026 17:26:24 -0800 (PST)
+From: Romain TISSERAND <romain.tisserand@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	sashiko-reviews@lists.linux.dev
+Subject: [PATCH 0/4] iio: adc: Add the Miyoo A30 and PocketGo S30 analog stick MCUs
+Date: Fri, 27 Nov 2026 02:26:08 +0100
+Message-ID: <20261127012612.1589039-1-romain.tisserand@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -98,19 +103,84 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Andy,
+The Miyoo A30 and the PocketGo S30 are two Allwinner A33 handhelds
+whose analog stick is read by a small microcontroller: the MCU samples
+the stick potentiometers and hands the raw 8-bit readings to the SoC,
+on a UART (A30, a stream of frames at 9600 baud) or over I2C (S30, a
+four-byte read with complements). Neither MCU takes commands.
 
-Sorry for the confusion — I did not ignore your comment; our emails
-crossed in flight. I sent v2 at 06:06 UTC (after Arnav's 04:59 UTC
-review on v1), and your v1 reply arrived later at 09:19 UTC. I should
-have replied on the v1 thread right away to make that clear.
+Both drivers expose the readings as raw IIO channels for the existing
+adc-joystick driver. The A30 MCU pushes its frames on its own, so its
+driver also feeds a software IIO buffer and adc-joystick takes the stick
+from it without polling. The S30 MCU only answers when read and has no
+data-ready line, so adc-joystick polls it, as on the Anbernic RGxx3
+boards where the stick is behind a SARADC. There is no scale: the
+readings are raw ADC codes of the MCU.
 
-I will address both of your comments in v3:
-- place `struct iio_dev_opaque *iio_dev_opaque;` in reverse xmas tree
-  order, and
-- move `iio_dev_opaque = to_iio_dev_opaque(indio_dev);` right after
-  `channel->indio_dev = indio_dev;`.
+Patches 1 and 2 add the A30 binding and driver, patches 3 and 4 the S30
+ones. Both use the existing "miyoo" vendor prefix (the PocketGo S30 is
+a Miyoo/Bittboy product). The board devicetrees will be sent to the
+sunxi tree.
 
-Best regards,
-Ilia
+Testing: each patch built with W=1 for arm (multi_v7_defconfig, both
+drivers =y and =m) and arm64 (defconfig, =m), no warnings;
+dt_binding_check clean for both bindings; the board devicetrees pass
+dtbs_check with these bindings.
+
+On a PocketGo S30 on 7.3.1: about one single read in four fails an exact
+complement check (the value and its complement differ by a count or two
+at rest, up to about thirty while the stick moves fast); with the +-2
+tolerance and up to three tries, polling as adc-joystick does (two reads
+every 10 ms), no read failed over 2 x 6000 reads at rest and moving, and
+under 2% needed a second try (exact check: about 4% failed). The in-tree
+adc-joystick driver on the S30 channels reported 365 and 374 events over
+15 s of full circles, 42..231 and 24..246.
+
+On a Miyoo A30 on 7.3.1: rest 136/123; reading the channels from sysfs,
+full circles 22..248 (X) and 11..221 (Y). The in-tree adc-joystick
+driver, without poll-interval, takes the stick from the IIO buffer: 826
+and 852 events over 15 s of full circles (the MCU sends about 67 frames
+a second), 37..246 and 11..220.
+
+Retested with this version on the A30 (7.3.1): with only one channel
+enabled in the buffer, each channel gives its own axis (stick held
+right: ch0 alone 141..242, ch1 alone 116..119); three unbind/bind rounds
+with adc-joystick bound: no warning, the readings and the adc-joystick
+device come back; at rest 139/118, +-1 over 50 sysfs reads.
+On the S30 (7.3.1): at rest 152/126, no failed read; adc-joystick 1213
+events over 15 s of full circles; three unbind/bind rounds: no warning,
+readings and adc-joystick back.
+
+Tool disclosure: this series was prepared with Claude Opus 5.5
+(Anthropic) as a coding assistant, in an interactive session: it
+captured the MCU protocols on the devices, wrote the drivers, the
+bindings and the messages. I reviewed and understand it, and tested it
+as described.
+
+Romain TISSERAND (4):
+  dt-bindings: iio: adc: Add the Miyoo A30 analog stick MCU
+  iio: adc: Add the Miyoo A30 analog stick MCU
+  dt-bindings: iio: adc: Add the PocketGo S30 analog stick MCU
+  iio: adc: Add the PocketGo S30 analog stick MCU
+
+ .../bindings/iio/adc/miyoo,a30-stick.yaml     |  42 ++++
+ .../iio/adc/miyoo,pocketgo-s30-stick.yaml     |  48 +++++
+ MAINTAINERS                                   |  14 ++
+ drivers/iio/adc/Kconfig                       |  24 +++
+ drivers/iio/adc/Makefile                      |   2 +
+ drivers/iio/adc/miyoo-a30-stick.c             | 204 ++++++++++++++++++
+ drivers/iio/adc/pocketgo-s30-stick.c          | 149 +++++++++++++
+ 7 files changed, 483 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/miyoo,a30-stick.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/miyoo,pocketgo-s30-stick.yaml
+ create mode 100644 drivers/iio/adc/miyoo-a30-stick.c
+ create mode 100644 drivers/iio/adc/pocketgo-s30-stick.c
+
+
+base-commit: 92c9d64c0cf749c8369403a32630562f0e855a6c
+-- 
+2.43.0
+
