@@ -1,79 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795775674;
-	b=QEHTp60rOubjalqQmwlWDm9j8L/cdYVW/dbr44whdvdWS64S2bEhM3xr28JbLOizHNG7
-	 JuP892VkfmAtpO+9PLNJQrpjMhQrJTJjgZMZ/pobPKDDXEnyNEocipW6mnqY2rYNx2Xwv
-	 ke133ebTvzFkTRZNWvI4R+Rr5PYVbNVbEB3lY5iV1o7jjr3LPcABwSEsPkptCaLYfhchh
-	 ANe3VMdqQW+XMcSl9u9mJqXLT5VIRUQAZOsW43D4IogtVT1Y98TiAlOL/0r4USVY+08EZ
-	 kdp5K1IqMqJdAhfU2rBj0gM3J1kQMnGs+IqDJhk6T1VRK9h8PgJ1vrPGD1EibwLU7qg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795775674;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Ij3mQ3ClSVA8TNXH+CBSqBM6B2MFef1TZGCDXnJ2u+0=;
-	b=Io7RB6V4m7eImXABC4lqwsMZbENdOp7VnvFXu70nBzSFocHbE9OxZ88k9SYgLrKcPZTb
-	 RYgOTKlAgQxBFNlVD/PnG2K3rh2KSZHFF+L/mQMQRc51r43KgAykMx3IOT+PjRLEzcQjf
-	 ydAoRAoI7uqXP9npghBNEMi2d7wpbP9pkZjfqLi0Qn+C5wGUwPVo/numjB426GoeLNOlw
-	 cVTD7O/dtd/2GAHEUnGBOwIhyykkIgV8MYHBC9y3rJl5lVD4hPcaAOzZv2FK9T9pUGMIb
-	 2MvT3cCWC2vK0iscZ+d+q4PEr4ilpmoOSE05ZlticDEBsAcMuuNjQolo1a4NbD/2JgQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A9w33v2T;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.9
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795777386;
+	b=BF1UtyCDxjRMJKQqly8LJEjU/hIyQB/wY5hoLVzA+epP+N/Ew3mjuz/Vi+EykLCjFzyI
+	 dg4ea781CBqS149cQ8Sb0mzas8L6lnup86YT2PPZj4a3mVLp2hwSTd6LmAX+rsM2yjrcH
+	 YTcMX64wG7GYZYL0/fU9dSnAqdSjKTu2m9oaBwSLiCKa7InkcUbj93BRZA+WsoIXnT/y1
+	 +sJrjU4j9SGSEwRevnmcU71yrxBvM5g+uCLUFmd7VKcBpXGzWraDTZ15G2vmb3gmMujCU
+	 VE0TuXvE4tSF3DdwVKDseZEZeylrj/SoXk4hgcAdwktQiT98dqoE/M+Ov/ZtSrc3Xvw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795777386;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:Organization;
+	bh=IU/hlSkS0ZlcXAiMbavSZF/m8ZJfmUnU74uO4s48uCk=;
+	b=K3dOIxNjDsxpj0vsziJcrOq5QS6npzDAO5LRec/diEIEDgoKn73BDb2v+oaztiIstERt
+	 NdjIjVCJUJLkXCxQf4Yy7u3G0aN16D50a8m2ZsxDu3EbmedLJJWrOudtkBWqfPqU20IRj
+	 n8jtRu3Xj7p03MGC21w28A62lTISqIJN6xgg87+H5yDLBrxPpwwNicI+BtPCrai1wnjtj
+	 Lk1rrnUnGlyoTbkD2vTWP5UBDguAP7cDXqIPLVbGhA7dNTHGATg0u83zQOKlOfrwR5Rlk
+	 5oBOeuXu24BQFSkC1FvKZPd00xn+3ytuR0a9LKrCEDs1YOi3kCntUDb3rggTRQUcRjw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Fl6vAUL0;
+	arc=none smtp.remote-ip=192.198.163.9
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 338DD606A326;
-	Fri, 27 Nov 2026 10:34:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AAEA606A332;
+	Fri, 27 Nov 2026 11:03:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8AAEA606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A9w33v2T
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1795775673;
-	b=KgnO4/u3d5hua0f30Osc0NASDtlu+ZKhrKfCpewNwc6ohF5ZNV74mD6HqD+JZpKiQSLU
-	 rucegUD20Xplh/D6unwHjBFhj/LJCbDkxofUBW9SYHO/+O+VMu2lOvxxqqwRnAmmVTzLD
-	 NW51TpKAOH1WNKQXTquRX/2dLK+3boUbjTJy5B5D1B6lvQYNYwpyNf5KsYFWT8pry0F7y
-	 Ds+6XMqksX0uZEDOIIobA6mKv4w4X0JmLD430vVTxAkFRu5v849OXV1PwB7py5oI+6tph
-	 da8d9hFE3AyMeP+Xwpt0K7sB4pXXQpwq1iu3GSsSVUm7CL/UoSp9FTxXT7UO+w2qpHQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1795775673;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=Ij3mQ3ClSVA8TNXH+CBSqBM6B2MFef1TZGCDXnJ2u+0=;
-	b=gPyFjqOu0bCqsGb9grBcrk1xFCnvBYS2IcU7bdU7gKyUtxxuERd4+W1YAYkIj1Q3rSWp
-	 ISqfZquAQYP4ZVCgXsFb62JmwPE+kr6G+lOqn+GVZf62aA2+mldMJ5EQY86qvGkvaFJAV
-	 Q+X/JjY2zAGqjNlvxDFfij9jIS2QIDvxXjMnoGOYOpv23A8pek+K8vh/34GPIIZwtT8hU
-	 mC9Fa8U9sTGtBJWROkIwLTHyKOWTBcDtrZC0XSt7icHoFs8gysoJNmnZLbIJTTBi/xtRr
-	 TvOTjWU0HjvKL7KxPvbpPx6IY4QBy1Yf3zoBVKcRlBHWgKXzkkorn78qdXFe3OYthXQ==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id AFF3F1F0089F;
-	Fri, 27 Nov 2026 10:34:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795775673;
-	bh=Ij3mQ3ClSVA8TNXH+CBSqBM6B2MFef1TZGCDXnJ2u+0=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=A9w33v2THgiUvEaSxKiR1XkaKj6NuYpaVE9cPjrmdaqtAoiEqwHKqqIGGXTd05RIT
-	 APzZ3XW4Lk/y9e25QPRW3hHOQo8FGtO6SXuIRIUxNf62haKpakzvl5wTmB1zqFWc6p
-	 665YKceNKGHBKuWjXLVfT3GoSto0pniJfe2XZMlJvpv/8GvD0YzcCJcfgV6qCKgoPo
-	 D4mlO43lkIaS0s5Ix0FDejFRSlyOakrFgRb3M2vtLOlWDwxz1YXdi2gD8oMGYbMnaK
-	 TAtf/G1CBBP9N6iDYC7viOFeRJ0gmvfmFvt8CiKDvrYdmfT6gupDr/FK7Ds77shCkq
-	 gNbGpp/Dhw5rw==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 7E01F4B73B;
-	Fri, 27 Nov 2026 10:34:17 +0000 (UTC)
-From: Sanjay Chitroda via B4 Relay <devnull+sanjayembeddedse.gmail.com@kernel.org>
-Date: Fri, 27 Nov 2026 16:04:00 +0530
-Subject: [PATCH v2 5/7] iio: add probe error messages to hid humidity and
- temperature drivers
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Fl6vAUL0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795777385; x=1827313385;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=60sMrvoiY0fFSRxnoXqAX03tCYSyAzPXmO7RCFfJfFc=;
+  b=Fl6vAUL0xB6W3fLdAPECl76hCBEFCT8+872WrlWTd1ojXX0WQYSlAC07
+   JM+rUUkwP3Sq1Kl4S83AcejPNeG2Ga9sZiwYOIZmD9Ii43v6c7AaUrf7t
+   6DKoW7FTj+/pS6fywR1r1MquzBJ+SLiXsu4ncboTC0FcQszJXBxAO6ClL
+   bguN6KGJgxMn9Z548dYVHoFZcl6jQ/1lM1S3Zbxrwj5G8e4XFhmdoifag
+   5auppPfQtz2nRs9QkOdhgj63nV5Cr3Q1bZHlWhfBJ+bPYURYE9nsOgLFn
+   ha1ZoVZsOSJf8kyA6bRuIbxrPVgWC+0pBskKFL9d/nyph6kNgH+BstQKT
+   A==;
+X-CSE-ConnectionGUID: pZAtlUuLTByjaepr8yn9Kg==
+X-CSE-MsgGUID: BBeYqqpqQkq1bilAPnQJvg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11978"; a="4544007"
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="4544007"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 03:03:04 -0800
+X-CSE-ConnectionGUID: cYAF2QrxRg6hEMuKfrKzlg==
+X-CSE-MsgGUID: MhyoIV2vRTOWhnRaWT6q/A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,236,1787036400"; 
+   d="scan'208";a="14049140"
+Received: from mkosciow-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.115])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2026 03:03:03 -0800
+Date: Fri, 27 Nov 2026 13:03:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Joshua Crofts <crofts@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: rohm-bd79703: Fix full-scale voltages
+Message-ID: <awljZLpARRVUFqbI@ashevche-desk.local>
+References: <0723d51fa973f0204e1c436c08a784b7b1cca795.1795699121.git.mazziesaccount@gmail.com>
+ <3ec029d6-d53d-4cd9-8582-a15cfd3eb4d1@kernel.org>
+ <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -83,94 +83,89 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261127-19-oct-hid-iio-unified-print-framework-v2-5-3f476fe1a940@gmail.com>
-References: <20261127-19-oct-hid-iio-unified-print-framework-v2-0-3f476fe1a940@gmail.com>
-In-Reply-To: <20261127-19-oct-hid-iio-unified-print-framework-v2-0-3f476fe1a940@gmail.com>
-To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795775655; l=2747;
- i=sanjayembeddedse@gmail.com; s=20260702; h=from:subject:message-id;
- bh=ZN+WHoqE9qU2ewu4pc1p2V/3TtyK73/jGZBLtNQtK8w=;
- b=dB/qKhcUNlC1QUpZbrpr9ulUu09qcXXAYyfTb90k97kqd0YbfgkOJP+ogvbZZRQt2lkj9XH9p
- wTmE7pJTrTyDnuozWdykqgjHc8QCFL7SuES4GqDSaW/FEkmK7y0+0pQ
-X-Developer-Key: i=sanjayembeddedse@gmail.com; a=ed25519;
- pk=PcneEFtkmY+Ldl+KmOTpB/Q/HDsqko6Fb0/Z/5cuycI=
-X-Endpoint-Received: by B4 Relay for sanjayembeddedse@gmail.com/20260702
- with auth_id=848
-X-Original-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Reply-To: sanjayembeddedse@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <036d044a-67ef-4716-aa0a-cdf3108c12e4@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Fri, Nov 27, 2026 at 08:34:22AM +0200, Matti Vaittinen wrote:
+> On 26/11/2026 15:31, Joshua Crofts wrote:
+> > On 26-Nov-26 14:23, Matti Vaittinen wrote:
 
-hid_sensor_parse_common_attributes() and the driver-specific
-*_parse_report() helpers may fail during probe without emitting any
-diagnostic information. Add error messages for these failure paths so
-that probe failures can be more easily identified from kernel logs,
-while preserving the original error codes.
+...
 
-This also improves consistency with other HID IIO drivers that provide
-probe-time diagnostics.
+> > > +	int vcc_mv;
+> > 
+> > _mV is the preferred style to denote SI unit variables.
+> 
+> I have discussed this before, and I disagree. Regular variables have been
+> lower case since forever. Capitals have been used to scream "Note me, here
+> is something unusal you need to pay attention for" (like macros). In my,
+> admittably not always humble enough, opinion, the whole "denote SI units" is
+> stupid. I haven't yet seen an engineer who wouldn't understand the meaning
+> of vcc_mv in this context. And, to be very blunt, if I saw such an engineer,
+> I would rather him stay away from the driver code. On the other hand, I have
+> seen engineers who have spent long time with kernel code, stop reading to
+> wonder "Hey, we have capitals here, what's special with this
+> variable/member". So for me a change from vcc_mv to vcc_mV makes this worse.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/humidity/hid-sensor-humidity.c       | 4 ++--
- drivers/iio/temperature/hid-sensor-temperature.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+And I disagree with your argumentation because the scope of discussion here is
+more than just millivolts. We have (in practice!) already a problem with mHz
+versus MHz. Yes, in real life. So, that's why it's better to follow SI for all
+SI registered units and stop messing with the multipliers.
 
-diff --git a/drivers/iio/humidity/hid-sensor-humidity.c b/drivers/iio/humidity/hid-sensor-humidity.c
-index 95dc4c4726f2..388a7b02fa1d 100644
---- a/drivers/iio/humidity/hid-sensor-humidity.c
-+++ b/drivers/iio/humidity/hid-sensor-humidity.c
-@@ -210,7 +210,7 @@ static int hid_humidity_probe(struct platform_device *pdev)
- 					humidity_sensitivity_addresses,
- 					ARRAY_SIZE(humidity_sensitivity_addresses));
- 	if (ret)
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to setup common attributes\n");
- 
- 	humid_chans = devm_kmemdup(&pdev->dev, humidity_channels,
- 				   sizeof(humidity_channels), GFP_KERNEL);
-@@ -220,7 +220,7 @@ static int hid_humidity_probe(struct platform_device *pdev)
- 	ret = humidity_parse_report(pdev, hsdev, humid_chans,
- 				    HID_USAGE_SENSOR_HUMIDITY, humid_st);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to setup attributes\n");
- 
- 	indio_dev->channels = humid_chans;
- 	indio_dev->num_channels = ARRAY_SIZE(humidity_channels);
-diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-index 6c112b444627..ef657c1cb043 100644
---- a/drivers/iio/temperature/hid-sensor-temperature.c
-+++ b/drivers/iio/temperature/hid-sensor-temperature.c
-@@ -207,7 +207,7 @@ static int hid_temperature_probe(struct platform_device *pdev)
- 					temperature_sensitivity_addresses,
- 					ARRAY_SIZE(temperature_sensitivity_addresses));
- 	if (ret)
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to setup common attributes\n");
- 
- 	temp_chans = devm_kmemdup(&pdev->dev, temperature_channels,
- 				  sizeof(temperature_channels), GFP_KERNEL);
-@@ -217,7 +217,7 @@ static int hid_temperature_probe(struct platform_device *pdev)
- 	ret = temperature_parse_report(pdev, hsdev, temp_chans,
- 				       HID_USAGE_SENSOR_TEMPERATURE, temp_st);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(dev, ret, "failed to setup attributes\n");
- 
- 	indio_dev->channels = temp_chans;
- 	indio_dev->num_channels = ARRAY_SIZE(temperature_channels);
+> > > +	int vfs_mv;
+
+...
+
+> > > +	data->vcc_mv = ret / 1000;
+> > 
+> > Better to do ret / (MICRO / MILLI).
+> 
+> This is another thing I've discussed also in the past. If you genuinely stop
+> to think this, why would MICRO / MILLI be better than 1000? Which one brings
+> smaller cognitional load, huh? And assigning the result to variable vcc_mv
+> makes units explicit in any case. And speaking of SI units and scientific
+> accuracy, what actually is MICRO? What is MILLI?
+
+Then what prevents you from adding a new multiplier to units.h?
+
+...
+
+> Micro is 10^-6! Milli is 10^-3. So, this becomes "ret / (10^-6 / 10^-3)",
+> which is plain incorrect. So, instead of making things better, this
+> obfuscates stuff even further. So please, let's not spread this madness any
+> further.
+
+Because kernel does not work in float, it works in integer space. We don't
+have fractions without keeping a multiplier in mind. I do not consider this
+a madness.
+
+> (So actually, this should be 1_PER_MICRO / 1_PER_MILLI - and that'd
+> be even more cognitive load. When did our goal changed from making
+> easy-to-understand -code back to making fancy-looking code, which is harder
+> to understand, while claiming it to be an improvement? That's what these
+> discussions really look to me.)
+> 
+> I agree on using MEGA for 1000000 and even 10 * KILO. This makes sense as
+> when the amount of zeroes increases, counting them becomes harder -
+> especially with old eyes like mine. But using (MICRO / MILLI) instead of
+> 1000, that's, in my opinion, just plain stupid. Intentional obfuscation of a
+> perfectly clear thing.
+> 
+> I am ready to discuss these points when I submit new features, and I've done
+> this quite a lot in the past with Andy ;) But with a fix for a pretty severe
+> bug potentially causing unexpected voltages being driven out of a device -
+> which may cause a havoc to hardware. I'd rather get this fixed ASAP. Maybe
+> you can send an improvement patch with suggested styling "fixes" if you feel
+> really strongly about them, and we can continue discussion there? I am sure
+> Andy will also join us ;)
+
+Yep, with my full disagreement with you :-)
 
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
 
 
