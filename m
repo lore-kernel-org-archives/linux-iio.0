@@ -1,50 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.206.34.216
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.206.16.166
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795748954;
-	b=jf6dPKAUZFHBNU9Rsx1wC1k9jAqvSHt/GoTg9X4HoQPnmGPF1niLZWR+HpO/rdTYoWsv
-	 GnyqV7yjompIBUx7Tvrp3N5jAC3lAGgzZzneW7zJ2+KHB7T/fCFRKcx4jc8rZih37cXrb
-	 OAwfBtoPmGFRxO1lwt07gLXdzmsyOI2/BLOOgktqJVZwufWz4iXklz6DrgOvNmd+i1SZ6
-	 0R2VyZYAuQ2bg/g0Sp77pxLbAQgRN29HqbFH/jXevSuWzwUtuUrXjLXB6LeTCo52Trmih
-	 wrbCF+QQCvWzm8Bk+uOmM9TISMauehRUs/G44ldQK1XWHJfug4ZvJ0vlQmssbV9q3Ig==
+	t=1795748958;
+	b=TU6TOju3TxQu1CPIwCBmHIRIHRK8dtKf/yB3AqMb7JG9XWj0eaIgqyacqKmE0VLXgnxi
+	 TPDqtuyHsdTqDjvicF0SG5LijEdAlHgQ+385DDNukZyam5uiqG2yojC8BwcuE3/e7YKRc
+	 ZJkc1uE9h61/BfTmIiW1bxH2nHjg9XIOEkMXV4gs6UkwmYSCdgOuai8AFBB69wzkuLY2M
+	 mTAqdUR6jep72TQjKOeZcnDAP93FwQE0BzpqYu8m0inBoMuFc+aJ77m9rXx3cm7x3kQj2
+	 0Nbm7wTRRgbbOkqtZ4K7zy2neNGMhHtrSyWwZFjgG8e3HXHxNAhWHQ7RHLtVUCq3n8w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795748954;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795748958;
 	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
 	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=O3hFAMKdWRdThjfxZRX/BnUg07JkndamL/Mi7Od3xlM=;
-	b=rLdre4BiocIk5VE6MCZgWhw9mfrZE0ATTVz3q/j4zPXH1vW9hIZmUUHaytqySFHCBpn1
-	 7lMQMp/PCmtlkvnb9y/RjaaxTVbnlgWuiu5iBG8mKIVAD5GiT3zeX+Rcffw7i3eBaCQFL
-	 rUSKGBZsLmqFcwcVHAnh45wpQZtrIBlSo4c5iZe4j6sSUPAR7i23j4jqM/xTXLjCDlUP6
-	 zCymqSJbBc1cHOwiDoVVwrfy6S42+lTtmeouFdFnN69FU28XyY1/WPGaEhWD+OqtjNiRH
-	 shQxFcnWyXpDiENtkZIrnFXsJR3O0b8RUroEWVidMJiu3QCTVwCflBU3pb2e5n2AHOQ==
+	bh=yang9FDd2QKzvnFaeSDzP8EVQcakOgTxvqErHr760yU=;
+	b=5D2bjz/RckICxc55smjLzrfEg5pNDlh8n4rKzazbikC9J7u9/ELxyBVLjFaKR5p8w+26
+	 vXuWSt0DB+7zNzNHfWfZ8Up/D/yEP10/lR54L1B4j35VR1BXoKVXmoDo/RqlEuVBX9k+P
+	 LjYLw2fZ+2k69I0z/2o767nxtrmFXoetD8k0797mYweaon1slX3NTacfGI2cYwiutlZnK
+	 X01p2cG4mDbX4DQEgotdNa6eu4LXZA/O0okJ6T0vXSsiopxAnARaVQrawsTYzbMWycQFC
+	 BHpghDALdZ3nNFE1U9CwhrLsAZs52JZOj837SE+U/eEluNYBY9v/LBg4NmE7oW2lN0Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=hexin.host;
 	spf=pass smtp.mailfrom=hexin.host;
-	arc=none smtp.remote-ip=54.206.34.216
-Received: from smtpbgau2.qq.com (smtpbgau2.qq.com [54.206.34.216])
+	arc=none smtp.remote-ip=54.206.16.166
+Received: from smtpbgau1.qq.com (smtpbgau1.qq.com [54.206.16.166])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DED3606A327
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6DED3606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6571606A323
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6571606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748905t12a764d3
-X-QQ-Originating-IP: y1T/doPrNGOrvUKkmpDQjoQBYfbeCvMp6qZ/fnZq27Q=
+X-QQ-mid: zesmtpip4t1795748911tf9beeec0
+X-QQ-Originating-IP: OGgt7BYEOgc/04Do+MHR7xcThL0N/iEyn0/GLwFxEu4=
 Received: from hx-KLVG-XX ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:24 +0800 (CST)
+	id ; Fri, 27 Nov 2026 11:08:30 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 16690795467617198118
+X-BIZMAIL-ID: 4401803222957150643
 From: He Xin <hexin@hexin.host>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 06/18] iio: accel: bma220_core: support mount matrix
-Date: Fri, 27 Nov 2026 11:07:58 +0800
-Message-ID: <971350673CE7806A+20261127030810.3150676-7-hexin@hexin.host>
+Subject: [PATCH 09/18] iio: accel: da311: support mount matrix
+Date: Fri, 27 Nov 2026 11:08:01 +0800
+Message-ID: <B8B52AB3DB58F436+20261127030810.3150676-10-hexin@hexin.host>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
 References: <20261127030810.3150676-1-hexin@hexin.host>
@@ -60,23 +60,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: MRiFTjyIbtS1Yi769LoyWUbD40+ZNigtIrDV6FZaSeC63pmTKaFFMnu0
-	d0oDag/hxLZkhYRfCuxvyww4Nke1rWoiQYlWnyKK5NAQuCi6uKpRLljg2VsOGjzvG6pKuYV
-	6cYTo5P8mGhL8iGpCBw+vH6KCGPlTpzlOWEDbRZIq84tVripH4sWx0UUYcL8PYcCteDLN7/
-	8lPJBLCn1af6c3Ufh0Q2r0ZlHi+C1XPDUH78epSvv3E0zitybY00HLtfJFPEJtFT/dDjo0m
-	gkkTFAMv0CXlh9KiKhtLaZ8mfrlKxSR42YpOhekrbb02iojRRWuCHl4RA+L7EnL7e+hE6Rh
-	9yoAQ/wa/biWX3IJriLALoJjcALG9BktiudOdMqxLJ5TFgY1Kmws5yi1Al2AWL3xj15iAoI
-	Yg3pQthhbMVkVdpoMzvkDAvmMhTVKRXxV+R/nqcJ+g2m54L4tjaowJ0WuYb1x/fXESAbVGa
-	CT/IOUoQZj8T6yxGA0F+MZ0ZojQPai6mZ+O2Kkof36AD5+9f5Gl4FgrUhvi8HdQcQDgt8P4
-	RHKOKJ0JRZJ7znTs8IAyGbMOvsI6r5hQngxfhEkKSszbl48lrKKSlRxK4i+gsCbiUwBIDYI
-	pF8xazdYQ5KQf0StkaEVqDGU1tGQjSHtHKwaHXK2AF4hQ5a8A4c+iqwFR1YiapTpOgppmuQ
-	KPmDuFJHVmbVcAfzJMX3vRAqLIdyL+0vSXM6zJWGqN1sYg1AOfXhpLFS+hGbjP1CyGji9/o
-	zLzM0dGAKkMbfOurXmU53jEmJHLS0e5zY34m3IKUihqwYyXiqmE9tn3DZYIxH7YVg9BtRgW
-	fj7RsCutVK8rCywC8GoMBw9In0xtfZG4GkdrXb4dz1M4E81jE0aa5kc9g04p8l2vVv9uKuy
-	orcqK/aB3HZyyjQOEEctkn7eeTKPpFB9lxgAR1eUlDiEYKZ5Ahjfmpo2c5gGHftsFho3GI4
-	yrPbsaBhADYpnhLfsdHyOOFYqPvStw21gv0ifKwzJ+haS7roMCSAbC8AHlpuY8mFpWfbErN
-	q/ur5N75fpsz9wpwlGf3FJ1k1Z2LJtIJJ3rXWjNupsZU/stoaG
-X-QQ-XMRINFO: M/715EihBoGS47X28/vv4NpnfpeBLnr4Qg==
+X-QQ-XMAILINFO: MVocNrGTvdgh2zD/I0lKSA3Fr/hn4trINp7uGbZuVZMIhC/Fusm4uG1q
+	yAnOdhB81kiW0KqKMZ05DhPD6G9udIpfrhsIRlvxA5QMJd1MtoWOfOUsnb2tmPeIa5iH6AT
+	63YqmwaJD1ysQy8xbRPWAbPMRIQaP89j2u2KxLLxu7GCwKugUAQNTOuJoORmvbFxcfOlcV8
+	S+7QYZu3YCx0eIl3IvhgWMCeG0lLoDXVFWTdUJFt1uOwrUuftPvOz7JI5GdagyhvcDbfNAn
+	aab/+BVWy4Q54pA8MnVPqHDoGzcc8lktU9JTK2iIGGj5GYXy6w+wtsbRQ4Jh9CmrB5aJp3+
+	SGGTjK2kFfWR8OHZgnLYjKUC8YH8sYSUL9Mh2Y57b7Zo3HLMn5PHnApRM20nE6xnHQv0ccX
+	eHccSMlVKNQvJjMCjUEMoj8RlR0G0OaDk9T6O8bESF/awe+F/15h/Os8X90QBNUgPyaB50A
+	sW6mTVK5mVZcBg180bOgKlS3n/JYf2SoB/Lk4N/yy1gBn6OxapsJcxFCdfAk8Gp0jWz0/ky
+	nxfXUPfErkrYaK373qjMYFOJbZMlwfLrQoSqFeLIlwcFrdUhOpSHFkbYCuEDH6Ru6g65PKr
+	KPpKTTY7kuY+BX8MgD69uO7NjR6HSbDzDNUjj4x6KT5dspJug/gDCFhfCGtq/rWSXWbXDf4
+	mXIb7mVFfLZjLnvjJKz75YR2EMrwAxL9QLB4UdaRvqaEP52nXjrTElJKEJXJKSSWCJLmjG1
+	3k9G48XG+Te+GaJkuQ1ztDYNXgH0pyFsNLGE5zFnwGfjS/ashnHFAEjZYdNXtUzkcEZZ5Oc
+	yHCjcgnkyJYuN5Q2TUp2Wo2/rXHEgPXd3uv+JV7de/jhXECzKvF0h5nxDixAh/INmpswBss
+	VoSqaJBifDFNaWjqCXt9omCuQsCwZmdetg6zecRdxjwQXVwZ3+1VCfDPbU6QkKbaH4vPrWt
+	dHTGGDVVohIBvlsIhhsmSDpmWy8YxaoLXoKN/xIZmQiostiPy8kzGsmJwIwtv0mIM/RTR3H
+	KvPh4RnfN+E42mkzIqxmM5IUMsNiT1BpzZdsm+dt0Z7829LgYNCzNgbRIkx+o=
+X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
 X-QQ-RECHKSPAM: 0
 
 The driver ignores the mount matrix described by the firmware (ACPI
@@ -89,62 +89,62 @@ IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
 
 Signed-off-by: He Xin <hexin@hexin.host>
 ---
- drivers/iio/accel/bma220_core.c | 24 ++++++++++++++++++++++++
+ drivers/iio/accel/da311.c | 24 ++++++++++++++++++++++++
  1 file changed, 24 insertions(+)
 
-diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
-index b83abfd..adb8484 100644
---- a/drivers/iio/accel/bma220_core.c
-+++ b/drivers/iio/accel/bma220_core.c
-@@ -94,8 +94,18 @@
- #define BMA220_COF_64Hz				0x4
- #define BMA220_COF_32Hz				0x5
+diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
+index dcb69c8..35472b2 100644
+--- a/drivers/iio/accel/da311.c
++++ b/drivers/iio/accel/da311.c
+@@ -77,8 +77,18 @@
+ 
+ static const int da311_nscale = 9580078;
  
 +static const struct iio_mount_matrix *
-+bma220_core_get_mount_matrix(const struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan);
++da311_get_mount_matrix(const struct iio_dev *indio_dev,
++		       const struct iio_chan_spec *chan);
 +
-+static const struct iio_chan_spec_ext_info bma220_core_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, bma220_core_get_mount_matrix),
++static const struct iio_chan_spec_ext_info da311_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, da311_get_mount_matrix),
 +	{ }
 +};
 +
- #define BMA220_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
-+	.ext_info = bma220_core_ext_info,				\
- 	.address = reg,							\
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
-@@ -135,8 +145,18 @@ struct bma220_data {
- 		/* Ensure timestamp is naturally aligned. */
- 		aligned_s64 timestamp;
- 	} scan __aligned(IIO_DMA_MINALIGN);
+ #define DA311_CHANNEL(reg, axis) {	\
+ 	.type = IIO_ACCEL,	\
++	.ext_info = da311_ext_info,\
+ 	.address = reg,	\
+ 	.modified = 1,	\
+ 	.channel2 = IIO_MOD_##axis,	\
+@@ -95,8 +105,18 @@ static const struct iio_chan_spec da311_channels[] = {
+ 
+ struct da311_data {
+ 	struct i2c_client *client;
 +	struct iio_mount_matrix orientation;
  };
  
 +static const struct iio_mount_matrix *
-+bma220_core_get_mount_matrix(const struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan)
++da311_get_mount_matrix(const struct iio_dev *indio_dev,
++		       const struct iio_chan_spec *chan)
 +{
-+	struct bma220_data *data = iio_priv(indio_dev);
++	struct da311_data *data = iio_priv(indio_dev);
 +
 +	return &data->orientation;
 +}
 +
- static const struct iio_chan_spec bma220_channels[] = {
- 	BMA220_ACCEL_CHANNEL(0, BMA220_REG_ACCEL_X, X),
- 	BMA220_ACCEL_CHANNEL(1, BMA220_REG_ACCEL_Y, Y),
-@@ -508,6 +528,10 @@ int bma220_common_probe(struct device *dev, struct regmap *regmap, int irq)
+ static int da311_register_mask_write(struct i2c_client *client, u16 addr,
+ 				     u8 mask, u8 data)
+ {
+@@ -232,6 +252,10 @@ static int da311_probe(struct i2c_client *client)
  		return -ENOMEM;
  
  	data = iio_priv(indio_dev);
 +
-+	ret = iio_read_mount_matrix(dev, &data->orientation);
++	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
 +	if (ret)
 +		return ret;
- 	data->regmap = regmap;
+ 	data->client = client;
  
- 	ret = bma220_init(dev, data);
+ 	indio_dev->info = &da311_info;
 -- 
 2.53.0
 
