@@ -1,23 +1,23 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.207.22.56
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795748959;
-	b=c+mbCtIvqm9USvKRnpBkqgVdpWZx59hTX6zSdlN/LvXVXrlB+QzIGADOLtskdLt1bQvV
-	 PCEp+B1mbzW8INzgtDvGMDn6GRZgp6dD+EhfCnKTc/Q7exYI4TQPJPhfeKsDthsiLLojm
-	 Rrj7sIFr5OXTkcgfOV+VIw1soKfzAyPU8i4tEnw+OWD6o1iLMjFE54aBRt3TBhClQA8vJ
-	 RaFMN2R9do79Dp7Yd3XJR3l6pMri0/SuNQjPRrbXa51WlW1lsbiDYKvaiiZ095pUqJhBQ
-	 Kh2Zw+ki4GgqF10PUdVBtJyovUvFfc5v4lxhcQ4Jpg3KJ9Pf9eFk8fZ6Ub5nBGqVq9w==
+	t=1795748960;
+	b=zFo+g4/HpFQEyYU6WuYVq4c6zQbdcEtPJxefM6th+2hsWoG+qWYZ20pDBykJEi97wcbr
+	 hruA5O6QHymYM7AuBfPRIWOtUq3AaJnhe4Esvfz+LvpEYOR5eWkNuy9x5kQ/cFZfdg5ag
+	 P+R2ijJMeaRUWkij6Xjt6gVxZTM5au5rmVTpQaLYNkaaQH2ZHuQs7Bgj71oCnxyERosiS
+	 dTlGjwjy0eh1VebOEtK+gvPDJpVuBCx1q2itSpvYbVOyiShwhEGBy4Wk5BJdPITGr+D9v
+	 nJgbNxNK/MesRAHcrWUTt9exjjqnB2VaNr7CVdGAfvl3DNn/Nb8xHyxPHIdv/Z+7/og==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795748959;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795748960;
 	h=DMARC-Filter:X-QQ-mid:X-QQ-Originating-IP:Received:X-QQ-SSF:
 	 X-QQ-GoodBg:X-BIZMAIL-ID:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
 	 X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=SGrQcW+oqdamym/ycLPq1Fvss4eYkJUcb8AltfBp0Sk=;
-	b=NVrE7jbKHvaRWwzLuSdqveXduduDyN3JFY8Sb2DwNc4S73vhVhCijkZKK70LD/qiitCp
-	 BgrdQQix0SD2fThuQNGSN4BrHbuNrZaz0pKxDzrWMQC4fepykWhs6l+PA5VDhJiVightB
-	 RSVcx6D8+vE1n5VHYa/jRHDsPCjrP2b+IkkryUPStVOzUKYLtnimwiSRUEIeLrIYPJhut
-	 N6H4fyYZDk4qWbuUKHddHB8xQEBNXU0Se1Hbe31tdtAYZoj7e42wUshiAj2FIFyreLmZ3
-	 3seUUfc7x7V1dCvCuQiUCmnVk8C73DWVTi19XEmO+2FxgMtMOSuU/AtxFOR/oADs9fg==
+	bh=k4030JRwbmT1KLdbn4MvzuJFfhGYUrnwL0leGxsaaqU=;
+	b=f2JHXImGqVrBJYzhC5oC+CXKJu+4PQBjRXV/cyPiMHInT6WWCqImQfg7XT7N37c3Lyiu
+	 +SlRv8T1yyGZaRvREdpx2MIu6oxmhdsFrkkHvFdgeN4rAUSqx+D4TlhGeh5CWYRhMBHzR
+	 f7JIMCFNcAueKWvsIRE0gnpOI/gOQ3FcXTYqCpkOtRGwiUtUQiAQO/M+JznUk8nq0s//x
+	 WuiACIBmXZCLvvAcAwScoiSaLaY8Fc21yJ3hh/TrkS93OBQH+j1Z0Jk5fKItZ3oCtvLxQ
+	 vvPYztmQfQSQD+Hlq0/pJPgVXlkqXEuT7P1hBYrspseEyYU4xLfblIoPMQ8AhxXnADA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=hexin.host;
 	spf=pass smtp.mailfrom=hexin.host;
@@ -25,26 +25,26 @@ ARC-Authentication-Results: i=1; smtp.subspace.kernel.org;
 Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F02606A31C
-	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43F02606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95E35606A323
+	for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2026 03:09:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95E35606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hexin.host
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexin.host
-X-QQ-mid: zesmtpip4t1795748903tc09191b8
-X-QQ-Originating-IP: kr5twJdcRFnOcLGTvC9ttqu5BDHZr6lAyG2ejcMke2w=
+X-QQ-mid: zesmtpip4t1795748900t39120d61
+X-QQ-Originating-IP: bWsbXieL0PD/5/AOcAeZqB4eO0twYWWUEIP1LrKU8aA=
 Received: from hx-KLVG-XX ( [localhost])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 27 Nov 2026 11:08:22 +0800 (CST)
+	id ; Fri, 27 Nov 2026 11:08:19 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 18021858121498967761
+X-BIZMAIL-ID: 7649906138524751584
 From: He Xin <hexin@hexin.host>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 05/18] iio: accel: adxl380: support mount matrix
-Date: Fri, 27 Nov 2026 11:07:57 +0800
-Message-ID: <86E87733857A8C1A+20261127030810.3150676-6-hexin@hexin.host>
+Subject: [PATCH 04/18] iio: accel: adxl372: support mount matrix
+Date: Fri, 27 Nov 2026 11:07:56 +0800
+Message-ID: <03B4FA8FEFFAF16B+20261127030810.3150676-5-hexin@hexin.host>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261127030810.3150676-1-hexin@hexin.host>
 References: <20261127030810.3150676-1-hexin@hexin.host>
@@ -60,23 +60,24 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
 Feedback-ID: zesmtpip:hexin.host:qybglogicsvrgz:qybglogicsvrgz5b-1
-X-QQ-XMAILINFO: OCnNLGxuhE2ofUvFmuP+eKwuC4Di0W3xbJbTUY/InfrJdFwqlEbSWGz3
-	ebf0jZ0arkp487tw4zZfathQLFJewsmXvKAC1bxgCMulnyacUngUmIsPVzo8Apo9RptQxer
-	Ny63D5fZ7Rk1ubhnn5uMJoNXQKRjDcelhGTUIUodnvzZpmcm1FIIl8JYjJ5cgPi0HHGjBuP
-	0lecZeELSXzuvM449elXIjxCQiD1G5UCpphc271wzdV13oftgwksQ4sAVYGfA5JAjBTWslx
-	JgZsq4Ph1rJPNnlLAZ/bWOA2WoHlF0+Bm9nkYqSMswStNOqsAbySjAzy6pcHT1AhzOtz52v
-	frBRRhx3fuEX2EZfL4bDkghlhxt2nDxIL9WdyeVYjfOKiZu4ibwTmzxXdAoJFBdcmkBZ/6P
-	6SuC8vkJu8vofg8p1cXLsH5Jzz55cmTkVOCxduVxfu9IfBjNGQNKFY8IUoDetFM3Kl7gsow
-	7lD9LkLKYaKl0lcS25xEbHMbLA/WSep+swYv+AcbPJ6TPzBBqnV01dEb6eCWI9o6mf6rSCo
-	OYlX3oWmBE079AkltnUu7cFCXPCeuTYSaCwJT7NFRVcnMKjy6V1D0Mx4dGXuZQvuQRMtCAx
-	+9/KDg2UKrFod0jAh4mkVfQ+l71AqOj9ssRbc4ZdhYgqt5y8jGaD4xmR9kX1tCxBU6fk8vD
-	iaU3JxQTwyTzyXd8Me4x+rLuyl+Dfc2dE4dLYp/Ah7fpSAMylnMbipCs4mxfbtvqMb6nWv2
-	51tXKZDBThp+/G6nqYR+aCGvgpmQ/FhF9vLQrMyL2O3g8fSwL96tKhR+JJaGHUsKHPsZDxy
-	CyTds0igUDTApz6gUYg9JGWLPnrhdD+rLlBPMfpcyt1ufKKAGaYI/Aj3oryj7wwWIX9lBoF
-	eb/UvUuVl5DZV7yvsVd5cMCv6f5IMkEMLUszqAsW1inmlzXsH2p7Z+P4PbaMidJrtKFEk50
-	9v4i+9r9/fGl0xmVcHpFfmV3Eh6U+fnjoBHU6hizRh85WeD3cxzWPJnAz+y65Kt5sjxqy9x
-	XDfh6Zyg0l05ziy3SEGaWeAleLs/kOng/haFFZkA==
-X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
+X-QQ-XMAILINFO: Mw3/skGyA4U5Dka1DvJQPZj4dCQxzfJONgvp91B62/dA/3a/YO1KRIg2
+	+xBUtiDAJdwNlKaVk9bNlEXvXTEC31YN+5s6eAf7VxceYAOR2+5vzgaDf1rUqTHC58FPxwn
+	uyih7w7L9Y3acJSeLKdVn1rL4TGy6GUTUlSN5xLnoOeMk3izaEXQ28UdSMPdpu5dnt+vxOH
+	LIEa2HYmpuV4oBwaRlX5Sojil3f44xM8rLK2DRH7YEy0lCZNpHcju6ZzbEKyrHQiCLW+smD
+	1wPxPSBnH5nT+JXvG8hY++MX4NOdCkP8/NqZzpeBIoAM2V/DVRI00nNPopyrzMPlwNhUyXT
+	j81JGecUv4QmuXsu3fS6FysYcIQyBX5qfALkYbMeCWBsaQfdXUijFwn2Cb3SsG7Jj1YWHm/
+	0ADbaehsqpnRJvIE4g6f8x9JZnxKZQZ+VPL3OK+Q9Qfw+Ww+qMdtbdrSfldhl5gF02J8T4S
+	k7nhdRYcy3YAMfhHqIH61gCA9K4Tau3dqecVpTht3cDinP8at3y5i1Sqjh0vwIKZ5eJtg4d
+	Am0Y1iiGA28b9lyVXgKqahFfmSbx+4AWudjp/nJn81hJOQb3djAOZtKn6BHVE3tPIsq8vu0
+	b2e/tdLj3OoPkKUuzAAGO8Sr6uVWyxdC3fPOaDepD6xWyT2Z5aHKggzWH5hBW1agQkTfpG+
+	qhsGiyuUkQNS67KddllIlRGI2FQov4zTs969gHK7l+UhZc8gydCXZo5p4M10Flw2/4OACwk
+	Qhf/GE+c5kDWwZfr9o3zlqy9silNp8eE+bmmmrqJHfR9GLpo1hLL+lwe+gMc6aLqBIDVPAr
+	Tcl+BYwHdDID/JJ6UGidJwuybe2B1HVUthAyjK2imNiyZy2JDugO1p0JZjDhfWsnP8SNJM5
+	ag8fZY8i27QdEMZc7Q56CerZ1JPxTlxZi+8El3hCWmcBXPKYzyqP5JX8rqoCvOEJV1Uuzxd
+	/8VkR0hVqm4GVcr+TlMyG/p5k3V8AfVfMGiWQseBqBm407xZYdMyauxDPoZJaAOhvD0bMk2
+	Qh72wqaYxi6UC0E2sd8FGvGRj/H17dSyGdm/Bc9fPRqcqfmkKVYT32Azy4gYvydf9KfjGk8
+	A==
+X-QQ-XMRINFO: Nq+8W0+stu50tPAe92KXseR0ZZmBTk3gLg==
 X-QQ-RECHKSPAM: 0
 
 The driver ignores the mount matrix described by the firmware (ACPI
@@ -89,56 +90,62 @@ IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
 
 Signed-off-by: He Xin <hexin@hexin.host>
 ---
- drivers/iio/accel/adxl380.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/iio/accel/adxl372.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
-index 7dca552..f5fd9c6 100644
---- a/drivers/iio/accel/adxl380.c
-+++ b/drivers/iio/accel/adxl380.c
-@@ -224,6 +224,7 @@ struct adxl380_state {
- 	int hpf_tbl[7][2];
- 
- 	__be16 fifo_buf[ADXL380_FIFO_SAMPLES] __aligned(IIO_DMA_MINALIGN);
-+	struct iio_mount_matrix orientation;
- };
- 
- bool adxl380_readable_noinc_reg(struct device *dev, unsigned int reg)
-@@ -1769,8 +1770,23 @@ static const struct iio_event_spec adxl380_events[] = {
+diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+index e375d06..1a02d26 100644
+--- a/drivers/iio/accel/adxl372.c
++++ b/drivers/iio/accel/adxl372.c
+@@ -315,8 +315,18 @@ static const struct iio_event_spec adxl372_events[] = {
  	},
  };
  
 +static const struct iio_mount_matrix *
-+adxl380_get_mount_matrix(const struct iio_dev *indio_dev,
++adxl372_get_mount_matrix(const struct iio_dev *indio_dev,
++			 const struct iio_chan_spec *chan);
++
++static const struct iio_chan_spec_ext_info adxl372_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, adxl372_get_mount_matrix),
++	{ }
++};
++
+ #define ADXL372_ACCEL_CHANNEL(index, reg, axis) {			\
+ 	.type = IIO_ACCEL,						\
++	.ext_info = adxl372_ext_info,					\
+ 	.address = reg,							\
+ 	.modified = 1,							\
+ 	.channel2 = IIO_MOD_##axis,					\
+@@ -368,8 +378,18 @@ struct adxl372_state {
+ 	__be16				fifo_buf[ADXL372_FIFO_SIZE];
+ 	bool				peak_fifo_mode_en;
+ 	struct mutex			threshold_m; /* lock for threshold */
++	struct iio_mount_matrix orientation;
+ };
+ 
++static const struct iio_mount_matrix *
++adxl372_get_mount_matrix(const struct iio_dev *indio_dev,
 +			 const struct iio_chan_spec *chan)
 +{
-+	struct adxl380_state *st = iio_priv(indio_dev);
++	struct adxl372_state *st = iio_priv(indio_dev);
 +
 +	return &st->orientation;
 +}
 +
-+static const struct iio_chan_spec_ext_info adxl380_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, adxl380_get_mount_matrix),
-+	{ }
-+};
-+
- #define ADXL380_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
-+	.ext_info = adxl380_ext_info,					\
- 	.address = reg,							\
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
-@@ -1962,6 +1978,10 @@ int adxl380_probe(struct device *dev, struct regmap *regmap,
+ static const unsigned long adxl372_channel_masks[] = {
+ 	BIT(0), BIT(1), BIT(2),
+ 	BIT(0) | BIT(1),
+@@ -1292,6 +1312,10 @@ int adxl372_probe(struct device *dev, struct regmap *regmap,
+ 		return -ENOMEM;
  
  	st = iio_priv(indio_dev);
- 
++
 +	ret = iio_read_mount_matrix(dev, &st->orientation);
 +	if (ret)
 +		return ret;
-+
+ 	dev_set_drvdata(dev, indio_dev);
+ 
  	st->dev = dev;
- 	st->regmap = regmap;
- 	st->chip_info = chip_info;
 -- 
 2.53.0
 
