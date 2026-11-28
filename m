@@ -1,57 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795828218;
-	b=OQJT4VmLGhZ9+yBG7c6RHXOgCUNv2RHK29Maf2zQRk+rQAmLbaJFXa0BNSvdGoEZZteS
-	 5vNQLui+c/zHz5WlP7PcjSLNCN/dXpTr/tvlEvxNAS8VwBce71owG9L4V8LyPhKC1V3Gz
-	 Y2NGd2oR1RaBckaaBNtb52cFRhDrlvAwGqc1AVvBa8VCcjxHCRsuvYdZONX3QHJSIblKU
-	 1xKG2qvbkvH6fzfZPj6RKFtfr6cbrSAy+ZjDxhD0fEILmgAYkL7buDO8GhL5nn9vVIfUR
-	 ccGz4sybpGzhXZU/RcM1UjvrWPNWtBqxSoxL3ak0yVYa9bsnyz7X7fRq9Hf4OqPprtQ==
+	t=1795828654;
+	b=rdCtigr8aU1lDsHS53PLaJNm8cFfCpD/Kfx9p7xrC1c3CQ1nem+rCsGFf2NrQYCTcK8D
+	 A8bNZ9vOOvTB1KrWBCENKrPGigUA0CWNvjWnM8k0XcHDYqe1bKUARJtvDTxCK599f1YfN
+	 mXRfGi2PQkWzV4UEARhuO38dKFDXMyy/J7hczhx7ZuH/BcBsVoi3yt4wDsR4MzE7Qi4Q2
+	 Ti05XrBBmi1CBakCCSnbcWX8kHtXQImR4WQ2AnxEzFz8pqLWXL/hHOJDlbvT42xYMpkTg
+	 GW/8yaSCh8kF8Fgs3PRsd/isuI196JsWMYTbJKn1g/suimWhp61mm+FR/n8uDImGUOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795828218;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795828654;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=4z7W2WBAlgUyUd77FSkVF1Gzr5aZ560MT2l0qj48cG8=;
-	b=MVbHOLEqTxncu65I69F5rOMcJwVv4A/8aQRSiHWF6WjEESPKkpYSeVjCb+QM4Zgzp8bL
-	 VjWN5mgKoZJcH8kbrIDZBB2rwUaWIyGieX1SF0KDTWGxPUnIars0DcEA7ojfT1IMvLHnh
-	 C8vnA29JYtQnJCfdf3LERz8+MhWR3/NedPRhBk7ky4ke8xVeSAwi9FeBgmtjY1bBvRAzl
-	 NILGmJ1dwJiswK9KPE2o1bHMhN2gPiBLQ+vjhqnWP0zYZHAD6+fesl5PlH2gOD71TPnOS
-	 liC+3vjbOYxXYWCC3p5Kf3lAMg1wux9QVsprpypwTBburjZDqOzI+DDezMlxcfJDccQ==
+	bh=OSBwzpdqGrkNuDnhZM4boZGZHKeJDG3XgxYt1ZiYd2g=;
+	b=Qxtm72THzojOmcjnzVdJ1p8nmCp0rqjBU79STSSB3u8OQ4fWQPHPmpd2JtC1wrFxAjlh
+	 HqGzehpYsFRtAGhTvGB40Ph331cepj+8uR+bi6wUj+b66BLXe4Cd9zfTVEZqFaJoDAvg5
+	 k43iNgeEWwHeldtsJQQ20oTo09PdgXc7+M6smDv7MbPNrDE9BJyDez8tEjxNd7bXzpPWZ
+	 /Xt6IdoR6hsTHtWyn1vJRfd1l8o9qWYV+YBBEP5n058G8Qo9ol027LTWXtYy6EthCV7zB
+	 NkKVOaCFF0vah0nSUOda9QYYJkobjSVRi05Xr9usN+F3JWX+m5Pqibx91zIbQvNvnbA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YdWx54DD;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YwFQFO9O;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB86606A31C;
-	Sat, 28 Nov 2026 01:10:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E83D606A31C;
+	Sat, 28 Nov 2026 01:17:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YdWx54DD
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFD41F000C1;
-	Sat, 28 Nov 2026 01:10:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YwFQFO9O
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E8E11F0089B;
+	Sat, 28 Nov 2026 01:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795828217;
-	bh=4z7W2WBAlgUyUd77FSkVF1Gzr5aZ560MT2l0qj48cG8=;
+	s=k20260515; t=1795828654;
+	bh=OSBwzpdqGrkNuDnhZM4boZGZHKeJDG3XgxYt1ZiYd2g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=YdWx54DDqHEY5NCf6DnPgcSwgHiRqrN8ZJjuaug6UUA2YoYXmRpuHEfuaOmlu+AdT
-	 MoVP6yj2XXUBycOeft/87fCJuZ1y9jn7FVC1/1GBWVx0TfFNPnDUrE5Qxo4PXxKa2O
-	 8eZkD/3lWUL5oN7kxKdkqrnNDsK7qiPIRO4hko2xK6dFVS6HvGNnOuuNs5fgo687lk
-	 HRozyHkosiAM+8N7FDidppuvJd1eCZ0Veb18HziDV9CDuEOdDBExA4iqsi0BTZRX9b
-	 rJZSg/AawnSFBj0cf8eHGRxhZHtEMZ01neGny+0yTCJnvl2dMjZq/xBGdR3XXG/+t1
-	 ZOlTbBG1QDUNg==
-Date: Sat, 28 Nov 2026 01:10:10 +0000
+	b=YwFQFO9ORRWN227/l0GCnmRpWQK2NbB7lShlcN7s9QtxxMtBiY5L+V9/8GYTxgvzC
+	 UHigp8GPJoqdqmze5EQz1rPCz97pFahvKRDxLZSS6i9SxC823lGpxDbn4Rbeyh0Okt
+	 TR/QF7EdGsyb4iX9xEema999kED+0qHOXTSC/zd9W6SqwEk9t6Tq7kV9VRLpw/2ULX
+	 lZDU+LXHYelHhnbJYShr7VmPhRuzE46TyOGynMxiWc9nAwYPf08wj+7j5tMlEebMPw
+	 La/jbPw8aTHKVyNuWkmLIdCrY4HKAU0JGcs7rf3I0ZFJY3TUwn7hzwnRpX1wHag7fv
+	 vSZXRK6okGcuw==
+Date: Sat, 28 Nov 2026 01:17:27 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 0/5] iio: split struct iio_dev_attr into typed core
- attributes
-Message-ID: <20261128011010.729b5021@jic23-hlaptop>
-In-Reply-To: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
-References: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: robertijtsma@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: light: add ams OSRAM TCS3430 XYZ and
+ ambient light sensor driver
+Message-ID: <20261128011727.297d2a27@jic23-hlaptop>
+In-Reply-To: <awnB1KT-oJQoPjOM@ashevche-desk.local>
+References: <20261127-iio-tcs3430-v3-0-e191a40a4ae9@gmail.com>
+	<20261127-iio-tcs3430-v3-2-e191a40a4ae9@gmail.com>
+	<awnB1KT-oJQoPjOM@ashevche-desk.local>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,31 +68,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Nov 2026 09:47:43 +0000
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+On Fri, 27 Nov 2026 19:45:56 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> struct iio_dev_attr does three unrelated jobs: it backs the static
-> attributes declared by drivers through IIO_DEVICE_ATTR*(), the channel
-> and event attributes generated by the IIO core, and the per-buffer
-> attributes. Every user carries every field (l, c, buffer), whether it
-> needs them or not, and the meaning of @address depends on the context:
-> an info mask bit, an ext_info index, a scan index or, for events, the
-> event_spec index and the event info packed together.
+> On Fri, Nov 27, 2026 at 09:12:50AM +0100, Robert Ijtsma via B4 Relay wrote:
+> > 
+> > Add an IIO driver for the ams OSRAM TCS3430 ambient light and CIE 1931
+> > XYZ tristimulus color sensor (found at I2C address 0x39 on devices such
+> > as the Microsoft Surface Pro X).
+> > 
+> > Unlike the older TAOS RGBC drivers (tcs3414, tcs3472) that use the 0x80
+> > COMMAND-bit SMBus protocol and RGBC channels, and unlike the banked
+> > MAZeT/JENCOLOR as73211 driver, the TCS3430 uses ams's direct-addressed
+> > 0x80..0xdd register map and exposes Z, Y, IR1, and X tristimulus channels.
+> > 
+> > The driver exposes:
+> > - Illuminance (photopic Y channel) with raw counts and lux scale
+> > - Modified intensity channels for X, Y, Z, and IR1
+> > - Selectable scale and integration time via the IIO GTS helper across
+> >   1x/4x/16x/64x/128x gain and 50.04/100.08/200.16/400.32 ms integration
+> >   time settings
+> > - Regulator management and system sleep suspend/resume support
+> > 
+> > Tested on Microsoft Surface Pro X SQ2 (SC8180X).  
 > 
-> This series keeps struct iio_dev_attr as what drivers use (dev_attr and
-> address) and moves the core-only state into private types embedding it:
 > 
->   struct iio_chan_attr   - core channel attributes (channel, list node)
->   struct iio_event_attr  - extends it with the event spec
->   struct iio_buffer_attr - extends it with the owning buffer
+> There are a couple of nit-picks below, but overall LGTM, after addressing them
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
-> Attribute creation is split into iio_chan_attr_prepare(), which builds
-> the full name and runs the duplicate check, and iio_chan_attr_add(),
-> which initializes an attribute allocated by the caller. Each context
-> allocates its own type and sets its own fields, so the core needs no
-> size, offset or context pointer.
+> ...
+> 
+> > +config TCS3430
+> > +	tristate "ams OSRAM TCS3430 ambient light and CIE 1931 XYZ sensor"  
+> 
+> This doesn't scale, but okay, I don't expect this kind of compatible devices
+> appear in a volume, we may rephrase this later on.
+> 
+> > +	depends on I2C
+> > +	select IIO_GTS_HELPER
+> > +	select REGMAP_I2C
+> > +	help
+> > +	  If you say yes here you get support for the ams OSRAM TCS3430
+> > +	  ambient light and CIE 1931 XYZ tristimulus color sensor.  
+> 
+> Usually when it starts with more that a single vendor line of the devices
+> the list of them is better as it's easier to tweak later on:
+> 
+> 	  If you say yes here you get support for the following sensors:
+> 	  - ams OSRAM TCS3430 ambient light
+> 	  - CIE 1931 XYZ tristimulus color
 
-Nice.  All looks good to me, but as it is a core change I'll let
-it sit for a little while before applying so others can take a good look.
+Agree with general statement and perhaps only know this because of
+a history with colour spaces: That second bit is a colour space in which
+the ams OSRAM sensor presents its data, not another sensor.
 
 Jonathan
