@@ -1,60 +1,56 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795830138;
-	b=JhyZ+Cc0RxOYv7hVogbkTGUNnCSnmsU2Id0N/AmuUfZnQa0YSZxQC7ZCxE7Ty/LYFLp7
-	 /CSEiNKQAV3K881jF9vea9T69RQOPXhUHrkmZE3LeBaJhjYWnKdMATUC3EYboG43RI+ev
-	 FC1w2EcjobWa4sonpFRY8jgLeCdNdpXaBspyLTpX0ofs1fSAYg6CO2mO4PFDoqyBeF0qn
-	 vLBqU1Q3xI89KN12Fn02oJlk5Qv4KV2iKmS0Jj8OXeXExBQuAu5D0wbLGrTZMUu4ebsFZ
-	 UWxKMT/IChmCl2vIZ9r43TxxDVlnrmWhD/nwDb2hC03uOewTAm6P0rzKpuah17T7JCw==
+	t=1795830267;
+	b=CmxS5HV03mfTIeuUuUaN9AVcnMpuyXhbk0MVgiOOrj3XTYlT+0h3U/Y7z0xxxHiARknW
+	 kCbFaWKRKzE4ZzpU6XCDmirEhpqHMDRomtRk61WnJmwvKk6sG/0uBWqeB2OkCjgMCaWwP
+	 t+oxnEVNJWfHr/JXWeVMe2C3Sf/JmLn17or1X5IJEVeeUH+IMz5tfPyj85FQoFkUR8o4w
+	 8pbbQYlVMVuYVKk6fiqKA6PrvWvrUyZqDbC1bw7B8Qye8IlVYyH9Hxu0DSXe6oz3wJzy2
+	 eYDuEwCv89RxVewhtdBnVAWXb3ou0PYmBoQjchH5qkKK2KCZDEioDEWzEuU4mG2y4WQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795830138;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795830267;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=NGxIKYlTWLs9BdPsJCG0LMDXFmXTxHrXo25j3QkL8Q0=;
-	b=3OkEHxbuFxo5kz6VDgtOhkQq8VfnYtPrqp83Jy9uFPtpo6F62n1KAtQCuSYFmzrwrkFJ
-	 r5sepn7Gvo5VoX78r0dll4hP3I2jXczm3CwnwMYqh5TxtcU2ltS2titzkpYZo9N6ca4JA
-	 O3zX8ianCw7jK+k534MAIByl0nJedK/GDHTq3gR9he2Yryo3bLrZtx+bMSD/rNilHqJMI
-	 ZsLWpd/UGtn6BDvdU8voEPAwVux10NcEzIDhh+hfxZaugPb3qinStGatYb5unij4JSk79
-	 jLlZnm5YJdShRPIGcvcsgVnSy0TA46XTvb/wy6tkFIYejssaBEVudLjp5VqF7bmso0Q==
+	bh=YmWM6npUiKBOpIOwoLsyB1g6oBEkpvum18IxGnWazho=;
+	b=Tcbrqa83ZpDXpQssnZNd+SfVpdZkCQiIAYD7eqRdiOPhVdUZU5WmckeHrhbyHFmN0kLS
+	 WeRWg8e+xyFvSyd0FYOfgpNxBg/pklf0bu0BSJ9v2xIa0RQe1lAUfB5LEBgfum8c22kgR
+	 7hqCaIjDH/aK9oiV3l/S2CgAI7lMkfx/SH9z/x5kotDPuFJjAh5pEVuCCDQzzP8atXdY2
+	 izjLns9dMMpBHNP/OkkTyWHqdlRFx6ZDFczWUZEetQ/MqwwAFttXVa8NdwY7yCrriHxob
+	 hysooz6xm4GprSoA2v2d8kKWNl0H4Kn8fjCZ0qzOEh7bl1YzTE3DoXH3l5SQDzPMsXw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nNXr230Y;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="IEIkhpJ/";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 282A2606A31C;
-	Sat, 28 Nov 2026 01:42:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C710606A31C;
+	Sat, 28 Nov 2026 01:44:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=nNXr230Y
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03EB81F000C1;
-	Sat, 28 Nov 2026 01:42:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=IEIkhpJ/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 125AA1F000C1;
+	Sat, 28 Nov 2026 01:44:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795830137;
-	bh=NGxIKYlTWLs9BdPsJCG0LMDXFmXTxHrXo25j3QkL8Q0=;
+	s=k20260515; t=1795830267;
+	bh=YmWM6npUiKBOpIOwoLsyB1g6oBEkpvum18IxGnWazho=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=nNXr230YLXe7qRNa6cff7PJMk4+5H/ebByyucSmlZxTmYxpSwUtUUUDO4SayTGSrc
-	 IrK93o4EiCl883KNuHtjOjxPxkleWHWQzgNGOfz2yaipODcECiWb0mVt/hl2WPRnaZ
-	 pPWF33NEYSVe8fX9jHsJhMjRq7qNAaHcFuud1XB1DLhx1jgeJ+m2ndJdOX727rVVuI
-	 gIB414vsgClROTtG9jep2lrWGmA56xTxT+qg3fDPEJoQ0KDrgOD4Z/RjwLVpS98xcM
-	 8xCyLL0cxUmiD4AKQx3JmpERUioes0CEZO82vfhazhNp+66tqun7cSvkT1YyT/FAQk
-	 QUZZCOcZjDnZQ==
-Date: Sat, 28 Nov 2026 01:42:14 +0000
+	b=IEIkhpJ/h9PP0FXIISN9zoka4QS7lWEA61AssaSiAO59hsnutTSq5N1MjbZpyzP9B
+	 qdNHbmWZUoHHCz7/M3uJ0aIjXUZNM1QwSFPQzR4kr23LNP1aRHsRoN56U052WZ4KU6
+	 fIehv0Q6a6QcQQGyp9fAOQt61vCvVbXXVnW0bp7ZNZPiTq/y4NtOQ5OzLUF+VDwHKg
+	 bGYilmmq4mS7dlhK9OBf+tEZnNchzE5PrzdQomofZ/entIiv3WzBi10vJjb5ekwuw2
+	 gSJPZHnY1nzdA9BSbWMXOSwIrfmvIXEbsKtD+FgS8GE3Ua1EroX/53d54NwNF3/1Jd
+	 ED5vkDZESixlQ==
+Date: Sat, 28 Nov 2026 01:44:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org>
-Cc: robertijtsma@gmail.com, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Matti Vaittinen
- <mazziesaccount@gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: light: add ams OSRAM TCS3430 XYZ and
- ambient light sensor driver
-Message-ID: <20261128014214.1541d7ee@jic23-hlaptop>
-In-Reply-To: <20261127-iio-tcs3430-v3-2-e191a40a4ae9@gmail.com>
-References: <20261127-iio-tcs3430-v3-0-e191a40a4ae9@gmail.com>
-	<20261127-iio-tcs3430-v3-2-e191a40a4ae9@gmail.com>
+To: Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org>
+Cc: iasnezhkov@gmail.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>, Arnav
+ Kapoor <kapoorarnav43@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: inkern: guard fwnode_xlate with info_exist_lock
+Message-ID: <20261128014419.78eb8e57@jic23-hlaptop>
+In-Reply-To: <20261127031038.12685-1-iasnezhkov@gmail.com>
+References: <20261127031038.12685-1-iasnezhkov@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,162 +64,95 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Nov 2026 09:12:50 +0100
-Robert Ijtsma via B4 Relay <devnull+robertijtsma.gmail.com@kernel.org> wrote:
+On Fri, 27 Nov 2026 03:10:38 +0000
+Ilia Snezhkov via B4 Relay <devnull+iasnezhkov.gmail.com@kernel.org> wrote:
 
-> From: Robert Ijtsma <robertijtsma@gmail.com>
+> From: Ilia Snezhkov <iasnezhkov@gmail.com>
 > 
-> Add an IIO driver for the ams OSRAM TCS3430 ambient light and CIE 1931
-> XYZ tristimulus color sensor (found at I2C address 0x39 on devices such
-> as the Microsoft Surface Pro X).
+> __fwnode_iio_channel_get() dereferences indio_dev->info->fwnode_xlate
+> and invokes it without holding info_exist_lock. Concurrent
+> iio_device_unregister() clears indio_dev->info under info_exist_lock,
+> allowing a NULL dereference or callback execution during provider
+> teardown.
 > 
-> Unlike the older TAOS RGBC drivers (tcs3414, tcs3472) that use the 0x80
-> COMMAND-bit SMBus protocol and RGBC channels, and unlike the banked
-> MAZeT/JENCOLOR as73211 driver, the TCS3430 uses ams's direct-addressed
-> 0x80..0xdd register map and exposes Z, Y, IR1, and X tristimulus channels.
+> Hold iio_dev_opaque->info_exist_lock with scoped_guard(mutex, ...)
+> matching the rest of inkern.c, and return -EPROBE_DEFER if
+> indio_dev->info is NULL. Since iio_device_unregister() calls
+> cdev_device_del() before clearing indio_dev->info, seeing a NULL info
+> pointer corresponds to racing right before device removal from
+> iio_bus_type, where !idev already returns -EPROBE_DEFER. Using
+> -EPROBE_DEFER also avoids colliding with the -ENODEV sentinel used by
+> callers to continue parent or map-list lookups and avoids the named
+> lookup -EINVAL fallback in __fwnode_iio_channel_get_by_name().
 > 
-> The driver exposes:
-> - Illuminance (photopic Y channel) with raw counts and lux scale
-> - Modified intensity channels for X, Y, Z, and IR1
-> - Selectable scale and integration time via the IIO GTS helper across
->   1x/4x/16x/64x/128x gain and 50.04/100.08/200.16/400.32 ms integration
->   time settings
-> - Regulator management and system sleep suspend/resume support
-> 
-> Tested on Microsoft Surface Pro X SQ2 (SC8180X).
-> 
-> Signed-off-by: Robert Ijtsma <robertijtsma@gmail.com>
-Looking good.
+> Fixes: acd8256723f2 ("iio: inkern: Add of_xlate function to struct iio_info")
+> Reviewed-by: Arnav Kapoor <kapoorarnav43@gmail.com>
+> Signed-off-by: Ilia Snezhkov <iasnezhkov@gmail.com>
+Good catch.
 
-Only significant remaining question I had is over scaling of the
-channels other than the illuminance one.  
-
-I'm not sure how easy it is to make the gts helper deal with the
-different scales (it was written much more recently than when I last
-touched a light sensor and I haven't used it myself yet as a result!)
-
-+CC Matti for input on this.
+I'm not going to rush this one in given we are getting latish in the cycle.
+So queued up on the testing branch of iio.git for the next merge window.
+Marked it for stable.
 
 Thanks,
 
 Jonathan
 
-> diff --git a/drivers/iio/light/tcs3430.c b/drivers/iio/light/tcs3430.c
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..06e5ecd91f6502a1d8c99de4707e590dac4f5beb
-> --- /dev/null
-> +++ b/drivers/iio/light/tcs3430.c
-> @@ -0,0 +1,521 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * ams OSRAM TCS3430 ambient light and CIE 1931 XYZ sensor driver
-> + *
-> + * Copyright (C) 2026 Robert Ijtsma <robertijtsma@gmail.com>
-> + *
-> + * Datasheet:
-> + *   https://look.ams-osram.com/m/43d518b4cd81e3f2/original/TCS3430-DS000539.pdf
-> + */
-> +
-> +#include <linux/array_size.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/device.h>
-
-I didn't check, but do we need device.h itself or can we use
-more specific headers like dev_printk.h?
-
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/pm.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/types.h>
-> +
-> +#include <asm/byteorder.h>
-
-> +
-> +/*
-> + * Photopic Y channel typical sensitivity from datasheet optical characteristics:
-> + * ~0.537 counts/lux at AGAIN = 16x and ATIME = 100 ms (36 cycles), giving:
-> + *   lux/count = 2980 / (gain * integration_time_ms)
-> + *
-> + * At minimum gain (1x) and shortest integration time (50.04 ms, 18 cycles):
-> + *   max_scale = 2980 / 50.04 = 59.552358113 lux/count
-> + */
-> +#define TCS3430_MAX_SCALE_INT		59
-> +#define TCS3430_MAX_SCALE_NANO		552358113
-
-
-> +static int tcs3430_apply_itime(struct tcs3430_data *data, u8 atime)
-> +{
-> +	int ret;
-> +
-> +	ret = regmap_write(data->regmap, TCS3430_REG_ATIME, atime);
-> +	if (ret)
-> +		return ret;
-> +
-> +	data->atime = atime;
-
-Trivial but slightly preference for a blank line before simple
-returns of 0 for success like these.  Just makes them stand out a tiny
-bit more as being the good path.
-
-> +	return 0;
-> +}
-
-> +
-> +#define TCS3430_INTENSITY_CHANNEL(_mod, _addr) {			\
-> +	.type = IIO_INTENSITY,						\
-> +	.modified = 1,							\
-> +	.channel2 = (_mod),						\
-> +	.address = (_addr),						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),		\
-> +	.info_mask_shared_by_all_available =				\
-> +		BIT(IIO_CHAN_INFO_INT_TIME),				\
-> +}
-> +
-> +static const struct iio_chan_spec tcs3430_channels[] = {
-> +	{
-> +		.type = IIO_LIGHT,
-> +		.address = TCS3430_REG_CH1DATAL,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SCALE),
-
-Scale is a bit of a weird concept for the various intensity channels
-but I'd still expect that if we change this scale, they would be affected
-(if it modifies AGAIN rather than the integration time that you are exposing).
-Hence I'm a little surprised to see it only here.
-
-The actual scaling doesn't matter for intensity channels because they are
-normally poorly defined though for CIE XYZ we are in a better state than
-normal so if the gain doubles they should double.  I'd expect the same
-for the IR channel. Or am I missing something?
-
-Upshot, I think this is either shared_by_all or separate but for
-each element with appropriate additional scale factors rolled in
-I played with an LLM and it thinks the values are a bit wrong for the
-listed 2700K white test relecting perhaps a small channel specific scaling?
-
-I'm not immediately sure how we do that with the gts code.
-
-Perhaps just keeping the one simple scaling control is the right option
-but I think we do need to expose it for all channels.
-
-
-
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME),
-> +		.info_mask_shared_by_all_available =
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +	},
-> +	TCS3430_INTENSITY_CHANNEL(IIO_MOD_Z, TCS3430_REG_CH0DATAL),
-> +	TCS3430_INTENSITY_CHANNEL(IIO_MOD_Y, TCS3430_REG_CH1DATAL),
-> +	TCS3430_INTENSITY_CHANNEL(IIO_MOD_LIGHT_IR, TCS3430_REG_CH2DATAL),
-> +	TCS3430_INTENSITY_CHANNEL(IIO_MOD_X, TCS3430_REG_CH3DATAL),
-> +};
-
+> ---
+> Changes in v3:
+> - Place `struct iio_dev_opaque *iio_dev_opaque;` in reverse xmas tree
+>   order (Andy Shevchenko).
+> - Move `iio_dev_opaque = to_iio_dev_opaque(indio_dev);` right after
+>   `channel->indio_dev = indio_dev;` immediately before scoped_guard()
+>   (Andy Shevchenko).
+> - Carry Reviewed-by from Arnav Kapoor.
+> 
+> Changes in v2:
+> - Return -EPROBE_DEFER instead of -ENODEV when indio_dev->info is NULL
+>   so callers do not treat it as the "no channel on this node, keep
+>   looking" sentinel and named lookups do not overwrite it to -EINVAL
+>   (Arnav Kapoor).
+> - Drop the unrelated indio_dev->num_channels bounds check from this
+>   locking fix (Arnav Kapoor).
+> - Move the AI coding assistant note below the --- separator.
+> 
+> Link: https://lore.kernel.org/r/20261126060615.63790-1-iasnezhkov@gmail.com
+> Found and drafted with an AI coding assistant.
+> 
+>  drivers/iio/inkern.c | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 1f22275..92b6679 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -145,6 +145,7 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+>  				    struct fwnode_handle *fwnode, int index)
+>  {
+> +	struct iio_dev_opaque *iio_dev_opaque;
+>  	struct fwnode_reference_args iiospec;
+>  	struct device *idev;
+>  	struct iio_dev *indio_dev;
+>  	int err;
+> @@ -162,10 +163,15 @@ static int __fwnode_iio_channel_get(struct iio_channel *channel,
+>  	}
+>  
+>  	indio_dev = dev_to_iio_dev(idev);
+>  	channel->indio_dev = indio_dev;
+> -	if (indio_dev->info->fwnode_xlate)
+> -		index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+> -	else
+> -		index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
+> +	iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +	scoped_guard(mutex, &iio_dev_opaque->info_exist_lock) {
+> +		if (!indio_dev->info)
+> +			index = -EPROBE_DEFER;
+> +		else if (indio_dev->info->fwnode_xlate)
+> +			index = indio_dev->info->fwnode_xlate(indio_dev, &iiospec);
+> +		else
+> +			index = __fwnode_iio_simple_xlate(indio_dev, &iiospec);
+> +	}
+>  	fwnode_handle_put(iiospec.fwnode);
+>  	if (index < 0)
+>  		goto err_put;
 
