@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795832527;
-	b=Erlm0UMegZ7a5Ogi0sa7L31LYJUqQMvtKILFSJF19ZO2PcrRimb2+0RW6IbdWkq3WMlb
-	 iiOQAQzgsk+YCdLxT9Vt72Px3nsRm5+n1EgI2WxKCnqqBUbIWcRFwy4jE7JNuMtM38eZX
-	 UbkRA/wPnbpEbuBvbBcG6C9Br7i4QTu3r6BqhCCS9iA2nxNivHaZAuYU2ghMY6MxkudvQ
-	 oiFqyApuci25kHdAt6KcYboGtNWYqcvSwXifaaQiETSw1ymOvazpZ3OQxJEaTO2DQT3Zt
-	 +GQ8HLhg8avL8OYKq6BgjnLeSlHDBS9jWdLc3ZLh/XtLIJV0CgxKLRrUNbZ7zCEe97w==
+	t=1795833217;
+	b=azErF5lOTHA+T3Fk7IyiQwVve4sg+herAIU9dYGxy3z8NOy5EFcSdA8GK4DpAFzytO7i
+	 Ivvz6QVZsf2Os1VHKhDqOKhouwifgGsXCMNssqFZK9r2VZ8TwCXTdHWuZPbLxTsJbDCYi
+	 2wgAUvKx+NSTjkXQY/WRq953ujsEsPY+wZWR8Zg6voCCtoJWFR7cvrBljacaG8hdfOWD4
+	 zD0hRxVW92joaBrK+iLjhvNzv0XSif8CubV+i10xYY+kOYxtqbzaQeqs4+Yxsb0rZkSFJ
+	 Bp2iMQr+2sPNkf2qDX390o+rywh892k7HzVmwol2L2hI+cX5gKMlf92kf0MvOWxPazg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795832527;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795833217;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=bA0QuwLrAhavKCx5CEuNn3dlERhJ7ym0sruZEZcGMlc=;
-	b=hC1hotEdzTIZoeJFOLXI4chAFEWxd4H/htwhF62Qc75HFBPni0S/WVapFb8VNsAuV7Hy
-	 V4ULL4QyDErm0U6xnqKaW3jIJgQhf3guBp5viAf6xjHUTtzy6DktWTph4FSPQ69nR8yCz
-	 6lXGQGahjSlsPMdP1SBUNiwJXEjneN9oGpHCTJkjRiAnssLQYNDWqhQlzhhxMTQnvXTIP
-	 5iABGX+YtruYh64TqmPYRNxKWoFiZo5ovvtadBm3WTyiGPJvze8nvZSwGLdm02tCYU+pn
-	 OMzTCE8bXy8ZW1HH2euw+VnimCTsyIlvACA96UEzSyGazWdA5b3tK+FQPt6coglgt7g==
+	bh=8auMlamrtMjVlgacbgikZGn2a5GvMMBHqeONTcWM4EA=;
+	b=Zff7/6YDzlxOoBeA+5MV5tneWlamuJVriyNcDj6/1zmk32Fi19eEs8i2GwgF1t1dX8Bx
+	 7rvpiHqiiiBuT9qlL/o1XqClsFd/t+aPDuNxvwNcXejYU8s7acX88Z3oSnowgWRUAZQXX
+	 xuDscgFkHlBEX6JPwLTS334WRE/wAisK+cARaW2ZnthZvfYRLkLGJvCDPEvWYpeerlQUP
+	 08n9M4NOMOi2jwWPeMUj5KPXxGOhi9O6+ihtPWLYXGYUCQcj1TlelKc5YQFNihh3PEboB
+	 44UHY4CnGWSR09drlyxY7ouKrDgNu5l6HcyRfyxEHq6rk0v8q3Pbr4n8pzyy4RC0rXA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aenTreZL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UuT+PvST;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F4D606A336;
-	Sat, 28 Nov 2026 02:22:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4EDC606A31F;
+	Sat, 28 Nov 2026 02:33:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aenTreZL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 696B71F00893;
-	Sat, 28 Nov 2026 02:22:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UuT+PvST
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BAAA1F000C1;
+	Sat, 28 Nov 2026 02:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795832527;
-	bh=bA0QuwLrAhavKCx5CEuNn3dlERhJ7ym0sruZEZcGMlc=;
+	s=k20260515; t=1795833216;
+	bh=8auMlamrtMjVlgacbgikZGn2a5GvMMBHqeONTcWM4EA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=aenTreZLm58F62041X4uLrCM7vBWP4Ae7fB50/6drkuNxp10epAbu795uEv7Yhmjh
-	 okLGDc9UgvJgaWIWmJLc9bWcDAY28mN0hzKNjIjL+SzykVuBjBeMv7TgT72HigmMc9
-	 a0z26ioUYcNgruAzqLtMLLgzTsaElxecs2Rkl2Ip9p2cqoc0Q/Mx3jPfC0Y2h4O7xe
-	 CKD+6Kqyx9jxhiSaj8MY5AeW840R/cQKFshlx20eihnHSCjpwDSECwvHlBJErHsOJz
-	 U6vg3QbNJJcixE+PfSmNtdt/nsNVjn7EUErCUkbE+Oq7wnHWlNBMPqcZ/MlnSv5A/7
-	 ql4J6DNqXbbCw==
-Date: Sat, 28 Nov 2026 02:21:57 +0000
+	b=UuT+PvSTJfBSMzu9xcK6TkXcffGKa3KQ03B5tBdBQbv7TxalXTg1Ulg1AF64uboFW
+	 3NeEfl+LBegM3ykALxhzunPVaA0zZlxEz5+s0uCNKGE2UrZXXM9ocAQsI7e7Z/AD+O
+	 5CjGHImmKcw9Z5FLzXMwk+TWYs8W+8qH5xKZM+ReosVhZNdaeqEB4LWPigUKzBxC0U
+	 Y1iizpkVsCDzhh9n6cc4eKHF4eXnGjyFoc9NOXKq3UEFckOQlVZwKyseZ1K5SSp8Hc
+	 QdcSGpguCdOgtxleT0pxOEjTlTA4tYxAPhj05T74Eo9ZlmYe21WJOdn87RqKBtv6HH
+	 uyjxrhim5TTjQ==
+Date: Sat, 28 Nov 2026 02:33:33 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Romain TISSERAND <romain.tisserand@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -49,11 +49,11 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-sunxi@lists.linux.dev,
  linux-kernel@vger.kernel.org, sashiko-reviews@lists.linux.dev
-Subject: Re: [PATCH 2/4] iio: adc: Add the Miyoo A30 analog stick MCU
-Message-ID: <20261128022157.7984a33d@jic23-hlaptop>
-In-Reply-To: <20261127012612.1589039-3-romain.tisserand@gmail.com>
+Subject: Re: [PATCH 4/4] iio: adc: Add the PocketGo S30 analog stick MCU
+Message-ID: <20261128023333.5873929d@jic23-hlaptop>
+In-Reply-To: <20261127012612.1589039-5-romain.tisserand@gmail.com>
 References: <20261127012612.1589039-1-romain.tisserand@gmail.com>
-	<20261127012612.1589039-3-romain.tisserand@gmail.com>
+	<20261127012612.1589039-5-romain.tisserand@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,165 +67,147 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Nov 2026 02:26:10 +0100
+On Fri, 27 Nov 2026 02:26:12 +0100
 Romain TISSERAND <romain.tisserand@gmail.com> wrote:
 
-> The Miyoo A30 handheld (Allwinner A33) reads its analog stick through a
-> microcontroller on uart0. From power-up it streams frames at 9600 baud,
-> about 67 per second:
+> The PocketGo S30 handheld (Allwinner A33) reads its analog stick through
+> a microcontroller at address 0x60 on i2c0. A four-byte read returns the
+> two raw 8-bit potentiometer readings, each followed by its complement:
 > 
->   0xff <b0> <b1> <b2> <b3> 0xfe
+>   <a> <~a> <b> <~b>
 > 
-> b2 and b3 are the raw 8-bit readings of the X and Y potentiometers, the
-> ones the stock firmware uses. b0 and b1 also move with the stick, but
-> their meaning is unknown, so they are not exposed.
+> The value and its complement appear to come from consecutive samples:
+> they differ by a count or two at rest and by more while the stick moves
+> fast. With an exact check, about one read in four is rejected, and
+> about 4% still fail after three tries when polled as adc-joystick does.
+> The stock driver uses an exact check and silently drops such frames.
+> Accept a difference of up to 2 instead and read again, up to three
+> times, beyond it or on a bus error (the MCU occasionally NACKs its
+> address): over 2 x 6000 reads at rest and moving, none failed and under
+> 2% needed a second try.
 > 
-> Add a serdev driver that exposes X and Y as two raw IIO channels. As
-> the MCU pushes its readings, each complete frame also goes to a software
-> IIO buffer (kfifo) with a timestamp: adc-joystick then takes the stick
-> from the buffer, without polling, both axes from the same frame. Direct
-> reads return the last complete frame, -EAGAIN before the first one.
+> Add an I2C driver that exposes the two readings as raw IIO channels, so
+> that adc-joystick can read the stick in polled mode. Each channel read
+> fetches a fresh frame.
 > 
 > Signed-off-by: Romain TISSERAND <romain.tisserand@gmail.com>
-Take a look at what Sashiko noted
-https://sashiko.dev/#/patchset/20261127012612.1589039-1-romain.tisserand%40gmail.com
-as well as what I have below.
+Hi Romain,
 
-> diff --git a/drivers/iio/adc/miyoo-a30-stick.c b/drivers/iio/adc/miyoo-a30-stick.c
+A few minor things inline.
+
+Thanks,
+
+Jonathan
+
+> diff --git a/drivers/iio/adc/pocketgo-s30-stick.c b/drivers/iio/adc/pocketgo-s30-stick.c
 > new file mode 100644
-> index 000000000000..d83761558ee7
+> index 000000000000..09a60cb307d9
 > --- /dev/null
-> +++ b/drivers/iio/adc/miyoo-a30-stick.c
-> @@ -0,0 +1,204 @@
+> +++ b/drivers/iio/adc/pocketgo-s30-stick.c
+> @@ -0,0 +1,149 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * PocketGo S30 analog stick MCU
+> + *
+> + * The MCU samples the two stick potentiometers and answers an I2C read of
+> + * four bytes with the raw 8-bit readings, each followed by its complement:
+> + *
+> + *   <a> <~a> <b> <~b>
+> + *
+> + * The value and its complement appear to come from consecutive samples:
+> + * they differ by a count or two at rest, and by more while the stick moves
+> + * fast, so an exact check would drop about one read in four. Accept a
+> + * difference of up to S30_STICK_TOLERANCE and read again beyond it. The
+> + * readings are exposed as two IIO channels, for adc-joystick.
+> + */
+
+I'd guess this is swapping ends of the pot to detect shorts or broken connections?
+That has to be on consecutive samples.
 
 > +
-> +static size_t a30_stick_receive(struct serdev_device *serdev, const u8 *data,
-> +				size_t count)
+> +#define S30_STICK_RETRIES	3
+> +/* largest accepted difference between a reading and its complement */
+> +#define S30_STICK_TOLERANCE	2
+> +
+> +/* signed distance of a + b from 0xff, -255..255 */
+> +static int s30_stick_mismatch(u8 a, u8 b)
 > +{
-> +	struct a30_stick *st = serdev_device_get_drvdata(serdev);
-> +	size_t i;
+> +	return a + b - 0xff;
+> +}
 > +
-> +	for (i = 0; i < count; i++) {
+> +static int s30_stick_read(struct i2c_client *client, u8 *val)
+> +{
+> +	u8 buf[4];
+> +	int i, ret = -EIO;
+> +
+> +	for (i = 0; i < S30_STICK_RETRIES; i++) {
 
-	for (size_t i = 0; ...
+	for (unsigned int i = 0; ...)
 
-> +		/* resynchronise on the start byte */
-> +		if (!st->len && data[i] != A30_STICK_START)
+> +		ret = i2c_master_recv(client, buf, sizeof(buf));
+> +		if (ret != sizeof(buf)) {
+> +			if (ret >= 0)
+> +				ret = -EIO;
 > +			continue;
-> +
-> +		st->frame[st->len++] = data[i];
-> +		if (st->len < A30_STICK_FRAME_LEN)
-> +			continue;
-> +
-> +		st->len = 0;
-> +		if (st->frame[A30_STICK_FRAME_LEN - 1] != A30_STICK_END)
-> +			continue;
-> +
-> +		scoped_guard(spinlock, &st->lock) {
-> +			st->val[0] = st->frame[3];
-> +			st->val[1] = st->frame[4];
-> +			st->valid = true;
+
+Does this actually happen?   It is fairly unusual for a recv to
+fail. 
+
 > +		}
 > +
-> +		if (iio_buffer_enabled(st->indio_dev)) {
-
-I'm not sure if the fix sashiko has for racing with the demux is
-correct... Please look into whether that works.
-
-> +			IIO_DECLARE_BUFFER_WITH_TS(u8, scan, 2) = { };
-> +
-> +			scan[0] = st->frame[3];
-> +			scan[1] = st->frame[4];
-> +			iio_push_to_buffers_with_ts(st->indio_dev, scan,
-> +						    sizeof(scan),
-> +						    iio_get_time_ns(st->indio_dev));
+> +		if (abs(s30_stick_mismatch(buf[0], buf[1])) > S30_STICK_TOLERANCE ||
+> +		    abs(s30_stick_mismatch(buf[2], buf[3])) > S30_STICK_TOLERANCE) {
+> +			ret = -EIO;
+> +			continue;
 > +		}
+> +
+> +		val[0] = buf[0];
+> +		val[1] = buf[2];
+> +		return 0;
 > +	}
 > +
-> +	return count;
+> +	return ret;
 > +}
-
 > +
-> +static int a30_stick_read_raw(struct iio_dev *indio_dev,
+> +static int s30_stick_read_raw(struct iio_dev *indio_dev,
 > +			      struct iio_chan_spec const *chan, int *val,
 > +			      int *val2, long mask)
 > +{
-> +	struct a30_stick *st = iio_priv(indio_dev);
+> +	struct i2c_client *client = iio_device_get_drvdata(indio_dev);
+
+Prefer that the client is embedded in the iio_priv().  That is a lot
+more flexible than using the iio_device drvdata.
+Currently you have set the size of that to 0.  Instead provide
+a structure for any state you need for the driver.
+
+
+> +	u8 v[2];
+> +	int ret;
 > +
 > +	if (mask != IIO_CHAN_INFO_RAW)
 > +		return -EINVAL;
 > +
-> +	guard(spinlock)(&st->lock);
-> +	if (!st->valid)
-> +		return -EAGAIN;
+> +	ret = s30_stick_read(client, v);
+> +	if (ret)
+> +		return ret;
 > +
-> +	*val = st->val[chan->channel];
-
-blank line here.
-
+> +	*val = v[chan->channel];
 > +	return IIO_VAL_INT;
 > +}
 
-> +static int a30_stick_probe(struct serdev_device *serdev)
-> +{
-> +	struct device *dev = &serdev->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct a30_stick *st;
-> +	unsigned int baud;
-> +	int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
+> +static const struct of_device_id s30_stick_of_match[] = {
+> +	{ .compatible = "miyoo,pocketgo-s30-stick" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, s30_stick_of_match);
 > +
-> +	st = iio_priv(indio_dev);
-> +	st->indio_dev = indio_dev;
-> +	spin_lock_init(&st->lock);
-> +
-> +	indio_dev->name = "miyoo-a30-stick";
-> +	indio_dev->info = &a30_stick_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = a30_stick_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(a30_stick_channels);
-> +	indio_dev->available_scan_masks = a30_stick_scan_masks;
-> +
-> +	ret = devm_iio_kfifo_buffer_setup(dev, indio_dev, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_iio_device_register(dev, indio_dev);
+> +static const struct i2c_device_id s30_stick_id[] = {
+> +	{ "pocketgo-s30-stick" },
 
-At this point interfaces are all exposed (both to usespace and in kernel).
-We normally expect everything to be pretty much fully functioning at that
-stage. So not to have to do all the stuff that follows.
+Sashiko got this.  Named initializers for these structures.
+There is some rework going on that will shortly require them.
 
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * Open the UART last, so that it is closed first on removal: no frame
-> +	 * is pushed to the buffer once the IIO device is going away. Reads
-> +	 * return -EAGAIN until the first frame.
-> +	 */
-> +	serdev_device_set_drvdata(serdev, st);
-> +	serdev_device_set_client_ops(serdev, &a30_stick_serdev_ops);
-> +
-> +	ret = devm_serdev_device_open(dev, serdev);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "cannot open the UART\n");
-> +
-> +	baud = serdev_device_set_baudrate(serdev, A30_STICK_BAUD);
-> +	if (baud != A30_STICK_BAUD)
-> +		return dev_err_probe(dev, -EINVAL, "cannot set %u baud (got %u)\n",
-> +				     A30_STICK_BAUD, baud);
-> +
-> +	serdev_device_set_flow_control(serdev, false);
-> +	ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "cannot set the parity\n");
-> +
-> +	return 0;
-> +}
-
-
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, s30_stick_id);
