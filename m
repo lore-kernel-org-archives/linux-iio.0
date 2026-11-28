@@ -1,54 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=136.143.169.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795857729;
-	b=3ouaprsClNVlqlymQNXguWPj7fKG0uUNrOkIBvT/Hb8OQb82zkDXCBpdEeQsKV2wnCun
-	 Tk5TetkbGAWktBPhcqdt6JDf2LkiTqcdhKfRi4YeTt+TguGpWgYJTDhYszP6yC/atzkoB
-	 4+38agycZCSqCPABNzzUFfQ8u2nRmNEsM5Dey02/p85qJLtS5x7D4PERq0eRxjEN3gKtN
-	 iOM8rXXu6KfRx7EnRNF1+pHBM/jpEd/iz/IkFkxGlovEKFr5EmjYk/XBWD6KglivOi19u
-	 77uRj5tsKaafXvbRgVGx4tNrhb3hkwZVuWxGrUwa14rftCLMDN0wAdB/hT2DitzY6HA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795857729;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=wlckpMJ074/wY0TNt41XHzSk8RPHuKfXuoWeAZ7xaY0=;
-	b=0HXkgcC1xFRVzoiqV8s9J2EaQRDZgpDBLOpldzrpGTmKB7SuMYhEu40UzIs7z7Ho2D2S
-	 W6fEBgsQaQRMElwbCJq9dSepcV2+KaWs3hB1YUZ3QfcpGJ4WowbPi2dfEKIt3uGOTUHLx
-	 +GBDNqpWmRos0MujjsiDK85savCjXSAnnq54Lo3IzLaOkq7/IfiWOJV6t+NZtwKxMmJ4T
-	 AASu5Oxhf/pIq4glxKNr69cPTzQCzIVhYdrzT6NnF25PSEM95Tpg5PdErjQf+KYOA9ikF
-	 oldyUA8PALPxlFk0ihV5xH6BzAtwD5A3Ix/N1VZjcRryzB3TT0EpFqs9RV4c2jOdPBw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=redaril.me;
-	spf=pass smtp.mailfrom=redaril.me;
-	dkim=pass header.d=redaril.me header.i=@redaril.me header.a=rsa-sha256 header.s=zmail header.b=gZvnawq0;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=136.143.169.18
-Received: from sender-op-o18.zoho.eu (sender-op-o18.zoho.eu [136.143.169.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795866714;
+	b=LwVaojMwXlPL7h1K0vvlxsp60p1ycN8B0W5DP8sQ/htUtasO30G/nuT6omG7KHR+VRYj
+	 PkWs2g+MVTeLHc6i2JIsiVR1rrAFr2bLzZwN4VMYGtj4WEBSYnJz3F4uH5WuWWk2jcRsy
+	 2X/dcTxfP/NduSRn40O5pqJzPFSz3DBcj3wICh0WJkjsXwMRCnLD37qXzVXMp76NbIq35
+	 Vr7kkRS5bGviZ0EW5+HC5ar2fw8eh0fV8gouGQkd96OGiOt8pTNRGjAKRQTaMgmOwrcC0
+	 0doMO2jKrfqRizFsoPTpIHa8UDsB/q315yW1/BFH24oSINXUtbrEeSQSiX8j2gK/9Qw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795866714;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=liuG+zrcpJhh/5ym3HDAfZpu0y4pt1z67EI0PqPuM4w=;
+	b=Q8XnJD2uiAyZ11sBZAWxOG0BWvfAztFfdVNy65EnDXLqf5kY5MYScseKNbhPN+bcI5+p
+	 gazxeqe1ylBGGWj/md000gxwWeEJY0ohwn3ggR963xJ+0JbVNDpPxEw/EtvU5BfwitgSg
+	 NJY+4bwXPtDh9IO4mz9n40nsmZN1KwrqrsrYyXsDnnpB5KK/dz9kT+vJGlRCVyP9Q+X3h
+	 a62we7+8ctME/ZRtxCbHCq3W8s/BkXRxIiUClbSz+GLQmVU25643U3xzP9yFRDf+hrBnJ
+	 cGKbhcGb4Lu6wJej7QRKzAbiUrK/4rI729BSWAN5cfw8lYmLIW2JuTrd+hlo8NHLLYw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VEdJrAdR;
+	arc=none smtp.remote-ip=74.125.82.170
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814A1606A323;
-	Sat, 28 Nov 2026 09:22:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 814A1606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redaril.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redaril.me
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A88606A323
+	for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 11:51:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 60A88606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redaril.me header.i=@redaril.me header.a=rsa-sha256 header.s=zmail header.b=gZvnawq0
-ARC-Seal: i=1; a=rsa-sha256; t=1795857688; cv=none; 
-	d=zohomail.eu; s=zohoarc; 
-	b=TrHrhQJMjSLKmgtcrGYeI8/hpod9FxQkl++KebPmUenmpVKOGxKhi5xfrGvuYEP2tlOXZu1131syz2sUOpknAnUUyUApx1cQMOmzBSlvpHvL+Mj8UBAFoswMprm69HFTM8QbnmO9tqrWzs+kQNXd1ROjJZeoPb7frXe9i2QxvKw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-	t=1795857688; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=wlckpMJ074/wY0TNt41XHzSk8RPHuKfXuoWeAZ7xaY0=; 
-	b=fh86+1oTVSIirsHzrNQK+4U8mBUOtU6TZdeNG4xl3mtZp4tnBqFTGz0U+O8bWnUzf7eQ22DniQVzXIwXWfpg/d01git94hKsgAlR/fjj/GtMYjdwVp++Ahj+lABzfQhqdmDZi3eto49XZIDNq7ydq159PnudrPBKJbLz20bC4+c=
-ARC-Authentication-Results: i=1; mx.zohomail.eu;
-	dkim=pass  header.i=redaril.me;
-	spf=pass  smtp.mailfrom=development@redaril.me;
-	dmarc=pass header.from=<development@redaril.me>
-DKIM-Signature: a=rsa-sha256; b=gZvnawq0Y8vfoCXRTSIQE9oKTGrgXth7zsKTkAXyNn9pIag8EP32d9sHrlbL+TJzoi+FCLy/bzpMz1UhJby8voQqaGgHZS2gTql5YfHzIcldQDiHb/SQSF8x9a5w+STenJQOayRn5rj2qB8Z2uxppvwE3IEVj37DnK0jOg4Zuas=; c=relaxed/relaxed; s=zmail; d=redaril.me; v=1; bh=wlckpMJ074/wY0TNt41XHzSk8RPHuKfXuoWeAZ7xaY0=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zoho.eu with SMTPS id 1795857686218484.3481136278716;
-	Sat, 28 Nov 2026 10:21:26 +0100 (CET)
-Message-ID: <bad51b29-1bf5-4603-ab63-bdcacc7ffd06@redaril.me>
-Date: Sat, 28 Nov 2026 10:21:25 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VEdJrAdR
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-3866a784546so12410765eec.0
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 03:51:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795866713; x=1796471513; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=liuG+zrcpJhh/5ym3HDAfZpu0y4pt1z67EI0PqPuM4w=;
+        b=VEdJrAdRSXS3H0I1Ws6jxU8Dge8z/jhZUYUuTUXFwYpoBlWLfCiIv/UWxB6AZv3nSb
+         nlZ/MQMJnq67bmMW5pn/I2FvfFpJfFkZVfH+U2Cd/y8eYwqDgptBdtbC6UZzeT1QXo+e
+         PSjsxtg1Ei0iDQYrQQsUyoo8pn8wTFSAW2JmfvdHJAuaZATJZ37syRZpSzRByPiz1HJ6
+         6S89ICdRevUVdA5dfQ/0GHgV0VVE7a7y8nvYWCc0kAfoakkQMf010ibl1tTIhmvauq6j
+         knFkH9nuKp300MKEuOhLGOYhDtE+B7nVwM+6e2Et8QRDhlv6KqFjYLF4Im2cOPuZwYAc
+         R/dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795866713; x=1796471513;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=liuG+zrcpJhh/5ym3HDAfZpu0y4pt1z67EI0PqPuM4w=;
+        b=JokGnLRz2QljHbUQsQ+0dmaKy1jSy+iWmwIXpDkf2R+iN9bSWmG/M+KVsX/bALZNtI
+         6Fy6zA8SV0e3cmnkg+ci9u9SgKyTUqfn5m1gqigv91y4xLlgW6zY50DcP/8dznzV10ft
+         JFq7dgWHPckPaPiySXuGKtmLX4HCc1etaDWZrEwdN9phZrT8sc99enD8g2kPLhp9ZWLi
+         YsOQoFJ6cYXVLHx1HmaiNlAySvZ64LvbwM/MPbTqB45ZRPkHOWXTk6/PdFK7N4I+pAzR
+         qNzfjqEQoYipsICkN8G4zWi+mEJ4p/tBq7TaPPqWG0j1P/m2L1PNOxf3EP8HOP5kscwN
+         mV/Q==
+X-Forwarded-Encrypted: i=1; AL+hErFtvZafoXzWgxDVOYkOyK0kDvHdBdi84tF+AkqZVLWstHAmve3b9U0px8M9deykNYtHTlCxcLY9lvk=@vger.kernel.org
+X-Gm-Message-State: APuU4Z+DlOBut8WhPPqFAcz9I5rRVCQD6HAjvDqs2hFrQxM2EuZ94QmM
+	8PCUUCpVdUhlwSSUZY41QEW9AaQu0M8Zy1uRgDD+ydaaL95xJLPzObiT
+X-Gm-Gg: AZFdTZeNimAGA1nwjktNRqIoR1xxJidPXt0ZzCuYJqFuCHRTtr03qokw1VGdKVrtE6i
+	OwQtxN1bQmHvNdD2z1DMehfWyQC2KZ6zfrI4yQRg0hxsfbyrX/eCkByDpb6L8hZnv/TBJHkAZA8
+	Dq9mggC6D5wc4SvjGf32RKJl0REeehPuOTnU4fq0g2pju2guPmlJfCSlrt8mVONCmxrM8JwV2ze
+	G3LWc6ZpxzvgoCKvg3wnIsa+/hcKC+vnTIgi+tCgXNzTVOYhHCqfkRedzJHuTcsPCeMuRCkhHBc
+	2qIIj5vHK3rmQ/A88X02QjGTosFI4QLNBYjKHjlvVdCm+n7UmeKi51tkItd1w4Dn6OLrHlFsNi3
+	6iuzWBnRjsXRNBoAv9Z6inowelkOjwXUb7xQmsT+Mx2fTBvC4XMmGtiRYwp+UAtw9X44edpZkX4
+	wM/TrILi/qxFeFFt81q6DvjD9sDBoRfSaL9SJ5HqQOeKQHaiBfIPTz1/ohwfYaB0IQOmJkfWBfu
+	kJhnnG2YC/k1+Dqmxt7zLzt1slZ/kUq7wtxONEu2neoQxFTk+7GZ9UiYkE5XvAlwkojfH0cHh8Y
+	o6MOVZxRCQdUxZi0v1tKnqe05ACWBmTzJLbZDqeF/2mlrxuuk+bF3irjM3C0UP3c/7f3HPZvtTB
+	8NbnE3DBS8WuT6zihSxqCyTFd5/EUD0QsMnlxh1ta/dyoNdDWPriOZMrptQPJhRQUXy6onERO9D
+	VpGt9dEJ0qIBe3dVch6fg3ad/CdqTVg8QZAFOdNkpypw==
+X-Received: by 2002:a05:7301:6908:b0:382:f0d4:1e77 with SMTP id 5a478bee46e88-38571219f03mr27167572eec.36.1795866713303;
+        Sat, 28 Nov 2026 03:51:53 -0800 (PST)
+Received: from kapoor.iiserb.ac.in ([203.18.51.239])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385c6830815sm74256544eec.20.2026.11.28.03.51.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Nov 2026 03:51:52 -0800 (PST)
+From: Arnav Kapoor <kapoorarnav43@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnav Kapoor <kapoorarnav43@gmail.com>
+Subject: [PATCH v2 0/4] iio: proximity: aw96103: fix diff sign, missing config, async config lifetime and event values
+Date: Sat, 28 Nov 2026 17:21:37 +0530
+Message-ID: <20261128115144.557411-1-kapoorarnav43@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -58,98 +101,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iio: afe: iio-rescale: Add platform IDs
-To: Jonathan Cameron <jic23@kernel.org>,
- Fabio Forni via B4 Relay <devnull+development.redaril.me@kernel.org>
-Cc: development@redaril.me, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Johan Hovold <johan@kernel.org>, Peter Rosin <peda@lysator.liu.se>,
- David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- driver-core@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20261128-iio_rescale_platform_ids-v2-0-4c35f16c4f77@redaril.me>
- <20261128-iio_rescale_platform_ids-v2-2-4c35f16c4f77@redaril.me>
- <20261128003010.6b36fa7b@jic23-hlaptop>
-Content-Language: en-US
-From: Fabio Forni <development@redaril.me>
-In-Reply-To: <20261128003010.6b36fa7b@jic23-hlaptop>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 28/11/26 01:30, Jonathan Cameron wrote:
-> On Sat, 28 Nov 2026 00:22:10 +0100
-> Fabio Forni via B4 Relay <devnull+development.redaril.me@kernel.org> wrote:
-> 
->> From: Fabio Forni <development@redaril.me>
->>
->> When a rescaler is dynamically instantiated and configured with swnode,
->> device_get_match_data() will always set rescale->cfg to NULL, because
->> device_get_match_data() is unimplemented for software nodes.
->>
->> Define a platform_device_id table (a replica of the of_device_id table)
->> and call the platform_get_match_data() helper, to deal with both
->> swnode-based and non-swnode-based instantiation methods.
->>
->> Signed-off-by: Fabio Forni <development@redaril.me>
->> ---
->>   drivers/iio/afe/iio-rescale.c | 18 +++++++++++++++++-
->>   1 file changed, 17 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
->> index c01292a15a29..c268dbaaaea6 100644
->> --- a/drivers/iio/afe/iio-rescale.c
->> +++ b/drivers/iio/afe/iio-rescale.c
->> @@ -518,6 +518,21 @@ static const struct of_device_id rescale_match[] = {
->>   };
->>   MODULE_DEVICE_TABLE(of, rescale_match);
->>   
->> +static const struct platform_device_id rescale_platform_ids[] = {
->> +	{ .name = "current-sense-amplifier",
->> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[CURRENT_SENSE_AMPLIFIER] },
-> 	{
-> 		.name = ...
-> 		.driver_data = ...
-> 	}, {
-> 		.name = ...
-> Or
-> 	},
-> 	{
-> 
-> I don't mind on that bit, but use a few more lines to make it easier
-> to add additional fields in future and generally make it easier to read.
+Four fixes for the AW96103/AW96105 capacitive proximity driver.
 
-Will do, but to be honest I always have a hard time syncing with
-maintainers' own style. Why isn't clang-format style simply agreed upon and enforced?
-Automatic formatting would reduce cognitive effort, and chances to argue :)
-I think Go and the Black formatter for Python did the right job on that matter: one
-style, no questions.
+1: the DIFF registers are signed S21.10 (as documented in Awinic's
+   aw_sar driver), but are divided as unsigned, so negative diffs read
+   back as about 4 million.
+2: without aw96103_0.bin the driver never loads its built-in defaults,
+   so the scan and the interrupts are never enabled.
+3: nothing waits for the request_firmware_nowait() callback, which
+   uses the devm-allocated driver data; a probe failure after the
+   request (e.g. no interrupt) or an early unbind frees it first.
+4: out-of-range debounce and hysteresis values are masked into their
+   2-bit fields instead of being rejected.
 
->> +	{ .name = "current-sense-shunt",
->> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[CURRENT_SENSE_SHUNT] },
->> +	{ .name = "voltage-divider",
->> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[VOLTAGE_DIVIDER] },
->> +	{ .name = "temperature-sense-rtd",
->> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[TEMP_SENSE_RTD] },
->> +	{ .name = "temperature-transducer",
->> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[TEMP_TRANSDUCER] },
->> +	{ }
->> +};
->> +MODULE_DEVICE_TABLE(platform, rescale_platform_ids);
->> +
->>   static int rescale_probe(struct platform_device *pdev)
->>   {
->>   	struct device *dev = &pdev->dev;
->> @@ -548,7 +563,7 @@ static int rescale_probe(struct platform_device *pdev)
->>   
->>   	rescale = iio_priv(indio_dev);
->>   
->> -	rescale->cfg = device_get_match_data(dev);
->> +	rescale->cfg = platform_get_match_data(pdev);
-> 
-> Can we get a failure here?  Forcing a driver bind to a device not in the tables
-> tends to end up with NULL and it is common to just fail probe if that happens.
+Changes in v2:
+- 1: declare data as unsigned int (the regmap_read() type) and keep the
+  (int) cast, now before the division (Andy)
+- 4: kept the explicit range check rather than FIELD_FIT() (Jonathan):
+  on 32-bit, FIELD_FIT() shifts the value in a 32-bit unsigned long, so
+  high bits fall off and e.g. 16777216 or INT_MIN pass as fitting the
+  OUTDEB field and are written as 0 (1020 such int values for
+  GENMASK(9, 8), 16380 for GENMASK(13, 12)); on 64-bit it is exact.
+- Dropped the Cc to Wang Shuaijie: the MAINTAINERS address bounces
+  (554, recipient doesn't exist).
 
-No problem.
+v1: https://lore.kernel.org/all/20261126053033.603086-1-kapoorarnav43@gmail.com/
+
+Patch 3 makes unbind wait for the callback, which can take as long as
+the firmware loader's fallback timeout if a user-mode helper fallback
+is configured.
+
+Applies to both fixes-togreg and testing.
+Compile-tested only (W=1 for every patch, checkpatch --strict clean); I
+don't have AW96103 hardware.
+
+Arnav Kapoor (4):
+  iio: proximity: aw96103: report negative proximity diff values
+  iio: proximity: aw96103: use the default configuration without
+    firmware
+  iio: proximity: aw96103: wait for the configuration load before
+    freeing
+  iio: proximity: aw96103: reject out-of-range debounce and hysteresis
+    values
+
+ drivers/iio/proximity/aw96103.c | 43 +++++++++++++++++++++++++++------
+ 1 file changed, 35 insertions(+), 8 deletions(-)
+
+
+base-commit: 69bf7489f01ffa3c3269d09eb8a0668b1bdfa053
+-- 
+2.53.0
 
