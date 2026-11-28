@@ -1,46 +1,46 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795825907;
-	b=xBpY2TZjk/rM+Q7zOeW0mmJg+PiUsNywpyRZ/GX9Ku1q1wacnJcYSxTNDgGP4U6dfOhv
-	 RUVyaVtF7bojDBuCmpxlBql0bgikkdQARVqvfVpG6qhV/9wz/MR4W0Xsr5m/FpC67ETmw
-	 wCcGtSLnGm+1xPpb1QPo2Z74kTYjlU7j61rwY+Y2sYACpB19u8+b9bwdJ1uImyrfxUYDi
-	 CuFRwqpR3ESicypspX3hZE24d7EChp4bRJWDxt8i4ukqmLIUQ0GOf3FIk2HPuX/Lw9aVM
-	 6kGcsjj26JjcKN1MZMouHdeghL/BjTiKrr/3/cGZ7hW033FB7rIWgjWPJZTl8/HNt5w==
+	t=1795826504;
+	b=yMNLw5y4cR5jOw1Jae4lTKmmliG9bTByZRmcgLDIOz0CwhqNgeHdzpAjdXhbilpFaqCt
+	 Rq8sd+tXza4q6jX/AzQ2UUrSy5Z3x+8DKqJa/VoyWL5BuHIDcarcuBoGGp+jz2Dc/ixWL
+	 AenEoljN74JXSE/XwzmgM2KYaeHSKK53Q0zLlVVWt7MRXOIF5BF5CoPaIC3dBWXAq9Vb0
+	 /L63J4M5TB2N5AVAI8JwmwcniD1nZctEEoa5t1fOI1XYYZEufN1ubhu5RxKIHLpChnUqx
+	 kb4X5amVKNCmGEnu/zAmyTMmRvf4nX8ZpQ2rAT3Rnj3E0JCQEInowfDBqqSJjmoiFfA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795825907;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795826504;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=JlVRTxL+BcSjflaSgLcOcjIGWl+CetICaQlh8dZNIJw=;
-	b=FZjxL19r5wh10Ali3sK/daNjoLnLXwqIb4lBhtSgoSeyvK4V4oBFjbNlYjz5S0cNM2+k
-	 Zq5bnC8VTs0AoGP6n7dgmhIfVx7lgcMXMearmUGE39xNTAoWGXSVvl56x+R8vufK5hzHi
-	 /Km7GrnyvQ6h/uJe2gmU/a5X0i3SrTBR4Fsikd+TWGyW2q0iYZLK7R8NHVgt9CFn/dEn8
-	 tnx1talOW+O8plHSnE4BaBIkAYF3ZA+pA4tvCaUXAohGbgQvcjQy4SwfxvQLAmEJKdfhN
-	 g0Peh7GiJ7jObERU2HIErGnsuBwe8xTsQIqo3aDiOsmLpc9pJUkZNymYh7UxUVvEMdA==
+	bh=txZ40HwG5PBs2JaJtTTKqqOr9g+GgVI7bM74efqgyNM=;
+	b=yUyKMMjsV0jEHmkm4MpuYhkXU/u1ie3Sm+aOHUxwPgbopfCfqxTXroDYiJF7xQoZt2rW
+	 kBzuKY6cZTZr2w88gF5ahsAjl7iQBbY7sKwzJ/KemMbhfL0LP028KbJdIZXQFUWDHg8z9
+	 qwmnKhbFollaoUy1CmxZiprJkNjhGurnrRK72CQ7uFvIUP99N68C992Wzbdekd37F6g4L
+	 gE3H0DWmQrUSCS61vIiMfvP7rt+pPwYSnQfqcV1mW5OiOkH92sDTOBIK8jOJTxK0FJA/6
+	 rYtnnhuMA2SgmuGKUmNNUvgoJLljZ24V0wWsVvVtnCRh3yl4QTEIOdiLXyANnilyp3g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="MirkBkv/";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZQMrUbQI;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71CC5606A31C;
-	Sat, 28 Nov 2026 00:31:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC014606A31C;
+	Sat, 28 Nov 2026 00:41:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MirkBkv/
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A054A1F000C1;
-	Sat, 28 Nov 2026 00:31:43 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZQMrUbQI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4DC1F000C1;
+	Sat, 28 Nov 2026 00:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795825907;
-	bh=JlVRTxL+BcSjflaSgLcOcjIGWl+CetICaQlh8dZNIJw=;
+	s=k20260515; t=1795826503;
+	bh=txZ40HwG5PBs2JaJtTTKqqOr9g+GgVI7bM74efqgyNM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=MirkBkv/IldmNlYYjVbjFiV1LePvCtliEMxLM2/GZDoiaacmxl60jRrw5KPSEpA9c
-	 lIdiYa6vP2v9XwiEyOh72znWsie2YUd+KVzxsoBbuM3vOZyJgfECXNWROw572uALMf
-	 DhkTDMB1yf2yu0HTqTCwPEdMlZ9k8fZuuWUEn7r1bau/KvNW9bfrChuxCzxvB3mDvw
-	 y+ZJvWIBtn2V2Q6QWKYAReJhdv7cbFmq1LEb+w0moW3nFw9GUNjSy9fgfw6DQ5OQb3
-	 MrSKv7wDNiyzKU4OP/2U+owZcBHkHFv3UIIYzJzQAMuBnFQzBNQ+1LIz7o+BBfKpry
-	 55qy3IJk/Uw1w==
-Date: Sat, 28 Nov 2026 00:31:39 +0000
+	b=ZQMrUbQINs6zsEe+v2hZIPwrasMaaRVwJEjzp+1Ykm5Fow+ht7PqCykTyF0iaE4Cq
+	 uChBArCXJVnU1AAYn/VJBhfSgjedoxgMXRJ4dNpSYR3sjoiXI3sOCdB6YpXac1xDQw
+	 qqLyyfegWEDvvSqXEhFVjsS4bwLAltPceINTY/zvQSbW8+X1r08cBrQ1e1mt40teH7
+	 QZcB7zLVh806GNxv22UkeBfPLadiaxkXjGoDQhJJ2JrK7JPEfpKQaiYS3yHG40MWQn
+	 IvyccHCKthkSNNdUUvo3IBLrSz998jKDZ68h1tocZyhqwmbVaVft2Bj/5l/jorVDRr
+	 Dw+4yIEsd38gA==
+Date: Sat, 28 Nov 2026 00:41:39 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Patrick Fischer via B4 Relay
  <devnull+admin.tsv-stahl-riesa.de@kernel.org>
@@ -50,13 +50,13 @@ Cc: admin@tsv-stahl-riesa.de, Rob Herring <robh@kernel.org>, Krzysztof
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kevin Tsai
  <ktsai@capellamicro.com>, Svyatoslav Ryhel <clamor95@gmail.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Krzysztof
- Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: Add Capella CM3217
-Message-ID: <20261128003139.0d8a011c@jic23-hlaptop>
-In-Reply-To: <20261128-upstream-iio-cm3217-v4-1-fdab04f40bbc@tsv-stahl-riesa.de>
+ linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: light: Add Capella CM3217 ambient light
+ sensor driver
+Message-ID: <20261128004139.4f4d3c36@jic23-hlaptop>
+In-Reply-To: <20261128-upstream-iio-cm3217-v4-2-fdab04f40bbc@tsv-stahl-riesa.de>
 References: <20261128-upstream-iio-cm3217-v4-0-fdab04f40bbc@tsv-stahl-riesa.de>
-	<20261128-upstream-iio-cm3217-v4-1-fdab04f40bbc@tsv-stahl-riesa.de>
+	<20261128-upstream-iio-cm3217-v4-2-fdab04f40bbc@tsv-stahl-riesa.de>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,85 +70,159 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 28 Nov 2026 00:38:56 +0100
+On Sat, 28 Nov 2026 00:38:57 +0100
 Patrick Fischer via B4 Relay <devnull+admin.tsv-stahl-riesa.de@kernel.org> wrote:
 
 > From: Patrick Fischer <admin@tsv-stahl-riesa.de>
 > 
-> The Capella CM3217 is an ambient light sensor with an I2C interface but
-> without registers and without an interrupt line. It always answers on
-> the two fixed addresses 0x10 and 0x11, which are both listed in reg.
+> The CM3217 has no registers and no ID. Writing a byte to address 0x10
+> or 0x11 sets command byte 1 or 2, reading a byte from 0x10 or 0x11
+> returns the high or low byte of the 16-bit light count. The second
+> address always follows the first one. The binding lists both, but the
+> driver derives the second one from the first instead of reading it from
+> firmware, which also covers new_device.
 > 
-> The sensor is used in the NVIDIA Tegra Note 7 and the NVIDIA Shield
-> Tablet.
+> Command byte 1 holds the shutdown bit and the IT_T field (1/2 T, 1 T,
+> 2 T or 4 T), command byte 2 the FD_IT field (800 ms down to 66 ms). The
+> count scales linearly with both. The driver exposes FD_IT as the
+> integration time and IT_T through the scale, so the scale list offers
+> four ranges for each integration time.
 > 
-> Tool use: Claude Code wrote this binding.
+> The datasheet is not public. The bit fields, the reserved bits that are
+> written as 1 and the startup setting of 2 T and 100 ms come from NVIDIA's
+> downstream drivers (drivers/staging/iio/light/cm3217.c in the 3.4 kernel
+> rel-tegranote-r8 and the 3.10 kernel
+> android-tegra-flounder-3.10-nougat-mr1.1). One value differs: the vendor
+> header defines 4 T as 4 << 2, which is outside the two-bit field. On a
+> Tegra Note 7 field value 3 gave four times the 1 T count, so the driver
+> uses that. For the resolution, Capella gives a range of 0.01875 to
+> 119156 lux. The driver takes 0.01875 lux per count at 4 T and 800 ms.
+> This matches both the upper end (65535 counts at 1/2 T and 66 ms) and
+> the 0.3 lux per count that the NVIDIA 3.4 driver uses at 2 T and 100 ms.
+> 
+> The sensor has no data-ready flag, and a new setting only takes effect
+> when the conversion in progress ends. A conversion takes IT_T times
+> FD_IT, up to 3.2 s. Leaving shutdown starts a new one at once, so the
+> driver passes through shutdown on every change and waits one conversion
+> period plus a margin before it reads the count. The timing was measured
+> on a Tegra Note 7.
+> 
+> Tool use: Claude Code wrote this driver from the downstream drivers and
+> from my measurements on the device.
 
-Comments on that belong below the ---
+As before. Unless there is something really unusual about the tooling,
+push it below the ---
 
-If nothing else comes up, I'll drop it whilst applying.
+Otherwise, I nearly picked this up, but I won't for now as I'd like
+you to take one more look at the includes + good to leave some
+time for others to review before I apply and by conincidence you
+sent it just as I was starting reviewing today.
+
+Thanks
+
+Jonathan
 
 > 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+> Tested-by: Svyatoslav Ryhel <clamor95@gmail.com> # Tegratab P1988
 > Signed-off-by: Patrick Fischer <admin@tsv-stahl-riesa.de>
 > ---
->  .../bindings/iio/light/capella,cm3217.yaml         | 49 ++++++++++++++++++++++
->  1 file changed, 49 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
+> Svyatoslav's Tested-by was given on v1. Since then there was no
+> functional change apart from how the driver gets the second address
+> (v1: fixed 0x11, v4: device address plus one, which gives the same
+> 0x11).
+
+> diff --git a/drivers/iio/light/cm3217.c b/drivers/iio/light/cm3217.c
 > new file mode 100644
-> index 000000000000..a03cdf2bd375
+> index 000000000000..5edd4d21d08c
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/capella,cm3217.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/capella,cm3217.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +++ b/drivers/iio/light/cm3217.c
+> @@ -0,0 +1,420 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Capella CM3217 ambient light sensor driver
+> + *
+> + * The CM3217 has no registers. It answers on two fixed I2C addresses:
+> + * writing a byte to 0x10 or 0x11 sets command byte 1 or 2, reading a byte
+> + * from 0x10 or 0x11 returns the MSB or LSB of the 16-bit light count.
+> + *
+> + * Copyright (C) 2026 Patrick Fischer <admin@tsv-stahl-riesa.de>
+> + */
 > +
-> +title: Capella CM3217 ambient light sensor
+> +#include <linux/array_size.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/build_bug.h>
+> +#include <linux/cleanup.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+We tend to try and avoid including that 'grab bag' style header.
+
+There are  more specific appropriate includes such
+as dev_printk.h
+
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/ktime.h>
+> +#include <linux/mod_devicetable.h>
+
+That shouldn't be needed. It is now assumed to always come via
+the appropriate bus header.
+
+
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/pm.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/time64.h>
+> +#include <linux/types.h>
+> +#include <linux/units.h>
 > +
-> +maintainers:
-> +  - Patrick Fischer <admin@tsv-stahl-riesa.de>
+> +#include <linux/iio/iio.h>
 > +
-> +description:
-> +  The CM3217 is an I2C ambient light sensor.
+> +#define CM3217_CMD1_RSVD	BIT(5)		/* reserved, set to 1 */
+> +#define CM3217_CMD1_IT_T	GENMASK(3, 2)	/* 1/2 T, 1 T, 2 T, 4 T */
+> +#define CM3217_CMD1_WDM		BIT(1)		/* set to 1 like the vendor driver */
+
 > +
-> +properties:
-> +  compatible:
-> +    const: capella,cm3217
+> +static int cm3217_read_avail(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     const int **vals, int *type, int *length,
+> +			     long mask)
+> +{
+> +	struct cm3217_data *data = iio_priv(indio_dev);
+> +	unsigned int fd_it;
 > +
-> +  reg:
-> +    items:
-> +      - description:
-> +          Command byte 1 (shutdown and IT_T) on write, high byte of the light
-> +          count on read. Fixed at 0x10.
-> +      - description:
-> +          Command byte 2 (FD_IT) on write, low byte of the light count on
-> +          read. Fixed at 0x11.
-> +
-> +  vdd-supply: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        light-sensor@10 {
-> +            compatible = "capella,cm3217";
-> +            reg = <0x10>, <0x11>;
-> +            vdd-supply = <&vdd_2v85_sen>;
-> +        };
-> +    };
-> +...
-> 
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		scoped_guard(mutex, &data->lock)
+
+For this sort of case I prefer we just take the guard for a bit longer and add
+scope for the whole statement. It generally ends up more readable.
+i.e.
+	case IIO_CHAN_INFO_SCALE: {
+		guard(mutex)(&data->lock);
+
+		fd_it = FIELD_GET(CM3217_CMD2_FD_IT, data->cmd2);
+		*vals = (const int *)cm3217_scale_avail[fd_it];
+		*length = 2 * ARRAY_SIZE(cm3217_scale_avail[0]);
+		*type = IIO_VAL_INT_PLUS_NANO;
+
+		return IIO_AVAIL_LIST;
+	}
+> +			fd_it = FIELD_GET(CM3217_CMD2_FD_IT, data->cmd2);
+> +		*vals = (const int *)cm3217_scale_avail[fd_it];
+> +		*length = 2 * ARRAY_SIZE(cm3217_scale_avail[0]);
+> +		*type = IIO_VAL_INT_PLUS_NANO;
+> +		return IIO_AVAIL_LIST;
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		*vals = (const int *)cm3217_int_time_avail;
+> +		*length = 2 * ARRAY_SIZE(cm3217_int_time_avail);
+> +		*type = IIO_VAL_INT_PLUS_MICRO;
+> +		return IIO_AVAIL_LIST;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+
+
 
