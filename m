@@ -1,59 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795826870;
-	b=cMeXD3PedXRPjGXaTbRYfKfeuFHJJOx9sX4LIU7WtUJx+GO5kCNYcz2fV6n6sORtIzio
-	 l/yjiEhLY2cRyNiP2fb6HNXgDRENAEoDTG+pcYL3ydKkROIw0aKkad5f85qMW8I1UJnjK
-	 CW4lTGHJdHNqlaE21a6ccDQSWVNSZfH6kB+dPrJFcipYlo+aUVBccy/X8SCewq+4c/3nR
-	 9GcuM9HrEHL1uBLvf/G6AArfaU/+ie4fW2j3IZKYA627m6SdqsqK4EWG1LE4cVJN+HSBh
-	 8FLqMIOIKGo7ypceSy1zY8qKSZbMYXa8Sk+VwwAOu/97Co/qw+8EbRA1TQBwSrB0Oag==
+	t=1795828218;
+	b=OQJT4VmLGhZ9+yBG7c6RHXOgCUNv2RHK29Maf2zQRk+rQAmLbaJFXa0BNSvdGoEZZteS
+	 5vNQLui+c/zHz5WlP7PcjSLNCN/dXpTr/tvlEvxNAS8VwBce71owG9L4V8LyPhKC1V3Gz
+	 Y2NGd2oR1RaBckaaBNtb52cFRhDrlvAwGqc1AVvBa8VCcjxHCRsuvYdZONX3QHJSIblKU
+	 1xKG2qvbkvH6fzfZPj6RKFtfr6cbrSAy+ZjDxhD0fEILmgAYkL7buDO8GhL5nn9vVIfUR
+	 ccGz4sybpGzhXZU/RcM1UjvrWPNWtBqxSoxL3ak0yVYa9bsnyz7X7fRq9Hf4OqPprtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795826870;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795828218;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=1kYaZkVu4hHdWnq014DoYYGMay8TDDPlvwbeqXFq4T0=;
-	b=Mg3b47c8byqsbbgcbtiOd/Z38s2Xhjufcj0QsuA6SkFA1otz+HYr2NLb7anOanaQvnsr
-	 wIL4RC+YKA1IcnimCNluG45H6QUw7142iHF0rT1Y65nl9DnNgrzjIBOjNIHN+ONO0wZRr
-	 xGkl9LrxxW8pS77yn2EWOWp9AbUkQwvY3W0I7Dh6AUBDeTaQ/6EZSVkKBZorGrjOBxMur
-	 ngd8hBm4am0PTO3aq3DsgcRrZM/ZnIghWr9lHJbJpZhMefkpPscqlBHaxSkMhIKIVCOk5
-	 cAePQaxznz7KvSQ6ZgOjh1jlCN8JtJuWxUfdhbUxQwc53V+HihqJeQoKCgwiwmk8T+Q==
+	bh=4z7W2WBAlgUyUd77FSkVF1Gzr5aZ560MT2l0qj48cG8=;
+	b=MVbHOLEqTxncu65I69F5rOMcJwVv4A/8aQRSiHWF6WjEESPKkpYSeVjCb+QM4Zgzp8bL
+	 VjWN5mgKoZJcH8kbrIDZBB2rwUaWIyGieX1SF0KDTWGxPUnIars0DcEA7ojfT1IMvLHnh
+	 C8vnA29JYtQnJCfdf3LERz8+MhWR3/NedPRhBk7ky4ke8xVeSAwi9FeBgmtjY1bBvRAzl
+	 NILGmJ1dwJiswK9KPE2o1bHMhN2gPiBLQ+vjhqnWP0zYZHAD6+fesl5PlH2gOD71TPnOS
+	 liC+3vjbOYxXYWCC3p5Kf3lAMg1wux9QVsprpypwTBburjZDqOzI+DDezMlxcfJDccQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NlZM0klj;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YdWx54DD;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FCF1606A31C;
-	Sat, 28 Nov 2026 00:47:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB86606A31C;
+	Sat, 28 Nov 2026 01:10:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NlZM0klj
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD6F1F000C1;
-	Sat, 28 Nov 2026 00:47:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YdWx54DD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFD41F000C1;
+	Sat, 28 Nov 2026 01:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795826869;
-	bh=1kYaZkVu4hHdWnq014DoYYGMay8TDDPlvwbeqXFq4T0=;
+	s=k20260515; t=1795828217;
+	bh=4z7W2WBAlgUyUd77FSkVF1Gzr5aZ560MT2l0qj48cG8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NlZM0kljSKDqIbKMQ8CA0rY/RZkOfHQfSlfxPzsmHpVFJaqdXmQ5Us9jz/NtV+Xf2
-	 0CA6rbmy1YEfuHsZudSMeWnH7kkCZhJy/8Aa7YOYZiR0JI+vVYEmKumRvHlyl+nvJ+
-	 IfTOktbrr/0QLJX6y/7eMWLtwhSsuLD7LIfAlXDA2V+41khIG7OFx+XKFeWHDiMCiz
-	 3WB3IN4zViL08rK8COSWXOrwZVJ4IzPLJDEMoDXsNN/X6DllA6oHsDePjjJLmS0vE1
-	 5ANa/dQduGfTdwnfrMCKaZ9RjncRk3KnkFK9EdF/TgJAj9mMWW6gMCqTMyAtCqLDUC
-	 YL+OnnmBOfMlw==
-Date: Sat, 28 Nov 2026 00:47:43 +0000
+	b=YdWx54DDqHEY5NCf6DnPgcSwgHiRqrN8ZJjuaug6UUA2YoYXmRpuHEfuaOmlu+AdT
+	 MoVP6yj2XXUBycOeft/87fCJuZ1y9jn7FVC1/1GBWVx0TfFNPnDUrE5Qxo4PXxKa2O
+	 8eZkD/3lWUL5oN7kxKdkqrnNDsK7qiPIRO4hko2xK6dFVS6HvGNnOuuNs5fgo687lk
+	 HRozyHkosiAM+8N7FDidppuvJd1eCZ0Veb18HziDV9CDuEOdDBExA4iqsi0BTZRX9b
+	 rJZSg/AawnSFBj0cf8eHGRxhZHtEMZ01neGny+0yTCJnvl2dMjZq/xBGdR3XXG/+t1
+	 ZOlTbBG1QDUNg==
+Date: Sat, 28 Nov 2026 01:10:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: sanjayembeddedse@gmail.com, Jiri Kosina <jikos@kernel.org>, Srinivas
- Pandruvada <srinivas.pandruvada@linux.intel.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Joshua Crofts
- <crofts@kernel.org>
-Subject: Re: [PATCH v2 0/7] HID: iio: Unify probe-path logging
-Message-ID: <20261128004743.233a15f1@jic23-hlaptop>
-In-Reply-To: <awllftF3xR6Arvua@ashevche-desk.local>
-References: <20261127-19-oct-hid-iio-unified-print-framework-v2-0-3f476fe1a940@gmail.com>
-	<awllftF3xR6Arvua@ashevche-desk.local>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v2 0/5] iio: split struct iio_dev_attr into typed core
+ attributes
+Message-ID: <20261128011010.729b5021@jic23-hlaptop>
+In-Reply-To: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
+References: <20261127-iio-core-attr-review-v2-0-e0aed1e8a81c@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,34 +65,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Nov 2026 13:11:58 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 27 Nov 2026 09:47:43 +0000
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> On Fri, Nov 27, 2026 at 04:03:55PM +0530, Sanjay Chitroda via B4 Relay wrote:
-> > This series provides consistent support for logs in probe() path for
-> > HID IIO drivers with suggestion and input from Jonathan.
-> > 
-> > This is followup series on top of multiple sub-series submitted for HID
-> > IIO device drivers which included fixes, devm support, cleanup and using
-> > preferred kernel coding style. This series adopts a common logging
-> > approach throughout the HID IIO device drivers in probe path.  
+> struct iio_dev_attr does three unrelated jobs: it backs the static
+> attributes declared by drivers through IIO_DEVICE_ATTR*(), the channel
+> and event attributes generated by the IIO core, and the per-buffer
+> attributes. Every user carries every field (l, c, buffer), whether it
+> needs them or not, and the meaning of @address depends on the context:
+> an info mask bit, an ext_info index, a scan index or, for events, the
+> event_spec index and the event info packed together.
 > 
-> > ---
-> > Changes in v2:
-> > - Following suggestion of Joshua, remove the comparison and change the
-> >   checks to `if (ret)` as respective devm_*() API `return 0` on success.
-> > - Link to v1: https://patch.msgid.link/20261105-19-oct-hid-iio-unified-print-framework-v1-0-0b360d9552d9@gmail.com  
+> This series keeps struct iio_dev_attr as what drivers use (dev_attr and
+> address) and moves the core-only state into private types embedding it:
 > 
-> Reviewed-by: Andy Shevchenko <andy@kernel.org>
-> for the not commented patches (the one is depends on the answer).
-I'm having one of those days where I decide there is too much outstanding
-and to try and trim it down to something manageable by taking what I can now.
+>   struct iio_chan_attr   - core channel attributes (channel, list node)
+>   struct iio_event_attr  - extends it with the event spec
+>   struct iio_buffer_attr - extends it with the owning buffer
+> 
+> Attribute creation is split into iio_chan_attr_prepare(), which builds
+> the full name and runs the duplicate check, and iio_chan_attr_add(),
+> which initializes an attribute allocated by the caller. Each context
+> allocates its own type and sets its own fields, so the core needs no
+> size, offset or context pointer.
 
-Applied 1-2, 4-7.  So that just leaves 3 where Andy had the questions.
-
-Thanks,
+Nice.  All looks good to me, but as it is a core change I'll let
+it sit for a little while before applying so others can take a good look.
 
 Jonathan
-
-> 
-
