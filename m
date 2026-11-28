@@ -1,85 +1,85 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795866722;
-	b=C6GbNXC2fid2mb3auZHTN1ZUw8S79WjPN5GHhSu3Fr3yrnoz+UfYd4I2nqAY8NXbkJ3p
-	 scAo3D8Qama2P0DuqVhmYYm/77I5wGUAf68zS+hJcmTAui+oyLnjDNqQaquNVuM7ww+iV
-	 uvi3aKta5GNofV3h9cn4rpWRX9o49pjvCY16UmeEhdsag84asAF2oMv3VYv1KFW9ulwj6
-	 5j+AmXzdZSXwzmLoGb/AcYhEC/sV2BEy4NyPgn7dLdpOyOfOTjLjzdypnp8GB9b2CKitT
-	 GZSh3LDtJg8GykPR7u0jWjETjEQ3/kDTtNptaEL6EtuMkMRGBT6FjdsYFr3mkwKglaw==
+	t=1795866727;
+	b=Wuv911GOO8vAbRJNyjuFsfpHfJrFi5NA6F07yvLwu/fae70z/JzqvSrbuiA+Yptcqzft
+	 HlBPsB6D7I0c81smq1jy4ndPFbvckUXTgNlMwsB4ye2eNJwwdWalI0U8ichwnTpBwyaze
+	 8vsQdfy2Z0nbcpiX+yXLUifOkfLhLowuAtkyx8Ru8HUUK8j1o9OEQPE4Fabpma9FGAncX
+	 1E+7rd8RM9wwi1GMHPNP5qztPz06SlVs8NUCmdDrkvms7sz9AhAw0iRAYK9Yn62giwjXL
+	 oYBqUtuKCPbFPr8Xu/cLa4r7VHe+rn8jYsl+814mSnii/5eV2vnb2zkqHRPwu5EUQrg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795866722;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795866727;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=wQAIunjbZ5VEO8eGZeZfnFQxqO5F52y9Of/nUTYaqm8=;
-	b=R9OipnzEQ5OFE0YI9Vk8qKVMHRfCqJYsYffuXFe4f5NHwSy+b3hH0jdOluRL63ecwT6Q
-	 Vwjpx36BkpSh1l0cS68zUMtZmvCAok2ZQ5k8lEyMGSzyzgdXf4O7LzLtpUBynpGf0ZNOX
-	 BUic5ab/Hx96iCAf/B4wJL1sJGfjNBq5r/MQkb8tyrn4wxuzKUxsQUUFPDWlt5NELr+2b
-	 BJ3c39MZgCHEDF+w19qZYKzelzTKy0N+rn8VvjdA16jI30AZHonUlFfZBR9cuNOQALspM
-	 8NcM6XbGx+GpoHxKQjErlEN9q9ZOGrXZh/4AcyMRMsDXEOZVS9wvy7R6IFR8rq6Yx2g==
+	bh=SWTA87kb3BnC5vtYNbhLJFRBLMPszC6ScY1egL/JZXo=;
+	b=cxxA1JvGnA93d60GtYw+PP/JxM2iJIgsjixkzMNwtr+hwimz+DpX/1Ga2panKJIapxtQ
+	 4lB1/gn4UTAFkbh3wtVXkDBMXAnvELxVRbrhUjoXhTUs1YTLDOyMmQZ0dX99W26AZb7vO
+	 yyQ3afWCHtBr5nGbiqU2hwNk2DwpwVdj4/L5ohmZS3lSALNSRd6cc7k6rxVmq1LL9K3OD
+	 Up0UFoGGddrGYZPKod8IKCXKn6rvXXbbEQAhKk1zi8KBZO/km3fnYOuPPgxXrYPSXOc+s
+	 jYMVhfy7ccV96ZuComzpuz4pDF3HI4TPhQmgpUGpu98/nEdkjjcPQcoYkxxdAr2frlw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ap6jOXkm;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fMhgfKBY;
 	arc=none smtp.remote-ip=74.125.82.179
 Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9F8606A31F
-	for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 11:52:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2F9F8606A31F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02CFB606A323
+	for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 11:52:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02CFB606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ap6jOXkm
-Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-386cf1041cdso6619334eec.0
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 03:52:02 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fMhgfKBY
+Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-38190551625so16959427eec.1
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 03:52:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795866721; x=1796471521; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1795866726; x=1796471526; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=wQAIunjbZ5VEO8eGZeZfnFQxqO5F52y9Of/nUTYaqm8=;
-        b=ap6jOXkmKMicDfUfxgcnRnW18agrg9BaJqYYH+bjyGcleTXPC7xrANAF6BPmZjCM8p
-         xgt56SIWv4rXCC3XwcJJFChJ7qluep/p7ccNdsQhpzy5AXMlCwZvm8pf7ge9n64OyGc2
-         Ki6pD/KaqcyqYY6isA1KeiOavhZZIBUQdsNBO63HWpDezIihlhk5IJI9jR+EiBQvHqLA
-         07r622D8xZVtUpt4sHvwQI0eq4w3fDgDFWKc4LAzQk8sw9kFmpluL7WWffcSg/fLWZqy
-         b/wJmKbrRALh69MgPiTeC+a3+I6kOj5VMU6S1pfCgMS1NOerL4ExJLq8wXSVA01EXl4P
-         HIKQ==
+        bh=SWTA87kb3BnC5vtYNbhLJFRBLMPszC6ScY1egL/JZXo=;
+        b=fMhgfKBYzxaPTciEXKI8CG743tw8X0JoogxcQTNWFgJDOQzywO2nIz1BSd1cKuzcvA
+         TXw6af9heSOOYxWdt4Xd/5pTf9eJlQf/w56sEQsF5sBlmp8Hf7MJTotCC5d9TJ1cs0N7
+         6zoBPs/70kkwO+f3Lz6+FezDa+hAG9QJQBEq8Dvfmj3SIcBHyISB49ZgQryOsRtdX2HM
+         czOTS3xV71YmxMNpHWaGeCgiqt1cAjXVxP5htsiI7e2a8WkGYVMhN8LDue+dMkBdrkoB
+         ig4ti6ZbDzVgwWUoqMs0FMf74uq5r5DmSMHZYN5MFdbg2f8MmPDNVN+8QHEvef0//m2v
+         BtYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795866721; x=1796471521;
+        d=1e100.net; s=20260707; t=1795866726; x=1796471526;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=wQAIunjbZ5VEO8eGZeZfnFQxqO5F52y9Of/nUTYaqm8=;
-        b=2wBlFySsTm++TtOtrfS56zsKOuIwsY7G2fQmZxjrH4ZsleQHfTyCF36vHdRumyx3Ui
-         RHvJTj3gqQjrmL+DmsuGlRw5iMabi3R2SHDpHiqnquewCAcvYgpJ+gEN07U7VkzoEDme
-         ZgrnCq1pcrFDPqyjkw4kLqmGg+5omS7ybCw7fb4NjqqF47gnN776UKPC89tcXtgb05HQ
-         ZtTNn8QumsFuLK0Gqw7o0gmzNpT5PBzdeoNLJ6xPYe5LE81dAmV0FzEq9UY15P4pR1bg
-         pJlCqP9TW0OJe7z1nzSW09MJ0KKzekHlJZCKMr+TTXiFIbWZ6OPKVEmo8YTZUaVoDF7D
-         uouQ==
-X-Forwarded-Encrypted: i=1; AL+hErFTYcglmaddUudbcdepcVFmhI06zz4OfnGF014ZDO6d9+N333L2tmOldrBb01ULHxAU3z+zkr4AEbE=@vger.kernel.org
-X-Gm-Message-State: APuU4Z/JgYtty/FVspHtaqdX/vzUIUBQ4LzQMttD/ir4mv+bk3eYJPpy
-	Zc7JVtFLnWSfEUB8Ty5Ib3mptpOA3aVP+OGrmEbz0IjA2Bbd5FhMH8gb
-X-Gm-Gg: AZFdTZfK0bQdWB9FGYWLW0AjHZa2GKhOm+WbUNz5t5SGM22QUD/5BJEosR+jVpkgL7J
-	y5qC9hoefpBBB+GG86TKRUvg7BiqFhtz+h7Lz1vkZGG2X5QlbXesDyOuLeo+jbGSTUzIK/aeLAu
-	K9AWV1MJRFQJZpZjgg0718Rai3bFWMLdyCbe8Zpg/UCE7K2HQ0gl/nS/1QjlIJkwYBgEpM4iSUq
-	Xaiw//9dQWzpiL5V+uHayQgY2DFxDK06DRRzg7CV9vPF1n2C8/bNlMMzZ9RE9bQfYrLWnQ+Zsjq
-	01bR7U+FPzva490w89XnLvXhhnQPVps+zv06LbQqkFxFEmt/yOOEtFPXqu7LDX+qjbKvjQljosL
-	uAY8vuR+BPT2mtmDwoATcDG/o2VoLh4Aale+UxCFkotE3wSjF4FZOyuvt1eaoYZNqvoDbSfVJf7
-	Jxkl9v+6Oc8spo6jLhfmQ6KmD8pAvNxa2ypTtMiOWR8IU/yL4R25pXde7mcAHTywVJ8DszpewYc
-	JW44vO2TlNVXrw1uT1VuZQHA6dnA1hr3EGDoCu5ol1PecxaYn1LQSWEhPC8a8inQV7jK1sRKLQZ
-	7ACnuz1Yo/EIi47oBy9RpqLVHuKBwTk3WLXY1X6NPHasa+Xmr1NJES1i/h9NLwFKKRNwYdX4TTE
-	0I3EP0cfJGVAbyku3n7xzddJKXgE/k8Kaufks/drWOwOEedkijQ7S/Z3sgjqrQeXc7Y3TeSlxP+
-	WGIb+dCvNpar3AGhapxKUyeBosjX8xBEDddlHyJZjeDQ==
-X-Received: by 2002:a05:7300:e9d9:10b0:386:ce20:31c6 with SMTP id 5a478bee46e88-386ce20334emr13305569eec.29.1795866721134;
-        Sat, 28 Nov 2026 03:52:01 -0800 (PST)
+        bh=SWTA87kb3BnC5vtYNbhLJFRBLMPszC6ScY1egL/JZXo=;
+        b=QWXoKzNUfeNuWfthJ8iV5UoiaKOq3q1dBSwJ2aVy3qe2ZlVr1Pqfmq6ujEvlCJQg27
+         JEMmwKuuAHwI1hM//G4lP75sRy3umYPytZm375ArJaNSYd/6t3fTRp2y+oUFArwE2Im3
+         HyHpAXmcWyaaCxpsdqBve9neIY2Wb1vGTthPSH9NeUlSXl7S2R5gKJDeYweL/qx31vRu
+         SJx6Owr6xyHTNqyBLq1NXjIge4NCnuhFqdpDUW5Ti22wuElia6H7rtHj+VUx1Cjr/+He
+         X17FF8sz1+ud+bBjPGcf91B4dqZfll6JGnUVD8kUFrwDPAMNeq1njQ3QfGF+NjwopC+L
+         RG5A==
+X-Forwarded-Encrypted: i=1; AL+hErE0bwM2DqEFMrTQgXcg+H/jMO9YxfiSkAPJXvdujVQuxYaVMa3Lg+lacHFZiWeCUZJJWE79NFYCIFs=@vger.kernel.org
+X-Gm-Message-State: APuU4Z/heG56QF+8kQZnqOF63w1+5q/6USbneyNuWcsQKgEgzkUMILAL
+	wuPL+IJ+5ovs7Mflt4jIShp+aJXuYkhZ4VuEboYGeY62Dn8WtBVS+7ix
+X-Gm-Gg: AZFdTZfitE0p+3XaW5VmMSW3jMnBLQFbM4Sfm3MWMuxDTyhi6ItwH8pXFoPmKEBYVPM
+	G8GOWOBClCavyb6GdC27VHC7Vf4TUyo1JahelygTeSPb3MjgwJNRfByzx7/Ck4eLfw2fU/xFBQ7
+	a/3aKqym59Bdz+Z/UCAAVhHby7YTV0+VtmLxNG7sVVoRshAoaZTmcazMTopDuW9sK2aS4XPbEfr
+	09Q4DBSvZ5TB7HC/90B6IMuqsGIDAlKhUyPanKGEGZVduuhskWTsPqE+2KzWcVsHSIuSS6N1qjZ
+	oI+H6e3CJTx0BsqDZ51crJ9UTfMx/qnYB/wJ7w58jutznpSg8tjhD4ZqUXS7oVlDpjVTFr8Nhwh
+	xs9OTcrXtvslkWFEBpLxKb4/MXwBOeg/vlB+tvfNhoo3lkZmJgkeTBDVBkekJXDaZqpPKKtX2wn
+	GuCq5QjfXVTkxk7EuoTZC0zJ0Epvq/Km1t4Vl214WMB7QTRrYc1sccPoec0z59Jg4OcXD+K+X0a
+	4CvDxFzLZGOgt7h9Ikg6D/1uk2Qk0kmGXzL1U6e7KjR9I2Acyok4ocsmMoeRvjTxrGOfoI4kN8h
+	N9moY+RnktQ8RVXkYDTDsf0PJiMKQREjwpBSRei2YM9jozHfkYsalNJ7DPsk90TyzLFr9xA2GA8
+	82TIM5FYDak0pOv/Mm1JM+J08aXujB5gh4Uk98nKeo3wti04YgXR+oWCKhVJmlhxL2+yXdScEr8
+	wJsKrRdAvD0frEItX3EsrX3AcK0mbAkiZUtD47PTdZJm4=
+X-Received: by 2002:a05:693c:69dc:b0:386:aff0:6109 with SMTP id 5a478bee46e88-386aff061f8mr18853178eec.2.1795866726050;
+        Sat, 28 Nov 2026 03:52:06 -0800 (PST)
 Received: from kapoor.iiserb.ac.in ([203.18.51.239])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385c6830815sm74256544eec.20.2026.11.28.03.51.57
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-385c6830815sm74256544eec.20.2026.11.28.03.52.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Nov 2026 03:52:00 -0800 (PST)
+        Sat, 28 Nov 2026 03:52:05 -0800 (PST)
 From: Arnav Kapoor <kapoorarnav43@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -89,9 +89,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arnav Kapoor <kapoorarnav43@gmail.com>
-Subject: [PATCH v2 1/4] iio: proximity: aw96103: report negative proximity diff values
-Date: Sat, 28 Nov 2026 17:21:38 +0530
-Message-ID: <20261128115144.557411-2-kapoorarnav43@gmail.com>
+Subject: [PATCH v2 2/4] iio: proximity: aw96103: use the default configuration without firmware
+Date: Sat, 28 Nov 2026 17:21:39 +0530
+Message-ID: <20261128115144.557411-3-kapoorarnav43@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261128115144.557411-1-kapoorarnav43@gmail.com>
 References: <20261128115144.557411-1-kapoorarnav43@gmail.com>
@@ -106,42 +106,45 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The DIFF registers hold a signed S21.10 fixed-point value (Awinic's own
-aw_sar driver documents the diff data format as S21.10), which goes
-negative when the measured capacitance drops below the baseline.
-aw96103_get_diff_raw() divides it as a u32, so a diff of -1 (0xfffffc00)
-is reported as 4194303 instead of -1.
+aw96103_cfg_update() falls back to the built-in register defaults when
+the aw96103_0.bin configuration file cannot be used, but not when it is
+missing: then it only logs "No firmware." and returns. In that case the
+chip is never configured, the channel scan and the interrupts are never
+enabled (aw96103_channel_scan_start()), and no channel is marked as
+used, so the device registers but never reports an event.
 
-Convert the value to int before the division instead of after it, and
-declare it as unsigned int, the type regmap_read() takes.
+Load the defaults when the file is missing as well, as the comment in
+aw96103_cfg_update() describes.
 
 Fixes: 07b241262dca ("iio: proximity: aw96103: Add support for aw96103/aw96105 proximity sensor")
 Signed-off-by: Arnav Kapoor <kapoorarnav43@gmail.com>
 ---
- drivers/iio/proximity/aw96103.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/proximity/aw96103.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/proximity/aw96103.c b/drivers/iio/proximity/aw96103.c
-index e3ab55170b6c..483b3bf18d19 100644
+index 483b3bf18d19..4f205d6ea030 100644
 --- a/drivers/iio/proximity/aw96103.c
 +++ b/drivers/iio/proximity/aw96103.c
-@@ -261,14 +261,14 @@ static const struct regmap_config aw96103_regmap_confg = {
- static int aw96103_get_diff_raw(struct aw96103 *aw96103, unsigned int chan,
- 				int *buf)
- {
--	u32 data;
-+	unsigned int data;
- 	int ret;
+@@ -589,12 +589,13 @@ static void aw96103_cfg_update(const struct firmware *fw, void *data)
+ 	struct aw96103 *aw96103 = data;
+ 	int ret, i;
  
- 	ret = regmap_read(aw96103->regmap,
- 			  AW96103_REG_DIFF_CH0 + chan * 4, &data);
- 	if (ret)
- 		return ret;
--	*buf = (int)(data / AW_DATA_PROCESS_FACTOR);
-+	*buf = (int)data / AW_DATA_PROCESS_FACTOR;
- 
- 	return 0;
- }
+-	if (!fw || !fw->data) {
+-		dev_err(aw96103->dev, "No firmware.\n");
+-		return;
++	if (fw && fw->data) {
++		ret = aw96103_cfg_all_loaded(fw, aw96103);
++	} else {
++		release_firmware(fw);
++		dev_warn(aw96103->dev, "No firmware, using the default configuration\n");
++		ret = -ENOENT;
+ 	}
+-
+-	ret = aw96103_cfg_all_loaded(fw, aw96103);
+ 	/*
+ 	 * If loading the register configuration file fails,
+ 	 * load the default register configuration in the driver to
 -- 
 2.53.0
 
