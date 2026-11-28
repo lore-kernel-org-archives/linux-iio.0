@@ -1,54 +1,54 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795830557;
-	b=TPHmjI0/QS7WhlY01Cv6FtdJcID97OVtOCUA1jEhOI7kYlqP29uVegpJVnP1M5W+Nafl
-	 e3gv2ZaMpLH1tWTu0V7rnR3Eu5tAAyNZHkSlRyPFvnqju5lyzU9Gs4qnrUmqYbpUwckj8
-	 vs8uwbg1XtjdpLkhbdz4Sv7ny2mDVwg1ahNbEcZNHswdMcT6XwNLsHGVmLhP1cSIcOOrm
-	 NZ6vnkmPkga+noV03BbWci6XT3JVe9Ax2n10W1yXQHpqNoYKBGtJjCOQSLXrzbIDOyGZz
-	 aWKAEH7/gFGM1Wk2YnCiGqadpMIDpLVImW3rmo2/rFMrfo7zTgzJwi0QJKRJ9qaRh7Q==
+	t=1795830644;
+	b=QbW2VWoBUffwRjWpvUH4jCC40Fnf/A58VAYZyVWXkNLnovzc0GRr6VuGJbcbCmtMyZjr
+	 gkUq12bJLO1q9tnzX5GEbMBZw/qccXTnuBytnz+BwZXSSfqOuOtlBnZmuLc3LICvMNlZW
+	 9p3kAgBcQkbGb5kJGNxmGn7cbFu60UtQVr8umz3XadsPA/9RumrSOiv2RzHn/iuR6gftr
+	 ccrw+gCrGZNyQONm5UY1oSqwuy6oTY/DabNdoxysXy7aYup5sM1z/cstzHxHNp353kHkq
+	 0yAb+mzZcOr586jrpJOKjVTAwOCKXVXvYasoqYwVG4IYfl5XQtqpOur6hcm3HN0VwdA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795830557;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795830644;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 In-Reply-To:References:X-Mailer:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=b0CNu0sMSomQPUMCwSAn1vfvgTsWzt6MgZxeDXpU9B4=;
-	b=pNjkyYEarMiRUmL7S+iosNuykNbQPODzMT7jQHiO1y2CSJV8RM1AS+Vy27zoh8M+IbD8
-	 XmA5UOklWArvJwtQ7j4i4FHeKlXzvuSWl2S7//VFKBHi9Xq2dXNH2w9kExlDGt5OOuTFN
-	 UnndTHCn7LErB16xPHRtEWq4Z9q7HPDkVAhdcurLOx5xROlYCpGmfiWkJSOg9K8wkbaa6
-	 WuIWfTdEjapZyneTuMNsroD7QoH9eOhG/Hk18AOlNS9nBJj075qde1ixboPv6CvG4Jfqw
-	 NEjnMKIJVjNVAPxhWnr8qf7ApNpxGMA8OWjfDF5Mk5kA6mYn/EMrQ3kD5xD5x3X0zIg==
+	bh=vsrlU8gTA5At2h2P01DoL6ti6obAsrLnq9WXk3/lQiw=;
+	b=gJRi4NX+bUexrzLBNT7gIbks9qeOpy3ii0MG3bUqnHGrek0BoYhYEv1kGGXoZg4PYaDE
+	 GASxUxO1e0sihTidMx763JRiggFpM3VhG3gA4yHng879RQodeYL4uImJHvQqGtshPhYt9
+	 /H31YfqUdwJx+XeRTZuEhEFvdwJLIvY3VcVETwCioo6/STikRQjJYDYw/DtrnKWRZ1zd0
+	 /AV2DoaGkkhIferxSU6g0GOin2OE9/alWls2nAhtUULu+45MnqRCOAaCmYx/fEjLaR6+r
+	 iArwxJUbmOBbKIXNQZbbgxwVAPAgPOALreLpsSHynC3mT/Qe3vn7yrauzny9E+tLjYA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ok8en1Zu;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KmfEUCX7;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08C7606A31E
-	for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 01:49:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A2A2606A31C
+	for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2026 01:50:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ok8en1Zu
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2EE81F00893;
-	Sat, 28 Nov 2026 01:49:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KmfEUCX7
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69AD61F000C1;
+	Sat, 28 Nov 2026 01:50:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795830556;
-	bh=b0CNu0sMSomQPUMCwSAn1vfvgTsWzt6MgZxeDXpU9B4=;
+	s=k20260515; t=1795830643;
+	bh=vsrlU8gTA5At2h2P01DoL6ti6obAsrLnq9WXk3/lQiw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=ok8en1ZubuT1LuPwAaglbxPNFtfsqMRUOc+0AramxHrJ/M2Ks7e98hAKVG/mvq11P
-	 k57tnBybzEYORSpISNVWTUNlp3rkENot4+4OlzVkfMt3PcPkVWznCkeRXx8cfFioW7
-	 WUybWn0X3hU9IPkD9Purp3C5wtRqTnEjvhOjieuHAo3kg5bEppjc9Y0838BUc9BpK/
-	 hHimMqBGP8ZI3V0qgLrZgMTB4Ok6xnEhDhU2XtW/3XcbTAK8R6M9faCQRvTVZTRG8K
-	 G4Yy14YtfV46FqOcXONmzQObtIdtMRzNyFCKw5WSlzuAHJ/y9YpTw0sTJwuL5ukuKU
-	 C+elmeflGRQJw==
-Date: Sat, 28 Nov 2026 01:49:10 +0000
+	b=KmfEUCX7zx9SncTVVCbirBHCrQvSu/WMKZBdZZuCGrNXnJUO4tmWlq/bGmFEW6OtA
+	 9tevCSPt/el4aRngOil/uX3QTJFKkUG6C9kEQARtAsnNL/NJ8Esv8kcAIcSi4usX70
+	 QE25AhuUMVh+LecPVpk+O8zhzSisPj7I+idI2h/69tDdLstYbiG8UuhujJ1LZfg5pB
+	 ldNcpZ466SBj4BVV3v+K9OgmR4vhlcc6H1mNQsTXYEV+aTprKYzCBDhCKj2e7AgVQX
+	 O8T5ojMTneP4yiyNc9oN1oHIIaw/sONWR4Wrl9z3od0FoT6aI/rupZ1RAbnq8gJcew
+	 Vwl1lvjbcnn9A==
+Date: Sat, 28 Nov 2026 01:50:38 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: He Xin <hexin@hexin.host>
 Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 01/18] iio: accel: adxl345_core: support mount matrix
-Message-ID: <20261128014910.53c4fe1f@jic23-hlaptop>
-In-Reply-To: <AB3626537FF1BFE3+20261127030810.3150676-2-hexin@hexin.host>
-References: <20261127030810.3150676-1-hexin@hexin.host>
-	<AB3626537FF1BFE3+20261127030810.3150676-2-hexin@hexin.host>
+Subject: Re: [PATCH 00/18] iio: accel: add mount-matrix support to the
+ remaining accelerometer drivers
+Message-ID: <20261128015038.776c6c54@jic23-hlaptop>
+In-Reply-To: <5F08289E852625FC+20261127030810.3150676-1-hexin@hexin.host>
+References: <5F08289E852625FC+20261127030810.3150676-1-hexin@hexin.host>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,62 +62,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Nov 2026 11:07:53 +0800
+On Fri, 27 Nov 2026 11:07:52 +0800
 He Xin <hexin@hexin.host> wrote:
 
-> The driver ignores the mount matrix described by the firmware (ACPI
-> _DSD "mount-matrix" or the devicetree property), so the orientation
-> reported to userspace is wrong whenever the sensor is not mounted
-> axis-aligned with the display.
-> 
-> Read the mount matrix at probe time and expose it through
-> IIO_MOUNT_MATRIX(), as several other accelerometer drivers already do.
-> 
-> Signed-off-by: He Xin <hexin@hexin.host>
+> The accelerometer drivers in the tree are inconsistent about honouring the
+> installation orientation described by the firmware.  Drivers such as kxcjk-1013,
+> mma8452, bmc150 or st_lis3dh read the "mount-matrix" property (ACPI _DSD on
+> x86/ACPI platforms, devicetree otherwise) and expose it as
+> in_accel_mount_matrix, while the drivers patched here silently ignore it.
+I looked at first couple of these. Sashiko caught same stuff I did so:
+https://sashiko.dev/#/patchset/AB3626537FF1BFE3%2B20261127030810.3150676-2-hexin%40hexin.host
+Make sure you understand the feedback on dma safe buffers for v2.
 
-Something messed around with your message IDs so the thread is broken.
-It seems to have added a prefix to them.  Try to find out what did that
-for v2 or just use the b4 webgateway (look for docs for b4 on kernel.org).
+Thanks,
 
-> ---
->  drivers/iio/accel/adxl345_core.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-> index 6c9080d..2a77b55 100644
-> --- a/drivers/iio/accel/adxl345_core.c
-> +++ b/drivers/iio/accel/adxl345_core.c
-> @@ -204,6 +204,7 @@ struct adxl345_state {
->  	u32 tap_window_us;
->  
->  	__le16 fifo_buf[ADXL345_DIRS * ADXL345_FIFO_SIZE + 1] __aligned(IIO_DMA_MINALIGN);
-> +	struct iio_mount_matrix orientation;
-Look at the line above and make sure you understand why that IIO_DMA_MINALIGN is there.
-
-Technically this isn't actually a bug because the data is const after boot, but none
-the less we should have nothing else in that cacheline because it makes things
-harder to reason about.
-
->  };
-
->  #define ADXL345_CHANNEL(index, reg, axis) {					\
->  	.type = IIO_ACCEL,						\
-> +	.ext_info = adxl345_core_ext_info,				\
->  	.modified = 1,							\
->  	.channel2 = IIO_MOD_##axis,					\
->  	.address = (reg),						\
-> @@ -1902,6 +1918,10 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
->  		return -ENOMEM;
->  
->  	st = iio_priv(indio_dev);
-> +
-> +	ret = iio_read_mount_matrix(dev, &st->orientation);
-> +	if (ret)
-> +		return ret;
-
-Next part is unrelated so a blank line here.
-
->  	st->regmap = regmap;
->  	st->info = device_get_match_data(dev);
->  	if (!st->info)
-
+Jonathan
