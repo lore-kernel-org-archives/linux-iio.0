@@ -1,54 +1,54 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=136.143.169.10
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=136.143.169.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795856720;
-	b=FE0RzyYDoHJiBOInl9oxRB7Tt0gWNef/j3x0mPOFDsDCZ4ObvD3kZb5S3LZ1DeaQWpWe
-	 6bniKdqm+6GUHT7BlMh2twUhmeISEGA7dv5fsz/0A0dM+8Fx9z6bP9JbnQAtjbkBoU3s/
-	 nyeLaO/tTwQbj17lDBOwN3QPoe18CDT9Ohg0irrFUjG7m2OJAMDMogVRhDqPn02ig5P1Y
-	 qW/4r+1GsHFBUJsI/8yawc4Ie9ypHLdI3cAzDlm3p2szwi+ttzYQ4MGgrWeiLOLv7OocB
-	 UaXb7pE4y+5jTSadQMAssUa5aGnkUvsCug89d04NK9ySn+2VGSJiN4UC4560gVMri9A==
+	t=1795857729;
+	b=3ouaprsClNVlqlymQNXguWPj7fKG0uUNrOkIBvT/Hb8OQb82zkDXCBpdEeQsKV2wnCun
+	 Tk5TetkbGAWktBPhcqdt6JDf2LkiTqcdhKfRi4YeTt+TguGpWgYJTDhYszP6yC/atzkoB
+	 4+38agycZCSqCPABNzzUFfQ8u2nRmNEsM5Dey02/p85qJLtS5x7D4PERq0eRxjEN3gKtN
+	 iOM8rXXu6KfRx7EnRNF1+pHBM/jpEd/iz/IkFkxGlovEKFr5EmjYk/XBWD6KglivOi19u
+	 77uRj5tsKaafXvbRgVGx4tNrhb3hkwZVuWxGrUwa14rftCLMDN0wAdB/hT2DitzY6HA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795856720;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795857729;
 	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
 	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=fR8+AZzMPmjRQhe1cjtha4XcPJsaasrVYp7w8W00FRU=;
-	b=mH/0Z9nEWn7jco4YLqartCbcYs7SA87xloS6t1u0GzOiUOaSCiM9xCHlW1SWwRj1v5lr
-	 JRwQ6T5RNEfge67vLkmIaSWUg8HWDO7Wr02mwq7w9vHw3gIR9+hH7Wbsm9UzVyUj5FZJG
-	 kiUhJsSVkOwFFkYYXziSkhqV+h1lTVMzplI0HHHTTK5ufkwKBMY7VGGjXPxy+kEbkrK8Z
-	 pLMzTap9becCYTotHDKQJGt/woSuq6I4PB1vWzrk2FIGW2P/g4oR9PREjh1pu2G2ZoImO
-	 +aEXjV0nejgI6QkjxrOZcWyYAJO034IYqfdHiYs6MzJ+XidFYhh4JHCEnuup0Dc6frg==
+	bh=wlckpMJ074/wY0TNt41XHzSk8RPHuKfXuoWeAZ7xaY0=;
+	b=0HXkgcC1xFRVzoiqV8s9J2EaQRDZgpDBLOpldzrpGTmKB7SuMYhEu40UzIs7z7Ho2D2S
+	 W6fEBgsQaQRMElwbCJq9dSepcV2+KaWs3hB1YUZ3QfcpGJ4WowbPi2dfEKIt3uGOTUHLx
+	 +GBDNqpWmRos0MujjsiDK85savCjXSAnnq54Lo3IzLaOkq7/IfiWOJV6t+NZtwKxMmJ4T
+	 AASu5Oxhf/pIq4glxKNr69cPTzQCzIVhYdrzT6NnF25PSEM95Tpg5PdErjQf+KYOA9ikF
+	 oldyUA8PALPxlFk0ihV5xH6BzAtwD5A3Ix/N1VZjcRryzB3TT0EpFqs9RV4c2jOdPBw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=redaril.me;
 	spf=pass smtp.mailfrom=redaril.me;
-	dkim=pass header.d=redaril.me header.i=@redaril.me header.a=rsa-sha256 header.s=zmail header.b=F+rlBotm;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=136.143.169.10
-Received: from sender-op-o10.zoho.eu (sender-op-o10.zoho.eu [136.143.169.10])
+	dkim=pass header.d=redaril.me header.i=@redaril.me header.a=rsa-sha256 header.s=zmail header.b=gZvnawq0;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=136.143.169.18
+Received: from sender-op-o18.zoho.eu (sender-op-o18.zoho.eu [136.143.169.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FEA3606A324;
-	Sat, 28 Nov 2026 09:05:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FEA3606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814A1606A323;
+	Sat, 28 Nov 2026 09:22:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 814A1606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redaril.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redaril.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redaril.me header.i=@redaril.me header.a=rsa-sha256 header.s=zmail header.b=F+rlBotm
-ARC-Seal: i=1; a=rsa-sha256; t=1795856692; cv=none; 
+	dkim=pass (1024-bit key) header.d=redaril.me header.i=@redaril.me header.a=rsa-sha256 header.s=zmail header.b=gZvnawq0
+ARC-Seal: i=1; a=rsa-sha256; t=1795857688; cv=none; 
 	d=zohomail.eu; s=zohoarc; 
-	b=BmvcYnpeszoCL0aV0up+uO2/IQJK/dik7UJsorD/sO+qAuWdGrWEQv5gBraLHzqJzZHIewKqI132vg8kNtRHv1YUFeZTE5x+1vPJhtrvlIip1WDGXdXdsk2WAqOuxCxNICpr8g6pfaFgmZlGt9Jc3Phm5Ehkuu7yjjkxSFxDKqc=
+	b=TrHrhQJMjSLKmgtcrGYeI8/hpod9FxQkl++KebPmUenmpVKOGxKhi5xfrGvuYEP2tlOXZu1131syz2sUOpknAnUUyUApx1cQMOmzBSlvpHvL+Mj8UBAFoswMprm69HFTM8QbnmO9tqrWzs+kQNXd1ROjJZeoPb7frXe9i2QxvKw=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-	t=1795856692; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=fR8+AZzMPmjRQhe1cjtha4XcPJsaasrVYp7w8W00FRU=; 
-	b=RPX8LdONHctMB4NMm0AEyqOosUs7GFzDfOeieRNdSD6acmA+qXhBa/E5yd+1MMQ6kS4Z1HT7hUCXg4H95RpO55ODhFnKQrH9mOiInYEqsTz3lWi8cJa6ZFcowZgtkzs5Co0o/PHN2nhl0Z52Cj9tWE0zdboyDh8kUkunnBxJh8E=
+	t=1795857688; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=wlckpMJ074/wY0TNt41XHzSk8RPHuKfXuoWeAZ7xaY0=; 
+	b=fh86+1oTVSIirsHzrNQK+4U8mBUOtU6TZdeNG4xl3mtZp4tnBqFTGz0U+O8bWnUzf7eQ22DniQVzXIwXWfpg/d01git94hKsgAlR/fjj/GtMYjdwVp++Ahj+lABzfQhqdmDZi3eto49XZIDNq7ydq159PnudrPBKJbLz20bC4+c=
 ARC-Authentication-Results: i=1; mx.zohomail.eu;
 	dkim=pass  header.i=redaril.me;
 	spf=pass  smtp.mailfrom=development@redaril.me;
 	dmarc=pass header.from=<development@redaril.me>
-DKIM-Signature: a=rsa-sha256; b=F+rlBotmIlf7etpnZWsD/sWPQmU4l9X4oUcTs4SgmfqiMrXG13YwkZAnEPjrp+P9XP0OLgzi75RblBhzkTlCk3JFRw/g4AC/bftLlZUmknMXdbGx3ipBKo1cj/P2NeSy8TUmSTqsYqFGznxEJQ2bJBst/NaEGyv3JWjz+Rg+Yr4=; c=relaxed/relaxed; s=zmail; d=redaril.me; v=1; bh=fR8+AZzMPmjRQhe1cjtha4XcPJsaasrVYp7w8W00FRU=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zoho.eu with SMTPS id 1795856689546186.7563515837245;
-	Sat, 28 Nov 2026 10:04:49 +0100 (CET)
-Message-ID: <a08267fa-5a8d-4945-85f9-a9476a476b04@redaril.me>
-Date: Sat, 28 Nov 2026 10:04:48 +0100
+DKIM-Signature: a=rsa-sha256; b=gZvnawq0Y8vfoCXRTSIQE9oKTGrgXth7zsKTkAXyNn9pIag8EP32d9sHrlbL+TJzoi+FCLy/bzpMz1UhJby8voQqaGgHZS2gTql5YfHzIcldQDiHb/SQSF8x9a5w+STenJQOayRn5rj2qB8Z2uxppvwE3IEVj37DnK0jOg4Zuas=; c=relaxed/relaxed; s=zmail; d=redaril.me; v=1; bh=wlckpMJ074/wY0TNt41XHzSk8RPHuKfXuoWeAZ7xaY0=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zoho.eu with SMTPS id 1795857686218484.3481136278716;
+	Sat, 28 Nov 2026 10:21:26 +0100 (CET)
+Message-ID: <bad51b29-1bf5-4603-ab63-bdcacc7ffd06@redaril.me>
+Date: Sat, 28 Nov 2026 10:21:25 +0100
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Post: <mailto:linux-iio@vger.kernel.org>
@@ -59,8 +59,7 @@ List-Owner: <mailto:linux-iio+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] drivers: core: platform: Add
- platform_get_match_data() helper
+Subject: Re: [PATCH v2 2/2] iio: afe: iio-rescale: Add platform IDs
 To: Jonathan Cameron <jic23@kernel.org>,
  Fabio Forni via B4 Relay <devnull+development.redaril.me@kernel.org>
 Cc: development@redaril.me, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -71,38 +70,86 @@ Cc: development@redaril.me, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  driver-core@lists.linux.dev, linux-kernel@vger.kernel.org,
  linux-iio@vger.kernel.org
 References: <20261128-iio_rescale_platform_ids-v2-0-4c35f16c4f77@redaril.me>
- <20261128-iio_rescale_platform_ids-v2-1-4c35f16c4f77@redaril.me>
- <20261128002732.7c47a16d@jic23-hlaptop>
+ <20261128-iio_rescale_platform_ids-v2-2-4c35f16c4f77@redaril.me>
+ <20261128003010.6b36fa7b@jic23-hlaptop>
 Content-Language: en-US
 From: Fabio Forni <development@redaril.me>
-In-Reply-To: <20261128002732.7c47a16d@jic23-hlaptop>
+In-Reply-To: <20261128003010.6b36fa7b@jic23-hlaptop>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hello Jonathan,
-
-On 28/11/26 01:27, Jonathan Cameron wrote:
-> On Sat, 28 Nov 2026 00:22:09 +0100
+On 28/11/26 01:30, Jonathan Cameron wrote:
+> On Sat, 28 Nov 2026 00:22:10 +0100
 > Fabio Forni via B4 Relay <devnull+development.redaril.me@kernel.org> wrote:
 > 
 >> From: Fabio Forni <development@redaril.me>
 >>
->> device_get_match_data() retrieves driver data through the device's
->> fwnode. However, software nodes don't implement
->> fwnode->device_get_match_data(), so for a platform device that is
->> dynamically instantiated, device_get_match_data() is of no use.
->> platform_get_device_id() can be used instead, but this doesn't make the
->> driver code abstract enough.
+>> When a rescaler is dynamically instantiated and configured with swnode,
+>> device_get_match_data() will always set rescale->cfg to NULL, because
+>> device_get_match_data() is unimplemented for software nodes.
 >>
->> Add the platform_get_match_data() helper, so that driver data can be
->> retrieved from platform_device's fwnode *or* device_id as a fallback.
-> I'd have added a reference to similar cases like i2c_get_match_data()
-> or spi_get_device_match_data()
+>> Define a platform_device_id table (a replica of the of_device_id table)
+>> and call the platform_get_match_data() helper, to deal with both
+>> swnode-based and non-swnode-based instantiation methods.
+>>
+>> Signed-off-by: Fabio Forni <development@redaril.me>
+>> ---
+>>   drivers/iio/afe/iio-rescale.c | 18 +++++++++++++++++-
+>>   1 file changed, 17 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+>> index c01292a15a29..c268dbaaaea6 100644
+>> --- a/drivers/iio/afe/iio-rescale.c
+>> +++ b/drivers/iio/afe/iio-rescale.c
+>> @@ -518,6 +518,21 @@ static const struct of_device_id rescale_match[] = {
+>>   };
+>>   MODULE_DEVICE_TABLE(of, rescale_match);
+>>   
+>> +static const struct platform_device_id rescale_platform_ids[] = {
+>> +	{ .name = "current-sense-amplifier",
+>> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[CURRENT_SENSE_AMPLIFIER] },
+> 	{
+> 		.name = ...
+> 		.driver_data = ...
+> 	}, {
+> 		.name = ...
+> Or
+> 	},
+> 	{
+> 
+> I don't mind on that bit, but use a few more lines to make it easier
+> to add additional fields in future and generally make it easier to read.
 
-Good idea, I'll do that in v3. I'll wait a few days to let others add comments.
+Will do, but to be honest I always have a hard time syncing with
+maintainers' own style. Why isn't clang-format style simply agreed upon and enforced?
+Automatic formatting would reduce cognitive effort, and chances to argue :)
+I think Go and the Black formatter for Python did the right job on that matter: one
+style, no questions.
 
-> and perhaps have followed the naming in there for the return variable.
-> Both call it match.
+>> +	{ .name = "current-sense-shunt",
+>> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[CURRENT_SENSE_SHUNT] },
+>> +	{ .name = "voltage-divider",
+>> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[VOLTAGE_DIVIDER] },
+>> +	{ .name = "temperature-sense-rtd",
+>> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[TEMP_SENSE_RTD] },
+>> +	{ .name = "temperature-transducer",
+>> +	  .driver_data = (kernel_ulong_t)&rescale_cfg[TEMP_TRANSDUCER] },
+>> +	{ }
+>> +};
+>> +MODULE_DEVICE_TABLE(platform, rescale_platform_ids);
+>> +
+>>   static int rescale_probe(struct platform_device *pdev)
+>>   {
+>>   	struct device *dev = &pdev->dev;
+>> @@ -548,7 +563,7 @@ static int rescale_probe(struct platform_device *pdev)
+>>   
+>>   	rescale = iio_priv(indio_dev);
+>>   
+>> -	rescale->cfg = device_get_match_data(dev);
+>> +	rescale->cfg = platform_get_match_data(pdev);
+> 
+> Can we get a failure here?  Forcing a driver bind to a device not in the tables
+> tends to end up with NULL and it is common to just fail probe if that happens.
 
-Alright. I think you want me to return NULL instead of -ENODATA as well?
-The other helpers do so.
+No problem.
+
